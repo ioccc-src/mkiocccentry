@@ -431,8 +431,8 @@ main(int argc, char *argv[])
     while ((i = getopt(argc, argv, "hv:e:")) != -1) {
 	switch (i) {
 	case 'h':	/* -h - print help to stderr and exit 0 */
-	    usage(0, __FUNCTION__, "-h help mode:\n");
 	    /* exit(0); */
+	    usage(0, __FUNCTION__, "-h help mode:\n");
 	    /*NOTREACHED*/
 	case 'v':	/* -v verbosity */
 	    /* parse verbosity */
@@ -449,15 +449,15 @@ main(int argc, char *argv[])
 	    errno = 0;
 	    forced_errno = strtol(optarg, NULL, 0);
 	    if (errno != 0) {
-		/* exit(1); */
-		err(1, __FUNCTION__, "cannot parse -v arg: %s error: %s", optarg, strerror(errno));
+		/* exit(2); */
+		err(2, __FUNCTION__, "cannot parse -v arg: %s error: %s", optarg, strerror(errno));
 		/*NOTREACHED*/
 	    }
 	    errno = forced_errno;	/* simulate errno setting */
 	    break;
 	default:
-	    usage(2, __FUNCTION__, "invalid -flag");
-	    /* exit(2); */
+	    /* exit(3); */
+	    usage(3, __FUNCTION__, "invalid -flag");
 	    /*NOTREACHED*/
 	}
     }
@@ -469,8 +469,8 @@ main(int argc, char *argv[])
 	tar_path = argv[optind+2];
     	break;
     default:
-	/* exit(3) */
-	usage(3, __FUNCTION__, "requires 2 or 3 arguments");
+	/* exit(4); */
+	usage(4, __FUNCTION__, "requires 2 or 3 arguments");
 	/*NOTREACHED*/
     	break;
     }
@@ -485,11 +485,11 @@ main(int argc, char *argv[])
      * simulate an error
      */
     if (errno != 0) {
-	errp(4, __FUNCTION__, "simulated error, work_dir: %s iocccsize_path: %s", work_dir, iocccsize_path);
-	/* exit(4); */
+	/* exit(5); */
+	errp(5, __FUNCTION__, "simulated error, work_dir: %s iocccsize_path: %s", work_dir, iocccsize_path);
     }
-    err(5, __FUNCTION__, "simulated error, work_dir: %s iocccsize_path: %s", work_dir, iocccsize_path);
-    /* exit(5); */
+    /* exit(6); */
+    err(6, __FUNCTION__, "simulated error, work_dir: %s iocccsize_path: %s", work_dir, iocccsize_path);
     /*NOTREACHED*/
 
     /*
