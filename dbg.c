@@ -42,7 +42,7 @@
 /*
  * definitions
  */
-#define VERSION "0.2.20211227"
+#define VERSION "1.0 2021-12-27"
 #define DBG_NONE (0)		/* no debugging */
 #define DBG_LOW (1)		/* minimal debugging */
 #define DBG_MED (3)		/* somewhat more debugging */
@@ -69,8 +69,9 @@ static char const *usage_msg =
 "\n"
 "\twork_dir\ta required arg\n"
 "\tiocccsize_path\tanother required arg\n"
+"\ttar_path\tan optional arg (def: %s)\n"
 "\n"
-"NOTE: This is just a demo. Arguments are ignored and may be any value\n"
+"NOTE: This is just a demo. Arguments are ignored and may be of any value.\n"
 "\n"
 "dbg_test version: %s\n";
 
