@@ -43,12 +43,13 @@
  * definitions
  */
 #define VERSION "0.1.20211223"
-#define DBG_NONE (0)	// no debugging
-#define DBG_LOW (1)	// minimal debugging
-#define DBG_MED (3)	// somewhat more debugging
-#define DBG_HIGH (5)	// verbose debugging
-#define DBG_VHIGH (7)	// very verbose debugging
-#define DBG_DEFAULT (DBG_NONE)	// default level of debugging
+#define DBG_NONE (0)	/* no debugging */
+#define DBG_LOW (1)	/* minimal debugging */
+#define DBG_MED (3)	/* somewhat more debugging */
+#define DBG_HIGH (5)	/* verbose debugging */
+#define DBG_VHIGH (7)	/* very verbose debugging */
+#define DBG_VVHIGH (9)	/* very very verbose debugging */
+#define DBG_DEFAULT (DBG_NONE)	/* default level of debugging */
 
 
 /*
