@@ -2,8 +2,8 @@
  * dbg - example of how to use usage(), dbg(), warn(), err(), errp()
  *
  * We show how to use the usage(), dbg(), warn(), and err() facility by
- * this stub from an early verison of iocccsize.  Compile with -DDBG_TEST
- * to build a standalone test program.
+ * this stub from an early version of iocccsize.  Compile with -DDBG_TEST
+ * to build a stand-alone test program.
  *
  * Copyright (c) 2021 by Landon Curt Noll.  All Rights Reserved.
  *
@@ -42,13 +42,13 @@
 /*
  * definitions
  */
-#define VERSION "0.1.20211223"
-#define DBG_NONE (0)	/* no debugging */
-#define DBG_LOW (1)	/* minimal debugging */
-#define DBG_MED (3)	/* somewhat more debugging */
-#define DBG_HIGH (5)	/* verbose debugging */
-#define DBG_VHIGH (7)	/* very verbose debugging */
-#define DBG_VVHIGH (9)	/* very very verbose debugging */
+#define VERSION "0.2.20211227"
+#define DBG_NONE (0)		/* no debugging */
+#define DBG_LOW (1)		/* minimal debugging */
+#define DBG_MED (3)		/* somewhat more debugging */
+#define DBG_HIGH (5)		/* verbose debugging */
+#define DBG_VHIGH (7)		/* very verbose debugging */
+#define DBG_VVHIGH (9)		/* very very verbose debugging */
 #define DBG_DEFAULT (DBG_NONE)	/* default level of debugging */
 
 
@@ -56,22 +56,19 @@
  * usage message
  *
  * Use the usage() function to print the usage message.
+ *
+ * The follow usage message came from an early draft of mkiocccentry.
+ * This is just an example of usage: there is no mkiocccentry functionality here.
  */
 static char const *usage_msg =
 "usage: %s [-h] [-v level] [-e errno] work_dir iocccsize_path [tar_path]\n"
 "\n"
 "\t-h\t\tprint help message and exit 0\n"
 "\t-v level\tset verbosity level: (def level: %d)\n"
-"\t-e errno\tsimilate setting of errno to cause errp() to be involed\n"
+"\t-e errno\tsimulate setting of errno to cause errp() to be involved\n"
 "\n"
-"\twork_dir\tdirectory where the entry directory and tarball are formed\n"
-"\tiocccsize_path\tpath to the iocccsize tool\n"
-"\t\t\tNOTE: Source for the iocccsize tool may be found at:\n"
-"\n"
-"\t\t\t    https://www.ioccc.org/YYYY/iocccsize.c\n"
-"\n"
-"\t\t\twhere YYYY is the IOCCC contest year.\n"
-"\ttar_path\tpath to tar tool that supports -cjvf (def: %s)\n"
+"\twork_dir\ta required arg\n"
+"\tiocccsize_path\tanother required arg\n"
 "\n"
 "NOTE: This is just a demo. Arguments are ignored and may be any value\n"
 "\n"
@@ -89,7 +86,7 @@ static char *iocccsize_path = NULL;		/* path to the iocccsize tool */
 
 
 /*
- * forward declarctions
+ * forward declarations
  */
 static void usage(int exitcode, char const *name, char const *str);
 static void dbg(int level, char const *fmt, ...);
@@ -182,7 +179,7 @@ dbg(int level, char const *fmt, ...)
 	warn(__FUNCTION__, "\nin dbg(%d, %s ...): NULL fmt, forcing use of: %d\n", level, fmt);
     }
 
-    /* 
+    /*
      * print the debug message if allowed by the verbosity level
      */
     if (level <= verbosity_level) {
