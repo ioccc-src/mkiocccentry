@@ -4,7 +4,7 @@
  *	"You are not expected to understand this" :-)
  *
  *	Public Domain 1992, 2015, 2018, 2019 by Anthony Howe.  All rights released.
- *	With IOCCC minor mods in 2019 by chongo (Landon Curt Noll) ^oo^
+ *	With IOCCC mods in 2019-2021 by chongo (Landon Curt Noll) ^oo^
  *
  * SYNOPSIS
  *
@@ -13,6 +13,7 @@
  *	-i	ignored for backward compatibility
  *	-h	print usage message in stderr and exit
  *	-v	turn on some debugging to stderr; -vv or -vvv for more
+ *	-V	print version string and exit
  *
  *	The source is written to stdout, with possible translations ie. trigraphs.
  *	The IOCCC net count rule 2b is written to stderr; with -v, net count (2b),
@@ -76,6 +77,9 @@
 #include <getopt.h>
 #include <string.h>
 #include <stdio.h>
+#include <stdlib.h>
+
+#define VERSION "28.2 2021-12-25"	/* use format: major.minor YYYY-MM-DD */
 
 #define WORD_BUFFER_SIZE	64
 #define MAX_SIZE		4096	/* IOCCC Rule 2a */
@@ -87,18 +91,19 @@
 #define COMMENT_BLOCK		2
 
 static char usage[] =
-"usage: iocccsize [-ihv] < prog.c\n"
+"usage: iocccsize [-h] [-i] [-v ...] [-V] < prog.c\n"
 "\n"
 "-i\t\tignored for backward compatibility\n"
 "-h\t\tprint usage message in stderr and exit\n"
 "-v\t\tturn on some debugging to stderr; -vv or -vvv for more\n"
+"-V\t\tprint version and exit\n"
 "\n"
 "The source is written to stdout, with possible translations ie. trigraphs.\n"
 "The IOCCC net count rule 2b is written to stderr; with -v, net count (2b),\n"
 "gross count (2a), number of keywords counted as 1 byte; -vv or -vvv write\n"
 "more tool diagnostics.\n"
 "\n"
-"Version: 2019-06-20-v27"
+"iocccsize version %s\n"
 ;
 
 static int debug;
@@ -446,7 +451,7 @@ main(int argc, char **argv)
 {
 	int ch;
 
-	while ((ch = getopt(argc, argv, "6ihv")) != -1) {
+	while ((ch = getopt(argc, argv, "6ihvV")) != -1) {
 		switch (ch) {
 		case 'i': /* ignored for backward compatibility */
 			break;
@@ -456,12 +461,16 @@ main(int argc, char **argv)
 			out_fmt = "%lu %lu %lu\n";
 			break;
 
+		case 'V':
+			printf("%s\n", VERSION);
+			exit(0);
+
 		case '6': /* You're a RTFS master!  Congrats. */
 			errx(6, "There is NO... Rule 6!\nI'm not a number!\nI'm a free(void *man)!\n");
 
 		case 'h':
 		default:
-			errx(2, "%s", usage);
+			errx(2, usage, VERSION);
 		}
 	}
 

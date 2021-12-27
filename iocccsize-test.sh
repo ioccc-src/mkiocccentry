@@ -7,7 +7,7 @@
 # This IOCCC size tool source file is version 2019-06-20-v27.
 #
 # Public Domain 1992, 2015, 2019 by Anthony Howe.  All rights released.
-# With IOCCC minor mods in 2019 by chongo (Landon Curt Noll) ^oo^
+# With IOCCC mods in 2019,2021 by chongo (Landon Curt Noll) ^oo^
 
 export PATH='/bin:/usr/bin:/usr/local/bin:/usr/pkg/bin'
 export ENV=''
@@ -44,7 +44,7 @@ shift $(($OPTIND - 1))
 #        usage
 #fi
 
-make -f iocccsize.mk ${__build} all
+make -f Makefile ${__build} all
 
 if [ ! -d test ]; then
 	mkdir test

@@ -2,14 +2,17 @@
 #
 # iocccsize - IOCCC Source Size Tool
 #
-# This IOCCC size tool source file is version 2019-06-20-v27.
+# This IOCCC size tool source file.  See below for the VERSION string.
 #
 # "You are not expected to understand this" :-)
 #
 # Public Domain 1992, 2015, 2018, 2019 by Anthony Howe.  All rights released.
-# With IOCCC minor mods in 2019 by chongo (Landon Curt Noll) ^oo^
+# With IOCCC minor mods in 2019,2021 by chongo (Landon Curt Noll) ^oo^
 
 .POSIX :
+
+GIT= git
+RM= rm
 
 O := .o
 E :=
@@ -33,7 +36,7 @@ LIBS		:=
 	${CC} -E ${CFLAGS} ${CPPFLAGS} $*.c >$*.i
 
 .c$E:
-	${CC} ${CFLAGS} ${CPPFLAGS} -o$*$E $*.c
+	${CC} ${CFLAGS} ${CPPFLAGS} -o $*$E $*.c
 
 #######################################################################
 
@@ -43,13 +46,14 @@ all: build
 build: ${PROJ}
 
 clean:
-	-rm -f ${PROJ}.i ${PROJ}$O *.stackdump *.core
+	${RM} -f ${PROJ}.i ${PROJ}$O *.stackdump *.core
+	${RM} -rf ${PROJ}.dSYM
 
 clobber: distclean
 
 distclean: clean
-	-rm -fr ${PROJ}$E test a.out
-	-rm -fr decom a.out iocccsize.dSYM
+	${RM} -fr ${PROJ}$E test a.out
+	${RM} -fr decom a.out iocccsize.dSYM
 
 test: ./${PROJ}-test.sh ${PROJ}
 	./${PROJ}-test.sh -v
@@ -58,4 +62,4 @@ unittest: test
 	./${PROJ}-test.sh -v
 
 version:
-	git describe --tags --abbrev=0 >VERSION
+	${GIT} describe --tags --abbrev=0
