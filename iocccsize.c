@@ -8,7 +8,8 @@
  *
  * SYNOPSIS
  *
- * 	iocccsize [-ihv] < input
+ * 	iocccsize [-ihvV] prog.c
+ * 	iocccsize [-ihvV] < prog.c
  *
  *	-i	ignored for backward compatibility
  *	-h	print usage message in stderr and exit
@@ -79,18 +80,20 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#define VERSION "28.2 2021-12-25"	/* use format: major.minor YYYY-MM-DD */
+#define VERSION "28.3 2021-12-29"	/* use format: major.minor YYYY-MM-DD */
 
 #define WORD_BUFFER_SIZE	64
 #define MAX_SIZE		4096	/* IOCCC Rule 2a */
 #define MAX_COUNT		2053	/* IOCCC Rule 2b */
 #define STRLEN(s)		(sizeof (s)-1)
 
+#define NO_STRING		0
 #define NO_COMMENT		0
 #define COMMENT_EOL		1
 #define COMMENT_BLOCK		2
 
 static char usage[] =
+"usage: iocccsize [-h] [-i] [-v ...] [-V] prog.c\n"
 "usage: iocccsize [-h] [-i] [-v ...] [-V] < prog.c\n"
 "\n"
 "-i\t\tignored for backward compatibility\n"
@@ -102,8 +105,6 @@ static char usage[] =
 "The IOCCC net count rule 2b is written to stderr; with -v, net count (2b),\n"
 "gross count (2a), number of keywords counted as 1 byte; -vv or -vvv write\n"
 "more tool diagnostics.\n"
-"\n"
-"iocccsize version %s\n"
 ;
 
 static int debug;
@@ -237,12 +238,15 @@ read_ch(FILE *fp)
 	return ch;
 }
 
-static void
+static int
 rule_count(FILE *fp)
 {
 	char word[WORD_BUFFER_SIZE];
 	size_t gross_count = 0, net_count = 0, keywords = 0, wordi = 0;
-	int ch, next_ch, quote = 0, escape = 0, is_comment = NO_COMMENT;
+	int ch, next_ch, quote = NO_STRING, escape = 0, is_comment = NO_COMMENT, rc = EXIT_SUCCESS;
+
+/* If quote == NO_STRING (0) and is_comment == NO_COMMENT (0) then its code. */
+#define IS_CODE	(quote == is_comment)
 
 	while ((ch = read_ch(fp)) != EOF) {
 		/* Future gazing. */
@@ -291,7 +295,7 @@ rule_count(FILE *fp)
 		}
 
 		/* Within quoted string? */
-		if (quote != 0) {
+		if (quote != NO_STRING) {
 			/* Escape _this_ character. */
 			if (escape) {
 				escape = 0;
@@ -304,7 +308,7 @@ rule_count(FILE *fp)
 
 			/* Close matching quote? */
 			else if (ch == quote) {
-				quote = 0;
+				quote = NO_STRING;
 			}
 		}
 
@@ -364,7 +368,7 @@ rule_count(FILE *fp)
 		 * tokenization, but map here and count as 1 byte, like their
 		 * ASCII counter parts.
 		 */
-		if (is_comment == NO_COMMENT && quote == 0) {
+		if (IS_CODE) {
 			const char *d;
 			static const char digraphs[] = "[<:]:>{<%}%>#%:";
 			for (d = digraphs; *d != '\0'; d += 3) {
@@ -413,8 +417,9 @@ rule_count(FILE *fp)
 		}
 
 		/* Collect next word not in a string or comment. */
-		if (quote == is_comment && (isalnum(ch) || ch == '_' || ch == '#')) {
+		if (IS_CODE && (isalnum(ch) || ch == '_' || ch == '#')) {
 			if (sizeof (word) <= wordi) {
+				warnx("word buffer overflow");
 				wordi = 0;
 			}
 			word[wordi++] = (char) ch;
@@ -434,22 +439,28 @@ rule_count(FILE *fp)
 	 * hopes it will reduce the number of entries that violate the IOCCC
 	 * size rules.
 	 */
-	if (debug == 0) {
-		if (MAX_SIZE < gross_count) {
+	if (MAX_SIZE < gross_count) {
+		if (debug == 0) {
 			(void) fprintf(stderr, "warning: size %zu exceeds Rule 2a %u\n", gross_count, MAX_SIZE);
 		}
-		if (MAX_COUNT < net_count) {
+		rc = EXIT_FAILURE;
+	}
+	if (MAX_COUNT < net_count) {
+		if (debug == 0) {
 			(void) fprintf(stderr, "warning: count %zu exceeds Rule 2b %u\n", net_count, MAX_COUNT);
 		}
+		rc = EXIT_FAILURE;
 	}
 
 	(void) fprintf(stderr, out_fmt, net_count, gross_count, keywords);
+
+	return rc;
 }
 
 int
 main(int argc, char **argv)
 {
-	int ch;
+	int ch, rc;
 
 	while ((ch = getopt(argc, argv, "6ihvV")) != -1) {
 		switch (ch) {
@@ -466,21 +477,33 @@ main(int argc, char **argv)
 			exit(0);
 
 		case '6': /* You're a RTFS master!  Congrats. */
-			errx(6, "There is NO... Rule 6!\nI'm not a number!\nI'm a free(void *man)!\n");
+			errx(6, "There is NO... Rule 6!  I'm not a number!  I'm a free(void *man)!");
 
 		case 'h':
 		default:
-			errx(2, usage, VERSION);
+			fprintf(stderr, "%s", usage);
+			return 2;
 		}
+	}
+
+	if (optind + 1 == argc) {
+		/* Redirect stdin to file path argument. */
+		if (freopen(argv[optind], "r", stdin) == NULL) {
+			err(3, "%s", argv[optind]);
+		}
+	} else if (optind != argc) {
+		/* Too many arguments. */
+		fprintf(stderr, "%s", usage);
+		return 2;
 	}
 
 	(void) setvbuf(stdin, NULL, _IOLBF, 0);
 
 	/* The Count - 1 Muha .. 2 Muhaha .. 3 Muhahaha ... */
-	rule_count(stdin);
+	rc = rule_count(stdin);
 
 	/*
 	 * All Done!!! All Done!!! -- Jessica Noll, age 2
 	 */
-	return 0;
+	return rc;
 }
