@@ -67,6 +67,7 @@
 #define UUID_LEN (36)		/* characters in a UUID string */
 #define UUID_VERSION (4)	/* version 4 - random UUID */
 #define UUID_VARIANT (0xa)	/* variant 1 - encoded as 0xa */
+#define MAX_ENTRY_NUM (9)	/* entry numbers from 0 to MAX_ENTRY_NUM allowed */
 
 
 /*
@@ -157,15 +158,18 @@ static void sanity_chk(char const *work_dir, char const *iocccsize, char const *
 static void fpara(FILE *stream, int nargs, ...);
 static char *prompt(char *str, char **linep);
 static char *get_contest_id(bool *testp);
+static int get_entry_num(void);
 
 
 int
 main(int argc, char *argv[])
 {
-    extern char *optarg;		/* option argument */
-    extern int optind;			/* argv index of the next arg */
-    bool test_mode = false;		/* true ==> contest ID is test */
-    char *ioccc_id = NULL;		/* IOCCC contest ID */
+    extern char *optarg;	/* option argument */
+    extern int optind;		/* argv index of the next arg */
+    bool test_mode = false;	/* true ==> contest ID is test */
+    char *ioccc_id = NULL;	/* IOCCC contest ID */
+    int entry_num = -1;		/* entry number or -1 ==> unset */
+    int ret;			/* libc return code */
     int i;
 
     /*
@@ -187,7 +191,7 @@ main(int argc, char *argv[])
 	    }
 	    break;
 	case 'V':	/* -V - print version and exit */
-	    printf("%s\n", VERSION);
+	    (void) printf("%s\n", VERSION);
 	    exit(0); /*ooo*/
 	    /*NOTREACHED*/
 	    break;
@@ -226,7 +230,12 @@ main(int argc, char *argv[])
     /*
      * welcome
      */
-    printf("Welcome to mkiocccentry version: %s\n", VERSION);
+    errno = 0;	/* pre-clear errno for errp() */
+    ret = printf("Welcome to mkiocccentry version: %s\n", VERSION);
+    if (ret < 0) {
+	errp(4, __FUNCTION__, "printf error printing the welcoem string");
+	/*NOTREACHED*/
+    }
 
     /*
      * environment sanity checks
@@ -239,6 +248,11 @@ main(int argc, char *argv[])
      * obtain the IOCCC contest ID
      */
     ioccc_id = get_contest_id(&test_mode);
+
+    /*
+     * obtain entry number
+     */
+    entry_num = get_entry_num();
 
     /*
      * All Done!!! - Jessica Noll, age 2
@@ -260,7 +274,7 @@ main(int argc, char *argv[])
 void
 usage(int exitcode, char const *name, char const *str)
 {
-    int ret;		/* return code holder */
+    int ret;		/* libc return code */
 
     /*
      * firewall
@@ -435,7 +449,7 @@ warn(char const *name, char const *fmt, ...)
  *
  * Example:
  *
- * 	err(exit_code, __FUNCTION__, "bad foobar: %s", message);
+ * 	err(1, __FUNCTION__, "bad foobar: %s", message);
  *
  * NOTE: We warn with extra newlines to help internal fault messages stand out.
  *	 Normally one should NOT include newlines in warn messages.
@@ -589,7 +603,7 @@ exists(char const *path)
      * firewall
      */
     if (path == NULL) {
-	err(4, __FUNCTION__, "exists called with NULL path");
+	err(5, __FUNCTION__, "exists called with NULL path");
 	/*NOTREACHED*/
     }
 
@@ -629,7 +643,7 @@ is_file(char const *path)
      * firewall
      */
     if (path == NULL) {
-	err(5, __FUNCTION__, "exists called with NULL path");
+	err(6, __FUNCTION__, "exists called with NULL path");
 	/*NOTREACHED*/
     }
 
@@ -679,7 +693,7 @@ is_exec(char const *path)
      * firewall
      */
     if (path == NULL) {
-	err(6, __FUNCTION__, "exists called with NULL path");
+	err(7, __FUNCTION__, "exists called with NULL path");
 	/*NOTREACHED*/
     }
 
@@ -729,7 +743,7 @@ is_dir(char const *path)
      * firewall
      */
     if (path == NULL) {
-	err(7, __FUNCTION__, "exists called with NULL path");
+	err(8, __FUNCTION__, "exists called with NULL path");
 	/*NOTREACHED*/
     }
 
@@ -779,7 +793,7 @@ is_write(char const *path)
      * firewall
      */
     if (path == NULL) {
-	err(8, __FUNCTION__, "exists called with NULL path");
+	err(9, __FUNCTION__, "exists called with NULL path");
 	/*NOTREACHED*/
     }
 
@@ -834,11 +848,11 @@ readline(char **linep, FILE *stream)
      * firewall
      */
     if (linep == NULL) {
-	err(9, __FUNCTION__, "linep is NULL");
+	err(10, __FUNCTION__, "linep is NULL");
 	/*NOTREACHED*/
     }
     if (stream == NULL) {
-	err(10, __FUNCTION__, "stream is NULL");
+	err(11, __FUNCTION__, "stream is NULL");
 	/*NOTREACHED*/
     }
 
@@ -850,16 +864,16 @@ readline(char **linep, FILE *stream)
     ret = getline(linep, &linecap, stream);
     if (ret < 0) {
 	if (feof(stream)) {
-	    errp(11, __FUNCTION__, "EOF found while reading line");
+	    errp(12, __FUNCTION__, "EOF found while reading line");
 	    /*NOTREACHED*/
 	} else {
-	    errp(12, __FUNCTION__, "getline() error");
+	    errp(13, __FUNCTION__, "getline() error");
 	    /*NOTREACHED*/
 	}
     }
     /* paranoia */
     if (*linep == NULL) {
-	err(13, __FUNCTION__, "*linep is NULL after getline()");
+	err(14, __FUNCTION__, "*linep is NULL after getline()");
 	/*NOTREACHED*/
     }
 
@@ -871,7 +885,7 @@ readline(char **linep, FILE *stream)
     errno = 0;	/* pre-clear errno for errp() */
     p = memchr(*linep, 0, ret);
     if (p != NULL) {
-	errp(14, __FUNCTION__, "found NUL before end of line");
+	errp(15, __FUNCTION__, "found NUL before end of line");
 	/*NOTREACHED*/
     }
 
@@ -879,7 +893,7 @@ readline(char **linep, FILE *stream)
      * process trailing newline or lack there of
      */
     if ((*linep)[ret-1] != '\n') {
-	err(15, __FUNCTION__, "line does not end in newline");
+	err(16, __FUNCTION__, "line does not end in newline");
 	/*NOTREACHED*/
     }
     (*linep)[ret-1] = '\0';	/* clear newline */
@@ -919,11 +933,11 @@ readline_dup(char **linep, FILE *stream)
      * firewall
      */
     if (linep == NULL) {
-	err(16, __FUNCTION__, "linep is NULL");
+	err(17, __FUNCTION__, "linep is NULL");
 	/*NOTREACHED*/
     }
     if (stream == NULL) {
-	err(17, __FUNCTION__, "stream is NULL");
+	err(18, __FUNCTION__, "stream is NULL");
 	/*NOTREACHED*/
     }
 
@@ -939,7 +953,7 @@ readline_dup(char **linep, FILE *stream)
     errno = 0;	/* pre-clear errno for errp() */
     ret = strdup(*linep);
     if (ret == NULL) {
-	err(18, __FUNCTION__, "strdup of read line of %d bytes failed", ret);
+	err(19, __FUNCTION__, "strdup of read line of %d bytes failed", ret);
 	/*NOTREACHED*/
     }
 
@@ -982,7 +996,7 @@ sanity_chk(char const *work_dir, char const *iocccsize, char const *tar)
      * firewall
      */
     if (work_dir == NULL || iocccsize == NULL || tar == NULL) {
-	err(19, __FUNCTION__, "called with NULL arg");
+	err(20, __FUNCTION__, "called with NULL arg");
 	/*NOTREACHED*/
     }
 
@@ -1003,7 +1017,7 @@ sanity_chk(char const *work_dir, char const *iocccsize, char const *tar)
 	      "",
 	      "    https://www.gnu.org/software/tar/",
 	      "");
-	err(20, __FUNCTION__, "tar does not exist: %s", tar);
+	err(21, __FUNCTION__, "tar does not exist: %s", tar);
 	/*NOTREACHED*/
     }
     if (! is_file(tar)) {
@@ -1019,7 +1033,7 @@ sanity_chk(char const *work_dir, char const *iocccsize, char const *tar)
 	      "",
 	      "    https://www.gnu.org/software/tar/",
 	      "");
-	err(21, __FUNCTION__, "tar is not a file: %s", tar);
+	err(22, __FUNCTION__, "tar is not a file: %s", tar);
 	/*NOTREACHED*/
     }
     if (! is_exec(tar)) {
@@ -1035,7 +1049,7 @@ sanity_chk(char const *work_dir, char const *iocccsize, char const *tar)
 	      "",
 	      "    https://www.gnu.org/software/tar/",
 	      "");
-	err(22, __FUNCTION__, "tar is not executable program: %s", tar);
+	err(23, __FUNCTION__, "tar is not executable program: %s", tar);
 	/*NOTREACHED*/
     }
 
@@ -1056,7 +1070,7 @@ sanity_chk(char const *work_dir, char const *iocccsize, char const *tar)
 	      "",
 	      "    https://www.gnu.org/software/coreutils/",
 	      "");
-	err(23, __FUNCTION__, "cp does not exist: %s", cp);
+	err(24, __FUNCTION__, "cp does not exist: %s", cp);
 	/*NOTREACHED*/
     }
     if (! is_file(cp)) {
@@ -1072,7 +1086,7 @@ sanity_chk(char const *work_dir, char const *iocccsize, char const *tar)
 	      "",
 	      "    https://www.gnu.org/software/cp/",
 	      "");
-	err(24, __FUNCTION__, "cp is not a file: %s", cp);
+	err(25, __FUNCTION__, "cp is not a file: %s", cp);
 	/*NOTREACHED*/
     }
     if (! is_exec(cp)) {
@@ -1088,7 +1102,7 @@ sanity_chk(char const *work_dir, char const *iocccsize, char const *tar)
 	      "",
 	      "    https://www.gnu.org/software/cp/",
 	      "");
-	err(25, __FUNCTION__, "cp is not executable program: %s", cp);
+	err(26, __FUNCTION__, "cp is not executable program: %s", cp);
 	/*NOTREACHED*/
     }
 
@@ -1109,7 +1123,7 @@ sanity_chk(char const *work_dir, char const *iocccsize, char const *tar)
 	      "",
 	      "    https://www.gnu.org/software/coreutils/",
 	      "");
-	err(26, __FUNCTION__, "ls does not exist: %s", ls);
+	err(27, __FUNCTION__, "ls does not exist: %s", ls);
 	/*NOTREACHED*/
     }
     if (! is_file(ls)) {
@@ -1125,7 +1139,7 @@ sanity_chk(char const *work_dir, char const *iocccsize, char const *tar)
 	      "",
 	      "    https://www.gnu.org/software/ls/",
 	      "");
-	err(27, __FUNCTION__, "ls is not a file: %s", ls);
+	err(28, __FUNCTION__, "ls is not a file: %s", ls);
 	/*NOTREACHED*/
     }
     if (! is_exec(ls)) {
@@ -1141,7 +1155,7 @@ sanity_chk(char const *work_dir, char const *iocccsize, char const *tar)
 	      "",
 	      "    https://www.gnu.org/software/ls/",
 	      "");
-	err(28, __FUNCTION__, "ls is not executable program: %s", ls);
+	err(29, __FUNCTION__, "ls is not executable program: %s", ls);
 	/*NOTREACHED*/
     }
 
@@ -1155,7 +1169,7 @@ sanity_chk(char const *work_dir, char const *iocccsize, char const *tar)
 	      "",
 	      "Perhaps you need to supply a different path?",
 	      "");
-	err(29, __FUNCTION__, "iocccsize does not exist: %s", iocccsize);
+	err(30, __FUNCTION__, "iocccsize does not exist: %s", iocccsize);
 	/*NOTREACHED*/
     }
     if (! is_file(iocccsize)) {
@@ -1165,7 +1179,7 @@ sanity_chk(char const *work_dir, char const *iocccsize, char const *tar)
 	      "",
 	      "We suggest you check the permissions on the iocccsize.",
 	      "");
-	err(30, __FUNCTION__, "iocccsize is not a file: %s", iocccsize);
+	err(31, __FUNCTION__, "iocccsize is not a file: %s", iocccsize);
 	/*NOTREACHED*/
     }
     if (! is_exec(iocccsize)) {
@@ -1175,7 +1189,7 @@ sanity_chk(char const *work_dir, char const *iocccsize, char const *tar)
 	      "",
 	      "We suggest you check the permissions on the iocccsize.",
 	      "");
-	err(31, __FUNCTION__, "iocccsize is not executable program: %s", iocccsize);
+	err(32, __FUNCTION__, "iocccsize is not executable program: %s", iocccsize);
 	/*NOTREACHED*/
     }
 
@@ -1189,7 +1203,7 @@ sanity_chk(char const *work_dir, char const *iocccsize, char const *tar)
 	      "",
 	      "You should either create work_dir, or use a different work_dir directory path on the command line.",
 	      "");
-	err(32, __FUNCTION__, "work_dir does not exist: %s", work_dir);
+	err(33, __FUNCTION__, "work_dir does not exist: %s", work_dir);
 	/*NOTREACHED*/
     }
     if (! is_dir(work_dir)) {
@@ -1200,7 +1214,7 @@ sanity_chk(char const *work_dir, char const *iocccsize, char const *tar)
 	      "You should move or remove work_dir and them make a new work_dir directory, or use a different",
 	      "work_dir directory path on the command line.",
 	      "");
-	err(33, __FUNCTION__, "work_dir is not a directory: %s", work_dir);
+	err(34, __FUNCTION__, "work_dir is not a directory: %s", work_dir);
 	/*NOTREACHED*/
     }
     if (! is_write(work_dir)) {
@@ -1211,7 +1225,7 @@ sanity_chk(char const *work_dir, char const *iocccsize, char const *tar)
 	      "You should change the permission to make work_dir writable, or you move or remove work_dir and then",
 	      "create a new writable directory, or use a different work_dir directory path on the command line.",
 	      "");
-	err(34, __FUNCTION__, "work_dir is not a writable directory: %s", work_dir);
+	err(35, __FUNCTION__, "work_dir is not a writable directory: %s", work_dir);
 	/*NOTREACHED*/
     }
 
@@ -1233,13 +1247,13 @@ sanity_chk(char const *work_dir, char const *iocccsize, char const *tar)
     errno = 0;	/* pre-clear errno for errp() */
     popen_cmd = malloc(popen_cmd_len + 1);
     if (popen_cmd == NULL) {
-	errp(35, __FUNCTION__, "malloc #0 failed");
+	errp(36, __FUNCTION__, "malloc #0 failed");
 	/*NOTREACHED*/
     }
     errno = 0;	/* pre-clear errno for errp() */
     ret = snprintf(popen_cmd, popen_cmd_len, "%s -V >/dev/null 2>&1", iocccsize);
     if (ret < 0) {
-	errp(36, __FUNCTION__, "snprintf error: %d", ret);
+	errp(37, __FUNCTION__, "snprintf error: %d", ret);
 	/*NOTREACHED*/
     }
     /* try running iocccsize -V to see if we can execute it */
@@ -1247,16 +1261,16 @@ sanity_chk(char const *work_dir, char const *iocccsize, char const *tar)
     errno = 0;	/* pre-clear errno for errp() */
     exit_code = system(popen_cmd);
     if (exit_code < 0) {
-	errp(37, __FUNCTION__, "error calling system(\"%s\")", popen_cmd);
+	errp(38, __FUNCTION__, "error calling system(\"%s\")", popen_cmd);
 	/*NOTREACHED*/
     } else if (exit_code == 127) {
-	errp(38, __FUNCTION__, "execution of the shell failed for system(\"%s\")", popen_cmd);
+	errp(39, __FUNCTION__, "execution of the shell failed for system(\"%s\")", popen_cmd);
 	/*NOTREACHED*/
     } else if (exit_code == 2) {
-	err(39, __FUNCTION__, "%s appears to be too old to support -V", iocccsize);
+	err(40, __FUNCTION__, "%s appears to be too old to support -V", iocccsize);
 	/*NOTREACHED*/
     } else if (exit_code != 0) {
-	err(40, __FUNCTION__, "%s failed with exit code: %d", popen_cmd, exit_code);
+	err(41, __FUNCTION__, "%s failed with exit code: %d", popen_cmd, exit_code);
 	/*NOTREACHED*/
     }
 
@@ -1266,7 +1280,7 @@ sanity_chk(char const *work_dir, char const *iocccsize, char const *tar)
     errno = 0;	/* pre-clear errno for errp() */
     ret = snprintf(popen_cmd, popen_cmd_len, "%s -V", iocccsize);
     if (ret < 0) {
-	errp(41, __FUNCTION__, "snprintf error: %d", ret);
+	errp(42, __FUNCTION__, "snprintf error: %d", ret);
 	/*NOTREACHED*/
     }
     /* pre-flush to avoid popen() buffered stdio issues */
@@ -1274,21 +1288,21 @@ sanity_chk(char const *work_dir, char const *iocccsize, char const *tar)
     errno = 0;	/* pre-clear errno for errp() */
     ret = fflush(stdout);
     if (ret < 0) {
-	errp(42, __FUNCTION__, "fflush(stdout); error code: %d", ret);
+	errp(43, __FUNCTION__, "fflush(stdout); error code: %d", ret);
 	/*NOTREACHED*/
     }
     clearerr(stderr);	/* pre-clear ferror() status */
     errno = 0;	/* pre-clear errno for errp() */
     ret = fflush(stderr);
     if (ret < 0) {
-	errp(43, __FUNCTION__, "fflush(stderr); error code: %d", ret);
+	errp(44, __FUNCTION__, "fflush(stderr); error code: %d", ret);
 	/*NOTREACHED*/
     }
     dbg(DBG_MED, "reading version string from %s -V", iocccsize);
     errno = 0;	/* pre-clear errno for errp() */
     iocccsize_stream = popen(popen_cmd, "r");
     if (iocccsize_stream == NULL) {
-	errp(44, __FUNCTION__, "popen for reading failed for: %s", popen_cmd);
+	errp(45, __FUNCTION__, "popen for reading failed for: %s", popen_cmd);
 	/*NOTREACHED*/
     }
     /* read the 1st line - should contain the iocccsize version */
@@ -1298,21 +1312,21 @@ sanity_chk(char const *work_dir, char const *iocccsize, char const *tar)
     (void) fclose(iocccsize_stream);
     ret = sscanf(linep, "%d.%d %d-%d-%d", &major_ver, &minor_ver, &year, &month, &day);
     if (ret != 5) {
-	err(45, __FUNCTION__, "iocccsize -V version string is mal-formed: %s", linep);
+	err(46, __FUNCTION__, "iocccsize -V version string is mal-formed: %s", linep);
 	/*NOTREACHED*/
     }
     dbg(DBG_MED, "iocccsize version: %d.%d", major_ver, minor_ver);
     dbg(DBG_HIGH, "iocccsize release year: %d month: %d day: %d", year, month, day);
     if (major_ver != REQUIRED_IOCCCSIZE_MAJVER) {
-	err(46, __FUNCTION__, "iocccsize major version: %d != required major version: %d", major_ver, REQUIRED_IOCCCSIZE_MAJVER);
-	/*NOTREACHED*/
-    }
-    if (major_ver != REQUIRED_IOCCCSIZE_MAJVER) {
 	err(47, __FUNCTION__, "iocccsize major version: %d != required major version: %d", major_ver, REQUIRED_IOCCCSIZE_MAJVER);
 	/*NOTREACHED*/
     }
+    if (major_ver != REQUIRED_IOCCCSIZE_MAJVER) {
+	err(48, __FUNCTION__, "iocccsize major version: %d != required major version: %d", major_ver, REQUIRED_IOCCCSIZE_MAJVER);
+	/*NOTREACHED*/
+    }
     if (minor_ver < MIN_IOCCCSIZE_MINVER) {
-	err(48, __FUNCTION__, "iocccsize minor version: %d < minimum minor version: %d", minor_ver, MIN_IOCCCSIZE_MINVER);
+	err(49, __FUNCTION__, "iocccsize minor version: %d < minimum minor version: %d", minor_ver, MIN_IOCCCSIZE_MINVER);
 	/*NOTREACHED*/
     }
     dbg(DBG_LOW, "good iocccsize version: %s", linep);
@@ -1357,7 +1371,7 @@ fpara(FILE *stream, int nargs, ...)
      * stream sanity check
      */
     if (stream == NULL) {
-	err(49, __FUNCTION__, "stream is NULL");
+	err(50, __FUNCTION__, "stream is NULL");
 	/*NOTREACHED*/
     }
     clearerr(stream);	/* pre-clear ferror() status */
@@ -1365,7 +1379,7 @@ fpara(FILE *stream, int nargs, ...)
     /* this may not always catch a bogus or un-opened stream, but try anyway */
     fd = fileno(stream);
     if (fd < 0) {
-	errp(50, __FUNCTION__, "fileno on stream returned: %d < 0", fd);
+	errp(51, __FUNCTION__, "fileno on stream returned: %d < 0", fd);
 	/*NOTREACHED*/
     }
     clearerr(stream);	/* paranoia */
@@ -1375,14 +1389,14 @@ fpara(FILE *stream, int nargs, ...)
      */
     dbg(DBG_VVHIGH, "request to print a %d line paragraph", nargs);
     if (nargs < 0) {
-	err(51, __FUNCTION__, "para called with a negative number of lines: %d < 0", nargs);
+	err(52, __FUNCTION__, "para called with a negative number of lines: %d < 0", nargs);
 	/*NOTREACHED*/
     } else if (nargs == 0) {
 	/* nothing to do */
 	va_end(ap);
 	return;
     } else if (nargs > MAX_SANE_PARA_LINES) {
-	err(52, __FUNCTION__, "para called with an absurd number of lines: %d < %d", nargs, MAX_SANE_PARA_LINES);
+	err(53, __FUNCTION__, "para called with an absurd number of lines: %d < %d", nargs, MAX_SANE_PARA_LINES);
 	/*NOTREACHED*/
     }
 
@@ -1399,13 +1413,13 @@ fpara(FILE *stream, int nargs, ...)
 	ret = fputs(va_arg(ap, char *), stream);
 	if (ret == EOF) {
 	    if (ferror(stream)) {
-		errp(53, __FUNCTION__, "error writing paragraph to a stream");
+		errp(54, __FUNCTION__, "error writing paragraph to a stream");
 		/*NOTREACHED*/
 	    } else if (feof(stream)) {
-		errp(54, __FUNCTION__, "EOF while writing paragraph to a stream");
+		errp(55, __FUNCTION__, "EOF while writing paragraph to a stream");
 		/*NOTREACHED*/
 	    } else {
-		errp(55, __FUNCTION__, "unexpected fputs error writing paragraph to a stream");
+		errp(56, __FUNCTION__, "unexpected fputs error writing paragraph to a stream");
 		/*NOTREACHED*/
 	    }
 	}
@@ -1418,13 +1432,13 @@ fpara(FILE *stream, int nargs, ...)
     	ret = fputc('\n', stream);
 	if (ret == EOF) {
 	    if (ferror(stream)) {
-		errp(56, __FUNCTION__, "error writing newline to a stream");
+		errp(57, __FUNCTION__, "error writing newline to a stream");
 		/*NOTREACHED*/
 	    } else if (feof(stream)) {
-		errp(57, __FUNCTION__, "EOF while writing newline to a stream");
+		errp(58, __FUNCTION__, "EOF while writing newline to a stream");
 		/*NOTREACHED*/
 	    } else {
-		errp(58, __FUNCTION__, "unexpected fputc error newline a stream");
+		errp(59, __FUNCTION__, "unexpected fputc error newline a stream");
 		/*NOTREACHED*/
 	    }
 	}
@@ -1443,13 +1457,13 @@ fpara(FILE *stream, int nargs, ...)
     ret = fflush(stream);
     if (ret == EOF) {
 	if (ferror(stream)) {
-	    errp(59, __FUNCTION__, "error flushing stream");
+	    errp(60, __FUNCTION__, "error flushing stream");
 	    /*NOTREACHED*/
 	} else if (feof(stream)) {
-	    errp(60, __FUNCTION__, "EOF while flushing stream");
+	    errp(61, __FUNCTION__, "EOF while flushing stream");
 	    /*NOTREACHED*/
 	} else {
-	    errp(61, __FUNCTION__, "unexpected fflush error while flushing stream");
+	    errp(62, __FUNCTION__, "unexpected fflush error while flushing stream");
 	    /*NOTREACHED*/
 	}
     }
@@ -1486,11 +1500,11 @@ prompt(char *str, char **linep)
      * firewall
      */
     if (str == NULL) {
-	err(62, __FUNCTION__, "str is NULL");
+	err(63, __FUNCTION__, "str is NULL");
 	/*NOTREACHED*/
     }
     if (linep == NULL) {
-	err(63, __FUNCTION__, "linep is NULL");
+	err(64, __FUNCTION__, "linep is NULL");
 	/*NOTREACHED*/
     }
 
@@ -1502,13 +1516,13 @@ prompt(char *str, char **linep)
     ret = fputs(str, stdout);
     if (ret == EOF) {
 	if (ferror(stdout)) {
-	    errp(64, __FUNCTION__, "error printing prompt string");
+	    errp(65, __FUNCTION__, "error printing prompt string");
 	    /*NOTREACHED*/
 	} else if (feof(stdout)) {
-	    errp(65, __FUNCTION__, "EOF while printing prompt string");
+	    errp(66, __FUNCTION__, "EOF while printing prompt string");
 	    /*NOTREACHED*/
 	} else {
-	    errp(66, __FUNCTION__, "unexpected fputs error printing prompt string");
+	    errp(67, __FUNCTION__, "unexpected fputs error printing prompt string");
 	    /*NOTREACHED*/
 	}
     }
@@ -1517,13 +1531,13 @@ prompt(char *str, char **linep)
     ret = fputs(": ", stdout);
     if (ret == EOF) {
 	if (ferror(stdout)) {
-	    errp(67, __FUNCTION__, "error printing :<space>");
+	    errp(68, __FUNCTION__, "error printing :<space>");
 	    /*NOTREACHED*/
 	} else if (feof(stdout)) {
-	    errp(68, __FUNCTION__, "EOF while writing :<space>");
+	    errp(69, __FUNCTION__, "EOF while writing :<space>");
 	    /*NOTREACHED*/
 	} else {
-	    errp(69, __FUNCTION__, "unexpected fputs error printing :<space>");
+	    errp(70, __FUNCTION__, "unexpected fputs error printing :<space>");
 	    /*NOTREACHED*/
 	}
     }
@@ -1532,13 +1546,13 @@ prompt(char *str, char **linep)
     ret = fflush(stdout);
     if (ret == EOF) {
 	if (ferror(stdout)) {
-	    errp(70, __FUNCTION__, "error flushing prompt to stdout");
+	    errp(71, __FUNCTION__, "error flushing prompt to stdout");
 	    /*NOTREACHED*/
 	} else if (feof(stdout)) {
-	    errp(71, __FUNCTION__, "EOF while flushing prompt to stdout");
+	    errp(72, __FUNCTION__, "EOF while flushing prompt to stdout");
 	    /*NOTREACHED*/
 	} else {
-	    errp(72, __FUNCTION__, "unexpected fflush error while flushing prompt to stdout");
+	    errp(73, __FUNCTION__, "unexpected fflush error while flushing prompt to stdout");
 	    /*NOTREACHED*/
 	}
     }
@@ -1548,7 +1562,7 @@ prompt(char *str, char **linep)
      */
     buf = readline_dup(linep, stdin);
     if (buf == NULL) {
-	errp(73, __FUNCTION__, "readline_dup returned NULL");
+	errp(74, __FUNCTION__, "readline_dup returned NULL");
 	/*NOTREACHED*/
     }
 
@@ -1592,7 +1606,7 @@ get_contest_id(bool *testp)
      * firewall
      */
     if (testp == NULL) {
-	err(74, __FUNCTION__, "testp is NULL");
+	err(75, __FUNCTION__, "testp is NULL");
 	/*NOTREACHED*/
     }
 
@@ -1605,8 +1619,8 @@ get_contest_id(bool *testp)
 	 "",
 	 "    file:///Users/chongo/bench/ioccc/ioccc-src/winner/index.html#enter",
 	 "",
-	 "If you do not have an IOCCC contest ID and you with to test this program,"
-	 "you may use the special contest ID:"
+	 "If you do not have an IOCCC contest ID and you with to test this program,",
+	 "you may use the special contest ID:",
 	 "",
 	 "    test",
 	 "",
@@ -1624,8 +1638,7 @@ get_contest_id(bool *testp)
      */
     if (strcmp(malloc_ret, "test") == 0) {
 	PARA("",
-	     "IOCCC contst ID is test, entering test mode.",
-	     "");
+	     "IOCCC contst ID is test, entering test mode.");
 	*testp = true;
     	return malloc_ret;
     }
@@ -1641,7 +1654,7 @@ get_contest_id(bool *testp)
      */
     len = strlen(malloc_ret);
     if (len != UUID_LEN) {
-	err(75, __FUNCTION__, "IOCCC contest ID are %d characters in length, you entered %d", UUID_LEN, len);
+	err(76, __FUNCTION__, "IOCCC contest ID are %d characters in length, you entered %d", UUID_LEN, len);
 	/*NOTREACHED*/
     }
     /* convert to lower case */
@@ -1662,7 +1675,7 @@ get_contest_id(bool *testp)
 	      "Your IOCCC contest ID is not a valid UUID.  Please check your the email you received",
 	      "when you registered as an IOCCC contestant for the correct IOCCC contest ID.",
 	      "");
-	err(76, __FUNCTION__, "malfiored IOCCC contest ID");
+	err(77, __FUNCTION__, "malfiored IOCCC contest ID");
 	/*NOTREACHED*/
     }
     dbg(DBG_MED, "IOCCC contest ID is a UUID: %s", malloc_ret);
@@ -1679,4 +1692,75 @@ get_contest_id(bool *testp)
      * return IOCCC contest ID
      */
     return malloc_ret;
+}
+
+
+/*
+ * get_entry_num - obtain the entry number
+ *
+ * returns:
+ *	entry number >= 0 <= MAX_ENTRY_NUM
+ */
+static int
+get_entry_num(void)
+{
+    int entry_num;		/* entry number */
+    char *linep = NULL;		/* line prompt buffer */
+    char *entry_str;		/* entry number string */
+    int ret;			/* libc fuction return */
+
+    /*
+     * keep asking for an entry number until we get a valid reply
+     */
+    do {
+
+	/*
+	 * explain entry numbers
+	 */
+	errno = 0;	/* pre-clear errno for errp() */
+	ret = printf("\nYou are allowed to submit up to %d entries to a given IOCCC.\n", MAX_ENTRY_NUM+1);
+	if (ret < 0) {
+	    errp(78, __FUNCTION__, "printf error printing number of entries allowed");
+	    /*NOTREACHED*/
+	}
+	PARA("",
+	     "As in C, Entry numbers start with 0.  If you are updated a previous entry, PLEASE",
+	     "use the same entry number that you previosly uploaded so we know which entry we",
+	     "should replace. If this is your 1st entry to this given IOCCC, enter 0.",
+	     "");
+
+	/*
+	 * ask for the entry number
+	 */
+	entry_str = prompt("Enter the entry number", &linep);
+
+	/*
+	 * check the entry number
+	 */
+	ret = sscanf(entry_str, "%1u", &entry_num);
+	if (ret != 1) {
+	    fprintf(stderr, "\nThe entry number must be a number from 0 thru %d, please re-enter.\n", MAX_ENTRY_NUM);
+	}
+
+	/*
+	 * free storage
+	 */
+	free(entry_str);
+	entry_str = NULL;
+
+    } while (entry_num < 0 || entry_num > MAX_ENTRY_NUM);
+
+    /*
+     * free storage
+     */
+    if (linep == NULL) {
+	free(linep);
+	linep = NULL;
+    }
+
+    /*
+     * return the entry number
+     */
+    dbg(DBG_MED, "entry number: %d", entry_num);
+    return entry_num;
 }
