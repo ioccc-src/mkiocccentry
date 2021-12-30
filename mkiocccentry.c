@@ -1737,8 +1737,8 @@ get_entry_num(void)
 	/*
 	 * check the entry number
 	 */
-	ret = sscanf(entry_str, "%1u", &entry_num);
-	if (ret != 1) {
+	ret = sscanf(entry_str, "%d", &entry_num);
+	if (ret != 1 || entry_num < 0 || entry_num > MAX_ENTRY_NUM) {
 	    fprintf(stderr, "\nThe entry number must be a number from 0 thru %d, please re-enter.\n", MAX_ENTRY_NUM);
 	}
 
