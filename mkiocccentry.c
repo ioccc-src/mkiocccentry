@@ -54,7 +54,7 @@
 /*
  * definitions
  */
-#define VERSION "0.2 2021-12-29"	/* use format: major.minor YYYY-MM-DD */
+#define VERSION "0.3 2021-12-29"	/* use format: major.minor YYYY-MM-DD */
 #define REQUIRED_IOCCCSIZE_MAJVER (28)	/* iocccsize major version must match */
 #define MIN_IOCCCSIZE_MINVER (2)	/* iocccsize minor version must be >= */
 #define DBG_NONE (0)		/* no debugging */
@@ -68,6 +68,7 @@
 #define UUID_VERSION (4)	/* version 4 - random UUID */
 #define UUID_VARIANT (0xa)	/* variant 1 - encoded as 0xa */
 #define MAX_ENTRY_NUM (9)	/* entry numbers from 0 to MAX_ENTRY_NUM allowed */
+#define MAX_ENTRY_CHARS (1)	/* characters that represent the maximum entry number */
 
 
 /*
@@ -159,6 +160,7 @@ static void fpara(FILE *stream, int nargs, ...);
 static char *prompt(char *str, char **linep);
 static char *get_contest_id(bool *testp);
 static int get_entry_num(void);
+static char *mk_entry_dir(char *work_dir, char *ioccc_id, int entry_num);
 
 
 int
@@ -169,6 +171,7 @@ main(int argc, char *argv[])
     bool test_mode = false;	/* true ==> contest ID is test */
     char *ioccc_id = NULL;	/* IOCCC contest ID */
     int entry_num = -1;		/* entry number or -1 ==> unset */
+    char *entry_dir = NULL;	/* entry directory from which to form a compressed tarball */
     int ret;			/* libc return code */
     int i;
 
@@ -248,11 +251,19 @@ main(int argc, char *argv[])
      * obtain the IOCCC contest ID
      */
     ioccc_id = get_contest_id(&test_mode);
+    dbg(DBG_MED, "IOCCC contest ID: %s", ioccc_id);
 
     /*
      * obtain entry number
      */
     entry_num = get_entry_num();
+    dbg(DBG_MED, "entry number: %d", entry_num);
+
+    /*
+     * create entry directory
+     */
+    entry_dir = mk_entry_dir(work_dir, ioccc_id, entry_num);
+    dbg(DBG_LOW, "formed entry directory: %s", entry_dir);
 
     /*
      * All Done!!! - Jessica Noll, age 2
@@ -1761,6 +1772,90 @@ get_entry_num(void)
     /*
      * return the entry number
      */
-    dbg(DBG_MED, "entry number: %d", entry_num);
     return entry_num;
+}
+
+
+/*
+ * mk_entry_dir - make the entry directory
+ *
+ * Make a directory, under work_dir, from which the compressed tarball
+ * will be formed.
+ *
+ * given:
+ *	work_dir - working directory under which the entry directory is formed
+ *	ioccc_id - IOCCC entry ID (or test)
+ *	entry_num - entry number
+ *
+ * returns:
+ *	the path of the working directory
+ *
+ * This function does not return on error or if the entry directory cannot be formed.
+ */
+static char *
+mk_entry_dir(char *work_dir, char *ioccc_id, int entry_num)
+{
+    int len;			/* length of entry directory */
+    char *entry_dir = NULL;	/* malloced entry directory path */
+    int ret;			/* libc fuction return */
+
+    /*
+     * firewall
+     */
+    if (work_dir == NULL || ioccc_id == NULL) {
+	err(79, __FUNCTION__, "work_dir and/or ioccc_id is NULL");
+	/*NOTREACHED*/
+    }
+    if (entry_num < 0 || entry_num > MAX_ENTRY_NUM) {
+	err(80, __FUNCTION__, "entry number: %d must >= 0 and <= %d", MAX_ENTRY_NUM);
+	/*NOTREACHED*/
+    }
+
+    /*
+     * determine length of entry directory path
+     */
+    /* work_dir/ioccc_id-entry */
+    len = strlen(work_dir) + 1 + strlen(ioccc_id) + 1 + MAX_ENTRY_CHARS + 1;
+    errno = 0;	/* pre-clear errno for errp() */
+    entry_dir = malloc(len + 1 + 1);
+    if (entry_dir == NULL) {
+	errp(81, __FUNCTION__, "cannot malloc %d characters", len + 1);
+	/*NOTREACHED*/
+    }
+    errno = 0;	/* pre-clear errno for errp() */
+    ret = snprintf(entry_dir, len + 1, "%s/%s-%d", work_dir, ioccc_id, entry_num);
+    if (ret < 0) {
+	errp(82, __FUNCTION__, "snprintf to form entry directory failed");
+	/*NOTREACHED*/
+    }
+    dbg(DBG_HIGH, "entry directory path: %s", entry_dir);
+
+    /*
+     * verify that the entry directory does not exist
+     */
+    if (exists(entry_dir)) {
+	(void) fprintf(stderr, "\nentry directory already exists: %s\n", entry_dir);
+	FPARA(stderr,
+	      "",
+	      "You need to move that directory, or remove it, or use a different work_dir.",
+	      "");
+	err(83, __FUNCTION__, "entry directory exists: %s", entry_dir);
+	/*NOTREACHED*/
+    }
+    dbg(DBG_HIGH, "entry directory path: %s", entry_dir);
+
+    /*
+     * make the entry directory
+     */
+    errno = 0;	/* pre-clear errno for errp() */
+    ret = mkdir(entry_dir, 0755);
+    if (ret < 0) {
+	errp(84, __FUNCTION__, "cannot mkdir %s with mode 0755", entry_dir);
+	/*NOTREACHED*/
+    }
+
+    /*
+     * return entry directory
+     */
+    return entry_dir;
 }
