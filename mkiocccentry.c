@@ -54,7 +54,7 @@
 /*
  * definitions
  */
-#define VERSION "0.3 2021-12-29"	/* use format: major.minor YYYY-MM-DD */
+#define VERSION "0.4 2021-12-31"	/* use format: major.minor YYYY-MM-DD */
 #define REQUIRED_IOCCCSIZE_MAJVER (28)	/* iocccsize major version must match */
 #define MIN_IOCCCSIZE_MINVER (2)	/* iocccsize minor version must be >= */
 #define DBG_NONE (0)		/* no debugging */
@@ -69,6 +69,12 @@
 #define UUID_VARIANT (0xa)	/* variant 1 - encoded as 0xa */
 #define MAX_ENTRY_NUM (9)	/* entry numbers from 0 to MAX_ENTRY_NUM allowed */
 #define MAX_ENTRY_CHARS (1)	/* characters that represent the maximum entry number */
+#define MAX_AUTHORS (5)		/* maximum number of authors of an entry */
+#define ISO_3166_1_CODE_URL0 "https://en.wikipedia.org/wiki/ISO_3166-1#Officially_assigned_code_elements"
+#define ISO_3166_1_CODE_URL1 "https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2"
+#define ISO_3166_1_CODE_URL2 "https://www.iso.org/obp/ui/#iso:pub:PUB500001:en"
+#define ISO_3166_1_CODE_URL3 "https://www.iso.org/obp/ui/#search"
+#define ISO_3166_1_CODE_URL4 "https://www.iso.org/glossary-for-iso-3166.html"
 
 
 /*
@@ -129,6 +135,418 @@ static char const *usage_msg =
 
 
 /*
+ * author info
+ */
+struct author {
+    char *name;			/* name of the author */
+    char *location_code;		/* author country code */
+    char *home_url;		/* home URL of author or empty string */
+    char *twitter;		/* author twitter handle or empty string */
+    char *github_user;		/* author GitHub username or empty string */
+    char *affiliation;		/* author affiliation or empty string */
+    int author_num;		/* author number */
+};
+
+
+/*
+ * location/country codes
+ *
+ * We list all Officially assigned code elements,
+ * all Exceptionally reserved code elements,
+ * all Transitionally reserved code elements,
+ * all Indeterminately reserved code elements,
+ * all Formerly assigned code elements,
+ * all User-assigned code elements,
+ * as of 2021 Dec 31.  See:
+ *
+ *	https://en.wikipedia.org/wiki/ISO_3166-1#Officially_assigned_code_elements
+ *	https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2
+ *	https://www.iso.org/obp/ui/#iso:pub:PUB500001:en
+ *	https://www.iso.org/obp/ui/#search
+ *
+ * See also:
+ *
+ *	https://www.iso.org/glossary-for-iso-3166.html
+ *
+ * This means you will find a few codes that belong to
+ * entities that no longer are recognized, entities
+ * that are/were temporary, codes that are reserved for
+ * future use, codes for Road Traffic Conventions,
+ * codes for Property Organizations, duplicate codes, etc.
+ *
+ * We do not list WIPO codes as they are not formally
+ * reserved.  They refer to Patent and related WIPO
+ * organizations: as such they do not repreent places
+ * where a IOCCC winner would live.
+ *
+ * We mean no offence by this list: we simply tried to
+ * include all ISO 3166 codes.  Please pardon any typos.
+ * Spelling corrections welcome.
+ */
+static struct location {
+    char *code;		/* ISO 3166-1 Alpha-2 Code */
+    char *name;		/* name (short name lower case) */
+} loc[] = {
+    {"AA", "User-assigned code AA"}, /* User-assigned code */
+    {"AC", "Ascension Island"}, /* Exceptionally reserved code */
+    {"AD", "Andorra"},
+    {"AE", "United Arab Emirates"},
+    {"AF", "Afghanistan"},
+    {"AG", "Antigua and Barbuda"},
+    {"AI", "Anguilla"},
+    {"AL", "Albania"},
+    {"AM", "Armenia"},
+    {"AN", "Netherlands Antilles"}, /* Transitionally reserved code */
+    {"AO", "Angola"},
+/*  {"AP", "African Regional Industrial Property Organization"}, */ /* WIPO Indeterminately reserved code */
+    {"AQ", "Antarctica"},
+    {"AR", "Argentina"},
+    {"AS", "American Samoa"},
+    {"AT", "Austria"},
+    {"AU", "Australia"},
+    {"AW", "Aruba"},
+    {"AX", "Åland Islands"},
+    {"AZ", "Azerbaijan"},
+    {"BA", "Bosnia and Herzegovina"},
+    {"BB", "Barbados"},
+    {"BD", "Bangladesh"},
+    {"BE", "Belgium"},
+    {"BF", "Burkina Faso"},
+    {"BG", "Bulgaria"},
+    {"BH", "Bahrain"},
+    {"BI", "Burundi"},
+    {"BJ", "Benin"},
+    {"BL", "Saint Barthélemy"},
+    {"BM", "Bermuda"},
+    {"BN", "Brunei Darussalam"},
+    {"BO", "Bolivia (Plurinational State of)"},
+    {"BQ", "Bonaire, Sint Eustatius and Saba"},
+    {"BR", "Brazil"},
+    {"BS", "Bahamas"},
+    {"BT", "Bhutan"},
+    {"BU", "Burma"}, /* Transitionally reserved code */
+    {"BV", "Bouvet Island"},
+    {"BW", "Botswana"},
+/*  {"BX", "Benelux Trademarks and Designs Office"}, */ /* WIPO Indeterminately reserved code */
+    {"BY", "Belarus"},
+    {"BZ", "Belize"},
+    {"CA", "Canada"},
+    {"CC", "Cocos (Keeling) Islands (the)"},
+    {"CD", "Congo, Democratic Republic of the"},
+    {"CF", "Central African Republic"},
+    {"CG", "Congo (the)"},
+    {"CH", "Switzerland"},
+    {"CI", "Côte d'Ivoire"},
+    {"CK", "Cook Islands"},
+    {"CL", "Chile"},
+    {"CM", "Cameroon"},
+    {"CN", "China"},
+    {"CO", "Colombia"},
+    {"CP", "Clipperton Island"}, /* Exceptionally reserved code */
+    {"CQ", "island of Sark"}, /* Exceptionally reserved code */
+    {"CR", "Costa Rica"},
+    {"CS", "Serbia and Montenegro"}, /* Transitionally reserved code */
+    {"CT", "Canton and Enderbury Island"}, /* Formerly assigned code */
+    {"CU", "Cuba"},
+    {"CV", "Cabo Verde"},
+    {"CW", "Curaçao"},
+    {"CX", "Christmas Island"},
+    {"CY", "Cyprus"},
+    {"CZ", "Czechia"},
+    {"DD", "German Democratic Republic"}, /* Formerly assigned code */
+    {"DE", "Germany"},
+    {"DG", "Diego Garcia"}, /* Exceptionally reserved code */
+    {"DJ", "Djibouti"},
+    {"DK", "Denmark"},
+    {"DM", "Dominica"},
+    {"DO", "Dominican Republic"},
+    {"DY", "Benin"}, /* Indeterminately reserved code */
+    {"DZ", "Algeria"},
+    {"EA", "Ceuta, Melilla"}, /* Exceptionally reserved code */
+    {"EC", "Ecuador"},
+    {"EE", "Estonia"},
+/*  {"EF", "Union of Countries under the European Community Patent Convention"}, */ /* WIPO Indeterminately reserved code */
+    {"EG", "Egypt"},
+    {"EH", "Western Sahara"},
+/*  {"EM", "European Trademark Office"}, */ /* WIPO Indeterminately reserved code */
+/*  {"EP", "European Patent Organization"}, */ /* WIPO Indeterminately reserved code */
+    {"ER", "Eritrea"},
+    {"ES", "Spain"},
+    {"ET", "Ethiopia"},
+    {"EU", "European Union"}, /* Exceptionally reserved code */
+/*  {"EV", "Eurasian Patent Organization"}, */ /* WIPO Indeterminately reserved code */
+    {"EW", "Estonia"}, /* Indeterminately reserved code */
+    {"EZ", "European OTC derivatives"}, /* Exceptionally reserved code */
+    {"FI", "Finland"},
+    {"FJ", "Fiji"},
+    {"FK", "Falkland Islands (the) [Malvinas]"},
+    {"FL", "Liechtenstein"}, /* Indeterminately reserved code */
+    {"FM", "Micronesia (Federated States of)"},
+    {"FO", "Faroe Islands"},
+    {"FQ", "French Southern and Antarctic Territories"}, /* Formerly assigned code */
+    {"FR", "France"},
+    {"FX", "France, Metropolitan"}, /* Exceptionally reserved code */
+    {"GA", "Gabon"},
+    {"GB", "United Kingdom of Great Britain and Northern Ireland (the)"},
+/*  {"GC", "Patent Office of the Cooperation Council for the Arab States of the Gulf"}, */ /* WIPO Indeterminately reserved code */
+    {"GD", "Grenada"},
+    {"GE", "Georgia"},
+    {"GF", "French Guiana"},
+    {"GG", "Guernsey"},
+    {"GH", "Ghana"},
+    {"GI", "Gibraltar"},
+    {"GL", "Greenland"},
+    {"GM", "Gambia"},
+    {"GN", "Guinea"},
+    {"GP", "Guadeloupe"},
+    {"GQ", "Equatorial Guinea"},
+    {"GR", "Greece"},
+    {"GS", "South Georgia and the South Sandwich Islands"},
+    {"GT", "Guatemala"},
+    {"GU", "Guam"},
+    {"GW", "Guinea-Bissau"},
+    {"GY", "Guyana"},
+    {"HK", "Hong Kong"},
+    {"HM", "Heard Island and McDonald Islands"},
+    {"HN", "Honduras"},
+    {"HR", "Croatia"},
+    {"HT", "Haiti"},
+    {"HU", "Hungary"},
+    {"HV", "Upper Volta"}, /* Formerly assigned code */
+/*  {"IB", "International Bureau of WIPO"}, */ /* WIPO Indeterminately reserved code */
+    {"IC", "Canary Islands"}, /* Exceptionally reserved code */
+    {"ID", "Indonesia"},
+    {"IE", "Ireland"},
+    {"IL", "Israel"},
+    {"IM", "Isle of Man"},
+    {"IN", "India"},
+    {"IO", "British Indian Ocean Territory"},
+    {"IQ", "Iraq"},
+    {"IR", "Iran (Islamic Republic of)"},
+    {"IS", "Iceland"},
+    {"IT", "Italy"},
+    {"JA", "Jamaica"}, /* Indeterminately reserved code */
+    {"JE", "Jersey"},
+    {"JM", "Jamaica"},
+    {"JO", "Jordan"},
+    {"JP", "Japan"},
+    {"JT", "Johnston Island"}, /* Formerly assigned code */
+    {"KE", "Kenya"},
+    {"KG", "Kyrgyzstan"},
+    {"KH", "Cambodia"},
+    {"KI", "Kiribati"},
+    {"KM", "Comoros"},
+    {"KN", "Saint Kitts and Nevis"},
+    {"KP", "Korea (the Democratic People's Republic of)"},
+    {"KR", "Korea (the Republic of)"},
+    {"KW", "Kuwait"},
+    {"KY", "Cayman Islands"},
+    {"KZ", "Kazakhstan"},
+    {"LA", "Lao People's Democratic Republic"},
+    {"LB", "Lebanon"},
+    {"LC", "Saint Lucia"},
+    {"LF", "Libya Fezzan"}, /* Indeterminately reserved code */
+    {"LI", "Liechtenstein"},
+    {"LK", "Sri Lanka"},
+    {"LR", "Liberia"},
+    {"LS", "Lesotho"},
+    {"LT", "Lithuania"},
+    {"LU", "Luxembourg"},
+    {"LV", "Latvia"},
+    {"LY", "Libya"},
+    {"MA", "Morocco"},
+    {"MC", "Monaco"},
+    {"MD", "Moldova (the Republic of)"},
+    {"ME", "Montenegro"},
+    {"MF", "Saint Martin (French part)"},
+    {"MG", "Madagascar"},
+    {"MH", "Marshall Islands (the)"},
+    {"MI", "Midway Islands"}, /* Formerly assigned code */
+    {"MK", "North Macedonia"},
+    {"ML", "Mali"},
+    {"MM", "Myanmar"},
+    {"MN", "Mongolia"},
+    {"MO", "Macao"},
+    {"MP", "Northern Mariana Islands"},
+    {"MQ", "Martinique"},
+    {"MR", "Mauritania"},
+    {"MS", "Montserrat"},
+    {"MT", "Malta"},
+    {"MU", "Mauritius"},
+    {"MV", "Maldives"},
+    {"MW", "Malawi"},
+    {"MX", "Mexico"},
+    {"MY", "Malaysia"},
+    {"MZ", "Mozambique"},
+    {"NA", "Namibia"},
+    {"NC", "New Caledonia"},
+    {"NE", "Niger"},
+    {"NF", "Norfolk Island"},
+    {"NG", "Nigeria"},
+    {"NH", "New Hebrides"}, /* Formerly assigned code */
+    {"NI", "Nicaragua"},
+    {"NL", "Netherlands"},
+    {"NO", "Norway"},
+    {"NP", "Nepal"},
+    {"NQ", "Dronning Maud Land"}, /* Formerly assigned code */
+    {"NR", "Nauru"},
+    {"NT", "Neutral Zone"}, /* Transitionally reserved code */
+    {"NU", "Niue"},
+    {"NZ", "New Zealand"},
+/*  {"OA", "African Intellectual Property Organization"}, */ /* WIPO Indeterminately reserved code */
+    {"OO", "user-assigned escape code"}, /* User-assigned code */
+    {"OM", "Oman"},
+    {"PA", "Panama"},
+    {"PC", "Pacific Islands Trust Territory"}, /* Formerly assigned code */
+    {"PE", "Peru"},
+    {"PF", "French Polynesia"},
+    {"PG", "Papua New Guinea"},
+    {"PH", "Philippines"},
+    {"PI", "Philippines"}, /* Indeterminately reserved code */
+    {"PK", "Pakistan"},
+    {"PL", "Poland"},
+    {"PM", "Saint Pierre and Miquelon"},
+    {"PN", "Pitcairn"},
+    {"PR", "Puerto Rico"},
+    {"PS", "Palestine, State of"},
+    {"PT", "Portugal"},
+    {"PU", "United States Miscellaneous Pacific Islands"}, /* Formerly assigned code */
+    {"PW", "Palau"},
+    {"PY", "Paraguay"},
+    {"PZ", "Panama Canal Zone"}, /* Formerly assigned code */
+    {"QA", "Qatar"},
+    {"QM", "User-assigned code QM"}, /* User-assigned code */
+    {"QN", "User-assigned code QN"}, /* User-assigned code */
+    {"QO", "User-assigned code QO"}, /* User-assigned code */
+    {"QP", "User-assigned code QP"}, /* User-assigned code */
+    {"QQ", "User-assigned code QQ"}, /* User-assigned code */
+    {"QR", "User-assigned code QR"}, /* User-assigned code */
+    {"QS", "User-assigned code QS"}, /* User-assigned code */
+    {"QT", "User-assigned code QT"}, /* User-assigned code */
+    {"QU", "User-assigned code QU"}, /* User-assigned code */
+    {"QV", "User-assigned code QV"}, /* User-assigned code */
+    {"QW", "User-assigned code QW"}, /* User-assigned code */
+    {"QX", "User-assigned code QX"}, /* User-assigned code */
+    {"QY", "User-assigned code QY"}, /* User-assigned code */
+    {"QZ", "User-assigned code QZ"}, /* User-assigned code */
+    {"RA", "Argentina"}, /* Indeterminately reserved code */
+    {"RB", "Bolivia or Botswana"}, /* Indeterminately reserved code */
+    {"RC", "China"}, /* Indeterminately reserved code */
+    {"RE", "Réunion"},
+    {"RH", "Haiti"}, /* Indeterminately reserved code */
+    {"RI", "Indonesia"}, /* Indeterminately reserved code */
+    {"RL", "Lebanon"}, /* Indeterminately reserved code */
+    {"RM", "Madagascar"}, /* Indeterminately reserved code */
+    {"RN", "Niger"}, /* Indeterminately reserved code */
+    {"RO", "Romania"},
+    {"RP", "Philippines"}, /* Indeterminately reserved code */
+    {"RS", "Serbia"},
+    {"RU", "Russian Federation"},
+    {"RW", "Rwanda"},
+    {"SA", "Saudi Arabia"},
+    {"SB", "Solomon Islands"},
+    {"SC", "Seychelles"},
+    {"SD", "Sudan"},
+    {"SE", "Sweden"},
+    {"SF", "Finland"}, /* Indeterminately reserved code */
+    {"SG", "Singapore"},
+    {"SH", "Saint Helena, Ascension and Tristan da Cunha"},
+    {"SI", "Slovenia"},
+    {"SJ", "Svalbard and Jan Mayen"},
+    {"SK", "Slovakia"},
+    {"SL", "Sierra Leone"},
+    {"SM", "San Marino"},
+    {"SN", "Senegal"},
+    {"SO", "Somalia"},
+    {"SR", "Suriname"},
+    {"SS", "South Sudan"},
+    {"ST", "Sao Tome and Principe"},
+    {"SU", "USSR"}, /* Exceptionally reserved code */
+    {"SV", "El Salvador"},
+    {"SX", "Sint Maarten (Dutch part)"},
+    {"SY", "Syrian Arab Republic"},
+    {"SZ", "Eswatini"},
+    {"TA", "Tristan da Cunha"}, /* Exceptionally reserved code */
+    {"TC", "Turks and Caicos Islands"},
+    {"TD", "Chad"},
+    {"TF", "French Southern Territories"},
+    {"TG", "Togo"},
+    {"TH", "Thailand"},
+    {"TJ", "Tajikistan"},
+    {"TK", "Tokelau"},
+    {"TL", "Timor-Leste"},
+    {"TM", "Turkmenistan"},
+    {"TN", "Tunisia"},
+    {"TO", "Tonga"},
+    {"TP", "Turkey"}, /* Transitionally reserved code */
+    {"TR", "Turkey"},
+    {"TT", "Trinidad and Tobago"},
+    {"TV", "Tuvalu"},
+    {"TW", "Taiwan"},
+    {"TZ", "Tanzania, United Republic of"},
+    {"UA", "Ukraine"},
+    {"UG", "Uganda"},
+    {"UK", "United Kingdom"}, /* Exceptionally reserved code */
+    {"UM", "United States Minor Outlying Islands"},
+    {"UN", "United Nations"}, /* Exceptionally reserved code */
+    {"US", "United States of America"},
+    {"UY", "Uruguay"},
+    {"UZ", "Uzbekistan"},
+    {"VA", "Holy See"},
+    {"VC", "Saint Vincent and the Grenadines"},
+    {"VD", "Democratic Republic of Viet-Nam"}, /* Formerly assigned code */
+    {"VE", "Venezuela (Bolivarian Republic of)"},
+    {"VG", "Virgin Islands (British)"},
+    {"VI", "Virgin Islands (U.S.)"},
+    {"VN", "Viet Nam"},
+    {"VU", "Vanuatu"},
+    {"WF", "Wallis and Futuna"},
+    {"WG", "Grenada"}, /* Indeterminately reserved code */
+    {"WK", "Wake Island"}, /* Formerly assigned code */
+    {"WL", "Saint Lucia"}, /* Indeterminately reserved code */
+/*  {"WO", "World Intellectual Property Organization"}, */ /* WIPO Indeterminately reserved code */
+    {"WS", "Samoa"},
+    {"WV", "Saint Vincent"}, /* Indeterminately reserved code */
+    {"XA", "User-assigned code XA"}, /* User-assigned code */
+    {"XB", "User-assigned code XB"}, /* User-assigned code */
+    {"XC", "User-assigned code XC"}, /* User-assigned code */
+    {"XD", "User-assigned code XD"}, /* User-assigned code */
+    {"XE", "User-assigned code XE"}, /* User-assigned code */
+    {"XF", "User-assigned code XF"}, /* User-assigned code */
+    {"XG", "User-assigned code XG"}, /* User-assigned code */
+    {"XH", "User-assigned code XH"}, /* User-assigned code */
+    {"XI", "User-assigned code XI"}, /* User-assigned code */
+    {"XJ", "User-assigned code XJ"}, /* User-assigned code */
+    {"XK", "User-assigned code XK"}, /* User-assigned code */
+    {"XL", "User-assigned code XL"}, /* User-assigned code */
+    {"XM", "User-assigned code XM"}, /* User-assigned code */
+    {"XN", "User-assigned code XN"}, /* User-assigned code */
+    {"XO", "User-assigned code XO"}, /* User-assigned code */
+    {"XP", "User-assigned code XP"}, /* User-assigned code */
+    {"XR", "User-assigned code XR"}, /* User-assigned code */
+    {"XS", "User-assigned code XS"}, /* User-assigned code */
+    {"XT", "User-assigned code XT"}, /* User-assigned code */
+    {"XU", "User-assigned code XU"}, /* User-assigned code */
+    {"XV", "User-assigned code XV"}, /* User-assigned code */
+    {"XW", "User-assigned code XW"}, /* User-assigned code */
+    {"XX", "User-assigned code XX"}, /* User-assigned code */
+    {"XY", "User-assigned code XY"}, /* User-assigned code */
+    {"XZ", "User-assigned code XZ"}, /* User-assigned code */
+    {"YD", "Democratic Yemen"}, /* Formerly assigned code */
+    {"YE", "Yemen"},
+    {"YT", "Mayotte"},
+    {"YU", "Yugoslavia"}, /* Transitionally reserved code */
+    {"YV", "Venezuela"}, /* Indeterminately reserved code */
+    {"ZA", "South Africa"},
+    {"ZM", "Zambia"},
+    {"ZR", "Zaire"}, /* Transitionally reserved code */
+    {"ZW", "Zimbabwe"},
+    {"ZZ", "User-assigned code ZZ"}, /* User-assigned code */
+    {NULL, NULL}, /* MUST BE LAST */
+};
+
+
+/*
  * globals
  */
 static char *program = NULL;			/* our name */
@@ -154,13 +572,16 @@ static bool is_exec(char const *path);
 static bool is_dir(char const *path);
 static bool is_write(char const *path);
 static ssize_t readline(char **linep, FILE *stream);
-static char *readline_dup(char **linep, FILE *stream);
+static char *readline_dup(char **linep, bool strip, size_t *lenp, FILE *stream);
 static void sanity_chk(char const *work_dir, char const *iocccsize, char const *tar);
 static void fpara(FILE *stream, int nargs, ...);
 static char *prompt(char *str, char **linep);
 static char *get_contest_id(bool *testp);
 static int get_entry_num(void);
 static char *mk_entry_dir(char *work_dir, char *ioccc_id, int entry_num);
+static char *lookup_location_name(char *upper_code);
+static bool yes_or_no(char *question);
+static int get_author_info(char *ioccc_id, int entry_num, struct author **author_set);
 
 
 int
@@ -172,6 +593,8 @@ main(int argc, char *argv[])
     char *ioccc_id = NULL;	/* IOCCC contest ID */
     int entry_num = -1;		/* entry number or -1 ==> unset */
     char *entry_dir = NULL;	/* entry directory from which to form a compressed tarball */
+    int author_count = -1;	/* number of authors */
+    struct author *author_set = NULL;	/* authors array */
     int ret;			/* libc return code */
     int i;
 
@@ -215,11 +638,11 @@ main(int argc, char *argv[])
     /* must have 2 args */
     switch (argc-optind) {
     case 2:
-    	break;
+	break;
     default:
 	usage(3, __FUNCTION__, "requires 2 arguments");
 	/*NOTREACHED*/
-    	break;
+	break;
     }
     /* collect required args */
     work_dir = argv[optind];
@@ -264,6 +687,12 @@ main(int argc, char *argv[])
      */
     entry_dir = mk_entry_dir(work_dir, ioccc_id, entry_num);
     dbg(DBG_LOW, "formed entry directory: %s", entry_dir);
+
+    /*
+     * obtain author information
+     */
+    author_count = get_author_info(ioccc_id, entry_num, &author_set);
+    dbg(DBG_LOW, "collected informaton on %d authors", author_count);
 
     /*
      * All Done!!! - Jessica Noll, age 2
@@ -925,20 +1354,26 @@ readline(char **linep, FILE *stream)
  *	linep	- malloced line buffer (may be realloced) or ptr to NULL
  *		  NULL ==> getline() will malloc() the linep buffer
  *		  else ==> getline() might realloc() the linep buffer
+ *	strip	- true ==> remove trailing whitespace,
+ *		  false ==> only rmove the trailing newline
+ *	lenp	- != NULL ==> pointer to length of final length of line malloced,
+ *		  NULL ==> do not return length of line
  *	stream - file stream to read from
  *
  * returns:
- *	malloced buffer containing the input without a trailing newline
+ *	malloced buffer containing the input without a trailing newline,
+ *	and if strip == true, without trailing whitespace
  *
  * NOTE: This function will NOT return NULL.
  *
  * This function does not return on error.
  */
 static char *
-readline_dup(char **linep, FILE *stream)
+readline_dup(char **linep, bool strip, size_t *lenp, FILE *stream)
 {
     ssize_t len;	/* getline return and our modified size return */
     char *ret;		/* malloced input */
+    int i;
 
     /*
      * firewall
@@ -956,7 +1391,7 @@ readline_dup(char **linep, FILE *stream)
      * read the line
      */
     len = readline(linep, stream);
-    dbg(DBG_VVHIGH, "readline returned %d", len);
+    dbg(DBG_VVHIGH, "readline returned %d bytes", len);
 
     /*
      * duplicate the line
@@ -966,6 +1401,25 @@ readline_dup(char **linep, FILE *stream)
     if (ret == NULL) {
 	err(19, __FUNCTION__, "strdup of read line of %d bytes failed", ret);
 	/*NOTREACHED*/
+    }
+
+    /*
+     * strip trailing whitespace if requested
+     */
+    if (strip == true) {
+	if (len > 0) {
+	    for (i=len-1; i >= 0; --i) {
+		if (isascii(ret[i]) && isspace(ret[i])) {
+		    /* strip trailing ASCII whitespace */
+		    --len;
+		    ret[i] = '\0';
+		}
+	    }
+	}
+	dbg(DBG_VVHIGH, "readline, after trailing whitespace strip is %d bytes", len);
+    }
+    if (lenp != NULL) {
+	*lenp = len;
     }
 
     /*
@@ -1341,6 +1795,14 @@ sanity_chk(char const *work_dir, char const *iocccsize, char const *tar)
 	/*NOTREACHED*/
     }
     dbg(DBG_LOW, "good iocccsize version: %s", linep);
+
+    /*
+     * free storage
+     */
+    if (linep != NULL) {
+	free(linep);
+	linep = NULL;
+    }
     return;
 }
 
@@ -1440,7 +1902,7 @@ fpara(FILE *stream, int nargs, ...)
 	 */
 	clearerr(stream);	/* pre-clear ferror() status */
 	errno = 0;	/* pre-clear errno for errp() */
-    	ret = fputc('\n', stream);
+	ret = fputc('\n', stream);
 	if (ret == EOF) {
 	    if (ferror(stream)) {
 		errp(57, __FUNCTION__, "error writing newline to a stream");
@@ -1486,6 +1948,7 @@ fpara(FILE *stream, int nargs, ...)
  * prompt - prompt for a string
  *
  * Prompt a string, followed by :<space> on stdout and then read a line from stdin.
+ * The line is stipped of the trailing newline and then of all trailing whitespace.
  *
  * given:
  *	str	- string to string followed by :<space>
@@ -1495,7 +1958,7 @@ fpara(FILE *stream, int nargs, ...)
  *
  *
  * returns:
- *	malloced input string
+ *	malloced input string with newline and trailing whitespace removed
  *
  * NOTE: This function will NOT return NULL.
  *
@@ -1505,6 +1968,7 @@ static char *
 prompt(char *str, char **linep)
 {
     int ret;		/* libc function return value */
+    size_t len;		/* length of input */
     char *buf;		/* malloced input string */
 
     /*
@@ -1571,11 +2035,12 @@ prompt(char *str, char **linep)
     /*
      * read user input - return input length
      */
-    buf = readline_dup(linep, stdin);
+    buf = readline_dup(linep, true, &len, stdin);
     if (buf == NULL) {
 	errp(74, __FUNCTION__, "readline_dup returned NULL");
 	/*NOTREACHED*/
     }
+    dbg(DBG_VHIGH, "received a %d byte response", len);
 
     /*
      * return malloced input buffer
@@ -1625,7 +2090,7 @@ get_contest_id(bool *testp)
      * explain contest ID
      */
     PARA("To submit entries to the IOCCC, you must a registered contestant and have received a",
-    	 "IOCCC contest ID (via email) shortly after you have been successfully registered.",
+	 "IOCCC contest ID (via email) shortly after you have been successfully registered.",
 	 "If the IOCCC os open, you may register as a contestant. See:",
 	 "",
 	 "    file:///Users/chongo/bench/ioccc/ioccc-src/winner/index.html#enter",
@@ -1638,57 +2103,64 @@ get_contest_id(bool *testp)
 	 "Note you will not be able to submit the resulting compressed tarball when using test.",
 	 "");
 
-    /*
-     * prompt for the contest ID
-     */
-    malloc_ret = prompt("Enter IOCCC contest ID or test", &linep);
-    dbg(DBG_HIGH, "the IOCCC contest ID as entered is: %s", malloc_ret);
 
     /*
-     * case: IOCCC contest ID is test, quick return
+     * keep asking for an entry number until we get a valid reply
      */
-    if (strcmp(malloc_ret, "test") == 0) {
-	PARA("",
-	     "IOCCC contst ID is test, entering test mode.");
-	*testp = true;
-    	return malloc_ret;
-    }
+    do {
 
-    /*
-     * validate format of non-test contest ID
-     *
-     * The contest ID, if not "test" must be a UUID.  The UUID has the 36 character format:
-     *
-     *		xxxxxxxx-xxxx-4xxx-axxx-xxxxxxxxxxxx
-     *
-     * where 'x' is a hex character.  The 4 is the UUID version and a the variant 1.
-     */
-    len = strlen(malloc_ret);
-    if (len != UUID_LEN) {
-	err(76, __FUNCTION__, "IOCCC contest ID are %d characters in length, you entered %d", UUID_LEN, len);
-	/*NOTREACHED*/
-    }
-    /* convert to lower case */
-    for (i=0; i < len; ++i) {
-	malloc_ret[i] = tolower(malloc_ret[i]);
-    }
-    dbg(DBG_VHIGH, "converted the IOCCC contest ID to: %s", malloc_ret);
-    ret = sscanf(malloc_ret, "%8x-%4x-%1x%3x-%1x%3x-%8x%4x", &a, &b, &version, &c, &variant, &d, &e, &f);
-    dbg(DBG_HIGH, "UUID version hex char: %1x", version);
-    dbg(DBG_HIGH, "UUID variant hex char: %1x", variant);
-    if (ret != 8) {
-	FPARA(stderr,
-	      "",
-	      "IOCCC contest IDs are version 4, variant 1 UUID as defined by RFC4122:",
-	      "",
-	      "    https://datatracker.ietf.org/doc/html/rfc4122#section-4.1.1",
-	      "",
-	      "Your IOCCC contest ID is not a valid UUID.  Please check your the email you received",
-	      "when you registered as an IOCCC contestant for the correct IOCCC contest ID.",
-	      "");
-	err(77, __FUNCTION__, "malfiored IOCCC contest ID");
-	/*NOTREACHED*/
-    }
+	/*
+	 * prompt for the contest ID
+	 */
+	malloc_ret = prompt("Enter IOCCC contest ID or test", &linep);
+	dbg(DBG_HIGH, "the IOCCC contest ID as entered is: %s", malloc_ret);
+
+	/*
+	 * case: IOCCC contest ID is test, quick return
+	 */
+	if (strcmp(malloc_ret, "test") == 0) {
+	    PARA("",
+		 "IOCCC contst ID is test, entering test mode.");
+	    *testp = true;
+	    return malloc_ret;
+	}
+
+	/*
+	 * validate format of non-test contest ID
+	 *
+	 * The contest ID, if not "test" must be a UUID.  The UUID has the 36 character format:
+	 *
+	 *		xxxxxxxx-xxxx-4xxx-axxx-xxxxxxxxxxxx
+	 *
+	 * where 'x' is a hex character.  The 4 is the UUID version and a the variant 1.
+	 */
+	len = strlen(malloc_ret);
+	if (len != UUID_LEN) {
+	    (void) fprintf(stderr, "\nIOCCC contest ID are %d characters in length, you entered %zu\n\n", UUID_LEN, len);
+	    free(malloc_ret);
+	    malloc_ret = NULL;
+	    continue;
+	}
+	/* convert to lower case */
+	for (i=0; i < len; ++i) {
+	    malloc_ret[i] = tolower(malloc_ret[i]);
+	}
+	dbg(DBG_VHIGH, "converted the IOCCC contest ID to: %s", malloc_ret);
+	ret = sscanf(malloc_ret, "%8x-%4x-%1x%3x-%1x%3x-%8x%4x", &a, &b, &version, &c, &variant, &d, &e, &f);
+	dbg(DBG_HIGH, "UUID version hex char: %1x", version);
+	dbg(DBG_HIGH, "UUID variant hex char: %1x", variant);
+	if (ret != 8) {
+	    FPARA(stderr,
+		  "",
+		  "IOCCC contest IDs are version 4, variant 1 UUID as defined by RFC4122:",
+		  "",
+		  "    https://datatracker.ietf.org/doc/html/rfc4122#section-4.1.1",
+		  "",
+		  "Your IOCCC contest ID is not a valid UUID.  Please check your the email you received",
+		  "when you registered as an IOCCC contestant for the correct IOCCC contest ID.",
+		  "");
+	}
+    } while (ret != 8);
     dbg(DBG_MED, "IOCCC contest ID is a UUID: %s", malloc_ret);
 
     /*
@@ -1698,6 +2170,14 @@ get_contest_id(bool *testp)
 	 "The format of the non-test IOCCC contest ID appears to be valid.",
 	 "");
     *testp = false;	/* IOCCC contest ID is not test */
+
+    /*
+     * free storage
+     */
+    if (linep != NULL) {
+	free(linep);
+	linep = NULL;
+    }
 
     /*
      * return IOCCC contest ID
@@ -1731,7 +2211,7 @@ get_entry_num(void)
 	errno = 0;	/* pre-clear errno for errp() */
 	ret = printf("\nYou are allowed to submit up to %d entries to a given IOCCC.\n", MAX_ENTRY_NUM+1);
 	if (ret < 0) {
-	    errp(78, __FUNCTION__, "printf error printing number of entries allowed");
+	    errp(76, __FUNCTION__, "printf error printing number of entries allowed");
 	    /*NOTREACHED*/
 	}
 	PARA("",
@@ -1750,7 +2230,7 @@ get_entry_num(void)
 	 */
 	ret = sscanf(entry_str, "%d", &entry_num);
 	if (ret != 1 || entry_num < 0 || entry_num > MAX_ENTRY_NUM) {
-	    fprintf(stderr, "\nThe entry number must be a number from 0 thru %d, please re-enter.\n", MAX_ENTRY_NUM);
+	    (void) fprintf(stderr, "\nThe entry number must be a number from 0 thru %d, please re-enter.\n", MAX_ENTRY_NUM);
 	}
 
 	/*
@@ -1764,7 +2244,7 @@ get_entry_num(void)
     /*
      * free storage
      */
-    if (linep == NULL) {
+    if (linep != NULL) {
 	free(linep);
 	linep = NULL;
     }
@@ -1803,11 +2283,11 @@ mk_entry_dir(char *work_dir, char *ioccc_id, int entry_num)
      * firewall
      */
     if (work_dir == NULL || ioccc_id == NULL) {
-	err(79, __FUNCTION__, "work_dir and/or ioccc_id is NULL");
+	err(77, __FUNCTION__, "work_dir and/or ioccc_id is NULL");
 	/*NOTREACHED*/
     }
     if (entry_num < 0 || entry_num > MAX_ENTRY_NUM) {
-	err(80, __FUNCTION__, "entry number: %d must >= 0 and <= %d", MAX_ENTRY_NUM);
+	err(78, __FUNCTION__, "entry number: %d must >= 0 and <= %d", MAX_ENTRY_NUM);
 	/*NOTREACHED*/
     }
 
@@ -1819,13 +2299,13 @@ mk_entry_dir(char *work_dir, char *ioccc_id, int entry_num)
     errno = 0;	/* pre-clear errno for errp() */
     entry_dir = malloc(len + 1 + 1);
     if (entry_dir == NULL) {
-	errp(81, __FUNCTION__, "cannot malloc %d characters", len + 1);
+	errp(79, __FUNCTION__, "cannot malloc %d characters", len + 1);
 	/*NOTREACHED*/
     }
     errno = 0;	/* pre-clear errno for errp() */
     ret = snprintf(entry_dir, len + 1, "%s/%s-%d", work_dir, ioccc_id, entry_num);
     if (ret < 0) {
-	errp(82, __FUNCTION__, "snprintf to form entry directory failed");
+	errp(80, __FUNCTION__, "snprintf to form entry directory failed");
 	/*NOTREACHED*/
     }
     dbg(DBG_HIGH, "entry directory path: %s", entry_dir);
@@ -1839,7 +2319,7 @@ mk_entry_dir(char *work_dir, char *ioccc_id, int entry_num)
 	      "",
 	      "You need to move that directory, or remove it, or use a different work_dir.",
 	      "");
-	err(83, __FUNCTION__, "entry directory exists: %s", entry_dir);
+	err(81, __FUNCTION__, "entry directory exists: %s", entry_dir);
 	/*NOTREACHED*/
     }
     dbg(DBG_HIGH, "entry directory path: %s", entry_dir);
@@ -1850,7 +2330,7 @@ mk_entry_dir(char *work_dir, char *ioccc_id, int entry_num)
     errno = 0;	/* pre-clear errno for errp() */
     ret = mkdir(entry_dir, 0755);
     if (ret < 0) {
-	errp(84, __FUNCTION__, "cannot mkdir %s with mode 0755", entry_dir);
+	errp(82, __FUNCTION__, "cannot mkdir %s with mode 0755", entry_dir);
 	/*NOTREACHED*/
     }
 
@@ -1858,4 +2338,407 @@ mk_entry_dir(char *work_dir, char *ioccc_id, int entry_num)
      * return entry directory
      */
     return entry_dir;
+}
+
+
+/*
+ * lookup_location_name - convert a ISO 3166-1 Alpha-2 into a locaion name
+ *
+ * given:
+ *	upper_code	- ISO 3166-1 Alpha-2 in UPPER CASE
+ *
+ * return:
+ *	locaion name or NULL ==> unlisted code
+ *
+ * This function does not return on error.
+ */
+static char *
+lookup_location_name(char *upper_code)
+{
+    struct location *p;		/* entry in the location table */
+
+    /*
+     * firewall
+     */
+    if (upper_code == NULL) {
+	err(83, __FUNCTION__, "upper_code is NULL");
+	/*NOTREACHED*/
+    }
+
+    /*
+     * search location table for the code
+     */
+    for (p=&loc[0]; p->code != NULL && p->name != NULL; ++p) {
+	if (strcmp(upper_code, p->code) == 0) {
+	    dbg(DBG_VHIGH, "code %s name found: %s", p->name);
+	    break;
+	}
+    }
+
+    /*
+     * return name or NULL
+     */
+    return p->name;
+}
+
+
+/*
+ * yes_or_no - determine if input is yes or no
+ *
+ * given:
+ *	question	string to prompt for a question
+ *
+ * retuns:
+ *	true ==> input is yes in some form,
+ *	false ==> input is not yes
+ */
+static bool
+yes_or_no(char *question)
+{
+    char *response;	/* response to the question */
+    char *linep = NULL;		/* line prompt buffer */
+    char *p;
+
+    /*
+     * firewall
+     */
+    if (question == NULL) {
+	err(84, __FUNCTION__, "question is NULL");
+	/*NOTREACHED*/
+    }
+
+    /*
+     * ask the question and obtain the response
+     */
+    do{
+	response = prompt(question, &linep);
+
+	/*
+	 * convert response to lower case
+	 */
+	for (p=response; *p != '\0'; ++p) {
+	    if (isascii(*p) && isalpha(*p)) {
+		*p = tolower(*p);
+	    }
+	}
+
+	/*
+	 * check for a valid reply
+	 */
+	if (strcmp(response, "y") == 0 || strcmp(response, "yes") == 0) {
+
+	    /*
+	     * free storage
+	     */
+	    if (linep != NULL) {
+		free(linep);
+		linep = NULL;
+	    }
+	    free(response);
+	    response = NULL;
+
+	    /*
+	     * return yes
+	     */
+	    return true;
+
+	} else if (strcmp(response, "n") == 0 || strcmp(response, "no") == 0) {
+
+	    /*
+	     * free storage
+	     */
+	    if (linep != NULL) {
+		free(linep);
+		linep = NULL;
+	    }
+	    free(response);
+	    response = NULL;
+
+	    /*
+	     * return no
+	     */
+	    return false;
+	}
+
+	/*
+	 * reject response and ask again
+	 */
+	free(response);
+	response = NULL;
+	(void) fprintf(stderr, "Please enter either y (yes) or n (no)\n");
+
+    } while (response == NULL);
+    /*NOTREACHED*/
+
+    /*
+     * free storage
+     */
+    if (linep != NULL) {
+	free(linep);
+	linep = NULL;
+    }
+    free(response);
+    response = NULL;
+
+    /*
+     * should not get here - but assume no if we do
+     */
+    return false;
+}
+
+
+/*
+ * get_author_info - obtain information on entry authors
+ *
+ * given:
+ *	ioccc_id	IOCCC entry ID or test
+ *	entry_num	entry number
+ *	author_set	pointer to array of authors
+ *
+ * returns:
+ *	number of authors
+ *
+ * This function does not return on error.
+ */
+static int
+get_author_info(char *ioccc_id, int entry_num, struct author **author_set_p)
+{
+    struct author *author_set = NULL;	/* allocated author set */
+    int author_count = -1;		/* number of authors or -1 */
+    char *linep = NULL;			/* line prompt buffer */
+    char *author_count_str = NULL;	/* author cound string */
+    char *location_name = NULL;		/* location name of a given location/country code */
+    bool yorn = false;			/* response to a question */
+    int ret;				/* libc fuction return */
+    int i;
+
+    /*
+     * firewall
+     */
+    if (ioccc_id == NULL || author_set_p == NULL) {
+	err(85, __FUNCTION__, "ioccc_id and/or author_set_p is NULL");
+	/*NOTREACHED*/
+    }
+
+    /*
+     * keep asking for an entry number until we get a valid reply
+     */
+    do {
+
+        /*
+	 * ask for author count
+	 */
+	author_count_str = prompt("\nEnter the number of authors of this entry", &linep);
+
+	/*
+	 * convert author_count_str to number
+	 */
+	ret = sscanf(author_count_str, "%d", &author_count);
+	if (ret != 1 || author_count < 0 || author_count > MAX_AUTHORS) {
+	    (void) fprintf(stderr, "\nThe number of authors must a number from 1 thru %d, please re-enter.\n", MAX_AUTHORS);
+	    (void) fprintf(stderr, "If you happen to have more than %d authors. we ask that you pick the\n", MAX_AUTHORS);
+	    (void) fprintf(stderr, "just %d authors and mention the remainer of the authors in the remarks file.\n", MAX_AUTHORS);
+	}
+
+	/*
+	 * free storage
+	 */
+	free(author_count_str);
+	author_count_str = NULL;
+
+    } while (author_count < 1 || author_count > MAX_AUTHORS);
+    dbg(DBG_HIGH, "will request information on %d authors", author_count);
+
+    /*
+     * allocate the author array
+     */
+    errno = 0;	/* pre-clear errno for errp() */
+    author_set = (struct author *)malloc(sizeof(struct author) * author_count);
+    if (author_set == NULL) {
+	errp(86, __FUNCTION__, "unable to malloc a struct author array of length: %d", author_count);
+	/*NOTREACHED*/
+    }
+
+    /*
+     * collect information on authors
+     */
+    PARA("",
+	 "We will now ask for information about the author(s) of this entry.",
+	 "A name is required. If an author wishes to be anonymous, use a psuedo-name.",
+	 "",
+	 "The location/country code must be a 2 character ISO 3166-1 Alpha-2 code.",
+	 "See the following URL for a table of location/county codes, or from",
+	 "these Wikipedia and ISO web pages:",
+	 "");
+    ret = puts(ISO_3166_1_CODE_URL0);
+    if (ret < 0) {
+	errp(87, __FUNCTION__, "puts error printing ISO 3166-1 URL");
+	/*NOTREACHED*/
+    }
+    ret = puts(ISO_3166_1_CODE_URL1);
+    if (ret < 0) {
+	errp(88, __FUNCTION__, "puts error printing ISO 3166-1 URL");
+	/*NOTREACHED*/
+    }
+    ret = puts(ISO_3166_1_CODE_URL2);
+    if (ret < 0) {
+	errp(89, __FUNCTION__, "puts error printing ISO 3166-1 URL2");
+	/*NOTREACHED*/
+    }
+    ret = puts(ISO_3166_1_CODE_URL3);
+    if (ret < 0) {
+	errp(90, __FUNCTION__, "puts error printing ISO 3166-1 URL2");
+	/*NOTREACHED*/
+    }
+    PARA("",
+	 "For the other information such as Email, twitter handle, and GitHub username,",
+	 "you may enter that information or just press return if not applicable of if you",
+	 "do not wish to provide that information.  Information that you supply, if your",
+	 "entry is selected as a winner, will be published along with your entry."
+	 "");
+    for (i=0; i < author_count; ++i) {
+
+	/*
+	 * announce author number
+	 */
+	errno = 0;	/* pre-clear errno for errp() */
+	ret = printf("\nEnter information for author #%d\n\n", i);
+	if (ret < 0) {
+	    errp(91, __FUNCTION__, "printf error printing author number");
+	    /*NOTREACHED*/
+	}
+
+	/*
+	 * obtain author name
+	 */
+	do {
+	    author_set[i].name = NULL;
+	    author_set[i].name = prompt("Enter author name", &linep);
+	    if (strlen(author_set[i].name) == 0) {
+
+		/*
+		 * reject emoty author name
+		 */
+		(void) fprintf(stderr, "The author name cannot be empty, try again\n");
+
+		/*
+		 * free storage
+		 */
+		free(author_set[i].name);
+		author_set[i].name = NULL;
+	    }
+	} while (author_set[i].name == NULL);
+
+	/*
+	 * obtain author location/country code
+	 */
+	do {
+	    /*
+	     * request code
+	     */
+	    author_set[i].location_code = NULL;
+	    author_set[i].location_code = prompt("Enter the 2 character location/country code for this author", &linep);
+	    dbg(DBG_VHIGH, "location/country code as entered: %s", author_set[i].location_code);
+
+	    /*
+	     * inspect code input
+	     */
+	    if (strlen(author_set[i].location_code) != 2 ||
+	        ! isascii(author_set[i].location_code[0]) ||
+	        ! isalpha(author_set[i].location_code[0]) ||
+	        ! isascii(author_set[i].location_code[1]) ||
+	        ! isalpha(author_set[i].location_code[1])) {
+
+		/*
+		 * provide more help on location/country codes
+		 */
+		(void) fprintf(stderr, "\nLocation/country codes are two letters\n\n");
+		(void) fprintf(stderr, "For ISO 3166-1 2 character codes, see: the Alpha-2 code column of:\n");
+		(void) fprintf(stderr, "\n%s\n\n", ISO_3166_1_CODE_URL0);
+		(void) fprintf(stderr, "or from these Wikipedia / ISO web pages:\n");
+		(void) fprintf(stderr, "\n%s\n", ISO_3166_1_CODE_URL1);
+		(void) fprintf(stderr, "%s\n", ISO_3166_1_CODE_URL2);
+		(void) fprintf(stderr, "%s\n\n", ISO_3166_1_CODE_URL3);
+
+		/*
+		 * free storage
+		 */
+		free(author_set[i].location_code);
+		author_set[i].location_code = NULL;
+
+		/*
+		 * discard this invalid location/country code input
+		 */
+		location_name = NULL;
+		yorn = false;
+		continue;
+
+	    } else {
+
+		/*
+		 * valid location/country code - convert to upper case
+		 */
+		author_set[i].location_code[0] = toupper(author_set[i].location_code[0]);
+		author_set[i].location_code[1] = toupper(author_set[i].location_code[1]);
+
+		/*
+		 * determine if code is known
+		 */
+		location_name = lookup_location_name(author_set[i].location_code);
+		if (location_name == NULL) {
+
+		    /*
+		     * provide more help on location/country codes
+		     */
+		    (void) fprintf(stderr, "\nThat is not a known location/country code.\n\n");
+		    (void) fprintf(stderr, "For ISO 3166-1 2 character codes, see: the Alpha-2 code column of:\n");
+		    (void) fprintf(stderr, "\n%s\n\n", ISO_3166_1_CODE_URL0);
+		    (void) fprintf(stderr, "or from these Wikipedia / ISO web pages:\n");
+		    (void) fprintf(stderr, "\n%s\n", ISO_3166_1_CODE_URL1);
+		    (void) fprintf(stderr, "%s\n", ISO_3166_1_CODE_URL2);
+		    (void) fprintf(stderr, "%s\n\n", ISO_3166_1_CODE_URL3);
+
+		    /*
+		     * free storage
+		     */
+		    free(author_set[i].location_code);
+		    author_set[i].location_code = NULL;
+
+		    /*
+		     * discard this invalid location/country code input
+		     */
+		    location_name = NULL;
+		    yorn = false;
+		    continue;
+		}
+
+		/*
+		 * verify the known location/country code
+		 */
+		ret = printf("The location/country code you entered is assigned to: %s\n", location_name);
+		yorn = yes_or_no("Is that location/country code correct? [yn]");
+	    }
+	} while (author_set[i].location_code == NULL || location_name == NULL || yorn == false);
+	dbg(DBG_HIGH, "author location/country: %s (%s)", author_set[i].location_code, location_name);
+
+	/* XXX */
+    }
+
+    /*
+     * store author set
+     */
+    *author_set_p = author_set;
+
+    /*
+     * free storage
+     */
+    if (linep != NULL) {
+	free(linep);
+	linep = NULL;
+    }
+
+    /*
+     * return the author count
+     */
+    return author_count;
 }
