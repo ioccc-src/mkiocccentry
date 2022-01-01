@@ -71,11 +71,11 @@
 #define MAX_ENTRY_CHARS (1)	/* characters that represent the maximum entry number */
 #define MAX_AUTHORS (5)		/* maximum number of authors of an entry */
 #define MAX_NAME_LEN (70)	/* max author name length */
-#define ISO_3166_1_CODE_URL0 "https://en.wikipedia.org/wiki/ISO_3166-1#Officially_assigned_code_elements"
-#define ISO_3166_1_CODE_URL1 "https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2"
-#define ISO_3166_1_CODE_URL2 "https://www.iso.org/obp/ui/#iso:pub:PUB500001:en"
-#define ISO_3166_1_CODE_URL3 "https://www.iso.org/obp/ui/#search"
-#define ISO_3166_1_CODE_URL4 "https://www.iso.org/glossary-for-iso-3166.html"
+#define ISO_3166_1_CODE_URL0 "    https://en.wikipedia.org/wiki/ISO_3166-1#Officially_assigned_code_elements"
+#define ISO_3166_1_CODE_URL1 "    https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2"
+#define ISO_3166_1_CODE_URL2 "    https://www.iso.org/obp/ui/#iso:pub:PUB500001:en"
+#define ISO_3166_1_CODE_URL3 "    https://www.iso.org/obp/ui/#search"
+#define ISO_3166_1_CODE_URL4 "    https://www.iso.org/glossary-for-iso-3166.html"
 
 
 /*
@@ -163,10 +163,10 @@ struct author {
  *
  * We do not list WIPO codes as they are not formally
  * reserved.  They refer to Patent and related WIPO
- * organizations: as such they do not repreent places
+ * organizations: as such they do not represent places
  * where a IOCCC winner would live.
  *
- * We mean no offence by this list: we simply tried to
+ * We mean no offense by this list: we simply tried to
  * include all ISO 3166 codes.  Please pardon any typos.
  * Spelling corrections welcome.
  */
@@ -648,14 +648,14 @@ main(int argc, char *argv[])
     errno = 0;	/* pre-clear errno for errp() */
     ret = printf("Welcome to mkiocccentry version: %s\n", VERSION);
     if (ret < 0) {
-	errp(4, __FUNCTION__, "printf error printing the welcoem string");
+	errp(4, __FUNCTION__, "printf error printing the welcome string");
 	/*NOTREACHED*/
     }
 
     /*
      * environment sanity checks
      */
-    para("", "Performing santiy checks on your environment ...", NULL);
+    para("", "Performing sanity checks on your environment ...", NULL);
     sanity_chk(work_dir, iocccsize, tar);
     para("... environment looks OK", "", NULL);
 
@@ -681,7 +681,7 @@ main(int argc, char *argv[])
      * obtain author information
      */
     author_count = get_author_info(ioccc_id, entry_num, &author_set);
-    dbg(DBG_LOW, "collected informaton on %d authors", author_count);
+    dbg(DBG_LOW, "collected information on %d authors", author_count);
 
     /*
      * free storage
@@ -1365,7 +1365,7 @@ readline(char **linep, FILE *stream)
  *		  NULL ==> getline() will malloc() the linep buffer
  *		  else ==> getline() might realloc() the linep buffer
  *	strip	- true ==> remove trailing whitespace,
- *		  false ==> only rmove the trailing newline
+ *		  false ==> only remove the trailing newline
  *	lenp	- != NULL ==> pointer to length of final length of line malloced,
  *		  NULL ==> do not return length of line
  *	stream - file stream to read from
@@ -1516,7 +1516,7 @@ sanity_chk(char const *work_dir, char const *iocccsize, char const *tar)
     if (! is_exec(tar)) {
 	fpara(stderr,
 	      "",
-	      "The tar, while it is a file, is not execurable.",
+	      "The tar, while it is a file, is not executable.",
 	      "",
 	      "We suggest you check the permissions on the tar program, or use another path:",
 	      "",
@@ -1544,7 +1544,7 @@ sanity_chk(char const *work_dir, char const *iocccsize, char const *tar)
 	      "",
 	      "    mkiocccentry -c cp ...",
 	      "",
-	      "and/or install a cp program?  You can find the sorce for cp in core utilities:",
+	      "and/or install a cp program?  You can find the source for cp in core utilities:",
 	      "",
 	      "    https://www.gnu.org/software/coreutils/",
 	      "",
@@ -1561,7 +1561,7 @@ sanity_chk(char const *work_dir, char const *iocccsize, char const *tar)
 	      "",
 	      "    mkiocccentry -t cp ...",
 	      "",
-	      "and/or install a cp program?  You can find the sorce for cp in core utilities:",
+	      "and/or install a cp program?  You can find the source for cp in core utilities:",
 	      "",
 	      "    https://www.gnu.org/software/cp/",
 	      "",
@@ -1572,13 +1572,13 @@ sanity_chk(char const *work_dir, char const *iocccsize, char const *tar)
     if (! is_exec(cp)) {
 	fpara(stderr,
 	      "",
-	      "The cp, while it is a file, is not execurable.",
+	      "The cp, while it is a file, is not executable.",
 	      "",
 	      "We suggest you check the permissions on the cp program, or use another path:",
 	      "",
 	      "    mkiocccentry -t cp ...",
 	      "",
-	      "and/or install a cp program?  You can find the sorce for cp in core utilities:",
+	      "and/or install a cp program?  You can find the source for cp in core utilities:",
 	      "",
 	      "    https://www.gnu.org/software/cp/",
 	      "",
@@ -1600,7 +1600,7 @@ sanity_chk(char const *work_dir, char const *iocccsize, char const *tar)
 	      "",
 	      "    mkiocccentry -c ls ...",
 	      "",
-	      "and/or install a ls program?  You can find the sorce for ls in core utilities:",
+	      "and/or install a ls program?  You can find the source for ls in core utilities:",
 	      "",
 	      "    https://www.gnu.org/software/coreutils/",
 	      "",
@@ -1617,7 +1617,7 @@ sanity_chk(char const *work_dir, char const *iocccsize, char const *tar)
 	      "",
 	      "    mkiocccentry -t ls ...",
 	      "",
-	      "and/or install a ls program?  You can find the sorce for ls in core utilities:",
+	      "and/or install a ls program?  You can find the source for ls in core utilities:",
 	      "",
 	      "    https://www.gnu.org/software/ls/",
 	      "",
@@ -1628,13 +1628,13 @@ sanity_chk(char const *work_dir, char const *iocccsize, char const *tar)
     if (! is_exec(ls)) {
 	fpara(stderr,
 	      "",
-	      "The ls, while it is a file, is not execurable.",
+	      "The ls, while it is a file, is not executable.",
 	      "",
 	      "We suggest you check the permissions on the ls program, or use another path:",
 	      "",
 	      "    mkiocccentry -t ls ...",
 	      "",
-	      "and/or install a ls program?  You can find the sorce for ls in core utilities:",
+	      "and/or install a ls program?  You can find the source for ls in core utilities:",
 	      "",
 	      "    https://www.gnu.org/software/ls/",
 	      "",
@@ -1671,7 +1671,7 @@ sanity_chk(char const *work_dir, char const *iocccsize, char const *tar)
     if (! is_exec(iocccsize)) {
 	fpara(stderr,
 	      "",
-	      "The iocccsize file, while it is a file, is not execurable.",
+	      "The iocccsize file, while it is a file, is not executable.",
 	      "",
 	      "We suggest you check the permissions on the iocccsize.",
 	      "",
@@ -1681,7 +1681,7 @@ sanity_chk(char const *work_dir, char const *iocccsize, char const *tar)
     }
 
     /*
-     * work_dir must be a writable direcrtory
+     * work_dir must be a writable directory
      */
     if (! exists(work_dir)) {
 	fpara(stderr,
@@ -1709,7 +1709,7 @@ sanity_chk(char const *work_dir, char const *iocccsize, char const *tar)
     if (! is_write(work_dir)) {
 	fpara(stderr,
 	      "",
-	      "While the diectory work_dir exists, it is not a writable directory.",
+	      "While the directory work_dir exists, it is not a writable directory.",
 	      "",
 	      "You should change the permission to make work_dir writable, or you move or remove work_dir and then",
 	      "create a new writable directory, or use a different work_dir directory path on the command line.",
@@ -1896,13 +1896,13 @@ para(char *line, ...)
 	ret = fputs(line, stdout);
 	if (ret == EOF) {
 	    if (ferror(stdout)) {
-		errp(54, __FUNCTION__, "error writing paragraph to a stdout");
+		errp(52, __FUNCTION__, "error writing paragraph to a stdout");
 		/*NOTREACHED*/
 	    } else if (feof(stdout)) {
-		errp(55, __FUNCTION__, "EOF while writing paragraph to a stdout");
+		errp(53, __FUNCTION__, "EOF while writing paragraph to a stdout");
 		/*NOTREACHED*/
 	    } else {
-		errp(56, __FUNCTION__, "unexpected fputs error writing paragraph to a stdout");
+		errp(54, __FUNCTION__, "unexpected fputs error writing paragraph to a stdout");
 		/*NOTREACHED*/
 	    }
 	}
@@ -1915,13 +1915,13 @@ para(char *line, ...)
 	ret = fputc('\n', stdout);
 	if (ret == EOF) {
 	    if (ferror(stdout)) {
-		errp(57, __FUNCTION__, "error writing newline to a stdout");
+		errp(55, __FUNCTION__, "error writing newline to a stdout");
 		/*NOTREACHED*/
 	    } else if (feof(stdout)) {
-		errp(58, __FUNCTION__, "EOF while writing newline to a stdout");
+		errp(56, __FUNCTION__, "EOF while writing newline to a stdout");
 		/*NOTREACHED*/
 	    } else {
-		errp(59, __FUNCTION__, "unexpected fputc error newline a stdout");
+		errp(57, __FUNCTION__, "unexpected fputc error newline a stdout");
 		/*NOTREACHED*/
 	    }
 	}
@@ -1946,13 +1946,13 @@ para(char *line, ...)
     ret = fflush(stdout);
     if (ret == EOF) {
 	if (ferror(stdout)) {
-	    errp(60, __FUNCTION__, "error flushing stdout");
+	    errp(58, __FUNCTION__, "error flushing stdout");
 	    /*NOTREACHED*/
 	} else if (feof(stdout)) {
-	    errp(61, __FUNCTION__, "EOF while flushing stdout");
+	    errp(59, __FUNCTION__, "EOF while flushing stdout");
 	    /*NOTREACHED*/
 	} else {
-	    errp(62, __FUNCTION__, "unexpected fflush error while flushing stdout");
+	    errp(60, __FUNCTION__, "unexpected fflush error while flushing stdout");
 	    /*NOTREACHED*/
 	}
     }
@@ -1995,7 +1995,7 @@ fpara(FILE *stream, char *line, ...)
      * stream sanity check
      */
     if (stream == NULL) {
-	err(50, __FUNCTION__, "stream is NULL");
+	err(61, __FUNCTION__, "stream is NULL");
 	/*NOTREACHED*/
     }
     clearerr(stream);	/* pre-clear ferror() status */
@@ -2003,7 +2003,7 @@ fpara(FILE *stream, char *line, ...)
     /* this may not always catch a bogus or un-opened stream, but try anyway */
     fd = fileno(stream);
     if (fd < 0) {
-	errp(51, __FUNCTION__, "fileno on stream returned: %d < 0", fd);
+	errp(62, __FUNCTION__, "fileno on stream returned: %d < 0", fd);
 	/*NOTREACHED*/
     }
     clearerr(stream);	/* paranoia */
@@ -2022,13 +2022,13 @@ fpara(FILE *stream, char *line, ...)
 	ret = fputs(line, stream);
 	if (ret == EOF) {
 	    if (ferror(stream)) {
-		errp(54, __FUNCTION__, "error writing paragraph to a stream");
+		errp(63, __FUNCTION__, "error writing paragraph to a stream");
 		/*NOTREACHED*/
 	    } else if (feof(stream)) {
-		errp(55, __FUNCTION__, "EOF while writing paragraph to a stream");
+		errp(64, __FUNCTION__, "EOF while writing paragraph to a stream");
 		/*NOTREACHED*/
 	    } else {
-		errp(56, __FUNCTION__, "unexpected fputs error writing paragraph to a stream");
+		errp(65, __FUNCTION__, "unexpected fputs error writing paragraph to a stream");
 		/*NOTREACHED*/
 	    }
 	}
@@ -2041,13 +2041,13 @@ fpara(FILE *stream, char *line, ...)
 	ret = fputc('\n', stream);
 	if (ret == EOF) {
 	    if (ferror(stream)) {
-		errp(57, __FUNCTION__, "error writing newline to a stream");
+		errp(66, __FUNCTION__, "error writing newline to a stream");
 		/*NOTREACHED*/
 	    } else if (feof(stream)) {
-		errp(58, __FUNCTION__, "EOF while writing newline to a stream");
+		errp(67, __FUNCTION__, "EOF while writing newline to a stream");
 		/*NOTREACHED*/
 	    } else {
-		errp(59, __FUNCTION__, "unexpected fputc error newline a stream");
+		errp(68, __FUNCTION__, "unexpected fputc error newline a stream");
 		/*NOTREACHED*/
 	    }
 	}
@@ -2072,13 +2072,13 @@ fpara(FILE *stream, char *line, ...)
     ret = fflush(stream);
     if (ret == EOF) {
 	if (ferror(stream)) {
-	    errp(60, __FUNCTION__, "error flushing stream");
+	    errp(69, __FUNCTION__, "error flushing stream");
 	    /*NOTREACHED*/
 	} else if (feof(stream)) {
-	    errp(61, __FUNCTION__, "EOF while flushing stream");
+	    errp(70, __FUNCTION__, "EOF while flushing stream");
 	    /*NOTREACHED*/
 	} else {
-	    errp(62, __FUNCTION__, "unexpected fflush error while flushing stream");
+	    errp(71, __FUNCTION__, "unexpected fflush error while flushing stream");
 	    /*NOTREACHED*/
 	}
     }
@@ -2091,7 +2091,7 @@ fpara(FILE *stream, char *line, ...)
  * prompt - prompt for a string
  *
  * Prompt a string, followed by :<space> on stdout and then read a line from stdin.
- * The line is stipped of the trailing newline and then of all trailing whitespace.
+ * The line is stripped of the trailing newline and then of all trailing whitespace.
  *
  * given:
  *	str	- string to string followed by :<space>
@@ -2118,7 +2118,7 @@ prompt(char *str, size_t *lenp)
      * firewall
      */
     if (str == NULL) {
-	err(63, __FUNCTION__, "str is NULL");
+	err(72, __FUNCTION__, "str is NULL");
 	/*NOTREACHED*/
     }
 
@@ -2130,13 +2130,13 @@ prompt(char *str, size_t *lenp)
     ret = fputs(str, stdout);
     if (ret == EOF) {
 	if (ferror(stdout)) {
-	    errp(65, __FUNCTION__, "error printing prompt string");
+	    errp(73, __FUNCTION__, "error printing prompt string");
 	    /*NOTREACHED*/
 	} else if (feof(stdout)) {
-	    errp(66, __FUNCTION__, "EOF while printing prompt string");
+	    errp(74, __FUNCTION__, "EOF while printing prompt string");
 	    /*NOTREACHED*/
 	} else {
-	    errp(67, __FUNCTION__, "unexpected fputs error printing prompt string");
+	    errp(75, __FUNCTION__, "unexpected fputs error printing prompt string");
 	    /*NOTREACHED*/
 	}
     }
@@ -2145,13 +2145,13 @@ prompt(char *str, size_t *lenp)
     ret = fputs(": ", stdout);
     if (ret == EOF) {
 	if (ferror(stdout)) {
-	    errp(68, __FUNCTION__, "error printing :<space>");
+	    errp(76, __FUNCTION__, "error printing :<space>");
 	    /*NOTREACHED*/
 	} else if (feof(stdout)) {
-	    errp(69, __FUNCTION__, "EOF while writing :<space>");
+	    errp(77, __FUNCTION__, "EOF while writing :<space>");
 	    /*NOTREACHED*/
 	} else {
-	    errp(70, __FUNCTION__, "unexpected fputs error printing :<space>");
+	    errp(78, __FUNCTION__, "unexpected fputs error printing :<space>");
 	    /*NOTREACHED*/
 	}
     }
@@ -2160,13 +2160,13 @@ prompt(char *str, size_t *lenp)
     ret = fflush(stdout);
     if (ret == EOF) {
 	if (ferror(stdout)) {
-	    errp(71, __FUNCTION__, "error flushing prompt to stdout");
+	    errp(79, __FUNCTION__, "error flushing prompt to stdout");
 	    /*NOTREACHED*/
 	} else if (feof(stdout)) {
-	    errp(72, __FUNCTION__, "EOF while flushing prompt to stdout");
+	    errp(80, __FUNCTION__, "EOF while flushing prompt to stdout");
 	    /*NOTREACHED*/
 	} else {
-	    errp(73, __FUNCTION__, "unexpected fflush error while flushing prompt to stdout");
+	    errp(81, __FUNCTION__, "unexpected fflush error while flushing prompt to stdout");
 	    /*NOTREACHED*/
 	}
     }
@@ -2176,7 +2176,7 @@ prompt(char *str, size_t *lenp)
      */
     buf = readline_dup(&linep, true, &len, stdin);
     if (buf == NULL) {
-	errp(74, __FUNCTION__, "readline_dup returned NULL");
+	errp(82, __FUNCTION__, "readline_dup returned NULL");
 	/*NOTREACHED*/
     }
     dbg(DBG_VHIGH, "received a %d byte response", len);
@@ -2223,9 +2223,9 @@ prompt(char *str, size_t *lenp)
 static char *
 get_contest_id(bool *testp)
 {
-    char *malloc_ret;		/* mallocted return string */
+    char *malloc_ret;		/* malloced return string */
     size_t len;			/* input string length */
-    int ret;			/* libc fuction return */
+    int ret;			/* libc function return */
     unsigned int a,b,c,d,e,f;	/* parts of the UUID string */
     unsigned int version = 0;	/* UUID version hex character */
     unsigned int variant = 0;	/* UUID variant hex character */
@@ -2235,7 +2235,7 @@ get_contest_id(bool *testp)
      * firewall
      */
     if (testp == NULL) {
-	err(75, __FUNCTION__, "testp is NULL");
+	err(83, __FUNCTION__, "testp is NULL");
 	/*NOTREACHED*/
     }
 
@@ -2244,7 +2244,7 @@ get_contest_id(bool *testp)
      */
     para("To submit entries to the IOCCC, you must a registered contestant and have received a",
 	 "IOCCC contest ID (via email) shortly after you have been successfully registered.",
-	 "If the IOCCC os open, you may register as a contestant. See:",
+	 "If the IOCCC is open, you may register as a contestant. See:",
 	 "",
 	 "    file:///Users/chongo/bench/ioccc/ioccc-src/winner/index.html#enter",
 	 "",
@@ -2268,7 +2268,7 @@ get_contest_id(bool *testp)
 	 */
 	malloc_ret = prompt("Enter IOCCC contest ID or test", &len);
 	dbg(DBG_HIGH, "the IOCCC contest ID as entered is: %s", malloc_ret);
-	ret = 0; /* initialise paranoia */
+	ret = 0; /* initialize paranoia */
 
 	/*
 	 * case: IOCCC contest ID is test, quick return
@@ -2279,7 +2279,7 @@ get_contest_id(bool *testp)
 	     * report test mode
 	     */
 	    para("",
-		 "IOCCC contst ID is test, entering test mode.",
+		 "IOCCC contest ID is test, entering test mode.",
 		 NULL);
 	    *testp = true;
 	    return malloc_ret;
@@ -2363,7 +2363,7 @@ get_entry_num(void)
 {
     int entry_num;		/* entry number */
     char *entry_str;		/* entry number string */
-    int ret;			/* libc fuction return */
+    int ret;			/* libc function return */
 
     /*
      * keep asking for an entry number until we get a valid reply
@@ -2376,12 +2376,12 @@ get_entry_num(void)
 	errno = 0;	/* pre-clear errno for errp() */
 	ret = printf("\nYou are allowed to submit up to %d entries to a given IOCCC.\n", MAX_ENTRY_NUM+1);
 	if (ret < 0) {
-	    errp(76, __FUNCTION__, "printf error printing number of entries allowed");
+	    errp(84, __FUNCTION__, "printf error printing number of entries allowed");
 	    /*NOTREACHED*/
 	}
 	para("",
 	     "As in C, Entry numbers start with 0.  If you are updated a previous entry, PLEASE",
-	     "use the same entry number that you previosly uploaded so we know which entry we",
+	     "use the same entry number that you previously uploaded so we know which entry we",
 	     "should replace. If this is your 1st entry to this given IOCCC, enter 0.",
 	     "",
 	     NULL);
@@ -2437,17 +2437,17 @@ mk_entry_dir(char *work_dir, char *ioccc_id, int entry_num)
 {
     int len;			/* length of entry directory */
     char *entry_dir = NULL;	/* malloced entry directory path */
-    int ret;			/* libc fuction return */
+    int ret;			/* libc function return */
 
     /*
      * firewall
      */
     if (work_dir == NULL || ioccc_id == NULL) {
-	err(77, __FUNCTION__, "work_dir and/or ioccc_id is NULL");
+	err(85, __FUNCTION__, "work_dir and/or ioccc_id is NULL");
 	/*NOTREACHED*/
     }
     if (entry_num < 0 || entry_num > MAX_ENTRY_NUM) {
-	err(78, __FUNCTION__, "entry number: %d must >= 0 and <= %d", MAX_ENTRY_NUM);
+	err(86, __FUNCTION__, "entry number: %d must >= 0 and <= %d", MAX_ENTRY_NUM);
 	/*NOTREACHED*/
     }
 
@@ -2459,13 +2459,13 @@ mk_entry_dir(char *work_dir, char *ioccc_id, int entry_num)
     errno = 0;	/* pre-clear errno for errp() */
     entry_dir = malloc(len + 1 + 1);
     if (entry_dir == NULL) {
-	errp(79, __FUNCTION__, "cannot malloc %d characters", len + 1);
+	errp(87, __FUNCTION__, "cannot malloc %d characters", len + 1);
 	/*NOTREACHED*/
     }
     errno = 0;	/* pre-clear errno for errp() */
     ret = snprintf(entry_dir, len + 1, "%s/%s-%d", work_dir, ioccc_id, entry_num);
     if (ret < 0) {
-	errp(80, __FUNCTION__, "snprintf to form entry directory failed");
+	errp(88, __FUNCTION__, "snprintf to form entry directory failed");
 	/*NOTREACHED*/
     }
     dbg(DBG_HIGH, "entry directory path: %s", entry_dir);
@@ -2480,7 +2480,7 @@ mk_entry_dir(char *work_dir, char *ioccc_id, int entry_num)
 	      "You need to move that directory, or remove it, or use a different work_dir.",
 	      "",
 	      NULL);
-	err(81, __FUNCTION__, "entry directory exists: %s", entry_dir);
+	err(89, __FUNCTION__, "entry directory exists: %s", entry_dir);
 	/*NOTREACHED*/
     }
     dbg(DBG_HIGH, "entry directory path: %s", entry_dir);
@@ -2491,7 +2491,7 @@ mk_entry_dir(char *work_dir, char *ioccc_id, int entry_num)
     errno = 0;	/* pre-clear errno for errp() */
     ret = mkdir(entry_dir, 0755);
     if (ret < 0) {
-	errp(82, __FUNCTION__, "cannot mkdir %s with mode 0755", entry_dir);
+	errp(90, __FUNCTION__, "cannot mkdir %s with mode 0755", entry_dir);
 	/*NOTREACHED*/
     }
 
@@ -2503,13 +2503,13 @@ mk_entry_dir(char *work_dir, char *ioccc_id, int entry_num)
 
 
 /*
- * lookup_location_name - convert a ISO 3166-1 Alpha-2 into a locaion name
+ * lookup_location_name - convert a ISO 3166-1 Alpha-2 into a location name
  *
  * given:
  *	upper_code	- ISO 3166-1 Alpha-2 in UPPER CASE
  *
  * return:
- *	locaion name or NULL ==> unlisted code
+ *	location name or NULL ==> unlisted code
  *
  * This function does not return on error.
  */
@@ -2522,7 +2522,7 @@ lookup_location_name(char *upper_code)
      * firewall
      */
     if (upper_code == NULL) {
-	err(83, __FUNCTION__, "upper_code is NULL");
+	err(91, __FUNCTION__, "upper_code is NULL");
 	/*NOTREACHED*/
     }
 
@@ -2549,7 +2549,7 @@ lookup_location_name(char *upper_code)
  * given:
  *	question	string to prompt for a question
  *
- * retuns:
+ * returns:
  *	true ==> input is yes in some form,
  *	false ==> input is not yes
  */
@@ -2563,7 +2563,7 @@ yes_or_no(char *question)
      * firewall
      */
     if (question == NULL) {
-	err(84, __FUNCTION__, "question is NULL");
+	err(92, __FUNCTION__, "question is NULL");
 	/*NOTREACHED*/
     }
 
@@ -2665,18 +2665,18 @@ get_author_info(char *ioccc_id, int entry_num, struct author **author_set_p)
 {
     struct author *author_set = NULL;	/* allocated author set */
     int author_count = -1;		/* number of authors or -1 */
-    char *author_count_str = NULL;	/* author cound string */
+    char *author_count_str = NULL;	/* author count string */
     char *location_name = NULL;		/* location name of a given location/country code */
     bool yorn = false;			/* response to a question */
     size_t len;				/* length of reply */
-    int ret;				/* libc fuction return */
+    int ret;				/* libc function return */
     int i;
 
     /*
      * firewall
      */
     if (ioccc_id == NULL || author_set_p == NULL) {
-	err(85, __FUNCTION__, "ioccc_id and/or author_set_p is NULL");
+	err(93, __FUNCTION__, "ioccc_id and/or author_set_p is NULL");
 	/*NOTREACHED*/
     }
 
@@ -2697,7 +2697,7 @@ get_author_info(char *ioccc_id, int entry_num, struct author **author_set_p)
 	if (ret != 1 || author_count < 0 || author_count > MAX_AUTHORS) {
 	    (void) fprintf(stderr, "\nThe number of authors must a number from 1 thru %d, please re-enter.\n", MAX_AUTHORS);
 	    (void) fprintf(stderr, "If you happen to have more than %d authors. we ask that you pick the\n", MAX_AUTHORS);
-	    (void) fprintf(stderr, "just %d authors and mention the remainer of the authors in the remarks file.\n", MAX_AUTHORS);
+	    (void) fprintf(stderr, "just %d authors and mention the remainder of the authors in the remarks file.\n", MAX_AUTHORS);
 	}
 
 	/*
@@ -2717,7 +2717,7 @@ get_author_info(char *ioccc_id, int entry_num, struct author **author_set_p)
     errno = 0;	/* pre-clear errno for errp() */
     author_set = (struct author *)malloc(sizeof(struct author) * author_count);
     if (author_set == NULL) {
-	errp(86, __FUNCTION__, "unable to malloc a struct author array of length: %d", author_count);
+	errp(94, __FUNCTION__, "unable to malloc a struct author array of length: %d", author_count);
 	/*NOTREACHED*/
     }
     /* pre-zeroize the author array */
@@ -2728,39 +2728,49 @@ get_author_info(char *ioccc_id, int entry_num, struct author **author_set_p)
      */
     para("",
 	 "We will now ask for information about the author(s) of this entry.",
-	 "A name is required. If an author wishes to be anonymous, use a psuedo-name.",
 	 "",
-	 "The location/country code must be a 2 character ISO 3166-1 Alpha-2 code.",
-	 "See the following URL for a table of location/county codes, or from",
-	 "these Wikipedia and ISO web pages:",
+	 "Information that you supply, if your entry is selected as a winner,",
+	 "will be published with your entry.",
 	 "",
+	 "Except for your name and location/country code, you can opt out of providing it,",
+	 "(or if you don't have the thing we are asking for), by just pressing return.",
+	 "",
+	 "A name is required. If an author wishes to be anonymous, use a pseudo-name.",
+	 "Keep in mind that if an author wins multiple years, or has won before, you might",
+	 "want to be consistent and provide the same name or pseudo-name each time.",
+	 "",
+	 "We will ask for the location/country as a 2 character ISO 3166-1 Alpha-2 code.",
+	 "",
+	 "    See the following URLs for information on ISO 3166-1 Alpha-2 codes:",
 	 NULL);
     ret = puts(ISO_3166_1_CODE_URL0);
     if (ret < 0) {
-	errp(87, __FUNCTION__, "puts error printing ISO 3166-1 URL");
+	errp(95, __FUNCTION__, "puts error printing ISO 3166-1 URL");
 	/*NOTREACHED*/
     }
     ret = puts(ISO_3166_1_CODE_URL1);
     if (ret < 0) {
-	errp(88, __FUNCTION__, "puts error printing ISO 3166-1 URL");
+	errp(96, __FUNCTION__, "puts error printing ISO 3166-1 URL");
 	/*NOTREACHED*/
     }
     ret = puts(ISO_3166_1_CODE_URL2);
     if (ret < 0) {
-	errp(89, __FUNCTION__, "puts error printing ISO 3166-1 URL2");
+	errp(97, __FUNCTION__, "puts error printing ISO 3166-1 URL2");
 	/*NOTREACHED*/
     }
     ret = puts(ISO_3166_1_CODE_URL3);
     if (ret < 0) {
-	errp(90, __FUNCTION__, "puts error printing ISO 3166-1 URL2");
+	errp(98, __FUNCTION__, "puts error printing ISO 3166-1 URL2");
 	/*NOTREACHED*/
     }
     para("",
-	 "For the other information such as Email, twitter handle, and GitHub username,",
-	 "you may enter that information or just press return if not applicable of if you",
-	 "do not wish to provide that information.  Information that you supply, if your",
-	 "entry is selected as a winner, will be published along with your entry."
+	 "We will ask for the author(s) Email address. Press return if you don't want to provide it, or if don't have one.",
 	 "",
+	 "We will ask for a home URL (starting with http:// or https://), or press return to skip, or if don't have one.",
+	 "",
+	 "We will ask a twitter handle (must start with @), or press return to skip, or if don't have one.",
+	 "",
+	 "We will ask a GitHub account (must start with @), or press return to skip, or if don't have one.",
 	 NULL);
     for (i=0; i < author_count; ++i) {
 
@@ -2770,7 +2780,7 @@ get_author_info(char *ioccc_id, int entry_num, struct author **author_set_p)
 	errno = 0;	/* pre-clear errno for errp() */
 	ret = printf("\nEnter information for author #%d\n\n", i);
 	if (ret < 0) {
-	    errp(91, __FUNCTION__, "printf error printing author number");
+	    errp(99, __FUNCTION__, "printf error printing author number");
 	    /*NOTREACHED*/
 	}
 
@@ -2947,11 +2957,11 @@ free_author_array(struct author *authorp, int author_count)
      * firewall
      */
     if (authorp == NULL) {
-	err(92, __FUNCTION__, "authorp is NULL");
+	err(100, __FUNCTION__, "authorp is NULL");
 	/*NOTREACHED*/
     }
     if (author_count < 0) {
-	err(93, __FUNCTION__, "author_count: %d < 0", author_count);
+	err(101, __FUNCTION__, "author_count: %d < 0", author_count);
 	/*NOTREACHED*/
     }
 
