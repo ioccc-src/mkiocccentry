@@ -2,7 +2,7 @@
 #
 # mkiocccentry - make an ioccc entry
 #
-# Copyright (c) 2021 by Landon Curt Noll.  All Rights Reserved.
+# Copyright (c) 2021,2022 by Landon Curt Noll.  All Rights Reserved.
 #
 # Permission to use, copy, modify, and distribute this software and
 # its documentation for any purpose and without fee is hereby granted,
@@ -30,9 +30,9 @@
 SHELL= /bin/bash
 
 CC= cc
-#CFLAGS= -O3 -g3 --pedantic -Wall -Werror
-CFLAGS= -O3 -g3 --pedantic -Wall -Werror -Wno-unused-function
 #CFLAGS= -O3 -g3 --pedantic -Wall
+CFLAGS= -O3 -g3 --pedantic -Wall -Werror
+#CFLAGS= -O0 -g --pedantic -Wall -Werror
 RM= rm
 INSTALL= install
 
@@ -56,4 +56,4 @@ clobber quick_clobber: clean
 	${RM} -r mkiocccentry
 
 install: all
-	@echo perhaps ${INSTALL} -m 0555 ${TARGETS} ${DESTDIR}
+	${INSTALL} -m 0555 ${TARGETS} ${DESTDIR}

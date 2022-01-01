@@ -12,7 +12,7 @@
  *
  * If you do find a problem with this code, let the judges know.
  *
- * Copyright (c) 2021 by Landon Curt Noll.  All Rights Reserved.
+ * Copyright (c) 2021,2022 by Landon Curt Noll.  All Rights Reserved.
  *
  * Permission to use, copy, modify, and distribute this software and
  * its documentation for any purpose and without fee is hereby granted,
@@ -54,7 +54,7 @@
 /*
  * definitions
  */
-#define VERSION "0.4 2021-12-31"	/* use format: major.minor YYYY-MM-DD */
+#define VERSION "0.5 2022-01-01"	/* use format: major.minor YYYY-MM-DD */
 #define REQUIRED_IOCCCSIZE_MAJVER (28)	/* iocccsize major version must match */
 #define MIN_IOCCCSIZE_MINVER (2)	/* iocccsize minor version must be >= */
 #define DBG_NONE (0)		/* no debugging */
@@ -70,26 +70,12 @@
 #define MAX_ENTRY_NUM (9)	/* entry numbers from 0 to MAX_ENTRY_NUM allowed */
 #define MAX_ENTRY_CHARS (1)	/* characters that represent the maximum entry number */
 #define MAX_AUTHORS (5)		/* maximum number of authors of an entry */
+#define MAX_NAME_LEN (70)	/* max author name length */
 #define ISO_3166_1_CODE_URL0 "https://en.wikipedia.org/wiki/ISO_3166-1#Officially_assigned_code_elements"
 #define ISO_3166_1_CODE_URL1 "https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2"
 #define ISO_3166_1_CODE_URL2 "https://www.iso.org/obp/ui/#iso:pub:PUB500001:en"
 #define ISO_3166_1_CODE_URL3 "https://www.iso.org/obp/ui/#search"
 #define ISO_3166_1_CODE_URL4 "https://www.iso.org/glossary-for-iso-3166.html"
-
-
-/*
- * paragraph support
- *
- * FPARA(stream, "string","string2",...) calls fpara(stream, arg_count, "string","string2",...)
- * provided that all argument passed to PARA(...) are strings (char *).
- *
- * PARA("string","string2",...) is a macro for fpara(stdout, arg_count, "string","string2",...)
- * to print a paragraph on standard output.
- */
-#define NARG(...) (sizeof((char *[]){__VA_ARGS__})/sizeof(char *))
-#define FPARA(stream, ...) fpara(stream, NARG(__VA_ARGS__), __VA_ARGS__)
-#define PARA(...) fpara(stdout, NARG(__VA_ARGS__), __VA_ARGS__)
-#define MAX_SANE_PARA_LINES (100) /* sanity check limit on paragraph lines */
 
 
 /*
@@ -121,7 +107,8 @@ static char const *usage_msg =
 "\t-V\t\tprint version string and exit\n"
 "\t-t tar\t\tpath to tar executable that supports -cjvf (def: %s)\n"
 "\t-c cp\t\tpath to cp executable (def: %s)\n"
-"\t-l ls\t\tpath to ls executable (def: %s)\n"
+"\t-l ls\t\tpath to ls executable (def: %s)\n";
+static char const *usage_msg2 =
 "\n"
 "\twork_dir\tdirectory where the entry directory and tarball are formed\n"
 "\tiocccsize\tpath to the iocccsize tool\n"
@@ -574,14 +561,16 @@ static bool is_write(char const *path);
 static ssize_t readline(char **linep, FILE *stream);
 static char *readline_dup(char **linep, bool strip, size_t *lenp, FILE *stream);
 static void sanity_chk(char const *work_dir, char const *iocccsize, char const *tar);
-static void fpara(FILE *stream, int nargs, ...);
-static char *prompt(char *str, char **linep);
+static void para(char *line, ...);
+static void fpara(FILE *stream, char *line, ...);
+static char *prompt(char *str, size_t *lenp);
 static char *get_contest_id(bool *testp);
 static int get_entry_num(void);
 static char *mk_entry_dir(char *work_dir, char *ioccc_id, int entry_num);
 static char *lookup_location_name(char *upper_code);
 static bool yes_or_no(char *question);
 static int get_author_info(char *ioccc_id, int entry_num, struct author **author_set);
+static void free_author_array(struct author *authorp, int author_count);
 
 
 int
@@ -666,9 +655,9 @@ main(int argc, char *argv[])
     /*
      * environment sanity checks
      */
-    PARA("", "Performing santiy checks on your environment ...");
+    para("", "Performing santiy checks on your environment ...", NULL);
     sanity_chk(work_dir, iocccsize, tar);
-    PARA("... environment looks OK", "");
+    para("... environment looks OK", "", NULL);
 
     /*
      * obtain the IOCCC contest ID
@@ -693,6 +682,23 @@ main(int argc, char *argv[])
      */
     author_count = get_author_info(ioccc_id, entry_num, &author_set);
     dbg(DBG_LOW, "collected informaton on %d authors", author_count);
+
+    /*
+     * free storage
+     */
+    if (ioccc_id != NULL) {
+	free(ioccc_id);
+	ioccc_id = NULL;
+    }
+    if (entry_dir != NULL) {
+	free(entry_dir);
+	entry_dir = NULL;
+    }
+    if (author_set != NULL) {
+        free_author_array(author_set, author_count);
+	free(author_set);
+	author_set = NULL;
+    }
 
     /*
      * All Done!!! - Jessica Noll, age 2
@@ -743,7 +749,11 @@ usage(int exitcode, char const *name, char const *str)
     if (ret < 0) {
 	warn(__FUNCTION__, "\nin usage(): fprintf #0 returned error: %d\n", ret);
     }
-    ret = fprintf(stderr, usage_msg, program, DBG_DEFAULT, tar, cp, ls, VERSION);
+    ret = fprintf(stderr, usage_msg, program, DBG_DEFAULT, tar, cp, ls);
+    if (ret < 0) {
+	warn(__FUNCTION__, "\nin usage(): fprintf #1 returned error: %d\n", ret);
+    }
+    ret = fprintf(stderr, usage_msg2, VERSION);
     if (ret < 0) {
 	warn(__FUNCTION__, "\nin usage(): fprintf #1 returned error: %d\n", ret);
     }
@@ -1100,8 +1110,8 @@ is_file(char const *path)
     /*
      * test if path is a regular file
      */
-    if ((buf.st_mode & S_IFMT) != S_IFREG) {
-	dbg(DBG_HIGH, "path %s is not a regular file, file type: %07o", path, buf.st_mode & S_IFMT);
+    if (! S_ISREG(buf.st_mode)) {
+	dbg(DBG_HIGH, "path %s is not a regular file");
 	return false;
     }
     dbg(DBG_VHIGH, "path %s is a regular file", path);
@@ -1200,8 +1210,8 @@ is_dir(char const *path)
     /*
      * test if path is a regular directory
      */
-    if ((buf.st_mode & S_IFMT) != S_IFDIR) {
-	dbg(DBG_HIGH, "path %s is not a directory, file type: %07o", path, buf.st_mode & S_IFMT);
+    if (! S_ISDIR(buf.st_mode)) {
+	dbg(DBG_HIGH, "path %s is not a directory");
 	return false;
     }
     dbg(DBG_VHIGH, "path %s is a directory", path);
@@ -1280,7 +1290,7 @@ is_write(char const *path)
 static ssize_t
 readline(char **linep, FILE *stream)
 {
-    size_t linecap;	/* allocated capacity of linep buffer */
+    size_t linecap = 0;	/* allocated capacity of linep buffer */
     ssize_t ret;	/* getline return and our modified size return */
     char *p;		/* printer to NUL */
 
@@ -1469,7 +1479,7 @@ sanity_chk(char const *work_dir, char const *iocccsize, char const *tar)
      * tar must be executable
      */
     if (! exists(tar)) {
-	FPARA(stderr,
+	fpara(stderr,
 	      "",
 	      "We cannot find a tar program.",
 	      "",
@@ -1481,12 +1491,13 @@ sanity_chk(char const *work_dir, char const *iocccsize, char const *tar)
 	      "and/or install a tar program?  You can find the source for tar:",
 	      "",
 	      "    https://www.gnu.org/software/tar/",
-	      "");
+	      "",
+	      NULL);
 	err(21, __FUNCTION__, "tar does not exist: %s", tar);
 	/*NOTREACHED*/
     }
     if (! is_file(tar)) {
-	FPARA(stderr,
+	fpara(stderr,
 	      "",
 	      "The tar, while it exists, is not a file.",
 	      "",
@@ -1497,12 +1508,13 @@ sanity_chk(char const *work_dir, char const *iocccsize, char const *tar)
 	      "and/or install a tar program?  You can find the source for tar:",
 	      "",
 	      "    https://www.gnu.org/software/tar/",
-	      "");
+	      "",
+	      NULL);
 	err(22, __FUNCTION__, "tar is not a file: %s", tar);
 	/*NOTREACHED*/
     }
     if (! is_exec(tar)) {
-	FPARA(stderr,
+	fpara(stderr,
 	      "",
 	      "The tar, while it is a file, is not execurable.",
 	      "",
@@ -1513,7 +1525,8 @@ sanity_chk(char const *work_dir, char const *iocccsize, char const *tar)
 	      "and/or install a tar program?  You can find the source for tar:",
 	      "",
 	      "    https://www.gnu.org/software/tar/",
-	      "");
+	      "",
+	      NULL);
 	err(23, __FUNCTION__, "tar is not executable program: %s", tar);
 	/*NOTREACHED*/
     }
@@ -1522,7 +1535,7 @@ sanity_chk(char const *work_dir, char const *iocccsize, char const *tar)
      * cp must be executable
      */
     if (! exists(cp)) {
-	FPARA(stderr,
+	fpara(stderr,
 	      "",
 	      "We cannot find a cp program.",
 	      "",
@@ -1534,12 +1547,13 @@ sanity_chk(char const *work_dir, char const *iocccsize, char const *tar)
 	      "and/or install a cp program?  You can find the sorce for cp in core utilities:",
 	      "",
 	      "    https://www.gnu.org/software/coreutils/",
-	      "");
+	      "",
+	      NULL);
 	err(24, __FUNCTION__, "cp does not exist: %s", cp);
 	/*NOTREACHED*/
     }
     if (! is_file(cp)) {
-	FPARA(stderr,
+	fpara(stderr,
 	      "",
 	      "The cp, while it exists, is not a file.",
 	      "",
@@ -1550,12 +1564,13 @@ sanity_chk(char const *work_dir, char const *iocccsize, char const *tar)
 	      "and/or install a cp program?  You can find the sorce for cp in core utilities:",
 	      "",
 	      "    https://www.gnu.org/software/cp/",
-	      "");
+	      "",
+	      NULL);
 	err(25, __FUNCTION__, "cp is not a file: %s", cp);
 	/*NOTREACHED*/
     }
     if (! is_exec(cp)) {
-	FPARA(stderr,
+	fpara(stderr,
 	      "",
 	      "The cp, while it is a file, is not execurable.",
 	      "",
@@ -1566,7 +1581,8 @@ sanity_chk(char const *work_dir, char const *iocccsize, char const *tar)
 	      "and/or install a cp program?  You can find the sorce for cp in core utilities:",
 	      "",
 	      "    https://www.gnu.org/software/cp/",
-	      "");
+	      "",
+	      NULL);
 	err(26, __FUNCTION__, "cp is not executable program: %s", cp);
 	/*NOTREACHED*/
     }
@@ -1575,7 +1591,7 @@ sanity_chk(char const *work_dir, char const *iocccsize, char const *tar)
      * ls must be executable
      */
     if (! exists(ls)) {
-	FPARA(stderr,
+	fpara(stderr,
 	      "",
 	      "We cannot find a ls program.",
 	      "",
@@ -1587,12 +1603,13 @@ sanity_chk(char const *work_dir, char const *iocccsize, char const *tar)
 	      "and/or install a ls program?  You can find the sorce for ls in core utilities:",
 	      "",
 	      "    https://www.gnu.org/software/coreutils/",
-	      "");
+	      "",
+	      NULL);
 	err(27, __FUNCTION__, "ls does not exist: %s", ls);
 	/*NOTREACHED*/
     }
     if (! is_file(ls)) {
-	FPARA(stderr,
+	fpara(stderr,
 	      "",
 	      "The ls, while it exists, is not a file.",
 	      "",
@@ -1603,12 +1620,13 @@ sanity_chk(char const *work_dir, char const *iocccsize, char const *tar)
 	      "and/or install a ls program?  You can find the sorce for ls in core utilities:",
 	      "",
 	      "    https://www.gnu.org/software/ls/",
-	      "");
+	      "",
+	      NULL);
 	err(28, __FUNCTION__, "ls is not a file: %s", ls);
 	/*NOTREACHED*/
     }
     if (! is_exec(ls)) {
-	FPARA(stderr,
+	fpara(stderr,
 	      "",
 	      "The ls, while it is a file, is not execurable.",
 	      "",
@@ -1619,7 +1637,8 @@ sanity_chk(char const *work_dir, char const *iocccsize, char const *tar)
 	      "and/or install a ls program?  You can find the sorce for ls in core utilities:",
 	      "",
 	      "    https://www.gnu.org/software/ls/",
-	      "");
+	      "",
+	      NULL);
 	err(29, __FUNCTION__, "ls is not executable program: %s", ls);
 	/*NOTREACHED*/
     }
@@ -1628,32 +1647,35 @@ sanity_chk(char const *work_dir, char const *iocccsize, char const *tar)
      * iocccsize (iocccsize) must be executable
      */
     if (! exists(iocccsize)) {
-	FPARA(stderr,
+	fpara(stderr,
 	      "",
 	      "The iocccsize file does not exist.",
 	      "",
 	      "Perhaps you need to supply a different path?",
-	      "");
+	      "",
+	      NULL);
 	err(30, __FUNCTION__, "iocccsize does not exist: %s", iocccsize);
 	/*NOTREACHED*/
     }
     if (! is_file(iocccsize)) {
-	FPARA(stderr,
+	fpara(stderr,
 	      "",
 	      "The iocccsize file, while it exits, is not a file.",
 	      "",
 	      "We suggest you check the permissions on the iocccsize.",
-	      "");
+	      "",
+	      NULL);
 	err(31, __FUNCTION__, "iocccsize is not a file: %s", iocccsize);
 	/*NOTREACHED*/
     }
     if (! is_exec(iocccsize)) {
-	FPARA(stderr,
+	fpara(stderr,
 	      "",
 	      "The iocccsize file, while it is a file, is not execurable.",
 	      "",
 	      "We suggest you check the permissions on the iocccsize.",
-	      "");
+	      "",
+	      NULL);
 	err(32, __FUNCTION__, "iocccsize is not executable program: %s", iocccsize);
 	/*NOTREACHED*/
     }
@@ -1662,34 +1684,37 @@ sanity_chk(char const *work_dir, char const *iocccsize, char const *tar)
      * work_dir must be a writable direcrtory
      */
     if (! exists(work_dir)) {
-	FPARA(stderr,
+	fpara(stderr,
 	      "",
 	      "The work_dir does not exist.",
 	      "",
 	      "You should either create work_dir, or use a different work_dir directory path on the command line.",
-	      "");
+	      "",
+	      NULL);
 	err(33, __FUNCTION__, "work_dir does not exist: %s", work_dir);
 	/*NOTREACHED*/
     }
     if (! is_dir(work_dir)) {
-	FPARA(stderr,
+	fpara(stderr,
 	      "",
 	      "While work_dir exists, it is not a directory.",
 	      "",
 	      "You should move or remove work_dir and them make a new work_dir directory, or use a different",
 	      "work_dir directory path on the command line.",
-	      "");
+	      "",
+	      NULL);
 	err(34, __FUNCTION__, "work_dir is not a directory: %s", work_dir);
 	/*NOTREACHED*/
     }
     if (! is_write(work_dir)) {
-	FPARA(stderr,
+	fpara(stderr,
 	      "",
 	      "While the diectory work_dir exists, it is not a writable directory.",
 	      "",
 	      "You should change the permission to make work_dir writable, or you move or remove work_dir and then",
 	      "create a new writable directory, or use a different work_dir directory path on the command line.",
-	      "");
+	      "",
+	      NULL);
 	err(35, __FUNCTION__, "work_dir is not a writable directory: %s", work_dir);
 	/*NOTREACHED*/
     }
@@ -1803,6 +1828,135 @@ sanity_chk(char const *work_dir, char const *iocccsize, char const *tar)
 	free(linep);
 	linep = NULL;
     }
+    if (popen_cmd != NULL) {
+	free(popen_cmd);
+	popen_cmd = NULL;
+    }
+    return;
+}
+
+
+/*
+ * para - print a paragraph of lines to stdout
+ *
+ * Print a collection of strings with newlines added after each string.
+ * The final string pointer must be a NULL.
+ *
+ * Example:
+ *	para("line 1", "line 2", "", "prev line 3 was an empty line", NULL);
+ *
+ * given:
+ *	line	1st paragraph line to print
+ *	...	strings as paragraph lines to print
+ *	NULL	end of string list
+ *
+ * This function does not return on error.
+ */
+static void
+para(char *line, ...)
+{
+    va_list ap;		/* stdarg block */
+    int ret;		/* libc function return value */
+    int fd;		/* stdout as a file descriptor or -1 */
+    int line_cnt;	/* number of lines in the paragraph */
+
+    /*
+     * stdarg setup
+     */
+    va_start(ap, line);
+
+    /*
+     * stdout sanity check
+     */
+    if (stdout == NULL) {
+	err(50, __FUNCTION__, "stdout is NULL");
+	/*NOTREACHED*/
+    }
+    clearerr(stdout);	/* pre-clear ferror() status */
+    errno = 0;	/* pre-clear errno for errp() */
+    /* this may not always catch a bogus or un-opened stdout, but try anyway */
+    fd = fileno(stdout);
+    if (fd < 0) {
+	errp(51, __FUNCTION__, "fileno on stdout returned: %d < 0", fd);
+	/*NOTREACHED*/
+    }
+    clearerr(stdout);	/* paranoia */
+
+    /*
+     * print paragraph strings followed by newlines
+     */
+    line_cnt = 0;
+    while (line != NULL) {
+
+	/*
+	 * print the string
+	 */
+	clearerr(stdout);	/* pre-clear ferror() status */
+	errno = 0;	/* pre-clear errno for errp() */
+	ret = fputs(line, stdout);
+	if (ret == EOF) {
+	    if (ferror(stdout)) {
+		errp(54, __FUNCTION__, "error writing paragraph to a stdout");
+		/*NOTREACHED*/
+	    } else if (feof(stdout)) {
+		errp(55, __FUNCTION__, "EOF while writing paragraph to a stdout");
+		/*NOTREACHED*/
+	    } else {
+		errp(56, __FUNCTION__, "unexpected fputs error writing paragraph to a stdout");
+		/*NOTREACHED*/
+	    }
+	}
+
+	/*
+	 * print the newline
+	 */
+	clearerr(stdout);	/* pre-clear ferror() status */
+	errno = 0;	/* pre-clear errno for errp() */
+	ret = fputc('\n', stdout);
+	if (ret == EOF) {
+	    if (ferror(stdout)) {
+		errp(57, __FUNCTION__, "error writing newline to a stdout");
+		/*NOTREACHED*/
+	    } else if (feof(stdout)) {
+		errp(58, __FUNCTION__, "EOF while writing newline to a stdout");
+		/*NOTREACHED*/
+	    } else {
+		errp(59, __FUNCTION__, "unexpected fputc error newline a stdout");
+		/*NOTREACHED*/
+	    }
+	}
+	++line_cnt;	/* count this line as printed */
+
+	/*
+	 * move to next line string
+	 */
+	line = va_arg(ap, char *);
+    }
+
+    /*
+     * stdarg cleanup
+     */
+    va_end(ap);
+
+    /*
+     * flush the paragraph onto the stdout
+     */
+    clearerr(stdout);	/* pre-clear ferror() status */
+    errno = 0;	/* pre-clear errno for errp() */
+    ret = fflush(stdout);
+    if (ret == EOF) {
+	if (ferror(stdout)) {
+	    errp(60, __FUNCTION__, "error flushing stdout");
+	    /*NOTREACHED*/
+	} else if (feof(stdout)) {
+	    errp(61, __FUNCTION__, "EOF while flushing stdout");
+	    /*NOTREACHED*/
+	} else {
+	    errp(62, __FUNCTION__, "unexpected fflush error while flushing stdout");
+	    /*NOTREACHED*/
+	}
+    }
+    dbg(DBG_VVHIGH, "%s() printed %d line paragraph", __FUNCTION__, line_cnt);
     return;
 }
 
@@ -1811,34 +1965,31 @@ sanity_chk(char const *work_dir, char const *iocccsize, char const *tar)
  * fpara - print a paragraph of lines to an open stream
  *
  * Print a collection of strings with newlines added after each string.
- * This function is intended to be invoked via the PARA() macro
- * in order to pass as the 1st argument, the number of strings passed.
+ * The final string pointer must be a NULL.
  *
  * Example:
- *	FPARA(stderr, "line 1", "line 2", "", "prev line 3 was an empty line");
- *	PARA("line 1", "line 2", "", "prev line 3 was an empty line");
- *
- * The PARA(...) macro is the same as FPARA(stdout, ...).
+ *	fpara(stderr, "line 1", "line 2", "", "prev line 3 was an empty line", NULL);
  *
  * given:
  *	stream	open file stream to print a paragraph onto
- *	nargd	number of lines in the paragraph
- *	...	strings as paragaph lines without trailing newlines
+ *	line	1st paragraph line to print
+ *	...	strings as paragraph lines to print
+ *	NULL	end of string list
  *
  * This function does not return on error.
  */
 static void
-fpara(FILE *stream, int nargs, ...)
+fpara(FILE *stream, char *line, ...)
 {
-    va_list ap;	/* stdarg block */
-    int ret;	/* libc function return value */
-    int fd;	/* stream as a file descriptor or -1 */
-    int i;
+    va_list ap;		/* stdarg block */
+    int ret;		/* libc function return value */
+    int fd;		/* stream as a file descriptor or -1 */
+    int line_cnt;	/* number of lines in the paragraph */
 
     /*
      * stdarg setup
      */
-    va_start(ap, nargs);
+    va_start(ap, line);
 
     /*
      * stream sanity check
@@ -1858,32 +2009,17 @@ fpara(FILE *stream, int nargs, ...)
     clearerr(stream);	/* paranoia */
 
     /*
-     * paragraph count sanity check
-     */
-    dbg(DBG_VVHIGH, "request to print a %d line paragraph", nargs);
-    if (nargs < 0) {
-	err(52, __FUNCTION__, "para called with a negative number of lines: %d < 0", nargs);
-	/*NOTREACHED*/
-    } else if (nargs == 0) {
-	/* nothing to do */
-	va_end(ap);
-	return;
-    } else if (nargs > MAX_SANE_PARA_LINES) {
-	err(53, __FUNCTION__, "para called with an absurd number of lines: %d < %d", nargs, MAX_SANE_PARA_LINES);
-	/*NOTREACHED*/
-    }
-
-    /*
      * print paragraph strings followed by newlines
      */
-    for (i=0; i < nargs; ++i) {
+    line_cnt = 0;
+    while (line != NULL) {
 
 	/*
 	 * print the string
 	 */
 	clearerr(stream);	/* pre-clear ferror() status */
 	errno = 0;	/* pre-clear errno for errp() */
-	ret = fputs(va_arg(ap, char *), stream);
+	ret = fputs(line, stream);
 	if (ret == EOF) {
 	    if (ferror(stream)) {
 		errp(54, __FUNCTION__, "error writing paragraph to a stream");
@@ -1915,6 +2051,12 @@ fpara(FILE *stream, int nargs, ...)
 		/*NOTREACHED*/
 	    }
 	}
+	++line_cnt;	/* count this line as printed */
+
+	/*
+	 * move to next line string
+	 */
+	line = va_arg(ap, char *);
     }
 
     /*
@@ -1940,6 +2082,7 @@ fpara(FILE *stream, int nargs, ...)
 	    /*NOTREACHED*/
 	}
     }
+    dbg(DBG_VVHIGH, "%s() printed %d line paragraph", __FUNCTION__, line_cnt);
     return;
 }
 
@@ -1952,9 +2095,8 @@ fpara(FILE *stream, int nargs, ...)
  *
  * given:
  *	str	- string to string followed by :<space>
- *	linep	- malloced line buffer (may be realloced) or ptr to NULL
- *		  NULL ==> getline() will malloc() the linep buffer
- *		  else ==> getline() might realloc() the linep buffer
+ *	lenp	- pointer to where to put the length of the response,
+ *		  NULL ==> do not save length
  *
  *
  * returns:
@@ -1965,8 +2107,9 @@ fpara(FILE *stream, int nargs, ...)
  * This function does not return on error.
  */
 static char *
-prompt(char *str, char **linep)
+prompt(char *str, size_t *lenp)
 {
+    char *linep = NULL;	/* readline_dup line buffer */
     int ret;		/* libc function return value */
     size_t len;		/* length of input */
     char *buf;		/* malloced input string */
@@ -1976,10 +2119,6 @@ prompt(char *str, char **linep)
      */
     if (str == NULL) {
 	err(63, __FUNCTION__, "str is NULL");
-	/*NOTREACHED*/
-    }
-    if (linep == NULL) {
-	err(64, __FUNCTION__, "linep is NULL");
 	/*NOTREACHED*/
     }
 
@@ -2035,12 +2174,27 @@ prompt(char *str, char **linep)
     /*
      * read user input - return input length
      */
-    buf = readline_dup(linep, true, &len, stdin);
+    buf = readline_dup(&linep, true, &len, stdin);
     if (buf == NULL) {
 	errp(74, __FUNCTION__, "readline_dup returned NULL");
 	/*NOTREACHED*/
     }
     dbg(DBG_VHIGH, "received a %d byte response", len);
+
+    /*
+     * save length if requested
+     */
+    if (lenp != NULL) {
+	*lenp = len;
+    }
+
+    /*
+     * free storage
+     */
+    if (linep != NULL) {
+	free(linep);
+	linep = NULL;
+    }
 
     /*
      * return malloced input buffer
@@ -2069,13 +2223,12 @@ prompt(char *str, char **linep)
 static char *
 get_contest_id(bool *testp)
 {
-    char *linep = NULL;		/* allocated line read from iocccsize */
     char *malloc_ret;		/* mallocted return string */
     size_t len;			/* input string length */
     int ret;			/* libc fuction return */
-    int a, b, c, d, e, f;	/* parts of the UUID string */
-    int version = 0;		/* UUID version hex character */
-    int variant = 0;		/* UUID variant hex character */
+    unsigned int a,b,c,d,e,f;	/* parts of the UUID string */
+    unsigned int version = 0;	/* UUID version hex character */
+    unsigned int variant = 0;	/* UUID variant hex character */
     int i;
 
     /*
@@ -2089,7 +2242,7 @@ get_contest_id(bool *testp)
     /*
      * explain contest ID
      */
-    PARA("To submit entries to the IOCCC, you must a registered contestant and have received a",
+    para("To submit entries to the IOCCC, you must a registered contestant and have received a",
 	 "IOCCC contest ID (via email) shortly after you have been successfully registered.",
 	 "If the IOCCC os open, you may register as a contestant. See:",
 	 "",
@@ -2101,7 +2254,8 @@ get_contest_id(bool *testp)
 	 "    test",
 	 "",
 	 "Note you will not be able to submit the resulting compressed tarball when using test.",
-	 "");
+	 "",
+	 NULL);
 
 
     /*
@@ -2112,15 +2266,21 @@ get_contest_id(bool *testp)
 	/*
 	 * prompt for the contest ID
 	 */
-	malloc_ret = prompt("Enter IOCCC contest ID or test", &linep);
+	malloc_ret = prompt("Enter IOCCC contest ID or test", &len);
 	dbg(DBG_HIGH, "the IOCCC contest ID as entered is: %s", malloc_ret);
+	ret = 0; /* initialise paranoia */
 
 	/*
 	 * case: IOCCC contest ID is test, quick return
 	 */
 	if (strcmp(malloc_ret, "test") == 0) {
-	    PARA("",
-		 "IOCCC contst ID is test, entering test mode.");
+
+	    /*
+	     * report test mode
+	     */
+	    para("",
+		 "IOCCC contst ID is test, entering test mode.",
+		 NULL);
 	    *testp = true;
 	    return malloc_ret;
 	}
@@ -2134,11 +2294,23 @@ get_contest_id(bool *testp)
 	 *
 	 * where 'x' is a hex character.  The 4 is the UUID version and a the variant 1.
 	 */
-	len = strlen(malloc_ret);
 	if (len != UUID_LEN) {
-	    (void) fprintf(stderr, "\nIOCCC contest ID are %d characters in length, you entered %zu\n\n", UUID_LEN, len);
-	    free(malloc_ret);
-	    malloc_ret = NULL;
+
+	    /*
+	     * reject improper input length
+	     */
+	    (void) fprintf(stderr, "\nIOCCC contest ID are %d characters in length, you entered %ld\n\n", UUID_LEN, len);
+	    (void) fprintf(stderr, "IOCCC contest IDs are in the form:\n\n");
+	    (void) fprintf(stderr, "    xxxxxxxx-xxxx-4xxx-axxx-xxxxxxxxxxxx\n\n");
+	    (void) fprintf(stderr, "where 'x' is a hex character, 4 is the UUID version and a the variant 1.\n\n");
+
+	    /*
+	     * free storage
+	     */
+	    if (malloc_ret != NULL) {
+		free(malloc_ret);
+		malloc_ret = NULL;
+	    }
 	    continue;
 	}
 	/* convert to lower case */
@@ -2150,7 +2322,7 @@ get_contest_id(bool *testp)
 	dbg(DBG_HIGH, "UUID version hex char: %1x", version);
 	dbg(DBG_HIGH, "UUID variant hex char: %1x", variant);
 	if (ret != 8) {
-	    FPARA(stderr,
+	    fpara(stderr,
 		  "",
 		  "IOCCC contest IDs are version 4, variant 1 UUID as defined by RFC4122:",
 		  "",
@@ -2158,7 +2330,8 @@ get_contest_id(bool *testp)
 		  "",
 		  "Your IOCCC contest ID is not a valid UUID.  Please check your the email you received",
 		  "when you registered as an IOCCC contestant for the correct IOCCC contest ID.",
-		  "");
+		  "",
+		  NULL);
 	}
     } while (ret != 8);
     dbg(DBG_MED, "IOCCC contest ID is a UUID: %s", malloc_ret);
@@ -2166,18 +2339,11 @@ get_contest_id(bool *testp)
     /*
      * report contest ID format is valid
      */
-    PARA("",
+    para("",
 	 "The format of the non-test IOCCC contest ID appears to be valid.",
-	 "");
+	 "",
+	 NULL);
     *testp = false;	/* IOCCC contest ID is not test */
-
-    /*
-     * free storage
-     */
-    if (linep != NULL) {
-	free(linep);
-	linep = NULL;
-    }
 
     /*
      * return IOCCC contest ID
@@ -2196,7 +2362,6 @@ static int
 get_entry_num(void)
 {
     int entry_num;		/* entry number */
-    char *linep = NULL;		/* line prompt buffer */
     char *entry_str;		/* entry number string */
     int ret;			/* libc fuction return */
 
@@ -2214,16 +2379,17 @@ get_entry_num(void)
 	    errp(76, __FUNCTION__, "printf error printing number of entries allowed");
 	    /*NOTREACHED*/
 	}
-	PARA("",
+	para("",
 	     "As in C, Entry numbers start with 0.  If you are updated a previous entry, PLEASE",
 	     "use the same entry number that you previosly uploaded so we know which entry we",
 	     "should replace. If this is your 1st entry to this given IOCCC, enter 0.",
-	     "");
+	     "",
+	     NULL);
 
 	/*
 	 * ask for the entry number
 	 */
-	entry_str = prompt("Enter the entry number", &linep);
+	entry_str = prompt("Enter the entry number", NULL);
 
 	/*
 	 * check the entry number
@@ -2236,18 +2402,12 @@ get_entry_num(void)
 	/*
 	 * free storage
 	 */
-	free(entry_str);
-	entry_str = NULL;
+	if (entry_str != NULL) {
+	    free(entry_str);
+	    entry_str = NULL;
+	}
 
     } while (entry_num < 0 || entry_num > MAX_ENTRY_NUM);
-
-    /*
-     * free storage
-     */
-    if (linep != NULL) {
-	free(linep);
-	linep = NULL;
-    }
 
     /*
      * return the entry number
@@ -2315,10 +2475,11 @@ mk_entry_dir(char *work_dir, char *ioccc_id, int entry_num)
      */
     if (exists(entry_dir)) {
 	(void) fprintf(stderr, "\nentry directory already exists: %s\n", entry_dir);
-	FPARA(stderr,
+	fpara(stderr,
 	      "",
 	      "You need to move that directory, or remove it, or use a different work_dir.",
-	      "");
+	      "",
+	      NULL);
 	err(81, __FUNCTION__, "entry directory exists: %s", entry_dir);
 	/*NOTREACHED*/
     }
@@ -2396,7 +2557,6 @@ static bool
 yes_or_no(char *question)
 {
     char *response;	/* response to the question */
-    char *linep = NULL;		/* line prompt buffer */
     char *p;
 
     /*
@@ -2411,7 +2571,7 @@ yes_or_no(char *question)
      * ask the question and obtain the response
      */
     do{
-	response = prompt(question, &linep);
+	response = prompt(question, NULL);
 
 	/*
 	 * convert response to lower case
@@ -2430,12 +2590,10 @@ yes_or_no(char *question)
 	    /*
 	     * free storage
 	     */
-	    if (linep != NULL) {
-		free(linep);
-		linep = NULL;
+	    if (response != NULL) {
+		free(response);
+		response = NULL;
 	    }
-	    free(response);
-	    response = NULL;
 
 	    /*
 	     * return yes
@@ -2447,12 +2605,10 @@ yes_or_no(char *question)
 	    /*
 	     * free storage
 	     */
-	    if (linep != NULL) {
-		free(linep);
-		linep = NULL;
+	    if (response != NULL) {
+		free(response);
+		response = NULL;
 	    }
-	    free(response);
-	    response = NULL;
 
 	    /*
 	     * return no
@@ -2463,9 +2619,15 @@ yes_or_no(char *question)
 	/*
 	 * reject response and ask again
 	 */
-	free(response);
-	response = NULL;
 	(void) fprintf(stderr, "Please enter either y (yes) or n (no)\n");
+
+	/*
+	 * free storage
+	 */
+	if (response != NULL) {
+	    free(response);
+	    response = NULL;
+	}
 
     } while (response == NULL);
     /*NOTREACHED*/
@@ -2473,12 +2635,10 @@ yes_or_no(char *question)
     /*
      * free storage
      */
-    if (linep != NULL) {
-	free(linep);
-	linep = NULL;
+    if (response != NULL) {
+	free(response);
+	response = NULL;
     }
-    free(response);
-    response = NULL;
 
     /*
      * should not get here - but assume no if we do
@@ -2505,10 +2665,10 @@ get_author_info(char *ioccc_id, int entry_num, struct author **author_set_p)
 {
     struct author *author_set = NULL;	/* allocated author set */
     int author_count = -1;		/* number of authors or -1 */
-    char *linep = NULL;			/* line prompt buffer */
     char *author_count_str = NULL;	/* author cound string */
     char *location_name = NULL;		/* location name of a given location/country code */
     bool yorn = false;			/* response to a question */
+    size_t len;				/* length of reply */
     int ret;				/* libc fuction return */
     int i;
 
@@ -2528,7 +2688,7 @@ get_author_info(char *ioccc_id, int entry_num, struct author **author_set_p)
         /*
 	 * ask for author count
 	 */
-	author_count_str = prompt("\nEnter the number of authors of this entry", &linep);
+	author_count_str = prompt("\nEnter the number of authors of this entry", NULL);
 
 	/*
 	 * convert author_count_str to number
@@ -2543,8 +2703,10 @@ get_author_info(char *ioccc_id, int entry_num, struct author **author_set_p)
 	/*
 	 * free storage
 	 */
-	free(author_count_str);
-	author_count_str = NULL;
+	if (author_count_str != NULL) {
+	    free(author_count_str);
+	    author_count_str = NULL;
+	}
 
     } while (author_count < 1 || author_count > MAX_AUTHORS);
     dbg(DBG_HIGH, "will request information on %d authors", author_count);
@@ -2558,18 +2720,21 @@ get_author_info(char *ioccc_id, int entry_num, struct author **author_set_p)
 	errp(86, __FUNCTION__, "unable to malloc a struct author array of length: %d", author_count);
 	/*NOTREACHED*/
     }
+    /* pre-zeroize the author array */
+    memset(author_set, 0, sizeof(struct author) * author_count);
 
     /*
      * collect information on authors
      */
-    PARA("",
+    para("",
 	 "We will now ask for information about the author(s) of this entry.",
 	 "A name is required. If an author wishes to be anonymous, use a psuedo-name.",
 	 "",
 	 "The location/country code must be a 2 character ISO 3166-1 Alpha-2 code.",
 	 "See the following URL for a table of location/county codes, or from",
 	 "these Wikipedia and ISO web pages:",
-	 "");
+	 "",
+	 NULL);
     ret = puts(ISO_3166_1_CODE_URL0);
     if (ret < 0) {
 	errp(87, __FUNCTION__, "puts error printing ISO 3166-1 URL");
@@ -2590,12 +2755,13 @@ get_author_info(char *ioccc_id, int entry_num, struct author **author_set_p)
 	errp(90, __FUNCTION__, "puts error printing ISO 3166-1 URL2");
 	/*NOTREACHED*/
     }
-    PARA("",
+    para("",
 	 "For the other information such as Email, twitter handle, and GitHub username,",
 	 "you may enter that information or just press return if not applicable of if you",
 	 "do not wish to provide that information.  Information that you supply, if your",
 	 "entry is selected as a winner, will be published along with your entry."
-	 "");
+	 "",
+	 NULL);
     for (i=0; i < author_count; ++i) {
 
 	/*
@@ -2613,19 +2779,36 @@ get_author_info(char *ioccc_id, int entry_num, struct author **author_set_p)
 	 */
 	do {
 	    author_set[i].name = NULL;
-	    author_set[i].name = prompt("Enter author name", &linep);
-	    if (strlen(author_set[i].name) == 0) {
+	    author_set[i].name = prompt("Enter author name", &len);
+	    if (len <= 0) {
 
 		/*
-		 * reject emoty author name
+		 * reject empty author name
 		 */
-		(void) fprintf(stderr, "The author name cannot be empty, try again\n");
+		(void) fprintf(stderr, "\nThe author name cannot be empty, try again\n\n");
 
 		/*
 		 * free storage
 		 */
-		free(author_set[i].name);
-		author_set[i].name = NULL;
+		if (author_set[i].name != NULL) {
+		    free(author_set[i].name);
+		    author_set[i].name = NULL;
+		}
+
+	    } else if (len > MAX_NAME_LEN) {
+
+		/*
+		 * reject if name is too long
+		 */
+		(void) fprintf(stderr, "\nSorry (tm Canada), we limit named to at most %d characters\n\n", MAX_NAME_LEN);
+
+		/*
+		 * free storage
+		 */
+		if (author_set[i].name != NULL) {
+		    free(author_set[i].name);
+		    author_set[i].name = NULL;
+		}
 	    }
 	} while (author_set[i].name == NULL);
 
@@ -2637,17 +2820,15 @@ get_author_info(char *ioccc_id, int entry_num, struct author **author_set_p)
 	     * request code
 	     */
 	    author_set[i].location_code = NULL;
-	    author_set[i].location_code = prompt("Enter the 2 character location/country code for this author", &linep);
+	    author_set[i].location_code = prompt("Enter the 2 character location/country code for this author", &len);
 	    dbg(DBG_VHIGH, "location/country code as entered: %s", author_set[i].location_code);
 
 	    /*
 	     * inspect code input
 	     */
-	    if (strlen(author_set[i].location_code) != 2 ||
-	        ! isascii(author_set[i].location_code[0]) ||
-	        ! isalpha(author_set[i].location_code[0]) ||
-	        ! isascii(author_set[i].location_code[1]) ||
-	        ! isalpha(author_set[i].location_code[1])) {
+	    if (len != 2 ||
+	        ! isascii(author_set[i].location_code[0]) || ! isalpha(author_set[i].location_code[0]) ||
+	        ! isascii(author_set[i].location_code[1]) || ! isalpha(author_set[i].location_code[1])) {
 
 		/*
 		 * provide more help on location/country codes
@@ -2663,8 +2844,10 @@ get_author_info(char *ioccc_id, int entry_num, struct author **author_set_p)
 		/*
 		 * free storage
 		 */
-		free(author_set[i].location_code);
-		author_set[i].location_code = NULL;
+		if (author_set[i].location_code != NULL) {
+		    free(author_set[i].location_code);
+		    author_set[i].location_code = NULL;
+		}
 
 		/*
 		 * discard this invalid location/country code input
@@ -2701,8 +2884,10 @@ get_author_info(char *ioccc_id, int entry_num, struct author **author_set_p)
 		    /*
 		     * free storage
 		     */
-		    free(author_set[i].location_code);
-		    author_set[i].location_code = NULL;
+		    if (author_set[i].location_code != NULL) {
+			free(author_set[i].location_code);
+			author_set[i].location_code = NULL;
+		    }
 
 		    /*
 		     * discard this invalid location/country code input
@@ -2717,6 +2902,16 @@ get_author_info(char *ioccc_id, int entry_num, struct author **author_set_p)
 		 */
 		ret = printf("The location/country code you entered is assigned to: %s\n", location_name);
 		yorn = yes_or_no("Is that location/country code correct? [yn]");
+
+		/*
+		 * free storage if no (reenter location/country code)
+		 */
+		if (yorn == false) {
+		    if (author_set[i].location_code != NULL) {
+			free(author_set[i].location_code);
+			author_set[i].location_code = NULL;
+		    }
+		}
 	    }
 	} while (author_set[i].location_code == NULL || location_name == NULL || yorn == false);
 	dbg(DBG_HIGH, "author location/country: %s (%s)", author_set[i].location_code, location_name);
@@ -2730,15 +2925,64 @@ get_author_info(char *ioccc_id, int entry_num, struct author **author_set_p)
     *author_set_p = author_set;
 
     /*
-     * free storage
-     */
-    if (linep != NULL) {
-	free(linep);
-	linep = NULL;
-    }
-
-    /*
      * return the author count
      */
     return author_count;
+}
+
+
+/*
+ * free_author_array - free storage related to a struct author
+ *
+ * given:
+ * 	authorp		- pointer to a struct author array
+ * 	author_count	- length of author array
+ */
+static void
+free_author_array(struct author *authorp, int author_count)
+{
+    int i;
+
+    /*
+     * firewall
+     */
+    if (authorp == NULL) {
+	err(92, __FUNCTION__, "authorp is NULL");
+	/*NOTREACHED*/
+    }
+    if (author_count < 0) {
+	err(93, __FUNCTION__, "author_count: %d < 0", author_count);
+	/*NOTREACHED*/
+    }
+
+    /*
+     * free elements of each array member
+     */
+    for (i=0; i < author_count; ++i) {
+	if (authorp[i].name != NULL) {
+	    free(authorp[i].name);
+	    authorp[i].name = NULL;
+	}
+	if (authorp[i].location_code != NULL) {
+	    free(authorp[i].location_code);
+	    authorp[i].location_code = NULL;
+	}
+	if (authorp[i].home_url != NULL) {
+	    free(authorp[i].home_url);
+	    authorp[i].home_url = NULL;
+	}
+	if (authorp[i].twitter != NULL) {
+	    free(authorp[i].twitter);
+	    authorp[i].twitter = NULL;
+	}
+	if (authorp[i].github_user != NULL) {
+	    free(authorp[i].github_user);
+	    authorp[i].github_user = NULL;
+	}
+	if (authorp[i].affiliation != NULL) {
+	    free(authorp[i].affiliation);
+	    authorp[i].affiliation = NULL;
+	}
+    }
+    return;
 }
