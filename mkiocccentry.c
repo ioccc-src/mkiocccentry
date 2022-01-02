@@ -54,7 +54,7 @@
 /*
  * definitions
  */
-#define VERSION "0.5 2022-01-01"	/* use format: major.minor YYYY-MM-DD */
+#define VERSION "0.6 2022-01-01"	/* use format: major.minor YYYY-MM-DD */
 #define REQUIRED_IOCCCSIZE_MAJVER (28)	/* iocccsize major version must match */
 #define MIN_IOCCCSIZE_MINVER (2)	/* iocccsize minor version must be >= */
 #define DBG_NONE (0)		/* no debugging */
@@ -70,7 +70,12 @@
 #define MAX_ENTRY_NUM (9)	/* entry numbers from 0 to MAX_ENTRY_NUM allowed */
 #define MAX_ENTRY_CHARS (1)	/* characters that represent the maximum entry number */
 #define MAX_AUTHORS (5)		/* maximum number of authors of an entry */
-#define MAX_NAME_LEN (70)	/* max author name length */
+#define MAX_NAME_LEN (64)	/* max author name length */
+#define MAX_EMAIL_LEN (64)	/* max Email address length */
+#define MAX_URL_LEN (64)	/* max home URL, including http:// or https:// */
+#define MAX_TWITTER_LEN (18+1)	/* max twitter handle, including the leading @, length */
+#define MAX_GITHUB_LEN (15+1)	/* max GitHub account, including the leading @, length */
+#define MAX_AFFILIATION_LEN (64)/* max affiliation name length */
 #define ISO_3166_1_CODE_URL0 "    https://en.wikipedia.org/wiki/ISO_3166-1#Officially_assigned_code_elements"
 #define ISO_3166_1_CODE_URL1 "    https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2"
 #define ISO_3166_1_CODE_URL2 "    https://www.iso.org/obp/ui/#iso:pub:PUB500001:en"
@@ -126,8 +131,9 @@ static char const *usage_msg2 =
  */
 struct author {
     char *name;			/* name of the author */
-    char *location_code;		/* author country code */
-    char *home_url;		/* home URL of author or empty string */
+    char *location_code;	/* author country code */
+    char *email;		/* Email address of author or empty string */
+    char *url;			/* home URL of author or empty string */
     char *twitter;		/* author twitter handle or empty string */
     char *github_user;		/* author GitHub username or empty string */
     char *affiliation;		/* author affiliation or empty string */
@@ -553,6 +559,7 @@ static void dbg(int level, char const *fmt, ...);
 static void warn(char const *name, char const *fmt, ...);
 static void err(int exitcode, char const *name, char const *fmt, ...);
 static void errp(int exitcode, char const *name, char const *fmt, ...);
+static void free_author_array(struct author *authorp, int author_count);
 static bool exists(char const *path);
 static bool is_file(char const *path);
 static bool is_exec(char const *path);
@@ -570,7 +577,6 @@ static char *mk_entry_dir(char *work_dir, char *ioccc_id, int entry_num);
 static char *lookup_location_name(char *upper_code);
 static bool yes_or_no(char *question);
 static int get_author_info(char *ioccc_id, int entry_num, struct author **author_set);
-static void free_author_array(struct author *authorp, int author_count);
 
 
 int
@@ -1031,6 +1037,67 @@ errp(int exitcode, char const *name, char const *fmt, ...)
 
 
 /*
+ * free_author_array - free storage related to a struct author
+ *
+ * given:
+ * 	author_set		- pointer to a struct author array
+ * 	author_count	- length of author array
+ */
+static void
+free_author_array(struct author *author_set, int author_count)
+{
+    int i;
+
+    /*
+     * firewall
+     */
+    if (author_set == NULL) {
+	err(5, __FUNCTION__, "author_set is NULL");
+	/*NOTREACHED*/
+    }
+    if (author_count < 0) {
+	err(6, __FUNCTION__, "author_count: %d < 0", author_count);
+	/*NOTREACHED*/
+    }
+
+    /*
+     * free elements of each array member
+     */
+    for (i=0; i < author_count; ++i) {
+	if (author_set[i].name != NULL) {
+	    free(author_set[i].name);
+	    author_set[i].name = NULL;
+	}
+	if (author_set[i].location_code != NULL) {
+	    free(author_set[i].location_code);
+	    author_set[i].location_code = NULL;
+	}
+	if (author_set[i].email != NULL) {
+	    free(author_set[i].email);
+	    author_set[i].email = NULL;
+	}
+	if (author_set[i].url != NULL) {
+	    free(author_set[i].url);
+	    author_set[i].url = NULL;
+	}
+	if (author_set[i].twitter != NULL) {
+	    free(author_set[i].twitter);
+	    author_set[i].twitter = NULL;
+	}
+	if (author_set[i].github_user != NULL) {
+	    free(author_set[i].github_user);
+	    author_set[i].github_user = NULL;
+	}
+	if (author_set[i].affiliation != NULL) {
+	    free(author_set[i].affiliation);
+	    author_set[i].affiliation = NULL;
+	}
+    }
+    return;
+}
+
+
+/*
  * exists - if a path exists
  *
  * This function tests if a path exists.
@@ -1053,7 +1120,7 @@ exists(char const *path)
      * firewall
      */
     if (path == NULL) {
-	err(5, __FUNCTION__, "exists called with NULL path");
+	err(7, __FUNCTION__, "exists called with NULL path");
 	/*NOTREACHED*/
     }
 
@@ -1093,7 +1160,7 @@ is_file(char const *path)
      * firewall
      */
     if (path == NULL) {
-	err(6, __FUNCTION__, "exists called with NULL path");
+	err(8, __FUNCTION__, "exists called with NULL path");
 	/*NOTREACHED*/
     }
 
@@ -1143,7 +1210,7 @@ is_exec(char const *path)
      * firewall
      */
     if (path == NULL) {
-	err(7, __FUNCTION__, "exists called with NULL path");
+	err(9, __FUNCTION__, "exists called with NULL path");
 	/*NOTREACHED*/
     }
 
@@ -1193,7 +1260,7 @@ is_dir(char const *path)
      * firewall
      */
     if (path == NULL) {
-	err(8, __FUNCTION__, "exists called with NULL path");
+	err(10, __FUNCTION__, "exists called with NULL path");
 	/*NOTREACHED*/
     }
 
@@ -1243,7 +1310,7 @@ is_write(char const *path)
      * firewall
      */
     if (path == NULL) {
-	err(9, __FUNCTION__, "exists called with NULL path");
+	err(11, __FUNCTION__, "exists called with NULL path");
 	/*NOTREACHED*/
     }
 
@@ -1298,11 +1365,11 @@ readline(char **linep, FILE *stream)
      * firewall
      */
     if (linep == NULL) {
-	err(10, __FUNCTION__, "linep is NULL");
+	err(12, __FUNCTION__, "linep is NULL");
 	/*NOTREACHED*/
     }
     if (stream == NULL) {
-	err(11, __FUNCTION__, "stream is NULL");
+	err(13, __FUNCTION__, "stream is NULL");
 	/*NOTREACHED*/
     }
 
@@ -1314,16 +1381,16 @@ readline(char **linep, FILE *stream)
     ret = getline(linep, &linecap, stream);
     if (ret < 0) {
 	if (feof(stream)) {
-	    errp(12, __FUNCTION__, "EOF found while reading line");
+	    errp(14, __FUNCTION__, "EOF found while reading line");
 	    /*NOTREACHED*/
 	} else {
-	    errp(13, __FUNCTION__, "getline() error");
+	    errp(15, __FUNCTION__, "getline() error");
 	    /*NOTREACHED*/
 	}
     }
     /* paranoia */
     if (*linep == NULL) {
-	err(14, __FUNCTION__, "*linep is NULL after getline()");
+	err(16, __FUNCTION__, "*linep is NULL after getline()");
 	/*NOTREACHED*/
     }
 
@@ -1335,7 +1402,7 @@ readline(char **linep, FILE *stream)
     errno = 0;	/* pre-clear errno for errp() */
     p = memchr(*linep, 0, ret);
     if (p != NULL) {
-	errp(15, __FUNCTION__, "found NUL before end of line");
+	errp(17, __FUNCTION__, "found NUL before end of line");
 	/*NOTREACHED*/
     }
 
@@ -1343,7 +1410,7 @@ readline(char **linep, FILE *stream)
      * process trailing newline or lack there of
      */
     if ((*linep)[ret-1] != '\n') {
-	err(16, __FUNCTION__, "line does not end in newline");
+	err(18, __FUNCTION__, "line does not end in newline");
 	/*NOTREACHED*/
     }
     (*linep)[ret-1] = '\0';	/* clear newline */
@@ -1389,11 +1456,11 @@ readline_dup(char **linep, bool strip, size_t *lenp, FILE *stream)
      * firewall
      */
     if (linep == NULL) {
-	err(17, __FUNCTION__, "linep is NULL");
+	err(19, __FUNCTION__, "linep is NULL");
 	/*NOTREACHED*/
     }
     if (stream == NULL) {
-	err(18, __FUNCTION__, "stream is NULL");
+	err(20, __FUNCTION__, "stream is NULL");
 	/*NOTREACHED*/
     }
 
@@ -1409,7 +1476,7 @@ readline_dup(char **linep, bool strip, size_t *lenp, FILE *stream)
     errno = 0;	/* pre-clear errno for errp() */
     ret = strdup(*linep);
     if (ret == NULL) {
-	err(19, __FUNCTION__, "strdup of read line of %d bytes failed", ret);
+	err(21, __FUNCTION__, "strdup of read line of %d bytes failed", ret);
 	/*NOTREACHED*/
     }
 
@@ -1471,7 +1538,7 @@ sanity_chk(char const *work_dir, char const *iocccsize, char const *tar)
      * firewall
      */
     if (work_dir == NULL || iocccsize == NULL || tar == NULL) {
-	err(20, __FUNCTION__, "called with NULL arg");
+	err(22, __FUNCTION__, "called with NULL arg");
 	/*NOTREACHED*/
     }
 
@@ -1493,7 +1560,7 @@ sanity_chk(char const *work_dir, char const *iocccsize, char const *tar)
 	      "    https://www.gnu.org/software/tar/",
 	      "",
 	      NULL);
-	err(21, __FUNCTION__, "tar does not exist: %s", tar);
+	err(23, __FUNCTION__, "tar does not exist: %s", tar);
 	/*NOTREACHED*/
     }
     if (! is_file(tar)) {
@@ -1510,7 +1577,7 @@ sanity_chk(char const *work_dir, char const *iocccsize, char const *tar)
 	      "    https://www.gnu.org/software/tar/",
 	      "",
 	      NULL);
-	err(22, __FUNCTION__, "tar is not a file: %s", tar);
+	err(24, __FUNCTION__, "tar is not a file: %s", tar);
 	/*NOTREACHED*/
     }
     if (! is_exec(tar)) {
@@ -1527,7 +1594,7 @@ sanity_chk(char const *work_dir, char const *iocccsize, char const *tar)
 	      "    https://www.gnu.org/software/tar/",
 	      "",
 	      NULL);
-	err(23, __FUNCTION__, "tar is not executable program: %s", tar);
+	err(25, __FUNCTION__, "tar is not executable program: %s", tar);
 	/*NOTREACHED*/
     }
 
@@ -1549,7 +1616,7 @@ sanity_chk(char const *work_dir, char const *iocccsize, char const *tar)
 	      "    https://www.gnu.org/software/coreutils/",
 	      "",
 	      NULL);
-	err(24, __FUNCTION__, "cp does not exist: %s", cp);
+	err(26, __FUNCTION__, "cp does not exist: %s", cp);
 	/*NOTREACHED*/
     }
     if (! is_file(cp)) {
@@ -1566,7 +1633,7 @@ sanity_chk(char const *work_dir, char const *iocccsize, char const *tar)
 	      "    https://www.gnu.org/software/cp/",
 	      "",
 	      NULL);
-	err(25, __FUNCTION__, "cp is not a file: %s", cp);
+	err(27, __FUNCTION__, "cp is not a file: %s", cp);
 	/*NOTREACHED*/
     }
     if (! is_exec(cp)) {
@@ -1583,7 +1650,7 @@ sanity_chk(char const *work_dir, char const *iocccsize, char const *tar)
 	      "    https://www.gnu.org/software/cp/",
 	      "",
 	      NULL);
-	err(26, __FUNCTION__, "cp is not executable program: %s", cp);
+	err(28, __FUNCTION__, "cp is not executable program: %s", cp);
 	/*NOTREACHED*/
     }
 
@@ -1605,7 +1672,7 @@ sanity_chk(char const *work_dir, char const *iocccsize, char const *tar)
 	      "    https://www.gnu.org/software/coreutils/",
 	      "",
 	      NULL);
-	err(27, __FUNCTION__, "ls does not exist: %s", ls);
+	err(29, __FUNCTION__, "ls does not exist: %s", ls);
 	/*NOTREACHED*/
     }
     if (! is_file(ls)) {
@@ -1622,7 +1689,7 @@ sanity_chk(char const *work_dir, char const *iocccsize, char const *tar)
 	      "    https://www.gnu.org/software/ls/",
 	      "",
 	      NULL);
-	err(28, __FUNCTION__, "ls is not a file: %s", ls);
+	err(30, __FUNCTION__, "ls is not a file: %s", ls);
 	/*NOTREACHED*/
     }
     if (! is_exec(ls)) {
@@ -1639,7 +1706,7 @@ sanity_chk(char const *work_dir, char const *iocccsize, char const *tar)
 	      "    https://www.gnu.org/software/ls/",
 	      "",
 	      NULL);
-	err(29, __FUNCTION__, "ls is not executable program: %s", ls);
+	err(31, __FUNCTION__, "ls is not executable program: %s", ls);
 	/*NOTREACHED*/
     }
 
@@ -1654,7 +1721,7 @@ sanity_chk(char const *work_dir, char const *iocccsize, char const *tar)
 	      "Perhaps you need to supply a different path?",
 	      "",
 	      NULL);
-	err(30, __FUNCTION__, "iocccsize does not exist: %s", iocccsize);
+	err(32, __FUNCTION__, "iocccsize does not exist: %s", iocccsize);
 	/*NOTREACHED*/
     }
     if (! is_file(iocccsize)) {
@@ -1665,7 +1732,7 @@ sanity_chk(char const *work_dir, char const *iocccsize, char const *tar)
 	      "We suggest you check the permissions on the iocccsize.",
 	      "",
 	      NULL);
-	err(31, __FUNCTION__, "iocccsize is not a file: %s", iocccsize);
+	err(33, __FUNCTION__, "iocccsize is not a file: %s", iocccsize);
 	/*NOTREACHED*/
     }
     if (! is_exec(iocccsize)) {
@@ -1676,7 +1743,7 @@ sanity_chk(char const *work_dir, char const *iocccsize, char const *tar)
 	      "We suggest you check the permissions on the iocccsize.",
 	      "",
 	      NULL);
-	err(32, __FUNCTION__, "iocccsize is not executable program: %s", iocccsize);
+	err(34, __FUNCTION__, "iocccsize is not executable program: %s", iocccsize);
 	/*NOTREACHED*/
     }
 
@@ -1691,7 +1758,7 @@ sanity_chk(char const *work_dir, char const *iocccsize, char const *tar)
 	      "You should either create work_dir, or use a different work_dir directory path on the command line.",
 	      "",
 	      NULL);
-	err(33, __FUNCTION__, "work_dir does not exist: %s", work_dir);
+	err(35, __FUNCTION__, "work_dir does not exist: %s", work_dir);
 	/*NOTREACHED*/
     }
     if (! is_dir(work_dir)) {
@@ -1703,7 +1770,7 @@ sanity_chk(char const *work_dir, char const *iocccsize, char const *tar)
 	      "work_dir directory path on the command line.",
 	      "",
 	      NULL);
-	err(34, __FUNCTION__, "work_dir is not a directory: %s", work_dir);
+	err(36, __FUNCTION__, "work_dir is not a directory: %s", work_dir);
 	/*NOTREACHED*/
     }
     if (! is_write(work_dir)) {
@@ -1715,7 +1782,7 @@ sanity_chk(char const *work_dir, char const *iocccsize, char const *tar)
 	      "create a new writable directory, or use a different work_dir directory path on the command line.",
 	      "",
 	      NULL);
-	err(35, __FUNCTION__, "work_dir is not a writable directory: %s", work_dir);
+	err(37, __FUNCTION__, "work_dir is not a writable directory: %s", work_dir);
 	/*NOTREACHED*/
     }
 
@@ -1737,13 +1804,13 @@ sanity_chk(char const *work_dir, char const *iocccsize, char const *tar)
     errno = 0;	/* pre-clear errno for errp() */
     popen_cmd = malloc(popen_cmd_len + 1);
     if (popen_cmd == NULL) {
-	errp(36, __FUNCTION__, "malloc #0 failed");
+	errp(38, __FUNCTION__, "malloc #0 failed");
 	/*NOTREACHED*/
     }
     errno = 0;	/* pre-clear errno for errp() */
     ret = snprintf(popen_cmd, popen_cmd_len, "%s -V >/dev/null 2>&1", iocccsize);
     if (ret < 0) {
-	errp(37, __FUNCTION__, "snprintf error: %d", ret);
+	errp(39, __FUNCTION__, "snprintf error: %d", ret);
 	/*NOTREACHED*/
     }
     /* try running iocccsize -V to see if we can execute it */
@@ -1751,16 +1818,16 @@ sanity_chk(char const *work_dir, char const *iocccsize, char const *tar)
     errno = 0;	/* pre-clear errno for errp() */
     exit_code = system(popen_cmd);
     if (exit_code < 0) {
-	errp(38, __FUNCTION__, "error calling system(\"%s\")", popen_cmd);
+	errp(40, __FUNCTION__, "error calling system(\"%s\")", popen_cmd);
 	/*NOTREACHED*/
     } else if (exit_code == 127) {
-	errp(39, __FUNCTION__, "execution of the shell failed for system(\"%s\")", popen_cmd);
+	errp(41, __FUNCTION__, "execution of the shell failed for system(\"%s\")", popen_cmd);
 	/*NOTREACHED*/
     } else if (exit_code == 2) {
-	err(40, __FUNCTION__, "%s appears to be too old to support -V", iocccsize);
+	err(42, __FUNCTION__, "%s appears to be too old to support -V", iocccsize);
 	/*NOTREACHED*/
     } else if (exit_code != 0) {
-	err(41, __FUNCTION__, "%s failed with exit code: %d", popen_cmd, exit_code);
+	err(43, __FUNCTION__, "%s failed with exit code: %d", popen_cmd, exit_code);
 	/*NOTREACHED*/
     }
 
@@ -1770,7 +1837,7 @@ sanity_chk(char const *work_dir, char const *iocccsize, char const *tar)
     errno = 0;	/* pre-clear errno for errp() */
     ret = snprintf(popen_cmd, popen_cmd_len, "%s -V", iocccsize);
     if (ret < 0) {
-	errp(42, __FUNCTION__, "snprintf error: %d", ret);
+	errp(44, __FUNCTION__, "snprintf error: %d", ret);
 	/*NOTREACHED*/
     }
     /* pre-flush to avoid popen() buffered stdio issues */
@@ -1778,21 +1845,21 @@ sanity_chk(char const *work_dir, char const *iocccsize, char const *tar)
     errno = 0;	/* pre-clear errno for errp() */
     ret = fflush(stdout);
     if (ret < 0) {
-	errp(43, __FUNCTION__, "fflush(stdout); error code: %d", ret);
+	errp(45, __FUNCTION__, "fflush(stdout); error code: %d", ret);
 	/*NOTREACHED*/
     }
     clearerr(stderr);	/* pre-clear ferror() status */
     errno = 0;	/* pre-clear errno for errp() */
     ret = fflush(stderr);
     if (ret < 0) {
-	errp(44, __FUNCTION__, "fflush(stderr); error code: %d", ret);
+	errp(46, __FUNCTION__, "fflush(stderr); error code: %d", ret);
 	/*NOTREACHED*/
     }
     dbg(DBG_MED, "reading version string from %s -V", iocccsize);
     errno = 0;	/* pre-clear errno for errp() */
     iocccsize_stream = popen(popen_cmd, "r");
     if (iocccsize_stream == NULL) {
-	errp(45, __FUNCTION__, "popen for reading failed for: %s", popen_cmd);
+	errp(47, __FUNCTION__, "popen for reading failed for: %s", popen_cmd);
 	/*NOTREACHED*/
     }
     /* read the 1st line - should contain the iocccsize version */
@@ -1802,21 +1869,21 @@ sanity_chk(char const *work_dir, char const *iocccsize, char const *tar)
     (void) fclose(iocccsize_stream);
     ret = sscanf(linep, "%d.%d %d-%d-%d", &major_ver, &minor_ver, &year, &month, &day);
     if (ret != 5) {
-	err(46, __FUNCTION__, "iocccsize -V version string is mal-formed: %s", linep);
+	err(48, __FUNCTION__, "iocccsize -V version string is mal-formed: %s", linep);
 	/*NOTREACHED*/
     }
     dbg(DBG_MED, "iocccsize version: %d.%d", major_ver, minor_ver);
     dbg(DBG_HIGH, "iocccsize release year: %d month: %d day: %d", year, month, day);
     if (major_ver != REQUIRED_IOCCCSIZE_MAJVER) {
-	err(47, __FUNCTION__, "iocccsize major version: %d != required major version: %d", major_ver, REQUIRED_IOCCCSIZE_MAJVER);
+	err(49, __FUNCTION__, "iocccsize major version: %d != required major version: %d", major_ver, REQUIRED_IOCCCSIZE_MAJVER);
 	/*NOTREACHED*/
     }
     if (major_ver != REQUIRED_IOCCCSIZE_MAJVER) {
-	err(48, __FUNCTION__, "iocccsize major version: %d != required major version: %d", major_ver, REQUIRED_IOCCCSIZE_MAJVER);
+	err(50, __FUNCTION__, "iocccsize major version: %d != required major version: %d", major_ver, REQUIRED_IOCCCSIZE_MAJVER);
 	/*NOTREACHED*/
     }
     if (minor_ver < MIN_IOCCCSIZE_MINVER) {
-	err(49, __FUNCTION__, "iocccsize minor version: %d < minimum minor version: %d", minor_ver, MIN_IOCCCSIZE_MINVER);
+	err(51, __FUNCTION__, "iocccsize minor version: %d < minimum minor version: %d", minor_ver, MIN_IOCCCSIZE_MINVER);
 	/*NOTREACHED*/
     }
     dbg(DBG_LOW, "good iocccsize version: %s", linep);
@@ -1869,7 +1936,7 @@ para(char *line, ...)
      * stdout sanity check
      */
     if (stdout == NULL) {
-	err(50, __FUNCTION__, "stdout is NULL");
+	err(52, __FUNCTION__, "stdout is NULL");
 	/*NOTREACHED*/
     }
     clearerr(stdout);	/* pre-clear ferror() status */
@@ -1877,7 +1944,7 @@ para(char *line, ...)
     /* this may not always catch a bogus or un-opened stdout, but try anyway */
     fd = fileno(stdout);
     if (fd < 0) {
-	errp(51, __FUNCTION__, "fileno on stdout returned: %d < 0", fd);
+	errp(53, __FUNCTION__, "fileno on stdout returned: %d < 0", fd);
 	/*NOTREACHED*/
     }
     clearerr(stdout);	/* paranoia */
@@ -1896,13 +1963,13 @@ para(char *line, ...)
 	ret = fputs(line, stdout);
 	if (ret == EOF) {
 	    if (ferror(stdout)) {
-		errp(52, __FUNCTION__, "error writing paragraph to a stdout");
+		errp(54, __FUNCTION__, "error writing paragraph to a stdout");
 		/*NOTREACHED*/
 	    } else if (feof(stdout)) {
-		errp(53, __FUNCTION__, "EOF while writing paragraph to a stdout");
+		errp(55, __FUNCTION__, "EOF while writing paragraph to a stdout");
 		/*NOTREACHED*/
 	    } else {
-		errp(54, __FUNCTION__, "unexpected fputs error writing paragraph to a stdout");
+		errp(56, __FUNCTION__, "unexpected fputs error writing paragraph to a stdout");
 		/*NOTREACHED*/
 	    }
 	}
@@ -1915,13 +1982,13 @@ para(char *line, ...)
 	ret = fputc('\n', stdout);
 	if (ret == EOF) {
 	    if (ferror(stdout)) {
-		errp(55, __FUNCTION__, "error writing newline to a stdout");
+		errp(57, __FUNCTION__, "error writing newline to a stdout");
 		/*NOTREACHED*/
 	    } else if (feof(stdout)) {
-		errp(56, __FUNCTION__, "EOF while writing newline to a stdout");
+		errp(58, __FUNCTION__, "EOF while writing newline to a stdout");
 		/*NOTREACHED*/
 	    } else {
-		errp(57, __FUNCTION__, "unexpected fputc error newline a stdout");
+		errp(59, __FUNCTION__, "unexpected fputc error newline a stdout");
 		/*NOTREACHED*/
 	    }
 	}
@@ -1946,13 +2013,13 @@ para(char *line, ...)
     ret = fflush(stdout);
     if (ret == EOF) {
 	if (ferror(stdout)) {
-	    errp(58, __FUNCTION__, "error flushing stdout");
+	    errp(60, __FUNCTION__, "error flushing stdout");
 	    /*NOTREACHED*/
 	} else if (feof(stdout)) {
-	    errp(59, __FUNCTION__, "EOF while flushing stdout");
+	    errp(61, __FUNCTION__, "EOF while flushing stdout");
 	    /*NOTREACHED*/
 	} else {
-	    errp(60, __FUNCTION__, "unexpected fflush error while flushing stdout");
+	    errp(62, __FUNCTION__, "unexpected fflush error while flushing stdout");
 	    /*NOTREACHED*/
 	}
     }
@@ -1995,7 +2062,7 @@ fpara(FILE *stream, char *line, ...)
      * stream sanity check
      */
     if (stream == NULL) {
-	err(61, __FUNCTION__, "stream is NULL");
+	err(63, __FUNCTION__, "stream is NULL");
 	/*NOTREACHED*/
     }
     clearerr(stream);	/* pre-clear ferror() status */
@@ -2003,7 +2070,7 @@ fpara(FILE *stream, char *line, ...)
     /* this may not always catch a bogus or un-opened stream, but try anyway */
     fd = fileno(stream);
     if (fd < 0) {
-	errp(62, __FUNCTION__, "fileno on stream returned: %d < 0", fd);
+	errp(64, __FUNCTION__, "fileno on stream returned: %d < 0", fd);
 	/*NOTREACHED*/
     }
     clearerr(stream);	/* paranoia */
@@ -2022,13 +2089,13 @@ fpara(FILE *stream, char *line, ...)
 	ret = fputs(line, stream);
 	if (ret == EOF) {
 	    if (ferror(stream)) {
-		errp(63, __FUNCTION__, "error writing paragraph to a stream");
+		errp(65, __FUNCTION__, "error writing paragraph to a stream");
 		/*NOTREACHED*/
 	    } else if (feof(stream)) {
-		errp(64, __FUNCTION__, "EOF while writing paragraph to a stream");
+		errp(66, __FUNCTION__, "EOF while writing paragraph to a stream");
 		/*NOTREACHED*/
 	    } else {
-		errp(65, __FUNCTION__, "unexpected fputs error writing paragraph to a stream");
+		errp(67, __FUNCTION__, "unexpected fputs error writing paragraph to a stream");
 		/*NOTREACHED*/
 	    }
 	}
@@ -2041,13 +2108,13 @@ fpara(FILE *stream, char *line, ...)
 	ret = fputc('\n', stream);
 	if (ret == EOF) {
 	    if (ferror(stream)) {
-		errp(66, __FUNCTION__, "error writing newline to a stream");
+		errp(68, __FUNCTION__, "error writing newline to a stream");
 		/*NOTREACHED*/
 	    } else if (feof(stream)) {
-		errp(67, __FUNCTION__, "EOF while writing newline to a stream");
+		errp(69, __FUNCTION__, "EOF while writing newline to a stream");
 		/*NOTREACHED*/
 	    } else {
-		errp(68, __FUNCTION__, "unexpected fputc error newline a stream");
+		errp(70, __FUNCTION__, "unexpected fputc error newline a stream");
 		/*NOTREACHED*/
 	    }
 	}
@@ -2072,13 +2139,13 @@ fpara(FILE *stream, char *line, ...)
     ret = fflush(stream);
     if (ret == EOF) {
 	if (ferror(stream)) {
-	    errp(69, __FUNCTION__, "error flushing stream");
+	    errp(71, __FUNCTION__, "error flushing stream");
 	    /*NOTREACHED*/
 	} else if (feof(stream)) {
-	    errp(70, __FUNCTION__, "EOF while flushing stream");
+	    errp(72, __FUNCTION__, "EOF while flushing stream");
 	    /*NOTREACHED*/
 	} else {
-	    errp(71, __FUNCTION__, "unexpected fflush error while flushing stream");
+	    errp(73, __FUNCTION__, "unexpected fflush error while flushing stream");
 	    /*NOTREACHED*/
 	}
     }
@@ -2118,7 +2185,7 @@ prompt(char *str, size_t *lenp)
      * firewall
      */
     if (str == NULL) {
-	err(72, __FUNCTION__, "str is NULL");
+	err(74, __FUNCTION__, "str is NULL");
 	/*NOTREACHED*/
     }
 
@@ -2130,13 +2197,13 @@ prompt(char *str, size_t *lenp)
     ret = fputs(str, stdout);
     if (ret == EOF) {
 	if (ferror(stdout)) {
-	    errp(73, __FUNCTION__, "error printing prompt string");
+	    errp(75, __FUNCTION__, "error printing prompt string");
 	    /*NOTREACHED*/
 	} else if (feof(stdout)) {
-	    errp(74, __FUNCTION__, "EOF while printing prompt string");
+	    errp(76, __FUNCTION__, "EOF while printing prompt string");
 	    /*NOTREACHED*/
 	} else {
-	    errp(75, __FUNCTION__, "unexpected fputs error printing prompt string");
+	    errp(77, __FUNCTION__, "unexpected fputs error printing prompt string");
 	    /*NOTREACHED*/
 	}
     }
@@ -2145,13 +2212,13 @@ prompt(char *str, size_t *lenp)
     ret = fputs(": ", stdout);
     if (ret == EOF) {
 	if (ferror(stdout)) {
-	    errp(76, __FUNCTION__, "error printing :<space>");
+	    errp(78, __FUNCTION__, "error printing :<space>");
 	    /*NOTREACHED*/
 	} else if (feof(stdout)) {
-	    errp(77, __FUNCTION__, "EOF while writing :<space>");
+	    errp(79, __FUNCTION__, "EOF while writing :<space>");
 	    /*NOTREACHED*/
 	} else {
-	    errp(78, __FUNCTION__, "unexpected fputs error printing :<space>");
+	    errp(80, __FUNCTION__, "unexpected fputs error printing :<space>");
 	    /*NOTREACHED*/
 	}
     }
@@ -2160,13 +2227,13 @@ prompt(char *str, size_t *lenp)
     ret = fflush(stdout);
     if (ret == EOF) {
 	if (ferror(stdout)) {
-	    errp(79, __FUNCTION__, "error flushing prompt to stdout");
+	    errp(81, __FUNCTION__, "error flushing prompt to stdout");
 	    /*NOTREACHED*/
 	} else if (feof(stdout)) {
-	    errp(80, __FUNCTION__, "EOF while flushing prompt to stdout");
+	    errp(82, __FUNCTION__, "EOF while flushing prompt to stdout");
 	    /*NOTREACHED*/
 	} else {
-	    errp(81, __FUNCTION__, "unexpected fflush error while flushing prompt to stdout");
+	    errp(83, __FUNCTION__, "unexpected fflush error while flushing prompt to stdout");
 	    /*NOTREACHED*/
 	}
     }
@@ -2176,7 +2243,7 @@ prompt(char *str, size_t *lenp)
      */
     buf = readline_dup(&linep, true, &len, stdin);
     if (buf == NULL) {
-	errp(82, __FUNCTION__, "readline_dup returned NULL");
+	errp(84, __FUNCTION__, "readline_dup returned NULL");
 	/*NOTREACHED*/
     }
     dbg(DBG_VHIGH, "received a %d byte response", len);
@@ -2235,7 +2302,7 @@ get_contest_id(bool *testp)
      * firewall
      */
     if (testp == NULL) {
-	err(83, __FUNCTION__, "testp is NULL");
+	err(85, __FUNCTION__, "testp is NULL");
 	/*NOTREACHED*/
     }
 
@@ -2376,7 +2443,7 @@ get_entry_num(void)
 	errno = 0;	/* pre-clear errno for errp() */
 	ret = printf("\nYou are allowed to submit up to %d entries to a given IOCCC.\n", MAX_ENTRY_NUM+1);
 	if (ret < 0) {
-	    errp(84, __FUNCTION__, "printf error printing number of entries allowed");
+	    errp(86, __FUNCTION__, "printf error printing number of entries allowed");
 	    /*NOTREACHED*/
 	}
 	para("",
@@ -2443,11 +2510,11 @@ mk_entry_dir(char *work_dir, char *ioccc_id, int entry_num)
      * firewall
      */
     if (work_dir == NULL || ioccc_id == NULL) {
-	err(85, __FUNCTION__, "work_dir and/or ioccc_id is NULL");
+	err(87, __FUNCTION__, "work_dir and/or ioccc_id is NULL");
 	/*NOTREACHED*/
     }
     if (entry_num < 0 || entry_num > MAX_ENTRY_NUM) {
-	err(86, __FUNCTION__, "entry number: %d must >= 0 and <= %d", MAX_ENTRY_NUM);
+	err(88, __FUNCTION__, "entry number: %d must >= 0 and <= %d", MAX_ENTRY_NUM);
 	/*NOTREACHED*/
     }
 
@@ -2459,13 +2526,13 @@ mk_entry_dir(char *work_dir, char *ioccc_id, int entry_num)
     errno = 0;	/* pre-clear errno for errp() */
     entry_dir = malloc(len + 1 + 1);
     if (entry_dir == NULL) {
-	errp(87, __FUNCTION__, "cannot malloc %d characters", len + 1);
+	errp(89, __FUNCTION__, "cannot malloc %d characters", len + 1);
 	/*NOTREACHED*/
     }
     errno = 0;	/* pre-clear errno for errp() */
     ret = snprintf(entry_dir, len + 1, "%s/%s-%d", work_dir, ioccc_id, entry_num);
     if (ret < 0) {
-	errp(88, __FUNCTION__, "snprintf to form entry directory failed");
+	errp(90, __FUNCTION__, "snprintf to form entry directory failed");
 	/*NOTREACHED*/
     }
     dbg(DBG_HIGH, "entry directory path: %s", entry_dir);
@@ -2480,7 +2547,7 @@ mk_entry_dir(char *work_dir, char *ioccc_id, int entry_num)
 	      "You need to move that directory, or remove it, or use a different work_dir.",
 	      "",
 	      NULL);
-	err(89, __FUNCTION__, "entry directory exists: %s", entry_dir);
+	err(91, __FUNCTION__, "entry directory exists: %s", entry_dir);
 	/*NOTREACHED*/
     }
     dbg(DBG_HIGH, "entry directory path: %s", entry_dir);
@@ -2491,7 +2558,7 @@ mk_entry_dir(char *work_dir, char *ioccc_id, int entry_num)
     errno = 0;	/* pre-clear errno for errp() */
     ret = mkdir(entry_dir, 0755);
     if (ret < 0) {
-	errp(90, __FUNCTION__, "cannot mkdir %s with mode 0755", entry_dir);
+	errp(92, __FUNCTION__, "cannot mkdir %s with mode 0755", entry_dir);
 	/*NOTREACHED*/
     }
 
@@ -2522,7 +2589,7 @@ lookup_location_name(char *upper_code)
      * firewall
      */
     if (upper_code == NULL) {
-	err(91, __FUNCTION__, "upper_code is NULL");
+	err(93, __FUNCTION__, "upper_code is NULL");
 	/*NOTREACHED*/
     }
 
@@ -2563,7 +2630,7 @@ yes_or_no(char *question)
      * firewall
      */
     if (question == NULL) {
-	err(92, __FUNCTION__, "question is NULL");
+	err(94, __FUNCTION__, "question is NULL");
 	/*NOTREACHED*/
     }
 
@@ -2670,13 +2737,14 @@ get_author_info(char *ioccc_id, int entry_num, struct author **author_set_p)
     bool yorn = false;			/* response to a question */
     size_t len;				/* length of reply */
     int ret;				/* libc function return */
+    char *p;
     int i;
 
     /*
      * firewall
      */
     if (ioccc_id == NULL || author_set_p == NULL) {
-	err(93, __FUNCTION__, "ioccc_id and/or author_set_p is NULL");
+	err(95, __FUNCTION__, "ioccc_id and/or author_set_p is NULL");
 	/*NOTREACHED*/
     }
 
@@ -2717,14 +2785,14 @@ get_author_info(char *ioccc_id, int entry_num, struct author **author_set_p)
     errno = 0;	/* pre-clear errno for errp() */
     author_set = (struct author *)malloc(sizeof(struct author) * author_count);
     if (author_set == NULL) {
-	errp(94, __FUNCTION__, "unable to malloc a struct author array of length: %d", author_count);
+	errp(96, __FUNCTION__, "unable to malloc a struct author array of length: %d", author_count);
 	/*NOTREACHED*/
     }
     /* pre-zeroize the author array */
     memset(author_set, 0, sizeof(struct author) * author_count);
 
     /*
-     * collect information on authors
+     * inform the user about the author information we need to collect
      */
     para("",
 	 "We will now ask for information about the author(s) of this entry.",
@@ -2745,22 +2813,22 @@ get_author_info(char *ioccc_id, int entry_num, struct author **author_set_p)
 	 NULL);
     ret = puts(ISO_3166_1_CODE_URL0);
     if (ret < 0) {
-	errp(95, __FUNCTION__, "puts error printing ISO 3166-1 URL");
+	errp(97, __FUNCTION__, "puts error printing ISO 3166-1 URL");
 	/*NOTREACHED*/
     }
     ret = puts(ISO_3166_1_CODE_URL1);
     if (ret < 0) {
-	errp(96, __FUNCTION__, "puts error printing ISO 3166-1 URL");
+	errp(98, __FUNCTION__, "puts error printing ISO 3166-1 URL");
 	/*NOTREACHED*/
     }
     ret = puts(ISO_3166_1_CODE_URL2);
     if (ret < 0) {
-	errp(97, __FUNCTION__, "puts error printing ISO 3166-1 URL2");
+	errp(99, __FUNCTION__, "puts error printing ISO 3166-1 URL2");
 	/*NOTREACHED*/
     }
     ret = puts(ISO_3166_1_CODE_URL3);
     if (ret < 0) {
-	errp(98, __FUNCTION__, "puts error printing ISO 3166-1 URL2");
+	errp(100, __FUNCTION__, "puts error printing ISO 3166-1 URL2");
 	/*NOTREACHED*/
     }
     para("",
@@ -2771,7 +2839,13 @@ get_author_info(char *ioccc_id, int entry_num, struct author **author_set_p)
 	 "We will ask a twitter handle (must start with @), or press return to skip, or if don't have one.",
 	 "",
 	 "We will ask a GitHub account (must start with @), or press return to skip, or if don't have one.",
+	 "",
+	 "We will ask for an affiliation (company, school, org) of the author, or press return to skip, or if don't have one.",
 	 NULL);
+
+    /*
+     * collect information on authors
+     */
     for (i=0; i < author_count; ++i) {
 
 	/*
@@ -2780,7 +2854,7 @@ get_author_info(char *ioccc_id, int entry_num, struct author **author_set_p)
 	errno = 0;	/* pre-clear errno for errp() */
 	ret = printf("\nEnter information for author #%d\n\n", i);
 	if (ret < 0) {
-	    errp(99, __FUNCTION__, "printf error printing author number");
+	    errp(101, __FUNCTION__, "printf error printing author number");
 	    /*NOTREACHED*/
 	}
 
@@ -2788,14 +2862,26 @@ get_author_info(char *ioccc_id, int entry_num, struct author **author_set_p)
 	 * obtain author name
 	 */
 	do {
+
+	    /*
+	     * prompt for the author name
+	     */
 	    author_set[i].name = NULL;
 	    author_set[i].name = prompt("Enter author name", &len);
+
+	    /*
+	     * reject empty author name
+	     */
 	    if (len <= 0) {
 
 		/*
-		 * reject empty author name
+		 * issue rejection message
 		 */
-		(void) fprintf(stderr, "\nThe author name cannot be empty, try again\n\n");
+		fpara(stderr,
+		     "",
+		     "The author name cannot be empty, try again.  If they want to be anonymous, give a pseudo-name.",
+		     "",
+		     NULL);
 
 		/*
 		 * free storage
@@ -2805,12 +2891,15 @@ get_author_info(char *ioccc_id, int entry_num, struct author **author_set_p)
 		    author_set[i].name = NULL;
 		}
 
+	    /*
+	     * reject if name is too long
+	     */
 	    } else if (len > MAX_NAME_LEN) {
 
 		/*
-		 * reject if name is too long
+		 * issue rejection message
 		 */
-		(void) fprintf(stderr, "\nSorry (tm Canada), we limit named to at most %d characters\n\n", MAX_NAME_LEN);
+		(void) fprintf(stderr, "\nSorry ( tm Canada :-) ), we limit names to %d characters\n\n", MAX_NAME_LEN);
 
 		/*
 		 * free storage
@@ -2826,11 +2915,12 @@ get_author_info(char *ioccc_id, int entry_num, struct author **author_set_p)
 	 * obtain author location/country code
 	 */
 	do {
+
 	    /*
-	     * request code
+	     * request location/country code
 	     */
 	    author_set[i].location_code = NULL;
-	    author_set[i].location_code = prompt("Enter the 2 character location/country code for this author", &len);
+	    author_set[i].location_code = prompt("Enter author 2 character location/country code", &len);
 	    dbg(DBG_VHIGH, "location/country code as entered: %s", author_set[i].location_code);
 
 	    /*
@@ -2926,7 +3016,351 @@ get_author_info(char *ioccc_id, int entry_num, struct author **author_set_p)
 	} while (author_set[i].location_code == NULL || location_name == NULL || yorn == false);
 	dbg(DBG_HIGH, "author location/country: %s (%s)", author_set[i].location_code, location_name);
 
-	/* XXX */
+	/*
+	 * ask for Email address
+	 */
+	do {
+
+	    /*
+	     * request Email address
+	     */
+	    author_set[i].email = NULL;
+	    author_set[i].email = prompt("Enter author email address, or press return to skip", &len);
+	    if (len == 0) {
+		dbg(DBG_VHIGH, "Email address withheld");
+	    } else {
+		dbg(DBG_VHIGH, "Email address: %s", author_set[i].email);
+	    }
+
+	    /*
+	     * reject if too long
+	     */
+	    if (len > MAX_EMAIL_LEN) {
+
+		/*
+		 * issue rejection message
+		 */
+		(void) fprintf(stderr, "\nSorry ( tm Canada :-) ), we limit Email address to %d characters\n\n", MAX_EMAIL_LEN);
+
+		/*
+		 * free storage
+		 */
+		if (author_set[i].email != NULL) {
+		    free(author_set[i].email);
+		    author_set[i].email = NULL;
+		}
+		continue;
+	    }
+
+	    /*
+	     * reject if no @ in the address
+	     */
+	    if (len > 0) {
+		p = strchr(author_set[i].email, '@');
+		if (p == NULL || author_set[i].email[0] == '@' || author_set[i].email[len-1] == '@' ||
+		    p != strrchr(author_set[i].email, '@')) {
+
+		    /*
+		     * issue rejection message
+		     */
+		    fpara(stderr,
+			  "",
+			  "Email addresses must have only a single @ somewhere inside the string."
+			  "",
+			  "",
+			  NULL);
+
+		    /*
+		     * free storage
+		     */
+		    if (author_set[i].email != NULL) {
+			free(author_set[i].email);
+			author_set[i].email = NULL;
+		    }
+		    continue;
+		}
+
+	    /*
+	     * just in case we have a bogus length
+	     */
+	    } else if (len < 0) {
+		errp(102, __FUNCTION__, "Bogus Email length: %d < 0", len);
+		/*NOTREACHED*/
+	    }
+	} while (author_set[i].email == NULL);
+
+	/*
+	 * ask for home URL
+	 */
+	do {
+
+	    /*
+	     * request URL
+	     */
+	    author_set[i].url = NULL;
+	    author_set[i].url = prompt("Enter author home page URL (starting with http:// or https://), or press return to skip", &len);
+	    if (len == 0) {
+		dbg(DBG_VHIGH, "URL withheld");
+	    } else {
+		dbg(DBG_VHIGH, "URL: %s", author_set[i].url);
+	    }
+
+	    /*
+	     * reject if too long
+	     */
+	    if (len > MAX_URL_LEN) {
+
+		/*
+		 * issue rejection message
+		 */
+		(void) fprintf(stderr, "\nSorry ( tm Canada :-) ), we URLs to %d characters\n\n", MAX_URL_LEN);
+
+		/*
+		 * free storage
+		 */
+		if (author_set[i].url != NULL) {
+		    free(author_set[i].url);
+		    author_set[i].url = NULL;
+		}
+		continue;
+	    }
+
+	    /*
+	     * if it starts with http:// or https:// and has more characters, it is OK
+	     */
+	    if (len > 0) {
+		if (((strncmp(author_set[i].url, "http://", sizeof("http://")-1) == 0) &&
+		     (author_set[i].url[sizeof("http://")-1] != '\0')) ||
+		    ((strncmp(author_set[i].url, "https://", sizeof("https://")-1) == 0) &&
+		     (author_set[i].url[sizeof("https://")-1] != '\0'))) {
+
+		    /* URL appears to in valid form */
+		    break;
+
+	    /*
+	     * reject if it does not start with http:// or https://
+	     */
+	    } else if (len > 0) {
+
+		    /*
+		     * issue rejection message
+		     */
+		    fpara(stderr,
+			  "",
+			  "url addresses must begin with http:// or https:// followed by the rest of the homepage URL",
+			  "",
+			  NULL);
+
+		    /*
+		     * free storage
+		     */
+		    if (author_set[i].url != NULL) {
+			free(author_set[i].url);
+			author_set[i].url = NULL;
+		    }
+		    continue;
+		}
+
+	    /*
+	     * just in case we have a bogus length
+	     */
+	    } else if (len < 0) {
+		errp(103, __FUNCTION__, "Bogus url length: %d < 0", len);
+		/*NOTREACHED*/
+	    }
+	} while (author_set[i].url == NULL);
+
+	/*
+	 * ask for twitter handle
+	 */
+	do {
+
+	    /*
+	     * request twitter handle
+	     */
+	    author_set[i].twitter = NULL;
+	    author_set[i].twitter = prompt("Enter author twitter handle, starting with @, or press return to skip", &len);
+	    if (len == 0) {
+		dbg(DBG_VHIGH, "Twitter handle not given");
+	    } else {
+		dbg(DBG_VHIGH, "Twitter handle: %s", author_set[i].twitter);
+	    }
+
+	    /*
+	     * reject if too long
+	     */
+	    if (len > MAX_TWITTER_LEN) {
+
+		/*
+		 * issue rejection message
+		 */
+		(void) fprintf(stderr, "\nSorry ( tm Canada :-) ), we limit twitter handles, starting with the @, to %d characters\n\n", MAX_TWITTER_LEN);
+
+		/*
+		 * free storage
+		 */
+		if (author_set[i].twitter != NULL) {
+		    free(author_set[i].twitter);
+		    author_set[i].twitter = NULL;
+		}
+		continue;
+	    }
+
+	    /*
+	     * reject if no leading @, or if more than one @
+	     */
+	    if (len > 0) {
+		p = strchr(author_set[i].twitter, '@');
+		if (p == NULL || author_set[i].twitter[0] != '@' || p != strrchr(author_set[i].twitter, '@') ||
+		    author_set[i].twitter[1] == '\0') {
+
+		    /*
+		     * issue rejection message
+		     */
+		    fpara(stderr,
+			  "",
+			  "Twitter handles must start with a @ and have no other @-signs."
+			  "",
+			  "",
+			  NULL);
+
+		    /*
+		     * free storage
+		     */
+		    if (author_set[i].twitter != NULL) {
+			free(author_set[i].twitter);
+			author_set[i].twitter = NULL;
+		    }
+		    continue;
+		}
+
+	    /*
+	     * just in case we have a bogus length
+	     */
+	    } else if (len < 0) {
+		errp(104, __FUNCTION__, "Bogus twitter handle length: %d < 0", len);
+		/*NOTREACHED*/
+	    }
+	} while (author_set[i].twitter == NULL);
+
+	/*
+	 * ask for GitHub account
+	 */
+	do {
+
+	    /*
+	     * request GitHub account
+	     */
+	    author_set[i].github_user = NULL;
+	    author_set[i].github_user = prompt("Enter author GitHub account, starting with @, or press return to skip", &len);
+	    if (len == 0) {
+		dbg(DBG_VHIGH, "GitHub account not given");
+	    } else {
+		dbg(DBG_VHIGH, "GitHub account: %s", author_set[i].github_user);
+	    }
+
+	    /*
+	     * reject if too long
+	     */
+	    if (len > MAX_GITHUB_LEN) {
+
+		/*
+		 * issue rejection message
+		 */
+		(void) fprintf(stderr, "\nSorry ( tm Canada :-) ), we limit GitHub account names, starting with the @, to %d characters\n\n", MAX_GITHUB_LEN);
+
+		/*
+		 * free storage
+		 */
+		if (author_set[i].github_user != NULL) {
+		    free(author_set[i].github_user);
+		    author_set[i].github_user = NULL;
+		}
+		continue;
+	    }
+
+	    /*
+	     * reject if no leading @, or if more than one @
+	     */
+	    if (len > 0) {
+		p = strchr(author_set[i].github_user, '@');
+		if (p == NULL || author_set[i].github_user[0] != '@' || p != strrchr(author_set[i].github_user, '@') || author_set[i].github_user[1] == '\0') {
+
+		    /*
+		     * issue rejection message
+		     */
+		    fpara(stderr,
+			  "",
+			  "GitHuv accounts must start with a @ and have no other @-signs."
+			  "",
+			  "",
+			  NULL);
+
+		    /*
+		     * free storage
+		     */
+		    if (author_set[i].github_user != NULL) {
+			free(author_set[i].github_user);
+			author_set[i].github_user = NULL;
+		    }
+		    continue;
+		}
+
+	    /*
+	     * just in case we have a bogus length
+	     */
+	    } else if (len < 0) {
+		errp(105, __FUNCTION__, "Bogus GitHub account length: %d < 0", len);
+		/*NOTREACHED*/
+	    }
+	} while (author_set[i].github_user == NULL);
+
+	/*
+	 * ask for affiliation
+	 */
+	do {
+
+	    /*
+	     * request affiliation
+	     */
+	    author_set[i].affiliation = NULL;
+	    author_set[i].affiliation = prompt("Enter author affiliation, or press return to skip", &len);
+	    if (len == 0) {
+		dbg(DBG_VHIGH, "Affiliation not given");
+	    } else {
+		dbg(DBG_VHIGH, "Affiliation: %s", author_set[i].affiliation);
+	    }
+
+	    /*
+	     * reject if too long
+	     */
+	    if (len > MAX_AFFILIATION_LEN) {
+
+		/*
+		 * issue rejection message
+		 */
+		(void) fprintf(stderr, "\nSorry ( tm Canada :-) ), we limit affiliation names to %d characters\n\n", MAX_AFFILIATION_LEN);
+
+		/*
+		 * free storage
+		 */
+		if (author_set[i].affiliation != NULL) {
+		    free(author_set[i].affiliation);
+		    author_set[i].affiliation = NULL;
+		}
+		continue;
+	    }
+
+	    /*
+	     * just in case we have a bogus length
+	     */
+	    if (len < 0) {
+		errp(106, __FUNCTION__, "Bogus affiliation length: %d < 0", len);
+		/*NOTREACHED*/
+	    }
+	} while (author_set[i].affiliation == NULL);
+
+	/* XXX - more code here - XXX */
     }
 
     /*
@@ -2938,61 +3372,4 @@ get_author_info(char *ioccc_id, int entry_num, struct author **author_set_p)
      * return the author count
      */
     return author_count;
-}
-
-
-/*
- * free_author_array - free storage related to a struct author
- *
- * given:
- * 	authorp		- pointer to a struct author array
- * 	author_count	- length of author array
- */
-static void
-free_author_array(struct author *authorp, int author_count)
-{
-    int i;
-
-    /*
-     * firewall
-     */
-    if (authorp == NULL) {
-	err(100, __FUNCTION__, "authorp is NULL");
-	/*NOTREACHED*/
-    }
-    if (author_count < 0) {
-	err(101, __FUNCTION__, "author_count: %d < 0", author_count);
-	/*NOTREACHED*/
-    }
-
-    /*
-     * free elements of each array member
-     */
-    for (i=0; i < author_count; ++i) {
-	if (authorp[i].name != NULL) {
-	    free(authorp[i].name);
-	    authorp[i].name = NULL;
-	}
-	if (authorp[i].location_code != NULL) {
-	    free(authorp[i].location_code);
-	    authorp[i].location_code = NULL;
-	}
-	if (authorp[i].home_url != NULL) {
-	    free(authorp[i].home_url);
-	    authorp[i].home_url = NULL;
-	}
-	if (authorp[i].twitter != NULL) {
-	    free(authorp[i].twitter);
-	    authorp[i].twitter = NULL;
-	}
-	if (authorp[i].github_user != NULL) {
-	    free(authorp[i].github_user);
-	    authorp[i].github_user = NULL;
-	}
-	if (authorp[i].affiliation != NULL) {
-	    free(authorp[i].affiliation);
-	    authorp[i].affiliation = NULL;
-	}
-    }
-    return;
 }
