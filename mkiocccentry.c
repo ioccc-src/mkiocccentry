@@ -135,7 +135,7 @@ struct author {
     char *email;		/* Email address of author or empty string */
     char *url;			/* home URL of author or empty string */
     char *twitter;		/* author twitter handle or empty string */
-    char *github_user;		/* author GitHub username or empty string */
+    char *github;		/* author GitHub username or empty string */
     char *affiliation;		/* author affiliation or empty string */
     int author_num;		/* author number */
 };
@@ -1084,9 +1084,9 @@ free_author_array(struct author *author_set, int author_count)
 	    free(author_set[i].twitter);
 	    author_set[i].twitter = NULL;
 	}
-	if (author_set[i].github_user != NULL) {
-	    free(author_set[i].github_user);
-	    author_set[i].github_user = NULL;
+	if (author_set[i].github != NULL) {
+	    free(author_set[i].github);
+	    author_set[i].github = NULL;
 	}
 	if (author_set[i].affiliation != NULL) {
 	    free(author_set[i].affiliation);
@@ -1490,6 +1490,8 @@ readline_dup(char **linep, bool strip, size_t *lenp, FILE *stream)
 		    /* strip trailing ASCII whitespace */
 		    --len;
 		    ret[i] = '\0';
+		} else {
+		    break;
 		}
 	    }
 	}
@@ -2857,6 +2859,7 @@ get_author_info(char *ioccc_id, int entry_num, struct author **author_set_p)
 	    errp(101, __FUNCTION__, "printf error printing author number");
 	    /*NOTREACHED*/
 	}
+	author_set[i].author_num = i;
 
 	/*
 	 * obtain author name
@@ -2910,6 +2913,7 @@ get_author_info(char *ioccc_id, int entry_num, struct author **author_set_p)
 		}
 	    }
 	} while (author_set[i].name == NULL);
+	dbg(DBG_MED, "Author #%d Name %s", i, author_set[i].name);
 
 	/*
 	 * obtain author location/country code
@@ -3014,7 +3018,7 @@ get_author_info(char *ioccc_id, int entry_num, struct author **author_set_p)
 		}
 	    }
 	} while (author_set[i].location_code == NULL || location_name == NULL || yorn == false);
-	dbg(DBG_HIGH, "author location/country: %s (%s)", author_set[i].location_code, location_name);
+	dbg(DBG_MED, "Author #%d location/country: %s (%s)", i, author_set[i].location_code, location_name);
 
 	/*
 	 * ask for Email address
@@ -3088,6 +3092,7 @@ get_author_info(char *ioccc_id, int entry_num, struct author **author_set_p)
 		/*NOTREACHED*/
 	    }
 	} while (author_set[i].email == NULL);
+	dbg(DBG_MED, "Author #%d Email: %s", i, author_set[i].email);
 
 	/*
 	 * ask for home URL
@@ -3169,6 +3174,7 @@ get_author_info(char *ioccc_id, int entry_num, struct author **author_set_p)
 		/*NOTREACHED*/
 	    }
 	} while (author_set[i].url == NULL);
+	dbg(DBG_MED, "Author #%d URL: %s", i, author_set[i].url);
 
 	/*
 	 * ask for twitter handle
@@ -3242,6 +3248,7 @@ get_author_info(char *ioccc_id, int entry_num, struct author **author_set_p)
 		/*NOTREACHED*/
 	    }
 	} while (author_set[i].twitter == NULL);
+	dbg(DBG_MED, "Author #%d twitter: %s", i, author_set[i].twitter);
 
 	/*
 	 * ask for GitHub account
@@ -3251,12 +3258,12 @@ get_author_info(char *ioccc_id, int entry_num, struct author **author_set_p)
 	    /*
 	     * request GitHub account
 	     */
-	    author_set[i].github_user = NULL;
-	    author_set[i].github_user = prompt("Enter author GitHub account, starting with @, or press return to skip", &len);
+	    author_set[i].github = NULL;
+	    author_set[i].github = prompt("Enter author GitHub account, starting with @, or press return to skip", &len);
 	    if (len == 0) {
 		dbg(DBG_VHIGH, "GitHub account not given");
 	    } else {
-		dbg(DBG_VHIGH, "GitHub account: %s", author_set[i].github_user);
+		dbg(DBG_VHIGH, "GitHub account: %s", author_set[i].github);
 	    }
 
 	    /*
@@ -3272,9 +3279,9 @@ get_author_info(char *ioccc_id, int entry_num, struct author **author_set_p)
 		/*
 		 * free storage
 		 */
-		if (author_set[i].github_user != NULL) {
-		    free(author_set[i].github_user);
-		    author_set[i].github_user = NULL;
+		if (author_set[i].github != NULL) {
+		    free(author_set[i].github);
+		    author_set[i].github = NULL;
 		}
 		continue;
 	    }
@@ -3283,8 +3290,8 @@ get_author_info(char *ioccc_id, int entry_num, struct author **author_set_p)
 	     * reject if no leading @, or if more than one @
 	     */
 	    if (len > 0) {
-		p = strchr(author_set[i].github_user, '@');
-		if (p == NULL || author_set[i].github_user[0] != '@' || p != strrchr(author_set[i].github_user, '@') || author_set[i].github_user[1] == '\0') {
+		p = strchr(author_set[i].github, '@');
+		if (p == NULL || author_set[i].github[0] != '@' || p != strrchr(author_set[i].github, '@') || author_set[i].github[1] == '\0') {
 
 		    /*
 		     * issue rejection message
@@ -3299,9 +3306,9 @@ get_author_info(char *ioccc_id, int entry_num, struct author **author_set_p)
 		    /*
 		     * free storage
 		     */
-		    if (author_set[i].github_user != NULL) {
-			free(author_set[i].github_user);
-			author_set[i].github_user = NULL;
+		    if (author_set[i].github != NULL) {
+			free(author_set[i].github);
+			author_set[i].github = NULL;
 		    }
 		    continue;
 		}
@@ -3313,7 +3320,8 @@ get_author_info(char *ioccc_id, int entry_num, struct author **author_set_p)
 		errp(105, __FUNCTION__, "Bogus GitHub account length: %d < 0", len);
 		/*NOTREACHED*/
 	    }
-	} while (author_set[i].github_user == NULL);
+	} while (author_set[i].github == NULL);
+	dbg(DBG_MED, "Author #%d GitHub: %s", i, author_set[i].github);
 
 	/*
 	 * ask for affiliation
@@ -3359,8 +3367,29 @@ get_author_info(char *ioccc_id, int entry_num, struct author **author_set_p)
 		/*NOTREACHED*/
 	    }
 	} while (author_set[i].affiliation == NULL);
+	dbg(DBG_MED, "Author #%d affiliation: %s", i, author_set[i].affiliation);
 
-	/* XXX - more code here - XXX */
+	/*
+	 * verify the information for this author
+	 */
+	errno = 0;	/* pre-clear errno for errp() */
+	if (printf("\nPlease verify the information about author #%d\n\n", i) < 0 ||
+	    printf("Name: %s\n", author_set[i].name) < 0 ||
+	    printf("Location/country code: %s (%s)\n", author_set[i].location_code, location_name) < 0 ||
+	    ((author_set[i].email[0] == '\0') ? printf("Email not given\n") : printf("Email: %s\n", author_set[i].email)) < 0 ||
+	    ((author_set[i].url[0] == '\0') ? printf("Url not given\n") : printf("Url: %s\n", author_set[i].url)) < 0 ||
+	    ((author_set[i].twitter[0] == '\0') ? printf("Twitter handle not given\n") : printf("Twitter handle: %s\n", author_set[i].twitter)) < 0 ||
+	    ((author_set[i].github[0] == '\0') ? printf("GitHub username not given\n") : printf("GitHub username: %s\n", author_set[i].github)) < 0 ||
+	    ((author_set[i].affiliation[0] == '\0') ? printf("Affiliation not given\n\n") : printf("Affiliation: %s\n\n", author_set[i].affiliation)) < 0) {
+	    errp(107, __FUNCTION__, "error while printing author #%d information\n", i);
+	    /*NOTREACHED*/
+	}
+	yorn = yes_or_no("Is that author information correct? [yn]");
+	if (yorn == false) {
+	    /* reenter author information */
+	    --i;
+	    continue;
+	}
     }
 
     /*
