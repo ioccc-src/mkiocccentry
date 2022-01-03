@@ -64,7 +64,7 @@ test_size()
 	typeset gross_count
 	typeset got
 
-	got=$($__tool $__tool_args <$file 2>&1 >/dev/null)
+	got=$($__tool $__tool_args $file 2>/dev/null)
 	if $__verbose ; then
 		gross_count=$(echo $got | cut -d' ' -f2)
 		bytes=$(get_wc $file 3 $filter)

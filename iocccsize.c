@@ -4,37 +4,31 @@
  *	"You are not expected to understand this" :-)
  *
  *	Public Domain 1992, 2015, 2018, 2019 by Anthony Howe.  All rights released.
- *	With IOCCC mods in 2019-2021 by chongo (Landon Curt Noll) ^oo^
+ *	See:
+ *		https://github.com/SirWumpus/iocccsize
+ *	IOCCC mods in 2019-2022 by chongo (Landon Curt Noll) ^oo^
  *
  * SYNOPSIS
  *
- * 	iocccsize [-ihvV] prog.c
- * 	iocccsize [-ihvV] < prog.c
+ *	iocccsize [-ihvV] prog.c
+ *	iocccsize [-ihvV] < prog.c
  *
  *	-i	ignored for backward compatibility
- *	-h	print usage message in stderr and exit
+ *	-h	print usage message in stderr and exit 2
  *	-v	turn on some debugging to stderr; -vv or -vvv for more
- *	-V	print version string and exit
+ *	-V	print version string and exit 3
  *
- *	The source is written to stdout, with possible translations ie. trigraphs.
- *	The IOCCC net count rule 2b is written to stderr; with -v, net count (2b),
- *	gross count (2a), number of keywords counted as 1 byte; -vv or -vvv write
+ *	The IOCCC net count rule 2b is written to stdout; with -v, net count (Rule 2b),
+ *	gross count (Rule 2a), number of keywords counted as 1 byte; -vv or -vvv write
  *	more tool diagnostics.
  *
  * DESCRIPION
  *
- *	Reading a C source file from standard input, apply the IOCCC
- *	source size rules as explained in the Guidelines.  The source
- *	code is passed through on standard output.  The source's net
- *	length is written to standard error; with -v option the net
- *	length, gross length, and matched keyword count are written.
+ *	Reading a C source file from standard input or a file arg, apply the IOCCC
+ *	source size rules as explained in the Guidelines.
  *
- *	The entry's gross size in bytes must be less than equal to 4096
- *	bytes in length.
- *
- *	The entry's net size in bytes must be less than equal to 2053
- *	bytes (first prime after 2048).  The net size is computed as
- *	follows:
+ *	The source's Rule 2b length is written to stdout; with -v option the Rule 2b
+ *	length, gross (Rule 2a) length, and matched keyword count are written to stdout.
  *
  *	The size tool counts most C reserved words (keyword, secondary,
  *	and selected preprocessor keywords) as 1.  The size tool counts all
@@ -54,7 +48,6 @@
  * perfectly documents itself.  :-)
  *
  * Many thanks to Anthony Howe for taking the time to put his OCD
- * (Obfuscated Coding Determination) into this code!
  */
 
 /*
@@ -79,12 +72,13 @@
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <errno.h>
 
-#define VERSION "28.3 2021-12-29"	/* use format: major.minor YYYY-MM-DD */
+#define VERSION "28.3 2022-01-03"	/* use format: major.minor YYYY-MM-DD */
 
-#define WORD_BUFFER_SIZE	64
-#define MAX_SIZE		4096	/* IOCCC Rule 2a */
-#define MAX_COUNT		2053	/* IOCCC Rule 2b */
+#define WORD_BUFFER_SIZE	256
+#define RULE_2A_SIZE		5120	/* IOCCC Rule 2a */
+#define RULE_2B_SIZE		3217	/* IOCCC Rule 2b */
 #define STRLEN(s)		(sizeof (s)-1)
 
 #define NO_STRING		0
@@ -97,18 +91,30 @@ static char usage[] =
 "usage: iocccsize [-h] [-i] [-v ...] [-V] < prog.c\n"
 "\n"
 "-i\t\tignored for backward compatibility\n"
-"-h\t\tprint usage message in stderr and exit\n"
+"-h\t\tprint usage message in stderr and exit 2\n"
 "-v\t\tturn on some debugging to stderr; -vv or -vvv for more\n"
-"-V\t\tprint version and exit\n"
+"-V\t\tprint version and exit 3\n"
 "\n"
-"The source is written to stdout, with possible translations ie. trigraphs.\n"
-"The IOCCC net count rule 2b is written to stderr; with -v, net count (2b),\n"
+"The IOCCC net count Rule 2b is written to stdout; with -v, net count (2b),\n"
 "gross count (2a), number of keywords counted as 1 byte; -vv or -vvv write\n"
 "more tool diagnostics.\n"
+"\n"
+"Exit codes:\n"
+"\t0 - soruce code is within Rule 2a and Rule 2b limits\n"
+"\t1 - soruce code larger than Rule 2a and/or Rule 2b limits\n"
+"\t2 - -h used and help printed\n"
+"\t3 - -V used and version printed\n"
+"\t>= 4 - some internal error occurred\n"
 ;
 
 static int debug;
 static char *out_fmt = "%lu\n";
+static int char_warning = 0;
+static int trigraph_warning = 0;
+static int wordbuf_warning = 0;
+static int ungetc_warning = 0;
+static int rule_2a_warning = 0;
+static int rule_2b_warning = 0;
 
 /*
  * C reserved words, plus a few #preprocessor tokens, that count as 1
@@ -232,18 +238,17 @@ read_ch(FILE *fp)
 		/* Discard bare CR and those part of CRLF. */
 	}
 	if (ch == '\0' || 128 <= ch) {
-		errx(1, "NUL or non-ASCII characters");
+		char_warning = 1;
 	}
-
 	return ch;
 }
 
-static int
+void
 rule_count(FILE *fp)
 {
-	char word[WORD_BUFFER_SIZE];
+	char word[WORD_BUFFER_SIZE+1];
 	size_t gross_count = 0, net_count = 0, keywords = 0, wordi = 0;
-	int ch, next_ch, quote = NO_STRING, escape = 0, is_comment = NO_COMMENT, rc = EXIT_SUCCESS;
+	int ch, next_ch, quote = NO_STRING, escape = 0, is_comment = NO_COMMENT;
 
 /* If quote == NO_STRING (0) and is_comment == NO_COMMENT (0) then its code. */
 #define IS_CODE	(quote == is_comment)
@@ -272,7 +277,7 @@ rule_count(FILE *fp)
 			/* Unknown trigraph, push back the 3rd character. */
 			if (*t == '\0') {
 				if (ch != EOF && ungetc(ch, fp) == EOF) {
-					errx(1, "ungetc error: bad \?\?%c trigraph", ch);
+					trigraph_warning = 1;
 				}
 				ch = '?';
 			}
@@ -291,7 +296,7 @@ rule_count(FILE *fp)
 			 * How does that relate to UTF8 and wide-character library
 			 * handling?  An invalid trigraph results in 2x ungetc().
 			 */
-			errx(1, "ungetc error: @SirWumpus goofed");
+			ungetc_warning = 1;
 		}
 
 		/* Within quoted string? */
@@ -336,7 +341,6 @@ rule_count(FILE *fp)
 			is_comment = COMMENT_EOL;
 
 			/* Consume next_ch. */
-			(void) fputc(ch, stdout);
 			ch = fgetc(fp);
 			gross_count++;
 			net_count++;
@@ -350,7 +354,6 @@ rule_count(FILE *fp)
 			is_comment = COMMENT_BLOCK;
 
 			/* Consume next_ch. */
-			(void) fputc(ch, stdout);
 			ch = fgetc(fp);
 			gross_count++;
 			net_count++;
@@ -360,8 +363,6 @@ rule_count(FILE *fp)
 		else if (is_comment == NO_COMMENT && (ch == '\'' || ch == '"')) {
 			quote = ch;
 		}
-
-		(void) fputc(ch, stdout);
 
 #ifdef DIGRAPHS
 		/* ISO C11 section 6.4.6 Punctuators, digraphs handled during
@@ -373,7 +374,6 @@ rule_count(FILE *fp)
 			static const char digraphs[] = "[<:]:>{<%}%>#%:";
 			for (d = digraphs; *d != '\0'; d += 3) {
 				if (ch == d[1] && next_ch == d[2]) {
-					(void) fputc(next_ch, stdout);
 					(void) fgetc(fp);
 					gross_count++;
 					ch = d[0];
@@ -419,7 +419,7 @@ rule_count(FILE *fp)
 		/* Collect next word not in a string or comment. */
 		if (IS_CODE && (isalnum(ch) || ch == '_' || ch == '#')) {
 			if (sizeof (word) <= wordi) {
-				warnx("word buffer overflow");
+				wordbuf_warning = 1;
 				wordi = 0;
 			}
 			word[wordi++] = (char) ch;
@@ -439,28 +439,22 @@ rule_count(FILE *fp)
 	 * hopes it will reduce the number of entries that violate the IOCCC
 	 * size rules.
 	 */
-	if (MAX_SIZE < gross_count) {
-		if (debug == 0) {
-			(void) fprintf(stderr, "warning: size %zu exceeds Rule 2a %u\n", gross_count, MAX_SIZE);
-		}
-		rc = EXIT_FAILURE;
+	if (RULE_2A_SIZE < gross_count) {
+		rule_2a_warning = 1;
 	}
-	if (MAX_COUNT < net_count) {
-		if (debug == 0) {
-			(void) fprintf(stderr, "warning: count %zu exceeds Rule 2b %u\n", net_count, MAX_COUNT);
-		}
-		rc = EXIT_FAILURE;
+	if (RULE_2B_SIZE < net_count) {
+		rule_2b_warning = 1;
 	}
 
-	(void) fprintf(stderr, out_fmt, net_count, gross_count, keywords);
+	(void) printf(out_fmt, net_count, gross_count, keywords);
 
-	return rc;
+	return;
 }
 
 int
 main(int argc, char **argv)
 {
-	int ch, rc;
+	int ch;
 
 	while ((ch = getopt(argc, argv, "6ihvV")) != -1) {
 		switch (ch) {
@@ -474,36 +468,69 @@ main(int argc, char **argv)
 
 		case 'V':
 			printf("%s\n", VERSION);
-			exit(0);
+			exit(3);
 
 		case '6': /* You're a RTFS master!  Congrats. */
 			errx(6, "There is NO... Rule 6!  I'm not a number!  I'm a free(void *man)!");
 
 		case 'h':
-		default:
 			fprintf(stderr, "%s", usage);
-			return 2;
+			exit(2);
+			break;
+
+		default:
+			fprintf(stderr, "unknown -option\n");
+			fprintf(stderr, "%s", usage);
+			exit(4);
+			break;
 		}
 	}
 
 	if (optind + 1 == argc) {
 		/* Redirect stdin to file path argument. */
+		errno = 0;
 		if (freopen(argv[optind], "r", stdin) == NULL) {
-			err(3, "%s", argv[optind]);
+			fprintf(stderr, "freopen(%s) failed: %s\n", argv[optind], strerror(errno));
+			exit(5);
 		}
 	} else if (optind != argc) {
 		/* Too many arguments. */
 		fprintf(stderr, "%s", usage);
-		return 2;
+		exit(4);
 	}
 
 	(void) setvbuf(stdin, NULL, _IOLBF, 0);
 
 	/* The Count - 1 Muha .. 2 Muhaha .. 3 Muhahaha ... */
-	rc = rule_count(stdin);
+	rule_count(stdin);
+
+	/*
+	 * issue warnings
+	 */
+	if (char_warning) {
+		fprintf(stderr, "Warning: character(s) with high bit set or NUL found! Be careful you don't violate rule 13!\n");
+	}
+	if (trigraph_warning) {
+		fprintf(stderr, "Warning: unknown or invalid trigraph(s) found! Be careful!\n");
+	}
+	if (wordbuf_warning) {
+		fprintf(stderr, "Warning: word buffer overflow! The size on stdout may be invalid under rule 2!");
+	}
+	if (ungetc_warning) {
+		fprintf(stderr, "Warning: ungetc error: @SirWumpus goofe The size on stdout may be invalid under rule 2!\n");
+	}
+	if (rule_2a_warning) {
+		(void) fprintf(stderr, "Warning: your source exceeds Rule 2a limit: %u! Rulr 2a violation!\n", RULE_2A_SIZE);
+	}
+	if (rule_2b_warning) {
+		(void) fprintf(stderr, "Warning: your source exceeds Rule 2b limit: %u! Rule 2b violation!\n", RULE_2B_SIZE);
+	}
 
 	/*
 	 * All Done!!! All Done!!! -- Jessica Noll, age 2
 	 */
-	return rc;
+	if (rule_2a_warning || rule_2b_warning) {
+		exit(1);
+	}
+	exit(0);
 }

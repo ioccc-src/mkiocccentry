@@ -7,7 +7,7 @@
 # "You are not expected to understand this" :-)
 #
 # Public Domain 1992, 2015, 2018, 2019 by Anthony Howe.  All rights released.
-# With IOCCC minor mods in 2019,2021 by chongo (Landon Curt Noll) ^oo^
+# With IOCCC minor mods in 2019,2021,2022 by chongo (Landon Curt Noll) ^oo^
 
 .POSIX :
 
@@ -27,8 +27,7 @@ E :=
 top_srcdir	:= ..
 PROJ 		:= iocccsize
 TAR_I		:= -T
-CFLAGS		:= -g -std=c11 -Wall -Wextra -Wno-char-subscripts -pedantic
-CFLAGS89	:= -g -std=c89 -Wall -Wextra -Wno-char-subscripts -pedantic
+CFLAGS		:= -g -std=c11 -Wall -Wextra -pedantic
 CPPFLAGS	:=
 LIBS		:=
 
@@ -60,6 +59,3 @@ test: ./${PROJ}-test.sh ${PROJ}
 
 unittest: test
 	./${PROJ}-test.sh -v
-
-version:
-	${GIT} describe --tags --abbrev=0
