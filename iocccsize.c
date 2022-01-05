@@ -74,7 +74,7 @@
 #include <stdlib.h>
 #include <errno.h>
 
-#define VERSION "28.3 2022-01-03"	/* use format: major.minor YYYY-MM-DD */
+#define VERSION "28.4 2022-01-04"	/* use format: major.minor YYYY-MM-DD */
 
 #define WORD_BUFFER_SIZE	256
 #define RULE_2A_SIZE		5120	/* IOCCC Rule 2a */
@@ -454,6 +454,7 @@ rule_count(FILE *fp)
 int
 main(int argc, char **argv)
 {
+	FILE *fp = stdin;
 	int ch;
 
 	while ((ch = getopt(argc, argv, "6ihvV")) != -1) {
@@ -489,7 +490,8 @@ main(int argc, char **argv)
 	if (optind + 1 == argc) {
 		/* Redirect stdin to file path argument. */
 		errno = 0;
-		if (freopen(argv[optind], "r", stdin) == NULL) {
+		fp = fopen(argv[optind], "r");
+		if (fp == NULL) {
 			fprintf(stderr, "freopen(%s) failed: %s\n", argv[optind], strerror(errno));
 			exit(5);
 		}
@@ -499,10 +501,10 @@ main(int argc, char **argv)
 		exit(4);
 	}
 
-	(void) setvbuf(stdin, NULL, _IOLBF, 0);
+	(void) setvbuf(fp, NULL, _IOLBF, 0);
 
 	/* The Count - 1 Muha .. 2 Muhaha .. 3 Muhahaha ... */
-	rule_count(stdin);
+	rule_count(fp);
 
 	/*
 	 * issue warnings
