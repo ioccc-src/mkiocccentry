@@ -52,9 +52,26 @@
 
 
 /*
+ * standard truth :-)
+ */
+#if defined __STDC__ && defined __STDC_VERSION__ && __STDC_VERSION__ >= 199901L
+/* have a C99 compiler - we should expect to have <stdbool.h> */
+# include <stdbool.h>
+#else
+/* do not have a C99 compiler - fake a <stdbool.h> header */
+typedef unsigned char bool;
+# undef true
+# define true ((bool)(1))
+# undef false
+# define false ((bool)(0))
+#endif
+
+
+/*
  * definitions
  */
-#define VERSION "0.9 2022-01-06"	/* use format: major.minor YYYY-MM-DD */
+#define VERSION "0.10 2022-01-07"	/* use format: major.minor YYYY-MM-DD */
+#define LITLEN(x) (sizeof(x)-1)		/* length of a literal string w/o the NUL byte */
 #define REQUIRED_IOCCCSIZE_MAJVER (28)	/* iocccsize major version must match */
 #define MIN_IOCCCSIZE_MINVER (4)	/* iocccsize minor version must be >= */
 #define DBG_NONE (0)		/* no debugging */
@@ -83,22 +100,9 @@
 #define ISO_3166_1_CODE_URL4 "    https://www.iso.org/glossary-for-iso-3166.html"
 #define RULE_2A_SIZE (5120)	/* rule 2s size of prog.c */
 #define RULE_2B_SIZE (3217)	/* rule 2b size as determined by iocccsize -i prog.c */
-
-
-/*
- * standard truth :-)
- */
-#if defined __STDC__ && defined __STDC_VERSION__ && __STDC_VERSION__ >= 199901L
-/* have a C99 compiler - we should expect to have <stdbool.h> */
-# include <stdbool.h>
-#else
-/* do not have a C99 compiler - fake a <stdbool.h> header */
-typedef unsigned char bool;
-# undef true
-# define true ((bool)(1))
-# undef false
-# define false ((bool)(0))
-#endif
+#define MAX_TITLE_LEN (24)	/* maximum length of a title */
+#define TITLE_CHARS "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789" /* [a-zA-Z0-9] */
+#define MAX_ABSTRACT_LEN (64)	/* maximum length of an abstract */
 
 
 /*
@@ -129,7 +133,7 @@ static char const *usage_msg2 =
 "\tMakefile\tMakefile to build (make all) and cleanup (make clean & make clobber)\n"
 "\n"
 "\tremarks.md\tRemarks about your entry in markdown format\n"
-"\t\t\tNOTE: The following is a gude to markdown:\n"
+"\t\t\tNOTE: The following is a guide to markdown:\n"
 "\n"
 "\t\t\t    https://www.markdownguide.org/basic-syntax\n"
 "\n"
@@ -591,7 +595,13 @@ static char *basename(char const *path);
 static void check_optional_data_files(char const *entry_dir, char const *cp, int count, char **args);
 static char const *lookup_location_name(char *upper_code);
 static bool yes_or_no(char *question);
+static char *get_title(void);
+static char *get_abstract(void);
 static int get_author_info(char *ioccc_id, int entry_num, struct author **author_set);
+static void verify_entry_dir(char const *entry_dir, char const *ls);
+static void write_info(char const *entry_dir, char const *ioccc_id, int entry_num, int optional_count, char **optional_list,
+		       char const *title, char const *abstract, int author_count, struct author *author_set);
+static void form_tarball(char const *work_dir, char const *entry_dir, char const *ioccc_id, int entry_num, char const *tar);
 
 
 int
@@ -610,7 +620,11 @@ main(int argc, char *argv[])
     bool test_mode = false;	/* true ==> contest ID is test */
     char *ioccc_id = NULL;	/* IOCCC contest ID */
     int entry_num = -1;		/* entry number or -1 ==> unset */
+    char *title = NULL;		/* entry title */
+    char *abstract = NULL;	/* entry 1-line abstract */
     char *entry_dir = NULL;	/* entry directory from which to form a compressed tarball */
+    int optional_count = 0;	/* number of optional files */
+    char **optional_list = NULL;	/* list of optional files (if any) */
     int author_count = -1;	/* number of authors */
     struct author *author_set = NULL;	/* authors array */
     int ret;			/* libc return code */
@@ -659,6 +673,8 @@ main(int argc, char *argv[])
 	/*NOTREACHED*/
     }
     /* collect required args */
+    optional_count = (argc-optind > 5) ? argc-optind-5 : 0;
+    optional_list = argv+optind+5;
     dbg(DBG_LOW, "tar: %s", tar);
     dbg(DBG_LOW, "cp: %s", cp);
     dbg(DBG_LOW, "ls: %s", ls);
@@ -672,10 +688,10 @@ main(int argc, char *argv[])
     dbg(DBG_LOW, "Makefile: %s", Makefile);
     remarks_md = argv[optind+4];
     dbg(DBG_LOW, "remarks: %s", remarks_md);
-    dbg(DBG_LOW, "number of optional data file args: %d", (argc-optind > 5) ? argc-optind-5 : 0);
+    dbg(DBG_LOW, "number of optional data file args: %d", optional_count);
 
     /*
-     * welcome
+     * Welcome
      */
     errno = 0;	/* pre-clear errno for errp() */
     ret = printf("Welcome to mkiocccentry version: %s\n", VERSION);
@@ -731,19 +747,51 @@ main(int argc, char *argv[])
     para("... completed remarks.md check.", "", NULL);
 
     /*
-     * check, if needed, extra files
+     * check, if needed, optional data files
      */
-    if (argc-optind > 5) {
+    if (optional_count > 0) {
 	para("Checking optional data files ...", NULL);
-	check_optional_data_files(entry_dir, cp, argc-optind-5, argv+optind+5);
+	check_optional_data_files(entry_dir, cp, optional_count, optional_list);
 	para("... completed optional data files check.", "", NULL);
     }
+
+    /*
+     * obtain the title
+     */
+    title = get_title();
+    dbg(DBG_LOW, "entry title: %s", title);
+
+    /*
+     * obtain the abstract
+     */
+    abstract = get_abstract();
+    dbg(DBG_LOW, "entry abstract: %s", abstract);
 
     /*
      * obtain author information
      */
     author_count = get_author_info(ioccc_id, entry_num, &author_set);
     dbg(DBG_LOW, "collected information on %d authors", author_count);
+
+    /*
+     * verify entry directory contents
+     */
+    verify_entry_dir(entry_dir, ls);
+    dbg(DBG_LOW, "verified entry directory: %s", entry_dir);
+
+    /*
+     * write the .info JSON file
+     */
+    para("", "Forming JSON .info file ...", NULL);
+    write_info(entry_dir, ioccc_id, entry_num, optional_count, optional_list, title, abstract, author_count, author_set);
+    para("... completed JSON .info file.", "", NULL);
+
+    /*
+     * form the .tar.bz2 file
+     */
+    para("Forming tarball ...", NULL);
+    form_tarball(work_dir, entry_dir, ioccc_id, entry_num, tar);
+    para("... completed tarball.", "", NULL);
 
     /*
      * free storage
@@ -755,6 +803,10 @@ main(int argc, char *argv[])
     if (entry_dir != NULL) {
 	free(entry_dir);
 	entry_dir = NULL;
+    }
+    if (title != NULL) {
+	free(title);
+	title = NULL;
     }
     if (author_set != NULL) {
         free_author_array(author_set, author_count);
@@ -1096,7 +1148,7 @@ errp(int exitcode, char const *name, char const *fmt, ...)
  * free_author_array - free storage related to a struct author
  *
  * given:
- * 	author_set		- pointer to a struct author array
+ * 	author_set	- pointer to a struct author array
  * 	author_count	- length of author array
  */
 static void
@@ -1667,9 +1719,9 @@ readline_dup(char **linep, bool strip, size_t *lenp, FILE *stream)
  *
  * given:
  *
- *	work_dir - where the entry directory and tarball are formed
- *	iocccsize - path to the iocccsize tool
- *	tar - path to tar that supports -cjvf
+ *	work_dir	- where the entry directory and tarball are formed
+ *	iocccsize	- path to the iocccsize tool
+ *	tar		- path to tar that supports -cjvf
  *
  * NOTE: This function does not return on error or if things are not sane.
  */
@@ -1944,7 +1996,7 @@ sanity_chk(char const *work_dir, char const *iocccsize, char const *tar, char co
      * Verify that iocccsize is new enough to have a -V flag
      */
     /* form the command to execute */
-    cmd_len = strlen(iocccsize) + sizeof(" -V >/dev/null 2>&1 </dev/null") + 1;
+    cmd_len = strlen(iocccsize) + 1 + LITLEN("-V >/dev/null 2>&1 </dev/null") + 1;
     errno = 0;	/* pre-clear errno for errp() */
     cmd = malloc(cmd_len + 1);
     if (cmd == NULL) {
@@ -1959,6 +2011,7 @@ sanity_chk(char const *work_dir, char const *iocccsize, char const *tar, char co
     }
     /* try running iocccsize -V to see if we can execute it - must exit 3 */
     dbg(DBG_MED, "testing if %s supports -V", iocccsize);
+    dbg(DBG_HIGH, "system(%s)", cmd);
     errno = 0;	/* pre-clear errno for errp() */
     exit_code = system(cmd);
     if (exit_code < 0) {
@@ -1984,7 +2037,7 @@ sanity_chk(char const *work_dir, char const *iocccsize, char const *tar, char co
     /*
      * obtain version string from iocccsize -V
      *
-     * We need to e sure that theiocccsize version is OK.
+     * We need to e sure that the iocccsize version is OK.
      *
      * The tool:
      *
@@ -1998,7 +2051,7 @@ sanity_chk(char const *work_dir, char const *iocccsize, char const *tar, char co
      * AND the minor version must be >= MIN_IOCCCSIZE_MINVER.
      */
     /* form the command to execute */
-    cmd_len = strlen(iocccsize) + sizeof(" -V 2>/dev/null </dev/null") + 1;
+    cmd_len = strlen(iocccsize) + 1 + LITLEN("-V 2>/dev/null </dev/null") + 1;
     errno = 0;	/* pre-clear errno for errp() */
     cmd = malloc(cmd_len + 1);
     if (cmd == NULL) {
@@ -2092,9 +2145,9 @@ sanity_chk(char const *work_dir, char const *iocccsize, char const *tar, char co
  *	para("line 1", "line 2", "", "prev line 3 was an empty line", NULL);
  *
  * given:
- *	line	1st paragraph line to print
- *	...	strings as paragraph lines to print
- *	NULL	end of string list
+ *	line	- 1st paragraph line to print
+ *	...	- strings as paragraph lines to print
+ *	NULL	- end of string list
  *
  * This function does not return on error.
  */
@@ -2217,10 +2270,10 @@ para(char *line, ...)
  *	fpara(stderr, "line 1", "line 2", "", "prev line 3 was an empty line", NULL);
  *
  * given:
- *	stream	open file stream to print a paragraph onto
- *	line	1st paragraph line to print
- *	...	strings as paragraph lines to print
- *	NULL	end of string list
+ *	stream	- open file stream to print a paragraph onto
+ *	line	- 1st paragraph line to print
+ *	...	- strings as paragraph lines to print
+ *	NULL	- end of string list
  *
  * This function does not return on error.
  */
@@ -2458,7 +2511,7 @@ prompt(char *str, size_t *lenp)
  * *testp will be set to true, otherwise it will be set to false.
  *
  * given:
- *	testp - pointer to boolean for test mode
+ *	testp	- pointer to boolean for test mode
  *
  * returns:
  *	malloced contest ID string
@@ -2669,9 +2722,9 @@ get_entry_num(void)
  * will be formed.
  *
  * given:
- *	work_dir - working directory under which the entry directory is formed
- *	ioccc_id - IOCCC entry ID (or test)
- *	entry_num - entry number
+ *	work_dir	- working directory under which the entry directory is formed
+ *	ioccc_id	- IOCCC entry ID (or test)
+ *	entry_num	- entry number
  *
  * returns:
  *	the path of the working directory
@@ -2757,10 +2810,10 @@ mk_entry_dir(char *work_dir, char *ioccc_id, int entry_num)
  * use cp to copy into entry_dir/prog.c.
  *
  * given:
- *	entry_dir	the newly created entry directory (by mk_entry_dir()) under work_dir
- *	iocccsize	iocccsize path
- *	cp		cp utility path
- *	prog_c		prog_c arg: given path to prog.c
+ *	entry_dir	- newly created entry directory (by mk_entry_dir()) under work_dir
+ *	iocccsize	- iocccsize path
+ *	cp		- cp utility path
+ *	prog_c		- prog_c arg: given path to prog.c
  *
  * This function does not return on error.
  */
@@ -2866,7 +2919,7 @@ check_prog_c(char const *entry_dir, char const *iocccsize, char const *cp, char 
 	}
 	fpara(stderr,
 	      "Unless you are attempting some cleaver rule abuse, then we strongly suggest that you",
-	      "tell us about your rule abose in your remarks.md file.  Be sure you have read the",
+	      "tell us about your rule abuse in your remarks.md file.  Be sure you have read the",
 	      "\"ABUSING THE RULES\" section of the guidelines.  And more importantly, read rule 12!",
 	      "",
 	      NULL);
@@ -2888,12 +2941,12 @@ check_prog_c(char const *entry_dir, char const *iocccsize, char const *cp, char 
      * will print the Rule 2b size and exit.
      *
      * If the size returned is outside of the allowed range, the user will
-     * be asked if they want to proceed.  We will allow it if the user insits
+     * be asked if they want to proceed.  We will allow it if the user insists
      * on proceeding, or of iocccsize says the size is allowed under Rule 2a.
      */
     entry_dir_len = strlen(entry_dir);
     prog_c_len = strlen(prog_c);
-    cmd_len = strlen(iocccsize) + sizeof(" -i < ") + prog_c_len + sizeof(" > ") + entry_dir_len + sizeof("/.size") + 1;
+    cmd_len = strlen(iocccsize) + 1 + LITLEN("-i <") + prog_c_len + 1 + LITLEN(">") + 1 | entry_dir_len + LITLEN("/.size") + 1;
     errno = 0;	/* pre-clear errno for errp() */
     cmd = malloc(cmd_len + 1);
     if (cmd == NULL) {
@@ -2906,6 +2959,7 @@ check_prog_c(char const *entry_dir, char const *iocccsize, char const *cp, char 
 	errp(104, __FUNCTION__, "snprintf #0 error: %d", ret);
 	/*NOTREACHED*/
     }
+    dbg(DBG_HIGH, "popen(%s, r)", cmd);
     /* pre-flush to avoid popen() buffered stdio issues */
     clearerr(stdout);	/* pre-clear ferror() status */
     errno = 0;	/* pre-clear errno for errp() */
@@ -2961,7 +3015,7 @@ check_prog_c(char const *entry_dir, char const *iocccsize, char const *cp, char 
 	}
 	fpara(stderr,
 	      "Unless you are attempting some cleaver rule abuse, then we strongly suggest that you",
-	      "tell us about your rule abose in your remarks.md file.  Be sure you have read the",
+	      "tell us about your rule abuse in your remarks.md file.  Be sure you have read the",
 	      "\"ABUSING THE RULES\" section of the guidelines.  And more importantly, read rule 12!",
 	      "",
 	      NULL);
@@ -2976,7 +3030,7 @@ check_prog_c(char const *entry_dir, char const *iocccsize, char const *cp, char 
     /*
      * copy prog.c under entry_dir
      */
-    cp_cmd_len = strlen(cp) + 1 + prog_c_len + 1 + entry_dir_len + 1 + sizeof("prog.c") + 1;
+    cp_cmd_len = strlen(cp) + 1 + prog_c_len + 1 + entry_dir_len + 1 + LITLEN("prog.c") + 1;
     errno = 0;	/* pre-clear errno for errp() */
     cp_cmd = malloc(cp_cmd_len + 1);
     if (cp_cmd == NULL) {
@@ -2997,6 +3051,7 @@ check_prog_c(char const *entry_dir, char const *iocccsize, char const *cp, char 
 	errp(115, __FUNCTION__, "fflush(stdout) #2: error code: %d", ret);
 	/*NOTREACHED*/
     }
+    dbg(DBG_HIGH, "system(%s)", cp_cmd);
     exit_code = system(cp_cmd);
     if (exit_code < 0) {
 	errp(116, __FUNCTION__, "error calling system(%s)", cp_cmd);
@@ -3005,7 +3060,7 @@ check_prog_c(char const *entry_dir, char const *iocccsize, char const *cp, char 
 	errp(117, __FUNCTION__, "execution of the shell failed for system(%s)", cp_cmd);
 	/*NOTREACHED*/
     } else if (exit_code != 0) {
-	err(118, __FUNCTION__, "%s failed with exit code: %d", cp_cmd, exit_code);
+	err(118, __FUNCTION__, "%s failed with exit code: %d", cp_cmd, WEXITSTATUS(exit_code));
 	/*NOTREACHED*/
     }
     return;
@@ -3019,7 +3074,7 @@ check_prog_c(char const *entry_dir, char const *iocccsize, char const *cp, char 
  * Determine if there is a clobber rule.  Determine if there is a try rule.
  *
  * NOTE: This is a simplistic Makefile line parser.  It is possible to
- *	 fool the line scanner and to evate rule detection due to use of
+ *	 fool the line scanner and to evade rule detection due to use of
  *	 Makefile variables, line continuation, conditional Gnu-make controls, etc.
  *
  * given:
@@ -3222,7 +3277,7 @@ inspect_Makefile(char const *Makefile)
     if (found_clobber_rule == false) {
 	fpara(stderr,
 	      "  The Makefile appears to not have a clobber rule.",
-	      "    The clobber rule shoould restore the directory to the original submission state.",
+	      "    The clobber rule should restore the directory to the original submission state.",
 	      "    The clobber role should depend on the clean rule, it could remove the entry's program,",
 	      "    clean up after program execution (if needed), and restore the entire directory back",
 	      "    to the original submission state.",
@@ -3250,9 +3305,9 @@ inspect_Makefile(char const *Makefile)
  * use cp to copy into entry_dir/Makefile.
  *
  * given:
- *	entry_dir	the newly created entry directory (by mk_entry_dir()) under work_dir
- *	cp		cp utility path
- *	Makefile	Makefile arg: given path to Makefile
+ *	entry_dir	- newly created entry directory (by mk_entry_dir()) under work_dir
+ *	cp		- cp utility path
+ *	Makefile	- Makefile arg: given path to Makefile
  *
  * This function does not return on error.
  */
@@ -3327,9 +3382,9 @@ check_Makefile(char const *entry_dir, char const *cp, char const *Makefile)
 	      "Makefiles must have the following Makefile rules:",
 	      "",
 	      "    all - compile the entry, must be the 1st entry",
-	      "    clean - remove intermediate complilation files",
+	      "    clean - remove intermediate compilation files",
 	      "    clobber - clean, remove compiled entry, restore to the original entry state",
-	      "    try - invole the entry at least once",
+	      "    try - invoke the entry at least once",
 	      "",
 	      "While this program's parser may have missed finding those Makefile rules,",
 	      "chances are this file is not a proper Makefile under the IOCCC rules:",
@@ -3350,6 +3405,7 @@ check_Makefile(char const *entry_dir, char const *cp, char const *Makefile)
 	    err(130, __FUNCTION__, "Use a different Makefile or modify this file: %s", Makefile);
 	    /*NOTREACHED*/
 	} else {
+	    errno = 0;	/* pre-clear errno for errp() */
 	    ret = fprintf(stderr, "You should hope that is Makefile will be OK: %s\n", Makefile);
 	    if (ret < 0) {
 		errp(131, __FUNCTION__, "fprintf error: %d", ret);
@@ -3363,7 +3419,7 @@ check_Makefile(char const *entry_dir, char const *cp, char const *Makefile)
      */
     entry_dir_len = strlen(entry_dir);
     Makefile_len = strlen(Makefile);
-    cp_cmd_len = strlen(cp) + 1 + Makefile_len + 1 + entry_dir_len + 1 + sizeof("Makefile") + 1;
+    cp_cmd_len = strlen(cp) + 1 + Makefile_len + 1 + entry_dir_len + 1 + LITLEN("Makefile") + 1;
     errno = 0;	/* pre-clear errno for errp() */
     cp_cmd = malloc(cp_cmd_len + 1);
     if (cp_cmd == NULL) {
@@ -3384,6 +3440,7 @@ check_Makefile(char const *entry_dir, char const *cp, char const *Makefile)
 	errp(134, __FUNCTION__, "fflush(stdout) error code: %d", ret);
 	/*NOTREACHED*/
     }
+    dbg(DBG_HIGH, "system(%s)", cp_cmd);
     exit_code = system(cp_cmd);
     if (exit_code < 0) {
 	errp(135, __FUNCTION__, "error calling system(%s)", cp_cmd);
@@ -3392,7 +3449,7 @@ check_Makefile(char const *entry_dir, char const *cp, char const *Makefile)
 	errp(136, __FUNCTION__, "execution of the shell failed for system(%s)", cp_cmd);
 	/*NOTREACHED*/
     } else if (exit_code != 0) {
-	err(137, __FUNCTION__, "%s failed with exit code: %d", cp_cmd, exit_code);
+	err(137, __FUNCTION__, "%s failed with exit code: %d", cp_cmd, WEXITSTATUS(exit_code));
 	/*NOTREACHED*/
     }
     return;
@@ -3407,9 +3464,9 @@ check_Makefile(char const *entry_dir, char const *cp, char const *Makefile)
  * use cp to copy into entry_dir/remarks.md.
  *
  * given:
- *	entry_dir	the newly created entry directory (by mk_entry_dir()) under work_dir
- *	cp		cp utility path
- *	remarks_md	remarks_md arg: given path to author's remarks markdown file
+ *	entry_dir	- the newly created entry directory (by mk_entry_dir()) under work_dir
+ *	cp		- cp utility path
+ *	remarks_md	- remarks_md arg: given path to author's remarks markdown file
  *
  * This function does not return on error.
  */
@@ -3476,7 +3533,7 @@ check_remarks_md(char const *entry_dir, char const *cp, char const *remarks_md)
      */
     entry_dir_len = strlen(entry_dir);
     remarks_md_len = strlen(remarks_md);
-    cp_cmd_len = strlen(cp) + 1 + remarks_md_len + 1 + entry_dir_len + 1 + sizeof("remarks_md") + 1;
+    cp_cmd_len = strlen(cp) + 1 + remarks_md_len + 1 + entry_dir_len + 1 + LITLEN("remarks_md") + 1;
     errno = 0;	/* pre-clear errno for errp() */
     cp_cmd = malloc(cp_cmd_len + 1);
     if (cp_cmd == NULL) {
@@ -3497,6 +3554,7 @@ check_remarks_md(char const *entry_dir, char const *cp, char const *remarks_md)
 	errp(146, __FUNCTION__, "fflush(stdout) error code: %d", ret);
 	/*NOTREACHED*/
     }
+    dbg(DBG_HIGH, "system(%s)", cp_cmd);
     exit_code = system(cp_cmd);
     if (exit_code < 0) {
 	errp(147, __FUNCTION__, "error calling system(%s)", cp_cmd);
@@ -3505,7 +3563,7 @@ check_remarks_md(char const *entry_dir, char const *cp, char const *remarks_md)
 	errp(148, __FUNCTION__, "execution of the shell failed for system(%s)", cp_cmd);
 	/*NOTREACHED*/
     } else if (exit_code != 0) {
-	err(149, __FUNCTION__, "%s failed with exit code: %d", cp_cmd, exit_code);
+	err(149, __FUNCTION__, "%s failed with exit code: %d", cp_cmd, WEXITSTATUS(exit_code));
 	/*NOTREACHED*/
     }
     return;
@@ -3516,7 +3574,7 @@ check_remarks_md(char const *entry_dir, char const *cp, char const *remarks_md)
  * basename - determine the final portion of a path
  *
  * given:
- *	path
+ *	path	- path to form the basename of
  *
  * returns:
  *	malloced basename
@@ -3606,10 +3664,10 @@ basename(char const *path)
  * use cp to copy into entry_dir/remarks.md.
  *
  * given:
- *	entry_dir	the newly created entry directory (by mk_entry_dir()) under work_dir
- *	cp		cp utility path
- *	count		number of optional data files argments
- *	args		pointer to an array of strings starting with 1st optional data file
+ *	entry_dir	- newly created entry directory (by mk_entry_dir()) under work_dir
+ *	cp		- cp utility path
+ *	count		- number of optional data files arguments
+ *	args		- pointer to an array of strings starting with 1st optional data file
  *
  * This function does not return on error.
  */
@@ -3620,10 +3678,10 @@ check_optional_data_files(char const *entry_dir, char const *cp, int count, char
     char *dest;		/* destination path of an optional data file */
     size_t dest_len;		/* length of the optional data file path */
     size_t entry_dir_len;	/* length of the entry_dir path */
-    int ret;			/* libc function return */
     char *cp_cmd = NULL;	/* cp prog_c entry_dir/prog.c */
     int cp_cmd_len;		/* length of cp command buffer */
     int exit_code;		/* exit code from system(cp_cmd) */
+    int ret;			/* libc function return */
     int i;
 
     /*
@@ -3721,7 +3779,7 @@ check_optional_data_files(char const *entry_dir, char const *cp, int count, char
 		  "Optional data files cannot overwrite other files.",
 		  "",
 		  NULL);
-	    err(160, __FUNCTION__, "for option file: %s desitnation already exists: %s", args[i], dest);
+	    err(160, __FUNCTION__, "for option file: %s destination already exists: %s", args[i], dest);
 	    /*NOTREACHED*/
 	}
 
@@ -3749,6 +3807,7 @@ check_optional_data_files(char const *entry_dir, char const *cp, int count, char
 	    errp(163, __FUNCTION__, "fflush(stdout) error code: %d", ret);
 	    /*NOTREACHED*/
 	}
+	dbg(DBG_HIGH, "system(%s)", cp_cmd);
 	exit_code = system(cp_cmd);
 	if (exit_code < 0) {
 	    errp(164, __FUNCTION__, "error calling system(%s)", cp_cmd);
@@ -3757,7 +3816,7 @@ check_optional_data_files(char const *entry_dir, char const *cp, int count, char
 	    errp(165, __FUNCTION__, "execution of the shell failed for system(%s)", cp_cmd);
 	    /*NOTREACHED*/
 	} else if (exit_code != 0) {
-	    err(166, __FUNCTION__, "%s failed with exit code: %d", cp_cmd, exit_code);
+	    err(166, __FUNCTION__, "%s failed with exit code: %d", cp_cmd, WEXITSTATUS(exit_code));
 	    /*NOTREACHED*/
 	}
 
@@ -3818,7 +3877,7 @@ lookup_location_name(char *upper_code)
  * yes_or_no - determine if input is yes or no
  *
  * given:
- *	question	string to prompt for a question
+ *	question	- string to prompt for a question
  *
  * returns:
  *	true ==> input is yes in some form,
@@ -3841,7 +3900,7 @@ yes_or_no(char *question)
     /*
      * ask the question and obtain the response
      */
-    do{
+    do {
 	response = prompt(question, NULL);
 
 	/*
@@ -3919,12 +3978,214 @@ yes_or_no(char *question)
 
 
 /*
+ * get_title - get the title of the entry
+ *
+ * Ask the user for an entry title, validate the response
+ * and return the malloced title.
+ *
+ * returns:
+ *	malloced and validated title
+ *
+ * This function does not return on error.
+ */
+static char *
+get_title(void)
+{
+    char *title = NULL;		/* entry title to return or NULL */
+    size_t len;			/* length of title */
+    size_t span;		/* span of valid characters in title */
+    int ret;			/* libc function return */
+
+    /*
+     * inform the user of the title
+     */
+    para("An entry title is a short name consisting of alphanumeric characters [a-zA-Z0-9].",
+	 "",
+         NULL);
+
+    /*
+     * ask the question and obtain the response
+     */
+    do {
+
+	/*
+	 * obtain the reply
+	 */
+	title = prompt("Enter a title for your entry", NULL);
+
+	/*
+	 * title cannot be empty
+	 */
+	len = strlen(title);
+	if (len == 0) {
+
+	    /* reject empty title */
+	    fpara(stderr,
+		  "",
+		  "The title cannot be an empty string.",
+		  "",
+		  NULL);
+
+	    /* free storage */
+	    if (title != NULL) {
+	        free(title);
+		title = NULL;
+	    }
+	    continue;
+
+	/*
+	 * title cannot be too long
+	 */
+	} else if (len > MAX_TITLE_LEN) {
+
+	    /* reject long title */
+	    fpara(stderr,
+		  "",
+		  "That title is too long.",
+		  "",
+		  NULL);
+	    errno = 0;	/* pre-clear errno for errp() */
+	    ret = fprintf(stderr, "You title must be between 1 and %d characters long.\n\n", MAX_TITLE_LEN);
+	    if (ret < 0) {
+		errp(169, __FUNCTION__, "fprintf error: %d", ret);
+		/*NOTREACHED*/
+	    }
+
+	    /* free storage */
+	    if (title != NULL) {
+	        free(title);
+		title = NULL;
+	    }
+	    continue;
+	}
+
+	/*
+	 * verify that the title characters are from the valid character set
+	 */
+	span = strspn(title, TITLE_CHARS);
+	if (span != len) {
+
+	    /* reject long title */
+	    fpara(stderr,
+		  "",
+		  "That title contains invalid characters.  A title can only contain alphanumeric characters.",
+		  "That is, only lower case letters [a-z], UPPER case letters [A-Z], and digits [0-9].",
+		  "",
+		  NULL);
+
+	    /* free storage */
+	    if (title != NULL) {
+	        free(title);
+		title = NULL;
+	    }
+	    continue;
+	}
+    } while (title == NULL);
+
+    /*
+     * returned malloced title
+     */
+    return title;
+}
+
+
+/*
+ * get_abstract - get the abstract of the entry
+ *
+ * Ask the user for an entry abstract, validate the response
+ * and return the malloced abstract.
+ *
+ * returns:
+ *	malloced and validated abstract
+ *
+ * This function does not return on error.
+ */
+static char *
+get_abstract(void)
+{
+    char *abstract = NULL;	/* entry abstract to return or NULL */
+    size_t len;			/* length of abstract */
+    int ret;			/* libc function return */
+
+    /*
+     * inform the user of the abstract
+     */
+    para("",
+         "An entry abstract is 1-line summary of your entry.",
+	 "",
+         NULL);
+
+    /*
+     * ask the question and obtain the response
+     */
+    do {
+
+	/*
+	 * obtain the reply
+	 */
+	abstract = prompt("Enter a 1-line abstract of your entry", NULL);
+
+	/*
+	 * abstract cannot be empty
+	 */
+	len = strlen(abstract);
+	if (len == 0) {
+
+	    /* reject empty abstract */
+	    fpara(stderr,
+		  "",
+		  "The abstract cannot be an empty string.",
+		  "",
+		  NULL);
+
+	    /* free storage */
+	    if (abstract != NULL) {
+	        free(abstract);
+		abstract = NULL;
+	    }
+	    continue;
+
+	/*
+	 * abstract cannot be too long
+	 */
+	} else if (len > MAX_ABSTRACT_LEN) {
+
+	    /* reject long abstract */
+	    fpara(stderr,
+		  "",
+		  "That abstract is too long.",
+		  "",
+		  NULL);
+	    errno = 0;	/* pre-clear errno for errp() */
+	    ret = fprintf(stderr, "You abstract must be between 1 and %d characters long.\n\n", MAX_ABSTRACT_LEN);
+	    if (ret < 0) {
+		errp(170, __FUNCTION__, "fprintf error: %d", ret);
+		/*NOTREACHED*/
+	    }
+
+	    /* free storage */
+	    if (abstract != NULL) {
+	        free(abstract);
+		abstract = NULL;
+	    }
+	    continue;
+	}
+    } while (abstract == NULL);
+
+    /*
+     * returned malloced abstract
+     */
+    return abstract;
+}
+
+
+/*
  * get_author_info - obtain information on entry authors
  *
  * given:
- *	ioccc_id	IOCCC entry ID or test
- *	entry_num	entry number
- *	author_set	pointer to array of authors
+ *	ioccc_id	- IOCCC entry ID or test
+ *	entry_num	- entry number
+ *	author_set	- pointer to array of authors
  *
  * returns:
  *	number of authors
@@ -3948,7 +4209,7 @@ get_author_info(char *ioccc_id, int entry_num, struct author **author_set_p)
      * firewall
      */
     if (ioccc_id == NULL || author_set_p == NULL) {
-	err(169, __FUNCTION__, "called with NULL arg(s)");
+	err(171, __FUNCTION__, "called with NULL arg(s)");
 	/*NOTREACHED*/
     }
 
@@ -3960,13 +4221,13 @@ get_author_info(char *ioccc_id, int entry_num, struct author **author_set_p)
         /*
 	 * ask for author count
 	 */
-	author_count_str = prompt("Enter the number of authors of this entry", NULL);
+	author_count_str = prompt("\nEnter the number of authors of this entry", NULL);
 
 	/*
 	 * convert author_count_str to number
 	 */
 	ret = sscanf(author_count_str, "%d", &author_count);
-	if (ret != 1 || author_count < 0 || author_count > MAX_AUTHORS) {
+	if (ret != 1 || author_count < 1 || author_count > MAX_AUTHORS) {
 	    (void) fprintf(stderr, "\nThe number of authors must a number from 1 thru %d, please re-enter.\n", MAX_AUTHORS);
 	    (void) fprintf(stderr, "If you happen to have more than %d authors. we ask that you pick the\n", MAX_AUTHORS);
 	    (void) fprintf(stderr, "just %d authors and mention the remainder of the authors in the remarks file.\n", MAX_AUTHORS);
@@ -3989,7 +4250,7 @@ get_author_info(char *ioccc_id, int entry_num, struct author **author_set_p)
     errno = 0;	/* pre-clear errno for errp() */
     author_set = (struct author *)malloc(sizeof(struct author) * author_count);
     if (author_set == NULL) {
-	errp(170, __FUNCTION__, "malloc a struct author array of length: %d failed", author_count);
+	errp(172, __FUNCTION__, "malloc a struct author array of length: %d failed", author_count);
 	/*NOTREACHED*/
     }
     /* pre-zeroize the author array */
@@ -4017,22 +4278,22 @@ get_author_info(char *ioccc_id, int entry_num, struct author **author_set_p)
 	 NULL);
     ret = puts(ISO_3166_1_CODE_URL0);
     if (ret < 0) {
-	errp(171, __FUNCTION__, "puts error printing ISO 3166-1 URL");
+	errp(173, __FUNCTION__, "puts error printing ISO 3166-1 URL");
 	/*NOTREACHED*/
     }
     ret = puts(ISO_3166_1_CODE_URL1);
     if (ret < 0) {
-	errp(172, __FUNCTION__, "puts error printing ISO 3166-1 URL");
+	errp(174, __FUNCTION__, "puts error printing ISO 3166-1 URL");
 	/*NOTREACHED*/
     }
     ret = puts(ISO_3166_1_CODE_URL2);
     if (ret < 0) {
-	errp(173, __FUNCTION__, "puts error printing ISO 3166-1 URL2");
+	errp(175, __FUNCTION__, "puts error printing ISO 3166-1 URL2");
 	/*NOTREACHED*/
     }
     ret = puts(ISO_3166_1_CODE_URL3);
     if (ret < 0) {
-	errp(174, __FUNCTION__, "puts error printing ISO 3166-1 URL2");
+	errp(176, __FUNCTION__, "puts error printing ISO 3166-1 URL2");
 	/*NOTREACHED*/
     }
     para("",
@@ -4058,7 +4319,7 @@ get_author_info(char *ioccc_id, int entry_num, struct author **author_set_p)
 	errno = 0;	/* pre-clear errno for errp() */
 	ret = printf("\nEnter information for author #%d\n\n", i);
 	if (ret < 0) {
-	    errp(175, __FUNCTION__, "printf error printing author number");
+	    errp(177, __FUNCTION__, "printf error printing author number");
 	    /*NOTREACHED*/
 	}
 	author_set[i].author_num = i;
@@ -4289,7 +4550,7 @@ get_author_info(char *ioccc_id, int entry_num, struct author **author_set_p)
 	     * just in case we have a bogus length
 	     */
 	    } else if (len < 0) {
-		errp(176, __FUNCTION__, "Bogus Email length: %d < 0", len);
+		errp(178, __FUNCTION__, "Bogus Email length: %d < 0", len);
 		/*NOTREACHED*/
 	    }
 	} while (author_set[i].email == NULL);
@@ -4335,10 +4596,10 @@ get_author_info(char *ioccc_id, int entry_num, struct author **author_set_p)
 	     * if it starts with http:// or https:// and has more characters, it is OK
 	     */
 	    if (len > 0) {
-		if (((strncmp(author_set[i].url, "http://", sizeof("http://")-1) == 0) &&
-		     (author_set[i].url[sizeof("http://")-1] != '\0')) ||
-		    ((strncmp(author_set[i].url, "https://", sizeof("https://")-1) == 0) &&
-		     (author_set[i].url[sizeof("https://")-1] != '\0'))) {
+		if (((strncmp(author_set[i].url, "http://", LITLEN("http://")) == 0) &&
+		     (author_set[i].url[LITLEN("http://")] != '\0')) ||
+		    ((strncmp(author_set[i].url, "https://", LITLEN("https://")) == 0) &&
+		     (author_set[i].url[LITLEN("https://")] != '\0'))) {
 
 		    /* URL appears to in valid form */
 		    break;
@@ -4353,7 +4614,7 @@ get_author_info(char *ioccc_id, int entry_num, struct author **author_set_p)
 		     */
 		    fpara(stderr,
 			  "",
-			  "url addresses must begin with http:// or https:// followed by the rest of the homepage URL",
+			  "url addresses must begin with http:// or https:// followed by the rest of the home page URL",
 			  "",
 			  NULL);
 
@@ -4371,7 +4632,7 @@ get_author_info(char *ioccc_id, int entry_num, struct author **author_set_p)
 	     * just in case we have a bogus length
 	     */
 	    } else if (len < 0) {
-		errp(177, __FUNCTION__, "Bogus url length: %d < 0", len);
+		errp(179, __FUNCTION__, "Bogus url length: %d < 0", len);
 		/*NOTREACHED*/
 	    }
 	} while (author_set[i].url == NULL);
@@ -4444,7 +4705,7 @@ get_author_info(char *ioccc_id, int entry_num, struct author **author_set_p)
 	     * just in case we have a bogus length
 	     */
 	    } else if (len < 0) {
-		errp(178, __FUNCTION__, "Bogus twitter handle length: %d < 0", len);
+		errp(180, __FUNCTION__, "Bogus twitter handle length: %d < 0", len);
 		/*NOTREACHED*/
 	    }
 	} while (author_set[i].twitter == NULL);
@@ -4498,7 +4759,7 @@ get_author_info(char *ioccc_id, int entry_num, struct author **author_set_p)
 		     */
 		    fpara(stderr,
 			  "",
-			  "GitHuv accounts must start with a @ and have no other @-signs.",
+			  "GitHub accounts must start with a @ and have no other @-signs.",
 			  "",
 			  NULL);
 
@@ -4516,7 +4777,7 @@ get_author_info(char *ioccc_id, int entry_num, struct author **author_set_p)
 	     * just in case we have a bogus length
 	     */
 	    } else if (len < 0) {
-		errp(179, __FUNCTION__, "Bogus GitHub account length: %d < 0", len);
+		errp(181, __FUNCTION__, "Bogus GitHub account length: %d < 0", len);
 		/*NOTREACHED*/
 	    }
 	} while (author_set[i].github == NULL);
@@ -4562,7 +4823,7 @@ get_author_info(char *ioccc_id, int entry_num, struct author **author_set_p)
 	     * just in case we have a bogus length
 	     */
 	    if (len < 0) {
-		errp(180, __FUNCTION__, "Bogus affiliation length: %d < 0", len);
+		errp(182, __FUNCTION__, "Bogus affiliation length: %d < 0", len);
 		/*NOTREACHED*/
 	    }
 	} while (author_set[i].affiliation == NULL);
@@ -4580,7 +4841,7 @@ get_author_info(char *ioccc_id, int entry_num, struct author **author_set_p)
 	    ((author_set[i].twitter[0] == '\0') ? printf("Twitter handle not given\n") : printf("Twitter handle: %s\n", author_set[i].twitter)) < 0 ||
 	    ((author_set[i].github[0] == '\0') ? printf("GitHub username not given\n") : printf("GitHub username: %s\n", author_set[i].github)) < 0 ||
 	    ((author_set[i].affiliation[0] == '\0') ? printf("Affiliation not given\n\n") : printf("Affiliation: %s\n\n", author_set[i].affiliation)) < 0) {
-	    errp(181, __FUNCTION__, "error while printing author #%d information\n", i);
+	    errp(183, __FUNCTION__, "error while printing author #%d information\n", i);
 	    /*NOTREACHED*/
 	}
 	yorn = yes_or_no("Is that author information correct? [yn]");
@@ -4600,4 +4861,173 @@ get_author_info(char *ioccc_id, int entry_num, struct author **author_set_p)
      * return the author count
      */
     return author_count;
+}
+
+
+/*
+ * verify_entry_dir - ask user to verify the contents of the entry directory
+ *
+ * Print a list of files in the entry directory using ls -l (before .info file is created),
+ * and ask the user to verify the result.
+ *
+ * given:
+ *	entry_dir	- path to entry directory
+ *	ls		- path to ls utility
+ *
+ * This function does not return on error.
+ */
+static void
+verify_entry_dir(char const *entry_dir, char const *ls)
+{
+    char *ls_cmd = NULL;	/* cd entry_dir && ls -l . */
+    int ls_cmd_len;		/* length of ls command buffer */
+    int exit_code;		/* exit code from system(ls_cmd) */
+    bool yorn = false;		/* response to a question */
+    int ret;			/* libc function return */
+
+    /*
+     * firewall
+     */
+    if (entry_dir == NULL || ls == NULL) {
+	err(184, __FUNCTION__, "called with NULL arg(s)");
+	/*NOTREACHED*/
+    }
+
+    /*
+     * list the contents of the entry_dir
+     */
+    para("",
+	 "The following is a listing of the entry directory:",
+	 "",
+	 NULL);
+    errno = 0;	/* pre-clear errno for errp() */
+    ret = printf("    %s\n", entry_dir);
+    if (ret < 0) {
+	err(185, __FUNCTION__, "printf error code: %d", ret);
+	/*NOTREACHED*/
+    }
+    para("",
+	 "form which the bzip2 tarball will be formed:",
+	 "",
+	 NULL);
+    ls_cmd_len = LITLEN("cd") + 1 + strlen(entry_dir) + 1 + LITLEN("&&") + 1 + strlen(ls) + 1 + LITLEN("-l .") + 1;
+    errno = 0;	/* pre-clear errno for errp() */
+    ls_cmd = malloc(ls_cmd_len + 1);
+    if (ls_cmd == NULL) {
+	errp(186, __FUNCTION__, "malloc of %d bytes failed", ls_cmd_len + 1);
+	/*NOTREACHED*/
+    }
+    errno = 0;	/* pre-clear errno for errp() */
+    ret = snprintf(ls_cmd, ls_cmd_len, "cd %s && %s -l .", entry_dir, ls);
+    if (ret < 0) {
+	errp(187, __FUNCTION__, "snprintf #1 error: %d", ret);
+	/*NOTREACHED*/
+    }
+    dbg(DBG_HIGH, "system(%s)", ls_cmd);
+    /* pre-flush to avoid system() buffered stdio issues */
+    clearerr(stdout);	/* pre-clear ferror() status */
+    errno = 0;	/* pre-clear errno for errp() */
+    ret = fflush(stdout);
+    if (ret < 0) {
+	errp(188, __FUNCTION__, "fflush(stdout) error code: %d", ret);
+	/*NOTREACHED*/
+    }
+    exit_code = system(ls_cmd);
+    if (exit_code < 0) {
+	errp(189, __FUNCTION__, "error calling system(%s)", ls_cmd);
+	/*NOTREACHED*/
+    } else if (exit_code == 127) {
+	errp(190, __FUNCTION__, "execution of the shell failed for system(%s)", ls_cmd);
+	/*NOTREACHED*/
+    } else if (exit_code != 0) {
+	err(191, __FUNCTION__, "%s failed with exit code: %d", ls_cmd, WEXITSTATUS(exit_code));
+	/*NOTREACHED*/
+    }
+
+    /*
+     * ask the user to verify the list
+     */
+    yorn = yes_or_no("\nIs the above list a complete list of your directory? [yn]");
+    if (yorn == false) {
+	fpara(stderr,
+	      "",
+	      "We suggest you remove the existing entry directory, and then",
+	      "rerun this tool with the correct set of file arguments.",
+	      NULL);
+	err(192, __FUNCTION__, "%s failed with exit code: %d", ls_cmd, WEXITSTATUS(exit_code));
+	/*NOTREACHED*/
+    }
+    return;
+}
+
+
+/*
+ * write_info - write the JSON .info file
+ *
+ * Form a simple JSON .info file describing the entry.
+ *
+ * given:
+ *	entry_dir	- path to entry directory
+ *	ioccc_id	- IOCCC entry ID or test
+ *	entry_num	- entry number
+ *	optional_count	- number of optional files
+ *	optional_list	- ptr to list of optional files
+ *	title		- short entry title
+ *	abstract	- 1 line entry abstract
+ *	author_count	- number of authors
+ *	author_set	- pointer to array of authors
+ *
+ * This function does not return on error.
+ */
+static void
+write_info(char const *entry_dir, char const *ioccc_id, int entry_num, int optional_count, char **optional_list,
+	   char const *title, char const *abstract, int author_count, struct author *author_set)
+{
+    /*
+     * firewall
+     */
+    if (entry_dir == NULL || ioccc_id == NULL || optional_list == NULL ||
+        title == NULL || abstract == NULL || author_set == NULL) {
+	err(193, __FUNCTION__, "called with NULL arg(s)");
+	/*NOTREACHED*/
+    }
+    if (optional_count < 0) {
+	err(194, __FUNCTION__, "optional_count %d < 0", optional_count);
+	/*NOTREACHED*/
+    }
+    if (author_count < 0) {
+	err(195, __FUNCTION__, "author_count %d < 0", author_count);
+	/*NOTREACHED*/
+    }
+
+    /* XXX - write more code here */
+}
+
+
+/*
+ * form_tarball - form the compressed tarball
+ *
+ * Given the completed entry directory, form a bzip2 tar file for the user to submit.
+ * Remind the user where to submit their compressed tarball file.
+ *
+ * given:
+ *	work_dir	- working directory under which the entry directory is formed
+ *	entry_dir	- path to entry directory
+ *	ioccc_id	- IOCCC entry ID or test
+ *	tar		- path to the tar utility
+ *
+ * This function does not return on error.
+ */
+static void
+form_tarball(char const *work_dir, char const *entry_dir, char const *ioccc_id, int entry_num, char const *tar)
+{
+    /*
+     * firewall
+     */
+    if (work_dir == NULL || entry_dir == NULL || ioccc_id == NULL || tar == NULL) {
+	err(196, __FUNCTION__, "called with NULL arg(s)");
+	/*NOTREACHED*/
+    }
+
+    /* XXX - write more code here */
 }
