@@ -70,7 +70,7 @@ typedef unsigned char bool;
 /*
  * definitions
  */
-#define VERSION "0.10 2022-01-07"	/* use format: major.minor YYYY-MM-DD */
+#define VERSION "0.11 2022-01-07"	/* use format: major.minor YYYY-MM-DD */
 #define LITLEN(x) (sizeof(x)-1)		/* length of a literal string w/o the NUL byte */
 #define REQUIRED_IOCCCSIZE_MAJVER (28)	/* iocccsize major version must match */
 #define MIN_IOCCCSIZE_MINVER (4)	/* iocccsize minor version must be >= */
@@ -103,6 +103,14 @@ typedef unsigned char bool;
 #define MAX_TITLE_LEN (24)	/* maximum length of a title */
 #define TITLE_CHARS "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789" /* [a-zA-Z0-9] */
 #define MAX_ABSTRACT_LEN (64)	/* maximum length of an abstract */
+
+
+/*
+ * Version of info for JSON the .info.json file.
+ *
+ * The following is NOT the version of this mkiocccentry tool!
+ */
+#define IOCCC_JSON_VERSION "1.0 2022-01-07"	/* version of .info.json file to produce */
 
 
 /*
@@ -155,6 +163,24 @@ struct author {
     char *affiliation;		/* author affiliation or empty string */
     int author_num;		/* author number */
 };
+
+
+/*
+ * info for JSON
+ *
+ * Information we will collect in order to form the .info json file.
+ */
+struct info {
+    char *info_ver;		/* IOCCC info format (IOCCC_JSON_VERSION) */
+    char *mkiocccentry_ver;	/* mkiocccentry version (VERSION) */
+    char *now_epoch;		/* epoch of now_tstamp, currently: Thr Jan  1 00:00:00 1970 UTC */
+    time_t now_tstamp;		/* seconds since epoch when .info json was formed (see gettimeofday(2)) */
+    char *now_gmtime;		/* UTC converted string for now_tstamp (see gmtime(3)) */
+    char *now_asctime;		/* local time converted string for now_tstamp (see asctime(3)) */
+    long tm_gmtoff;		/* local timezone offset from UTC in seconds (see localtime(3)) */
+    /* XXX - ... more here ... */
+};
+
 
 
 /*
@@ -822,6 +848,8 @@ main(int argc, char *argv[])
 }
 
 
+/* XXX - merge with debug.c and debug.h - XXX */
+/* XXX - perform DEBUG_LINT - XXX */
 /*
  * usage - print usage to stderr
  *
@@ -900,8 +928,16 @@ dbg(int level, char const *fmt, ...)
 {
     va_list ap;		/* argument pointer */
     int ret;		/* return code holder */
+    int saved_errno;	/* errno at function start */
 
-    /* start the var arg setup and fetch our first arg */
+    /*
+     * start the var arg setup and fetch our first arg
+     */
+    saved_errno = errno;
+
+    /*
+     * start the var arg setup and fetch our first arg
+     */
     va_start(ap, fmt);
 
     /* firewall */
@@ -932,8 +968,15 @@ dbg(int level, char const *fmt, ...)
 	}
     }
 
-    /* clean up stdarg stuff */
+    /*
+     * clean up stdarg stuff
+     */
     va_end(ap);
+
+    /*
+     * restore previous errno value
+     */
+    errno = saved_errno;
     return;
 }
 
@@ -958,15 +1001,25 @@ warn(char const *name, char const *fmt, ...)
 {
     va_list ap;		/* argument pointer */
     int ret;		/* return code holder */
+    int saved_errno;	/* errno at function start */
 
-    /* start the var arg setup and fetch our first arg */
+    /*
+     * start the var arg setup and fetch our first arg
+     */
+    saved_errno = errno;
+
+    /*
+     * start the var arg setup and fetch our first arg
+     */
     va_start(ap, fmt);
 
     /*
      * NOTE: We cannot use warn because this is the warn function!
      */
 
-    /* firewall */
+    /*
+     * firewall
+     */
     if (name == NULL) {
 	name = "((NULL name))";
 	(void) fprintf(stderr, "\nWarning: in warn(): called with NULL name, forcing name: %s\n", name);
@@ -976,7 +1029,9 @@ warn(char const *name, char const *fmt, ...)
 	(void) fprintf(stderr, "\nWarning: in warn(): called with NULL fmt, forcing fmt: %s\n", fmt);
     }
 
-    /* issue the warning */
+    /*
+     * issue the warning
+     */
     ret = fprintf(stderr, "Warning: %s: ", name);
     if (ret < 0) {
 	(void) fprintf(stderr, "\nWarning: in warn(%s, %s ...): fprintf returned error: %d\n", name, fmt, ret);
@@ -994,8 +1049,15 @@ warn(char const *name, char const *fmt, ...)
 	(void) fprintf(stderr, "\nWarning: in warn(%s, %s ...): fflush returned error: %d\n", name, fmt, ret);
     }
 
-    /* clean up stdarg stuff */
+    /*
+     * clean up stdarg stuff
+     */
     va_end(ap);
+
+    /*
+     * restore previous errno value
+     */
+    errno = saved_errno;
     return;
 }
 
@@ -1009,14 +1071,14 @@ warn(char const *name, char const *fmt, ...)
  * 	fmt		format of the warning
  * 	...		optional format args
  *
- * This function does not return.
- *
  * Example:
  *
  * 	err(1, __FUNCTION__, "bad foobar: %s", message);
  *
  * NOTE: We warn with extra newlines to help internal fault messages stand out.
  *	 Normally one should NOT include newlines in warn messages.
+ *
+ * This function does not return.
  */
 static void
 err(int exitcode, char const *name, char const *fmt, ...)
@@ -1024,10 +1086,14 @@ err(int exitcode, char const *name, char const *fmt, ...)
     va_list ap;		/* argument pointer */
     int ret;		/* return code holder */
 
-    /* start the var arg setup and fetch our first arg */
+    /*
+     * start the var arg setup and fetch our first arg
+     */
     va_start(ap, fmt);
 
-    /* firewall */
+    /*
+     * firewall
+     */
     if (exitcode < 0) {
 	warn(__FUNCTION__, "\nin err(): called with exitcode <0: %d\n", exitcode);
 	exitcode = 255;
@@ -1042,7 +1108,9 @@ err(int exitcode, char const *name, char const *fmt, ...)
 	warn(__FUNCTION__, "\nin err(): called with NULL fmt, forcing fmt: %s\n", fmt);
     }
 
-    /* issue the FATAL error */
+    /*
+     * issue the FATAL error
+     */
     ret = fprintf(stderr, "FATAL[%d]: %s: ", exitcode, name);
     if (ret < 0) {
 	warn(__FUNCTION__, "\nin err(%d, %s, %s ...): fprintf returned error: %d\n", exitcode, name, fmt, ret);
@@ -1060,11 +1128,16 @@ err(int exitcode, char const *name, char const *fmt, ...)
 	warn(__FUNCTION__, "\nin err(%d, %s, %s ...): fflush returned error: %d\n", exitcode, name, fmt, ret);
     }
 
-    /* clean up stdarg stuff */
+    /*
+     * clean up stdarg stuff
+     */
     va_end(ap);
 
-    /* terminate */
+    /*
+     * terminate with exit code
+     */
     exit(exitcode);
+    /*NOTREACHED*/
 }
 
 
@@ -1077,14 +1150,14 @@ err(int exitcode, char const *name, char const *fmt, ...)
  * 	fmt		format of the warning
  * 	...		optional format args
  *
- * This function does not return.
- *
  * Example:
  *
  * 	errp(1, __FUNCTION__, "bad foobar: %s", message);
  *
  * NOTE: We warn with extra newlines to help internal fault messages stand out.
  *	 Normally one should NOT include newlines in warn messages.
+ *
+ * This function does not return.
  */
 static void
 errp(int exitcode, char const *name, char const *fmt, ...)
@@ -1093,10 +1166,14 @@ errp(int exitcode, char const *name, char const *fmt, ...)
     int ret;		/* return code holder */
     int saved_errno;	/* errno value when called */
 
-    /* save errno in case we need it for strerror() */
+    /*
+     * save errno in case we need it for strerror()
+     */
     saved_errno = errno;
 
-    /* start the var arg setup and fetch our first arg */
+    /*
+     * start the var arg setup and fetch our first arg
+     */
     va_start(ap, fmt);
 
     /* firewall */
@@ -1114,7 +1191,9 @@ errp(int exitcode, char const *name, char const *fmt, ...)
 	warn(__FUNCTION__, "\nin err(): called with NULL fmt, forcing fmt: %s\n", fmt);
     }
 
-    /* issue the FATAL error */
+    /*
+     * issue the FATAL error
+     */
     ret = fprintf(stderr, "FATAL[%d]: %s: ", exitcode, name);
     if (ret < 0) {
 	warn(__FUNCTION__, "\nin err(%d, %s, %s ...): fprintf #0 returned error: %d\n", exitcode, name, fmt, ret);
@@ -1136,11 +1215,16 @@ errp(int exitcode, char const *name, char const *fmt, ...)
 	warn(__FUNCTION__, "\nin err(%d, %s, %s ...): fflush returned error: %d\n", exitcode, name, fmt, ret);
     }
 
-    /* clean up stdarg stuff */
+    /*
+     * clean up stdarg stuff
+     */
     va_end(ap);
 
-    /* terminate */
+    /*
+     * terminate with exit code
+     */
     exit(exitcode);
+    /*NOTREACHED*/
 }
 
 
