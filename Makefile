@@ -2,7 +2,7 @@
 #
 # dbg - example of how to use usage(), dbg(), warn(), err()
 #
-# Copyright (c) 2021 by Landon Curt Noll.  All Rights Reserved.
+# Copyright (c) 2021,2022 by Landon Curt Noll.  All Rights Reserved.
 #
 # Permission to use, copy, modify, and distribute this software and
 # its documentation for any purpose and without fee is hereby granted,
@@ -31,7 +31,7 @@ SHELL= /bin/bash
 
 CC= cc
 CFLAGS= -O3 -g3 --pedantic -Wall -Werror -DDBG_TEST
-#CFLAGS= -O3 -g3 --pedantic -Wall -DDBG_TEST
+#CFLAGS= -O3 -g3 --pedantic -Wall -Werror -DDBG_TEST -DDBG_LINT
 RM= rm
 
 DESTDIR= /usr/local/bin
@@ -40,7 +40,7 @@ TARGETS= dbg_test
 
 all: ${TARGETS}
 
-dbg_test: dbg.c
+dbg_test: dbg.c dbg.h
 	${CC} ${CFLAGS} dbg.c -o $@
 
 configure:

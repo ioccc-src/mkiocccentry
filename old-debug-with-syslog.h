@@ -1,3 +1,4 @@
+/* THIS IS NOT DBG - IT IS AN OLD UNUSED ARCHIVE OF DBG USING SYSLOG */
 /*
  * debug - debug, warning and error reporting facility
  *
