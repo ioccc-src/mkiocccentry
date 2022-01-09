@@ -55,6 +55,7 @@
 #include <errno.h>
 #include <sys/stat.h>
 #include <ctype.h>
+#include <time.h>
 #include <sys/time.h>
 
 
@@ -234,7 +235,8 @@ static char const *usage_msg2 =
     "\n"
     "\t\t\t    https://github.com/ioccc-src/iocccsize\n"
     "\n"
-    "\tprog.c\t\tpath to your source entry code\n"
+    "\tprog.c\t\tpath to your source entry code\n";
+static char const *usage_msg3 =
     "\n"
     "\tMakefile\tMakefile to build (make all) and cleanup (make clean & make clobber)\n"
     "\n"
@@ -242,7 +244,8 @@ static char const *usage_msg2 =
     "\t\t\tNOTE: The following is a guide to markdown:\n"
     "\n"
     "\t\t\t    https://www.markdownguide.org/basic-syntax\n"
-    "\n" "\t[file ...]\textra data files to include with your entry\n" "\n" "mkiocccentry version: %s\n";
+    "\n"
+    "\t[file ...]\textra data files to include with your entry\n" "\n" "mkiocccentry version: %s\n";
 
 
 /*
@@ -1061,9 +1064,14 @@ usage(int exitcode, char const *name, char const *str, char const *program, char
 	warn(__FUNCTION__, "\nin usage(): fprintf #1 returned error: %d\n", ret);
     }
     errno = 0;			/* pre-clear errno for errp() */
-    ret = fprintf(stderr, usage_msg2, MKIOCCCENTRY_VERSION);
+    ret = fprintf(stderr, usage_msg2);
     if (ret < 0) {
-	warn(__FUNCTION__, "\nin usage(): fprintf #1 returned error: %d\n", ret);
+	warn(__FUNCTION__, "\nin usage(): fprintf #2 returned error: %d\n", ret);
+    }
+    errno = 0;			/* pre-clear errno for errp() */
+    ret = fprintf(stderr, usage_msg3, MKIOCCCENTRY_VERSION);
+    if (ret < 0) {
+	warn(__FUNCTION__, "\nin usage(): fprintf #3 returned error: %d\n", ret);
     }
 
     /*
@@ -3435,7 +3443,7 @@ check_prog_c(struct info *infop, char const *entry_dir, char const *iocccsize, c
      */
     entry_dir_len = strlen(entry_dir);
     prog_c_len = strlen(prog_c);
-    cmd_len = strlen(iocccsize) + 1 + LITLEN("-i <") + prog_c_len + 1 + LITLEN(">") + 1 | entry_dir_len + LITLEN("/.size") + 1;
+    cmd_len = strlen(iocccsize) + 1 + LITLEN("-i <") + prog_c_len + 1 + LITLEN(">") + 1 + entry_dir_len + LITLEN("/.size") + 1;
     errno = 0;			/* pre-clear errno for errp() */
     cmd = malloc(cmd_len + 1);
     if (cmd == NULL) {
@@ -3474,11 +3482,7 @@ check_prog_c(struct info *infop, char const *entry_dir, char const *iocccsize, c
 	/*NOTREACHED*/
     }
     errno = 0;			/* pre-clear errno for errp() */
-    ret = setlinebuf(iocccsize_stream);
-    if (ret != 0) {
-	errp(110, __FUNCTION__, "setlinebuf failed for popen stream of: %s", cmd);
-	/*NOTREACHED*/
-    }
+    setlinebuf(iocccsize_stream);
 
     /*
      * read the 1st line - should contain the iocccsize Rule 2b size
@@ -5895,7 +5899,7 @@ write_info(struct info *infop, char const *entry_dir)
 
     errno = 0;			/* pre-clear errno for errp() */
     ret = fprintf(info_stream, "\t],\n") != 0 &&
-	fprintf(info_stream, "\t\"formed_timestamp\" : %ld.%06d,\n", infop->now_tstamp, infop->now_usec) != 0 &&
+	fprintf(info_stream, "\t\"formed_timestamp\" : %ld.%06ld,\n", infop->now_tstamp, infop->now_usec) != 0 &&
 	fprintf(info_stream, "\t\"timestamp_epoch\" : \"%s\",\n", STR_OR_NULL(infop->now_epoch)) != 0 &&
 	fprintf(info_stream, "\t\"formed_UTC\" : \"%s UTC\"\n", STR_OR_NULL(infop->now_gmtime)) != 0 &&
 	fprintf(info_stream, "}\n") != 0;
@@ -6013,7 +6017,7 @@ write_author(struct info *infop, int author_count, struct author *authorp, char 
 
     errno = 0;			/* pre-clear errno for errp() */
     ret = fprintf(author_stream, "\t],\n") != 0 &&
-	fprintf(author_stream, "\t\"formed_timestamp\" : %ld.%06d,\n", infop->now_tstamp, infop->now_usec) != 0 &&
+	fprintf(author_stream, "\t\"formed_timestamp\" : %ld.%06ld,\n", infop->now_tstamp, infop->now_usec) != 0 &&
 	fprintf(author_stream, "\t\"timestamp_epoch\" : \"%s\",\n", STR_OR_NULL(infop->now_epoch)) != 0 &&
 	fprintf(author_stream, "\t\"formed_UTC\" : \"%s UTC\"\n", STR_OR_NULL(infop->now_gmtime)) != 0 &&
 	fprintf(author_stream, "}\n") != 0;
