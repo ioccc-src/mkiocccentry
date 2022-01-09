@@ -71,7 +71,7 @@ typedef unsigned char bool;
 /*
  * definitions
  */
-#define VERSION "0.12 2022-01-08"	/* use format: major.minor YYYY-MM-DD */
+#define VERSION "0.13 2022-01-08"	/* use format: major.minor YYYY-MM-DD */
 #define LITLEN(x) (sizeof(x)-1)		/* length of a literal string w/o the NUL byte */
 #define STR_OR_NULL(x) (((x) == NULL) ? "NULL" : (x))
 #define REQUIRED_IOCCCSIZE_MAJVER (28)	/* iocccsize major version must match */
@@ -113,7 +113,15 @@ typedef unsigned char bool;
  *
  * The following is NOT the version of this mkiocccentry tool!
  */
-#define IOCCC_JSON_VERSION "1.0 2022-01-08"	/* version of .info.json file to produce */
+#define INFO_JSON_VERSION "1.0 2022-01-08"	/* version of .info.json file to produce */
+
+
+/*
+ * Version of info for JSON the .author.json file.
+ *
+ * The following is NOT the version of this mkiocccentry tool!
+ */
+#define AUTHOR_JSON_VERSION "1.0 2022-01-08"	/* version of .author.json file to produce */
 
 
 /*
@@ -193,9 +201,6 @@ struct info {
     int extra_count;		/* number of extra files */
     char **extra_file;		/* list of extra filenames followed by NULL */
     char **manifest;		/* list of all filenames followed by NULL */
-    /* authors */
-    int author_count;		/* number of authors */
-    struct author *author_set;	/* list of authors */
     /* time */
     time_t now_tstamp;		/* seconds since epoch when .info json was formed (see gettimeofday(2)) */
     suseconds_t now_usec;	/* microseconds since the now_tstamp second */
@@ -612,7 +617,8 @@ static int verbosity_level = DBG_DEFAULT;	/* debug level set by -v */
 /*
  * forward declarations
  */
-static void usage(int exitcode, char const *name, char const *str, char const *program, char const *tar, char const *cp, char const *ls);
+static void usage(int exitcode, char const *name, char const *str, char const *program, char const *tar,
+		  char const *cp, char const *ls);
 static void dbg(int level, char const *fmt, ...);
 static void warn(char const *name, char const *fmt, ...);
 static void err(int exitcode, char const *name, char const *fmt, ...);
@@ -649,6 +655,7 @@ static char *get_abstract(struct info *infop);
 static int get_author_info(struct info *infop, char *ioccc_id, int entry_num, struct author **author_set);
 static void verify_entry_dir(char const *entry_dir, char const *ls);
 static void write_info(struct info *infop, char const *entry_dir);
+static void write_author(struct info *infop, int author_count, struct author *authorp, char const *entry_dir);
 static void form_tarball(char const *work_dir, char const *entry_dir, char const *ioccc_id, int entry_num, char const *tar);
 
 
@@ -669,7 +676,9 @@ main(int argc, char *argv[])
     char *entry_dir = NULL;	/* entry directory from which to form a compressed tarball */
     int extra_count = 0;	/* number of extra files */
     char **extra_list = NULL;	/* list of extra files (if any) */
-    struct info info;			/* data to form .info.json */
+    struct info info;		/* data to form .info.json */
+    int author_count = 0;		/* number of authors */
+    struct author *author_set = NULL;	/* list of authors */
     int ret;				/* libc return code */
     int i;
 
@@ -826,8 +835,8 @@ main(int argc, char *argv[])
     /*
      * obtain author information
      */
-    info.author_count = get_author_info(&info, info.ioccc_id, info.entry_num, &info.author_set);
-    dbg(DBG_LOW, "collected information on %d authors", info.author_count);
+    author_count = get_author_info(&info, info.ioccc_id, info.entry_num, &author_set);
+    dbg(DBG_LOW, "collected information on %d authors", author_count);
 
     /*
      * verify entry directory contents
@@ -836,11 +845,18 @@ main(int argc, char *argv[])
     dbg(DBG_LOW, "verified entry directory: %s", entry_dir);
 
     /*
-     * write the .info JSON file
+     * write the .info.json file
      */
-    para("", "Forming JSON .info file ...", NULL);
+    para("", "Forming the .info.json file ...", NULL);
     write_info(&info, entry_dir);
-    para("... completed JSON .info file.", "", NULL);
+    para("... completed the .info.json file.", "", NULL);
+
+    /*
+     * write the .author.json file
+     */
+    para("", "Forming the .author.json file ...", NULL);
+    write_author(&info, author_count, author_set, entry_dir);
+    para("... completed .author.json file.", "", NULL);
 
     /*
      * form the .tar.bz2 file
@@ -857,6 +873,11 @@ main(int argc, char *argv[])
 	entry_dir = NULL;
     }
     free_info(&info);
+    if (author_set != NULL) {
+        free_author_array(author_set, author_count);
+	free(author_set);
+	author_set = NULL;
+    }
 
     /*
      * All Done!!! - Jessica Noll, age 2
@@ -866,7 +887,6 @@ main(int argc, char *argv[])
 }
 
 
-/* XXX - merge with debug.c and debug.h - XXX */
 /* XXX - perform DEBUG_LINT - XXX */
 /*
  * usage - print usage to stderr
@@ -1331,15 +1351,6 @@ free_info(struct info *infop)
 	}
 	free(infop->manifest);
 	infop->manifest = NULL;
-    }
-
-    /*
-     * free authors values
-     */
-    if (infop->author_set != NULL) {
-        free_author_array(infop->author_set, infop->author_count);
-	free(infop->author_set);
-	infop->author_set = NULL;
     }
 
     /*
@@ -3975,8 +3986,8 @@ check_extra_data_files(struct info *infop, char const *entry_dir, char const *cp
 	/*NOTREACHED*/
     }
     errno = 0;	/* pre-clear errno for errp() */
-    /* + 5 for .info.json, prog.c, Makefile, remarks.md, and trailing NULL */
-    infop->manifest = calloc(count+5, sizeof(char *));
+    /* + 6 for .info.json, .author.json, prog.c, Makefile, remarks.md, and trailing NULL */
+    infop->manifest = calloc(count+6, sizeof(char *));
     if (infop->manifest == NULL) {
 	errp(160, __FUNCTION__, "calloc #1 of %d char* pointers failed", count + 5);
 	/*NOTREACHED*/
@@ -4128,24 +4139,30 @@ check_extra_data_files(struct info *infop, char const *entry_dir, char const *cp
 	/*NOTREACHED*/
     }
     errno = 0;	/* pre-clear errno for errp() */
-    infop->manifest[count+1] = strdup("prog.c");
+    infop->manifest[count+1] = strdup(".author.json");
     if (infop->manifest[count+1] == NULL) {
-	errp(176, __FUNCTION__, "strdup prog.c filename failed");
+	errp(176, __FUNCTION__, "strdup .author.json filename failed");
 	/*NOTREACHED*/
     }
     errno = 0;	/* pre-clear errno for errp() */
-    infop->manifest[count+2] = strdup("Makefile");
+    infop->manifest[count+2] = strdup("prog.c");
     if (infop->manifest[count+2] == NULL) {
-	errp(177, __FUNCTION__, "strdup Makefile filename failed");
+	errp(177, __FUNCTION__, "strdup prog.c filename failed");
 	/*NOTREACHED*/
     }
     errno = 0;	/* pre-clear errno for errp() */
-    infop->manifest[count+3] = strdup("remarks.md");
+    infop->manifest[count+3] = strdup("Makefile");
     if (infop->manifest[count+3] == NULL) {
-	errp(178, __FUNCTION__, "strdup remarks.md filename failed");
+	errp(178, __FUNCTION__, "strdup Makefile filename failed");
 	/*NOTREACHED*/
     }
-    infop->manifest[count+4] = NULL;
+    errno = 0;	/* pre-clear errno for errp() */
+    infop->manifest[count+4] = strdup("remarks.md");
+    if (infop->manifest[count+4] == NULL) {
+	errp(179, __FUNCTION__, "strdup remarks.md filename failed");
+	/*NOTREACHED*/
+    }
+    infop->manifest[count+5] = NULL;
     return;
 }
 
@@ -4170,7 +4187,7 @@ lookup_location_name(char *upper_code)
      * firewall
      */
     if (upper_code == NULL) {
-	err(179, __FUNCTION__, "called with NULL arg(s)");
+	err(180, __FUNCTION__, "called with NULL arg(s)");
 	/*NOTREACHED*/
     }
 
@@ -4211,7 +4228,7 @@ yes_or_no(char *question)
      * firewall
      */
     if (question == NULL) {
-	err(180, __FUNCTION__, "called with NULL arg(s)");
+	err(181, __FUNCTION__, "called with NULL arg(s)");
 	/*NOTREACHED*/
     }
 
@@ -4321,7 +4338,7 @@ get_title(struct info *infop)
      * firewall
      */
     if (infop == NULL) {
-	err(181, __FUNCTION__, "called with NULL arg(s)");
+	err(182, __FUNCTION__, "called with NULL arg(s)");
 	/*NOTREACHED*/
     }
 
@@ -4376,7 +4393,7 @@ get_title(struct info *infop)
 	    errno = 0;	/* pre-clear errno for errp() */
 	    ret = fprintf(stderr, "You title must be between 1 and %d characters long.\n\n", MAX_TITLE_LEN);
 	    if (ret < 0) {
-		errp(182, __FUNCTION__, "fprintf error: %d", ret);
+		errp(183, __FUNCTION__, "fprintf error: %d", ret);
 		/*NOTREACHED*/
 	    }
 
@@ -4443,7 +4460,7 @@ get_abstract(struct info *infop)
      * firewall
      */
     if (infop == NULL) {
-	err(183, __FUNCTION__, "called with NULL arg(s)");
+	err(184, __FUNCTION__, "called with NULL arg(s)");
 	/*NOTREACHED*/
     }
 
@@ -4499,7 +4516,7 @@ get_abstract(struct info *infop)
 	    errno = 0;	/* pre-clear errno for errp() */
 	    ret = fprintf(stderr, "You abstract must be between 1 and %d characters long.\n\n", MAX_ABSTRACT_LEN);
 	    if (ret < 0) {
-		errp(184, __FUNCTION__, "fprintf error: %d", ret);
+		errp(185, __FUNCTION__, "fprintf error: %d", ret);
 		/*NOTREACHED*/
 	    }
 
@@ -4550,7 +4567,7 @@ get_author_info(struct info *infop, char *ioccc_id, int entry_num, struct author
      * firewall
      */
     if (infop == NULL || ioccc_id == NULL || author_set_p == NULL) {
-	err(185, __FUNCTION__, "called with NULL arg(s)");
+	err(186, __FUNCTION__, "called with NULL arg(s)");
 	/*NOTREACHED*/
     }
 
@@ -4591,7 +4608,7 @@ get_author_info(struct info *infop, char *ioccc_id, int entry_num, struct author
     errno = 0;	/* pre-clear errno for errp() */
     author_set = (struct author *)malloc(sizeof(struct author) * author_count);
     if (author_set == NULL) {
-	errp(186, __FUNCTION__, "malloc a struct author array of length: %d failed", author_count);
+	errp(187, __FUNCTION__, "malloc a struct author array of length: %d failed", author_count);
 	/*NOTREACHED*/
     }
     /* pre-zeroize the author array */
@@ -4619,22 +4636,22 @@ get_author_info(struct info *infop, char *ioccc_id, int entry_num, struct author
 	 NULL);
     ret = puts(ISO_3166_1_CODE_URL0);
     if (ret < 0) {
-	errp(187, __FUNCTION__, "puts error printing ISO 3166-1 URL");
+	errp(188, __FUNCTION__, "puts error printing ISO 3166-1 URL");
 	/*NOTREACHED*/
     }
     ret = puts(ISO_3166_1_CODE_URL1);
     if (ret < 0) {
-	errp(188, __FUNCTION__, "puts error printing ISO 3166-1 URL");
+	errp(189, __FUNCTION__, "puts error printing ISO 3166-1 URL");
 	/*NOTREACHED*/
     }
     ret = puts(ISO_3166_1_CODE_URL2);
     if (ret < 0) {
-	errp(189, __FUNCTION__, "puts error printing ISO 3166-1 URL2");
+	errp(190, __FUNCTION__, "puts error printing ISO 3166-1 URL2");
 	/*NOTREACHED*/
     }
     ret = puts(ISO_3166_1_CODE_URL3);
     if (ret < 0) {
-	errp(190, __FUNCTION__, "puts error printing ISO 3166-1 URL2");
+	errp(191, __FUNCTION__, "puts error printing ISO 3166-1 URL2");
 	/*NOTREACHED*/
     }
     para("",
@@ -4660,7 +4677,7 @@ get_author_info(struct info *infop, char *ioccc_id, int entry_num, struct author
 	errno = 0;	/* pre-clear errno for errp() */
 	ret = printf("\nEnter information for author #%d\n\n", i);
 	if (ret < 0) {
-	    errp(191, __FUNCTION__, "printf error printing author number");
+	    errp(192, __FUNCTION__, "printf error printing author number");
 	    /*NOTREACHED*/
 	}
 	author_set[i].author_num = i;
@@ -4891,7 +4908,7 @@ get_author_info(struct info *infop, char *ioccc_id, int entry_num, struct author
 	     * just in case we have a bogus length
 	     */
 	    } else if (len < 0) {
-		errp(192, __FUNCTION__, "Bogus Email length: %d < 0", len);
+		errp(193, __FUNCTION__, "Bogus Email length: %d < 0", len);
 		/*NOTREACHED*/
 	    }
 	} while (author_set[i].email == NULL);
@@ -4973,7 +4990,7 @@ get_author_info(struct info *infop, char *ioccc_id, int entry_num, struct author
 	     * just in case we have a bogus length
 	     */
 	    } else if (len < 0) {
-		errp(193, __FUNCTION__, "Bogus url length: %d < 0", len);
+		errp(194, __FUNCTION__, "Bogus url length: %d < 0", len);
 		/*NOTREACHED*/
 	    }
 	} while (author_set[i].url == NULL);
@@ -5046,7 +5063,7 @@ get_author_info(struct info *infop, char *ioccc_id, int entry_num, struct author
 	     * just in case we have a bogus length
 	     */
 	    } else if (len < 0) {
-		errp(194, __FUNCTION__, "Bogus twitter handle length: %d < 0", len);
+		errp(195, __FUNCTION__, "Bogus twitter handle length: %d < 0", len);
 		/*NOTREACHED*/
 	    }
 	} while (author_set[i].twitter == NULL);
@@ -5118,7 +5135,7 @@ get_author_info(struct info *infop, char *ioccc_id, int entry_num, struct author
 	     * just in case we have a bogus length
 	     */
 	    } else if (len < 0) {
-		errp(195, __FUNCTION__, "Bogus GitHub account length: %d < 0", len);
+		errp(196, __FUNCTION__, "Bogus GitHub account length: %d < 0", len);
 		/*NOTREACHED*/
 	    }
 	} while (author_set[i].github == NULL);
@@ -5164,7 +5181,7 @@ get_author_info(struct info *infop, char *ioccc_id, int entry_num, struct author
 	     * just in case we have a bogus length
 	     */
 	    if (len < 0) {
-		errp(196, __FUNCTION__, "Bogus affiliation length: %d < 0", len);
+		errp(197, __FUNCTION__, "Bogus affiliation length: %d < 0", len);
 		/*NOTREACHED*/
 	    }
 	} while (author_set[i].affiliation == NULL);
@@ -5182,7 +5199,7 @@ get_author_info(struct info *infop, char *ioccc_id, int entry_num, struct author
 	    ((author_set[i].twitter[0] == '\0') ? printf("Twitter handle not given\n") : printf("Twitter handle: %s\n", author_set[i].twitter)) < 0 ||
 	    ((author_set[i].github[0] == '\0') ? printf("GitHub username not given\n") : printf("GitHub username: %s\n", author_set[i].github)) < 0 ||
 	    ((author_set[i].affiliation[0] == '\0') ? printf("Affiliation not given\n\n") : printf("Affiliation: %s\n\n", author_set[i].affiliation)) < 0) {
-	    errp(197, __FUNCTION__, "error while printing author #%d information\n", i);
+	    errp(198, __FUNCTION__, "error while printing author #%d information\n", i);
 	    /*NOTREACHED*/
 	}
 	yorn = yes_or_no("Is that author information correct? [yn]");
@@ -5230,7 +5247,7 @@ verify_entry_dir(char const *entry_dir, char const *ls)
      * firewall
      */
     if (entry_dir == NULL || ls == NULL) {
-	err(198, __FUNCTION__, "called with NULL arg(s)");
+	err(199, __FUNCTION__, "called with NULL arg(s)");
 	/*NOTREACHED*/
     }
 
@@ -5244,7 +5261,7 @@ verify_entry_dir(char const *entry_dir, char const *ls)
     errno = 0;	/* pre-clear errno for errp() */
     ret = printf("    %s\n", entry_dir);
     if (ret < 0) {
-	err(199, __FUNCTION__, "printf error code: %d", ret);
+	err(200, __FUNCTION__, "printf error code: %d", ret);
 	/*NOTREACHED*/
     }
     para("",
@@ -5255,13 +5272,13 @@ verify_entry_dir(char const *entry_dir, char const *ls)
     errno = 0;	/* pre-clear errno for errp() */
     ls_cmd = malloc(ls_cmd_len + 1);
     if (ls_cmd == NULL) {
-	errp(200, __FUNCTION__, "malloc of %d bytes failed", ls_cmd_len + 1);
+	errp(201, __FUNCTION__, "malloc of %d bytes failed", ls_cmd_len + 1);
 	/*NOTREACHED*/
     }
     errno = 0;	/* pre-clear errno for errp() */
     ret = snprintf(ls_cmd, ls_cmd_len, "cd %s && %s -l .", entry_dir, ls);
     if (ret < 0) {
-	errp(201, __FUNCTION__, "snprintf #1 error: %d", ret);
+	errp(202, __FUNCTION__, "snprintf #1 error: %d", ret);
 	/*NOTREACHED*/
     }
     dbg(DBG_HIGH, "system(%s)", ls_cmd);
@@ -5270,18 +5287,18 @@ verify_entry_dir(char const *entry_dir, char const *ls)
     errno = 0;	/* pre-clear errno for errp() */
     ret = fflush(stdout);
     if (ret < 0) {
-	errp(202, __FUNCTION__, "fflush(stdout) error code: %d", ret);
+	errp(203, __FUNCTION__, "fflush(stdout) error code: %d", ret);
 	/*NOTREACHED*/
     }
     exit_code = system(ls_cmd);
     if (exit_code < 0) {
-	errp(203, __FUNCTION__, "error calling system(%s)", ls_cmd);
+	errp(204, __FUNCTION__, "error calling system(%s)", ls_cmd);
 	/*NOTREACHED*/
     } else if (exit_code == 127) {
-	errp(204, __FUNCTION__, "execution of the shell failed for system(%s)", ls_cmd);
+	errp(205, __FUNCTION__, "execution of the shell failed for system(%s)", ls_cmd);
 	/*NOTREACHED*/
     } else if (exit_code != 0) {
-	err(205, __FUNCTION__, "%s failed with exit code: %d", ls_cmd, WEXITSTATUS(exit_code));
+	err(206, __FUNCTION__, "%s failed with exit code: %d", ls_cmd, WEXITSTATUS(exit_code));
 	/*NOTREACHED*/
     }
 
@@ -5295,7 +5312,7 @@ verify_entry_dir(char const *entry_dir, char const *ls)
 	      "We suggest you remove the existing entry directory, and then",
 	      "rerun this tool with the correct set of file arguments.",
 	      NULL);
-	err(206, __FUNCTION__, "%s failed with exit code: %d", ls_cmd, WEXITSTATUS(exit_code));
+	err(207, __FUNCTION__, "%s failed with exit code: %d", ls_cmd, WEXITSTATUS(exit_code));
 	/*NOTREACHED*/
     }
     return;
@@ -5303,7 +5320,7 @@ verify_entry_dir(char const *entry_dir, char const *ls)
 
 
 /*
- * write_info - write the JSON .info file
+ * write_info - create the .info.json file
  *
  * Form a simple JSON .info file describing the entry.
  *
@@ -5330,15 +5347,11 @@ write_info(struct info *infop, char const *entry_dir)
      * firewall
      */
     if (infop == NULL || entry_dir == NULL) {
-	err(207, __FUNCTION__, "called with NULL arg(s)");
+	err(208, __FUNCTION__, "called with NULL arg(s)");
 	/*NOTREACHED*/
     }
     if (infop->extra_count < 0) {
-	err(208, __FUNCTION__, "extra_count %d < 0", infop->extra_count);
-	/*NOTREACHED*/
-    }
-    if (infop->author_count < 0) {
-	err(209, __FUNCTION__, "author_count %d < 0", infop->author_count);
+	err(209, __FUNCTION__, "extra_count %d < 0", infop->extra_count);
 	/*NOTREACHED*/
     }
 
@@ -5437,10 +5450,9 @@ write_info(struct info *infop, char const *entry_dir)
      * write info as JSON to the open .info.json file
      */
     /* XXX - STR_OR_NULL should instead be a JSON file escaper */
-    /* XXX - write author information into .author.json */
     errno = 0;	/* pre-clear errno for errp() */
     ret = fprintf(info_stream, "{\n") != 0 &&
-	  fprintf(info_stream, "\t\"IOCCC_JSON_version\" : \"%s\",\n", STR_OR_NULL(IOCCC_JSON_VERSION)) != 0 &&
+	  fprintf(info_stream, "\t\"IOCCC_info_JSON_version\" : \"%s\",\n", STR_OR_NULL(INFO_JSON_VERSION)) != 0 &&
 	  fprintf(info_stream, "\t\"mkiocccentry_version\" : \"%s\",\n", STR_OR_NULL(infop->mkiocccentry_ver)) != 0 &&
 	  fprintf(info_stream, "\t\"iocccsize_version\" : \"%s\",\n", STR_OR_NULL(infop->iocccsize_ver)) != 0 &&
 	  fprintf(info_stream, "\t\"IOCCC_contest_id\" : \"%s\",\n", STR_OR_NULL(infop->ioccc_id)) != 0 &&
@@ -5499,7 +5511,132 @@ write_info(struct info *infop, char const *entry_dir)
 	/*NOTREACHED*/
     }
 
-    /* XXX - write more code here */
+    /*
+     * close the file
+     */
+    errno = 0;	/* pre-clear errno for errp() */
+    ret = fclose(info_stream);
+    if (ret < 0) {
+	errp(225, __FUNCTION__, "fclose error");
+	/*NOTREACHED*/
+    }
+    return;
+}
+
+
+/*
+ * write_author - create the .author.json file
+ *
+ * Form a simple JSON .author file describing the entry.
+ *
+ * given:
+ *	infop		- pointer to info structure
+ *	author_count	- length of the author structure array in elements
+ *	authorp		- pointer to author structure array
+ *	entry_dir	- path to entry directory
+ *
+ * This function does not return on error.
+ */
+static void
+write_author(struct info *infop, int author_count, struct author *authorp, char const *entry_dir)
+{
+    char *author_path;		/* path to .author.json file */
+    int author_path_len;	/* length of path to .author.json */
+    FILE *author_stream;	/* open write stream to the .author.json file */
+    int ret;			/* libc function return */
+    int i;
+
+    /*
+     * firewall
+     */
+    if (authorp == NULL || entry_dir == NULL) {
+	err(226, __FUNCTION__, "called with NULL arg(s)");
+	/*NOTREACHED*/
+    }
+    if (author_count <= 0) {
+	err(227, __FUNCTION__, "author_count %d <= 0", author_count);
+	/*NOTREACHED*/
+    }
+
+    /*
+     * open .author.json for writing
+     */
+    author_path_len = strlen(entry_dir) + 1 + LITLEN(".author.json") + 1;
+    errno = 0;	/* pre-clear errno for errp() */
+    author_path = malloc(author_path_len + 1);
+    if (author_path == NULL) {
+	errp(228, __FUNCTION__, "malloc #0 of %d bytes failed", author_path_len + 1);
+	/*NOTREACHED*/
+    }
+    ret = snprintf(author_path, author_path_len, "%s/.author.json", entry_dir);
+    if (ret < 0) {
+	errp(229, __FUNCTION__, "snprintf #0 error: %d", ret);
+	/*NOTREACHED*/
+    }
+    dbg(DBG_HIGH, ".author.json path: %s", author_path);
+    errno = 0;	/* pre-clear errno for errp() */
+    author_stream = fopen(author_path, "w");
+    if (author_stream == NULL) {
+	errp(230, __FUNCTION__, "failed to open for writing: %s", author_path);
+	/*NOTREACHED*/
+    }
+
+    /*
+     * write info as JSON to the open .author.json file
+     */
+    /* XXX - STR_OR_NULL should instead be a JSON file escaper */
+    errno = 0;	/* pre-clear errno for errp() */
+    ret = fprintf(author_stream, "{\n") != 0 &&
+	  fprintf(author_stream, "\t\"IOCCC_author_JSON_version\" : \"%s\",\n", STR_OR_NULL(AUTHOR_JSON_VERSION)) != 0 &&
+	  fprintf(author_stream, "\t\"mkiocccentry_version\" : \"%s\",\n", STR_OR_NULL(infop->mkiocccentry_ver)) != 0 &&
+	  fprintf(author_stream, "\t\"IOCCC_contest_id\" : \"%s\",\n", STR_OR_NULL(infop->ioccc_id)) != 0 &&
+	  fprintf(author_stream, "\t\"entry_num\" : %d,\n", infop->entry_num) != 0 &&
+	  fprintf(author_stream, "\t\"author_count\" : %d,\n", author_count) != 0 &&
+	  fprintf(author_stream, "\t\"authors\" : [\n") != 0;
+    if (ret == false) {
+	errp(231, __FUNCTION__, "fprintf #0 error writing to %s", author_path);
+	/*NOTREACHED*/
+    }
+
+    for (i = 0; i < author_count; ++i) {
+	errno = 0;	/* pre-clear errno for errp() */
+	ret = fprintf(author_stream, "\t\t\"author\" : {\n") != 0 &&
+	      fprintf(author_stream, "\t\t\t\"name\" : \"%s\",\n", STR_OR_NULL(authorp[i].name)) != 0 &&
+	      fprintf(author_stream, "\t\t\t\"location_code\" : \"%s\",\n", STR_OR_NULL(authorp[i].location_code)) != 0 &&
+	      fprintf(author_stream, "\t\t\t\"email\" : \"%s\",\n", STR_OR_NULL(authorp[i].email)) != 0 &&
+	      fprintf(author_stream, "\t\t\t\"url\" : \"%s\",\n", STR_OR_NULL(authorp[i].url)) != 0 &&
+	      fprintf(author_stream, "\t\t\t\"twitter\" : \"%s\",\n", STR_OR_NULL(authorp[i].twitter)) != 0 &&
+	      fprintf(author_stream, "\t\t\t\"github\" : \"%s\",\n", STR_OR_NULL(authorp[i].github)) != 0 &&
+	      fprintf(author_stream, "\t\t\t\"affiliation\" : \"%s\",\n", STR_OR_NULL(authorp[i].affiliation)) != 0 &&
+	      fprintf(author_stream, "\t\t\t\"author_number\" : %d\n", authorp[i].author_num) != 0 &&
+	      fprintf(author_stream, "\t\t}%s\n", (((i+1) < author_count) ? "," : "")) != 0;
+	if (ret < 0) {
+	    errp(232, __FUNCTION__, "fprintf #1 error writing to %s", author_path);
+	    /*NOTREACHED*/
+	}
+    }
+
+    errno = 0;	/* pre-clear errno for errp() */
+    ret = fprintf(author_stream, "\t],\n") != 0 &&
+	  fprintf(author_stream, "\t\"formed_timestamp\" : %ld.%06d,\n", infop->now_tstamp, infop->now_usec) != 0 &&
+	  fprintf(author_stream, "\t\"timestamp_epoch\" : \"%s\",\n", STR_OR_NULL(infop->now_epoch)) != 0 &&
+	  fprintf(author_stream, "\t\"formed_UTC\" : \"%s UTC\"\n", STR_OR_NULL(infop->now_gmtime)) != 0 &&
+	  fprintf(author_stream, "}\n") != 0;
+    if (ret == false) {
+	errp(233, __FUNCTION__, "fprintf #2 error writing to %s", author_path);
+	/*NOTREACHED*/
+    }
+
+    /*
+     * close the file
+     */
+    errno = 0;	/* pre-clear errno for errp() */
+    ret = fclose(author_stream);
+    if (ret < 0) {
+	errp(234, __FUNCTION__, "fclose error");
+	/*NOTREACHED*/
+    }
+    return;
 }
 
 
@@ -5524,7 +5661,7 @@ form_tarball(char const *work_dir, char const *entry_dir, char const *ioccc_id, 
      * firewall
      */
     if (work_dir == NULL || entry_dir == NULL || ioccc_id == NULL || tar == NULL) {
-	err(225, __FUNCTION__, "called with NULL arg(s)");
+	err(235, __FUNCTION__, "called with NULL arg(s)");
 	/*NOTREACHED*/
     }
 
