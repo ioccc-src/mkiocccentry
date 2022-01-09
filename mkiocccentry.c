@@ -1064,7 +1064,7 @@ usage(int exitcode, char const *name, char const *str, char const *program, char
 	warn(__FUNCTION__, "\nin usage(): fprintf #1 returned error: %d\n", ret);
     }
     errno = 0;			/* pre-clear errno for errp() */
-    ret = fprintf(stderr, usage_msg2);
+    ret = fprintf(stderr, "%s", usage_msg2);
     if (ret < 0) {
 	warn(__FUNCTION__, "\nin usage(): fprintf #2 returned error: %d\n", ret);
     }
@@ -5899,7 +5899,7 @@ write_info(struct info *infop, char const *entry_dir)
 
     errno = 0;			/* pre-clear errno for errp() */
     ret = fprintf(info_stream, "\t],\n") != 0 &&
-	fprintf(info_stream, "\t\"formed_timestamp\" : %ld.%06ld,\n", infop->now_tstamp, infop->now_usec) != 0 &&
+	fprintf(info_stream, "\t\"formed_timestamp\" : %ld.%06d,\n", infop->now_tstamp, (int)infop->now_usec) != 0 &&
 	fprintf(info_stream, "\t\"timestamp_epoch\" : \"%s\",\n", STR_OR_NULL(infop->now_epoch)) != 0 &&
 	fprintf(info_stream, "\t\"formed_UTC\" : \"%s UTC\"\n", STR_OR_NULL(infop->now_gmtime)) != 0 &&
 	fprintf(info_stream, "}\n") != 0;
@@ -6017,7 +6017,7 @@ write_author(struct info *infop, int author_count, struct author *authorp, char 
 
     errno = 0;			/* pre-clear errno for errp() */
     ret = fprintf(author_stream, "\t],\n") != 0 &&
-	fprintf(author_stream, "\t\"formed_timestamp\" : %ld.%06ld,\n", infop->now_tstamp, infop->now_usec) != 0 &&
+	fprintf(author_stream, "\t\"formed_timestamp\" : %ld.%06d,\n", infop->now_tstamp, (int)infop->now_usec) != 0 &&
 	fprintf(author_stream, "\t\"timestamp_epoch\" : \"%s\",\n", STR_OR_NULL(infop->now_epoch)) != 0 &&
 	fprintf(author_stream, "\t\"formed_UTC\" : \"%s UTC\"\n", STR_OR_NULL(infop->now_gmtime)) != 0 &&
 	fprintf(author_stream, "}\n") != 0;
