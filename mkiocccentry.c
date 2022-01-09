@@ -79,6 +79,78 @@
 
 
 /*
+ * DEBUG_LINT - if defined, debug calls turn into fprintf to stderr calls
+ *
+ * The purpose of DEBUG_LINT is to let the C compiler do a fprintf format
+ * argument count and type check against the debug function.  With DEBUG_LINT,
+ * the debug macros are "faked" as best as we can.
+ *
+ * NOTE: Use of DEBUG_LINT is intended ONLY for static analysis (ala classic lint)
+ * with compiler warnings.  DEBUG_LINT works best with -Wall.  In particular, it
+ * won't help of you disable warnings that DEBUG_LINT would otherwise generate.
+ *
+ * When using DEBUG_LINT, consider compiling with:
+ *
+ *      -Wall -Werror -pedantic
+ *
+ * with at least the c11 standard.  As in:
+ *
+ *      -std=c11 -Wall -Werror -pedantic
+ *
+ * During DEBUG_LINT, output will be written to stderr.  These macros assume
+ * that stderr is unbuffered.
+ *
+ * No error checking is performed by fprintf and fputc to stderr.  Such errors will overwrite
+ * errno making the calls that perror print incorrect error messages.
+ *
+ * The DEBUG_LINT assumes the following file is included somewhere above the include of this file:
+ *
+ *      #include <stdlib.h>
+ *
+ * The DEBUG_LINT only works with compilers newer than 199901L (c11 or newer).
+ * Defining DEBUG_LINT on an older compiler will be ignored in this file.
+ * However when it comes to compiling debug.c, nothing will happen resulting
+ * in a link error.  This is a feature, not a bug.  It tells you that your
+ * compiler is too old to make use of DEBUG_LINT so don't use it.
+ *
+ * IMPORTANT NOTE:
+ *
+ * Executing code with DEBUG_LINT enabled is NOT recommended.
+ * It might work, but don't count in it!
+ *
+ *  You are better off defining DEBUG_LINT in CFLAGS with, say:
+ *
+ *      -std=c11 -Wall -Werror -pedantic
+ *
+ * At a minimum, fix warnings (that turn into compiler errors) related to fprintf()
+ * calls * until the program compiles.  For better results, fix ALL warnings as some
+ * of those warnings may indicate the presence of bugs in your code including but
+ * not limited to the use of debug functions.
+ */
+#if defined(DEBUG_LINT) && __STDC_VERSION__ >= 199901L
+
+#define dbg(level, ...) \
+	    ((verbosity_level >= (level)) ? \
+		(fprintf(stderr, "Debug[%d]: ", (level)), \
+		 printf(__VA_ARGS__)) : \
+	     true)
+#define warn(name, ...) \
+	    (fprintf(stderr, "Warning: %s: ", (name)), \
+	     fprintf(stderr, __VA_ARGS__))
+#define err(exitcode, name, ...) \
+	    (fprintf(stderr, "FATAL[%d]: %s: ", (exitcode), (name)), \
+	     fprintf(stderr, __VA_ARGS__), \
+	     exit(exitcode))
+#define errp(exitcode, name, ...) \
+	    (fprintf(stderr, "FATAL[%d]: %s: ", (exitcode), (name)), \
+	     fprintf(stderr, __VA_ARGS__), \
+	     fputc('\n', stderr), \
+	     perror(__FUNCTION__), \
+	     exit(exitcode))
+#endif			/* DEBUG_LINT && __STDC_VERSION__ >= 199901L */
+
+
+/*
  * definitions
  */
 #define MKIOCCCENTRY_VERSION "0.15 2022-01-09"	/* use format: major.minor YYYY-MM-DD */
@@ -95,6 +167,7 @@
 #define DBG_HIGH (5)		/* verbose debugging */
 #define DBG_VHIGH (7)		/* very verbose debugging */
 #define DBG_VVHIGH (9)		/* very very verbose debugging */
+#define DBG_VVVHIGH (11)	/* very very very verbose debugging */
 #define DBG_DEFAULT (DBG_NONE)	/* default level of debugging */
 #define UUID_LEN (36)		/* characters in a UUID string */
 #define UUID_VERSION (4)	/* version 4 - random UUID */
@@ -638,10 +711,12 @@ static int verbosity_level = DBG_DEFAULT;	/* debug level set by -v */
  */
 static void usage(int exitcode, char const *name, char const *str, char const *program, char const *tar,
 		  char const *cp, char const *ls);
+#if !defined(DEBUG_LINT)
 static void dbg(int level, char const *fmt, ...);
 static void warn(char const *name, char const *fmt, ...);
 static void err(int exitcode, char const *name, char const *fmt, ...);
 static void errp(int exitcode, char const *name, char const *fmt, ...);
+#endif				/* DEBUG_LINT */
 static void free_info(struct info *infop);
 static void free_author_array(struct author *authorp, int author_count);
 static bool exists(char const *path);
@@ -787,7 +862,7 @@ main(int argc, char *argv[])
     info.now_tstamp = tp.tv_sec;
     dbg(DBG_VVHIGH, "info.now_tstamp: %ld", info.now_tstamp);
     info.now_usec = tp.tv_usec;
-    dbg(DBG_VVHIGH, "infop->now_usec: %ld", info.now_usec);
+    dbg(DBG_VVHIGH, "infop->now_usec: %d", info.now_usec);
 
     /*
      * Welcome
@@ -939,9 +1014,6 @@ main(int argc, char *argv[])
 
 
 /*
- * XXX - perform DEBUG_LINT - XXX
- */
-/*
  * usage - print usage to stderr
  *
  * Example:
@@ -1002,6 +1074,7 @@ usage(int exitcode, char const *name, char const *str, char const *program, char
 }
 
 
+#if !defined(DEBUG_LINT)
 /*
  * dbg - print debug message if we are verbose enough
  *
@@ -1359,6 +1432,7 @@ errp(int exitcode, char const *name, char const *fmt, ...)
     exit(exitcode); /*ooo*/
     /*NOTREACHED*/
 }
+#endif					/* DEBUG_LINT */
 
 
 /*
@@ -1559,7 +1633,7 @@ exists(char const *path)
 	dbg(DBG_HIGH, "path %s does not exist, stat returned: %d", path, ret);
 	return false;
     }
-    dbg(DBG_VHIGH, "path %s size: %ld", path, buf.st_size);
+    dbg(DBG_VHIGH, "path %s size: %lld", path, buf.st_size);
     return true;
 }
 
@@ -1599,13 +1673,13 @@ is_file(char const *path)
 	dbg(DBG_HIGH, "path %s does not exist, stat returned: %d", path, ret);
 	return false;
     }
-    dbg(DBG_VHIGH, "path %s size: %ld", path, buf.st_size);
+    dbg(DBG_VHIGH, "path %s size: %lld", path, buf.st_size);
 
     /*
      * test if path is a regular file
      */
     if (!S_ISREG(buf.st_mode)) {
-	dbg(DBG_HIGH, "path %s is not a regular file");
+	dbg(DBG_HIGH, "path %s is not a regular file", path);
 	return false;
     }
     dbg(DBG_VHIGH, "path %s is a regular file", path);
@@ -1649,7 +1723,7 @@ is_exec(char const *path)
 	dbg(DBG_HIGH, "path %s does not exist, stat returned: %d", path, ret);
 	return false;
     }
-    dbg(DBG_VHIGH, "path %s size: %ld", path, buf.st_size);
+    dbg(DBG_VHIGH, "path %s size: %lld", path, buf.st_size);
 
     /*
      * test if we are allowed to execute it
@@ -1699,13 +1773,13 @@ is_dir(char const *path)
 	dbg(DBG_HIGH, "path %s does not exist, stat returned: %d", path, ret);
 	return false;
     }
-    dbg(DBG_VHIGH, "path %s size: %ld", path, buf.st_size);
+    dbg(DBG_VHIGH, "path %s size: %lld", path, buf.st_size);
 
     /*
      * test if path is a regular directory
      */
     if (!S_ISDIR(buf.st_mode)) {
-	dbg(DBG_HIGH, "path %s is not a directory");
+	dbg(DBG_HIGH, "path %s is not a directory", path);
 	return false;
     }
     dbg(DBG_VHIGH, "path %s is a directory", path);
@@ -1749,7 +1823,7 @@ is_read(char const *path)
 	dbg(DBG_HIGH, "path %s does not exist, stat returned: %d", path, ret);
 	return false;
     }
-    dbg(DBG_VHIGH, "path %s size: %ld", path, buf.st_size);
+    dbg(DBG_VHIGH, "path %s size: %lld", path, buf.st_size);
 
     /*
      * test if we are allowed to execute it
@@ -1800,7 +1874,7 @@ is_write(char const *path)
 	dbg(DBG_HIGH, "path %s does not exist, stat returned: %d", path, ret);
 	return false;
     }
-    dbg(DBG_VHIGH, "path %s size: %ld", path, buf.st_size);
+    dbg(DBG_VHIGH, "path %s size: %lld", path, buf.st_size);
 
     /*
      * test if we are allowed to execute it
@@ -1854,7 +1928,7 @@ file_size(char const *path)
     /*
      * return file size
      */
-    dbg(DBG_VHIGH, "path %s size: %ld", path, buf.st_size);
+    dbg(DBG_VHIGH, "path %s size: %lld", path, buf.st_size);
     return buf.st_size;
 }
 
@@ -1939,7 +2013,7 @@ readline(char **linep, FILE * stream)
 	(*linep)[ret - 1] = '\0';	/* clear newline */
 	--ret;
     }
-    dbg(DBG_VVHIGH, "read %d bytes + newline into %d byte buffer", ret, linecap);
+    dbg(DBG_VVHIGH, "read %lu bytes + newline into %ld byte buffer", ret, linecap);
 
     /*
      * return length of line without the trailing newline
@@ -1995,7 +2069,7 @@ readline_dup(char **linep, bool strip, size_t *lenp, FILE * stream)
 	 */
 	return NULL;
     }
-    dbg(DBG_VVHIGH, "readline returned %d bytes", len);
+    dbg(DBG_VVHIGH, "readline returned %ld bytes", len);
 
     /*
      * duplicate the line
@@ -2003,7 +2077,7 @@ readline_dup(char **linep, bool strip, size_t *lenp, FILE * stream)
     errno = 0;			/* pre-clear errno for errp() */
     ret = strdup(*linep);
     if (ret == NULL) {
-	errp(21, __FUNCTION__, "strdup of read line of %d bytes failed", ret);
+	errp(21, __FUNCTION__, "strdup of read line of %ld bytes failed", len);
 	/*NOTREACHED*/
     }
 
@@ -2024,7 +2098,7 @@ readline_dup(char **linep, bool strip, size_t *lenp, FILE * stream)
 		}
 	    }
 	}
-	dbg(DBG_VVHIGH, "readline, after trailing whitespace strip is %d bytes", len);
+	dbg(DBG_VVHIGH, "readline, after trailing whitespace strip is %ld bytes", len);
     }
     if (lenp != NULL) {
 	*lenp = len;
@@ -2841,7 +2915,7 @@ prompt(char *str, size_t *lenp)
 	err(86, __FUNCTION__, "EOF while reading prompt input");
 	/*NOTREACHED*/
     }
-    dbg(DBG_VHIGH, "received a %d byte response", len);
+    dbg(DBG_VHIGH, "received a %ld byte response", len);
 
     /*
      * save length if requested
@@ -3137,7 +3211,7 @@ mk_entry_dir(char *work_dir, char *ioccc_id, int entry_num, char **tarball_path,
 	/*NOTREACHED*/
     }
     if (entry_num < 0 || entry_num > MAX_ENTRY_NUM) {
-	err(91, __FUNCTION__, "entry number: %d must >= 0 and <= %d", MAX_ENTRY_NUM);
+	err(91, __FUNCTION__, "entry number: %d must >= 0 and <= %d", entry_num, MAX_ENTRY_NUM);
 	/*NOTREACHED*/
     }
 
@@ -3151,7 +3225,7 @@ mk_entry_dir(char *work_dir, char *ioccc_id, int entry_num, char **tarball_path,
     errno = 0;			/* pre-clear errno for errp() */
     entry_dir = malloc(entry_dir_len + 1);
     if (entry_dir == NULL) {
-	errp(92, __FUNCTION__, "malloc #0 of %d bytes failed", entry_dir_len + 1);
+	errp(92, __FUNCTION__, "malloc #0 of %ld bytes failed", entry_dir_len + 1);
 	/*NOTREACHED*/
     }
     errno = 0;			/* pre-clear errno for errp() */
@@ -3199,7 +3273,7 @@ mk_entry_dir(char *work_dir, char *ioccc_id, int entry_num, char **tarball_path,
     errno = 0;			/* pre-clear errno for errp() */
     *tarball_path = malloc(tarball_len + 1);
     if (*tarball_path == NULL) {
-	errp(96, __FUNCTION__, "malloc #1 of %d bytes failed", tarball_len + 1);
+	errp(96, __FUNCTION__, "malloc #1 of %ld bytes failed", tarball_len + 1);
 	/*NOTREACHED*/
     }
     errno = 0;			/* pre-clear errno for errp() */
@@ -3298,7 +3372,7 @@ check_prog_c(struct info *infop, char const *entry_dir, char const *iocccsize, c
 	err(102, __FUNCTION__, "file_size(%s) returned %d < 0", prog_c, infop->rule_2a_size);
 	/*NOTREACHED*/
     } else if (infop->rule_2a_size == 0) {
-	dbg(DBG_MED, "prog.c is empty", prog_c);
+	dbg(DBG_MED, "prog.c: %s is empty", prog_c);
 	fpara(stderr,
 	      "WARNING: prog.c is empty.  An empty prog.c has been submitted before:",
 	      "",
@@ -3319,13 +3393,13 @@ check_prog_c(struct info *infop, char const *entry_dir, char const *iocccsize, c
 	    err(103, __FUNCTION__, "please fix your prog.c file: %s", prog_c);
 	    /*NOTREACHED*/
 	}
-	dbg(DBG_LOW, "user says that their empty prog.c is OK", prog_c);
+	dbg(DBG_LOW, "user says that their empty prog.c: %s is OK", prog_c);
 
     /*
      * warn if prog.c is too large under Rule 2a
      */
     } else if (infop->rule_2a_size > RULE_2A_SIZE) {
-	dbg(DBG_MED, "prog.c size: %d > Rule 2a size: %d", prog_c, infop->rule_2a_size, RULE_2A_SIZE);
+	dbg(DBG_MED, "prog.c: %s size: %d > Rule 2a size: %d", prog_c, infop->rule_2a_size, RULE_2A_SIZE);
 	ret = fprintf(stderr, "\nWARNING: The prog.c %s size: %d > Rule 2a maximum: %d\n", prog_c,
 		      infop->rule_2a_size, RULE_2A_SIZE);
 	if (ret < 0) {
@@ -3415,7 +3489,7 @@ check_prog_c(struct info *infop, char const *entry_dir, char const *iocccsize, c
 	err(111, __FUNCTION__, "EOF while reading Rule 2b output from iocccsize: %s", iocccsize);
 	/*NOTREACHED*/
     } else {
-	dbg(DBG_HIGH, "version line read length: %d buffer: %s", readline_len, linep);
+	dbg(DBG_HIGH, "version line read length: %ld buffer: %s", readline_len, linep);
     }
 
     /*
@@ -3433,7 +3507,7 @@ check_prog_c(struct info *infop, char const *entry_dir, char const *iocccsize, c
     }
     dbg(DBG_MED, "prog.c %s Rule 2b size: %d", prog_c, infop->rule_2b_size);
     if (infop->rule_2b_size > RULE_2B_SIZE) {
-	dbg(DBG_MED, "prog.c size: %d > Rule 2b size: %d", prog_c, infop->rule_2b_size, RULE_2B_SIZE);
+	dbg(DBG_MED, "prog.c: %s size: %d > Rule 2b size: %d", prog_c, infop->rule_2b_size, RULE_2B_SIZE);
 	ret = fprintf(stderr, "\nWARNING: The prog.c %s size: %d > Rule 2b maximum: %d\n", prog_c,
 		      infop->rule_2a_size, RULE_2A_SIZE);
 	if (ret < 0) {
@@ -3504,7 +3578,7 @@ check_prog_c(struct info *infop, char const *entry_dir, char const *iocccsize, c
     errno = 0;			/* pre-clear errno for errp() */
     infop->prog_c = strdup("prog.c");
     if (infop->prog_c == NULL) {
-	errp(120, __FUNCTION__, "malloc #2 of %d bytes failed", LITLEN("prog.c") + 1);
+	errp(120, __FUNCTION__, "malloc #2 of %ld bytes failed", LITLEN("prog.c") + 1);
 	/*NOTREACHED*/
     }
     return;
@@ -3559,7 +3633,7 @@ inspect_Makefile(char const *Makefile)
     errno = 0;			/* pre-clear errno for errp() */
     stream = fopen(Makefile, "r");
     if (stream == NULL) {
-	errp(122, __FUNCTION__, "cannot open Makefile: %d", Makefile);
+	errp(122, __FUNCTION__, "cannot open Makefile: %s", Makefile);
 	/*NOTREACHED*/
     }
 
@@ -3915,7 +3989,7 @@ check_Makefile(struct info *infop, char const *entry_dir, char const *cp, char c
     errno = 0;			/* pre-clear errno for errp() */
     infop->Makefile = strdup("Makefile");
     if (infop->Makefile == NULL) {
-	errp(138, __FUNCTION__, "malloc #1 of %d bytes failed", LITLEN("Makefile") + 1);
+	errp(138, __FUNCTION__, "malloc #1 of %ld bytes failed", LITLEN("Makefile") + 1);
 	/*NOTREACHED*/
     }
     return;
@@ -4043,7 +4117,7 @@ check_remarks_md(struct info *infop, char const *entry_dir, char const *cp, char
     errno = 0;			/* pre-clear errno for errp() */
     infop->remarks_md = strdup("remarks.md");
     if (infop->remarks_md == NULL) {
-	errp(151, __FUNCTION__, "malloc #1 of %d bytes failed", LITLEN("remarks.md") + 1);
+	errp(151, __FUNCTION__, "malloc #1 of %ld bytes failed", LITLEN("remarks.md") + 1);
 	/*NOTREACHED*/
     }
     return;
@@ -4284,7 +4358,7 @@ check_extra_data_files(struct info *infop, char const *entry_dir, char const *cp
 	errno = 0;		/* pre-clear errno for errp() */
 	infop->manifest[i] = strdup(base);
 	if (infop->manifest[i] == NULL) {
-	    errp(163, __FUNCTION__, "strdup of extra file[i] basename: %s failed", i, base);
+	    errp(163, __FUNCTION__, "strdup of extra file[%d] basename: %s failed", i, base);
 	    /*NOTREACHED*/
 	}
 
@@ -4295,7 +4369,7 @@ check_extra_data_files(struct info *infop, char const *entry_dir, char const *cp
 	errno = 0;		/* pre-clear errno for errp() */
 	dest = malloc(dest_len + 1);
 	if (dest == NULL) {
-	    errp(164, __FUNCTION__, "malloc #0 of %d bytes failed", dest_len + 1);
+	    errp(164, __FUNCTION__, "malloc #0 of %ld bytes failed", dest_len + 1);
 	    /*NOTREACHED*/
 	}
 	ret = snprintf(dest, dest_len, "%s/%s", entry_dir, base);
@@ -4436,7 +4510,7 @@ lookup_location_name(char *upper_code)
      */
     for (p = &loc[0]; p->code != NULL && p->name != NULL; ++p) {
 	if (strcmp(upper_code, p->code) == 0) {
-	    dbg(DBG_VHIGH, "code %s name found: %s", p->name);
+	    dbg(DBG_VHIGH, "code %s name found: %s", p->code, p->name);
 	    break;
 	}
     }
@@ -5218,7 +5292,7 @@ get_author_info(struct info *infop, char *ioccc_id, int entry_num, struct author
 		 * just in case we have a bogus length
 		 */
 	    } else if (len < 0) {
-		err(184, __FUNCTION__, "Bogus Email length: %d < 0", len);
+		err(184, __FUNCTION__, "Bogus Email length: %ld < 0", len);
 		/*NOTREACHED*/
 	    }
 	} while (author_set[i].email == NULL);
@@ -5306,7 +5380,7 @@ get_author_info(struct info *infop, char *ioccc_id, int entry_num, struct author
 		 * just in case we have a bogus length
 		 */
 	    } else if (len < 0) {
-		err(185, __FUNCTION__, "Bogus url length: %d < 0", len);
+		err(185, __FUNCTION__, "Bogus url length: %ld < 0", len);
 		/*NOTREACHED*/
 	    }
 	} while (author_set[i].url == NULL);
@@ -5383,7 +5457,7 @@ get_author_info(struct info *infop, char *ioccc_id, int entry_num, struct author
 		 * just in case we have a bogus length
 		 */
 	    } else if (len < 0) {
-		err(186, __FUNCTION__, "Bogus twitter handle length: %d < 0", len);
+		err(186, __FUNCTION__, "Bogus twitter handle length: %ld < 0", len);
 		/*NOTREACHED*/
 	    }
 	} while (author_set[i].twitter == NULL);
@@ -5462,7 +5536,7 @@ get_author_info(struct info *infop, char *ioccc_id, int entry_num, struct author
 		 * just in case we have a bogus length
 		 */
 	    } else if (len < 0) {
-		err(187, __FUNCTION__, "Bogus GitHub account length: %d < 0", len);
+		err(187, __FUNCTION__, "Bogus GitHub account length: %ld < 0", len);
 		/*NOTREACHED*/
 	    }
 	} while (author_set[i].github == NULL);
@@ -5513,7 +5587,7 @@ get_author_info(struct info *infop, char *ioccc_id, int entry_num, struct author
 	     * just in case we have a bogus length
 	     */
 	    if (len < 0) {
-		err(188, __FUNCTION__, "Bogus affiliation length: %d < 0", len);
+		err(188, __FUNCTION__, "Bogus affiliation length: %ld < 0", len);
 		/*NOTREACHED*/
 	    }
 	} while (author_set[i].affiliation == NULL);
@@ -5981,7 +6055,7 @@ form_tarball(char const *work_dir, char const *entry_dir, char const *tarball_pa
     char *basename_entry_dir;	/* basename of the entry directory */
     char *basename_tarball_path;	/* basename of tarball_path */
     char *tar_cmd;		/* the tar command to form the compressed tarball */
-    int tar_cmd_len;		/* length of tar_cmd path */
+    size_t tar_cmd_len;		/* length of tar_cmd path */
     int exit_code;		/* exit code from system(tar_cmd) */
     int ret;			/* libc function return */
 
@@ -6012,7 +6086,7 @@ form_tarball(char const *work_dir, char const *entry_dir, char const *tarball_pa
     errno = 0;			/* pre-clear errno for errp() */
     tar_cmd = malloc(tar_cmd_len + 1);
     if (tar_cmd == NULL) {
-	errp(222, __FUNCTION__, "malloc of %d bytes failed", tar_cmd + 1);
+	errp(222, __FUNCTION__, "malloc of %ld bytes failed", tar_cmd_len + 1);
 	/*NOTREACHED*/
     }
     errno = 0;			/* pre-clear errno for errp() */

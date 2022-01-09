@@ -32,6 +32,7 @@ SHELL= /bin/bash
 CC= cc
 #CFLAGS= -O3 -g3 --pedantic -Wall
 CFLAGS= -O3 -g3 --pedantic -Wall -Werror
+#CFLAGS= -O3 -g3 --pedantic -Wall -Werror -DDEBUG_LINT
 #CFLAGS= -O0 -g --pedantic -Wall -Werror
 RM= rm
 INSTALL= install
