@@ -195,6 +195,8 @@
 #define TIMESTAMP_EPOCH "Thr Jan  1 00:00:00 1970 UTC"	/* gettimeofday epoch */
 #define IOCCC_REGISTER_URL "https://register.ioccc.org/just/a/guess/NOT/a/real/URL"	/* XXX - change to real URL */
 #define IOCCC_SUBMIT_URL "https://submit.ioccc.org/just/a/guess/NOT/a/real/URL"	/* XXX - change to real URL */
+/* MANIFEST_EXTRA is for .info.json, .author.json, prog.c, Makefile, remarks.md, and trailing NULL */
+#define MANIFEST_EXTRA (6)	/* manifest array needs this many more than extra args */
 
 
 /*
@@ -1518,7 +1520,7 @@ free_info(struct info *infop)
 	infop->extra_file = NULL;
     }
     if (infop->manifest == NULL) {
-	for (i = 0; i < infop->extra_count + 4; ++i) {
+	for (i = 0; i < infop->extra_count + MANIFEST_EXTRA; ++i) {
 	    if (infop->manifest[i] != NULL) {
 		free(infop->manifest[i]);
 		infop->manifest[i] = NULL;
@@ -3585,6 +3587,22 @@ check_prog_c(struct info *infop, char const *entry_dir, char const *iocccsize, c
 	errp(120, __FUNCTION__, "malloc #2 of %ld bytes failed", LITLEN("prog.c") + 1);
 	/*NOTREACHED*/
     }
+
+    /*
+     * free storage
+     */
+    if (cmd != NULL) {
+	free(cmd);
+	cmd = NULL;
+    }
+    if (cp_cmd != NULL) {
+	free(cp_cmd);
+	cp_cmd = NULL;
+    }
+    if (linep != NULL) {
+	free(linep);
+	linep = NULL;
+    }
     return;
 }
 
@@ -3996,6 +4014,14 @@ check_Makefile(struct info *infop, char const *entry_dir, char const *cp, char c
 	errp(138, __FUNCTION__, "malloc #1 of %ld bytes failed", LITLEN("Makefile") + 1);
 	/*NOTREACHED*/
     }
+
+    /*
+     * free storage
+     */
+    if (cp_cmd != NULL) {
+	free(cp_cmd);
+	cp_cmd = NULL;
+    }
     return;
 }
 
@@ -4123,6 +4149,14 @@ check_remarks_md(struct info *infop, char const *entry_dir, char const *cp, char
     if (infop->remarks_md == NULL) {
 	errp(151, __FUNCTION__, "malloc #1 of %ld bytes failed", LITLEN("remarks.md") + 1);
 	/*NOTREACHED*/
+    }
+
+    /*
+     * free storage
+     */
+    if (cp_cmd != NULL) {
+	free(cp_cmd);
+	cp_cmd = NULL;
     }
     return;
 }
@@ -4300,10 +4334,10 @@ check_extra_data_files(struct info *infop, char const *entry_dir, char const *cp
 	/*NOTREACHED*/
     }
     errno = 0;			/* pre-clear errno for errp() */
-    /* + 6 for .info.json, .author.json, prog.c, Makefile, remarks.md, and trailing NULL */
-    infop->manifest = calloc(count + 6, sizeof(char *));
+    /* + MANIFEST_EXTRA for .info.json, .author.json, prog.c, Makefile, remarks.md, and trailing NULL */
+    infop->manifest = calloc(count + MANIFEST_EXTRA, sizeof(char *));
     if (infop->manifest == NULL) {
-	errp(158, __FUNCTION__, "calloc #1 of %d char* pointers failed", count + 5);
+	errp(158, __FUNCTION__, "calloc #1 of %d char* pointers failed", count + MANIFEST_EXTRA);
 	/*NOTREACHED*/
     }
 
@@ -4443,6 +4477,10 @@ check_extra_data_files(struct info *infop, char const *entry_dir, char const *cp
 	if (dest != NULL) {
 	    free(dest);
 	    dest = NULL;
+	}
+	if (cp_cmd != NULL) {
+	    free(cp_cmd);
+	    cp_cmd = NULL;
 	}
     }
     infop->extra_file[i] = NULL;
@@ -5728,6 +5766,14 @@ verify_entry_dir(char const *entry_dir, char const *ls)
 	err(197, __FUNCTION__, "%s failed with exit code: %d", ls_cmd, WEXITSTATUS(exit_code));
 	/*NOTREACHED*/
     }
+
+    /*
+     * free storage
+     */
+    if (ls_cmd != NULL) {
+	free(ls_cmd);
+	ls_cmd = NULL;
+    }
     return;
 }
 
@@ -5909,6 +5955,14 @@ write_info(struct info *infop, char const *entry_dir)
     }
 
     /*
+     * free storage
+     */
+    if (info_path != NULL) {
+	free(info_path);
+	info_path = NULL;
+    }
+
+    /*
      * close the file
      */
     errno = 0;			/* pre-clear errno for errp() */
@@ -6024,6 +6078,14 @@ write_author(struct info *infop, int author_count, struct author *authorp, char 
     if (ret == false) {
 	errp(218, __FUNCTION__, "fprintf #2 error writing to %s", author_path);
 	/*NOTREACHED*/
+    }
+
+    /*
+     * free storage
+     */
+    if (author_path != NULL) {
+	free(author_path);
+	author_path = NULL;
     }
 
     /*
@@ -6150,6 +6212,10 @@ form_tarball(char const *work_dir, char const *entry_dir, char const *tarball_pa
     if (basename_tarball_path != NULL) {
 	free(basename_tarball_path);
 	basename_tarball_path = NULL;
+    }
+    if (tar_cmd != NULL) {
+	free(tar_cmd);
+	tar_cmd = NULL;
     }
     return;
 }
