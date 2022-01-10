@@ -80,6 +80,70 @@
 
 
 /*
+ * definitions
+ */
+#define MKIOCCCENTRY_VERSION "0.16 2022-01-09"	/* use format: major.minor YYYY-MM-DD */
+#define LITLEN(x) (sizeof(x)-1)	/* length of a literal string w/o the NUL byte */
+/*
+ * XXX - replace with a JSON safe string encoding, including for NULL pointers
+ */
+#define STR_OR_NULL(x) (((x) == NULL) ? "NULL" : (x))	/* return "NULL" if NULL, else the string */
+#define REQUIRED_IOCCCSIZE_MAJVER (28)	/* iocccsize major version must match */
+#define MIN_IOCCCSIZE_MINVER (4)	/* iocccsize minor version must be >= */
+#define DBG_NONE (0)		/* no debugging */
+#define DBG_LOW (1)		/* minimal debugging */
+#define DBG_MED (3)		/* somewhat more debugging */
+#define DBG_HIGH (5)		/* verbose debugging */
+#define DBG_VHIGH (7)		/* very verbose debugging */
+#define DBG_VVHIGH (9)		/* very very verbose debugging */
+#define DBG_VVVHIGH (11)	/* very very very verbose debugging */
+#define DBG_DEFAULT (DBG_NONE)	/* default level of debugging */
+#define UUID_LEN (36)		/* characters in a UUID string */
+#define UUID_VERSION (4)	/* version 4 - random UUID */
+#define UUID_VARIANT (0xa)	/* variant 1 - encoded as 0xa */
+#define MAX_ENTRY_NUM (9)	/* entry numbers from 0 to MAX_ENTRY_NUM allowed - cannot be >= 1000 */
+#define MAX_ENTRY_CHARS (1)	/* characters that represent the maximum entry number - cannot be >= 3 */
+#define MAX_AUTHORS (5)		/* maximum number of authors of an entry */
+#define MAX_NAME_LEN (64)	/* max author name length */
+#define MAX_EMAIL_LEN (64)	/* max Email address length */
+#define MAX_URL_LEN (64)	/* max home URL, including http:// or https:// */
+#define MAX_TWITTER_LEN (18+1)	/* max twitter handle, including the leading @, length */
+#define MAX_GITHUB_LEN (15+1)	/* max GitHub account, including the leading @, length */
+#define MAX_AFFILIATION_LEN (64)	/* max affiliation name length */
+#define ISO_3166_1_CODE_URL0 "    https://en.wikipedia.org/wiki/ISO_3166-1#Officially_assigned_code_elements"
+#define ISO_3166_1_CODE_URL1 "    https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2"
+#define ISO_3166_1_CODE_URL2 "    https://www.iso.org/obp/ui/#iso:pub:PUB500001:en"
+#define ISO_3166_1_CODE_URL3 "    https://www.iso.org/obp/ui/#search"
+#define ISO_3166_1_CODE_URL4 "    https://www.iso.org/glossary-for-iso-3166.html"
+#define RULE_2A_SIZE (5120)	/* rule 2s size of prog.c */
+#define RULE_2B_SIZE (3217)	/* rule 2b size as determined by iocccsize -i prog.c */
+#define MAX_TITLE_LEN (24)	/* maximum length of a title */
+#define TITLE_CHARS "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"	/* [a-zA-Z0-9] */
+#define MAX_ABSTRACT_LEN (64)	/* maximum length of an abstract */
+#define TIMESTAMP_EPOCH "Thr Jan  1 00:00:00 1970 UTC"	/* gettimeofday epoch */
+#define IOCCC_REGISTER_URL "https://register.ioccc.org/just/a/guess/NOT/a/real/URL"	/* XXX - change to real URL */
+#define IOCCC_SUBMIT_URL "https://submit.ioccc.org/just/a/guess/NOT/a/real/URL"	/* XXX - change to real URL */
+/* MANIFEST_EXTRA is for .info.json, .author.json, prog.c, Makefile, remarks.md, and trailing NULL */
+#define MANIFEST_EXTRA (6)	/* manifest array needs this many more than extra args */
+
+
+/*
+ * Version of info for JSON the .info.json file.
+ *
+ * The following is NOT the version of this mkiocccentry tool!
+ */
+#define INFO_JSON_VERSION "1.0 2022-01-08"	/* version of the .info.json file to produce */
+
+
+/*
+ * Version of info for JSON the .author.json file.
+ *
+ * The following is NOT the version of this mkiocccentry tool!
+ */
+#define AUTHOR_JSON_VERSION "1.0 2022-01-08"	/* version of the .author.json file to produce */
+
+
+/*
  * DEBUG_LINT - if defined, debug calls turn into fprintf to stderr calls
  *
  * The purpose of DEBUG_LINT is to let the C compiler do a fprintf format
@@ -149,70 +213,6 @@
 	     perror(__FUNCTION__), \
 	     exit(exitcode))
 #endif			/* DEBUG_LINT && __STDC_VERSION__ >= 199901L */
-
-
-/*
- * definitions
- */
-#define MKIOCCCENTRY_VERSION "0.15 2022-01-09"	/* use format: major.minor YYYY-MM-DD */
-#define LITLEN(x) (sizeof(x)-1)	/* length of a literal string w/o the NUL byte */
-/*
- * XXX - replace with a JSON safe string encoding, including for NULL pointers
- */
-#define STR_OR_NULL(x) (((x) == NULL) ? "NULL" : (x))	/* return "NULL" if NULL, else the string */
-#define REQUIRED_IOCCCSIZE_MAJVER (28)	/* iocccsize major version must match */
-#define MIN_IOCCCSIZE_MINVER (4)	/* iocccsize minor version must be >= */
-#define DBG_NONE (0)		/* no debugging */
-#define DBG_LOW (1)		/* minimal debugging */
-#define DBG_MED (3)		/* somewhat more debugging */
-#define DBG_HIGH (5)		/* verbose debugging */
-#define DBG_VHIGH (7)		/* very verbose debugging */
-#define DBG_VVHIGH (9)		/* very very verbose debugging */
-#define DBG_VVVHIGH (11)	/* very very very verbose debugging */
-#define DBG_DEFAULT (DBG_NONE)	/* default level of debugging */
-#define UUID_LEN (36)		/* characters in a UUID string */
-#define UUID_VERSION (4)	/* version 4 - random UUID */
-#define UUID_VARIANT (0xa)	/* variant 1 - encoded as 0xa */
-#define MAX_ENTRY_NUM (9)	/* entry numbers from 0 to MAX_ENTRY_NUM allowed - cannot be >= 1000 */
-#define MAX_ENTRY_CHARS (1)	/* characters that represent the maximum entry number - cannot be >= 3 */
-#define MAX_AUTHORS (5)		/* maximum number of authors of an entry */
-#define MAX_NAME_LEN (64)	/* max author name length */
-#define MAX_EMAIL_LEN (64)	/* max Email address length */
-#define MAX_URL_LEN (64)	/* max home URL, including http:// or https:// */
-#define MAX_TWITTER_LEN (18+1)	/* max twitter handle, including the leading @, length */
-#define MAX_GITHUB_LEN (15+1)	/* max GitHub account, including the leading @, length */
-#define MAX_AFFILIATION_LEN (64)	/* max affiliation name length */
-#define ISO_3166_1_CODE_URL0 "    https://en.wikipedia.org/wiki/ISO_3166-1#Officially_assigned_code_elements"
-#define ISO_3166_1_CODE_URL1 "    https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2"
-#define ISO_3166_1_CODE_URL2 "    https://www.iso.org/obp/ui/#iso:pub:PUB500001:en"
-#define ISO_3166_1_CODE_URL3 "    https://www.iso.org/obp/ui/#search"
-#define ISO_3166_1_CODE_URL4 "    https://www.iso.org/glossary-for-iso-3166.html"
-#define RULE_2A_SIZE (5120)	/* rule 2s size of prog.c */
-#define RULE_2B_SIZE (3217)	/* rule 2b size as determined by iocccsize -i prog.c */
-#define MAX_TITLE_LEN (24)	/* maximum length of a title */
-#define TITLE_CHARS "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"	/* [a-zA-Z0-9] */
-#define MAX_ABSTRACT_LEN (64)	/* maximum length of an abstract */
-#define TIMESTAMP_EPOCH "Thr Jan  1 00:00:00 1970 UTC"	/* gettimeofday epoch */
-#define IOCCC_REGISTER_URL "https://register.ioccc.org/just/a/guess/NOT/a/real/URL"	/* XXX - change to real URL */
-#define IOCCC_SUBMIT_URL "https://submit.ioccc.org/just/a/guess/NOT/a/real/URL"	/* XXX - change to real URL */
-/* MANIFEST_EXTRA is for .info.json, .author.json, prog.c, Makefile, remarks.md, and trailing NULL */
-#define MANIFEST_EXTRA (6)	/* manifest array needs this many more than extra args */
-
-
-/*
- * Version of info for JSON the .info.json file.
- *
- * The following is NOT the version of this mkiocccentry tool!
- */
-#define INFO_JSON_VERSION "1.0 2022-01-08"	/* version of the .info.json file to produce */
-
-
-/*
- * Version of info for JSON the .author.json file.
- *
- * The following is NOT the version of this mkiocccentry tool!
- */
-#define AUTHOR_JSON_VERSION "1.0 2022-01-08"	/* version of the .author.json file to produce */
 
 
 /*
@@ -1519,7 +1519,7 @@ free_info(struct info *infop)
 	free(infop->extra_file);
 	infop->extra_file = NULL;
     }
-    if (infop->manifest == NULL) {
+    if (infop->manifest != NULL) {
 	for (i = 0; i < infop->extra_count + MANIFEST_EXTRA; ++i) {
 	    if (infop->manifest[i] != NULL) {
 		free(infop->manifest[i]);
@@ -3673,6 +3673,14 @@ inspect_Makefile(char const *Makefile)
 	}
 
 	/*
+	 * free storage
+	 */
+	if (linep != NULL) {
+	    free(linep);
+	    linep = NULL;
+	}
+
+	/*
 	 * trim off and comments
 	 */
 	p = strchr(line, '#');
@@ -3692,7 +3700,7 @@ inspect_Makefile(char const *Makefile)
 	    /*
 	     * free storage
 	     */
-	    if (line == NULL) {
+	    if (line != NULL) {
 		free(line);
 		line = NULL;
 	    }
@@ -3771,7 +3779,7 @@ inspect_Makefile(char const *Makefile)
 	/*
 	 * free storage
 	 */
-	if (line == NULL) {
+	if (line != NULL) {
 	    free(line);
 	    line = NULL;
 	}
@@ -3787,6 +3795,14 @@ inspect_Makefile(char const *Makefile)
     if (ret < 0) {
 	errp(123, __FUNCTION__, "fclose error");
 	/*NOTREACHED*/
+    }
+
+    /*
+     * free storage
+     */
+    if (line != NULL) {
+	free(line);
+	line = NULL;
     }
 
     /*
