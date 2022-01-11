@@ -43,6 +43,7 @@
  * Share and enjoy! :-)
  */
 
+/* special comments for the seqcexit tool */
 /*ooo*/ /* exit code out of numerical order - ignore in sequencing */
 /*coo*/ /* exit code change of order - use new value in sequencing */
 
@@ -86,7 +87,7 @@ typedef unsigned char bool;
 /*
  * definitions
  */
-#define MKIOCCCENTRY_VERSION "0.19 2022-01-11"	/* use format: major.minor YYYY-MM-DD */
+#define MKIOCCCENTRY_VERSION "0.20 2022-01-11"	/* use format: major.minor YYYY-MM-DD */
 #define IOCCC_CONTEST "IOCCC28"			/* use format: IOCCC99 */
 #define IOCCC_YEAR (2022)			/* Year IOCCC_CONTEST closes */
 #define LITLEN(x) (sizeof(x)-1)	/* length of a literal string w/o the NUL byte */
@@ -123,8 +124,8 @@ typedef unsigned char bool;
 #define TITLE_CHARS "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"	/* [a-zA-Z0-9] */
 #define MAX_ABSTRACT_LEN (64)	/* maximum length of an abstract */
 #define TIMESTAMP_EPOCH "Thr Jan  1 00:00:00 1970 UTC"	/* gettimeofday epoch */
-/* MANIFEST_EXTRA is for .info.json, .author.json, prog.c, Makefile, remarks.md, and trailing NULL */
-#define MANIFEST_EXTRA (6)	/* manifest array needs this many more than extra args */
+/* MANIFEST_EXTRA is for .info.json, .author.json, prog.c, Makefile, remarks.md */
+#define MANIFEST_EXTRA (5)	/* manifest array needs this many more than extra args before the final NULL ptr */
 #define IOCCC_REGISTER_URL "https://register.ioccc.org/just/a/guess/NOT/a/real/URL"	/* XXX - change to real URL */
 #define IOCCC_SUBMIT_URL "https://submit.ioccc.org/just/a/guess/NOT/a/real/URL"	/* XXX - change to real URL */
 
@@ -845,8 +846,8 @@ main(int argc, char *argv[])
 	/*NOTREACHED*/
     }
     /* collect required args */
-    extra_count = (argc - optind > 5) ? argc - optind - 5 : 0;
-    extra_list = argv + optind + 5;
+    extra_count = (argc - optind > MANIFEST_EXTRA) ? argc - optind - 5 : 0;
+    extra_list = argv + optind + MANIFEST_EXTRA;
     dbg(DBG_LOW, "tar: %s", tar);
     dbg(DBG_LOW, "cp: %s", cp);
     dbg(DBG_LOW, "ls: %s", ls);
@@ -1651,7 +1652,7 @@ free_info(struct info *infop)
 	infop->extra_file = NULL;
     }
     if (infop->manifest != NULL) {
-	for (i = 0; i < infop->extra_count + MANIFEST_EXTRA; ++i) {
+	for (i = 0; i < infop->extra_count + MANIFEST_EXTRA + 1; ++i) {
 	    if (infop->manifest[i] != NULL) {
 		free(infop->manifest[i]);
 		infop->manifest[i] = NULL;
@@ -2466,6 +2467,10 @@ sanity_chk(struct info *infop, char const *work_dir, char const *iocccsize, char
 	      "The iocccsize file does not exist.",
 	      "",
 	      "Perhaps you need to supply a different path?",
+	      ""
+	      "The source to the iocccsize tool may be found at:",
+	      "",
+	      "    https://github.com/ioccc-src/iocccsize",
 	      "",
 	      NULL);
 	err(32, __FUNCTION__, "iocccsize does not exist: %s", iocccsize);
@@ -2477,6 +2482,10 @@ sanity_chk(struct info *infop, char const *work_dir, char const *iocccsize, char
 	      "The iocccsize file, while it exits, is not a file.",
 	      "",
 	      "We suggest you check the permissions on the iocccsize.",
+	      ""
+	      "The source to the iocccsize tool may be found at:",
+	      "",
+	      "    https://github.com/ioccc-src/iocccsize",
 	      "",
 	      NULL);
 	err(33, __FUNCTION__, "iocccsize is not a file: %s", iocccsize);
@@ -2488,6 +2497,10 @@ sanity_chk(struct info *infop, char const *work_dir, char const *iocccsize, char
 	      "The iocccsize file, while it is a file, is not executable.",
 	      "",
 	      "We suggest you check the permissions on the iocccsize.",
+	      ""
+	      "The source to the iocccsize tool may be found at:",
+	      "",
+	      "    https://github.com/ioccc-src/iocccsize",
 	      "",
 	      NULL);
 	err(34, __FUNCTION__, "iocccsize is not executable program: %s", iocccsize);
@@ -2572,6 +2585,13 @@ sanity_chk(struct info *infop, char const *work_dir, char const *iocccsize, char
      * pre v28 iocccsize tools exited 2 if -V was an unknown -flag
      */
     } else if (WEXITSTATUS(exit_code) == 2) {
+	fpara(stderr,
+	      "",
+	      "The source to the iocccsize tool may be found at:",
+	      "",
+	      "    https://github.com/ioccc-src/iocccsize",
+	      "",
+	      NULL);
 	err(42, __FUNCTION__, "%s appears to be too old to support -V", iocccsize);
 	/*NOTREACHED*/
     } else if (WEXITSTATUS(exit_code) != 3) {
@@ -2680,14 +2700,28 @@ sanity_chk(struct info *infop, char const *work_dir, char const *iocccsize, char
     dbg(DBG_MED, "iocccsize version: %d.%d", major_ver, minor_ver);
     dbg(DBG_HIGH, "iocccsize release year: %d month: %d day: %d", year, month, day);
     if (major_ver != REQUIRED_IOCCCSIZE_MAJVER) {
+	fpara(stderr,
+	      "",
+	      "The iocccsize major version number does NOT match the required version.",
+	      "",
+	      "The source to the iocccsize tool may be found at:",
+	      "",
+	      "    https://github.com/ioccc-src/iocccsize",
+	      "",
+	      NULL);
 	err(51, __FUNCTION__, "iocccsize major version: %d != required major version: %d", major_ver, REQUIRED_IOCCCSIZE_MAJVER);
 	/*NOTREACHED*/
     }
-    if (major_ver != REQUIRED_IOCCCSIZE_MAJVER) {
-	err(52, __FUNCTION__, "iocccsize major version: %d != required major version: %d", major_ver, REQUIRED_IOCCCSIZE_MAJVER);
-	/*NOTREACHED*/
-    }
     if (minor_ver < MIN_IOCCCSIZE_MINVER) {
+	fpara(stderr,
+	      "",
+	      "The iocccsize minor version number is too low.",
+	      "",
+	      "The source to the iocccsize tool may be found at:",
+	      "",
+	      "    https://github.com/ioccc-src/iocccsize",
+	      "",
+	      NULL);
 	err(53, __FUNCTION__, "iocccsize minor version: %d < minimum minor version: %d", minor_ver, MIN_IOCCCSIZE_MINVER);
 	/*NOTREACHED*/
     }
@@ -4481,10 +4515,10 @@ check_extra_data_files(struct info *infop, char const *entry_dir, char const *cp
 	/*NOTREACHED*/
     }
     errno = 0;			/* pre-clear errno for errp() */
-    /* + MANIFEST_EXTRA for .info.json, .author.json, prog.c, Makefile, remarks.md, and trailing NULL */
-    infop->manifest = calloc(count + MANIFEST_EXTRA, sizeof(char *));
+    /* + MANIFEST_EXTRA + 1 for .info.json, .author.json, prog.c, Makefile, remarks.md, and trailing NULL */
+    infop->manifest = calloc(count + MANIFEST_EXTRA + 1, sizeof(char *));
     if (infop->manifest == NULL) {
-	errp(157, __FUNCTION__, "calloc #1 of %d char* pointers failed", count + MANIFEST_EXTRA);
+	errp(157, __FUNCTION__, "calloc #1 of %d char* pointers failed", count + MANIFEST_EXTRA + 1);
 	/*NOTREACHED*/
     }
 
@@ -6539,7 +6573,7 @@ write_info(struct info *infop, char const *entry_dir)
 	json_fprintf_value_string(info_stream, "\t", "Makefile", infop->Makefile, true) &&
 	json_fprintf_value_bool(info_stream, "\t", "Makefile_override", (long)infop->Makefile_override, true) &&
 	json_fprintf_value_string(info_stream, "\t", "remarks_md", infop->remarks_md, true) &&
-	json_fprintf_value_long(info_stream, "\t", "manifest_count", (long)(infop->extra_count + MANIFEST_EXTRA - 1), true) &&
+	json_fprintf_value_long(info_stream, "\t", "manifest_count", (long)(infop->extra_count + MANIFEST_EXTRA), true) &&
 	fprintf(info_stream, "\t\"manifest_files\" : [\n") > 0;
     if (ret == false) {
 	errp(207, __FUNCTION__, "fprintf #0 error writing to %s", info_path);
