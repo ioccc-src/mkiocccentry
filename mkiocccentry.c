@@ -62,29 +62,32 @@
 /*
  * standard truth :-)
  */
-#if defined __STDC__ && defined __STDC_VERSION__ && __STDC_VERSION__ >= 199901L
-    /*
-     * have a C99 compiler - we should expect to have <stdbool.h>
-     */
-#   include <stdbool.h>
+#if defined(__STDC__) && defined(__STDC_VERSION__) && (__STDC_VERSION__ >= 199901L)
+
+/*
+ * have a C99 compiler - we should expect to have <stdbool.h>
+ */
+#include <stdbool.h>
+
 #else
-    /*
-     * do not have a C99 compiler - fake a <stdbool.h> header
-     */
-    typedef unsigned char bool;
-#   undef true
-#   define true ((bool)(1))
-#   undef false
-#   define false ((bool)(0))
+
+/*
+ * do not have a C99 compiler - fake a <stdbool.h> header file
+ */
+typedef unsigned char bool;
+#undef true
+#define true ((bool)(1))
+#undef false
+#define false ((bool)(0))
+
 #endif
 
 
 /*
  * definitions
  */
-#define MKIOCCCENTRY_VERSION "0.17 2022-01-11"	/* use format: major.minor YYYY-MM-DD */
+#define MKIOCCCENTRY_VERSION "0.18 2022-01-11"	/* use format: major.minor YYYY-MM-DD */
 #define LITLEN(x) (sizeof(x)-1)	/* length of a literal string w/o the NUL byte */
-#define STR_OR_NULL(x) (((x) == NULL) ? "NULL" : (x))	/* return "NULL" if NULL, else the string */
 #define REQUIRED_IOCCCSIZE_MAJVER (28)	/* iocccsize major version must match */
 #define MIN_IOCCCSIZE_MINVER (4)	/* iocccsize minor version must be >= */
 #define DBG_NONE (0)		/* no debugging */
@@ -118,10 +121,10 @@
 #define TITLE_CHARS "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"	/* [a-zA-Z0-9] */
 #define MAX_ABSTRACT_LEN (64)	/* maximum length of an abstract */
 #define TIMESTAMP_EPOCH "Thr Jan  1 00:00:00 1970 UTC"	/* gettimeofday epoch */
-#define IOCCC_REGISTER_URL "https://register.ioccc.org/just/a/guess/NOT/a/real/URL"	/* XXX - change to real URL */
-#define IOCCC_SUBMIT_URL "https://submit.ioccc.org/just/a/guess/NOT/a/real/URL"	/* XXX - change to real URL */
 /* MANIFEST_EXTRA is for .info.json, .author.json, prog.c, Makefile, remarks.md, and trailing NULL */
 #define MANIFEST_EXTRA (6)	/* manifest array needs this many more than extra args */
+#define IOCCC_REGISTER_URL "https://register.ioccc.org/just/a/guess/NOT/a/real/URL"	/* XXX - change to real URL */
+#define IOCCC_SUBMIT_URL "https://submit.ioccc.org/just/a/guess/NOT/a/real/URL"	/* XXX - change to real URL */
 
 
 /*
@@ -129,7 +132,7 @@
  *
  * The following is NOT the version of this mkiocccentry tool!
  */
-#define INFO_JSON_VERSION "1.0 2022-01-08"	/* version of the .info.json file to produce */
+#define INFO_JSON_VERSION "1.1 2022-01-11"	/* version of the .info.json file to produce */
 
 
 /*
@@ -137,7 +140,7 @@
  *
  * The following is NOT the version of this mkiocccentry tool!
  */
-#define AUTHOR_JSON_VERSION "1.0 2022-01-08"	/* version of the .author.json file to produce */
+#define AUTHOR_JSON_VERSION "1.1 2022-01-11"	/* version of the .author.json file to produce */
 
 
 /*
@@ -6116,7 +6119,7 @@ json_fprintf_str(FILE *stream, char const *str)
 /*
  * json_fprintf_value_lead - print name : but not value
  *
- * On a stream, we will printm if colon is true:
+ * On a stream, we will print if colon is true:
  *
  *	lead"name_encoded"tail
  *
@@ -6146,7 +6149,7 @@ json_fprintf_value_lead(FILE *stream, char const *lead, char const *name, char c
     }
 
     /*
-     * print leading string (usully whitespace)
+     * print leading string (usually whitespace)
      */
     errno = 0;			/* pre-clear errno for errp() */
     ret = fprintf(stream, "%s", lead);
@@ -6870,7 +6873,8 @@ remind_user(char const *work_dir, char const *entry_dir, char const *tarball_pat
 	 NULL);
     ret = printf("    rm -rf %s\n", entry_dir);
     if (ret <= 0) {
-	warn(__FUNCTION__, "printf #0 error");
+	errp(233, __FUNCTION__, "printf #0 error");
+	/*NOTREACHED*/
     }
 
     /*
@@ -6887,9 +6891,11 @@ remind_user(char const *work_dir, char const *entry_dir, char const *tarball_pat
 	     "IOCCC contestant at the web site:",
 	     "",
 	     NULL);
+	errno = 0;			/* pre-clear errno for errp() */
 	ret = printf("    %s\n", IOCCC_REGISTER_URL);
 	if (ret <= 0) {
-	    warn(__FUNCTION__, "printf #1 error");
+	    errp(234, __FUNCTION__, "printf #1 error");
+	    /*NOTREACHED*/
 	}
 	para("",
 	     "If you are curious, you may wish to examine the test compressed tarball file,",
@@ -6913,7 +6919,8 @@ remind_user(char const *work_dir, char const *entry_dir, char const *tarball_pat
      */
     ret = printf("    %s/%s\n", work_dir, tarball_path);
     if (ret <= 0) {
-	warn(__FUNCTION__, "printf #2 error");
+	errp(235, __FUNCTION__, "printf #2 error");
+	/*NOTREACHED*/
     }
 
     /*
@@ -6926,7 +6933,8 @@ remind_user(char const *work_dir, char const *entry_dir, char const *tarball_pat
 	     NULL);
 	ret = printf("    rm -f %s/%s\n", work_dir, tarball_path);
 	if (ret <= 0) {
-	    warn(__FUNCTION__, "printf #3 error");
+	    errp(236, __FUNCTION__, "printf #3 error");
+	    /*NOTREACHED*/
 	}
 
     /*
@@ -6940,7 +6948,8 @@ remind_user(char const *work_dir, char const *entry_dir, char const *tarball_pat
 	     NULL);
 	ret = printf("    %s\n", IOCCC_SUBMIT_URL);
 	if (ret < 0) {
-	    warn(__FUNCTION__, "printf #3 error");
+	    errp(237, __FUNCTION__, "printf #4 error");
+	    /*NOTREACHED*/
 	}
     }
     return;
