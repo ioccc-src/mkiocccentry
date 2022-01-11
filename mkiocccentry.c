@@ -86,7 +86,9 @@ typedef unsigned char bool;
 /*
  * definitions
  */
-#define MKIOCCCENTRY_VERSION "0.18 2022-01-11"	/* use format: major.minor YYYY-MM-DD */
+#define MKIOCCCENTRY_VERSION "0.19 2022-01-11"	/* use format: major.minor YYYY-MM-DD */
+#define IOCCC_CONTEST "IOCCC28"			/* use format: IOCCC99 */
+#define IOCCC_YEAR (2022)			/* Year IOCCC_CONTEST closes */
 #define LITLEN(x) (sizeof(x)-1)	/* length of a literal string w/o the NUL byte */
 #define REQUIRED_IOCCCSIZE_MAJVER (28)	/* iocccsize major version must match */
 #define MIN_IOCCCSIZE_MINVER (4)	/* iocccsize minor version must be >= */
@@ -132,7 +134,7 @@ typedef unsigned char bool;
  *
  * The following is NOT the version of this mkiocccentry tool!
  */
-#define INFO_JSON_VERSION "1.1 2022-01-11"	/* version of the .info.json file to produce */
+#define INFO_JSON_VERSION "1.2 2022-01-11"	/* version of the .info.json file to produce */
 
 
 /*
@@ -140,7 +142,7 @@ typedef unsigned char bool;
  *
  * The following is NOT the version of this mkiocccentry tool!
  */
-#define AUTHOR_JSON_VERSION "1.1 2022-01-11"	/* version of the .author.json file to produce */
+#define AUTHOR_JSON_VERSION "1.2 2022-01-11"	/* version of the .author.json file to produce */
 
 
 /*
@@ -304,8 +306,8 @@ struct info {
      */
     time_t tstamp;		/* seconds since epoch when .info json was formed (see gettimeofday(2)) */
     suseconds_t usec;		/* microseconds since the tstamp second */
-    char *now_epoch;		/* epoch of tstamp, currently: Thr Jan 1 00:00:00 1970 UTC */
-    char *now_gmtime;		/* UTC converted string for tstamp (see asctime(3)) */
+    char *epoch;		/* epoch of tstamp, currently: Thr Jan 1 00:00:00 1970 UTC */
+    char *gmtime;		/* UTC converted string for tstamp (see asctime(3)) */
 };
 
 
@@ -1662,13 +1664,13 @@ free_info(struct info *infop)
     /*
      * free time values
      */
-    if (infop->now_epoch != NULL) {
-	free(infop->now_epoch);
-	infop->now_epoch = NULL;
+    if (infop->epoch != NULL) {
+	free(infop->epoch);
+	infop->epoch = NULL;
     }
-    if (infop->now_gmtime != NULL) {
-	free(infop->now_gmtime);
-	infop->now_gmtime = NULL;
+    if (infop->gmtime != NULL) {
+	free(infop->gmtime);
+	infop->gmtime = NULL;
     }
     return;
 }
@@ -6421,6 +6423,7 @@ write_info(struct info *infop, char const *entry_dir)
     char *info_path;		/* path to .info.json file */
     int info_path_len;		/* length of path to .info.json */
     FILE *info_stream;		/* open write stream to the .info.json file */
+    int gmtime_len;		/* length of gmtime string (gmtime() + " UTC") */
     int ret;			/* libc function return */
     char *p;
     char **q;
@@ -6444,12 +6447,12 @@ write_info(struct info *infop, char const *entry_dir)
      * timestamp epoch
      */
     errno = 0;			/* pre-clear errno for errp() */
-    infop->now_epoch = strdup(TIMESTAMP_EPOCH);
-    if (infop->now_epoch == NULL) {
+    infop->epoch = strdup(TIMESTAMP_EPOCH);
+    if (infop->epoch == NULL) {
 	errp(198, __FUNCTION__, "strdup of %s failed", TIMESTAMP_EPOCH);
 	/*NOTREACHED*/
     }
-    dbg(DBG_VVHIGH, "infop->now_epoch: %s", infop->now_epoch);
+    dbg(DBG_VVHIGH, "infop->epoch: %s", infop->epoch);
 
     /*
      * reset to UTC timezone
@@ -6480,17 +6483,16 @@ write_info(struct info *infop, char const *entry_dir)
 	errp(202, __FUNCTION__, "asctime #1 returned NULL");
 	/*NOTREACHED*/
     }
+    gmtime_len = strlen(p) + 1 + LITLEN("UTC") + 1;
     errno = 0;			/* pre-clear errno for errp() */
-    infop->now_gmtime = strdup(p);
-    if (infop->now_gmtime == NULL) {
-	errp(203, __FUNCTION__, "strdup of asctime #1 return failed: %s", p);
+    infop->gmtime = calloc(gmtime_len + 1, 1);
+    if (infop->gmtime == NULL) {
+	errp(204, __FUNCTION__, "calloc of %d bytes failed", gmtime_len + 1);
 	/*NOTREACHED*/
     }
-    p = strrchr(infop->now_gmtime, '\n');
-    if (p != NULL) {
-	*p = '\0';		/* remove trailing newline */
-    }
-    dbg(DBG_VVHIGH, "infop->now_gmtime: %s", infop->now_gmtime);
+    (void) strncat(infop->gmtime, p, strlen(p)-1); /* -1 to remove trailing newline */
+    (void) strcat(infop->gmtime, " UTC");
+    dbg(DBG_VVHIGH, "infop->gmtime: %s", infop->gmtime);
 
     /*
      * open .info.json for writing
@@ -6522,6 +6524,8 @@ write_info(struct info *infop, char const *entry_dir)
     errno = 0;			/* pre-clear errno for errp() */
     ret = fprintf(info_stream, "{\n") > 0 &&
 	json_fprintf_value_string(info_stream, "\t", "IOCCC_info_JSON_version", INFO_JSON_VERSION, true) &&
+	json_fprintf_value_string(info_stream, "\t", "ioccc_contest", IOCCC_CONTEST, true) &&
+	json_fprintf_value_long(info_stream, "\t", "ioccc_year", (long)IOCCC_YEAR, true) &&
 	json_fprintf_value_string(info_stream, "\t", "mkiocccentry_version", infop->mkiocccentry_ver, true) &&
 	json_fprintf_value_string(info_stream, "\t", "iocccsize_version", infop->iocccsize_ver, true) &&
 	json_fprintf_value_string(info_stream, "\t", "IOCCC_contest_id", infop->ioccc_id, true) &&
@@ -6569,8 +6573,8 @@ write_info(struct info *infop, char const *entry_dir)
     ret = fprintf(info_stream, "\t],\n") > 0 &&
 	json_fprintf_value_long(info_stream, "\t", "formed_timestamp", (long)infop->tstamp, true) &&
 	json_fprintf_value_long(info_stream, "\t", "formed_timestamp_usec", (long)infop->usec, true) &&
-	json_fprintf_value_string(info_stream, "\t", "timestamp_epoch", infop->now_epoch, true) &&
-	json_fprintf_value_string(info_stream, "\t", "formed_UTC", infop->now_gmtime, false) &&
+	json_fprintf_value_string(info_stream, "\t", "timestamp_epoch", infop->epoch, true) &&
+	json_fprintf_value_string(info_stream, "\t", "formed_UTC", infop->gmtime, false) &&
 	fprintf(info_stream, "}\n") > 0;
     if (ret == false) {
 	errp(211, __FUNCTION__, "fprintf #4 error writing to %s", info_path);
@@ -6661,6 +6665,8 @@ write_author(struct info *infop, int author_count, struct author *authorp, char 
     errno = 0;			/* pre-clear errno for errp() */
     ret = fprintf(author_stream, "{\n") > 0 &&
 	json_fprintf_value_string(author_stream, "\t", "IOCCC_info_JSON_version", INFO_JSON_VERSION, true) &&
+	json_fprintf_value_string(author_stream, "\t", "ioccc_contest", IOCCC_CONTEST, true) &&
+	json_fprintf_value_long(author_stream, "\t", "ioccc_year", (long)IOCCC_YEAR, true) &&
 	json_fprintf_value_string(author_stream, "\t", "mkiocccentry_version", infop->mkiocccentry_ver, true) &&
 	json_fprintf_value_string(author_stream, "\t", "IOCCC_contest_id", infop->ioccc_id, true) &&
 	json_fprintf_value_long(author_stream, "\t", "entry_num", (long)infop->entry_num, true) &&
@@ -6693,8 +6699,8 @@ write_author(struct info *infop, int author_count, struct author *authorp, char 
     ret = fprintf(author_stream, "\t],\n") > 0 &&
 	json_fprintf_value_long(author_stream, "\t", "formed_timestamp", (long)infop->tstamp, true) &&
 	json_fprintf_value_long(author_stream, "\t", "formed_timestamp_usec", (long)infop->usec, true) &&
-	json_fprintf_value_string(author_stream, "\t", "timestamp_epoch", infop->now_epoch, true) &&
-	json_fprintf_value_string(author_stream, "\t", "formed_UTC", infop->now_gmtime, false) &&
+	json_fprintf_value_string(author_stream, "\t", "timestamp_epoch", infop->epoch, true) &&
+	json_fprintf_value_string(author_stream, "\t", "formed_UTC", infop->gmtime, false) &&
 	fprintf(author_stream, "}\n") > 0;
     if (ret == false) {
 	errp(219, __FUNCTION__, "fprintf #2 error writing to %s", author_path);
