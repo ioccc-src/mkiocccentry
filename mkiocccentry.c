@@ -79,7 +79,7 @@ typedef unsigned char bool;
 /*
  * mkiocccentry version
  */
-#define MKIOCCCENTRY_VERSION "0.21 2022-01-12"	/* use format: major.minor YYYY-MM-DD */
+#define MKIOCCCENTRY_VERSION "0.22 2022-01-12"	/* use format: major.minor YYYY-MM-DD */
 #define IOCCC_CONTEST "IOCCC28"			/* use format: IOCCC99 */
 #define IOCCC_YEAR (2022)			/* Year IOCCC_CONTEST closes */
 
@@ -89,7 +89,7 @@ typedef unsigned char bool;
  *
  * The following is NOT the version of this mkiocccentry tool!
  */
-#define INFO_JSON_VERSION "1.3 2022-01-12"	/* version of the .info.json file to produce */
+#define INFO_JSON_VERSION "1.4 2022-01-12"	/* version of the .info.json file to produce */
 
 
 /*
@@ -97,7 +97,7 @@ typedef unsigned char bool;
  *
  * The following is NOT the version of this mkiocccentry tool!
  */
-#define AUTHOR_JSON_VERSION "1.3 2022-01-12"	/* version of the .author.json file to produce */
+#define AUTHOR_JSON_VERSION "1.4 2022-01-12"	/* version of the .author.json file to produce */
 
 
 /*
@@ -256,7 +256,8 @@ static const char * const usage_msg3 =
  */
 struct author {
     char *name;			/* name of the author */
-    char *location_code;	/* author country code */
+    char *location_code;	/* author location/country code */
+    char const *location_name;	/* name of author location/country */
     char *email;		/* Email address of author or or empty string ==> not provided */
     char *url;			/* home URL of author or or empty string ==> not provided */
     char *twitter;		/* author twitter handle or or empty string ==> not provided */
@@ -748,7 +749,7 @@ static void check_Makefile(struct info *infop, char const *entry_dir, char const
 static void check_remarks_md(struct info *infop, char const *entry_dir, char const *cp, char const *remarks_md);
 static char *basename(char const *path);
 static void check_extra_data_files(struct info *infop, char const *entry_dir, char const *cp, int count, char **args);
-static char const *lookup_location_name(char *upper_code);
+static char const *lookup_location_name(char const *upper_code);
 static bool yes_or_no(char *question);
 static char *get_title(struct info *infop);
 static char *get_abstract(struct info *infop);
@@ -763,7 +764,7 @@ static bool json_fprintf_value_long(FILE *stream, char const *lead, char const *
 static bool json_fprintf_value_bool(FILE *stream, char const *lead, char const *name, char const *middle, bool value,
 				    char const *tail);
 static char const * const strnull(char const * const str);
-static void write_info(struct info *infop, char const *entry_dir);
+static void write_info(struct info *infop, char const *entry_dir, bool test_mode);
 static void write_author(struct info *infop, int author_count, struct author *authorp, char const *entry_dir);
 static void form_tarball(char const *work_dir, char const *entry_dir, char const *tarball_path, char const *tar);
 static void remind_user(char const *work_dir, char const *entry_dir, char const *tarball_path, bool test_mode);
@@ -980,7 +981,7 @@ main(int argc, char *argv[])
      * write the .info.json file
      */
     para("", "Forming the .info.json file ...", NULL);
-    write_info(&info, entry_dir);
+    write_info(&info, entry_dir, test_mode);
     para("... completed the .info.json file.", "", NULL);
 
     /*
@@ -4645,7 +4646,7 @@ check_extra_data_files(struct info *infop, char const *entry_dir, char const *cp
  * This function does not return on error.
  */
 static char const *
-lookup_location_name(char *upper_code)
+lookup_location_name(char const *upper_code)
 {
     struct location *p;		/* entry in the location table */
 
@@ -5038,9 +5039,8 @@ static int
 get_author_info(struct info *infop, char *ioccc_id, int entry_num, struct author **author_set_p)
 {
     struct author *author_set = NULL;	/* allocated author set */
-    int author_count = -1;	/* number of authors or -1 */
+    int author_count = -1;		/* number of authors or -1 */
     char *author_count_str = NULL;	/* author count string */
-    char const *location_name = NULL;	/* location name of a given location/country code */
     bool yorn = false;		/* response to a question */
     size_t len;			/* length of reply */
     int ret;			/* libc function return */
@@ -5290,7 +5290,7 @@ get_author_info(struct info *infop, char *ioccc_id, int entry_num, struct author
 		/*
 		 * discard this invalid location/country code input
 		 */
-		location_name = NULL;
+		author_set[i].location_name = NULL;
 		yorn = false;
 		continue;
 
@@ -5305,8 +5305,8 @@ get_author_info(struct info *infop, char *ioccc_id, int entry_num, struct author
 		/*
 		 * determine if code is known
 		 */
-		location_name = lookup_location_name(author_set[i].location_code);
-		if (location_name == NULL) {
+		author_set[i].location_name = lookup_location_name(author_set[i].location_code);
+		if (author_set[i].location_name == NULL) {
 
 		    /*
 		     * provide more help on location/country codes
@@ -5350,7 +5350,7 @@ get_author_info(struct info *infop, char *ioccc_id, int entry_num, struct author
 		    /*
 		     * discard this invalid location/country code input
 		     */
-		    location_name = NULL;
+		    author_set[i].location_name = NULL;
 		    yorn = false;
 		    continue;
 		}
@@ -5358,7 +5358,7 @@ get_author_info(struct info *infop, char *ioccc_id, int entry_num, struct author
 		/*
 		 * verify the known location/country code
 		 */
-		ret = printf("The location/country code you entered is assigned to: %s\n", location_name);
+		ret = printf("The location/country code you entered is assigned to: %s\n", author_set[i].location_name);
 		if (ret <= 0) {
 		    warn(__FUNCTION__, "fprintf location/country code assignment");
 		}
@@ -5374,8 +5374,8 @@ get_author_info(struct info *infop, char *ioccc_id, int entry_num, struct author
 		    }
 		}
 	    }
-	} while (author_set[i].location_code == NULL || location_name == NULL || yorn == false);
-	dbg(DBG_MED, "Author #%d location/country: %s (%s)", i, author_set[i].location_code, location_name);
+	} while (author_set[i].location_code == NULL || author_set[i].location_name == NULL || yorn == false);
+	dbg(DBG_MED, "Author #%d location/country: %s (%s)", i, author_set[i].location_code, author_set[i].location_name);
 
 	/*
 	 * ask for Email address
@@ -5755,7 +5755,7 @@ get_author_info(struct info *infop, char *ioccc_id, int entry_num, struct author
 	errno = 0;	/* pre-clear errno for errp() */
 	if (printf("\nPlease verify the information about author #%d\n\n", i) <= 0 ||
 	    printf("Name: %s\n", author_set[i].name) <= 0 ||
-	    printf("Location/country code: %s (%s)\n", author_set[i].location_code, location_name) <= 0 ||
+	    printf("Location/country code: %s (%s)\n", author_set[i].location_code, author_set[i].location_name) <= 0 ||
 	    ((author_set[i].email[0] == '\0') ? printf("Email not given\n") :
 						printf("Email: %s\n", author_set[i].email)) <= 0 ||
 	    ((author_set[i].url[0] == '\0') ? printf("Url not given\n") :
@@ -6380,6 +6380,7 @@ strnull(char const * const str)
  * given:
  *      infop           - pointer to info structure
  *      entry_dir       - path to entry directory
+ *      test_mode       - true ==> test mode, do not upload
  *
  * returns:
  *	true
@@ -6387,7 +6388,7 @@ strnull(char const * const str)
  * This function does not return on error.
  */
 static void
-write_info(struct info *infop, char const *entry_dir)
+write_info(struct info *infop, char const *entry_dir, bool test_mode)
 {
     struct tm *timeptr;		/* localtime return */
     char *info_path;		/* path to .info.json file */
@@ -6506,7 +6507,8 @@ write_info(struct info *infop, char const *entry_dir)
 	json_fprintf_value_long(info_stream, "\t", "rule_2a_size", " : ", (long)infop->rule_2a_size, ",\n") &&
 	json_fprintf_value_long(info_stream, "\t", "rule_2b_size", " : ", (long)infop->rule_2b_size, ",\n") &&
 	json_fprintf_value_bool(info_stream, "\t", "rule_2b_override", " : ", (long)infop->rule_2b_override, ",\n") &&
-	json_fprintf_value_bool(info_stream, "\t", "Makefile_override", " : ", (long)infop->Makefile_override, ",\n") &&
+	json_fprintf_value_bool(info_stream, "\t", "Makefile_override", " : ", infop->Makefile_override, ",\n") &&
+	json_fprintf_value_bool(info_stream, "\t", "test_mode", " : ", test_mode, ",\n") &&
 	fprintf(info_stream, "\t\"manifest\" : [\n") > 0;
     if (ret == false) {
 	errp(199, __FUNCTION__, "fprintf error writing leading part of info to %s", info_path);
@@ -6636,7 +6638,7 @@ write_author(struct info *infop, int author_count, struct author *authorp, char 
      */
     errno = 0;			/* pre-clear errno for errp() */
     ret = fprintf(author_stream, "{\n") > 0 &&
-	json_fprintf_value_string(author_stream, "\t", "IOCCC_info_JSON_version", " : ", INFO_JSON_VERSION, ",\n") &&
+	json_fprintf_value_string(author_stream, "\t", "IOCCC_author_JSON_version", " : ", AUTHOR_JSON_VERSION, ",\n") &&
 	json_fprintf_value_string(author_stream, "\t", "ioccc_contest", " : ", IOCCC_CONTEST, ",\n") &&
 	json_fprintf_value_long(author_stream, "\t", "ioccc_year", " : ", (long)IOCCC_YEAR, ",\n") &&
 	json_fprintf_value_string(author_stream, "\t", "mkiocccentry_version", " : ", infop->mkiocccentry_ver, ",\n") &&
@@ -6656,6 +6658,7 @@ write_author(struct info *infop, int author_count, struct author *authorp, char 
 	ret = fprintf(author_stream, "\t\t\"author\" : {\n") > 0 &&
 	    json_fprintf_value_string(author_stream, "\t\t\t", "name", " : ", authorp[i].name, ",\n") &&
 	    json_fprintf_value_string(author_stream, "\t\t\t", "location_code", " : ", authorp[i].location_code, ",\n") &&
+	    json_fprintf_value_string(author_stream, "\t\t\t", "location_name", " : ", authorp[i].location_name, ",\n") &&
 	    json_fprintf_value_string(author_stream, "\t\t\t", "email", " : ", strnull(authorp[i].email), ",\n") &&
 	    json_fprintf_value_string(author_stream, "\t\t\t", "url", " : ", strnull(authorp[i].url), ",\n") &&
 	    json_fprintf_value_string(author_stream, "\t\t\t", "twitter", " : ", strnull(authorp[i].twitter), ",\n") &&
