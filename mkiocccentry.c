@@ -6883,8 +6883,7 @@ form_tarball(char const *work_dir, char const *entry_dir, char const *tarball_pa
      */
     basename_entry_dir = basename(entry_dir);
     basename_tarball_path = basename(tarball_path);
-    tar_cmd_len = strlen(tar) + 1 + LITLEN("--options='compression-level=9'") + 1 + LITLEN("-cJf") + 1 +
-		  strlen(basename_tarball_path) + 1 + strlen(basename_entry_dir) + 1;
+    tar_cmd_len = strlen(tar) + 1 + + LITLEN("-cJf") + 1 + strlen(basename_tarball_path) + 1 + strlen(basename_entry_dir) + 1;
     errno = 0;			/* pre-clear errno for errp() */
     tar_cmd = malloc(tar_cmd_len + 1);
     if (tar_cmd == NULL) {
@@ -6892,7 +6891,7 @@ form_tarball(char const *work_dir, char const *entry_dir, char const *tarball_pa
 	/*NOTREACHED*/
     }
     errno = 0;			/* pre-clear errno for errp() */
-    ret = snprintf(tar_cmd, tar_cmd_len, "%s --options='compression-level=9' -cJf %s %s",
+    ret = snprintf(tar_cmd, tar_cmd_len, "%s -cJf %s %s",
 		   tar, basename_tarball_path, basename_entry_dir);
     if (ret <= 0) {
 	errp(225, __FUNCTION__, "snprintf #0 error: %d", ret);
