@@ -3632,7 +3632,6 @@ check_prog_c(struct info *infop, char const *entry_dir, char const *iocccsize, c
 	errp(108, __FUNCTION__, "popen for reading failed for: %s", cmd);
 	/*NOTREACHED*/
     }
-    errno = 0;			/* pre-clear errno for errp() */
     setlinebuf(iocccsize_stream);
 
     /*
@@ -5936,12 +5935,7 @@ verify_entry_dir(char const *entry_dir, char const *ls)
 	errp(191, __FUNCTION__, "popen for reading failed for: %s", ls_cmd);
 	/*NOTREACHED*/
     }
-    errno = 0;			/* pre-clear errno for errp() */
-    ret = setlinebuf(ls_stream);
-    if (ret != 0) {
-	errp(192, __FUNCTION__, "setlinebuf of ls command failed");
-	/*NOTREACHED*/
-    }
+    setlinebuf(ls_stream);
 
     /*
      * read the 1st line - contains the total kilo block line
