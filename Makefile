@@ -33,8 +33,10 @@ CC= cc
 CFLAGS= -O3 -g3 --pedantic -Wall
 #CFLAGS= -O3 -g3 --pedantic -Wall -Werror
 #CFLAGS= -O3 -g3 --pedantic -Wall -Werror -DDEBUG_LINT
-## If you use clang ASAN, set this environment var: ASAN_OPTIONS="detect_stack_use_after_return=1"
-#CFLAGS= -O0 -g --pedantic -Wall -Werror -fsanitize=address -fno-omit-frame-pointer -fsanitize=undefined
+## If you use ASAN, set this environment var: ASAN_OPTIONS="detect_stack_use_after_return=1"
+#CFLAGS= -O0 -g --pedantic -Wall -Werror -fsanitize=address -fno-omit-frame-pointer
+# For valgrind, run with: valgrind --leak-check=yes --track-origins=yes --leak-resolution=high --read-var-info=yes
+#CFLAGS= -O0 -g --pedantic -Wall -Werror
 RM= rm
 INSTALL= install
 
