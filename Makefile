@@ -32,10 +32,9 @@ SHELL= /bin/bash
 CC= cc
 CFLAGS= -O3 -g3 --pedantic -Wall
 #CFLAGS= -O3 -g3 --pedantic -Wall -Werror
-## If you use clang ASAN, set this environment var: ASAN_OPTIONS="detect_stack_use_after_return=1"
-#CFLAGS= -O3 -g3 --pedantic -Wall -Werror -fsanitize=address -fno-omit-frame-pointer
 #CFLAGS= -O3 -g3 --pedantic -Wall -Werror -DDEBUG_LINT
-#CFLAGS= -O0 -g --pedantic -Wall -Werror
+## If you use clang ASAN, set this environment var: ASAN_OPTIONS="detect_stack_use_after_return=1"
+#CFLAGS= -O0 -g --pedantic -Wall -Werror -fsanitize=address -fno-omit-frame-pointer -fsanitize=undefined
 RM= rm
 INSTALL= install
 

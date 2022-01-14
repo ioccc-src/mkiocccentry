@@ -79,7 +79,7 @@ typedef unsigned char bool;
 /*
  * mkiocccentry version
  */
-#define MKIOCCCENTRY_VERSION "0.22 2022-01-12"	/* use format: major.minor YYYY-MM-DD */
+#define MKIOCCCENTRY_VERSION "0.23 2022-01-14"	/* use format: major.minor YYYY-MM-DD */
 #define IOCCC_CONTEST "IOCCC28"			/* use format: IOCCC99 */
 #define IOCCC_YEAR (2022)			/* Year IOCCC_CONTEST closes */
 
@@ -134,9 +134,12 @@ typedef unsigned char bool;
 #define RULE_2A_SIZE (5120)	/* rule 2s size of prog.c */
 #define RULE_2B_SIZE (3217)	/* rule 2b size as determined by iocccsize -i prog.c */
 #define MAX_TITLE_LEN (24)	/* maximum length of a title */
-#define TITLE_CHARS "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"	/* [a-zA-Z0-9] */
+#define LEAD_TITLE_CHARS "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"	/* [a-z0-9] */
+#define TAIL_TITLE_CHARS "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_+-"	/* [a-z0-9_+-] */
 #define MAX_ABSTRACT_LEN (64)	/* maximum length of an abstract */
 #define TIMESTAMP_EPOCH "Thr Jan  1 00:00:00 1970 UTC"	/* gettimeofday epoch */
+#define MAX_TARBALL_LEN ((off_t)(3999971))	/* the compressed tarball formed cannot be longer than this */
+#define MAX_DIR_KSIZE (27651)			/* entry directory cannot exceed this size in kibibyte (1024 byte) blocks */
 #define IOCCC_REGISTER_URL "https://register.ioccc.org/just/a/guess/NOT/a/real/URL"	/* XXX - change to real URL */
 #define IOCCC_SUBMIT_URL "https://submit.ioccc.org/just/a/guess/NOT/a/real/URL"	/* XXX - change to real URL */
 
@@ -227,7 +230,7 @@ static const char * const usage_msg =
     "\t-h\t\tprint help message and exit 0\n"
     "\t-v level\tset verbosity level: (def level: %d)\n"
     "\t-V\t\tprint version string and exit\n"
-    "\t-t tar\t\tpath to tar executable that supports -j (def: %s)\n"
+    "\t-t tar\t\tpath to tar executable that supports -J (LZMA) (def: %s)\n"
     "\t-c cp\t\tpath to cp executable (def: %s)\n" "\t-l ls\t\tpath to ls executable (def: %s)\n";
 static const char * const usage_msg2 =
     "\n"
@@ -766,8 +769,8 @@ static bool json_fprintf_value_bool(FILE *stream, char const *lead, char const *
 static char const * const strnull(char const * const str);
 static void write_info(struct info *infop, char const *entry_dir, bool test_mode);
 static void write_author(struct info *infop, int author_count, struct author *authorp, char const *entry_dir);
-static void form_tarball(char const *work_dir, char const *entry_dir, char const *tarball_path, char const *tar);
-static void remind_user(char const *work_dir, char const *entry_dir, char const *tarball_path, bool test_mode);
+static void form_tarball(char const *work_dir, char const *entry_dir, char const *tarball_path, char const *tar, char const *ls);
+static void remind_user(char const *work_dir, char const *entry_dir, char const *tar, char const *tarball_path, bool test_mode);
 
 
 int
@@ -972,12 +975,6 @@ main(int argc, char *argv[])
     dbg(DBG_LOW, "collected information on %d authors", author_count);
 
     /*
-     * verify entry directory contents
-     */
-    verify_entry_dir(entry_dir, ls);
-    dbg(DBG_LOW, "verified entry directory: %s", entry_dir);
-
-    /*
      * write the .info.json file
      */
     para("", "Forming the .info.json file ...", NULL);
@@ -992,16 +989,14 @@ main(int argc, char *argv[])
     para("... completed .author.json file.", "", NULL);
 
     /*
-     * form the .tar.bz2 file
+     * form the .txz file
      */
-    para("About to run the tar command to form the compressed tarball ...", NULL);
-    form_tarball(work_dir, entry_dir, tarball_path, tar);
-    para("... the output above is the listing of the compressed tarball.", "", NULL);
+    form_tarball(work_dir, entry_dir, tarball_path, tar, ls);
 
     /*
      * remind user to upload (unless in test mode)
      */
-    remind_user(work_dir, entry_dir, tarball_path, test_mode);
+    remind_user(work_dir, entry_dir, tar, tarball_path, test_mode);
 
     /*
      * free storage
@@ -2251,7 +2246,9 @@ readline_dup(char **linep, bool strip, size_t *lenp, FILE * stream)
  *      infop           - pointer to info structure
  *      work_dir        - where the entry directory and tarball are formed
  *      iocccsize       - path to the iocccsize tool
- *      tar             - path to tar that supports -j
+ *      tar             - path to tar that supports -J (LZMA)
+ *	cp		- path to the cp utility
+ *	ls		- path to the ls utility
  *
  * NOTE: This function does not return on error or if things are not sane.
  */
@@ -2286,7 +2283,7 @@ sanity_chk(struct info *infop, char const *work_dir, char const *iocccsize, char
 	      "",
 	      "We cannot find a tar program.",
 	      "",
-	      "A tar program that supports -j is required to build an compressed tarball.",
+	      "A tar program that supports -J (LZMA) is required to build an compressed tarball.",
 	      "Perhaps you need to use:",
 	      "",
 	      "    mkiocccentry -t tar ...",
@@ -3250,7 +3247,6 @@ get_contest_id(struct info *infop, bool *testp)
      */
     para("",
 	 "The format of the non-test IOCCC contest ID appears to be valid.",
-	 "",
 	 NULL);
     *testp = false;		/* IOCCC contest ID is not test */
 
@@ -3432,7 +3428,7 @@ mk_entry_dir(char *work_dir, char *ioccc_id, int entry_num, char **tarball_path,
      *
      * We assume timestamps will be values of 12 decimal digits or less in the future. :-)
      */
-    tarball_len = LITLEN("entry.") + strlen(ioccc_id) + 1 + MAX_ENTRY_CHARS + LITLEN(".123456789012.tar.bz2") + 1;
+    tarball_len = LITLEN("entry.") + strlen(ioccc_id) + 1 + MAX_ENTRY_CHARS + LITLEN(".123456789012.txz") + 1;
     errno = 0;			/* pre-clear errno for errp() */
     *tarball_path = malloc(tarball_len + 1);
     if (*tarball_path == NULL) {
@@ -3440,7 +3436,7 @@ mk_entry_dir(char *work_dir, char *ioccc_id, int entry_num, char **tarball_path,
 	/*NOTREACHED*/
     }
     errno = 0;			/* pre-clear errno for errp() */
-    ret = snprintf(*tarball_path, tarball_len + 1, "entry.%s.%d.%ld.tar.bz2", ioccc_id, entry_num, tstamp);
+    ret = snprintf(*tarball_path, tarball_len + 1, "entry.%s.%d.%ld.txz", ioccc_id, entry_num, tstamp);
     if (ret <= 0) {
 	errp(96, __FUNCTION__, "snprintf to form compressed tarball path failed");
 	/*NOTREACHED*/
@@ -3648,7 +3644,7 @@ check_prog_c(struct info *infop, char const *entry_dir, char const *iocccsize, c
 	err(109, __FUNCTION__, "EOF while reading Rule 2b output from iocccsize: %s", iocccsize);
 	/*NOTREACHED*/
     } else {
-	dbg(DBG_HIGH, "version line read length: %ld buffer: %s", readline_len, linep);
+	dbg(DBG_HIGH, "iocccsize version line read length: %ld buffer: %s", readline_len, linep);
     }
 
     /*
@@ -4813,9 +4809,19 @@ yes_or_no(char *question)
 	/*
 	 * inform the user of the title
 	 */
-	para("An entry title is a short name consisting of alphanumeric characters [a-zA-Z0-9].",
+	para("An entry title is a short name using the [a-z0-9][a-z0-9_+-]* regex pattern.",
+	      "",
+	      "If your entry wins, the title might become the directory name of your entry.",
+	      "Although the IOCCC judges might change the title for various reason.",
+	      "",
+	      "If you submitting more than one entry, please make your titles unique",
+	      "amongst the entries that you submit to the current IOCCC.",
 	      "",
 	      NULL);
+	ret = fprintf(stderr, "You title must be between 1 and %d ASCII characters long.\n\n", MAX_TITLE_LEN);
+	if (ret <= 0) {
+	    warn(__FUNCTION__, "fprintf #0 error: %d", ret);
+	}
 
 	/*
 	 * ask the question and obtain the response
@@ -4864,10 +4870,33 @@ yes_or_no(char *question)
 		  "That title is too long.",
 		  "",
 		  NULL);
-	    ret = fprintf(stderr, "You title must be between 1 and %d characters long.\n\n", MAX_TITLE_LEN);
+	    ret = fprintf(stderr, "You title must be between 1 and %d ASCII characters long.\n\n", MAX_TITLE_LEN);
 	    if (ret <= 0) {
-		warn(__FUNCTION__, "fprintf error: %d", ret);
+		warn(__FUNCTION__, "fprintf #1 error: %d", ret);
 	    }
+
+	    /*
+	     * free storage
+	     */
+	    if (title != NULL) {
+		free(title);
+		title = NULL;
+	    }
+	    continue;
+	}
+
+	/*
+	 * verify that the title starts withg [a-z0-9]
+	 */
+	if (!isascii(title[0]) || (!islower(title[0]) && !isdigit(title[0]))) {
+	    /*
+	     * reject long title
+	     */
+	    fpara(stderr,
+		  "",
+		  "That title does not start with a lower case ASCII letter [a-z] or digit [0-9]:",
+		  "",
+		  NULL);
 
 	    /*
 	     * free storage
@@ -4882,7 +4911,7 @@ yes_or_no(char *question)
 	/*
 	 * verify that the title characters are from the valid character set
 	 */
-	span = strspn(title, TITLE_CHARS);
+	span = strspn(title, TAIL_TITLE_CHARS);
 	if (span != len) {
 
 	    /*
@@ -4890,8 +4919,13 @@ yes_or_no(char *question)
 	     */
 	    fpara(stderr,
 		  "",
-		  "That title contains invalid characters.  A title can only contain alphanumeric characters.",
-		  "That is, only lower case letters [a-z], UPPER case letters [A-Z], and digits [0-9].",
+		  "Your title contains invalid characters.  A title must match the following regex:",
+		  "",
+		  "    [a-z0-9][a-z0-9-]*",
+		  "",
+		  "That is, it must start with a lower case letter ASCII [a-z] or digit [0-9]",
+		  "followed by zero or more lower case letters ASCII [a-z], digits [0-9],",
+		  "- (ASCII dash), + (ASCII plus), or _ (ASCII underscore).",
 		  "",
 		  NULL);
 
@@ -5129,6 +5163,7 @@ get_author_info(struct info *infop, char *ioccc_id, int entry_num, struct author
 	 "We will ask for the location/country as a 2 character ISO 3166-1 Alpha-2 code.",
 	 "",
 	 "    See the following URLs for information on ISO 3166-1 Alpha-2 codes:",
+	 "",
 	 NULL);
     ret = puts(ISO_3166_1_CODE_URL0);
     if (ret < 0) {
@@ -5148,13 +5183,9 @@ get_author_info(struct info *infop, char *ioccc_id, int entry_num, struct author
     }
     para("",
 	 "We will ask for the author(s) Email address. Press return if you don't want to provide it, or if don't have one.",
-	 "",
 	 "We will ask for a home URL (starting with http:// or https://), or press return to skip, or if don't have one.",
-	 "",
 	 "We will ask a twitter handle (must start with @), or press return to skip, or if don't have one.",
-	 "",
 	 "We will ask a GitHub account (must start with @), or press return to skip, or if don't have one.",
-	 "",
 	 "We will ask for an affiliation (company, school, org) of the author, or press return to skip, or if don't have one.",
 	 NULL);
 
@@ -5794,9 +5825,6 @@ get_author_info(struct info *infop, char *ioccc_id, int entry_num, struct author
 /*
  * verify_entry_dir - ask user to verify the contents of the entry directory
  *
- * Print a list of files in the entry directory using ls -l (before .info file is created),
- * and ask the user to verify the result.
- *
  * given:
  *      entry_dir       - path to entry directory
  *      ls              - path to ls utility
@@ -5806,10 +5834,14 @@ get_author_info(struct info *infop, char *ioccc_id, int entry_num, struct author
 static void
 verify_entry_dir(char const *entry_dir, char const *ls)
 {
-    char *ls_cmd = NULL;	/* cd entry_dir && ls -l . */
-    int ls_cmd_len;		/* length of ls command buffer */
     int exit_code;		/* exit code from system(ls_cmd) */
     bool yorn = false;		/* response to a question */
+    char *ls_cmd = NULL;	/* cd entry_dir && ls -l . */
+    int ls_cmd_len;		/* length of ls command buffer */
+    FILE *ls_stream;		/* pipe from iocccsize -V */
+    char *linep = NULL;		/* allocated line read from iocccsize */
+    size_t readline_len;	/* readline return length */
+    int kdirsize;		/* number of kilo byte blocks in entry directory */
     int ret;			/* libc function return */
 
     /*
@@ -5823,8 +5855,7 @@ verify_entry_dir(char const *entry_dir, char const *ls)
     /*
      * list the contents of the entry_dir
      */
-    para("",
-	 "The following is a listing of the entry directory:",
+    para("The following is a listing of the entry directory:",
 	 "",
 	 NULL);
     ret = printf("    %s\n", entry_dir);
@@ -5832,10 +5863,10 @@ verify_entry_dir(char const *entry_dir, char const *ls)
 	warn(__FUNCTION__, "printf error code: %d", ret);
     }
     para("",
-	 "form which the bzip2 tarball will be formed:",
+	 "form which the xz tarball will be formed:",
 	 "",
 	 NULL);
-    ls_cmd_len = LITLEN("cd") + 1 + strlen(entry_dir) + 1 + LITLEN("&&") + 1 + strlen(ls) + 1 + LITLEN("-l .") + 1;
+    ls_cmd_len = LITLEN("cd") + 1 + strlen(entry_dir) + 1 + LITLEN("&&") + 1 + strlen(ls) + 1 + LITLEN("-lak .") + 1;
     errno = 0;			/* pre-clear errno for errp() */
     ls_cmd = malloc(ls_cmd_len + 1);
     if (ls_cmd == NULL) {
@@ -5843,15 +5874,16 @@ verify_entry_dir(char const *entry_dir, char const *ls)
 	/*NOTREACHED*/
     }
     errno = 0;			/* pre-clear errno for errp() */
-    ret = snprintf(ls_cmd, ls_cmd_len, "cd %s && %s -l .", entry_dir, ls);
+    ret = snprintf(ls_cmd, ls_cmd_len, "cd %s && %s -lak .", entry_dir, ls);
     if (ret <= 0) {
 	errp(183, __FUNCTION__, "snprintf #1 error: %d", ret);
 	/*NOTREACHED*/
     }
-    dbg(DBG_HIGH, "system(%s)", ls_cmd);
+
     /*
      * pre-flush to avoid system() buffered stdio issues
      */
+    dbg(DBG_HIGH, "system(%s)", ls_cmd);
     clearerr(stdout);		/* pre-clear ferror() status */
     errno = 0;			/* pre-clear errno for errp() */
     ret = fflush(stdout);
@@ -5860,29 +5892,119 @@ verify_entry_dir(char const *entry_dir, char const *ls)
 	/*NOTREACHED*/
     }
     errno = 0;			/* pre-clear errno for errp() */
+    clearerr(stderr);		/* pre-clear ferror() status */
+    errno = 0;			/* pre-clear errno for errp() */
+    ret = fflush(stderr);
+    if (ret < 0) {
+	errp(185, __FUNCTION__, "fflush(stderr) #1: error code: %d", ret);
+	/*NOTREACHED*/
+    }
+    errno = 0;			/* pre-clear errno for errp() */
     exit_code = system(ls_cmd);
     if (exit_code < 0) {
-	errp(185, __FUNCTION__, "error calling system(%s)", ls_cmd);
+	errp(186, __FUNCTION__, "error calling system(%s)", ls_cmd);
 	/*NOTREACHED*/
     } else if (exit_code == 127) {
-	errp(186, __FUNCTION__, "execution of the shell failed for system(%s)", ls_cmd);
+	errp(187, __FUNCTION__, "execution of the shell failed for system(%s)", ls_cmd);
 	/*NOTREACHED*/
     } else if (exit_code != 0) {
-	err(187, __FUNCTION__, "%s failed with exit code: %d", ls_cmd, WEXITSTATUS(exit_code));
+	err(188, __FUNCTION__, "%s failed with exit code: %d", ls_cmd, WEXITSTATUS(exit_code));
 	/*NOTREACHED*/
     }
 
     /*
+     * pre-flush to avoid popen() buffered stdio issues
+     */
+    dbg(DBG_HIGH, "popen(%s, r)", ls_cmd);
+    clearerr(stdout);		/* pre-clear ferror() status */
+    errno = 0;			/* pre-clear errno for errp() */
+    ret = fflush(stdout);
+    if (ret < 0) {
+	errp(189, __FUNCTION__, "fflush(stdout) #0: error code: %d", ret);
+	/*NOTREACHED*/
+    }
+    clearerr(stderr);		/* pre-clear ferror() status */
+    errno = 0;			/* pre-clear errno for errp() */
+    ret = fflush(stderr);
+    if (ret < 0) {
+	errp(190, __FUNCTION__, "fflush(stderr) #1: error code: %d", ret);
+	/*NOTREACHED*/
+    }
+    errno = 0;			/* pre-clear errno for errp() */
+    ls_stream = popen(ls_cmd, "r");
+    if (ls_stream == NULL) {
+	errp(191, __FUNCTION__, "popen for reading failed for: %s", ls_cmd);
+	/*NOTREACHED*/
+    }
+    errno = 0;			/* pre-clear errno for errp() */
+    ret = setlinebuf(ls_stream);
+    if (ret != 0) {
+	errp(192, __FUNCTION__, "setlinebuf of ls command failed");
+	/*NOTREACHED*/
+    }
+
+    /*
+     * read the 1st line - contains the total kilo block line
+     */
+    dbg(DBG_HIGH, "reading 1st line from popen(%s, r)", ls_cmd);
+    readline_len = readline(&linep, ls_stream);
+    if (readline_len < 0) {
+	err(193, __FUNCTION__, "EOF while reading 1st line from ls: %s", ls);
+	/*NOTREACHED*/
+    } else {
+	dbg(DBG_HIGH, "ls 1st line read length: %ld buffer: %s", readline_len, linep);
+    }
+
+    /*
+     * parse k-block line from ls
+     */
+    ret = sscanf(linep, "total %d", &kdirsize);
+    if (ret != 1) {
+	err(194, __FUNCTION__, "failed to parse block line from ls: %s", linep);
+	/*NOTREACHED*/
+    }
+    if (kdirsize <= 0) {
+	err(195, __FUNCTION__, "ls k block value: %d <= 0", kdirsize);
+	/*NOTREACHED*/
+    }
+    if (kdirsize > MAX_DIR_KSIZE) {
+	fpara(stderr,
+	      "",
+	      "The entry is too large.",
+	      "",
+	      NULL);
+	errno = 0;			/* pre-clear errno for errp() */
+	ret = fprintf(stderr, "The entry directory %s is %d kibibyte (1024 byte blocks) in length.\n"
+			      "It must be <= %d kibibyte (1024 byte blocks).\n\n", entry_dir, kdirsize, MAX_DIR_KSIZE);
+	if (ret <= 0) {
+	    errp(196, __FUNCTION__, "fprintf error while printing entry directory kibibyte sizes");
+	    /*NOTREACHED*/
+	}
+	err(197, __FUNCTION__, "The entry directory is too large: %s", entry_dir);
+	/*NOTREACHED*/
+    }
+    dbg(DBG_LOW, "entry directiry %s size in kibibyte (1024 byte blocks): %d", entry_dir, kdirsize);
+
+    /*
+     * close down pipe
+     */
+    ret = pclose(ls_stream);
+    if (ret < 0) {
+	warn(__FUNCTION__, "pclose error on ls stream");
+    }
+    ls_stream = NULL;
+
+    /*
      * ask the user to verify the list
      */
-    yorn = yes_or_no("\nIs the above list a complete list of your directory? [yn]");
+    yorn = yes_or_no("\nIs the above list a correct list of files in your entry? [yn]");
     if (yorn == false) {
 	fpara(stderr,
 	      "",
 	      "We suggest you remove the existing entry directory, and then",
 	      "rerun this tool with the correct set of file arguments.",
 	      NULL);
-	err(188, __FUNCTION__, "%s failed with exit code: %d", ls_cmd, WEXITSTATUS(exit_code));
+	err(198, __FUNCTION__, "%s failed with exit code: %d", ls_cmd, WEXITSTATUS(exit_code));
 	/*NOTREACHED*/
     }
 
@@ -5892,6 +6014,10 @@ verify_entry_dir(char const *entry_dir, char const *ls)
     if (ls_cmd != NULL) {
 	free(ls_cmd);
 	ls_cmd = NULL;
+    }
+    if (linep != NULL) {
+	free(linep);
+	linep = NULL;
     }
     return;
 }
@@ -6404,7 +6530,7 @@ write_info(struct info *infop, char const *entry_dir, bool test_mode)
      * firewall
      */
     if (infop == NULL || entry_dir == NULL) {
-	err(189, __FUNCTION__, "called with NULL arg(s)");
+	err(199, __FUNCTION__, "called with NULL arg(s)");
 	/*NOTREACHED*/
     }
     if (infop->extra_count < 0) {
@@ -6421,7 +6547,7 @@ write_info(struct info *infop, char const *entry_dir, bool test_mode)
     errno = 0;			/* pre-clear errno for errp() */
     infop->epoch = strdup(TIMESTAMP_EPOCH);
     if (infop->epoch == NULL) {
-	errp(190, __FUNCTION__, "strdup of %s failed", TIMESTAMP_EPOCH);
+	errp(200, __FUNCTION__, "strdup of %s failed", TIMESTAMP_EPOCH);
 	/*NOTREACHED*/
     }
     dbg(DBG_VVHIGH, "infop->epoch: %s", infop->epoch);
@@ -6432,17 +6558,17 @@ write_info(struct info *infop, char const *entry_dir, bool test_mode)
     errno = 0;			/* pre-clear errno for errp() */
     ret = setenv("TZ", "UTC", 1);
     if (ret < 0) {
-	errp(191, __FUNCTION__, "cannot set TZ=UTC");
+	errp(201, __FUNCTION__, "cannot set TZ=UTC");
 	/*NOTREACHED*/
     }
     errno = 0;			/* pre-clear errno for errp() */
     timeptr = localtime(&(infop->tstamp));
     if (timeptr == NULL) {
-	errp(192, __FUNCTION__, "localtime #1 returned NULL");
+	errp(202, __FUNCTION__, "localtime #1 returned NULL");
 	/*NOTREACHED*/
     }
     if (timeptr->tm_zone == NULL) {
-	err(193, __FUNCTION__, "timeptr->tm_zone #1 is NULL");
+	err(203, __FUNCTION__, "timeptr->tm_zone #1 is NULL");
 	/*NOTREACHED*/
     }
 
@@ -6452,14 +6578,14 @@ write_info(struct info *infop, char const *entry_dir, bool test_mode)
     errno = 0;			/* pre-clear errno for errp() */
     p = asctime(timeptr);
     if (p == NULL) {
-	errp(194, __FUNCTION__, "asctime #1 returned NULL");
+	errp(204, __FUNCTION__, "asctime #1 returned NULL");
 	/*NOTREACHED*/
     }
     gmtime_len = strlen(p) + 1 + LITLEN("UTC") + 1;
     errno = 0;			/* pre-clear errno for errp() */
     infop->gmtime = calloc(gmtime_len + 1, 1);
     if (infop->gmtime == NULL) {
-	errp(195, __FUNCTION__, "calloc of %d bytes failed", gmtime_len + 1);
+	errp(205, __FUNCTION__, "calloc of %d bytes failed", gmtime_len + 1);
 	/*NOTREACHED*/
     }
     (void) strncat(infop->gmtime, p, strlen(p)-1); /* -1 to remove trailing newline */
@@ -6473,20 +6599,20 @@ write_info(struct info *infop, char const *entry_dir, bool test_mode)
     errno = 0;			/* pre-clear errno for errp() */
     info_path = malloc(info_path_len + 1);
     if (info_path == NULL) {
-	errp(196, __FUNCTION__, "malloc of %d bytes failed", info_path_len + 1);
+	errp(206, __FUNCTION__, "malloc of %d bytes failed", info_path_len + 1);
 	/*NOTREACHED*/
     }
     errno = 0;			/* pre-clear errno for errp() */
     ret = snprintf(info_path, info_path_len, "%s/.info.json", entry_dir);
     if (ret <= 0) {
-	errp(197, __FUNCTION__, "snprintf #0 error: %d", ret);
+	errp(207, __FUNCTION__, "snprintf #0 error: %d", ret);
 	/*NOTREACHED*/
     }
     dbg(DBG_HIGH, ".info.json path: %s", info_path);
     errno = 0;			/* pre-clear errno for errp() */
     info_stream = fopen(info_path, "w");
     if (info_stream == NULL) {
-	errp(198, __FUNCTION__, "failed to open for writing: %s", info_path);
+	errp(208, __FUNCTION__, "failed to open for writing: %s", info_path);
 	/*NOTREACHED*/
     }
 
@@ -6511,7 +6637,7 @@ write_info(struct info *infop, char const *entry_dir, bool test_mode)
 	json_fprintf_value_bool(info_stream, "\t", "test_mode", " : ", test_mode, ",\n") &&
 	fprintf(info_stream, "\t\"manifest\" : [\n") > 0;
     if (ret == false) {
-	errp(199, __FUNCTION__, "fprintf error writing leading part of info to %s", info_path);
+	errp(209, __FUNCTION__, "fprintf error writing leading part of info to %s", info_path);
 	/*NOTREACHED*/
     }
 
@@ -6525,7 +6651,7 @@ write_info(struct info *infop, char const *entry_dir, bool test_mode)
 	  json_fprintf_value_string(info_stream, "\t\t{", "remarks", " : ", infop->remarks_md,
 				    ((infop->extra_count > 0) ?  "},\n" : "}\n"));
     if (ret == false) {
-	errp(200, __FUNCTION__, "fprintf error writing mandatory filename to %s", info_path);
+	errp(210, __FUNCTION__, "fprintf error writing mandatory filename to %s", info_path);
 	/*NOTREACHED*/
     }
 
@@ -6535,7 +6661,7 @@ write_info(struct info *infop, char const *entry_dir, bool test_mode)
     for (i=0, q=infop->extra_file; i < infop->extra_count && *q != NULL; ++i, ++q) {
         if (json_fprintf_value_string(info_stream, "\t\t{", "extra_file", " : ", *q,
 				     (((i+1) < infop->extra_count) ? "},\n" : "}\n")) != true) {
-	    errp(201, __FUNCTION__, "fprintf error writing extra filename[%d] to %s", i, info_path);
+	    errp(211, __FUNCTION__, "fprintf error writing extra filename[%d] to %s", i, info_path);
 	    /*NOTREACHED*/
 	}
     }
@@ -6551,7 +6677,7 @@ write_info(struct info *infop, char const *entry_dir, bool test_mode)
 	json_fprintf_value_string(info_stream, "\t", "formed_UTC", " : ", infop->gmtime, "\n") &&
 	fprintf(info_stream, "}\n") > 0;
     if (ret == false) {
-	errp(202, __FUNCTION__, "fprintf error writing trailing part of info to %s", info_path);
+	errp(212, __FUNCTION__, "fprintf error writing trailing part of info to %s", info_path);
 	/*NOTREACHED*/
     }
 
@@ -6569,7 +6695,7 @@ write_info(struct info *infop, char const *entry_dir, bool test_mode)
     errno = 0;			/* pre-clear errno for errp() */
     ret = fclose(info_stream);
     if (ret < 0) {
-	errp(203, __FUNCTION__, "fclose error");
+	errp(213, __FUNCTION__, "fclose error");
 	/*NOTREACHED*/
     }
     return;
@@ -6602,7 +6728,7 @@ write_author(struct info *infop, int author_count, struct author *authorp, char 
      * firewall
      */
     if (authorp == NULL || entry_dir == NULL) {
-	err(204, __FUNCTION__, "called with NULL arg(s)");
+	err(214, __FUNCTION__, "called with NULL arg(s)");
 	/*NOTREACHED*/
     }
     if (author_count <= 0) {
@@ -6616,20 +6742,20 @@ write_author(struct info *infop, int author_count, struct author *authorp, char 
     errno = 0;			/* pre-clear errno for errp() */
     author_path = malloc(author_path_len + 1);
     if (author_path == NULL) {
-	errp(205, __FUNCTION__, "malloc of %d bytes failed", author_path_len + 1);
+	errp(215, __FUNCTION__, "malloc of %d bytes failed", author_path_len + 1);
 	/*NOTREACHED*/
     }
     errno = 0;			/* pre-clear errno for errp() */
     ret = snprintf(author_path, author_path_len, "%s/.author.json", entry_dir);
     if (ret <= 0) {
-	errp(206, __FUNCTION__, "snprintf #0 error: %d", ret);
+	errp(216, __FUNCTION__, "snprintf #0 error: %d", ret);
 	/*NOTREACHED*/
     }
     dbg(DBG_HIGH, ".author.json path: %s", author_path);
     errno = 0;			/* pre-clear errno for errp() */
     author_stream = fopen(author_path, "w");
     if (author_stream == NULL) {
-	errp(207, __FUNCTION__, "failed to open for writing: %s", author_path);
+	errp(217, __FUNCTION__, "failed to open for writing: %s", author_path);
 	/*NOTREACHED*/
     }
 
@@ -6646,7 +6772,7 @@ write_author(struct info *infop, int author_count, struct author *authorp, char 
 	json_fprintf_value_long(author_stream, "\t", "entry_num", " : ", (long)infop->entry_num, ",\n") &&
 	fprintf(author_stream, "\t\"authors\" : [\n") > 0;
     if (ret == false) {
-	errp(208, __FUNCTION__, "fprintf error writing leading part of authorship to %s", author_path);
+	errp(218, __FUNCTION__, "fprintf error writing leading part of authorship to %s", author_path);
 	/*NOTREACHED*/
     }
 
@@ -6667,7 +6793,7 @@ write_author(struct info *infop, int author_count, struct author *authorp, char 
 	    json_fprintf_value_long(author_stream, "\t\t\t", "author_number", " : ", authorp[i].author_num, "\n") &&
 	    fprintf(author_stream, "\t\t}%s\n", (((i + 1) < author_count) ? "," : "")) > 0;
 	if (ret < 0) {
-	    errp(209, __FUNCTION__, "fprintf error writing author info to %s", author_path);
+	    errp(219, __FUNCTION__, "fprintf error writing author info to %s", author_path);
 	    /*NOTREACHED*/
 	}
     }
@@ -6683,7 +6809,7 @@ write_author(struct info *infop, int author_count, struct author *authorp, char 
 	json_fprintf_value_string(author_stream, "\t", "formed_UTC", " : ", infop->gmtime, "\n") &&
 	fprintf(author_stream, "}\n") > 0;
     if (ret == false) {
-	errp(210, __FUNCTION__, "fprintf error writing trailing part of authorship to %s", author_path);
+	errp(220, __FUNCTION__, "fprintf error writing trailing part of authorship to %s", author_path);
 	/*NOTREACHED*/
     }
 
@@ -6701,7 +6827,7 @@ write_author(struct info *infop, int author_count, struct author *authorp, char 
     errno = 0;			/* pre-clear errno for errp() */
     ret = fclose(author_stream);
     if (ret < 0) {
-	errp(211, __FUNCTION__, "fclose error");
+	errp(221, __FUNCTION__, "fclose error");
 	/*NOTREACHED*/
     }
     return;
@@ -6719,26 +6845,34 @@ write_author(struct info *infop, int author_count, struct author *authorp, char 
  *      entry_dir       - path to entry directory
  *      tarball_path    - path of the compressed tarball to form
  *      tar             - path to the tar utility
+ *      ls              - path to ls utility
  *
  * This function does not return on error.
  */
 static void
-form_tarball(char const *work_dir, char const *entry_dir, char const *tarball_path, char const *tar)
+form_tarball(char const *work_dir, char const *entry_dir, char const *tarball_path, char const *tar, char const *ls)
 {
     char *basename_entry_dir;	/* basename of the entry directory */
     char *basename_tarball_path;	/* basename of tarball_path */
     char *tar_cmd;		/* the tar command to form the compressed tarball */
     size_t tar_cmd_len;		/* length of tar_cmd path */
     int exit_code;		/* exit code from system(tar_cmd) */
+    struct stat buf;		/* stat of the tarball */
     int ret;			/* libc function return */
 
     /*
      * firewall
      */
-    if (work_dir == NULL || entry_dir == NULL || tarball_path == NULL || tar == NULL) {
-	err(212, __FUNCTION__, "called with NULL arg(s)");
+    if (work_dir == NULL || entry_dir == NULL || tarball_path == NULL || tar == NULL || ls == NULL) {
+	err(222, __FUNCTION__, "called with NULL arg(s)");
 	/*NOTREACHED*/
     }
+
+    /*
+     * verify entry directory contents
+     */
+    verify_entry_dir(entry_dir, ls);
+    dbg(DBG_LOW, "verified entry directory: %s", entry_dir);
 
     /*
      * cd into the work_dir, just above the entry_dir and where the compressed tarball will be formed
@@ -6746,7 +6880,7 @@ form_tarball(char const *work_dir, char const *entry_dir, char const *tarball_pa
     errno = 0;			/* pre-clear errno for errp() */
     ret = chdir(work_dir);
     if (ret < 0) {
-	errp(213, __FUNCTION__, "cannot cd %s", work_dir);
+	errp(223, __FUNCTION__, "cannot cd %s", work_dir);
 	/*NOTREACHED*/
     }
 
@@ -6755,17 +6889,19 @@ form_tarball(char const *work_dir, char const *entry_dir, char const *tarball_pa
      */
     basename_entry_dir = basename(entry_dir);
     basename_tarball_path = basename(tarball_path);
-    tar_cmd_len = strlen(tar) + 1 + LITLEN("-cjf") + 1 + strlen(basename_tarball_path) + 1 + strlen(basename_entry_dir) + 1;
+    tar_cmd_len = strlen(tar) + 1 + LITLEN("--options='compression-level=9'") + 1 + LITLEN("-cJf") + 1 +
+		  strlen(basename_tarball_path) + 1 + strlen(basename_entry_dir) + 1;
     errno = 0;			/* pre-clear errno for errp() */
     tar_cmd = malloc(tar_cmd_len + 1);
     if (tar_cmd == NULL) {
-	errp(214, __FUNCTION__, "malloc of %ld bytes failed", tar_cmd_len + 1);
+	errp(224, __FUNCTION__, "malloc of %ld bytes failed", tar_cmd_len + 1);
 	/*NOTREACHED*/
     }
     errno = 0;			/* pre-clear errno for errp() */
-    ret = snprintf(tar_cmd, tar_cmd_len, "%s -cjf %s %s", tar, basename_tarball_path, basename_entry_dir);
+    ret = snprintf(tar_cmd, tar_cmd_len, "%s --options='compression-level=9' -cJf %s %s",
+		   tar, basename_tarball_path, basename_entry_dir);
     if (ret <= 0) {
-	errp(215, __FUNCTION__, "snprintf #0 error: %d", ret);
+	errp(225, __FUNCTION__, "snprintf #0 error: %d", ret);
 	/*NOTREACHED*/
     }
     dbg(DBG_MED, "tar command: %s", tar_cmd);
@@ -6773,16 +6909,40 @@ form_tarball(char const *work_dir, char const *entry_dir, char const *tarball_pa
     /*
      * perform the tar command
      */
+    para("",
+	 "About to run the tar command to form the compressed tarball ...",
+	 "",
+	 NULL);
     errno = 0;			/* pre-clear errno for errp() */
     exit_code = system(tar_cmd);
     if (exit_code < 0) {
-	errp(216, __FUNCTION__, "error calling system(%s)", tar_cmd);
+	errp(226, __FUNCTION__, "error calling system(%s)", tar_cmd);
 	/*NOTREACHED*/
     } else if (exit_code == 127) {
-	errp(217, __FUNCTION__, "execution of the shell failed for system(%s)", tar_cmd);
+	errp(227, __FUNCTION__, "execution of the shell failed for system(%s)", tar_cmd);
 	/*NOTREACHED*/
     } else if (exit_code != 0) {
-	err(218, __FUNCTION__, "%s failed with exit code: %d", tar_cmd, WEXITSTATUS(exit_code));
+	err(228, __FUNCTION__, "%s failed with exit code: %d", tar_cmd, WEXITSTATUS(exit_code));
+	/*NOTREACHED*/
+    }
+
+    /*
+     * enforce the maximum size of the compressed tarball
+     */
+    errno = 0;			/* pre-clear errno for errp() */
+    ret = stat(basename_tarball_path, &buf);
+    if (ret != 0) {
+	errp(229, __FUNCTION__, "stat of the compressed tarball failed: %s", basename_tarball_path);
+	/*NOTREACHED*/
+    }
+    if (buf.st_size > MAX_TARBALL_LEN) {
+	fpara(stderr,
+	      "",
+	      "The compressed tarball exceeds the maximim allowed size, sorry.",
+	      "",
+	      NULL);
+	err(230, __FUNCTION__, "The compressed tarball: %s size: %lld > %lld",
+		 basename_tarball_path, buf.st_size, MAX_TARBALL_LEN);
 	/*NOTREACHED*/
     }
 
@@ -6790,24 +6950,28 @@ form_tarball(char const *work_dir, char const *entry_dir, char const *tarball_pa
      * list the contents of the tarball
      */
     errno = 0;			/* pre-clear errno for errp() */
-    ret = snprintf(tar_cmd, tar_cmd_len, "%s -tvjf %s", tar, basename_tarball_path);
+    ret = snprintf(tar_cmd, tar_cmd_len, "%s -tvJf %s", tar, basename_tarball_path);
     if (ret <= 0) {
-	errp(219, __FUNCTION__, "snprintf #1 error: %d", ret);
+	errp(231, __FUNCTION__, "snprintf #1 error: %d", ret);
 	/*NOTREACHED*/
     }
     dbg(DBG_MED, "tar command: %s", tar_cmd);
     errno = 0;			/* pre-clear errno for errp() */
     exit_code = system(tar_cmd);
     if (exit_code < 0) {
-	errp(220, __FUNCTION__, "error calling system(%s)", tar_cmd);
+	errp(232, __FUNCTION__, "error calling system(%s)", tar_cmd);
 	/*NOTREACHED*/
     } else if (exit_code == 127) {
-	errp(221, __FUNCTION__, "execution of the shell failed for system(%s)", tar_cmd);
+	errp(233, __FUNCTION__, "execution of the shell failed for system(%s)", tar_cmd);
 	/*NOTREACHED*/
     } else if (exit_code != 0) {
-	err(222, __FUNCTION__, "%s failed with exit code: %d", tar_cmd, WEXITSTATUS(exit_code));
+	err(234, __FUNCTION__, "%s failed with exit code: %d", tar_cmd, WEXITSTATUS(exit_code));
 	/*NOTREACHED*/
     }
+    para("",
+	 "... the output above is the listing of the compressed tarball.",
+	 "",
+	 NULL);
 
     /*
      * free memory
@@ -6834,32 +6998,43 @@ form_tarball(char const *work_dir, char const *entry_dir, char const *tarball_pa
  * given:
  *      work_dir        - working directory under which the entry directory is formed
  *      entry_dir       - path to entry directory
+ *      tar             - path to the tar utility
  *      tarball_path    - path of the compressed tarball to form
  *      test_mode       - true ==> test mode, do not upload
  */
 static void
-remind_user(char const *work_dir, char const *entry_dir, char const *tarball_path, bool test_mode)
+remind_user(char const *work_dir, char const *entry_dir, char const *tar, char const *tarball_path, bool test_mode)
 {
     int ret;			/* libc function return */
 
     /*
      * firewall
      */
-    if (work_dir == NULL || entry_dir == NULL || tarball_path == NULL) {
-	err(223, __FUNCTION__, "called with NULL arg(s)");
+    if (work_dir == NULL || entry_dir == NULL || tar == NULL || tarball_path == NULL) {
+	err(235, __FUNCTION__, "called with NULL arg(s)");
 	/*NOTREACHED*/
     }
 
     /*
      * tell user they can now remove entry_dir
      */
-    para("Now that we have formed the compressed tarball file,",
-	 "you can remove the entry directory we have formed by executing:",
+    para("Now that we have formed the compressed tarball file, you",
+	 "can remove the entry directory we have formed by executing:",
 	 "",
 	 NULL);
     ret = printf("    rm -rf %s\n", entry_dir);
     if (ret <= 0) {
-	errp(224, __FUNCTION__, "printf #0 error");
+	errp(236, __FUNCTION__, "printf #0 error");
+	/*NOTREACHED*/
+    }
+    para("",
+	 "If you are curious, you may examine the newly created compressed tarball",
+	 "by running the following command:",
+	 "",
+	 NULL);
+    ret = printf("    %s -Jtvf %s/%s\n", tar, work_dir, tarball_path);
+    if (ret <= 0) {
+	errp(237, __FUNCTION__, "printf #2 error");
 	/*NOTREACHED*/
     }
 
@@ -6868,23 +7043,12 @@ remind_user(char const *work_dir, char const *entry_dir, char const *tarball_pat
      */
     if (test_mode == true) {
 
+	/*
+	 * remind them that this is a test entry, not an official entry
+	 */
 	para("",
 	     "As you entered an IOCCC contest ID of test, the compressed tarball",
-	     "we formed CANNOT be used for an entry submission.",
-	     "",
-	     "To submit an entry you need a valid IOCCC contest ID.  If the IOCCC",
-	     "is open, you may receive your IOCCC contest ID by registering as an",
-	     "IOCCC contestant at the web site:",
-	     "",
-	     NULL);
-	errno = 0;			/* pre-clear errno for errp() */
-	ret = printf("    %s\n", IOCCC_REGISTER_URL);
-	if (ret <= 0) {
-	    errp(225, __FUNCTION__, "printf #1 error");
-	    /*NOTREACHED*/
-	}
-	para("",
-	     "If you are curious, you may wish to examine the test compressed tarball file,",
+	     "that was just formed CANNOT be used as an IOCCCC entry.",
 	     "",
 	     NULL);
 
@@ -6893,48 +7057,33 @@ remind_user(char const *work_dir, char const *entry_dir, char const *tarball_pat
      */
     } else {
 
+	/*
+	 * inform them of the compressed tarball file
+	 */
 	para("",
 	     "Assuming that the IOCCC is still open, you may submit your entry",
 	     "by uploading following compressed tarball file:",
 	     "",
 	     NULL);
-    }
-
-    /*
-     * inform them of the compressed tarball file
-     */
-    ret = printf("    %s/%s\n", work_dir, tarball_path);
-    if (ret <= 0) {
-	errp(226, __FUNCTION__, "printf #2 error");
-	/*NOTREACHED*/
-    }
-
-    /*
-     * case: test mode
-     */
-    if (test_mode == true) {
-	para("",
-	     "After which you may remove this test compressed tarball file by executing:",
-	     "",
-	     NULL);
-	ret = printf("    rm -f %s/%s\n", work_dir, tarball_path);
+	ret = printf("    %s/%s\n", work_dir, tarball_path);
 	if (ret <= 0) {
-	    errp(227, __FUNCTION__, "printf #3 error");
+	    errp(238, __FUNCTION__, "printf #2 error");
 	    /*NOTREACHED*/
 	}
+    }
 
     /*
-     * case: entry mode
+     * case: test mode report
      */
-    } else {
+    if (test_mode == false) {
 	para("",
-	     "To the following URL using the instructions you were sent when you first",
-	     "registered for this IOCCC, to the following URL:",
+	     "If the contest is still open, you may upload the above",
+	     "tarball to the following submission URL:",
 	     "",
 	     NULL);
-	ret = printf("    %s\n", IOCCC_SUBMIT_URL);
+	ret = printf("    %s\n\n", IOCCC_SUBMIT_URL);
 	if (ret < 0) {
-	    errp(228, __FUNCTION__, "printf #4 error");
+	    errp(239, __FUNCTION__, "printf #4 error");
 	    /*NOTREACHED*/
 	}
     }
