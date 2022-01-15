@@ -114,12 +114,12 @@ typedef unsigned char bool;
 #define DBG_VVHIGH (9)		/* very very verbose debugging */
 #define DBG_VVVHIGH (11)	/* very very very verbose debugging */
 #define DBG_DEFAULT (DBG_NONE)	/* default level of debugging */
-#define UUID_LEN (36)		/* characters in a UUID string */
+#define UUID_LEN (36)		/* characters in a UUID string - as per RFC4122 */
 #define UUID_VERSION (4)	/* version 4 - random UUID */
 #define UUID_VARIANT (0xa)	/* variant 1 - encoded as 0xa */
 #define MAX_ENTRY_NUM (9)	/* entry numbers from 0 to MAX_ENTRY_NUM allowed - must be < 10 to the MAX_ENTRY_CHARS power */
 #define MAX_ENTRY_CHARS (1)	/* characters that represent the maximum entry number */
-#define MAX_AUTHORS (9)		/* maximum number of authors of an entry */
+#define MAX_AUTHORS (5)		/* maximum number of authors of an entry */
 #define MAX_NAME_LEN (48)	/* max author name length */
 #define MAX_EMAIL_LEN (48)	/* max Email address length */
 #define MAX_URL_LEN (64)	/* max home URL, including http:// or https:// */
@@ -133,16 +133,15 @@ typedef unsigned char bool;
 #define ISO_3166_1_CODE_URL4 "https://www.iso.org/glossary-for-iso-3166.html"
 #define RULE_2A_SIZE (5120)	/* rule 2s size of prog.c */
 #define RULE_2B_SIZE (3217)	/* rule 2b size as determined by iocccsize -i prog.c */
-#define MAX_TITLE_LEN (16)	/* maximum length of a title */
-#define LEAD_TITLE_CHARS "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"	/* [a-z0-9] */
-#define TAIL_TITLE_CHARS "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_+-"	/* [a-z0-9_+-] */
+#define MAX_TITLE_LEN (20)	/* maximum length of a title */
+#define LEAD_TITLE_CHARS "abcdefghijklmnopqrstuvwxyz0123456789"	/* [a-z0-9] */
+#define TAIL_TITLE_CHARS "abcdefghijklmnopqrstuvwxyz0123456789_+-"	/* [a-z0-9_+-] */
 #define MAX_ABSTRACT_LEN (64)	/* maximum length of an abstract */
 #define TIMESTAMP_EPOCH "Thr Jan  1 00:00:00 1970 UTC"	/* gettimeofday epoch */
 #define MAX_TARBALL_LEN ((off_t)(3999971))	/* the compressed tarball formed cannot be longer than this many bytes */
 #define MAX_DIR_KSIZE (27651)			/* entry directory cannot exceed this size in kibibyte (1024 byte) blocks */
-#define IOCCC_REGISTER_URL "https://register.ioccc.org/just/a/guess/NOT/a/real/URL"	/* XXX - change to real URL */
-#define IOCCC_SUBMIT_URL "https://submit.ioccc.org/just/a/guess/NOT/a/real/URL"	/* XXX - change to real URL */
-
+#define IOCCC_REGISTER_URL "https://register.ioccc.org/just/NOT/a/real/URL"	/* XXX - change to real URL */
+#define IOCCC_SUBMIT_URL "https://submit.ioccc.org/just/NOT/a/real/URL"	/* XXX - change to real URL */
 
 /*
  * DEBUG_LINT - if defined, debug calls turn into fprintf to stderr calls
