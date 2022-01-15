@@ -117,15 +117,15 @@ typedef unsigned char bool;
 #define UUID_LEN (36)		/* characters in a UUID string */
 #define UUID_VERSION (4)	/* version 4 - random UUID */
 #define UUID_VARIANT (0xa)	/* variant 1 - encoded as 0xa */
-#define MAX_ENTRY_NUM (9)	/* entry numbers from 0 to MAX_ENTRY_NUM allowed - cannot be >= 1000 */
-#define MAX_ENTRY_CHARS (1)	/* characters that represent the maximum entry number - cannot be >= 3 */
-#define MAX_AUTHORS (5)		/* maximum number of authors of an entry */
-#define MAX_NAME_LEN (64)	/* max author name length */
-#define MAX_EMAIL_LEN (64)	/* max Email address length */
+#define MAX_ENTRY_NUM (9)	/* entry numbers from 0 to MAX_ENTRY_NUM allowed - must be < 10 to the MAX_ENTRY_CHARS power */
+#define MAX_ENTRY_CHARS (1)	/* characters that represent the maximum entry number */
+#define MAX_AUTHORS (9)		/* maximum number of authors of an entry */
+#define MAX_NAME_LEN (48)	/* max author name length */
+#define MAX_EMAIL_LEN (48)	/* max Email address length */
 #define MAX_URL_LEN (64)	/* max home URL, including http:// or https:// */
 #define MAX_TWITTER_LEN (18+1)	/* max twitter handle, including the leading @, length */
 #define MAX_GITHUB_LEN (15+1)	/* max GitHub account, including the leading @, length */
-#define MAX_AFFILIATION_LEN (64)	/* max affiliation name length */
+#define MAX_AFFILIATION_LEN (48)/* max affiliation name length */
 #define ISO_3166_1_CODE_URL0 "    https://en.wikipedia.org/wiki/ISO_3166-1#Officially_assigned_code_elements"
 #define ISO_3166_1_CODE_URL1 "    https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2"
 #define ISO_3166_1_CODE_URL2 "    https://www.iso.org/obp/ui/#iso:pub:PUB500001:en"
@@ -133,12 +133,12 @@ typedef unsigned char bool;
 #define ISO_3166_1_CODE_URL4 "    https://www.iso.org/glossary-for-iso-3166.html"
 #define RULE_2A_SIZE (5120)	/* rule 2s size of prog.c */
 #define RULE_2B_SIZE (3217)	/* rule 2b size as determined by iocccsize -i prog.c */
-#define MAX_TITLE_LEN (24)	/* maximum length of a title */
+#define MAX_TITLE_LEN (16)	/* maximum length of a title */
 #define LEAD_TITLE_CHARS "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"	/* [a-z0-9] */
 #define TAIL_TITLE_CHARS "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_+-"	/* [a-z0-9_+-] */
 #define MAX_ABSTRACT_LEN (64)	/* maximum length of an abstract */
 #define TIMESTAMP_EPOCH "Thr Jan  1 00:00:00 1970 UTC"	/* gettimeofday epoch */
-#define MAX_TARBALL_LEN ((off_t)(3999971))	/* the compressed tarball formed cannot be longer than this */
+#define MAX_TARBALL_LEN ((off_t)(3999971))	/* the compressed tarball formed cannot be longer than this many bytes */
 #define MAX_DIR_KSIZE (27651)			/* entry directory cannot exceed this size in kibibyte (1024 byte) blocks */
 #define IOCCC_REGISTER_URL "https://register.ioccc.org/just/a/guess/NOT/a/real/URL"	/* XXX - change to real URL */
 #define IOCCC_SUBMIT_URL "https://submit.ioccc.org/just/a/guess/NOT/a/real/URL"	/* XXX - change to real URL */
