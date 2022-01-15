@@ -79,7 +79,7 @@ typedef unsigned char bool;
 /*
  * mkiocccentry version
  */
-#define MKIOCCCENTRY_VERSION "0.23 2022-01-14"	/* use format: major.minor YYYY-MM-DD */
+#define MKIOCCCENTRY_VERSION "0.24 2022-01-15"	/* use format: major.minor YYYY-MM-DD */
 #define IOCCC_CONTEST "IOCCC28"			/* use format: IOCCC99 */
 #define IOCCC_YEAR (2022)			/* Year IOCCC_CONTEST closes */
 
@@ -140,8 +140,8 @@ typedef unsigned char bool;
 #define TIMESTAMP_EPOCH "Thr Jan  1 00:00:00 1970 UTC"	/* gettimeofday epoch */
 #define MAX_TARBALL_LEN ((off_t)(3999971))	/* the compressed tarball formed cannot be longer than this many bytes */
 #define MAX_DIR_KSIZE (27651)			/* entry directory cannot exceed this size in kibibyte (1024 byte) blocks */
-#define IOCCC_REGISTER_URL "https://register.ioccc.org/just/NOT/a/real/URL"	/* XXX - change to real URL */
-#define IOCCC_SUBMIT_URL "https://submit.ioccc.org/just/NOT/a/real/URL"	/* XXX - change to real URL */
+#define IOCCC_REGISTER_URL "https://register.ioccc.org/NOT/a/real/URL"	/* XXX - change to real URL when ready */
+#define IOCCC_SUBMIT_URL "https://submit.ioccc.org/NOT/a/real/URL"	/* XXX - change to real URL when ready */
 
 /*
  * DEBUG_LINT - if defined, debug calls turn into fprintf to stderr calls
@@ -5942,7 +5942,7 @@ verify_entry_dir(char const *entry_dir, char const *ls)
     dbg(DBG_HIGH, "reading 1st line from popen(%s, r)", ls_cmd);
     readline_len = readline(&linep, ls_stream);
     if (readline_len < 0) {
-	err(193, __FUNCTION__, "EOF while reading 1st line from ls: %s", ls);
+	err(192, __FUNCTION__, "EOF while reading 1st line from ls: %s", ls);
 	/*NOTREACHED*/
     } else {
 	dbg(DBG_HIGH, "ls 1st line read length: %ld buffer: %s", readline_len, linep);
@@ -5953,11 +5953,11 @@ verify_entry_dir(char const *entry_dir, char const *ls)
      */
     ret = sscanf(linep, "total %d", &kdirsize);
     if (ret != 1) {
-	err(194, __FUNCTION__, "failed to parse block line from ls: %s", linep);
+	err(193, __FUNCTION__, "failed to parse block line from ls: %s", linep);
 	/*NOTREACHED*/
     }
     if (kdirsize <= 0) {
-	err(195, __FUNCTION__, "ls k block value: %d <= 0", kdirsize);
+	err(194, __FUNCTION__, "ls k block value: %d <= 0", kdirsize);
 	/*NOTREACHED*/
     }
     if (kdirsize > MAX_DIR_KSIZE) {
@@ -5970,10 +5970,10 @@ verify_entry_dir(char const *entry_dir, char const *ls)
 	ret = fprintf(stderr, "The entry directory %s is %d kibibyte (1024 byte blocks) in length.\n"
 			      "It must be <= %d kibibyte (1024 byte blocks).\n\n", entry_dir, kdirsize, MAX_DIR_KSIZE);
 	if (ret <= 0) {
-	    errp(196, __FUNCTION__, "fprintf error while printing entry directory kibibyte sizes");
+	    errp(195, __FUNCTION__, "fprintf error while printing entry directory kibibyte sizes");
 	    /*NOTREACHED*/
 	}
-	err(197, __FUNCTION__, "The entry directory is too large: %s", entry_dir);
+	err(196, __FUNCTION__, "The entry directory is too large: %s", entry_dir);
 	/*NOTREACHED*/
     }
     dbg(DBG_LOW, "entry directory %s size in kibibyte (1024 byte blocks): %d", entry_dir, kdirsize);
@@ -5997,7 +5997,7 @@ verify_entry_dir(char const *entry_dir, char const *ls)
 	      "We suggest you remove the existing entry directory, and then",
 	      "rerun this tool with the correct set of file arguments.",
 	      NULL);
-	err(198, __FUNCTION__, "%s failed with exit code: %d", ls_cmd, WEXITSTATUS(exit_code));
+	err(197, __FUNCTION__, "%s failed with exit code: %d", ls_cmd, WEXITSTATUS(exit_code));
 	/*NOTREACHED*/
     }
 
@@ -6523,7 +6523,7 @@ write_info(struct info *infop, char const *entry_dir, bool test_mode)
      * firewall
      */
     if (infop == NULL || entry_dir == NULL) {
-	err(199, __FUNCTION__, "called with NULL arg(s)");
+	err(198, __FUNCTION__, "called with NULL arg(s)");
 	/*NOTREACHED*/
     }
     if (infop->extra_count < 0) {
@@ -6540,7 +6540,7 @@ write_info(struct info *infop, char const *entry_dir, bool test_mode)
     errno = 0;			/* pre-clear errno for errp() */
     infop->epoch = strdup(TIMESTAMP_EPOCH);
     if (infop->epoch == NULL) {
-	errp(200, __FUNCTION__, "strdup of %s failed", TIMESTAMP_EPOCH);
+	errp(199, __FUNCTION__, "strdup of %s failed", TIMESTAMP_EPOCH);
 	/*NOTREACHED*/
     }
     dbg(DBG_VVHIGH, "infop->epoch: %s", infop->epoch);
@@ -6551,17 +6551,17 @@ write_info(struct info *infop, char const *entry_dir, bool test_mode)
     errno = 0;			/* pre-clear errno for errp() */
     ret = setenv("TZ", "UTC", 1);
     if (ret < 0) {
-	errp(201, __FUNCTION__, "cannot set TZ=UTC");
+	errp(200, __FUNCTION__, "cannot set TZ=UTC");
 	/*NOTREACHED*/
     }
     errno = 0;			/* pre-clear errno for errp() */
     timeptr = localtime(&(infop->tstamp));
     if (timeptr == NULL) {
-	errp(202, __FUNCTION__, "localtime #1 returned NULL");
+	errp(201, __FUNCTION__, "localtime #1 returned NULL");
 	/*NOTREACHED*/
     }
     if (timeptr->tm_zone == NULL) {
-	err(203, __FUNCTION__, "timeptr->tm_zone #1 is NULL");
+	err(202, __FUNCTION__, "timeptr->tm_zone #1 is NULL");
 	/*NOTREACHED*/
     }
 
@@ -6571,14 +6571,14 @@ write_info(struct info *infop, char const *entry_dir, bool test_mode)
     errno = 0;			/* pre-clear errno for errp() */
     p = asctime(timeptr);
     if (p == NULL) {
-	errp(204, __FUNCTION__, "asctime #1 returned NULL");
+	errp(203, __FUNCTION__, "asctime #1 returned NULL");
 	/*NOTREACHED*/
     }
     gmtime_len = strlen(p) + 1 + LITLEN("UTC") + 1;
     errno = 0;			/* pre-clear errno for errp() */
     infop->gmtime = calloc(gmtime_len + 1, 1);
     if (infop->gmtime == NULL) {
-	errp(205, __FUNCTION__, "calloc of %d bytes failed", gmtime_len + 1);
+	errp(204, __FUNCTION__, "calloc of %d bytes failed", gmtime_len + 1);
 	/*NOTREACHED*/
     }
     (void) strncat(infop->gmtime, p, strlen(p)-1); /* -1 to remove trailing newline */
@@ -6592,20 +6592,20 @@ write_info(struct info *infop, char const *entry_dir, bool test_mode)
     errno = 0;			/* pre-clear errno for errp() */
     info_path = malloc(info_path_len + 1);
     if (info_path == NULL) {
-	errp(206, __FUNCTION__, "malloc of %d bytes failed", info_path_len + 1);
+	errp(205, __FUNCTION__, "malloc of %d bytes failed", info_path_len + 1);
 	/*NOTREACHED*/
     }
     errno = 0;			/* pre-clear errno for errp() */
     ret = snprintf(info_path, info_path_len, "%s/.info.json", entry_dir);
     if (ret <= 0) {
-	errp(207, __FUNCTION__, "snprintf #0 error: %d", ret);
+	errp(206, __FUNCTION__, "snprintf #0 error: %d", ret);
 	/*NOTREACHED*/
     }
     dbg(DBG_HIGH, ".info.json path: %s", info_path);
     errno = 0;			/* pre-clear errno for errp() */
     info_stream = fopen(info_path, "w");
     if (info_stream == NULL) {
-	errp(208, __FUNCTION__, "failed to open for writing: %s", info_path);
+	errp(207, __FUNCTION__, "failed to open for writing: %s", info_path);
 	/*NOTREACHED*/
     }
 
@@ -6630,7 +6630,7 @@ write_info(struct info *infop, char const *entry_dir, bool test_mode)
 	json_fprintf_value_bool(info_stream, "\t", "test_mode", " : ", test_mode, ",\n") &&
 	fprintf(info_stream, "\t\"manifest\" : [\n") > 0;
     if (ret == false) {
-	errp(209, __FUNCTION__, "fprintf error writing leading part of info to %s", info_path);
+	errp(208, __FUNCTION__, "fprintf error writing leading part of info to %s", info_path);
 	/*NOTREACHED*/
     }
 
@@ -6644,7 +6644,7 @@ write_info(struct info *infop, char const *entry_dir, bool test_mode)
 	  json_fprintf_value_string(info_stream, "\t\t{", "remarks", " : ", infop->remarks_md,
 				    ((infop->extra_count > 0) ?  "},\n" : "}\n"));
     if (ret == false) {
-	errp(210, __FUNCTION__, "fprintf error writing mandatory filename to %s", info_path);
+	errp(209, __FUNCTION__, "fprintf error writing mandatory filename to %s", info_path);
 	/*NOTREACHED*/
     }
 
@@ -6654,7 +6654,7 @@ write_info(struct info *infop, char const *entry_dir, bool test_mode)
     for (i=0, q=infop->extra_file; i < infop->extra_count && *q != NULL; ++i, ++q) {
         if (json_fprintf_value_string(info_stream, "\t\t{", "extra_file", " : ", *q,
 				     (((i+1) < infop->extra_count) ? "},\n" : "}\n")) != true) {
-	    errp(211, __FUNCTION__, "fprintf error writing extra filename[%d] to %s", i, info_path);
+	    errp(210, __FUNCTION__, "fprintf error writing extra filename[%d] to %s", i, info_path);
 	    /*NOTREACHED*/
 	}
     }
@@ -6670,7 +6670,7 @@ write_info(struct info *infop, char const *entry_dir, bool test_mode)
 	json_fprintf_value_string(info_stream, "\t", "formed_UTC", " : ", infop->gmtime, "\n") &&
 	fprintf(info_stream, "}\n") > 0;
     if (ret == false) {
-	errp(212, __FUNCTION__, "fprintf error writing trailing part of info to %s", info_path);
+	errp(211, __FUNCTION__, "fprintf error writing trailing part of info to %s", info_path);
 	/*NOTREACHED*/
     }
 
@@ -6688,7 +6688,7 @@ write_info(struct info *infop, char const *entry_dir, bool test_mode)
     errno = 0;			/* pre-clear errno for errp() */
     ret = fclose(info_stream);
     if (ret < 0) {
-	errp(213, __FUNCTION__, "fclose error");
+	errp(212, __FUNCTION__, "fclose error");
 	/*NOTREACHED*/
     }
     return;
@@ -6721,7 +6721,7 @@ write_author(struct info *infop, int author_count, struct author *authorp, char 
      * firewall
      */
     if (authorp == NULL || entry_dir == NULL) {
-	err(214, __FUNCTION__, "called with NULL arg(s)");
+	err(213, __FUNCTION__, "called with NULL arg(s)");
 	/*NOTREACHED*/
     }
     if (author_count <= 0) {
@@ -6735,20 +6735,20 @@ write_author(struct info *infop, int author_count, struct author *authorp, char 
     errno = 0;			/* pre-clear errno for errp() */
     author_path = malloc(author_path_len + 1);
     if (author_path == NULL) {
-	errp(215, __FUNCTION__, "malloc of %d bytes failed", author_path_len + 1);
+	errp(214, __FUNCTION__, "malloc of %d bytes failed", author_path_len + 1);
 	/*NOTREACHED*/
     }
     errno = 0;			/* pre-clear errno for errp() */
     ret = snprintf(author_path, author_path_len, "%s/.author.json", entry_dir);
     if (ret <= 0) {
-	errp(216, __FUNCTION__, "snprintf #0 error: %d", ret);
+	errp(215, __FUNCTION__, "snprintf #0 error: %d", ret);
 	/*NOTREACHED*/
     }
     dbg(DBG_HIGH, ".author.json path: %s", author_path);
     errno = 0;			/* pre-clear errno for errp() */
     author_stream = fopen(author_path, "w");
     if (author_stream == NULL) {
-	errp(217, __FUNCTION__, "failed to open for writing: %s", author_path);
+	errp(216, __FUNCTION__, "failed to open for writing: %s", author_path);
 	/*NOTREACHED*/
     }
 
@@ -6765,7 +6765,7 @@ write_author(struct info *infop, int author_count, struct author *authorp, char 
 	json_fprintf_value_long(author_stream, "\t", "entry_num", " : ", (long)infop->entry_num, ",\n") &&
 	fprintf(author_stream, "\t\"authors\" : [\n") > 0;
     if (ret == false) {
-	errp(218, __FUNCTION__, "fprintf error writing leading part of authorship to %s", author_path);
+	errp(217, __FUNCTION__, "fprintf error writing leading part of authorship to %s", author_path);
 	/*NOTREACHED*/
     }
 
@@ -6786,7 +6786,7 @@ write_author(struct info *infop, int author_count, struct author *authorp, char 
 	    json_fprintf_value_long(author_stream, "\t\t\t", "author_number", " : ", authorp[i].author_num, "\n") &&
 	    fprintf(author_stream, "\t\t}%s\n", (((i + 1) < author_count) ? "," : "")) > 0;
 	if (ret < 0) {
-	    errp(219, __FUNCTION__, "fprintf error writing author info to %s", author_path);
+	    errp(218, __FUNCTION__, "fprintf error writing author info to %s", author_path);
 	    /*NOTREACHED*/
 	}
     }
@@ -6802,7 +6802,7 @@ write_author(struct info *infop, int author_count, struct author *authorp, char 
 	json_fprintf_value_string(author_stream, "\t", "formed_UTC", " : ", infop->gmtime, "\n") &&
 	fprintf(author_stream, "}\n") > 0;
     if (ret == false) {
-	errp(220, __FUNCTION__, "fprintf error writing trailing part of authorship to %s", author_path);
+	errp(219, __FUNCTION__, "fprintf error writing trailing part of authorship to %s", author_path);
 	/*NOTREACHED*/
     }
 
@@ -6820,7 +6820,7 @@ write_author(struct info *infop, int author_count, struct author *authorp, char 
     errno = 0;			/* pre-clear errno for errp() */
     ret = fclose(author_stream);
     if (ret < 0) {
-	errp(221, __FUNCTION__, "fclose error");
+	errp(220, __FUNCTION__, "fclose error");
 	/*NOTREACHED*/
     }
     return;
@@ -6857,7 +6857,7 @@ form_tarball(char const *work_dir, char const *entry_dir, char const *tarball_pa
      * firewall
      */
     if (work_dir == NULL || entry_dir == NULL || tarball_path == NULL || tar == NULL || ls == NULL) {
-	err(222, __FUNCTION__, "called with NULL arg(s)");
+	err(221, __FUNCTION__, "called with NULL arg(s)");
 	/*NOTREACHED*/
     }
 
@@ -6873,7 +6873,7 @@ form_tarball(char const *work_dir, char const *entry_dir, char const *tarball_pa
     errno = 0;			/* pre-clear errno for errp() */
     ret = chdir(work_dir);
     if (ret < 0) {
-	errp(223, __FUNCTION__, "cannot cd %s", work_dir);
+	errp(222, __FUNCTION__, "cannot cd %s", work_dir);
 	/*NOTREACHED*/
     }
 
@@ -6886,14 +6886,14 @@ form_tarball(char const *work_dir, char const *entry_dir, char const *tarball_pa
     errno = 0;			/* pre-clear errno for errp() */
     tar_cmd = malloc(tar_cmd_len + 1);
     if (tar_cmd == NULL) {
-	errp(224, __FUNCTION__, "malloc of %ld bytes failed", tar_cmd_len + 1);
+	errp(223, __FUNCTION__, "malloc of %ld bytes failed", tar_cmd_len + 1);
 	/*NOTREACHED*/
     }
     errno = 0;			/* pre-clear errno for errp() */
     ret = snprintf(tar_cmd, tar_cmd_len, "%s -cJf %s %s",
 		   tar, basename_tarball_path, basename_entry_dir);
     if (ret <= 0) {
-	errp(225, __FUNCTION__, "snprintf #0 error: %d", ret);
+	errp(224, __FUNCTION__, "snprintf #0 error: %d", ret);
 	/*NOTREACHED*/
     }
     dbg(DBG_MED, "tar command: %s", tar_cmd);
@@ -6908,13 +6908,13 @@ form_tarball(char const *work_dir, char const *entry_dir, char const *tarball_pa
     errno = 0;			/* pre-clear errno for errp() */
     exit_code = system(tar_cmd);
     if (exit_code < 0) {
-	errp(226, __FUNCTION__, "error calling system(%s)", tar_cmd);
+	errp(225, __FUNCTION__, "error calling system(%s)", tar_cmd);
 	/*NOTREACHED*/
     } else if (exit_code == 127) {
-	errp(227, __FUNCTION__, "execution of the shell failed for system(%s)", tar_cmd);
+	errp(226, __FUNCTION__, "execution of the shell failed for system(%s)", tar_cmd);
 	/*NOTREACHED*/
     } else if (exit_code != 0) {
-	err(228, __FUNCTION__, "%s failed with exit code: %d", tar_cmd, WEXITSTATUS(exit_code));
+	err(227, __FUNCTION__, "%s failed with exit code: %d", tar_cmd, WEXITSTATUS(exit_code));
 	/*NOTREACHED*/
     }
 
@@ -6924,7 +6924,7 @@ form_tarball(char const *work_dir, char const *entry_dir, char const *tarball_pa
     errno = 0;			/* pre-clear errno for errp() */
     ret = stat(basename_tarball_path, &buf);
     if (ret != 0) {
-	errp(229, __FUNCTION__, "stat of the compressed tarball failed: %s", basename_tarball_path);
+	errp(228, __FUNCTION__, "stat of the compressed tarball failed: %s", basename_tarball_path);
 	/*NOTREACHED*/
     }
     if (buf.st_size > MAX_TARBALL_LEN) {
@@ -6933,7 +6933,7 @@ form_tarball(char const *work_dir, char const *entry_dir, char const *tarball_pa
 	      "The compressed tarball exceeds the maximum allowed size, sorry.",
 	      "",
 	      NULL);
-	err(230, __FUNCTION__, "The compressed tarball: %s size: %lld > %lld",
+	err(229, __FUNCTION__, "The compressed tarball: %s size: %lld > %lld",
 		 basename_tarball_path, buf.st_size, MAX_TARBALL_LEN);
 	/*NOTREACHED*/
     }
@@ -6944,20 +6944,20 @@ form_tarball(char const *work_dir, char const *entry_dir, char const *tarball_pa
     errno = 0;			/* pre-clear errno for errp() */
     ret = snprintf(tar_cmd, tar_cmd_len, "%s -tvJf %s", tar, basename_tarball_path);
     if (ret <= 0) {
-	errp(231, __FUNCTION__, "snprintf #1 error: %d", ret);
+	errp(230, __FUNCTION__, "snprintf #1 error: %d", ret);
 	/*NOTREACHED*/
     }
     dbg(DBG_MED, "tar command: %s", tar_cmd);
     errno = 0;			/* pre-clear errno for errp() */
     exit_code = system(tar_cmd);
     if (exit_code < 0) {
-	errp(232, __FUNCTION__, "error calling system(%s)", tar_cmd);
+	errp(231, __FUNCTION__, "error calling system(%s)", tar_cmd);
 	/*NOTREACHED*/
     } else if (exit_code == 127) {
-	errp(233, __FUNCTION__, "execution of the shell failed for system(%s)", tar_cmd);
+	errp(232, __FUNCTION__, "execution of the shell failed for system(%s)", tar_cmd);
 	/*NOTREACHED*/
     } else if (exit_code != 0) {
-	err(234, __FUNCTION__, "%s failed with exit code: %d", tar_cmd, WEXITSTATUS(exit_code));
+	err(233, __FUNCTION__, "%s failed with exit code: %d", tar_cmd, WEXITSTATUS(exit_code));
 	/*NOTREACHED*/
     }
     para("",
@@ -7003,7 +7003,7 @@ remind_user(char const *work_dir, char const *entry_dir, char const *tar, char c
      * firewall
      */
     if (work_dir == NULL || entry_dir == NULL || tar == NULL || tarball_path == NULL) {
-	err(235, __FUNCTION__, "called with NULL arg(s)");
+	err(234, __FUNCTION__, "called with NULL arg(s)");
 	/*NOTREACHED*/
     }
 
@@ -7016,7 +7016,7 @@ remind_user(char const *work_dir, char const *entry_dir, char const *tar, char c
 	 NULL);
     ret = printf("    rm -rf %s\n", entry_dir);
     if (ret <= 0) {
-	errp(236, __FUNCTION__, "printf #0 error");
+	errp(235, __FUNCTION__, "printf #0 error");
 	/*NOTREACHED*/
     }
     para("",
@@ -7026,7 +7026,7 @@ remind_user(char const *work_dir, char const *entry_dir, char const *tar, char c
 	 NULL);
     ret = printf("    %s -Jtvf %s/%s\n", tar, work_dir, tarball_path);
     if (ret <= 0) {
-	errp(237, __FUNCTION__, "printf #2 error");
+	errp(236, __FUNCTION__, "printf #2 error");
 	/*NOTREACHED*/
     }
 
@@ -7059,7 +7059,7 @@ remind_user(char const *work_dir, char const *entry_dir, char const *tar, char c
 	     NULL);
 	ret = printf("    %s/%s\n", work_dir, tarball_path);
 	if (ret <= 0) {
-	    errp(238, __FUNCTION__, "printf #2 error");
+	    errp(237, __FUNCTION__, "printf #2 error");
 	    /*NOTREACHED*/
 	}
     }
@@ -7075,7 +7075,7 @@ remind_user(char const *work_dir, char const *entry_dir, char const *tar, char c
 	     NULL);
 	ret = printf("    %s\n\n", IOCCC_SUBMIT_URL);
 	if (ret < 0) {
-	    errp(239, __FUNCTION__, "printf #4 error");
+	    errp(238, __FUNCTION__, "printf #4 error");
 	    /*NOTREACHED*/
 	}
     }
