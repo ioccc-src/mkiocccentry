@@ -3295,7 +3295,7 @@ get_entry_num(struct info *infop)
 	    /*NOTREACHED*/
 	}
 	para("",
-	     "As in C, Entry numbers start with 0.  If you are updated a previous entry, PLEASE",
+	     "As in C, Entry numbers start with 0.  If you are updating a previous entry, PLEASE",
 	     "use the same entry number that you previously uploaded so we know which entry we",
 	     "should replace. If this is your 1st entry to this given IOCCC, enter 0.",
 	     "",
@@ -4884,7 +4884,7 @@ yes_or_no(char *question)
 	}
 
 	/*
-	 * verify that the title starts withg [a-z0-9]
+	 * verify that the title starts with [a-z0-9]
 	 */
 	if (!isascii(title[0]) || (!islower(title[0]) && !isdigit(title[0]))) {
 	    /*
@@ -5976,7 +5976,7 @@ verify_entry_dir(char const *entry_dir, char const *ls)
 	err(197, __FUNCTION__, "The entry directory is too large: %s", entry_dir);
 	/*NOTREACHED*/
     }
-    dbg(DBG_LOW, "entry directiry %s size in kibibyte (1024 byte blocks): %d", entry_dir, kdirsize);
+    dbg(DBG_LOW, "entry directory %s size in kibibyte (1024 byte blocks): %d", entry_dir, kdirsize);
 
     /*
      * close down pipe
@@ -6105,7 +6105,7 @@ json_putc(int const c, FILE *stream)
 	break;
 
     /*
-     * case: unescaped char
+     * case: un-escaped char
      */
     default:
 	ret = fprintf(stream, "%c", c);
@@ -6217,7 +6217,7 @@ json_fprintf_str(FILE *stream, char const *str)
  *	stream	- open file stream to print on
  *	lead	- leading whitespace string to print
  *	name	- name string to JSON encode or NULL
- *	middle	- middle strimg (often " : " )l
+ *	middle	- middle string (often " : " )l
  *	value	- value string to JSON encode or NULL
  *	tail	- tailing string to print (often ",\n")
  *
@@ -6304,7 +6304,7 @@ json_fprintf_value_string(FILE *stream, char const *lead, char const *name, char
  *	stream	- open file stream to print on
  *	lead	- leading whitespace string to print
  *	name	- name string to JSON encode or NULL
- *	middle	- middle strimg (often " : " )l
+ *	middle	- middle string (often " : " )l
  *	value	- value as long
  *	tail	- tailing string to print (often ",\n")
  *
@@ -6395,7 +6395,7 @@ json_fprintf_value_long(FILE *stream, char const *lead, char const *name, char c
  *	stream	- open file stream to print on
  *	lead	- leading whitespace string to print
  *	name	- name string to JSON encode or NULL
- *	middle	- middle strimg (often " : " )l
+ *	middle	- middle string (often " : " )l
  *	value	- value as boolean
  *	tail	- tailing string to print (often ",\n")
  *
@@ -6830,7 +6830,7 @@ write_author(struct info *infop, int author_count, struct author *authorp, char 
 /*
  * form_tarball - form the compressed tarball
  *
- * Given the completed entry directory, form a bzip2 tar file for the user to submit.
+ * Given the completed entry directory, form a compressed tar file for the user to submit.
  * Remind the user where to submit their compressed tarball file.
  *
  * given:
@@ -6930,7 +6930,7 @@ form_tarball(char const *work_dir, char const *entry_dir, char const *tarball_pa
     if (buf.st_size > MAX_TARBALL_LEN) {
 	fpara(stderr,
 	      "",
-	      "The compressed tarball exceeds the maximim allowed size, sorry.",
+	      "The compressed tarball exceeds the maximum allowed size, sorry.",
 	      "",
 	      NULL);
 	err(230, __FUNCTION__, "The compressed tarball: %s size: %lld > %lld",
