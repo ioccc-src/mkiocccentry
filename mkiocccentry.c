@@ -126,11 +126,11 @@ typedef unsigned char bool;
 #define MAX_TWITTER_LEN (18+1)	/* max twitter handle, including the leading @, length */
 #define MAX_GITHUB_LEN (15+1)	/* max GitHub account, including the leading @, length */
 #define MAX_AFFILIATION_LEN (48)/* max affiliation name length */
-#define ISO_3166_1_CODE_URL0 "    https://en.wikipedia.org/wiki/ISO_3166-1#Officially_assigned_code_elements"
-#define ISO_3166_1_CODE_URL1 "    https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2"
-#define ISO_3166_1_CODE_URL2 "    https://www.iso.org/obp/ui/#iso:pub:PUB500001:en"
-#define ISO_3166_1_CODE_URL3 "    https://www.iso.org/obp/ui/#search"
-#define ISO_3166_1_CODE_URL4 "    https://www.iso.org/glossary-for-iso-3166.html"
+#define ISO_3166_1_CODE_URL0 "https://en.wikipedia.org/wiki/ISO_3166-1#Officially_assigned_code_elements"
+#define ISO_3166_1_CODE_URL1 "https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2"
+#define ISO_3166_1_CODE_URL2 "https://www.iso.org/obp/ui/#iso:pub:PUB500001:en"
+#define ISO_3166_1_CODE_URL3 "https://www.iso.org/obp/ui/#search"
+#define ISO_3166_1_CODE_URL4 "https://www.iso.org/glossary-for-iso-3166.html"
 #define RULE_2A_SIZE (5120)	/* rule 2s size of prog.c */
 #define RULE_2B_SIZE (3217)	/* rule 2b size as determined by iocccsize -i prog.c */
 #define MAX_TITLE_LEN (16)	/* maximum length of a title */
@@ -5288,7 +5288,7 @@ get_author_info(struct info *infop, char *ioccc_id, int entry_num, struct author
 		      "For ISO 3166-1 2 character codes, see: the Alpha-2 code column of:",
 		      "",
 		      NULL);
-		ret = fprintf(stderr, "%s\n\n", ISO_3166_1_CODE_URL0);
+		ret = fprintf(stderr, "    %s\n\n", ISO_3166_1_CODE_URL0);
 		if (ret <= 0) {
 		    warn(__FUNCTION__, "fprintf while printing ISO 3166-1 CODE URL #0");
 		}
@@ -5296,15 +5296,15 @@ get_author_info(struct info *infop, char *ioccc_id, int entry_num, struct author
 		      "or from these Wikipedia / ISO web pages:",
 		      "",
 		      NULL);
-		ret = fprintf(stderr, "%s\n", ISO_3166_1_CODE_URL1);
+		ret = fprintf(stderr, "    %s\n", ISO_3166_1_CODE_URL1);
 		if (ret <= 0) {
 		    warn(__FUNCTION__, "fprintf while printing ISO 3166-1 CODE URL #1");
 		}
-		ret = fprintf(stderr, "%s\n", ISO_3166_1_CODE_URL2);
+		ret = fprintf(stderr, "    %s\n", ISO_3166_1_CODE_URL2);
 		if (ret <= 0) {
 		    warn(__FUNCTION__, "fprintf while printing ISO 3166-1 CODE URL #2");
 		}
-		ret = fprintf(stderr, "%s\n\n", ISO_3166_1_CODE_URL3);
+		ret = fprintf(stderr, "    %s\n\n", ISO_3166_1_CODE_URL3);
 		if (ret <= 0) {
 		    warn(__FUNCTION__, "fprintf while printing ISO 3166-1 CODE URL #3");
 		}
@@ -5348,7 +5348,7 @@ get_author_info(struct info *infop, char *ioccc_id, int entry_num, struct author
 			  "For ISO 3166-1 2 character codes, see: the Alpha-2 code column of:",
 			  "",
 			  NULL);
-		    ret = fprintf(stderr, "%s\n\n", ISO_3166_1_CODE_URL0);
+		    ret = fprintf(stderr, "    %s\n\n", ISO_3166_1_CODE_URL0);
 		    if (ret <= 0) {
 			warn(__FUNCTION__, "fprintf when printing ISO 3166-1 CODE URL #0");
 		    }
@@ -5356,15 +5356,15 @@ get_author_info(struct info *infop, char *ioccc_id, int entry_num, struct author
 			  "or from these Wikipedia / ISO web pages:",
 			  "",
 			  NULL);
-		    ret = fprintf(stderr, "%s\n", ISO_3166_1_CODE_URL1);
+		    ret = fprintf(stderr, "    %s\n", ISO_3166_1_CODE_URL1);
 		    if (ret <= 0) {
 			warn(__FUNCTION__, "fprintf when printing ISO 3166-1 CODE URL #1");
 		    }
-		    ret = fprintf(stderr, "%s\n", ISO_3166_1_CODE_URL2);
+		    ret = fprintf(stderr, "    %s\n", ISO_3166_1_CODE_URL2);
 		    if (ret <= 0) {
 			warn(__FUNCTION__, "fprintf when printing ISO 3166-1 CODE URL #2");
 		    }
-		    ret = fprintf(stderr, "%s\n\n", ISO_3166_1_CODE_URL3);
+		    ret = fprintf(stderr, "    %s\n\n", ISO_3166_1_CODE_URL3);
 		    if (ret <= 0) {
 			warn(__FUNCTION__, "fprintf when printing ISO 3166-1 CODE URL #3");
 		    }
