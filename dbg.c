@@ -70,7 +70,7 @@ const char version_string[] = VERSION;	/* our package name and version */
 #endif /* DBG_TEST */
 
 
-#ifndef DEBUG_LINT
+#if !defined(DEBUG_LINT)
 
 /*
  * msg - print a generic message
@@ -168,7 +168,7 @@ dbg(int level, char const *fmt, ...)
      */
     if (fmt == NULL) {
 	fmt = "((NULL fmt))";
-	warn(__FUNCTION__, "\nin dbg(%d, %s ...): NULL fmt, forcing use of: %d\n", level, fmt);
+	warn(__func__, "\nin dbg(%d, %s ...): NULL fmt, forcing use of: %d\n", level, fmt);
     }
 
     /*
@@ -177,19 +177,19 @@ dbg(int level, char const *fmt, ...)
     if (level <= verbosity_level) {
 	ret = fprintf(stderr, "debug[%d]: ", level);
 	if (ret < 0) {
-	    warn(__FUNCTION__, "\nin dbg(%d, %s, %s ...): fprintf returned error: %d\n", level, fmt, ret);
+	    warn(__func__, "\nin dbg(%d, %s, %s ...): fprintf returned error: %d\n", level, fmt, ret);
 	}
 	ret = vfprintf(stderr, fmt, ap);
 	if (ret < 0) {
-	    warn(__FUNCTION__, "\nin dbg(%d, %s, %s ...): vfprintf returned error: %d\n", level, fmt, ret);
+	    warn(__func__, "\nin dbg(%d, %s, %s ...): vfprintf returned error: %d\n", level, fmt, ret);
 	}
 	ret = fputc('\n', stderr);
 	if (ret != '\n') {
-	    warn(__FUNCTION__, "\nin dbg(%d, %s, %s ...): fputc returned error: %d\n", level, fmt, ret);
+	    warn(__func__, "\nin dbg(%d, %s, %s ...): fputc returned error: %d\n", level, fmt, ret);
 	}
 	ret = fflush(stderr);
 	if (ret < 0) {
-	    warn(__FUNCTION__, "\nin dbg(%d, %s, %s ...): fflush returned error: %d\n", level, fmt, ret);
+	    warn(__func__, "\nin dbg(%d, %s, %s ...): fflush returned error: %d\n", level, fmt, ret);
 	}
     }
 
@@ -216,7 +216,7 @@ dbg(int level, char const *fmt, ...)
  *
  * Example:
  *
- * 	warn(__FUNCTION__, "unexpected foobar: %d", value);
+ * 	warn(__func__, "unexpected foobar: %d", value);
  *
  * NOTE: We warn with extra newlines to help internal fault messages stand out.
  *	 Normally one should NOT include newlines in warn messages.
@@ -297,7 +297,7 @@ warn(char const *name, char const *fmt, ...)
  *
  * Example:
  *
- * 	warnp(__FUNCTION__, "unexpected foobar: %d", value);
+ * 	warnp(__func__, "unexpected foobar: %d", value);
  *
  * NOTE: We warn with extra newlines to help internal fault messages stand out.
  *	 Normally one should NOT include newlines in warn messages.
@@ -375,7 +375,7 @@ warnp(char const *name, char const *fmt, ...)
  *
  * Example:
  *
- * 	err(1, __FUNCTION__, "bad foobar: %s", message);
+ * 	err(1, __func__, "bad foobar: %s", message);
  *
  * NOTE: We warn with extra newlines to help internal fault messages stand out.
  *	 Normally one should NOT include newlines in warn messages.
@@ -397,17 +397,17 @@ err(int exitcode, char const *name, char const *fmt, ...)
      * firewall
      */
     if (exitcode < 0) {
-	warn(__FUNCTION__, "\nin err(): called with exitcode <0: %d\n", exitcode);
+	warn(__func__, "\nin err(): called with exitcode <0: %d\n", exitcode);
 	exitcode = 255;
-	warn(__FUNCTION__, "\nin err(): forcing exit code: %d\n", exitcode);
+	warn(__func__, "\nin err(): forcing exit code: %d\n", exitcode);
     }
     if (name == NULL) {
 	name = "((NULL name))";
-	warn(__FUNCTION__, "\nin err(): called with NULL name, forcing name: %s\n", name);
+	warn(__func__, "\nin err(): called with NULL name, forcing name: %s\n", name);
     }
     if (fmt == NULL) {
 	fmt = "((NULL fmt))";
-	warn(__FUNCTION__, "\nin err(): called with NULL fmt, forcing fmt: %s\n", fmt);
+	warn(__func__, "\nin err(): called with NULL fmt, forcing fmt: %s\n", fmt);
     }
 
     /*
@@ -415,19 +415,19 @@ err(int exitcode, char const *name, char const *fmt, ...)
      */
     ret = fprintf(stderr, "FATAL[%d]: %s: ", exitcode, name);
     if (ret < 0) {
-	warn(__FUNCTION__, "\nin err(%d, %s, %s ...): fprintf returned error: %d\n", exitcode, name, fmt, ret);
+	warn(__func__, "\nin err(%d, %s, %s ...): fprintf returned error: %d\n", exitcode, name, fmt, ret);
     }
     ret = vfprintf(stderr, fmt, ap);
     if (ret < 0) {
-	warn(__FUNCTION__, "\nin err(%d, %s, %s ...): vfprintf returned error: %d\n", exitcode, name, fmt, ret);
+	warn(__func__, "\nin err(%d, %s, %s ...): vfprintf returned error: %d\n", exitcode, name, fmt, ret);
     }
     ret = fputc('\n', stderr);
     if (ret != '\n') {
-	warn(__FUNCTION__, "\nin err(%d, %s, %s ...): fputc returned error: %d\n", exitcode, name, fmt, ret);
+	warn(__func__, "\nin err(%d, %s, %s ...): fputc returned error: %d\n", exitcode, name, fmt, ret);
     }
     ret = fflush(stderr);
     if (ret < 0) {
-	warn(__FUNCTION__, "\nin err(%d, %s, %s ...): fflush returned error: %d\n", exitcode, name, fmt, ret);
+	warn(__func__, "\nin err(%d, %s, %s ...): fflush returned error: %d\n", exitcode, name, fmt, ret);
     }
 
     /*
@@ -454,7 +454,7 @@ err(int exitcode, char const *name, char const *fmt, ...)
  *
  * Example:
  *
- * 	errp(1, __FUNCTION__, "bad foobar: %s", message);
+ * 	errp(1, __func__, "bad foobar: %s", message);
  *
  * NOTE: We warn with extra newlines to help internal fault messages stand out.
  *	 Normally one should NOT include newlines in warn messages.
@@ -480,17 +480,17 @@ errp(int exitcode, char const *name, char const *fmt, ...)
 
     /* firewall */
     if (exitcode < 0) {
-	warn(__FUNCTION__, "\nin err(): called with exitcode <0: %d\n", exitcode);
+	warn(__func__, "\nin err(): called with exitcode <0: %d\n", exitcode);
 	exitcode = 255;
-	warn(__FUNCTION__, "\nin err(): forcing exit code: %d\n", exitcode);
+	warn(__func__, "\nin err(): forcing exit code: %d\n", exitcode);
     }
     if (name == NULL) {
 	name = "((NULL name))";
-	warn(__FUNCTION__, "\nin err(): called with NULL name, forcing name: %s\n", name);
+	warn(__func__, "\nin err(): called with NULL name, forcing name: %s\n", name);
     }
     if (fmt == NULL) {
 	fmt = "((NULL fmt))";
-	warn(__FUNCTION__, "\nin err(): called with NULL fmt, forcing fmt: %s\n", fmt);
+	warn(__func__, "\nin err(): called with NULL fmt, forcing fmt: %s\n", fmt);
     }
 
     /*
@@ -498,23 +498,23 @@ errp(int exitcode, char const *name, char const *fmt, ...)
      */
     ret = fprintf(stderr, "FATAL[%d]: %s: ", exitcode, name);
     if (ret < 0) {
-	warn(__FUNCTION__, "\nin err(%d, %s, %s ...): fprintf #0 returned error: %d\n", exitcode, name, fmt, ret);
+	warn(__func__, "\nin err(%d, %s, %s ...): fprintf #0 returned error: %d\n", exitcode, name, fmt, ret);
     }
     ret = vfprintf(stderr, fmt, ap);
     if (ret < 0) {
-	warn(__FUNCTION__, "\nin err(%d, %s, %s ...): vfprintf returned error: %d\n", exitcode, name, fmt, ret);
+	warn(__func__, "\nin err(%d, %s, %s ...): vfprintf returned error: %d\n", exitcode, name, fmt, ret);
     }
     ret = fprintf(stderr, " errno[%d]: %s", saved_errno, strerror(saved_errno));
     if (ret < 0) {
-	warn(__FUNCTION__, "\nin err(%d, %s, %s ...): fprintf #1  returned error: %d\n", exitcode, name, fmt, ret);
+	warn(__func__, "\nin err(%d, %s, %s ...): fprintf #1  returned error: %d\n", exitcode, name, fmt, ret);
     }
     ret = fputc('\n', stderr);
     if (ret != '\n') {
-	warn(__FUNCTION__, "\nin err(%d, %s, %s ...): fputc returned error: %d\n", exitcode, name, fmt, ret);
+	warn(__func__, "\nin err(%d, %s, %s ...): fputc returned error: %d\n", exitcode, name, fmt, ret);
     }
     ret = fflush(stderr);
     if (ret < 0) {
-	warn(__FUNCTION__, "\nin err(%d, %s, %s ...): fflush returned error: %d\n", exitcode, name, fmt, ret);
+	warn(__func__, "\nin err(%d, %s, %s ...): fflush returned error: %d\n", exitcode, name, fmt, ret);
     }
 
     /*
@@ -787,7 +787,7 @@ main(int argc, char *argv[])
 	switch (i) {
 	case 'h':	/* -h - print help to stderr and exit 0 */
 	    /* exit(0); */
-	    usage_err(0, __FUNCTION__, "-h help mode:\n");
+	    usage_err(0, __func__, "-h help mode:\n");
 	    /*NOTREACHED*/
 	case 'v':	/* -v verbosity */
 	    /* parse verbosity */
@@ -795,7 +795,7 @@ main(int argc, char *argv[])
 	    verbosity_level = strtol(optarg, NULL, 0);
 	    if (errno != 0) {
 		/* exit(1); */
-		err(1, __FUNCTION__, "cannot parse -v arg: %s error: %s", optarg, strerror(errno));
+		err(1, __func__, "cannot parse -v arg: %s error: %s", optarg, strerror(errno));
 		/*NOTREACHED*/
 	    }
 	    break;
@@ -805,14 +805,14 @@ main(int argc, char *argv[])
 	    forced_errno = strtol(optarg, NULL, 0);
 	    if (errno != 0) {
 		/* exit(2); */
-		err(2, __FUNCTION__, "cannot parse -v arg: %s error: %s", optarg, strerror(errno));
+		err(2, __func__, "cannot parse -v arg: %s error: %s", optarg, strerror(errno));
 		/*NOTREACHED*/
 	    }
 	    errno = forced_errno;	/* simulate errno setting */
 	    break;
 	default:
 	    /* exit(3); */
-	    usage_err(3, __FUNCTION__, "invalid -flag");
+	    usage_err(3, __func__, "invalid -flag");
 	    /*NOTREACHED*/
 	}
     }
@@ -825,7 +825,7 @@ main(int argc, char *argv[])
     	break;
     default:
 	/* exit(4); */
-	usage_err(4, __FUNCTION__, "requires 2 or 3 arguments");
+	usage_err(4, __func__, "requires 2 or 3 arguments");
 	/*NOTREACHED*/
     	break;
     }
@@ -841,10 +841,10 @@ main(int argc, char *argv[])
      */
     if (errno != 0) {
 	/* exit(5); */
-	errp(5, __FUNCTION__, "simulated error, work_dir: %s iocccsize_path: %s", work_dir, iocccsize_path);
+	errp(5, __func__, "simulated error, work_dir: %s iocccsize_path: %s", work_dir, iocccsize_path);
     }
     /* exit(6); */
-    err(6, __FUNCTION__, "simulated error, work_dir: %s iocccsize_path: %s", work_dir, iocccsize_path);
+    err(6, __func__, "simulated error, work_dir: %s iocccsize_path: %s", work_dir, iocccsize_path);
     /*NOTREACHED*/
 
     /*

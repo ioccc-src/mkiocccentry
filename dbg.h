@@ -112,7 +112,7 @@ extern int verbosity_level;		/* print debug messages <= verbosity_level */
 		    (fprintf(stderr, "Warning: %s: ", (name)), \
 		     fprintf(stderr, __VA_ARGS__), \
 		     fputc('\n', stderr), \
-		     perror(__FUNCTION__))
+		     perror(__func__))
 #        define err(exitcode, name, ...) \
 		    (fprintf(stderr, "FATAL[%d]: %s: ", (exitcode), (name)), \
 		     fprintf(stderr, __VA_ARGS__), \
@@ -121,7 +121,7 @@ extern int verbosity_level;		/* print debug messages <= verbosity_level */
 		    (fprintf(stderr, "FATAL[%d]: %s: ", (exitcode), (name)), \
 		     fprintf(stderr, __VA_ARGS__), \
 		     fputc('\n', stderr), \
-		     perror(__FUNCTION__), \
+		     perror(__func__), \
 		     exit(exitcode))
 #        define usage_err(exitcode, name, ...) \
 		    (fprintf(stderr, "FATAL[%d]: %s: ", (exitcode), (name)), \
@@ -134,7 +134,7 @@ extern int verbosity_level;		/* print debug messages <= verbosity_level */
 		    (fprintf(stderr, "FATAL[%d]: %s: ", (exitcode), (name)), \
 		     fprintf(stderr, __VA_ARGS__), \
 		     fputc('\n', stderr), \
-		     perror(__FUNCTION__), \
+		     perror(__func__), \
 		     fputc('\n', stderr), \
 		     fprintf(stderr, (usage), (name)), \
 		     fprintf(stderr, "\n\nnVersion: %s\n", (version_string)), \
