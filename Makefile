@@ -19,6 +19,14 @@ RM= rm
 CFLAGS= -O3 -g3 -Wall -Wextra -pedantic
 LFLAGS=
 
+# where to install
+#
+DESTDIR= /usr/local/bin
+
+# rules, not file targets
+#
+.PHONY: all configure clean clobber install test
+
 all: iocccsize
 
 iocccsize: iocccsize.c Makefile
@@ -30,6 +38,9 @@ clean:
 
 clobber: clean
 	${RM} -f iocccsize
+
+install: all
+	${INSTALL} -m 0555 iocccsize ${DESTDIR}
 
 test: ./iocccsize-test.sh iocccsize Makefile
 	./iocccsize-test.sh -v
