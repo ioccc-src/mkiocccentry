@@ -849,10 +849,10 @@ main(int argc, char *argv[])
 	    tar = optarg;
 	    break;
 	case 'c':		/* -c cp */
-	    tar = optarg;
+	    cp = optarg;
 	    break;
 	case 'l':		/* -l ls */
-	    tar = optarg;
+	    ls = optarg;
 	    break;
 	default:
 	    usage(1, __func__, "invalid -flag", program, tar, cp, ls); /*ooo*/
