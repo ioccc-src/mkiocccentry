@@ -6531,6 +6531,7 @@ write_info(struct info *infop, char const *entry_dir, bool test_mode)
     char *info_path;		/* path to .info.json file */
     int info_path_len;		/* length of path to .info.json */
     FILE *info_stream;		/* open write stream to the .info.json file */
+    size_t asctime_len;		/* length of asctime() string without the trailing newline */
     int gmtime_len;		/* length of gmtime string (gmtime() + " UTC") */
     int ret;			/* libc function return */
     char **q;			/* extra filename array pointer */
@@ -6592,6 +6593,7 @@ write_info(struct info *infop, char const *entry_dir, bool test_mode)
 	errp(203, __func__, "asctime #1 returned NULL");
 	/*NOTREACHED*/
     }
+    asctime_len = strlen(p) - 1; /* -1 to remove trailing newline */
     gmtime_len = strlen(p) + 1 + LITLEN("UTC") + 1;
     errno = 0;			/* pre-clear errno for errp() */
     infop->gmtime = calloc(gmtime_len + 1, 1);
@@ -6599,7 +6601,7 @@ write_info(struct info *infop, char const *entry_dir, bool test_mode)
 	errp(204, __func__, "calloc of %d bytes failed", gmtime_len + 1);
 	/*NOTREACHED*/
     }
-    (void) strncat(infop->gmtime, p, strlen(p)-1); /* -1 to remove trailing newline */
+    (void) strncat(infop->gmtime, p, asctime_len);
     (void) strcat(infop->gmtime, " UTC");
     dbg(DBG_VVHIGH, "infop->gmtime: %s", infop->gmtime);
 
