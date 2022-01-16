@@ -88,7 +88,7 @@ typedef unsigned char bool;
 /*
  * mkiocccentry version
  */
-#define MKIOCCCENTRY_VERSION "0.24 2022-01-15"	/* use format: major.minor YYYY-MM-DD */
+#define MKIOCCCENTRY_VERSION "0.25 2022-01-16"	/* use format: major.minor YYYY-MM-DD */
 #define IOCCC_CONTEST "IOCCC28"			/* use format: IOCCC99 */
 #define IOCCC_YEAR (2022)			/* Year IOCCC_CONTEST closes */
 
@@ -114,7 +114,7 @@ typedef unsigned char bool;
  */
 #define LITLEN(x) (sizeof(x)-1)	/* length of a literal string w/o the NUL byte */
 #define REQUIRED_IOCCCSIZE_MAJVER (28)	/* iocccsize major version must match */
-#define MIN_IOCCCSIZE_MINVER (4)	/* iocccsize minor version must be >= */
+#define MIN_IOCCCSIZE_MINVER (5)	/* iocccsize minor version must be >= */
 #define DBG_NONE (0)		/* no debugging */
 #define DBG_LOW (1)		/* minimal debugging */
 #define DBG_MED (3)		/* somewhat more debugging */
