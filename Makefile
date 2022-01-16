@@ -40,11 +40,16 @@ CFLAGS= -O3 -g3 --pedantic -Wall -Wextra
 RM= rm
 INSTALL= install
 
+# where and what to install
+#
 DESTDIR= /usr/local/bin
-
 TARGETS= mkiocccentry
 
 all: ${TARGETS}
+
+# rules, not file targets
+#
+.PHONY: all configure clean clobber install
 
 mkiocccentry: mkiocccentry.c
 	${CC} ${CFLAGS} mkiocccentry.c -o $@
@@ -52,11 +57,11 @@ mkiocccentry: mkiocccentry.c
 configure:
 	@echo nothing to configure
 
-clean quick_clean quick_distclean distclean:
+clean:
 	${RM} -f mkiocccentry.o
 	${RM} -rf mkiocccentry.dSYM
 
-clobber quick_clobber: clean
+clobber: clean
 	${RM} -r mkiocccentry
 
 install: all
