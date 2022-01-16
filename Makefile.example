@@ -25,7 +25,7 @@ all: prog
 # compile the program
 #
 prog: prog.c Makefile
-	${CC} ${CFLAGS} $< ${LDFLAGS} -o $@
+	${CC} ${CFLAGS} prog.c ${LDFLAGS} -o $@
 
 # remove any intermediate files created while compiling
 #
