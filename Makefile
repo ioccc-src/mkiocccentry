@@ -11,6 +11,7 @@
 
 .POSIX :
 
+CC= cc
 GIT= git
 RM= rm
 
