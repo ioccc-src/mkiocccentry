@@ -138,6 +138,8 @@ typedef unsigned char bool;
 #define TAIL_TITLE_CHARS "abcdefghijklmnopqrstuvwxyz0123456789_+-"	/* [a-z0-9_+-] */
 #define MAX_ABSTRACT_LEN (64)	/* maximum length of an abstract */
 #define TIMESTAMP_EPOCH "Thr Jan  1 00:00:00 1970 UTC"	/* gettimeofday epoch */
+#define TAR_PATH_0 "/usr/bin/tar"			/* historic path for tar */
+#define TAR_PATH_1 "/bin/tar"				/* some systems where /usr/bin != /bin have tar here */
 #define MAX_TARBALL_LEN ((off_t)(3999971))	/* the compressed tarball formed cannot be longer than this many bytes */
 #define MAX_DIR_KSIZE (27651)			/* entry directory cannot exceed this size in kibibyte (1024 byte) blocks */
 #define IOCCC_REGISTER_URL "https://register.ioccc.org/NOT/a/real/URL"	/* XXX - change to real URL when ready */
@@ -784,7 +786,7 @@ main(int argc, char *argv[])
     char *prog_c = NULL;	/* path to prog.c */
     char *Makefile = NULL;	/* path to Makefile */
     char *remarks_md = NULL;	/* path to remarks.md */
-    char *tar = "/usr/bin/tar";	/* path to tar executable that supports -j */
+    char *tar = TAR_PATH_0;	/* path to tar executable that supports -J (LZMA) */
     char *cp = "/bin/cp";	/* path to cp executable */
     char *ls = "/bin/ls";	/* path to ls executable */
     bool test_mode = false;	/* true ==> contest ID is test */
@@ -797,6 +799,22 @@ main(int argc, char *argv[])
     struct author *author_set = NULL;	/* list of authors */
     int ret;			/* libc return code */
     int i;
+
+    /*
+     * guess where tar is located
+     *
+     * If tar is not in the historic loctation, then change the default to an alternate location.
+     * If tar isn't in the calternate location as well, then the sanity_chk() function call
+     * will fail and the user will have to supply a -t /some/path option.
+     *
+     * BTW: When the arguments are parsed, if the user does supply a -t /some/path, then
+     *	    the tar path will be changed to use that /some/path where sanity_chk() function
+     *	    call will attempt to validate it.  So it doesn't really matter if the check
+     *	    immediately below fails to find a valid path to tar.
+     */
+    if (!is_exec(TAR_PATH_0)) {
+	tar = TAR_PATH_1;
+    }
 
     /*
      * parse args
