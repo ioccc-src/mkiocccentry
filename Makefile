@@ -1,4 +1,4 @@
-#!/usr/bin/make
+#!/usr/bin/env make
 #
 # mkiocccentry - make an ioccc entry
 #
