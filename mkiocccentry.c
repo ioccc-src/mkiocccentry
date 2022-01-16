@@ -755,7 +755,7 @@ static char const *lookup_location_name(char const *upper_code);
 static bool yes_or_no(char *question);
 static char *get_title(struct info *infop);
 static char *get_abstract(struct info *infop);
-static int get_author_info(struct info *infop, char *ioccc_id, int entry_num, struct author **author_set);
+static int get_author_info(struct info *infop, char *ioccc_id, struct author **author_set);
 static void verify_entry_dir(char const *entry_dir, char const *ls);
 static bool json_putc(int const c, FILE *stream);
 static bool json_fprintf_str(FILE *stream, char const *str);
@@ -970,7 +970,7 @@ main(int argc, char *argv[])
     /*
      * obtain author information
      */
-    author_count = get_author_info(&info, info.ioccc_id, info.entry_num, &author_set);
+    author_count = get_author_info(&info, info.ioccc_id, &author_set);
     dbg(DBG_LOW, "collected information on %d authors", author_count);
 
     /*
@@ -5068,7 +5068,7 @@ get_abstract(struct info *infop)
  * This function does not return on error.
  */
 static int
-get_author_info(struct info *infop, char *ioccc_id, int entry_num, struct author **author_set_p)
+get_author_info(struct info *infop, char *ioccc_id, struct author **author_set_p)
 {
     struct author *author_set = NULL;	/* allocated author set */
     int author_count = -1;		/* number of authors or -1 */
