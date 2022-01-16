@@ -23,11 +23,11 @@ LFLAGS=
 #
 DESTDIR= /usr/local/bin
 
+all: iocccsize
+
 # rules, not file targets
 #
 .PHONY: all configure clean clobber install test
-
-all: iocccsize
 
 iocccsize: iocccsize.c Makefile
 	${CC} ${CFLAGS} iocccsize.c ${LDFLAGS} -o $@
