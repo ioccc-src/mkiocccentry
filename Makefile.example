@@ -22,6 +22,10 @@ LFLAGS=
 #
 all: prog
 
+# rules, not file targets
+#
+.PHONY: all clean clobber install try
+
 # compile the program
 #
 prog: prog.c Makefile
@@ -37,6 +41,11 @@ clean:
 #
 clobber: clean
 	${RM} -f prog
+
+# do not install
+#
+install: all
+	@echo you have got to be kidding
 
 # suggested way to try running the program
 #
