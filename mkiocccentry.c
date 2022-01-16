@@ -1,3 +1,4 @@
+/* vim: set tabstop=8 softtabstop=4 shiftwidth=4 noexpandtab : */
 /*
  * mkiocccentry - make an ioccc entry
  *
@@ -97,7 +98,7 @@ typedef unsigned char bool;
  *
  * The following is NOT the version of this mkiocccentry tool!
  */
-#define AUTHOR_JSON_VERSION "1.4 2022-01-12"	/* version of the .author.json file to produce */
+#define AUTHOR_JSON_VERSION "1.5 2022-01-16"	/* version of the .author.json file to produce */
 
 
 /*
@@ -6794,7 +6795,7 @@ write_author(struct info *infop, int author_count, struct author *authorp, char 
      */
     for (i = 0; i < author_count; ++i) {
 	errno = 0;		/* pre-clear errno for errp() */
-	ret = fprintf(author_stream, "\t\t\"author\" : {\n") > 0 &&
+	ret = fprintf(author_stream, "\t\t\"{\n") > 0 &&
 	    json_fprintf_value_string(author_stream, "\t\t\t", "name", " : ", authorp[i].name, ",\n") &&
 	    json_fprintf_value_string(author_stream, "\t\t\t", "location_code", " : ", authorp[i].location_code, ",\n") &&
 	    json_fprintf_value_string(author_stream, "\t\t\t", "location_name", " : ", authorp[i].location_name, ",\n") &&
