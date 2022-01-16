@@ -74,7 +74,7 @@
 #include <stdlib.h>
 #include <errno.h>
 
-#define VERSION "28.4 2022-01-04"	/* use format: major.minor YYYY-MM-DD */
+#define VERSION "28.5 2022-01-16"	/* use format: major.minor YYYY-MM-DD */
 
 #define WORD_BUFFER_SIZE	256
 #define RULE_2A_SIZE		5120	/* IOCCC Rule 2a */
@@ -86,7 +86,7 @@
 #define COMMENT_EOL		1
 #define COMMENT_BLOCK		2
 
-static char usage[] =
+static char usage0[] =
 "usage: iocccsize [-h] [-i] [-v ...] [-V] prog.c\n"
 "usage: iocccsize [-h] [-i] [-v ...] [-V] < prog.c\n"
 "\n"
@@ -94,7 +94,8 @@ static char usage[] =
 "-h\t\tprint usage message in stderr and exit 2\n"
 "-v\t\tturn on some debugging to stderr; -vv or -vvv for more\n"
 "-V\t\tprint version and exit 3\n"
-"\n"
+"\n";
+static char usage1[] =
 "The IOCCC net count Rule 2b is written to stdout; with -v, net count (2b),\n"
 "gross count (2a), number of keywords counted as 1 byte; -vv or -vvv write\n"
 "more tool diagnostics.\n"
@@ -247,7 +248,8 @@ void
 rule_count(FILE *fp)
 {
 	char word[WORD_BUFFER_SIZE+1];
-	size_t gross_count = 0, net_count = 0, keywords = 0, wordi = 0;
+	size_t gross_count = 0, net_count = 0, wordi = 0;
+	int keywords = 0;
 	int ch, next_ch, quote = NO_STRING, escape = 0, is_comment = NO_COMMENT;
 
 /* If quote == NO_STRING (0) and is_comment == NO_COMMENT (0) then its code. */
@@ -394,7 +396,7 @@ rule_count(FILE *fp)
 				net_count = net_count - wordi + 1;
 				keywords++;
 				if (debug > 1) {
-					(void) fprintf(stderr, "~~keyword %zu \"%s\"\n", keywords, word);
+					(void) fprintf(stderr, "~~keyword %d \"%s\"\n", keywords, word);
 				}
 			}
 			word[wordi = 0] = '\0';
@@ -475,13 +477,13 @@ main(int argc, char **argv)
 			errx(6, "There is NO... Rule 6!  I'm not a number!  I'm a free(void *man)!");
 
 		case 'h':
-			fprintf(stderr, "%s", usage);
+			fprintf(stderr, "%s%s", usage0, usage1);
 			exit(2);
 			break;
 
 		default:
 			fprintf(stderr, "unknown -option\n");
-			fprintf(stderr, "%s", usage);
+			fprintf(stderr, "%s%s", usage0, usage1);
 			exit(4);
 			break;
 		}
@@ -497,7 +499,7 @@ main(int argc, char **argv)
 		}
 	} else if (optind != argc) {
 		/* Too many arguments. */
-		fprintf(stderr, "%s", usage);
+		fprintf(stderr, "%s%s", usage0, usage1);
 		exit(4);
 	}
 
