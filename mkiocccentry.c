@@ -742,7 +742,7 @@ static void sanity_chk(struct info *infop, char const *work_dir, char const *ioc
 		       char const *cp, char const *ls);
 static void para(char *line, ...);
 static void fpara(FILE * stream, char *line, ...);
-static char *prompt(char *str, size_t *lenp);
+static char *prompt(char *str, ssize_t *lenp);
 static char *get_contest_id(struct info *infop, bool *testp);
 static int get_entry_num(struct info *infop);
 static char *mk_entry_dir(char *work_dir, char *ioccc_id, int entry_num, char **tarball_path, time_t tstamp);
@@ -3002,7 +3002,7 @@ fpara(FILE * stream, char *line, ...)
  * This function does not return on error.
  */
 static char *
-prompt(char *str, size_t *lenp)
+prompt(char *str, ssize_t *lenp)
 {
     char *linep = NULL;		/* readline_dup line buffer */
     int ret;			/* libc function return value */
@@ -3120,12 +3120,12 @@ static char *
 get_contest_id(struct info *infop, bool *testp)
 {
     char *malloc_ret;		/* malloced return string */
-    size_t len;			/* input string length */
+    ssize_t len;		/* input string length */
     int ret;			/* libc function return */
     unsigned int a, b, c, d, e, f;	/* parts of the UUID string */
     unsigned int version = 0;	/* UUID version hex character */
     unsigned int variant = 0;	/* UUID variant hex character */
-    size_t i;
+    ssize_t i;
 
     /*
      * firewall
@@ -3474,7 +3474,7 @@ check_prog_c(struct info *infop, char const *entry_dir, char const *iocccsize, c
     int cmd_len;		/* length of command */
     char *linep = NULL;		/* allocated line read from iocccsize */
     bool yorn = false;		/* response to a question */
-    size_t readline_len;	/* readline return length */
+    ssize_t readline_len;	/* readline return length */
     size_t prog_c_len;		/* length of the prog_c path */
     size_t entry_dir_len;	/* length of the entry_dir path */
     char *cp_cmd = NULL;	/* cp prog_c entry_dir/prog.c */
@@ -5074,7 +5074,7 @@ get_author_info(struct info *infop, char *ioccc_id, struct author **author_set_p
     int author_count = -1;		/* number of authors or -1 */
     char *author_count_str = NULL;	/* author count string */
     bool yorn = false;		/* response to a question */
-    size_t len;			/* length of reply */
+    ssize_t len;		/* length of reply */
     int ret;			/* libc function return */
     char *p;
     int i;
@@ -5838,7 +5838,7 @@ verify_entry_dir(char const *entry_dir, char const *ls)
     int ls_cmd_len;		/* length of ls command buffer */
     FILE *ls_stream;		/* pipe from iocccsize -V */
     char *linep = NULL;		/* allocated line read from iocccsize */
-    size_t readline_len;	/* readline return length */
+    ssize_t readline_len;	/* readline return length */
     int kdirsize;		/* number of kilo byte blocks in entry directory */
     int ret;			/* libc function return */
 
