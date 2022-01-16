@@ -9,54 +9,27 @@
 # Public Domain 1992, 2015, 2018, 2019 by Anthony Howe.  All rights released.
 # With IOCCC minor mods in 2019,2021,2022 by chongo (Landon Curt Noll) ^oo^
 
-.POSIX :
-
+# utilities
+#
 CC= cc
-GIT= git
 RM= rm
 
-O := .o
-E :=
+# compile and link options
+#
+CFLAGS= -O3 -g3 -Wall -Wextra -pedantic
+LFLAGS=
 
-.SUFFIXES :
-.SUFFIXES : .c .h .i $O $E
+all: iocccsize
 
-########################################################################
-### No further configuration beyond this point.
-########################################################################
-
-top_srcdir	:= ..
-PROJ 		:= iocccsize
-TAR_I		:= -T
-CFLAGS		:= -g -std=c11 -Wall -Wextra -pedantic
-CPPFLAGS	:=
-LIBS		:=
-
-.c.i:
-	${CC} -E ${CFLAGS} ${CPPFLAGS} $*.c >$*.i
-
-.c$E:
-	${CC} ${CFLAGS} ${CPPFLAGS} -o $*$E $*.c
-
-#######################################################################
-
-all: build
-	@true
-
-build: ${PROJ}
+iocccsize: iocccsize.c Makefile
+	${CC} ${CFLAGS} iocccsize.c ${LDFLAGS} -o $@
 
 clean:
-	${RM} -f ${PROJ}.i ${PROJ}$O *.stackdump *.core
-	${RM} -rf ${PROJ}.dSYM
+	${RM} -f iocccsize.o
+	${RM} -rf iocccsize.dSYM
 
-clobber: distclean
+clobber: clean
+	${RM} -f iocccsize
 
-distclean: clean
-	${RM} -fr ${PROJ}$E test a.out
-	${RM} -fr decom a.out iocccsize.dSYM
-
-test: ./${PROJ}-test.sh ${PROJ}
-	./${PROJ}-test.sh -v
-
-unittest: test
-	./${PROJ}-test.sh -v
+test: ./iocccsize-test.sh iocccsize Makefile
+	./iocccsize-test.sh -v
