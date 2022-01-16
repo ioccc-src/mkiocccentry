@@ -3125,7 +3125,7 @@ get_contest_id(struct info *infop, bool *testp)
     unsigned int a, b, c, d, e, f;	/* parts of the UUID string */
     unsigned int version = 0;	/* UUID version hex character */
     unsigned int variant = 0;	/* UUID variant hex character */
-    int i;
+    size_t i;
 
     /*
      * firewall
