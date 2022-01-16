@@ -2284,6 +2284,7 @@ sanity_chk(struct info *infop, char const *work_dir, char const *iocccsize, char
     int month;			/* iocccsize release month */
     int day;			/* iocccsize release day */
     int ret;			/* libc function return value */
+    char guard;			/* scanf guard to catch excess amout of input */
 
     /*
      * firewall
@@ -2695,7 +2696,7 @@ sanity_chk(struct info *infop, char const *work_dir, char const *iocccsize, char
     /*
      * parse output
      */
-    ret = sscanf(infop->iocccsize_ver, "%d.%d %d-%d-%d", &major_ver, &minor_ver, &year, &month, &day);
+    ret = sscanf(infop->iocccsize_ver, "%d.%d %d-%d-%d%c", &major_ver, &minor_ver, &year, &month, &day, &guard);
     if (ret != 5) {
 	err(50, __func__, "iocccsize -V version string is mal-formed: %s", linep);
 	/*NOTREACHED*/
@@ -3144,6 +3145,7 @@ get_contest_id(struct info *infop, bool *testp)
     unsigned int a, b, c, d, e, f;	/* parts of the UUID string */
     unsigned int version = 0;	/* UUID version hex character */
     unsigned int variant = 0;	/* UUID variant hex character */
+    char guard;			/* scanf guard to catch excess amout of input */
     ssize_t i;
 
     /*
@@ -3218,7 +3220,7 @@ get_contest_id(struct info *infop, bool *testp)
 		warn(__func__, "fprintf error while improper input length");
 	    }
 	    fpara(stderr,
-		  "IOCCC contest IDs are in the form:",
+		  "IOCCC contest IDs are of the form:",
 		  "",
 		  "    xxxxxxxx-xxxx-4xxx-axxx-xxxxxxxxxxxx",
 		  "",
@@ -3242,7 +3244,7 @@ get_contest_id(struct info *infop, bool *testp)
 	    malloc_ret[i] = tolower(malloc_ret[i]);
 	}
 	dbg(DBG_VHIGH, "converted the IOCCC contest ID to: %s", malloc_ret);
-	ret = sscanf(malloc_ret, "%8x-%4x-%1x%3x-%1x%3x-%8x%4x", &a, &b, &version, &c, &variant, &d, &e, &f);
+	ret = sscanf(malloc_ret, "%8x-%4x-%1x%3x-%1x%3x-%8x%4x%c", &a, &b, &version, &c, &variant, &d, &e, &f, &guard);
 	dbg(DBG_HIGH, "UUID version hex char: %1x", version);
 	dbg(DBG_HIGH, "UUID variant hex char: %1x", variant);
 	if (ret != 8) {
@@ -3251,6 +3253,12 @@ get_contest_id(struct info *infop, bool *testp)
 		  "IOCCC contest IDs are version 4, variant 1 UUID as defined by RFC4122:",
 		  "",
 		  "    https://datatracker.ietf.org/doc/html/rfc4122#section-4.1.1",
+		  "",
+		  "They are of the form:",
+		  "",
+		  "    xxxxxxxx-xxxx-4xxx-axxx-xxxxxxxxxxxx",
+		  "",
+		  "where 'x' is a hex character, 4 is the UUID version and a the variant 1.",
 		  "",
 		  "Your IOCCC contest ID is not a valid UUID.  Please check your the email you received",
 		  "when you registered as an IOCCC contestant for the correct IOCCC contest ID.",
@@ -3290,6 +3298,7 @@ get_entry_num(struct info *infop)
     int entry_num;		/* entry number */
     char *entry_str;		/* entry number string */
     int ret;			/* libc function return */
+    char guard;			/* scanf guard to catch excess amout of input */
 
     /*
      * firewall
@@ -3329,12 +3338,13 @@ get_entry_num(struct info *infop)
 	 * check the entry number
 	 */
 	errno = 0;		/* pre-clear errno for errp() */
-	ret = sscanf(entry_str, "%d", &entry_num);
+	ret = sscanf(entry_str, "%d%c", &entry_num, &guard);
 	if (ret != 1 || entry_num < 0 || entry_num > MAX_ENTRY_NUM) {
 	    ret = fprintf(stderr, "\nThe entry number must be a number from 0 thru %d, please re-enter.\n", MAX_ENTRY_NUM);
 	    if (ret <= 0) {
 		warn(__func__, "fprintf error while informing about the valid entry number range");
 	    }
+	    entry_num = -1;	/* invalidate input */
 	}
 
 	/*
@@ -3499,6 +3509,7 @@ check_prog_c(struct info *infop, char const *entry_dir, char const *iocccsize, c
     char *cp_cmd = NULL;	/* cp prog_c entry_dir/prog.c */
     int cp_cmd_len;		/* length of cp command buffer */
     int exit_code;		/* exit code from system(cp_cmd) */
+    char guard;			/* scanf guard to catch excess amout of input */
     int ret;			/* libc function return */
 
     /*
@@ -3672,7 +3683,7 @@ check_prog_c(struct info *infop, char const *entry_dir, char const *iocccsize, c
 	warn(__func__, "pclose error on iocccsize stream");
     }
     iocccsize_stream = NULL;
-    ret = sscanf(linep, "%d", &(infop->rule_2b_size));
+    ret = sscanf(linep, "%d%c", &(infop->rule_2b_size), &guard);
     if (ret != 1) {
 	err(110, __func__, "iocccsize -i < prog.c Rule 2b output is mal-formed: %s", linep);
 	/*NOTREACHED*/
@@ -5095,6 +5106,7 @@ get_author_info(struct info *infop, char *ioccc_id, struct author **author_set_p
     bool yorn = false;		/* response to a question */
     ssize_t len;		/* length of reply */
     int ret;			/* libc function return */
+    char guard;			/* scanf guard to catch excess amout of input */
     char *p;
     int i;
 
@@ -5119,7 +5131,7 @@ get_author_info(struct info *infop, char *ioccc_id, struct author **author_set_p
 	/*
 	 * convert author_count_str to number
 	 */
-	ret = sscanf(author_count_str, "%d", &author_count);
+	ret = sscanf(author_count_str, "%d%c", &author_count, &guard);
 	if (ret != 1 || author_count < 1 || author_count > MAX_AUTHORS) {
 	    ret = fprintf(stderr, "\nThe number of authors must a number from 1 thru %d, please re-enter.\n", MAX_AUTHORS);
 	    if (ret <= 0) {
@@ -5133,6 +5145,7 @@ get_author_info(struct info *infop, char *ioccc_id, struct author **author_set_p
 	    if (ret <= 0) {
 		warn(__func__, "fprintf error #2 while printing author number range");
 	    }
+	    author_count = -1;	/* invalidate input */
 	}
 
 	/*
@@ -5859,6 +5872,7 @@ verify_entry_dir(char const *entry_dir, char const *ls)
     char *linep = NULL;		/* allocated line read from iocccsize */
     ssize_t readline_len;	/* readline return length */
     int kdirsize;		/* number of kilo byte blocks in entry directory */
+    char guard;			/* scanf guard to catch excess amout of input */
     int ret;			/* libc function return */
 
     /*
@@ -5970,7 +5984,7 @@ verify_entry_dir(char const *entry_dir, char const *ls)
     /*
      * parse k-block line from ls
      */
-    ret = sscanf(linep, "total %d", &kdirsize);
+    ret = sscanf(linep, "total %d%c", &kdirsize, &guard);
     if (ret != 1) {
 	err(193, __func__, "failed to parse block line from ls: %s", linep);
 	/*NOTREACHED*/
