@@ -1,0 +1,44 @@
+#!/usr/bin/make
+#
+# prog - an example Makefile
+#
+# We suggest you rename this file to Makefile before using.
+# Modify as needed before submitting with your entry, including
+# changing comments such as these.
+
+# utilities
+#
+CC= cc
+RM= rm
+
+# compile and link options
+#
+CFLAGS= -O3 -g3 -Wall -Wextra -pedantic
+LFLAGS=
+
+# default rule - compile the program
+#
+# The all rule should be the 1st rule.
+#
+all: prog
+
+# compile the program
+#
+prog: prog.c Makefile
+	${CC} ${CFLAGS} $< ${LDFLAGS} -o $@
+
+# remove any intermediate files created while compiling
+#
+clean:
+	${RM} -f prog.o
+	${RM} -rf prog.dSYM
+
+# restore directory to original submission state
+#
+clobber: clean
+	${RM} -f prog
+
+# suggested way to try running the program
+#
+try: prog
+	./prog some argumwnt
