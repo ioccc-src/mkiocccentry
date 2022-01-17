@@ -1,6 +1,8 @@
 #!/usr/bin/env make
 #
-# mkiocccentry - make an ioccc entry
+# mkiocccentry and iocccsize - make an IOCCC entry AND IOCCC Rule 2b size tool
+#
+# For mkiocccentry:
 #
 # Copyright (c) 2021,2022 by Landon Curt Noll.  All Rights Reserved.
 #
@@ -25,6 +27,18 @@
 # chongo (Landon Curt Noll, http://www.isthe.com/chongo/index.html) /\oo/\
 #
 # Share and enjoy! :-)
+####
+
+####
+# For iocccsize:
+#
+# This IOCCC size tool source file.  See below for the VERSION string.
+#
+# "You are not expected to understand this" :-)
+#
+# Public Domain 1992, 2015, 2018, 2019 by Anthony Howe.  All rights released.
+# With IOCCC minor mods in 2019,2021,2022 by chongo (Landon Curt Noll) ^oo^
+####
 
 
 SHELL= /bin/bash
@@ -43,26 +57,32 @@ INSTALL= install
 # where and what to install
 #
 DESTDIR= /usr/local/bin
-TARGETS= mkiocccentry
+TARGETS= mkiocccentry iocccsize
 
 all: ${TARGETS}
 
 # rules, not file targets
 #
-.PHONY: all configure clean clobber install
+.PHONY: all configure clean clobber install test
 
 mkiocccentry: mkiocccentry.c
 	${CC} ${CFLAGS} mkiocccentry.c -o $@
+
+iocccsize: iocccsize.c
+	${CC} ${CFLAGS} iocccsize.c -o $@
 
 configure:
 	@echo nothing to configure
 
 clean:
-	${RM} -f mkiocccentry.o
-	${RM} -rf mkiocccentry.dSYM
+	${RM} -f mkiocccentry.o iocccsize.o
+	${RM} -rf mkiocccentry.dSYM iocccsize.dSYM
 
 clobber: clean
-	${RM} -r mkiocccentry
+	${RM} -f ${TARGETS}
 
 install: all
 	${INSTALL} -m 0555 ${TARGETS} ${DESTDIR}
+
+test: ./iocccsize-test.sh iocccsize Makefile
+	./iocccsize-test.sh -v
