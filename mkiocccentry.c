@@ -88,7 +88,7 @@ typedef unsigned char bool;
 /*
  * mkiocccentry version
  */
-#define MKIOCCCENTRY_VERSION "0.25 2022-01-16"	/* use format: major.minor YYYY-MM-DD */
+#define MKIOCCCENTRY_VERSION "0.26 2022-01-17"	/* use format: major.minor YYYY-MM-DD */
 #define IOCCC_CONTEST "IOCCC28"			/* use format: IOCCC99 */
 #define IOCCC_YEAR (2022)			/* Year IOCCC_CONTEST closes */
 
@@ -148,7 +148,11 @@ typedef unsigned char bool;
 #define MAX_ABSTRACT_LEN (64)	/* maximum length of an abstract */
 #define TIMESTAMP_EPOCH "Thr Jan  1 00:00:00 1970 UTC"	/* gettimeofday epoch */
 #define TAR_PATH_0 "/usr/bin/tar"			/* historic path for tar */
-#define TAR_PATH_1 "/bin/tar"				/* some systems where /usr/bin != /bin have tar here */
+#define TAR_PATH_1 "/bin/tar"			/* alternate tar path for some systems where /usr/bin/tar != /bin/tar */
+#define CP_PATH_0 "/bin/cp"			/* historic path for cp */
+#define CP_PATH_1 "/usr/bin/cp"			/* alternate cp path for some systems where /bin/cp != /usr/bin/cp */
+#define LS_PATH_0 "/bin/ls"			/* historic path for ls */
+#define LS_PATH_1 "/usr/bin/ls"			/* alternate ls path for some systems where /bin/ls != /usr/bin/ls */
 #define MAX_TARBALL_LEN ((off_t)(3999971))	/* the compressed tarball formed cannot be longer than this many bytes */
 #define MAX_DIR_KSIZE (27651)			/* entry directory cannot exceed this size in kibibyte (1024 byte) blocks */
 #define IOCCC_REGISTER_URL "https://register.ioccc.org/NOT/a/real/URL"	/* XXX - change to real URL when ready */
@@ -232,17 +236,18 @@ typedef unsigned char bool;
 /*
  * usage message
  *
- * Use the usage() function to print the usage message.
+ * Use the usage() function to print the these usage_msgX strings.
  */
-static const char * const usage_msg =
+static const char * const usage_msg0 =
     "usage: %s [-h] [-v level] [-V] [-t tar] [-c cp] [-l ls] work_dir iocccsize prog.c Makefile remarks.md [file ...]\n"
     "\n"
     "\t-h\t\tprint help message and exit 0\n"
     "\t-v level\tset verbosity level: (def level: %d)\n"
     "\t-V\t\tprint version string and exit\n"
-    "\t-t tar\t\tpath to tar executable that supports -J (LZMA) (def: %s)\n"
-    "\t-c cp\t\tpath to cp executable (def: %s)\n" "\t-l ls\t\tpath to ls executable (def: %s)\n";
-static const char * const usage_msg2 =
+    "\t-t /path/to/tar\t\tpath to tar executable that supports the -J (xz) option (def: %s)\n"
+    "\t-c /path/to/cp\t\tpath to cp executable (def: %s)\n"
+    "\t-l /path/to/ls\t\tpath to ls executable (def: %s)\n";
+static const char * const usage_msg1 =
     "\n"
     "\twork_dir\tdirectory where the entry directory and tarball are formed\n"
     "\n"
@@ -251,8 +256,8 @@ static const char * const usage_msg2 =
     "\n"
     "\t\t\t    https://github.com/ioccc-src/iocccsize\n"
     "\n"
-    "\tprog.c\t\tpath to your source entry code\n";
-static const char * const usage_msg3 =
+    "\tprog.c\t\tpath to the C source for your entry\n";
+static const char * const usage_msg2 =
     "\n"
     "\tMakefile\tMakefile to build (make all) and cleanup (make clean & make clobber)\n"
     "\n"
@@ -728,8 +733,8 @@ static int verbosity_level = DBG_DEFAULT;	/* debug level set by -v */
 /*
  * forward declarations
  */
-static void usage(int exitcode, char const *name, char const *str, char const *program, char const *tar,
-		  char const *cp, char const *ls);
+static void usage(int exitcode, char const *name, char const *str, char const *program,
+		  char const *tar, char const *cp, char const *ls);
 #if !defined(DEBUG_LINT)
 static void dbg(int level, char const *fmt, ...);
 static void warn(char const *name, char const *fmt, ...);
@@ -795,9 +800,9 @@ main(int argc, char *argv[])
     char *prog_c = NULL;	/* path to prog.c */
     char *Makefile = NULL;	/* path to Makefile */
     char *remarks_md = NULL;	/* path to remarks.md */
-    char *tar = TAR_PATH_0;	/* path to tar executable that supports -J (LZMA) */
-    char *cp = "/bin/cp";	/* path to cp executable */
-    char *ls = "/bin/ls";	/* path to ls executable */
+    char *tar = TAR_PATH_0;	/* path to tar executable that supports the -J (xz) option */
+    char *cp = CP_PATH_0;	/* path to cp executable */
+    char *ls = LS_PATH_0;	/* path to ls executable */
     bool test_mode = false;	/* true ==> contest ID is test */
     char *entry_dir = NULL;	/* entry directory from which to form a compressed tarball */
     char *tarball_path = NULL;	/* path of the compressed tarball to form */
@@ -806,24 +811,11 @@ main(int argc, char *argv[])
     struct info info;		/* data to form .info.json */
     int author_count = 0;	/* number of authors */
     struct author *author_set = NULL;	/* list of authors */
+    bool t_flag_used = false;	/* true ==> -t /path/to/tar was given */
+    bool c_flag_used = false;	/* true ==> -c /path/to/cp was given */
+    bool l_flag_used = false;	/* true ==> -. /path/to/ls was given */
     int ret;			/* libc return code */
     int i;
-
-    /*
-     * guess where tar is located
-     *
-     * If tar is not in the historic loctation, then change the default to an alternate location.
-     * If tar isn't in the calternate location as well, then the sanity_chk() function call
-     * will fail and the user will have to supply a -t /some/path option.
-     *
-     * BTW: When the arguments are parsed, if the user does supply a -t /some/path, then
-     *	    the tar path will be changed to use that /some/path where sanity_chk() function
-     *	    call will attempt to validate it.  So it doesn't really matter if the check
-     *	    immediately below fails to find a valid path to tar.
-     */
-    if (!is_exec(TAR_PATH_0)) {
-	tar = TAR_PATH_1;
-    }
 
     /*
      * parse args
@@ -854,14 +846,17 @@ main(int argc, char *argv[])
 	    exit(0); /*ooo*/
 	    /*NOTREACHED*/
 	    break;
-	case 't':		/* -t tar */
+	case 't':		/* -t /path/to/tar */
 	    tar = optarg;
+	    t_flag_used = true;
 	    break;
-	case 'c':		/* -c cp */
+	case 'c':		/* -c /path/to/cp */
 	    cp = optarg;
+	    c_flag_used = true;
 	    break;
-	case 'l':		/* -l ls */
+	case 'l':		/* -l /path/to/ls */
 	    ls = optarg;
+	    l_flag_used = true;
 	    break;
 	default:
 	    usage(1, __func__, "invalid -flag", program, tar, cp, ls); /*ooo*/
@@ -872,6 +867,28 @@ main(int argc, char *argv[])
     if (argc - optind < 5) {
 	usage(1, __func__, "requires at least 5 arguments", program, tar, cp, ls); /*ooo*/
 	/*NOTREACHED*/
+    }
+    /*
+     * guess where tar, cp and ls utilities are located
+     *
+     * If the user did not give a -t, -c and/or -l /path/to/x path, then look at
+     * the historic loctation for the utility.  If the historic loctation of the utility
+     * isn't executable, look for an executable in the alternate location.
+     *
+     * On some systems where /usr/bin != /bin, the distribution made the mistake of
+     * moving historic critical applications, look to see if the alternate path works instead.
+     */
+    if (t_flag_used == false && !is_exec(TAR_PATH_0) && is_exec(TAR_PATH_1)) {
+	tar = TAR_PATH_1;
+	dbg(DBG_LOW, "tar is not in historic loctation: %s : wil try alternate location: %s", TAR_PATH_0, tar);
+    }
+    if (c_flag_used == false && !is_exec(CP_PATH_0) && is_exec(CP_PATH_1)) {
+	cp = CP_PATH_1;
+	dbg(DBG_LOW, "cp is not in historic loctation: %s : wil try alternate location: %s", CP_PATH_0, cp);
+    }
+    if (l_flag_used == false && !is_exec(LS_PATH_0) && is_exec(LS_PATH_1)) {
+	ls = LS_PATH_1;
+	dbg(DBG_LOW, "ls is not in historic loctation: %s : wil try alternate location: %s", LS_PATH_0, ls);
     }
     /* collect required 5 args */
     extra_count = (argc - optind > 5) ? argc - optind - 5 : 0;
@@ -1084,6 +1101,14 @@ usage(int exitcode, char const *name, char const *str, char const *program, char
 	tar = "((NULL tar))";
 	warn(__func__, "\nin usage(): tar was NULL, forcing it to be: %s\n", tar);
     }
+    if (cp == NULL) {
+	cp = "((NULL cp))";
+	warn(__func__, "\nin usage(): cp was NULL, forcing it to be: %s\n", cp);
+    }
+    if (ls == NULL) {
+	ls = "((NULL ls))";
+	warn(__func__, "\nin usage(): ls was NULL, forcing it to be: %s\n", ls);
+    }
 
     /*
      * print the formatted usage stream
@@ -1094,17 +1119,17 @@ usage(int exitcode, char const *name, char const *str, char const *program, char
 	warn(__func__, "\nin usage(): fprintf #0 returned error: %d\n", ret);
     }
     errno = 0;			/* pre-clear errno for errp() */
-    ret = fprintf(stderr, usage_msg, program, DBG_DEFAULT, tar, cp, ls);
+    ret = fprintf(stderr, usage_msg0, program, DBG_DEFAULT, tar, cp, ls);
     if (ret <= 0) {
 	warn(__func__, "\nin usage(): fprintf #1 returned error: %d\n", ret);
     }
     errno = 0;			/* pre-clear errno for errp() */
-    ret = fprintf(stderr, "%s", usage_msg2);
+    ret = fprintf(stderr, "%s", usage_msg1);
     if (ret <= 0) {
 	warn(__func__, "\nin usage(): fprintf #2 returned error: %d\n", ret);
     }
     errno = 0;			/* pre-clear errno for errp() */
-    ret = fprintf(stderr, usage_msg3, MKIOCCCENTRY_VERSION);
+    ret = fprintf(stderr, usage_msg2, MKIOCCCENTRY_VERSION);
     if (ret <= 0) {
 	warn(__func__, "\nin usage(): fprintf #3 returned error: %d\n", ret);
     }
@@ -2273,7 +2298,7 @@ readline_dup(char **linep, bool strip, size_t *lenp, FILE * stream)
  *      infop           - pointer to info structure
  *      work_dir        - where the entry directory and tarball are formed
  *      iocccsize       - path to the iocccsize tool
- *      tar             - path to tar that supports -J (LZMA)
+ *      tar             - path to tar that supports the -J (xz) option
  *	cp		- path to the cp utility
  *	ls		- path to the ls utility
  *
@@ -2311,10 +2336,10 @@ sanity_chk(struct info *infop, char const *work_dir, char const *iocccsize, char
 	      "",
 	      "We cannot find a tar program.",
 	      "",
-	      "A tar program that supports -J (LZMA) is required to build an compressed tarball.",
+	      "A tar program that supports the -J (xz) option is required to build an compressed tarball.",
 	      "Perhaps you need to use:",
 	      "",
-	      "    mkiocccentry -t tar ...",
+	      "    mkiocccentry -t /path/to/tar ...",
 	      "",
 	      "and/or install a tar program?  You can find the source for tar:",
 	      "",
@@ -2331,7 +2356,7 @@ sanity_chk(struct info *infop, char const *work_dir, char const *iocccsize, char
 	      "",
 	      "Perhaps you need to use another path:",
 	      "",
-	      "    mkiocccentry -t tar ...",
+	      "    mkiocccentry -t /path/to/tar ...",
 	      "",
 	      "and/or install a tar program?  You can find the source for tar:",
 	      "",
@@ -2348,7 +2373,7 @@ sanity_chk(struct info *infop, char const *work_dir, char const *iocccsize, char
 	      "",
 	      "We suggest you check the permissions on the tar program, or use another path:",
 	      "",
-	      "    mkiocccentry -t tar ...",
+	      "    mkiocccentry -t /path/to/tar ...",
 	      "",
 	      "and/or install a tar program?  You can find the source for tar:",
 	      "",
@@ -2370,7 +2395,7 @@ sanity_chk(struct info *infop, char const *work_dir, char const *iocccsize, char
 	      "A cp program is required to copy files into a directory under work_dir.",
 	      "Perhaps you need to use:",
 	      "",
-	      "    mkiocccentry -c cp ...",
+	      "    mkiocccentry -c /path/to/cp ...",
 	      "",
 	      "and/or install a cp program?  You can find the source for cp in core utilities:",
 	      "",
@@ -2387,11 +2412,11 @@ sanity_chk(struct info *infop, char const *work_dir, char const *iocccsize, char
 	      "",
 	      "Perhaps you need to use another path:",
 	      "",
-	      "    mkiocccentry -t cp ...",
+	      "    mkiocccentry -c /path/to/cp ...",
 	      "",
 	      "and/or install a cp program?  You can find the source for cp in core utilities:",
 	      "",
-	      "    https://www.gnu.org/software/cp/",
+	      "    https://www.gnu.org/software/coreutils/",
 	      "",
 	      NULL);
 	err(27, __func__, "cp is not a file: %s", cp);
@@ -2404,11 +2429,11 @@ sanity_chk(struct info *infop, char const *work_dir, char const *iocccsize, char
 	      "",
 	      "We suggest you check the permissions on the cp program, or use another path:",
 	      "",
-	      "    mkiocccentry -t cp ...",
+	      "    mkiocccentry -c /path/to/cp ...",
 	      "",
 	      "and/or install a cp program?  You can find the source for cp in core utilities:",
 	      "",
-	      "    https://www.gnu.org/software/cp/",
+	      "    https://www.gnu.org/software/coreutils/",
 	      "",
 	      NULL);
 	err(28, __func__, "cp is not executable program: %s", cp);
@@ -2426,7 +2451,7 @@ sanity_chk(struct info *infop, char const *work_dir, char const *iocccsize, char
 	      "A ls program is required to copy files into a directory under work_dir.",
 	      "Perhaps you need to use:",
 	      "",
-	      "    mkiocccentry -c ls ...",
+	      "    mkiocccentry -l /path/to/ls ...",
 	      "",
 	      "and/or install a ls program?  You can find the source for ls in core utilities:",
 	      "",
@@ -2443,11 +2468,11 @@ sanity_chk(struct info *infop, char const *work_dir, char const *iocccsize, char
 	      "",
 	      "Perhaps you need to use another path:",
 	      "",
-	      "    mkiocccentry -t ls ...",
+	      "    mkiocccentry -l /path/to/ls ...",
 	      "",
 	      "and/or install a ls program?  You can find the source for ls in core utilities:",
 	      "",
-	      "    https://www.gnu.org/software/ls/",
+	      "    https://www.gnu.org/software/coreutils/",
 	      "",
 	      NULL);
 	err(30, __func__, "ls is not a file: %s", ls);
@@ -2460,11 +2485,11 @@ sanity_chk(struct info *infop, char const *work_dir, char const *iocccsize, char
 	      "",
 	      "We suggest you check the permissions on the ls program, or use another path:",
 	      "",
-	      "    mkiocccentry -t ls ...",
+	      "    mkiocccentry -l /path/to/ls ...",
 	      "",
 	      "and/or install a ls program?  You can find the source for ls in core utilities:",
 	      "",
-	      "    https://www.gnu.org/software/ls/",
+	      "    https://www.gnu.org/software/coreutils/",
 	      "",
 	      NULL);
 	err(31, __func__, "ls is not executable program: %s", ls);
