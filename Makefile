@@ -80,6 +80,7 @@ clean:
 
 clobber: clean
 	${RM} -f ${TARGETS}
+	${RM} -rf test-iocccsize
 
 install: all
 	${INSTALL} -m 0555 ${TARGETS} ${DESTDIR}

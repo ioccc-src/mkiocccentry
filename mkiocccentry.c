@@ -252,9 +252,9 @@ static const char * const usage_msg1 =
     "\twork_dir\tdirectory where the entry directory and tarball are formed\n"
     "\n"
     "\tiocccsize\tpath to the iocccsize tool\n"
-    "\t\t\tNOTE: Source for the iocccsize tool may be found at:\n"
+    "\t\t\tNOTE: The source for the iocccsize tool may be found within the mkiocccentry repo:\n"
     "\n"
-    "\t\t\t    https://github.com/ioccc-src/iocccsize\n"
+    "\t\t\t    https://github.com/ioccc-src/mkiocccentry\n"
     "\n"
     "\tprog.c\t\tpath to the C source for your entry\n";
 static const char * const usage_msg2 =
@@ -2506,9 +2506,9 @@ sanity_chk(struct info *infop, char const *work_dir, char const *iocccsize, char
 	      "",
 	      "Perhaps you need to supply a different path?",
 	      ""
-	      "The source to the iocccsize tool may be found at:",
+	      "The source for the iocccsize tool may be found within the mkiocccentry repo",
 	      "",
-	      "    https://github.com/ioccc-src/iocccsize",
+	      "    https://github.com/ioccc-src/mkiocccentry",
 	      "",
 	      NULL);
 	err(32, __func__, "iocccsize does not exist: %s", iocccsize);
@@ -2521,9 +2521,9 @@ sanity_chk(struct info *infop, char const *work_dir, char const *iocccsize, char
 	      "",
 	      "We suggest you check the permissions on the iocccsize.",
 	      ""
-	      "The source to the iocccsize tool may be found at:",
+	      "The source for the iocccsize tool may be found within the mkiocccentry repo",
 	      "",
-	      "    https://github.com/ioccc-src/iocccsize",
+	      "    https://github.com/ioccc-src/mkiocccentry",
 	      "",
 	      NULL);
 	err(33, __func__, "iocccsize is not a file: %s", iocccsize);
@@ -2536,9 +2536,9 @@ sanity_chk(struct info *infop, char const *work_dir, char const *iocccsize, char
 	      "",
 	      "We suggest you check the permissions on the iocccsize.",
 	      ""
-	      "The source to the iocccsize tool may be found at:",
+	      "The source for the iocccsize tool may be found within the mkiocccentry repo",
 	      "",
-	      "    https://github.com/ioccc-src/iocccsize",
+	      "    https://github.com/ioccc-src/mkiocccentry",
 	      "",
 	      NULL);
 	err(34, __func__, "iocccsize is not executable program: %s", iocccsize);
@@ -2625,9 +2625,9 @@ sanity_chk(struct info *infop, char const *work_dir, char const *iocccsize, char
     } else if (WEXITSTATUS(exit_code) == 2) {
 	fpara(stderr,
 	      "",
-	      "The source to the iocccsize tool may be found at:",
+	      "The source for the iocccsize tool may be found within the mkiocccentry repo",
 	      "",
-	      "    https://github.com/ioccc-src/iocccsize",
+	      "    https://github.com/ioccc-src/mkiocccentry",
 	      "",
 	      NULL);
 	err(42, __func__, "%s appears to be too old to support -V", iocccsize);
@@ -2742,9 +2742,9 @@ sanity_chk(struct info *infop, char const *work_dir, char const *iocccsize, char
 	      "",
 	      "The iocccsize major version number does NOT match the required version.",
 	      "",
-	      "The source to the iocccsize tool may be found at:",
+	      "The source for the iocccsize tool may be found within the mkiocccentry repo",
 	      "",
-	      "    https://github.com/ioccc-src/iocccsize",
+	      "    https://github.com/ioccc-src/mkiocccentry",
 	      "",
 	      NULL);
 	err(51, __func__, "iocccsize major version: %d != required major version: %d", major_ver, REQUIRED_IOCCCSIZE_MAJVER);
@@ -2755,9 +2755,9 @@ sanity_chk(struct info *infop, char const *work_dir, char const *iocccsize, char
 	      "",
 	      "The iocccsize minor version number is too low.",
 	      "",
-	      "The source to the iocccsize tool may be found at:",
+	      "The source for the iocccsize tool may be found within the mkiocccentry repo",
 	      "",
-	      "    https://github.com/ioccc-src/iocccsize",
+	      "    https://github.com/ioccc-src/mkiocccentry",
 	      "",
 	      NULL);
 	err(52, __func__, "iocccsize minor version: %d < minimum minor version: %d", minor_ver, MIN_IOCCCSIZE_MINVER);
