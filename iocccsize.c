@@ -123,11 +123,11 @@ static int rule_2b_warning = 0;
  *
  * NOTE: For a good list of reserved words in C, see:
  *
- *	http://www.bezem.de/pdf/ReservedWordsInC.pdf
+ *	https://www.bezem.de/pdf/ReservedWordsInC.pdf
  *
  * by Johan Bezem of JB Enterprises:
  *
- *	See http://www.bezem.de/en/
+ *	See https://www.bezem.de/en/
  */
 typedef struct {
 	size_t length;
