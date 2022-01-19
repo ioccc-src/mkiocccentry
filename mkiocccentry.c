@@ -7042,12 +7042,12 @@ cmdprintf(int err, const char *func, const char *format, ...)
 	else {
 	    p = next = va_arg(va, const char*);
 	    nquot = 0;
-		while ((c = *p++))
-		    if (c == '\'') {
-			SAFESYS_COPY
-			nquot = 0; next++;
-			*d++ = '\\'; *d++ = '\'';
-		    } else nquot += !!strchr(esc, c);
+	    while ((c = *p++))
+		if (c == '\'') {
+		    SAFESYS_COPY
+		    nquot = 0; next++;
+		    *d++ = '\\'; *d++ = '\'';
+		} else nquot += !!strchr(esc, c);
 	    SAFESYS_COPY
 	}
     va_end(va);
