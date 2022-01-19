@@ -41,9 +41,15 @@
 ####
 
 
-SHELL= /bin/bash
-
+# utilities
+#
 CC= cc
+RM= rm
+CP= cp
+INSTALL= install
+
+# how to compile
+#
 CFLAGS= -O3 -g3 --pedantic -Wall -Wextra
 #CFLAGS= -O3 -g3 --pedantic -Wall -Wextra -Werror
 #CFLAGS= -O3 -g3 --pedantic -Wall -Wextra -Werror -DDEBUG_LINT
@@ -51,8 +57,6 @@ CFLAGS= -O3 -g3 --pedantic -Wall -Wextra
 #CFLAGS= -O0 -g --pedantic -Wall -Wextra -Werror -fsanitize=address -fno-omit-frame-pointer
 # For valgrind, run with: valgrind --leak-check=yes --track-origins=yes --leak-resolution=high --read-var-info=yes
 #CFLAGS= -O0 -g --pedantic -Wall -Wextra -Werror
-RM= rm
-INSTALL= install
 
 # where and what to install
 #
@@ -65,21 +69,28 @@ all: ${TARGETS}
 #
 .PHONY: all configure clean clobber install test
 
-mkiocccentry: mkiocccentry.c Makefile
-	${CC} ${CFLAGS} mkiocccentry.c -o $@
+rule_count.c: iocccsize.c
+	${RM} -f $@
+	${CP} -f $? $@
 
-iocccsize: iocccsize.c Makefile
+rule_count.o: rule_count.c limit_ioccc.h Makefile
+	${CC} ${CFLAGS} -DMKIOCCCENTRY_USE rule_count.c -c
+
+mkiocccentry: mkiocccentry.c limit_ioccc.h rule_count.o Makefile
+	${CC} ${CFLAGS} mkiocccentry.c rule_count.o -o $@
+
+iocccsize: iocccsize.c limit_ioccc.h Makefile
 	${CC} ${CFLAGS} iocccsize.c -o $@
 
 configure:
 	@echo nothing to configure
 
 clean:
-	${RM} -f mkiocccentry.o iocccsize.o
+	${RM} -f mkiocccentry.o iocccsize.o rule_count.o
 	${RM} -rf mkiocccentry.dSYM iocccsize.dSYM
 
 clobber: clean
-	${RM} -f ${TARGETS}
+	${RM} -f ${TARGETS} rule_count.c
 	${RM} -rf test-iocccsize
 
 install: all

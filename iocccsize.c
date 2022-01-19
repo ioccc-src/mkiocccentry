@@ -38,9 +38,6 @@
  *	';', '{' or '}' octet immediately before the end of file.
  */
 
-#define DIGRAPHS
-#define TRIGRAPHS
-
 /*
  * IOCCC Judge's remarks:
  *
@@ -75,11 +72,14 @@
 #include <stdlib.h>
 #include <errno.h>
 
-#define VERSION "28.5 2022-01-16"	/* use format: major.minor YYYY-MM-DD */
+/*
+ * IOCCC size and rule related limtations
+ */
+#include "limit_ioccc.h"
+
+#define IOCCCSIZE_VERSION "28.6 2022-01-19"	/* use format: major.minor YYYY-MM-DD */
 
 #define WORD_BUFFER_SIZE	256
-#define RULE_2A_SIZE		5120	/* IOCCC Rule 2a */
-#define RULE_2B_SIZE		3217	/* IOCCC Rule 2b */
 #define STRLEN(s)		(sizeof (s)-1)
 
 #define NO_STRING		0
@@ -87,6 +87,7 @@
 #define COMMENT_EOL		1
 #define COMMENT_BLOCK		2
 
+#if !defined(MKIOCCCENTRY_USE)
 static char usage0[] =
 "usage: iocccsize [-h] [-i] [-v ...] [-V] prog.c\n"
 "usage: iocccsize [-h] [-i] [-v ...] [-V] < prog.c\n"
@@ -106,17 +107,13 @@ static char usage1[] =
 "\t1 - soruce code larger than Rule 2a and/or Rule 2b limits\n"
 "\t2 - -h used and help printed\n"
 "\t3 - -V used and version printed\n"
-"\t>= 4 - some internal error occurred\n"
-;
+"\t>= 4 - some internal error occurred\n";
+#endif /* ! MKIOCCCENTRY_USE */
 
-static int debug;
-static char *out_fmt = "%lu\n";
-static int char_warning = 0;
-static int trigraph_warning = 0;
-static int wordbuf_warning = 0;
-static int ungetc_warning = 0;
-static int rule_2a_warning = 0;
-static int rule_2b_warning = 0;
+/*
+ * iocccsize version string
+ */
+char const * const iocccsize_version = IOCCCSIZE_VERSION;
 
 /*
  * C reserved words, plus a few #preprocessor tokens, that count as 1
@@ -232,33 +229,37 @@ find_member(Word *table, const char *string)
 }
 
 static int
-read_ch(FILE *fp)
+read_ch(FILE *fp, int *char_warning, int *nul_warning)
 {
 	int ch;
 
 	while ((ch = fgetc(fp)) != EOF && ch == '\r') {
 		/* Discard bare CR and those part of CRLF. */
 	}
-	if (ch == '\0' || 128 <= ch) {
-		char_warning = 1;
+	if (128 <= ch) {
+		*char_warning = 1;
+	}
+	if (ch == '\0') {
+		*nul_warning = 1;
 	}
 	return ch;
 }
 
-void
-rule_count(FILE *fp)
+struct iocccsize
+rule_count(FILE *fp, int debug)
 {
 	char word[WORD_BUFFER_SIZE+1];
-	size_t gross_count = 0, net_count = 0, wordi = 0;
-	int keywords = 0;
+	size_t wordi = 0;
 	int ch, next_ch, quote = NO_STRING, escape = 0, is_comment = NO_COMMENT;
+	struct iocccsize size;
 
 /* If quote == NO_STRING (0) and is_comment == NO_COMMENT (0) then its code. */
 #define IS_CODE	(quote == is_comment)
 
-	while ((ch = read_ch(fp)) != EOF) {
+	memset(&size, 0, sizeof(size));
+	while ((ch = read_ch(fp, &size.char_warning, &size.nul_warning)) != EOF) {
 		/* Future gazing. */
-		next_ch = read_ch(fp);
+		next_ch = read_ch(fp, &size.char_warning, &size.nul_warning);
 
 #ifdef TRIGRAPHS
 		if (ch == '?' && next_ch == '?') {
@@ -271,7 +272,7 @@ rule_count(FILE *fp)
 				if (ch == t[0]) {
 					/* Mapped trigraphs count as 1 byte. */
 					next_ch = fgetc(fp);
-					gross_count += 2;
+					size.rule_2a_size += 2;
 					ch = t[1];
 					break;
 				}
@@ -280,7 +281,7 @@ rule_count(FILE *fp)
 			/* Unknown trigraph, push back the 3rd character. */
 			if (*t == '\0') {
 				if (ch != EOF && ungetc(ch, fp) == EOF) {
-					trigraph_warning = 1;
+					size.trigraph_warning = 1;
 				}
 				ch = '?';
 			}
@@ -290,7 +291,7 @@ rule_count(FILE *fp)
 			/* ISO C11 section 5.1.1.2 Translation Phases
 			 * point 2 discards backslash newlines.
 			 */
-			gross_count += 2;
+			size.rule_2a_size += 2;
 			continue;
 		}
 
@@ -299,7 +300,7 @@ rule_count(FILE *fp)
 			 * How does that relate to UTF8 and wide-character library
 			 * handling?  An invalid trigraph results in 2x ungetc().
 			 */
-			ungetc_warning = 1;
+			size.ungetc_warning = 1;
 		}
 
 		/* Within quoted string? */
@@ -345,8 +346,8 @@ rule_count(FILE *fp)
 
 			/* Consume next_ch. */
 			ch = fgetc(fp);
-			gross_count++;
-			net_count++;
+			size.rule_2a_size++;
+			size.rule_2b_size++;
 		}
 
 		/* Start of comment block? */
@@ -358,8 +359,8 @@ rule_count(FILE *fp)
 
 			/* Consume next_ch. */
 			ch = fgetc(fp);
-			gross_count++;
-			net_count++;
+			size.rule_2a_size++;
+			size.rule_2b_size++;
 		}
 
 		/* Open single or double quote? */
@@ -378,7 +379,7 @@ rule_count(FILE *fp)
 			for (d = digraphs; *d != '\0'; d += 3) {
 				if (ch == d[1] && next_ch == d[2]) {
 					(void) fgetc(fp);
-					gross_count++;
+					size.rule_2a_size++;
 					ch = d[0];
 					break;
 				}
@@ -386,7 +387,7 @@ rule_count(FILE *fp)
 		}
 #endif
 		/* Sanity check against file size and wc(1) byte count. */
-		gross_count++;
+		size.rule_2a_size++;
 
 		/* End of possible keyword?  Care with #word as there can
 		 * be whitespace or comments between # and word.
@@ -394,10 +395,10 @@ rule_count(FILE *fp)
 		if ((word[0] != '#' || 1 < wordi) && !isalnum(ch) && ch != '_' && ch != '#') {
 			if (find_member(cwords, word) != NULL) {
 				/* Count keyword as 1. */
-				net_count = net_count - wordi + 1;
-				keywords++;
+				size.rule_2b_size = size.rule_2b_size - wordi + 1;
+				(size.keywords)++;
 				if (debug > 1) {
-					(void) fprintf(stderr, "~~keyword %d \"%s\"\n", keywords, word);
+					(void) fprintf(stderr, "~~keyword %ld \"%s\"\n", size.keywords, word);
 				}
 			}
 			word[wordi = 0] = '\0';
@@ -422,44 +423,32 @@ rule_count(FILE *fp)
 		/* Collect next word not in a string or comment. */
 		if (IS_CODE && (isalnum(ch) || ch == '_' || ch == '#')) {
 			if (sizeof (word) <= wordi) {
-				wordbuf_warning = 1;
+				size.wordbuf_warning = 1;
 				wordi = 0;
 			}
 			word[wordi++] = (char) ch;
 			word[wordi] = '\0';
 		}
 
-		net_count++;
+		size.rule_2b_size++;
 	}
 
 	/*
-	 * The original author was not entirely in agreement with printing
-	 * these warnings, since he believes that its the programmer's job to
-	 * be cognisant of the rules, guidelines, and the state of their work.
-	 *
-	 * The IOCCC judges observe that enough IOCCC submitters are not so
-	 * cognizant (cognisant) and so make these warnings manditory in the
-	 * hopes it will reduce the number of entries that violate the IOCCC
-	 * size rules.
+	 * return stats
 	 */
-	if (RULE_2A_SIZE < gross_count) {
-		rule_2a_warning = 1;
-	}
-	if (RULE_2B_SIZE < net_count) {
-		rule_2b_warning = 1;
-	}
-
-	(void) printf(out_fmt, net_count, gross_count, keywords);
-
-	return;
+	return size;
 }
 
+#if !defined(MKIOCCCENTRY_USE)
 int
 main(int argc, char **argv)
 {
-	FILE *fp = stdin;
+	FILE *fp = stdin;		/* stream from which to determine sizes */
+	struct iocccsize size;		/* rule_count() processing results */
+	int debug = 0;
 	int ch;
 
+	memset(&size, 0, sizeof(size));
 	while ((ch = getopt(argc, argv, "6ihvV")) != -1) {
 		switch (ch) {
 		case 'i': /* ignored for backward compatibility */
@@ -467,11 +456,10 @@ main(int argc, char **argv)
 
 		case 'v':
 			debug++;
-			out_fmt = "%lu %lu %lu\n";
 			break;
 
 		case 'V':
-			printf("%s\n", VERSION);
+			printf("%s\n", iocccsize_version);
 			exit(3);
 
 		case '6': /* You're a RTFS master!  Congrats. */
@@ -507,35 +495,46 @@ main(int argc, char **argv)
 	(void) setvbuf(fp, NULL, _IOLBF, 0);
 
 	/* The Count - 1 Muha .. 2 Muhaha .. 3 Muhahaha ... */
-	rule_count(fp);
+	size = rule_count(fp, debug);
+	if (debug == 0) {
+		(void) printf("%ld\n", (unsigned long)size.rule_2b_size);
+	} else {
+		(void) printf("%ld %ld %ld\n", (unsigned long)size.rule_2b_size, (unsigned long)size.rule_2a_size,
+					       (unsigned long)size.keywords);
+	}
 
 	/*
 	 * issue warnings
 	 */
-	if (char_warning) {
-		fprintf(stderr, "Warning: character(s) with high bit set or NUL found! Be careful you don't violate rule 13!\n");
+	if (size.char_warning) {
+		fprintf(stderr, "Warning: character(s) with high bit set found! Be careful you don't violate rule 13!\n");
 	}
-	if (trigraph_warning) {
-		fprintf(stderr, "Warning: unknown or invalid trigraph(s) found! Be careful!\n");
+	if (size.nul_warning) {
+		fprintf(stderr, "Warning: NUL character(s) found! Be careful you don't violate rule 13!\n");
 	}
-	if (wordbuf_warning) {
-		fprintf(stderr, "Warning: word buffer overflow! The size on stdout may be invalid under rule 2!");
+	if (size.trigraph_warning) {
+		fprintf(stderr, "Warning: unknown or invalid trigraph(s) found! Is that a bug in, or a feature of your code?\n");
 	}
-	if (ungetc_warning) {
-		fprintf(stderr, "Warning: ungetc error: @SirWumpus goofe The size on stdout may be invalid under rule 2!\n");
+	if (size.wordbuf_warning) {
+		fprintf(stderr, "Warning: word buffer overflow! Is that a bug in, or a feature of your code?\n");
 	}
-	if (rule_2a_warning) {
-		(void) fprintf(stderr, "Warning: your source exceeds Rule 2a limit: %u! Rulr 2a violation!\n", RULE_2A_SIZE);
+	if (size.ungetc_warning) {
+		fprintf(stderr, "Warning: ungetc error: @SirWumpus goofed. The size on stdout may be invalid under rule 2!\n");
 	}
-	if (rule_2b_warning) {
-		(void) fprintf(stderr, "Warning: your source exceeds Rule 2b limit: %u! Rule 2b violation!\n", RULE_2B_SIZE);
+	if (size.rule_2a_size > RULE_2A_SIZE) {
+		(void) fprintf(stderr, "Warning: your source under Rule 2a: %lu exceeds Rule 2a limit: %lu: Rule 2a violation!\n",
+				       (unsigned long)size.rule_2a_size, (unsigned long)RULE_2A_SIZE);
+		exit(1);
+	}
+	if (size.rule_2b_size > RULE_2B_SIZE) {
+		(void) fprintf(stderr, "Warning: your source under Rule 2b: %lu exceeds Rule 2b limit: %lu: Rule 2b violation!\n",
+				       (unsigned long)size.rule_2b_size, (unsigned long)RULE_2B_SIZE);
+		exit(1);
 	}
 
 	/*
 	 * All Done!!! All Done!!! -- Jessica Noll, age 2
 	 */
-	if (rule_2a_warning || rule_2b_warning) {
-		exit(1);
-	}
 	exit(0);
 }
+#endif /* ! MKIOCCCENTRY_USE */

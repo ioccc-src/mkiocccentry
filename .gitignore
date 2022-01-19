@@ -4,6 +4,8 @@ mkiocccentry
 test
 test-iocccsize
 work_dir
+rule_count.c
+orig.iocccsize.c
 
 # Prerequisites
 *.d
