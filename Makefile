@@ -65,10 +65,10 @@ all: ${TARGETS}
 #
 .PHONY: all configure clean clobber install test
 
-mkiocccentry: mkiocccentry.c
+mkiocccentry: mkiocccentry.c Makefile
 	${CC} ${CFLAGS} mkiocccentry.c -o $@
 
-iocccsize: iocccsize.c
+iocccsize: iocccsize.c Makefile
 	${CC} ${CFLAGS} iocccsize.c -o $@
 
 configure:

@@ -3250,7 +3250,7 @@ get_contest_id(struct info *infop, bool *testp)
 	    /*
 	     * reject improper input length
 	     */
-	    ret = fprintf(stderr, "\nIOCCC contest ID are %d characters in length, you entered %ld\n\n", UUID_LEN, len);
+	    ret = fprintf(stderr, "\nIOCCC contest ID are %d characters in length, you entered %ld\n\n", UUID_LEN, (long)len);
 	    if (ret <= 0) {
 		warn(__func__, "fprintf error while improper input length");
 	    }
@@ -4611,8 +4611,8 @@ check_extra_data_files(struct info *infop, char const *entry_dir, char const *cp
 		  "The basename of an extra file is too long.",
 		  "",
 		  NULL);
-	    err(160, __func__, "basename of extra data file: %s is %ld characters an is > the limit: %d",
-			       base_len, MAX_BASENAME_LEN);
+	    err(160, __func__, "basename of extra data file: %s is %ld characters an is > the limit: %ld",
+			       args[i], base_len, (long)MAX_BASENAME_LEN);
 	    /*NOTREACHED*/
 	}
 
@@ -4642,7 +4642,7 @@ check_extra_data_files(struct info *infop, char const *entry_dir, char const *cp
 		      "    A–Z a–z 0–9 . _ - +",
 		      "",
 		      NULL);
-		err(162, __func__, "basename of %s character %d is NOT a POSIX Fully portable character nor +", args[i], j);
+		err(162, __func__, "basename of %s character %ld is NOT a POSIX Fully portable character nor +", args[i], (long)j);
 		/*NOTREACHED*/
 	    }
 	}
