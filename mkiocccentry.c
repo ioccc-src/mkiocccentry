@@ -21,10 +21,10 @@
  *
  * Many thanks are due to a number of people who provided important
  * and valuable testing, suggestions, issue reports and GitHub pull
- * requests to this code.  Without their time and errort, this tool
+ * requests to this code.  Without their time and effort, this tool
  * would not work very well!
  *
- * Amoung the GitHub users we wish to thank include these fine developers:
+ * Among the GitHub users we wish to thank include these fine developers:
  *
  *	@ilyakurdyukov		Ilya Kurdyukov
  *	@SirWumpus		Anthony Howe
@@ -74,7 +74,7 @@
 
 
 /*
- * IOCCC size and rule related limtations
+ * IOCCC size and rule related limitations
  */
 #include "limit_ioccc.h"
 
@@ -868,7 +868,7 @@ main(int argc, char *argv[])
      * guess where tar, cp and ls utilities are located
      *
      * If the user did not give a -t, -c and/or -l /path/to/x path, then look at
-     * the historic loctation for the utility.  If the historic loctation of the utility
+     * the historic location for the utility.  If the historic location of the utility
      * isn't executable, look for an executable in the alternate location.
      *
      * On some systems where /usr/bin != /bin, the distribution made the mistake of
@@ -876,15 +876,15 @@ main(int argc, char *argv[])
      */
     if (t_flag_used == false && !is_exec(TAR_PATH_0) && is_exec(TAR_PATH_1)) {
 	tar = TAR_PATH_1;
-	dbg(DBG_LOW, "tar is not in historic loctation: %s : wil try alternate location: %s", TAR_PATH_0, tar);
+	dbg(DBG_LOW, "tar is not in historic location: %s : will try alternate location: %s", TAR_PATH_0, tar);
     }
     if (c_flag_used == false && !is_exec(CP_PATH_0) && is_exec(CP_PATH_1)) {
 	cp = CP_PATH_1;
-	dbg(DBG_LOW, "cp is not in historic loctation: %s : wil try alternate location: %s", CP_PATH_0, cp);
+	dbg(DBG_LOW, "cp is not in historic location: %s : will try alternate location: %s", CP_PATH_0, cp);
     }
     if (l_flag_used == false && !is_exec(LS_PATH_0) && is_exec(LS_PATH_1)) {
 	ls = LS_PATH_1;
-	dbg(DBG_LOW, "ls is not in historic loctation: %s : wil try alternate location: %s", LS_PATH_0, ls);
+	dbg(DBG_LOW, "ls is not in historic location: %s : will try alternate location: %s", LS_PATH_0, ls);
     }
     /* collect required the required args */
     extra_count = (argc - optind > REQUIRED_ARGS) ? argc - optind - REQUIRED_ARGS : 0;
@@ -2918,7 +2918,7 @@ get_contest_id(struct info *infop, bool *testp)
     unsigned int a, b, c, d, e, f;	/* parts of the UUID string */
     unsigned int version = 0;	/* UUID version hex character */
     unsigned int variant = 0;	/* UUID variant hex character */
-    char guard;			/* scanf guard to catch excess amout of input */
+    char guard;			/* scanf guard to catch excess amount of input */
     ssize_t i;
 
     /*
@@ -3071,7 +3071,7 @@ get_entry_num(struct info *infop)
     int entry_num;		/* entry number */
     char *entry_str;		/* entry number string */
     int ret;			/* libc function return */
-    char guard;			/* scanf guard to catch excess amout of input */
+    char guard;			/* scanf guard to catch excess amount of input */
 
     /*
      * firewall
@@ -3532,7 +3532,7 @@ check_prog_c(struct info *infop, char const *entry_dir, char const *cp, char con
 	    err(94, __func__, "please fix your prog.c file: %s", prog_c);
 	    /*NOTREACHED*/
 	}
-	dbg(DBG_LOW, "user says that prog.c %s triggered an iungetc warning OK", prog_c);
+	dbg(DBG_LOW, "user says that prog.c %s triggered an ungetc warning OK", prog_c);
 	infop->ungetc_warning = true;
     } else {
 	infop->ungetc_warning = false;
@@ -4993,7 +4993,7 @@ get_author_info(struct info *infop, char *ioccc_id, struct author **author_set_p
     bool yorn = false;		/* response to a question */
     ssize_t len;		/* length of reply */
     int ret;			/* libc function return */
-    char guard;			/* scanf guard to catch excess amout of input */
+    char guard;			/* scanf guard to catch excess amount of input */
     char *p;
     int i;
 
@@ -5758,7 +5758,7 @@ verify_entry_dir(char const *entry_dir, char const *ls)
     char *linep = NULL;		/* allocated line read from iocccsize */
     ssize_t readline_len;	/* readline return length */
     int kdirsize;		/* number of kilo byte blocks in entry directory */
-    char guard;			/* scanf guard to catch excess amout of input */
+    char guard;			/* scanf guard to catch excess amount of input */
     int ret;			/* libc function return */
 
     /*
@@ -7007,7 +7007,7 @@ remind_user(char const *work_dir, char const *entry_dir, char const *tar, char c
 	 */
 	para("",
 	     "As you entered an IOCCC contest ID of test, the compressed tarball",
-	     "that was just formed CANNOT be used as an IOCCCC entry.",
+	     "that was just formed CANNOT be used as an IOCCC entry.",
 	     "",
 	     NULL);
 
@@ -7053,7 +7053,7 @@ remind_user(char const *work_dir, char const *entry_dir, char const *tar, char c
 /*
  * cmdprintf - malloc a safer shell command line for use with system() and popen()
  *
- * XXX - TODO - finosh comemnting and documentined the cmdprintf() as needed
+ * XXX - TODO - finish commenting and documenting the cmdprintf() as needed
  *		replace magic constants with defined or computed values if needed
  *		re-test for memory leaks
  *
@@ -7082,7 +7082,7 @@ cmdprintf(const char *format, ...)
     int nquot;
 
     /*
-     * determine how much storage we will need for the command lind
+     * determine how much storage we will need for the command line
      */
     va_start(va, format);
     f = format;

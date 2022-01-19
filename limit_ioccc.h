@@ -1,6 +1,6 @@
 /* vim: set tabstop=8 softtabstop=4 shiftwidth=4 noexpandtab : */
 /*
- * limit_ioccc - IOCCC size and rule related limtations
+ * limit_ioccc - IOCCC size and rule related limitations
  *
  * Copyright (c) 2021,2022 by Landon Curt Noll.  All Rights Reserved.
  *
