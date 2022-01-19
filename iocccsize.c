@@ -73,7 +73,7 @@
 #include <errno.h>
 
 /*
- * IOCCC size and rule related limtations
+ * IOCCC size and rule related limitations
  */
 #include "limit_ioccc.h"
 
