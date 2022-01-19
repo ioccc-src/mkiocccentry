@@ -777,6 +777,7 @@ static void write_info(struct info *infop, char const *entry_dir, bool test_mode
 static void write_author(struct info *infop, int author_count, struct author *authorp, char const *entry_dir);
 static void form_tarball(char const *work_dir, char const *entry_dir, char const *tarball_path, char const *tar, char const *ls);
 static void remind_user(char const *work_dir, char const *entry_dir, char const *tar, char const *tarball_path, bool test_mode);
+static char *cmdprintf(int err, const char *func, const char *format, ...);
 
 
 int
@@ -3270,7 +3271,6 @@ check_prog_c(struct info *infop, char const *entry_dir, char const *cp, char con
     size_t prog_c_len;		/* length of the prog_c path */
     size_t entry_dir_len;	/* length of the entry_dir path */
     char *cp_cmd = NULL;	/* cp prog_c entry_dir/prog.c */
-    int cp_cmd_len;		/* length of cp command buffer */
     int exit_code;		/* exit code from system(cp_cmd) */
     int ret;			/* libc function return */
 
@@ -3560,19 +3560,8 @@ check_prog_c(struct info *infop, char const *entry_dir, char const *cp, char con
     /*
      * copy prog.c under entry_dir
      */
-    cp_cmd_len = strlen(cp) + 1 + prog_c_len + 1 + entry_dir_len + 1 + LITLEN("prog.c") + 1;
     errno = 0;			/* pre-clear errno for errp() */
-    cp_cmd = malloc(cp_cmd_len + 1);
-    if (cp_cmd == NULL) {
-	errp(96, __func__, "malloc #1 of %d bytes failed", cp_cmd_len + 1);
-	/*NOTREACHED*/
-    }
-    errno = 0;			/* pre-clear errno for errp() */
-    ret = snprintf(cp_cmd, cp_cmd_len, "%s %s %s/prog.c", cp, prog_c, entry_dir);
-    if (ret <= 0) {
-	errp(97, __func__, "snprintf #1 error: %d", ret);
-	/*NOTREACHED*/
-    }
+    cp_cmd = cmdprintf(96, __func__, "% % %/prog.c", cp, prog_c, entry_dir);
 
     /*
      * pre-flush to avoid system() buffered stdio issues
@@ -7002,4 +6991,66 @@ remind_user(char const *work_dir, char const *entry_dir, char const *tar, char c
 	}
     }
     return;
+}
+
+static char *
+cmdprintf(int err, const char *func, const char *format, ...)
+{
+    va_list va;
+    size_t size = 0;
+    const char *next, *p, *f;
+    const char *esc = "\t\n\r !\"#$&()*;<=>?[\\]^`{|}~";
+    char *d, *cmd, c;
+    int nquot;
+
+    va_start(va, format);
+    f = format;
+    while ((c = *f++))
+	if (c == '%') {
+	    p = next = va_arg(va, const char*);
+	    nquot = 0;
+	    while ((c = *p++))
+		nquot = c == '\'' ? 
+		    size += nquot > 1 ? 3 : nquot + 1, 0 :
+		    nquot + !!strchr(esc, c);
+	    size += (nquot > 1 ? 2 : nquot) + (p - next) - 2;
+	}
+    va_end(va);
+    size += f - format;
+
+    cmd = malloc(size);
+    if (cmd == NULL) {
+	errp(err, func, "malloc from the cmdprintf of %ld bytes failed", size);
+	/*NOTREACHED*/
+    }
+
+#define SAFESYS_COPY \
+    if (nquot > 1) *d++ = '\''; \
+    while (next < p - 1) { \
+	c = *next++; \
+	if (nquot == 1 && strchr(esc, c)) \
+	    *d++ = '\\', nquot = 0; \
+	*d++ = c; \
+    } \
+    if (nquot > 1) *d++ = '\'';
+
+    d = cmd;
+    va_start(va, format);
+    f = format;
+    while ((c = *f++))
+	if (c != '%') *d++ = c;
+	else {
+	    p = next = va_arg(va, const char*);
+	    nquot = 0;
+		while ((c = *p++))
+		    if (c == '\'') {
+			SAFESYS_COPY
+			nquot = 0; next++;
+			*d++ = '\\'; *d++ = '\'';
+		    } else nquot += !!strchr(esc, c);
+	    SAFESYS_COPY
+	}
+    va_end(va);
+    *d = 0;
+    return cmd;
 }
