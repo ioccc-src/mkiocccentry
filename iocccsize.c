@@ -398,7 +398,7 @@ rule_count(FILE *fp, int debug)
 				size.rule_2b_size = size.rule_2b_size - wordi + 1;
 				(size.keywords)++;
 				if (debug > 1) {
-					(void) fprintf(stderr, "~~keyword %ld \"%s\"\n", size.keywords, word);
+					(void) fprintf(stderr, "~~keyword %lu \"%s\"\n", (unsigned long)size.keywords, word);
 				}
 			}
 			word[wordi = 0] = '\0';
