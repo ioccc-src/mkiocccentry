@@ -6993,28 +6993,42 @@ remind_user(char const *work_dir, char const *entry_dir, char const *tar, char c
     return;
 }
 
+
+/*
+ * cmdprintf - malloc a command that is safer for use with system() and popen()
+ *
+ * XXX - TODO - comment and document as needed
+ *		remove magic constants as needed
+ *		rework use of errp to process error in calling function
+ *		deploy in other cases where system() and popen() are used
+ *		free malloced memory and test for memory leaks
+ */
 static char *
 cmdprintf(int err, const char *func, const char *format, ...)
 {
     va_list va;
     size_t size = 0;
-    const char *next, *p, *f;
-    const char *esc = "\t\n\r !\"#$&()*;<=>?[\\]^`{|}~";
-    char *d, *cmd, c;
+    char const *next;
+    char const *p;
+    char const *f;
+    char const *esc = "\t\n\r !\"#$&()*;<=>?[\\]^`{|}~";
+    char *d;
+    char *cmd;
+    char c;
     int nquot;
 
     va_start(va, format);
     f = format;
-    while ((c = *f++))
+    while ((c = *f++)) {
 	if (c == '%') {
-	    p = next = va_arg(va, const char*);
+	    p = next = va_arg(va, const char *);
 	    nquot = 0;
-	    while ((c = *p++))
-		nquot = c == '\'' ? 
-		    size += nquot > 1 ? 3 : nquot + 1, 0 :
-		    nquot + !!strchr(esc, c);
+	    while ((c = *p++)) {
+		nquot = c == '\'' ? size += nquot > 1 ? 3 : nquot + 1, 0 : nquot + !!strchr(esc, c);
+	    }
 	    size += (nquot > 1 ? 2 : nquot) + (p - next) - 2;
 	}
+    }
     va_end(va);
     size += f - format;
 
@@ -7024,32 +7038,59 @@ cmdprintf(int err, const char *func, const char *format, ...)
 	/*NOTREACHED*/
     }
 
-#define SAFESYS_COPY \
-    if (nquot > 1) *d++ = '\''; \
-    while (next < p - 1) { \
-	c = *next++; \
-	if (nquot == 1 && strchr(esc, c)) \
-	    *d++ = '\\', nquot = 0; \
-	*d++ = c; \
-    } \
-    if (nquot > 1) *d++ = '\'';
-
     d = cmd;
     va_start(va, format);
     f = format;
-    while ((c = *f++))
-	if (c != '%') *d++ = c;
-	else {
-	    p = next = va_arg(va, const char*);
+    while ((c = *f++)) {
+	if (c != '%') {
+	    *d++ = c;
+	} else {
+	    p = next = va_arg(va, const char *);
 	    nquot = 0;
-	    while ((c = *p++))
+	    while ((c = *p++)) {
 		if (c == '\'') {
-		    SAFESYS_COPY
-		    nquot = 0; next++;
-		    *d++ = '\\'; *d++ = '\'';
-		} else nquot += !!strchr(esc, c);
-	    SAFESYS_COPY
+
+		    /* former SAFESYS_COPY macro - XXX */
+		    if (nquot > 1) {
+			*d++ = '\'';
+		    }
+		    while (next < p - 1) {
+			c = *next++;
+			if (nquot == 1 && strchr(esc, c)) {
+			    *d++ = '\\', nquot = 0;
+			}
+			*d++ = c;
+		    }
+		    if (nquot > 1) {
+			*d++ = '\'';
+		    }
+
+		    nquot = 0;
+		    next++;
+		    *d++ = '\\';
+		    *d++ = '\'';
+		} else {
+		    nquot += !!strchr(esc, c);
+		}
+	    }
+
+	    /* former SAFESYS_COPY macro - XXX */
+	    if (nquot > 1) {
+		*d++ = '\'';
+	    }
+	    while (next < p - 1) {
+		c = *next++;
+		if (nquot == 1 && strchr(esc, c)) {
+		    *d++ = '\\', nquot = 0;
+		}
+		*d++ = c;
+	    }
+	    if (nquot > 1) {
+		*d++ = '\'';
+	    }
+
 	}
+    }
     va_end(va);
     *d = 0;
     return cmd;
