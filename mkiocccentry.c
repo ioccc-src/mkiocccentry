@@ -19,6 +19,17 @@
  *
  * "Because even printf has a return value worth paying attention to." :-)
  *
+ * Many thanks are due to a number of people who provided important
+ * and valuable testing, suggestions, issue reports and GitHub pull
+ * requests to this code.  Without their time and errort, this tool
+ * would not work very well!
+ *
+ * Amoung the GitHub users we wish to thank include these fine developers:
+ *
+ *	@ilyakurdyukov		Ilya Kurdyukov
+ *	@SirWumpus		Anthony Howe
+ *	@vog			Volker Diels-Grabsch
+ *
  * Copyright (c) 2021,2022 by Landon Curt Noll.  All Rights Reserved.
  *
  * Permission to use, copy, modify, and distribute this software and
