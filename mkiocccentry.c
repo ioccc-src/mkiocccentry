@@ -7007,11 +7007,7 @@ remind_user(char const *work_dir, char const *entry_dir, char const *tar, char c
 	 "by running the following command:",
 	 "",
 	 NULL);
-    if (work_dir[0] == '-') {
-       ret = printf("    (cd -- %s && %s -Jtvf %s)\n", work_dir_esc, tar, tarball_path);
-    } else {
-       ret = printf("    %s -Jtvf %s/%s\n", tar, work_dir_esc, tarball_path);
-    }
+    ret = printf("    %s -Jtvf %s%s/%s\n", tar, work_dir[0] == '-' ? "./" : "", work_dir_esc, tarball_path);
     if (ret <= 0) {
 	errp(225, __func__, "printf #2 error");
 	/*NOTREACHED*/
