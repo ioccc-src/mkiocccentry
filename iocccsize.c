@@ -23,7 +23,7 @@
  *	gross count (Rule 2a), number of keywords counted as 1 byte; -vv or -vvv write
  *	more tool diagnostics.
  *
- * DESCRIPION
+ * DESCRIPTION
  *
  *	Reading a C source file from standard input or a file arg, apply the IOCCC
  *	source size rules as explained in the Guidelines.
@@ -103,8 +103,8 @@ static char usage1[] =
 "more tool diagnostics.\n"
 "\n"
 "Exit codes:\n"
-"\t0 - soruce code is within Rule 2a and Rule 2b limits\n"
-"\t1 - soruce code larger than Rule 2a and/or Rule 2b limits\n"
+"\t0 - source code is within Rule 2a and Rule 2b limits\n"
+"\t1 - source code larger than Rule 2a and/or Rule 2b limits\n"
 "\t2 - -h used and help printed\n"
 "\t3 - -V used and version printed\n"
 "\t>= 4 - some internal error occurred\n";

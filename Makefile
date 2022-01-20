@@ -121,7 +121,7 @@ configure:
 	@echo nothing to configure
 
 clean:
-	${RM} -f mkiocccentry.o iocccsize.o rule_count.o dbg_test.o
+	${RM} -f mkiocccentry.o iocccsize.o rule_count.o dbg_test.o dbg.o
 	${RM} -rf mkiocccentry.dSYM iocccsize.dSYM dbg_test.dSYM
 
 clobber: clean

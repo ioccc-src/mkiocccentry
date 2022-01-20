@@ -50,4 +50,4 @@ install: all
 # suggested way to try running the program
 #
 try: prog
-	./prog some argumwnt
+	./prog some argument
