@@ -98,7 +98,7 @@ typedef unsigned char bool;
 /*
  * mkiocccentry version
  */
-#define MKIOCCCENTRY_VERSION "0.27 2022-01-19"	/* use format: major.minor YYYY-MM-DD */
+#define MKIOCCCENTRY_VERSION "0.28 2022-01-19"	/* use format: major.minor YYYY-MM-DD */
 #define IOCCC_CONTEST "IOCCC28"			/* use format: IOCCC99 */
 #define IOCCC_YEAR (2022)			/* Year IOCCC_CONTEST closes */
 
@@ -7053,14 +7053,10 @@ remind_user(char const *work_dir, char const *entry_dir, char const *tar, char c
 /*
  * cmdprintf - malloc a safer shell command line for use with system() and popen()
  *
- * XXX - TODO - finish commenting and documenting the cmdprintf() as needed
- *		replace magic constants with defined or computed values if needed
- *		re-test for memory leaks
- *
  * given:
  *
  *      format - The format string, any % on this string inserts the next string from the list,
- *               escaping special characters that the shell might threaten as command characters. 
+ *               escaping special characters that the shell might threaten as command characters.
  *               In the worst case, the algorithm will make twice as many characters.
  *               Will not use escaping if it isn't needed.
  *
