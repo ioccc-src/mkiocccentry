@@ -33,9 +33,7 @@
 #include <stdlib.h>
 #include <stdarg.h>
 #include <string.h>
-#include <stdbool.h>
 #include <errno.h>
-#include <syslog.h>
 
 extern int verbosity_level;		/* print debug messages <= verbosity_level */
 
