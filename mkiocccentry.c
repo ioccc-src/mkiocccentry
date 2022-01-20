@@ -7091,9 +7091,21 @@ cmdprintf(const char *format, ...)
 	    p = next = va_arg(va, const char *);
 	    nquot = 0;
 	    while ((c = *p++)) {
-		nquot = c == '\'' ? size += nquot > 1 ? 3 : nquot + 1, 0 : nquot + !!strchr(esc, c);
+		if (c == '\'') {
+		    /* nquot >= 2: 'x##x' */
+		    /* nquot == 1: x\#xx */
+		    /* nquot == 0: xxxx */
+		    /* +1 for escaping the single qoute */
+		    size += (nquot >= 2 ? 2 : nquot) + 1;
+		    nquot = 0;
+		} else {
+		    /* count the characters need to escape */
+		    nquot += strchr(esc, c) != NULL;
+		}
 	    }
-	    size += (nquot > 1 ? 2 : nquot) + (p - next) - 2;
+	    /* -2 for excluding counted NUL and */
+	    /* counted % sign in the format string */
+	    size += (nquot >= 2 ? 2 : nquot) + (p - next) - 2;
 	}
     }
     va_end(va);
@@ -7103,9 +7115,9 @@ cmdprintf(const char *format, ...)
      * malloc storage or return NULL
      */
     errno = 0;			/* pre-clear errno for errp() */
-    cmd = malloc(size + 1);
+    cmd = malloc(size);		/* trailing zero included in size */
     if (cmd == NULL) {
-	warnp(__func__, "malloc from the cmdprintf of %ld bytes failed", size + 1);
+	warnp(__func__, "malloc from the cmdprintf of %ld bytes failed", size);
 	return NULL;
     }
 
@@ -7125,7 +7137,7 @@ cmdprintf(const char *format, ...)
 		if (c == '\'') {
 
 		    /* former SAFESYS_COPY macro - XXX */
-		    if (nquot > 1) {
+		    if (nquot >= 2) {
 			*d++ = '\'';
 		    }
 		    while (next < p - 1) {
@@ -7135,7 +7147,7 @@ cmdprintf(const char *format, ...)
 			}
 			*d++ = c;
 		    }
-		    if (nquot > 1) {
+		    if (nquot >= 2) {
 			*d++ = '\'';
 		    }
 
@@ -7149,7 +7161,7 @@ cmdprintf(const char *format, ...)
 	    }
 
 	    /* former SAFESYS_COPY macro - XXX */
-	    if (nquot > 1) {
+	    if (nquot >= 2) {
 		*d++ = '\'';
 	    }
 	    while (next < p - 1) {
@@ -7159,7 +7171,7 @@ cmdprintf(const char *format, ...)
 		}
 		*d++ = c;
 	    }
-	    if (nquot > 1) {
+	    if (nquot >= 2) {
 		*d++ = '\'';
 	    }
 
@@ -7167,6 +7179,11 @@ cmdprintf(const char *format, ...)
     }
     va_end(va);
     *d = '\0';	/* NUL terminate command line */
+
+    if ((size_t)(d + 1 - cmd) != size) {
+	errp(228, __func__, "cmdprintf: written characters (%ld) don't match the size (%lu)", d + 1 - cmd, size);
+	/*NOTREACHED*/
+    }
 
     /*
      * return safer command line string
