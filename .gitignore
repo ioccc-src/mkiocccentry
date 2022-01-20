@@ -4,9 +4,9 @@ iocccsize
 mkiocccentry
 orig.iocccsize.c
 rule_count.c
-test
 test-iocccsize
-work_dir
+test_src
+test_work
 
 # Prerequisites
 *.d

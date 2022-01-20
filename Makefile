@@ -131,6 +131,14 @@ clobber: clean
 install: all
 	${INSTALL} -m 0555 ${TARGETS} ${DESTDIR}
 
-test: ./iocccsize-test.sh iocccsize dbg_test Makefile
+test: ./iocccsize-test.sh iocccsize dbg_test mkiocccentry ./mkiocccentry-test.sh Makefile
+	@echo "RUNNING: iocccsize-test.sh"
 	./iocccsize-test.sh -v
+	@echo "PASSED: iocccsize-test.sh"
+	@echo "This next test is supposed fail with the error: FATAL[5]: main: simulated error, ..."
+	@echo "RUNNING: dbg_test"
 	-./dbg_test -v 1 -e 12 work_dir iocccsize_path
+	@echo "PASSED: dbg_test"
+	@echo "RUNNING: mkiocccentry-test.sh"
+	./mkiocccentry-test.sh
+	@echo "PASSED: mkiocccentry-test.sh"
