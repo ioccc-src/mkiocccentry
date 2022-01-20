@@ -40,6 +40,34 @@
 # With IOCCC minor mods in 2019,2021,2022 by chongo (Landon Curt Noll) ^oo^
 ####
 
+####
+# dbg - example of how to use usage(), dbg(), warn(), err(), vfprintf_usage(), etc.
+#
+# Copyright (c) 1989,1997,2018-2022 by Landon Curt Noll.  All Rights Reserved.
+#
+# Permission to use, copy, modify, and distribute this software and
+# its documentation for any purpose and without fee is hereby granted,
+# provided that the above copyright, this permission notice and text
+# this comment, and the disclaimer below appear in all of the following:
+#
+#       supporting documentation
+#       source copies
+#       source works derived from this source
+#       binaries derived from this source or from derived source
+#
+# LANDON CURT NOLL DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE,
+# INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS. IN NO
+# EVENT SHALL LANDON CURT NOLL BE LIABLE FOR ANY SPECIAL, INDIRECT OR
+# CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF
+# USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR
+# OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
+# PERFORMANCE OF THIS SOFTWARE.
+#
+# chongo (Landon Curt Noll, http://www.isthe.com/chongo/index.html) /\oo/\
+#
+# Share and enjoy! :-)
+####
+
 
 # utilities
 #
@@ -61,9 +89,10 @@ CFLAGS= -O3 -g3 --pedantic -Wall -Wextra
 # where and what to install
 #
 DESTDIR= /usr/local/bin
-TARGETS= mkiocccentry iocccsize
+TARGETS= mkiocccentry iocccsize dbg_test
+TEST_TARGETS= dbg_test
 
-all: ${TARGETS}
+all: ${TARGETS} ${TEST_TARGETS}
 
 # rules, not file targets
 #
@@ -76,25 +105,32 @@ rule_count.c: iocccsize.c
 rule_count.o: rule_count.c limit_ioccc.h Makefile
 	${CC} ${CFLAGS} -DMKIOCCCENTRY_USE rule_count.c -c
 
-mkiocccentry: mkiocccentry.c limit_ioccc.h rule_count.o Makefile
-	${CC} ${CFLAGS} mkiocccentry.c rule_count.o -o $@
+mkiocccentry: mkiocccentry.c limit_ioccc.h rule_count.o dbg.o Makefile
+	${CC} ${CFLAGS} mkiocccentry.c rule_count.o dbg.o -o $@
 
 iocccsize: iocccsize.c limit_ioccc.h Makefile
 	${CC} ${CFLAGS} iocccsize.c -o $@
+
+dbg.o: dbg.c dbg.h Makefile
+	${CC} ${CFLAGS} dbg.c -c
+
+dbg_test: dbg.c dbg.h Makefile
+	${CC} ${CFLAGS} -DDBG_TEST dbg.c -o $@
 
 configure:
 	@echo nothing to configure
 
 clean:
-	${RM} -f mkiocccentry.o iocccsize.o rule_count.o
-	${RM} -rf mkiocccentry.dSYM iocccsize.dSYM
+	${RM} -f mkiocccentry.o iocccsize.o rule_count.o dbg_test.o
+	${RM} -rf mkiocccentry.dSYM iocccsize.dSYM dbg_test.dSYM
 
 clobber: clean
-	${RM} -f ${TARGETS} rule_count.c
+	${RM} -f ${TARGETS} ${TEST_TARGETS} rule_count.c
 	${RM} -rf test-iocccsize
 
 install: all
 	${INSTALL} -m 0555 ${TARGETS} ${DESTDIR}
 
-test: ./iocccsize-test.sh iocccsize Makefile
+test: ./iocccsize-test.sh iocccsize dbg_test Makefile
 	./iocccsize-test.sh -v
+	-./dbg_test -v 1 -e 12 work_dir iocccsize_path

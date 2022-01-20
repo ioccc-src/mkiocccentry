@@ -80,6 +80,12 @@
 
 
 /*
+ * dbg - debug, warning and error reporting facility
+ */
+#include "dbg.h"
+
+
+/*
  * standard truth :-)
  */
 #if defined(__STDC__) && defined(__STDC_VERSION__) && (__STDC_VERSION__ >= 199901L)
@@ -124,14 +130,6 @@ typedef unsigned char bool;
  */
 #define LITLEN(x) (sizeof(x)-1)	/* length of a literal string w/o the NUL byte */
 #define REQUIRED_ARGS (4)	/* number of required arguments on the command line */
-#define DBG_NONE (0)		/* no debugging */
-#define DBG_LOW (1)		/* minimal debugging */
-#define DBG_MED (3)		/* somewhat more debugging */
-#define DBG_HIGH (5)		/* verbose debugging */
-#define DBG_VHIGH (7)		/* very verbose debugging */
-#define DBG_VVHIGH (9)		/* very very verbose debugging */
-#define DBG_VVVHIGH (11)	/* very very very verbose debugging */
-#define DBG_DEFAULT (DBG_NONE)	/* default level of debugging */
 #define UUID_LEN (36)		/* characters in a UUID string - as per RFC4122 */
 #define UUID_VERSION (4)	/* version 4 - random UUID */
 #define UUID_VARIANT (0xa)	/* variant 1 - encoded as 0xa */
@@ -152,80 +150,6 @@ typedef unsigned char bool;
 #define IOCCC_REGISTER_URL "https://register.ioccc.org/NOT/a/real/URL"	/* XXX - change to real URL when ready */
 #define IOCCC_SUBMIT_URL "https://submit.ioccc.org/NOT/a/real/URL"	/* XXX - change to real URL when ready */
 
-/*
- * DEBUG_LINT - if defined, debug calls turn into fprintf to stderr calls
- *
- * The purpose of DEBUG_LINT is to let the C compiler do a fprintf format
- * argument count and type check against the debug function.  With DEBUG_LINT,
- * the debug macros are "faked" as best as we can.
- *
- * NOTE: Use of DEBUG_LINT is intended ONLY for static analysis (ala classic lint)
- * with compiler warnings.  DEBUG_LINT works best with -Wall.  In particular, it
- * won't help of you disable warnings that DEBUG_LINT would otherwise generate.
- *
- * When using DEBUG_LINT, consider compiling with:
- *
- *      -Wall -Werror -pedantic
- *
- * with at least the c11 standard.  As in:
- *
- *      -std=c11 -Wall -Werror -pedantic
- *
- * During DEBUG_LINT, output will be written to stderr.  These macros assume
- * that stderr is unbuffered.
- *
- * No error checking is performed by fprintf and fputc to stderr.  Such errors will overwrite
- * errno making the calls that perror print incorrect error messages.
- *
- * The DEBUG_LINT assumes the following file is included somewhere above the include of this file:
- *
- *      #include <stdlib.h>
- *
- * The DEBUG_LINT only works with compilers newer than 199901L (c11 or newer).
- * Defining DEBUG_LINT on an older compiler will be ignored in this file.
- * However when it comes to compiling debug.c, nothing will happen resulting
- * in a link error.  This is a feature, not a bug.  It tells you that your
- * compiler is too old to make use of DEBUG_LINT so don't use it.
- *
- * IMPORTANT NOTE:
- *
- * Executing code with DEBUG_LINT enabled is NOT recommended.
- * It might work, but don't count in it!
- *
- *  You are better off defining DEBUG_LINT in CFLAGS with, say:
- *
- *      -std=c11 -Wall -Werror -pedantic
- *
- * At a minimum, fix warnings (that turn into compiler errors) related to fprintf()
- * calls * until the program compiles.  For better results, fix ALL warnings as some
- * of those warnings may indicate the presence of bugs in your code including but
- * not limited to the use of debug functions.
- */
-#if defined(DEBUG_LINT) && __STDC_VERSION__ >= 199901L
-
-#define dbg(level, ...) \
-	    ((verbosity_level >= (level)) ? \
-		(fprintf(stderr, "Debug[%d]: ", (level)), \
-		 printf(__VA_ARGS__)) : \
-	     true)
-#define warn(name, ...) \
-	    (fprintf(stderr, "Warning: %s: ", (name)), \
-	     fprintf(stderr, __VA_ARGS__))
-#define warnp(name, ...) \
-	    (fprintf(stderr, "Warning: %s: ", (name)), \
-	     fprintf(stderr, __VA_ARGS__))
-#define err(exitcode, name, ...) \
-	    (fprintf(stderr, "FATAL[%d]: %s: ", (exitcode), (name)), \
-	     fprintf(stderr, __VA_ARGS__), \
-	     exit(exitcode))
-#define errp(exitcode, name, ...) \
-	    (fprintf(stderr, "FATAL[%d]: %s: ", (exitcode), (name)), \
-	     fprintf(stderr, __VA_ARGS__), \
-	     fputc('\n', stderr), \
-	     perror(__func__), \
-	     exit(exitcode))
-#endif			/* DEBUG_LINT && __STDC_VERSION__ >= 199901L */
-
 
 /*
  * usage message
@@ -235,9 +159,10 @@ typedef unsigned char bool;
 static const char * const usage_msg0 =
     "usage: %s [-h] [-v level] [-V] [-t tar] [-c cp] [-l ls] work_dir prog.c Makefile remarks.md [file ...]\n"
     "\n"
-    "\t-h\t\tprint help message and exit 0\n"
-    "\t-v level\tset verbosity level: (def level: %d)\n"
-    "\t-V\t\tprint version string and exit\n"
+    "\t-h\t\t\tprint help message and exit 0\n"
+    "\t-v level\t\tset verbosity level: (def level: %d)\n"
+    "\t-V\t\t\tprint version string and exit\n"
+    "\n"
     "\t-t /path/to/tar\t\tpath to tar executable that supports the -J (xz) option (def: %s)\n"
     "\t-c /path/to/cp\t\tpath to cp executable (def: %s)\n"
     "\t-l /path/to/ls\t\tpath to ls executable (def: %s)\n";
@@ -722,8 +647,8 @@ static struct location {
 /*
  * globals
  */
-static char *program = NULL;	/* our name */
-static int verbosity_level = DBG_DEFAULT;	/* debug level set by -v */
+char *program = NULL;			/* our name */
+int verbosity_level = DBG_DEFAULT;	/* debug level set by -v */
 
 
 /*
@@ -731,13 +656,6 @@ static int verbosity_level = DBG_DEFAULT;	/* debug level set by -v */
  */
 static void usage(int exitcode, char const *name, char const *str, char const *program,
 		  char const *tar, char const *cp, char const *ls);
-#if !defined(DEBUG_LINT)
-static void dbg(int level, char const *fmt, ...);
-static void warn(char const *name, char const *fmt, ...);
-static void warnp(char const *name, char const *fmt, ...);
-static void err(int exitcode, char const *name, char const *fmt, ...);
-static void errp(int exitcode, char const *name, char const *fmt, ...);
-#endif				/* DEBUG_LINT */
 static void free_info(struct info *infop);
 static void free_author_array(struct author *authorp, int author_count);
 static bool exists(char const *path);
@@ -820,7 +738,7 @@ main(int argc, char *argv[])
     while ((i = getopt(argc, argv, "hv:Vt:c:l:")) != -1) {
 	switch (i) {
 	case 'h':		/* -h - print help to stderr and exit 0 */
-	    usage(0, __func__, "-h help mode:\n", program, tar, cp, ls);
+	    usage(0, __func__, "-h help mode", program, tar, cp, ls);
 	    /*NOTREACHED*/
 	    break;
 	case 'v':	/* -v verbosity */
@@ -1074,8 +992,6 @@ main(int argc, char *argv[])
 static void
 usage(int exitcode, char const *name, char const *str, char const *program, char const *tar, char const *cp, char const *ls)
 {
-    int ret;			/* libc return code */
-
     /*
      * firewall
      */
@@ -1107,513 +1023,13 @@ usage(int exitcode, char const *name, char const *str, char const *program, char
     /*
      * print the formatted usage stream
      */
-    errno = 0;			/* pre-clear errno for errp() */
-    ret = fprintf(stderr, "%s\n", str);
-    if (ret <= 0) {
-	warn(__func__, "\nin usage(): fprintf #0 returned error: %d\n", ret);
-    }
-    errno = 0;			/* pre-clear errno for errp() */
-    ret = fprintf(stderr, usage_msg0, program, DBG_DEFAULT, tar, cp, ls);
-    if (ret <= 0) {
-	warn(__func__, "\nin usage(): fprintf #1 returned error: %d\n", ret);
-    }
-    errno = 0;			/* pre-clear errno for errp() */
-    ret = fprintf(stderr, "%s", usage_msg1);
-    if (ret <= 0) {
-	warn(__func__, "\nin usage(): fprintf #2 returned error: %d\n", ret);
-    }
-    errno = 0;			/* pre-clear errno for errp() */
-    ret = fprintf(stderr, usage_msg2, MKIOCCCENTRY_VERSION);
-    if (ret <= 0) {
-	warn(__func__, "\nin usage(): fprintf #3 returned error: %d\n", ret);
-    }
-
-    /*
-     * exit
-     */
-    exit(exitcode); /*ooo*/
+    vfprintf_usage(DONT_EXIT, stderr, "%s\n", str);
+    vfprintf_usage(DONT_EXIT, stderr, usage_msg0, program, DBG_DEFAULT, tar, cp, ls);
+    vfprintf_usage(DONT_EXIT, stderr, "%s", usage_msg1);
+    vfprintf_usage(exitcode, stderr, usage_msg2, MKIOCCCENTRY_VERSION);
     /*NOTREACHED*/
-}
-
-
-#if !defined(DEBUG_LINT)
-/*
- * dbg - print debug message if we are verbose enough
- *
- * given:
- *      level   print message if >= verbosity level
- *      fmt     printf format
- *      ...
- *
- * Example:
- *
- *      dbg(1, "foobar information: %d", value);
- *
- * NOTE: We warn with extra newlines to help internal fault messages stand out.
- *       Normally one should NOT include newlines in warn messages.
- */
-static void
-dbg(int level, char const *fmt, ...)
-{
-    va_list ap;			/* argument pointer */
-    int ret;			/* return code holder */
-    int saved_errno;		/* errno at function start */
-
-    /*
-     * save errno so we can restore it before returning
-     */
-    saved_errno = errno;
-
-    /*
-     * start the var arg setup and fetch our first arg
-     */
-    va_start(ap, fmt);
-
-    /*
-     * firewall
-     */
-    if (fmt == NULL) {
-	fmt = "((NULL fmt))";
-	warn(__func__, "\nin dbg(%d, %s ...): NULL fmt, forcing use of: %d\n", level, fmt);
-    }
-
-    /*
-     * print the debug message if allowed by the verbosity level
-     */
-    if (level <= verbosity_level) {
-	errno = 0;		/* pre-clear errno for errp() */
-	ret = fprintf(stderr, "debug[%d]: ", level);
-	if (ret <= 0) {
-	    warn(__func__, "\nin dbg(%d, %s, %s ...): fprintf returned error: %d\n", level, fmt, ret);
-	}
-	errno = 0;		/* pre-clear errno for errp() */
-	ret = vfprintf(stderr, fmt, ap);
-	if (ret < 0) { /* compare < 0 only in case fmt is an empty string */
-	    warn(__func__, "\nin dbg(%d, %s, %s ...): vfprintf returned error: %d\n", level, fmt, ret);
-	}
-	errno = 0;		/* pre-clear errno for errp() */
-	ret = fputc('\n', stderr);
-	if (ret != '\n') {
-	    warn(__func__, "\nin dbg(%d, %s, %s ...): fputc returned error: %d\n", level, fmt, ret);
-	}
-	errno = 0;		/* pre-clear errno for errp() */
-	ret = fflush(stderr);
-	if (ret < 0) {
-	    warn(__func__, "\nin dbg(%d, %s, %s ...): fflush returned error: %d\n", level, fmt, ret);
-	}
-    }
-
-    /*
-     * clean up stdarg stuff
-     */
-    va_end(ap);
-
-    /*
-     * restore previous errno value
-     */
-    errno = saved_errno;
-    return;
-}
-
-
-/*
- * warn - issue a warning message
- *
- * given:
- *      name    name of function issuing the warning
- *      fmt     format of the warning
- *      ...     extra format args
- *
- * Example:
- *
- *      warn(__func__, "unexpected foobar: %d", value);
- *
- * NOTE: We warn with extra newlines to help internal fault messages stand out.
- *       Normally one should NOT include newlines in warn messages.
- */
-void
-warn(char const *name, char const *fmt, ...)
-{
-    va_list ap;			/* argument pointer */
-    int ret;			/* return code holder */
-    int saved_errno;		/* errno at function start */
-    int f_ret;			/* fprintf return code */
-    bool issue = false;		/* true ==> fprintf problem detected */
-
-    /*
-     * save errno so we can restore it before returning
-     */
-    saved_errno = errno;
-
-    /*
-     * start the var arg setup and fetch our first arg
-     */
-    va_start(ap, fmt);
-
-    /*
-     * NOTE: We cannot use warn because this is the warn function!
-     */
-
-    /*
-     * firewall
-     */
-    if (name == NULL) {
-	name = "((NULL name))";
-	f_ret = fprintf(stderr, "\nWarning: in warn(): called with NULL name, forcing name: %s\n", name);
-	if (f_ret <= 0) {
-	    issue = true;
-	}
-    }
-    if (fmt == NULL) {
-	fmt = "((NULL fmt))";
-	f_ret = fprintf(stderr, "\nWarning: in warn(): called with NULL fmt, forcing fmt: %s\n", fmt);
-	if (f_ret <= 0) {
-	    issue = true;
-	}
-    }
-
-    /*
-     * issue the warning
-     */
-    ret = fprintf(stderr, "Warning: %s: ", name);
-    if (ret <= 0) {
-	f_ret = fprintf(stderr, "\nWarning: in warn(%s, %s ...): fprintf returned error: %d\n", name, fmt, ret);
-	if (f_ret <= 0) {
-	    issue = true;
-	}
-    }
-    ret = vfprintf(stderr, fmt, ap);
-    if (ret < 0) { /* compare < 0 only in case fmt is an empty string */
-	f_ret = fprintf(stderr, "\nWarning: in warn(%s, %s ...): vfprintf returned error: %d\n", name, fmt, ret);
-	if (f_ret <= 0) {
-	    issue = true;
-	}
-    }
-    ret = fputc('\n', stderr);
-    if (ret != '\n') {
-	f_ret = fprintf(stderr, "\nWarning: in warn(%s, %s ...): fputc returned error: %d\n", name, fmt, ret);
-	if (f_ret <= 0) {
-	    issue = true;
-	}
-    }
-    ret = fflush(stderr);
-    if (ret < 0) {
-	f_ret = fprintf(stderr, "\nWarning: in warn(%s, %s ...): fflush returned error: %d\n", name, fmt, ret);
-	if (f_ret <= 0) {
-	    issue = true;
-	}
-    }
-
-    /*
-     * clean up stdarg stuff
-     */
-    va_end(ap);
-
-    /*
-     * notify if we had an fprintf error
-     */
-    if (issue == true) {
-	fpara(stderr,
-	      "",
-	      "Warning: one of more errors were encountered with fprintf in the warn() function.",
-	      "",
-	      NULL);
-    }
-
-    /*
-     * restore previous errno value
-     */
-    errno = saved_errno;
-    return;
-}
-
-
-/*
- * warnp - issue a warning message with errno information
- *
- * given:
- *      name    name of function issuing the warning
- *      fmt     format of the warning
- *      ...     extra format args
- *
- * Example:
- *
- *      warnp(__func__, "unexpected foobar: %d", value);
- *
- * NOTE: We warn with extra newlines to help internal fault messages stand out.
- *       Normally one should NOT include newlines in warn messages.
- */
-void
-warnp(char const *name, char const *fmt, ...)
-{
-    va_list ap;			/* argument pointer */
-    int ret;			/* return code holder */
-    int saved_errno;		/* errno at function start */
-    int f_ret;			/* fprintf return code */
-    bool issue = false;		/* true ==> fprintf problem detected */
-
-    /*
-     * save errno so we can restore it before returning
-     */
-    saved_errno = errno;
-
-    /*
-     * start the var arg setup and fetch our first arg
-     */
-    va_start(ap, fmt);
-
-    /*
-     * NOTE: We cannot use warn because this is the warn function!
-     */
-
-    /*
-     * firewall
-     */
-    if (name == NULL) {
-	name = "((NULL name))";
-	f_ret = fprintf(stderr, "\nWarning: in warn(): called with NULL name, forcing name: %s\n", name);
-	if (f_ret <= 0) {
-	    issue = true;
-	}
-    }
-    if (fmt == NULL) {
-	fmt = "((NULL fmt))";
-	f_ret = fprintf(stderr, "\nWarning: in warn(): called with NULL fmt, forcing fmt: %s\n", fmt);
-	if (f_ret <= 0) {
-	    issue = true;
-	}
-    }
-
-    /*
-     * issue the warning
-     */
-    ret = fprintf(stderr, "Warning: %s: ", name);
-    if (ret <= 0) {
-	f_ret = fprintf(stderr, "\nWarning: in warn(%s, %s ...): fprintf returned error: %d\n", name, fmt, ret);
-	if (f_ret <= 0) {
-	    issue = true;
-	}
-    }
-    ret = vfprintf(stderr, fmt, ap);
-    if (ret < 0) { /* compare < 0 only in case fmt is an empty string */
-	f_ret = fprintf(stderr, "\nWarning: in warn(%s, %s ...): vfprintf returned error: %d\n", name, fmt, ret);
-	if (f_ret <= 0) {
-	    issue = true;
-	}
-    }
-    ret = fprintf(stderr, "errno[%d]: %s\n", saved_errno, strerror(saved_errno));
-    if (ret <= 0) {
-	f_ret = fprintf(stderr, "\nWarning: in warn(%s, %s ...): fprintf with errno returned error: %d\n", name, fmt, ret);
-	if (f_ret <= 0) {
-	    issue = true;
-	}
-    }
-    ret = fputc('\n', stderr);
-    if (ret != '\n') {
-	f_ret = fprintf(stderr, "\nWarning: in warn(%s, %s ...): fputc returned error: %d\n", name, fmt, ret);
-	if (f_ret <= 0) {
-	    issue = true;
-	}
-    }
-    ret = fflush(stderr);
-    if (ret < 0) {
-	f_ret = fprintf(stderr, "\nWarning: in warn(%s, %s ...): fflush returned error: %d\n", name, fmt, ret);
-	if (f_ret <= 0) {
-	    issue = true;
-	}
-    }
-
-    /*
-     * clean up stdarg stuff
-     */
-    va_end(ap);
-
-    /*
-     * notify if we had an fprintf error
-     */
-    if (issue == true) {
-	fpara(stderr,
-	      "",
-	      "Warning: one of more errors were encountered with fprintf in the warn() function.",
-	      "",
-	      NULL);
-    }
-
-    /*
-     * restore previous errno value
-     */
-    errno = saved_errno;
-    return;
-}
-
-
-/*
- * err - issue a fatal error message and exit
- *
- * given:
- *      exitcode        value to exit with
- *      name            name of function issuing the warning
- *      fmt             format of the warning
- *      ...             extra format args
- *
- * Example:
- *
- *      err(1, __func__, "bad foobar: %s", message);
- *
- * NOTE: We warn with extra newlines to help internal fault messages stand out.
- *       Normally one should NOT include newlines in warn messages.
- *
- * This function does not return.
- */
-static void
-err(int exitcode, char const *name, char const *fmt, ...)
-{
-    va_list ap;			/* argument pointer */
-    int ret;			/* return code holder */
-
-    /*
-     * start the var arg setup and fetch our first arg
-     */
-    va_start(ap, fmt);
-
-    /*
-     * firewall
-     */
-    if (exitcode < 0) {
-	warn(__func__, "\nin err(): called with exitcode <0: %d\n", exitcode);
-	exitcode = 255;
-	warn(__func__, "\nin err(): forcing exit code: %d\n", exitcode);
-    }
-    if (name == NULL) {
-	name = "((NULL name))";
-	warn(__func__, "\nin err(): called with NULL name, forcing name: %s\n", name);
-    }
-    if (fmt == NULL) {
-	fmt = "((NULL fmt))";
-	warn(__func__, "\nin err(): called with NULL fmt, forcing fmt: %s\n", fmt);
-    }
-
-    /*
-     * issue the FATAL error
-     */
-    ret = fprintf(stderr, "FATAL[%d]: %s: ", exitcode, name);
-    if (ret <= 0) {
-	warn(__func__, "\nin err(%d, %s, %s ...): fprintf returned error: %d\n", exitcode, name, fmt, ret);
-    }
-    ret = vfprintf(stderr, fmt, ap);
-    if (ret < 0) { /* compare < 0 only in case fmt is an empty string */
-	warn(__func__, "\nin err(%d, %s, %s ...): vfprintf returned error: %d\n", exitcode, name, fmt, ret);
-    }
-    ret = fputc('\n', stderr);
-    if (ret != '\n') {
-	warn(__func__, "\nin err(%d, %s, %s ...): fputc returned error: %d\n", exitcode, name, fmt, ret);
-    }
-    ret = fflush(stderr);
-    if (ret < 0) {
-	warn(__func__, "\nin err(%d, %s, %s ...): fflush returned error: %d\n", exitcode, name, fmt, ret);
-    }
-
-    /*
-     * clean up stdarg stuff
-     */
-    va_end(ap);
-
-    /*
-     * terminate with exit code
-     */
     exit(exitcode); /*ooo*/
-    /*NOTREACHED*/
 }
-
-
-/*
- * errp - issue a fatal error message with errno information and exit
- *
- * given:
- *      exitcode        value to exit with
- *      name            name of function issuing the warning
- *      fmt             format of the warning
- *      ...             extra format args
- *
- * Example:
- *
- *      errp(1, __func__, "bad foobar: %s", message);
- *
- * NOTE: We warn with extra newlines to help internal fault messages stand out.
- *       Normally one should NOT include newlines in warn messages.
- *
- * This function does not return.
- */
-static void
-errp(int exitcode, char const *name, char const *fmt, ...)
-{
-    va_list ap;			/* argument pointer */
-    int ret;			/* return code holder */
-    int saved_errno;		/* errno value when called */
-
-    /*
-     * save errno in case we need it for strerror()
-     */
-    saved_errno = errno;
-
-    /*
-     * start the var arg setup and fetch our first arg
-     */
-    va_start(ap, fmt);
-
-    /*
-     * firewall
-     */
-    if (exitcode < 0) {
-	warn(__func__, "\nin err(): called with exitcode <0: %d\n", exitcode);
-	exitcode = 255;
-	warn(__func__, "\nin err(): forcing exit code: %d\n", exitcode);
-    }
-    if (name == NULL) {
-	name = "((NULL name))";
-	warn(__func__, "\nin err(): called with NULL name, forcing name: %s\n", name);
-    }
-    if (fmt == NULL) {
-	fmt = "((NULL fmt))";
-	warn(__func__, "\nin err(): called with NULL fmt, forcing fmt: %s\n", fmt);
-    }
-
-    /*
-     * issue the FATAL error
-     */
-    ret = fprintf(stderr, "FATAL[%d]: %s: ", exitcode, name);
-    if (ret <= 0) {
-	warn(__func__, "\nin err(%d, %s, %s ...): fprintf #0 returned error: %d\n", exitcode, name, fmt, ret);
-    }
-    ret = vfprintf(stderr, fmt, ap);
-    if (ret < 0) { /* compare < 0 only in case fmt is an empty string */
-	warn(__func__, "\nin err(%d, %s, %s ...): vfprintf returned error: %d\n", exitcode, name, fmt, ret);
-    }
-    ret = fprintf(stderr, " errno[%d]: %s", saved_errno, strerror(saved_errno));
-    if (ret <= 0) {
-	warn(__func__, "\nin err(%d, %s, %s ...): fprintf #1  returned error: %d\n", exitcode, name, fmt, ret);
-    }
-    ret = fputc('\n', stderr);
-    if (ret != '\n') {
-	warn(__func__, "\nin err(%d, %s, %s ...): fputc returned error: %d\n", exitcode, name, fmt, ret);
-    }
-    ret = fflush(stderr);
-    if (ret < 0) {
-	warn(__func__, "\nin err(%d, %s, %s ...): fflush returned error: %d\n", exitcode, name, fmt, ret);
-    }
-
-    /*
-     * clean up stdarg stuff
-     */
-    va_end(ap);
-
-    /*
-     * terminate with exit code
-     */
-    exit(exitcode); /*ooo*/
-    /*NOTREACHED*/
-}
-#endif					/* DEBUG_LINT */
 
 
 /*

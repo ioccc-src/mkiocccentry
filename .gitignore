@@ -1,11 +1,12 @@
 # mkiocccentry specific
+dbg_test
 iocccsize
 mkiocccentry
+orig.iocccsize.c
+rule_count.c
 test
 test-iocccsize
 work_dir
-rule_count.c
-orig.iocccsize.c
 
 # Prerequisites
 *.d
