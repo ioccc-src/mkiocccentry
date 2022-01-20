@@ -4645,27 +4645,6 @@ yes_or_no(char *question)
 
 	} else if (strcmp(response, "n") == 0 || strcmp(response, "no") == 0) {
 
-		/*
-		 * free storage
-		 */
-		if (response != NULL) {
-		    free(response);
-		    response = NULL;
-		}
-
-		/*
-		 * return no
-		 */
-		return false;
-	    }
-
-	    /*
-	     * reject response and ask again
-	     */
-	    fpara(stderr,
-		  "Please enter either y (yes) or n (no)",
-		  NULL);
-
 	    /*
 	     * free storage
 	     */
@@ -4674,7 +4653,18 @@ yes_or_no(char *question)
 		response = NULL;
 	    }
 
-	} while (response == NULL);
+	    /*
+	     * return no
+	     */
+	    return false;
+	}
+
+	/*
+	 * reject response and ask again
+	 */
+	fpara(stderr,
+	      "Please enter either y (yes) or n (no)",
+	      NULL);
 
 	/*
 	 * free storage
@@ -4684,69 +4674,79 @@ yes_or_no(char *question)
 	    response = NULL;
 	}
 
-	/*
-	 * should not get here - but assume no if we do
-	 */
-	return false;
-    }
-
+    } while (response == NULL);
 
     /*
-     * get_title - get the title of the entry
-     *
-     * Ask the user for an entry title, validate the response
-     * and return the malloced title.
-     *
-     * given:
-     *      infop   - pointer to info structure
-     *
-     * returns:
-     *      malloced and validated title
-     *
-     * This function does not return on error.
+     * free storage
      */
-    static char *
-    get_title(struct info *infop)
-    {
-	char *title = NULL;		/* entry title to return or NULL */
-	size_t len;			/* length of title */
-	size_t span;		/* span of valid characters in title */
-	int ret;			/* libc function return */
+    if (response != NULL) {
+	free(response);
+	response = NULL;
+    }
+
+    /*
+     * should not get here - but assume no if we do
+     */
+    return false;
+}
+
+
+/*
+ * get_title - get the title of the entry
+ *
+ * Ask the user for an entry title, validate the response
+ * and return the malloced title.
+ *
+ * given:
+ *      infop   - pointer to info structure
+ *
+ * returns:
+ *      malloced and validated title
+ *
+ * This function does not return on error.
+ */
+static char *
+get_title(struct info *infop)
+{
+    char *title = NULL;		/* entry title to return or NULL */
+    size_t len;			/* length of title */
+    size_t span;		/* span of valid characters in title */
+    int ret;			/* libc function return */
+
+    /*
+     * firewall
+     */
+    if (infop == NULL) {
+	err(158, __func__, "called with NULL arg(s)");
+	/*NOTREACHED*/
+    }
+
+    /*
+     * inform the user of the title
+     */
+    para("An entry title is a short name using the [a-z0-9][a-z0-9_+-]* regex pattern.",
+	  "",
+	  "If your entry wins, the title might become the directory name of your entry.",
+	  "Although the IOCCC judges might change the title for various reason.",
+	  "",
+	  "If you submitting more than one entry, please make your titles unique",
+	  "amongst the entries that you submit to the current IOCCC.",
+	  "",
+	  NULL);
+    ret = fprintf(stderr, "You title must be between 1 and %d ASCII characters long.\n\n", MAX_TITLE_LEN);
+    if (ret <= 0) {
+	warn(__func__, "fprintf #0 error: %d", ret);
+    }
+
+    /*
+     * ask the question and obtain the response
+     */
+    do {
 
 	/*
-	 * firewall
+	 * obtain the reply
 	 */
-	if (infop == NULL) {
-	    err(158, __func__, "called with NULL arg(s)");
-	    /*NOTREACHED*/
-	}
-
-	/*
-	 * inform the user of the title
-	 */
-	para("An entry title is a short name using the [a-z0-9][a-z0-9_+-]* regex pattern.",
-	      "",
-	      "If your entry wins, the title might become the directory name of your entry.",
-	      "Although the IOCCC judges might change the title for various reason.",
-	      "",
-	      "If you submitting more than one entry, please make your titles unique",
-	      "amongst the entries that you submit to the current IOCCC.",
-	      "",
-	      NULL);
-	ret = fprintf(stderr, "You title must be between 1 and %d ASCII characters long.\n\n", MAX_TITLE_LEN);
-	if (ret <= 0) {
-	    warn(__func__, "fprintf #0 error: %d", ret);
-	}
-
-	/*
-	 * ask the question and obtain the response
-	 */
-	do {
-
-	    /*
-	     * obtain the reply
-	     */
-	    title = prompt("Enter a title for your entry", NULL);
+	title = prompt("Enter a title for your entry", NULL);
 
 	/*
 	 * title cannot be empty
