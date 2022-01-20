@@ -24,7 +24,6 @@ cat << "EOF"
 test
 0
 title
-summary
 abstract
 1
 author name
