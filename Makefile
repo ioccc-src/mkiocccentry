@@ -2,7 +2,7 @@
 #
 # dbg - example of how to use usage(), dbg(), warn(), err()
 #
-# Copyright (c) 2021,2022 by Landon Curt Noll.  All Rights Reserved.
+# Copyright (c) 1989,1997,2018-2022 by Landon Curt Noll.  All Rights Reserved.
 #
 # Permission to use, copy, modify, and distribute this software and
 # its documentation for any purpose and without fee is hereby granted,
@@ -40,17 +40,17 @@ TARGETS= dbg_test
 
 all: ${TARGETS}
 
-dbg_test: dbg.c dbg.h
+dbg_test: dbg.c dbg.h Makefile
 	${CC} ${CFLAGS} dbg.c -o $@
 
 configure:
 	@echo nothing to $@
 
-clean quick_clean quick_distclean distclean:
+clean:
 	${RM} -f dbg.o dbg_test.o
 	${RM} -rf dbg_test.dSYM
 
-clobber quick_clobber: clean
+clobber: clean
 	${RM} -f ${TARGETS}
 
 install: all

@@ -1,7 +1,7 @@
 /*
  * debug - debug, warning and error reporting facility
  *
- * Copyright (c) 2022 by Landon Curt Noll.  All Rights Reserved.
+ * Copyright (c) 1989,1997,2018-2022 by Landon Curt Noll.  All Rights Reserved.
  *
  * Permission to use, copy, modify, and distribute this software and
  * its documentation for any purpose and without fee is hereby granted,
@@ -36,13 +36,18 @@
 /*
  * definitions
  */
-#define VERSION "1.1 2022-01-07"
+#define VERSION "1.2 2022-01-19"
+
+
+/*
+ * globals
+ */
+char *program = NULL;			/* our name */
+int verbosity_level = DBG_NONE;		/* debug level set by -v */
 
 
 /*
  * usage message
- *
- * Use the usage() function to print the usage message.
  *
  * The follow usage message came from an early draft of mkiocccentry.
  * This is just an example of usage: there is no mkiocccentry functionality here.
@@ -58,15 +63,9 @@ char const *usage =
 "\tiocccsize_path\tanother required arg\n"
 "\ttar_path\tan optional arg\n"
 "\n"
-"NOTE: This is just a demo. Arguments are ignored and may be of any value.\n";
-
-
-/*
- * globals
- */
-char *program = NULL;			/* our name */
-int verbosity_level = DBG_NONE;		/* debug level set by -v */
-const char version_string[] = VERSION;	/* our package name and version */
+"NOTE: This is just a demo. Arguments are ignored and may be of any value.\n"
+"\n"
+"Version: %s";
 #endif /* DBG_TEST */
 
 
@@ -88,7 +87,7 @@ void
 msg(const char *fmt, ...)
 {
     va_list ap;			/* argument pointer */
-    int ret;			/* return code holder */
+    int ret;			/* libc function return code */
     int saved_errno;	/* errno at function start */
 
     /*
@@ -150,7 +149,7 @@ void
 dbg(int level, char const *fmt, ...)
 {
     va_list ap;		/* argument pointer */
-    int ret;		/* return code holder */
+    int ret;		/* libc function return code */
     int saved_errno;	/* errno at function start */
 
     /*
@@ -225,7 +224,7 @@ void
 warn(char const *name, char const *fmt, ...)
 {
     va_list ap;		/* argument pointer */
-    int ret;		/* return code holder */
+    int ret;		/* libc function return code */
     int saved_errno;	/* errno at function start */
 
     /*
@@ -306,7 +305,7 @@ void
 warnp(char const *name, char const *fmt, ...)
 {
     va_list ap;		/* argument pointer */
-    int ret;		/* return code holder */
+    int ret;		/* libc function return code */
     int saved_errno;	/* errno at function start */
 
     /*
@@ -386,7 +385,7 @@ void
 err(int exitcode, char const *name, char const *fmt, ...)
 {
     va_list ap;		/* argument pointer */
-    int ret;		/* return code holder */
+    int ret;		/* libc function return code */
 
     /*
      * start the var arg setup and fetch our first arg
@@ -465,7 +464,7 @@ void
 errp(int exitcode, char const *name, char const *fmt, ...)
 {
     va_list ap;		/* argument pointer */
-    int ret;		/* return code holder */
+    int ret;		/* libc function return code */
     int saved_errno;	/* errno value when called */
 
     /*
@@ -530,121 +529,38 @@ errp(int exitcode, char const *name, char const *fmt, ...)
 }
 
 
+
 /*
- * usage_err - issue a fatal error message and exit
+ * vfprintf_usage - print command line usage and perhaps exit
  *
  * given:
- *      exitcode        value to exit with (must be 0 <= exitcode < 256)
- *                      exitcode == 0 ==> just how to use -h for usage help and exit(0)
- *      name            name of function issuing the warning
- *      fmt             format of the warning
- *      ...             optional format args
- *
- * Example:
- *
- *      usage_err(99, __func__, "bad foobar: %s", message);
- *
- * This function does not return.
+ * 	exitcode	- >= 0, exit with this code
+ *			  < 0, just return
+ *	stream		- stream to print on
+ * 	fmt		- format of the usage message
+ *	...		- potential args for usage message
  */
 void
-usage_err(int exitcode, const char *name, const char *fmt, ...)
+vfprintf_usage(int exitcode, FILE *stream, const char *fmt, ...)
 {
-    va_list ap;			/* argument pointer */
-    int ret;			/* return code holder */
-
-    /*
-     * start the var arg setup and fetch our first arg
-     */
-    va_start(ap, fmt);
+    va_list ap;		/* argument pointer */
+    int saved_errno;	/* errno at function start */
+    int ret;		/* libc function return code */
 
     /*
      * firewall
      */
-    if (exitcode < 0 || exitcode >= 256) {
-	warn(__func__, "exitcode must be >= 0 && < 256: %d", exitcode);
-	exitcode = FORCED_EXIT;
-	warn(__func__, "forcing exit code: %d", exitcode);
-    }
-    if (name == NULL) {
-	warn(__func__, "called with NULL name");
-	name = "((NULL name))";
+    if (stream == NULL) {
+	warn(__func__, "called with NULL stream, will use stderr");
+	stream = stderr;
     }
     if (fmt == NULL) {
-	warn(__func__, "called with NULL fmt");
-	fmt = "((NULL fmt))";
+	fmt = "no usage message given";
+	warn(__func__, "called with NULL fmt, will use: %s", fmt);
     }
 
     /*
-     * issue the fatal error
-     */
-    ret = fprintf(stderr, "FATAL[%d]: %s: ", exitcode, name);
-    if (ret <= 0) {
-	fprintf(stderr, "[%s fprintf #0 returned error: %d]", __func__, ret);
-    }
-    ret = vfprintf(stderr, fmt, ap);
-    if (ret <= 0) {
-	fprintf(stderr, "[%s vfprintf returned error: %d]", __func__, ret);
-    }
-    ret = fputc('\n', stderr);
-    if (ret <= 0) {
-	fprintf(stderr, "[%s fputc returned error: %d]", __func__, ret);
-    }
-
-    /*
-     * print command usage
-     */
-    ret = fprintf(stderr, usage, name);
-    if (ret <= 0) {
-	fprintf(stderr, "[%s fprintf #1 returned error: %d]", __func__, ret);
-    }
-
-    /*
-     * print version string
-     */
-    ret = fprintf(stderr, "\n\nVersion: %s\n", version_string);
-    if (ret <= 0) {
-	fprintf(stderr, "[%s fprintf #2 returned error: %d]", __func__, ret);
-    }
-
-    /*
-     * clean up stdarg stuff
-     */
-    va_end(ap);
-
-    /*
-     * terminate with exit code
-     */
-    exit(exitcode);
-    /*NOTREACHED*/
-}
-
-
-/*
- * usage_errp - issue a fatal error message, errno string and exit
- *
- * given:
- *      exitcode        value to exit with (must be 0 <= exitcode < 256)
- *                      exitcode == 0 ==> just how to use -h for usage help and exit(0)
- *      name            name of function issuing the warning
- *      fmt             format of the warning
- *      ...             optional format args
- *
- * This function does not return.  Unlike err() this function
- * also prints an errno message.
- *
- * Example:
- *
- *      usage_errp(99, __func__, "bad foobar: %s", message);
- */
-void
-usage_errp(int exitcode, const char *name, const char *fmt, ...)
-{
-    va_list ap;			/* argument pointer */
-    int ret;			/* return code holder */
-    int saved_errno;	/* errno value when called */
-
-    /*
-     * save errno in case we need it for strerror()
+     * save errno so we can restore it before returning
      */
     saved_errno = errno;
 
@@ -654,56 +570,19 @@ usage_errp(int exitcode, const char *name, const char *fmt, ...)
     va_start(ap, fmt);
 
     /*
-     * firewall
+     * issue the usage message
      */
-    if (exitcode < 0 || exitcode >= 256) {
-	warn(__func__, "exitcode must be >= 0 && < 256: %d", exitcode);
-	exitcode = FORCED_EXIT;
-	warn(__func__, "forcing exit code: %d", exitcode);
-    }
-    if (name == NULL) {
-	warn(__func__, "called with NULL name");
-	name = "((NULL name))";
-    }
-    if (fmt == NULL) {
-	warn(__func__, "called with NULL fmt");
-	fmt = "((NULL fmt))";
-    }
-
-    /*
-     * issue the fatal error with errno message
-     */
-    ret = fprintf(stderr, "FATAL[%d]: %s: ", exitcode, name);
-    if (ret <= 0) {
-	fprintf(stderr, "[%s fprintf #0 returned error: %d]", __func__, ret);
-    }
-    ret = vfprintf(stderr, fmt, ap);
-    if (ret <= 0) {
-	fprintf(stderr, "[%s vfprintf returned error: %d]", __func__, ret);
+    ret = vfprintf(stream, fmt, ap);
+    if (ret < 0) {
+	(void) fprintf(stream, "\nWarning: in vfprintf_usage(%d, stream, %s ...): vfprintf error: %d\n", exitcode, fmt, ret);
     }
     ret = fputc('\n', stderr);
-    if (ret <= 0) {
-	fprintf(stderr, "[%s fputc returned error: %d]", __func__, ret);
+    if (ret != '\n') {
+	(void) fprintf(stream, "\nWarning: in vfprintf_usage(%d, stream, %s ...): fputc error: %d\n", exitcode, fmt, ret);
     }
-    ret = fprintf(stderr, "errno[%d]: %s\n", saved_errno, strerror(saved_errno));
-    if (ret <= 0) {
-	fprintf(stderr, "[%s fprintf #1 returned error: %d]", __func__, ret);
-    }
-
-    /*
-     * print command usage
-     */
-    ret = fprintf(stderr, usage, name);
-    if (ret <= 0) {
-	fprintf(stderr, "[%s fprintf #2 returned error: %d]", __func__, ret);
-    }
-
-    /*
-     * print version string
-     */
-    ret = fprintf(stderr, "\n\nVersion: %s\n", version_string);
-    if (ret <= 0) {
-	fprintf(stderr, "[%s fprintf #3 returned error: %d]", __func__, ret);
+    ret = fflush(stream);
+    if (ret < 0) {
+	(void) fprintf(stream, "\nWarning: in vfprintf_usage(%d, stream, %s ...): fflush error: %d\n", exitcode, fmt, ret);
     }
 
     /*
@@ -712,56 +591,13 @@ usage_errp(int exitcode, const char *name, const char *fmt, ...)
     va_end(ap);
 
     /*
-     * terminate with exit code
+     * terminate with exit code if exitcode >= 0
      */
-    exit(exitcode);
-    /*NOTREACHED*/
-}
-
-
-/*
- * usage_msg - print command line usage and exit
- *
- * given:
- * 	exitcode	- exit with this code
- * 	name		- our program name
- *
- * NOTE: This function does not return.
- */
-void
-usage_msg(int exitcode, const char *name)
-{
-    int ret;			/* return code holder */
-
-    /*
-     * firewall
-     */
-    if (name == NULL) {
-	warn(__func__, "called with NULL name");
-	name = "((NULL name))";
+    if (exitcode >= 0) {
+	exit(exitcode);
+	/*NOTREACHED*/
     }
-
-    /*
-     * print command usage
-     */
-    ret = fprintf(stderr, usage, name);
-    if (ret <= 0) {
-	fprintf(stderr, "[%s fprintf #2 returned error: %d]", __func__, ret);
-    }
-
-    /*
-     * print version string
-     */
-    ret = fprintf(stderr, "\n\nVersion: %s\n", version_string);
-    if (ret <= 0) {
-	fprintf(stderr, "[%s fprintf #3 returned error: %d]", __func__, ret);
-    }
-
-    /*
-     * terminate with exit code
-     */
-    exit(exitcode);
-    /*NOTREACHED*/
+    return;
 }
 
 #endif				/* DEBUG_LINT */
@@ -787,7 +623,7 @@ main(int argc, char *argv[])
 	switch (i) {
 	case 'h':	/* -h - print help to stderr and exit 0 */
 	    /* exit(0); */
-	    usage_err(0, __func__, "-h help mode:\n");
+	    vfprintf_usage(0, stderr, usage, program, VERSION);
 	    /*NOTREACHED*/
 	case 'v':	/* -v verbosity */
 	    /* parse verbosity */
@@ -811,23 +647,25 @@ main(int argc, char *argv[])
 	    errno = forced_errno;	/* simulate errno setting */
 	    break;
 	default:
+	    vfprintf_usage(-1, stderr, "invalid -flag");
 	    /* exit(3); */
-	    usage_err(3, __func__, "invalid -flag");
+	    vfprintf_usage(3, stderr, usage, program, VERSION);
 	    /*NOTREACHED*/
 	}
     }
     /* must have 2 or 3 args */
     switch (argc-optind) {
     case 2:
-    	break;
+	break;
     case 3:
 	tar_path = argv[optind+2];
-    	break;
+	break;
     default:
+	vfprintf_usage(-1, stderr, "requires 2 or 3 arguments");
 	/* exit(4); */
-	usage_err(4, __func__, "requires 2 or 3 arguments");
+	vfprintf_usage(4, stderr, usage, program, VERSION);
 	/*NOTREACHED*/
-    	break;
+	break;
     }
     /* collect required args */
     work_dir = argv[optind];

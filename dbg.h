@@ -1,7 +1,7 @@
 /*
  * dbg - debug, warning and error reporting facility
  *
- * Copyright (c) 2022 by Landon Curt Noll.  All Rights Reserved.
+ * Copyright (c) 1989,1997,2018-2022 by Landon Curt Noll.  All Rights Reserved.
  *
  * Permission to use, copy, modify, and distribute this software and
  * its documentation for any purpose and without fee is hereby granted,
@@ -37,10 +37,6 @@
 #include <errno.h>
 #include <syslog.h>
 
-extern const char *usage;		/* usage message */
-
-extern char *program;			/* our name */
-extern const char version_string[];	/* our package name and version */
 extern int verbosity_level;		/* print debug messages <= verbosity_level */
 
 /*
@@ -123,26 +119,9 @@ extern int verbosity_level;		/* print debug messages <= verbosity_level */
 		     fputc('\n', stderr), \
 		     perror(__func__), \
 		     exit(exitcode))
-#        define usage_err(exitcode, name, ...) \
-		    (fprintf(stderr, "FATAL[%d]: %s: ", (exitcode), (name)), \
-		     fprintf(stderr, __VA_ARGS__), \
-		     fputc('\n', stderr), \
-		     fprintf(stderr, (usage), (name)), \
-		     fprintf(stderr, "\n\nnVersion: %s\n", version_string), \
-		     exit(exitcode))
-#        define usage_errp(exitcode, name, ...) \
-		    (fprintf(stderr, "FATAL[%d]: %s: ", (exitcode), (name)), \
-		     fprintf(stderr, __VA_ARGS__), \
-		     fputc('\n', stderr), \
-		     perror(__func__), \
-		     fputc('\n', stderr), \
-		     fprintf(stderr, (usage), (name)), \
-		     fprintf(stderr, "\n\nnVersion: %s\n", (version_string)), \
-		     exit(exitcode))
-#	 define usage_msg(exitcode, name) \
-		    (fprintf(stderr, (usage), (name)), \
-		     fprintf(stderr, "\n\nnVersion: %s\n", (version_string)), \
-		     exit(exitcode))
+#	 define vfprintf_usage(exitcode, stream, fmt, ...) \
+		    (vfprintf((stream), (fmt), ...), \
+		     (((exitcode) >= 0) ? exit(exitcode) : 1))
 
 #    else			/* DEBUG_LINT && __STDC_VERSION__ >= 199901L */
 
@@ -152,9 +131,7 @@ extern void warn(const char *name, const char *fmt, ...);
 extern void warnp(const char *name, const char *fmt, ...);
 extern void err(int exitcode, const char *name, const char *fmt, ...);
 extern void errp(int exitcode, const char *name, const char *fmt, ...);
-extern void usage_err(int exitcode, const char *name, const char *fmt, ...);
-extern void usage_errp(int exitcode, const char *name, const char *fmt, ...);
-extern void usage_msg(int exit_code, const char *name);
+extern void vfprintf_usage(int exitcode, FILE *stream, const char *fmt, ...);
 
 #    endif			/* DEBUG_LINT && __STDC_VERSION__ >= 199901L */
 
