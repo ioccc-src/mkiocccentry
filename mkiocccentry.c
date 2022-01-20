@@ -6965,12 +6965,20 @@ static void
 remind_user(char const *work_dir, char const *entry_dir, char const *tar, char const *tarball_path, bool test_mode)
 {
     int ret;			/* libc function return */
+    char *entry_dir_esc;
+    char *work_dir_esc;
 
     /*
      * firewall
      */
     if (work_dir == NULL || entry_dir == NULL || tar == NULL || tarball_path == NULL) {
 	err(223, __func__, "called with NULL arg(s)");
+	/*NOTREACHED*/
+    }
+
+    entry_dir_esc = cmdprintf("%", entry_dir);
+    if (entry_dir_esc == NULL) {
+	err(224, __func__, "failed to cmdprintf: entry_dir");
 	/*NOTREACHED*/
     }
 
@@ -6981,21 +6989,30 @@ remind_user(char const *work_dir, char const *entry_dir, char const *tar, char c
 	 "can remove the entry directory we have formed by executing:",
 	 "",
 	 NULL);
-    ret = printf("    rm -rf %s\n", entry_dir);
+    ret = printf("    rm -rf %s%s\n", entry_dir[0] == '-' ? "-- " : "", entry_dir_esc);
     if (ret <= 0) {
 	errp(224, __func__, "printf #0 error");
 	/*NOTREACHED*/
     }
+    free(entry_dir_esc);
+
+    work_dir_esc = cmdprintf("%", work_dir);
+    if (work_dir_esc == NULL) {
+	err(225, __func__, "failed to cmdprintf: work_dir");
+	/*NOTREACHED*/
+    }
+
     para("",
 	 "If you are curious, you may examine the newly created compressed tarball",
 	 "by running the following command:",
 	 "",
 	 NULL);
-    ret = printf("    %s -Jtvf %s/%s\n", tar, work_dir, tarball_path);
+    ret = printf("    %s -Jtvf %s%s/%s\n", tar, work_dir[0] == '-' ? "./" : "", work_dir_esc, tarball_path);
     if (ret <= 0) {
 	errp(225, __func__, "printf #2 error");
 	/*NOTREACHED*/
     }
+    free(work_dir_esc);
 
     /*
      * case: test mode
