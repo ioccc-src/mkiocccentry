@@ -3566,7 +3566,7 @@ check_prog_c(struct info *infop, char const *entry_dir, char const *cp, char con
      * copy prog.c under entry_dir
      */
     errno = 0;			/* pre-clear errno for errp() */
-    cmd = cmdprintf("% % %/prog.c", cp, prog_c, entry_dir);
+    cmd = cmdprintf("% -- % %/prog.c", cp, prog_c, entry_dir);
     if (cmd == NULL) {
 	err(96, __func__, "failed to cmdprintf: cp prog_c entry_dir/prog.c");
 	/*NOTREACHED*/
@@ -3998,7 +3998,7 @@ check_Makefile(struct info *infop, char const *entry_dir, char const *cp, char c
      * copy Makefile under entry_dir
      */
     errno = 0;			/* pre-clear errno for errp() */
-    cmd = cmdprintf("% % %/Makefile", cp, Makefile, entry_dir);
+    cmd = cmdprintf("% -- % %/Makefile", cp, Makefile, entry_dir);
     if (cmd == NULL) {
 	err(113, __func__, "failed to cmdprintf: cp Makefile entry_dir/Makefile");
 	/*NOTREACHED*/
@@ -4133,7 +4133,7 @@ check_remarks_md(struct info *infop, char const *entry_dir, char const *cp, char
      * copy remarks_md under entry_dir
      */
     errno = 0;			/* pre-clear errno for errp() */
-    cmd = cmdprintf("% % %/remarks_md", cp, remarks_md, entry_dir);
+    cmd = cmdprintf("% -- % %/remarks_md", cp, remarks_md, entry_dir);
     if (cmd == NULL) {
 	err(126, __func__, "failed to cmdprintf: cp remarks.md entry_dir/remarks.md");
 	/*NOTREACHED*/
@@ -4487,7 +4487,7 @@ check_extra_data_files(struct info *infop, char const *entry_dir, char const *cp
 	/*
 	 * copy remarks_md under entry_dir
 	 */
-	cmd = cmdprintf("% % %", cp, args[i], dest);
+	cmd = cmdprintf("% -- % %", cp, args[i], dest);
 	if (cmd == NULL) {
 	    err(150, __func__, "failed to cmdprintf: cp extra_file[%d]: %s dest: %s", i, args[i], dest);
 	    /*NOTREACHED*/
@@ -5784,7 +5784,7 @@ verify_entry_dir(char const *entry_dir, char const *ls)
 	 "",
 	 NULL);
     errno = 0;			/* pre-clear errno for errp() */
-    cmd = cmdprintf("cd % && % -lak .", entry_dir, ls);
+    cmd = cmdprintf("cd -- % && % -lak .", entry_dir, ls);
     if (cmd == NULL) {
 	err(169, __func__, "failed to cmdprintf: cd entry_dir && ls -lak .");
 	/*NOTREACHED*/
@@ -7057,6 +7057,13 @@ remind_user(char const *work_dir, char const *entry_dir, char const *tar, char c
  *		replace magic constants with defined or computed values if needed
  *		re-test for memory leaks
  *
+ * given:
+ *
+ *      format - The format string, any % on this string inserts the next string from the list,
+ *               escaping special characters that the shell might threaten as command characters. 
+ *               In the worst case, the algorithm will make twice as many characters.
+ *               Will not use escaping if it isn't needed.
+ *
  * returns:
  *	malloced shell command line, or
  *	NULL ==> error
@@ -7135,39 +7142,41 @@ cmdprintf(const char *format, ...)
 	    nquot = 0;
 	    while ((c = *p++)) {
 		if (c == '\'') {
-
-		    /* former SAFESYS_COPY macro - XXX */
 		    if (nquot >= 2) {
 			*d++ = '\'';
 		    }
 		    while (next < p - 1) {
 			c = *next++;
+			/* nquot == 1 means one character needs to be escaped */
+			/* quotes around are not used in this mode */
 			if (nquot == 1 && strchr(esc, c)) {
-			    *d++ = '\\', nquot = 0;
+			    *d++ = '\\';
+			    /* set nquot to zero since we processed it */
+			    /* to not call strchr() again */
+			    nquot = 0;
 			}
 			*d++ = c;
 		    }
 		    if (nquot >= 2) {
 			*d++ = '\'';
 		    }
-
 		    nquot = 0;
 		    next++;
 		    *d++ = '\\';
 		    *d++ = '\'';
 		} else {
-		    nquot += !!strchr(esc, c);
+		    nquot += strchr(esc, c) != NULL;
 		}
 	    }
 
-	    /* former SAFESYS_COPY macro - XXX */
 	    if (nquot >= 2) {
 		*d++ = '\'';
 	    }
 	    while (next < p - 1) {
 		c = *next++;
 		if (nquot == 1 && strchr(esc, c)) {
-		    *d++ = '\\', nquot = 0;
+		    *d++ = '\\';
+		    nquot = 0;
 		}
 		*d++ = c;
 	    }
