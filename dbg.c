@@ -597,6 +597,11 @@ vfprintf_usage(int exitcode, FILE *stream, const char *fmt, ...)
 	exit(exitcode);
 	/*NOTREACHED*/
     }
+
+    /*
+     * restore previous errno value
+     */
+    errno = saved_errno;
     return;
 }
 
@@ -625,6 +630,7 @@ main(int argc, char *argv[])
 	    /* exit(0); */
 	    vfprintf_usage(0, stderr, usage, program, VERSION);
 	    /*NOTREACHED*/
+	    break;
 	case 'v':	/* -v verbosity */
 	    /* parse verbosity */
 	    errno = 0;
