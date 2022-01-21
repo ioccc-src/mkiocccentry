@@ -88,7 +88,7 @@
 /*
  * standard truth :-)
  */
-#if defined(__STDC__) && defined(__STDC_VERSION__) && (__STDC_VERSION__ >= 199901L)
+#if defined(__STDC_VERSION__) && (__STDC_VERSION__ >= 199901L)
 /* have a C99 compiler - we should expect to have <stdbool.h> */
 #include <stdbool.h>
 #else
@@ -104,7 +104,7 @@ typedef unsigned char bool;
 /*
  * mkiocccentry version
  */
-#define MKIOCCCENTRY_VERSION "0.29 2022-01-20"	/* use format: major.minor YYYY-MM-DD */
+#define MKIOCCCENTRY_VERSION "0.30 2022-01-21"	/* use format: major.minor YYYY-MM-DD */
 #define IOCCC_CONTEST "IOCCC28"			/* use format: IOCCC99 */
 #define IOCCC_YEAR (2022)			/* Year IOCCC_CONTEST closes */
 
@@ -1595,7 +1595,7 @@ readline(char **linep, FILE * stream)
 	(*linep)[ret - 1] = '\0';	/* clear newline */
 	--ret;
     }
-    dbg(DBG_VVHIGH, "read %lu bytes + newline into %ld byte buffer", ret, linecap);
+    dbg(DBG_VVHIGH, "read %lu bytes + newline into %ld byte buffer", (unsigned long)ret, (long)linecap);
 
     /*
      * return length of line without the trailing newline
@@ -1651,7 +1651,7 @@ readline_dup(char **linep, bool strip, size_t *lenp, FILE * stream)
 	 */
 	return NULL;
     }
-    dbg(DBG_VVHIGH, "readline returned %ld bytes", len);
+    dbg(DBG_VVHIGH, "readline returned %lu bytes", (unsigned long)len);
 
     /*
      * duplicate the line
@@ -1659,7 +1659,7 @@ readline_dup(char **linep, bool strip, size_t *lenp, FILE * stream)
     errno = 0;			/* pre-clear errno for errp() */
     ret = strdup(*linep);
     if (ret == NULL) {
-	errp(21, __func__, "strdup of read line of %ld bytes failed", len);
+	errp(21, __func__, "strdup of read line of %lu bytes failed", (unsigned long)len);
 	NOTREACHED;
     }
 
@@ -1680,7 +1680,7 @@ readline_dup(char **linep, bool strip, size_t *lenp, FILE * stream)
 		}
 	    }
 	}
-	dbg(DBG_VVHIGH, "readline, after trailing whitespace strip is %ld bytes", len);
+	dbg(DBG_VVHIGH, "readline, after trailing whitespace strip is %lu bytes", (unsigned long)len);
     }
     if (lenp != NULL) {
 	*lenp = len;
@@ -2282,7 +2282,7 @@ prompt(char *str, ssize_t *lenp)
 	err(67, __func__, "EOF while reading prompt input");
 	NOTREACHED;
     }
-    dbg(DBG_VHIGH, "received a %ld byte response", len);
+    dbg(DBG_VHIGH, "received a %lu byte response", (unsigned long)len);
 
     /*
      * save length if requested
@@ -2600,7 +2600,7 @@ mk_entry_dir(char *work_dir, char *ioccc_id, int entry_num, char **tarball_path,
     errno = 0;			/* pre-clear errno for errp() */
     entry_dir = malloc(entry_dir_len + 1);
     if (entry_dir == NULL) {
-	errp(73, __func__, "malloc #0 of %ld bytes failed", entry_dir_len + 1);
+	errp(73, __func__, "malloc #0 of %lu bytes failed", (unsigned long)(entry_dir_len + 1));
 	NOTREACHED;
     }
     errno = 0;			/* pre-clear errno for errp() */
@@ -2648,7 +2648,7 @@ mk_entry_dir(char *work_dir, char *ioccc_id, int entry_num, char **tarball_path,
     errno = 0;			/* pre-clear errno for errp() */
     *tarball_path = malloc(tarball_len + 1);
     if (*tarball_path == NULL) {
-	errp(77, __func__, "malloc #1 of %ld bytes failed", tarball_len + 1);
+	errp(77, __func__, "malloc #1 of %lu bytes failed", (unsigned long)(tarball_len + 1));
 	NOTREACHED;
     }
     errno = 0;			/* pre-clear errno for errp() */
@@ -3028,7 +3028,7 @@ check_prog_c(struct info *infop, char const *entry_dir, char const *cp, char con
     errno = 0;			/* pre-clear errno for errp() */
     infop->prog_c = strdup("prog.c");
     if (infop->prog_c == NULL) {
-	errp(102, __func__, "malloc #2 of %ld bytes failed", LITLEN("prog.c") + 1);
+	errp(102, __func__, "malloc #2 of %lu bytes failed", (unsigned long)(LITLEN("prog.c") + 1));
 	NOTREACHED;
     }
 
@@ -3460,7 +3460,7 @@ check_Makefile(struct info *infop, char const *entry_dir, char const *cp, char c
     errno = 0;			/* pre-clear errno for errp() */
     infop->Makefile = strdup("Makefile");
     if (infop->Makefile == NULL) {
-	errp(119, __func__, "malloc #1 of %ld bytes failed", LITLEN("Makefile") + 1);
+	errp(119, __func__, "malloc #1 of %lu bytes failed", (unsigned long)(LITLEN("Makefile") + 1));
 	NOTREACHED;
     }
 
@@ -3595,7 +3595,7 @@ check_remarks_md(struct info *infop, char const *entry_dir, char const *cp, char
     errno = 0;			/* pre-clear errno for errp() */
     infop->remarks_md = strdup("remarks.md");
     if (infop->remarks_md == NULL) {
-	errp(133, __func__, "malloc #1 of %ld bytes failed", LITLEN("remarks.md") + 1);
+	errp(133, __func__, "malloc #1 of %lu bytes failed", (unsigned long)(LITLEN("remarks.md") + 1));
 	NOTREACHED;
     }
 
@@ -3832,8 +3832,8 @@ check_extra_data_files(struct info *infop, char const *entry_dir, char const *cp
 		  "The basename of an extra file is too long.",
 		  "",
 		  NULL);
-	    err(144, __func__, "basename of extra data file: %s is %ld characters an is > the limit: %ld",
-			       args[i], base_len, (long)MAX_BASENAME_LEN);
+	    err(144, __func__, "basename of extra data file: %s is %lu characters an is > the limit: %lu",
+			       args[i], (unsigned long)base_len, (unsigned long)MAX_BASENAME_LEN);
 	    NOTREACHED;
 	}
 
@@ -3876,7 +3876,7 @@ check_extra_data_files(struct info *infop, char const *entry_dir, char const *cp
 	errno = 0;		/* pre-clear errno for errp() */
 	dest = malloc(dest_len + 1);
 	if (dest == NULL) {
-	    errp(147, __func__, "malloc #0 of %ld bytes failed", dest_len + 1);
+	    errp(147, __func__, "malloc #0 of %lu bytes failed", (unsigned long)(dest_len + 1));
 	    NOTREACHED;
 	}
 	ret = snprintf(dest, dest_len, "%s/%s", entry_dir, base);
@@ -4810,7 +4810,7 @@ get_author_info(struct info *infop, char *ioccc_id, struct author **author_set_p
 	     * just in case we have a bogus length
 	     */
 	    } else if (len < 0) {
-		err(162, __func__, "Bogus Email length: %ld < 0", len);
+		err(162, __func__, "Bogus Email length: %ld < 0", (long)len);
 		NOTREACHED;
 
 	    }
@@ -4899,7 +4899,7 @@ get_author_info(struct info *infop, char *ioccc_id, struct author **author_set_p
 	     * just in case we have a bogus length
 	     */
 	    } else if (len < 0) {
-		err(163, __func__, "Bogus url length: %ld < 0", len);
+		err(163, __func__, "Bogus url length: %ld < 0", (long)len);
 		NOTREACHED;
 	    }
 	} while (author_set[i].url == NULL);
@@ -4976,7 +4976,7 @@ get_author_info(struct info *infop, char *ioccc_id, struct author **author_set_p
 	     * just in case we have a bogus length
 	     */
 	    } else if (len < 0) {
-		err(164, __func__, "Bogus twitter handle length: %ld < 0", len);
+		err(164, __func__, "Bogus twitter handle length: %ld < 0", (long)len);
 		NOTREACHED;
 	    }
 	} while (author_set[i].twitter == NULL);
@@ -5055,7 +5055,7 @@ get_author_info(struct info *infop, char *ioccc_id, struct author **author_set_p
 	     * just in case we have a bogus length
 	     */
 	    } else if (len < 0) {
-		err(165, __func__, "Bogus GitHub account length: %ld < 0", len);
+		err(165, __func__, "Bogus GitHub account length: %ld < 0", (long)len);
 		NOTREACHED;
 	    }
 	} while (author_set[i].github == NULL);
@@ -5106,7 +5106,7 @@ get_author_info(struct info *infop, char *ioccc_id, struct author **author_set_p
 	     * just in case we have a bogus length
 	     */
 	    if (len < 0) {
-		err(166, __func__, "Bogus affiliation length: %ld < 0", len);
+		err(166, __func__, "Bogus affiliation length: %ld < 0", (long)len);
 		NOTREACHED;
 	    }
 	} while (author_set[i].affiliation == NULL);
@@ -5280,7 +5280,7 @@ verify_entry_dir(char const *entry_dir, char const *ls)
 	err(178, __func__, "EOF while reading 1st line from ls: %s", ls);
 	NOTREACHED;
     } else {
-	dbg(DBG_HIGH, "ls 1st line read length: %ld buffer: %s", readline_len, linep);
+	dbg(DBG_HIGH, "ls 1st line read length: %ld buffer: %s", (long)readline_len, linep);
     }
 
     /*
@@ -6286,8 +6286,8 @@ form_tarball(char const *work_dir, char const *entry_dir, char const *tarball_pa
 	      "The compressed tarball exceeds the maximum allowed size, sorry.",
 	      "",
 	      NULL);
-	err(216, __func__, "The compressed tarball: %s size: %ld > %ld",
-		 basename_tarball_path, (long)buf.st_size, (long)MAX_TARBALL_LEN);
+	err(216, __func__, "The compressed tarball: %s size: %lu > %ld",
+		 basename_tarball_path, (unsigned long)buf.st_size, (long)MAX_TARBALL_LEN);
 	NOTREACHED;
     }
 
@@ -6552,7 +6552,7 @@ cmdprintf(const char *format, ...)
     errno = 0;			/* pre-clear errno for errp() */
     cmd = malloc(size);		/* trailing zero included in size */
     if (cmd == NULL) {
-	warnp(__func__, "malloc from the cmdprintf of %ld bytes failed", size);
+	warnp(__func__, "malloc from the cmdprintf of %lu bytes failed", (unsigned long)size);
 	return NULL;
     }
 
@@ -6618,7 +6618,8 @@ cmdprintf(const char *format, ...)
     *d = '\0';	/* NUL terminate command line */
 
     if ((size_t)(d + 1 - cmd) != size) {
-	errp(228, __func__, "cmdprintf: written characters (%ld) don't match the size (%lu)", d + 1 - cmd, size);
+	errp(228, __func__, "cmdprintf: written characters (%ld) don't match the size (%lu)",
+			    (long)(d + 1 - cmd), (unsigned long)size);
 	NOTREACHED;
     }
 
