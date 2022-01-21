@@ -709,7 +709,6 @@ main(int argc, char *argv[])
     extern char *optarg;	/* option argument */
     extern int optind;		/* argv index of the next arg */
     struct timeval tp;		/* gettimeofday time value */
-    struct timezone tzp;	/* gettimeofday timezone */
     char *work_dir = NULL;	/* where the entry directory and tarball are formed */
     char *prog_c = NULL;	/* path to prog.c */
     char *Makefile = NULL;	/* path to Makefile */
@@ -829,7 +828,7 @@ main(int argc, char *argv[])
      * record the time
      */
     errno = 0;			/* pre-clear errno for errp() */
-    ret = gettimeofday(&tp, &tzp);
+    ret = gettimeofday(&tp, NULL);
     if (ret < 0) {
 	errp(2, __func__, "gettimeofday failed");
 	NOTREACHED;
@@ -837,7 +836,7 @@ main(int argc, char *argv[])
     info.tstamp = tp.tv_sec;
     dbg(DBG_VVHIGH, "info.tstamp: %ld", info.tstamp);
     info.usec = tp.tv_usec;
-    dbg(DBG_VVHIGH, "infop->usec: %d", info.usec);
+    dbg(DBG_VVHIGH, "infop->usec: %ld", (long)info.usec);
 
     /*
      * Welcome
@@ -1216,7 +1215,7 @@ exists(char const *path)
 	dbg(DBG_HIGH, "path %s does not exist, stat returned: %d", path, ret);
 	return false;
     }
-    dbg(DBG_VHIGH, "path %s size: %lld", path, buf.st_size);
+    dbg(DBG_VHIGH, "path %s size: %ld", path, (long)buf.st_size);
     return true;
 }
 
@@ -1256,7 +1255,7 @@ is_file(char const *path)
 	dbg(DBG_HIGH, "path %s does not exist, stat returned: %d", path, ret);
 	return false;
     }
-    dbg(DBG_VHIGH, "path %s size: %lld", path, buf.st_size);
+    dbg(DBG_VHIGH, "path %s size: %ld", path, (long)buf.st_size);
 
     /*
      * test if path is a regular file
@@ -1306,7 +1305,7 @@ is_exec(char const *path)
 	dbg(DBG_HIGH, "path %s does not exist, stat returned: %d", path, ret);
 	return false;
     }
-    dbg(DBG_VHIGH, "path %s size: %lld", path, buf.st_size);
+    dbg(DBG_VHIGH, "path %s size: %ld", path, (long)buf.st_size);
 
     /*
      * test if we are allowed to execute it
@@ -1356,7 +1355,7 @@ is_dir(char const *path)
 	dbg(DBG_HIGH, "path %s does not exist, stat returned: %d", path, ret);
 	return false;
     }
-    dbg(DBG_VHIGH, "path %s size: %lld", path, buf.st_size);
+    dbg(DBG_VHIGH, "path %s size: %ld", path, (long)buf.st_size);
 
     /*
      * test if path is a regular directory
@@ -1406,7 +1405,7 @@ is_read(char const *path)
 	dbg(DBG_HIGH, "path %s does not exist, stat returned: %d", path, ret);
 	return false;
     }
-    dbg(DBG_VHIGH, "path %s size: %lld", path, buf.st_size);
+    dbg(DBG_VHIGH, "path %s size: %ld", path, (long)buf.st_size);
 
     /*
      * test if we are allowed to execute it
@@ -1457,7 +1456,7 @@ is_write(char const *path)
 	dbg(DBG_HIGH, "path %s does not exist, stat returned: %d", path, ret);
 	return false;
     }
-    dbg(DBG_VHIGH, "path %s size: %lld", path, buf.st_size);
+    dbg(DBG_VHIGH, "path %s size: %ld", path, (long)buf.st_size);
 
     /*
      * test if we are allowed to execute it
@@ -1511,7 +1510,7 @@ file_size(char const *path)
     /*
      * return file size
      */
-    dbg(DBG_VHIGH, "path %s size: %lld", path, buf.st_size);
+    dbg(DBG_VHIGH, "path %s size: %ld", path, (long)buf.st_size);
     return buf.st_size;
 }
 
@@ -6287,8 +6286,8 @@ form_tarball(char const *work_dir, char const *entry_dir, char const *tarball_pa
 	      "The compressed tarball exceeds the maximum allowed size, sorry.",
 	      "",
 	      NULL);
-	err(216, __func__, "The compressed tarball: %s size: %lld > %lld",
-		 basename_tarball_path, buf.st_size, MAX_TARBALL_LEN);
+	err(216, __func__, "The compressed tarball: %s size: %ld > %ld",
+		 basename_tarball_path, (long)buf.st_size, (long)MAX_TARBALL_LEN);
 	NOTREACHED;
     }
 
