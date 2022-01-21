@@ -3879,6 +3879,7 @@ check_extra_data_files(struct info *infop, char const *entry_dir, char const *cp
 	if (dest == NULL) {
 	    errp(147, __func__, "malloc #0 of %ld bytes failed", dest_len + 1);
 	    /*NOTREACHED*/
+	    return;	/* because gcc does not understand NOTREACHED */
 	}
 	ret = snprintf(dest, dest_len, "%s/%s", entry_dir, base);
 	if (ret <= 0) {
