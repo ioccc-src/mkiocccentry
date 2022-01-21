@@ -48,6 +48,9 @@
  * The NOTREACHED will either yield a __builtin_unreachable() feature call,
  * or it will call abort from stdlib.
  */
+#if !defined __has_builtin
+#    define __has_builtin(x) 0
+#endif
 #if __has_builtin(__builtin_unreachable)
 #    define NOTREACHED __builtin_unreachable()
 #else
