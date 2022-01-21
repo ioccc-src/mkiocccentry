@@ -35,115 +35,62 @@
 #include <string.h>
 #include <errno.h>
 
-extern int verbosity_level;		/* print debug messages <= verbosity_level */
 
 /*
- * DEBUG_LINT - if defined, debug calls turn into fprintf to stderr calls
+ * NOTREACHED
  *
- * The purpose of DEBUG_LINT is to let the C compiler do a fprintf format
- * argument count and type check against the debug function.  With DEBUG_LINT,
- * the debug macros are "faked" as best as we can.
+ * In the old days of lint, one could give lint and friends a hint by
+ * placing the token NOTREACHED immediately between opening and closing
+ * comments.  Modern compilers do not honor such commented tokens
+ * and instead rely on features such as __builtin_unreachable
+ * and __attribute__((noreturn)).
  *
- * NOTE: Use of DEBUG_LINT is intended ONLY for static analysis (ala classic lint)
- * with compiler warnings.  DEBUG_LINT works best with -Wall.  In particular, it
- * won't help of you disable warnings that DEBUG_LINT would otherwise generate.
- *
- * When using DEBUG_LINT, consider compiling with:
- *
- *      -Wall -Werror -pedantic
- *
- * with at least the c11 standard.  As in:
- *
- *      -std=c11 -Wall -Werror -pedantic
- *
- * During DEBUG_LINT, output will be written to stderr.  These macros assume
- * that stderr is unbuffered.
- *
- * No error checking is performed by fprintf and fputc to stderr.  Such errors will overwrite
- * errno making the calls that perror print incorrect error messages.
- *
- * The DEBUG_LINT assumes the following global variables is declared elsewhere:
- *
- *      long int verbosity_level;            // dbg() verbosity cutoff level
- *
- * The DEBUG_LINT assumes the following file is included somewhere above the include of this file:
- *
- *      #include <stdlib.h>
- *
- * The DEBUG_LINT only works with compilers newer than 199901L (c11 or newer).
- * Defining DEBUG_LINT on an older compiler will be ignored in this file.
- * However when it comes to compiling debug.c, nothing will happen resulting
- * in a link error.  This is a feature, not a bug.  It tells you that your
- * compiler is too old to make use of DEBUG_LINT so don't use it.
- *
- * IMPORTANT NOTE:
- *
- * Executing code with DEBUG_LINT enabled is NOT recommended.
- * It might work, but don't count in it!
- *
- *  You are better off defining DEBUG_LINT in CFLAGS with, say:
- *
- *      -std=c11 -Wall -Werror -pedantic
- *
- * At a minimum, fix warnings (that turn into compiler errors) related to fprintf()
- * calls * until the program compiles.  For better results, fix ALL warnings as some
- * of those warnings may indicate the presence of bugs in your code including but
- * not limited to the use of debug functions.
+ * The NOTREACHED will either yield a __builtin_unreachable() feature call,
+ * or it will call abort from stdlib.
  */
+#if __has_builtin(__builtin_unreachable)
+#    define NOTREACHED __builtin_unreachable()
+#else
+#    define NOTREACHED abort()
+#endif /* __has_builtin(__builtin_unreachable) */
 
-#    if defined(DEBUG_LINT) && __STDC_VERSION__ >= 199901L
 
-#        define msg(...) fprintf(stderr, __VA_ARGS__)
-#        define dbg(level, ...) \
-		    ((verbosity_level >= (level)) ? \
-			(fprintf(stderr, "Debug[%d]: ", (level)), \
-			 printf(__VA_ARGS__)) : \
-		     true)
-#        define warn(name, ...) \
-		    (fprintf(stderr, "Warning: %s: ", (name)), \
-		     fprintf(stderr, __VA_ARGS__))
-#        define warnp(name, ...) \
-		    (fprintf(stderr, "Warning: %s: ", (name)), \
-		     fprintf(stderr, __VA_ARGS__), \
-		     fputc('\n', stderr), \
-		     perror(__func__))
-#        define err(exitcode, name, ...) \
-		    (fprintf(stderr, "FATAL[%d]: %s: ", (exitcode), (name)), \
-		     fprintf(stderr, __VA_ARGS__), \
-		     exit(exitcode))
-#        define errp(exitcode, name, ...) \
-		    (fprintf(stderr, "FATAL[%d]: %s: ", (exitcode), (name)), \
-		     fprintf(stderr, __VA_ARGS__), \
-		     fputc('\n', stderr), \
-		     perror(__func__), \
-		     exit(exitcode))
-#	 define vfprintf_usage(exitcode, stream, fmt, ...) \
-		    (vfprintf((stream), (fmt), ...), \
-		     (((exitcode) >= 0) ? exit(exitcode) : 1))
+#define DBG_NONE (0)		/* no debugging */
+#define DBG_LOW (1)		/* minimal debugging */
+#define DBG_MED (3)		/* somewhat more debugging */
+#define DBG_HIGH (5)		/* verbose debugging */
+#define DBG_VHIGH (7)		/* very verbose debugging */
+#define DBG_VVHIGH (9)		/* very very verbose debugging */
+#define DBG_VVVHIGH (11)	/* very very very verbose debugging */
 
-#    else			/* DEBUG_LINT && __STDC_VERSION__ >= 199901L */
+#define DBG_DEFAULT (DBG_NONE)	/* default debugging level */
 
-extern void msg(const char *fmt, ...);
-extern void dbg(int level, const char *fmt, ...);
-extern void warn(const char *name, const char *fmt, ...);
-extern void warnp(const char *name, const char *fmt, ...);
-extern void err(int exitcode, const char *name, const char *fmt, ...);
-extern void errp(int exitcode, const char *name, const char *fmt, ...);
-extern void vfprintf_usage(int exitcode, FILE *stream, const char *fmt, ...);
+#define FORCED_EXIT (255)	/* exit(255) on bad exit code */
+#define DO_NOT_EXIT (-1)		/* do not let vfprintf_usage() exit */
 
-#    endif			/* DEBUG_LINT && __STDC_VERSION__ >= 199901L */
 
-#    define DBG_NONE (0)	/* no debugging */
-#    define DBG_LOW (1)		/* minimal debugging */
-#    define DBG_MED (3)		/* somewhat more debugging */
-#    define DBG_HIGH (5)	/* verbose debugging */
-#    define DBG_VHIGH (7)	/* very verbose debugging */
-#    define DBG_VVHIGH (9)	/* very very verbose debugging */
-#    define DBG_VVVHIGH (11)	/* very very very verbose debugging */
+/*
+ * external variables
+ */
+extern int verbosity_level;		/* print debug messages <= verbosity_level */
 
-#    define DBG_DEFAULT (DBG_NONE)	/* default debugging level */
 
-#    define FORCED_EXIT (255)	/* exit(255) on bad exit code */
-#    define DONT_EXIT (-1)	/* do not let vfprintf_usage() exit */
+/*
+ * external function declaractions
+ */
+extern void msg(const char *fmt, ...) \
+	__attribute__((format(printf, 1, 2)));		/* 1=format 2=params */
+extern void dbg(int level, const char *fmt, ...) \
+	__attribute__((format(printf, 2, 3)));		/* 2=format 3=params */
+extern void warn(const char *name, const char *fmt, ...) \
+	__attribute__((format(printf, 2, 3)));		/* 2=format 3=params */
+extern void warnp(const char *name, const char *fmt, ...) \
+	__attribute__((format(printf, 2, 3)));		/* 2=format 3=params */
+extern void err(int exitcode, const char *name, const char *fmt, ...) \
+	__attribute__((noreturn)) __attribute__((format(printf, 3, 4)));	/* 3=format 4=params */
+extern void errp(int exitcode, const char *name, const char *fmt, ...) \
+	__attribute__((noreturn)) __attribute__((format(printf, 3, 4)));	/* 3=format 4=params */
+extern void vfprintf_usage(int exitcode, FILE *stream, const char *fmt, ...) \
+	 __attribute__((format(printf, 3, 4)));					/* 3=format 4=params */
 
 #endif				/* INCLUDE_DBG_H */

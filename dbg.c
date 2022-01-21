@@ -167,7 +167,7 @@ dbg(int level, char const *fmt, ...)
      */
     if (fmt == NULL) {
 	fmt = "((NULL fmt))";
-	warn(__func__, "\nin dbg(%d, %s ...): NULL fmt, forcing use of: %d\n", level, fmt);
+	warn(__func__, "\nin dbg(%d, ...): NULL fmt, forcing use of: %s\n", level, fmt);
     }
 
     /*
@@ -176,19 +176,19 @@ dbg(int level, char const *fmt, ...)
     if (level <= verbosity_level) {
 	ret = fprintf(stderr, "debug[%d]: ", level);
 	if (ret < 0) {
-	    warn(__func__, "\nin dbg(%d, %s, %s ...): fprintf returned error: %d\n", level, fmt, ret);
+	    warn(__func__, "\nin dbg(%d, %s ...): fprintf returned error: %d\n", level, fmt, ret);
 	}
 	ret = vfprintf(stderr, fmt, ap);
 	if (ret < 0) {
-	    warn(__func__, "\nin dbg(%d, %s, %s ...): vfprintf returned error: %d\n", level, fmt, ret);
+	    warn(__func__, "\nin dbg(%d, %s ...): vfprintf returned error: %d\n", level, fmt, ret);
 	}
 	ret = fputc('\n', stderr);
 	if (ret != '\n') {
-	    warn(__func__, "\nin dbg(%d, %s, %s ...): fputc returned error: %d\n", level, fmt, ret);
+	    warn(__func__, "\nin dbg(%d, %s ...): fputc returned error: %d\n", level, fmt, ret);
 	}
 	ret = fflush(stderr);
 	if (ret < 0) {
-	    warn(__func__, "\nin dbg(%d, %s, %s ...): fflush returned error: %d\n", level, fmt, ret);
+	    warn(__func__, "\nin dbg(%d, %s ...): fflush returned error: %d\n", level, fmt, ret);
 	}
     }
 
@@ -438,7 +438,7 @@ err(int exitcode, char const *name, char const *fmt, ...)
      * terminate with exit code
      */
     exit(exitcode);
-    /*NOTREACHED*/
+    NOTREACHED;
 }
 
 
@@ -525,7 +525,7 @@ errp(int exitcode, char const *name, char const *fmt, ...)
      * terminate with exit code
      */
     exit(exitcode);
-    /*NOTREACHED*/
+    NOTREACHED;
 }
 
 
@@ -595,7 +595,7 @@ vfprintf_usage(int exitcode, FILE *stream, const char *fmt, ...)
      */
     if (exitcode >= 0) {
 	exit(exitcode);
-	/*NOTREACHED*/
+	NOTREACHED;
     }
 
     /*
@@ -629,7 +629,7 @@ main(int argc, char *argv[])
 	case 'h':	/* -h - print help to stderr and exit 0 */
 	    /* exit(0); */
 	    vfprintf_usage(0, stderr, usage, program, VERSION);
-	    /*NOTREACHED*/
+	    NOTREACHED;
 	    break;
 	case 'v':	/* -v verbosity */
 	    /* parse verbosity */
@@ -638,7 +638,7 @@ main(int argc, char *argv[])
 	    if (errno != 0) {
 		/* exit(1); */
 		err(1, __func__, "cannot parse -v arg: %s error: %s", optarg, strerror(errno));
-		/*NOTREACHED*/
+		NOTREACHED;
 	    }
 	    break;
 	case 'e':	/* -e errno - force errno */
@@ -648,15 +648,15 @@ main(int argc, char *argv[])
 	    if (errno != 0) {
 		/* exit(2); */
 		err(2, __func__, "cannot parse -v arg: %s error: %s", optarg, strerror(errno));
-		/*NOTREACHED*/
+		NOTREACHED;
 	    }
 	    errno = forced_errno;	/* simulate errno setting */
 	    break;
 	default:
-	    vfprintf_usage(DONT_EXIT, stderr, "invalid -flag");
+	    vfprintf_usage(DO_NOT_EXIT, stderr, "invalid -flag");
 	    /* exit(3); */
 	    vfprintf_usage(3, stderr, usage, program, VERSION);
-	    /*NOTREACHED*/
+	    NOTREACHED;
 	}
     }
     /* must have 2 or 3 args */
@@ -667,10 +667,10 @@ main(int argc, char *argv[])
 	tar_path = argv[optind+2];
 	break;
     default:
-	vfprintf_usage(DONT_EXIT, stderr, "requires 2 or 3 arguments");
+	vfprintf_usage(DO_NOT_EXIT, stderr, "requires 2 or 3 arguments");
 	/* exit(4); */
 	vfprintf_usage(4, stderr, usage, program, VERSION);
-	/*NOTREACHED*/
+	NOTREACHED;
 	break;
     }
     /* collect required args */
@@ -689,7 +689,7 @@ main(int argc, char *argv[])
     }
     /* exit(6); */
     err(6, __func__, "simulated error, work_dir: %s iocccsize_path: %s", work_dir, iocccsize_path);
-    /*NOTREACHED*/
+    NOTREACHED;
 
     /*
      * All Done!!! - Jessica Noll, age 2

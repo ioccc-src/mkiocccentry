@@ -80,7 +80,6 @@ INSTALL= install
 #
 CFLAGS= -O3 -g3 --pedantic -Wall -Wextra
 #CFLAGS= -O3 -g3 --pedantic -Wall -Wextra -Werror
-#CFLAGS= -O3 -g3 --pedantic -Wall -Wextra -Werror -DDEBUG_LINT
 ## If you use ASAN, set this environment var: ASAN_OPTIONS="detect_stack_use_after_return=1"
 #CFLAGS= -O0 -g --pedantic -Wall -Wextra -Werror -fsanitize=address -fno-omit-frame-pointer
 # For valgrind, run with: valgrind --leak-check=yes --track-origins=yes --leak-resolution=high --read-var-info=yes
