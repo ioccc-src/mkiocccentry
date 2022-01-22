@@ -19,7 +19,9 @@ fi
 
 # cleanout the under work_dir area
 #
-find -mindepth 1 -depth -delete -- "$work_dir"
+work_dir_esc="$work_dir"
+test "${work_dir:0:1}" = "-" && work_dir_esc=./"$work_dir"
+find "$work_dir_esc" -mindepth 1 -depth -delete
 
 # Form an entry that is unlikely to win the IOCCC :-)
 #
