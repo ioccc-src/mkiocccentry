@@ -216,7 +216,7 @@ struct info {
     int entry_num;		/* IOCCC entry number */
     char *title;		/* entry title */
     char *abstract;		/* entry abstract */
-    size_t rule_2a_size;	/* Rule 2a size of prog.c */
+    ssize_t rule_2a_size;	/* Rule 2a size of prog.c */
     size_t rule_2b_size;	/* Rule 2b size of prog.c */
     bool empty_override;	/* true ==> empty prog.c override requested */
     bool rule_2a_override;	/* true ==> Rule 2a override requested */
@@ -664,7 +664,7 @@ static bool is_exec(char const *path);
 static bool is_dir(char const *path);
 static bool is_read(char const *path);
 static bool is_write(char const *path);
-static size_t file_size(char const *path);
+static ssize_t file_size(char const *path);
 static void check_prog_c(struct info *infop, char const *entry_dir, char const *cp, char const *prog_c);
 static ssize_t readline(char **linep, FILE * stream);
 static char *readline_dup(char **linep, bool strip, size_t *lenp, FILE * stream);
@@ -1488,7 +1488,7 @@ is_write(char const *path)
  *      >= 0 ==> file size,
  *      <0 ==> file does not exist
  */
-static size_t
+static ssize_t
 file_size(char const *path)
 {
     int ret;			/* return code holder */
@@ -1508,14 +1508,14 @@ file_size(char const *path)
     ret = stat(path, &buf);
     if (ret < 0) {
 	dbg(DBG_HIGH, "path %s does not exist, stat returned: %d", path, ret);
-	return ~(size_t)0;
+	return -1;
     }
 
     /*
      * return file size
      */
     dbg(DBG_VHIGH, "path %s size: %ld", path, (long)buf.st_size);
-    return buf.st_size;
+    return (ssize_t)buf.st_size;
 }
 
 
@@ -2835,7 +2835,7 @@ check_prog_c(struct info *infop, char const *entry_dir, char const *cp, char con
     /*
      * sanity check on file size vs rule_count function size for Rule 2a
      */
-    if (infop->rule_2a_size != size.rule_2a_size) {
+    if (infop->rule_2a_size != (ssize_t)size.rule_2a_size) {
 	ret = fprintf(stderr, "\nInteresting: prog.c: %s file size: %lu != rule_count function size: %lu\n"
 			      "In order to avoid a possible Rule 2a violation, BE SURE TO CLEARLY MENTION THIS IN\n"
 			      "YOUR remarks.md FILE!\n\n",
@@ -3322,7 +3322,7 @@ inspect_Makefile(char const *Makefile)
 static void
 check_Makefile(struct info *infop, char const *entry_dir, char const *cp, char const *Makefile)
 {
-    int filesize = 0;		/* size of Makefile */
+    ssize_t filesize = 0;	/* size of Makefile */
     int ret;			/* libc function return */
     char *cmd = NULL;		/* cp prog_c entry_dir/prog.c */
     int exit_code;		/* exit code from system(cmd) */
@@ -3368,7 +3368,7 @@ check_Makefile(struct info *infop, char const *entry_dir, char const *cp, char c
     }
     filesize = file_size(Makefile);
     if (filesize < 0) {
-	err(110, __func__, "Makefile file_size error: %d", filesize);
+	err(110, __func__, "Makefile file_size error: %ld", (long)filesize);
 	not_reached();
     } else if (filesize == 0) {
 	err(111, __func__, "Makefile cannot be empty: %s", Makefile);
@@ -3497,7 +3497,7 @@ check_Makefile(struct info *infop, char const *entry_dir, char const *cp, char c
 static void
 check_remarks_md(struct info *infop, char const *entry_dir, char const *cp, char const *remarks_md)
 {
-    int filesize = 0;		/* size of remarks.md */
+    ssize_t filesize = 0;	/* size of remarks.md */
     char *cmd = NULL;		/* cp prog_c entry_dir/prog.c */
     int exit_code;		/* exit code from system(cmd) */
     int ret;			/* libc function return */
@@ -3541,7 +3541,7 @@ check_remarks_md(struct info *infop, char const *entry_dir, char const *cp, char
     }
     filesize = file_size(remarks_md);
     if (filesize < 0) {
-	err(124, __func__, "remarks.md file_size error: %d", filesize);
+	err(124, __func__, "remarks.md file_size error: %ld", (long)filesize);
 	not_reached();
     } else if (filesize == 0) {
 	err(125, __func__, "remarks.md cannot be empty: %s", remarks_md);
