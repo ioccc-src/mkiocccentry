@@ -40,10 +40,12 @@
  * backward compatibility
  *
  * Not all compilers support __attribute__ nor do they suuport __has_builtin.
- * For example, MSVC, TenDRAm and Little C Compiler doesn't support __attribute__.
+ * For example, MSVC, TenDRA and Little C Compiler doesn't support __attribute__.
  * Early gcc does not support __attribute__.
  *
  * Not all compiles have __has_builtin
+ *
+ * __func__ is not supported prior to C99.
  */
 #if !defined(__attribute__) && \
     (defined(__cplusplus) || !defined(__GNUC__)  || __GNUC__ == 2 && __GNUC_MINOR__ < 8)
@@ -51,6 +53,9 @@
 #endif
 #if !defined __has_builtin
 #    define __has_builtin(x) 0
+#endif
+#if __STDC_VERSION__ < 199901L
+#    define __func__ __FILE__
 #endif
 
 
