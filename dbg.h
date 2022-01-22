@@ -84,13 +84,13 @@
 #define DBG_DEFAULT (DBG_NONE)	/* default debugging level */
 
 #define FORCED_EXIT (255)	/* exit(255) on bad exit code */
-#define DO_NOT_EXIT (-1)		/* do not let vfprintf_usage() exit */
+#define DO_NOT_EXIT (-1)	/* do not let vfprintf_usage() exit */
 
 
 /*
  * external variables
  */
-extern int verbosity_level;		/* print debug messages <= verbosity_level */
+extern int verbosity_level;	/* print debug messages <= verbosity_level */
 
 
 /*
