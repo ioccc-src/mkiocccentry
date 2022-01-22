@@ -635,7 +635,7 @@ main(int argc, char *argv[])
 	case 'v':	/* -v verbosity */
 	    /* parse verbosity */
 	    errno = 0;
-	    verbosity_level = strtol(optarg, NULL, 0);
+	    verbosity_level = (int)strtol(optarg, NULL, 0);
 	    if (errno != 0) {
 		/* exit(1); */
 		err(1, __func__, "cannot parse -v arg: %s error: %s", optarg, strerror(errno));
@@ -645,7 +645,7 @@ main(int argc, char *argv[])
 	case 'e':	/* -e errno - force errno */
 	    /* parse verbosity */
 	    errno = 0;
-	    forced_errno = strtol(optarg, NULL, 0);
+	    forced_errno = (int)strtol(optarg, NULL, 0);
 	    if (errno != 0) {
 		/* exit(2); */
 		err(2, __func__, "cannot parse -v arg: %s error: %s", optarg, strerror(errno));
@@ -691,10 +691,5 @@ main(int argc, char *argv[])
     /* exit(6); */
     err(6, __func__, "simulated error, work_dir: %s iocccsize_path: %s", work_dir, iocccsize_path);
     not_reached();
-
-    /*
-     * All Done!!! - Jessica Noll, age 2
-     */
-    exit(0);
 }
 #endif /* DBG_TEST */

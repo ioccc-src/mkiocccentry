@@ -79,10 +79,25 @@ INSTALL= install
 # how to compile
 #
 CFLAGS= -O3 -g3 -pedantic -Wall -Wextra
+
+# We test by focing warnings to be errors so you don't have to (allegedly :-) )
+#
 #CFLAGS= -O3 -g3 -pedantic -Wall -Wextra -Werror
-## If you use ASAN, set this environment var: ASAN_OPTIONS="detect_stack_use_after_return=1"
+
+# NOTE: There are some things clang -Weverything warns about that are not relivant
+# 	and this for the -Weverything case, we exclude several directives
+#
+#CFLAGS= -O3 -g3 -pedantic -Wall -Wextra -Werror -Weverything \
+#     -Wno-poison-system-directories -Wno-unreachable-code-break -Wno-padded
+
+# NOTE: If you use ASAN, set this environment var:
+#	ASAN_OPTIONS="detect_stack_use_after_return=1"
+#
 #CFLAGS= -O0 -g -pedantic -Wall -Wextra -Werror -fsanitize=address -fno-omit-frame-pointer
-# For valgrind, run with: valgrind --leak-check=yes --track-origins=yes --leak-resolution=high --read-var-info=yes
+
+# NOTE: For valgrind, run with:
+#	valgrind --leak-check=yes --track-origins=yes --leak-resolution=high --read-var-info=yes
+#
 #CFLAGS= -O0 -g -pedantic -Wall -Wextra -Werror
 
 # where and what to install

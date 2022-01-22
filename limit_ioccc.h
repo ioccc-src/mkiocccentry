@@ -56,7 +56,7 @@
  * rule_count() processing results
  */
 struct iocccsize {
-	size_t rule_2a_size;	/* official IOCCC Rule 2a calculated size */
+	ssize_t rule_2a_size;	/* official IOCCC Rule 2a calculated size */
 	size_t rule_2b_size;	/* official IOCCC Rule 2b calculated size */
 	size_t keywords;	/* keyword count - for -v mode */
 	int char_warning;	/* != 0 ==> found high-bit character */
