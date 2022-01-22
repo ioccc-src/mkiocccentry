@@ -647,7 +647,6 @@ static struct location {
 /*
  * globals
  */
-char *program = NULL;			/* our name */
 int verbosity_level = DBG_DEFAULT;	/* debug level set by -v */
 
 
@@ -710,6 +709,7 @@ static char *cmdprintf(char const *format, ...);
 int
 main(int argc, char *argv[])
 {
+    char *program = NULL;	/* our name */
     extern char *optarg;	/* option argument */
     extern int optind;		/* argv index of the next arg */
     struct timeval tp;		/* gettimeofday time value */
@@ -1030,8 +1030,8 @@ usage(int exitcode, char const *name, char const *str, char const *program, char
     vfprintf_usage(DO_NOT_EXIT, stderr, usage_msg0, program, DBG_DEFAULT, tar, cp, ls);
     vfprintf_usage(DO_NOT_EXIT, stderr, "%s", usage_msg1);
     vfprintf_usage(exitcode, stderr, usage_msg2, MKIOCCCENTRY_VERSION);
-    not_reached();
     exit(exitcode); /*ooo*/
+    not_reached();
 }
 
 
