@@ -240,7 +240,7 @@ struct info {
      * time
      */
     time_t tstamp;		/* seconds since epoch when .info json was formed (see gettimeofday(2)) */
-    suseconds_t usec;		/* microseconds since the tstamp second */
+    int usec;			/* microseconds since the tstamp second */
     char *epoch;		/* epoch of tstamp, currently: Thr Jan 1 00:00:00 1970 UTC */
     char *gmtime;		/* UTC converted string for tstamp (see asctime(3)) */
 };
@@ -979,7 +979,7 @@ main(int argc, char *argv[])
     /*
      * All Done!!! - Jessica Noll, age 2
      */
-    exit(0); /*ooo*/
+    return 0; /*ooo*/
 }
 
 
@@ -1508,7 +1508,7 @@ file_size(char const *path)
     ret = stat(path, &buf);
     if (ret < 0) {
 	dbg(DBG_HIGH, "path %s does not exist, stat returned: %d", path, ret);
-	return -1;
+	return ~(size_t)0;
     }
 
     /*
