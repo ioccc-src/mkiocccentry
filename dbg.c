@@ -1,3 +1,4 @@
+/* vim: set tabstop=8 softtabstop=4 shiftwidth=4 noexpandtab : */
 /*
  * debug - debug, warning and error reporting facility
  *
@@ -42,7 +43,6 @@
 /*
  * globals
  */
-char *program = NULL;			/* our name */
 int verbosity_level = DBG_DEFAULT;	/* debug level set by -v */
 
 
@@ -52,7 +52,7 @@ int verbosity_level = DBG_DEFAULT;	/* debug level set by -v */
  * The follow usage message came from an early draft of mkiocccentry.
  * This is just an example of usage: there is no mkiocccentry functionality here.
  */
-char const *usage =
+static char const * const usage =
 "usage: %s [-h] [-v level] [-e errno] work_dir iocccsize_path [tar_path]\n"
 "\n"
 "\t-h\t\tprint help message and exit 0\n"
@@ -612,6 +612,7 @@ vfprintf_usage(int exitcode, FILE *stream, char const *fmt, ...)
 int
 main(int argc, char *argv[])
 {
+    char *program = NULL;		/* our name */
     extern char *optarg;		/* option argument */
     extern int optind;			/* argv index of the next arg */
     char const *work_dir = NULL;		/* where the entry directory and tarball are formed */
