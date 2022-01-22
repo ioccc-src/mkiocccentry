@@ -128,7 +128,7 @@ char const * const iocccsize_version = IOCCCSIZE_VERSION;
  */
 typedef struct {
 	size_t length;
-	const char *word;
+	char const *word;
 } Word;
 
 static Word cwords[] = {
@@ -217,7 +217,7 @@ static Word cwords[] = {
 };
 
 static Word *
-find_member(Word *table, const char *string)
+find_member(Word *table, char const *string)
 {
 	Word *w;
 	for (w = table; w->length != 0; w++) {
@@ -264,8 +264,8 @@ rule_count(FILE *fp, int debug)
 #ifdef TRIGRAPHS
 		if (ch == '?' && next_ch == '?') {
 			/* ISO C11 section 5.2.1.1 Trigraph Sequences */
-			const char *t;
-			static const char trigraphs[] = "=#([)]'^<{!|>}-~/\\";
+			char const *t;
+			static char const trigraphs[] = "=#([)]'^<{!|>}-~/\\";
 
 			ch = fgetc(fp);
 			for (t = trigraphs; *t != '\0'; t += 2) {
@@ -374,8 +374,8 @@ rule_count(FILE *fp, int debug)
 		 * ASCII counter parts.
 		 */
 		if (IS_CODE) {
-			const char *d;
-			static const char digraphs[] = "[<:]:>{<%}%>#%:";
+			char const *d;
+			static char const digraphs[] = "[<:]:>{<%}%>#%:";
 			for (d = digraphs; *d != '\0'; d += 3) {
 				if (ch == d[1] && next_ch == d[2]) {
 					(void) fgetc(fp);

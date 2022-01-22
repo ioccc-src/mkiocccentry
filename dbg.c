@@ -84,7 +84,7 @@ char const *usage =
  *      msg("foo = %d\n", foo);
  */
 void
-msg(const char *fmt, ...)
+msg(char const *fmt, ...)
 {
     va_list ap;			/* argument pointer */
     int ret;			/* libc function return code */
@@ -541,7 +541,7 @@ errp(int exitcode, char const *name, char const *fmt, ...)
  *	...		- potential args for usage message
  */
 void
-vfprintf_usage(int exitcode, FILE *stream, const char *fmt, ...)
+vfprintf_usage(int exitcode, FILE *stream, char const *fmt, ...)
 {
     va_list ap;		/* argument pointer */
     int saved_errno;	/* errno at function start */
@@ -614,9 +614,9 @@ main(int argc, char *argv[])
 {
     extern char *optarg;		/* option argument */
     extern int optind;			/* argv index of the next arg */
-    const char *work_dir = NULL;		/* where the entry directory and tarball are formed */
-    const char *tar_path = "/usr/bin/tar";	/* path to tar that supports -cjvf */
-    const char *iocccsize_path = NULL;	/* path to the iocccsize tool */
+    char const *work_dir = NULL;		/* where the entry directory and tarball are formed */
+    char const *tar_path = "/usr/bin/tar";	/* path to tar that supports -cjvf */
+    char const *iocccsize_path = NULL;	/* path to the iocccsize tool */
     int forced_errno;			/* -e errno setting */
     int i;
 

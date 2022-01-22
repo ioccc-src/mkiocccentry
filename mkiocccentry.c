@@ -679,10 +679,10 @@ static char *mk_entry_dir(char const *work_dir, char const *ioccc_id, int entry_
 static bool inspect_Makefile(char const *Makefile);
 static void check_Makefile(struct info *infop, char const *entry_dir, char const *cp, char const *Makefile);
 static void check_remarks_md(struct info *infop, char const *entry_dir, char const *cp, char const *remarks_md);
-#ifdef __cplusplus
+#if defined(__cplusplus)
 /* string.h for C++ contains a function of the same name */
 #define basename basename_c
-#endif
+#endif /* __cplusplus */
 static char *basename(char const *path);
 static void check_extra_data_files(struct info *infop, char const *entry_dir, char const *cp, int count, char **args);
 static char const *lookup_location_name(char const *upper_code);
@@ -704,7 +704,7 @@ static void write_info(struct info *infop, char const *entry_dir, bool test_mode
 static void write_author(struct info *infop, int author_count, struct author *authorp, char const *entry_dir);
 static void form_tarball(char const *work_dir, char const *entry_dir, char const *tarball_path, char const *tar, char const *ls);
 static void remind_user(char const *work_dir, char const *entry_dir, char const *tar, char const *tarball_path, bool test_mode);
-static char *cmdprintf(const char *format, ...);
+static char *cmdprintf(char const *format, ...);
 
 
 int
@@ -713,13 +713,13 @@ main(int argc, char *argv[])
     extern char *optarg;	/* option argument */
     extern int optind;		/* argv index of the next arg */
     struct timeval tp;		/* gettimeofday time value */
-    const char *work_dir = NULL;	/* where the entry directory and tarball are formed */
-    const char *prog_c = NULL;		/* path to prog.c */
-    const char *Makefile = NULL;	/* path to Makefile */
-    const char *remarks_md = NULL;	/* path to remarks.md */
-    const char *tar = TAR_PATH_0;	/* path to tar executable that supports the -J (xz) option */
-    const char *cp = CP_PATH_0;		/* path to cp executable */
-    const char *ls = LS_PATH_0;		/* path to ls executable */
+    char const *work_dir = NULL;	/* where the entry directory and tarball are formed */
+    char const *prog_c = NULL;		/* path to prog.c */
+    char const *Makefile = NULL;	/* path to Makefile */
+    char const *remarks_md = NULL;	/* path to remarks.md */
+    char const *tar = TAR_PATH_0;	/* path to tar executable that supports the -J (xz) option */
+    char const *cp = CP_PATH_0;		/* path to cp executable */
+    char const *ls = LS_PATH_0;		/* path to ls executable */
     bool test_mode = false;		/* true ==> contest ID is test */
     char *entry_dir = NULL;	/* entry directory from which to form a compressed tarball */
     char *tarball_path = NULL;	/* path of the compressed tarball to form */
@@ -1584,7 +1584,7 @@ readline(char **linep, FILE * stream)
      * We could use memchr() but
      */
     errno = 0;			/* pre-clear errno for errp() */
-    p = (char*)memchr(*linep, 0, ret);
+    p = (char *)memchr(*linep, 0, ret);
     if (p != NULL) {
 	errp(19, __func__, "found NUL before end of line");
 	not_reached();
@@ -2602,7 +2602,7 @@ mk_entry_dir(char const *work_dir, char const *ioccc_id, int entry_num, char **t
      */
     entry_dir_len = strlen(work_dir) + 1 + strlen(ioccc_id) + 1 + MAX_ENTRY_CHARS + 1 + 1;
     errno = 0;			/* pre-clear errno for errp() */
-    entry_dir = (char*)malloc(entry_dir_len + 1);
+    entry_dir = (char *)malloc(entry_dir_len + 1);
     if (entry_dir == NULL) {
 	errp(73, __func__, "malloc #0 of %lu bytes failed", (unsigned long)(entry_dir_len + 1));
 	not_reached();
@@ -2650,7 +2650,7 @@ mk_entry_dir(char const *work_dir, char const *ioccc_id, int entry_num, char **t
      */
     tarball_len = LITLEN("entry.") + strlen(ioccc_id) + 1 + MAX_ENTRY_CHARS + LITLEN(".123456789012.txz") + 1;
     errno = 0;			/* pre-clear errno for errp() */
-    *tarball_path = (char*)malloc(tarball_len + 1);
+    *tarball_path = (char *)malloc(tarball_len + 1);
     if (*tarball_path == NULL) {
 	errp(77, __func__, "malloc #1 of %lu bytes failed", (unsigned long)(tarball_len + 1));
 	not_reached();
@@ -3777,9 +3777,9 @@ check_extra_data_files(struct info *infop, char const *entry_dir, char const *cp
      */
     errno = 0;			/* pre-clear errno for errp() */
     /* + 1 for trailing NULL */
-    infop->extra_file = (char**)calloc(count + 1, sizeof(char *));
+    infop->extra_file = (char **)calloc(count + 1, sizeof(char *));
     if (infop->extra_file == NULL) {
-	errp(139, __func__, "calloc #0 of %d char* pointers failed", count + 1);
+	errp(139, __func__, "calloc #0 of %d char * pointers failed", count + 1);
 	not_reached();
     }
 
@@ -3878,7 +3878,7 @@ check_extra_data_files(struct info *infop, char const *entry_dir, char const *cp
 	infop->extra_file[i] = base;
 	dest_len = entry_dir_len + 1 + base_len + 1;
 	errno = 0;		/* pre-clear errno for errp() */
-	dest = (char*)malloc(dest_len + 1);
+	dest = (char *)malloc(dest_len + 1);
 	if (dest == NULL) {
 	    errp(147, __func__, "malloc #0 of %lu bytes failed", (unsigned long)(dest_len + 1));
 	    not_reached();
@@ -5917,7 +5917,7 @@ write_info(struct info *infop, char const *entry_dir, bool test_mode)
     asctime_len = strlen(p) - 1; /* -1 to remove trailing newline */
     gmtime_len = strlen(p) + 1 + LITLEN("UTC") + 1;
     errno = 0;			/* pre-clear errno for errp() */
-    infop->gmtime = (char*)calloc(gmtime_len + 1, 1);
+    infop->gmtime = (char *)calloc(gmtime_len + 1, 1);
     if (infop->gmtime == NULL) {
 	errp(190, __func__, "calloc of %d bytes failed", gmtime_len + 1);
 	not_reached();
@@ -5931,7 +5931,7 @@ write_info(struct info *infop, char const *entry_dir, bool test_mode)
      */
     info_path_len = strlen(entry_dir) + 1 + LITLEN(".info.json") + 1;
     errno = 0;			/* pre-clear errno for errp() */
-    info_path = (char*)malloc(info_path_len + 1);
+    info_path = (char *)malloc(info_path_len + 1);
     if (info_path == NULL) {
 	errp(191, __func__, "malloc of %d bytes failed", info_path_len + 1);
 	not_reached();
@@ -6082,7 +6082,7 @@ write_author(struct info *infop, int author_count, struct author *authorp, char 
      */
     author_path_len = strlen(entry_dir) + 1 + LITLEN(".author.json") + 1;
     errno = 0;			/* pre-clear errno for errp() */
-    author_path = (char*)malloc(author_path_len + 1);
+    author_path = (char *)malloc(author_path_len + 1);
     if (author_path == NULL) {
 	errp(200, __func__, "malloc of %d bytes failed", author_path_len + 1);
 	not_reached();
@@ -6507,7 +6507,7 @@ remind_user(char const *work_dir, char const *entry_dir, char const *tar, char c
  *	 Thank you Ilya Kurdyukov!
  */
 static char *
-cmdprintf(const char *format, ...)
+cmdprintf(char const *format, ...)
 {
     va_list va;
     size_t size = 0;
@@ -6527,7 +6527,7 @@ cmdprintf(const char *format, ...)
     f = format;
     while ((c = *f++)) {
 	if (c == '%') {
-	    p = next = va_arg(va, const char *);
+	    p = next = va_arg(va, char const *);
 	    nquot = 0;
 	    while ((c = *p++)) {
 		if (c == '\'') {
@@ -6554,7 +6554,7 @@ cmdprintf(const char *format, ...)
      * malloc storage or return NULL
      */
     errno = 0;			/* pre-clear errno for errp() */
-    cmd = (char*)malloc(size);	/* trailing zero included in size */
+    cmd = (char *)malloc(size);	/* trailing zero included in size */
     if (cmd == NULL) {
 	warnp(__func__, "malloc from the cmdprintf of %lu bytes failed", (unsigned long)size);
 	return NULL;
@@ -6570,7 +6570,7 @@ cmdprintf(const char *format, ...)
 	if (c != '%') {
 	    *d++ = c;
 	} else {
-	    p = next = va_arg(va, const char *);
+	    p = next = va_arg(va, char const *);
 	    nquot = 0;
 	    while ((c = *p++)) {
 		if (c == '\'') {
