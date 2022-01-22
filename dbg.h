@@ -39,7 +39,7 @@
 /*
  * backward compatibility
  *
- * Not all compilers support __attribute__ nor do they suuport __has_builtin.
+ * Not all compilers support __attribute__ nor do they support __has_builtin.
  * For example, MSVC, TenDRA and Little C Compiler doesn't support __attribute__.
  * Early gcc does not support __attribute__.
  *
@@ -54,7 +54,7 @@
 #if !defined __has_builtin
 #    define __has_builtin(x) 0
 #endif
-#if __STDC_VERSION__ < 199901L
+#if (__STDC_VERSION__ < 199901L)
 #    define __func__ __FILE__
 #endif
 
@@ -99,7 +99,7 @@ extern int verbosity_level;	/* print debug messages <= verbosity_level */
 
 
 /*
- * external function declaractions
+ * external function declarations
  */
 extern void msg(const char *fmt, ...) \
 	__attribute__((format(printf, 1, 2)));		/* 1=format 2=params */
