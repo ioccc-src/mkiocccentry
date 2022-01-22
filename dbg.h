@@ -37,24 +37,24 @@
 
 
 /*
- * NOTREACHED
+ * not_reached
  *
  * In the old days of lint, one could give lint and friends a hint by
- * placing the token NOTREACHED immediately between opening and closing
+ * placing the token not_reached immediately between opening and closing
  * comments.  Modern compilers do not honor such commented tokens
  * and instead rely on features such as __builtin_unreachable
  * and __attribute__((noreturn)).
  *
- * The NOTREACHED will either yield a __builtin_unreachable() feature call,
+ * The not_reached will either yield a __builtin_unreachable() feature call,
  * or it will call abort from stdlib.
  */
 #if !defined __has_builtin
 #    define __has_builtin(x) 0
 #endif
 #if __has_builtin(__builtin_unreachable)
-#    define NOTREACHED() __builtin_unreachable()
+#    define not_reached() __builtin_unreachable()
 #else
-#    define NOTREACHED() abort()
+#    define not_reached() abort()
 #endif /* __has_builtin(__builtin_unreachable) */
 
 

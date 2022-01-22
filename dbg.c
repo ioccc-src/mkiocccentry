@@ -438,7 +438,7 @@ err(int exitcode, char const *name, char const *fmt, ...)
      * terminate with exit code
      */
     exit(exitcode);
-    NOTREACHED();
+    not_reached();
 }
 
 
@@ -525,7 +525,7 @@ errp(int exitcode, char const *name, char const *fmt, ...)
      * terminate with exit code
      */
     exit(exitcode);
-    NOTREACHED();
+    not_reached();
 }
 
 
@@ -595,7 +595,7 @@ vfprintf_usage(int exitcode, FILE *stream, const char *fmt, ...)
      */
     if (exitcode >= 0) {
 	exit(exitcode);
-	NOTREACHED();
+	not_reached();
     }
 
     /*
@@ -629,7 +629,7 @@ main(int argc, char *argv[])
 	case 'h':	/* -h - print help to stderr and exit 0 */
 	    /* exit(0); */
 	    vfprintf_usage(0, stderr, usage, program, VERSION);
-	    NOTREACHED();
+	    not_reached();
 	    break;
 	case 'v':	/* -v verbosity */
 	    /* parse verbosity */
@@ -638,7 +638,7 @@ main(int argc, char *argv[])
 	    if (errno != 0) {
 		/* exit(1); */
 		err(1, __func__, "cannot parse -v arg: %s error: %s", optarg, strerror(errno));
-		NOTREACHED();
+		not_reached();
 	    }
 	    break;
 	case 'e':	/* -e errno - force errno */
@@ -648,7 +648,7 @@ main(int argc, char *argv[])
 	    if (errno != 0) {
 		/* exit(2); */
 		err(2, __func__, "cannot parse -v arg: %s error: %s", optarg, strerror(errno));
-		NOTREACHED();
+		not_reached();
 	    }
 	    errno = forced_errno;	/* simulate errno setting */
 	    break;
@@ -656,7 +656,7 @@ main(int argc, char *argv[])
 	    vfprintf_usage(DO_NOT_EXIT, stderr, "invalid -flag");
 	    /* exit(3); */
 	    vfprintf_usage(3, stderr, usage, program, VERSION);
-	    NOTREACHED();
+	    not_reached();
 	}
     }
     /* must have 2 or 3 args */
@@ -670,7 +670,7 @@ main(int argc, char *argv[])
 	vfprintf_usage(DO_NOT_EXIT, stderr, "requires 2 or 3 arguments");
 	/* exit(4); */
 	vfprintf_usage(4, stderr, usage, program, VERSION);
-	NOTREACHED();
+	not_reached();
 	break;
     }
     /* collect required args */
@@ -689,7 +689,7 @@ main(int argc, char *argv[])
     }
     /* exit(6); */
     err(6, __func__, "simulated error, work_dir: %s iocccsize_path: %s", work_dir, iocccsize_path);
-    NOTREACHED();
+    not_reached();
 
     /*
      * All Done!!! - Jessica Noll, age 2
