@@ -647,7 +647,6 @@ static struct location {
 /*
  * globals
  */
-char *program = NULL;			/* our name */
 int verbosity_level = DBG_DEFAULT;	/* debug level set by -v */
 
 
@@ -710,6 +709,7 @@ static char *cmdprintf(char const *format, ...);
 int
 main(int argc, char *argv[])
 {
+    char *program = NULL;	/* our name */
     extern char *optarg;	/* option argument */
     extern int optind;		/* argv index of the next arg */
     struct timeval tp;		/* gettimeofday time value */
