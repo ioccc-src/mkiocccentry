@@ -104,7 +104,7 @@ typedef unsigned char bool;
 /*
  * mkiocccentry version
  */
-#define MKIOCCCENTRY_VERSION "0.30 2022-01-21"	/* use format: major.minor YYYY-MM-DD */
+#define MKIOCCCENTRY_VERSION "0.31 2022-01-21"	/* use format: major.minor YYYY-MM-DD */
 #define IOCCC_CONTEST "IOCCC28"			/* use format: IOCCC99 */
 #define IOCCC_YEAR (2022)			/* Year IOCCC_CONTEST closes */
 
@@ -114,7 +114,7 @@ typedef unsigned char bool;
  *
  * The following is NOT the version of this mkiocccentry tool!
  */
-#define INFO_JSON_VERSION "1.5 2022-01-19"	/* version of the .info.json file to produce */
+#define INFO_VERSION "1.6 2022-01-21"	/* version of the .info.json file to produce */
 
 
 /*
@@ -122,7 +122,7 @@ typedef unsigned char bool;
  *
  * The following is NOT the version of this mkiocccentry tool!
  */
-#define AUTHOR_JSON_VERSION "1.6 2022-01-16"	/* version of the .author.json file to produce */
+#define AUTHOR_VERSION "1.7 2022-01-21"	/* version of the .author.json file to produce */
 
 
 /*
@@ -5951,7 +5951,7 @@ write_info(struct info *infop, char const *entry_dir, bool test_mode)
      */
     errno = 0;			/* pre-clear errno for errp() */
     ret = fprintf(info_stream, "{\n") > 0 &&
-	json_fprintf_value_string(info_stream, "\t", "IOCCC_info_JSON_version", " : ", INFO_JSON_VERSION, ",\n") &&
+	json_fprintf_value_string(info_stream, "\t", "IOCCC_info_version", " : ", INFO_VERSION, ",\n") &&
 	json_fprintf_value_string(info_stream, "\t", "ioccc_contest", " : ", IOCCC_CONTEST, ",\n") &&
 	json_fprintf_value_long(info_stream, "\t", "ioccc_year", " : ", (long)IOCCC_YEAR, ",\n") &&
 	json_fprintf_value_string(info_stream, "\t", "mkiocccentry_version", " : ", infop->mkiocccentry_ver, ",\n") &&
@@ -6102,7 +6102,7 @@ write_author(struct info *infop, int author_count, struct author *authorp, char 
      */
     errno = 0;			/* pre-clear errno for errp() */
     ret = fprintf(author_stream, "{\n") > 0 &&
-	json_fprintf_value_string(author_stream, "\t", "IOCCC_author_JSON_version", " : ", AUTHOR_JSON_VERSION, ",\n") &&
+	json_fprintf_value_string(author_stream, "\t", "IOCCC_author_version", " : ", AUTHOR_VERSION, ",\n") &&
 	json_fprintf_value_string(author_stream, "\t", "ioccc_contest", " : ", IOCCC_CONTEST, ",\n") &&
 	json_fprintf_value_long(author_stream, "\t", "ioccc_year", " : ", (long)IOCCC_YEAR, ",\n") &&
 	json_fprintf_value_string(author_stream, "\t", "mkiocccentry_version", " : ", infop->mkiocccentry_ver, ",\n") &&
