@@ -23,17 +23,19 @@ find -mindepth 1 -depth -delete -- "$work_dir"
 
 # Form an entry that is unlikely to win the IOCCC :-)
 #
+test -f "$src_dir"/prog.c || {
 cat > "$src_dir"/prog.c << "EOF"
 #include <stdio.h>
 int main() { puts("Hello, World!"); }
 EOF
+}
 
 # fake some requireed files
 #
-cat Makefile.example > "$src_dir"/Makefile
-cat README.md > "$src_dir"/remarks.md
-echo "123" > "$src_dir"/extra1
-echo "456" > "$src_dir"/extra2
+test -f "$src_dir"/Makefile || cat Makefile.example > "$test_src"/Makefile
+test -f "$src_dir"/remarks.md || cat README.md > "$src_dir"/remarks.md
+test -f "$src_dir"/extra1 || echo "123" > "$src_dir"/extra1
+test -f "$src_dir"/extra2 || echo "456" > "$src_dir"/extra2
 
 # Answers as of mkiocccentry version: 0.29 2022-01-20
 #
