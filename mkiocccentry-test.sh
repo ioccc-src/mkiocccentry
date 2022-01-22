@@ -10,16 +10,16 @@ src_dir="test_src"
 
 # be sure the working locations exist
 #
-mkdir -p "$work_dir" "$src_dir"
+mkdir -p -- "$work_dir" "$src_dir"
 status="$?"
 if [[ $status -ne 0 ]]; then
-    echo "$0: FATAL: error in crearing working dirs: mkdir -p $work_dir $src_dir" 1>&2
+    echo "$0: FATAL: error in crearing working dirs: mkdir -p -- $work_dir $src_dir" 1>&2
     exit 250
 fi
 
 # cleanout the under work_dir area
 #
-find "$work_dir" -mindepth 1 -depth -delete
+find -mindepth 1 -depth -delete -- "$work_dir"
 
 # Form an entry that is unlikely to win the IOCCC :-)
 #
@@ -59,7 +59,7 @@ EOF
 
 # run the test, looking for an exit
 #
-answers | ./mkiocccentry "$work_dir" "$src_dir"/{prog.c,Makefile,remarks.md,extra1,extra2}
+answers | ./mkiocccentry -- "$work_dir" "$src_dir"/{prog.c,Makefile,remarks.md,extra1,extra2}
 status="$?"
 if [[ $status -ne 0 ]]; then
     echo "$0: FATAL: /mkiocccentry non-zero exit code: $status" 1>&2
