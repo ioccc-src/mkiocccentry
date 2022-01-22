@@ -52,9 +52,9 @@
 #    define __has_builtin(x) 0
 #endif
 #if __has_builtin(__builtin_unreachable)
-#    define NOTREACHED __builtin_unreachable()
+#    define NOTREACHED() __builtin_unreachable()
 #else
-#    define NOTREACHED abort()
+#    define NOTREACHED() abort()
 #endif /* __has_builtin(__builtin_unreachable) */
 
 
