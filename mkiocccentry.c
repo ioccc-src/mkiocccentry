@@ -3864,7 +3864,7 @@ check_extra_data_files(struct info *infop, char const *entry_dir, char const *cp
 		      "",
 		      "The basename of an extra file can only consist of POSIX Fully portable characters and +:",
 		      "",
-		      "    A–Z a–z 0–9 . _ - +",
+		      "    A-Z a-z 0-9 . _ - +",
 		      "",
 		      NULL);
 		err(146, __func__, "basename of %s character %ld is NOT a POSIX Fully portable character nor +", args[i], (long)j);
