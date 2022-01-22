@@ -614,9 +614,9 @@ main(int argc, char *argv[])
 {
     extern char *optarg;		/* option argument */
     extern int optind;			/* argv index of the next arg */
-    char *work_dir = NULL;		/* where the entry directory and tarball are formed */
-    char *tar_path = "/usr/bin/tar";	/* path to tar that supports -cjvf */
-    char *iocccsize_path = NULL;	/* path to the iocccsize tool */
+    const char *work_dir = NULL;		/* where the entry directory and tarball are formed */
+    const char *tar_path = "/usr/bin/tar";	/* path to tar that supports -cjvf */
+    const char *iocccsize_path = NULL;	/* path to the iocccsize tool */
     int forced_errno;			/* -e errno setting */
     int i;
 
