@@ -37,10 +37,28 @@
 
 
 /*
+ * backward compatibility
+ *
+ * Not all compilers support __attribute__ nor do they suuport __has_builtin.
+ * For example, MSVC, TenDRAm and Little C Compiler doesn't support __attribute__.
+ * Early gcc does not support __attribute__.
+ *
+ * Not all compiles have __has_builtin
+ */
+#if !defined(__attribute__) && \
+    (defined(__cplusplus) || !defined(__GNUC__)  || __GNUC__ == 2 && __GNUC_MINOR__ < 8)
+#    define __attribute__(A)
+#endif
+#if !defined __has_builtin
+#    define __has_builtin(x) 0
+#endif
+
+
+/*
  * not_reached
  *
  * In the old days of lint, one could give lint and friends a hint by
- * placing the token not_reached immediately between opening and closing
+ * placing the token NOTREACHED immediately between opening and closing
  * comments.  Modern compilers do not honor such commented tokens
  * and instead rely on features such as __builtin_unreachable
  * and __attribute__((noreturn)).
@@ -48,9 +66,6 @@
  * The not_reached will either yield a __builtin_unreachable() feature call,
  * or it will call abort from stdlib.
  */
-#if !defined __has_builtin
-#    define __has_builtin(x) 0
-#endif
 #if __has_builtin(__builtin_unreachable)
 #    define not_reached() __builtin_unreachable()
 #else
@@ -90,10 +105,10 @@ extern void warn(const char *name, const char *fmt, ...) \
 extern void warnp(const char *name, const char *fmt, ...) \
 	__attribute__((format(printf, 2, 3)));		/* 2=format 3=params */
 extern void err(int exitcode, const char *name, const char *fmt, ...) \
-	__attribute__((noreturn)) __attribute__((format(printf, 3, 4)));	/* 3=format 4=params */
+	__attribute__((noreturn)) __attribute__((format(printf, 3, 4))); /* 3=format 4=params */
 extern void errp(int exitcode, const char *name, const char *fmt, ...) \
-	__attribute__((noreturn)) __attribute__((format(printf, 3, 4)));	/* 3=format 4=params */
+	__attribute__((noreturn)) __attribute__((format(printf, 3, 4))); /* 3=format 4=params */
 extern void vfprintf_usage(int exitcode, FILE *stream, const char *fmt, ...) \
-	 __attribute__((format(printf, 3, 4)));					/* 3=format 4=params */
+	__attribute__((format(printf, 3, 4))); /* 3=format 4=params */
 
 #endif				/* INCLUDE_DBG_H */
