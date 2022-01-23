@@ -676,11 +676,7 @@ static char *mk_entry_dir(char const *work_dir, char const *ioccc_id, int entry_
 static bool inspect_Makefile(char const *Makefile);
 static void check_Makefile(struct info *infop, char const *entry_dir, char const *cp, char const *Makefile);
 static void check_remarks_md(struct info *infop, char const *entry_dir, char const *cp, char const *remarks_md);
-#if defined(__cplusplus)
-/* string.h for C++ contains a function of the same name */
-#define basename basename_c
-#endif /* __cplusplus */
-static char *basename(char const *path);
+static char *base_name(char const *path);
 static void check_extra_data_files(struct info *infop, char const *entry_dir, char const *cp, int count, char **args);
 static char const *lookup_location_name(char const *upper_code);
 static bool yes_or_no(char const *question);
@@ -3622,10 +3618,10 @@ check_remarks_md(struct info *infop, char const *entry_dir, char const *cp, char
 
 
 /*
- * basename - determine the final portion of a path
+ * base_name - determine the final portion of a path
  *
  * given:
- *      path    - path to form the basename of
+ *      path    - path to form the basename from
  *
  * returns:
  *      malloced basename
@@ -3633,7 +3629,7 @@ check_remarks_md(struct info *infop, char const *entry_dir, char const *cp, char
  * This function does not return on error.
  */
 static char *
-basename(char const *path)
+base_name(char const *path)
 {
     size_t len;			/* length of path */
     char *copy;			/* copy of path to work from and maybe return */
@@ -3664,7 +3660,7 @@ basename(char const *path)
      */
     len = strlen(copy);
     if (len == 0) {
-	dbg(DBG_VVHIGH, "#0: basename(\"\") == \"\"");
+	dbg(DBG_VVHIGH, "#0: basename of path:%s is an empty string", path);
 	return copy;
     }
 
@@ -3831,7 +3827,7 @@ check_extra_data_files(struct info *infop, char const *entry_dir, char const *cp
 	/*
 	 * basename cannot be too long
 	 */
-	base = basename(args[i]);
+	base = base_name(args[i]);
 	dbg(DBG_VHIGH, "basename(%s): %s", args[i], base);
 	base_len = strlen(base);
 	if (base_len == 0) {
@@ -6170,7 +6166,7 @@ static void
 form_tarball(char const *work_dir, char const *entry_dir, char const *tarball_path, char const *tar, char const *ls)
 {
     char *basename_entry_dir;	/* basename of the entry directory */
-    char *basename_tarball_path;	/* basename of tarball_path */
+    char *basename_tarball_path;/* basename of tarball_path */
     char *cmd;			/* the tar command to form the compressed tarball */
     int exit_code;		/* exit code from system(cmd) */
     struct stat buf;		/* stat of the tarball */
@@ -6203,8 +6199,8 @@ form_tarball(char const *work_dir, char const *entry_dir, char const *tarball_pa
     /*
      * form the tar create command
      */
-    basename_entry_dir = basename(entry_dir);
-    basename_tarball_path = basename(tarball_path);
+    basename_entry_dir = base_name(entry_dir);
+    basename_tarball_path = base_name(tarball_path);
     cmd = cmdprintf("% --format=v7 -cJf % %", tar, basename_tarball_path, basename_entry_dir);
     if (cmd == NULL) {
 	err(205, __func__, "failed to cmdprintf: tar --format=v7 -cJf tarball_path entry_dir");
