@@ -140,7 +140,7 @@ clean:
 
 clobber: clean
 	${RM} -f ${TARGETS} ${TEST_TARGETS} rule_count.c
-	${RM} -rf test-iocccsize
+	${RM} -rf test-iocccsize test-src test-work
 
 install: all
 	${INSTALL} -m 0555 ${TARGETS} ${DESTDIR}

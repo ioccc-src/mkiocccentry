@@ -103,7 +103,7 @@ typedef unsigned char bool;
 /*
  * mkiocccentry version
  */
-#define MKIOCCCENTRY_VERSION "0.31 2022-01-21"	/* use format: major.minor YYYY-MM-DD */
+#define MKIOCCCENTRY_VERSION "0.32 2022-01-24"	/* use format: major.minor YYYY-MM-DD */
 #define IOCCC_CONTEST "IOCCC28"			/* use format: IOCCC99 */
 #define IOCCC_YEAR (2022)			/* Year IOCCC_CONTEST closes */
 
@@ -5147,7 +5147,7 @@ verify_entry_dir(char const *entry_dir, char const *ls)
     FILE *ls_stream;		/* pipe from iocccsize -V */
     char *linep = NULL;		/* allocated line read from iocccsize */
     ssize_t readline_len;	/* readline return length */
-    int kdirsize;		/* number of kilo byte blocks in entry directory */
+    int kdirsize;		/* number of kibibyte (2^10) blocks in entry directory */
     char guard;			/* scanf guard to catch excess amount of input */
     int ret;			/* libc function return */
 
@@ -5247,7 +5247,7 @@ verify_entry_dir(char const *entry_dir, char const *ls)
     setlinebuf(ls_stream);
 
     /*
-     * read the 1st line - contains the total kilo block line
+     * read the 1st line - contains the total kibibyte (2^10) block line
      */
     dbg(DBG_HIGH, "reading 1st line from popen(%s, r)", cmd);
     readline_len = readline(&linep, ls_stream);
