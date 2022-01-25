@@ -155,7 +155,7 @@ typedef unsigned char bool;
  * Use the usage() function to print the these usage_msgX strings.
  */
 static const char * const usage_msg0 =
-    "usage: %s [-h] [-v level] [-V] [-t tar] [-c cp] [-l ls] work_dir prog.c Makefile remarks.md [file ...]\n"
+    "usage: %s [-h] [-v level] [-V] [-t tar] [-c cp] [-l ls] [-o output_file] work_dir prog.c Makefile remarks.md [file ...]\n"
     "\n"
     "\t-h\t\t\tprint help message and exit 0\n"
     "\t-v level\t\tset verbosity level: (def level: %d)\n"
@@ -163,7 +163,8 @@ static const char * const usage_msg0 =
     "\n"
     "\t-t /path/to/tar\t\tpath to tar executable that supports the -J (xz) option (def: %s)\n"
     "\t-c /path/to/cp\t\tpath to cp executable (def: %s)\n"
-    "\t-l /path/to/ls\t\tpath to ls executable (def: %s)\n";
+    "\t-l /path/to/ls\t\tpath to ls executable (def: %s)\n"
+    "\t-o\t\twrite answers to output file for easier updating entry\n";
 static const char * const usage_msg1 =
     "\n"
     "\twork_dir\tdirectory where the entry directory and tarball are formed\n"
@@ -647,7 +648,6 @@ static struct location {
  */
 int verbosity_level = DBG_DEFAULT;	/* debug level set by -v */
 
-
 /*
  * forward declarations
  */
@@ -666,7 +666,7 @@ static void check_prog_c(struct info *infop, char const *entry_dir, char const *
 static ssize_t readline(char **linep, FILE * stream);
 static char *readline_dup(char **linep, bool strip, size_t *lenp, FILE * stream);
 static void sanity_chk(struct info *infop, char const *work_dir, char const *tar,
-		       char const *cp, char const *ls);
+		       char const *cp, char const *ls, char const *output);
 static void para(char const *line, ...);
 static void fpara(FILE * stream, char const *line, ...);
 static char *prompt(char const *str, size_t *lenp);
@@ -682,7 +682,7 @@ static char const *lookup_location_name(char const *upper_code);
 static bool yes_or_no(char const *question);
 static char *get_title(struct info *infop);
 static char *get_abstract(struct info *infop);
-static int get_author_info(struct info *infop, char *ioccc_id, struct author **author_set);
+static int get_author_info(struct info *infop, char *ioccc_id, struct author **author_set, FILE *outputp);
 static void verify_entry_dir(char const *entry_dir, char const *ls);
 static bool json_putc(int const c, FILE *stream);
 static bool json_fprintf_str(FILE *stream, char const *str);
@@ -696,7 +696,7 @@ static char const * strnull(char const * const str);
 static void write_info(struct info *infop, char const *entry_dir, bool test_mode);
 static void write_author(struct info *infop, int author_count, struct author *authorp, char const *entry_dir);
 static void form_tarball(char const *work_dir, char const *entry_dir, char const *tarball_path, char const *tar, char const *ls);
-static void remind_user(char const *work_dir, char const *entry_dir, char const *tar, char const *tarball_path, bool test_mode);
+static void remind_user(char const *work_dir, char const *entry_dir, char const *tar, char const *tarball_path, bool test_mode, char const *output);
 static char *cmdprintf(char const *format, ...);
 
 
@@ -714,6 +714,8 @@ main(int argc, char *argv[])
     char const *tar = TAR_PATH_0;	/* path to tar executable that supports the -J (xz) option */
     char const *cp = CP_PATH_0;		/* path to cp executable */
     char const *ls = LS_PATH_0;		/* path to ls executable */
+    char const *output = NULL;		/* path to output the input */
+    FILE *outputp = NULL;		/* file pointer to output file */
     bool test_mode = false;		/* true ==> contest ID is test */
     char *entry_dir = NULL;	/* entry directory from which to form a compressed tarball */
     char *tarball_path = NULL;	/* path of the compressed tarball to form */
@@ -725,6 +727,7 @@ main(int argc, char *argv[])
     bool t_flag_used = false;	/* true ==> -t /path/to/tar was given */
     bool c_flag_used = false;	/* true ==> -c /path/to/cp was given */
     bool l_flag_used = false;	/* true ==> -. /path/to/ls was given */
+    bool o_flag_used = false;	/* true ==> -o output file of input specified */
     int ret;			/* libc return code */
     int i;
 
@@ -732,7 +735,7 @@ main(int argc, char *argv[])
      * parse args
      */
     program = argv[0];
-    while ((i = getopt(argc, argv, "hv:Vt:c:l:")) != -1) {
+    while ((i = getopt(argc, argv, "hv:Vt:c:l:o:")) != -1) {
 	switch (i) {
 	case 'h':		/* -h - print help to stderr and exit 0 */
 	    usage(0, __func__, "-h help mode", program, tar, cp, ls);
@@ -768,6 +771,10 @@ main(int argc, char *argv[])
 	case 'l':		/* -l /path/to/ls */
 	    ls = optarg;
 	    l_flag_used = true;
+	    break;
+	case 'o':
+	    output = optarg;
+	    o_flag_used = true;
 	    break;
 	default:
 	    usage(1, __func__, "invalid -flag", program, tar, cp, ls); /*ooo*/
@@ -860,20 +867,40 @@ main(int argc, char *argv[])
      * environment sanity checks
      */
     para("", "Performing sanity checks on your environment ...", NULL);
-    sanity_chk(&info, work_dir, tar, cp, ls);
+    sanity_chk(&info, work_dir, tar, cp, ls, output);
     para("... environment looks OK", "", NULL);
+
+    if (o_flag_used && output != NULL && strlen(output) > 0) {
+	outputp = fopen(output, "w");
+	if (outputp == NULL) {
+	    err(37, __func__, "cannot create output file: %s", output);
+	    not_reached();
+	}
+    }
 
     /*
      * obtain the IOCCC contest ID
      */
     info.ioccc_id = get_contest_id(&info, &test_mode);
     dbg(DBG_MED, "IOCCC contest ID: %s", info.ioccc_id);
+    if (outputp) {
+        ret = fprintf(outputp, "%s\n", info.ioccc_id);
+	if (ret <= 0) {
+	    warn(__func__, "fprintf error printing IOCCC contest id to output file");
+	}
+    }
 
     /*
      * obtain entry number
      */
     info.entry_num = get_entry_num(&info);
     dbg(DBG_MED, "entry number: %d", info.entry_num);
+    if (outputp) {
+	ret = fprintf(outputp, "%d\n", info.entry_num);
+	if (ret <= 0) {
+	    warn(__func__, "fprintf error printing entry number to output file");
+	}
+    }
 
     /*
      * create entry directory
@@ -914,18 +941,33 @@ main(int argc, char *argv[])
      */
     info.title = get_title(&info);
     dbg(DBG_LOW, "entry title: %s", info.title);
+    if (outputp) {
+	ret = fprintf(outputp, "%s\n", info.title);
+	if (ret <= 0) {
+	    warn(__func__, "fprintf error printing title to output file");
+	}
+
+    }
 
     /*
      * obtain the abstract
      */
     info.abstract = get_abstract(&info);
     dbg(DBG_LOW, "entry abstract: %s", info.abstract);
+    if (outputp) {
+	ret = fprintf(outputp, "%s\n", info.abstract);
+	if (ret <= 0) {
+	    warn(__func__, "fprintf error printing abstract to output file");
+	}
+    }
+
 
     /*
      * obtain author information
      */
-    author_count = get_author_info(&info, info.ioccc_id, &author_set);
+    author_count = get_author_info(&info, info.ioccc_id, &author_set, outputp);
     dbg(DBG_LOW, "collected information on %d authors", author_count);
+
 
     /*
      * write the .info.json file
@@ -941,6 +983,15 @@ main(int argc, char *argv[])
     write_author(&info, author_count, author_set, entry_dir);
     para("... completed .author.json file.", "", NULL);
 
+    if (outputp) {
+	ret = fprintf(outputp, "y\n");
+	if (ret <= 0) {
+	    warn(__func__, "unable to write confirming y to output file");
+	}
+	fflush(outputp);
+	fclose(outputp);
+    }
+
     /*
      * form the .txz file
      */
@@ -949,7 +1000,7 @@ main(int argc, char *argv[])
     /*
      * remind user to upload (unless in test mode)
      */
-    remind_user(work_dir, entry_dir, tar, tarball_path, test_mode);
+    remind_user(work_dir, entry_dir, tar, tarball_path, test_mode, output);
 
     /*
      * free storage
@@ -969,6 +1020,7 @@ main(int argc, char *argv[])
 	free(author_set);
 	author_set = NULL;
     }
+
 
     /*
      * All Done!!! - Jessica Noll, age 2
@@ -1703,11 +1755,12 @@ readline_dup(char **linep, bool strip, size_t *lenp, FILE *stream)
  *      tar             - path to tar that supports the -J (xz) option
  *	cp		- path to the cp utility
  *	ls		- path to the ls utility
+ *	output		- path to output file (or NULL if not specified)
  *
  * NOTE: This function does not return on error or if things are not sane.
  */
 static void
-sanity_chk(struct info *infop, char const *work_dir, char const *tar, char const *cp, char const *ls)
+sanity_chk(struct info *infop, char const *work_dir, char const *tar, char const *cp, char const *ls, char const *output)
 {
     /*
      * firewall
@@ -1923,6 +1976,19 @@ sanity_chk(struct info *infop, char const *work_dir, char const *tar, char const
 	err(34, __func__, "work_dir is not a writable directory: %s", work_dir);
 	not_reached();
     }
+
+    /*
+     * if output is specified it must not exist
+     */
+    if (output && strlen(output) > 0 && exists(output)) {
+	fprintf(stderr,
+		"The output file already exists.\n\n"
+		"You might consider using the file to automate the process of answering the prompts e.g. by.\n"
+		"\tcat %s | ./mkiocccentry ...\n", output);
+	err(36, __func__, "output already exists: %s", output);
+	not_reached();
+    }
+
 
     /*
      * obtain version string from iocccsize_version
@@ -4401,6 +4467,7 @@ get_abstract(struct info *infop)
  *      ioccc_id        - IOCCC entry ID or test
  *      entry_num       - entry number
  *      author_set      - pointer to array of authors
+ *      outputp		- output file (for updating entries) or NULL
  *
  * returns:
  *      number of authors
@@ -4408,7 +4475,7 @@ get_abstract(struct info *infop)
  * This function does not return on error.
  */
 static int
-get_author_info(struct info *infop, char *ioccc_id, struct author **author_set_p)
+get_author_info(struct info *infop, char *ioccc_id, struct author **author_set_p, FILE *outputp)
 {
     struct author *author_set = NULL;	/* allocated author set */
     int author_count = -1;		/* number of authors or -1 */
@@ -4468,6 +4535,12 @@ get_author_info(struct info *infop, char *ioccc_id, struct author **author_set_p
 
     } while (author_count < 1 || author_count > MAX_AUTHORS);
     dbg(DBG_HIGH, "will request information on %d authors", author_count);
+    if (outputp) {
+        ret = fprintf(outputp, "%d\n", author_count);
+	if (ret <= 0) {
+	    warn(__func__, "fprintf error printing IOCCC contest id to output file");
+	}
+    }
 
     /*
      * allocate the author array
@@ -4603,6 +4676,7 @@ get_author_info(struct info *infop, char *ioccc_id, struct author **author_set_p
 	    }
 	} while (author_set[i].name == NULL);
 	dbg(DBG_MED, "Author #%d Name %s", i, author_set[i].name);
+
 
 	/*
 	 * obtain author location/country code
@@ -5087,6 +5161,8 @@ get_author_info(struct info *infop, char *ioccc_id, struct author **author_set_p
 	} while (author_set[i].affiliation == NULL);
 	dbg(DBG_MED, "Author #%d affiliation: %s", i, author_set[i].affiliation);
 
+
+
 	/*
 	 * verify the information for this author
 	 */
@@ -5114,6 +5190,40 @@ get_author_info(struct info *infop, char *ioccc_id, struct author **author_set_p
 	     */
 	    --i;
 	    continue;
+	}
+	if (outputp) {
+	    ret = fprintf(outputp, "%s\n", author_set[i].name);
+	    if (ret <= 0) {
+		warn(__func__, "fprintf error printing author name to output file");
+	    }
+	    ret = fprintf(outputp, "%s\ny\n", author_set[i].location_code);
+	    if (ret <= 0) {
+		warn(__func__, "fprintf error printing author location to output file");
+	    }
+	    ret = fprintf(outputp, "%s\n", author_set[i].email);
+	    if (ret <= 0) {
+		warn(__func__, "fprintf error printing author email to output file");
+	    }
+	    ret = fprintf(outputp, "%s\n", author_set[i].url);
+	    if (ret <= 0) {
+		warn(__func__, "fprintf error printing author url to output file");
+	    }
+	    ret = fprintf(outputp, "%s\n", author_set[i].twitter);
+	    if (ret <= 0) {
+		warn(__func__, "fprintf error printing author twitter handle to output file");
+	    }
+	    ret = fprintf(outputp, "%s\n", author_set[i].github);
+	    if (ret <= 0) {
+		warn(__func__, "fprintf error printing author GitHub account to output file");
+	    }
+	    ret = fprintf(outputp, "%s\n", author_set[i].affiliation);
+	    if (ret <= 0) {
+		warn(__func__, "fprintf error printing author affiliation to output file");
+	    }
+	    ret = fprintf(outputp, "y\n");
+	    if (ret <= 0) {
+		warn(__func__, "fprintf error writing 'y' to confirm author information");
+	    }
 	}
     }
 
@@ -6350,9 +6460,10 @@ form_tarball(char const *work_dir, char const *entry_dir, char const *tarball_pa
  *      tar             - path to the tar utility
  *      tarball_path    - path of the compressed tarball to form
  *      test_mode       - true ==> test mode, do not upload
+ *      output		- path to output file (if specified)
  */
 static void
-remind_user(char const *work_dir, char const *entry_dir, char const *tar, char const *tarball_path, bool test_mode)
+remind_user(char const *work_dir, char const *entry_dir, char const *tar, char const *tarball_path, bool test_mode, char const *output)
 {
     int ret;			/* libc function return */
     char *entry_dir_esc;
@@ -6451,6 +6562,13 @@ remind_user(char const *work_dir, char const *entry_dir, char const *tar, char c
 	if (ret < 0) {
 	    errp(225, __func__, "printf #4 error");
 	    not_reached();
+	}
+    }
+
+    if (output) {
+	ret = printf("To more easily update this entry you can run:\n\tcat %s | ./mkiocccentry ...\n", output);
+	if (ret <= 0) {
+	    warn(__func__, "unable to tell user how to more easily update entry");
 	}
     }
     return;
