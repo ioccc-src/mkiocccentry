@@ -3627,7 +3627,7 @@ check_remarks_md(struct info *infop, char const *entry_dir, char const *cp, char
     if (!exists(remarks_md)) {
 	fpara(stderr,
 	       "",
-	       "We cannot find the prog.c file.",
+	       "We cannot find the remarks.md file.",
 	       "",
 	       NULL);
 	err(126, __func__, "remarks.md does not exist: %s", remarks_md);
