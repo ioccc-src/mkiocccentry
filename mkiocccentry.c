@@ -3660,10 +3660,10 @@ check_remarks_md(struct info *infop, char const *entry_dir, char const *cp, char
     }
 
     /*
-     * copy remarks_md under entry_dir
+     * copy remarks.md under entry_dir
      */
     errno = 0;			/* pre-clear errno for errp() */
-    cmd = cmdprintf("% -- % %/remarks_md", cp, remarks_md, entry_dir);
+    cmd = cmdprintf("% -- % %/remarks.md", cp, remarks_md, entry_dir);
     if (cmd == NULL) {
 	err(132, __func__, "failed to cmdprintf: cp remarks.md entry_dir/remarks.md");
 	not_reached();
