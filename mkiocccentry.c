@@ -875,7 +875,27 @@ main(int argc, char *argv[])
     para("... environment looks OK", "", NULL);
 
     /*
-     * if -a, open the answers file for later use
+     * obtain the IOCCC contest ID
+     */
+    info.ioccc_id = get_contest_id(&info, &test_mode);
+    dbg(DBG_MED, "IOCCC contest ID: %s", info.ioccc_id);
+    /*
+     * obtain entry number
+     */
+    info.entry_num = get_entry_num(&info);
+    dbg(DBG_MED, "entry number: %d", info.entry_num);
+
+    /*
+     * create entry directory
+     */
+    entry_dir = mk_entry_dir(work_dir, info.ioccc_id, info.entry_num, &tarball_path, info.tstamp);
+    dbg(DBG_LOW, "formed entry directory: %s", entry_dir);
+
+
+    /*
+     * if -a, open the answers file. We only do it after verifying that we can
+     * make the entry directory because if we get input before and find out the
+     * directory already exists then the answers file will have invalid data.
      */
     if (a_flag_used && answers != NULL && strlen(answers) > 0) {
 	errno = 0;			/* pre-clear errno for errp() */
@@ -887,36 +907,20 @@ main(int argc, char *argv[])
     }
 
     /*
-     * obtain the IOCCC contest ID
+     * write the IOCCC id and entry number to the answers file 
      */
-    info.ioccc_id = get_contest_id(&info, &test_mode);
-    dbg(DBG_MED, "IOCCC contest ID: %s", info.ioccc_id);
     if (answerp != NULL) {
 	errno = 0;			/* pre-clear errno for errp() */
         ret = fprintf(answerp, "%s\n", info.ioccc_id);
 	if (ret <= 0) {
 	    warnp(__func__, "fprintf error printing IOCCC contest id to the answers file");
 	}
-    }
-
-    /*
-     * obtain entry number
-     */
-    info.entry_num = get_entry_num(&info);
-    dbg(DBG_MED, "entry number: %d", info.entry_num);
-    if (answerp != NULL) {
 	errno = 0;			/* pre-clear errno for errp() */
 	ret = fprintf(answerp, "%d\n", info.entry_num);
 	if (ret <= 0) {
 	    warnp(__func__, "fprintf error printing entry number to the answers file");
 	}
     }
-
-    /*
-     * create entry directory
-     */
-    entry_dir = mk_entry_dir(work_dir, info.ioccc_id, info.entry_num, &tarball_path, info.tstamp);
-    dbg(DBG_LOW, "formed entry directory: %s", entry_dir);
 
     /*
      * check prog.c
