@@ -29,7 +29,7 @@
  *	@ilyakurdyukov		Ilya Kurdyukov
  *	@SirWumpus		Anthony Howe
  *	@vog			Volker Diels-Grabsch
- *	@xexyl			xexyl
+ *	@xexyl			Cody Boone Ferguson
  *
  * Copyright (c) 2021,2022 by Landon Curt Noll.  All Rights Reserved.
  *
@@ -718,7 +718,7 @@ main(int argc, char *argv[])
     char const *cp = CP_PATH_0;		/* path to cp executable */
     char const *ls = LS_PATH_0;		/* path to ls executable */
     char const *answers = NULL;		/* path to the answers file (recording input given on stdin) */
-    FILE *answerp = NULL;		/* file pointer to the ansewrs file */
+    FILE *answerp = NULL;		/* file pointer to the answers file */
     bool test_mode = false;		/* true ==> contest ID is test */
     char *entry_dir = NULL;	/* entry directory from which to form a compressed tarball */
     char *tarball_path = NULL;	/* path of the compressed tarball to form */
@@ -875,7 +875,27 @@ main(int argc, char *argv[])
     para("... environment looks OK", "", NULL);
 
     /*
-     * if -a, open the anwers file for later use
+     * obtain the IOCCC contest ID
+     */
+    info.ioccc_id = get_contest_id(&info, &test_mode);
+    dbg(DBG_MED, "IOCCC contest ID: %s", info.ioccc_id);
+    /*
+     * obtain entry number
+     */
+    info.entry_num = get_entry_num(&info);
+    dbg(DBG_MED, "entry number: %d", info.entry_num);
+
+    /*
+     * create entry directory
+     */
+    entry_dir = mk_entry_dir(work_dir, info.ioccc_id, info.entry_num, &tarball_path, info.tstamp);
+    dbg(DBG_LOW, "formed entry directory: %s", entry_dir);
+
+
+    /*
+     * if -a, open the answers file. We only do it after verifying that we can
+     * make the entry directory because if we get input before and find out the
+     * directory already exists then the answers file will have invalid data.
      */
     if (a_flag_used && answers != NULL && strlen(answers) > 0) {
 	errno = 0;			/* pre-clear errno for errp() */
@@ -887,36 +907,20 @@ main(int argc, char *argv[])
     }
 
     /*
-     * obtain the IOCCC contest ID
+     * write the IOCCC id and entry number to the answers file 
      */
-    info.ioccc_id = get_contest_id(&info, &test_mode);
-    dbg(DBG_MED, "IOCCC contest ID: %s", info.ioccc_id);
     if (answerp != NULL) {
 	errno = 0;			/* pre-clear errno for errp() */
         ret = fprintf(answerp, "%s\n", info.ioccc_id);
 	if (ret <= 0) {
-	    warnp(__func__, "fprintf error printing IOCCC contest id to the ansewrs file");
+	    warnp(__func__, "fprintf error printing IOCCC contest id to the answers file");
 	}
-    }
-
-    /*
-     * obtain entry number
-     */
-    info.entry_num = get_entry_num(&info);
-    dbg(DBG_MED, "entry number: %d", info.entry_num);
-    if (answerp != NULL) {
 	errno = 0;			/* pre-clear errno for errp() */
 	ret = fprintf(answerp, "%d\n", info.entry_num);
 	if (ret <= 0) {
-	    warnp(__func__, "fprintf error printing entry number to the ansewrs file");
+	    warnp(__func__, "fprintf error printing entry number to the answers file");
 	}
     }
-
-    /*
-     * create entry directory
-     */
-    entry_dir = mk_entry_dir(work_dir, info.ioccc_id, info.entry_num, &tarball_path, info.tstamp);
-    dbg(DBG_LOW, "formed entry directory: %s", entry_dir);
 
     /*
      * check prog.c
@@ -955,7 +959,7 @@ main(int argc, char *argv[])
 	errno = 0;			/* pre-clear errno for errp() */
 	ret = fprintf(answerp, "%s\n", info.title);
 	if (ret <= 0) {
-	    warnp(__func__, "fprintf error printing title to the ansewrs file");
+	    warnp(__func__, "fprintf error printing title to the answers file");
 	}
 
     }
@@ -969,7 +973,7 @@ main(int argc, char *argv[])
 	errno = 0;			/* pre-clear errno for errp() */
 	ret = fprintf(answerp, "%s\n", info.abstract);
 	if (ret <= 0) {
-	    warnp(__func__, "fprintf error printing abstract to the ansewrs file");
+	    warnp(__func__, "fprintf error printing abstract to the answers file");
 	}
     }
 
@@ -1002,7 +1006,7 @@ main(int argc, char *argv[])
 	errno = 0;			/* pre-clear errno for errp() */
 	ret = fprintf(answerp, "y\n");
 	if (ret <= 0) {
-	    warnp(__func__, "unable to write confirming y to the ansewrs file");
+	    warnp(__func__, "unable to write confirming y to the answers file");
 	}
 	errno = 0;			/* pre-clear errno for errp() */
 	ret = fflush(answerp);
@@ -1781,7 +1785,7 @@ readline_dup(char **linep, bool strip, size_t *lenp, FILE *stream)
  *      tar             - path to tar that supports the -J (xz) option
  *	cp		- path to the cp utility
  *	ls		- path to the ls utility
- *	answers		- path to the ansewrs file (or NULL if not specified)
+ *	answers		- path to the answers file (or NULL if not specified)
  *
  * NOTE: This function does not return on error or if things are not sane.
  */
@@ -2010,7 +2014,7 @@ sanity_chk(struct info *infop, char const *work_dir, char const *tar, char const
 	fprintf(stderr,
 		"The answers file already exists.\n\n"
 		"You might consider using the file to automate the process of answering the prompts e.g. by.\n"
-		"\tcat %s | ./mkiocccentry ...\n", answers);
+		"\t./mkiocccentry ... < %s\n", answers);
 	err(38, __func__, "answers file already exists: %s", answers);
 	not_reached();
     }
@@ -3623,7 +3627,7 @@ check_remarks_md(struct info *infop, char const *entry_dir, char const *cp, char
     if (!exists(remarks_md)) {
 	fpara(stderr,
 	       "",
-	       "We cannot find the prog.c file.",
+	       "We cannot find the remarks.md file.",
 	       "",
 	       NULL);
 	err(126, __func__, "remarks.md does not exist: %s", remarks_md);
@@ -3656,10 +3660,10 @@ check_remarks_md(struct info *infop, char const *entry_dir, char const *cp, char
     }
 
     /*
-     * copy remarks_md under entry_dir
+     * copy remarks.md under entry_dir
      */
     errno = 0;			/* pre-clear errno for errp() */
-    cmd = cmdprintf("% -- % %/remarks_md", cp, remarks_md, entry_dir);
+    cmd = cmdprintf("% -- % %/remarks.md", cp, remarks_md, entry_dir);
     if (cmd == NULL) {
 	err(132, __func__, "failed to cmdprintf: cp remarks.md entry_dir/remarks.md");
 	not_reached();
@@ -4582,7 +4586,7 @@ get_author_info(struct info *infop, char *ioccc_id, struct author **author_set_p
 	errno = 0;			/* pre-clear errno for errp() */
         ret = fprintf(answerp, "%d\n", author_count);
 	if (ret <= 0) {
-	    warnp(__func__, "fprintf error printing IOCCC contest id to the ansewrs file");
+	    warnp(__func__, "fprintf error printing IOCCC contest id to the answers file");
 	}
     }
 
@@ -5264,37 +5268,37 @@ get_author_info(struct info *infop, char *ioccc_id, struct author **author_set_p
 	    errno = 0;			/* pre-clear errno for errp() */
 	    ret = fprintf(answerp, "%s\n", author_set[i].name);
 	    if (ret <= 0) {
-		warnp(__func__, "fprintf error printing author name to the ansewrs file");
+		warnp(__func__, "fprintf error printing author name to the answers file");
 	    }
 	    errno = 0;			/* pre-clear errno for errp() */
 	    ret = fprintf(answerp, "%s\ny\n", author_set[i].location_code);
 	    if (ret <= 0) {
-		warnp(__func__, "fprintf error printing author location to the ansewrs file");
+		warnp(__func__, "fprintf error printing author location to the answers file");
 	    }
 	    errno = 0;			/* pre-clear errno for errp() */
 	    ret = fprintf(answerp, "%s\n", author_set[i].email);
 	    if (ret <= 0) {
-		warnp(__func__, "fprintf error printing author email to the ansewrs file");
+		warnp(__func__, "fprintf error printing author email to the answers file");
 	    }
 	    errno = 0;			/* pre-clear errno for errp() */
 	    ret = fprintf(answerp, "%s\n", author_set[i].url);
 	    if (ret <= 0) {
-		warnp(__func__, "fprintf error printing author url to the ansewrs file");
+		warnp(__func__, "fprintf error printing author url to the answers file");
 	    }
 	    errno = 0;			/* pre-clear errno for errp() */
 	    ret = fprintf(answerp, "%s\n", author_set[i].twitter);
 	    if (ret <= 0) {
-		warnp(__func__, "fprintf error printing author twitter handle to the ansewrs file");
+		warnp(__func__, "fprintf error printing author twitter handle to the answers file");
 	    }
 	    errno = 0;			/* pre-clear errno for errp() */
 	    ret = fprintf(answerp, "%s\n", author_set[i].github);
 	    if (ret <= 0) {
-		warnp(__func__, "fprintf error printing author GitHub account to the ansewrs file");
+		warnp(__func__, "fprintf error printing author GitHub account to the answers file");
 	    }
 	    errno = 0;			/* pre-clear errno for errp() */
 	    ret = fprintf(answerp, "%s\n", author_set[i].affiliation);
 	    if (ret <= 0) {
-		warnp(__func__, "fprintf error printing author affiliation to the ansewrs file");
+		warnp(__func__, "fprintf error printing author affiliation to the answers file");
 	    }
 	    errno = 0;			/* pre-clear errno for errp() */
 	    ret = fprintf(answerp, "y\n");
@@ -6539,7 +6543,7 @@ form_tarball(char const *work_dir, char const *entry_dir, char const *tarball_pa
  *      tar             - path to the tar utility
  *      tarball_path    - path of the compressed tarball to form
  *      test_mode       - true ==> test mode, do not upload
- *      answers		- path to the ansewrs file (if specified)
+ *      answers		- path to the answers file (if specified)
  */
 static void
 remind_user(char const *work_dir, char const *entry_dir, char const *tar, char const *tarball_path, bool test_mode,
@@ -6600,7 +6604,7 @@ remind_user(char const *work_dir, char const *entry_dir, char const *tar, char c
      */
     if (answers != NULL) {
 	errno = 0;			/* pre-clear errno for errp() */
-	ret = printf("\nTo more easily update this entry you can run:\n\n    cat %s | ./mkiocccentry ...\n", answers);
+	ret = printf("\nTo more easily update this entry you can run:\n\n    ./mkiocccentry ... < %s\n", answers);
 	if (ret <= 0) {
 	    warnp(__func__, "unable to tell user how to more easily update entry");
 	}
