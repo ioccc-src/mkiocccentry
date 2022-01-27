@@ -166,7 +166,8 @@ static const char * const usage_msg0 =
     "\t-t /path/to/tar\t\tpath to tar executable that supports the -J (xz) option (def: %s)\n"
     "\t-c /path/to/cp\t\tpath to cp executable (def: %s)\n"
     "\t-l /path/to/ls\t\tpath to ls executable (def: %s)\n"
-    "\t-a answers\t\twrite answers to a file for easier updating of an entry\n";
+    "\t-a answers\t\twrite answers to a file for easier updating of an entry\n"
+    "\t-i answers\t\tread answers from file previously written by -a\n";
 static const char * const usage_msg1 =
     "\n"
     "\twork_dir\tdirectory where the entry directory and tarball are formed\n"
@@ -665,11 +666,11 @@ static bool is_dir(char const *path);
 static bool is_read(char const *path);
 static bool is_write(char const *path);
 static ssize_t file_size(char const *path);
-static void check_prog_c(struct info *infop, char const *entry_dir, char const *cp, char const *prog_c, FILE *answerp);
+static void check_prog_c(struct info *infop, char const *entry_dir, char const *cp, char const *prog_c, FILE *answerp, bool i_flag_used);
 static ssize_t readline(char **linep, FILE * stream);
 static char *readline_dup(char **linep, bool strip, size_t *lenp, FILE * stream);
 static void sanity_chk(struct info *infop, char const *work_dir, char const *tar,
-		       char const *cp, char const *ls, char const *answers);
+		       char const *cp, char const *ls, char const *answers, bool i_flag_used);
 static void para(char const *line, ...);
 static void fpara(FILE * stream, char const *line, ...);
 static char *prompt(char const *str, size_t *lenp);
@@ -677,7 +678,7 @@ static char *get_contest_id(struct info *infop, bool *testp);
 static int get_entry_num(struct info *infop);
 static char *mk_entry_dir(char const *work_dir, char const *ioccc_id, int entry_num, char **tarball_path, time_t tstamp);
 static bool inspect_Makefile(char const *Makefile);
-static void check_Makefile(struct info *infop, char const *entry_dir, char const *cp, char const *Makefile, FILE *answerp);
+static void check_Makefile(struct info *infop, char const *entry_dir, char const *cp, char const *Makefile, FILE *answerp, bool i_flag_used);
 static void check_remarks_md(struct info *infop, char const *entry_dir, char const *cp, char const *remarks_md);
 static char *base_name(char const *path);
 static void check_extra_data_files(struct info *infop, char const *entry_dir, char const *cp, int count, char **args);
@@ -685,7 +686,7 @@ static char const *lookup_location_name(char const *upper_code);
 static bool yes_or_no(char const *question);
 static char *get_title(struct info *infop);
 static char *get_abstract(struct info *infop);
-static int get_author_info(struct info *infop, char *ioccc_id, struct author **author_set, FILE *answerp);
+static int get_author_info(struct info *infop, char *ioccc_id, struct author **author_set, FILE *answerp, bool i_flag_used);
 static void verify_entry_dir(char const *entry_dir, char const *ls);
 static bool json_putc(int const c, FILE *stream);
 static bool json_fprintf_str(FILE *stream, char const *str);
@@ -731,7 +732,8 @@ main(int argc, char *argv[])
     bool t_flag_used = false;	/* true ==> -t /path/to/tar was given */
     bool c_flag_used = false;	/* true ==> -c /path/to/cp was given */
     bool l_flag_used = false;	/* true ==> -l /path/to/ls was given */
-    bool a_flag_used = false;	/* true ==> -a answers file of input specified */
+    bool a_flag_used = false;	/* true ==> -a write answers to answers file */
+    bool i_flag_used = false;	/* true ==> -i read answers from answers file */
     int ret;			/* libc return code */
     int i;
 
@@ -739,7 +741,7 @@ main(int argc, char *argv[])
      * parse args
      */
     program = argv[0];
-    while ((i = getopt(argc, argv, "hv:Vt:c:l:a:")) != -1) {
+    while ((i = getopt(argc, argv, "hv:Vt:c:l:a:i:")) != -1) {
 	switch (i) {
 	case 'h':		/* -h - print help to stderr and exit 0 */
 	    usage(0, __func__, "-h help mode", program, tar, cp, ls);
@@ -780,6 +782,10 @@ main(int argc, char *argv[])
 	case 'a':
 	    answers = optarg;
 	    a_flag_used = true;
+	    break;
+	case 'i':
+	    answers = optarg;
+	    i_flag_used = true;
 	    break;
 	default:
 	    usage(1, __func__, "invalid -flag", program, tar, cp, ls); /*ooo*/
@@ -828,6 +834,7 @@ main(int argc, char *argv[])
     remarks_md = argv[optind + 3];
     dbg(DBG_LOW, "remarks: %s", remarks_md);
     dbg(DBG_LOW, "number of extra data file args: %d", extra_count);
+    dbg(DBG_LOW, "answers file: %s", answers);
 
     /*
      * zerosize info
@@ -872,9 +879,31 @@ main(int argc, char *argv[])
      * environment sanity checks
      */
     para("", "Performing sanity checks on your environment ...", NULL);
-    sanity_chk(&info, work_dir, tar, cp, ls, answers);
+    sanity_chk(&info, work_dir, tar, cp, ls, answers, i_flag_used);
     para("... environment looks OK", "", NULL);
 
+    /*
+     * make sure both -a and -i are not specified.
+     */
+    if (a_flag_used == true && i_flag_used == true) {
+	fprintf(stderr, "cannot use both -a and -i\n");
+	not_reached();
+    }
+    /* 
+     * check if we should read input from answers file
+     */
+    if (i_flag_used == true) {
+	if (is_read(answers) == false) {
+	    errp(26, __func__, "cannot read answers file");
+	    not_reached();
+	}
+	errno = 0;
+	answerp = freopen(answers, "r", stdin);
+	if (answerp == NULL) {
+	    errp(26, __func__, "cannot open answers file");
+	    not_reached();
+	}
+    }
     /*
      * obtain the IOCCC contest ID
      */
@@ -927,14 +956,14 @@ main(int argc, char *argv[])
      * check prog.c
      */
     para("", "Checking prog.c ...", NULL);
-    check_prog_c(&info, entry_dir, cp, prog_c, answerp);
+    check_prog_c(&info, entry_dir, cp, prog_c, answerp, i_flag_used);
     para("... completed prog.c check.", "", NULL);
 
     /*
      * check Makefile
      */
     para("Checking Makefile ...", NULL);
-    check_Makefile(&info, entry_dir, cp, Makefile, answerp);
+    check_Makefile(&info, entry_dir, cp, Makefile, answerp, i_flag_used);
     para("... completed Makefile check.", "", NULL);
 
     /*
@@ -982,7 +1011,7 @@ main(int argc, char *argv[])
     /*
      * obtain author information
      */
-    author_count = get_author_info(&info, info.ioccc_id, &author_set, answerp);
+    author_count = get_author_info(&info, info.ioccc_id, &author_set, answerp, i_flag_used);
     dbg(DBG_LOW, "collected information on %d authors", author_count);
 
 
@@ -1003,7 +1032,7 @@ main(int argc, char *argv[])
     /*
      * finalize the answers file
      */
-    if (answerp != NULL) {
+    if (answerp != NULL && a_flag_used == true) {
 	errno = 0;			/* pre-clear errno for errp() */
 	ret = fprintf(answerp, "y\n");
 	if (ret <= 0) {
@@ -1787,11 +1816,12 @@ readline_dup(char **linep, bool strip, size_t *lenp, FILE *stream)
  *	cp		- path to the cp utility
  *	ls		- path to the ls utility
  *	answers		- path to the answers file (or NULL if not specified)
+ *	i_flag_used	- if -i was specified
  *
  * NOTE: This function does not return on error or if things are not sane.
  */
 static void
-sanity_chk(struct info *infop, char const *work_dir, char const *tar, char const *cp, char const *ls, char const *answers)
+sanity_chk(struct info *infop, char const *work_dir, char const *tar, char const *cp, char const *ls, char const *answers, bool i_flag_used)
 {
     /*
      * firewall
@@ -2011,11 +2041,11 @@ sanity_chk(struct info *infop, char const *work_dir, char const *tar, char const
     /*
      * if answers was specified, then it must not exist
      */
-    if (answers && strlen(answers) > 0 && exists(answers)) {
+    if (answers && strlen(answers) > 0 && exists(answers) && i_flag_used == false) {
 	fprintf(stderr,
 		"The answers file already exists.\n\n"
 		"You might consider using the file to automate the process of answering the prompts e.g. by.\n"
-		"\t./mkiocccentry ... < %s\n\n"
+		"\t./mkiocccentry -i %s ...\n\n"
 		"If you've ignored warnings and you've fixed these (or you ignore different warnings)\n"
 		"we STRONGLY recommend you re-enter your answers!\n\n", answers);
 	err(38, __func__, "answers file already exists: %s", answers);
@@ -2787,11 +2817,12 @@ mk_entry_dir(char const *work_dir, char const *ioccc_id, int entry_num, char **t
  *      cp              - cp utility path
  *      prog_c          - prog_c arg: given path to prog.c
  *      answerp		- answer file
+ *      i_flag_used	- if -i was specified
  *
  * This function does not return on error.
  */
 static void
-check_prog_c(struct info *infop, char const *entry_dir, char const *cp, char const *prog_c, FILE *answerp)
+check_prog_c(struct info *infop, char const *entry_dir, char const *cp, char const *prog_c, FILE *answerp, bool i_flag_used)
 {
     FILE *prog_stream;		/* prog.c open file stream */
     struct iocccsize size;	/* rule_count() processing results */
@@ -2885,7 +2916,7 @@ check_prog_c(struct info *infop, char const *entry_dir, char const *cp, char con
 	infop->empty_override = true;
 	infop->rule_2a_override = false;
 	infop->warnings_ignored = true;
-	if (answerp != NULL) {
+	if (answerp != NULL && i_flag_used == false) {
 	    errno = 0;			/* pre-clear errno for errp() */
 	    ret = fprintf(answerp, "y\n");
 	    if (ret <= 0) {
@@ -2922,7 +2953,7 @@ check_prog_c(struct info *infop, char const *entry_dir, char const *cp, char con
 	infop->empty_override = false;
 	infop->rule_2a_override = true;
 	infop->warnings_ignored = true;
-	if (answerp != NULL) {
+	if (answerp != NULL && i_flag_used == false) {
 	    errno = 0;			/* pre-clear errno for errp() */
 	    ret = fprintf(answerp, "y\n");
 	    if (ret <= 0) {
@@ -2978,7 +3009,7 @@ check_prog_c(struct info *infop, char const *entry_dir, char const *cp, char con
 	    (long)infop->rule_2a_size, (long)size.rule_2a_size);
 	infop->rule_2a_mismatch = true;
 	infop->warnings_ignored = true;
-	if (answerp != NULL) {
+	if (answerp != NULL && i_flag_used == false) {
 	    errno = 0;			/* pre-clear errno for errp() */
 	    ret = fprintf(answerp, "y\n");
 	    if (ret <= 0) {
@@ -3007,7 +3038,7 @@ check_prog_c(struct info *infop, char const *entry_dir, char const *cp, char con
 	dbg(DBG_LOW, "user says that prog.c %s having character(s) with high bit is OK", prog_c);
 	infop->highbit_warning = true;
 	infop->warnings_ignored = true;
-	if (answerp != NULL) {
+	if (answerp != NULL && i_flag_used == false) {
 	    errno = 0;			/* pre-clear errno for errp() */
 	    ret = fprintf(answerp, "y\n");
 	    if (ret <= 0) {
@@ -3036,7 +3067,7 @@ check_prog_c(struct info *infop, char const *entry_dir, char const *cp, char con
 	dbg(DBG_LOW, "user says that prog.c %s having NUL character(s) is OK", prog_c);
 	infop->nul_warning = true;
 	infop->warnings_ignored = true;
-	if (answerp != NULL) {
+	if (answerp != NULL && i_flag_used == false) {
 	    errno = 0;			/* pre-clear errno for errp() */
 	    ret = fprintf(answerp, "y\n");
 	    if (ret <= 0) {
@@ -3065,7 +3096,7 @@ check_prog_c(struct info *infop, char const *entry_dir, char const *cp, char con
 	dbg(DBG_LOW, "user says that prog.c %s having unknown or invalid trigraph(s) is OK", prog_c);
 	infop->trigraph_warning = true;
 	infop->warnings_ignored = true;
-	if (answerp != NULL) {
+	if (answerp != NULL && i_flag_used == false) {
 	    errno = 0;			/* pre-clear errno for errp() */
 	    ret = fprintf(answerp, "y\n");
 	    if (ret <= 0) {
@@ -3095,7 +3126,7 @@ check_prog_c(struct info *infop, char const *entry_dir, char const *cp, char con
 	dbg(DBG_LOW, "user says that prog.c %s triggered a word buffer overflow is OK", prog_c);
 	infop->wordbuf_warning = true;
 	infop->warnings_ignored = true;
-	if (answerp != NULL) {
+	if (answerp != NULL && i_flag_used == false) {
 	    errno = 0;			/* pre-clear errno for errp() */
 	    ret = fprintf(answerp, "y\n");
 	    if (ret <= 0) {
@@ -3125,7 +3156,7 @@ check_prog_c(struct info *infop, char const *entry_dir, char const *cp, char con
 	dbg(DBG_LOW, "user says that prog.c %s triggered an ungetc warning OK", prog_c);
 	infop->ungetc_warning = true;
 	infop->warnings_ignored = true;
-	if (answerp != NULL) {
+	if (answerp != NULL && i_flag_used == false) {
 	    errno = 0;			/* pre-clear errno for errp() */
 	    ret = fprintf(answerp, "y\n");
 	    if (ret <= 0) {
@@ -3157,7 +3188,7 @@ check_prog_c(struct info *infop, char const *entry_dir, char const *cp, char con
 	    (unsigned long)infop->rule_2b_size, (unsigned long)RULE_2B_SIZE);
 	infop->rule_2b_override = true;
 	infop->warnings_ignored = true;
-	if (answerp != NULL) {
+	if (answerp != NULL && i_flag_used == false) {
 	    errno = 0;			/* pre-clear errno for errp() */
 	    ret = fprintf(answerp, "y\n");
 	    if (ret <= 0) {
@@ -3504,11 +3535,12 @@ inspect_Makefile(char const *Makefile)
  *      cp              - cp utility path
  *      Makefile        - Makefile arg: given path to Makefile
  *      answerp		- answer file
+ *      i_flag_used	- if -i was used
  *
  * This function does not return on error.
  */
 static void
-check_Makefile(struct info *infop, char const *entry_dir, char const *cp, char const *Makefile, FILE *answerp)
+check_Makefile(struct info *infop, char const *entry_dir, char const *cp, char const *Makefile, FILE *answerp, bool i_flag_used)
 {
     ssize_t filesize = 0;	/* size of Makefile */
     int ret;			/* libc function return */
@@ -3599,7 +3631,7 @@ check_Makefile(struct info *infop, char const *entry_dir, char const *cp, char c
 	}
 	infop->Makefile_override = true;
 	infop->warnings_ignored = true;
-	if (answerp != NULL) {
+	if (answerp != NULL && i_flag_used == false) {
 	    errno = 0;			/* pre-clear errno for errp() */
 	    ret = fprintf(answerp, "y\n");
 	    if (ret <= 0) {
@@ -4598,6 +4630,7 @@ get_abstract(struct info *infop)
  *      entry_num       - entry number
  *      author_set      - pointer to array of authors
  *      answerp		- answers file (for updating entries) or NULL
+ *      i_flag_used	- if -i was used
  *
  * returns:
  *      number of authors
@@ -4605,7 +4638,7 @@ get_abstract(struct info *infop)
  * This function does not return on error.
  */
 static int
-get_author_info(struct info *infop, char *ioccc_id, struct author **author_set_p, FILE *answerp)
+get_author_info(struct info *infop, char *ioccc_id, struct author **author_set_p, FILE *answerp, bool i_flag_used)
 {
     struct author *author_set = NULL;	/* allocated author set */
     int author_count = -1;		/* number of authors or -1 */
@@ -4668,7 +4701,7 @@ get_author_info(struct info *infop, char *ioccc_id, struct author **author_set_p
 
     } while (author_count < 1 || author_count > MAX_AUTHORS);
     dbg(DBG_HIGH, "will request information on %d authors", author_count);
-    if (answerp != NULL) {
+    if (answerp != NULL && i_flag_used == false) {
 	errno = 0;			/* pre-clear errno for errp() */
         ret = fprintf(answerp, "%d\n", author_count);
 	if (ret <= 0) {
@@ -5350,7 +5383,7 @@ get_author_info(struct info *infop, char *ioccc_id, struct author **author_set_p
 	/*
 	 * if we have an answers file, record the verified author information
 	 */
-	if (answerp != NULL) {
+	if (answerp != NULL && i_flag_used == false) {
 	    errno = 0;			/* pre-clear errno for errp() */
 	    ret = fprintf(answerp, "%s\n", author_set[i].name);
 	    if (ret <= 0) {
@@ -6691,7 +6724,7 @@ remind_user(char const *work_dir, char const *entry_dir, char const *tar, char c
      */
     if (answers != NULL) {
 	errno = 0;			/* pre-clear errno for errp() */
-	ret = printf("\nTo more easily update this entry you can run:\n\n    ./mkiocccentry ... < %s\n", answers);
+	ret = printf("\nTo more easily update this entry you can run:\n\n    ./mkiocccentry -i %s ...\n", answers);
 	if (ret <= 0) {
 	    warnp(__func__, "unable to tell user how to more easily update entry");
 	}
