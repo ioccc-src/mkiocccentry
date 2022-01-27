@@ -229,6 +229,7 @@ struct info {
     bool wordbuf_warning;	/* true ==> word buffer overflow detected */
     bool ungetc_warning;	/* true ==> ungetc warning detected */
     bool Makefile_override;	/* true ==> Makefile rule override requested */
+    bool warnings_ignored;	/* true ==> warnings were ignored */
     /*
      * filenames
      */
@@ -664,7 +665,7 @@ static bool is_dir(char const *path);
 static bool is_read(char const *path);
 static bool is_write(char const *path);
 static ssize_t file_size(char const *path);
-static void check_prog_c(struct info *infop, char const *entry_dir, char const *cp, char const *prog_c);
+static void check_prog_c(struct info *infop, char const *entry_dir, char const *cp, char const *prog_c, FILE *answerp);
 static ssize_t readline(char **linep, FILE * stream);
 static char *readline_dup(char **linep, bool strip, size_t *lenp, FILE * stream);
 static void sanity_chk(struct info *infop, char const *work_dir, char const *tar,
@@ -676,7 +677,7 @@ static char *get_contest_id(struct info *infop, bool *testp);
 static int get_entry_num(struct info *infop);
 static char *mk_entry_dir(char const *work_dir, char const *ioccc_id, int entry_num, char **tarball_path, time_t tstamp);
 static bool inspect_Makefile(char const *Makefile);
-static void check_Makefile(struct info *infop, char const *entry_dir, char const *cp, char const *Makefile);
+static void check_Makefile(struct info *infop, char const *entry_dir, char const *cp, char const *Makefile, FILE *answerp);
 static void check_remarks_md(struct info *infop, char const *entry_dir, char const *cp, char const *remarks_md);
 static char *base_name(char const *path);
 static void check_extra_data_files(struct info *infop, char const *entry_dir, char const *cp, int count, char **args);
@@ -699,7 +700,7 @@ static void write_info(struct info *infop, char const *entry_dir, bool test_mode
 static void write_author(struct info *infop, int author_count, struct author *authorp, char const *entry_dir);
 static void form_tarball(char const *work_dir, char const *entry_dir, char const *tarball_path, char const *tar, char const *ls);
 static void remind_user(char const *work_dir, char const *entry_dir, char const *tar, char const *tarball_path, bool test_mode,
-			char const *answers);
+			char const *answers, struct info *infop);
 static char *cmdprintf(char const *format, ...);
 
 
@@ -926,14 +927,14 @@ main(int argc, char *argv[])
      * check prog.c
      */
     para("", "Checking prog.c ...", NULL);
-    check_prog_c(&info, entry_dir, cp, prog_c);
+    check_prog_c(&info, entry_dir, cp, prog_c, answerp);
     para("... completed prog.c check.", "", NULL);
 
     /*
      * check Makefile
      */
     para("Checking Makefile ...", NULL);
-    check_Makefile(&info, entry_dir, cp, Makefile);
+    check_Makefile(&info, entry_dir, cp, Makefile, answerp);
     para("... completed Makefile check.", "", NULL);
 
     /*
@@ -1028,9 +1029,9 @@ main(int argc, char *argv[])
     form_tarball(work_dir, entry_dir, tarball_path, tar, ls);
 
     /*
-     * remind user to upload (unless in test mode)
+     * remind user various things e.g. to upload (unless in test mode)
      */
-    remind_user(work_dir, entry_dir, tar, tarball_path, test_mode, answers);
+    remind_user(work_dir, entry_dir, tar, tarball_path, test_mode, answers, &info);
 
     /*
      * free storage
@@ -2014,7 +2015,9 @@ sanity_chk(struct info *infop, char const *work_dir, char const *tar, char const
 	fprintf(stderr,
 		"The answers file already exists.\n\n"
 		"You might consider using the file to automate the process of answering the prompts e.g. by.\n"
-		"\t./mkiocccentry ... < %s\n", answers);
+		"\t./mkiocccentry ... < %s\n\n"
+		"If you've ignored warnings and you've fixed these (or you ignore different warnings)\n"
+		"we STRONGLY recommend you re-enter your answers!\n\n", answers);
 	err(38, __func__, "answers file already exists: %s", answers);
 	not_reached();
     }
@@ -2783,11 +2786,12 @@ mk_entry_dir(char const *work_dir, char const *ioccc_id, int entry_num, char **t
  *      entry_dir       - newly created entry directory (by mk_entry_dir()) under work_dir
  *      cp              - cp utility path
  *      prog_c          - prog_c arg: given path to prog.c
+ *      answerp		- answer file
  *
  * This function does not return on error.
  */
 static void
-check_prog_c(struct info *infop, char const *entry_dir, char const *cp, char const *prog_c)
+check_prog_c(struct info *infop, char const *entry_dir, char const *cp, char const *prog_c, FILE *answerp)
 {
     FILE *prog_stream;		/* prog.c open file stream */
     struct iocccsize size;	/* rule_count() processing results */
@@ -2843,7 +2847,7 @@ check_prog_c(struct info *infop, char const *entry_dir, char const *cp, char con
 	      "The prog.c, while it is a file, is not readable.",
 	      "",
 	      NULL);
-	err(88, __func__, "prog.c is not readable file: %s", prog_c);
+	err(88, __func__, "prog.c is not a readable file: %s", prog_c);
 	not_reached();
     }
 
@@ -2862,7 +2866,7 @@ check_prog_c(struct info *infop, char const *entry_dir, char const *cp, char con
 	      "",
 	      "    https://www.ioccc.org/years.html#1994_smr",
 	      "",
-	      "The guidelines indicate that we tend to dislike programs that are:",
+	      "The guidelines indicate that we tend to dislike programs that:",
 	      "",
 	      "    * are rather similar to previous winners  :-(",
 	      "",
@@ -2880,6 +2884,15 @@ check_prog_c(struct info *infop, char const *entry_dir, char const *cp, char con
 	dbg(DBG_LOW, "user says that their empty prog.c: %s is OK", prog_c);
 	infop->empty_override = true;
 	infop->rule_2a_override = false;
+	infop->warnings_ignored = true;
+	if (answerp != NULL) {
+	    errno = 0;			/* pre-clear errno for errp() */
+	    ret = fprintf(answerp, "y\n");
+	    if (ret <= 0) {
+		warnp(__func__, "fprintf error writing user confirmation that empty prog.c is OK to answers file");
+	    }
+	}
+
 
     /*
      * warn if prog.c is too large under Rule 2a
@@ -2894,7 +2907,7 @@ check_prog_c(struct info *infop, char const *entry_dir, char const *cp, char con
 	    warnp(__func__, "fprintf error when printing prog.c Rule 2a warning");
 	}
 	fpara(stderr,
-	      "Unless you are attempting some cleaver rule abuse, then we strongly suggest that you",
+	      "If you are attempting some clever rule abuse, then we strongly suggest that you",
 	      "tell us about your rule abuse in your remarks.md file.  Be sure you have read the",
 	      "\"ABUSING THE RULES\" section of the guidelines.  And more importantly, read rule 12!",
 	      "",
@@ -2908,6 +2921,14 @@ check_prog_c(struct info *infop, char const *entry_dir, char const *cp, char con
 	    (long)infop->rule_2a_size, (long)RULE_2A_SIZE);
 	infop->empty_override = false;
 	infop->rule_2a_override = true;
+	infop->warnings_ignored = true;
+	if (answerp != NULL) {
+	    errno = 0;			/* pre-clear errno for errp() */
+	    ret = fprintf(answerp, "y\n");
+	    if (ret <= 0) {
+		warnp(__func__, "fprintf error writing user confirmation that prog.c size > Rule 2a max size is OK to answers file");
+	    }
+	}
     } else {
 	infop->empty_override = false;
 	infop->rule_2a_override = false;
@@ -2956,6 +2977,14 @@ check_prog_c(struct info *infop, char const *entry_dir, char const *cp, char con
 	dbg(DBG_LOW, "user says that prog.c %s size: %ld != rule_count function size: %ld is OK", prog_c,
 	    (long)infop->rule_2a_size, (long)size.rule_2a_size);
 	infop->rule_2a_mismatch = true;
+	infop->warnings_ignored = true;
+	if (answerp != NULL) {
+	    errno = 0;			/* pre-clear errno for errp() */
+	    ret = fprintf(answerp, "y\n");
+	    if (ret <= 0) {
+		warnp(__func__, "fprintf error writing user confirmation that prog.c size != rule_count function size is OK to answers file");
+	    }
+	}
     } else {
 	infop->rule_2a_mismatch = false;
     }
@@ -2977,6 +3006,14 @@ check_prog_c(struct info *infop, char const *entry_dir, char const *cp, char con
 	}
 	dbg(DBG_LOW, "user says that prog.c %s having character(s) with high bit is OK", prog_c);
 	infop->highbit_warning = true;
+	infop->warnings_ignored = true;
+	if (answerp != NULL) {
+	    errno = 0;			/* pre-clear errno for errp() */
+	    ret = fprintf(answerp, "y\n");
+	    if (ret <= 0) {
+		warnp(__func__, "fprintf error writing user confirmation that prog.c having character(s) with high bit is OK to answers file");
+	    }
+	}
     } else {
 	infop->highbit_warning = false;
     }
@@ -2998,6 +3035,14 @@ check_prog_c(struct info *infop, char const *entry_dir, char const *cp, char con
 	}
 	dbg(DBG_LOW, "user says that prog.c %s having NUL character(s) is OK", prog_c);
 	infop->nul_warning = true;
+	infop->warnings_ignored = true;
+	if (answerp != NULL) {
+	    errno = 0;			/* pre-clear errno for errp() */
+	    ret = fprintf(answerp, "y\n");
+	    if (ret <= 0) {
+		warnp(__func__, "fprintf error writing user confirmation that prog.c having NUL character(s) is OK to answers file");
+	    }
+	}
     } else {
 	infop->nul_warning = false;
     }
@@ -3019,6 +3064,14 @@ check_prog_c(struct info *infop, char const *entry_dir, char const *cp, char con
 	}
 	dbg(DBG_LOW, "user says that prog.c %s having unknown or invalid trigraph(s) is OK", prog_c);
 	infop->trigraph_warning = true;
+	infop->warnings_ignored = true;
+	if (answerp != NULL) {
+	    errno = 0;			/* pre-clear errno for errp() */
+	    ret = fprintf(answerp, "y\n");
+	    if (ret <= 0) {
+		warnp(__func__, "fprintf error writing user confirmation that prog.c having unknown or invalid trigraph(s)) is OK to answers file");
+	    }
+	}
     } else {
 	infop->trigraph_warning = false;
     }
@@ -3041,6 +3094,14 @@ check_prog_c(struct info *infop, char const *entry_dir, char const *cp, char con
 	}
 	dbg(DBG_LOW, "user says that prog.c %s triggered a word buffer overflow is OK", prog_c);
 	infop->wordbuf_warning = true;
+	infop->warnings_ignored = true;
+	if (answerp != NULL) {
+	    errno = 0;			/* pre-clear errno for errp() */
+	    ret = fprintf(answerp, "y\n");
+	    if (ret <= 0) {
+		warnp(__func__, "fprintf error writing user confirmation that it's OK that prog.c triggered a word buffer overflow to answers file");
+	    }
+	}
     } else {
 	infop->wordbuf_warning = false;
     }
@@ -3063,6 +3124,14 @@ check_prog_c(struct info *infop, char const *entry_dir, char const *cp, char con
 	}
 	dbg(DBG_LOW, "user says that prog.c %s triggered an ungetc warning OK", prog_c);
 	infop->ungetc_warning = true;
+	infop->warnings_ignored = true;
+	if (answerp != NULL) {
+	    errno = 0;			/* pre-clear errno for errp() */
+	    ret = fprintf(answerp, "y\n");
+	    if (ret <= 0) {
+		warnp(__func__, "fprintf error writing user confirmation that it's OK that prog.c triggered an ungetc warning to answers file");
+	    }
+	}
     } else {
 	infop->ungetc_warning = false;
     }
@@ -3087,6 +3156,14 @@ check_prog_c(struct info *infop, char const *entry_dir, char const *cp, char con
 	dbg(DBG_LOW, "user says that their prog.c %s size: %lu > Rule 2B max size: %lu is OK", prog_c,
 	    (unsigned long)infop->rule_2b_size, (unsigned long)RULE_2B_SIZE);
 	infop->rule_2b_override = true;
+	infop->warnings_ignored = true;
+	if (answerp != NULL) {
+	    errno = 0;			/* pre-clear errno for errp() */
+	    ret = fprintf(answerp, "y\n");
+	    if (ret <= 0) {
+		warnp(__func__, "fprintf error writing user confirmation that  prog.c size > Rule 2b max size is OK to answers file");
+	    }
+	}
     } else {
 	infop->rule_2b_override = false;
     }
@@ -3403,7 +3480,7 @@ inspect_Makefile(char const *Makefile)
     }
     if (found_try_rule == false) {
 	fpara(stderr,
-	      "  The Makefile appears to not have an try rule.",
+	      "  The Makefile appears to not have a try rule.",
 	      "    The try rule should execute the program with suggested arguments (if any needed).",
 	      "    The program may be executed more than once if such examples are informative.",
 	      "	   The try rule should depend on the all rule.",
@@ -3426,11 +3503,12 @@ inspect_Makefile(char const *Makefile)
  *      entry_dir       - newly created entry directory (by mk_entry_dir()) under work_dir
  *      cp              - cp utility path
  *      Makefile        - Makefile arg: given path to Makefile
+ *      answerp		- answer file
  *
  * This function does not return on error.
  */
 static void
-check_Makefile(struct info *infop, char const *entry_dir, char const *cp, char const *Makefile)
+check_Makefile(struct info *infop, char const *entry_dir, char const *cp, char const *Makefile, FILE *answerp)
 {
     ssize_t filesize = 0;	/* size of Makefile */
     int ret;			/* libc function return */
@@ -3520,6 +3598,14 @@ check_Makefile(struct info *infop, char const *entry_dir, char const *cp, char c
 	    not_reached();
 	}
 	infop->Makefile_override = true;
+	infop->warnings_ignored = true;
+	if (answerp != NULL) {
+	    errno = 0;			/* pre-clear errno for errp() */
+	    ret = fprintf(answerp, "y\n");
+	    if (ret <= 0) {
+		warnp(__func__, "fprintf error writing user confirmation that Makefile is OK to answers file");
+	    }
+	}
     } else {
 	infop->Makefile_override = false;
     }
@@ -5428,7 +5514,7 @@ verify_entry_dir(char const *entry_dir, char const *ls)
     }
 
     /*
-     * form pile to the ls command
+     * form pipe to the ls command
      */
     errno = 0;			/* pre-clear errno for errp() */
     ls_stream = popen(cmd, "r");
@@ -6544,10 +6630,11 @@ form_tarball(char const *work_dir, char const *entry_dir, char const *tarball_pa
  *      tarball_path    - path of the compressed tarball to form
  *      test_mode       - true ==> test mode, do not upload
  *      answers		- path to the answers file (if specified)
+ *      infop		- pointer to info structure
  */
 static void
 remind_user(char const *work_dir, char const *entry_dir, char const *tar, char const *tarball_path, bool test_mode,
-	    char const *answers)
+	    char const *answers, struct info *infop)
 {
     int ret;			/* libc function return */
     char *entry_dir_esc;
@@ -6607,6 +6694,16 @@ remind_user(char const *work_dir, char const *entry_dir, char const *tar, char c
 	ret = printf("\nTo more easily update this entry you can run:\n\n    ./mkiocccentry ... < %s\n", answers);
 	if (ret <= 0) {
 	    warnp(__func__, "unable to tell user how to more easily update entry");
+	}
+	if (infop->warnings_ignored == true) {
+	    errno = 0;	/* pre-clear errno for errp() */
+	    ret = printf("\nYou've ignored one or more warnings. If you update your files so that these warnings\n"
+		         "aren't triggered or if different warnings are triggered, it is very likely that the\n"
+			 "answers file will cause invalid results and we STRONGLY recommend that you re-enter\n"
+			 "your answers!\n");
+	    if (ret <= 0) {
+		warnp(__func__, "unable to warn user about ignoring warnings when writing to the answer file");
+	    }
 	}
     }
 
