@@ -1030,7 +1030,8 @@ main(int argc, char *argv[])
     para("... completed .author.json file.", "", NULL);
 
     /*
-     * finalize the answers file
+     * finalize the answers file, writing final answers (if writing answers) and
+     * then closing the stream.
      */
     if (answerp != NULL) {
 	if (a_flag_used == true) {
