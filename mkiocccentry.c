@@ -1032,17 +1032,19 @@ main(int argc, char *argv[])
     /*
      * finalize the answers file
      */
-    if (answerp != NULL && a_flag_used == true) {
-	errno = 0;			/* pre-clear errno for errp() */
-	ret = fprintf(answerp, "y\n");
-	if (ret <= 0) {
-	    warnp(__func__, "unable to write confirming y to the answers file");
-	}
-	errno = 0;			/* pre-clear errno for errp() */
-	ret = fflush(answerp);
-	if (ret != 0) {
-	    errp(6, __func__, "error in flushing data to the answers file");
-	    not_reached();
+    if (answerp != NULL) {
+	if (a_flag_used == true) {
+	    errno = 0;			/* pre-clear errno for errp() */
+	    ret = fprintf(answerp, "y\n");
+	    if (ret <= 0) {
+		warnp(__func__, "unable to write confirming y to the answers file");
+	    }
+	    errno = 0;			/* pre-clear errno for errp() */
+	    ret = fflush(answerp);
+	    if (ret != 0) {
+		errp(6, __func__, "error in flushing data to the answers file");
+		not_reached();
+	    }
 	}
 	ret = fclose(answerp);
 	if (ret != 0) {
