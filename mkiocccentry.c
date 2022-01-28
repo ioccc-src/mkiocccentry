@@ -890,13 +890,6 @@ main(int argc, char *argv[])
     para("... environment looks OK", "", NULL);
 
     /*
-     * make sure both -a and -i are not specified.
-     */
-    if (a_flag_used == true && i_flag_used == true) {
-	fprintf(stderr, "cannot use both -a and -i\n");
-	not_reached();
-    }
-    /*
      * check if we should read input from answers file
      */
     if (i_flag_used == true) {
