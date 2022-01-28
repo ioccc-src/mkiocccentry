@@ -668,7 +668,7 @@ static bool is_read(char const *path);
 static bool is_write(char const *path);
 static ssize_t file_size(char const *path);
 static void check_prog_c(struct info *infop, char const *entry_dir, char const *cp, char const *prog_c, FILE *answerp,
-			 bool i_flag_used);
+			 bool i_flag_used, unsigned *answers_errors);
 static ssize_t readline(char **linep, FILE * stream);
 static char *readline_dup(char **linep, bool strip, size_t *lenp, FILE * stream);
 static void sanity_chk(struct info *infop, char const *work_dir, char const *tar,
@@ -681,7 +681,7 @@ static int get_entry_num(struct info *infop);
 static char *mk_entry_dir(char const *work_dir, char const *ioccc_id, int entry_num, char **tarball_path, time_t tstamp);
 static bool inspect_Makefile(char const *Makefile);
 static void check_Makefile(struct info *infop, char const *entry_dir, char const *cp, char const *Makefile, FILE *answerp,
-			   bool i_flag_used);
+			   bool i_flag_used, unsigned *answers_errors);
 static void check_remarks_md(struct info *infop, char const *entry_dir, char const *cp, char const *remarks_md);
 static char *base_name(char const *path);
 static void check_extra_data_files(struct info *infop, char const *entry_dir, char const *cp, int count, char **args);
@@ -689,7 +689,8 @@ static char const *lookup_location_name(char const *upper_code);
 static bool yes_or_no(char const *question);
 static char *get_title(struct info *infop);
 static char *get_abstract(struct info *infop);
-static int get_author_info(struct info *infop, char *ioccc_id, struct author **author_set, FILE *answerp, bool i_flag_used);
+static int get_author_info(struct info *infop, char *ioccc_id, struct author **author_set, FILE *answerp, bool i_flag_used, 
+	unsigned *answers_errors);
 static void verify_entry_dir(char const *entry_dir, char const *ls);
 static bool json_putc(int const c, FILE *stream);
 static bool json_fprintf_str(FILE *stream, char const *str);
@@ -704,7 +705,7 @@ static void write_info(struct info *infop, char const *entry_dir, bool test_mode
 static void write_author(struct info *infop, int author_count, struct author *authorp, char const *entry_dir);
 static void form_tarball(char const *work_dir, char const *entry_dir, char const *tarball_path, char const *tar, char const *ls);
 static void remind_user(char const *work_dir, char const *entry_dir, char const *tar, char const *tarball_path, bool test_mode,
-			char const *answers, struct info *infop);
+			char const *answers, struct info *infop, unsigned answers_errors);
 static char *cmdprintf(char const *format, ...);
 
 
@@ -737,6 +738,7 @@ main(int argc, char *argv[])
     bool l_flag_used = false;	/* true ==> -l /path/to/ls was given */
     bool a_flag_used = false;	/* true ==> -a write answers to answers file */
     bool i_flag_used = false;	/* true ==> -i read answers from answers file */
+    unsigned answers_errors = 0; /* > 0 ==> flushing or closing answers file failed */
     int ret;			/* libc return code */
     int i;
 
@@ -890,13 +892,6 @@ main(int argc, char *argv[])
     para("... environment looks OK", "", NULL);
 
     /*
-     * make sure both -a and -i are not specified.
-     */
-    if (a_flag_used == true && i_flag_used == true) {
-	fprintf(stderr, "cannot use both -a and -i\n");
-	not_reached();
-    }
-    /*
      * check if we should read input from answers file
      */
     if (i_flag_used == true) {
@@ -963,14 +958,14 @@ main(int argc, char *argv[])
      * check prog.c
      */
     para("", "Checking prog.c ...", NULL);
-    check_prog_c(&info, entry_dir, cp, prog_c, answerp, i_flag_used);
+    check_prog_c(&info, entry_dir, cp, prog_c, answerp, i_flag_used, &answers_errors);
     para("... completed prog.c check.", "", NULL);
 
     /*
      * check Makefile
      */
     para("Checking Makefile ...", NULL);
-    check_Makefile(&info, entry_dir, cp, Makefile, answerp, i_flag_used);
+    check_Makefile(&info, entry_dir, cp, Makefile, answerp, i_flag_used, &answers_errors);
     para("... completed Makefile check.", "", NULL);
 
     /*
@@ -1018,7 +1013,7 @@ main(int argc, char *argv[])
     /*
      * obtain author information
      */
-    author_count = get_author_info(&info, info.ioccc_id, &author_set, answerp, i_flag_used);
+    author_count = get_author_info(&info, info.ioccc_id, &author_set, answerp, i_flag_used, &answers_errors);
     dbg(DBG_LOW, "collected information on %d authors", author_count);
 
 
@@ -1037,6 +1032,11 @@ main(int argc, char *argv[])
     para("... completed .author.json file.", "", NULL);
 
     /*
+     * form the .txz file
+     */
+    form_tarball(work_dir, entry_dir, tarball_path, tar, ls);
+
+    /*
      * finalize the answers file, writing final answers (if writing answers) and
      * then closing the stream.
      */
@@ -1045,32 +1045,29 @@ main(int argc, char *argv[])
 	    errno = 0;			/* pre-clear errno for errp() */
 	    ret = fprintf(answerp, "y\n");
 	    if (ret <= 0) {
+		++answers_errors;
 		warnp(__func__, "unable to write confirming y to the answers file");
 	    }
 	    errno = 0;			/* pre-clear errno for errp() */
 	    ret = fflush(answerp);
 	    if (ret != 0) {
-		errp(9, __func__, "error in flushing data to the answers file");
-		not_reached();
+		warnp(__func__, "unable to flush data to the answers file");
+		++answers_errors;
 	    }
 	}
 	ret = fclose(answerp);
 	if (ret != 0) {
-	    errp(10, __func__, "error in fclose to the answers file");
-	    not_reached();
+	    warnp(__func__, "error in fclose to the answers file");
+	    ++answers_errors;
 	}
 	answerp = NULL;
     }
 
-    /*
-     * form the .txz file
-     */
-    form_tarball(work_dir, entry_dir, tarball_path, tar, ls);
 
     /*
      * remind user various things e.g., to upload (unless in test mode)
      */
-    remind_user(work_dir, entry_dir, tar, tarball_path, test_mode, answers, &info);
+    remind_user(work_dir, entry_dir, tar, tarball_path, test_mode, answers, &info, answers_errors);
 
     /*
      * free storage
@@ -2829,11 +2826,13 @@ mk_entry_dir(char const *work_dir, char const *ioccc_id, int entry_num, char **t
  *      prog_c          - prog_c arg: given path to prog.c
  *      answerp		- answer file
  *      i_flag_used	- if -i was specified
+ *      answers_errors  - > 0 I/O errors on answers file
  *
  * This function does not return on error.
  */
 static void
-check_prog_c(struct info *infop, char const *entry_dir, char const *cp, char const *prog_c, FILE *answerp, bool i_flag_used)
+check_prog_c(struct info *infop, char const *entry_dir, char const *cp, char const *prog_c, FILE *answerp, bool i_flag_used,
+	unsigned *answers_errors)
 {
     FILE *prog_stream;		/* prog.c open file stream */
     struct iocccsize size;	/* rule_count() processing results */
@@ -2932,6 +2931,7 @@ check_prog_c(struct info *infop, char const *entry_dir, char const *cp, char con
 	    ret = fprintf(answerp, "y\n");
 	    if (ret <= 0) {
 		warnp(__func__, "fprintf error writing user confirmation that empty prog.c is OK to answers file");
+		(*answers_errors)++;
 	    }
 	}
 
@@ -2969,6 +2969,7 @@ check_prog_c(struct info *infop, char const *entry_dir, char const *cp, char con
 	    ret = fprintf(answerp, "y\n");
 	    if (ret <= 0) {
 		warnp(__func__, "fprintf error writing user confirmation that prog.c size > Rule 2a max size is OK to answers file");
+		(*answers_errors)++;
 	    }
 	}
     } else {
@@ -3025,6 +3026,7 @@ check_prog_c(struct info *infop, char const *entry_dir, char const *cp, char con
 	    ret = fprintf(answerp, "y\n");
 	    if (ret <= 0) {
 		warnp(__func__, "fprintf error writing user confirmation that prog.c size != rule_count function size is OK to answers file");
+		(*answers_errors)++;
 	    }
 	}
     } else {
@@ -3054,6 +3056,7 @@ check_prog_c(struct info *infop, char const *entry_dir, char const *cp, char con
 	    ret = fprintf(answerp, "y\n");
 	    if (ret <= 0) {
 		warnp(__func__, "fprintf error writing user confirmation that prog.c having character(s) with high bit is OK to answers file");
+		(*answers_errors)++;
 	    }
 	}
     } else {
@@ -3083,6 +3086,7 @@ check_prog_c(struct info *infop, char const *entry_dir, char const *cp, char con
 	    ret = fprintf(answerp, "y\n");
 	    if (ret <= 0) {
 		warnp(__func__, "fprintf error writing user confirmation that prog.c having NUL character(s) is OK to answers file");
+		(*answers_errors)++;
 	    }
 	}
     } else {
@@ -3112,6 +3116,7 @@ check_prog_c(struct info *infop, char const *entry_dir, char const *cp, char con
 	    ret = fprintf(answerp, "y\n");
 	    if (ret <= 0) {
 		warnp(__func__, "fprintf error writing user confirmation that prog.c having unknown or invalid trigraph(s)) is OK to answers file");
+		(*answers_errors)++;
 	    }
 	}
     } else {
@@ -3142,6 +3147,7 @@ check_prog_c(struct info *infop, char const *entry_dir, char const *cp, char con
 	    ret = fprintf(answerp, "y\n");
 	    if (ret <= 0) {
 		warnp(__func__, "fprintf error writing user confirmation that it's OK that prog.c triggered a word buffer overflow to answers file");
+		(*answers_errors)++;
 	    }
 	}
     } else {
@@ -3172,6 +3178,7 @@ check_prog_c(struct info *infop, char const *entry_dir, char const *cp, char con
 	    ret = fprintf(answerp, "y\n");
 	    if (ret <= 0) {
 		warnp(__func__, "fprintf error writing user confirmation that it's OK that prog.c triggered an ungetc warning to answers file");
+		(*answers_errors)++;
 	    }
 	}
     } else {
@@ -3204,6 +3211,7 @@ check_prog_c(struct info *infop, char const *entry_dir, char const *cp, char con
 	    ret = fprintf(answerp, "y\n");
 	    if (ret <= 0) {
 		warnp(__func__, "fprintf error writing user confirmation that  prog.c size > Rule 2b max size is OK to answers file");
+		(*answers_errors)++;
 	    }
 	}
     } else {
@@ -3547,11 +3555,13 @@ inspect_Makefile(char const *Makefile)
  *      Makefile        - Makefile arg: given path to Makefile
  *      answerp		- answer file
  *      i_flag_used	- if -i was used
+ *      answers_errors  - > 0 I/O errors on answers file
  *
  * This function does not return on error.
  */
 static void
-check_Makefile(struct info *infop, char const *entry_dir, char const *cp, char const *Makefile, FILE *answerp, bool i_flag_used)
+check_Makefile(struct info *infop, char const *entry_dir, char const *cp, char const *Makefile, FILE *answerp, bool i_flag_used,
+	unsigned *answers_errors)
 {
     ssize_t filesize = 0;	/* size of Makefile */
     int ret;			/* libc function return */
@@ -3647,6 +3657,7 @@ check_Makefile(struct info *infop, char const *entry_dir, char const *cp, char c
 	    ret = fprintf(answerp, "y\n");
 	    if (ret <= 0) {
 		warnp(__func__, "fprintf error writing user confirmation that Makefile is OK to answers file");
+		(*answers_errors)++;
 	    }
 	}
     } else {
@@ -4642,6 +4653,7 @@ get_abstract(struct info *infop)
  *      author_set      - pointer to array of authors
  *      answerp		- answers file (for updating entries) or NULL
  *      i_flag_used	- if -i was used
+ *      answers_errors	- > 0 I/O errors on answers file
  *
  * returns:
  *      number of authors
@@ -4649,7 +4661,7 @@ get_abstract(struct info *infop)
  * This function does not return on error.
  */
 static int
-get_author_info(struct info *infop, char *ioccc_id, struct author **author_set_p, FILE *answerp, bool i_flag_used)
+get_author_info(struct info *infop, char *ioccc_id, struct author **author_set_p, FILE *answerp, bool i_flag_used, unsigned *answers_errors)
 {
     struct author *author_set = NULL;	/* allocated author set */
     int author_count = -1;		/* number of authors or -1 */
@@ -4717,6 +4729,7 @@ get_author_info(struct info *infop, char *ioccc_id, struct author **author_set_p
         ret = fprintf(answerp, "%d\n", author_count);
 	if (ret <= 0) {
 	    warnp(__func__, "fprintf error printing IOCCC contest id to the answers file");
+	    (*answers_errors)++;
 	}
     }
 
@@ -5399,41 +5412,49 @@ get_author_info(struct info *infop, char *ioccc_id, struct author **author_set_p
 	    ret = fprintf(answerp, "%s\n", author_set[i].name);
 	    if (ret <= 0) {
 		warnp(__func__, "fprintf error printing author name to the answers file");
+		(*answers_errors)++;
 	    }
 	    errno = 0;			/* pre-clear errno for errp() */
 	    ret = fprintf(answerp, "%s\ny\n", author_set[i].location_code);
 	    if (ret <= 0) {
 		warnp(__func__, "fprintf error printing author location to the answers file");
+		(*answers_errors)++;
 	    }
 	    errno = 0;			/* pre-clear errno for errp() */
 	    ret = fprintf(answerp, "%s\n", author_set[i].email);
 	    if (ret <= 0) {
 		warnp(__func__, "fprintf error printing author email to the answers file");
+		(*answers_errors)++;
 	    }
 	    errno = 0;			/* pre-clear errno for errp() */
 	    ret = fprintf(answerp, "%s\n", author_set[i].url);
 	    if (ret <= 0) {
 		warnp(__func__, "fprintf error printing author url to the answers file");
+		(*answers_errors)++;
 	    }
 	    errno = 0;			/* pre-clear errno for errp() */
 	    ret = fprintf(answerp, "%s\n", author_set[i].twitter);
 	    if (ret <= 0) {
 		warnp(__func__, "fprintf error printing author twitter handle to the answers file");
+		(*answers_errors)++;
 	    }
 	    errno = 0;			/* pre-clear errno for errp() */
 	    ret = fprintf(answerp, "%s\n", author_set[i].github);
 	    if (ret <= 0) {
 		warnp(__func__, "fprintf error printing author GitHub account to the answers file");
+		(*answers_errors)++;
 	    }
 	    errno = 0;			/* pre-clear errno for errp() */
 	    ret = fprintf(answerp, "%s\n", author_set[i].affiliation);
 	    if (ret <= 0) {
 		warnp(__func__, "fprintf error printing author affiliation to the answers file");
+		(*answers_errors)++;
 	    }
 	    errno = 0;			/* pre-clear errno for errp() */
 	    ret = fprintf(answerp, "y\n");
 	    if (ret <= 0) {
 		warnp(__func__, "fprintf error writing 'y' to confirm author information");
+		(*answers_errors)++;
 	    }
 	}
     }
@@ -6675,10 +6696,11 @@ form_tarball(char const *work_dir, char const *entry_dir, char const *tarball_pa
  *      test_mode       - true ==> test mode, do not upload
  *      answers		- path to the answers file (if specified)
  *      infop		- pointer to info structure
+ *      answers_errors	- > 0 ==> I/O errors on answers file
  */
 static void
 remind_user(char const *work_dir, char const *entry_dir, char const *tar, char const *tarball_path, bool test_mode,
-	    char const *answers, struct info *infop)
+	    char const *answers, struct info *infop, unsigned answers_errors)
 {
     int ret;			/* libc function return */
     char *entry_dir_esc;
@@ -6739,6 +6761,16 @@ remind_user(char const *work_dir, char const *entry_dir, char const *tar, char c
 	if (ret <= 0) {
 	    warnp(__func__, "unable to tell user how to more easily update entry");
 	}
+	if (answers_errors > 0) {
+	    errno = 0;	/* pre-clear errno for errp() */
+	    ret = printf("Warning: There were %u I/O error%s on the answers file. Make SURE to verify that using the file\n"
+			 "results in the proper input before reuploading!\n",
+			 answers_errors, answers_errors==1?"":"s");
+	    if (ret <= 0) {
+		warnp(__func__, "unable to warn user that there were I/O errors on the answers file");
+	    }
+	}
+
 	if (infop->warnings_ignored == true) {
 	    errno = 0;	/* pre-clear errno for errp() */
 	    ret = printf("\nYou've ignored one or more warnings. If you update your files so that these warnings\n"
@@ -6747,6 +6779,14 @@ remind_user(char const *work_dir, char const *entry_dir, char const *tar, char c
 			 "your answers!\n");
 	    if (ret <= 0) {
 		warnp(__func__, "unable to warn user about ignoring warnings when writing to the answer file");
+	    }
+	}
+	else {
+	    errno = 0;	/* pre-clear errno for errp() */
+	    printf("\nAlthough you've not ignored any warnings be aware that if you add or change a file that\n"
+		    "triggers a warning the next time, then this can result in improper answers being provided.\n");
+	    if (ret <= 0) {
+		warnp(__func__, "unable to warn user that if they add or change a file that triggers a warning, it cause invalid input");
 	    }
 	}
     }
