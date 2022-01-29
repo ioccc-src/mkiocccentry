@@ -1,3 +1,4 @@
+/* vim: set tabstop=8 softtabstop=4 shiftwidth=4 noexpandtab : */
 /*
  * mkiocccentry - make an ioccc entry
  *
@@ -232,6 +233,7 @@ struct info {
     bool ungetc_warning;	/* true ==> ungetc warning detected */
     bool Makefile_override;	/* true ==> Makefile rule override requested */
     bool warnings_ignored;	/* true ==> warnings were ignored */
+    int answers_errors;		/* > 0 ==> flushing or closing answers file failed */
     /*
      * filenames
      */
@@ -652,6 +654,10 @@ static struct location {
  * globals
  */
 int verbosity_level = DBG_DEFAULT;	/* debug level set by -v */
+static bool need_confirm = true;	/* true ==> ask for confirmations */
+static bool need_hints = true;		/* true ==> show hints */
+static bool prompt_fix_echo = false;    /* true ==> print the line read from the stream (fixes the log when using the -i option) */
+static bool need_retry = true;
 
 /*
  * forward declarations
@@ -667,8 +673,7 @@ static bool is_dir(char const *path);
 static bool is_read(char const *path);
 static bool is_write(char const *path);
 static ssize_t file_size(char const *path);
-static void check_prog_c(struct info *infop, char const *entry_dir, char const *cp, char const *prog_c, FILE *answerp,
-			 bool i_flag_used, unsigned *answers_errors);
+static void check_prog_c(struct info *infop, char const *entry_dir, char const *cp, char const *prog_c);
 static ssize_t readline(char **linep, FILE * stream);
 static char *readline_dup(char **linep, bool strip, size_t *lenp, FILE * stream);
 static void sanity_chk(struct info *infop, char const *work_dir, char const *tar,
@@ -680,8 +685,7 @@ static char *get_contest_id(struct info *infop, bool *testp);
 static int get_entry_num(struct info *infop);
 static char *mk_entry_dir(char const *work_dir, char const *ioccc_id, int entry_num, char **tarball_path, time_t tstamp);
 static bool inspect_Makefile(char const *Makefile);
-static void check_Makefile(struct info *infop, char const *entry_dir, char const *cp, char const *Makefile, FILE *answerp,
-			   bool i_flag_used, unsigned *answers_errors);
+static void check_Makefile(struct info *infop, char const *entry_dir, char const *cp, char const *Makefile);
 static void check_remarks_md(struct info *infop, char const *entry_dir, char const *cp, char const *remarks_md);
 static char *base_name(char const *path);
 static void check_extra_data_files(struct info *infop, char const *entry_dir, char const *cp, int count, char **args);
@@ -689,8 +693,7 @@ static char const *lookup_location_name(char const *upper_code);
 static bool yes_or_no(char const *question);
 static char *get_title(struct info *infop);
 static char *get_abstract(struct info *infop);
-static int get_author_info(struct info *infop, char *ioccc_id, struct author **author_set, FILE *answerp, bool i_flag_used, 
-	unsigned *answers_errors);
+static int get_author_info(struct info *infop, char *ioccc_id, struct author **author_set);
 static void verify_entry_dir(char const *entry_dir, char const *ls);
 static bool json_putc(int const c, FILE *stream);
 static bool json_fprintf_str(FILE *stream, char const *str);
@@ -705,7 +708,7 @@ static void write_info(struct info *infop, char const *entry_dir, bool test_mode
 static void write_author(struct info *infop, int author_count, struct author *authorp, char const *entry_dir);
 static void form_tarball(char const *work_dir, char const *entry_dir, char const *tarball_path, char const *tar, char const *ls);
 static void remind_user(char const *work_dir, char const *entry_dir, char const *tar, char const *tarball_path, bool test_mode,
-			char const *answers, struct info *infop, unsigned answers_errors);
+			char const *answers, struct info *infop);
 static char *cmdprintf(char const *format, ...);
 
 
@@ -738,7 +741,6 @@ main(int argc, char *argv[])
     bool l_flag_used = false;	/* true ==> -l /path/to/ls was given */
     bool a_flag_used = false;	/* true ==> -a write answers to answers file */
     bool i_flag_used = false;	/* true ==> -i read answers from answers file */
-    unsigned answers_errors = 0; /* > 0 ==> flushing or closing answers file failed */
     int ret;			/* libc return code */
     int i;
 
@@ -791,6 +793,9 @@ main(int argc, char *argv[])
 	case 'i':		/* -i input_recorded_answers */
 	    answers = optarg;
 	    i_flag_used = true;
+	    need_confirm = false;
+	    need_hints = false;
+	    prompt_fix_echo = true;
 	    break;
 	default:
 	    usage(1, __func__, "invalid -flag", program, tar, cp, ls); /*ooo*/
@@ -941,7 +946,7 @@ main(int argc, char *argv[])
     /*
      * write the IOCCC id and entry number to the answers file
      */
-    if (answerp != NULL) {
+    if (answerp != NULL && a_flag_used == true) {
 	errno = 0;			/* pre-clear errno for errp() */
         ret = fprintf(answerp, "%s\n", info.ioccc_id);
 	if (ret <= 0) {
@@ -958,14 +963,14 @@ main(int argc, char *argv[])
      * check prog.c
      */
     para("", "Checking prog.c ...", NULL);
-    check_prog_c(&info, entry_dir, cp, prog_c, answerp, i_flag_used, &answers_errors);
+    check_prog_c(&info, entry_dir, cp, prog_c);
     para("... completed prog.c check.", "", NULL);
 
     /*
      * check Makefile
      */
     para("Checking Makefile ...", NULL);
-    check_Makefile(&info, entry_dir, cp, Makefile, answerp, i_flag_used, &answers_errors);
+    check_Makefile(&info, entry_dir, cp, Makefile);
     para("... completed Makefile check.", "", NULL);
 
     /*
@@ -987,7 +992,7 @@ main(int argc, char *argv[])
      */
     info.title = get_title(&info);
     dbg(DBG_LOW, "entry title: %s", info.title);
-    if (answerp != NULL) {
+    if (answerp != NULL && a_flag_used == true) {
 	errno = 0;			/* pre-clear errno for errp() */
 	ret = fprintf(answerp, "%s\n", info.title);
 	if (ret <= 0) {
@@ -1001,7 +1006,7 @@ main(int argc, char *argv[])
      */
     info.abstract = get_abstract(&info);
     dbg(DBG_LOW, "entry abstract: %s", info.abstract);
-    if (answerp != NULL) {
+    if (answerp != NULL && a_flag_used == true) {
 	errno = 0;			/* pre-clear errno for errp() */
 	ret = fprintf(answerp, "%s\n", info.abstract);
 	if (ret <= 0) {
@@ -1013,9 +1018,37 @@ main(int argc, char *argv[])
     /*
      * obtain author information
      */
-    author_count = get_author_info(&info, info.ioccc_id, &author_set, answerp, i_flag_used, &answers_errors);
+    author_count = get_author_info(&info, info.ioccc_id, &author_set);
     dbg(DBG_LOW, "collected information on %d authors", author_count);
 
+    /*
+    * if we have an answers file, record the verified author information
+    */
+    if (answerp != NULL && i_flag_used == false) {
+	errno = 0;			/* pre-clear errno for errp() */
+        ret = fprintf(answerp, "%d\n", author_count);
+	if (ret <= 0) {
+	    warnp(__func__, "fprintf error printing IOCCC author count to the answers file");
+	    info.answers_errors++;
+	}
+
+	for (i = 0; i < author_count; i++) {
+	    errno = 0;			/* pre-clear errno for errp() */
+	    ret = fprintf(answerp,
+		"%s\n" "%s\n" "%s\n" "%s\n" "%s\n" "%s\n" "%s\n",
+		author_set[i].name,
+		author_set[i].location_code,
+		author_set[i].email,
+		author_set[i].url,
+		author_set[i].twitter,
+		author_set[i].github,
+		author_set[i].affiliation);
+	    if (ret <= 0) {
+		warnp(__func__, "fprintf error printing author info the answers file");
+		info.answers_errors++;
+	    }
+	}
+    }
 
     /*
      * write the .info.json file
@@ -1032,42 +1065,48 @@ main(int argc, char *argv[])
     para("... completed .author.json file.", "", NULL);
 
     /*
-     * form the .txz file
-     */
-    form_tarball(work_dir, entry_dir, tarball_path, tar, ls);
-
-    /*
      * finalize the answers file, writing final answers (if writing answers) and
      * then closing the stream.
      */
     if (answerp != NULL) {
-	if (a_flag_used == true) {
-	    errno = 0;			/* pre-clear errno for errp() */
-	    ret = fprintf(answerp, "y\n");
-	    if (ret <= 0) {
-		++answers_errors;
-		warnp(__func__, "unable to write confirming y to the answers file");
+	if (i_flag_used == true) {
+	    char *linep = NULL;
+	    char *line;
+	    bool error = true;
+
+	    line = readline_dup(&linep, true, NULL, answerp);
+	    if (linep != NULL) {
+		error = strcmp(line, "ANSWERS_EOF") != 0;
+		free(linep);
 	    }
-	    errno = 0;			/* pre-clear errno for errp() */
-	    ret = fflush(answerp);
-	    if (ret != 0) {
-		warnp(__func__, "unable to flush data to the answers file");
-		++answers_errors;
+	    if (error == true) {
+	        errp(1, __func__, "expected ANSWERS_EOF marker at the end of the answers file");
+	        not_reached();
+	    }
+	} else {
+	    ret = fprintf(answerp, "ANSWERS_EOF\n");
+	    if (ret <= 0) {
+	        warnp(__func__, "fprintf error printing ANSWERS_EOF marker to the answers file");
+		info.answers_errors++;
 	    }
 	}
 	ret = fclose(answerp);
 	if (ret != 0) {
 	    warnp(__func__, "error in fclose to the answers file");
-	    ++answers_errors;
+	    info.answers_errors++;
 	}
 	answerp = NULL;
     }
 
+    /*
+     * form the .txz file
+     */
+    form_tarball(work_dir, entry_dir, tarball_path, tar, ls);
 
     /*
      * remind user various things e.g., to upload (unless in test mode)
      */
-    remind_user(work_dir, entry_dir, tar, tarball_path, test_mode, answers, &info, answers_errors);
+    remind_user(work_dir, entry_dir, tar, tarball_path, test_mode, answers, &info);
 
     /*
      * free storage
@@ -2435,6 +2474,10 @@ prompt(char const *str, size_t *lenp)
 	linep = NULL;
     }
 
+    if (prompt_fix_echo == true) {
+	fprintf(stdout, "%s\n", buf);
+    }
+
     /*
      * return malloced input buffer
      */
@@ -2483,25 +2526,27 @@ get_contest_id(struct info *infop, bool *testp)
     /*
      * explain contest ID
      */
-    para("To submit entries to the IOCCC, you must a registered contestant and have received a",
-	 "IOCCC contest ID (via email) shortly after you have been successfully registered.",
-	 "If the IOCCC is open, you may register as a contestant. See:",
-	 "",
-	 NULL);
-    errno = 0;		/* pre-clear errno for errp() */
-    ret = fprintf(stderr, "    %s\n", IOCCC_REGISTER_URL);
-    if (ret <= 0) {
-	warnp(__func__, "fprintf error printing IOCCC_REGISTER_URL");
+    if (need_hints == true) {
+	para("To submit entries to the IOCCC, you must a registered contestant and have received a",
+	     "IOCCC contest ID (via email) shortly after you have been successfully registered.",
+	     "If the IOCCC is open, you may register as a contestant. See:",
+	     "",
+	     NULL);
+	errno = 0;		/* pre-clear errno for errp() */
+	ret = fprintf(stderr, "    %s\n", IOCCC_REGISTER_URL);
+	if (ret <= 0) {
+	    warnp(__func__, "fprintf error printing IOCCC_REGISTER_URL");
+	}
+	para("",
+	     "If you do not have an IOCCC contest ID and you with to test this program,",
+	     "you may use the special contest ID:",
+	     "",
+	     "    test",
+	     "",
+	     "Note you will not be able to submit the resulting compressed tarball when using test.",
+	     "",
+	     NULL);
     }
-    para("",
-	 "If you do not have an IOCCC contest ID and you with to test this program,",
-	 "you may use the special contest ID:",
-	 "",
-	 "    test",
-	 "",
-	 "Note you will not be able to submit the resulting compressed tarball when using test.",
-	 "",
-	 NULL);
 
     /*
      * keep asking for an entry number until we get a valid reply
@@ -2596,7 +2641,12 @@ get_contest_id(struct info *infop, bool *testp)
 		  "",
 		  NULL);
 	}
-    } while (ret != 8);
+    } while (ret != 8 && need_retry == true);
+
+    if (ret != 8) {
+	errp(100, __func__, "retry prompt is disabled");
+    }
+
     dbg(DBG_MED, "IOCCC contest ID is a UUID: %s", malloc_ret);
 
     /*
@@ -2647,18 +2697,20 @@ get_entry_num(struct info *infop)
 	/*
 	 * explain entry numbers
 	 */
-	errno = 0;		/* pre-clear errno for errp() */
-	ret = printf("\nYou are allowed to submit up to %d entries to a given IOCCC.\n", MAX_ENTRY_NUM + 1);
-	if (ret <= 0) {
-	    errp(77, __func__, "printf error printing number of entries allowed");
-	    not_reached();
+	if (need_hints == true) {
+	    errno = 0;		/* pre-clear errno for errp() */
+	    ret = printf("\nYou are allowed to submit up to %d entries to a given IOCCC.\n", MAX_ENTRY_NUM + 1);
+	    if (ret <= 0) {
+		errp(77, __func__, "printf error printing number of entries allowed");
+		not_reached();
+	    }
+	    para("",
+		 "As in C, Entry numbers start with 0.  If you are updating a previous entry, PLEASE",
+		 "use the same entry number that you previously uploaded so we know which entry we",
+		 "should replace. If this is your 1st entry to this given IOCCC, enter 0.",
+		 "",
+		 NULL);
 	}
-	para("",
-	     "As in C, Entry numbers start with 0.  If you are updating a previous entry, PLEASE",
-	     "use the same entry number that you previously uploaded so we know which entry we",
-	     "should replace. If this is your 1st entry to this given IOCCC, enter 0.",
-	     "",
-	     NULL);
 
 	/*
 	 * ask for the entry number
@@ -2687,7 +2739,11 @@ get_entry_num(struct info *infop)
 	    entry_str = NULL;
 	}
 
-    } while (entry_num < 0 || entry_num > MAX_ENTRY_NUM);
+    } while ((entry_num < 0 || entry_num > MAX_ENTRY_NUM) && need_retry == true);
+
+    if (entry_num < 0 || entry_num > MAX_ENTRY_NUM) {
+	errp(100, __func__, "retry prompt is disabled");
+    }
 
     /*
      * return the entry number
@@ -2824,15 +2880,11 @@ mk_entry_dir(char const *work_dir, char const *ioccc_id, int entry_num, char **t
  *      entry_dir       - newly created entry directory (by mk_entry_dir()) under work_dir
  *      cp              - cp utility path
  *      prog_c          - prog_c arg: given path to prog.c
- *      answerp		- answer file
- *      i_flag_used	- if -i was specified
- *      answers_errors  - > 0 I/O errors on answers file
  *
  * This function does not return on error.
  */
 static void
-check_prog_c(struct info *infop, char const *entry_dir, char const *cp, char const *prog_c, FILE *answerp, bool i_flag_used,
-	unsigned *answers_errors)
+check_prog_c(struct info *infop, char const *entry_dir, char const *cp, char const *prog_c)
 {
     FILE *prog_stream;		/* prog.c open file stream */
     struct iocccsize size;	/* rule_count() processing results */
@@ -2917,24 +2969,17 @@ check_prog_c(struct info *infop, char const *entry_dir, char const *cp, char con
 	      "entry prog.c is not another smallest self-replicating program.",
 	      "",
 	      NULL);
-	yorn = yes_or_no("Are you sure you want to submit an empty prog.c file? [yn]");
-	if (yorn == false) {
-	    err(93, __func__, "please fix your prog.c file: %s", prog_c);
-	    not_reached();
+	if (need_confirm == true) {
+	    yorn = yes_or_no("Are you sure you want to submit an empty prog.c file? [yn]");
+	    if (yorn == false) {
+		err(93, __func__, "please fix your prog.c file: %s", prog_c);
+		not_reached();
+	    }
+	    dbg(DBG_LOW, "user says that their empty prog.c: %s is OK", prog_c);
 	}
-	dbg(DBG_LOW, "user says that their empty prog.c: %s is OK", prog_c);
 	infop->empty_override = true;
 	infop->rule_2a_override = false;
 	infop->warnings_ignored = true;
-	if (answerp != NULL && i_flag_used == false) {
-	    errno = 0;			/* pre-clear errno for errp() */
-	    ret = fprintf(answerp, "y\n");
-	    if (ret <= 0) {
-		warnp(__func__, "fprintf error writing user confirmation that empty prog.c is OK to answers file");
-		(*answers_errors)++;
-	    }
-	}
-
 
     /*
      * warn if prog.c is too large under Rule 2a
@@ -2954,24 +2999,18 @@ check_prog_c(struct info *infop, char const *entry_dir, char const *cp, char con
 	      "\"ABUSING THE RULES\" section of the guidelines.  And more importantly, read rule 12!",
 	      "",
 	      NULL);
-	yorn = yes_or_no("Are you sure you want to submit such a large prog.c file? [yn]");
-	if (yorn == false) {
-	    err(94, __func__, "please fix your prog.c file: %s", prog_c);
-	    not_reached();
+	if (need_confirm == true) {
+	    yorn = yes_or_no("Are you sure you want to submit such a large prog.c file? [yn]");
+	    if (yorn == false) {
+		err(94, __func__, "please fix your prog.c file: %s", prog_c);
+		not_reached();
+	    }
+	    dbg(DBG_LOW, "user says that their prog.c %s size: %ld > Rule 2a max size: %ld is OK", prog_c,
+	        (long)infop->rule_2a_size, (long)RULE_2A_SIZE);
 	}
-	dbg(DBG_LOW, "user says that their prog.c %s size: %ld > Rule 2a max size: %ld is OK", prog_c,
-	    (long)infop->rule_2a_size, (long)RULE_2A_SIZE);
 	infop->empty_override = false;
 	infop->rule_2a_override = true;
 	infop->warnings_ignored = true;
-	if (answerp != NULL && i_flag_used == false) {
-	    errno = 0;			/* pre-clear errno for errp() */
-	    ret = fprintf(answerp, "y\n");
-	    if (ret <= 0) {
-		warnp(__func__, "fprintf error writing user confirmation that prog.c size > Rule 2a max size is OK to answers file");
-		(*answers_errors)++;
-	    }
-	}
     } else {
 	infop->empty_override = false;
 	infop->rule_2a_override = false;
@@ -3012,23 +3051,17 @@ check_prog_c(struct info *infop, char const *entry_dir, char const *cp, char con
 	if (ret <= 0) {
 	    warnp(__func__, "fprintf error when printing prog.c file size and Rule 2a mismatch");
 	}
-	yorn = yes_or_no("Are you sure you want to proceed? [yn]");
-	if (yorn == false) {
-	    err(97, __func__, "please fix your prog.c file: %s", prog_c);
-	    not_reached();
+	if (need_confirm == true) {
+	    yorn = yes_or_no("Are you sure you want to proceed? [yn]");
+	    if (yorn == false) {
+		err(97, __func__, "please fix your prog.c file: %s", prog_c);
+	        not_reached();
+	    }
+	    dbg(DBG_LOW, "user says that prog.c %s size: %ld != rule_count function size: %ld is OK", prog_c,
+	        (long)infop->rule_2a_size, (long)size.rule_2a_size);
 	}
-	dbg(DBG_LOW, "user says that prog.c %s size: %ld != rule_count function size: %ld is OK", prog_c,
-	    (long)infop->rule_2a_size, (long)size.rule_2a_size);
 	infop->rule_2a_mismatch = true;
 	infop->warnings_ignored = true;
-	if (answerp != NULL && i_flag_used == false) {
-	    errno = 0;			/* pre-clear errno for errp() */
-	    ret = fprintf(answerp, "y\n");
-	    if (ret <= 0) {
-		warnp(__func__, "fprintf error writing user confirmation that prog.c size != rule_count function size is OK to answers file");
-		(*answers_errors)++;
-	    }
-	}
     } else {
 	infop->rule_2a_mismatch = false;
     }
@@ -3043,22 +3076,16 @@ check_prog_c(struct info *infop, char const *entry_dir, char const *cp, char con
 	if (ret <= 0) {
 	    warnp(__func__, "fprintf error when printing prog.c char_warning");
 	}
-	yorn = yes_or_no("Are you sure you want to proceed? [yn]");
-	if (yorn == false) {
-	    err(98, __func__, "please fix your prog.c file: %s", prog_c);
-	    not_reached();
+	if (need_confirm == true) {
+	    yorn = yes_or_no("Are you sure you want to proceed? [yn]");
+	    if (yorn == false) {
+		err(98, __func__, "please fix your prog.c file: %s", prog_c);
+	        not_reached();
+	    }
+	    dbg(DBG_LOW, "user says that prog.c %s having character(s) with high bit is OK", prog_c);
 	}
-	dbg(DBG_LOW, "user says that prog.c %s having character(s) with high bit is OK", prog_c);
 	infop->highbit_warning = true;
 	infop->warnings_ignored = true;
-	if (answerp != NULL && i_flag_used == false) {
-	    errno = 0;			/* pre-clear errno for errp() */
-	    ret = fprintf(answerp, "y\n");
-	    if (ret <= 0) {
-		warnp(__func__, "fprintf error writing user confirmation that prog.c having character(s) with high bit is OK to answers file");
-		(*answers_errors)++;
-	    }
-	}
     } else {
 	infop->highbit_warning = false;
     }
@@ -3073,22 +3100,16 @@ check_prog_c(struct info *infop, char const *entry_dir, char const *cp, char con
 	if (ret <= 0) {
 	    warnp(__func__, "fprintf error when printing prog.c nul_warning");
 	}
-	yorn = yes_or_no("Are you sure you want to proceed? [yn]");
-	if (yorn == false) {
-	    err(99, __func__, "please fix your prog.c file: %s", prog_c);
-	    not_reached();
+	if (need_confirm == true) {
+	    yorn = yes_or_no("Are you sure you want to proceed? [yn]");
+	    if (yorn == false) {
+	        err(99, __func__, "please fix your prog.c file: %s", prog_c);
+		not_reached();
+	    }
+	    dbg(DBG_LOW, "user says that prog.c %s having NUL character(s) is OK", prog_c);
 	}
-	dbg(DBG_LOW, "user says that prog.c %s having NUL character(s) is OK", prog_c);
 	infop->nul_warning = true;
 	infop->warnings_ignored = true;
-	if (answerp != NULL && i_flag_used == false) {
-	    errno = 0;			/* pre-clear errno for errp() */
-	    ret = fprintf(answerp, "y\n");
-	    if (ret <= 0) {
-		warnp(__func__, "fprintf error writing user confirmation that prog.c having NUL character(s) is OK to answers file");
-		(*answers_errors)++;
-	    }
-	}
     } else {
 	infop->nul_warning = false;
     }
@@ -3103,22 +3124,16 @@ check_prog_c(struct info *infop, char const *entry_dir, char const *cp, char con
 	if (ret <= 0) {
 	    warnp(__func__, "fprintf error when printing prog.c trigraph_warning");
 	}
-	yorn = yes_or_no("Are you sure you want to proceed? [yn]");
-	if (yorn == false) {
-	    err(100, __func__, "please fix your prog.c file: %s", prog_c);
-	    not_reached();
+	if (need_confirm == true) {
+	    yorn = yes_or_no("Are you sure you want to proceed? [yn]");
+	    if (yorn == false) {
+	        err(100, __func__, "please fix your prog.c file: %s", prog_c);
+		not_reached();
+	    }
+	    dbg(DBG_LOW, "user says that prog.c %s having unknown or invalid trigraph(s) is OK", prog_c);
 	}
-	dbg(DBG_LOW, "user says that prog.c %s having unknown or invalid trigraph(s) is OK", prog_c);
 	infop->trigraph_warning = true;
 	infop->warnings_ignored = true;
-	if (answerp != NULL && i_flag_used == false) {
-	    errno = 0;			/* pre-clear errno for errp() */
-	    ret = fprintf(answerp, "y\n");
-	    if (ret <= 0) {
-		warnp(__func__, "fprintf error writing user confirmation that prog.c having unknown or invalid trigraph(s)) is OK to answers file");
-		(*answers_errors)++;
-	    }
-	}
     } else {
 	infop->trigraph_warning = false;
     }
@@ -3134,22 +3149,16 @@ check_prog_c(struct info *infop, char const *entry_dir, char const *cp, char con
 	if (ret <= 0) {
 	    warnp(__func__, "fprintf error when printing prog.c wordbuf_warning");
 	}
-	yorn = yes_or_no("Are you sure you want to proceed? [yn]");
-	if (yorn == false) {
-	    err(101, __func__, "please fix your prog.c file: %s", prog_c);
-	    not_reached();
+	if (need_confirm == true) {
+	    yorn = yes_or_no("Are you sure you want to proceed? [yn]");
+	    if (yorn == false) {
+		err(101, __func__, "please fix your prog.c file: %s", prog_c);
+	        not_reached();
+	    }
+	    dbg(DBG_LOW, "user says that prog.c %s triggered a word buffer overflow is OK", prog_c);
 	}
-	dbg(DBG_LOW, "user says that prog.c %s triggered a word buffer overflow is OK", prog_c);
 	infop->wordbuf_warning = true;
 	infop->warnings_ignored = true;
-	if (answerp != NULL && i_flag_used == false) {
-	    errno = 0;			/* pre-clear errno for errp() */
-	    ret = fprintf(answerp, "y\n");
-	    if (ret <= 0) {
-		warnp(__func__, "fprintf error writing user confirmation that it's OK that prog.c triggered a word buffer overflow to answers file");
-		(*answers_errors)++;
-	    }
-	}
     } else {
 	infop->wordbuf_warning = false;
     }
@@ -3165,22 +3174,16 @@ check_prog_c(struct info *infop, char const *entry_dir, char const *cp, char con
 	if (ret <= 0) {
 	    warnp(__func__, "fprintf error when printing prog.c ungetc_warning");
 	}
-	yorn = yes_or_no("Are you sure you want to proceed? [yn]");
-	if (yorn == false) {
-	    err(102, __func__, "please fix your prog.c file: %s", prog_c);
-	    not_reached();
+	if (need_confirm == true) {
+	    yorn = yes_or_no("Are you sure you want to proceed? [yn]");
+	    if (yorn == false) {
+		err(102, __func__, "please fix your prog.c file: %s", prog_c);
+	        not_reached();
+	    }
+	    dbg(DBG_LOW, "user says that prog.c %s triggered an ungetc warning OK", prog_c);
 	}
-	dbg(DBG_LOW, "user says that prog.c %s triggered an ungetc warning OK", prog_c);
 	infop->ungetc_warning = true;
 	infop->warnings_ignored = true;
-	if (answerp != NULL && i_flag_used == false) {
-	    errno = 0;			/* pre-clear errno for errp() */
-	    ret = fprintf(answerp, "y\n");
-	    if (ret <= 0) {
-		warnp(__func__, "fprintf error writing user confirmation that it's OK that prog.c triggered an ungetc warning to answers file");
-		(*answers_errors)++;
-	    }
-	}
     } else {
 	infop->ungetc_warning = false;
     }
@@ -3197,23 +3200,17 @@ check_prog_c(struct info *infop, char const *entry_dir, char const *cp, char con
 	      "\"ABUSING THE RULES\" section of the guidelines.  And more importantly, read rule 12!",
 	      "",
 	      NULL);
-	yorn = yes_or_no("Are you sure you want to submit such a large prog.c file? [yn]");
-	if (yorn == false) {
-	    err(103, __func__, "please fix your prog.c file: %s", prog_c);
-	    not_reached();
+	if (need_confirm == true) {
+	    yorn = yes_or_no("Are you sure you want to submit such a large prog.c file? [yn]");
+	    if (yorn == false) {
+	        err(103, __func__, "please fix your prog.c file: %s", prog_c);
+	        not_reached();
+	    }
+	    dbg(DBG_LOW, "user says that their prog.c %s size: %lu > Rule 2B max size: %lu is OK", prog_c,
+	        (unsigned long)infop->rule_2b_size, (unsigned long)RULE_2B_SIZE);
 	}
-	dbg(DBG_LOW, "user says that their prog.c %s size: %lu > Rule 2B max size: %lu is OK", prog_c,
-	    (unsigned long)infop->rule_2b_size, (unsigned long)RULE_2B_SIZE);
 	infop->rule_2b_override = true;
 	infop->warnings_ignored = true;
-	if (answerp != NULL && i_flag_used == false) {
-	    errno = 0;			/* pre-clear errno for errp() */
-	    ret = fprintf(answerp, "y\n");
-	    if (ret <= 0) {
-		warnp(__func__, "fprintf error writing user confirmation that  prog.c size > Rule 2b max size is OK to answers file");
-		(*answers_errors)++;
-	    }
-	}
     } else {
 	infop->rule_2b_override = false;
     }
@@ -3553,15 +3550,11 @@ inspect_Makefile(char const *Makefile)
  *      entry_dir       - newly created entry directory (by mk_entry_dir()) under work_dir
  *      cp              - cp utility path
  *      Makefile        - Makefile arg: given path to Makefile
- *      answerp		- answer file
- *      i_flag_used	- if -i was used
- *      answers_errors  - > 0 I/O errors on answers file
  *
  * This function does not return on error.
  */
 static void
-check_Makefile(struct info *infop, char const *entry_dir, char const *cp, char const *Makefile, FILE *answerp, bool i_flag_used,
-	unsigned *answers_errors)
+check_Makefile(struct info *infop, char const *entry_dir, char const *cp, char const *Makefile)
 {
     ssize_t filesize = 0;	/* size of Makefile */
     int ret;			/* libc function return */
@@ -3645,21 +3638,15 @@ check_Makefile(struct info *infop, char const *entry_dir, char const *cp, char c
 	/*
 	 * Ask if they want to submit it anyway
 	 */
-	yorn = yes_or_no("Do you still want to submit this Makefile in the hopes that it is OK? [yn]");
-	if (yorn == false) {
-	    err(120, __func__, "Use a different Makefile or modify this file: %s", Makefile);
-	    not_reached();
+	if (need_confirm == true) {
+	    yorn = yes_or_no("Do you still want to submit this Makefile in the hopes that it is OK? [yn]");
+	    if (yorn == false) {
+	        err(120, __func__, "Use a different Makefile or modify this file: %s", Makefile);
+		not_reached();
+	    }
 	}
 	infop->Makefile_override = true;
 	infop->warnings_ignored = true;
-	if (answerp != NULL && i_flag_used == false) {
-	    errno = 0;			/* pre-clear errno for errp() */
-	    ret = fprintf(answerp, "y\n");
-	    if (ret <= 0) {
-		warnp(__func__, "fprintf error writing user confirmation that Makefile is OK to answers file");
-		(*answers_errors)++;
-	    }
-	}
     } else {
 	infop->Makefile_override = false;
     }
@@ -4345,7 +4332,11 @@ yes_or_no(char const *question)
 	    response = NULL;
 	}
 
-    } while (response == NULL);
+    } while (response == NULL && need_retry == true);
+
+    if (response == NULL) {
+	errp(100, __func__, "retry prompt is disabled");
+    }
 
     /*
      * free storage
@@ -4395,19 +4386,21 @@ get_title(struct info *infop)
     /*
      * inform the user of the title
      */
-    para("An entry title is a short name using the [a-z0-9][a-z0-9_+-]* regex pattern.",
-	  "",
-	  "If your entry wins, the title might become the directory name of your entry.",
-	  "Although the IOCCC judges might change the title for various reason.",
-	  "",
-	  "If you submitting more than one entry, please make your titles unique",
-	  "amongst the entries that you submit to the current IOCCC.",
-	  "",
-	  NULL);
-    errno = 0;		/* pre-clear errno for errp() */
-    ret = fprintf(stderr, "You title must be between 1 and %d ASCII characters long.\n\n", MAX_TITLE_LEN);
-    if (ret <= 0) {
-	warnp(__func__, "fprintf #0 error: %d", ret);
+    if (need_hints == true) {
+	para("An entry title is a short name using the [a-z0-9][a-z0-9_+-]* regex pattern.",
+	      "",
+	      "If your entry wins, the title might become the directory name of your entry.",
+	      "Although the IOCCC judges might change the title for various reason.",
+	      "",
+	      "If you submitting more than one entry, please make your titles unique",
+	      "amongst the entries that you submit to the current IOCCC.",
+	      "",
+	      NULL);
+	errno = 0;		/* pre-clear errno for errp() */
+	ret = fprintf(stderr, "You title must be between 1 and %d ASCII characters long.\n\n", MAX_TITLE_LEN);
+	if (ret <= 0) {
+	    warnp(__func__, "fprintf #0 error: %d", ret);
+	}
     }
 
     /*
@@ -4526,7 +4519,11 @@ get_title(struct info *infop)
 	    }
 	    continue;
 	}
-    } while (title == NULL);
+    } while (title == NULL && need_retry == true);
+
+    if (title == NULL) {
+	errp(100, __func__, "retry prompt is disabled");
+    }
 
     /*
      * returned malloced title
@@ -4634,7 +4631,11 @@ get_abstract(struct info *infop)
 	    }
 	    continue;
 	}
-    } while (abstract == NULL);
+    } while (abstract == NULL && need_retry == true);
+
+    if (abstract == NULL) {
+	errp(100, __func__, "retry prompt is disabled");
+    }
 
     /*
      * returned malloced abstract
@@ -4651,9 +4652,6 @@ get_abstract(struct info *infop)
  *      ioccc_id        - IOCCC entry ID or test
  *      entry_num       - entry number
  *      author_set      - pointer to array of authors
- *      answerp		- answers file (for updating entries) or NULL
- *      i_flag_used	- if -i was used
- *      answers_errors	- > 0 I/O errors on answers file
  *
  * returns:
  *      number of authors
@@ -4661,7 +4659,7 @@ get_abstract(struct info *infop)
  * This function does not return on error.
  */
 static int
-get_author_info(struct info *infop, char *ioccc_id, struct author **author_set_p, FILE *answerp, bool i_flag_used, unsigned *answers_errors)
+get_author_info(struct info *infop, char *ioccc_id, struct author **author_set_p)
 {
     struct author *author_set = NULL;	/* allocated author set */
     int author_count = -1;		/* number of authors or -1 */
@@ -4722,16 +4720,13 @@ get_author_info(struct info *infop, char *ioccc_id, struct author **author_set_p
 	    author_count_str = NULL;
 	}
 
-    } while (author_count < 1 || author_count > MAX_AUTHORS);
-    dbg(DBG_HIGH, "will request information on %d authors", author_count);
-    if (answerp != NULL && i_flag_used == false) {
-	errno = 0;			/* pre-clear errno for errp() */
-        ret = fprintf(answerp, "%d\n", author_count);
-	if (ret <= 0) {
-	    warnp(__func__, "fprintf error printing IOCCC contest id to the answers file");
-	    (*answers_errors)++;
-	}
+    } while ((author_count < 1 || author_count > MAX_AUTHORS) && need_retry == true);
+
+    if (author_count < 1 || author_count > MAX_AUTHORS) {
+	errp(100, __func__, "retry prompt is disabled");
     }
+
+    dbg(DBG_HIGH, "will request information on %d authors", author_count);
 
     /*
      * allocate the author array
@@ -4751,56 +4746,58 @@ get_author_info(struct info *infop, char *ioccc_id, struct author **author_set_p
     /*
      * inform the user about the author information we need to collect
      */
-    para("",
-	 "We will now ask for information about the author(s) of this entry.",
-	 "",
-	 "Information that you supply, if your entry is selected as a winner,",
-	 "will be published with your entry.",
-	 "",
-	 "Except for your name and location/country code, you can opt out of providing it,",
-	 "(or if you don't have the thing we are asking for), by just pressing return.",
-	 "",
-	 "A name is required. If an author wishes to be anonymous, use a pseudo-name.",
-	 "Keep in mind that if an author wins multiple years, or has won before, you might",
-	 "want to be consistent and provide the same name or pseudo-name each time.",
-	 "",
-	 "We will ask for the location/country as a 2 character ISO 3166-1 Alpha-2 code.",
-	 "",
-	 "    See the following URLs for information on ISO 3166-1 Alpha-2 codes:",
-	 "",
-	 NULL);
-    errno = 0;		/* pre-clear errno for errp() */
-    ret = puts(ISO_3166_1_CODE_URL0);
-    if (ret < 0) {
-	warnp(__func__, "puts error printing ISO 3166-1 URL0");
+    if (need_hints == true) {
+	para("",
+	     "We will now ask for information about the author(s) of this entry.",
+	     "",
+	     "Information that you supply, if your entry is selected as a winner,",
+	     "will be published with your entry.",
+	     "",
+	     "Except for your name and location/country code, you can opt out of providing it,",
+	     "(or if you don't have the thing we are asking for), by just pressing return.",
+	     "",
+	     "A name is required. If an author wishes to be anonymous, use a pseudo-name.",
+	     "Keep in mind that if an author wins multiple years, or has won before, you might",
+	     "want to be consistent and provide the same name or pseudo-name each time.",
+	     "",
+	     "We will ask for the location/country as a 2 character ISO 3166-1 Alpha-2 code.",
+	     "",
+	     "    See the following URLs for information on ISO 3166-1 Alpha-2 codes:",
+	     "",
+	     NULL);
+	errno = 0;		/* pre-clear errno for errp() */
+	ret = puts(ISO_3166_1_CODE_URL0);
+	if (ret < 0) {
+	    warnp(__func__, "puts error printing ISO 3166-1 URL0");
+	}
+	errno = 0;		/* pre-clear errno for errp() */
+	ret = puts(ISO_3166_1_CODE_URL1);
+	if (ret < 0) {
+	    warnp(__func__, "puts error printing ISO 3166-1 URL1");
+	}
+	errno = 0;		/* pre-clear errno for errp() */
+	ret = puts(ISO_3166_1_CODE_URL2);
+	if (ret < 0) {
+	    warnp(__func__, "puts error printing ISO 3166-1 URL2");
+	}
+	errno = 0;		/* pre-clear errno for errp() */
+	ret = puts(ISO_3166_1_CODE_URL3);
+	if (ret < 0) {
+	    warnp(__func__, "puts error printing ISO 3166-1 URL3");
+	}
+	errno = 0;		/* pre-clear errno for errp() */
+	ret = puts(ISO_3166_1_CODE_URL4);
+	if (ret < 0) {
+	    warnp(__func__, "puts error printing ISO 3166-1 URL4");
+	}
+	para("",
+	     "We will ask for the author(s) Email address. Press return if you don't want to provide it, or if don't have one.",
+	     "We will ask for a home URL (starting with http:// or https://), or press return to skip, or if don't have one.",
+	     "We will ask a twitter handle (must start with @), or press return to skip, or if don't have one.",
+	     "We will ask a GitHub account (must start with @), or press return to skip, or if don't have one.",
+	     "We will ask for an affiliation (company, school, org) of the author, or press return to skip, or if don't have one.",
+	     NULL);
     }
-    errno = 0;		/* pre-clear errno for errp() */
-    ret = puts(ISO_3166_1_CODE_URL1);
-    if (ret < 0) {
-	warnp(__func__, "puts error printing ISO 3166-1 URL1");
-    }
-    errno = 0;		/* pre-clear errno for errp() */
-    ret = puts(ISO_3166_1_CODE_URL2);
-    if (ret < 0) {
-	warnp(__func__, "puts error printing ISO 3166-1 URL2");
-    }
-    errno = 0;		/* pre-clear errno for errp() */
-    ret = puts(ISO_3166_1_CODE_URL3);
-    if (ret < 0) {
-	warnp(__func__, "puts error printing ISO 3166-1 URL3");
-    }
-    errno = 0;		/* pre-clear errno for errp() */
-    ret = puts(ISO_3166_1_CODE_URL4);
-    if (ret < 0) {
-	warnp(__func__, "puts error printing ISO 3166-1 URL4");
-    }
-    para("",
-	 "We will ask for the author(s) Email address. Press return if you don't want to provide it, or if don't have one.",
-	 "We will ask for a home URL (starting with http:// or https://), or press return to skip, or if don't have one.",
-	 "We will ask a twitter handle (must start with @), or press return to skip, or if don't have one.",
-	 "We will ask a GitHub account (must start with @), or press return to skip, or if don't have one.",
-	 "We will ask for an affiliation (company, school, org) of the author, or press return to skip, or if don't have one.",
-	 NULL);
 
     /*
      * collect information on authors
@@ -4872,7 +4869,12 @@ get_author_info(struct info *infop, char *ioccc_id, struct author **author_set_p
 		    author_set[i].name = NULL;
 		}
 	    }
-	} while (author_set[i].name == NULL);
+	} while (author_set[i].name == NULL && need_retry == true);
+
+	if (author_set[i].name == NULL) {
+	    errp(100, __func__, "retry prompt is disabled");
+	}
+
 	dbg(DBG_MED, "Author #%d Name %s", i, author_set[i].name);
 
 
@@ -5013,24 +5015,33 @@ get_author_info(struct info *infop, char *ioccc_id, struct author **author_set_p
 		/*
 		 * verify the known location/country code
 		 */
-		errno = 0;		/* pre-clear errno for errp() */
-		ret = printf("The location/country code you entered is assigned to: %s\n", author_set[i].location_name);
-		if (ret <= 0) {
-		    warnp(__func__, "fprintf location/country code assignment");
-		}
-		yorn = yes_or_no("Is that location/country code correct? [yn]");
-
-		/*
-		 * free storage if no (reenter location/country code)
-		 */
-		if (yorn == false) {
-		    if (author_set[i].location_code != NULL) {
-			free(author_set[i].location_code);
-			author_set[i].location_code = NULL;
+	        if (need_confirm == true) {
+		    errno = 0;		/* pre-clear errno for errp() */
+		    ret = printf("The location/country code you entered is assigned to: %s\n", author_set[i].location_name);
+		    if (ret <= 0) {
+			warnp(__func__, "fprintf location/country code assignment");
 		    }
+		    yorn = yes_or_no("Is that location/country code correct? [yn]");
+
+		    /*
+		     * free storage if no (reenter location/country code)
+		     */
+		    if (yorn == false) {
+			if (author_set[i].location_code != NULL) {
+			    free(author_set[i].location_code);
+			    author_set[i].location_code = NULL;
+			}
+		    }
+		} else {
+		    yorn = true;
 		}
 	    }
-	} while (author_set[i].location_code == NULL || author_set[i].location_name == NULL || yorn == false);
+	} while ((author_set[i].location_code == NULL || author_set[i].location_name == NULL || yorn == false) && need_retry == true);
+
+	if (author_set[i].location_code == NULL || author_set[i].location_name == NULL || yorn == false) {
+	    errp(100, __func__, "retry prompt is disabled");
+	}
+
 	dbg(DBG_MED, "Author #%d location/country: %s (%s)", i, author_set[i].location_code, author_set[i].location_name);
 
 	/*
@@ -5042,7 +5053,9 @@ get_author_info(struct info *infop, char *ioccc_id, struct author **author_set_p
 	     * request Email address
 	     */
 	    author_set[i].email = NULL;
-	    author_set[i].email = prompt("Enter author email address, or press return to skip", &len);
+	    author_set[i].email = prompt(need_hints == true ?
+		"Enter author email address, or press return to skip" :
+		"Enter author email address", &len);
 	    if (len == 0) {
 		dbg(DBG_VHIGH, "Email address withheld");
 	    } else {
@@ -5100,7 +5113,12 @@ get_author_info(struct info *infop, char *ioccc_id, struct author **author_set_p
 		    continue;
 		}
 	    }
-	} while (author_set[i].email == NULL);
+	} while (author_set[i].email == NULL && need_retry == true);
+
+	if (author_set[i].email == NULL) {
+	    errp(100, __func__, "retry prompt is disabled");
+	}
+
 	dbg(DBG_MED, "Author #%d Email: %s", i, author_set[i].email);
 
 	/*
@@ -5113,7 +5131,9 @@ get_author_info(struct info *infop, char *ioccc_id, struct author **author_set_p
 	     */
 	    author_set[i].url = NULL;
 	    author_set[i].url =
-		prompt("Enter author home page URL (starting with http:// or https://), or press return to skip", &len);
+		prompt(need_hints == true ?
+		    "Enter author home page URL (starting with http:// or https://), or press return to skip" :
+		    "Enter author home page URL", &len);
 	    if (len == 0) {
 		dbg(DBG_VHIGH, "URL withheld");
 	    } else {
@@ -5182,7 +5202,12 @@ get_author_info(struct info *infop, char *ioccc_id, struct author **author_set_p
 		    continue;
 		}
 	    }
-	} while (author_set[i].url == NULL);
+	} while (author_set[i].url == NULL && need_retry == true);
+
+	if (author_set[i].url == NULL) {
+	    errp(100, __func__, "retry prompt is disabled");
+	}
+
 	dbg(DBG_MED, "Author #%d URL: %s", i, author_set[i].url);
 
 	/*
@@ -5194,7 +5219,9 @@ get_author_info(struct info *infop, char *ioccc_id, struct author **author_set_p
 	     * request twitter handle
 	     */
 	    author_set[i].twitter = NULL;
-	    author_set[i].twitter = prompt("Enter author twitter handle, starting with @, or press return to skip", &len);
+	    author_set[i].twitter = prompt(need_hints == true ?
+		"Enter author twitter handle, starting with @, or press return to skip" :
+		"Enter author twitter handle", &len);
 	    if (len == 0) {
 		dbg(DBG_VHIGH, "Twitter handle not given");
 	    } else {
@@ -5253,7 +5280,12 @@ get_author_info(struct info *infop, char *ioccc_id, struct author **author_set_p
 		    continue;
 		}
 	    }
-	} while (author_set[i].twitter == NULL);
+	} while (author_set[i].twitter == NULL && need_retry == true);
+
+	if (author_set[i].twitter == NULL) {
+	    errp(100, __func__, "retry prompt is disabled");
+	}
+
 	dbg(DBG_MED, "Author #%d twitter: %s", i, author_set[i].twitter);
 
 	/*
@@ -5265,7 +5297,9 @@ get_author_info(struct info *infop, char *ioccc_id, struct author **author_set_p
 	     * request GitHub account
 	     */
 	    author_set[i].github = NULL;
-	    author_set[i].github = prompt("Enter author GitHub account, starting with @, or press return to skip", &len);
+	    author_set[i].github = prompt(need_hints == true ?
+		"Enter author GitHub account, starting with @, or press return to skip" :
+		"Enter author GitHub account", &len);
 	    if (len == 0) {
 		dbg(DBG_VHIGH, "GitHub account not given");
 	    } else {
@@ -5326,7 +5360,12 @@ get_author_info(struct info *infop, char *ioccc_id, struct author **author_set_p
 		    continue;
 		}
 	    }
-	} while (author_set[i].github == NULL);
+	} while (author_set[i].github == NULL && need_retry == true);
+
+	if (author_set[i].github == NULL) {
+	    errp(100, __func__, "retry prompt is disabled");
+	}
+
 	dbg(DBG_MED, "Author #%d GitHub: %s", i, author_set[i].github);
 
 	/*
@@ -5338,7 +5377,9 @@ get_author_info(struct info *infop, char *ioccc_id, struct author **author_set_p
 	     * request affiliation
 	     */
 	    author_set[i].affiliation = NULL;
-	    author_set[i].affiliation = prompt("Enter author affiliation, or press return to skip", &len);
+	    author_set[i].affiliation = prompt(need_hints == true ?
+		"Enter author affiliation, or press return to skip" :
+		"Enter author affiliation", &len);
 	    if (len == 0) {
 		dbg(DBG_VHIGH, "Affiliation not given");
 	    } else {
@@ -5370,7 +5411,12 @@ get_author_info(struct info *infop, char *ioccc_id, struct author **author_set_p
 		}
 		continue;
 	    }
-	} while (author_set[i].affiliation == NULL);
+	} while (author_set[i].affiliation == NULL && need_retry == true);
+
+	if (author_set[i].affiliation == NULL) {
+	    errp(100, __func__, "retry prompt is disabled");
+	}
+
 	dbg(DBG_MED, "Author #%d affiliation: %s", i, author_set[i].affiliation);
 
 
@@ -5395,66 +5441,14 @@ get_author_info(struct info *infop, char *ioccc_id, struct author **author_set_p
 	    errp(170, __func__, "error while printing author #%d information\n", i);
 	    not_reached();
 	}
-	yorn = yes_or_no("Is that author information correct? [yn]");
-	if (yorn == false) {
-	    /*
-	     * reenter author information
-	     */
-	    --i;
-	    continue;
-	}
-
-	/*
-	 * if we have an answers file, record the verified author information
-	 */
-	if (answerp != NULL && i_flag_used == false) {
-	    errno = 0;			/* pre-clear errno for errp() */
-	    ret = fprintf(answerp, "%s\n", author_set[i].name);
-	    if (ret <= 0) {
-		warnp(__func__, "fprintf error printing author name to the answers file");
-		(*answers_errors)++;
-	    }
-	    errno = 0;			/* pre-clear errno for errp() */
-	    ret = fprintf(answerp, "%s\ny\n", author_set[i].location_code);
-	    if (ret <= 0) {
-		warnp(__func__, "fprintf error printing author location to the answers file");
-		(*answers_errors)++;
-	    }
-	    errno = 0;			/* pre-clear errno for errp() */
-	    ret = fprintf(answerp, "%s\n", author_set[i].email);
-	    if (ret <= 0) {
-		warnp(__func__, "fprintf error printing author email to the answers file");
-		(*answers_errors)++;
-	    }
-	    errno = 0;			/* pre-clear errno for errp() */
-	    ret = fprintf(answerp, "%s\n", author_set[i].url);
-	    if (ret <= 0) {
-		warnp(__func__, "fprintf error printing author url to the answers file");
-		(*answers_errors)++;
-	    }
-	    errno = 0;			/* pre-clear errno for errp() */
-	    ret = fprintf(answerp, "%s\n", author_set[i].twitter);
-	    if (ret <= 0) {
-		warnp(__func__, "fprintf error printing author twitter handle to the answers file");
-		(*answers_errors)++;
-	    }
-	    errno = 0;			/* pre-clear errno for errp() */
-	    ret = fprintf(answerp, "%s\n", author_set[i].github);
-	    if (ret <= 0) {
-		warnp(__func__, "fprintf error printing author GitHub account to the answers file");
-		(*answers_errors)++;
-	    }
-	    errno = 0;			/* pre-clear errno for errp() */
-	    ret = fprintf(answerp, "%s\n", author_set[i].affiliation);
-	    if (ret <= 0) {
-		warnp(__func__, "fprintf error printing author affiliation to the answers file");
-		(*answers_errors)++;
-	    }
-	    errno = 0;			/* pre-clear errno for errp() */
-	    ret = fprintf(answerp, "y\n");
-	    if (ret <= 0) {
-		warnp(__func__, "fprintf error writing 'y' to confirm author information");
-		(*answers_errors)++;
+	if (need_confirm == true) {
+	    yorn = yes_or_no("Is that author information correct? [yn]");
+	    if (yorn == false) {
+		/*
+		 * reenter author information
+		 */
+		--i;
+		continue;
 	    }
 	}
     }
@@ -5644,15 +5638,17 @@ verify_entry_dir(char const *entry_dir, char const *ls)
     /*
      * ask the user to verify the list
      */
-    yorn = yes_or_no("\nIs the above list a correct list of files in your entry? [yn]");
-    if (yorn == false) {
-	fpara(stderr,
-	      "",
-	      "We suggest you remove the existing entry directory, and then",
-	      "rerun this tool with the correct set of file arguments.",
-	      NULL);
-	err(186, __func__, "%s failed with exit code: %d", cmd, WEXITSTATUS(exit_code));
-	not_reached();
+    if (need_confirm == true) {
+	yorn = yes_or_no("\nIs the above list a correct list of files in your entry? [yn]");
+	if (yorn == false) {
+	    fpara(stderr,
+		  "",
+		  "We suggest you remove the existing entry directory, and then",
+		  "rerun this tool with the correct set of file arguments.",
+		  NULL);
+	    err(186, __func__, "%s failed with exit code: %d", cmd, WEXITSTATUS(exit_code));
+	    not_reached();
+	}
     }
 
     /*
@@ -6696,11 +6692,10 @@ form_tarball(char const *work_dir, char const *entry_dir, char const *tarball_pa
  *      test_mode       - true ==> test mode, do not upload
  *      answers		- path to the answers file (if specified)
  *      infop		- pointer to info structure
- *      answers_errors	- > 0 ==> I/O errors on answers file
  */
 static void
 remind_user(char const *work_dir, char const *entry_dir, char const *tar, char const *tarball_path, bool test_mode,
-	    char const *answers, struct info *infop, unsigned answers_errors)
+	    char const *answers, struct info *infop)
 {
     int ret;			/* libc function return */
     char *entry_dir_esc;
@@ -6756,16 +6751,19 @@ remind_user(char const *work_dir, char const *entry_dir, char const *tar, char c
      * remind the user about their answers file
      */
     if (answers != NULL) {
-	errno = 0;			/* pre-clear errno for errp() */
-	ret = printf("\nTo more easily update this entry you can run:\n\n    ./mkiocccentry -i %s ...\n", answers);
-	if (ret <= 0) {
-	    warnp(__func__, "unable to tell user how to more easily update entry");
+	if (need_hints == true) {
+	    errno = 0;			/* pre-clear errno for errp() */
+	    ret = printf("\nTo more easily update this entry you can run:\n\n    ./mkiocccentry -i %s ...\n", answers);
+	    if (ret <= 0) {
+		warnp(__func__, "unable to tell user how to more easily update entry");
+	    }
 	}
-	if (answers_errors > 0) {
+
+	if (infop->answers_errors > 0) {
 	    errno = 0;	/* pre-clear errno for errp() */
-	    ret = printf("Warning: There were %u I/O error%s on the answers file. Make SURE to verify that using the file\n"
+	    ret = printf("Warning: There were %d I/O error%s on the answers file. Make SURE to verify that using the file\n"
 			 "results in the proper input before reuploading!\n",
-			 answers_errors, answers_errors==1?"":"s");
+			 infop->answers_errors, infop->answers_errors == 1 ? "" : "s" );
 	    if (ret <= 0) {
 		warnp(__func__, "unable to warn user that there were I/O errors on the answers file");
 	    }
@@ -6773,20 +6771,9 @@ remind_user(char const *work_dir, char const *entry_dir, char const *tar, char c
 
 	if (infop->warnings_ignored == true) {
 	    errno = 0;	/* pre-clear errno for errp() */
-	    ret = printf("\nYou've ignored one or more warnings. If you update your files so that these warnings\n"
-		         "aren't triggered or if different warnings are triggered, it is very likely that the\n"
-			 "answers file will cause invalid results and we STRONGLY recommend that you re-enter\n"
-			 "your answers!\n");
+	    ret = printf("\nYou've ignored one or more warnings!\n");
 	    if (ret <= 0) {
 		warnp(__func__, "unable to warn user about ignoring warnings when writing to the answer file");
-	    }
-	}
-	else {
-	    errno = 0;	/* pre-clear errno for errp() */
-	    printf("\nAlthough you've not ignored any warnings be aware that if you add or change a file that\n"
-		    "triggers a warning the next time, then this can result in improper answers being provided.\n");
-	    if (ret <= 0) {
-		warnp(__func__, "unable to warn user that if they add or change a file that triggers a warning, it cause invalid input");
 	    }
 	}
     }
