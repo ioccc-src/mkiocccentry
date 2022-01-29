@@ -232,7 +232,6 @@ struct info {
     bool wordbuf_warning;	/* true ==> word buffer overflow detected */
     bool ungetc_warning;	/* true ==> ungetc warning detected */
     bool Makefile_override;	/* true ==> Makefile rule override requested */
-    bool warnings_ignored;	/* true ==> warnings were ignored */
     int answers_errors;		/* > 0 ==> flushing or closing answers file failed */
     /*
      * filenames
@@ -2979,7 +2978,6 @@ check_prog_c(struct info *infop, char const *entry_dir, char const *cp, char con
 	}
 	infop->empty_override = true;
 	infop->rule_2a_override = false;
-	infop->warnings_ignored = true;
 
     /*
      * warn if prog.c is too large under Rule 2a
@@ -3010,7 +3008,6 @@ check_prog_c(struct info *infop, char const *entry_dir, char const *cp, char con
 	}
 	infop->empty_override = false;
 	infop->rule_2a_override = true;
-	infop->warnings_ignored = true;
     } else {
 	infop->empty_override = false;
 	infop->rule_2a_override = false;
@@ -3061,7 +3058,6 @@ check_prog_c(struct info *infop, char const *entry_dir, char const *cp, char con
 	        (long)infop->rule_2a_size, (long)size.rule_2a_size);
 	}
 	infop->rule_2a_mismatch = true;
-	infop->warnings_ignored = true;
     } else {
 	infop->rule_2a_mismatch = false;
     }
@@ -3085,7 +3081,6 @@ check_prog_c(struct info *infop, char const *entry_dir, char const *cp, char con
 	    dbg(DBG_LOW, "user says that prog.c %s having character(s) with high bit is OK", prog_c);
 	}
 	infop->highbit_warning = true;
-	infop->warnings_ignored = true;
     } else {
 	infop->highbit_warning = false;
     }
@@ -3109,7 +3104,6 @@ check_prog_c(struct info *infop, char const *entry_dir, char const *cp, char con
 	    dbg(DBG_LOW, "user says that prog.c %s having NUL character(s) is OK", prog_c);
 	}
 	infop->nul_warning = true;
-	infop->warnings_ignored = true;
     } else {
 	infop->nul_warning = false;
     }
@@ -3133,7 +3127,6 @@ check_prog_c(struct info *infop, char const *entry_dir, char const *cp, char con
 	    dbg(DBG_LOW, "user says that prog.c %s having unknown or invalid trigraph(s) is OK", prog_c);
 	}
 	infop->trigraph_warning = true;
-	infop->warnings_ignored = true;
     } else {
 	infop->trigraph_warning = false;
     }
@@ -3158,7 +3151,6 @@ check_prog_c(struct info *infop, char const *entry_dir, char const *cp, char con
 	    dbg(DBG_LOW, "user says that prog.c %s triggered a word buffer overflow is OK", prog_c);
 	}
 	infop->wordbuf_warning = true;
-	infop->warnings_ignored = true;
     } else {
 	infop->wordbuf_warning = false;
     }
@@ -3183,7 +3175,6 @@ check_prog_c(struct info *infop, char const *entry_dir, char const *cp, char con
 	    dbg(DBG_LOW, "user says that prog.c %s triggered an ungetc warning OK", prog_c);
 	}
 	infop->ungetc_warning = true;
-	infop->warnings_ignored = true;
     } else {
 	infop->ungetc_warning = false;
     }
@@ -3210,7 +3201,6 @@ check_prog_c(struct info *infop, char const *entry_dir, char const *cp, char con
 	        (unsigned long)infop->rule_2b_size, (unsigned long)RULE_2B_SIZE);
 	}
 	infop->rule_2b_override = true;
-	infop->warnings_ignored = true;
     } else {
 	infop->rule_2b_override = false;
     }
@@ -3646,7 +3636,6 @@ check_Makefile(struct info *infop, char const *entry_dir, char const *cp, char c
 	    }
 	}
 	infop->Makefile_override = true;
-	infop->warnings_ignored = true;
     } else {
 	infop->Makefile_override = false;
     }
@@ -6769,9 +6758,66 @@ remind_user(char const *work_dir, char const *entry_dir, char const *tar, char c
 	    }
 	}
 
-	if (infop->warnings_ignored == true) {
-	    errno = 0;	/* pre-clear errno for errp() */
-	    ret = printf("\nYou've ignored one or more warnings!\n");
+	if (infop->empty_override == true ||
+	    infop->rule_2a_override == true ||
+	    infop->rule_2a_mismatch == true ||
+	    infop->rule_2b_override == true ||
+	    infop->highbit_warning == true ||
+	    infop->nul_warning == true ||
+	    infop->trigraph_warning == true ||
+	    infop->wordbuf_warning == true ||
+	    infop->ungetc_warning == true ||
+	    infop->Makefile_override == true) {
+	    /* short summary on warnings */
+	    do {
+	        errno = 0;	/* pre-clear errno for errp() */
+		ret = printf("\nYou've ignored one or more warnings:\n");	    
+		if (ret <= 0) break;
+		if (infop->empty_override) {
+		    ret = printf("\nWARNING: prog.c is empty\n");
+		    if (ret <= 0) break;
+		}
+		if (infop->rule_2a_override) {
+		    ret = printf("\nWARNING: prog.c size: %ld > Rule 2a maximum: %ld\n",
+			(long)infop->rule_2a_size, (long)RULE_2A_SIZE);
+		    if (ret <= 0) break;
+		}
+		if (infop->rule_2a_mismatch) {
+		    ret = printf("\nWARNING: prog.c file size: %ld != rule_count function size\n",
+			(long)infop->rule_2a_size);
+		    if (ret <= 0) break;
+		}
+		if (infop->rule_2b_override) {
+		    ret = printf("\nWARNING: prog.c size: %ld > Rule 2b maximum: %ld\n",
+			(long)infop->rule_2b_size, (long)RULE_2B_SIZE);
+		    if (ret <= 0) break;
+		}
+		if (infop->highbit_warning) {
+		    ret = printf("\nWARNING: prog.c has character(s) with high bit set\n");
+		    if (ret <= 0) break;
+		}
+		if (infop->nul_warning) {
+		    ret = printf("\nWARNING: prog.c has NUL character(s)\n");
+		    if (ret <= 0) break;
+		}
+		if (infop->trigraph_warning) {
+		    ret = printf("\nWARNING: prog.c has unknown or invalid trigraph(s) found\n");
+		    if (ret <= 0) break;
+		}
+		if (infop->wordbuf_warning) {
+		    ret = printf("\nWARNING: prog.c triggered a word buffer overflow\n");
+		    if (ret <= 0) break;
+		}
+		if (infop->ungetc_warning) {
+		    ret = printf("\nWARNING: prog.c triggered an ungetc error\n");
+		    if (ret <= 0) break;
+		}
+		if (infop->Makefile_override) {
+		    ret = printf("\nWARNING: Makefile don't have all the required targets\n");
+		    if (ret <= 0) break;
+		}
+	    } while (0);
+
 	    if (ret <= 0) {
 		warnp(__func__, "unable to warn user about ignoring warnings when writing to the answer file");
 	    }
