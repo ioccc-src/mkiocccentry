@@ -61,9 +61,22 @@ y
 EOF
 }
 
+rm -f answers.txt
+
 # run the test, looking for an exit
 #
-answers | ./mkiocccentry -- "$work_dir" "$src_dir"/{prog.c,Makefile,remarks.md,extra1,extra2}
+answers | ./mkiocccentry -a answers.txt -- "$work_dir" "$src_dir"/{prog.c,Makefile,remarks.md,extra1,extra2}
+status="$?"
+if [[ $status -ne 0 ]]; then
+    echo "$0: FATAL: /mkiocccentry non-zero exit code: $status" 1>&2
+    exit "$status"
+fi
+
+# cleanout the under work_dir area, again
+#
+find "$work_dir_esc" -mindepth 1 -depth -delete
+
+./mkiocccentry -i answers.txt -- "$work_dir" "$src_dir"/{prog.c,Makefile,remarks.md,extra1,extra2}
 status="$?"
 if [[ $status -ne 0 ]]; then
     echo "$0: FATAL: /mkiocccentry non-zero exit code: $status" 1>&2
