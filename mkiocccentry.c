@@ -657,6 +657,7 @@ static bool need_confirm = true;	/* true ==> ask for confirmations */
 static bool need_hints = true;		/* true ==> show hints */
 static bool prompt_fix_echo = false;    /* true ==> print the line read from the stream (fixes the log when using the -i option) */
 static bool need_retry = true;
+static FILE *input_stream = NULL;
 
 /*
  * forward declarations
@@ -706,8 +707,7 @@ static char const * strnull(char const * const str);
 static void write_info(struct info *infop, char const *entry_dir, bool test_mode);
 static void write_author(struct info *infop, int author_count, struct author *authorp, char const *entry_dir);
 static void form_tarball(char const *work_dir, char const *entry_dir, char const *tarball_path, char const *tar, char const *ls);
-static void remind_user(char const *work_dir, char const *entry_dir, char const *tar, char const *tarball_path, bool test_mode,
-			char const *answers, struct info *infop);
+static void remind_user(char const *work_dir, char const *entry_dir, char const *tar, char const *tarball_path, bool test_mode);
 static char *cmdprintf(char const *format, ...);
 
 
@@ -742,6 +742,8 @@ main(int argc, char *argv[])
     bool i_flag_used = false;	/* true ==> -i read answers from answers file */
     int ret;			/* libc return code */
     int i;
+
+    input_stream = stdin;
 
     /*
      * parse args
@@ -904,11 +906,12 @@ main(int argc, char *argv[])
 	    not_reached();
 	}
 	errno = 0;
-	answerp = freopen(answers, "r", stdin);
+	answerp = fopen(answers, "r");
 	if (answerp == NULL) {
 	    errp(7, __func__, "cannot open answers file");
 	    not_reached();
 	}
+	input_stream = answerp;
     }
     /*
      * obtain the IOCCC contest ID
@@ -933,7 +936,7 @@ main(int argc, char *argv[])
      * make the entry directory because if we get input before and find out the
      * directory already exists then the answers file will have invalid data.
      */
-    if (a_flag_used && answers != NULL && strlen(answers) > 0) {
+    if (a_flag_used == true && answers != NULL && strlen(answers) > 0) {
 	errno = 0;			/* pre-clear errno for errp() */
 	answerp = fopen(answers, "w");
 	if (answerp == NULL) {
@@ -1075,17 +1078,18 @@ main(int argc, char *argv[])
 
 	    line = readline_dup(&linep, true, NULL, answerp);
 	    if (linep != NULL) {
-		error = strcmp(line, "ANSWERS_EOF") != 0;
+		error = strcmp(line, "ANSWERS_END") != 0;
 		free(linep);
 	    }
 	    if (error == true) {
-	        errp(1, __func__, "expected ANSWERS_EOF marker at the end of the answers file");
+	        errp(1, __func__, "expected ANSWERS_END marker at the end of the answers file");
 	        not_reached();
 	    }
+	    input_stream = stdin;
 	} else {
-	    ret = fprintf(answerp, "ANSWERS_EOF\n");
+	    ret = fprintf(answerp, "ANSWERS_END\n");
 	    if (ret <= 0) {
-	        warnp(__func__, "fprintf error printing ANSWERS_EOF marker to the answers file");
+	        warnp(__func__, "fprintf error printing ANSWERS_END marker to the answers file");
 		info.answers_errors++;
 	    }
 	}
@@ -1098,6 +1102,105 @@ main(int argc, char *argv[])
     }
 
     /*
+     * remind the user about their answers file
+     */
+    if (answers != NULL) {
+	int yorn;
+
+	if (need_hints == true) {
+	    errno = 0;			/* pre-clear errno for errp() */
+	    ret = printf("\nTo more easily update this entry you can run:\n\n    ./mkiocccentry -i %s ...\n", answers);
+	    if (ret <= 0) {
+		warnp(__func__, "unable to tell user how to more easily update entry");
+	    }
+	}
+
+	if (info.answers_errors > 0) {
+	    errno = 0;	/* pre-clear errno for errp() */
+	    ret = printf("Warning: There were %d I/O error%s on the answers file. Make SURE to verify that using the file\n"
+			 "results in the proper input before reuploading!\n",
+			 info.answers_errors, info.answers_errors == 1 ? "" : "s" );
+	    if (ret <= 0) {
+		warnp(__func__, "unable to warn user that there were I/O errors on the answers file");
+	    }
+	}
+
+	if (info.empty_override == true ||
+	    info.rule_2a_override == true ||
+	    info.rule_2a_mismatch == true ||
+	    info.rule_2b_override == true ||
+	    info.highbit_warning == true ||
+	    info.nul_warning == true ||
+	    info.trigraph_warning == true ||
+	    info.wordbuf_warning == true ||
+	    info.ungetc_warning == true ||
+	    info.Makefile_override == true) {
+	    /* short summary on warnings */
+	    do {
+	        errno = 0;	/* pre-clear errno for errp() */
+		ret = printf("\nYou've ignored one or more warnings:\n");	    
+		if (ret <= 0) break;
+		if (info.empty_override) {
+		    ret = printf("\nWARNING: prog.c is empty\n");
+		    if (ret <= 0) break;
+		}
+		if (info.rule_2a_override) {
+		    ret = printf("\nWARNING: prog.c size: %ld > Rule 2a maximum: %ld\n",
+			(long)info.rule_2a_size, (long)RULE_2A_SIZE);
+		    if (ret <= 0) break;
+		}
+		if (info.rule_2a_mismatch) {
+		    ret = printf("\nWARNING: prog.c file size: %ld != rule_count function size\n",
+			(long)info.rule_2a_size);
+		    if (ret <= 0) break;
+		}
+		if (info.rule_2b_override) {
+		    ret = printf("\nWARNING: prog.c size: %ld > Rule 2b maximum: %ld\n",
+			(long)info.rule_2b_size, (long)RULE_2B_SIZE);
+		    if (ret <= 0) break;
+		}
+		if (info.highbit_warning) {
+		    ret = printf("\nWARNING: prog.c has character(s) with high bit set\n");
+		    if (ret <= 0) break;
+		}
+		if (info.nul_warning) {
+		    ret = printf("\nWARNING: prog.c has NUL character(s)\n");
+		    if (ret <= 0) break;
+		}
+		if (info.trigraph_warning) {
+		    ret = printf("\nWARNING: prog.c has unknown or invalid trigraph(s) found\n");
+		    if (ret <= 0) break;
+		}
+		if (info.wordbuf_warning) {
+		    ret = printf("\nWARNING: prog.c triggered a word buffer overflow\n");
+		    if (ret <= 0) break;
+		}
+		if (info.ungetc_warning) {
+		    ret = printf("\nWARNING: prog.c triggered an ungetc error\n");
+		    if (ret <= 0) break;
+		}
+		if (info.Makefile_override) {
+		    ret = printf("\nWARNING: Makefile don't have all the required targets\n");
+		    if (ret <= 0) break;
+		}
+		ret = printf("\nYou've ignored one or more warnings:\n");	    
+		if (ret <= 0) break;
+
+	    } while (0);
+
+	    if (ret <= 0) {
+		warnp(__func__, "unable to warn user about ignoring warnings when writing to the answer file");
+	    }
+
+	    yorn = yes_or_no("Are you sure you want to create a tarball with having these warnings unresolved? [yn]");
+	    if (yorn == false) {
+		err(93, __func__, "the user has chosen not to create a tarball");
+		not_reached();
+	    }
+	}
+    }
+
+    /*
      * form the .txz file
      */
     form_tarball(work_dir, entry_dir, tarball_path, tar, ls);
@@ -1105,7 +1208,7 @@ main(int argc, char *argv[])
     /*
      * remind user various things e.g., to upload (unless in test mode)
      */
-    remind_user(work_dir, entry_dir, tar, tarball_path, test_mode, answers, &info);
+    remind_user(work_dir, entry_dir, tar, tarball_path, test_mode);
 
     /*
      * free storage
@@ -2451,7 +2554,7 @@ prompt(char const *str, size_t *lenp)
     /*
      * read user input - return input length
      */
-    buf = readline_dup(&linep, true, &len, stdin);
+    buf = readline_dup(&linep, true, &len, input_stream);
     if (buf == NULL) {
 	err(74, __func__, "EOF while reading prompt input");
 	not_reached();
@@ -6683,8 +6786,7 @@ form_tarball(char const *work_dir, char const *entry_dir, char const *tarball_pa
  *      infop		- pointer to info structure
  */
 static void
-remind_user(char const *work_dir, char const *entry_dir, char const *tar, char const *tarball_path, bool test_mode,
-	    char const *answers, struct info *infop)
+remind_user(char const *work_dir, char const *entry_dir, char const *tar, char const *tarball_path, bool test_mode)
 {
     int ret;			/* libc function return */
     char *entry_dir_esc;
@@ -6735,94 +6837,6 @@ remind_user(char const *work_dir, char const *entry_dir, char const *tar, char c
 	not_reached();
     }
     free(work_dir_esc);
-
-    /*
-     * remind the user about their answers file
-     */
-    if (answers != NULL) {
-	if (need_hints == true) {
-	    errno = 0;			/* pre-clear errno for errp() */
-	    ret = printf("\nTo more easily update this entry you can run:\n\n    ./mkiocccentry -i %s ...\n", answers);
-	    if (ret <= 0) {
-		warnp(__func__, "unable to tell user how to more easily update entry");
-	    }
-	}
-
-	if (infop->answers_errors > 0) {
-	    errno = 0;	/* pre-clear errno for errp() */
-	    ret = printf("Warning: There were %d I/O error%s on the answers file. Make SURE to verify that using the file\n"
-			 "results in the proper input before reuploading!\n",
-			 infop->answers_errors, infop->answers_errors == 1 ? "" : "s" );
-	    if (ret <= 0) {
-		warnp(__func__, "unable to warn user that there were I/O errors on the answers file");
-	    }
-	}
-
-	if (infop->empty_override == true ||
-	    infop->rule_2a_override == true ||
-	    infop->rule_2a_mismatch == true ||
-	    infop->rule_2b_override == true ||
-	    infop->highbit_warning == true ||
-	    infop->nul_warning == true ||
-	    infop->trigraph_warning == true ||
-	    infop->wordbuf_warning == true ||
-	    infop->ungetc_warning == true ||
-	    infop->Makefile_override == true) {
-	    /* short summary on warnings */
-	    do {
-	        errno = 0;	/* pre-clear errno for errp() */
-		ret = printf("\nYou've ignored one or more warnings:\n");	    
-		if (ret <= 0) break;
-		if (infop->empty_override) {
-		    ret = printf("\nWARNING: prog.c is empty\n");
-		    if (ret <= 0) break;
-		}
-		if (infop->rule_2a_override) {
-		    ret = printf("\nWARNING: prog.c size: %ld > Rule 2a maximum: %ld\n",
-			(long)infop->rule_2a_size, (long)RULE_2A_SIZE);
-		    if (ret <= 0) break;
-		}
-		if (infop->rule_2a_mismatch) {
-		    ret = printf("\nWARNING: prog.c file size: %ld != rule_count function size\n",
-			(long)infop->rule_2a_size);
-		    if (ret <= 0) break;
-		}
-		if (infop->rule_2b_override) {
-		    ret = printf("\nWARNING: prog.c size: %ld > Rule 2b maximum: %ld\n",
-			(long)infop->rule_2b_size, (long)RULE_2B_SIZE);
-		    if (ret <= 0) break;
-		}
-		if (infop->highbit_warning) {
-		    ret = printf("\nWARNING: prog.c has character(s) with high bit set\n");
-		    if (ret <= 0) break;
-		}
-		if (infop->nul_warning) {
-		    ret = printf("\nWARNING: prog.c has NUL character(s)\n");
-		    if (ret <= 0) break;
-		}
-		if (infop->trigraph_warning) {
-		    ret = printf("\nWARNING: prog.c has unknown or invalid trigraph(s) found\n");
-		    if (ret <= 0) break;
-		}
-		if (infop->wordbuf_warning) {
-		    ret = printf("\nWARNING: prog.c triggered a word buffer overflow\n");
-		    if (ret <= 0) break;
-		}
-		if (infop->ungetc_warning) {
-		    ret = printf("\nWARNING: prog.c triggered an ungetc error\n");
-		    if (ret <= 0) break;
-		}
-		if (infop->Makefile_override) {
-		    ret = printf("\nWARNING: Makefile don't have all the required targets\n");
-		    if (ret <= 0) break;
-		}
-	    } while (0);
-
-	    if (ret <= 0) {
-		warnp(__func__, "unable to warn user about ignoring warnings when writing to the answer file");
-	    }
-	}
-    }
 
     /*
      * case: test mode
