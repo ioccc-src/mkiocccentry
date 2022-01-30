@@ -681,7 +681,7 @@ static void sanity_chk(struct info *infop, char const *work_dir, char const *tar
 static void para(char const *line, ...);
 static void fpara(FILE * stream, char const *line, ...);
 static char *prompt(char const *str, size_t *lenp);
-static char *get_contest_id(struct info *infop, bool *testp);
+static char *get_contest_id(struct info *infop, bool *testp, bool *i_flag_used);
 static int get_entry_num(struct info *infop);
 static char *mk_entry_dir(char const *work_dir, char const *ioccc_id, int entry_num, char **tarball_path, time_t tstamp);
 static bool inspect_Makefile(char const *Makefile);
@@ -916,8 +916,16 @@ main(int argc, char *argv[])
     /*
      * obtain the IOCCC contest ID
      */
-    info.ioccc_id = get_contest_id(&info, &test_mode);
+    info.ioccc_id = get_contest_id(&info, &test_mode, &i_flag_used);
     dbg(DBG_MED, "IOCCC contest ID: %s", info.ioccc_id);
+
+    /*
+     * found the answer file header in stdin
+     */
+    if (i_flag_used == true && answers == NULL) {
+	answerp = stdin;
+    }
+
     /*
      * obtain entry number
      */
@@ -942,6 +950,10 @@ main(int argc, char *argv[])
 	if (answerp == NULL) {
 	    errp(8, __func__, "cannot create answers file: %s", answers);
 	    not_reached();
+	}
+        ret = fprintf(answerp, "MKIOCCCENTRY_ANSWERS_V1\n");
+	if (ret <= 0) {
+	    warnp(__func__, "fprintf error printing header to the answers file");
 	}
     }
 
@@ -1093,10 +1105,12 @@ main(int argc, char *argv[])
 		info.answers_errors++;
 	    }
 	}
-	ret = fclose(answerp);
-	if (ret != 0) {
-	    warnp(__func__, "error in fclose to the answers file");
-	    info.answers_errors++;
+	if (answers != NULL) {
+	    ret = fclose(answerp);
+	    if (ret != 0) {
+	        warnp(__func__, "error in fclose to the answers file");
+	        info.answers_errors++;
+	    }
 	}
 	answerp = NULL;
     }
@@ -1105,8 +1119,6 @@ main(int argc, char *argv[])
      * remind the user about their answers file
      */
     if (answers != NULL) {
-	int yorn;
-
 	if (need_hints == true) {
 	    errno = 0;			/* pre-clear errno for errp() */
 	    ret = printf("\nTo more easily update this entry you can run:\n\n    ./mkiocccentry -i %s ...\n", answers);
@@ -1114,6 +1126,10 @@ main(int argc, char *argv[])
 		warnp(__func__, "unable to tell user how to more easily update entry");
 	    }
 	}
+    }
+
+    if (i_flag_used == true) {
+	int yorn;
 
 	if (info.answers_errors > 0) {
 	    errno = 0;	/* pre-clear errno for errp() */
@@ -2606,7 +2622,7 @@ prompt(char const *str, size_t *lenp)
  * This function does not return on error or if the contest ID is malformed.
  */
 static char *
-get_contest_id(struct info *infop, bool *testp)
+get_contest_id(struct info *infop, bool *testp, bool *i_flag_used)
 {
     char *malloc_ret;		/* malloced return string */
     size_t len;			/* input string length */
@@ -2616,6 +2632,7 @@ get_contest_id(struct info *infop, bool *testp)
     unsigned int variant = 0;	/* UUID variant hex character */
     char guard;			/* scanf guard to catch excess amount of input */
     size_t i;
+    bool seen_answers_header = false;
 
     /*
      * firewall
@@ -2659,6 +2676,24 @@ get_contest_id(struct info *infop, bool *testp)
 	 * prompt for the contest ID
 	 */
 	malloc_ret = prompt("Enter IOCCC contest ID or test", &len);
+	if (seen_answers_header == false && !strcmp(malloc_ret, "MKIOCCCENTRY_ANSWERS_V1")) {
+	    dbg(DBG_HIGH, "found answers header");
+	    seen_answers_header = true;
+	    *i_flag_used = true;
+	    need_retry = false;
+	    need_confirm = false;
+	    need_hints = false;
+	    prompt_fix_echo = true;
+
+	    free(malloc_ret);
+	    malloc_ret = prompt("", &len);
+	}
+	if (*i_flag_used == true && seen_answers_header == false) {
+	    dbg(DBG_HIGH, "the IOCCC contest ID as entered is: %s", malloc_ret);
+	    err(75, __func__, "didn't find the correct answers file header");
+	    not_reached();
+	}
+
 	dbg(DBG_HIGH, "the IOCCC contest ID as entered is: %s", malloc_ret);
 	ret = 0;		/* initialize paranoia */
 
