@@ -4106,7 +4106,7 @@ check_extra_data_files(struct info *infop, char const *entry_dir, char const *cp
 	}
 
 	/*
-	 * basename must only use POSIX Fully portable characters: A–Z a–z 0–9 . _ - and the + character
+	 * basename must only use POSIX Fully portable characters: A-Z a-z 0–9 . _ - and the + character
 	 */
 	for (j=0; j < base_len; ++j) {
 	    if (!isascii(base[j]) ||
