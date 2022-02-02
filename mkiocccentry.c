@@ -166,10 +166,10 @@ static const char * const usage_msg0 =
     "\n"
     "\t-t /path/to/tar\t\tpath to tar executable that supports the -J (xz) option (def: %s)\n"
     "\t-c /path/to/cp\t\tpath to cp executable (def: %s)\n"
-    "\t-l /path/to/ls\t\tpath to ls executable (def: %s)\n"
-    "\t-a answers\t\twrite answers to a file for easier updating of an entry\n"
-    "\t-i answers\t\tread answers from file previously written by -a answers\n";
+    "\t-l /path/to/ls\t\tpath to ls executable (def: %s)\n";
 static const char * const usage_msg1 =
+    "\t-a answers\t\twrite answers to a file for easier updating of an entry\n"
+    "\t-i answers\t\tread answers from file previously written by -a answers\n\n"
     "\t    NOTE: One cannot use both -a answers and -i answers at the same time.\n"
     "\n"
     "\twork_dir\tdirectory where the entry directory and tarball are formed\n"
