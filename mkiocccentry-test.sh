@@ -34,7 +34,7 @@ EOF
 
 echo -n > "$src_dir"/empty_prog.c
 
-# fake some requireed files
+# fake some required files
 #
 test -f "$src_dir"/Makefile || cat Makefile.example > "$src_dir"/Makefile
 test -f "$src_dir"/remarks.md || cat README.md > "$src_dir"/remarks.md
@@ -52,13 +52,13 @@ abstract
 1
 author name
 cc
-yes
+y
 test@example.com
 http://example.com/index.html
 @twitter
 @github
 affiliation
-Y
+y
 y
 EOF
 }
@@ -70,7 +70,7 @@ rm -f answers.txt
 answers | ./mkiocccentry -a answers.txt -- "$work_dir" "$src_dir"/{prog.c,Makefile,remarks.md,extra1,extra2}
 status="$?"
 if [[ $status -ne 0 ]]; then
-    echo "$0: FATAL: /mkiocccentry non-zero exit code: $status" 1>&2
+    echo "$0: FATAL: ./mkiocccentry non-zero exit code: $status" 1>&2
     exit "$status"
 fi
 
@@ -78,7 +78,7 @@ fi
 #
 find "$work_dir_esc" -mindepth 1 -depth -delete
 
-./mkiocccentry -i answers.txt -- "$work_dir" "$src_dir"/{empty_prog.c,Makefile,remarks.md,extra1,extra2}
+yes | ./mkiocccentry -i answers.txt -- "$work_dir" "$src_dir"/{empty_prog.c,Makefile,remarks.md,extra1,extra2}
 status="$?"
 if [[ $status -ne 0 ]]; then
     echo "$0: FATAL: /mkiocccentry non-zero exit code: $status" 1>&2
@@ -89,9 +89,10 @@ fi
 #
 find "$work_dir_esc" -mindepth 1 -depth -delete
 
-echo yes >> answers.txt
-
-cat answers.txt | ./mkiocccentry -- "$work_dir" "$src_dir"/{empty_prog.c,Makefile,remarks.md,extra1,extra2}
+# Note that as of commit c9b31d416c82932daa0e6ec4dd8d094d2d3edb25 redirecting
+# stdin (or cat answers | ./mkiocccentry ...) no longer works due to the version
+# tag and EOF marker so we have to use -i answers.txt here too.
+yes | ./mkiocccentry -i answers.txt -- "$work_dir" "$src_dir"/{empty_prog.c,Makefile,remarks.md,extra1,extra2}
 status="$?"
 if [[ $status -ne 0 ]]; then
     echo "$0: FATAL: /mkiocccentry non-zero exit code: $status" 1>&2
