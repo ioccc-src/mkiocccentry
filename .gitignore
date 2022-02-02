@@ -7,6 +7,8 @@ rule_count.c
 test-iocccsize
 test_src
 test_work
+answers.txt
+limit_ioccc.sh
 
 # Prerequisites
 *.d

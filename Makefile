@@ -75,6 +75,10 @@ CC= cc
 RM= rm
 CP= cp
 INSTALL= install
+GREP= grep
+AWK= awk
+TR= tr
+SED= sed
 
 # how to compile
 #
@@ -103,7 +107,7 @@ CFLAGS= -O3 -g3 -pedantic -Wall -Wextra
 # where and what to install
 #
 DESTDIR= /usr/local/bin
-TARGETS= mkiocccentry iocccsize dbg_test
+TARGETS= mkiocccentry iocccsize dbg_test limit_ioccc.sh
 TEST_TARGETS= dbg_test
 
 all: ${TARGETS} ${TEST_TARGETS}
@@ -131,6 +135,12 @@ dbg.o: dbg.c dbg.h Makefile
 dbg_test: dbg.c dbg.h Makefile
 	${CC} ${CFLAGS} -DDBG_TEST dbg.c -o $@
 
+limit_ioccc.sh: limit_ioccc.h
+	#{RM} -f $@
+	${GREP} -E '^#define (RULE_|MAX_)' limit_ioccc.h | \
+	    ${AWK} '{print $$2 "=\"" $$3 "\"" ;}' | ${TR} -d '[a-z]()' | \
+	    ${SED} -e 's/"_/"/' -e 's/^/export /' > $@
+
 configure:
 	@echo nothing to configure
 
@@ -139,7 +149,8 @@ clean:
 	${RM} -rf mkiocccentry.dSYM iocccsize.dSYM dbg_test.dSYM
 
 clobber: clean
-	${RM} -f ${TARGETS} ${TEST_TARGETS} rule_count.c
+	${RM} -f ${TARGETS} ${TEST_TARGETS}
+	${RM} -f rule_count.c answers.txt
 	${RM} -rf test-iocccsize test-src test-work
 
 install: all

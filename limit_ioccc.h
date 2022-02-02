@@ -44,8 +44,8 @@
 #define MAX_NAME_LEN (48)		/* max author name length */
 #define MAX_EMAIL_LEN (48)		/* max Email address length */
 #define MAX_URL_LEN (64)		/* max home URL, including http:// or https:// */
-#define MAX_TWITTER_LEN (18+1)		/* max twitter handle, including the leading @, length */
-#define MAX_GITHUB_LEN (15+1)		/* max GitHub account, including the leading @, length */
+#define MAX_TWITTER_LEN (19)		/* max twitter handle, including the leading @, length */
+#define MAX_GITHUB_LEN (16)		/* max GitHub account, including the leading @, length */
 #define MAX_AFFILIATION_LEN (48)	/* max affiliation name length */
 #define MAX_TITLE_LEN (20)		/* maximum length of a title */
 #define MAX_ABSTRACT_LEN (64)		/* maximum length of an abstract */
