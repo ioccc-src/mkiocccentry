@@ -32,6 +32,8 @@ int main() { puts("Hello, World!"); }
 EOF
 }
 
+echo -n > "$src_dir"/empty_prog.c
+
 # fake some requireed files
 #
 test -f "$src_dir"/Makefile || cat Makefile.example > "$src_dir"/Makefile
@@ -61,9 +63,35 @@ y
 EOF
 }
 
+rm -f answers.txt
+
 # run the test, looking for an exit
 #
-answers | ./mkiocccentry -- "$work_dir" "$src_dir"/{prog.c,Makefile,remarks.md,extra1,extra2}
+answers | ./mkiocccentry -a answers.txt -- "$work_dir" "$src_dir"/{prog.c,Makefile,remarks.md,extra1,extra2}
+status="$?"
+if [[ $status -ne 0 ]]; then
+    echo "$0: FATAL: /mkiocccentry non-zero exit code: $status" 1>&2
+    exit "$status"
+fi
+
+# cleanout the under work_dir area, again
+#
+find "$work_dir_esc" -mindepth 1 -depth -delete
+
+./mkiocccentry -i answers.txt -- "$work_dir" "$src_dir"/{empty_prog.c,Makefile,remarks.md,extra1,extra2}
+status="$?"
+if [[ $status -ne 0 ]]; then
+    echo "$0: FATAL: /mkiocccentry non-zero exit code: $status" 1>&2
+    exit "$status"
+fi
+
+# cleanout the under work_dir area, again
+#
+find "$work_dir_esc" -mindepth 1 -depth -delete
+
+echo yes >> answers.txt
+
+cat answers.txt | ./mkiocccentry -- "$work_dir" "$src_dir"/{empty_prog.c,Makefile,remarks.md,extra1,extra2}
 status="$?"
 if [[ $status -ne 0 ]]; then
     echo "$0: FATAL: /mkiocccentry non-zero exit code: $status" 1>&2
