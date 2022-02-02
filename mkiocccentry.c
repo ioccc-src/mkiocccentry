@@ -3015,7 +3015,7 @@ warn_empty_prog(char const *prog_c)
 	  "",
 	  "Perhaps you have a different twist on an empty prog.c than yet another",
 	  "smallest self-replicating program.  If so, the you may proceed, although",
-	  "we strongly suggest that you put into your remarks.md file, why your",
+	  "we STRONGLY suggest that you put into your remarks.md file, why your",
 	  "entry prog.c is not another smallest self-replicating program.",
 	  "",
 	  NULL);
@@ -3064,7 +3064,7 @@ warn_rule2a_size(struct info *infop, char const *prog_c, int mode)
 	}
 	if (need_confirm == true) {
 	    fpara(stderr,
-	      "If you are attempting some clever rule abuse, then we strongly suggest that you",
+	      "If you are attempting some clever rule abuse, then we STRONGLY suggest that you",
 	      "tell us about your rule abuse in your remarks.md file.  Be sure you have read the",
 	      "\"ABUSING THE RULES\" section of the guidelines.  And more importantly, read rule 12!",
 	      "",
@@ -3315,13 +3315,12 @@ warn_rule2b_size(struct info *infop, char const *prog_c)
 	not_reached();
     }
 
-
     if (need_confirm == true) {
 	errno = 0;
 	ret = fprintf(stderr, "\nWARNING: The prog.c %s size: %lu > Rule 2b maximum: %lu\n", prog_c,
 		      (unsigned long)infop->rule_2b_size, (unsigned long)RULE_2B_SIZE);
 	fpara(stderr,
-	      "Unless you are attempting some clever rule abuse, then we strongly suggest that you",
+	      "Unless you are attempting some clever rule abuse, then we STRONGLY suggest that you",
 	      "tell us about your rule abuse in your remarks.md file.  Be sure you have read the",
 	      "\"ABUSING THE RULES\" section of the guidelines.  And more importantly, read rule 12!",
 	      "",
