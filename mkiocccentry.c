@@ -2696,7 +2696,7 @@ get_contest_id(struct info *infop, bool *testp, bool *i_flag_used)
 	 *
 	 *             xxxxxxxx-xxxx-4xxx-axxx-xxxxxxxxxxxx
 	 *
-	 * where 'x' is a hex character.  The 4 is the UUID version and a the variant 1.
+	 * where 'x' is a hex character.  The 4 is the UUID version and the variant 1.
 	 */
 	if (len != UUID_LEN) {
 
@@ -2714,7 +2714,7 @@ get_contest_id(struct info *infop, bool *testp, bool *i_flag_used)
 		  "",
 		  "    xxxxxxxx-xxxx-4xxx-axxx-xxxxxxxxxxxx",
 		  "",
-		  "where 'x' is a hex character, 4 is the UUID version and a the variant 1.",
+		  "where 'x' is a hex character, 4 is the UUID version and the variant 1.",
 		  "",
 		  NULL);
 
@@ -2748,7 +2748,7 @@ get_contest_id(struct info *infop, bool *testp, bool *i_flag_used)
 		  "",
 		  "    xxxxxxxx-xxxx-4xxx-axxx-xxxxxxxxxxxx",
 		  "",
-		  "where 'x' is a hex character, 4 is the UUID version and a the variant 1.",
+		  "where 'x' is a hex character, 4 is the UUID version and the variant 1.",
 		  "",
 		  "Your IOCCC contest ID is not a valid UUID.  Please check your the email you received",
 		  "when you registered as an IOCCC contestant for the correct IOCCC contest ID.",
@@ -4382,7 +4382,7 @@ check_extra_data_files(struct info *infop, char const *entry_dir, char const *cp
 	if (!is_file(args[i])) {
 	    fpara(stderr,
 		   "",
-		   "The remarks.md path, while it exists, is not a file.",
+		   "The file, while it exists, is not a file.",
 		   "",
 		   NULL);
 	    err(149, __func__, "extra[%i] is not a file: %s", i, args[i]);
@@ -4391,7 +4391,7 @@ check_extra_data_files(struct info *infop, char const *entry_dir, char const *cp
 	if (!is_read(args[i])) {
 	    fpara(stderr,
 		  "",
-		  "The remarks.md, while it is a file, is not readable.",
+		  "The file, while it is a file, is not readable.",
 		  "",
 		  NULL);
 	    err(150, __func__, "extra[%i] is not readable file: %s", i, args[i]);
