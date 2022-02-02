@@ -3319,6 +3319,11 @@ warn_rule2b_size(struct info *infop, char const *prog_c)
 	errno = 0;
 	ret = fprintf(stderr, "\nWARNING: The prog.c %s size: %lu > Rule 2b maximum: %lu\n", prog_c,
 		      (unsigned long)infop->rule_2b_size, (unsigned long)RULE_2B_SIZE);
+	if (ret <= 0) {
+	    errp(77, __func__, "printf error printing prog.c size > Rule 2b maximum");
+	    not_reached();
+	}
+
 	fpara(stderr,
 	      "Unless you are attempting some clever rule abuse, then we STRONGLY suggest that you",
 	      "tell us about your rule abuse in your remarks.md file.  Be sure you have read the",
