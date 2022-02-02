@@ -3856,7 +3856,7 @@ inspect_Makefile(char const *Makefile)
 }
 
 /*
- * warn_Makefile - warn user that Makefile
+ * warn_Makefile - warn user that Makefile is invalid/incomplete
  *
  * given:
  *
