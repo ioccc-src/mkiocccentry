@@ -77,7 +77,7 @@
  */
 #include "limit_ioccc.h"
 
-#define IOCCCSIZE_VERSION "28.6 2022-01-19"	/* use format: major.minor YYYY-MM-DD */
+#define IOCCCSIZE_VERSION "28.7 2022-02-01"	/* use format: major.minor YYYY-MM-DD */
 
 #define WORD_BUFFER_SIZE	256
 #define STRLEN(s)		(sizeof (s)-1)

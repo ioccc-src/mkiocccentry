@@ -31,11 +31,11 @@
 #define INCLUDE_LIMIT_IOCCC_H
 
 
-#define DIGRAPHS	/* digraphs count a 1 for Rule 2b */
-#define TRIGRAPHS	/* trigraphs count a 1 for Rule 2b */
+#undef DIGRAPHS		/* digraphs count a 2 for Rule 2b */
+#undef TRIGRAPHS	/* trigraphs count a 3 for Rule 2b */
 
 #define RULE_2A_SIZE ((ssize_t)(4096))		/* Rule 2a size of prog.c */
-#define RULE_2B_SIZE ((size_t)(2053))		/* Rule 2b size of prog.c */
+#define RULE_2B_SIZE ((size_t)(2503))		/* Rule 2b size of prog.c */
 #define MAX_TARBALL_LEN ((off_t)(3999971))	/* the compressed tarball formed cannot be longer than this many bytes */
 #define MAX_DIR_KSIZE (27651)			/* entry directory cannot exceed this size in kibibyte (1024 byte) blocks */
 #define MAX_ENTRY_NUM (9)		/* entry numbers from 0 to MAX_ENTRY_NUM - must be < 10 to the MAX_ENTRY_CHARS power */
