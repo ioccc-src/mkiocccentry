@@ -82,7 +82,7 @@ SED= sed
 
 # how to compile
 #
-CFLAGS= -D_XOPEN_SOURCE -O3 -g3 -pedantic -Wall -Wextra
+CFLAGS= -O3 -g3 -pedantic -Wall -Wextra
 
 # We test by forcing warnings to be errors so you don't have to (allegedly :-) )
 #
