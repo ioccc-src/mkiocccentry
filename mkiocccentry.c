@@ -126,6 +126,18 @@ typedef unsigned char bool;
  */
 #define AUTHOR_VERSION "1.7 2022-01-21"	/* version of the .author.json file to produce */
 
+/*
+ * Answers file constants.
+ *
+ * Version of answers file.
+ * Use format: MKIOCCCENTRY_ANSWERS-YYYY-major.minor
+ *
+ * The following is NOT the version of this mkiocccentry tool!
+ */
+#define MKIOCCCENTRY_ANSWERS_VER "MKIOCCCENTRY_ANSWERS-2022-0.0"
+/* Answers file EOF marker */
+#define MKIOCCCENTRY_ANSWERS_EOF "ANSWERS_EOF"
+
 
 /*
  * definitions
@@ -958,7 +970,7 @@ main(int argc, char *argv[])
 	    errp(7, __func__, "cannot create answers file: %s", answers);
 	    not_reached();
 	}
-        ret = fprintf(answerp, "MKIOCCCENTRY_ANSWERS_V1\n");
+        ret = fprintf(answerp, "%s\n", MKIOCCCENTRY_ANSWERS_VER);
 	if (ret <= 0) {
 	    warnp(__func__, "fprintf error printing header to the answers file");
 	}
@@ -1097,18 +1109,18 @@ main(int argc, char *argv[])
 
 	    line = readline_dup(&linep, true, NULL, answerp);
 	    if (linep != NULL) {
-		error = strcmp(line, "ANSWERS_END") != 0;
+		error = strcmp(line, MKIOCCCENTRY_ANSWERS_EOF) != 0;
 		free(linep);
 	    }
 	    if (error == true) {
-	        errp(8, __func__, "expected ANSWERS_END marker at the end of the answers file");
+	        errp(8, __func__, "expected ANSWERS_EOF marker at the end of the answers file");
 	        not_reached();
 	    }
 	    input_stream = stdin;
 	} else {
-	    ret = fprintf(answerp, "ANSWERS_END\n");
+	    ret = fprintf(answerp, "%s\n", MKIOCCCENTRY_ANSWERS_EOF);
 	    if (ret <= 0) {
-	        warnp(__func__, "fprintf error printing ANSWERS_END marker to the answers file");
+	        warnp(__func__, "fprintf error writing ANSWERS_EOF marker to the answers file");
 		info.answers_errors++;
 	    }
 	}
@@ -2634,7 +2646,7 @@ get_contest_id(struct info *infop, bool *testp, bool *i_flag_used)
 	 * prompt for the contest ID
 	 */
 	malloc_ret = prompt("Enter IOCCC contest ID or test", &len);
-	if (seen_answers_header == false && !strcmp(malloc_ret, "MKIOCCCENTRY_ANSWERS_V1")) {
+	if (seen_answers_header == false && !strcmp(malloc_ret, MKIOCCCENTRY_ANSWERS_VER)) {
 	    dbg(DBG_HIGH, "found answers header");
 	    seen_answers_header = true;
 	    *i_flag_used = true;

@@ -39,11 +39,11 @@ test -f "$src_dir"/remarks.md || cat README.md > "$src_dir"/remarks.md
 test -f "$src_dir"/extra1 || echo "123" > "$src_dir"/extra1
 test -f "$src_dir"/extra2 || echo "456" > "$src_dir"/extra2
 
-# Answers as of mkiocccentry version: 0.29 2022-01-20
-#
+# Answers as of mkiocccentry version: v0.33 2022-02-03
+# The first line retrieves the answers version from mkiocccentry.c
 answers() {
+echo $(grep -E '^#define MKIOCCCENTRY_ANSWERS_VER' mkiocccentry.c|awk '{print $3  ;}'|sed 's/"//g')
 cat << "EOF"
-MKIOCCCENTRY_ANSWERS_V1
 test
 0
 title
@@ -56,7 +56,7 @@ https://example.com/index.html
 @twitter
 @github
 an affiliation
-ANSWERS_END
+ANSWERS_EOF
 EOF
 }
 rm -f answers.txt
