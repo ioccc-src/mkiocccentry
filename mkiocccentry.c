@@ -246,7 +246,12 @@ struct info {
     bool wordbuf_warning;	/* true ==> word buffer overflow detected */
     bool ungetc_warning;	/* true ==> ungetc warning detected */
     bool Makefile_override;	/* true ==> Makefile rule override requested */
-    int answers_errors;		/* > 0 ==> flushing or closing answers file failed */
+    bool first_rule_is_all;	/* true ==> Makefile first rule is all */
+    bool found_all_rule;	/* true ==> Makefile has an all rule */
+    bool found_clean_rule;	/* true ==> Makefile has clean rule */
+    bool found_clobber_rule;	/* true ==> Makefile has a clobber rule */
+    bool found_try_rule;	/* true ==> Makefile has a try rule */
+    unsigned answers_errors;	/* > 0 ==> flushing or closing answers file failed */
     /*
      * filenames
      */
@@ -255,6 +260,7 @@ struct info {
     char *remarks_md;		/* remarks.md filename */
     int extra_count;		/* number of extra files */
     char **extra_file;		/* list of extra filenames followed by NULL */
+    char *tarball_path;		/* tarball filename */
     /*
      * time
      */
@@ -263,7 +269,6 @@ struct info {
     char *epoch;		/* epoch of tstamp, currently: Thr Jan 1 00:00:00 1970 UTC */
     char *gmtime;		/* UTC converted string for tstamp (see asctime(3)) */
 };
-
 
 /*
  * location/country codes
@@ -705,8 +710,8 @@ static char *prompt(char const *str, size_t *lenp);
 static char *get_contest_id(struct info *infop, bool *testp, bool *i_flag_used);
 static int get_entry_num(struct info *infop);
 static char *mk_entry_dir(char const *work_dir, char const *ioccc_id, int entry_num, char **tarball_path, time_t tstamp);
-static bool inspect_Makefile(char const *Makefile);
-static void warn_Makefile(char const *Makefile);
+static bool inspect_Makefile(char const *Makefile, struct info *infop);
+static void warn_Makefile(char const *Makefile, struct info *infop);
 static void check_Makefile(struct info *infop, char const *entry_dir, char const *cp, char const *Makefile);
 static void check_remarks_md(struct info *infop, char const *entry_dir, char const *cp, char const *remarks_md);
 static char *base_name(char const *path);
@@ -957,6 +962,7 @@ main(int argc, char *argv[])
      * create entry directory
      */
     entry_dir = mk_entry_dir(work_dir, info.ioccc_id, info.entry_num, &tarball_path, info.tstamp);
+    info.tarball_path = tarball_path;
     dbg(DBG_LOW, "formed entry directory: %s", entry_dir);
 
 
@@ -1152,7 +1158,7 @@ main(int argc, char *argv[])
     if (a_flag_used == true) {
 	if (info.answers_errors > 0) {
 	    errno = 0;	/* pre-clear errno for warnp() */
-	    ret = printf("Warning: There were %d I/O error%s on the answers file. Make SURE to verify that using the file\n"
+	    ret = printf("Warning: There were %u I/O error%s on the answers file. Make SURE to verify that using the file\n"
 			 "results in the proper input before reuploading!\n",
 			 info.answers_errors, info.answers_errors == 1 ? "" : "s" );
 	    if (ret <= 0) {
@@ -1204,7 +1210,7 @@ main(int argc, char *argv[])
 		    warn_ungetc(prog_c);
 		}
 		if (info.Makefile_override) {
-		    warn_Makefile(Makefile);
+		    warn_Makefile(Makefile, &info);
 		}
 	    } while (0);
 	}
@@ -3616,7 +3622,8 @@ check_prog_c(struct info *infop, char const *entry_dir, char const *cp, char con
  *       Makefile variables, line continuation, conditional Gnu-make controls, etc.
  *
  * given:
- *      stream  - Makefile opened as a stream
+ *      Makefile  - path to Makefile
+ *      infop	  - pointer to info struct
  *
  * returns:
  *      true ==> the rule set in Makefile is OK,
@@ -3625,24 +3632,19 @@ check_prog_c(struct info *infop, char const *entry_dir, char const *cp, char con
  * This function does not return on error.
  */
 static bool
-inspect_Makefile(char const *Makefile)
+inspect_Makefile(char const *Makefile, struct info *infop)
 {
     FILE *stream;		/* open file stream */
     int ret;			/* libc function return */
     char *linep = NULL;		/* allocated line read from iocccsize */
     char *line;			/* Makefile line to parse */
-    bool first_rule_is_all = false;	/* true ==> first rule set contains the all rule */
-    bool found_all_rule = false;	/* true ==> found all rule */
-    bool found_clean_rule = false;	/* true ==> found clean rule */
-    bool found_clobber_rule = false;	/* true ==> found clobber rule */
-    bool found_try_rule = false;	/* true ==> found try rule */
     int rulenum = 0;		/* current rule number */
     char *p;
 
     /*
      * firewall
      */
-    if (Makefile == NULL) {
+    if (Makefile == NULL || infop == NULL) {
 	err(120, __func__, "called with NULL arg(s)");
 	not_reached();
     }
@@ -3679,7 +3681,7 @@ inspect_Makefile(char const *Makefile)
 	}
 
 	/*
-	 * trim off and comments
+	 * trim off comments
 	 */
 	p = strchr(line, '#');
 	if (p != NULL) {
@@ -3726,49 +3728,49 @@ inspect_Makefile(char const *Makefile)
 	     * detect all rule
 	     */
 	    dbg(DBG_VHIGH, "rulenum[%d]: token: %s", rulenum, p);
-	    if (found_all_rule == false && strcmp(p, "all") == 0) {
+	    if (infop->found_all_rule == false && strcmp(p, "all") == 0) {
 		/*
 		 * first all rule found
 		 */
 		dbg(DBG_HIGH, "rulenum[%d]: all token found", rulenum);
-		found_all_rule = true;
+		infop->found_all_rule = true;
 		if (rulenum == 1) {
 		    /*
 		     * all rule is in 1st rule line
 		     */
-		    first_rule_is_all = true;
+		    infop->first_rule_is_all = true;
 		    break;
 		}
 
 	    /*
 	     * detect clean rule
 	     */
-	    } else if (found_clean_rule == false && strcmp(p, "clean") == 0) {
+	    } else if (infop->found_clean_rule == false && strcmp(p, "clean") == 0) {
 		/*
 		 * first clean rule found
 		 */
 		dbg(DBG_HIGH, "rulenum[%d]: clean token found", rulenum);
-		found_clean_rule = true;
+		infop->found_clean_rule = true;
 
 	    /*
 	     * detect clobber rule
 	     */
-	    } else if (found_clobber_rule == false && strcmp(p, "clobber") == 0) {
+	    } else if (infop->found_clobber_rule == false && strcmp(p, "clobber") == 0) {
 		/*
 		 * first clobber rule found
 		 */
 		dbg(DBG_HIGH, "rulenum[%d]: clobber token found", rulenum);
-		found_clobber_rule = true;
+		infop->found_clobber_rule = true;
 
 	    /*
 	     * detect try rule
 	     */
-	    } else if (found_try_rule == false && strcmp(p, "try") == 0) {
+	    } else if (infop->found_try_rule == false && strcmp(p, "try") == 0) {
 		/*
 		 * first try rule found
 		 */
 		dbg(DBG_HIGH, "rulenum[%d]: try token found", rulenum);
-		found_try_rule = true;
+		infop->found_try_rule = true;
 	    }
 	}
 
@@ -3780,8 +3782,8 @@ inspect_Makefile(char const *Makefile)
 	    line = NULL;
 	}
 
-    } while (first_rule_is_all == false || found_all_rule == false || found_clean_rule == false ||
-	     found_clobber_rule == false || found_try_rule == false);
+    } while (infop->first_rule_is_all == false || infop->found_all_rule == false || infop->found_clean_rule == false ||
+	     infop->found_clobber_rule == false || infop->found_try_rule == false);
 
     /*
      * close Makefile
@@ -3804,60 +3806,12 @@ inspect_Makefile(char const *Makefile)
     /*
      * if our parse of Makefile was successful
      */
-    if (first_rule_is_all == true && found_all_rule == true && found_clean_rule == true &&
-	found_clobber_rule == true && found_try_rule == true) {
+    if (infop->first_rule_is_all == true && infop->found_all_rule == true && infop->found_clean_rule == true &&
+	infop->found_clobber_rule == true && infop->found_try_rule == true) {
 	dbg(DBG_MED, "Makefile appears to pass");
 	return true;
     }
 
-    /*
-     * report problem with Makefile
-     */
-    fpara(stderr,
-	  "",
-	  "There are problems with the Makefile provided:",
-	  "",
-	  NULL);
-    if (first_rule_is_all == false) {
-	fpara(stderr, "The all rule appears to not be the first (default) rule.",
-	      "",
-	      NULL);
-    }
-    if (found_all_rule == false) {
-	fpara(stderr,
-	      "  The Makefile appears to not have an all rule.",
-	      "    The all rule should make your compiled/built program.",
-	      "",
-	      NULL);
-    }
-    if (found_clean_rule == false) {
-	fpara(stderr,
-	      "  The Makefile appears to not have a clean rule.",
-	      "    The clean rule should remove any intermediate build files.",
-	      "    For example, remove .o files and other intermediate build files .",
-	      "    The clean rule should NOT remove compiled/built program built by the all rule.",
-	      "",
-	      NULL);
-    }
-    if (found_clobber_rule == false) {
-	fpara(stderr,
-	      "  The Makefile appears to not have a clobber rule.",
-	      "    The clobber rule should restore the directory to the original submission state.",
-	      "    The clobber role should depend on the clean rule, it could remove the entry's program,",
-	      "    clean up after program execution (if needed), and restore the entire directory back",
-	      "    to the original submission state.",
-	      "",
-	      NULL);
-    }
-    if (found_try_rule == false) {
-	fpara(stderr,
-	      "  The Makefile appears to not have a try rule.",
-	      "    The try rule should execute the program with suggested arguments (if any needed).",
-	      "    The program may be executed more than once if such examples are informative.",
-	      "	   The try rule should depend on the all rule.",
-	      "",
-	      NULL);
-    }
     return false;
 }
 
@@ -3868,11 +3822,12 @@ inspect_Makefile(char const *Makefile)
  * given:
  *
  *      Makefile          - Makefile arg: given path to Makefile
+ *      infop		  - pointer to info struct
  *
  * This function does not return on error.
  */
 static void
-warn_Makefile(char const *Makefile)
+warn_Makefile(char const *Makefile, struct info *infop)
 {
     bool yorn = false;
     int ret;
@@ -3880,11 +3835,60 @@ warn_Makefile(char const *Makefile)
     /*
      * firewall
      */
-    if (Makefile == NULL) {
+    if (Makefile == NULL || infop == NULL) {
 	err(123, __func__, "called with NULL arg(s)");
 	not_reached();
     }
     if (need_confirm == true) {
+	/*
+	 * report problem with Makefile
+	 */
+	fpara(stderr,
+	      "",
+	      "There are problems with the Makefile provided:",
+	      "",
+	      NULL);
+	if (infop->first_rule_is_all == false) {
+	    fpara(stderr, "The all rule appears to not be the first (default) rule.",
+		  "",
+		  NULL);
+	}
+	if (infop->found_all_rule == false) {
+	    fpara(stderr,
+		  "  The Makefile appears to not have an all rule.",
+		  "    The all rule should make your compiled/built program.",
+		  "",
+		  NULL);
+	}
+	if (infop->found_clean_rule == false) {
+	    fpara(stderr,
+		  "  The Makefile appears to not have a clean rule.",
+		  "    The clean rule should remove any intermediate build files.",
+		  "    For example, remove .o files and other intermediate build files .",
+		  "    The clean rule should NOT remove compiled/built program built by the all rule.",
+		  "",
+		  NULL);
+	}
+	if (infop->found_clobber_rule == false) {
+	    fpara(stderr,
+		  "  The Makefile appears to not have a clobber rule.",
+		  "    The clobber rule should restore the directory to the original submission state.",
+		  "    The clobber role should depend on the clean rule, it could remove the entry's program,",
+		  "    clean up after program execution (if needed), and restore the entire directory back",
+		  "    to the original submission state.",
+		  "",
+		  NULL);
+	}
+	if (infop->found_try_rule == false) {
+	    fpara(stderr,
+		  "  The Makefile appears to not have a try rule.",
+		  "    The try rule should execute the program with suggested arguments (if any needed).",
+		  "    The program may be executed more than once if such examples are informative.",
+		  "	   The try rule should depend on the all rule.",
+		  "",
+		  NULL);
+	}
+
 	/*
 	 * Explain again what is needed in a Makefile
 	 */
@@ -3991,8 +3995,8 @@ check_Makefile(struct info *infop, char const *entry_dir, char const *cp, char c
     /*
      * scan Makefile for critical rules
      */
-    if (inspect_Makefile(Makefile) == false) {
-	warn_Makefile(Makefile);
+    if (inspect_Makefile(Makefile, infop) == false) {
+	warn_Makefile(Makefile, infop);
 	infop->Makefile_override = true;
     } else {
 	infop->Makefile_override = false;
@@ -4390,7 +4394,7 @@ check_extra_data_files(struct info *infop, char const *entry_dir, char const *cp
 	if (!is_file(args[i])) {
 	    fpara(stderr,
 		   "",
-		   "The file, while it exists, is not a file.",
+		   "The file, while it exists, is not a regular file.",
 		   "",
 		   NULL);
 	    err(159, __func__, "extra[%i] is not a file: %s", i, args[i]);
@@ -6614,6 +6618,7 @@ write_info(struct info *infop, char const *entry_dir, bool test_mode)
 	json_fprintf_value_long(info_stream, "\t", "entry_num", " : ", (long)infop->entry_num, ",\n") &&
 	json_fprintf_value_string(info_stream, "\t", "title", " : ", infop->title, ",\n") &&
 	json_fprintf_value_string(info_stream, "\t", "abstract", " : ", infop->abstract, ",\n") &&
+	json_fprintf_value_string(info_stream, "\t", "tarball", " : ", infop->tarball_path, ",\n") &&
 	json_fprintf_value_long(info_stream, "\t", "rule_2a_size", " : ", (long)infop->rule_2a_size, ",\n") &&
 	json_fprintf_value_long(info_stream, "\t", "rule_2b_size", " : ", (long)infop->rule_2b_size, ",\n") &&
 	json_fprintf_value_bool(info_stream, "\t", "empty_override", " : ", infop->empty_override, ",\n") &&
@@ -6626,6 +6631,11 @@ write_info(struct info *infop, char const *entry_dir, bool test_mode)
 	json_fprintf_value_bool(info_stream, "\t", "wordbuf_warning", " : ", infop->wordbuf_warning, ",\n") &&
 	json_fprintf_value_bool(info_stream, "\t", "ungetc_warning", " : ", infop->ungetc_warning, ",\n") &&
 	json_fprintf_value_bool(info_stream, "\t", "Makefile_override", " : ", infop->Makefile_override, ",\n") &&
+	json_fprintf_value_bool(info_stream, "\t", "first_rule_is_all", " : ", infop->first_rule_is_all, ",\n") &&
+	json_fprintf_value_bool(info_stream, "\t", "found_all_rule", " : ", infop->found_all_rule, ",\n") &&
+	json_fprintf_value_bool(info_stream, "\t", "found_clean_rule", " : ", infop->found_clean_rule, ",\n") &&
+	json_fprintf_value_bool(info_stream, "\t", "found_clobber_rule", " : ", infop->found_clobber_rule, ",\n") &&
+	json_fprintf_value_bool(info_stream, "\t", "found_try_rule", " : ", infop->found_try_rule, ",\n") &&
 	json_fprintf_value_bool(info_stream, "\t", "test_mode", " : ", test_mode, ",\n") &&
 	fprintf(info_stream, "\t\"manifest\" : [\n") > 0;
     if (ret == false) {
