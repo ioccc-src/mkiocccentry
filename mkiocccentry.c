@@ -166,10 +166,10 @@ static const char * const usage_msg0 =
     "\n"
     "\t-t /path/to/tar\t\tpath to tar executable that supports the -J (xz) option (def: %s)\n"
     "\t-c /path/to/cp\t\tpath to cp executable (def: %s)\n"
-    "\t-l /path/to/ls\t\tpath to ls executable (def: %s)\n"
-    "\t-a answers\t\twrite answers to a file for easier updating of an entry\n"
-    "\t-i answers\t\tread answers from file previously written by -a answers\n";
+    "\t-l /path/to/ls\t\tpath to ls executable (def: %s)\n";
 static const char * const usage_msg1 =
+    "\t-a answers\t\twrite answers to a file for easier updating of an entry\n"
+    "\t-i answers\t\tread answers from file previously written by -a answers\n\n"
     "\t    NOTE: One cannot use both -a answers and -i answers at the same time.\n"
     "\n"
     "\twork_dir\tdirectory where the entry directory and tarball are formed\n"
@@ -655,9 +655,9 @@ static struct location {
 int verbosity_level = DBG_DEFAULT;	/* debug level set by -v */
 static bool need_confirm = true;	/* true ==> ask for confirmations */
 static bool need_hints = true;		/* true ==> show hints */
-static bool prompt_fix_echo = false;    /* true ==> print the line read from the stream (fixes the log when using the -i option) */
 static bool need_retry = true;
 static FILE *input_stream = NULL;
+static struct iocccsize size;	/* rule_count() processing results */
 
 /*
  * forward declarations
@@ -673,6 +673,14 @@ static bool is_dir(char const *path);
 static bool is_read(char const *path);
 static bool is_write(char const *path);
 static ssize_t file_size(char const *path);
+static void warn_empty_prog(char const *prog_c);
+static void warn_rule2a_size(struct info *infop, char const *prog_c, int mode);
+static void warn_high_bit(char const *prog_c);
+static void warn_nul_chars(char const *prog_c);
+static void warn_trigraph(char const *prog_c);
+static void warn_wordbuf(char const *prog_c);
+static void warn_ungetc(char const *prog_c);
+static void warn_rule2b_size(struct info *infop, char const *prog_c);
 static void check_prog_c(struct info *infop, char const *entry_dir, char const *cp, char const *prog_c);
 static ssize_t readline(char **linep, FILE * stream);
 static char *readline_dup(char **linep, bool strip, size_t *lenp, FILE * stream);
@@ -685,6 +693,7 @@ static char *get_contest_id(struct info *infop, bool *testp, bool *i_flag_used);
 static int get_entry_num(struct info *infop);
 static char *mk_entry_dir(char const *work_dir, char const *ioccc_id, int entry_num, char **tarball_path, time_t tstamp);
 static bool inspect_Makefile(char const *Makefile);
+static void warn_Makefile(char const *Makefile);
 static void check_Makefile(struct info *infop, char const *entry_dir, char const *cp, char const *Makefile);
 static void check_remarks_md(struct info *infop, char const *entry_dir, char const *cp, char const *remarks_md);
 static char *base_name(char const *path);
@@ -796,7 +805,6 @@ main(int argc, char *argv[])
 	    i_flag_used = true;
 	    need_confirm = false;
 	    need_hints = false;
-	    prompt_fix_echo = true;
 	    break;
 	default:
 	    usage(1, __func__, "invalid -flag", program, tar, cp, ls); /*ooo*/
@@ -1128,9 +1136,7 @@ main(int argc, char *argv[])
 	}
     }
 
-    if (i_flag_used == true) {
-	int yorn;
-
+    if (a_flag_used == true) {
 	if (info.answers_errors > 0) {
 	    errno = 0;	/* pre-clear errno for errp() */
 	    ret = printf("Warning: There were %d I/O error%s on the answers file. Make SURE to verify that using the file\n"
@@ -1140,7 +1146,9 @@ main(int argc, char *argv[])
 		warnp(__func__, "unable to warn user that there were I/O errors on the answers file");
 	    }
 	}
+    }
 
+    if (i_flag_used == true) {
 	if (info.empty_override == true ||
 	    info.rule_2a_override == true ||
 	    info.rule_2a_mismatch == true ||
@@ -1151,68 +1159,41 @@ main(int argc, char *argv[])
 	    info.wordbuf_warning == true ||
 	    info.ungetc_warning == true ||
 	    info.Makefile_override == true) {
-	    /* short summary on warnings */
+	    
 	    do {
-	        errno = 0;	/* pre-clear errno for errp() */
-		ret = printf("\nYou've ignored one or more warnings:\n");	    
-		if (ret <= 0) break;
+		need_confirm = true;
+
 		if (info.empty_override) {
-		    ret = printf("\nWARNING: prog.c is empty\n");
-		    if (ret <= 0) break;
+		    warn_empty_prog(prog_c);
 		}
 		if (info.rule_2a_override) {
-		    ret = printf("\nWARNING: prog.c size: %ld > Rule 2a maximum: %ld\n",
-			(long)info.rule_2a_size, (long)RULE_2A_SIZE);
-		    if (ret <= 0) break;
+		    warn_rule2a_size(&info, prog_c, 0);
 		}
 		if (info.rule_2a_mismatch) {
-		    ret = printf("\nWARNING: prog.c file size: %ld != rule_count function size\n",
-			(long)info.rule_2a_size);
-		    if (ret <= 0) break;
+		    warn_rule2a_size(&info, prog_c, 1);
 		}
 		if (info.rule_2b_override) {
-		    ret = printf("\nWARNING: prog.c size: %ld > Rule 2b maximum: %ld\n",
-			(long)info.rule_2b_size, (long)RULE_2B_SIZE);
-		    if (ret <= 0) break;
+		    warn_rule2b_size(&info, prog_c);
 		}
 		if (info.highbit_warning) {
-		    ret = printf("\nWARNING: prog.c has character(s) with high bit set\n");
-		    if (ret <= 0) break;
+		    warn_high_bit(prog_c);
 		}
 		if (info.nul_warning) {
-		    ret = printf("\nWARNING: prog.c has NUL character(s)\n");
-		    if (ret <= 0) break;
+		    warn_nul_chars(prog_c);
 		}
 		if (info.trigraph_warning) {
-		    ret = printf("\nWARNING: prog.c has unknown or invalid trigraph(s) found\n");
-		    if (ret <= 0) break;
+		    warn_trigraph(prog_c);
 		}
 		if (info.wordbuf_warning) {
-		    ret = printf("\nWARNING: prog.c triggered a word buffer overflow\n");
-		    if (ret <= 0) break;
+		    warn_wordbuf(prog_c);
 		}
 		if (info.ungetc_warning) {
-		    ret = printf("\nWARNING: prog.c triggered an ungetc error\n");
-		    if (ret <= 0) break;
+		    warn_ungetc(prog_c);
 		}
 		if (info.Makefile_override) {
-		    ret = printf("\nWARNING: Makefile don't have all the required targets\n");
-		    if (ret <= 0) break;
+		    warn_Makefile(Makefile);
 		}
-		ret = printf("\nYou've ignored one or more warnings:\n");	    
-		if (ret <= 0) break;
-
 	    } while (0);
-
-	    if (ret <= 0) {
-		warnp(__func__, "unable to warn user about ignoring warnings when writing to the answer file");
-	    }
-
-	    yorn = yes_or_no("Are you sure you want to create a tarball with having these warnings unresolved? [yn]");
-	    if (yorn == false) {
-		err(93, __func__, "the user has chosen not to create a tarball");
-		not_reached();
-	    }
 	}
     }
 
@@ -2592,9 +2573,6 @@ prompt(char const *str, size_t *lenp)
 	linep = NULL;
     }
 
-    if (prompt_fix_echo == true) {
-	fprintf(stdout, "%s\n", buf);
-    }
 
     /*
      * return malloced input buffer
@@ -2683,7 +2661,6 @@ get_contest_id(struct info *infop, bool *testp, bool *i_flag_used)
 	    need_retry = false;
 	    need_confirm = false;
 	    need_hints = false;
-	    prompt_fix_echo = true;
 
 	    free(malloc_ret);
 	    malloc_ret = prompt("", &len);
@@ -2719,7 +2696,7 @@ get_contest_id(struct info *infop, bool *testp, bool *i_flag_used)
 	 *
 	 *             xxxxxxxx-xxxx-4xxx-axxx-xxxxxxxxxxxx
 	 *
-	 * where 'x' is a hex character.  The 4 is the UUID version and a the variant 1.
+	 * where 'x' is a hex character.  The 4 is the UUID version and the variant 1.
 	 */
 	if (len != UUID_LEN) {
 
@@ -2737,7 +2714,7 @@ get_contest_id(struct info *infop, bool *testp, bool *i_flag_used)
 		  "",
 		  "    xxxxxxxx-xxxx-4xxx-axxx-xxxxxxxxxxxx",
 		  "",
-		  "where 'x' is a hex character, 4 is the UUID version and a the variant 1.",
+		  "where 'x' is a hex character, 4 is the UUID version and the variant 1.",
 		  "",
 		  NULL);
 
@@ -2771,7 +2748,7 @@ get_contest_id(struct info *infop, bool *testp, bool *i_flag_used)
 		  "",
 		  "    xxxxxxxx-xxxx-4xxx-axxx-xxxxxxxxxxxx",
 		  "",
-		  "where 'x' is a hex character, 4 is the UUID version and a the variant 1.",
+		  "where 'x' is a hex character, 4 is the UUID version and the variant 1.",
 		  "",
 		  "Your IOCCC contest ID is not a valid UUID.  Please check your the email you received",
 		  "when you registered as an IOCCC contestant for the correct IOCCC contest ID.",
@@ -3003,6 +2980,365 @@ mk_entry_dir(char const *work_dir, char const *ioccc_id, int entry_num, char **t
     return entry_dir;
 }
 
+/*
+ * warn_empty_prog - warn user that prog.c is empty 
+ *
+ * given:
+ *
+ *      prog_c          - prog_c arg: given path to prog.c
+ *
+ * This function does not return on error.
+ */
+static void
+warn_empty_prog(char const *prog_c)
+{
+    bool yorn = false;
+
+    /*
+     * firewall
+     */
+    if (prog_c == NULL) {
+	err(114, __func__, "called with NULL arg(s)");
+	not_reached();
+    }
+
+    dbg(DBG_MED, "prog.c: %s is empty", prog_c);
+    if (need_confirm == true) {
+	fpara(stderr,
+	  "WARNING: prog.c is empty.  An empty prog.c has been submitted before:",
+	  "",
+	  "    https://www.ioccc.org/years.html#1994_smr",
+	  "",
+	  "The guidelines indicate that we tend to dislike programs that:",
+	  "",
+	  "    * are rather similar to previous winners  :-(",
+	  "",
+	  "Perhaps you have a different twist on an empty prog.c than yet another",
+	  "smallest self-replicating program.  If so, the you may proceed, although",
+	  "we STRONGLY suggest that you put into your remarks.md file, why your",
+	  "entry prog.c is not another smallest self-replicating program.",
+	  "",
+	  NULL);
+	    yorn = yes_or_no("Are you sure you want to submit an empty prog.c file? [yn]");
+	    if (yorn == false) {
+		err(93, __func__, "please fix your prog.c file: %s", prog_c);
+		not_reached();
+	    }
+	    dbg(DBG_LOW, "user says that their empty prog.c: %s is OK", prog_c);
+	}
+}
+
+/*
+ * warn_rule2a_size - warn if prog.c is too large under Rule 2a
+ *
+ * given:
+ *      infop           - pointer to info structure
+ *      prog_c          - prog_c arg: given path to prog.c
+ *      mode		- determines which warning to give
+ *
+ * This function does not return on error.
+ */
+static void
+warn_rule2a_size(struct info *infop, char const *prog_c, int mode)
+{
+    bool yorn = false;
+    int ret;
+
+    /*
+     * firewall
+     */
+    if (infop == NULL || prog_c == NULL) {
+	err(114, __func__, "called with NULL arg(s)");
+	not_reached();
+    }
+
+
+    if (mode == 0) {
+	dbg(DBG_MED, "prog.c: %s size: %ld > Rule 2a size: %ld", prog_c,
+		     (long)infop->rule_2a_size, (long)RULE_2A_SIZE);
+	errno = 0;		/* pre-clear errno for errp() */
+	ret = fprintf(stderr, "\nWARNING: The prog.c %s size: %ld > Rule 2a maximum: %ld\n", prog_c,
+		      (long)infop->rule_2a_size, (long)RULE_2A_SIZE);
+	if (ret <= 0) {
+	    warnp(__func__, "fprintf error when printing prog.c Rule 2a warning");
+	}
+	if (need_confirm == true) {
+	    fpara(stderr,
+	      "If you are attempting some clever rule abuse, then we STRONGLY suggest that you",
+	      "tell us about your rule abuse in your remarks.md file.  Be sure you have read the",
+	      "\"ABUSING THE RULES\" section of the guidelines.  And more importantly, read rule 12!",
+	      "",
+	      NULL);
+	    yorn = yes_or_no("Are you sure you want to submit such a large prog.c file? [yn]");
+	    if (yorn == false) {
+		err(94, __func__, "please fix your prog.c file: %s", prog_c);
+		not_reached();
+	    }
+	    dbg(DBG_LOW, "user says that their prog.c %s size: %ld > Rule 2a max size: %ld is OK", prog_c,
+		(long)infop->rule_2a_size, (long)RULE_2A_SIZE);
+	}
+    }
+    else if (mode == 1) {
+	if (need_confirm == true) {
+	    errno = 0;		/* pre-clear errno for errp() */
+	    ret = fprintf(stderr, "\nInteresting: prog.c: %s file size: %ld != rule_count function size: %ld\n"
+				  "In order to avoid a possible Rule 2a violation, BE SURE TO CLEARLY MENTION THIS IN\n"
+				  "YOUR remarks.md FILE!\n\n",
+				  prog_c, (long)infop->rule_2a_size, (long)size.rule_2a_size);
+	    if (ret <= 0) {
+		warnp(__func__, "fprintf error when printing prog.c file size and Rule 2a mismatch");
+	    }
+	    yorn = yes_or_no("Are you sure you want to proceed? [yn]");
+	    if (yorn == false) {
+		err(97, __func__, "please fix your prog.c file: %s", prog_c);
+		not_reached();
+	    }
+	    dbg(DBG_LOW, "user says that prog.c %s size: %ld != rule_count function size: %ld is OK", prog_c,
+		(long)infop->rule_2a_size, (long)size.rule_2a_size);
+	}
+    }
+}
+
+/*
+ * warn_high_bit - warn user that prog.c has high bit chars in prog.c 
+ *
+ * given:
+ *
+ *      prog_c          - prog_c arg: given path to prog.c
+ *
+ * This function does not return on error.
+ */
+static void
+warn_high_bit(char const *prog_c)
+{
+    int ret, yorn;
+
+    /*
+     * firewall
+     */
+    if (prog_c == NULL) {
+	err(114, __func__, "called with NULL arg(s)");
+	not_reached();
+    }
+
+
+    if (need_confirm == true) {
+	errno = 0;		/* pre-clear errno for errp() */
+	ret = fprintf(stderr, "\nprog_c: %s has character(s) with high bit set!\n"
+			      "Be careful you don't violate rule 13!\n\n", prog_c);
+	if (ret <= 0) {
+	    warnp(__func__, "fprintf error when printing prog.c char_warning");
+	}
+	yorn = yes_or_no("Are you sure you want to proceed? [yn]");
+	if (yorn == false) {
+	    err(98, __func__, "please fix your prog.c file: %s", prog_c);
+	    not_reached();
+	}
+	dbg(DBG_LOW, "user says that prog.c %s having character(s) with high bit is OK", prog_c);
+    }
+}
+
+/*
+ * warn_nul_chars - warn user that prog.c has high one or more NUL char(s)
+ *
+ * given:
+ *
+ *      prog_c          - prog_c arg: given path to prog.c
+ *
+ * This function does not return on error.
+ */
+static void
+warn_nul_chars(char const *prog_c)
+{
+    int ret, yorn;
+
+    /*
+     * firewall
+     */
+    if (prog_c == NULL) {
+	err(114, __func__, "called with NULL arg(s)");
+	not_reached();
+    }
+
+
+    if (need_confirm == true) {
+	errno = 0;		/* pre-clear errno for errp() */
+	ret = fprintf(stderr, "\nprog_c: %s has NUL character(s)!\n"
+			      "Be careful you don't violate rule 13!\n\n", prog_c);
+	if (ret <= 0) {
+	    warnp(__func__, "fprintf error when printing prog.c nul_warning");
+	}
+	yorn = yes_or_no("Are you sure you want to proceed? [yn]");
+	if (yorn == false) {
+	    err(99, __func__, "please fix your prog.c file: %s", prog_c);
+	    not_reached();
+	}
+	dbg(DBG_LOW, "user says that prog.c %s having NUL character(s) is OK", prog_c);
+    }
+}
+/*
+ * warn_trigraph - warn user that prog.c has unknown or invalid trigraph(s)
+ *
+ * given:
+ *
+ *      prog_c          - prog_c arg: given path to prog.c
+ *
+ * This function does not return on error.
+ */
+static void
+warn_trigraph(char const *prog_c)
+{
+    bool yorn = false;
+    int ret;
+
+    /*
+     * firewall
+     */
+    if (prog_c == NULL) {
+	err(114, __func__, "called with NULL arg(s)");
+	not_reached();
+    }
+
+    if (need_confirm == true) {
+	errno = 0;		/* pre-clear errno for errp() */
+	ret = fprintf(stderr, "\nprog_c: %s has unknown or invalid trigraph(s) found!\n"
+			      "Is that a bug in, or a feature of your code?\n\n", prog_c);
+	if (ret <= 0) {
+	    warnp(__func__, "fprintf error when printing prog.c trigraph_warning");
+	}
+	yorn = yes_or_no("Are you sure you want to proceed? [yn]");
+	if (yorn == false) {
+	    err(100, __func__, "please fix your prog.c file: %s", prog_c);
+	    not_reached();
+	}
+	dbg(DBG_LOW, "user says that prog.c %s having unknown or invalid trigraph(s) is OK", prog_c);
+    }
+}
+/*
+ * warn_wordbuf - warn user that prog.c triggered a word buffer overflow
+ *
+ * given:
+ *
+ *      prog_c          - prog_c arg: given path to prog.c
+ *
+ * This function does not return on error.
+ */
+static void
+warn_wordbuf(char const *prog_c)
+{
+    int ret, yorn;
+
+    /*
+     * firewall
+     */
+    if (prog_c == NULL) {
+	err(114, __func__, "called with NULL arg(s)");
+	not_reached();
+    }
+
+
+    if (need_confirm == true) {
+	errno = 0;		/* pre-clear errno for errp() */
+	ret = fprintf(stderr, "\nprog_c: %s triggered a word buffer overflow!\n"
+			      "In order to avoid a possible Rule 2b violation, BE SURE TO CLEARLY MENTION THIS IN\n"
+			      "YOUR remarks.md FILE!\n\n", prog_c);
+	if (ret <= 0) {
+	    warnp(__func__, "fprintf error when printing prog.c wordbuf_warning");
+	}
+	yorn = yes_or_no("Are you sure you want to proceed? [yn]");
+	if (yorn == false) {
+	    err(101, __func__, "please fix your prog.c file: %s", prog_c);
+	    not_reached();
+	}
+	dbg(DBG_LOW, "user says that prog.c %s triggered a word buffer overflow is OK", prog_c);
+    }
+}
+/*
+ * warn_ungetc - warn user that prog.c triggered an ungetc error
+ *
+ * given:
+ *
+ *      prog_c          - prog_c arg: given path to prog.c
+ *
+ * This function does not return on error.
+ */
+static void
+warn_ungetc(char const *prog_c)
+{
+    bool yorn = false;
+    int ret;
+
+    /*
+     * firewall
+     */
+    if (prog_c == NULL) {
+	err(114, __func__, "called with NULL arg(s)");
+	not_reached();
+    }
+
+
+    if (need_confirm == true) {
+	errno = 0;		/* pre-clear errno for errp() */
+	ret = fprintf(stderr, "\nprog_c: %s triggered a triggered an ungetc error: @SirWumpus goofed\n"
+			      "In order to avoid a possible Rule 2b violation, BE SURE TO CLEARLY MENTION THIS IN\n"
+			      "YOUR remarks.md FILE!\n\n", prog_c);
+	if (ret <= 0) {
+	    warnp(__func__, "fprintf error when printing prog.c ungetc_warning");
+	}
+	yorn = yes_or_no("Are you sure you want to proceed? [yn]");
+	if (yorn == false) {
+	    err(102, __func__, "please fix your prog.c file: %s", prog_c);
+	    not_reached();
+	}
+	dbg(DBG_LOW, "user says that prog.c %s triggered an ungetc warning OK", prog_c);
+    }
+}
+/*
+ * warn_rule2b_size - warn user that prog.c triggered an ungetc error
+ *
+ * given:
+ *
+ *      prog_c          - prog_c arg: given path to prog.c
+ *
+ * This function does not return on error.
+ */
+static void
+warn_rule2b_size(struct info *infop, char const *prog_c)
+{
+    int ret, yorn;
+
+     /*
+     * firewall
+     */
+    if (infop == NULL || prog_c == NULL) {
+	err(114, __func__, "called with NULL arg(s)");
+	not_reached();
+    }
+
+    if (need_confirm == true) {
+	errno = 0;
+	ret = fprintf(stderr, "\nWARNING: The prog.c %s size: %lu > Rule 2b maximum: %lu\n", prog_c,
+		      (unsigned long)infop->rule_2b_size, (unsigned long)RULE_2B_SIZE);
+	if (ret <= 0) {
+	    errp(77, __func__, "printf error printing prog.c size > Rule 2b maximum");
+	    not_reached();
+	}
+
+	fpara(stderr,
+	      "Unless you are attempting some clever rule abuse, then we STRONGLY suggest that you",
+	      "tell us about your rule abuse in your remarks.md file.  Be sure you have read the",
+	      "\"ABUSING THE RULES\" section of the guidelines.  And more importantly, read rule 12!",
+	      "",
+	      NULL);
+	yorn = yes_or_no("Are you sure you want to submit such a large prog.c file? [yn]");
+	if (yorn == false) {
+	    err(103, __func__, "please fix your prog.c file: %s", prog_c);
+	    not_reached();
+	}
+	dbg(DBG_LOW, "user says that their prog.c %s size: %lu > Rule 2B max size: %lu is OK", prog_c,
+	    (unsigned long)infop->rule_2b_size, (unsigned long)RULE_2B_SIZE);
+    }
+}
 
 /*
  * check_prog_c - check prog_c arg and if OK, copy into entry_dir/prog.c
@@ -3024,8 +3360,6 @@ static void
 check_prog_c(struct info *infop, char const *entry_dir, char const *cp, char const *prog_c)
 {
     FILE *prog_stream;		/* prog.c open file stream */
-    struct iocccsize size;	/* rule_count() processing results */
-    bool yorn = false;		/* response to a question */
     size_t prog_c_len;		/* length of the prog_c path */
     size_t entry_dir_len;	/* length of the entry_dir path */
     char *cmd = NULL;		/* cp prog_c entry_dir/prog.c */
@@ -3090,30 +3424,7 @@ check_prog_c(struct info *infop, char const *entry_dir, char const *cp, char con
 	err(92, __func__, "file_size error: %ld on prog_c: %s", (long)infop->rule_2a_size, prog_c);
 	not_reached();
     } else if (infop->rule_2a_size == 0) {
-	dbg(DBG_MED, "prog.c: %s is empty", prog_c);
-	fpara(stderr,
-	      "WARNING: prog.c is empty.  An empty prog.c has been submitted before:",
-	      "",
-	      "    https://www.ioccc.org/years.html#1994_smr",
-	      "",
-	      "The guidelines indicate that we tend to dislike programs that:",
-	      "",
-	      "    * are rather similar to previous winners  :-(",
-	      "",
-	      "Perhaps you have a different twist on an empty prog.c than yet another",
-	      "smallest self-replicating program.  If so, the you may proceed, although",
-	      "we strongly suggest that you put into your remarks.md file, why your",
-	      "entry prog.c is not another smallest self-replicating program.",
-	      "",
-	      NULL);
-	if (need_confirm == true) {
-	    yorn = yes_or_no("Are you sure you want to submit an empty prog.c file? [yn]");
-	    if (yorn == false) {
-		err(93, __func__, "please fix your prog.c file: %s", prog_c);
-		not_reached();
-	    }
-	    dbg(DBG_LOW, "user says that their empty prog.c: %s is OK", prog_c);
-	}
+	warn_empty_prog(prog_c);
 	infop->empty_override = true;
 	infop->rule_2a_override = false;
 
@@ -3121,29 +3432,7 @@ check_prog_c(struct info *infop, char const *entry_dir, char const *cp, char con
      * warn if prog.c is too large under Rule 2a
      */
     } else if (infop->rule_2a_size > RULE_2A_SIZE) {
-	dbg(DBG_MED, "prog.c: %s size: %ld > Rule 2a size: %ld", prog_c,
-		     (long)infop->rule_2a_size, (long)RULE_2A_SIZE);
-	errno = 0;		/* pre-clear errno for errp() */
-	ret = fprintf(stderr, "\nWARNING: The prog.c %s size: %ld > Rule 2a maximum: %ld\n", prog_c,
-		      (long)infop->rule_2a_size, (long)RULE_2A_SIZE);
-	if (ret <= 0) {
-	    warnp(__func__, "fprintf error when printing prog.c Rule 2a warning");
-	}
-	fpara(stderr,
-	      "If you are attempting some clever rule abuse, then we strongly suggest that you",
-	      "tell us about your rule abuse in your remarks.md file.  Be sure you have read the",
-	      "\"ABUSING THE RULES\" section of the guidelines.  And more importantly, read rule 12!",
-	      "",
-	      NULL);
-	if (need_confirm == true) {
-	    yorn = yes_or_no("Are you sure you want to submit such a large prog.c file? [yn]");
-	    if (yorn == false) {
-		err(94, __func__, "please fix your prog.c file: %s", prog_c);
-		not_reached();
-	    }
-	    dbg(DBG_LOW, "user says that their prog.c %s size: %ld > Rule 2a max size: %ld is OK", prog_c,
-	        (long)infop->rule_2a_size, (long)RULE_2A_SIZE);
-	}
+	warn_rule2a_size(infop, prog_c, 0);
 	infop->empty_override = false;
 	infop->rule_2a_override = true;
     } else {
@@ -3178,23 +3467,7 @@ check_prog_c(struct info *infop, char const *entry_dir, char const *cp, char con
      * sanity check on file size vs rule_count function size for Rule 2a
      */
     if (infop->rule_2a_size != (ssize_t)size.rule_2a_size) {
-	errno = 0;		/* pre-clear errno for errp() */
-	ret = fprintf(stderr, "\nInteresting: prog.c: %s file size: %ld != rule_count function size: %ld\n"
-			      "In order to avoid a possible Rule 2a violation, BE SURE TO CLEARLY MENTION THIS IN\n"
-			      "YOUR remarks.md FILE!\n\n",
-			      prog_c, (long)infop->rule_2a_size, (long)size.rule_2a_size);
-	if (ret <= 0) {
-	    warnp(__func__, "fprintf error when printing prog.c file size and Rule 2a mismatch");
-	}
-	if (need_confirm == true) {
-	    yorn = yes_or_no("Are you sure you want to proceed? [yn]");
-	    if (yorn == false) {
-		err(97, __func__, "please fix your prog.c file: %s", prog_c);
-	        not_reached();
-	    }
-	    dbg(DBG_LOW, "user says that prog.c %s size: %ld != rule_count function size: %ld is OK", prog_c,
-	        (long)infop->rule_2a_size, (long)size.rule_2a_size);
-	}
+	warn_rule2a_size(infop, prog_c, 1);
 	infop->rule_2a_mismatch = true;
     } else {
 	infop->rule_2a_mismatch = false;
@@ -3204,20 +3477,7 @@ check_prog_c(struct info *infop, char const *entry_dir, char const *cp, char con
      * sanity check on high bit character(s)
      */
     if (size.char_warning) {
-	errno = 0;		/* pre-clear errno for errp() */
-	ret = fprintf(stderr, "\nprog_c: %s has character(s) with high bit set!\n"
-			      "Be careful you don't violate rule 13!\n\n", prog_c);
-	if (ret <= 0) {
-	    warnp(__func__, "fprintf error when printing prog.c char_warning");
-	}
-	if (need_confirm == true) {
-	    yorn = yes_or_no("Are you sure you want to proceed? [yn]");
-	    if (yorn == false) {
-		err(98, __func__, "please fix your prog.c file: %s", prog_c);
-	        not_reached();
-	    }
-	    dbg(DBG_LOW, "user says that prog.c %s having character(s) with high bit is OK", prog_c);
-	}
+	warn_high_bit(prog_c);
 	infop->highbit_warning = true;
     } else {
 	infop->highbit_warning = false;
@@ -3227,20 +3487,7 @@ check_prog_c(struct info *infop, char const *entry_dir, char const *cp, char con
      * sanity check on NUL character(s)
      */
     if (size.nul_warning) {
-	errno = 0;		/* pre-clear errno for errp() */
-	ret = fprintf(stderr, "\nprog_c: %s has NUL character(s)!\n"
-			      "Be careful you don't violate rule 13!\n\n", prog_c);
-	if (ret <= 0) {
-	    warnp(__func__, "fprintf error when printing prog.c nul_warning");
-	}
-	if (need_confirm == true) {
-	    yorn = yes_or_no("Are you sure you want to proceed? [yn]");
-	    if (yorn == false) {
-	        err(99, __func__, "please fix your prog.c file: %s", prog_c);
-		not_reached();
-	    }
-	    dbg(DBG_LOW, "user says that prog.c %s having NUL character(s) is OK", prog_c);
-	}
+	warn_nul_chars(prog_c);
 	infop->nul_warning = true;
     } else {
 	infop->nul_warning = false;
@@ -3250,20 +3497,7 @@ check_prog_c(struct info *infop, char const *entry_dir, char const *cp, char con
      * sanity check on unknown tri-graph(s)
      */
     if (size.trigraph_warning) {
-	errno = 0;		/* pre-clear errno for errp() */
-	ret = fprintf(stderr, "\nprog_c: %s has unknown or invalid trigraph(s) found!\n"
-			      "Is that a bug in, or a feature of your code?\n\n", prog_c);
-	if (ret <= 0) {
-	    warnp(__func__, "fprintf error when printing prog.c trigraph_warning");
-	}
-	if (need_confirm == true) {
-	    yorn = yes_or_no("Are you sure you want to proceed? [yn]");
-	    if (yorn == false) {
-	        err(100, __func__, "please fix your prog.c file: %s", prog_c);
-		not_reached();
-	    }
-	    dbg(DBG_LOW, "user says that prog.c %s having unknown or invalid trigraph(s) is OK", prog_c);
-	}
+	warn_trigraph(prog_c);
 	infop->trigraph_warning = true;
     } else {
 	infop->trigraph_warning = false;
@@ -3273,21 +3507,7 @@ check_prog_c(struct info *infop, char const *entry_dir, char const *cp, char con
      * sanity check on word buffer overflow
      */
     if (size.wordbuf_warning) {
-	errno = 0;		/* pre-clear errno for errp() */
-	ret = fprintf(stderr, "\nprog_c: %s triggered a word buffer overflow!\n"
-			      "In order to avoid a possible Rule 2b violation, BE SURE TO CLEARLY MENTION THIS IN\n"
-			      "YOUR remarks.md FILE!\n\n", prog_c);
-	if (ret <= 0) {
-	    warnp(__func__, "fprintf error when printing prog.c wordbuf_warning");
-	}
-	if (need_confirm == true) {
-	    yorn = yes_or_no("Are you sure you want to proceed? [yn]");
-	    if (yorn == false) {
-		err(101, __func__, "please fix your prog.c file: %s", prog_c);
-	        not_reached();
-	    }
-	    dbg(DBG_LOW, "user says that prog.c %s triggered a word buffer overflow is OK", prog_c);
-	}
+	warn_wordbuf(prog_c);
 	infop->wordbuf_warning = true;
     } else {
 	infop->wordbuf_warning = false;
@@ -3297,21 +3517,7 @@ check_prog_c(struct info *infop, char const *entry_dir, char const *cp, char con
      * sanity check on ungetc warning
      */
     if (size.ungetc_warning) {
-	errno = 0;		/* pre-clear errno for errp() */
-	ret = fprintf(stderr, "\nprog_c: %s triggered a triggered an ungetc error: @SirWumpus goofed\n"
-			      "In order to avoid a possible Rule 2b violation, BE SURE TO CLEARLY MENTION THIS IN\n"
-			      "YOUR remarks.md FILE!\n\n", prog_c);
-	if (ret <= 0) {
-	    warnp(__func__, "fprintf error when printing prog.c ungetc_warning");
-	}
-	if (need_confirm == true) {
-	    yorn = yes_or_no("Are you sure you want to proceed? [yn]");
-	    if (yorn == false) {
-		err(102, __func__, "please fix your prog.c file: %s", prog_c);
-	        not_reached();
-	    }
-	    dbg(DBG_LOW, "user says that prog.c %s triggered an ungetc warning OK", prog_c);
-	}
+	warn_ungetc(prog_c);
 	infop->ungetc_warning = true;
     } else {
 	infop->ungetc_warning = false;
@@ -3321,23 +3527,7 @@ check_prog_c(struct info *infop, char const *entry_dir, char const *cp, char con
      * inspect the Rule 2b size
      */
     if (infop->rule_2b_size > RULE_2B_SIZE) {
-	ret = fprintf(stderr, "\nWARNING: The prog.c %s size: %lu > Rule 2b maximum: %lu\n", prog_c,
-		      (unsigned long)infop->rule_2b_size, (unsigned long)RULE_2B_SIZE);
-	fpara(stderr,
-	      "Unless you are attempting some cleaver rule abuse, then we strongly suggest that you",
-	      "tell us about your rule abuse in your remarks.md file.  Be sure you have read the",
-	      "\"ABUSING THE RULES\" section of the guidelines.  And more importantly, read rule 12!",
-	      "",
-	      NULL);
-	if (need_confirm == true) {
-	    yorn = yes_or_no("Are you sure you want to submit such a large prog.c file? [yn]");
-	    if (yorn == false) {
-	        err(103, __func__, "please fix your prog.c file: %s", prog_c);
-	        not_reached();
-	    }
-	    dbg(DBG_LOW, "user says that their prog.c %s size: %lu > Rule 2B max size: %lu is OK", prog_c,
-	        (unsigned long)infop->rule_2b_size, (unsigned long)RULE_2B_SIZE);
-	}
+	warn_rule2b_size(infop, prog_c);
 	infop->rule_2b_override = true;
     } else {
 	infop->rule_2b_override = false;
@@ -3665,6 +3855,60 @@ inspect_Makefile(char const *Makefile)
     return false;
 }
 
+/*
+ * warn_Makefile - warn user that Makefile is invalid/incomplete
+ *
+ * given:
+ *
+ *      Makefile          - Makefile arg: given path to Makefile 
+ *
+ * This function does not return on error.
+ */
+static void
+warn_Makefile(char const *Makefile)
+{
+    bool yorn = false;
+    int ret;
+
+    /*
+     * firewall
+     */
+    if (Makefile == NULL) {
+	err(114, __func__, "called with NULL arg(s)");
+	not_reached();
+    }
+    if (need_confirm == true) {
+	/*
+	 * Explain again what is needed in a Makefile
+	 */
+	fpara(stderr,
+	      "Makefiles must have the following Makefile rules:",
+	      "",
+	      "    all - compile the entry, must be the 1st entry",
+	      "    clean - remove intermediate compilation files",
+	      "    clobber - clean, remove compiled entry, restore to the original entry state",
+	      "    try - invoke the entry at least once",
+	      "",
+	      "While this program's parser may have missed finding those Makefile rules,",
+	      "chances are this file is not a proper Makefile under the IOCCC rules:",
+	      "",
+	      NULL);
+	errno = 0;		/* pre-clear errno for errp() */
+	ret = fprintf(stderr, "    %s\n\n", Makefile);
+	if (ret <= 0) {
+	    warnp(__func__, "fprintf for Makefile error: %d", ret);
+	}
+
+	/*
+	 * Ask if they want to submit it anyway
+	 */
+	    yorn = yes_or_no("Do you still want to submit this Makefile in the hopes that it is OK? [yn]");
+	    if (yorn == false) {
+		err(120, __func__, "Use a different Makefile or modify this file: %s", Makefile);
+		not_reached();
+	    }
+    }
+}
 
 /*
  * check_Makefile - check Makefile arg and if OK, copy into entry_dir/Makefile
@@ -3688,7 +3932,6 @@ check_Makefile(struct info *infop, char const *entry_dir, char const *cp, char c
     int ret;			/* libc function return */
     char *cmd = NULL;		/* cp prog_c entry_dir/prog.c */
     int exit_code;		/* exit code from system(cmd) */
-    bool yorn = false;		/* response to a question */
 
     /*
      * firewall
@@ -3741,38 +3984,7 @@ check_Makefile(struct info *infop, char const *entry_dir, char const *cp, char c
      * scan Makefile for critical rules
      */
     if (inspect_Makefile(Makefile) == false) {
-
-	/*
-	 * Explain again what is needed in a Makefile
-	 */
-	fpara(stderr,
-	      "Makefiles must have the following Makefile rules:",
-	      "",
-	      "    all - compile the entry, must be the 1st entry",
-	      "    clean - remove intermediate compilation files",
-	      "    clobber - clean, remove compiled entry, restore to the original entry state",
-	      "    try - invoke the entry at least once",
-	      "",
-	      "While this program's parser may have missed finding those Makefile rules,",
-	      "chances are this file is not a proper Makefile under the IOCCC rules:",
-	      "",
-	      NULL);
-	errno = 0;		/* pre-clear errno for errp() */
-	ret = fprintf(stderr, "    %s\n\n", Makefile);
-	if (ret <= 0) {
-	    warnp(__func__, "fprintf for Makefile error: %d", ret);
-	}
-
-	/*
-	 * Ask if they want to submit it anyway
-	 */
-	if (need_confirm == true) {
-	    yorn = yes_or_no("Do you still want to submit this Makefile in the hopes that it is OK? [yn]");
-	    if (yorn == false) {
-	        err(120, __func__, "Use a different Makefile or modify this file: %s", Makefile);
-		not_reached();
-	    }
-	}
+	warn_Makefile(Makefile);
 	infop->Makefile_override = true;
     } else {
 	infop->Makefile_override = false;
@@ -4170,7 +4382,7 @@ check_extra_data_files(struct info *infop, char const *entry_dir, char const *cp
 	if (!is_file(args[i])) {
 	    fpara(stderr,
 		   "",
-		   "The remarks.md path, while it exists, is not a file.",
+		   "The file, while it exists, is not a file.",
 		   "",
 		   NULL);
 	    err(149, __func__, "extra[%i] is not a file: %s", i, args[i]);
@@ -4179,7 +4391,7 @@ check_extra_data_files(struct info *infop, char const *entry_dir, char const *cp
 	if (!is_read(args[i])) {
 	    fpara(stderr,
 		  "",
-		  "The remarks.md, while it is a file, is not readable.",
+		  "The file, while it is a file, is not readable.",
 		  "",
 		  NULL);
 	    err(150, __func__, "extra[%i] is not readable file: %s", i, args[i]);
@@ -5765,17 +5977,15 @@ verify_entry_dir(char const *entry_dir, char const *ls)
     /*
      * ask the user to verify the list
      */
-    if (need_confirm == true) {
-	yorn = yes_or_no("\nIs the above list a correct list of files in your entry? [yn]");
-	if (yorn == false) {
-	    fpara(stderr,
-		  "",
-		  "We suggest you remove the existing entry directory, and then",
-		  "rerun this tool with the correct set of file arguments.",
-		  NULL);
-	    err(186, __func__, "%s failed with exit code: %d", cmd, WEXITSTATUS(exit_code));
-	    not_reached();
-	}
+    yorn = yes_or_no("\nIs the above list a correct list of files in your entry? [yn]");
+    if (yorn == false) {
+	fpara(stderr,
+	      "",
+	      "We suggest you remove the existing entry directory, and then",
+	      "rerun this tool with the correct set of file arguments.",
+	      NULL);
+	err(186, __func__, "%s failed with exit code: %d", cmd, WEXITSTATUS(exit_code));
+	not_reached();
     }
 
     /*
