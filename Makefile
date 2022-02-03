@@ -82,13 +82,13 @@ SED= sed
 
 # how to compile
 #
-CFLAGS= -O3 -g3 -pedantic -Wall -Wextra
+CFLAGS= -D_XOPEN_SOURCE -O3 -g3 -pedantic -Wall -Wextra
 
-# We test by focing warnings to be errors so you don't have to (allegedly :-) )
+# We test by forcing warnings to be errors so you don't have to (allegedly :-) )
 #
 #CFLAGS= -O3 -g3 -pedantic -Wall -Wextra -Werror
 
-# NOTE: There are some things clang -Weverything warns about that are not relivant
+# NOTE: There are some things clang -Weverything warns about that are not relevant
 # 	and this for the -Weverything case, we exclude several directives
 #
 #CFLAGS= -O3 -g3 -pedantic -Wall -Wextra -Werror -Weverything \
