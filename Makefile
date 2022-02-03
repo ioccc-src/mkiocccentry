@@ -136,7 +136,7 @@ dbg_test: dbg.c dbg.h Makefile
 	${CC} ${CFLAGS} -DDBG_TEST dbg.c -o $@
 
 limit_ioccc.sh: limit_ioccc.h
-	#{RM} -f $@
+	${RM} -f $@
 	${GREP} -E '^#define (RULE_|MAX_)' limit_ioccc.h | \
 	    ${AWK} '{print $$2 "=\"" $$3 "\"" ;}' | ${TR} -d '[a-z]()' | \
 	    ${SED} -e 's/"_/"/' -e 's/^/export /' > $@

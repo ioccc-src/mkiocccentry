@@ -32,8 +32,6 @@ int main() { puts("Hello, World!"); }
 EOF
 }
 
-echo -n > "$src_dir"/empty_prog.c
-
 # fake some required files
 #
 test -f "$src_dir"/Makefile || cat Makefile.example > "$src_dir"/Makefile
@@ -45,54 +43,28 @@ test -f "$src_dir"/extra2 || echo "456" > "$src_dir"/extra2
 #
 answers() {
 cat << "EOF"
+MKIOCCCENTRY_ANSWERS_V1
 test
 0
 title
 abstract
 1
 author name
-cc
-y
+CC
 test@example.com
-http://example.com/index.html
+https://example.com/index.html
 @twitter
 @github
-affiliation
-y
-y
+an affiliation
+ANSWERS_END
 EOF
 }
-
 rm -f answers.txt
+answers > answers.txt
 
 # run the test, looking for an exit
 #
-answers | ./mkiocccentry -a answers.txt -- "$work_dir" "$src_dir"/{prog.c,Makefile,remarks.md,extra1,extra2}
-status="$?"
-if [[ $status -ne 0 ]]; then
-    echo "$0: FATAL: ./mkiocccentry non-zero exit code: $status" 1>&2
-    exit "$status"
-fi
-
-# cleanout the under work_dir area, again
-#
-find "$work_dir_esc" -mindepth 1 -depth -delete
-
-yes | ./mkiocccentry -i answers.txt -- "$work_dir" "$src_dir"/{empty_prog.c,Makefile,remarks.md,extra1,extra2}
-status="$?"
-if [[ $status -ne 0 ]]; then
-    echo "$0: FATAL: /mkiocccentry non-zero exit code: $status" 1>&2
-    exit "$status"
-fi
-
-# cleanout the under work_dir area, again
-#
-find "$work_dir_esc" -mindepth 1 -depth -delete
-
-# Note that as of commit c9b31d416c82932daa0e6ec4dd8d094d2d3edb25 redirecting
-# stdin (or cat answers | ./mkiocccentry ...) no longer works due to the version
-# tag and EOF marker so we have to use -i answers.txt here too.
-yes | ./mkiocccentry -i answers.txt -- "$work_dir" "$src_dir"/{empty_prog.c,Makefile,remarks.md,extra1,extra2}
+yes | ./mkiocccentry -i answers.txt -- "$work_dir" "$src_dir"/{prog.c,Makefile,remarks.md,extra1,extra2}
 status="$?"
 if [[ $status -ne 0 ]]; then
     echo "$0: FATAL: /mkiocccentry non-zero exit code: $status" 1>&2
