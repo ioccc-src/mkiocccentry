@@ -166,10 +166,10 @@ static const char * const usage_msg0 =
     "\n"
     "\t-t /path/to/tar\t\tpath to tar executable that supports the -J (xz) option (def: %s)\n"
     "\t-c /path/to/cp\t\tpath to cp executable (def: %s)\n"
-    "\t-l /path/to/ls\t\tpath to ls executable (def: %s)\n"
-    "\t-a answers\t\twrite answers to a file for easier updating of an entry\n"
-    "\t-i answers\t\tread answers from file previously written by -a answers\n";
+    "\t-l /path/to/ls\t\tpath to ls executable (def: %s)\n";
 static const char * const usage_msg1 =
+    "\t-a answers\t\twrite answers to a file for easier updating of an entry\n"
+    "\t-i answers\t\tread answers from file previously written by -a answers\n\n"
     "\t    NOTE: One cannot use both -a answers and -i answers at the same time.\n"
     "\n"
     "\twork_dir\tdirectory where the entry directory and tarball are formed\n"
@@ -2696,7 +2696,7 @@ get_contest_id(struct info *infop, bool *testp, bool *i_flag_used)
 	 *
 	 *             xxxxxxxx-xxxx-4xxx-axxx-xxxxxxxxxxxx
 	 *
-	 * where 'x' is a hex character.  The 4 is the UUID version and a the variant 1.
+	 * where 'x' is a hex character.  The 4 is the UUID version and the variant 1.
 	 */
 	if (len != UUID_LEN) {
 
@@ -2714,7 +2714,7 @@ get_contest_id(struct info *infop, bool *testp, bool *i_flag_used)
 		  "",
 		  "    xxxxxxxx-xxxx-4xxx-axxx-xxxxxxxxxxxx",
 		  "",
-		  "where 'x' is a hex character, 4 is the UUID version and a the variant 1.",
+		  "where 'x' is a hex character, 4 is the UUID version and the variant 1.",
 		  "",
 		  NULL);
 
@@ -2748,7 +2748,7 @@ get_contest_id(struct info *infop, bool *testp, bool *i_flag_used)
 		  "",
 		  "    xxxxxxxx-xxxx-4xxx-axxx-xxxxxxxxxxxx",
 		  "",
-		  "where 'x' is a hex character, 4 is the UUID version and a the variant 1.",
+		  "where 'x' is a hex character, 4 is the UUID version and the variant 1.",
 		  "",
 		  "Your IOCCC contest ID is not a valid UUID.  Please check your the email you received",
 		  "when you registered as an IOCCC contestant for the correct IOCCC contest ID.",
@@ -3319,6 +3319,11 @@ warn_rule2b_size(struct info *infop, char const *prog_c)
 	errno = 0;
 	ret = fprintf(stderr, "\nWARNING: The prog.c %s size: %lu > Rule 2b maximum: %lu\n", prog_c,
 		      (unsigned long)infop->rule_2b_size, (unsigned long)RULE_2B_SIZE);
+	if (ret <= 0) {
+	    errp(77, __func__, "printf error printing prog.c size > Rule 2b maximum");
+	    not_reached();
+	}
+
 	fpara(stderr,
 	      "Unless you are attempting some clever rule abuse, then we STRONGLY suggest that you",
 	      "tell us about your rule abuse in your remarks.md file.  Be sure you have read the",
@@ -3851,7 +3856,7 @@ inspect_Makefile(char const *Makefile)
 }
 
 /*
- * warn_Makefile - warn user that Makefile
+ * warn_Makefile - warn user that Makefile is invalid/incomplete
  *
  * given:
  *
@@ -4377,7 +4382,7 @@ check_extra_data_files(struct info *infop, char const *entry_dir, char const *cp
 	if (!is_file(args[i])) {
 	    fpara(stderr,
 		   "",
-		   "The remarks.md path, while it exists, is not a file.",
+		   "The file, while it exists, is not a file.",
 		   "",
 		   NULL);
 	    err(149, __func__, "extra[%i] is not a file: %s", i, args[i]);
@@ -4386,7 +4391,7 @@ check_extra_data_files(struct info *infop, char const *entry_dir, char const *cp
 	if (!is_read(args[i])) {
 	    fpara(stderr,
 		  "",
-		  "The remarks.md, while it is a file, is not readable.",
+		  "The file, while it is a file, is not readable.",
 		  "",
 		  NULL);
 	    err(150, __func__, "extra[%i] is not readable file: %s", i, args[i]);
