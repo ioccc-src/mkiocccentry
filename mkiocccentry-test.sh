@@ -42,7 +42,7 @@ test -f "$src_dir"/extra2 || echo "456" > "$src_dir"/extra2
 # Answers as of mkiocccentry version: v0.33 2022-02-03
 # The first line retrieves the answers version from mkiocccentry.c
 answers() {
-echo $(grep -E '^#define MKIOCCCENTRY_ANSWERS_VER' mkiocccentry.c|awk '{print $3  ;}'|sed 's/"//g')
+echo $(grep -E '^#define MKIOCCCENTRY_ANSWERS_VER' mkiocccentry.c|cut -d' ' -f3|sed 's/"//g')
 cat << "EOF"
 test
 0
