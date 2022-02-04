@@ -172,19 +172,21 @@ typedef unsigned char bool;
  * Use the usage() function to print the these usage_msgX strings.
  */
 static const char * const usage_msg0 =
-    "usage: %s [-h] [-v level] [-V] [-t tar] [-c cp] [-l ls] [{-a|-i} answers] work_dir prog.c Makefile remarks.md [file ...]\n"
+    "usage: %s [-h] [-v level] [-V] [-t tar] [-c cp] [-l ls] [{-a|-A|-i} answers] [-W] work_dir prog.c Makefile remarks.md [file ...]\n"
     "\n"
     "\t-h\t\t\tprint help message and exit 0\n"
     "\t-v level\t\tset verbosity level: (def level: %d)\n"
     "\t-V\t\t\tprint version string and exit\n"
+    "\t-W\t\t\tignore all warnings (this does NOT mean the judges will! :) )\n\n"
     "\n"
     "\t-t /path/to/tar\t\tpath to tar executable that supports the -J (xz) option (def: %s)\n"
     "\t-c /path/to/cp\t\tpath to cp executable (def: %s)\n"
     "\t-l /path/to/ls\t\tpath to ls executable (def: %s)\n";
 static const char * const usage_msg1 =
     "\t-a answers\t\twrite answers to a file for easier updating of an entry\n"
-    "\t-i answers\t\tread answers from file previously written by -a answers\n\n"
-    "\t    NOTE: One cannot use both -a answers and -i answers at the same time.\n"
+    "\t-A answers\t\twrite answers file even if it already exists\n"
+    "\t-i answers\t\tread answers from file previously written by -a|-A answers\n\n"
+    "\t    NOTE: One cannot use both -a/-A answers and -i answers at the same time.\n"
     "\n"
     "\twork_dir\tdirectory where the entry directory and tarball are formed\n"
     "\tprog.c\t\tpath to the C source for your entry\n";
@@ -675,6 +677,7 @@ int verbosity_level = DBG_DEFAULT;	/* debug level set by -v */
 static bool need_confirm = true;	/* true ==> ask for confirmations */
 static bool need_hints = true;		/* true ==> show hints */
 static bool need_retry = true;
+static bool ignore_warnings = false;	/* true ==> ignore all warnings (this does NOT mean the judges will! :) */
 static FILE *input_stream = NULL;
 static struct iocccsize size;	/* rule_count() processing results */
 
@@ -767,6 +770,8 @@ main(int argc, char *argv[])
     bool l_flag_used = false;	/* true ==> -l /path/to/ls was given */
     bool a_flag_used = false;	/* true ==> -a write answers to answers file */
     bool i_flag_used = false;	/* true ==> -i read answers from answers file */
+    bool A_flag_used = false;	/* true ==> don't prompt to overwrite answers if it already exists */
+    bool overwrite_answers = true; /* true ==> overwrite answers file even if it already exists */
     int ret;			/* libc return code */
     int i;
 
@@ -776,7 +781,7 @@ main(int argc, char *argv[])
      */
     input_stream = stdin;	/* default to reading from standard in */
     program = argv[0];
-    while ((i = getopt(argc, argv, "hv:Vt:c:l:a:i:")) != -1) {
+    while ((i = getopt(argc, argv, "hv:Vt:c:l:a:i:A:W")) != -1) {
 	switch (i) {
 	case 'h':		/* -h - print help to stderr and exit 0 */
 	    usage(0, __func__, "-h help mode", program, tar, cp, ls);
@@ -814,6 +819,10 @@ main(int argc, char *argv[])
 	    ls = optarg;
 	    l_flag_used = true;
 	    break;
+	case 'A':		/* -A answers overwrite answers file */
+	    answers = optarg;
+	    A_flag_used = true;
+	    /* FALL THROUGH */
 	case 'a':		/* -a record_answers */
 	    answers = optarg;
 	    a_flag_used = true;
@@ -823,6 +832,9 @@ main(int argc, char *argv[])
 	    i_flag_used = true;
 	    need_confirm = false;
 	    need_hints = false;
+	    break;
+	case 'W':		/* -W ignores all warnings (this does NOT the judges will! :) ) */
+	    ignore_warnings = true;
 	    break;
 	default:
 	    usage(1, __func__, "invalid -flag", program, tar, cp, ls); /*ooo*/
@@ -916,6 +928,15 @@ main(int argc, char *argv[])
 	not_reached();
     }
 
+    /* if the user requested to ignore warnings, ignore this once and warn them :) */
+    if (ignore_warnings == true) {
+	para("",
+	     "WARNING: You've chosen to ignore all warnings (except this warning! :) )!",
+	     "If this was unintentional run this program again without the -W option.",
+	     "Note that The Judges will NOT ignore warnings!",
+	     NULL);
+    }
+
     /*
      * environment sanity checks
      */
@@ -923,10 +944,28 @@ main(int argc, char *argv[])
     sanity_chk(&info, work_dir, tar, cp, ls);
     para("... environment looks OK", "", NULL);
 
+    /* if -a answers was specified and answers file exists, prompt user if they
+     * want to overwrite it; if they don't tell them how to use it and abort.
+     * Else it will be overwritten.
+     */
+    if (a_flag_used == true && A_flag_used == false && answers != NULL && strlen(answers) > 0 && exists(answers) == true) {
+	overwrite_answers = yes_or_no("WARNING: The answers file already exists! Do you wish to overwrite it? [yn]");
+	if (overwrite_answers == false) {
+	    errno = 0;
+	    ret = printf("\nTo use the answers file, try:\n\n\t./mkiocccentry -i %s [...]\n\n", answers);
+	    if (ret <= 0) {
+		errp(3, __func__, "printf error telling the user how to use the answers file");
+		not_reached();
+	    }
+	    err(87, __func__, "won't overwrite answers file");
+	    not_reached();
+	}
+    }
+
     /*
      * check if we should read input from answers file
      */
-    if (i_flag_used == true) {
+    if (i_flag_used == true && answers != NULL && strlen(answers) > 0) {
 	if (is_read(answers) == false) {
 	    errp(5, __func__, "cannot read answers file");
 	    not_reached();
@@ -971,7 +1010,9 @@ main(int argc, char *argv[])
      * make the entry directory because if we get input before and find out the
      * directory already exists then the answers file will have invalid data.
      */
+
     if (a_flag_used == true && answers != NULL && strlen(answers) > 0) {
+
 	errno = 0;			/* pre-clear errno for errp() */
 	answerp = fopen(answers, "w");
 	if (answerp == NULL) {
@@ -1180,37 +1221,39 @@ main(int argc, char *argv[])
 	    info.Makefile_override == true) {
 
 	    do {
-		need_confirm = true;
+		if (ignore_warnings == false) {
+		    need_confirm = true;
 
-		if (info.empty_override) {
-		    warn_empty_prog(prog_c);
-		}
-		if (info.rule_2a_override) {
-		    warn_rule2a_size(&info, prog_c, 0);
-		}
-		if (info.rule_2a_mismatch) {
-		    warn_rule2a_size(&info, prog_c, 1);
-		}
-		if (info.rule_2b_override) {
-		    warn_rule2b_size(&info, prog_c);
-		}
-		if (info.highbit_warning) {
-		    warn_high_bit(prog_c);
-		}
-		if (info.nul_warning) {
-		    warn_nul_chars(prog_c);
-		}
-		if (info.trigraph_warning) {
-		    warn_trigraph(prog_c);
-		}
-		if (info.wordbuf_warning) {
-		    warn_wordbuf(prog_c);
-		}
-		if (info.ungetc_warning) {
-		    warn_ungetc(prog_c);
-		}
-		if (info.Makefile_override) {
-		    warn_Makefile(Makefile, &info);
+		    if (info.empty_override) {
+			warn_empty_prog(prog_c);
+		    }
+		    if (info.rule_2a_override) {
+			warn_rule2a_size(&info, prog_c, 0);
+		    }
+		    if (info.rule_2a_mismatch) {
+			warn_rule2a_size(&info, prog_c, 1);
+		    }
+		    if (info.rule_2b_override) {
+			warn_rule2b_size(&info, prog_c);
+		    }
+		    if (info.highbit_warning) {
+			warn_high_bit(prog_c);
+		    }
+		    if (info.nul_warning) {
+			warn_nul_chars(prog_c);
+		    }
+		    if (info.trigraph_warning) {
+			warn_trigraph(prog_c);
+		    }
+		    if (info.wordbuf_warning) {
+			warn_wordbuf(prog_c);
+		    }
+		    if (info.ungetc_warning) {
+			warn_ungetc(prog_c);
+		    }
+		    if (info.Makefile_override) {
+			warn_Makefile(Makefile, &info);
+		    }
 		}
 	    } while (0);
 	}
@@ -3005,7 +3048,7 @@ warn_empty_prog(char const *prog_c)
     }
 
     dbg(DBG_MED, "prog.c: %s is empty", prog_c);
-    if (need_confirm == true) {
+    if (need_confirm == true && ignore_warnings == false) {
 	fpara(stderr,
 	  "WARNING: prog.c is empty.  An empty prog.c has been submitted before:",
 	  "",
@@ -3065,7 +3108,7 @@ warn_rule2a_size(struct info *infop, char const *prog_c, int mode)
 	if (ret <= 0) {
 	    warnp(__func__, "fprintf error when printing prog.c Rule 2a warning");
 	}
-	if (need_confirm == true) {
+	if (need_confirm == true && ignore_warnings == false) {
 	    fpara(stderr,
 	      "If you are attempting some clever rule abuse, then we STRONGLY suggest that you",
 	      "tell us about your rule abuse in your remarks.md file.  Be sure you have read the",
@@ -3081,7 +3124,7 @@ warn_rule2a_size(struct info *infop, char const *prog_c, int mode)
 		(long)infop->rule_2a_size, (long)RULE_2A_SIZE);
 	}
     } else if (mode == 1) {
-	if (need_confirm == true) {
+	if (need_confirm == true && ignore_warnings == false) {
 	    errno = 0;		/* pre-clear errno for warnp() */
 	    ret = fprintf(stderr, "\nInteresting: prog.c: %s file size: %ld != rule_count function size: %ld\n"
 				  "In order to avoid a possible Rule 2a violation, BE SURE TO CLEARLY MENTION THIS IN\n"
@@ -3124,7 +3167,7 @@ warn_high_bit(char const *prog_c)
     }
 
 
-    if (need_confirm == true) {
+    if (need_confirm == true && ignore_warnings == false) {
 	errno = 0;		/* pre-clear errno for warnp() */
 	ret = fprintf(stderr, "\nprog_c: %s has character(s) with high bit set!\n"
 			      "Be careful you don't violate rule 13!\n\n", prog_c);
@@ -3164,7 +3207,7 @@ warn_nul_chars(char const *prog_c)
     }
 
 
-    if (need_confirm == true) {
+    if (need_confirm == true && ignore_warnings == false) {
 	errno = 0;		/* pre-clear errno for warnp() */
 	ret = fprintf(stderr, "\nprog_c: %s has NUL character(s)!\n"
 			      "Be careful you don't violate rule 13!\n\n", prog_c);
@@ -3204,7 +3247,7 @@ warn_trigraph(char const *prog_c)
 	not_reached();
     }
 
-    if (need_confirm == true) {
+    if (need_confirm == true && ignore_warnings == false) {
 	errno = 0;		/* pre-clear errno for errp() */
 	ret = fprintf(stderr, "\nprog_c: %s has unknown or invalid trigraph(s) found!\n"
 			      "Is that a bug in, or a feature of your code?\n\n", prog_c);
@@ -3244,7 +3287,7 @@ warn_wordbuf(char const *prog_c)
     }
 
 
-    if (need_confirm == true) {
+    if (need_confirm == true && ignore_warnings == false) {
 	errno = 0;		/* pre-clear errno for warnp() */
 	ret = fprintf(stderr, "\nprog_c: %s triggered a word buffer overflow!\n"
 			      "In order to avoid a possible Rule 2b violation, BE SURE TO CLEARLY MENTION THIS IN\n"
@@ -3286,7 +3329,7 @@ warn_ungetc(char const *prog_c)
     }
 
 
-    if (need_confirm == true) {
+    if (need_confirm == true && ignore_warnings == false) {
 	errno = 0;		/* pre-clear errno for warnp() */
 	ret = fprintf(stderr, "\nprog_c: %s triggered a triggered an ungetc error: @SirWumpus goofed\n"
 			      "In order to avoid a possible Rule 2b violation, BE SURE TO CLEARLY MENTION THIS IN\n"
@@ -3326,7 +3369,7 @@ warn_rule2b_size(struct info *infop, char const *prog_c)
 	not_reached();
     }
 
-    if (need_confirm == true) {
+    if (need_confirm == true && ignore_warnings == false) {
 	errno = 0;
 	ret = fprintf(stderr, "\nWARNING: The prog.c %s size: %lu > Rule 2b maximum: %lu\n", prog_c,
 		      (unsigned long)infop->rule_2b_size, (unsigned long)RULE_2B_SIZE);
@@ -3839,7 +3882,7 @@ warn_Makefile(char const *Makefile, struct info *infop)
 	err(123, __func__, "called with NULL arg(s)");
 	not_reached();
     }
-    if (need_confirm == true) {
+    if (need_confirm == true && ignore_warnings == false) {
 	/*
 	 * report problem with Makefile
 	 */
@@ -5052,7 +5095,7 @@ get_author_info(struct info *infop, char *ioccc_id, struct author **author_set_p
 		warnp(__func__, "fprintf error #0 while printing author number range");
 	    }
 	    errno = 0;		/* pre-clear errno for warnp() */
-	    ret = fprintf(stderr, "If you happen to have more than %d authors. we ask that you pick the\n", MAX_AUTHORS);
+	    ret = fprintf(stderr, "If you happen to have more than %d authors, we ask that you pick\n", MAX_AUTHORS);
 	    if (ret <= 0) {
 		warnp(__func__, "fprintf error #1 while printing author number range");
 	    }
