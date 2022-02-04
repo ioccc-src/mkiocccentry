@@ -111,6 +111,8 @@ CFLAGS= -O3 -g3 -pedantic -Wall -Wextra
 DESTDIR= /usr/local/bin
 TARGETS= mkiocccentry iocccsize dbg_test limit_ioccc.sh filenamechk
 TEST_TARGETS= dbg_test
+OBJFILES = dbg.o util.o
+SRCFILES = $(patsubst %.o,%.c,$(OBJFILES))
 
 all: ${TARGETS} ${TEST_TARGETS}
 
@@ -130,12 +132,6 @@ mkiocccentry: mkiocccentry.c limit_ioccc.h rule_count.o dbg.o util.o Makefile
 
 iocccsize: iocccsize.c limit_ioccc.h Makefile
 	${CC} ${CFLAGS} iocccsize.c -o $@
-
-dbg.o: dbg.c dbg.h Makefile
-	${CC} ${CFLAGS} dbg.c -c
-
-util.o: util.c util.h Makefile
-	${CC} ${CFLAGS} util.c -c
 
 dbg_test: dbg.c dbg.h Makefile
 	${CC} ${CFLAGS} -DDBG_TEST dbg.c -o $@
@@ -160,7 +156,7 @@ limit_ioccc.sh: limit_ioccc.h Makefile
 #
 # DO NOT run this rule simply for a new IOCCC!
 #
-# Yes, we make it very hard to run this rule for good reasson.
+# Yes, we make it very hard to run this rule for good reason.
 # Only IOCCC judges can perform the ALL the steps needed to complete this action.
 #
 reset_min_timestamp:
@@ -269,3 +265,18 @@ test: ./iocccsize-test.sh iocccsize dbg_test mkiocccentry ./mkiocccentry-test.sh
 	@echo "RUNNING: mkiocccentry-test.sh"
 	./mkiocccentry-test.sh
 	@echo "PASSED: mkiocccentry-test.sh"
+
+depend:
+	@LINE="`grep -n '^### DO NOT CHANGE' Makefile|awk -F : '{print $$1}'`"; \
+        if [ "$$LINE" = "" ]; then                                              \
+                echo "Make depend aborted, tag not found in Makefile.";         \
+                exit;                                                           \
+        fi;                                                                     \
+        mv -f Makefile Makefile.orig;head -n $$LINE Makefile.orig > Makefile;   \
+        echo "Generating dependencies.";                               \
+        ${CC} ${CFLAGS} -MM ${SRCFILES} >> Makefile
+	@echo "Make depend completed.";
+
+### DO NOT CHANGE MANUALLY BEYOND THIS LINE
+dbg.o: dbg.c dbg.h
+util.o: util.c dbg.h util.h
