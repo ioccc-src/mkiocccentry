@@ -6523,7 +6523,7 @@ form_tarball(char const *work_dir, char const *entry_dir, char const *tarball_pa
     errno = 0;			/* pre-clear errno for errp() */
     ret = stat(basename_tarball_path, &buf);
     if (ret != 0) {
-	errp(1, __func__, "stat of the compressed tarball failed: %s", basename_tarball_path);
+	errp(10, __func__, "stat of the compressed tarball failed: %s", basename_tarball_path);
 	not_reached();
     }
     if (buf.st_size > MAX_TARBALL_LEN) {
@@ -6532,7 +6532,7 @@ form_tarball(char const *work_dir, char const *entry_dir, char const *tarball_pa
 	      "The compressed tarball exceeds the maximum allowed size, sorry.",
 	      "",
 	      NULL);
-	err(2, __func__, "The compressed tarball: %s size: %lu > %ld",
+	err(11, __func__, "The compressed tarball: %s size: %lu > %ld",
 		 basename_tarball_path, (unsigned long)buf.st_size, (long)MAX_TARBALL_LEN);
 	not_reached();
     }
@@ -6550,7 +6550,7 @@ form_tarball(char const *work_dir, char const *entry_dir, char const *tarball_pa
      */
     cmd = cmdprintf("% -tvJf %", tar, basename_tarball_path);
     if (cmd == NULL) {
-	err(3, __func__, "failed to cmdprintf: tar -tJf tarball_path");
+	err(12, __func__, "failed to cmdprintf: tar -tJf tarball_path");
 	not_reached();
     }
     dbg(DBG_HIGH, "about to perform: system(%s)", cmd);
@@ -6562,14 +6562,14 @@ form_tarball(char const *work_dir, char const *entry_dir, char const *tarball_pa
     errno = 0;		/* pre-clear errno for errp() */
     ret = fflush(stdout);
     if (ret < 0) {
-	errp(4, __func__, "fflush(stdout) error code: %d", ret);
+	errp(13, __func__, "fflush(stdout) error code: %d", ret);
 	not_reached();
     }
     clearerr(stderr);		/* pre-clear ferror() status */
     errno = 0;			/* pre-clear errno for errp() */
     ret = fflush(stderr);
     if (ret < 0) {
-	errp(5, __func__, "fflush(stderr) #1: error code: %d", ret);
+	errp(14, __func__, "fflush(stderr) #1: error code: %d", ret);
 	not_reached();
     }
 
@@ -6579,13 +6579,13 @@ form_tarball(char const *work_dir, char const *entry_dir, char const *tarball_pa
     errno = 0;			/* pre-clear errno for errp() */
     exit_code = system(cmd);
     if (exit_code < 0) {
-	errp(6, __func__, "error calling system(%s)", cmd);
+	errp(15, __func__, "error calling system(%s)", cmd);
 	not_reached();
     } else if (exit_code == 127) {
-	errp(7, __func__, "execution of the shell failed for system(%s)", cmd);
+	errp(16, __func__, "execution of the shell failed for system(%s)", cmd);
 	not_reached();
     } else if (exit_code != 0) {
-	err(8, __func__, "%s failed with exit code: %d", cmd, WEXITSTATUS(exit_code));
+	err(17, __func__, "%s failed with exit code: %d", cmd, WEXITSTATUS(exit_code));
 	not_reached();
     }
     para("",
@@ -6635,13 +6635,13 @@ remind_user(char const *work_dir, char const *entry_dir, char const *tar, char c
      * firewall
      */
     if (work_dir == NULL || entry_dir == NULL || tar == NULL || tarball_path == NULL) {
-	err(251, __func__, "called with NULL arg(s)"); /*ooo*/
+	err(18, __func__, "called with NULL arg(s)");
 	not_reached();
     }
 
     entry_dir_esc = cmdprintf("%", entry_dir);
     if (entry_dir_esc == NULL) {
-	err(251, __func__, "failed to cmdprintf: entry_dir"); /*ooo*/
+	err(19, __func__, "failed to cmdprintf: entry_dir");
 	not_reached();
     }
 
@@ -6654,14 +6654,14 @@ remind_user(char const *work_dir, char const *entry_dir, char const *tar, char c
 	 NULL);
     ret = printf("    rm -rf %s%s\n", entry_dir[0] == '-' ? "-- " : "", entry_dir_esc);
     if (ret <= 0) {
-	errp(251, __func__, "printf #0 error"); /*ooo*/
+	errp(20, __func__, "printf #0 error");
 	not_reached();
     }
     free(entry_dir_esc);
 
     work_dir_esc = cmdprintf("%", work_dir);
     if (work_dir_esc == NULL) {
-	err(251, __func__, "failed to cmdprintf: work_dir"); /*ooo*/
+	err(21, __func__, "failed to cmdprintf: work_dir");
 	not_reached();
     }
 
@@ -6672,7 +6672,7 @@ remind_user(char const *work_dir, char const *entry_dir, char const *tar, char c
 	 NULL);
     ret = printf("    %s -Jtvf %s%s/%s\n", tar, work_dir[0] == '-' ? "./" : "", work_dir_esc, tarball_path);
     if (ret <= 0) {
-	errp(251, __func__, "printf #2 error"); /*ooo*/
+	errp(22, __func__, "printf #2 error");
 	not_reached();
     }
     free(work_dir_esc);
@@ -6706,7 +6706,7 @@ remind_user(char const *work_dir, char const *entry_dir, char const *tar, char c
 	     NULL);
 	ret = printf("    %s/%s\n", work_dir, tarball_path);
 	if (ret <= 0) {
-	    errp(251, __func__, "printf #2 error"); /*ooo*/
+	    errp(23, __func__, "printf #2 error");
 	    not_reached();
 	}
     }
@@ -6722,7 +6722,7 @@ remind_user(char const *work_dir, char const *entry_dir, char const *tar, char c
 	     NULL);
 	ret = printf("    %s\n\n", IOCCC_SUBMIT_URL);
 	if (ret < 0) {
-	    errp(251, __func__, "printf #4 error"); /*ooo*/
+	    errp(24, __func__, "printf #4 error");
 	    not_reached();
 	}
     }

@@ -78,7 +78,7 @@ base_name(char const *path)
      * firewall
      */
     if (path == NULL) {
-	err(200, __func__, "called with NULL arg(s)");
+	err(200, __func__, "called with NULL arg(s)"); /*coo*/
 	not_reached();
     }
 
@@ -502,6 +502,7 @@ file_size(char const *path)
     return (ssize_t)buf.st_size;
 }
 
+
 /*
  * cmdprintf - malloc a safer shell command line for use with system() and popen()
  *
@@ -638,7 +639,7 @@ cmdprintf(char const *format, ...)
     *d = '\0';	/* NUL terminate command line */
 
     if ((size_t)(d + 1 - cmd) != size) {
-	errp(252, __func__, "cmdprintf: written characters (%ld) don't match the size (%lu)", /*ooo*/
+	errp(210, __func__, "cmdprintf: written characters (%ld) don't match the size (%lu)",
 			    (long)(d + 1 - cmd), (unsigned long)size);
 	not_reached();
     }

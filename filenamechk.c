@@ -133,7 +133,7 @@ main(int argc, char *argv[])
     while ((i = getopt(argc, argv, "hv:V")) != -1) {
 	switch (i) {
 	case 'h':		/* -h - print help to stderr and exit 0 */
-	    usage(0, "-h help mode", program);
+	    usage(1, "-h help mode", program); /*ooo*/
 	    not_reached();
 	    break;
 	case 'v':		/* -v verbosity */
@@ -143,7 +143,7 @@ main(int argc, char *argv[])
 	    errno = 0;		/* pre-clear errno for errp() */
 	    verbosity_level = (int)strtol(optarg, NULL, 0);
 	    if (errno != 0) {
-		errp(1, __func__, "cannot parse -v arg: %s error: %s", optarg, strerror(errno));
+		errp(1, __func__, "cannot parse -v arg: %s error: %s", optarg, strerror(errno)); /*ooo*/
 		not_reached();
 	    }
 	    break;
