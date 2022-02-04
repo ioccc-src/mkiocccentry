@@ -50,6 +50,14 @@
 #define MAX_TITLE_LEN (20)		/* maximum length of a title */
 #define MAX_ABSTRACT_LEN (64)		/* maximum length of an abstract */
 #define MAX_BASENAME_LEN ((size_t)(99))	/* tar --format=v7 limits filenames to 99 characters */
+#define UUID_LEN (36)		/* characters in a UUID string - as per RFC4122 */
+#define UUID_VERSION (4)	/* version 4 - random UUID */
+#define UUID_VARIANT (0xa)	/* variant 1 - encoded as 0xa */
+
+/*
+ * Be carefil to change this value as it will invailate all IOCCC timestamps <= this value
+ */
+#define MIN_TIMESTAMP ((time_t)1643987926)
 
 
 /*

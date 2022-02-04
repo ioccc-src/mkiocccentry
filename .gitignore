@@ -9,6 +9,7 @@ test_src
 test_work
 answers.txt
 limit_ioccc.sh
+filenamechk
 
 # Prerequisites
 *.d
