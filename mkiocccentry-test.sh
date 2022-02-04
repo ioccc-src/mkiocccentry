@@ -11,7 +11,8 @@ src_dir="test_src"
 # be sure the working locations exist
 #
 mkdir -p -- "${work_dir}" "${src_dir}"
-if [[ $? -ne 0 ]]; then
+status=$?
+if [[ ${status} -ne 0 ]]; then
     echo "$0: FATAL: error in creating working dirs: mkdir -p -- ${work_dir} ${src_dir}" 1>&2
     exit 250
 fi
@@ -30,6 +31,7 @@ int main() { puts("Hello, World!"); }
 EOF
 }
 rm -f "${src_dir}"/empty.c
+# shellcheck disable=SC2188
 > "${src_dir}"/empty.c
 
 # fake some required files
@@ -66,18 +68,20 @@ answers >>answers.txt
 # run the test, looking for an exit
 #
 yes | ./mkiocccentry -i answers.txt -- "${work_dir}" "${src_dir}"/{prog.c,Makefile,remarks.md,extra1,extra2}
-if [[ $? -ne 0 ]]; then
+status=$?
+if [[ ${status} -ne 0 ]]; then
     echo "$0: FATAL: /mkiocccentry non-zero exit code: $status" 1>&2
-    exit "$status"
+    exit "${status}"
 fi
 
 # delete the work directory for next test
 find "${work_dir_esc}" -mindepth 1 -depth -delete
 # test empty prog.c, ignoring the warning about it
 yes | ./mkiocccentry -W -i answers.txt -- "${work_dir}" "${src_dir}"/{empty.c,Makefile,remarks.md,extra1,extra2}
-if [[ $? -ne 0 ]]; then
+status=$?
+if [[ ${status} -ne 0 ]]; then
     echo "$0: FATAL: /mkiocccentry non-zero exit code: $status" 1>&2
-    exit "$status"
+    exit "${status}"
 fi
 
 
