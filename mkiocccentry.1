@@ -86,7 +86,7 @@ Make \fIwork_dir\fP and then make an entry from the files \fIprog.c\fP, \fIMakef
 .RS
 \fB
  mkdir work_dir
- ./mkiocccentry -a answers test_work prog.c Makefile remarks.md
+ ./mkiocccentry -a answers work_dir prog.c Makefile remarks.md
 .fi
 .RE
 .PP
@@ -95,6 +95,6 @@ Use the answers file from the previous invocation to quickly update the entry wi
 
 .RS
 \fB
- ./mkiocccentry -i answers test_work prog.c Makefile remarks.md data.txt
+ ./mkiocccentry -i answers work_dir prog.c Makefile remarks.md data.txt
 .fi
 .RE
