@@ -89,7 +89,7 @@ CFLAGS= -O3 -g3 -pedantic -Wall -Wextra
 #CFLAGS= -O3 -g3 -pedantic -Wall -Wextra -Werror
 
 # NOTE: There are some things clang -Weverything warns about that are not relevant
-# 	and this for the -Weverything case, we exclude several directives
+# 	and thus for the -Weverything case, we exclude several directives
 #
 #CFLAGS= -O3 -g3 -pedantic -Wall -Wextra -Werror -Weverything \
 #     -Wno-poison-system-directories -Wno-unreachable-code-break -Wno-padded
@@ -123,17 +123,21 @@ rule_count.c: iocccsize.c
 rule_count.o: rule_count.c limit_ioccc.h Makefile
 	${CC} ${CFLAGS} -DMKIOCCCENTRY_USE rule_count.c -c
 
-mkiocccentry: mkiocccentry.c limit_ioccc.h rule_count.o dbg.o Makefile
-	${CC} ${CFLAGS} mkiocccentry.c rule_count.o dbg.o -o $@
+mkiocccentry: mkiocccentry.c limit_ioccc.h rule_count.o utils.o dbg.o Makefile
+	${CC} ${CFLAGS} mkiocccentry.c rule_count.o utils.o dbg.o -o $@
 
 iocccsize: iocccsize.c limit_ioccc.h Makefile
 	${CC} ${CFLAGS} iocccsize.c -o $@
+
+utils.o: utils.c
+	${CC} ${CFLAGS} utils.c -c
 
 dbg.o: dbg.c dbg.h Makefile
 	${CC} ${CFLAGS} dbg.c -c
 
 dbg_test: dbg.c dbg.h Makefile
 	${CC} ${CFLAGS} -DDBG_TEST dbg.c -o $@
+
 
 limit_ioccc.sh: limit_ioccc.h
 	${RM} -f $@
