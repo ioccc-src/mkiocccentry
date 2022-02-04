@@ -1,0 +1,100 @@
+.TH mkiocccentry 1 "04 February 2022" "mkiocccentry" "IOCCC tools"
+.SH NAME
+mkiocccentry \- make an IOCCC compressed tarball for an IOCCC entry
+.SH SYNOPSIS
+\fBmkiocccentry [-h] [-v level] [-V] [-t tar] [-c cp] [-l ls] [{-a|-A|-i} answers] [-W] work_dir prog.c Makefile remarks.md [file ...]\fP
+.SH DESCRIPTION
+\fBmkiocccentry\fP gathers your source file, Makefile, remarks as well as any other files and creates a XZ compressed tarball.
+The tool runs \fBiocccsize\fP and it also runs a test on the Makefile to verify that everything seems in order. 
+You can ignore the warnings except that the Makefile cannot be empty.
+The work_dir is a directory that the program will copy the files to (under a subdirectory based on the title of the entry and the entry number), to create the tarball.
+If the work_dir already exists the program will tell you to move it or delete it.
+The program does \fBNOT\fP delete it in case you wish to inspect that everything is okay or do any other tests; it does however show you how you can delete it should you wish to.
+.SH OPTIONS
+.PP
+\fB\-h\fP
+Show help and exit.
+.PP
+\fB\-v\fP
+Set verbosity level.
+.PP
+\fB\-V\fP
+Show version and exit.
+.PP
+\fB\-t\fP
+Specify path to tar that accepts the \fB\-J\fP option.
+\fBmkiocccentry\fP checks \fI/usr/bin\fP and \fI/bin\fP if this option is not specified.
+.PP
+\fB\-c\fP
+Specify path to cp program.
+\fBmkiocccentry\fP checks \fI/usr/bin\fP and \fI/bin\fP if this option is not specified.
+.PP
+\fB\-l\fP
+Specify path to ls program.
+\fBmkiocccentry\fP checks \fI/usr/bin\fP and \fI/bin\fP if this option is not specified.
+.PP
+\fB\-a\fP
+Write to file specified the answers for easier updating the entry (via the \fB\-i\fP option).
+If the file exists \fBmkiocccentry\fP will ask you if you wish to overwrite it unless \fB\-A\fP is specified which will always overwrite the answers file.
+.PP
+\fB\-A\fP
+Always overwrite answers file.
+.PP
+\fP\-W\fP
+Ignore all warnings.
+When this option is specified the program warns you that you've ignored all warnings (therefore not ignoring all warnings :) ), informing you that the judges will not ignore all warnings.
+.PP
+.SH EXIT STATUS
+.PP
+\fBmain()\fP returns 0 on success; if there's an error the end is not reached.
+.SH FILES
+\fImkiocccentry.c\fP
+.RS
+Source file to the \fBmkiocccentry\fP tool.
+.RE
+\fIiocccsize.c\fP
+.RS
+Source file to the iocccsize tool.
+.RE
+\fImkiocccentry-test.sh\fP
+.RS
+Script that tests the \fBmkiocccentry\fP tool.
+.RE
+\fIiocccsize-test.sh\fP
+.RS
+Script that tests the \fBiocccsize\fP tool.
+.RE
+.SH BUGS
+.PP
+More than 0 humans work on it! :)
+.PP
+If you have an issue with the tool you can open an issue at \fI\<https://github.com/ioccc-src/mkiocccentry/issues\>\fP.
+.SH EXAMPLES
+.PP
+.nf
+Run test script:
+
+.RS
+\fB
+ ./mkiocccentry-test.sh\fP
+.fi
+.RE
+.PP
+.nf
+Make \fIwork_dir\fP and then make an entry from the files \fIprog.c\fP, \fIMakefile\fP and \fIremarks.md\fP, saving your answers to the file \fIanswers\fP for future updates:
+
+.RS
+\fB
+ mkdir work_dir
+ ./mkiocccentry -a answers test_work prog.c Makefile remarks.md
+.fi
+.RE
+.PP
+.nf
+Use the answers file from the previous invocation to quickly update the entry with an additional file added:
+
+.RS
+\fB
+ ./mkiocccentry -i answers test_work prog.c Makefile remarks.md data.txt
+.fi
+.RE
