@@ -6469,6 +6469,11 @@ form_tarball(char const *work_dir, char const *entry_dir, char const *tarball_pa
 
     /*
      * form the tar create command
+     *
+     * IMPORTANT NOTE: The reason why we form a v7 tarball is that we do NOT want to
+     *		       preserve user and group names (to help keep authors anonymoys),
+     *		       (modern flags to force a username/groupname are not very portable),
+     *		       and we don't want special files, symlinks, etc.
      */
     basename_entry_dir = base_name(entry_dir);
     basename_tarball_path = base_name(tarball_path);
