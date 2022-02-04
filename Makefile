@@ -244,12 +244,12 @@ configure:
 
 clean:
 	${RM} -f mkiocccentry.o iocccsize.o rule_count.o dbg_test.o dbg.o
-	${RM} -rf mkiocccentry.dSYM iocccsize.dSYM dbg_test.dSYM
+	${RM} -rf mkiocccentry.dSYM iocccsize.dSYM dbg_test.dSYM filenamechk.dSYM
 
 clobber: clean
 	${RM} -f ${TARGETS} ${TEST_TARGETS}
 	${RM} -f rule_count.c answers.txt
-	${RM} -rf test-iocccsize test-src test-work
+	${RM} -rf test-iocccsize test_src test_work
 
 install: all
 	${INSTALL} -m 0555 ${TARGETS} ${DESTDIR}
