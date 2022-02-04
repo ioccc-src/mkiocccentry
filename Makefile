@@ -180,7 +180,7 @@ reset_min_timestamp:
 	@echo
 	@echo 'WARNING: If you wish to do this, please enter the following phrase:'
 	@echo
-	@echo 'Please invalidate all IOCCC timestamps prior to now'
+	@echo '    Please invalidate all IOCCC timestamps prior to now'
 	@echo
 	@read answer && \
 	    if [[ "$$answer" != 'Please invalidate all IOCCC timestamps prior to now' ]]; then \
@@ -195,11 +195,11 @@ reset_min_timestamp:
 	@echo
 	@echo 'WARNING: If you really wish to do this, please enter the following phrase:'
 	@echo
-	@echo 'I understand this'
+	@echo '    I understand this'
 	@echo
 	@echo 'WARNING: followed by the phrase:'
 	@echo
-	@echo 'and say sorry to those with existing IOCCC compressed tarballs'
+	@echo '    and say sorry to those with existing IOCCC compressed tarballs'
 	@echo
 	@read answer && \
 	    if [[ "$$answer" != 'I understand this and say sorry to those with existing IOCCC compressed tarballs' ]]; then \
