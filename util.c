@@ -1,4 +1,3 @@
-
 /* vim: set tabstop=8 softtabstop=4 shiftwidth=4 noexpandtab : */
 /*
  * util - IOCCC entry common utility functions
@@ -501,4 +500,151 @@ file_size(char const *path)
      */
     dbg(DBG_VHIGH, "path %s size: %ld", path, (long)buf.st_size);
     return (ssize_t)buf.st_size;
+}
+
+/*
+ * cmdprintf - malloc a safer shell command line for use with system() and popen()
+ *
+ * given:
+ *
+ *      format - The format string, any % on this string inserts the next string from the list,
+ *               escaping special characters that the shell might threaten as command characters.
+ *               In the worst case, the algorithm will make twice as many characters.
+ *               Will not use escaping if it isn't needed.
+ *
+ * returns:
+ *	malloced shell command line, or
+ *	NULL ==> error
+ *
+ * NOTE: This code is base on an enhancement request by GitHub user @ilyakurdyukov:
+ *
+ *		https://github.com/ioccc-src/mkiocccentry/issues/11
+ *
+ *	 Thank you Ilya Kurdyukov!
+ */
+char *
+cmdprintf(char const *format, ...)
+{
+    va_list va;
+    size_t size = 0;
+    char const *next;
+    char const *p;
+    char const *f;
+    char const *esc = "\t\n\r !\"#$&()*;<=>?[\\]^`{|}~";
+    char *d;
+    char *cmd;
+    char c;
+    int nquot;
+
+    /*
+     * determine how much storage we will need for the command line
+     */
+    va_start(va, format);
+    f = format;
+    while ((c = *f++)) {
+	if (c == '%') {
+	    p = next = va_arg(va, char const *);
+	    nquot = 0;
+	    while ((c = *p++)) {
+		if (c == '\'') {
+		    /* nquot >= 2: 'x##x' */
+		    /* nquot == 1: x\#xx */
+		    /* nquot == 0: xxxx */
+		    /* +1 for escaping the single quote */
+		    size += (size_t)(nquot >= 2 ? 2 : nquot) + 1;
+		    nquot = 0;
+		} else {
+		    /* count the characters need to escape */
+		    nquot += strchr(esc, c) != NULL;
+		}
+	    }
+	    /* -2 for excluding counted NUL and */
+	    /* counted % sign in the format string */
+	    size += (size_t)(nquot >= 2 ? 2 : nquot) + (size_t)(p - next) - 2;
+	}
+    }
+    va_end(va);
+    size += (size_t)(f - format);
+
+    /*
+     * malloc storage or return NULL
+     */
+    errno = 0;			/* pre-clear errno for warnp() */
+    cmd = (char *)malloc(size);	/* trailing zero included in size */
+    if (cmd == NULL) {
+	warnp(__func__, "malloc from the cmdprintf of %lu bytes failed", (unsigned long)size);
+	return NULL;
+    }
+
+    /*
+     * form the safer command line
+     */
+    d = cmd;
+    va_start(va, format);
+    f = format;
+    while ((c = *f++)) {
+	if (c != '%') {
+	    *d++ = c;
+	} else {
+	    p = next = va_arg(va, char const *);
+	    nquot = 0;
+	    while ((c = *p++)) {
+		if (c == '\'') {
+		    if (nquot >= 2) {
+			*d++ = '\'';
+		    }
+		    while (next < p - 1) {
+			c = *next++;
+			/* nquot == 1 means one character needs to be escaped */
+			/* quotes around are not used in this mode */
+			if (nquot == 1 && strchr(esc, c)) {
+			    *d++ = '\\';
+			    /* set nquot to zero since we processed it */
+			    /* to not call strchr() again */
+			    nquot = 0;
+			}
+			*d++ = c;
+		    }
+		    if (nquot >= 2) {
+			*d++ = '\'';
+		    }
+		    nquot = 0;
+		    next++;
+		    *d++ = '\\';
+		    *d++ = '\'';
+		} else {
+		    nquot += strchr(esc, c) != NULL;
+		}
+	    }
+
+	    if (nquot >= 2) {
+		*d++ = '\'';
+	    }
+	    while (next < p - 1) {
+		c = *next++;
+		if (nquot == 1 && strchr(esc, c)) {
+		    *d++ = '\\';
+		    nquot = 0;
+		}
+		*d++ = c;
+	    }
+	    if (nquot >= 2) {
+		*d++ = '\'';
+	    }
+
+	}
+    }
+    va_end(va);
+    *d = '\0';	/* NUL terminate command line */
+
+    if ((size_t)(d + 1 - cmd) != size) {
+	errp(252, __func__, "cmdprintf: written characters (%ld) don't match the size (%lu)", /*ooo*/
+			    (long)(d + 1 - cmd), (unsigned long)size);
+	not_reached();
+    }
+
+    /*
+     * return safer command line string
+     */
+    return cmd;
 }

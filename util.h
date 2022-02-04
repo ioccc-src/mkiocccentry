@@ -1,5 +1,5 @@
 /*
- * dbg - debug, warning and error reporting facility
+ * util - IOCCC entry common utility functions
  *
  * Copyright (c) 1989,1997,2018-2022 by Landon Curt Noll.  All Rights Reserved.
  *
@@ -56,6 +56,6 @@ extern bool is_dir(char const *path);
 extern bool is_read(char const *path);
 extern bool is_write(char const *path);
 extern ssize_t file_size(char const *path);
-
+extern char *cmdprintf(char const *format, ...);
 
 #endif				/* INCLUDE_UTIL_H */
