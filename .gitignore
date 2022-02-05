@@ -10,6 +10,7 @@ test_work
 answers.txt
 limit_ioccc.sh
 filenamechk
+txzchk
 
 # Prerequisites
 *.d
