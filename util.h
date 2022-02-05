@@ -73,7 +73,7 @@ struct location {
 #define TXZCHK_PATH_1 "/usr/local/bin/txzchk"	/* default path to txzchk tool if installed */
 
 /*
- * global vairables
+ * global variables
  */
 extern struct location loc[];			/* location/country codes */
 

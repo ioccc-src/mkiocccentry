@@ -5634,7 +5634,8 @@ write_author(struct info *infop, int author_count, struct author *authorp, char 
  * form_tarball - form the compressed tarball
  *
  * Given the completed entry directory, form a compressed tar file for the user to submit.
- * Remind the user where to submit their compressed tarball file.
+ * Remind the user where to submit their compressed tarball file. The function
+ * shows the listing of the tarball contents via the txzchk tool.
  *
  * given:
  *      work_dir        - working directory under which the entry directory is formed
@@ -5764,55 +5765,7 @@ form_tarball(char const *work_dir, char const *entry_dir, char const *tarball_pa
     }
 
     /*
-     * form the tar list command
-     */
-    cmd = cmdprintf("% -tvJf %", tar, basename_tarball_path);
-    if (cmd == NULL) {
-	err(224, __func__, "failed to cmdprintf: tar -tJf tarball_path");
-	not_reached();
-    }
-    dbg(DBG_HIGH, "about to perform: system(%s)", cmd);
-
-    /*
-     * pre-flush to avoid system() buffered stdio issues
-     */
-    clearerr(stdout);	/* pre-clear ferror() status */
-    errno = 0;		/* pre-clear errno for errp() */
-    ret = fflush(stdout);
-    if (ret < 0) {
-	errp(225, __func__, "fflush(stdout) error code: %d", ret);
-	not_reached();
-    }
-    clearerr(stderr);		/* pre-clear ferror() status */
-    errno = 0;			/* pre-clear errno for errp() */
-    ret = fflush(stderr);
-    if (ret < 0) {
-	errp(226, __func__, "fflush(stderr) #1: error code: %d", ret);
-	not_reached();
-    }
-
-    /*
-     * perform the tar list command
-     */
-    errno = 0;			/* pre-clear errno for errp() */
-    exit_code = system(cmd);
-    if (exit_code < 0) {
-	errp(227, __func__, "error calling system(%s)", cmd);
-	not_reached();
-    } else if (exit_code == 127) {
-	errp(228, __func__, "execution of the shell failed for system(%s)", cmd);
-	not_reached();
-    } else if (exit_code != 0) {
-	err(229, __func__, "%s failed with exit code: %d", cmd, WEXITSTATUS(exit_code));
-	not_reached();
-    }
-    para("",
-	 "... the output above is the listing of the compressed tarball.",
-	 "",
-	 NULL);
-
-    /*
-     * form the txzchk
+     * form the txzchk command
      */
     cmd = cmdprintf("../% -q %", txzchk, basename_tarball_path);
     if (cmd == NULL) {
@@ -5840,7 +5793,8 @@ form_tarball(char const *work_dir, char const *entry_dir, char const *tarball_pa
     }
 
     /*
-     * perform the txzchk
+     * perform the txzchk which will indirectly show the user the tarball
+     * contents
      */
     errno = 0;			/* pre-clear errno for errp() */
     exit_code = system(cmd);
@@ -5854,6 +5808,10 @@ form_tarball(char const *work_dir, char const *entry_dir, char const *tarball_pa
 	err(235, __func__, "%s failed with exit code: %d", cmd, WEXITSTATUS(exit_code));
 	not_reached();
     }
+    para("",
+	 "... the output above is the listing of the compressed tarball.",
+	 "",
+	 NULL);
 
     /*
      * free memory
