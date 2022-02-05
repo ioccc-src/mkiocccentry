@@ -46,6 +46,14 @@ typedef unsigned char bool;
 #endif
 
 /*
+ * location/country codes
+ */
+struct location {
+    const char * const code;		/* ISO 3166-1 Alpha-2 Code */
+    const char * const name;		/* name (short name lower case) */
+};
+
+/*
  * definitions
  */
 #define LITLEN(x) (sizeof(x)-1)	/* length of a literal string w/o the NUL byte */
@@ -63,6 +71,11 @@ typedef unsigned char bool;
 #define FILENAMECHK_PATH_1 "/usr/local/bin/filenamechk"	/* default path to filenamechk tool if installed */
 #define TXZCHK_PATH_0 "./txzchk"		/* default path to txzchk tool */
 #define TXZCHK_PATH_1 "/usr/local/bin/txzchk"	/* default path to txzchk tool if installed */
+
+/*
+ * global vairables
+ */
+extern struct location loc[];			/* location/country codes */
 
 /*
  * external function declarations
