@@ -134,7 +134,6 @@
 /*
  * definitions
  */
-#define LITLEN(x) (sizeof(x)-1)	/* length of a literal string w/o the NUL byte */
 #define REQUIRED_ARGS (4)	/* number of required arguments on the command line */
 #define ISO_3166_1_CODE_URL0 "https://en.wikipedia.org/wiki/ISO_3166-1#Officially_assigned_code_elements"
 #define ISO_3166_1_CODE_URL1 "https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2"
@@ -143,12 +142,6 @@
 #define ISO_3166_1_CODE_URL4 "https://www.iso.org/glossary-for-iso-3166.html"
 #define TAIL_TITLE_CHARS "abcdefghijklmnopqrstuvwxyz0123456789_+-"	/* [a-z0-9_+-] */
 #define TIMESTAMP_EPOCH "Thr Jan  1 00:00:00 1970 UTC"	/* gettimeofday epoch */
-#define TAR_PATH_0 "/usr/bin/tar"			/* historic path for tar */
-#define TAR_PATH_1 "/bin/tar"			/* alternate tar path for some systems where /usr/bin/tar != /bin/tar */
-#define CP_PATH_0 "/bin/cp"			/* historic path for cp */
-#define CP_PATH_1 "/usr/bin/cp"			/* alternate cp path for some systems where /bin/cp != /usr/bin/cp */
-#define LS_PATH_0 "/bin/ls"			/* historic path for ls */
-#define LS_PATH_1 "/usr/bin/ls"			/* alternate ls path for some systems where /bin/ls != /usr/bin/ls */
 #define IOCCC_REGISTER_URL "https://register.ioccc.org/NOT/a/real/URL"	/* XXX - change to real URL when ready */
 #define IOCCC_SUBMIT_URL "https://submit.ioccc.org/NOT/a/real/URL"	/* XXX - change to real URL when ready */
 
@@ -159,17 +152,19 @@
  * Use the usage() function to print the these usage_msgX strings.
  */
 static const char * const usage_msg0 =
-    "usage: %s [-h] [-v level] [-V] [-t tar] [-c cp] [-l ls] [{-a|-A|-i} answers] [-W] work_dir prog.c Makefile remarks.md [file ...]\n"
-    "\n"
+    "usage: %s [options] work_dir prog.c Makefile remarks.md [file ...]\n"
+    "\noptions:\n"
     "\t-h\t\t\tprint help message and exit 0\n"
     "\t-v level\t\tset verbosity level: (def level: %d)\n"
     "\t-V\t\t\tprint version string and exit\n"
-    "\t-W\t\t\tignore all warnings (this does NOT mean the judges will! :) )\n\n"
-    "\n"
+    "\t-W\t\t\tignore all warnings (this does NOT mean the judges will! :) )\n";
+
+static const char * const usage_msg1 =
     "\t-t /path/to/tar\t\tpath to tar executable that supports the -J (xz) option (def: %s)\n"
     "\t-c /path/to/cp\t\tpath to cp executable (def: %s)\n"
-    "\t-l /path/to/ls\t\tpath to ls executable (def: %s)\n";
-static const char * const usage_msg1 =
+    "\t-l /path/to/ls\t\tpath to ls executable (def: %s)\n"
+    "\t-C /path/to/txzchk\tpath to txzchk executable (def: %s)";
+static const char * const usage_msg2 =
     "\t-a answers\t\twrite answers to a file for easier updating of an entry\n"
     "\t-A answers\t\twrite answers file even if it already exists\n"
     "\t-i answers\t\tread answers from file previously written by -a|-A answers\n\n"
@@ -177,7 +172,7 @@ static const char * const usage_msg1 =
     "\n"
     "\twork_dir\tdirectory where the entry directory and tarball are formed\n"
     "\tprog.c\t\tpath to the C source for your entry\n";
-static const char * const usage_msg2 =
+static const char * const usage_msg3 =
     "\n"
     "\tMakefile\tMakefile to build (make all) and cleanup (make clean & make clobber)\n"
     "\n"
@@ -290,7 +285,7 @@ struct info {
  * We do not list WIPO codes as they are not formally
  * reserved.  They refer to Patent and related WIPO
  * organizations: as such they do not represent places
- * where a IOCCC winner would live.
+ * where an IOCCC winner would live.
  *
  * We mean no offense by this list: we simply tried to
  * include all ISO 3166 codes.  Please pardon any typos.
@@ -674,7 +669,7 @@ static struct iocccsize size;	/* rule_count() processing results */
  * forward declarations
  */
 static void usage(int exitcode, char const *str, char const *program,
-		  char const *tar, char const *cp, char const *ls) __attribute__((noreturn));
+		  char const *tar, char const *cp, char const *ls, char const *txzchk) __attribute__((noreturn));
 static void free_info(struct info *infop);
 static void free_author_array(struct author *authorp, int author_count);
 static void warn_empty_prog(char const *prog_c);
@@ -686,11 +681,7 @@ static void warn_wordbuf(char const *prog_c);
 static void warn_ungetc(char const *prog_c);
 static void warn_rule2b_size(struct info *infop, char const *prog_c);
 static void check_prog_c(struct info *infop, char const *entry_dir, char const *cp, char const *prog_c);
-static ssize_t readline(char **linep, FILE * stream);
-static char *readline_dup(char **linep, bool strip, size_t *lenp, FILE * stream);
-static void sanity_chk(struct info *infop, char const *work_dir, char const *tar, char const *cp, char const *ls);
-static void para(char const *line, ...);
-static void fpara(FILE * stream, char const *line, ...);
+static void sanity_chk(struct info *infop, char const *work_dir, char const *tar, char const *cp, char const *ls, char const *txzchk);
 static char *prompt(char const *str, size_t *lenp);
 static char *get_contest_id(struct info *infop, bool *testp, bool *i_flag_used);
 static int get_entry_num(struct info *infop);
@@ -717,9 +708,8 @@ static bool json_fprintf_value_bool(FILE *stream, char const *lead, char const *
 static char const * strnull(char const * const str);
 static void write_info(struct info *infop, char const *entry_dir, bool test_mode);
 static void write_author(struct info *infop, int author_count, struct author *authorp, char const *entry_dir);
-static void form_tarball(char const *work_dir, char const *entry_dir, char const *tarball_path, char const *tar, char const *ls);
+static void form_tarball(char const *work_dir, char const *entry_dir, char const *tarball_path, char const *tar, char const *ls, char const *txzpath);
 static void remind_user(char const *work_dir, char const *entry_dir, char const *tar, char const *tarball_path, bool test_mode);
-
 
 int
 main(int argc, char *argv[])
@@ -732,27 +722,29 @@ main(int argc, char *argv[])
     char const *prog_c = NULL;		/* path to prog.c */
     char const *Makefile = NULL;	/* path to Makefile */
     char const *remarks_md = NULL;	/* path to remarks.md */
-    char const *tar = TAR_PATH_0;	/* path to tar executable that supports the -J (xz) option */
-    char const *cp = CP_PATH_0;		/* path to cp executable */
-    char const *ls = LS_PATH_0;		/* path to ls executable */
+    char *tar = TAR_PATH_0;		/* path to tar executable that supports the -J (xz) option */
+    char *cp = CP_PATH_0;		/* path to cp executable */
+    char *ls = LS_PATH_0;		/* path to ls executable */
+    char *txzchk = TXZCHK_PATH_0;	/* path to txzchk executable */
     char const *answers = NULL;		/* path to the answers file (recording input given on stdin) */
     FILE *answerp = NULL;		/* file pointer to the answers file */
     bool test_mode = false;		/* true ==> contest ID is test */
-    char *entry_dir = NULL;	/* entry directory from which to form a compressed tarball */
-    char *tarball_path = NULL;	/* path of the compressed tarball to form */
-    int extra_count = 0;	/* number of extra files */
-    char **extra_list = NULL;	/* list of extra files (if any) */
-    struct info info;		/* data to form .info.json */
-    int author_count = 0;	/* number of authors */
+    char *entry_dir = NULL;		/* entry directory from which to form a compressed tarball */
+    char *tarball_path = NULL;		/* path of the compressed tarball to form */
+    int extra_count = 0;		/* number of extra files */
+    char **extra_list = NULL;		/* list of extra files (if any) */
+    struct info info;			/* data to form .info.json */
+    int author_count = 0;		/* number of authors */
     struct author *author_set = NULL;	/* list of authors */
-    bool t_flag_used = false;	/* true ==> -t /path/to/tar was given */
-    bool c_flag_used = false;	/* true ==> -c /path/to/cp was given */
-    bool l_flag_used = false;	/* true ==> -l /path/to/ls was given */
-    bool a_flag_used = false;	/* true ==> -a write answers to answers file */
-    bool i_flag_used = false;	/* true ==> -i read answers from answers file */
-    bool A_flag_used = false;	/* true ==> don't prompt to overwrite answers if it already exists */
-    bool overwrite_answers = true; /* true ==> overwrite answers file even if it already exists */
-    int ret;			/* libc return code */
+    bool t_flag_used = false;		/* true ==> -t /path/to/tar was given */
+    bool c_flag_used = false;		/* true ==> -c /path/to/cp was given */
+    bool l_flag_used = false;		/* true ==> -l /path/to/ls was given */
+    bool a_flag_used = false;		/* true ==> -a write answers to answers file */
+    bool i_flag_used = false;		/* true ==> -i read answers from answers file */
+    bool A_flag_used = false;		/* true ==> don't prompt to overwrite answers if it already exists */
+    bool txzchk_flag_used = false;	/* true ==> -C /path/to/txzchk was given */
+    bool overwrite_answers = true;	/* true ==> overwrite answers file even if it already exists */
+    int ret;				/* libc return code */
     int i;
 
 
@@ -761,10 +753,10 @@ main(int argc, char *argv[])
      */
     input_stream = stdin;	/* default to reading from standard in */
     program = argv[0];
-    while ((i = getopt(argc, argv, "hv:Vt:c:l:a:i:A:W")) != -1) {
+    while ((i = getopt(argc, argv, "hv:Vt:c:l:a:i:A:WC:")) != -1) {
 	switch (i) {
 	case 'h':		/* -h - print help to stderr and exit 0 */
-	    usage(19, "-h help mode", program, tar, cp, ls);
+	    usage(19, "-h help mode", program, TAR_PATH_0, CP_PATH_0, LS_PATH_0, TXZCHK_PATH_0);
 	    not_reached();
 	    break;
 	case 'v':		/* -v verbosity */
@@ -816,16 +808,20 @@ main(int argc, char *argv[])
 	case 'W':		/* -W ignores all warnings (this does NOT the judges will! :) ) */
 	    ignore_warnings = true;
 	    break;
+	case 'C':
+	    txzchk_flag_used = true;
+	    txzchk = optarg;
 	default:
-	    usage(1, "invalid -flag", program, tar, cp, ls); /*ooo*/
+	    usage(1, "invalid -flag", program, TAR_PATH_0, CP_PATH_0, LS_PATH_0, TXZCHK_PATH_0); /*ooo*/
 	    not_reached();
 	 }
     }
     /* must have at least the required number of args */
     if (argc - optind < REQUIRED_ARGS) {
-	usage(1, "wrong number of arguments", program, tar, cp, ls); /*ooo*/
+	usage(1, "wrong number of arguments", program, TAR_PATH_0, CP_PATH_0, LS_PATH_0, TXZCHK_PATH_0); /*ooo*/
 	not_reached();
     }
+
     /*
      * guess where tar, cp and ls utilities are located
      *
@@ -836,18 +832,9 @@ main(int argc, char *argv[])
      * On some systems where /usr/bin != /bin, the distribution made the mistake of
      * moving historic critical applications, look to see if the alternate path works instead.
      */
-    if (t_flag_used == false && !is_exec(TAR_PATH_0) && is_exec(TAR_PATH_1)) {
-	tar = TAR_PATH_1;
-	dbg(DBG_MED, "tar is not in historic location: %s : will try alternate location: %s", TAR_PATH_0, tar);
-    }
-    if (c_flag_used == false && !is_exec(CP_PATH_0) && is_exec(CP_PATH_1)) {
-	cp = CP_PATH_1;
-	dbg(DBG_MED, "cp is not in historic location: %s : will try alternate location: %s", CP_PATH_0, cp);
-    }
-    if (l_flag_used == false && !is_exec(LS_PATH_0) && is_exec(LS_PATH_1)) {
-	ls = LS_PATH_1;
-	dbg(DBG_MED, "ls is not in historic location: %s : will try alternate location: %s", LS_PATH_0, ls);
-    }
+    find_utils(t_flag_used, &tar, c_flag_used, &cp, l_flag_used, &ls, txzchk_flag_used, &txzchk, false, NULL);
+
+    /* check that conflicting answers file options are not used together */
     if (a_flag_used == true && i_flag_used == true) {
 	err(1, __func__, "-a answers and -i answers cannot be used together"); /*ooo*/
 	not_reached();
@@ -921,7 +908,7 @@ main(int argc, char *argv[])
      * environment sanity checks
      */
     para("", "Performing sanity checks on your environment ...", NULL);
-    sanity_chk(&info, work_dir, tar, cp, ls);
+    sanity_chk(&info, work_dir, tar, cp, ls, txzchk);
     para("... environment looks OK", "", NULL);
 
     /* if -a answers was specified and answers file exists, prompt user if they
@@ -1242,7 +1229,7 @@ main(int argc, char *argv[])
     /*
      * form the .txz file
      */
-    form_tarball(work_dir, entry_dir, tarball_path, tar, ls);
+    form_tarball(work_dir, entry_dir, tarball_path, tar, ls, txzchk);
 
     /*
      * remind user various things e.g., to upload (unless in test mode)
@@ -1280,7 +1267,7 @@ main(int argc, char *argv[])
  * usage - print usage to stderr
  *
  * Example:
- *      usage(3, "missing required argument(s), tar: %s cp: %s ls: %s", "/usr/bin/tar", "/bin/cp", "/bin/ls");
+ *      usage(3, "missing required argument(s), tar: %s cp: %s ls: %s", "/usr/bin/tar", "/bin/cp", "/bin/ls", "./txzchk");
  *
  * given:
  *	exitcode        value to exit with
@@ -1296,7 +1283,7 @@ main(int argc, char *argv[])
  * This function does not return.
  */
 static void
-usage(int exitcode, char const *str, char const *program, char const *tar, char const *cp, char const *ls)
+usage(int exitcode, char const *str, char const *program, char const *tar, char const *cp, char const *ls, char const *txzchk)
 {
     /*
      * firewall
@@ -1326,9 +1313,10 @@ usage(int exitcode, char const *str, char const *program, char const *tar, char 
      * print the formatted usage stream
      */
     vfprintf_usage(DO_NOT_EXIT, stderr, "%s\n", str);
-    vfprintf_usage(DO_NOT_EXIT, stderr, usage_msg0, program, DBG_DEFAULT, tar, cp, ls);
-    vfprintf_usage(DO_NOT_EXIT, stderr, "%s", usage_msg1);
-    vfprintf_usage(exitcode, stderr, usage_msg2, MKIOCCCENTRY_VERSION);
+    vfprintf_usage(DO_NOT_EXIT, stderr, usage_msg0, program, DBG_DEFAULT);
+    vfprintf_usage(DO_NOT_EXIT, stderr, usage_msg1, tar, cp, ls, txzchk);
+    vfprintf_usage(DO_NOT_EXIT, stderr, "%s", usage_msg2);
+    vfprintf_usage(exitcode, stderr, usage_msg3, MKIOCCCENTRY_VERSION);
     exit(exitcode); /*ooo*/
     not_reached();
 }
@@ -1482,184 +1470,6 @@ free_author_array(struct author *author_set, int author_count)
 
 
 /*
- * readline - read a line from a stream
- *
- * Read a line from an open stream.  Malloc or realloc the line
- * buffer as needed.  Remove the trailing newline that was read.
- *
- * given:
- *      linep   - malloced line buffer (may be realloced) or ptr to NULL
- *                NULL ==> getline() will malloc() the linep buffer
- *                else ==> getline() might realloc() the linep buffer
- *      stream - file stream to read from
- *
- * returns:
- *      number of characters in the line with newline removed,
- *      or -1 for EOF
- *
- * This function does not return on error.
- */
-static ssize_t
-readline(char **linep, FILE * stream)
-{
-    size_t linecap = 0;		/* allocated capacity of linep buffer */
-    ssize_t ret;		/* getline return and our modified size return */
-    char *p;			/* printer to NUL */
-
-    /*
-     * firewall
-     */
-    if (linep == NULL || stream == NULL) {
-	err(33, __func__, "called with NULL arg(s)");
-	not_reached();
-    }
-
-    /*
-     * read the line
-     */
-    clearerr(stream);
-    errno = 0;			/* pre-clear errno for errp() */
-    ret = getline(linep, &linecap, stream);
-    if (ret < 0) {
-	if (feof(stream)) {
-	    dbg(DBG_VVHIGH, "EOF detected on readline");
-	    return -1; /* EOF found */
-	} else if (ferror(stream)) {
-	    errp(34, __func__, "getline() error");
-	    not_reached();
-	} else {
-	    errp(35, __func__, "unexpected getline() error");
-	    not_reached();
-	}
-    }
-    /*
-     * paranoia
-     */
-    if (*linep == NULL) {
-	err(36, __func__, "*linep is NULL after getline()");
-	not_reached();
-    }
-
-    /*
-     * scan for embedded NUL bytes (before end of line)
-     *
-     * We could use memchr() but
-     */
-    errno = 0;			/* pre-clear errno for errp() */
-    p = (char *)memchr(*linep, 0, (size_t)ret);
-    if (p != NULL) {
-	errp(37, __func__, "found NUL before end of line");
-	not_reached();
-    }
-
-    /*
-     * process trailing newline or lack there of
-     */
-    if ((*linep)[ret - 1] != '\n') {
-	warn(__func__, "line does not end in newline: %s", *linep);
-    } else {
-	(*linep)[ret - 1] = '\0';	/* clear newline */
-	--ret;
-    }
-    dbg(DBG_VVHIGH, "read %ld bytes + newline into %lu byte buffer", (long)ret, (unsigned long)linecap);
-
-    /*
-     * return length of line without the trailing newline
-     */
-    return ret;
-}
-
-
-/*
- * readline_dup - read a line from a stream and duplicate to a malloced buffer.
- *
- * given:
- *      linep   - malloced line buffer (may be realloced) or ptr to NULL
- *                NULL ==> getline() will malloc() the linep buffer
- *                else ==> getline() might realloc() the linep buffer
- *      strip   - true ==> remove trailing whitespace,
- *                false ==> only remove the trailing newline
- *      lenp    - != NULL ==> pointer to length of final length of line malloced,
- *                NULL ==> do not return length of line
- *      stream - file stream to read from
- *
- * returns:
- *      malloced buffer containing the input without a trailing newline,
- *      and if strip == true, without trailing whitespace,
- *      or NULL ==> EOF
- *
- * NOTE: This function will NOT return NULL.
- *
- * This function does not return on error.
- */
-static char *
-readline_dup(char **linep, bool strip, size_t *lenp, FILE *stream)
-{
-    ssize_t len;		/* getline return and our modified size return */
-    char *ret;			/* malloced input */
-    ssize_t i;
-
-    /*
-     * firewall
-     */
-    if (linep == NULL || stream == NULL) {
-	err(38, __func__, "called with NULL arg(s)");
-	not_reached();
-    }
-
-    /*
-     * read the line
-     */
-    len = readline(linep, stream);
-    if (len < 0) {
-	/*
-	 * EOF found
-	 */
-	return NULL;
-    }
-    dbg(DBG_VVHIGH, "readline returned %ld bytes", (long)len);
-
-    /*
-     * duplicate the line
-     */
-    errno = 0;			/* pre-clear errno for errp() */
-    ret = strdup(*linep);
-    if (ret == NULL) {
-	errp(39, __func__, "strdup of read line of %ld bytes failed", (long)len);
-	not_reached();
-    }
-
-    /*
-     * strip trailing whitespace if requested
-     */
-    if (strip == true) {
-	if (len > 0) {
-	    for (i = len - 1; i >= 0; --i) {
-		if (isascii(ret[i]) && isspace(ret[i])) {
-		    /*
-		     * strip trailing ASCII whitespace
-		     */
-		    --len;
-		    ret[i] = '\0';
-		} else {
-		    break;
-		}
-	    }
-	}
-	dbg(DBG_VVHIGH, "readline, after trailing whitespace strip is %ld bytes", (long)len);
-    }
-    if (lenp != NULL) {
-	*lenp = (size_t)len;
-    }
-
-    /*
-     * return the malloced string
-     */
-    return ret;
-}
-
-
-/*
  * sanity_chk - perform basic sanity checks
  *
  * We perform basic sanity checks on paths and the IOCCC contest ID.
@@ -1671,16 +1481,17 @@ readline_dup(char **linep, bool strip, size_t *lenp, FILE *stream)
  *      tar             - path to tar that supports the -J (xz) option
  *	cp		- path to the cp utility
  *	ls		- path to the ls utility
+ *	txzchk		- path to txzchk path
  *
  * NOTE: This function does not return on error or if things are not sane.
  */
 static void
-sanity_chk(struct info *infop, char const *work_dir, char const *tar, char const *cp, char const *ls)
+sanity_chk(struct info *infop, char const *work_dir, char const *tar, char const *cp, char const *ls, char const *txzchk)
 {
     /*
      * firewall
      */
-    if (infop == NULL || work_dir == NULL || tar == NULL) {
+    if (infop == NULL || work_dir == NULL || tar == NULL || cp == NULL || ls == NULL || txzchk == NULL) {
 	err(40, __func__, "called with NULL arg(s)");
 	not_reached();
     }
@@ -1726,7 +1537,7 @@ sanity_chk(struct info *infop, char const *work_dir, char const *tar, char const
     if (!is_exec(tar)) {
 	fpara(stderr,
 	      "",
-	      "The tar, while it is a file, is not executable.",
+	      "The tar, while it is a file, is not an executable.",
 	      "",
 	      "We suggest you check the permissions on the tar program, or use another path:",
 	      "",
@@ -1737,7 +1548,7 @@ sanity_chk(struct info *infop, char const *work_dir, char const *tar, char const
 	      "    https://www.gnu.org/software/tar/",
 	      "",
 	      NULL);
-	err(43, __func__, "tar is not executable program: %s", tar);
+	err(43, __func__, "tar is not an executable program: %s", tar);
 	not_reached();
     }
 
@@ -1793,7 +1604,7 @@ sanity_chk(struct info *infop, char const *work_dir, char const *tar, char const
 	      "    https://www.gnu.org/software/coreutils/",
 	      "",
 	      NULL);
-	err(46, __func__, "cp is not executable program: %s", cp);
+	err(46, __func__, "cp is not an executable program: %s", cp);
 	not_reached();
     }
 
@@ -1849,7 +1660,7 @@ sanity_chk(struct info *infop, char const *work_dir, char const *tar, char const
 	      "    https://www.gnu.org/software/coreutils/",
 	      "",
 	      NULL);
-	err(49, __func__, "ls is not executable program: %s", ls);
+	err(49, __func__, "ls is not an executable program: %s", ls);
 	not_reached();
     }
 
@@ -1899,261 +1710,6 @@ sanity_chk(struct info *infop, char const *work_dir, char const *tar, char const
     return;
 }
 
-
-/*
- * para - print a paragraph of lines to stdout
- *
- * Print a collection of strings with newlines added after each string.
- * The final string pointer must be a NULL.
- *
- * Example:
- *      para("line 1", "line 2", "", "prev line 3 was an empty line", NULL);
- *
- * given:
- *      line    - 1st paragraph line to print
- *      ...     - strings as paragraph lines to print
- *      NULL    - end of string list
- *
- * This function does not return on error.
- */
-static void
-para(char const *line, ...)
-{
-    va_list ap;			/* stdarg block */
-    int ret;			/* libc function return value */
-    int fd;			/* stdout as a file descriptor or -1 */
-    int line_cnt;		/* number of lines in the paragraph */
-
-    /*
-     * stdarg setup
-     */
-    va_start(ap, line);
-
-    /*
-     * firewall
-     */
-    if (stdout == NULL) {
-	err(53, __func__, "stdout is NULL");
-	not_reached();
-    }
-    clearerr(stdout);		/* pre-clear ferror() status */
-    errno = 0;			/* pre-clear errno for errp() */
-    /*
-     * this may not always catch a bogus or un-opened stdout, but try anyway
-     */
-    fd = fileno(stdout);
-    if (fd < 0) {
-	errp(54, __func__, "fileno on stdout returned: %d < 0", fd);
-	not_reached();
-    }
-    clearerr(stdout);		/* paranoia */
-
-    /*
-     * print paragraph strings followed by newlines
-     */
-    line_cnt = 0;
-    while (line != NULL) {
-
-	/*
-	 * print the string
-	 */
-	clearerr(stdout);	/* pre-clear ferror() status */
-	errno = 0;		/* pre-clear errno for errp() */
-	ret = fputs(line, stdout);
-	if (ret == EOF) {
-	    if (ferror(stdout)) {
-		errp(55, __func__, "error writing paragraph to a stdout");
-		not_reached();
-	    } else if (feof(stdout)) {
-		err(56, __func__, "EOF while writing paragraph to a stdout");
-		not_reached();
-	    } else {
-		errp(57, __func__, "unexpected fputs error writing paragraph to a stdout");
-		not_reached();
-	    }
-	}
-
-	/*
-	 * print the newline
-	 */
-	clearerr(stdout);	/* pre-clear ferror() status */
-	errno = 0;		/* pre-clear errno for errp() */
-	ret = fputc('\n', stdout);
-	if (ret == EOF) {
-	    if (ferror(stdout)) {
-		errp(58, __func__, "error writing newline to a stdout");
-		not_reached();
-	    } else if (feof(stdout)) {
-		err(59, __func__, "EOF while writing newline to a stdout");
-		not_reached();
-	    } else {
-		errp(60, __func__, "unexpected fputc error newline a stdout");
-		not_reached();
-	    }
-	}
-	++line_cnt;		/* count this line as printed */
-
-	/*
-	 * move to next line string
-	 */
-	line = va_arg(ap, char *);
-    }
-
-    /*
-     * stdarg cleanup
-     */
-    va_end(ap);
-
-    /*
-     * flush the paragraph onto the stdout
-     */
-    clearerr(stdout);		/* pre-clear ferror() status */
-    errno = 0;			/* pre-clear errno for errp() */
-    ret = fflush(stdout);
-    if (ret == EOF) {
-	if (ferror(stdout)) {
-	    errp(61, __func__, "error flushing stdout");
-	    not_reached();
-	} else if (feof(stdout)) {
-	    err(62, __func__, "EOF while flushing stdout");
-	    not_reached();
-	} else {
-	    errp(63, __func__, "unexpected fflush error while flushing stdout");
-	    not_reached();
-	}
-    }
-    dbg(DBG_VVHIGH, "%s() printed %d line paragraph", __func__, line_cnt);
-    return;
-}
-
-
-/*
- * fpara - print a paragraph of lines to an open stream
- *
- * Print a collection of strings with newlines added after each string.
- * The final string pointer must be a NULL.
- *
- * Example:
- *      fpara(stderr, "line 1", "line 2", "", "prev line 3 was an empty line", NULL);
- *
- * given:
- *      stream  - open file stream to print a paragraph onto
- *      line    - 1st paragraph line to print
- *      ...     - strings as paragraph lines to print
- *      NULL    - end of string list
- *
- * This function does not return on error.
- */
-static void
-fpara(FILE * stream, char const *line, ...)
-{
-    va_list ap;			/* stdarg block */
-    int ret;			/* libc function return value */
-    int fd;			/* stream as a file descriptor or -1 */
-    int line_cnt;		/* number of lines in the paragraph */
-
-    /*
-     * stdarg setup
-     */
-    va_start(ap, line);
-
-    /*
-     * firewall
-     */
-    if (stream == NULL) {
-	err(64, __func__, "stream is NULL");
-	not_reached();
-    }
-
-    /*
-     * this may not always catch a bogus or un-opened stream, but try anyway
-     */
-    clearerr(stream);		/* pre-clear ferror() status */
-    errno = 0;			/* pre-clear errno for errp() */
-    fd = fileno(stream);
-    if (fd < 0) {
-	errp(65, __func__, "fileno on stream returned: %d < 0", fd);
-	not_reached();
-    }
-    clearerr(stream);		/* paranoia */
-
-    /*
-     * print paragraph strings followed by newlines
-     */
-    line_cnt = 0;
-    while (line != NULL) {
-
-	/*
-	 * print the string
-	 */
-	clearerr(stream);	/* pre-clear ferror() status */
-	errno = 0;		/* pre-clear errno for errp() */
-	ret = fputs(line, stream);
-	if (ret == EOF) {
-	    if (ferror(stream)) {
-		errp(66, __func__, "error writing paragraph to a stream");
-		not_reached();
-	    } else if (feof(stream)) {
-		err(67, __func__, "EOF while writing paragraph to a stream");
-		not_reached();
-	    } else {
-		errp(68, __func__, "unexpected fputs error writing paragraph to a stream");
-		not_reached();
-	    }
-	}
-
-	/*
-	 * print the newline
-	 */
-	clearerr(stream);	/* pre-clear ferror() status */
-	errno = 0;		/* pre-clear errno for errp() */
-	ret = fputc('\n', stream);
-	if (ret == EOF) {
-	    if (ferror(stream)) {
-		errp(69, __func__, "error writing newline to a stream");
-		not_reached();
-	    } else if (feof(stream)) {
-		err(70, __func__, "EOF while writing newline to a stream");
-		not_reached();
-	    } else {
-		errp(71, __func__, "unexpected fputc error newline a stream");
-		not_reached();
-	    }
-	}
-	++line_cnt;		/* count this line as printed */
-
-	/*
-	 * move to next line string
-	 */
-	line = va_arg(ap, char *);
-    }
-
-    /*
-     * stdarg cleanup
-     */
-    va_end(ap);
-
-    /*
-     * flush the paragraph onto the stream
-     */
-    clearerr(stream);		/* pre-clear ferror() status */
-    errno = 0;			/* pre-clear errno for errp() */
-    ret = fflush(stream);
-    if (ret == EOF) {
-	if (ferror(stream)) {
-	    errp(72, __func__, "error flushing stream");
-	    not_reached();
-	} else if (feof(stream)) {
-	    err(73, __func__, "EOF while flushing stream");
-	    not_reached();
-	} else {
-	    errp(74, __func__, "unexpected fflush error while flushing stream");
-	    not_reached();
-	}
-    }
-    dbg(DBG_VVHIGH, "%s() printed %d line paragraph", __func__, line_cnt);
-    return;
-}
 
 
 /*
@@ -5432,7 +4988,7 @@ verify_entry_dir(char const *entry_dir, char const *ls)
 	warnp(__func__, "printf error code: %d", ret);
     }
     para("",
-	 "form which the xz tarball will be formed:",
+	 "from which the xz tarball will be formed:",
 	 "",
 	 NULL);
     errno = 0;			/* pre-clear errno for errp() */
@@ -6430,11 +5986,12 @@ write_author(struct info *infop, int author_count, struct author *authorp, char 
  *      tarball_path    - path of the compressed tarball to form
  *      tar             - path to the tar utility
  *      ls              - path to ls utility
+ *      txzchk		- path to txzchk utility
  *
  * This function does not return on error.
  */
 static void
-form_tarball(char const *work_dir, char const *entry_dir, char const *tarball_path, char const *tar, char const *ls)
+form_tarball(char const *work_dir, char const *entry_dir, char const *tarball_path, char const *tar, char const *ls, char const *txzchk)
 {
     char *basename_entry_dir;	/* basename of the entry directory */
     char *basename_tarball_path;/* basename of tarball_path */
@@ -6471,7 +6028,7 @@ form_tarball(char const *work_dir, char const *entry_dir, char const *tarball_pa
      * form the tar create command
      *
      * IMPORTANT NOTE: The reason why we form a v7 tarball is that we do NOT want to
-     *		       preserve user and group names (to help keep authors anonymoys),
+     *		       preserve user and group names (to help keep authors anonymous),
      *		       (modern flags to force a username/groupname are not very portable),
      *		       and we don't want special files, symlinks, etc.
      */
@@ -6597,6 +6154,50 @@ form_tarball(char const *work_dir, char const *entry_dir, char const *tarball_pa
 	 "... the output above is the listing of the compressed tarball.",
 	 "",
 	 NULL);
+
+    /*
+     * form the txzchk
+     */
+    cmd = cmdprintf("../% -q %", txzchk, basename_tarball_path);
+    if (cmd == NULL) {
+	err(12, __func__, "failed to cmdprintf: txzchk -q tarball_path");
+	not_reached();
+    }
+    dbg(DBG_HIGH, "about to perform: system(%s)", cmd);
+
+    /*
+     * pre-flush to avoid system() buffered stdio issues
+     */
+    clearerr(stdout);	/* pre-clear ferror() status */
+    errno = 0;		/* pre-clear errno for errp() */
+    ret = fflush(stdout);
+    if (ret < 0) {
+	errp(13, __func__, "fflush(stdout) error code: %d", ret);
+	not_reached();
+    }
+    clearerr(stderr);		/* pre-clear ferror() status */
+    errno = 0;			/* pre-clear errno for errp() */
+    ret = fflush(stderr);
+    if (ret < 0) {
+	errp(14, __func__, "fflush(stderr) #1: error code: %d", ret);
+	not_reached();
+    }
+
+    /*
+     * perform the txzchk
+     */
+    errno = 0;			/* pre-clear errno for errp() */
+    exit_code = system(cmd);
+    if (exit_code < 0) {
+	errp(15, __func__, "error calling system(%s)", cmd);
+	not_reached();
+    } else if (exit_code == 127) {
+	errp(16, __func__, "execution of the shell failed for system(%s)", cmd);
+	not_reached();
+    } else if (exit_code != 0) {
+	err(17, __func__, "%s failed with exit code: %d", cmd, WEXITSTATUS(exit_code));
+	not_reached();
+    }
 
     /*
      * free memory

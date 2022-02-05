@@ -109,7 +109,7 @@ CFLAGS= -O3 -g3 -pedantic -Wall -Wextra
 # where and what to install
 #
 DESTDIR= /usr/local/bin
-TARGETS= mkiocccentry iocccsize dbg_test limit_ioccc.sh filenamechk
+TARGETS= mkiocccentry iocccsize dbg_test limit_ioccc.sh filenamechk txzchk
 TEST_TARGETS= dbg_test
 OBJFILES = dbg.o util.o
 SRCFILES = $(patsubst %.o,%.c,$(OBJFILES))
@@ -138,6 +138,9 @@ dbg_test: dbg.c dbg.h Makefile
 
 filenamechk: filenamechk.c limit_ioccc.h dbg.o util.o
 	${CC} ${CFLAGS} filenamechk.c dbg.o util.o -o $@
+
+txzchk: txzchk.c limit_ioccc.h rule_count.o dbg.o util.o Makefile
+	${CC} ${CFLAGS} txzchk.c rule_count.o dbg.o util.o -o $@
 
 limit_ioccc.sh: limit_ioccc.h Makefile
 	${RM} -f $@
@@ -243,7 +246,7 @@ configure:
 	@echo nothing to configure
 
 clean:
-	${RM} -f mkiocccentry.o iocccsize.o rule_count.o dbg_test.o dbg.o
+	${RM} -f mkiocccentry.o iocccsize.o rule_count.o dbg_test.o dbg.o util.o
 	${RM} -rf mkiocccentry.dSYM iocccsize.dSYM dbg_test.dSYM filenamechk.dSYM
 
 clobber: clean

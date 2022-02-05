@@ -1,8 +1,8 @@
-.TH mkiocccentry 1 "04 February 2022" "mkiocccentry" "IOCCC tools"
+.TH mkiocccentry 1 "05 February 2022" "mkiocccentry" "IOCCC tools"
 .SH NAME
 mkiocccentry \- make an IOCCC compressed tarball for an IOCCC entry
 .SH SYNOPSIS
-\fBmkiocccentry [-h] [-v level] [-V] [-t tar] [-c cp] [-l ls] [{-a|-A|-i} answers] [-W] work_dir prog.c Makefile remarks.md [file ...]\fP
+\fBmkiocccentry [\-h] [\-v level] [\-V] [\-t tar] [\-c cp] [\-l ls] [\-C txzchk] [{\-a|\-A|\-i} answers] [\-W] work_dir prog.c Makefile remarks.md [file ...]\fP
 .SH DESCRIPTION
 \fBmkiocccentry\fP gathers your source file, Makefile, remarks as well as any other files and creates a XZ compressed tarball.
 The tool runs \fBiocccsize\fP and it also runs a test on the Makefile to verify that everything seems in order. 
@@ -23,15 +23,19 @@ Show version and exit.
 .PP
 \fB\-t\fP
 Specify path to tar that accepts the \fB\-J\fP option.
-\fBmkiocccentry\fP checks \fI/usr/bin\fP and \fI/bin\fP if this option is not specified.
+\fBmkiocccentry\fP checks \fI/usr/bin/tar\fP and \fI/bin/tar\fP if this option is not specified.
 .PP
 \fB\-c\fP
 Specify path to cp program.
-\fBmkiocccentry\fP checks \fI/usr/bin\fP and \fI/bin\fP if this option is not specified.
+\fBmkiocccentry\fP checks \fI/usr/bin/cp\fP and \fI/bin/cp\fP if this option is not specified.
 .PP
 \fB\-l\fP
 Specify path to ls program.
-\fBmkiocccentry\fP checks \fI/usr/bin\fP and \fI/bin\fP if this option is not specified.
+\fBmkiocccentry\fP checks \fI/usr/bin/ls\fP and \fI/bin/ls\fP if this option is not specified.
+.PP
+\fP\-C\fP
+Specify path to \fBtxzchk\fP tool.
+\fBmkiocccentry\fP checks \fI./txzchk\fP and \fI/usr/local/bin/txzchk\fP if this option is not specified.
 .PP
 \fB\-a\fP
 Write to file specified the answers for easier updating the entry (via the \fB\-i\fP option).

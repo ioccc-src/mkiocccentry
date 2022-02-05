@@ -2,7 +2,6 @@
 /*
  * filenamechk - IOCCC compressed tarball filename sanity check tool
  *
- * Verify that the
  *
  * "Because even printf has a return value worth paying attention to." :-)
  *
@@ -55,7 +54,7 @@
 
 
 /*
- * util - utility functions
+ * util - utility functions and definitions
  */
 #include "util.h"
 
@@ -69,7 +68,6 @@
 /*
  * definitions
  */
-#define LITLEN(x) (sizeof(x)-1)	/* length of a literal string w/o the NUL byte */
 #define REQUIRED_ARGS (1)	/* number of required arguments on the command line */
 
 
@@ -85,7 +83,7 @@ static const char * const usage_msg =
     "\t-v level\t\tset verbosity level: (def level: %d)\n"
     "\t-V\t\t\tprint version string and exit\n"
     "\n"
-    "filepath\t\tpath to a IOCCC compressed tarball\n"
+    "\tfilepath\t\tpath to an IOCCC compressed tarball\n"
     "\n"
     "filenamechk version: %s\n";
 

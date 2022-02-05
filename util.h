@@ -46,6 +46,25 @@ typedef unsigned char bool;
 #endif
 
 /*
+ * definitions
+ */
+#define LITLEN(x) (sizeof(x)-1)	/* length of a literal string w/o the NUL byte */
+
+/*
+ * paths to utilities the IOCCC tools use (including filenamechk and txzchk)
+ */
+#define TAR_PATH_0 "/usr/bin/tar"		/* historic path for tar */
+#define TAR_PATH_1 "/bin/tar"			/* alternate tar path for some systems where /usr/bin/tar != /bin/tar */
+#define CP_PATH_0 "/bin/cp"			/* historic path for cp */
+#define CP_PATH_1 "/usr/bin/cp"			/* alternate cp path for some systems where /bin/cp != /usr/bin/cp */
+#define LS_PATH_0 "/bin/ls"			/* historic path for ls */
+#define LS_PATH_1 "/usr/bin/ls"			/* alternate ls path for some systems where /bin/ls != /usr/bin/ls */
+#define FILENAMECHK_PATH_0 "./filenamechk"	/* default path to filenamechk tool */
+#define FILENAMECHK_PATH_1 "/usr/local/bin/filenamechk"	/* default path to filenamechk tool if installed */
+#define TXZCHK_PATH_0 "./txzchk"		/* default path to txzchk tool */
+#define TXZCHK_PATH_1 "/usr/local/bin/txzchk"	/* default path to txzchk tool if installed */
+
+/*
  * external function declarations
  */
 extern char *base_name(char const *path);
@@ -57,5 +76,11 @@ extern bool is_read(char const *path);
 extern bool is_write(char const *path);
 extern ssize_t file_size(char const *path);
 extern char *cmdprintf(char const *format, ...);
-
+extern void para(char const *line, ...);
+extern void fpara(FILE * stream, char const *line, ...);
+extern ssize_t readline(char **linep, FILE * stream);
+extern char *readline_dup(char **linep, bool strip, size_t *lenp, FILE * stream);
+extern void find_utils(bool tar_flag_used, char **tar, bool cp_flag_used, char **cp,
+	bool ls_flag_used, char **ls, bool txzchk_flag_used, char **txzchk,
+	bool filenamechk_flag_used, char **filenamechk);
 #endif				/* INCLUDE_UTIL_H */
