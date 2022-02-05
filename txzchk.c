@@ -90,7 +90,6 @@ int main(int argc, char **argv)
     int ret;				    /* libc return code */
     int i;
 
-
     /*
      * parse args
      */
@@ -192,13 +191,13 @@ int main(int argc, char **argv)
 	para("All checks passed.", "", NULL);
     }
 
-
-
     /*
      * All Done!!! - Jessica Noll, age 2
      */
     exit(0); /*ooo*/
 }
+
+
 /*
  * usage - print usage to stderr
  *
@@ -242,6 +241,7 @@ usage(int exitcode, char const *str, char const *prog, char const *tar, char con
     exit(exitcode); /*ooo*/
     not_reached();
 }
+
 
 /*
  * sanity_chk - perform basic sanity checks
@@ -368,7 +368,9 @@ sanity_chk(char const *tar, char const *filenamechk, char const *txzpath)
     return;
 }
 
-/* check_tarball - perform tests on tarball, validating it for the IOCCC
+
+/*
+ * check_tarball - perform tests on tarball, validating it for the IOCCC
  *
  * given:
  *
@@ -378,7 +380,7 @@ sanity_chk(char const *tar, char const *filenamechk, char const *txzpath)
  *
  *  Returns the number of issues found.
  */
-static int 
+static int
 check_tarball(char const *tar, char const *filenamechk, char const *txzpath)
 {
     off_t size = 0; /* file size of tarball */
@@ -428,7 +430,7 @@ check_tarball(char const *tar, char const *filenamechk, char const *txzpath)
     errno = 0;			/* pre-clear errno for errp() */
     cmd = cmdprintf("% -tJvf %", tar, txzpath);
     if (cmd == NULL) {
-	err(14, __func__, "failed to cmdprintf: tar -tJvf txzpath");
+	err(13, __func__, "failed to cmdprintf: tar -tJvf txzpath");
 	not_reached();
     }
     dbg(DBG_HIGH, "about to perform: system(%s)", cmd);
@@ -440,7 +442,7 @@ check_tarball(char const *tar, char const *filenamechk, char const *txzpath)
     errno = 0;			/* pre-clear errno for errp() */
     ret = fflush(stdout);
     if (ret < 0) {
-	errp(15, __func__, "fflush(stdout) error code: %d", ret);
+	errp(14, __func__, "fflush(stdout) error code: %d", ret);
 	not_reached();
     }
     errno = 0;			/* pre-clear errno for errp() */
@@ -448,7 +450,7 @@ check_tarball(char const *tar, char const *filenamechk, char const *txzpath)
     errno = 0;			/* pre-clear errno for errp() */
     ret = fflush(stderr);
     if (ret < 0) {
-	errp(16, __func__, "fflush(stderr) #1: error code: %d", ret);
+	errp(15, __func__, "fflush(stderr) #1: error code: %d", ret);
 	not_reached();
     }
 
@@ -458,13 +460,13 @@ check_tarball(char const *tar, char const *filenamechk, char const *txzpath)
     errno = 0;			/* pre-clear errno for errp() */
     exit_code = system(cmd);
     if (exit_code < 0) {
-	errp(17, __func__, "error calling system(%s)", cmd);
+	errp(16, __func__, "error calling system(%s)", cmd);
 	not_reached();
     } else if (exit_code == 127) {
-	errp(18, __func__, "execution of the shell failed for system(%s)", cmd);
+	errp(17, __func__, "execution of the shell failed for system(%s)", cmd);
 	not_reached();
     } else if (exit_code != 0) {
-	err(19, __func__, "%s failed with exit code: %d", cmd, WEXITSTATUS(exit_code));
+	err(18, __func__, "%s failed with exit code: %d", cmd, WEXITSTATUS(exit_code));
 	not_reached();
     }
 
@@ -476,14 +478,14 @@ check_tarball(char const *tar, char const *filenamechk, char const *txzpath)
     errno = 0;			/* pre-clear errno for errp() */
     ret = fflush(stdout);
     if (ret < 0) {
-	errp(20, __func__, "fflush(stdout) #0: error code: %d", ret);
+	errp(19, __func__, "fflush(stdout) #0: error code: %d", ret);
 	not_reached();
     }
     clearerr(stderr);		/* pre-clear ferror() status */
     errno = 0;			/* pre-clear errno for errp() */
     ret = fflush(stderr);
     if (ret < 0) {
-	errp(21, __func__, "fflush(stderr) #1: error code: %d", ret);
+	errp(20, __func__, "fflush(stderr) #1: error code: %d", ret);
 	not_reached();
     }
 
@@ -493,7 +495,7 @@ check_tarball(char const *tar, char const *filenamechk, char const *txzpath)
     errno = 0;			/* pre-clear errno for errp() */
     tar_stream = popen(cmd, "r");
     if (tar_stream == NULL) {
-	errp(22, __func__, "popen for reading failed for: %s", cmd);
+	errp(21, __func__, "popen for reading failed for: %s", cmd);
 	not_reached();
     }
     setlinebuf(tar_stream);
@@ -504,20 +506,20 @@ check_tarball(char const *tar, char const *filenamechk, char const *txzpath)
     dbg(DBG_HIGH, "reading 1st line from popen(%s, r)", cmd);
     readline_len = readline(&linep, tar_stream);
     if (readline_len < 0) {
-	err(23, __func__, "EOF while reading 1st line from tar: %s", tar);
+	err(22, __func__, "EOF while reading 1st line from tar: %s", tar);
 	not_reached();
     } else {
 	dbg(DBG_HIGH, "tar 1st line read length: %ld buffer: %s", (long)readline_len, linep);
 	if (strncmp(linep, "drwxr-xr-x", 10) != 0) {
 	    if (*linep == 'd') {
-		err(24, __func__, "although the first file in the tarball is a directory, the permissions are incorrect\n");
+		err(23, __func__, "although the first file in the tarball is a directory, the permissions are incorrect\n");
 	    } else {
-		err(25, __func__, "first entry in the tarball is not a directory\n");
+		err(24, __func__, "first entry in the tarball is not a directory\n");
 	    }
 	    ++issues;
 	}
     }
-    
+
     ++line_num;
 
     do {
@@ -527,7 +529,7 @@ check_tarball(char const *tar, char const *filenamechk, char const *txzpath)
 	} else {
 	    /* perform various tests */
 	    if (*linep != '-') {
-		err(26, __func__, "found entry in tarball that's not a regular file\n");
+		err(25, __func__, "found entry in tarball that's not a regular file\n");
 		++issues;
 	    }
 	}

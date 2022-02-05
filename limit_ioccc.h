@@ -55,7 +55,7 @@
 #define UUID_VARIANT (0xa)	/* variant 1 - encoded as 0xa */
 
 /*
- * Be carefil to change this value as it will invailate all IOCCC timestamps <= this value
+ * Be carefil to change this value as it will invailate all IOCCC timestamps < this value
  */
 #define MIN_TIMESTAMP ((time_t)1643987926)
 

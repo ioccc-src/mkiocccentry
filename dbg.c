@@ -686,10 +686,10 @@ main(int argc, char *argv[])
      */
     if (errno != 0) {
 	/* exit(5); */
-	errp(5, __func__, "simulated error, work_dir: %s iocccsize_path: %s", work_dir, iocccsize_path);
+	errp(3, __func__, "simulated error, work_dir: %s iocccsize_path: %s", work_dir, iocccsize_path);
     }
     /* exit(6); */
-    err(6, __func__, "simulated error, work_dir: %s iocccsize_path: %s", work_dir, iocccsize_path);
+    err(4, __func__, "simulated error, work_dir: %s iocccsize_path: %s", work_dir, iocccsize_path);
     not_reached();
 }
 #endif /* DBG_TEST */

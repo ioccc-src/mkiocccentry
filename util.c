@@ -684,7 +684,7 @@ para(char const *line, ...)
      * firewall
      */
     if (stdout == NULL) {
-	err(53, __func__, "stdout is NULL");
+	err(211, __func__, "stdout is NULL");
 	not_reached();
     }
     clearerr(stdout);		/* pre-clear ferror() status */
@@ -694,7 +694,7 @@ para(char const *line, ...)
      */
     fd = fileno(stdout);
     if (fd < 0) {
-	errp(54, __func__, "fileno on stdout returned: %d < 0", fd);
+	errp(212, __func__, "fileno on stdout returned: %d < 0", fd);
 	not_reached();
     }
     clearerr(stdout);		/* paranoia */
@@ -713,13 +713,13 @@ para(char const *line, ...)
 	ret = fputs(line, stdout);
 	if (ret == EOF) {
 	    if (ferror(stdout)) {
-		errp(55, __func__, "error writing paragraph to a stdout");
+		errp(213, __func__, "error writing paragraph to a stdout");
 		not_reached();
 	    } else if (feof(stdout)) {
-		err(56, __func__, "EOF while writing paragraph to a stdout");
+		err(214, __func__, "EOF while writing paragraph to a stdout");
 		not_reached();
 	    } else {
-		errp(57, __func__, "unexpected fputs error writing paragraph to a stdout");
+		errp(215, __func__, "unexpected fputs error writing paragraph to a stdout");
 		not_reached();
 	    }
 	}
@@ -732,13 +732,13 @@ para(char const *line, ...)
 	ret = fputc('\n', stdout);
 	if (ret == EOF) {
 	    if (ferror(stdout)) {
-		errp(58, __func__, "error writing newline to a stdout");
+		errp(216, __func__, "error writing newline to a stdout");
 		not_reached();
 	    } else if (feof(stdout)) {
-		err(59, __func__, "EOF while writing newline to a stdout");
+		err(217, __func__, "EOF while writing newline to a stdout");
 		not_reached();
 	    } else {
-		errp(60, __func__, "unexpected fputc error newline a stdout");
+		errp(218, __func__, "unexpected fputc error newline a stdout");
 		not_reached();
 	    }
 	}
@@ -763,13 +763,13 @@ para(char const *line, ...)
     ret = fflush(stdout);
     if (ret == EOF) {
 	if (ferror(stdout)) {
-	    errp(61, __func__, "error flushing stdout");
+	    errp(219, __func__, "error flushing stdout");
 	    not_reached();
 	} else if (feof(stdout)) {
-	    err(62, __func__, "EOF while flushing stdout");
+	    err(220, __func__, "EOF while flushing stdout");
 	    not_reached();
 	} else {
-	    errp(63, __func__, "unexpected fflush error while flushing stdout");
+	    errp(221, __func__, "unexpected fflush error while flushing stdout");
 	    not_reached();
 	}
     }
@@ -812,7 +812,7 @@ fpara(FILE * stream, char const *line, ...)
      * firewall
      */
     if (stream == NULL) {
-	err(64, __func__, "stream is NULL");
+	err(222, __func__, "stream is NULL");
 	not_reached();
     }
 
@@ -823,7 +823,7 @@ fpara(FILE * stream, char const *line, ...)
     errno = 0;			/* pre-clear errno for errp() */
     fd = fileno(stream);
     if (fd < 0) {
-	errp(65, __func__, "fileno on stream returned: %d < 0", fd);
+	errp(223, __func__, "fileno on stream returned: %d < 0", fd);
 	not_reached();
     }
     clearerr(stream);		/* paranoia */
@@ -842,13 +842,13 @@ fpara(FILE * stream, char const *line, ...)
 	ret = fputs(line, stream);
 	if (ret == EOF) {
 	    if (ferror(stream)) {
-		errp(66, __func__, "error writing paragraph to a stream");
+		errp(224, __func__, "error writing paragraph to a stream");
 		not_reached();
 	    } else if (feof(stream)) {
-		err(67, __func__, "EOF while writing paragraph to a stream");
+		err(225, __func__, "EOF while writing paragraph to a stream");
 		not_reached();
 	    } else {
-		errp(68, __func__, "unexpected fputs error writing paragraph to a stream");
+		errp(226, __func__, "unexpected fputs error writing paragraph to a stream");
 		not_reached();
 	    }
 	}
@@ -861,13 +861,13 @@ fpara(FILE * stream, char const *line, ...)
 	ret = fputc('\n', stream);
 	if (ret == EOF) {
 	    if (ferror(stream)) {
-		errp(69, __func__, "error writing newline to a stream");
+		errp(227, __func__, "error writing newline to a stream");
 		not_reached();
 	    } else if (feof(stream)) {
-		err(70, __func__, "EOF while writing newline to a stream");
+		err(228, __func__, "EOF while writing newline to a stream");
 		not_reached();
 	    } else {
-		errp(71, __func__, "unexpected fputc error newline a stream");
+		errp(229, __func__, "unexpected fputc error newline a stream");
 		not_reached();
 	    }
 	}
@@ -892,19 +892,20 @@ fpara(FILE * stream, char const *line, ...)
     ret = fflush(stream);
     if (ret == EOF) {
 	if (ferror(stream)) {
-	    errp(72, __func__, "error flushing stream");
+	    errp(230, __func__, "error flushing stream");
 	    not_reached();
 	} else if (feof(stream)) {
-	    err(73, __func__, "EOF while flushing stream");
+	    err(231, __func__, "EOF while flushing stream");
 	    not_reached();
 	} else {
-	    errp(74, __func__, "unexpected fflush error while flushing stream");
+	    errp(232, __func__, "unexpected fflush error while flushing stream");
 	    not_reached();
 	}
     }
     dbg(DBG_VVHIGH, "%s() printed %d line paragraph", __func__, line_cnt);
     return;
 }
+
 
 /*
  * readline - read a line from a stream
@@ -935,7 +936,7 @@ readline(char **linep, FILE * stream)
      * firewall
      */
     if (linep == NULL || stream == NULL) {
-	err(33, __func__, "called with NULL arg(s)");
+	err(233, __func__, "called with NULL arg(s)");
 	not_reached();
     }
 
@@ -950,10 +951,10 @@ readline(char **linep, FILE * stream)
 	    dbg(DBG_VVHIGH, "EOF detected on readline");
 	    return -1; /* EOF found */
 	} else if (ferror(stream)) {
-	    errp(34, __func__, "getline() error");
+	    errp(234, __func__, "getline() error");
 	    not_reached();
 	} else {
-	    errp(35, __func__, "unexpected getline() error");
+	    errp(235, __func__, "unexpected getline() error");
 	    not_reached();
 	}
     }
@@ -961,7 +962,7 @@ readline(char **linep, FILE * stream)
      * paranoia
      */
     if (*linep == NULL) {
-	err(36, __func__, "*linep is NULL after getline()");
+	err(236, __func__, "*linep is NULL after getline()");
 	not_reached();
     }
 
@@ -972,7 +973,7 @@ readline(char **linep, FILE * stream)
     errno = 0;			/* pre-clear errno for errp() */
     p = (char *)memchr(*linep, 0, (size_t)ret);
     if (p != NULL) {
-	errp(37, __func__, "found NUL before end of line");
+	errp(237, __func__, "found NUL before end of line");
 	not_reached();
     }
 
@@ -1027,7 +1028,7 @@ readline_dup(char **linep, bool strip, size_t *lenp, FILE *stream)
      * firewall
      */
     if (linep == NULL || stream == NULL) {
-	err(38, __func__, "called with NULL arg(s)");
+	err(238, __func__, "called with NULL arg(s)");
 	not_reached();
     }
 
@@ -1049,7 +1050,7 @@ readline_dup(char **linep, bool strip, size_t *lenp, FILE *stream)
     errno = 0;			/* pre-clear errno for errp() */
     ret = strdup(*linep);
     if (ret == NULL) {
-	errp(39, __func__, "strdup of read line of %ld bytes failed", (long)len);
+	errp(239, __func__, "strdup of read line of %ld bytes failed", (long)len);
 	not_reached();
     }
 
@@ -1082,11 +1083,12 @@ readline_dup(char **linep, bool strip, size_t *lenp, FILE *stream)
     return ret;
 }
 
-/* find_utils - find tar, cp and ls utilities 
+
+/* find_utils - find tar, cp and ls utilities
  *
  * given:
  *
- *	tar_flag_used	    - true ==> -t tar was used 
+ *	tar_flag_used	    - true ==> -t tar was used
  *	tar		    - if -t tar was not used and tar != NULL set *tar to to tar path
  *	cp_flag_used	    - true ==> -c cp was used
  *	cp		    - if -c cp was not used and cp != NULL set *cp to cp path
@@ -1134,5 +1136,3 @@ find_utils(bool tar_flag_used, char **tar, bool cp_flag_used, char **cp, bool ls
 	dbg(DBG_MED, "using default filenamechk path: %s", FILENAMECHK_PATH_1);
     }
 }
-
-
