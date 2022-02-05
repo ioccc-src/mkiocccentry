@@ -38,6 +38,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <ctype.h>
 #include <unistd.h>
 #include <sys/stat.h>
 
@@ -649,3 +650,489 @@ cmdprintf(char const *format, ...)
      */
     return cmd;
 }
+
+/*
+ * para - print a paragraph of lines to stdout
+ *
+ * Print a collection of strings with newlines added after each string.
+ * The final string pointer must be a NULL.
+ *
+ * Example:
+ *      para("line 1", "line 2", "", "prev line 3 was an empty line", NULL);
+ *
+ * given:
+ *      line    - 1st paragraph line to print
+ *      ...     - strings as paragraph lines to print
+ *      NULL    - end of string list
+ *
+ * This function does not return on error.
+ */
+void
+para(char const *line, ...)
+{
+    va_list ap;			/* stdarg block */
+    int ret;			/* libc function return value */
+    int fd;			/* stdout as a file descriptor or -1 */
+    int line_cnt;		/* number of lines in the paragraph */
+
+    /*
+     * stdarg setup
+     */
+    va_start(ap, line);
+
+    /*
+     * firewall
+     */
+    if (stdout == NULL) {
+	err(53, __func__, "stdout is NULL");
+	not_reached();
+    }
+    clearerr(stdout);		/* pre-clear ferror() status */
+    errno = 0;			/* pre-clear errno for errp() */
+    /*
+     * this may not always catch a bogus or un-opened stdout, but try anyway
+     */
+    fd = fileno(stdout);
+    if (fd < 0) {
+	errp(54, __func__, "fileno on stdout returned: %d < 0", fd);
+	not_reached();
+    }
+    clearerr(stdout);		/* paranoia */
+
+    /*
+     * print paragraph strings followed by newlines
+     */
+    line_cnt = 0;
+    while (line != NULL) {
+
+	/*
+	 * print the string
+	 */
+	clearerr(stdout);	/* pre-clear ferror() status */
+	errno = 0;		/* pre-clear errno for errp() */
+	ret = fputs(line, stdout);
+	if (ret == EOF) {
+	    if (ferror(stdout)) {
+		errp(55, __func__, "error writing paragraph to a stdout");
+		not_reached();
+	    } else if (feof(stdout)) {
+		err(56, __func__, "EOF while writing paragraph to a stdout");
+		not_reached();
+	    } else {
+		errp(57, __func__, "unexpected fputs error writing paragraph to a stdout");
+		not_reached();
+	    }
+	}
+
+	/*
+	 * print the newline
+	 */
+	clearerr(stdout);	/* pre-clear ferror() status */
+	errno = 0;		/* pre-clear errno for errp() */
+	ret = fputc('\n', stdout);
+	if (ret == EOF) {
+	    if (ferror(stdout)) {
+		errp(58, __func__, "error writing newline to a stdout");
+		not_reached();
+	    } else if (feof(stdout)) {
+		err(59, __func__, "EOF while writing newline to a stdout");
+		not_reached();
+	    } else {
+		errp(60, __func__, "unexpected fputc error newline a stdout");
+		not_reached();
+	    }
+	}
+	++line_cnt;		/* count this line as printed */
+
+	/*
+	 * move to next line string
+	 */
+	line = va_arg(ap, char *);
+    }
+
+    /*
+     * stdarg cleanup
+     */
+    va_end(ap);
+
+    /*
+     * flush the paragraph onto the stdout
+     */
+    clearerr(stdout);		/* pre-clear ferror() status */
+    errno = 0;			/* pre-clear errno for errp() */
+    ret = fflush(stdout);
+    if (ret == EOF) {
+	if (ferror(stdout)) {
+	    errp(61, __func__, "error flushing stdout");
+	    not_reached();
+	} else if (feof(stdout)) {
+	    err(62, __func__, "EOF while flushing stdout");
+	    not_reached();
+	} else {
+	    errp(63, __func__, "unexpected fflush error while flushing stdout");
+	    not_reached();
+	}
+    }
+    dbg(DBG_VVHIGH, "%s() printed %d line paragraph", __func__, line_cnt);
+    return;
+}
+
+
+/*
+ * fpara - print a paragraph of lines to an open stream
+ *
+ * Print a collection of strings with newlines added after each string.
+ * The final string pointer must be a NULL.
+ *
+ * Example:
+ *      fpara(stderr, "line 1", "line 2", "", "prev line 3 was an empty line", NULL);
+ *
+ * given:
+ *      stream  - open file stream to print a paragraph onto
+ *      line    - 1st paragraph line to print
+ *      ...     - strings as paragraph lines to print
+ *      NULL    - end of string list
+ *
+ * This function does not return on error.
+ */
+void
+fpara(FILE * stream, char const *line, ...)
+{
+    va_list ap;			/* stdarg block */
+    int ret;			/* libc function return value */
+    int fd;			/* stream as a file descriptor or -1 */
+    int line_cnt;		/* number of lines in the paragraph */
+
+    /*
+     * stdarg setup
+     */
+    va_start(ap, line);
+
+    /*
+     * firewall
+     */
+    if (stream == NULL) {
+	err(64, __func__, "stream is NULL");
+	not_reached();
+    }
+
+    /*
+     * this may not always catch a bogus or un-opened stream, but try anyway
+     */
+    clearerr(stream);		/* pre-clear ferror() status */
+    errno = 0;			/* pre-clear errno for errp() */
+    fd = fileno(stream);
+    if (fd < 0) {
+	errp(65, __func__, "fileno on stream returned: %d < 0", fd);
+	not_reached();
+    }
+    clearerr(stream);		/* paranoia */
+
+    /*
+     * print paragraph strings followed by newlines
+     */
+    line_cnt = 0;
+    while (line != NULL) {
+
+	/*
+	 * print the string
+	 */
+	clearerr(stream);	/* pre-clear ferror() status */
+	errno = 0;		/* pre-clear errno for errp() */
+	ret = fputs(line, stream);
+	if (ret == EOF) {
+	    if (ferror(stream)) {
+		errp(66, __func__, "error writing paragraph to a stream");
+		not_reached();
+	    } else if (feof(stream)) {
+		err(67, __func__, "EOF while writing paragraph to a stream");
+		not_reached();
+	    } else {
+		errp(68, __func__, "unexpected fputs error writing paragraph to a stream");
+		not_reached();
+	    }
+	}
+
+	/*
+	 * print the newline
+	 */
+	clearerr(stream);	/* pre-clear ferror() status */
+	errno = 0;		/* pre-clear errno for errp() */
+	ret = fputc('\n', stream);
+	if (ret == EOF) {
+	    if (ferror(stream)) {
+		errp(69, __func__, "error writing newline to a stream");
+		not_reached();
+	    } else if (feof(stream)) {
+		err(70, __func__, "EOF while writing newline to a stream");
+		not_reached();
+	    } else {
+		errp(71, __func__, "unexpected fputc error newline a stream");
+		not_reached();
+	    }
+	}
+	++line_cnt;		/* count this line as printed */
+
+	/*
+	 * move to next line string
+	 */
+	line = va_arg(ap, char *);
+    }
+
+    /*
+     * stdarg cleanup
+     */
+    va_end(ap);
+
+    /*
+     * flush the paragraph onto the stream
+     */
+    clearerr(stream);		/* pre-clear ferror() status */
+    errno = 0;			/* pre-clear errno for errp() */
+    ret = fflush(stream);
+    if (ret == EOF) {
+	if (ferror(stream)) {
+	    errp(72, __func__, "error flushing stream");
+	    not_reached();
+	} else if (feof(stream)) {
+	    err(73, __func__, "EOF while flushing stream");
+	    not_reached();
+	} else {
+	    errp(74, __func__, "unexpected fflush error while flushing stream");
+	    not_reached();
+	}
+    }
+    dbg(DBG_VVHIGH, "%s() printed %d line paragraph", __func__, line_cnt);
+    return;
+}
+
+/*
+ * readline - read a line from a stream
+ *
+ * Read a line from an open stream.  Malloc or realloc the line
+ * buffer as needed.  Remove the trailing newline that was read.
+ *
+ * given:
+ *      linep   - malloced line buffer (may be realloced) or ptr to NULL
+ *                NULL ==> getline() will malloc() the linep buffer
+ *                else ==> getline() might realloc() the linep buffer
+ *      stream - file stream to read from
+ *
+ * returns:
+ *      number of characters in the line with newline removed,
+ *      or -1 for EOF
+ *
+ * This function does not return on error.
+ */
+ssize_t
+readline(char **linep, FILE * stream)
+{
+    size_t linecap = 0;		/* allocated capacity of linep buffer */
+    ssize_t ret;		/* getline return and our modified size return */
+    char *p;			/* printer to NUL */
+
+    /*
+     * firewall
+     */
+    if (linep == NULL || stream == NULL) {
+	err(33, __func__, "called with NULL arg(s)");
+	not_reached();
+    }
+
+    /*
+     * read the line
+     */
+    clearerr(stream);
+    errno = 0;			/* pre-clear errno for errp() */
+    ret = getline(linep, &linecap, stream);
+    if (ret < 0) {
+	if (feof(stream)) {
+	    dbg(DBG_VVHIGH, "EOF detected on readline");
+	    return -1; /* EOF found */
+	} else if (ferror(stream)) {
+	    errp(34, __func__, "getline() error");
+	    not_reached();
+	} else {
+	    errp(35, __func__, "unexpected getline() error");
+	    not_reached();
+	}
+    }
+    /*
+     * paranoia
+     */
+    if (*linep == NULL) {
+	err(36, __func__, "*linep is NULL after getline()");
+	not_reached();
+    }
+
+    /*
+     * scan for embedded NUL bytes (before end of line)
+     *
+     */
+    errno = 0;			/* pre-clear errno for errp() */
+    p = (char *)memchr(*linep, 0, (size_t)ret);
+    if (p != NULL) {
+	errp(37, __func__, "found NUL before end of line");
+	not_reached();
+    }
+
+    /*
+     * process trailing newline or lack there of
+     */
+    if ((*linep)[ret - 1] != '\n') {
+	warn(__func__, "line does not end in newline: %s", *linep);
+    } else {
+	(*linep)[ret - 1] = '\0';	/* clear newline */
+	--ret;
+    }
+    dbg(DBG_VVHIGH, "read %ld bytes + newline into %lu byte buffer", (long)ret, (unsigned long)linecap);
+
+    /*
+     * return length of line without the trailing newline
+     */
+    return ret;
+}
+
+
+/*
+ * readline_dup - read a line from a stream and duplicate to a malloced buffer.
+ *
+ * given:
+ *      linep   - malloced line buffer (may be realloced) or ptr to NULL
+ *                NULL ==> getline() will malloc() the linep buffer
+ *                else ==> getline() might realloc() the linep buffer
+ *      strip   - true ==> remove trailing whitespace,
+ *                false ==> only remove the trailing newline
+ *      lenp    - != NULL ==> pointer to length of final length of line malloced,
+ *                NULL ==> do not return length of line
+ *      stream - file stream to read from
+ *
+ * returns:
+ *      malloced buffer containing the input without a trailing newline,
+ *      and if strip == true, without trailing whitespace,
+ *      or NULL ==> EOF
+ *
+ * NOTE: This function will NOT return NULL.
+ *
+ * This function does not return on error.
+ */
+char *
+readline_dup(char **linep, bool strip, size_t *lenp, FILE *stream)
+{
+    ssize_t len;		/* getline return and our modified size return */
+    char *ret;			/* malloced input */
+    ssize_t i;
+
+    /*
+     * firewall
+     */
+    if (linep == NULL || stream == NULL) {
+	err(38, __func__, "called with NULL arg(s)");
+	not_reached();
+    }
+
+    /*
+     * read the line
+     */
+    len = readline(linep, stream);
+    if (len < 0) {
+	/*
+	 * EOF found
+	 */
+	return NULL;
+    }
+    dbg(DBG_VVHIGH, "readline returned %ld bytes", (long)len);
+
+    /*
+     * duplicate the line
+     */
+    errno = 0;			/* pre-clear errno for errp() */
+    ret = strdup(*linep);
+    if (ret == NULL) {
+	errp(39, __func__, "strdup of read line of %ld bytes failed", (long)len);
+	not_reached();
+    }
+
+    /*
+     * strip trailing whitespace if requested
+     */
+    if (strip == true) {
+	if (len > 0) {
+	    for (i = len - 1; i >= 0; --i) {
+		if (isascii(ret[i]) && isspace(ret[i])) {
+		    /*
+		     * strip trailing ASCII whitespace
+		     */
+		    --len;
+		    ret[i] = '\0';
+		} else {
+		    break;
+		}
+	    }
+	}
+	dbg(DBG_VVHIGH, "readline, after trailing whitespace strip is %ld bytes", (long)len);
+    }
+    if (lenp != NULL) {
+	*lenp = (size_t)len;
+    }
+
+    /*
+     * return the malloced string
+     */
+    return ret;
+}
+
+/* find_utils - find tar, cp and ls utilities 
+ *
+ * given:
+ *
+ *	tar_flag_used	    - true ==> -t tar was used 
+ *	tar		    - if -t tar was not used and tar != NULL set *tar to to tar path
+ *	cp_flag_used	    - true ==> -c cp was used
+ *	cp		    - if -c cp was not used and cp != NULL set *cp to cp path
+ *	ls_flag_used	    - true ==> -l ls was used
+ *	ls		    - if -l ls was not used and ls != NULL set *ls to ls path
+ *	txzchk_flag_used    - true ==> -C flag used
+ *	txzchk		    - if -C txzchk was used and txzchk != NULL set *txzchk to path
+ *	filenamechk_flag_used - true ==> if filenamechk flag was used
+ *	filenamechk	    - if filenamechk option used and filenamechk ! NULL set *filenamechk to path
+ */
+void
+find_utils(bool tar_flag_used, char **tar, bool cp_flag_used, char **cp, bool ls_flag_used, char **ls,
+	bool txzchk_flag_used, char **txzchk, bool filenamechk_flag_used, char **filenamechk)
+{
+    /*
+     * guess where tar, cp and ls utilities are located
+     *
+     * If the user did not give a -t, -c and/or -l /path/to/x path, then look at
+     * the historic location for the utility.  If the historic location of the utility
+     * isn't executable, look for an executable in the alternate location.
+     *
+     * On some systems where /usr/bin != /bin, the distribution made the mistake of
+     * moving historic critical applications, look to see if the alternate path works instead.
+     */
+    if (tar != NULL && tar_flag_used == false && !is_exec(TAR_PATH_0) && is_exec(TAR_PATH_1)) {
+	*tar = TAR_PATH_1;
+	dbg(DBG_MED, "tar is not in historic location: %s : will try alternate location: %s", TAR_PATH_0, *tar);
+    }
+    if (cp != NULL && cp_flag_used == false && !is_exec(CP_PATH_0) && is_exec(CP_PATH_1)) {
+	*cp = CP_PATH_1;
+	dbg(DBG_MED, "cp is not in historic location: %s : will try alternate location: %s", CP_PATH_0, *cp);
+    }
+    if (ls != NULL && ls_flag_used == false && !is_exec(LS_PATH_0) && is_exec(LS_PATH_1)) {
+	*ls = LS_PATH_1;
+	dbg(DBG_MED, "ls is not in historic location: %s : will try alternate location: %s", LS_PATH_0, *ls);
+    }
+
+    /* now do the same for our utilities: txzchk and filenamechk */
+    if (txzchk != NULL && txzchk_flag_used == false && !is_exec(TXZCHK_PATH_0) && is_exec(TXZCHK_PATH_1)) {
+	*txzchk = TXZCHK_PATH_1;
+	dbg(DBG_MED, "using default txzchk path: %s", TXZCHK_PATH_1);
+    }
+    if (filenamechk != NULL && filenamechk_flag_used == false && !is_exec(FILENAMECHK_PATH_0) && is_exec(FILENAMECHK_PATH_1)) {
+	*filenamechk = FILENAMECHK_PATH_1;
+	dbg(DBG_MED, "using default filenamechk path: %s", FILENAMECHK_PATH_1);
+    }
+}
+
+
