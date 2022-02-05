@@ -248,6 +248,7 @@ configure:
 clean:
 	${RM} -f mkiocccentry.o iocccsize.o rule_count.o dbg_test.o dbg.o util.o
 	${RM} -rf mkiocccentry.dSYM iocccsize.dSYM dbg_test.dSYM filenamechk.dSYM
+	${RM} -rf txzchk.dSYM
 
 clobber: clean
 	${RM} -f ${TARGETS} ${TEST_TARGETS}
