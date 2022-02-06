@@ -1,4 +1,4 @@
-.TH mkiocccentry 1 "05 February 2022" "mkiocccentry" "IOCCC tools"
+.TH mkiocccentry 1 "06 February 2022" "mkiocccentry" "IOCCC tools"
 .SH NAME
 mkiocccentry \- make an IOCCC compressed tarball for an IOCCC entry
 .SH SYNOPSIS
@@ -104,5 +104,14 @@ Use the answers file from the previous invocation to quickly update the entry wi
 .RS
 \fB
  ./mkiocccentry -i answers work_dir prog.c Makefile remarks.md data.txt
+.fi
+.RE
+.PP
+.nf
+Run program, specifying alternative path to \fBtar\fP and \fBtxzchk\fP:
+
+.RS
+\fB
+ ./mkiocccentry -t /path/to/tar -C /path/to/txzchk
 .fi
 .RE

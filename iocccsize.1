@@ -1,0 +1,74 @@
+.TH iocccsize 1 "06 February 2022" "iocccsize" "IOCCC tools"
+.SH NAME
+iocccsize \- IOCCC Source Size Tool
+.SH SYNOPSIS
+\fBiocccsize iocccsize [-h] [-i] [-v ...] [-V] prog.c\fP 
+.SH DESCRIPTION
+.PP
+Reading a C source file from standard input or a file arg, apply the IOCCC source size rules as explained in the Guidelines.
+.PP
+The source's Rule 2b length is written to stdout; with -v option the Rule 2b length, gross (Rule 2a) length, and matched keyword count are written to stdout.
+.PP
+The size tool counts most C reserved words (keyword, secondary, and selected preprocessor keywords) as 1.
+The size tool counts all other octets as 1 excluding ASCII whitespace, and excluding any ';', '{' or '}' followed by ASCII whitespace, and excluding any ';', '{' or '}' octet immediately before the end of file.
+.SH OPTIONS
+.PP
+\fB\-h\fP
+Show help and exit.
+.PP
+\fB\-i\fP
+Ignored for backward compatibility.
+.PP
+\fB\-v\fP
+Turn on some debugging to stderr; \-vv or \-vvv for more
+.PP
+\fB\-V\fP
+Show version and exit 3.
+.SH EXIT STATUS
+.PP
+Exit codes:
+.RS
+.PP
+0 \- source code is within Rule 2a and Rule 2b limits
+.PP
+1 \- source code larger than Rule 2a and/or Rule 2b limits
+.PP
+2 \- \-h used and help printed
+.PP
+3 \- \-V used and version printed
+.PP
+>= 4 \- some internal error occurred
+.RE
+.SH FILES
+\fIiocccsize.c\fP
+.RS
+Source file to the \fBiocccsize\fP tool.
+.RE
+\fIiocccsize-test.sh\fP
+.RS
+Script that tests the \fBiocccsize\fP tool.
+.RE
+.SH BUGS
+.PP
+There are no bugs: "You are not expected to understand this" :\-)
+.PP
+But if you think you have an issue with the tool you can open an issue at \fI\<https://github.com/ioccc-src/iocccsize/issues\>\fP.
+.SH EXAMPLES
+.PP
+.nf
+Run test script:
+
+.RS
+\fB
+ ./iocccsize-test.sh\fP
+.fi
+.RE
+.PP
+.nf
+Test if prog.c fits within the IOCCC 2a and 2b rules, only showing output if there's a problem:
+.RS
+\fB
+ ./iocccsize < prog.c 
+ ./iocccsize prog.c
+.fi
+.RE

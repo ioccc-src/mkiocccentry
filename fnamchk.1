@@ -1,0 +1,76 @@
+.TH fnamchk 1 "06 February 2022" "fnamchk" "IOCCC tools"
+.SH NAME
+fnamchk \- IOCCC compressed tarball filename sanity check tool
+.SH SYNOPSIS
+\fBfnamchk fnamchk [\-h] [\-v level] [\-V] filepath
+.SH DESCRIPTION
+\fBfnamchk\fP verifies that an IOCCC compressed tarball is properly named.
+.PP
+The program validates that the filename is correct, in either the form of \fI"entry." ("test" or a valid UUID) "." entry_number "." timestamp ".txz"
+\fP where \fBentry_number\fP is an integer between 0 and MAX_ENTRY_NUM (see \fIlimit_ioccc.h\fP) and where \fBtimestamp\fP is an integer number of seconds since the epoch.
+.PP
+More specifically, the filename must:
+.RS
+Start with "entry."
+.PP
+Followed by either test or a UUID string of the form xxxxxxxx-xxxx-4xxx-axxx-xxxxxxxxxxxx
+Where "x" are [0-9-f] characters. And yes, there is a "4" (UUID version 4) and an "a" (UUID variant 1) in there.
+.PP
+Followed by "."
+.PP
+Followed by an decimal entry number between 0 and MAX_ENTRY_NUM (see \fIlimit_ioccc.h\fP) inclusive.
+.PP
+Followed by "."
+.PP
+Followed by a positive non-zero 64-bit decimal integer.
+.PP
+End with ".txz".
+.RE
+.PP
+It is indirectly invoked via the \fBtxzchk(1)\fP utility (which is called by \fBmkiocccentry(1)\fP) and it will also be directly executed by the judges during the judging process of the contests.
+.SH OPTIONS
+.PP
+\fB\-h\fP
+Show help and exit.
+.PP
+\fB\-v\fP
+Set verbosity level.
+.PP
+\fB\-V\fP
+Show version and exit.
+.SH EXIT STATUS
+.PP
+\fBmain()\fP returns 0 on success; if there's an error the end is not reached.
+.SH FILES
+\fIfnamchk.c\fP
+.RS
+Source file to the \fBfnamchk\fP tool.
+.RE
+\fIlimit_ioccc.h\fP
+.RS
+Header file with limits related to the IOCCC.
+.RE
+.SH BUGS
+.PP
+More than 0 humans work on it! :)
+.PP
+If you have an issue with the tool you can open an issue at \fI\<https://github.com/ioccc-src/mkiocccentry/issues\>\fP.
+.SH EXAMPLES
+.PP
+.nf
+Run the program on the tarball \fIentry.test.0.1644094311.txz\fP:
+
+.RS
+\fB
+ ./fnamchk entry.test.0.1644094311.txz\fP
+.fi
+.RE
+.PP
+.nf
+Run the program on the tarball \fItest.tar\fP, which will fail:
+
+.RS
+\fB
+ ./fnamchk test.tar
+.fi
+.RE
