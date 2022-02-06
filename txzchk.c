@@ -34,7 +34,7 @@
 /*
  * txzchk version
  */
-#define TXZCHK_VERSION "0.1 2022-02-05"	/* use format: major.minor YYYY-MM-DD */
+#define TXZCHK_VERSION "0.2 2022-02-06"	/* use format: major.minor YYYY-MM-DD */
 
 
 /*
@@ -389,6 +389,7 @@ check_tarball(char const *tar, char const *fnamchk, char const *txzpath)
     FILE *tar_stream = NULL; /* pipe for tar output */
     char *linep = NULL;		/* allocated line read from iocccsize */
     ssize_t readline_len;	/* readline return length */
+    int dir_count = 0;		/* number of directories detected */
     int ret;			/* libc function return */
     int exit_code;
 
@@ -501,39 +502,42 @@ check_tarball(char const *tar, char const *fnamchk, char const *txzpath)
     setlinebuf(tar_stream);
 
     /*
-     * read the 1st line - should contain the directory name
+     * process all tar lines listed
      */
-    dbg(DBG_HIGH, "reading 1st line from popen(%s, r)", cmd);
-    readline_len = readline(&linep, tar_stream);
-    if (readline_len < 0) {
-	err(22, __func__, "EOF while reading 1st line from tar: %s", tar);
-	not_reached();
-    } else {
-	dbg(DBG_HIGH, "tar 1st line read length: %ld buffer: %s", (long)readline_len, linep);
-	if (strncmp(linep, "drwxr-xr-x", 10) != 0) {
-	    if (*linep == 'd') {
-		err(23, __func__, "although the first file in the tarball is a directory, the permissions are incorrect\n");
-	    } else {
-		err(24, __func__, "first entry in the tarball is not a directory\n");
-	    }
-	    ++issues;
-	}
-    }
-
-    ++line_num;
-
     do {
+
+	/*
+	 * count this line
+	 */
+	++line_num;
+
+	/*
+	 * read the next listing line
+	 */
 	readline_len = readline(&linep, tar_stream);
 	if (readline_len < 0) {
-	    dbg(DBG_VVHIGH, "reached EOF of tarball");
-	} else {
-	    /* perform various tests */
-	    if (*linep != '-') {
-		err(25, __func__, "found entry in tarball that's not a regular file\n");
+	    dbg(DBG_HIGH, "reached EOF of tarball");
+	    break;
+	}
+	dbg(DBG_VHIGH, "line %d: <%s>", line_num, linep);
+
+	/*
+	 * look for more than one directory
+	 */
+	if (*linep == 'd') {
+	    ++dir_count;
+	    if (dir_count > 1) {
+		warn(__func__, "found more than one direcotry entry: %s", linep);
 		++issues;
 	    }
+
+	/*
+	 * look for non-direcotry non-regular non-hard-lined items
+	 */
+	} else if (*linep != '-') {
+	    warn(__func__, "found a non-direcotry non-regular non-hard-lined item: %s", linep);
+	    ++issues;
 	}
-	++line_num;
     } while (readline_len >= 0);
 
     /*

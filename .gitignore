@@ -11,6 +11,7 @@ answers.txt
 limit_ioccc.sh
 fnamchk
 txzchk
+test-set
 
 # Prerequisites
 *.d
