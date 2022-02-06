@@ -1530,4 +1530,5 @@ find_utils(bool tar_flag_used, char **tar, bool cp_flag_used, char **cp, bool ls
 	*filenamechk = FILENAMECHK_PATH_1;
 	dbg(DBG_MED, "using default filenamechk path: %s", FILENAMECHK_PATH_1);
     }
+    return;
 }

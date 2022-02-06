@@ -165,7 +165,8 @@ static const char * const usage_msg1 =
     "\t-t /path/to/tar\t\tpath to tar executable that supports the -J (xz) option (def: %s)\n"
     "\t-c /path/to/cp\t\tpath to cp executable (def: %s)\n"
     "\t-l /path/to/ls\t\tpath to ls executable (def: %s)\n"
-    "\t-C /path/to/txzchk\tpath to txzchk executable (def: %s)";
+    "\t-C /path/to/txzchk\tpath to txzchk executable (def: %s)\n"
+    "\t-F /path/to/filenamechk\tpath to filenamechk executable used by txzchk (def: %s)";
 static const char * const usage_msg2 =
     "\t-a answers\t\twrite answers to a file for easier updating of an entry\n"
     "\t-A answers\t\twrite answers file even if it already exists\n"
@@ -274,8 +275,8 @@ static struct iocccsize size;	/* rule_count() processing results */
 /*
  * forward declarations
  */
-static void usage(int exitcode, char const *str, char const *program,
-		  char const *tar, char const *cp, char const *ls, char const *txzchk) __attribute__((noreturn));
+static void usage(int exitcode, char const *str, char const *program, char const *tar, char const *cp, char const *ls,
+		  char const *txzchk, char const *filenamechk);
 static void free_info(struct info *infop);
 static void free_author_array(struct author *authorp, int author_count);
 static void warn_empty_prog(char const *prog_c);
@@ -287,7 +288,8 @@ static void warn_wordbuf(char const *prog_c);
 static void warn_ungetc(char const *prog_c);
 static void warn_rule2b_size(struct info *infop, char const *prog_c);
 static void check_prog_c(struct info *infop, char const *entry_dir, char const *cp, char const *prog_c);
-static void sanity_chk(struct info *infop, char const *work_dir, char const *tar, char const *cp, char const *ls, char const *txzchk);
+static void sanity_chk(struct info *infop, char const *work_dir, char const *tar, char const *cp,
+		       char const *ls, char const *txzchk, char const *filenamechk);
 static char *prompt(char const *str, size_t *lenp);
 static char *get_contest_id(struct info *infop, bool *testp, bool *i_flag_used);
 static int get_entry_num(struct info *infop);
@@ -314,7 +316,8 @@ static bool json_fprintf_value_bool(FILE *stream, char const *lead, char const *
 static char const * strnull(char const * const str);
 static void write_info(struct info *infop, char const *entry_dir, bool test_mode);
 static void write_author(struct info *infop, int author_count, struct author *authorp, char const *entry_dir);
-static void form_tarball(char const *work_dir, char const *entry_dir, char const *tarball_path, char const *tar, char const *ls, char const *txzpath);
+static void form_tarball(char const *work_dir, char const *entry_dir, char const *tarball_path, char const *tar,
+	     char const *ls, char const *txzchk, char const *filenamechk);
 static void remind_user(char const *work_dir, char const *entry_dir, char const *tar, char const *tarball_path, bool test_mode);
 
 
@@ -333,6 +336,7 @@ main(int argc, char *argv[])
     char *cp = CP_PATH_0;		/* path to cp executable */
     char *ls = LS_PATH_0;		/* path to ls executable */
     char *txzchk = TXZCHK_PATH_0;	/* path to txzchk executable */
+    char *filenamechk = FILENAMECHK_PATH_0;	/* path to filenamechk executable */
     char const *answers = NULL;		/* path to the answers file (recording input given on stdin) */
     FILE *answerp = NULL;		/* file pointer to the answers file */
     bool test_mode = false;		/* true ==> contest ID is test */
@@ -350,6 +354,7 @@ main(int argc, char *argv[])
     bool i_flag_used = false;		/* true ==> -i read answers from answers file */
     bool A_flag_used = false;		/* true ==> don't prompt to overwrite answers if it already exists */
     bool txzchk_flag_used = false;	/* true ==> -C /path/to/txzchk was given */
+    bool F_flag_used = false;		/* true ==> -F /path/to/filenamechk was given */
     bool overwrite_answers = true;	/* true ==> overwrite answers file even if it already exists */
     int ret;				/* libc return code */
     int i;
@@ -359,10 +364,10 @@ main(int argc, char *argv[])
      */
     input_stream = stdin;	/* default to reading from standard in */
     program = argv[0];
-    while ((i = getopt(argc, argv, "hv:Vt:c:l:a:i:A:WC:")) != -1) {
+    while ((i = getopt(argc, argv, "hv:Vt:c:l:a:i:A:WC:F:")) != -1) {
 	switch (i) {
 	case 'h':		/* -h - print help to stderr and exit 0 */
-	    usage(19, "-h help mode", program, TAR_PATH_0, CP_PATH_0, LS_PATH_0, TXZCHK_PATH_0);
+	    usage(1, "-h help mode", program, TAR_PATH_0, CP_PATH_0, LS_PATH_0, TXZCHK_PATH_0, FILENAMECHK_PATH_0);
 	    not_reached();
 	    break;
 	case 'v':		/* -v verbosity */
@@ -418,14 +423,18 @@ main(int argc, char *argv[])
 	    txzchk_flag_used = true;
 	    txzchk = optarg;
 	    break;
+	case 'F':
+	    F_flag_used = true;
+	    filenamechk = optarg;
+	    break;
 	default:
-	    usage(1, "invalid -flag", program, TAR_PATH_0, CP_PATH_0, LS_PATH_0, TXZCHK_PATH_0); /*ooo*/
+	    usage(1, "invalid -flag", program, TAR_PATH_0, CP_PATH_0, LS_PATH_0, TXZCHK_PATH_0, FILENAMECHK_PATH_0); /*ooo*/
 	    not_reached();
 	 }
     }
     /* must have at least the required number of args */
     if (argc - optind < REQUIRED_ARGS) {
-	usage(1, "wrong number of arguments", program, TAR_PATH_0, CP_PATH_0, LS_PATH_0, TXZCHK_PATH_0); /*ooo*/
+	usage(1, "wrong number of arguments", program, TAR_PATH_0, CP_PATH_0, LS_PATH_0, TXZCHK_PATH_0, FILENAMECHK_PATH_0); /*ooo*/
 	not_reached();
     }
 
@@ -439,7 +448,7 @@ main(int argc, char *argv[])
      * On some systems where /usr/bin != /bin, the distribution made the mistake of
      * moving historic critical applications, look to see if the alternate path works instead.
      */
-    find_utils(t_flag_used, &tar, c_flag_used, &cp, l_flag_used, &ls, txzchk_flag_used, &txzchk, false, NULL);
+    find_utils(t_flag_used, &tar, c_flag_used, &cp, l_flag_used, &ls, txzchk_flag_used, &txzchk, F_flag_used, &filenamechk);
 
     /* check that conflicting answers file options are not used together */
     if (a_flag_used == true && i_flag_used == true) {
@@ -515,7 +524,7 @@ main(int argc, char *argv[])
      * environment sanity checks
      */
     para("", "Performing sanity checks on your environment ...", NULL);
-    sanity_chk(&info, work_dir, tar, cp, ls, txzchk);
+    sanity_chk(&info, work_dir, tar, cp, ls, txzchk, filenamechk);
     para("... environment looks OK", "", NULL);
 
     /* if -a answers was specified and answers file exists, prompt user if they
@@ -844,7 +853,7 @@ main(int argc, char *argv[])
     /*
      * form the .txz file
      */
-    form_tarball(work_dir, entry_dir, tarball_path, tar, ls, txzchk);
+    form_tarball(work_dir, entry_dir, tarball_path, tar, ls, txzchk, filenamechk);
 
     /*
      * remind user various things e.g., to upload (unless in test mode)
@@ -887,9 +896,11 @@ main(int argc, char *argv[])
  *	exitcode        value to exit with
  *	str		top level usage message
  *	program		our program name
- *	tar		default path to the tar utility
- *	cp		default path to tar cp utility
- *	ls		default path to tar ls utility
+ *	tar		path to the tar utility
+ *	cp		path to tar cp utility
+ *	ls		path to tar ls utility
+ *	txzchk		path to the txzchk tool
+ *	filenamechk	path to the filenamechk tool
  *
  * NOTE: We warn with extra newlines to help internal fault messages stand out.
  *       Normally one should NOT include newlines in warn messages.
@@ -897,7 +908,8 @@ main(int argc, char *argv[])
  * This function does not return.
  */
 static void
-usage(int exitcode, char const *str, char const *program, char const *tar, char const *cp, char const *ls, char const *txzchk)
+usage(int exitcode, char const *str, char const *program, char const *tar, char const *cp, char const *ls,
+      char const *txzchk, char const *filenamechk)
 {
     /*
      * firewall
@@ -922,13 +934,21 @@ usage(int exitcode, char const *str, char const *program, char const *tar, char 
 	ls = "((NULL ls))";
 	warn(__func__, "\nin usage(): ls was NULL, forcing it to be: %s\n", ls);
     }
+    if (txzchk == NULL) {
+	txzchk = "((NULL txzchk))";
+	warn(__func__, "\nin usage(): txzchk was NULL, forcing it to be: %s\n", txzchk);
+    }
+    if (filenamechk == NULL) {
+	filenamechk = "((NULL filenamechk))";
+	warn(__func__, "\nin usage(): filenamechk was NULL, forcing it to be: %s\n", filenamechk);
+    }
 
     /*
      * print the formatted usage stream
      */
     vfprintf_usage(DO_NOT_EXIT, stderr, "%s\n", str);
     vfprintf_usage(DO_NOT_EXIT, stderr, usage_msg0, program, DBG_DEFAULT);
-    vfprintf_usage(DO_NOT_EXIT, stderr, usage_msg1, tar, cp, ls, txzchk);
+    vfprintf_usage(DO_NOT_EXIT, stderr, usage_msg1, tar, cp, ls, txzchk, filenamechk);
     vfprintf_usage(DO_NOT_EXIT, stderr, "%s", usage_msg2);
     vfprintf_usage(exitcode, stderr, usage_msg3, MKIOCCCENTRY_VERSION);
     exit(exitcode); /*ooo*/
@@ -1095,17 +1115,20 @@ free_author_array(struct author *author_set, int author_count)
  *      tar             - path to tar that supports the -J (xz) option
  *	cp		- path to the cp utility
  *	ls		- path to the ls utility
- *	txzchk		- path to txzchk path
+ *	txzchk		- path to txzchk tool
+ *	filenamechk	- path to filenamechk tool
  *
  * NOTE: This function does not return on error or if things are not sane.
  */
 static void
-sanity_chk(struct info *infop, char const *work_dir, char const *tar, char const *cp, char const *ls, char const *txzchk)
+sanity_chk(struct info *infop, char const *work_dir, char const *tar, char const *cp, char const *ls,
+	   char const *txzchk, char const *filenamechk)
 {
     /*
      * firewall
      */
-    if (infop == NULL || work_dir == NULL || tar == NULL || cp == NULL || ls == NULL || txzchk == NULL) {
+    if (infop == NULL || work_dir == NULL || tar == NULL || cp == NULL || ls == NULL ||
+    	txzchk == NULL || filenamechk == NULL) {
 	err(33, __func__, "called with NULL arg(s)");
 	not_reached();
     }
@@ -1331,6 +1354,62 @@ sanity_chk(struct info *infop, char const *work_dir, char const *tar, char const
 	      "",
 	      NULL);
 	err(42, __func__, "txzchk is not an executable program: %s", txzchk);
+	not_reached();
+    }
+
+    /*
+     * filenamechk must be executable
+     */
+    if (!exists(filenamechk)) {
+	fpara(stderr,
+	      "",
+	      "We cannot find a filenamechk tool.",
+	      "",
+	      "A filenamechk program performs a sanity check on the compressed tarball.",
+	      "Perhaps you need to use:",
+	      "",
+	      "    mkiocccentry -F /path/to/filenamechk ...",
+	      "",
+	      "and/or install the filenamechk tool?  You can find the source for filenamechk in the mkiocccentry GitHub repo:",
+	      "",
+	      "    https://github.com/ioccc-src/mkiocccentry",
+	      "",
+	      NULL);
+	err(40, __func__, "filenamechk does not exist: %s", filenamechk);
+	not_reached();
+    }
+    if (!is_file(filenamechk)) {
+	fpara(stderr,
+	      "",
+	      "The filenamechk tool, while it exists, is not a file.",
+	      "",
+	      "Perhaps you need to use another path:",
+	      "",
+	      "    mkiocccentry -F /path/to/filenamechk ...",
+	      "",
+	      "and/or install the filenamechk tool?  You can find the source for filenamechk in the mkiocccentry GitHub repo:",
+	      "",
+	      "    https://github.com/ioccc-src/mkiocccentry",
+	      "",
+	      NULL);
+	err(41, __func__, "filenamechk is not a file: %s", filenamechk);
+	not_reached();
+    }
+    if (!is_exec(filenamechk)) {
+	fpara(stderr,
+	      "",
+	      "The filenamechk tool, while it is a file, is not executable.",
+	      "",
+	      "We suggest you check the permissions on the filenamechk program, or use another path:",
+	      "",
+	      "    mkiocccentry -F /path/to/filenamechk ...",
+	      "",
+	      "and/or install the filenamechk tool?  You can find the source for filenamechk in the mkiocccentry GitHub repo:",
+	      "",
+	      "    https://github.com/ioccc-src/mkiocccentry",
+	      "",
+	      NULL);
+	err(42, __func__, "filenamechk is not an executable program: %s", filenamechk);
 	not_reached();
     }
 
@@ -5692,7 +5771,7 @@ write_author(struct info *infop, int author_count, struct author *authorp, char 
  *
  * Given the completed entry directory, form a compressed tar file for the user to submit.
  * Remind the user where to submit their compressed tarball file. The function
- * shows the listing of the tarball contents via the txzchk tool.
+ * shows the listing of the tarball contents via the txzchk tool and the filenamechk tool.
  *
  * given:
  *      work_dir        - working directory under which the entry directory is formed
@@ -5700,12 +5779,14 @@ write_author(struct info *infop, int author_count, struct author *authorp, char 
  *      tarball_path    - path of the compressed tarball to form
  *      tar             - path to the tar utility
  *      ls              - path to ls utility
- *      txzchk		- path to txzchk utility
+ *      txzchk		- path to txzchk tool
+ *      filenamechk	- path to filenamechk tool
  *
  * This function does not return on error.
  */
 static void
-form_tarball(char const *work_dir, char const *entry_dir, char const *tarball_path, char const *tar, char const *ls, char const *txzchk)
+form_tarball(char const *work_dir, char const *entry_dir, char const *tarball_path, char const *tar,
+	     char const *ls, char const *txzchk, char const *filenamechk)
 {
     char *basename_entry_dir;	/* basename of the entry directory */
     char *basename_tarball_path;/* basename of tarball_path */
@@ -5718,7 +5799,7 @@ form_tarball(char const *work_dir, char const *entry_dir, char const *tarball_pa
      * firewall
      */
     if (work_dir == NULL || entry_dir == NULL || tarball_path == NULL || tar == NULL || ls == NULL ||
-        txzchk == NULL) {
+        txzchk == NULL || filenamechk == NULL) {
 	err(214, __func__, "called with NULL arg(s)");
 	not_reached();
     }
@@ -5825,7 +5906,7 @@ form_tarball(char const *work_dir, char const *entry_dir, char const *tarball_pa
     /*
      * form the txzchk command
      */
-    cmd = cmdprintf("../% -q %", txzchk, basename_tarball_path);
+    cmd = cmdprintf("../% -q -f % %", txzchk, filenamechk, basename_tarball_path);
     if (cmd == NULL) {
 	err(230, __func__, "failed to cmdprintf: txzchk -q tarball_path");
 	not_reached();
@@ -5926,8 +6007,7 @@ remind_user(char const *work_dir, char const *entry_dir, char const *tar, char c
     /*
      * tell user they can now remove entry_dir
      */
-    para("",
-	 "Now that we have formed the compressed tarball file, you",
+    para("Now that we have formed the compressed tarball file, you",
 	 "can remove the entry directory we have formed by executing:",
 	 "",
 	 NULL);
