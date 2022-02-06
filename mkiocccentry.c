@@ -1279,6 +1279,62 @@ sanity_chk(struct info *infop, char const *work_dir, char const *tar, char const
     }
 
     /*
+     * txzchk must be executable
+     */
+    if (!exists(txzchk)) {
+	fpara(stderr,
+	      "",
+	      "We cannot find a txzchk tool.",
+	      "",
+	      "A txzchk program performs a sanity check on the compressed tarball.",
+	      "Perhaps you need to use:",
+	      "",
+	      "    mkiocccentry -C /path/to/txzchk ...",
+	      "",
+	      "and/or install the txzchk tool?  You can find the source for txzchk in the mkiocccentry GitHub repo:",
+	      "",
+	      "    https://github.com/ioccc-src/mkiocccentry",
+	      "",
+	      NULL);
+	err(40, __func__, "txzchk does not exist: %s", txzchk);
+	not_reached();
+    }
+    if (!is_file(txzchk)) {
+	fpara(stderr,
+	      "",
+	      "The txzchk tool, while it exists, is not a file.",
+	      "",
+	      "Perhaps you need to use another path:",
+	      "",
+	      "    mkiocccentry -C /path/to/txzchk ...",
+	      "",
+	      "and/or install the txzchk tool?  You can find the source for txzchk in the mkiocccentry GitHub repo:",
+	      "",
+	      "    https://github.com/ioccc-src/mkiocccentry",
+	      "",
+	      NULL);
+	err(41, __func__, "txzchk is not a file: %s", txzchk);
+	not_reached();
+    }
+    if (!is_exec(txzchk)) {
+	fpara(stderr,
+	      "",
+	      "The txzchk tool, while it is a file, is not executable.",
+	      "",
+	      "We suggest you check the permissions on the txzchk program, or use another path:",
+	      "",
+	      "    mkiocccentry -C /path/to/txzchk ...",
+	      "",
+	      "and/or install the txzchk tool?  You can find the source for txzchk in the mkiocccentry GitHub repo:",
+	      "",
+	      "    https://github.com/ioccc-src/mkiocccentry",
+	      "",
+	      NULL);
+	err(42, __func__, "txzchk is not an executable program: %s", txzchk);
+	not_reached();
+    }
+
+    /*
      * work_dir must be a writable directory
      */
     if (!exists(work_dir)) {
