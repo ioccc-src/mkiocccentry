@@ -2,7 +2,7 @@
 .SH NAME
 txzchk \- sanity checker tool used on IOCCC compressed tarballs
 .SH SYNOPSIS
-\fBtxzchk usage: ./txzchk [\-h] [\-v level] [\-q] [\-V] [\-t tar] [\-f fnamchk] txzpath
+\fBtxzchk usage: ./txzchk [\-h] [\-v level] [\-q] [\-V] [\-t tar] [\-F fnamchk] txzpath
 .SH DESCRIPTION
 \fBtxzchk\fP runs a series of sanity tests on IOCCC compressed tarballs and it is invoked indirectly through \fBmkiocccentry(1)\fP.
 .PP
@@ -30,7 +30,7 @@ Show version and exit.
 Specify path to tar that accepts the \fB\-J\fP option.
 \fBtxzchk\fP checks \fI/usr/bin/tar\fP and \fI/bin/tar\fP if this option is not specified.
 .PP
-\fB\-f\fP
+\fB\-F\fP
 Specify path to the IOCCC \fBfnamchk(1)\fP tool.
 If this option is not specified the program looks under the current working directory and \fI/usr/local/bin\fP.
 .SH EXIT STATUS
@@ -62,6 +62,6 @@ Run the program on the tarball \fIentry.test.0.1644094311.txz\fP, specifying an 
 
 .RS
 \fB
- ./txzchk -t /path/to/tar -f ./filenamechk entry.test.0.1644094311.txz\fP
+ ./txzchk -t /path/to/tar -F ./filenamechk entry.test.0.1644094311.txz\fP
 .fi
 .RE
