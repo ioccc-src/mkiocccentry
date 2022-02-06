@@ -417,6 +417,7 @@ main(int argc, char *argv[])
 	case 'C':
 	    txzchk_flag_used = true;
 	    txzchk = optarg;
+	    break;
 	default:
 	    usage(1, "invalid -flag", program, TAR_PATH_0, CP_PATH_0, LS_PATH_0, TXZCHK_PATH_0); /*ooo*/
 	    not_reached();
