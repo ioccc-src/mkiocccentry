@@ -63,7 +63,7 @@ static const char * const usage_msg =
     "\t-v level\t\tset verbosity level: (def level: %d)\n"
     "\t-V\t\t\tprint version string and exit\n"
     "\n"
-    "\t-t /path/to/tar\t\tpath to tar executable that supports the -J (xz) option (def: %s)\n\n"
+    "\t-t /path/to/tar\t\tpath to tar executable that supports the -J (xz) option (def: %s)\n"
     "\t-f fnamchk\t\tpath to tool that checks if filename.txz is a valid compressed tarball\n"
     "\t\t\t\tfilename (def: %s)\n\n"
     "\ttxzpath\t\t\tpath to an IOCCC compressed tarball\n"
@@ -232,6 +232,10 @@ usage(int exitcode, char const *str, char const *prog, char const *tar, char con
 	tar = "((NULL tar))";
 	warn(__func__, "\nin usage: tar was NULL, forcing it to be: %s\n", tar);
     }
+    if (fnamchk == NULL) {
+	fnamchk = "((NULL fnamchk))";
+	warn(__func__, "\nin usage(): fnamchk was NULL, forcing it to be: %s\n", fnamchk);
+    }
 
     /*
      * print the formatted usage stream
@@ -385,7 +389,7 @@ check_tarball(char const *tar, char const *fnamchk, char const *txzpath)
 {
     off_t size = 0; /* file size of tarball */
     unsigned line_num = 0; /* line number of tar output */
-    char *cmd = NULL;	/* tar -tJvf */
+    char *cmd = NULL;	/* fnamchk and tar -tJvf */
     FILE *tar_stream = NULL; /* pipe for tar output */
     char *linep = NULL;		/* allocated line read from iocccsize */
     ssize_t readline_len;	/* readline return length */
@@ -426,7 +430,55 @@ check_tarball(char const *tar, char const *fnamchk, char const *txzpath)
 	    warn(__func__, "unable to tell user how big the tarball is");
 	}
     }
-    dbg(DBG_MED, "tarball %s size in bytes: %d", txzpath, (int)size);
+    dbg(DBG_MED, "tarball %s size in bytes: %lu", txzpath, (unsigned long)size);
+
+    /* form command line to fnamchk */
+    errno = 0;			/* pre-clear errno for errp() */
+    cmd = cmdprintf("../% %", fnamchk, txzpath);
+    if (cmd == NULL) {
+	err(13, __func__, "failed to cmdprintf: fnamchk txzpath");
+	not_reached();
+    }
+    dbg(DBG_HIGH, "about to perform: system(%s)", cmd);
+
+    /*
+     * pre-flush to avoid system() buffered stdio issues
+     */
+    clearerr(stdout);		/* pre-clear ferror() status */
+    errno = 0;			/* pre-clear errno for errp() */
+    ret = fflush(stdout);
+    if (ret < 0) {
+	errp(14, __func__, "fflush(stdout) error code: %d", ret);
+	not_reached();
+    }
+    errno = 0;			/* pre-clear errno for errp() */
+    clearerr(stderr);		/* pre-clear ferror() status */
+    errno = 0;			/* pre-clear errno for errp() */
+    ret = fflush(stderr);
+    if (ret < 0) {
+	errp(15, __func__, "fflush(stderr) #1: error code: %d", ret);
+	not_reached();
+    }
+
+    /*
+     * execute the fnamchk command
+     */
+    errno = 0;			/* pre-clear errno for errp() */
+    exit_code = system(cmd);
+    if (exit_code < 0) {
+	errp(16, __func__, "error calling system(%s)", cmd);
+	not_reached();
+    } else if (exit_code == 127) {
+	errp(17, __func__, "execution of the shell failed for system(%s)", cmd);
+	not_reached();
+    } else if (exit_code != 0) {
+	err(18, __func__, "%s failed with exit code: %d", cmd, WEXITSTATUS(exit_code));
+	not_reached();
+    }
+
+
+    /* free cmd for tar */
+    free(cmd);
 
     errno = 0;			/* pre-clear errno for errp() */
     cmd = cmdprintf("% -tJvf %", tar, txzpath);
@@ -527,15 +579,15 @@ check_tarball(char const *tar, char const *fnamchk, char const *txzpath)
 	if (*linep == 'd') {
 	    ++dir_count;
 	    if (dir_count > 1) {
-		warn(__func__, "found more than one direcotry entry: %s", linep);
+		warn(__func__, "found more than one directory entry: %s", linep);
 		++issues;
 	    }
 
 	/*
-	 * look for non-direcotry non-regular non-hard-lined items
+	 * look for non-directory non-regular non-hard-lined items
 	 */
 	} else if (*linep != '-') {
-	    warn(__func__, "found a non-direcotry non-regular non-hard-lined item: %s", linep);
+	    warn(__func__, "found a non-directory non-regular non-hard-lined item: %s", linep);
 	    ++issues;
 	}
     } while (readline_len >= 0);
@@ -556,3 +608,4 @@ check_tarball(char const *tar, char const *fnamchk, char const *txzpath)
 
     return issues;
 }
+

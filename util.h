@@ -67,7 +67,7 @@ struct location {
 #define CP_PATH_1 "/usr/bin/cp"			/* alternate cp path for some systems where /bin/cp != /usr/bin/cp */
 #define LS_PATH_0 "/bin/ls"			/* historic path for ls */
 #define LS_PATH_1 "/usr/bin/ls"			/* alternate ls path for some systems where /bin/ls != /usr/bin/ls */
-#define FNAMCHK_PATH_0 "./fnamchk"	/* default path to fnamchk tool */
+#define FNAMCHK_PATH_0 "./fnamchk"		/* default path to fnamchk tool */
 #define FNAMCHK_PATH_1 "/usr/local/bin/fnamchk"	/* default path to fnamchk tool if installed */
 #define TXZCHK_PATH_0 "./txzchk"		/* default path to txzchk tool */
 #define TXZCHK_PATH_1 "/usr/local/bin/txzchk"	/* default path to txzchk tool if installed */

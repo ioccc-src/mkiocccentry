@@ -182,10 +182,10 @@ main(int argc, char *argv[])
 	not_reached();
     }
     if (strcmp(entry, "entry") != 0) {
-	err(3, __func__, "filename does not start with entry.: %s", filepath);
+	err(3, __func__, "filename does not start with \"entry.\": %s", filepath);
 	not_reached();
     }
-    dbg(DBG_LOW, "filename starts with entry.: %s", filename);
+    dbg(DBG_LOW, "filename starts with \"entry.\": %s", filename);
 
     /*
      * 2nd .-separated token must be test or a UUID
