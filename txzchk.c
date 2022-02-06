@@ -35,7 +35,7 @@
 /*
  * txzchk version
  */
-#define TXZCHK_VERSION "0.2 2022-02-06"	/* use format: major.minor YYYY-MM-DD */
+#define TXZCHK_VERSION "0.3 2022-02-06"	/* use format: major.minor YYYY-MM-DD */
 
 
 /*
