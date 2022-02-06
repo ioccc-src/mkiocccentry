@@ -5804,6 +5804,7 @@ form_tarball(char const *work_dir, char const *entry_dir, char const *tarball_pa
 	not_reached();
     }
 
+
     /*
      * verify entry directory contents
      */
@@ -5904,9 +5905,20 @@ form_tarball(char const *work_dir, char const *entry_dir, char const *tarball_pa
     }
 
     /*
+     * switch back to parent directory
+     */
+    errno = 0;			/* pre-clear errno for errp() */
+    ret = chdir("..");
+    if (ret < 0) {
+	errp(203, __func__, "cannot cd ..");
+	not_reached();
+    }
+
+
+    /*
      * form the txzchk command
      */
-    cmd = cmdprintf("../% -q -f % %", txzchk, fnamchk, basename_tarball_path);
+    cmd = cmdprintf("% -q -F % %/../%", txzchk, fnamchk, entry_dir, basename_tarball_path);
     if (cmd == NULL) {
 	err(212, __func__, "failed to cmdprintf: txzchk -q tarball_path");
 	not_reached();

@@ -1,0 +1,67 @@
+.TH txzchk 1 "06 February 2022" "txzchk" "IOCCC tools"
+.SH NAME
+txzchk \- sanity checker tool used on IOCCC compressed tarballs
+.SH SYNOPSIS
+\fBtxzchk usage: ./txzchk [\-h] [\-v level] [\-q] [\-V] [\-t tar] [\-F fnamchk] txzpath
+.SH DESCRIPTION
+\fBtxzchk\fP runs a series of sanity tests on IOCCC compressed tarballs and it is invoked indirectly through \fBmkiocccentry(1)\fP.
+.PP
+The program runs \fB\-tJvf\fP on the \fItxzpath\fP to list (it does NOT extract) and parses the output of \fBtar(1)\fP, performing a variety of tests on the tarball.
+It also runs the IOCCC tool \fBfnamchk(1)\fP on the file, verifying that the tarball is properly named.
+.PP
+It will also be directly executed by the judges during the judging process of the contests.
+This is an important part of the judging process.
+.SH OPTIONS
+.PP
+\fB\-h\fP
+Show help and exit.
+.PP
+\fB\-v\fP
+Set verbosity level.
+.PP
+\fB\-q\fP
+Suppresses some of the output.
+This does not include warnings, errors or the output of the tar command.
+.PP
+\fB\-V\fP
+Show version and exit.
+.PP
+\fB\-t\fP
+Specify path to tar that accepts the \fB\-J\fP option.
+\fBtxzchk\fP checks \fI/usr/bin/tar\fP and \fI/bin/tar\fP if this option is not specified.
+.PP
+\fB\-F\fP
+Specify path to the IOCCC \fBfnamchk(1)\fP tool.
+If this option is not specified the program looks under the current working directory and \fI/usr/local/bin\fP.
+.SH EXIT STATUS
+.PP
+\fBmain()\fP returns 0 on success; if there's an error the end is not reached.
+.SH FILES
+\fItxzchk.c\fP
+.RS
+Source file to the \fBtxzchk\fP tool.
+.RE
+.SH BUGS
+.PP
+More than 0 humans work on it! :)
+.PP
+If you have an issue with the tool you can open an issue at \fI\<https://github.com/ioccc-src/mkiocccentry/issues\>\fP.
+.SH EXAMPLES
+.PP
+.nf
+Run the program on the tarball \fIentry.test.0.1644094311.txz\fP:
+
+.RS
+\fB
+ ./txzchk entry.test.0.1644094311.txz\fP
+.fi
+.RE
+.PP
+.nf
+Run the program on the tarball \fIentry.test.0.1644094311.txz\fP, specifying an alternate path to \fBtar\fP and \fBfnamchk\fP:
+
+.RS
+\fB
+ ./txzchk -t /path/to/tar -F ./filenamechk entry.test.0.1644094311.txz\fP
+.fi
+.RE

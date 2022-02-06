@@ -12,6 +12,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <string.h>
+#include <ctype.h>
 
 /*
  * IOCCC size and rule related limitations
@@ -34,7 +35,7 @@
 /*
  * txzchk version
  */
-#define TXZCHK_VERSION "0.2 2022-02-06"	/* use format: major.minor YYYY-MM-DD */
+#define TXZCHK_VERSION "0.3 2022-02-06"	/* use format: major.minor YYYY-MM-DD */
 
 
 /*
@@ -57,14 +58,14 @@ static bool quiet = false;		/* true ==> only show errors and warnings */
  * Use the usage() function to print the these usage_msgX strings.
  */
 static const char * const usage_msg =
-    "usage: %s [-h] [-v level] [-V] [-t tar] [-f fnamchk] txzpath\n"
+    "usage: %s [-h] [-v level] [-V] [-t tar] [-F fnamchk] txzpath\n"
     "\n"
     "\t-h\t\t\tprint help message and exit 0\n"
     "\t-v level\t\tset verbosity level: (def level: %d)\n"
     "\t-V\t\t\tprint version string and exit\n"
     "\n"
-    "\t-t /path/to/tar\t\tpath to tar executable that supports the -J (xz) option (def: %s)\n\n"
-    "\t-f fnamchk\t\tpath to tool that checks if filename.txz is a valid compressed tarball\n"
+    "\t-t /path/to/tar\t\tpath to tar executable that supports the -J (xz) option (def: %s)\n"
+    "\t-F fnamchk\t\tpath to tool that checks if filename.txz is a valid compressed tarball name\n"
     "\t\t\t\tfilename (def: %s)\n\n"
     "\ttxzpath\t\t\tpath to an IOCCC compressed tarball\n"
     "\n"
@@ -76,6 +77,7 @@ static const char * const usage_msg =
 static void usage(int exitcode, char const *name, char const *str, char const *tar, char const *fnamchk) __attribute__((noreturn));
 static void sanity_chk(char const *tar, char const *fnamchk, char const *txzpath);
 static int check_tarball(char const *tar, char const *fnamchk, char const *txzpath);
+static bool has_special_bits(char const *str);
 
 int main(int argc, char **argv)
 {
@@ -85,7 +87,7 @@ int main(int argc, char **argv)
     char *tar = TAR_PATH_0;		    /* path to tar executable that supports the -J (xz) option */
     char *txzpath;			    /* txzpath argument to check */
     char *fnamchk = FNAMCHK_PATH_0;   	    /* path to fnamchk tool */
-    bool fnamchk_flag_used = true;	    /* if -f option used */
+    bool fnamchk_flag_used = false;	    /* if -F option used */
     bool t_flag_used = false;		    /* true ==> -t /path/to/tar was given */
     int ret;				    /* libc return code */
     int i;
@@ -94,7 +96,7 @@ int main(int argc, char **argv)
      * parse args
      */
     program = argv[0];
-    while ((i = getopt(argc, argv, "hv:Vqf:t:")) != -1) {
+    while ((i = getopt(argc, argv, "hv:VqF:t:")) != -1) {
 	switch (i) {
 	case 'h':		/* -h - print help to stderr and exit 0 */
 	    usage(0, "-h help mode", program, TAR_PATH_0, FNAMCHK_PATH_0);
@@ -120,7 +122,7 @@ int main(int argc, char **argv)
 	    exit(0); /*ooo*/
 	    not_reached();
 	    break;
-	case 'f':
+	case 'F':
 	    fnamchk_flag_used = true;
 	    fnamchk = optarg;
 	    break;
@@ -187,7 +189,7 @@ int main(int argc, char **argv)
 	para("", "Performing checks on tarball ...", NULL);
     }
     issues = check_tarball(tar, fnamchk, txzpath);
-    if (!quiet) {
+    if (!quiet && !issues) {
 	para("All checks passed.", "", NULL);
     }
 
@@ -231,6 +233,10 @@ usage(int exitcode, char const *str, char const *prog, char const *tar, char con
     if (tar == NULL) {
 	tar = "((NULL tar))";
 	warn(__func__, "\nin usage: tar was NULL, forcing it to be: %s\n", tar);
+    }
+    if (fnamchk == NULL) {
+	fnamchk = "((NULL fnamchk))";
+	warn(__func__, "\nin usage(): fnamchk was NULL, forcing it to be: %s\n", fnamchk);
     }
 
     /*
@@ -324,6 +330,48 @@ sanity_chk(char const *tar, char const *fnamchk, char const *txzpath)
     }
 
     /*
+     * fnamchk must be executable
+     */
+    if (!exists(fnamchk)) {
+	fpara(stderr,
+	      "",
+	      "We cannot find fnamchk.",
+	      "",
+	      "This tool is required to test the tarball.",
+	      "Perhaps you need to use:",
+	      "",
+	      "    txzchk -F /path/to/fnamchk ...",
+	      NULL);
+	err(4, __func__, "fnamchk does not exist: %s", fnamchk);
+	not_reached();
+    }
+    if (!is_file(fnamchk)) {
+	fpara(stderr,
+	      "",
+	      "The fnamchk, whilst it exists, is not a file.",
+	      "",
+	      "Perhaps you need to use another path:",
+	      "",
+	      "    txzchk -F /path/to/fnamchk ...",
+	      NULL);
+	err(5, __func__, "fnamchk is not a file: %s", tar);
+	not_reached();
+    }
+    if (!is_exec(fnamchk)) {
+	fpara(stderr,
+	      "",
+	      "The fnamchk, whilst it is a file, is not executable.",
+	      "",
+	      "We suggest you check the permissions on the fnamchk program, or use another path:",
+	      "",
+	      "    txzchk -F /path/to/fnamchk ...",
+	      NULL);
+	err(6, __func__, "fnamchk is not an executable program: %s", tar);
+	not_reached();
+    }
+
+
+    /*
      * txzpath must be readable
      */
     if (!exists(txzpath)) {
@@ -379,15 +427,18 @@ sanity_chk(char const *tar, char const *fnamchk, char const *txzpath)
  *	txzpath		- path to tarball to check
  *
  *  Returns the number of issues found.
+ *
+ *  Does not return on error.
  */
 static int
 check_tarball(char const *tar, char const *fnamchk, char const *txzpath)
 {
     off_t size = 0; /* file size of tarball */
     unsigned line_num = 0; /* line number of tar output */
-    char *cmd = NULL;	/* tar -tJvf */
+    char *cmd = NULL;	/* fnamchk and tar -tJvf */
     FILE *tar_stream = NULL; /* pipe for tar output */
     char *linep = NULL;		/* allocated line read from iocccsize */
+    char *line_dup = NULL;	/* duplicated line from readline */
     ssize_t readline_len;	/* readline return length */
     int dir_count = 0;		/* number of directories detected */
     int ret;			/* libc function return */
@@ -426,9 +477,9 @@ check_tarball(char const *tar, char const *fnamchk, char const *txzpath)
 	    warn(__func__, "unable to tell user how big the tarball is");
 	}
     }
-    dbg(DBG_MED, "tarball %s size in bytes: %d", txzpath, (int)size);
+    dbg(DBG_MED, "tarball %s size in bytes: %lu", txzpath, (unsigned long)size);
 
-    errno = 0;			/* pre-clear errno for errp() */
+   errno = 0;			/* pre-clear errno for errp() */
     cmd = cmdprintf("% -tJvf %", tar, txzpath);
     if (cmd == NULL) {
 	err(13, __func__, "failed to cmdprintf: tar -tJvf txzpath");
@@ -505,6 +556,7 @@ check_tarball(char const *tar, char const *fnamchk, char const *txzpath)
      * process all tar lines listed
      */
     do {
+	char *p = NULL;
 
 	/*
 	 * count this line
@@ -515,7 +567,7 @@ check_tarball(char const *tar, char const *fnamchk, char const *txzpath)
 	 * read the next listing line
 	 */
 	readline_len = readline(&linep, tar_stream);
-	if (readline_len < 0) {
+        if (readline_len < 0) {
 	    dbg(DBG_HIGH, "reached EOF of tarball");
 	    break;
 	}
@@ -527,17 +579,75 @@ check_tarball(char const *tar, char const *fnamchk, char const *txzpath)
 	if (*linep == 'd') {
 	    ++dir_count;
 	    if (dir_count > 1) {
-		warn(__func__, "found more than one direcotry entry: %s", linep);
+		warn(__func__, "found more than one directory entry: %s", linep);
 		++issues;
 	    }
 
 	/*
-	 * look for non-direcotry non-regular non-hard-lined items
+	 * look for non-directory non-regular non-hard-lined items
 	 */
 	} else if (*linep != '-') {
-	    warn(__func__, "found a non-direcotry non-regular non-hard-lined item: %s", linep);
+	    warn(__func__, "found a non-directory non-regular non-hard-lined item: %s", linep);
 	    ++issues;
 	}
+	line_dup = strdup(linep);
+	if (line_dup == NULL) {
+	    err(11, __func__, "duplicating %s failed", linep);
+	    not_reached();
+	}
+	/* extract each field, one at a time, to do various tests */
+	p = strtok(linep, " \t");
+	if (p == NULL) {
+	    err(18, __func__, "NULL pointer encountered trying to parse line");
+	    not_reached();
+	}
+	if (has_special_bits(p)) {
+	    warn(__func__, "found special bits on line: %s", line_dup);
+	    ++issues;
+	}
+	/* we don't need this next field */
+	p = strtok(NULL, " \t");
+
+	if (p == NULL) {
+	    err(19, __func__, "NULL pointer encountered trying to parse line");
+	    not_reached();
+	}
+	p = strtok(NULL, " \t");
+	if (p == NULL) {
+	    err(20, __func__, "NULL pointer encountered trying to parse line");
+	    not_reached();
+	}
+	/* 
+	 * attempt to find !isdigit() chars (i.e. the tarball listing includes
+	 * the owner of the files
+	 */
+	for (; p && *p && isdigit(*p); )
+	    ++p; /* satisfy warnings */
+
+	if (*p) {
+	    warn(__func__, "found non-digit UID in file in line: %s", line_dup);
+	    ++issues;
+	}
+
+	/*
+	 * now do the same for group
+	 */
+	p = strtok(NULL, " \t");
+	if (p == NULL) {
+	    err(21, __func__, "NULL pointer encountered trying to parse line");
+	    not_reached();
+	}
+	for (; p && *p && isdigit(*p); )
+	    ++p; /* satisfy warnings */
+
+	if (*p) {
+	    warn(__func__, "found non-digit GID in file in line: %s", line_dup);
+	    ++issues;
+	}
+
+	free(line_dup);
+	line_dup = NULL;
+
     } while (readline_len >= 0);
 
     /*
@@ -550,9 +660,91 @@ check_tarball(char const *tar, char const *fnamchk, char const *txzpath)
     }
     tar_stream = NULL;
 
+    /* 
+     * report issues found before running fnamchk so that it's easy to see how
+     * many problems we found (if the fnamchk fails it errors out so this won't
+     * be seen).
+     */
     if (issues > 0) {
-	fprintf(stderr, "check_tarball() found %u issue%s\n", issues, issues==1?"":"s");
+	fprintf(stderr, "txzchk found %u issue%s\n", issues, issues==1?"":"s");
     }
 
+    /* 
+     * free cmd for next command
+     */
+    free(cmd);
+    cmd = NULL;
+
+    /* form command line to fnamchk */
+    errno = 0;			/* pre-clear errno for errp() */
+    cmd = cmdprintf("% %", fnamchk, txzpath);
+    if (cmd == NULL) {
+	err(13, __func__, "failed to cmdprintf: fnamchk txzpath");
+	not_reached();
+    }
+    dbg(DBG_HIGH, "about to perform: system(%s)", cmd);
+
+    /*
+     * pre-flush to avoid system() buffered stdio issues
+     */
+    clearerr(stdout);		/* pre-clear ferror() status */
+    errno = 0;			/* pre-clear errno for errp() */
+    ret = fflush(stdout);
+    if (ret < 0) {
+	errp(14, __func__, "fflush(stdout) error code: %d", ret);
+	not_reached();
+    }
+    errno = 0;			/* pre-clear errno for errp() */
+    clearerr(stderr);		/* pre-clear ferror() status */
+    errno = 0;			/* pre-clear errno for errp() */
+    ret = fflush(stderr);
+    if (ret < 0) {
+	errp(15, __func__, "fflush(stderr) #1: error code: %d", ret);
+	not_reached();
+    }
+
+    /*
+     * execute the fnamchk command
+     */
+    errno = 0;			/* pre-clear errno for errp() */
+    exit_code = system(cmd);
+    if (exit_code < 0) {
+	errp(16, __func__, "error calling system(%s)", cmd);
+	not_reached();
+    } else if (exit_code == 127) {
+	errp(17, __func__, "execution of the shell failed for system(%s)", cmd);
+	not_reached();
+    } else if (exit_code != 0) {
+	err(18, __func__, "%s failed with exit code: %d", cmd, WEXITSTATUS(exit_code));
+	not_reached();
+    }
+
+
+    /* free cmd for tar */
+    free(cmd);
+
     return issues;
+}
+
+/*
+ * has_special_bits - determine if the string has any special bits
+ *
+ * given:
+ *
+ *	str	    - the string to test
+ *
+ * This function does not return on NULL pointer passed into the function.
+ */
+static bool
+has_special_bits(char const *str)
+{
+    /*
+     * firewall
+     */
+    if (str == NULL) {
+	err(3, __func__, "called with NULL arg(s)");
+	not_reached();
+    }
+
+    return str[strspn(str, "-drwx")]!='\0';
 }
