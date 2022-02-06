@@ -75,6 +75,7 @@
 #include <sys/time.h>
 #include <sys/types.h>
 #include <sys/wait.h> /* for WEXITSTATUS() */
+#include <fcntl.h> /* for open() */
 
 
 /*
@@ -5784,7 +5785,7 @@ write_author(struct info *infop, int author_count, struct author *authorp, char 
  *
  * This function does not return on error.
  */
-static void 
+static void
 form_tarball(char const *work_dir, char const *entry_dir, char const *tarball_path, char const *tar,
 	     char const *ls, char const *txzchk, char const *fnamchk)
 {
@@ -5794,6 +5795,7 @@ form_tarball(char const *work_dir, char const *entry_dir, char const *tarball_pa
     int exit_code;		/* exit code from system(cmd) */
     struct stat buf;		/* stat of the tarball */
     int ret;			/* libc function return */
+    int cwd;			/* current working directory */
 
     /*
      * firewall
@@ -5804,7 +5806,6 @@ form_tarball(char const *work_dir, char const *entry_dir, char const *tarball_pa
 	not_reached();
     }
 
-
     /*
      * verify entry directory contents
      */
@@ -5812,12 +5813,22 @@ form_tarball(char const *work_dir, char const *entry_dir, char const *tarball_pa
     dbg(DBG_LOW, "verified entry directory: %s", entry_dir);
 
     /*
+     * note the current directory so we can restore it later, after the chdir(work_dir) below
+     */
+    errno = 0;			/* pre-clear errno for errp() */
+    cwd = open(".", O_RDONLY|O_DIRECTORY|O_CLOEXEC);
+    if (cwd < 0) {
+	errp(203, __func__, "cannot open .");
+	not_reached();
+    }
+
+    /*
      * cd into the work_dir, just above the entry_dir and where the compressed tarball will be formed
      */
     errno = 0;			/* pre-clear errno for errp() */
     ret = chdir(work_dir);
     if (ret < 0) {
-	errp(203, __func__, "cannot cd %s", work_dir);
+	errp(204, __func__, "cannot cd %s", work_dir);
 	not_reached();
     }
 
@@ -5833,7 +5844,7 @@ form_tarball(char const *work_dir, char const *entry_dir, char const *tarball_pa
     basename_tarball_path = base_name(tarball_path);
     cmd = cmdprintf("% --format=v7 -cJf % %", tar, basename_tarball_path, basename_entry_dir);
     if (cmd == NULL) {
-	err(204, __func__, "failed to cmdprintf: tar --format=v7 -cJf tarball_path entry_dir");
+	err(205, __func__, "failed to cmdprintf: tar --format=v7 -cJf tarball_path entry_dir");
 	not_reached();
     }
     dbg(DBG_HIGH, "about to perform: system(%s)", cmd);
@@ -5845,14 +5856,14 @@ form_tarball(char const *work_dir, char const *entry_dir, char const *tarball_pa
     errno = 0;		/* pre-clear errno for errp() */
     ret = fflush(stdout);
     if (ret < 0) {
-	errp(205, __func__, "fflush(stdout) error code: %d", ret);
+	errp(206, __func__, "fflush(stdout) error code: %d", ret);
 	not_reached();
     }
     clearerr(stderr);		/* pre-clear ferror() status */
     errno = 0;			/* pre-clear errno for errp() */
     ret = fflush(stderr);
     if (ret < 0) {
-	errp(206, __func__, "fflush(stderr) #1: error code: %d", ret);
+	errp(207, __func__, "fflush(stderr) #1: error code: %d", ret);
 	not_reached();
     }
 
@@ -5866,13 +5877,13 @@ form_tarball(char const *work_dir, char const *entry_dir, char const *tarball_pa
     errno = 0;			/* pre-clear errno for errp() */
     exit_code = system(cmd);
     if (exit_code < 0) {
-	errp(207, __func__, "error calling system(%s)", cmd);
+	errp(208, __func__, "error calling system(%s)", cmd);
 	not_reached();
     } else if (exit_code == 127) {
-	errp(208, __func__, "execution of the shell failed for system(%s)", cmd);
+	errp(209, __func__, "execution of the shell failed for system(%s)", cmd);
 	not_reached();
     } else if (exit_code != 0) {
-	err(209, __func__, "%s failed with exit code: %d", cmd, WEXITSTATUS(exit_code));
+	err(210, __func__, "%s failed with exit code: %d", cmd, WEXITSTATUS(exit_code));
 	not_reached();
     }
 
@@ -5882,7 +5893,7 @@ form_tarball(char const *work_dir, char const *entry_dir, char const *tarball_pa
     errno = 0;			/* pre-clear errno for errp() */
     ret = stat(basename_tarball_path, &buf);
     if (ret != 0) {
-	errp(210, __func__, "stat of the compressed tarball failed: %s", basename_tarball_path);
+	errp(211, __func__, "stat of the compressed tarball failed: %s", basename_tarball_path);
 	not_reached();
     }
     if (buf.st_size > MAX_TARBALL_LEN) {
@@ -5891,7 +5902,7 @@ form_tarball(char const *work_dir, char const *entry_dir, char const *tarball_pa
 	      "The compressed tarball exceeds the maximum allowed size, sorry.",
 	      "",
 	      NULL);
-	err(211, __func__, "The compressed tarball: %s size: %lu > %ld",
+	err(212, __func__, "The compressed tarball: %s size: %lu > %ld",
 		 basename_tarball_path, (unsigned long)buf.st_size, (long)MAX_TARBALL_LEN);
 	not_reached();
     }
@@ -5905,22 +5916,27 @@ form_tarball(char const *work_dir, char const *entry_dir, char const *tarball_pa
     }
 
     /*
-     * switch back to parent directory
+     * switch back to the previous current directory
      */
     errno = 0;			/* pre-clear errno for errp() */
-    ret = chdir("..");
+    ret = fchdir(cwd);
     if (ret < 0) {
-	errp(203, __func__, "cannot cd ..");
+	errp(213, __func__, "cannot fchdir to the previous current directory");
 	not_reached();
     }
-
+    errno = 0;			/* pre-clear errno for errp() */
+    ret = close(cwd);
+    if (ret < 0) {
+	errp(214, __func__, "close of previous current directory failed");
+	not_reached();
+    }
 
     /*
      * form the txzchk command
      */
     cmd = cmdprintf("% -q -F % %/../%", txzchk, fnamchk, entry_dir, basename_tarball_path);
     if (cmd == NULL) {
-	err(212, __func__, "failed to cmdprintf: txzchk -q tarball_path");
+	err(215, __func__, "failed to cmdprintf: txzchk -q tarball_path");
 	not_reached();
     }
     dbg(DBG_HIGH, "about to perform: system(%s)", cmd);
@@ -5932,14 +5948,14 @@ form_tarball(char const *work_dir, char const *entry_dir, char const *tarball_pa
     errno = 0;		/* pre-clear errno for errp() */
     ret = fflush(stdout);
     if (ret < 0) {
-	errp(213, __func__, "fflush(stdout) error code: %d", ret);
+	errp(216, __func__, "fflush(stdout) error code: %d", ret);
 	not_reached();
     }
     clearerr(stderr);		/* pre-clear ferror() status */
     errno = 0;			/* pre-clear errno for errp() */
     ret = fflush(stderr);
     if (ret < 0) {
-	errp(214, __func__, "fflush(stderr) #1: error code: %d", ret);
+	errp(217, __func__, "fflush(stderr) #1: error code: %d", ret);
 	not_reached();
     }
 
@@ -5950,13 +5966,13 @@ form_tarball(char const *work_dir, char const *entry_dir, char const *tarball_pa
     errno = 0;			/* pre-clear errno for errp() */
     exit_code = system(cmd);
     if (exit_code < 0) {
-	errp(215, __func__, "error calling system(%s)", cmd);
+	errp(218, __func__, "error calling system(%s)", cmd);
 	not_reached();
     } else if (exit_code == 127) {
-	errp(216, __func__, "execution of the shell failed for system(%s)", cmd);
+	errp(219, __func__, "execution of the shell failed for system(%s)", cmd);
 	not_reached();
     } else if (exit_code != 0) {
-	err(217, __func__, "%s failed with exit code: %d", cmd, WEXITSTATUS(exit_code));
+	err(220, __func__, "%s failed with exit code: %d", cmd, WEXITSTATUS(exit_code));
 	not_reached();
     }
     para("",
@@ -6006,13 +6022,13 @@ remind_user(char const *work_dir, char const *entry_dir, char const *tar, char c
      * firewall
      */
     if (work_dir == NULL || entry_dir == NULL || tar == NULL || tarball_path == NULL) {
-	err(218, __func__, "called with NULL arg(s)");
+	err(221, __func__, "called with NULL arg(s)");
 	not_reached();
     }
 
     entry_dir_esc = cmdprintf("%", entry_dir);
     if (entry_dir_esc == NULL) {
-	err(219, __func__, "failed to cmdprintf: entry_dir");
+	err(222, __func__, "failed to cmdprintf: entry_dir");
 	not_reached();
     }
 
@@ -6025,14 +6041,14 @@ remind_user(char const *work_dir, char const *entry_dir, char const *tar, char c
 	 NULL);
     ret = printf("    rm -rf %s%s\n", entry_dir[0] == '-' ? "-- " : "", entry_dir_esc);
     if (ret <= 0) {
-	errp(220, __func__, "printf #0 error");
+	errp(223, __func__, "printf #0 error");
 	not_reached();
     }
     free(entry_dir_esc);
 
     work_dir_esc = cmdprintf("%", work_dir);
     if (work_dir_esc == NULL) {
-	err(221, __func__, "failed to cmdprintf: work_dir");
+	err(224, __func__, "failed to cmdprintf: work_dir");
 	not_reached();
     }
 
@@ -6043,7 +6059,7 @@ remind_user(char const *work_dir, char const *entry_dir, char const *tar, char c
 	 NULL);
     ret = printf("    %s -Jtvf %s%s/%s\n", tar, work_dir[0] == '-' ? "./" : "", work_dir_esc, tarball_path);
     if (ret <= 0) {
-	errp(222, __func__, "printf #2 error");
+	errp(225, __func__, "printf #2 error");
 	not_reached();
     }
     free(work_dir_esc);
@@ -6077,7 +6093,7 @@ remind_user(char const *work_dir, char const *entry_dir, char const *tar, char c
 	     NULL);
 	ret = printf("    %s/%s\n", work_dir, tarball_path);
 	if (ret <= 0) {
-	    errp(223, __func__, "printf #2 error");
+	    errp(226, __func__, "printf #2 error");
 	    not_reached();
 	}
     }
@@ -6093,7 +6109,7 @@ remind_user(char const *work_dir, char const *entry_dir, char const *tar, char c
 	     NULL);
 	ret = printf("    %s\n\n", IOCCC_SUBMIT_URL);
 	if (ret < 0) {
-	    errp(224, __func__, "printf #4 error");
+	    errp(227, __func__, "printf #4 error");
 	    not_reached();
 	}
     }

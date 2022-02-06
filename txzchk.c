@@ -342,7 +342,7 @@ sanity_chk(char const *tar, char const *fnamchk, char const *txzpath)
 	      "",
 	      "    txzchk -F /path/to/fnamchk ...",
 	      NULL);
-	err(4, __func__, "fnamchk does not exist: %s", fnamchk);
+	err(7, __func__, "fnamchk does not exist: %s", fnamchk);
 	not_reached();
     }
     if (!is_file(fnamchk)) {
@@ -354,7 +354,7 @@ sanity_chk(char const *tar, char const *fnamchk, char const *txzpath)
 	      "",
 	      "    txzchk -F /path/to/fnamchk ...",
 	      NULL);
-	err(5, __func__, "fnamchk is not a file: %s", tar);
+	err(8, __func__, "fnamchk is not a file: %s", tar);
 	not_reached();
     }
     if (!is_exec(fnamchk)) {
@@ -366,7 +366,7 @@ sanity_chk(char const *tar, char const *fnamchk, char const *txzpath)
 	      "",
 	      "    txzchk -F /path/to/fnamchk ...",
 	      NULL);
-	err(6, __func__, "fnamchk is not an executable program: %s", tar);
+	err(9, __func__, "fnamchk is not an executable program: %s", tar);
 	not_reached();
     }
 
@@ -383,7 +383,7 @@ sanity_chk(char const *tar, char const *fnamchk, char const *txzpath)
 	      "    txzchk [options] <txzpath>"
 	      "",
 	      NULL);
-	err(7, __func__, "txzpath does not exist: %s", txzpath);
+	err(10, __func__, "txzpath does not exist: %s", txzpath);
 	not_reached();
     }
     if (!is_file(txzpath)) {
@@ -396,7 +396,7 @@ sanity_chk(char const *tar, char const *fnamchk, char const *txzpath)
 	      "    txzchk [...] <txzpath>",
 	      "",
 	      NULL);
-	err(8, __func__, "txzpath is not a file: %s", txzpath);
+	err(11, __func__, "txzpath is not a file: %s", txzpath);
 	not_reached();
     }
     if (!is_read(txzpath)) {
@@ -409,7 +409,7 @@ sanity_chk(char const *tar, char const *fnamchk, char const *txzpath)
 	      "    txzchk [...] <txzpath>"
 	      "",
 	      NULL);
-	err(9, __func__, "txzpath is not readable: %s", txzpath);
+	err(12, __func__, "txzpath is not readable: %s", txzpath);
 	not_reached();
     }
 
@@ -448,7 +448,7 @@ check_tarball(char const *tar, char const *fnamchk, char const *txzpath)
      * firewall
      */
     if (tar == NULL || fnamchk == NULL || txzpath == NULL) {
-	err(10, __func__, "called with NULL arg(s)");
+	err(13, __func__, "called with NULL arg(s)");
 	not_reached();
     }
 
@@ -456,7 +456,7 @@ check_tarball(char const *tar, char const *fnamchk, char const *txzpath)
     size = file_size(txzpath);
     /* report size (if too big) */
     if (size < 0) {
-	err(11, __func__, "impossible error: sanity_chk found tarball but file_size() did not");
+	err(14, __func__, "impossible error: sanity_chk found tarball but file_size() did not");
 	not_reached();
     }
     else if (size > MAX_TARBALL_LEN) {
@@ -466,7 +466,7 @@ check_tarball(char const *tar, char const *fnamchk, char const *txzpath)
 	      "The compressed tarball exceeds the maximum allowed size, sorry.",
 	      "",
 	      NULL);
-	err(12, __func__, "The compressed tarball: %s size: %lu > %ld",
+	err(15, __func__, "The compressed tarball: %s size: %lu > %ld",
 		 txzpath, (unsigned long)size, (long)MAX_TARBALL_LEN);
 	not_reached();
     }
@@ -482,7 +482,7 @@ check_tarball(char const *tar, char const *fnamchk, char const *txzpath)
    errno = 0;			/* pre-clear errno for errp() */
     cmd = cmdprintf("% -tJvf %", tar, txzpath);
     if (cmd == NULL) {
-	err(13, __func__, "failed to cmdprintf: tar -tJvf txzpath");
+	err(16, __func__, "failed to cmdprintf: tar -tJvf txzpath");
 	not_reached();
     }
     dbg(DBG_HIGH, "about to perform: system(%s)", cmd);
@@ -494,7 +494,7 @@ check_tarball(char const *tar, char const *fnamchk, char const *txzpath)
     errno = 0;			/* pre-clear errno for errp() */
     ret = fflush(stdout);
     if (ret < 0) {
-	errp(14, __func__, "fflush(stdout) error code: %d", ret);
+	errp(17, __func__, "fflush(stdout) error code: %d", ret);
 	not_reached();
     }
     errno = 0;			/* pre-clear errno for errp() */
@@ -502,7 +502,7 @@ check_tarball(char const *tar, char const *fnamchk, char const *txzpath)
     errno = 0;			/* pre-clear errno for errp() */
     ret = fflush(stderr);
     if (ret < 0) {
-	errp(15, __func__, "fflush(stderr) #1: error code: %d", ret);
+	errp(18, __func__, "fflush(stderr) #1: error code: %d", ret);
 	not_reached();
     }
 
@@ -512,13 +512,13 @@ check_tarball(char const *tar, char const *fnamchk, char const *txzpath)
     errno = 0;			/* pre-clear errno for errp() */
     exit_code = system(cmd);
     if (exit_code < 0) {
-	errp(16, __func__, "error calling system(%s)", cmd);
+	errp(19, __func__, "error calling system(%s)", cmd);
 	not_reached();
     } else if (exit_code == 127) {
-	errp(17, __func__, "execution of the shell failed for system(%s)", cmd);
+	errp(20, __func__, "execution of the shell failed for system(%s)", cmd);
 	not_reached();
     } else if (exit_code != 0) {
-	err(18, __func__, "%s failed with exit code: %d", cmd, WEXITSTATUS(exit_code));
+	err(21, __func__, "%s failed with exit code: %d", cmd, WEXITSTATUS(exit_code));
 	not_reached();
     }
 
@@ -530,14 +530,14 @@ check_tarball(char const *tar, char const *fnamchk, char const *txzpath)
     errno = 0;			/* pre-clear errno for errp() */
     ret = fflush(stdout);
     if (ret < 0) {
-	errp(19, __func__, "fflush(stdout) #0: error code: %d", ret);
+	errp(22, __func__, "fflush(stdout) #0: error code: %d", ret);
 	not_reached();
     }
     clearerr(stderr);		/* pre-clear ferror() status */
     errno = 0;			/* pre-clear errno for errp() */
     ret = fflush(stderr);
     if (ret < 0) {
-	errp(20, __func__, "fflush(stderr) #1: error code: %d", ret);
+	errp(23, __func__, "fflush(stderr) #1: error code: %d", ret);
 	not_reached();
     }
 
@@ -547,7 +547,7 @@ check_tarball(char const *tar, char const *fnamchk, char const *txzpath)
     errno = 0;			/* pre-clear errno for errp() */
     tar_stream = popen(cmd, "r");
     if (tar_stream == NULL) {
-	errp(21, __func__, "popen for reading failed for: %s", cmd);
+	errp(24, __func__, "popen for reading failed for: %s", cmd);
 	not_reached();
     }
     setlinebuf(tar_stream);
@@ -592,13 +592,13 @@ check_tarball(char const *tar, char const *fnamchk, char const *txzpath)
 	}
 	line_dup = strdup(linep);
 	if (line_dup == NULL) {
-	    err(11, __func__, "duplicating %s failed", linep);
+	    err(25, __func__, "duplicating %s failed", linep);
 	    not_reached();
 	}
 	/* extract each field, one at a time, to do various tests */
 	p = strtok(linep, " \t");
 	if (p == NULL) {
-	    err(18, __func__, "NULL pointer encountered trying to parse line");
+	    err(26, __func__, "NULL pointer encountered trying to parse line");
 	    not_reached();
 	}
 	if (has_special_bits(p)) {
@@ -609,15 +609,15 @@ check_tarball(char const *tar, char const *fnamchk, char const *txzpath)
 	p = strtok(NULL, " \t");
 
 	if (p == NULL) {
-	    err(19, __func__, "NULL pointer encountered trying to parse line");
+	    err(27, __func__, "NULL pointer encountered trying to parse line");
 	    not_reached();
 	}
 	p = strtok(NULL, " \t");
 	if (p == NULL) {
-	    err(20, __func__, "NULL pointer encountered trying to parse line");
+	    err(28, __func__, "NULL pointer encountered trying to parse line");
 	    not_reached();
 	}
-	/* 
+	/*
 	 * attempt to find !isdigit() chars (i.e. the tarball listing includes
 	 * the owner of the files
 	 */
@@ -634,7 +634,7 @@ check_tarball(char const *tar, char const *fnamchk, char const *txzpath)
 	 */
 	p = strtok(NULL, " \t");
 	if (p == NULL) {
-	    err(21, __func__, "NULL pointer encountered trying to parse line");
+	    err(29, __func__, "NULL pointer encountered trying to parse line");
 	    not_reached();
 	}
 	for (; p && *p && isdigit(*p); )
@@ -660,7 +660,7 @@ check_tarball(char const *tar, char const *fnamchk, char const *txzpath)
     }
     tar_stream = NULL;
 
-    /* 
+    /*
      * report issues found before running fnamchk so that it's easy to see how
      * many problems we found (if the fnamchk fails it errors out so this won't
      * be seen).
@@ -669,7 +669,7 @@ check_tarball(char const *tar, char const *fnamchk, char const *txzpath)
 	fprintf(stderr, "txzchk found %u issue%s\n", issues, issues==1?"":"s");
     }
 
-    /* 
+    /*
      * free cmd for next command
      */
     free(cmd);
@@ -679,7 +679,7 @@ check_tarball(char const *tar, char const *fnamchk, char const *txzpath)
     errno = 0;			/* pre-clear errno for errp() */
     cmd = cmdprintf("% %", fnamchk, txzpath);
     if (cmd == NULL) {
-	err(13, __func__, "failed to cmdprintf: fnamchk txzpath");
+	err(30, __func__, "failed to cmdprintf: fnamchk txzpath");
 	not_reached();
     }
     dbg(DBG_HIGH, "about to perform: system(%s)", cmd);
@@ -691,7 +691,7 @@ check_tarball(char const *tar, char const *fnamchk, char const *txzpath)
     errno = 0;			/* pre-clear errno for errp() */
     ret = fflush(stdout);
     if (ret < 0) {
-	errp(14, __func__, "fflush(stdout) error code: %d", ret);
+	errp(31, __func__, "fflush(stdout) error code: %d", ret);
 	not_reached();
     }
     errno = 0;			/* pre-clear errno for errp() */
@@ -699,7 +699,7 @@ check_tarball(char const *tar, char const *fnamchk, char const *txzpath)
     errno = 0;			/* pre-clear errno for errp() */
     ret = fflush(stderr);
     if (ret < 0) {
-	errp(15, __func__, "fflush(stderr) #1: error code: %d", ret);
+	errp(32, __func__, "fflush(stderr) #1: error code: %d", ret);
 	not_reached();
     }
 
@@ -709,13 +709,13 @@ check_tarball(char const *tar, char const *fnamchk, char const *txzpath)
     errno = 0;			/* pre-clear errno for errp() */
     exit_code = system(cmd);
     if (exit_code < 0) {
-	errp(16, __func__, "error calling system(%s)", cmd);
+	errp(33, __func__, "error calling system(%s)", cmd);
 	not_reached();
     } else if (exit_code == 127) {
-	errp(17, __func__, "execution of the shell failed for system(%s)", cmd);
+	errp(34, __func__, "execution of the shell failed for system(%s)", cmd);
 	not_reached();
     } else if (exit_code != 0) {
-	err(18, __func__, "%s failed with exit code: %d", cmd, WEXITSTATUS(exit_code));
+	err(35, __func__, "%s failed with exit code: %d", cmd, WEXITSTATUS(exit_code));
 	not_reached();
     }
 
@@ -742,7 +742,7 @@ has_special_bits(char const *str)
      * firewall
      */
     if (str == NULL) {
-	err(3, __func__, "called with NULL arg(s)");
+	err(36, __func__, "called with NULL arg(s)");
 	not_reached();
     }
 
