@@ -782,13 +782,13 @@ main(int argc, char *argv[])
     }
 
     /*
-     * warn the user if there were I/O erros while writing the answers file
+     * warn the user if there were I/O errors while writing the answers file
      */
     if (a_flag_used == true) {
 	if (info.answers_errors > 0) {
 	    errno = 0;	/* pre-clear errno for warnp() */
 	    ret = printf("Warning: There were %u I/O error%s on the answers file. Make SURE to verify that using the file\n"
-			 "results in the proper input before reuploading!\n",
+			 "results in the proper input before re-uploading!\n",
 			 info.answers_errors, info.answers_errors == 1 ? "" : "s" );
 	    if (ret <= 0) {
 		warnp(__func__, "unable to warn user that there were I/O errors on the answers file");
@@ -2315,7 +2315,7 @@ warn_ungetc(char const *prog_c)
     }
 
     /*
-     * warn the user aboit iocccsize ungetc error, if we are allowed
+     * warn the user abort iocccsize ungetc error, if we are allowed
      */
     if (need_confirm == true && ignore_warnings == false) {
 	errno = 0;		/* pre-clear errno for warnp() */
