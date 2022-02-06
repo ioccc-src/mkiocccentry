@@ -1,7 +1,7 @@
 /*
  * txzchk: the IOCCC tarball validation checker
  *
- * Invoked by mkiocccentry; txzchk in turn uses filenamechk to make sure that
+ * Invoked by mkiocccentry; txzchk in turn uses fnamchk to make sure that
  * the tarball was correctly named and formed (i.e. the mkiocccentry tool was
  * used).
  *
@@ -57,14 +57,14 @@ static bool quiet = false;		/* true ==> only show errors and warnings */
  * Use the usage() function to print the these usage_msgX strings.
  */
 static const char * const usage_msg =
-    "usage: %s [-h] [-v level] [-V] [-t tar] [-f filenamechk] txzpath\n"
+    "usage: %s [-h] [-v level] [-V] [-t tar] [-f fnamchk] txzpath\n"
     "\n"
     "\t-h\t\t\tprint help message and exit 0\n"
     "\t-v level\t\tset verbosity level: (def level: %d)\n"
     "\t-V\t\t\tprint version string and exit\n"
     "\n"
     "\t-t /path/to/tar\t\tpath to tar executable that supports the -J (xz) option (def: %s)\n\n"
-    "\t-f filenamechk\t\tpath to tool that checks if filename.txz is a valid compressed tarball\n"
+    "\t-f fnamchk\t\tpath to tool that checks if filename.txz is a valid compressed tarball\n"
     "\t\t\t\tfilename (def: %s)\n\n"
     "\ttxzpath\t\t\tpath to an IOCCC compressed tarball\n"
     "\n"
@@ -73,9 +73,9 @@ static const char * const usage_msg =
 /*
  * forward declarations
  */
-static void usage(int exitcode, char const *name, char const *str, char const *tar, char const *filenamechk) __attribute__((noreturn));
-static void sanity_chk(char const *tar, char const *filenamechk, char const *txzpath);
-static int check_tarball(char const *tar, char const *filenamechk, char const *txzpath);
+static void usage(int exitcode, char const *name, char const *str, char const *tar, char const *fnamchk) __attribute__((noreturn));
+static void sanity_chk(char const *tar, char const *fnamchk, char const *txzpath);
+static int check_tarball(char const *tar, char const *fnamchk, char const *txzpath);
 
 int main(int argc, char **argv)
 {
@@ -84,8 +84,8 @@ int main(int argc, char **argv)
     extern int optind;			    /* argv index of the next arg */
     char *tar = TAR_PATH_0;		    /* path to tar executable that supports the -J (xz) option */
     char *txzpath;			    /* txzpath argument to check */
-    char *filenamechk = FILENAMECHK_PATH_0;   /* path to filenamechk tool */
-    bool filenamechk_flag_used = true;	    /* if -f option used */
+    char *fnamchk = FNAMCHK_PATH_0;   	    /* path to fnamchk tool */
+    bool fnamchk_flag_used = true;	    /* if -f option used */
     bool t_flag_used = false;		    /* true ==> -t /path/to/tar was given */
     int ret;				    /* libc return code */
     int i;
@@ -97,7 +97,7 @@ int main(int argc, char **argv)
     while ((i = getopt(argc, argv, "hv:Vqf:t:")) != -1) {
 	switch (i) {
 	case 'h':		/* -h - print help to stderr and exit 0 */
-	    usage(0, "-h help mode", program, TAR_PATH_0, FILENAMECHK_PATH_0);
+	    usage(0, "-h help mode", program, TAR_PATH_0, FNAMCHK_PATH_0);
 	    not_reached();
 	    break;
 	case 'v':		/* -v verbosity */
@@ -121,8 +121,8 @@ int main(int argc, char **argv)
 	    not_reached();
 	    break;
 	case 'f':
-	    filenamechk_flag_used = true;
-	    filenamechk = optarg;
+	    fnamchk_flag_used = true;
+	    fnamchk = optarg;
 	    break;
 	case 't':
 	    tar = optarg;
@@ -166,7 +166,7 @@ int main(int argc, char **argv)
      * On some systems where /usr/bin != /bin, the distribution made the mistake of
      * moving historic critical applications, look to see if the alternate path works instead.
      */
-    find_utils(t_flag_used, &tar, false, NULL, false, NULL, false, NULL, filenamechk_flag_used, &filenamechk);
+    find_utils(t_flag_used, &tar, false, NULL, false, NULL, false, NULL, fnamchk_flag_used, &fnamchk);
 
 
     /*
@@ -175,7 +175,7 @@ int main(int argc, char **argv)
     if (!quiet) {
 	para("", "Performing sanity checks on your environment ...", NULL);
     }
-    sanity_chk(tar, filenamechk, txzpath);
+    sanity_chk(tar, fnamchk, txzpath);
     if (!quiet) {
 	para("... environment looks OK", "", NULL);
     }
@@ -186,7 +186,7 @@ int main(int argc, char **argv)
     if (!quiet) {
 	para("", "Performing checks on tarball ...", NULL);
     }
-    issues = check_tarball(tar, filenamechk, txzpath);
+    issues = check_tarball(tar, fnamchk, txzpath);
     if (!quiet) {
 	para("All checks passed.", "", NULL);
     }
@@ -215,7 +215,7 @@ int main(int argc, char **argv)
  * This function does not return.
  */
 static void
-usage(int exitcode, char const *str, char const *prog, char const *tar, char const *filenamechk)
+usage(int exitcode, char const *str, char const *prog, char const *tar, char const *fnamchk)
 {
     /*
      * firewall
@@ -237,7 +237,7 @@ usage(int exitcode, char const *str, char const *prog, char const *tar, char con
      * print the formatted usage stream
      */
     vfprintf_usage(DO_NOT_EXIT, stderr, "%s\n", str);
-    vfprintf_usage(exitcode, stderr, usage_msg, prog, DBG_DEFAULT, tar, filenamechk, TXZCHK_VERSION);
+    vfprintf_usage(exitcode, stderr, usage_msg, prog, DBG_DEFAULT, tar, fnamchk, TXZCHK_VERSION);
     exit(exitcode); /*ooo*/
     not_reached();
 }
@@ -251,18 +251,18 @@ usage(int exitcode, char const *str, char const *prog, char const *tar, char con
  * given:
  *
  *      tar             - path to tar that supports the -J (xz) option
- *	filenamechk	- path to the filenamechk utility
+ *	fnamchk		- path to the fnamchk utility
  *	txzpath		- path to txz tarball to check
  *
  * NOTE: This function does not return on error or if things are not sane.
  */
 static void
-sanity_chk(char const *tar, char const *filenamechk, char const *txzpath)
+sanity_chk(char const *tar, char const *fnamchk, char const *txzpath)
 {
     /*
      * firewall
      */
-    if (tar == NULL || filenamechk == NULL || txzpath == NULL) {
+    if (tar == NULL || fnamchk == NULL || txzpath == NULL) {
 	err(3, __func__, "called with NULL arg(s)");
 	not_reached();
     }
@@ -374,14 +374,14 @@ sanity_chk(char const *tar, char const *filenamechk, char const *txzpath)
  *
  * given:
  *
- *	tar	    - path to executable tar program
- *	filenamechk - path to filenamechk tool
- *	txzpath	    - path to tarball to check
+ *	tar		- path to executable tar program
+ *	fnamchk		- path to fnamchk tool
+ *	txzpath		- path to tarball to check
  *
  *  Returns the number of issues found.
  */
 static int
-check_tarball(char const *tar, char const *filenamechk, char const *txzpath)
+check_tarball(char const *tar, char const *fnamchk, char const *txzpath)
 {
     off_t size = 0; /* file size of tarball */
     unsigned line_num = 0; /* line number of tar output */
@@ -395,7 +395,7 @@ check_tarball(char const *tar, char const *filenamechk, char const *txzpath)
     /*
      * firewall
      */
-    if (tar == NULL || filenamechk == NULL || txzpath == NULL) {
+    if (tar == NULL || fnamchk == NULL || txzpath == NULL) {
 	err(10, __func__, "called with NULL arg(s)");
 	not_reached();
     }

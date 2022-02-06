@@ -1,6 +1,6 @@
 /* vim: set tabstop=8 softtabstop=4 shiftwidth=4 noexpandtab : */
 /*
- * filenamechk - IOCCC compressed tarball filename sanity check tool
+ * fnamchk - IOCCC compressed tarball filename sanity check tool
  *
  *
  * "Because even printf has a return value worth paying attention to." :-)
@@ -85,7 +85,7 @@ static const char * const usage_msg =
     "\n"
     "\tfilepath\t\tpath to an IOCCC compressed tarball\n"
     "\n"
-    "filenamechk version: %s\n";
+    "fnamchk version: %s\n";
 
 
 /*

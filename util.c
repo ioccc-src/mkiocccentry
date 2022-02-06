@@ -1491,12 +1491,12 @@ readline_dup(char **linep, bool strip, size_t *lenp, FILE *stream)
  *	ls		    - if -l ls was not used and ls != NULL set *ls to ls path
  *	txzchk_flag_used    - true ==> -C flag used
  *	txzchk		    - if -C txzchk was used and txzchk != NULL set *txzchk to path
- *	filenamechk_flag_used - true ==> if filenamechk flag was used
- *	filenamechk	    - if filenamechk option used and filenamechk ! NULL set *filenamechk to path
+ *	fnamchk_flag_used   - true ==> if fnamchk flag was used
+ *	fnamchk	    	    - if fnamchk option used and fnamchk ! NULL set *fnamchk to path
  */
 void
 find_utils(bool tar_flag_used, char **tar, bool cp_flag_used, char **cp, bool ls_flag_used, char **ls,
-	bool txzchk_flag_used, char **txzchk, bool filenamechk_flag_used, char **filenamechk)
+	bool txzchk_flag_used, char **txzchk, bool fnamchk_flag_used, char **fnamchk)
 {
     /*
      * guess where tar, cp and ls utilities are located
@@ -1521,14 +1521,14 @@ find_utils(bool tar_flag_used, char **tar, bool cp_flag_used, char **cp, bool ls
 	dbg(DBG_MED, "ls is not in historic location: %s : will try alternate location: %s", LS_PATH_0, *ls);
     }
 
-    /* now do the same for our utilities: txzchk and filenamechk */
+    /* now do the same for our utilities: txzchk and fnamchk */
     if (txzchk != NULL && txzchk_flag_used == false && !is_exec(TXZCHK_PATH_0) && is_exec(TXZCHK_PATH_1)) {
 	*txzchk = TXZCHK_PATH_1;
 	dbg(DBG_MED, "using default txzchk path: %s", TXZCHK_PATH_1);
     }
-    if (filenamechk != NULL && filenamechk_flag_used == false && !is_exec(FILENAMECHK_PATH_0) && is_exec(FILENAMECHK_PATH_1)) {
-	*filenamechk = FILENAMECHK_PATH_1;
-	dbg(DBG_MED, "using default filenamechk path: %s", FILENAMECHK_PATH_1);
+    if (fnamchk != NULL && fnamchk_flag_used == false && !is_exec(FNAMCHK_PATH_0) && is_exec(FNAMCHK_PATH_1)) {
+	*fnamchk = FNAMCHK_PATH_1;
+	dbg(DBG_MED, "using default fnamchk path: %s", FNAMCHK_PATH_1);
     }
     return;
 }
