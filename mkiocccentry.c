@@ -5717,7 +5717,8 @@ form_tarball(char const *work_dir, char const *entry_dir, char const *tarball_pa
     /*
      * firewall
      */
-    if (work_dir == NULL || entry_dir == NULL || tarball_path == NULL || tar == NULL || ls == NULL) {
+    if (work_dir == NULL || entry_dir == NULL || tarball_path == NULL || tar == NULL || ls == NULL ||
+        txzchk == NULL) {
 	err(214, __func__, "called with NULL arg(s)");
 	not_reached();
     }
