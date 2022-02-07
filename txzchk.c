@@ -931,7 +931,7 @@ check_files(void)
 	    info.has_remarks_md = true;
 	} else if (*(file->basename) == '.' && strcmp(file->basename, ".info.json") && strcmp(file->basename, ".author.json")) {
 	    ++issues;
-	    warn(__func__, "found non .author.json and .info.json dot file");
+	    warn(__func__, "found non .author.json and .info.json dot file %s", file->basename);
 	    info.dot_files++;
 	}
 
