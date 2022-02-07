@@ -6,7 +6,7 @@ fnamchk \- IOCCC compressed tarball filename sanity check tool
 .SH DESCRIPTION
 \fBfnamchk\fP verifies that an IOCCC compressed tarball is properly named.
 .PP
-The program validates that the filename is correct, in either the form of \fI"entry." ("test" or a valid UUID) "." entry_number "." timestamp ".txz"
+The program validates that the filename is correct, in either the form of \fI"entry." ("test" or a valid UUID) "\-" entry_number "." timestamp ".txz"
 \fP where \fBentry_number\fP is an integer between 0 and MAX_ENTRY_NUM (see \fIlimit_ioccc.h\fP) and where \fBtimestamp\fP is an integer number of seconds since the epoch.
 .PP
 More specifically, the filename must:
@@ -16,7 +16,7 @@ Start with "entry."
 Followed by either test or a UUID string of the form xxxxxxxx-xxxx-4xxx-axxx-xxxxxxxxxxxx
 Where "x" are [0-9-f] characters. And yes, there is a "4" (UUID version 4) and an "a" (UUID variant 1) in there.
 .PP
-Followed by "."
+Followed by "\-"
 .PP
 Followed by an decimal entry number between 0 and MAX_ENTRY_NUM (see \fIlimit_ioccc.h\fP) inclusive.
 .PP

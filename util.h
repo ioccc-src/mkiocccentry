@@ -96,4 +96,5 @@ extern char *readline_dup(char **linep, bool strip, size_t *lenp, FILE * stream)
 extern void find_utils(bool tar_flag_used, char **tar, bool cp_flag_used, char **cp,
 	bool ls_flag_used, char **ls, bool txzchk_flag_used, char **txzchk,
 	bool fnamchk_flag_used, char **fnamchk);
+extern off_t round_to_multiple(off_t num, off_t multiple);
 #endif				/* INCLUDE_UTIL_H */

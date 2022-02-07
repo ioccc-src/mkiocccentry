@@ -99,7 +99,7 @@
 /*
  * mkiocccentry version
  */
-#define MKIOCCCENTRY_VERSION "0.34 2022-02-04"	/* use format: major.minor YYYY-MM-DD */
+#define MKIOCCCENTRY_VERSION "0.35 2022-02-07"	/* use format: major.minor YYYY-MM-DD */
 #define IOCCC_CONTEST "IOCCC28"			/* use format: IOCCC99 */
 #define IOCCC_YEAR (2022)			/* Year IOCCC_CONTEST closes */
 
@@ -292,7 +292,7 @@ static void check_prog_c(struct info *infop, char const *entry_dir, char const *
 static void sanity_chk(struct info *infop, char const *work_dir, char const *tar, char const *cp,
 		       char const *ls, char const *txzchk, char const *fnamchk);
 static char *prompt(char const *str, size_t *lenp);
-static char *get_contest_id(struct info *infop, bool *testp, bool *i_flag_used);
+static char *get_contest_id(struct info *infop, bool *testp, bool *read_answers_flag_used);
 static int get_entry_num(struct info *infop);
 static char *mk_entry_dir(char const *work_dir, char const *ioccc_id, int entry_num, char **tarball_path, time_t tstamp);
 static bool inspect_Makefile(char const *Makefile, struct info *infop);
@@ -348,14 +348,14 @@ main(int argc, char *argv[])
     struct info info;			/* data to form .info.json */
     int author_count = 0;		/* number of authors */
     struct author *author_set = NULL;	/* list of authors */
-    bool t_flag_used = false;		/* true ==> -t /path/to/tar was given */
-    bool c_flag_used = false;		/* true ==> -c /path/to/cp was given */
-    bool l_flag_used = false;		/* true ==> -l /path/to/ls was given */
-    bool a_flag_used = false;		/* true ==> -a write answers to answers file */
-    bool i_flag_used = false;		/* true ==> -i read answers from answers file */
-    bool A_flag_used = false;		/* true ==> don't prompt to overwrite answers if it already exists */
+    bool tar_flag_used = false;		/* true ==> -t /path/to/tar was given */
+    bool cp_flag_used = false;		/* true ==> -c /path/to/cp was given */
+    bool ls_flag_used = false;		/* true ==> -l /path/to/ls was given */
+    bool answers_flag_used = false;		/* true ==> -a write answers to answers file */
+    bool read_answers_flag_used = false;		/* true ==> -i read answers from answers file */
+    bool overwite_answers_flag_used = false;		/* true ==> don't prompt to overwrite answers if it already exists */
     bool txzchk_flag_used = false;	/* true ==> -C /path/to/txzchk was given */
-    bool F_flag_used = false;		/* true ==> -F /path/to/fnamchk was given */
+    bool fnamchk_flag_used = false;		/* true ==> -F /path/to/fnamchk was given */
     bool overwrite_answers = true;	/* true ==> overwrite answers file even if it already exists */
     int ret;				/* libc return code */
     int i;
@@ -393,27 +393,27 @@ main(int argc, char *argv[])
 	    break;
 	case 't':		/* -t /path/to/tar */
 	    tar = optarg;
-	    t_flag_used = true;
+	    tar_flag_used = true;
 	    break;
 	case 'c':		/* -c /path/to/cp */
 	    cp = optarg;
-	    c_flag_used = true;
+	    cp_flag_used = true;
 	    break;
 	case 'l':		/* -l /path/to/ls */
 	    ls = optarg;
-	    l_flag_used = true;
+	    ls_flag_used = true;
 	    break;
 	case 'A':		/* -A answers overwrite answers file */
 	    answers = optarg;
-	    A_flag_used = true;
+	    overwite_answers_flag_used = true;
 	    /* FALL THROUGH */
 	case 'a':		/* -a record_answers */
 	    answers = optarg;
-	    a_flag_used = true;
+	    answers_flag_used = true;
 	    break;
 	case 'i':		/* -i input_recorded_answers */
 	    answers = optarg;
-	    i_flag_used = true;
+	    read_answers_flag_used = true;
 	    need_confirm = false;
 	    need_hints = false;
 	    break;
@@ -425,7 +425,7 @@ main(int argc, char *argv[])
 	    txzchk = optarg;
 	    break;
 	case 'F':
-	    F_flag_used = true;
+	    fnamchk_flag_used = true;
 	    fnamchk = optarg;
 	    break;
 	default:
@@ -449,10 +449,10 @@ main(int argc, char *argv[])
      * On some systems where /usr/bin != /bin, the distribution made the mistake of
      * moving historic critical applications, look to see if the alternate path works instead.
      */
-    find_utils(t_flag_used, &tar, c_flag_used, &cp, l_flag_used, &ls, txzchk_flag_used, &txzchk, F_flag_used, &fnamchk);
+    find_utils(tar_flag_used, &tar, cp_flag_used, &cp, ls_flag_used, &ls, txzchk_flag_used, &txzchk, fnamchk_flag_used, &fnamchk);
 
     /* check that conflicting answers file options are not used together */
-    if (a_flag_used == true && i_flag_used == true) {
+    if (answers_flag_used && read_answers_flag_used) {
 	err(1, __func__, "-a answers and -i answers cannot be used together"); /*ooo*/
 	not_reached();
     }
@@ -513,7 +513,7 @@ main(int argc, char *argv[])
     }
 
     /* if the user requested to ignore warnings, ignore this once and warn them :) */
-    if (ignore_warnings == true) {
+    if (ignore_warnings) {
 	para("",
 	     "WARNING: You've chosen to ignore all warnings (except this warning! :) )!",
 	     "If this was unintentional run this program again without the -W option.",
@@ -532,9 +532,9 @@ main(int argc, char *argv[])
      * want to overwrite it; if they don't tell them how to use it and abort.
      * Else it will be overwritten.
      */
-    if (a_flag_used == true && A_flag_used == false && answers != NULL && strlen(answers) > 0 && exists(answers) == true) {
+    if (answers_flag_used && !overwite_answers_flag_used && answers != NULL && strlen(answers) > 0 && exists(answers)) {
 	overwrite_answers = yes_or_no("WARNING: The answers file already exists! Do you wish to overwrite it? [yn]");
-	if (overwrite_answers == false) {
+	if (!overwrite_answers) {
 	    errno = 0;
 	    ret = printf("\nTo use the answers file, try:\n\n\t./mkiocccentry -i %s [...]\n\n", answers);
 	    if (ret <= 0) {
@@ -549,8 +549,8 @@ main(int argc, char *argv[])
     /*
      * check if we should read input from answers file
      */
-    if (i_flag_used == true && answers != NULL && strlen(answers) > 0) {
-	if (is_read(answers) == false) {
+    if (read_answers_flag_used && answers != NULL && strlen(answers) > 0) {
+	if (!is_read(answers)) {
 	    errp(8, __func__, "cannot read answers file");
 	    not_reached();
 	}
@@ -565,13 +565,13 @@ main(int argc, char *argv[])
     /*
      * obtain the IOCCC contest ID
      */
-    info.ioccc_id = get_contest_id(&info, &test_mode, &i_flag_used);
+    info.ioccc_id = get_contest_id(&info, &test_mode, &read_answers_flag_used);
     dbg(DBG_MED, "IOCCC contest ID: %s", info.ioccc_id);
 
     /*
      * found the answer file header in stdin
      */
-    if (i_flag_used == true && answers == NULL) {
+    if (read_answers_flag_used && answers == NULL) {
 	answerp = stdin;
     }
 
@@ -595,7 +595,7 @@ main(int argc, char *argv[])
      * directory already exists then the answers file will have invalid data.
      */
 
-    if (a_flag_used == true && answers != NULL && strlen(answers) > 0) {
+    if (answers_flag_used && answers != NULL && strlen(answers) > 0) {
 
 	errno = 0;			/* pre-clear errno for errp() */
 	answerp = fopen(answers, "w");
@@ -612,7 +612,7 @@ main(int argc, char *argv[])
     /*
      * write the IOCCC id and entry number to the answers file
      */
-    if (answerp != NULL && a_flag_used == true) {
+    if (answerp != NULL && answers_flag_used) {
 	errno = 0;			/* pre-clear errno for warnp() */
         ret = fprintf(answerp, "%s\n", info.ioccc_id);
 	if (ret <= 0) {
@@ -658,7 +658,7 @@ main(int argc, char *argv[])
      */
     info.title = get_title(&info);
     dbg(DBG_LOW, "entry title: %s", info.title);
-    if (answerp != NULL && a_flag_used == true) {
+    if (answerp != NULL && answers_flag_used) {
 	errno = 0;			/* pre-clear errno for warnp() */
 	ret = fprintf(answerp, "%s\n", info.title);
 	if (ret <= 0) {
@@ -671,7 +671,7 @@ main(int argc, char *argv[])
      */
     info.abstract = get_abstract(&info);
     dbg(DBG_LOW, "entry abstract: %s", info.abstract);
-    if (answerp != NULL && a_flag_used == true) {
+    if (answerp != NULL && answers_flag_used) {
 	errno = 0;			/* pre-clear errno for warnp() */
 	ret = fprintf(answerp, "%s\n", info.abstract);
 	if (ret <= 0) {
@@ -688,7 +688,7 @@ main(int argc, char *argv[])
     /*
     * if we have an answers file, record the verified author information
     */
-    if (answerp != NULL && i_flag_used == false) {
+    if (answerp != NULL && !read_answers_flag_used) {
 	errno = 0;			/* pre-clear errno for warnp() */
         ret = fprintf(answerp, "%d\n", author_count);
 	if (ret <= 0) {
@@ -736,7 +736,7 @@ main(int argc, char *argv[])
      * then closing the stream.
      */
     if (answerp != NULL) {
-	if (i_flag_used == true) {
+	if (read_answers_flag_used) {
 	    char *linep = NULL;
 	    char *line;
 	    bool error = true;
@@ -746,7 +746,7 @@ main(int argc, char *argv[])
 		error = strcmp(line, MKIOCCCENTRY_ANSWERS_EOF) != 0;
 		free(linep);
 	    }
-	    if (error == true) {
+	    if (error) {
 	        errp(11, __func__, "expected ANSWERS_EOF marker at the end of the answers file");
 	        not_reached();
 	    }
@@ -772,7 +772,7 @@ main(int argc, char *argv[])
      * remind the user about their answers file
      */
     if (answers != NULL) {
-	if (need_hints == true) {
+	if (need_hints) {
 	    errno = 0;			/* pre-clear errno for warnp() */
 	    ret = printf("\nTo more easily update this entry you can run:\n\n    ./mkiocccentry -i %s ...\n", answers);
 	    if (ret <= 0) {
@@ -784,7 +784,7 @@ main(int argc, char *argv[])
     /*
      * warn the user if there were I/O errors while writing the answers file
      */
-    if (a_flag_used == true) {
+    if (answers_flag_used) {
 	if (info.answers_errors > 0) {
 	    errno = 0;	/* pre-clear errno for warnp() */
 	    ret = printf("Warning: There were %u I/O error%s on the answers file. Make SURE to verify that using the file\n"
@@ -800,20 +800,20 @@ main(int argc, char *argv[])
      * If the answers file (-i answers) was used, and there were warnings/problems
      * discovered with the entry that were overridden, warn the user.
      */
-    if (i_flag_used == true) {
-	if (info.empty_override == true ||
-	    info.rule_2a_override == true ||
-	    info.rule_2a_mismatch == true ||
-	    info.rule_2b_override == true ||
-	    info.highbit_warning == true ||
-	    info.nul_warning == true ||
-	    info.trigraph_warning == true ||
-	    info.wordbuf_warning == true ||
-	    info.ungetc_warning == true ||
-	    info.Makefile_override == true) {
+    if (read_answers_flag_used) {
+	if (info.empty_override ||
+	    info.rule_2a_override ||
+	    info.rule_2a_mismatch ||
+	    info.rule_2b_override ||
+	    info.highbit_warning ||
+	    info.nul_warning ||
+	    info.trigraph_warning ||
+	    info.wordbuf_warning ||
+	    info.ungetc_warning ||
+	    info.Makefile_override) {
 
 	    do {
-		if (ignore_warnings == false) {
+		if (!ignore_warnings) {
 		    need_confirm = true;
 
 		    if (info.empty_override) {
@@ -1592,12 +1592,12 @@ prompt(char const *str, size_t *lenp)
  *
  * returns:
  *      malloced contest ID string
- *      *testp == true ==> contest ID is "test", else contest ID is a UUID.
+ *      *testp ==> contest ID is "test", else contest ID is a UUID.
  *
  * This function does not return on error or if the contest ID is malformed.
  */
 static char *
-get_contest_id(struct info *infop, bool *testp, bool *i_flag_used)
+get_contest_id(struct info *infop, bool *testp, bool *read_answers_flag_used)
 {
     char *malloc_ret;		/* malloced return string */
     size_t len;			/* input string length */
@@ -1620,7 +1620,7 @@ get_contest_id(struct info *infop, bool *testp, bool *i_flag_used)
     /*
      * explain contest ID
      */
-    if (need_hints == true) {
+    if (need_hints) {
 	para("To submit entries to the IOCCC, you must a registered contestant and have received a",
 	     "IOCCC contest ID (via email) shortly after you have been successfully registered.",
 	     "If the IOCCC is open, you may register as a contestant. See:",
@@ -1651,10 +1651,10 @@ get_contest_id(struct info *infop, bool *testp, bool *i_flag_used)
 	 * prompt for the contest ID
 	 */
 	malloc_ret = prompt("Enter IOCCC contest ID or test", &len);
-	if (seen_answers_header == false && !strcmp(malloc_ret, MKIOCCCENTRY_ANSWERS_VER)) {
+	if (!seen_answers_header && !strcmp(malloc_ret, MKIOCCCENTRY_ANSWERS_VER)) {
 	    dbg(DBG_HIGH, "found answers header");
 	    seen_answers_header = true;
-	    *i_flag_used = true;
+	    *read_answers_flag_used = true;
 	    need_retry = false;
 	    need_confirm = false;
 	    need_hints = false;
@@ -1662,7 +1662,7 @@ get_contest_id(struct info *infop, bool *testp, bool *i_flag_used)
 	    free(malloc_ret);
 	    malloc_ret = prompt("", &len);
 	}
-	if (*i_flag_used == true && seen_answers_header == false) {
+	if (*read_answers_flag_used && !seen_answers_header) {
 	    dbg(DBG_HIGH, "the IOCCC contest ID as entered is: %s", malloc_ret);
 	    err(46, __func__, "didn't find the correct answers file header");
 	    not_reached();
@@ -1752,7 +1752,7 @@ get_contest_id(struct info *infop, bool *testp, bool *i_flag_used)
 		  "",
 		  NULL);
 	}
-    } while (ret != 8 && need_retry == true);
+    } while (ret != 8 && need_retry);
 
     /*
      * report on the result of the contest ID validation
@@ -1811,7 +1811,7 @@ get_entry_num(struct info *infop)
 	/*
 	 * explain entry numbers
 	 */
-	if (need_hints == true) {
+	if (need_hints) {
 	    errno = 0;		/* pre-clear errno for errp() */
 	    ret = printf("\nYou are allowed to submit up to %d entries to a given IOCCC.\n", MAX_ENTRY_NUM + 1);
 	    if (ret <= 0) {
@@ -1853,7 +1853,7 @@ get_entry_num(struct info *infop)
 	    entry_str = NULL;
 	}
 
-    } while ((entry_num < 0 || entry_num > MAX_ENTRY_NUM) && need_retry == true);
+    } while ((entry_num < 0 || entry_num > MAX_ENTRY_NUM) && need_retry);
 
     /*
      * report on the result of the entry number validation
@@ -1972,7 +1972,7 @@ mk_entry_dir(char const *work_dir, char const *ioccc_id, int entry_num, char **t
 	not_reached();
     }
     errno = 0;			/* pre-clear errno for errp() */
-    ret = snprintf(*tarball_path, tarball_len + 1, "entry.%s.%d.%ld.txz", ioccc_id, entry_num, (long)tstamp);
+    ret = snprintf(*tarball_path, tarball_len + 1, "entry.%s-%d.%ld.txz", ioccc_id, entry_num, (long)tstamp);
     if (ret <= 0) {
 	errp(58, __func__, "snprintf to form compressed tarball path failed");
 	not_reached();
@@ -2009,7 +2009,7 @@ warn_empty_prog(char const *prog_c)
     }
 
     dbg(DBG_MED, "prog.c: %s is empty", prog_c);
-    if (need_confirm == true && ignore_warnings == false) {
+    if (need_confirm && !ignore_warnings) {
 	fpara(stderr,
 	  "WARNING: prog.c is empty.  An empty prog.c has been submitted before:",
 	  "",
@@ -2026,7 +2026,7 @@ warn_empty_prog(char const *prog_c)
 	  "",
 	  NULL);
 	    yorn = yes_or_no("Are you sure you want to submit an empty prog.c file? [yn]");
-	    if (yorn == false) {
+	    if (!yorn) {
 		err(60, __func__, "please fix your prog.c file: %s", prog_c);
 		not_reached();
 	    }
@@ -2073,7 +2073,7 @@ warn_rule2a_size(struct info *infop, char const *prog_c, int mode)
 	if (ret <= 0) {
 	    warnp(__func__, "fprintf error when printing prog.c Rule 2a warning");
 	}
-	if (need_confirm == true && ignore_warnings == false) {
+	if (need_confirm && !ignore_warnings) {
 	    fpara(stderr,
 	      "If you are attempting some clever rule abuse, then we STRONGLY suggest that you",
 	      "tell us about your rule abuse in your remarks.md file.  Be sure you have read the",
@@ -2081,7 +2081,7 @@ warn_rule2a_size(struct info *infop, char const *prog_c, int mode)
 	      "",
 	      NULL);
 	    yorn = yes_or_no("Are you sure you want to submit such a large prog.c file? [yn]");
-	    if (yorn == false) {
+	    if (!yorn) {
 		err(62, __func__, "please fix your prog.c file: %s", prog_c);
 		not_reached();
 	    }
@@ -2093,7 +2093,7 @@ warn_rule2a_size(struct info *infop, char const *prog_c, int mode)
      * File size and iocccsize file size differ warning
      */
     } else if (mode == RULE_2A_BIG_FILE_WARNING) {
-	if (need_confirm == true && ignore_warnings == false) {
+	if (need_confirm && !ignore_warnings) {
 	    errno = 0;		/* pre-clear errno for warnp() */
 	    ret = fprintf(stderr, "\nInteresting: prog.c: %s file size: %ld != rule_count function size: %ld\n"
 				  "In order to avoid a possible Rule 2a violation, BE SURE TO CLEARLY MENTION THIS IN\n"
@@ -2103,7 +2103,7 @@ warn_rule2a_size(struct info *infop, char const *prog_c, int mode)
 		warnp(__func__, "fprintf error when printing prog.c file size and Rule 2a mismatch");
 	    }
 	    yorn = yes_or_no("Are you sure you want to proceed? [yn]");
-	    if (yorn == false) {
+	    if (!yorn) {
 		err(63, __func__, "please fix your prog.c file: %s", prog_c);
 		not_reached();
 	    }
@@ -2146,7 +2146,7 @@ warn_high_bit(char const *prog_c)
     /*
      * warn about high bit chars, if we are allowed
      */
-    if (need_confirm == true && ignore_warnings == false) {
+    if (need_confirm && !ignore_warnings) {
 	errno = 0;		/* pre-clear errno for warnp() */
 	ret = fprintf(stderr, "\nprog_c: %s has character(s) with high bit set!\n"
 			      "Be careful you don't violate rule 13!\n\n", prog_c);
@@ -2154,7 +2154,7 @@ warn_high_bit(char const *prog_c)
 	    warnp(__func__, "fprintf error when printing prog.c char_warning");
 	}
 	yorn = yes_or_no("Are you sure you want to proceed? [yn]");
-	if (yorn == false) {
+	if (!yorn) {
 	    err(66, __func__, "please fix your prog.c file: %s", prog_c);
 	    not_reached();
 	}
@@ -2188,7 +2188,7 @@ warn_nul_chars(char const *prog_c)
     /*
      * warn about NUL chars(s) if we are allowed
      */
-    if (need_confirm == true && ignore_warnings == false) {
+    if (need_confirm && !ignore_warnings) {
 	errno = 0;		/* pre-clear errno for warnp() */
 	ret = fprintf(stderr, "\nprog_c: %s has NUL character(s)!\n"
 			      "Be careful you don't violate rule 13!\n\n", prog_c);
@@ -2196,7 +2196,7 @@ warn_nul_chars(char const *prog_c)
 	    warnp(__func__, "fprintf error when printing prog.c nul_warning");
 	}
 	yorn = yes_or_no("Are you sure you want to proceed? [yn]");
-	if (yorn == false) {
+	if (!yorn) {
 	    err(68, __func__, "please fix your prog.c file: %s", prog_c);
 	    not_reached();
 	}
@@ -2231,7 +2231,7 @@ warn_trigraph(char const *prog_c)
     /*
      * warn the user about unknown or invalid trigraph(s), if we are allowed
      */
-    if (need_confirm == true && ignore_warnings == false) {
+    if (need_confirm && !ignore_warnings) {
 	errno = 0;		/* pre-clear errno for errp() */
 	ret = fprintf(stderr, "\nprog_c: %s has unknown or invalid trigraph(s) found!\n"
 			      "Is that a bug in, or a feature of your code?\n\n", prog_c);
@@ -2239,7 +2239,7 @@ warn_trigraph(char const *prog_c)
 	    warnp(__func__, "fprintf error when printing prog.c trigraph_warning");
 	}
 	yorn = yes_or_no("Are you sure you want to proceed? [yn]");
-	if (yorn == false) {
+	if (!yorn) {
 	    err(70, __func__, "please fix your prog.c file: %s", prog_c);
 	    not_reached();
 	}
@@ -2273,7 +2273,7 @@ warn_wordbuf(char const *prog_c)
     /*
      * warn the user about triggered a word buffer overflow in iocccsize, if we are allowed
      */
-    if (need_confirm == true && ignore_warnings == false) {
+    if (need_confirm && !ignore_warnings) {
 	errno = 0;		/* pre-clear errno for warnp() */
 	ret = fprintf(stderr, "\nprog_c: %s triggered a word buffer overflow!\n"
 			      "In order to avoid a possible Rule 2b violation, BE SURE TO CLEARLY MENTION THIS IN\n"
@@ -2282,7 +2282,7 @@ warn_wordbuf(char const *prog_c)
 	    warnp(__func__, "fprintf error when printing prog.c wordbuf_warning");
 	}
 	yorn = yes_or_no("Are you sure you want to proceed? [yn]");
-	if (yorn == false) {
+	if (!yorn) {
 	    err(72, __func__, "please fix your prog.c file: %s", prog_c);
 	    not_reached();
 	}
@@ -2317,7 +2317,7 @@ warn_ungetc(char const *prog_c)
     /*
      * warn the user abort iocccsize ungetc error, if we are allowed
      */
-    if (need_confirm == true && ignore_warnings == false) {
+    if (need_confirm && !ignore_warnings) {
 	errno = 0;		/* pre-clear errno for warnp() */
 	ret = fprintf(stderr, "\nprog_c: %s triggered a triggered an ungetc error: @SirWumpus goofed\n"
 			      "In order to avoid a possible Rule 2b violation, BE SURE TO CLEARLY MENTION THIS IN\n"
@@ -2326,7 +2326,7 @@ warn_ungetc(char const *prog_c)
 	    warnp(__func__, "fprintf error when printing prog.c ungetc_warning");
 	}
 	yorn = yes_or_no("Are you sure you want to proceed? [yn]");
-	if (yorn == false) {
+	if (!yorn) {
 	    err(74, __func__, "please fix your prog.c file: %s", prog_c);
 	    not_reached();
 	}
@@ -2360,7 +2360,7 @@ warn_rule2b_size(struct info *infop, char const *prog_c)
     /*
      * warn the user about a possible Rule 2b violation, if we are allowed
      */
-    if (need_confirm == true && ignore_warnings == false) {
+    if (need_confirm && !ignore_warnings) {
 	errno = 0;
 	ret = fprintf(stderr, "\nWARNING: The prog.c %s size: %lu > Rule 2b maximum: %lu\n", prog_c,
 		      (unsigned long)infop->rule_2b_size, (unsigned long)RULE_2B_SIZE);
@@ -2376,7 +2376,7 @@ warn_rule2b_size(struct info *infop, char const *prog_c)
 	      "",
 	      NULL);
 	yorn = yes_or_no("Are you sure you want to submit such a large prog.c file? [yn]");
-	if (yorn == false) {
+	if (!yorn) {
 	    err(77, __func__, "please fix your prog.c file: %s", prog_c);
 	    not_reached();
 	}
@@ -2762,7 +2762,7 @@ inspect_Makefile(char const *Makefile, struct info *infop)
 	     * detect all rule
 	     */
 	    dbg(DBG_VHIGH, "rulenum[%d]: token: %s", rulenum, p);
-	    if (infop->found_all_rule == false && strcmp(p, "all") == 0) {
+	    if (!infop->found_all_rule && strcmp(p, "all") == 0) {
 		/*
 		 * first all rule found
 		 */
@@ -2779,7 +2779,7 @@ inspect_Makefile(char const *Makefile, struct info *infop)
 	    /*
 	     * detect clean rule
 	     */
-	    } else if (infop->found_clean_rule == false && strcmp(p, "clean") == 0) {
+	    } else if (!infop->found_clean_rule && strcmp(p, "clean") == 0) {
 		/*
 		 * first clean rule found
 		 */
@@ -2789,7 +2789,7 @@ inspect_Makefile(char const *Makefile, struct info *infop)
 	    /*
 	     * detect clobber rule
 	     */
-	    } else if (infop->found_clobber_rule == false && strcmp(p, "clobber") == 0) {
+	    } else if (!infop->found_clobber_rule && strcmp(p, "clobber") == 0) {
 		/*
 		 * first clobber rule found
 		 */
@@ -2799,7 +2799,7 @@ inspect_Makefile(char const *Makefile, struct info *infop)
 	    /*
 	     * detect try rule
 	     */
-	    } else if (infop->found_try_rule == false && strcmp(p, "try") == 0) {
+	    } else if (!infop->found_try_rule && strcmp(p, "try") == 0) {
 		/*
 		 * first try rule found
 		 */
@@ -2816,8 +2816,8 @@ inspect_Makefile(char const *Makefile, struct info *infop)
 	    line = NULL;
 	}
 
-    } while (infop->first_rule_is_all == false || infop->found_all_rule == false || infop->found_clean_rule == false ||
-	     infop->found_clobber_rule == false || infop->found_try_rule == false);
+    } while (!infop->first_rule_is_all || !infop->found_all_rule || !infop->found_clean_rule ||
+	     !infop->found_clobber_rule || !infop->found_try_rule);
 
     /*
      * close Makefile
@@ -2840,8 +2840,8 @@ inspect_Makefile(char const *Makefile, struct info *infop)
     /*
      * if our parse of Makefile was successful
      */
-    if (infop->first_rule_is_all == true && infop->found_all_rule == true && infop->found_clean_rule == true &&
-	infop->found_clobber_rule == true && infop->found_try_rule == true) {
+    if (infop->first_rule_is_all && infop->found_all_rule && infop->found_clean_rule &&
+	infop->found_clobber_rule && infop->found_try_rule) {
 	dbg(DBG_MED, "Makefile appears to pass");
 	return true;
     }
@@ -2873,7 +2873,7 @@ warn_Makefile(char const *Makefile, struct info *infop)
 	err(97, __func__, "called with NULL arg(s)");
 	not_reached();
     }
-    if (need_confirm == true && ignore_warnings == false) {
+    if (need_confirm && !ignore_warnings) {
 	/*
 	 * report problem with Makefile
 	 */
@@ -2882,19 +2882,19 @@ warn_Makefile(char const *Makefile, struct info *infop)
 	      "There are problems with the Makefile provided:",
 	      "",
 	      NULL);
-	if (infop->first_rule_is_all == false) {
+	if (!infop->first_rule_is_all) {
 	    fpara(stderr, "The all rule appears to not be the first (default) rule.",
 		  "",
 		  NULL);
 	}
-	if (infop->found_all_rule == false) {
+	if (!infop->found_all_rule) {
 	    fpara(stderr,
 		  "  The Makefile appears to not have an all rule.",
 		  "    The all rule should make your compiled/built program.",
 		  "",
 		  NULL);
 	}
-	if (infop->found_clean_rule == false) {
+	if (!infop->found_clean_rule) {
 	    fpara(stderr,
 		  "  The Makefile appears to not have a clean rule.",
 		  "    The clean rule should remove any intermediate build files.",
@@ -2903,7 +2903,7 @@ warn_Makefile(char const *Makefile, struct info *infop)
 		  "",
 		  NULL);
 	}
-	if (infop->found_clobber_rule == false) {
+	if (!infop->found_clobber_rule) {
 	    fpara(stderr,
 		  "  The Makefile appears to not have a clobber rule.",
 		  "    The clobber rule should restore the directory to the original submission state.",
@@ -2913,7 +2913,7 @@ warn_Makefile(char const *Makefile, struct info *infop)
 		  "",
 		  NULL);
 	}
-	if (infop->found_try_rule == false) {
+	if (!infop->found_try_rule) {
 	    fpara(stderr,
 		  "  The Makefile appears to not have a try rule.",
 		  "    The try rule should execute the program with suggested arguments (if any needed).",
@@ -2948,7 +2948,7 @@ warn_Makefile(char const *Makefile, struct info *infop)
 	 * Ask if they want to submit it anyway
 	 */
 	yorn = yes_or_no("Do you still want to submit this Makefile in the hopes that it is OK? [yn]");
-	if (yorn == false) {
+	if (!yorn) {
 	    err(98, __func__, "Use a different Makefile or modify this file: %s", Makefile);
 	    not_reached();
 	}
@@ -3029,7 +3029,7 @@ check_Makefile(struct info *infop, char const *entry_dir, char const *cp, char c
     /*
      * scan Makefile for critical rules
      */
-    if (inspect_Makefile(Makefile, infop) == false) {
+    if (!inspect_Makefile(Makefile, infop)) {
 	warn_Makefile(Makefile, infop);
 	infop->Makefile_override = true;
     } else {
@@ -3605,7 +3605,7 @@ yes_or_no(char const *question)
 	    response = NULL;
 	}
 
-    } while (response == NULL && need_retry == true);
+    } while (response == NULL && need_retry);
     if (response == NULL) {
 	errp(147, __func__, "retry prompt is disabled");
 	not_reached();
@@ -3659,7 +3659,7 @@ get_title(struct info *infop)
     /*
      * inform the user of the title
      */
-    if (need_hints == true) {
+    if (need_hints) {
 	para("An entry title is a short name using the [a-z0-9][a-z0-9_+-]* regex pattern.",
 	      "",
 	      "If your entry wins, the title might become the directory name of your entry.",
@@ -3792,7 +3792,7 @@ get_title(struct info *infop)
 	    }
 	    continue;
 	}
-    } while (title == NULL && need_retry == true);
+    } while (title == NULL && need_retry);
 
     /*
      * check the result of the title validation
@@ -3908,7 +3908,7 @@ get_abstract(struct info *infop)
 	    }
 	    continue;
 	}
-    } while (abstract == NULL && need_retry == true);
+    } while (abstract == NULL && need_retry);
 
     /*
      * check the result of the abstract validation
@@ -4001,7 +4001,7 @@ get_author_info(struct info *infop, char *ioccc_id, struct author **author_set_p
 	    author_count_str = NULL;
 	}
 
-    } while ((author_count < 1 || author_count > MAX_AUTHORS) && need_retry == true);
+    } while ((author_count < 1 || author_count > MAX_AUTHORS) && need_retry);
 
     if (author_count < 1 || author_count > MAX_AUTHORS) {
 	errp(153, __func__, "retry prompt is disabled");
@@ -4028,7 +4028,7 @@ get_author_info(struct info *infop, char *ioccc_id, struct author **author_set_p
     /*
      * inform the user about the author information we need to collect
      */
-    if (need_hints == true) {
+    if (need_hints) {
 	para("",
 	     "We will now ask for information about the author(s) of this entry.",
 	     "",
@@ -4151,7 +4151,7 @@ get_author_info(struct info *infop, char *ioccc_id, struct author **author_set_p
 		    author_set[i].name = NULL;
 		}
 	    }
-	} while (author_set[i].name == NULL && need_retry == true);
+	} while (author_set[i].name == NULL && need_retry);
 	if (author_set[i].name == NULL) {
 	    errp(155, __func__, "retry prompt is disabled");
 	    not_reached();
@@ -4296,7 +4296,7 @@ get_author_info(struct info *infop, char *ioccc_id, struct author **author_set_p
 		/*
 		 * verify the known location/country code
 		 */
-	        if (need_confirm == true) {
+	        if (need_confirm) {
 		    errno = 0;		/* pre-clear errno for warnp() */
 		    ret = printf("The location/country code you entered is assigned to: %s\n", author_set[i].location_name);
 		    if (ret <= 0) {
@@ -4307,7 +4307,7 @@ get_author_info(struct info *infop, char *ioccc_id, struct author **author_set_p
 		    /*
 		     * free storage if no (reenter location/country code)
 		     */
-		    if (yorn == false) {
+		    if (!yorn) {
 			if (author_set[i].location_code != NULL) {
 			    free(author_set[i].location_code);
 			    author_set[i].location_code = NULL;
@@ -4317,9 +4317,9 @@ get_author_info(struct info *infop, char *ioccc_id, struct author **author_set_p
 		    yorn = true;
 		}
 	    }
-	} while ((author_set[i].location_code == NULL || author_set[i].location_name == NULL || yorn == false) &&
-		 need_retry == true);
-	if (author_set[i].location_code == NULL || author_set[i].location_name == NULL || yorn == false) {
+	} while ((author_set[i].location_code == NULL || author_set[i].location_name == NULL || !yorn) &&
+		 need_retry);
+	if (author_set[i].location_code == NULL || author_set[i].location_name == NULL || !yorn) {
 	    errp(156, __func__, "retry prompt is disabled");
 	    not_reached();
 	}
@@ -4334,7 +4334,7 @@ get_author_info(struct info *infop, char *ioccc_id, struct author **author_set_p
 	     * request Email address
 	     */
 	    author_set[i].email = NULL;
-	    author_set[i].email = prompt(need_hints == true ?
+	    author_set[i].email = prompt(need_hints ?
 		"Enter author email address, or press return to skip" :
 		"Enter author email address", &len);
 	    if (len == 0) {
@@ -4394,7 +4394,7 @@ get_author_info(struct info *infop, char *ioccc_id, struct author **author_set_p
 		    continue;
 		}
 	    }
-	} while (author_set[i].email == NULL && need_retry == true);
+	} while (author_set[i].email == NULL && need_retry);
 	if (author_set[i].email == NULL) {
 	    errp(157, __func__, "retry prompt is disabled");
 	    not_reached();
@@ -4411,7 +4411,7 @@ get_author_info(struct info *infop, char *ioccc_id, struct author **author_set_p
 	     */
 	    author_set[i].url = NULL;
 	    author_set[i].url =
-		prompt(need_hints == true ?
+		prompt(need_hints ?
 		    "Enter author home page URL (starting with http:// or https://), or press return to skip" :
 		    "Enter author home page URL", &len);
 	    if (len == 0) {
@@ -4482,7 +4482,7 @@ get_author_info(struct info *infop, char *ioccc_id, struct author **author_set_p
 		    continue;
 		}
 	    }
-	} while (author_set[i].url == NULL && need_retry == true);
+	} while (author_set[i].url == NULL && need_retry);
 	if (author_set[i].url == NULL) {
 	    errp(158, __func__, "retry prompt is disabled");
 	    not_reached();
@@ -4498,7 +4498,7 @@ get_author_info(struct info *infop, char *ioccc_id, struct author **author_set_p
 	     * request twitter handle
 	     */
 	    author_set[i].twitter = NULL;
-	    author_set[i].twitter = prompt(need_hints == true ?
+	    author_set[i].twitter = prompt(need_hints ?
 		"Enter author twitter handle, starting with @, or press return to skip" :
 		"Enter author twitter handle", &len);
 	    if (len == 0) {
@@ -4559,7 +4559,7 @@ get_author_info(struct info *infop, char *ioccc_id, struct author **author_set_p
 		    continue;
 		}
 	    }
-	} while (author_set[i].twitter == NULL && need_retry == true);
+	} while (author_set[i].twitter == NULL && need_retry);
 	if (author_set[i].twitter == NULL) {
 	    errp(159, __func__, "retry prompt is disabled");
 	    not_reached();
@@ -4575,7 +4575,7 @@ get_author_info(struct info *infop, char *ioccc_id, struct author **author_set_p
 	     * request GitHub account
 	     */
 	    author_set[i].github = NULL;
-	    author_set[i].github = prompt(need_hints == true ?
+	    author_set[i].github = prompt(need_hints ?
 		"Enter author GitHub account, starting with @, or press return to skip" :
 		"Enter author GitHub account", &len);
 	    if (len == 0) {
@@ -4638,7 +4638,7 @@ get_author_info(struct info *infop, char *ioccc_id, struct author **author_set_p
 		    continue;
 		}
 	    }
-	} while (author_set[i].github == NULL && need_retry == true);
+	} while (author_set[i].github == NULL && need_retry);
 	if (author_set[i].github == NULL) {
 	    errp(160, __func__, "retry prompt is disabled");
 	    not_reached();
@@ -4654,7 +4654,7 @@ get_author_info(struct info *infop, char *ioccc_id, struct author **author_set_p
 	     * request affiliation
 	     */
 	    author_set[i].affiliation = NULL;
-	    author_set[i].affiliation = prompt(need_hints == true ?
+	    author_set[i].affiliation = prompt(need_hints ?
 		"Enter author affiliation, or press return to skip" :
 		"Enter author affiliation", &len);
 	    if (len == 0) {
@@ -4688,7 +4688,7 @@ get_author_info(struct info *infop, char *ioccc_id, struct author **author_set_p
 		}
 		continue;
 	    }
-	} while (author_set[i].affiliation == NULL && need_retry == true);
+	} while (author_set[i].affiliation == NULL && need_retry);
 	if (author_set[i].affiliation == NULL) {
 	    errp(161, __func__, "retry prompt is disabled");
 	    not_reached();
@@ -4715,9 +4715,9 @@ get_author_info(struct info *infop, char *ioccc_id, struct author **author_set_p
 	    errp(162, __func__, "error while printing author #%d information\n", i);
 	    not_reached();
 	}
-	if (need_confirm == true) {
+	if (need_confirm) {
 	    yorn = yes_or_no("Is that author information correct? [yn]");
-	    if (yorn == false) {
+	    if (!yorn) {
 		/*
 		 * reenter author information
 		 */
@@ -4913,7 +4913,7 @@ verify_entry_dir(char const *entry_dir, char const *ls)
      * ask the user to verify the list
      */
     yorn = yes_or_no("\nIs the above list a correct list of files in your entry? [yn]");
-    if (yorn == false) {
+    if (!yorn) {
 	fpara(stderr,
 	      "",
 	      "We suggest you remove the existing entry directory, and then",
@@ -5371,7 +5371,7 @@ json_fprintf_value_bool(FILE *stream, char const *lead, char const *name, char c
      * print value as a JSON boolean
      */
     errno = 0;			/* pre-clear errno for warnp() */
-    ret = fprintf(stream, "%s", (value == true) ? "true" : "false");
+    ret = fprintf(stream, "%s", (value) ? "true" : "false");
     if (ret <= 0) {
 	warnp(__func__, "fprintf for value as a boolean");
 	return false;
@@ -5567,7 +5567,7 @@ write_info(struct info *infop, char const *entry_dir, bool test_mode)
 	json_fprintf_value_bool(info_stream, "\t", "found_try_rule", " : ", infop->found_try_rule, ",\n") &&
 	json_fprintf_value_bool(info_stream, "\t", "test_mode", " : ", test_mode, ",\n") &&
 	fprintf(info_stream, "\t\"manifest\" : [\n") > 0;
-    if (ret == false) {
+    if (!ret) {
 	errp(189, __func__, "fprintf error writing leading part of info to %s", info_path);
 	not_reached();
     }
@@ -5581,7 +5581,7 @@ write_info(struct info *infop, char const *entry_dir, bool test_mode)
 	  json_fprintf_value_string(info_stream, "\t\t{", "Makefile", " : ", infop->Makefile, "},\n") &&
 	  json_fprintf_value_string(info_stream, "\t\t{", "remarks", " : ", infop->remarks_md,
 				    ((infop->extra_count > 0) ?  "},\n" : "}\n"));
-    if (ret == false) {
+    if (!ret) {
 	errp(190, __func__, "fprintf error writing mandatory filename to %s", info_path);
 	not_reached();
     }
@@ -5608,7 +5608,7 @@ write_info(struct info *infop, char const *entry_dir, bool test_mode)
 	json_fprintf_value_long(info_stream, "\t", "min_timestamp", " : ", MIN_TIMESTAMP, "\n") &&
 	json_fprintf_value_string(info_stream, "\t", "formed_UTC", " : ", infop->gmtime, "\n") &&
 	fprintf(info_stream, "}\n") > 0;
-    if (ret == false) {
+    if (!ret) {
 	errp(192, __func__, "fprintf error writing trailing part of info to %s", info_path);
 	not_reached();
     }
@@ -5703,7 +5703,7 @@ write_author(struct info *infop, int author_count, struct author *authorp, char 
 	json_fprintf_value_string(author_stream, "\t", "IOCCC_contest_id", " : ", infop->ioccc_id, ",\n") &&
 	json_fprintf_value_long(author_stream, "\t", "entry_num", " : ", (long)infop->entry_num, ",\n") &&
 	fprintf(author_stream, "\t\"authors\" : [\n") > 0;
-    if (ret == false) {
+    if (!ret) {
 	errp(198, __func__, "fprintf error writing leading part of authorship to %s", author_path);
 	not_reached();
     }
@@ -5741,7 +5741,7 @@ write_author(struct info *infop, int author_count, struct author *authorp, char 
 	json_fprintf_value_long(author_stream, "\t", "min_timestamp", " : ", MIN_TIMESTAMP, "\n") &&
 	json_fprintf_value_string(author_stream, "\t", "formed_UTC", " : ", infop->gmtime, "\n") &&
 	fprintf(author_stream, "}\n") > 0;
-    if (ret == false) {
+    if (!ret) {
 	errp(200, __func__, "fprintf error writing trailing part of authorship to %s", author_path);
 	not_reached();
     }
@@ -6067,7 +6067,7 @@ remind_user(char const *work_dir, char const *entry_dir, char const *tar, char c
     /*
      * case: test mode
      */
-    if (test_mode == true) {
+    if (test_mode) {
 
 	/*
 	 * remind them that this is a test entry, not an official entry
@@ -6101,7 +6101,7 @@ remind_user(char const *work_dir, char const *entry_dir, char const *tar, char c
     /*
      * case: test mode report
      */
-    if (test_mode == false) {
+    if (!test_mode) {
 	para("",
 	     "If the contest is still open, you may upload the above",
 	     "tarball to the following submission URL:",

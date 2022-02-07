@@ -60,9 +60,9 @@
 
 
 /*
- * mkiocccentry version
+ * fnamchk version
  */
-#define FILENAMECHECK_VERSION "0.1 2022-02-03"	/* use format: major.minor YYYY-MM-DD */
+#define FILENAMECHECK_VERSION "0.2 2022-02-07"	/* use format: major.minor YYYY-MM-DD */
 
 
 /*
@@ -109,18 +109,18 @@ main(int argc, char *argv[])
     char *filepath;		/* filepath argument to check */
     char *filename;		/* basename of filepath to check */
     int ret;			/* libc return code */
-    char *entry;		/* 1st .-separated token - entry */
-    char *uuid;			/* 2nd .-separated token - test or UUID */
+    char *entry;		/* 1st '.' separated token - entry */
+    char *uuid;			/* 1st '-' separated token - test or UUID */
     size_t len;			/* UUID length */
     unsigned int a, b, c, d, e, f;	/* parts of the UUID string */
     unsigned int version = 0;	/* UUID version hex character */
     unsigned int variant = 0;	/* UUID variant hex character */
     char guard;			/* scanf guard to catch excess amount of input */
-    char *entry_str;		/* 3nd .-separated token - entry number */
-    int entry_num;		/* 3nd .-separated token as a number */
+    char *entry_str;		/* 2nd .-separated token - entry number */
+    int entry_num;		/* 3rd .-separated token as a number */
     char *timestamp_str;	/* 4th .-separated token - timestamp */
-    long timestamp;		/* 4th .-separated token as a timestamp */
-    char *extension;		/* 5th .-separated token as a filename extension */
+    long timestamp;		/* 5th .-separated token as a timestamp */
+    char *extension;		/* 6th .-separated token as a filename extension */
     int i;
 
 
@@ -188,11 +188,11 @@ main(int argc, char *argv[])
     dbg(DBG_LOW, "filename starts with \"entry.\": %s", filename);
 
     /*
-     * 2nd .-separated token must be test or a UUID
+     * 1st '-' separated token must be test or a UUID
      */
-    uuid = strtok(NULL, ".");
+    uuid = strtok(NULL, "-");
     if (uuid == NULL) {
-	err(4, __func__, "nothing found after 1st .-separated token of entry");
+	err(4, __func__, "nothing found after 1st '.'  separated token of entry");
 	not_reached();
     }
     if (strcmp(uuid, "test") == 0) {
@@ -200,77 +200,77 @@ main(int argc, char *argv[])
     } else {
 	len = strlen(uuid);
 	if (len != UUID_LEN) {
-	    err(5, __func__, "2nd .-separated token is neither test nor a UUID: %s", filepath);
+	    err(5, __func__, "1st '-' separated token is neither test nor a UUID: %s", filepath);
 	    not_reached();
 	}
 	ret = sscanf(uuid, "%8x-%4x-%1x%3x-%1x%3x-%8x%4x%c", &a, &b, &version, &c, &variant, &d, &e, &f, &guard);
 	if (ret != 8) {
-	    err(6, __func__, "2nd .-separated non-test in not in UUID format: %s", filepath);
+	    err(6, __func__, "1st '-' separated non-test not in UUID format: %s", filepath);
 	    not_reached();
 	}
 	if (version != UUID_VERSION) {
-	    err(7, __func__, "2nd .-separated UUID token version %x != %x: %s", version, UUID_VERSION, filepath);
+	    err(7, __func__, "1st '-' separated UUID token version %x != %x: %s", version, UUID_VERSION, filepath);
 	    not_reached();
 	}
 	if (variant != UUID_VARIANT) {
-	    err(8, __func__, "2nd .-separated UUID token variant %x != %x: %s", variant, UUID_VARIANT, filepath);
+	    err(8, __func__, "1st '-' separated UUID token variant %x != %x: %s", variant, UUID_VARIANT, filepath);
 	    not_reached();
 	}
 	dbg(DBG_LOW, "entry ID is a valid UUID: %s", uuid);
     }
 
     /*
-     * 3rd .-separated token must a valid entry number
+     * 2nd .-separated token must a valid entry number
      */
     entry_str = strtok(NULL, ".");
     if (entry_str == NULL) {
-	err(9, __func__, "nothing found after 2rd .-separated token of entry.test nor entry.UUID");
+	err(9, __func__, "nothing found after 2nd '.' separated token of entry.test nor entry.UUID");
 	not_reached();
     }
     ret = sscanf(entry_str, "%d%c", &entry_num, &guard);
     if (ret != 1) {
-	err(10, __func__, "3rd .-separated token: %s is not an entry number: %s", entry_str, filepath);
+	err(10, __func__, "2nd '.' separated token: %s is not an entry number: %s", entry_str, filepath);
 	not_reached();
     }
     if (entry_num < 0) {
-	err(11, __func__, "3rd .-separated entry number: %d is < 0: %s", entry_num, filepath);
+	err(11, __func__, "2nd '.' separated entry number: %d is < 0: %s", entry_num, filepath);
 	not_reached();
     }
     if (entry_num > MAX_ENTRY_NUM) {
-	err(12, __func__, "3rd .-separated entry number: %d is > %d: %s", entry_num, MAX_ENTRY_NUM, filepath);
+	err(12, __func__, "2nd '-' separated entry number: %d is > %d: %s", entry_num, MAX_ENTRY_NUM, filepath);
 	not_reached();
     }
     dbg(DBG_LOW, "entry number is valid: %d", entry_num);
 
     /*
-     * 4th .-separated token must a valid timestamp
+     * 3rd '.' separated token must a valid timestamp
      */
     timestamp_str = strtok(NULL, ".");
     if (timestamp_str == NULL) {
-	err(13, __func__, "nothing found after 3th .-separated token of entry number");
+	err(13, __func__, "nothing found after 3rd '.' separated token of entry number");
 	not_reached();
     }
     ret = sscanf(timestamp_str, "%ld%c", &timestamp, &guard);
     if (ret != 1) {
-	err(14, __func__, "4th .-separated token: %s is not a timestamp: %s", timestamp_str, filepath);
+	err(14, __func__, "3rd '.' separated token: %s is not a timestamp: %s", timestamp_str, filepath);
 	not_reached();
     }
     if (timestamp < MIN_TIMESTAMP) {
-	err(15, __func__, "4th .-separated timestamp: %ld is < %ld: %s", timestamp, (long)MIN_TIMESTAMP, filepath);
+	err(15, __func__, "3rd '.' separated timestamp: %ld is < %ld: %s", timestamp, (long)MIN_TIMESTAMP, filepath);
 	not_reached();
     }
     dbg(DBG_LOW, "timestamp is valid: %ld", timestamp);
 
     /*
-     * 5th .-separated token must be the filename extension
+     * 4th .-separated token must be the filename extension
      */
     extension = strtok(NULL, ".");
     if (extension == NULL) {
-	err(16, __func__, "nothing found after 4th .-separated token of timestamp");
+	err(16, __func__, "nothing found after 4th '.' separated token of timestamp");
 	not_reached();
     }
     if (strcmp(extension, "txz") != 0) {
-	err(17, __func__, "final 5th .-separated token filename extension: %s != txz: %s", extension, filepath);
+	err(17, __func__, "final 5th '.' separated token filename extension: %s != txz: %s", extension, filepath);
 	not_reached();
     }
     dbg(DBG_LOW, "filename extension is valid: %s", extension);
@@ -280,7 +280,7 @@ main(int argc, char *argv[])
      */
     dbg(DBG_LOW, "filepath passes all checks: %s", filepath);
     errno = 0;		/* pre-clear errno for errp() */
-    ret = printf("%s.%d\n", uuid, entry_num);
+    ret = printf("%s-%d\n", uuid, entry_num);
     if (ret <= 0) {
 	errp(18, __func__, "printf of entry directory basename failed");
 	not_reached();
