@@ -179,7 +179,7 @@ int main(int argc, char **argv)
     }
     sanity_chk(tar, fnamchk, txzpath);
     if (!quiet) {
-	para("... environment looks OK", "", NULL);
+	para("... environment looks OK", NULL);
     }
 
     /*
@@ -434,6 +434,8 @@ static int
 check_tarball(char const *tar, char const *fnamchk, char const *txzpath)
 {
     off_t size = 0; /* file size of tarball */
+    off_t file_sizes = 0; /* accumulation of file sizes within the tarball */
+    off_t rounded_file_size = 0; /* file sizes rounded up to 1024 multiple */
     unsigned line_num = 0; /* line number of tar output */
     char *cmd = NULL;	/* fnamchk and tar -tJvf */
     FILE *tar_stream = NULL; /* pipe for tar output */
@@ -456,7 +458,7 @@ check_tarball(char const *tar, char const *fnamchk, char const *txzpath)
     size = file_size(txzpath);
     /* report size (if too big) */
     if (size < 0) {
-	err(14, __func__, "impossible error: sanity_chk found tarball but file_size() did not");
+	err(14, __func__, "impossible error: sanity_chk() found tarball but file_size() did not");
 	not_reached();
     }
     else if (size > MAX_TARBALL_LEN) {
@@ -479,7 +481,7 @@ check_tarball(char const *tar, char const *fnamchk, char const *txzpath)
     }
     dbg(DBG_MED, "tarball %s size in bytes: %lu", txzpath, (unsigned long)size);
 
-   errno = 0;			/* pre-clear errno for errp() */
+    errno = 0;			/* pre-clear errno for errp() */
     cmd = cmdprintf("% -tJvf %", tar, txzpath);
     if (cmd == NULL) {
 	err(16, __func__, "failed to cmdprintf: tar -tJvf txzpath");
@@ -645,6 +647,21 @@ check_tarball(char const *tar, char const *fnamchk, char const *txzpath)
 	    ++issues;
 	}
 
+	p = strtok(NULL, " \t");
+	if (p == NULL) {
+	    err(30, __func__, "NULL pointer encountered trying to parse line");
+	    not_reached();
+	}
+
+	errno = 0;
+	file_sizes += strtoll(p, NULL, 10);
+	if (errno != 0) {
+	    err(31, __func__, "trying to parse file size in tarball on line: %s, string: %s", line_dup, p);
+	    not_reached();
+	}
+
+
+
 	free(line_dup);
 	line_dup = NULL;
 
@@ -659,6 +676,18 @@ check_tarball(char const *tar, char const *fnamchk, char const *txzpath)
 	warnp(__func__, "pclose error on tar stream");
     }
     tar_stream = NULL;
+
+    /* report total file size */
+    rounded_file_size = round_to_multiple(file_sizes, 1024);
+    if (rounded_file_size > MAX_DIR_KSIZE) {
+	warn(__func__, "accumulated size of all files %lld rounded up to multiple of 1024 %lld > %d", file_sizes, rounded_file_size, MAX_DIR_KSIZE);
+	++issues;
+    } else if (rounded_file_size < 0) {
+	err(30, __func__, "accumulated file size < 0!");
+	not_reached();
+    } else if (!quiet) {
+	printf("total size of files %lld rounded up to 1024 multiple: %lld OK\n", file_sizes, rounded_file_size);
+    }
 
     /*
      * report issues found before running fnamchk so that it's easy to see how
