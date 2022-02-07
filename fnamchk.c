@@ -60,9 +60,9 @@
 
 
 /*
- * mkiocccentry version
+ * fnamchk version
  */
-#define FILENAMECHECK_VERSION "0.1 2022-02-03"	/* use format: major.minor YYYY-MM-DD */
+#define FILENAMECHECK_VERSION "0.2 2022-02-07"	/* use format: major.minor YYYY-MM-DD */
 
 
 /*
