@@ -45,6 +45,24 @@ int verbosity_level = DBG_DEFAULT;	/* debug level set by -v */
 int issues = 0;				/* issues with tarball found */
 static bool quiet = false;		/* true ==> only show errors and warnings */
 
+struct info {
+    bool has_info_json;
+    bool has_author_json;
+    bool has_prog_c;
+    bool has_remarks_md;
+    bool has_Makefile;
+    unsigned dot_files;
+} info;
+
+struct file {
+    char *basename;
+    char *filename;
+    unsigned count;
+    struct file *next;
+};
+
+struct file *files;
+
 /*
  * definitions
  */
@@ -78,6 +96,9 @@ static void usage(int exitcode, char const *name, char const *str, char const *t
 static void sanity_chk(char const *tar, char const *fnamchk, char const *txzpath);
 static int check_tarball(char const *tar, char const *fnamchk, char const *txzpath);
 static bool has_special_bits(char const *str);
+static void add_file_to_list(struct file *file);
+static unsigned check_files(void);
+static void free_file_list(void);
 
 int main(int argc, char **argv)
 {
@@ -435,6 +456,7 @@ check_tarball(char const *tar, char const *fnamchk, char const *txzpath)
 {
     off_t size = 0; /* file size of tarball */
     off_t file_sizes = 0; /* accumulation of file sizes within the tarball */
+    off_t current_file_size = 0; /* current file size */
     off_t rounded_file_size = 0; /* file sizes rounded up to 1024 multiple */
     unsigned line_num = 0; /* line number of tar output */
     char *cmd = NULL;	/* fnamchk and tar -tJvf */
@@ -446,6 +468,7 @@ check_tarball(char const *tar, char const *fnamchk, char const *txzpath)
     int ret;			/* libc function return */
     int exit_code;
     int i;
+    struct file *file = NULL;
 
     /*
      * firewall
@@ -655,11 +678,12 @@ check_tarball(char const *tar, char const *fnamchk, char const *txzpath)
 	}
 
 	errno = 0;
-	file_sizes += strtoll(p, NULL, 10);
+	current_file_size = strtoll(p, NULL, 10);
 	if (errno != 0) {
 	    err(31, __func__, "trying to parse file size in tarball on line: %s, string: %s", line_dup, p);
 	    not_reached();
 	}
+	file_sizes += current_file_size;
 
 	/* 
 	 * the next three fields we don't care about but we loop four times to
@@ -673,6 +697,52 @@ check_tarball(char const *tar, char const *fnamchk, char const *txzpath)
 	    }
 	}
 	/* p should now contain the filename. */
+	errno = 0;
+	file = calloc(1, sizeof *file);
+	if (file == NULL) {
+	    err(32, __func__, "unable to allocate a struct file *");
+	    not_reached();
+	}
+
+	errno = 0;
+	file->filename = strdup(p);
+	if (!file->filename) {
+	    err(33, __func__, "unable to strdup filename %s", p);
+	    not_reached();
+	}
+
+	errno = 0;
+	file->basename = strdup(base_name(p)?base_name(p):"");
+	if (!file->basename || !strlen(file->basename)) {
+	    err(34, __func__, "unable to strdup basename of filename %s", p);
+	    not_reached();
+	}
+
+	/* 
+	 * although we could check these in check_file() we check here because
+	 * the add_file_to_list() function doesn't add the same file (basename)
+	 * more than once: it simply increments the times it's been seen.
+	 */
+	if (current_file_size == 0) {
+	    if (!strcmp(file->basename, ".author.json")) {
+		++issues;
+		warn(__func__, "found empty .author.json file");
+	    }
+	    else if (!strcmp(file->basename, ".info.json")) {
+		++issues;
+		warn(__func__, "found empty .info.json file");
+	    }
+	    else if (!strcmp(file->basename, "remarks.md")) {
+		++issues;
+		warn(__func__, "found empty remarks.md");
+	    }
+	    else if (!strcmp(file->basename, "Makefile")) {
+		++issues;
+		warn(__func__, "found empty Makefile");
+	    }
+	}
+
+	add_file_to_list(file);
 
 	free(line_dup);
 	line_dup = NULL;
@@ -689,6 +759,10 @@ check_tarball(char const *tar, char const *fnamchk, char const *txzpath)
     }
     tar_stream = NULL;
 
+
+    /* check the file list, reporting any issues */
+    issues += check_files();
+
     /* report total file size */
     rounded_file_size = round_to_multiple(file_sizes, 1024);
     if (rounded_file_size > MAX_DIR_KSIZE) {
@@ -700,6 +774,8 @@ check_tarball(char const *tar, char const *fnamchk, char const *txzpath)
     } else if (!quiet) {
 	printf("total size of files %lld rounded up to 1024 multiple: %lld OK\n", file_sizes, rounded_file_size);
     }
+
+
 
     /*
      * report issues found before running fnamchk so that it's easy to see how
@@ -761,8 +837,10 @@ check_tarball(char const *tar, char const *fnamchk, char const *txzpath)
     }
 
 
-    /* free cmd for tar */
     free(cmd);
+    cmd = NULL;
+
+    free_file_list();
 
     return issues;
 }
@@ -788,4 +866,127 @@ has_special_bits(char const *str)
     }
 
     return str[strspn(str, "-drwx")]!='\0';
+}
+/*
+ * add_file_to_list - add a filename to the linked list 
+ *
+ * given:
+ *
+ *	file		    - pointer to struct file which should already have the name
+ *
+ * If the function finds this filename already in the list (basename!) it
+ * increments the count and does not add it to the list; else it adds it to the
+ * list with a count of 1.
+ *
+ * This function does not return on error.
+ */
+static void
+add_file_to_list(struct file *file)
+{
+    struct file *ptr; /* used to iterate through list to find duplicate files */
+
+    /*
+     * firewall
+     */
+    if (file == NULL || !file->filename || !file->basename) {
+	err(37, __func__, "called with NULL pointer(s)");
+	not_reached();
+    }
+
+    for (ptr = files; ptr != NULL; ptr = ptr->next)
+    {
+	if (!strcmp(ptr->basename, file->basename)) {
+	    dbg(DBG_MED, "incrementing count of filename %s", file->basename);
+	    ptr->count++;
+	    return;
+	}
+    }
+    file->count++;
+    /* lazily add to list */
+    dbg(DBG_MED, "adding filename %s (basename %s) to list of files", file->filename, file->basename);
+    file->next = files;
+    files = file;
+}
+
+/* check_files	- check the files list, reporting issues (that aren't reported elsewhere)
+ *
+ * Returns the number of issues that _this_ function finds.
+ */
+static unsigned
+check_files(void)
+{
+    unsigned issues = 0;
+    struct file *file = NULL;
+
+    for (file = files; file; file = file->next) {
+	if (!strcmp(file->basename, ".info.json")) {
+	    info.has_info_json = true;
+	} else if (!strcmp(file->basename, ".author.json")) {
+	    info.has_author_json = true;
+	} else if (!strcmp(file->basename, "Makefile")) {
+	    info.has_Makefile = true;
+	} else if (!strcmp(file->basename, "prog.c")) {
+	    info.has_prog_c = true;
+	} else if (!strcmp(file->basename, "remarks.md")) {
+	    info.has_remarks_md = true;
+	} else if (*(file->basename) == '.' && strcmp(file->basename, ".info.json") && strcmp(file->basename, ".author.json")) {
+	    ++issues;
+	    warn(__func__, "found non .author.json and .info.json dot file");
+	    info.dot_files++;
+	}
+
+	if (file->count > 1) {
+	    warn(__func__, "found a total of %u files with the name %s", file->count, file->basename);
+	    issues += file->count - 1;
+	}
+    }
+
+    /* determine if the required files are there */
+    if (!info.has_info_json) {
+	warn(__func__, "tarball has no .info.json file");
+	++issues;
+    }
+    if (!info.has_author_json) {
+	warn(__func__, "tarball has no .author.json file");
+	++issues;
+    }
+    if (!info.has_prog_c) {
+	warn(__func__, "tarball has no prog.c file");
+	++issues;
+    }
+    if (!info.has_Makefile) {
+	warn(__func__, "tarball has no Makefile");
+	++issues;
+    }
+    if (!info.has_remarks_md) {
+	warn(__func__, "tarball has no remarks.md file");
+	++issues;
+    }
+
+
+    return issues;
+}
+/*
+ * free_file_list - free the file linked list
+ *
+ */
+static void
+free_file_list(void)
+{
+    struct file *file, *next_file;
+
+    for (file = files; file != NULL; file = next_file) {
+	next_file = file->next;
+	if (file->filename) {
+	    free(file->filename);
+	    file->filename = NULL;
+	}
+	if (file->basename) {
+	    free(file->basename);
+	    file->basename = NULL;
+	}
+
+	free(file);
+	file = NULL;
+    }
 }
