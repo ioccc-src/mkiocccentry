@@ -35,7 +35,7 @@
 /*
  * txzchk version
  */
-#define TXZCHK_VERSION "0.3 2022-02-06"	/* use format: major.minor YYYY-MM-DD */
+#define TXZCHK_VERSION "0.4 2022-02-07"	/* use format: major.minor YYYY-MM-DD */
 
 
 /*
@@ -445,6 +445,7 @@ check_tarball(char const *tar, char const *fnamchk, char const *txzpath)
     int dir_count = 0;		/* number of directories detected */
     int ret;			/* libc function return */
     int exit_code;
+    int i;
 
     /*
      * firewall
@@ -660,7 +661,18 @@ check_tarball(char const *tar, char const *fnamchk, char const *txzpath)
 	    not_reached();
 	}
 
-
+	/* 
+	 * the next three fields we don't care about but we loop four times to
+	 * get the following field which we do care about.
+	 */
+	for (i = 0; i < 4; ++i) {
+	    p = strtok(NULL, " \t");
+	    if (p == NULL) {
+		err(32, __func__, "NULL pointer trying to parse line");
+		not_reached();
+	    }
+	}
+	/* p should now contain the filename. */
 
 	free(line_dup);
 	line_dup = NULL;
