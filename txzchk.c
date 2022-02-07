@@ -88,7 +88,7 @@ int main(int argc, char **argv)
     char *txzpath;			    /* txzpath argument to check */
     char *fnamchk = FNAMCHK_PATH_0;   	    /* path to fnamchk tool */
     bool fnamchk_flag_used = false;	    /* if -F option used */
-    bool t_flag_used = false;		    /* true ==> -t /path/to/tar was given */
+    bool tar_flag_used = false;		    /* true ==> -t /path/to/tar was given */
     int ret;				    /* libc return code */
     int i;
 
@@ -128,7 +128,7 @@ int main(int argc, char **argv)
 	    break;
 	case 't':
 	    tar = optarg;
-	    t_flag_used = true;
+	    tar_flag_used = true;
 	    break;
 	case 'q':
 	    quiet = true;
@@ -168,7 +168,7 @@ int main(int argc, char **argv)
      * On some systems where /usr/bin != /bin, the distribution made the mistake of
      * moving historic critical applications, look to see if the alternate path works instead.
      */
-    find_utils(t_flag_used, &tar, false, NULL, false, NULL, false, NULL, fnamchk_flag_used, &fnamchk);
+    find_utils(tar_flag_used, &tar, false, NULL, false, NULL, false, NULL, fnamchk_flag_used, &fnamchk);
 
 
     /*
