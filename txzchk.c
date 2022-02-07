@@ -741,6 +741,13 @@ check_tarball(char const *tar, char const *fnamchk, char const *txzpath)
 		warn(__func__, "found empty Makefile");
 	    }
 	}
+	if (strstr(file->filename, "../")) {
+	    ++issues;
+	    warn(__func__, "found file with ../ in the path: %s", file->filename);
+	} else if (!strncmp(file->filename, "/", 1)) {
+	    ++issues;
+	    warn(__func__, "found absolute path %s", file->filename);
+	}
 
 	add_file_to_list(file);
 
