@@ -458,14 +458,17 @@ check_tarball(char const *tar, char const *fnamchk)
     unsigned line_num = 0; /* line number of tar output */
     char *cmd = NULL;	/* fnamchk and tar -tJvf */
     FILE *tar_stream = NULL; /* pipe for tar output */
-    char *linep = NULL;		/* allocated line read from iocccsize */
+    FILE *fnamchk_stream = NULL; /* pipe for fnamchk output */
+    char *linep = NULL;		/* allocated line read from tar */
     char *line_dup = NULL;	/* duplicated line from readline */
+    char *dir_name = NULL;	/* line read from fnamchk (directory name) */
     ssize_t readline_len;	/* readline return length */
     int dir_count = 0;		/* number of directories detected */
     int ret;			/* libc function return */
     int exit_code;
     int i;
     struct file *file = NULL;
+    bool fnamchk_okay = false;    /* true ==> fnamchk passed */
 
     /*
      * firewall
@@ -473,6 +476,104 @@ check_tarball(char const *tar, char const *fnamchk)
     if (tar == NULL || fnamchk == NULL || txzpath == NULL) {
 	err(13, __func__, "called with NULL arg(s)");
 	not_reached();
+    }
+
+    /* 
+     * First of all we have to run fnamchk on the tarball: this is important
+     * because we have to know the actual directory name the files should be in
+     * within the tarball and we cannot use strtok(3) on the strdup()'d strings
+     * (since we then can't free them) later on so we have to act on the path in
+     * the initial loop when discovering the filenames.
+     */
+
+    /* form command line to fnamchk */
+    errno = 0;			/* pre-clear errno for errp() */
+    cmd = cmdprintf("% %", fnamchk, txzpath);
+    if (cmd == NULL) {
+	err(30, __func__, "failed to cmdprintf: fnamchk txzpath");
+	not_reached();
+    }
+    dbg(DBG_HIGH, "about to perform: system(%s)", cmd);
+
+    /*
+     * pre-flush to avoid system() buffered stdio issues
+     */
+    clearerr(stdout);		/* pre-clear ferror() status */
+    errno = 0;			/* pre-clear errno for errp() */
+    ret = fflush(stdout);
+    if (ret < 0) {
+	errp(31, __func__, "fflush(stdout) error code: %d", ret);
+	not_reached();
+    }
+    errno = 0;			/* pre-clear errno for errp() */
+    clearerr(stderr);		/* pre-clear ferror() status */
+    errno = 0;			/* pre-clear errno for errp() */
+    ret = fflush(stderr);
+    if (ret < 0) {
+	errp(32, __func__, "fflush(stderr) #1: error code: %d", ret);
+	not_reached();
+    }
+
+    /*
+     * execute the fnamchk command
+     */
+    errno = 0;			/* pre-clear errno for errp() */
+    exit_code = system(cmd);
+    if (exit_code < 0) {
+	errp(33, __func__, "%s: error calling system(%s)", txzpath, cmd);
+	not_reached();
+    } else if (exit_code == 127) {
+	errp(34, __func__, "%s: execution of the shell failed for system(%s)", txzpath, cmd);
+	not_reached();
+    } else if (exit_code != 0) {
+	warn("txzchk", "%s: %s failed with exit code: %d", txzpath, cmd, WEXITSTATUS(exit_code));
+	++total_issues;
+    } else {
+	fnamchk_okay = true;
+    }
+
+    /* 
+     * If fnamchk went okay we have to retrieve the directory name that's
+     * expected and compare it to what's in the filenames of the tarball. Since
+     * it's the only output we shouldn't have to loop at all. If the output
+     * format of the tool changes this must also change!
+     *
+     * Note that the reason we don't exit if fnamchk reports an error is we
+     * still can detect other issues; we just won't detect issues with the entry
+     * number and directory.
+     */
+    if (fnamchk_okay) {
+
+	/*
+	 * form pipe to the fnamchk command
+	 */
+	errno = 0;			/* pre-clear errno for errp() */
+	fnamchk_stream = popen(cmd, "r");
+	if (fnamchk_stream == NULL) {
+	    errp(24, __func__, "popen for reading failed for: %s", cmd);
+	    not_reached();
+	}
+	setlinebuf(fnamchk_stream);
+
+	readline_len = readline(&dir_name, fnamchk_stream);
+	if (readline_len < 0) {
+	    warn("txzchk", "%s: unexpected EOF from fnamchk", txzpath);
+	}
+	
+	/*
+	 * close down pipe
+	 */
+	errno = 0;		/* pre-clear errno for errp() */
+	ret = pclose(fnamchk_stream);
+	if (ret < 0) {
+	    warnp(__func__, "%s: pclose error on fnamchk stream", txzpath);
+	}
+	fnamchk_stream = NULL;
+
+	if (dir_name == NULL || !strlen(dir_name)) {
+	    err(40, __func__, "txzchk: %s: unexpected NULL pointer from %s", txzpath, cmd);
+	    not_reached();
+	}
     }
 
     /* determine size of tarball */
@@ -501,6 +602,11 @@ check_tarball(char const *tar, char const *fnamchk)
 	}
     }
     dbg(DBG_MED, "txzchk: %s size in bytes: %lu", txzpath, (unsigned long)size);
+
+    /*
+     * free cmd for tar command
+     */
+    free(cmd); 
 
     errno = 0;			/* pre-clear errno for errp() */
     cmd = cmdprintf("% -tJvf %", tar, txzpath);
@@ -749,8 +855,23 @@ check_tarball(char const *tar, char const *fnamchk)
 		warn("txzchk", "%s: found empty Makefile", txzpath);
 	    }
 	}
-
 	add_file_to_list(file);
+
+	/* 
+	 * Now we have to run some tests on the directory name which we obtained
+	 * from fnamchk earlier on - but only if fnamchk did not return an
+	 * error! If it did we'll report other issues but we won't check
+	 * directory names (at least the directory name expected in the
+	 * tarball).
+	 */
+
+	if (fnamchk_okay && dir_name != NULL && strlen(dir_name) > 0) {
+	    if (strncmp(p, dir_name, strlen(dir_name))) {
+		warn("txzchk", "%s: incorrect directory in filename %s", txzpath, p);
+		++total_issues;
+	    }
+	}
+
 
 	free(line_dup);
 	line_dup = NULL;
@@ -865,49 +986,6 @@ check_tarball(char const *tar, char const *fnamchk)
     free(cmd);
     cmd = NULL;
 
-    /* form command line to fnamchk */
-    errno = 0;			/* pre-clear errno for errp() */
-    cmd = cmdprintf("% %", fnamchk, txzpath);
-    if (cmd == NULL) {
-	err(30, __func__, "failed to cmdprintf: fnamchk txzpath");
-	not_reached();
-    }
-    dbg(DBG_HIGH, "about to perform: system(%s)", cmd);
-
-    /*
-     * pre-flush to avoid system() buffered stdio issues
-     */
-    clearerr(stdout);		/* pre-clear ferror() status */
-    errno = 0;			/* pre-clear errno for errp() */
-    ret = fflush(stdout);
-    if (ret < 0) {
-	errp(31, __func__, "fflush(stdout) error code: %d", ret);
-	not_reached();
-    }
-    errno = 0;			/* pre-clear errno for errp() */
-    clearerr(stderr);		/* pre-clear ferror() status */
-    errno = 0;			/* pre-clear errno for errp() */
-    ret = fflush(stderr);
-    if (ret < 0) {
-	errp(32, __func__, "fflush(stderr) #1: error code: %d", ret);
-	not_reached();
-    }
-
-    /*
-     * execute the fnamchk command
-     */
-    errno = 0;			/* pre-clear errno for errp() */
-    exit_code = system(cmd);
-    if (exit_code < 0) {
-	errp(33, __func__, "%s: error calling system(%s)", txzpath, cmd);
-	not_reached();
-    } else if (exit_code == 127) {
-	errp(34, __func__, "%s: execution of the shell failed for system(%s)", txzpath, cmd);
-	not_reached();
-    } else if (exit_code != 0) {
-	warn("txzchk", "%s: %s failed with exit code: %d", txzpath, cmd, WEXITSTATUS(exit_code));
-	++total_issues;
-    }
     /*
      * report total issues found
      */
