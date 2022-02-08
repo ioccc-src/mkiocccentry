@@ -594,6 +594,17 @@ check_tarball(char const *tar, char const *fnamchk)
 	    dbg(DBG_HIGH, "reached EOF of tarball %s", txzpath);
 	    break;
 	}
+
+	/*
+	 * scan for embedded NUL bytes (before end of line)
+	 *
+	 */
+	errno = 0;			/* pre-clear errno for errp() */
+	p = (char *)memchr(linep, 0, (size_t)readline_len);
+	if (p != NULL) {
+	    errp(237, __func__, "found NUL before end of line");
+	    not_reached();
+	}
 	dbg(DBG_VHIGH, "line %d: %s", line_num, linep);
 
 	/*
