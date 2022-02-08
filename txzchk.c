@@ -899,13 +899,13 @@ check_tarball(char const *tar, char const *fnamchk)
     errno = 0;			/* pre-clear errno for errp() */
     exit_code = system(cmd);
     if (exit_code < 0) {
-	errp(33, __func__, "error calling system(%s)", cmd);
+	errp(33, __func__, "%s: error calling system(%s)", txzpath, cmd);
 	not_reached();
     } else if (exit_code == 127) {
-	errp(34, __func__, "execution of the shell failed for system(%s)", cmd);
+	errp(34, __func__, "%s: execution of the shell failed for system(%s)", txzpath, cmd);
 	not_reached();
     } else if (exit_code != 0) {
-	warn("txzchk", "%s failed with exit code: %d", cmd, WEXITSTATUS(exit_code));
+	warn("txzchk", "%s: %s failed with exit code: %d", txzpath, cmd, WEXITSTATUS(exit_code));
 	++total_issues;
     }
     /*
