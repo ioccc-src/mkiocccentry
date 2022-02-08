@@ -871,6 +871,10 @@ check_tarball(char const *tar, char const *fnamchk)
 		++total_issues;
 	    }
 	}
+	if (strchr(p, '/') == NULL) {
+	    warn("txzchk", "%s: no directory found in filename %s", txzpath, p);
+	    ++total_issues;
+	}
 
 
 	free(line_dup);
