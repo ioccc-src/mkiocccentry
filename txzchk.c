@@ -759,7 +759,7 @@ check_tarball(char const *tar, char const *fnamchk)
 	}
 	/*
 	 * attempt to find !isdigit() chars (i.e. the tarball listing includes
-	 * the owner name of the files
+	 * the owner name of the file).
 	 */
 	for (; p && *p && isdigit(*p); )
 	    ++p; /* satisfy warnings */
