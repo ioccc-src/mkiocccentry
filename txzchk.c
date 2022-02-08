@@ -956,7 +956,7 @@ check_tarball(char const *tar, char const *fnamchk)
     }
 
     /* 
-     * Report total number of non .author.json and .info.json files.
+     * Report total number of non .author.json and .info.json dot files.
      * Don't increment the number of issues as this was done when iterating
      * through the linked list above.
      */
