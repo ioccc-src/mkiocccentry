@@ -981,7 +981,7 @@ check_tarball(char const *tar, char const *fnamchk)
     }
 
     /*
-     * free cmd for next command
+     * free cmd
      */
     free(cmd);
     cmd = NULL;
@@ -992,11 +992,6 @@ check_tarball(char const *tar, char const *fnamchk)
     if (total_issues > 0) {
 	warn("txzchk", "%s: txzchk found %u issue%s\n", txzpath, total_issues, total_issues==1?"":"s");
     }
-
-
-
-    free(cmd);
-    cmd = NULL;
 
     free_file_list();
 
