@@ -553,7 +553,7 @@ check_tarball(char const *tar, char const *fnamchk)
 	    errp(24, __func__, "popen for reading failed for: %s", cmd);
 	    not_reached();
 	}
-	setlinebuf(fnamchk_stream);
+	setvbuf(fnamchk_stream, (char *)NULL, _IOLBF, 0);
 
 	readline_len = readline(&dir_name, fnamchk_stream);
 	if (readline_len < 0) {
@@ -596,7 +596,7 @@ check_tarball(char const *tar, char const *fnamchk)
     }
     else if (!quiet) {
 	errno = 0;
-	ret = printf("txzchk: %s size of %lld bytes OK\n", txzpath, (off_t) size);
+	ret = printf("txzchk: %s size of %lu bytes OK\n", txzpath, (unsigned long) size);
 	if (ret <= 0) {
 	    warn("txzchk", "unable to tell user how big the tarball %s is", txzpath);
 	}
@@ -679,7 +679,7 @@ check_tarball(char const *tar, char const *fnamchk)
 	errp(24, __func__, "popen for reading failed for: %s", cmd);
 	not_reached();
     }
-    setlinebuf(tar_stream);
+    setvbuf(tar_stream, (char *)NULL, _IOLBF, 0);
 
     /*
      * process all tar lines listed
@@ -974,14 +974,16 @@ check_tarball(char const *tar, char const *fnamchk)
 	++total_issues;
     }
     rounded_file_size = round_to_multiple(file_sizes, 1024);
-    if (rounded_file_size > MAX_DIR_KSIZE) {
-	warn("txzchk", "%s: total size of files %lld rounded up to multiple of 1024 %lld > %d", txzpath, file_sizes, rounded_file_size, MAX_DIR_KSIZE);
-	++total_issues;
-    } else if (rounded_file_size < 0) {
+    if (rounded_file_size < 0) {
 	err(30, __func__, "%s: total size of all files rounded up to multiple of 1024 < 0!", txzpath);
 	not_reached();
+    } else if (rounded_file_size > MAX_DIR_KSIZE) {
+	warn("txzchk", "%s: total size of files %lu rounded up to multiple of 1024 %lu > %d", txzpath, (unsigned long) file_sizes,
+		(unsigned long) rounded_file_size, MAX_DIR_KSIZE);
+	++total_issues;
     } else if (!quiet) {
-	printf("txzchk: %s total size of files %lld rounded up to 1024 multiple: %lld OK\n", txzpath, file_sizes, rounded_file_size);
+	printf("txzchk: %s total size of files %lu rounded up to 1024 multiple: %lu OK\n", txzpath, (unsigned long) file_sizes,
+		(unsigned long) rounded_file_size);
     }
 
     /*
