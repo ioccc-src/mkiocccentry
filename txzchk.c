@@ -712,7 +712,15 @@ check_tarball(char const *tar, char const *fnamchk)
      * process all tar lines listed
      */
     do {
+	bool null = false;
 	char *p = NULL;
+
+	/* 
+	 * free line_dup just in case we had to continue (we always set to NULL
+	 * after freeing so this is safe).
+	 */
+	free(line_dup);
+	line_dup = NULL;
 
 	/*
 	 * count this line
@@ -726,6 +734,9 @@ check_tarball(char const *tar, char const *fnamchk)
         if (readline_len < 0) {
 	    dbg(DBG_HIGH, "reached EOF of tarball %s", txzpath);
 	    break;
+	} else if (readline_len == 0) {
+	    dbg(DBG_HIGH, "found empty line in tarball %s", txzpath);
+	    continue;
 	}
 
 	if (text_file_flag_used) {
@@ -743,8 +754,8 @@ check_tarball(char const *tar, char const *fnamchk)
 	errno = 0;			/* pre-clear errno for errp() */
 	p = (char *)memchr(linep, 0, (size_t)readline_len);
 	if (p != NULL) {
-	    errp(237, __func__, "found NUL before end of line");
-	    not_reached();
+	    warn("txzchk", "found NUL before end of line, reading next line");
+	    continue;
 	}
 	dbg(DBG_VHIGH, "line %d: %s", line_num, linep);
 
@@ -773,8 +784,8 @@ check_tarball(char const *tar, char const *fnamchk)
 	/* extract each field, one at a time, to do various tests */
 	p = strtok(linep, " \t");
 	if (p == NULL) {
-	    err(26, __func__, "%s: NULL pointer encountered trying to parse line", txzpath);
-	    not_reached();
+	    warn("txzchk", "%s: NULL pointer encountered trying to parse line, reading next line", txzpath);
+	    continue;
 	}
 	if (has_special_bits(p)) {
 	    warn("txzchk", "%s: found special bits on line: %s", txzpath, line_dup);
@@ -782,15 +793,14 @@ check_tarball(char const *tar, char const *fnamchk)
 	}
 	/* we don't need this next field */
 	p = strtok(NULL, " \t");
-
 	if (p == NULL) {
-	    err(27, __func__, "%s: NULL pointer encountered trying to parse line", txzpath);
-	    not_reached();
+	    warn("txzchk", "%s: NULL pointer encountered trying to parse line, reading next line", txzpath);
+	    continue;
 	}
 	p = strtok(NULL, " \t");
 	if (p == NULL) {
-	    err(28, __func__, "%s: NULL pointer encountered trying to parse line", txzpath);
-	    not_reached();
+	    warn("txzchk", "%s: NULL pointer encountered trying to parse line, reading next line", txzpath);
+	    continue;
 	}
 	/*
 	 * attempt to find !isdigit() chars (i.e. the tarball listing includes
@@ -809,8 +819,8 @@ check_tarball(char const *tar, char const *fnamchk)
 	 */
 	p = strtok(NULL, " \t");
 	if (p == NULL) {
-	    err(29, __func__, "%s: NULL pointer encountered trying to parse line", txzpath);
-	    not_reached();
+	    warn("txzchk", "%s: NULL pointer encountered trying to parse line, reading next line", txzpath);
+	    continue;
 	}
 	for (; p && *p && isdigit(*p); )
 	    ++p; /* satisfy warnings */
@@ -822,15 +832,14 @@ check_tarball(char const *tar, char const *fnamchk)
 
 	p = strtok(NULL, " \t");
 	if (p == NULL) {
-	    err(30, __func__, "%s: NULL pointer encountered trying to parse line", txzpath);
-	    not_reached();
+	    warn("txzchk", "%s: NULL pointer encountered trying to parse line, reading next line", txzpath);
+	    continue;
 	}
 
 	errno = 0;
 	current_file_size = strtoll(p, NULL, 10);
 	if (errno != 0) {
-	    err(31, __func__, "%s: trying to parse file size in on line: %s, string: %s", txzpath, line_dup, p);
-	    not_reached();
+	    warn("txzchk", "%s: trying to parse file size in on line: %s, string: %s, reading next line", txzpath, line_dup, p);
 	}
 	file_sizes += current_file_size;
 
@@ -841,10 +850,15 @@ check_tarball(char const *tar, char const *fnamchk)
 	for (i = 0; i < 4; ++i) {
 	    p = strtok(NULL, " \t");
 	    if (p == NULL) {
-		err(32, __func__, "%s: NULL pointer trying to parse line", txzpath);
-		not_reached();
+		warn("txzchk", "%s: NULL pointer trying to parse line, reading next line", txzpath);
+		null = true;
+		break;
 	    }
 	}
+	if (null) {
+	    continue;
+	}
+
 	/* p should now contain the filename. */
 	errno = 0;
 	file = calloc(1, sizeof *file);
@@ -912,10 +926,14 @@ check_tarball(char const *tar, char const *fnamchk)
 	}
 
 
-	free(line_dup);
-	line_dup = NULL;
-
     } while (readline_len >= 0);
+
+    /* 
+     * free line_dup finally (we always set to NULL after a free so this is
+     * safe)
+     */
+    free(line_dup);
+    line_dup = NULL;
 
     /*
      * close down pipe
