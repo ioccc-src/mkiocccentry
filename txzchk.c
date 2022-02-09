@@ -99,6 +99,8 @@ static const char * const usage_msg =
 static void usage(int exitcode, char const *name, char const *str, char const *tar, char const *fnamchk) __attribute__((noreturn));
 static void sanity_chk(char const *tar, char const *fnamchk);
 static void parse_line(char *linep, char *line_dup, char *dir_name, char const *txzpath, off_t *file_sizes, int *dir_count);
+static void parse_linux_line(char *p, char *line, char *line_dup, char *dir_name, char const *txzpath, off_t *file_sizes);
+static void parse_bsd_line(char *p, char *line, char *line_dup, char *dir_name, char const *txzpath, off_t *file_sizes);
 static unsigned check_tarball(char const *tar, char const *fnamchk);
 static bool has_special_bits(char const *str);
 static void add_file_to_list(struct file *file);
@@ -450,71 +452,191 @@ sanity_chk(char const *tar, char const *fnamchk)
     return;
 }
 
-/* 
- * parse_line	 - parse a line in the tarball listing
+/*
+ * parse_linux_line	- parse linux tar output
  *
  * given:
  *
- *	linep		-   line to parse
- *	line_dup	-   pointer to the duplicated line
- *	dir_name	-   the dir name reported by fnamchk or NULL if it failed
- *	txzpath		-   the tarball path
- *	file_sizes	-   pointer to file_sizes (from check_tarball())	
- *	dir_count	-   pointer to dir_count (from check_tarball())
+ *	p	    - pointer to current field in line
+ *	linep	    - the line we're parsing
+ *	line_dup    - duplicated line
+ *	dir_name    - directory name retrieved from fnamchk or NULL if it failed
+ *	txzpath	    - the tarball path
+ *	file_sizes  - pointer to the total file sizes of the tarball
  *
- *  Function updates total_issues, file_sizes and dir_count. Returns void.
+ * If everything goes okay the line will be completely parsed and the calling
+ * function (parse_line()) will return to its caller (check_tarball()) which
+ * will in turn read the next line.
  *
- *  Function does not return on error.
+ * This function does not return on error.
  */
 static void
-parse_line(char *linep, char *line_dup, char *dir_name, char const *txzpath, off_t *file_sizes, int *dir_count)
+parse_linux_line(char *p, char *linep, char *line_dup, char *dir_name, char const *txzpath, off_t *file_sizes)
 {
+    off_t current_file_size = 0;
     struct file *file = NULL;
-    off_t current_file_size = 0; /* current file size */
-    char *p = NULL;
-    int i;
+    int i = 0;
 
     /*
      * firewall
      */
 
-    if (linep == NULL || line_dup == NULL || txzpath == NULL || file_sizes == NULL || dir_count == NULL) {
-	err(33, __func__, "called with NULL arg(s)");
+    if (p == NULL || linep == NULL || line_dup == NULL || txzpath == NULL || file_sizes == NULL) {
+	err(122, __func__, "called with NULL arg(s)");
 	not_reached();
     }
-    /*
-     * look for more than one directory
-     */
-    if (*linep == 'd') {
-	++(*dir_count);
-	if (*dir_count > 1) {
-	    warn("txzchk", "%s: found more than one directory entry: %s", txzpath, linep);
-	    ++total_issues;
-	}
 
-    /*
-     * look for non-directory non-regular non-hard-lined items
-     */
-    } else if (*linep != '-') {
-	warn("txzchk", "%s: found a non-directory non-regular non-hard-lined item: %s", txzpath, linep);
+    for ( ; *p && isdigit(*p) && *p != '/'; )
+	++p;
+
+    if (*p != '/') {
+	warn("txzchk", "found non-numerical UID in line %s", line_dup);
 	++total_issues;
+	p = strchr(p, '/');
     }
-    /* extract each field, one at a time, to do various tests */
-    p = strtok(linep, " \t");
     if (p == NULL) {
-	warn("txzchk", "%s: NULL pointer encountered trying to parse line, reading next line", txzpath);
+	warn("txzchk", "encountered NULL pointer when parsing line %s", line_dup);
 	return;
     }
-    if (has_special_bits(p)) {
-	warn("txzchk", "%s: found special bits on line: %s", txzpath, line_dup);
+    ++p;
+
+    /*
+     * now do the same for group id
+     */
+    for ( ; *p && isdigit(*p); ) {
+	++p; /* satisfy warning */
+    }
+
+    if (*p) {
+	warn("txzchk", "found non-numerical GID in file in line %s", line_dup);
 	++total_issues;
     }
-    /* we don't need this next field */
     p = strtok(NULL, " \t");
     if (p == NULL) {
 	warn("txzchk", "%s: NULL pointer encountered trying to parse line, reading next line", txzpath);
 	return;
     }
+
+    errno = 0;
+    current_file_size = strtoll(p, NULL, 10);
+    if (errno != 0) {
+	warn("txzchk", "%s: trying to parse file size in on line: %s, string: %s, reading next line", txzpath, line_dup, p);
+    }
+    *file_sizes += current_file_size;
+
+    /*
+     * the next two fields we don't care about but we loop three times to
+     * get the following field which we do care about.
+     */
+    for (i = 0; i < 3; ++i) {
+	p = strtok(NULL, " \t");
+	if (p == NULL) {
+	    warn("txzchk", "%s: NULL pointer trying to parse line, reading next line", txzpath);
+	    return;
+	}
+    }
+
+    /* p should now contain the filename. */
+    errno = 0;
+    file = calloc(1, sizeof *file);
+    if (file == NULL) {
+	err(32, __func__, "%s: unable to allocate a struct file *", txzpath);
+	not_reached();
+    }
+
+    errno = 0;
+    file->filename = strdup(p);
+    if (!file->filename) {
+	err(33, __func__, "%s: unable to strdup filename %s", txzpath, p);
+	not_reached();
+    }
+
+    errno = 0;
+    file->basename = strdup(base_name(p)?base_name(p):"");
+    if (!file->basename || !strlen(file->basename)) {
+	err(34, __func__, "%s: unable to strdup basename of filename %s", txzpath, p);
+	not_reached();
+    }
+
+    /*
+     * although we could check these later we check here because the
+     * add_file_to_list() function doesn't add the same file (basename) more
+     * than once: it simply increments the times it's been seen.
+     */
+    if (current_file_size == 0) {
+	if (!strcmp(file->basename, ".author.json")) {
+	    ++total_issues;
+	    warn("txzchk", "%s: found empty .author.json file", txzpath);
+	}
+	else if (!strcmp(file->basename, ".info.json")) {
+	    ++total_issues;
+	    warn("txzchk", "%s: found empty .info.json file", txzpath);
+	}
+	else if (!strcmp(file->basename, "remarks.md")) {
+	    ++total_issues;
+	    warn("txzchk", "%s: found empty remarks.md", txzpath);
+	}
+	else if (!strcmp(file->basename, "Makefile")) {
+	    ++total_issues;
+	    warn("txzchk", "%s: found empty Makefile", txzpath);
+	}
+    }
+    add_file_to_list(file);
+
+    /*
+     * Now we have to run some tests on the directory name which we obtained
+     * from fnamchk earlier on - but only if fnamchk did not return an
+     * error! If it did we'll report other issues but we won't check
+     * directory names (at least the directory name expected in the
+     * tarball).
+     */
+
+    if (dir_name != NULL && strlen(dir_name) > 0) {
+	if (strncmp(p, dir_name, strlen(dir_name))) {
+	    warn("txzchk", "%s: incorrect directory in filename %s", txzpath, p);
+	    ++total_issues;
+	}
+    }
+    if (strchr(p, '/') == NULL) {
+	warn("txzchk", "%s: no directory found in filename %s", txzpath, p);
+	++total_issues;
+    }
+
+}
+/*
+ * parse_linux_line	- parse macOS/BSD tar output
+ *
+ * given:
+ *
+ *	p	    - pointer to current field in line
+ *	linep	    - the line we're parsing
+ *	line_dup    - duplicated line
+ *	dir_name    - directory name retrieved from fnamchk or NULL if it failed
+ *	txzpath	    - the tarball path
+ *	file_sizes  - pointer to the total file sizes of the tarball
+ *
+ * If everything goes okay the line will be completely parsed and the calling
+ * function (parse_line()) will return to its caller (check_tarball()) which
+ * will in turn read the next line.
+ *
+ * This function does not return on error.
+ */
+static void
+parse_bsd_line(char *p, char *linep, char *line_dup, char *dir_name, char const *txzpath, off_t *file_sizes)
+{
+    off_t current_file_size = 0;
+    struct file *file = NULL;
+    int i = 0;
+
+    /*
+     * firewall
+     */
+
+    if (p == NULL || linep == NULL || line_dup == NULL || txzpath == NULL || file_sizes == NULL) {
+	err(122, __func__, "called with NULL arg(s)");
+	not_reached();
+    }
+
     p = strtok(NULL, " \t");
     if (p == NULL) {
 	warn("txzchk", "%s: NULL pointer encountered trying to parse line, reading next line", txzpath);
@@ -528,7 +650,7 @@ parse_line(char *linep, char *line_dup, char *dir_name, char const *txzpath, off
 	++p; /* satisfy warnings */
 
     if (*p) {
-	warn("txzchk", "%s: found non-digit UID in file in line %s", txzpath, line_dup);
+	warn("txzchk", "%s: found non-numerical UID in file in line %s", txzpath, line_dup);
 	++total_issues;
     }
 
@@ -544,7 +666,7 @@ parse_line(char *linep, char *line_dup, char *dir_name, char const *txzpath, off
 	++p; /* satisfy warnings */
 
     if (*p) {
-	warn("txzchk", "%s: found non-digit GID in file in line: %s", txzpath, line_dup);
+	warn("txzchk", "%s: found non-numerical GID in file in line: %s", txzpath, line_dup);
 	++total_issues;
     }
 
@@ -637,6 +759,78 @@ parse_line(char *linep, char *line_dup, char *dir_name, char const *txzpath, off
     if (strchr(p, '/') == NULL) {
 	warn("txzchk", "%s: no directory found in filename %s", txzpath, p);
 	++total_issues;
+    }
+}
+/*
+ * parse_line	 - parse a line in the tarball listing
+ *
+ * given:
+ *
+ *	linep		-   line to parse
+ *	line_dup	-   pointer to the duplicated line
+ *	dir_name	-   the dir name reported by fnamchk or NULL if it failed
+ *	txzpath		-   the tarball path
+ *	file_sizes	-   pointer to file_sizes (from check_tarball())
+ *	dir_count	-   pointer to dir_count (from check_tarball())
+ *
+ *  Function updates total_issues, file_sizes and dir_count. Returns void.
+ *
+ *  Function does not return on error.
+ */
+static void
+parse_line(char *linep, char *line_dup, char *dir_name, char const *txzpath, off_t *file_sizes, int *dir_count)
+{
+    char *p = NULL;
+
+    /*
+     * firewall
+     */
+
+    if (linep == NULL || line_dup == NULL || txzpath == NULL || file_sizes == NULL || dir_count == NULL) {
+	err(33, __func__, "called with NULL arg(s)");
+	not_reached();
+    }
+    /*
+     * look for more than one directory
+     */
+    if (*linep == 'd') {
+	++(*dir_count);
+	if (*dir_count > 1) {
+	    warn("txzchk", "%s: found more than one directory entry: %s", txzpath, linep);
+	    ++total_issues;
+	}
+
+    /*
+     * look for non-directory non-regular non-hard-lined items
+     */
+    } else if (*linep != '-') {
+	warn("txzchk", "%s: found a non-directory non-regular non-hard-lined item: %s", txzpath, linep);
+	++total_issues;
+    }
+    /* extract each field, one at a time, to do various tests */
+    p = strtok(linep, " \t");
+    if (p == NULL) {
+	warn("txzchk", "%s: NULL pointer encountered trying to parse line, reading next line", txzpath);
+	return;
+    }
+    if (has_special_bits(p)) {
+	warn("txzchk", "%s: found special bits on line: %s", txzpath, line_dup);
+	++total_issues;
+    }
+    /*
+     * we have to check this next field for a '/': this will tell us whether to
+     * parse it for linux or for macOS/BSD.
+     */
+    p = strtok(NULL, " \t");
+    if (p == NULL) {
+	warn("txzchk", "%s: NULL pointer encountered trying to parse line, reading next line", txzpath);
+	return;
+    }
+    if (strchr(p, '/') != NULL) {
+	/* found linux output */
+	parse_linux_line(p, linep, line_dup, dir_name, txzpath, file_sizes);
+    } else {
+	parse_bsd_line(p, linep, line_dup, dir_name, txzpath, file_sizes);
     }
 }
 /*
@@ -901,7 +1095,7 @@ check_tarball(char const *tar, char const *fnamchk)
     do {
 	char *p = NULL;
 
-	/* 
+	/*
 	 * free line_dup just in case we had to continue (we always set to NULL
 	 * after freeing so this is safe).
 	 */
@@ -957,7 +1151,7 @@ check_tarball(char const *tar, char const *fnamchk)
 
     } while (readline_len >= 0);
 
-    /* 
+    /*
      * free line_dup finally (we always set to NULL after a free so this is
      * safe)
      */
