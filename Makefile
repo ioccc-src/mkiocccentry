@@ -110,8 +110,10 @@ CFLAGS= -D_BSD_SOURCE -D_POSIX_C_SOURCE=200809L -D_XOPEN_SOURCE -std=c99 -O3 -g3
 
 # where and what to install
 #
+MANDIR = /usr/local/share/man/man1
 DESTDIR= /usr/local/bin
 TARGETS= mkiocccentry iocccsize dbg_test limit_ioccc.sh fnamchk txzchk
+MANPAGES = mkiocccentry.1 txzchk.1 fnamchk.1 iocccsize.1
 TEST_TARGETS= dbg_test
 OBJFILES = dbg.o util.o
 SRCFILES = $(patsubst %.o,%.c,$(OBJFILES))
@@ -259,6 +261,7 @@ clobber: clean
 
 install: all
 	${INSTALL} -m 0555 ${TARGETS} ${DESTDIR}
+	${INSTALL} -m 0644 ${MANPAGES} ${MANDIR}
 
 test: ./iocccsize-test.sh iocccsize dbg_test mkiocccentry ./mkiocccentry-test.sh Makefile
 	@echo "RUNNING: iocccsize-test.sh"
