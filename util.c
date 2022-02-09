@@ -1452,7 +1452,7 @@ readline_dup(char **linep, bool strip, size_t *lenp, FILE *stream)
     /*
      * strip trailing whitespace if requested
      */
-    if (strip == true) {
+    if (strip) {
 	if (len > 0) {
 	    for (i = len - 1; i >= 0; --i) {
 		if (isascii(ret[i]) && isspace(ret[i])) {
@@ -1508,25 +1508,25 @@ find_utils(bool tar_flag_used, char **tar, bool cp_flag_used, char **cp, bool ls
      * On some systems where /usr/bin != /bin, the distribution made the mistake of
      * moving historic critical applications, look to see if the alternate path works instead.
      */
-    if (tar != NULL && tar_flag_used == false && !is_exec(TAR_PATH_0) && is_exec(TAR_PATH_1)) {
+    if (tar != NULL && !tar_flag_used && !is_exec(TAR_PATH_0) && is_exec(TAR_PATH_1)) {
 	*tar = TAR_PATH_1;
 	dbg(DBG_MED, "tar is not in historic location: %s : will try alternate location: %s", TAR_PATH_0, *tar);
     }
-    if (cp != NULL && cp_flag_used == false && !is_exec(CP_PATH_0) && is_exec(CP_PATH_1)) {
+    if (cp != NULL && !cp_flag_used && !is_exec(CP_PATH_0) && is_exec(CP_PATH_1)) {
 	*cp = CP_PATH_1;
 	dbg(DBG_MED, "cp is not in historic location: %s : will try alternate location: %s", CP_PATH_0, *cp);
     }
-    if (ls != NULL && ls_flag_used == false && !is_exec(LS_PATH_0) && is_exec(LS_PATH_1)) {
+    if (ls != NULL && !ls_flag_used && !is_exec(LS_PATH_0) && is_exec(LS_PATH_1)) {
 	*ls = LS_PATH_1;
 	dbg(DBG_MED, "ls is not in historic location: %s : will try alternate location: %s", LS_PATH_0, *ls);
     }
 
     /* now do the same for our utilities: txzchk and fnamchk */
-    if (txzchk != NULL && txzchk_flag_used == false && !is_exec(TXZCHK_PATH_0) && is_exec(TXZCHK_PATH_1)) {
+    if (txzchk != NULL && !txzchk_flag_used && !is_exec(TXZCHK_PATH_0) && is_exec(TXZCHK_PATH_1)) {
 	*txzchk = TXZCHK_PATH_1;
 	dbg(DBG_MED, "using default txzchk path: %s", TXZCHK_PATH_1);
     }
-    if (fnamchk != NULL && fnamchk_flag_used == false && !is_exec(FNAMCHK_PATH_0) && is_exec(FNAMCHK_PATH_1)) {
+    if (fnamchk != NULL && !fnamchk_flag_used && !is_exec(FNAMCHK_PATH_0) && is_exec(FNAMCHK_PATH_1)) {
 	*fnamchk = FNAMCHK_PATH_1;
 	dbg(DBG_MED, "using default fnamchk path: %s", FNAMCHK_PATH_1);
     }
