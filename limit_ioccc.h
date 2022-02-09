@@ -30,6 +30,7 @@
 #if !defined(INCLUDE_LIMIT_IOCCC_H)
 #define INCLUDE_LIMIT_IOCCC_H
 
+#include <time.h>
 
 #undef DIGRAPHS		/* digraphs count a 2 for Rule 2b */
 #undef TRIGRAPHS	/* trigraphs count a 3 for Rule 2b */

@@ -325,7 +325,7 @@ static void remind_user(char const *work_dir, char const *entry_dir, char const 
 int
 main(int argc, char *argv[])
 {
-    char *program = NULL;	/* our name */
+    char const *program = NULL;	/* our name */
     extern char *optarg;	/* option argument */
     extern int optind;		/* argv index of the next arg */
     struct timeval tp;		/* gettimeofday time value */
@@ -4855,7 +4855,7 @@ verify_entry_dir(char const *entry_dir, char const *ls)
 	errp(172, __func__, "popen for reading failed for: %s", cmd);
 	not_reached();
     }
-    setlinebuf(ls_stream);
+    setvbuf(ls_stream, (char *)NULL, _IOLBF, 0);
 
     /*
      * read the 1st line - contains the total kibibyte (2^10) block line

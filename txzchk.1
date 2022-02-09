@@ -2,7 +2,7 @@
 .SH NAME
 txzchk \- sanity checker tool used on IOCCC compressed tarballs
 .SH SYNOPSIS
-\fBtxzchk usage: ./txzchk [\-h] [\-v level] [\-q] [\-V] [\-t tar] [\-F fnamchk] txzpath
+\fBtxzchk usage: ./txzchk [\-h] [\-v level] [\-q] [\-V] [\-t tar] [\-F fnamchk] [\-T] txzpath
 .SH DESCRIPTION
 \fBtxzchk\fP runs a series of sanity tests on IOCCC compressed tarballs and it is invoked indirectly through \fBmkiocccentry(1)\fP.
 .PP
@@ -21,18 +21,21 @@ Set verbosity level.
 .PP
 \fB\-q\fP
 Suppresses some of the output.
-This does not include warnings, errors or the output of the tar command.
+This does not include warnings, errors or the output of the \fBtar\fP command.
 .PP
 \fB\-V\fP
 Show version and exit.
 .PP
 \fB\-t\fP
-Specify path to tar that accepts the \fB\-J\fP option.
+Specify path to \fBtar\fP that accepts the \fB\-J\fP option.
 \fBtxzchk\fP checks \fI/usr/bin/tar\fP and \fI/bin/tar\fP if this option is not specified.
 .PP
 \fB\-F\fP
 Specify path to the IOCCC \fBfnamchk(1)\fP tool.
 If this option is not specified the program looks under the current working directory and \fI/usr/local/bin\fP.
+.PP
+\fB\-T\fP
+Assume txzpath is a text file; use \fBfopen(3)\fP and \fBfclose(3)\fP instead of \fBpopen(3)\fP and \fBpclose(3)\fP and don't require \fBtar\fP program.
 .SH EXIT STATUS
 .PP
 \fBmain()\fP returns 0 if no issues are found and 1 if there are issues found; if there's an error the end is not reached.
