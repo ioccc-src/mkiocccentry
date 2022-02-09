@@ -103,7 +103,7 @@ static void usage(int exitcode, char const *name, char const *str) __attribute__
 int
 main(int argc, char *argv[])
 {
-    char *program = NULL;	/* our name */
+    char const *program = NULL;	/* our name */
     extern char *optarg;	/* option argument */
     extern int optind;		/* argv index of the next arg */
     char *filepath;		/* filepath argument to check */

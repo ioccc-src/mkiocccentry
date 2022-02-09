@@ -1479,7 +1479,7 @@ readline_dup(char **linep, bool strip, size_t *lenp, FILE *stream)
 }
 
 
-/* find_utils - find tar, cp and ls utilities
+/* find_utils - find tar, cp, ls, txzchk and fnamchk utilities
  *
  * given:
  *

@@ -41,10 +41,11 @@
 /*
  * globals
  */
-char *program = NULL;			    /* our name */
+char const *program = NULL;		    /* our name */
 int verbosity_level = DBG_DEFAULT;	    /* debug level set by -v */
 static int total_issues = 0;		    /* total number of issues with tarball found */
 static bool quiet = false;		    /* true ==> only show errors and warnings */
+static bool text_file_flag_used = false;    /* true ==> assume txzpath is a text file */
 char const *txzpath = NULL;		    /* the current tarball being checked */
 
 struct info {
@@ -78,7 +79,7 @@ struct file *files;
  * Use the usage() function to print the usage_msgX strings.
  */
 static const char * const usage_msg =
-    "usage: %s [-h] [-v level] [-V] [-t tar] [-F fnamchk] txzpath\n"
+    "usage: %s [-h] [-v level] [-V] [-t tar] [-F fnamchk] [-T] txzpath\n"
     "\n"
     "\t-h\t\t\tprint help message and exit 0\n"
     "\t-v level\t\tset verbosity level: (def level: %d)\n"
@@ -87,6 +88,7 @@ static const char * const usage_msg =
     "\t-t /path/to/tar\t\tpath to tar executable that supports the -J (xz) option (def: %s)\n"
     "\t-F /path/to/fnamchk\tpath to tool that checks if txzpath is a valid compressed tarball name\n"
     "\t\t\t\tfilename (def: %s)\n\n"
+    "\t-T\t\t\tassume txzpath is a text file with tar listing (for testing different formats)\n\n"
     "\ttxzpath\t\t\tpath to an IOCCC compressed tarball\n"
     "\n"
     "txzchk version: %s\n";
@@ -116,7 +118,7 @@ int main(int argc, char **argv)
      * parse args
      */
     program = argv[0];
-    while ((i = getopt(argc, argv, "hv:VqF:t:")) != -1) {
+    while ((i = getopt(argc, argv, "hv:VqF:t:T")) != -1) {
 	switch (i) {
 	case 'h':		/* -h - print help to stderr and exit 0 */
 	    usage(0, "-h help mode", program, TAR_PATH_0, FNAMCHK_PATH_0);
@@ -153,6 +155,9 @@ int main(int argc, char **argv)
 	case 'q':
 	    quiet = true;
 	    break;
+	case 'T':
+	    text_file_flag_used = true; /* don't rely on tar: just read file as if it was a text file */
+	    break;
 	default:
 	    usage(1, "invalid -flag", program, TAR_PATH_0, TXZCHK_PATH_0); /*ooo*/
 	    not_reached();
@@ -187,8 +192,15 @@ int main(int argc, char **argv)
      *
      * On some systems where /usr/bin != /bin, the distribution made the mistake of
      * moving historic critical applications, look to see if the alternate path works instead.
+     *
+     * If -T was used we don't actually need tar(1) so we test for that
+     * specifically.
      */
-    find_utils(tar_flag_used, &tar, false, NULL, false, NULL, false, NULL, fnamchk_flag_used, &fnamchk);
+
+    if (!text_file_flag_used)
+	find_utils(tar_flag_used, &tar, false, NULL, false, NULL, false, NULL, fnamchk_flag_used, &fnamchk);
+    else
+	find_utils(false, NULL, false, NULL, false, NULL, false, NULL, fnamchk_flag_used, &fnamchk);
 
 
     /*
@@ -287,65 +299,67 @@ sanity_chk(char const *tar, char const *fnamchk)
     /*
      * firewall
      */
-    if (tar == NULL || fnamchk == NULL || txzpath == NULL) {
+    if ((tar == NULL && !text_file_flag_used) || fnamchk == NULL || txzpath == NULL) {
 	err(3, __func__, "called with NULL arg(s)");
 	not_reached();
     }
 
     /*
-     * tar must be executable
+     * if text file flag not used tar must be executable
      */
-    if (!exists(tar)) {
-	fpara(stderr,
-	      "",
-	      "We cannot find a tar program.",
-	      "",
-	      "A tar program that supports the -J (xz) option is required to build an compressed tarball.",
-	      "Perhaps you need to use:",
-	      "",
-	      "    txzchk -t /path/to/tar ...",
-	      "",
-	      "and/or install a tar program?  You can find the source for tar:",
-	      "",
-	      "    https://www.gnu.org/software/tar/",
-	      "",
-	      NULL);
-	err(4, __func__, "tar does not exist: %s", tar);
-	not_reached();
-    }
-    if (!is_file(tar)) {
-	fpara(stderr,
-	      "",
-	      "The tar, whilst it exists, is not a file.",
-	      "",
-	      "Perhaps you need to use another path:",
-	      "",
-	      "    txzchk -t /path/to/tar ...",
-	      "",
-	      "and/or install a tar program?  You can find the source for tar:",
-	      "",
-	      "    https://www.gnu.org/software/tar/",
-	      "",
-	      NULL);
-	err(5, __func__, "tar is not a file: %s", tar);
-	not_reached();
-    }
-    if (!is_exec(tar)) {
-	fpara(stderr,
-	      "",
-	      "The tar, whilst it is a file, is not executable.",
-	      "",
-	      "We suggest you check the permissions on the tar program, or use another path:",
-	      "",
-	      "    txzchk -t /path/to/tar ...",
-	      "",
-	      "and/or install a tar program?  You can find the source for tar:",
-	      "",
-	      "    https://www.gnu.org/software/tar/",
-	      "",
-	      NULL);
-	err(6, __func__, "tar is not an executable program: %s", tar);
-	not_reached();
+    if (!text_file_flag_used) {
+	if (!exists(tar)) {
+	    fpara(stderr,
+		  "",
+		  "We cannot find a tar program.",
+		  "",
+		  "A tar program that supports the -J (xz) option is required to build an compressed tarball.",
+		  "Perhaps you need to use:",
+		  "",
+		  "    txzchk -t /path/to/tar ...",
+		  "",
+		  "and/or install a tar program?  You can find the source for tar:",
+		  "",
+		  "    https://www.gnu.org/software/tar/",
+		  "",
+		  NULL);
+	    err(4, __func__, "tar does not exist: %s", tar);
+	    not_reached();
+	}
+	if (!is_file(tar)) {
+	    fpara(stderr,
+		  "",
+		  "The tar, whilst it exists, is not a file.",
+		  "",
+		  "Perhaps you need to use another path:",
+		  "",
+		  "    txzchk -t /path/to/tar ...",
+		  "",
+		  "and/or install a tar program?  You can find the source for tar:",
+		  "",
+		  "    https://www.gnu.org/software/tar/",
+		  "",
+		  NULL);
+	    err(5, __func__, "tar is not a file: %s", tar);
+	    not_reached();
+	}
+	if (!is_exec(tar)) {
+	    fpara(stderr,
+		  "",
+		  "The tar, whilst it is a file, is not executable.",
+		  "",
+		  "We suggest you check the permissions on the tar program, or use another path:",
+		  "",
+		  "    txzchk -t /path/to/tar ...",
+		  "",
+		  "and/or install a tar program?  You can find the source for tar:",
+		  "",
+		  "    https://www.gnu.org/software/tar/",
+		  "",
+		  NULL);
+	    err(6, __func__, "tar is not an executable program: %s", tar);
+	    not_reached();
+	}
     }
 
     /*
@@ -373,7 +387,7 @@ sanity_chk(char const *tar, char const *fnamchk)
 	      "",
 	      "    txzchk -F /path/to/fnamchk ...",
 	      NULL);
-	err(8, __func__, "fnamchk is not a file: %s", tar);
+	err(8, __func__, "fnamchk is not a file: %s", fnamchk);
 	not_reached();
     }
     if (!is_exec(fnamchk)) {
@@ -385,7 +399,7 @@ sanity_chk(char const *tar, char const *fnamchk)
 	      "",
 	      "    txzchk -F /path/to/fnamchk ...",
 	      NULL);
-	err(9, __func__, "fnamchk is not an executable program: %s", tar);
+	err(9, __func__, "fnamchk is not an executable program: %s", fnamchk);
 	not_reached();
     }
 
@@ -441,7 +455,8 @@ sanity_chk(char const *tar, char const *fnamchk)
  *
  * given:
  *
- *	tar		- path to executable tar program
+ *	tar		- path to executable tar program (if -T was not
+ *			  specified)
  *	fnamchk		- path to fnamchk tool
  *
  *  Returns the number of total number of issues found (total_issues).
@@ -457,7 +472,7 @@ check_tarball(char const *tar, char const *fnamchk)
     off_t rounded_file_size = 0; /* file sizes rounded up to 1024 multiple */
     unsigned line_num = 0; /* line number of tar output */
     char *cmd = NULL;	/* fnamchk and tar -tJvf */
-    FILE *tar_stream = NULL; /* pipe for tar output */
+    FILE *input_stream = NULL; /* pipe for tar output (or if -T specified read as a text file) */
     FILE *fnamchk_stream = NULL; /* pipe for fnamchk output */
     char *linep = NULL;		/* allocated line read from tar */
     char *line_dup = NULL;	/* duplicated line from readline */
@@ -473,12 +488,12 @@ check_tarball(char const *tar, char const *fnamchk)
     /*
      * firewall
      */
-    if (tar == NULL || fnamchk == NULL || txzpath == NULL) {
+    if ((!text_file_flag_used && tar == NULL) || fnamchk == NULL || txzpath == NULL) {
 	err(13, __func__, "called with NULL arg(s)");
 	not_reached();
     }
 
-    /* 
+    /*
      * First of all we have to run fnamchk on the tarball: this is important
      * because we have to know the actual directory name the files should be in
      * within the tarball and we cannot use strtok(3) on the strdup()'d strings
@@ -532,7 +547,7 @@ check_tarball(char const *tar, char const *fnamchk)
 	fnamchk_okay = true;
     }
 
-    /* 
+    /*
      * If fnamchk went okay we have to retrieve the directory name that's
      * expected and compare it to what's in the filenames of the tarball. Since
      * it's the only output we shouldn't have to loop at all. If the output
@@ -559,7 +574,7 @@ check_tarball(char const *tar, char const *fnamchk)
 	if (readline_len < 0) {
 	    warn("txzchk", "%s: unexpected EOF from fnamchk", txzpath);
 	}
-	
+
 	/*
 	 * close down pipe
 	 */
@@ -604,82 +619,94 @@ check_tarball(char const *tar, char const *fnamchk)
     dbg(DBG_MED, "txzchk: %s size in bytes: %lu", txzpath, (unsigned long)size);
 
     /*
-     * free cmd for tar command
+     * free cmd for tar (if -T wasn't specified) command
      */
-    free(cmd); 
+    free(cmd);
+    cmd = NULL;
 
-    errno = 0;			/* pre-clear errno for errp() */
-    cmd = cmdprintf("% -tJvf %", tar, txzpath);
-    if (cmd == NULL) {
-	err(16, __func__, "failed to cmdprintf: tar -tJvf txzpath");
-	not_reached();
+    if (text_file_flag_used) {
+	input_stream = fopen(txzpath, "r");
+	errno = 0;
+	if (input_stream == NULL) {
+	    errp(122, __func__, "fopen of %s failed", txzpath);
+	    not_reached();
+	}
     }
-    dbg(DBG_HIGH, "about to perform: system(%s)", cmd);
+    else { /* if -T not specified we have to do more to set up input stream */
 
-    /*
-     * pre-flush to avoid system() buffered stdio issues
-     */
-    clearerr(stdout);		/* pre-clear ferror() status */
-    errno = 0;			/* pre-clear errno for errp() */
-    ret = fflush(stdout);
-    if (ret < 0) {
-	errp(17, __func__, "fflush(stdout) error code: %d", ret);
-	not_reached();
-    }
-    errno = 0;			/* pre-clear errno for errp() */
-    clearerr(stderr);		/* pre-clear ferror() status */
-    errno = 0;			/* pre-clear errno for errp() */
-    ret = fflush(stderr);
-    if (ret < 0) {
-	errp(18, __func__, "fflush(stderr) #1: error code: %d", ret);
-	not_reached();
-    }
+	errno = 0;			/* pre-clear errno for errp() */
+	cmd = cmdprintf("% -tJvf %", tar, txzpath);
+	if (cmd == NULL) {
+	    err(16, __func__, "failed to cmdprintf: tar -tJvf txzpath");
+	    not_reached();
+	}
+	dbg(DBG_HIGH, "about to perform: system(%s)", cmd);
 
-    /*
-     * execute the tar command
-     */
-    errno = 0;			/* pre-clear errno for errp() */
-    exit_code = system(cmd);
-    if (exit_code < 0) {
-	errp(19, __func__, "error calling system(%s)", cmd);
-	not_reached();
-    } else if (exit_code == 127) {
-	errp(20, __func__, "execution of the shell failed for system(%s)", cmd);
-	not_reached();
-    } else if (exit_code != 0) {
-	err(21, __func__, "%s failed with exit code: %d", cmd, WEXITSTATUS(exit_code));
-	not_reached();
-    }
+	/*
+	 * pre-flush to avoid system() buffered stdio issues
+	 */
+	clearerr(stdout);		/* pre-clear ferror() status */
+	errno = 0;			/* pre-clear errno for errp() */
+	ret = fflush(stdout);
+	if (ret < 0) {
+	    errp(17, __func__, "fflush(stdout) error code: %d", ret);
+	    not_reached();
+	}
+	errno = 0;			/* pre-clear errno for errp() */
+	clearerr(stderr);		/* pre-clear ferror() status */
+	errno = 0;			/* pre-clear errno for errp() */
+	ret = fflush(stderr);
+	if (ret < 0) {
+	    errp(18, __func__, "fflush(stderr) #1: error code: %d", ret);
+	    not_reached();
+	}
 
-    /*
-     * pre-flush to avoid popen() buffered stdio issues
-     */
-    dbg(DBG_HIGH, "about to perform: popen(%s, r)", cmd);
-    clearerr(stdout);		/* pre-clear ferror() status */
-    errno = 0;			/* pre-clear errno for errp() */
-    ret = fflush(stdout);
-    if (ret < 0) {
-	errp(22, __func__, "fflush(stdout) #0: error code: %d", ret);
-	not_reached();
-    }
-    clearerr(stderr);		/* pre-clear ferror() status */
-    errno = 0;			/* pre-clear errno for errp() */
-    ret = fflush(stderr);
-    if (ret < 0) {
-	errp(23, __func__, "fflush(stderr) #1: error code: %d", ret);
-	not_reached();
-    }
+	/*
+	 * execute the tar command
+	 */
+	errno = 0;			/* pre-clear errno for errp() */
+	exit_code = system(cmd);
+	if (exit_code < 0) {
+	    errp(19, __func__, "error calling system(%s)", cmd);
+	    not_reached();
+	} else if (exit_code == 127) {
+	    errp(20, __func__, "execution of the shell failed for system(%s)", cmd);
+	    not_reached();
+	} else if (exit_code != 0) {
+	    err(21, __func__, "%s failed with exit code: %d", cmd, WEXITSTATUS(exit_code));
+	    not_reached();
+	}
 
-    /*
-     * form pipe to the tar command
-     */
-    errno = 0;			/* pre-clear errno for errp() */
-    tar_stream = popen(cmd, "r");
-    if (tar_stream == NULL) {
-	errp(24, __func__, "popen for reading failed for: %s", cmd);
-	not_reached();
+	/*
+	 * pre-flush to avoid popen() buffered stdio issues
+	 */
+	dbg(DBG_HIGH, "about to perform: popen(%s, r)", cmd);
+	clearerr(stdout);		/* pre-clear ferror() status */
+	errno = 0;			/* pre-clear errno for errp() */
+	ret = fflush(stdout);
+	if (ret < 0) {
+	    errp(22, __func__, "fflush(stdout) #0: error code: %d", ret);
+	    not_reached();
+	}
+	clearerr(stderr);		/* pre-clear ferror() status */
+	errno = 0;			/* pre-clear errno for errp() */
+	ret = fflush(stderr);
+	if (ret < 0) {
+	    errp(23, __func__, "fflush(stderr) #1: error code: %d", ret);
+	    not_reached();
+	}
+
+	/*
+	 * If we get here -T was not specified so open pipe to tar command.
+	 */
+	errno = 0;			/* pre-clear errno for errp() */
+	input_stream = popen(cmd, "r");
+	if (input_stream == NULL) {
+	    errp(24, __func__, "popen for reading failed for: %s", cmd);
+	    not_reached();
+	}
     }
-    setvbuf(tar_stream, (char *)NULL, _IOLBF, 0);
+    setvbuf(input_stream, (char *)NULL, _IOLBF, 0);
 
     /*
      * process all tar lines listed
@@ -695,10 +722,18 @@ check_tarball(char const *tar, char const *fnamchk)
 	/*
 	 * read the next listing line
 	 */
-	readline_len = readline(&linep, tar_stream);
+	readline_len = readline(&linep, input_stream);
         if (readline_len < 0) {
 	    dbg(DBG_HIGH, "reached EOF of tarball %s", txzpath);
 	    break;
+	}
+
+	if (text_file_flag_used) {
+	    errno = 0;
+	    ret = printf("%s\n", linep);
+	    if (ret <= 0) {
+		warnp(__func__, "unable to printf line from text file");
+	    }
 	}
 
 	/*
@@ -799,7 +834,7 @@ check_tarball(char const *tar, char const *fnamchk)
 	}
 	file_sizes += current_file_size;
 
-	/* 
+	/*
 	 * the next three fields we don't care about but we loop four times to
 	 * get the following field which we do care about.
 	 */
@@ -832,7 +867,7 @@ check_tarball(char const *tar, char const *fnamchk)
 	    not_reached();
 	}
 
-	/* 
+	/*
 	 * although we could check these later we check here because the
 	 * add_file_to_list() function doesn't add the same file (basename) more
 	 * than once: it simply increments the times it's been seen.
@@ -857,7 +892,7 @@ check_tarball(char const *tar, char const *fnamchk)
 	}
 	add_file_to_list(file);
 
-	/* 
+	/*
 	 * Now we have to run some tests on the directory name which we obtained
 	 * from fnamchk earlier on - but only if fnamchk did not return an
 	 * error! If it did we'll report other issues but we won't check
@@ -886,16 +921,26 @@ check_tarball(char const *tar, char const *fnamchk)
      * close down pipe
      */
     errno = 0;		/* pre-clear errno for errp() */
-    ret = pclose(tar_stream);
+    if (text_file_flag_used)
+	ret = fclose(input_stream);
+    else
+	ret = pclose(input_stream);
     if (ret < 0) {
-	warnp(__func__, "%s: pclose error on tar stream", txzpath);
+	warnp(__func__, "%s: %s error on tar stream", txzpath, text_file_flag_used?"fclose":"pclose");
     }
-    tar_stream = NULL;
+    input_stream = NULL;
+
+    /*
+     * free cmd (it'll be NULL if -T was specified but this is safe)
+     */
+    free(cmd);
+    cmd = NULL;
 
 
-    /* 
+
+    /*
      * now go through the files list and detect any additional issues
-     */ 
+     */
     for (file = files; file != NULL; file = file->next) {
 	if (!strcmp(file->basename, ".info.json")) {
 	    info.has_info_json = true;
@@ -914,7 +959,7 @@ check_tarball(char const *tar, char const *fnamchk)
 	    info.dot_files++;
 	}
 	if (strstr(file->filename, "../")) {
-	    /* 
+	    /*
 	     * note that this check does NOT detect a file in the form of
 	     * "../.file" but since the basename of each file is checked above
 	     * this is okay.
@@ -955,7 +1000,7 @@ check_tarball(char const *tar, char const *fnamchk)
 	++total_issues;
     }
 
-    /* 
+    /*
      * Report total number of non .author.json and .info.json dot files.
      * Don't increment the number of issues as this was done when iterating
      * through the linked list above.
@@ -985,12 +1030,6 @@ check_tarball(char const *tar, char const *fnamchk)
 	printf("txzchk: %s total size of files %lu rounded up to 1024 multiple: %lu OK\n", txzpath, (unsigned long) file_sizes,
 		(unsigned long) rounded_file_size);
     }
-
-    /*
-     * free cmd
-     */
-    free(cmd);
-    cmd = NULL;
 
     /*
      * report total issues found
@@ -1027,7 +1066,7 @@ has_special_bits(char const *str)
     return str[strspn(str, "-drwx")]!='\0';
 }
 /*
- * add_file_to_list - add a filename to the linked list 
+ * add_file_to_list - add a filename to the linked list
  *
  * given:
  *

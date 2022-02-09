@@ -325,7 +325,7 @@ static void remind_user(char const *work_dir, char const *entry_dir, char const 
 int
 main(int argc, char *argv[])
 {
-    char *program = NULL;	/* our name */
+    char const *program = NULL;	/* our name */
     extern char *optarg;	/* option argument */
     extern int optind;		/* argv index of the next arg */
     struct timeval tp;		/* gettimeofday time value */
