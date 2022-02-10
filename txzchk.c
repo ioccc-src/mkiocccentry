@@ -680,7 +680,8 @@ static void
 check_directories(struct file *file, char const *dir_name, char const *txzpath)
 {
     unsigned dir_count = 0; /* number of directories in the path */
-    int last = '\0';
+    int prev = '\0';
+    int first = '\0';
     int i;
 
     /*
@@ -735,12 +736,14 @@ check_directories(struct file *file, char const *dir_name, char const *txzpath)
      * since we also check for more than one 'd' line in the output it would
      * trigger more than one directory in the tarball.
      */
-    last = file->filename[0];
+    first = file->filename[0];
+    prev = file->filename[1];
     for (i = 1; file->filename[i]; ++i) {
-	if (file->filename[i] == '/' && last != '/') {
+	if (file->filename[i] == '/' && prev != '/' && first != '.') {
 	    ++dir_count;
 	}
-	last = file->filename[i];
+	first = prev;
+	prev = file->filename[i];
     }
     if (dir_count > 1) {
 	++total_issues;
