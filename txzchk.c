@@ -54,6 +54,7 @@ struct info {
     bool has_prog_c;
     bool has_remarks_md;
     bool has_Makefile;
+    bool has_correct_directory;
     unsigned dot_files;
 } info;
 
@@ -112,7 +113,7 @@ static void parse_bsd_line(char *p, char *line, char *line_dup, char const *dir_
 static unsigned check_tarball(char const *tar, char const *fnamchk);
 static void check_empty_file(char const *txzpath, off_t file_size, struct file *file);
 static void check_file(char const *txzpath, char *p, char const *dir_name, struct file *file);
-static void check_all_files(off_t file_sizes);
+static void check_all_files(off_t file_sizes, char const *dir_name);
 static bool has_special_bits(char const *str);
 static void add_line(char const *str, int line_num);
 static void parse_all_lines(char const *dir_name, char const *txzpath, off_t *file_sizes);
@@ -492,6 +493,11 @@ check_file(char const *txzpath, char *p, char const *dir_name, struct file *file
 	not_reached();
     }
 
+    if (strchr(p, '/') == NULL) {
+	warn("txzchk", "%s: no directory found in filename %s", txzpath, p);
+	++total_issues;
+    }
+
     if (*(file->basename) == '.' && strcmp(file->basename, ".info.json") && strcmp(file->basename, ".author.json")) {
 	++total_issues;
 	warn("txzchk", "%s: found non .author.json and .info.json dot file %s", txzpath, file->basename);
@@ -524,10 +530,13 @@ check_file(char const *txzpath, char *p, char const *dir_name, struct file *file
 	    warn("txzchk", "%s: found incorrect directory in filename %s", txzpath, p);
 	    ++total_issues;
 	}
-    }
-    if (strchr(p, '/') == NULL) {
-	warn("txzchk", "%s: no directory found in filename %s", txzpath, p);
-	++total_issues;
+	else {
+	    /*
+	     * we can indicate that we have seen the correct directory: this is
+	     * to test for a directory change later on.
+	     */
+	    info.has_correct_directory = true;
+	}
     }
 }
 /*
@@ -581,6 +590,7 @@ check_empty_file(char const *txzpath, off_t file_size, struct file *file)
  * given:
  *
  *	file_sizes	- total size of all files
+ *	dir_name	- fnamchk result (if passed - else NULL)
  *
  * Reports any additional issues found in the tarball (or text file).
  *
@@ -589,7 +599,7 @@ check_empty_file(char const *txzpath, off_t file_size, struct file *file)
  *
  */
 static void
-check_all_files(off_t file_sizes)
+check_all_files(off_t file_sizes, char const *dir_name)
 {
     struct file *file; /* to iterate through files list */
     off_t rounded_file_size = 0; /* file sizes rounded up to 1024 multiple */
@@ -631,6 +641,13 @@ check_all_files(off_t file_sizes)
 	} else if (!strcmp(file->basename, "remarks.md")) {
 	    info.has_remarks_md = true;
 	}
+	if (dir_name != NULL && info.has_correct_directory) {
+	    if (strncmp(file->filename, dir_name, strlen(dir_name))) {
+		warn("txzchk", "%s: found directory change in filename %s", txzpath, file->filename);
+		++total_issues;
+	    }
+	}
+
 	if (file->count > 1) {
 	    warn("txzchk", "%s: found a total of %u files with the name %s", txzpath, file->count, file->basename);
 	    total_issues += file->count - 1;
@@ -1278,7 +1295,7 @@ check_tarball(char const *tar, char const *fnamchk)
     /*
      * check files list and report any additional issues
      */
-    check_all_files(file_sizes);
+    check_all_files(file_sizes, dir_name);
 
     /* free the files list */
     free_file_list();
