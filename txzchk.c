@@ -656,24 +656,28 @@ check_all_files(off_t file_sizes, char const *dir_name)
 
     /* determine if the required files are there */
     if (!info.has_info_json) {
-	warn("txzchk", "%s: no .info.json found", txzpath);
 	++total_issues;
+	warn("txzchk", "%s: no .info.json found", txzpath);
     }
     if (!info.has_author_json) {
-	warn("txzchk", "%s: no .author.json found", txzpath);
 	++total_issues;
+	warn("txzchk", "%s: no .author.json found", txzpath);
     }
     if (!info.has_prog_c) {
-	warn("txzchk", "%s: no prog.c found", txzpath);
 	++total_issues;
+	warn("txzchk", "%s: no prog.c found", txzpath);
     }
     if (!info.has_Makefile) {
-	warn("txzchk", "%s: no Makefile found", txzpath);
 	++total_issues;
+	warn("txzchk", "%s: no Makefile found", txzpath);
     }
     if (!info.has_remarks_md) {
-	warn("txzchk", "%s: no remarks.md found", txzpath);
 	++total_issues;
+	warn("txzchk", "%s: no remarks.md found", txzpath);
+    }
+    if (!info.has_correct_directory) {
+	++total_issues;
+	warn("txzchk", "%s: did not find correct directory", txzpath);
     }
 
     /*
