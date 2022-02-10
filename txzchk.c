@@ -604,7 +604,7 @@ parse_linux_line(char *p, char *linep, char *line_dup, char *dir_name, char cons
 
 }
 /*
- * parse_linux_line	- parse macOS/BSD tar output
+ * parse_bsd_line	- parse macOS/BSD tar output
  *
  * given:
  *
