@@ -44,6 +44,7 @@
 char const *program = NULL;		    /* our name */
 int verbosity_level = DBG_DEFAULT;	    /* debug level set by -v */
 static int total_issues = 0;		    /* total number of issues with tarball found */
+static unsigned total_files = 0;	    /* total number of files in tarball found */
 static bool quiet = false;		    /* true ==> only show errors and warnings */
 static bool text_file_flag_used = false;    /* true ==> assume txzpath is a text file */
 char const *txzpath = NULL;		    /* the current tarball being checked */
@@ -54,7 +55,7 @@ struct info {
     bool has_prog_c;
     bool has_remarks_md;
     bool has_Makefile;
-    bool has_correct_directory;
+    unsigned has_correct_directory;
     unsigned dot_files;
 } info;
 
@@ -114,6 +115,7 @@ static unsigned check_tarball(char const *tar, char const *fnamchk);
 static void check_empty_file(char const *txzpath, off_t file_size, struct file *file);
 static void check_file(char const *txzpath, char *p, char const *dir_name, struct file *file);
 static void check_all_files(off_t file_sizes, char const *dir_name);
+static void check_directories(struct file *file, char const *dir_name, char const *txzpath);
 static bool has_special_bits(char const *str);
 static void add_line(char const *str, int line_num);
 static void parse_all_lines(char const *dir_name, char const *txzpath, off_t *file_sizes);
@@ -493,51 +495,14 @@ check_file(char const *txzpath, char *p, char const *dir_name, struct file *file
 	not_reached();
     }
 
-    if (strchr(p, '/') == NULL) {
-	warn("txzchk", "%s: no directory found in filename %s", txzpath, p);
-	++total_issues;
-    }
-
     if (*(file->basename) == '.' && strcmp(file->basename, ".info.json") && strcmp(file->basename, ".author.json")) {
 	++total_issues;
 	warn("txzchk", "%s: found non .author.json and .info.json dot file %s", txzpath, file->basename);
 	info.dot_files++;
     }
 
-    if (strstr(file->filename, "../")) {
-	/*
-	 * note that this check does NOT detect a file in the form of
-	 * "../.file" but since the basename of each file is checked above
-	 * this is okay.
-	 */
-	++total_issues;
-	warn("txzchk", "%s: found file with ../ in the path: %s", txzpath, file->filename);
-    }
-    if (*(file->filename) == '/') {
-	++total_issues;
-	warn("txzchk", "%s: found absolute path %s", txzpath, file->filename);
-    }
+    check_directories(file, dir_name, txzpath);
 
-    /*
-     * Now we have to run some tests on the directory name which we obtained
-     * from fnamchk earlier on - but only if fnamchk did not return an
-     * error! If it did we'll report other issues but we won't check
-     * directory names (at least the directory name expected in the
-     * tarball).
-     */
-    if (dir_name != NULL && strlen(dir_name) > 0) {
-	if (strncmp(p, dir_name, strlen(dir_name))) {
-	    warn("txzchk", "%s: found incorrect directory in filename %s", txzpath, p);
-	    ++total_issues;
-	}
-	else {
-	    /*
-	     * we can indicate that we have seen the correct directory: this is
-	     * to test for a directory change later on.
-	     */
-	    info.has_correct_directory = true;
-	}
-    }
 }
 /*
  * check_empty_file	- if file is empty, check which file it is and report it
@@ -675,9 +640,9 @@ check_all_files(off_t file_sizes, char const *dir_name)
 	++total_issues;
 	warn("txzchk", "%s: no remarks.md found", txzpath);
     }
-    if (!info.has_correct_directory) {
+    if (info.has_correct_directory < total_files) {
 	++total_issues;
-	warn("txzchk", "%s: did not find correct directory", txzpath);
+	warn("txzchk", "%s: not all files in correct directory", txzpath);
     }
 
     /*
@@ -695,6 +660,108 @@ check_all_files(off_t file_sizes, char const *dir_name)
      */
     if (total_issues > 0) {
 	warn("txzchk", "%s: found %u issue%s", txzpath, total_issues, total_issues==1?"":"s");
+    }
+}
+
+/* check_directories	- directory specific checks on the file
+ *
+ * given:
+ *
+ *	file		- file structure
+ *	dir_name	- the directory expected (or NULL if fnamchk fails)
+ *	txzpath		- the tarball path
+ *
+ * Issues a warning for every violations specific to directories (and
+ * subdirectories).
+ *
+ * Does not return on error.
+ */
+static void
+check_directories(struct file *file, char const *dir_name, char const *txzpath)
+{
+    unsigned dir_count = 0; /* number of directories in the path */
+    int last = '\0';
+    int i;
+
+    /*
+     * firewall
+     */
+    if (txzpath == NULL || file == NULL || file->filename == NULL) {
+	err(35, __func__, "passed NULL arg(s)");
+	not_reached();
+    }
+
+    /* check that there is a directory */
+    if (strchr(file->filename, '/') == NULL) {
+	warn("txzchk", "%s: no directory found in filename %s", txzpath, file->filename);
+	++total_issues;
+    } else if (strstr(file->filename, "../")) { /* check for '../' in path */
+	/*
+	 * Note that this check does NOT detect a file in the form of "../.file"
+	 * but since the basename of each file is checked in check_file() this
+	 * is okay.
+	 */
+	++total_issues;
+	warn("txzchk", "%s: found file with ../ in the path: %s", txzpath, file->filename);
+    }
+    if (*(file->filename) == '/') {
+	++total_issues;
+	warn("txzchk", "%s: found absolute path %s", txzpath, file->filename);
+    }
+
+    /* Check the path to see if there are any subdirectories. The way this is
+     * done is counting the number of '/' but done carefully: for example the
+     * path test-1//prog.c would not count as two directories but just one. 
+     *
+     * Another example: ..// would be counted as one directory but it still has
+     * ../ so that would have been detected above.
+     *
+     * It does this by saving the previous character: if it was also a '/' then
+     * it's not counted as another directory: the first one will be counted
+     * however since there wasn't one before it.
+     *
+     * We don't count the first character of the path because a path like:
+     * /test-3/ would be counted as two directories but it's actually only one.
+     * Well it kind of is two but / is special and it would still trigger an
+     * absolute path warning - at least from a text file (tar strips it off) -
+     * because it starts with a '/'.
+     *
+     * Note that the path /test-3 would trigger a warning that it's not in the
+     * correct directory because it's an absolute directory. However since tar
+     * strips the initial '/'s this would probably not get flagged.
+     *
+     * Note also that if the tar output does not have a trailing '/' in a
+     * directory entry itself it would not count as another directory. However
+     * since we also check for more than one 'd' line in the output it would
+     * trigger more than one directory in the tarball.
+     */
+    last = file->filename[0];
+    for (i = 1; file->filename[i]; ++i) {
+	if (file->filename[i] == '/' && last != '/') {
+	    ++dir_count;
+	}
+	last = file->filename[i];
+    }
+    if (dir_count > 1) {
+	++total_issues;
+	warn("txzchk", "%s: found more than one directory in path %s", txzpath, file->filename);
+    }
+    /*
+     * Now we have to run some tests on the directory name which we obtained
+     * from fnamchk earlier on - but only if fnamchk did not return an
+     * error! If it did we'll report other issues but we won't check
+     * directory names (at least the directory name expected in the
+     * tarball).
+     */
+    if (dir_name != NULL && strlen(dir_name) > 0) {
+	if (strncmp(file->filename, dir_name, strlen(dir_name))) {
+	    warn("txzchk", "%s: found incorrect directory in filename %s", txzpath, file->filename);
+	    ++total_issues;
+	}
+	else {
+	    /* This file is in the right directory */
+	    info.has_correct_directory++;
+	}
     }
 }
 
@@ -1540,6 +1607,9 @@ add_file_to_list(struct file *file)
 	err(37, __func__, "called with NULL pointer(s)");
 	not_reached();
     }
+
+    /* always increment total files count */
+    ++total_files;
 
     for (ptr = files; ptr != NULL; ptr = ptr->next)
     {
