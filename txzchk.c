@@ -735,6 +735,12 @@ check_directories(struct file *file, char const *dir_name, char const *txzpath)
      * directory entry itself it would not count as another directory. However
      * since we also check for more than one 'd' line in the output it would
      * trigger more than one directory in the tarball.
+     *
+     * We keep track of two previous characters. The reason is that
+     * 'test-3/././file' should count as only one directory but previously
+     * (first version of this) it detected more than one directory because the
+     * '.' was not considered. Notice that the path 'test-3/.././file' will
+     * trigger both '../' in the path as well as more than one directory.
      */
     first = file->filename[0];
     prev = file->filename[1];
