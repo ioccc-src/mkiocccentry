@@ -659,7 +659,7 @@ check_all_files(off_t file_sizes, char const *dir_name)
      */
 
     if (info.dot_files > 0) {
-	warn("txzchk", "%s: found a total of %u unacceptable dot files", txzpath, info.dot_files);
+	warn("txzchk", "%s: found a total of %u unacceptable dot file%s", txzpath, info.dot_files, info.dot_files==1?"":"s");
     }
 
     /*
@@ -704,14 +704,15 @@ check_directories(struct file *file, char const *dir_name, char const *txzpath)
     if (strchr(file->filename, '/') == NULL) {
 	warn("txzchk", "%s: no directory found in filename %s", txzpath, file->filename);
 	++total_issues;
-    } else if (strstr(file->filename, "../")) { /* check for '../' in path */
+    }
+    if (strstr(file->filename, "..")) { /* check for '..' in path */
 	/*
 	 * Note that this check does NOT detect a file in the form of "../.file"
 	 * but since the basename of each file is checked in check_file() this
 	 * is okay.
 	 */
 	++total_issues;
-	warn("txzchk", "%s: found file with ../ in the path: %s", txzpath, file->filename);
+	warn("txzchk", "%s: found file with .. in the path: %s", txzpath, file->filename);
     }
     if (*(file->filename) == '/') {
 	++total_issues;
