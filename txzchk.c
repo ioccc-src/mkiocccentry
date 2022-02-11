@@ -815,7 +815,7 @@ parse_linux_line(char *p, char *linep, char *line_dup, char const *dir_name, cha
      * firewall
      */
 
-    if (p == NULL || linep == NULL || line_dup == NULL || txzpath == NULL || file_sizes == NULL) {
+    if (p == NULL || linep == NULL || line_dup == NULL || txzpath == NULL || file_sizes == NULL || saveptr == NULL) {
 	err(18, __func__, "called with NULL arg(s)");
 	not_reached();
     }
@@ -920,7 +920,7 @@ parse_bsd_line(char *p, char *linep, char *line_dup, char const *dir_name, char 
      * firewall
      */
 
-    if (p == NULL || linep == NULL || line_dup == NULL || txzpath == NULL || file_sizes == NULL) {
+    if (p == NULL || linep == NULL || line_dup == NULL || txzpath == NULL || file_sizes == NULL || saveptr == NULL) {
 	err(19, __func__, "called with NULL arg(s)");
 	not_reached();
     }
