@@ -154,9 +154,8 @@ limit_ioccc.sh: limit_ioccc.h Makefile
 	${GREP} -E '^#define (RULE_|MAX_|UUID_|MIN_|_VERSION|IOCCC_)' limit_ioccc.h | \
 	    ${AWK} '{print $$2 "=\"" $$3 "\"" ;}' | ${TR} -d '[a-z]()' | \
 	    ${SED} -e 's/"_/"/' -e 's/""/"/g' -e 's/^/export /' >> $@
-	${GREP} -E '^#define (IOCCCSIZE_VERSION|MKIOCCCENTRY_VERSION)' limit_ioccc.h | \
-	    ${AWK} '{print $$2 "=\"" $$3, $$4 "\"" ;}' | ${TR} -d '[a-z]()' | \
-	    ${SED} -e 's/"_/"/' -e 's/""/"/g' -e 's/^/export /' >> $@
+	${GREP} -E '^#define (IOCCCSIZE_VERSION|MKIOCCCENTRY_VERSION|TIMESTAMP_EPOCH)' limit_ioccc.h | \
+	    ${SED} -e 's/^#define/export/' -e 's/ "/="/' -e 's/"[	 ].*$$/"/' >> $@
 
 # Only run this rule when you wish to invalidate all timestamps
 # prior to now, such as when you make a fundamental change to a

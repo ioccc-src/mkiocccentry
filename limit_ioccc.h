@@ -54,6 +54,7 @@
 #define UUID_LEN (36)		/* characters in a UUID string - as per RFC4122 */
 #define UUID_VERSION (4)	/* version 4 - random UUID */
 #define UUID_VARIANT (0xa)	/* variant 1 - encoded as 0xa */
+#define TIMESTAMP_EPOCH "Thr Jan  1 00:00:00 1970 UTC"	/* gettimeofday epoch */
 
 /*
  * Be careful to change this value as it will invalidate all IOCCC timestamps < this value
