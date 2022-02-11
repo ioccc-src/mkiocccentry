@@ -117,8 +117,6 @@ MANPAGES = mkiocccentry.1 txzchk.1 fnamchk.1 iocccsize.1
 TEST_TARGETS= dbg_test
 OBJFILES = dbg.o util.o mkiocccentry.o iocccsize.o dbg_test.o fnamchk.o txzchk.o
 SRCFILES = $(patsubst %.o,%.c,$(OBJFILES))
-ALT_OBJFILES= orig.iocccsize.o
-ALT_TARGETS= orig.iocccsize
 
 all: ${TARGETS} ${TEST_TARGETS}
 
@@ -248,28 +246,16 @@ reset_min_timestamp:
 	    echo 'WARNING: And if all is well, commit and push the change to the GitHib repo!';\
 	    echo
 
-# This version of iocccsize is NOT part of the offical mkiocccentry toolset.
-# For the official IOCCC iocccsize tool, see the iocccsize rule above.
-#
-# This file is kept as a patch reference copy from:
-#
-#	https://github.com/SirWumpus/iocccsize/blob/master/iocccsize.c
-#
-orig.iocccsize: orig.iocccsize.c Makefile
-	${CC} ${CFLAGS} orig.iocccsize.c -o $@
-
 configure:
 	@echo nothing to configure
 
 clean:
 	${RM} -f ${OBJFILES}
-	${RM} -f ${ALT_OBJFILES}
 	${RM} -rf mkiocccentry.dSYM iocccsize.dSYM dbg_test.dSYM fnamchk.dSYM
-	${RM} -rf txzchk.dSYM orig.iocccsize.dSYM
+	${RM} -rf txzchk.dSYM
 
 clobber: clean
 	${RM} -f ${TARGETS} ${TEST_TARGETS}
-	${RM} -f ${ALT_TARGETS}
 	${RM} -f rule_count.c answers.txt
 	${RM} -rf test-iocccsize test_src test_work
 

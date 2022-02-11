@@ -1,23 +1,23 @@
 #
 # iocccsize.c patch
 #
-# The orig.ioccccsize.c is from:
+# The original orig.iocccsize/iocccsize.c file is from:
 #
 #      https://github.com/SirWumpus/iocccsize/blob/master/iocccsize.c
 #
-# For this patch, orig.ioccccsize.c represents this GitHub commit:
+# For this patch, the original orig.iocccsize/iocccsize.c file is from this GitHub commit:
 #
-#      https://github.com/SirWumpus/iocccsize/commit/1c65741901d0c863e3d6c0f73c0445d4e61b797b
+#      https://github.com/SirWumpus/iocccsize/commit/561f007621e4e884c98ad5943c5a854a514b4d13
 #
-# The occccsize.c is from:
+# The official ioccccsize.c file may be found at:
 #
-#      https://github.com/ioccc-src/mkiocccentry
+#      https://github.com/ioccc-src/mkiocccentry/blob/master/iocccsize.c
 #
-# For this patch, ioccccsize.c represents this GitHub commit:
+# This patch was made against the following GitHub commit:
 #
-#      https://github.com/ioccc-src/mkiocccentry/commit/c58d616d6288ebd08cbbad094d93bb14cfdfbb43
+#      https://github.com/ioccc-src/mkiocccentry/commit/807f0d9a45157d006722ad93d02786af74bea685
 #
---- orig.iocccsize.c	2022-02-11 09:28:30.000000000 -0800
+--- orig.iocccsize/iocccsize.c	2022-02-11 09:26:48.000000000 -0800
 +++ iocccsize.c	2022-02-11 10:37:17.000000000 -0800
 @@ -1,40 +1,33 @@
 +/* vim: set tabstop=8 softtabstop=8 shiftwidth=8 noexpandtab : */
