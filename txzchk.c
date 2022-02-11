@@ -112,8 +112,8 @@ static const char * const usage_msg =
 static void usage(int exitcode, char const *name, char const *str, char const *tar, char const *fnamchk) __attribute__((noreturn));
 static void sanity_chk(char const *tar, char const *fnamchk);
 static void parse_line(char *linep, char *line_dup, char const *dir_name, char const *txzpath, off_t *file_sizes, int *dir_count);
-static void parse_linux_line(char *p, char *line, char *line_dup, char const *dir_name, char const *txzpath, off_t *file_sizes);
-static void parse_bsd_line(char *p, char *line, char *line_dup, char const *dir_name, char const *txzpath, off_t *file_sizes);
+static void parse_linux_line(char *p, char *line, char *line_dup, char const *dir_name, char const *txzpath, off_t *file_sizes, char **saveptr);
+static void parse_bsd_line(char *p, char *line, char *line_dup, char const *dir_name, char const *txzpath, off_t *file_sizes, char **saveptr);
 static unsigned check_tarball(char const *tar, char const *fnamchk);
 static void check_empty_file(char const *txzpath, off_t file_size, struct file *file);
 static void check_file(char const *txzpath, char *p, char const *dir_name, struct file *file);
@@ -795,6 +795,7 @@ check_directories(struct file *file, char const *dir_name, char const *txzpath)
  *	dir_name    - directory name retrieved from fnamchk or NULL if it failed
  *	txzpath	    - the tarball path
  *	file_sizes  - pointer to the total file sizes of the tarball
+ *	saveptr	    - pointer to char * to save context between each strtok_r() call
  *
  * If everything goes okay the line will be completely parsed and the calling
  * function (parse_line()) will return to its caller (parse_all_lines()) which
@@ -803,7 +804,7 @@ check_directories(struct file *file, char const *dir_name, char const *txzpath)
  * This function does not return on error.
  */
 static void
-parse_linux_line(char *p, char *linep, char *line_dup, char const *dir_name, char const *txzpath, off_t *file_sizes)
+parse_linux_line(char *p, char *linep, char *line_dup, char const *dir_name, char const *txzpath, off_t *file_sizes, char **saveptr)
 {
     off_t current_file_size = 0;
     struct file *file = NULL;
@@ -843,7 +844,7 @@ parse_linux_line(char *p, char *linep, char *line_dup, char const *dir_name, cha
 	warn("txzchk", "found non-numerical GID in file in line %s", line_dup);
 	++total_issues;
     }
-    p = strtok(NULL, " \t");
+    p = strtok_r(NULL, " \t", saveptr);
     if (p == NULL) {
 	warn("txzchk", "%s: NULL pointer encountered trying to parse line, reading next line", txzpath);
 	return;
@@ -864,7 +865,7 @@ parse_linux_line(char *p, char *linep, char *line_dup, char const *dir_name, cha
      * get the following field which we _do_ care about.
      */
     for (i = 0; i < 3; ++i) {
-	p = strtok(NULL, " \t");
+	p = strtok_r(NULL, " \t", saveptr);
 	if (p == NULL) {
 	    warn("txzchk", "%s: NULL pointer trying to parse line, reading next line", txzpath);
 	    return;
@@ -899,6 +900,7 @@ parse_linux_line(char *p, char *linep, char *line_dup, char const *dir_name, cha
  *	dir_name    - directory name retrieved from fnamchk or NULL if it failed
  *	txzpath	    - the tarball path
  *	file_sizes  - pointer to the total file sizes of the tarball
+ *	saveptr	    - pointer to char * to save context between each strtok_r() call
  *
  * If everything goes okay the line will be completely parsed and the calling
  * function (parse_line()) will return to its caller (parse_all_lines()) which
@@ -907,7 +909,7 @@ parse_linux_line(char *p, char *linep, char *line_dup, char const *dir_name, cha
  * This function does not return on error.
  */
 static void
-parse_bsd_line(char *p, char *linep, char *line_dup, char const *dir_name, char const *txzpath, off_t *file_sizes)
+parse_bsd_line(char *p, char *linep, char *line_dup, char const *dir_name, char const *txzpath, off_t *file_sizes, char **saveptr)
 {
     off_t current_file_size = 0;
     struct file *file = NULL;
@@ -922,7 +924,7 @@ parse_bsd_line(char *p, char *linep, char *line_dup, char const *dir_name, char 
 	not_reached();
     }
 
-    p = strtok(NULL, " \t");
+    p = strtok_r(NULL, " \t", saveptr);
     if (p == NULL) {
 	warn("txzchk", "%s: NULL pointer encountered trying to parse line, reading next line", txzpath);
 	return;
@@ -942,7 +944,7 @@ parse_bsd_line(char *p, char *linep, char *line_dup, char const *dir_name, char 
     /*
      * now do the same for group
      */
-    p = strtok(NULL, " \t");
+    p = strtok_r(NULL, " \t", saveptr);
     if (p == NULL) {
 	warn("txzchk", "%s: NULL pointer encountered trying to parse line, reading next line", txzpath);
 	return;
@@ -955,7 +957,7 @@ parse_bsd_line(char *p, char *linep, char *line_dup, char const *dir_name, char 
 	++total_issues;
     }
 
-    p = strtok(NULL, " \t");
+    p = strtok_r(NULL, " \t", saveptr);
     if (p == NULL) {
 	warn("txzchk", "%s: NULL pointer encountered trying to parse line, reading next line", txzpath);
 	return;
@@ -973,7 +975,7 @@ parse_bsd_line(char *p, char *linep, char *line_dup, char const *dir_name, char 
      * get the following field which we _do_ care about.
      */
     for (i = 0; i < 4; ++i) {
-	p = strtok(NULL, " \t");
+	p = strtok_r(NULL, " \t", saveptr);
 	if (p == NULL) {
 	    warn("txzchk", "%s: NULL pointer trying to parse line, reading next line", txzpath);
 	    return;
@@ -1016,7 +1018,8 @@ parse_bsd_line(char *p, char *linep, char *line_dup, char const *dir_name, char 
 static void
 parse_line(char *linep, char *line_dup, char const *dir_name, char const *txzpath, off_t *file_sizes, int *dir_count)
 {
-    char *p = NULL;
+    char *p = NULL; /* each field in the line extracted from strtok_r() */
+    char *saveptr = NULL; /* for strtok_r() context */
 
     /*
      * firewall
@@ -1044,7 +1047,7 @@ parse_line(char *linep, char *line_dup, char const *dir_name, char const *txzpat
 	++total_issues;
     }
     /* extract each field, one at a time, to do various tests */
-    p = strtok(linep, " \t");
+    p = strtok_r(linep, " \t", &saveptr);
     if (p == NULL) {
 	warn("txzchk", "%s: NULL pointer encountered trying to parse line, reading next line", txzpath);
 	return;
@@ -1057,17 +1060,17 @@ parse_line(char *linep, char *line_dup, char const *dir_name, char const *txzpat
      * we have to check this next field for a '/': this will tell us whether to
      * parse it for linux or for macOS/BSD.
      */
-    p = strtok(NULL, " \t");
+    p = strtok_r(NULL, " \t", &saveptr);
     if (p == NULL) {
 	warn("txzchk", "%s: NULL pointer encountered trying to parse line, reading next line", txzpath);
 	return;
     }
     if (strchr(p, '/') != NULL) {
 	/* found linux output */
-	parse_linux_line(p, linep, line_dup, dir_name, txzpath, file_sizes);
+	parse_linux_line(p, linep, line_dup, dir_name, txzpath, file_sizes, &saveptr);
     } else {
 	/* assume macOS/BSD output */
-	parse_bsd_line(p, linep, line_dup, dir_name, txzpath, file_sizes);
+	parse_bsd_line(p, linep, line_dup, dir_name, txzpath, file_sizes, &saveptr);
     }
 }
 
@@ -1112,9 +1115,8 @@ check_tarball(char const *tar, char const *fnamchk)
     /*
      * First of all we have to run fnamchk on the tarball: this is important
      * because we have to know the actual directory name the files should be in
-     * within the tarball and we cannot use strtok(3) on the strdup()'d strings
-     * (since we then can't free them) later on so we have to act on the path in
-     * the initial loop when discovering the filenames.
+     * within the tarball which we use in checks on the directory (and any
+     * additional directories in the tarball).
      */
 
     /* form command line to fnamchk */
