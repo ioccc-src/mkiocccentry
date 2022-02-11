@@ -1,4 +1,4 @@
-.TH txzchk 1 "06 February 2022" "txzchk" "IOCCC tools"
+.TH txzchk 1 "11 February 2022" "txzchk" "IOCCC tools"
 .SH NAME
 txzchk \- sanity checker tool used on IOCCC compressed tarballs
 .SH SYNOPSIS
@@ -44,9 +44,13 @@ Assume txzpath is a text file; use \fBfopen(3)\fP and \fBfclose(3)\fP instead of
 .RS
 Source file to the \fBtxzchk\fP tool.
 .RE
+\fIlimit_ioccc.h\fP
+.RS
+Header file with limits related to the IOCCC.
+.RE
 .SH BUGS
 .PP
-More than 0 humans work on it! :)
+Cody Boone Ferguson wrote it! :)
 .PP
 If you have an issue with the tool you can open an issue at \fI\<https://github.com/ioccc-src/mkiocccentry/issues\>\fP.
 .SH EXAMPLES
