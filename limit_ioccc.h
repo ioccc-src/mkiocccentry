@@ -60,6 +60,21 @@
  */
 #define MIN_TIMESTAMP ((time_t)1643987926)
 
+/*
+ * Version of info for JSON the .info.json file.
+ *
+ * The following is NOT the version of this mkiocccentry tool!
+ */
+#define INFO_VERSION "1.7 2022-02-04"	/* version of the .info.json file to produce */
+
+
+/*
+ * Version of info for JSON the .author.json file.
+ *
+ * The following is NOT the version of this mkiocccentry tool!
+ */
+#define AUTHOR_VERSION "1.8 2022-02-04"	/* version of the .author.json file to produce */
+
 
 /*
  * rule_count() processing results

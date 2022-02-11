@@ -151,7 +151,7 @@ limit_ioccc.sh: limit_ioccc.h Makefile
 	@echo '#' > $@
 	@echo '# Copies of select limit_ioccc.h values for shell script use' >> $@
 	@echo '#' >> $@
-	${GREP} -E '^#define (RULE_|MAX_|UUID_|MIN_)' limit_ioccc.h | \
+	${GREP} -E '^#define (RULE_|MAX_|UUID_|MIN_|_VERSION)' limit_ioccc.h | \
 	    ${AWK} '{print $$2 "=\"" $$3 "\"" ;}' | ${TR} -d '[a-z]()' | \
 	    ${SED} -e 's/"_/"/' -e 's/^/export /' >> $@
 
