@@ -60,6 +60,19 @@
  */
 #define MIN_TIMESTAMP ((time_t)1643987926)
 
+
+/*
+ * official iocccsize version
+ */
+#define IOCCCSIZE_VERSION "28.7 2022-02-01"	/* use format: major.minor YYYY-MM-DD */
+
+
+/*
+ * official mkiocccentry version
+ */
+#define MKIOCCCENTRY_VERSION "0.35 2022-02-07"	/* use format: major.minor YYYY-MM-DD */
+
+
 /*
  * Version of info for JSON the .info.json file.
  *

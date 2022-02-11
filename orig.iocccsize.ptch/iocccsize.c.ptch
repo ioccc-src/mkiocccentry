@@ -13,12 +13,10 @@
 #
 #      https://github.com/ioccc-src/mkiocccentry/blob/master/iocccsize.c
 #
-# This patch was made against the following GitHub commit:
-#
-#      https://github.com/ioccc-src/mkiocccentry/commit/807f0d9a45157d006722ad93d02786af74bea685
+# This patch was made against the most recent iocccsize.c commit.
 #
 --- orig.iocccsize/iocccsize.c	2022-02-11 09:26:48.000000000 -0800
-+++ iocccsize.c	2022-02-11 10:37:17.000000000 -0800
++++ iocccsize.c	2022-02-11 14:26:59.000000000 -0800
 @@ -1,40 +1,33 @@
 +/* vim: set tabstop=8 softtabstop=8 shiftwidth=8 noexpandtab : */
  /*
@@ -98,7 +96,7 @@
   */
  
  /*
-@@ -79,53 +72,93 @@
+@@ -79,53 +72,97 @@
  #include <string.h>
  #include <stdio.h>
  #include <stdlib.h>
@@ -111,21 +109,6 @@
 -#define WORD_BUFFER_SIZE	64
 -#define MAX_SIZE		4096	/* IOCCC Rule 2a */
 -#define MAX_COUNT		2053	/* IOCCC Rule 2b */
--#define STRLEN(s)		(sizeof (s)-1)
-+/*
-+ * iocccsize version string
-+ */
-+#define IOCCCSIZE_VERSION "28.7 2022-02-01"	/* use format: major.minor YYYY-MM-DD */
-+char const * const iocccsize_version = IOCCCSIZE_VERSION;
- 
--#define NO_STRING		0
--#define NO_COMMENT		0
--#define COMMENT_EOL		1
--#define COMMENT_BLOCK		2
- 
--static char usage[] =
--"usage: iocccsize [-ihvV] prog.c\n"
--"       iocccsize [-ihvV] < prog.c\n"
 +#if ! defined(MKIOCCCENTRY_USE)
 +/*
 + * usage message, split into strings that are small enough to be supported by C standards
@@ -133,22 +116,16 @@
 +static char usage0[] =
 +"usage: iocccsize [-h] [-i] [-v ...] [-V] prog.c\n"
 +"usage: iocccsize [-h] [-i] [-v ...] [-V] < prog.c\n"
- "\n"
- "-i\t\tignored for backward compatibility\n"
--"-h\t\tprint usage message in stderr and exit\n"
++"\n"
++"-i\t\tignored for backward compatibility\n"
 +"-h\t\tprint usage message in stderr and exit 2\n"
- "-v\t\tturn on some debugging to stderr; -vv or -vvv for more\n"
--"-V\t\tprint version and exit\n"
--"\n"
--"The source is written to stdout, with possible translations ie. trigraphs.\n"
--"The IOCCC net count rule 2b is written to stderr; with -v, net count (2b),\n"
++"-v\t\tturn on some debugging to stderr; -vv or -vvv for more\n"
 +"-V\t\tprint version and exit 3\n"
 +"\n";
 +static char usage1[] =
 +"The IOCCC net count Rule 2b is written to stdout; with -v, net count (2b),\n"
- "gross count (2a), number of keywords counted as 1 byte; -vv or -vvv write\n"
- "more tool diagnostics.\n"
--;
++"gross count (2a), number of keywords counted as 1 byte; -vv or -vvv write\n"
++"more tool diagnostics.\n"
 +"\n"
 +"Exit codes:\n"
 +"\t0 - source code is within Rule 2a and Rule 2b limits\n"
@@ -184,18 +161,43 @@
 +#undef DIGRAPHS				/* digraphs count a 2 for Rule 2b */
 +#undef TRIGRAPHS			/* trigraphs count a 3 for Rule 2b */
 +
-+#define STRLEN(s)		(sizeof (s)-1)
+ #define STRLEN(s)		(sizeof (s)-1)
+ 
++#if !defined(IOCCCSIZE_VERSION)
++#define IOCCCSIZE_VERSION "unofficial iocccsize version"
++#endif /* ! IOCCCSIZE_VERSION */
 +
 +#endif /* MKIOCCCENTRY_USE || IOCCCSIZE_STANDALONE */
++
++#define WORD_BUFFER_SIZE	256
++
+ #define NO_STRING		0
+ #define NO_COMMENT		0
+ #define COMMENT_EOL		1
+ #define COMMENT_BLOCK		2
+ 
+-static char usage[] =
+-"usage: iocccsize [-ihvV] prog.c\n"
+-"       iocccsize [-ihvV] < prog.c\n"
+-"\n"
+-"-i\t\tignored for backward compatibility\n"
+-"-h\t\tprint usage message in stderr and exit\n"
+-"-v\t\tturn on some debugging to stderr; -vv or -vvv for more\n"
+-"-V\t\tprint version and exit\n"
+-"\n"
+-"The source is written to stdout, with possible translations ie. trigraphs.\n"
+-"The IOCCC net count rule 2b is written to stderr; with -v, net count (2b),\n"
+-"gross count (2a), number of keywords counted as 1 byte; -vv or -vvv write\n"
+-"more tool diagnostics.\n"
+-;
  
 -static int debug;
 -static char *out_fmt = "%lu\n";
-+#define WORD_BUFFER_SIZE	256
++/*
++ * iocccsize version
++ */
++char const * const iocccsize_version = IOCCCSIZE_VERSION;
 +
-+#define NO_STRING		0
-+#define NO_COMMENT		0
-+#define COMMENT_EOL		1
-+#define COMMENT_BLOCK		2
  
  /*
   * C reserved words, plus a few #preprocessor tokens, that count as 1
@@ -217,7 +219,7 @@
  } Word;
  
  static Word cwords[] = {
-@@ -214,7 +247,7 @@
+@@ -214,7 +251,7 @@
  };
  
  static Word *
@@ -226,7 +228,7 @@
  {
  	Word *w;
  	for (w = table; w->length != 0; w++) {
-@@ -226,46 +259,50 @@
+@@ -226,46 +263,50 @@
  }
  
  static int
@@ -291,7 +293,7 @@
  					ch = t[1];
  					break;
  				}
-@@ -274,7 +311,7 @@
+@@ -274,7 +315,7 @@
  			/* Unknown trigraph, push back the 3rd character. */
  			if (*t == '\0') {
  				if (ch != EOF && ungetc(ch, fp) == EOF) {
@@ -300,7 +302,7 @@
  				}
  				ch = '?';
  			}
-@@ -284,7 +321,7 @@
+@@ -284,7 +325,7 @@
  			/* ISO C11 section 5.1.1.2 Translation Phases
  			 * point 2 discards backslash newlines.
  			 */
@@ -309,7 +311,7 @@
  			continue;
  		}
  
-@@ -293,7 +330,7 @@
+@@ -293,7 +334,7 @@
  			 * How does that relate to UTF8 and wide-character library
  			 * handling?  An invalid trigraph results in 2x ungetc().
  			 */
@@ -318,7 +320,7 @@
  		}
  
  		/* Within quoted string? */
-@@ -338,10 +375,9 @@
+@@ -338,10 +379,9 @@
  			is_comment = COMMENT_EOL;
  
  			/* Consume next_ch. */
@@ -331,7 +333,7 @@
  		}
  
  		/* Start of comment block? */
-@@ -352,10 +388,9 @@
+@@ -352,10 +392,9 @@
  			is_comment = COMMENT_BLOCK;
  
  			/* Consume next_ch. */
@@ -344,7 +346,7 @@
  		}
  
  		/* Open single or double quote? */
-@@ -363,21 +398,18 @@
+@@ -363,21 +402,18 @@
  			quote = ch;
  		}
  
@@ -369,7 +371,7 @@
  					ch = d[0];
  					break;
  				}
-@@ -385,7 +417,7 @@
+@@ -385,7 +421,7 @@
  		}
  #endif
  		/* Sanity check against file size and wc(1) byte count. */
@@ -378,7 +380,7 @@
  
  		/* End of possible keyword?  Care with #word as there can
  		 * be whitespace or comments between # and word.
-@@ -393,10 +425,10 @@
+@@ -393,10 +429,10 @@
  		if ((word[0] != '#' || 1 < wordi) && !isalnum(ch) && ch != '_' && ch != '#') {
  			if (find_member(cwords, word) != NULL) {
  				/* Count keyword as 1. */
@@ -392,7 +394,7 @@
  				}
  			}
  			word[wordi = 0] = '\0';
-@@ -421,49 +453,32 @@
+@@ -421,49 +457,32 @@
  		/* Collect next word not in a string or comment. */
  		if (IS_CODE && (isalnum(ch) || ch == '_' || ch == '#')) {
  			if (sizeof (word) <= wordi) {
@@ -452,7 +454,7 @@
  	while ((ch = getopt(argc, argv, "6ihvV")) != -1) {
  		switch (ch) {
  		case 'i': /* ignored for backward compatibility */
-@@ -471,41 +486,85 @@
+@@ -471,41 +490,85 @@
  
  		case 'v':
  			debug++;

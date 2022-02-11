@@ -97,12 +97,6 @@
 
 
 /*
- * mkiocccentry version
- */
-#define MKIOCCCENTRY_VERSION "0.35 2022-02-07"	/* use format: major.minor YYYY-MM-DD */
-
-
-/*
  * Answers file constants.
  *
  * Version of answers file.

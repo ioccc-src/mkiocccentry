@@ -75,13 +75,6 @@
 #include <errno.h>
 
 
-/*
- * iocccsize version string
- */
-#define IOCCCSIZE_VERSION "28.7 2022-02-01"	/* use format: major.minor YYYY-MM-DD */
-char const * const iocccsize_version = IOCCCSIZE_VERSION;
-
-
 #if ! defined(MKIOCCCENTRY_USE)
 /*
  * usage message, split into strings that are small enough to be supported by C standards
@@ -136,6 +129,10 @@ static char usage1[] =
 
 #define STRLEN(s)		(sizeof (s)-1)
 
+#if !defined(IOCCCSIZE_VERSION)
+#define IOCCCSIZE_VERSION "unofficial iocccsize version"
+#endif /* ! IOCCCSIZE_VERSION */
+
 #endif /* MKIOCCCENTRY_USE || IOCCCSIZE_STANDALONE */
 
 #define WORD_BUFFER_SIZE	256
@@ -144,6 +141,13 @@ static char usage1[] =
 #define NO_COMMENT		0
 #define COMMENT_EOL		1
 #define COMMENT_BLOCK		2
+
+
+/*
+ * iocccsize version
+ */
+char const * const iocccsize_version = IOCCCSIZE_VERSION;
+
 
 /*
  * C reserved words, plus a few #preprocessor tokens, that count as 1
