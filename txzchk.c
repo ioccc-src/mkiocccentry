@@ -115,7 +115,7 @@ static void parse_line(char *linep, char *line_dup, char const *dir_name, char c
 static void parse_linux_line(char *p, char *line, char *line_dup, char const *dir_name, char const *txzpath, off_t *file_sizes, char **saveptr);
 static void parse_bsd_line(char *p, char *line, char *line_dup, char const *dir_name, char const *txzpath, off_t *file_sizes, char **saveptr);
 static unsigned check_tarball(char const *tar, char const *fnamchk);
-static void check_empty_file(char const *txzpath, off_t file_size, struct file *file);
+static void check_empty_file(char const *txzpath, off_t size, struct file *file);
 static void check_file(char const *txzpath, char *p, char const *dir_name, struct file *file);
 static void check_all_files(off_t file_sizes, char const *dir_name);
 static void check_directories(struct file *file, char const *dir_name, char const *txzpath);
@@ -516,7 +516,7 @@ check_file(char const *txzpath, char *p, char const *dir_name, struct file *file
  * given:
  *
  *	txzpath		- the tarball (or text file) we're checking
- *	file_size	- size of the file
+ *	size		- size of the file
  *	file		- the struct file we're checking
  *
  * Returns void.
@@ -524,7 +524,7 @@ check_file(char const *txzpath, char *p, char const *dir_name, struct file *file
  * Does not return on error (NULL pointers passed in).
  */
 static void
-check_empty_file(char const *txzpath, off_t file_size, struct file *file)
+check_empty_file(char const *txzpath, off_t size, struct file *file)
 {
     /*
      * firewall
@@ -535,7 +535,7 @@ check_empty_file(char const *txzpath, off_t file_size, struct file *file)
 	not_reached();
     }
 
-    if (file_size == 0) {
+    if (size == 0) {
 	if (!strcmp(file->basename, ".author.json")) {
 	    ++total_issues;
 	    warn("txzchk", "%s: found empty .author.json file", txzpath);
