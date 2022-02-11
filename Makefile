@@ -1,6 +1,6 @@
 #!/usr/bin/env make
 #
-# mkiocccentry and iocccsize - make an IOCCC entry AND IOCCC Rule 2b size tool
+# mkiocccentry and related tools - how to form an IOCCC entry
 #
 # For mkiocccentry:
 #
@@ -36,8 +36,8 @@
 #
 # "You are not expected to understand this" :-)
 #
-# Public Domain 1992, 2015, 2018, 2019 by Anthony Howe.  All rights released.
-# With IOCCC minor mods in 2019,2021,2022 by chongo (Landon Curt Noll) ^oo^
+# Public Domain 1992, 2015, 2018, 2019, 2021 by Anthony Howe.  All rights released.
+# With IOCCC mods in 2019-2022 by chongo (Landon Curt Noll) ^oo^
 ####
 
 ####
