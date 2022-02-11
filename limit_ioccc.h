@@ -77,6 +77,23 @@
 
 
 /*
+ * IOCCC contest name
+ *
+ * use format: IOCCC99 or IOCCCMOCK
+ */
+#define IOCCC_CONTEST "IOCCCMOCK"
+
+
+/*
+ * The year that IOCCC_CONTEST closes
+ *
+ * NOTE: If the content spans the new year, then the year
+ *	 that IOCCC_CONTEST opens may be different.
+ */
+#define IOCCC_YEAR (2022)
+
+
+/*
  * rule_count() processing results
  */
 struct iocccsize {

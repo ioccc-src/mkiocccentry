@@ -100,8 +100,6 @@
  * mkiocccentry version
  */
 #define MKIOCCCENTRY_VERSION "0.35 2022-02-07"	/* use format: major.minor YYYY-MM-DD */
-#define IOCCC_CONTEST "IOCCC28"			/* use format: IOCCC99 */
-#define IOCCC_YEAR (2022)			/* Year IOCCC_CONTEST closes */
 
 
 /*
