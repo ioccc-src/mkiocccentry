@@ -137,7 +137,7 @@ mkiocccentry: mkiocccentry.c limit_ioccc.h rule_count.o dbg.o util.o Makefile
 	${CC} ${CFLAGS} mkiocccentry.c rule_count.o dbg.o util.o -o $@
 
 iocccsize: iocccsize.c limit_ioccc.h Makefile
-	${CC} ${CFLAGS} iocccsize.c -o $@
+	${CC} ${CFLAGS} -DIOCCCSIZE_STANDALONE iocccsize.c -o $@
 
 dbg_test: dbg.c dbg.h Makefile
 	${CC} ${CFLAGS} -DDBG_TEST dbg.c -o $@

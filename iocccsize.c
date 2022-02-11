@@ -1,13 +1,11 @@
+/* vim: set tabstop=8 softtabstop=8 shiftwidth=8 noexpandtab : */
 /*
  * iocccsize - IOCCC Source Size Tool
  *
  *	"You are not expected to understand this" :-)
  *
- *	Public Domain 1992, 2015, 2018, 2019 by Anthony Howe.  All rights released.
- *	See:
- *		https://github.com/SirWumpus/iocccsize
- *
- *	IOCCC mods in 2019-2022 by chongo (Landon Curt Noll) ^oo^
+ *	Public Domain 1992, 2015, 2018, 2019, 2021 by Anthony Howe.  All rights released.
+ *	With IOCCC mods in 2019-2022 by chongo (Landon Curt Noll) ^oo^
  *
  * SYNOPSIS
  *
@@ -45,7 +43,11 @@
  * is RTFS (for certain values of RTFS).  One might say that this code
  * perfectly documents itself.  :-)
  *
- * Many thanks to Anthony Howe for taking the time to put his OCD
+ * Many thanks to Anthony Howe for taking the time to put his OCD.
+ *
+ * For the original Anthony Howe source repo, please see:
+ *
+ *		https://github.com/SirWumpus/iocccsize
  */
 
 /*
@@ -72,22 +74,18 @@
 #include <stdlib.h>
 #include <errno.h>
 
+
 /*
- * IOCCC size and rule related limitations
+ * iocccsize version string
  */
-#include "limit_ioccc.h"
-
 #define IOCCCSIZE_VERSION "28.7 2022-02-01"	/* use format: major.minor YYYY-MM-DD */
+char const * const iocccsize_version = IOCCCSIZE_VERSION;
 
-#define WORD_BUFFER_SIZE	256
-#define STRLEN(s)		(sizeof (s)-1)
 
-#define NO_STRING		0
-#define NO_COMMENT		0
-#define COMMENT_EOL		1
-#define COMMENT_BLOCK		2
-
-#if !defined(MKIOCCCENTRY_USE)
+#if ! defined(MKIOCCCENTRY_USE)
+/*
+ * usage message, split into strings that are small enough to be supported by C standards
+ */
 static char usage0[] =
 "usage: iocccsize [-h] [-i] [-v ...] [-V] prog.c\n"
 "usage: iocccsize [-h] [-i] [-v ...] [-V] < prog.c\n"
@@ -110,10 +108,42 @@ static char usage1[] =
 "\t>= 4 - some internal error occurred\n";
 #endif /* ! MKIOCCCENTRY_USE */
 
+
+#if defined(MKIOCCCENTRY_USE) || defined(IOCCCSIZE_STANDALONE)
 /*
- * iocccsize version string
+ * IOCCC size and rule related limitations
  */
-char const * const iocccsize_version = IOCCCSIZE_VERSION;
+#include "limit_ioccc.h"
+#include "util.h"
+
+#define STRLEN(s) LITLEN(s)
+
+# else /* MKIOCCCENTRY_USE || IOCCCSIZE_STANDALONE */
+
+/*
+ * IMPORTANT NOTE: The official IOCCC Rule 2a and Rule 2b values are found in:
+ *
+ *	https://github.com/ioccc-src/mkiocccentry/blob/master/limit_ioccc.h
+ *
+ * The RULE_2A_SIZE and RULE_2B_SIZE defines below are added for convience of
+ * compiling orig.iocccsize, only.  They are not official IOCCC Rule 2a and Rule 2b values.
+ * The same thing goes for DIGRAPHS and TRIGRAPHS.
+ */
+#define RULE_2A_SIZE		4096	/* IOCCC Rule 2a */
+#define RULE_2B_SIZE		2503	/* IOCCC Rule 2b */
+#undef DIGRAPHS				/* digraphs count a 2 for Rule 2b */
+#undef TRIGRAPHS			/* trigraphs count a 3 for Rule 2b */
+
+#define STRLEN(s)		(sizeof (s)-1)
+
+#endif /* MKIOCCCENTRY_USE || IOCCCSIZE_STANDALONE */
+
+#define WORD_BUFFER_SIZE	256
+
+#define NO_STRING		0
+#define NO_COMMENT		0
+#define COMMENT_EOL		1
+#define COMMENT_BLOCK		2
 
 /*
  * C reserved words, plus a few #preprocessor tokens, that count as 1

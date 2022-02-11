@@ -3,33 +3,32 @@
 #
 # The orig.ioccccsize.c is from:
 #
-#	https://github.com/SirWumpus/iocccsize/blob/master/iocccsize.c
+#      https://github.com/SirWumpus/iocccsize/blob/master/iocccsize.c
 #
 # For this patch, orig.ioccccsize.c represents this GitHub commit:
 #
-#	https://github.com/SirWumpus/iocccsize/commit/1c65741901d0c863e3d6c0f73c0445d4e61b797b
+#      https://github.com/SirWumpus/iocccsize/commit/1c65741901d0c863e3d6c0f73c0445d4e61b797b
 #
 # The occccsize.c is from:
 #
-#	https://github.com/ioccc-src/mkiocccentry
+#      https://github.com/ioccc-src/mkiocccentry
 #
 # For this patch, ioccccsize.c represents this GitHub commit:
 #
-#	https://github.com/ioccc-src/mkiocccentry/commit/c58d616d6288ebd08cbbad094d93bb14cfdfbb43
-#	
+#      https://github.com/ioccc-src/mkiocccentry/commit/c58d616d6288ebd08cbbad094d93bb14cfdfbb43
+#
 --- orig.iocccsize.c	2022-02-11 09:28:30.000000000 -0800
-+++ iocccsize.c	2022-02-11 09:28:59.000000000 -0800
-@@ -3,38 +3,33 @@
++++ iocccsize.c	2022-02-11 10:37:17.000000000 -0800
+@@ -1,40 +1,33 @@
++/* vim: set tabstop=8 softtabstop=8 shiftwidth=8 noexpandtab : */
+ /*
+  * iocccsize - IOCCC Source Size Tool
   *
   *	"You are not expected to understand this" :-)
   *
-- *	Public Domain 1992, 2015, 2018, 2019, 2021 by Anthony Howe.  All rights released.
+  *	Public Domain 1992, 2015, 2018, 2019, 2021 by Anthony Howe.  All rights released.
 - *	With IOCCC mods in 2019-2021 by chongo (Landon Curt Noll) ^oo^
-+ *	Public Domain 1992, 2015, 2018, 2019 by Anthony Howe.  All rights released.
-+ *	See:
-+ *		https://github.com/SirWumpus/iocccsize
-+ *
-+ *	IOCCC mods in 2019-2022 by chongo (Landon Curt Noll) ^oo^
++ *	With IOCCC mods in 2019-2022 by chongo (Landon Curt Noll) ^oo^
   *
   * SYNOPSIS
   *
@@ -54,9 +53,6 @@
   *
 - * DESCRIPION
 + * DESCRIPTION
-+ *
-+ *	Reading a C source file from standard input or a file arg, apply the IOCCC
-+ *	source size rules as explained in the Guidelines.
   *
 - *	Reading a C source file from standard input, apply the IOCCC
 - *	source size rules as explained in the Guidelines.  The source
@@ -70,12 +66,15 @@
 - *	The entry's net size in bytes must be less than equal to 2053
 - *	bytes (first prime after 2048).  The net size is computed as
 - *	follows:
++ *	Reading a C source file from standard input or a file arg, apply the IOCCC
++ *	source size rules as explained in the Guidelines.
++ *
 + *	The source's Rule 2b length is written to stdout; with -v option the Rule 2b
 + *	length, gross (Rule 2a) length, and matched keyword count are written to stdout.
   *
   *	The size tool counts most C reserved words (keyword, secondary,
   *	and selected preprocessor keywords) as 1.  The size tool counts all
-@@ -43,9 +38,6 @@
+@@ -43,9 +36,6 @@
   *	';', '{' or '}' octet immediately before the end of file.
   */
  
@@ -85,15 +84,21 @@
  /*
   * IOCCC Judge's remarks:
   *
-@@ -54,7 +46,6 @@
+@@ -53,8 +43,11 @@
+  * is RTFS (for certain values of RTFS).  One might say that this code
   * perfectly documents itself.  :-)
   *
-  * Many thanks to Anthony Howe for taking the time to put his OCD
+- * Many thanks to Anthony Howe for taking the time to put his OCD
 - * (Obfuscated Coding Determination) into this code!
++ * Many thanks to Anthony Howe for taking the time to put his OCD.
++ *
++ * For the original Anthony Howe source repo, please see:
++ *
++ *		https://github.com/SirWumpus/iocccsize
   */
  
  /*
-@@ -79,14 +70,16 @@
+@@ -79,53 +72,93 @@
  #include <string.h>
  #include <stdio.h>
  #include <stdlib.h>
@@ -102,28 +107,29 @@
 -#ifndef VERSION
 -#define VERSION "28.3 2021-12-29"	/* use format: major.minor YYYY-MM-DD */
 -#endif
-+/*
-+ * IOCCC size and rule related limitations
-+ */
-+#include "limit_ioccc.h"
-+
-+#define IOCCCSIZE_VERSION "28.7 2022-02-01"	/* use format: major.minor YYYY-MM-DD */
  
 -#define WORD_BUFFER_SIZE	64
 -#define MAX_SIZE		4096	/* IOCCC Rule 2a */
 -#define MAX_COUNT		2053	/* IOCCC Rule 2b */
-+#define WORD_BUFFER_SIZE	256
- #define STRLEN(s)		(sizeof (s)-1)
+-#define STRLEN(s)		(sizeof (s)-1)
++/*
++ * iocccsize version string
++ */
++#define IOCCCSIZE_VERSION "28.7 2022-02-01"	/* use format: major.minor YYYY-MM-DD */
++char const * const iocccsize_version = IOCCCSIZE_VERSION;
  
- #define NO_STRING		0
-@@ -94,38 +87,48 @@
- #define COMMENT_EOL		1
- #define COMMENT_BLOCK		2
+-#define NO_STRING		0
+-#define NO_COMMENT		0
+-#define COMMENT_EOL		1
+-#define COMMENT_BLOCK		2
  
 -static char usage[] =
 -"usage: iocccsize [-ihvV] prog.c\n"
 -"       iocccsize [-ihvV] < prog.c\n"
-+#if !defined(MKIOCCCENTRY_USE)
++#if ! defined(MKIOCCCENTRY_USE)
++/*
++ * usage message, split into strings that are small enough to be supported by C standards
++ */
 +static char usage0[] =
 +"usage: iocccsize [-h] [-i] [-v ...] [-V] prog.c\n"
 +"usage: iocccsize [-h] [-i] [-v ...] [-V] < prog.c\n"
@@ -151,13 +157,45 @@
 +"\t3 - -V used and version printed\n"
 +"\t>= 4 - some internal error occurred\n";
 +#endif /* ! MKIOCCCENTRY_USE */
++
++
++#if defined(MKIOCCCENTRY_USE) || defined(IOCCCSIZE_STANDALONE)
++/*
++ * IOCCC size and rule related limitations
++ */
++#include "limit_ioccc.h"
++#include "util.h"
++
++#define STRLEN(s) LITLEN(s)
++
++# else /* MKIOCCCENTRY_USE || IOCCCSIZE_STANDALONE */
++
++/*
++ * IMPORTANT NOTE: The official IOCCC Rule 2a and Rule 2b values are found in:
++ *
++ *	https://github.com/ioccc-src/mkiocccentry/blob/master/limit_ioccc.h
++ *
++ * The RULE_2A_SIZE and RULE_2B_SIZE defines below are added for convience of
++ * compiling orig.iocccsize, only.  They are not official IOCCC Rule 2a and Rule 2b values.
++ * The same thing goes for DIGRAPHS and TRIGRAPHS.
++ */
++#define RULE_2A_SIZE		4096	/* IOCCC Rule 2a */
++#define RULE_2B_SIZE		2503	/* IOCCC Rule 2b */
++#undef DIGRAPHS				/* digraphs count a 2 for Rule 2b */
++#undef TRIGRAPHS			/* trigraphs count a 3 for Rule 2b */
++
++#define STRLEN(s)		(sizeof (s)-1)
++
++#endif /* MKIOCCCENTRY_USE || IOCCCSIZE_STANDALONE */
  
 -static int debug;
 -static char *out_fmt = "%lu\n";
-+/*
-+ * iocccsize version string
-+ */
-+char const * const iocccsize_version = IOCCCSIZE_VERSION;
++#define WORD_BUFFER_SIZE	256
++
++#define NO_STRING		0
++#define NO_COMMENT		0
++#define COMMENT_EOL		1
++#define COMMENT_BLOCK		2
  
  /*
   * C reserved words, plus a few #preprocessor tokens, that count as 1
@@ -179,7 +217,7 @@
  } Word;
  
  static Word cwords[] = {
-@@ -214,7 +217,7 @@
+@@ -214,7 +247,7 @@
  };
  
  static Word *
@@ -188,7 +226,7 @@
  {
  	Word *w;
  	for (w = table; w->length != 0; w++) {
-@@ -226,46 +229,50 @@
+@@ -226,46 +259,50 @@
  }
  
  static int
@@ -253,7 +291,7 @@
  					ch = t[1];
  					break;
  				}
-@@ -274,7 +281,7 @@
+@@ -274,7 +311,7 @@
  			/* Unknown trigraph, push back the 3rd character. */
  			if (*t == '\0') {
  				if (ch != EOF && ungetc(ch, fp) == EOF) {
@@ -262,7 +300,7 @@
  				}
  				ch = '?';
  			}
-@@ -284,7 +291,7 @@
+@@ -284,7 +321,7 @@
  			/* ISO C11 section 5.1.1.2 Translation Phases
  			 * point 2 discards backslash newlines.
  			 */
@@ -271,7 +309,7 @@
  			continue;
  		}
  
-@@ -293,7 +300,7 @@
+@@ -293,7 +330,7 @@
  			 * How does that relate to UTF8 and wide-character library
  			 * handling?  An invalid trigraph results in 2x ungetc().
  			 */
@@ -280,7 +318,7 @@
  		}
  
  		/* Within quoted string? */
-@@ -338,10 +345,9 @@
+@@ -338,10 +375,9 @@
  			is_comment = COMMENT_EOL;
  
  			/* Consume next_ch. */
@@ -293,7 +331,7 @@
  		}
  
  		/* Start of comment block? */
-@@ -352,10 +358,9 @@
+@@ -352,10 +388,9 @@
  			is_comment = COMMENT_BLOCK;
  
  			/* Consume next_ch. */
@@ -306,7 +344,7 @@
  		}
  
  		/* Open single or double quote? */
-@@ -363,21 +368,18 @@
+@@ -363,21 +398,18 @@
  			quote = ch;
  		}
  
@@ -331,7 +369,7 @@
  					ch = d[0];
  					break;
  				}
-@@ -385,7 +387,7 @@
+@@ -385,7 +417,7 @@
  		}
  #endif
  		/* Sanity check against file size and wc(1) byte count. */
@@ -340,7 +378,7 @@
  
  		/* End of possible keyword?  Care with #word as there can
  		 * be whitespace or comments between # and word.
-@@ -393,10 +395,10 @@
+@@ -393,10 +425,10 @@
  		if ((word[0] != '#' || 1 < wordi) && !isalnum(ch) && ch != '_' && ch != '#') {
  			if (find_member(cwords, word) != NULL) {
  				/* Count keyword as 1. */
@@ -354,7 +392,7 @@
  				}
  			}
  			word[wordi = 0] = '\0';
-@@ -421,49 +423,32 @@
+@@ -421,49 +453,32 @@
  		/* Collect next word not in a string or comment. */
  		if (IS_CODE && (isalnum(ch) || ch == '_' || ch == '#')) {
  			if (sizeof (word) <= wordi) {
@@ -414,7 +452,7 @@
  	while ((ch = getopt(argc, argv, "6ihvV")) != -1) {
  		switch (ch) {
  		case 'i': /* ignored for backward compatibility */
-@@ -471,41 +456,85 @@
+@@ -471,41 +486,85 @@
  
  		case 'v':
  			debug++;
