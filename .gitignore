@@ -2,7 +2,7 @@
 dbg_test
 iocccsize
 mkiocccentry
-orig.iocccsize.c
+orig.iocccsize
 rule_count.c
 test-iocccsize
 test_src

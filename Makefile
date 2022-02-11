@@ -115,8 +115,10 @@ DESTDIR= /usr/local/bin
 TARGETS= mkiocccentry iocccsize dbg_test limit_ioccc.sh fnamchk txzchk
 MANPAGES = mkiocccentry.1 txzchk.1 fnamchk.1 iocccsize.1
 TEST_TARGETS= dbg_test
-OBJFILES = dbg.o util.o
+OBJFILES = dbg.o util.o mkiocccentry.o iocccsize.o dbg_test.o fnamchk.o txzchk.o
 SRCFILES = $(patsubst %.o,%.c,$(OBJFILES))
+ALT_OBJFILES= orig.iocccsize.o
+ALT_TARGETS= orig.iocccsize
 
 all: ${TARGETS} ${TEST_TARGETS}
 
@@ -149,7 +151,7 @@ txzchk: txzchk.c limit_ioccc.h rule_count.o dbg.o util.o Makefile
 limit_ioccc.sh: limit_ioccc.h Makefile
 	${RM} -f $@
 	@echo '#' > $@
-	@echo '# Copies of limit_ioccc.h values for shell script use' >> $@
+	@echo '# Copies of select limit_ioccc.h values for shell script use' >> $@
 	@echo '#' >> $@
 	${GREP} -E '^#define (RULE_|MAX_|UUID_|MIN_)' limit_ioccc.h | \
 	    ${AWK} '{print $$2 "=\"" $$3 "\"" ;}' | ${TR} -d '[a-z]()' | \
@@ -246,16 +248,28 @@ reset_min_timestamp:
 	    echo 'WARNING: And if all is well, commit and push the change to the GitHib repo!';\
 	    echo
 
+# This version of iocccsize is NOT part of the offical mkiocccentry toolset.
+# For the official IOCCC iocccsize tool, see the iocccsize rule above.
+#
+# This file is kept as a patch reference copy from:
+#
+#	https://github.com/SirWumpus/iocccsize/blob/master/iocccsize.c
+#
+orig.iocccsize: orig.iocccsize.c Makefile
+	${CC} ${CFLAGS} orig.iocccsize.c -o $@
+
 configure:
 	@echo nothing to configure
 
 clean:
-	${RM} -f mkiocccentry.o iocccsize.o rule_count.o dbg_test.o dbg.o util.o
+	${RM} -f ${OBJFILES}
+	${RM} -f ${ALT_OBJFILES}
 	${RM} -rf mkiocccentry.dSYM iocccsize.dSYM dbg_test.dSYM fnamchk.dSYM
-	${RM} -rf txzchk.dSYM
+	${RM} -rf txzchk.dSYM orig.iocccsize.dSYM
 
 clobber: clean
 	${RM} -f ${TARGETS} ${TEST_TARGETS}
+	${RM} -f ${ALT_TARGETS}
 	${RM} -f rule_count.c answers.txt
 	${RM} -rf test-iocccsize test_src test_work
 
