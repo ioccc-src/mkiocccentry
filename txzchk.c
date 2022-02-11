@@ -35,7 +35,7 @@
 /*
  * txzchk version
  */
-#define TXZCHK_VERSION "0.41 2022-02-08"    /* use format: major.minor YYYY-MM-DD */
+#define TXZCHK_VERSION "0.5 2022-02-10"    /* use format: major.minor YYYY-MM-DD */
 
 
 /*
@@ -44,6 +44,7 @@
 char const *program = NULL;		    /* our name */
 int verbosity_level = DBG_DEFAULT;	    /* debug level set by -v */
 static int total_issues = 0;		    /* total number of issues with tarball found */
+static unsigned total_files = 0;	    /* total number of files in tarball found */
 static bool quiet = false;		    /* true ==> only show errors and warnings */
 static bool text_file_flag_used = false;    /* true ==> assume txzpath is a text file */
 char const *txzpath = NULL;		    /* the current tarball being checked */
@@ -54,6 +55,7 @@ struct info {
     bool has_prog_c;
     bool has_remarks_md;
     bool has_Makefile;
+    unsigned has_correct_directory;
     unsigned dot_files;
 } info;
 
@@ -65,6 +67,14 @@ struct file {
 };
 
 struct file *files;
+
+struct line {
+    char *line;
+    int line_num;
+    struct line *next;
+};
+
+struct line *lines;
 
 /*
  * definitions
@@ -98,11 +108,19 @@ static const char * const usage_msg =
  */
 static void usage(int exitcode, char const *name, char const *str, char const *tar, char const *fnamchk) __attribute__((noreturn));
 static void sanity_chk(char const *tar, char const *fnamchk);
-static void parse_line(char *linep, char *line_dup, char *dir_name, char const *txzpath, off_t *file_sizes, int *dir_count);
-static void parse_linux_line(char *p, char *line, char *line_dup, char *dir_name, char const *txzpath, off_t *file_sizes);
-static void parse_bsd_line(char *p, char *line, char *line_dup, char *dir_name, char const *txzpath, off_t *file_sizes);
+static void parse_line(char *linep, char *line_dup, char const *dir_name, char const *txzpath, off_t *file_sizes, int *dir_count);
+static void parse_linux_line(char *p, char *line, char *line_dup, char const *dir_name, char const *txzpath, off_t *file_sizes);
+static void parse_bsd_line(char *p, char *line, char *line_dup, char const *dir_name, char const *txzpath, off_t *file_sizes);
 static unsigned check_tarball(char const *tar, char const *fnamchk);
+static void check_empty_file(char const *txzpath, off_t file_size, struct file *file);
+static void check_file(char const *txzpath, char *p, char const *dir_name, struct file *file);
+static void check_all_files(off_t file_sizes, char const *dir_name);
+static void check_directories(struct file *file, char const *dir_name, char const *txzpath);
 static bool has_special_bits(char const *str);
+static void add_line(char const *str, int line_num);
+static void parse_all_lines(char const *dir_name, char const *txzpath, off_t *file_sizes);
+static void free_lines(void);
+static struct file *alloc_file(char const *p);
 static void add_file_to_list(struct file *file);
 static void free_file_list(void);
 
@@ -452,6 +470,310 @@ sanity_chk(char const *tar, char const *fnamchk)
     return;
 }
 
+/* check_file		- checks on the current file only
+ *
+ * given:
+ *
+ *	txzpath		- the tarball (or text file) we're processing
+ *	p		- the path
+ *	dir_name	- the directory name (if fnamchk passed - else NULL)
+ *	file		- file structure
+ *
+ * Report issues on the current file's path.
+ *
+ * Returns void. Does not return on error.
+ *
+ */
+static void
+check_file(char const *txzpath, char *p, char const *dir_name, struct file *file)
+{
+    /*
+     * firewall
+     */
+    if (txzpath == NULL || p == NULL || file == NULL || file->basename == NULL || file->filename == NULL) {
+	err(35, __func__, "passed NULL arg(s)");
+	not_reached();
+    }
+
+    if (*(file->basename) == '.' && strcmp(file->basename, ".info.json") && strcmp(file->basename, ".author.json")) {
+	++total_issues;
+	warn("txzchk", "%s: found non .author.json and .info.json dot file %s", txzpath, file->basename);
+	info.dot_files++;
+    }
+
+    check_directories(file, dir_name, txzpath);
+
+}
+/*
+ * check_empty_file	- if file is empty, check which file it is and report it
+ *
+ * given:
+ *
+ *	txzpath		- the tarball (or text file) we're checking
+ *	file_size	- size of the file
+ *	file		- the struct file we're checking
+ *
+ * Returns void.
+ *
+ * Does not return on error (NULL pointers passed in).
+ */
+static void
+check_empty_file(char const *txzpath, off_t file_size, struct file *file)
+{
+    /*
+     * firewall
+     */
+
+    if (txzpath == NULL || file == NULL || file->basename == NULL || file->filename == NULL) {
+	err(123, __func__, "called with NULL arg(s)");
+	not_reached();
+    }
+
+    if (file_size == 0) {
+	if (!strcmp(file->basename, ".author.json")) {
+	    ++total_issues;
+	    warn("txzchk", "%s: found empty .author.json file", txzpath);
+	}
+	else if (!strcmp(file->basename, ".info.json")) {
+	    ++total_issues;
+	    warn("txzchk", "%s: found empty .info.json file", txzpath);
+	}
+	else if (!strcmp(file->basename, "remarks.md")) {
+	    ++total_issues;
+	    warn("txzchk", "%s: found empty remarks.md", txzpath);
+	}
+	else if (!strcmp(file->basename, "Makefile")) {
+	    ++total_issues;
+	    warn("txzchk", "%s: found empty Makefile", txzpath);
+	}
+    }
+}
+
+/*
+ * check_all_files		- check files list after parsing tarball (or text file)
+ *
+ * given:
+ *
+ *	file_sizes	- total size of all files
+ *	dir_name	- fnamchk result (if passed - else NULL)
+ *
+ * Reports any additional issues found in the tarball (or text file).
+ *
+ * Returns void. Ignores empty files (though these should not be in the list at
+ * all).
+ *
+ */
+static void
+check_all_files(off_t file_sizes, char const *dir_name)
+{
+    struct file *file; /* to iterate through files list */
+    off_t rounded_file_size = 0; /* file sizes rounded up to 1024 multiple */
+
+    /* report total file size */
+    if (file_sizes < 0) {
+	err(32, __func__, "%s: total size of all files < 0!", txzpath);
+	not_reached();
+    } else if (file_sizes == 0) {
+	warn("txzchk", "%s: total size of all files == 0", txzpath);
+	++total_issues;
+    }
+    rounded_file_size = round_to_multiple(file_sizes, 1024);
+    if (rounded_file_size < 0) {
+	err(30, __func__, "%s: total size of all files rounded up to multiple of 1024 < 0!", txzpath);
+	not_reached();
+    } else if (rounded_file_size > MAX_DIR_KSIZE) {
+	warn("txzchk", "%s: total size of files %lu rounded up to multiple of 1024 %lu > %d", txzpath, (unsigned long) file_sizes,
+		(unsigned long) rounded_file_size, MAX_DIR_KSIZE);
+	++total_issues;
+    } else if (!quiet) {
+	printf("txzchk: %s total size of files %lu rounded up to 1024 multiple: %lu OK\n", txzpath, (unsigned long) file_sizes,
+		(unsigned long) rounded_file_size);
+    }
+
+
+    /*
+     * now go through the files list and detect any additional issues
+     */
+    for (file = files; file != NULL; file = file->next) {
+	if (!strcmp(file->basename, ".info.json")) {
+	    info.has_info_json = true;
+	} else if (!strcmp(file->basename, ".author.json")) {
+	    info.has_author_json = true;
+	} else if (!strcmp(file->basename, "Makefile")) {
+	    info.has_Makefile = true;
+	} else if (!strcmp(file->basename, "prog.c")) {
+	    info.has_prog_c = true;
+	} else if (!strcmp(file->basename, "remarks.md")) {
+	    info.has_remarks_md = true;
+	}
+	if (dir_name != NULL && info.has_correct_directory) {
+	    if (strncmp(file->filename, dir_name, strlen(dir_name))) {
+		warn("txzchk", "%s: found directory change in filename %s", txzpath, file->filename);
+		++total_issues;
+	    }
+	}
+
+	if (file->count > 1) {
+	    warn("txzchk", "%s: found a total of %u files with the name %s", txzpath, file->count, file->basename);
+	    total_issues += file->count - 1;
+	}
+    }
+
+    /* determine if the required files are there */
+    if (!info.has_info_json) {
+	++total_issues;
+	warn("txzchk", "%s: no .info.json found", txzpath);
+    }
+    if (!info.has_author_json) {
+	++total_issues;
+	warn("txzchk", "%s: no .author.json found", txzpath);
+    }
+    if (!info.has_prog_c) {
+	++total_issues;
+	warn("txzchk", "%s: no prog.c found", txzpath);
+    }
+    if (!info.has_Makefile) {
+	++total_issues;
+	warn("txzchk", "%s: no Makefile found", txzpath);
+    }
+    if (!info.has_remarks_md) {
+	++total_issues;
+	warn("txzchk", "%s: no remarks.md found", txzpath);
+    }
+    if (info.has_correct_directory < total_files) {
+	++total_issues;
+	warn("txzchk", "%s: not all files in correct directory", txzpath);
+    }
+
+    /*
+     * Report total number of non .author.json and .info.json dot files.
+     * Don't increment the number of issues as this was done when iterating
+     * through the linked list above.
+     */
+
+    if (info.dot_files > 0) {
+	warn("txzchk", "%s: found a total of %u unacceptable dot files", txzpath, info.dot_files);
+    }
+
+    /*
+     * report total issues found
+     */
+    if (total_issues > 0) {
+	warn("txzchk", "%s: found %u issue%s", txzpath, total_issues, total_issues==1?"":"s");
+    }
+}
+
+/* check_directories	- directory specific checks on the file
+ *
+ * given:
+ *
+ *	file		- file structure
+ *	dir_name	- the directory expected (or NULL if fnamchk fails)
+ *	txzpath		- the tarball path
+ *
+ * Issues a warning for every violations specific to directories (and
+ * subdirectories).
+ *
+ * Does not return on error.
+ */
+static void
+check_directories(struct file *file, char const *dir_name, char const *txzpath)
+{
+    unsigned dir_count = 0; /* number of directories in the path */
+    int prev = '\0';
+    int first = '\0';
+    int i;
+
+    /*
+     * firewall
+     */
+    if (txzpath == NULL || file == NULL || file->filename == NULL) {
+	err(35, __func__, "passed NULL arg(s)");
+	not_reached();
+    }
+
+    /* check that there is a directory */
+    if (strchr(file->filename, '/') == NULL) {
+	warn("txzchk", "%s: no directory found in filename %s", txzpath, file->filename);
+	++total_issues;
+    } else if (strstr(file->filename, "../")) { /* check for '../' in path */
+	/*
+	 * Note that this check does NOT detect a file in the form of "../.file"
+	 * but since the basename of each file is checked in check_file() this
+	 * is okay.
+	 */
+	++total_issues;
+	warn("txzchk", "%s: found file with ../ in the path: %s", txzpath, file->filename);
+    }
+    if (*(file->filename) == '/') {
+	++total_issues;
+	warn("txzchk", "%s: found absolute path %s", txzpath, file->filename);
+    }
+
+    /* Check the path to see if there are any subdirectories. The way this is
+     * done is counting the number of '/' but done carefully: for example the
+     * path test-1//prog.c would not count as two directories but just one. 
+     *
+     * Another example: ..// would be counted as one directory but it still has
+     * ../ so that would have been detected above.
+     *
+     * It does this by saving the previous character: if it was also a '/' then
+     * it's not counted as another directory: the first one will be counted
+     * however since there wasn't one before it.
+     *
+     * We don't count the first character of the path because a path like:
+     * /test-3/ would be counted as two directories but it's actually only one.
+     * Well it kind of is two but / is special and it would still trigger an
+     * absolute path warning - at least from a text file (tar strips it off) -
+     * because it starts with a '/'.
+     *
+     * Note that the path /test-3 would trigger a warning that it's not in the
+     * correct directory because it's an absolute directory. However since tar
+     * strips the initial '/'s this would probably not get flagged.
+     *
+     * Note also that if the tar output does not have a trailing '/' in a
+     * directory entry itself it would not count as another directory. However
+     * since we also check for more than one 'd' line in the output it would
+     * trigger more than one directory in the tarball.
+     *
+     * We keep track of two previous characters. The reason is that
+     * 'test-3/././file' should count as only one directory but previously
+     * (first version of this) it detected more than one directory because the
+     * '.' was not considered. Notice that the path 'test-3/.././file' will
+     * trigger both '../' in the path as well as more than one directory.
+     */
+    first = file->filename[0];
+    prev = file->filename[1];
+    for (i = 1; file->filename[i]; ++i) {
+	if (file->filename[i] == '/' && prev != '/' && first != '.') {
+	    ++dir_count;
+	}
+	first = prev;
+	prev = file->filename[i];
+    }
+    if (dir_count > 1) {
+	++total_issues;
+	warn("txzchk", "%s: found more than one directory in path %s", txzpath, file->filename);
+    }
+    /*
+     * Now we have to run some tests on the directory name which we obtained
+     * from fnamchk earlier on - but only if fnamchk did not return an
+     * error! If it did we'll report other issues but we won't check
+     * directory names (at least the directory name expected in the
+     * tarball).
+     */
+    if (dir_name != NULL && strlen(dir_name) > 0) {
+	if (strncmp(file->filename, dir_name, strlen(dir_name))) {
+	    warn("txzchk", "%s: found incorrect directory in filename %s", txzpath, file->filename);
+	    ++total_issues;
+	}
+	else {
+	    /* This file is in the right directory */
+	    info.has_correct_directory++;
+	}
+    }
+}
+
 /*
  * parse_linux_line	- parse linux tar output
  *
@@ -465,13 +787,13 @@ sanity_chk(char const *tar, char const *fnamchk)
  *	file_sizes  - pointer to the total file sizes of the tarball
  *
  * If everything goes okay the line will be completely parsed and the calling
- * function (parse_line()) will return to its caller (check_tarball()) which
+ * function (parse_line()) will return to its caller (parse_all_lines()) which
  * will in turn read the next line.
  *
  * This function does not return on error.
  */
 static void
-parse_linux_line(char *p, char *linep, char *line_dup, char *dir_name, char const *txzpath, off_t *file_sizes)
+parse_linux_line(char *p, char *linep, char *line_dup, char const *dir_name, char const *txzpath, off_t *file_sizes)
 {
     off_t current_file_size = 0;
     struct file *file = NULL;
@@ -521,12 +843,15 @@ parse_linux_line(char *p, char *linep, char *line_dup, char *dir_name, char cons
     current_file_size = strtoll(p, NULL, 10);
     if (errno != 0) {
 	warn("txzchk", "%s: trying to parse file size in on line: %s, string: %s, reading next line", txzpath, line_dup, p);
+    } else if (current_file_size < 0) {
+	warn("txzchk", "%s: file size < 0", txzpath);
+	++total_issues;
     }
     *file_sizes += current_file_size;
 
     /*
      * the next two fields we don't care about but we loop three times to
-     * get the following field which we do care about.
+     * get the following field which we _do_ care about.
      */
     for (i = 0; i < 3; ++i) {
 	p = strtok(NULL, " \t");
@@ -537,71 +862,19 @@ parse_linux_line(char *p, char *linep, char *line_dup, char *dir_name, char cons
     }
 
     /* p should now contain the filename. */
-    errno = 0;
-    file = calloc(1, sizeof *file);
-    if (file == NULL) {
-	err(32, __func__, "%s: unable to allocate a struct file *", txzpath);
-	not_reached();
-    }
-
-    errno = 0;
-    file->filename = strdup(p);
-    if (!file->filename) {
-	err(33, __func__, "%s: unable to strdup filename %s", txzpath, p);
-	not_reached();
-    }
-
-    errno = 0;
-    file->basename = strdup(base_name(p)?base_name(p):"");
-    if (!file->basename || !strlen(file->basename)) {
-	err(34, __func__, "%s: unable to strdup basename of filename %s", txzpath, p);
-	not_reached();
-    }
+    file = alloc_file(p);
 
     /*
      * although we could check these later we check here because the
      * add_file_to_list() function doesn't add the same file (basename) more
      * than once: it simply increments the times it's been seen.
      */
-    if (current_file_size == 0) {
-	if (!strcmp(file->basename, ".author.json")) {
-	    ++total_issues;
-	    warn("txzchk", "%s: found empty .author.json file", txzpath);
-	}
-	else if (!strcmp(file->basename, ".info.json")) {
-	    ++total_issues;
-	    warn("txzchk", "%s: found empty .info.json file", txzpath);
-	}
-	else if (!strcmp(file->basename, "remarks.md")) {
-	    ++total_issues;
-	    warn("txzchk", "%s: found empty remarks.md", txzpath);
-	}
-	else if (!strcmp(file->basename, "Makefile")) {
-	    ++total_issues;
-	    warn("txzchk", "%s: found empty Makefile", txzpath);
-	}
-    }
+    check_empty_file(txzpath, current_file_size, file);
+
+    /* checks on this specific file */
+    check_file(txzpath, p, dir_name, file);
+
     add_file_to_list(file);
-
-    /*
-     * Now we have to run some tests on the directory name which we obtained
-     * from fnamchk earlier on - but only if fnamchk did not return an
-     * error! If it did we'll report other issues but we won't check
-     * directory names (at least the directory name expected in the
-     * tarball).
-     */
-
-    if (dir_name != NULL && strlen(dir_name) > 0) {
-	if (strncmp(p, dir_name, strlen(dir_name))) {
-	    warn("txzchk", "%s: incorrect directory in filename %s", txzpath, p);
-	    ++total_issues;
-	}
-    }
-    if (strchr(p, '/') == NULL) {
-	warn("txzchk", "%s: no directory found in filename %s", txzpath, p);
-	++total_issues;
-    }
-
 }
 /*
  * parse_bsd_line	- parse macOS/BSD tar output
@@ -616,13 +889,13 @@ parse_linux_line(char *p, char *linep, char *line_dup, char *dir_name, char cons
  *	file_sizes  - pointer to the total file sizes of the tarball
  *
  * If everything goes okay the line will be completely parsed and the calling
- * function (parse_line()) will return to its caller (check_tarball()) which
+ * function (parse_line()) will return to its caller (parse_all_lines()) which
  * will in turn read the next line.
  *
  * This function does not return on error.
  */
 static void
-parse_bsd_line(char *p, char *linep, char *line_dup, char *dir_name, char const *txzpath, off_t *file_sizes)
+parse_bsd_line(char *p, char *linep, char *line_dup, char const *dir_name, char const *txzpath, off_t *file_sizes)
 {
     off_t current_file_size = 0;
     struct file *file = NULL;
@@ -685,7 +958,7 @@ parse_bsd_line(char *p, char *linep, char *line_dup, char *dir_name, char const 
 
     /*
      * the next three fields we don't care about but we loop four times to
-     * get the following field which we do care about.
+     * get the following field which we _do_ care about.
      */
     for (i = 0; i < 4; ++i) {
 	p = strtok(NULL, " \t");
@@ -696,70 +969,19 @@ parse_bsd_line(char *p, char *linep, char *line_dup, char *dir_name, char const 
     }
 
     /* p should now contain the filename. */
-    errno = 0;
-    file = calloc(1, sizeof *file);
-    if (file == NULL) {
-	err(32, __func__, "%s: unable to allocate a struct file *", txzpath);
-	not_reached();
-    }
-
-    errno = 0;
-    file->filename = strdup(p);
-    if (!file->filename) {
-	err(33, __func__, "%s: unable to strdup filename %s", txzpath, p);
-	not_reached();
-    }
-
-    errno = 0;
-    file->basename = strdup(base_name(p)?base_name(p):"");
-    if (!file->basename || !strlen(file->basename)) {
-	err(34, __func__, "%s: unable to strdup basename of filename %s", txzpath, p);
-	not_reached();
-    }
+    file = alloc_file(p);
 
     /*
      * although we could check these later we check here because the
      * add_file_to_list() function doesn't add the same file (basename) more
      * than once: it simply increments the times it's been seen.
      */
-    if (current_file_size == 0) {
-	if (!strcmp(file->basename, ".author.json")) {
-	    ++total_issues;
-	    warn("txzchk", "%s: found empty .author.json file", txzpath);
-	}
-	else if (!strcmp(file->basename, ".info.json")) {
-	    ++total_issues;
-	    warn("txzchk", "%s: found empty .info.json file", txzpath);
-	}
-	else if (!strcmp(file->basename, "remarks.md")) {
-	    ++total_issues;
-	    warn("txzchk", "%s: found empty remarks.md", txzpath);
-	}
-	else if (!strcmp(file->basename, "Makefile")) {
-	    ++total_issues;
-	    warn("txzchk", "%s: found empty Makefile", txzpath);
-	}
-    }
+    check_empty_file(txzpath, current_file_size, file);
+
+    /* checks on this specific file */
+    check_file(txzpath, p, dir_name, file);
+
     add_file_to_list(file);
-
-    /*
-     * Now we have to run some tests on the directory name which we obtained
-     * from fnamchk earlier on - but only if fnamchk did not return an
-     * error! If it did we'll report other issues but we won't check
-     * directory names (at least the directory name expected in the
-     * tarball).
-     */
-
-    if (dir_name != NULL && strlen(dir_name) > 0) {
-	if (strncmp(p, dir_name, strlen(dir_name))) {
-	    warn("txzchk", "%s: incorrect directory in filename %s", txzpath, p);
-	    ++total_issues;
-	}
-    }
-    if (strchr(p, '/') == NULL) {
-	warn("txzchk", "%s: no directory found in filename %s", txzpath, p);
-	++total_issues;
-    }
 }
 /*
  * parse_line	 - parse a line in the tarball listing
@@ -778,7 +1000,7 @@ parse_bsd_line(char *p, char *linep, char *line_dup, char *dir_name, char const 
  *  Function does not return on error.
  */
 static void
-parse_line(char *linep, char *line_dup, char *dir_name, char const *txzpath, off_t *file_sizes, int *dir_count)
+parse_line(char *linep, char *line_dup, char const *dir_name, char const *txzpath, off_t *file_sizes, int *dir_count)
 {
     char *p = NULL;
 
@@ -830,9 +1052,11 @@ parse_line(char *linep, char *line_dup, char *dir_name, char const *txzpath, off
 	/* found linux output */
 	parse_linux_line(p, linep, line_dup, dir_name, txzpath, file_sizes);
     } else {
+	/* assume macOS/BSD output */
 	parse_bsd_line(p, linep, line_dup, dir_name, txzpath, file_sizes);
     }
 }
+
 /*
  * check_tarball - perform tests on tarball, validating it for the IOCCC
  *
@@ -851,19 +1075,15 @@ check_tarball(char const *tar, char const *fnamchk)
 {
     off_t size = 0; /* file size of tarball */
     off_t file_sizes = 0; /* accumulation of file sizes within the tarball */
-    off_t rounded_file_size = 0; /* file sizes rounded up to 1024 multiple */
     unsigned line_num = 0; /* line number of tar output */
     char *cmd = NULL;	/* fnamchk and tar -tJvf */
     FILE *input_stream = NULL; /* pipe for tar output (or if -T specified read as a text file) */
     FILE *fnamchk_stream = NULL; /* pipe for fnamchk output */
     char *linep = NULL;		/* allocated line read from tar (or text file) */
-    char *line_dup = NULL;	/* duplicated line from readline */
     char *dir_name = NULL;	/* line read from fnamchk (directory name) */
     ssize_t readline_len;	/* readline return length */
-    int dir_count = 0;		/* number of directories detected */
     int ret;			/* libc function return */
     int exit_code;
-    struct file *file = NULL;
     bool fnamchk_okay = false;    /* true ==> fnamchk passed */
 
     /*
@@ -1096,13 +1316,6 @@ check_tarball(char const *tar, char const *fnamchk)
 	char *p = NULL;
 
 	/*
-	 * free line_dup just in case we had to continue (we always set to NULL
-	 * after freeing so this is safe).
-	 */
-	free(line_dup);
-	line_dup = NULL;
-
-	/*
 	 * count this line
 	 */
 	++line_num;
@@ -1119,14 +1332,6 @@ check_tarball(char const *tar, char const *fnamchk)
 	    continue;
 	}
 
-	if (text_file_flag_used) {
-	    errno = 0;
-	    ret = printf("%s\n", linep);
-	    if (ret <= 0) {
-		warnp(__func__, "unable to printf line from text file");
-	    }
-	}
-
 	/*
 	 * scan for embedded NUL bytes (before end of line)
 	 *
@@ -1139,24 +1344,44 @@ check_tarball(char const *tar, char const *fnamchk)
 	}
 	dbg(DBG_VHIGH, "line %d: %s", line_num, linep);
 
-	line_dup = strdup(linep);
-	if (line_dup == NULL) {
-	    err(25, __func__, "%s: duplicating %s failed", txzpath, linep);
-	    not_reached();
+
+	/*
+	 * add line to list (to parse once the list of files has been shown to
+	 * the user.
+	 */
+	add_line(linep, line_num);
+
+	if (text_file_flag_used) {
+	    errno = 0;
+	    ret = printf("%s\n", linep);
+	    if (ret <= 0) {
+		warnp(__func__, "unable to printf line from text file");
+	    }
 	}
 
-	parse_line(linep, line_dup, dir_name, txzpath, &file_sizes, &dir_count);
-	free(line_dup);
-	line_dup = NULL;
 
     } while (readline_len >= 0);
+    /*
+     * free cmd (it'll be NULL if -T was specified but this is safe)
+     */
+    free(cmd);
+    cmd = NULL;
+
+    /* now parse the lines, reporting any issue that have to be done whilst
+     * parsing.
+     */
+    parse_all_lines(dir_name, txzpath, &file_sizes);
 
     /*
-     * free line_dup finally (we always set to NULL after a free so this is
-     * safe)
+     * check files list and report any additional issues
      */
-    free(line_dup);
-    line_dup = NULL;
+    check_all_files(file_sizes, dir_name);
+
+    /* free the files list */
+    free_file_list();
+
+    /* free lines list */
+    free_lines();
 
     /*
      * close down pipe
@@ -1170,116 +1395,6 @@ check_tarball(char const *tar, char const *fnamchk)
 	warnp(__func__, "%s: %s error on tar stream", txzpath, text_file_flag_used?"fclose":"pclose");
     }
     input_stream = NULL;
-
-    /*
-     * free cmd (it'll be NULL if -T was specified but this is safe)
-     */
-    free(cmd);
-    cmd = NULL;
-
-
-
-    /*
-     * now go through the files list and detect any additional issues
-     */
-    for (file = files; file != NULL; file = file->next) {
-	if (!strcmp(file->basename, ".info.json")) {
-	    info.has_info_json = true;
-	} else if (!strcmp(file->basename, ".author.json")) {
-	    info.has_author_json = true;
-	} else if (!strcmp(file->basename, "Makefile")) {
-	    info.has_Makefile = true;
-	} else if (!strcmp(file->basename, "prog.c")) {
-	    info.has_prog_c = true;
-	} else if (!strcmp(file->basename, "remarks.md")) {
-	    info.has_remarks_md = true;
-	}
-	if (*(file->basename) == '.' && strcmp(file->basename, ".info.json") && strcmp(file->basename, ".author.json")) {
-	    ++total_issues;
-	    warn("txzchk", "%s: found non .author.json and .info.json dot file %s", txzpath, file->basename);
-	    info.dot_files++;
-	}
-	if (strstr(file->filename, "../")) {
-	    /*
-	     * note that this check does NOT detect a file in the form of
-	     * "../.file" but since the basename of each file is checked above
-	     * this is okay.
-	     */
-	    ++total_issues;
-	    warn("txzchk", "%s: found file with ../ in the path: %s", txzpath, file->filename);
-	}
-	if (*(file->filename) == '/') {
-	    ++total_issues;
-	    warn("txzchk", "%s: found absolute path %s", txzpath, file->filename);
-	}
-
-	if (file->count > 1) {
-	    warn("txzchk", "%s: found a total of %u files with the name %s", txzpath, file->count, file->basename);
-	    total_issues += file->count - 1;
-	}
-    }
-
-    /* determine if the required files are there */
-    if (!info.has_info_json) {
-	warn("txzchk", "%s: no .info.json found", txzpath);
-	++total_issues;
-    }
-    if (!info.has_author_json) {
-	warn("txzchk", "%s: no .author.json found", txzpath);
-	++total_issues;
-    }
-    if (!info.has_prog_c) {
-	warn("txzchk", "%s: no prog.c found", txzpath);
-	++total_issues;
-    }
-    if (!info.has_Makefile) {
-	warn("txzchk", "%s: no Makefile found", txzpath);
-	++total_issues;
-    }
-    if (!info.has_remarks_md) {
-	warn("txzchk", "%s: no remarks.md found", txzpath);
-	++total_issues;
-    }
-
-    /*
-     * Report total number of non .author.json and .info.json dot files.
-     * Don't increment the number of issues as this was done when iterating
-     * through the linked list above.
-     */
-
-    if (info.dot_files > 0) {
-	warn("txzchk", "%s: found a total of %u unacceptable dot files", txzpath, info.dot_files);
-    }
-
-    /* report total file size */
-    if (file_sizes < 0) {
-	err(32, __func__, "%s: total size of all files < 0!", txzpath);
-	not_reached();
-    } else if (file_sizes == 0) {
-	warn("txzchk", "%s: total size of all files 0", txzpath);
-	++total_issues;
-    }
-    rounded_file_size = round_to_multiple(file_sizes, 1024);
-    if (rounded_file_size < 0) {
-	err(30, __func__, "%s: total size of all files rounded up to multiple of 1024 < 0!", txzpath);
-	not_reached();
-    } else if (rounded_file_size > MAX_DIR_KSIZE) {
-	warn("txzchk", "%s: total size of files %lu rounded up to multiple of 1024 %lu > %d", txzpath, (unsigned long) file_sizes,
-		(unsigned long) rounded_file_size, MAX_DIR_KSIZE);
-	++total_issues;
-    } else if (!quiet) {
-	printf("txzchk: %s total size of files %lu rounded up to 1024 multiple: %lu OK\n", txzpath, (unsigned long) file_sizes,
-		(unsigned long) rounded_file_size);
-    }
-
-    /*
-     * report total issues found
-     */
-    if (total_issues > 0) {
-	warn("txzchk", "%s: txzchk found %u issue%s\n", txzpath, total_issues, total_issues==1?"":"s");
-    }
-
-    free_file_list();
 
     return total_issues;
 }
@@ -1306,6 +1421,176 @@ has_special_bits(char const *str)
 
     return str[strspn(str, "-drwx")]!='\0';
 }
+
+/*
+ * add_line	    - add line to lines list
+ *
+ * given:
+ *
+ *	str	    - line to add to the list
+ *	line_num    - line number
+ *
+ * The purpose of this function is that we can show the tarball listing in one
+ * go and then after that we can parse this so that any warnings are not
+ * interspersed with the tarball list thus keeping the output cleaner.
+ *
+ * This function returns void.
+ */
+static void
+add_line(char const *str, int line_num)
+{
+    struct line *line;
+
+    /*
+     * firewall
+     */
+    if (str == NULL) {
+	err(35, __func__, "passed NULL arg");
+	not_reached();
+    }
+
+    errno = 0;
+    line = calloc(1, sizeof *line);
+    if (line == NULL) {
+	err(36, __func__, "unable to allocate struct line *");
+	not_reached();
+    }
+
+    errno = 0;
+    line->line = strdup(str);
+    if (line->line == NULL) {
+	err(37, __func__, "unable to strdup string '%s' for lines list", str);
+	not_reached();
+    }
+    line->line_num = line_num;
+
+    dbg(DBG_MED, "adding line %s to lines list", line->line);
+    line->next = lines;
+    lines = line;
+}
+
+/*
+ * parse_all_lines	    - parse lines, reporting any issues found
+ *
+ * given:
+ *
+ *	dir_name    - directory name as reported by fnamchk (can be NULL if
+ *		      fnamchk failed to validate directory)
+ *	txzpath	    - the tarball that is being read
+ *	file_sizes  - pointer to file size accumulation
+ *
+ * This function returns void.
+ *
+ * This function does not return on error.
+ */
+static void
+parse_all_lines(char const *dir_name, char const *txzpath, off_t *file_sizes)
+{
+    struct line *line = NULL;	/* for lines list */
+    char *line_dup = NULL;	/* strdup()d line */
+    int dir_count = 0;		/* number of directories detected */
+
+    /*
+     * firewall
+     */
+    if (txzpath == NULL || file_sizes == NULL) {
+	err(35, __func__, "passed NULL arg(s)");
+	not_reached();
+    }
+
+    for (line = lines; line; line = line->next) {
+	if (line->line == NULL) {
+	    warn("txzchk", "encountered NULL string on line %d", line->line_num);
+	    continue;
+	}
+	line_dup = strdup(line->line);
+	if (line_dup == NULL) {
+	    err(25, __func__, "%s: duplicating %s failed", txzpath, line->line);
+	    not_reached();
+	}
+
+	parse_line(line->line, line_dup, dir_name, txzpath, file_sizes, &dir_count);
+	free(line_dup);
+	line_dup = NULL;
+    }
+}
+/*
+ * free_lines	    - free lines list
+ *
+ * The purpose of the lines list is so that we can show the list of files in the
+ * tarball together without interspersing it with any warnings. Thus we show the
+ * files list, adding each line to the list in the process, and then after that
+ * we can iterate through the lines and show any warnings. After that we report
+ * any issues that haven't been reported yet (some warnings have to be issued
+ * whilst parsing the lines).
+ *
+ * This function returns void.
+ */
+static void
+free_lines(void)
+{
+    struct line *line, *next_line;
+
+    for (line = lines; line != NULL; line = next_line) {
+	next_line = line->next;
+	if (line->line) {
+	    free(line->line);
+	    line->line = NULL;
+	}
+
+	free(line);
+	line = NULL;
+    }
+
+    lines = NULL;
+}
+
+/* alloc_file	- allocate a struct file *
+ *
+ * given:
+ *
+ *	p	- file path
+ *
+ * Returns the newly allocated struct file * with the file information. The
+ * function does NOT add it to the list!
+ *
+ * This function does not return on error.
+ */
+static struct file *
+alloc_file(char const *p)
+{
+    struct file *file; /* the file structure */
+
+    /*
+     * firewall
+     */
+    if (p == NULL) {
+	err(35, __func__, "passed NULL path");
+	not_reached();
+    }
+    errno = 0;
+    file = calloc(1, sizeof *file);
+    if (file == NULL) {
+	err(32, __func__, "%s: unable to allocate a struct file *", txzpath);
+	not_reached();
+    }
+
+    errno = 0;
+    file->filename = strdup(p);
+    if (!file->filename) {
+	err(33, __func__, "%s: unable to strdup filename %s", txzpath, p);
+	not_reached();
+    }
+
+    errno = 0;
+    file->basename = strdup(base_name(p)?base_name(p):"");
+    if (!file->basename || !strlen(file->basename)) {
+	err(34, __func__, "%s: unable to strdup basename of filename %s", txzpath, p);
+	not_reached();
+    }
+
+    return file;
+}
 /*
  * add_file_to_list - add a filename to the linked list
  *
@@ -1331,6 +1616,9 @@ add_file_to_list(struct file *file)
 	err(37, __func__, "called with NULL pointer(s)");
 	not_reached();
     }
+
+    /* always increment total files count */
+    ++total_files;
 
     for (ptr = files; ptr != NULL; ptr = ptr->next)
     {
@@ -1370,4 +1658,6 @@ free_file_list(void)
 	free(file);
 	file = NULL;
     }
+
+    files = NULL;
 }
