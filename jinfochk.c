@@ -74,9 +74,6 @@ static const char * const usage_msg =
 int verbosity_level = DBG_DEFAULT;	    /* debug level set by -v */
 char const *program = NULL;		    /* our name */
 static bool quiet = false;		    /* true ==> quiet mode */
-static bool parse_author_json = false;	    /* true ==> parse .author.json file */
-static bool parse_info_json = false;	    /* true ==> parse .info.json file */
-static unsigned total_issues = 0;	    /* number of issues found with the file */
 static struct info info;
 
 /*
@@ -85,7 +82,6 @@ static struct info info;
 static void usage(int exitcode, char const *name, char const *str) __attribute__((noreturn));
 static void sanity_chk(char const *file);
 static void check_info_json(char const *file);
-static void check_author_json(char const *file);
 
 
 int
@@ -96,7 +92,6 @@ main(int argc, char **argv)
     char *file;		/* file argument to check */
     int ret;			/* libc return code */
     int i;
-
 
     /*
      * parse args
@@ -161,24 +156,13 @@ main(int argc, char **argv)
     if (!quiet) {
 	para("... environment looks OK", "", NULL);
     }
-    if (parse_author_json) {
-	if (!quiet) {
-	    para("attempting to validate file as .author.json", NULL);
-	}
-	check_author_json(file);
-    }
-    if (parse_info_json) {
-	if (!quiet) {
-	    para("attempting to validate file as .info.json", NULL);
-	}
-	check_info_json(file);
-    }
 
+    check_info_json(file);
 
     /*
      * All Done!!! - Jessica Noll, age 2
      */
-    exit(total_issues != 0);
+    exit(info.issues != 0);
 }
 
 /*
@@ -195,8 +179,6 @@ main(int argc, char **argv)
 static void
 sanity_chk(char const *file)
 {
-    char const *jsonfile;
-
     /*
      * firewall
      */
@@ -246,33 +228,6 @@ sanity_chk(char const *file)
 	err(12, __func__, "file is not readable: %s", file);
 	not_reached();
     }
-
-    /* 
-     * now check if either -i or -a were passed in: if neither were used we try
-     * determining the format based on the basename of the file; if this cannot
-     * be determined it is an error. Else the correct flag will be set.
-     */
-
-    if (!parse_author_json && !parse_info_json) {
-	jsonfile = base_name(file);
-
-	if (jsonfile == NULL) {
-	    err(3, __func__, "unable to determine basename of the json file");
-	    not_reached();
-	}
-	if (!strcmp(jsonfile, ".info.json")) {
-	    parse_info_json = true;
-	} else if (!strcmp(jsonfile, ".author.json")) {
-	    parse_author_json = true;
-	} else {
-	    err(4, __func__, "could not determine which JSON format to test, try specifying -i or -a");
-	    not_reached();
-	}
-    } else if (parse_author_json && parse_info_json) {
-	dbg(DBG_MED, __func__, "will attempt to parse file as both .author.json and .info.json");
-    }
-
-
     return;
 }
 
@@ -291,6 +246,7 @@ static void
 check_info_json(char const *file)
 {
     FILE *info_json;
+    int ret;
 
     /*
      * firewall
@@ -306,34 +262,10 @@ check_info_json(char const *file)
 	not_reached();
     }
 
-}
-/*
- * check_author_json  - check file as .author.json
- *
- * given:
- *
- *	file	-   path to the file to check
- *
- * Attempts to validate the file as .author.json, reporting any problems found.
- *
- * Function does not return on error.
- */
-static void
-check_author_json(char const *file)
-{
-    FILE *author_json;
-
-    /*
-     * firewall
-     */
-    if (file == NULL) {
-	err(16, __func__, "passed NULL arg");
-	not_reached();
-    }
-    author_json = fopen(file, "r");
-    if (author_json == NULL) {
-	err(17, __func__, "couldn't open %s", file);
-	not_reached();
+    errno = 0;
+    ret = fclose(info_json);
+    if (ret != 0) {
+	warnp(__func__, "error in fclose to .info.json file %s", file);
     }
 }
 
