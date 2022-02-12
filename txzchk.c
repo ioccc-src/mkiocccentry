@@ -54,7 +54,7 @@ static bool quiet = false;		    /* true ==> only show errors and warnings */
 static bool text_file_flag_used = false;    /* true ==> assume txzpath is a text file */
 char const *txzpath = NULL;		    /* the current tarball being checked */
 
-struct info {
+struct txz_info {
     bool has_info_json;
     bool has_author_json;
     bool has_prog_c;
@@ -62,7 +62,7 @@ struct info {
     bool has_Makefile;
     unsigned has_correct_directory;
     unsigned dot_files;
-} info;
+} txz_info;
 
 struct file {
     char *basename;
@@ -504,7 +504,7 @@ check_file(char const *txzpath, char *p, char const *dir_name, struct file *file
     if (*(file->basename) == '.' && strcmp(file->basename, ".info.json") && strcmp(file->basename, ".author.json")) {
 	++total_issues;
 	warn("txzchk", "%s: found non .author.json and .info.json dot file %s", txzpath, file->basename);
-	info.dot_files++;
+	txz_info.dot_files++;
     }
 
     check_directories(file, dir_name, txzpath);
@@ -605,17 +605,17 @@ check_all_files(off_t file_sizes, char const *dir_name)
      */
     for (file = files; file != NULL; file = file->next) {
 	if (!strcmp(file->basename, ".info.json")) {
-	    info.has_info_json = true;
+	    txz_info.has_info_json = true;
 	} else if (!strcmp(file->basename, ".author.json")) {
-	    info.has_author_json = true;
+	    txz_info.has_author_json = true;
 	} else if (!strcmp(file->basename, "Makefile")) {
-	    info.has_Makefile = true;
+	    txz_info.has_Makefile = true;
 	} else if (!strcmp(file->basename, "prog.c")) {
-	    info.has_prog_c = true;
+	    txz_info.has_prog_c = true;
 	} else if (!strcmp(file->basename, "remarks.md")) {
-	    info.has_remarks_md = true;
+	    txz_info.has_remarks_md = true;
 	}
-	if (dir_name != NULL && info.has_correct_directory) {
+	if (dir_name != NULL && txz_info.has_correct_directory) {
 	    if (strncmp(file->filename, dir_name, strlen(dir_name))) {
 		warn("txzchk", "%s: found directory change in filename %s", txzpath, file->filename);
 		++total_issues;
@@ -629,27 +629,27 @@ check_all_files(off_t file_sizes, char const *dir_name)
     }
 
     /* determine if the required files are there */
-    if (!info.has_info_json) {
+    if (!txz_info.has_info_json) {
 	++total_issues;
 	warn("txzchk", "%s: no .info.json found", txzpath);
     }
-    if (!info.has_author_json) {
+    if (!txz_info.has_author_json) {
 	++total_issues;
 	warn("txzchk", "%s: no .author.json found", txzpath);
     }
-    if (!info.has_prog_c) {
+    if (!txz_info.has_prog_c) {
 	++total_issues;
 	warn("txzchk", "%s: no prog.c found", txzpath);
     }
-    if (!info.has_Makefile) {
+    if (!txz_info.has_Makefile) {
 	++total_issues;
 	warn("txzchk", "%s: no Makefile found", txzpath);
     }
-    if (!info.has_remarks_md) {
+    if (!txz_info.has_remarks_md) {
 	++total_issues;
 	warn("txzchk", "%s: no remarks.md found", txzpath);
     }
-    if (info.has_correct_directory < total_files) {
+    if (txz_info.has_correct_directory < total_files) {
 	++total_issues;
 	warn("txzchk", "%s: not all files in correct directory", txzpath);
     }
@@ -660,8 +660,8 @@ check_all_files(off_t file_sizes, char const *dir_name)
      * through the linked list above.
      */
 
-    if (info.dot_files > 0) {
-	warn("txzchk", "%s: found a total of %u unacceptable dot file%s", txzpath, info.dot_files, info.dot_files==1?"":"s");
+    if (txz_info.dot_files > 0) {
+	warn("txzchk", "%s: found a total of %u unacceptable dot file%s", txzpath, txz_info.dot_files, txz_info.dot_files==1?"":"s");
     }
 
     /*
@@ -781,7 +781,7 @@ check_directories(struct file *file, char const *dir_name, char const *txzpath)
 	}
 	else {
 	    /* This file is in the right directory */
-	    info.has_correct_directory++;
+	    txz_info.has_correct_directory++;
 	}
     }
 }
