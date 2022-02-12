@@ -12,6 +12,8 @@ limit_ioccc.sh
 fnamchk
 txzchk
 test-set
+jauthchk
+jinfochk
 
 # Prerequisites
 *.d
