@@ -61,17 +61,20 @@ struct location {
 /*
  * paths to utilities the IOCCC tools use (including fnamchk and txzchk)
  */
-#define TAR_PATH_0 "/usr/bin/tar"		/* historic path for tar */
-#define TAR_PATH_1 "/bin/tar"			/* alternate tar path for some systems where /usr/bin/tar != /bin/tar */
-#define CP_PATH_0 "/bin/cp"			/* historic path for cp */
-#define CP_PATH_1 "/usr/bin/cp"			/* alternate cp path for some systems where /bin/cp != /usr/bin/cp */
-#define LS_PATH_0 "/bin/ls"			/* historic path for ls */
-#define LS_PATH_1 "/usr/bin/ls"			/* alternate ls path for some systems where /bin/ls != /usr/bin/ls */
-#define FNAMCHK_PATH_0 "./fnamchk"		/* default path to fnamchk tool */
-#define FNAMCHK_PATH_1 "/usr/local/bin/fnamchk"	/* default path to fnamchk tool if installed */
-#define TXZCHK_PATH_0 "./txzchk"		/* default path to txzchk tool */
-#define TXZCHK_PATH_1 "/usr/local/bin/txzchk"	/* default path to txzchk tool if installed */
-
+#define TAR_PATH_0 "/usr/bin/tar"		    /* historic path for tar */
+#define TAR_PATH_1 "/bin/tar"			    /* alternate tar path for some systems where /usr/bin/tar != /bin/tar */
+#define CP_PATH_0 "/bin/cp"			    /* historic path for cp */
+#define CP_PATH_1 "/usr/bin/cp"			    /* alternate cp path for some systems where /bin/cp != /usr/bin/cp */
+#define LS_PATH_0 "/bin/ls"			    /* historic path for ls */
+#define LS_PATH_1 "/usr/bin/ls"			    /* alternate ls path for some systems where /bin/ls != /usr/bin/ls */
+#define FNAMCHK_PATH_0 "./fnamchk"		    /* default path to fnamchk tool */
+#define FNAMCHK_PATH_1 "/usr/local/bin/fnamchk"	    /* default path to fnamchk tool if installed */
+#define TXZCHK_PATH_0 "./txzchk"		    /* default path to txzchk tool */
+#define TXZCHK_PATH_1 "/usr/local/bin/txzchk"	    /* default path to txzchk tool if installed */
+#define JAUTHCHK_PATH_0 "./jauthchk"		    /* default path to jauthchk tool */
+#define JAUTHCHK_PATH_1 "/usr/local/bin/jauthchk"   /* default path to jauthchk tool if installed */
+#define JINFOCHK_PATH_0 "./jinfochk"		    /* default path to jinfochk tool */
+#define JINFOCHK_PATH_1 "/usr/local/bin/jinfochk"   /* default path to jinfochk tool if installed */
 /*
  * global variables
  */
@@ -87,7 +90,7 @@ extern bool is_exec(char const *path);
 extern bool is_dir(char const *path);
 extern bool is_read(char const *path);
 extern bool is_write(char const *path);
-extern ssize_t file_size(char const *path);
+extern off_t file_size(char const *path);
 extern char *cmdprintf(char const *format, ...);
 extern void para(char const *line, ...);
 extern void fpara(FILE * stream, char const *line, ...);
@@ -95,6 +98,7 @@ extern ssize_t readline(char **linep, FILE * stream);
 extern char *readline_dup(char **linep, bool strip, size_t *lenp, FILE * stream);
 extern void find_utils(bool tar_flag_used, char **tar, bool cp_flag_used, char **cp,
 	bool ls_flag_used, char **ls, bool txzchk_flag_used, char **txzchk,
-	bool fnamchk_flag_used, char **fnamchk);
+	bool fnamchk_flag_used, char **fnamchk, bool jinfochk_flag_used, char **jinfochk,
+	bool jauthchk_flag_used, char **jauthchk);
 extern off_t round_to_multiple(off_t num, off_t multiple);
 #endif				/* INCLUDE_UTIL_H */

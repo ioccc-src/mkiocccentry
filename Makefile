@@ -112,10 +112,10 @@ CFLAGS= -D_BSD_SOURCE -D_POSIX_C_SOURCE=200809L -D_XOPEN_SOURCE -std=c99 -O3 -g3
 #
 MANDIR = /usr/local/share/man/man1
 DESTDIR= /usr/local/bin
-TARGETS= mkiocccentry iocccsize dbg_test limit_ioccc.sh fnamchk txzchk
+TARGETS= mkiocccentry iocccsize dbg_test limit_ioccc.sh fnamchk txzchk jauthchk jinfochk
 MANPAGES = mkiocccentry.1 txzchk.1 fnamchk.1 iocccsize.1
 TEST_TARGETS= dbg_test
-OBJFILES = dbg.o util.o mkiocccentry.o iocccsize.o dbg_test.o fnamchk.o txzchk.o
+OBJFILES = dbg.o util.o mkiocccentry.o iocccsize.o fnamchk.o txzchk.o jauthchk.o jinfochk.o
 SRCFILES = $(patsubst %.o,%.c,$(OBJFILES))
 
 all: ${TARGETS} ${TEST_TARGETS}
@@ -131,7 +131,7 @@ rule_count.c: iocccsize.c
 rule_count.o: rule_count.c limit_ioccc.h Makefile
 	${CC} ${CFLAGS} -DMKIOCCCENTRY_USE rule_count.c -c
 
-mkiocccentry: mkiocccentry.c limit_ioccc.h rule_count.o dbg.o util.o Makefile
+mkiocccentry: mkiocccentry.c limit_ioccc.h json.h rule_count.o dbg.o util.o Makefile
 	${CC} ${CFLAGS} mkiocccentry.c rule_count.o dbg.o util.o -o $@
 
 iocccsize: iocccsize.c limit_ioccc.h Makefile
@@ -145,6 +145,13 @@ fnamchk: fnamchk.c limit_ioccc.h dbg.o util.o
 
 txzchk: txzchk.c limit_ioccc.h rule_count.o dbg.o util.o Makefile
 	${CC} ${CFLAGS} txzchk.c rule_count.o dbg.o util.o -o $@
+
+jauthchk: jauthchk.c limit_ioccc.h json.h rule_count.o dbg.o util.o Makefile 
+	${CC} ${CFLAGS} jauthchk.c rule_count.o dbg.o util.o -o $@
+
+jinfochk: jinfochk.c limit_ioccc.h json.h rule_count.o dbg.o util.o Makefile
+	${CC} ${CFLAGS} jinfochk.c rule_count.o dbg.o util.o -o $@
+
 
 limit_ioccc.sh: limit_ioccc.h Makefile
 	${RM} -f $@
@@ -291,3 +298,9 @@ depend:
 ### DO NOT CHANGE MANUALLY BEYOND THIS LINE
 dbg.o: dbg.c dbg.h
 util.o: util.c dbg.h util.h
+mkiocccentry.o: mkiocccentry.c limit_ioccc.h dbg.h util.h json.h
+iocccsize.o: iocccsize.c
+fnamchk.o: fnamchk.c limit_ioccc.h dbg.h util.h
+txzchk.o: txzchk.c limit_ioccc.h dbg.h util.h
+jauthchk.o: jauthchk.c limit_ioccc.h dbg.h util.h json.h
+jinfochk.o: jinfochk.c limit_ioccc.h dbg.h util.h json.h

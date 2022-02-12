@@ -95,6 +95,12 @@
  */
 #include "util.h"
 
+/*
+ * json - json structs
+ */
+#include "json.h"
+
+
 
 /*
  * Answers file constants.
@@ -145,6 +151,9 @@ static const char * const usage_msg1 =
     "\t-C /path/to/txzchk\tpath to txzchk executable (def: %s)\n"
     "\t-F /path/to/fnamchk\tpath to fnamchk executable used by txzchk (def: %s)";
 static const char * const usage_msg2 =
+    "\t-j /path/to/jinfochk	path to jinfochk executable used by txzchk (def: %s)\n"
+    "\t-J /path/to/jauthchk	path to jauthchk executable used by txzchk (def: %s)\n";
+static const char * const usage_msg3 =
     "\t-a answers\t\twrite answers to a file for easier updating of an entry\n"
     "\t-A answers\t\twrite answers file even if it already exists\n"
     "\t-i answers\t\tread answers from file previously written by -a|-A answers\n\n"
@@ -152,7 +161,7 @@ static const char * const usage_msg2 =
     "\n"
     "\twork_dir\tdirectory where the entry directory and tarball are formed\n"
     "\tprog.c\t\tpath to the C source for your entry\n";
-static const char * const usage_msg3 =
+static const char * const usage_msg4 =
     "\n"
     "\tMakefile\tMakefile to build (make all) and cleanup (make clean & make clobber)\n"
     "\n"
@@ -164,78 +173,6 @@ static const char * const usage_msg3 =
     "\t[file ...]\textra data files to include with your entry\n"
     "\n"
     "mkiocccentry version: %s\n";
-
-
-/*
- * author info
- */
-struct author {
-    char *name;			/* name of the author */
-    char *location_code;	/* author location/country code */
-    char const *location_name;	/* name of author location/country */
-    char *email;		/* Email address of author or or empty string ==> not provided */
-    char *url;			/* home URL of author or or empty string ==> not provided */
-    char *twitter;		/* author twitter handle or or empty string ==> not provided */
-    char *github;		/* author GitHub username or or empty string ==> not provided */
-    char *affiliation;		/* author affiliation or or empty string ==> not provided */
-    int author_num;		/* author number */
-};
-
-
-/*
- * info for JSON
- *
- * Information we will collect in order to form the .info json file.
- */
-struct info {
-    /*
-     * version
-     */
-    char *mkiocccentry_ver;	/* mkiocccentry version (MKIOCCCENTRY_VERSION) */
-    char const *iocccsize_ver;	/* iocccsize version (compiled in, same as iocccsize -V) */
-    /*
-     * entry
-     */
-    char *ioccc_id;		/* IOCCC contest ID */
-    int entry_num;		/* IOCCC entry number */
-    char *title;		/* entry title */
-    char *abstract;		/* entry abstract */
-    ssize_t rule_2a_size;	/* Rule 2a size of prog.c */
-    size_t rule_2b_size;	/* Rule 2b size of prog.c */
-    bool empty_override;	/* true ==> empty prog.c override requested */
-    bool rule_2a_override;	/* true ==> Rule 2a override requested */
-    bool rule_2a_mismatch;	/* true ==> file size != rule_count function size */
-    bool rule_2b_override;	/* true ==> Rule 2b override requested */
-    bool highbit_warning;	/* true ==> high bit character(s) detected */
-    bool nul_warning;		/* true ==> NUL character(s) detected */
-    bool trigraph_warning;	/* true ==> unknown or invalid tri-graph(s) detected */
-    bool wordbuf_warning;	/* true ==> word buffer overflow detected */
-    bool ungetc_warning;	/* true ==> ungetc warning detected */
-    bool Makefile_override;	/* true ==> Makefile rule override requested */
-    bool first_rule_is_all;	/* true ==> Makefile first rule is all */
-    bool found_all_rule;	/* true ==> Makefile has an all rule */
-    bool found_clean_rule;	/* true ==> Makefile has clean rule */
-    bool found_clobber_rule;	/* true ==> Makefile has a clobber rule */
-    bool found_try_rule;	/* true ==> Makefile has a try rule */
-    unsigned answers_errors;	/* > 0 ==> flushing or closing answers file failed */
-    /*
-     * filenames
-     */
-    char *prog_c;		/* prog.c filename */
-    char *Makefile;		/* Makefile filename */
-    char *remarks_md;		/* remarks.md filename */
-    int extra_count;		/* number of extra files */
-    char **extra_file;		/* list of extra filenames followed by NULL */
-    char *tarball_path;		/* tarball filename */
-    /*
-     * time
-     */
-    time_t tstamp;		/* seconds since epoch when .info json was formed (see gettimeofday(2)) */
-    int usec;			/* microseconds since the tstamp second */
-    char *epoch;		/* epoch of tstamp, currently: Thr Jan 1 00:00:00 1970 UTC */
-    char *gmtime;		/* UTC converted string for tstamp (see asctime(3)) */
-};
-
 
 /*
  * globals
@@ -253,7 +190,7 @@ static struct iocccsize size;	/* rule_count() processing results */
  * forward declarations
  */
 static void usage(int exitcode, char const *str, char const *program, char const *tar, char const *cp, char const *ls,
-		  char const *txzchk, char const *fnamchk);
+		  char const *txzchk, char const *fnamchk, char const *jinfochk, char const *jauthchk);
 static void free_info(struct info *infop);
 static void free_author_array(struct author *authorp, int author_count);
 static void warn_empty_prog(char const *prog_c);
@@ -266,7 +203,7 @@ static void warn_ungetc(char const *prog_c);
 static void warn_rule2b_size(struct info *infop, char const *prog_c);
 static void check_prog_c(struct info *infop, char const *entry_dir, char const *cp, char const *prog_c);
 static void sanity_chk(struct info *infop, char const *work_dir, char const *tar, char const *cp,
-		       char const *ls, char const *txzchk, char const *fnamchk);
+		       char const *ls, char const *txzchk, char const *fnamchk, char const *jinfochk, char const *jauthchk);
 static char *prompt(char const *str, size_t *lenp);
 static char *get_contest_id(struct info *infop, bool *testp, bool *read_answers_flag_used);
 static int get_entry_num(struct info *infop);
@@ -291,8 +228,8 @@ static bool json_fprintf_value_long(FILE *stream, char const *lead, char const *
 static bool json_fprintf_value_bool(FILE *stream, char const *lead, char const *name, char const *middle, bool value,
 				    char const *tail);
 static char const * strnull(char const * const str);
-static void write_info(struct info *infop, char const *entry_dir, bool test_mode);
-static void write_author(struct info *infop, int author_count, struct author *authorp, char const *entry_dir);
+static void write_info(struct info *infop, char const *entry_dir, bool test_mode, char const *jinfochk);
+static void write_author(struct info *infop, int author_count, struct author *authorp, char const *entry_dir, char const *jauthchk);
 static void form_tarball(char const *work_dir, char const *entry_dir, char const *tarball_path, char const *tar,
 			 char const *ls, char const *txzchk, char const *fnamchk);
 static void remind_user(char const *work_dir, char const *entry_dir, char const *tar, char const *tarball_path, bool test_mode);
@@ -314,6 +251,8 @@ main(int argc, char *argv[])
     char *ls = LS_PATH_0;		/* path to ls executable */
     char *txzchk = TXZCHK_PATH_0;	/* path to txzchk executable */
     char *fnamchk = FNAMCHK_PATH_0;	/* path to fnamchk executable */
+    char *jauthchk = JAUTHCHK_PATH_0;	/* path to jauthchk executable */
+    char *jinfochk = JINFOCHK_PATH_0;	/* path to jinfochk executable */
     char const *answers = NULL;		/* path to the answers file (recording input given on stdin) */
     FILE *answerp = NULL;		/* file pointer to the answers file */
     bool test_mode = false;		/* true ==> contest ID is test */
@@ -332,6 +271,8 @@ main(int argc, char *argv[])
     bool overwite_answers_flag_used = false;		/* true ==> don't prompt to overwrite answers if it already exists */
     bool txzchk_flag_used = false;	/* true ==> -C /path/to/txzchk was given */
     bool fnamchk_flag_used = false;		/* true ==> -F /path/to/fnamchk was given */
+    bool jinfochk_flag_used = false;	/* true ==> -j /path/to/jinfochk was given */
+    bool jauthchk_flag_used = false;	/* true ==> -J /path/to/jauthchk was given */
     bool overwrite_answers = true;	/* true ==> overwrite answers file even if it already exists */
     int ret;				/* libc return code */
     int i;
@@ -341,10 +282,10 @@ main(int argc, char *argv[])
      */
     input_stream = stdin;	/* default to reading from standard in */
     program = argv[0];
-    while ((i = getopt(argc, argv, "hv:Vt:c:l:a:i:A:WC:F:")) != -1) {
+    while ((i = getopt(argc, argv, "hv:Vt:c:l:a:i:A:WC:F:j:J:")) != -1) {
 	switch (i) {
 	case 'h':		/* -h - print help to stderr and exit 0 */
-	    usage(1, "-h help mode", program, TAR_PATH_0, CP_PATH_0, LS_PATH_0, TXZCHK_PATH_0, FNAMCHK_PATH_0);
+	    usage(1, "-h help mode", program, TAR_PATH_0, CP_PATH_0, LS_PATH_0, TXZCHK_PATH_0, FNAMCHK_PATH_0, JINFOCHK_PATH_0, JAUTHCHK_PATH_0);
 	    not_reached();
 	    break;
 	case 'v':		/* -v verbosity */
@@ -404,14 +345,24 @@ main(int argc, char *argv[])
 	    fnamchk_flag_used = true;
 	    fnamchk = optarg;
 	    break;
+	case 'j':
+	    jinfochk_flag_used = true;
+	    jinfochk = optarg;
+	    break;
+	case 'J':
+	    jauthchk_flag_used = true;
+	    jauthchk = optarg;
+	    break;
 	default:
-	    usage(1, "invalid -flag", program, TAR_PATH_0, CP_PATH_0, LS_PATH_0, TXZCHK_PATH_0, FNAMCHK_PATH_0); /*ooo*/
+	    usage(1, "invalid -flag", program, TAR_PATH_0, CP_PATH_0, LS_PATH_0, TXZCHK_PATH_0, FNAMCHK_PATH_0,
+		    JINFOCHK_PATH_0, JAUTHCHK_PATH_0); /*ooo*/
 	    not_reached();
 	 }
     }
     /* must have at least the required number of args */
     if (argc - optind < REQUIRED_ARGS) {
-	usage(1, "wrong number of arguments", program, TAR_PATH_0, CP_PATH_0, LS_PATH_0, TXZCHK_PATH_0, FNAMCHK_PATH_0); /*ooo*/
+	usage(1, "wrong number of arguments", program, TAR_PATH_0, CP_PATH_0, LS_PATH_0, TXZCHK_PATH_0, FNAMCHK_PATH_0,
+		JINFOCHK_PATH_0, JAUTHCHK_PATH_0); /*ooo*/
 	not_reached();
     }
 
@@ -425,7 +376,9 @@ main(int argc, char *argv[])
      * On some systems where /usr/bin != /bin, the distribution made the mistake of
      * moving historic critical applications, look to see if the alternate path works instead.
      */
-    find_utils(tar_flag_used, &tar, cp_flag_used, &cp, ls_flag_used, &ls, txzchk_flag_used, &txzchk, fnamchk_flag_used, &fnamchk);
+    find_utils(tar_flag_used, &tar, cp_flag_used, &cp, ls_flag_used, &ls, 
+	    txzchk_flag_used, &txzchk, fnamchk_flag_used, &fnamchk,
+	    jinfochk_flag_used, &jinfochk, jauthchk_flag_used, &jauthchk);
 
     /* check that conflicting answers file options are not used together */
     if (answers_flag_used && read_answers_flag_used) {
@@ -501,7 +454,7 @@ main(int argc, char *argv[])
      * environment sanity checks
      */
     para("", "Performing sanity checks on your environment ...", NULL);
-    sanity_chk(&info, work_dir, tar, cp, ls, txzchk, fnamchk);
+    sanity_chk(&info, work_dir, tar, cp, ls, txzchk, fnamchk, jinfochk, jauthchk);
     para("... environment looks OK", "", NULL);
 
     /* if -a answers was specified and answers file exists, prompt user if they
@@ -697,14 +650,14 @@ main(int argc, char *argv[])
      * write the .info.json file
      */
     para("", "Forming the .info.json file ...", NULL);
-    write_info(&info, entry_dir, test_mode);
+    write_info(&info, entry_dir, test_mode, jinfochk);
     para("... completed the .info.json file.", "", NULL);
 
     /*
      * write the .author.json file
      */
     para("", "Forming the .author.json file ...", NULL);
-    write_author(&info, author_count, author_set, entry_dir);
+    write_author(&info, author_count, author_set, entry_dir, jauthchk);
     para("... completed .author.json file.", "", NULL);
 
     /*
@@ -878,6 +831,8 @@ main(int argc, char *argv[])
  *	ls		path to tar ls utility
  *	txzchk		path to the txzchk tool
  *	fnamchk		path to the fnamchk tool
+ *	jinfochk	path to jinfochk tool
+ *	jauthchk	path to jauthchk tool
  *
  * NOTE: We warn with extra newlines to help internal fault messages stand out.
  *       Normally one should NOT include newlines in warn messages.
@@ -886,7 +841,7 @@ main(int argc, char *argv[])
  */
 static void
 usage(int exitcode, char const *str, char const *program, char const *tar, char const *cp, char const *ls,
-      char const *txzchk, char const *fnamchk)
+      char const *txzchk, char const *fnamchk, char const *jinfochk, char const *jauthchk)
 {
     /*
      * firewall
@@ -919,6 +874,16 @@ usage(int exitcode, char const *str, char const *program, char const *tar, char 
 	fnamchk = "((NULL fnamchk))";
 	warn(__func__, "\nin usage(): fnamchk was NULL, forcing it to be: %s\n", fnamchk);
     }
+    if (jinfochk == NULL) {
+	jinfochk = "((NULL jinfochk))";
+	warn(__func__, "\nin usage(): jinfochk was NULL, forcing it to be: %s\n", jinfochk);
+    }
+    if (jauthchk == NULL) {
+	jauthchk = "((NULL jauthchk))";
+	warn(__func__, "\nin usage(): jauthchk was NULL, forcing it to be: %s\n", jauthchk);
+    }
+
+
 
     /*
      * print the formatted usage stream
@@ -926,8 +891,9 @@ usage(int exitcode, char const *str, char const *program, char const *tar, char 
     vfprintf_usage(DO_NOT_EXIT, stderr, "%s\n", str);
     vfprintf_usage(DO_NOT_EXIT, stderr, usage_msg0, program, DBG_DEFAULT);
     vfprintf_usage(DO_NOT_EXIT, stderr, usage_msg1, tar, cp, ls, txzchk, fnamchk);
-    vfprintf_usage(DO_NOT_EXIT, stderr, "%s", usage_msg2);
-    vfprintf_usage(exitcode, stderr, usage_msg3, MKIOCCCENTRY_VERSION);
+    vfprintf_usage(DO_NOT_EXIT, stderr, usage_msg2, jinfochk, jauthchk);
+    vfprintf_usage(DO_NOT_EXIT, stderr, "%s", usage_msg3);
+    vfprintf_usage(exitcode, stderr, usage_msg4, MKIOCCCENTRY_VERSION);
     exit(exitcode); /*ooo*/
     not_reached();
 }
@@ -1094,18 +1060,20 @@ free_author_array(struct author *author_set, int author_count)
  *	ls		- path to the ls utility
  *	txzchk		- path to txzchk tool
  *	fnamchk		- path to fnamchk tool
+ *	jinfochk	- path to jinfochk tool
+ *	jauthchk	- path to jauthchk tool
  *
  * NOTE: This function does not return on error or if things are not sane.
  */
 static void
 sanity_chk(struct info *infop, char const *work_dir, char const *tar, char const *cp, char const *ls,
-	   char const *txzchk, char const *fnamchk)
+	   char const *txzchk, char const *fnamchk, char const *jinfochk, char const *jauthchk)
 {
     /*
      * firewall
      */
     if (infop == NULL || work_dir == NULL || tar == NULL || cp == NULL || ls == NULL ||
-	txzchk == NULL || fnamchk == NULL) {
+	txzchk == NULL || fnamchk == NULL || jinfochk == NULL || jauthchk == NULL) {
 	err(15, __func__, "called with NULL arg(s)");
 	not_reached();
     }
@@ -1387,6 +1355,118 @@ sanity_chk(struct info *infop, char const *work_dir, char const *tar, char const
 	      "",
 	      NULL);
 	err(30, __func__, "fnamchk is not an executable program: %s", fnamchk);
+	not_reached();
+    }
+
+    /*
+     * jinfochk must be executable
+     */
+    if (!exists(jinfochk)) {
+	fpara(stderr,
+	      "",
+	      "We cannot find a jinfochk tool.",
+	      "",
+	      "A jinfochk program performs a sanity check on the compressed tarball.",
+	      "Perhaps you need to use:",
+	      "",
+	      "    mkiocccentry -j /path/to/jinfochk ...",
+	      "",
+	      "and/or install the jinfochk tool?  You can find the source for jinfochk in the mkiocccentry GitHub repo:",
+	      "",
+	      "    https://github.com/ioccc-src/mkiocccentry",
+	      "",
+	      NULL);
+	err(28, __func__, "jinfochk does not exist: %s", jinfochk);
+	not_reached();
+    }
+    if (!is_file(jinfochk)) {
+	fpara(stderr,
+	      "",
+	      "The jinfochk tool, while it exists, is not a file.",
+	      "",
+	      "Perhaps you need to use another path:",
+	      "",
+	      "    mkiocccentry -j /path/to/jinfochk ...",
+	      "",
+	      "and/or install the jinfochk tool?  You can find the source for jinfochk in the mkiocccentry GitHub repo:",
+	      "",
+	      "    https://github.com/ioccc-src/mkiocccentry",
+	      "",
+	      NULL);
+	err(29, __func__, "jinfochk is not a file: %s", jinfochk);
+	not_reached();
+    }
+    if (!is_exec(jinfochk)) {
+	fpara(stderr,
+	      "",
+	      "The jinfochk tool, while it is a file, is not executable.",
+	      "",
+	      "We suggest you check the permissions on the jinfochk program, or use another path:",
+	      "",
+	      "    mkiocccentry -j /path/to/jinfochk ...",
+	      "",
+	      "and/or install the jinfochk tool?  You can find the source for jinfochk in the mkiocccentry GitHub repo:",
+	      "",
+	      "    https://github.com/ioccc-src/mkiocccentry",
+	      "",
+	      NULL);
+	err(30, __func__, "jinfochk is not an executable program: %s", jinfochk);
+	not_reached();
+    }
+
+    /*
+     * jauthchk must be executable
+     */
+    if (!exists(jauthchk)) {
+	fpara(stderr,
+	      "",
+	      "We cannot find a jauthchk tool.",
+	      "",
+	      "A jauthchk program performs a sanity check on the compressed tarball.",
+	      "Perhaps you need to use:",
+	      "",
+	      "    mkiocccentry -J /path/to/jauthchk ...",
+	      "",
+	      "and/or install the jauthchk tool?  You can find the source for jauthchk in the mkiocccentry GitHub repo:",
+	      "",
+	      "    https://github.com/ioccc-src/mkiocccentry",
+	      "",
+	      NULL);
+	err(28, __func__, "jauthchk does not exist: %s", jauthchk);
+	not_reached();
+    }
+    if (!is_file(jauthchk)) {
+	fpara(stderr,
+	      "",
+	      "The jauthchk tool, while it exists, is not a file.",
+	      "",
+	      "Perhaps you need to use another path:",
+	      "",
+	      "    mkiocccentry -J /path/to/jauthchk ...",
+	      "",
+	      "and/or install the jauthchk tool?  You can find the source for jauthchk in the mkiocccentry GitHub repo:",
+	      "",
+	      "    https://github.com/ioccc-src/mkiocccentry",
+	      "",
+	      NULL);
+	err(29, __func__, "jauthchk is not a file: %s", jauthchk);
+	not_reached();
+    }
+    if (!is_exec(jauthchk)) {
+	fpara(stderr,
+	      "",
+	      "The jauthchk tool, while it is a file, is not executable.",
+	      "",
+	      "We suggest you check the permissions on the jauthchk program, or use another path:",
+	      "",
+	      "    mkiocccentry -J /path/to/jauthchk ...",
+	      "",
+	      "and/or install the jauthchk tool?  You can find the source for jauthchk in the mkiocccentry GitHub repo:",
+	      "",
+	      "    https://github.com/ioccc-src/mkiocccentry",
+	      "",
+	      NULL);
+	err(30, __func__, "jauthchk is not an executable program: %s", jauthchk);
 	not_reached();
     }
 
@@ -2488,7 +2568,7 @@ check_prog_c(struct info *infop, char const *entry_dir, char const *cp, char con
     /*
      * sanity check on file size vs rule_count function size for Rule 2a
      */
-    if (infop->rule_2a_size != (ssize_t)size.rule_2a_size) {
+    if (infop->rule_2a_size != size.rule_2a_size) {
 	warn_rule2a_size(infop, prog_c, RULE_2A_IOCCCSIZE_MISMATCH);
 	infop->rule_2a_mismatch = true;
     } else {
@@ -2950,7 +3030,7 @@ warn_Makefile(char const *Makefile, struct info *infop)
 static void
 check_Makefile(struct info *infop, char const *entry_dir, char const *cp, char const *Makefile)
 {
-    ssize_t filesize = 0;	/* size of Makefile */
+    off_t filesize = 0;		/* size of Makefile */
     int ret;			/* libc function return */
     char *cmd = NULL;		/* cp prog_c entry_dir/prog.c */
     int exit_code;		/* exit code from system(cmd) */
@@ -3096,7 +3176,7 @@ check_Makefile(struct info *infop, char const *entry_dir, char const *cp, char c
 static void
 check_remarks_md(struct info *infop, char const *entry_dir, char const *cp, char const *remarks_md)
 {
-    ssize_t filesize = 0;	/* size of remarks.md */
+    off_t filesize = 0;		/* size of remarks.md */
     char *cmd = NULL;		/* cp prog_c entry_dir/prog.c */
     int exit_code;		/* exit code from system(cmd) */
     int ret;			/* libc function return */
@@ -5398,6 +5478,7 @@ strnull(char const * const str)
  *      infop           - pointer to info structure
  *      entry_dir       - path to entry directory
  *      test_mode       - true ==> test mode, do not upload
+ *      jinfochk	- path to jinfochk tool
  *
  * returns:
  *	true
@@ -5405,7 +5486,7 @@ strnull(char const * const str)
  * This function does not return on error.
  */
 static void
-write_info(struct info *infop, char const *entry_dir, bool test_mode)
+write_info(struct info *infop, char const *entry_dir, bool test_mode, char const *jinfochk)
 {
     struct tm *timeptr;		/* localtime return */
     char *info_path;		/* path to .info.json file */
@@ -5417,11 +5498,13 @@ write_info(struct info *infop, char const *entry_dir, bool test_mode)
     char **q;			/* extra filename array pointer */
     char *p;
     int i;
+    char *cmd = NULL;		/* for jinfochk */
+    int exit_code;		/* for system() */
 
     /*
      * firewall
      */
-    if (infop == NULL || entry_dir == NULL) {
+    if (infop == NULL || entry_dir == NULL || jinfochk == NULL) {
 	err(179, __func__, "called with NULL arg(s)");
 	not_reached();
     }
@@ -5590,15 +5673,7 @@ write_info(struct info *infop, char const *entry_dir, bool test_mode)
     }
 
     /*
-     * free storage
-     */
-    if (info_path != NULL) {
-	free(info_path);
-	info_path = NULL;
-    }
-
-    /*
-     * close the file
+     * close the file prior to running jinfochk
      */
     errno = 0;			/* pre-clear errno for errp() */
     ret = fclose(info_stream);
@@ -5606,6 +5681,65 @@ write_info(struct info *infop, char const *entry_dir, bool test_mode)
 	errp(193, __func__, "fclose error");
 	not_reached();
     }
+    /*
+     * form the jinfochk command
+     */
+    cmd = cmdprintf("% -q %", jinfochk, info_path);
+    if (cmd == NULL) {
+	err(215, __func__, "failed to cmdprintf: jinfochk %s", info_path);
+	not_reached();
+    }
+    dbg(DBG_HIGH, "about to perform: system(%s)", cmd);
+
+    /*
+     * pre-flush to avoid system() buffered stdio issues
+     */
+    clearerr(stdout);	/* pre-clear ferror() status */
+    errno = 0;		/* pre-clear errno for errp() */
+    ret = fflush(stdout);
+    if (ret < 0) {
+	errp(216, __func__, "fflush(stdout) error code: %d", ret);
+	not_reached();
+    }
+    clearerr(stderr);		/* pre-clear ferror() status */
+    errno = 0;			/* pre-clear errno for errp() */
+    ret = fflush(stderr);
+    if (ret < 0) {
+	errp(217, __func__, "fflush(stderr) #1: error code: %d", ret);
+	not_reached();
+    }
+
+    /*
+     * perform the jinfochk which will indirectly show the user the tarball
+     * contents
+     */
+    errno = 0;			/* pre-clear errno for errp() */
+    exit_code = system(cmd);
+    if (exit_code < 0) {
+	errp(218, __func__, "error calling system(%s)", cmd);
+	not_reached();
+    } else if (exit_code == 127) {
+	errp(219, __func__, "execution of the shell failed for system(%s)", cmd);
+	not_reached();
+    } else if (exit_code != 0) {
+	err(220, __func__, "%s failed with exit code: %d", cmd, WEXITSTATUS(exit_code));
+	not_reached();
+    }
+
+    para("... all appears well with the .info.json file.", NULL);
+
+    /*
+     * free storage
+     */
+    if (info_path != NULL) {
+	free(info_path);
+	info_path = NULL;
+    }
+
+    free(cmd);
+    cmd = NULL;
+
+
     return;
 }
 
@@ -5620,22 +5754,25 @@ write_info(struct info *infop, char const *entry_dir, bool test_mode)
  *      author_count    - length of the author structure array in elements
  *      authorp         - pointer to author structure array
  *      entry_dir       - path to entry directory
+ *      jauthchk	- path to jauthchk tool
  *
  * This function does not return on error.
  */
 static void
-write_author(struct info *infop, int author_count, struct author *authorp, char const *entry_dir)
+write_author(struct info *infop, int author_count, struct author *authorp, char const *entry_dir, char const *jauthchk)
 {
     char *author_path;		/* path to .author.json file */
     size_t author_path_len;	/* length of path to .author.json */
     FILE *author_stream;	/* open write stream to the .author.json file */
     int ret;			/* libc function return */
     int i;
+    int exit_code;		/* exit code from system(cmd) */
+    char *cmd;			/* for jauthchk */
 
     /*
      * firewall
      */
-    if (authorp == NULL || entry_dir == NULL) {
+    if (infop == NULL || authorp == NULL || entry_dir == NULL || jauthchk == NULL) {
 	err(194, __func__, "called with NULL arg(s)");
 	not_reached();
     }
@@ -5723,15 +5860,7 @@ write_author(struct info *infop, int author_count, struct author *authorp, char 
     }
 
     /*
-     * free storage
-     */
-    if (author_path != NULL) {
-	free(author_path);
-	author_path = NULL;
-    }
-
-    /*
-     * close the file
+     * close the file before checking it with jauthchk
      */
     errno = 0;			/* pre-clear errno for errp() */
     ret = fclose(author_stream);
@@ -5739,6 +5868,70 @@ write_author(struct info *infop, int author_count, struct author *authorp, char 
 	errp(201, __func__, "fclose error");
 	not_reached();
     }
+
+    para("",
+	"Checking the format of .author.json ...", NULL);
+
+    /*
+     * form the jauthchk command
+     */
+    cmd = cmdprintf("% -q %", jauthchk, author_path);
+    if (cmd == NULL) {
+	err(215, __func__, "failed to cmdprintf: jauthchk %s", author_path);
+	not_reached();
+    }
+    dbg(DBG_HIGH, "about to perform: system(%s)", cmd);
+
+    /*
+     * pre-flush to avoid system() buffered stdio issues
+     */
+    clearerr(stdout);	/* pre-clear ferror() status */
+    errno = 0;		/* pre-clear errno for errp() */
+    ret = fflush(stdout);
+    if (ret < 0) {
+	errp(216, __func__, "fflush(stdout) error code: %d", ret);
+	not_reached();
+    }
+    clearerr(stderr);		/* pre-clear ferror() status */
+    errno = 0;			/* pre-clear errno for errp() */
+    ret = fflush(stderr);
+    if (ret < 0) {
+	errp(217, __func__, "fflush(stderr) #1: error code: %d", ret);
+	not_reached();
+    }
+
+    /*
+     * perform the jauthchk which will indirectly show the user the tarball
+     * contents
+     */
+    errno = 0;			/* pre-clear errno for errp() */
+    exit_code = system(cmd);
+    if (exit_code < 0) {
+	errp(218, __func__, "error calling system(%s)", cmd);
+	not_reached();
+    } else if (exit_code == 127) {
+	errp(219, __func__, "execution of the shell failed for system(%s)", cmd);
+	not_reached();
+    } else if (exit_code != 0) {
+	err(220, __func__, "%s failed with exit code: %d", cmd, WEXITSTATUS(exit_code));
+	not_reached();
+    }
+
+    para("... all appears well with the .author.json file.", NULL);
+
+
+    /*
+     * free storage
+     */
+    if (author_path != NULL) {
+	free(author_path);
+	author_path = NULL;
+    }
+
+    /* free cmd */
+    free(cmd);
+    cmd = NULL;
+
     return;
 }
 

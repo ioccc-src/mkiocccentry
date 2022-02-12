@@ -118,7 +118,7 @@ static char usage1[] =
  *
  *	https://github.com/ioccc-src/mkiocccentry/blob/master/limit_ioccc.h
  *
- * The RULE_2A_SIZE and RULE_2B_SIZE defines below are added for convience of
+ * The RULE_2A_SIZE and RULE_2B_SIZE defines below are added for convenience of
  * compiling orig.iocccsize, only.  They are not official IOCCC Rule 2a and Rule 2b values.
  * The same thing goes for DIGRAPHS and TRIGRAPHS.
  */

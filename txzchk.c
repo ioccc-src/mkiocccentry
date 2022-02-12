@@ -9,7 +9,9 @@
  *
  * Written in 2022 by:
  *
- *	@xexyl			Cody Boone Ferguson
+ *	@xexyl
+ *	https://xexyl.net		Cody Boone Ferguson
+ *	https://ioccc.xexyl.net
  */
 #include <stdio.h>
 #include <stdlib.h>
@@ -38,7 +40,7 @@
 /*
  * txzchk version
  */
-#define TXZCHK_VERSION "0.6 2022-02-11"    /* use format: major.minor YYYY-MM-DD */
+#define TXZCHK_VERSION "0.7 2022-02-12"    /* use format: major.minor YYYY-MM-DD */
 
 
 /*
@@ -46,21 +48,32 @@
  */
 char const *program = NULL;		    /* our name */
 int verbosity_level = DBG_DEFAULT;	    /* debug level set by -v */
-static int total_issues = 0;		    /* total number of issues with tarball found */
-static unsigned total_files = 0;	    /* total number of files in tarball found */
 static bool quiet = false;		    /* true ==> only show errors and warnings */
 static bool text_file_flag_used = false;    /* true ==> assume txzpath is a text file */
 char const *txzpath = NULL;		    /* the current tarball being checked */
 
-struct info {
-    bool has_info_json;
-    bool has_author_json;
-    bool has_prog_c;
-    bool has_remarks_md;
-    bool has_Makefile;
-    unsigned has_correct_directory;
-    unsigned dot_files;
-} info;
+/* 
+ * information about the tarball
+ */
+struct txz_info {
+    bool has_info_json;			    /* true ==> has a .info.json file */
+    bool empty_info_json;		    /* true ==> .info.json size == 0 */
+    bool has_author_json;		    /* true ==> has an .author.json file */
+    bool empty_author_json;		    /* true ==> .author.json size == 0 */
+    bool has_prog_c;			    /* true ==> has a prog.c file */
+    bool empty_prog_c;			    /* true ==> prog.c size == 0 (this is for debugging information only) */
+    bool has_remarks_md;		    /* true ==> has a remarks.md file */
+    bool empty_remarks_md;		    /* true ==> remarks.md size == 0 */
+    bool has_Makefile;			    /* true ==> has a Makefile */
+    bool empty_Makefile;		    /* true ==> Makefile size == 0 */
+    off_t size;				    /* size of the tarball itself */
+    off_t file_sizes;			    /* total size of all the files combined */
+    off_t rounded_file_size;		    /* file sizes rounded up to 1024 multiple */
+    unsigned correct_directory;		    /* number of files in the correct directory */
+    unsigned dot_files;			    /* number of dot files that aren't .author.json and .info.json */
+    unsigned total_files;		    /* total files in the tarball */
+    int total_issues;			    /* number of total issues in tarball */
+} txz_info;
 
 struct file {
     char *basename;
@@ -111,17 +124,18 @@ static const char * const usage_msg =
  */
 static void usage(int exitcode, char const *name, char const *str, char const *tar, char const *fnamchk) __attribute__((noreturn));
 static void sanity_chk(char const *tar, char const *fnamchk);
-static void parse_line(char *linep, char *line_dup, char const *dir_name, char const *txzpath, off_t *file_sizes, int *dir_count);
-static void parse_linux_line(char *p, char *line, char *line_dup, char const *dir_name, char const *txzpath, off_t *file_sizes, char **saveptr);
-static void parse_bsd_line(char *p, char *line, char *line_dup, char const *dir_name, char const *txzpath, off_t *file_sizes, char **saveptr);
+static void parse_line(char *linep, char *line_dup, char const *dir_name, char const *txzpath, int *dir_count);
+static void parse_linux_line(char *p, char *line, char *line_dup, char const *dir_name, char const *txzpath, char **saveptr);
+static void parse_bsd_line(char *p, char *line, char *line_dup, char const *dir_name, char const *txzpath, char **saveptr);
 static unsigned check_tarball(char const *tar, char const *fnamchk);
+static void show_txz_info(char const *txzpath);
 static void check_empty_file(char const *txzpath, off_t size, struct file *file);
 static void check_file(char const *txzpath, char *p, char const *dir_name, struct file *file);
-static void check_all_files(off_t file_sizes, char const *dir_name);
+static void check_all_files(char const *dir_name);
 static void check_directories(struct file *file, char const *dir_name, char const *txzpath);
 static bool has_special_bits(char const *str);
 static void add_line(char const *str, int line_num);
-static void parse_all_lines(char const *dir_name, char const *txzpath, off_t *file_sizes);
+static void parse_all_lines(char const *dir_name, char const *txzpath);
 static void free_lines(void);
 static struct file *alloc_file(char const *p);
 static void add_file_to_list(struct file *file);
@@ -222,9 +236,9 @@ int main(int argc, char **argv)
      */
 
     if (!text_file_flag_used)
-	find_utils(tar_flag_used, &tar, false, NULL, false, NULL, false, NULL, fnamchk_flag_used, &fnamchk);
+	find_utils(tar_flag_used, &tar, false, NULL, false, NULL, false, NULL, fnamchk_flag_used, &fnamchk, false, NULL, false, NULL);
     else
-	find_utils(false, NULL, false, NULL, false, NULL, false, NULL, fnamchk_flag_used, &fnamchk);
+	find_utils(false, NULL, false, NULL, false, NULL, false, NULL, fnamchk_flag_used, &fnamchk, false, NULL, false, NULL);
 
 
     /*
@@ -244,17 +258,62 @@ int main(int argc, char **argv)
     if (!quiet) {
 	para("", "Performing checks on tarball ...", NULL);
     }
-    total_issues = check_tarball(tar, fnamchk);
-    if (!quiet && !total_issues) {
+    txz_info.total_issues = check_tarball(tar, fnamchk);
+    if (!quiet && !txz_info.total_issues) {
 	para("All checks passed.", "", NULL);
     }
+
+    show_txz_info(txzpath);
 
     /*
      * All Done!!! - Jessica Noll, age 2
      */
-    exit(total_issues != 0); /*ooo*/
+    exit(txz_info.total_issues != 0); /*ooo*/
 }
 
+/* 
+ * show_txz_info    - show information about tarball (if verbosity is >= medium)
+ *
+ * given:
+ *  
+ *	txzpath	    - path to tarball we checked
+ *
+ * Returns void. Does not return on error.
+ */
+static void
+show_txz_info(char const *txzpath)
+{
+    /*
+     * firewall
+     */
+    if (txzpath == NULL) {
+	err(52, __func__, "passed NULL arg");
+	not_reached();
+    }
+    if (verbosity_level >= DBG_MED) {
+	/* show information about tarball */
+	para("", "The following information about the tarball was collected:", NULL);
+
+	dbg(DBG_MED, "txzchk: %s: has .info.json:\t\t%d", txzpath, txz_info.has_info_json);
+	dbg(DBG_HIGH, "txzchk: %s: empty .info.json:\t\t%d", txzpath, txz_info.empty_info_json);
+	dbg(DBG_MED, "txzchk: %s: has .author.json:\t\t%d", txzpath, txz_info.has_author_json);
+	dbg(DBG_HIGH, "txzchk: %s: empty .author.json:\t\t%d", txzpath, txz_info.empty_author_json);
+	dbg(DBG_MED, "txzchk: %s: has prog.c:\t\t\t%d", txzpath, txz_info.has_prog_c);
+	dbg(DBG_HIGH, "txzchk: %s: empty prog.c:\t\t\t%d", txzpath, txz_info.empty_prog_c);
+	dbg(DBG_MED, "txzchk: %s: has remarks.md:\t\t%d", txzpath, txz_info.has_remarks_md);
+	dbg(DBG_HIGH, "txzchk: %s: empty remarks.md:\t\t%d", txzpath, txz_info.empty_remarks_md);
+	dbg(DBG_MED, "txzchk: %s: has Makefile:\t\t\t%d", txzpath, txz_info.has_Makefile);
+	dbg(DBG_HIGH, "txzchk: %s: empty Makefile:\t\t%d", txzpath, txz_info.empty_Makefile);
+	dbg(DBG_MED, "txzchk: %s: size:\t\t\t\t%lld", txzpath, (long long)txz_info.size);
+	dbg(DBG_MED, "txzchk: %s: size of all files:\t\t%lld", txzpath, (long long)txz_info.file_sizes);
+	dbg(DBG_MED, "txzchk: %s: rounded files size:\t\t%lld", txzpath, (long long)txz_info.rounded_file_size);
+	dbg(DBG_MED, "txzchk: %s: total files:\t\t\t%d", txzpath, txz_info.total_files);
+	dbg(DBG_MED, "txzchk: %s: incorrect directory found:\t%d", txzpath, txz_info.correct_directory != txz_info.total_files);
+	dbg(DBG_MED, "txzchk: %s: invalid dot files found:\t%d", txzpath, txz_info.dot_files > 0);
+	dbg(DBG_VHIGH, "txzchk: %s: issues found:\t\t\t%d", txzpath, txz_info.total_issues);
+
+    }
+}
 
 /*
  * usage - print usage to stderr
@@ -500,9 +559,9 @@ check_file(char const *txzpath, char *p, char const *dir_name, struct file *file
     }
 
     if (*(file->basename) == '.' && strcmp(file->basename, ".info.json") && strcmp(file->basename, ".author.json")) {
-	++total_issues;
+	++txz_info.total_issues;
 	warn("txzchk", "%s: found non .author.json and .info.json dot file %s", txzpath, file->basename);
-	info.dot_files++;
+	txz_info.dot_files++;
     }
 
     check_directories(file, dir_name, txzpath);
@@ -537,20 +596,28 @@ check_empty_file(char const *txzpath, off_t size, struct file *file)
 
     if (size == 0) {
 	if (!strcmp(file->basename, ".author.json")) {
-	    ++total_issues;
+	    ++txz_info.total_issues;
 	    warn("txzchk", "%s: found empty .author.json file", txzpath);
+	    txz_info.empty_author_json = true;
 	}
 	else if (!strcmp(file->basename, ".info.json")) {
-	    ++total_issues;
+	    ++txz_info.total_issues;
+	    txz_info.empty_info_json = true;
 	    warn("txzchk", "%s: found empty .info.json file", txzpath);
 	}
 	else if (!strcmp(file->basename, "remarks.md")) {
-	    ++total_issues;
+	    ++txz_info.total_issues;
+	    txz_info.empty_remarks_md = true;
 	    warn("txzchk", "%s: found empty remarks.md", txzpath);
 	}
 	else if (!strcmp(file->basename, "Makefile")) {
-	    ++total_issues;
+	    ++txz_info.total_issues;
+	    txz_info.empty_Makefile = true;
 	    warn("txzchk", "%s: found empty Makefile", txzpath);
+	}
+	else if (!strcmp(file->basename, "prog.c")) {
+	    /* this is NOT an issue: it's only for debugging information! */
+	    txz_info.empty_prog_c = true;
 	}
     }
 }
@@ -561,7 +628,6 @@ check_empty_file(char const *txzpath, off_t size, struct file *file)
  *
  * given:
  *
- *	file_sizes	- total size of all files
  *	dir_name	- fnamchk result (if passed - else NULL)
  *
  * Reports any additional issues found in the tarball (or text file).
@@ -571,30 +637,29 @@ check_empty_file(char const *txzpath, off_t size, struct file *file)
  *
  */
 static void
-check_all_files(off_t file_sizes, char const *dir_name)
+check_all_files(char const *dir_name)
 {
     struct file *file; /* to iterate through files list */
-    off_t rounded_file_size = 0; /* file sizes rounded up to 1024 multiple */
 
     /* report total file size */
-    if (file_sizes < 0) {
+    if (txz_info.file_sizes < 0) {
 	err(15, __func__, "%s: total size of all files < 0!", txzpath);
 	not_reached();
-    } else if (file_sizes == 0) {
+    } else if (txz_info.file_sizes == 0) {
 	warn("txzchk", "%s: total size of all files == 0", txzpath);
-	++total_issues;
+	++txz_info.total_issues;
     }
-    rounded_file_size = round_to_multiple(file_sizes, 1024);
-    if (rounded_file_size < 0) {
+    txz_info.rounded_file_size = round_to_multiple(txz_info.file_sizes, 1024);
+    if (txz_info.rounded_file_size < 0) {
 	err(16, __func__, "%s: total size of all files rounded up to multiple of 1024 < 0!", txzpath);
 	not_reached();
-    } else if (rounded_file_size > MAX_DIR_KSIZE) {
-	warn("txzchk", "%s: total size of files %lu rounded up to multiple of 1024 %lu > %d", txzpath, (unsigned long) file_sizes,
-		(unsigned long) rounded_file_size, MAX_DIR_KSIZE);
-	++total_issues;
+    } else if (txz_info.rounded_file_size > MAX_DIR_KSIZE) {
+	warn("txzchk", "%s: total size of files %lld rounded up to multiple of 1024 %lld > %d", txzpath, (long long) txz_info.file_sizes,
+		(long long) txz_info.rounded_file_size, MAX_DIR_KSIZE);
+	++txz_info.total_issues;
     } else if (!quiet) {
-	printf("txzchk: %s total size of files %lu rounded up to 1024 multiple: %lu OK\n", txzpath, (unsigned long) file_sizes,
-		(unsigned long) rounded_file_size);
+	printf("txzchk: %s total size of files %lld rounded up to 1024 multiple: %lld OK\n", txzpath, (long long) txz_info.file_sizes,
+		(long long) txz_info.rounded_file_size);
     }
 
 
@@ -603,52 +668,52 @@ check_all_files(off_t file_sizes, char const *dir_name)
      */
     for (file = files; file != NULL; file = file->next) {
 	if (!strcmp(file->basename, ".info.json")) {
-	    info.has_info_json = true;
+	    txz_info.has_info_json = true;
 	} else if (!strcmp(file->basename, ".author.json")) {
-	    info.has_author_json = true;
+	    txz_info.has_author_json = true;
 	} else if (!strcmp(file->basename, "Makefile")) {
-	    info.has_Makefile = true;
+	    txz_info.has_Makefile = true;
 	} else if (!strcmp(file->basename, "prog.c")) {
-	    info.has_prog_c = true;
+	    txz_info.has_prog_c = true;
 	} else if (!strcmp(file->basename, "remarks.md")) {
-	    info.has_remarks_md = true;
+	    txz_info.has_remarks_md = true;
 	}
-	if (dir_name != NULL && info.has_correct_directory) {
+	if (dir_name != NULL && txz_info.correct_directory) {
 	    if (strncmp(file->filename, dir_name, strlen(dir_name))) {
 		warn("txzchk", "%s: found directory change in filename %s", txzpath, file->filename);
-		++total_issues;
+		++txz_info.total_issues;
 	    }
 	}
 
 	if (file->count > 1) {
 	    warn("txzchk", "%s: found a total of %u files with the name %s", txzpath, file->count, file->basename);
-	    total_issues += file->count - 1;
+	    txz_info.total_issues += file->count - 1;
 	}
     }
 
     /* determine if the required files are there */
-    if (!info.has_info_json) {
-	++total_issues;
+    if (!txz_info.has_info_json) {
+	++txz_info.total_issues;
 	warn("txzchk", "%s: no .info.json found", txzpath);
     }
-    if (!info.has_author_json) {
-	++total_issues;
+    if (!txz_info.has_author_json) {
+	++txz_info.total_issues;
 	warn("txzchk", "%s: no .author.json found", txzpath);
     }
-    if (!info.has_prog_c) {
-	++total_issues;
+    if (!txz_info.has_prog_c) {
+	++txz_info.total_issues;
 	warn("txzchk", "%s: no prog.c found", txzpath);
     }
-    if (!info.has_Makefile) {
-	++total_issues;
+    if (!txz_info.has_Makefile) {
+	++txz_info.total_issues;
 	warn("txzchk", "%s: no Makefile found", txzpath);
     }
-    if (!info.has_remarks_md) {
-	++total_issues;
+    if (!txz_info.has_remarks_md) {
+	++txz_info.total_issues;
 	warn("txzchk", "%s: no remarks.md found", txzpath);
     }
-    if (info.has_correct_directory < total_files) {
-	++total_issues;
+    if (txz_info.correct_directory < txz_info.total_files) {
+	++txz_info.total_issues;
 	warn("txzchk", "%s: not all files in correct directory", txzpath);
     }
 
@@ -658,15 +723,15 @@ check_all_files(off_t file_sizes, char const *dir_name)
      * through the linked list above.
      */
 
-    if (info.dot_files > 0) {
-	warn("txzchk", "%s: found a total of %u unacceptable dot file%s", txzpath, info.dot_files, info.dot_files==1?"":"s");
+    if (txz_info.dot_files > 0) {
+	warn("txzchk", "%s: found a total of %u unacceptable dot file%s", txzpath, txz_info.dot_files, txz_info.dot_files==1?"":"s");
     }
 
     /*
      * report total issues found
      */
-    if (total_issues > 0) {
-	warn("txzchk", "%s: found %u issue%s", txzpath, total_issues, total_issues==1?"":"s");
+    if (txz_info.total_issues > 0) {
+	warn("txzchk", "%s: found %u issue%s", txzpath, txz_info.total_issues, txz_info.total_issues==1?"":"s");
     }
 }
 
@@ -703,7 +768,7 @@ check_directories(struct file *file, char const *dir_name, char const *txzpath)
     /* check that there is a directory */
     if (strchr(file->filename, '/') == NULL) {
 	warn("txzchk", "%s: no directory found in filename %s", txzpath, file->filename);
-	++total_issues;
+	++txz_info.total_issues;
     }
     if (strstr(file->filename, "..")) { /* check for '..' in path */
 	/*
@@ -711,11 +776,11 @@ check_directories(struct file *file, char const *dir_name, char const *txzpath)
 	 * but since the basename of each file is checked in check_file() this
 	 * is okay.
 	 */
-	++total_issues;
+	++txz_info.total_issues;
 	warn("txzchk", "%s: found file with .. in the path: %s", txzpath, file->filename);
     }
     if (*(file->filename) == '/') {
-	++total_issues;
+	++txz_info.total_issues;
 	warn("txzchk", "%s: found absolute path %s", txzpath, file->filename);
     }
 
@@ -762,7 +827,7 @@ check_directories(struct file *file, char const *dir_name, char const *txzpath)
 	prev = file->filename[i];
     }
     if (dir_count > 1) {
-	++total_issues;
+	++txz_info.total_issues;
 	warn("txzchk", "%s: found more than one directory in path %s", txzpath, file->filename);
     }
     /*
@@ -775,11 +840,11 @@ check_directories(struct file *file, char const *dir_name, char const *txzpath)
     if (dir_name != NULL && strlen(dir_name) > 0) {
 	if (strncmp(file->filename, dir_name, strlen(dir_name))) {
 	    warn("txzchk", "%s: found incorrect directory in filename %s", txzpath, file->filename);
-	    ++total_issues;
+	    ++txz_info.total_issues;
 	}
 	else {
 	    /* This file is in the right directory */
-	    info.has_correct_directory++;
+	    txz_info.correct_directory++;
 	}
     }
 }
@@ -795,7 +860,6 @@ check_directories(struct file *file, char const *dir_name, char const *txzpath)
  *	line_dup    - duplicated line
  *	dir_name    - directory name retrieved from fnamchk or NULL if it failed
  *	txzpath	    - the tarball path
- *	file_sizes  - pointer to the total file sizes of the tarball
  *	saveptr	    - pointer to char * to save context between each strtok_r() call
  *
  * If everything goes okay the line will be completely parsed and the calling
@@ -805,7 +869,7 @@ check_directories(struct file *file, char const *dir_name, char const *txzpath)
  * This function does not return on error.
  */
 static void
-parse_linux_line(char *p, char *linep, char *line_dup, char const *dir_name, char const *txzpath, off_t *file_sizes, char **saveptr)
+parse_linux_line(char *p, char *linep, char *line_dup, char const *dir_name, char const *txzpath, char **saveptr)
 {
     off_t current_file_size = 0;
     struct file *file = NULL;
@@ -815,7 +879,7 @@ parse_linux_line(char *p, char *linep, char *line_dup, char const *dir_name, cha
      * firewall
      */
 
-    if (p == NULL || linep == NULL || line_dup == NULL || txzpath == NULL || file_sizes == NULL || saveptr == NULL) {
+    if (p == NULL || linep == NULL || line_dup == NULL || txzpath == NULL || saveptr == NULL) {
 	err(18, __func__, "called with NULL arg(s)");
 	not_reached();
     }
@@ -825,7 +889,7 @@ parse_linux_line(char *p, char *linep, char *line_dup, char const *dir_name, cha
 
     if (*p != '/') {
 	warn("txzchk", "found non-numerical UID in line %s", line_dup);
-	++total_issues;
+	++txz_info.total_issues;
 	p = strchr(p, '/');
     }
     if (p == NULL) {
@@ -843,7 +907,7 @@ parse_linux_line(char *p, char *linep, char *line_dup, char const *dir_name, cha
 
     if (*p) {
 	warn("txzchk", "found non-numerical GID in file in line %s", line_dup);
-	++total_issues;
+	++txz_info.total_issues;
     }
     p = strtok_r(NULL, " \t", saveptr);
     if (p == NULL) {
@@ -857,9 +921,9 @@ parse_linux_line(char *p, char *linep, char *line_dup, char const *dir_name, cha
 	warn("txzchk", "%s: trying to parse file size in on line: %s, string: %s, reading next line", txzpath, line_dup, p);
     } else if (current_file_size < 0) {
 	warn("txzchk", "%s: file size < 0", txzpath);
-	++total_issues;
+	++txz_info.total_issues;
     }
-    *file_sizes += current_file_size;
+    txz_info.file_sizes += current_file_size;
 
     /*
      * the next two fields we don't care about but we loop three times to
@@ -900,7 +964,6 @@ parse_linux_line(char *p, char *linep, char *line_dup, char const *dir_name, cha
  *	line_dup    - duplicated line
  *	dir_name    - directory name retrieved from fnamchk or NULL if it failed
  *	txzpath	    - the tarball path
- *	file_sizes  - pointer to the total file sizes of the tarball
  *	saveptr	    - pointer to char * to save context between each strtok_r() call
  *
  * If everything goes okay the line will be completely parsed and the calling
@@ -910,7 +973,7 @@ parse_linux_line(char *p, char *linep, char *line_dup, char const *dir_name, cha
  * This function does not return on error.
  */
 static void
-parse_bsd_line(char *p, char *linep, char *line_dup, char const *dir_name, char const *txzpath, off_t *file_sizes, char **saveptr)
+parse_bsd_line(char *p, char *linep, char *line_dup, char const *dir_name, char const *txzpath, char **saveptr)
 {
     off_t current_file_size = 0;
     struct file *file = NULL;
@@ -920,7 +983,7 @@ parse_bsd_line(char *p, char *linep, char *line_dup, char const *dir_name, char 
      * firewall
      */
 
-    if (p == NULL || linep == NULL || line_dup == NULL || txzpath == NULL || file_sizes == NULL || saveptr == NULL) {
+    if (p == NULL || linep == NULL || line_dup == NULL || txzpath == NULL || saveptr == NULL) {
 	err(19, __func__, "called with NULL arg(s)");
 	not_reached();
     }
@@ -939,7 +1002,7 @@ parse_bsd_line(char *p, char *linep, char *line_dup, char const *dir_name, char 
 
     if (*p) {
 	warn("txzchk", "%s: found non-numerical UID in file in line %s", txzpath, line_dup);
-	++total_issues;
+	++txz_info.total_issues;
     }
 
     /*
@@ -955,7 +1018,7 @@ parse_bsd_line(char *p, char *linep, char *line_dup, char const *dir_name, char 
 
     if (*p) {
 	warn("txzchk", "%s: found non-numerical GID in file in line: %s", txzpath, line_dup);
-	++total_issues;
+	++txz_info.total_issues;
     }
 
     p = strtok_r(NULL, " \t", saveptr);
@@ -969,7 +1032,7 @@ parse_bsd_line(char *p, char *linep, char *line_dup, char const *dir_name, char 
     if (errno != 0) {
 	warn("txzchk", "%s: trying to parse file size in on line: %s, string: %s, reading next line", txzpath, line_dup, p);
     }
-    *file_sizes += current_file_size;
+    txz_info.file_sizes += current_file_size;
 
     /*
      * the next three fields we don't care about but we loop four times to
@@ -1009,15 +1072,14 @@ parse_bsd_line(char *p, char *linep, char *line_dup, char const *dir_name, char 
  *	line_dup	-   pointer to the duplicated line
  *	dir_name	-   the dir name reported by fnamchk or NULL if it failed
  *	txzpath		-   the tarball path
- *	file_sizes	-   pointer to file_sizes (from check_tarball())
  *	dir_count	-   pointer to dir_count (from check_tarball())
  *
- *  Function updates total_issues, file_sizes and dir_count. Returns void.
+ *  Function updates txz_info.total_issues, txz_info.file_sizes and dir_count. Returns void.
  *
  *  Function does not return on error.
  */
 static void
-parse_line(char *linep, char *line_dup, char const *dir_name, char const *txzpath, off_t *file_sizes, int *dir_count)
+parse_line(char *linep, char *line_dup, char const *dir_name, char const *txzpath, int *dir_count)
 {
     char *p = NULL; /* each field in the line extracted from strtok_r() */
     char *saveptr = NULL; /* for strtok_r() context */
@@ -1026,7 +1088,7 @@ parse_line(char *linep, char *line_dup, char const *dir_name, char const *txzpat
      * firewall
      */
 
-    if (linep == NULL || line_dup == NULL || txzpath == NULL || file_sizes == NULL || dir_count == NULL) {
+    if (linep == NULL || line_dup == NULL || txzpath == NULL || dir_count == NULL) {
 	err(20, __func__, "called with NULL arg(s)");
 	not_reached();
     }
@@ -1037,7 +1099,7 @@ parse_line(char *linep, char *line_dup, char const *dir_name, char const *txzpat
 	++(*dir_count);
 	if (*dir_count > 1) {
 	    warn("txzchk", "%s: found more than one directory entry: %s", txzpath, linep);
-	    ++total_issues;
+	    ++txz_info.total_issues;
 	}
 
     /*
@@ -1045,7 +1107,7 @@ parse_line(char *linep, char *line_dup, char const *dir_name, char const *txzpat
      */
     } else if (*linep != '-') {
 	warn("txzchk", "%s: found a non-directory non-regular non-hard-lined item: %s", txzpath, linep);
-	++total_issues;
+	++txz_info.total_issues;
     }
     /* extract each field, one at a time, to do various tests */
     p = strtok_r(linep, " \t", &saveptr);
@@ -1055,7 +1117,7 @@ parse_line(char *linep, char *line_dup, char const *dir_name, char const *txzpat
     }
     if (has_special_bits(p)) {
 	warn("txzchk", "%s: found special bits on line: %s", txzpath, line_dup);
-	++total_issues;
+	++txz_info.total_issues;
     }
     /*
      * we have to check this next field for a '/': this will tell us whether to
@@ -1068,10 +1130,10 @@ parse_line(char *linep, char *line_dup, char const *dir_name, char const *txzpat
     }
     if (strchr(p, '/') != NULL) {
 	/* found linux output */
-	parse_linux_line(p, linep, line_dup, dir_name, txzpath, file_sizes, &saveptr);
+	parse_linux_line(p, linep, line_dup, dir_name, txzpath, &saveptr);
     } else {
 	/* assume macOS/BSD output */
-	parse_bsd_line(p, linep, line_dup, dir_name, txzpath, file_sizes, &saveptr);
+	parse_bsd_line(p, linep, line_dup, dir_name, txzpath, &saveptr);
     }
 }
 
@@ -1085,15 +1147,13 @@ parse_line(char *linep, char *line_dup, char const *dir_name, char const *txzpat
  *			  specified)
  *	fnamchk		- path to fnamchk tool
  *
- *  Returns the number of total number of issues found (total_issues).
+ *  Returns the number of total number of issues found (txz_info.total_issues).
  *
  *  Does not return on error.
  */
 static unsigned
 check_tarball(char const *tar, char const *fnamchk)
 {
-    off_t size = 0; /* file size of tarball */
-    off_t file_sizes = 0; /* accumulation of file sizes within the tarball */
     unsigned line_num = 0; /* line number of tar output */
     char *cmd = NULL;	/* fnamchk and tar -tJvf */
     FILE *input_stream = NULL; /* pipe for tar output (or if -T specified read as a text file) */
@@ -1161,7 +1221,7 @@ check_tarball(char const *tar, char const *fnamchk)
 	not_reached();
     } else if (exit_code != 0) {
 	warn("txzchk", "%s: %s failed with exit code: %d", txzpath, cmd, WEXITSTATUS(exit_code));
-	++total_issues;
+	++txz_info.total_issues;
     } else {
 	fnamchk_okay = true;
     }
@@ -1211,31 +1271,31 @@ check_tarball(char const *tar, char const *fnamchk)
     }
 
     /* determine size of tarball */
-    size = file_size(txzpath);
+    txz_info.size = file_size(txzpath);
     /* report size (if too big) */
-    if (size < 0) {
+    if (txz_info.size < 0) {
 	err(29, __func__, "%s: impossible error: sanity_chk() found tarball but file_size() did not", txzpath);
 	not_reached();
     }
-    else if (size > MAX_TARBALL_LEN) {
-	++total_issues;
+    else if (txz_info.size > MAX_TARBALL_LEN) {
+	++txz_info.total_issues;
 	fpara(stderr,
 	      "",
 	      "The compressed tarball exceeds the maximum allowed size, sorry.",
 	      "",
 	      NULL);
-	err(30, __func__, "%s: The compressed tarball size %lu > %ld",
-		 txzpath, (unsigned long)size, (long)MAX_TARBALL_LEN);
+	err(30, __func__, "%s: The compressed tarball size %lld > %ld",
+		 txzpath, (long long)txz_info.size, (long)MAX_TARBALL_LEN);
 	not_reached();
     }
     else if (!quiet) {
 	errno = 0;
-	ret = printf("txzchk: %s size of %lu bytes OK\n", txzpath, (unsigned long) size);
+	ret = printf("txzchk: %s size of %lld bytes OK\n", txzpath, (long long) txz_info.size);
 	if (ret <= 0) {
 	    warn("txzchk", "unable to tell user how big the tarball %s is", txzpath);
 	}
     }
-    dbg(DBG_MED, "txzchk: %s size in bytes: %lu", txzpath, (unsigned long)size);
+    dbg(DBG_MED, "txzchk: %s size in bytes: %lld", txzpath, (long long)txz_info.size);
 
     /*
      * free cmd for tar (if -T wasn't specified) command
@@ -1388,12 +1448,12 @@ check_tarball(char const *tar, char const *fnamchk)
     /* now parse the lines, reporting any issue that have to be done whilst
      * parsing.
      */
-    parse_all_lines(dir_name, txzpath, &file_sizes);
+    parse_all_lines(dir_name, txzpath);
 
     /*
      * check files list and report any additional issues
      */
-    check_all_files(file_sizes, dir_name);
+    check_all_files(dir_name);
 
     /* free the files list */
     free_file_list();
@@ -1414,7 +1474,7 @@ check_tarball(char const *tar, char const *fnamchk)
     }
     input_stream = NULL;
 
-    return total_issues;
+    return txz_info.total_issues;
 }
 
 
@@ -1498,14 +1558,13 @@ add_line(char const *str, int line_num)
  *	dir_name    - directory name as reported by fnamchk (can be NULL if
  *		      fnamchk failed to validate directory)
  *	txzpath	    - the tarball that is being read
- *	file_sizes  - pointer to file size accumulation
  *
  * This function returns void.
  *
  * This function does not return on error.
  */
 static void
-parse_all_lines(char const *dir_name, char const *txzpath, off_t *file_sizes)
+parse_all_lines(char const *dir_name, char const *txzpath)
 {
     struct line *line = NULL;	/* for lines list */
     char *line_dup = NULL;	/* strdup()d line */
@@ -1514,8 +1573,8 @@ parse_all_lines(char const *dir_name, char const *txzpath, off_t *file_sizes)
     /*
      * firewall
      */
-    if (txzpath == NULL || file_sizes == NULL) {
-	err(45, __func__, "passed NULL arg(s)");
+    if (txzpath == NULL) {
+	err(45, __func__, "passed NULL arg");
 	not_reached();
     }
 
@@ -1530,7 +1589,7 @@ parse_all_lines(char const *dir_name, char const *txzpath, off_t *file_sizes)
 	    not_reached();
 	}
 
-	parse_line(line->line, line_dup, dir_name, txzpath, file_sizes, &dir_count);
+	parse_line(line->line, line_dup, dir_name, txzpath, &dir_count);
 	free(line_dup);
 	line_dup = NULL;
     }
@@ -1644,7 +1703,7 @@ add_file_to_list(struct file *file)
     }
 
     /* always increment total files count */
-    ++total_files;
+    ++txz_info.total_files;
 
     for (ptr = files; ptr != NULL; ptr = ptr->next)
     {
