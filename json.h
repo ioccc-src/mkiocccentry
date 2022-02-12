@@ -39,7 +39,7 @@ struct info {
     int entry_num;		/* IOCCC entry number */
     char *title;		/* entry title */
     char *abstract;		/* entry abstract */
-    ssize_t rule_2a_size;	/* Rule 2a size of prog.c */
+    off_t rule_2a_size;		/* Rule 2a size of prog.c */
     size_t rule_2b_size;	/* Rule 2b size of prog.c */
     bool empty_override;	/* true ==> empty prog.c override requested */
     bool rule_2a_override;	/* true ==> Rule 2a override requested */

@@ -2422,7 +2422,7 @@ check_prog_c(struct info *infop, char const *entry_dir, char const *cp, char con
     /*
      * sanity check on file size vs rule_count function size for Rule 2a
      */
-    if (infop->rule_2a_size != (ssize_t)size.rule_2a_size) {
+    if (infop->rule_2a_size != size.rule_2a_size) {
 	warn_rule2a_size(infop, prog_c, RULE_2A_IOCCCSIZE_MISMATCH);
 	infop->rule_2a_mismatch = true;
     } else {
@@ -2884,7 +2884,7 @@ warn_Makefile(char const *Makefile, struct info *infop)
 static void
 check_Makefile(struct info *infop, char const *entry_dir, char const *cp, char const *Makefile)
 {
-    ssize_t filesize = 0;	/* size of Makefile */
+    off_t filesize = 0;		/* size of Makefile */
     int ret;			/* libc function return */
     char *cmd = NULL;		/* cp prog_c entry_dir/prog.c */
     int exit_code;		/* exit code from system(cmd) */
@@ -3030,7 +3030,7 @@ check_Makefile(struct info *infop, char const *entry_dir, char const *cp, char c
 static void
 check_remarks_md(struct info *infop, char const *entry_dir, char const *cp, char const *remarks_md)
 {
-    ssize_t filesize = 0;	/* size of remarks.md */
+    off_t filesize = 0;		/* size of remarks.md */
     char *cmd = NULL;		/* cp prog_c entry_dir/prog.c */
     int exit_code;		/* exit code from system(cmd) */
     int ret;			/* libc function return */

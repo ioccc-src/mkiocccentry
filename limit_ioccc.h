@@ -35,7 +35,7 @@
 #undef DIGRAPHS		/* digraphs count a 2 for Rule 2b */
 #undef TRIGRAPHS	/* trigraphs count a 3 for Rule 2b */
 
-#define RULE_2A_SIZE ((ssize_t)(4096))		/* Rule 2a size of prog.c */
+#define RULE_2A_SIZE ((off_t)(4096))		/* Rule 2a size of prog.c */
 #define RULE_2B_SIZE ((size_t)(2503))		/* Rule 2b size of prog.c */
 #define MAX_TARBALL_LEN ((off_t)(3999971))	/* the compressed tarball formed cannot be longer than this many bytes */
 #define MAX_DIR_KSIZE (27651)			/* entry directory cannot exceed this size in kibibyte (1024 byte) blocks */
@@ -111,7 +111,7 @@
  * rule_count() processing results
  */
 struct iocccsize {
-	ssize_t rule_2a_size;	/* official IOCCC Rule 2a calculated size */
+	off_t rule_2a_size;	/* official IOCCC Rule 2a calculated size */
 	size_t rule_2b_size;	/* official IOCCC Rule 2b calculated size */
 	size_t keywords;	/* keyword count - for -v mode */
 	int char_warning;	/* != 0 ==> found high-bit character */

@@ -87,7 +87,7 @@ extern bool is_exec(char const *path);
 extern bool is_dir(char const *path);
 extern bool is_read(char const *path);
 extern bool is_write(char const *path);
-extern ssize_t file_size(char const *path);
+extern off_t file_size(char const *path);
 extern char *cmdprintf(char const *format, ...);
 extern void para(char const *line, ...);
 extern void fpara(FILE * stream, char const *line, ...);

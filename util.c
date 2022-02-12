@@ -868,7 +868,7 @@ is_write(char const *path)
  *      >= 0 ==> file size,
  *      <0 ==> file does not exist
  */
-ssize_t
+off_t
 file_size(char const *path)
 {
     int ret;			/* return code holder */
@@ -895,7 +895,7 @@ file_size(char const *path)
      * return file size
      */
     dbg(DBG_VHIGH, "path %s size: %ld", path, (long)buf.st_size);
-    return (ssize_t)buf.st_size;
+    return buf.st_size;
 }
 
 
