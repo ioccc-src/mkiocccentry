@@ -52,11 +52,12 @@
  * Use the usage() function to print the these usage_msgX strings.
  */
 static const char * const usage_msg =
-"usage: %s [-h] [-v level] [-V] file\n"
+"usage: %s [-h] [-v level] [-V] [-q] file\n"
 "\n"
 "\t-h\t\tprint help message and exit 0\n"
 "\t-v level\tset verbosity level: (def level: %d)\n"
 "\t-V\t\tprint version string and exit\n"
+"\t-q\t\tquiet mode\n"
 "\n"
 "\tfile\t\tpath to a .author.json file\n"
 "\n"
@@ -98,7 +99,7 @@ main(int argc, char **argv)
      * parse args
      */
     program = argv[0];
-    while ((i = getopt(argc, argv, "hv:V")) != -1) {
+    while ((i = getopt(argc, argv, "hv:Vq")) != -1) {
 	switch (i) {
 	case 'h':		/* -h - print help to stderr and exit 0 */
 	    usage(1, "-h help mode", program); /*ooo*/
@@ -124,6 +125,9 @@ main(int argc, char **argv)
 	    exit(0); /*ooo*/
 	    not_reached();
 	    break;
+	case 'q':
+	    quiet = true;
+	    break;
 	default:
 	    usage(1, "invalid -flag", program); /*ooo*/
 	    not_reached();
@@ -140,19 +144,19 @@ main(int argc, char **argv)
     /*
      * Welcome
      */
-    errno = 0;			/* pre-clear errno for errp() */
-    ret = printf("Welcome to jauthchk version: %s\n", JAUTHCHK_VERSION);
-    if (ret <= 0) {
-	errp(4, __func__, "printf error printing the welcome string");
-	not_reached();
-    }
-
+    if (!quiet) {
+	errno = 0;			/* pre-clear errno for errp() */
+	ret = printf("Welcome to jauthchk version: %s\n", JAUTHCHK_VERSION);
+	if (ret <= 0) {
+	    errp(4, __func__, "printf error printing the welcome string");
+	    not_reached();
+	}
     /*
      * environment sanity checks
      */
-    if (!quiet) {
 	para("", "Performing sanity checks on your environment ...", NULL);
     }
+
     sanity_chk(file);
     if (!quiet) {
 	para("... environment looks OK", "", NULL);

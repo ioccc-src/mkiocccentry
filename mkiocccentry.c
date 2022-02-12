@@ -228,8 +228,8 @@ static bool json_fprintf_value_long(FILE *stream, char const *lead, char const *
 static bool json_fprintf_value_bool(FILE *stream, char const *lead, char const *name, char const *middle, bool value,
 				    char const *tail);
 static char const * strnull(char const * const str);
-static void write_info(struct info *infop, char const *entry_dir, bool test_mode);
-static void write_author(struct info *infop, int author_count, struct author *authorp, char const *entry_dir);
+static void write_info(struct info *infop, char const *entry_dir, bool test_mode, char const *jinfochk);
+static void write_author(struct info *infop, int author_count, struct author *authorp, char const *entry_dir, char const *jauthchk);
 static void form_tarball(char const *work_dir, char const *entry_dir, char const *tarball_path, char const *tar,
 			 char const *ls, char const *txzchk, char const *fnamchk);
 static void remind_user(char const *work_dir, char const *entry_dir, char const *tar, char const *tarball_path, bool test_mode);
@@ -650,14 +650,14 @@ main(int argc, char *argv[])
      * write the .info.json file
      */
     para("", "Forming the .info.json file ...", NULL);
-    write_info(&info, entry_dir, test_mode);
+    write_info(&info, entry_dir, test_mode, jinfochk);
     para("... completed the .info.json file.", "", NULL);
 
     /*
      * write the .author.json file
      */
     para("", "Forming the .author.json file ...", NULL);
-    write_author(&info, author_count, author_set, entry_dir);
+    write_author(&info, author_count, author_set, entry_dir, jauthchk);
     para("... completed .author.json file.", "", NULL);
 
     /*
@@ -5478,6 +5478,7 @@ strnull(char const * const str)
  *      infop           - pointer to info structure
  *      entry_dir       - path to entry directory
  *      test_mode       - true ==> test mode, do not upload
+ *      jinfochk	- path to jinfochk tool
  *
  * returns:
  *	true
@@ -5485,7 +5486,7 @@ strnull(char const * const str)
  * This function does not return on error.
  */
 static void
-write_info(struct info *infop, char const *entry_dir, bool test_mode)
+write_info(struct info *infop, char const *entry_dir, bool test_mode, char const *jinfochk)
 {
     struct tm *timeptr;		/* localtime return */
     char *info_path;		/* path to .info.json file */
@@ -5497,11 +5498,13 @@ write_info(struct info *infop, char const *entry_dir, bool test_mode)
     char **q;			/* extra filename array pointer */
     char *p;
     int i;
+    char *cmd = NULL;		/* for jinfochk */
+    int exit_code;		/* for system() */
 
     /*
      * firewall
      */
-    if (infop == NULL || entry_dir == NULL) {
+    if (infop == NULL || entry_dir == NULL || jinfochk == NULL) {
 	err(179, __func__, "called with NULL arg(s)");
 	not_reached();
     }
@@ -5670,15 +5673,7 @@ write_info(struct info *infop, char const *entry_dir, bool test_mode)
     }
 
     /*
-     * free storage
-     */
-    if (info_path != NULL) {
-	free(info_path);
-	info_path = NULL;
-    }
-
-    /*
-     * close the file
+     * close the file prior to running jinfochk
      */
     errno = 0;			/* pre-clear errno for errp() */
     ret = fclose(info_stream);
@@ -5686,6 +5681,65 @@ write_info(struct info *infop, char const *entry_dir, bool test_mode)
 	errp(193, __func__, "fclose error");
 	not_reached();
     }
+    /*
+     * form the jinfochk command
+     */
+    cmd = cmdprintf("% -q %", jinfochk, info_path);
+    if (cmd == NULL) {
+	err(215, __func__, "failed to cmdprintf: jinfochk %s", info_path);
+	not_reached();
+    }
+    dbg(DBG_HIGH, "about to perform: system(%s)", cmd);
+
+    /*
+     * pre-flush to avoid system() buffered stdio issues
+     */
+    clearerr(stdout);	/* pre-clear ferror() status */
+    errno = 0;		/* pre-clear errno for errp() */
+    ret = fflush(stdout);
+    if (ret < 0) {
+	errp(216, __func__, "fflush(stdout) error code: %d", ret);
+	not_reached();
+    }
+    clearerr(stderr);		/* pre-clear ferror() status */
+    errno = 0;			/* pre-clear errno for errp() */
+    ret = fflush(stderr);
+    if (ret < 0) {
+	errp(217, __func__, "fflush(stderr) #1: error code: %d", ret);
+	not_reached();
+    }
+
+    /*
+     * perform the jinfochk which will indirectly show the user the tarball
+     * contents
+     */
+    errno = 0;			/* pre-clear errno for errp() */
+    exit_code = system(cmd);
+    if (exit_code < 0) {
+	errp(218, __func__, "error calling system(%s)", cmd);
+	not_reached();
+    } else if (exit_code == 127) {
+	errp(219, __func__, "execution of the shell failed for system(%s)", cmd);
+	not_reached();
+    } else if (exit_code != 0) {
+	err(220, __func__, "%s failed with exit code: %d", cmd, WEXITSTATUS(exit_code));
+	not_reached();
+    }
+
+    para("... all appears well with the .info.json file.", NULL);
+
+    /*
+     * free storage
+     */
+    if (info_path != NULL) {
+	free(info_path);
+	info_path = NULL;
+    }
+
+    free(cmd);
+    cmd = NULL;
+
+
     return;
 }
 
@@ -5700,22 +5754,25 @@ write_info(struct info *infop, char const *entry_dir, bool test_mode)
  *      author_count    - length of the author structure array in elements
  *      authorp         - pointer to author structure array
  *      entry_dir       - path to entry directory
+ *      jauthchk	- path to jauthchk tool
  *
  * This function does not return on error.
  */
 static void
-write_author(struct info *infop, int author_count, struct author *authorp, char const *entry_dir)
+write_author(struct info *infop, int author_count, struct author *authorp, char const *entry_dir, char const *jauthchk)
 {
     char *author_path;		/* path to .author.json file */
     size_t author_path_len;	/* length of path to .author.json */
     FILE *author_stream;	/* open write stream to the .author.json file */
     int ret;			/* libc function return */
     int i;
+    int exit_code;		/* exit code from system(cmd) */
+    char *cmd;			/* for jauthchk */
 
     /*
      * firewall
      */
-    if (authorp == NULL || entry_dir == NULL) {
+    if (infop == NULL || authorp == NULL || entry_dir == NULL || jauthchk == NULL) {
 	err(194, __func__, "called with NULL arg(s)");
 	not_reached();
     }
@@ -5803,15 +5860,7 @@ write_author(struct info *infop, int author_count, struct author *authorp, char 
     }
 
     /*
-     * free storage
-     */
-    if (author_path != NULL) {
-	free(author_path);
-	author_path = NULL;
-    }
-
-    /*
-     * close the file
+     * close the file before checking it with jauthchk
      */
     errno = 0;			/* pre-clear errno for errp() */
     ret = fclose(author_stream);
@@ -5819,6 +5868,70 @@ write_author(struct info *infop, int author_count, struct author *authorp, char 
 	errp(201, __func__, "fclose error");
 	not_reached();
     }
+
+    para("",
+	"Checking the format of .author.json ...", NULL);
+
+    /*
+     * form the jauthchk command
+     */
+    cmd = cmdprintf("% -q %", jauthchk, author_path);
+    if (cmd == NULL) {
+	err(215, __func__, "failed to cmdprintf: jauthchk %s", author_path);
+	not_reached();
+    }
+    dbg(DBG_HIGH, "about to perform: system(%s)", cmd);
+
+    /*
+     * pre-flush to avoid system() buffered stdio issues
+     */
+    clearerr(stdout);	/* pre-clear ferror() status */
+    errno = 0;		/* pre-clear errno for errp() */
+    ret = fflush(stdout);
+    if (ret < 0) {
+	errp(216, __func__, "fflush(stdout) error code: %d", ret);
+	not_reached();
+    }
+    clearerr(stderr);		/* pre-clear ferror() status */
+    errno = 0;			/* pre-clear errno for errp() */
+    ret = fflush(stderr);
+    if (ret < 0) {
+	errp(217, __func__, "fflush(stderr) #1: error code: %d", ret);
+	not_reached();
+    }
+
+    /*
+     * perform the jauthchk which will indirectly show the user the tarball
+     * contents
+     */
+    errno = 0;			/* pre-clear errno for errp() */
+    exit_code = system(cmd);
+    if (exit_code < 0) {
+	errp(218, __func__, "error calling system(%s)", cmd);
+	not_reached();
+    } else if (exit_code == 127) {
+	errp(219, __func__, "execution of the shell failed for system(%s)", cmd);
+	not_reached();
+    } else if (exit_code != 0) {
+	err(220, __func__, "%s failed with exit code: %d", cmd, WEXITSTATUS(exit_code));
+	not_reached();
+    }
+
+    para("... all appears well with the .author.json file.", NULL);
+
+
+    /*
+     * free storage
+     */
+    if (author_path != NULL) {
+	free(author_path);
+	author_path = NULL;
+    }
+
+    /* free cmd */
+    free(cmd);
+    cmd = NULL;
+
     return;
 }
 
