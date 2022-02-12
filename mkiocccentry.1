@@ -2,12 +2,15 @@
 .SH NAME
 mkiocccentry \- make an IOCCC compressed tarball for an IOCCC entry
 .SH SYNOPSIS
-\fBmkiocccentry [\-h] [\-v level] [\-V] [\-t tar] [\-c cp] [\-l ls] [\-C txzchk] [\-F fnamchk] [{\-a|\-A|\-i} answers] [\-W] work_dir prog.c Makefile remarks.md [file ...]\fP
+\fBmkiocccentry [\-h] [\-v level] [\-V] [\-t tar] [\-c cp] [\-l ls] [\-C txzchk] [\-F fnamchk] [{\-a|\-A|\-i} answers] [\-j jinfochk] [\-J jauthchk] [\-W] work_dir prog.c Makefile remarks.md [file ...]\fP
 .SH DESCRIPTION
 \fBmkiocccentry\fP gathers your source file, Makefile, remarks as well as any other files and creates a XZ compressed tarball.
 The tool runs \fBiocccsize\fP and it also runs a test on the Makefile to verify that everything seems in order.
 You can ignore the warnings except that the Makefile cannot be empty.
 The work_dir is a directory that the program will copy the files to (under a subdirectory based on the title of the entry and the entry number), to create the tarball.
+After forming the tarball \fBtxzchk\fP is run which verifies that the tarball is okay (\fBtxzchk\fP in turn will call \fBfnamchk\fP).
+Once the writing of the \fI.info.json\fP file is completed \fBmkiocccentry\fP runs \fBjinfochk\fP and if there are any errors it aborts.
+After the writing of the \fI.info.json\fP file the \fI.author.json\fP file is written; once completed \fBmkiocccentry\fP runs \fBjauthchk\fP and if there are any errors it aborts.
 If the work_dir already exists the program will tell you to move it or delete it.
 The program does \fBNOT\fP delete it in case you wish to inspect that everything is okay or do any other tests; it does however show you how you can delete it should you wish to.
 .SH OPTIONS
@@ -47,6 +50,14 @@ If the file exists \fBmkiocccentry\fP will ask you if you wish to overwrite it u
 .PP
 \fB\-A\fP
 Always overwrite answers file.
+.PP
+\fB\-j\fP
+Specify path to \fBjinfochk\fP tool.
+\fBmkiocccentry\fP checks \fI./jinfochk\fP and \fI/usr/local/bin/jinfochk\fP if this option is not specified.
+.PP
+\fB\-J\fP
+Specify path to \fBjauthchk\fP tool.
+\fBmkiocccentry\fP checks \fI./jauthchk\fP and \fI/usr/local/bin/jauthchk\fP if this option is not specified.
 .PP
 \fP\-W\fP
 Ignore all warnings.
