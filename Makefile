@@ -115,7 +115,7 @@ DESTDIR= /usr/local/bin
 TARGETS= mkiocccentry iocccsize dbg_test limit_ioccc.sh fnamchk txzchk jauthchk jinfochk
 MANPAGES = mkiocccentry.1 txzchk.1 fnamchk.1 iocccsize.1
 TEST_TARGETS= dbg_test
-OBJFILES = dbg.o util.o mkiocccentry.o iocccsize.o fnamchk.o txzchk.o jauthchk.o
+OBJFILES = dbg.o util.o mkiocccentry.o iocccsize.o fnamchk.o txzchk.o jauthchk.o jinfochk.o
 SRCFILES = $(patsubst %.o,%.c,$(OBJFILES))
 
 all: ${TARGETS} ${TEST_TARGETS}
@@ -303,3 +303,4 @@ iocccsize.o: iocccsize.c
 fnamchk.o: fnamchk.c limit_ioccc.h dbg.h util.h
 txzchk.o: txzchk.c limit_ioccc.h dbg.h util.h
 jauthchk.o: jauthchk.c limit_ioccc.h dbg.h util.h json.h
+jinfochk.o: jinfochk.c limit_ioccc.h dbg.h util.h json.h
