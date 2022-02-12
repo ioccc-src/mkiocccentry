@@ -151,6 +151,9 @@ static const char * const usage_msg1 =
     "\t-C /path/to/txzchk\tpath to txzchk executable (def: %s)\n"
     "\t-F /path/to/fnamchk\tpath to fnamchk executable used by txzchk (def: %s)";
 static const char * const usage_msg2 =
+    "\t-j /path/to/jinfochk	path to jinfochk executable used by txzchk (def: %s)\n"
+    "\t-J /path/to/jauthchk	path to jauthchk executable used by txzchk (def: %s)\n";
+static const char * const usage_msg3 =
     "\t-a answers\t\twrite answers to a file for easier updating of an entry\n"
     "\t-A answers\t\twrite answers file even if it already exists\n"
     "\t-i answers\t\tread answers from file previously written by -a|-A answers\n\n"
@@ -158,7 +161,7 @@ static const char * const usage_msg2 =
     "\n"
     "\twork_dir\tdirectory where the entry directory and tarball are formed\n"
     "\tprog.c\t\tpath to the C source for your entry\n";
-static const char * const usage_msg3 =
+static const char * const usage_msg4 =
     "\n"
     "\tMakefile\tMakefile to build (make all) and cleanup (make clean & make clobber)\n"
     "\n"
@@ -187,7 +190,7 @@ static struct iocccsize size;	/* rule_count() processing results */
  * forward declarations
  */
 static void usage(int exitcode, char const *str, char const *program, char const *tar, char const *cp, char const *ls,
-		  char const *txzchk, char const *fnamchk);
+		  char const *txzchk, char const *fnamchk, char const *jinfochk, char const *jauthchk);
 static void free_info(struct info *infop);
 static void free_author_array(struct author *authorp, int author_count);
 static void warn_empty_prog(char const *prog_c);
@@ -200,7 +203,7 @@ static void warn_ungetc(char const *prog_c);
 static void warn_rule2b_size(struct info *infop, char const *prog_c);
 static void check_prog_c(struct info *infop, char const *entry_dir, char const *cp, char const *prog_c);
 static void sanity_chk(struct info *infop, char const *work_dir, char const *tar, char const *cp,
-		       char const *ls, char const *txzchk, char const *fnamchk);
+		       char const *ls, char const *txzchk, char const *fnamchk, char const *jinfochk, char const *jauthchk);
 static char *prompt(char const *str, size_t *lenp);
 static char *get_contest_id(struct info *infop, bool *testp, bool *read_answers_flag_used);
 static int get_entry_num(struct info *infop);
@@ -248,6 +251,8 @@ main(int argc, char *argv[])
     char *ls = LS_PATH_0;		/* path to ls executable */
     char *txzchk = TXZCHK_PATH_0;	/* path to txzchk executable */
     char *fnamchk = FNAMCHK_PATH_0;	/* path to fnamchk executable */
+    char *jauthchk = JAUTHCHK_PATH_0;	/* path to jauthchk executable */
+    char *jinfochk = JINFOCHK_PATH_0;	/* path to jinfochk executable */
     char const *answers = NULL;		/* path to the answers file (recording input given on stdin) */
     FILE *answerp = NULL;		/* file pointer to the answers file */
     bool test_mode = false;		/* true ==> contest ID is test */
@@ -266,6 +271,8 @@ main(int argc, char *argv[])
     bool overwite_answers_flag_used = false;		/* true ==> don't prompt to overwrite answers if it already exists */
     bool txzchk_flag_used = false;	/* true ==> -C /path/to/txzchk was given */
     bool fnamchk_flag_used = false;		/* true ==> -F /path/to/fnamchk was given */
+    bool jinfochk_flag_used = false;	/* true ==> -j /path/to/jinfochk was given */
+    bool jauthchk_flag_used = false;	/* true ==> -J /path/to/jauthchk was given */
     bool overwrite_answers = true;	/* true ==> overwrite answers file even if it already exists */
     int ret;				/* libc return code */
     int i;
@@ -275,10 +282,10 @@ main(int argc, char *argv[])
      */
     input_stream = stdin;	/* default to reading from standard in */
     program = argv[0];
-    while ((i = getopt(argc, argv, "hv:Vt:c:l:a:i:A:WC:F:")) != -1) {
+    while ((i = getopt(argc, argv, "hv:Vt:c:l:a:i:A:WC:F:j:J:")) != -1) {
 	switch (i) {
 	case 'h':		/* -h - print help to stderr and exit 0 */
-	    usage(1, "-h help mode", program, TAR_PATH_0, CP_PATH_0, LS_PATH_0, TXZCHK_PATH_0, FNAMCHK_PATH_0);
+	    usage(1, "-h help mode", program, TAR_PATH_0, CP_PATH_0, LS_PATH_0, TXZCHK_PATH_0, FNAMCHK_PATH_0, JINFOCHK_PATH_0, JAUTHCHK_PATH_0);
 	    not_reached();
 	    break;
 	case 'v':		/* -v verbosity */
@@ -338,14 +345,24 @@ main(int argc, char *argv[])
 	    fnamchk_flag_used = true;
 	    fnamchk = optarg;
 	    break;
+	case 'j':
+	    jinfochk_flag_used = true;
+	    jinfochk = optarg;
+	    break;
+	case 'J':
+	    jauthchk_flag_used = true;
+	    jauthchk = optarg;
+	    break;
 	default:
-	    usage(1, "invalid -flag", program, TAR_PATH_0, CP_PATH_0, LS_PATH_0, TXZCHK_PATH_0, FNAMCHK_PATH_0); /*ooo*/
+	    usage(1, "invalid -flag", program, TAR_PATH_0, CP_PATH_0, LS_PATH_0, TXZCHK_PATH_0, FNAMCHK_PATH_0,
+		    JINFOCHK_PATH_0, JAUTHCHK_PATH_0); /*ooo*/
 	    not_reached();
 	 }
     }
     /* must have at least the required number of args */
     if (argc - optind < REQUIRED_ARGS) {
-	usage(1, "wrong number of arguments", program, TAR_PATH_0, CP_PATH_0, LS_PATH_0, TXZCHK_PATH_0, FNAMCHK_PATH_0); /*ooo*/
+	usage(1, "wrong number of arguments", program, TAR_PATH_0, CP_PATH_0, LS_PATH_0, TXZCHK_PATH_0, FNAMCHK_PATH_0,
+		JINFOCHK_PATH_0, JAUTHCHK_PATH_0); /*ooo*/
 	not_reached();
     }
 
@@ -359,7 +376,9 @@ main(int argc, char *argv[])
      * On some systems where /usr/bin != /bin, the distribution made the mistake of
      * moving historic critical applications, look to see if the alternate path works instead.
      */
-    find_utils(tar_flag_used, &tar, cp_flag_used, &cp, ls_flag_used, &ls, txzchk_flag_used, &txzchk, fnamchk_flag_used, &fnamchk);
+    find_utils(tar_flag_used, &tar, cp_flag_used, &cp, ls_flag_used, &ls, 
+	    txzchk_flag_used, &txzchk, fnamchk_flag_used, &fnamchk,
+	    jinfochk_flag_used, &jinfochk, jauthchk_flag_used, &jauthchk);
 
     /* check that conflicting answers file options are not used together */
     if (answers_flag_used && read_answers_flag_used) {
@@ -435,7 +454,7 @@ main(int argc, char *argv[])
      * environment sanity checks
      */
     para("", "Performing sanity checks on your environment ...", NULL);
-    sanity_chk(&info, work_dir, tar, cp, ls, txzchk, fnamchk);
+    sanity_chk(&info, work_dir, tar, cp, ls, txzchk, fnamchk, jinfochk, jauthchk);
     para("... environment looks OK", "", NULL);
 
     /* if -a answers was specified and answers file exists, prompt user if they
@@ -812,6 +831,8 @@ main(int argc, char *argv[])
  *	ls		path to tar ls utility
  *	txzchk		path to the txzchk tool
  *	fnamchk		path to the fnamchk tool
+ *	jinfochk	path to jinfochk tool
+ *	jauthchk	path to jauthchk tool
  *
  * NOTE: We warn with extra newlines to help internal fault messages stand out.
  *       Normally one should NOT include newlines in warn messages.
@@ -820,7 +841,7 @@ main(int argc, char *argv[])
  */
 static void
 usage(int exitcode, char const *str, char const *program, char const *tar, char const *cp, char const *ls,
-      char const *txzchk, char const *fnamchk)
+      char const *txzchk, char const *fnamchk, char const *jinfochk, char const *jauthchk)
 {
     /*
      * firewall
@@ -853,6 +874,16 @@ usage(int exitcode, char const *str, char const *program, char const *tar, char 
 	fnamchk = "((NULL fnamchk))";
 	warn(__func__, "\nin usage(): fnamchk was NULL, forcing it to be: %s\n", fnamchk);
     }
+    if (jinfochk == NULL) {
+	jinfochk = "((NULL jinfochk))";
+	warn(__func__, "\nin usage(): jinfochk was NULL, forcing it to be: %s\n", jinfochk);
+    }
+    if (jauthchk == NULL) {
+	jauthchk = "((NULL jauthchk))";
+	warn(__func__, "\nin usage(): jauthchk was NULL, forcing it to be: %s\n", jauthchk);
+    }
+
+
 
     /*
      * print the formatted usage stream
@@ -860,8 +891,9 @@ usage(int exitcode, char const *str, char const *program, char const *tar, char 
     vfprintf_usage(DO_NOT_EXIT, stderr, "%s\n", str);
     vfprintf_usage(DO_NOT_EXIT, stderr, usage_msg0, program, DBG_DEFAULT);
     vfprintf_usage(DO_NOT_EXIT, stderr, usage_msg1, tar, cp, ls, txzchk, fnamchk);
-    vfprintf_usage(DO_NOT_EXIT, stderr, "%s", usage_msg2);
-    vfprintf_usage(exitcode, stderr, usage_msg3, MKIOCCCENTRY_VERSION);
+    vfprintf_usage(DO_NOT_EXIT, stderr, usage_msg2, jinfochk, jauthchk);
+    vfprintf_usage(DO_NOT_EXIT, stderr, "%s", usage_msg3);
+    vfprintf_usage(exitcode, stderr, usage_msg4, MKIOCCCENTRY_VERSION);
     exit(exitcode); /*ooo*/
     not_reached();
 }
@@ -1028,18 +1060,20 @@ free_author_array(struct author *author_set, int author_count)
  *	ls		- path to the ls utility
  *	txzchk		- path to txzchk tool
  *	fnamchk		- path to fnamchk tool
+ *	jinfochk	- path to jinfochk tool
+ *	jauthchk	- path to jauthchk tool
  *
  * NOTE: This function does not return on error or if things are not sane.
  */
 static void
 sanity_chk(struct info *infop, char const *work_dir, char const *tar, char const *cp, char const *ls,
-	   char const *txzchk, char const *fnamchk)
+	   char const *txzchk, char const *fnamchk, char const *jinfochk, char const *jauthchk)
 {
     /*
      * firewall
      */
     if (infop == NULL || work_dir == NULL || tar == NULL || cp == NULL || ls == NULL ||
-	txzchk == NULL || fnamchk == NULL) {
+	txzchk == NULL || fnamchk == NULL || jinfochk == NULL || jauthchk == NULL) {
 	err(15, __func__, "called with NULL arg(s)");
 	not_reached();
     }
@@ -1321,6 +1355,118 @@ sanity_chk(struct info *infop, char const *work_dir, char const *tar, char const
 	      "",
 	      NULL);
 	err(30, __func__, "fnamchk is not an executable program: %s", fnamchk);
+	not_reached();
+    }
+
+    /*
+     * jinfochk must be executable
+     */
+    if (!exists(jinfochk)) {
+	fpara(stderr,
+	      "",
+	      "We cannot find a jinfochk tool.",
+	      "",
+	      "A jinfochk program performs a sanity check on the compressed tarball.",
+	      "Perhaps you need to use:",
+	      "",
+	      "    mkiocccentry -j /path/to/jinfochk ...",
+	      "",
+	      "and/or install the jinfochk tool?  You can find the source for jinfochk in the mkiocccentry GitHub repo:",
+	      "",
+	      "    https://github.com/ioccc-src/mkiocccentry",
+	      "",
+	      NULL);
+	err(28, __func__, "jinfochk does not exist: %s", jinfochk);
+	not_reached();
+    }
+    if (!is_file(jinfochk)) {
+	fpara(stderr,
+	      "",
+	      "The jinfochk tool, while it exists, is not a file.",
+	      "",
+	      "Perhaps you need to use another path:",
+	      "",
+	      "    mkiocccentry -j /path/to/jinfochk ...",
+	      "",
+	      "and/or install the jinfochk tool?  You can find the source for jinfochk in the mkiocccentry GitHub repo:",
+	      "",
+	      "    https://github.com/ioccc-src/mkiocccentry",
+	      "",
+	      NULL);
+	err(29, __func__, "jinfochk is not a file: %s", jinfochk);
+	not_reached();
+    }
+    if (!is_exec(jinfochk)) {
+	fpara(stderr,
+	      "",
+	      "The jinfochk tool, while it is a file, is not executable.",
+	      "",
+	      "We suggest you check the permissions on the jinfochk program, or use another path:",
+	      "",
+	      "    mkiocccentry -j /path/to/jinfochk ...",
+	      "",
+	      "and/or install the jinfochk tool?  You can find the source for jinfochk in the mkiocccentry GitHub repo:",
+	      "",
+	      "    https://github.com/ioccc-src/mkiocccentry",
+	      "",
+	      NULL);
+	err(30, __func__, "jinfochk is not an executable program: %s", jinfochk);
+	not_reached();
+    }
+
+    /*
+     * jauthchk must be executable
+     */
+    if (!exists(jauthchk)) {
+	fpara(stderr,
+	      "",
+	      "We cannot find a jauthchk tool.",
+	      "",
+	      "A jauthchk program performs a sanity check on the compressed tarball.",
+	      "Perhaps you need to use:",
+	      "",
+	      "    mkiocccentry -J /path/to/jauthchk ...",
+	      "",
+	      "and/or install the jauthchk tool?  You can find the source for jauthchk in the mkiocccentry GitHub repo:",
+	      "",
+	      "    https://github.com/ioccc-src/mkiocccentry",
+	      "",
+	      NULL);
+	err(28, __func__, "jauthchk does not exist: %s", jauthchk);
+	not_reached();
+    }
+    if (!is_file(jauthchk)) {
+	fpara(stderr,
+	      "",
+	      "The jauthchk tool, while it exists, is not a file.",
+	      "",
+	      "Perhaps you need to use another path:",
+	      "",
+	      "    mkiocccentry -J /path/to/jauthchk ...",
+	      "",
+	      "and/or install the jauthchk tool?  You can find the source for jauthchk in the mkiocccentry GitHub repo:",
+	      "",
+	      "    https://github.com/ioccc-src/mkiocccentry",
+	      "",
+	      NULL);
+	err(29, __func__, "jauthchk is not a file: %s", jauthchk);
+	not_reached();
+    }
+    if (!is_exec(jauthchk)) {
+	fpara(stderr,
+	      "",
+	      "The jauthchk tool, while it is a file, is not executable.",
+	      "",
+	      "We suggest you check the permissions on the jauthchk program, or use another path:",
+	      "",
+	      "    mkiocccentry -J /path/to/jauthchk ...",
+	      "",
+	      "and/or install the jauthchk tool?  You can find the source for jauthchk in the mkiocccentry GitHub repo:",
+	      "",
+	      "    https://github.com/ioccc-src/mkiocccentry",
+	      "",
+	      NULL);
+	err(30, __func__, "jauthchk is not an executable program: %s", jauthchk);
 	not_reached();
     }
 

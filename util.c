@@ -1493,10 +1493,15 @@ readline_dup(char **linep, bool strip, size_t *lenp, FILE *stream)
  *	txzchk		    - if -C txzchk was used and txzchk != NULL set *txzchk to path
  *	fnamchk_flag_used   - true ==> if fnamchk flag was used
  *	fnamchk	    	    - if fnamchk option used and fnamchk ! NULL set *fnamchk to path
+ *	jinfochk_flag_used  - true ==> -j jinfochk was used
+ *	jinfochk	    - if -j jinfochk was used and jinfochk != NULL set *jinfochk to path
+ *	jauthchk_flag_used  - true ==> -J jauthchk was used	    - 
+ *	jauthchk	    - if -J jauthchk was used and jauthchk != NULL set *jauthchk to path
  */
 void
 find_utils(bool tar_flag_used, char **tar, bool cp_flag_used, char **cp, bool ls_flag_used, char **ls,
-	bool txzchk_flag_used, char **txzchk, bool fnamchk_flag_used, char **fnamchk)
+	bool txzchk_flag_used, char **txzchk, bool fnamchk_flag_used, char **fnamchk,
+	bool jinfochk_flag_used, char **jinfochk, bool jauthchk_flag_used, char **jauthchk)
 {
     /*
      * guess where tar, cp and ls utilities are located
@@ -1521,7 +1526,7 @@ find_utils(bool tar_flag_used, char **tar, bool cp_flag_used, char **cp, bool ls
 	dbg(DBG_MED, "ls is not in historic location: %s : will try alternate location: %s", LS_PATH_0, *ls);
     }
 
-    /* now do the same for our utilities: txzchk and fnamchk */
+    /* now do the same for our utilities: txzchk, fnamchk, jinfochk and jauthchk */
     if (txzchk != NULL && !txzchk_flag_used && !is_exec(TXZCHK_PATH_0) && is_exec(TXZCHK_PATH_1)) {
 	*txzchk = TXZCHK_PATH_1;
 	dbg(DBG_MED, "using default txzchk path: %s", TXZCHK_PATH_1);
@@ -1530,6 +1535,16 @@ find_utils(bool tar_flag_used, char **tar, bool cp_flag_used, char **cp, bool ls
 	*fnamchk = FNAMCHK_PATH_1;
 	dbg(DBG_MED, "using default fnamchk path: %s", FNAMCHK_PATH_1);
     }
+    if (jinfochk != NULL && !jinfochk_flag_used && !is_exec(JINFOCHK_PATH_0) && is_exec(JINFOCHK_PATH_1)) {
+	*jinfochk = JINFOCHK_PATH_1;
+	dbg(DBG_MED, "using default jinfochk path: %s", JINFOCHK_PATH_1);
+    }
+    if (jauthchk != NULL && !jauthchk_flag_used && !is_exec(JAUTHCHK_PATH_0) && is_exec(JAUTHCHK_PATH_1)) {
+	*jauthchk = JAUTHCHK_PATH_1;
+	dbg(DBG_MED, "using default jauthchk path: %s", JAUTHCHK_PATH_1);
+    }
+
+
     return;
 }
 
