@@ -9,7 +9,9 @@
  *
  * Written in 2022 by:
  *
- *	@xexyl			Cody Boone Ferguson
+ *	@xexyl
+ *	https://xexyl.net		Cody Boone Ferguson
+ *	https://ioccc.xexyl.net
  */
 #include <stdio.h>
 #include <stdlib.h>
