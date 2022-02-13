@@ -5006,16 +5006,17 @@ verify_entry_dir(char const *entry_dir, char const *ls)
  *
  * These escape characters are required by JSON:
  *
- *     old		new
- *     --------------------
- *	"		\"
- *	/		\/
- *	\		\\
- *	<backspace>	\b	(\x08)
- *	<tab>		\t	(\x09)
- *	<newline>	\n	(\x0a)
- *	<vertical_tab>	\f	(\x0c)
- *	<enter>		\r	(\x0d)
+ *     old			new
+ *     ----------------------------
+ *	"			\"
+ *	/			\/
+ *	\			\\
+ *	<backspace>		\b	(\x08)
+ *	<horizontal_tab>	\t	(\x09)
+ *	<newline>		\n	(\x0a)
+ *	<vertical_tab>		\v	(\x0b)
+ *	<form_feed>		\f	(\x0c)
+ *	<enter>			\r	(\x0d)
  *
  * These escape characters are implied by JSON due to
  * HTML and XML encoding, although not strictly required:
@@ -5096,20 +5097,23 @@ json_putc(int const c, FILE *stream)
     case '\\':
 	ret = fprintf(stream, "\\\\");
 	break;
-    case '\b':
+    case '\b':	/* \x08 - bachspace */
 	ret = fprintf(stream, "\\b");
 	break;
-    case '\f':
-	ret = fprintf(stream, "\\f");
-	break;
-    case '\t':
+    case '\t':	/* \x09 - horizontal tab */
 	ret = fprintf(stream, "\\t");
 	break;
-    case '\r':
-	ret = fprintf(stream, "\\r");
-	break;
-    case '\n':
+    case '\n':	/* \x0a - line feed */
 	ret = fprintf(stream, "\\n");
+	break;
+    case '\v':	/* \x0b - Verical tab */
+	ret = fprintf(stream, "\\v");
+	break;
+    case '\f':	/* \x0c - form feed */
+	ret = fprintf(stream, "\\f");
+	break;
+    case '\r':	/* \x0d - carriage return */
+	ret = fprintf(stream, "\\r");
 	break;
 
     /*
