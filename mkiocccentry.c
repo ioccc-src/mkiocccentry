@@ -5023,9 +5023,9 @@ verify_entry_dir(char const *entry_dir, char const *ls)
  *
  *     old		new
  *     --------------------
- *	<		\u003C
- *	>		\u003E
  *	&		\u0026
+ *	<		\u003c
+ *	>		\u003e
  *
  * These escape characters are implied by JSON to let humans
  * view JSON without worrying about characters that might
@@ -5070,14 +5070,14 @@ json_putc(int const c, FILE *stream)
     }
 
     /*
-     * case: \cFFFF encoding
+     * case: \cffff encoding
      */
-    if (c == '<' || c == '>' || c == '&' ||
+    if (c == '&' || c == '<' || c == '>' ||
 	(c >= 0x00 && c <= 0x07) || (c >= 0x0e && c <= 0x1f) || c >= 0x7f) {
 	errno = 0;			/* pre-clear errno for warnp() */
 	ret = fprintf(stream, "\\c%04X", c);
 	if (ret <= 0) {
-	    warnp(__func__, "fprintf #0 error in \\cFFFF encoding");
+	    warnp(__func__, "fprintf #0 error in \\cffff encoding");
 	    return false;
 	}
         return true;
