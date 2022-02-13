@@ -311,13 +311,13 @@ check_info_json(char const *file)
 	errno = 0;
 	line_dup = strdup(linep);
 	if (line_dup == NULL) {
-	    errp(34, __func__, "unable to strdup line %s", linep);
+	    errp(11, __func__, "unable to strdup line %s", linep);
 	    not_reached();
 	}
 
 	if (line_num == 1 && *linep != '{') {
 	    ++info.issues;
-	    err(1, __func__, "first character in file is not '{'");
+	    err(12, __func__, "first character in file is not '{'");
 	    not_reached();
 	}
 
@@ -326,7 +326,7 @@ check_info_json(char const *file)
     /* verify that the very last character is a '}' */
     if (line_dup == NULL || line_dup[strlen(line_dup)-1]!= '}') {
 	++info.issues;
-	err(2, __func__, "last character in file not '}': \"%c\"", line_dup?line_dup[strlen(line_dup)-1]:'\0');
+	err(13, __func__, "last character in file not '}': \"%c\"", line_dup?line_dup[strlen(line_dup)-1]:'\0');
 	not_reached();
     }
     
