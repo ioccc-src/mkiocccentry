@@ -1,6 +1,6 @@
 /* vim: set tabstop=8 softtabstop=4 shiftwidth=4 noexpandtab : */
 /*
- * jinfochk - IOCCC JSON .author.json checker and validator
+ * jinfochk - IOCCC JSON .info.json checker and validator
  *
  * "Because sometimes even the IOCCC Judges need some help." :-)
  */

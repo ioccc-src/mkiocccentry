@@ -1,0 +1,44 @@
+.TH jinfochk 1 "13 February 2022" "jinfochk" "IOCCC tools"
+.SH NAME
+jinfochk \- IOCCC tool to validate .info.json file found within an entry directory
+.SH SYNOPSIS
+\fBjinfochk [\-h] [\-v level] [\-V] [\-q] file
+.SH DESCRIPTION
+\fBjinfochk\fP is primarily used by other tools (not humans).
+As such it should behave like \fBfnamchk(1)\fP in that if all is well, it should not print anything and simply exit 0.
+If there are problems found with the \fI.info.json\fP file, then warning messages should be printed to \fBstderr\fP AND the \fBjinfochk\fP tool should exit with a non-zero status.
+The use of a -v level may be use to assist in debugging.
+.PP
+The \fBjinfochk\fP tool is primarily a stand alone tool.
+As a sanity check, the \fBmkiocccentry(1)\fP program executes \fBjinfochk\fP AFTER the \fI.info.json\fP file has been created and before the compressed tarball is formed.
+If \fBmkiocccentry\fP program sees a 0 exit status, then all is well.
+For a non-zero exit code, the tool aborts because any problems detected by \fBjinfochk\fP based on what \fBmkiocccentry\fP wrote into \fI.info.json\fP indicates there is a serious mismatch between what \fBmkiocccentry\fP is doing and what \fBjinfochk\fP expects.
+.PP
+.SH OPTIONS
+.PP
+\fB\-h\fP
+Show help and exit.
+.PP
+\fB\-v\fP
+Set verbosity level.
+.PP
+\fB\-V\fP
+Show version and exit.
+.PP
+\fB\-q\fP
+Quiet mode: don't show welcome messages etc. (primarily used with \fBmkiocccentry\fP).
+.SH EXIT STATUS
+.PP
+\fBmain()\fP returns 0 on success; if there's an error non-zero is returned.
+.SH FILES
+\fIjinfochk.c\fP
+.RS
+Source file to the \fBjinfochk\fP tool.
+.RE
+\fIjson.h\fP
+.RS
+Header file with JSON data and function prototypes.
+.RE
+.SH BUGS
+.PP
+If you have an issue with the tool you can open an issue at \fI\<https://github.com/ioccc-src/mkiocccentry/issues\>\fP.
