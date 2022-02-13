@@ -799,7 +799,7 @@ check_directories(struct file *file, char const *dir_name, char const *txzpath)
     }
 
     /* check that there is a directory */
-    if (strchr(file->filename, '/') == NULL) {
+    if (strchr(file->filename, '/') == NULL && strcmp(file->filename, ".")) {
 	warn("txzchk", "%s: no directory found in filename %s", txzpath, file->filename);
 	++txz_info.total_issues;
     }
