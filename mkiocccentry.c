@@ -5014,7 +5014,6 @@ verify_entry_dir(char const *entry_dir, char const *ls)
  *	<backspace>		\b	(\x08)
  *	<horizontal_tab>	\t	(\x09)
  *	<newline>		\n	(\x0a)
- *	<vertical_tab>		\v	(\x0b)
  *	<form_feed>		\f	(\x0c)
  *	<enter>			\r	(\x0d)
  *
@@ -5031,11 +5030,12 @@ verify_entry_dir(char const *entry_dir, char const *ls)
  * view JSON without worrying about characters that might
  * not display / might not be printable:
  *
- *     old		new
- *     --------------------
- *	\x00-\x07	\u0000 - \u0007
- *	\x0e-\x1f	\u0005 - \x001f
- *	\x7f-\xff	\u007f - \u00ff
+ *     old			new
+ *     ----------------------------
+ *	\x00-\x07		\u0000 - \u0007
+ *	\x0b			\u000b <vertical_tab>
+ *	\x0e-\x1f		\u000e - \x001f
+ *	\x7f-\xff		\u007f - \u00ff
  *
  * See:
  *
@@ -5043,6 +5043,10 @@ verify_entry_dir(char const *entry_dir, char const *ls)
  *
  * NOTE: We chose to not escape '%' as was suggested by the above URL
  *	 because it is neither required by JSON nor implied by JSON.
+ *
+ * NOTE: While there exist C escapes for characters such as '\c',
+ *	 due to flaws in the JSON spec, we must encode such characters
+ *	 using the \uffff notation.
  *
  * given:
  *	stream	- string to print on
@@ -5072,10 +5076,10 @@ json_putc(int const c, FILE *stream)
     /*
      * case: \cffff encoding
      */
-    if (c == '&' || c == '<' || c == '>' ||
-	(c >= 0x00 && c <= 0x07) || (c >= 0x0e && c <= 0x1f) || c >= 0x7f) {
+    if ((c >= 0x00 && c <= 0x07) || c == 0x0b || (c >= 0x0e && c <= 0x1f) ||
+        c == '&' || c == '<' || c == '>' || c >= 0x7f) {
 	errno = 0;			/* pre-clear errno for warnp() */
-	ret = fprintf(stream, "\\c%04X", c);
+	ret = fprintf(stream, "\\c%04x", c);
 	if (ret <= 0) {
 	    warnp(__func__, "fprintf #0 error in \\cffff encoding");
 	    return false;
@@ -5105,9 +5109,6 @@ json_putc(int const c, FILE *stream)
 	break;
     case '\n':	/* \x0a - line feed */
 	ret = fprintf(stream, "\\n");
-	break;
-    case '\v':	/* \x0b - Verical tab */
-	ret = fprintf(stream, "\\v");
 	break;
     case '\f':	/* \x0c - form feed */
 	ret = fprintf(stream, "\\f");
