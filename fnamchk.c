@@ -62,7 +62,7 @@
 /*
  * fnamchk version
  */
-#define FNAMCHK_VERSION "0.2 2022-02-07"	/* use format: major.minor YYYY-MM-DD */
+#define FILENAMECHECK_VERSION "0.2 2022-02-07"	/* use format: major.minor YYYY-MM-DD */
 
 
 /*
@@ -146,9 +146,9 @@ main(int argc, char *argv[])
 	    break;
 	case 'V':		/* -V - print version and exit */
 	    errno = 0;		/* pre-clear errno for warnp() */
-	    ret = printf("%s\n", FNAMCHK_VERSION);
+	    ret = printf("%s\n", FILENAMECHECK_VERSION);
 	    if (ret <= 0) {
-		warnp(__func__, "printf error printing version string: %s", FNAMCHK_VERSION);
+		warnp(__func__, "printf error printing version string: %s", FILENAMECHECK_VERSION);
 	    }
 	    exit(0); /*ooo*/
 	    not_reached();
@@ -342,7 +342,7 @@ usage(int exitcode, char const *str, char const *prog)
      * print the formatted usage stream
      */
     vfprintf_usage(DO_NOT_EXIT, stderr, "%s\n", str);
-    vfprintf_usage(exitcode, stderr, usage_msg, prog, DBG_DEFAULT, FNAMCHK_VERSION);
+    vfprintf_usage(exitcode, stderr, usage_msg, prog, DBG_DEFAULT, FILENAMECHECK_VERSION);
     exit(exitcode); /*ooo*/
     not_reached();
 }
