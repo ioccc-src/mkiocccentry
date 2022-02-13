@@ -202,7 +202,7 @@ main(int argc, char *argv[])
     if (strncmp(uuid, "test-", LITLEN("test-")) == 0) {
 	if (len != LITLEN("test-")+MAX_ENTRY_CHARS) {
 	    err(5, __func__, "2nd '-' separated token length: %lu != %lu: %s",
-	    		     (unsigned long)len, (unsigned long)(LITLEN("test-")+MAX_ENTRY_CHARS), filepath);
+			     (unsigned long)len, (unsigned long)(LITLEN("test-")+MAX_ENTRY_CHARS), filepath);
 	    not_reached();
 	}
 	ret = sscanf(uuid, "test-%d%c", &entry_num, &guard);
@@ -227,7 +227,7 @@ main(int argc, char *argv[])
     } else {
 	if (len != UUID_LEN+1+MAX_ENTRY_CHARS) {
 	    err(9, __func__, "2nd '-' separated token length: %lu != %lu: %s",
-	    		     (unsigned long)len, (unsigned long)(UUID_LEN+1+MAX_ENTRY_CHARS), filepath);
+			     (unsigned long)len, (unsigned long)(UUID_LEN+1+MAX_ENTRY_CHARS), filepath);
 	    not_reached();
 	}
 	ret = sscanf(uuid, "%8x-%4x-%1x%3x-%1x%3x-%8x%4x-%d%c", &a, &b, &version, &c, &variant, &d, &e, &f, &entry_num, &guard);

@@ -169,6 +169,7 @@ main(int argc, char **argv)
     exit(info.issues != 0);
 }
 
+
 /*
  * sanity_chk - perform basic sanity checks
  *
@@ -234,6 +235,7 @@ sanity_chk(char const *file)
     }
     return;
 }
+
 
 /*
  * check_info_json  - check file as .info.json
@@ -329,7 +331,7 @@ check_info_json(char const *file)
 	err(13, __func__, "last character in file not '}': \"%c\"", line_dup?line_dup[strlen(line_dup)-1]:'\0');
 	not_reached();
     }
-    
+
     /* free line_dup */
     free(line_dup);
     line_dup = NULL;
@@ -340,6 +342,7 @@ check_info_json(char const *file)
 	warnp(__func__, "error in fclose to .info.json file %s", file);
     }
 }
+
 
 /*
  * usage - print usage to stderr
