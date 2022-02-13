@@ -188,7 +188,7 @@ sanity_chk(char const *file)
      * firewall
      */
     if (file == NULL) {
-	err(3, __func__, "called with NULL arg");
+	err(5, __func__, "called with NULL arg");
 	not_reached();
     }
 
@@ -204,7 +204,7 @@ sanity_chk(char const *file)
 	      "    jauthchk [options] <file>"
 	      "",
 	      NULL);
-	err(10, __func__, "file does not exist: %s", file);
+	err(6, __func__, "file does not exist: %s", file);
 	not_reached();
     }
     if (!is_file(file)) {
@@ -217,7 +217,7 @@ sanity_chk(char const *file)
 	      "    jauthchk [...] <file>",
 	      "",
 	      NULL);
-	err(11, __func__, "file is not a file: %s", file);
+	err(7, __func__, "file is not a file: %s", file);
 	not_reached();
     }
     if (!is_read(file)) {
@@ -230,7 +230,7 @@ sanity_chk(char const *file)
 	      "    jauthchk [...] <file>"
 	      "",
 	      NULL);
-	err(12, __func__, "file is not readable: %s", file);
+	err(8, __func__, "file is not readable: %s", file);
 	not_reached();
     }
 
@@ -258,12 +258,12 @@ check_author_json(char const *file)
      * firewall
      */
     if (file == NULL) {
-	err(16, __func__, "passed NULL arg");
+	err(9, __func__, "passed NULL arg");
 	not_reached();
     }
     author_json = fopen(file, "r");
     if (author_json == NULL) {
-	err(17, __func__, "couldn't open %s", file);
+	err(10, __func__, "couldn't open %s", file);
 	not_reached();
     }
 
