@@ -96,7 +96,7 @@
 #include "util.h"
 
 /*
- * json - json structs
+ * JSON - Jon structures
  */
 #include "json.h"
 
@@ -267,9 +267,9 @@ main(int argc, char *argv[])
     bool cp_flag_used = false;		/* true ==> -c /path/to/cp was given */
     bool ls_flag_used = false;		/* true ==> -l /path/to/ls was given */
     bool answers_flag_used = false;		/* true ==> -a write answers to answers file */
-    bool read_answers_flag_used = false;		/* true ==> -i read answers from answers file */
-    bool overwite_answers_flag_used = false;		/* true ==> don't prompt to overwrite answers if it already exists */
-    bool txzchk_flag_used = false;	/* true ==> -C /path/to/txzchk was given */
+    bool read_answers_flag_used = false;	/* true ==> -i read answers from answers file */
+    bool overwrite_answers_flag_used = false;	/* true ==> don't prompt to overwrite answers if it already exists */
+    bool txzchk_flag_used = false;		/* true ==> -C /path/to/txzchk was given */
     bool fnamchk_flag_used = false;		/* true ==> -F /path/to/fnamchk was given */
     bool jinfochk_flag_used = false;	/* true ==> -j /path/to/jinfochk was given */
     bool jauthchk_flag_used = false;	/* true ==> -J /path/to/jauthchk was given */
@@ -322,7 +322,7 @@ main(int argc, char *argv[])
 	    break;
 	case 'A':		/* -A answers overwrite answers file */
 	    answers = optarg;
-	    overwite_answers_flag_used = true;
+	    overwrite_answers_flag_used = true;
 	    /* FALL THROUGH */
 	case 'a':		/* -a record_answers */
 	    answers = optarg;
@@ -376,9 +376,9 @@ main(int argc, char *argv[])
      * On some systems where /usr/bin != /bin, the distribution made the mistake of
      * moving historic critical applications, look to see if the alternate path works instead.
      */
-    find_utils(tar_flag_used, &tar, cp_flag_used, &cp, ls_flag_used, &ls, 
-	    txzchk_flag_used, &txzchk, fnamchk_flag_used, &fnamchk,
-	    jinfochk_flag_used, &jinfochk, jauthchk_flag_used, &jauthchk);
+    find_utils(tar_flag_used, &tar, cp_flag_used, &cp, ls_flag_used, &ls,
+	       txzchk_flag_used, &txzchk, fnamchk_flag_used, &fnamchk,
+	       jinfochk_flag_used, &jinfochk, jauthchk_flag_used, &jauthchk);
 
     /* check that conflicting answers file options are not used together */
     if (answers_flag_used && read_answers_flag_used) {
@@ -403,7 +403,7 @@ main(int argc, char *argv[])
     dbg(DBG_LOW, "answers file: %s", answers);
 
     /*
-     * zerosize info
+     * zeroize info
      */
     memset(&info, 0, sizeof(info));
 
@@ -461,7 +461,7 @@ main(int argc, char *argv[])
      * want to overwrite it; if they don't tell them how to use it and abort.
      * Else it will be overwritten.
      */
-    if (answers_flag_used && !overwite_answers_flag_used && answers != NULL && strlen(answers) > 0 && exists(answers)) {
+    if (answers_flag_used && !overwrite_answers_flag_used && answers != NULL && strlen(answers) > 0 && exists(answers)) {
 	overwrite_answers = yes_or_no("WARNING: The answers file already exists! Do you wish to overwrite it? [yn]");
 	if (!overwrite_answers) {
 	    errno = 0;
@@ -5000,29 +5000,48 @@ verify_entry_dir(char const *entry_dir, char const *ls)
 
 
 /*
- * json_putc - print a character with JSON encoding
+ * json_putc - print a UTF-8 character with JSON encoding
  *
- * JSON string encoding JSON string encoding.  We will encode as follows:
+ * JSON string encoding JSON string encoding.
+ *
+ * These escape characters are required by JSON:
  *
  *     old		new
  *     --------------------
  *	"		\"
  *	/		\/
  *	\		\\
- *	<backspace>	\b
- *	<vertical tab>	\f
- *	<tab>		\t
- *	<enter>		\r
- *	<newline>	\n
+ *	<backspace>	\b	(\x08)
+ *	<tab>		\t	(\x09)
+ *	<newline>	\n	(\x0a)
+ *	<vertical_tab>	\f	(\x0c)
+ *	<enter>		\r	(\x0d)
+ *
+ * These escape characters are implied by JSON due to
+ * HTML and XML encoding, although not strictly required:
+ *
+ *     old		new
+ *     --------------------
  *	<		\u003C
  *	>		\u003E
- *	&		\uoo26
- *	%		\u0025
- *	\x80-\xff	\u0080 - \u00ff
+ *	&		\u0026
+ *
+ * These escape characters are implied by JSON to let humans
+ * view JSON without worrying about characters that might
+ * not display / might not be printable:
+ *
+ *     old		new
+ *     --------------------
+ *	\x00-\x07	\u0000 - \u0007
+ *	\x0e-\x1f	\u0005 - \x001f
+ *	\x7f-\xff	\u007f - \u00ff
  *
  * See:
  *
  *	https://developpaper.com/escape-and-unicode-encoding-in-json-serialization/
+ *
+ * NOTE: We chose to not escape '%' as was suggested by the above URL
+ *	 because it is neither required by JSON nor implied by JSON.
  *
  * given:
  *	stream	- string to print on
@@ -5044,12 +5063,17 @@ json_putc(int const c, FILE *stream)
 	warn(__func__, "called with NULL arg(s)");
 	return false;
     }
+    if (c < 0 || c > 0xffff) {
+	warn(__func__, "c is out of range [0,0xffff]: %x", c);
+	return false;
+    }
 
     /*
      * case: \cFFFF encoding
      */
-    errno = 0;			/* pre-clear errno for errp() */
-    if ((c >= 0x80 && c <= 0xffff) || c == '<' || c == '>' || c == '&' || c == '%') {
+    if (c == '<' || c == '>' || c == '&' ||
+	(c >= 0x00 && c <= 0x07) || (c >= 0x0e && c <= 0x1f) || c >= 0x7f) {
+	errno = 0;			/* pre-clear errno for warnp() */
 	ret = fprintf(stream, "\\c%04X", c);
 	if (ret <= 0) {
 	    warnp(__func__, "fprintf #0 error in \\cFFFF encoding");
@@ -5061,6 +5085,7 @@ json_putc(int const c, FILE *stream)
     /*
      * case: \ escaped char
      */
+    errno = 0;			/* pre-clear errno for warnp() */
     switch (c) {
     case '"':
 	ret = fprintf(stream, "\\\"");
@@ -5533,7 +5558,7 @@ write_info(struct info *infop, char const *entry_dir, bool test_mode, char const
     dbg(DBG_VVHIGH, "infop->epoch: %s", infop->epoch);
 
     /*
-     * reset to UTC timezone
+     * reset to UTC time zone
      */
     errno = 0;			/* pre-clear errno for errp() */
     ret = setenv("TZ", "UTC", 1);
