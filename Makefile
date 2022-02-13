@@ -82,31 +82,35 @@ SED= sed
 RPL= rpl
 TRUE= true
 
+# C source standards being used
+#
+STD_SRC= -D_BSD_SOURCE -D_POSIX_C_SOURCE=200809L -D_XOPEN_SOURCE
+
 # how to compile
 #
 # note the feature test macros are required to compile on more systems e.g.
 # CentOS
-CFLAGS= -D_BSD_SOURCE -D_POSIX_C_SOURCE=200809L -D_XOPEN_SOURCE -std=c99 -O3 -g3 -pedantic -Wall -Wextra
+CFLAGS= ${STD_SRC} -std=c99 -O3 -g3 -pedantic -Wall -Wextra
 
 # We test by forcing warnings to be errors so you don't have to (allegedly :-) )
 #
-#CFLAGS= -D_BSD_SOURCE -D_POSIX_C_SOURCE=200809L -D_XOPEN_SOURCE -std=c99 -O3 -g3 -pedantic -Wall -Wextra -Werror
+#CFLAGS= ${STD_SRC} -std=c99 -O3 -g3 -pedantic -Wall -Wextra -Werror
 
 # NOTE: There are some things clang -Weverything warns about that are not relevant
 # 	and this for the -Weverything case, we exclude several directives
 #
-#CFLAGS= -D_BSD_SOURCE -D_POSIX_C_SOURCE=200809L -D_XOPEN_SOURCE -std=c99 -O3 -g3 -pedantic -Wall -Wextra -Werror -Weverything \
+#CFLAGS= ${STD_SRC} -std=c99 -O3 -g3 -pedantic -Wall -Wextra -Werror -Weverything \
 #     -Wno-poison-system-directories -Wno-unreachable-code-break -Wno-padded
 
 # NOTE: If you use ASAN, set this environment var:
 #	ASAN_OPTIONS="detect_stack_use_after_return=1"
 #
-#CFLAGS= -D_BSD_SOURCE -D_POSIX_C_SOURCE=200809L -D_XOPEN_SOURCE -std=c99 -O0 -g -pedantic -Wall -Wextra -Werror -fsanitize=address -fno-omit-frame-pointer
+#CFLAGS= ${STD_SRC} -std=c99 -O0 -g -pedantic -Wall -Wextra -Werror -fsanitize=address -fno-omit-frame-pointer
 
 # NOTE: For valgrind, run with:
 #	valgrind --leak-check=yes --track-origins=yes --leak-resolution=high --read-var-info=yes
 #
-#CFLAGS= -D_BSD_SOURCE -D_POSIX_C_SOURCE=200809L -D_XOPEN_SOURCE -std=c99 -O0 -g -pedantic -Wall -Wextra -Werror
+#CFLAGS= ${STD_SRC} -std=c99 -O0 -g -pedantic -Wall -Wextra -Werror
 
 # where and what to install
 #
@@ -117,6 +121,7 @@ MANPAGES = mkiocccentry.1 txzchk.1 fnamchk.1 iocccsize.1
 TEST_TARGETS= dbg_test
 OBJFILES = dbg.o util.o mkiocccentry.o iocccsize.o fnamchk.o txzchk.o jauthchk.o jinfochk.o
 SRCFILES = $(patsubst %.o,%.c,$(OBJFILES))
+DSYMDIRS = $(patsubst %,%.dSYM,$(TARGETS))
 
 all: ${TARGETS} ${TEST_TARGETS}
 
@@ -146,12 +151,11 @@ fnamchk: fnamchk.c limit_ioccc.h dbg.o util.o
 txzchk: txzchk.c limit_ioccc.h rule_count.o dbg.o util.o Makefile
 	${CC} ${CFLAGS} txzchk.c rule_count.o dbg.o util.o -o $@
 
-jauthchk: jauthchk.c limit_ioccc.h json.h rule_count.o dbg.o util.o Makefile 
+jauthchk: jauthchk.c limit_ioccc.h json.h rule_count.o dbg.o util.o Makefile
 	${CC} ${CFLAGS} jauthchk.c rule_count.o dbg.o util.o -o $@
 
 jinfochk: jinfochk.c limit_ioccc.h json.h rule_count.o dbg.o util.o Makefile
 	${CC} ${CFLAGS} jinfochk.c rule_count.o dbg.o util.o -o $@
-
 
 limit_ioccc.sh: limit_ioccc.h Makefile
 	${RM} -f $@
@@ -235,6 +239,9 @@ reset_min_timestamp:
 	@read OLD_MIN_TIMESTAMP &&\
 	    now=`/bin/date '+%s'` &&\
 	    if ${GREP} "$$OLD_MIN_TIMESTAMP" limit_ioccc.h; then\
+		echo; \
+		echo "We guess that you do really really do want to change MIN_TIMESTAMP"; \
+		echo; \
 	        ${TRUE};\
 	    else\
 	        echo 'Invalid value of MIN_TIMESTAMP' 1>&2;\
@@ -244,7 +251,7 @@ reset_min_timestamp:
 	       "#define MIN_TIMESTAMP ((time_t)$$OLD_MIN_TIMESTAMP)"\
 	       "#define MIN_TIMESTAMP ((time_t)$$now)" limit_ioccc.h;\
 	    echo;\
-	    echo "This line in limit_ioccc.h as it exists now:";\
+	    echo "This line in limit_ioccc.h, as it exists now, is:";\
 	    echo;\
 	    ${GREP} '^#define MIN_TIMESTAMP' limit_ioccc.h;\
 	    echo;\
@@ -260,8 +267,7 @@ configure:
 
 clean:
 	${RM} -f ${OBJFILES}
-	${RM} -rf mkiocccentry.dSYM iocccsize.dSYM dbg_test.dSYM fnamchk.dSYM
-	${RM} -rf txzchk.dSYM
+	${RM} -rf ${DSYMDIRS}
 
 clobber: clean
 	${RM} -f ${TARGETS} ${TEST_TARGETS}
