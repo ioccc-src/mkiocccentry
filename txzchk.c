@@ -1280,7 +1280,12 @@ check_tarball(char const *tar, char const *fnamchk)
 	    errp(28, __func__, "popen for reading failed for: %s", cmd);
 	    not_reached();
 	}
-	setvbuf(fnamchk_stream, (char *)NULL, _IOLBF, 0);
+
+	errno = 0;
+	ret = setvbuf(fnamchk_stream, (char *)NULL, _IOLBF, 0);
+	if (ret != 0) {
+	    warnp(__func__, "setvbuf failed for %s", cmd);
+	}
 
 	readline_len = readline(&dir_name, fnamchk_stream);
 	if (readline_len < 0) {
@@ -1342,6 +1347,11 @@ check_tarball(char const *tar, char const *fnamchk)
 	if (input_stream == NULL) {
 	    errp(32, __func__, "fopen of %s failed", txzpath);
 	    not_reached();
+	}
+	errno = 0;
+	ret = setvbuf(input_stream, (char *)NULL, _IOLBF, 0);
+	if (ret != 0) {
+	    warnp(__func__, "setvbuf failed for %s", txzpath);
 	}
     }
     else { /* if -T not specified we have to do more to set up input stream */
@@ -1418,7 +1428,11 @@ check_tarball(char const *tar, char const *fnamchk)
 	    not_reached();
 	}
     }
-    setvbuf(input_stream, (char *)NULL, _IOLBF, 0);
+    errno = 0;
+    ret = setvbuf(input_stream, (char *)NULL, _IOLBF, 0);
+    if (ret != 0) {
+	warnp(__func__, "setvbuf failed for %s", cmd);
+    }
 
     /*
      * process all tar lines listed
