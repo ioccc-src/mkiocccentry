@@ -37,7 +37,7 @@
 /*
  * jauthchk version
  */
-#define JAUTHCHK_VERSION "0.1 2022-02-12"	/* use format: major.minor YYYY-MM-DD */
+#define JAUTHCHK_VERSION "0.2 2022-02-13"	/* use format: major.minor YYYY-MM-DD */
 
 
 /*
@@ -251,8 +251,13 @@ sanity_chk(char const *file)
 static void
 check_author_json(char const *file)
 {
-    FILE *author_json;
+    FILE *stream;
     int ret;
+    unsigned line_num = 0; /* line number */
+    char *linep = NULL;	/* allocated line read */
+    char *line_dup = NULL; /* currently last line read */
+    ssize_t readline_len;	/* readline return length */
+
 
     /*
      * firewall
@@ -261,14 +266,73 @@ check_author_json(char const *file)
 	err(9, __func__, "passed NULL arg");
 	not_reached();
     }
-    author_json = fopen(file, "r");
-    if (author_json == NULL) {
+    stream = fopen(file, "r");
+    if (stream == NULL) {
 	err(10, __func__, "couldn't open %s", file);
 	not_reached();
     }
 
     errno = 0;
-    ret = fclose(author_json);
+    ret = setvbuf(stream, (char *)NULL, _IOLBF, 0);
+    if (ret != 0) {
+	warnp(__func__, "setvbuf for %s", file);
+    }
+    /* process lines until EOF */
+    do {
+	char *p = NULL;
+
+	++line_num;
+
+	readline_len = readline(&linep, stream);
+	if (readline_len < 0) {
+	    dbg(DBG_HIGH, "reached EOF of file %s", file);
+	    break;
+	} else if (readline_len == 0) {
+	    dbg(DBG_HIGH, "found empty line in file %s", file);
+	    continue;
+	}
+
+	/*
+	 * scan for embedded NUL bytes (before end of line)
+	 *
+	 */
+	errno = 0;			/* pre-clear errno for errp() */
+	p = (char *)memchr(linep, 0, (size_t)readline_len);
+	if (p != NULL) {
+	    warn("jauthchk", "found NUL before end of line, reading next line");
+	    continue;
+	}
+	dbg(DBG_VHIGH, "line %d: %s", line_num, linep);
+
+	/* free previous line's copy for current line (if this is the first line
+	 * it's still safe because it's safe to free a NULL pointer).
+	 */
+	free(line_dup);
+
+	/* now make a copy of the line */
+	errno = 0;
+	line_dup = strdup(linep);
+	if (line_dup == NULL) {
+	    errp(34, __func__, "unable to strdup line %s", linep);
+	    not_reached();
+	}
+
+	if (line_num == 1 && *linep != '{') {
+	    ++author.issues;
+	    err(1, __func__, "first character in file is not '{'");
+	    not_reached();
+	}
+    } while (readline_len >= 0);
+
+    /* verify that the very last character is a '}' */
+    if (line_dup == NULL || line_dup[strlen(line_dup)-1]!= '}') {
+	++author.issues;
+	err(2, __func__, "last character in file not '}': \"%c\"", line_dup?line_dup[strlen(line_dup)-1]:'\0');
+	not_reached();
+    }
+
+    errno = 0;
+    ret = fclose(stream);
     if (ret != 0) {
 	warnp(__func__, "error in fclose to .author.json file %s", file);
     }

@@ -66,11 +66,13 @@ struct txz_info {
     bool empty_remarks_md;		    /* true ==> remarks.md size == 0 */
     bool has_Makefile;			    /* true ==> has a Makefile */
     bool empty_Makefile;		    /* true ==> Makefile size == 0 */
+    unsigned invalid_chars;		    /* > 0 ==> invalid characters found in one or more files */
     off_t size;				    /* size of the tarball itself */
     off_t file_sizes;			    /* total size of all the files combined */
     off_t rounded_file_size;		    /* file sizes rounded up to 1024 multiple */
     unsigned correct_directory;		    /* number of files in the correct directory */
     unsigned dot_files;			    /* number of dot files that aren't .author.json and .info.json */
+    unsigned named_dot;			    /* number of files called just '.' */
     unsigned total_files;		    /* total files in the tarball */
     int total_issues;			    /* number of total issues in tarball */
 } txz_info;
@@ -300,16 +302,18 @@ show_txz_info(char const *txzpath)
 	dbg(DBG_HIGH, "txzchk: %s: empty .author.json:\t\t%d", txzpath, txz_info.empty_author_json);
 	dbg(DBG_MED, "txzchk: %s: has prog.c:\t\t\t%d", txzpath, txz_info.has_prog_c);
 	dbg(DBG_HIGH, "txzchk: %s: empty prog.c:\t\t\t%d", txzpath, txz_info.empty_prog_c);
-	dbg(DBG_MED, "txzchk: %s: has remarks.md:\t\t%d", txzpath, txz_info.has_remarks_md);
+	dbg(DBG_MED, "txzchk: %s: has remarks.md:\t\t\t%d", txzpath, txz_info.has_remarks_md);
 	dbg(DBG_HIGH, "txzchk: %s: empty remarks.md:\t\t%d", txzpath, txz_info.empty_remarks_md);
 	dbg(DBG_MED, "txzchk: %s: has Makefile:\t\t\t%d", txzpath, txz_info.has_Makefile);
-	dbg(DBG_HIGH, "txzchk: %s: empty Makefile:\t\t%d", txzpath, txz_info.empty_Makefile);
+	dbg(DBG_HIGH, "txzchk: %s: empty Makefile:\t\t\t%d", txzpath, txz_info.empty_Makefile);
 	dbg(DBG_MED, "txzchk: %s: size:\t\t\t\t%lld", txzpath, (long long)txz_info.size);
 	dbg(DBG_MED, "txzchk: %s: size of all files:\t\t%lld", txzpath, (long long)txz_info.file_sizes);
 	dbg(DBG_MED, "txzchk: %s: rounded files size:\t\t%lld", txzpath, (long long)txz_info.rounded_file_size);
 	dbg(DBG_MED, "txzchk: %s: total files:\t\t\t%d", txzpath, txz_info.total_files);
 	dbg(DBG_MED, "txzchk: %s: incorrect directory found:\t%d", txzpath, txz_info.correct_directory != txz_info.total_files);
-	dbg(DBG_MED, "txzchk: %s: invalid dot files found:\t%d", txzpath, txz_info.dot_files > 0);
+	dbg(DBG_MED, "txzchk: %s: invalid dot files found:\t\t%d", txzpath, txz_info.dot_files);
+	dbg(DBG_MED, "txzchk: %s: files named '.':\t\t\t%d", txzpath, txz_info.named_dot);
+	dbg(DBG_MED, "txzchk: %s: files with invalid chars:\t%u", txzpath, txz_info.invalid_chars);
 	dbg(DBG_VHIGH, "txzchk: %s: issues found:\t\t\t%d", txzpath, txz_info.total_issues);
 
     }
@@ -550,6 +554,8 @@ sanity_chk(char const *tar, char const *fnamchk)
 static void
 check_file(char const *txzpath, char *p, char const *dir_name, struct file *file)
 {
+    size_t j;
+
     /*
      * firewall
      */
@@ -558,14 +564,41 @@ check_file(char const *txzpath, char *p, char const *dir_name, struct file *file
 	not_reached();
     }
 
+    /* 
+     * check for dot files but note that a basename of only '.' also counts as a
+     * filename with just '.': so if the file starts with a '.' and it's not
+     * ".author.json" and not ".info.json" then it's a dot file; if it's ONLY
+     * '.' it counts as BOTH a dot file AND a file called just '.' (which would
+     * likely be a directory but is abuse nonetheless).
+     */
     if (*(file->basename) == '.' && strcmp(file->basename, ".info.json") && strcmp(file->basename, ".author.json")) {
 	++txz_info.total_issues;
 	warn("txzchk", "%s: found non .author.json and .info.json dot file %s", txzpath, file->basename);
 	txz_info.dot_files++;
     }
+    /* check for files called '.' without anything after the full stop */
+    if (*(file->basename) == '.' && !file->basename[1]) {
+	++txz_info.total_issues;
+	++txz_info.named_dot;
+	warn("txzchk", "%s: found file called '.' in path %s", txzpath, file->filename);
+    }
+
+    /* 
+     * filename (full path) must only use POSIX Fully portable characters: A-Z
+     * a-z 0-9 . _ - + characters and (for directories) '/'.
+     */
+    for (j = 0; j < strlen(file->filename); ++j) {
+	if (!isascii(file->filename[j]) ||
+	    (!isalnum(file->filename[j]) && file->filename[j] != '.' && file->filename[j] != '_' && 
+	     file->filename[j] != '-' && file->filename[j] != '+' && file->filename[j] != '/')) {
+		++txz_info.total_issues; /* report it once and consider it only one issue */
+		++txz_info.invalid_chars;
+		warn("txzchk", "%s: found non portable characters in file %s", txzpath, file->filename);
+		break; /* only count one character per filename */
+	}
+    }
 
     check_directories(file, dir_name, txzpath);
-
 }
 
 
@@ -766,7 +799,7 @@ check_directories(struct file *file, char const *dir_name, char const *txzpath)
     }
 
     /* check that there is a directory */
-    if (strchr(file->filename, '/') == NULL) {
+    if (strchr(file->filename, '/') == NULL && strcmp(file->filename, ".")) {
 	warn("txzchk", "%s: no directory found in filename %s", txzpath, file->filename);
 	++txz_info.total_issues;
     }
@@ -1247,7 +1280,12 @@ check_tarball(char const *tar, char const *fnamchk)
 	    errp(28, __func__, "popen for reading failed for: %s", cmd);
 	    not_reached();
 	}
-	setvbuf(fnamchk_stream, (char *)NULL, _IOLBF, 0);
+
+	errno = 0;
+	ret = setvbuf(fnamchk_stream, (char *)NULL, _IOLBF, 0);
+	if (ret != 0) {
+	    warnp(__func__, "setvbuf failed for %s", cmd);
+	}
 
 	readline_len = readline(&dir_name, fnamchk_stream);
 	if (readline_len < 0) {
@@ -1309,6 +1347,11 @@ check_tarball(char const *tar, char const *fnamchk)
 	if (input_stream == NULL) {
 	    errp(32, __func__, "fopen of %s failed", txzpath);
 	    not_reached();
+	}
+	errno = 0;
+	ret = setvbuf(input_stream, (char *)NULL, _IOLBF, 0);
+	if (ret != 0) {
+	    warnp(__func__, "setvbuf failed for %s", txzpath);
 	}
     }
     else { /* if -T not specified we have to do more to set up input stream */
@@ -1385,7 +1428,11 @@ check_tarball(char const *tar, char const *fnamchk)
 	    not_reached();
 	}
     }
-    setvbuf(input_stream, (char *)NULL, _IOLBF, 0);
+    errno = 0;
+    ret = setvbuf(input_stream, (char *)NULL, _IOLBF, 0);
+    if (ret != 0) {
+	warnp(__func__, "setvbuf failed for %s", cmd);
+    }
 
     /*
      * process all tar lines listed

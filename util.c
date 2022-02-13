@@ -1408,8 +1408,6 @@ readline(char **linep, FILE * stream)
  *      and if strip == true, without trailing whitespace,
  *      or NULL ==> EOF
  *
- * NOTE: This function will NOT return NULL.
- *
  * This function does not return on error.
  */
 char *

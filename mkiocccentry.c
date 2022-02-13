@@ -4911,7 +4911,12 @@ verify_entry_dir(char const *entry_dir, char const *ls)
 	errp(180, __func__, "popen for reading failed for: %s", cmd);
 	not_reached();
     }
-    setvbuf(ls_stream, (char *)NULL, _IOLBF, 0);
+
+    errno = 0;
+    ret = setvbuf(ls_stream, (char *)NULL, _IOLBF, 0);
+    if (ret != 0) {
+	warn(__func__, "setvbuf failed for %s", cmd);
+    }
 
     /*
      * read the 1st line - contains the total kibibyte (2^10) block line

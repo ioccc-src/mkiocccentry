@@ -93,7 +93,7 @@
 /*
  * IOCCC contest name
  *
- * use format: IOCCC99 or IOCCCMOCK
+ * use format: IOCCC[2-9][0-9] or IOCCCMOCK
  */
 #define IOCCC_CONTEST "IOCCCMOCK"
 
