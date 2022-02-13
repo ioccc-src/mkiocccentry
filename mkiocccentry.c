@@ -5044,7 +5044,7 @@ verify_entry_dir(char const *entry_dir, char const *ls)
  * NOTE: We chose to not escape '%' as was suggested by the above URL
  *	 because it is neither required by JSON nor implied by JSON.
  *
- * NOTE: While there exist C escapes for characters such as '\c',
+ * NOTE: While there exist C escapes for characters such as '\v',
  *	 due to flaws in the JSON spec, we must encode such characters
  *	 using the \uffff notation.
  *
