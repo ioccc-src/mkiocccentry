@@ -529,7 +529,6 @@ errp(int exitcode, char const *name, char const *fmt, ...)
 }
 
 
-
 /*
  * vfprintf_usage - print command line usage and perhaps exit
  *

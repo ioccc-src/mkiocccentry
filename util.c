@@ -1046,6 +1046,7 @@ cmdprintf(char const *format, ...)
     return cmd;
 }
 
+
 /*
  * para - print a paragraph of lines to stdout
  *
@@ -1493,7 +1494,7 @@ readline_dup(char **linep, bool strip, size_t *lenp, FILE *stream)
  *	fnamchk	    	    - if fnamchk option used and fnamchk ! NULL set *fnamchk to path
  *	jinfochk_flag_used  - true ==> -j jinfochk was used
  *	jinfochk	    - if -j jinfochk was used and jinfochk != NULL set *jinfochk to path
- *	jauthchk_flag_used  - true ==> -J jauthchk was used	    - 
+ *	jauthchk_flag_used  - true ==> -J jauthchk was used	    -
  *	jauthchk	    - if -J jauthchk was used and jauthchk != NULL set *jauthchk to path
  */
 void
@@ -1545,6 +1546,7 @@ find_utils(bool tar_flag_used, char **tar, bool cp_flag_used, char **cp, bool ls
 
     return;
 }
+
 
 /* round_to_multiple - round to a multiple
  *

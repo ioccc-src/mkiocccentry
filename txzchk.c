@@ -52,7 +52,7 @@ static bool quiet = false;		    /* true ==> only show errors and warnings */
 static bool text_file_flag_used = false;    /* true ==> assume txzpath is a text file */
 char const *txzpath = NULL;		    /* the current tarball being checked */
 
-/* 
+/*
  * information about the tarball
  */
 struct txz_info {
@@ -143,7 +143,9 @@ static struct file *alloc_file(char const *p);
 static void add_file_to_list(struct file *file);
 static void free_file_list(void);
 
-int main(int argc, char **argv)
+
+int
+main(int argc, char **argv)
 {
     extern char *optarg;		    /* option argument */
     extern int optind;			    /* argv index of the next arg */
@@ -273,11 +275,11 @@ int main(int argc, char **argv)
     exit(txz_info.total_issues != 0); /*ooo*/
 }
 
-/* 
+/*
  * show_txz_info    - show information about tarball (if verbosity is >= medium)
  *
  * given:
- *  
+ *
  *	txzpath	    - path to tarball we checked
  *
  * Returns void. Does not return on error.
@@ -564,7 +566,7 @@ check_file(char const *txzpath, char *p, char const *dir_name, struct file *file
 	not_reached();
     }
 
-    /* 
+    /*
      * check for dot files but note that a basename of only '.' also counts as a
      * filename with just '.': so if the file starts with a '.' and it's not
      * ".author.json" and not ".info.json" then it's a dot file; if it's ONLY
@@ -583,13 +585,13 @@ check_file(char const *txzpath, char *p, char const *dir_name, struct file *file
 	warn("txzchk", "%s: found file called '.' in path %s", txzpath, file->filename);
     }
 
-    /* 
+    /*
      * filename (full path) must only use POSIX Fully portable characters: A-Z
      * a-z 0-9 . _ - + characters and (for directories) '/'.
      */
     for (j = 0; j < strlen(file->filename); ++j) {
 	if (!isascii(file->filename[j]) ||
-	    (!isalnum(file->filename[j]) && file->filename[j] != '.' && file->filename[j] != '_' && 
+	    (!isalnum(file->filename[j]) && file->filename[j] != '.' && file->filename[j] != '_' &&
 	     file->filename[j] != '-' && file->filename[j] != '+' && file->filename[j] != '/')) {
 		++txz_info.total_issues; /* report it once and consider it only one issue */
 		++txz_info.invalid_chars;

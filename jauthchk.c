@@ -170,6 +170,7 @@ main(int argc, char **argv)
     exit(author.issues != 0);
 }
 
+
 /*
  * sanity_chk - perform basic sanity checks
  *
@@ -236,6 +237,7 @@ sanity_chk(char const *file)
 
     return;
 }
+
 
 /*
  * check_author_json  - check file as .author.json
@@ -337,6 +339,7 @@ check_author_json(char const *file)
 	warnp(__func__, "error in fclose to .author.json file %s", file);
     }
 }
+
 
 /*
  * usage - print usage to stderr
