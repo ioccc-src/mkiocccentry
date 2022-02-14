@@ -170,7 +170,7 @@ static struct encode jenc[BYTE_VALUES] = {
 
 
 /*
- * hexval - convert ASCII character to hex value
+ * hexval - concert ASCII character to hex value
  *
  * NOTE: -1 means the ASCII character is not a value hex character
  */
@@ -1020,14 +1020,14 @@ malloc_json_decode(char const *ptr, size_t len, size_t *retlen, bool strict)
     char *beyond = NULL;    /* beyond the end of the malloced encoding string */
     size_t mlen = 0;	    /* length of malloced encoded string */
     char *p;		    /* next place to encode */
-    char n;		    /* next character beyond a \\ */
-    char a;		    /* 1st hex character after \u */
+    char n='\0';	    /* next character beyond a \\ */
+    char a='\0';	    /* 1st hex character after \u */
     int xa;		    /* 1st hex character numeric value */
-    char b;		    /* 2nd hex character after \u */
+    char b='\0';	    /* 2nd hex character after \u */
     int xb;		    /* 2nd hex character numeric value */
-    char c;		    /* character to decode or 3rd hex character after \u */
+    char c='\0';	    /* character to decode or 3rd hex character after \u */
     int xc;		    /* 3nd hex character numeric value */
-    char d;		    /* 4th hex character after \u */
+    char d='\0';	    /* 4th hex character after \u */
     int xd;		    /* 4th hex character numeric value */
     size_t i;
 
