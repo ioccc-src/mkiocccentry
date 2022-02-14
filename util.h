@@ -44,6 +44,7 @@ typedef unsigned char bool;
 #undef false
 #define false ((bool)(0))
 #endif
+#define BITS_IN_BYTE (8)    /* assume 8 bit bytes */
 
 /*
  * location/country codes
@@ -75,10 +76,11 @@ struct location {
 #define JAUTHCHK_PATH_1 "/usr/local/bin/jauthchk"   /* default path to jauthchk tool if installed */
 #define JINFOCHK_PATH_0 "./jinfochk"		    /* default path to jinfochk tool */
 #define JINFOCHK_PATH_1 "/usr/local/bin/jinfochk"   /* default path to jinfochk tool if installed */
+
 /*
  * global variables
  */
-extern struct location loc[];			/* location/country codes */
+extern struct location loc[];		/* location/country codes */
 
 /*
  * external function declarations
@@ -97,8 +99,13 @@ extern void fpara(FILE * stream, char const *line, ...);
 extern ssize_t readline(char **linep, FILE * stream);
 extern char *readline_dup(char **linep, bool strip, size_t *lenp, FILE * stream);
 extern void find_utils(bool tar_flag_used, char **tar, bool cp_flag_used, char **cp,
-	bool ls_flag_used, char **ls, bool txzchk_flag_used, char **txzchk,
-	bool fnamchk_flag_used, char **fnamchk, bool jinfochk_flag_used, char **jinfochk,
-	bool jauthchk_flag_used, char **jauthchk);
+		       bool ls_flag_used, char **ls, bool txzchk_flag_used, char **txzchk,
+		       bool fnamchk_flag_used, char **fnamchk, bool jinfochk_flag_used,
+		       char **jinfochk, bool jauthchk_flag_used, char **jauthchk);
 extern off_t round_to_multiple(off_t num, off_t multiple);
+extern char *malloc_json_encode(char const *ptr, size_t len, size_t *retlen);
+extern char *malloc_json_str(char const *str, size_t *retlen);
+extern void jencchk(void);
+
+
 #endif				/* INCLUDE_UTIL_H */

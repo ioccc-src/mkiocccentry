@@ -1510,6 +1510,11 @@ sanity_chk(struct info *infop, char const *work_dir, char const *tar, char const
     }
 
     /*
+     * validate JSON encoding table
+     */
+    jencchk();
+
+    /*
      * obtain version string from iocccsize_version
      */
     infop->iocccsize_ver = iocccsize_version;
@@ -5002,29 +5007,29 @@ verify_entry_dir(char const *entry_dir, char const *ls)
 /*
  * json_putc - print a UTF-8 character with JSON encoding
  *
- * JSON string encoding JSON string encoding.
+ * JSON string encoding:
  *
  * These escape characters are required by JSON:
  *
  *     old			new
  *     ----------------------------
- *	"			\"
- *	/			\/
- *	\			\\
  *	<backspace>		\b	(\x08)
  *	<horizontal_tab>	\t	(\x09)
  *	<newline>		\n	(\x0a)
  *	<form_feed>		\f	(\x0c)
  *	<enter>			\r	(\x0d)
+ *	"			\"	(\x22)
+ *	/			\/	(\x2f)
+ *	\			\\	(\x5c)
  *
  * These escape characters are implied by JSON due to
  * HTML and XML encoding, although not strictly required:
  *
  *     old		new
  *     --------------------
- *	&		\u0026
- *	<		\u003c
- *	>		\u003e
+ *	&		\u0026	(\x26)
+ *	<		\u003c	(\x3c)
+ *	>		\u003e	(\x3e)
  *
  * These escape characters are implied by JSON to let humans
  * view JSON without worrying about characters that might
