@@ -79,6 +79,12 @@ struct info {
 };
 
 
+/*
+ * external function declarations
+ */
+extern char *malloc_json_encode(char const *ptr, size_t len, size_t *retlen);
+extern char *malloc_json_str(char const *str, size_t *retlen);
+extern void jencchk(void);
 
 
 #endif /* JSON_H */

@@ -95,8 +95,9 @@
  */
 #include "util.h"
 
+
 /*
- * JSON - Jon structures
+ * JSON - JSON structures and functions
  */
 #include "json.h"
 

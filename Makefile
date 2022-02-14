@@ -119,7 +119,7 @@ DESTDIR= /usr/local/bin
 TARGETS= mkiocccentry iocccsize dbg_test limit_ioccc.sh fnamchk txzchk jauthchk jinfochk
 MANPAGES = mkiocccentry.1 txzchk.1 fnamchk.1 iocccsize.1
 TEST_TARGETS= dbg_test
-OBJFILES = dbg.o util.o mkiocccentry.o iocccsize.o fnamchk.o txzchk.o jauthchk.o jinfochk.o
+OBJFILES = dbg.o util.o mkiocccentry.o iocccsize.o fnamchk.o txzchk.o jauthchk.o jinfochk.o json.o
 SRCFILES = $(patsubst %.o,%.c,$(OBJFILES))
 DSYMDIRS = $(patsubst %,%.dSYM,$(TARGETS))
 
@@ -136,8 +136,8 @@ rule_count.c: iocccsize.c
 rule_count.o: rule_count.c limit_ioccc.h Makefile
 	${CC} ${CFLAGS} -DMKIOCCCENTRY_USE rule_count.c -c
 
-mkiocccentry: mkiocccentry.c limit_ioccc.h json.h rule_count.o dbg.o util.o Makefile
-	${CC} ${CFLAGS} mkiocccentry.c rule_count.o dbg.o util.o -o $@
+mkiocccentry: mkiocccentry.c limit_ioccc.h json.h rule_count.o dbg.o util.o json.o Makefile
+	${CC} ${CFLAGS} mkiocccentry.c rule_count.o dbg.o util.o json.o -o $@
 
 iocccsize: iocccsize.c limit_ioccc.h Makefile
 	${CC} ${CFLAGS} -DIOCCCSIZE_STANDALONE iocccsize.c -o $@
@@ -310,3 +310,4 @@ fnamchk.o: fnamchk.c limit_ioccc.h dbg.h util.h
 txzchk.o: txzchk.c limit_ioccc.h dbg.h util.h
 jauthchk.o: jauthchk.c limit_ioccc.h dbg.h util.h json.h
 jinfochk.o: jinfochk.c limit_ioccc.h dbg.h util.h json.h
+json.o: json.c dbg.h util.h
