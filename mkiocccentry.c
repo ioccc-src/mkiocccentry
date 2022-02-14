@@ -95,8 +95,9 @@
  */
 #include "util.h"
 
+
 /*
- * JSON - Jon structures
+ * JSON - JSON structures and functions
  */
 #include "json.h"
 
@@ -219,7 +220,6 @@ static char *get_title(struct info *infop);
 static char *get_abstract(struct info *infop);
 static int get_author_info(struct info *infop, char *ioccc_id, struct author **author_set);
 static void verify_entry_dir(char const *entry_dir, char const *ls);
-static bool json_putc(int const c, FILE *stream);
 static bool json_fprintf_str(FILE *stream, char const *str);
 static bool json_fprintf_value_string(FILE *stream, char const *lead, char const *name, char const *middle, char const *value,
 				      char const *tail);
@@ -1508,6 +1508,11 @@ sanity_chk(struct info *infop, char const *work_dir, char const *tar, char const
 	err(41, __func__, "work_dir is not a writable directory: %s", work_dir);
 	not_reached();
     }
+
+    /*
+     * validate JSON encoding table
+     */
+    jencchk();
 
     /*
      * obtain version string from iocccsize_version
@@ -5000,134 +5005,6 @@ verify_entry_dir(char const *entry_dir, char const *ls)
 
 
 /*
- * json_putc - print a UTF-8 character with JSON encoding
- *
- * JSON string encoding JSON string encoding.
- *
- * These escape characters are required by JSON:
- *
- *     old		new
- *     --------------------
- *	"		\"
- *	/		\/
- *	\		\\
- *	<backspace>	\b	(\x08)
- *	<tab>		\t	(\x09)
- *	<newline>	\n	(\x0a)
- *	<vertical_tab>	\f	(\x0c)
- *	<enter>		\r	(\x0d)
- *
- * These escape characters are implied by JSON due to
- * HTML and XML encoding, although not strictly required:
- *
- *     old		new
- *     --------------------
- *	<		\u003C
- *	>		\u003E
- *	&		\u0026
- *
- * These escape characters are implied by JSON to let humans
- * view JSON without worrying about characters that might
- * not display / might not be printable:
- *
- *     old		new
- *     --------------------
- *	\x00-\x07	\u0000 - \u0007
- *	\x0e-\x1f	\u0005 - \x001f
- *	\x7f-\xff	\u007f - \u00ff
- *
- * See:
- *
- *	https://developpaper.com/escape-and-unicode-encoding-in-json-serialization/
- *
- * NOTE: We chose to not escape '%' as was suggested by the above URL
- *	 because it is neither required by JSON nor implied by JSON.
- *
- * given:
- *	stream	- string to print on
- *	c	- character to encode
- *
- * returns:
- *	true ==> stream print was OK,
- *	false ==> error printing to stream
- */
-static bool
-json_putc(int const c, FILE *stream)
-{
-    int ret;			/* libc function return */
-
-    /*
-     * firewall
-     */
-    if (stream == NULL) {
-	warn(__func__, "called with NULL arg(s)");
-	return false;
-    }
-    if (c < 0 || c > 0xffff) {
-	warn(__func__, "c is out of range [0,0xffff]: %x", c);
-	return false;
-    }
-
-    /*
-     * case: \cFFFF encoding
-     */
-    if (c == '<' || c == '>' || c == '&' ||
-	(c >= 0x00 && c <= 0x07) || (c >= 0x0e && c <= 0x1f) || c >= 0x7f) {
-	errno = 0;			/* pre-clear errno for warnp() */
-	ret = fprintf(stream, "\\c%04X", c);
-	if (ret <= 0) {
-	    warnp(__func__, "fprintf #0 error in \\cFFFF encoding");
-	    return false;
-	}
-        return true;
-    }
-
-    /*
-     * case: \ escaped char
-     */
-    errno = 0;			/* pre-clear errno for warnp() */
-    switch (c) {
-    case '"':
-	ret = fprintf(stream, "\\\"");
-	break;
-    case '/':
-	ret = fprintf(stream, "\\/");
-	break;
-    case '\\':
-	ret = fprintf(stream, "\\\\");
-	break;
-    case '\b':
-	ret = fprintf(stream, "\\b");
-	break;
-    case '\f':
-	ret = fprintf(stream, "\\f");
-	break;
-    case '\t':
-	ret = fprintf(stream, "\\t");
-	break;
-    case '\r':
-	ret = fprintf(stream, "\\r");
-	break;
-    case '\n':
-	ret = fprintf(stream, "\\n");
-	break;
-
-    /*
-     * case: un-escaped char
-     */
-    default:
-	ret = fprintf(stream, "%c", c);
-	break;
-    }
-    if (ret <= 0) {
-	warnp(__func__, "fprintf #1 error");
-	return false;
-    }
-    return true;
-}
-
-
-/*
  * json_fprintf_str - print a JSON string
  *
  * Print on stream:
@@ -5694,7 +5571,7 @@ write_info(struct info *infop, char const *entry_dir, bool test_mode, char const
 	json_fprintf_value_long(info_stream, "\t", "formed_timestamp", " : ", (long)infop->tstamp, ",\n") &&
 	json_fprintf_value_long(info_stream, "\t", "formed_timestamp_usec", " : ", (long)infop->usec, ",\n") &&
 	json_fprintf_value_string(info_stream, "\t", "timestamp_epoch", " : ", infop->epoch, ",\n") &&
-	json_fprintf_value_long(info_stream, "\t", "min_timestamp", " : ", MIN_TIMESTAMP, "\n") &&
+	json_fprintf_value_long(info_stream, "\t", "min_timestamp", " : ", MIN_TIMESTAMP, ",\n") &&
 	json_fprintf_value_string(info_stream, "\t", "formed_UTC", " : ", infop->gmtime, "\n") &&
 	fprintf(info_stream, "}\n") > 0;
     if (!ret) {
@@ -5881,7 +5758,7 @@ write_author(struct info *infop, int author_count, struct author *authorp, char 
 	json_fprintf_value_long(author_stream, "\t", "formed_timestamp", " : ", (long)infop->tstamp, ",\n") &&
 	json_fprintf_value_long(author_stream, "\t", "formed_timestamp_usec", " : ", (long)infop->usec, ",\n") &&
 	json_fprintf_value_string(author_stream, "\t", "timestamp_epoch", " : ", infop->epoch, ",\n") &&
-	json_fprintf_value_long(author_stream, "\t", "min_timestamp", " : ", MIN_TIMESTAMP, "\n") &&
+	json_fprintf_value_long(author_stream, "\t", "min_timestamp", " : ", MIN_TIMESTAMP, ",\n") &&
 	json_fprintf_value_string(author_stream, "\t", "formed_UTC", " : ", infop->gmtime, "\n") &&
 	fprintf(author_stream, "}\n") > 0;
     if (!ret) {

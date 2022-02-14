@@ -1,5 +1,54 @@
+/* vim: set tabstop=8 softtabstop=4 shiftwidth=4 noexpandtab : */
+/*
+ * json - JSON functions supporting mkiocccentry code
+ *
+ * JSON related functions to support formation of .info.json files
+ * and .author.json files their related check tools, test code,
+ * and string encoding/decoding tools.
+ *
+ * "Because JSON embodies a commitment to original design flaws." :-)
+ *
+ * Copyright (c) 2022 by Landon Curt Noll.  All Rights Reserved.
+ *
+ * Permission to use, copy, modify, and distribute this software and
+ * its documentation for any purpose and without fee is hereby granted,
+ * provided that the above copyright, this permission notice and text
+ * this comment, and the disclaimer below appear in all of the following:
+ *
+ *       supporting documentation
+ *       source copies
+ *       source works derived from this source
+ *       binaries derived from this source or from derived source
+ *
+ * LANDON CURT NOLL DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE,
+ * INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS. IN NO
+ * EVENT SHALL LANDON CURT NOLL BE LIABLE FOR ANY SPECIAL, INDIRECT OR
+ * CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF
+ * USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR
+ * OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
+ * PERFORMANCE OF THIS SOFTWARE.
+ *
+ * chongo (Landon Curt Noll, http://www.isthe.com/chongo/index.html) /\oo/\
+ *
+ * Share and enjoy! :-)
+ */
+
+
 #ifndef JSON_H
 #define JSON_H
+
+
+#include <time.h>
+#include <stdint.h>
+
+
+/*
+ * byte as octet constants
+ */
+#define BITS_IN_BYTE (8)	    /* assume 8 bit bytes */
+#define MAX_BYTE (0xff)		    /* maximum byte value */
+#define BYTE_VALUES (MAX_BYTE+1)    /* number of different combinations of bytes */
+
 
 /*
  * author info
@@ -14,7 +63,6 @@ struct author {
     char *github;		/* author GitHub username or or empty string ==> not provided */
     char *affiliation;		/* author affiliation or or empty string ==> not provided */
     int author_num;		/* author number */
-
 
     /* jauthchk specific */
     unsigned issues;		/* number of issues found in file (for jauthchk) */
@@ -79,6 +127,15 @@ struct info {
 };
 
 
+/*
+ * external function declarations
+ */
+extern char *malloc_json_encode(char const *ptr, size_t len, size_t *retlen);
+extern char *malloc_json_encode_str(char const *str, size_t *retlen);
+extern void jencchk(void);
+extern bool json_putc(uint8_t const c, FILE *stream);
+extern char *malloc_json_decode(char const *ptr, size_t len, size_t *retlen, bool strict);
+extern char *malloc_json_decode_str(char const *str, size_t *retlen, bool strict);
 
 
 #endif /* JSON_H */

@@ -79,7 +79,7 @@
  *
  * The following is NOT the version of this mkiocccentry tool!
  */
-#define INFO_VERSION "1.7 2022-02-04"	/* version of the .info.json file to produce */
+#define INFO_VERSION "1.8 2022-02-13"	/* version of the .info.json file to produce */
 
 
 /*
@@ -87,13 +87,13 @@
  *
  * The following is NOT the version of this mkiocccentry tool!
  */
-#define AUTHOR_VERSION "1.8 2022-02-04"	/* version of the .author.json file to produce */
+#define AUTHOR_VERSION "1.9 2022-02-13"	/* version of the .author.json file to produce */
 
 
 /*
  * IOCCC contest name
  *
- * use format: IOCCC[2-9][0-9] or IOCCCMOCK
+ * use format: IOCCC[0-9][0-9] or IOCCCMOCK
  */
 #define IOCCC_CONTEST "IOCCCMOCK"
 
