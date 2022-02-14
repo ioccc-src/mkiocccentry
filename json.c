@@ -170,7 +170,7 @@ static struct encode jenc[BYTE_VALUES] = {
 
 
 /*
- * hexval - concert ASCII character to hex value
+ * hexval - convert ASCII character to hex value
  *
  * NOTE: -1 means the ASCII character is not a value hex character
  */
