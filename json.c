@@ -859,62 +859,16 @@ jencchk(void)
 /*
  * json_putc - print a UTF-8 character with JSON encoding
  *
- * JSON string encoding:
- *
- * These escape characters are required by JSON:
- *
- *     old			new
- *     ----------------------------
- *	<backspace>		\b	(\x08)
- *	<horizontal_tab>	\t	(\x09)
- *	<newline>		\n	(\x0a)
- *	<form_feed>		\f	(\x0c)
- *	<enter>			\r	(\x0d)
- *	"			\"	(\x22)
- *	/			\/	(\x2f)
- *	\			\\	(\x5c)
- *
- * These escape characters are implied by JSON due to
- * HTML and XML encoding, although not strictly required:
- *
- *     old		new
- *     --------------------
- *	&		\u0026	(\x26)
- *	<		\u003c	(\x3c)
- *	>		\u003e	(\x3e)
- *
- * These escape characters are implied by JSON to let humans
- * view JSON without worrying about characters that might
- * not display / might not be printable:
- *
- *     old			new
- *     ----------------------------
- *	\x00-\x07		\u0000 - \u0007
- *	\x0b			\u000b <vertical_tab>
- *	\x0e-\x1f		\u000e - \x001f
- *	\x7f-\xff		\u007f - \u00ff
- *
- * See:
- *
- *	https://developpaper.com/escape-and-unicode-encoding-in-json-serialization/
- *
- * NOTE: We chose to not escape '%' as was suggested by the above URL
- *	 because it is neither required by JSON nor implied by JSON.
- *
- * NOTE: While there exist C escapes for characters such as '\v',
- *	 due to flaws in the JSON spec, we must encode such characters
- *	 using the \uffff notation.
- *
  * given:
  *	stream	- string to print on
- *	c	- character to encode
+ *	c	- UTF-8 character to encode
  *
  * returns:
  *	true ==> stream print was OK,
  *	false ==> error printing to stream
  */
 bool
-json_putc(int const c, FILE *stream)
+json_putc(uint8_t const c, FILE *stream)
 {
     int ret;			/* libc function return */
 
@@ -925,62 +879,15 @@ json_putc(int const c, FILE *stream)
 	warn(__func__, "called with NULL arg(s)");
 	return false;
     }
-    if (c < 0 || c > 0xffff) {
-	warn(__func__, "c is out of range [0,0xffff]: %x", c);
+    if (c < 0 || c > 0xff) {
+	warn(__func__, "c is out of range [0,0xff]: %x", c);
 	return false;
     }
 
     /*
-     * case: \cffff encoding
+     * write JSON encoding to stream
      */
-    if ((c >= 0x00 && c <= 0x07) || c == 0x0b || (c >= 0x0e && c <= 0x1f) ||
-        c == '&' || c == '<' || c == '>' || c >= 0x7f) {
-	errno = 0;			/* pre-clear errno for warnp() */
-	ret = fprintf(stream, "\\c%04x", c);
-	if (ret <= 0) {
-	    warnp(__func__, "fprintf #0 error in \\cffff encoding");
-	    return false;
-	}
-        return true;
-    }
-
-    /*
-     * case: \ escaped char
-     */
-    errno = 0;			/* pre-clear errno for warnp() */
-    switch (c) {
-    case '"':
-	ret = fprintf(stream, "\\\"");
-	break;
-    case '/':
-	ret = fprintf(stream, "\\/");
-	break;
-    case '\\':
-	ret = fprintf(stream, "\\\\");
-	break;
-    case '\b':	/* \x08 - bachspace */
-	ret = fprintf(stream, "\\b");
-	break;
-    case '\t':	/* \x09 - horizontal tab */
-	ret = fprintf(stream, "\\t");
-	break;
-    case '\n':	/* \x0a - line feed */
-	ret = fprintf(stream, "\\n");
-	break;
-    case '\f':	/* \x0c - form feed */
-	ret = fprintf(stream, "\\f");
-	break;
-    case '\r':	/* \x0d - carriage return */
-	ret = fprintf(stream, "\\r");
-	break;
-
-    /*
-     * case: un-escaped char
-     */
-    default:
-	ret = fprintf(stream, "%c", c);
-	break;
-    }
+    ret = fprintf(stream, "%s", jenc[c].enc);
     if (ret <= 0) {
 	warnp(__func__, "fprintf #1 error");
 	return false;
