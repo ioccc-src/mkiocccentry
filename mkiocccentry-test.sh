@@ -46,16 +46,30 @@ answers() {
 cat <<"EOF"
 test
 0
-title
-abstract
-1
-author name
-CC
-test@example.com
-https://example.com/index.html
-@twitter
-@github
-an affiliation
+title-for-entry0
+abstract for entry #0
+3
+author0 middle0 last0
+AU
+user0@example.com
+https://host0.example.com/index.html
+@twitter0
+@github0
+an affiliation for #0 author
+author1 middle1a middle1b last1
+UK
+
+
+
+
+
+author2 middle2 last2
+US
+user2@example.com
+http://host2.example.com/index.html
+@twitter2
+@github2
+an affiliation for #2 author
 ANSWERS_EOF
 EOF
 }
