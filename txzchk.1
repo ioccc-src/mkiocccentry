@@ -1,4 +1,4 @@
-.TH txzchk 1 "13 February 2022" "txzchk" "IOCCC tools"
+.TH txzchk 1 "14 February 2022" "txzchk" "IOCCC tools"
 .SH NAME
 txzchk \- sanity checker tool used on IOCCC compressed tarballs
 .SH SYNOPSIS
@@ -38,7 +38,8 @@ If this option is not specified the program looks under the current working dire
 Assume txzpath is a text file; use \fBfopen(3)\fP and \fBfclose(3)\fP instead of \fBpopen(3)\fP and \fBpclose(3)\fP and don't require \fBtar\fP program.
 .SH EXIT STATUS
 .PP
-\fBmain()\fP returns 0 if no issues are found and 1 if there are issues found; if there's an error the end is not reached.
+\fBmain()\fP returns the number of issues found: 0 indicating all okay whereas a value > 0 is the number of issues found.
+If there's either an internal error or parsing error (which could happen with a tar output that's not known for example) the end is not reached.
 .SH FILES
 \fItxzchk.c\fP
 .RS

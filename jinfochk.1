@@ -1,4 +1,4 @@
-.TH jinfochk 1 "13 February 2022" "jinfochk" "IOCCC tools"
+.TH jinfochk 1 "14 February 2022" "jinfochk" "IOCCC tools"
 .SH NAME
 jinfochk \- IOCCC tool to validate .info.json file found within an entry directory
 .SH SYNOPSIS
@@ -30,7 +30,7 @@ Quiet mode.
 Don't show welcome messages etc. (primarily used with \fBmkiocccentry\fP).
 .SH EXIT STATUS
 .PP
-\fBmain()\fP returns 0 on success; if there's an error non-zero is returned.
+\fBmain()\fP returns the number of issues found: 0 indicating all okay whereas a value > 0 is the number of issues found.
 .SH FILES
 \fIjinfochk.c\fP
 .RS
@@ -39,6 +39,10 @@ Source file to the \fBjinfochk\fP tool.
 \fIjson.h\fP
 .RS
 Header file with JSON data and function prototypes.
+.RE
+\fIjson.c\fP
+.RS
+Source file with JSON data and function definitions.
 .RE
 .SH BUGS
 .PP

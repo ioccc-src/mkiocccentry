@@ -167,7 +167,7 @@ main(int argc, char **argv)
     /*
      * All Done!!! - Jessica Noll, age 2
      */
-    exit(author.issues != 0);
+    exit(author.issues);
 }
 
 
