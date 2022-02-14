@@ -2,11 +2,11 @@
 /*
  * json - JSON functions supporting mkiocccentry code
  *
- * JSON related fuctions to support formation of .info.json files
- * and .author.json filesm their related check tools, test code,
+ * JSON related functions to support formation of .info.json files
+ * and .author.json files their related check tools, test code,
  * and string encoding/decoding tools.
  *
- * "Because JSON enbodies a commitment to original design flaws." :-)
+ * "Because JSON embodies a commitment to original design flaws." :-)
  *
  * Copyright (c) 2022 by Landon Curt Noll.  All Rights Reserved.
  *

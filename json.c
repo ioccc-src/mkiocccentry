@@ -2,11 +2,11 @@
 /*
  * json - JSON functions supporting mkiocccentry code
  *
- * JSON related fuctions to support formation of .info.json files
- * and .author.json filesm their related check tools, test code,
+ * JSON related functions to support formation of .info.json files
+ * and .author.json files their related check tools, test code,
  * and string encoding/decoding tools.
  *
- * "Because JSON enbodies a commitment to original design flaws." :-)
+ * "Because JSON embodies a commitment to original design flaws." :-)
  *
  * Copyright (c) 2022 by Landon Curt Noll.  All Rights Reserved.
  *
@@ -172,7 +172,7 @@ static struct encode jenc[BYTE_VALUES] = {
 /*
  * hexval - concert ASCII character to hex value
  *
- * NOTE: -1 means the ASCII character is not a valud hex character
+ * NOTE: -1 means the ASCII character is not a value hex character
  */
 static int hexval[BYTE_VALUES] = {
     /* \x00 - \x0f */
@@ -262,7 +262,7 @@ static int hexval[BYTE_VALUES] = {
  * given:
  *	ptr	start of memory block to encode
  *	len	length of block to encode in bytes
- *	retlen	address of where to store malloced length, if reflen != NULL
+ *	retlen	address of where to store malloced length, if retlen != NULL
  *
  * returns:
  *	malloced JSON encoding of a block, or NULL ==> error
@@ -354,7 +354,7 @@ malloc_json_encode(char const *ptr, size_t len, size_t *retlen)
  *
  * given:
  *	str	a string to encode
- *	retlen	address of where to store malloced length, if reflen != NULL
+ *	retlen	address of where to store malloced length, if retlen != NULL
  *
  * returns:
  *	malloced JSON encoding of a block, or NULL ==> error
@@ -1003,8 +1003,8 @@ json_putc(uint8_t const c, FILE *stream)
  * given:
  *	ptr	start of memory block to decode
  *	len	length of block to decode in bytes
- *	retlen	address of where to store malloced length, if reflen != NULL
- *	strict	true ==> strict decodong based on how malloc_json_encode() encodes
+ *	retlen	address of where to store malloced length, if retlen != NULL
+ *	strict	true ==> strict decoding based on how malloc_json_encode() encodes
  *	        false ==> permit a wider use of \-escaping and unencoded char
  *
  *		    NOTE: struct == false implies a strict reading of the JSON spec
@@ -1079,7 +1079,7 @@ malloc_json_decode(char const *ptr, size_t len, size_t *retlen, bool strict)
 		    if (retlen != NULL) {
 			*retlen = 0;
 		    }
-		    warn(__func__, "strict encoding at %lu found unescapted char: 0x%02x", (unsigned long)i, (uint8_t)c);
+		    warn(__func__, "strict encoding at %lu found un-escaped char: 0x%02x", (unsigned long)i, (uint8_t)c);
 		    return NULL;
 		}
 		switch (c) {
@@ -1093,7 +1093,7 @@ malloc_json_decode(char const *ptr, size_t len, size_t *retlen, bool strict)
 		    if (retlen != NULL) {
 			*retlen = 0;
 		    }
-		    warn(__func__, "strict encoding at %lu found unescapted char: %c", (unsigned long)i, c);
+		    warn(__func__, "strict encoding at %lu found un-escaped char: %c", (unsigned long)i, c);
 		    return NULL;
 		    break;
 
@@ -1123,7 +1123,7 @@ malloc_json_decode(char const *ptr, size_t len, size_t *retlen, bool strict)
 		    if (retlen != NULL) {
 			*retlen = 0;
 		    }
-		    warn(__func__, "non-strict encoding found \\=escapted char: 0x%02x", (uint8_t)c);
+		    warn(__func__, "non-strict encoding found \\=escaped char: 0x%02x", (uint8_t)c);
 		    return NULL;
 		    break;
 		case '"':   /*fallthru*/
@@ -1133,7 +1133,7 @@ malloc_json_decode(char const *ptr, size_t len, size_t *retlen, bool strict)
 		    if (retlen != NULL) {
 			*retlen = 0;
 		    }
-		    warn(__func__, "non-strict encoding found \\=escapted char: %c", c);
+		    warn(__func__, "non-strict encoding found \\=escaped char: %c", c);
 		    return NULL;
 		    break;
 
@@ -1237,7 +1237,7 @@ malloc_json_decode(char const *ptr, size_t len, size_t *retlen, bool strict)
 		break;
 
 	    /*
-	     * valid C escaoe sequence but unusual JSON \-escape character
+	     * valid C escape sequence but unusual JSON \-escape character
 	     */
 	    case 'a':	/* ASCII bell */ /*fallthru*/
 	    case 'v':	/* ASCII vertical tab */ /*fallthru*/
@@ -1408,7 +1408,7 @@ malloc_json_decode(char const *ptr, size_t len, size_t *retlen, bool strict)
 		    break;
 
 		/*
-		 * case: \xxxxx
+		 * case: \uxxxx
 		 */
 		} else {
 
@@ -1480,9 +1480,9 @@ malloc_json_decode(char const *ptr, size_t len, size_t *retlen, bool strict)
  *
  * given:
  *	str	a string to decode
- *	retlen	address of where to store malloced length, if reflen != NULL
- *	strict	true ==> strict decodong based on how malloc_json_decode() decodes
- *	        false ==> permit a wider use of \-escaping and undecoded char
+ *	retlen	address of where to store malloced length, if retlen != NULL
+ *	strict	true ==> strict decoding based on how malloc_json_decode() decodes
+ *	        false ==> permit a wider use of \-escaping and un-decoded char
  *
  *		    NOTE: struct == false implies a strict reading of the JSON spec
  *
