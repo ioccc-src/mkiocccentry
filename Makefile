@@ -310,4 +310,4 @@ fnamchk.o: fnamchk.c limit_ioccc.h dbg.h util.h
 txzchk.o: txzchk.c limit_ioccc.h dbg.h util.h
 jauthchk.o: jauthchk.c limit_ioccc.h dbg.h util.h json.h
 jinfochk.o: jinfochk.c limit_ioccc.h dbg.h util.h json.h
-json.o: json.c dbg.h util.h
+json.o: json.c dbg.h util.h json.h

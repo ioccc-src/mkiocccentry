@@ -44,7 +44,6 @@ typedef unsigned char bool;
 #undef false
 #define false ((bool)(0))
 #endif
-#define BITS_IN_BYTE (8)    /* assume 8 bit bytes */
 
 /*
  * location/country codes

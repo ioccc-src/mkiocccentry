@@ -59,6 +59,7 @@
 /*
  * JSON - JSON structures and functions
  */
+#include "json.h"
 
 
 /*
@@ -69,7 +70,7 @@ struct encode {
     size_t len;		    /* length of encoding */
     const char * const enc; /* JSON encoding of val */
 };
-static struct encode jenc[1<<BITS_IN_BYTE] = {
+static struct encode jenc[BYTE_VALUES] = {
     /* \x00 - \x0f */
     {0x00, 6, "\\u0000"}, {0x01, 6, "\\u0001"}, {0x02, 6, "\\u0002"}, {0x03, 6, "\\u0003"},
     {0x04, 6, "\\u0004"}, {0x05, 6, "\\u0005"}, {0x06, 6, "\\u0006"}, {0x07, 6, "\\u0007"},
@@ -393,16 +394,16 @@ jencchk(void)
     /*
      * assert: table must be 256 elements long
      */
-    if (sizeof(jenc)/sizeof(jenc[0]) != 1<<BITS_IN_BYTE) {
+    if (sizeof(jenc)/sizeof(jenc[0]) != BYTE_VALUES) {
 	err(151, __func__, "jenc table as %lu elements instead of %d",
-			   (unsigned long)sizeof(jenc)/sizeof(jenc[0]), 1<<BITS_IN_BYTE);
+			   (unsigned long)sizeof(jenc)/sizeof(jenc[0]), BYTE_VALUES);
 	not_reached();
     }
 
     /*
      * assert: byte must be an index from 0 to 256
      */
-    for (i=0; i < 1<<BITS_IN_BYTE; ++i) {
+    for (i=0; i < BYTE_VALUES; ++i) {
 	if (jenc[i].byte != i) {
 	    err(152, __func__, "jenc[0x%02x].byte: %d != %d", i, jenc[i].byte, i);
 	    not_reached();
@@ -412,7 +413,7 @@ jencchk(void)
     /*
      * assert: enc string must be non-NULL
      */
-    for (i=0; i < 1<<BITS_IN_BYTE; ++i) {
+    for (i=0; i < BYTE_VALUES; ++i) {
 	if (jenc[i].enc == NULL) {
 	    err(153, __func__, "jenc[0x%02x].enc == NULL", i);
 	    not_reached();
@@ -422,7 +423,7 @@ jencchk(void)
     /*
      * assert: length of enc string must match len
      */
-    for (i=0; i < 1<<BITS_IN_BYTE; ++i) {
+    for (i=0; i < BYTE_VALUES; ++i) {
 	if (strlen(jenc[i].enc) != jenc[i].len) {
 	    err(154, __func__, "jenc[0x%02x].enc length: %lu != jenc[0x%02x].len: %lu",
 			       i, (unsigned long)strlen(jenc[i].enc),
@@ -820,7 +821,7 @@ jencchk(void)
     /*
      * finally try to encode every possible string with a single non-NUL character
      */
-    for (i=1; i < 1<<BITS_IN_BYTE; ++i) {
+    for (i=1; i < BYTE_VALUES; ++i) {
 	dbg(DBG_VVVHIGH, "testing malloc_json_str(0x%02x, *mlen)", i);
 	/* load input string */
 	str[0] = (char)i;
@@ -852,4 +853,137 @@ jencchk(void)
      */
     dbg(DBG_VVHIGH, "jenc[] table passes");
     return;
+}
+
+
+/*
+ * json_putc - print a UTF-8 character with JSON encoding
+ *
+ * JSON string encoding:
+ *
+ * These escape characters are required by JSON:
+ *
+ *     old			new
+ *     ----------------------------
+ *	<backspace>		\b	(\x08)
+ *	<horizontal_tab>	\t	(\x09)
+ *	<newline>		\n	(\x0a)
+ *	<form_feed>		\f	(\x0c)
+ *	<enter>			\r	(\x0d)
+ *	"			\"	(\x22)
+ *	/			\/	(\x2f)
+ *	\			\\	(\x5c)
+ *
+ * These escape characters are implied by JSON due to
+ * HTML and XML encoding, although not strictly required:
+ *
+ *     old		new
+ *     --------------------
+ *	&		\u0026	(\x26)
+ *	<		\u003c	(\x3c)
+ *	>		\u003e	(\x3e)
+ *
+ * These escape characters are implied by JSON to let humans
+ * view JSON without worrying about characters that might
+ * not display / might not be printable:
+ *
+ *     old			new
+ *     ----------------------------
+ *	\x00-\x07		\u0000 - \u0007
+ *	\x0b			\u000b <vertical_tab>
+ *	\x0e-\x1f		\u000e - \x001f
+ *	\x7f-\xff		\u007f - \u00ff
+ *
+ * See:
+ *
+ *	https://developpaper.com/escape-and-unicode-encoding-in-json-serialization/
+ *
+ * NOTE: We chose to not escape '%' as was suggested by the above URL
+ *	 because it is neither required by JSON nor implied by JSON.
+ *
+ * NOTE: While there exist C escapes for characters such as '\v',
+ *	 due to flaws in the JSON spec, we must encode such characters
+ *	 using the \uffff notation.
+ *
+ * given:
+ *	stream	- string to print on
+ *	c	- character to encode
+ *
+ * returns:
+ *	true ==> stream print was OK,
+ *	false ==> error printing to stream
+ */
+bool
+json_putc(int const c, FILE *stream)
+{
+    int ret;			/* libc function return */
+
+    /*
+     * firewall
+     */
+    if (stream == NULL) {
+	warn(__func__, "called with NULL arg(s)");
+	return false;
+    }
+    if (c < 0 || c > 0xffff) {
+	warn(__func__, "c is out of range [0,0xffff]: %x", c);
+	return false;
+    }
+
+    /*
+     * case: \cffff encoding
+     */
+    if ((c >= 0x00 && c <= 0x07) || c == 0x0b || (c >= 0x0e && c <= 0x1f) ||
+        c == '&' || c == '<' || c == '>' || c >= 0x7f) {
+	errno = 0;			/* pre-clear errno for warnp() */
+	ret = fprintf(stream, "\\c%04x", c);
+	if (ret <= 0) {
+	    warnp(__func__, "fprintf #0 error in \\cffff encoding");
+	    return false;
+	}
+        return true;
+    }
+
+    /*
+     * case: \ escaped char
+     */
+    errno = 0;			/* pre-clear errno for warnp() */
+    switch (c) {
+    case '"':
+	ret = fprintf(stream, "\\\"");
+	break;
+    case '/':
+	ret = fprintf(stream, "\\/");
+	break;
+    case '\\':
+	ret = fprintf(stream, "\\\\");
+	break;
+    case '\b':	/* \x08 - bachspace */
+	ret = fprintf(stream, "\\b");
+	break;
+    case '\t':	/* \x09 - horizontal tab */
+	ret = fprintf(stream, "\\t");
+	break;
+    case '\n':	/* \x0a - line feed */
+	ret = fprintf(stream, "\\n");
+	break;
+    case '\f':	/* \x0c - form feed */
+	ret = fprintf(stream, "\\f");
+	break;
+    case '\r':	/* \x0d - carriage return */
+	ret = fprintf(stream, "\\r");
+	break;
+
+    /*
+     * case: un-escaped char
+     */
+    default:
+	ret = fprintf(stream, "%c", c);
+	break;
+    }
+    if (ret <= 0) {
+	warnp(__func__, "fprintf #1 error");
+	return false;
+    }
+    return true;
 }

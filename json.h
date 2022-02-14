@@ -1,6 +1,18 @@
 #ifndef JSON_H
 #define JSON_H
 
+
+#include <time.h>
+
+
+/*
+ * byte as octet constants
+ */
+#define BITS_IN_BYTE (8)	    /* assume 8 bit bytes */
+#define MAX_BYTE (0xff)		    /* maximum byte value */
+#define BYTE_VALUES (MAX_BYTE+1)    /* number of different combinations of bytes */
+
+
 /*
  * author info
  */
@@ -85,6 +97,7 @@ struct info {
 extern char *malloc_json_encode(char const *ptr, size_t len, size_t *retlen);
 extern char *malloc_json_str(char const *str, size_t *retlen);
 extern void jencchk(void);
+extern bool json_putc(int const c, FILE *stream);
 
 
 #endif /* JSON_H */
