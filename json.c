@@ -170,38 +170,79 @@ static struct encode jenc[BYTE_VALUES] = {
 
 
 /*
+ * hexval - concert ASCII character to hex value
+ *
+ * NOTE: -1 means the ASCII character is not a valud hex character
+ */
+static int hexval[BYTE_VALUES] = {
+    /* \x00 - \x0f */
+    -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+    /* \x10 - \x1f */
+    -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+    /* \x20 - \x2f */
+    -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+    /* \x30 - \x3f */
+     0,  1,  2,  3,  4,  5,  6,  7,  8,  9, -1, -1, -1, -1, -1, -1,
+    /* \x40 - \x4f */
+    -1, 10, 11, 12, 13, 14, 15, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+    /* \x50 - \x5f */
+    -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+    /* \x60 - \x6f */
+    -1, 10, 11, 12, 13, 14, 15, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+    /* \x70 - \x7f */
+    -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+    /* \x80 - \x8f */
+    -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+    /* \x90 - \x9f */
+    -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+    /* \xa0 - \xaf */
+    -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+    /* \xb0 - \xbf */
+    -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+    /* \xc0 - \xcf */
+    -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+    /* \xd0 - \xdf */
+    -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+    /* \xe0 - \xef */
+    -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+    /* \xf0 - \xff */
+    -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+};
+
+
+/*
  * malloc_json_encode - return a JSON encoding of a block of memory
  *
  * JSON string encoding:
  *
  * These escape characters are required by JSON:
  *
- *     old			new
- *     ----------------------------
- *	"			\"
- *	/			\/
- *	\			\\
+ *      old			new
+ *      ----------------------------
  *	<backspace>		\b	(\x08)
  *	<horizontal_tab>	\t	(\x09)
  *	<newline>		\n	(\x0a)
  *	<form_feed>		\f	(\x0c)
  *	<enter>			\r	(\x0d)
+ *	"			\"	(\x22)
+ *	/			\/	(\x2f)
+ *	\			\\	(\x5c)
  *
  * These escape characters are implied by JSON due to
  * HTML and XML encoding, although not strictly required:
  *
- *     old		new
- *     --------------------
- *	&		\u0026
- *	<		\u003c
- *	>		\u003e
+ *      old		new
+ *      --------------------
+ *	&		\u0026		(\x26)
+ *	<		\u003c		(\x3c)
+ *	>		\u003e		(\x3e)
  *
  * These escape characters are implied by JSON to let humans
  * view JSON without worrying about characters that might
  * not display / might not be printable:
  *
- *     old			new
- *     ----------------------------
+ *      old			new
+ *      ----------------------------
  *	\x00-\x07		\u0000 - \u0007
  *	\x0b			\u000b <vertical_tab>
  *	\x0e-\x1f		\u000e - \x001f
@@ -220,7 +261,7 @@ static struct encode jenc[BYTE_VALUES] = {
  *
  * given:
  *	ptr	start of memory block to encode
- *	len	length of block tp encode in bytes
+ *	len	length of block to encode in bytes
  *	retlen	address of where to store malloced length, if reflen != NULL
  *
  * returns:
@@ -307,7 +348,7 @@ malloc_json_encode(char const *ptr, size_t len, size_t *retlen)
 
 
 /*
- * malloc_json_str - return a JSON encoding of a string
+ * malloc_json_encode_str - return a JSON encoding of a string
  *
  * This is an simplified interface for malloc_json_encode().
  *
@@ -320,7 +361,7 @@ malloc_json_encode(char const *ptr, size_t len, size_t *retlen)
  *	NOTE: retlen, if non-NULL, is set to 0 on error
  */
 char *
-malloc_json_str(char const *str, size_t *retlen)
+malloc_json_encode_str(char const *str, size_t *retlen)
 {
     void *ret = NULL;	    /* malloced encoding string or NULL */
     size_t len = 0;	    /* length of string to encode */
@@ -353,7 +394,7 @@ malloc_json_str(char const *str, size_t *retlen)
     if (ret == NULL) {
 	dbg(DBG_VVHIGH, "returning NULL for encoding of: <%s>", str);
     } else {
-	dbg(DBG_VVHIGH, "string: <%s> JSON encoded as: <%s>", str, (char *)ret);
+	dbg(DBG_VVHIGH, "string: JSON encoded as: <%s>", (char *)ret);
     }
 
     /*
@@ -381,6 +422,10 @@ jencchk(void)
     char str[2];	/* character string to encode */
     char *mstr = NULL;	/* malloced encoding string */
     size_t mlen = 0;	/* length of malloced encoding string */
+    char *mstr2 = NULL;	/* malloced strict decoding string */
+    size_t mlen2 = 0;	/* length of malloced strict decoding string */
+    char *mstr3 = NULL;	/* malloced non-strict decoding string */
+    size_t mlen3 = 0;	/* length of malloced non-strict decoding string */
     int i;
 
     /*
@@ -818,33 +863,89 @@ jencchk(void)
 	mstr = NULL;
     }
 
+    /* XXX = test decoding \u0000 */
+
     /*
      * finally try to encode every possible string with a single non-NUL character
      */
     for (i=1; i < BYTE_VALUES; ++i) {
-	dbg(DBG_VVVHIGH, "testing malloc_json_str(0x%02x, *mlen)", i);
+
+	/*
+	 * test JSON encoding
+	 */
+	dbg(DBG_VVVHIGH, "testing malloc_json_encode_str(0x%02x, *mlen)", i);
 	/* load input string */
 	str[0] = (char)i;
-	/* test malloc_json_str */
-	mstr = malloc_json_str(str, &mlen);
+	/* test malloc_json_encode_str() */
+	mstr = malloc_json_encode_str(str, &mlen);
 	/* check encoding result */
 	if (mstr == NULL) {
-	    err(205, __func__, "malloc_json_str(0x%02x, *mlen: %lu) == NULL", i, mlen);
+	    err(205, __func__, "malloc_json_encode_str(0x%02x, *mlen: %lu) == NULL", i, mlen);
 	    not_reached();
 	}
 	if (mlen != jenc[i].len) {
-	    err(206, __func__, "malloc_json_str(0x%02x, *mlen %lu != %lu)",
+	    err(206, __func__, "malloc_json_encode_str(0x%02x, *mlen %lu != %lu)",
 			       i, mlen, (unsigned long)jenc[i].len);
 	    not_reached();
 	}
 	if (strcmp(jenc[i].enc, mstr) != 0) {
-	    err(207, __func__, "malloc_json_str(0x%02x, *mlen: %lu) != <%s>", i, mlen, jenc[i].enc);
+	    err(207, __func__, "malloc_json_encode_str(0x%02x, *mlen: %lu) != <%s>", i, mlen, jenc[i].enc);
 	    not_reached();
 	}
+	dbg(DBG_VVHIGH, "testing malloc_json_encode_str(0x%02x, *mlen) encoded to <%s>", i, mstr);
+
+	/*
+	 * test strict decoding the JSON encoded string
+	 */
+	dbg(DBG_VVVHIGH, "testing malloc_json_decode_str(<%s>, *mlen, true)", mstr);
+	/* test malloc_json_decode_str() */
+	mstr2 = malloc_json_decode_str(mstr, &mlen2, true);
+	if (mstr2 == NULL) {
+	    err(208, __func__, "malloc_json_decode_str(<%s>, *mlen: %lu, true) == NULL", mstr, mlen2);
+	    not_reached();
+	}
+	if (mlen2 != 1) {
+	    err(209, __func__, "malloc_json_decode_str(<%s>, *mlen2 %lu != 1, true)", mstr, mlen2);
+	    not_reached();
+	}
+	if ((uint8_t)(mstr2[0]) != i) {
+	    err(210, __func__, "malloc_json_decode_str(<%s>, *mlen: %lu, true): 0x%02x != 0x%02x",
+			       mstr, mlen2, (uint8_t)(mstr2[0]), i);
+	    not_reached();
+	}
+
+	/*
+	 * test non-strict decoding the JSON encoded string
+	 */
+	dbg(DBG_VVVHIGH, "testing malloc_json_decode_str(<%s>, *mlen, false)", mstr);
+	/* test malloc_json_decode_str() */
+	mstr3 = malloc_json_decode_str(mstr, &mlen3, false);
+	if (mstr3 == NULL) {
+	    err(211, __func__, "malloc_json_decode_str(<%s>, *mlen: %lu, false) == NULL", mstr, mlen3);
+	    not_reached();
+	}
+	if (mlen3 != 1) {
+	    err(212, __func__, "malloc_json_decode_str(<%s>, *mlen3 %lu != 1, false)", mstr, mlen3);
+	    not_reached();
+	}
+	if ((uint8_t)(mstr3[0]) != i) {
+	    err(213, __func__, "malloc_json_decode_str(<%s>, *mlen: %lu, false): 0x%02x != 0x%02x",
+			       mstr, mlen3, (uint8_t)(mstr3[0]), i);
+	    not_reached();
+	}
+
 	/* free the malloced encoded string */
 	if (mstr != NULL) {
 	    free(mstr);
 	    mstr = NULL;
+	}
+	if (mstr2 != NULL) {
+	    free(mstr2);
+	    mstr2 = NULL;
+	}
+	if (mstr3 != NULL) {
+	    free(mstr3);
+	    mstr3 = NULL;
 	}
     }
 
@@ -893,4 +994,542 @@ json_putc(uint8_t const c, FILE *stream)
 	return false;
     }
     return true;
+}
+
+
+/*
+ * malloc_json_decode - return a decoding of a block of JSON encoded memory
+ *
+ * given:
+ *	ptr	start of memory block to decode
+ *	len	length of block to decode in bytes
+ *	retlen	address of where to store malloced length, if reflen != NULL
+ *	strict	true ==> strict decodong based on how malloc_json_encode() encodes
+ *	        false ==> permit a wider use of \-escaping and unencoded char
+ *
+ *		    NOTE: struct == false implies a strict reading of the JSON spec
+ *
+ * returns:
+ *	malloced JSON decoding of a block, or NULL ==> error
+ *	NOTE: retlen, if non-NULL, is set to 0 on error
+ */
+char *
+malloc_json_decode(char const *ptr, size_t len, size_t *retlen, bool strict)
+{
+    char *ret = NULL;	    /* malloced encoding string or NULL */
+    char *beyond = NULL;    /* beyond the end of the malloced encoding string */
+    size_t mlen = 0;	    /* length of malloced encoded string */
+    char *p;		    /* next place to encode */
+    char n;		    /* next character beyond a \\ */
+    char a;		    /* 1st hex character after \u */
+    int xa;		    /* 1st hex character numeric value */
+    char b;		    /* 2nd hex character after \u */
+    int xb;		    /* 2nd hex character numeric value */
+    char c;		    /* character to decode or 3rd hex character after \u */
+    int xc;		    /* 3nd hex character numeric value */
+    char d;		    /* 4th hex character after \u */
+    int xd;		    /* 4th hex character numeric value */
+    size_t i;
+
+    /*
+     * firewall
+     */
+    if (ptr == NULL) {
+	/* error - clear malloced length */
+	if (retlen != NULL) {
+	    *retlen = 0;
+	}
+	warn(__func__, "called with NULL ptr");
+	return NULL;
+    }
+    if (len <= 0) {
+	/* error - clear malloced length */
+	if (retlen != NULL) {
+	    *retlen = 0;
+	}
+	warn(__func__, "len: %lu must be > 0", (unsigned long) len);
+	return NULL;
+    }
+
+    /*
+     * count the bytes that will be in the decoded malloced string
+     */
+    for (i=0; i < len; ++i) {
+
+	/*
+	 * examine the current character
+	 */
+	c = (char)((uint8_t)(ptr[i]));
+
+	/*
+	 * valid non-\-escaped characters count as 1
+	 */
+        if (c != '\\') {
+
+	    /*
+	     * case: strict encoding based on malloc_json_encode() \-escapes
+	     */
+	    if (strict == true) {
+
+		/*
+		 * disallow characters that should have been escaped
+		 */
+		if ((c >= 0x00 && c <= 0x1f) || c >= 0x7f) {
+		    /* error - clear malloced length */
+		    if (retlen != NULL) {
+			*retlen = 0;
+		    }
+		    warn(__func__, "strict encoding at %lu found unescapted char: 0x%02x", (unsigned long)i, (uint8_t)c);
+		    return NULL;
+		}
+		switch (c) {
+		case '"':   /*fallthru*/
+		case '/':   /*fallthru*/
+		case '\\':  /*fallthru*/
+		case '&':   /*fallthru*/
+		case '<':   /*fallthru*/
+		case '>':
+		    /* error - clear malloced length */
+		    if (retlen != NULL) {
+			*retlen = 0;
+		    }
+		    warn(__func__, "strict encoding at %lu found unescapted char: %c", (unsigned long)i, c);
+		    return NULL;
+		    break;
+
+		/*
+		 * count a valid character
+		 */
+		default:
+		    ++mlen;
+		    break;
+		}
+
+	    /*
+	     * case: non-strict encoding - only what JSON mandates
+	     */
+	    } else {
+
+		/*
+		 * disallow characters that should have been escaped
+		 */
+		switch (c) {
+		case '\b':  /*fallthru*/
+		case '\t':  /*fallthru*/
+		case '\n':  /*fallthru*/
+		case '\f':  /*fallthru*/
+		case '\r':
+		    /* error - clear malloced length */
+		    if (retlen != NULL) {
+			*retlen = 0;
+		    }
+		    warn(__func__, "non-strict encoding found \\=escapted char: 0x%02x", (uint8_t)c);
+		    return NULL;
+		    break;
+		case '"':   /*fallthru*/
+		case '/':   /*fallthru*/
+		case '\\':
+		    /* error - clear malloced length */
+		    if (retlen != NULL) {
+			*retlen = 0;
+		    }
+		    warn(__func__, "non-strict encoding found \\=escapted char: %c", c);
+		    return NULL;
+		    break;
+
+		/*
+		 * count a valid character
+		 */
+		default:
+		    ++mlen;
+		    break;
+		}
+	    }
+
+	/*
+	 * valid \-escaped characters count as 2 or 6
+	 */
+	} else {
+
+	    /*
+	     * there must be at least 1 more character beyond \
+	     */
+	    if (i+1 >= len) {
+		/* error - clear malloced length */
+		if (retlen != NULL) {
+		    *retlen = 0;
+		}
+		warn(__func__, "found \\ at end of buffer, missing next character");
+		return NULL;
+	    }
+
+	    /*
+	     * look at the next character beyond \
+	     */
+	    n = (char)((uint8_t)(ptr[i+1]));
+
+	    /*
+	     * process single \c escaped pairs
+	     */
+	    switch (n) {
+	    case 'b':	/*fallthru*/
+	    case 't':	/*fallthru*/
+	    case 'n':	/*fallthru*/
+	    case 'f':	/*fallthru*/
+	    case 'r':	/*fallthru*/
+	    case '"':	/*fallthru*/
+	    case '/':	/*fallthru*/
+	    case '\\':
+		/*
+		 * count \c escaped pair as 1 character
+		 */
+		++mlen;
+		++i;
+		break;
+
+	    /*
+	     * process \uxxxx where x is a hex character
+	     */
+	    case 'u':
+
+		/*
+		 * there must be at least 5 more characters beyond \
+		 */
+		if (i+5 >= len) {
+		    /* error - clear malloced length */
+		    if (retlen != NULL) {
+			*retlen = 0;
+		    }
+		    warn(__func__, "found \\u, but not enough for 4 hex chars at end of buffer");
+		    return NULL;
+		}
+		a = (char)((uint8_t)(ptr[i+2]));
+		b = (char)((uint8_t)(ptr[i+3]));
+		c = (char)((uint8_t)(ptr[i+4]));
+		d = (char)((uint8_t)(ptr[i+5]));
+
+		/*
+		 * the next 4 characters beyond \u must be hex characters
+		 */
+		if (isxdigit(a) && isxdigit(b) && isxdigit(c) && isxdigit(d)) {
+
+		    /*
+		     * case: strict encoding - the 4 hex characters must be lower case
+		     */
+		    if (strict == true &&
+		        (isupper(a) || isupper(b) || isupper(c) || isupper(d))) {
+			/* error - clear malloced length */
+			if (retlen != NULL) {
+			    *retlen = 0;
+			}
+			warn(__func__, "strict mode found \\u, some of the  4 hex chars are UPPERCASE: 0x%02X%02X%02X%02X",
+				       (uint8_t)a, (uint8_t)b, (uint8_t)c, (uint8_t)d);
+			return NULL;
+		    }
+
+		    /*
+		     * count \uxxxx set as 1 character
+		     */
+		    ++mlen;
+		    i += 5;
+		    break;
+		}
+		break;
+
+	    /*
+	     * valid C escaoe sequence but unusual JSON \-escape character
+	     */
+	    case 'a':	/* ASCII bell */ /*fallthru*/
+	    case 'v':	/* ASCII vertical tab */ /*fallthru*/
+	    case 'e':	/* ASCII escape */
+
+		/*
+		 * case: struct mode - invalid unusual \-escape character
+		 */
+		if (strict == true) {
+		    /* error - clear malloced length */
+		    if (retlen != NULL) {
+			*retlen = 0;
+		    }
+		    warn(__func__, "strict mode found an unusual JSON \\-escape: \\%c", (uint8_t)c);
+		    return NULL;
+		}
+
+		/*
+		 * case: non-struct - count \c escaped pair as 1 character
+		 */
+		++mlen;
+		++i;
+		break;
+
+	    /*
+	     * found invalid JSON \-escape character
+	     */
+	    default:
+		/* error - clear malloced length */
+		if (retlen != NULL) {
+		    *retlen = 0;
+		}
+		warn(__func__, "found invalid JSON \\-escape: followed by 0x%02x", (uint8_t)c);
+		return NULL;
+	    }
+	}
+    }
+
+    /*
+     * malloced decoded string
+     */
+    ret = malloc(mlen + 1 + 1);
+    if (ret == NULL) {
+	/* error - clear malloced length */
+	if (retlen != NULL) {
+	    *retlen = 0;
+	}
+	warn(__func__, "malloc of %ld bytes failed", (unsigned long)(mlen + 1 + 1));
+	return NULL;
+    }
+    ret[mlen] = '\0';   /* terminate string */
+    ret[mlen + 1] = '\0';   /* paranoia */
+    beyond = &(ret[mlen]);
+
+    /*
+     * JSON string decode
+     *
+     * In the above counting code, prior to the malloc for the decoded string,
+     * we determined that the JSON encoded string is valid.  We can now safely
+     * decode regardless of struct mode.
+     */
+    for (i=0, p=ret; i < len; ++i) {
+
+	/*
+	 * examine the current character
+	 */
+	c = (char)((uint8_t)(ptr[i]));
+
+	/*
+	 * paranoia
+	 */
+	if (p >= beyond) {
+	    /* error - clear malloced length */
+	    if (retlen != NULL) {
+		*retlen = 0;
+	    }
+	    warn(__func__, "ran beyond end of decoded string");
+	    return NULL;
+	}
+
+	/*
+	 * case: JSON decode non \-escape character
+	 */
+	if (c != '\\') {
+	    /* no translation encoding */
+	    *p = c;
+
+	/*
+	 * case: JSON decode \-escape character
+	 */
+	} else {
+
+	    /*
+	     * look at the next character beyond \
+	     */
+	    n = (char)((uint8_t)(ptr[i+1]));
+
+	    /*
+	     * decode single \c escaped pairs
+	     */
+	    switch (n) {
+	    case 'b':	/* ASCII backspace */
+		++i;
+		*p = '\b';
+		break;
+	    case 't':	/* ASCII horizontal tab */
+		++i;
+		*p = '\t';
+		break;
+	    case 'n':	/* ASCII line feed */
+		++i;
+		*p = '\n';
+		break;
+	    case 'f':	/* ASCII form feed */
+		++i;
+		*p = '\f';
+		break;
+	    case 'r':	/* ASCII carriage return */
+		++i;
+		*p = '\r';
+		break;
+	    case 'a':	/* ASCII bell */
+		++i;
+		*p = '\a';
+		break;
+	    case 'v':	/* ASCII vertical tab */
+		++i;
+		*p = '\v';
+		break;
+	    case 'e':	/* ASCII escape */
+		++i;
+		*p = 0x0b;  /* no all C compilers understand /e */
+		break;
+	    case '"':	/*fallthru*/
+	    case '/':	/*fallthru*/
+	    case '\\':
+		++i;
+		*p = n;	/* escape decodes to itself */
+		break;
+
+	    /*
+	     * decode \uxxxx
+	     */
+	    case 'u':
+
+		/*
+		 * there must be at least 5 more characters beyond \
+		 */
+		if (i+5 >= len) {
+		    /* error - clear malloced length */
+		    if (retlen != NULL) {
+			*retlen = 0;
+		    }
+		    warn(__func__, "found \\u while decoding, but not enough for 4 hex chars at end of buffer");
+		    return NULL;
+		}
+		xa = hexval[(uint8_t)(ptr[i+2])];
+		xb = hexval[(uint8_t)(ptr[i+3])];
+		xc = hexval[(uint8_t)(ptr[i+4])];
+		xd = hexval[(uint8_t)(ptr[i+5])];
+
+		/*
+		 * case: \u00xx
+		 */
+		if (xa == 0 && xb == 0) {
+		    i += 5;
+		    *p = (char)((xc << 4) | xd);
+		    break;
+
+		/*
+		 * case: \xxxxx
+		 */
+		} else {
+
+		    /*
+		     * case: strict mode: found non UTF-8 encoded character
+		     */
+		    if (strict == true) {
+			/* error - clear malloced length */
+			if (retlen != NULL) {
+			    *retlen = 0;
+			}
+			warn(__func__, "strict mode: found non-UTF-8 \\u encoding: \\u%c%c%c%c", a,b,c,d);
+			return NULL;
+
+		    /*
+		     * case; non-strict mode: found non UTF-8 encoded character
+		     */
+		    } else {
+
+			/*
+			 * paranoia
+			 */
+			if (p+1 >= beyond) {
+			    /* error - clear malloced length */
+			    if (retlen != NULL) {
+				*retlen = 0;
+			    }
+			    warn(__func__, "ran beyond end of decoded string for non-UTF-8 \\u encoding");
+			    return NULL;
+			}
+			i += 5;
+			*p = (char)((xa << 4) | xb);
+			++p;
+			*p = (char)((xc << 4) | xd);
+			break;
+		    }
+		}
+		break;
+
+	    /*
+	     * unknown \c escaped pairs
+	     */
+	    default:
+		/* error - clear malloced length */
+		if (retlen != NULL) {
+		    *retlen = 0;
+		}
+		warn(__func__, "found invalid JSON \\-escape while decoding: followed by 0x%02x", (uint8_t)c);
+		return NULL;
+	    }
+	}
+     }
+
+    /*
+     * return result
+     */
+    dbg(DBG_VVVHIGH, "returning from malloc_json_decode(ptr, %lu, *%lu)", len, mlen);
+    if (retlen != NULL) {
+	*retlen = mlen;
+    }
+    return ret;
+}
+
+
+/*
+ * malloc_json_decode_str - return a JSON decoding of a string
+ *
+ * This is an simplified interface for malloc_json_decode().
+ *
+ * given:
+ *	str	a string to decode
+ *	retlen	address of where to store malloced length, if reflen != NULL
+ *	strict	true ==> strict decodong based on how malloc_json_decode() decodes
+ *	        false ==> permit a wider use of \-escaping and undecoded char
+ *
+ *		    NOTE: struct == false implies a strict reading of the JSON spec
+ *
+ *
+ * returns:
+ *	malloced JSON decoding of a block, or NULL ==> error
+ *	NOTE: retlen, if non-NULL, is set to 0 on error
+ */
+char *
+malloc_json_decode_str(char const *str, size_t *retlen, bool strict)
+{
+    void *ret = NULL;	    /* malloced decoding string or NULL */
+    size_t len = 0;	    /* length of string to decode */
+
+    /*
+     * firewall
+     */
+    if (str == NULL) {
+	/* error - clear malloced length */
+	if (retlen != NULL) {
+	    *retlen = 0;
+	}
+	warn(__func__, "called with NULL ptr");
+	return NULL;
+    }
+    len = strlen(str);
+    if (len <= 0) {
+	/* error - clear malloced length */
+	if (retlen != NULL) {
+	    *retlen = 0;
+	}
+	warn(__func__, "len: %lu must be > 0", (unsigned long) len);
+	return NULL;
+    }
+
+    /*
+     * convert to malloc_json_decode() call
+     */
+    ret = malloc_json_decode(str, len, retlen, strict);
+    if (ret == NULL) {
+	dbg(DBG_VVHIGH, "returning NULL for decoding of: <%s>", str);
+    } else {
+	dbg(DBG_VVHIGH, "string: <%s> JSON decoded", str);
+    }
+
+    /*
+     * return decoded result or NULL
+     */
+    return ret;
 }

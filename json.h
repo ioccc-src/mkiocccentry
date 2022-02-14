@@ -131,9 +131,11 @@ struct info {
  * external function declarations
  */
 extern char *malloc_json_encode(char const *ptr, size_t len, size_t *retlen);
-extern char *malloc_json_str(char const *str, size_t *retlen);
+extern char *malloc_json_encode_str(char const *str, size_t *retlen);
 extern void jencchk(void);
 extern bool json_putc(uint8_t const c, FILE *stream);
+extern char *malloc_json_decode(char const *ptr, size_t len, size_t *retlen, bool strict);
+extern char *malloc_json_decode_str(char const *str, size_t *retlen, bool strict);
 
 
 #endif /* JSON_H */
