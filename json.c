@@ -1005,7 +1005,7 @@ json_putc(uint8_t const c, FILE *stream)
  *	len	length of block to decode in bytes
  *	retlen	address of where to store malloced length, if retlen != NULL
  *	strict	true ==> strict decoding based on how malloc_json_encode() encodes
- *	        false ==> permit a wider use of \-escaping and unencoded char
+ *	        false ==> permit a wider use of \-escaping and un-encoded char
  *
  *		    NOTE: struct == false implies a strict reading of the JSON spec
  *
