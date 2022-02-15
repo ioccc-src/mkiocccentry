@@ -2,8 +2,7 @@
 /*
  * fnamchk - IOCCC compressed tarball filename sanity check tool
  *
- *
- * "Because even printf has a return value worth paying attention to." :-)
+ * "Because even fprintf has a return value worth paying attention to." :-)
  *
  * Copyright (c) 2022 by Landon Curt Noll.  All Rights Reserved.
  *
@@ -57,12 +56,6 @@
  * util - utility functions and definitions
  */
 #include "util.h"
-
-
-/*
- * fnamchk version
- */
-#define FNAMCHK_VERSION "0.2 2022-02-07"	/* use format: major.minor YYYY-MM-DD */
 
 
 /*

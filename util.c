@@ -1549,7 +1549,8 @@ find_utils(bool tar_flag_used, char **tar, bool cp_flag_used, char **cp, bool ls
 }
 
 
-/* round_to_multiple - round to a multiple
+/*
+ * round_to_multiple - round to a multiple
  *
  * given:
  *
@@ -1588,4 +1589,175 @@ off_t round_to_multiple(off_t num, off_t multiple)
     }
 
     return num + multiple - mod;
+}
+
+
+/*
+ * read_all - read all data from an open file
+ *
+ * given:
+ *	stream	    - an open file stream to read from
+ *	psize	    - if psize != NULL, put data read into *psize
+ *
+ * returns:
+ *	malloc buffer containing the entire contents of stream,
+ *	or NULL is an error occurred.
+ *
+ * This function will update *psize, if it was non-NULL, to indicate
+ * the amount of data that was read from stream before EOF.
+ *
+ * The malloced buffer may be larger than the amount of data read.
+ * In this case *psize (if psize != NULL) will contain the exact
+ * amount of data read, ignoring and extra allocated data.
+ * Any extra unused space in the malloced buffer will be zeroized
+ * before returning.
+ *
+ * This function will always add at least one extra byte of allocated
+ * data to the end of the malloced buffer (zeroized ad mentioned above).
+ * So even if no data is read, the malloc buffer will contain at
+ * least one extra zeroized byte.
+ *
+ * Because files can contain NUL bytes, the strlen() function on
+ * the malloced buffer may return a different length than the
+ * amount of data read from steam.  This is also why the function
+ * returns a pointer to void.
+ */
+void *
+read_all(FILE *stream, size_t *psize)
+{
+    uint8_t *buf = NULL;    /* allocated buffer to return */
+    uint8_t *tmp = NULL;    /* temporary reallocation buffer */
+    size_t size = 0;	    /* size of the buffer allocated */
+    size_t used = 0;	    /* amount of data read into the buffer */
+    size_t last_read = 0;   /* amount last fread read from open stream */
+    long read_cycle = 0;    /* number of read cycles */
+    long realloc_cycle = 0; /* number of realloc cycles */
+
+    /*
+     * firewall
+     */
+    if (stream == NULL) {
+	err(141, __func__, "called with NULL stream");
+	not_reached();
+    }
+
+    /*
+     * allocate the initial zeroized buffer
+     */
+    errno = 0;			/* pre-clear errno for warnp() */
+    dbg(DBG_VVHIGH, "%s: about to start calloc cycle: %ld", __func__, realloc_cycle);
+    buf = calloc(INITIAL_BUF_SIZE, 1);
+    if (buf == NULL) {
+	warnp(__func__, "calloc of %lu bytes failed", (unsigned long)INITIAL_BUF_SIZE);
+	return NULL;
+    }
+    size = INITIAL_BUF_SIZE;
+    dbg(DBG_VVHIGH, "%s: calloc cycle: %ld new size: 0x%lx", __func__, realloc_cycle, (unsigned long)size);
+    ++realloc_cycle;
+
+    /*
+     * quick return with no data if stream is already in ERROR or EOF state
+     */
+    if (feof(stream) || ferror(stream)) {
+	/* report the I/O condition */
+	if (feof(stream)) {
+	    warn(__func__, "EOF found at start of reading stream");
+	} else if (ferror(stream)) {
+	    warn(__func__, "I/O error flag found at start of reading stream");
+	}
+	/* record empty size, if requested */
+	if (psize != NULL) {
+	    *psize = 0;
+	}
+	return NULL;
+    }
+
+    /*
+     * read until stream EOF or ERROR
+     */
+    do {
+
+	/*
+	 * expand buffer as needed for the next potential read
+	 */
+	if (used + READ_ALL_CHUNK + 1 > size) {
+
+	    /*
+	     * realloc buffer
+	     */
+	    dbg(DBG_VVHIGH, "%s: about to start realloc cycle: %ld", __func__, realloc_cycle);
+	    errno = 0;			/* pre-clear errno for warnp() */
+	    tmp = realloc(buf, size + READ_ALL_CHUNK);
+	    if (tmp == NULL) {
+		/* report realloc failure */
+		warnp(__func__, "realloc from %lu bytes to %lu bytes failed",
+				(unsigned long)size, (unsigned long)(size + READ_ALL_CHUNK));
+		/* free up the previous buffer */
+		if (buf != NULL) {
+		    free(buf);
+		    buf = NULL;
+		}
+		/* toss data we might have collected as we cannot read all of the stream */
+		size = 0;
+		used = 0;
+		/* record empty size, if requested */
+		if (psize != NULL) {
+		    *psize = 0;
+		}
+		/* return failure to read all of the stream */
+		return NULL;
+	    }
+	    buf = tmp;
+
+	    /*
+	     * zeroize expanded chunk of data
+	     */
+	    memset(buf+size, 0, READ_ALL_CHUNK);
+
+	    /*
+	     * note expanded buffer size
+	     */
+	    size += READ_ALL_CHUNK;
+	    dbg(DBG_VVHIGH, "%s: realloc cycle: %ld new size: 0x%lx", __func__, realloc_cycle, (unsigned long)size);
+	    ++realloc_cycle;
+	}
+
+	/*
+	 * try to read more data from the stream
+	 */
+	dbg(DBG_VVHIGH, "%s: about to start read cycle: %ld", __func__, read_cycle);
+	errno = 0;			/* pre-clear errno for warnp() */
+	last_read = fread(buf+used, 1, READ_ALL_CHUNK, stream);
+	used += last_read;	/* record newly read data, if any */
+	if (last_read == 0 || ferror(stream) || feof(stream)) {
+
+	    /* report the I/O condition */
+	    if (feof(stream)) {
+		dbg(DBG_HIGH, "normal EOF reading stream at: %lu bytes", (unsigned long)used);
+	    } else if (ferror(stream)) {
+		warnp(__func__, "I/O error detected while reading stream at: %lu bytes", (unsigned long)used);
+	    } else {
+		warnp(__func__, "fread returned 0 although the EOF nor ERROR flag were not set: assuming EOF anyway");
+	    }
+
+	    /*
+	     * stop reading stream
+	     */
+	    break;
+	}
+	dbg(DBG_VVHIGH, "%s: read cycle: %ld read count: 0x%lx", __func__, read_cycle, (unsigned long)read_cycle);
+	++read_cycle;
+    } while (true);
+
+    /*
+     * report the amount of data actually read, if requested
+     */
+    if (psize != NULL) {
+	*psize = used;
+    }
+
+    /*
+     * return the malloced buffer
+     */
+    return buf;
 }

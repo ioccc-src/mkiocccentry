@@ -84,42 +84,49 @@ TRUE= true
 
 # C source standards being used
 #
-STD_SRC= -D_BSD_SOURCE -D_POSIX_C_SOURCE=200809L -D_XOPEN_SOURCE
+STD_SRC= -D_BSD_SOURCE -D_POSIX_C_SOURCE=200809L -D_XOPEN_SOURCE -std=c99
+
+# optimization and debug level
+#
+COPT= -O3 -g3
+#COPT= -O0 -g
 
 # how to compile
 #
 # note the feature test macros are required to compile on more systems e.g.
 # CentOS
-CFLAGS= ${STD_SRC} -std=c99 -O3 -g3 -pedantic -Wall -Wextra
+CFLAGS= ${STD_SRC} ${COPT} -pedantic -Wall -Wextra
 
 # We test by forcing warnings to be errors so you don't have to (allegedly :-) )
 #
-#CFLAGS= ${STD_SRC} -std=c99 -O3 -g3 -pedantic -Wall -Wextra -Werror
+#CFLAGS= ${STD_SRC} ${COPT} -pedantic -Wall -Wextra -Werror
 
 # NOTE: There are some things clang -Weverything warns about that are not relevant
 # 	and this for the -Weverything case, we exclude several directives
 #
-#CFLAGS= ${STD_SRC} -std=c99 -O3 -g3 -pedantic -Wall -Wextra -Werror -Weverything \
+#CFLAGS= ${STD_SRC} ${COPT} -pedantic -Wall -Wextra -Werror -Weverything \
 #     -Wno-poison-system-directories -Wno-unreachable-code-break -Wno-padded
 
 # NOTE: If you use ASAN, set this environment var:
 #	ASAN_OPTIONS="detect_stack_use_after_return=1"
 #
-#CFLAGS= ${STD_SRC} -std=c99 -O0 -g -pedantic -Wall -Wextra -Werror -fsanitize=address -fno-omit-frame-pointer
+#CFLAGS= ${STD_SRC} -O0 -g -pedantic -Wall -Wextra -Werror -fsanitize=address -fno-omit-frame-pointer
 
 # NOTE: For valgrind, run with:
 #	valgrind --leak-check=yes --track-origins=yes --leak-resolution=high --read-var-info=yes
 #
-#CFLAGS= ${STD_SRC} -std=c99 -O0 -g -pedantic -Wall -Wextra -Werror
+#CFLAGS= ${STD_SRC} -O0 -g -pedantic -Wall -Wextra -Werror
 
 # where and what to install
 #
 MANDIR = /usr/local/share/man/man1
 DESTDIR= /usr/local/bin
-TARGETS= mkiocccentry iocccsize dbg_test limit_ioccc.sh fnamchk txzchk jauthchk jinfochk
+TARGETS= mkiocccentry iocccsize dbg_test limit_ioccc.sh fnamchk txzchk jauthchk jinfochk \
+	jstrencode jstrdecode
 MANPAGES = mkiocccentry.1 txzchk.1 fnamchk.1 iocccsize.1
 TEST_TARGETS= dbg_test
-OBJFILES = dbg.o util.o mkiocccentry.o iocccsize.o fnamchk.o txzchk.o jauthchk.o jinfochk.o json.o
+OBJFILES = dbg.o util.o mkiocccentry.o iocccsize.o fnamchk.o txzchk.o jauthchk.o jinfochk.o \
+	json.o jstrencode.o jstrdecode.o
 SRCFILES = $(patsubst %.o,%.c,$(OBJFILES))
 DSYMDIRS = $(patsubst %,%.dSYM,$(TARGETS))
 
@@ -133,29 +140,35 @@ rule_count.c: iocccsize.c
 	${RM} -f $@
 	${CP} -f $? $@
 
-rule_count.o: rule_count.c limit_ioccc.h Makefile
+rule_count.o: rule_count.c Makefile
 	${CC} ${CFLAGS} -DMKIOCCCENTRY_USE rule_count.c -c
 
-mkiocccentry: mkiocccentry.c limit_ioccc.h json.h rule_count.o dbg.o util.o json.o Makefile
+mkiocccentry: mkiocccentry.c rule_count.o dbg.o util.o json.o Makefile
 	${CC} ${CFLAGS} mkiocccentry.c rule_count.o dbg.o util.o json.o -o $@
 
-iocccsize: iocccsize.c limit_ioccc.h Makefile
+iocccsize: iocccsize.c Makefile
 	${CC} ${CFLAGS} -DIOCCCSIZE_STANDALONE iocccsize.c -o $@
 
-dbg_test: dbg.c dbg.h Makefile
+dbg_test: dbg.c Makefile
 	${CC} ${CFLAGS} -DDBG_TEST dbg.c -o $@
 
-fnamchk: fnamchk.c limit_ioccc.h dbg.o util.o
+fnamchk: fnamchk.c dbg.o util.o Makefile
 	${CC} ${CFLAGS} fnamchk.c dbg.o util.o -o $@
 
-txzchk: txzchk.c limit_ioccc.h rule_count.o dbg.o util.o Makefile
+txzchk: txzchk.c rule_count.o dbg.o util.o Makefile
 	${CC} ${CFLAGS} txzchk.c rule_count.o dbg.o util.o -o $@
 
-jauthchk: jauthchk.c limit_ioccc.h json.h rule_count.o dbg.o util.o Makefile
+jauthchk: jauthchk.c json.h rule_count.o dbg.o util.o Makefile
 	${CC} ${CFLAGS} jauthchk.c rule_count.o dbg.o util.o -o $@
 
-jinfochk: jinfochk.c limit_ioccc.h json.h rule_count.o dbg.o util.o Makefile
+jinfochk: jinfochk.c rule_count.o dbg.o util.o Makefile
 	${CC} ${CFLAGS} jinfochk.c rule_count.o dbg.o util.o -o $@
+
+jstrencode: jstrencode.c dbg.o json.o util.o Makefile
+	${CC} ${CFLAGS} jstrencode.c dbg.o json.o util.o -o $@
+
+jstrdecode: jstrdecode.c dbg.o json.o util.o Makefile
+	${CC} ${CFLAGS} jstrdecode.c dbg.o json.o util.o -o $@
 
 limit_ioccc.sh: limit_ioccc.h Makefile
 	${RM} -f $@
@@ -311,3 +324,5 @@ txzchk.o: txzchk.c limit_ioccc.h dbg.h util.h
 jauthchk.o: jauthchk.c limit_ioccc.h dbg.h util.h json.h
 jinfochk.o: jinfochk.c limit_ioccc.h dbg.h util.h json.h
 json.o: json.c dbg.h util.h json.h
+jstrencode.o: jstrencode.c limit_ioccc.h dbg.h util.h json.h
+jstrdecode.o: jstrdecode.c limit_ioccc.h dbg.h util.h json.h

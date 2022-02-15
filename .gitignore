@@ -1,20 +1,22 @@
 # mkiocccentry specific
+answers.txt
 dbg_test
+entry.*.tx[zt]
+fnamchk
 iocccsize
+jauthchk
+jinfochk
+jstrdecode
+jstrencode
+limit_ioccc.sh
 mkiocccentry
 orig.iocccsize
 rule_count.c
 test-iocccsize
+test-set
 test_src
 test_work
-answers.txt
-limit_ioccc.sh
-fnamchk
 txzchk
-test-set
-jauthchk
-jinfochk
-entry.*.tx[zt]
 
 # Prerequisites
 *.d

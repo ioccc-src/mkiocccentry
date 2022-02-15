@@ -91,6 +91,24 @@
 
 
 /*
+ * fnamchk version
+ */
+#define FNAMCHK_VERSION "0.2 2022-02-07"	/* use format: major.minor YYYY-MM-DD */
+
+
+/*
+ * jstrencode version
+ */
+#define JSTRENCODE_VERSION "0.1 2022-02-14"	/* use format: major.minor YYYY-MM-DD */
+
+
+/*
+ * jstrdecode version
+ */
+#define JSTRDECODE_VERSION "0.1 2022-02-14"	/* use format: major.minor YYYY-MM-DD */
+
+
+/*
  * IOCCC contest name
  *
  * use format: IOCCC[0-9][0-9] or IOCCCMOCK

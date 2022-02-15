@@ -57,6 +57,8 @@ struct location {
  * definitions
  */
 #define LITLEN(x) (sizeof(x)-1)	/* length of a literal string w/o the NUL byte */
+#define INITIAL_BUF_SIZE (8192)	/* initial size of buffer allocated by read_all */
+#define READ_ALL_CHUNK (65536)	/* grow this read_all by this amount when needed */
 
 /*
  * paths to utilities the IOCCC tools use (including fnamchk and txzchk)
@@ -105,6 +107,7 @@ extern off_t round_to_multiple(off_t num, off_t multiple);
 extern char *malloc_json_encode(char const *ptr, size_t len, size_t *retlen);
 extern char *malloc_json_str(char const *str, size_t *retlen);
 extern void jencchk(void);
+extern void *read_all(FILE *stream, size_t *psize);
 
 
 #endif				/* INCLUDE_UTIL_H */
