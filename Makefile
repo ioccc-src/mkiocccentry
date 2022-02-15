@@ -284,7 +284,7 @@ clean:
 
 clobber: clean
 	${RM} -f ${TARGETS} ${TEST_TARGETS}
-	${RM} -f rule_count.c answers.txt j-test.out
+	${RM} -f rule_count.c answers.txt j-test.out j-test2.out
 	${RM} -rf test-iocccsize test_src test_work
 
 install: all
