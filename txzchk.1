@@ -38,7 +38,7 @@ If this option is not specified the program looks under the current working dire
 Assume txzpath is a text file; use \fBfopen(3)\fP and \fBfclose(3)\fP instead of \fBpopen(3)\fP and \fBpclose(3)\fP and don't require \fBtar\fP program.
 .SH EXIT STATUS
 .PP
-\fBmain()\fP returns the number of issues found: 0 indicating all okay whereas a value > 0 is the number of issues found.
+\fBmain()\fP returns 1 for errors or issues found; 0 for success.
 If there's either an internal error or parsing error (which could happen with a tar output that's not known for example) the end is not reached.
 .SH FILES
 \fItxzchk.c\fP
