@@ -227,7 +227,6 @@ static bool json_fprintf_value_long(FILE *stream, char const *lead, char const *
 				    char const *tail);
 static bool json_fprintf_value_bool(FILE *stream, char const *lead, char const *name, char const *middle, bool value,
 				    char const *tail);
-static char const * strnull(char const * const str);
 static void write_info(struct info *infop, char const *entry_dir, bool test_mode, char const *jinfochk);
 static void write_author(struct info *infop, int author_count, struct author *authorp, char const *entry_dir, char const *jauthchk);
 static void form_tarball(char const *work_dir, char const *entry_dir, char const *tarball_path, char const *tar,
@@ -5352,28 +5351,6 @@ json_fprintf_value_bool(FILE *stream, char const *lead, char const *name, char c
     return true;
 }
 
-
-/*
- * strnull - return NULL if string is empty
- *
- * given:
- *	str (NULL allowed)
- *
- * returns:
- *	str if str is NOT empty,
- *	else NULL
- */
-static char const *
-strnull(char const * const str)
-{
-    /*
-     * if str is non-NULL and non-zero length, return str
-     */
-    if (str != NULL && strlen(str) > 0) {
-	return str;
-    }
-    return NULL;
-}
 
 
 /*
