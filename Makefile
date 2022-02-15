@@ -284,24 +284,33 @@ clean:
 
 clobber: clean
 	${RM} -f ${TARGETS} ${TEST_TARGETS}
-	${RM} -f rule_count.c answers.txt
+	${RM} -f rule_count.c answers.txt j-test.out
 	${RM} -rf test-iocccsize test_src test_work
 
 install: all
 	${INSTALL} -m 0555 ${TARGETS} ${DESTDIR}
 	${INSTALL} -m 0644 ${MANPAGES} ${MANDIR}
 
-test: ./iocccsize-test.sh iocccsize dbg_test mkiocccentry ./mkiocccentry-test.sh Makefile
+test: ./iocccsize-test.sh iocccsize dbg_test mkiocccentry ./mkiocccentry-test.sh \
+	./j-test.sh Makefile
 	@echo "RUNNING: iocccsize-test.sh"
 	./iocccsize-test.sh -v
 	@echo "PASSED: iocccsize-test.sh"
+	@echo
 	@echo "This next test is supposed fail with the error: FATAL[5]: main: simulated error, ..."
 	@echo "RUNNING: dbg_test"
 	-./dbg_test -v 1 -e 12 work_dir iocccsize_path
 	@echo "PASSED: dbg_test"
+	@echo
 	@echo "RUNNING: mkiocccentry-test.sh"
 	./mkiocccentry-test.sh
 	@echo "PASSED: mkiocccentry-test.sh"
+	@echo
+	@echo "RUNNING j-test.sh"
+	./j-test.sh
+	@echo "PASSED: j-test.sh"
+	@echo
+	@echo "All tests PASSED"
 
 depend:
 	@LINE="`grep -n '^### DO NOT CHANGE' Makefile|awk -F : '{print $$1}'`"; \
