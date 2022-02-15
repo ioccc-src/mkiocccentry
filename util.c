@@ -1761,3 +1761,25 @@ read_all(FILE *stream, size_t *psize)
      */
     return buf;
 }
+
+/*
+ * strnull - return NULL if string is empty
+ *
+ * given:
+ *	str (NULL allowed)
+ *
+ * returns:
+ *	str if str is NOT empty,
+ *	else NULL
+ */
+char const *
+strnull(char const * const str)
+{
+    /*
+     * if str is non-NULL and non-zero length, return str
+     */
+    if (str != NULL && strlen(str) > 0) {
+	return str;
+    }
+    return NULL;
+}

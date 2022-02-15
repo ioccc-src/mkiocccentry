@@ -13,86 +13,27 @@
  *	https://xexyl.net		Cody Boone Ferguson
  *	https://ioccc.xexyl.net
  */
+
+#define TXZCHK_C
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
 #include <string.h>
 #include <ctype.h>
 
+
+/*
+ * Our header file - #includes util.h and dbg.h
+ */
+#include "txzchk.h"
+
+
 /*
  * IOCCC size and rule related limitations
  */
 #include "limit_ioccc.h"
 
-
-/*
- * dbg - debug, warning and error reporting facility
- */
-#include "dbg.h"
-
-
-/*
- * util - utility functions and definitions
- */
-#include "util.h"
-
-
-/*
- * txzchk version
- */
-#define TXZCHK_VERSION "0.7 2022-02-12"    /* use format: major.minor YYYY-MM-DD */
-
-
-/*
- * globals
- */
-char const *program = NULL;		    /* our name */
-int verbosity_level = DBG_DEFAULT;	    /* debug level set by -v */
-static bool quiet = false;		    /* true ==> only show errors and warnings */
-static bool text_file_flag_used = false;    /* true ==> assume txzpath is a text file */
-char const *txzpath = NULL;		    /* the current tarball being checked */
-
-/*
- * information about the tarball
- */
-struct txz_info {
-    bool has_info_json;			    /* true ==> has a .info.json file */
-    bool empty_info_json;		    /* true ==> .info.json size == 0 */
-    bool has_author_json;		    /* true ==> has an .author.json file */
-    bool empty_author_json;		    /* true ==> .author.json size == 0 */
-    bool has_prog_c;			    /* true ==> has a prog.c file */
-    bool empty_prog_c;			    /* true ==> prog.c size == 0 (this is for debugging information only) */
-    bool has_remarks_md;		    /* true ==> has a remarks.md file */
-    bool empty_remarks_md;		    /* true ==> remarks.md size == 0 */
-    bool has_Makefile;			    /* true ==> has a Makefile */
-    bool empty_Makefile;		    /* true ==> Makefile size == 0 */
-    unsigned invalid_chars;		    /* > 0 ==> invalid characters found in one or more files */
-    off_t size;				    /* size of the tarball itself */
-    off_t file_sizes;			    /* total size of all the files combined */
-    off_t rounded_file_size;		    /* file sizes rounded up to 1024 multiple */
-    unsigned correct_directory;		    /* number of files in the correct directory */
-    unsigned dot_files;			    /* number of dot files that aren't .author.json and .info.json */
-    unsigned named_dot;			    /* number of files called just '.' */
-    unsigned total_files;		    /* total files in the tarball */
-    int total_issues;			    /* number of total issues in tarball */
-} txz_info;
-
-struct file {
-    char *basename;
-    char *filename;
-    unsigned count;
-    struct file *next;
-};
-
-struct file *files;
-
-struct line {
-    char *line;
-    int line_num;
-    struct line *next;
-};
-
-struct line *lines;
 
 /*
  * definitions
@@ -106,7 +47,7 @@ struct line *lines;
  *
  * Use the usage() function to print the usage_msgX strings.
  */
-static const char * const usage_msg =
+const char * const usage_msg =
     "usage: %s [-h] [-v level] [-V] [-t tar] [-F fnamchk] [-T] txzpath\n"
     "\n"
     "\t-h\t\t\tprint help message and exit 0\n"
@@ -120,28 +61,6 @@ static const char * const usage_msg =
     "\ttxzpath\t\t\tpath to an IOCCC compressed tarball\n"
     "\n"
     "txzchk version: %s\n";
-
-/*
- * forward declarations
- */
-static void usage(int exitcode, char const *name, char const *str, char const *tar, char const *fnamchk) __attribute__((noreturn));
-static void sanity_chk(char const *tar, char const *fnamchk);
-static void parse_line(char *linep, char *line_dup, char const *dir_name, char const *txzpath, int *dir_count);
-static void parse_linux_line(char *p, char *line, char *line_dup, char const *dir_name, char const *txzpath, char **saveptr);
-static void parse_bsd_line(char *p, char *line, char *line_dup, char const *dir_name, char const *txzpath, char **saveptr);
-static unsigned check_tarball(char const *tar, char const *fnamchk);
-static void show_txz_info(char const *txzpath);
-static void check_empty_file(char const *txzpath, off_t size, struct file *file);
-static void check_file(char const *txzpath, char *p, char const *dir_name, struct file *file);
-static void check_all_files(char const *dir_name);
-static void check_directories(struct file *file, char const *dir_name, char const *txzpath);
-static bool has_special_bits(char const *str);
-static void add_line(char const *str, int line_num);
-static void parse_all_lines(char const *dir_name, char const *txzpath);
-static void free_lines(void);
-static struct file *alloc_file(char const *p);
-static void add_file_to_list(struct file *file);
-static void free_file_list(void);
 
 
 int
@@ -284,7 +203,7 @@ main(int argc, char **argv)
  *
  * Returns void. Does not return on error.
  */
-static void
+void
 show_txz_info(char const *txzpath)
 {
     /*
@@ -337,7 +256,7 @@ show_txz_info(char const *txzpath)
  *
  * This function does not return.
  */
-static void
+void
 usage(int exitcode, char const *str, char const *prog, char const *tar, char const *fnamchk)
 {
     /*
@@ -382,7 +301,7 @@ usage(int exitcode, char const *str, char const *prog, char const *tar, char con
  *
  * NOTE: This function does not return on error or if things are not sane.
  */
-static void
+void
 sanity_chk(char const *tar, char const *fnamchk)
 {
     /*
@@ -553,7 +472,7 @@ sanity_chk(char const *tar, char const *fnamchk)
  * Returns void. Does not return on error.
  *
  */
-static void
+void
 check_file(char const *txzpath, char *p, char const *dir_name, struct file *file)
 {
     size_t j;
@@ -617,7 +536,7 @@ check_file(char const *txzpath, char *p, char const *dir_name, struct file *file
  *
  * Does not return on error (NULL pointers passed in).
  */
-static void
+void
 check_empty_file(char const *txzpath, off_t size, struct file *file)
 {
     /*
@@ -671,7 +590,7 @@ check_empty_file(char const *txzpath, off_t size, struct file *file)
  * all).
  *
  */
-static void
+void
 check_all_files(char const *dir_name)
 {
     struct file *file; /* to iterate through files list */
@@ -784,7 +703,7 @@ check_all_files(char const *dir_name)
  *
  * Does not return on error.
  */
-static void
+void
 check_directories(struct file *file, char const *dir_name, char const *txzpath)
 {
     unsigned dir_count = 0; /* number of directories in the path */
@@ -903,7 +822,7 @@ check_directories(struct file *file, char const *dir_name, char const *txzpath)
  *
  * This function does not return on error.
  */
-static void
+void
 parse_linux_line(char *p, char *linep, char *line_dup, char const *dir_name, char const *txzpath, char **saveptr)
 {
     off_t current_file_size = 0;
@@ -1007,7 +926,7 @@ parse_linux_line(char *p, char *linep, char *line_dup, char const *dir_name, cha
  *
  * This function does not return on error.
  */
-static void
+void
 parse_bsd_line(char *p, char *linep, char *line_dup, char const *dir_name, char const *txzpath, char **saveptr)
 {
     off_t current_file_size = 0;
@@ -1113,7 +1032,7 @@ parse_bsd_line(char *p, char *linep, char *line_dup, char const *dir_name, char 
  *
  *  Function does not return on error.
  */
-static void
+void
 parse_line(char *linep, char *line_dup, char const *dir_name, char const *txzpath, int *dir_count)
 {
     char *p = NULL; /* each field in the line extracted from strtok_r() */
@@ -1186,7 +1105,7 @@ parse_line(char *linep, char *line_dup, char const *dir_name, char const *txzpat
  *
  *  Does not return on error.
  */
-static unsigned
+unsigned
 check_tarball(char const *tar, char const *fnamchk)
 {
     unsigned line_num = 0; /* line number of tar output */
@@ -1536,7 +1455,7 @@ check_tarball(char const *tar, char const *fnamchk)
  *
  * This function does not return on NULL pointer passed into the function.
  */
-static bool
+bool
 has_special_bits(char const *str)
 {
     /*
@@ -1565,7 +1484,7 @@ has_special_bits(char const *str)
  *
  * This function returns void.
  */
-static void
+void
 add_line(char const *str, int line_num)
 {
     struct line *line;
@@ -1612,7 +1531,7 @@ add_line(char const *str, int line_num)
  *
  * This function does not return on error.
  */
-static void
+void
 parse_all_lines(char const *dir_name, char const *txzpath)
 {
     struct line *line = NULL;	/* for lines list */
@@ -1657,7 +1576,7 @@ parse_all_lines(char const *dir_name, char const *txzpath)
  *
  * This function returns void.
  */
-static void
+void
 free_lines(void)
 {
     struct line *line, *next_line;
@@ -1688,7 +1607,7 @@ free_lines(void)
  *
  * This function does not return on error.
  */
-static struct file *
+struct file *
 alloc_file(char const *p)
 {
     struct file *file; /* the file structure */
@@ -1738,7 +1657,7 @@ alloc_file(char const *p)
  *
  * This function does not return on error.
  */
-static void
+void
 add_file_to_list(struct file *file)
 {
     struct file *ptr; /* used to iterate through list to find duplicate files */
@@ -1774,7 +1693,7 @@ add_file_to_list(struct file *file)
  * free_file_list - free the file linked list
  *
  */
-static void
+void
 free_file_list(void)
 {
     struct file *file, *next_file;

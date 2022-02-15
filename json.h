@@ -119,7 +119,7 @@ struct info {
      */
     time_t tstamp;		/* seconds since epoch when .info json was formed (see gettimeofday(2)) */
     int usec;			/* microseconds since the tstamp second */
-    char *epoch;		/* epoch of tstamp, currently: Thr Jan 1 00:00:00 1970 UTC */
+    char *epoch;		/* epoch of tstamp, currently: Thu Jan 1 00:00:00 1970 UTC */
     char *gmtime;		/* UTC converted string for tstamp (see asctime(3)) */
 
     /* jinfochk specific */
