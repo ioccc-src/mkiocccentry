@@ -249,6 +249,7 @@ main(int argc, char *argv[])
 			       bufsiz, (unsigned long)outputlen);
 		error = true;
 	    }
+	    dbg(DBG_MED, "stdout write length: %lu", (unsigned long)outputlen);
 	}
 
 	/*

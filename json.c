@@ -1019,16 +1019,16 @@ malloc_json_decode(char const *ptr, size_t len, size_t *retlen, bool strict)
     char *ret = NULL;	    /* malloced encoding string or NULL */
     char *beyond = NULL;    /* beyond the end of the malloced encoding string */
     size_t mlen = 0;	    /* length of malloced encoded string */
-    char *p;		    /* next place to encode */
-    char n='\0';	    /* next character beyond a \\ */
-    char a='\0';	    /* 1st hex character after \u */
-    int xa;		    /* 1st hex character numeric value */
-    char b='\0';	    /* 2nd hex character after \u */
-    int xb;		    /* 2nd hex character numeric value */
-    char c='\0';	    /* character to decode or 3rd hex character after \u */
-    int xc;		    /* 3nd hex character numeric value */
-    char d='\0';	    /* 4th hex character after \u */
-    int xd;		    /* 4th hex character numeric value */
+    char *p = NULL;	    /* next place to encode */
+    char n = 0;		    /* next character beyond a \\ */
+    char a = 0;		    /* 1st hex character after \u */
+    int xa = 0;		    /* 1st hex character numeric value */
+    char b = 0;		    /* 2nd hex character after \u */
+    int xb = 0;		    /* 2nd hex character numeric value */
+    char c = 0;		    /* character to decode or 3rd hex character after \u */
+    int xc = 0;		    /* 3nd hex character numeric value */
+    char d = 0;		    /* 4th hex character after \u */
+    int xd = 0;		    /* 4th hex character numeric value */
     size_t i;
 
     /*
@@ -1123,7 +1123,7 @@ malloc_json_decode(char const *ptr, size_t len, size_t *retlen, bool strict)
 		    if (retlen != NULL) {
 			*retlen = 0;
 		    }
-		    warn(__func__, "non-strict encoding found \\=escaped char: 0x%02x", (uint8_t)c);
+		    warn(__func__, "non-strict encoding found \\-escaped char: 0x%02x", (uint8_t)c);
 		    return NULL;
 		    break;
 		case '"':   /*fallthru*/
@@ -1133,7 +1133,7 @@ malloc_json_decode(char const *ptr, size_t len, size_t *retlen, bool strict)
 		    if (retlen != NULL) {
 			*retlen = 0;
 		    }
-		    warn(__func__, "non-strict encoding found \\=escaped char: %c", c);
+		    warn(__func__, "non-strict encoding found \\-escaped char: %c", c);
 		    return NULL;
 		    break;
 
@@ -1323,7 +1323,7 @@ malloc_json_decode(char const *ptr, size_t len, size_t *retlen, bool strict)
 	 */
 	if (c != '\\') {
 	    /* no translation encoding */
-	    *p = c;
+	    *p++ = c;
 
 	/*
 	 * case: JSON decode \-escape character
@@ -1341,41 +1341,41 @@ malloc_json_decode(char const *ptr, size_t len, size_t *retlen, bool strict)
 	    switch (n) {
 	    case 'b':	/* ASCII backspace */
 		++i;
-		*p = '\b';
+		*p++ = '\b';
 		break;
 	    case 't':	/* ASCII horizontal tab */
 		++i;
-		*p = '\t';
+		*p++ = '\t';
 		break;
 	    case 'n':	/* ASCII line feed */
 		++i;
-		*p = '\n';
+		*p++ = '\n';
 		break;
 	    case 'f':	/* ASCII form feed */
 		++i;
-		*p = '\f';
+		*p++ = '\f';
 		break;
 	    case 'r':	/* ASCII carriage return */
 		++i;
-		*p = '\r';
+		*p++ = '\r';
 		break;
 	    case 'a':	/* ASCII bell */
 		++i;
-		*p = '\a';
+		*p++ = '\a';
 		break;
 	    case 'v':	/* ASCII vertical tab */
 		++i;
-		*p = '\v';
+		*p++ = '\v';
 		break;
 	    case 'e':	/* ASCII escape */
 		++i;
-		*p = 0x0b;  /* no all C compilers understand /e */
+		*p++ = 0x0b;  /* no all C compilers understand /e */
 		break;
 	    case '"':	/*fallthru*/
 	    case '/':	/*fallthru*/
 	    case '\\':
 		++i;
-		*p = n;	/* escape decodes to itself */
+		*p++ = n;	/* escape decodes to itself */
 		break;
 
 	    /*
@@ -1404,7 +1404,7 @@ malloc_json_decode(char const *ptr, size_t len, size_t *retlen, bool strict)
 		 */
 		if (xa == 0 && xb == 0) {
 		    i += 5;
-		    *p = (char)((xc << 4) | xd);
+		    *p++ = (char)((xc << 4) | xd);
 		    break;
 
 		/*
@@ -1440,9 +1440,8 @@ malloc_json_decode(char const *ptr, size_t len, size_t *retlen, bool strict)
 			    return NULL;
 			}
 			i += 5;
-			*p = (char)((xa << 4) | xb);
-			++p;
-			*p = (char)((xc << 4) | xd);
+			*p++ = (char)((xa << 4) | xb);
+			*p++ = (char)((xc << 4) | xd);
 			break;
 		    }
 		}
