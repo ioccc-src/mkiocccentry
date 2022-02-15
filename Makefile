@@ -84,6 +84,8 @@ TRUE= true
 
 # C source standards being used
 #
+# NOTE: feature test macros are required for some systems: e.g., CentOS
+#
 STD_SRC= -D_BSD_SOURCE -D_POSIX_C_SOURCE=200809L -D_XOPEN_SOURCE -std=c99
 
 # optimization and debug level
@@ -93,9 +95,8 @@ COPT= -O3 -g3
 
 # how to compile
 #
-# note the feature test macros are required to compile on more systems e.g.
-# CentOS
 CFLAGS= ${STD_SRC} ${COPT} -pedantic -Wall -Wextra
+#CFLAGS= ${STD_SRC} ${COPT} -pedantic -Wall -Wextra -Werror
 
 # We test by forcing warnings to be errors so you don't have to (allegedly :-) )
 #

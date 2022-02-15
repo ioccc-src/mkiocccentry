@@ -414,7 +414,7 @@ malloc_json_encode_str(char const *str, size_t *retlen)
 void
 jencchk(void)
 {
-    int hexval;		/* hex value from xxxx part of \uxxxx */
+    unsigned int hexval;/* hex value from xxxx part of \uxxxx */
     char guard;		/* scanf guard to catch excess amount of input */
     int indx;		/* test index */
     char const *encstr;	/* encoding string */
@@ -426,7 +426,7 @@ jencchk(void)
     size_t mlen2 = 0;	/* length of malloced strict decoding string */
     char *mstr3 = NULL;	/* malloced non-strict decoding string */
     size_t mlen3 = 0;	/* length of malloced non-strict decoding string */
-    int i;
+    unsigned int i;
 
     /*
      * assert: bits in byte must be 8
@@ -624,7 +624,7 @@ jencchk(void)
 			       i, (unsigned long)strlen(jenc[i].enc), 1);
 	    not_reached();
 	}
-	if (jenc[i].enc[0] != i) {
+	if ((unsigned int)(jenc[i].enc[0]) != i) {
 	    err(174, __func__, "jenc[0x%02x].enc: <%s> is not <%c>", i, jenc[i].enc, (char)i);
 	    not_reached();
 	}
@@ -655,7 +655,7 @@ jencchk(void)
 			       i, (unsigned long)strlen(jenc[i].enc), 1);
 	    not_reached();
 	}
-	if (jenc[i].enc[0] != i) {
+	if ((unsigned int)(jenc[i].enc[0]) != i) {
 	    err(178, __func__, "jenc[0x%02x].enc: <%s> is not <%c>", i, jenc[i].enc, (char)i);
 	    not_reached();
 	}
@@ -686,7 +686,7 @@ jencchk(void)
 			       i, (unsigned long)strlen(jenc[i].enc), 1);
 	    not_reached();
 	}
-	if (jenc[i].enc[0] != i) {
+	if ((unsigned int)(jenc[i].enc[0]) != i) {
 	    err(182, __func__, "jenc[0x%02x].enc: <%s> is not <%c>", i, jenc[i].enc, (char)i);
 	    not_reached();
 	}
@@ -717,7 +717,7 @@ jencchk(void)
 			       i, (unsigned long)strlen(jenc[i].enc), 1);
 	    not_reached();
 	}
-	if (jenc[i].enc[0] != i) {
+	if ((unsigned int)(jenc[i].enc[0]) != i) {
 	    err(186, __func__, "jenc[0x%02x].enc: <%s> is not <%c>", i, jenc[i].enc, (char)i);
 	    not_reached();
 	}
@@ -748,7 +748,7 @@ jencchk(void)
 			       i, (unsigned long)strlen(jenc[i].enc), 1);
 	    not_reached();
 	}
-	if (jenc[i].enc[0] != i) {
+	if ((unsigned int)(jenc[i].enc[0]) != i) {
 	    err(190, __func__, "jenc[0x%02x].enc: <%s> is not <%c>", i, jenc[i].enc, (char)i);
 	    not_reached();
 	}
@@ -779,7 +779,7 @@ jencchk(void)
 			       i, (unsigned long)strlen(jenc[i].enc), 1);
 	    not_reached();
 	}
-	if (jenc[i].enc[0] != i) {
+	if ((unsigned int)(jenc[i].enc[0]) != i) {
 	    err(194, __func__, "jenc[0x%02x].enc: <%s> is not <%c>", i, jenc[i].enc, (char)i);
 	    not_reached();
 	}
@@ -810,7 +810,7 @@ jencchk(void)
 			       i, (unsigned long)strlen(jenc[i].enc), 1);
 	    not_reached();
 	}
-	if (jenc[i].enc[0] != i) {
+	if ((unsigned int)(jenc[i].enc[0]) != i) {
 	    err(198, __func__, "jenc[0x%02x].enc: <%s> is not <%c>", i, jenc[i].enc, (char)i);
 	    not_reached();
 	}
@@ -849,7 +849,7 @@ jencchk(void)
     }
     if (mlen != jenc[0].len) {
 	err(203, __func__, "malloc_json_encode(0x00, 1, *mlen: %lu != %lu)",
-			   mlen, (unsigned long)jenc[i].len);
+			   mlen, (unsigned long)(jenc[0].len));
 	not_reached();
     }
     if (strcmp(jenc[0].enc, mstr) != 0) {
@@ -978,10 +978,6 @@ json_putc(uint8_t const c, FILE *stream)
      */
     if (stream == NULL) {
 	warn(__func__, "called with NULL arg(s)");
-	return false;
-    }
-    if (c < 0 || c > 0xff) {
-	warn(__func__, "c is out of range [0,0xff]: %x", c);
 	return false;
     }
 
