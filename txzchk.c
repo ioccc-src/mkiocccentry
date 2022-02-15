@@ -272,7 +272,7 @@ main(int argc, char **argv)
     /*
      * All Done!!! - Jessica Noll, age 2
      */
-    exit(txz_info.total_issues); /*ooo*/
+    exit(txz_info.total_issues != 0); /*ooo*/
 }
 
 /*
