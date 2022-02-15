@@ -126,7 +126,7 @@ TARGETS= mkiocccentry iocccsize dbg_test limit_ioccc.sh fnamchk txzchk jauthchk 
 MANPAGES = mkiocccentry.1 txzchk.1 fnamchk.1 iocccsize.1
 TEST_TARGETS= dbg_test
 OBJFILES = dbg.o util.o mkiocccentry.o iocccsize.o fnamchk.o txzchk.o jauthchk.o jinfochk.o \
-	json.o jstrencode.o jstrdecode.o
+	json.o jstrencode.o jstrdecode.o rule_count.o
 SRCFILES = $(patsubst %.o,%.c,$(OBJFILES))
 DSYMDIRS = $(patsubst %,%.dSYM,$(TARGETS))
 
