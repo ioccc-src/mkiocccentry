@@ -297,7 +297,7 @@ test: all iocccsize-test.sh dbg_test mkiocccentry-test.sh j-test.sh Makefile
 	./iocccsize-test.sh -v
 	@echo "PASSED: iocccsize-test.sh"
 	@echo
-	@echo "This next test is supposed fail with the error: FATAL[5]: main: simulated error, ..."
+	@echo "This next test is supposed to fail with the error: FATAL[5]: main: simulated error, ..."
 	@echo "RUNNING: dbg_test"
 	-./dbg_test -v 1 -e 12 work_dir iocccsize_path
 	@echo "PASSED: dbg_test"
