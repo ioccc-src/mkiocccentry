@@ -85,35 +85,6 @@
 
 
 /*
- * Answers file constants.
- *
- * Version of answers file.
- * Use format: MKIOCCCENTRY_ANSWERS-YYYY-major.minor
- *
- * The following is NOT the version of this mkiocccentry tool!
- */
-#define MKIOCCCENTRY_ANSWERS_VER "MKIOCCCENTRY_ANSWERS-2022-0.0"
-/* Answers file EOF marker */
-#define MKIOCCCENTRY_ANSWERS_EOF "ANSWERS_EOF"
-
-
-/*
- * definitions
- */
-#define REQUIRED_ARGS (4)	/* number of required arguments on the command line */
-#define ISO_3166_1_CODE_URL0 "https://en.wikipedia.org/wiki/ISO_3166-1#Officially_assigned_code_elements"
-#define ISO_3166_1_CODE_URL1 "https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2"
-#define ISO_3166_1_CODE_URL2 "https://www.iso.org/obp/ui/#iso:pub:PUB500001:en"
-#define ISO_3166_1_CODE_URL3 "https://www.iso.org/obp/ui/#search"
-#define ISO_3166_1_CODE_URL4 "https://www.iso.org/glossary-for-iso-3166.html"
-#define TAIL_TITLE_CHARS "abcdefghijklmnopqrstuvwxyz0123456789_+-"	/* [a-z0-9_+-] */
-#define IOCCC_REGISTER_URL "https://register.ioccc.org/NOT/a/real/URL"	/* XXX - change to real URL when ready */
-#define IOCCC_SUBMIT_URL "https://submit.ioccc.org/NOT/a/real/URL"	/* XXX - change to real URL when ready */
-#define RULE_2A_BIG_FILE_WARNING (0)	/* warn that prog.c appears to be too big under Rule 2a */
-#define RULE_2A_IOCCCSIZE_MISMATCH (1)	/* warn that prog.c iocccsize size differs from the file size */
-
-
-/*
  * usage message
  *
  * Use the usage() function to print the these usage_msgX strings.
