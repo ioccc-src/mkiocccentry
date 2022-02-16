@@ -39,12 +39,6 @@
 #include "limit_ioccc.h"
 
 
-/*
- * definitions
- */
-#define REQUIRED_ARGS (1)	/* number of required arguments on the command line */
-
-
 
 /* variable specific to txzchk */
 char const *txzpath = NULL;		    /* the current tarball being checked */

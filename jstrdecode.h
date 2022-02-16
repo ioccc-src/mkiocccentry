@@ -59,12 +59,6 @@
 #include "json.h"
 
 /*
- * definitions
- */
-#define REQUIRED_ARGS (0)	/* number of required arguments on the command line */
-
-
-/*
  * usage message
  *
  * Use the usage() function to print the these usage_msgX strings.

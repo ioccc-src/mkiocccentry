@@ -45,6 +45,13 @@
  */
 #include "jstrdecode.h"
 
+/*
+ * definitions
+ */
+#define REQUIRED_ARGS (0)	/* number of required arguments on the command line */
+
+
+
 int
 main(int argc, char *argv[])
 {
