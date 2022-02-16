@@ -1608,18 +1608,18 @@ off_t round_to_multiple(off_t num, off_t multiple)
  *
  * The malloced buffer may be larger than the amount of data read.
  * In this case *psize (if psize != NULL) will contain the exact
- * amount of data read, ignoring and extra allocated data.
+ * amount of data read, ignoring any extra allocated data.
  * Any extra unused space in the malloced buffer will be zeroized
  * before returning.
  *
  * This function will always add at least one extra byte of allocated
- * data to the end of the malloced buffer (zeroized ad mentioned above).
+ * data to the end of the malloced buffer (zeroized as mentioned above).
  * So even if no data is read, the malloc buffer will contain at
  * least one extra zeroized byte.
  *
  * Because files can contain NUL bytes, the strlen() function on
  * the malloced buffer may return a different length than the
- * amount of data read from steam.  This is also why the function
+ * amount of data read from stream.  This is also why the function
  * returns a pointer to void.
  */
 void *

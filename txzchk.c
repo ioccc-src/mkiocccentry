@@ -22,45 +22,16 @@
 #include <string.h>
 #include <ctype.h>
 
-
 /*
- * Our header file - #includes util.h and dbg.h
+ * Our header file - #includes the header files we need
  */
 #include "txzchk.h"
-
-
-/*
- * IOCCC size and rule related limitations
- */
-#include "limit_ioccc.h"
-
 
 /*
  * definitions
  */
 #define REQUIRED_ARGS (1)	/* number of required arguments on the command line */
 
-
-
-/*
- * usage message
- *
- * Use the usage() function to print the usage_msgX strings.
- */
-const char * const usage_msg =
-    "usage: %s [-h] [-v level] [-V] [-t tar] [-F fnamchk] [-T] txzpath\n"
-    "\n"
-    "\t-h\t\t\tprint help message and exit 0\n"
-    "\t-v level\t\tset verbosity level: (def level: %d)\n"
-    "\t-V\t\t\tprint version string and exit\n"
-    "\n"
-    "\t-t /path/to/tar\t\tpath to tar executable that supports the -J (xz) option (def: %s)\n"
-    "\t-F /path/to/fnamchk\tpath to tool that checks if txzpath is a valid compressed tarball name\n"
-    "\t\t\t\tfilename (def: %s)\n\n"
-    "\t-T\t\t\tassume txzpath is a text file with tar listing (for testing different formats)\n\n"
-    "\ttxzpath\t\t\tpath to an IOCCC compressed tarball\n"
-    "\n"
-    "txzchk version: %s\n";
 
 
 int
