@@ -62,6 +62,8 @@
 /*ooo*/ /* exit code out of numerical order - ignore in sequencing */
 /*coo*/ /* exit code change of order - use new value in sequencing */
 
+#define MKIOCCCENTRY_C
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -77,162 +79,10 @@
 #include <sys/wait.h> /* for WEXITSTATUS() */
 #include <fcntl.h> /* for open() */
 
-
 /*
- * IOCCC size and rule related limitations
+ * Our header file - #includes the header files we need
  */
-#include "limit_ioccc.h"
-
-
-/*
- * dbg - debug, warning and error reporting facility
- */
-#include "dbg.h"
-
-
-/*
- * util - utility functions
- */
-#include "util.h"
-
-
-/*
- * JSON - JSON structures and functions
- */
-#include "json.h"
-
-
-
-/*
- * Answers file constants.
- *
- * Version of answers file.
- * Use format: MKIOCCCENTRY_ANSWERS-YYYY-major.minor
- *
- * The following is NOT the version of this mkiocccentry tool!
- */
-#define MKIOCCCENTRY_ANSWERS_VER "MKIOCCCENTRY_ANSWERS-2022-0.0"
-/* Answers file EOF marker */
-#define MKIOCCCENTRY_ANSWERS_EOF "ANSWERS_EOF"
-
-
-/*
- * definitions
- */
-#define REQUIRED_ARGS (4)	/* number of required arguments on the command line */
-#define ISO_3166_1_CODE_URL0 "https://en.wikipedia.org/wiki/ISO_3166-1#Officially_assigned_code_elements"
-#define ISO_3166_1_CODE_URL1 "https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2"
-#define ISO_3166_1_CODE_URL2 "https://www.iso.org/obp/ui/#iso:pub:PUB500001:en"
-#define ISO_3166_1_CODE_URL3 "https://www.iso.org/obp/ui/#search"
-#define ISO_3166_1_CODE_URL4 "https://www.iso.org/glossary-for-iso-3166.html"
-#define TAIL_TITLE_CHARS "abcdefghijklmnopqrstuvwxyz0123456789_+-"	/* [a-z0-9_+-] */
-#define IOCCC_REGISTER_URL "https://register.ioccc.org/NOT/a/real/URL"	/* XXX - change to real URL when ready */
-#define IOCCC_SUBMIT_URL "https://submit.ioccc.org/NOT/a/real/URL"	/* XXX - change to real URL when ready */
-#define RULE_2A_BIG_FILE_WARNING (0)	/* warn that prog.c appears to be too big under Rule 2a */
-#define RULE_2A_IOCCCSIZE_MISMATCH (1)	/* warn that prog.c iocccsize size differs from the file size */
-
-
-/*
- * usage message
- *
- * Use the usage() function to print the these usage_msgX strings.
- */
-static const char * const usage_msg0 =
-    "usage: %s [options] work_dir prog.c Makefile remarks.md [file ...]\n"
-    "\noptions:\n"
-    "\t-h\t\t\tprint help message and exit 0\n"
-    "\t-v level\t\tset verbosity level: (def level: %d)\n"
-    "\t-V\t\t\tprint version string and exit\n"
-    "\t-W\t\t\tignore all warnings (this does NOT mean the judges will! :) )\n";
-
-static const char * const usage_msg1 =
-    "\t-t /path/to/tar\t\tpath to tar executable that supports the -J (xz) option (def: %s)\n"
-    "\t-c /path/to/cp\t\tpath to cp executable (def: %s)\n"
-    "\t-l /path/to/ls\t\tpath to ls executable (def: %s)\n"
-    "\t-C /path/to/txzchk\tpath to txzchk executable (def: %s)\n"
-    "\t-F /path/to/fnamchk\tpath to fnamchk executable used by txzchk (def: %s)";
-static const char * const usage_msg2 =
-    "\t-j /path/to/jinfochk	path to jinfochk executable used by txzchk (def: %s)\n"
-    "\t-J /path/to/jauthchk	path to jauthchk executable used by txzchk (def: %s)\n";
-static const char * const usage_msg3 =
-    "\t-a answers\t\twrite answers to a file for easier updating of an entry\n"
-    "\t-A answers\t\twrite answers file even if it already exists\n"
-    "\t-i answers\t\tread answers from file previously written by -a|-A answers\n\n"
-    "\t    NOTE: One cannot use both -a/-A answers and -i answers at the same time.\n"
-    "\n"
-    "\twork_dir\tdirectory where the entry directory and tarball are formed\n"
-    "\tprog.c\t\tpath to the C source for your entry\n";
-static const char * const usage_msg4 =
-    "\n"
-    "\tMakefile\tMakefile to build (make all) and cleanup (make clean & make clobber)\n"
-    "\n"
-    "\tremarks.md\tRemarks about your entry in markdown format\n"
-    "\t\t\tNOTE: The following is a guide to markdown:\n"
-    "\n"
-    "\t\t\t    https://www.markdownguide.org/basic-syntax\n"
-    "\n"
-    "\t[file ...]\textra data files to include with your entry\n"
-    "\n"
-    "mkiocccentry version: %s\n";
-
-/*
- * globals
- */
-int verbosity_level = DBG_DEFAULT;	/* debug level set by -v */
-static bool need_confirm = true;	/* true ==> ask for confirmations */
-static bool need_hints = true;		/* true ==> show hints */
-static bool need_retry = true;
-static bool ignore_warnings = false;	/* true ==> ignore all warnings (this does NOT mean the judges will! :) */
-static FILE *input_stream = NULL;
-static struct iocccsize size;	/* rule_count() processing results */
-
-
-/*
- * forward declarations
- */
-static void usage(int exitcode, char const *str, char const *program, char const *tar, char const *cp, char const *ls,
-		  char const *txzchk, char const *fnamchk, char const *jinfochk, char const *jauthchk);
-static void free_info(struct info *infop);
-static void free_author_array(struct author *authorp, int author_count);
-static void warn_empty_prog(char const *prog_c);
-static void warn_rule2a_size(struct info *infop, char const *prog_c, int mode);
-static void warn_high_bit(char const *prog_c);
-static void warn_nul_chars(char const *prog_c);
-static void warn_trigraph(char const *prog_c);
-static void warn_wordbuf(char const *prog_c);
-static void warn_ungetc(char const *prog_c);
-static void warn_rule2b_size(struct info *infop, char const *prog_c);
-static void check_prog_c(struct info *infop, char const *entry_dir, char const *cp, char const *prog_c);
-static void sanity_chk(struct info *infop, char const *work_dir, char const *tar, char const *cp,
-		       char const *ls, char const *txzchk, char const *fnamchk, char const *jinfochk, char const *jauthchk);
-static char *prompt(char const *str, size_t *lenp);
-static char *get_contest_id(struct info *infop, bool *testp, bool *read_answers_flag_used);
-static int get_entry_num(struct info *infop);
-static char *mk_entry_dir(char const *work_dir, char const *ioccc_id, int entry_num, char **tarball_path, time_t tstamp);
-static bool inspect_Makefile(char const *Makefile, struct info *infop);
-static void warn_Makefile(char const *Makefile, struct info *infop);
-static void check_Makefile(struct info *infop, char const *entry_dir, char const *cp, char const *Makefile);
-static void check_remarks_md(struct info *infop, char const *entry_dir, char const *cp, char const *remarks_md);
-static void check_extra_data_files(struct info *infop, char const *entry_dir, char const *cp, int count, char **args);
-static char const *lookup_location_name(char const *upper_code);
-static bool yes_or_no(char const *question);
-static char *get_title(struct info *infop);
-static char *get_abstract(struct info *infop);
-static int get_author_info(struct info *infop, char *ioccc_id, struct author **author_set);
-static void verify_entry_dir(char const *entry_dir, char const *ls);
-static bool json_fprintf_str(FILE *stream, char const *str);
-static bool json_fprintf_value_string(FILE *stream, char const *lead, char const *name, char const *middle, char const *value,
-				      char const *tail);
-static bool json_fprintf_value_long(FILE *stream, char const *lead, char const *name, char const *middle, long value,
-				    char const *tail);
-static bool json_fprintf_value_bool(FILE *stream, char const *lead, char const *name, char const *middle, bool value,
-				    char const *tail);
-static void write_info(struct info *infop, char const *entry_dir, bool test_mode, char const *jinfochk);
-static void write_author(struct info *infop, int author_count, struct author *authorp, char const *entry_dir, char const *jauthchk);
-static void form_tarball(char const *work_dir, char const *entry_dir, char const *tarball_path, char const *tar,
-			 char const *ls, char const *txzchk, char const *fnamchk);
-static void remind_user(char const *work_dir, char const *entry_dir, char const *tar, char const *tarball_path, bool test_mode);
-
+#include "mkiocccentry.h"
 
 int
 main(int argc, char *argv[])
@@ -838,7 +688,7 @@ main(int argc, char *argv[])
  *
  * This function does not return.
  */
-static void
+void
 usage(int exitcode, char const *str, char const *program, char const *tar, char const *cp, char const *ls,
       char const *txzchk, char const *fnamchk, char const *jinfochk, char const *jauthchk)
 {
@@ -906,7 +756,7 @@ usage(int exitcode, char const *str, char const *program, char const *tar, char 
  *
  * This function does not return.
  */
-static void
+void
 free_info(struct info *infop)
 {
     int i;
@@ -991,7 +841,7 @@ free_info(struct info *infop)
  *      author_set      - pointer to a struct author array
  *      author_count    - length of author array
  */
-static void
+void
 free_author_array(struct author *author_set, int author_count)
 {
     int i;
@@ -1064,7 +914,7 @@ free_author_array(struct author *author_set, int author_count)
  *
  * NOTE: This function does not return on error or if things are not sane.
  */
-static void
+void
 sanity_chk(struct info *infop, char const *work_dir, char const *tar, char const *cp, char const *ls,
 	   char const *txzchk, char const *fnamchk, char const *jinfochk, char const *jauthchk)
 {
@@ -1542,7 +1392,7 @@ sanity_chk(struct info *infop, char const *work_dir, char const *tar, char const
  *
  * This function does not return on error.
  */
-static char *
+char *
 prompt(char const *str, size_t *lenp)
 {
     char *linep = NULL;		/* readline_dup line buffer */
@@ -1656,7 +1506,7 @@ prompt(char const *str, size_t *lenp)
  *
  * This function does not return on error or if the contest ID is malformed.
  */
-static char *
+char *
 get_contest_id(struct info *infop, bool *testp, bool *read_answers_flag_used)
 {
     char *malloc_ret;		/* malloced return string */
@@ -1847,7 +1697,7 @@ get_contest_id(struct info *infop, bool *testp, bool *read_answers_flag_used)
  * returns:
  *      entry number >= 0 <= MAX_ENTRY_NUM
  */
-static int
+int
 get_entry_num(struct info *infop)
 {
     int entry_num;		/* entry number */
@@ -1949,7 +1799,7 @@ get_entry_num(struct info *infop)
  *
  * This function does not return on error or if the entry directory cannot be formed.
  */
-static char *
+char *
 mk_entry_dir(char const *work_dir, char const *ioccc_id, int entry_num, char **tarball_path, time_t tstamp)
 {
     size_t entry_dir_len;	/* length of entry directory */
@@ -2055,7 +1905,7 @@ mk_entry_dir(char const *work_dir, char const *ioccc_id, int entry_num, char **t
  *
  * This function does not return on error.
  */
-static void
+void
 warn_empty_prog(char const *prog_c)
 {
     bool yorn = false;
@@ -2107,7 +1957,7 @@ warn_empty_prog(char const *prog_c)
  *
  * This function does not return on error.
  */
-static void
+void
 warn_rule2a_size(struct info *infop, char const *prog_c, int mode)
 {
     bool yorn = false;
@@ -2190,7 +2040,7 @@ warn_rule2a_size(struct info *infop, char const *prog_c, int mode)
  *
  * This function does not return on error.
  */
-static void
+void
 warn_high_bit(char const *prog_c)
 {
     int ret, yorn;
@@ -2232,7 +2082,7 @@ warn_high_bit(char const *prog_c)
  *
  * This function does not return on error.
  */
-static void
+void
 warn_nul_chars(char const *prog_c)
 {
     int ret, yorn;
@@ -2274,7 +2124,7 @@ warn_nul_chars(char const *prog_c)
  *
  * This function does not return on error.
  */
-static void
+void
 warn_trigraph(char const *prog_c)
 {
     bool yorn = false;
@@ -2317,7 +2167,7 @@ warn_trigraph(char const *prog_c)
  *
  * This function does not return on error.
  */
-static void
+void
 warn_wordbuf(char const *prog_c)
 {
     int ret, yorn;
@@ -2360,7 +2210,7 @@ warn_wordbuf(char const *prog_c)
  *
  * This function does not return on error.
  */
-static void
+void
 warn_ungetc(char const *prog_c)
 {
     bool yorn = false;
@@ -2404,7 +2254,7 @@ warn_ungetc(char const *prog_c)
  *
  * This function does not return on error.
  */
-static void
+void
 warn_rule2b_size(struct info *infop, char const *prog_c)
 {
     int ret, yorn;
@@ -2462,7 +2312,7 @@ warn_rule2b_size(struct info *infop, char const *prog_c)
  *
  * This function does not return on error.
  */
-static void
+void
 check_prog_c(struct info *infop, char const *entry_dir, char const *cp, char const *prog_c)
 {
     FILE *prog_stream;		/* prog.c open file stream */
@@ -2725,7 +2575,7 @@ check_prog_c(struct info *infop, char const *entry_dir, char const *cp, char con
  *
  * This function does not return on error.
  */
-static bool
+bool
 inspect_Makefile(char const *Makefile, struct info *infop)
 {
     FILE *stream;		/* open file stream */
@@ -2920,7 +2770,7 @@ inspect_Makefile(char const *Makefile, struct info *infop)
  *
  * This function does not return on error.
  */
-static void
+void
 warn_Makefile(char const *Makefile, struct info *infop)
 {
     bool yorn = false;
@@ -3031,7 +2881,7 @@ warn_Makefile(char const *Makefile, struct info *infop)
  *
  * This function does not return on error.
  */
-static void
+void
 check_Makefile(struct info *infop, char const *entry_dir, char const *cp, char const *Makefile)
 {
     off_t filesize = 0;		/* size of Makefile */
@@ -3177,7 +3027,7 @@ check_Makefile(struct info *infop, char const *entry_dir, char const *cp, char c
  *
  * This function does not return on error.
  */
-static void
+void
 check_remarks_md(struct info *infop, char const *entry_dir, char const *cp, char const *remarks_md)
 {
     off_t filesize = 0;		/* size of remarks.md */
@@ -3312,7 +3162,7 @@ check_remarks_md(struct info *infop, char const *entry_dir, char const *cp, char
  *
  * This function does not return on error.
  */
-static void
+void
 check_extra_data_files(struct info *infop, char const *entry_dir, char const *cp, int count, char **args)
 {
     char *base;			/* basename of extra data file */
@@ -3547,7 +3397,7 @@ check_extra_data_files(struct info *infop, char const *entry_dir, char const *cp
  *
  * This function does not return on error.
  */
-static char const *
+char const *
 lookup_location_name(char const *upper_code)
 {
     struct location *p;		/* entry in the location table */
@@ -3587,7 +3437,7 @@ lookup_location_name(char const *upper_code)
  *      true ==> input is yes in some form,
  *      false ==> input is not yes
  */
-static bool
+bool
 yes_or_no(char const *question)
 {
     char *response;		/* response to the question */
@@ -3700,7 +3550,7 @@ yes_or_no(char const *question)
  *
  * This function does not return on error.
  */
-static char *
+char *
 get_title(struct info *infop)
 {
     char *title = NULL;		/* entry title to return or NULL */
@@ -3883,7 +3733,7 @@ get_title(struct info *infop)
  *
  * This function does not return on error.
  */
-static char *
+char *
 get_abstract(struct info *infop)
 {
     char *abstract = NULL;	/* entry abstract to return or NULL */
@@ -3999,7 +3849,7 @@ get_abstract(struct info *infop)
  *
  * This function does not return on error.
  */
-static int
+int
 get_author_info(struct info *infop, char *ioccc_id, struct author **author_set_p)
 {
     struct author *author_set = NULL;	/* allocated author set */
@@ -4808,7 +4658,7 @@ get_author_info(struct info *infop, char *ioccc_id, struct author **author_set_p
  *
  * This function does not return on error.
  */
-static void
+void
 verify_entry_dir(char const *entry_dir, char const *ls)
 {
     int exit_code;		/* exit code from system(cmd) */
@@ -5030,7 +4880,7 @@ verify_entry_dir(char const *entry_dir, char const *ls)
  *
  * This function does not return on error.
  */
-static bool
+bool
 json_fprintf_str(FILE *stream, char const *str)
 {
     int ret;			/* libc function return */
@@ -5114,7 +4964,7 @@ json_fprintf_str(FILE *stream, char const *str)
  *
  * This function does not return on error.
  */
-static bool
+bool
 json_fprintf_value_string(FILE *stream, char const *lead, char const *name, char const *middle, char const *value,
 			  char const *tail)
 {
@@ -5201,7 +5051,7 @@ json_fprintf_value_string(FILE *stream, char const *lead, char const *name, char
  *
  * This function does not return on error.
  */
-static bool
+bool
 json_fprintf_value_long(FILE *stream, char const *lead, char const *name, char const *middle, long value,
 			char const *tail)
 {
@@ -5287,7 +5137,7 @@ json_fprintf_value_long(FILE *stream, char const *lead, char const *name, char c
  *	true ==> stream print was OK,
  *	false ==> error printing to stream
  */
-static bool
+bool
 json_fprintf_value_bool(FILE *stream, char const *lead, char const *name, char const *middle, bool value,
 			char const *tail)
 {
@@ -5369,7 +5219,7 @@ json_fprintf_value_bool(FILE *stream, char const *lead, char const *name, char c
  *
  * This function does not return on error.
  */
-static void
+void
 write_info(struct info *infop, char const *entry_dir, bool test_mode, char const *jinfochk)
 {
     struct tm *timeptr;		/* localtime return */
@@ -5642,7 +5492,7 @@ write_info(struct info *infop, char const *entry_dir, bool test_mode, char const
  *
  * This function does not return on error.
  */
-static void
+void
 write_author(struct info *infop, int author_count, struct author *authorp, char const *entry_dir, char const *jauthchk)
 {
     char *author_path;		/* path to .author.json file */
@@ -5838,7 +5688,7 @@ write_author(struct info *infop, int author_count, struct author *authorp, char 
  *
  * This function does not return on error.
  */
-static void
+void
 form_tarball(char const *work_dir, char const *entry_dir, char const *tarball_path, char const *tar,
 	     char const *ls, char const *txzchk, char const *fnamchk)
 {
@@ -6064,7 +5914,7 @@ form_tarball(char const *work_dir, char const *entry_dir, char const *tarball_pa
  *      answers		- path to the answers file (if specified)
  *      infop		- pointer to info structure
  */
-static void
+void
 remind_user(char const *work_dir, char const *entry_dir, char const *tar, char const *tarball_path, bool test_mode)
 {
     int ret;			/* libc function return */
