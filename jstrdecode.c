@@ -254,7 +254,7 @@ main(int argc, char *argv[])
  *
  * This function does not return.
  */
-void
+static void
 usage(int exitcode, char const *str, char const *prog)
 {
     /*

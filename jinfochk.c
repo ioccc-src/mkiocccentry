@@ -5,85 +5,17 @@
  * "Because sometimes even the IOCCC Judges need some help." :-)
  */
 
+#define JINFOCHK_C
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
 #include <string.h>
 
-
 /*
- * IOCCC size and rule related limitations
+ * Our header file - #includes the header files we need
  */
-#include "limit_ioccc.h"
-
-
-/*
- * dbg - debug, warning and error reporting facility
- */
-#include "dbg.h"
-
-
-/*
- * util - utility functions and definitions
- */
-#include "util.h"
-
-/*
- * json - json file structs
- */
-#include "json.h"
-
-
-/*
- * jinfochk version
- */
-#define JINFOCHK_VERSION "0.2 2022-02-13"	/* use format: major.minor YYYY-MM-DD */
-
-
-/*
- * definitions
- */
-#define REQUIRED_ARGS (1)	/* number of required arguments on the command line */
-
-
-/*
- * usage message
- *
- * Use the usage() function to print the these usage_msgX strings.
- */
-static const char * const usage_msg =
-"usage: %s [-h] [-v level] [-V] [-q] file\n"
-"\n"
-"\t-h\t\tprint help message and exit 0\n"
-"\t-v level\tset verbosity level: (def level: %d)\n"
-"\t-V\t\tprint version string and exit\n"
-"\t-q\t\tquiet mode\n"
-"\n"
-"\tfile\t\tpath to a .info.json file\n"
-"\n"
-"exit codes:\n"
-"\n"
-"\t0\t\tno errors or warnings detected\n"
-"\t>0\t\tsome error(s) and/or warning(s) were detected\n"
-"\n"
-"jinfochk version: %s\n";
-
-
-/*
- * globals
- */
-int verbosity_level = DBG_DEFAULT;	    /* debug level set by -v */
-char const *program = NULL;		    /* our name */
-static bool quiet = false;		    /* true ==> quiet mode */
-static struct info info;
-
-/*
- * forward declarations
- */
-static void usage(int exitcode, char const *name, char const *str) __attribute__((noreturn));
-static void sanity_chk(char const *file);
-static void check_info_json(char const *file);
-
+#include "jinfochk.h"
 
 int
 main(int argc, char **argv)
@@ -98,7 +30,7 @@ main(int argc, char **argv)
      * parse args
      */
     program = argv[0];
-    while ((i = getopt(argc, argv, "hv:Vq")) != -1) {
+    while ((i = getopt(argc, argv, "hv:Vqs")) != -1) {
 	switch (i) {
 	case 'h':		/* -h - print help to stderr and exit 0 */
 	    usage(1, "-h help mode", program); /*ooo*/
@@ -126,6 +58,9 @@ main(int argc, char **argv)
 	    break;
 	case 'q':
 	    quiet = true;
+	    break;
+	case 's':
+	    strict = true;
 	    break;
 	default:
 	    usage(1, "invalid -flag", program); /*ooo*/
@@ -253,10 +188,10 @@ check_info_json(char const *file)
 {
     FILE *stream;
     int ret;
-    unsigned line_num = 0; /* line number */
-    char *linep = NULL;	/* allocated line read */
-    char *line_dup = NULL; /* currently last line read */
-    ssize_t readline_len;	/* readline return length */
+    char *data;		/* .info.json contents */
+    char *data_dup;	/* contents of file strdup()d */
+    size_t length;	/* length of input buffer */
+    char *p;
 
     /*
      * firewall
@@ -271,76 +206,64 @@ check_info_json(char const *file)
 	err(10, __func__, "couldn't open %s", file);
 	not_reached();
     }
-    errno = 0;
-    ret = setvbuf(stream, (char *)NULL, _IOLBF, 0);
-    if (ret != 0) {
-	warnp(__func__, "setvbuf for %s", file);
-    }
 
-    /* process lines until EOF */
-    do {
-	char *p = NULL;
-
-	++line_num;
-
-	readline_len = readline(&linep, stream);
-	if (readline_len < 0) {
-	    dbg(DBG_HIGH, "reached EOF of file %s", file);
-	    break;
-	} else if (readline_len == 0) {
-	    dbg(DBG_HIGH, "found empty line in file %s", file);
-	    continue;
-	}
-
-	/*
-	 * scan for embedded NUL bytes (before end of line)
-	 *
-	 */
-	errno = 0;			/* pre-clear errno for errp() */
-	p = (char *)memchr(linep, 0, (size_t)readline_len);
-	if (p != NULL) {
-	    warn("jinfochk", "found NUL before end of line, reading next line");
-	    continue;
-	}
-	dbg(DBG_VHIGH, "line %d: %s", line_num, linep);
-
-	/* free previous line's copy for current line (if this is the first line
-	 * it's still safe because it's safe to free a NULL pointer).
-	 */
-	free(line_dup);
-
-	/* now make a copy of this line */
-	errno = 0;
-	line_dup = strdup(linep);
-	if (line_dup == NULL) {
-	    errp(11, __func__, "unable to strdup line %s", linep);
-	    not_reached();
-	}
-
-	if (line_num == 1 && *linep != '{') {
-	    ++info.issues;
-	    err(12, __func__, "first character in file is not '{'");
-	    not_reached();
-	}
-
-    } while (readline_len >= 0);
-
-    /* verify that the very last character is a '}' */
-    if (line_dup == NULL || line_dup[strlen(line_dup)-1]!= '}') {
-	++info.issues;
-	err(13, __func__, "last character in file not '}': \"%c\"", line_dup?line_dup[strlen(line_dup)-1]:'\0');
+    /* read in the file */
+    data = read_all(stream, &length);
+    if (data == NULL) {
+	err(11, __func__, "error while reading data in %s", file);
+	not_reached();
+    } else if (length == 0) {
+	err(12, __func__, "zero length data in file %s", file);
 	not_reached();
     }
+    dbg(DBG_MED, "%s read length: %lu", file, (unsigned long)length);
 
-    /* free line_dup */
-    free(line_dup);
-    line_dup = NULL;
-
+    /* close the stream as we no longer need it, having read in all the file */
     errno = 0;
     ret = fclose(stream);
     if (ret != 0) {
 	warnp(__func__, "error in fclose to .info.json file %s", file);
     }
+
+    /*
+     * scan for embedded NUL bytes (before EOF)
+     *
+     */
+    errno = 0;			/* pre-clear errno for errp() */
+    p = (char *)memchr(data, 0, (size_t)length);
+    if (p != NULL) {
+	err(15, __func__, "found NUL before EOF: %s", file);
+	not_reached();
+    }
+   
+    errno = 0;
+    data_dup = strdup(data);
+    if (data_dup == NULL) {
+	errp(11, __func__, "unable to strdup file %s contents", file);
+	not_reached();
+    }
+
+    /* verify that the very first character is a '{' */
+    if (check_first_json_char(file, data_dup, strict, &p)) {
+	err(12, __func__, "first character in file %s not a '{': '%c'", file, *p);
+	not_reached();
+    }
+    dbg(DBG_MED, "first character: '%c'", *p);
+    /* verify that the very last character is a '}' */
+    if (check_last_json_char(file, data_dup, strict, &p)) {
+	err(13, __func__, "last character in file %s not a '}': '%c'", file, *p);
+	not_reached();
+    }
+    dbg(DBG_MED, "last character: '%c'", *p);
+
+    /* free data */
+    free(data);
+    data = NULL;
+
+    /* free strdup()d data */
+    free(data_dup);
+    data_dup = NULL;
+
 }
 
 

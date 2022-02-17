@@ -159,11 +159,11 @@ fnamchk: fnamchk.c dbg.o util.o Makefile
 txzchk: txzchk.c txzchk.h rule_count.o dbg.o util.o Makefile
 	${CC} ${CFLAGS} txzchk.c rule_count.o dbg.o util.o -o $@
 
-jauthchk: jauthchk.c json.h rule_count.o dbg.o util.o Makefile
-	${CC} ${CFLAGS} jauthchk.c rule_count.o dbg.o util.o -o $@
+jauthchk: jauthchk.c jauthchk.h json.h rule_count.o json.o dbg.o util.o Makefile
+	${CC} ${CFLAGS} jauthchk.c rule_count.o json.o dbg.o util.o -o $@
 
-jinfochk: jinfochk.c rule_count.o dbg.o util.o Makefile
-	${CC} ${CFLAGS} jinfochk.c rule_count.o dbg.o util.o -o $@
+jinfochk: jinfochk.c jinfochk.h rule_count.o json.o dbg.o util.o Makefile
+	${CC} ${CFLAGS} jinfochk.c rule_count.o json.o dbg.o util.o -o $@
 
 jstrencode: jstrencode.c jstrencode.h dbg.o json.o util.o Makefile
 	${CC} ${CFLAGS} jstrencode.c dbg.o json.o util.o -o $@
@@ -331,8 +331,8 @@ mkiocccentry.o: mkiocccentry.c mkiocccentry.h util.h json.h dbg.h \
 iocccsize.o: iocccsize.c
 fnamchk.o: fnamchk.c limit_ioccc.h dbg.h util.h
 txzchk.o: txzchk.c txzchk.h util.h dbg.h limit_ioccc.h
-jauthchk.o: jauthchk.c limit_ioccc.h dbg.h util.h json.h
-jinfochk.o: jinfochk.c limit_ioccc.h dbg.h util.h json.h
+jauthchk.o: jauthchk.c jauthchk.h limit_ioccc.h dbg.h util.h json.h
+jinfochk.o: jinfochk.c jinfochk.h limit_ioccc.h dbg.h util.h json.h
 json.o: json.c dbg.h util.h json.h
 jstrencode.o: jstrencode.c jstrencode.h limit_ioccc.h dbg.h util.h json.h
 jstrdecode.o: jstrdecode.c jstrdecode.h limit_ioccc.h dbg.h util.h json.h

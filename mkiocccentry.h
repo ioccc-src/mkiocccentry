@@ -89,7 +89,7 @@
  *
  * Use the usage() function to print the these usage_msgX strings.
  */
-const char * const usage_msg0 =
+static const char * const usage_msg0 =
     "usage: %s [options] work_dir prog.c Makefile remarks.md [file ...]\n"
     "\noptions:\n"
     "\t-h\t\t\tprint help message and exit 0\n"
@@ -97,16 +97,16 @@ const char * const usage_msg0 =
     "\t-V\t\t\tprint version string and exit\n"
     "\t-W\t\t\tignore all warnings (this does NOT mean the judges will! :) )\n";
 
-const char * const usage_msg1 =
+static const char * const usage_msg1 =
     "\t-t /path/to/tar\t\tpath to tar executable that supports the -J (xz) option (def: %s)\n"
     "\t-c /path/to/cp\t\tpath to cp executable (def: %s)\n"
     "\t-l /path/to/ls\t\tpath to ls executable (def: %s)\n"
     "\t-C /path/to/txzchk\tpath to txzchk executable (def: %s)\n"
     "\t-F /path/to/fnamchk\tpath to fnamchk executable used by txzchk (def: %s)";
-const char * const usage_msg2 =
+static const char * const usage_msg2 =
     "\t-j /path/to/jinfochk	path to jinfochk executable used by txzchk (def: %s)\n"
     "\t-J /path/to/jauthchk	path to jauthchk executable used by txzchk (def: %s)\n";
-const char * const usage_msg3 =
+static const char * const usage_msg3 =
     "\t-a answers\t\twrite answers to a file for easier updating of an entry\n"
     "\t-A answers\t\twrite answers file even if it already exists\n"
     "\t-i answers\t\tread answers from file previously written by -a|-A answers\n\n"
@@ -114,7 +114,7 @@ const char * const usage_msg3 =
     "\n"
     "\twork_dir\tdirectory where the entry directory and tarball are formed\n"
     "\tprog.c\t\tpath to the C source for your entry\n";
-const char * const usage_msg4 =
+static const char * const usage_msg4 =
     "\n"
     "\tMakefile\tMakefile to build (make all) and cleanup (make clean & make clobber)\n"
     "\n"
@@ -131,59 +131,59 @@ const char * const usage_msg4 =
  * globals
  */
 int verbosity_level = DBG_DEFAULT;	/* debug level set by -v */
-bool need_confirm = true;	/* true ==> ask for confirmations */
-bool need_hints = true;		/* true ==> show hints */
-bool need_retry = true;
-bool ignore_warnings = false;	/* true ==> ignore all warnings (this does NOT mean the judges will! :) */
-FILE *input_stream = NULL;
-struct iocccsize size;	/* rule_count() processing results */
+static bool need_confirm = true;	/* true ==> ask for confirmations */
+static bool need_hints = true;		/* true ==> show hints */
+static bool need_retry = true;
+static bool ignore_warnings = false;	/* true ==> ignore all warnings (this does NOT mean the judges will! :) */
+static FILE *input_stream = NULL;
+static struct iocccsize size;	/* rule_count() processing results */
 
 
 /*
  * forward declarations
  */
-void usage(int exitcode, char const *str, char const *program, char const *tar, char const *cp, char const *ls,
+static void usage(int exitcode, char const *str, char const *program, char const *tar, char const *cp, char const *ls,
 		  char const *txzchk, char const *fnamchk, char const *jinfochk, char const *jauthchk);
-void free_info(struct info *infop);
-void free_author_array(struct author *authorp, int author_count);
-void warn_empty_prog(char const *prog_c);
-void warn_rule2a_size(struct info *infop, char const *prog_c, int mode);
-void warn_high_bit(char const *prog_c);
-void warn_nul_chars(char const *prog_c);
-void warn_trigraph(char const *prog_c);
-void warn_wordbuf(char const *prog_c);
-void warn_ungetc(char const *prog_c);
-void warn_rule2b_size(struct info *infop, char const *prog_c);
-void check_prog_c(struct info *infop, char const *entry_dir, char const *cp, char const *prog_c);
-void sanity_chk(struct info *infop, char const *work_dir, char const *tar, char const *cp,
+static void free_info(struct info *infop);
+static void free_author_array(struct author *authorp, int author_count);
+static void warn_empty_prog(char const *prog_c);
+static void warn_rule2a_size(struct info *infop, char const *prog_c, int mode);
+static void warn_high_bit(char const *prog_c);
+static void warn_nul_chars(char const *prog_c);
+static void warn_trigraph(char const *prog_c);
+static void warn_wordbuf(char const *prog_c);
+static void warn_ungetc(char const *prog_c);
+static void warn_rule2b_size(struct info *infop, char const *prog_c);
+static void check_prog_c(struct info *infop, char const *entry_dir, char const *cp, char const *prog_c);
+static void sanity_chk(struct info *infop, char const *work_dir, char const *tar, char const *cp,
 		       char const *ls, char const *txzchk, char const *fnamchk, char const *jinfochk, char const *jauthchk);
-char *prompt(char const *str, size_t *lenp);
-char *get_contest_id(struct info *infop, bool *testp, bool *read_answers_flag_used);
-int get_entry_num(struct info *infop);
-char *mk_entry_dir(char const *work_dir, char const *ioccc_id, int entry_num, char **tarball_path, time_t tstamp);
-bool inspect_Makefile(char const *Makefile, struct info *infop);
-void warn_Makefile(char const *Makefile, struct info *infop);
-void check_Makefile(struct info *infop, char const *entry_dir, char const *cp, char const *Makefile);
-void check_remarks_md(struct info *infop, char const *entry_dir, char const *cp, char const *remarks_md);
-void check_extra_data_files(struct info *infop, char const *entry_dir, char const *cp, int count, char **args);
-char const *lookup_location_name(char const *upper_code);
-bool yes_or_no(char const *question);
-char *get_title(struct info *infop);
-char *get_abstract(struct info *infop);
-int get_author_info(struct info *infop, char *ioccc_id, struct author **author_set);
-void verify_entry_dir(char const *entry_dir, char const *ls);
-bool json_fprintf_str(FILE *stream, char const *str);
-bool json_fprintf_value_string(FILE *stream, char const *lead, char const *name, char const *middle, char const *value,
+static char *prompt(char const *str, size_t *lenp);
+static char *get_contest_id(struct info *infop, bool *testp, bool *read_answers_flag_used);
+static int get_entry_num(struct info *infop);
+static char *mk_entry_dir(char const *work_dir, char const *ioccc_id, int entry_num, char **tarball_path, time_t tstamp);
+static bool inspect_Makefile(char const *Makefile, struct info *infop);
+static void warn_Makefile(char const *Makefile, struct info *infop);
+static void check_Makefile(struct info *infop, char const *entry_dir, char const *cp, char const *Makefile);
+static void check_remarks_md(struct info *infop, char const *entry_dir, char const *cp, char const *remarks_md);
+static void check_extra_data_files(struct info *infop, char const *entry_dir, char const *cp, int count, char **args);
+static char const *lookup_location_name(char const *upper_code);
+static bool yes_or_no(char const *question);
+static char *get_title(struct info *infop);
+static char *get_abstract(struct info *infop);
+static int get_author_info(struct info *infop, char *ioccc_id, struct author **author_set);
+static void verify_entry_dir(char const *entry_dir, char const *ls);
+static bool json_fprintf_str(FILE *stream, char const *str);
+static bool json_fprintf_value_string(FILE *stream, char const *lead, char const *name, char const *middle, char const *value,
 				      char const *tail);
-bool json_fprintf_value_long(FILE *stream, char const *lead, char const *name, char const *middle, long value,
+static bool json_fprintf_value_long(FILE *stream, char const *lead, char const *name, char const *middle, long value,
 				    char const *tail);
-bool json_fprintf_value_bool(FILE *stream, char const *lead, char const *name, char const *middle, bool value,
+static bool json_fprintf_value_bool(FILE *stream, char const *lead, char const *name, char const *middle, bool value,
 				    char const *tail);
-void write_info(struct info *infop, char const *entry_dir, bool test_mode, char const *jinfochk);
-void write_author(struct info *infop, int author_count, struct author *authorp, char const *entry_dir, char const *jauthchk);
-void form_tarball(char const *work_dir, char const *entry_dir, char const *tarball_path, char const *tar,
+static void write_info(struct info *infop, char const *entry_dir, bool test_mode, char const *jinfochk);
+static void write_author(struct info *infop, int author_count, struct author *authorp, char const *entry_dir, char const *jauthchk);
+static void form_tarball(char const *work_dir, char const *entry_dir, char const *tarball_path, char const *tar,
 			 char const *ls, char const *txzchk, char const *fnamchk);
-void remind_user(char const *work_dir, char const *entry_dir, char const *tar, char const *tarball_path, bool test_mode);
+static void remind_user(char const *work_dir, char const *entry_dir, char const *tar, char const *tarball_path, bool test_mode);
 
 
 
