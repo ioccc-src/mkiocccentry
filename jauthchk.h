@@ -34,7 +34,7 @@
 /*
  * jauthchk version
  */
-#define JAUTHCHK_VERSION "0.2 2022-02-13"	/* use format: major.minor YYYY-MM-DD */
+#define JAUTHCHK_VERSION "0.3 2022-02-17"	/* use format: major.minor YYYY-MM-DD */
 
 
 
