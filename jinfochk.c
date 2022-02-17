@@ -232,26 +232,26 @@ check_info_json(char const *file)
     errno = 0;			/* pre-clear errno for errp() */
     p = (char *)memchr(data, 0, (size_t)length);
     if (p != NULL) {
-	err(15, __func__, "found NUL before EOF: %s", file);
+	err(13, __func__, "found NUL before EOF: %s", file);
 	not_reached();
     }
    
     errno = 0;
     data_dup = strdup(data);
     if (data_dup == NULL) {
-	errp(11, __func__, "unable to strdup file %s contents", file);
+	errp(14, __func__, "unable to strdup file %s contents", file);
 	not_reached();
     }
 
     /* verify that the very first character is a '{' */
     if (check_first_json_char(file, data_dup, strict, &p)) {
-	err(12, __func__, "first character in file %s not a '{': '%c'", file, *p);
+	err(15, __func__, "first character in file %s not a '{': '%c'", file, *p);
 	not_reached();
     }
     dbg(DBG_MED, "first character: '%c'", *p);
     /* verify that the very last character is a '}' */
     if (check_last_json_char(file, data_dup, strict, &p)) {
-	err(13, __func__, "last character in file %s not a '}': '%c'", file, *p);
+	err(16, __func__, "last character in file %s not a '}': '%c'", file, *p);
 	not_reached();
     }
     dbg(DBG_MED, "last character: '%c'", *p);

@@ -1594,10 +1594,10 @@ check_last_json_char(char const *file, char *data, bool strict, char **last)
      * firewall
      */
     if (data == NULL || strlen(data) == 0) {
-	err(214, __func__, "passed NULL or zero length data");
+	err(216, __func__, "passed NULL or zero length data");
 	not_reached();
     } else if (file == NULL || last == NULL) {
-	err(215, __func__, "passed NULL arg(s)");
+	err(217, __func__, "passed NULL arg(s)");
 	not_reached();
     }
 
