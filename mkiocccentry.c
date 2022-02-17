@@ -718,7 +718,7 @@ main(int argc, char *argv[])
  *
  * This function does not return.
  */
-void
+static void
 usage(int exitcode, char const *str, char const *program, char const *tar, char const *cp, char const *ls,
       char const *txzchk, char const *fnamchk, char const *jinfochk, char const *jauthchk)
 {
@@ -786,7 +786,7 @@ usage(int exitcode, char const *str, char const *program, char const *tar, char 
  *
  * This function does not return.
  */
-void
+static void
 free_info(struct info *infop)
 {
     int i;
@@ -871,7 +871,7 @@ free_info(struct info *infop)
  *      author_set      - pointer to a struct author array
  *      author_count    - length of author array
  */
-void
+static void
 free_author_array(struct author *author_set, int author_count)
 {
     int i;
@@ -944,7 +944,7 @@ free_author_array(struct author *author_set, int author_count)
  *
  * NOTE: This function does not return on error or if things are not sane.
  */
-void
+static void
 sanity_chk(struct info *infop, char const *work_dir, char const *tar, char const *cp, char const *ls,
 	   char const *txzchk, char const *fnamchk, char const *jinfochk, char const *jauthchk)
 {
@@ -1422,7 +1422,7 @@ sanity_chk(struct info *infop, char const *work_dir, char const *tar, char const
  *
  * This function does not return on error.
  */
-char *
+static char *
 prompt(char const *str, size_t *lenp)
 {
     char *linep = NULL;		/* readline_dup line buffer */
@@ -1536,7 +1536,7 @@ prompt(char const *str, size_t *lenp)
  *
  * This function does not return on error or if the contest ID is malformed.
  */
-char *
+static char *
 get_contest_id(struct info *infop, bool *testp, bool *read_answers_flag_used)
 {
     char *malloc_ret;		/* malloced return string */
@@ -1727,7 +1727,7 @@ get_contest_id(struct info *infop, bool *testp, bool *read_answers_flag_used)
  * returns:
  *      entry number >= 0 <= MAX_ENTRY_NUM
  */
-int
+static int
 get_entry_num(struct info *infop)
 {
     int entry_num;		/* entry number */
@@ -1829,7 +1829,7 @@ get_entry_num(struct info *infop)
  *
  * This function does not return on error or if the entry directory cannot be formed.
  */
-char *
+static char *
 mk_entry_dir(char const *work_dir, char const *ioccc_id, int entry_num, char **tarball_path, time_t tstamp)
 {
     size_t entry_dir_len;	/* length of entry directory */
@@ -1935,7 +1935,7 @@ mk_entry_dir(char const *work_dir, char const *ioccc_id, int entry_num, char **t
  *
  * This function does not return on error.
  */
-void
+static void
 warn_empty_prog(char const *prog_c)
 {
     bool yorn = false;
@@ -1987,7 +1987,7 @@ warn_empty_prog(char const *prog_c)
  *
  * This function does not return on error.
  */
-void
+static void
 warn_rule2a_size(struct info *infop, char const *prog_c, int mode)
 {
     bool yorn = false;
@@ -2070,7 +2070,7 @@ warn_rule2a_size(struct info *infop, char const *prog_c, int mode)
  *
  * This function does not return on error.
  */
-void
+static void
 warn_high_bit(char const *prog_c)
 {
     int ret, yorn;
@@ -2112,7 +2112,7 @@ warn_high_bit(char const *prog_c)
  *
  * This function does not return on error.
  */
-void
+static void
 warn_nul_chars(char const *prog_c)
 {
     int ret, yorn;
@@ -2154,7 +2154,7 @@ warn_nul_chars(char const *prog_c)
  *
  * This function does not return on error.
  */
-void
+static void
 warn_trigraph(char const *prog_c)
 {
     bool yorn = false;
@@ -2197,7 +2197,7 @@ warn_trigraph(char const *prog_c)
  *
  * This function does not return on error.
  */
-void
+static void
 warn_wordbuf(char const *prog_c)
 {
     int ret, yorn;
@@ -2240,7 +2240,7 @@ warn_wordbuf(char const *prog_c)
  *
  * This function does not return on error.
  */
-void
+static void
 warn_ungetc(char const *prog_c)
 {
     bool yorn = false;
@@ -2284,7 +2284,7 @@ warn_ungetc(char const *prog_c)
  *
  * This function does not return on error.
  */
-void
+static void
 warn_rule2b_size(struct info *infop, char const *prog_c)
 {
     int ret, yorn;
@@ -2342,7 +2342,7 @@ warn_rule2b_size(struct info *infop, char const *prog_c)
  *
  * This function does not return on error.
  */
-void
+static void
 check_prog_c(struct info *infop, char const *entry_dir, char const *cp, char const *prog_c)
 {
     FILE *prog_stream;		/* prog.c open file stream */
@@ -2605,7 +2605,7 @@ check_prog_c(struct info *infop, char const *entry_dir, char const *cp, char con
  *
  * This function does not return on error.
  */
-bool
+static bool
 inspect_Makefile(char const *Makefile, struct info *infop)
 {
     FILE *stream;		/* open file stream */
@@ -2800,7 +2800,7 @@ inspect_Makefile(char const *Makefile, struct info *infop)
  *
  * This function does not return on error.
  */
-void
+static void
 warn_Makefile(char const *Makefile, struct info *infop)
 {
     bool yorn = false;
@@ -2911,7 +2911,7 @@ warn_Makefile(char const *Makefile, struct info *infop)
  *
  * This function does not return on error.
  */
-void
+static void
 check_Makefile(struct info *infop, char const *entry_dir, char const *cp, char const *Makefile)
 {
     off_t filesize = 0;		/* size of Makefile */
@@ -3057,7 +3057,7 @@ check_Makefile(struct info *infop, char const *entry_dir, char const *cp, char c
  *
  * This function does not return on error.
  */
-void
+static void
 check_remarks_md(struct info *infop, char const *entry_dir, char const *cp, char const *remarks_md)
 {
     off_t filesize = 0;		/* size of remarks.md */
@@ -3192,7 +3192,7 @@ check_remarks_md(struct info *infop, char const *entry_dir, char const *cp, char
  *
  * This function does not return on error.
  */
-void
+static void
 check_extra_data_files(struct info *infop, char const *entry_dir, char const *cp, int count, char **args)
 {
     char *base;			/* basename of extra data file */
@@ -3427,7 +3427,7 @@ check_extra_data_files(struct info *infop, char const *entry_dir, char const *cp
  *
  * This function does not return on error.
  */
-char const *
+static char const *
 lookup_location_name(char const *upper_code)
 {
     struct location *p;		/* entry in the location table */
@@ -3467,7 +3467,7 @@ lookup_location_name(char const *upper_code)
  *      true ==> input is yes in some form,
  *      false ==> input is not yes
  */
-bool
+static bool
 yes_or_no(char const *question)
 {
     char *response;		/* response to the question */
@@ -3580,7 +3580,7 @@ yes_or_no(char const *question)
  *
  * This function does not return on error.
  */
-char *
+static char *
 get_title(struct info *infop)
 {
     char *title = NULL;		/* entry title to return or NULL */
@@ -3763,7 +3763,7 @@ get_title(struct info *infop)
  *
  * This function does not return on error.
  */
-char *
+static char *
 get_abstract(struct info *infop)
 {
     char *abstract = NULL;	/* entry abstract to return or NULL */
@@ -3879,7 +3879,7 @@ get_abstract(struct info *infop)
  *
  * This function does not return on error.
  */
-int
+static int
 get_author_info(struct info *infop, char *ioccc_id, struct author **author_set_p)
 {
     struct author *author_set = NULL;	/* allocated author set */
@@ -4688,7 +4688,7 @@ get_author_info(struct info *infop, char *ioccc_id, struct author **author_set_p
  *
  * This function does not return on error.
  */
-void
+static void
 verify_entry_dir(char const *entry_dir, char const *ls)
 {
     int exit_code;		/* exit code from system(cmd) */
@@ -4910,7 +4910,7 @@ verify_entry_dir(char const *entry_dir, char const *ls)
  *
  * This function does not return on error.
  */
-bool
+static bool
 json_fprintf_str(FILE *stream, char const *str)
 {
     int ret;			/* libc function return */
@@ -4994,7 +4994,7 @@ json_fprintf_str(FILE *stream, char const *str)
  *
  * This function does not return on error.
  */
-bool
+static bool
 json_fprintf_value_string(FILE *stream, char const *lead, char const *name, char const *middle, char const *value,
 			  char const *tail)
 {
@@ -5081,7 +5081,7 @@ json_fprintf_value_string(FILE *stream, char const *lead, char const *name, char
  *
  * This function does not return on error.
  */
-bool
+static bool
 json_fprintf_value_long(FILE *stream, char const *lead, char const *name, char const *middle, long value,
 			char const *tail)
 {
@@ -5167,7 +5167,7 @@ json_fprintf_value_long(FILE *stream, char const *lead, char const *name, char c
  *	true ==> stream print was OK,
  *	false ==> error printing to stream
  */
-bool
+static bool
 json_fprintf_value_bool(FILE *stream, char const *lead, char const *name, char const *middle, bool value,
 			char const *tail)
 {
@@ -5249,7 +5249,7 @@ json_fprintf_value_bool(FILE *stream, char const *lead, char const *name, char c
  *
  * This function does not return on error.
  */
-void
+static void
 write_info(struct info *infop, char const *entry_dir, bool test_mode, char const *jinfochk)
 {
     struct tm *timeptr;		/* localtime return */
@@ -5448,7 +5448,7 @@ write_info(struct info *infop, char const *entry_dir, bool test_mode, char const
     /*
      * form the jinfochk command
      */
-    cmd = cmdprintf("% -q %", jinfochk, info_path);
+    cmd = cmdprintf("% -q -s %", jinfochk, info_path);
     if (cmd == NULL) {
 	err(202, __func__, "failed to cmdprintf: jinfochk %s", info_path);
 	not_reached();
@@ -5522,7 +5522,7 @@ write_info(struct info *infop, char const *entry_dir, bool test_mode, char const
  *
  * This function does not return on error.
  */
-void
+static void
 write_author(struct info *infop, int author_count, struct author *authorp, char const *entry_dir, char const *jauthchk)
 {
     char *author_path;		/* path to .author.json file */
@@ -5639,7 +5639,7 @@ write_author(struct info *infop, int author_count, struct author *authorp, char 
     /*
      * form the jauthchk command
      */
-    cmd = cmdprintf("% -q %", jauthchk, author_path);
+    cmd = cmdprintf("% -q -s %", jauthchk, author_path);
     if (cmd == NULL) {
 	err(216, __func__, "failed to cmdprintf: jauthchk %s", author_path);
 	not_reached();
@@ -5718,7 +5718,7 @@ write_author(struct info *infop, int author_count, struct author *authorp, char 
  *
  * This function does not return on error.
  */
-void
+static void
 form_tarball(char const *work_dir, char const *entry_dir, char const *tarball_path, char const *tar,
 	     char const *ls, char const *txzchk, char const *fnamchk)
 {
@@ -5944,7 +5944,7 @@ form_tarball(char const *work_dir, char const *entry_dir, char const *tarball_pa
  *      answers		- path to the answers file (if specified)
  *      infop		- pointer to info structure
  */
-void
+static void
 remind_user(char const *work_dir, char const *entry_dir, char const *tar, char const *tarball_path, bool test_mode)
 {
     int ret;			/* libc function return */

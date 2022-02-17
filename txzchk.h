@@ -41,11 +41,11 @@
 
 
 /* variable specific to txzchk */
-char const *txzpath = NULL;		    /* the current tarball being checked */
-char const *program = NULL;		    /* our name */
+static char const *txzpath = NULL;		    /* the current tarball being checked */
+static char const *program = NULL;		    /* our name */
 int verbosity_level = DBG_DEFAULT;	    /* debug level set by -v */
-bool quiet = false;			    /* true ==> only show errors and warnings */
-bool text_file_flag_used = false;	    /* true ==> assume txzpath is a text file */
+static bool quiet = false;			    /* true ==> only show errors and warnings */
+static bool text_file_flag_used = false;	    /* true ==> assume txzpath is a text file */
 
 /*
  * information about the tarball
@@ -70,7 +70,9 @@ struct txz_info {
     unsigned named_dot;			    /* number of files called just '.' */
     unsigned total_files;		    /* total files in the tarball */
     int total_issues;			    /* number of total issues in tarball */
-} txz_info;
+};
+
+static struct txz_info txz_info;
 
 struct file {
     char *basename;
@@ -79,7 +81,7 @@ struct file {
     struct file *next;
 };
 
-struct file *files;
+static struct file *files;
 
 struct line {
     char *line;
@@ -87,7 +89,7 @@ struct line {
     struct line *next;
 };
 
-struct line *lines;
+static struct line *lines;
 
 /*
  * txzchk version
@@ -100,7 +102,7 @@ struct line *lines;
  *
  * Use the usage() function to print the usage_msgX strings.
  */
-const char * const usage_msg =
+static const char * const usage_msg =
     "usage: %s [-h] [-v level] [-V] [-t tar] [-F fnamchk] [-T] txzpath\n"
     "\n"
     "\t-h\t\t\tprint help message and exit 0\n"
@@ -120,24 +122,24 @@ const char * const usage_msg =
 /*
  * function prototypes
  */
-void usage(int exitcode, char const *name, char const *str, char const *tar, char const *fnamchk) __attribute__((noreturn));
-void sanity_chk(char const *tar, char const *fnamchk);
-void parse_line(char *linep, char *line_dup, char const *dir_name, char const *txzpath, int *dir_count);
-void parse_linux_line(char *p, char *line, char *line_dup, char const *dir_name, char const *txzpath, char **saveptr);
-void parse_bsd_line(char *p, char *line, char *line_dup, char const *dir_name, char const *txzpath, char **saveptr);
-unsigned check_tarball(char const *tar, char const *fnamchk);
-void show_txz_info(char const *txzpath);
-void check_empty_file(char const *txzpath, off_t size, struct file *file);
-void check_file(char const *txzpath, char *p, char const *dir_name, struct file *file);
-void check_all_files(char const *dir_name);
-void check_directories(struct file *file, char const *dir_name, char const *txzpath);
-bool has_special_bits(char const *str);
-void add_line(char const *str, int line_num);
-void parse_all_lines(char const *dir_name, char const *txzpath);
-void free_lines(void);
-struct file *alloc_file(char const *p);
-void add_file_to_list(struct file *file);
-void free_file_list(void);
+static void usage(int exitcode, char const *name, char const *str, char const *tar, char const *fnamchk) __attribute__((noreturn));
+static void sanity_chk(char const *tar, char const *fnamchk);
+static void parse_line(char *linep, char *line_dup, char const *dir_name, char const *txzpath, int *dir_count);
+static void parse_linux_line(char *p, char *line, char *line_dup, char const *dir_name, char const *txzpath, char **saveptr);
+static void parse_bsd_line(char *p, char *line, char *line_dup, char const *dir_name, char const *txzpath, char **saveptr);
+static unsigned check_tarball(char const *tar, char const *fnamchk);
+static void show_txz_info(char const *txzpath);
+static void check_empty_file(char const *txzpath, off_t size, struct file *file);
+static void check_file(char const *txzpath, char *p, char const *dir_name, struct file *file);
+static void check_all_files(char const *dir_name);
+static void check_directories(struct file *file, char const *dir_name, char const *txzpath);
+static bool has_special_bits(char const *str);
+static void add_line(char const *str, int line_num);
+static void parse_all_lines(char const *dir_name, char const *txzpath);
+static void free_lines(void);
+static struct file *alloc_file(char const *p);
+static void add_file_to_list(struct file *file);
+static void free_file_list(void);
 
 
 #endif /* TXZCHK_C */

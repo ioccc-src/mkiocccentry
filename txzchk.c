@@ -33,7 +33,6 @@
 #define REQUIRED_ARGS (1)	/* number of required arguments on the command line */
 
 
-
 int
 main(int argc, char **argv)
 {
@@ -174,7 +173,7 @@ main(int argc, char **argv)
  *
  * Returns void. Does not return on error.
  */
-void
+static void
 show_txz_info(char const *txzpath)
 {
     /*
@@ -227,7 +226,7 @@ show_txz_info(char const *txzpath)
  *
  * This function does not return.
  */
-void
+static void
 usage(int exitcode, char const *str, char const *prog, char const *tar, char const *fnamchk)
 {
     /*
@@ -272,7 +271,7 @@ usage(int exitcode, char const *str, char const *prog, char const *tar, char con
  *
  * NOTE: This function does not return on error or if things are not sane.
  */
-void
+static void
 sanity_chk(char const *tar, char const *fnamchk)
 {
     /*
@@ -443,7 +442,7 @@ sanity_chk(char const *tar, char const *fnamchk)
  * Returns void. Does not return on error.
  *
  */
-void
+static void
 check_file(char const *txzpath, char *p, char const *dir_name, struct file *file)
 {
     size_t j;
@@ -507,7 +506,7 @@ check_file(char const *txzpath, char *p, char const *dir_name, struct file *file
  *
  * Does not return on error (NULL pointers passed in).
  */
-void
+static void
 check_empty_file(char const *txzpath, off_t size, struct file *file)
 {
     /*
@@ -561,7 +560,7 @@ check_empty_file(char const *txzpath, off_t size, struct file *file)
  * all).
  *
  */
-void
+static void
 check_all_files(char const *dir_name)
 {
     struct file *file; /* to iterate through files list */
@@ -674,7 +673,7 @@ check_all_files(char const *dir_name)
  *
  * Does not return on error.
  */
-void
+static void
 check_directories(struct file *file, char const *dir_name, char const *txzpath)
 {
     unsigned dir_count = 0; /* number of directories in the path */
@@ -793,7 +792,7 @@ check_directories(struct file *file, char const *dir_name, char const *txzpath)
  *
  * This function does not return on error.
  */
-void
+static void
 parse_linux_line(char *p, char *linep, char *line_dup, char const *dir_name, char const *txzpath, char **saveptr)
 {
     off_t current_file_size = 0;
@@ -897,7 +896,7 @@ parse_linux_line(char *p, char *linep, char *line_dup, char const *dir_name, cha
  *
  * This function does not return on error.
  */
-void
+static void
 parse_bsd_line(char *p, char *linep, char *line_dup, char const *dir_name, char const *txzpath, char **saveptr)
 {
     off_t current_file_size = 0;
@@ -1003,7 +1002,7 @@ parse_bsd_line(char *p, char *linep, char *line_dup, char const *dir_name, char 
  *
  *  Function does not return on error.
  */
-void
+static void
 parse_line(char *linep, char *line_dup, char const *dir_name, char const *txzpath, int *dir_count)
 {
     char *p = NULL; /* each field in the line extracted from strtok_r() */
@@ -1076,7 +1075,7 @@ parse_line(char *linep, char *line_dup, char const *dir_name, char const *txzpat
  *
  *  Does not return on error.
  */
-unsigned
+static unsigned
 check_tarball(char const *tar, char const *fnamchk)
 {
     unsigned line_num = 0; /* line number of tar output */
@@ -1426,7 +1425,7 @@ check_tarball(char const *tar, char const *fnamchk)
  *
  * This function does not return on NULL pointer passed into the function.
  */
-bool
+static bool
 has_special_bits(char const *str)
 {
     /*
@@ -1455,7 +1454,7 @@ has_special_bits(char const *str)
  *
  * This function returns void.
  */
-void
+static void
 add_line(char const *str, int line_num)
 {
     struct line *line;
@@ -1502,7 +1501,7 @@ add_line(char const *str, int line_num)
  *
  * This function does not return on error.
  */
-void
+static void
 parse_all_lines(char const *dir_name, char const *txzpath)
 {
     struct line *line = NULL;	/* for lines list */
@@ -1547,7 +1546,7 @@ parse_all_lines(char const *dir_name, char const *txzpath)
  *
  * This function returns void.
  */
-void
+static void
 free_lines(void)
 {
     struct line *line, *next_line;
@@ -1578,7 +1577,7 @@ free_lines(void)
  *
  * This function does not return on error.
  */
-struct file *
+static struct file *
 alloc_file(char const *p)
 {
     struct file *file; /* the file structure */
@@ -1628,7 +1627,7 @@ alloc_file(char const *p)
  *
  * This function does not return on error.
  */
-void
+static void
 add_file_to_list(struct file *file)
 {
     struct file *ptr; /* used to iterate through list to find duplicate files */
@@ -1664,7 +1663,7 @@ add_file_to_list(struct file *file)
  * free_file_list - free the file linked list
  *
  */
-void
+static void
 free_file_list(void)
 {
     struct file *file, *next_file;

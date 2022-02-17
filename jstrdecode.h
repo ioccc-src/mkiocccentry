@@ -63,7 +63,7 @@
  *
  * Use the usage() function to print the these usage_msgX strings.
  */
-const char * const usage_msg =
+static const char * const usage_msg =
     "usage: %s [-h] [-v level] [-V] [-t] [-n] [-s] [string ...]\n"
     "\n"
     "\t-h\t\tprint help message and exit 0\n"
@@ -87,7 +87,7 @@ int verbosity_level = DBG_DEFAULT;	/* debug level set by -v */
 /*
  * function prototypes
  */
-void usage(int exitcode, char const *name, char const *str) __attribute__((noreturn));
+static void usage(int exitcode, char const *name, char const *str) __attribute__((noreturn));
 
 
 #endif /* JSTRDECODE_C */
