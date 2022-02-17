@@ -33,6 +33,7 @@
  * Share and enjoy! :-)
  */
 
+#define JSON_C
 
 /* special comments for the seqcexit tool */
 /*ooo*/ /* exit code out of numerical order - ignore in sequencing */
@@ -1527,4 +1528,93 @@ malloc_json_decode_str(char const *str, size_t *retlen, bool strict)
      * return decoded result or NULL
      */
     return ret;
+}
+
+/* check_first_json_char - check if first char is '{'
+ *
+ * given:
+ *
+ *	file		- path to file
+ *	data		- the data read in from the file
+ *	strict		- true ==> disallow anything (including whitespace) before the first '{'.
+ *	first		- if != NULL set *first to the first character
+ *
+ *  Returns 0 if first character is '{' and 1 if it is not.
+ *
+ *  Sets *first to the first character (for debugging purposes).
+ *
+ *  Does not return on NULL.
+ */
+int
+check_first_json_char(char const *file, char *data, bool strict, char **first)
+{
+    /*
+     * firewall
+     */
+    if (data == NULL || strlen(data) == 0) {
+	err(214, __func__, "passed NULL or zero length data");
+	not_reached();
+    } else if (file == NULL || first == NULL) {
+	err(215, __func__, "passed NULL arg(s)");
+	not_reached();
+    }
+
+    if (!strict) {
+	while (*data && isspace(*data))
+	    ++data;
+    }
+    if (first != NULL) {
+	*first = data;
+    }
+
+    if (*data != '{')
+	return 1;
+    return 0;
+}
+
+/* check_last_json_char - check if last char is '}'
+ *
+ * given:
+ *
+ *	file		- path to file
+ *	data		- the data read in from the file
+ *	strict		- true ==> permit only a single trailing newline ("\n") after the last '}'.
+ *	last		- if != NULL set *last to last char
+ *
+ *  Returns 0 if last character is '}' and 1 if it is not.
+ *
+ *  Does not return on error.
+ */
+int
+check_last_json_char(char const *file, char *data, bool strict, char **last)
+{
+    char *p;
+
+    /*
+     * firewall
+     */
+    if (data == NULL || strlen(data) == 0) {
+	err(214, __func__, "passed NULL or zero length data");
+	not_reached();
+    } else if (file == NULL || last == NULL) {
+	err(215, __func__, "passed NULL arg(s)");
+	not_reached();
+    }
+
+    p = data + strlen(data) - 1;
+
+    if (!strict) {
+	if (*p && isspace(*p))
+	    --p;
+    }
+    else if (*p && *p == '\n') {
+	--p;
+    }
+    if (last != NULL) {
+	*last = p;
+    }
+    if (*p != '}')
+	return 1;
+
+    return 0;
 }
