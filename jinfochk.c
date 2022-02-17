@@ -212,20 +212,27 @@ check_info_json(char const *file)
     if (data == NULL) {
 	err(11, __func__, "error while reading data in %s", file);
 	not_reached();
-    } else if (!strlen(data)) {
+    } else if (length == 0) {
 	err(12, __func__, "zero length data in file %s", file);
 	not_reached();
     }
     dbg(DBG_MED, "%s read length: %lu", file, (unsigned long)length);
 
+    /* close the stream as we no longer need it, having read in all the file */
+    errno = 0;
+    ret = fclose(stream);
+    if (ret != 0) {
+	warnp(__func__, "error in fclose to .info.json file %s", file);
+    }
+
     /*
-     * scan for embedded NUL bytes (before end of line)
+     * scan for embedded NUL bytes (before EOF)
      *
      */
     errno = 0;			/* pre-clear errno for errp() */
     p = (char *)memchr(data, 0, (size_t)length);
     if (p != NULL) {
-	err(15, __func__, "found NUL before end of file %s", file);
+	err(15, __func__, "found NUL before EOF: %s", file);
 	not_reached();
     }
    
@@ -257,11 +264,6 @@ check_info_json(char const *file)
     free(data_dup);
     data_dup = NULL;
 
-    errno = 0;
-    ret = fclose(stream);
-    if (ret != 0) {
-	warnp(__func__, "error in fclose to .info.json file %s", file);
-    }
 }
 
 
