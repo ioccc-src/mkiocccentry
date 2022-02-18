@@ -12,8 +12,8 @@ if [[ ! -x jstrdecode ]]; then
     echo "$0: missing jstrdecode tool" 1>&2
     exit 101
 fi
-export TEST_FILE="j-test.out"
-export TEST_FILE2="j-test2.out"
+export TEST_FILE="jstr-test.out"
+export TEST_FILE2="jstr-test2.out"
 if [[ -e "$TEST_FILE" ]]; then
     echo "$0: found $TEST_FILE move or remove before running this test" 1>&2
     exit 102
@@ -83,7 +83,7 @@ fi
 # test some text foles in the encoding and decoding pipe
 #
 echo "$0: about to run test #6"
-export SRC_SET="j-test.sh dbg.c dbg.h fnamchk.c iocccsize.c jauthchk.c"
+export SRC_SET="jstr-test.sh dbg.c dbg.h fnamchk.c iocccsize.c jauthchk.c"
 SRC_SET="$SRC_SET jinfochk.c json.c json.h jstrdecode.c jstrencode.c"
 SRC_SET="$SRC_SET limit_ioccc.h mkiocccentry.c txzchk.c util.c util.h"
 echo "cat \$SRC_SET | ./jstrencode -n | ./jstrdecode -n > $TEST_FILE"
@@ -99,7 +99,7 @@ fi
 # test some text foles in the encoding and decoding pipe in strict mode
 #
 echo "$0: about to run test #7"
-export SRC_SET="j-test.sh dbg.c dbg.h fnamchk.c iocccsize.c jauthchk.c"
+export SRC_SET="jstr-test.sh dbg.c dbg.h fnamchk.c iocccsize.c jauthchk.c"
 SRC_SET="$SRC_SET jinfochk.c json.c json.h jstrdecode.c jstrencode.c"
 SRC_SET="$SRC_SET limit_ioccc.h mkiocccentry.c txzchk.c util.c util.h"
 echo "cat \$SRC_SET | ./jstrencode -n | ./jstrdecode -n -s > $TEST_FILE"
