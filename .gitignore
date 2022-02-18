@@ -6,7 +6,7 @@ fnamchk
 iocccsize
 jauthchk
 jinfochk
-j-test.out
+jstr-test.out
 jstrdecode
 jstrencode
 limit_ioccc.sh
