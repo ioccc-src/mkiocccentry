@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# j-test.sh - JSON encoding and decoding test
+# jstr-test.sh - JSON string encoding and decoding test
 
 # verify we have the tools and conditions to test
 #

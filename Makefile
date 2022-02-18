@@ -292,7 +292,7 @@ install: all
 	${INSTALL} -m 0555 ${TARGETS} ${DESTDIR}
 	${INSTALL} -m 0644 ${MANPAGES} ${MANDIR}
 
-test: all iocccsize-test.sh dbg_test mkiocccentry-test.sh j-test.sh Makefile
+test: all iocccsize-test.sh dbg_test mkiocccentry-test.sh jstr-test.sh Makefile
 	@echo "RUNNING: iocccsize-test.sh"
 	./iocccsize-test.sh -v
 	@echo "PASSED: iocccsize-test.sh"
@@ -306,9 +306,9 @@ test: all iocccsize-test.sh dbg_test mkiocccentry-test.sh j-test.sh Makefile
 	./mkiocccentry-test.sh
 	@echo "PASSED: mkiocccentry-test.sh"
 	@echo
-	@echo "RUNNING j-test.sh"
-	./j-test.sh
-	@echo "PASSED: j-test.sh"
+	@echo "RUNNING jstr-test.sh"
+	./jstr-test.sh
+	@echo "PASSED: jstr-test.sh"
 	@echo
 	@echo "All tests PASSED"
 
