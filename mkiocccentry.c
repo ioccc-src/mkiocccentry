@@ -1664,13 +1664,12 @@ get_contest_id(struct info *infop, bool *testp, bool *read_answers_flag_used)
 	    }
 	    continue;
 	}
-	/*
-	 * convert to lower case
-	 */
+	/* convert to UUID lower case before checking */
 	for (i = 0; i < len; ++i) {
 	    malloc_ret[i] = (char)tolower(malloc_ret[i]);
 	}
 	dbg(DBG_VHIGH, "converted the IOCCC contest ID to: %s", malloc_ret);
+	/* validate UUID string, version and variant */
 	ret = sscanf(malloc_ret, "%8x-%4x-%1x%3x-%1x%3x-%8x%4x%c", &a, &b, &version, &c, &variant, &d, &e, &f, &guard);
 	dbg(DBG_HIGH, "UUID version hex char: %1x", version);
 	dbg(DBG_HIGH, "UUID variant hex char: %1x", variant);
