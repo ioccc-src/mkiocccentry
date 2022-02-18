@@ -34,7 +34,7 @@
 /*
  * jauthchk version
  */
-#define JAUTHCHK_VERSION "0.3 2022-02-17"	/* use format: major.minor YYYY-MM-DD */
+#define JAUTHCHK_VERSION "0.4 2022-02-18"	/* use format: major.minor YYYY-MM-DD */
 
 
 
@@ -56,7 +56,6 @@ static const char * const usage_msg =
 "\tfile\t\tpath to a .author.json file\n"
 "\n"
 "exit codes:\n"
-"\n"
 "\t0\t\tno errors or warnings detected\n"
 "\t>0\t\tsome error(s) and/or warning(s) were detected\n"
 "\n"

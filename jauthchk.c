@@ -11,6 +11,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <string.h>
+#include <ctype.h>
 
 /*
  * Our header file - #includes the header files we need
@@ -194,8 +195,10 @@ check_author_json(char const *file)
     char *data;		/* .author.json contents */
     char *data_dup;	/* contents of file strdup()d */
     size_t length;	/* length of input buffer */
-    char *p;
-
+    char *p = NULL;	/* temporary use: check for NUL bytes and field extraction */
+    char *end = NULL;	/* temporary use: end of strings (p, field) for removing spaces */
+    char *value = NULL;	/* current field's value being parsed */
+    char *savefield = NULL; /* for strtok_r() usage */
 
     /*
      * firewall
@@ -225,26 +228,38 @@ check_author_json(char const *file)
     errno = 0;
     ret = fclose(stream);
     if (ret != 0) {
-	warnp(__func__, "error in fclose to .author.json file %s", file);
+	warnp(__func__, "error in fclose to %s file %s", json_filename(AUTHOR_JSON), file);
     }
 
-    /*
-     * scan for embedded NUL bytes (before EOF)
-     *
-     */
+    /* scan for embedded NUL bytes (before EOF) */
     errno = 0;			/* pre-clear errno for errp() */
     p = (char *)memchr(data, 0, (size_t)length);
     if (p != NULL) {
 	err(13, __func__, "found NUL before EOF: %s", file);
 	not_reached();
     }
-   
+
     errno = 0;
     data_dup = strdup(data);
     if (data_dup == NULL) {
 	errp(14, __func__, "unable to strdup file contents");
 	not_reached();
     }
+
+    /*
+     * Verify that the very last character is a '}'. We do this check first
+     * because we don't care what comes after it (in parsing) but we do care
+     * what comes after the '{' (in parsing); that is to say we proceed in
+     * parsing after the first '{' but after the '}' we don't continue.
+     */
+    if (check_last_json_char(file, data_dup, strict, &p)) {
+	err(16, __func__, "last character in file %s not a '}': '%c'", file, *p);
+	not_reached();
+    }
+    dbg(DBG_MED, "last character: '%c'", *p);
+
+    /* remove closing brace (and any whitespace after it) */
+    *p = '\0';
 
     /* verify that the very first character is a '{' */
     if (check_first_json_char(file, data_dup, strict, &p)) {
@@ -253,12 +268,98 @@ check_author_json(char const *file)
     }
     dbg(DBG_MED, "first character: '%c'", *p);
 
-    /* verify that the very last character is a '}' */
-    if (check_last_json_char(file, data_dup, strict, &p)) {
-	err(16, __func__, "last character in file %s not a '}': '%c'", file, *p);
-	not_reached();
-    }
-    dbg(DBG_MED, "last character: '%c'", *p);
+    /* skip past the initial opening brace */
+    ++p;
+
+    /* 
+     * Begin to parse the file, field by field (if it's not a validly formed
+     * JSON file an error will occur and the loop will be aborted).
+     */
+    do {
+	/* we have to skip skip leading whitespace */
+	while (*p && isspace(*p))
+	    ++p;
+	/* get the next field */
+	p = strtok_r(value?NULL:p, ":", &savefield);
+	if (p == NULL) {
+	    break;
+	}
+	/* skip leading whitespace on the field */
+	while (*p && isspace(*p))
+	    ++p;
+
+	/* remove a single '"' if one exists at the beginning (*p == '"') */
+	if (*p == '"')
+	    ++p;
+
+	/* also skip trailing spaces */
+	end = p + strlen(p) - 1;
+	while (*end && isspace(*end))
+	    *end-- = '\0';
+
+	/* remove a single '"' if one exists at the end (*end == '"') */
+	if (*end == '"')
+	    *end = '\0';
+
+	/* 
+	 * after removing the spaces and a single '"' at the beginning and end,
+	 * if we find a '"' in the field we know it's erroneous: thus we can
+	 * simply use strcmp() on it. Note that when we get to the array(s) we
+	 * have to handle it specially but this step still has to be done.
+	 */
+
+	/* Before we can extract the value we have to determine if the field is
+	 * supposed to be an array or not: if it's an array we have to handle it
+	 * differently as there's more to parse. If it's not an array we just
+	 * check the name, retrieve the value and then test if it's a valid
+	 * value.
+	 */
+
+	if (!strcmp(p, "authors")) {
+	    /* handle the arrays */
+	} else {
+	    /* extract the value */
+	    value = strtok_r(NULL, ",", &savefield);
+	    if (value == NULL) {
+		err(18, __func__, "unable to find value in file %s for field %s", file, p);
+		not_reached();
+	    }
+
+	    /* skip leading whitespace */
+	    while (*value && isspace(*value))
+		++value;
+
+	    /* 
+	     * Depending on the field, remove a single '"' at the beginning and
+	     * end of the value.
+	     */
+	    if (strcmp(p, "ioccc_year") && strcmp(p, "entry_num")) {
+		/* remove a single '"' at the beginning of the value */
+		if (*value == '"')
+		    ++value;
+
+		/* also remove a trailing '"' at the end of the value. */
+		end = value + strlen(value) - 1;
+		if (*end == '"')
+		    *end = '\0';
+		/* 
+		 * after removing the spaces and a single '"' at the beginning and end,
+		 * if we find a '"' in the field we know it's erroneous.
+		 */
+	    }
+	    /* handle regular field */
+	    if (check_common_json_fields(file, p, value)) {
+	    } else if (!strcmp(p, "formed_timestamp")) {
+	    } else if (!strcmp(p, "formed_timestamp_usec")) {
+	    } else if (!strcmp(p, "timestamp_epoch")) {
+	    } else if (!strcmp(p, "min_timestamp")) {
+	    } else if (!strcmp(p, "formed_UTC")) {
+	    } else {
+	    }
+	
+	    dbg(DBG_MED, "found field '%s' with value '%s'", p, value);
+	}
+    } while (true);
 
     /* free data */
     free(data);

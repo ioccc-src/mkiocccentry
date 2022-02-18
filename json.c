@@ -56,6 +56,10 @@
  */
 #include "util.h"
 
+/*
+ * IOCCC limits
+ */
+#include "limit_ioccc.h"
 
 /*
  * JSON - JSON structures and functions
@@ -1617,4 +1621,109 @@ check_last_json_char(char const *file, char *data, bool strict, char **last)
 	return 1;
 
     return 0;
+}
+/* json_filename    - return ".info.json", ".author.json" or "null" depending on type
+ *
+ * given:
+ *
+ *	type	    - INFO_JSON or AUTHOR_JSON
+ *
+ * Returns a char * depending on type or "null" (NOT a NULL pointer!) if invalid
+ * type.
+ *
+ * This function never returns NULL.
+ *
+ */
+char const *
+json_filename(int type)
+{
+    switch (type) {
+	case INFO_JSON:
+	    return ".info.json";
+	    break; /* in case the return is ever removed */
+	case AUTHOR_JSON:
+	    return ".author.json";
+	    break; /* in case the return is ever removed */
+	default:
+	    return "null";
+	    break; /* in case the return is ever removed */
+    }
+}
+
+/* check_common_json_fields	-   check if field is common to both .info.json
+ *				    and author.json and check the value if it is
+ *
+ * given:
+ *
+ *	file	- the file being parsed (path to)
+ *	field	- the field name
+ *	value	- the value of the field
+ *
+ * Returns 1 if the field was parsed (that is the field is one of the common
+ * fields to both files and it has a valid value); if it's not one of the common
+ * fields return 0.
+ *
+ * Does not return on error (NULL pointers).
+ */
+int check_common_json_fields(char const *file, char const *field, char const *value)
+{
+    int ret = 1;
+    int year = 0;
+    int entry_num = -1;
+
+    /*
+     * firewall
+     */
+    if (file == NULL || field == NULL || value == NULL) {
+	err(15, __func__, "passed NULL arg(s)");
+	not_reached();
+    }
+
+    if (!strcmp(field, "IOCCC_info_version")) {
+	if (strcmp(value, INFO_VERSION)) {
+	    err(16, __func__, "IOCCC_info_version \"%s\" != \"%s\" in file %s", value, INFO_VERSION, file);
+	    not_reached();
+	}
+    } else if (!strcmp(field, "ioccc_contest")) {
+	if (strcmp(value, IOCCC_CONTEST)) {
+	    err(16, __func__, "ioccc_contest \"%s\" != \"%s\" in file %s", value, IOCCC_CONTEST, file);
+	    not_reached();
+	}
+    } else if (!strcmp(field, "ioccc_year")) {
+	errno = 0;
+	year = (int)strtol(value, NULL, 10);
+	if (errno != 0) {
+	    err(17, __func__, "parsing ioccc_year \"%s\" in file %s", value, file);
+	    not_reached();
+	} else if (year != IOCCC_YEAR) {
+	    err(18, __func__, "ioccc_year %d != IOCCC_YEAR %d", year, IOCCC_YEAR);
+	    not_reached();
+	}
+    } else if (!strcmp(field, "mkiocccentry_version")) {
+	if (strcmp(value, MKIOCCCENTRY_VERSION)) {
+	    err(19, __func__, "mkiocccentry_version \"%s\" != MKIOCCCENTRY_VERSION \"%s\"", value, MKIOCCCENTRY_VERSION);
+	    not_reached();
+	}
+    } else if (!strcmp(field, "iocccsize_version")) {
+	if (strcmp(value, IOCCCSIZE_VERSION)) {
+	    err(20, __func__, "iocccsize_version \"%s\" != IOCCCSIZE_VERSION \"%s\"", value, IOCCCSIZE_VERSION);
+	    not_reached();
+	}
+    } else if (!strcmp(field, "IOCCC_contest_id")) {
+	/* TODO add handling of IOCCC_contest_id field */
+    } else if (!strcmp(field, "entry_num")) {
+	errno = 0;
+	entry_num = (int)strtol(value, NULL, 10);
+	if (errno != 0) {
+	    err(17, __func__, "parsing entry_num \"%s\" in file %s", value, file);
+	    not_reached();
+	} else if (!(entry_num >= 0 && entry_num <= MAX_ENTRY_NUM)) {
+	    err(18, __func__, "entry number %d out of range", entry_num);
+	    not_reached();
+	}
+    } else {
+	ret = 0;
+    }
+
+    return ret;
 }

@@ -17,7 +17,7 @@
 /*
  * jinfochk version
  */
-#define JINFOCHK_VERSION "0.3 2022-02-17"	/* use format: major.minor YYYY-MM-DD */
+#define JINFOCHK_VERSION "0.4 2022-02-18"	/* use format: major.minor YYYY-MM-DD */
 
 /*
  * IOCCC size and rule related limitations
@@ -48,19 +48,19 @@
  * Use the usage() function to print the these usage_msgX strings.
  */
 static const char * const usage_msg =
-"usage: %s [-h] [-v level] [-V] [-q] [-s] file\n"
+"usage: %s [-h] [-v level] [-V] [-q] [-s] [-F fnamchk] file\n"
 "\n"
-"\t-h\t\tprint help message and exit 0\n"
-"\t-v level\tset verbosity level: (def level: %d)\n"
-"\t-V\t\tprint version string and exit\n"
-"\t-q\t\tquiet mode\n"
-"\t-s\t\tstrict mode: disallow whitespace before '{' and after '}' except\n"
-"\t\t\tone newline after '}' (def: true in mkiocccentry, else false)\n"
+"\t-h\t\t\tprint help message and exit 0\n"
+"\t-v level\t\tset verbosity level: (def level: %d)\n"
+"\t-V\t\t\tprint version string and exit\n"
+"\t-q\t\t\tquiet mode\n"
+"\t-s\t\t\tstrict mode: disallow whitespace before '{' and after '}' except\n"
+"\t\t\t\tone newline after '}' (def: true in mkiocccentry, else false)\n"
+"\t-F /path/to/fnamchk\tpath to fnamchk executable used by txzchk (def: %s)\n"
 "\n"
-"\tfile\t\tpath to a .info.json file\n"
+"\tfile\t\t\tpath to a .info.json file\n"
 "\n"
 "exit codes:\n"
-"\n"
 "\t0\t\tno errors or warnings detected\n"
 "\t>0\t\tsome error(s) and/or warning(s) were detected\n"
 "\n"
@@ -80,8 +80,8 @@ static bool strict = false;		    /* true ==> disallow anything before/after the 
  * forward declarations
  */
 static void usage(int exitcode, char const *name, char const *str) __attribute__((noreturn));
-static void sanity_chk(char const *file);
-static void check_info_json(char const *file);
+static void sanity_chk(char const *file, char const *fnamchk);
+static void check_info_json(char const *file, char const *fnamchk);
 
 
 #endif /* JINFOCHK_C */
