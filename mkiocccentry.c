@@ -4307,7 +4307,7 @@ get_author_info(struct info *infop, char *ioccc_id, struct author **author_set_p
 	    }
 
 	    /*
-	     * reject if no @ or 2+ in the email address
+	     * reject if no @ or 2+ @'s in the email address
 	     */
 	    if (len > 0) {
 		p = strchr(author_set[i].email, '@');
