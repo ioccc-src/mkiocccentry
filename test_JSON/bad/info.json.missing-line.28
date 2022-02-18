@@ -25,7 +25,7 @@
 	"found_all_rule" : true,
 	"found_clean_rule" : true,
 	"found_clobber_rule" : true,
-	"test_mode" : true,
+	"test_mode" : false,
 	"manifest" : [
 		{"info_JSON" : ".info.json"},
 		{"author_JSON" : ".author.json"},
