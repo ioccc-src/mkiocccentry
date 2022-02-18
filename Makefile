@@ -333,7 +333,7 @@ fnamchk.o: fnamchk.c limit_ioccc.h dbg.h util.h
 txzchk.o: txzchk.c txzchk.h util.h dbg.h limit_ioccc.h
 jauthchk.o: jauthchk.c jauthchk.h limit_ioccc.h dbg.h util.h json.h
 jinfochk.o: jinfochk.c jinfochk.h limit_ioccc.h dbg.h util.h json.h
-json.o: json.c dbg.h util.h json.h
+json.o: json.c dbg.h util.h limit_ioccc.h json.h
 jstrencode.o: jstrencode.c jstrencode.h limit_ioccc.h dbg.h util.h json.h
 jstrdecode.o: jstrdecode.c jstrdecode.h limit_ioccc.h dbg.h util.h json.h
 rule_count.o: rule_count.c

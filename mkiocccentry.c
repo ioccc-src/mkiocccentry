@@ -529,7 +529,7 @@ main(int argc, char *argv[])
      * write the .info.json file
      */
     para("", "Forming the .info.json file ...", NULL);
-    write_info(&info, entry_dir, test_mode, jinfochk);
+    write_info(&info, entry_dir, test_mode, jinfochk, fnamchk);
     para("... completed the .info.json file.", "", NULL);
 
     /*
@@ -5242,6 +5242,7 @@ json_fprintf_value_bool(FILE *stream, char const *lead, char const *name, char c
  *      entry_dir       - path to entry directory
  *      test_mode       - true ==> test mode, do not upload
  *      jinfochk	- path to jinfochk tool
+ *      fnamchk		- path to fnamchk tool
  *
  * returns:
  *	true
@@ -5249,7 +5250,7 @@ json_fprintf_value_bool(FILE *stream, char const *lead, char const *name, char c
  * This function does not return on error.
  */
 static void
-write_info(struct info *infop, char const *entry_dir, bool test_mode, char const *jinfochk)
+write_info(struct info *infop, char const *entry_dir, bool test_mode, char const *jinfochk, char const *fnamchk)
 {
     struct tm *timeptr;		/* localtime return */
     char *info_path;		/* path to .info.json file */
@@ -5267,7 +5268,7 @@ write_info(struct info *infop, char const *entry_dir, bool test_mode, char const
     /*
      * firewall
      */
-    if (infop == NULL || entry_dir == NULL || jinfochk == NULL) {
+    if (infop == NULL || entry_dir == NULL || jinfochk == NULL || fnamchk == NULL) {
 	err(187, __func__, "called with NULL arg(s)");
 	not_reached();
     }
@@ -5447,7 +5448,7 @@ write_info(struct info *infop, char const *entry_dir, bool test_mode, char const
     /*
      * form the jinfochk command
      */
-    cmd = cmdprintf("% -q -s %", jinfochk, info_path);
+    cmd = cmdprintf("% -q -s -F % %", jinfochk, fnamchk, info_path);
     if (cmd == NULL) {
 	err(202, __func__, "failed to cmdprintf: jinfochk %s", info_path);
 	not_reached();
