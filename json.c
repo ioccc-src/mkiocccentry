@@ -1008,7 +1008,7 @@ json_putc(uint8_t const c, FILE *stream)
  *	strict	true ==> strict decoding based on how malloc_json_encode() encodes
  *	        false ==> permit a wider use of \-escaping and un-encoded char
  *
- *		    NOTE: struct == false implies a strict reading of the JSON spec
+ *		    NOTE: strict == false implies a strict reading of the JSON spec
  *
  * returns:
  *	malloced JSON decoding of a block, or NULL ==> error
@@ -1245,7 +1245,7 @@ malloc_json_decode(char const *ptr, size_t len, size_t *retlen, bool strict)
 	    case 'e':	/* ASCII escape */
 
 		/*
-		 * case: struct mode - invalid unusual \-escape character
+		 * case: strict mode - invalid unusual \-escape character
 		 */
 		if (strict == true) {
 		    /* error - clear malloced length */
@@ -1257,7 +1257,7 @@ malloc_json_decode(char const *ptr, size_t len, size_t *retlen, bool strict)
 		}
 
 		/*
-		 * case: non-struct - count \c escaped pair as 1 character
+		 * case: non-strict - count \c escaped pair as 1 character
 		 */
 		++mlen;
 		++i;
@@ -1298,7 +1298,7 @@ malloc_json_decode(char const *ptr, size_t len, size_t *retlen, bool strict)
      *
      * In the above counting code, prior to the malloc for the decoded string,
      * we determined that the JSON encoded string is valid.  We can now safely
-     * decode regardless of struct mode.
+     * decode regardless of strict mode.
      */
     for (i=0, p=ret; i < len; ++i) {
 
@@ -1484,7 +1484,7 @@ malloc_json_decode(char const *ptr, size_t len, size_t *retlen, bool strict)
  *	strict	true ==> strict decoding based on how malloc_json_decode() decodes
  *	        false ==> permit a wider use of \-escaping and un-decoded char
  *
- *		    NOTE: struct == false implies a strict reading of the JSON spec
+ *		    NOTE: strict == false implies a strict reading of the JSON spec
  *
  *
  * returns:
