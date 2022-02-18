@@ -1675,38 +1675,38 @@ int check_common_json_fields(char const *file, char const *field, char const *va
      * firewall
      */
     if (file == NULL || field == NULL || value == NULL) {
-	err(15, __func__, "passed NULL arg(s)");
+	err(218, __func__, "passed NULL arg(s)");
 	not_reached();
     }
 
     if (!strcmp(field, "IOCCC_info_version")) {
 	if (strcmp(value, INFO_VERSION)) {
-	    err(16, __func__, "IOCCC_info_version \"%s\" != \"%s\" in file %s", value, INFO_VERSION, file);
+	    err(219, __func__, "IOCCC_info_version \"%s\" != \"%s\" in file %s", value, INFO_VERSION, file);
 	    not_reached();
 	}
     } else if (!strcmp(field, "ioccc_contest")) {
 	if (strcmp(value, IOCCC_CONTEST)) {
-	    err(16, __func__, "ioccc_contest \"%s\" != \"%s\" in file %s", value, IOCCC_CONTEST, file);
+	    err(220, __func__, "ioccc_contest \"%s\" != \"%s\" in file %s", value, IOCCC_CONTEST, file);
 	    not_reached();
 	}
     } else if (!strcmp(field, "ioccc_year")) {
 	errno = 0;
 	year = (int)strtol(value, NULL, 10);
 	if (errno != 0) {
-	    err(17, __func__, "parsing ioccc_year \"%s\" in file %s", value, file);
+	    err(221, __func__, "parsing ioccc_year \"%s\" in file %s", value, file);
 	    not_reached();
 	} else if (year != IOCCC_YEAR) {
-	    err(18, __func__, "ioccc_year %d != IOCCC_YEAR %d", year, IOCCC_YEAR);
+	    err(222, __func__, "ioccc_year %d != IOCCC_YEAR %d", year, IOCCC_YEAR);
 	    not_reached();
 	}
     } else if (!strcmp(field, "mkiocccentry_version")) {
 	if (strcmp(value, MKIOCCCENTRY_VERSION)) {
-	    err(19, __func__, "mkiocccentry_version \"%s\" != MKIOCCCENTRY_VERSION \"%s\"", value, MKIOCCCENTRY_VERSION);
+	    err(223, __func__, "mkiocccentry_version \"%s\" != MKIOCCCENTRY_VERSION \"%s\"", value, MKIOCCCENTRY_VERSION);
 	    not_reached();
 	}
     } else if (!strcmp(field, "iocccsize_version")) {
 	if (strcmp(value, IOCCCSIZE_VERSION)) {
-	    err(20, __func__, "iocccsize_version \"%s\" != IOCCCSIZE_VERSION \"%s\"", value, IOCCCSIZE_VERSION);
+	    err(224, __func__, "iocccsize_version \"%s\" != IOCCCSIZE_VERSION \"%s\"", value, IOCCCSIZE_VERSION);
 	    not_reached();
 	}
     } else if (!strcmp(field, "IOCCC_contest_id")) {
@@ -1715,10 +1715,10 @@ int check_common_json_fields(char const *file, char const *field, char const *va
 	errno = 0;
 	entry_num = (int)strtol(value, NULL, 10);
 	if (errno != 0) {
-	    err(17, __func__, "parsing entry_num \"%s\" in file %s", value, file);
+	    err(225, __func__, "parsing entry_num \"%s\" in file %s", value, file);
 	    not_reached();
 	} else if (!(entry_num >= 0 && entry_num <= MAX_ENTRY_NUM)) {
-	    err(18, __func__, "entry number %d out of range", entry_num);
+	    err(226, __func__, "entry number %d out of range", entry_num);
 	    not_reached();
 	}
     } else {

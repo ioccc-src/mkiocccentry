@@ -159,7 +159,7 @@ sanity_chk(char const *file, char const *fnamchk)
 	      "    https://github.com/ioccc-src/mkiocccentry",
 	      "",
 	      NULL);
-	err(30, __func__, "fnamchk does not exist: %s", fnamchk);
+	err(6, __func__, "fnamchk does not exist: %s", fnamchk);
 	not_reached();
     }
     if (!is_file(fnamchk)) {
@@ -176,7 +176,7 @@ sanity_chk(char const *file, char const *fnamchk)
 	      "    https://github.com/ioccc-src/mkiocccentry",
 	      "",
 	      NULL);
-	err(31, __func__, "fnamchk is not a file: %s", fnamchk);
+	err(7, __func__, "fnamchk is not a file: %s", fnamchk);
 	not_reached();
     }
     if (!is_exec(fnamchk)) {
@@ -193,7 +193,7 @@ sanity_chk(char const *file, char const *fnamchk)
 	      "    https://github.com/ioccc-src/mkiocccentry",
 	      "",
 	      NULL);
-	err(32, __func__, "fnamchk is not an executable program: %s", fnamchk);
+	err(8, __func__, "fnamchk is not an executable program: %s", fnamchk);
 	not_reached();
     }
 
@@ -210,7 +210,7 @@ sanity_chk(char const *file, char const *fnamchk)
 	      "    jinfochk [options] <file>"
 	      "",
 	      NULL);
-	err(6, __func__, "file does not exist: %s", file);
+	err(9, __func__, "file does not exist: %s", file);
 	not_reached();
     }
     if (!is_file(file)) {
@@ -223,7 +223,7 @@ sanity_chk(char const *file, char const *fnamchk)
 	      "    jinfochk [...] <file>",
 	      "",
 	      NULL);
-	err(7, __func__, "file is not a file: %s", file);
+	err(10, __func__, "file is not a file: %s", file);
 	not_reached();
     }
     if (!is_read(file)) {
@@ -236,7 +236,7 @@ sanity_chk(char const *file, char const *fnamchk)
 	      "    jinfochk [...] <file>"
 	      "",
 	      NULL);
-	err(8, __func__, "file is not readable: %s", file);
+	err(11, __func__, "file is not readable: %s", file);
 	not_reached();
     }
     return;
@@ -272,23 +272,23 @@ check_info_json(char const *file, char const *fnamchk)
      * firewall
      */
     if (file == NULL || fnamchk == NULL) {
-	err(9, __func__, "passed NULL arg(s)");
+	err(12, __func__, "passed NULL arg(s)");
 	not_reached();
     }
 
     stream = fopen(file, "r");
     if (stream == NULL) {
-	err(10, __func__, "couldn't open %s", file);
+	err(13, __func__, "couldn't open %s", file);
 	not_reached();
     }
 
     /* read in the file */
     data = read_all(stream, &length);
     if (data == NULL) {
-	err(11, __func__, "error while reading data in %s", file);
+	err(14, __func__, "error while reading data in %s", file);
 	not_reached();
     } else if (length == 0) {
-	err(12, __func__, "zero length data in file %s", file);
+	err(15, __func__, "zero length data in file %s", file);
 	not_reached();
     }
     dbg(DBG_MED, "%s read length: %lu", file, (unsigned long)length);
@@ -304,14 +304,14 @@ check_info_json(char const *file, char const *fnamchk)
     errno = 0;			/* pre-clear errno for errp() */
     p = (char *)memchr(data, 0, (size_t)length);
     if (p != NULL) {
-	err(13, __func__, "found NUL before EOF: %s", file);
+	err(16, __func__, "found NUL before EOF: %s", file);
 	not_reached();
     }
 
     errno = 0;
     data_dup = strdup(data);
     if (data_dup == NULL) {
-	errp(14, __func__, "unable to strdup file %s contents", file);
+	errp(17, __func__, "unable to strdup file %s contents", file);
 	not_reached();
     }
 
@@ -322,7 +322,7 @@ check_info_json(char const *file, char const *fnamchk)
      * parsing after the first '{' but after the '}' we don't continue.
      */
     if (check_last_json_char(file, data_dup, strict, &p)) {
-	err(16, __func__, "last character in file %s not a '}': '%c'", file, *p);
+	err(18, __func__, "last character in file %s not a '}': '%c'", file, *p);
 	not_reached();
     }
     dbg(DBG_MED, "last character: '%c'", *p);
@@ -332,7 +332,7 @@ check_info_json(char const *file, char const *fnamchk)
 
     /* verify that the very first character is a '{' */
     if (check_first_json_char(file, data_dup, strict, &p)) {
-	err(15, __func__, "first character in file %s not a '{': '%c'", file, *p);
+	err(19, __func__, "first character in file %s not a '{': '%c'", file, *p);
 	not_reached();
     }
     dbg(DBG_MED, "first character: '%c'", *p);
@@ -390,7 +390,7 @@ check_info_json(char const *file, char const *fnamchk)
 	    /* extract the value */
 	    value = strtok_r(NULL, ",\0", &savefield);
 	    if (value == NULL) {
-		err(18, __func__, "unable to find value in file %s for field %s", file, p);
+		err(20, __func__, "unable to find value in file %s for field %s", file, p);
 		not_reached();
 	    }
 
@@ -434,7 +434,7 @@ check_info_json(char const *file, char const *fnamchk)
 	      !strcmp(p, "found_clean_rule") || !strcmp(p, "found_clobber_rule") ||
 	      !strcmp(p, "found_try_rule") || !strcmp(p, "test_mode")) {
 		if (strcmp(value, "false") && strcmp(value, "true")) {
-		    err(15, __func__, "found non-boolean value '%s' for boolean '%s' in file %s", value,  p, file);
+		    err(21, __func__, "found non-boolean value '%s' for boolean '%s' in file %s", value,  p, file);
 		    not_reached();
 		}
 	    } else if (!strcmp(p, "formed_timestamp")) {

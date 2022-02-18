@@ -253,7 +253,7 @@ check_author_json(char const *file)
      * parsing after the first '{' but after the '}' we don't continue.
      */
     if (check_last_json_char(file, data_dup, strict, &p)) {
-	err(16, __func__, "last character in file %s not a '}': '%c'", file, *p);
+	err(15, __func__, "last character in file %s not a '}': '%c'", file, *p);
 	not_reached();
     }
     dbg(DBG_MED, "last character: '%c'", *p);
@@ -263,7 +263,7 @@ check_author_json(char const *file)
 
     /* verify that the very first character is a '{' */
     if (check_first_json_char(file, data_dup, strict, &p)) {
-	err(15, __func__, "first character in file %s not a '{': '%c'", file, *p);
+	err(16, __func__, "first character in file %s not a '{': '%c'", file, *p);
 	not_reached();
     }
     dbg(DBG_MED, "first character: '%c'", *p);
@@ -321,7 +321,7 @@ check_author_json(char const *file)
 	    /* extract the value */
 	    value = strtok_r(NULL, ",", &savefield);
 	    if (value == NULL) {
-		err(18, __func__, "unable to find value in file %s for field %s", file, p);
+		err(17, __func__, "unable to find value in file %s for field %s", file, p);
 		not_reached();
 	    }
 
