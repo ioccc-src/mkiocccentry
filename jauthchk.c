@@ -355,6 +355,9 @@ check_author_json(char const *file)
 	    } else if (!strcmp(p, "min_timestamp")) {
 	    } else if (!strcmp(p, "formed_UTC")) {
 	    } else {
+		/* TODO: after everything else is parsed if we get here it's an
+		 * error as there's invalid fields in the file.
+		 */
 	    }
 	
 	    dbg(DBG_MED, "found field '%s' with value '%s'", p, value);

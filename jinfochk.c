@@ -403,7 +403,12 @@ check_info_json(char const *file, char const *fnamchk)
 	     * end of the value.
 	     */
 	    if (strcmp(p, "ioccc_year") && strcmp(p, "entry_num") && strcmp(p, "rule_2a_size") &&
-		strcmp(p, "rule_2b_size")) {
+		strcmp(p, "rule_2b_size") && strcmp(p, "empty_override") && strcmp(p, "rule_2a_override") &&
+		strcmp(p, "rule_2a_mismatch") && strcmp(p, "rule_2b_override") && strcmp(p, "highbit_warning") &&
+		strcmp(p, "nul_warning") && strcmp(p, "trigraph_warning") && strcmp(p, "wordbuf_warning") &&
+		strcmp(p, "ungetc_warning") && strcmp(p, "Makefile_override") && strcmp(p, "first_rule_is_all") &&
+		strcmp(p, "found_all_rule") && strcmp(p, "found_clean_rule") && strcmp(p, "found_clobber_rule") &&
+		strcmp(p, "found_try_rule") && strcmp(p, "test_mode")) {
 		/* remove a single '"' at the beginning of the value */
 		if (*value == '"')
 		    ++value;
