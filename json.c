@@ -43,7 +43,7 @@
 #include <stdlib.h>
 #include <ctype.h>
 #include <stdint.h>
-
+#include <time.h>
 
 /*
  * dbg - debug, warning and error reporting facility
@@ -1745,6 +1745,18 @@ int check_common_json_fields(char const *file, char const *field, char const *va
 	    not_reached();
 	} else if (!(entry_num >= 0 && entry_num <= MAX_ENTRY_NUM)) {
 	    err(231, __func__, "entry number %d out of range", entry_num);
+	    not_reached();
+	}
+    } else if (!strcmp(field, "formed_UTC")) {
+	/* TODO add this check */
+    } else if (!strcmp(field, "formed_timestamp")) {
+	errno = 0;
+	ts = strtol(value, NULL, 10);
+	if (errno != 0) {
+	    err(33, __func__, "unable to parse formed_timestamp \"%s\"", value);
+	    not_reached();
+	} else if (ts < MIN_TIMESTAMP) {
+	    err(34, __func__, "formed_timestamp '%ld' < MIN_TIMESTAMP '%ld'", ts, MIN_TIMESTAMP);
 	    not_reached();
 	}
     } else {

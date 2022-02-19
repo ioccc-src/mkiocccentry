@@ -461,8 +461,6 @@ check_info_json(char const *file, char const *fnamchk)
 		    err(22, __func__, "found non-boolean value '%s' for boolean '%s' in file %s", value,  p, file);
 		    not_reached();
 		}
-	    } else if (!strcmp(p, "formed_timestamp")) {
-	    } else if (!strcmp(p, "formed_UTC")) {
 	    } else {
 	    }
 	
