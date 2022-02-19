@@ -153,7 +153,7 @@ sanity_chk(char const *file, char const *fnamchk)
 	      "    jinfochk [options] <file>"
 	      "",
 	      NULL);
-	err(9, __func__, "file does not exist: %s", file);
+	err(6, __func__, "file does not exist: %s", file);
 	not_reached();
     }
     if (!is_file(file)) {
@@ -166,7 +166,7 @@ sanity_chk(char const *file, char const *fnamchk)
 	      "    jinfochk [...] <file>",
 	      "",
 	      NULL);
-	err(10, __func__, "file is not a file: %s", file);
+	err(7, __func__, "file is not a file: %s", file);
 	not_reached();
     }
     if (!is_read(file)) {
@@ -179,7 +179,7 @@ sanity_chk(char const *file, char const *fnamchk)
 	      "    jinfochk [...] <file>"
 	      "",
 	      NULL);
-	err(11, __func__, "file is not readable: %s", file);
+	err(8, __func__, "file is not readable: %s", file);
 	not_reached();
     }
 
@@ -201,7 +201,7 @@ sanity_chk(char const *file, char const *fnamchk)
 	      "    https://github.com/ioccc-src/mkiocccentry",
 	      "",
 	      NULL);
-	err(6, __func__, "fnamchk does not exist: %s", fnamchk);
+	err(9, __func__, "fnamchk does not exist: %s", fnamchk);
 	not_reached();
     }
     if (!is_file(fnamchk)) {
@@ -218,7 +218,7 @@ sanity_chk(char const *file, char const *fnamchk)
 	      "    https://github.com/ioccc-src/mkiocccentry",
 	      "",
 	      NULL);
-	err(7, __func__, "fnamchk is not a file: %s", fnamchk);
+	err(10, __func__, "fnamchk is not a file: %s", fnamchk);
 	not_reached();
     }
     if (!is_exec(fnamchk)) {
@@ -235,7 +235,7 @@ sanity_chk(char const *file, char const *fnamchk)
 	      "    https://github.com/ioccc-src/mkiocccentry",
 	      "",
 	      NULL);
-	err(8, __func__, "fnamchk is not an executable program: %s", fnamchk);
+	err(11, __func__, "fnamchk is not an executable program: %s", fnamchk);
 	not_reached();
     }
 
@@ -403,7 +403,7 @@ check_info_json(char const *file, char const *fnamchk)
 	    /* extract the value */
 	    value = strtok_r(NULL, ",\0", &savefield);
 	    if (value == NULL) {
-		err(20, __func__, "unable to find value in file %s for field %s", file, p);
+		err(21, __func__, "unable to find value in file %s for field %s", file, p);
 		not_reached();
 	    }
 
@@ -458,7 +458,7 @@ check_info_json(char const *file, char const *fnamchk)
 	      !strcmp(p, "found_clean_rule") || !strcmp(p, "found_clobber_rule") ||
 	      !strcmp(p, "found_try_rule") || !strcmp(p, "test_mode")) {
 		if (strcmp(value, "false") && strcmp(value, "true")) {
-		    err(21, __func__, "found non-boolean value '%s' for boolean '%s' in file %s", value,  p, file);
+		    err(22, __func__, "found non-boolean value '%s' for boolean '%s' in file %s", value,  p, file);
 		    not_reached();
 		}
 	    } else if (!strcmp(p, "formed_timestamp")) {
