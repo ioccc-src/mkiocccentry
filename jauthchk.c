@@ -27,13 +27,15 @@ main(int argc, char **argv)
     char *file;		/* file argument to check */
     int ret;			/* libc return code */
     int i;
+    char *fnamchk = FNAMCHK_PATH_0;	/* path to fnamchk executable */
+    bool fnamchk_flag_used = false; /* true ==> -F fnamchk used */
 
 
     /*
      * parse args
      */
     program = argv[0];
-    while ((i = getopt(argc, argv, "hv:Vqs")) != -1) {
+    while ((i = getopt(argc, argv, "hv:VqsF:")) != -1) {
 	switch (i) {
 	case 'h':		/* -h - print help to stderr and exit 0 */
 	    usage(1, "-h help mode", program); /*ooo*/
@@ -65,6 +67,10 @@ main(int argc, char **argv)
 	case 's':
 	    strict = true;
 	    break;
+	case 'F':
+	    fnamchk_flag_used = true;
+	    fnamchk = optarg;
+	    break;
 	default:
 	    usage(1, "invalid -flag", program); /*ooo*/
 	    not_reached();
@@ -88,18 +94,25 @@ main(int argc, char **argv)
 	    errp(4, __func__, "printf error printing the welcome string");
 	    not_reached();
 	}
+    }
+
+    /* we have to find the fnamchk util */
+    find_utils(false, NULL, false, NULL, false, NULL, false, NULL, fnamchk_flag_used, &fnamchk,
+	       false, NULL, false, NULL);
+
     /*
      * environment sanity checks
      */
+    if (!quiet) {
 	para("", "Performing sanity checks on your environment ...", NULL);
     }
 
-    sanity_chk(file);
+    sanity_chk(file, fnamchk);
     if (!quiet) {
 	para("... environment looks OK", "", NULL);
     }
 
-    check_author_json(file);
+    check_author_json(file, fnamchk);
 
     /*
      * All Done!!! - Jessica Noll, age 2
@@ -116,17 +129,18 @@ main(int argc, char **argv)
  * given:
  *
  *      file        - path to JSON file to parse
+ *      fnamchk	    - path to fnamchk util
  *
  * NOTE: This function does not return on error or if things are not sane.
  */
 static void
-sanity_chk(char const *file)
+sanity_chk(char const *file, char const *fnamchk)
 {
     /*
      * firewall
      */
-    if (file == NULL) {
-	err(5, __func__, "called with NULL arg");
+    if (file == NULL || fnamchk == NULL) {
+	err(5, __func__, "called with NULL arg(s)");
 	not_reached();
     }
 
@@ -148,7 +162,7 @@ sanity_chk(char const *file)
     if (!is_file(file)) {
 	fpara(stderr,
 	      "",
-	      "The file specified, whilst it exists, is not a regular file.",
+	      "The file specified, while it exists, is not a regular file.",
 	      "",
 	      "Perhaps you need to use another path:",
 	      "",
@@ -161,7 +175,7 @@ sanity_chk(char const *file)
     if (!is_read(file)) {
 	fpara(stderr,
 	      "",
-	      "The JSON path, whilst it is a file, is not readable.",
+	      "The JSON path, while it is a file, is not readable.",
 	      "",
 	      "We suggest you check the permissions on the path or use another path:",
 	      "",
@@ -171,6 +185,64 @@ sanity_chk(char const *file)
 	err(8, __func__, "file is not readable: %s", file);
 	not_reached();
     }
+
+    /*
+     * fnamchk must be executable
+     */
+    if (!exists(fnamchk)) {
+	fpara(stderr,
+	      "",
+	      "We cannot find a fnamchk tool.",
+	      "",
+	      "A fnamchk program performs a sanity check on the compressed tarball.",
+	      "Perhaps you need to use:",
+	      "",
+	      "    jauthchk -F /path/to/fnamchk ...",
+	      "",
+	      "and/or install the fnamchk tool?  You can find the source for fnamchk in the mkiocccentry GitHub repo:",
+	      "",
+	      "    https://github.com/ioccc-src/mkiocccentry",
+	      "",
+	      NULL);
+	err(9, __func__, "fnamchk does not exist: %s", fnamchk);
+	not_reached();
+    }
+    if (!is_file(fnamchk)) {
+	fpara(stderr,
+	      "",
+	      "The fnamchk tool, while it exists, is not a file.",
+	      "",
+	      "Perhaps you need to use another path:",
+	      "",
+	      "    jauthchk -F /path/to/fnamchk ...",
+	      "",
+	      "and/or install the fnamchk tool?  You can find the source for fnamchk in the mkiocccentry GitHub repo:",
+	      "",
+	      "    https://github.com/ioccc-src/mkiocccentry",
+	      "",
+	      NULL);
+	err(10, __func__, "fnamchk is not a file: %s", fnamchk);
+	not_reached();
+    }
+    if (!is_exec(fnamchk)) {
+	fpara(stderr,
+	      "",
+	      "The fnamchk tool, while it is a file, is not executable.",
+	      "",
+	      "We suggest you check the permissions on the fnamchk program, or use another path:",
+	      "",
+	      "    jauthchk -F /path/to/fnamchk ...",
+	      "",
+	      "and/or install the fnamchk tool?  You can find the source for fnamchk in the mkiocccentry GitHub repo:",
+	      "",
+	      "    https://github.com/ioccc-src/mkiocccentry",
+	      "",
+	      NULL);
+	err(11, __func__, "fnamchk is not an executable program: %s", fnamchk);
+	not_reached();
+    }
+
+
 
     return;
 }
@@ -182,13 +254,14 @@ sanity_chk(char const *file)
  * given:
  *
  *	file	-   path to the file to check
+ *	fnamchk	-   path to our fnamchk util
  *
  * Attempts to validate the file as .author.json, reporting any problems found.
  *
  * Function does not return on error.
  */
 static void
-check_author_json(char const *file)
+check_author_json(char const *file, char const *fnamchk)
 {
     FILE *stream;
     int ret;
@@ -203,23 +276,23 @@ check_author_json(char const *file)
     /*
      * firewall
      */
-    if (file == NULL) {
-	err(9, __func__, "passed NULL arg");
+    if (file == NULL || fnamchk == NULL) {
+	err(12, __func__, "passed NULL arg(s)");
 	not_reached();
     }
     stream = fopen(file, "r");
     if (stream == NULL) {
-	err(10, __func__, "couldn't open %s", file);
+	err(13, __func__, "couldn't open %s", file);
 	not_reached();
     }
 
     /* read in the file */
     data = read_all(stream, &length);
     if (data == NULL) {
-	err(11, __func__, "error while reading data in %s", file);
+	err(14, __func__, "error while reading data in %s", file);
 	not_reached();
     } else if (length == 0) {
-	err(12, __func__, "zero length data in file %s", file);
+	err(15, __func__, "zero length data in file %s", file);
 	not_reached();
     }
     dbg(DBG_MED, "%s read length: %lu", file, (unsigned long)length);
@@ -235,14 +308,14 @@ check_author_json(char const *file)
     errno = 0;			/* pre-clear errno for errp() */
     p = (char *)memchr(data, 0, (size_t)length);
     if (p != NULL) {
-	err(13, __func__, "found NUL before EOF: %s", file);
+	err(16, __func__, "found NUL before EOF: %s", file);
 	not_reached();
     }
 
     errno = 0;
     data_dup = strdup(data);
     if (data_dup == NULL) {
-	errp(14, __func__, "unable to strdup file contents");
+	errp(17, __func__, "unable to strdup file contents");
 	not_reached();
     }
 
@@ -253,7 +326,7 @@ check_author_json(char const *file)
      * parsing after the first '{' but after the '}' we don't continue.
      */
     if (check_last_json_char(file, data_dup, strict, &p)) {
-	err(15, __func__, "last character in file %s not a '}': '%c'", file, *p);
+	err(18, __func__, "last character in file %s not a '}': '%c'", file, *p);
 	not_reached();
     }
     dbg(DBG_MED, "last character: '%c'", *p);
@@ -263,7 +336,7 @@ check_author_json(char const *file)
 
     /* verify that the very first character is a '{' */
     if (check_first_json_char(file, data_dup, strict, &p)) {
-	err(16, __func__, "first character in file %s not a '{': '%c'", file, *p);
+	err(19, __func__, "first character in file %s not a '{': '%c'", file, *p);
 	not_reached();
     }
     dbg(DBG_MED, "first character: '%c'", *p);
@@ -316,18 +389,33 @@ check_author_json(char const *file)
 	 */
 
 	if (!strcmp(p, "authors")) {
-	    /* handle the arrays */
+	    /* TODO: handle the arrays */
+	   
+	    /* The below is only done to prevent infinite loop which occurs in
+	     * some cases (e.g. when "authors" is at the top of the file) until
+	     * arrays are handled; when arrays are handled this will be changed.
+	     */
+	    value = strtok_r(NULL, ",\0", &savefield);
+	    if (value == NULL) {
+		err(20, __func__, "unable to find value in file %s for field %s", file, p);
+		not_reached();
+	    }
 	} else {
 	    /* extract the value */
 	    value = strtok_r(NULL, ",", &savefield);
 	    if (value == NULL) {
-		err(17, __func__, "unable to find value in file %s for field %s", file, p);
+		err(21, __func__, "unable to find value in file %s for field %s", file, p);
 		not_reached();
 	    }
 
 	    /* skip leading whitespace */
 	    while (*value && isspace(*value))
 		++value;
+
+	    /* skip trailing whitespace */
+	    end = value + strlen(value) - 1;
+	    while (*end && isspace(*end))
+		*end-- = '\0';
 
 	    /* 
 	     * Depending on the field, remove a single '"' at the beginning and
@@ -349,11 +437,6 @@ check_author_json(char const *file)
 	    }
 	    /* handle regular field */
 	    if (check_common_json_fields(file, p, value)) {
-	    } else if (!strcmp(p, "formed_timestamp")) {
-	    } else if (!strcmp(p, "formed_timestamp_usec")) {
-	    } else if (!strcmp(p, "timestamp_epoch")) {
-	    } else if (!strcmp(p, "min_timestamp")) {
-	    } else if (!strcmp(p, "formed_UTC")) {
 	    } else {
 		/* TODO: after everything else is parsed if we get here it's an
 		 * error as there's invalid fields in the file.
@@ -409,7 +492,7 @@ usage(int exitcode, char const *str, char const *prog)
      * print the formatted usage stream
      */
     vfprintf_usage(DO_NOT_EXIT, stderr, "%s\n", str);
-    vfprintf_usage(exitcode, stderr, usage_msg, prog, DBG_DEFAULT, JAUTHCHK_VERSION);
+    vfprintf_usage(exitcode, stderr, usage_msg, prog, DBG_DEFAULT, FNAMCHK_PATH_0, JAUTHCHK_VERSION);
     exit(exitcode); /*ooo*/
     not_reached();
 }

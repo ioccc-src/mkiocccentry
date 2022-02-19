@@ -24,9 +24,9 @@ main(int argc, char **argv)
     extern char *optarg;	/* option argument */
     extern int optind;		/* argv index of the next arg */
     char *file;			/* file argument to check */
-    char *fnamchk = FNAMCHK_PATH_0;	/* path to fnamchk executable */
     int ret;			/* libc return code */
     int i;
+    char *fnamchk = FNAMCHK_PATH_0;	/* path to fnamchk executable */
     bool fnamchk_flag_used = false; /* true ==> -F fnamchk used */
 
     /*
@@ -142,6 +142,48 @@ sanity_chk(char const *file, char const *fnamchk)
     }
 
     /*
+     * file must be readable
+     */
+    if (!exists(file)) {
+	fpara(stderr,
+	      "",
+	      "The JSON path specified does not exist. Perhaps you made a typo?",
+	      "Please check the path and try again."
+	      "",
+	      "    jinfochk [options] <file>"
+	      "",
+	      NULL);
+	err(6, __func__, "file does not exist: %s", file);
+	not_reached();
+    }
+    if (!is_file(file)) {
+	fpara(stderr,
+	      "",
+	      "The file specified, while it exists, is not a regular file.",
+	      "",
+	      "Perhaps you need to use another path:",
+	      "",
+	      "    jinfochk [...] <file>",
+	      "",
+	      NULL);
+	err(7, __func__, "file is not a file: %s", file);
+	not_reached();
+    }
+    if (!is_read(file)) {
+	fpara(stderr,
+	      "",
+	      "The JSON path, while it is a file, is not readable.",
+	      "",
+	      "We suggest you check the permissions on the path or use another path:",
+	      "",
+	      "    jinfochk [...] <file>"
+	      "",
+	      NULL);
+	err(8, __func__, "file is not readable: %s", file);
+	not_reached();
+    }
+
+    /*
      * fnamchk must be executable
      */
     if (!exists(fnamchk)) {
@@ -159,7 +201,7 @@ sanity_chk(char const *file, char const *fnamchk)
 	      "    https://github.com/ioccc-src/mkiocccentry",
 	      "",
 	      NULL);
-	err(6, __func__, "fnamchk does not exist: %s", fnamchk);
+	err(9, __func__, "fnamchk does not exist: %s", fnamchk);
 	not_reached();
     }
     if (!is_file(fnamchk)) {
@@ -176,7 +218,7 @@ sanity_chk(char const *file, char const *fnamchk)
 	      "    https://github.com/ioccc-src/mkiocccentry",
 	      "",
 	      NULL);
-	err(7, __func__, "fnamchk is not a file: %s", fnamchk);
+	err(10, __func__, "fnamchk is not a file: %s", fnamchk);
 	not_reached();
     }
     if (!is_exec(fnamchk)) {
@@ -193,52 +235,12 @@ sanity_chk(char const *file, char const *fnamchk)
 	      "    https://github.com/ioccc-src/mkiocccentry",
 	      "",
 	      NULL);
-	err(8, __func__, "fnamchk is not an executable program: %s", fnamchk);
+	err(11, __func__, "fnamchk is not an executable program: %s", fnamchk);
 	not_reached();
     }
 
 
-    /*
-     * file must be readable
-     */
-    if (!exists(file)) {
-	fpara(stderr,
-	      "",
-	      "The JSON path specified does not exist. Perhaps you made a typo?",
-	      "Please check the path and try again."
-	      "",
-	      "    jinfochk [options] <file>"
-	      "",
-	      NULL);
-	err(9, __func__, "file does not exist: %s", file);
-	not_reached();
-    }
-    if (!is_file(file)) {
-	fpara(stderr,
-	      "",
-	      "The file specified, whilst it exists, is not a regular file.",
-	      "",
-	      "Perhaps you need to use another path:",
-	      "",
-	      "    jinfochk [...] <file>",
-	      "",
-	      NULL);
-	err(10, __func__, "file is not a file: %s", file);
-	not_reached();
-    }
-    if (!is_read(file)) {
-	fpara(stderr,
-	      "",
-	      "The JSON path, whilst it is a file, is not readable.",
-	      "",
-	      "We suggest you check the permissions on the path or use another path:",
-	      "",
-	      "    jinfochk [...] <file>"
-	      "",
-	      NULL);
-	err(11, __func__, "file is not readable: %s", file);
-	not_reached();
-    }
+
     return;
 }
 
@@ -249,7 +251,7 @@ sanity_chk(char const *file, char const *fnamchk)
  * given:
  *
  *	file	-   path to the file to check
- *	fnamchk -   path to fnamchk util
+ *	fnamchk -   path to our fnamchk util
  *
  * Attempts to validate the file as .info.json, reporting any problems found.
  *
@@ -371,6 +373,7 @@ check_info_json(char const *file, char const *fnamchk)
 	if (*end == '"')
 	    *end = '\0';
 
+
 	/* 
 	 * after removing the spaces and a single '"' at the beginning and end,
 	 * if we find a '"' in the field we know it's erroneous: thus we can
@@ -385,18 +388,34 @@ check_info_json(char const *file, char const *fnamchk)
 	 * value.
 	 */
 	if (!strcmp(p, "manifest")) {
-	    /* handle the array */
-	} else {
-	    /* extract the value */
+	    /* TODO: handle the array */
+	   
+	    /* The below is only done to prevent infinite loop which occurs in
+	     * some cases (e.g. when "manifest" is at the top of the file) until
+	     * arrays are handled; when arrays are handled this will be changed.
+	     */
 	    value = strtok_r(NULL, ",\0", &savefield);
 	    if (value == NULL) {
 		err(20, __func__, "unable to find value in file %s for field %s", file, p);
 		not_reached();
 	    }
+	} else {
+	    /* extract the value */
+	    value = strtok_r(NULL, ",\0", &savefield);
+	    if (value == NULL) {
+		err(21, __func__, "unable to find value in file %s for field %s", file, p);
+		not_reached();
+	    }
+
 
 	    /* skip leading whitespace */
 	    while (*value && isspace(*value))
 		++value;
+
+	    /* skip trailing whitespace */
+	    end = value + strlen(value) - 1;
+	    while (*end && isspace(*end))
+		*end-- = '\0';
 
 	    /* 
 	     * Depending on the field, remove a single '"' at the beginning and
@@ -409,20 +428,20 @@ check_info_json(char const *file, char const *fnamchk)
 		strcmp(p, "ungetc_warning") && strcmp(p, "Makefile_override") && strcmp(p, "first_rule_is_all") &&
 		strcmp(p, "found_all_rule") && strcmp(p, "found_clean_rule") && strcmp(p, "found_clobber_rule") &&
 		strcmp(p, "found_try_rule") && strcmp(p, "test_mode")) {
-		/* remove a single '"' at the beginning of the value */
-		if (*value == '"')
-		    ++value;
+		    /* remove a single '"' at the beginning of the value */
+		    if (*value == '"')
+			++value;
 
-		/* also remove a trailing '"' at the end of the value. */
-		end = value + strlen(value) - 1;
-		if (*end == '"')
-		    *end = '\0';
-		
-		/* 
-		 * after removing the spaces and a single '"' at the beginning and end,
-		 * if we find a '"' in the field we know it's erroneous.
-		 */
-	    } 
+		    /* also remove a trailing '"' at the end of the value. */
+		    end = value + strlen(value) - 1;
+		    if (*end == '"')
+			*end = '\0';
+		    
+		    /* 
+		     * after removing the spaces and a single '"' at the beginning and end,
+		     * if we find a '"' in the field we know it's erroneous.
+		     */
+	    }
 	    /* handle regular field */
 	    if (check_common_json_fields(file, p, value)) {
 	    } else if (!strcmp(p, "title")) {
@@ -439,14 +458,9 @@ check_info_json(char const *file, char const *fnamchk)
 	      !strcmp(p, "found_clean_rule") || !strcmp(p, "found_clobber_rule") ||
 	      !strcmp(p, "found_try_rule") || !strcmp(p, "test_mode")) {
 		if (strcmp(value, "false") && strcmp(value, "true")) {
-		    err(21, __func__, "found non-boolean value '%s' for boolean '%s' in file %s", value,  p, file);
+		    err(22, __func__, "found non-boolean value '%s' for boolean '%s' in file %s", value,  p, file);
 		    not_reached();
 		}
-	    } else if (!strcmp(p, "formed_timestamp")) {
-	    } else if (!strcmp(p, "formed_timestamp_usec")) {
-	    } else if (!strcmp(p, "timestamp_epoch")) {
-	    } else if (!strcmp(p, "min_timestamp")) {
-	    } else if (!strcmp(p, "formed_UTC")) {
 	    } else {
 	    }
 	

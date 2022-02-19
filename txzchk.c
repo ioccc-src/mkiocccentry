@@ -52,7 +52,7 @@ main(int argc, char **argv)
     while ((i = getopt(argc, argv, "hv:VqF:t:T")) != -1) {
 	switch (i) {
 	case 'h':		/* -h - print help to stderr and exit 0 */
-	    usage(0, "-h help mode", program, TAR_PATH_0, FNAMCHK_PATH_0);
+	    usage(0, "-h help mode", program);
 	    not_reached();
 	    break;
 	case 'v':		/* -v verbosity */
@@ -90,13 +90,13 @@ main(int argc, char **argv)
 	    text_file_flag_used = true; /* don't rely on tar: just read file as if it was a text file */
 	    break;
 	default:
-	    usage(1, "invalid -flag", program, TAR_PATH_0, TXZCHK_PATH_0); /*ooo*/
+	    usage(1, "invalid -flag", program); /*ooo*/
 	    not_reached();
 	 }
     }
     /* must have the exact required number of args */
     if (argc - optind != REQUIRED_ARGS) {
-	usage(1, "wrong number of arguments", program, TAR_PATH_0, TXZCHK_PATH_0); /*ooo*/
+	usage(1, "wrong number of arguments", program); /*ooo*/
 	not_reached();
     }
     txzpath = argv[optind];
@@ -227,7 +227,7 @@ show_txz_info(char const *txzpath)
  * This function does not return.
  */
 static void
-usage(int exitcode, char const *str, char const *prog, char const *tar, char const *fnamchk)
+usage(int exitcode, char const *str, char const *prog)
 {
     /*
      * firewall
@@ -237,23 +237,15 @@ usage(int exitcode, char const *str, char const *prog, char const *tar, char con
 	warn("txzchk", "\nin usage(): program was NULL, forcing it to be: %s\n", str);
     }
     if (prog == NULL) {
-	prog = "((NULL prog))";
+	prog = "txzchk";
 	warn("txzchk", "\nin usage(): program was NULL, forcing it to be: %s\n", prog);
-    }
-    if (tar == NULL) {
-	tar = "((NULL tar))";
-	warn("txzchk", "\nin usage: tar was NULL, forcing it to be: %s\n", tar);
-    }
-    if (fnamchk == NULL) {
-	fnamchk = "((NULL fnamchk))";
-	warn("txzchk", "\nin usage(): fnamchk was NULL, forcing it to be: %s\n", fnamchk);
     }
 
     /*
      * print the formatted usage stream
      */
     vfprintf_usage(DO_NOT_EXIT, stderr, "%s\n", str);
-    vfprintf_usage(exitcode, stderr, usage_msg, prog, DBG_DEFAULT, tar, fnamchk, TXZCHK_VERSION);
+    vfprintf_usage(exitcode, stderr, usage_msg, prog, DBG_DEFAULT, TAR_PATH_0, FNAMCHK_PATH_0, TXZCHK_VERSION);
     exit(exitcode); /*ooo*/
     not_reached();
 }
@@ -291,7 +283,7 @@ sanity_chk(char const *tar, char const *fnamchk)
 		  "",
 		  "We cannot find a tar program.",
 		  "",
-		  "A tar program that supports the -J (xz) option is required to build an compressed tarball.",
+		  "A tar program that supports the -J (xz) option is required to test the compressed tarball.",
 		  "Perhaps you need to use:",
 		  "",
 		  "    txzchk -t /path/to/tar ...",
@@ -307,7 +299,7 @@ sanity_chk(char const *tar, char const *fnamchk)
 	if (!is_file(tar)) {
 	    fpara(stderr,
 		  "",
-		  "The tar, whilst it exists, is not a file.",
+		  "The tar, while it exists, is not a file.",
 		  "",
 		  "Perhaps you need to use another path:",
 		  "",
@@ -324,7 +316,7 @@ sanity_chk(char const *tar, char const *fnamchk)
 	if (!is_exec(tar)) {
 	    fpara(stderr,
 		  "",
-		  "The tar, whilst it is a file, is not executable.",
+		  "The tar, while it is a file, is not executable.",
 		  "",
 		  "We suggest you check the permissions on the tar program, or use another path:",
 		  "",
@@ -359,7 +351,7 @@ sanity_chk(char const *tar, char const *fnamchk)
     if (!is_file(fnamchk)) {
 	fpara(stderr,
 	      "",
-	      "The fnamchk, whilst it exists, is not a file.",
+	      "The fnamchk, while it exists, is not a file.",
 	      "",
 	      "Perhaps you need to use another path:",
 	      "",
@@ -371,7 +363,7 @@ sanity_chk(char const *tar, char const *fnamchk)
     if (!is_exec(fnamchk)) {
 	fpara(stderr,
 	      "",
-	      "The fnamchk, whilst it is a file, is not executable.",
+	      "The fnamchk, while it is a file, is not executable.",
 	      "",
 	      "We suggest you check the permissions on the fnamchk program, or use another path:",
 	      "",
@@ -400,7 +392,7 @@ sanity_chk(char const *tar, char const *fnamchk)
     if (!is_file(txzpath)) {
 	fpara(stderr,
 	      "",
-	      "The file specified, whilst it exists, is not a regular file.",
+	      "The file specified, while it exists, is not a regular file.",
 	      "",
 	      "Perhaps you need to use another path:",
 	      "",
@@ -413,7 +405,7 @@ sanity_chk(char const *tar, char const *fnamchk)
     if (!is_read(txzpath)) {
 	fpara(stderr,
 	      "",
-	      "The tarball path, whilst it is a file, is not readable.",
+	      "The tarball path, while it is a file, is not readable.",
 	      "",
 	      "We suggest you check the permissions on the path or use another path:",
 	      "",
@@ -1383,7 +1375,7 @@ check_tarball(char const *tar, char const *fnamchk)
     free(cmd);
     cmd = NULL;
 
-    /* now parse the lines, reporting any issue that have to be done whilst
+    /* now parse the lines, reporting any issue that have to be done while
      * parsing.
      */
     parse_all_lines(dir_name, txzpath);
@@ -1542,7 +1534,7 @@ parse_all_lines(char const *dir_name, char const *txzpath)
  * files list, adding each line to the list in the process, and then after that
  * we can iterate through the lines and show any warnings. After that we report
  * any issues that haven't been reported yet (some warnings have to be issued
- * whilst parsing the lines).
+ * while parsing the lines).
  *
  * This function returns void.
  */

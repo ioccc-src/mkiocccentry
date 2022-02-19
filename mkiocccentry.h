@@ -142,8 +142,7 @@ static struct iocccsize size;	/* rule_count() processing results */
 /*
  * forward declarations
  */
-static void usage(int exitcode, char const *str, char const *program, char const *tar, char const *cp, char const *ls,
-		  char const *txzchk, char const *fnamchk, char const *jinfochk, char const *jauthchk);
+static void usage(int exitcode, char const *str, char const *program);
 static void free_info(struct info *infop);
 static void free_author_array(struct author *authorp, int author_count);
 static void warn_empty_prog(char const *prog_c);
@@ -179,7 +178,7 @@ static bool json_fprintf_value_long(FILE *stream, char const *lead, char const *
 				    char const *tail);
 static bool json_fprintf_value_bool(FILE *stream, char const *lead, char const *name, char const *middle, bool value,
 				    char const *tail);
-static void write_info(struct info *infop, char const *entry_dir, bool test_mode, char const *jinfochk, char const *fnamchk);
+static void write_info(struct info *infop, char const *entry_dir, bool test_mode, char const *jinfochk, char const *fnamchk, int author_count);
 static void write_author(struct info *infop, int author_count, struct author *authorp, char const *entry_dir, char const *jauthchk);
 static void form_tarball(char const *work_dir, char const *entry_dir, char const *tarball_path, char const *tar,
 			 char const *ls, char const *txzchk, char const *fnamchk);

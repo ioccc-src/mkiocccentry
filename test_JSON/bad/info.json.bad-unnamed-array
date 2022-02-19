@@ -27,7 +27,7 @@
 	"found_clobber_rule" : true,
 	"found_try_rule" : true,
 	"test_mode" : false,
-	"manifest" : [
+	: [
 		{"info_JSON" : ".info.json"},
 		{"author_JSON" : ".author.json"},
 		{"c_src" : "prog.c"},

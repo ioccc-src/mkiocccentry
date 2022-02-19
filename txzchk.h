@@ -122,7 +122,7 @@ static const char * const usage_msg =
 /*
  * function prototypes
  */
-static void usage(int exitcode, char const *name, char const *str, char const *tar, char const *fnamchk) __attribute__((noreturn));
+static void usage(int exitcode, char const *name, char const *str) __attribute__((noreturn));
 static void sanity_chk(char const *tar, char const *fnamchk);
 static void parse_line(char *linep, char *line_dup, char const *dir_name, char const *txzpath, int *dir_count);
 static void parse_linux_line(char *p, char *line, char *line_dup, char const *dir_name, char const *txzpath, char **saveptr);

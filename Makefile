@@ -80,6 +80,7 @@ AWK= awk
 TR= tr
 SED= sed
 RPL= rpl
+SEQCEXIT = seqcexit
 TRUE= true
 
 # C source standards being used
@@ -181,6 +182,15 @@ limit_ioccc.sh: limit_ioccc.h Makefile
 	    ${SED} -e 's/"_/"/' -e 's/""/"/g' -e 's/^/export /' >> $@
 	${GREP} -E '^#define (IOCCCSIZE_VERSION|MKIOCCCENTRY_VERSION|TIMESTAMP_EPOCH)' limit_ioccc.h | \
 	    ${SED} -e 's/^#define/export/' -e 's/ "/="/' -e 's/"[	 ].*$$/"/' >> $@
+
+seqcexit:
+	@HAVE_SEQCEXIT=`command -v seqcexit`; if [[ -z "$$HAVE_SEQCEXIT" ]]; then \
+		echo 'If you have not bothered to install the seqcexit tool, then' 1>&2; \
+		echo 'you may not run this rule.'; 1>&2; \
+		exit 1; \
+	fi
+	${SEQCEXIT} ${SRCFILES}
+
 
 # Only run this rule when you wish to invalidate all timestamps
 # prior to now, such as when you make a fundamental change to a
