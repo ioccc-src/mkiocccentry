@@ -64,6 +64,7 @@ struct author {
     char *twitter;		/* author twitter handle or or empty string ==> not provided */
     char *github;		/* author GitHub username or or empty string ==> not provided */
     char *affiliation;		/* author affiliation or or empty string ==> not provided */
+    char *winner_handle;	/* previous IOCCC winner handle, or empty string ==> not provided */
     int author_num;		/* author number */
 
     /* jauthchk specific */

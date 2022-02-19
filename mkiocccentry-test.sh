@@ -56,8 +56,10 @@ https://host0.example.com/index.html
 @twitter0
 @github0
 an affiliation for #0 author
+author0-last0
 author1 middle1a middle1b last1
 UK
+
 
 
 
@@ -70,6 +72,7 @@ http://host2.example.com/index.html
 @twitter2
 @github2
 an affiliation for #2 author
+author2-last2
 ANSWERS_EOF
 EOF
 }
