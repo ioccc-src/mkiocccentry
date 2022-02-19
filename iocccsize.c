@@ -501,13 +501,13 @@ main(int argc, char **argv)
 
 		case 'h':
 			fprintf(stderr, "%s%s", usage0, usage1);
-			exit(2);
+			exit(4);
 			break;
 
 		default:
 			fprintf(stderr, "unknown -option\n");
 			fprintf(stderr, "%s%s", usage0, usage1);
-			exit(4);
+			exit(5);
 			break;
 		}
 	}
@@ -518,12 +518,12 @@ main(int argc, char **argv)
 		fp = fopen(argv[optind], "r");
 		if (fp == NULL) {
 			fprintf(stderr, "freopen(%s) failed: %s\n", argv[optind], strerror(errno));
-			exit(5);
+			exit(6);
 		}
 	} else if (optind != argc) {
 		/* Too many arguments. */
 		fprintf(stderr, "%s%s", usage0, usage1);
-		exit(4);
+		exit(7);
 	}
 
 	(void) setvbuf(fp, NULL, _IOLBF, 0);
@@ -558,17 +558,17 @@ main(int argc, char **argv)
 	if (size.rule_2a_size > RULE_2A_SIZE) {
 		(void) fprintf(stderr, "Warning: your source under Rule 2a: %lu exceeds Rule 2a limit: %lu: Rule 2a violation!\n",
 				       (unsigned long)size.rule_2a_size, (unsigned long)RULE_2A_SIZE);
-		exit(1);
+		exit(8);
 	}
 	if (size.rule_2b_size > RULE_2B_SIZE) {
 		(void) fprintf(stderr, "Warning: your source under Rule 2b: %lu exceeds Rule 2b limit: %lu: Rule 2b violation!\n",
 				       (unsigned long)size.rule_2b_size, (unsigned long)RULE_2B_SIZE);
-		exit(1);
+		exit(9);
 	}
 
 	/*
 	 * All Done!!! All Done!!! -- Jessica Noll, age 2
 	 */
-	exit(0);
+	exit(10);
 }
 #endif /* ! MKIOCCCENTRY_USE */

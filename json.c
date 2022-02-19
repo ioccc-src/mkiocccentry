@@ -1720,10 +1720,10 @@ int check_common_json_fields(char const *file, char const *field, char const *va
 	errno = 0;
 	entry_num = (int)strtol(value, NULL, 10);
 	if (errno != 0) {
-	    err(225, __func__, "parsing entry_num \"%s\" in file %s", value, file);
+	    err(226, __func__, "parsing entry_num \"%s\" in file %s", value, file);
 	    not_reached();
 	} else if (!(entry_num >= 0 && entry_num <= MAX_ENTRY_NUM)) {
-	    err(226, __func__, "entry number %d out of range", entry_num);
+	    err(227, __func__, "entry number %d out of range", entry_num);
 	    not_reached();
 	}
     } else {
