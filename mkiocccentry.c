@@ -3266,12 +3266,12 @@ check_extra_data_files(struct info *infop, char const *entry_dir, char const *cp
 	}
 
 	/*
-	 * basename cannot begin with . nor - nor +
+	 * basename must start with an alphanumeric character
 	 */
-	if (base[0] == '.' || base[0] == '-' || base[0] == '+') {
+	if (!isascii(base[0]) || !isalnum(base[0])) {
 	    fpara(stderr,
 		  "",
-		  "The first character is the basename of an extra file cannot be . nor - nor +",
+		  "The first character is the basename of an extra file must be alpha numeric:",
 		  "",
 		  NULL);
 	    err(140, __func__, "basename of extra data file: %s start with in invalid character: %s", args[i], base);
