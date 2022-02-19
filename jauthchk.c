@@ -439,7 +439,6 @@ check_author_json(char const *file, char const *fnamchk)
 	    if (check_common_json_fields(file, p, value)) {
 	    } else if (!strcmp(p, "formed_timestamp")) {
 	    } else if (!strcmp(p, "formed_timestamp_usec")) {
-	    } else if (!strcmp(p, "timestamp_epoch")) {
 	    } else if (!strcmp(p, "min_timestamp")) {
 	    } else if (!strcmp(p, "formed_UTC")) {
 	    } else {

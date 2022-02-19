@@ -428,20 +428,20 @@ check_info_json(char const *file, char const *fnamchk)
 		strcmp(p, "ungetc_warning") && strcmp(p, "Makefile_override") && strcmp(p, "first_rule_is_all") &&
 		strcmp(p, "found_all_rule") && strcmp(p, "found_clean_rule") && strcmp(p, "found_clobber_rule") &&
 		strcmp(p, "found_try_rule") && strcmp(p, "test_mode")) {
-		/* remove a single '"' at the beginning of the value */
-		if (*value == '"')
-		    ++value;
+		    /* remove a single '"' at the beginning of the value */
+		    if (*value == '"')
+			++value;
 
-		/* also remove a trailing '"' at the end of the value. */
-		end = value + strlen(value) - 1;
-		if (*end == '"')
-		    *end = '\0';
-		
-		/* 
-		 * after removing the spaces and a single '"' at the beginning and end,
-		 * if we find a '"' in the field we know it's erroneous.
-		 */
-	    } 
+		    /* also remove a trailing '"' at the end of the value. */
+		    end = value + strlen(value) - 1;
+		    if (*end == '"')
+			*end = '\0';
+		    
+		    /* 
+		     * after removing the spaces and a single '"' at the beginning and end,
+		     * if we find a '"' in the field we know it's erroneous.
+		     */
+	    }
 	    /* handle regular field */
 	    if (check_common_json_fields(file, p, value)) {
 	    } else if (!strcmp(p, "title")) {
@@ -463,7 +463,6 @@ check_info_json(char const *file, char const *fnamchk)
 		}
 	    } else if (!strcmp(p, "formed_timestamp")) {
 	    } else if (!strcmp(p, "formed_timestamp_usec")) {
-	    } else if (!strcmp(p, "timestamp_epoch")) {
 	    } else if (!strcmp(p, "min_timestamp")) {
 	    } else if (!strcmp(p, "formed_UTC")) {
 	    } else {

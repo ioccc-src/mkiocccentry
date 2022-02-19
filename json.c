@@ -1711,6 +1711,11 @@ int check_common_json_fields(char const *file, char const *field, char const *va
 	}
     } else if (!strcmp(field, "IOCCC_contest_id")) {
 	/* TODO add handling of IOCCC_contest_id field */
+    } else if (!strcmp(field, "timestamp_epoch")) {
+	if (strcmp(value, TIMESTAMP_EPOCH)) {
+	    err(225, __func__, "timestamp_epoch \"%s\" != TIMESTAMP_EPOCH \"%s\"", value, TIMESTAMP_EPOCH);
+	    not_reached();
+	}
     } else if (!strcmp(field, "entry_num")) {
 	errno = 0;
 	entry_num = (int)strtol(value, NULL, 10);
