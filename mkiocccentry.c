@@ -4617,6 +4617,7 @@ get_author_info(struct info *infop, char *ioccc_id, struct author **author_set_p
 	 * ask for IOCCC winner handle
 	 */
 	do {
+	    j = 0; /* set j to 0 for when there's more than one author */
 
 	    /*
 	     * request IOCCC winner handle
@@ -4669,7 +4670,8 @@ get_author_info(struct info *infop, char *ioccc_id, struct author **author_set_p
 		      "    A-Z a-z 0-9",
 		      "",
 		      NULL);
-		err(170, __func__, "IOCCC winner handle of author #%d does not start with an alpha numeric character", i);
+		err(170, __func__, "IOCCC winner handle of author #%d '%s' does not start with an alpha numeric character", i,
+			author_set[i].winner_handle);
 		not_reached();
 	    }
 

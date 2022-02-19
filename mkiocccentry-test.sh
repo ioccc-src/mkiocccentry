@@ -48,7 +48,7 @@ test
 0
 title-for-entry0
 abstract for entry #0
-3
+5
 author0 middle0 last0
 AU
 user0@example.com
@@ -73,6 +73,22 @@ http://host2.example.com/index.html
 @github2
 an affiliation for #2 author
 author2-last2
+author3 middle3 last3
+AU
+user0@example.com
+https://host0.example.com/index.html
+@twitter3
+@github3
+an affiliation for #3 author
+author3-last3
+author4 middle4 last4
+AU
+user0@example.com
+https://host0.example.com/index.html
+@twitter4
+@github4
+an affiliation for #4 author
+author4-last4
 ANSWERS_EOF
 EOF
 }
