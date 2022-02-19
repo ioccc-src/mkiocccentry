@@ -4635,7 +4635,7 @@ get_author_info(struct info *infop, char *ioccc_id, struct author **author_set_p
 	    /*
 	     * reject if too long
 	     */
-	    if (len > MAX_WINNER_HANDLE) {
+	    if (len > MAX_HANDLE) {
 
 		/*
 		 * issue rejection message
@@ -4643,7 +4643,7 @@ get_author_info(struct info *infop, char *ioccc_id, struct author **author_set_p
 		errno = 0;		/* pre-clear errno for warnp() */
 		ret =
 		    fprintf(stderr, "\nSorry ( tm Canada :-) ), we limit IOCCC winner handles to %d characters\n\n",
-			    MAX_WINNER_HANDLE);
+			    MAX_HANDLE);
 		if (ret <= 0) {
 		    warnp(__func__, "fprintf error while printing IOCCC winner handle length limit");
 		}

@@ -50,7 +50,7 @@
 #define MAX_AFFILIATION_LEN (48)	/* max affiliation name length */
 #define MAX_TITLE_LEN (20)		/* maximum length of a title */
 #define MAX_ABSTRACT_LEN (64)		/* maximum length of an abstract */
-#define MAX_WINNER_HANDLE (24)		/* maximum IOCCC winner handle */
+#define MAX_HANDLE (24)		/* maximum IOCCC winner handle */
 #define MAX_BASENAME_LEN ((size_t)(99))	/* tar --format=v7 limits filenames to 99 characters */
 #define UUID_LEN (36)		/* characters in a UUID string - as per RFC4122 */
 #define UUID_VERSION (4)	/* version 4 - random UUID */
