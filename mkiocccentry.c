@@ -527,7 +527,7 @@ main(int argc, char *argv[])
      * write the .info.json file
      */
     para("", "Forming the .info.json file ...", NULL);
-    write_info(&info, entry_dir, test_mode, jinfochk, fnamchk);
+    write_info(&info, entry_dir, test_mode, jinfochk, fnamchk, author_count);
     para("... completed the .info.json file.", "", NULL);
 
     /*
@@ -5313,6 +5313,7 @@ json_fprintf_value_bool(FILE *stream, char const *lead, char const *name, char c
  *      test_mode       - true ==> test mode, do not upload
  *      jinfochk	- path to jinfochk tool
  *      fnamchk		- path to fnamchk tool
+ *      author_count	- number of authors
  *
  * returns:
  *	true
@@ -5320,7 +5321,7 @@ json_fprintf_value_bool(FILE *stream, char const *lead, char const *name, char c
  * This function does not return on error.
  */
 static void
-write_info(struct info *infop, char const *entry_dir, bool test_mode, char const *jinfochk, char const *fnamchk)
+write_info(struct info *infop, char const *entry_dir, bool test_mode, char const *jinfochk, char const *fnamchk, int author_count)
 {
     struct tm *timeptr;		/* localtime return */
     char *info_path;		/* path to .info.json file */
@@ -5345,6 +5346,14 @@ write_info(struct info *infop, char const *entry_dir, bool test_mode, char const
     if (infop->extra_count < 0) {
 	warn(__func__, "extra_count %d < 0", infop->extra_count);
     }
+    if (author_count <= 0) {
+	err(35, __func__, "author_count %d <= 0", author_count);
+	not_reached();
+    } else if (author_count > MAX_AUTHORS) {
+	err(33, __func__, "author count %d > max authors %d", author_count, MAX_AUTHORS);
+	not_reached();
+    }
+
 
     /*
      * fill out time information in the info structure
@@ -5438,6 +5447,7 @@ write_info(struct info *infop, char const *entry_dir, bool test_mode, char const
 	json_fprintf_value_string(info_stream, "\t", "iocccsize_version", " : ", infop->iocccsize_ver, ",\n") &&
 	json_fprintf_value_string(info_stream, "\t", "IOCCC_contest_id", " : ", infop->ioccc_id, ",\n") &&
 	json_fprintf_value_long(info_stream, "\t", "entry_num", " : ", (long)infop->entry_num, ",\n") &&
+	json_fprintf_value_long(info_stream, "\t", "num_authors", " : ", (long)author_count, ",\n") &&
 	json_fprintf_value_string(info_stream, "\t", "title", " : ", infop->title, ",\n") &&
 	json_fprintf_value_string(info_stream, "\t", "abstract", " : ", infop->abstract, ",\n") &&
 	json_fprintf_value_string(info_stream, "\t", "tarball", " : ", infop->tarball_path, ",\n") &&
@@ -5611,8 +5621,13 @@ write_author(struct info *infop, int author_count, struct author *authorp, char 
 	not_reached();
     }
     if (author_count <= 0) {
-	warn(__func__, "author_count %d <= 0", author_count);
+	err(32, __func__, "author_count %d <= 0", author_count);
+	not_reached();
+    } else if (author_count > MAX_AUTHORS) {
+	err(33, __func__, "author count %d > max authors %d", author_count, MAX_AUTHORS);
+	not_reached();
     }
+
 
     /*
      * open .author.json for writing
@@ -5650,6 +5665,7 @@ write_author(struct info *infop, int author_count, struct author *authorp, char 
 	json_fprintf_value_string(author_stream, "\t", "IOCCC_contest_id", " : ", infop->ioccc_id, ",\n") &&
 	json_fprintf_value_string(author_stream, "\t", "tarball", " : ", infop->tarball_path, ",\n") &&
 	json_fprintf_value_long(author_stream, "\t", "entry_num", " : ", (long)infop->entry_num, ",\n") &&
+	json_fprintf_value_long(author_stream, "\t", "num_authors", " : ", (long)author_count, ",\n") &&
 	fprintf(author_stream, "\t\"authors\" : [\n") > 0;
     if (!ret) {
 	errp(215, __func__, "fprintf error writing leading part of authorship to %s", author_path);
