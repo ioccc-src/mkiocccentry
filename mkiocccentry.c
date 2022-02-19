@@ -164,7 +164,7 @@ main(int argc, char *argv[])
     while ((i = getopt(argc, argv, "hv:Vt:c:l:a:i:A:WC:F:j:J:")) != -1) {
 	switch (i) {
 	case 'h':		/* -h - print help to stderr and exit 0 */
-	    usage(1, "-h help mode", program, TAR_PATH_0, CP_PATH_0, LS_PATH_0, TXZCHK_PATH_0, FNAMCHK_PATH_0, JINFOCHK_PATH_0, JAUTHCHK_PATH_0);
+	    usage(1, "-h help mode", program);
 	    not_reached();
 	    break;
 	case 'v':		/* -v verbosity */
@@ -233,15 +233,13 @@ main(int argc, char *argv[])
 	    jauthchk = optarg;
 	    break;
 	default:
-	    usage(3, "invalid -flag", program, TAR_PATH_0, CP_PATH_0, LS_PATH_0, TXZCHK_PATH_0, FNAMCHK_PATH_0,
-		    JINFOCHK_PATH_0, JAUTHCHK_PATH_0); /*ooo*/
+	    usage(3, "invalid -flag", program); /*ooo*/
 	    not_reached();
 	 }
     }
     /* must have at least the required number of args */
     if (argc - optind < REQUIRED_ARGS) {
-	usage(4, "wrong number of arguments", program, TAR_PATH_0, CP_PATH_0, LS_PATH_0, TXZCHK_PATH_0, FNAMCHK_PATH_0,
-		JINFOCHK_PATH_0, JAUTHCHK_PATH_0); /*ooo*/
+	usage(4, "wrong number of arguments", program); /*ooo*/
 	not_reached();
     }
 
@@ -719,8 +717,7 @@ main(int argc, char *argv[])
  * This function does not return.
  */
 static void
-usage(int exitcode, char const *str, char const *program, char const *tar, char const *cp, char const *ls,
-      char const *txzchk, char const *fnamchk, char const *jinfochk, char const *jauthchk)
+usage(int exitcode, char const *str, char const *program)
 {
     /*
      * firewall
@@ -733,35 +730,6 @@ usage(int exitcode, char const *str, char const *program, char const *tar, char 
 	program = "((NULL program))";
 	warn(__func__, "\nin usage(): program was NULL, forcing it to be: %s\n", program);
     }
-    if (tar == NULL) {
-	tar = "((NULL tar))";
-	warn(__func__, "\nin usage(): tar was NULL, forcing it to be: %s\n", tar);
-    }
-    if (cp == NULL) {
-	cp = "((NULL cp))";
-	warn(__func__, "\nin usage(): cp was NULL, forcing it to be: %s\n", cp);
-    }
-    if (ls == NULL) {
-	ls = "((NULL ls))";
-	warn(__func__, "\nin usage(): ls was NULL, forcing it to be: %s\n", ls);
-    }
-    if (txzchk == NULL) {
-	txzchk = "((NULL txzchk))";
-	warn(__func__, "\nin usage(): txzchk was NULL, forcing it to be: %s\n", txzchk);
-    }
-    if (fnamchk == NULL) {
-	fnamchk = "((NULL fnamchk))";
-	warn(__func__, "\nin usage(): fnamchk was NULL, forcing it to be: %s\n", fnamchk);
-    }
-    if (jinfochk == NULL) {
-	jinfochk = "((NULL jinfochk))";
-	warn(__func__, "\nin usage(): jinfochk was NULL, forcing it to be: %s\n", jinfochk);
-    }
-    if (jauthchk == NULL) {
-	jauthchk = "((NULL jauthchk))";
-	warn(__func__, "\nin usage(): jauthchk was NULL, forcing it to be: %s\n", jauthchk);
-    }
-
 
 
     /*
@@ -769,8 +737,8 @@ usage(int exitcode, char const *str, char const *program, char const *tar, char 
      */
     vfprintf_usage(DO_NOT_EXIT, stderr, "%s\n", str);
     vfprintf_usage(DO_NOT_EXIT, stderr, usage_msg0, program, DBG_DEFAULT);
-    vfprintf_usage(DO_NOT_EXIT, stderr, usage_msg1, tar, cp, ls, txzchk, fnamchk);
-    vfprintf_usage(DO_NOT_EXIT, stderr, usage_msg2, jinfochk, jauthchk);
+    vfprintf_usage(DO_NOT_EXIT, stderr, usage_msg1, TAR_PATH_0, CP_PATH_0, LS_PATH_0, TXZCHK_PATH_0, FNAMCHK_PATH_0);
+    vfprintf_usage(DO_NOT_EXIT, stderr, usage_msg2, JINFOCHK_PATH_0, JAUTHCHK_PATH_0);
     vfprintf_usage(DO_NOT_EXIT, stderr, "%s", usage_msg3);
     vfprintf_usage(exitcode, stderr, usage_msg4, MKIOCCCENTRY_VERSION);
     exit(exitcode); /*ooo*/
@@ -1572,7 +1540,7 @@ get_contest_id(struct info *infop, bool *testp, bool *read_answers_flag_used)
 	    warnp(__func__, "fprintf error printing IOCCC_REGISTER_URL");
 	}
 	para("",
-	     "If you do not have an IOCCC contest ID and you with to test this program,",
+	     "If you do not have an IOCCC contest ID and you wish to test this program,",
 	     "you may use the special contest ID:",
 	     "",
 	     "    test",

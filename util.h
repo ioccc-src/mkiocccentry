@@ -61,7 +61,8 @@ struct location {
 #define READ_ALL_CHUNK (65536)	/* grow this read_all by this amount when needed */
 
 /*
- * paths to utilities the IOCCC tools use (including fnamchk and txzchk)
+ * paths to utilities the IOCCC tools use (including our own tools fnamchk,
+ * txzchk, jinfochk and jauthchk)
  */
 #define TAR_PATH_0 "/usr/bin/tar"		    /* historic path for tar */
 #define TAR_PATH_1 "/bin/tar"			    /* alternate tar path for some systems where /usr/bin/tar != /bin/tar */

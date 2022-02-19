@@ -52,7 +52,7 @@ main(int argc, char **argv)
     while ((i = getopt(argc, argv, "hv:VqF:t:T")) != -1) {
 	switch (i) {
 	case 'h':		/* -h - print help to stderr and exit 0 */
-	    usage(0, "-h help mode", program, TAR_PATH_0, FNAMCHK_PATH_0);
+	    usage(0, "-h help mode", program);
 	    not_reached();
 	    break;
 	case 'v':		/* -v verbosity */
@@ -90,13 +90,13 @@ main(int argc, char **argv)
 	    text_file_flag_used = true; /* don't rely on tar: just read file as if it was a text file */
 	    break;
 	default:
-	    usage(1, "invalid -flag", program, TAR_PATH_0, TXZCHK_PATH_0); /*ooo*/
+	    usage(1, "invalid -flag", program); /*ooo*/
 	    not_reached();
 	 }
     }
     /* must have the exact required number of args */
     if (argc - optind != REQUIRED_ARGS) {
-	usage(1, "wrong number of arguments", program, TAR_PATH_0, TXZCHK_PATH_0); /*ooo*/
+	usage(1, "wrong number of arguments", program); /*ooo*/
 	not_reached();
     }
     txzpath = argv[optind];
@@ -227,7 +227,7 @@ show_txz_info(char const *txzpath)
  * This function does not return.
  */
 static void
-usage(int exitcode, char const *str, char const *prog, char const *tar, char const *fnamchk)
+usage(int exitcode, char const *str, char const *prog)
 {
     /*
      * firewall
@@ -237,23 +237,15 @@ usage(int exitcode, char const *str, char const *prog, char const *tar, char con
 	warn("txzchk", "\nin usage(): program was NULL, forcing it to be: %s\n", str);
     }
     if (prog == NULL) {
-	prog = "((NULL prog))";
+	prog = "txzchk";
 	warn("txzchk", "\nin usage(): program was NULL, forcing it to be: %s\n", prog);
-    }
-    if (tar == NULL) {
-	tar = "((NULL tar))";
-	warn("txzchk", "\nin usage: tar was NULL, forcing it to be: %s\n", tar);
-    }
-    if (fnamchk == NULL) {
-	fnamchk = "((NULL fnamchk))";
-	warn("txzchk", "\nin usage(): fnamchk was NULL, forcing it to be: %s\n", fnamchk);
     }
 
     /*
      * print the formatted usage stream
      */
     vfprintf_usage(DO_NOT_EXIT, stderr, "%s\n", str);
-    vfprintf_usage(exitcode, stderr, usage_msg, prog, DBG_DEFAULT, tar, fnamchk, TXZCHK_VERSION);
+    vfprintf_usage(exitcode, stderr, usage_msg, prog, DBG_DEFAULT, TAR_PATH_0, FNAMCHK_PATH_0, TXZCHK_VERSION);
     exit(exitcode); /*ooo*/
     not_reached();
 }

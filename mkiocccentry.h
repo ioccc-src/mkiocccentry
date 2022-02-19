@@ -142,8 +142,7 @@ static struct iocccsize size;	/* rule_count() processing results */
 /*
  * forward declarations
  */
-static void usage(int exitcode, char const *str, char const *program, char const *tar, char const *cp, char const *ls,
-		  char const *txzchk, char const *fnamchk, char const *jinfochk, char const *jauthchk);
+static void usage(int exitcode, char const *str, char const *program);
 static void free_info(struct info *infop);
 static void free_author_array(struct author *authorp, int author_count);
 static void warn_empty_prog(char const *prog_c);
