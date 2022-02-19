@@ -283,7 +283,7 @@ sanity_chk(char const *tar, char const *fnamchk)
 		  "",
 		  "We cannot find a tar program.",
 		  "",
-		  "A tar program that supports the -J (xz) option is required to build an compressed tarball.",
+		  "A tar program that supports the -J (xz) option is required to test the compressed tarball.",
 		  "Perhaps you need to use:",
 		  "",
 		  "    txzchk -t /path/to/tar ...",
