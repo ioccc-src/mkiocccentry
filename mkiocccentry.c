@@ -3861,8 +3861,8 @@ get_author_info(struct info *infop, char *ioccc_id, struct author **author_set_p
     int ret;			/* libc function return */
     char guard;			/* scanf guard to catch excess amount of input */
     char *p;
-    int i;
-    int j;
+    int i = 0;
+    int j = 0;
 
     /*
      * firewall
