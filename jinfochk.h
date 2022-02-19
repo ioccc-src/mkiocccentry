@@ -17,7 +17,7 @@
 /*
  * jinfochk version
  */
-#define JINFOCHK_VERSION "0.4 2022-02-18"	/* use format: major.minor YYYY-MM-DD */
+#define JINFOCHK_VERSION "0.5 2022-02-19"	/* use format: major.minor YYYY-MM-DD */
 
 /*
  * IOCCC size and rule related limitations
