@@ -389,7 +389,17 @@ check_author_json(char const *file, char const *fnamchk)
 	 */
 
 	if (!strcmp(p, "authors")) {
-	    /* handle the arrays */
+	    /* TODO: handle the arrays */
+	   
+	    /* The below is only done to prevent infinite loop which occurs in
+	     * some cases (e.g. when "authors" is at the top of the file) until
+	     * arrays are handled; when arrays are handled this will be changed.
+	     */
+	    value = strtok_r(NULL, ",\0", &savefield);
+	    if (value == NULL) {
+		err(20, __func__, "unable to find value in file %s for field %s", file, p);
+		not_reached();
+	    }
 	} else {
 	    /* extract the value */
 	    value = strtok_r(NULL, ",", &savefield);
@@ -401,6 +411,11 @@ check_author_json(char const *file, char const *fnamchk)
 	    /* skip leading whitespace */
 	    while (*value && isspace(*value))
 		++value;
+
+	    /* skip trailing whitespace */
+	    end = value + strlen(value) - 1;
+	    while (*end && isspace(*end))
+		*end-- = '\0';
 
 	    /* 
 	     * Depending on the field, remove a single '"' at the beginning and

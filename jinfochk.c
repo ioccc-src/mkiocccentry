@@ -373,6 +373,7 @@ check_info_json(char const *file, char const *fnamchk)
 	if (*end == '"')
 	    *end = '\0';
 
+
 	/* 
 	 * after removing the spaces and a single '"' at the beginning and end,
 	 * if we find a '"' in the field we know it's erroneous: thus we can
@@ -387,7 +388,17 @@ check_info_json(char const *file, char const *fnamchk)
 	 * value.
 	 */
 	if (!strcmp(p, "manifest")) {
-	    /* handle the array */
+	    /* TODO: handle the array */
+	   
+	    /* The below is only done to prevent infinite loop which occurs in
+	     * some cases (e.g. when "manifest" is at the top of the file) until
+	     * arrays are handled; when arrays are handled this will be changed.
+	     */
+	    value = strtok_r(NULL, ",\0", &savefield);
+	    if (value == NULL) {
+		err(20, __func__, "unable to find value in file %s for field %s", file, p);
+		not_reached();
+	    }
 	} else {
 	    /* extract the value */
 	    value = strtok_r(NULL, ",\0", &savefield);
@@ -396,9 +407,15 @@ check_info_json(char const *file, char const *fnamchk)
 		not_reached();
 	    }
 
+
 	    /* skip leading whitespace */
 	    while (*value && isspace(*value))
 		++value;
+
+	    /* skip trailing whitespace */
+	    end = value + strlen(value) - 1;
+	    while (*end && isspace(*end))
+		*end-- = '\0';
 
 	    /* 
 	     * Depending on the field, remove a single '"' at the beginning and
