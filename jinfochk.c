@@ -24,9 +24,9 @@ main(int argc, char **argv)
     extern char *optarg;	/* option argument */
     extern int optind;		/* argv index of the next arg */
     char *file;			/* file argument to check */
-    char *fnamchk = FNAMCHK_PATH_0;	/* path to fnamchk executable */
     int ret;			/* libc return code */
     int i;
+    char *fnamchk = FNAMCHK_PATH_0;	/* path to fnamchk executable */
     bool fnamchk_flag_used = false; /* true ==> -F fnamchk used */
 
     /*
@@ -142,6 +142,48 @@ sanity_chk(char const *file, char const *fnamchk)
     }
 
     /*
+     * file must be readable
+     */
+    if (!exists(file)) {
+	fpara(stderr,
+	      "",
+	      "The JSON path specified does not exist. Perhaps you made a typo?",
+	      "Please check the path and try again."
+	      "",
+	      "    jinfochk [options] <file>"
+	      "",
+	      NULL);
+	err(9, __func__, "file does not exist: %s", file);
+	not_reached();
+    }
+    if (!is_file(file)) {
+	fpara(stderr,
+	      "",
+	      "The file specified, while it exists, is not a regular file.",
+	      "",
+	      "Perhaps you need to use another path:",
+	      "",
+	      "    jinfochk [...] <file>",
+	      "",
+	      NULL);
+	err(10, __func__, "file is not a file: %s", file);
+	not_reached();
+    }
+    if (!is_read(file)) {
+	fpara(stderr,
+	      "",
+	      "The JSON path, while it is a file, is not readable.",
+	      "",
+	      "We suggest you check the permissions on the path or use another path:",
+	      "",
+	      "    jinfochk [...] <file>"
+	      "",
+	      NULL);
+	err(11, __func__, "file is not readable: %s", file);
+	not_reached();
+    }
+
+    /*
      * fnamchk must be executable
      */
     if (!exists(fnamchk)) {
@@ -198,47 +240,7 @@ sanity_chk(char const *file, char const *fnamchk)
     }
 
 
-    /*
-     * file must be readable
-     */
-    if (!exists(file)) {
-	fpara(stderr,
-	      "",
-	      "The JSON path specified does not exist. Perhaps you made a typo?",
-	      "Please check the path and try again."
-	      "",
-	      "    jinfochk [options] <file>"
-	      "",
-	      NULL);
-	err(9, __func__, "file does not exist: %s", file);
-	not_reached();
-    }
-    if (!is_file(file)) {
-	fpara(stderr,
-	      "",
-	      "The file specified, whilst it exists, is not a regular file.",
-	      "",
-	      "Perhaps you need to use another path:",
-	      "",
-	      "    jinfochk [...] <file>",
-	      "",
-	      NULL);
-	err(10, __func__, "file is not a file: %s", file);
-	not_reached();
-    }
-    if (!is_read(file)) {
-	fpara(stderr,
-	      "",
-	      "The JSON path, whilst it is a file, is not readable.",
-	      "",
-	      "We suggest you check the permissions on the path or use another path:",
-	      "",
-	      "    jinfochk [...] <file>"
-	      "",
-	      NULL);
-	err(11, __func__, "file is not readable: %s", file);
-	not_reached();
-    }
+
     return;
 }
 
@@ -249,7 +251,7 @@ sanity_chk(char const *file, char const *fnamchk)
  * given:
  *
  *	file	-   path to the file to check
- *	fnamchk -   path to fnamchk util
+ *	fnamchk -   path to our fnamchk util
  *
  * Attempts to validate the file as .info.json, reporting any problems found.
  *

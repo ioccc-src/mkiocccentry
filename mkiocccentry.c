@@ -391,7 +391,7 @@ main(int argc, char *argv[])
      * create entry directory
      */
     entry_dir = mk_entry_dir(work_dir, info.ioccc_id, info.entry_num, &tarball_path, info.tstamp);
-    info.tarball_path = tarball_path;
+    info.tarball_path = tarball_path; /* note: do NOT free this in free_info() ! */
     dbg(DBG_LOW, "formed entry directory: %s", entry_dir);
 
 
@@ -674,11 +674,13 @@ main(int argc, char *argv[])
 	free(entry_dir);
 	entry_dir = NULL;
     }
+    /* after this we cannot call free() on infop->tarball_path! */
     if (tarball_path != NULL) {
 	free(tarball_path);
 	tarball_path = NULL;
     }
     free_info(&info);
+
     memset(&info, 0, sizeof(info));
     if (author_set != NULL) {
 	free_author_array(author_set, author_count);
@@ -816,6 +818,10 @@ free_info(struct info *infop)
 	free(infop->extra_file);
 	infop->extra_file = NULL;
     }
+
+    /* Do NOT free(infop->tarball_path)! This is because it shares the memory
+     * with tarball_path in main() which is free()d there!
+     */
 
     /*
      * free time values
@@ -5642,6 +5648,7 @@ write_author(struct info *infop, int author_count, struct author *authorp, char 
 	json_fprintf_value_long(author_stream, "\t", "ioccc_year", " : ", (long)IOCCC_YEAR, ",\n") &&
 	json_fprintf_value_string(author_stream, "\t", "mkiocccentry_version", " : ", infop->mkiocccentry_ver, ",\n") &&
 	json_fprintf_value_string(author_stream, "\t", "IOCCC_contest_id", " : ", infop->ioccc_id, ",\n") &&
+	json_fprintf_value_string(author_stream, "\t", "tarball", " : ", infop->tarball_path, ",\n") &&
 	json_fprintf_value_long(author_stream, "\t", "entry_num", " : ", (long)infop->entry_num, ",\n") &&
 	fprintf(author_stream, "\t\"authors\" : [\n") > 0;
     if (!ret) {

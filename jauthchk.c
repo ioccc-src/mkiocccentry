@@ -27,13 +27,15 @@ main(int argc, char **argv)
     char *file;		/* file argument to check */
     int ret;			/* libc return code */
     int i;
+    char *fnamchk = FNAMCHK_PATH_0;	/* path to fnamchk executable */
+    bool fnamchk_flag_used = false; /* true ==> -F fnamchk used */
 
 
     /*
      * parse args
      */
     program = argv[0];
-    while ((i = getopt(argc, argv, "hv:Vqs")) != -1) {
+    while ((i = getopt(argc, argv, "hv:VqsF:")) != -1) {
 	switch (i) {
 	case 'h':		/* -h - print help to stderr and exit 0 */
 	    usage(1, "-h help mode", program); /*ooo*/
@@ -65,6 +67,10 @@ main(int argc, char **argv)
 	case 's':
 	    strict = true;
 	    break;
+	case 'F':
+	    fnamchk_flag_used = true;
+	    fnamchk = optarg;
+	    break;
 	default:
 	    usage(1, "invalid -flag", program); /*ooo*/
 	    not_reached();
@@ -88,18 +94,25 @@ main(int argc, char **argv)
 	    errp(4, __func__, "printf error printing the welcome string");
 	    not_reached();
 	}
+    }
+
+    /* we have to find the fnamchk util */
+    find_utils(false, NULL, false, NULL, false, NULL, false, NULL, fnamchk_flag_used, &fnamchk,
+	       false, NULL, false, NULL);
+
     /*
      * environment sanity checks
      */
+    if (!quiet) {
 	para("", "Performing sanity checks on your environment ...", NULL);
     }
 
-    sanity_chk(file);
+    sanity_chk(file, fnamchk);
     if (!quiet) {
 	para("... environment looks OK", "", NULL);
     }
 
-    check_author_json(file);
+    check_author_json(file, fnamchk);
 
     /*
      * All Done!!! - Jessica Noll, age 2
@@ -116,17 +129,18 @@ main(int argc, char **argv)
  * given:
  *
  *      file        - path to JSON file to parse
+ *      fnamchk	    - path to fnamchk util
  *
  * NOTE: This function does not return on error or if things are not sane.
  */
 static void
-sanity_chk(char const *file)
+sanity_chk(char const *file, char const *fnamchk)
 {
     /*
      * firewall
      */
-    if (file == NULL) {
-	err(5, __func__, "called with NULL arg");
+    if (file == NULL || fnamchk == NULL) {
+	err(5, __func__, "called with NULL arg(s)");
 	not_reached();
     }
 
@@ -148,7 +162,7 @@ sanity_chk(char const *file)
     if (!is_file(file)) {
 	fpara(stderr,
 	      "",
-	      "The file specified, whilst it exists, is not a regular file.",
+	      "The file specified, while it exists, is not a regular file.",
 	      "",
 	      "Perhaps you need to use another path:",
 	      "",
@@ -161,7 +175,7 @@ sanity_chk(char const *file)
     if (!is_read(file)) {
 	fpara(stderr,
 	      "",
-	      "The JSON path, whilst it is a file, is not readable.",
+	      "The JSON path, while it is a file, is not readable.",
 	      "",
 	      "We suggest you check the permissions on the path or use another path:",
 	      "",
@@ -171,6 +185,64 @@ sanity_chk(char const *file)
 	err(8, __func__, "file is not readable: %s", file);
 	not_reached();
     }
+
+    /*
+     * fnamchk must be executable
+     */
+    if (!exists(fnamchk)) {
+	fpara(stderr,
+	      "",
+	      "We cannot find a fnamchk tool.",
+	      "",
+	      "A fnamchk program performs a sanity check on the compressed tarball.",
+	      "Perhaps you need to use:",
+	      "",
+	      "    jauthchk -F /path/to/fnamchk ...",
+	      "",
+	      "and/or install the fnamchk tool?  You can find the source for fnamchk in the mkiocccentry GitHub repo:",
+	      "",
+	      "    https://github.com/ioccc-src/mkiocccentry",
+	      "",
+	      NULL);
+	err(6, __func__, "fnamchk does not exist: %s", fnamchk);
+	not_reached();
+    }
+    if (!is_file(fnamchk)) {
+	fpara(stderr,
+	      "",
+	      "The fnamchk tool, while it exists, is not a file.",
+	      "",
+	      "Perhaps you need to use another path:",
+	      "",
+	      "    jauthchk -F /path/to/fnamchk ...",
+	      "",
+	      "and/or install the fnamchk tool?  You can find the source for fnamchk in the mkiocccentry GitHub repo:",
+	      "",
+	      "    https://github.com/ioccc-src/mkiocccentry",
+	      "",
+	      NULL);
+	err(7, __func__, "fnamchk is not a file: %s", fnamchk);
+	not_reached();
+    }
+    if (!is_exec(fnamchk)) {
+	fpara(stderr,
+	      "",
+	      "The fnamchk tool, while it is a file, is not executable.",
+	      "",
+	      "We suggest you check the permissions on the fnamchk program, or use another path:",
+	      "",
+	      "    jauthchk -F /path/to/fnamchk ...",
+	      "",
+	      "and/or install the fnamchk tool?  You can find the source for fnamchk in the mkiocccentry GitHub repo:",
+	      "",
+	      "    https://github.com/ioccc-src/mkiocccentry",
+	      "",
+	      NULL);
+	err(8, __func__, "fnamchk is not an executable program: %s", fnamchk);
+	not_reached();
+    }
+
+
 
     return;
 }
@@ -182,13 +254,14 @@ sanity_chk(char const *file)
  * given:
  *
  *	file	-   path to the file to check
+ *	fnamchk	-   path to our fnamchk util
  *
  * Attempts to validate the file as .author.json, reporting any problems found.
  *
  * Function does not return on error.
  */
 static void
-check_author_json(char const *file)
+check_author_json(char const *file, char const *fnamchk)
 {
     FILE *stream;
     int ret;
@@ -203,8 +276,8 @@ check_author_json(char const *file)
     /*
      * firewall
      */
-    if (file == NULL) {
-	err(9, __func__, "passed NULL arg");
+    if (file == NULL || fnamchk == NULL) {
+	err(9, __func__, "passed NULL arg(s)");
 	not_reached();
     }
     stream = fopen(file, "r");
@@ -409,7 +482,7 @@ usage(int exitcode, char const *str, char const *prog)
      * print the formatted usage stream
      */
     vfprintf_usage(DO_NOT_EXIT, stderr, "%s\n", str);
-    vfprintf_usage(exitcode, stderr, usage_msg, prog, DBG_DEFAULT, JAUTHCHK_VERSION);
+    vfprintf_usage(exitcode, stderr, usage_msg, prog, DBG_DEFAULT, FNAMCHK_PATH_0, JAUTHCHK_VERSION);
     exit(exitcode); /*ooo*/
     not_reached();
 }

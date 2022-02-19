@@ -299,7 +299,7 @@ sanity_chk(char const *tar, char const *fnamchk)
 	if (!is_file(tar)) {
 	    fpara(stderr,
 		  "",
-		  "The tar, whilst it exists, is not a file.",
+		  "The tar, while it exists, is not a file.",
 		  "",
 		  "Perhaps you need to use another path:",
 		  "",
@@ -316,7 +316,7 @@ sanity_chk(char const *tar, char const *fnamchk)
 	if (!is_exec(tar)) {
 	    fpara(stderr,
 		  "",
-		  "The tar, whilst it is a file, is not executable.",
+		  "The tar, while it is a file, is not executable.",
 		  "",
 		  "We suggest you check the permissions on the tar program, or use another path:",
 		  "",
@@ -351,7 +351,7 @@ sanity_chk(char const *tar, char const *fnamchk)
     if (!is_file(fnamchk)) {
 	fpara(stderr,
 	      "",
-	      "The fnamchk, whilst it exists, is not a file.",
+	      "The fnamchk, while it exists, is not a file.",
 	      "",
 	      "Perhaps you need to use another path:",
 	      "",
@@ -363,7 +363,7 @@ sanity_chk(char const *tar, char const *fnamchk)
     if (!is_exec(fnamchk)) {
 	fpara(stderr,
 	      "",
-	      "The fnamchk, whilst it is a file, is not executable.",
+	      "The fnamchk, while it is a file, is not executable.",
 	      "",
 	      "We suggest you check the permissions on the fnamchk program, or use another path:",
 	      "",
@@ -392,7 +392,7 @@ sanity_chk(char const *tar, char const *fnamchk)
     if (!is_file(txzpath)) {
 	fpara(stderr,
 	      "",
-	      "The file specified, whilst it exists, is not a regular file.",
+	      "The file specified, while it exists, is not a regular file.",
 	      "",
 	      "Perhaps you need to use another path:",
 	      "",
@@ -405,7 +405,7 @@ sanity_chk(char const *tar, char const *fnamchk)
     if (!is_read(txzpath)) {
 	fpara(stderr,
 	      "",
-	      "The tarball path, whilst it is a file, is not readable.",
+	      "The tarball path, while it is a file, is not readable.",
 	      "",
 	      "We suggest you check the permissions on the path or use another path:",
 	      "",
@@ -1375,7 +1375,7 @@ check_tarball(char const *tar, char const *fnamchk)
     free(cmd);
     cmd = NULL;
 
-    /* now parse the lines, reporting any issue that have to be done whilst
+    /* now parse the lines, reporting any issue that have to be done while
      * parsing.
      */
     parse_all_lines(dir_name, txzpath);
@@ -1534,7 +1534,7 @@ parse_all_lines(char const *dir_name, char const *txzpath)
  * files list, adding each line to the list in the process, and then after that
  * we can iterate through the lines and show any warnings. After that we report
  * any issues that haven't been reported yet (some warnings have to be issued
- * whilst parsing the lines).
+ * while parsing the lines).
  *
  * This function returns void.
  */

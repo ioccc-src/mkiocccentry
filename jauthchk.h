@@ -44,13 +44,14 @@
  * Use the usage() function to print the these usage_msgX strings.
  */
 static const char * const usage_msg =
-"usage: %s [-h] [-v level] [-V] [-q] [-s] file\n"
+"usage: %s [-h] [-v level] [-V] [-q] [-s] [-F fnamchk] file\n"
 "\n"
 "\t-h\t\tprint help message and exit 0\n"
 "\t-v level\tset verbosity level: (def level: %d)\n"
 "\t-V\t\tprint version string and exit\n"
 "\t-q\t\tquiet mode\n"
 "\t-s\t\tstrict mode: be more strict on what is allowed (def: not strict)\n"
+"\t-F /path/to/fnamchk\tpath to fnamchk tool (def: %s)\n"
 "\n"
 "\tfile\t\tpath to a .author.json file\n"
 "\n"
@@ -74,8 +75,8 @@ static bool strict = false;		    /* true ==> disallow anything before/after the 
  * forward declarations
  */
 static void usage(int exitcode, char const *name, char const *str) __attribute__((noreturn));
-static void sanity_chk(char const *file);
-static void check_author_json(char const *file);
+static void sanity_chk(char const *file, char const *fnamchk);
+static void check_author_json(char const *file, char const *fnamchk);
 
 
 #endif /* JAUTHCHK_C */
