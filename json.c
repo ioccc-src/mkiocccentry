@@ -1724,17 +1724,27 @@ int check_common_json_fields(char const *file, char const *field, char const *va
 	}
     } else if (!strcmp(field, "timestamp_epoch")) {
 	if (strcmp(value, TIMESTAMP_EPOCH)) {
-	    err(225, __func__, "timestamp_epoch \"%s\" != TIMESTAMP_EPOCH \"%s\"", value, TIMESTAMP_EPOCH);
+	    err(227, __func__, "timestamp_epoch \"%s\" != TIMESTAMP_EPOCH \"%s\"", value, TIMESTAMP_EPOCH);
+	    not_reached();
+	}
+    } else if (!strcmp(field, "formed_timestamp_usec")) {
+	errno = 0;
+	ts = strtol(value, NULL, 10);
+	if (errno != 0) {
+	    err(228, __func__, "unable to parse min_timestamp \"%s\"", value);
+	    not_reached();
+	} else if (ts < 0 || ts > 999999) {
+	    err(229, __func__, "formed_timestamp_usec '%ld' out of range of >= 0 && <= 999999", ts);
 	    not_reached();
 	}
     } else if (!strcmp(field, "entry_num")) {
 	errno = 0;
 	entry_num = (int)strtol(value, NULL, 10);
 	if (errno != 0) {
-	    err(226, __func__, "parsing entry_num \"%s\" in file %s", value, file);
+	    err(230, __func__, "parsing entry_num \"%s\" in file %s", value, file);
 	    not_reached();
 	} else if (!(entry_num >= 0 && entry_num <= MAX_ENTRY_NUM)) {
-	    err(227, __func__, "entry number %d out of range", entry_num);
+	    err(231, __func__, "entry number %d out of range", entry_num);
 	    not_reached();
 	}
     } else {
