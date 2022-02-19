@@ -1670,6 +1670,7 @@ int check_common_json_fields(char const *file, char const *field, char const *va
     int ret = 1;
     int year = 0;
     int entry_num = -1;
+    long ts = 0;
 
     /*
      * firewall
@@ -1711,6 +1712,16 @@ int check_common_json_fields(char const *file, char const *field, char const *va
 	}
     } else if (!strcmp(field, "IOCCC_contest_id")) {
 	/* TODO add handling of IOCCC_contest_id field */
+    } else if (!strcmp(field, "min_timestamp")) {
+	errno = 0;
+	ts = strtol(value, NULL, 10);
+	if (errno != 0) {
+	    err(225, __func__, "unable to parse min_timestamp \"%s\"", value);
+	    not_reached();
+	} else if (ts != MIN_TIMESTAMP) {
+	    err(226, __func__, "min_timestamp '%ld' != MIN_TIMESTAMP '%ld'", ts, MIN_TIMESTAMP);
+	    not_reached();
+	}
     } else if (!strcmp(field, "timestamp_epoch")) {
 	if (strcmp(value, TIMESTAMP_EPOCH)) {
 	    err(225, __func__, "timestamp_epoch \"%s\" != TIMESTAMP_EPOCH \"%s\"", value, TIMESTAMP_EPOCH);

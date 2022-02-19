@@ -463,7 +463,6 @@ check_info_json(char const *file, char const *fnamchk)
 		}
 	    } else if (!strcmp(p, "formed_timestamp")) {
 	    } else if (!strcmp(p, "formed_timestamp_usec")) {
-	    } else if (!strcmp(p, "min_timestamp")) {
 	    } else if (!strcmp(p, "formed_UTC")) {
 	    } else {
 	    }
