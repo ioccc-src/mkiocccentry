@@ -117,43 +117,44 @@
 int
 main(int argc, char *argv[])
 {
-    char const *program = NULL;	/* our name */
-    extern char *optarg;	/* option argument */
-    extern int optind;		/* argv index of the next arg */
-    struct timeval tp;		/* gettimeofday time value */
-    char const *work_dir = NULL;	/* where the entry directory and tarball are formed */
-    char const *prog_c = NULL;		/* path to prog.c */
-    char const *Makefile = NULL;	/* path to Makefile */
-    char const *remarks_md = NULL;	/* path to remarks.md */
-    char *tar = TAR_PATH_0;		/* path to tar executable that supports the -J (xz) option */
-    char *cp = CP_PATH_0;		/* path to cp executable */
-    char *ls = LS_PATH_0;		/* path to ls executable */
-    char *txzchk = TXZCHK_PATH_0;	/* path to txzchk executable */
-    char *fnamchk = FNAMCHK_PATH_0;	/* path to fnamchk executable */
-    char *jauthchk = JAUTHCHK_PATH_0;	/* path to jauthchk executable */
-    char *jinfochk = JINFOCHK_PATH_0;	/* path to jinfochk executable */
-    char const *answers = NULL;		/* path to the answers file (recording input given on stdin) */
-    FILE *answerp = NULL;		/* file pointer to the answers file */
-    bool test_mode = false;		/* true ==> contest ID is test */
-    char *entry_dir = NULL;		/* entry directory from which to form a compressed tarball */
-    char *tarball_path = NULL;		/* path of the compressed tarball to form */
-    int extra_count = 0;		/* number of extra files */
-    char **extra_list = NULL;		/* list of extra files (if any) */
-    struct info info;			/* data to form .info.json */
-    int author_count = 0;		/* number of authors */
-    struct author *author_set = NULL;	/* list of authors */
-    bool tar_flag_used = false;		/* true ==> -t /path/to/tar was given */
-    bool cp_flag_used = false;		/* true ==> -c /path/to/cp was given */
-    bool ls_flag_used = false;		/* true ==> -l /path/to/ls was given */
+    char const *program = NULL;			/* our name */
+    extern char *optarg;			/* option argument */
+    extern int optind;				/* argv index of the next arg */
+    struct timeval tp;				/* gettimeofday time value */
+    char const *work_dir = NULL;		/* where the entry directory and tarball are formed */
+    char const *prog_c = NULL;			/* path to prog.c */
+    char const *Makefile = NULL;		/* path to Makefile */
+    char const *remarks_md = NULL;		/* path to remarks.md */
+    char *tar = TAR_PATH_0;			/* path to tar executable that supports the -J (xz) option */
+    char *cp = CP_PATH_0;			/* path to cp executable */
+    char *ls = LS_PATH_0;			/* path to ls executable */
+    char *txzchk = TXZCHK_PATH_0;		/* path to txzchk executable */
+    char *fnamchk = FNAMCHK_PATH_0;		/* path to fnamchk executable */
+    char *jauthchk = JAUTHCHK_PATH_0;		/* path to jauthchk executable */
+    char *jinfochk = JINFOCHK_PATH_0;		/* path to jinfochk executable */
+    char const *answers = NULL;			/* path to the answers file (recording input given on stdin) */
+    FILE *answerp = NULL;			/* file pointer to the answers file */
+    bool test_mode = false;			/* true ==> contest ID is test */
+    char *entry_dir = NULL;			/* entry directory from which to form a compressed tarball */
+    char *tarball_path = NULL;			/* path of the compressed tarball to form */
+    int extra_count = 0;			/* number of extra files */
+    char **extra_list = NULL;			/* list of extra files (if any) */
+    struct info info;				/* data to form .info.json */
+    int author_count = 0;			/* number of authors */
+    struct author *author_set = NULL;		/* list of authors */
+    bool tar_flag_used = false;			/* true ==> -t /path/to/tar was given */
+    bool cp_flag_used = false;			/* true ==> -c /path/to/cp was given */
+    bool ls_flag_used = false;			/* true ==> -l /path/to/ls was given */
     bool answers_flag_used = false;		/* true ==> -a write answers to answers file */
     bool read_answers_flag_used = false;	/* true ==> -i read answers from answers file */
     bool overwrite_answers_flag_used = false;	/* true ==> don't prompt to overwrite answers if it already exists */
     bool txzchk_flag_used = false;		/* true ==> -C /path/to/txzchk was given */
     bool fnamchk_flag_used = false;		/* true ==> -F /path/to/fnamchk was given */
-    bool jinfochk_flag_used = false;	/* true ==> -j /path/to/jinfochk was given */
-    bool jauthchk_flag_used = false;	/* true ==> -J /path/to/jauthchk was given */
-    bool overwrite_answers = true;	/* true ==> overwrite answers file even if it already exists */
-    int ret;				/* libc return code */
+    bool jinfochk_flag_used = false;		/* true ==> -j /path/to/jinfochk was given */
+    bool jauthchk_flag_used = false;		/* true ==> -J /path/to/jauthchk was given */
+    bool overwrite_answers = true;		/* true ==> overwrite answers file even if it already exists */
+    RuleCount size;				/* rule_count() processing results */
+    int ret;					/* libc return code */
     int i;
 
     /*
@@ -435,7 +436,7 @@ main(int argc, char *argv[])
      * check prog.c
      */
     para("", "Checking prog.c ...", NULL);
-    check_prog_c(&info, entry_dir, cp, prog_c);
+    size = check_prog_c(&info, entry_dir, cp, prog_c);
     para("... completed prog.c check.", "", NULL);
 
     /*
@@ -626,10 +627,10 @@ main(int argc, char *argv[])
 			warn_empty_prog(prog_c);
 		    }
 		    if (info.rule_2a_override) {
-			warn_rule2a_size(&info, prog_c, RULE_2A_BIG_FILE_WARNING);
+			warn_rule2a_size(&info, prog_c, RULE_2A_BIG_FILE_WARNING, size);
 		    }
 		    if (info.rule_2a_mismatch) {
-			warn_rule2a_size(&info, prog_c, RULE_2A_IOCCCSIZE_MISMATCH);
+			warn_rule2a_size(&info, prog_c, RULE_2A_IOCCCSIZE_MISMATCH, size);
 		    }
 		    if (info.rule_2b_override) {
 			warn_rule2b_size(&info, prog_c);
@@ -1961,7 +1962,7 @@ warn_empty_prog(char const *prog_c)
  * This function does not return on error.
  */
 static void
-warn_rule2a_size(struct info *infop, char const *prog_c, int mode)
+warn_rule2a_size(struct info *infop, char const *prog_c, int mode, RuleCount size)
 {
     bool yorn = false;
     int ret;
@@ -2315,7 +2316,7 @@ warn_rule2b_size(struct info *infop, char const *prog_c)
  *
  * This function does not return on error.
  */
-static void
+static RuleCount
 check_prog_c(struct info *infop, char const *entry_dir, char const *cp, char const *prog_c)
 {
     FILE *prog_stream;		/* prog.c open file stream */
@@ -2324,6 +2325,7 @@ check_prog_c(struct info *infop, char const *entry_dir, char const *cp, char con
     char *cmd = NULL;		/* cp prog_c entry_dir/prog.c */
     int exit_code;		/* exit code from system(cmd) */
     int ret;			/* libc function return */
+    RuleCount size;		/* rule_count() processing results */
 
     /*
      * firewall
@@ -2375,31 +2377,6 @@ check_prog_c(struct info *infop, char const *entry_dir, char const *cp, char con
     }
 
     /*
-     * warn if prog.c is empty
-     */
-    infop->rule_2a_size = file_size(prog_c);
-    dbg(DBG_MED, "Rule 2a size: %ld", (long)infop->rule_2a_size);
-    if (infop->rule_2a_size < 0) {
-	err(90, __func__, "file_size error: %ld on prog_c: %s", (long)infop->rule_2a_size, prog_c);
-	not_reached();
-    } else if (infop->rule_2a_size == 0) {
-	warn_empty_prog(prog_c);
-	infop->empty_override = true;
-	infop->rule_2a_override = false;
-
-    /*
-     * warn if prog.c is too large under Rule 2a
-     */
-    } else if (infop->rule_2a_size > RULE_2A_SIZE) {
-	warn_rule2a_size(infop, prog_c, RULE_2A_BIG_FILE_WARNING);
-	infop->empty_override = false;
-	infop->rule_2a_override = true;
-    } else {
-	infop->empty_override = false;
-	infop->rule_2a_override = false;
-    }
-
-    /*
      * determine Rule 2b for prog.c
      *
      * If the size returned is outside of the allowed range, the user will
@@ -2423,10 +2400,35 @@ check_prog_c(struct info *infop, char const *entry_dir, char const *cp, char con
     }
 
     /*
+     * warn if prog.c is empty
+     */
+    infop->rule_2a_size = file_size(prog_c);
+    dbg(DBG_MED, "Rule 2a size: %ld", (long)infop->rule_2a_size);
+    if (infop->rule_2a_size < 0) {
+	err(90, __func__, "file_size error: %ld on prog_c: %s", (long)infop->rule_2a_size, prog_c);
+	not_reached();
+    } else if (infop->rule_2a_size == 0) {
+	warn_empty_prog(prog_c);
+	infop->empty_override = true;
+	infop->rule_2a_override = false;
+
+    /*
+     * warn if prog.c is too large under Rule 2a
+     */
+    } else if (infop->rule_2a_size > RULE_2A_SIZE) {
+	warn_rule2a_size(infop, prog_c, RULE_2A_BIG_FILE_WARNING, size);
+	infop->empty_override = false;
+	infop->rule_2a_override = true;
+    } else {
+	infop->empty_override = false;
+	infop->rule_2a_override = false;
+    }
+
+    /*
      * sanity check on file size vs rule_count function size for Rule 2a
      */
     if (infop->rule_2a_size != size.rule_2a_size) {
-	warn_rule2a_size(infop, prog_c, RULE_2A_IOCCCSIZE_MISMATCH);
+	warn_rule2a_size(infop, prog_c, RULE_2A_IOCCCSIZE_MISMATCH, size);
 	infop->rule_2a_mismatch = true;
     } else {
 	infop->rule_2a_mismatch = false;
@@ -2554,7 +2556,7 @@ check_prog_c(struct info *infop, char const *entry_dir, char const *cp, char con
 	free(cmd);
 	cmd = NULL;
     }
-    return;
+    return size;
 }
 
 

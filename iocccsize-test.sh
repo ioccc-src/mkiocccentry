@@ -12,12 +12,13 @@ export PATH='/bin:/usr/bin:/usr/local/bin:/usr/pkg/bin'
 export ENV=''
 export CDPATH=''
 export LANG=C
-export DIGRAPHS=''	# assume #undef DIGRAPHS in limit_ioccc.h
-export TRIGRAPHS=''	# assume #undef TRIGRAPHS in limit_ioccc.h
+export DIGRAPHS='true'	# assume #define DIGRAPHS
+export TRIGRAPHS='true'	# assume #define TRIGRAPHS
+export EXIT_CODE=0
 
 usage()
 {
-	echo 'usage: test-iocccsize.sh [-bv][-t tool]'
+	echo 'usage: iocccsize-test.sh [-bv][-t tool]'
 	exit 2
 }
 
@@ -31,7 +32,7 @@ while getopts 'bvt:' opt; do
 		;;
 	(v)
 		__verbose=true
-		__tool_args="-v"
+		__tool_args="-v 1"
 		;;
 	(t)
 		__tool="$OPTARG"
@@ -41,13 +42,13 @@ while getopts 'bvt:' opt; do
 	esac
 done
 shift $(($OPTIND - 1))
-#if [ $# -lt 1 ]; then
+#if [[ $# -lt 1 ]]; then
 #        usage
 #fi
 
-make -f Makefile ${__build} all
+make ${__build} all 2>&1 | grep -v 'Nothing to be done for'
 
-if [ ! -d test-iocccsize ]; then
+if [[ ! -d test-iocccsize ]]; then
 	mkdir test-iocccsize
 fi
 
@@ -55,10 +56,14 @@ fi
 #
 if [[ -f limit_ioccc.h ]]; then
 	if grep -q '^#define DIGRAPHS' limit_ioccc.h; then
-		DIGRAPHS='yes'
+		DIGRAPHS='true'
+	else
+		DIGRAPHS=''
 	fi
 	if grep -q '^#define TRIGRAPHS' limit_ioccc.h; then
-		TRIGRAPHS='yes'
+		TRIGRAPHS='true'
+	else
+		TRIGRAPHS=''
 	fi
 fi
 
@@ -80,20 +85,32 @@ test_size()
 	if $__verbose ; then
 		gross_count=$(echo $got | cut -d' ' -f2)
 		bytes=$(get_wc $file 3 $filter)
-		if [ $gross_count != $bytes ]; then
+		if [[ $gross_count != $bytes ]]; then
 			echo "FAIL $file: got $gross_count != wc $bytes"
+			EXIT_CODE=1
 			return
 		fi
 	else
 		got=$(echo $got | cut -d' ' -f1)
 		expect=$(echo $expect | cut -d' ' -f1)
 	fi
-	if [ "$expect" = "$got" ]; then
+	if [[ "$expect" = "$got" ]]; then
 		echo "-OK- $file: $got"
 	else
 		echo "FAIL $file: got $got != expect $expect"
+		EXIT_CODE=1
 	fi
 }
+
+#######################################################################
+
+printf 'int x;\r\n' >test-iocccsize/crlf.c
+test_size crlf.c "2 8 1"
+
+#######################################################################
+
+printf 'char str[] = "טיר";\r\n' >test-iocccsize/utf8.c
+test_size utf8.c "12 21 1"
 
 #######################################################################
 
@@ -423,3 +440,4 @@ test_size semicolon2.c "67 127 8"
 #######################################################################
 # END
 #######################################################################
+exit "$EXIT_CODE"

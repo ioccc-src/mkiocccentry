@@ -141,18 +141,14 @@ all: ${TARGETS} ${TEST_TARGETS}
 #
 .PHONY: all configure clean clobber install test reset_min_timestamp
 
-rule_count.c: iocccsize.c
-	${RM} -f $@
-	${CP} -f $? $@
-
 rule_count.o: rule_count.c Makefile
 	${CC} ${CFLAGS} -DMKIOCCCENTRY_USE rule_count.c -c
 
 mkiocccentry: mkiocccentry.c mkiocccentry.h rule_count.o dbg.o util.o json.o Makefile
 	${CC} ${CFLAGS} mkiocccentry.c rule_count.o dbg.o util.o json.o -o $@
 
-iocccsize: iocccsize.c Makefile
-	${CC} ${CFLAGS} -DIOCCCSIZE_STANDALONE iocccsize.c -o $@
+iocccsize: iocccsize.c rule_count.o dbg.o Makefile
+	${CC} ${CFLAGS} -DIOCCCSIZE_STANDALONE iocccsize.c rule_count.o dbg.o -o $@
 
 dbg_test: dbg.c Makefile
 	${CC} ${CFLAGS} -DDBG_TEST dbg.c -o $@
@@ -298,7 +294,7 @@ clean:
 
 clobber: clean
 	${RM} -f ${TARGETS} ${TEST_TARGETS}
-	${RM} -f rule_count.c answers.txt j-test.out j-test2.out
+	${RM} -f answers.txt j-test.out j-test2.out
 	${RM} -rf test-iocccsize test_src test_work tags
 
 install: all
@@ -344,13 +340,13 @@ depend:
 dbg.o: dbg.c dbg.h
 util.o: util.c dbg.h util.h
 mkiocccentry.o: mkiocccentry.c mkiocccentry.h util.h json.h dbg.h \
-  limit_ioccc.h
-iocccsize.o: iocccsize.c
-fnamchk.o: fnamchk.c limit_ioccc.h dbg.h util.h
+  limit_ioccc.h iocccsize.h
+iocccsize.o: iocccsize.c iocccsize_err.h iocccsize.h
+fnamchk.o: fnamchk.c dbg.h util.h limit_ioccc.h
 txzchk.o: txzchk.c txzchk.h util.h dbg.h limit_ioccc.h
-jauthchk.o: jauthchk.c jauthchk.h limit_ioccc.h dbg.h util.h json.h
-jinfochk.o: jinfochk.c jinfochk.h limit_ioccc.h dbg.h util.h json.h
+jauthchk.o: jauthchk.c jauthchk.h dbg.h util.h json.h limit_ioccc.h
+jinfochk.o: jinfochk.c jinfochk.h dbg.h util.h json.h limit_ioccc.h
 json.o: json.c dbg.h util.h limit_ioccc.h json.h
-jstrencode.o: jstrencode.c jstrencode.h limit_ioccc.h dbg.h util.h json.h
-jstrdecode.o: jstrdecode.c jstrdecode.h limit_ioccc.h dbg.h util.h json.h
-rule_count.o: rule_count.c
+jstrencode.o: jstrencode.c jstrencode.h dbg.h util.h json.h limit_ioccc.h
+jstrdecode.o: jstrdecode.c jstrdecode.h dbg.h util.h json.h limit_ioccc.h
+rule_count.o: rule_count.c iocccsize_err.h iocccsize.h

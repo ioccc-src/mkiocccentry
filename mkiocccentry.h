@@ -83,6 +83,11 @@
  */
 #include "limit_ioccc.h"
 
+/*
+ * iocccsize use
+ */
+#include "iocccsize.h"
+
 
 /*
  * usage message
@@ -136,7 +141,6 @@ static bool need_hints = true;		/* true ==> show hints */
 static bool need_retry = true;
 static bool ignore_warnings = false;	/* true ==> ignore all warnings (this does NOT mean the judges will! :) */
 static FILE *input_stream = NULL;
-static struct iocccsize size;	/* rule_count() processing results */
 
 
 /*
@@ -146,14 +150,14 @@ static void usage(int exitcode, char const *str, char const *program);
 static void free_info(struct info *infop);
 static void free_author_array(struct author *authorp, int author_count);
 static void warn_empty_prog(char const *prog_c);
-static void warn_rule2a_size(struct info *infop, char const *prog_c, int mode);
+static void warn_rule2a_size(struct info *infop, char const *prog_c, int mode, RuleCount size);
 static void warn_high_bit(char const *prog_c);
 static void warn_nul_chars(char const *prog_c);
 static void warn_trigraph(char const *prog_c);
 static void warn_wordbuf(char const *prog_c);
 static void warn_ungetc(char const *prog_c);
 static void warn_rule2b_size(struct info *infop, char const *prog_c);
-static void check_prog_c(struct info *infop, char const *entry_dir, char const *cp, char const *prog_c);
+static RuleCount check_prog_c(struct info *infop, char const *entry_dir, char const *cp, char const *prog_c);
 static void sanity_chk(struct info *infop, char const *work_dir, char const *tar, char const *cp,
 		       char const *ls, char const *txzchk, char const *fnamchk, char const *jinfochk, char const *jauthchk);
 static char *prompt(char const *str, size_t *lenp);

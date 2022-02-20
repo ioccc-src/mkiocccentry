@@ -66,7 +66,7 @@
 /*
  * official iocccsize version
  */
-#define IOCCCSIZE_VERSION "28.7 2022-02-01"	/* use format: major.minor YYYY-MM-DD */
+#define IOCCCSIZE_VERSION "28.8 2022-02-20"	/* use format: major.minor YYYY-MM-DD */
 
 
 /*
@@ -124,28 +124,6 @@
  *	 that IOCCC_CONTEST opens may be different.
  */
 #define IOCCC_YEAR (2022)
-
-
-/*
- * rule_count() processing results
- */
-struct iocccsize {
-	off_t rule_2a_size;	/* official IOCCC Rule 2a calculated size */
-	size_t rule_2b_size;	/* official IOCCC Rule 2b calculated size */
-	size_t keywords;	/* keyword count - for -v mode */
-	bool char_warning;	/* true ==> found high-bit or non-ASCII character */
-	bool nul_warning;	/* true ==> found NUL */
-	bool trigraph_warning;	/* true ==> found an unknown Tri-Graph */
-	bool wordbuf_warning;	/* true ==> word buffer overflow detected */
-	bool ungetc_warning;	/* true ==> ungetc called too many times */
-};
-
-
-/*
- * external functions related to size
- */
-extern char const * const iocccsize_version;
-extern struct iocccsize rule_count(FILE *fp, int debug);
 
 
 #endif /* ! INCLUDE_LIMIT_IOCCC_H */
