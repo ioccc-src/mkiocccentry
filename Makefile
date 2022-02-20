@@ -82,6 +82,7 @@ SED= sed
 RPL= rpl
 SEQCEXIT = seqcexit
 TRUE= true
+CTAGS= ctags
 
 # C source standards being used
 #
@@ -130,6 +131,8 @@ TEST_TARGETS= dbg_test
 OBJFILES = dbg.o util.o mkiocccentry.o iocccsize.o fnamchk.o txzchk.o jauthchk.o jinfochk.o \
 	json.o jstrencode.o jstrdecode.o rule_count.o
 SRCFILES = $(patsubst %.o,%.c,$(OBJFILES))
+H_FILES = dbg.h jauthchk.h jinfochk.h json.h jstrdecode.h jstrencode.h limit_ioccc.h \
+	mkiocccentry.h txzchk.h util.h
 DSYMDIRS = $(patsubst %,%.dSYM,$(TARGETS))
 
 all: ${TARGETS} ${TEST_TARGETS}
@@ -296,7 +299,7 @@ clean:
 clobber: clean
 	${RM} -f ${TARGETS} ${TEST_TARGETS}
 	${RM} -f rule_count.c answers.txt j-test.out j-test2.out
-	${RM} -rf test-iocccsize test_src test_work
+	${RM} -rf test-iocccsize test_src test_work tags
 
 install: all
 	${INSTALL} -m 0555 ${TARGETS} ${DESTDIR}
@@ -321,6 +324,10 @@ test: all iocccsize-test.sh dbg_test mkiocccentry-test.sh jstr-test.sh Makefile
 	@echo "PASSED: jstr-test.sh"
 	@echo
 	@echo "All tests PASSED"
+
+tags: ${SRCFILES} ${H_FILES} Makefile
+	-${CTAGS} -- ${SRCFILES} ${H_FILES} 2>&1 | \
+	     ${GREP} -E -v 'Duplicate entry|Second entry ignored'
 
 depend:
 	@LINE="`grep -n '^### DO NOT CHANGE' Makefile|awk -F : '{print $$1}'`"; \

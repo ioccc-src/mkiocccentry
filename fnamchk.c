@@ -41,12 +41,6 @@
 
 
 /*
- * IOCCC size and rule related limitations
- */
-#include "limit_ioccc.h"
-
-
-/*
  * dbg - debug, warning and error reporting facility
  */
 #include "dbg.h"
@@ -56,6 +50,12 @@
  * util - utility functions and definitions
  */
 #include "util.h"
+
+
+/*
+ * IOCCC size and rule related limitations
+ */
+#include "limit_ioccc.h"
 
 
 /*

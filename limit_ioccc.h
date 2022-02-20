@@ -133,11 +133,11 @@ struct iocccsize {
 	off_t rule_2a_size;	/* official IOCCC Rule 2a calculated size */
 	size_t rule_2b_size;	/* official IOCCC Rule 2b calculated size */
 	size_t keywords;	/* keyword count - for -v mode */
-	int char_warning;	/* != 0 ==> found high-bit or non-ASCII character */
-	int nul_warning;	/* != 0 ==> found NUL */
-	int trigraph_warning;	/* != 0 ==> found an unknown Tri-Graph */
-	int wordbuf_warning;	/* != 0 ==> word buffer overflow detected */
-	int ungetc_warning;	/* != 0 ==> ungetc called too many times */
+	bool char_warning;	/* true ==> found high-bit or non-ASCII character */
+	bool nul_warning;	/* true ==> found NUL */
+	bool trigraph_warning;	/* true ==> found an unknown Tri-Graph */
+	bool wordbuf_warning;	/* true ==> word buffer overflow detected */
+	bool ungetc_warning;	/* true ==> ungetc called too many times */
 };
 
 

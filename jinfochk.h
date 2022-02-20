@@ -19,11 +19,6 @@
  */
 #define JINFOCHK_VERSION "0.5 2022-02-19"	/* use format: major.minor YYYY-MM-DD */
 
-/*
- * IOCCC size and rule related limitations
- */
-#include "limit_ioccc.h"
-
 
 /*
  * dbg - debug, warning and error reporting facility
@@ -40,6 +35,11 @@
  * json - json file structs
  */
 #include "json.h"
+
+/*
+ * IOCCC size and rule related limitations
+ */
+#include "limit_ioccc.h"
 
 
 /*

@@ -3,11 +3,6 @@
 
 #ifdef JAUTHCHK_C
 
-/*
- * IOCCC size and rule related limitations
- */
-#include "limit_ioccc.h"
-
 
 /*
  * dbg - debug, warning and error reporting facility
@@ -20,10 +15,18 @@
  */
 #include "util.h"
 
+
 /*
  * json - json file structs
  */
 #include "json.h"
+
+
+/*
+ * IOCCC size and rule related limitations
+ */
+#include "limit_ioccc.h"
+
 
 /*
  * definitions

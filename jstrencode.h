@@ -3,11 +3,6 @@
 
 #ifdef JSTRENCODE_C
 
-/*
- * IOCCC size and rule related limitations
- */
-#include "limit_ioccc.h"
-
 
 /*
  * dbg - debug, warning and error reporting facility
@@ -25,6 +20,12 @@
  * JSON functions supporting mkiocccentry code
  */
 #include "json.h"
+
+
+/*
+ * IOCCC size and rule related limitations
+ */
+#include "limit_ioccc.h"
 
 
 

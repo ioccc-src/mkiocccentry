@@ -106,8 +106,8 @@ static char usage1[] =
 /*
  * IOCCC size and rule related limitations
  */
-#include "limit_ioccc.h"
 #include "util.h"
+#include "limit_ioccc.h"
 
 #define STRLEN(s) LITLEN(s)
 
@@ -263,7 +263,7 @@ find_member(Word *table, char const *string)
 }
 
 static int
-read_ch(FILE *fp, int *char_warning, int *nul_warning)
+read_ch(FILE *fp, bool *char_warning, bool *nul_warning)
 {
 	int ch;
 
