@@ -306,7 +306,7 @@ clean:
 clobber: clean
 	${RM} -f ${TARGETS} ${TEST_TARGETS}
 	${RM} -f answers.txt j-test.out j-test2.out
-	${RM} -rf test-iocccsize test_src test_work tags
+	${RM} -rf test-iocccsize test_src test_work tags dbg_test.out
 
 install: all
 	${INSTALL} -m 0555 ${TARGETS} ${DESTDIR}
@@ -319,7 +319,14 @@ test: all iocccsize-test.sh dbg_test mkiocccentry-test.sh jstr-test.sh Makefile
 	@echo
 	@echo "This next test is supposed to fail with the error: FATAL[5]: main: simulated error, ..."
 	@echo "RUNNING: dbg_test"
-	-./dbg_test -v 1 -e 12 work_dir iocccsize_path
+	@${RM} -f dbg_test.out
+	@status=`./dbg_test -e 2 foo bar baz 2>dbg_test.out; echo "$$?"`; \
+	    if [ "$$status" != 3 ]; then \
+		echo "exit status of dbg_test: $$status != 3"; \
+		exit 1; \
+	    fi
+	@${GREP} -q '^FATAL\[3\]: main: simulated error, foo: foo bar: bar errno\[2\]: No such file or directory$$' dbg_test.out
+	@${RM} -f dbg_test.out
 	@echo "PASSED: dbg_test"
 	@echo
 	@echo "RUNNING: mkiocccentry-test.sh"

@@ -37,7 +37,7 @@
 /*
  * definitions
  */
-#define VERSION "1.2 2022-01-19"
+#define VERSION "1.3 2022-02-20"
 
 
 /*
@@ -53,23 +53,21 @@ int verbosity_level = DBG_DEFAULT;	/* debug level set by -v */
  * This is just an example of usage: there is no mkiocccentry functionality here.
  */
 static char const * const usage =
-"usage: %s [-h] [-v level] [-e errno] work_dir iocccsize_path [tar_path]\n"
+"usage: %s [-h] [-v level] [-e errno] foo bar [baz]\n"
 "\n"
 "\t-h\t\tprint help message and exit 0\n"
 "\t-v level\tset verbosity level: (def level: 0)\n"
 "\t-e errno\tsimulate setting of errno to cause errp() to be involved\n"
 "\n"
-"\twork_dir\ta required arg\n"
-"\tiocccsize_path\tanother required arg\n"
-"\ttar_path\tan optional arg\n"
+"\tfoo\t\ta required arg\n"
+"\tbar\t\tanother required arg\n"
+"\tbaz\t\tan optional arg\n"
 "\n"
 "NOTE: This is just a demo. Arguments are ignored and may be of any value.\n"
 "\n"
 "Version: %s";
 #endif /* DBG_TEST */
 
-
-#if !defined(DEBUG_LINT)
 
 /*
  * msg - print a generic message
@@ -604,7 +602,159 @@ vfprintf_usage(int exitcode, FILE *stream, char const *fmt, ...)
     return;
 }
 
-#endif				/* DEBUG_LINT */
+
+/*
+ * warn_or_err - issue a warning or an error depending on test
+ *
+ * given:
+ * 	exitcode	value to exit with
+ * 	name		name of function issuing the warning
+ *	test		true ==> call warn(), false ==> call err()
+ * 	fmt		format of the warning
+ * 	...		optional format args
+ *
+ * Example:
+ *
+ * 	warn_or_err(1, __func__, true, "bad foobar: %s", message);
+ *
+ * NOTE: This function does not return if test == false.
+ */
+void
+warn_or_err(int exitcode, const char *name, bool test, const char *fmt, ...)
+{
+    va_list ap;		/* argument pointer */
+
+    /*
+     * start the var arg setup and fetch our first arg
+     */
+    va_start(ap, fmt);
+
+    /*
+     * firewall
+     */
+    if (exitcode < 0) {
+	warn(__func__, "\nin err(): called with exitcode <0: %d\n", exitcode);
+	exitcode = 255;
+	warn(__func__, "\nin err(): forcing exit code: %d\n", exitcode);
+    }
+    if (name == NULL) {
+	name = "((NULL name))";
+	warn(__func__, "\nin err(): called with NULL name, forcing name: %s\n", name);
+    }
+    if (fmt == NULL) {
+	fmt = "((NULL fmt))";
+	warn(__func__, "\nin err(): called with NULL fmt, forcing fmt: %s\n", fmt);
+    }
+
+    /*
+     * case: true: call warn()
+     */
+    if (test == true) {
+
+	/*
+	 * issue a wanring as the calling function
+	 */
+	warn(name, fmt, ap);
+
+    /*
+     * case: false: call err()
+     */
+    } else {
+
+	/*
+	 * issue error message as the calling function and exit
+	 */
+	err(exitcode, name, fmt, ap);
+	not_reached();
+    }
+
+    /*
+     * clean up stdarg stuff
+     */
+    va_end(ap);
+
+    /*
+     * return for the true case
+     */
+    return;
+}
+
+
+/*
+ * warnp_or_errp - issue a warning or an error depending on test
+ *
+ * given:
+ * 	exitcode	value to exit with
+ * 	name		name of function issuing the warning
+ *	test		true ==> call warn(), false ==> call err()
+ * 	fmt		format of the warning
+ * 	...		optional format args
+ *
+ * Example:
+ *
+ * 	warnp_or_errp(1, __func__, true, "bad foobar: %s", message);
+ *
+ * NOTE: This function does not return if test == false.
+ */
+void
+warnp_or_errp(int exitcode, const char *name, bool test, const char *fmt, ...)
+{
+    va_list ap;		/* argument pointer */
+
+    /*
+     * start the var arg setup and fetch our first arg
+     */
+    va_start(ap, fmt);
+
+    /*
+     * firewall
+     */
+    if (exitcode < 0) {
+	warn(__func__, "\nin err(): called with exitcode <0: %d\n", exitcode);
+	exitcode = 255;
+	warn(__func__, "\nin err(): forcing exit code: %d\n", exitcode);
+    }
+    if (name == NULL) {
+	name = "((NULL name))";
+	warn(__func__, "\nin err(): called with NULL name, forcing name: %s\n", name);
+    }
+    if (fmt == NULL) {
+	fmt = "((NULL fmt))";
+	warn(__func__, "\nin err(): called with NULL fmt, forcing fmt: %s\n", fmt);
+    }
+
+    /*
+     * case: true: call warnp()
+     */
+    if (test == true) {
+
+	/*
+	 * issue a wanring as the calling function
+	 */
+	warnp(name, fmt, ap);
+
+    /*
+     * case: false: call errp()
+     */
+    } else {
+
+	/*
+	 * issue error message as the calling function and exit
+	 */
+	errp(exitcode, name, fmt, ap);
+	not_reached();
+    }
+
+    /*
+     * clean up stdarg stuff
+     */
+    va_end(ap);
+
+    /*
+     * return for the true case
+     */
+    return;
+}
 
 
 #if defined(DBG_TEST)
@@ -614,9 +764,9 @@ main(int argc, char *argv[])
     char *program = NULL;		/* our name */
     extern char *optarg;		/* option argument */
     extern int optind;			/* argv index of the next arg */
-    char const *work_dir = NULL;		/* where the entry directory and tarball are formed */
-    char const *tar_path = "/usr/bin/tar";	/* path to tar that supports -cjvf */
-    char const *iocccsize_path = NULL;	/* path to the iocccsize tool */
+    char const *foo = NULL;		/* where the entry directory and tarball are formed */
+    char const *bar = "/usr/bin/tar";	/* path to tar that supports -cjvf */
+    char const *baz = NULL;	/* path to the iocccsize tool */
     int forced_errno;			/* -e errno setting */
     int i;
 
@@ -664,7 +814,7 @@ main(int argc, char *argv[])
     case 2:
 	break;
     case 3:
-	tar_path = argv[optind+2];
+	bar = argv[optind+2];
 	break;
     default:
 	vfprintf_usage(DO_NOT_EXIT, stderr, "requires 2 or 3 arguments");
@@ -674,21 +824,21 @@ main(int argc, char *argv[])
 	break;
     }
     /* collect required args */
-    work_dir = argv[optind];
-    dbg(DBG_LOW, "work_dir: %s", work_dir);
-    iocccsize_path = argv[optind+1];
-    dbg(DBG_LOW, "iocccsize_path: %s", iocccsize_path);
-    dbg(DBG_LOW, "tar_path: %s", tar_path);
+    foo = argv[optind];
+    dbg(DBG_LOW, "foo: %s", foo);
+    baz = argv[optind+1];
+    dbg(DBG_LOW, "baz: %s", baz);
+    dbg(DBG_LOW, "bar: %s", bar);
 
     /*
      * simulate an error
      */
     if (errno != 0) {
 	/* exit(5); */
-	errp(3, __func__, "simulated error, work_dir: %s iocccsize_path: %s", work_dir, iocccsize_path);
+	errp(3, __func__, "simulated error, foo: %s bar: %s", foo, baz);
     }
     /* exit(6); */
-    err(4, __func__, "simulated error, work_dir: %s iocccsize_path: %s", work_dir, iocccsize_path);
+    err(4, __func__, "simulated error, foo: %s bar: %s", foo, baz);
     not_reached();
 }
 #endif /* DBG_TEST */
