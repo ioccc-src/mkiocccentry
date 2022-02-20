@@ -8,20 +8,27 @@
  *
  * SYNOPSIS
  *
- * 	iocccsize [-ihvV] prog.c
- * 	iocccsize [-ihvV] < prog.c
+ *	usage: iocccsize [-h] [-i] [-v level] [-V] prog.c
+ *	usage: iocccsize [-h] [-i] [-v level] [-V] < prog.c
  *
- *	-i	ignored for backward compatibility
- *	-h	print usage message in stderr and exit
- *	-v	turn on some debugging to stderr; -vv or -vvv for more
- *	-V	print version and exit
+ *	-i		ignored for backward compatibility
+ *	-h		print usage message in stderr and exit 2
+ *	-v level	set debug level (def: none)
+ *	-V		print version and exit 3
  *
- *	The source is written to stdout, with possible translations ie. trigraphs.
- *	The IOCCC net count rule 2b is written to stderr; with -v, net count (2b),
- *	gross count (2a), number of keywords counted as 1 byte; -vv or -vvv write
- *	more tool diagnostics.
+ *		By default,the Rule 2b count is written to stdout.
+ *		If the debug level is > 0, then the Rule 2a, Rule 2b,
+ *		and keyword count is written to stdout instead.
  *
- * DESCRIPION
+ *	Exit codes:
+ *		0 - source code is within Rule 2a and Rule 2b limits
+ *		1 - source code larger than Rule 2a and/or Rule 2b limits
+ *		2 - -h used and help printed
+ *		3 - -V used and version printed
+ *		4 - invalid command line
+ *		>= 5 - some internal error occurred
+ *
+ * DESCRIPTION
  *
  *	Reading a C source file from standard input, apply the IOCCC
  *	source size rules as explained in the Guidelines.  The source
@@ -88,7 +95,7 @@ static char usage1[] =
 "\t1 - source code larger than Rule 2a and/or Rule 2b limits\n"
 "\t2 - -h used and help printed\n"
 "\t3 - -V used and version printed\n"
-"\t4 - invalid commmand line\n"
+"\t4 - invalid command line\n"
 "\t>= 5 - some internal error occurred\n";
 
 int verbosity_level = 0;
@@ -107,7 +114,7 @@ main(int argc, char **argv)
 			break;
 
 		case 'v':
-			errno = 0;	/* pre-clear errno for errp() */
+			errno = 0;
 			verbosity_level = (int)strtol(optarg, NULL, 0);
 			if (errno != 0) {
 			    iocccsize_errx(4, "cannot parse -v arg: %s", optarg);
@@ -141,7 +148,7 @@ main(int argc, char **argv)
 		errno = 0;
 		fp = fopen(argv[optind], "r");
 		if (fp == NULL) {
-			fprintf(stderr, "freopen(%s) failed: %s\n", argv[optind], strerror(errno));
+			fprintf(stderr, "fopen(%s) failed: %s\n", argv[optind], strerror(errno));
 			exit(6); /*ooo*/
 			not_reached();
 		}

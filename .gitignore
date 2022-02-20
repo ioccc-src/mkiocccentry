@@ -12,7 +12,6 @@ jstrencode
 limit_ioccc.sh
 mkiocccentry
 orig.iocccsize
-rule_count.c
 tags
 test-iocccsize
 test-set
