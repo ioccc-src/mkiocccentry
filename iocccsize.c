@@ -79,9 +79,9 @@ static char usage0[] =
 "-V\t\tprint version and exit 3\n"
 "\n";
 static char usage1[] =
-"The IOCCC net count Rule 2b is written to stdout; with -v, net count (2b),\n"
-"gross count (2a), number of keywords counted as 1 byte; -vv or -vvv write\n"
-"more tool diagnostics.\n"
+"\tBy default,the Rule 2b count is written to stdout.\n"
+"\tIf the debug level is > 0, then the Rule 2a, Rule 2b,\n"
+"\tand keyword count is written to stdout instead.\n"
 "\n"
 "Exit codes:\n"
 "\t0 - source code is within Rule 2a and Rule 2b limits\n"
