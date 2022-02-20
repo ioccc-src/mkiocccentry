@@ -16,10 +16,6 @@
  *	-v level	set debug level (def: none)
  *	-V		print version and exit 3
  *
- *		By default,the Rule 2b count is written to stdout.
- *		If the debug level is > 0, then the Rule 2a, Rule 2b,
- *		and keyword count is written to stdout instead.
- *
  *	Exit codes:
  *		0 - source code is within Rule 2a and Rule 2b limits
  *		1 - source code larger than Rule 2a and/or Rule 2b limits
@@ -30,16 +26,14 @@
  *
  * DESCRIPTION
  *
- *	Reading a C source file from standard input, apply the IOCCC
- *	source size rules as explained in the Guidelines.  The source
- *	code is passed through on standard output.  The source's net
- *	length is written to standard error; with -v option the net
- *	length, gross length, and matched keyword count are written.
+ *	By default,the Rule 2b count is written to stdout.
+ *	If the debug level is > 0, then the Rule 2a, Rule 2b,
+ *	and keyword count is written to stdout instead.
  *
  *	The entry's gross size in bytes must be less than equal to 4096
  *	bytes in length.
  *
- *	The entry's net size in bytes must be less than equal to 2053
+ *	The entry's net size in bytes must be less than equal to 2503
  *	bytes (first prime after 2048).  The net size is computed as
  *	follows:
  *
