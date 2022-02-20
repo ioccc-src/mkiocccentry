@@ -835,10 +835,10 @@ main(int argc, char *argv[])
      */
     if (errno != 0) {
 	/* exit(5); */
-	errp(3, __func__, "simulated error, foo: %s bar: %s", foo, baz);
+	errp(5, __func__, "simulated error, foo: %s bar: %s", foo, baz);
     }
     /* exit(6); */
-    err(4, __func__, "simulated error, foo: %s bar: %s", foo, baz);
+    err(6, __func__, "simulated error, foo: %s bar: %s", foo, baz);
     not_reached();
 }
 #endif /* DBG_TEST */
