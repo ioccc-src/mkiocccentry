@@ -174,12 +174,13 @@ jstrdecode: jstrdecode.c jstrdecode.h dbg.o json.o util.o Makefile
 limit_ioccc.sh: limit_ioccc.h Makefile
 	${RM} -f $@
 	@echo '#' > $@
-	@echo '# Copies of select limit_ioccc.h values for shell script use' >> $@
+	@echo '# Copies of select limit_ioccc.h and version.h values for shell script use' >> $@
 	@echo '#' >> $@
-	${GREP} -E '^#define (RULE_|MAX_|UUID_|MIN_|_VERSION|IOCCC_)' limit_ioccc.h | \
+	${GREP} -E '^#define (RULE_|MAX_|UUID_|MIN_|IOCCC_)' limit_ioccc.h | \
 	    ${AWK} '{print $$2 "=\"" $$3 "\"" ;}' | ${TR} -d '[a-z]()' | \
 	    ${SED} -e 's/"_/"/' -e 's/""/"/g' -e 's/^/export /' >> $@
-	${GREP} -E '^#define (IOCCCSIZE_VERSION|MKIOCCCENTRY_VERSION|TIMESTAMP_EPOCH)' limit_ioccc.h | \
+	${GREP} -hE '^#define (.*_VERSION|TIMESTAMP_EPOCH)' version.h limit_ioccc.h | \
+	    ${GREP} -v 'UUID_VERSION' | \
 	    ${SED} -e 's/^#define/export/' -e 's/ "/="/' -e 's/"[	 ].*$$/"/' >> $@
 	-if ${GREP} -q '^#define DIGRAPHS' limit_ioccc.h; then \
 	    echo "export DIGRAPHS='yes'"; \
@@ -350,13 +351,17 @@ depend:
 dbg.o: dbg.c dbg.h
 util.o: util.c dbg.h util.h
 mkiocccentry.o: mkiocccentry.c mkiocccentry.h util.h json.h dbg.h \
-  limit_ioccc.h iocccsize.h
+  limit_ioccc.h version.h iocccsize.h
 iocccsize.o: iocccsize.c iocccsize_err.h iocccsize.h
-fnamchk.o: fnamchk.c dbg.h util.h limit_ioccc.h
-txzchk.o: txzchk.c txzchk.h util.h dbg.h limit_ioccc.h
-jauthchk.o: jauthchk.c jauthchk.h dbg.h util.h json.h limit_ioccc.h
-jinfochk.o: jinfochk.c jinfochk.h dbg.h util.h json.h limit_ioccc.h
-json.o: json.c dbg.h util.h limit_ioccc.h json.h
-jstrencode.o: jstrencode.c jstrencode.h dbg.h util.h json.h limit_ioccc.h
-jstrdecode.o: jstrdecode.c jstrdecode.h dbg.h util.h json.h limit_ioccc.h
+fnamchk.o: fnamchk.c dbg.h util.h limit_ioccc.h version.h
+txzchk.o: txzchk.c txzchk.h util.h dbg.h limit_ioccc.h version.h
+jauthchk.o: jauthchk.c jauthchk.h dbg.h util.h json.h limit_ioccc.h \
+  version.h
+jinfochk.o: jinfochk.c jinfochk.h dbg.h util.h json.h limit_ioccc.h \
+  version.h
+json.o: json.c dbg.h util.h limit_ioccc.h version.h json.h
+jstrencode.o: jstrencode.c jstrencode.h dbg.h util.h json.h limit_ioccc.h \
+  version.h
+jstrdecode.o: jstrdecode.c jstrdecode.h dbg.h util.h json.h limit_ioccc.h \
+  version.h
 rule_count.o: rule_count.c iocccsize_err.h iocccsize.h

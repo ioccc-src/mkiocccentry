@@ -88,6 +88,28 @@
  */
 #include "iocccsize.h"
 
+/*
+ * definitions
+ *
+ * XXX: the MKIOCCCENTRY_ANSWERS_VERSION and MKIOCCCENTRY_ANSWERS_EOF have to be
+ * defined in mkiocccentry.c
+ *
+ */
+#define REQUIRED_ARGS (4)	/* number of required arguments on the command line */
+#define ISO_3166_1_CODE_URL0 "https://en.wikipedia.org/wiki/ISO_3166-1#Officially_assigned_code_elements"
+#define ISO_3166_1_CODE_URL1 "https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2"
+#define ISO_3166_1_CODE_URL2 "https://www.iso.org/obp/ui/#iso:pub:PUB500001:en"
+#define ISO_3166_1_CODE_URL3 "https://www.iso.org/obp/ui/#search"
+#define ISO_3166_1_CODE_URL4 "https://www.iso.org/glossary-for-iso-3166.html"
+#define TAIL_TITLE_CHARS "abcdefghijklmnopqrstuvwxyz0123456789_+-"	/* [a-z0-9_+-] */
+#define IOCCC_REGISTER_URL "https://register.ioccc.org/NOT/a/real/URL"	/* XXX - change to real URL when ready */
+#define IOCCC_SUBMIT_URL "https://submit.ioccc.org/NOT/a/real/URL"	/* XXX - change to real URL when ready */
+/* XXX: The next two are for the warn_rule_2a_size() function. Do **NOT** change these values! */
+#define RULE_2A_BIG_FILE_WARNING (0)	/* warn that prog.c appears to be too big under Rule 2a */
+#define RULE_2A_IOCCCSIZE_MISMATCH (1)	/* warn that prog.c iocccsize size differs from the file size */
+
+
+
 
 /*
  * usage message
@@ -150,13 +172,13 @@ static void usage(int exitcode, char const *str, char const *program);
 static void free_info(struct info *infop);
 static void free_author_array(struct author *authorp, int author_count);
 static void warn_empty_prog(char const *prog_c);
-static void warn_rule2a_size(struct info *infop, char const *prog_c, int mode, RuleCount size);
+static void warn_rule_2a_size(struct info *infop, char const *prog_c, int mode, RuleCount size);
 static void warn_high_bit(char const *prog_c);
 static void warn_nul_chars(char const *prog_c);
 static void warn_trigraph(char const *prog_c);
 static void warn_wordbuf(char const *prog_c);
 static void warn_ungetc(char const *prog_c);
-static void warn_rule2b_size(struct info *infop, char const *prog_c);
+static void warn_rule_2b_size(struct info *infop, char const *prog_c);
 static RuleCount check_prog_c(struct info *infop, char const *entry_dir, char const *cp, char const *prog_c);
 static void sanity_chk(struct info *infop, char const *work_dir, char const *tar, char const *cp,
 		       char const *ls, char const *txzchk, char const *fnamchk, char const *jinfochk, char const *jauthchk);

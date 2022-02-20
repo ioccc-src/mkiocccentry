@@ -33,7 +33,7 @@ main(int argc, char **argv)
      * parse args
      */
     program = argv[0];
-    while ((i = getopt(argc, argv, "hv:VqsF:")) != -1) {
+    while ((i = getopt(argc, argv, "hv:VqsF:t")) != -1) {
 	switch (i) {
 	case 'h':		/* -h - print help to stderr and exit 0 */
 	    usage(1, "-h help mode", program); /*ooo*/
@@ -68,6 +68,9 @@ main(int argc, char **argv)
 	case 'F':
 	    fnamchk_flag_used = true;
 	    fnamchk = optarg;
+	    break;
+	case 't':
+	    test = true;
 	    break;
 	default:
 	    usage(1, "invalid -flag", program); /*ooo*/

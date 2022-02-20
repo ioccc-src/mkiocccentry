@@ -14,11 +14,6 @@
  */
 #define REQUIRED_ARGS (1)	/* number of required arguments on the command line */
 
-/*
- * jinfochk version
- */
-#define JINFOCHK_VERSION "0.5 2022-02-19"	/* use format: major.minor YYYY-MM-DD */
-
 
 /*
  * dbg - debug, warning and error reporting facility
@@ -48,7 +43,7 @@
  * Use the usage() function to print the these usage_msgX strings.
  */
 static const char * const usage_msg =
-"usage: %s [-h] [-v level] [-V] [-q] [-s] [-F fnamchk] file\n"
+"usage: %s [-h] [-v level] [-V] [-q] [-s] [-F fnamchk] [-t] file\n"
 "\n"
 "\t-h\t\t\tprint help message and exit 0\n"
 "\t-v level\t\tset verbosity level: (def level: %d)\n"
@@ -56,6 +51,7 @@ static const char * const usage_msg =
 "\t-q\t\t\tquiet mode\n"
 "\t-s\t\t\tstrict mode: be more strict on what is allowed (def: not strict)\n"
 "\t-F /path/to/fnamchk\tpath to fnamchk tool (def: %s)\n"
+"\t-t\t\t\ttest mode: only issue warnings in some cases\n"
 "\n"
 "\tfile\t\t\tpath to a .info.json file\n"
 "\n"
@@ -74,6 +70,7 @@ char const *program = NULL;		    /* our name */
 static bool quiet = false;		    /* true ==> quiet mode */
 static struct info info;		    /* .info.json struct */
 static bool strict = false;		    /* true ==> disallow anything before/after the '{' and '}' in the file */
+static bool test = false;		    /* true ==> issue warnings instead of errors in some cases (N.B.: not yet used) */
 
 /*
  * forward declarations
