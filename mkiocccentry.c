@@ -2061,7 +2061,7 @@ warn_high_bit(char const *prog_c)
      */
     if (need_confirm && !ignore_warnings) {
 	errno = 0;		/* pre-clear errno for warnp() */
-	ret = fprintf(stderr, "\nprog_c: %s has character(s) with high bit set!\n"
+	ret = fprintf(stderr, "\nprog_c: %s has non-ASCII and/or character(s) with high bit set!\n"
 			      "Be careful you don't violate rule 13!\n\n", prog_c);
 	if (ret <= 0) {
 	    warnp(__func__, "fprintf error when printing prog.c char_warning");
@@ -2071,7 +2071,7 @@ warn_high_bit(char const *prog_c)
 	    err(72, __func__, "please fix your prog.c file: %s", prog_c);
 	    not_reached();
 	}
-	dbg(DBG_LOW, "user says that prog.c %s having character(s) with high bit is OK", prog_c);
+	dbg(DBG_LOW, "user says that prog.c %s having non-ASCII and/or character(s) with high bit is OK", prog_c);
     }
 }
 
