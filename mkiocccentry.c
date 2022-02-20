@@ -2389,7 +2389,7 @@ check_prog_c(struct info *infop, char const *entry_dir, char const *cp, char con
 	errp(91, __func__, "failed to fopen: %s", prog_c);
 	not_reached();
     }
-    size = rule_count(prog_stream, 0);
+    size = rule_count(prog_stream);
     infop->rule_2b_size = size.rule_2b_size;
     dbg(DBG_MED, "prog.c: %s Rule 2b size: %lu", prog_c, (unsigned long)infop->rule_2b_size);
     errno = 0;			/* pre-clear errno for errp() */

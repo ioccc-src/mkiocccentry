@@ -77,7 +77,7 @@ typedef struct {
 /*
  * external functions
  */
-extern RuleCount rule_count(FILE *fp_in, int debug);
+extern RuleCount rule_count(FILE *fp_in);
 
 /*
  * global variables

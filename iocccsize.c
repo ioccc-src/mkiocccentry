@@ -155,7 +155,7 @@ main(int argc, char **argv)
 	(void) setvbuf(fp, NULL, _IOLBF, 0);
 
 	/* The Count - 1 Muha .. 2 Muhaha .. 3 Muhahaha ... */
-	count = rule_count(fp, verbosity_level);
+	count = rule_count(fp);
 	if (verbosity_level == 0) {
 		(void) printf("%ld\n", (unsigned long)count.rule_2b_size);
 	} else {
