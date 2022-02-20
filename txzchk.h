@@ -91,11 +91,6 @@ struct line {
 
 static struct line *lines;
 
-/*
- * txzchk version
- */
-#define TXZCHK_VERSION "0.7 2022-02-12"    /* use format: major.minor YYYY-MM-DD */
-
 
 /*
  * usage message
