@@ -54,17 +54,8 @@ fi
 
 # Change DIGRAPHS and TRIGRAPHS according to limit_ioccc.h
 #
-if [[ -f limit_ioccc.h ]]; then
-	if grep -q '^#define DIGRAPHS' limit_ioccc.h; then
-		DIGRAPHS='true'
-	else
-		DIGRAPHS=''
-	fi
-	if grep -q '^#define TRIGRAPHS' limit_ioccc.h; then
-		TRIGRAPHS='true'
-	else
-		TRIGRAPHS=''
-	fi
+if [[ -f limit_ioccc.sh ]]; then
+	source limit_ioccc.sh
 fi
 
 get_wc()

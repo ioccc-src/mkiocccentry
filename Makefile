@@ -181,6 +181,16 @@ limit_ioccc.sh: limit_ioccc.h Makefile
 	    ${SED} -e 's/"_/"/' -e 's/""/"/g' -e 's/^/export /' >> $@
 	${GREP} -E '^#define (IOCCCSIZE_VERSION|MKIOCCCENTRY_VERSION|TIMESTAMP_EPOCH)' limit_ioccc.h | \
 	    ${SED} -e 's/^#define/export/' -e 's/ "/="/' -e 's/"[	 ].*$$/"/' >> $@
+	-if ${GREP} -q '^#define DIGRAPHS' limit_ioccc.h; then \
+	    echo "export DIGRAPHS='yes'"; \
+	else \
+	    echo "export DIGRAPHS="; \
+	fi >> $@
+	-if ${GREP} -q '^#define TRIGRAPHS' limit_ioccc.h; then \
+	    echo "export TRIGRAPHS='yes'"; \
+	else \
+	    echo "export TRIGRAPHS="; \
+	fi >> $@
 
 seqcexit:
 	@HAVE_SEQCEXIT=`command -v seqcexit`; if [[ -z "$$HAVE_SEQCEXIT" ]]; then \
