@@ -171,7 +171,7 @@ jstrencode: jstrencode.c jstrencode.h dbg.o json.o util.o Makefile
 jstrdecode: jstrdecode.c jstrdecode.h dbg.o json.o util.o Makefile
 	${CC} ${CFLAGS} jstrdecode.c dbg.o json.o util.o -o $@
 
-limit_ioccc.sh: limit_ioccc.h Makefile
+limit_ioccc.sh: limit_ioccc.h version.h Makefile
 	${RM} -f $@
 	@echo '#' > $@
 	@echo '# Copies of select limit_ioccc.h and version.h values for shell script use' >> $@
@@ -338,6 +338,12 @@ test: all iocccsize-test.sh dbg_test mkiocccentry-test.sh jstr-test.sh Makefile
 	@echo "PASSED: jstr-test.sh"
 	@echo
 	@echo "All tests PASSED"
+
+test-mkiocccentry:
+	@echo "RUNNING: mkiocccentry-test.sh"
+	./mkiocccentry-test.sh
+	@echo "PASSED: mkiocccentry-test.sh"
+
 
 tags: ${SRCFILES} ${H_FILES} Makefile
 	-${CTAGS} -- ${SRCFILES} ${H_FILES} 2>&1 | \
