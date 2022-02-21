@@ -154,7 +154,7 @@ main(int argc, char *argv[])
 		outputlen = fwrite(buf, 1, bufsiz, stdout);
 		if (outputlen != bufsiz) {
 		    warn(__func__, "error: write of %lu bytes of arg: %d returned: %lu",
-				    bufsiz, i-optind, outputlen);
+				    (unsigned long)bufsiz, i-optind, (unsigned long)outputlen);
 		    error = true;
 		}
 	    }
@@ -201,7 +201,7 @@ main(int argc, char *argv[])
 	    outputlen = fwrite(buf, 1, bufsiz, stdout);
 	    if (outputlen != bufsiz) {
 		warn(__func__, "error: write of %lu bytes of stdin data: returned: %lu",
-			       bufsiz, (unsigned long)outputlen);
+			       (unsigned long)bufsiz, (unsigned long)outputlen);
 		error = true;
 	    }
 	    dbg(DBG_MED, "stdout write length: %lu", (unsigned long)outputlen);

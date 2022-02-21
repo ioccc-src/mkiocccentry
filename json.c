@@ -337,14 +337,15 @@ malloc_json_encode(char const *ptr, size_t len, size_t *retlen)
 	    warn(__func__, "encoding ran beyond end of malloced encoded string");
 	    return NULL;
 	}
-	strncpy(p, jenc[(uint8_t)(ptr[i])].enc, jenc[(uint8_t)(ptr[i])].len);
+	strcpy(p, jenc[(uint8_t)(ptr[i])].enc);
 	p += jenc[(uint8_t)(ptr[i])].len;
     }
 
     /*
      * return result
      */
-    dbg(DBG_VVVHIGH, "returning from malloc_json_encode(ptr, %lu, *%lu)", len, mlen);
+    dbg(DBG_VVVHIGH, "returning from malloc_json_encode(ptr, %lu, *%lu)",
+		     (unsigned long)len, (unsigned long)mlen);
     if (retlen != NULL) {
 	*retlen = mlen;
     }
@@ -849,17 +850,17 @@ jencchk(void)
     memset(str, 0, sizeof(str));    /* clear all bytes in str, including the final \0 */
     mstr = malloc_json_encode(str, 1,  &mlen);
     if (mstr == NULL) {
-	err(202, __func__, "malloc_json_encode(0x00, 1, *mlen: %lu) == NULL", mlen);
+	err(202, __func__, "malloc_json_encode(0x00, 1, *mlen: %lu) == NULL", (unsigned long)mlen);
 	not_reached();
     }
     if (mlen != jenc[0].len) {
 	err(203, __func__, "malloc_json_encode(0x00, 1, *mlen: %lu != %lu)",
-			   mlen, (unsigned long)(jenc[0].len));
+			   (unsigned long)mlen, (unsigned long)(jenc[0].len));
 	not_reached();
     }
     if (strcmp(jenc[0].enc, mstr) != 0) {
 	err(204, __func__, "malloc_json_encode(0x00, 1, *mlen: %lu) != <%s>",
-			   mlen, jenc[0].enc);
+			   (unsigned long)mlen, jenc[0].enc);
 	not_reached();
     }
     /* free the malloced encoded string */
@@ -885,16 +886,18 @@ jencchk(void)
 	mstr = malloc_json_encode_str(str, &mlen);
 	/* check encoding result */
 	if (mstr == NULL) {
-	    err(205, __func__, "malloc_json_encode_str(0x%02x, *mlen: %lu) == NULL", i, mlen);
+	    err(205, __func__, "malloc_json_encode_str(0x%02x, *mlen: %lu) == NULL",
+			       i, (unsigned long)mlen);
 	    not_reached();
 	}
 	if (mlen != jenc[i].len) {
 	    err(206, __func__, "malloc_json_encode_str(0x%02x, *mlen %lu != %lu)",
-			       i, mlen, (unsigned long)jenc[i].len);
+			       i, (unsigned long)mlen, (unsigned long)jenc[i].len);
 	    not_reached();
 	}
 	if (strcmp(jenc[i].enc, mstr) != 0) {
-	    err(207, __func__, "malloc_json_encode_str(0x%02x, *mlen: %lu) != <%s>", i, mlen, jenc[i].enc);
+	    err(207, __func__, "malloc_json_encode_str(0x%02x, *mlen: %lu) != <%s>", i,
+			       (unsigned long)mlen, jenc[i].enc);
 	    not_reached();
 	}
 	dbg(DBG_VVHIGH, "testing malloc_json_encode_str(0x%02x, *mlen) encoded to <%s>", i, mstr);
@@ -906,16 +909,18 @@ jencchk(void)
 	/* test malloc_json_decode_str() */
 	mstr2 = malloc_json_decode_str(mstr, &mlen2, true);
 	if (mstr2 == NULL) {
-	    err(208, __func__, "malloc_json_decode_str(<%s>, *mlen: %lu, true) == NULL", mstr, mlen2);
+	    err(208, __func__, "malloc_json_decode_str(<%s>, *mlen: %lu, true) == NULL",
+			       mstr, (unsigned long)mlen2);
 	    not_reached();
 	}
 	if (mlen2 != 1) {
-	    err(209, __func__, "malloc_json_decode_str(<%s>, *mlen2 %lu != 1, true)", mstr, mlen2);
+	    err(209, __func__, "malloc_json_decode_str(<%s>, *mlen2 %lu != 1, true)",
+			       mstr, (unsigned long)mlen2);
 	    not_reached();
 	}
 	if ((uint8_t)(mstr2[0]) != i) {
 	    err(210, __func__, "malloc_json_decode_str(<%s>, *mlen: %lu, true): 0x%02x != 0x%02x",
-			       mstr, mlen2, (uint8_t)(mstr2[0]), i);
+			       mstr, (unsigned long)mlen2, (uint8_t)(mstr2[0]), i);
 	    not_reached();
 	}
 
@@ -926,16 +931,18 @@ jencchk(void)
 	/* test malloc_json_decode_str() */
 	mstr3 = malloc_json_decode_str(mstr, &mlen3, false);
 	if (mstr3 == NULL) {
-	    err(211, __func__, "malloc_json_decode_str(<%s>, *mlen: %lu, false) == NULL", mstr, mlen3);
+	    err(211, __func__, "malloc_json_decode_str(<%s>, *mlen: %lu, false) == NULL",
+			       mstr, (unsigned long)mlen3);
 	    not_reached();
 	}
 	if (mlen3 != 1) {
-	    err(212, __func__, "malloc_json_decode_str(<%s>, *mlen3 %lu != 1, false)", mstr, mlen3);
+	    err(212, __func__, "malloc_json_decode_str(<%s>, *mlen3 %lu != 1, false)",
+			       mstr, (unsigned long)mlen3);
 	    not_reached();
 	}
 	if ((uint8_t)(mstr3[0]) != i) {
 	    err(213, __func__, "malloc_json_decode_str(<%s>, *mlen: %lu, false): 0x%02x != 0x%02x",
-			       mstr, mlen3, (uint8_t)(mstr3[0]), i);
+			       mstr, (unsigned long)mlen3, (uint8_t)(mstr3[0]), i);
 	    not_reached();
 	}
 
@@ -1075,7 +1082,7 @@ malloc_json_decode(char const *ptr, size_t len, size_t *retlen, bool strict)
 		/*
 		 * disallow characters that should have been escaped
 		 */
-		if ((c >= 0x00 && c <= 0x1f) || c >= 0x7f) {
+		if (c <= 0x1f || c >= 0x7f) {
 		    /* error - clear malloced length */
 		    if (retlen != NULL) {
 			*retlen = 0;
@@ -1465,7 +1472,8 @@ malloc_json_decode(char const *ptr, size_t len, size_t *retlen, bool strict)
     /*
      * return result
      */
-    dbg(DBG_VVVHIGH, "returning from malloc_json_decode(ptr, %lu, *%lu)", len, mlen);
+    dbg(DBG_VVVHIGH, "returning from malloc_json_decode(ptr, %lu, *%lu)",
+		     (unsigned long)len, (unsigned long)mlen);
     if (retlen != NULL) {
 	*retlen = mlen;
     }
