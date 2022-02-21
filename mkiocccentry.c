@@ -822,9 +822,9 @@ free_info(struct info *infop)
 	free(infop->epoch);
 	infop->epoch = NULL;
     }
-    if (infop->gmtime != NULL) {
-	free(infop->gmtime);
-	infop->gmtime = NULL;
+    if (infop->utctime != NULL) {
+	free(infop->utctime);
+	infop->utctime = NULL;
     }
     return;
 }
@@ -5326,7 +5326,7 @@ write_info(struct info *infop, char const *entry_dir, bool test_mode, char const
     size_t info_path_len;	/* length of path to .info.json */
     FILE *info_stream;		/* open write stream to the .info.json file */
     size_t asctime_len;		/* length of asctime() string without the trailing newline */
-    size_t gmtime_len;		/* length of gmtime string (gmtime() + " UTC") */
+    size_t utctime_len;		/* length of utctime string (utctime() + " UTC") */
     int ret;			/* libc function return */
     char **q;			/* extra filename array pointer */
     char *p;
@@ -5394,16 +5394,16 @@ write_info(struct info *infop, char const *entry_dir, bool test_mode, char const
 	not_reached();
     }
     asctime_len = strlen(p) - 1; /* -1 to remove trailing newline */
-    gmtime_len = strlen(p) + 1 + LITLEN("UTC") + 1;
+    utctime_len = strlen(p) + 1 + LITLEN("UTC") + 1;
     errno = 0;			/* pre-clear errno for errp() */
-    infop->gmtime = (char *)calloc(gmtime_len + 1, 1);
-    if (infop->gmtime == NULL) {
-	errp(194, __func__, "calloc of %lu bytes failed", (unsigned long)gmtime_len + 1);
+    infop->utctime = (char *)calloc(utctime_len + 1, 1);
+    if (infop->utctime == NULL) {
+	errp(194, __func__, "calloc of %lu bytes failed", (unsigned long)utctime_len + 1);
 	not_reached();
     }
-    (void) strncat(infop->gmtime, p, asctime_len);
-    (void) strcat(infop->gmtime, " UTC");
-    dbg(DBG_VVHIGH, "infop->gmtime: %s", infop->gmtime);
+    (void) strncat(infop->utctime, p, asctime_len);
+    (void) strcat(infop->utctime, " UTC");
+    dbg(DBG_VVHIGH, "infop->utctime: %s", infop->utctime);
 
     /*
      * open .info.json for writing
@@ -5503,7 +5503,7 @@ write_info(struct info *infop, char const *entry_dir, bool test_mode, char const
 	json_fprintf_value_long(info_stream, "\t", "formed_timestamp_usec", " : ", (long)infop->usec, ",\n") &&
 	json_fprintf_value_string(info_stream, "\t", "timestamp_epoch", " : ", infop->epoch, ",\n") &&
 	json_fprintf_value_long(info_stream, "\t", "min_timestamp", " : ", MIN_TIMESTAMP, ",\n") &&
-	json_fprintf_value_string(info_stream, "\t", "formed_UTC", " : ", infop->gmtime, "\n") &&
+	json_fprintf_value_string(info_stream, "\t", "formed_UTC", " : ", infop->utctime, "\n") &&
 	fprintf(info_stream, "}\n") > 0;
     if (!ret) {
 	errp(201, __func__, "fprintf error writing trailing part of info to %s", info_path);
@@ -5698,7 +5698,7 @@ write_author(struct info *infop, int author_count, struct author *authorp, char 
 	json_fprintf_value_long(author_stream, "\t", "formed_timestamp_usec", " : ", (long)infop->usec, ",\n") &&
 	json_fprintf_value_string(author_stream, "\t", "timestamp_epoch", " : ", infop->epoch, ",\n") &&
 	json_fprintf_value_long(author_stream, "\t", "min_timestamp", " : ", MIN_TIMESTAMP, ",\n") &&
-	json_fprintf_value_string(author_stream, "\t", "formed_UTC", " : ", infop->gmtime, "\n") &&
+	json_fprintf_value_string(author_stream, "\t", "formed_UTC", " : ", infop->utctime, "\n") &&
 	fprintf(author_stream, "}\n") > 0;
     if (!ret) {
 	errp(217, __func__, "fprintf error writing trailing part of authorship to %s", author_path);
