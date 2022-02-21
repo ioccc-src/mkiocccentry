@@ -347,7 +347,7 @@ check_info_json(char const *file, char const *fnamchk)
     /* skip past the initial opening brace */
     ++p;
 
-    /* 
+    /*
      * Begin to parse the file, field by field (if it's not a validly formed
      * JSON file an error will occur and the loop will be aborted).
      */
@@ -379,7 +379,7 @@ check_info_json(char const *file, char const *fnamchk)
 	    *end = '\0';
 
 
-	/* 
+	/*
 	 * after removing the spaces and a single '"' at the beginning and end,
 	 * if we find a '"' in the field we know it's erroneous: thus we can
 	 * simply use strcmp() on it. Note that when we get to the array(s) we
@@ -394,7 +394,7 @@ check_info_json(char const *file, char const *fnamchk)
 	 */
 	if (!strcmp(p, "manifest")) {
 	    /* TODO: handle the array */
-	   
+
 	    /* The below is only done to prevent infinite loop which occurs in
 	     * some cases (e.g. when "manifest" is at the top of the file) until
 	     * arrays are handled; when arrays are handled this will be changed.
@@ -422,7 +422,7 @@ check_info_json(char const *file, char const *fnamchk)
 	    while (*end && isspace(*end))
 		*end-- = '\0';
 
-	    /* 
+	    /*
 	     * Depending on the field, remove a single '"' at the beginning and
 	     * end of the value.
 	     */
@@ -441,8 +441,8 @@ check_info_json(char const *file, char const *fnamchk)
 		    end = value + strlen(value) - 1;
 		    if (*end == '"')
 			*end = '\0';
-		    
-		    /* 
+
+		    /*
 		     * after removing the spaces and a single '"' at the beginning and end,
 		     * if we find a '"' in the field we know it's erroneous.
 		     */
@@ -455,7 +455,8 @@ check_info_json(char const *file, char const *fnamchk)
 		    err(22, __func__, "title length zero");
 		    not_reached();
 		} else if (value_length > MAX_TITLE_LEN) {
-		    err(23, __func__, "title length %lu > max %d", value_length, MAX_TITLE_LEN);
+		    err(23, __func__, "title length %lu > max %d",
+				      (unsigned long)value_length, MAX_TITLE_LEN);
 		    not_reached();
 		}
 
@@ -475,7 +476,8 @@ check_info_json(char const *file, char const *fnamchk)
 		    err(26, __func__, "abstract value zero length");
 		    not_reached();
 		} else if (value_length > MAX_ABSTRACT_LEN) {
-		    err(27, __func__, "abstract length %lu > max %d", value_length, MAX_ABSTRACT_LEN);
+		    err(27, __func__, "abstract length %lu > max %d",
+				      (unsigned long)value_length, MAX_ABSTRACT_LEN);
 		    not_reached();
 		}
 	    } else if (!strcmp(p, "tarball")) {
@@ -496,7 +498,7 @@ check_info_json(char const *file, char const *fnamchk)
 		}
 	    } else {
 	    }
-	
+
 	    dbg(DBG_MED, "found field '%s' with value '%s'", p, value);
 	}
     } while (true);

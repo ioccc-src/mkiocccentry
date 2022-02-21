@@ -78,6 +78,7 @@
 #include <sys/types.h>
 #include <sys/wait.h> /* for WEXITSTATUS() */
 #include <fcntl.h> /* for open() */
+#include <string.h> /* for strdup() */
 
 /*
  * Our header file - #includes the header files we need
@@ -5380,10 +5381,6 @@ write_info(struct info *infop, char const *entry_dir, bool test_mode, char const
     timeptr = localtime(&(infop->tstamp));
     if (timeptr == NULL) {
 	errp(191, __func__, "localtime #1 returned NULL");
-	not_reached();
-    }
-    if (timeptr->tm_zone == NULL) {
-	err(192, __func__, "timeptr->tm_zone #1 is NULL");
 	not_reached();
     }
 

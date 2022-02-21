@@ -88,7 +88,7 @@ CTAGS= ctags
 #
 # NOTE: feature test macros are required for some systems: e.g., CentOS
 #
-STD_SRC= -D_DEFAULT_SOURCE -D_POSIX_C_SOURCE=200809L -D_XOPEN_SOURCE -std=c99
+STD_SRC= -D_DEFAULT_SOURCE -D_POSIX_C_SOURCE=200809L -D_XOPEN_SOURCE -std=gnu11
 
 # optimization and debug level
 #
