@@ -439,7 +439,7 @@ check_author_json(char const *file, char const *fnamchk)
 		 */
 	    }
 	    /* handle regular field */
-	    if (check_common_json_fields(file, p, value)) {
+	    if (check_common_json_fields("jauthchk", file, fnamchk, p, value)) {
 	    } else {
 		/* TODO: after everything else is parsed if we get here it's an
 		 * error as there's invalid fields in the file.

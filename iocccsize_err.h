@@ -40,7 +40,7 @@ extern "C" {
  * For example, MSVC, TenDRA and Little C Compiler doesn't support __attribute__.
  * Early gcc does not support __attribute__.
  *
- * Not all compiles have __has_builtin
+ * Not all compilers have __has_builtin
  *
  * __func__ is not supported prior to C99.
  */

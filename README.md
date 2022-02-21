@@ -2,6 +2,7 @@
 
 *NOTE*: This code is currently under alpha-test.
 
+
 ## mkiocccentry
 
 Form an **IOCCC** entry as a compressed tarball file.
@@ -22,7 +23,7 @@ This code is based on code by @SirWumpus (*Anthony Howe*):
 
 For more information and examples, try:
 
-	    
+
 	    man ./iocccsize.1
 
 
@@ -45,3 +46,26 @@ For more information and examples, try:
 
 
 	    man ./fnamechk.1
+
+
+##  jinfochk
+
+The official **IOCCC** .info.json sanity checker tool.
+
+For more information and examples, try:
+
+
+	    man ./jinfochk.1
+
+
+##  jauthchk
+
+The official **IOCCC** .author.json sanity checker tool.
+
+For more information and examples, try:
+
+
+	    man ./jauthchk.1
+
+
+

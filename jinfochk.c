@@ -272,6 +272,8 @@ check_info_json(char const *file, char const *fnamchk)
     char *end = NULL;	/* temporary use: end of strings (p, field) for removing spaces */
     char *value = NULL;	/* current field's value being parsed */
     char *savefield = NULL; /* for strtok_r() usage */
+    size_t value_length;    /* length of current value */
+    size_t span;
 
     /*
      * firewall
@@ -445,11 +447,39 @@ check_info_json(char const *file, char const *fnamchk)
 		     * if we find a '"' in the field we know it's erroneous.
 		     */
 	    }
+	    value_length = strlen(value);
 	    /* handle regular field */
-	    if (check_common_json_fields(file, p, value)) {
+	    if (check_common_json_fields("jinfochk", file, fnamchk, p, value)) {
 	    } else if (!strcmp(p, "title")) {
+		if (value_length == 0) {
+		    err(22, __func__, "title length zero");
+		    not_reached();
+		} else if (value_length > MAX_TITLE_LEN) {
+		    err(23, __func__, "title length %lu > max %d", value_length, MAX_TITLE_LEN);
+		    not_reached();
+		}
+
+		/* check for valid chars only */
+		if (!isascii(value[0]) || (!islower(value[0]) && !isdigit(value[0]))) {
+		    err(24, __func__, "first char of title '%c' invalid", value[0]);
+		    not_reached();
+		} else {
+		    span = strspn(value, TAIL_TITLE_CHARS);
+		    if (span != value_length) {
+			err(25, __func__, "invalid chars found in title \"%s\"", value);
+			not_reached();
+		    }
+		}
 	    } else if (!strcmp(p, "abstract")) {
+		if (value_length == 0) {
+		    err(26, __func__, "abstract value zero length");
+		    not_reached();
+		} else if (value_length > MAX_ABSTRACT_LEN) {
+		    err(27, __func__, "abstract length %lu > max %d", value_length, MAX_ABSTRACT_LEN);
+		    not_reached();
+		}
 	    } else if (!strcmp(p, "tarball")) {
+
 	    } else if (!strcmp(p, "rule_2a_size")) {
 	    } else if (!strcmp(p, "rule_2b_size")) {
 	    } else if (!strcmp(p, "empty_override") || !strcmp(p, "rule_2a_override") ||
@@ -461,7 +491,7 @@ check_info_json(char const *file, char const *fnamchk)
 	      !strcmp(p, "found_clean_rule") || !strcmp(p, "found_clobber_rule") ||
 	      !strcmp(p, "found_try_rule") || !strcmp(p, "test_mode")) {
 		if (strcmp(value, "false") && strcmp(value, "true")) {
-		    err(22, __func__, "found non-boolean value '%s' for boolean '%s' in file %s", value,  p, file);
+		    err(28, __func__, "found non-boolean value '%s' for boolean '%s' in file %s", value,  p, file);
 		    not_reached();
 		}
 	    } else {

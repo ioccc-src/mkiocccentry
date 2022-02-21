@@ -5,7 +5,7 @@
 /*
  * official iocccsize version
  */
-#define IOCCCSIZE_VERSION "28.7 2022-02-01"	/* use format: major.minor YYYY-MM-DD */
+#define IOCCCSIZE_VERSION "28.8 2022-02-20"	/* use format: major.minor YYYY-MM-DD */
 
 
 /*

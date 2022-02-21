@@ -1662,8 +1662,10 @@ json_filename(int type)
  *				    and author.json and check the value if it is
  *
  * given:
- *
+ *	
+ *	name	- which util called this (jinfochk or jauthchk)
  *	file	- the file being parsed (path to)
+ *	fnamchk	- path to fnamchk util
  *	field	- the field name
  *	value	- the value of the field
  *
@@ -1673,20 +1675,25 @@ json_filename(int type)
  *
  * Does not return on error (NULL pointers).
  */
-int check_common_json_fields(char const *file, char const *field, char const *value)
+int check_common_json_fields(char const *name, char const *file, char const *fnamchk, char *field, char *value)
 {
     int ret = 1;
     int year = 0;
     int entry_num = -1;
     long ts = 0;
+    struct tm tm;
+    char *p, *cmd;
+    int exit_code;
 
     /*
      * firewall
      */
-    if (file == NULL || field == NULL || value == NULL) {
+    if (name == NULL || file == NULL || fnamchk == NULL || field == NULL || value == NULL) {
 	err(218, __func__, "passed NULL arg(s)");
 	not_reached();
     }
+
+    memset(&tm, 0, sizeof tm);
 
     if (!strcmp(field, "IOCCC_info_version")) {
 	if (strcmp(value, INFO_VERSION)) {
@@ -1699,74 +1706,108 @@ int check_common_json_fields(char const *file, char const *field, char const *va
 	    not_reached();
 	}
     } else if (!strcmp(field, "ioccc_year")) {
-	errno = 0;
-	year = (int)strtol(value, NULL, 10);
-	if (errno != 0) {
-	    err(221, __func__, "parsing ioccc_year \"%s\" in file %s", value, file);
-	    not_reached();
-	} else if (year != IOCCC_YEAR) {
-	    err(222, __func__, "ioccc_year %d != IOCCC_YEAR %d", year, IOCCC_YEAR);
+	year = string_to_int(value);
+	if (year != IOCCC_YEAR) {
+	    err(221, __func__, "ioccc_year %d != IOCCC_YEAR %d", year, IOCCC_YEAR);
 	    not_reached();
 	}
     } else if (!strcmp(field, "mkiocccentry_version")) {
 	if (strcmp(value, MKIOCCCENTRY_VERSION)) {
-	    err(223, __func__, "mkiocccentry_version \"%s\" != MKIOCCCENTRY_VERSION \"%s\"", value, MKIOCCCENTRY_VERSION);
+	    err(222, __func__, "mkiocccentry_version \"%s\" != MKIOCCCENTRY_VERSION \"%s\"", value, MKIOCCCENTRY_VERSION);
 	    not_reached();
 	}
     } else if (!strcmp(field, "iocccsize_version")) {
 	if (strcmp(value, IOCCCSIZE_VERSION)) {
-	    err(224, __func__, "iocccsize_version \"%s\" != IOCCCSIZE_VERSION \"%s\"", value, IOCCCSIZE_VERSION);
+	    err(223, __func__, "iocccsize_version \"%s\" != IOCCCSIZE_VERSION \"%s\"", value, IOCCCSIZE_VERSION);
 	    not_reached();
 	}
     } else if (!strcmp(field, "IOCCC_contest_id")) {
-	/* TODO add handling of IOCCC_contest_id field */
-    } else if (!strcmp(field, "min_timestamp")) {
-	errno = 0;
-	ts = strtol(value, NULL, 10);
-	if (errno != 0) {
-	    err(225, __func__, "unable to parse min_timestamp \"%s\"", value);
+	if (!valid_contest_id(value)) {
+	    err(224, __func__, "IOCCC_contest_id \"%s\" is invalid", value);
 	    not_reached();
-	} else if (ts != MIN_TIMESTAMP) {
-	    err(226, __func__, "min_timestamp '%ld' != MIN_TIMESTAMP '%ld'", ts, MIN_TIMESTAMP);
+	}
+    } else if (!strcmp(field, "min_timestamp")) {
+	ts = string_to_long(value);
+	if (ts != MIN_TIMESTAMP) {
+	    err(225, __func__, "min_timestamp '%ld' != MIN_TIMESTAMP '%ld'", ts, MIN_TIMESTAMP);
 	    not_reached();
 	}
     } else if (!strcmp(field, "timestamp_epoch")) {
 	if (strcmp(value, TIMESTAMP_EPOCH)) {
-	    err(227, __func__, "timestamp_epoch \"%s\" != TIMESTAMP_EPOCH \"%s\"", value, TIMESTAMP_EPOCH);
+	    err(226, __func__, "timestamp_epoch \"%s\" != TIMESTAMP_EPOCH \"%s\"", value, TIMESTAMP_EPOCH);
 	    not_reached();
 	}
     } else if (!strcmp(field, "formed_timestamp_usec")) {
 	errno = 0;
-	ts = strtol(value, NULL, 10);
-	if (errno != 0) {
-	    err(228, __func__, "unable to parse min_timestamp \"%s\"", value);
-	    not_reached();
-	} else if (ts < 0 || ts > 999999) {
-	    err(229, __func__, "formed_timestamp_usec '%ld' out of range of >= 0 && <= 999999", ts);
+	ts = string_to_long(value);
+	if (ts < 0 || ts > 999999) {
+	    err(227, __func__, "formed_timestamp_usec '%ld' out of range of >= 0 && <= 999999", ts);
 	    not_reached();
 	}
     } else if (!strcmp(field, "entry_num")) {
-	errno = 0;
-	entry_num = (int)strtol(value, NULL, 10);
-	if (errno != 0) {
-	    err(230, __func__, "parsing entry_num \"%s\" in file %s", value, file);
-	    not_reached();
-	} else if (!(entry_num >= 0 && entry_num <= MAX_ENTRY_NUM)) {
-	    err(231, __func__, "entry number %d out of range", entry_num);
+	entry_num = string_to_int(value);
+	if (!(entry_num >= 0 && entry_num <= MAX_ENTRY_NUM)) {
+	    err(228, __func__, "entry number %d out of range", entry_num);
 	    not_reached();
 	}
     } else if (!strcmp(field, "formed_UTC")) {
-	/* TODO add this check */
-    } else if (!strcmp(field, "formed_timestamp")) {
-	errno = 0;
-	ts = strtol(value, NULL, 10);
-	if (errno != 0) {
-	    err(232, __func__, "unable to parse formed_timestamp \"%s\"", value);
-	    not_reached();
-	} else if (ts < MIN_TIMESTAMP) {
-	    err(233, __func__, "formed_timestamp '%ld' < MIN_TIMESTAMP '%ld'", ts, MIN_TIMESTAMP);
+    	p = strptime(value, FORMED_UTC_FMT, &tm);
+	if (p == NULL) {
+	    err(229, __func__, "formed_UTC \"%s\" does not match FORMED_UTC_FMT \"%s\"", value, FORMED_UTC_FMT);
 	    not_reached();
 	}
+    } else if (!strcmp(field, "formed_timestamp")) {
+	ts = string_to_long(value);
+	if (ts < MIN_TIMESTAMP) {
+	    err(230, __func__, "formed_timestamp '%ld' < MIN_TIMESTAMP '%ld'", ts, MIN_TIMESTAMP);
+	    not_reached();
+	}
+    } else if (!strcmp(field, "tarball")) {
+	/* form command line to fnamchk */
+	errno = 0;			/* pre-clear errno for errp() */
+	cmd = cmdprintf("% % >/dev/null", fnamchk, value);
+	if (cmd == NULL) {
+	    err(231, __func__, "failed to cmdprintf: fnamchk %s", value);
+	    not_reached();
+	}
+	dbg(DBG_HIGH, "about to perform: system(%s)", cmd);
+
+	/*
+	 * pre-flush to avoid system() buffered stdio issues
+	 */
+	clearerr(stdout);		/* pre-clear ferror() status */
+	errno = 0;			/* pre-clear errno for errp() */
+	ret = fflush(stdout);
+	if (ret < 0) {
+	    errp(232, __func__, "fflush(stdout) error code: %d", ret);
+	    not_reached();
+	}
+	errno = 0;			/* pre-clear errno for errp() */
+	clearerr(stderr);		/* pre-clear ferror() status */
+	errno = 0;			/* pre-clear errno for errp() */
+	ret = fflush(stderr);
+	if (ret < 0) {
+	    errp(233, __func__, "fflush(stderr) #1: error code: %d", ret);
+	    not_reached();
+	}
+
+	/*
+	 * execute the fnamchk command
+	 */
+	errno = 0;			/* pre-clear errno for errp() */
+	exit_code = system(cmd);
+	if (exit_code < 0) {
+	    errp(234, __func__, "%s: %s: error calling system(%s)", name, value, cmd);
+	    not_reached();
+	} else if (exit_code == 127) {
+	    errp(235, __func__, "%s: execution of the shell failed for system(%s)", name, cmd);
+	    not_reached();
+	} else if (exit_code != 0) {
+	    err(236, __func__, "%s: %s: failed with exit code: %d", name, cmd, WEXITSTATUS(exit_code));
+	    not_reached();
+	}
+
+
     } else {
 	ret = 0;
     }

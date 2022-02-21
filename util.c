@@ -42,7 +42,8 @@
 #include <unistd.h>
 #include <sys/stat.h>
 #include <stdint.h>
-
+#include <limits.h>
+#include <errno.h>
 
 /*
  * dbg - debug, warning and error reporting facility
@@ -55,6 +56,11 @@
  */
 #include "util.h"
 
+
+/*
+ * IOCCC limits
+ */
+#include "limit_ioccc.h"
 
 /*
  * location/country codes
@@ -1782,4 +1788,175 @@ strnull(char const * const str)
 	return str;
     }
     return NULL;
+}
+
+/* string_to_long   -	convert str to long and check for errors
+ *
+ * given:
+ *
+ *	str	-   the string to convert to a long int.
+ *
+ * Returns string 'str' as a long int.
+ *
+ * Does not return on error or NULL pointer.
+ */
+long string_to_long(char const *str)
+{
+    long long num; /* use a long long for overflow/underflow checks */
+
+    /*
+     * firewall
+     */
+    if (str == NULL) {
+	err(142, __func__, "passed NULL arg");
+	not_reached();
+    }
+
+    errno = 0;
+    num = strtoll(str, NULL, 10);
+
+    if (errno != 0) {
+	errp(143, __func__, "error converting string \"%s\" to long int: %s", str, strerror(errno));
+	not_reached();
+    }
+    else if (num < LONG_MIN || num > LONG_MAX) {
+	err(144, __func__, "number %s out of range for long int (must be >= %ld && <= %ld)", str, LONG_MIN, LONG_MAX);
+	not_reached();
+    }
+    return (long)num;
+}
+
+/* string_to_long_long   -	convert str to long long and check for errors
+ *
+ * given:
+ *
+ *	str	-   the string to convert to a long long int.
+ *
+ * Returns string 'str' as a long long int.
+ *
+ * Does not return on error or NULL pointer.
+ */
+long long string_to_long_long(char const *str)
+{
+    long long num;
+
+    /*
+     * firewall
+     */
+    if (str == NULL) {
+	err(145, __func__, "passed NULL arg");
+	not_reached();
+    }
+
+    errno = 0;
+    num = strtoll(str, NULL, 10);
+
+    if (errno != 0) {
+	errp(146, __func__, "error converting string \"%s\" to long long int: %s", str, strerror(errno));
+	not_reached();
+    }
+    else if (num <= LLONG_MIN || num >= LLONG_MAX) {
+	err(147, __func__, "number %s out of range for long long int (must be > %lld && < %lld)", str, LLONG_MIN, LLONG_MAX);
+	not_reached();
+    }
+    return num;
+}
+/* string_to_int   -	convert str to int and check for errors
+ *
+ * given:
+ *
+ *	str	-   the string to convert to an int.
+ *
+ * Returns string 'str' as an int.
+ *
+ * Does not return on error or NULL pointer.
+ */
+int string_to_int(char const *str)
+{
+    long long num; /* use a long long for overflow/underflow checks */
+
+    /*
+     * firewall
+     */
+    if (str == NULL) {
+	err(148, __func__, "passed NULL arg");
+	not_reached();
+    }
+
+    errno = 0;
+    num = (int)strtoll(str, NULL, 10);
+
+    if (errno != 0) {
+	errp(149, __func__, "error converting string \"%s\" to int: %s", str, strerror(errno));
+	not_reached();
+    }
+    else if (num < INT_MIN || num > INT_MAX) {
+	err(150, __func__, "number %s out of range for int (must be >= %d && <= %d)", str, INT_MIN, INT_MAX);
+	not_reached();
+    }
+    return (int)num;
+}
+
+/* valid_contest_id	    -	validate string as a contest ID
+ *
+ * given:
+ *
+ *	str	    -	string to test
+ *
+ * Returns true if it's valid.
+ *
+ * Returns false if it's invalid, NULL or empty string.
+ */
+bool valid_contest_id(char *str)
+{
+    size_t len;			/* input string length */
+    int ret;			/* libc function return */
+    unsigned int a, b, c, d, e, f;	/* parts of the UUID string */
+    unsigned int version = 0;	/* UUID version hex character */
+    unsigned int variant = 0;	/* UUID variant hex character */
+    char guard;			/* scanf guard to catch excess amount of input */
+    size_t i;
+
+    if (str == NULL || strlen(str) == 0) {
+	return false;
+    }
+
+    if (!strcmp(str, "test")) {
+	/*
+	 * special case: test is valid
+	 */
+	return true;
+    }
+    len = strlen(str);
+
+    /*
+     * validate format of non-test contest ID.  The contest ID, if not "test"
+     * must be a UUID.  The UUID has the 36 character format:
+     *
+     *	    xxxxxxxx-xxxx-4xxx-axxx-xxxxxxxxxxxx
+     *
+     * where 'x' is a hex character.  The 4 is the UUID version and the variant
+     * 1.
+     */
+    if (len != UUID_LEN) {
+	return false;
+    }
+
+    /* convert to UUID lower case before checking */
+    for (i = 0; i < len; ++i) {
+	str[i] = (char)tolower(str[i]);
+    }
+    dbg(DBG_VHIGH, "converted the IOCCC contest ID to: %s", str);
+    /* validate UUID string, version and variant */
+    ret = sscanf(str, "%8x-%4x-%1x%3x-%1x%3x-%8x%4x%c", &a, &b, &version, &c, &variant, &d, &e, &f, &guard);
+    dbg(DBG_HIGH, "UUID version hex char: %1x", version);
+    dbg(DBG_HIGH, "UUID variant hex char: %1x", variant);
+    if (ret != 8 || version != UUID_VERSION || variant != UUID_VARIANT) {
+	return false;
+    }
+
+
+    dbg(DBG_MED, "IOCCC contest ID is a UUID: %s", str);
+
+    return true;
 }

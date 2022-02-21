@@ -3,12 +3,13 @@
 	"ioccc_contest" : "IOCCCMOCK",
 	"ioccc_year" : 2022,
 	"mkiocccentry_version" : "0.36 2022-02-18",
-	"iocccsize_version" : "28.8 2022-02-20",
-	"IOCCC_contest_id" : "12345678-1234-4321-abcd-1234567890ab",
+	"iocccsize_version" : "28.7 2022-02-01",
+	"IOCCC_contest_id" : "test",
 	"entry_num" : 0,
+	"author_count" : 5,
 	"title" : "title-for-entry0",
-	"abstract" : "null",
-	"tarball" : "entry.12345678-1234-4321-abcd-1234567890ab-0.1645212226.txz",
+	"abstract" : "abstract for entry #0",
+	"tarball" : "entry.test-0.1645375089.txz",
 	"rule_2a_size" : 0,
 	"rule_2b_size" : 0,
 	"empty_override" : true,
@@ -26,7 +27,7 @@
 	"found_clean_rule" : true,
 	"found_clobber_rule" : true,
 	"found_try_rule" : true,
-	"test_mode" : false,
+	"test_mode" : true,
 	"manifest" : [
 		{"info_JSON" : ".info.json"},
 		{"author_JSON" : ".author.json"},
@@ -36,9 +37,9 @@
 		{"extra_file" : "extra1"},
 		{"extra_file" : "extra2"}
 	],
-	"formed_timestamp" : 1645212226,
-	"formed_timestamp_usec" : 13685,
+	"formed_timestamp" : 1645375089,
+	"formed_timestamp_usec" : 108952,
 	"timestamp_epoch" : "Thu Jan  1 00:00:00 1970 UTC",
 	"min_timestamp" : 1643987926,
-	"formed_UTC" : "Fri Feb 18 19:23:46 2022 UTC"
+	"formed_UTC" : "Sun Feb 20 16:38:09 2022 GMT"
 }
