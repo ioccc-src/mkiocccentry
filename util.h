@@ -110,5 +110,8 @@ extern char *malloc_json_str(char const *str, size_t *retlen);
 extern void jencchk(void);
 extern void *read_all(FILE *stream, size_t *psize);
 extern char const * strnull(char const * const str);
+extern long string_to_long(char const *str);
+extern long long string_to_long_long(char const *str);
+extern int string_to_int(char const *str);
 
 #endif				/* INCLUDE_UTIL_H */

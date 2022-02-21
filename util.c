@@ -42,7 +42,8 @@
 #include <unistd.h>
 #include <sys/stat.h>
 #include <stdint.h>
-
+#include <limits.h>
+#include <errno.h>
 
 /*
  * dbg - debug, warning and error reporting facility
@@ -1782,4 +1783,111 @@ strnull(char const * const str)
 	return str;
     }
     return NULL;
+}
+
+/* string_to_long   -	convert str to long and check for errors
+ *
+ * given:
+ *
+ *	str	-   the string to convert to a long int.
+ *
+ * Returns string 'str' as a long int.
+ *
+ * Does not return on error or NULL pointer.
+ */
+long string_to_long(char const *str)
+{
+    long long num; /* use a long long for overflow/underflow checks */
+
+    /*
+     * firewall
+     */
+    if (str == NULL) {
+	err(142, __func__, "passed NULL arg");
+	not_reached();
+    }
+
+    errno = 0;
+    num = strtoll(str, NULL, 10);
+
+    if (errno != 0) {
+	errp(143, __func__, "error converting string \"%s\" to long int", str);
+	not_reached();
+    }
+    else if (num < LONG_MIN || num > LONG_MAX) {
+	err(144, __func__, "number %s out of range for long int (must be >= %ld && <= %ld)", str, LONG_MIN, LONG_MAX);
+	not_reached();
+    }
+    return (long)num;
+}
+
+/* string_to_long_long   -	convert str to long long and check for errors
+ *
+ * given:
+ *
+ *	str	-   the string to convert to a long long int.
+ *
+ * Returns string 'str' as a long long int.
+ *
+ * Does not return on error or NULL pointer.
+ */
+long long string_to_long_long(char const *str)
+{
+    long long num;
+
+    /*
+     * firewall
+     */
+    if (str == NULL) {
+	err(145, __func__, "passed NULL arg");
+	not_reached();
+    }
+
+    errno = 0;
+    num = strtoll(str, NULL, 10);
+
+    if (errno != 0) {
+	errp(146, __func__, "error converting string \"%s\" to long long int", str);
+	not_reached();
+    }
+    else if (num <= LLONG_MIN || num >= LLONG_MAX) {
+	err(147, __func__, "number %s out of range for long long int (must be > %lld && < %lld)", str, LLONG_MIN, LLONG_MAX);
+	not_reached();
+    }
+    return num;
+}
+/* string_to_int   -	convert str to int and check for errors
+ *
+ * given:
+ *
+ *	str	-   the string to convert to an int.
+ *
+ * Returns string 'str' as an int.
+ *
+ * Does not return on error or NULL pointer.
+ */
+int string_to_int(char const *str)
+{
+    long long num; /* use a long long for overflow/underflow checks */
+
+    /*
+     * firewall
+     */
+    if (str == NULL) {
+	err(148, __func__, "passed NULL arg");
+	not_reached();
+    }
+
+    errno = 0;
+    num = (int)strtoll(str, NULL, 10);
+
+    if (errno != 0) {
+	errp(149, __func__, "error converting string \"%s\" to int", str);
+	not_reached();
+    }
+    else if (num < INT_MIN || num > INT_MAX) {
+	err(150, __func__, "number %s out of range for int (must be >= %d && <= %d)", str, INT_MIN, INT_MAX);
+	not_reached();
+    }
+    return (int)num;
 }
