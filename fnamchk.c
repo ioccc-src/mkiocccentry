@@ -249,7 +249,7 @@ main(int argc, char *argv[])
     }
 
     /*
-     * 3rd '.' separated token must a valid timestamp
+     * 3rd '.' separated token must be a valid timestamp
      */
     timestamp_str = strtok(NULL, ".");
     if (timestamp_str == NULL) {

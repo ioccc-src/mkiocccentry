@@ -94,7 +94,7 @@ EOF
 }
 rm -f answers.txt
 # Retrieve the answers version from mkiocccentry.c and write to answers file:
-grep -E '^#define MKIOCCCENTRY_ANSWERS_VER' mkiocccentry.c | cut -d' ' -f3 | sed 's/"//g' >answers.txt
+grep -E '^#define MKIOCCCENTRY_ANSWERS_VERSION' mkiocccentry.c | cut -d' ' -f3 | sed 's/"//g' >answers.txt
 # Append answers + EOF marker
 answers >>answers.txt
 
