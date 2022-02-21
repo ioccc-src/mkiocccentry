@@ -5325,11 +5325,10 @@ write_info(struct info *infop, char const *entry_dir, bool test_mode, char const
     char *info_path;		/* path to .info.json file */
     size_t info_path_len;	/* length of path to .info.json */
     FILE *info_stream;		/* open write stream to the .info.json file */
-    size_t asctime_len;		/* length of asctime() string without the trailing newline */
+    size_t strftime_ret;	/* length of asctime() string without the trailing newline */
     size_t utctime_len;		/* length of utctime string (utctime() + " UTC") */
     int ret;			/* libc function return */
     char **q;			/* extra filename array pointer */
-    char *p;
     int i;
     char *cmd = NULL;		/* for jinfochk */
     int exit_code;		/* for system() */
@@ -5378,32 +5377,42 @@ write_info(struct info *infop, char const *entry_dir, bool test_mode, char const
 	not_reached();
     }
     errno = 0;			/* pre-clear errno for errp() */
-    timeptr = localtime(&(infop->tstamp));
+    timeptr = gmtime(&(infop->tstamp));
     if (timeptr == NULL) {
 	errp(191, __func__, "localtime #1 returned NULL");
 	not_reached();
     }
 
     /*
-     * ASCII UTC string
+     * allocate ASCII UTC string
+     */
+    utctime_len = LITLEN(TIMESTAMP_EPOCH) + 1;	/* + 1 for trailing NUL byte */
+    errno = 0;			/* pre-clear errno for errp() */
+    infop->utctime = (char *)calloc(utctime_len + 1, 1); /* + 1 for paranoia padding */
+    if (infop->utctime == NULL) {
+	errp(192, __func__, "calloc of %lu bytes failed", (unsigned long)utctime_len + 1);
+	not_reached();
+    }
+
+    /*
+     * fill out ASCII UTC string for time now
+     *
+     * The ASCII UTC string is of the form:
+     *
+     * example:	    Thu Jan 01 00:00:00 1970 UTC
+     * format:	    %a  %b  %d %H %M %S %Y
      */
     errno = 0;			/* pre-clear errno for errp() */
-    p = asctime(timeptr);
-    if (p == NULL) {
-	errp(193, __func__, "asctime #1 returned NULL");
+    strftime_ret = strftime(infop->utctime, utctime_len, "%a %b %d %H:%M:%S %Y UTC", timeptr);
+    if (strftime_ret == 0) {
+	errp(193, __func__, "strftime returned 0");
+	not_reached();
+    } else if (strftime_ret+1 != utctime_len) {
+	errp(194, __func__, "strftime returned: %lu != %lu",
+			    (unsigned long)(strftime_ret+1), (unsigned long)utctime_len);
 	not_reached();
     }
-    asctime_len = strlen(p) - 1; /* -1 to remove trailing newline */
-    utctime_len = strlen(p) + 1 + LITLEN("UTC") + 1;
-    errno = 0;			/* pre-clear errno for errp() */
-    infop->utctime = (char *)calloc(utctime_len + 1, 1);
-    if (infop->utctime == NULL) {
-	errp(194, __func__, "calloc of %lu bytes failed", (unsigned long)utctime_len + 1);
-	not_reached();
-    }
-    (void) strncat(infop->utctime, p, asctime_len);
-    (void) strcat(infop->utctime, " UTC");
-    dbg(DBG_VVHIGH, "infop->utctime: %s", infop->utctime);
+    dbg(DBG_VHIGH, "infop->utctime: %s", infop->utctime);
 
     /*
      * open .info.json for writing
