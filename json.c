@@ -1662,8 +1662,10 @@ json_filename(int type)
  *				    and author.json and check the value if it is
  *
  * given:
- *
+ *	
+ *	name	- which util called this (jinfochk or jauthchk)
  *	file	- the file being parsed (path to)
+ *	fnamchk	- path to fnamchk util
  *	field	- the field name
  *	value	- the value of the field
  *
@@ -1673,19 +1675,20 @@ json_filename(int type)
  *
  * Does not return on error (NULL pointers).
  */
-int check_common_json_fields(char const *file, char *field, char *value)
+int check_common_json_fields(char const *name, char const *file, char const *fnamchk, char *field, char *value)
 {
     int ret = 1;
     int year = 0;
     int entry_num = -1;
     long ts = 0;
     struct tm tm;
-    char *p;
+    char *p, *cmd;
+    int exit_code;
 
     /*
      * firewall
      */
-    if (file == NULL || field == NULL || value == NULL) {
+    if (name == NULL || file == NULL || fnamchk == NULL || field == NULL || value == NULL) {
 	err(218, __func__, "passed NULL arg(s)");
 	not_reached();
     }
@@ -1759,6 +1762,52 @@ int check_common_json_fields(char const *file, char *field, char *value)
 	    err(230, __func__, "formed_timestamp '%ld' < MIN_TIMESTAMP '%ld'", ts, MIN_TIMESTAMP);
 	    not_reached();
 	}
+    } else if (!strcmp(field, "tarball")) {
+	/* form command line to fnamchk */
+	errno = 0;			/* pre-clear errno for errp() */
+	cmd = cmdprintf("% % >/dev/null", fnamchk, value);
+	if (cmd == NULL) {
+	    err(23, __func__, "failed to cmdprintf: fnamchk %s", value);
+	    not_reached();
+	}
+	dbg(DBG_HIGH, "about to perform: system(%s)", cmd);
+
+	/*
+	 * pre-flush to avoid system() buffered stdio issues
+	 */
+	clearerr(stdout);		/* pre-clear ferror() status */
+	errno = 0;			/* pre-clear errno for errp() */
+	ret = fflush(stdout);
+	if (ret < 0) {
+	    errp(24, __func__, "fflush(stdout) error code: %d", ret);
+	    not_reached();
+	}
+	errno = 0;			/* pre-clear errno for errp() */
+	clearerr(stderr);		/* pre-clear ferror() status */
+	errno = 0;			/* pre-clear errno for errp() */
+	ret = fflush(stderr);
+	if (ret < 0) {
+	    errp(25, __func__, "fflush(stderr) #1: error code: %d", ret);
+	    not_reached();
+	}
+
+	/*
+	 * execute the fnamchk command
+	 */
+	errno = 0;			/* pre-clear errno for errp() */
+	exit_code = system(cmd);
+	if (exit_code < 0) {
+	    errp(26, __func__, "%s: %s: error calling system(%s)", name, value, cmd);
+	    not_reached();
+	} else if (exit_code == 127) {
+	    errp(27, __func__, "%s: execution of the shell failed for system(%s)", name, cmd);
+	    not_reached();
+	} else if (exit_code != 0) {
+	    err(39, __func__, "%s: %s: failed with exit code: %d", name, cmd, WEXITSTATUS(exit_code));
+	    not_reached();
+	}
+
+
     } else {
 	ret = 0;
     }

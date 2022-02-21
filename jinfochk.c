@@ -449,7 +449,7 @@ check_info_json(char const *file, char const *fnamchk)
 	    }
 	    value_length = strlen(value);
 	    /* handle regular field */
-	    if (check_common_json_fields(file, p, value)) {
+	    if (check_common_json_fields("jinfochk", file, fnamchk, p, value)) {
 	    } else if (!strcmp(p, "title")) {
 		if (value_length == 0) {
 		    err(23, __func__, "title length zero");
@@ -479,6 +479,7 @@ check_info_json(char const *file, char const *fnamchk)
 		    not_reached();
 		}
 	    } else if (!strcmp(p, "tarball")) {
+
 	    } else if (!strcmp(p, "rule_2a_size")) {
 	    } else if (!strcmp(p, "rule_2b_size")) {
 	    } else if (!strcmp(p, "empty_override") || !strcmp(p, "rule_2a_override") ||

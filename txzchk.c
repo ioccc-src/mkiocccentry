@@ -1130,10 +1130,10 @@ check_tarball(char const *tar, char const *fnamchk)
     errno = 0;			/* pre-clear errno for errp() */
     exit_code = system(cmd);
     if (exit_code < 0) {
-	errp(26, __func__, "%s: error calling system(%s)", txzpath, cmd);
+	errp(26, "txzchk", "%s: error calling system(%s)", txzpath, cmd);
 	not_reached();
     } else if (exit_code == 127) {
-	errp(27, __func__, "%s: execution of the shell failed for system(%s)", txzpath, cmd);
+	errp(27, "txzchk", "%s: execution of the shell failed for system(%s)", txzpath, cmd);
 	not_reached();
     } else if (exit_code != 0) {
 	warn("txzchk", "%s: %s failed with exit code: %d", txzpath, cmd, WEXITSTATUS(exit_code));
