@@ -1705,58 +1705,58 @@ int check_common_json_fields(char const *file, char *field, char *value)
     } else if (!strcmp(field, "ioccc_year")) {
 	year = string_to_int(value);
 	if (year != IOCCC_YEAR) {
-	    err(222, __func__, "ioccc_year %d != IOCCC_YEAR %d", year, IOCCC_YEAR);
+	    err(221, __func__, "ioccc_year %d != IOCCC_YEAR %d", year, IOCCC_YEAR);
 	    not_reached();
 	}
     } else if (!strcmp(field, "mkiocccentry_version")) {
 	if (strcmp(value, MKIOCCCENTRY_VERSION)) {
-	    err(223, __func__, "mkiocccentry_version \"%s\" != MKIOCCCENTRY_VERSION \"%s\"", value, MKIOCCCENTRY_VERSION);
+	    err(222, __func__, "mkiocccentry_version \"%s\" != MKIOCCCENTRY_VERSION \"%s\"", value, MKIOCCCENTRY_VERSION);
 	    not_reached();
 	}
     } else if (!strcmp(field, "iocccsize_version")) {
 	if (strcmp(value, IOCCCSIZE_VERSION)) {
-	    err(224, __func__, "iocccsize_version \"%s\" != IOCCCSIZE_VERSION \"%s\"", value, IOCCCSIZE_VERSION);
+	    err(223, __func__, "iocccsize_version \"%s\" != IOCCCSIZE_VERSION \"%s\"", value, IOCCCSIZE_VERSION);
 	    not_reached();
 	}
     } else if (!strcmp(field, "IOCCC_contest_id")) {
 	if (!valid_contest_id(value)) {
-	    err(225, __func__, "IOCCC_contest_id \"%s\" is invalid", value);
+	    err(224, __func__, "IOCCC_contest_id \"%s\" is invalid", value);
 	    not_reached();
 	}
     } else if (!strcmp(field, "min_timestamp")) {
 	ts = string_to_long(value);
 	if (ts != MIN_TIMESTAMP) {
-	    err(226, __func__, "min_timestamp '%ld' != MIN_TIMESTAMP '%ld'", ts, MIN_TIMESTAMP);
+	    err(225, __func__, "min_timestamp '%ld' != MIN_TIMESTAMP '%ld'", ts, MIN_TIMESTAMP);
 	    not_reached();
 	}
     } else if (!strcmp(field, "timestamp_epoch")) {
 	if (strcmp(value, TIMESTAMP_EPOCH)) {
-	    err(227, __func__, "timestamp_epoch \"%s\" != TIMESTAMP_EPOCH \"%s\"", value, TIMESTAMP_EPOCH);
+	    err(226, __func__, "timestamp_epoch \"%s\" != TIMESTAMP_EPOCH \"%s\"", value, TIMESTAMP_EPOCH);
 	    not_reached();
 	}
     } else if (!strcmp(field, "formed_timestamp_usec")) {
 	errno = 0;
 	ts = string_to_long(value);
 	if (ts < 0 || ts > 999999) {
-	    err(229, __func__, "formed_timestamp_usec '%ld' out of range of >= 0 && <= 999999", ts);
+	    err(227, __func__, "formed_timestamp_usec '%ld' out of range of >= 0 && <= 999999", ts);
 	    not_reached();
 	}
     } else if (!strcmp(field, "entry_num")) {
 	entry_num = string_to_int(value);
 	if (!(entry_num >= 0 && entry_num <= MAX_ENTRY_NUM)) {
-	    err(231, __func__, "entry number %d out of range", entry_num);
+	    err(228, __func__, "entry number %d out of range", entry_num);
 	    not_reached();
 	}
     } else if (!strcmp(field, "formed_UTC")) {
     	p = strptime(value, FORMED_UTC_FMT, &tm);
 	if (p == NULL) {
-	    err(232, __func__, "formed_UTC \"%s\" does not match FORMED_UTC_FMT \"%s\"", value, FORMED_UTC_FMT);
+	    err(229, __func__, "formed_UTC \"%s\" does not match FORMED_UTC_FMT \"%s\"", value, FORMED_UTC_FMT);
 	    not_reached();
 	}
     } else if (!strcmp(field, "formed_timestamp")) {
 	ts = string_to_long(value);
 	if (ts < MIN_TIMESTAMP) {
-	    err(234, __func__, "formed_timestamp '%ld' < MIN_TIMESTAMP '%ld'", ts, MIN_TIMESTAMP);
+	    err(230, __func__, "formed_timestamp '%ld' < MIN_TIMESTAMP '%ld'", ts, MIN_TIMESTAMP);
 	    not_reached();
 	}
     } else {

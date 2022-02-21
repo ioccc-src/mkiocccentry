@@ -452,10 +452,10 @@ check_info_json(char const *file, char const *fnamchk)
 	    } else if (!strcmp(p, "title")) {
 	    } else if (!strcmp(p, "abstract")) {
 		if (value_length == 0) {
-		    err(35, __func__, "abstract value zero length");
+		    err(22, __func__, "abstract value zero length");
 		    not_reached();
 		} else if (value_length > MAX_ABSTRACT_LEN) {
-		    err(36, __func__, "abstract length %lu > max %d", value_length, MAX_ABSTRACT_LEN);
+		    err(23, __func__, "abstract length %lu > max %d", value_length, MAX_ABSTRACT_LEN);
 		    not_reached();
 		}
 	    } else if (!strcmp(p, "tarball")) {
@@ -470,7 +470,7 @@ check_info_json(char const *file, char const *fnamchk)
 	      !strcmp(p, "found_clean_rule") || !strcmp(p, "found_clobber_rule") ||
 	      !strcmp(p, "found_try_rule") || !strcmp(p, "test_mode")) {
 		if (strcmp(value, "false") && strcmp(value, "true")) {
-		    err(22, __func__, "found non-boolean value '%s' for boolean '%s' in file %s", value,  p, file);
+		    err(24, __func__, "found non-boolean value '%s' for boolean '%s' in file %s", value,  p, file);
 		    not_reached();
 		}
 	    } else {
