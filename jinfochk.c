@@ -273,6 +273,7 @@ check_info_json(char const *file, char const *fnamchk)
     char *value = NULL;	/* current field's value being parsed */
     char *savefield = NULL; /* for strtok_r() usage */
     size_t value_length;    /* length of current value */
+    size_t span;
 
     /*
      * firewall
@@ -450,6 +451,25 @@ check_info_json(char const *file, char const *fnamchk)
 	    /* handle regular field */
 	    if (check_common_json_fields(file, p, value)) {
 	    } else if (!strcmp(p, "title")) {
+		if (value_length == 0) {
+		    err(23, __func__, "title length zero");
+		    not_reached();
+		} else if (value_length > MAX_TITLE_LEN) {
+		    err(23, __func__, "title length %lu > max %d", value_length, MAX_TITLE_LEN);
+		    not_reached();
+		}
+
+		/* check for valid chars only */
+		if (!isascii(value[0]) || (!islower(value[0]) && !isdigit(value[0]))) {
+		    err(24, __func__, "first char of title '%c' invalid", value[0]);
+		    not_reached();
+		} else {
+		    span = strspn(value, TAIL_TITLE_CHARS);
+		    if (span != value_length) {
+			err(25, __func__, "invalid chars found in title \"%s\"", value);
+			not_reached();
+		    }
+		}
 	    } else if (!strcmp(p, "abstract")) {
 		if (value_length == 0) {
 		    err(22, __func__, "abstract value zero length");

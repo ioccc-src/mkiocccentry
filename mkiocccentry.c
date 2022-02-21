@@ -3677,7 +3677,7 @@ get_title(struct info *infop)
 	if (span != len) {
 
 	    /*
-	     * reject long title
+	     * reject invalid chars in title
 	     */
 	    fpara(stderr,
 		  "",

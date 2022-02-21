@@ -59,6 +59,7 @@ struct location {
 #define LITLEN(x) (sizeof(x)-1)	/* length of a literal string w/o the NUL byte */
 #define INITIAL_BUF_SIZE (8192)	/* initial size of buffer allocated by read_all */
 #define READ_ALL_CHUNK (65536)	/* grow this read_all by this amount when needed */
+#define TAIL_TITLE_CHARS "abcdefghijklmnopqrstuvwxyz0123456789_+-"	/* [a-z0-9_+-] */
 
 /*
  * paths to utilities the IOCCC tools use (including our own tools fnamchk,
