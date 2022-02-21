@@ -1811,7 +1811,7 @@ long string_to_long(char const *str)
     num = strtoll(str, NULL, 10);
 
     if (errno != 0) {
-	errp(143, __func__, "error converting string \"%s\" to long int", str);
+	errp(143, __func__, "error converting string \"%s\" to long int: %s", str, strerror(errno));
 	not_reached();
     }
     else if (num < LONG_MIN || num > LONG_MAX) {
@@ -1847,7 +1847,7 @@ long long string_to_long_long(char const *str)
     num = strtoll(str, NULL, 10);
 
     if (errno != 0) {
-	errp(146, __func__, "error converting string \"%s\" to long long int", str);
+	errp(146, __func__, "error converting string \"%s\" to long long int: %s", str, strerror(errno));
 	not_reached();
     }
     else if (num <= LLONG_MIN || num >= LLONG_MAX) {
@@ -1882,7 +1882,7 @@ int string_to_int(char const *str)
     num = (int)strtoll(str, NULL, 10);
 
     if (errno != 0) {
-	errp(149, __func__, "error converting string \"%s\" to int", str);
+	errp(149, __func__, "error converting string \"%s\" to int: %s", str, strerror(errno));
 	not_reached();
     }
     else if (num < INT_MIN || num > INT_MAX) {
