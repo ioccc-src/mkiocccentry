@@ -37,22 +37,6 @@
 
 
 /*
- * standard truth :-)
- */
-#if defined(__STDC_VERSION__) && (__STDC_VERSION__ >= 199901L)
-/* have a C99 compiler - we should expect to have <stdbool.h> */
-#include <stdbool.h>
-#elif !defined(__cplusplus)
-/* do not have a C99 compiler - fake a <stdbool.h> header file */
-typedef unsigned char bool;
-#undef true
-#define true ((bool)(1))
-#undef false
-#define false ((bool)(0))
-#endif
-
-
-/*
  * backward compatibility
  *
  * Not all compilers support __attribute__ nor do they support __has_builtin.
@@ -119,26 +103,17 @@ extern int verbosity_level;	/* print debug messages <= verbosity_level */
  */
 extern void msg(const char *fmt, ...) \
 	__attribute__((format(printf, 1, 2)));		/* 1=format 2=params */
-
 extern void dbg(int level, const char *fmt, ...) \
 	__attribute__((format(printf, 2, 3)));		/* 2=format 3=params */
-
 extern void warn(const char *name, const char *fmt, ...) \
 	__attribute__((format(printf, 2, 3)));		/* 2=format 3=params */
 extern void warnp(const char *name, const char *fmt, ...) \
 	__attribute__((format(printf, 2, 3)));		/* 2=format 3=params */
-
 extern void err(int exitcode, const char *name, const char *fmt, ...) \
 	__attribute__((noreturn)) __attribute__((format(printf, 3, 4))); /* 3=format 4=params */
 extern void errp(int exitcode, const char *name, const char *fmt, ...) \
 	__attribute__((noreturn)) __attribute__((format(printf, 3, 4))); /* 3=format 4=params */
-
 extern void vfprintf_usage(int exitcode, FILE *stream, const char *fmt, ...) \
-	__attribute__((format(printf, 3, 4)));		/* 3=format 4=params */
-
-extern void warn_or_err(int exitcode, const char *name, bool test, const char *fmt, ...) \
- 	__attribute__((format(printf, 4, 5)));		/* 4=format 5=params */
-extern void warnp_or_errp(int exitcode, const char *name, bool test, const char *fmt, ...) \
- 	__attribute__((format(printf, 4, 5)));		/* 4=format 5=params */
+	__attribute__((format(printf, 3, 4))); /* 3=format 4=params */
 
 #endif				/* INCLUDE_DBG_H */
