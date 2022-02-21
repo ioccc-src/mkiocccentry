@@ -97,8 +97,8 @@ COPT= -O3 -g3
 
 # how to compile
 #
-CFLAGS= ${STD_SRC} ${COPT} -pedantic -Wall -Wextra
-#CFLAGS= ${STD_SRC} ${COPT} -pedantic -Wall -Wextra -Werror
+#CFLAGS= ${STD_SRC} ${COPT} -pedantic -Wall -Wextra
+CFLAGS= ${STD_SRC} ${COPT} -pedantic -Wall -Wextra -Werror
 
 # We test by forcing warnings to be errors so you don't have to (allegedly :-) )
 #
