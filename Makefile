@@ -148,7 +148,7 @@ mkiocccentry: mkiocccentry.c mkiocccentry.h rule_count.o dbg.o util.o json.o Mak
 	${CC} ${CFLAGS} mkiocccentry.c rule_count.o dbg.o util.o json.o -o $@
 
 iocccsize: iocccsize.c rule_count.o dbg.o Makefile
-	${CC} ${CFLAGS} -DIOCCCSIZE_STANDALONE iocccsize.c rule_count.o dbg.o -o $@
+	${CC} ${CFLAGS} -DMKIOCCCENTRY_USE iocccsize.c rule_count.o dbg.o -o $@
 
 dbg_test: dbg.c Makefile
 	${CC} ${CFLAGS} -DDBG_TEST dbg.c -o $@
