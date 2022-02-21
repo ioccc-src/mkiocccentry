@@ -321,11 +321,11 @@ test: all iocccsize-test.sh dbg_test mkiocccentry-test.sh jstr-test.sh Makefile
 	@echo "RUNNING: dbg_test"
 	@${RM} -f dbg_test.out
 	@status=`./dbg_test -e 2 foo bar baz 2>dbg_test.out; echo "$$?"`; \
-	    if [ "$$status" != 3 ]; then \
-		echo "exit status of dbg_test: $$status != 3"; \
+	    if [ "$$status" != 5 ]; then \
+		echo "exit status of dbg_test: $$status != 5"; \
 		exit 1; \
 	    fi
-	@${GREP} -q '^FATAL\[3\]: main: simulated error, foo: foo bar: bar errno\[2\]: No such file or directory$$' dbg_test.out
+	@${GREP} -q '^FATAL\[5\]: main: simulated error, foo: foo bar: bar errno\[2\]: No such file or directory$$' dbg_test.out
 	@${RM} -f dbg_test.out
 	@echo "PASSED: dbg_test"
 	@echo
