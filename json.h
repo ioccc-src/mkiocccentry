@@ -51,7 +51,7 @@
 
 #define INFO_JSON	(0)	    /* file is assumed to be a .info.json file */
 #define AUTHOR_JSON	(1)	    /* file is assumed to be a .author.json file */
-#define FORMED_UTC_FMT "+%a %b %d %H:%M:%S %Y UTC"
+#define FORMED_UTC_FMT "%a %b %d %H:%M:%S %Y UTC"
 /*
  * author info
  */

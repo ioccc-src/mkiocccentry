@@ -1679,6 +1679,8 @@ int check_common_json_fields(char const *file, char const *field, char const *va
     int year = 0;
     int entry_num = -1;
     long ts = 0;
+    struct tm tm;
+    char *p;
 
     /*
      * firewall
@@ -1687,6 +1689,8 @@ int check_common_json_fields(char const *file, char const *field, char const *va
 	err(218, __func__, "passed NULL arg(s)");
 	not_reached();
     }
+
+    memset(&tm, 0, sizeof tm);
 
     if (!strcmp(field, "IOCCC_info_version")) {
 	if (strcmp(value, INFO_VERSION)) {
@@ -1756,7 +1760,11 @@ int check_common_json_fields(char const *file, char const *field, char const *va
 	    not_reached();
 	}
     } else if (!strcmp(field, "formed_UTC")) {
-	/* TODO add this check */
+    	p = strptime(value, FORMED_UTC_FMT, &tm);
+	if (p == NULL) {
+	    err(232, __func__, "formed_UTC \"%s\" does not match FORMED_UTC_FMT \"%s\"", value, FORMED_UTC_FMT);
+	    not_reached();
+	}
     } else if (!strcmp(field, "formed_timestamp")) {
 	errno = 0;
 	ts = strtol(value, NULL, 10);
