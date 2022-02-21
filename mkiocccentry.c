@@ -362,7 +362,7 @@ main(int argc, char *argv[])
     /*
      * obtain the IOCCC contest ID
      */
-    info.ioccc_id = get_contest_id(&info, &test_mode, &read_answers_flag_used);
+    info.ioccc_id = get_contest_id(&test_mode, &read_answers_flag_used);
     dbg(DBG_MED, "IOCCC contest ID: %s", info.ioccc_id);
 
     /*
@@ -1483,7 +1483,6 @@ prompt(char const *str, size_t *lenp)
     return buf;
 }
 
-
 /*
  * get IOCCC ID or test
  *
@@ -1502,7 +1501,7 @@ prompt(char const *str, size_t *lenp)
  * This function does not return on error or if the contest ID is malformed.
  */
 static char *
-get_contest_id(struct info *infop, bool *testp, bool *read_answers_flag_used)
+get_contest_id(bool *testp, bool *read_answers_flag_used)
 {
     char *malloc_ret;		/* malloced return string */
     size_t len;			/* input string length */
@@ -1517,7 +1516,7 @@ get_contest_id(struct info *infop, bool *testp, bool *read_answers_flag_used)
     /*
      * firewall
      */
-    if (infop == NULL || testp == NULL) {
+    if (testp == NULL) {
 	err(51, __func__, "called with NULL arg(s)");
 	not_reached();
     }

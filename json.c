@@ -1673,7 +1673,7 @@ json_filename(int type)
  *
  * Does not return on error (NULL pointers).
  */
-int check_common_json_fields(char const *file, char const *field, char const *value)
+int check_common_json_fields(char const *file, char *field, char *value)
 {
     int ret = 1;
     int year = 0;
@@ -1719,7 +1719,10 @@ int check_common_json_fields(char const *file, char const *field, char const *va
 	    not_reached();
 	}
     } else if (!strcmp(field, "IOCCC_contest_id")) {
-	/* TODO add handling of IOCCC_contest_id field */
+	if (!valid_contest_id(value)) {
+	    err(225, __func__, "IOCCC_contest_id \"%s\" is invalid", value);
+	    not_reached();
+	}
     } else if (!strcmp(field, "min_timestamp")) {
 	ts = string_to_long(value);
 	if (ts != MIN_TIMESTAMP) {

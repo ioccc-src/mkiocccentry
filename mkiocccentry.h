@@ -183,7 +183,7 @@ static RuleCount check_prog_c(struct info *infop, char const *entry_dir, char co
 static void sanity_chk(struct info *infop, char const *work_dir, char const *tar, char const *cp,
 		       char const *ls, char const *txzchk, char const *fnamchk, char const *jinfochk, char const *jauthchk);
 static char *prompt(char const *str, size_t *lenp);
-static char *get_contest_id(struct info *infop, bool *testp, bool *read_answers_flag_used);
+static char *get_contest_id(bool *testp, bool *read_answers_flag_used);
 static int get_entry_num(struct info *infop);
 static char *mk_entry_dir(char const *work_dir, char const *ioccc_id, int entry_num, char **tarball_path, time_t tstamp);
 static bool inspect_Makefile(char const *Makefile, struct info *infop);

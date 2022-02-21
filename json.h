@@ -142,6 +142,6 @@ extern char *malloc_json_decode_str(char const *str, size_t *retlen, bool strict
 extern int check_first_json_char(char const *file, char *data, bool strict, char **first);
 extern int check_last_json_char(char const *file, char *data, bool strict, char **last);
 extern char const *json_filename(int type);
-extern int check_common_json_fields(char const *file, char const *field, char const *value);
+extern int check_common_json_fields(char const *file, char *field, char *value);
 
 #endif /* JSON_H */
