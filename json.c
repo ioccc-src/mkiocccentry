@@ -1769,10 +1769,10 @@ int check_common_json_fields(char const *file, char const *field, char const *va
 	errno = 0;
 	ts = strtol(value, NULL, 10);
 	if (errno != 0) {
-	    err(232, __func__, "unable to parse formed_timestamp \"%s\"", value);
+	    err(233, __func__, "unable to parse formed_timestamp \"%s\"", value);
 	    not_reached();
 	} else if (ts < MIN_TIMESTAMP) {
-	    err(233, __func__, "formed_timestamp '%ld' < MIN_TIMESTAMP '%ld'", ts, MIN_TIMESTAMP);
+	    err(234, __func__, "formed_timestamp '%ld' < MIN_TIMESTAMP '%ld'", ts, MIN_TIMESTAMP);
 	    not_reached();
 	}
     } else {
