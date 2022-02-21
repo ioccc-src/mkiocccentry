@@ -272,6 +272,7 @@ check_info_json(char const *file, char const *fnamchk)
     char *end = NULL;	/* temporary use: end of strings (p, field) for removing spaces */
     char *value = NULL;	/* current field's value being parsed */
     char *savefield = NULL; /* for strtok_r() usage */
+    size_t value_length;    /* length of current value */
 
     /*
      * firewall
@@ -445,10 +446,18 @@ check_info_json(char const *file, char const *fnamchk)
 		     * if we find a '"' in the field we know it's erroneous.
 		     */
 	    }
+	    value_length = strlen(value);
 	    /* handle regular field */
 	    if (check_common_json_fields(file, p, value)) {
 	    } else if (!strcmp(p, "title")) {
 	    } else if (!strcmp(p, "abstract")) {
+		if (value_length == 0) {
+		    err(35, __func__, "abstract value zero length");
+		    not_reached();
+		} else if (value_length > MAX_ABSTRACT_LEN) {
+		    err(36, __func__, "abstract length %lu > max %d", value_length, MAX_ABSTRACT_LEN);
+		    not_reached();
+		}
 	    } else if (!strcmp(p, "tarball")) {
 	    } else if (!strcmp(p, "rule_2a_size")) {
 	    } else if (!strcmp(p, "rule_2b_size")) {
