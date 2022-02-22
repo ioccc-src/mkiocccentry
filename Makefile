@@ -193,7 +193,7 @@ limit_ioccc.sh: limit_ioccc.h version.h Makefile
 	    echo "export TRIGRAPHS="; \
 	fi >> $@
 
-seqcexit:
+seqcexit: ${SRCFILES}
 	@HAVE_SEQCEXIT=`command -v seqcexit`; if [[ -z "$$HAVE_SEQCEXIT" ]]; then \
 		echo 'If you have not bothered to install the seqcexit tool, then' 1>&2; \
 		echo 'you may not run this rule.'; 1>&2; \
