@@ -155,7 +155,7 @@ iocccsize: iocccsize.c rule_count.o dbg.o Makefile
 dbg_test: dbg.c Makefile
 	${CC} ${CFLAGS} -DDBG_TEST dbg.c -o $@
 
-fnamchk: fnamchk.c dbg.o util.o Makefile
+fnamchk: fnamchk.c fnamchk.h dbg.o util.o Makefile
 	${CC} ${CFLAGS} fnamchk.c dbg.o util.o -o $@
 
 txzchk: txzchk.c txzchk.h rule_count.o dbg.o util.o Makefile
@@ -371,7 +371,7 @@ util.o: util.c dbg.h util.h limit_ioccc.h version.h
 mkiocccentry.o: mkiocccentry.c mkiocccentry.h util.h json.h dbg.h \
   limit_ioccc.h version.h iocccsize.h
 iocccsize.o: iocccsize.c iocccsize_err.h iocccsize.h
-fnamchk.o: fnamchk.c dbg.h util.h limit_ioccc.h version.h
+fnamchk.o: fnamchk.c fnamchk.h dbg.h util.h limit_ioccc.h version.h
 txzchk.o: txzchk.c txzchk.h util.h dbg.h limit_ioccc.h version.h
 jauthchk.o: jauthchk.c jauthchk.h dbg.h util.h json.h limit_ioccc.h \
   version.h
