@@ -128,7 +128,7 @@ main(int argc, char **argv)
      * On some systems where /usr/bin != /bin, the distribution made the mistake of
      * moving historic critical applications, look to see if the alternate path works instead.
      *
-     * If -T was used we don't actually need tar(1) so we test for that
+     * If -f was used we don't actually need tar(1) so we test for that
      * specifically.
      */
 
@@ -1063,7 +1063,7 @@ parse_line(char *linep, char *line_dup, char const *dir_name, char const *txzpat
  *
  * given:
  *
- *	tar		- path to executable tar program (if -T was not
+ *	tar		- path to executable tar program (if -f was not
  *			  specified)
  *	fnamchk		- path to fnamchk tool
  *
@@ -1076,7 +1076,7 @@ check_tarball(char const *tar, char const *fnamchk)
 {
     unsigned line_num = 0; /* line number of tar output */
     char *cmd = NULL;	/* fnamchk and tar -tJvf */
-    FILE *input_stream = NULL; /* pipe for tar output (or if -T specified read as a text file) */
+    FILE *input_stream = NULL; /* pipe for tar output (or if -f specified read as a text file) */
     FILE *fnamchk_stream = NULL; /* pipe for fnamchk output */
     char *linep = NULL;		/* allocated line read from tar (or text file) */
     char *dir_name = NULL;	/* line read from fnamchk (directory name) */
@@ -1197,7 +1197,7 @@ check_tarball(char const *tar, char const *fnamchk)
 
     /* determine size of tarball */
     txz_info.size = file_size(txzpath);
-    /* report size (if too big) */
+    /* report size if too big or !quiet */
     if (txz_info.size < 0) {
 	err(29, __func__, "%s: impossible error: sanity_chk() found tarball but file_size() did not", txzpath);
 	not_reached();
@@ -1223,7 +1223,7 @@ check_tarball(char const *tar, char const *fnamchk)
     dbg(DBG_MED, "txzchk: %s size in bytes: %lld", txzpath, (long long)txz_info.size);
 
     /*
-     * free cmd for tar (if -T wasn't specified) command
+     * free cmd for tar (if -f wasn't specified) command
      */
     free(cmd);
     cmd = NULL;
@@ -1241,7 +1241,7 @@ check_tarball(char const *tar, char const *fnamchk)
 	    warnp(__func__, "setvbuf failed for %s", txzpath);
 	}
     }
-    else { /* if -T not specified we have to do more to set up input stream */
+    else { /* if -f not specified we have to do more to set up input stream */
 
 	errno = 0;			/* pre-clear errno for errp() */
 	cmd = cmdprintf("% -tJvf %", tar, txzpath);
@@ -1306,7 +1306,7 @@ check_tarball(char const *tar, char const *fnamchk)
 	}
 
 	/*
-	 * If we get here -T was not specified so open pipe to tar command.
+	 * If we get here -f was not specified so open pipe to tar command.
 	 */
 	errno = 0;			/* pre-clear errno for errp() */
 	input_stream = popen(cmd, "r");
@@ -1374,7 +1374,7 @@ check_tarball(char const *tar, char const *fnamchk)
 
     } while (readline_len >= 0);
     /*
-     * free cmd (it'll be NULL if -T was specified but this is safe)
+     * free cmd (it'll be NULL if -f was specified but this is safe)
      */
     free(cmd);
     cmd = NULL;
