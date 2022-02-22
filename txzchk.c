@@ -49,7 +49,7 @@ main(int argc, char **argv)
      * parse args
      */
     program = argv[0];
-    while ((i = getopt(argc, argv, "hv:VqF:t:T")) != -1) {
+    while ((i = getopt(argc, argv, "hv:VqF:t:fT")) != -1) {
 	switch (i) {
 	case 'h':		/* -h - print help to stderr and exit 0 */
 	    usage(0, "-h help mode", program);
@@ -86,8 +86,17 @@ main(int argc, char **argv)
 	case 'q':
 	    quiet = true;
 	    break;
-	case 'T':
+	case 'f':
 	    text_file_flag_used = true; /* don't rely on tar: just read file as if it was a text file */
+	    break;
+	case 'T':		/* -T (IOCCC toolset chain release repository tag) */
+	    errno = 0;		/* pre-clear errno for warnp() */
+	    ret = printf("%s\n", IOCCC_TOOLSET_RELEASE);
+	    if (ret <= 0) {
+		warnp(__func__, "printf error printing IOCCC toolset release repository tag");
+	    }
+	    exit(0); /*ooo*/
+	    not_reached();
 	    break;
 	default:
 	    usage(1, "invalid -flag", program); /*ooo*/

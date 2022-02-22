@@ -70,11 +70,12 @@
  * Use the usage() function to print the these usage_msgX strings.
  */
 static const char * const usage_msg =
-    "usage: %s [-h] [-v level] [-V] filepath\n"
+    "usage: %s [-h] [-v level] [-V] [-T] filepath\n"
     "\n"
     "\t-h\t\t\tprint help message and exit 0\n"
     "\t-v level\t\tset verbosity level: (def level: %d)\n"
     "\t-V\t\t\tprint version string and exit\n"
+    "\t-T\t\t\tshow IOCCC toolset chain release repository tag\n"
     "\n"
     "\tfilepath\t\tpath to an IOCCC compressed tarball\n"
     "\n"
@@ -120,7 +121,7 @@ main(int argc, char *argv[])
      * parse args
      */
     program = argv[0];
-    while ((i = getopt(argc, argv, "hv:V")) != -1) {
+    while ((i = getopt(argc, argv, "hv:VT")) != -1) {
 	switch (i) {
 	case 'h':		/* -h - print help to stderr and exit 0 */
 	    usage(1, "-h help mode", program); /*ooo*/
@@ -142,6 +143,15 @@ main(int argc, char *argv[])
 	    ret = printf("%s\n", FNAMCHK_VERSION);
 	    if (ret <= 0) {
 		warnp(__func__, "printf error printing version string: %s", FNAMCHK_VERSION);
+	    }
+	    exit(0); /*ooo*/
+	    not_reached();
+	    break;
+	case 'T':		/* -T (IOCCC toolset chain release repository tag) */
+	    errno = 0;		/* pre-clear errno for warnp() */
+	    ret = printf("%s\n", IOCCC_TOOLSET_RELEASE);
+	    if (ret <= 0) {
+		warnp(__func__, "printf error printing IOCCC toolset release repository tag");
 	    }
 	    exit(0); /*ooo*/
 	    not_reached();

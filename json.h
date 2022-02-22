@@ -108,7 +108,7 @@ struct info {
     bool found_clean_rule;	/* true ==> Makefile has clean rule */
     bool found_clobber_rule;	/* true ==> Makefile has a clobber rule */
     bool found_try_rule;	/* true ==> Makefile has a try rule */
-    unsigned answers_errors;	/* > 0 ==> flushing or closing answers file failed */
+    unsigned answers_errors;	/* > 0 ==> output errors on answers file */
     /*
      * filenames
      */
@@ -124,7 +124,7 @@ struct info {
     time_t tstamp;		/* seconds since epoch when .info json was formed (see gettimeofday(2)) */
     int usec;			/* microseconds since the tstamp second */
     char *epoch;		/* epoch of tstamp, currently: Thu Jan 1 00:00:00 1970 UTC */
-    char *utctime;		/* UTC converted string for tstamp (see asctime(3)) */
+    char *utctime;		/* UTC converted string for tstamp (see strftime(3)) */
 
     /* jinfochk specific */
     unsigned issues;		/* number of issues found in file (for jinfochk) */

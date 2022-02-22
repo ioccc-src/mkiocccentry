@@ -74,7 +74,7 @@ main(int argc, char *argv[])
      * parse args
      */
     program = argv[0];
-    while ((i = getopt(argc, argv, "hv:Vtns")) != -1) {
+    while ((i = getopt(argc, argv, "hv:VtnsT")) != -1) {
 	switch (i) {
 	case 'h':		/* -h - print help to stderr and exit 0 */
 	    usage(2, "-h help mode", program); /*ooo*/
@@ -96,6 +96,15 @@ main(int argc, char *argv[])
 	    ret = printf("%s\n", JSTRDECODE_VERSION);
 	    if (ret <= 0) {
 		warnp(__func__, "printf error printing version string: %s", JSTRDECODE_VERSION);
+	    }
+	    exit(0); /*ooo*/
+	    not_reached();
+	    break;
+	case 'T':		/* -T (IOCCC toolset chain release repository tag) */
+	    errno = 0;		/* pre-clear errno for warnp() */
+	    ret = printf("%s\n", IOCCC_TOOLSET_RELEASE);
+	    if (ret <= 0) {
+		warnp(__func__, "printf error printing IOCCC toolset release repository tag");
 	    }
 	    exit(0); /*ooo*/
 	    not_reached();

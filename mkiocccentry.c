@@ -96,7 +96,7 @@
  *
  * The following is NOT the version of this mkiocccentry tool!
  *
- * XXX These MUST be here and **NOT** in version.h!
+ * XXX These MUST be here and **NOT** in version.h or mkiocccentry.h!
  */
 #define MKIOCCCENTRY_ANSWERS_VERSION "MKIOCCCENTRY_ANSWERS-IOCCCMOCK-1.0"
 /* Answers file EOF marker */
@@ -5333,7 +5333,7 @@ write_info(struct info *infop, char const *entry_dir, bool test_mode, char const
     char *info_path;		/* path to .info.json file */
     size_t info_path_len;	/* length of path to .info.json */
     FILE *info_stream;		/* open write stream to the .info.json file */
-    size_t strftime_ret;	/* length of asctime() string without the trailing newline */
+    size_t strftime_ret;	/* length of strftime() string without the trailing newline */
     size_t utctime_len;		/* length of utctime string (utctime() + " UTC") */
     int ret;			/* libc function return */
     char **q;			/* extra filename array pointer */

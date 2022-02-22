@@ -2,7 +2,7 @@
 .SH NAME
 jinfochk \- IOCCC tool to validate .info.json file found within an entry directory
 .SH SYNOPSIS
-\fBjinfochk [\-h] [\-v level] [\-V] [\-q] file
+\fBjinfochk [\-h] [\-v level] [\-V] [\-T] [\-q] [\-t] file
 .SH DESCRIPTION
 \fBjinfochk\fP is primarily used by other tools (not humans).
 As such it should behave like \fBfnamchk(1)\fP in that if all is well, it should not print anything and simply exit 0.
@@ -24,6 +24,9 @@ Set verbosity level.
 .PP
 \fB\-V\fP
 Show version and exit.
+.PP
+\fB\-T\fP
+Show IOCCC toolset chain release repository tag.
 .PP
 \fB\-q\fP
 Quiet mode.
