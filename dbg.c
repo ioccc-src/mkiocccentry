@@ -810,7 +810,7 @@ main(int argc, char *argv[])
 	switch (i) {
 	case 'h':	/* -h - print help to stderr and exit 0 */
 	    /* exit(0); */
-	    vfprintf_usage(0, stderr, usage, program, VERSION);
+	    vfprintf_usage(0, stderr, usage, program, VERSION); /*ooo*/
 	    not_reached();
 	    break;
 	case 'v':	/* -v verbosity */
@@ -829,7 +829,7 @@ main(int argc, char *argv[])
 	    forced_errno = (int)strtol(optarg, NULL, 0);
 	    if (errno != 0) {
 		/* exit(2); */
-		err(2, __func__, "cannot parse -v arg: %s error: %s", optarg, strerror(errno));
+		err(2, __func__, "cannot parse -v arg: %s error: %s", optarg, strerror(errno)); /*ooo*/
 		not_reached();
 	    }
 	    errno = forced_errno;	/* simulate errno setting */
@@ -837,7 +837,7 @@ main(int argc, char *argv[])
 	default:
 	    vfprintf_usage(DO_NOT_EXIT, stderr, "invalid -flag");
 	    /* exit(3); */
-	    vfprintf_usage(3, stderr, usage, program, VERSION);
+	    vfprintf_usage(3, stderr, usage, program, VERSION); /*ooo*/
 	    not_reached();
 	}
     }
@@ -851,7 +851,7 @@ main(int argc, char *argv[])
     default:
 	vfprintf_usage(DO_NOT_EXIT, stderr, "requires 2 or 3 arguments");
 	/* exit(4); */
-	vfprintf_usage(4, stderr, usage, program, VERSION);
+	vfprintf_usage(4, stderr, usage, program, VERSION); /*ooo*/
 	not_reached();
 	break;
     }
@@ -867,10 +867,10 @@ main(int argc, char *argv[])
      */
     if (errno != 0) {
 	/* exit(5); */
-	errp(5, __func__, "simulated error, foo: %s bar: %s", foo, baz);
+	errp(5, __func__, "simulated error, foo: %s bar: %s", foo, baz); /*ooo*/
     }
     /* exit(6); */
-    err(6, __func__, "simulated error, foo: %s bar: %s", foo, baz);
+    err(6, __func__, "simulated error, foo: %s bar: %s", foo, baz); /*ooo*/
     not_reached();
 }
 #endif /* DBG_TEST */

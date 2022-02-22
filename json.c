@@ -1675,7 +1675,8 @@ json_filename(int type)
  *
  * Does not return on error (NULL pointers).
  */
-int check_common_json_fields(char const *name, char const *file, char const *fnamchk, char *field, char *value)
+int check_common_json_fields(char const *program, char const *file, struct info *infop,
+	struct author *authorp, char const *fnamchk, char *field, char *value)
 {
     int ret = 1;
     int year = 0;
@@ -1688,7 +1689,8 @@ int check_common_json_fields(char const *name, char const *file, char const *fna
     /*
      * firewall
      */
-    if (name == NULL || file == NULL || fnamchk == NULL || field == NULL || value == NULL) {
+    if (program == NULL || file == NULL || fnamchk == NULL || field == NULL || value == NULL ||
+	(!strcmp(program, "jinfochk") && infop == NULL) || (!strcmp(program, "jauthchk") && authorp == NULL)) {
 	err(218, __func__, "passed NULL arg(s)");
 	not_reached();
     }
@@ -1797,20 +1799,172 @@ int check_common_json_fields(char const *name, char const *file, char const *fna
 	errno = 0;			/* pre-clear errno for errp() */
 	exit_code = system(cmd);
 	if (exit_code < 0) {
-	    errp(234, __func__, "%s: %s: error calling system(%s)", name, value, cmd);
+	    errp(234, __func__, "%s: %s: error calling system(%s)", program, value, cmd);
 	    not_reached();
 	} else if (exit_code == 127) {
-	    errp(235, __func__, "%s: execution of the shell failed for system(%s)", name, cmd);
+	    errp(235, __func__, "%s: execution of the shell failed for system(%s)", program, cmd);
 	    not_reached();
 	} else if (exit_code != 0) {
-	    err(236, __func__, "%s: %s: failed with exit code: %d", name, cmd, WEXITSTATUS(exit_code));
+	    err(236, __func__, "%s: %s: failed with exit code: %d", program, cmd, WEXITSTATUS(exit_code));
 	    not_reached();
 	}
-
-
     } else {
 	ret = 0;
     }
 
     return ret;
+}
+
+/*
+ * free_info - free info and related sub-elements
+ *
+ * given:
+ *      infop   - pointer to info structure to free
+ *
+ * This function does not return on error.
+ */
+void
+free_info(struct info *infop)
+{
+    int i;
+
+    /*
+     * firewall
+     */
+    if (infop == NULL) {
+	err(237, __func__, "called with NULL arg(s)");
+	not_reached();
+    }
+
+    /*
+     * free version values
+     */
+    if (infop->mkiocccentry_ver != NULL) {
+	free(infop->mkiocccentry_ver);
+	infop->mkiocccentry_ver = NULL;
+    }
+
+    /*
+     * free entry values
+     */
+    if (infop->ioccc_id != NULL) {
+	free(infop->ioccc_id);
+	infop->ioccc_id = NULL;
+    }
+    if (infop->title != NULL) {
+	free(infop->title);
+	infop->title = NULL;
+    }
+    if (infop->abstract != NULL) {
+	free(infop->abstract);
+	infop->abstract = NULL;
+    }
+
+    /*
+     * free filenames
+     */
+    if (infop->prog_c != NULL) {
+	free(infop->prog_c);
+	infop->prog_c = NULL;
+    }
+    if (infop->Makefile != NULL) {
+	free(infop->Makefile);
+	infop->Makefile = NULL;
+    }
+    if (infop->remarks_md != NULL) {
+	free(infop->remarks_md);
+	infop->remarks_md = NULL;
+    }
+    if (infop->extra_file != NULL) {
+	for (i = 0; i < infop->extra_count; ++i) {
+	    if (infop->extra_file[i] != NULL) {
+		free(infop->extra_file[i]);
+		infop->extra_file[i] = NULL;
+	    }
+	}
+	free(infop->extra_file);
+	infop->extra_file = NULL;
+    }
+
+    if (infop->tarball != NULL) {
+	free(infop->tarball);
+	infop->tarball = NULL;
+    }
+
+    /*
+     * free time values
+     */
+    if (infop->epoch != NULL) {
+	free(infop->epoch);
+	infop->epoch = NULL;
+    }
+    if (infop->utctime != NULL) {
+	free(infop->utctime);
+	infop->utctime = NULL;
+    }
+    memset(infop, 0, sizeof *infop);
+
+    return;
+}
+
+/*
+ * free_author_array - free storage related to a struct author
+ *
+ * given:
+ *      author_set      - pointer to a struct author array
+ *      author_count    - length of author array
+ */
+void
+free_author_array(struct author *author_set, int author_count)
+{
+    int i;
+
+    /*
+     * firewall
+     */
+    if (author_set == NULL) {
+	err(238, __func__, "called with NULL arg(s)");
+	not_reached();
+    }
+    if (author_count < 0) {
+	err(239, __func__, "author_count: %d < 0", author_count);
+	not_reached();
+    }
+
+    /*
+     * free elements of each array member
+     */
+    for (i = 0; i < author_count; ++i) {
+	if (author_set[i].name != NULL) {
+	    free(author_set[i].name);
+	    author_set[i].name = NULL;
+	}
+	if (author_set[i].location_code != NULL) {
+	    free(author_set[i].location_code);
+	    author_set[i].location_code = NULL;
+	}
+	if (author_set[i].email != NULL) {
+	    free(author_set[i].email);
+	    author_set[i].email = NULL;
+	}
+	if (author_set[i].url != NULL) {
+	    free(author_set[i].url);
+	    author_set[i].url = NULL;
+	}
+	if (author_set[i].twitter != NULL) {
+	    free(author_set[i].twitter);
+	    author_set[i].twitter = NULL;
+	}
+	if (author_set[i].github != NULL) {
+	    free(author_set[i].github);
+	    author_set[i].github = NULL;
+	}
+	if (author_set[i].affiliation != NULL) {
+	    free(author_set[i].affiliation);
+	    author_set[i].affiliation = NULL;
+	}
+    }
+
+    memset(author_set, 0, sizeof *author_set);
+    return;
 }

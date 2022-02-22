@@ -35,6 +35,7 @@ main(int argc, char **argv)
      * parse args
      */
     program = argv[0];
+    program_basename = base_name(program);
     while ((i = getopt(argc, argv, "hv:VqsF:tT")) != -1) {
 	switch (i) {
 	case 'h':		/* -h - print help to stderr and exit 0 */
@@ -120,6 +121,16 @@ main(int argc, char **argv)
     }
 
     check_author_json(file, fnamchk);
+
+    if (program_basename != NULL) {
+	free(program_basename);
+	program_basename = NULL;
+    }
+
+    /*
+     * TODO Once the authors array is parsed we have to call
+     * free_author_array()
+     */
 
     /*
      * All Done!!! - Jessica Noll, age 2
@@ -351,7 +362,7 @@ check_author_json(char const *file, char const *fnamchk)
     /* skip past the initial opening brace */
     ++p;
 
-    /* 
+    /*
      * Begin to parse the file, field by field (if it's not a validly formed
      * JSON file an error will occur and the loop will be aborted).
      */
@@ -381,7 +392,7 @@ check_author_json(char const *file, char const *fnamchk)
 	if (*end == '"')
 	    *end = '\0';
 
-	/* 
+	/*
 	 * after removing the spaces and a single '"' at the beginning and end,
 	 * if we find a '"' in the field we know it's erroneous: thus we can
 	 * simply use strcmp() on it. Note that when we get to the array(s) we
@@ -397,7 +408,7 @@ check_author_json(char const *file, char const *fnamchk)
 
 	if (!strcmp(p, "authors")) {
 	    /* TODO: handle the arrays */
-	   
+
 	    /* The below is only done to prevent infinite loop which occurs in
 	     * some cases (e.g. when "authors" is at the top of the file) until
 	     * arrays are handled; when arrays are handled this will be changed.
@@ -424,7 +435,7 @@ check_author_json(char const *file, char const *fnamchk)
 	    while (*end && isspace(*end))
 		*end-- = '\0';
 
-	    /* 
+	    /*
 	     * Depending on the field, remove a single '"' at the beginning and
 	     * end of the value.
 	     */
@@ -437,19 +448,19 @@ check_author_json(char const *file, char const *fnamchk)
 		end = value + strlen(value) - 1;
 		if (*end == '"')
 		    *end = '\0';
-		/* 
+		/*
 		 * after removing the spaces and a single '"' at the beginning and end,
 		 * if we find a '"' in the field we know it's erroneous.
 		 */
 	    }
 	    /* handle regular field */
-	    if (check_common_json_fields("jauthchk", file, fnamchk, p, value)) {
+	    if (check_common_json_fields(program_basename, file, NULL, &author, fnamchk, p, value)) {
 	    } else {
 		/* TODO: after everything else is parsed if we get here it's an
 		 * error as there's invalid fields in the file.
 		 */
 	    }
-	
+
 	    dbg(DBG_MED, "found field '%s' with value '%s'", p, value);
 	}
     } while (true);

@@ -74,6 +74,7 @@ static const char * const usage_msg =
  */
 int verbosity_level = DBG_DEFAULT;	    /* debug level set by -v */
 char const *program = NULL;		    /* our name */
+char *program_basename = NULL;		    /* our basename */
 static bool quiet = false;		    /* true ==> quiet mode */
 static struct info info;		    /* .info.json struct */
 static bool strict = false;		    /* true ==> disallow anything before/after the '{' and '}' in the file */

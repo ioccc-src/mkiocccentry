@@ -33,6 +33,7 @@ main(int argc, char **argv)
      * parse args
      */
     program = argv[0];
+    program_basename = base_name(program);
     while ((i = getopt(argc, argv, "hv:VqsF:tT")) != -1) {
 	switch (i) {
 	case 'h':		/* -h - print help to stderr and exit 0 */
@@ -117,6 +118,14 @@ main(int argc, char **argv)
     }
 
     check_info_json(file, fnamchk);
+
+    if (program_basename != NULL) {
+	free(program_basename);
+	program_basename = NULL;
+    }
+
+    /* free any allocated memory in our info struct */
+    free_info(&info);
 
     /*
      * All Done!!! - Jessica Noll, age 2
@@ -453,7 +462,7 @@ check_info_json(char const *file, char const *fnamchk)
 	    }
 	    value_length = strlen(value);
 	    /* handle regular field */
-	    if (check_common_json_fields("jinfochk", file, fnamchk, p, value)) {
+	    if (check_common_json_fields(program_basename, file, &info, NULL, fnamchk, p, value)) {
 	    } else if (!strcmp(p, "title")) {
 		if (value_length == 0) {
 		    err(22, __func__, "title length zero");

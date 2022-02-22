@@ -168,8 +168,6 @@ static FILE *input_stream = NULL;
  * forward declarations
  */
 static void usage(int exitcode, char const *str, char const *program);
-static void free_info(struct info *infop);
-static void free_author_array(struct author *authorp, int author_count);
 static void warn_empty_prog(char const *prog_c);
 static void warn_rule_2a_size(struct info *infop, char const *prog_c, int mode, RuleCount size);
 static void warn_high_bit(char const *prog_c);
