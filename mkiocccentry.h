@@ -88,6 +88,7 @@
  */
 #include "iocccsize.h"
 
+
 /*
  * definitions
  *
@@ -108,8 +109,6 @@
 #define RULE_2A_IOCCCSIZE_MISMATCH (1)	/* warn that prog.c iocccsize size differs from the file size */
 
 
-
-
 /*
  * usage message
  *
@@ -121,6 +120,7 @@ static const char * const usage_msg0 =
     "\t-h\t\t\tprint help message and exit 0\n"
     "\t-v level\t\tset verbosity level: (def level: %d)\n"
     "\t-V\t\t\tprint version string and exit\n"
+    "\t-T\t\t\tShow IOCCC toolset chain release repository tag\n"
     "\t-W\t\t\tignore all warnings (this does NOT mean the judges will! :) )\n";
 
 static const char * const usage_msg1 =

@@ -65,7 +65,7 @@
 /*
  * overall IOCCC entry tool set release version
  */
-#define IOCCC_TOOLSET_VERSION "0.1 2022-02-21"	/* format: major.minor YYYY-MM-DD */
+#define IOCCC_TOOLSET_RELEASE "0.1"		/* format: major.minor */
 
 
 /*
@@ -127,5 +127,6 @@
  * jstrdecode version
  */
 #define JSTRDECODE_VERSION "0.1 2022-02-14"	/* format: major.minor YYYY-MM-DD */
+
 
 #endif /* INCLUDE_VERSION_H */
