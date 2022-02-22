@@ -308,7 +308,7 @@ clean:
 	${RM} -f ${OBJFILES}
 	${RM} -rf ${DSYMDIRS}
 
-clobber: clean
+clobber distclean: clean
 	${RM} -f ${TARGETS} ${TEST_TARGETS}
 	${RM} -f answers.txt j-test.out j-test2.out
 	${RM} -rf test-iocccsize test_src test_work tags dbg_test.out
@@ -319,7 +319,7 @@ install: all
 
 test: all iocccsize-test.sh dbg_test mkiocccentry-test.sh jstr-test.sh Makefile
 	@echo "RUNNING: iocccsize-test.sh"
-	./iocccsize-test.sh -v
+	./iocccsize-test.sh -v 1
 	@echo "PASSED: iocccsize-test.sh"
 	@echo
 	@echo "This next test is supposed to fail with the error: FATAL[5]: main: simulated error, ..."
