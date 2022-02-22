@@ -84,12 +84,7 @@ main(int argc, char *argv[])
 	    /*
 	     * parse verbosity
 	     */
-	    errno = 0;		/* pre-clear errno for errp() */
-	    verbosity_level = (int)strtol(optarg, NULL, 0);
-	    if (errno != 0) {
-		errp(2, __func__, "cannot parse -v arg: %s error: %s", optarg, strerror(errno)); /*ooo*/
-		not_reached();
-	    }
+	    verbosity_level = parse_verbosity(program, optarg);
 	    break;
 	case 'V':		/* -V - print version and exit */
 	    errno = 0;		/* pre-clear errno for warnp() */
