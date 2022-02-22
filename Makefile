@@ -71,18 +71,19 @@
 
 # utilities
 #
-CC= cc
-RM= rm
-CP= cp
-INSTALL= install
-GREP= grep
 AWK= awk
-TR= tr
-SED= sed
-RPL= rpl
-SEQCEXIT = seqcexit
-TRUE= true
+CC= cc
+CP= cp
 CTAGS= ctags
+GREP= grep
+INSTALL= install
+RM= rm
+RPL= rpl
+SED= sed
+SEQCEXIT= seqcexit
+SHELLCHECK= shellcheck
+TR= tr
+TRUE= true
 
 # C source standards being used
 #
@@ -134,6 +135,7 @@ SRCFILES = $(patsubst %.o,%.c,$(OBJFILES))
 H_FILES = dbg.h jauthchk.h jinfochk.h json.h jstrdecode.h jstrencode.h limit_ioccc.h \
 	mkiocccentry.h txzchk.h util.h
 DSYMDIRS = $(patsubst %,%.dSYM,$(TARGETS))
+SH_FILES= iocccsize-test.sh jstr-test.sh limit_ioccc.sh mkiocccentry-test.sh
 
 all: ${TARGETS} ${TEST_TARGETS}
 
@@ -173,7 +175,8 @@ jstrdecode: jstrdecode.c jstrdecode.h dbg.o json.o util.o Makefile
 
 limit_ioccc.sh: limit_ioccc.h version.h Makefile
 	${RM} -f $@
-	@echo '#' > $@
+	@echo '#!/usr/bin/env bash' > $@
+	@echo '#' >> $@
 	@echo '# Copies of select limit_ioccc.h and version.h values for shell script use' >> $@
 	@echo '#' >> $@
 	${GREP} -E '^#define (RULE_|MAX_|UUID_|MIN_|IOCCC_)' limit_ioccc.h | \
@@ -201,6 +204,8 @@ seqcexit: ${SRCFILES}
 	fi
 	${SEQCEXIT} ${SRCFILES}
 
+shellcheck: ${SH_FILES}
+	${SHELLCHECK} -f gcc ${SH_FILES}
 
 # Only run this rule when you wish to invalidate all timestamps
 # prior to now, such as when you make a fundamental change to a

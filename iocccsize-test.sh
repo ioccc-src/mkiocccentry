@@ -24,6 +24,7 @@ usage()
 
 __tool="./iocccsize"
 __verbose=false
+__build=
 
 while getopts 'bvt:' opt; do
 	case "$opt" in
@@ -41,15 +42,15 @@ while getopts 'bvt:' opt; do
 		usage
 	esac
 done
-shift $(($OPTIND - 1))
+shift $((OPTIND - 1))
 #if [[ $# -lt 1 ]]; then
 #        usage
 #fi
 
-make ${__build} all 2>&1 | grep -v 'Nothing to be done for'
+eval make "${__build}" all 2>&1 | grep -v 'Nothing to be done for'
 
 if [[ ! -d test-iocccsize ]]; then
-	mkdir test-iocccsize
+	mkdir -p test-iocccsize
 fi
 
 # Change DIGRAPHS and TRIGRAPHS according to limit_ioccc.h
@@ -62,7 +63,7 @@ get_wc()
 {
 	typeset file="$1"
 	typeset field="$2"
-	wc $file | sed -e's/^ *//; s/  */ /g' | cut -d' ' -f$field
+	wc "$file" | sed -e's/^ *//; s/  */ /g' | cut -d' ' "-f$field"
 }
 
 test_size()
@@ -72,18 +73,18 @@ test_size()
 	typeset gross_count
 	typeset got
 
-	got=$($__tool $__tool_args $file 2>/dev/null)
+	got=$("$__tool" "$__tool_args" "$file" 2>/dev/null)
 	if $__verbose ; then
-		gross_count=$(echo $got | cut -d' ' -f2)
-		bytes=$(get_wc $file 3 $filter)
-		if [[ $gross_count != $bytes ]]; then
+		gross_count=$(echo "$got" | cut -d' ' -f2)
+		bytes=$(get_wc "$file" 3)
+		if [[ $gross_count != "$bytes" ]]; then
 			echo "FAIL $file: got $gross_count != wc $bytes"
 			EXIT_CODE=1
 			return
 		fi
 	else
-		got=$(echo $got | cut -d' ' -f1)
-		expect=$(echo $expect | cut -d' ' -f1)
+		got=$(echo "$got" | cut -d' ' -f1)
+		expect=$(echo "$expect" | cut -d' ' -f1)
 	fi
 	if [[ "$expect" = "$got" ]]; then
 		echo "-OK- $file: $got"

@@ -23,7 +23,7 @@ if [[ -e "$TEST_FILE2" ]]; then
     exit 103
 fi
 export EXIT_CODE=0
-trap "rm -f $TEST_FILE $TEST_FILE2; exit" 0 1 2 3 15
+trap "rm -f \$TEST_FILE \$TEST_FILE2; exit" 0 1 2 3 15
 
 # run the basic encoding test
 #
@@ -41,6 +41,7 @@ fi
 #
 echo "$0: about to run test #2"
 echo "./jstrencode -n < ./jstrencode | ./jstrdecode -n > $TEST_FILE"
+# shellcheck disable=SC2094
 ./jstrencode -n < ./jstrencode | ./jstrdecode -n > "$TEST_FILE"
 if cmp -s ./jstrencode "$TEST_FILE"; then
     echo "$0: test #2 passed"
@@ -50,6 +51,7 @@ else
 fi
 echo "$0: about to run test #3"
 echo "./jstrencode -n < ./jstrdecode | ./jstrdecode -n > $TEST_FILE"
+# shellcheck disable=SC2094
 ./jstrencode -n < ./jstrdecode | ./jstrdecode -n > "$TEST_FILE"
 if cmp -s ./jstrdecode "$TEST_FILE"; then
     echo "$0: test #3 passed"
@@ -61,8 +63,8 @@ fi
 # test JSON encoding and decoding pipe in strict mode
 #
 echo "$0: about to run test #4"
-trap "rm -f $TEST_FILE; exit" 0 1 2 3 15
 echo "./jstrencode -n < ./jstrencode | ./jstrdecode -n -s > $TEST_FILE"
+# shellcheck disable=SC2094
 ./jstrencode -n < ./jstrencode | ./jstrdecode -n -s > "$TEST_FILE"
 if cmp -s ./jstrencode "$TEST_FILE"; then
     echo "$0: test #4 passed"
@@ -72,6 +74,7 @@ else
 fi
 echo "$0: about to run test #5"
 echo "./jstrencode -n < ./jstrdecode | ./jstrdecode -n -s > $TEST_FILE"
+# shellcheck disable=SC2094
 ./jstrencode -n < ./jstrdecode | ./jstrdecode -n -s > "$TEST_FILE"
 if cmp -s ./jstrdecode "$TEST_FILE"; then
     echo "$0: test #5 passed"
@@ -87,7 +90,9 @@ export SRC_SET="jstr-test.sh dbg.c dbg.h fnamchk.c iocccsize.c jauthchk.c"
 SRC_SET="$SRC_SET jinfochk.c json.c json.h jstrdecode.c jstrencode.c"
 SRC_SET="$SRC_SET limit_ioccc.h mkiocccentry.c txzchk.c util.c util.h"
 echo "cat \$SRC_SET | ./jstrencode -n | ./jstrdecode -n > $TEST_FILE"
+# shellcheck disable=SC2086
 cat $SRC_SET | ./jstrencode -n | ./jstrdecode -n > "$TEST_FILE"
+# shellcheck disable=SC2086
 cat $SRC_SET > "$TEST_FILE2"
 if cmp -s "$TEST_FILE2" "$TEST_FILE"; then
     echo "$0: test #6 passed"
@@ -103,7 +108,9 @@ export SRC_SET="jstr-test.sh dbg.c dbg.h fnamchk.c iocccsize.c jauthchk.c"
 SRC_SET="$SRC_SET jinfochk.c json.c json.h jstrdecode.c jstrencode.c"
 SRC_SET="$SRC_SET limit_ioccc.h mkiocccentry.c txzchk.c util.c util.h"
 echo "cat \$SRC_SET | ./jstrencode -n | ./jstrdecode -n -s > $TEST_FILE"
+# shellcheck disable=SC2086
 cat $SRC_SET | ./jstrencode -n | ./jstrdecode -n -s > "$TEST_FILE"
+# shellcheck disable=SC2086
 cat $SRC_SET > "$TEST_FILE2"
 if cmp -s "$TEST_FILE2" "$TEST_FILE"; then
     echo "$0: test #7 passed"
@@ -119,5 +126,5 @@ if [[ $EXIT_CODE == 0 ]]; then
 else
     echo "$0: test failure detected, about to exit: $EXIT_CODE" 1>&2
 fi
-rm -f $TEST_FILE $TEST_FILE2
+rm -f "$TEST_FILE" "$TEST_FILE2"
 exit "$EXIT_CODE"
