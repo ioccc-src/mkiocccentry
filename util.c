@@ -1897,6 +1897,76 @@ int string_to_int(char const *str)
     return (int)num;
 }
 
+/* string_to_unsigned_long - string to unsigned long with error checks
+ *
+ * given:
+ *
+ *	str	- the string to convert to unsigned long
+ *
+ * Returns str as an unsigned long.
+ *
+ * Does not return on error.
+ */
+unsigned long string_to_unsigned_long(char const *str)
+{
+    unsigned long num = 0;
+
+    /*
+     * firewall
+     */
+    if (str == NULL) {
+	err(151, __func__, "passed NULL arg");
+	not_reached();
+    }
+
+    errno = 0;
+    num = strtoul(str, NULL, 10);
+    if (errno != 0) {
+	err(152, __func__, "strtoul(%s): %s", str, strerror(errno));
+	not_reached();
+    } else if (num >= ULONG_MAX) {
+	err(153, __func__, "strtoul(%s): too big", str);
+	not_reached();
+    }
+
+    return num;
+}
+
+/* string_to_unsigned_long_long - string to unsigned long long with error checks
+ *
+ * given:
+ *
+ *	str	- the string to convert to unsigned long long
+ *
+ * Returns str as an unsigned long long.
+ *
+ * Does not return on error.
+ */
+unsigned long long string_to_unsigned_long_long(char const *str)
+{
+    unsigned long long num;
+
+    /*
+     * firewall
+     */
+    if (str == NULL) {
+	err(154, __func__, "passed NULL arg");
+	not_reached();
+    }
+
+    errno = 0;
+    num = strtoul(str, NULL, 10);
+    if (errno != 0) {
+	err(155, __func__, "strtoul(%s): %s", str, strerror(errno));
+	not_reached();
+    } else if (num >= ULLONG_MAX) {
+	err(156, __func__, "strtoul(%s): too big", str);
+	not_reached();
+    }
+
+    return num;
+
+}
 /* valid_contest_id	    -	validate string as a contest ID
  *
  * given:

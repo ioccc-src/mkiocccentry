@@ -34,8 +34,8 @@
  */
 
 
-#if !defined(INLUDE_JSON_H)
-#    define  INLUDE_JSON_H
+#if !defined(INCLUDE_JSON_H)
+#    define  INCLUDE_JSON_H
 
 
 #include <time.h>
@@ -65,6 +65,7 @@ struct author {
     char *github;		/* author GitHub username or or empty string ==> not provided */
     char *affiliation;		/* author affiliation or or empty string ==> not provided */
     char *winner_handle;	/* previous IOCCC winner handle, or empty string ==> not provided */
+    char *tarball;		/* tarball path; XXX this is _ONLY allocated in jauthchk_; mkiocccentry uses the copy in struct info! */
     int author_num;		/* author number */
 
     /* jauthchk specific */
@@ -107,7 +108,7 @@ struct info {
     bool found_clean_rule;	/* true ==> Makefile has clean rule */
     bool found_clobber_rule;	/* true ==> Makefile has a clobber rule */
     bool found_try_rule;	/* true ==> Makefile has a try rule */
-    unsigned answers_errors;	/* > 0 ==> flushing or closing answers file failed */
+    unsigned answers_errors;	/* > 0 ==> output errors on answers file */
     /*
      * filenames
      */
@@ -116,14 +117,14 @@ struct info {
     char *remarks_md;		/* remarks.md filename */
     int extra_count;		/* number of extra files */
     char **extra_file;		/* list of extra filenames followed by NULL */
-    char *tarball_path;		/* tarball filename */
+    char *tarball;		/* tarball filename */
     /*
      * time
      */
     time_t tstamp;		/* seconds since epoch when .info json was formed (see gettimeofday(2)) */
     int usec;			/* microseconds since the tstamp second */
     char *epoch;		/* epoch of tstamp, currently: Thu Jan 1 00:00:00 1970 UTC */
-    char *utctime;		/* UTC converted string for tstamp (see asctime(3)) */
+    char *utctime;		/* UTC converted string for tstamp (see strftime(3)) */
 
     /* jinfochk specific */
     unsigned issues;		/* number of issues found in file (for jinfochk) */
@@ -142,6 +143,8 @@ extern char *malloc_json_decode_str(char const *str, size_t *retlen, bool strict
 extern int check_first_json_char(char const *file, char *data, bool strict, char **first);
 extern int check_last_json_char(char const *file, char *data, bool strict, char **last);
 extern char const *json_filename(int type);
-extern int check_common_json_fields(char const *name, char const *file, char const *fnamchk, char *field, char *value);
+extern int check_common_json_fields(char const *program, char const *file, struct info *infop, struct author *authorp, char const *fnamchk, char *field, char *value);
+extern void free_info(struct info *infop);
+extern void free_author_array(struct author *authorp, int author_count);
 
-#endif /* INLUDE_JSON_H */
+#endif /* INCLUDE_JSON_H */

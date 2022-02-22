@@ -66,11 +66,12 @@
  * Use the usage() function to print the these usage_msgX strings.
  */
 static const char * const usage_msg =
-    "usage: %s [-h] [-v level] [-V] [-t] [-n] [-s] [string ...]\n"
+    "usage: %s [-h] [-v level] [-V] [-T] [-t] [-n] [-s] [string ...]\n"
     "\n"
     "\t-h\t\tprint help message and exit 0\n"
     "\t-v level\tset verbosity level (def level: %d)\n"
     "\t-V\t\tprint version string and exit 0\n"
+    "\t-T\t\t\tshow IOCCC toolset chain release repository tag\n"
     "\t-t\t\tperform jencchk test on code JSON decode/decode functions\n"
     "\t-n\t\tdo not output newline after decode output\n"
     "\t-s\t\tdecode using strict mode (def: not strict)\n"

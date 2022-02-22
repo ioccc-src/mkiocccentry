@@ -1,8 +1,8 @@
 /* vim: set tabstop=8 softtabstop=4 shiftwidth=4 noexpandtab : */
 /*
- * jstrencode - encode a string for JSON
+ * fnamchk - IOCCC compressed tarball filename sanity check tool
  *
- * "JSON: when a minimal design falls below a critical minimum." :-)
+ * "Because even fprintf has a return value worth paying attention to." :-)
  *
  * Copyright (c) 2022 by Landon Curt Noll.  All Rights Reserved.
  *
@@ -29,11 +29,17 @@
  * Share and enjoy! :-)
  */
 
-#if !defined(INCLUDE_JSTRENCODE_H)
-#    define  INCLUDE_JSTRENCODE_H
 
-#ifdef JSTRENCODE_C
 
+
+#if !defined(INCLUDE_FNAMCHK_H)
+#    define  INCLUDE_FNAMCHK_H
+
+/*
+ * some of the identifiers below share the name of identifiers in other files so
+ * only define/declare the below for fnamchk.c
+ */
+#ifdef FNAMCHK_C
 
 /*
  * dbg - debug, warning and error reporting facility
@@ -48,16 +54,15 @@
 
 
 /*
- * JSON functions supporting mkiocccentry code
- */
-#include "json.h"
-
-
-/*
  * IOCCC size and rule related limitations
  */
 #include "limit_ioccc.h"
 
+
+/*
+ * definitions
+ */
+#define REQUIRED_ARGS (1)	/* number of required arguments on the command line */
 
 
 /*
@@ -66,18 +71,16 @@
  * Use the usage() function to print the these usage_msgX strings.
  */
 static const char * const usage_msg =
-    "usage: %s [-h] [-v level] [-V] [-T] [-t] [-n] [string ...]\n"
+    "usage: %s [-h] [-v level] [-V] [-T] filepath\n"
     "\n"
-    "\t-h\t\tprint help message and exit 0\n"
-    "\t-v level\tset verbosity level: (def level: %d)\n"
-    "\t-V\t\tprint version string and exit 0\n"
+    "\t-h\t\t\tprint help message and exit 0\n"
+    "\t-v level\t\tset verbosity level: (def level: %d)\n"
+    "\t-V\t\t\tprint version string and exit\n"
     "\t-T\t\t\tshow IOCCC toolset chain release repository tag\n"
-    "\t-t\t\tperform jencchk test on code JSON encode/decode functions\n"
-    "\t-n\t\tdo not output newline after encode output\n"
     "\n"
-    "\t[string ...]\tencode strings on command line (def: read stdin)\n"
+    "\tfilepath\t\tpath to an IOCCC compressed tarball\n"
     "\n"
-    "jstrencode version: %s\n";
+    "fnamchk version: %s\n";
 
 
 /*
@@ -91,6 +94,5 @@ int verbosity_level = DBG_DEFAULT;	/* debug level set by -v */
  */
 static void usage(int exitcode, char const *name, char const *str) __attribute__((noreturn));
 
-
-#endif /* JSTRENCODE_C */
-#endif /* INCLUDE_JSTRENCODE_H */
+#endif /* FNAMCHK_C */
+#endif /* INCLUDE_FNAMCHK_H */

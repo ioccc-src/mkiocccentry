@@ -32,7 +32,7 @@
 
 #include <time.h>
 
-/* 
+/*
  * version.h - official version for all the IOCCC tools
  */
 #include "version.h"
@@ -44,8 +44,8 @@
 #define RULE_2A_SIZE ((off_t)(4096))		/* Rule 2a size of prog.c */
 #define RULE_2B_SIZE ((size_t)(2503))		/* Rule 2b size of prog.c */
 #define MAX_TARBALL_LEN ((off_t)(3999971))	/* compressed tarball size limit in bytes */
-/* NOTE: MAX_ENTRY_NUM must be < 10 to the MAX_ENTRY_CHARS power */
 #define MAX_DIR_KSIZE (27651)		/* entry directory size limit in kibibyte (1024 byte) blocks */
+/* NOTE: MAX_ENTRY_NUM must be < 10 to the MAX_ENTRY_CHARS power */
 #define MAX_ENTRY_NUM (9)		/* entry numbers from 0 to MAX_ENTRY_NUM */
 #define MAX_ENTRY_CHARS (1)		/* characters that represent the maximum entry number */
 #define MAX_AUTHORS (5)			/* maximum number of authors of an entry */

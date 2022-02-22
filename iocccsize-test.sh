@@ -26,7 +26,7 @@ usage()
 	echo "usage: $0 [-h] [-b] [-v lvl] [-V] [-t tool]"
 	echo
 	echo "	-h	    print usage message and exit 2"
-	echo "	-b	    make disclean all (def: makke all)"
+	echo "	-b	    make disclean all (def: make all)"
 	echo "	-v lvl	    set debugging level to lvl (def: no debugging)"
 	echo "	-V	    print tool version and exit 3"
 	echo "	-t tool	    test with tool (def: test with ./iocccsize)"

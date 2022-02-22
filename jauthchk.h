@@ -53,11 +53,12 @@
  * Use the usage() function to print the these usage_msgX strings.
  */
 static const char * const usage_msg =
-"usage: %s [-h] [-v level] [-V] [-q] [-s] [-F fnamchk] [-t] file\n"
+"usage: %s [-h] [-v level] [-V] [-T] [-q] [-s] [-F fnamchk] [-t] file\n"
 "\n"
 "\t-h\t\tprint help message and exit 0\n"
 "\t-v level\tset verbosity level: (def level: %d)\n"
 "\t-V\t\tprint version string and exit\n"
+"\t-T\t\t\tshow IOCCC toolset chain release repository tag\n"
 "\t-q\t\tquiet mode\n"
 "\t-s\t\tstrict mode: be more strict on what is allowed (def: not strict)\n"
 "\t-F /path/to/fnamchk\tpath to fnamchk tool (def: %s)\n"
@@ -77,6 +78,7 @@ static const char * const usage_msg =
  */
 int verbosity_level = DBG_DEFAULT;	    /* debug level set by -v */
 char const *program = NULL;		    /* our name */
+char *program_basename = NULL;		    /* our basename */
 static bool quiet = false;		    /* true ==> quiet mode */
 static struct author author;		    /* the .author.json struct */
 static bool strict = false;		    /* true ==> disallow anything before/after the '{' and '}' */

@@ -120,7 +120,7 @@ static const char * const usage_msg0 =
     "\t-h\t\t\tprint help message and exit 0\n"
     "\t-v level\t\tset verbosity level: (def level: %d)\n"
     "\t-V\t\t\tprint version string and exit\n"
-    "\t-T\t\t\tShow IOCCC toolset chain release repository tag\n"
+    "\t-T\t\t\tshow IOCCC toolset chain release repository tag\n"
     "\t-W\t\t\tignore all warnings (this does NOT mean the judges will! :) )\n";
 
 static const char * const usage_msg1 =
@@ -168,8 +168,6 @@ static FILE *input_stream = NULL;
  * forward declarations
  */
 static void usage(int exitcode, char const *str, char const *program);
-static void free_info(struct info *infop);
-static void free_author_array(struct author *authorp, int author_count);
 static void warn_empty_prog(char const *prog_c);
 static void warn_rule_2a_size(struct info *infop, char const *prog_c, int mode, RuleCount size);
 static void warn_high_bit(char const *prog_c);

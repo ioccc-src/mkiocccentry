@@ -33,7 +33,8 @@ main(int argc, char **argv)
      * parse args
      */
     program = argv[0];
-    while ((i = getopt(argc, argv, "hv:VqsF:t")) != -1) {
+    program_basename = base_name(program);
+    while ((i = getopt(argc, argv, "hv:VqsF:tT")) != -1) {
 	switch (i) {
 	case 'h':		/* -h - print help to stderr and exit 0 */
 	    usage(1, "-h help mode", program); /*ooo*/
@@ -43,18 +44,22 @@ main(int argc, char **argv)
 	    /*
 	     * parse verbosity
 	     */
-	    errno = 0;		/* pre-clear errno for errp() */
-	    verbosity_level = (int)strtol(optarg, NULL, 0);
-	    if (errno != 0) {
-		errp(1, __func__, "cannot parse -v arg: %s error: %s", optarg, strerror(errno)); /*ooo*/
-		not_reached();
-	    }
+	    verbosity_level = parse_verbosity(program, optarg);
 	    break;
 	case 'V':		/* -V - print version and exit */
 	    errno = 0;		/* pre-clear errno for warnp() */
 	    ret = printf("%s\n", JINFOCHK_VERSION);
 	    if (ret <= 0) {
 		warnp(__func__, "printf error printing version string: %s", JINFOCHK_VERSION);
+	    }
+	    exit(0); /*ooo*/
+	    not_reached();
+	    break;
+	case 'T':		/* -T (IOCCC toolset chain release repository tag) */
+	    errno = 0;		/* pre-clear errno for warnp() */
+	    ret = printf("%s\n", IOCCC_TOOLSET_RELEASE);
+	    if (ret <= 0) {
+		warnp(__func__, "printf error printing IOCCC toolset release repository tag");
 	    }
 	    exit(0); /*ooo*/
 	    not_reached();
@@ -113,6 +118,14 @@ main(int argc, char **argv)
     }
 
     check_info_json(file, fnamchk);
+
+    if (program_basename != NULL) {
+	free(program_basename);
+	program_basename = NULL;
+    }
+
+    /* free any allocated memory in our info struct */
+    free_info(&info);
 
     /*
      * All Done!!! - Jessica Noll, age 2
@@ -449,7 +462,7 @@ check_info_json(char const *file, char const *fnamchk)
 	    }
 	    value_length = strlen(value);
 	    /* handle regular field */
-	    if (check_common_json_fields("jinfochk", file, fnamchk, p, value)) {
+	    if (check_common_json_fields(program_basename, file, &info, NULL, fnamchk, p, value)) {
 	    } else if (!strcmp(p, "title")) {
 		if (value_length == 0) {
 		    err(22, __func__, "title length zero");
@@ -480,10 +493,10 @@ check_info_json(char const *file, char const *fnamchk)
 				      (unsigned long)value_length, MAX_ABSTRACT_LEN);
 		    not_reached();
 		}
-	    } else if (!strcmp(p, "tarball")) {
-
 	    } else if (!strcmp(p, "rule_2a_size")) {
+		info.rule_2a_size = string_to_long_long(value);
 	    } else if (!strcmp(p, "rule_2b_size")) {
+		info.rule_2b_size = string_to_unsigned_long_long(value);
 	    } else if (!strcmp(p, "empty_override") || !strcmp(p, "rule_2a_override") ||
 	      !strcmp(p, "rule_2a_mismatch") || !strcmp(p, "rule_2b_override") ||
 	      !strcmp(p, "highbit_warning") || !strcmp(p, "nul_warning") ||

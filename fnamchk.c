@@ -34,63 +34,17 @@
 /*ooo*/ /* exit code out of numerical order - ignore in sequencing */
 /*coo*/ /* exit code change of order - use new value in sequencing */
 
+#define FNAMCHK_C
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
 #include <string.h>
 
-
 /*
- * dbg - debug, warning and error reporting facility
+ * Our header file - #includes the header files we need
  */
-#include "dbg.h"
-
-
-/*
- * util - utility functions and definitions
- */
-#include "util.h"
-
-
-/*
- * IOCCC size and rule related limitations
- */
-#include "limit_ioccc.h"
-
-
-/*
- * definitions
- */
-#define REQUIRED_ARGS (1)	/* number of required arguments on the command line */
-
-
-/*
- * usage message
- *
- * Use the usage() function to print the these usage_msgX strings.
- */
-static const char * const usage_msg =
-    "usage: %s [-h] [-v level] [-V] filepath\n"
-    "\n"
-    "\t-h\t\t\tprint help message and exit 0\n"
-    "\t-v level\t\tset verbosity level: (def level: %d)\n"
-    "\t-V\t\t\tprint version string and exit\n"
-    "\n"
-    "\tfilepath\t\tpath to an IOCCC compressed tarball\n"
-    "\n"
-    "fnamchk version: %s\n";
-
-
-/*
- * globals
- */
-int verbosity_level = DBG_DEFAULT;	/* debug level set by -v */
-
-
-/*
- * forward declarations
- */
-static void usage(int exitcode, char const *name, char const *str) __attribute__((noreturn));
+#include "fnamchk.h"
 
 
 int
@@ -120,7 +74,7 @@ main(int argc, char *argv[])
      * parse args
      */
     program = argv[0];
-    while ((i = getopt(argc, argv, "hv:V")) != -1) {
+    while ((i = getopt(argc, argv, "hv:VT")) != -1) {
 	switch (i) {
 	case 'h':		/* -h - print help to stderr and exit 0 */
 	    usage(1, "-h help mode", program); /*ooo*/
@@ -130,18 +84,22 @@ main(int argc, char *argv[])
 	    /*
 	     * parse verbosity
 	     */
-	    errno = 0;		/* pre-clear errno for errp() */
-	    verbosity_level = (int)strtol(optarg, NULL, 0);
-	    if (errno != 0) {
-		errp(1, __func__, "cannot parse -v arg: %s error: %s", optarg, strerror(errno)); /*ooo*/
-		not_reached();
-	    }
+	    verbosity_level = parse_verbosity(program, optarg);
 	    break;
 	case 'V':		/* -V - print version and exit */
 	    errno = 0;		/* pre-clear errno for warnp() */
 	    ret = printf("%s\n", FNAMCHK_VERSION);
 	    if (ret <= 0) {
 		warnp(__func__, "printf error printing version string: %s", FNAMCHK_VERSION);
+	    }
+	    exit(0); /*ooo*/
+	    not_reached();
+	    break;
+	case 'T':		/* -T (IOCCC toolset chain release repository tag) */
+	    errno = 0;		/* pre-clear errno for warnp() */
+	    ret = printf("%s\n", IOCCC_TOOLSET_RELEASE);
+	    if (ret <= 0) {
+		warnp(__func__, "printf error printing IOCCC toolset release repository tag");
 	    }
 	    exit(0); /*ooo*/
 	    not_reached();

@@ -127,7 +127,7 @@ MANDIR = /usr/local/share/man/man1
 DESTDIR= /usr/local/bin
 TARGETS= mkiocccentry iocccsize dbg_test limit_ioccc.sh fnamchk txzchk jauthchk jinfochk \
 	jstrencode jstrdecode
-MANPAGES = mkiocccentry.1 txzchk.1 fnamchk.1 iocccsize.1
+MANPAGES = mkiocccentry.1 txzchk.1 fnamchk.1 iocccsize.1 jinfochk.1 jauthchk.1
 TEST_TARGETS= dbg_test
 OBJFILES = dbg.o util.o mkiocccentry.o iocccsize.o fnamchk.o txzchk.o jauthchk.o jinfochk.o \
 	json.o jstrencode.o jstrdecode.o rule_count.o
@@ -155,7 +155,7 @@ iocccsize: iocccsize.c rule_count.o dbg.o Makefile
 dbg_test: dbg.c Makefile
 	${CC} ${CFLAGS} -DDBG_TEST dbg.c -o $@
 
-fnamchk: fnamchk.c dbg.o util.o Makefile
+fnamchk: fnamchk.c fnamchk.h dbg.o util.o Makefile
 	${CC} ${CFLAGS} fnamchk.c dbg.o util.o -o $@
 
 txzchk: txzchk.c txzchk.h rule_count.o dbg.o util.o Makefile
@@ -371,7 +371,7 @@ util.o: util.c dbg.h util.h limit_ioccc.h version.h
 mkiocccentry.o: mkiocccentry.c mkiocccentry.h util.h json.h dbg.h \
   limit_ioccc.h version.h iocccsize.h
 iocccsize.o: iocccsize.c iocccsize_err.h iocccsize.h
-fnamchk.o: fnamchk.c dbg.h util.h limit_ioccc.h version.h
+fnamchk.o: fnamchk.c fnamchk.h dbg.h util.h limit_ioccc.h version.h
 txzchk.o: txzchk.c txzchk.h util.h dbg.h limit_ioccc.h version.h
 jauthchk.o: jauthchk.c jauthchk.h dbg.h util.h json.h limit_ioccc.h \
   version.h

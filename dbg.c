@@ -756,6 +756,38 @@ warnp_or_errp(int exitcode, const char *name, bool test, const char *fmt, ...)
     return;
 }
 
+/* parse_verbosity	- parse -v option for our tools
+ *
+ * given:
+ *
+ *	program		- the calling program e.g. txzchk, fnamchk, mkiocccentry etc.
+ *	arg		- the optarg in the calling tool
+ *
+ * Returns the parsed verbosity.
+ *
+ * Returns DBG_NONE if passed NULL args or empty string.
+ */
+int
+parse_verbosity(char const *program, char const *arg)
+{
+    int verbosity;
+
+    if (program == NULL || arg == NULL || !strlen(arg)) {
+	return DBG_NONE;
+    }
+
+    /*
+     * parse verbosity
+     */
+    errno = 0;		/* pre-clear errno for errp() */
+    verbosity = (int)strtol(arg, NULL, 0);
+    if (errno != 0) {
+	errp(1, __func__, "%s: cannot parse -v arg: %s error: %s", program, arg, strerror(errno)); /*ooo*/
+	not_reached();
+    }
+
+    return verbosity;
+}
 
 #if defined(DBG_TEST)
 int
@@ -778,7 +810,7 @@ main(int argc, char *argv[])
 	switch (i) {
 	case 'h':	/* -h - print help to stderr and exit 0 */
 	    /* exit(0); */
-	    vfprintf_usage(0, stderr, usage, program, VERSION);
+	    vfprintf_usage(0, stderr, usage, program, VERSION); /*ooo*/
 	    not_reached();
 	    break;
 	case 'v':	/* -v verbosity */
@@ -787,17 +819,17 @@ main(int argc, char *argv[])
 	    verbosity_level = (int)strtol(optarg, NULL, 0);
 	    if (errno != 0) {
 		/* exit(1); */
-		err(1, __func__, "cannot parse -v arg: %s error: %s", optarg, strerror(errno));
+		err(1, __func__, "cannot parse -v arg: %s error: %s", optarg, strerror(errno)); /*ooo*/
 		not_reached();
 	    }
 	    break;
 	case 'e':	/* -e errno - force errno */
-	    /* parse verbosity */
+	    /* parse errno */
 	    errno = 0;
 	    forced_errno = (int)strtol(optarg, NULL, 0);
 	    if (errno != 0) {
 		/* exit(2); */
-		err(2, __func__, "cannot parse -v arg: %s error: %s", optarg, strerror(errno));
+		err(2, __func__, "cannot parse -v arg: %s error: %s", optarg, strerror(errno)); /*ooo*/
 		not_reached();
 	    }
 	    errno = forced_errno;	/* simulate errno setting */
@@ -805,7 +837,7 @@ main(int argc, char *argv[])
 	default:
 	    vfprintf_usage(DO_NOT_EXIT, stderr, "invalid -flag");
 	    /* exit(3); */
-	    vfprintf_usage(3, stderr, usage, program, VERSION);
+	    vfprintf_usage(3, stderr, usage, program, VERSION); /*ooo*/
 	    not_reached();
 	}
     }
@@ -819,7 +851,7 @@ main(int argc, char *argv[])
     default:
 	vfprintf_usage(DO_NOT_EXIT, stderr, "requires 2 or 3 arguments");
 	/* exit(4); */
-	vfprintf_usage(4, stderr, usage, program, VERSION);
+	vfprintf_usage(4, stderr, usage, program, VERSION); /*ooo*/
 	not_reached();
 	break;
     }
@@ -835,10 +867,10 @@ main(int argc, char *argv[])
      */
     if (errno != 0) {
 	/* exit(5); */
-	errp(5, __func__, "simulated error, foo: %s bar: %s", foo, baz);
+	errp(5, __func__, "simulated error, foo: %s bar: %s", foo, baz); /*ooo*/
     }
     /* exit(6); */
-    err(6, __func__, "simulated error, foo: %s bar: %s", foo, baz);
+    err(6, __func__, "simulated error, foo: %s bar: %s", foo, baz); /*ooo*/
     not_reached();
 }
 #endif /* DBG_TEST */

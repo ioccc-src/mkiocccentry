@@ -17,7 +17,7 @@
 #if !defined(INCLUDE_TXZCHK_H)
 #    define  INCLUDE_TXZCHK_H
 
-/* 
+/*
  * some of the identifiers below share the name of identifiers in other files so
  * only define/declare the below for txzchk.c
  */
@@ -98,16 +98,17 @@ static struct line *lines;
  * Use the usage() function to print the usage_msgX strings.
  */
 static const char * const usage_msg =
-    "usage: %s [-h] [-v level] [-V] [-t tar] [-F fnamchk] [-T] txzpath\n"
+    "usage: %s [-h] [-v level] [-V] [-t tar] [-F fnamchk] [-f] txzpath\n"
     "\n"
     "\t-h\t\t\tprint help message and exit 0\n"
     "\t-v level\t\tset verbosity level: (def level: %d)\n"
     "\t-V\t\t\tprint version string and exit\n"
+    "\t-T\t\t\tshow IOCCC toolset chain release repository tag\n"
     "\n"
     "\t-t /path/to/tar\t\tpath to tar executable that supports the -J (xz) option (def: %s)\n"
     "\t-F /path/to/fnamchk\tpath to tool that checks if txzpath is a valid compressed tarball name\n"
     "\t\t\t\tfilename (def: %s)\n\n"
-    "\t-T\t\t\tassume txzpath is a text file with tar listing (for testing different formats)\n\n"
+    "\t-f\t\t\tassume txzpath is a text file with tar listing (for testing different formats)\n\n"
     "\ttxzpath\t\t\tpath to an IOCCC compressed tarball\n"
     "\n"
     "txzchk version: %s\n";

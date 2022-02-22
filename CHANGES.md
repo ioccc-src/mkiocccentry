@@ -4,10 +4,16 @@
 
 Created this CHANGES.md markdown document.
 
-Added -T flag to mkiocccentry to print the IOCCC entry tool set release tag:
+Added -T flag to `mkiocccentry`, `fnamchk`, `txzchk`, `jstrencode` and
+`jstrdecode` to print the IOCCC entry tool set release tag:
+
 
 ```sh
 ./mkiocccentry -T
+./fnamchk -T
+./txzchk -T
+./jstrencode -T
+./jstrdecode -T
 ```
 
 ## Release 0.0
