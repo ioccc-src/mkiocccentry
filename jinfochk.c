@@ -493,8 +493,6 @@ check_info_json(char const *file, char const *fnamchk)
 				      (unsigned long)value_length, MAX_ABSTRACT_LEN);
 		    not_reached();
 		}
-	    } else if (!strcmp(p, "tarball")) {
-
 	    } else if (!strcmp(p, "rule_2a_size")) {
 	    } else if (!strcmp(p, "rule_2b_size")) {
 	    } else if (!strcmp(p, "empty_override") || !strcmp(p, "rule_2a_override") ||
