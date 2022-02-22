@@ -494,7 +494,9 @@ check_info_json(char const *file, char const *fnamchk)
 		    not_reached();
 		}
 	    } else if (!strcmp(p, "rule_2a_size")) {
+		info.rule_2a_size = string_to_long_long(value);
 	    } else if (!strcmp(p, "rule_2b_size")) {
+		info.rule_2b_size = string_to_unsigned_long_long(value);
 	    } else if (!strcmp(p, "empty_override") || !strcmp(p, "rule_2a_override") ||
 	      !strcmp(p, "rule_2a_mismatch") || !strcmp(p, "rule_2b_override") ||
 	      !strcmp(p, "highbit_warning") || !strcmp(p, "nul_warning") ||
