@@ -25,3 +25,5 @@ See these man pages for details
 - iocccsize.1
 - mkiocccentry.1
 - txzchk.1
+- jinfochk.1
+- jauthchk.1
