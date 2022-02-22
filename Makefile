@@ -185,6 +185,10 @@ limit_ioccc.sh: limit_ioccc.h version.h Makefile
 	${GREP} -hE '^#define (.*_VERSION|TIMESTAMP_EPOCH)' version.h limit_ioccc.h | \
 	    ${GREP} -v 'UUID_VERSION' | \
 	    ${SED} -e 's/^#define/export/' -e 's/ "/="/' -e 's/"[	 ].*$$/"/' >> $@
+	${GREP} -hE '^#define IOCCC_TOOLSET_VERSION' version.h | \
+	    ${SED} -e 's/^#define/export/' -e 's/ "/="/' -e 's/"[	 ].*$$/"/' \
+		   -e 's/\(="[^ ][^ ]*\) [^"]*"/\1"/' \
+		   -e 's/IOCCC_TOOLSET_VERSION/IOCCC_TOOLSET_RELEASE/' >> $@
 	-if ${GREP} -q '^#define DIGRAPHS' limit_ioccc.h; then \
 	    echo "export DIGRAPHS='yes'"; \
 	else \
