@@ -367,7 +367,7 @@ depend:
 
 ### DO NOT CHANGE MANUALLY BEYOND THIS LINE
 dbg.o: dbg.c dbg.h
-util.o: util.c dbg.h util.h
+util.o: util.c dbg.h util.h limit_ioccc.h version.h
 mkiocccentry.o: mkiocccentry.c mkiocccentry.h util.h json.h dbg.h \
   limit_ioccc.h version.h iocccsize.h
 iocccsize.o: iocccsize.c iocccsize_err.h iocccsize.h

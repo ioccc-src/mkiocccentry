@@ -1,3 +1,4 @@
+/* vim: set tabstop=8 softtabstop=4 shiftwidth=4 noexpandtab : */
 /*
  * util - IOCCC entry common utility functions
  *
@@ -27,7 +28,7 @@
  */
 
 #if !defined(INCLUDE_UTIL_H)
-#    define INCLUDE_UTIL_H
+#    define  INCLUDE_UTIL_H
 
 
 #include <sys/types.h>

@@ -3,10 +3,16 @@
  * jinfochk - IOCCC JSON .info.json checker and validator
  *
  * "Because sometimes even the IOCCC Judges need some help." :-)
+ *
+ * Written in 2022 by:
+ *
+ *	@xexyl
+ *	https://xexyl.net		Cody Boone Ferguson
+ *	https://ioccc.xexyl.net
  */
 
-#ifndef JINFOCHK_H
-#define JINFOCHK_H
+#if !defined(INCLUDE_JINFOCHK_H)
+#    define  INCLUDE_JINFOCHK_H
 
 #ifdef JINFOCHK_C
 /*
@@ -81,4 +87,4 @@ static void check_info_json(char const *file, char const *fnamchk);
 
 
 #endif /* JINFOCHK_C */
-#endif /* JINFOCHK_H */
+#endif /* INCLUDE_JINFOCHK_H */

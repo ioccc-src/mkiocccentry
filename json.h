@@ -34,8 +34,8 @@
  */
 
 
-#ifndef JSON_H
-#define JSON_H
+#if !defined(INLUDE_JSON_H)
+#    define  INLUDE_JSON_H
 
 
 #include <time.h>
@@ -144,4 +144,4 @@ extern int check_last_json_char(char const *file, char *data, bool strict, char 
 extern char const *json_filename(int type);
 extern int check_common_json_fields(char const *name, char const *file, char const *fnamchk, char *field, char *value);
 
-#endif /* JSON_H */
+#endif /* INLUDE_JSON_H */

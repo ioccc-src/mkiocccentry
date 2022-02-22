@@ -58,8 +58,8 @@
  */
 
 
-#ifndef MKIOCCCENTRY_H
-#define MKIOCCCENTRY_H
+#if !defined(INCLUDE_MKIOCCCENTRY_H)
+#    define  INCLUDE_MKIOCCCENTRY_H
 
 #ifdef MKIOCCCENTRY_C
 
@@ -212,4 +212,4 @@ static void remind_user(char const *work_dir, char const *entry_dir, char const 
 
 
 #endif /* MKIOCCCENTRY_C */
-#endif /* MKIOCCCENTRY_H */
+#endif /* INCLUDE_MKIOCCCENTRY_H */

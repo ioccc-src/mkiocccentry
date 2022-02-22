@@ -1,3 +1,4 @@
+/* vim: set tabstop=8 softtabstop=4 shiftwidth=4 noexpandtab : */
 /*
  * dbg - debug, warning and error reporting facility
  *
@@ -27,7 +28,7 @@
  */
 
 #if !defined(INCLUDE_DBG_H)
-#    define INCLUDE_DBG_H
+#    define  INCLUDE_DBG_H
 
 #include <stdio.h>
 #include <stdlib.h>

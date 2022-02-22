@@ -1,5 +1,17 @@
-#ifndef JAUTHCHK_H
-#define JAUTHCHK_H
+/*
+ * jauthchk - IOCCC JSON .author.json checker and validator
+ *
+ * "Because sometimes even the IOCCC Judges need some help." :-)
+ *
+ * Written in 2022 by:
+ *
+ *	@xexyl
+ *	https://xexyl.net		Cody Boone Ferguson
+ *	https://ioccc.xexyl.net
+ */
+
+#if !defined(INCLUDE_JAUTHCHK_H)
+#    define  INCLUDE_JAUTHCHK_H
 
 #ifdef JAUTHCHK_C
 
@@ -79,4 +91,4 @@ static void check_author_json(char const *file, char const *fnamchk);
 
 
 #endif /* JAUTHCHK_C */
-#endif /* JAUTHCHK_H */
+#endif /* INCLUDE_JAUTHCHK_H */

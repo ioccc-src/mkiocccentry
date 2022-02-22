@@ -1,6 +1,66 @@
-/* official IOCCC tools versions */
-#ifndef VERSION_H
-#define VERSION_H
+/* vim: set tabstop=8 softtabstop=4 shiftwidth=4 noexpandtab : */
+/*
+ * mkiocccentry -  official IOCCC tool set versions
+ *
+ * Make an IOCCC compressed tarball for an IOCCC entry.
+ *
+ * We will form the IOCCC entry compressed tarball "by hand" in C.
+ * Not in some high level language, but standard vanilla C.
+ * Why?  Because this is a obfuscated C contest.  But then why isn't
+ * this code obfuscated?  Because the IOCCC judges prefer to write
+ * in robust unobfuscated code.  Besides, the IOCCC was started
+ * as an ironic commentary on the Bourne shell source and finger daemon
+ * source.  Moreover, irony is well baked-in to the IOCCC.  :-)
+ *
+ * If you do find a problem with this code, let the judges know.
+ * To contact the judges please see:
+ *
+ *      https://www.ioccc.org/judges.html
+ *
+ * "Because even printf has a return value worth paying attention to." :-)
+ *
+ * Many thanks are due to a number of people who provided important
+ * and valuable testing, suggestions, issue reports and GitHub pull
+ * requests to this code.  Without their time and effort, this tool
+ * would not work very well!
+ *
+ * Among the GitHub users we wish to thank include these fine developers
+ * in alphabetical GitHub @user order:
+ *
+ *	@ilyakurdyukov		Ilya Kurdyukov
+ *	@SirWumpus		Anthony Howe
+ *	@vog			Volker Diels-Grabsch
+ *	@xexyl			Cody Boone Ferguson
+ *
+ * Copyright (c) 2021,2022 by Landon Curt Noll.  All Rights Reserved.
+ *
+ * Permission to use, copy, modify, and distribute this software and
+ * its documentation for any purpose and without fee is hereby granted,
+ * provided that the above copyright, this permission notice and text
+ * this comment, and the disclaimer below appear in all of the following:
+ *
+ *       supporting documentation
+ *       source copies
+ *       source works derived from this source
+ *       binaries derived from this source or from derived source
+ *
+ * LANDON CURT NOLL DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE,
+ * INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS. IN NO
+ * EVENT SHALL LANDON CURT NOLL BE LIABLE FOR ANY SPECIAL, INDIRECT OR
+ * CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF
+ * USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR
+ * OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
+ * PERFORMANCE OF THIS SOFTWARE.
+ *
+ * chongo (Landon Curt Noll, http://www.isthe.com/chongo/index.html) /\oo/\
+ *
+ * Share and enjoy! :-)
+ */
+
+
+#if !defined(INCLUDE_VERSION_H)
+#    define  INCLUDE_VERSION_H
+
 
 /*
  * official iocccsize version
@@ -62,4 +122,4 @@
  */
 #define JSTRDECODE_VERSION "0.1 2022-02-14"	/* use format: major.minor YYYY-MM-DD */
 
-#endif /* VERSION_H */
+#endif /* INCLUDE_VERSION_H */
