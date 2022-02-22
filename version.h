@@ -97,34 +97,34 @@
 
 
 /*
- * fnamchk version
+ * official fnamchk version
  */
 #define FNAMCHK_VERSION "0.2 2022-02-07"	/* format: major.minor YYYY-MM-DD */
 
 /*
- * txzchk version
+ * official txzchk version
  */
 #define TXZCHK_VERSION "0.7 2022-02-12"		/* format: major.minor YYYY-MM-DD */
 
 /*
- * jinfochk version
+ * official jinfochk version
  */
 #define JINFOCHK_VERSION "0.5 2022-02-19"	/* format: major.minor YYYY-MM-DD */
 
 /*
- * jauthchk version
+ * official jauthchk version
  */
 #define JAUTHCHK_VERSION "0.5 2022-02-19"	/* format: major.minor YYYY-MM-DD */
 
 
 /*
- * jstrencode version
+ * official jstrencode version
  */
 #define JSTRENCODE_VERSION "0.1 2022-02-14"	/* format: major.minor YYYY-MM-DD */
 
 
 /*
- * jstrdecode version
+ * official jstrdecode version
  */
 #define JSTRDECODE_VERSION "0.1 2022-02-14"	/* format: major.minor YYYY-MM-DD */
 
