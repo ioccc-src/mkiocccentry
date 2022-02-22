@@ -2,8 +2,8 @@
  * iocccsize_err.h - debug, warning and error compat routines
  */
 
-#if !defined(__iocccsize_err_h__)
-#define __iocccsize_err_h__
+#if !defined(INCLUDE_IOCCCSIZE_ERR_H)
+#    define  INCLUDE_IOCCCSIZE_ERR_H
 
 
 #ifdef __cplusplus
@@ -102,4 +102,4 @@ extern "C" {
 #endif
 
 
-#endif /* __iocccsize_err_h__ */
+#endif /* INCLUDE_IOCCCSIZE_ERR_H */
