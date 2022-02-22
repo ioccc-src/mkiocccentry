@@ -1662,7 +1662,7 @@ json_filename(int type)
  *				    and author.json and check the value if it is
  *
  * given:
- *	
+ *
  *	name	- which util called this (jinfochk or jauthchk)
  *	file	- the file being parsed (path to)
  *	fnamchk	- path to fnamchk util

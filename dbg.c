@@ -756,7 +756,7 @@ warnp_or_errp(int exitcode, const char *name, bool test, const char *fmt, ...)
     return;
 }
 
-/* parse_verbosity	- parse -v option for our tools 
+/* parse_verbosity	- parse -v option for our tools
  *
  * given:
  *

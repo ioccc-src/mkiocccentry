@@ -35,7 +35,7 @@
 #if !defined(INCLUDE_FNAMCHK_H)
 #    define  INCLUDE_FNAMCHK_H
 
-/* 
+/*
  * some of the identifiers below share the name of identifiers in other files so
  * only define/declare the below for fnamchk.c
  */

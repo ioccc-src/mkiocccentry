@@ -17,7 +17,7 @@
 #if !defined(INCLUDE_TXZCHK_H)
 #    define  INCLUDE_TXZCHK_H
 
-/* 
+/*
  * some of the identifiers below share the name of identifiers in other files so
  * only define/declare the below for txzchk.c
  */
