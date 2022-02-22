@@ -65,6 +65,7 @@ struct author {
     char *github;		/* author GitHub username or or empty string ==> not provided */
     char *affiliation;		/* author affiliation or or empty string ==> not provided */
     char *winner_handle;	/* previous IOCCC winner handle, or empty string ==> not provided */
+    char *tarball;		/* tarball path; XXX this is _ONLY allocated in jauthchk_; mkiocccentry uses the copy in struct info! */
     int author_num;		/* author number */
 
     /* jauthchk specific */
@@ -116,7 +117,7 @@ struct info {
     char *remarks_md;		/* remarks.md filename */
     int extra_count;		/* number of extra files */
     char **extra_file;		/* list of extra filenames followed by NULL */
-    char *tarball_path;		/* tarball filename */
+    char *tarball;		/* tarball filename */
     /*
      * time
      */

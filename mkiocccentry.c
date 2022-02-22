@@ -391,7 +391,7 @@ main(int argc, char *argv[])
      * create entry directory
      */
     entry_dir = mk_entry_dir(work_dir, info.ioccc_id, info.entry_num, &tarball_path, info.tstamp);
-    info.tarball_path = tarball_path; /* note: do NOT free this in free_info() ! */
+    info.tarball = tarball_path; /* XXX do **NOT** free this in free_info() ! */
     dbg(DBG_LOW, "formed entry directory: %s", entry_dir);
 
 
@@ -3661,7 +3661,7 @@ get_title(struct info *infop)
 	 */
 	if (!isascii(title[0]) || (!islower(title[0]) && !isdigit(title[0]))) {
 	    /*
-	     * reject long title
+	     * reject title whose first char is not [a-z0-9]
 	     */
 	    fpara(stderr,
 		  "",
@@ -5457,7 +5457,7 @@ write_info(struct info *infop, char const *entry_dir, bool test_mode, char const
 	json_fprintf_value_long(info_stream, "\t", "author_count", " : ", (long)author_count, ",\n") &&
 	json_fprintf_value_string(info_stream, "\t", "title", " : ", infop->title, ",\n") &&
 	json_fprintf_value_string(info_stream, "\t", "abstract", " : ", infop->abstract, ",\n") &&
-	json_fprintf_value_string(info_stream, "\t", "tarball", " : ", infop->tarball_path, ",\n") &&
+	json_fprintf_value_string(info_stream, "\t", "tarball", " : ", infop->tarball, ",\n") &&
 	json_fprintf_value_long(info_stream, "\t", "rule_2a_size", " : ", (long)infop->rule_2a_size, ",\n") &&
 	json_fprintf_value_long(info_stream, "\t", "rule_2b_size", " : ", (long)infop->rule_2b_size, ",\n") &&
 	json_fprintf_value_bool(info_stream, "\t", "empty_override", " : ", infop->empty_override, ",\n") &&
@@ -5670,7 +5670,7 @@ write_author(struct info *infop, int author_count, struct author *authorp, char 
 	json_fprintf_value_long(author_stream, "\t", "ioccc_year", " : ", (long)IOCCC_YEAR, ",\n") &&
 	json_fprintf_value_string(author_stream, "\t", "mkiocccentry_version", " : ", infop->mkiocccentry_ver, ",\n") &&
 	json_fprintf_value_string(author_stream, "\t", "IOCCC_contest_id", " : ", infop->ioccc_id, ",\n") &&
-	json_fprintf_value_string(author_stream, "\t", "tarball", " : ", infop->tarball_path, ",\n") &&
+	json_fprintf_value_string(author_stream, "\t", "tarball", " : ", infop->tarball, ",\n") &&
 	json_fprintf_value_long(author_stream, "\t", "entry_num", " : ", (long)infop->entry_num, ",\n") &&
 	json_fprintf_value_long(author_stream, "\t", "author_count", " : ", (long)author_count, ",\n") &&
 	fprintf(author_stream, "\t\"authors\" : [\n") > 0;
