@@ -62,8 +62,6 @@
 #    define  INCLUDE_MKIOCCCENTRY_H
 
 
-#ifdef MKIOCCCENTRY_C
-
 /*
  * util - utility functions and variable types (like bool)
  */
@@ -207,9 +205,6 @@ static void write_author(struct info *infop, int author_count, struct author *au
 static void form_tarball(char const *work_dir, char const *entry_dir, char const *tarball_path, char const *tar,
 			 char const *ls, char const *txzchk, char const *fnamchk);
 static void remind_user(char const *work_dir, char const *entry_dir, char const *tar, char const *tarball_path, bool test_mode);
-
-
-#endif /* MKIOCCCENTRY_C */
 
 
 #endif /* INCLUDE_MKIOCCCENTRY_H */

@@ -14,7 +14,6 @@
  *	https://ioccc.xexyl.net
  */
 
-#define TXZCHK_C
 
 #include <stdio.h>
 #include <stdlib.h>

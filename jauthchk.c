@@ -5,8 +5,6 @@
  * "Because sometimes even the IOCCC Judges need some help." :-)
  */
 
-#define JAUTHCHK_C
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>

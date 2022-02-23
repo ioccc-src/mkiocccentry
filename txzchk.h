@@ -20,12 +20,6 @@
 
 
 /*
- * some of the identifiers below share the name of identifiers in other files so
- * only define/declare the below for txzchk.c
- */
-#ifdef TXZCHK_C
-
-/*
  * util - utility functions and definitions
  */
 #include "util.h"
@@ -138,9 +132,6 @@ static void free_lines(void);
 static struct file *alloc_file(char const *p);
 static void add_file_to_list(struct file *file);
 static void free_file_list(void);
-
-
-#endif /* TXZCHK_C */
 
 
 #endif /* INCLUDE_TXZCHK_H */

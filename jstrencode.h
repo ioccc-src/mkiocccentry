@@ -34,9 +34,6 @@
 #    define  INCLUDE_JSTRENCODE_H
 
 
-#ifdef JSTRENCODE_C
-
-
 /*
  * dbg - debug, warning and error reporting facility
  */
@@ -92,9 +89,6 @@ int verbosity_level = DBG_DEFAULT;	/* debug level set by -v */
  * forward declarations
  */
 static void usage(int exitcode, char const *name, char const *str) __attribute__((noreturn));
-
-
-#endif /* JSTRENCODE_C */
 
 
 #endif /* INCLUDE_JSTRENCODE_H */

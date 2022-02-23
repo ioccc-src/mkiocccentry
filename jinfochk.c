@@ -5,7 +5,6 @@
  * "Because sometimes even the IOCCC Judges need some help." :-)
  */
 
-#define JINFOCHK_C
 
 #include <stdio.h>
 #include <stdlib.h>

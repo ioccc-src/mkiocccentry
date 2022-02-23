@@ -34,12 +34,6 @@
 #    define  INCLUDE_FNAMCHK_H
 
 /*
- * some of the identifiers below share the name of identifiers in other files so
- * only define/declare the below for fnamchk.c
- */
-#ifdef FNAMCHK_C
-
-/*
  * dbg - debug, warning and error reporting facility
  */
 #include "dbg.h"
@@ -91,8 +85,6 @@ int verbosity_level = DBG_DEFAULT;	/* debug level set by -v */
  * forward declarations
  */
 static void usage(int exitcode, char const *name, char const *str) __attribute__((noreturn));
-
-#endif /* FNAMCHK_C */
 
 
 #endif /* INCLUDE_FNAMCHK_H */

@@ -34,9 +34,6 @@
 #    define  INCLUDE_JSTRDECODE_H
 
 
-#ifdef JSTRDECODE_C
-
-
 /*
  * dbg - debug, warning and error reporting facility
  */
@@ -92,9 +89,6 @@ int verbosity_level = DBG_DEFAULT;	/* debug level set by -v */
  * function prototypes
  */
 static void usage(int exitcode, char const *name, char const *str) __attribute__((noreturn));
-
-
-#endif /* JSTRDECODE_C */
 
 
 #endif /* INCLUDE_JSTRDECODE_H */

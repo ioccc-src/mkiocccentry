@@ -29,7 +29,6 @@
  * Share and enjoy! :-)
  */
 
-#define JSTRENCODE_C
 
 /* special comments for the seqcexit tool */
 /*ooo*/ /* exit code out of numerical order - ignore in sequencing */

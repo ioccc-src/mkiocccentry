@@ -15,9 +15,6 @@
 #    define  INCLUDE_JAUTHCHK_H
 
 
-#ifdef JAUTHCHK_C
-
-
 /*
  * dbg - debug, warning and error reporting facility
  */
@@ -92,9 +89,6 @@ static bool test = false;		    /* true ==> issue warnings instead of errors in s
 static void usage(int exitcode, char const *name, char const *str) __attribute__((noreturn));
 static void sanity_chk(char const *file, char const *fnamchk);
 static void check_author_json(char const *file, char const *fnamchk);
-
-
-#endif /* JAUTHCHK_C */
 
 
 #endif /* INCLUDE_JAUTHCHK_H */
