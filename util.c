@@ -441,7 +441,7 @@ struct location loc[] = {
     {"XU", "User-assigned code XU"},	/* User-assigned code */
     {"XV", "User-assigned code XV"},	/* User-assigned code */
     {"XW", "User-assigned code XW"},	/* User-assigned code */
-    {"XX", "User-assigned code XX"},	/* User-assigned code */
+    {"XX", "User-assigned code XX for anonymous locations"},	/* User-assigned code */
     {"XY", "User-assigned code XY"},	/* User-assigned code */
     {"XZ", "User-assigned code XZ"},	/* User-assigned code */
     {"YD", "Democratic Yemen"},	/* Formerly assigned code */

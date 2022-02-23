@@ -3775,6 +3775,8 @@ get_author_info(struct info *infop, char *ioccc_id, struct author **author_set_p
 	     "",
 	     "    See the following URLs for information on ISO 3166-1 Alpha-2 codes:",
 	     "",
+	     "If you wish your location/country to be anonymous, use the User-assigned code: XX",
+	     "",
 	     NULL);
 	errno = 0;		/* pre-clear errno for warnp() */
 	ret = puts(ISO_3166_1_CODE_URL0);
@@ -3897,7 +3899,7 @@ get_author_info(struct info *infop, char *ioccc_id, struct author **author_set_p
 	     * request location/country code
 	     */
 	    author_set[i].location_code = NULL;
-	    author_set[i].location_code = prompt("Enter author 2 character location/country code", &len);
+	    author_set[i].location_code = prompt("Enter author 2 character location/country code (XX for anonymous)", &len);
 	    dbg(DBG_VHIGH, "location/country code as entered: %s", author_set[i].location_code);
 
 	    /*
