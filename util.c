@@ -1190,10 +1190,10 @@ shell_cmd(char const *name, bool abort, char const *format, ...)
     va_start(ap, format);
 
     /*
-     * copy prog.c under entry_dir
+     * execute the shell command
      */
     errno = 0;			/* pre-clear errno for errp() */
-    cmd = vcmdprintf("% -- % %/prog.c", ap);
+    cmd = vcmdprintf(format, ap);
     if (cmd == NULL) {
 	/* exit or error return depending on abort */
 	if (abort == true) {
