@@ -1542,7 +1542,9 @@ malloc_json_decode_str(char const *str, size_t *retlen, bool strict)
     return ret;
 }
 
-/* check_first_json_char - check if first char is '{'
+
+/*
+ * check_first_json_char - check if first char is '{'
  *
  * given:
  *
@@ -1584,7 +1586,9 @@ check_first_json_char(char const *file, char *data, bool strict, char **first)
     return 0;
 }
 
-/* check_last_json_char - check if last char is '}'
+
+/*
+ * check_last_json_char - check if last char is '}'
  *
  * given:
  *
@@ -1630,7 +1634,10 @@ check_last_json_char(char const *file, char *data, bool strict, char **last)
 
     return 0;
 }
-/* json_filename    - return ".info.json", ".author.json" or "null" depending on type
+
+
+/*
+ * json_filename    - return ".info.json", ".author.json" or "null" depending on type
  *
  * given:
  *
@@ -1658,7 +1665,9 @@ json_filename(int type)
     }
 }
 
-/* check_common_json_fields	-   check if field is common to both .info.json
+
+/*
+ * check_common_json_fields	-   check if field is common to both .info.json
  *				    and author.json and check the value if it is
  *
  * given:
@@ -1753,7 +1762,7 @@ int check_common_json_fields(char const *program, char const *file, struct info 
 	    not_reached();
 	}
     } else if (!strcmp(field, "formed_UTC")) {
-    	p = strptime(value, FORMED_UTC_FMT, &tm);
+	p = strptime(value, FORMED_UTC_FMT, &tm);
 	if (p == NULL) {
 	    err(229, __func__, "formed_UTC \"%s\" does not match FORMED_UTC_FMT \"%s\"", value, FORMED_UTC_FMT);
 	    not_reached();
@@ -1814,6 +1823,7 @@ int check_common_json_fields(char const *program, char const *file, struct info 
 
     return ret;
 }
+
 
 /*
  * free_info - free info and related sub-elements

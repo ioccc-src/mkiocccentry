@@ -147,4 +147,5 @@ extern int check_common_json_fields(char const *program, char const *file, struc
 extern void free_info(struct info *infop);
 extern void free_author_array(struct author *authorp, int author_count);
 
+
 #endif /* INCLUDE_JSON_H */

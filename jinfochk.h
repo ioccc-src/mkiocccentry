@@ -11,8 +11,10 @@
  *	https://ioccc.xexyl.net
  */
 
+
 #if !defined(INCLUDE_JINFOCHK_H)
 #    define  INCLUDE_JINFOCHK_H
+
 
 #ifdef JINFOCHK_C
 /*
@@ -89,4 +91,6 @@ static void check_info_json(char const *file, char const *fnamchk);
 
 
 #endif /* JINFOCHK_C */
+
+
 #endif /* INCLUDE_JINFOCHK_H */

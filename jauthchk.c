@@ -261,7 +261,6 @@ sanity_chk(char const *file, char const *fnamchk)
     }
 
 
-
     return;
 }
 

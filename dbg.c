@@ -132,13 +132,13 @@ msg(char const *fmt, ...)
  * dbg - print debug message if we are verbose enough
  *
  * given:
- * 	level	print message if >= verbosity level
- * 	fmt	printf format
- * 	...
+ *	level	print message if >= verbosity level
+ *	fmt	printf format
+ *	...
  *
  * Example:
  *
- * 	dbg(1, "foobar information: %d", value);
+ *	dbg(1, "foobar information: %d", value);
  *
  * NOTE: We warn with extra newlines to help internal fault messages stand out.
  *	 Normally one should NOT include newlines in warn messages.
@@ -207,13 +207,13 @@ dbg(int level, char const *fmt, ...)
  * warn - issue a warning message
  *
  * given:
- * 	name	name of function issuing the warning
- * 	fmt	format of the warning
- * 	...	optional format args
+ *	name	name of function issuing the warning
+ *	fmt	format of the warning
+ *	...	optional format args
  *
  * Example:
  *
- * 	warn(__func__, "unexpected foobar: %d", value);
+ *	warn(__func__, "unexpected foobar: %d", value);
  *
  * NOTE: We warn with extra newlines to help internal fault messages stand out.
  *	 Normally one should NOT include newlines in warn messages.
@@ -288,13 +288,13 @@ warn(char const *name, char const *fmt, ...)
  * warnp - issue a warning message with errno information
  *
  * given:
- * 	name	name of function issuing the warning
- * 	fmt	format of the warning
- * 	...	optional format args
+ *	name	name of function issuing the warning
+ *	fmt	format of the warning
+ *	...	optional format args
  *
  * Example:
  *
- * 	warnp(__func__, "unexpected foobar: %d", value);
+ *	warnp(__func__, "unexpected foobar: %d", value);
  *
  * NOTE: We warn with extra newlines to help internal fault messages stand out.
  *	 Normally one should NOT include newlines in warn messages.
@@ -365,14 +365,14 @@ warnp(char const *name, char const *fmt, ...)
  * err - issue a fatal error message and exit
  *
  * given:
- * 	exitcode	value to exit with
- * 	name		name of function issuing the warning
- * 	fmt		format of the warning
- * 	...		optional format args
+ *	exitcode	value to exit with
+ *	name		name of function issuing the warning
+ *	fmt		format of the warning
+ *	...		optional format args
  *
  * Example:
  *
- * 	err(1, __func__, "bad foobar: %s", message);
+ *	err(1, __func__, "bad foobar: %s", message);
  *
  * NOTE: We warn with extra newlines to help internal fault messages stand out.
  *	 Normally one should NOT include newlines in warn messages.
@@ -444,14 +444,14 @@ err(int exitcode, char const *name, char const *fmt, ...)
  * errp - issue a fatal error message with errno information and exit
  *
  * given:
- * 	exitcode	value to exit with
- * 	name		name of function issuing the warning
- * 	fmt		format of the warning
- * 	...		optional format args
+ *	exitcode	value to exit with
+ *	name		name of function issuing the warning
+ *	fmt		format of the warning
+ *	...		optional format args
  *
  * Example:
  *
- * 	errp(1, __func__, "bad foobar: %s", message);
+ *	errp(1, __func__, "bad foobar: %s", message);
  *
  * NOTE: We warn with extra newlines to help internal fault messages stand out.
  *	 Normally one should NOT include newlines in warn messages.
@@ -531,10 +531,10 @@ errp(int exitcode, char const *name, char const *fmt, ...)
  * vfprintf_usage - print command line usage and perhaps exit
  *
  * given:
- * 	exitcode	- >= 0, exit with this code
+ *	exitcode	- >= 0, exit with this code
  *			  < 0, just return
  *	stream		- stream to print on
- * 	fmt		- format of the usage message
+ *	fmt		- format of the usage message
  *	...		- potential args for usage message
  */
 void
@@ -607,15 +607,15 @@ vfprintf_usage(int exitcode, FILE *stream, char const *fmt, ...)
  * warn_or_err - issue a warning or an error depending on test
  *
  * given:
- * 	exitcode	value to exit with
- * 	name		name of function issuing the warning
+ *	exitcode	value to exit with
+ *	name		name of function issuing the warning
  *	test		true ==> call warn(), false ==> call err()
- * 	fmt		format of the warning
- * 	...		optional format args
+ *	fmt		format of the warning
+ *	...		optional format args
  *
  * Example:
  *
- * 	warn_or_err(1, __func__, true, "bad foobar: %s", message);
+ *	warn_or_err(1, __func__, true, "bad foobar: %s", message);
  *
  * NOTE: This function does not return if test == false.
  */
@@ -684,15 +684,15 @@ warn_or_err(int exitcode, const char *name, bool test, const char *fmt, ...)
  * warnp_or_errp - issue a warning or an error depending on test
  *
  * given:
- * 	exitcode	value to exit with
- * 	name		name of function issuing the warning
+ *	exitcode	value to exit with
+ *	name		name of function issuing the warning
  *	test		true ==> call warn(), false ==> call err()
- * 	fmt		format of the warning
- * 	...		optional format args
+ *	fmt		format of the warning
+ *	...		optional format args
  *
  * Example:
  *
- * 	warnp_or_errp(1, __func__, true, "bad foobar: %s", message);
+ *	warnp_or_errp(1, __func__, true, "bad foobar: %s", message);
  *
  * NOTE: This function does not return if test == false.
  */
@@ -756,7 +756,9 @@ warnp_or_errp(int exitcode, const char *name, bool test, const char *fmt, ...)
     return;
 }
 
-/* parse_verbosity	- parse -v option for our tools
+
+/*
+ * parse_verbosity	- parse -v option for our tools
  *
  * given:
  *
@@ -788,6 +790,7 @@ parse_verbosity(char const *program, char const *arg)
 
     return verbosity;
 }
+
 
 #if defined(DBG_TEST)
 int

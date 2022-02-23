@@ -4,8 +4,10 @@
  * Public Domain 1992, 2015, 2018, 2019, 2021, 2022 by Anthony Howe.  All rights released.
  */
 
+
 #if !defined(INCLUDE_IOCCCSIZE_H)
 #    define  INCLUDE_IOCCCSIZE_H
+
 
 #ifdef __cplusplus
 extern "C" {
@@ -89,5 +91,6 @@ extern char const * const iocccsize_version;
 #ifdef  __cplusplus
 }
 #endif
+
 
 #endif /* INCLUDE_IOCCCSIZE_H */

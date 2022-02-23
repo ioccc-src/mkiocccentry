@@ -269,7 +269,8 @@ rule_count(FILE *fp_in)
 		}
 #endif
 		if (ch == '\\' && next_ch == '\n') {
-			/* ISO C11 section 5.1.1.2 Translation Phases
+			/*
+			 * ISO C11 section 5.1.1.2 Translation Phases
 			 * point 2 discards backslash newlines.
 			 */
 			counts.rule_2a_size += 2;
@@ -277,7 +278,8 @@ rule_count(FILE *fp_in)
 		}
 
 		if (next_ch != EOF && ungetc(next_ch, fp_in) == EOF) {
-			/* ISO C ungetc() guarantees one character (byte) pushback.
+			/*
+			 * ISO C ungetc() guarantees one character (byte) pushback.
 			 * How does that relate to UTF8 and wide-character library
 			 * handling?  An invalid trigraph results in 2x ungetc().
 			 */
@@ -344,7 +346,8 @@ rule_count(FILE *fp_in)
 		}
 
 #ifdef DIGRAPHS
-		/* ISO C11 section 6.4.6 Punctuators, digraphs handled during
+		/*
+		 * ISO C11 section 6.4.6 Punctuators, digraphs handled during
 		 * tokenization, but map here and count as 1 byte, like their
 		 * ASCII counter parts.
 		 */
@@ -364,7 +367,8 @@ rule_count(FILE *fp_in)
 		/* Sanity check against file size and wc(1) byte count. */
 		counts.rule_2a_size++;
 
-		/* End of possible keyword?  Care with #word as there can
+		/*
+		 * End of possible keyword?  Care with #word as there can
 		 * be whitespace or comments between # and word.
 		 */
 		if ((word[0] != '#' || 1 < wordi) && !isalnum(ch) && ch != '_' && ch != '#') {

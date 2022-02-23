@@ -39,7 +39,7 @@ main(int argc, char **argv)
     extern char *optarg;		    /* option argument */
     extern int optind;			    /* argv index of the next arg */
     char *tar = TAR_PATH_0;		    /* path to tar executable that supports the -J (xz) option */
-    char *fnamchk = FNAMCHK_PATH_0;   	    /* path to fnamchk tool */
+    char *fnamchk = FNAMCHK_PATH_0;	    /* path to fnamchk tool */
     bool fnamchk_flag_used = false;	    /* if -F option used */
     bool tar_flag_used = false;		    /* true ==> -t /path/to/tar was given */
     int ret;				    /* libc return code */
@@ -168,6 +168,7 @@ main(int argc, char **argv)
     exit(txz_info.total_issues != 0); /*ooo*/
 }
 
+
 /*
  * show_txz_info    - show information about tarball (if verbosity is >= medium)
  *
@@ -213,6 +214,7 @@ show_txz_info(char const *txzpath)
 
     }
 }
+
 
 /*
  * usage - print usage to stderr
@@ -424,7 +426,8 @@ sanity_chk(char const *tar, char const *fnamchk)
 }
 
 
-/* check_file		- checks on the current file only
+/*
+ * check_file		- checks on the current file only
  *
  * given:
  *
@@ -656,7 +659,8 @@ check_all_files(char const *dir_name)
 }
 
 
-/* check_directories	- directory specific checks on the file
+/*
+ * check_directories	- directory specific checks on the file
  *
  * given:
  *
@@ -1379,8 +1383,8 @@ check_tarball(char const *tar, char const *fnamchk)
     free(cmd);
     cmd = NULL;
 
-    /* now parse the lines, reporting any issue that have to be done while
-     * parsing.
+    /*
+     * now parse the lines, reporting any issue that have to be done while parsing
      */
     parse_all_lines(dir_name, txzpath);
 
@@ -1562,7 +1566,8 @@ free_lines(void)
 }
 
 
-/* alloc_file	- allocate a struct file *
+/*
+ * alloc_file	- allocate a struct file *
  *
  * given:
  *
@@ -1657,7 +1662,6 @@ add_file_to_list(struct file *file)
 
 /*
  * free_file_list - free the file linked list
- *
  */
 static void
 free_file_list(void)

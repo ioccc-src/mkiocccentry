@@ -30,8 +30,6 @@
  */
 
 
-
-
 #if !defined(INCLUDE_FNAMCHK_H)
 #    define  INCLUDE_FNAMCHK_H
 
@@ -95,4 +93,6 @@ int verbosity_level = DBG_DEFAULT;	/* debug level set by -v */
 static void usage(int exitcode, char const *name, char const *str) __attribute__((noreturn));
 
 #endif /* FNAMCHK_C */
+
+
 #endif /* INCLUDE_FNAMCHK_H */

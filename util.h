@@ -27,6 +27,7 @@
  * Share and enjoy! :-)
  */
 
+
 #if !defined(INCLUDE_UTIL_H)
 #    define  INCLUDE_UTIL_H
 
@@ -121,5 +122,6 @@ extern int string_to_int(char const *str);
 extern unsigned long string_to_unsigned_long(char const *str);
 extern unsigned long long string_to_unsigned_long_long(char const *str);
 extern bool valid_contest_id(char *str);
+
 
 #endif				/* INCLUDE_UTIL_H */

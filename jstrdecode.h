@@ -33,6 +33,7 @@
 #if !defined(INCLUDE_JSTRDECODE_H)
 #    define  INCLUDE_JSTRDECODE_H
 
+
 #ifdef JSTRDECODE_C
 
 
@@ -94,4 +95,6 @@ static void usage(int exitcode, char const *name, char const *str) __attribute__
 
 
 #endif /* JSTRDECODE_C */
+
+
 #endif /* INCLUDE_JSTRDECODE_H */

@@ -10,8 +10,10 @@
  *	https://ioccc.xexyl.net
  */
 
+
 #if !defined(INCLUDE_JAUTHCHK_H)
 #    define  INCLUDE_JAUTHCHK_H
+
 
 #ifdef JAUTHCHK_C
 
@@ -93,4 +95,6 @@ static void check_author_json(char const *file, char const *fnamchk);
 
 
 #endif /* JAUTHCHK_C */
+
+
 #endif /* INCLUDE_JAUTHCHK_H */

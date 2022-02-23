@@ -61,6 +61,7 @@
 #if !defined(INCLUDE_MKIOCCCENTRY_H)
 #    define  INCLUDE_MKIOCCCENTRY_H
 
+
 #ifdef MKIOCCCENTRY_C
 
 /*
@@ -208,6 +209,7 @@ static void form_tarball(char const *work_dir, char const *entry_dir, char const
 static void remind_user(char const *work_dir, char const *entry_dir, char const *tar, char const *tarball_path, bool test_mode);
 
 
-
 #endif /* MKIOCCCENTRY_C */
+
+
 #endif /* INCLUDE_MKIOCCCENTRY_H */

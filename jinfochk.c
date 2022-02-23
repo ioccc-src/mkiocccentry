@@ -18,6 +18,7 @@
  */
 #include "jinfochk.h"
 
+
 int
 main(int argc, char **argv)
 {
@@ -256,7 +257,6 @@ sanity_chk(char const *file, char const *fnamchk)
     }
 
 
-
     return;
 }
 
@@ -399,7 +399,8 @@ check_info_json(char const *file, char const *fnamchk)
 	 * have to handle it specially but this step still has to be done.
 	 */
 
-	/* Before we can extract the value we have to determine if the field is
+	/*
+	 * Before we can extract the value we have to determine if the field is
 	 * supposed to be an array or not: if it's an array we have to handle it
 	 * differently as there's more to parse. If it's not an array we just
 	 * check the name, retrieve the value and then test if it's a valid

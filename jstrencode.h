@@ -29,8 +29,10 @@
  * Share and enjoy! :-)
  */
 
+
 #if !defined(INCLUDE_JSTRENCODE_H)
 #    define  INCLUDE_JSTRENCODE_H
+
 
 #ifdef JSTRENCODE_C
 
@@ -93,4 +95,6 @@ static void usage(int exitcode, char const *name, char const *str) __attribute__
 
 
 #endif /* JSTRENCODE_C */
+
+
 #endif /* INCLUDE_JSTRENCODE_H */

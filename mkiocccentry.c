@@ -103,7 +103,6 @@
 #define MKIOCCCENTRY_ANSWERS_EOF "ANSWERS_EOF"
 
 
-
 int
 main(int argc, char *argv[])
 {
@@ -329,7 +328,8 @@ main(int argc, char *argv[])
     sanity_chk(&info, work_dir, tar, cp, ls, txzchk, fnamchk, jinfochk, jauthchk);
     para("... environment looks OK", "", NULL);
 
-    /* if -a answers was specified and answers file exists, prompt user if they
+    /*
+     * if -a answers was specified and answers file exists, prompt user if they
      * want to overwrite it; if they don't tell them how to use it and abort.
      * Else it will be overwritten.
      */
@@ -747,7 +747,6 @@ usage(int exitcode, char const *str, char const *program)
     exit(exitcode); /*ooo*/
     not_reached();
 }
-
 
 
 /*
@@ -1226,7 +1225,6 @@ sanity_chk(struct info *infop, char const *work_dir, char const *tar, char const
 }
 
 
-
 /*
  * prompt - prompt for a string
  *
@@ -1342,6 +1340,7 @@ prompt(char const *str, size_t *lenp)
      */
     return buf;
 }
+
 
 /*
  * get IOCCC ID or test
@@ -1883,6 +1882,7 @@ warn_rule_2a_size(struct info *infop, char const *prog_c, int mode, RuleCount si
     }
     return;
 }
+
 
 /*
  * warn_high_bit - warn user that prog.c has high bit chars in prog.c
@@ -5156,7 +5156,6 @@ json_fprintf_value_bool(FILE *stream, char const *lead, char const *name, char c
     }
     return true;
 }
-
 
 
 /*

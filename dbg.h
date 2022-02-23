@@ -27,8 +27,10 @@
  * Share and enjoy! :-)
  */
 
+
 #if !defined(INCLUDE_DBG_H)
 #    define  INCLUDE_DBG_H
+
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -138,10 +140,11 @@ extern void vfprintf_usage(int exitcode, FILE *stream, const char *fmt, ...) \
 	__attribute__((format(printf, 3, 4)));		/* 3=format 4=params */
 
 extern void warn_or_err(int exitcode, const char *name, bool test, const char *fmt, ...) \
- 	__attribute__((format(printf, 4, 5)));		/* 4=format 5=params */
+	__attribute__((format(printf, 4, 5)));		/* 4=format 5=params */
 extern void warnp_or_errp(int exitcode, const char *name, bool test, const char *fmt, ...) \
- 	__attribute__((format(printf, 4, 5)));		/* 4=format 5=params */
+	__attribute__((format(printf, 4, 5)));		/* 4=format 5=params */
 
 extern int parse_verbosity(char const *program, char const *arg);
+
 
 #endif				/* INCLUDE_DBG_H */

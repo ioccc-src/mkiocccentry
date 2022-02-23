@@ -1485,7 +1485,8 @@ readline_dup(char **linep, bool strip, size_t *lenp, FILE *stream)
 }
 
 
-/* find_utils - find tar, cp, ls, txzchk and fnamchk utilities
+/*
+ * find_utils - find tar, cp, ls, txzchk and fnamchk utilities
  *
  * given:
  *
@@ -1498,7 +1499,7 @@ readline_dup(char **linep, bool strip, size_t *lenp, FILE *stream)
  *	txzchk_flag_used    - true ==> -C flag used
  *	txzchk		    - if -C txzchk was used and txzchk != NULL set *txzchk to path
  *	fnamchk_flag_used   - true ==> if fnamchk flag was used
- *	fnamchk	    	    - if fnamchk option used and fnamchk ! NULL set *fnamchk to path
+ *	fnamchk		    - if fnamchk option used and fnamchk ! NULL set *fnamchk to path
  *	jinfochk_flag_used  - true ==> -j jinfochk was used
  *	jinfochk	    - if -j jinfochk was used and jinfochk != NULL set *jinfochk to path
  *	jauthchk_flag_used  - true ==> -J jauthchk was used	    -
@@ -1768,6 +1769,7 @@ read_all(FILE *stream, size_t *psize)
     return buf;
 }
 
+
 /*
  * strnull - return NULL if string is empty
  *
@@ -1790,7 +1792,9 @@ strnull(char const * const str)
     return NULL;
 }
 
-/* string_to_long   -	convert str to long and check for errors
+
+/*
+ * string_to_long   -	convert str to long and check for errors
  *
  * given:
  *
@@ -1826,7 +1830,9 @@ long string_to_long(char const *str)
     return (long)num;
 }
 
-/* string_to_long_long   -	convert str to long long and check for errors
+
+/*
+ * string_to_long_long   -	convert str to long long and check for errors
  *
  * given:
  *
@@ -1861,7 +1867,10 @@ long long string_to_long_long(char const *str)
     }
     return num;
 }
-/* string_to_int   -	convert str to int and check for errors
+
+
+/*
+ * string_to_int   -	convert str to int and check for errors
  *
  * given:
  *
@@ -1897,7 +1906,9 @@ int string_to_int(char const *str)
     return (int)num;
 }
 
-/* string_to_unsigned_long - string to unsigned long with error checks
+
+/*
+ * string_to_unsigned_long - string to unsigned long with error checks
  *
  * given:
  *
@@ -1932,7 +1943,9 @@ unsigned long string_to_unsigned_long(char const *str)
     return num;
 }
 
-/* string_to_unsigned_long_long - string to unsigned long long with error checks
+
+/*
+ * string_to_unsigned_long_long - string to unsigned long long with error checks
  *
  * given:
  *
@@ -1967,7 +1980,10 @@ unsigned long long string_to_unsigned_long_long(char const *str)
     return num;
 
 }
-/* valid_contest_id	    -	validate string as a contest ID
+
+
+/*
+ * valid_contest_id	    -	validate string as a contest ID
  *
  * given:
  *

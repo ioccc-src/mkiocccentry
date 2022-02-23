@@ -14,8 +14,10 @@
  *	https://ioccc.xexyl.net
  */
 
+
 #if !defined(INCLUDE_TXZCHK_H)
 #    define  INCLUDE_TXZCHK_H
+
 
 /*
  * some of the identifiers below share the name of identifiers in other files so
@@ -139,4 +141,6 @@ static void free_file_list(void);
 
 
 #endif /* TXZCHK_C */
+
+
 #endif /* INCLUDE_TXZCHK_H */
