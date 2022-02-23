@@ -412,6 +412,7 @@ main(int argc, char *argv[])
         ret = fprintf(answerp, "%s\n", MKIOCCCENTRY_ANSWERS_VERSION);
 	if (ret <= 0) {
 	    warnp(__func__, "fprintf error printing header to the answers file");
+	    ++answers_errors;
 	}
     }
 
@@ -423,11 +424,13 @@ main(int argc, char *argv[])
         ret = fprintf(answerp, "%s\n", info.common.ioccc_id);
 	if (ret <= 0) {
 	    warnp(__func__, "fprintf error printing IOCCC contest id to the answers file");
+	    ++answers_errors;
 	}
 	errno = 0;			/* pre-clear errno for warnp() */
 	ret = fprintf(answerp, "%d\n", info.common.entry_num);
 	if (ret <= 0) {
 	    warnp(__func__, "fprintf error printing entry number to the answers file");
+	    ++answers_errors;
 	}
     }
 
@@ -469,6 +472,7 @@ main(int argc, char *argv[])
 	ret = fprintf(answerp, "%s\n", info.title);
 	if (ret <= 0) {
 	    warnp(__func__, "fprintf error printing title to the answers file");
+	    ++answers_errors;
 	}
     }
 
@@ -482,6 +486,7 @@ main(int argc, char *argv[])
 	ret = fprintf(answerp, "%s\n", info.abstract);
 	if (ret <= 0) {
 	    warnp(__func__, "fprintf error printing abstract to the answers file");
+	    ++answers_errors;
 	}
     }
 
@@ -499,7 +504,7 @@ main(int argc, char *argv[])
         ret = fprintf(answerp, "%d\n", author_count);
 	if (ret <= 0) {
 	    warnp(__func__, "fprintf error printing IOCCC author count to the answers file");
-	    answers_errors++;
+	    ++answers_errors;
 	}
 
 	/*
@@ -518,7 +523,7 @@ main(int argc, char *argv[])
 		author_set[i].affiliation);
 	    if (ret <= 0) {
 		warnp(__func__, "fprintf error printing author info the answers file");
-		answers_errors++;
+		++answers_errors;
 	    }
 	}
     }
@@ -538,8 +543,9 @@ main(int argc, char *argv[])
     para("... completed .author.json file.", "", NULL);
 
     /*
-     * finalize the answers file, writing final answers (if writing answers) and
-     * then closing the stream.
+     * finalize the answers file: either write the final answers (if writing
+     * answers) or read the answers EOF marker and then finally closing the
+     * stream.
      */
     if (answerp != NULL) {
 	if (read_answers_flag_used) {
@@ -561,14 +567,14 @@ main(int argc, char *argv[])
 	    ret = fprintf(answerp, "%s\n", MKIOCCCENTRY_ANSWERS_EOF);
 	    if (ret <= 0) {
 	        warnp(__func__, "fprintf error writing ANSWERS_EOF marker to the answers file");
-		answers_errors++;
+		++answers_errors;
 	    }
 	}
 	if (answers != NULL) {
 	    ret = fclose(answerp);
 	    if (ret != 0) {
 	        warnp(__func__, "error in fclose to the answers file");
-	        answers_errors++;
+		++answers_errors;
 	    }
 	}
 	answerp = NULL;
