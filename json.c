@@ -1651,17 +1651,19 @@ check_last_json_char(char const *file, char *data, bool strict, char **last)
 char const *
 json_filename(int type)
 {
+    char const *name = INVALID_JSON_FILENAME; /* "null" */
+
     switch (type) {
 	case INFO_JSON:
-	    return ".info.json";
+	    return INFO_JSON_FILENAME; /* ".info.json" */
 	    break; /* in case the return is ever removed */
 	case AUTHOR_JSON:
-	    return ".author.json";
+	    return AUTHOR_JSON_FILENAME; /* ".author.json" */
 	    break; /* in case the return is ever removed */
 	default:
-	    return "null";
 	    break; /* in case the return is ever removed */
     }
+    return name;
 }
 
 
@@ -1673,6 +1675,8 @@ json_filename(int type)
  *
  *	name	- which util called this (jinfochk or jauthchk)
  *	file	- the file being parsed (path to)
+ *	common	- pointer to struct json_common (in either a struct info or
+ *		  struct author)
  *	fnamchk	- path to fnamchk util
  *	field	- the field name
  *	value	- the value of the field
@@ -1683,8 +1687,8 @@ json_filename(int type)
  *
  * Does not return on error (NULL pointers).
  */
-int check_common_json_fields(char const *program, char const *file, struct info *infop,
-	struct author *authorp, char const *fnamchk, char *field, char *value)
+int check_common_json_fields(char const *program, char const *file, struct json_common *common,
+	char const *fnamchk, char *field, char *value)
 {
     int ret = 1;
     int year = 0;
@@ -1697,8 +1701,7 @@ int check_common_json_fields(char const *program, char const *file, struct info 
     /*
      * firewall
      */
-    if (program == NULL || file == NULL || fnamchk == NULL || field == NULL || value == NULL ||
-	(!strcmp(program, "jinfochk") && infop == NULL) || (!strcmp(program, "jauthchk") && authorp == NULL)) {
+    if (program == NULL || file == NULL || fnamchk == NULL || field == NULL || value == NULL || common == NULL) {
 	err(218, __func__, "passed NULL arg(s)");
 	not_reached();
     }
@@ -1848,17 +1851,17 @@ free_info(struct info *infop)
     /*
      * free version values
      */
-    if (infop->mkiocccentry_ver != NULL) {
-	free(infop->mkiocccentry_ver);
-	infop->mkiocccentry_ver = NULL;
+    if (infop->common.mkiocccentry_ver != NULL) {
+	free(infop->common.mkiocccentry_ver);
+	infop->common.mkiocccentry_ver = NULL;
     }
 
     /*
      * free entry values
      */
-    if (infop->ioccc_id != NULL) {
-	free(infop->ioccc_id);
-	infop->ioccc_id = NULL;
+    if (infop->common.ioccc_id != NULL) {
+	free(infop->common.ioccc_id);
+	infop->common.ioccc_id = NULL;
     }
     if (infop->title != NULL) {
 	free(infop->title);
@@ -1895,21 +1898,21 @@ free_info(struct info *infop)
 	infop->extra_file = NULL;
     }
 
-    if (infop->tarball != NULL) {
-	free(infop->tarball);
-	infop->tarball = NULL;
+    if (infop->common.tarball != NULL) {
+	free(infop->common.tarball);
+	infop->common.tarball = NULL;
     }
 
     /*
      * free time values
      */
-    if (infop->epoch != NULL) {
-	free(infop->epoch);
-	infop->epoch = NULL;
+    if (infop->common.epoch != NULL) {
+	free(infop->common.epoch);
+	infop->common.epoch = NULL;
     }
-    if (infop->utctime != NULL) {
-	free(infop->utctime);
-	infop->utctime = NULL;
+    if (infop->common.utctime != NULL) {
+	free(infop->common.utctime);
+	infop->common.utctime = NULL;
     }
     memset(infop, 0, sizeof *infop);
 
