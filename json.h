@@ -49,9 +49,16 @@
 #define MAX_BYTE (0xff)		    /* maximum byte value */
 #define BYTE_VALUES (MAX_BYTE+1)    /* number of different combinations of bytes */
 
+/*
+ * the next five are for the json_filename() function
+ */
 #define INFO_JSON	(0)	    /* file is assumed to be a .info.json file */
 #define AUTHOR_JSON	(1)	    /* file is assumed to be a .author.json file */
-#define FORMED_UTC_FMT "%a %b %d %H:%M:%S %Y UTC"
+#define INFO_JSON_FILENAME ".info.json"
+#define AUTHOR_JSON_FILENAME ".author.json"
+#define INVALID_JSON_FILENAME "null"
+
+#define FORMED_UTC_FMT "%a %b %d %H:%M:%S %Y UTC"   /* format for strptime() of formed_UTC */
 
 /*
  * common json fields

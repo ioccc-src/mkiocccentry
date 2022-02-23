@@ -1651,17 +1651,19 @@ check_last_json_char(char const *file, char *data, bool strict, char **last)
 char const *
 json_filename(int type)
 {
+    char const *name = INVALID_JSON_FILENAME; /* "null" */
+
     switch (type) {
 	case INFO_JSON:
-	    return ".info.json";
+	    return INFO_JSON_FILENAME; /* ".info.json" */
 	    break; /* in case the return is ever removed */
 	case AUTHOR_JSON:
-	    return ".author.json";
+	    return AUTHOR_JSON_FILENAME; /* ".author.json" */
 	    break; /* in case the return is ever removed */
 	default:
-	    return "null";
 	    break; /* in case the return is ever removed */
     }
+    return name;
 }
 
 
