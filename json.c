@@ -1848,17 +1848,17 @@ free_info(struct info *infop)
     /*
      * free version values
      */
-    if (infop->mkiocccentry_ver != NULL) {
-	free(infop->mkiocccentry_ver);
-	infop->mkiocccentry_ver = NULL;
+    if (infop->common.mkiocccentry_ver != NULL) {
+	free(infop->common.mkiocccentry_ver);
+	infop->common.mkiocccentry_ver = NULL;
     }
 
     /*
      * free entry values
      */
-    if (infop->ioccc_id != NULL) {
-	free(infop->ioccc_id);
-	infop->ioccc_id = NULL;
+    if (infop->common.ioccc_id != NULL) {
+	free(infop->common.ioccc_id);
+	infop->common.ioccc_id = NULL;
     }
     if (infop->title != NULL) {
 	free(infop->title);
@@ -1895,21 +1895,21 @@ free_info(struct info *infop)
 	infop->extra_file = NULL;
     }
 
-    if (infop->tarball != NULL) {
-	free(infop->tarball);
-	infop->tarball = NULL;
+    if (infop->common.tarball != NULL) {
+	free(infop->common.tarball);
+	infop->common.tarball = NULL;
     }
 
     /*
      * free time values
      */
-    if (infop->epoch != NULL) {
-	free(infop->epoch);
-	infop->epoch = NULL;
+    if (infop->common.epoch != NULL) {
+	free(infop->common.epoch);
+	infop->common.epoch = NULL;
     }
-    if (infop->utctime != NULL) {
-	free(infop->utctime);
-	infop->utctime = NULL;
+    if (infop->common.utctime != NULL) {
+	free(infop->common.utctime);
+	infop->common.utctime = NULL;
     }
     memset(infop, 0, sizeof *infop);
 

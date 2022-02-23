@@ -286,10 +286,10 @@ main(int argc, char *argv[])
 	errp(2, __func__, "gettimeofday failed");
 	not_reached();
     }
-    info.tstamp = tp.tv_sec;
-    dbg(DBG_HIGH, "info.tstamp: %ld", (long)info.tstamp);
-    info.usec = tp.tv_usec;
-    dbg(DBG_HIGH, "infop->usec: %ld", (long)info.usec);
+    info.common.tstamp = tp.tv_sec;
+    dbg(DBG_HIGH, "info.common.tstamp: %ld", (long)info.common.tstamp);
+    info.common.usec = tp.tv_usec;
+    dbg(DBG_HIGH, "infop->common.usec: %ld", (long)info.common.usec);
 
     /*
      * Welcome
@@ -305,8 +305,8 @@ main(int argc, char *argv[])
      * save our version
      */
     errno = 0;			/* pre-clear errno for errp() */
-    info.mkiocccentry_ver = strdup(MKIOCCCENTRY_VERSION);
-    if (info.mkiocccentry_ver == NULL) {
+    info.common.mkiocccentry_ver = strdup(MKIOCCCENTRY_VERSION);
+    if (info.common.mkiocccentry_ver == NULL) {
 	errp(4, __func__, "cannot strdup version: %s", MKIOCCCENTRY_VERSION);
 	not_reached();
     }
@@ -365,8 +365,8 @@ main(int argc, char *argv[])
     /*
      * obtain the IOCCC contest ID
      */
-    info.ioccc_id = get_contest_id(&test_mode, &read_answers_flag_used);
-    dbg(DBG_MED, "IOCCC contest ID: %s", info.ioccc_id);
+    info.common.ioccc_id = get_contest_id(&test_mode, &read_answers_flag_used);
+    dbg(DBG_MED, "IOCCC contest ID: %s", info.common.ioccc_id);
 
     /*
      * found the answer file header in stdin
@@ -378,16 +378,16 @@ main(int argc, char *argv[])
     /*
      * obtain entry number
      */
-    info.entry_num = get_entry_num(&info);
-    dbg(DBG_MED, "entry number: %d", info.entry_num);
+    info.common.entry_num = get_entry_num(&info);
+    dbg(DBG_MED, "entry number: %d", info.common.entry_num);
 
     /*
      * create entry directory
      */
-    entry_dir = mk_entry_dir(work_dir, info.ioccc_id, info.entry_num, &tarball_path, info.tstamp);
+    entry_dir = mk_entry_dir(work_dir, info.common.ioccc_id, info.common.entry_num, &tarball_path, info.common.tstamp);
     errno = 0;
-    info.tarball = strdup(tarball_path);
-    if (info.tarball == NULL) {
+    info.common.tarball = strdup(tarball_path);
+    if (info.common.tarball == NULL) {
 	errp(9, __func__, "strdup() tarball path %s failed", tarball_path);
 	not_reached();
     }
@@ -420,12 +420,12 @@ main(int argc, char *argv[])
      */
     if (answerp != NULL && answers_flag_used) {
 	errno = 0;			/* pre-clear errno for warnp() */
-        ret = fprintf(answerp, "%s\n", info.ioccc_id);
+        ret = fprintf(answerp, "%s\n", info.common.ioccc_id);
 	if (ret <= 0) {
 	    warnp(__func__, "fprintf error printing IOCCC contest id to the answers file");
 	}
 	errno = 0;			/* pre-clear errno for warnp() */
-	ret = fprintf(answerp, "%d\n", info.entry_num);
+	ret = fprintf(answerp, "%d\n", info.common.entry_num);
 	if (ret <= 0) {
 	    warnp(__func__, "fprintf error printing entry number to the answers file");
 	}
@@ -488,7 +488,7 @@ main(int argc, char *argv[])
     /*
      * obtain author information
      */
-    author_count = get_author_info(&info, info.ioccc_id, &author_set);
+    author_count = get_author_info(&info, info.common.ioccc_id, &author_set);
     dbg(DBG_LOW, "collected information on %d authors", author_count);
 
     /*
@@ -499,7 +499,7 @@ main(int argc, char *argv[])
         ret = fprintf(answerp, "%d\n", author_count);
 	if (ret <= 0) {
 	    warnp(__func__, "fprintf error printing IOCCC author count to the answers file");
-	    info.answers_errors++;
+	    answers_errors++;
 	}
 
 	/*
@@ -518,7 +518,7 @@ main(int argc, char *argv[])
 		author_set[i].affiliation);
 	    if (ret <= 0) {
 		warnp(__func__, "fprintf error printing author info the answers file");
-		info.answers_errors++;
+		answers_errors++;
 	    }
 	}
     }
@@ -561,14 +561,14 @@ main(int argc, char *argv[])
 	    ret = fprintf(answerp, "%s\n", MKIOCCCENTRY_ANSWERS_EOF);
 	    if (ret <= 0) {
 	        warnp(__func__, "fprintf error writing ANSWERS_EOF marker to the answers file");
-		info.answers_errors++;
+		answers_errors++;
 	    }
 	}
 	if (answers != NULL) {
 	    ret = fclose(answerp);
 	    if (ret != 0) {
 	        warnp(__func__, "error in fclose to the answers file");
-	        info.answers_errors++;
+	        answers_errors++;
 	    }
 	}
 	answerp = NULL;
@@ -591,11 +591,11 @@ main(int argc, char *argv[])
      * warn the user if there were I/O errors while writing the answers file
      */
     if (answers_flag_used) {
-	if (info.answers_errors > 0) {
+	if (answers_errors > 0) {
 	    errno = 0;	/* pre-clear errno for warnp() */
 	    ret = printf("Warning: There were %u I/O error%s on the answers file. Make SURE to verify that using the file\n"
 			 "results in the proper input before re-uploading!\n",
-			 info.answers_errors, info.answers_errors == 1 ? "" : "s" );
+			 answers_errors, answers_errors == 1 ? "" : "s" );
 	    if (ret <= 0) {
 		warnp(__func__, "unable to warn user that there were I/O errors on the answers file");
 	    }
@@ -674,7 +674,6 @@ main(int argc, char *argv[])
 	free(entry_dir);
 	entry_dir = NULL;
     }
-    /* after this we cannot call free() on infop->tarball_path! */
     if (tarball_path != NULL) {
 	free(tarball_path);
 	tarball_path = NULL;
@@ -1219,7 +1218,7 @@ sanity_chk(struct info *infop, char const *work_dir, char const *tar, char const
     /*
      * obtain version string from iocccsize_version
      */
-    infop->iocccsize_ver = iocccsize_version;
+    infop->common.iocccsize_ver = iocccsize_version;
     return;
 }
 
@@ -5217,12 +5216,12 @@ write_info(struct info *infop, char const *entry_dir, bool test_mode, char const
      * timestamp epoch
      */
     errno = 0;			/* pre-clear errno for errp() */
-    infop->epoch = strdup(TIMESTAMP_EPOCH);
-    if (infop->epoch == NULL) {
+    infop->common.epoch = strdup(TIMESTAMP_EPOCH);
+    if (infop->common.epoch == NULL) {
 	errp(186, __func__, "strdup of %s failed", TIMESTAMP_EPOCH);
 	not_reached();
     }
-    dbg(DBG_VVHIGH, "infop->epoch: %s", infop->epoch);
+    dbg(DBG_VVHIGH, "infop->common.epoch: %s", infop->common.epoch);
 
     /*
      * reset to UTC time zone
@@ -5234,7 +5233,7 @@ write_info(struct info *infop, char const *entry_dir, bool test_mode, char const
 	not_reached();
     }
     errno = 0;			/* pre-clear errno for errp() */
-    timeptr = gmtime(&(infop->tstamp));
+    timeptr = gmtime(&(infop->common.tstamp));
     if (timeptr == NULL) {
 	errp(188, __func__, "localtime #1 returned NULL");
 	not_reached();
@@ -5245,8 +5244,8 @@ write_info(struct info *infop, char const *entry_dir, bool test_mode, char const
      */
     utctime_len = MAX_TIMESTAMP_LEN + 1;    /* + 1 for trailing NUL byte */
     errno = 0;			/* pre-clear errno for errp() */
-    infop->utctime = (char *)calloc(utctime_len + 1, 1); /* + 1 for paranoia padding */
-    if (infop->utctime == NULL) {
+    infop->common.utctime = (char *)calloc(utctime_len + 1, 1); /* + 1 for paranoia padding */
+    if (infop->common.utctime == NULL) {
 	errp(189, __func__, "calloc of %lu bytes failed", (unsigned long)utctime_len + 1);
 	not_reached();
     }
@@ -5260,12 +5259,12 @@ write_info(struct info *infop, char const *entry_dir, bool test_mode, char const
      * format:	    %a  %b  %d %H %M %S %Y
      */
     errno = 0;			/* pre-clear errno for errp() */
-    strftime_ret = strftime(infop->utctime, utctime_len, "%a %b %d %H:%M:%S %Y UTC", timeptr);
+    strftime_ret = strftime(infop->common.utctime, utctime_len, "%a %b %d %H:%M:%S %Y UTC", timeptr);
     if (strftime_ret == 0) {
 	errp(190, __func__, "strftime returned 0");
 	not_reached();
     }
-    dbg(DBG_VHIGH, "infop->utctime: %s", infop->utctime);
+    dbg(DBG_VHIGH, "infop->common.utctime: %s", infop->common.utctime);
 
     /*
      * open .info.json for writing
@@ -5299,14 +5298,14 @@ write_info(struct info *infop, char const *entry_dir, bool test_mode, char const
 	json_fprintf_value_string(info_stream, "\t", "IOCCC_info_version", " : ", INFO_VERSION, ",\n") &&
 	json_fprintf_value_string(info_stream, "\t", "ioccc_contest", " : ", IOCCC_CONTEST, ",\n") &&
 	json_fprintf_value_long(info_stream, "\t", "ioccc_year", " : ", (long)IOCCC_YEAR, ",\n") &&
-	json_fprintf_value_string(info_stream, "\t", "mkiocccentry_version", " : ", infop->mkiocccentry_ver, ",\n") &&
-	json_fprintf_value_string(info_stream, "\t", "iocccsize_version", " : ", infop->iocccsize_ver, ",\n") &&
-	json_fprintf_value_string(info_stream, "\t", "IOCCC_contest_id", " : ", infop->ioccc_id, ",\n") &&
-	json_fprintf_value_long(info_stream, "\t", "entry_num", " : ", (long)infop->entry_num, ",\n") &&
+	json_fprintf_value_string(info_stream, "\t", "mkiocccentry_version", " : ", infop->common.mkiocccentry_ver, ",\n") &&
+	json_fprintf_value_string(info_stream, "\t", "iocccsize_version", " : ", infop->common.iocccsize_ver, ",\n") &&
+	json_fprintf_value_string(info_stream, "\t", "IOCCC_contest_id", " : ", infop->common.ioccc_id, ",\n") &&
+	json_fprintf_value_long(info_stream, "\t", "entry_num", " : ", (long)infop->common.entry_num, ",\n") &&
 	json_fprintf_value_long(info_stream, "\t", "author_count", " : ", (long)author_count, ",\n") &&
 	json_fprintf_value_string(info_stream, "\t", "title", " : ", infop->title, ",\n") &&
 	json_fprintf_value_string(info_stream, "\t", "abstract", " : ", infop->abstract, ",\n") &&
-	json_fprintf_value_string(info_stream, "\t", "tarball", " : ", infop->tarball, ",\n") &&
+	json_fprintf_value_string(info_stream, "\t", "tarball", " : ", infop->common.tarball, ",\n") &&
 	json_fprintf_value_long(info_stream, "\t", "rule_2a_size", " : ", (long)infop->rule_2a_size, ",\n") &&
 	json_fprintf_value_long(info_stream, "\t", "rule_2b_size", " : ", (long)infop->rule_2b_size, ",\n") &&
 	json_fprintf_value_bool(info_stream, "\t", "empty_override", " : ", infop->empty_override, ",\n") &&
@@ -5361,11 +5360,11 @@ write_info(struct info *infop, char const *entry_dir, bool test_mode, char const
      */
     errno = 0;			/* pre-clear errno for errp() */
     ret = fprintf(info_stream, "\t],\n") > 0 &&
-	json_fprintf_value_long(info_stream, "\t", "formed_timestamp", " : ", (long)infop->tstamp, ",\n") &&
-	json_fprintf_value_long(info_stream, "\t", "formed_timestamp_usec", " : ", (long)infop->usec, ",\n") &&
-	json_fprintf_value_string(info_stream, "\t", "timestamp_epoch", " : ", infop->epoch, ",\n") &&
+	json_fprintf_value_long(info_stream, "\t", "formed_timestamp", " : ", (long)infop->common.tstamp, ",\n") &&
+	json_fprintf_value_long(info_stream, "\t", "formed_timestamp_usec", " : ", (long)infop->common.usec, ",\n") &&
+	json_fprintf_value_string(info_stream, "\t", "timestamp_epoch", " : ", infop->common.epoch, ",\n") &&
 	json_fprintf_value_long(info_stream, "\t", "min_timestamp", " : ", MIN_TIMESTAMP, ",\n") &&
-	json_fprintf_value_string(info_stream, "\t", "formed_UTC", " : ", infop->utctime, "\n") &&
+	json_fprintf_value_string(info_stream, "\t", "formed_UTC", " : ", infop->common.utctime, "\n") &&
 	fprintf(info_stream, "}\n") > 0;
     if (!ret) {
 	errp(197, __func__, "fprintf error writing trailing part of info to %s", info_path);
@@ -5517,10 +5516,10 @@ write_author(struct info *infop, int author_count, struct author *authorp, char 
 	json_fprintf_value_string(author_stream, "\t", "IOCCC_author_version", " : ", AUTHOR_VERSION, ",\n") &&
 	json_fprintf_value_string(author_stream, "\t", "ioccc_contest", " : ", IOCCC_CONTEST, ",\n") &&
 	json_fprintf_value_long(author_stream, "\t", "ioccc_year", " : ", (long)IOCCC_YEAR, ",\n") &&
-	json_fprintf_value_string(author_stream, "\t", "mkiocccentry_version", " : ", infop->mkiocccentry_ver, ",\n") &&
-	json_fprintf_value_string(author_stream, "\t", "IOCCC_contest_id", " : ", infop->ioccc_id, ",\n") &&
-	json_fprintf_value_string(author_stream, "\t", "tarball", " : ", infop->tarball, ",\n") &&
-	json_fprintf_value_long(author_stream, "\t", "entry_num", " : ", (long)infop->entry_num, ",\n") &&
+	json_fprintf_value_string(author_stream, "\t", "mkiocccentry_version", " : ", infop->common.mkiocccentry_ver, ",\n") &&
+	json_fprintf_value_string(author_stream, "\t", "IOCCC_contest_id", " : ", infop->common.ioccc_id, ",\n") &&
+	json_fprintf_value_string(author_stream, "\t", "tarball", " : ", infop->common.tarball, ",\n") &&
+	json_fprintf_value_long(author_stream, "\t", "entry_num", " : ", (long)infop->common.entry_num, ",\n") &&
 	json_fprintf_value_long(author_stream, "\t", "author_count", " : ", (long)author_count, ",\n") &&
 	fprintf(author_stream, "\t\"authors\" : [\n") > 0;
     if (!ret) {
@@ -5556,11 +5555,11 @@ write_author(struct info *infop, int author_count, struct author *authorp, char 
      */
     errno = 0;			/* pre-clear errno for errp() */
     ret = fprintf(author_stream, "\t],\n") > 0 &&
-	json_fprintf_value_long(author_stream, "\t", "formed_timestamp", " : ", (long)infop->tstamp, ",\n") &&
-	json_fprintf_value_long(author_stream, "\t", "formed_timestamp_usec", " : ", (long)infop->usec, ",\n") &&
-	json_fprintf_value_string(author_stream, "\t", "timestamp_epoch", " : ", infop->epoch, ",\n") &&
+	json_fprintf_value_long(author_stream, "\t", "formed_timestamp", " : ", (long)infop->common.tstamp, ",\n") &&
+	json_fprintf_value_long(author_stream, "\t", "formed_timestamp_usec", " : ", (long)infop->common.usec, ",\n") &&
+	json_fprintf_value_string(author_stream, "\t", "timestamp_epoch", " : ", infop->common.epoch, ",\n") &&
 	json_fprintf_value_long(author_stream, "\t", "min_timestamp", " : ", MIN_TIMESTAMP, ",\n") &&
-	json_fprintf_value_string(author_stream, "\t", "formed_UTC", " : ", infop->utctime, "\n") &&
+	json_fprintf_value_string(author_stream, "\t", "formed_UTC", " : ", infop->common.utctime, "\n") &&
 	fprintf(author_stream, "}\n") > 0;
     if (!ret) {
 	errp(213, __func__, "fprintf error writing trailing part of authorship to %s", author_path);

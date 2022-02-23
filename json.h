@@ -52,6 +52,33 @@
 #define INFO_JSON	(0)	    /* file is assumed to be a .info.json file */
 #define AUTHOR_JSON	(1)	    /* file is assumed to be a .author.json file */
 #define FORMED_UTC_FMT "%a %b %d %H:%M:%S %Y UTC"
+
+/*
+ * common json fields
+ */
+struct json_common
+{
+    /*
+     * version
+     */
+    char *mkiocccentry_ver;	/* mkiocccentry version (MKIOCCCENTRY_VERSION) */
+    char const *iocccsize_ver;	/* iocccsize version (compiled in, same as iocccsize -V) */
+    /*
+     * entry
+     */
+    char *ioccc_id;		/* IOCCC contest ID */
+    int entry_num;		/* IOCCC entry number */
+    char *tarball;		/* tarball filename */
+
+    /*
+     * time
+     */
+    time_t tstamp;		/* seconds since epoch when .info json was formed (see gettimeofday(2)) */
+    int usec;			/* microseconds since the tstamp second */
+    char *epoch;		/* epoch of tstamp, currently: Thu Jan 1 00:00:00 1970 UTC */
+    char *utctime;		/* UTC converted string for tstamp (see strftime(3)) */
+};
+
 /*
  * author info
  */
@@ -65,13 +92,12 @@ struct author {
     char *github;		/* author GitHub username or or empty string ==> not provided */
     char *affiliation;		/* author affiliation or or empty string ==> not provided */
     char *winner_handle;	/* previous IOCCC winner handle, or empty string ==> not provided */
-    char *tarball;		/* tarball path; XXX this is _ONLY allocated in jauthchk_; mkiocccentry uses the copy in struct info! */
     int author_num;		/* author number */
 
+    struct json_common common;	/* fields that are common to this struct author and struct info (below) */
     /* jauthchk specific */
     unsigned issues;		/* number of issues found in file (for jauthchk) */
 };
-
 
 /*
  * info for JSON
@@ -80,15 +106,8 @@ struct author {
  */
 struct info {
     /*
-     * version
-     */
-    char *mkiocccentry_ver;	/* mkiocccentry version (MKIOCCCENTRY_VERSION) */
-    char const *iocccsize_ver;	/* iocccsize version (compiled in, same as iocccsize -V) */
-    /*
      * entry
      */
-    char *ioccc_id;		/* IOCCC contest ID */
-    int entry_num;		/* IOCCC entry number */
     char *title;		/* entry title */
     char *abstract;		/* entry abstract */
     off_t rule_2a_size;		/* Rule 2a size of prog.c */
@@ -108,7 +127,6 @@ struct info {
     bool found_clean_rule;	/* true ==> Makefile has clean rule */
     bool found_clobber_rule;	/* true ==> Makefile has a clobber rule */
     bool found_try_rule;	/* true ==> Makefile has a try rule */
-    unsigned answers_errors;	/* > 0 ==> output errors on answers file */
     /*
      * filenames
      */
@@ -117,14 +135,11 @@ struct info {
     char *remarks_md;		/* remarks.md filename */
     int extra_count;		/* number of extra files */
     char **extra_file;		/* list of extra filenames followed by NULL */
-    char *tarball;		/* tarball filename */
     /*
      * time
      */
-    time_t tstamp;		/* seconds since epoch when .info json was formed (see gettimeofday(2)) */
-    int usec;			/* microseconds since the tstamp second */
-    char *epoch;		/* epoch of tstamp, currently: Thu Jan 1 00:00:00 1970 UTC */
-    char *utctime;		/* UTC converted string for tstamp (see strftime(3)) */
+
+    struct json_common common;	/* fields that are common to this struct info and struct author (above) */
 
     /* jinfochk specific */
     unsigned issues;		/* number of issues found in file (for jinfochk) */
