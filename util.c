@@ -1205,7 +1205,6 @@ shell_cmd(char const *name, bool abort, char const *format, ...)
 	    return MALLOC_FAILED_EXIT;
 	}
     }
-    dbg(DBG_HIGH, "about to perform: system(%s)", cmd);
 
     /*
      * pre-flush stdout to avoid system() buffered stdio issues
@@ -1256,6 +1255,7 @@ shell_cmd(char const *name, bool abort, char const *format, ...)
     /*
      * execute the command
      */
+    dbg(DBG_HIGH, "about to perform: system(%s)", cmd);
     errno = 0;			/* pre-clear errno for errp() */
     exit_code = system(cmd);
     if (exit_code < 0) {
@@ -1387,7 +1387,6 @@ pipe_open(char const *name, bool abort, char const *format, ...)
 	    return NULL;
 	}
     }
-    dbg(DBG_HIGH, "about to perform: system(%s)", cmd);
 
     /*
      * pre-flush stdout to avoid popen() buffered stdio issues
@@ -1438,6 +1437,7 @@ pipe_open(char const *name, bool abort, char const *format, ...)
     /*
      * establish the open pipe to the shell command
      */
+    dbg(DBG_HIGH, "about to perform: popen(%s, \"r\")", cmd);
     errno = 0;			/* pre-clear errno for errp() */
     stream = popen(cmd, "r");
     if (stream == NULL) {
@@ -1480,7 +1480,7 @@ pipe_open(char const *name, bool abort, char const *format, ...)
     va_end(ap);
 
     /*
-     * return exit code from system()
+     * return open pipe stream
      */
     return stream;
 }
