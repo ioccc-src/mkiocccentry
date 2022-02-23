@@ -462,7 +462,7 @@ check_info_json(char const *file, char const *fnamchk)
 	    }
 	    value_length = strlen(value);
 	    /* handle regular field */
-	    if (check_common_json_fields(program_basename, file, &info, NULL, fnamchk, p, value)) {
+	    if (check_common_json_fields(program_basename, file, &info.common, fnamchk, p, value)) {
 	    } else if (!strcmp(p, "title")) {
 		if (value_length == 0) {
 		    err(22, __func__, "title length zero");

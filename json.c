@@ -1673,6 +1673,8 @@ json_filename(int type)
  *
  *	name	- which util called this (jinfochk or jauthchk)
  *	file	- the file being parsed (path to)
+ *	common	- pointer to struct json_common (in either a struct info or
+ *		  struct author)
  *	fnamchk	- path to fnamchk util
  *	field	- the field name
  *	value	- the value of the field
@@ -1683,8 +1685,8 @@ json_filename(int type)
  *
  * Does not return on error (NULL pointers).
  */
-int check_common_json_fields(char const *program, char const *file, struct info *infop,
-	struct author *authorp, char const *fnamchk, char *field, char *value)
+int check_common_json_fields(char const *program, char const *file, struct json_common *common,
+	char const *fnamchk, char *field, char *value)
 {
     int ret = 1;
     int year = 0;
@@ -1697,8 +1699,7 @@ int check_common_json_fields(char const *program, char const *file, struct info 
     /*
      * firewall
      */
-    if (program == NULL || file == NULL || fnamchk == NULL || field == NULL || value == NULL ||
-	(!strcmp(program, "jinfochk") && infop == NULL) || (!strcmp(program, "jauthchk") && authorp == NULL)) {
+    if (program == NULL || file == NULL || fnamchk == NULL || field == NULL || value == NULL || common == NULL) {
 	err(218, __func__, "passed NULL arg(s)");
 	not_reached();
     }
