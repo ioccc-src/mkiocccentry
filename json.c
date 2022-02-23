@@ -1681,22 +1681,24 @@ json_filename(int type)
  *	field	- the field name
  *	value	- the value of the field
  *
- * Returns 1 if the field was parsed (that is the field is one of the common
- * fields to both files and it has a valid value); if it's not one of the common
- * fields return 0.
+ * returns:
+ *	1 ==> if the field was parsed (that is the field is one of the common
+ *	      fields to both files and it has a valid value)
+ *	0 ==> if it's not one of the common fields
  *
- * Does not return on error (NULL pointers).
+ * NOTE: Does not return on error (NULL pointers).
  */
-int check_common_json_fields(char const *program, char const *file, struct json_common *common,
-	char const *fnamchk, char *field, char *value)
+int
+check_common_json_fields(char const *program, char const *file, struct json_common *common,
+			 char const *fnamchk, char *field, char *value)
 {
-    int ret = 1;
-    int year = 0;
-    int entry_num = -1;
-    long ts = 0;
-    struct tm tm;
-    char *p, *cmd;
-    int exit_code;
+    int year = 0;	/* ioccc_year: IOCCC year as an integer */
+    int entry_num = -1;	/* entry_num: entry number as an integer */
+    long ts = 0;	/* formed_timestamp_usec: microseconds as an integer */
+    struct tm tm;	/* formed_timestamp: formatted as a time structure */
+    int exit_code = 0;	/* tarball: exit code from fnamchk command */
+    int ret = 1;	/* return value: 1 ==> known field, 0 ==> not a common field */
+    char *p;
 
     /*
      * firewall
@@ -1706,8 +1708,14 @@ int check_common_json_fields(char const *program, char const *file, struct json_
 	not_reached();
     }
 
+    /*
+     * preclear time before strptime() use
+     */
     memset(&tm, 0, sizeof tm);
 
+    /*
+     * process a given common field
+     */
     if (!strcmp(field, "IOCCC_info_version")) {
 	if (strcmp(value, INFO_VERSION)) {
 	    err(219, __func__, "IOCCC_info_version \"%s\" != \"%s\" in file %s", value, INFO_VERSION, file);
@@ -1776,53 +1784,24 @@ int check_common_json_fields(char const *program, char const *file, struct json_
 	    not_reached();
 	}
     } else if (!strcmp(field, "tarball")) {
-	/* form command line to fnamchk */
-	errno = 0;			/* pre-clear errno for errp() */
-	cmd = cmdprintf("% % >/dev/null", fnamchk, value);
-	if (cmd == NULL) {
-	    err(231, __func__, "failed to cmdprintf: fnamchk %s", value);
-	    not_reached();
-	}
-	dbg(DBG_HIGH, "about to perform: system(%s)", cmd);
-
-	/*
-	 * pre-flush to avoid system() buffered stdio issues
-	 */
-	clearerr(stdout);		/* pre-clear ferror() status */
-	errno = 0;			/* pre-clear errno for errp() */
-	ret = fflush(stdout);
-	if (ret < 0) {
-	    errp(232, __func__, "fflush(stdout) error code: %d", ret);
-	    not_reached();
-	}
-	errno = 0;			/* pre-clear errno for errp() */
-	clearerr(stderr);		/* pre-clear ferror() status */
-	errno = 0;			/* pre-clear errno for errp() */
-	ret = fflush(stderr);
-	if (ret < 0) {
-	    errp(233, __func__, "fflush(stderr) #1: error code: %d", ret);
-	    not_reached();
-	}
 
 	/*
 	 * execute the fnamchk command
 	 */
 	errno = 0;			/* pre-clear errno for errp() */
-	exit_code = system(cmd);
-	if (exit_code < 0) {
-	    errp(234, __func__, "%s: %s: error calling system(%s)", program, value, cmd);
-	    not_reached();
-	} else if (exit_code == 127) {
-	    errp(235, __func__, "%s: execution of the shell failed for system(%s)", program, cmd);
-	    not_reached();
-	} else if (exit_code != 0) {
-	    err(236, __func__, "%s: %s: failed with exit code: %d", program, cmd, WEXITSTATUS(exit_code));
+	exit_code = shell_cmd(__func__, true, "% % >/dev/null", fnamchk, value);
+	if (exit_code != 0) {
+	    err(236, __func__, "%s: %s %s > /dev/null: failed with exit code: %d",
+				program, fnamchk, value, WEXITSTATUS(exit_code));
 	    not_reached();
 	}
+
+    /*
+     * case: unknown field
+     */
     } else {
 	ret = 0;
     }
-
     return ret;
 }
 
