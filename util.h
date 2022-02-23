@@ -112,6 +112,7 @@ extern off_t file_size(char const *path);
 extern char *cmdprintf(char const *format, ...);
 extern char *vcmdprintf(char const *format, va_list ap);
 extern int shell_cmd(char const *name, bool abort, char const *format, ...);
+extern FILE *pipe_open(char const *name, bool abort, char const *format, ...);
 extern void para(char const *line, ...);
 extern void fpara(FILE * stream, char const *line, ...);
 extern ssize_t readline(char **linep, FILE * stream);
