@@ -44,6 +44,7 @@
 #include <stdint.h>
 #include <limits.h>
 #include <errno.h>
+#include <stdarg.h>
 
 /*
  * dbg - debug, warning and error reporting facility
@@ -915,21 +916,73 @@ file_size(char const *path)
  *               escaping special characters that the shell might threaten as command characters.
  *               In the worst case, the algorithm will make twice as many characters.
  *               Will not use escaping if it isn't needed.
+ *      ...    - args to give after the format
+ *
+ * returns:
+ *	malloced shell command line, or
+ *	NULL ==> error
+ */
+char *
+cmdprintf(char const *format, ...)
+{
+    va_list ap;
+    char *cmd = NULL;
+
+    /*
+     * firewall
+     */
+    if (format == NULL) {
+	warn(__func__, "format is NULL");
+	return NULL;
+    }
+
+    /*
+     * stdarg setup
+     */
+    va_start(ap, format);
+
+    /*
+     * call vcmdprintf()
+     */
+    cmd = vcmdprintf(format, ap);
+
+    /*
+     * stdarg cleanup
+     */
+    va_end(ap);
+
+    /*
+     * return safer command line string
+     */
+    return cmd;
+}
+
+
+/*
+ * vcmdprintf - malloc a safer shell command line for use with system() and popen()
+ *
+ * given:
+ *
+ *      format - The format string, any % on this string inserts the next string from the list,
+ *               escaping special characters that the shell might threaten as command characters.
+ *               In the worst case, the algorithm will make twice as many characters.
+ *               Will not use escaping if it isn't needed.
+ *      ap     - va_list of arguments for format
  *
  * returns:
  *	malloced shell command line, or
  *	NULL ==> error
  *
- * NOTE: This code is base on an enhancement request by GitHub user @ilyakurdyukov:
+ * NOTE: This coded is base on an enhancement request by GitHub user @ilyakurdyukov:
  *
  *		https://github.com/ioccc-src/mkiocccentry/issues/11
  *
- *	 Thank you Ilya Kurdyukov!
+ *	 and this function code was writen by him.  Thank you Ilya Kurdyukov!
  */
 char *
-cmdprintf(char const *format, ...)
+vcmdprintf(char const *format, va_list ap)
 {
-    va_list va;
+    va_list ap2;		/* copy of original va_list for 2nd pass */
     size_t size = 0;
     char const *next;
     char const *p;
@@ -941,13 +994,25 @@ cmdprintf(char const *format, ...)
     int nquot;
 
     /*
-     * determine how much storage we will need for the command line
+     * firewall
      */
-    va_start(va, format);
+    if (format == NULL) {
+	warn(__func__, "format is NULL");
+	return NULL;
+    }
+
+    /*
+     * copy va_list for 2nd pass
+     */
+    va_copy(ap2, ap);
+
+    /*
+     * pass 0: determine how much storage we will need for the command line
+     */
     f = format;
     while ((c = *f++)) {
 	if (c == '%') {
-	    p = next = va_arg(va, char const *);
+	    p = next = va_arg(ap, char const *);
 	    nquot = 0;
 	    while ((c = *p++)) {
 		if (c == '\'') {
@@ -967,7 +1032,7 @@ cmdprintf(char const *format, ...)
 	    size += (size_t)(nquot >= 2 ? 2 : nquot) + (size_t)(p - next) - 2;
 	}
     }
-    va_end(va);
+    va_end(ap);
     size += (size_t)(f - format);
 
     /*
@@ -981,16 +1046,15 @@ cmdprintf(char const *format, ...)
     }
 
     /*
-     * form the safer command line
+     * pass 1: form the safer command line
      */
     d = cmd;
-    va_start(va, format);
     f = format;
     while ((c = *f++)) {
 	if (c != '%') {
 	    *d++ = c;
 	} else {
-	    p = next = va_arg(va, char const *);
+	    p = next = va_arg(ap2, char const *);
 	    nquot = 0;
 	    while ((c = *p++)) {
 		if (c == '\'') {
@@ -1038,19 +1102,215 @@ cmdprintf(char const *format, ...)
 
 	}
     }
-    va_end(va);
+    va_end(ap2);
     *d = '\0';	/* NUL terminate command line */
 
+    /*
+     * verify amount of data written
+     */
     if ((size_t)(d + 1 - cmd) != size) {
-	errp(110, __func__, "cmdprintf: written characters (%ld) don't match the size (%lu)",
-			    (long)(d + 1 - cmd), (unsigned long)size);
-	not_reached();
+	if (cmd != NULL) {
+	    free(cmd);
+	    cmd = NULL;
+	}
+	warn(__func__, "stored characters: %ld != size: %lu",
+	     (long)((size_t)(d + 1 - cmd)), (unsigned long)size);
+	return NULL;
     }
 
     /*
      * return safer command line string
      */
     return cmd;
+}
+
+
+/*
+ * shell_cmd - pass a command to the shell via vcmdprintf()
+ *
+ * Attempt to call the shell with a command string.
+ *
+ * given:
+ *	name	- name of the calling function
+ *	abort	- false ==> return exit code if able to successfully call system(), or
+ *			    return MALLOC_FAILED_EXIT malloc() failure,
+ *			    return FLUSH_FAILED_EXIT on fflush failure,
+ *			    return SYSTEM_FAILED_EXIT if system() failed,
+ *			    return NULL_ARGS_EXIT if NULL pointers were passed
+ *		  true ==> return exit code if able to successfully call system(), or
+ *			   call errp() (and thus exit) if unccessful
+ *      format	- The format string, any % on this string inserts the next string from the list,
+ *                escaping special characters that the shell might threaten as command characters.
+ *                In the worst case, the algorithm will make twice as many characters.
+ *                Will not use escaping if it isn't needed.
+ *      ...     - args to give after the format
+ *
+ * returns:
+ *	>= ==> exit code, <0 ==> *_EXIT failure (if flag == false)
+ *
+ * NOTE: The values *_EXIT are < 0, and therefore do not match a valid exit code.
+ *	 Moreover if flag == false, a simple check if the return was < 0 will allow the calling
+ *	 function to determine if this function failed.
+ */
+int
+shell_cmd(char const *name, bool abort, char const *format, ...)
+{
+    va_list ap;			/* stdarg block */
+    char *cmd = NULL;		/* cp prog_c entry_dir/prog.c */
+    int exit_code;		/* exit code from system(cmd) */
+    int ret;			/* libc function return */
+
+    /*
+     * firewall
+     */
+    if (name == NULL) {
+	/* exit or error return depending on abort */
+	if (abort == true) {
+	    err(110, __func__, "function name is not caller name because we were called with NULL name");
+	    not_reached();
+	} else {
+	    dbg(DBG_MED, "called with NULL name, returning: %d < 0", NULL_ARGS_EXIT);
+	    return NULL_ARGS_EXIT;
+	}
+    }
+    if (format == NULL) {
+	/* exit or error return depending on abort */
+	if (abort == true) {
+	    err(111, name, "called NULL format");
+	    not_reached();
+	} else {
+	    dbg(DBG_MED, "called with NULL format, returning: %d < 0", NULL_ARGS_EXIT);
+	    return NULL_ARGS_EXIT;
+	}
+    }
+
+    /*
+     * stdarg setup
+     */
+    va_start(ap, format);
+
+    /*
+     * copy prog.c under entry_dir
+     */
+    errno = 0;			/* pre-clear errno for errp() */
+    cmd = vcmdprintf("% -- % %/prog.c", ap);
+    if (cmd == NULL) {
+	/* exit or error return depending on abort */
+	if (abort == true) {
+	    err(112, name, "malloc failed in cmdprintf()");
+	    not_reached();
+	} else {
+	    dbg(DBG_MED, "called from %s: malloc failed in cmdprintf(), returning: %d < 0", name, MALLOC_FAILED_EXIT);
+	    va_end(ap);
+	    return MALLOC_FAILED_EXIT;
+	}
+    }
+    dbg(DBG_HIGH, "about to perform: system(%s)", cmd);
+
+    /*
+     * pre-flush stdout to avoid system() buffered stdio issues
+     */
+    clearerr(stdout);		/* pre-clear ferror() status */
+    errno = 0;			/* pre-clear errno for errp() */
+    ret = fflush(stdout);
+    if (ret < 0) {
+	/* free malloced command storage */
+	if (cmd != NULL) {
+	    free(cmd);
+	    cmd = NULL;
+	}
+	/* exit or error return depending on abort */
+	if (abort == true) {
+	    errp(113, name, "fflush(stdout): error code: %d", ret);
+	    not_reached();
+	} else {
+	    dbg(DBG_MED, "called from %s: fflush(stdout) failed", name);
+	    va_end(ap);
+	    return FLUSH_FAILED_EXIT;
+	}
+    }
+
+    /*
+     * pre-flush stderr to avoid system() buffered stdio issues
+     */
+    clearerr(stderr);		/* pre-clear ferror() status */
+    errno = 0;			/* pre-clear errno for errp() */
+    ret = fflush(stderr);
+    if (ret < 0) {
+	/* free malloced command storage */
+	if (cmd != NULL) {
+	    free(cmd);
+	    cmd = NULL;
+	}
+	/* exit or error return depending on abort */
+	if (abort == true) {
+	    errp(114, name, "fflush(stderr): error code: %d", ret);
+	    not_reached();
+	} else {
+	    dbg(DBG_MED, "called from %s: fflush(stderr) failed", name);
+	    va_end(ap);
+	    return FLUSH_FAILED_EXIT;
+	}
+    }
+
+    /*
+     * execute the command
+     */
+    errno = 0;			/* pre-clear errno for errp() */
+    exit_code = system(cmd);
+    if (exit_code < 0) {
+	/* free malloced command storage */
+	if (cmd != NULL) {
+	    free(cmd);
+	    cmd = NULL;
+	}
+	/* exit or error return depending on abort */
+	if (abort == true) {
+	    errp(115, __func__, "error calling system(%s)", cmd);
+	    not_reached();
+	} else {
+	    dbg(DBG_MED, "called from %s: error calling system(%s)", name, cmd);
+	    va_end(ap);
+	    return SYSTEM_FAILED_EXIT;
+	}
+
+    /*
+     * case: exit code 127 usually means the fork/exec was unable to invoke the shell
+     */
+    } else if (exit_code == 127) {
+	/* free malloced command storage */
+	if (cmd != NULL) {
+	    free(cmd);
+	    cmd = NULL;
+	}
+	/* exit or error return depending on abort */
+	if (abort == true) {
+	    errp(116, __func__, "execution of the shell failed for system(%s)", cmd);
+	    not_reached();
+	} else {
+	    dbg(DBG_MED, "called from %s: execution of the shell failed for system(%s)", name, cmd);
+	    va_end(ap);
+	    return SYSTEM_FAILED_EXIT;
+	}
+    }
+
+    /*
+     * free malloced command storage
+     */
+    if (cmd != NULL) {
+	free(cmd);
+	cmd = NULL;
+    }
+
+    /*
+     * stdarg cleanup
+     */
+    va_end(ap);
+
+    /*
+     * return exit code from system()
+     */
+    return exit_code;
 }
 
 
@@ -1087,7 +1347,7 @@ para(char const *line, ...)
      * firewall
      */
     if (stdout == NULL) {
-	err(111, __func__, "stdout is NULL");
+	err(117, __func__, "stdout is NULL");
 	not_reached();
     }
     clearerr(stdout);		/* pre-clear ferror() status */
@@ -1097,7 +1357,7 @@ para(char const *line, ...)
      */
     fd = fileno(stdout);
     if (fd < 0) {
-	errp(112, __func__, "fileno on stdout returned: %d < 0", fd);
+	errp(118, __func__, "fileno on stdout returned: %d < 0", fd);
 	not_reached();
     }
     clearerr(stdout);		/* paranoia */
@@ -1116,13 +1376,13 @@ para(char const *line, ...)
 	ret = fputs(line, stdout);
 	if (ret == EOF) {
 	    if (ferror(stdout)) {
-		errp(113, __func__, "error writing paragraph to a stdout");
+		errp(119, __func__, "error writing paragraph to a stdout");
 		not_reached();
 	    } else if (feof(stdout)) {
-		err(114, __func__, "EOF while writing paragraph to a stdout");
+		err(120, __func__, "EOF while writing paragraph to a stdout");
 		not_reached();
 	    } else {
-		errp(115, __func__, "unexpected fputs error writing paragraph to a stdout");
+		errp(121, __func__, "unexpected fputs error writing paragraph to a stdout");
 		not_reached();
 	    }
 	}
@@ -1135,13 +1395,13 @@ para(char const *line, ...)
 	ret = fputc('\n', stdout);
 	if (ret == EOF) {
 	    if (ferror(stdout)) {
-		errp(116, __func__, "error writing newline to a stdout");
+		errp(122, __func__, "error writing newline to a stdout");
 		not_reached();
 	    } else if (feof(stdout)) {
-		err(117, __func__, "EOF while writing newline to a stdout");
+		err(123, __func__, "EOF while writing newline to a stdout");
 		not_reached();
 	    } else {
-		errp(118, __func__, "unexpected fputc error newline a stdout");
+		errp(124, __func__, "unexpected fputc error newline a stdout");
 		not_reached();
 	    }
 	}
@@ -1166,13 +1426,13 @@ para(char const *line, ...)
     ret = fflush(stdout);
     if (ret == EOF) {
 	if (ferror(stdout)) {
-	    errp(119, __func__, "error flushing stdout");
+	    errp(125, __func__, "error flushing stdout");
 	    not_reached();
 	} else if (feof(stdout)) {
-	    err(120, __func__, "EOF while flushing stdout");
+	    err(126, __func__, "EOF while flushing stdout");
 	    not_reached();
 	} else {
-	    errp(121, __func__, "unexpected fflush error while flushing stdout");
+	    errp(128, __func__, "unexpected fflush error while flushing stdout");
 	    not_reached();
 	}
     }
@@ -1215,7 +1475,7 @@ fpara(FILE * stream, char const *line, ...)
      * firewall
      */
     if (stream == NULL) {
-	err(122, __func__, "stream is NULL");
+	err(129, __func__, "stream is NULL");
 	not_reached();
     }
 
@@ -1226,7 +1486,7 @@ fpara(FILE * stream, char const *line, ...)
     errno = 0;			/* pre-clear errno for errp() */
     fd = fileno(stream);
     if (fd < 0) {
-	errp(123, __func__, "fileno on stream returned: %d < 0", fd);
+	errp(130, __func__, "fileno on stream returned: %d < 0", fd);
 	not_reached();
     }
     clearerr(stream);		/* paranoia */
@@ -1245,13 +1505,13 @@ fpara(FILE * stream, char const *line, ...)
 	ret = fputs(line, stream);
 	if (ret == EOF) {
 	    if (ferror(stream)) {
-		errp(124, __func__, "error writing paragraph to a stream");
+		errp(131, __func__, "error writing paragraph to a stream");
 		not_reached();
 	    } else if (feof(stream)) {
-		err(125, __func__, "EOF while writing paragraph to a stream");
+		err(132, __func__, "EOF while writing paragraph to a stream");
 		not_reached();
 	    } else {
-		errp(126, __func__, "unexpected fputs error writing paragraph to a stream");
+		errp(133, __func__, "unexpected fputs error writing paragraph to a stream");
 		not_reached();
 	    }
 	}
@@ -1264,13 +1524,13 @@ fpara(FILE * stream, char const *line, ...)
 	ret = fputc('\n', stream);
 	if (ret == EOF) {
 	    if (ferror(stream)) {
-		errp(128, __func__, "error writing newline to a stream");
+		errp(134, __func__, "error writing newline to a stream");
 		not_reached();
 	    } else if (feof(stream)) {
-		err(129, __func__, "EOF while writing newline to a stream");
+		err(135, __func__, "EOF while writing newline to a stream");
 		not_reached();
 	    } else {
-		errp(130, __func__, "unexpected fputc error newline a stream");
+		errp(136, __func__, "unexpected fputc error newline a stream");
 		not_reached();
 	    }
 	}
@@ -1295,13 +1555,13 @@ fpara(FILE * stream, char const *line, ...)
     ret = fflush(stream);
     if (ret == EOF) {
 	if (ferror(stream)) {
-	    errp(131, __func__, "error flushing stream");
+	    errp(137, __func__, "error flushing stream");
 	    not_reached();
 	} else if (feof(stream)) {
-	    err(132, __func__, "EOF while flushing stream");
+	    err(138, __func__, "EOF while flushing stream");
 	    not_reached();
 	} else {
-	    errp(133, __func__, "unexpected fflush error while flushing stream");
+	    errp(139, __func__, "unexpected fflush error while flushing stream");
 	    not_reached();
 	}
     }
@@ -1339,7 +1599,7 @@ readline(char **linep, FILE * stream)
      * firewall
      */
     if (linep == NULL || stream == NULL) {
-	err(134, __func__, "called with NULL arg(s)");
+	err(140, __func__, "called with NULL arg(s)");
 	not_reached();
     }
 
@@ -1354,10 +1614,10 @@ readline(char **linep, FILE * stream)
 	    dbg(DBG_VVHIGH, "EOF detected on readline");
 	    return -1; /* EOF found */
 	} else if (ferror(stream)) {
-	    errp(135, __func__, "getline() error");
+	    errp(141, __func__, "getline() error");
 	    not_reached();
 	} else {
-	    errp(136, __func__, "unexpected getline() error");
+	    errp(142, __func__, "unexpected getline() error");
 	    not_reached();
 	}
     }
@@ -1365,7 +1625,7 @@ readline(char **linep, FILE * stream)
      * paranoia
      */
     if (*linep == NULL) {
-	err(137, __func__, "*linep is NULL after getline()");
+	err(143, __func__, "*linep is NULL after getline()");
 	not_reached();
     }
 
@@ -1376,7 +1636,7 @@ readline(char **linep, FILE * stream)
     errno = 0;			/* pre-clear errno for errp() */
     p = (char *)memchr(*linep, 0, (size_t)ret);
     if (p != NULL) {
-	errp(138, __func__, "found NUL before end of line");
+	errp(144, __func__, "found NUL before end of line");
 	not_reached();
     }
 
@@ -1429,7 +1689,7 @@ readline_dup(char **linep, bool strip, size_t *lenp, FILE *stream)
      * firewall
      */
     if (linep == NULL || stream == NULL) {
-	err(139, __func__, "called with NULL arg(s)");
+	err(145, __func__, "called with NULL arg(s)");
 	not_reached();
     }
 
@@ -1451,7 +1711,7 @@ readline_dup(char **linep, bool strip, size_t *lenp, FILE *stream)
     errno = 0;			/* pre-clear errno for errp() */
     ret = strdup(*linep);
     if (ret == NULL) {
-	errp(140, __func__, "strdup of read line of %ld bytes failed", (long)len);
+	errp(146, __func__, "strdup of read line of %ld bytes failed", (long)len);
 	not_reached();
     }
 
@@ -1644,7 +1904,7 @@ read_all(FILE *stream, size_t *psize)
      * firewall
      */
     if (stream == NULL) {
-	err(141, __func__, "called with NULL stream");
+	err(147, __func__, "called with NULL stream");
 	not_reached();
     }
 
@@ -1812,7 +2072,7 @@ long string_to_long(char const *str)
      * firewall
      */
     if (str == NULL) {
-	err(142, __func__, "passed NULL arg");
+	err(148, __func__, "passed NULL arg");
 	not_reached();
     }
 
@@ -1820,11 +2080,11 @@ long string_to_long(char const *str)
     num = strtoll(str, NULL, 10);
 
     if (errno != 0) {
-	errp(143, __func__, "error converting string \"%s\" to long int: %s", str, strerror(errno));
+	errp(149, __func__, "error converting string \"%s\" to long int: %s", str, strerror(errno));
 	not_reached();
     }
     else if (num < LONG_MIN || num > LONG_MAX) {
-	err(144, __func__, "number %s out of range for long int (must be >= %ld && <= %ld)", str, LONG_MIN, LONG_MAX);
+	err(150, __func__, "number %s out of range for long int (must be >= %ld && <= %ld)", str, LONG_MIN, LONG_MAX);
 	not_reached();
     }
     return (long)num;
@@ -1850,7 +2110,7 @@ long long string_to_long_long(char const *str)
      * firewall
      */
     if (str == NULL) {
-	err(145, __func__, "passed NULL arg");
+	err(151, __func__, "passed NULL arg");
 	not_reached();
     }
 
@@ -1858,11 +2118,11 @@ long long string_to_long_long(char const *str)
     num = strtoll(str, NULL, 10);
 
     if (errno != 0) {
-	errp(146, __func__, "error converting string \"%s\" to long long int: %s", str, strerror(errno));
+	errp(152, __func__, "error converting string \"%s\" to long long int: %s", str, strerror(errno));
 	not_reached();
     }
     else if (num <= LLONG_MIN || num >= LLONG_MAX) {
-	err(147, __func__, "number %s out of range for long long int (must be > %lld && < %lld)", str, LLONG_MIN, LLONG_MAX);
+	err(153, __func__, "number %s out of range for long long int (must be > %lld && < %lld)", str, LLONG_MIN, LLONG_MAX);
 	not_reached();
     }
     return num;
@@ -1888,7 +2148,7 @@ int string_to_int(char const *str)
      * firewall
      */
     if (str == NULL) {
-	err(148, __func__, "passed NULL arg");
+	err(154, __func__, "passed NULL arg");
 	not_reached();
     }
 
@@ -1896,11 +2156,11 @@ int string_to_int(char const *str)
     num = (int)strtoll(str, NULL, 10);
 
     if (errno != 0) {
-	errp(149, __func__, "error converting string \"%s\" to int: %s", str, strerror(errno));
+	errp(155, __func__, "error converting string \"%s\" to int: %s", str, strerror(errno));
 	not_reached();
     }
     else if (num < INT_MIN || num > INT_MAX) {
-	err(150, __func__, "number %s out of range for int (must be >= %d && <= %d)", str, INT_MIN, INT_MAX);
+	err(156, __func__, "number %s out of range for int (must be >= %d && <= %d)", str, INT_MIN, INT_MAX);
 	not_reached();
     }
     return (int)num;
@@ -1926,17 +2186,17 @@ unsigned long string_to_unsigned_long(char const *str)
      * firewall
      */
     if (str == NULL) {
-	err(151, __func__, "passed NULL arg");
+	err(157, __func__, "passed NULL arg");
 	not_reached();
     }
 
     errno = 0;
     num = strtoul(str, NULL, 10);
     if (errno != 0) {
-	err(152, __func__, "strtoul(%s): %s", str, strerror(errno));
+	err(158, __func__, "strtoul(%s): %s", str, strerror(errno));
 	not_reached();
     } else if (num >= ULONG_MAX) {
-	err(153, __func__, "strtoul(%s): too big", str);
+	err(159, __func__, "strtoul(%s): too big", str);
 	not_reached();
     }
 
@@ -1963,17 +2223,17 @@ unsigned long long string_to_unsigned_long_long(char const *str)
      * firewall
      */
     if (str == NULL) {
-	err(154, __func__, "passed NULL arg");
+	err(160, __func__, "passed NULL arg");
 	not_reached();
     }
 
     errno = 0;
     num = strtoul(str, NULL, 10);
     if (errno != 0) {
-	err(155, __func__, "strtoul(%s): %s", str, strerror(errno));
+	err(161, __func__, "strtoul(%s): %s", str, strerror(errno));
 	not_reached();
     } else if (num >= ULLONG_MAX) {
-	err(156, __func__, "strtoul(%s): too big", str);
+	err(162, __func__, "strtoul(%s): too big", str);
 	not_reached();
     }
 

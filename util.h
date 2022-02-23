@@ -68,7 +68,7 @@ struct location {
 
 /*
  * paths to utilities the IOCCC tools use (including our own tools fnamchk,
- * txzchk, jinfochk and jauthchk)
+ * txzchk, jinfochk, jauthchk, etc.)
  */
 #define TAR_PATH_0 "/usr/bin/tar"		    /* historic path for tar */
 #define TAR_PATH_1 "/bin/tar"			    /* alternate tar path for some systems where /usr/bin/tar != /bin/tar */
@@ -84,6 +84,14 @@ struct location {
 #define JAUTHCHK_PATH_1 "/usr/local/bin/jauthchk"   /* default path to jauthchk tool if installed */
 #define JINFOCHK_PATH_0 "./jinfochk"		    /* default path to jinfochk tool */
 #define JINFOCHK_PATH_1 "/usr/local/bin/jinfochk"   /* default path to jinfochk tool if installed */
+
+/*
+ * invalid exit codes (values < 0): that may be returned by shell_cmd()
+ */
+#define MALLOC_FAILED_EXIT (-2)		/* invalid exit code - malloc() failure */
+#define SYSTEM_FAILED_EXIT (-3)		/* invalid exit code - system() failed - returned exit 127 */
+#define FLUSH_FAILED_EXIT (-4)		/* invalid exit code - fflush() failed */
+#define NULL_ARGS_EXIT (-5)		/* invalid exit code - function called with a NULL arg */
 
 /*
  * global variables
@@ -102,6 +110,8 @@ extern bool is_read(char const *path);
 extern bool is_write(char const *path);
 extern off_t file_size(char const *path);
 extern char *cmdprintf(char const *format, ...);
+extern char *vcmdprintf(char const *format, va_list ap);
+extern int shell_cmd(char const *name, bool abort, char const *format, ...);
 extern void para(char const *line, ...);
 extern void fpara(FILE * stream, char const *line, ...);
 extern ssize_t readline(char **linep, FILE * stream);
