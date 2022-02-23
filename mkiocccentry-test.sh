@@ -103,7 +103,7 @@ answers >>answers.txt
 yes | ./mkiocccentry -i answers.txt -- "${work_dir}" "${src_dir}"/{prog.c,Makefile,remarks.md,extra1,extra2}
 status=$?
 if [[ ${status} -ne 0 ]]; then
-    echo "$0: FATAL: /mkiocccentry non-zero exit code: $status" 1>&2
+    echo "$0: FATAL: mkiocccentry non-zero exit code: $status" 1>&2
     exit "${status}"
 fi
 
@@ -113,7 +113,7 @@ find "${work_dir_esc}" -mindepth 1 -depth -delete
 yes | ./mkiocccentry -W -i answers.txt -- "${work_dir}" "${src_dir}"/{empty.c,Makefile,remarks.md,extra1,extra2}
 status=$?
 if [[ ${status} -ne 0 ]]; then
-    echo "$0: FATAL: /mkiocccentry non-zero exit code: $status" 1>&2
+    echo "$0: FATAL: mkiocccentry non-zero exit code: $status" 1>&2
     exit "${status}"
 fi
 
