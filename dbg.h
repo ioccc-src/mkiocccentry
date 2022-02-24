@@ -144,7 +144,5 @@ extern void warn_or_err(int exitcode, const char *name, bool test, const char *f
 extern void warnp_or_errp(int exitcode, const char *name, bool test, const char *fmt, ...) \
 	__attribute__((format(printf, 4, 5)));		/* 4=format 5=params */
 
-extern int parse_verbosity(char const *program, char const *arg);
-
 
 #endif				/* INCLUDE_DBG_H */

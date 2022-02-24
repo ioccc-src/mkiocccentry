@@ -757,41 +757,6 @@ warnp_or_errp(int exitcode, const char *name, bool test, const char *fmt, ...)
 }
 
 
-/*
- * parse_verbosity	- parse -v option for our tools
- *
- * given:
- *
- *	program		- the calling program e.g. txzchk, fnamchk, mkiocccentry etc.
- *	arg		- the optarg in the calling tool
- *
- * Returns the parsed verbosity.
- *
- * Returns DBG_NONE if passed NULL args or empty string.
- */
-int
-parse_verbosity(char const *program, char const *arg)
-{
-    int verbosity;
-
-    if (program == NULL || arg == NULL || !strlen(arg)) {
-	return DBG_NONE;
-    }
-
-    /*
-     * parse verbosity
-     */
-    errno = 0;		/* pre-clear errno for errp() */
-    verbosity = (int)strtol(arg, NULL, 0);
-    if (errno != 0) {
-	errp(1, __func__, "%s: cannot parse -v arg: %s error: %s", program, arg, strerror(errno)); /*ooo*/
-	not_reached();
-    }
-
-    return verbosity;
-}
-
-
 #if defined(DBG_TEST)
 int
 main(int argc, char *argv[])
