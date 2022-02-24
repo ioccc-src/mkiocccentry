@@ -2367,7 +2367,7 @@ unsigned long string_to_unsigned_long(char const *str)
     errno = 0;
     num = strtoul(str, NULL, 10);
     if (errno != 0) {
-	err(164, __func__, "strtoul(%s): %s", str, strerror(errno));
+	errp(164, __func__, "strtoul(%s): %s", str, strerror(errno));
 	not_reached();
     } else if (num >= ULONG_MAX) {
 	err(165, __func__, "strtoul(%s): too big", str);
@@ -2404,7 +2404,7 @@ unsigned long long string_to_unsigned_long_long(char const *str)
     errno = 0;
     num = strtoul(str, NULL, 10);
     if (errno != 0) {
-	err(167, __func__, "strtoul(%s): %s", str, strerror(errno));
+	errp(167, __func__, "strtoul(%s): %s", str, strerror(errno));
 	not_reached();
     } else if (num >= ULLONG_MAX) {
 	err(168, __func__, "strtoul(%s): too big", str);

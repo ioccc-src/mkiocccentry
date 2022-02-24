@@ -1762,7 +1762,7 @@ check_common_json_fields(char const *program, char const *file, struct json_comm
 	errno = 0;
 	ts = string_to_long(value);
 	if (ts < 0 || ts > 999999) {
-	    err(227, __func__, "formed_timestamp_usec '%ld' out of range of >= 0 && <= 999999", ts);
+	    errp(227, __func__, "formed_timestamp_usec '%ld' out of range of >= 0 && <= 999999", ts);
 	    not_reached();
 	}
     } else if (!strcmp(field, "entry_num")) {

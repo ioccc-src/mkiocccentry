@@ -841,7 +841,7 @@ parse_linux_line(char *p, char *linep, char *line_dup, char const *dir_name, cha
     errno = 0;
     current_file_size = strtoll(p, NULL, 10);
     if (errno != 0) {
-	warn("txzchk", "%s: trying to parse file size in on line: %s, string: %s, reading next line", txzpath, line_dup, p);
+	warnp("txzchk", "%s: trying to parse file size in on line: %s, string: %s, reading next line", txzpath, line_dup, p);
     } else if (current_file_size < 0) {
 	warn("txzchk", "%s: file size < 0", txzpath);
 	++txz_info.total_issues;
@@ -953,7 +953,7 @@ parse_bsd_line(char *p, char *linep, char *line_dup, char const *dir_name, char 
     errno = 0;
     current_file_size = strtoll(p, NULL, 10);
     if (errno != 0) {
-	warn("txzchk", "%s: trying to parse file size in on line: %s, string: %s, reading next line", txzpath, line_dup, p);
+	warnp("txzchk", "%s: trying to parse file size in on line: %s, string: %s, reading next line", txzpath, line_dup, p);
     }
     txz_info.file_sizes += current_file_size;
 
@@ -1112,7 +1112,7 @@ check_tarball(char const *tar, char const *fnamchk)
     errno = 0;			/* pre-clear errno for errp() */
     exit_code = shell_cmd(__func__, true, "% %", fnamchk, txzpath);
     if (exit_code != 0) {
-	warn("txzchk", "%s: %s %s failed with exit code: %d", txzpath, fnamchk, txzpath, WEXITSTATUS(exit_code));
+	warnp("txzchk", "%s: %s %s failed with exit code: %d", txzpath, fnamchk, txzpath, WEXITSTATUS(exit_code));
 	++txz_info.total_issues;
     } else {
 	fnamchk_okay = true;
@@ -1185,7 +1185,7 @@ check_tarball(char const *tar, char const *fnamchk)
 	errno = 0;
 	ret = printf("txzchk: %s size of %lld bytes OK\n", txzpath, (long long) txz_info.size);
 	if (ret <= 0) {
-	    warn("txzchk", "unable to tell user how big the tarball %s is", txzpath);
+	    warnp("txzchk", "unable to tell user how big the tarball %s is", txzpath);
 	}
     }
     dbg(DBG_MED, "txzchk: %s size in bytes: %lld", txzpath, (long long)txz_info.size);
@@ -1217,7 +1217,7 @@ check_tarball(char const *tar, char const *fnamchk)
 	errno = 0;			/* pre-clear errno for errp() */
 	exit_code = shell_cmd(__func__, true, "% -tJvf %", tar, txzpath);
 	if (exit_code != 0) {
-	    err(27, __func__, "%s -tJvf %s failed with exit code: %d",
+	    errp(27, __func__, "%s -tJvf %s failed with exit code: %d",
 			      tar, txzpath, WEXITSTATUS(exit_code));
 	    not_reached();
 	}
@@ -1263,7 +1263,7 @@ check_tarball(char const *tar, char const *fnamchk)
 	errno = 0;			/* pre-clear errno for errp() */
 	p = (char *)memchr(linep, 0, (size_t)readline_len);
 	if (p != NULL) {
-	    warn("txzchk", "found NUL before end of line, reading next line");
+	    warnp("txzchk", "found NUL before end of line, reading next line");
 	    continue;
 	}
 	dbg(DBG_VHIGH, "line %d: %s", line_num, linep);
@@ -1378,14 +1378,14 @@ add_line(char const *str, int line_num)
     errno = 0;
     line = calloc(1, sizeof *line);
     if (line == NULL) {
-	err(31, __func__, "unable to allocate struct line *");
+	errp(31, __func__, "unable to allocate struct line *");
 	not_reached();
     }
 
     errno = 0;
     line->line = strdup(str);
     if (line->line == NULL) {
-	err(32, __func__, "unable to strdup string '%s' for lines list", str);
+	errp(32, __func__, "unable to strdup string '%s' for lines list", str);
 	not_reached();
     }
     line->line_num = line_num;
@@ -1501,21 +1501,21 @@ alloc_file(char const *p)
     errno = 0;
     file = calloc(1, sizeof *file);
     if (file == NULL) {
-	err(36, __func__, "%s: unable to allocate a struct file *", txzpath);
+	errp(36, __func__, "%s: unable to allocate a struct file *", txzpath);
 	not_reached();
     }
 
     errno = 0;
     file->filename = strdup(p);
     if (!file->filename) {
-	err(37, __func__, "%s: unable to strdup filename %s", txzpath, p);
+	errp(37, __func__, "%s: unable to strdup filename %s", txzpath, p);
 	not_reached();
     }
 
     errno = 0;
     file->basename = strdup(base_name(p)?base_name(p):"");
     if (!file->basename || !strlen(file->basename)) {
-	err(38, __func__, "%s: unable to strdup basename of filename %s", txzpath, p);
+	errp(38, __func__, "%s: unable to strdup basename of filename %s", txzpath, p);
 	not_reached();
     }
 

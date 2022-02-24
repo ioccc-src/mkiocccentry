@@ -81,7 +81,6 @@ main(int argc, char *argv[])
 	    /*
 	     * parse verbosity
 	     */
-	    errno = 0;		/* pre-clear errno for errp() */
 	    verbosity_level = parse_verbosity(program, optarg);
 	    break;
 	case 'V':		/* -V - print version and exit */
@@ -152,7 +151,7 @@ main(int argc, char *argv[])
 		errno = 0;		/* pre-clear errno for warnp() */
 		outputlen = fwrite(buf, 1, bufsiz, stdout);
 		if (outputlen != bufsiz) {
-		    warn(__func__, "error: write of %lu bytes of arg: %d returned: %lu",
+		    warnp(__func__, "error: write of %lu bytes of arg: %d returned: %lu",
 				    (unsigned long)bufsiz, i-optind, (unsigned long)outputlen);
 		    error = true;
 		}
@@ -199,8 +198,8 @@ main(int argc, char *argv[])
 	    errno = 0;		/* pre-clear errno for warnp() */
 	    outputlen = fwrite(buf, 1, bufsiz, stdout);
 	    if (outputlen != bufsiz) {
-		warn(__func__, "error: write of %lu bytes of stdin data: returned: %lu",
-			       (unsigned long)bufsiz, (unsigned long)outputlen);
+		warnp(__func__, "error: write of %lu bytes of stdin data: returned: %lu",
+			        (unsigned long)bufsiz, (unsigned long)outputlen);
 		error = true;
 	    }
 	    dbg(DBG_MED, "stdout write length: %lu", (unsigned long)outputlen);

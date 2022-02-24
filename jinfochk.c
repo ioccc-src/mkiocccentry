@@ -323,7 +323,7 @@ check_info_json(char const *file, char const *fnamchk)
     errno = 0;			/* pre-clear errno for errp() */
     p = (char *)memchr(data, 0, (size_t)length);
     if (p != NULL) {
-	err(16, __func__, "found NUL before EOF: %s", file);
+	errp(16, __func__, "found NUL before EOF: %s", file);
 	not_reached();
     }
 
