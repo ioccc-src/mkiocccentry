@@ -1668,6 +1668,53 @@ json_filename(int type)
 
 
 /*
+ * get_common_json_field	-   check if field is common to both .info.json
+ *				    and author.json and if it is add to common
+ *				    list
+ *
+ * given:
+ *
+ *	name	- which util called this (jinfochk or jauthchk)
+ *	file	- the file being parsed (path to)
+ *	field	- the field name
+ *	value	- the value of the field
+ *
+ * returns:
+ *	1 ==> if the field is common to both files
+ *	0 ==> if it's not one of the common fields
+ *
+ * NOTE: Does not return on error (NULL pointers).
+ */
+int
+get_common_json_field(char const *program, char const *file, char *field, char *value)
+{
+    int ret = 1;	/* return value: 1 ==> known field, 0 ==> not a common field */
+
+    /*
+     * firewall
+     */
+    if (program == NULL || file == NULL || field == NULL || value == NULL) {
+	err(218, __func__, "passed NULL arg(s)");
+	not_reached();
+    }
+
+    /*
+     * process a given common field
+     */
+    if (!strcmp(field, "ioccc_contest") || !strcmp(field, "ioccc_year") ||
+	!strcmp(field, "mkiocccentry_version") || !strcmp(field, "iocccsize_version") ||
+	!strcmp(field, "IOCCC_contest_id") || !strcmp(field, "min_timestamp") ||
+	!strcmp(field, "timestamp_epoch") || !strcmp(field, "formed_timestamp_usec") ||
+	!strcmp(field, "entry_num") || !strcmp(field, "formed_UTC") ||
+	!strcmp(field, "formed_timestamp") || !strcmp(field, "tarball")) {
+	    add_common_json_field(field, value);
+    } else {
+	ret = 0;
+    }
+    return ret;
+}
+
+/*
  * check_common_json_fields	-   check if field is common to both .info.json
  *				    and author.json and check the value if it is
  *
@@ -1675,35 +1722,30 @@ json_filename(int type)
  *
  *	name	- which util called this (jinfochk or jauthchk)
  *	file	- the file being parsed (path to)
- *	common	- pointer to struct json_common (in either a struct info or
- *		  struct author)
  *	fnamchk	- path to fnamchk util
- *	field	- the field name
- *	value	- the value of the field
  *
  * returns:
- *	1 ==> if the field was parsed (that is the field is one of the common
- *	      fields to both files and it has a valid value)
- *	0 ==> if it's not one of the common fields
+ *	1 ==> there were one or more issues found
+ *	0 ==> if no issues were found
  *
  * NOTE: Does not return on error (NULL pointers).
  */
 int
-check_common_json_fields(char const *program, char const *file, struct json_common *common,
-			 char const *fnamchk, char *field, char *value)
+check_common_json_fields(char const *program, char const *file, char const *fnamchk)
 {
     int year = 0;	/* ioccc_year: IOCCC year as an integer */
     int entry_num = -1;	/* entry_num: entry number as an integer */
     long ts = 0;	/* formed_timestamp_usec: microseconds as an integer */
     struct tm tm;	/* formed_timestamp: formatted as a time structure */
     int exit_code = 0;	/* tarball: exit code from fnamchk command */
-    int ret = 1;	/* return value: 1 ==> known field, 0 ==> not a common field */
+    int issues = 0;	/* number of issues found */
     char *p;
+    struct json_field *field; /* current field in common_json_fields list */
 
     /*
      * firewall
      */
-    if (program == NULL || file == NULL || fnamchk == NULL || field == NULL || value == NULL || common == NULL) {
+    if (program == NULL || file == NULL || fnamchk == NULL) {
 	err(218, __func__, "passed NULL arg(s)");
 	not_reached();
     }
@@ -1713,92 +1755,179 @@ check_common_json_fields(char const *program, char const *file, struct json_comm
      */
     memset(&tm, 0, sizeof tm);
 
-    /*
-     * process a given common field
-     */
-    if (!strcmp(field, "ioccc_contest")) {
-	if (strcmp(value, IOCCC_CONTEST)) {
-	    err(220, __func__, "ioccc_contest \"%s\" != \"%s\" in file %s", value, IOCCC_CONTEST, file);
-	    not_reached();
-	}
-    } else if (!strcmp(field, "ioccc_year")) {
-	year = string_to_int(value);
-	if (year != IOCCC_YEAR) {
-	    err(221, __func__, "ioccc_year %d != IOCCC_YEAR %d", year, IOCCC_YEAR);
-	    not_reached();
-	}
-    } else if (!strcmp(field, "mkiocccentry_version")) {
-	if (strcmp(value, MKIOCCCENTRY_VERSION)) {
-	    err(222, __func__, "mkiocccentry_version \"%s\" != MKIOCCCENTRY_VERSION \"%s\"", value, MKIOCCCENTRY_VERSION);
-	    not_reached();
-	}
-    } else if (!strcmp(field, "iocccsize_version")) {
-	if (strcmp(value, IOCCCSIZE_VERSION)) {
-	    err(223, __func__, "iocccsize_version \"%s\" != IOCCCSIZE_VERSION \"%s\"", value, IOCCCSIZE_VERSION);
-	    not_reached();
-	}
-    } else if (!strcmp(field, "IOCCC_contest_id")) {
-	if (!valid_contest_id(value)) {
-	    err(224, __func__, "IOCCC_contest_id \"%s\" is invalid", value);
-	    not_reached();
-	}
-    } else if (!strcmp(field, "min_timestamp")) {
-	ts = string_to_long(value);
-	if (ts != MIN_TIMESTAMP) {
-	    err(225, __func__, "min_timestamp '%ld' != MIN_TIMESTAMP '%ld'", ts, MIN_TIMESTAMP);
-	    not_reached();
-	}
-    } else if (!strcmp(field, "timestamp_epoch")) {
-	if (strcmp(value, TIMESTAMP_EPOCH)) {
-	    err(226, __func__, "timestamp_epoch \"%s\" != TIMESTAMP_EPOCH \"%s\"", value, TIMESTAMP_EPOCH);
-	    not_reached();
-	}
-    } else if (!strcmp(field, "formed_timestamp_usec")) {
-	errno = 0;
-	ts = string_to_long(value);
-	if (ts < 0 || ts > 999999) {
-	    errp(227, __func__, "formed_timestamp_usec '%ld' out of range of >= 0 && <= 999999", ts);
-	    not_reached();
-	}
-    } else if (!strcmp(field, "entry_num")) {
-	entry_num = string_to_int(value);
-	if (!(entry_num >= 0 && entry_num <= MAX_ENTRY_NUM)) {
-	    err(228, __func__, "entry number %d out of range", entry_num);
-	    not_reached();
-	}
-    } else if (!strcmp(field, "formed_UTC")) {
-	p = strptime(value, FORMED_UTC_FMT, &tm);
-	if (p == NULL) {
-	    err(229, __func__, "formed_UTC \"%s\" does not match FORMED_UTC_FMT \"%s\"", value, FORMED_UTC_FMT);
-	    not_reached();
-	}
-    } else if (!strcmp(field, "formed_timestamp")) {
-	ts = string_to_long(value);
-	if (ts < MIN_TIMESTAMP) {
-	    err(230, __func__, "formed_timestamp '%ld' < MIN_TIMESTAMP '%ld'", ts, MIN_TIMESTAMP);
-	    not_reached();
-	}
-    } else if (!strcmp(field, "tarball")) {
+    for (field = common_json_fields; field != NULL; field = field->next) {
+	/*
+	 * process a given common field->field
+	 */
+	if (!strcmp(field->field, "ioccc_contest")) {
+	    if (strcmp(field->value, IOCCC_CONTEST)) {
+		warn(__func__, "ioccc_contest \"%s\" != \"%s\" in file %s", field->value, IOCCC_CONTEST, file);
+		++issues;
+	    }
+	} else if (!strcmp(field->field, "ioccc_year")) {
+	    year = string_to_int(field->value);
+	    if (year != IOCCC_YEAR) {
+		warn(__func__, "ioccc_year %d != IOCCC_YEAR %d", year, IOCCC_YEAR);
+		++issues;
+	    }
+	} else if (!strcmp(field->field, "mkiocccentry_version")) {
+	    if (strcmp(field->value, MKIOCCCENTRY_VERSION)) {
+		warn(__func__, "mkiocccentry_version \"%s\" != MKIOCCCENTRY_VERSION \"%s\"", field->value, MKIOCCCENTRY_VERSION);
+		++issues;
+	    }
+	} else if (!strcmp(field->field, "iocccsize_version")) {
+	    if (strcmp(field->value, IOCCCSIZE_VERSION)) {
+		warn(__func__, "iocccsize_version \"%s\" != IOCCCSIZE_VERSION \"%s\"", field->value, IOCCCSIZE_VERSION);
+		++issues;
+	    }
+	} else if (!strcmp(field->field, "IOCCC_contest_id")) {
+	    if (!valid_contest_id(field->value)) {
+		warn(__func__, "IOCCC_contest_id \"%s\" is invalid", field->value);
+		++issues;
+	    }
+	} else if (!strcmp(field->field, "min_timestamp")) {
+	    ts = string_to_long(field->value);
+	    if (ts != MIN_TIMESTAMP) {
+		warn(__func__, "min_timestamp '%ld' != MIN_TIMESTAMP '%ld'", ts, MIN_TIMESTAMP);
+		++issues;
+	    }
+	} else if (!strcmp(field->field, "timestamp_epoch")) {
+	    if (strcmp(field->value, TIMESTAMP_EPOCH)) {
+		warn(__func__, "timestamp_epoch \"%s\" != TIMESTAMP_EPOCH \"%s\"", field->value, TIMESTAMP_EPOCH);
+		++issues;
+	    }
+	} else if (!strcmp(field->field, "formed_timestamp_usec")) {
+	    errno = 0;
+	    ts = string_to_long(field->value);
+	    if (ts < 0 || ts > 999999) {
+		warnp(__func__, "formed_timestamp_usec '%ld' out of range of >= 0 && <= 999999", ts);
+		++issues;
+	    }
+	} else if (!strcmp(field->field, "entry_num")) {
+	    entry_num = string_to_int(field->value);
+	    if (!(entry_num >= 0 && entry_num <= MAX_ENTRY_NUM)) {
+		warn(__func__, "entry number %d out of range", entry_num);
+		++issues;
+	    }
+	} else if (!strcmp(field->field, "formed_UTC")) {
+	    p = strptime(field->value, FORMED_UTC_FMT, &tm);
+	    if (p == NULL) {
+		warn(__func__, "formed_UTC \"%s\" does not match FORMED_UTC_FMT \"%s\"", field->value, FORMED_UTC_FMT);
+		++issues;
+	    }
+	} else if (!strcmp(field->field, "formed_timestamp")) {
+	    ts = string_to_long(field->value);
+	    if (ts < MIN_TIMESTAMP) {
+		warn(__func__, "formed_timestamp '%ld' < MIN_TIMESTAMP '%ld'", ts, MIN_TIMESTAMP);
+		++issues;
+	    }
+	} else if (!strcmp(field->field, "tarball")) {
+
+	    /*
+	     * execute the fnamchk command
+	     */
+	    exit_code = shell_cmd(__func__, true, "% % >/dev/null", fnamchk, field->value);
+	    if (exit_code != 0) {
+		warn(__func__, "%s: %s %s > /dev/null: failed with exit code: %d",
+				    program, fnamchk, field->value, WEXITSTATUS(exit_code));
+		++issues;
+	    }
 
 	/*
-	 * execute the fnamchk command
+	 * case: unknown field
 	 */
-	exit_code = shell_cmd(__func__, true, "% % >/dev/null", fnamchk, value);
-	if (exit_code != 0) {
-	    err(231, __func__, "%s: %s %s > /dev/null: failed with exit code: %d",
-				program, fnamchk, value, WEXITSTATUS(exit_code));
-	    not_reached();
 	}
-
-    /*
-     * case: unknown field
-     */
-    } else {
-	ret = 0;
     }
-    return ret;
+    return issues;
 }
 
+
+
+/* add_common_json_field   - add a common json field to json_common_fields list
+ *
+ *
+ * Allocates a struct json_field * and add it to the json_common_fields list.
+ * This will be used for reporting errors after parsing the file as well as
+ * (later on) verifying that these fields are present in both .info.json and
+ * .author.json (this detail is not yet completely thought out).
+ *
+ * This function returns the newly allocated struct json_field OR if the field
+ * was already in the list, the previous one with the count incremented.
+ *
+ */
+struct json_field *
+add_common_json_field(char const *field, char const *value)
+{
+    struct json_field *f; /* newly allocated field */
+
+    /*
+     * firewall
+     */
+    if (field == NULL || value == NULL) {
+	err(35, __func__, "passed NULL arg(s)");
+	not_reached();
+    }
+
+    for (f = common_json_fields; f != NULL; f = f->next) {
+	if (f->field && !strcmp(f->field, field)) {
+	    f->count++;
+	    return f;
+	}
+    }
+
+    errno = 0;
+    f = calloc(1, sizeof *f);
+    if (f == NULL) {
+	errp(33, __func__, "unable to calloc struct json_field * for field '%s' with value '%s'", field, value);
+	not_reached();
+    }
+
+    errno = 0;
+    f->field = strdup(field);
+    if (f->field == NULL) {
+	errp(32, __func__, "unable to strdup field '%s'", field);
+	not_reached();
+    }
+
+    errno = 0;
+    f->value = strdup(value);
+    if (f->value == NULL) {
+	errp(33, __func__, "unable to strdup value '%s'", value);
+	not_reached();
+    }
+    f->count = 1;
+    f->next = common_json_fields;
+    common_json_fields = f;
+
+    return f;
+}
+
+/* free_common_json_fields  - free the common json fields list
+ *
+ * This function returns void.
+ */
+void
+free_common_json_fields(void)
+{
+    struct json_field *field, *next_field;
+
+    for (field = common_json_fields; field != NULL; field = next_field) {
+	next_field = field->next;
+
+	if (field->field) {
+	    free(field->field);
+	    field->field = NULL;
+	}
+	if (field->value) {
+	    free(field->value);
+	    field->value = NULL;
+	}
+	free(field);
+	field = NULL;
+    }
+
+    common_json_fields = NULL;
+}
 
 /*
  * free_info - free info and related sub-elements

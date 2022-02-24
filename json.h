@@ -60,6 +60,18 @@
 
 #define FORMED_UTC_FMT "%a %b %d %H:%M:%S %Y UTC"   /* format for strptime() of formed_UTC */
 
+struct json_field
+{
+    char *field;
+    char *value;
+
+    size_t count;
+
+    struct json_field *next;
+};
+
+struct json_field *common_json_fields;
+
 /*
  * common json fields
  */
@@ -165,9 +177,11 @@ extern char *malloc_json_decode_str(char const *str, size_t *retlen, bool strict
 extern int check_first_json_char(char const *file, char *data, bool strict, char **first);
 extern int check_last_json_char(char const *file, char *data, bool strict, char **last);
 extern char const *json_filename(int type);
-extern int check_common_json_fields(char const *program, char const *file, struct json_common *common, char const *fnamchk, char *field, char *value);
+extern int get_common_json_field(char const *program, char const *file, char *field, char *value);
+extern int check_common_json_fields(char const *program, char const *file, char const *fnamchk);
 extern void free_info(struct info *infop);
+extern void free_common_json_fields(void);
 extern void free_author_array(struct author *authorp, int author_count);
-
+extern struct json_field *add_common_json_field(char const *field, char const *value);
 
 #endif /* INCLUDE_JSON_H */

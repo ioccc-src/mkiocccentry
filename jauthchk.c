@@ -25,6 +25,7 @@ main(int argc, char **argv)
     char *file;		/* file argument to check */
     int ret;			/* libc return code */
     int i;
+    int issues;
     char *fnamchk = FNAMCHK_PATH_0;	/* path to fnamchk executable */
     bool fnamchk_flag_used = false; /* true ==> -F fnamchk used */
 
@@ -118,7 +119,7 @@ main(int argc, char **argv)
 	para("... environment looks OK", "", NULL);
     }
 
-    check_author_json(file, fnamchk);
+    issues = check_author_json(file, fnamchk);
 
     if (program_basename != NULL) {
 	free(program_basename);
@@ -133,7 +134,7 @@ main(int argc, char **argv)
     /*
      * All Done!!! - Jessica Noll, age 2
      */
-    exit(author.issues != 0);
+    exit(issues != 0);
 }
 
 
@@ -273,13 +274,16 @@ sanity_chk(char const *file, char const *fnamchk)
  *
  * Attempts to validate the file as .author.json, reporting any problems found.
  *
+ * Returns 0 if no issues were found; else it returns non-zero.
+ *
  * Function does not return on error.
  */
-static void
+static int
 check_author_json(char const *file, char const *fnamchk)
 {
     FILE *stream;
     int ret;
+    int issues = 0;
     char *data;		/* .author.json contents */
     char *data_dup;	/* contents of file strdup()d */
     size_t length;	/* length of input buffer */
@@ -451,11 +455,11 @@ check_author_json(char const *file, char const *fnamchk)
 		 */
 	    }
 	    /* handle regular field */
-	    if (check_common_json_fields(program_basename, file, &author.common, fnamchk, p, value)) {
+	    if (get_common_json_field(program_basename, file, p, value)) {
 	    } else if (!strcmp(p, "IOCCC_author_version")) {
 		if (strcmp(value, AUTHOR_VERSION)) {
-		    err(219, __func__, "IOCCC_author_version \"%s\" != \"%s\" in file %s", value, AUTHOR_VERSION, file);
-		    not_reached();
+		    warn(__func__, "IOCCC_author_version \"%s\" != \"%s\" in file %s", value, AUTHOR_VERSION, file);
+		    ++issues;
 		}
 	    } else {
 		/* TODO: after everything else is parsed if we get here it's an
@@ -474,6 +478,11 @@ check_author_json(char const *file, char const *fnamchk)
     /* free strdup()d data */
     free(data_dup);
     data_dup = NULL;
+
+    issues += check_common_json_fields(program_basename, file, fnamchk);
+    free_common_json_fields();
+
+    return issues;
 }
 
 

@@ -26,6 +26,7 @@ main(int argc, char **argv)
     char *file;			/* file argument to check */
     int ret;			/* libc return code */
     int i;
+    int issues = 0;
     char *fnamchk = FNAMCHK_PATH_0;	/* path to fnamchk executable */
     bool fnamchk_flag_used = false; /* true ==> -F fnamchk used */
 
@@ -117,7 +118,7 @@ main(int argc, char **argv)
 	para("... environment looks OK", "", NULL);
     }
 
-    check_info_json(file, fnamchk);
+    issues = check_info_json(file, fnamchk);
 
     if (program_basename != NULL) {
 	free(program_basename);
@@ -130,7 +131,7 @@ main(int argc, char **argv)
     /*
      * All Done!!! - Jessica Noll, age 2
      */
-    exit(info.issues != 0);
+    exit(issues != 0);
 }
 
 
@@ -270,13 +271,16 @@ sanity_chk(char const *file, char const *fnamchk)
  *
  * Attempts to validate the file as .info.json, reporting any problems found.
  *
+ * Returns 0 if no issues were found; else it returns non-zero.
+ *
  * Function does not return on error.
  */
-static void
+static int
 check_info_json(char const *file, char const *fnamchk)
 {
     FILE *stream;
     int ret;
+    int issues = 0;
     char *data;		/* .info.json contents */
     char *data_dup;	/* contents of file strdup()d */
     size_t length;	/* length of input buffer */
@@ -462,41 +466,41 @@ check_info_json(char const *file, char const *fnamchk)
 	    }
 	    value_length = strlen(value);
 	    /* handle regular field */
-	    if (check_common_json_fields(program_basename, file, &info.common, fnamchk, p, value)) {
+	    if (get_common_json_field(program_basename, file, p, value)) {
 	    } else if (!strcmp(p, "IOCCC_info_version")) {
 		if (strcmp(value, INFO_VERSION)) {
-		    err(219, __func__, "IOCCC_info_version \"%s\" != \"%s\" in file %s", value, INFO_VERSION, file);
-		    not_reached();
+		    warn(__func__, "IOCCC_info_version \"%s\" != \"%s\" in file %s", value, INFO_VERSION, file);
+		    ++issues;
 		}
 	    } else if (!strcmp(p, "title")) {
 		if (value_length == 0) {
-		    err(22, __func__, "title length zero");
-		    not_reached();
+		    warn(__func__, "title length zero");
+		    ++issues;
 		} else if (value_length > MAX_TITLE_LEN) {
-		    err(23, __func__, "title length %lu > max %d",
+		    warn(__func__, "title length %lu > max %d",
 				      (unsigned long)value_length, MAX_TITLE_LEN);
-		    not_reached();
+		    ++issues;
 		}
 
 		/* check for valid chars only */
 		if (!isascii(value[0]) || (!islower(value[0]) && !isdigit(value[0]))) {
-		    err(24, __func__, "first char of title '%c' invalid", value[0]);
-		    not_reached();
+		    warn(__func__, "first char of title '%c' invalid", value[0]);
+		    ++issues;
 		} else {
 		    span = strspn(value, TAIL_TITLE_CHARS);
 		    if (span != value_length) {
-			err(25, __func__, "invalid chars found in title \"%s\"", value);
-			not_reached();
+			warn(__func__, "invalid chars found in title \"%s\"", value);
+			++issues;
 		    }
 		}
 	    } else if (!strcmp(p, "abstract")) {
 		if (value_length == 0) {
-		    err(26, __func__, "abstract value zero length");
-		    not_reached();
+		    warn(__func__, "abstract value zero length");
+		    ++issues;
 		} else if (value_length > MAX_ABSTRACT_LEN) {
-		    err(27, __func__, "abstract length %lu > max %d",
+		    warn(__func__, "abstract length %lu > max %d",
 				      (unsigned long)value_length, MAX_ABSTRACT_LEN);
-		    not_reached();
+		    ++issues;
 		}
 	    } else if (!strcmp(p, "rule_2a_size")) {
 		info.rule_2a_size = string_to_long_long(value);
@@ -511,8 +515,8 @@ check_info_json(char const *file, char const *fnamchk)
 	      !strcmp(p, "found_clean_rule") || !strcmp(p, "found_clobber_rule") ||
 	      !strcmp(p, "found_try_rule") || !strcmp(p, "test_mode")) {
 		if (strcmp(value, "false") && strcmp(value, "true")) {
-		    err(28, __func__, "found non-boolean value '%s' for boolean '%s' in file %s", value,  p, file);
-		    not_reached();
+		    warn(__func__, "found non-boolean value '%s' for boolean '%s' in file %s", value,  p, file);
+		    ++issues;
 		}
 	    } else {
 	    }
@@ -529,6 +533,11 @@ check_info_json(char const *file, char const *fnamchk)
     /* free strdup()d data */
     free(data_dup);
     data_dup = NULL;
+
+    issues += check_common_json_fields(program_basename, file, fnamchk);
+    free_common_json_fields();
+
+    return issues;
 }
 
 
