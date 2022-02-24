@@ -37,7 +37,7 @@
 /*
  * definitions
  */
-#define VERSION "1.3 2022-02-20"
+#define VERSION "1.4 2022-02-23"
 
 
 /*
