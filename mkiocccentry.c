@@ -5166,10 +5166,10 @@ write_info(struct info *infop, char const *entry_dir, bool test_mode, char const
     /*
      * perform the jinfochk which will indirectly show the user the tarball contents
      */
-    dbg(DBG_HIGH, "about to perform: %s -q -s -F %s %s", jinfochk, fnamchk, info_path);
-    exit_code = shell_cmd(__func__, true, "% -q -s -F % %", jinfochk, fnamchk, info_path);
+    dbg(DBG_HIGH, "about to perform: %s -q -s -F %s -- %s", jinfochk, fnamchk, info_path);
+    exit_code = shell_cmd(__func__, true, "% -q -s -F % -- %", jinfochk, fnamchk, info_path);
     if (exit_code != 0) {
-	err(172, __func__, "%s -q -s -F %s %s failed with exit code: %d",
+	err(172, __func__, "%s -q -s -F %s -- %s failed with exit code: %d",
 			   jinfochk, fnamchk, info_path, WEXITSTATUS(exit_code));
 	not_reached();
     }
@@ -5325,10 +5325,10 @@ write_author(struct info *infop, int author_count, struct author *authorp, char 
     /*
      * perform the jauthchk which will indirectly show the user the tarball contents
      */
-    dbg(DBG_HIGH, "about to perform: %s -q -s %s", jauthchk, author_path);
-    exit_code = shell_cmd(__func__, true, "% -q -s %", jauthchk, author_path);
+    dbg(DBG_HIGH, "about to perform: %s -q -s -- %s", jauthchk, author_path);
+    exit_code = shell_cmd(__func__, true, "% -q -s -- %", jauthchk, author_path);
     if (exit_code != 0) {
-	err(183, __func__, "%s -q -s %s failed with exit code: %d",
+	err(183, __func__, "%s -q -s -- %s failed with exit code: %d",
 			   jauthchk, author_path, WEXITSTATUS(exit_code));
 	not_reached();
     }
@@ -5424,12 +5424,12 @@ form_tarball(char const *work_dir, char const *entry_dir, char const *tarball_pa
 	 NULL);
     basename_entry_dir = base_name(entry_dir);
     basename_tarball_path = base_name(tarball_path);
-    dbg(DBG_HIGH, "about to perform: %s --format=v7 -cJf %s %s",
+    dbg(DBG_HIGH, "about to perform: %s --format=v7 -cJf %s -- %s",
 		   tar, basename_tarball_path, basename_entry_dir);
-    exit_code = shell_cmd(__func__, true, "% --format=v7 -cJf % %",
+    exit_code = shell_cmd(__func__, true, "% --format=v7 -cJf % -- %",
 				    tar, basename_tarball_path, basename_entry_dir);
     if (exit_code != 0) {
-	err(187, __func__, "%s --format=v7 -cJf %s %s failed with exit code: %d",
+	err(187, __func__, "%s --format=v7 -cJf %s -- %s failed with exit code: %d",
 			   tar, basename_tarball_path, basename_entry_dir, WEXITSTATUS(exit_code));
 	not_reached();
     }
@@ -5473,12 +5473,12 @@ form_tarball(char const *work_dir, char const *entry_dir, char const *tarball_pa
     /*
      * perform the txzchk which will indirectly show the user the tarball contents
      */
-    dbg(DBG_HIGH, "about to perform: %s -q -F %s %s/../%s",
+    dbg(DBG_HIGH, "about to perform: %s -q -F %s -- %s/../%s",
 		  txzchk, fnamchk, entry_dir, basename_tarball_path);
-    exit_code = shell_cmd(__func__, true, "% -q -F % %/../%",
+    exit_code = shell_cmd(__func__, true, "% -q -F % -- %/../%",
 					  txzchk, fnamchk, entry_dir, basename_tarball_path);
     if (exit_code != 0) {
-	err(192, __func__, "%s -q -F %s %s/../%s failed with exit code: %d",
+	err(192, __func__, "%s -q -F %s -- %s/../%s failed with exit code: %d",
 			   txzchk, fnamchk, entry_dir, basename_tarball_path, WEXITSTATUS(exit_code));
 	not_reached();
     }

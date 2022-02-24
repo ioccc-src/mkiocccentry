@@ -1041,7 +1041,7 @@ vcmdprintf(char const *format, va_list ap)
     errno = 0;			/* pre-clear errno for warnp() */
     cmd = (char *)malloc(size);	/* trailing zero included in size */
     if (cmd == NULL) {
-	warnp(__func__, "malloc from the cmdprintf of %lu bytes failed", (unsigned long)size);
+	warnp(__func__, "malloc from vcmdprintf of %lu bytes failed", (unsigned long)size);
 	return NULL;
     }
 
@@ -1197,10 +1197,11 @@ shell_cmd(char const *name, bool abort, char const *format, ...)
     if (cmd == NULL) {
 	/* exit or error return depending on abort */
 	if (abort == true) {
-	    err(112, name, "malloc failed in cmdprintf()");
+	    errp(112, name, "malloc failed in vcmdprintf()");
 	    not_reached();
 	} else {
-	    dbg(DBG_MED, "called from %s: malloc failed in vcmdprintf(), returning: %d < 0", name, MALLOC_FAILED_EXIT);
+	    dbg(DBG_MED, "called from %s: malloc failed in vcmdprintf(): %s, returning: %d < 0",
+			 name, strerror(errno), MALLOC_FAILED_EXIT);
 	    va_end(ap);
 	    return MALLOC_FAILED_EXIT;
 	}
@@ -1223,7 +1224,7 @@ shell_cmd(char const *name, bool abort, char const *format, ...)
 	    errp(113, name, "fflush(stdout): error code: %d", ret);
 	    not_reached();
 	} else {
-	    dbg(DBG_MED, "called from %s: fflush(stdout) failed", name);
+	    dbg(DBG_MED, "called from %s: fflush(stdout) failed: %s", name, strerror(errno));
 	    va_end(ap);
 	    return FLUSH_FAILED_EXIT;
 	}
@@ -1379,10 +1380,11 @@ pipe_open(char const *name, bool abort, char const *format, ...)
     if (cmd == NULL) {
 	/* exit or error return depending on abort */
 	if (abort == true) {
-	    err(119, name, "malloc failed in cmdprintf()");
+	    errp(119, name, "malloc failed in vcmdprintf()");
 	    not_reached();
 	} else {
-	    dbg(DBG_MED, "called from %s: malloc failed in vcmdprintf(), returning: %d < 0", name, MALLOC_FAILED_EXIT);
+	    dbg(DBG_MED, "called from %s: malloc failed in vcmdprintf(): %s returning: %d < 0",
+			 name, strerror(errno), MALLOC_FAILED_EXIT);
 	    va_end(ap);
 	    return NULL;
 	}
@@ -1405,7 +1407,7 @@ pipe_open(char const *name, bool abort, char const *format, ...)
 	    errp(120, name, "fflush(stdout): error code: %d", ret);
 	    not_reached();
 	} else {
-	    dbg(DBG_MED, "called from %s: fflush(stdout) failed", name);
+	    dbg(DBG_MED, "called from %s: fflush(stdout) failed: %s", name, strerror(errno));
 	    va_end(ap);
 	    return NULL;
 	}
@@ -1428,7 +1430,7 @@ pipe_open(char const *name, bool abort, char const *format, ...)
 	    errp(121, name, "fflush(stderr): error code: %d", ret);
 	    not_reached();
 	} else {
-	    dbg(DBG_MED, "called from %s: fflush(stderr) failed", name);
+	    dbg(DBG_MED, "called from %s: fflush(stderr) failed: %s", name, strerror(errno));
 	    va_end(ap);
 	    return NULL;
 	}
@@ -1451,7 +1453,7 @@ pipe_open(char const *name, bool abort, char const *format, ...)
 	    errp(122, name, "error calling popen(%s, \"r\")", cmd);
 	    not_reached();
 	} else {
-	    dbg(DBG_MED, "called from %s: error calling popen(%s, \"r\")", name, cmd);
+	    dbg(DBG_MED, "called from %s: error calling popen(%s, \"r\"): %s", name, cmd, strerror(errno));
 	    va_end(ap);
 	    return NULL;
 	}

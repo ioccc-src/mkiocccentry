@@ -1788,7 +1788,6 @@ check_common_json_fields(char const *program, char const *file, struct json_comm
 	/*
 	 * execute the fnamchk command
 	 */
-	errno = 0;			/* pre-clear errno for errp() */
 	exit_code = shell_cmd(__func__, true, "% % >/dev/null", fnamchk, value);
 	if (exit_code != 0) {
 	    err(231, __func__, "%s: %s %s > /dev/null: failed with exit code: %d",

@@ -1133,10 +1133,9 @@ check_tarball(char const *tar, char const *fnamchk)
 	/*
 	 * form pipe to the fnamchk command
 	 */
-	errno = 0;			/* pre-clear errno for errp() */
-	fnamchk_stream = pipe_open(__func__, true, "% %", fnamchk, txzpath);
+	fnamchk_stream = pipe_open(__func__, true, "% -- %", fnamchk, txzpath);
 	if (fnamchk_stream == NULL) {
-	    errp(22, __func__, "popen for reading failed for: %s %s", fnamchk, txzpath);
+	    err(22, __func__, "popen for reading failed for: %s -- %s", fnamchk, txzpath);
 	    not_reached();
 	}
 
@@ -1226,11 +1225,10 @@ check_tarball(char const *tar, char const *fnamchk)
 	/*
 	 * If we get here -f was not specified so open pipe to tar command.
 	 */
-	errno = 0;			/* pre-clear errno for errp() */
 	input_stream = pipe_open(__func__, true, "% -tJvf %", tar, txzpath);
 	if (input_stream == NULL) {
-	    errp(28, __func__, "popen for reading failed for: %s -tJvf %s",
-			       tar, txzpath);
+	    err(28, __func__, "popen for reading failed for: %s -tJvf %s",
+			      tar, txzpath);
 	    not_reached();
 	}
     }
