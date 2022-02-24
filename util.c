@@ -973,11 +973,11 @@ cmdprintf(char const *format, ...)
  *	malloced shell command line, or
  *	NULL ==> error
  *
- * NOTE: This coded is base on an enhancement request by GitHub user @ilyakurdyukov:
+ * NOTE: This code is based on an enhancement request by GitHub user @ilyakurdyukov:
  *
  *		https://github.com/ioccc-src/mkiocccentry/issues/11
  *
- *	 and this function code was writen by him.  Thank you Ilya Kurdyukov!
+ *	 and this function code was written by him.  Thank you Ilya Kurdyukov!
  */
 char *
 vcmdprintf(char const *format, va_list ap)
@@ -1323,7 +1323,7 @@ shell_cmd(char const *name, bool abort, char const *format, ...)
  * given:
  *	name	- name of the calling function
  *	abort	- false ==> return FILE * stream for open pipe to shell, or
- *			    return NULL on falure
+ *			    return NULL on failure
  *		  true ==> return FILE * stream for open pipe to shell, or
  *			   call errp() (and thus exit) if unsuccessful
  *      format	- The format string, any % on this string inserts the next string from the list,

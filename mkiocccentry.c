@@ -1222,9 +1222,9 @@ sanity_chk(struct info *infop, char const *work_dir, char const *tar, char const
     jencchk();
 
     /*
-     * obtain version string from iocccsize_version
+     * obtain version string from IOCCCSIZE_VERSION
      */
-    infop->common.iocccsize_ver = iocccsize_version;
+    infop->common.iocccsize_ver = IOCCCSIZE_VERSION;
     return;
 }
 

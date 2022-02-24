@@ -88,7 +88,7 @@ static bool test = false;		    /* true ==> issue warnings instead of errors in s
  */
 static void usage(int exitcode, char const *name, char const *str) __attribute__((noreturn));
 static void sanity_chk(char const *file, char const *fnamchk);
-static void check_author_json(char const *file, char const *fnamchk);
+static int check_author_json(char const *file, char const *fnamchk);
 
 
 #endif /* INCLUDE_JAUTHCHK_H */
