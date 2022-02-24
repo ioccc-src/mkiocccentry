@@ -87,6 +87,10 @@
  */
 #include "iocccsize.h"
 
+/*
+ * official versions
+ */
+#include "version.h"
 
 /*
  * definitions
