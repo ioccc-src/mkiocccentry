@@ -1716,12 +1716,7 @@ check_common_json_fields(char const *program, char const *file, struct json_comm
     /*
      * process a given common field
      */
-    if (!strcmp(field, "IOCCC_info_version")) {
-	if (strcmp(value, INFO_VERSION)) {
-	    err(219, __func__, "IOCCC_info_version \"%s\" != \"%s\" in file %s", value, INFO_VERSION, file);
-	    not_reached();
-	}
-    } else if (!strcmp(field, "ioccc_contest")) {
+    if (!strcmp(field, "ioccc_contest")) {
 	if (strcmp(value, IOCCC_CONTEST)) {
 	    err(220, __func__, "ioccc_contest \"%s\" != \"%s\" in file %s", value, IOCCC_CONTEST, file);
 	    not_reached();

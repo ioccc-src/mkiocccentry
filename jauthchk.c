@@ -452,6 +452,11 @@ check_author_json(char const *file, char const *fnamchk)
 	    }
 	    /* handle regular field */
 	    if (check_common_json_fields(program_basename, file, &author.common, fnamchk, p, value)) {
+	    } else if (!strcmp(p, "IOCCC_author_version")) {
+		if (strcmp(value, AUTHOR_VERSION)) {
+		    err(219, __func__, "IOCCC_author_version \"%s\" != \"%s\" in file %s", value, AUTHOR_VERSION, file);
+		    not_reached();
+		}
 	    } else {
 		/* TODO: after everything else is parsed if we get here it's an
 		 * error as there's invalid fields in the file.
