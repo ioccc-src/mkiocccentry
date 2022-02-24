@@ -1791,7 +1791,7 @@ check_common_json_fields(char const *program, char const *file, struct json_comm
 	errno = 0;			/* pre-clear errno for errp() */
 	exit_code = shell_cmd(__func__, true, "% % >/dev/null", fnamchk, value);
 	if (exit_code != 0) {
-	    err(236, __func__, "%s: %s %s > /dev/null: failed with exit code: %d",
+	    err(231, __func__, "%s: %s %s > /dev/null: failed with exit code: %d",
 				program, fnamchk, value, WEXITSTATUS(exit_code));
 	    not_reached();
 	}
@@ -1823,7 +1823,7 @@ free_info(struct info *infop)
      * firewall
      */
     if (infop == NULL) {
-	err(237, __func__, "called with NULL arg(s)");
+	err(232, __func__, "called with NULL arg(s)");
 	not_reached();
     }
 
@@ -1914,11 +1914,11 @@ free_author_array(struct author *author_set, int author_count)
      * firewall
      */
     if (author_set == NULL) {
-	err(238, __func__, "called with NULL arg(s)");
+	err(233, __func__, "called with NULL arg(s)");
 	not_reached();
     }
     if (author_count < 0) {
-	err(239, __func__, "author_count: %d < 0", author_count);
+	err(234, __func__, "author_count: %d < 0", author_count);
 	not_reached();
     }
 
