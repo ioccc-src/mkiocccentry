@@ -65,19 +65,19 @@
 /*
  * overall IOCCC entry tool set release version
  */
-#define IOCCC_TOOLSET_RELEASE "0.1"		/* format: major.minor */
+#define IOCCC_TOOLSET_RELEASE "0.2"		/* format: major.minor */
 
 
 /*
  * official iocccsize version
  */
-#define IOCCCSIZE_VERSION "28.8 2022-02-20"	/* format: major.minor YYYY-MM-DD */
+#define IOCCCSIZE_VERSION "28.9 2022-02-23"	/* format: major.minor YYYY-MM-DD */
 
 
 /*
  * official mkiocccentry version
  */
-#define MKIOCCCENTRY_VERSION "0.36 2022-02-18"	/* format: major.minor YYYY-MM-DD */
+#define MKIOCCCENTRY_VERSION "0.37 2022-02-23"	/* format: major.minor YYYY-MM-DD */
 
 
 /*
@@ -85,7 +85,7 @@
  *
  * The following is NOT the version of this mkiocccentry tool!
  */
-#define INFO_VERSION "1.8 2022-02-13"		/* format: major.minor YYYY-MM-DD */
+#define INFO_VERSION "1.0 2022-02-23"		/* format: major.minor YYYY-MM-DD */
 
 
 /*
@@ -93,40 +93,40 @@
  *
  * The following is NOT the version of this mkiocccentry tool!
  */
-#define AUTHOR_VERSION "1.10 2022-02-18"	/* format: major.minor YYYY-MM-DD */
+#define AUTHOR_VERSION "1.11 2022-02-23"	/* format: major.minor YYYY-MM-DD */
 
 
 /*
  * official fnamchk version
  */
-#define FNAMCHK_VERSION "0.2 2022-02-07"	/* format: major.minor YYYY-MM-DD */
+#define FNAMCHK_VERSION "0.3 2022-02-23"	/* format: major.minor YYYY-MM-DD */
 
 /*
  * official txzchk version
  */
-#define TXZCHK_VERSION "0.7 2022-02-12"		/* format: major.minor YYYY-MM-DD */
+#define TXZCHK_VERSION "0.8 2022-02-23"		/* format: major.minor YYYY-MM-DD */
 
 /*
  * official jinfochk version
  */
-#define JINFOCHK_VERSION "0.5 2022-02-19"	/* format: major.minor YYYY-MM-DD */
+#define JINFOCHK_VERSION "0.6 2022-02-23"	/* format: major.minor YYYY-MM-DD */
 
 /*
  * official jauthchk version
  */
-#define JAUTHCHK_VERSION "0.5 2022-02-19"	/* format: major.minor YYYY-MM-DD */
+#define JAUTHCHK_VERSION "0.6 2022-02-23"	/* format: major.minor YYYY-MM-DD */
 
 
 /*
  * official jstrencode version
  */
-#define JSTRENCODE_VERSION "0.1 2022-02-14"	/* format: major.minor YYYY-MM-DD */
+#define JSTRENCODE_VERSION "0.2 2022-02-23"	/* format: major.minor YYYY-MM-DD */
 
 
 /*
  * official jstrdecode version
  */
-#define JSTRDECODE_VERSION "0.1 2022-02-14"	/* format: major.minor YYYY-MM-DD */
+#define JSTRDECODE_VERSION "0.2 2022-02-23"	/* format: major.minor YYYY-MM-DD */
 
 
 #endif /* INCLUDE_VERSION_H */
