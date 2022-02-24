@@ -2175,7 +2175,7 @@ check_prog_c(struct info *infop, char const *entry_dir, char const *cp, char con
     FILE *prog_stream;		/* prog.c open file stream */
     size_t prog_c_len;		/* length of the prog_c path */
     size_t entry_dir_len;	/* length of the entry_dir path */
-    int exit_code;		/* exit code from system(cmd) */
+    int exit_code;		/* exit code from shell_cmd() */
     int ret;			/* libc function return */
     RuleCount size;		/* rule_count() processing results */
 
@@ -2700,7 +2700,7 @@ static void
 check_Makefile(struct info *infop, char const *entry_dir, char const *cp, char const *Makefile)
 {
     off_t filesize = 0;		/* size of Makefile */
-    int exit_code;		/* exit code from system(cmd) */
+    int exit_code;		/* exit code from shell_cmd() */
 
     /*
      * firewall
@@ -2803,7 +2803,7 @@ check_remarks_md(struct info *infop, char const *entry_dir, char const *cp, char
 {
     off_t filesize = 0;		/* size of remarks.md */
     char *cmd = NULL;		/* cp prog_c entry_dir/prog.c */
-    int exit_code;		/* exit code from system(cmd) */
+    int exit_code;		/* exit code from shell_cmd() */
 
     /*
      * firewall
@@ -2906,7 +2906,7 @@ check_extra_data_files(struct info *infop, char const *entry_dir, char const *cp
     size_t base_len;		/* length of the basename of the data file */
     size_t dest_len;		/* length of the extra data file path */
     size_t entry_dir_len;	/* length of the entry_dir path */
-    int exit_code;		/* exit code from system(cmd) */
+    int exit_code;		/* exit code from shell_cmd() */
     int ret;			/* libc function return */
     int i;
     size_t j;
@@ -4463,7 +4463,7 @@ get_author_info(struct info *infop, char *ioccc_id, struct author **author_set_p
 static void
 verify_entry_dir(char const *entry_dir, char const *ls)
 {
-    int exit_code;		/* exit code from system(cmd) */
+    int exit_code;		/* exit code from shell_cmd() */
     bool yorn = false;		/* response to a question */
     FILE *ls_stream;		/* pipe from iocccsize -V */
     char *linep = NULL;		/* allocated line read from iocccsize */
@@ -4968,7 +4968,7 @@ write_info(struct info *infop, char const *entry_dir, bool test_mode, char const
     size_t utctime_len;		/* length of utctime string (utctime() + " UTC") */
     int ret;			/* libc function return */
     char **q;			/* extra filename array pointer */
-    int exit_code;		/* exit code from system() call */
+    int exit_code;		/* exit code from shell_cmd() */
     int i;
 
     /*
@@ -5208,7 +5208,7 @@ write_author(struct info *infop, int author_count, struct author *authorp, char 
     size_t author_path_len;	/* length of path to .author.json */
     FILE *author_stream;	/* open write stream to the .author.json file */
     int ret;			/* libc function return */
-    int exit_code;		/* exit code from system(cmd) */
+    int exit_code;		/* exit code from shell_cmd() */
     int i;
 
     /*
@@ -5370,7 +5370,7 @@ form_tarball(char const *work_dir, char const *entry_dir, char const *tarball_pa
 {
     char *basename_entry_dir;	/* basename of the entry directory */
     char *basename_tarball_path;/* basename of tarball_path */
-    int exit_code;		/* exit code from system(cmd) */
+    int exit_code;		/* exit code from shell_cmd() */
     struct stat buf;		/* stat of the tarball */
     int ret;			/* libc function return */
     int cwd;			/* current working directory */
