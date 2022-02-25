@@ -573,7 +573,8 @@ check_info_json(char const *file, char const *fnamchk)
 
     /* now free the found_info_json_fields list.
      *
-     * NOTE: after this the list will be NULL */
+     * NOTE: after this the list will be NULL
+     */
     free_found_info_json_fields();
 
     issues += check_found_common_json_fields(program_basename, file, fnamchk);

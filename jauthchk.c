@@ -513,7 +513,8 @@ check_author_json(char const *file, char const *fnamchk)
 
     /* now free the found_author_json_fields list.
      *
-     * NOTE: after this the list will be NULL */
+     * NOTE: after this the list will be NULL
+     */
     free_found_author_json_fields();
 
     /* check common json fields which will update the number of issues */
