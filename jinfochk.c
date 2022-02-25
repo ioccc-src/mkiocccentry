@@ -128,10 +128,13 @@ main(int argc, char **argv)
     /* free any allocated memory in our info struct */
     free_info(&info);
 
+    if (issues != 0) {
+	dbg(DBG_LOW, "%s is invalid", file);
+    }
     /*
      * All Done!!! - Jessica Noll, age 2
      */
-    exit(issues != 0);
+    exit(issues != 0); /*ooo*/
 }
 
 
@@ -154,7 +157,7 @@ sanity_chk(char const *file, char const *fnamchk)
      * firewall
      */
     if (file == NULL || fnamchk == NULL) {
-	err(5, __func__, "called with NULL arg(s)");
+	err(6, __func__, "called with NULL arg(s)");
 	not_reached();
     }
 
@@ -170,7 +173,7 @@ sanity_chk(char const *file, char const *fnamchk)
 	      "    jinfochk [options] <file>"
 	      "",
 	      NULL);
-	err(6, __func__, "file does not exist: %s", file);
+	err(7, __func__, "file does not exist: %s", file);
 	not_reached();
     }
     if (!is_file(file)) {
@@ -183,7 +186,7 @@ sanity_chk(char const *file, char const *fnamchk)
 	      "    jinfochk [...] <file>",
 	      "",
 	      NULL);
-	err(7, __func__, "file is not a file: %s", file);
+	err(8, __func__, "file is not a file: %s", file);
 	not_reached();
     }
     if (!is_read(file)) {
@@ -196,7 +199,7 @@ sanity_chk(char const *file, char const *fnamchk)
 	      "    jinfochk [...] <file>"
 	      "",
 	      NULL);
-	err(8, __func__, "file is not readable: %s", file);
+	err(9, __func__, "file is not readable: %s", file);
 	not_reached();
     }
 
@@ -218,7 +221,7 @@ sanity_chk(char const *file, char const *fnamchk)
 	      "    https://github.com/ioccc-src/mkiocccentry",
 	      "",
 	      NULL);
-	err(9, __func__, "fnamchk does not exist: %s", fnamchk);
+	err(10, __func__, "fnamchk does not exist: %s", fnamchk);
 	not_reached();
     }
     if (!is_file(fnamchk)) {
@@ -235,7 +238,7 @@ sanity_chk(char const *file, char const *fnamchk)
 	      "    https://github.com/ioccc-src/mkiocccentry",
 	      "",
 	      NULL);
-	err(10, __func__, "fnamchk is not a file: %s", fnamchk);
+	err(11, __func__, "fnamchk is not a file: %s", fnamchk);
 	not_reached();
     }
     if (!is_exec(fnamchk)) {
@@ -252,7 +255,7 @@ sanity_chk(char const *file, char const *fnamchk)
 	      "    https://github.com/ioccc-src/mkiocccentry",
 	      "",
 	      NULL);
-	err(11, __func__, "fnamchk is not an executable program: %s", fnamchk);
+	err(12, __func__, "fnamchk is not an executable program: %s", fnamchk);
 	not_reached();
     }
 
@@ -290,28 +293,30 @@ check_info_json(char const *file, char const *fnamchk)
     char *savefield = NULL; /* for strtok_r() usage */
     size_t value_length;    /* length of current value */
     size_t span;
+    struct json_field *field; /* for found_info_json_fields list */
+    struct json_value *field_value; /* for found_info_json_fields list's value */
 
     /*
      * firewall
      */
     if (file == NULL || fnamchk == NULL) {
-	err(12, __func__, "passed NULL arg(s)");
+	err(13, __func__, "passed NULL arg(s)");
 	not_reached();
     }
 
     stream = fopen(file, "r");
     if (stream == NULL) {
-	err(13, __func__, "couldn't open %s", file);
+	err(14, __func__, "couldn't open %s", file);
 	not_reached();
     }
 
     /* read in the file */
     data = read_all(stream, &length);
     if (data == NULL) {
-	err(14, __func__, "error while reading data in %s", file);
+	err(15, __func__, "error while reading data in %s", file);
 	not_reached();
     } else if (length == 0) {
-	err(15, __func__, "zero length data in file %s", file);
+	err(16, __func__, "zero length data in file %s", file);
 	not_reached();
     }
     dbg(DBG_MED, "%s read length: %lu", file, (unsigned long)length);
@@ -327,14 +332,14 @@ check_info_json(char const *file, char const *fnamchk)
     errno = 0;			/* pre-clear errno for errp() */
     p = (char *)memchr(data, 0, (size_t)length);
     if (p != NULL) {
-	errp(16, __func__, "found NUL before EOF: %s", file);
+	errp(17, __func__, "found NUL before EOF: %s", file);
 	not_reached();
     }
 
     errno = 0;
     data_dup = strdup(data);
     if (data_dup == NULL) {
-	errp(17, __func__, "unable to strdup file %s contents", file);
+	errp(18, __func__, "unable to strdup file %s contents", file);
 	not_reached();
     }
 
@@ -345,7 +350,7 @@ check_info_json(char const *file, char const *fnamchk)
      * parsing after the first '{' but after the '}' we don't continue.
      */
     if (check_last_json_char(file, data_dup, strict, &p)) {
-	err(18, __func__, "last character in file %s not a '}': '%c'", file, *p);
+	err(19, __func__, "last character in file %s not a '}': '%c'", file, *p);
 	not_reached();
     }
     dbg(DBG_MED, "last character: '%c'", *p);
@@ -355,7 +360,7 @@ check_info_json(char const *file, char const *fnamchk)
 
     /* verify that the very first character is a '{' */
     if (check_first_json_char(file, data_dup, strict, &p)) {
-	err(19, __func__, "first character in file %s not a '{': '%c'", file, *p);
+	err(20, __func__, "first character in file %s not a '{': '%c'", file, *p);
 	not_reached();
     }
     dbg(DBG_MED, "first character: '%c'", *p);
@@ -418,14 +423,14 @@ check_info_json(char const *file, char const *fnamchk)
 	     */
 	    value = strtok_r(NULL, ",\0", &savefield);
 	    if (value == NULL) {
-		err(20, __func__, "unable to find value in file %s for field %s", file, p);
+		err(21, __func__, "unable to find value in file %s for field %s", file, p);
 		not_reached();
 	    }
 	} else {
 	    /* extract the value */
 	    value = strtok_r(NULL, ",\0", &savefield);
 	    if (value == NULL) {
-		err(21, __func__, "unable to find value in file %s for field %s", file, p);
+		err(22, __func__, "unable to find value in file %s for field %s", file, p);
 		not_reached();
 	    }
 
@@ -467,12 +472,47 @@ check_info_json(char const *file, char const *fnamchk)
 	    value_length = strlen(value);
 	    /* handle regular field */
 	    if (get_common_json_field(program_basename, file, p, value)) {
-	    } else if (!strcmp(p, "IOCCC_info_version")) {
-		if (strcmp(value, INFO_VERSION)) {
-		    warn(__func__, "IOCCC_info_version \"%s\" != \"%s\" in file %s", value, INFO_VERSION, file);
+	    } else {
+		field = add_found_info_json_field(p, value);
+		if (field == NULL) {
+		    /*
+		     * if this is NULL there's a serious problem as the other
+		     * functions should have aborted already
+		     */
+		    err(23, __func__, "couldn't add field '%s' with value '%s' to list", p, value);
+		    not_reached();
+		}
+	    }
+	} /* uncommon value: value specific to .info.json */
+	dbg(DBG_MED, "found field '%s' with value '%s'", p, value);
+    } while (true); /* end do while */
+
+    /* free data */
+    free(data);
+    data = NULL;
+
+    /* free strdup()d data */
+    free(data_dup);
+    data_dup = NULL;
+
+
+    /*
+     * now iterate through the found_info_json_fields list, reporting any issues
+     *
+     * XXX Note that fields that aren't expected to be in the file would also be
+     * added to the list but this will be dealt with at a later time.
+     */
+    for (field = found_info_json_fields; field != NULL; field = field->next) {
+	for (field_value = field->values; field_value != NULL; field_value = field_value->next) {
+	    char const *v = field_value->value;
+	    value_length = strlen(v);
+
+	    if (!strcmp(field->field, "IOCCC_info_version")) {
+		if (strcmp(v, INFO_VERSION)) {
+		    warn(__func__, "IOCCC_info_version \"%s\" != \"%s\" in file %s", v, INFO_VERSION, file);
 		    ++issues;
 		}
-	    } else if (!strcmp(p, "title")) {
+	    } else if (!strcmp(field->field, "title")) {
 		if (value_length == 0) {
 		    warn(__func__, "title length zero");
 		    ++issues;
@@ -483,17 +523,17 @@ check_info_json(char const *file, char const *fnamchk)
 		}
 
 		/* check for valid chars only */
-		if (!isascii(value[0]) || (!islower(value[0]) && !isdigit(value[0]))) {
-		    warn(__func__, "first char of title '%c' invalid", value[0]);
+		if (!isascii(v[0]) || (!islower(v[0]) && !isdigit(v[0]))) {
+		    warn(__func__, "first char of title '%c' invalid", v[0]);
 		    ++issues;
 		} else {
-		    span = strspn(value, TAIL_TITLE_CHARS);
+		    span = strspn(v, TAIL_TITLE_CHARS);
 		    if (span != value_length) {
-			warn(__func__, "invalid chars found in title \"%s\"", value);
+			warn(__func__, "invalid chars found in title \"%s\"", v);
 			++issues;
 		    }
 		}
-	    } else if (!strcmp(p, "abstract")) {
+	    } else if (!strcmp(field->field, "abstract")) {
 		if (value_length == 0) {
 		    warn(__func__, "abstract value zero length");
 		    ++issues;
@@ -502,43 +542,134 @@ check_info_json(char const *file, char const *fnamchk)
 				      (unsigned long)value_length, MAX_ABSTRACT_LEN);
 		    ++issues;
 		}
-	    } else if (!strcmp(p, "rule_2a_size")) {
-		info.rule_2a_size = string_to_long_long(value);
-	    } else if (!strcmp(p, "rule_2b_size")) {
-		info.rule_2b_size = string_to_unsigned_long_long(value);
-	    } else if (!strcmp(p, "empty_override") || !strcmp(p, "rule_2a_override") ||
-	      !strcmp(p, "rule_2a_mismatch") || !strcmp(p, "rule_2b_override") ||
-	      !strcmp(p, "highbit_warning") || !strcmp(p, "nul_warning") ||
-	      !strcmp(p, "trigraph_warning") || !strcmp(p, "wordbuf_warning") ||
-	      !strcmp(p, "ungetc_warning") || !strcmp(p, "Makefile_override") ||
-	      !strcmp(p, "first_rule_is_all") || !strcmp(p, "found_all_rule") ||
-	      !strcmp(p, "found_clean_rule") || !strcmp(p, "found_clobber_rule") ||
-	      !strcmp(p, "found_try_rule") || !strcmp(p, "test_mode")) {
-		if (strcmp(value, "false") && strcmp(value, "true")) {
-		    warn(__func__, "found non-boolean value '%s' for boolean '%s' in file %s", value,  p, file);
+	    } else if (!strcmp(field->field, "rule_2a_size")) {
+		info.rule_2a_size = string_to_long_long(v);
+	    } else if (!strcmp(field->field, "rule_2b_size")) {
+		info.rule_2b_size = string_to_unsigned_long_long(v);
+	    } else if (!strcmp(field->field, "empty_override") || !strcmp(field->field, "rule_2a_override") ||
+	      !strcmp(field->field, "rule_2a_mismatch") || !strcmp(field->field, "rule_2b_override") ||
+	      !strcmp(field->field, "highbit_warning") || !strcmp(field->field, "nul_warning") ||
+	      !strcmp(field->field, "trigraph_warning") || !strcmp(field->field, "wordbuf_warning") ||
+	      !strcmp(field->field, "ungetc_warning") || !strcmp(field->field, "Makefile_override") ||
+	      !strcmp(field->field, "first_rule_is_all") || !strcmp(field->field, "found_all_rule") ||
+	      !strcmp(field->field, "found_clean_rule") || !strcmp(field->field, "found_clobber_rule") ||
+	      !strcmp(field->field, "found_try_rule") || !strcmp(field->field, "test_mode")) {
+		if (strcmp(v, "false") && strcmp(v, "true")) {
+		    warn(__func__, "found non-boolean value '%s' for boolean '%s' in file %s", v,  field->field, file);
 		    ++issues;
 		}
-	    } else {
 	    }
+	    else {
+		/* TODO: after everything else is parsed if we get here it's an
+		 * error as there's invalid fields in the file.
+		 *
+		 * Currently (as of 25 February 2022) this is not done
+		 * because the arrays are not parsed yet.
+		 */
 
-	    dbg(DBG_MED, "found field '%s' with value '%s'", p, value);
+	    }
 	}
-    } while (true);
+    }
 
+    /* now free the found_info_json_fields list.
+     *
+     * NOTE: after this the list will be NULL */
+    free_found_info_json_fields();
 
-    /* free data */
-    free(data);
-    data = NULL;
+    issues += check_found_common_json_fields(program_basename, file, fnamchk);
 
-    /* free strdup()d data */
-    free(data_dup);
-    data_dup = NULL;
+    /* free the found_common_json_fields list.
+     *
+     * NOTE: After this the list will be NULL
+     */
+    free_found_common_json_fields();
 
-    issues += check_common_json_fields(program_basename, file, fnamchk);
-    free_common_json_fields();
-
+    /* if issues != 0 there will be a non-zero return status of jinfochk */
     return issues;
 }
+
+/* add_found_info_json_field	- add a field:value pair to the
+ *				  found_info_json_fields list
+ *
+ * given:
+ *
+ *	field			- field name
+ *	value			- value
+ *
+ * Returns the newly allocated struct json_field * added to the
+ * found_info_json_fields list.
+ *
+ * NOTE: If the field is already in the list we just add the value to the values
+ * list in the struct json_value * within the struct json_field *. Does not
+ * return on error.
+ *
+ */
+static struct json_field *
+add_found_info_json_field(char const *field, char const *value)
+{
+    struct json_field *f = NULL; /* iterate through fields list to find the field (or if not found, create a new field) */
+    struct json_value *v = NULL; /* the new value */
+
+    /*
+     * firewall
+     */
+    if (field == NULL || value == NULL) {
+	err(24, __func__, "passed NULL arg(s)");
+	not_reached();
+    }
+
+    for (f = found_info_json_fields; f; f = f->next) {
+	if (f->field && !strcmp(f->field, field)) {
+	    /*
+	     * we found a field already in the list, add the value (even if this
+	     * value was already in the list as this might need to be reported).
+	     */
+	    v = add_json_value(f, value);
+	    if (v == NULL) {
+		/*
+		 * this shouldn't happen as if add_json_value() gets an error
+		 * it'll abort but just to be safe we check here too
+		 */
+		err(25, __func__, "error adding json value '%s' to field '%s'", value, f->field);
+		not_reached();
+	    }
+	    return f; /* already in the list: just return it after adding the new value */
+	}
+    }
+
+    /*
+     * okay we got here which means we have to create a new field in the list
+     * with the value passed in
+     */
+    f = new_json_field(field, value);
+    if (f == NULL) {
+	/*
+	 * we should never get here because if new_json_field gets NULL it
+	 * aborts the program.
+	 */
+	err(26, __func__, "error creating new struct json_field * for field '%s' value '%s'", field, value);
+    }
+    return f;
+}
+
+/* free_found_info_json_fields  - free the infos json fields list
+ *
+ * This function returns void.
+ *
+ */
+static void
+free_found_info_json_fields(void)
+{
+    struct json_field *field, *next_field = NULL;
+
+    for (field = found_info_json_fields; field != NULL; field = next_field) {
+	next_field = field->next;
+	free_json_field(field);
+	field = NULL;
+    }
+    found_info_json_fields = NULL; /* NULL out list */
+}
+
 
 
 /*

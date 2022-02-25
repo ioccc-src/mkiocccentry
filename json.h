@@ -60,9 +60,20 @@
 
 #define FORMED_UTC_FMT "%a %b %d %H:%M:%S %Y UTC"   /* format for strptime() of formed_UTC */
 
+/*
+ * JSON values: a linked list of all values for the same field
+ */
+struct json_value
+{
+    char *value;
+
+    struct json_value *next;
+};
+
 struct json_field
 {
     char *field;
+    struct json_value *values;
     char *value;
 
     size_t count;
@@ -70,7 +81,7 @@ struct json_field
     struct json_field *next;
 };
 
-struct json_field *common_json_fields;
+static struct json_field *found_common_json_fields;
 
 /*
  * common json fields
@@ -114,8 +125,6 @@ struct author {
     int author_num;		/* author number */
 
     struct json_common common;	/* fields that are common to this struct author and struct info (below) */
-    /* jauthchk specific */
-    unsigned issues;		/* number of issues found in file (for jauthchk) */
 };
 
 /*
@@ -159,9 +168,6 @@ struct info {
      */
 
     struct json_common common;	/* fields that are common to this struct info and struct author (above) */
-
-    /* jinfochk specific */
-    unsigned issues;		/* number of issues found in file (for jinfochk) */
 };
 
 
@@ -174,14 +180,21 @@ extern void jencchk(void);
 extern bool json_putc(uint8_t const c, FILE *stream);
 extern char *malloc_json_decode(char const *ptr, size_t len, size_t *retlen, bool strict);
 extern char *malloc_json_decode_str(char const *str, size_t *retlen, bool strict);
+/* jinfochk and jauthchk related */
 extern int check_first_json_char(char const *file, char *data, bool strict, char **first);
 extern int check_last_json_char(char const *file, char *data, bool strict, char **last);
 extern char const *json_filename(int type);
-extern int get_common_json_field(char const *program, char const *file, char *field, char *value);
-extern int check_common_json_fields(char const *program, char const *file, char const *fnamchk);
-extern void free_info(struct info *infop);
-extern void free_common_json_fields(void);
-extern void free_author_array(struct author *authorp, int author_count);
 extern struct json_field *add_common_json_field(char const *field, char const *value);
+extern int get_common_json_field(char const *program, char const *file, char *field, char *value);
+extern int check_found_common_json_fields(char const *program, char const *file, char const *fnamchk);
+extern struct json_value *add_json_value(struct json_field *field, char const *str);
+extern struct json_field *new_json_field(char const *field, char const *value);
+/* free() functions */
+extern void free_found_common_json_fields(void);
+extern void free_json_field(struct json_field *field);
+extern void free_json_values(struct json_value *value);
+/* these free() functions are also used in mkiocccentry.c */
+extern void free_info(struct info *infop);
+extern void free_author_array(struct author *authorp, int author_count);
 
 #endif /* INCLUDE_JSON_H */
