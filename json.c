@@ -1661,7 +1661,7 @@ json_filename(int type)
 	    return AUTHOR_JSON_FILENAME; /* ".author.json" */
 	    break; /* in case the return is ever removed */
 	default:
-	    break; /* in case the return is ever removed */
+	    break; /* in case the return is ever removed ... which it ironically was. */
     }
     return name;
 }
