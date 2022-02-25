@@ -72,7 +72,7 @@ struct json_value
 
 struct json_field
 {
-    char *field;
+    char *name;
     struct json_value *values;
     char *value;
 
@@ -188,7 +188,7 @@ extern struct json_field *add_common_json_field(char const *field, char const *v
 extern int get_common_json_field(char const *program, char const *file, char *field, char *value);
 extern int check_found_common_json_fields(char const *program, char const *file, char const *fnamchk);
 extern struct json_value *add_json_value(struct json_field *field, char const *str);
-extern struct json_field *new_json_field(char const *field, char const *value);
+extern struct json_field *new_json_field(char const *name, char const *value);
 /* free() functions */
 extern void free_found_common_json_fields(void);
 extern void free_json_field(struct json_field *field);

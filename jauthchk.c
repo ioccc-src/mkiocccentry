@@ -493,9 +493,10 @@ check_author_json(char const *file, char const *fnamchk)
      * added to the list but this will be dealt with at a later time.
      */
     for (field = found_author_json_fields; field != NULL; field = field->next) {
+	dbg(DBG_VHIGH, "checking field '%s' in file %s", field->name, file);
 	for (field_value = field->values; field_value != NULL; field_value = field_value->next) {
 	    char const *v = field_value->value;
-	    if (!strcmp(field->field, "IOCCC_author_version")) {
+	    if (!strcmp(field->name, "IOCCC_author_version")) {
 		if (strcmp(v, AUTHOR_VERSION)) {
 		    warn(__func__, "IOCCC_author_version \"%s\" != \"%s\" in file %s", v, AUTHOR_VERSION, file);
 		    ++issues;
@@ -547,7 +548,7 @@ check_author_json(char const *file, char const *fnamchk)
  *
  */
 static struct json_field *
-add_found_author_json_field(char const *field, char const *value)
+add_found_author_json_field(char const *name, char const *value)
 {
     struct json_field *f = NULL; /* iterate through fields list to find the field (or if not found, create a new field) */
     struct json_value *v = NULL; /* the new value */
@@ -555,13 +556,13 @@ add_found_author_json_field(char const *field, char const *value)
     /*
      * firewall
      */
-    if (field == NULL || value == NULL) {
+    if (name == NULL || value == NULL) {
 	err(24, __func__, "passed NULL arg(s)");
 	not_reached();
     }
 
     for (f = found_author_json_fields; f; f = f->next) {
-	if (f->field && !strcmp(f->field, field)) {
+	if (f->name && !strcmp(f->name, name)) {
 	    /*
 	     * we found a field already in the list, add the value (even if this
 	     * value was already in the list as this might need to be reported).
@@ -572,7 +573,7 @@ add_found_author_json_field(char const *field, char const *value)
 		 * this shouldn't happen as if add_json_value() gets an error
 		 * it'll abort but just to be safe we check here too
 		 */
-		err(25, __func__, "error adding json value '%s' to field '%s'", value, f->field);
+		err(25, __func__, "error adding json value '%s' to field '%s'", value, f->name);
 		not_reached();
 	    }
 	    return f; /* already in the list: just return it after adding the new value */
@@ -583,14 +584,21 @@ add_found_author_json_field(char const *field, char const *value)
      * okay we got here which means we have to create a new field in the list
      * with the value passed in
      */
-    f = new_json_field(field, value);
+    f = new_json_field(name, value);
     if (f == NULL) {
 	/*
 	 * we should never get here because if new_json_field gets NULL it
 	 * aborts the program.
 	 */
-	err(26, __func__, "error creating new struct json_field * for field '%s' value '%s'", field, value);
+	err(26, __func__, "error creating new struct json_field * for field '%s' value '%s'", name, value);
     }
+
+    /* add to the list */
+    f->next = found_author_json_fields;
+    found_author_json_fields = f;
+
+    dbg(DBG_VHIGH, "added field '%s' value '%s'", f->name, value);
+
     return f;
 }
 

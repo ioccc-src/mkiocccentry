@@ -88,7 +88,7 @@ static struct json_field *found_info_json_fields; /* list of fields specific to 
 static void usage(int exitcode, char const *name, char const *str) __attribute__((noreturn));
 static void sanity_chk(char const *file, char const *fnamchk);
 static int check_info_json(char const *file, char const *fnamchk);
-static struct json_field *add_found_info_json_field(char const *field, char const *value);
+static struct json_field *add_found_info_json_field(char const *name, char const *value);
 static void free_found_info_json_fields(void);
 
 #endif /* INCLUDE_JINFOCHK_H */

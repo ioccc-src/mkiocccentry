@@ -319,7 +319,7 @@ check_info_json(char const *file, char const *fnamchk)
 	err(16, __func__, "zero length data in file %s", file);
 	not_reached();
     }
-    dbg(DBG_MED, "%s read length: %lu", file, (unsigned long)length);
+    dbg(DBG_HIGH, "%s read length: %lu", file, (unsigned long)length);
 
     /* close the stream as we no longer need it, having read in all the file */
     errno = 0;
@@ -353,7 +353,7 @@ check_info_json(char const *file, char const *fnamchk)
 	err(19, __func__, "last character in file %s not a '}': '%c'", file, *p);
 	not_reached();
     }
-    dbg(DBG_MED, "last character: '%c'", *p);
+    dbg(DBG_HIGH, "last character: '%c'", *p);
 
     /* remove closing brace (and any whitespace after it) */
     *p = '\0';
@@ -363,7 +363,7 @@ check_info_json(char const *file, char const *fnamchk)
 	err(20, __func__, "first character in file %s not a '{': '%c'", file, *p);
 	not_reached();
     }
-    dbg(DBG_MED, "first character: '%c'", *p);
+    dbg(DBG_HIGH, "first character: '%c'", *p);
 
     /* skip past the initial opening brace */
     ++p;
@@ -472,6 +472,7 @@ check_info_json(char const *file, char const *fnamchk)
 	    value_length = strlen(value);
 	    /* handle regular field */
 	    if (get_common_json_field(program_basename, file, p, value)) {
+		dbg(DBG_HIGH, "found common field '%s' value '%s'", p, value);
 	    } else {
 		field = add_found_info_json_field(p, value);
 		if (field == NULL) {
@@ -482,9 +483,9 @@ check_info_json(char const *file, char const *fnamchk)
 		    err(23, __func__, "couldn't add field '%s' with value '%s' to list", p, value);
 		    not_reached();
 		}
-	    }
-	} /* uncommon value: value specific to .info.json */
-	dbg(DBG_MED, "found field '%s' with value '%s'", p, value);
+		dbg(DBG_HIGH, "found field '%s' with value '%s'", p, value);
+	    } /* uncommon value: value specific to .info.json */
+	}
     } while (true); /* end do while */
 
     /* free data */
@@ -503,16 +504,17 @@ check_info_json(char const *file, char const *fnamchk)
      * added to the list but this will be dealt with at a later time.
      */
     for (field = found_info_json_fields; field != NULL; field = field->next) {
+	dbg(DBG_VHIGH, "checking field '%s' in file %s", field->name, file);
 	for (field_value = field->values; field_value != NULL; field_value = field_value->next) {
 	    char const *v = field_value->value;
 	    value_length = strlen(v);
 
-	    if (!strcmp(field->field, "IOCCC_info_version")) {
+	    if (!strcmp(field->name, "IOCCC_info_version")) {
 		if (strcmp(v, INFO_VERSION)) {
 		    warn(__func__, "IOCCC_info_version \"%s\" != \"%s\" in file %s", v, INFO_VERSION, file);
 		    ++issues;
 		}
-	    } else if (!strcmp(field->field, "title")) {
+	    } else if (!strcmp(field->name, "title")) {
 		if (value_length == 0) {
 		    warn(__func__, "title length zero");
 		    ++issues;
@@ -533,7 +535,7 @@ check_info_json(char const *file, char const *fnamchk)
 			++issues;
 		    }
 		}
-	    } else if (!strcmp(field->field, "abstract")) {
+	    } else if (!strcmp(field->name, "abstract")) {
 		if (value_length == 0) {
 		    warn(__func__, "abstract value zero length");
 		    ++issues;
@@ -542,20 +544,20 @@ check_info_json(char const *file, char const *fnamchk)
 				      (unsigned long)value_length, MAX_ABSTRACT_LEN);
 		    ++issues;
 		}
-	    } else if (!strcmp(field->field, "rule_2a_size")) {
+	    } else if (!strcmp(field->name, "rule_2a_size")) {
 		info.rule_2a_size = string_to_long_long(v);
-	    } else if (!strcmp(field->field, "rule_2b_size")) {
+	    } else if (!strcmp(field->name, "rule_2b_size")) {
 		info.rule_2b_size = string_to_unsigned_long_long(v);
-	    } else if (!strcmp(field->field, "empty_override") || !strcmp(field->field, "rule_2a_override") ||
-	      !strcmp(field->field, "rule_2a_mismatch") || !strcmp(field->field, "rule_2b_override") ||
-	      !strcmp(field->field, "highbit_warning") || !strcmp(field->field, "nul_warning") ||
-	      !strcmp(field->field, "trigraph_warning") || !strcmp(field->field, "wordbuf_warning") ||
-	      !strcmp(field->field, "ungetc_warning") || !strcmp(field->field, "Makefile_override") ||
-	      !strcmp(field->field, "first_rule_is_all") || !strcmp(field->field, "found_all_rule") ||
-	      !strcmp(field->field, "found_clean_rule") || !strcmp(field->field, "found_clobber_rule") ||
-	      !strcmp(field->field, "found_try_rule") || !strcmp(field->field, "test_mode")) {
+	    } else if (!strcmp(field->name, "empty_override") || !strcmp(field->name, "rule_2a_override") ||
+	      !strcmp(field->name, "rule_2a_mismatch") || !strcmp(field->name, "rule_2b_override") ||
+	      !strcmp(field->name, "highbit_warning") || !strcmp(field->name, "nul_warning") ||
+	      !strcmp(field->name, "trigraph_warning") || !strcmp(field->name, "wordbuf_warning") ||
+	      !strcmp(field->name, "ungetc_warning") || !strcmp(field->name, "Makefile_override") ||
+	      !strcmp(field->name, "first_rule_is_all") || !strcmp(field->name, "found_all_rule") ||
+	      !strcmp(field->name, "found_clean_rule") || !strcmp(field->name, "found_clobber_rule") ||
+	      !strcmp(field->name, "found_try_rule") || !strcmp(field->name, "test_mode")) {
 		if (strcmp(v, "false") && strcmp(v, "true")) {
-		    warn(__func__, "found non-boolean value '%s' for boolean '%s' in file %s", v,  field->field, file);
+		    warn(__func__, "found non-boolean value '%s' for boolean '%s' in file %s", v,  field->name, file);
 		    ++issues;
 		}
 	    }
@@ -606,7 +608,7 @@ check_info_json(char const *file, char const *fnamchk)
  *
  */
 static struct json_field *
-add_found_info_json_field(char const *field, char const *value)
+add_found_info_json_field(char const *name, char const *value)
 {
     struct json_field *f = NULL; /* iterate through fields list to find the field (or if not found, create a new field) */
     struct json_value *v = NULL; /* the new value */
@@ -614,13 +616,13 @@ add_found_info_json_field(char const *field, char const *value)
     /*
      * firewall
      */
-    if (field == NULL || value == NULL) {
+    if (name == NULL || value == NULL) {
 	err(24, __func__, "passed NULL arg(s)");
 	not_reached();
     }
 
     for (f = found_info_json_fields; f; f = f->next) {
-	if (f->field && !strcmp(f->field, field)) {
+	if (f->name && !strcmp(f->name, name)) {
 	    /*
 	     * we found a field already in the list, add the value (even if this
 	     * value was already in the list as this might need to be reported).
@@ -631,7 +633,7 @@ add_found_info_json_field(char const *field, char const *value)
 		 * this shouldn't happen as if add_json_value() gets an error
 		 * it'll abort but just to be safe we check here too
 		 */
-		err(25, __func__, "error adding json value '%s' to field '%s'", value, f->field);
+		err(25, __func__, "error adding json value '%s' to field '%s'", value, f->name);
 		not_reached();
 	    }
 	    return f; /* already in the list: just return it after adding the new value */
@@ -642,14 +644,23 @@ add_found_info_json_field(char const *field, char const *value)
      * okay we got here which means we have to create a new field in the list
      * with the value passed in
      */
-    f = new_json_field(field, value);
+    f = new_json_field(name, value);
     if (f == NULL) {
 	/*
 	 * we should never get here because if new_json_field gets NULL it
 	 * aborts the program.
 	 */
-	err(26, __func__, "error creating new struct json_field * for field '%s' value '%s'", field, value);
+	err(26, __func__, "error creating new struct json_field * for field '%s' value '%s'", name, value);
+	not_reached();
     }
+
+
+    /* add to the list */
+    f->next = found_info_json_fields;
+    found_info_json_fields = f;
+
+    dbg(DBG_VHIGH, "added field '%s' value '%s'", f->name, value);
+
     return f;
 }
 

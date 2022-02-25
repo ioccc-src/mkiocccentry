@@ -1763,69 +1763,69 @@ check_found_common_json_fields(char const *program, char const *file, char const
 	for (value = field->values; value != NULL; value = value->next) {
 	    char *v = value->value;
 
-	    if (!strcmp(field->field, "ioccc_contest")) {
+	    if (!strcmp(field->name, "ioccc_contest")) {
 		if (strcmp(v, IOCCC_CONTEST)) {
 		    warn(__func__, "ioccc_contest \"%s\" != \"%s\" in file %s", v, IOCCC_CONTEST, file);
 		    ++issues;
 		}
-	    } else if (!strcmp(field->field, "ioccc_year")) {
+	    } else if (!strcmp(field->name, "ioccc_year")) {
 		year = string_to_int(v);
 		if (year != IOCCC_YEAR) {
 		    warn(__func__, "ioccc_year %d != IOCCC_YEAR %d", year, IOCCC_YEAR);
 		    ++issues;
 		}
-	    } else if (!strcmp(field->field, "mkiocccentry_version")) {
+	    } else if (!strcmp(field->name, "mkiocccentry_version")) {
 		if (strcmp(v, MKIOCCCENTRY_VERSION)) {
 		    warn(__func__, "mkiocccentry_version \"%s\" != MKIOCCCENTRY_VERSION \"%s\"", v, MKIOCCCENTRY_VERSION);
 		    ++issues;
 		}
-	    } else if (!strcmp(field->field, "iocccsize_version")) {
+	    } else if (!strcmp(field->name, "iocccsize_version")) {
 		if (strcmp(v, IOCCCSIZE_VERSION)) {
 		    warn(__func__, "iocccsize_version \"%s\" != IOCCCSIZE_VERSION \"%s\"", v, IOCCCSIZE_VERSION);
 		    ++issues;
 		}
-	    } else if (!strcmp(field->field, "IOCCC_contest_id")) {
+	    } else if (!strcmp(field->name, "IOCCC_contest_id")) {
 		if (!valid_contest_id(v)) {
 		    warn(__func__, "IOCCC_contest_id \"%s\" is invalid", v);
 		    ++issues;
 		}
-	    } else if (!strcmp(field->field, "min_timestamp")) {
+	    } else if (!strcmp(field->name, "min_timestamp")) {
 		ts = string_to_long(v);
 		if (ts != MIN_TIMESTAMP) {
 		    warn(__func__, "min_timestamp '%ld' != MIN_TIMESTAMP '%ld'", ts, MIN_TIMESTAMP);
 		    ++issues;
 		}
-	    } else if (!strcmp(field->field, "timestamp_epoch")) {
+	    } else if (!strcmp(field->name, "timestamp_epoch")) {
 		if (strcmp(v, TIMESTAMP_EPOCH)) {
 		    warn(__func__, "timestamp_epoch \"%s\" != TIMESTAMP_EPOCH \"%s\"", v, TIMESTAMP_EPOCH);
 		    ++issues;
 		}
-	    } else if (!strcmp(field->field, "formed_timestamp_usec")) {
+	    } else if (!strcmp(field->name, "formed_timestamp_usec")) {
 		errno = 0;
 		ts = string_to_long(v);
 		if (ts < 0 || ts > 999999) {
 		    warnp(__func__, "formed_timestamp_usec '%ld' out of range of >= 0 && <= 999999", ts);
 		    ++issues;
 		}
-	    } else if (!strcmp(field->field, "entry_num")) {
+	    } else if (!strcmp(field->name, "entry_num")) {
 		entry_num = string_to_int(v);
 		if (!(entry_num >= 0 && entry_num <= MAX_ENTRY_NUM)) {
 		    warn(__func__, "entry number %d out of range", entry_num);
 		    ++issues;
 		}
-	    } else if (!strcmp(field->field, "formed_UTC")) {
+	    } else if (!strcmp(field->name, "formed_UTC")) {
 		p = strptime(v, FORMED_UTC_FMT, &tm);
 		if (p == NULL) {
 		    warn(__func__, "formed_UTC \"%s\" does not match FORMED_UTC_FMT \"%s\"", v, FORMED_UTC_FMT);
 		    ++issues;
 		}
-	    } else if (!strcmp(field->field, "formed_timestamp")) {
+	    } else if (!strcmp(field->name, "formed_timestamp")) {
 		ts = string_to_long(v);
 		if (ts < MIN_TIMESTAMP) {
 		    warn(__func__, "formed_timestamp '%ld' < MIN_TIMESTAMP '%ld'", ts, MIN_TIMESTAMP);
 		    ++issues;
 		}
-	    } else if (!strcmp(field->field, "tarball")) {
+	    } else if (!strcmp(field->name, "tarball")) {
 
 		/*
 		 * execute the fnamchk command
@@ -1850,6 +1850,11 @@ check_found_common_json_fields(char const *program, char const *file, char const
 /* add_common_json_field   - add a common json field to found_common_json_fields list
  *
  *
+ * given:
+ *
+ *	name	    - name of the field
+ *	value	    - value of the field
+ *
  * Allocates a struct json_field * and add it to the json_common_fields list.
  * This will be used for reporting errors after parsing the file as well as
  * (later on) verifying that these fields are present in both .info.json and
@@ -1860,23 +1865,23 @@ check_found_common_json_fields(char const *program, char const *file, char const
  *
  */
 struct json_field *
-add_common_json_field(char const *field, char const *value)
+add_common_json_field(char const *name, char const *value)
 {
     struct json_field *f; /* newly allocated field */
 
     /*
      * firewall
      */
-    if (field == NULL || value == NULL) {
+    if (name == NULL || value == NULL) {
 	err(220, __func__, "passed NULL arg(s)");
 	not_reached();
     }
 
     for (f = found_common_json_fields; f != NULL; f = f->next) {
-	if (f->field && !strcmp(f->field, field)) {
+	if (f->name && !strcmp(f->name, name)) {
 	    f->count++;
 	    if (add_json_value(f, value) == NULL) {
-		err(221, __func__, "couldn't add value '%s' to field '%s'", value, f->field);
+		err(221, __func__, "couldn't add value '%s' to field '%s'", value, f->name);
 		not_reached();
 	    }
 	    return f;
@@ -1888,14 +1893,14 @@ add_common_json_field(char const *field, char const *value)
 	errno = 0;
 	f = calloc(1, sizeof *f);
 	if (f == NULL) {
-	    errp(222, __func__, "unable to calloc struct json_field * for field '%s' with value '%s'", field, value);
+	    errp(222, __func__, "unable to calloc struct json_field * for field '%s' with value '%s'", name, value);
 	    not_reached();
 	}
 	/* now that we have a struct json_field * we can strdup() the field name */
 	errno = 0;
-	f->field = strdup(field);
-	if (f->field == NULL) {
-	    errp(223, __func__, "unable to strdup field '%s'", field);
+	f->name = strdup(name);
+	if (f->name == NULL) {
+	    errp(223, __func__, "unable to strdup field '%s'", name);
 	    not_reached();
 	}
     }
@@ -1903,13 +1908,14 @@ add_common_json_field(char const *field, char const *value)
     /* now let's add a new value to the field's list of values */
     if (add_json_value(f, value) == NULL) {
 	/* we should never get here but just in case */
-	err(224, __func__, "error adding value '%s' to field '%s'", value, field);
+	err(224, __func__, "error adding value '%s' to field '%s'", value, name);
 	not_reached();
     }
     /* add field to found_common_json_fields list */
     f->next = found_common_json_fields;
     found_common_json_fields = f;
 
+    dbg(DBG_VHIGH, "added field '%s' value '%s' to found_common_json_fields", f->name, value);
     return f;
 }
 
@@ -1917,7 +1923,7 @@ add_common_json_field(char const *field, char const *value)
  *
  * given:
  *
- *	field	    - the field name
+ *	name	    - the field name
  *	value	    - the field's value
  *
  * Returns the newly allocated struct json_field *.
@@ -1928,32 +1934,38 @@ add_common_json_field(char const *field, char const *value)
  *
  */
 struct json_field *
-new_json_field(char const *field, char const *value)
+new_json_field(char const *name, char const *value)
 {
-    struct json_field *new_field; /* the new field */
+    struct json_field *field; /* the new field */
 
     /*
      * firewall
      */
-    if (field == NULL || value == NULL) {
+    if (name == NULL || value == NULL) {
 	err(225, __func__, "passed NULL arg(s)");
 	not_reached();
     }
 
     errno = 0;
-    new_field = calloc(1, sizeof *new_field);
-    if (new_field == NULL) {
-	err(226, __func__, "error allocating new struct json_field * for field '%s' and value '%s'", field, value);
+    field = calloc(1, sizeof *field);
+    if (field == NULL) {
+	err(226, __func__, "error allocating new struct json_field * for field '%s' and value '%s'", name, value);
 	not_reached();
     }
 
+
     errno = 0;
-    new_field->value = strdup(value);
-    if (new_field->value == NULL) {
-	err(227, __func__, "error strdup()ing value '%s' for field '%s'", value, field);
+    field->name = strdup(name);
+    if (field->name == NULL) {
+	err(35, __func__, "unable to strdup() field name '%s'", name);
 	not_reached();
     }
-    return new_field;
+
+    if (add_json_value(field, value) == NULL) {
+	err(227, __func__, "error adding value '%s' to field '%s'", value, name);
+	not_reached();
+    }
+    return field;
 }
 /* free_json_field	- release memory in a struct json_field *
  *
@@ -2021,13 +2033,13 @@ add_json_value(struct json_field *field, char const *str)
     errno = 0;
     new_value = calloc(1, sizeof *new_value);
     if (new_value == NULL) {
-	errp(230, __func__, "error allocating new value '%s' for field '%s'", str, field->field);
+	errp(230, __func__, "error allocating new value '%s' for field '%s'", str, field->name);
 	not_reached();
     }
     errno = 0;
     new_value->value = strdup(str);
     if (new_value->value == NULL) {
-	errp(231, __func__, "error strdup()ing value '%s' for field '%s'", str, field->field);
+	errp(231, __func__, "error strdup()ing value '%s' for field '%s'", str, field->name);
 	not_reached();
     }
     /* find end of list */
@@ -2054,9 +2066,9 @@ free_found_common_json_fields(void)
     for (field = found_common_json_fields; field != NULL; field = next_field) {
 	next_field = field->next;
 
-	if (field->field) {
-	    free(field->field);
-	    field->field = NULL;
+	if (field->name) {
+	    free(field->name);
+	    field->name = NULL;
 	}
 	if (field->value) {
 	    free(field->value);
