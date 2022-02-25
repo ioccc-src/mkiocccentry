@@ -81,7 +81,7 @@ struct json_field
     struct json_field *next;
 };
 
-static struct json_field *found_common_json_fields;
+struct json_field *found_common_json_fields;
 
 /*
  * common json fields
