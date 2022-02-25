@@ -1957,12 +1957,12 @@ new_json_field(char const *name, char const *value)
     errno = 0;
     field->name = strdup(name);
     if (field->name == NULL) {
-	err(35, __func__, "unable to strdup() field name '%s'", name);
+	err(227, __func__, "unable to strdup() field name '%s'", name);
 	not_reached();
     }
 
     if (add_json_value(field, value) == NULL) {
-	err(227, __func__, "error adding value '%s' to field '%s'", value, name);
+	err(228, __func__, "error adding value '%s' to field '%s'", value, name);
 	not_reached();
     }
     return field;
@@ -1987,7 +1987,7 @@ free_json_field(struct json_field *field)
      * firewall
      */
     if (field == NULL) {
-	err(228, __func__, "passed NULL field");
+	err(229, __func__, "passed NULL field");
 	not_reached();
     }
     for (value = field->values; value != NULL; value = next_value) {
@@ -2026,20 +2026,20 @@ add_json_value(struct json_field *field, char const *str)
      * firewall
      */
     if (field == NULL || str == NULL) {
-	err(229, __func__, "passed NULL arg(s)");
+	err(230, __func__, "passed NULL arg(s)");
 	not_reached();
     }
 
     errno = 0;
     new_value = calloc(1, sizeof *new_value);
     if (new_value == NULL) {
-	errp(230, __func__, "error allocating new value '%s' for field '%s'", str, field->name);
+	errp(231, __func__, "error allocating new value '%s' for field '%s'", str, field->name);
 	not_reached();
     }
     errno = 0;
     new_value->value = strdup(str);
     if (new_value->value == NULL) {
-	errp(231, __func__, "error strdup()ing value '%s' for field '%s'", str, field->name);
+	errp(232, __func__, "error strdup()ing value '%s' for field '%s'", str, field->name);
 	not_reached();
     }
     /* find end of list */
@@ -2098,7 +2098,7 @@ free_info(struct info *infop)
      * firewall
      */
     if (infop == NULL) {
-	err(232, __func__, "called with NULL arg(s)");
+	err(233, __func__, "called with NULL arg(s)");
 	not_reached();
     }
 
@@ -2189,11 +2189,11 @@ free_author_array(struct author *author_set, int author_count)
      * firewall
      */
     if (author_set == NULL) {
-	err(233, __func__, "called with NULL arg(s)");
+	err(234, __func__, "called with NULL arg(s)");
 	not_reached();
     }
     if (author_count < 0) {
-	err(234, __func__, "author_count: %d < 0", author_count);
+	err(235, __func__, "author_count: %d < 0", author_count);
 	not_reached();
     }
 
