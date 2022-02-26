@@ -1685,40 +1685,40 @@ check_last_json_char(char const *file, char *data, bool strict, char **last)
 struct json_field *
 add_found_common_json_field(char const *name, char const *val)
 {
-    struct json_field *f; /* newly allocated field */
+    struct json_field *field; /* newly allocated field */
 
     /*
      * firewall
      */
     if (name == NULL || val == NULL) {
-	err(220, __func__, "passed NULL arg(s)");
+	err(218, __func__, "passed NULL arg(s)");
 	not_reached();
     }
 
-    for (f = found_common_json_fields; f != NULL; f = f->next) {
-	if (f->name && !strcmp(f->name, name)) {
-	    f->count++;
-	    if (add_json_value(f, val) == NULL) {
-		err(221, __func__, "couldn't add value '%s' to field '%s'", val, f->name);
+    for (field = found_common_json_fields; field != NULL; field = field->next) {
+	if (field->name && !strcmp(field->name, name)) {
+	    field->count++;
+	    if (add_json_value(field, val) == NULL) {
+		err(219, __func__, "couldn't add value '%s' to field '%s'", val, field->name);
 		not_reached();
 	    }
-	    return f;
+	    return field;
 	}
     }
 
-    f = new_json_field(name, val);
-    if (f == NULL) {
+    field = new_json_field(name, val);
+    if (field == NULL) {
 	/* this should NEVER be reached but we check just to be sure */
-	err(222, __func__, "new_json_field() returned NULL pointer");
+	err(220, __func__, "new_json_field() returned NULL pointer");
 	not_reached();
     }
 
     /* add field to found_common_json_fields list */
-    f->next = found_common_json_fields;
-    found_common_json_fields = f;
+    field->next = found_common_json_fields;
+    found_common_json_fields = field;
 
-    dbg(DBG_VHIGH, "added field '%s' value '%s' to found_common_json_fields", f->name, val);
-    return f;
+    dbg(DBG_VHIGH, "added field '%s' value '%s' to found_common_json_fields", field->name, val);
+    return field;
 }
 
 /*
@@ -1748,7 +1748,7 @@ get_common_json_field(char const *program, char const *file, char *name, char *v
      * firewall
      */
     if (program == NULL || file == NULL || name == NULL || val == NULL) {
-	err(218, __func__, "passed NULL arg(s)");
+	err(221, __func__, "passed NULL arg(s)");
 	not_reached();
     }
 
@@ -1801,7 +1801,7 @@ check_found_common_json_fields(char const *program, char const *file, char const
      * firewall
      */
     if (program == NULL || file == NULL || fnamchk == NULL) {
-	err(219, __func__, "passed NULL arg(s)");
+	err(222, __func__, "passed NULL arg(s)");
 	not_reached();
     }
 
@@ -1913,7 +1913,8 @@ check_found_common_json_fields(char const *program, char const *file, char const
  *
  * NOTE: This function does not return on NULL and it does not check any list:
  * as long as no NULL pointers are encountered it will return a newly allocated
- * struct json_field *.
+ * struct json_field *. This means that it is the caller's responsibility to
+ * check if the field is already in the list.
  *
  */
 struct json_field *
@@ -1939,7 +1940,7 @@ new_json_field(char const *name, char const *val)
     errno = 0;
     field->name = strdup(name);
     if (field->name == NULL) {
-	err(225, __func__, "unable to strdup() field name '%s'", name);
+	errp(225, __func__, "unable to strdup() field name '%s'", name);
 	not_reached();
     }
 
@@ -1947,6 +1948,9 @@ new_json_field(char const *name, char const *val)
 	err(226, __func__, "error adding value '%s' to field '%s'", val, name);
 	not_reached();
     }
+
+    field->count = 1;
+
     return field;
 }
 
@@ -1973,20 +1977,20 @@ add_json_value(struct json_field *field, char const *val)
      * firewall
      */
     if (field == NULL || val == NULL) {
-	err(228, __func__, "passed NULL arg(s)");
+	err(227, __func__, "passed NULL arg(s)");
 	not_reached();
     }
 
     errno = 0;
     new_value = calloc(1, sizeof *new_value);
     if (new_value == NULL) {
-	errp(229, __func__, "error allocating new value '%s' for field '%s'", val, field->name);
+	errp(228, __func__, "error allocating new value '%s' for field '%s'", val, field->name);
 	not_reached();
     }
     errno = 0;
     new_value->value = strdup(val);
     if (new_value->value == NULL) {
-	errp(230, __func__, "error strdup()ing value '%s' for field '%s'", val, field->name);
+	errp(229, __func__, "error strdup()ing value '%s' for field '%s'", val, field->name);
 	not_reached();
     }
     /* find end of list */
@@ -2022,7 +2026,7 @@ free_json_field_values(struct json_field *field)
      * firewall
      */
     if (field == NULL) {
-	err(231, __func__, "passed NULL field");
+	err(230, __func__, "passed NULL field");
 	not_reached();
     }
 
@@ -2084,7 +2088,7 @@ free_json_field(struct json_field *field)
      * firewall
      */
     if (field == NULL) {
-	err(227, __func__, "passed NULL field");
+	err(231, __func__, "passed NULL field");
 	not_reached();
     }
 

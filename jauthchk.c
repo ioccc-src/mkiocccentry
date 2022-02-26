@@ -576,7 +576,10 @@ add_found_author_json_field(char const *name, char const *val)
 		err(24, __func__, "error adding json value '%s' to field '%s'", val, field->name);
 		not_reached();
 	    }
-	    return field; /* already in the list: just return it after adding the new value */
+
+	    field->count++; /* update count */
+
+	    return field; /* already in the list: just return it after incrementing the count and adding the new value */
 	}
     }
 
