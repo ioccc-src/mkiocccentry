@@ -289,12 +289,12 @@ check_info_json(char const *file, char const *fnamchk)
     size_t length;	/* length of input buffer */
     char *p = NULL;	/* temporary use: check for NUL bytes and field extraction */
     char *end = NULL;	/* temporary use: end of strings (p, field) for removing spaces */
-    char *value = NULL;	/* current field's value being parsed */
+    char *val = NULL;	/* current field's value being parsed */
     char *savefield = NULL; /* for strtok_r() usage */
-    size_t value_length;    /* length of current value */
+    size_t val_length;    /* length of current val */
     size_t span;
     struct json_field *field; /* for found_info_json_fields list */
-    struct json_value *field_value; /* for found_info_json_fields list's value */
+    struct json_value *value; /* for found_info_json_fields list's value */
 
     /*
      * firewall
@@ -377,7 +377,7 @@ check_info_json(char const *file, char const *fnamchk)
 	while (*p && isspace(*p))
 	    ++p;
 	/* get the next field */
-	p = strtok_r(value?NULL:p, ":", &savefield);
+	p = strtok_r(val?NULL:p, ":", &savefield);
 	if (p == NULL) {
 	    break;
 	}
@@ -421,26 +421,26 @@ check_info_json(char const *file, char const *fnamchk)
 	     * some cases (e.g. when "manifest" is at the top of the file) until
 	     * arrays are handled; when arrays are handled this will be changed.
 	     */
-	    value = strtok_r(NULL, ",\0", &savefield);
-	    if (value == NULL) {
+	    val = strtok_r(NULL, ",\0", &savefield);
+	    if (val == NULL) {
 		err(20, __func__, "unable to find value in file %s for field %s", file, p);
 		not_reached();
 	    }
 	} else {
 	    /* extract the value */
-	    value = strtok_r(NULL, ",\0", &savefield);
-	    if (value == NULL) {
+	    val = strtok_r(NULL, ",\0", &savefield);
+	    if (val == NULL) {
 		err(21, __func__, "unable to find value in file %s for field %s", file, p);
 		not_reached();
 	    }
 
 
 	    /* skip leading whitespace */
-	    while (*value && isspace(*value))
-		++value;
+	    while (*val && isspace(*val))
+		++val;
 
 	    /* skip trailing whitespace */
-	    end = value + strlen(value) - 1;
+	    end = val + strlen(val) - 1;
 	    while (*end && isspace(*end))
 		*end-- = '\0';
 
@@ -456,11 +456,11 @@ check_info_json(char const *file, char const *fnamchk)
 		strcmp(p, "found_all_rule") && strcmp(p, "found_clean_rule") && strcmp(p, "found_clobber_rule") &&
 		strcmp(p, "found_try_rule") && strcmp(p, "test_mode")) {
 		    /* remove a single '"' at the beginning of the value */
-		    if (*value == '"')
-			++value;
+		    if (*val == '"')
+			++val;
 
 		    /* also remove a trailing '"' at the end of the value. */
-		    end = value + strlen(value) - 1;
+		    end = val + strlen(val) - 1;
 		    if (*end == '"')
 			*end = '\0';
 
@@ -469,21 +469,21 @@ check_info_json(char const *file, char const *fnamchk)
 		     * if we find a '"' in the field we know it's erroneous.
 		     */
 	    }
-	    value_length = strlen(value);
+	    val_length = strlen(val);
 	    /* handle regular field */
-	    if (get_common_json_field(program_basename, file, p, value)) {
-		dbg(DBG_HIGH, "found common field '%s' value '%s'", p, value);
+	    if (get_common_json_field(program_basename, file, p, val)) {
+		dbg(DBG_HIGH, "found common field '%s' value '%s'", p, val);
 	    } else {
-		field = add_found_info_json_field(p, value);
+		field = add_found_info_json_field(p, val);
 		if (field == NULL) {
 		    /*
 		     * if this is NULL there's a serious problem as the other
 		     * functions should have aborted already
 		     */
-		    err(22, __func__, "couldn't add field '%s' with value '%s' to list", p, value);
+		    err(22, __func__, "couldn't add field '%s' with value '%s' to list", p, val);
 		    not_reached();
 		}
-		dbg(DBG_HIGH, "found field '%s' with value '%s'", p, value);
+		dbg(DBG_HIGH, "found field '%s' with value '%s'", p, val);
 	    } /* uncommon value: value specific to .info.json */
 	}
     } while (true); /* end do while */
@@ -505,9 +505,9 @@ check_info_json(char const *file, char const *fnamchk)
      */
     for (field = found_info_json_fields; field != NULL; field = field->next) {
 	dbg(DBG_VHIGH, "checking field '%s' in file %s", field->name, file);
-	for (field_value = field->values; field_value != NULL; field_value = field_value->next) {
-	    char const *v = field_value->value;
-	    value_length = strlen(v);
+	for (value = field->values; value != NULL; value = value->next) {
+	    char const *v = value->value;
+	    val_length = strlen(v);
 
 	    if (!strcmp(field->name, "IOCCC_info_version")) {
 		if (strcmp(v, INFO_VERSION)) {
@@ -515,12 +515,12 @@ check_info_json(char const *file, char const *fnamchk)
 		    ++issues;
 		}
 	    } else if (!strcmp(field->name, "title")) {
-		if (value_length == 0) {
+		if (val == 0) {
 		    warn(__func__, "title length zero");
 		    ++issues;
-		} else if (value_length > MAX_TITLE_LEN) {
+		} else if (val_length > MAX_TITLE_LEN) {
 		    warn(__func__, "title length %lu > max %d",
-				      (unsigned long)value_length, MAX_TITLE_LEN);
+				      (unsigned long)val_length, MAX_TITLE_LEN);
 		    ++issues;
 		}
 
@@ -530,18 +530,18 @@ check_info_json(char const *file, char const *fnamchk)
 		    ++issues;
 		} else {
 		    span = strspn(v, TAIL_TITLE_CHARS);
-		    if (span != value_length) {
+		    if (span != val_length) {
 			warn(__func__, "invalid chars found in title \"%s\"", v);
 			++issues;
 		    }
 		}
 	    } else if (!strcmp(field->name, "abstract")) {
-		if (value_length == 0) {
+		if (val_length == 0) {
 		    warn(__func__, "abstract value zero length");
 		    ++issues;
-		} else if (value_length > MAX_ABSTRACT_LEN) {
+		} else if (val_length > MAX_ABSTRACT_LEN) {
 		    warn(__func__, "abstract length %lu > max %d",
-				      (unsigned long)value_length, MAX_ABSTRACT_LEN);
+				      (unsigned long)val_length, MAX_ABSTRACT_LEN);
 		    ++issues;
 		}
 	    } else if (!strcmp(field->name, "rule_2a_size")) {
@@ -596,8 +596,8 @@ check_info_json(char const *file, char const *fnamchk)
  *
  * given:
  *
- *	field			- field name
- *	value			- value
+ *	name			- field name
+ *	val			- field value
  *
  * Returns the newly allocated struct json_field * added to the
  * found_info_json_fields list.
@@ -608,35 +608,35 @@ check_info_json(char const *file, char const *fnamchk)
  *
  */
 static struct json_field *
-add_found_info_json_field(char const *name, char const *value)
+add_found_info_json_field(char const *name, char const *val)
 {
-    struct json_field *f = NULL; /* iterate through fields list to find the field (or if not found, create a new field) */
-    struct json_value *v = NULL; /* the new value */
+    struct json_field *field = NULL; /* iterate through fields list to find the field (or if not found, create a new field) */
+    struct json_value *value = NULL; /* the new value */
 
     /*
      * firewall
      */
-    if (name == NULL || value == NULL) {
+    if (name == NULL || val == NULL) {
 	err(23, __func__, "passed NULL arg(s)");
 	not_reached();
     }
 
-    for (f = found_info_json_fields; f; f = f->next) {
-	if (f->name && !strcmp(f->name, name)) {
+    for (field = found_info_json_fields; field; field = field->next) {
+	if (field->name && !strcmp(field->name, name)) {
 	    /*
 	     * we found a field already in the list, add the value (even if this
 	     * value was already in the list as this might need to be reported).
 	     */
-	    v = add_json_value(f, value);
-	    if (v == NULL) {
+	    value = add_json_value(field, val);
+	    if (value == NULL) {
 		/*
 		 * this shouldn't happen as if add_json_value() gets an error
 		 * it'll abort but just to be safe we check here too
 		 */
-		err(24, __func__, "error adding json value '%s' to field '%s'", value, f->name);
+		err(24, __func__, "error adding json value '%s' to field '%s'", val, field->name);
 		not_reached();
 	    }
-	    return f; /* already in the list: just return it after adding the new value */
+	    return field; /* already in the list: just return it after adding the new value */
 	}
     }
 
@@ -644,24 +644,24 @@ add_found_info_json_field(char const *name, char const *value)
      * okay we got here which means we have to create a new field in the list
      * with the value passed in
      */
-    f = new_json_field(name, value);
-    if (f == NULL) {
+    field = new_json_field(name, val);
+    if (field == NULL) {
 	/*
 	 * we should never get here because if new_json_field gets NULL it
 	 * aborts the program.
 	 */
-	err(25, __func__, "error creating new struct json_field * for field '%s' value '%s'", name, value);
+	err(25, __func__, "error creating new struct json_field * for field '%s' value '%s'", name, val);
 	not_reached();
     }
 
 
     /* add to the list */
-    f->next = found_info_json_fields;
-    found_info_json_fields = f;
+    field->next = found_info_json_fields;
+    found_info_json_fields = field;
 
-    dbg(DBG_VHIGH, "added field '%s' value '%s'", f->name, value);
+    dbg(DBG_VHIGH, "added field '%s' value '%s'", field->name, val);
 
-    return f;
+    return field;
 }
 
 /* free_found_info_json_fields  - free the infos json fields list

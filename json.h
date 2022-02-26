@@ -74,7 +74,6 @@ struct json_field
 {
     char *name;
     struct json_value *values;
-    char *value;
 
     size_t count;
 
@@ -184,15 +183,15 @@ extern char *malloc_json_decode_str(char const *str, size_t *retlen, bool strict
 extern int check_first_json_char(char const *file, char *data, bool strict, char **first);
 extern int check_last_json_char(char const *file, char *data, bool strict, char **last);
 extern char const *json_filename(int type);
-extern struct json_field *add_common_json_field(char const *field, char const *value);
-extern int get_common_json_field(char const *program, char const *file, char *field, char *value);
+extern struct json_field *add_found_common_json_field(char const *name, char const *val);
+extern int get_common_json_field(char const *program, char const *file, char *name, char *val);
 extern int check_found_common_json_fields(char const *program, char const *file, char const *fnamchk);
-extern struct json_value *add_json_value(struct json_field *field, char const *str);
-extern struct json_field *new_json_field(char const *name, char const *value);
+extern struct json_value *add_json_value(struct json_field *field, char const *val);
+extern struct json_field *new_json_field(char const *name, char const *val);
 /* free() functions */
 extern void free_found_common_json_fields(void);
 extern void free_json_field(struct json_field *field);
-extern void free_json_values(struct json_value *value);
+extern void free_json_field_values(struct json_field *field);
 /* these free() functions are also used in mkiocccentry.c */
 extern void free_info(struct info *infop);
 extern void free_author_array(struct author *authorp, int author_count);
