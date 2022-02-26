@@ -58,6 +58,9 @@ For more information and examples, try:
 	    man ./jinfochk.1
 
 
+NOTE: This tool is currently unfinished.
+
+
 ##  jauthchk
 
 The official **IOCCC** .author.json sanity checker tool.
@@ -68,4 +71,4 @@ For more information and examples, try:
 	    man ./jauthchk.1
 
 
-
+NOTE: This tool is currently unfinished.
