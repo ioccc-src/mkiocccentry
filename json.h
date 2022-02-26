@@ -61,7 +61,7 @@
 #define FORMED_UTC_FMT "%a %b %d %H:%M:%S %Y UTC"   /* format for strptime() of formed_UTC */
 
 /*
- * JSON values: a linked list of all values for the same field
+ * JSON value: a linked list of all values of the same json_field (below)
  */
 struct json_value
 {
@@ -70,21 +70,49 @@ struct json_value
     struct json_value *next;
 };
 
+/*
+ * JSON field: a JSON field consists of the name and all the values (if more
+ * than one field of the same name is found in the file).
+ */
 struct json_field
 {
-    char *name;
-    struct json_value *values;
-    char *value;
+    char *name;			/* field name */
+    struct json_value *values;	/* linked list of values */
 
-    size_t count;
+    /*
+     * Number of times this field has been seen in the list, how many are
+     * actually allowed and whether the field has been found: This is for the
+     * tables that say tell many times a field has been seen, how many times it
+     * is allowed and whether or not it's been seen (it is true that this could
+     * simply be count > 0 but this is to be more clear, however slight).
+     *
+     * In other words this is done as part of the checks after the field:value
+     * pairs have been extracted.
+     */
+    size_t count;		/* how many of this field in the list (or how many values) */
+    size_t max_count;		/* how many of this field is allowed */
+    bool found;			/* if this field was found */
 
-    struct json_field *next;
+    struct json_field *next;	/* the next in the whatever list (XXX don't add to more than one list!) */
 };
 
+extern struct json_field common_json_fields[];
+
+/*
+ * linked list of the common json fields found in the .info.json and
+ * .author.json files.
+ *
+ * A common json field is a field that is supposed to be in both .info.json and
+ * .author.json.
+ */
 struct json_field *found_common_json_fields;
 
 /*
- * common json fields
+ * common json fields - for use in mkiocccentry.
+ *
+ * NOTE: We don't use the json_field or json_value fields because this struct is
+ * for mkiocccentry which is in control of what's written whereas for jinfochk
+ * and jauthchk we don't have control of what's in the file.
  */
 struct json_common
 {
@@ -181,18 +209,19 @@ extern bool json_putc(uint8_t const c, FILE *stream);
 extern char *malloc_json_decode(char const *ptr, size_t len, size_t *retlen, bool strict);
 extern char *malloc_json_decode_str(char const *str, size_t *retlen, bool strict);
 /* jinfochk and jauthchk related */
+extern struct json_field *find_json_field_in_table(struct json_field *table, char const *name, size_t *loc);
+extern char const *json_filename(int type);
 extern int check_first_json_char(char const *file, char *data, bool strict, char **first);
 extern int check_last_json_char(char const *file, char *data, bool strict, char **last);
-extern char const *json_filename(int type);
-extern struct json_field *add_common_json_field(char const *field, char const *value);
-extern int get_common_json_field(char const *program, char const *file, char *field, char *value);
-extern int check_found_common_json_fields(char const *program, char const *file, char const *fnamchk);
-extern struct json_value *add_json_value(struct json_field *field, char const *str);
-extern struct json_field *new_json_field(char const *name, char const *value);
+extern struct json_field *add_found_common_json_field(char const *name, char const *val);
+extern int get_common_json_field(char const *program, char const *file, char *name, char *val);
+extern int check_found_common_json_fields(char const *program, char const *file, char const *fnamchk, bool test);
+extern struct json_field *new_json_field(char const *name, char const *val);
+extern struct json_value *add_json_value(struct json_field *field, char const *val);
 /* free() functions */
+extern void free_json_field_values(struct json_field *field);
 extern void free_found_common_json_fields(void);
 extern void free_json_field(struct json_field *field);
-extern void free_json_values(struct json_value *value);
 /* these free() functions are also used in mkiocccentry.c */
 extern void free_info(struct info *infop);
 extern void free_author_array(struct author *authorp, int author_count);

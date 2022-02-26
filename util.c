@@ -2292,15 +2292,20 @@ long long string_to_long_long(char const *str)
 	not_reached();
     }
 
+    if (strlen(str) > LLONG_MAX_BASE10_DIGITS) {
+	err(158, __func__, "string '%s' too long", str);
+	not_reached();
+    }
+
     errno = 0;
     num = strtoll(str, NULL, 10);
 
     if (errno != 0) {
-	errp(158, __func__, "error converting string \"%s\" to long long int: %s", str, strerror(errno));
+	errp(159, __func__, "error converting string \"%s\" to long long int: %s", str, strerror(errno));
 	not_reached();
     }
     else if (num <= LLONG_MIN || num >= LLONG_MAX) {
-	err(159, __func__, "number %s out of range for long long int (must be > %lld && < %lld)", str, LLONG_MIN, LLONG_MAX);
+	err(160, __func__, "number %s out of range for long long int (must be > %lld && < %lld)", str, LLONG_MIN, LLONG_MAX);
 	not_reached();
     }
     return num;
@@ -2326,7 +2331,7 @@ int string_to_int(char const *str)
      * firewall
      */
     if (str == NULL) {
-	err(160, __func__, "passed NULL arg");
+	err(161, __func__, "passed NULL arg");
 	not_reached();
     }
 
@@ -2334,11 +2339,11 @@ int string_to_int(char const *str)
     num = (int)strtoll(str, NULL, 10);
 
     if (errno != 0) {
-	errp(161, __func__, "error converting string \"%s\" to int: %s", str, strerror(errno));
+	errp(162, __func__, "error converting string \"%s\" to int: %s", str, strerror(errno));
 	not_reached();
     }
     else if (num < INT_MIN || num > INT_MAX) {
-	err(162, __func__, "number %s out of range for int (must be >= %d && <= %d)", str, INT_MIN, INT_MAX);
+	err(163, __func__, "number %s out of range for int (must be >= %d && <= %d)", str, INT_MIN, INT_MAX);
 	not_reached();
     }
     return (int)num;
@@ -2364,17 +2369,17 @@ unsigned long string_to_unsigned_long(char const *str)
      * firewall
      */
     if (str == NULL) {
-	err(163, __func__, "passed NULL arg");
+	err(164, __func__, "passed NULL arg");
 	not_reached();
     }
 
     errno = 0;
     num = strtoul(str, NULL, 10);
     if (errno != 0) {
-	errp(164, __func__, "strtoul(%s): %s", str, strerror(errno));
+	errp(165, __func__, "strtoul(%s): %s", str, strerror(errno));
 	not_reached();
     } else if (num >= ULONG_MAX) {
-	err(165, __func__, "strtoul(%s): too big", str);
+	err(166, __func__, "strtoul(%s): too big", str);
 	not_reached();
     }
 
@@ -2401,17 +2406,17 @@ unsigned long long string_to_unsigned_long_long(char const *str)
      * firewall
      */
     if (str == NULL) {
-	err(166, __func__, "passed NULL arg");
+	err(167, __func__, "passed NULL arg");
 	not_reached();
     }
 
     errno = 0;
     num = strtoul(str, NULL, 10);
     if (errno != 0) {
-	errp(167, __func__, "strtoul(%s): %s", str, strerror(errno));
+	errp(168, __func__, "strtoul(%s): %s", str, strerror(errno));
 	not_reached();
     } else if (num >= ULLONG_MAX) {
-	err(168, __func__, "strtoul(%s): too big", str);
+	err(169, __func__, "strtoul(%s): too big", str);
 	not_reached();
     }
 

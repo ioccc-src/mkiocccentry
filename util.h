@@ -66,6 +66,10 @@ struct location {
 #define READ_ALL_CHUNK (65536)	/* grow this read_all by this amount when needed */
 #define TAIL_TITLE_CHARS "abcdefghijklmnopqrstuvwxyz0123456789_+-"	/* [a-z0-9_+-] */
 
+
+#define LLONG_MAX_BASE10_DIGITS (19)
+
+
 /*
  * paths to utilities the IOCCC tools use (including our own tools fnamchk,
  * txzchk, jinfochk, jauthchk, etc.)

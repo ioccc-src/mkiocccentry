@@ -1541,100 +1541,79 @@ malloc_json_decode_str(char const *str, size_t *retlen, bool strict)
     return ret;
 }
 
-
 /*
- * check_first_json_char - check if first char is '{'
+ * Common JSON fields table used to determine if a name is a common field,
+ * whether it's been added to the found_common_json_fields list, how many times
+ * it has been seen and how many are allowed.
+ */
+
+struct json_field common_json_fields[] =
+{
+    { "ioccc_contest",		    NULL, 0, 1, false, NULL },
+    { "ioccc_year",		    NULL, 0, 1, false, NULL },
+    { "mkiocccentry_version",	    NULL, 0, 1, false, NULL },
+    { "iocccsize_version",	    NULL, 0, 1, false, NULL },
+    { "IOCCC_contest_id",	    NULL, 0, 1, false, NULL },
+    { "entry_num",		    NULL, 0, 1, false, NULL },
+    { "author_count",		    NULL, 0, 1, false, NULL },
+    { "tarball",		    NULL, 0, 1, false, NULL },
+    { "formed_timestamp",	    NULL, 0, 1, false, NULL },
+    { "formed_timestamp_usec",	    NULL, 0, 1, false, NULL },
+    { "timestamp_epoch",	    NULL, 0, 1, false, NULL },
+    { "min_timestamp",		    NULL, 0, 1, false, NULL },
+    { "formed_UTC",		    NULL, 0, 1, false, NULL },
+    { NULL,			    NULL, 0, 0, false, NULL } /* XXX this **MUST** be last! */
+};
+
+
+/* find_json_field_in_table	    - find field 'name' in json table
  *
  * given:
  *
- *	file		- path to file
- *	data		- the data read in from the file
- *	strict		- true ==> disallow anything (including whitespace) before the first '{'.
- *	first		- if != NULL set *first to the first character
+ *	table			    - the table to check
+ *	name			    - the name to check
+ *	loc			    - if != NULL set to index
  *
- *  Returns 0 if first character is '{' and 1 if it is not.
+ * XXX The table MUST end with NULL!
  *
- *  Sets *first to the first character (for debugging purposes).
+ * NOTE: If loc != NULL and the name is not found in the table then in the
+ * calling function loc will be the number of entries in the table. To get the
+ * number of entries in the table pass in an empty name ("") as there will never
+ * be an empty name in any of the tables.
  *
- *  Does not return on NULL.
+ * This function will return NULL if the field is not in the table. It will not
+ * return if table and/or name is/are NULL.
  */
-int
-check_first_json_char(char const *file, char *data, bool strict, char **first)
+struct json_field *
+find_json_field_in_table(struct json_field *table, char const *name, size_t *loc)
 {
+    struct json_field *field = NULL;	/* the current field */
+    size_t i = 0;			/* current index */
     /*
      * firewall
      */
-    if (data == NULL || strlen(data) == 0) {
-	err(214, __func__, "passed NULL or zero length data");
-	not_reached();
-    } else if (file == NULL || first == NULL) {
-	err(215, __func__, "passed NULL arg(s)");
+    if (table == NULL || name == NULL) {
+	err(214, __func__, "passed NULL arg(s)");
 	not_reached();
     }
-
-    if (!strict) {
-	while (*data && isspace(*data))
-	    ++data;
-    }
-    if (first != NULL) {
-	*first = data;
-    }
-
-    if (*data != '{')
-	return 1;
-    return 0;
-}
-
-
-/*
- * check_last_json_char - check if last char is '}'
- *
- * given:
- *
- *	file		- path to file
- *	data		- the data read in from the file
- *	strict		- true ==> permit only a single trailing newline ("\n") after the last '}'.
- *	last		- if != NULL set *last to last char
- *
- *  Returns 0 if last character is '}' and 1 if it is not.
- *
- *  Does not return on error.
- */
-int
-check_last_json_char(char const *file, char *data, bool strict, char **last)
-{
-    char *p;
 
     /*
-     * firewall
+     * While the current index's name is not what we're looking for, continue to
+     * the next field in the table.
      */
-    if (data == NULL || strlen(data) == 0) {
-	err(216, __func__, "passed NULL or zero length data");
-	not_reached();
-    } else if (file == NULL || last == NULL) {
-	err(217, __func__, "passed NULL arg(s)");
-	not_reached();
+    for (i = 0; table[i].name != NULL; ++i) {
+	if (!strcmp(table[i].name, name)) {
+	    field = &table[i];
+	    break;
+	}
     }
 
-    p = data + strlen(data) - 1;
+    if (loc != NULL) {
+	*loc = i;
+    }
 
-    if (!strict) {
-	if (*p && isspace(*p))
-	    --p;
-    }
-    else if (*p && *p == '\n') {
-	--p;
-    }
-    if (last != NULL) {
-	*last = p;
-    }
-    if (*p != '}')
-	return 1;
-
-    return 0;
+    return field;
 }
-
-
 /*
  * json_filename    - return ".info.json", ".author.json" or "null" depending on type
  *
@@ -1667,6 +1646,167 @@ json_filename(int type)
 }
 
 
+
+/*
+ * check_first_json_char - check if first char is '{'
+ *
+ * given:
+ *
+ *	file		- path to file
+ *	data		- the data read in from the file
+ *	strict		- true ==> disallow anything (including whitespace) before the first '{'.
+ *	first		- if != NULL set *first to the first character
+ *
+ *  Returns 0 if first character is '{' and 1 if it is not.
+ *
+ *  Sets *first to the first character (for debugging purposes).
+ *
+ *  Does not return on NULL.
+ */
+int
+check_first_json_char(char const *file, char *data, bool strict, char **first)
+{
+    /*
+     * firewall
+     */
+    if (data == NULL || strlen(data) == 0) {
+	err(215, __func__, "passed NULL or zero length data");
+	not_reached();
+    } else if (file == NULL || first == NULL) {
+	err(216, __func__, "passed NULL arg(s)");
+	not_reached();
+    }
+
+    if (!strict) {
+	while (*data && isspace(*data))
+	    ++data;
+    }
+    if (first != NULL) {
+	*first = data;
+    }
+
+    if (*data != '{')
+	return 1;
+    return 0;
+}
+
+/*
+ * check_last_json_char - check if last char is '}'
+ *
+ * given:
+ *
+ *	file		- path to file
+ *	data		- the data read in from the file
+ *	strict		- true ==> permit only a single trailing newline ("\n") after the last '}'.
+ *	last		- if != NULL set *last to last char
+ *
+ *  Returns 0 if last character is '}' and 1 if it is not.
+ *
+ *  Does not return on error.
+ */
+int
+check_last_json_char(char const *file, char *data, bool strict, char **last)
+{
+    char *p;
+
+    /*
+     * firewall
+     */
+    if (data == NULL || strlen(data) == 0) {
+	err(217, __func__, "passed NULL or zero length data");
+	not_reached();
+    } else if (file == NULL || last == NULL) {
+	err(218, __func__, "passed NULL arg(s)");
+	not_reached();
+    }
+
+    p = data + strlen(data) - 1;
+
+    if (!strict) {
+	if (*p && isspace(*p))
+	    --p;
+    }
+    else if (*p && *p == '\n') {
+	--p;
+    }
+    if (last != NULL) {
+	*last = p;
+    }
+    if (*p != '}')
+	return 1;
+
+    return 0;
+}
+
+/* add_found_common_json_field   - add a common json field to found_common_json_fields list
+ *
+ *
+ * given:
+ *
+ *	name	    - name of the field
+ *	val	    - value of the field
+ *
+ * Allocates a struct json_field * and add it to the found_json_common_fields
+ * list. This will be used for reporting errors after parsing the file as well
+ * as (later on) verifying that these fields are present in both .info.json and
+ * .author.json (this detail is not yet completely thought out).
+ *
+ * This function returns the newly allocated struct json_field OR if the field
+ * was already in the list, the previous one with the count incremented and the
+ * value added to the values list.
+ */
+struct json_field *
+add_found_common_json_field(char const *name, char const *val)
+{
+    struct json_field *field; /* newly allocated field */
+    struct json_field *field_in_table = NULL;
+    size_t loc = 0; /* location in table */
+
+    /*
+     * firewall
+     */
+    if (name == NULL || val == NULL) {
+	err(219, __func__, "passed NULL arg(s)");
+	not_reached();
+    }
+
+    field_in_table = find_json_field_in_table(common_json_fields, name, &loc);
+    if (field_in_table == NULL) {
+	err(220, __func__, "called add_found_common_json_field() on uncommon field '%s'", name);
+	not_reached();
+    }
+    /*
+     * Set in table that it's found and increment the number of times it's been
+     * seen.
+     */
+    common_json_fields[loc].count++;
+    common_json_fields[loc].found = true;
+    for (field = found_common_json_fields; field != NULL; field = field->next) {
+	if (field->name && !strcmp(field->name, name)) {
+	    field->count++;
+	    if (add_json_value(field, val) == NULL) {
+		err(221, __func__, "couldn't add value '%s' to field '%s'", val, field->name);
+		not_reached();
+	    }
+	    return field;
+	}
+    }
+
+    field = new_json_field(name, val);
+    if (field == NULL) {
+	/* this should NEVER be reached but we check just to be sure */
+	err(222, __func__, "new_json_field() returned NULL pointer");
+	not_reached();
+    }
+
+    /* add field to found_common_json_fields list */
+    field->next = found_common_json_fields;
+    found_common_json_fields = field;
+
+    dbg(DBG_VHIGH, "added field '%s' value '%s' to found_common_json_fields", field->name, val);
+    return field;
+}
+
 /*
  * get_common_json_field	-   check if field is common to both .info.json
  *				    and author.json and if it is add to common
@@ -1674,10 +1814,10 @@ json_filename(int type)
  *
  * given:
  *
- *	name	- which util called this (jinfochk or jauthchk)
+ *	program	- which util called this (jinfochk or jauthchk)
  *	file	- the file being parsed (path to)
- *	field	- the field name
- *	value	- the value of the field
+ *	name	- the field name
+ *	val	- the value of the field
  *
  * returns:
  *	1 ==> if the field is common to both files
@@ -1686,28 +1826,26 @@ json_filename(int type)
  * NOTE: Does not return on error (NULL pointers).
  */
 int
-get_common_json_field(char const *program, char const *file, char *field, char *value)
+get_common_json_field(char const *program, char const *file, char *name, char *val)
 {
     int ret = 1;	/* return value: 1 ==> known field, 0 ==> not a common field */
+    struct json_field *field = NULL; /* the field in the common_json_fields table if found */
+    size_t loc = 0; /* index of the common_json_fields table */
 
     /*
      * firewall
      */
-    if (program == NULL || file == NULL || field == NULL || value == NULL) {
-	err(218, __func__, "passed NULL arg(s)");
+    if (program == NULL || file == NULL || name == NULL || val == NULL) {
+	err(223, __func__, "passed NULL arg(s)");
 	not_reached();
     }
 
     /*
-     * process a given common field
+     * check if the name is an expected common field
      */
-    if (!strcmp(field, "ioccc_contest") || !strcmp(field, "ioccc_year") ||
-	!strcmp(field, "mkiocccentry_version") || !strcmp(field, "iocccsize_version") ||
-	!strcmp(field, "IOCCC_contest_id") || !strcmp(field, "min_timestamp") ||
-	!strcmp(field, "timestamp_epoch") || !strcmp(field, "formed_timestamp_usec") ||
-	!strcmp(field, "entry_num") || !strcmp(field, "formed_UTC") ||
-	!strcmp(field, "formed_timestamp") || !strcmp(field, "tarball")) {
-	    add_common_json_field(field, value);
+    field = find_json_field_in_table(common_json_fields, name, &loc);
+    if (field != NULL) {
+	add_found_common_json_field(name, val);
     } else {
 	ret = 0;
     }
@@ -1720,7 +1858,7 @@ get_common_json_field(char const *program, char const *file, char *field, char *
  *
  * given:
  *
- *	name	- which util called this (jinfochk or jauthchk)
+ *	program	- which util called this (jinfochk or jauthchk)
  *	file	- the file being parsed (path to)
  *	fnamchk	- path to fnamchk util
  *
@@ -1731,7 +1869,7 @@ get_common_json_field(char const *program, char const *file, char *field, char *
  * NOTE: Does not return on error (NULL pointers).
  */
 int
-check_found_common_json_fields(char const *program, char const *file, char const *fnamchk)
+check_found_common_json_fields(char const *program, char const *file, char const *fnamchk, bool test)
 {
     int year = 0;	/* ioccc_year: IOCCC year as an integer */
     int entry_num = -1;	/* entry_num: entry number as an integer */
@@ -1742,12 +1880,14 @@ check_found_common_json_fields(char const *program, char const *file, char const
     char *p;
     struct json_field *field; /* current field in found_common_json_fields list */
     struct json_value *value; /* current value in current field's values list */
+    struct json_field *common_field = NULL; /* element in the common_json_fields table */
+    size_t loc = 0;	/* location in the common_json_fields table */
 
     /*
      * firewall
      */
     if (program == NULL || file == NULL || fnamchk == NULL) {
-	err(219, __func__, "passed NULL arg(s)");
+	err(224, __func__, "passed NULL arg(s)");
 	not_reached();
     }
 
@@ -1760,67 +1900,101 @@ check_found_common_json_fields(char const *program, char const *file, char const
 	/*
 	 * process a given common field
 	 */
+
+	/*
+	 * first make sure the name != NULL and strlen() > 0
+	 */
+	if (field->name == NULL || !strlen(field->name)) {
+	    err(225, __func__, "found NULL or empty field in found_common_json_fields list");
+	    not_reached();
+	}
+
+	/* now make sure it's allowed to be in this table. */
+	loc = 0;
+	common_field = find_json_field_in_table(common_json_fields, field->name, &loc);
+
+	/*
+	 * If the field is not allowed in the list then it suggests there is a
+	 * problem in the code because only common fields should be added to the
+	 * list in the first place. Thus it's an error if a field that's in the
+	 * common list is not a common field name.
+	 */
+	if (common_field == NULL) {
+	    err(226, __func__, "illegal field name '%s' in found_common_json_fields list", field->name);
+	    not_reached();
+	}
+
+	/*
+	 * Next we test if the field has been seen more times than allowed. In
+	 * the case of the common fields each is only allowed once but in
+	 * uncommon fields some are allowed more than once.
+	 */
+	if (common_field->count > common_field->max_count) {
+	    warn(__func__, "field '%s' found %lu times but is only allowed once", common_field->name, (unsigned long)common_field->count);
+	    ++issues;
+	}
+
 	for (value = field->values; value != NULL; value = value->next) {
-	    char *v = value->value;
+	    char *val = value->value;
 
 	    if (!strcmp(field->name, "ioccc_contest")) {
-		if (strcmp(v, IOCCC_CONTEST)) {
-		    warn(__func__, "ioccc_contest \"%s\" != \"%s\" in file %s", v, IOCCC_CONTEST, file);
+		if (strcmp(val, IOCCC_CONTEST)) {
+		    warn(__func__, "ioccc_contest \"%s\" != \"%s\" in file %s", val, IOCCC_CONTEST, file);
 		    ++issues;
 		}
 	    } else if (!strcmp(field->name, "ioccc_year")) {
-		year = string_to_int(v);
+		year = string_to_int(val);
 		if (year != IOCCC_YEAR) {
 		    warn(__func__, "ioccc_year %d != IOCCC_YEAR %d", year, IOCCC_YEAR);
 		    ++issues;
 		}
 	    } else if (!strcmp(field->name, "mkiocccentry_version")) {
-		if (strcmp(v, MKIOCCCENTRY_VERSION)) {
-		    warn(__func__, "mkiocccentry_version \"%s\" != MKIOCCCENTRY_VERSION \"%s\"", v, MKIOCCCENTRY_VERSION);
+		if (!test && strcmp(val, MKIOCCCENTRY_VERSION)) {
+		    warn(__func__, "mkiocccentry_version \"%s\" != MKIOCCCENTRY_VERSION \"%s\"", val, MKIOCCCENTRY_VERSION);
 		    ++issues;
 		}
 	    } else if (!strcmp(field->name, "iocccsize_version")) {
-		if (strcmp(v, IOCCCSIZE_VERSION)) {
-		    warn(__func__, "iocccsize_version \"%s\" != IOCCCSIZE_VERSION \"%s\"", v, IOCCCSIZE_VERSION);
+		if (!test && strcmp(val, IOCCCSIZE_VERSION)) {
+		    warn(__func__, "iocccsize_version \"%s\" != IOCCCSIZE_VERSION \"%s\"", val, IOCCCSIZE_VERSION);
 		    ++issues;
 		}
 	    } else if (!strcmp(field->name, "IOCCC_contest_id")) {
-		if (!valid_contest_id(v)) {
-		    warn(__func__, "IOCCC_contest_id \"%s\" is invalid", v);
+		if (!valid_contest_id(val)) {
+		    warn(__func__, "IOCCC_contest_id \"%s\" is invalid", val);
 		    ++issues;
 		}
 	    } else if (!strcmp(field->name, "min_timestamp")) {
-		ts = string_to_long(v);
+		ts = string_to_long(val);
 		if (ts != MIN_TIMESTAMP) {
 		    warn(__func__, "min_timestamp '%ld' != MIN_TIMESTAMP '%ld'", ts, MIN_TIMESTAMP);
 		    ++issues;
 		}
 	    } else if (!strcmp(field->name, "timestamp_epoch")) {
-		if (strcmp(v, TIMESTAMP_EPOCH)) {
-		    warn(__func__, "timestamp_epoch \"%s\" != TIMESTAMP_EPOCH \"%s\"", v, TIMESTAMP_EPOCH);
+		if (strcmp(val, TIMESTAMP_EPOCH)) {
+		    warn(__func__, "timestamp_epoch \"%s\" != TIMESTAMP_EPOCH \"%s\"", val, TIMESTAMP_EPOCH);
 		    ++issues;
 		}
 	    } else if (!strcmp(field->name, "formed_timestamp_usec")) {
 		errno = 0;
-		ts = string_to_long(v);
+		ts = string_to_long(val);
 		if (ts < 0 || ts > 999999) {
 		    warnp(__func__, "formed_timestamp_usec '%ld' out of range of >= 0 && <= 999999", ts);
 		    ++issues;
 		}
 	    } else if (!strcmp(field->name, "entry_num")) {
-		entry_num = string_to_int(v);
+		entry_num = string_to_int(val);
 		if (!(entry_num >= 0 && entry_num <= MAX_ENTRY_NUM)) {
 		    warn(__func__, "entry number %d out of range", entry_num);
 		    ++issues;
 		}
 	    } else if (!strcmp(field->name, "formed_UTC")) {
-		p = strptime(v, FORMED_UTC_FMT, &tm);
+		p = strptime(val, FORMED_UTC_FMT, &tm);
 		if (p == NULL) {
-		    warn(__func__, "formed_UTC \"%s\" does not match FORMED_UTC_FMT \"%s\"", v, FORMED_UTC_FMT);
+		    warn(__func__, "formed_UTC \"%s\" does not match FORMED_UTC_FMT \"%s\"", val, FORMED_UTC_FMT);
 		    ++issues;
 		}
 	    } else if (!strcmp(field->name, "formed_timestamp")) {
-		ts = string_to_long(v);
+		ts = string_to_long(val);
 		if (ts < MIN_TIMESTAMP) {
 		    warn(__func__, "formed_timestamp '%ld' < MIN_TIMESTAMP '%ld'", ts, MIN_TIMESTAMP);
 		    ++issues;
@@ -1830,177 +2004,85 @@ check_found_common_json_fields(char const *program, char const *file, char const
 		/*
 		 * execute the fnamchk command
 		 */
-		exit_code = shell_cmd(__func__, true, "% % >/dev/null", fnamchk, v);
+		exit_code = shell_cmd(__func__, true, "% % >/dev/null", fnamchk, val);
 		if (exit_code != 0) {
 		    warn(__func__, "%s: %s %s > /dev/null: failed with exit code: %d",
-					program, fnamchk, v, WEXITSTATUS(exit_code));
+					program, fnamchk, val, WEXITSTATUS(exit_code));
 		    ++issues;
 		}
 
-	    } else {
-	    /*
-	     * case: unknown field
-	     */
 	    }
+	}
+    }
+
+    /*
+     * Now that we've checked each field by name, we still have to make sure
+     * that each field expected is actually there. Note that in the above loop
+     * we already tested if each field has been seen more times than allowed so
+     * we don't do that here. This is because the fields that are in the list
+     * are those that will potentially have more than allowed whereas here we're
+     * making sure every field that is required is actually in the list.
+     */
+    for (loc = 0; common_json_fields[loc].name != NULL; ++loc) {
+	if (!common_json_fields[loc].found) {
+	    warn(__func__, "field '%s' not found in common_json_fields list", common_json_fields[loc].name);
+	    ++issues;
 	}
     }
     return issues;
 }
 
-/* add_common_json_field   - add a common json field to found_common_json_fields list
- *
- *
- * given:
- *
- *	name	    - name of the field
- *	value	    - value of the field
- *
- * Allocates a struct json_field * and add it to the json_common_fields list.
- * This will be used for reporting errors after parsing the file as well as
- * (later on) verifying that these fields are present in both .info.json and
- * .author.json (this detail is not yet completely thought out).
- *
- * This function returns the newly allocated struct json_field OR if the field
- * was already in the list, the previous one with the count incremented.
- *
- */
-struct json_field *
-add_common_json_field(char const *name, char const *value)
-{
-    struct json_field *f; /* newly allocated field */
-
-    /*
-     * firewall
-     */
-    if (name == NULL || value == NULL) {
-	err(220, __func__, "passed NULL arg(s)");
-	not_reached();
-    }
-
-    for (f = found_common_json_fields; f != NULL; f = f->next) {
-	if (f->name && !strcmp(f->name, name)) {
-	    f->count++;
-	    if (add_json_value(f, value) == NULL) {
-		err(221, __func__, "couldn't add value '%s' to field '%s'", value, f->name);
-		not_reached();
-	    }
-	    return f;
-	}
-    }
-
-    if (f == NULL) {
-	/* if we did NOT find it in the list, we have to allocate a new struct */
-	errno = 0;
-	f = calloc(1, sizeof *f);
-	if (f == NULL) {
-	    errp(222, __func__, "unable to calloc struct json_field * for field '%s' with value '%s'", name, value);
-	    not_reached();
-	}
-	/* now that we have a struct json_field * we can strdup() the field name */
-	errno = 0;
-	f->name = strdup(name);
-	if (f->name == NULL) {
-	    errp(223, __func__, "unable to strdup field '%s'", name);
-	    not_reached();
-	}
-    }
-
-    /* now let's add a new value to the field's list of values */
-    if (add_json_value(f, value) == NULL) {
-	/* we should never get here but just in case */
-	err(224, __func__, "error adding value '%s' to field '%s'", value, name);
-	not_reached();
-    }
-    /* add field to found_common_json_fields list */
-    f->next = found_common_json_fields;
-    found_common_json_fields = f;
-
-    dbg(DBG_VHIGH, "added field '%s' value '%s' to found_common_json_fields", f->name, value);
-    return f;
-}
 
 /* new_json_field	- allocate a new json_field with the value passed in
  *
  * given:
  *
  *	name	    - the field name
- *	value	    - the field's value
+ *	val	    - the field's value
  *
  * Returns the newly allocated struct json_field *.
  *
  * NOTE: This function does not return on NULL and it does not check any list:
  * as long as no NULL pointers are encountered it will return a newly allocated
- * struct json_field *.
+ * struct json_field *. This means that it is the caller's responsibility to
+ * check if the field is already in the list.
  *
  */
 struct json_field *
-new_json_field(char const *name, char const *value)
+new_json_field(char const *name, char const *val)
 {
     struct json_field *field; /* the new field */
 
     /*
      * firewall
      */
-    if (name == NULL || value == NULL) {
-	err(225, __func__, "passed NULL arg(s)");
+    if (name == NULL || val == NULL) {
+	err(227, __func__, "passed NULL arg(s)");
 	not_reached();
     }
 
     errno = 0;
     field = calloc(1, sizeof *field);
     if (field == NULL) {
-	err(226, __func__, "error allocating new struct json_field * for field '%s' and value '%s'", name, value);
+	errp(228, __func__, "error allocating new struct json_field * for field '%s' and value '%s': %s", name, val, strerror(errno));
 	not_reached();
     }
-
 
     errno = 0;
     field->name = strdup(name);
     if (field->name == NULL) {
-	err(227, __func__, "unable to strdup() field name '%s'", name);
+	errp(229, __func__, "unable to strdup() field name '%s': %s", name, strerror(errno));
 	not_reached();
     }
 
-    if (add_json_value(field, value) == NULL) {
-	err(228, __func__, "error adding value '%s' to field '%s'", value, name);
+    if (add_json_value(field, val) == NULL) {
+	err(230, __func__, "error adding value '%s' to field '%s'", val, name);
 	not_reached();
     }
+
+    field->count = 1;
+
     return field;
-}
-/* free_json_field	- release memory in a struct json_field *
- *
- * given:
- *
- *	field	    - the field to free
- *
- * NOTE: This function does not return on NULL.
- *
- * XXX It is the caller's responsibility to remove it from the list(s) it is in!
- *
- */
-void
-free_json_field(struct json_field *field)
-{
-    struct json_value *value, *next_value; /* to free the values of the field */
-
-    /*
-     * firewall
-     */
-    if (field == NULL) {
-	err(229, __func__, "passed NULL field");
-	not_reached();
-    }
-    for (value = field->values; value != NULL; value = next_value) {
-	next_value = value->next;
-
-	if (value->value != NULL) {
-	    free(value->value);
-	    value->value = NULL;
-	}
-	value = NULL;
-    }
-    free(field);
-    field = NULL;
 }
 
 /* add_json_value	- add a value to a struct json_field *
@@ -2008,7 +2090,7 @@ free_json_field(struct json_field *field)
  * given:
  *
  *	field		- the field to add to
- *	str		- the value to add
+ *	val		- the value to add
  *
  * This function returns the newly allocated struct json_value * with the value
  * strdup()d and added to the struct json_field * values list.
@@ -2017,7 +2099,7 @@ free_json_field(struct json_field *field)
  *
  */
 struct json_value *
-add_json_value(struct json_field *field, char const *str)
+add_json_value(struct json_field *field, char const *val)
 {
     struct json_value *new_value = NULL;    /* the newly allocated value */
     struct json_value *value = NULL;	    /* the current list of values in field */
@@ -2025,21 +2107,21 @@ add_json_value(struct json_field *field, char const *str)
     /*
      * firewall
      */
-    if (field == NULL || str == NULL) {
-	err(230, __func__, "passed NULL arg(s)");
+    if (field == NULL || val == NULL) {
+	err(231, __func__, "passed NULL arg(s)");
 	not_reached();
     }
 
     errno = 0;
     new_value = calloc(1, sizeof *new_value);
     if (new_value == NULL) {
-	errp(231, __func__, "error allocating new value '%s' for field '%s'", str, field->name);
+	errp(232, __func__, "error allocating new value '%s' for field '%s': %s", val, field->name, strerror(errno));
 	not_reached();
     }
     errno = 0;
-    new_value->value = strdup(str);
+    new_value->value = strdup(val);
     if (new_value->value == NULL) {
-	errp(232, __func__, "error strdup()ing value '%s' for field '%s'", str, field->name);
+	errp(233, __func__, "error strdup()ing value '%s' for field '%s': %s", val, field->name, strerror(errno));
 	not_reached();
     }
     /* find end of list */
@@ -2054,6 +2136,43 @@ add_json_value(struct json_field *field, char const *str)
     }
     return new_value;
 }
+
+
+/* free_json_field_values	- free a field's values list
+ *
+ * given:
+ *
+ *	field			- field to free the values list
+ *
+ * Returns void.
+ *
+ * NOTE: This function does not return on error (NULL field passed in).
+ */
+void
+free_json_field_values(struct json_field *field)
+{
+    struct json_value *value, *next_value; /* to free the values of the field */
+
+    /*
+     * firewall
+     */
+    if (field == NULL) {
+	err(234, __func__, "passed NULL field");
+	not_reached();
+    }
+
+    /* free each value */
+    for (value = field->values; value != NULL; value = next_value) {
+	next_value = value->next;
+
+	if (value->value != NULL) {
+	    free(value->value);
+	    value->value = NULL;
+	}
+	value = NULL;
+    }
+}
+
 /* free_found_common_json_fields  - free the common json fields list
  *
  * This function returns void.
@@ -2063,6 +2182,7 @@ free_found_common_json_fields(void)
 {
     struct json_field *field, *next_field;
 
+
     for (field = found_common_json_fields; field != NULL; field = next_field) {
 	next_field = field->next;
 
@@ -2070,15 +2190,50 @@ free_found_common_json_fields(void)
 	    free(field->name);
 	    field->name = NULL;
 	}
-	if (field->value) {
-	    free(field->value);
-	    field->value = NULL;
+	if (field->values) {
+	    free_json_field_values(field);
+	    field->values = NULL; /* redundant but for safety anyway */
 	}
 	free(field);
 	field = NULL;
     }
 
     found_common_json_fields = NULL;
+}
+
+/* free_json_field	- release memory in a struct json_field *
+ *
+ * given:
+ *
+ *	field	    - the field to free
+ *
+ * NOTE: This function does not return on NULL.
+ *
+ * XXX It is the caller's responsibility to remove it from the list(s) it is in!
+ *
+ */
+void
+free_json_field(struct json_field *field)
+{
+    /*
+     * firewall
+     */
+    if (field == NULL) {
+	err(235, __func__, "passed NULL field");
+	not_reached();
+    }
+
+    /* free the field's values list */
+    free_json_field_values(field);
+    field->values = NULL; /* redundant but for safety */
+
+    if (field->name) {
+	free(field->name);
+	field->name = NULL;
+    }
+
+    free(field);
+    field = NULL;
 }
 
 /*
@@ -2098,7 +2253,7 @@ free_info(struct info *infop)
      * firewall
      */
     if (infop == NULL) {
-	err(233, __func__, "called with NULL arg(s)");
+	err(236, __func__, "called with NULL arg(s)");
 	not_reached();
     }
 
@@ -2189,11 +2344,11 @@ free_author_array(struct author *author_set, int author_count)
      * firewall
      */
     if (author_set == NULL) {
-	err(234, __func__, "called with NULL arg(s)");
+	err(237, __func__, "called with NULL arg(s)");
 	not_reached();
     }
     if (author_count < 0) {
-	err(235, __func__, "author_count: %d < 0", author_count);
+	err(238, __func__, "author_count: %d < 0", author_count);
 	not_reached();
     }
 
