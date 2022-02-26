@@ -1542,6 +1542,82 @@ malloc_json_decode_str(char const *str, size_t *retlen, bool strict)
 }
 
 /*
+ * Common JSON fields table used to determine if a name is a common field,
+ * whether it's been added to the found_common_json_fields list, how many times
+ * it has been seen and how many are allowed.
+ */
+
+struct json_field common_json_fields[] =
+{
+    { "ioccc_contest",		    NULL, 0, 1, false, NULL },
+    { "ioccc_year",		    NULL, 0, 1, false, NULL },
+    { "mkiocccentry_version",	    NULL, 0, 1, false, NULL },
+    { "iocccsize_version",	    NULL, 0, 1, false, NULL },
+    { "IOCCC_contest_id",	    NULL, 0, 1, false, NULL },
+    { "entry_num",		    NULL, 0, 1, false, NULL },
+    { "author_count",		    NULL, 0, 1, false, NULL },
+    { "tarball",		    NULL, 0, 1, false, NULL },
+    { "formed_timestamp",	    NULL, 0, 1, false, NULL },
+    { "formed_timestamp_usec",	    NULL, 0, 1, false, NULL },
+    { "timestamp_epoch",	    NULL, 0, 1, false, NULL },
+    { "min_timestamp",		    NULL, 0, 1, false, NULL },
+    { "formed_UTC",		    NULL, 0, 1, false, NULL },
+    { NULL,			    NULL, 0, 0, false, NULL } /* XXX this **MUST** be last! */
+};
+
+
+/* find_json_field_in_table	    - find field 'name' in json table
+ *
+ * given:
+ *
+ *	table			    - the table to check
+ *	name			    - the name to check
+ *	loc			    - if != NULL set to index
+ *
+ * XXX The table MUST end with NULL!
+ *
+ * NOTE: If index != NULL and the name is not found in the table then in the
+ * calling function index will be the number of entries in the table. To get the
+ * number of entries in the table pass in an empty name ("") as there will never
+ * be an empty name in any of the tables.
+ *
+ * This function will return NULL if the field is not in the table. It will not
+ * return if table and/or name is/are NULL.
+ */
+struct json_field *
+find_json_field_in_table(struct json_field *table, char const *name, size_t *loc)
+{
+    struct json_field *field = NULL;	/* the current field */
+    size_t i = 0;			/* current index */
+    /*
+     * firewall
+     */
+    if (table == NULL || name == NULL) {
+	err(35, __func__, "passed NULL arg(s)");
+	not_reached();
+    }
+
+    /*
+     * While the current index's name is not what we're looking for, continue to
+     * the next field in the table.
+     */
+    for (i = 0; table[i].name != NULL; ++i) {
+	if (!strcmp(table[i].name, name)) {
+	    field = &table[i];
+	    if (loc != NULL) {
+		*loc = i;
+	    }
+	    return field;
+	}
+    }
+
+    if (loc != NULL) {
+	*loc = i;
+    }
+
+    return NULL;
+}
+/*
  * json_filename    - return ".info.json", ".author.json" or "null" depending on type
  *
  * given:
@@ -1686,6 +1762,8 @@ struct json_field *
 add_found_common_json_field(char const *name, char const *val)
 {
     struct json_field *field; /* newly allocated field */
+    struct json_field *field_in_table = NULL;
+    size_t loc = 0; /* location in table */
 
     /*
      * firewall
@@ -1695,6 +1773,17 @@ add_found_common_json_field(char const *name, char const *val)
 	not_reached();
     }
 
+    field_in_table = find_json_field_in_table(common_json_fields, name, &loc);
+    if (field_in_table == NULL) {
+	err(35, __func__, "called add_found_common_json_field() on uncommon field '%s'", name);
+	not_reached();
+    }
+    /*
+     * Set in table that it's found and increment the number of times it's been
+     * seen.
+     */
+    common_json_fields[loc].count++;
+    common_json_fields[loc].found = true;
     for (field = found_common_json_fields; field != NULL; field = field->next) {
 	if (field->name && !strcmp(field->name, name)) {
 	    field->count++;
@@ -1743,6 +1832,8 @@ int
 get_common_json_field(char const *program, char const *file, char *name, char *val)
 {
     int ret = 1;	/* return value: 1 ==> known field, 0 ==> not a common field */
+    struct json_field *field = NULL; /* the field in the common_json_fields table if found */
+    size_t loc = 0; /* index of the common_json_fields table */
 
     /*
      * firewall
@@ -1753,15 +1844,11 @@ get_common_json_field(char const *program, char const *file, char *name, char *v
     }
 
     /*
-     * process a given common field
+     * check if the name is an expected common field
      */
-    if (!strcmp(name, "ioccc_contest") || !strcmp(name, "ioccc_year") ||
-	!strcmp(name, "mkiocccentry_version") || !strcmp(name, "iocccsize_version") ||
-	!strcmp(name, "IOCCC_contest_id") || !strcmp(name, "min_timestamp") ||
-	!strcmp(name, "timestamp_epoch") || !strcmp(name, "formed_timestamp_usec") ||
-	!strcmp(name, "entry_num") || !strcmp(name, "formed_UTC") ||
-	!strcmp(name, "formed_timestamp") || !strcmp(name, "tarball")) {
-	    add_found_common_json_field(name, val);
+    field = find_json_field_in_table(common_json_fields, name, &loc);
+    if (field != NULL) {
+	add_found_common_json_field(name, val);
     } else {
 	ret = 0;
     }
@@ -1796,6 +1883,8 @@ check_found_common_json_fields(char const *program, char const *file, char const
     char *p;
     struct json_field *field; /* current field in found_common_json_fields list */
     struct json_value *value; /* current value in current field's values list */
+    struct json_field *common_field = NULL; /* element in the common_json_fields table */
+    size_t loc = 0;	/* location in the common_json_fields table */
 
     /*
      * firewall
@@ -1814,6 +1903,40 @@ check_found_common_json_fields(char const *program, char const *file, char const
 	/*
 	 * process a given common field
 	 */
+
+	/*
+	 * first make sure the name != NULL and strlen() > 0
+	 */
+	if (field->name == NULL || !strlen(field->name)) {
+	    err(35, __func__, "found NULL or empty field in found_common_json_fields list");
+	    not_reached();
+	}
+
+	/* now make sure it's allowed to be in this table. */
+	loc = 0;
+	common_field = find_json_field_in_table(common_json_fields, field->name, &loc);
+
+	/*
+	 * If the field is not allowed in the list then it suggests there is a
+	 * problem in the code because only common fields should be added to the
+	 * list in the first place. Thus it's an error if a field that's in the
+	 * common list is not a common field name.
+	 */
+	if (common_field == NULL) {
+	    err(36, __func__, "illegal field name '%s' in found_common_json_fields list", field->name);
+	    not_reached();
+	}
+
+	/*
+	 * Next we test if the field has been seen more times than allowed. In
+	 * the case of the common fields each is only allowed once but in
+	 * uncommon fields some are allowed more than once.
+	 */
+	if (common_field->count > common_field->max_count) {
+	    warn(__func__, "field '%s' found %lu times but is only allowed once", common_field->name, (unsigned long)common_field->count);
+	    ++issues;
+	}
+
 	for (value = field->values; value != NULL; value = value->next) {
 	    char *val = value->value;
 
@@ -1891,11 +2014,22 @@ check_found_common_json_fields(char const *program, char const *file, char const
 		    ++issues;
 		}
 
-	    } else {
-	    /*
-	     * case: unknown field
-	     */
 	    }
+	}
+    }
+
+    /*
+     * Now that we've checked each field by name, we still have to make sure
+     * that each field expected is actually there. Note that in the above loop
+     * we already tested if each field has been seen more times than allowed so
+     * we don't do that here. This is because the fields that are in the list
+     * are those that will potentially have more than allowed whereas here we're
+     * making sure every field that is required is actually in the list.
+     */
+    for (loc = 0; common_json_fields[loc].name != NULL; ++loc) {
+	if (!common_json_fields[loc].found) {
+	    warn(__func__, "field '%s' not found in common_json_fields list", common_json_fields[loc].name);
+	    ++issues;
 	}
     }
     return issues;

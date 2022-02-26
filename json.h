@@ -76,13 +76,27 @@ struct json_value
  */
 struct json_field
 {
-    char *name;
-    struct json_value *values;
+    char *name;			/* field name */
+    struct json_value *values;	/* linked list of values */
 
-    size_t count;
+    /*
+     * Number of times this field has been seen in the list, how many are
+     * actually allowed and whether the field has been found: This is for the
+     * tables that say tell many times a field has been seen, how many times it
+     * is allowed and whether or not it's been seen (it is true that this could
+     * simply be count > 0 but this is to be more clear, however slight).
+     *
+     * In other words this is done as part of the checks after the field:value
+     * pairs have been extracted.
+     */
+    size_t count;		/* how many of this field in the list (or how many values) */
+    size_t max_count;		/* how many of this field is allowed */
+    bool found;			/* if this field was found */
 
-    struct json_field *next;
+    struct json_field *next;	/* the next in the whatever list (XXX don't add to more than one list!) */
 };
+
+extern struct json_field common_json_fields[];
 
 /*
  * linked list of the common json fields found in the .info.json and
@@ -195,6 +209,7 @@ extern bool json_putc(uint8_t const c, FILE *stream);
 extern char *malloc_json_decode(char const *ptr, size_t len, size_t *retlen, bool strict);
 extern char *malloc_json_decode_str(char const *str, size_t *retlen, bool strict);
 /* jinfochk and jauthchk related */
+extern struct json_field *find_json_field_in_table(struct json_field *table, char const *name, size_t *loc);
 extern char const *json_filename(int type);
 extern int check_first_json_char(char const *file, char *data, bool strict, char **first);
 extern int check_last_json_char(char const *file, char *data, bool strict, char **last);
