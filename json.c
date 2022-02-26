@@ -1576,8 +1576,8 @@ struct json_field common_json_fields[] =
  *
  * XXX The table MUST end with NULL!
  *
- * NOTE: If index != NULL and the name is not found in the table then in the
- * calling function index will be the number of entries in the table. To get the
+ * NOTE: If loc != NULL and the name is not found in the table then in the
+ * calling function loc will be the number of entries in the table. To get the
  * number of entries in the table pass in an empty name ("") as there will never
  * be an empty name in any of the tables.
  *
@@ -1604,10 +1604,7 @@ find_json_field_in_table(struct json_field *table, char const *name, size_t *loc
     for (i = 0; table[i].name != NULL; ++i) {
 	if (!strcmp(table[i].name, name)) {
 	    field = &table[i];
-	    if (loc != NULL) {
-		*loc = i;
-	    }
-	    return field;
+	    break;
 	}
     }
 
@@ -1615,7 +1612,7 @@ find_json_field_in_table(struct json_field *table, char const *name, size_t *loc
 	*loc = i;
     }
 
-    return NULL;
+    return field;
 }
 /*
  * json_filename    - return ".info.json", ".author.json" or "null" depending on type
