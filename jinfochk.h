@@ -80,6 +80,7 @@ static bool quiet = false;		    /* true ==> quiet mode */
 static struct info info;		    /* .info.json struct */
 static bool strict = false;		    /* true ==> disallow anything before/after the '{' and '}' in the file */
 static bool test = false;		    /* true ==> issue warnings instead of errors in some cases (N.B.: not yet used) */
+static struct json_field *found_info_json_fields; /* list of fields specific to .info.json that have been found */
 
 /*
  * forward declarations
@@ -87,5 +88,7 @@ static bool test = false;		    /* true ==> issue warnings instead of errors in s
 static void usage(int exitcode, char const *name, char const *str) __attribute__((noreturn));
 static void sanity_chk(char const *file, char const *fnamchk);
 static int check_info_json(char const *file, char const *fnamchk);
+static struct json_field *add_found_info_json_field(char const *name, char const *value);
+static void free_found_info_json_fields(void);
 
 #endif /* INCLUDE_JINFOCHK_H */

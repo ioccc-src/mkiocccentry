@@ -1271,7 +1271,7 @@ check_tarball(char const *tar, char const *fnamchk)
 
 	/*
 	 * add line to list (to parse once the list of files has been shown to
-	 * the user.
+	 * the user).
 	 */
 	add_line(linep, line_num);
 

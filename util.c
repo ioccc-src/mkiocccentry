@@ -1131,19 +1131,21 @@ vcmdprintf(char const *format, va_list ap)
  * Attempt to call the shell with a command string.
  *
  * given:
- *	name	- name of the calling function
- *	abort	- false ==> return exit code if able to successfully call system(), or
+ *	name		- name of the calling function
+ *	abort_on_error	- false ==> return exit code if able to successfully call system(), or
  *			    return MALLOC_FAILED_EXIT malloc() failure,
  *			    return FLUSH_FAILED_EXIT on fflush failure,
  *			    return SYSTEM_FAILED_EXIT if system() failed,
  *			    return NULL_ARGS_EXIT if NULL pointers were passed
- *		  true ==> return exit code if able to successfully call system(), or
+ *			  true ==> return exit code if able to successfully call system(), or
  *			   call errp() (and thus exit) if unsuccessful
- *      format	- The format string, any % on this string inserts the next string from the list,
- *                escaping special characters that the shell might threaten as command characters.
- *                In the worst case, the algorithm will make twice as many characters.
- *                Will not use escaping if it isn't needed.
- *      ...     - args to give after the format
+ *      format		- The format string, any % on this string inserts the
+ *			  next string from the list, escaping special characters
+ *			  that the shell might threaten as command characters.
+ *			  In the worst case, the algorithm will make twice as
+ *			  many characters.  Will not use escaping if it isn't
+ *			  needed.
+ *      ...		- args to give after the format
  *
  * returns:
  *	>= ==> exit code, <0 ==> *_EXIT failure (if flag == false)
@@ -1153,7 +1155,7 @@ vcmdprintf(char const *format, va_list ap)
  *	 function to determine if this function failed.
  */
 int
-shell_cmd(char const *name, bool abort, char const *format, ...)
+shell_cmd(char const *name, bool abort_on_error, char const *format, ...)
 {
     va_list ap;			/* stdarg block */
     char *cmd = NULL;		/* cp prog_c entry_dir/prog.c */
@@ -1164,8 +1166,8 @@ shell_cmd(char const *name, bool abort, char const *format, ...)
      * firewall
      */
     if (name == NULL) {
-	/* exit or error return depending on abort */
-	if (abort == true) {
+	/* exit or error return depending on abort_on_error */
+	if (abort_on_error) {
 	    err(110, __func__, "function name is not caller name because we were called with NULL name");
 	    not_reached();
 	} else {
@@ -1174,8 +1176,8 @@ shell_cmd(char const *name, bool abort, char const *format, ...)
 	}
     }
     if (format == NULL) {
-	/* exit or error return depending on abort */
-	if (abort == true) {
+	/* exit or error return depending on abort_on_error */
+	if (abort_on_error) {
 	    err(111, name, "called NULL format");
 	    not_reached();
 	} else {
@@ -1195,8 +1197,8 @@ shell_cmd(char const *name, bool abort, char const *format, ...)
     errno = 0;			/* pre-clear errno for errp() */
     cmd = vcmdprintf(format, ap);
     if (cmd == NULL) {
-	/* exit or error return depending on abort */
-	if (abort == true) {
+	/* exit or error return depending on abort_on_error */
+	if (abort_on_error) {
 	    errp(112, name, "malloc failed in vcmdprintf()");
 	    not_reached();
 	} else {
@@ -1219,8 +1221,8 @@ shell_cmd(char const *name, bool abort, char const *format, ...)
 	    free(cmd);
 	    cmd = NULL;
 	}
-	/* exit or error return depending on abort */
-	if (abort == true) {
+	/* exit or error return depending on abort_on_error */
+	if (abort_on_error) {
 	    errp(113, name, "fflush(stdout): error code: %d", ret);
 	    not_reached();
 	} else {
@@ -1242,8 +1244,8 @@ shell_cmd(char const *name, bool abort, char const *format, ...)
 	    free(cmd);
 	    cmd = NULL;
 	}
-	/* exit or error return depending on abort */
-	if (abort == true) {
+	/* exit or error return depending on abort_on_error */
+	if (abort_on_error) {
 	    errp(114, name, "fflush(stderr): error code: %d", ret);
 	    not_reached();
 	} else {
@@ -1265,8 +1267,8 @@ shell_cmd(char const *name, bool abort, char const *format, ...)
 	    free(cmd);
 	    cmd = NULL;
 	}
-	/* exit or error return depending on abort */
-	if (abort == true) {
+	/* exit or error return depending on abort_on_error */
+	if (abort_on_error) {
 	    errp(115, __func__, "error calling system(%s)", cmd);
 	    not_reached();
 	} else {
@@ -1284,8 +1286,8 @@ shell_cmd(char const *name, bool abort, char const *format, ...)
 	    free(cmd);
 	    cmd = NULL;
 	}
-	/* exit or error return depending on abort */
-	if (abort == true) {
+	/* exit or error return depending on abort_on_error */
+	if (abort_on_error) {
 	    errp(116, __func__, "execution of the shell failed for system(%s)", cmd);
 	    not_reached();
 	} else {
@@ -1321,22 +1323,24 @@ shell_cmd(char const *name, bool abort, char const *format, ...)
  * Attempt to call the shell with a command string.
  *
  * given:
- *	name	- name of the calling function
- *	abort	- false ==> return FILE * stream for open pipe to shell, or
+ *	name		- name of the calling function
+ *	abort_on_error	- false ==> return FILE * stream for open pipe to shell, or
  *			    return NULL on failure
- *		  true ==> return FILE * stream for open pipe to shell, or
+ *			  true ==> return FILE * stream for open pipe to shell, or
  *			   call errp() (and thus exit) if unsuccessful
- *      format	- The format string, any % on this string inserts the next string from the list,
- *                escaping special characters that the shell might threaten as command characters.
- *                In the worst case, the algorithm will make twice as many characters.
- *                Will not use escaping if it isn't needed.
+ *      format		- The format string, any % on this string inserts the
+ *			  next string from the list, escaping special characters
+ *			  that the shell might threaten as command characters.
+ *			  In the worst case, the algorithm will make twice as
+ *			  many characters.  Will not use escaping if it isn't
+ *			  needed.
  *      ...     - args to give after the format
  *
  * returns:
  *	FILE * stream for open pipe to shell, or NULL ==> error
  */
 FILE *
-pipe_open(char const *name, bool abort, char const *format, ...)
+pipe_open(char const *name, bool abort_on_error, char const *format, ...)
 {
     va_list ap;			/* stdarg block */
     char *cmd = NULL;		/* cp prog_c entry_dir/prog.c */
@@ -1348,7 +1352,7 @@ pipe_open(char const *name, bool abort, char const *format, ...)
      */
     if (name == NULL) {
 	/* exit or error return depending on abort */
-	if (abort == true) {
+	if (abort_on_error) {
 	    err(117, __func__, "function name is not caller name because we were called with NULL name");
 	    not_reached();
 	} else {
@@ -1358,7 +1362,7 @@ pipe_open(char const *name, bool abort, char const *format, ...)
     }
     if (format == NULL) {
 	/* exit or error return depending on abort */
-	if (abort == true) {
+	if (abort_on_error) {
 	    err(118, name, "called NULL format");
 	    not_reached();
 	} else {
@@ -1379,7 +1383,7 @@ pipe_open(char const *name, bool abort, char const *format, ...)
     cmd = vcmdprintf(format, ap);
     if (cmd == NULL) {
 	/* exit or error return depending on abort */
-	if (abort == true) {
+	if (abort_on_error) {
 	    errp(119, name, "malloc failed in vcmdprintf()");
 	    not_reached();
 	} else {
@@ -1403,7 +1407,7 @@ pipe_open(char const *name, bool abort, char const *format, ...)
 	    cmd = NULL;
 	}
 	/* exit or error return depending on abort */
-	if (abort == true) {
+	if (abort_on_error) {
 	    errp(120, name, "fflush(stdout): error code: %d", ret);
 	    not_reached();
 	} else {
@@ -1425,8 +1429,8 @@ pipe_open(char const *name, bool abort, char const *format, ...)
 	    free(cmd);
 	    cmd = NULL;
 	}
-	/* exit or error return depending on abort */
-	if (abort == true) {
+	/* exit or error return depending on abort_on_error */
+	if (abort_on_error) {
 	    errp(121, name, "fflush(stderr): error code: %d", ret);
 	    not_reached();
 	} else {
@@ -1448,8 +1452,8 @@ pipe_open(char const *name, bool abort, char const *format, ...)
 	    free(cmd);
 	    cmd = NULL;
 	}
-	/* exit or error return depending on abort */
-	if (abort == true) {
+	/* exit or error return depending on abort_on_error */
+	if (abort_on_error) {
 	    errp(122, name, "error calling popen(%s, \"r\")", cmd);
 	    not_reached();
 	} else {

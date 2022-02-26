@@ -4,12 +4,12 @@ txzchk \- sanity checker tool used on IOCCC compressed tarballs
 .SH SYNOPSIS
 \fBtxzchk [\-h] [\-v level] [\-q] [\-V] [\-T] [\-t tar] [\-F fnamchk] [\-f] txzpath
 .SH DESCRIPTION
-\fBtxzchk\fP runs a series of sanity tests on IOCCC compressed tarballs and it is invoked indirectly through \fBmkiocccentry(1)\fP.
+\fBtxzchk\fP runs a series of sanity tests on IOCCC compressed tarballs and it is invoked by \fBmkiocccentry(1)\fP after forming the tarball.
 .PP
-The program runs \fB\-tJvf\fP on the \fItxzpath\fP to list (it does NOT extract) and parses the output of \fBtar(1)\fP, performing a variety of tests on the tarball.
+The program runs \fBtar \-tJvf\fP on the \fItxzpath\fP to list (it does NOT extract) and parses the output of the command, performing a variety of tests on the tarball.
 It also runs the IOCCC tool \fBfnamchk(1)\fP on the file, verifying that the tarball is properly named.
 .PP
-It will also be directly executed by the judges during the judging process of the contests.
+It will also be directly executed by The Judges during the judging process of the contest.
 This is an important part of the judging process.
 .SH OPTIONS
 .PP
