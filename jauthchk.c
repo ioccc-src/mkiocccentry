@@ -497,7 +497,7 @@ check_author_json(char const *file, char const *fnamchk)
 	for (value = field->values; value != NULL; value = value->next) {
 	    char const *v = value->value;
 	    if (!strcmp(field->name, "IOCCC_author_version")) {
-		if (strcmp(v, AUTHOR_VERSION)) {
+		if (!test && strcmp(v, AUTHOR_VERSION)) {
 		    warn(__func__, "IOCCC_author_version \"%s\" != \"%s\" in file %s", v, AUTHOR_VERSION, file);
 		    ++issues;
 		}
@@ -519,7 +519,7 @@ check_author_json(char const *file, char const *fnamchk)
     free_found_author_json_fields();
 
     /* check common json fields which will update the number of issues */
-    issues += check_found_common_json_fields(program_basename, file, fnamchk);
+    issues += check_found_common_json_fields(program_basename, file, fnamchk, test);
 
     /* free the found_common_json_fields list.
      *

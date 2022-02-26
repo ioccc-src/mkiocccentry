@@ -1872,7 +1872,7 @@ get_common_json_field(char const *program, char const *file, char *name, char *v
  * NOTE: Does not return on error (NULL pointers).
  */
 int
-check_found_common_json_fields(char const *program, char const *file, char const *fnamchk)
+check_found_common_json_fields(char const *program, char const *file, char const *fnamchk, bool test)
 {
     int year = 0;	/* ioccc_year: IOCCC year as an integer */
     int entry_num = -1;	/* entry_num: entry number as an integer */
@@ -1952,12 +1952,12 @@ check_found_common_json_fields(char const *program, char const *file, char const
 		    ++issues;
 		}
 	    } else if (!strcmp(field->name, "mkiocccentry_version")) {
-		if (strcmp(val, MKIOCCCENTRY_VERSION)) {
+		if (!test && strcmp(val, MKIOCCCENTRY_VERSION)) {
 		    warn(__func__, "mkiocccentry_version \"%s\" != MKIOCCCENTRY_VERSION \"%s\"", val, MKIOCCCENTRY_VERSION);
 		    ++issues;
 		}
 	    } else if (!strcmp(field->name, "iocccsize_version")) {
-		if (strcmp(val, IOCCCSIZE_VERSION)) {
+		if (!test && strcmp(val, IOCCCSIZE_VERSION)) {
 		    warn(__func__, "iocccsize_version \"%s\" != IOCCCSIZE_VERSION \"%s\"", val, IOCCCSIZE_VERSION);
 		    ++issues;
 		}

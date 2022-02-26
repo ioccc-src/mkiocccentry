@@ -510,7 +510,7 @@ check_info_json(char const *file, char const *fnamchk)
 	    val_length = strlen(v);
 
 	    if (!strcmp(field->name, "IOCCC_info_version")) {
-		if (strcmp(v, INFO_VERSION)) {
+		if (!test && strcmp(v, INFO_VERSION)) {
 		    warn(__func__, "IOCCC_info_version \"%s\" != \"%s\" in file %s", v, INFO_VERSION, file);
 		    ++issues;
 		}
@@ -579,7 +579,7 @@ check_info_json(char const *file, char const *fnamchk)
      */
     free_found_info_json_fields();
 
-    issues += check_found_common_json_fields(program_basename, file, fnamchk);
+    issues += check_found_common_json_fields(program_basename, file, fnamchk, test);
 
     /* free the found_common_json_fields list.
      *

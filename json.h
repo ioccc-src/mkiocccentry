@@ -215,7 +215,7 @@ extern int check_first_json_char(char const *file, char *data, bool strict, char
 extern int check_last_json_char(char const *file, char *data, bool strict, char **last);
 extern struct json_field *add_found_common_json_field(char const *name, char const *val);
 extern int get_common_json_field(char const *program, char const *file, char *name, char *val);
-extern int check_found_common_json_fields(char const *program, char const *file, char const *fnamchk);
+extern int check_found_common_json_fields(char const *program, char const *file, char const *fnamchk, bool test);
 extern struct json_field *new_json_field(char const *name, char const *val);
 extern struct json_value *add_json_value(struct json_field *field, char const *val);
 /* free() functions */
