@@ -81,7 +81,7 @@ char *program_basename = NULL;			/* our basename */
 static bool quiet = false;			/* true ==> quiet mode */
 struct author author;			/* the .author.json struct */
 static bool strict = false;			/* true ==> disallow anything before/after the '{' and '}' */
-static bool test = false;			/* true ==> issue warnings instead of errors in some cases (N.B.: not yet used) */
+static bool test = false;			/* true ==> some tests are not performed */
 static struct json_field *found_author_json_fields;	/* list of fields specific to .author.json found */
 /*
  * forward declarations

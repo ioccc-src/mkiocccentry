@@ -79,8 +79,9 @@ char *program_basename = NULL;		    /* our basename */
 static bool quiet = false;		    /* true ==> quiet mode */
 static struct info info;		    /* .info.json struct */
 static bool strict = false;		    /* true ==> disallow anything before/after the '{' and '}' in the file */
-static bool test = false;		    /* true ==> issue warnings instead of errors in some cases (N.B.: not yet used) */
+static bool test = false;		    /* true ==> some tests are not performed */
 static struct json_field *found_info_json_fields; /* list of fields specific to .info.json that have been found */
+extern struct json_field info_json_fields[];
 
 /*
  * forward declarations

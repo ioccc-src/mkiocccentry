@@ -36,7 +36,7 @@
 	"rule_2b_size" : 0,
 	"tarball" : "entry.12345678-1234-4321-abcd-1234567890ab-0.1645212226.txz",
 	"test_mode" : false,
-	"timestamp_epoch" : "Thu Jan  1 00:00:00 1970 UTC",
+	"timestamp_epoch" : "Thu Jan 01 00:00:00 1970 UTC",
 	"title" : "title-for-entry0",
 	"trigraph_warning" : false,
 	"ungetc_warning" : false,

@@ -2064,14 +2064,14 @@ new_json_field(char const *name, char const *val)
     errno = 0;
     field = calloc(1, sizeof *field);
     if (field == NULL) {
-	err(228, __func__, "error allocating new struct json_field * for field '%s' and value '%s'", name, val);
+	errp(228, __func__, "error allocating new struct json_field * for field '%s' and value '%s': %s", name, val, strerror(errno));
 	not_reached();
     }
 
     errno = 0;
     field->name = strdup(name);
     if (field->name == NULL) {
-	errp(229, __func__, "unable to strdup() field name '%s'", name);
+	errp(229, __func__, "unable to strdup() field name '%s': %s", name, strerror(errno));
 	not_reached();
     }
 
@@ -2115,13 +2115,13 @@ add_json_value(struct json_field *field, char const *val)
     errno = 0;
     new_value = calloc(1, sizeof *new_value);
     if (new_value == NULL) {
-	errp(232, __func__, "error allocating new value '%s' for field '%s'", val, field->name);
+	errp(232, __func__, "error allocating new value '%s' for field '%s': %s", val, field->name, strerror(errno));
 	not_reached();
     }
     errno = 0;
     new_value->value = strdup(val);
     if (new_value->value == NULL) {
-	errp(233, __func__, "error strdup()ing value '%s' for field '%s'", val, field->name);
+	errp(233, __func__, "error strdup()ing value '%s' for field '%s': %s", val, field->name, strerror(errno));
 	not_reached();
     }
     /* find end of list */
