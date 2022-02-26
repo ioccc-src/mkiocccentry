@@ -1541,6 +1541,38 @@ malloc_json_decode_str(char const *str, size_t *retlen, bool strict)
     return ret;
 }
 
+/*
+ * json_filename    - return ".info.json", ".author.json" or "null" depending on type
+ *
+ * given:
+ *
+ *	type	    - INFO_JSON or AUTHOR_JSON
+ *
+ * Returns a char * depending on type or "null" (NOT a NULL pointer!) if invalid
+ * type.
+ *
+ * This function never returns NULL.
+ *
+ */
+char const *
+json_filename(int type)
+{
+    char const *name = INVALID_JSON_FILENAME; /* "null" */
+
+    switch (type) {
+	case INFO_JSON:
+	    return INFO_JSON_FILENAME; /* ".info.json" */
+	    break; /* in case the return is ever removed */
+	case AUTHOR_JSON:
+	    return AUTHOR_JSON_FILENAME; /* ".author.json" */
+	    break; /* in case the return is ever removed */
+	default:
+	    break; /* in case the return is ever removed ... which it ironically was. */
+    }
+    return name;
+}
+
+
 
 /*
  * check_first_json_char - check if first char is '{'
@@ -1584,7 +1616,6 @@ check_first_json_char(char const *file, char *data, bool strict, char **first)
 	return 1;
     return 0;
 }
-
 
 /*
  * check_last_json_char - check if last char is '}'
@@ -1634,38 +1665,61 @@ check_last_json_char(char const *file, char *data, bool strict, char **last)
     return 0;
 }
 
-
-/*
- * json_filename    - return ".info.json", ".author.json" or "null" depending on type
+/* add_found_common_json_field   - add a common json field to found_common_json_fields list
+ *
  *
  * given:
  *
- *	type	    - INFO_JSON or AUTHOR_JSON
+ *	name	    - name of the field
+ *	val	    - value of the field
  *
- * Returns a char * depending on type or "null" (NOT a NULL pointer!) if invalid
- * type.
+ * Allocates a struct json_field * and add it to the found_json_common_fields
+ * list. This will be used for reporting errors after parsing the file as well
+ * as (later on) verifying that these fields are present in both .info.json and
+ * .author.json (this detail is not yet completely thought out).
  *
- * This function never returns NULL.
- *
+ * This function returns the newly allocated struct json_field OR if the field
+ * was already in the list, the previous one with the count incremented and the
+ * value added to the values list.
  */
-char const *
-json_filename(int type)
+struct json_field *
+add_found_common_json_field(char const *name, char const *val)
 {
-    char const *name = INVALID_JSON_FILENAME; /* "null" */
+    struct json_field *f; /* newly allocated field */
 
-    switch (type) {
-	case INFO_JSON:
-	    return INFO_JSON_FILENAME; /* ".info.json" */
-	    break; /* in case the return is ever removed */
-	case AUTHOR_JSON:
-	    return AUTHOR_JSON_FILENAME; /* ".author.json" */
-	    break; /* in case the return is ever removed */
-	default:
-	    break; /* in case the return is ever removed ... which it ironically was. */
+    /*
+     * firewall
+     */
+    if (name == NULL || val == NULL) {
+	err(220, __func__, "passed NULL arg(s)");
+	not_reached();
     }
-    return name;
-}
 
+    for (f = found_common_json_fields; f != NULL; f = f->next) {
+	if (f->name && !strcmp(f->name, name)) {
+	    f->count++;
+	    if (add_json_value(f, val) == NULL) {
+		err(221, __func__, "couldn't add value '%s' to field '%s'", val, f->name);
+		not_reached();
+	    }
+	    return f;
+	}
+    }
+
+    f = new_json_field(name, val);
+    if (f == NULL) {
+	/* this should NEVER be reached but we check just to be sure */
+	err(222, __func__, "new_json_field() returned NULL pointer");
+	not_reached();
+    }
+
+    /* add field to found_common_json_fields list */
+    f->next = found_common_json_fields;
+    found_common_json_fields = f;
+
+    dbg(DBG_VHIGH, "added field '%s' value '%s' to found_common_json_fields", f->name, val);
+    return f;
+}
 
 /*
  * get_common_json_field	-   check if field is common to both .info.json
@@ -1847,61 +1901,6 @@ check_found_common_json_fields(char const *program, char const *file, char const
     return issues;
 }
 
-/* add_found_common_json_field   - add a common json field to found_common_json_fields list
- *
- *
- * given:
- *
- *	name	    - name of the field
- *	val	    - value of the field
- *
- * Allocates a struct json_field * and add it to the json_common_fields list.
- * This will be used for reporting errors after parsing the file as well as
- * (later on) verifying that these fields are present in both .info.json and
- * .author.json (this detail is not yet completely thought out).
- *
- * This function returns the newly allocated struct json_field OR if the field
- * was already in the list, the previous one with the count incremented.
- *
- */
-struct json_field *
-add_found_common_json_field(char const *name, char const *val)
-{
-    struct json_field *f; /* newly allocated field */
-
-    /*
-     * firewall
-     */
-    if (name == NULL || val == NULL) {
-	err(220, __func__, "passed NULL arg(s)");
-	not_reached();
-    }
-
-    for (f = found_common_json_fields; f != NULL; f = f->next) {
-	if (f->name && !strcmp(f->name, name)) {
-	    f->count++;
-	    if (add_json_value(f, val) == NULL) {
-		err(221, __func__, "couldn't add value '%s' to field '%s'", val, f->name);
-		not_reached();
-	    }
-	    return f;
-	}
-    }
-
-    f = new_json_field(name, val);
-    if (f == NULL) {
-	/* this should NEVER be reached but we check just to be sure */
-	err(222, __func__, "new_json_field() returned NULL pointer");
-	not_reached();
-    }
-
-    /* add field to found_common_json_fields list */
-    f->next = found_common_json_fields;
-    found_common_json_fields = f;
-
-    dbg(DBG_VHIGH, "added field '%s' value '%s' to found_common_json_fields", f->name, val);
-    return f;
-}
 
 /* new_json_field	- allocate a new json_field with the value passed in
  *
@@ -1949,40 +1948,6 @@ new_json_field(char const *name, char const *val)
 	not_reached();
     }
     return field;
-}
-/* free_json_field	- release memory in a struct json_field *
- *
- * given:
- *
- *	field	    - the field to free
- *
- * NOTE: This function does not return on NULL.
- *
- * XXX It is the caller's responsibility to remove it from the list(s) it is in!
- *
- */
-void
-free_json_field(struct json_field *field)
-{
-    /*
-     * firewall
-     */
-    if (field == NULL) {
-	err(227, __func__, "passed NULL field");
-	not_reached();
-    }
-
-    /* free the field's values list */
-    free_json_field_values(field);
-    field->values = NULL; /* redundant but for safety */
-
-    if (field->name) {
-	free(field->name);
-	field->name = NULL;
-    }
-
-    free(field);
-    field = NULL;
 }
 
 /* add_json_value	- add a value to a struct json_field *
@@ -2037,6 +2002,7 @@ add_json_value(struct json_field *field, char const *val)
     return new_value;
 }
 
+
 /* free_json_field_values	- free a field's values list
  *
  * given:
@@ -2071,6 +2037,7 @@ free_json_field_values(struct json_field *field)
 	value = NULL;
     }
 }
+
 /* free_found_common_json_fields  - free the common json fields list
  *
  * This function returns void.
@@ -2097,6 +2064,41 @@ free_found_common_json_fields(void)
     }
 
     found_common_json_fields = NULL;
+}
+
+/* free_json_field	- release memory in a struct json_field *
+ *
+ * given:
+ *
+ *	field	    - the field to free
+ *
+ * NOTE: This function does not return on NULL.
+ *
+ * XXX It is the caller's responsibility to remove it from the list(s) it is in!
+ *
+ */
+void
+free_json_field(struct json_field *field)
+{
+    /*
+     * firewall
+     */
+    if (field == NULL) {
+	err(227, __func__, "passed NULL field");
+	not_reached();
+    }
+
+    /* free the field's values list */
+    free_json_field_values(field);
+    field->values = NULL; /* redundant but for safety */
+
+    if (field->name) {
+	free(field->name);
+	field->name = NULL;
+    }
+
+    free(field);
+    field = NULL;
 }
 
 /*
