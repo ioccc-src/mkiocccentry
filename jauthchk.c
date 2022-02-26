@@ -503,7 +503,7 @@ check_author_json(char const *file, char const *fnamchk)
 		}
 	    } else {
 		/* TODO: after everything else is parsed if we get here it's an
-		 * error as there's invalid fields in the file.
+		 * error as there's an invalid field in the file.
 		 *
 		 * Currently (as of 25 February 2022) this is not done
 		 * because the arrays are not parsed yet.

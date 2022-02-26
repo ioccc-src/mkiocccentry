@@ -563,7 +563,7 @@ check_info_json(char const *file, char const *fnamchk)
 	    }
 	    else {
 		/* TODO: after everything else is parsed if we get here it's an
-		 * error as there's invalid fields in the file.
+		 * error as there's an invalid field in the file.
 		 *
 		 * Currently (as of 25 February 2022) this is not done
 		 * because the arrays are not parsed yet.
@@ -624,7 +624,7 @@ add_found_info_json_field(char const *name, char const *val)
     for (field = found_info_json_fields; field; field = field->next) {
 	if (field->name && !strcmp(field->name, name)) {
 	    /*
-	     * we found a field already in the list, add the value (even if this
+	     * we found a field already in the list: add the value (even if this
 	     * value was already in the list as this might need to be reported).
 	     */
 	    value = add_json_value(field, val);
