@@ -167,6 +167,45 @@ main(int argc, char **argv)
     exit(issues != 0); /*ooo*/
 }
 
+/* check_author_json_fields_table	    - perform some sanity checks on the
+ *					      author_json_fields table
+ *
+ * This function checks if JSON_NULL is used on any field other than the NULL
+ * field. It also makes sure that each field_type is valid. More tests might be
+ * devised later on but this is a good start (27 Feb 2022).
+ *
+ * This function does not return on error.
+ */
+static void
+check_author_json_fields_table(void)
+{
+    size_t loc;
+
+    for (loc = 0; author_json_fields[loc].name != NULL; ++loc) {
+	switch (author_json_fields[loc].field_type) {
+	    case JSON_NULL:
+		if (author_json_fields[loc].name != NULL) {
+		    err(5, __func__, "found invalid data in author_json_fields table #0");
+		    not_reached();
+		}
+		break;
+	    case JSON_NUMBER:
+	    case JSON_BOOL:
+	    case JSON_STRING:
+	    case JSON_ARRAY:
+	    case JSON_ARRAY_NUMBER:
+	    case JSON_ARRAY_BOOL:
+	    case JSON_ARRAY_STRING:
+		/* these are all the valid types */
+		break;
+	    default:
+		err(6, __func__, "found invalid data in author_json_fields table #1");
+		not_reached();
+		break;
+	}
+    }
+}
+
 
 /*
  * sanity_chk - perform basic sanity checks
@@ -187,7 +226,7 @@ sanity_chk(char const *file, char const *fnamchk)
      * firewall
      */
     if (file == NULL || fnamchk == NULL) {
-	err(5, __func__, "called with NULL arg(s)");
+	err(7, __func__, "called with NULL arg(s)");
 	not_reached();
     }
 
@@ -203,7 +242,7 @@ sanity_chk(char const *file, char const *fnamchk)
 	      "    jauthchk [options] <file>"
 	      "",
 	      NULL);
-	err(6, __func__, "file does not exist: %s", file);
+	err(8, __func__, "file does not exist: %s", file);
 	not_reached();
     }
     if (!is_file(file)) {
@@ -216,7 +255,7 @@ sanity_chk(char const *file, char const *fnamchk)
 	      "    jauthchk [...] <file>",
 	      "",
 	      NULL);
-	err(7, __func__, "file is not a file: %s", file);
+	err(9, __func__, "file is not a file: %s", file);
 	not_reached();
     }
     if (!is_read(file)) {
@@ -229,7 +268,7 @@ sanity_chk(char const *file, char const *fnamchk)
 	      "    jauthchk [...] <file>"
 	      "",
 	      NULL);
-	err(8, __func__, "file is not readable: %s", file);
+	err(10, __func__, "file is not readable: %s", file);
 	not_reached();
     }
 
@@ -251,7 +290,7 @@ sanity_chk(char const *file, char const *fnamchk)
 	      "    https://github.com/ioccc-src/mkiocccentry",
 	      "",
 	      NULL);
-	err(9, __func__, "fnamchk does not exist: %s", fnamchk);
+	err(11, __func__, "fnamchk does not exist: %s", fnamchk);
 	not_reached();
     }
     if (!is_file(fnamchk)) {
@@ -268,7 +307,7 @@ sanity_chk(char const *file, char const *fnamchk)
 	      "    https://github.com/ioccc-src/mkiocccentry",
 	      "",
 	      NULL);
-	err(10, __func__, "fnamchk is not a file: %s", fnamchk);
+	err(12, __func__, "fnamchk is not a file: %s", fnamchk);
 	not_reached();
     }
     if (!is_exec(fnamchk)) {
@@ -285,10 +324,15 @@ sanity_chk(char const *file, char const *fnamchk)
 	      "    https://github.com/ioccc-src/mkiocccentry",
 	      "",
 	      NULL);
-	err(11, __func__, "fnamchk is not an executable program: %s", fnamchk);
+	err(13, __func__, "fnamchk is not an executable program: %s", fnamchk);
 	not_reached();
     }
 
+    /* check the common_json_fields table */
+    check_common_json_fields_table();
+
+    /* check our author_json_fields table */
+    check_author_json_fields_table();
 
     return;
 }
@@ -329,22 +373,22 @@ check_author_json(char const *file, char const *fnamchk)
      * firewall
      */
     if (file == NULL || fnamchk == NULL) {
-	err(12, __func__, "passed NULL arg(s)");
+	err(14, __func__, "passed NULL arg(s)");
 	not_reached();
     }
     stream = fopen(file, "r");
     if (stream == NULL) {
-	err(13, __func__, "couldn't open %s", file);
+	err(15, __func__, "couldn't open %s", file);
 	not_reached();
     }
 
     /* read in the file */
     data = read_all(stream, &length);
     if (data == NULL) {
-	err(14, __func__, "error while reading data in %s", file);
+	err(16, __func__, "error while reading data in %s", file);
 	not_reached();
     } else if (length == 0) {
-	err(15, __func__, "zero length data in file %s", file);
+	err(17, __func__, "zero length data in file %s", file);
 	not_reached();
     }
     dbg(DBG_MED, "%s read length: %lu", file, (unsigned long)length);
@@ -360,14 +404,14 @@ check_author_json(char const *file, char const *fnamchk)
     errno = 0;			/* pre-clear errno for errp() */
     p = (char *)memchr(data, 0, (size_t)length);
     if (p != NULL) {
-	errp(16, __func__, "found NUL before EOF: %s", file);
+	errp(18, __func__, "found NUL before EOF: %s", file);
 	not_reached();
     }
 
     errno = 0;
     data_dup = strdup(data);
     if (data_dup == NULL) {
-	errp(17, __func__, "unable to strdup file contents");
+	errp(19, __func__, "unable to strdup file contents");
 	not_reached();
     }
 
@@ -378,7 +422,7 @@ check_author_json(char const *file, char const *fnamchk)
      * parsing after the first '{' but after the '}' we don't continue.
      */
     if (check_last_json_char(file, data_dup, strict, &p)) {
-	err(18, __func__, "last character in file %s not a '}': '%c'", file, *p);
+	err(20, __func__, "last character in file %s not a '}': '%c'", file, *p);
 	not_reached();
     }
     dbg(DBG_MED, "last character: '%c'", *p);
@@ -388,7 +432,7 @@ check_author_json(char const *file, char const *fnamchk)
 
     /* verify that the very first character is a '{' */
     if (check_first_json_char(file, data_dup, strict, &p)) {
-	err(19, __func__, "first character in file %s not a '{': '%c'", file, *p);
+	err(21, __func__, "first character in file %s not a '{': '%c'", file, *p);
 	not_reached();
     }
     dbg(DBG_MED, "first character: '%c'", *p);
@@ -455,14 +499,14 @@ check_author_json(char const *file, char const *fnamchk)
 	     */
 	    val = strtok_r(NULL, ",\0", &savefield);
 	    if (val == NULL) {
-		err(20, __func__, "unable to find value in file %s for field %s", file, p);
+		err(22, __func__, "unable to find value in file %s for field %s", file, p);
 		not_reached();
 	    }
 	} else {
 	    /* extract the value */
 	    val = strtok_r(NULL, ",", &savefield);
 	    if (val == NULL) {
-		err(21, __func__, "unable to find value in file %s for field %s", file, p);
+		err(23, __func__, "unable to find value in file %s for field %s", file, p);
 		not_reached();
 	    }
 
@@ -566,7 +610,7 @@ get_author_json_field(char const *file, char *name, char *val)
      * firewall
      */
     if (file == NULL || name == NULL || val == NULL) {
-	err(22, __func__, "passed NULL arg(s)");
+	err(24, __func__, "passed NULL arg(s)");
 	not_reached();
     }
 
@@ -612,7 +656,7 @@ check_found_author_json_fields(char const *file, bool test)
      * firewall
      */
     if (file == NULL) {
-	err(23, __func__, "passed NULL file");
+	err(25, __func__, "passed NULL file");
 	not_reached();
     }
 
@@ -621,7 +665,7 @@ check_found_author_json_fields(char const *file, bool test)
 	 * first make sure the name != NULL and strlen() > 0
 	 */
 	if (field->name == NULL || !strlen(field->name)) {
-	    err(24, __func__, "found NULL or empty field in found_author_json_fields list");
+	    err(26, __func__, "found NULL or empty field in found_author_json_fields list");
 	    not_reached();
 	}
 
@@ -636,7 +680,7 @@ check_found_author_json_fields(char const *file, bool test)
 	 * author list is not a author field name.
 	 */
 	if (author_field == NULL) {
-	    err(25, __func__, "illegal field name '%s' in found_author_json_fields list", field->name);
+	    err(27, __func__, "illegal field name '%s' in found_author_json_fields list", field->name);
 	    not_reached();
 	}
 
@@ -734,13 +778,13 @@ add_found_author_json_field(char const *name, char const *val)
      * firewall
      */
     if (name == NULL || val == NULL) {
-	err(26, __func__, "passed NULL arg(s)");
+	err(28, __func__, "passed NULL arg(s)");
 	not_reached();
     }
 
     field_in_table = find_json_field_in_table(author_json_fields, name, &loc);
     if (field_in_table == NULL) {
-	err(27, __func__, "called add_found_author_json_field() on field '%s' not specific to .author.json", name);
+	err(29, __func__, "called add_found_author_json_field() on field '%s' not specific to .author.json", name);
 	not_reached();
     }
     /*
@@ -763,7 +807,7 @@ add_found_author_json_field(char const *name, char const *val)
 		 * this shouldn't happen as if add_json_value() gets an error
 		 * it'll abort but just to be safe we check here too
 		 */
-		err(28, __func__, "error adding json value '%s' to field '%s'", val, field->name);
+		err(30, __func__, "error adding json value '%s' to field '%s'", val, field->name);
 		not_reached();
 	    }
 
@@ -783,7 +827,7 @@ add_found_author_json_field(char const *name, char const *val)
 	 * we should never get here because if new_json_field gets NULL it
 	 * aborts the program.
 	 */
-	err(29, __func__, "error creating new struct json_field * for field '%s' value '%s'", name, val);
+	err(31, __func__, "error creating new struct json_field * for field '%s' value '%s'", name, val);
     }
 
     /* add to the list */

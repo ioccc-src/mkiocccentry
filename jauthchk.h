@@ -93,6 +93,7 @@ static int check_author_json(char const *file, char const *fnamchk);
 static struct json_field *add_found_author_json_field(char const *name, char const *val);
 static int get_author_json_field(char const *file, char *name, char *val);
 static int check_found_author_json_fields(char const *file, bool test);
+static void check_author_json_fields_table(void);
 static void free_found_author_json_fields(void);
 
 #endif /* INCLUDE_JAUTHCHK_H */
