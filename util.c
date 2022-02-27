@@ -2575,7 +2575,7 @@ is_number(char const *str)
  *
  *	str		- string to convert to bool
  *
- * Returns true if *str == '1' or string is "true"; else it returns false.
+ * Returns true if !strcmp(str, "true").
  *
  * This function does not return on NULL str. If strlen(str) == 0 return false.
  */
@@ -2589,7 +2589,7 @@ string_to_bool(char const *str)
 	err(171, __func__, "passed NULL string");
 	not_reached();
     }
-    if (*str == '1' || !strcmp(str, "true")) {
+    if (!strcmp(str, "true")) {
 	return true;
     }
 
