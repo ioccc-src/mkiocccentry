@@ -783,7 +783,7 @@ check_found_info_json_fields(char const *file, bool test)
 		    ++issues;
 		}
 	    } else if (!strcmp(field->name, "title")) {
-		if (val == 0) {
+		if (val_length == 0) {
 		    warn(__func__, "title length zero");
 		    ++issues;
 		} else if (val_length > MAX_TITLE_LEN) {
