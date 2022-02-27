@@ -1995,7 +1995,7 @@ find_utils(bool tar_flag_used, char **tar, bool cp_flag_used, char **cp, bool ls
 
 
 /*
- * round_to_multiple - round to a multiple
+ * round_to_multiple - round up to a multiple
  *
  * given:
  *
@@ -2011,7 +2011,7 @@ find_utils(bool tar_flag_used, char **tar, bool cp_flag_used, char **cp, bool ls
  *
  *  Examples:
  *
- *	0 rounds 0
+ *	0 rounds to 0
  *	1 rounds to 1024
  *	1023 rounds to 1024
  *	1024 rounds to 1024
@@ -2182,7 +2182,7 @@ read_all(FILE *stream, size_t *psize)
 	    } else if (ferror(stream)) {
 		warnp(__func__, "I/O error detected while reading stream at: %lu bytes", (unsigned long)used);
 	    } else {
-		warnp(__func__, "fread returned 0 although the EOF nor ERROR flag were not set: assuming EOF anyway");
+		warnp(__func__, "fread returned 0 although neither the EOF nor ERROR flag were set: assuming EOF anyway");
 	    }
 
 	    /*
@@ -2523,4 +2523,48 @@ parse_verbosity(char const *program, char const *arg)
     }
 
     return verbosity;
+}
+
+/* is_number	    - if the string str is a number
+ *
+ * given:
+ *
+ *	str	    - string to check
+ *
+ * For our purposes a number is defined as: a string that starts with either a
+ * '-' or '+' and beyond that no other characters but [0-9] (any count).
+ *
+ * returns:
+ *
+ *	true	==> str is a number
+ *	false	==> str is not a number
+ *
+ * NOTE: This function does not return on error (str == NULL). An empty string
+ * is considered not a number.
+ */
+bool
+is_number(char const *str)
+{
+    /*
+     * firewall
+     */
+    if (str == NULL) {
+	err(35, __func__, "passed NULL string");
+	not_reached();
+    }
+
+    switch (*str) {
+	case '-':
+	case '+':
+	    str++;
+	    break;
+	default:
+	    break;
+    }
+
+    if (!strlen(str)) {
+	return false;
+    }
+
+    return strspn(str, "0123456789") == strlen(str);
 }

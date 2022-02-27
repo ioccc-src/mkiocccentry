@@ -109,12 +109,12 @@
 /*
  * official jinfochk version
  */
-#define JINFOCHK_VERSION "0.8 2022-02-26"	/* format: major.minor YYYY-MM-DD */
+#define JINFOCHK_VERSION "0.9 2022-02-27"	/* format: major.minor YYYY-MM-DD */
 
 /*
  * official jauthchk version
  */
-#define JAUTHCHK_VERSION "0.8 2022-02-26"	/* format: major.minor YYYY-MM-DD */
+#define JAUTHCHK_VERSION "0.9 2022-02-27"	/* format: major.minor YYYY-MM-DD */
 
 
 /*

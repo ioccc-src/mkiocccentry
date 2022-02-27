@@ -70,6 +70,15 @@ struct json_value
     struct json_value *next;
 };
 
+#define JSON_NUMBER	    (0)	    /* json field is supposed to be a number */
+#define JSON_BOOL	    (1)	    /* json field is supposed to be a boolean */
+#define JSON_STRING	    (2)	    /* json field is supposed to be a string */
+#define JSON_ARRAY	    (3)	    /* json field is supposed to be an array */
+#define JSON_ARRAY_NUMBER   (5)	    /* json field is supposed to be a number in an array */
+#define JSON_ARRAY_BOOL	    (6)	    /* json field is supposed to be a number in an array (NB: not used) */
+#define JSON_ARRAY_STRING   (7)	    /* json field is supposed to be a string in an array */
+#define JSON_NULL	    (-1)    /* json field is NULL (not null): used internally to mark end of the tables */
+
 /*
  * JSON field: a JSON field consists of the name and all the values (if more
  * than one field of the same name is found in the file).
@@ -80,6 +89,9 @@ struct json_field
     struct json_value *values;	/* linked list of values */
 
     /*
+     * the below are for the tables: common_json_fields, info_json_fields and
+     * author_json_fields:
+     *
      * Number of times this field has been seen in the list, how many are
      * actually allowed and whether the field has been found: This is for the
      * tables that say tell many times a field has been seen, how many times it
@@ -88,10 +100,18 @@ struct json_field
      *
      * In other words this is done as part of the checks after the field:value
      * pairs have been extracted.
+     *
+     * NOTE: A max_count == 0 means that there's no limit.
      */
     size_t count;		/* how many of this field in the list (or how many values) */
     size_t max_count;		/* how many of this field is allowed */
     bool found;			/* if this field was found */
+
+    /*
+     * Data type: one of JSON_NUMBER, JSON_BOOL, JSON_STRING or
+     * JSON_ARRAY_ equivalents.
+     */
+    int field_type;
 
     struct json_field *next;	/* the next in the whatever list (XXX don't add to more than one list!) */
 };

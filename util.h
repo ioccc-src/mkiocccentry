@@ -65,8 +65,7 @@ struct location {
 #define INITIAL_BUF_SIZE (8192)	/* initial size of buffer allocated by read_all */
 #define READ_ALL_CHUNK (65536)	/* grow this read_all by this amount when needed */
 #define TAIL_TITLE_CHARS "abcdefghijklmnopqrstuvwxyz0123456789_+-"	/* [a-z0-9_+-] */
-
-
+/* for string to int functions */
 #define LLONG_MAX_BASE10_DIGITS (19)
 
 
@@ -138,6 +137,6 @@ extern unsigned long string_to_unsigned_long(char const *str);
 extern unsigned long long string_to_unsigned_long_long(char const *str);
 extern bool valid_contest_id(char *str);
 extern int parse_verbosity(char const *program, char const *arg);
-
+extern bool is_number(char const *str);
 
 #endif				/* INCLUDE_UTIL_H */

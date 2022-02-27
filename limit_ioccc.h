@@ -59,7 +59,7 @@
 #define MAX_AFFILIATION_LEN (48)	/* max affiliation name length */
 #define MAX_TITLE_LEN (32)		/* maximum length of a title */
 #define MAX_ABSTRACT_LEN (64)		/* maximum length of an abstract */
-#define MAX_HANDLE (32)			/* maximum IOCCC winner handle */
+#define MAX_HANDLE (32)			/* maximum length of IOCCC winner handle */
 #define MAX_BASENAME_LEN ((size_t)(99))	/* tar --format=v7 limits filenames to 99 characters */
 #define UUID_LEN (36)			/* characters in a UUID string - as per RFC4122 */
 #define UUID_VERSION (4)		/* version 4 - random UUID */
@@ -68,7 +68,7 @@
 #define MAX_TIMESTAMP_LEN (48)		/* 28 + 20 more padding for locate */
 
 /*
- * Be careful to change this value as it will invalidate all IOCCC timestamps < this value
+ * Be careful not to change this value as it will invalidate all IOCCC timestamps < this value
  */
 #define MIN_TIMESTAMP ((time_t)1643987926)
 

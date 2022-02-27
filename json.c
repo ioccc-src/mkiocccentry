@@ -1546,23 +1546,22 @@ malloc_json_decode_str(char const *str, size_t *retlen, bool strict)
  * whether it's been added to the found_common_json_fields list, how many times
  * it has been seen and how many are allowed.
  */
-
 struct json_field common_json_fields[] =
 {
-    { "ioccc_contest",		    NULL, 0, 1, false, NULL },
-    { "ioccc_year",		    NULL, 0, 1, false, NULL },
-    { "mkiocccentry_version",	    NULL, 0, 1, false, NULL },
-    { "iocccsize_version",	    NULL, 0, 1, false, NULL },
-    { "IOCCC_contest_id",	    NULL, 0, 1, false, NULL },
-    { "entry_num",		    NULL, 0, 1, false, NULL },
-    { "author_count",		    NULL, 0, 1, false, NULL },
-    { "tarball",		    NULL, 0, 1, false, NULL },
-    { "formed_timestamp",	    NULL, 0, 1, false, NULL },
-    { "formed_timestamp_usec",	    NULL, 0, 1, false, NULL },
-    { "timestamp_epoch",	    NULL, 0, 1, false, NULL },
-    { "min_timestamp",		    NULL, 0, 1, false, NULL },
-    { "formed_UTC",		    NULL, 0, 1, false, NULL },
-    { NULL,			    NULL, 0, 0, false, NULL } /* XXX this **MUST** be last! */
+    { "ioccc_contest",		    NULL, 0, 1, false, JSON_STRING, NULL },
+    { "ioccc_year",		    NULL, 0, 1, false, JSON_NUMBER, NULL },
+    { "mkiocccentry_version",	    NULL, 0, 1, false, JSON_STRING, NULL },
+    { "iocccsize_version",	    NULL, 0, 1, false, JSON_STRING, NULL },
+    { "IOCCC_contest_id",	    NULL, 0, 1, false, JSON_STRING, NULL },
+    { "entry_num",		    NULL, 0, 1, false, JSON_NUMBER, NULL },
+    { "author_count",		    NULL, 0, 1, false, JSON_NUMBER, NULL },
+    { "tarball",		    NULL, 0, 1, false, JSON_STRING, NULL },
+    { "formed_timestamp",	    NULL, 0, 1, false, JSON_NUMBER, NULL },
+    { "formed_timestamp_usec",	    NULL, 0, 1, false, JSON_NUMBER, NULL },
+    { "timestamp_epoch",	    NULL, 0, 1, false, JSON_STRING, NULL },
+    { "min_timestamp",		    NULL, 0, 1, false, JSON_NUMBER, NULL },
+    { "formed_UTC",		    NULL, 0, 1, false, JSON_STRING, NULL },
+    { NULL,			    NULL, 0, 0, false, JSON_NULL,   NULL } /* XXX this **MUST** be last! */
 };
 
 
@@ -1578,23 +1577,27 @@ struct json_field common_json_fields[] =
  *
  * NOTE: If loc != NULL and the name is not found in the table then in the
  * calling function loc will be the number of entries in the table. To get the
- * number of entries in the table pass in an empty name ("") as there will never
- * be an empty name in any of the tables.
+ * number of entries in the table pass in a NULL pointer or zero length name.
  *
  * This function will return NULL if the field is not in the table. It will not
- * return if table and/or name is/are NULL.
+ * return if table is NULL.
  */
 struct json_field *
 find_json_field_in_table(struct json_field *table, char const *name, size_t *loc)
 {
-    struct json_field *field = NULL;	/* the current field */
+    struct json_field *field = NULL;	/* the found field or NULL if not found */
     size_t i = 0;			/* current index */
     /*
      * firewall
      */
-    if (table == NULL || name == NULL) {
-	err(214, __func__, "passed NULL arg(s)");
+    if (table == NULL) {
+	err(214, __func__, "passed NULL arg table");
 	not_reached();
+    }
+
+    /* zero length name is equivalent to NULL */
+    if (!strlen(name)) {
+	name = NULL;
     }
 
     /*
@@ -1602,7 +1605,7 @@ find_json_field_in_table(struct json_field *table, char const *name, size_t *loc
      * the next field in the table.
      */
     for (i = 0; table[i].name != NULL; ++i) {
-	if (!strcmp(table[i].name, name)) {
+	if (name && !strcmp(table[i].name, name)) {
 	    field = &table[i];
 	    break;
 	}
@@ -1614,6 +1617,7 @@ find_json_field_in_table(struct json_field *table, char const *name, size_t *loc
 
     return field;
 }
+
 /*
  * json_filename    - return ".info.json", ".author.json" or "null" depending on type
  *
@@ -1803,12 +1807,12 @@ add_found_common_json_field(char const *name, char const *val)
     field->next = found_common_json_fields;
     found_common_json_fields = field;
 
-    dbg(DBG_VHIGH, "added field '%s' value '%s' to found_common_json_fields", field->name, val);
+    dbg(DBG_HIGH, "added field '%s' value '%s' to found_common_json_fields", field->name, val);
     return field;
 }
 
 /*
- * get_common_json_field	-   check if field is common to both .info.json
+ * get_common_json_field	-   check if name is common to both .info.json
  *				    and author.json and if it is add to common
  *				    list
  *
@@ -1820,8 +1824,8 @@ add_found_common_json_field(char const *name, char const *val)
  *	val	- the value of the field
  *
  * returns:
- *	1 ==> if the field is common to both files
- *	0 ==> if it's not one of the common fields
+ *	1 ==> if the name is common to both files
+ *	0 ==> if it's not one of the common field names
  *
  * NOTE: Does not return on error (NULL pointers).
  */
@@ -1830,7 +1834,7 @@ get_common_json_field(char const *program, char const *file, char *name, char *v
 {
     int ret = 1;	/* return value: 1 ==> known field, 0 ==> not a common field */
     struct json_field *field = NULL; /* the field in the common_json_fields table if found */
-    size_t loc = 0; /* index of the common_json_fields table */
+    size_t loc = 0; /* location in the common_json_fields table */
 
     /*
      * firewall
@@ -1845,7 +1849,8 @@ get_common_json_field(char const *program, char const *file, char *name, char *v
      */
     field = find_json_field_in_table(common_json_fields, name, &loc);
     if (field != NULL) {
-	add_found_common_json_field(name, val);
+	dbg(DBG_HIGH, "found common field '%s' value '%s'", field->name, val);
+	add_found_common_json_field(field->name, val);
     } else {
 	ret = 0;
     }
@@ -1853,8 +1858,9 @@ get_common_json_field(char const *program, char const *file, char *name, char *v
 }
 
 /*
- * check_found_common_json_fields - check if field is common to both .info.json
- *				    and author.json and check the value if it is
+ * check_found_common_json_fields - check that all the fields in the
+ *				    found_common_json_fields table have valid
+ *				    values
  *
  * given:
  *
@@ -1863,7 +1869,7 @@ get_common_json_field(char const *program, char const *file, char *name, char *v
  *	fnamchk	- path to fnamchk util
  *
  * returns:
- *	1 ==> there were one or more issues found
+ *	>0 ==> the number of issues found
  *	0 ==> if no issues were found
  *
  * NOTE: Does not return on error (NULL pointers).
@@ -1882,6 +1888,7 @@ check_found_common_json_fields(char const *program, char const *file, char const
     struct json_value *value; /* current value in current field's values list */
     struct json_field *common_field = NULL; /* element in the common_json_fields table */
     size_t loc = 0;	/* location in the common_json_fields table */
+    size_t val_length = 0; /* current value length */
 
     /*
      * firewall
@@ -1936,6 +1943,37 @@ check_found_common_json_fields(char const *program, char const *file, char const
 
 	for (value = field->values; value != NULL; value = value->next) {
 	    char *val = value->value;
+	    val_length = strlen(val);
+
+	    if (!val_length) {
+		warn(__func__, "empty value found for field '%s' in file %s", field->name, file);
+		/* don't increase issues because the below checks will do that
+		 * too: this warning only notes the reason the test will fail.
+		 */
+	    }
+	    /* first we do checks on the field type */
+	    switch (common_field->field_type) {
+		case JSON_BOOL:
+		    if (strcmp(val, "false") && strcmp(val, "true")) {
+			warn(__func__, "bool field '%s' has no boolean value '%s' in file %s", common_field->name, val, file);
+			++issues;
+			continue;
+		    }
+		    break;
+		case JSON_ARRAY_BOOL:
+		    break; /* arrays are not handled yet */
+		case JSON_NUMBER:
+		    if (!is_number(val)) {
+			warn(__func__, "number field '%s' has non-number value '%s' in file %s", common_field->name, val, file);
+			++issues;
+			continue;
+		    }
+		    break;
+		case JSON_ARRAY_NUMBER:
+		    break; /* arrays are not handled yet */
+		default:
+		    break;
+	    }
 
 	    if (!strcmp(field->name, "ioccc_contest")) {
 		if (strcmp(val, IOCCC_CONTEST)) {

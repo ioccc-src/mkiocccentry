@@ -90,6 +90,8 @@ static void usage(int exitcode, char const *name, char const *str) __attribute__
 static void sanity_chk(char const *file, char const *fnamchk);
 static int check_info_json(char const *file, char const *fnamchk);
 static struct json_field *add_found_info_json_field(char const *name, char const *val);
+static int get_info_json_field(char const *file, char *name, char *val);
+static int check_found_info_json_fields(char const *file, bool test);
 static void free_found_info_json_fields(void);
 
 #endif /* INCLUDE_JINFOCHK_H */

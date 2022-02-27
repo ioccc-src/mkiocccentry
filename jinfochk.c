@@ -17,6 +17,48 @@
  */
 #include "jinfochk.h"
 
+/*
+ * .info.json fields table used to determine if a name belongs in the file,
+ * whether it's been added to the found_info_json_fields list, how many times
+ * it's been seen and how many are allowed.
+ *
+ * XXX: As of 27 February 2022 all fields are in the table but because arrays
+ * are not yet parsed not all of these values will be dealt with: that is they
+ * won't be in the found_info_json list. Additionally the way array elements are
+ * defined might very well change.
+ */
+struct json_field info_json_fields[] =
+{
+    { "IOCCC_info_version",	NULL, 0, 1, false, JSON_STRING,		NULL },
+    { "title",			NULL, 0, 1, false, JSON_STRING,		NULL },
+    { "abstract",		NULL, 0, 1, false, JSON_STRING,		NULL },
+    { "rule_2a_size",		NULL, 0, 1, false, JSON_NUMBER,		NULL },
+    { "rule_2b_size",		NULL, 0, 1, false, JSON_NUMBER,		NULL },
+    { "empty_override",		NULL, 0, 1, false, JSON_BOOL,		NULL },
+    { "rule_2a_override",	NULL, 0, 1, false, JSON_BOOL,		NULL },
+    { "rule_2a_mismatch",	NULL, 0, 1, false, JSON_BOOL,		NULL },
+    { "rule_2b_override",	NULL, 0, 1, false, JSON_BOOL,		NULL },
+    { "highbit_warning",	NULL, 0, 1, false, JSON_BOOL,		NULL },
+    { "nul_warning",		NULL, 0, 1, false, JSON_BOOL,		NULL },
+    { "trigraph_warning",	NULL, 0, 1, false, JSON_BOOL,		NULL },
+    { "wordbuf_warning",	NULL, 0, 1, false, JSON_BOOL,		NULL },
+    { "ungetc_warning",		NULL, 0, 1, false, JSON_BOOL,		NULL },
+    { "Makefile_override",	NULL, 0, 1, false, JSON_BOOL,		NULL },
+    { "first_rule_is_all",	NULL, 0, 1, false, JSON_BOOL,		NULL },
+    { "found_all_rule",		NULL, 0, 1, false, JSON_BOOL,		NULL },
+    { "found_clean_rule",	NULL, 0, 1, false, JSON_BOOL,		NULL },
+    { "found_clobber_rule",	NULL, 0, 1, false, JSON_BOOL,		NULL },
+    { "found_try_rule",		NULL, 0, 1, false, JSON_BOOL,		NULL },
+    { "test_mode",		NULL, 0, 1, false, JSON_BOOL,		NULL },
+    { "manifest",		NULL, 0, 1, false, JSON_ARRAY,		NULL },
+    { "info_JSON",		NULL, 0, 1, false, JSON_ARRAY_STRING,	NULL },
+    { "author_JSON",		NULL, 0, 1, false, JSON_ARRAY_STRING,	NULL },
+    { "c_src",			NULL, 0, 1, false, JSON_ARRAY_STRING,	NULL },
+    { "Makefile",		NULL, 0, 1, false, JSON_ARRAY_STRING,	NULL },
+    { "remarks",		NULL, 0, 1, false, JSON_ARRAY_STRING,	NULL },
+    { "extra_file",		NULL, 0, 0, false, JSON_ARRAY_STRING,	NULL },
+    { NULL,			NULL, 0, 0, false, JSON_NULL,		NULL } /* this **MUST** be last */
+};
 
 int
 main(int argc, char **argv)
@@ -291,10 +333,9 @@ check_info_json(char const *file, char const *fnamchk)
     char *end = NULL;	/* temporary use: end of strings (p, field) for removing spaces */
     char *val = NULL;	/* current field's value being parsed */
     char *savefield = NULL; /* for strtok_r() usage */
-    size_t val_length;    /* length of current val */
-    size_t span;
-    struct json_field *field; /* for found_info_json_fields list */
-    struct json_value *value; /* for found_info_json_fields list's value */
+    struct json_field *info_field; /* temporary use to determine type of value if .info.json field */
+    struct json_field *common_field; /* temporary use to determine type of value if common field */
+    size_t loc = 0;
 
     /*
      * firewall
@@ -376,6 +417,7 @@ check_info_json(char const *file, char const *fnamchk)
 	/* we have to skip leading whitespace */
 	while (*p && isspace(*p))
 	    ++p;
+
 	/* get the next field */
 	p = strtok_r(val?NULL:p, ":", &savefield);
 	if (p == NULL) {
@@ -399,20 +441,18 @@ check_info_json(char const *file, char const *fnamchk)
 	if (*end == '"')
 	    *end = '\0';
 
-
 	/*
-	 * after removing the spaces and a single '"' at the beginning and end,
-	 * if we find a '"' in the field we know it's erroneous: thus we can
-	 * simply use strcmp() on it. Note that when we get to the array(s) we
-	 * have to handle it specially but this step still has to be done.
+	 * After removing the spaces and a single '"' at the beginning and end,
+	 * if we find a '"' in the field (name) we know it's erroneous: thus we
+	 * can simply use strcmp() on it.
 	 */
+	info_field = find_json_field_in_table(info_json_fields, p, &loc);
+	common_field = find_json_field_in_table(common_json_fields, p, &loc);
 
 	/*
-	 * Before we can extract the value we have to determine if the field is
-	 * supposed to be an array or not: if it's an array we have to handle it
-	 * differently as there's more to parse. If it's not an array we just
-	 * check the name, retrieve the value and then test if it's a valid
-	 * value.
+	 * Before we can extract the value we have to determine the field's type
+	 * of value: depending on the type of value we have to handle it
+	 * differently; the above function calls will help us do that.
 	 */
 	if (!strcmp(p, "manifest")) {
 	    /* TODO: handle the array */
@@ -445,16 +485,11 @@ check_info_json(char const *file, char const *fnamchk)
 		*end-- = '\0';
 
 	    /*
-	     * Depending on the field, remove a single '"' at the beginning and
-	     * end of the value.
+	     * If the field type is a string we have to remove a single '"' and
+	     * from the beginning and end of the value.
 	     */
-	    if (strcmp(p, "ioccc_year") && strcmp(p, "entry_num") && strcmp(p, "rule_2a_size") &&
-		strcmp(p, "rule_2b_size") && strcmp(p, "empty_override") && strcmp(p, "rule_2a_override") &&
-		strcmp(p, "rule_2a_mismatch") && strcmp(p, "rule_2b_override") && strcmp(p, "highbit_warning") &&
-		strcmp(p, "nul_warning") && strcmp(p, "trigraph_warning") && strcmp(p, "wordbuf_warning") &&
-		strcmp(p, "ungetc_warning") && strcmp(p, "Makefile_override") && strcmp(p, "first_rule_is_all") &&
-		strcmp(p, "found_all_rule") && strcmp(p, "found_clean_rule") && strcmp(p, "found_clobber_rule") &&
-		strcmp(p, "found_try_rule") && strcmp(p, "test_mode")) {
+	    if ((common_field && (common_field->field_type == JSON_STRING || common_field->field_type == JSON_ARRAY_STRING)) ||
+		(info_field && (info_field->field_type == JSON_STRING || info_field->field_type == JSON_ARRAY_STRING))) {
 		    /* remove a single '"' at the beginning of the value */
 		    if (*val == '"')
 			++val;
@@ -469,22 +504,16 @@ check_info_json(char const *file, char const *fnamchk)
 		     * if we find a '"' in the field we know it's erroneous.
 		     */
 	    }
-	    val_length = strlen(val);
+
 	    /* handle regular field */
 	    if (get_common_json_field(program_basename, file, p, val)) {
-		dbg(DBG_HIGH, "found common field '%s' value '%s'", p, val);
+	    } else if (get_info_json_field(file, p, val)) {
 	    } else {
-		field = add_found_info_json_field(p, val);
-		if (field == NULL) {
-		    /*
-		     * if this is NULL there's a serious problem as the other
-		     * functions should have aborted already
-		     */
-		    err(22, __func__, "couldn't add field '%s' with value '%s' to list", p, val);
-		    not_reached();
-		}
-		dbg(DBG_HIGH, "found field '%s' with value '%s'", p, val);
-	    } /* uncommon value: value specific to .info.json */
+		/*
+		 * invalid field: currently we cannot report this as an issue
+		 * since arrays are not handled yet.
+		 */
+	    }
 	}
     } while (true); /* end do while */
 
@@ -499,79 +528,8 @@ check_info_json(char const *file, char const *fnamchk)
 
     /*
      * now iterate through the found_info_json_fields list, reporting any issues
-     *
-     * XXX Note that fields that aren't expected to be in the file would also be
-     * added to the list but this will be dealt with at a later time.
      */
-    for (field = found_info_json_fields; field != NULL; field = field->next) {
-	dbg(DBG_VHIGH, "checking field '%s' in file %s", field->name, file);
-	for (value = field->values; value != NULL; value = value->next) {
-	    char const *v = value->value;
-	    val_length = strlen(v);
-
-	    if (!strcmp(field->name, "IOCCC_info_version")) {
-		if (!test && strcmp(v, INFO_VERSION)) {
-		    warn(__func__, "IOCCC_info_version \"%s\" != \"%s\" in file %s", v, INFO_VERSION, file);
-		    ++issues;
-		}
-	    } else if (!strcmp(field->name, "title")) {
-		if (val == 0) {
-		    warn(__func__, "title length zero");
-		    ++issues;
-		} else if (val_length > MAX_TITLE_LEN) {
-		    warn(__func__, "title length %lu > max %d",
-				      (unsigned long)val_length, MAX_TITLE_LEN);
-		    ++issues;
-		}
-
-		/* check for valid chars only */
-		if (!isascii(v[0]) || (!islower(v[0]) && !isdigit(v[0]))) {
-		    warn(__func__, "first char of title '%c' invalid", v[0]);
-		    ++issues;
-		} else {
-		    span = strspn(v, TAIL_TITLE_CHARS);
-		    if (span != val_length) {
-			warn(__func__, "invalid chars found in title \"%s\"", v);
-			++issues;
-		    }
-		}
-	    } else if (!strcmp(field->name, "abstract")) {
-		if (val_length == 0) {
-		    warn(__func__, "abstract value zero length");
-		    ++issues;
-		} else if (val_length > MAX_ABSTRACT_LEN) {
-		    warn(__func__, "abstract length %lu > max %d",
-				      (unsigned long)val_length, MAX_ABSTRACT_LEN);
-		    ++issues;
-		}
-	    } else if (!strcmp(field->name, "rule_2a_size")) {
-		info.rule_2a_size = string_to_long_long(v);
-	    } else if (!strcmp(field->name, "rule_2b_size")) {
-		info.rule_2b_size = string_to_unsigned_long_long(v);
-	    } else if (!strcmp(field->name, "empty_override") || !strcmp(field->name, "rule_2a_override") ||
-	      !strcmp(field->name, "rule_2a_mismatch") || !strcmp(field->name, "rule_2b_override") ||
-	      !strcmp(field->name, "highbit_warning") || !strcmp(field->name, "nul_warning") ||
-	      !strcmp(field->name, "trigraph_warning") || !strcmp(field->name, "wordbuf_warning") ||
-	      !strcmp(field->name, "ungetc_warning") || !strcmp(field->name, "Makefile_override") ||
-	      !strcmp(field->name, "first_rule_is_all") || !strcmp(field->name, "found_all_rule") ||
-	      !strcmp(field->name, "found_clean_rule") || !strcmp(field->name, "found_clobber_rule") ||
-	      !strcmp(field->name, "found_try_rule") || !strcmp(field->name, "test_mode")) {
-		if (strcmp(v, "false") && strcmp(v, "true")) {
-		    warn(__func__, "found non-boolean value '%s' for boolean '%s' in file %s", v,  field->name, file);
-		    ++issues;
-		}
-	    }
-	    else {
-		/* TODO: after everything else is parsed if we get here it's an
-		 * error as there's an invalid field in the file.
-		 *
-		 * Currently (as of 25 February 2022) this is not done
-		 * because the arrays are not parsed yet.
-		 */
-
-	    }
-	}
-    }
+    issues += check_found_info_json_fields(file, test);
 
     /* now free the found_info_json_fields list.
      *
@@ -579,6 +537,7 @@ check_info_json(char const *file, char const *fnamchk)
      */
     free_found_info_json_fields();
 
+    /* check the found_common_json_fields list */
     issues += check_found_common_json_fields(program_basename, file, fnamchk, test);
 
     /* free the found_common_json_fields list.
@@ -590,6 +549,53 @@ check_info_json(char const *file, char const *fnamchk)
     /* if issues != 0 there will be a non-zero return status of jinfochk */
     return issues;
 }
+
+/*
+ * get_info_json_field	-	    check if name is a .info.json field
+ *				    and if it is add it to the found_info_json
+ *				    list.
+ *
+ * given:
+ *
+ *	file	- the file being parsed (path to)
+ *	name	- the field name
+ *	val	- the value of the field
+ *
+ * returns:
+ *	1 ==> if the name is a .info.json field
+ *	0 ==> if it's not one of the .info.json fields
+ *
+ * NOTE: Does not return on error (NULL pointers).
+ */
+int
+get_info_json_field(char const *file, char *name, char *val)
+{
+    int ret = 1;	/* return value: 1 ==> known field, 0 ==> not a common field */
+    struct json_field *field = NULL; /* the field in the info_json_fields table if found */
+    size_t loc = 0; /* location in the info_json_fields table */
+
+    /*
+     * firewall
+     */
+    if (file == NULL || name == NULL || val == NULL) {
+	err(223, __func__, "passed NULL arg(s)");
+	not_reached();
+    }
+
+    /*
+     * check if the name is an expected common field
+     */
+    field = find_json_field_in_table(info_json_fields, name, &loc);
+    if (field != NULL) {
+	dbg(DBG_HIGH, "found field '%s' with value '%s'", name, val);
+	add_found_info_json_field(name, val);
+    } else {
+	ret = 0;
+    }
+    return ret;
+}
+
+
 
 /* add_found_info_json_field	- add a field:value pair to the
  *				  found_info_json_fields list
@@ -666,6 +672,164 @@ add_found_info_json_field(char const *name, char const *val)
 
     return field;
 }
+
+/*
+ * check_found_info_json_fields - check that all the fields in the
+ *				    found_info_json_fields table have valid
+ *				    values
+ *
+ *  given:
+ *
+ *	    file	- .info.json file we're checking
+ *	    test	- if test mode: ignore some checks
+ *
+ *
+ * returns:
+ *	>0 ==> the number of issues found
+ *	0 ==> if no issues were found
+ */
+int
+check_found_info_json_fields(char const *file, bool test)
+{
+    struct json_field *field; /* current field in found_info_json_fields list */
+    struct json_value *value; /* current value in current field's values list */
+    struct json_field *info_field = NULL; /* element in the info_json_fields table */
+    size_t loc = 0;	/* location in the info_json_fields table */
+    size_t val_length = 0;
+    int issues = 0;
+    size_t span;
+
+    /*
+     * firewall
+     */
+    if (file == NULL) {
+	err(224, __func__, "passed NULL file");
+	not_reached();
+    }
+
+    for (field = found_info_json_fields; field != NULL; field = field->next) {
+	/*
+	 * first make sure the name != NULL and strlen() > 0
+	 */
+	if (field->name == NULL || !strlen(field->name)) {
+	    err(225, __func__, "found NULL or empty field in found_info_json_fields list");
+	    not_reached();
+	}
+
+	/* now make sure it's allowed to be in this table. */
+	loc = 0;
+	info_field = find_json_field_in_table(info_json_fields, field->name, &loc);
+
+	/*
+	 * If the field is not allowed in the list then it suggests there is a
+	 * problem in the code because only info fields should be added to the
+	 * list in the first place. Thus it's an error if a field that's in the
+	 * info list is not a info field name.
+	 */
+	if (info_field == NULL) {
+	    err(226, __func__, "illegal field name '%s' in found_info_json_fields list", field->name);
+	    not_reached();
+	}
+
+	dbg(DBG_VHIGH, "checking field '%s' in file %s", field->name, file);
+	/* make sure the field is not over the limit allowed */
+	if (info_field->max_count > 0 && info_field->count > info_field->max_count) {
+	    warn(__func__, "field '%s' found %lu times but is only allowed %lu times", info_field->name,
+		    (unsigned long)info_field->count, (unsigned long)info_field->max_count);
+	    ++issues;
+	}
+
+	for (value = field->values; value != NULL; value = value->next) {
+	    char *val = value->value;
+	    val_length = strlen(val);
+
+	    if (!val_length) {
+		warn(__func__, "empty value found for field '%s' in file %s", field->name, file);
+		/* don't increase issues because the below checks will do that
+		 * too: this warning only notes the reason the test will fail.
+		 */
+	    }
+	    /* first we do checks on the field type */
+	    switch (info_field->field_type) {
+		case JSON_BOOL:
+		    if (strcmp(val, "false") && strcmp(val, "true")) {
+			warn(__func__, "bool field '%s' has invalid value '%s' in file %s", info_field->name, val, file);
+			++issues;
+			continue;
+		    } else {
+			dbg(DBG_VHIGH, "%s is a bool", val);
+		    }
+		    break;
+		case JSON_ARRAY_BOOL:
+		    break; /* arrays are not handled yet */
+		case JSON_NUMBER:
+		    if (!is_number(val)) {
+			warn(__func__, "number field '%s' has non-number value '%s' in file %s", info_field->name, val, file);
+			++issues;
+			continue;
+		    } else {
+			dbg(DBG_VHIGH, "%s is a number", val);
+		    }
+		    break;
+		case JSON_ARRAY_NUMBER:
+		    break; /* arrays are not handled yet */
+		default:
+		    break;
+	    }
+
+	    if (!strcmp(field->name, "IOCCC_info_version")) {
+		if (!test && strcmp(val, INFO_VERSION)) {
+		    warn(__func__, "IOCCC_info_version \"%s\" != \"%s\" in file %s", val, INFO_VERSION, file);
+		    ++issues;
+		}
+	    } else if (!strcmp(field->name, "title")) {
+		if (val == 0) {
+		    warn(__func__, "title length zero");
+		    ++issues;
+		} else if (val_length > MAX_TITLE_LEN) {
+		    warn(__func__, "title length %lu > max %d",
+				      (unsigned long)val_length, MAX_TITLE_LEN);
+		    ++issues;
+		}
+
+		/* check for valid chars only */
+		if (!isascii(*val) || (!islower(*val) && !isdigit(*val))) {
+		    warn(__func__, "first char of title '%c' invalid", *val);
+		    ++issues;
+		} else {
+		    span = strspn(val, TAIL_TITLE_CHARS);
+		    if (span != val_length) {
+			warn(__func__, "invalid chars found in title \"%s\"", val);
+			++issues;
+		    }
+		}
+	    } else if (!strcmp(field->name, "abstract")) {
+		if (val_length == 0) {
+		    warn(__func__, "abstract value zero length");
+		    ++issues;
+		} else if (val_length > MAX_ABSTRACT_LEN) {
+		    warn(__func__, "abstract length %lu > max %d",
+				      (unsigned long)val_length, MAX_ABSTRACT_LEN);
+		    ++issues;
+		}
+	    } else if (!strcmp(field->name, "rule_2a_size")) {
+		info.rule_2a_size = string_to_long_long(val);
+	    } else if (!strcmp(field->name, "rule_2b_size")) {
+		info.rule_2b_size = string_to_unsigned_long_long(val);
+	    } else {
+		/* TODO: after everything else is parsed if we get here it's an
+		 * error as there's an invalid field in the file.
+		 *
+		 * Currently (as of 27 February 2022) this is not done
+		 * because the arrays are not parsed yet.
+		 */
+	    }
+	}
+    }
+
+    return issues;
+}
+
 
 /* free_found_info_json_fields  - free the infos json fields list
  *
