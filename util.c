@@ -2586,7 +2586,7 @@ string_to_bool(char const *str)
      * firewall
      */
     if (str == NULL) {
-	err(35, __func__, "passed NULL string");
+	err(171, __func__, "passed NULL string");
 	not_reached();
     }
     if (*str == '1' || !strcmp(str, "true")) {
