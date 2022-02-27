@@ -2589,9 +2589,6 @@ string_to_bool(char const *str)
 	err(171, __func__, "passed NULL string");
 	not_reached();
     }
-    if (!strcmp(str, "true")) {
-	return true;
-    }
 
-    return false;
+    return !strcmp(str, "true");
 }
