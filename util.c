@@ -2568,3 +2568,30 @@ is_number(char const *str)
 
     return strspn(str, "0123456789") == strlen(str);
 }
+
+/* string_to_bool	- convert string to a bool
+ *
+ * given:
+ *
+ *	str		- string to convert to bool
+ *
+ * Returns true if *str == '1' or string is "true"; else it returns false.
+ *
+ * This function does not return on NULL str. If strlen(str) == 0 return false.
+ */
+bool
+string_to_bool(char const *str)
+{
+    /*
+     * firewall
+     */
+    if (str == NULL) {
+	err(35, __func__, "passed NULL string");
+	not_reached();
+    }
+    if (*str == '1' || !strcmp(str, "true")) {
+	return true;
+    }
+
+    return false;
+}

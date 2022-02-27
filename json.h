@@ -203,6 +203,7 @@ struct info {
     bool found_clean_rule;	/* true ==> Makefile has clean rule */
     bool found_clobber_rule;	/* true ==> Makefile has a clobber rule */
     bool found_try_rule;	/* true ==> Makefile has a try rule */
+    bool test_mode;		/* true ==> contest ID is test */
     /*
      * filenames
      */

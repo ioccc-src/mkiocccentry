@@ -812,10 +812,47 @@ check_found_info_json_fields(char const *file, bool test)
 				      (unsigned long)val_length, MAX_ABSTRACT_LEN);
 		    ++issues;
 		}
+	    /*
+	     * The next checks for boolean names could be cleaned up: for now
+	     * we use strcmp() on each and every name but perhaps a table for
+	     * booleans should be formed for easier assignment.
+	     */
 	    } else if (!strcmp(field->name, "rule_2a_size")) {
 		info.rule_2a_size = string_to_long_long(val);
 	    } else if (!strcmp(field->name, "rule_2b_size")) {
 		info.rule_2b_size = string_to_unsigned_long_long(val);
+	    } else if (!strcmp(field->name, "empty_override")) {
+		info.empty_override = string_to_bool(val);
+	    } else if (!strcmp(field->name, "rule_2a_override")) {
+		info.rule_2a_override = string_to_bool(val);
+	    } else if (!strcmp(field->name, "rule_2a_mismatch")) {
+		info.rule_2a_mismatch = string_to_bool(val);
+	    } else if (!strcmp(field->name, "rule_2b_override")) {
+		info.rule_2b_override = string_to_bool(val);
+	    } else if (!strcmp(field->name, "highbit_warning")) {
+		info.highbit_warning = string_to_bool(val);
+	    } else if (!strcmp(field->name, "nul_warning")) {
+		info.nul_warning = string_to_bool(val);
+	    } else if (!strcmp(field->name, "trigraph_warning")) {
+		info.trigraph_warning = string_to_bool(val);
+	    } else if (!strcmp(field->name, "wordbuf_warning")) {
+		info.wordbuf_warning = string_to_bool(val);
+	    } else if (!strcmp(field->name, "ungetc_warning")) {
+		info.ungetc_warning = string_to_bool(val);
+	    } else if (!strcmp(field->name, "Makefile_override")) {
+		info.Makefile_override = string_to_bool(val);
+	    } else if (!strcmp(field->name, "first_rule_is_all")) {
+		info.first_rule_is_all = string_to_bool(val);
+	    } else if (!strcmp(field->name, "found_all_rule")) {
+		info.found_all_rule = string_to_bool(val);
+	    } else if (!strcmp(field->name, "found_clean_rule")) {
+		info.found_clean_rule = string_to_bool(val);
+	    } else if (!strcmp(field->name, "found_clobber_rule")) {
+		info.found_clobber_rule = string_to_bool(val);
+	    } else if (!strcmp(field->name, "found_try_rule")) {
+		info.found_try_rule = string_to_bool(val);
+	    } else if (!strcmp(field->name, "test_mode")) {
+		info.test_mode = string_to_bool(val);
 	    } else {
 		/* TODO: after everything else is parsed if we get here it's an
 		 * error as there's an invalid field in the file.
@@ -825,6 +862,30 @@ check_found_info_json_fields(char const *file, bool test)
 		 */
 	    }
 	}
+    }
+
+    /*
+     * Now we have to do some additional sanity tests like bool mismatches etc.
+     *
+     * XXX More tests need to be added here!
+     */
+
+    /*
+     * If Makefile override is set to true and there's no problems found with
+     * the Makefile there's a mismatch: check and report if this is the case.
+     */
+    if (info.Makefile_override && info.first_rule_is_all && info.found_all_rule &&
+	    info.found_clean_rule && info.found_clobber_rule && info.found_try_rule) {
+	warn(__func__, "Makefile_override == true but all expected Makefile rules found and 'all:' is first");
+	++issues;
+    }
+    /*
+     * If info.found_all_rule == false and info.first_rule_is_all == true
+     * there's a mismatch: check this and report if this is the case.
+     */
+    if (!info.found_all_rule && info.first_rule_is_all) {
+	warn(__func__, "'all:' rule not found but first_rule_is_all == true");
+	++issues;
     }
 
     return issues;

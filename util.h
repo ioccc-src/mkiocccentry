@@ -138,5 +138,6 @@ extern unsigned long long string_to_unsigned_long_long(char const *str);
 extern bool valid_contest_id(char *str);
 extern int parse_verbosity(char const *program, char const *arg);
 extern bool is_number(char const *str);
+extern bool string_to_bool(char const *str);
 
 #endif				/* INCLUDE_UTIL_H */

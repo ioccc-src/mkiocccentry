@@ -1879,6 +1879,7 @@ check_found_common_json_fields(char const *program, char const *file, char const
 {
     int year = 0;	/* ioccc_year: IOCCC year as an integer */
     int entry_num = -1;	/* entry_num: entry number as an integer */
+    int author_count = 0; /* author count */
     long ts = 0;	/* formed_timestamp_usec: microseconds as an integer */
     struct tm tm;	/* formed_timestamp: formatted as a time structure */
     int exit_code = 0;	/* tarball: exit code from fnamchk command */
@@ -2023,6 +2024,12 @@ check_found_common_json_fields(char const *program, char const *file, char const
 		entry_num = string_to_int(val);
 		if (!(entry_num >= 0 && entry_num <= MAX_ENTRY_NUM)) {
 		    warn(__func__, "entry number %d out of range", entry_num);
+		    ++issues;
+		}
+	    } else if (!strcmp(field->name, "author_count")) {
+		author_count = string_to_int(val);
+		if (!(author_count > 0 && author_count <= MAX_AUTHORS)) {
+		    warn(__func__, "author count %d out of range of > 1 && <= %d", author_count, MAX_AUTHORS);
 		    ++issues;
 		}
 	    } else if (!strcmp(field->name, "formed_UTC")) {
