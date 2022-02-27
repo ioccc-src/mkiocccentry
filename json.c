@@ -1483,7 +1483,7 @@ malloc_json_decode(char const *ptr, size_t len, size_t *retlen, bool strict)
 /*
  * malloc_json_decode_str - return a JSON decoding of a string
  *
- * This is an simplified interface for malloc_json_decode().
+ * This is a simplified interface for malloc_json_decode().
  *
  * given:
  *	str	a string to decode
@@ -1636,7 +1636,8 @@ check_common_json_fields_table(void)
 	switch (common_json_fields[loc].field_type) {
 	    case JSON_NULL:
 		if (common_json_fields[loc].name != NULL) {
-		    err(215, __func__, "found invalid data in common_json_fields table #0");
+		    err(215, __func__, "found JSON_NULL element with non NULL name '%s' location %lu in common_json_fields table",
+                            common_json_fields[loc].name, (unsigned long)loc);
 		    not_reached();
 		}
 		break;
@@ -1650,7 +1651,7 @@ check_common_json_fields_table(void)
 		/* these are all the valid types */
 		break;
 	    default:
-		err(216, __func__, "found invalid data in common_json_fields table #1");
+		err(216, __func__, "found invalid data_type in common_json_fields table location %lu", (unsigned long)loc);
 		not_reached();
 		break;
 	}

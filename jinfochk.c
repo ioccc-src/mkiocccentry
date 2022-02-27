@@ -198,7 +198,8 @@ check_info_json_fields_table(void)
 	switch (info_json_fields[loc].field_type) {
 	    case JSON_NULL:
 		if (info_json_fields[loc].name != NULL) {
-		    err(5, __func__, "found invalid data in info_json_fields table #0");
+		    err(5, __func__, "found JSON_NULL element with non NULL name '%s' location %lu in info_json_fields table",
+			    info_json_fields[loc].name, (unsigned long)loc);
 		    not_reached();
 		}
 		break;
@@ -212,7 +213,7 @@ check_info_json_fields_table(void)
 		/* these are all the valid types */
 		break;
 	    default:
-		err(6, __func__, "found invalid data in info_json_fields table #1");
+		err(6, __func__, "found invalid data_type in info_json_fields table location %lu", (unsigned long)loc);
 		not_reached();
 		break;
 	}

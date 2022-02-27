@@ -185,7 +185,8 @@ check_author_json_fields_table(void)
 	switch (author_json_fields[loc].field_type) {
 	    case JSON_NULL:
 		if (author_json_fields[loc].name != NULL) {
-		    err(5, __func__, "found invalid data in author_json_fields table #0");
+		    err(5, __func__, "found JSON_NULL element with non NULL name '%s' location %lu in author_json_fields table",
+                            author_json_fields[loc].name, (unsigned long)loc);
 		    not_reached();
 		}
 		break;
@@ -199,7 +200,7 @@ check_author_json_fields_table(void)
 		/* these are all the valid types */
 		break;
 	    default:
-		err(6, __func__, "found invalid data in author_json_fields table #1");
+		err(6, __func__, "found invalid data_type in author_json_fields table location %lu", (unsigned long)loc);
 		not_reached();
 		break;
 	}
@@ -772,7 +773,7 @@ add_found_author_json_field(char const *name, char const *val)
     struct json_field *field = NULL; /* iterate through fields list to find the field (or if not found, create a new field) */
     struct json_value *value = NULL; /* the new value */
     struct json_field *field_in_table = NULL;
-    size_t loc = 0; /* location in info_json_fields table */
+    size_t loc = 0; /* location in author_json_fields table */
 
     /*
      * firewall
