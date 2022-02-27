@@ -740,7 +740,7 @@ add_found_author_json_field(char const *name, char const *val)
 
     field_in_table = find_json_field_in_table(author_json_fields, name, &loc);
     if (field_in_table == NULL) {
-	err(220, __func__, "called add_found_author_json_field() on field '%s' not specific to .author.json", name);
+	err(27, __func__, "called add_found_author_json_field() on field '%s' not specific to .author.json", name);
 	not_reached();
     }
     /*
@@ -763,7 +763,7 @@ add_found_author_json_field(char const *name, char const *val)
 		 * this shouldn't happen as if add_json_value() gets an error
 		 * it'll abort but just to be safe we check here too
 		 */
-		err(27, __func__, "error adding json value '%s' to field '%s'", val, field->name);
+		err(28, __func__, "error adding json value '%s' to field '%s'", val, field->name);
 		not_reached();
 	    }
 
@@ -783,7 +783,7 @@ add_found_author_json_field(char const *name, char const *val)
 	 * we should never get here because if new_json_field gets NULL it
 	 * aborts the program.
 	 */
-	err(28, __func__, "error creating new struct json_field * for field '%s' value '%s'", name, val);
+	err(29, __func__, "error creating new struct json_field * for field '%s' value '%s'", name, val);
     }
 
     /* add to the list */
