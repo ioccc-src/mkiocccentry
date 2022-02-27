@@ -618,6 +618,8 @@ add_found_info_json_field(char const *name, char const *val)
 {
     struct json_field *field = NULL; /* iterate through fields list to find the field (or if not found, create a new field) */
     struct json_value *value = NULL; /* the new value */
+    struct json_field *field_in_table = NULL;
+    size_t loc = 0; /* location in info_json_fields table */
 
     /*
      * firewall
@@ -626,6 +628,18 @@ add_found_info_json_field(char const *name, char const *val)
 	err(23, __func__, "passed NULL arg(s)");
 	not_reached();
     }
+
+    field_in_table = find_json_field_in_table(info_json_fields, name, &loc);
+    if (field_in_table == NULL) {
+	err(220, __func__, "called add_found_info_json_field() on field '%s' not specific to .info.json", name);
+	not_reached();
+    }
+    /*
+     * Set in table that it's found and increment the number of times it's been
+     * seen.
+     */
+    info_json_fields[loc].count++;
+    info_json_fields[loc].found = true;
 
     for (field = found_info_json_fields; field; field = field->next) {
 	if (field->name && !strcmp(field->name, name)) {

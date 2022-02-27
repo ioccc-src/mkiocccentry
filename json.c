@@ -2091,7 +2091,6 @@ check_found_common_json_fields(char const *program, char const *file, char const
  * as long as no NULL pointers are encountered it will return a newly allocated
  * struct json_field *. This means that it is the caller's responsibility to
  * check if the field is already in the list.
- *
  */
 struct json_field *
 new_json_field(char const *name, char const *val)

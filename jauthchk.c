@@ -434,7 +434,7 @@ check_author_json(char const *file, char const *fnamchk)
 	 * if we find a '"' in the field (name) we know it's erroneous: thus we
 	 * can simply use strcmp() on it.
 	 *
-	 * Now we see if we can find the field in the info_json_fields table or
+	 * Now we see if we can find the field in the author_json_fields table or
 	 * the common_json_fields table.
 	 */
 	author_field = find_json_field_in_table(author_json_fields, p, &loc);
@@ -727,6 +727,8 @@ add_found_author_json_field(char const *name, char const *val)
 {
     struct json_field *field = NULL; /* iterate through fields list to find the field (or if not found, create a new field) */
     struct json_value *value = NULL; /* the new value */
+    struct json_field *field_in_table = NULL;
+    size_t loc = 0; /* location in info_json_fields table */
 
     /*
      * firewall
@@ -735,6 +737,19 @@ add_found_author_json_field(char const *name, char const *val)
 	err(26, __func__, "passed NULL arg(s)");
 	not_reached();
     }
+
+    field_in_table = find_json_field_in_table(author_json_fields, name, &loc);
+    if (field_in_table == NULL) {
+	err(220, __func__, "called add_found_author_json_field() on field '%s' not specific to .author.json", name);
+	not_reached();
+    }
+    /*
+     * Set in table that it's found and increment the number of times it's been
+     * seen.
+     */
+    author_json_fields[loc].count++;
+    author_json_fields[loc].found = true;
+
 
     for (field = found_author_json_fields; field; field = field->next) {
 	if (field->name && !strcmp(field->name, name)) {
