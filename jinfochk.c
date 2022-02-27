@@ -578,7 +578,7 @@ get_info_json_field(char const *file, char *name, char *val)
      * firewall
      */
     if (file == NULL || name == NULL || val == NULL) {
-	err(223, __func__, "passed NULL arg(s)");
+	err(22, __func__, "passed NULL arg(s)");
 	not_reached();
     }
 
@@ -703,7 +703,7 @@ check_found_info_json_fields(char const *file, bool test)
      * firewall
      */
     if (file == NULL) {
-	err(224, __func__, "passed NULL file");
+	err(26, __func__, "passed NULL file");
 	not_reached();
     }
 
@@ -712,7 +712,7 @@ check_found_info_json_fields(char const *file, bool test)
 	 * first make sure the name != NULL and strlen() > 0
 	 */
 	if (field->name == NULL || !strlen(field->name)) {
-	    err(225, __func__, "found NULL or empty field in found_info_json_fields list");
+	    err(27, __func__, "found NULL or empty field in found_info_json_fields list");
 	    not_reached();
 	}
 
@@ -727,7 +727,7 @@ check_found_info_json_fields(char const *file, bool test)
 	 * info list is not a info field name.
 	 */
 	if (info_field == NULL) {
-	    err(226, __func__, "illegal field name '%s' in found_info_json_fields list", field->name);
+	    err(28, __func__, "illegal field name '%s' in found_info_json_fields list", field->name);
 	    not_reached();
 	}
 

@@ -2549,7 +2549,7 @@ is_number(char const *str)
      * firewall
      */
     if (str == NULL) {
-	err(35, __func__, "passed NULL string");
+	err(170, __func__, "passed NULL string");
 	not_reached();
     }
 
