@@ -1493,10 +1493,17 @@ malloc_json_decode(char const *ptr, size_t len, size_t *retlen, bool strict)
  *
  *		    NOTE: strict == false implies a strict reading of the JSON spec
  *
- *
  * returns:
  *	malloced JSON decoding of a block, or NULL ==> error
- *	NOTE: retlen, if non-NULL, is set to 0 on error
+ *
+ * NOTE: retlen, if non-NULL, is set to 0 on error
+ *
+ * NOTE: This function assumes that str is a valud C-style string with a terminating
+ *	 NUL byte.  This code assumes that the first NUL byte found is the end of
+ *	 the string.  When withing with raw binary data, or data that could have
+ *	 a NUL byte inside the block of memory (instead at the very end), this
+ *	 function should NOT be used.  In such cases, malloc_json_decode() should
+ *	 be used instead!
  */
 char *
 malloc_json_decode_str(char const *str, size_t *retlen, bool strict)
