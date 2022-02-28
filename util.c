@@ -2210,6 +2210,61 @@ read_all(FILE *stream, size_t *psize)
 
 
 /*
+ * is_string - determine if a block of memory is a C string
+ *
+ * given:
+ *	ptr	- pointer to a character
+ *	len	- number of bytes to check, including the final NUL
+ *
+ * returns:
+ *	true ==> ptr is a C-style string of length len, that is NUL terminated,
+ *	false ==> ptr is NULL, or
+ *		  NUL character was found before the final byte, or
+ *		  the string is not NUL terminated
+ */
+bool
+is_string(char const * const ptr, size_t len)
+{
+    char *nul_found = NULL;	/* where a NUL character was found, if any */
+
+    /*
+     * firewall
+     */
+    if (ptr == NULL) {
+	dbg(DBG_VVHIGH, "is_string: ptr is NULL");
+	return false;
+    }
+
+    /*
+     * look for a NUL byte
+     */
+    nul_found = memchr(ptr, '\0', len);
+
+    /*
+     * process the result of the NUL byte search
+     */
+    if (nul_found == NULL) {
+	dbg(DBG_VVHIGH, "is_string: no NUL found from ptr thru ptr[%ld]",
+			(long)(len-1));
+	return false;
+    }
+    if ((nul_found-ptr) != (long)(len-1)) {
+	dbg(DBG_VVHIGH, "is_string: found NUL at ptr[%ld] != ptr[%ld]",
+			(long)(nul_found-ptr),
+			(long)(len-1));
+	return false;
+    }
+
+    /*
+     * report that ptr is a C-style string of length len
+     */
+    dbg(DBG_VVVHIGH, "is_string: is a C-style string of length: %ld",
+		    (long)len);
+    return true;
+}
+
+
+/*
  * strnull - detect if string is empty
  *
  * given:
