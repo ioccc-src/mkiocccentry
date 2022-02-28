@@ -1569,6 +1569,7 @@ struct json_field common_json_fields[] =
     { "timestamp_epoch",	    NULL, 0, 1, false, JSON_STRING, NULL },
     { "min_timestamp",		    NULL, 0, 1, false, JSON_NUMBER, NULL },
     { "formed_UTC",		    NULL, 0, 1, false, JSON_STRING, NULL },
+    { "test_mode",		    NULL, 0, 1, false, JSON_BOOL,   NULL },
     { NULL,			    NULL, 0, 0, false, JSON_NULL,   NULL } /* XXX this **MUST** be last! */
 };
 
@@ -1639,8 +1640,9 @@ void
 check_common_json_fields_table(void)
 {
     size_t loc;
+    size_t max = sizeof(common_json_fields)/sizeof(common_json_fields[0]);
 
-    for (loc = 0; common_json_fields[loc].name != NULL; ++loc) {
+    for (loc = 0; loc < max-1 && common_json_fields[loc].name != NULL; ++loc) {
 	switch (common_json_fields[loc].field_type) {
 	    case JSON_NULL:
 		if (common_json_fields[loc].name != NULL) {
@@ -1663,6 +1665,10 @@ check_common_json_fields_table(void)
 		not_reached();
 		break;
 	}
+    }
+    if (max - 1 != loc) {
+	err(217, __func__, "found embedded NULL element in common_json_fields table");
+	not_reached();
     }
 }
 
@@ -1725,10 +1731,10 @@ check_first_json_char(char const *file, char *data, bool strict, char **first)
      * firewall
      */
     if (data == NULL || strlen(data) == 0) {
-	err(217, __func__, "passed NULL or zero length data");
+	err(218, __func__, "passed NULL or zero length data");
 	not_reached();
     } else if (file == NULL || first == NULL) {
-	err(218, __func__, "passed NULL arg(s)");
+	err(219, __func__, "passed NULL arg(s)");
 	not_reached();
     }
 
@@ -1769,10 +1775,10 @@ check_last_json_char(char const *file, char *data, bool strict, char **last)
      * firewall
      */
     if (data == NULL || strlen(data) == 0) {
-	err(219, __func__, "passed NULL or zero length data");
+	err(220, __func__, "passed NULL or zero length data");
 	not_reached();
     } else if (file == NULL || last == NULL) {
-	err(220, __func__, "passed NULL arg(s)");
+	err(221, __func__, "passed NULL arg(s)");
 	not_reached();
     }
 
@@ -1825,13 +1831,13 @@ add_found_common_json_field(char const *name, char const *val)
      * firewall
      */
     if (name == NULL || val == NULL) {
-	err(221, __func__, "passed NULL arg(s)");
+	err(222, __func__, "passed NULL arg(s)");
 	not_reached();
     }
 
     field_in_table = find_json_field_in_table(common_json_fields, name, &loc);
     if (field_in_table == NULL) {
-	err(222, __func__, "called add_found_common_json_field() on uncommon field '%s'", name);
+	err(223, __func__, "called add_found_common_json_field() on uncommon field '%s'", name);
 	not_reached();
     }
     /*
@@ -1844,7 +1850,7 @@ add_found_common_json_field(char const *name, char const *val)
 	if (field->name && !strcmp(field->name, name)) {
 	    field->count++;
 	    if (add_json_value(field, val) == NULL) {
-		err(223, __func__, "couldn't add value '%s' to field '%s'", val, field->name);
+		err(224, __func__, "couldn't add value '%s' to field '%s'", val, field->name);
 		not_reached();
 	    }
 	    return field;
@@ -1854,7 +1860,7 @@ add_found_common_json_field(char const *name, char const *val)
     field = new_json_field(name, val);
     if (field == NULL) {
 	/* this should NEVER be reached but we check just to be sure */
-	err(224, __func__, "new_json_field() returned NULL pointer");
+	err(225, __func__, "new_json_field() returned NULL pointer");
 	not_reached();
     }
 
@@ -1898,7 +1904,7 @@ get_common_json_field(char const *program, char const *file, char *name, char *v
      * firewall
      */
     if (program == NULL || file == NULL || name == NULL || val == NULL) {
-	err(225, __func__, "passed NULL arg(s)");
+	err(226, __func__, "passed NULL arg(s)");
 	not_reached();
     }
 
@@ -1948,14 +1954,16 @@ check_found_common_json_fields(char const *program, char const *file, char const
     struct json_field *field; /* current field in found_common_json_fields list */
     struct json_value *value; /* current value in current field's values list */
     struct json_field *common_field = NULL; /* element in the common_json_fields table */
+    struct json_field *tarball_field = NULL;
     size_t loc = 0;	/* location in the common_json_fields table */
     size_t val_length = 0; /* current value length */
+    bool test_mode = false; /* will be set to true if test_mode value is true */
 
     /*
      * firewall
      */
     if (program == NULL || file == NULL || fnamchk == NULL) {
-	err(226, __func__, "passed NULL arg(s)");
+	err(227, __func__, "passed NULL arg(s)");
 	not_reached();
     }
 
@@ -1973,7 +1981,7 @@ check_found_common_json_fields(char const *program, char const *file, char const
 	 * first make sure the name != NULL and strlen() > 0
 	 */
 	if (field->name == NULL || !strlen(field->name)) {
-	    err(227, __func__, "found NULL or empty field in found_common_json_fields list");
+	    err(228, __func__, "found NULL or empty field in found_common_json_fields list");
 	    not_reached();
 	}
 
@@ -1988,7 +1996,7 @@ check_found_common_json_fields(char const *program, char const *file, char const
 	 * common list is not a common field name.
 	 */
 	if (common_field == NULL) {
-	    err(228, __func__, "illegal field name '%s' in found_common_json_fields list", field->name);
+	    err(229, __func__, "illegal field name '%s' in found_common_json_fields list", field->name);
 	    not_reached();
 	}
 
@@ -2105,15 +2113,24 @@ check_found_common_json_fields(char const *program, char const *file, char const
 		    ++issues;
 		}
 	    } else if (!strcmp(field->name, "tarball")) {
-
 		/*
-		 * execute the fnamchk command
+		 * We have to do special tests on this after we find if
+		 * test_mode == true
 		 */
-		exit_code = shell_cmd(__func__, true, "% % >/dev/null", fnamchk, val);
-		if (exit_code != 0) {
-		    warn(__func__, "%s: %s %s > /dev/null: failed with exit code: %d",
-					program, fnamchk, val, WEXITSTATUS(exit_code));
-		    ++issues;
+		tarball_field = field;
+	    } else if (!strcmp(field->name, "test_mode")) {
+		/*
+		 * Only set to the value if !test_mode: this is so that if
+		 * there's more than one of "test_mode" in the file it will not
+		 * set back to false if already seen as true (we start out as
+		 * false so this isn't a problem).
+		 *
+		 * Note that if this field is seen more than once in the file
+		 * that still will be reported after the loop.
+		 */
+		if (!test_mode) {
+		    test_mode = string_to_bool(val);
+		    dbg(DBG_LOW, "set test_mode to %s", test_mode?"true":"false");
 		}
 
 	    }
@@ -2130,10 +2147,52 @@ check_found_common_json_fields(char const *program, char const *file, char const
      */
     for (loc = 0; common_json_fields[loc].name != NULL; ++loc) {
 	if (!common_json_fields[loc].found) {
-	    warn(__func__, "field '%s' not found in common_json_fields list", common_json_fields[loc].name);
+	    warn(__func__, "field '%s' not found in found_common_json_fields list", common_json_fields[loc].name);
 	    ++issues;
 	}
     }
+
+    /* test consistency of test_mode and tarball field */
+    if (tarball_field == NULL) {
+	warn(__func__, "didn't find tarball path in file %s", file);
+	++issues;
+    } else if (test_mode) {
+	/*
+	 * test_mode was set: execute the fnamchk command with -t.
+	 *
+	 * Note: Although having the tarball path more than once is considered
+	 * an issue we still check each value to be complete.
+	 */
+	for (value = tarball_field->values; value; value = value->next) {
+	    char const *val = value->value;
+
+	    exit_code = shell_cmd(__func__, true, "% -t % >/dev/null", fnamchk, val);
+	    if (exit_code != 0) {
+		warn(__func__, "%s: %s %s > /dev/null: failed with exit code: %d",
+				    program, fnamchk, val, WEXITSTATUS(exit_code));
+		++issues;
+	    }
+	}
+    } else {
+	/*
+	 * test_mode false: execute the fnamchk command with -u.
+	 *
+	 * Note: Although having the tarball path more than once is considered
+	 * an issue we still check each value to be complete.
+	 */
+	for (value = tarball_field->values; value; value = value->next) {
+	    char const *val = value->value;
+
+	    exit_code = shell_cmd(__func__, true, "% -u % >/dev/null", fnamchk, val);
+	    if (exit_code != 0) {
+		warn(__func__, "%s: %s %s > /dev/null: failed with exit code: %d",
+				    program, fnamchk, val, WEXITSTATUS(exit_code));
+		++issues;
+	    }
+	}
+
+    }
+
     return issues;
 }
 
@@ -2162,26 +2221,26 @@ new_json_field(char const *name, char const *val)
      * firewall
      */
     if (name == NULL || val == NULL) {
-	err(229, __func__, "passed NULL arg(s)");
+	err(230, __func__, "passed NULL arg(s)");
 	not_reached();
     }
 
     errno = 0;
     field = calloc(1, sizeof *field);
     if (field == NULL) {
-	errp(230, __func__, "error allocating new struct json_field * for field '%s' and value '%s': %s", name, val, strerror(errno));
+	errp(231, __func__, "error allocating new struct json_field * for field '%s' and value '%s': %s", name, val, strerror(errno));
 	not_reached();
     }
 
     errno = 0;
     field->name = strdup(name);
     if (field->name == NULL) {
-	errp(231, __func__, "unable to strdup() field name '%s': %s", name, strerror(errno));
+	errp(232, __func__, "unable to strdup() field name '%s': %s", name, strerror(errno));
 	not_reached();
     }
 
     if (add_json_value(field, val) == NULL) {
-	err(232, __func__, "error adding value '%s' to field '%s'", val, name);
+	err(233, __func__, "error adding value '%s' to field '%s'", val, name);
 	not_reached();
     }
 
@@ -2215,20 +2274,20 @@ add_json_value(struct json_field *field, char const *val)
      * firewall
      */
     if (field == NULL || val == NULL) {
-	err(233, __func__, "passed NULL arg(s)");
+	err(234, __func__, "passed NULL arg(s)");
 	not_reached();
     }
 
     errno = 0;
     new_value = calloc(1, sizeof *new_value);
     if (new_value == NULL) {
-	errp(234, __func__, "error allocating new value '%s' for field '%s': %s", val, field->name, strerror(errno));
+	errp(235, __func__, "error allocating new value '%s' for field '%s': %s", val, field->name, strerror(errno));
 	not_reached();
     }
     errno = 0;
     new_value->value = strdup(val);
     if (new_value->value == NULL) {
-	errp(235, __func__, "error strdup()ing value '%s' for field '%s': %s", val, field->name, strerror(errno));
+	errp(236, __func__, "error strdup()ing value '%s' for field '%s': %s", val, field->name, strerror(errno));
 	not_reached();
     }
     /* find end of list */
@@ -2265,7 +2324,7 @@ free_json_field_values(struct json_field *field)
      * firewall
      */
     if (field == NULL) {
-	err(236, __func__, "passed NULL field");
+	err(237, __func__, "passed NULL field");
 	not_reached();
     }
 
@@ -2331,7 +2390,7 @@ free_json_field(struct json_field *field)
      * firewall
      */
     if (field == NULL) {
-	err(237, __func__, "passed NULL field");
+	err(238, __func__, "passed NULL field");
 	not_reached();
     }
 
@@ -2366,7 +2425,7 @@ free_info(struct info *infop)
      * firewall
      */
     if (infop == NULL) {
-	err(238, __func__, "called with NULL arg(s)");
+	err(239, __func__, "called with NULL arg(s)");
 	not_reached();
     }
 
@@ -2458,11 +2517,11 @@ free_author_array(struct author *author_set, int author_count)
      * firewall
      */
     if (author_set == NULL) {
-	err(239, __func__, "called with NULL arg(s)");
+	err(240, __func__, "called with NULL arg(s)");
 	not_reached();
     }
     if (author_count < 0) {
-	err(240, __func__, "author_count: %d < 0", author_count);
+	err(241, __func__, "author_count: %d < 0", author_count);
 	not_reached();
     }
 

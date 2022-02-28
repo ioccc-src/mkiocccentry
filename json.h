@@ -147,6 +147,7 @@ struct json_common
     char *ioccc_id;		/* IOCCC contest ID */
     int entry_num;		/* IOCCC entry number */
     char *tarball;		/* tarball filename */
+    bool test_mode;		/* true ==> test mode entered */
 
     /*
      * time

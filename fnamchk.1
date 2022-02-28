@@ -2,7 +2,7 @@
 .SH NAME
 fnamchk \- IOCCC compressed tarball filename sanity check tool
 .SH SYNOPSIS
-\fBfnamchk [\-h] [\-v level] [\-V] [\-T] filepath
+\fBfnamchk [\-h] [\-v level] [\-V] [\-T] [\-t|\-u] filepath
 .SH DESCRIPTION
 \fBfnamchk\fP verifies that an IOCCC compressed tarball is properly named.
 .PP
@@ -41,9 +41,18 @@ Show version and exit.
 .PP
 \fB\-T\fP
 Show IOCCC toolset chain release repository tag.
+.PP
+\fB\-t\fP
+If the filename does not start with the test mode filename format, issue an error.
+In other words the filename has to start with \fB"entry.test-"\fP or it's an error.
+.PP
+\fB\-u\fP
+If the filename does not start with the normal filename format, issue an error.
+In other words if the filename starts with \fB"entry.test-"\fP it is an error.
 .SH EXIT STATUS
 .PP
 \fBmain()\fP returns 0 on success; if there's an error the end is not reached.
+If there's an error the error message is printed; else the output will be the name of the required directory in the tarball.
 .SH FILES
 \fIfnamchk.c\fP
 .RS
@@ -65,7 +74,7 @@ Run the program on the tarball \fIentry.test.0.1644094311.txz\fP:
 
 .RS
 \fB
- ./fnamchk entry.test.0.1644094311.txz\fP
+ ./fnamchk entry.test-0.1644094311.txz\fP
 .fi
 .RE
 .PP
@@ -77,3 +86,23 @@ Run the program on the tarball \fItest.tar\fP, which will fail:
  ./fnamchk test.tar
 .fi
 .RE
+.PP
+.nf
+Run the program on the tarball \fIentry.test.0.1644094311.txz\fP with the option \fI\-u\fP which will fail:
+
+.RS
+\fB
+ ./fnamchk -u entry.test-0.1644094311.txz\fP
+.fi
+.RE
+.PP
+.nf
+Run the program on the tarball \fIentry.test.0.1644094311.txz\fP with the option \fI\-t\fP which will pass:
+
+.RS
+\fB
+ ./fnamchk -t entry.test-0.1644094311.txz\fP
+.fi
+.RE
+.PP
+The above will print \fBtest\-0\fP.
