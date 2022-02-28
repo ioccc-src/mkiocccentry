@@ -2147,7 +2147,7 @@ check_found_common_json_fields(char const *program, char const *file, char const
      */
     for (loc = 0; common_json_fields[loc].name != NULL; ++loc) {
 	if (!common_json_fields[loc].found) {
-	    warn(__func__, "field '%s' not found in common_json_fields list", common_json_fields[loc].name);
+	    warn(__func__, "field '%s' not found in found_common_json_fields list", common_json_fields[loc].name);
 	    ++issues;
 	}
     }
