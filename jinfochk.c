@@ -419,10 +419,8 @@ check_info_json(char const *file, char const *fnamchk)
     }
 
     /* scan for embedded NUL bytes (before EOF) */
-    errno = 0;			/* pre-clear errno for errp() */
-    p = (char *)memchr(data, 0, (size_t)length);
-    if (p != NULL) {
-	errp(18, __func__, "found NUL before EOF: %s", file);
+    if (is_string(data, length+1) == false) {
+	err(18, __func__, "found NUL before EOF: %s", file);
 	not_reached();
     }
 
