@@ -49,7 +49,6 @@ struct json_field info_json_fields[] =
     { "found_clean_rule",	NULL, 0, 1, false, JSON_BOOL,		NULL },
     { "found_clobber_rule",	NULL, 0, 1, false, JSON_BOOL,		NULL },
     { "found_try_rule",		NULL, 0, 1, false, JSON_BOOL,		NULL },
-    { "test_mode",		NULL, 0, 1, false, JSON_BOOL,		NULL },
     { "manifest",		NULL, 0, 1, false, JSON_ARRAY,		NULL },
     { "info_JSON",		NULL, 0, 1, false, JSON_ARRAY_STRING,	NULL },
     { "author_JSON",		NULL, 0, 1, false, JSON_ARRAY_STRING,	NULL },
@@ -295,9 +294,9 @@ sanity_chk(char const *file, char const *fnamchk)
     if (!exists(fnamchk)) {
 	fpara(stderr,
 	      "",
-	      "We cannot find a fnamchk tool.",
+	      "We cannot find fnamchk.",
 	      "",
-	      "A fnamchk program performs a sanity check on the compressed tarball.",
+	      "A fnamchk program performs a sanity check on the compressed tarball filename.",
 	      "Perhaps you need to use:",
 	      "",
 	      "    jinfochk -F /path/to/fnamchk ...",
@@ -378,7 +377,7 @@ check_info_json(char const *file, char const *fnamchk)
     char *data;		/* .info.json contents */
     char *data_dup;	/* contents of file strdup()d */
     size_t length;	/* length of input buffer */
-    char *p = NULL;	/* temporary use: check for NUL bytes and field extraction */
+    char *p = NULL;	/* for field extraction */
     char *end = NULL;	/* temporary use: end of strings (p, field) for removing spaces */
     char *val = NULL;	/* current field's value being parsed */
     char *savefield = NULL; /* for strtok_r() usage */
@@ -419,7 +418,7 @@ check_info_json(char const *file, char const *fnamchk)
     }
 
     /* scan for embedded NUL bytes (before EOF) */
-    if (is_string(data, length+1) == false) {
+    if (!is_string(data, length+1)) {
 	err(18, __func__, "found NUL before EOF: %s", file);
 	not_reached();
     }
@@ -917,8 +916,6 @@ check_found_info_json_fields(char const *file, bool test)
 		info.found_clobber_rule = string_to_bool(val);
 	    } else if (!strcmp(field->name, "found_try_rule")) {
 		info.found_try_rule = string_to_bool(val);
-	    } else if (!strcmp(field->name, "test_mode")) {
-		info.test_mode = string_to_bool(val);
 	    } else {
 		/* TODO: after everything else is parsed if we get here it's an
 		 * error as there's an invalid field in the file.
@@ -951,6 +948,21 @@ check_found_info_json_fields(char const *file, bool test)
      */
     if (!info.found_all_rule && info.first_rule_is_all) {
 	warn(__func__, "'all:' rule not found but first_rule_is_all == true");
+	++issues;
+    }
+
+    /* if empty_override == true and prog.c is not size 0 there's a problem */
+    if (info.empty_override && info.rule_2a_size > 0 && info.rule_2b_size > 0) {
+	warn(__func__, "empty_override == true but prog.c size > 0");
+	++issues;
+    }
+
+    /*
+     * If empty_override == false and either of rule 2a or rule 2b size == 0
+     * there's a problem.
+     */
+    if (!info.empty_override && (info.rule_2a_size == 0 || info.rule_2b_size == 0)) {
+	warn(__func__, "empty_override == false but rule 2a and/or rule 2b size == 0");
 	++issues;
     }
 

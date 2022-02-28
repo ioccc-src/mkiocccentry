@@ -282,9 +282,9 @@ sanity_chk(char const *file, char const *fnamchk)
     if (!exists(fnamchk)) {
 	fpara(stderr,
 	      "",
-	      "We cannot find a fnamchk tool.",
+	      "We cannot find fnamchk.",
 	      "",
-	      "A fnamchk program performs a sanity check on the compressed tarball.",
+	      "A fnamchk program performs a sanity check on the compressed tarball filename.",
 	      "Perhaps you need to use:",
 	      "",
 	      "    jauthchk -F /path/to/fnamchk ...",
@@ -365,7 +365,7 @@ check_author_json(char const *file, char const *fnamchk)
     char *data;		/* .author.json contents */
     char *data_dup;	/* contents of file strdup()d */
     size_t length;	/* length of input buffer */
-    char *p = NULL;	/* temporary use: check for NUL bytes and field extraction */
+    char *p = NULL;	/* for field extraction */
     char *end = NULL;	/* temporary use: end of strings (p, field) for removing spaces */
     char *val = NULL;	/* current field's value being parsed */
     char *savefield = NULL; /* for strtok_r() usage */
@@ -405,7 +405,7 @@ check_author_json(char const *file, char const *fnamchk)
     }
 
     /* scan for embedded NUL bytes (before EOF) */
-    if (is_string(data, length+1) == false) {
+    if (!is_string(data, length+1)) {
 	err(18, __func__, "found NUL before EOF: %s", file);
 	not_reached();
     }

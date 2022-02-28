@@ -64,16 +64,20 @@
  * Use the usage() function to print the these usage_msgX strings.
  */
 static const char * const usage_msg =
-    "usage: %s [-h] [-v level] [-V] [-T] filepath\n"
+    "usage: %s [-h] [-v level] [-V] [-T] [-t|-u] filepath\n"
     "\n"
     "\t-h\t\t\tprint help message and exit 0\n"
     "\t-v level\t\tset verbosity level: (def level: %d)\n"
     "\t-V\t\t\tprint version string and exit\n"
     "\t-T\t\t\tshow IOCCC toolset chain release repository tag\n"
+    "\t-t\t\t\tfilename must match test entry filename\n"
+    "\t-u\t\t\tfilename must match real entry filename\n"
     "\n"
+    "\t\tNOTE: -t and -u cannot be used together.\n\n"
     "\tfilepath\t\tpath to an IOCCC compressed tarball\n"
     "\n"
     "fnamchk version: %s\n";
+
 
 
 /*

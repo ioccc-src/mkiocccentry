@@ -77,7 +77,7 @@
 /*
  * official mkiocccentry version
  */
-#define MKIOCCCENTRY_VERSION "0.37 2022-02-23"	/* format: major.minor YYYY-MM-DD */
+#define MKIOCCCENTRY_VERSION "0.38 2022-02-28"	/* format: major.minor YYYY-MM-DD */
 
 
 /*
@@ -99,7 +99,7 @@
 /*
  * official fnamchk version
  */
-#define FNAMCHK_VERSION "0.3 2022-02-23"	/* format: major.minor YYYY-MM-DD */
+#define FNAMCHK_VERSION "0.4 2022-02-28"	/* format: major.minor YYYY-MM-DD */
 
 /*
  * official txzchk version
@@ -109,12 +109,12 @@
 /*
  * official jinfochk version
  */
-#define JINFOCHK_VERSION "0.9 2022-02-27"	/* format: major.minor YYYY-MM-DD */
+#define JINFOCHK_VERSION "0.10 2022-02-28"	/* format: major.minor YYYY-MM-DD */
 
 /*
  * official jauthchk version
  */
-#define JAUTHCHK_VERSION "0.9 2022-02-27"	/* format: major.minor YYYY-MM-DD */
+#define JAUTHCHK_VERSION "0.10 2022-02-28"	/* format: major.minor YYYY-MM-DD */
 
 
 /*

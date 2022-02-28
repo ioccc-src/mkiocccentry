@@ -365,7 +365,7 @@ main(int argc, char *argv[])
     /*
      * obtain the IOCCC contest ID
      */
-    info.common.ioccc_id = get_contest_id(&info.test_mode, &read_answers_flag_used);
+    info.common.ioccc_id = get_contest_id(&info.common.test_mode, &read_answers_flag_used);
     dbg(DBG_MED, "IOCCC contest ID: %s", info.common.ioccc_id);
 
     /*
@@ -532,7 +532,7 @@ main(int argc, char *argv[])
      * write the .info.json file
      */
     para("", "Forming the .info.json file ...", NULL);
-    write_info(&info, entry_dir, info.test_mode, jinfochk, fnamchk, author_count);
+    write_info(&info, entry_dir, jinfochk, fnamchk, author_count);
     para("... completed the .info.json file.", "", NULL);
 
     /*
@@ -671,7 +671,7 @@ main(int argc, char *argv[])
     /*
      * remind user various things e.g., to upload (unless in test mode)
      */
-    remind_user(work_dir, entry_dir, tar, tarball_path, info.test_mode);
+    remind_user(work_dir, entry_dir, tar, tarball_path, info.common.test_mode);
 
     /*
      * free storage
@@ -2259,7 +2259,7 @@ check_prog_c(struct info *infop, char const *entry_dir, char const *cp, char con
     if (infop->rule_2a_size < 0) {
 	err(89, __func__, "file_size error: %ld on prog_c: %s", (long)infop->rule_2a_size, prog_c);
 	not_reached();
-    } else if (infop->rule_2a_size == 0) {
+    } else if (infop->rule_2a_size == 0 || infop->rule_2b_size == 0) {
 	warn_empty_prog(prog_c);
 	infop->empty_override = true;
 	infop->rule_2a_override = false;
@@ -4947,7 +4947,6 @@ json_fprintf_value_bool(FILE *stream, char const *lead, char const *name, char c
  * given:
  *      infop           - pointer to info structure
  *      entry_dir       - path to entry directory
- *      test_mode       - true ==> test mode, do not upload
  *      jinfochk	- path to jinfochk tool
  *      fnamchk		- path to fnamchk tool
  *      author_count	- number of authors
@@ -4958,7 +4957,7 @@ json_fprintf_value_bool(FILE *stream, char const *lead, char const *name, char c
  * This function does not return on error.
  */
 static void
-write_info(struct info *infop, char const *entry_dir, bool test_mode, char const *jinfochk, char const *fnamchk, int author_count)
+write_info(struct info *infop, char const *entry_dir, char const *jinfochk, char const *fnamchk, int author_count)
 {
     struct tm *timeptr;		/* localtime return */
     char *info_path;		/* path to .info.json file */
@@ -5105,7 +5104,7 @@ write_info(struct info *infop, char const *entry_dir, bool test_mode, char const
 	json_fprintf_value_bool(info_stream, "\t", "found_clean_rule", " : ", infop->found_clean_rule, ",\n") &&
 	json_fprintf_value_bool(info_stream, "\t", "found_clobber_rule", " : ", infop->found_clobber_rule, ",\n") &&
 	json_fprintf_value_bool(info_stream, "\t", "found_try_rule", " : ", infop->found_try_rule, ",\n") &&
-	json_fprintf_value_bool(info_stream, "\t", "test_mode", " : ", test_mode, ",\n") &&
+	json_fprintf_value_bool(info_stream, "\t", "test_mode", " : ", infop->common.test_mode, ",\n") &&
 	fprintf(info_stream, "\t\"manifest\" : [\n") > 0;
     if (!ret) {
 	errp(167, __func__, "fprintf error writing leading part of info to %s", info_path);
@@ -5265,6 +5264,7 @@ write_author(struct info *infop, int author_count, struct author *authorp, char 
 	json_fprintf_value_string(author_stream, "\t", "tarball", " : ", infop->common.tarball, ",\n") &&
 	json_fprintf_value_long(author_stream, "\t", "entry_num", " : ", (long)infop->common.entry_num, ",\n") &&
 	json_fprintf_value_long(author_stream, "\t", "author_count", " : ", (long)author_count, ",\n") &&
+	json_fprintf_value_bool(author_stream, "\t", "test_mode", " : ", infop->common.test_mode, ",\n") &&
 	fprintf(author_stream, "\t\"authors\" : [\n") > 0;
     if (!ret) {
 	errp(179, __func__, "fprintf error writing leading part of authorship to %s", author_path);

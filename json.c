@@ -1569,6 +1569,7 @@ struct json_field common_json_fields[] =
     { "timestamp_epoch",	    NULL, 0, 1, false, JSON_STRING, NULL },
     { "min_timestamp",		    NULL, 0, 1, false, JSON_NUMBER, NULL },
     { "formed_UTC",		    NULL, 0, 1, false, JSON_STRING, NULL },
+    { "test_mode",		    NULL, 0, 1, false, JSON_BOOL,   NULL },
     { NULL,			    NULL, 0, 0, false, JSON_NULL,   NULL } /* XXX this **MUST** be last! */
 };
 
@@ -1948,8 +1949,10 @@ check_found_common_json_fields(char const *program, char const *file, char const
     struct json_field *field; /* current field in found_common_json_fields list */
     struct json_value *value; /* current value in current field's values list */
     struct json_field *common_field = NULL; /* element in the common_json_fields table */
+    struct json_field *tarball_field = NULL;
     size_t loc = 0;	/* location in the common_json_fields table */
     size_t val_length = 0; /* current value length */
+    bool test_mode = false; /* will be set to true if test_mode value is true */
 
     /*
      * firewall
@@ -2105,15 +2108,24 @@ check_found_common_json_fields(char const *program, char const *file, char const
 		    ++issues;
 		}
 	    } else if (!strcmp(field->name, "tarball")) {
-
 		/*
-		 * execute the fnamchk command
+		 * We have to do special tests on this after we find if
+		 * test_mode == true
 		 */
-		exit_code = shell_cmd(__func__, true, "% % >/dev/null", fnamchk, val);
-		if (exit_code != 0) {
-		    warn(__func__, "%s: %s %s > /dev/null: failed with exit code: %d",
-					program, fnamchk, val, WEXITSTATUS(exit_code));
-		    ++issues;
+		tarball_field = field;
+	    } else if (!strcmp(field->name, "test_mode")) {
+		/*
+		 * Only set to the value if !test_mode: this is so that if
+		 * there's more than one of "test_mode" in the file it will not
+		 * set back to false if already seen as true (we start out as
+		 * false so this isn't a problem).
+		 *
+		 * Note that if this field is seen more than once in the file
+		 * that still will be reported after the loop.
+		 */
+		if (!test_mode) {
+		    test_mode = string_to_bool(val);
+		    dbg(DBG_LOW, "set test_mode to %s", test_mode?"true":"false");
 		}
 
 	    }
@@ -2134,6 +2146,48 @@ check_found_common_json_fields(char const *program, char const *file, char const
 	    ++issues;
 	}
     }
+
+    /* test consistency of test_mode and tarball field */
+    if (tarball_field == NULL) {
+	warn(__func__, "didn't find tarball path in file %s", file);
+	++issues;
+    } else if (test_mode) {
+	/*
+	 * test_mode was set: execute the fnamchk command with -t.
+	 *
+	 * Note: Although having the tarball path more than once is considered
+	 * an issue we still check each value to be complete.
+	 */
+	for (value = tarball_field->values; value; value = value->next) {
+	    char const *val = value->value;
+
+	    exit_code = shell_cmd(__func__, true, "% -t % >/dev/null", fnamchk, val);
+	    if (exit_code != 0) {
+		warn(__func__, "%s: %s %s > /dev/null: failed with exit code: %d",
+				    program, fnamchk, val, WEXITSTATUS(exit_code));
+		++issues;
+	    }
+	}
+    } else {
+	/*
+	 * test_mode false: execute the fnamchk command with -u.
+	 *
+	 * Note: Although having the tarball path more than once is considered
+	 * an issue we still check each value to be complete.
+	 */
+	for (value = tarball_field->values; value; value = value->next) {
+	    char const *val = value->value;
+
+	    exit_code = shell_cmd(__func__, true, "% -u % >/dev/null", fnamchk, val);
+	    if (exit_code != 0) {
+		warn(__func__, "%s: %s %s > /dev/null: failed with exit code: %d",
+				    program, fnamchk, val, WEXITSTATUS(exit_code));
+		++issues;
+	    }
+	}
+
+    }
+
     return issues;
 }
 
