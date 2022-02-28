@@ -122,7 +122,6 @@ main(int argc, char *argv[])
     char *jinfochk = JINFOCHK_PATH_0;		/* path to jinfochk executable */
     char const *answers = NULL;			/* path to the answers file (recording input given on stdin) */
     FILE *answerp = NULL;			/* file pointer to the answers file */
-    bool test_mode = false;			/* true ==> contest ID is test */
     char *entry_dir = NULL;			/* entry directory from which to form a compressed tarball */
     char *tarball_path = NULL;			/* path of the compressed tarball to form */
     int extra_count = 0;			/* number of extra files */
@@ -366,7 +365,7 @@ main(int argc, char *argv[])
     /*
      * obtain the IOCCC contest ID
      */
-    info.common.ioccc_id = get_contest_id(&test_mode, &read_answers_flag_used);
+    info.common.ioccc_id = get_contest_id(&info.test_mode, &read_answers_flag_used);
     dbg(DBG_MED, "IOCCC contest ID: %s", info.common.ioccc_id);
 
     /*
@@ -533,7 +532,7 @@ main(int argc, char *argv[])
      * write the .info.json file
      */
     para("", "Forming the .info.json file ...", NULL);
-    write_info(&info, entry_dir, test_mode, jinfochk, fnamchk, author_count);
+    write_info(&info, entry_dir, info.test_mode, jinfochk, fnamchk, author_count);
     para("... completed the .info.json file.", "", NULL);
 
     /*
@@ -672,7 +671,7 @@ main(int argc, char *argv[])
     /*
      * remind user various things e.g., to upload (unless in test mode)
      */
-    remind_user(work_dir, entry_dir, tar, tarball_path, test_mode);
+    remind_user(work_dir, entry_dir, tar, tarball_path, info.test_mode);
 
     /*
      * free storage
