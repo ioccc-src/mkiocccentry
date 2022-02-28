@@ -2209,13 +2209,13 @@ read_all(FILE *stream, size_t *psize)
 
 
 /*
- * strnull - return NULL if string is empty
+ * strnull - detect if string is empty
  *
  * given:
- *	str (NULL allowed)
+ *	str	- C-style string or NULL
  *
  * returns:
- *	str if str is NOT empty,
+ *	str if str a non-NULL non-empty string,
  *	else NULL
  */
 char const *
@@ -2224,9 +2224,10 @@ strnull(char const * const str)
     /*
      * if str is non-NULL and non-zero length, return str
      */
-    if (str != NULL && strlen(str) > 0) {
+    if (str != NULL && str[0] != '\0') {
 	return str;
     }
+    /* NULL pointer or empty C-style string */
     return NULL;
 }
 
