@@ -2043,7 +2043,7 @@ round_to_multiple(off_t num, off_t multiple)
  *
  * given:
  *	stream	    - an open file stream to read from
- *	psize	    - if psize != NULL, put data read into *psize
+ *	psize	    - if psize != NULL, *psize is the amount of data read
  *
  * returns:
  *	malloc buffer containing the entire contents of stream,
@@ -2259,7 +2259,7 @@ is_string(char const * const ptr, size_t len)
      * report that ptr is a C-style string of length len
      */
     dbg(DBG_VVVHIGH, "is_string: is a C-style string of length: %ld",
-		    (long)len);
+		     (long)len);
     return true;
 }
 
