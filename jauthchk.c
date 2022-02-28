@@ -167,12 +167,15 @@ main(int argc, char **argv)
     exit(issues != 0); /*ooo*/
 }
 
-/* check_author_json_fields_table	    - perform some sanity checks on the
- *					      author_json_fields table
+
+/*
+ * check_author_json_fields_table - perform author_json_fields table sanity checks
  *
  * This function checks if JSON_NULL is used on any field other than the NULL
- * field. It also makes sure that each field_type is valid. More tests might be
- * devised later on but this is a good start (27 Feb 2022).
+ * field. It also makes sure that each field_type is valid.  The checks are
+ * performed against the author_json_fields table.
+ *
+ * NOTE: More tests might be devised later on but this is a good start (27 Feb 2022).
  *
  * This function does not return on error.
  */
@@ -583,10 +586,12 @@ check_author_json(char const *file, char const *fnamchk)
     return issues;
 }
 
+
 /*
- * get_author_json_field	-	    check if name is a .info.json field
- *				    and if it is add it to the found_author_json
- *				    list.
+ * get_author_json_field - check field name
+ *
+ * Check if name is a .info.json field, and check if name is found
+ * in the found_author_json list.
  *
  * given:
  *
@@ -628,10 +633,12 @@ get_author_json_field(char const *file, char *name, char *val)
     return ret;
 }
 
+
 /*
- * check_found_author_json_fields - check that all the fields in the
- *				    found_author_json_fields table have valid
- *				    values
+ * check_found_author_json_fields - found_author_json_fields table value check
+ *
+ * Verify that all the fields in the found_author_json_fields table have
+ * values that are valid.
  *
  *  given:
  *
@@ -751,8 +758,11 @@ check_found_author_json_fields(char const *file, bool test)
     return issues;
 }
 
-/* add_found_author_json_field	- add a field:value pair to the
- *				  found_author_json_fields list
+
+/*
+ * add_found_author_json_field - add field:value to found_author_json_fields list
+ *
+ * Add a field:value pair to to the found_author_json_fields list.
  *
  * given:
  *
@@ -840,7 +850,9 @@ add_found_author_json_field(char const *name, char const *val)
     return field;
 }
 
-/* free_found_author_json_fields  - free the authors json fields list
+
+/*
+ * free_found_author_json_fields - free the authors json fields list
  *
  * This function returns void.
  *
@@ -858,6 +870,7 @@ free_found_author_json_fields(void)
 
     found_author_json_fields = NULL;
 }
+
 
 /*
  * usage - print usage to stderr

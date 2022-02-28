@@ -426,7 +426,7 @@ sanity_chk(char const *tar, char const *fnamchk)
 
 
 /*
- * check_file		- checks on the current file only
+ * check_file - checks on the current file only
  *
  * given:
  *
@@ -492,7 +492,7 @@ check_file(char const *txzpath, char *p, char const *dir_name, struct file *file
 
 
 /*
- * check_empty_file	- if file is empty, check which file it is and report it
+ * check_empty_file - if file is empty, check which file it is and report it
  *
  * given:
  *
@@ -546,7 +546,7 @@ check_empty_file(char const *txzpath, off_t size, struct file *file)
 
 
 /*
- * check_all_files		- check files list after parsing tarball (or text file)
+ * check_all_files - check files list after parsing tarball (or text file)
  *
  * given:
  *
@@ -659,7 +659,7 @@ check_all_files(char const *dir_name)
 
 
 /*
- * check_directories	- directory specific checks on the file
+ * check_directories - directory specific checks on the file
  *
  * given:
  *
@@ -774,7 +774,7 @@ check_directories(struct file *file, char const *dir_name, char const *txzpath)
 
 
 /*
- * parse_linux_line	- parse linux tar output
+ * parse_linux_line - parse linux tar output
  *
  * given:
  *
@@ -878,7 +878,7 @@ parse_linux_line(char *p, char *linep, char *line_dup, char const *dir_name, cha
 
 
 /*
- * parse_bsd_line	- parse macOS/BSD tar output
+ * parse_bsd_line - parse macOS/BSD tar output
  *
  * given:
  *
@@ -987,7 +987,7 @@ parse_bsd_line(char *p, char *linep, char *line_dup, char const *dir_name, char 
 
 
 /*
- * parse_line	 - parse a line in the tarball listing
+ * parse_line  - parse a line in the tarball listing
  *
  * given:
  *
@@ -1349,7 +1349,7 @@ has_special_bits(char const *str)
 
 
 /*
- * add_line	    - add line to lines list
+ * add_line - add line to lines list
  *
  * given:
  *
@@ -1397,7 +1397,7 @@ add_line(char const *str, int line_num)
 
 
 /*
- * parse_all_lines	    - parse lines, reporting any issues found
+ * parse_all_lines - parse lines, reporting any issues found
  *
  * given:
  *
@@ -1443,7 +1443,7 @@ parse_all_lines(char const *dir_name, char const *txzpath)
 
 
 /*
- * free_lines	    - free lines list
+ * free_lines - free lines list
  *
  * The purpose of the lines list is so that we can show the list of files in the
  * tarball together without interspersing it with any warnings. Thus we show the
@@ -1475,7 +1475,7 @@ free_lines(void)
 
 
 /*
- * alloc_file	- allocate a struct file *
+ * alloc_file - allocate a struct file *
  *
  * given:
  *

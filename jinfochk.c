@@ -61,6 +61,7 @@ struct json_field info_json_fields[] =
     { "extra_file",		NULL, 0, 0, false, JSON_ARRAY_STRING,	NULL },
 };
 
+
 int
 main(int argc, char **argv)
 {
@@ -180,12 +181,15 @@ main(int argc, char **argv)
     exit(issues != 0); /*ooo*/
 }
 
-/* check_info_json_fields_table	    - perform some sanity checks on the
- *				      info_json_fields table
+
+/*
+ * check_info_json_fields_table	 - sanity check info_json_fields table
  *
  * This function checks if JSON_NULL is used on any field other than the NULL
- * field. It also makes sure that each field_type is valid. More tests might be
- * devised later on but this is a good start (27 Feb 2022).
+ * field. It also makes sure that each field_type is valid.  These sanitu checks
+ * are performed with the info_json_fields table.
+ *
+ * NPTE: More tests might be devised later on but this is a good start (27 Feb 2022).
  *
  * This function does not return on error.
  */
@@ -595,10 +599,12 @@ check_info_json(char const *file, char const *fnamchk)
     return issues;
 }
 
+
 /*
- * get_info_json_field	-	    check if name is a .info.json field
- *				    and if it is add it to the found_info_json
- *				    list.
+ * get_info_json_field - check if name is a known
+ *
+ * Check if a name is a known .info.json field.  If it is a known field,
+ * add that name to the found_info_json list.
  *
  * given:
  *
@@ -641,9 +647,10 @@ get_info_json_field(char const *file, char *name, char *val)
 }
 
 
-
-/* add_found_info_json_field	- add a field:value pair to the
- *				  found_info_json_fields list
+/*
+ * add_found_info_json_field - add a field:value to found_info_json_fields list
+ *
+ * Add a field:value pair to the to the found_info_json_fields list.
  *
  * given:
  *
@@ -732,10 +739,12 @@ add_found_info_json_field(char const *name, char const *val)
     return field;
 }
 
+
 /*
- * check_found_info_json_fields - check that all the fields in the
- *				    found_info_json_fields table have valid
- *				    values
+ * check_found_info_json_fields - found_info_json_fields table value check
+ *
+ * Verify that all the fields in the found_info_json_fields table have values
+ * that are valid.
  *
  *  given:
  *
@@ -951,10 +960,8 @@ check_found_info_json_fields(char const *file, bool test)
 }
 
 
-/* free_found_info_json_fields  - free the infos json fields list
- *
- * This function returns void.
- *
+/*
+ * free_found_info_json_fields - free the infos json fields list
  */
 static void
 free_found_info_json_fields(void)

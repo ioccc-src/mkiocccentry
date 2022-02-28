@@ -1541,6 +1541,7 @@ malloc_json_decode_str(char const *str, size_t *retlen, bool strict)
     return ret;
 }
 
+
 /*
  * Common JSON fields table used to determine if a name is a common field,
  * whether it's been added to the found_common_json_fields list, how many times
@@ -1660,7 +1661,10 @@ check_common_json_fields_table(void)
 
 
 /*
- * json_filename    - return ".info.json", ".author.json" or "null" depending on type
+ * json_filename - determine basename of JSON type
+ *
+ * This function will return ".info.json", ".author.json" or "null" depending on
+ * the value of type.
  *
  * given:
  *
@@ -1689,7 +1693,6 @@ json_filename(int type)
     }
     return name;
 }
-
 
 
 /*
@@ -1734,6 +1737,7 @@ check_first_json_char(char const *file, char *data, bool strict, char **first)
 	return 1;
     return 0;
 }
+
 
 /*
  * check_last_json_char - check if last char is '}'
@@ -1783,8 +1787,11 @@ check_last_json_char(char const *file, char *data, bool strict, char **last)
     return 0;
 }
 
-/* add_found_common_json_field   - add a common json field to found_common_json_fields list
+
+/*
+ * add_found_common_json_field - add to found_common_json_fields list
  *
+ * This functio will add a common JSON field name and value to the found_common_json_fields list.
  *
  * given:
  *
@@ -1852,10 +1859,13 @@ add_found_common_json_field(char const *name, char const *val)
     return field;
 }
 
+
 /*
- * get_common_json_field	-   check if name is common to both .info.json
- *				    and author.json and if it is add to common
- *				    list
+ * get_common_json_field - add name, if it is common, to the common list
+ *
+ * This function will deterine of a name is common to both the .info.json
+ * as well as to .author.json.  If it is, then it will be added to the
+ * common list.
  *
  * given:
  *
@@ -1898,10 +1908,12 @@ get_common_json_field(char const *program, char const *file, char *name, char *v
     return ret;
 }
 
+
 /*
- * check_found_common_json_fields - check that all the fields in the
- *				    found_common_json_fields table have valid
- *				    values
+ * check_found_common_json_fields - found_common_json_fields tabke check
+ *
+ * The found_common_json_fields table will be checked to determine of
+ * all fields have a valid value.
  *
  * given:
  *
@@ -2119,7 +2131,8 @@ check_found_common_json_fields(char const *program, char const *file, char const
 }
 
 
-/* new_json_field	- allocate a new json_field with the value passed in
+/*
+ * new_json_field - allocate a new json_field with the value passed in
  *
  * given:
  *
@@ -2170,7 +2183,9 @@ new_json_field(char const *name, char const *val)
     return field;
 }
 
-/* add_json_value	- add a value to a struct json_field *
+
+/*
+ * add_json_value - add a value to a struct json_field
  *
  * given:
  *
@@ -2223,7 +2238,8 @@ add_json_value(struct json_field *field, char const *val)
 }
 
 
-/* free_json_field_values	- free a field's values list
+/*
+ * free_json_field_values - free a field's values list
  *
  * given:
  *
@@ -2258,7 +2274,9 @@ free_json_field_values(struct json_field *field)
     }
 }
 
-/* free_found_common_json_fields  - free the common json fields list
+
+/*
+ * free_found_common_json_fields  - free the common json fields list
  *
  * This function returns void.
  */
@@ -2286,7 +2304,9 @@ free_found_common_json_fields(void)
     found_common_json_fields = NULL;
 }
 
-/* free_json_field	- release memory in a struct json_field *
+
+/*
+ * free_json_field	- release memory in a struct json_field *
  *
  * given:
  *
@@ -2320,6 +2340,7 @@ free_json_field(struct json_field *field)
     free(field);
     field = NULL;
 }
+
 
 /*
  * free_info - free info and related sub-elements
@@ -2412,6 +2433,7 @@ free_info(struct info *infop)
 
     return;
 }
+
 
 /*
  * free_author_array - free storage related to a struct author

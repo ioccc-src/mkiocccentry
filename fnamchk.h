@@ -33,6 +33,7 @@
 #if !defined(INCLUDE_FNAMCHK_H)
 #    define  INCLUDE_FNAMCHK_H
 
+
 /*
  * dbg - debug, warning and error reporting facility
  */

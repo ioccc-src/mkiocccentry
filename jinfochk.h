@@ -95,4 +95,5 @@ static int check_found_info_json_fields(char const *file, bool test);
 static void check_info_json_fields_table(void);
 static void free_found_info_json_fields(void);
 
+
 #endif /* INCLUDE_JINFOCHK_H */
