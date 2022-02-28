@@ -130,7 +130,7 @@ extern char *malloc_json_encode(char const *ptr, size_t len, size_t *retlen);
 extern char *malloc_json_str(char const *str, size_t *retlen);
 extern void jencchk(void);
 extern void *read_all(FILE *stream, size_t *psize);
-extern char const * strnull(char const * const str);
+extern char const *strnull(char const * const str);
 extern long string_to_long(char const *str);
 extern long long string_to_long_long(char const *str);
 extern int string_to_int(char const *str);

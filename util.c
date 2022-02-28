@@ -2020,7 +2020,8 @@ find_utils(bool tar_flag_used, char **tar, bool cp_flag_used, char **cp, bool ls
  *	2048 rounds to 2048
  *	etc.
  */
-off_t round_to_multiple(off_t num, off_t multiple)
+off_t
+round_to_multiple(off_t num, off_t multiple)
 {
     off_t mod;
 
@@ -2243,7 +2244,8 @@ strnull(char const * const str)
  *
  * Does not return on error or NULL pointer.
  */
-long string_to_long(char const *str)
+long
+string_to_long(char const *str)
 {
     long long num; /* use a long long for overflow/underflow checks */
 
@@ -2281,7 +2283,8 @@ long string_to_long(char const *str)
  *
  * Does not return on error or NULL pointer.
  */
-long long string_to_long_long(char const *str)
+long long
+string_to_long_long(char const *str)
 {
     long long num;
 
@@ -2324,7 +2327,8 @@ long long string_to_long_long(char const *str)
  *
  * Does not return on error or NULL pointer.
  */
-int string_to_int(char const *str)
+int
+string_to_int(char const *str)
 {
     long long num; /* use a long long for overflow/underflow checks */
 
@@ -2362,7 +2366,8 @@ int string_to_int(char const *str)
  *
  * Does not return on error.
  */
-unsigned long string_to_unsigned_long(char const *str)
+unsigned long
+string_to_unsigned_long(char const *str)
 {
     unsigned long num = 0;
 
@@ -2399,7 +2404,8 @@ unsigned long string_to_unsigned_long(char const *str)
  *
  * Does not return on error.
  */
-unsigned long long string_to_unsigned_long_long(char const *str)
+unsigned long long
+string_to_unsigned_long_long(char const *str)
 {
     unsigned long long num;
 
@@ -2437,7 +2443,8 @@ unsigned long long string_to_unsigned_long_long(char const *str)
  *
  * Returns false if it's invalid, NULL or empty string.
  */
-bool valid_contest_id(char *str)
+bool
+valid_contest_id(char *str)
 {
     size_t len;			/* input string length */
     int ret;			/* libc function return */
