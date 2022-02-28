@@ -2060,13 +2060,32 @@ round_to_multiple(off_t num, off_t multiple)
  *
  * This function will always add at least one extra byte of allocated
  * data to the end of the malloced buffer (zeroized as mentioned above).
- * So even if no data is read, the malloc buffer will contain at
- * least one extra zeroized byte.
+ * These extra bytes(s) WILL be set to NUL.  Thus, a file or stread
+ * without a NUL byte will return a NUL terminated C-style string.
+ *
+ * If no data is read, the malloc buffer will still be NUL terminated.
+ *
+ * If one is using is_string() to check if the data read is a string,
+ * one should check for ONE EXTRA BYTE!  That is:
+ *
+ *	data = read_all(stream, len);
+ *	if (data == NULL) {
+ *	    .. handle read_all errors ..
+ *	}
+ *
+ *	...
+ *
+ *	if (is_string(data, len+1) == true) {
+ *	    .. data has no internal NUL byte ..
+ *	} else {
+ *	    .. data has at least 1 internal NUL byte ..
+ }	}
  *
  * Because files can contain NUL bytes, the strlen() function on
  * the malloced buffer may return a different length than the
  * amount of data read from stream.  This is also why the function
  * returns a pointer to void.
+ *
  */
 void *
 read_all(FILE *stream, size_t *psize)
@@ -2221,6 +2240,10 @@ read_all(FILE *stream, size_t *psize)
  *	false ==> ptr is NULL, or
  *		  NUL character was found before the final byte, or
  *		  the string is not NUL terminated
+ *
+ * NOTE: If you are using is_string() to deetct if read_all() read an internal
+ *	 NUL byte, be sure to check for ONE EXTRA BYTE.  See the read_all()
+ *	 comment above for an example.
  */
 bool
 is_string(char const * const ptr, size_t len)

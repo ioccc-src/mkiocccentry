@@ -187,6 +187,19 @@ main(int argc, char *argv[])
 	dbg(DBG_MED, "stdin read length: %lu", (unsigned long)inputlen);
 
 	/*
+	 * warn if encode data contains an imbedded NUL byte
+	 *
+	 * NOTE: The read_all will ensure that at least one extra byte
+	 *	 will have been allodated and set to NUL.  Thus in order
+	 *	 to correctly check if data contains an imbedded NUL byte,
+	 *	 we MUST check for a length of inputlen+1!
+	 */
+	if (is_string(input, inputlen+1) == false) {
+	    warn(__func__, "encoded data that was read contains a NUL byte");
+	    error = true;
+	}
+
+	/*
 	 * decode data read from stdin
 	 */
 	buf = malloc_json_decode(input, inputlen, &bufsiz, strict);
