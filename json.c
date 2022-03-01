@@ -3,7 +3,7 @@
  * json - JSON functions supporting mkiocccentry code
  *
  * JSON related functions to support formation of .info.json files
- * and .author.json files their related check tools, test code,
+ * and .author.json files, their related check tools, test code,
  * and string encoding/decoding tools.
  *
  * "Because JSON embodies a commitment to original design flaws." :-)

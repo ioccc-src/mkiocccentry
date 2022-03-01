@@ -3,7 +3,7 @@
  * json - JSON functions supporting mkiocccentry code
  *
  * JSON related functions to support formation of .info.json files
- * and .author.json files their related check tools, test code,
+ * and .author.json files, their related check tools, test code,
  * and string encoding/decoding tools.
  *
  * "Because JSON embodies a commitment to original design flaws." :-)
@@ -77,7 +77,7 @@ struct json_value
 #define JSON_STRING	    (2)	    /* json field is supposed to be a string */
 #define JSON_ARRAY	    (3)	    /* json field is supposed to be an array */
 #define JSON_ARRAY_NUMBER   (5)	    /* json field is supposed to be a number in an array */
-#define JSON_ARRAY_BOOL	    (6)	    /* json field is supposed to be a number in an array (NB: not used) */
+#define JSON_ARRAY_BOOL	    (6)	    /* json field is supposed to be a bool in an array (NB: not used) */
 #define JSON_ARRAY_STRING   (7)	    /* json field is supposed to be a string in an array */
 #define JSON_NULL	    (-1)    /* json field is NULL (not null): used internally to mark end of the tables */
 
