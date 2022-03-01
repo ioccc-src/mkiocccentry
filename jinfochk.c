@@ -1077,12 +1077,9 @@ check_found_info_json_fields(char const *file, bool test)
 	    } else if (!strcmp(field->name, "found_try_rule")) {
 		info.found_try_rule = string_to_bool(val);
 	    } else {
-		/* TODO: after everything else is parsed if we get here it's an
-		 * error as there's an invalid field in the file.
-		 *
-		 * Currently (as of 27 February 2022) this is not done
-		 * because the arrays are not parsed yet.
-		 */
+		/* this should never actually be reached but just in case */
+		warn(__func__, "found invalid field '%s'", field->name);
+		++issues;
 	    }
 	}
     }
