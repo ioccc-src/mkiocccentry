@@ -758,8 +758,8 @@ check_found_author_json_fields(char const *file, bool test)
 	dbg(DBG_VHIGH, "checking field '%s' in file %s", field->name, file);
 	/* make sure the field is not over the limit allowed */
 	if (author_field->max_count > 0 && author_field->count > author_field->max_count) {
-	    warn(__func__, "field '%s' found %lu times but is only allowed %lu times", author_field->name,
-		    (unsigned long)author_field->count, (unsigned long)author_field->max_count);
+	    warn(__func__, "field '%s' found %lu times but is only allowed %lu time%s", author_field->name,
+		    (unsigned long)author_field->count, (unsigned long)author_field->max_count, author_field->max_count==1?"":"s");
 	    ++issues;
 	}
 
