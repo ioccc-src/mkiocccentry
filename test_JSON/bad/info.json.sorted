@@ -6,7 +6,7 @@
 		{"extra_file" : "extra1"},
 		{"extra_file" : "extra2"}
 		{"info_JSON" : ".info.json"},
-		{"remarks" : "remarks.md"}
+		{"remarks" : "remarks.md"},
 	],
 	"IOCCC_contest_id" : "12345678-1234-4321-abcd-1234567890ab",
 	"IOCCC_info_version" : "1.8 2022-02-13",

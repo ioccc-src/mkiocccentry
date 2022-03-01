@@ -1498,9 +1498,9 @@ malloc_json_decode(char const *ptr, size_t len, size_t *retlen, bool strict)
  *
  * NOTE: retlen, if non-NULL, is set to 0 on error
  *
- * NOTE: This function assumes that str is a valud C-style string with a terminating
+ * NOTE: This function assumes that str is a valid C-style string with a terminating
  *	 NUL byte.  This code assumes that the first NUL byte found is the end of
- *	 the string.  When withing with raw binary data, or data that could have
+ *	 the string.  When working with raw binary data, or data that could have
  *	 a NUL byte inside the block of memory (instead at the very end), this
  *	 function should NOT be used.  In such cases, malloc_json_decode() should
  *	 be used instead!
@@ -1632,7 +1632,13 @@ find_json_field_in_table(struct json_field *table, char const *name, size_t *loc
  *
  * This function checks if JSON_NULL is used on any field other than the NULL
  * field. It also makes sure that each field_type is valid. More tests might be
- * devised later on but this is a good start (27 Feb 2022).
+ * devised later on but this is a good start (28 Feb 2022).  Additionally it
+ * makes sure that there are no NULL elements before the final element.
+ *
+ * These sanity checks are performed on the common_json_fields table.
+ *
+ * NOTE: More tests might be devised later on but this is a good start (28 Feb
+ * 2022).
  *
  * This function does not return on error.
  */
@@ -1804,7 +1810,7 @@ check_last_json_char(char const *file, char *data, bool strict, char **last)
 /*
  * add_found_common_json_field - add to found_common_json_fields list
  *
- * This functio will add a common JSON field name and value to the found_common_json_fields list.
+ * This function will add a common JSON field name and value to the found_common_json_fields list.
  *
  * given:
  *
@@ -1876,7 +1882,7 @@ add_found_common_json_field(char const *name, char const *val)
 /*
  * get_common_json_field - add name, if it is common, to the common list
  *
- * This function will deterine of a name is common to both the .info.json
+ * This function will determine of a name is common to both the .info.json
  * as well as to .author.json.  If it is, then it will be added to the
  * common list.
  *

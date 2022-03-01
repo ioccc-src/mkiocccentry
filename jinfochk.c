@@ -170,13 +170,13 @@ main(int argc, char **argv)
     /* free any allocated memory in our info struct */
     free_info(&info);
 
-    if (issues != 0) {
+    if (issues != 0 && !test) {
 	dbg(DBG_LOW, "%s is invalid", file);
     }
     /*
      * All Done!!! - Jessica Noll, age 2
      */
-    exit(issues != 0); /*ooo*/
+    exit(issues != 0 && !test); /*ooo*/
 }
 
 
@@ -184,10 +184,13 @@ main(int argc, char **argv)
  * check_info_json_fields_table	 - sanity check info_json_fields table
  *
  * This function checks if JSON_NULL is used on any field other than the NULL
- * field. It also makes sure that each field_type is valid.  These sanitu checks
- * are performed with the info_json_fields table.
+ * field. It also makes sure that each field_type is valid. Additionally it
+ * makes sure that there are no NULL elements before the final element.
  *
- * NOTE: More tests might be devised later on but this is a good start (27 Feb 2022).
+ * These sanity checks are performed on the info_json_fields table.
+ *
+ * NOTE: More tests might be devised later on but this is a good start (28 Feb
+ * 2022).
  *
  * This function does not return on error.
  */
@@ -359,7 +362,6 @@ sanity_chk(char const *file, char const *fnamchk)
     return;
 }
 
-
 /*
  * check_info_json  - check file as .info.json
  *
@@ -386,7 +388,10 @@ check_info_json(char const *file, char const *fnamchk)
     char *p = NULL;	/* for field extraction */
     char *end = NULL;	/* temporary use: end of strings (p, field) for removing spaces */
     char *val = NULL;	/* current field's value being parsed */
-    char *savefield = NULL; /* for strtok_r() usage */
+    char *saveptr = NULL; /* for strtok_r() usage */
+    char *array = NULL; /* array extraction */
+    char *array_start = NULL; /* start of array */
+    char *array_dup = NULL; /* strdup()d copy of array */
     struct json_field *info_field; /* temporary use to determine type of value if .info.json field */
     struct json_field *common_field; /* temporary use to determine type of value if common field */
     size_t loc = 0;
@@ -462,8 +467,9 @@ check_info_json(char const *file, char const *fnamchk)
     ++p;
 
     /*
-     * Begin to parse the file, field by field (if it's not a validly formed
-     * JSON file an error will occur and the loop will be aborted).
+     * Begin to parse the file, field by field. Note that as of 1 March 2022
+     * this is not complete and there some files that are validly formed will
+     * trip the parser up. These will be fixed in a future commit.
      */
     do {
 	/* we have to skip leading whitespace */
@@ -471,7 +477,7 @@ check_info_json(char const *file, char const *fnamchk)
 	    ++p;
 
 	/* get the next field */
-	p = strtok_r(val?NULL:p, ":", &savefield);
+	p = strtok_r(val?NULL:p, ":,", &saveptr);
 	if (p == NULL) {
 	    break;
 	}
@@ -497,32 +503,65 @@ check_info_json(char const *file, char const *fnamchk)
 	 * After removing the spaces and a single '"' at the beginning and end,
 	 * if we find a '"' in the field (name) we know it's erroneous: thus we
 	 * can simply use strcmp() on it.
+	 *
+	 * Before we can extract the value we have to determine the field's type
+	 * of value: depending on the type of value we have to handle it
+	 * differently; the below function calls will help us do that.
+	 *
+	 * What they do is determine which field type it is: if it is common to
+	 * both .info.json and .author.json or if it belongs to .info.json: if
+	 * it's neither it's an error.
 	 */
 	info_field = find_json_field_in_table(info_json_fields, p, &loc);
 	common_field = find_json_field_in_table(common_json_fields, p, &loc);
 
-	/*
-	 * Before we can extract the value we have to determine the field's type
-	 * of value: depending on the type of value we have to handle it
-	 * differently; the above function calls will help us do that.
-	 */
+	/* manifest array is handled specially */
 	if (!strcmp(p, "manifest")) {
-	    /* TODO: handle the array */
-
-	    /* The below is only done to prevent infinite loop which occurs in
-	     * some cases (e.g. when "manifest" is at the top of the file) until
-	     * arrays are handled; when arrays are handled this will be changed.
+	    /* TODO The below only extracts the array: it does not yet parse it.
+	     * This will come in a future commit.
 	     */
-	    val = strtok_r(NULL, ",\0", &savefield);
-	    if (val == NULL) {
-		err(23, __func__, "unable to find value in file %s for field %s", file, p);
+	    if (!info_field) {
+		err(23, __func__, "manifest field not found in info_json_fields table");
 		not_reached();
 	    }
+
+	    /* find start of array */
+	    array_start = strtok_r(NULL, ":[{", &saveptr);
+	    if (array_start == NULL) {
+		err(24, __func__, "unable to find beginning of array");
+		not_reached();
+	    }
+
+	    /* extract the array */
+	    array = strtok_r(NULL, "]", &saveptr);
+	    if (array == NULL) {
+		err(25, __func__, "unable to extract array in file %s", file);
+		not_reached();
+	    }
+
+	    /* strdup() the array for special parsing */
+	    errno = 0;
+	    array_dup = strdup(array);
+	    if (array_dup == NULL) {
+		errp(26, __func__, "strdup() on array failed: %s", strerror(errno));
+		not_reached();
+	    }
+	    /*
+	     * Update p to go beyond the array.
+	     *
+	     * XXX Note that currently this means if the array is last you'll
+	     * see:
+	     *
+	     *	    check_info_json: unable to find value in file test_work/test-0/.info.json for field
+	     *
+	     * This will be fixed later.
+	     */
+	    p = array + strlen(array) + 1;
 	} else {
 	    /* extract the value */
-	    val = strtok_r(NULL, ",\0", &savefield);
+	    val = strtok_r(NULL, ",\0", &saveptr);
 	    if (val == NULL) {
-		err(24, __func__, "unable to find value in file %s for field %s", file, p);
+		err(27, __func__, "unable to find value in file %s for field %s", file, p);
 		not_reached();
 	    }
 
@@ -570,31 +609,43 @@ check_info_json(char const *file, char const *fnamchk)
     } while (true); /* end do while */
 
     /* free data */
-    free(data);
-    data = NULL;
+    if (data != NULL) {
+	/* Yes it's safe to free() a NULL pointer but we check for NULL anyway. */
+	free(data);
+	data = NULL;
+    }
 
     /* free strdup()d data */
-    free(data_dup);
-    data_dup = NULL;
+    if (data_dup != NULL) {
+	/* Yes it's safe to free() a NULL pointer but we check for NULL anyway. */
+	free(data_dup);
+	data_dup = NULL;
+    }
 
+    /* free strdup()d array */
+    if (array_dup != NULL) {
+	/* Yes it's safe to free() a NULL pointer but we check for NULL anyway. */
+	free(array_dup);
+	array_dup = NULL;
+    }
 
-    /*
-     * now iterate through the found_info_json_fields list, reporting any issues
-     */
+    /* check the found_info_json_fields list for issues */
     issues += check_found_info_json_fields(file, test);
 
     /* now free the found_info_json_fields list.
      *
-     * NOTE: after this the list will be NULL
+     * NOTE: after this the list will be NULL.
      */
     free_found_info_json_fields();
 
-    /* check the found_common_json_fields list */
+    /*
+     * check the found_common_json_fields list, updating the number of issues found
+     */
     issues += check_found_common_json_fields(program_basename, file, fnamchk, test);
 
     /* free the found_common_json_fields list.
      *
-     * NOTE: After this the list will be NULL
+     * NOTE: After this the list will be NULL.
      */
     free_found_common_json_fields();
 
@@ -632,7 +683,7 @@ get_info_json_field(char const *file, char *name, char *val)
      * firewall
      */
     if (file == NULL || name == NULL || val == NULL) {
-	err(25, __func__, "passed NULL arg(s)");
+	err(28, __func__, "passed NULL arg(s)");
 	not_reached();
     }
 
@@ -680,13 +731,13 @@ add_found_info_json_field(char const *name, char const *val)
      * firewall
      */
     if (name == NULL || val == NULL) {
-	err(26, __func__, "passed NULL arg(s)");
+	err(29, __func__, "passed NULL arg(s)");
 	not_reached();
     }
 
     field_in_table = find_json_field_in_table(info_json_fields, name, &loc);
     if (field_in_table == NULL) {
-	err(27, __func__, "called add_found_info_json_field() on field '%s' not specific to .info.json", name);
+	err(30, __func__, "called add_found_info_json_field() on field '%s' not specific to .info.json", name);
 	not_reached();
     }
     /*
@@ -708,7 +759,7 @@ add_found_info_json_field(char const *name, char const *val)
 		 * this shouldn't happen as if add_json_value() gets an error
 		 * it'll abort but just to be safe we check here too
 		 */
-		err(28, __func__, "error adding json value '%s' to field '%s'", val, field->name);
+		err(31, __func__, "error adding json value '%s' to field '%s'", val, field->name);
 		not_reached();
 	    }
 
@@ -728,7 +779,7 @@ add_found_info_json_field(char const *name, char const *val)
 	 * we should never get here because if new_json_field gets NULL it
 	 * aborts the program.
 	 */
-	err(29, __func__, "error creating new struct json_field * for field '%s' value '%s'", name, val);
+	err(32, __func__, "error creating new struct json_field * for field '%s' value '%s'", name, val);
 	not_reached();
     }
 
@@ -774,7 +825,7 @@ check_found_info_json_fields(char const *file, bool test)
      * firewall
      */
     if (file == NULL) {
-	err(30, __func__, "passed NULL file");
+	err(33, __func__, "passed NULL file");
 	not_reached();
     }
 
@@ -783,7 +834,7 @@ check_found_info_json_fields(char const *file, bool test)
 	 * first make sure the name != NULL and strlen() > 0
 	 */
 	if (field->name == NULL || !strlen(field->name)) {
-	    err(31, __func__, "found NULL or empty field in found_info_json_fields list");
+	    err(34, __func__, "found NULL or empty field in found_info_json_fields list");
 	    not_reached();
 	}
 
@@ -798,7 +849,7 @@ check_found_info_json_fields(char const *file, bool test)
 	 * info list is not a info field name.
 	 */
 	if (info_field == NULL) {
-	    err(32, __func__, "illegal field name '%s' in found_info_json_fields list", field->name);
+	    err(35, __func__, "illegal field name '%s' in found_info_json_fields list", field->name);
 	    not_reached();
 	}
 
@@ -828,7 +879,7 @@ check_found_info_json_fields(char const *file, bool test)
 			++issues;
 			continue;
 		    } else {
-			dbg(DBG_VHIGH, "%s is a bool", val);
+			dbg(DBG_VHIGH, "... %s is a bool", val);
 		    }
 		    break;
 		case JSON_ARRAY_BOOL:
@@ -839,7 +890,7 @@ check_found_info_json_fields(char const *file, bool test)
 			++issues;
 			continue;
 		    } else {
-			dbg(DBG_VHIGH, "%s is a number", val);
+			dbg(DBG_VHIGH, "... %s is a number", val);
 		    }
 		    break;
 		case JSON_ARRAY_NUMBER:
@@ -936,11 +987,8 @@ check_found_info_json_fields(char const *file, bool test)
     /*
      * Now we have to do some additional sanity tests like bool mismatches etc.
      *
-     * XXX More tests need to be added here!
-     */
-
-    /*
-     * If Makefile override is set to true and there's no problems found with
+     *
+     * If Makefile override is set to true and there are no problems found with
      * the Makefile there's a mismatch: check and report if this is the case.
      */
     if (info.Makefile_override && info.first_rule_is_all && info.found_all_rule &&
@@ -948,6 +996,7 @@ check_found_info_json_fields(char const *file, bool test)
 	warn(__func__, "Makefile_override == true but all expected Makefile rules found and 'all:' is first");
 	++issues;
     }
+
     /*
      * If info.found_all_rule == false and info.first_rule_is_all == true
      * there's a mismatch: check this and report if this is the case.
@@ -977,7 +1026,7 @@ check_found_info_json_fields(char const *file, bool test)
 
 
 /*
- * free_found_info_json_fields - free the infos json fields list
+ * free_found_info_json_fields - free the found_info_json_fields list
  */
 static void
 free_found_info_json_fields(void)
