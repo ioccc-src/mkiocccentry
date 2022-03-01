@@ -528,6 +528,15 @@ check_info_json(char const *file, char const *fnamchk)
 		not_reached();
 	    }
 
+	    /*
+	     * Add the manifest field to the found_info_json_fields list: it can
+	     * have an empty value as all we care about is that it's been seen;
+	     * the values of the array we will parse below.
+	     */
+	    if (!get_info_json_field(file, "manifest", "")) {
+		warn(__func__, "couldn't add manifest to found_info_json_fields");
+	    }
+
 	    /* find start of array */
 	    array_start = strtok_r(NULL, ":[{", &saveptr);
 	    if (array_start == NULL) {
@@ -920,7 +929,11 @@ check_found_info_json_fields(char const *file, bool test)
 	    char *val = value->value;
 	    val_length = strlen(val);
 
-	    if (!val_length) {
+	    if (!val_length && strcmp(field->name, "manifest")) {
+		/*
+		 * manifest has an empty value in a sense so we only do this for
+		 * fields that aren't manifest.
+		 */
 		warn(__func__, "empty value found for field '%s' in file %s", field->name, file);
 		/* don't increase issues because the below checks will do that
 		 * too: this warning only notes the reason the test will fail.
@@ -1076,7 +1089,7 @@ check_found_info_json_fields(char const *file, bool test)
 		info.found_clobber_rule = string_to_bool(val);
 	    } else if (!strcmp(field->name, "found_try_rule")) {
 		info.found_try_rule = string_to_bool(val);
-	    } else {
+	    } else if (strcmp(field->name, "manifest")) {
 		/* this should never actually be reached but just in case */
 		warn(__func__, "found invalid field '%s'", field->name);
 		++issues;
@@ -1120,6 +1133,23 @@ check_found_info_json_fields(char const *file, bool test)
 	warn(__func__, "empty_override == false but rule 2a and/or rule 2b size == 0");
 	++issues;
     }
+
+    /*
+     * Now that we've checked each field by name, we still have to make sure
+     * that each field expected is actually there. Note that in the above loop
+     * we already tested if each field has been seen more times than allowed so
+     * we don't do that here. This is because the fields that are in the list
+     * are those that will potentially have more than allowed whereas here we're
+     * making sure every field that is required is actually in the list.
+     */
+    for (loc = 0; info_json_fields[loc].name != NULL; ++loc) {
+	if (!info_json_fields[loc].found) {
+	    warn(__func__, "field '%s' not found in found_info_json_fields list", info_json_fields[loc].name);
+	    ++issues;
+	}
+    }
+
+
 
     return issues;
 }
