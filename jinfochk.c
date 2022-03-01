@@ -657,10 +657,8 @@ check_info_json(char const *file, char const *fnamchk)
 	    if (get_common_json_field(program_basename, file, p, val)) {
 	    } else if (get_info_json_field(file, p, val)) {
 	    } else {
-		/*
-		 * invalid field: currently we cannot report this as an issue
-		 * since arrays are not handled yet.
-		 */
+		warn(__func__, "invalid field '%s' found in file %s", p, file);
+		++issues;
 	    }
 	}
     } while (true); /* end do while */
