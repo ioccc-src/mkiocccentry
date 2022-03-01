@@ -583,7 +583,7 @@ check_info_json(char const *file, char const *fnamchk)
 
 		array_val = strtok_r(NULL, ":,", &array_saveptr);
 		if (array_val == NULL) {
-		    err(35, __func__, "array element %s without value", array_field);
+		    err(27, __func__, "array element %s without value", array_field);
 		}
 		/* remove leading spaces from value */
 		while (*array_val && isspace(*array_val))
@@ -627,7 +627,7 @@ check_info_json(char const *file, char const *fnamchk)
 	    /* extract the value */
 	    val = strtok_r(NULL, ",\0", &saveptr);
 	    if (val == NULL) {
-		err(27, __func__, "unable to find value in file %s for field %s", file, p);
+		err(28, __func__, "unable to find value in file %s for field %s", file, p);
 		not_reached();
 	    }
 
@@ -747,7 +747,7 @@ get_info_json_field(char const *file, char *name, char *val)
      * firewall
      */
     if (file == NULL || name == NULL || val == NULL) {
-	err(28, __func__, "passed NULL arg(s)");
+	err(29, __func__, "passed NULL arg(s)");
 	not_reached();
     }
 
@@ -795,13 +795,13 @@ add_found_info_json_field(char const *name, char const *val)
      * firewall
      */
     if (name == NULL || val == NULL) {
-	err(29, __func__, "passed NULL arg(s)");
+	err(30, __func__, "passed NULL arg(s)");
 	not_reached();
     }
 
     field_in_table = find_json_field_in_table(info_json_fields, name, &loc);
     if (field_in_table == NULL) {
-	err(30, __func__, "called add_found_info_json_field() on field '%s' not specific to .info.json", name);
+	err(31, __func__, "called add_found_info_json_field() on field '%s' not specific to .info.json", name);
 	not_reached();
     }
     /*
@@ -823,7 +823,7 @@ add_found_info_json_field(char const *name, char const *val)
 		 * this shouldn't happen as if add_json_value() gets an error
 		 * it'll abort but just to be safe we check here too
 		 */
-		err(31, __func__, "error adding json value '%s' to field '%s'", val, field->name);
+		err(32, __func__, "error adding json value '%s' to field '%s'", val, field->name);
 		not_reached();
 	    }
 
@@ -843,7 +843,7 @@ add_found_info_json_field(char const *name, char const *val)
 	 * we should never get here because if new_json_field gets NULL it
 	 * aborts the program.
 	 */
-	err(32, __func__, "error creating new struct json_field * for field '%s' value '%s'", name, val);
+	err(33, __func__, "error creating new struct json_field * for field '%s' value '%s'", name, val);
 	not_reached();
     }
 
@@ -889,7 +889,7 @@ check_found_info_json_fields(char const *file, bool test)
      * firewall
      */
     if (file == NULL) {
-	err(33, __func__, "passed NULL file");
+	err(34, __func__, "passed NULL file");
 	not_reached();
     }
 
@@ -898,7 +898,7 @@ check_found_info_json_fields(char const *file, bool test)
 	 * first make sure the name != NULL and strlen() > 0
 	 */
 	if (field->name == NULL || !strlen(field->name)) {
-	    err(34, __func__, "found NULL or empty field in found_info_json_fields list");
+	    err(35, __func__, "found NULL or empty field in found_info_json_fields list");
 	    not_reached();
 	}
 
@@ -913,7 +913,7 @@ check_found_info_json_fields(char const *file, bool test)
 	 * info list is not a info field name.
 	 */
 	if (info_field == NULL) {
-	    err(35, __func__, "illegal field name '%s' in found_info_json_fields list", field->name);
+	    err(36, __func__, "illegal field name '%s' in found_info_json_fields list", field->name);
 	    not_reached();
 	}
 
