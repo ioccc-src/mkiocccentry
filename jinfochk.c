@@ -950,8 +950,6 @@ check_found_info_json_fields(char const *file, bool test)
 			dbg(DBG_VHIGH, "... %s is a bool", val);
 		    }
 		    break;
-		case JSON_ARRAY_BOOL:
-		    break; /* arrays are not handled yet */
 		case JSON_NUMBER:
 		    if (!is_number(val)) {
 			warn(__func__, "number field '%s' has non-number value '%s' in file %s", info_field->name, val, file);
@@ -961,9 +959,9 @@ check_found_info_json_fields(char const *file, bool test)
 			dbg(DBG_VHIGH, "... %s is a number", val);
 		    }
 		    break;
-		case JSON_ARRAY_NUMBER:
-		    break; /* arrays are not handled yet */
 		default:
+		case JSON_ARRAY_NUMBER: /* no array fields are of number type */
+		case JSON_ARRAY_BOOL: /* no array fields are of bool type */
 		    break;
 	    }
 
