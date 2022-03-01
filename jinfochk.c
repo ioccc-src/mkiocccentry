@@ -392,6 +392,9 @@ check_info_json(char const *file, char const *fnamchk)
     char *array = NULL; /* array extraction */
     char *array_start = NULL; /* start of array */
     char *array_dup = NULL; /* strdup()d copy of array */
+    char *array_field = NULL; /* for extraction of array fields */
+    char *array_saveptr = NULL; /* for strtok_r() on array_dup */
+    char *array_val = NULL; /* for extraction of array values */
     struct json_field *info_field; /* temporary use to determine type of value if .info.json field */
     struct json_field *common_field; /* temporary use to determine type of value if common field */
     size_t loc = 0;
@@ -546,6 +549,60 @@ check_info_json(char const *file, char const *fnamchk)
 		errp(26, __func__, "strdup() on array failed: %s", strerror(errno));
 		not_reached();
 	    }
+
+	    do {
+		array_field = strtok_r(array_val?NULL:array_dup, "{ \t\n", &array_saveptr);
+		if (array_field == NULL) {
+		    break;
+		}
+		/* skip leading whitespace on the field */
+		while (*array_field && isspace(*array_field))
+		    ++array_field;
+
+		/* remove a single '"' if one exists at the beginning (*p == '"') */
+		if (*array_field == '"')
+		    ++array_field;
+
+		/* also skip trailing spaces */
+		end = array_field + strlen(array_field) - 1;
+		while (*end && isspace(*end))
+		    *end-- = '\0';
+
+		/* remove a single '"' if one exists at the end (*end == '"') */
+		if (*end == '"')
+		    *end = '\0';
+
+		array_val = strtok_r(NULL, ":,", &array_saveptr);
+		if (array_val == NULL) {
+		    err(35, __func__, "array element %s without value", array_field);
+		}
+		/* remove leading spaces from value */
+		while (*array_val && isspace(*array_val))
+		    ++array_val;
+
+		/* remove a single '"' if one exists at the beginning (*p == '"') */
+		if (*array_val == '"')
+		    ++array_val;
+
+		/* also skip trailing spaces */
+		end = array_val + strlen(array_val) - 1;
+		while (*end && isspace(*end))
+		    *end-- = '\0';
+
+		/* remove a single '}' if one exists at the end (*end == '}') */
+		if (*end == '}')
+		    *end-- = '\0';
+		/* then remove the closing '"' */
+		if (*end == '"')
+		    *end = '\0';
+
+		if (get_info_json_field(file, array_field, array_val)) {
+		} else {
+		    warn(__func__, "found invalid field in array");
+		    ++issues;
+		}
+
+	    } while (true);
 	    /*
 	     * Update p to go beyond the array.
 	     *
@@ -856,8 +913,8 @@ check_found_info_json_fields(char const *file, bool test)
 	dbg(DBG_VHIGH, "checking field '%s' in file %s", field->name, file);
 	/* make sure the field is not over the limit allowed */
 	if (info_field->max_count > 0 && info_field->count > info_field->max_count) {
-	    warn(__func__, "field '%s' found %lu times but is only allowed %lu times", info_field->name,
-		    (unsigned long)info_field->count, (unsigned long)info_field->max_count);
+	    warn(__func__, "field '%s' found %lu times but is only allowed %lu time%s", info_field->name,
+		    (unsigned long)info_field->count, (unsigned long)info_field->max_count, info_field->max_count==1?"":"s");
 	    ++issues;
 	}
 
@@ -934,6 +991,54 @@ check_found_info_json_fields(char const *file, bool test)
 				      (unsigned long)val_length, MAX_ABSTRACT_LEN);
 		    ++issues;
 		}
+	    } else if (!strcmp(field->name, "info_JSON")) {
+		if (strcmp(val, ".info.json")) {
+		    warn(__func__, "found invalid info_JSON value: '%s'", val);
+		    ++issues;
+		}
+	    } else if (!strcmp(field->name, "author_JSON")) {
+	    	if (strcmp(val, ".author.json")) {
+		    warn(__func__, "found invalid author_JSON value: '%s'", val);
+		    ++issues;
+		}
+	    } else if (!strcmp(field->name, "c_src")) {
+		if (strcmp(val, "prog.c")) {
+		    warn(__func__, "found invalid c_src value: '%s'", val);
+		    ++issues;
+		}
+	    } else if (!strcmp(field->name, "Makefile")) {
+		if (strcmp(val, "Makefile")) {
+		    warn(__func__, "found invalid Makefile value: '%s'", val);
+		    ++issues;
+		}
+	    } else if (!strcmp(field->name, "remarks")) {
+		if (strcmp(val, "remarks.md")) {
+		    warn(__func__, "found invalid remarks value: '%s'", val);
+		    ++issues;
+		}
+	    } else if (!strcmp(field->name, "extra_file")) {
+		size_t j;
+		if (val_length > MAX_BASENAME_LEN) {
+		    warn(__func__, "extra file name length %lu > the limit %lu", (unsigned long)val_length, (unsigned long)MAX_BASENAME_LEN);
+		    ++issues;
+		}
+		if (!isascii(*val) || !isalnum(*val)) {
+		    warn(__func__, "extra data file: %s starts with an invalid character: %c", val, *val);
+		    ++issues;
+		}
+		for (j = 0; j < val_length; ++j) {
+		    if (!isascii(val[j]) ||
+			(!isalnum(val[j]) &&
+			 val[j] != '.' &&
+			 val[j] != '_' &&
+			 val[j] != '-' &&
+			 val[j] != '+')) {
+			    warn(__func__, "extra data file: %s does not only consist of POSIX Fully portable characters and +", val);
+			    ++issues;
+			    break;
+		    }
+		}
+
 	    /*
 	     * The next checks for boolean names could be cleaned up: for now
 	     * we use strcmp() on each and every name but perhaps a table for
