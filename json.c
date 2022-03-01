@@ -3,7 +3,7 @@
  * json - JSON functions supporting mkiocccentry code
  *
  * JSON related functions to support formation of .info.json files
- * and .author.json files their related check tools, test code,
+ * and .author.json files, their related check tools, test code,
  * and string encoding/decoding tools.
  *
  * "Because JSON embodies a commitment to original design flaws." :-)
@@ -1498,9 +1498,9 @@ malloc_json_decode(char const *ptr, size_t len, size_t *retlen, bool strict)
  *
  * NOTE: retlen, if non-NULL, is set to 0 on error
  *
- * NOTE: This function assumes that str is a valud C-style string with a terminating
+ * NOTE: This function assumes that str is a valid C-style string with a terminating
  *	 NUL byte.  This code assumes that the first NUL byte found is the end of
- *	 the string.  When withing with raw binary data, or data that could have
+ *	 the string.  When working with raw binary data, or data that could have
  *	 a NUL byte inside the block of memory (instead at the very end), this
  *	 function should NOT be used.  In such cases, malloc_json_decode() should
  *	 be used instead!
@@ -1632,7 +1632,13 @@ find_json_field_in_table(struct json_field *table, char const *name, size_t *loc
  *
  * This function checks if JSON_NULL is used on any field other than the NULL
  * field. It also makes sure that each field_type is valid. More tests might be
- * devised later on but this is a good start (27 Feb 2022).
+ * devised later on but this is a good start (28 Feb 2022).  Additionally it
+ * makes sure that there are no NULL elements before the final element.
+ *
+ * These sanity checks are performed on the common_json_fields table.
+ *
+ * NOTE: More tests might be devised later on but this is a good start (28 Feb
+ * 2022).
  *
  * This function does not return on error.
  */
@@ -1804,7 +1810,7 @@ check_last_json_char(char const *file, char *data, bool strict, char **last)
 /*
  * add_found_common_json_field - add to found_common_json_fields list
  *
- * This functio will add a common JSON field name and value to the found_common_json_fields list.
+ * This function will add a common JSON field name and value to the found_common_json_fields list.
  *
  * given:
  *
@@ -1876,7 +1882,7 @@ add_found_common_json_field(char const *name, char const *val)
 /*
  * get_common_json_field - add name, if it is common, to the common list
  *
- * This function will deterine of a name is common to both the .info.json
+ * This function will determine of a name is common to both the .info.json
  * as well as to .author.json.  If it is, then it will be added to the
  * common list.
  *
@@ -1923,10 +1929,11 @@ get_common_json_field(char const *program, char const *file, char *name, char *v
 
 
 /*
- * check_found_common_json_fields - found_common_json_fields tabke check
+ * check_found_common_json_fields - found_common_json_fields table check
  *
- * The found_common_json_fields table will be checked to determine of
- * all fields have a valid value.
+ * The found_common_json_fields table will be checked to determine if
+ * all fields have a valid value. It also checks that the expected fields are in
+ * the file.
  *
  * given:
  *
@@ -2261,6 +2268,9 @@ new_json_field(char const *name, char const *val)
  * This function returns the newly allocated struct json_value * with the value
  * strdup()d and added to the struct json_field * values list.
  *
+ * If the value of the field is already in the field we simply increment the
+ * counter of the value.
+ *
  * NOTE: This function does not return on error.
  *
  */
@@ -2278,6 +2288,16 @@ add_json_value(struct json_field *field, char const *val)
 	not_reached();
     }
 
+    /* try locating the value's value in the field's value list */
+    for (value = field->values; value; value = value->next) {
+	if (!strcmp(value->value, val)) {
+	    value->count++;
+	    return value;
+	}
+    }
+
+    /* if we get here then the value has not been seen yet */
+
     errno = 0;
     new_value = calloc(1, sizeof *new_value);
     if (new_value == NULL) {
@@ -2290,16 +2310,11 @@ add_json_value(struct json_field *field, char const *val)
 	errp(236, __func__, "error strdup()ing value '%s' for field '%s': %s", val, field->name, strerror(errno));
 	not_reached();
     }
-    /* find end of list */
-    for (value = field->values; value != NULL && value->next != NULL; value = value->next)
-	; /* satisfy warnings */
 
-    /* append new value to values list (field->values) */
-    if (!value) {
-	field->values = new_value;
-    } else {
-	value->next = new_value;
-    }
+    new_value->count = 1;
+    new_value->next = field->values;
+    field->values = new_value;
+
     return new_value;
 }
 
