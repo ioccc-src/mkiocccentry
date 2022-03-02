@@ -741,6 +741,14 @@ check_info_json(char const *file, char const *fnamchk)
      */
     free_found_common_json_fields();
 
+    /*
+     * free the manifest_files list
+     *
+     * NOTE: After this the list will be NULL.
+     */
+    free_manifest_files_list();
+
+
     /* if issues != 0 there will be a non-zero return status of jinfochk */
     return issues;
 }
@@ -885,6 +893,116 @@ add_found_info_json_field(char const *name, char const *val)
     return field;
 }
 
+/* add_manifest_file	- add filename to manifest_files list
+ *
+ * given:
+ *
+ *	filename	- name of file to add to manifest_files list
+ *
+ * This list is used to detect if any filenames are duplicates.
+ *
+ * NOTE: If the filename is already in the files list we only increment the
+ * counter; we don't add a new struct manifest_file * to the list.
+ *
+ * If filename is NULL or empty value warn about it and return NULL.
+ *
+ * This function does not return on error.
+ *
+ */
+static struct manifest_file *
+add_manifest_file(char const *filename)
+{
+    struct manifest_file *ptr = NULL; /* to check if the file already is in the manifest files list */
+    struct manifest_file *file = NULL; /* the newly allocated manifest_file * */
+
+    /*
+     * firewall
+     */
+    if (filename == NULL || strlen(filename) == 0) {
+	warn(__func__, "passed NULL or empty filename");
+	return NULL;
+    }
+
+    for (ptr = manifest_files; ptr != NULL; ptr = ptr->next)
+    {
+	if (!strcmp(ptr->filename, filename)) {
+	    dbg(DBG_MED, "incrementing count of filename %s", filename);
+	    ptr->count++;
+	    return ptr;
+	}
+    }
+
+    errno = 0;
+    file = calloc(1, sizeof *file);
+    if (file == NULL) {
+	err(35, __func__, "calloc() error allocating struct manifest_file * for filename %s", filename);
+	not_reached();
+    }
+
+    errno = 0;
+    file->filename = strdup(filename);
+    if (file->filename == NULL) {
+	err(36, __func__, "strdup() error on filename %s", filename);
+	not_reached();
+    }
+
+    file->count = 1;
+
+    file->next = manifest_files;
+    manifest_files = file;
+
+    return file;
+}
+
+/* free_manifest_file	    - free a struct manifest_file *
+ *
+ * given:
+ *
+ *	file		    - the manifest_file * to free
+ *
+ * This function does not return on NULL pointer because a NULL pointer should
+ * never be passed to the function.
+ *
+ */
+static void
+free_manifest_file(struct manifest_file *file)
+{
+    /*
+     * firewall
+     */
+    if (file == NULL) {
+	err(37, __func__, "passed NULL file");
+	not_reached();
+    }
+
+    free(file->filename);
+    file->filename = NULL;
+
+    free(file);
+    file = NULL; /* not helpful here but I always set pointers to NULL after freeing */
+}
+
+
+/* free_manifest_files_list	- free the manifest_files list
+ *
+ * NOTE: If the manifest_files list is NULL this function does nothing.
+ */
+static void
+free_manifest_files_list(void)
+{
+    struct manifest_file *file, *next_file;
+
+    for (file = manifest_files; file != NULL; file = next_file) {
+	next_file = file->next;
+
+	free_manifest_file(file);
+
+	file = NULL;
+    }
+
+    manifest_files = NULL;
+}
+
 
 /*
  * check_found_info_json_fields - found_info_json_fields table value check
@@ -908,6 +1026,7 @@ check_found_info_json_fields(char const *file, bool test)
     struct json_field *field; /* current field in found_info_json_fields list */
     struct json_value *value; /* current value in current field's values list */
     struct json_field *info_field = NULL; /* element in the info_json_fields table */
+    struct manifest_file *manifest_file = NULL;
     size_t loc = 0;	/* location in the info_json_fields table */
     size_t val_length = 0;
     int issues = 0;
@@ -962,10 +1081,8 @@ check_found_info_json_fields(char const *file, bool test)
 		 * manifest has an empty value in a sense so we only do this for
 		 * fields that aren't manifest.
 		 */
-		warn(__func__, "empty value found for field '%s' in file %s", field->name, file);
-		/* don't increase issues because the below checks will do that
-		 * too: this warning only notes the reason the test will fail.
-		 */
+		err(35, __func__, "empty value found for field '%s' in file %s", field->name, file);
+		not_reached();
 	    }
 
 	    /*
@@ -1050,28 +1167,54 @@ check_found_info_json_fields(char const *file, bool test)
 		    warn(__func__, "found invalid info_JSON value: '%s'", val);
 		    ++issues;
 		}
+		manifest_file = add_manifest_file(val);
+		if (manifest_file == NULL) {
+		    err(35, __func__, "couldn't add info_JSON file '%s'", val);
+		    not_reached();
+		}
 	    } else if (!strcmp(field->name, "author_JSON")) {
 	    	if (strcmp(val, ".author.json")) {
 		    warn(__func__, "found invalid author_JSON value: '%s'", val);
 		    ++issues;
+		}
+		manifest_file = add_manifest_file(val);
+		if (manifest_file == NULL) {
+		    err(35, __func__, "couldn't add author_JSON file '%s'", val);
+		    not_reached();
 		}
 	    } else if (!strcmp(field->name, "c_src")) {
 		if (strcmp(val, "prog.c")) {
 		    warn(__func__, "found invalid c_src value: '%s'", val);
 		    ++issues;
 		}
+		manifest_file = add_manifest_file(val);
+		if (manifest_file == NULL) {
+		    err(35, __func__, "couldn't add c_src file '%s'", val);
+		    not_reached();
+		}
 	    } else if (!strcmp(field->name, "Makefile")) {
 		if (strcmp(val, "Makefile")) {
 		    warn(__func__, "found invalid Makefile value: '%s'", val);
 		    ++issues;
+		}
+		manifest_file = add_manifest_file(val);
+		if (manifest_file == NULL) {
+		    err(35, __func__, "couldn't add Makefile file '%s'", val);
+		    not_reached();
 		}
 	    } else if (!strcmp(field->name, "remarks")) {
 		if (strcmp(val, "remarks.md")) {
 		    warn(__func__, "found invalid remarks value: '%s'", val);
 		    ++issues;
 		}
+		manifest_file = add_manifest_file(val);
+		if (manifest_file == NULL) {
+		    err(35, __func__, "couldn't add remarks file '%s'", val);
+		    not_reached();
+		}
 	    } else if (!strcmp(field->name, "extra_file")) {
 		size_t j;
+
 		if (val_length > MAX_BASENAME_LEN) {
 		    warn(__func__, "extra file name length %lu > the limit %lu", (unsigned long)val_length, (unsigned long)MAX_BASENAME_LEN);
 		    ++issues;
@@ -1091,6 +1234,11 @@ check_found_info_json_fields(char const *file, bool test)
 			    ++issues;
 			    break;
 		    }
+		}
+		manifest_file = add_manifest_file(val);
+		if (manifest_file == NULL) {
+		    err(35, __func__, "couldn't add extra_file file '%s'", val);
+		    not_reached();
 		}
 	    } else if (!strcmp(field->name, "rule_2a_size")) {
 		info.rule_2a_size = string_to_long_long(val);
@@ -1181,6 +1329,18 @@ check_found_info_json_fields(char const *file, bool test)
     for (loc = 0; info_json_fields[loc].name != NULL; ++loc) {
 	if (!info_json_fields[loc].found) {
 	    warn(__func__, "field '%s' not found in found_info_json_fields list", info_json_fields[loc].name);
+	    ++issues;
+	}
+    }
+
+    /*
+     * Check for duplicate files in the manifest.
+     *
+     * XXX This should probably be in its own function.
+     */
+    for (manifest_file = manifest_files; manifest_file; manifest_file = manifest_file->next) {
+	if (manifest_file->count > 1) {
+	    warn(__func__, "found duplicate file '%s' (count: %lu)", manifest_file->filename, (unsigned long)manifest_file->count);
 	    ++issues;
 	}
     }

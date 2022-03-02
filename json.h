@@ -67,8 +67,6 @@ struct json_value
 {
     char *value;
 
-    size_t count;
-
     struct json_value *next;
 };
 

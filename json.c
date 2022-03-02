@@ -2268,10 +2268,10 @@ new_json_field(char const *name, char const *val)
  * This function returns the newly allocated struct json_value * with the value
  * strdup()d and added to the struct json_field * values list.
  *
- * If the value of the field is already in the field we simply increment the
- * counter of the value.
+ * NOTE: If the value of the field is already in the field we still add the
+ * value.
  *
- * NOTE: This function does not return on error.
+ * This function does not return on error.
  *
  */
 struct json_value *
@@ -2288,16 +2288,7 @@ add_json_value(struct json_field *field, char const *val)
 	not_reached();
     }
 
-    /* try locating the value's value in the field's value list */
-    for (value = field->values; value; value = value->next) {
-	if (!strcmp(value->value, val)) {
-	    value->count++;
-	    return value;
-	}
-    }
-
-    /* if we get here then the value has not been seen yet */
-
+    /* allocate new json_value */
     errno = 0;
     new_value = calloc(1, sizeof *new_value);
     if (new_value == NULL) {
@@ -2311,9 +2302,16 @@ add_json_value(struct json_field *field, char const *val)
 	not_reached();
     }
 
-    new_value->count = 1;
-    new_value->next = field->values;
-    field->values = new_value;
+    /* find end of list */
+    for (value = field->values; value != NULL && value->next != NULL; value = value->next)
+	; /* satisfy warnings */
+
+    /* append new value to values list (field->values) */
+    if (!value) {
+	field->values = new_value;
+    } else {
+	value->next = new_value;
+    }
 
     return new_value;
 }
