@@ -452,7 +452,7 @@ check_info_json(char const *file, char const *fnamchk)
      * what comes after the '{' (in parsing); that is to say we proceed in
      * parsing after the first '{' but after the '}' we don't continue.
      */
-    if (check_last_json_char(file, data_dup, strict, &p)) {
+    if (check_last_json_char(file, data_dup, strict, &p, '}')) {
 	err(21, __func__, "last character in file %s not a '}': '%c'", file, *p);
 	not_reached();
     }
@@ -461,8 +461,14 @@ check_info_json(char const *file, char const *fnamchk)
     /* remove closing brace (and any whitespace after it) */
     *p = '\0';
 
+    /* check that the new last char is NOT a ',' */
+    if (!check_last_json_char(file, data_dup, strict, &p, ',')) {
+	err(22, __func__, "last char is a ',' in file %s", file);
+	not_reached();
+    }
+
     /* verify that the very first character is a '{' */
-    if (check_first_json_char(file, data_dup, strict, &p)) {
+    if (check_first_json_char(file, data_dup, strict, &p, '{')) {
 	err(22, __func__, "first character in file %s not a '{': '%c'", file, *p);
 	not_reached();
     }

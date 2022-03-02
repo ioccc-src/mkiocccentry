@@ -1715,7 +1715,7 @@ json_filename(int type)
 
 
 /*
- * check_first_json_char - check if first char is '{'
+ * check_first_json_char - check if first char is ch
  *
  * given:
  *
@@ -1724,14 +1724,14 @@ json_filename(int type)
  *	strict		- true ==> disallow anything (including whitespace) before the first '{'.
  *	first		- if != NULL set *first to the first character
  *
- *  Returns 0 if first character is '{' and 1 if it is not.
+ *  Returns 0 if first character is ch and 1 if it is not.
  *
  *  Sets *first to the first character (for debugging purposes).
  *
  *  Does not return on NULL.
  */
 int
-check_first_json_char(char const *file, char *data, bool strict, char **first)
+check_first_json_char(char const *file, char *data, bool strict, char **first, char ch)
 {
     /*
      * firewall
@@ -1752,14 +1752,14 @@ check_first_json_char(char const *file, char *data, bool strict, char **first)
 	*first = data;
     }
 
-    if (*data != '{')
+    if (*data != ch)
 	return 1;
     return 0;
 }
 
 
 /*
- * check_last_json_char - check if last char is '}'
+ * check_last_json_char - check if last char is ch 
  *
  * given:
  *
@@ -1767,13 +1767,14 @@ check_first_json_char(char const *file, char *data, bool strict, char **first)
  *	data		- the data read in from the file
  *	strict		- true ==> permit only a single trailing newline ("\n") after the last '}'.
  *	last		- if != NULL set *last to last char
+ *	ch		- the char to check that the last char is
  *
- *  Returns 0 if last character is '}' and 1 if it is not.
+ *  Returns 0 if last character is ch and 1 if it is not.
  *
  *  Does not return on error.
  */
 int
-check_last_json_char(char const *file, char *data, bool strict, char **last)
+check_last_json_char(char const *file, char *data, bool strict, char **last, char ch)
 {
     char *p;
 
@@ -1800,7 +1801,7 @@ check_last_json_char(char const *file, char *data, bool strict, char **last)
     if (last != NULL) {
 	*last = p;
     }
-    if (*p != '}')
+    if (*p != ch)
 	return 1;
 
     return 0;

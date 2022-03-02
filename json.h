@@ -233,8 +233,8 @@ extern char *malloc_json_decode_str(char const *str, size_t *retlen, bool strict
 /* jinfochk and jauthchk related */
 extern struct json_field *find_json_field_in_table(struct json_field *table, char const *name, size_t *loc);
 extern char const *json_filename(int type);
-extern int check_first_json_char(char const *file, char *data, bool strict, char **first);
-extern int check_last_json_char(char const *file, char *data, bool strict, char **last);
+extern int check_first_json_char(char const *file, char *data, bool strict, char **first, char ch);
+extern int check_last_json_char(char const *file, char *data, bool strict, char **last, char ch);
 extern struct json_field *add_found_common_json_field(char const *name, char const *val);
 extern void check_common_json_fields_table(void);
 extern int get_common_json_field(char const *program, char const *file, char *name, char *val);
