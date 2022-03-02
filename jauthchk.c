@@ -505,7 +505,6 @@ check_author_json(char const *file, char const *fnamchk)
 	author_field = find_json_field_in_table(author_json_fields, p, &loc);
 	common_field = find_json_field_in_table(common_json_fields, p, &loc);
 
-	dbg(DBG_NONE, "p: '%s'", p);
 	/*
 	 * Before we can extract the value we have to determine the field's type
 	 * of value: depending on the type of value we have to handle it
@@ -542,7 +541,6 @@ check_author_json(char const *file, char const *fnamchk)
 		errp(26, __func__, "strdup() on array failed: %s", strerror(errno));
 		not_reached();
 	    }
-	    dbg(DBG_NONE, "array: '%s'", array);
 	    /*
 	     * Update p to go beyond the array.
 	     *
