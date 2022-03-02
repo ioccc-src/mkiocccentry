@@ -483,7 +483,7 @@ check_info_json(char const *file, char const *fnamchk)
 
 	/* get the next field */
 	p = strtok_r(val?NULL:p, ":,", &saveptr);
-	if (p == NULL) {
+	if (p == NULL || *p == '\0') {
 	    break;
 	}
 
@@ -503,6 +503,9 @@ check_info_json(char const *file, char const *fnamchk)
 	/* remove a single '"' if one exists at the end (*end == '"') */
 	if (*end == '"')
 	    *end = '\0';
+
+	if (*p == '\0')
+	    break;
 
 	/*
 	 * After removing the spaces and a single '"' at the beginning and end,
@@ -643,7 +646,7 @@ check_info_json(char const *file, char const *fnamchk)
 	    /* extract the value */
 	    val = strtok_r(NULL, ",\0", &saveptr);
 	    if (val == NULL) {
-		err(29, __func__, "unable to find value in file %s for field %s", file, p);
+		err(29, __func__, "unable to find value in file %s for field '%s'", file, p);
 		not_reached();
 	    }
 
@@ -935,14 +938,14 @@ add_manifest_file(char const *filename)
     errno = 0;
     file = calloc(1, sizeof *file);
     if (file == NULL) {
-	err(35, __func__, "calloc() error allocating struct manifest_file * for filename %s", filename);
+	err(36, __func__, "calloc() error allocating struct manifest_file * for filename %s", filename);
 	not_reached();
     }
 
     errno = 0;
     file->filename = strdup(filename);
     if (file->filename == NULL) {
-	err(36, __func__, "strdup() error on filename %s", filename);
+	err(37, __func__, "strdup() error on filename %s", filename);
 	not_reached();
     }
 
@@ -971,7 +974,7 @@ free_manifest_file(struct manifest_file *file)
      * firewall
      */
     if (file == NULL) {
-	err(37, __func__, "passed NULL file");
+	err(38, __func__, "passed NULL file");
 	not_reached();
     }
 
@@ -1036,7 +1039,7 @@ check_found_info_json_fields(char const *file, bool test)
      * firewall
      */
     if (file == NULL) {
-	err(36, __func__, "passed NULL file");
+	err(39, __func__, "passed NULL file");
 	not_reached();
     }
 
@@ -1045,7 +1048,7 @@ check_found_info_json_fields(char const *file, bool test)
 	 * first make sure the name != NULL and strlen() > 0
 	 */
 	if (field->name == NULL || !strlen(field->name)) {
-	    err(37, __func__, "found NULL or empty field in found_info_json_fields list");
+	    err(40, __func__, "found NULL or empty field in found_info_json_fields list");
 	    not_reached();
 	}
 
@@ -1060,7 +1063,7 @@ check_found_info_json_fields(char const *file, bool test)
 	 * info list is not a info field name.
 	 */
 	if (info_field == NULL) {
-	    err(38, __func__, "illegal field name '%s' in found_info_json_fields list", field->name);
+	    err(41, __func__, "illegal field name '%s' in found_info_json_fields list", field->name);
 	    not_reached();
 	}
 
@@ -1081,7 +1084,7 @@ check_found_info_json_fields(char const *file, bool test)
 		 * manifest has an empty value in a sense so we only do this for
 		 * fields that aren't manifest.
 		 */
-		err(35, __func__, "empty value found for field '%s' in file %s", field->name, file);
+		err(42, __func__, "empty value found for field '%s' in file %s", field->name, file);
 		not_reached();
 	    }
 
@@ -1169,7 +1172,7 @@ check_found_info_json_fields(char const *file, bool test)
 		}
 		manifest_file = add_manifest_file(val);
 		if (manifest_file == NULL) {
-		    err(35, __func__, "couldn't add info_JSON file '%s'", val);
+		    err(43, __func__, "couldn't add info_JSON file '%s'", val);
 		    not_reached();
 		}
 	    } else if (!strcmp(field->name, "author_JSON")) {
@@ -1179,7 +1182,7 @@ check_found_info_json_fields(char const *file, bool test)
 		}
 		manifest_file = add_manifest_file(val);
 		if (manifest_file == NULL) {
-		    err(35, __func__, "couldn't add author_JSON file '%s'", val);
+		    err(44, __func__, "couldn't add author_JSON file '%s'", val);
 		    not_reached();
 		}
 	    } else if (!strcmp(field->name, "c_src")) {
@@ -1189,7 +1192,7 @@ check_found_info_json_fields(char const *file, bool test)
 		}
 		manifest_file = add_manifest_file(val);
 		if (manifest_file == NULL) {
-		    err(35, __func__, "couldn't add c_src file '%s'", val);
+		    err(45, __func__, "couldn't add c_src file '%s'", val);
 		    not_reached();
 		}
 	    } else if (!strcmp(field->name, "Makefile")) {
@@ -1199,7 +1202,7 @@ check_found_info_json_fields(char const *file, bool test)
 		}
 		manifest_file = add_manifest_file(val);
 		if (manifest_file == NULL) {
-		    err(35, __func__, "couldn't add Makefile file '%s'", val);
+		    err(46, __func__, "couldn't add Makefile file '%s'", val);
 		    not_reached();
 		}
 	    } else if (!strcmp(field->name, "remarks")) {
@@ -1209,7 +1212,7 @@ check_found_info_json_fields(char const *file, bool test)
 		}
 		manifest_file = add_manifest_file(val);
 		if (manifest_file == NULL) {
-		    err(35, __func__, "couldn't add remarks file '%s'", val);
+		    err(47, __func__, "couldn't add remarks file '%s'", val);
 		    not_reached();
 		}
 	    } else if (!strcmp(field->name, "extra_file")) {
@@ -1237,7 +1240,7 @@ check_found_info_json_fields(char const *file, bool test)
 		}
 		manifest_file = add_manifest_file(val);
 		if (manifest_file == NULL) {
-		    err(35, __func__, "couldn't add extra_file file '%s'", val);
+		    err(48, __func__, "couldn't add extra_file file '%s'", val);
 		    not_reached();
 		}
 	    } else if (!strcmp(field->name, "rule_2a_size")) {
