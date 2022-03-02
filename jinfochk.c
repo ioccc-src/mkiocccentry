@@ -388,6 +388,7 @@ check_info_json(char const *file, char const *fnamchk)
     char *p = NULL;	/* for field extraction */
     char *end = NULL;	/* temporary use: end of strings (p, field) for removing spaces */
     char *val = NULL;	/* current field's value being parsed */
+    char *val_esc = NULL; /* for malloc_json_decode_str() */
     char *saveptr = NULL; /* for strtok_r() usage */
     char *array = NULL; /* array extraction */
     char *array_start = NULL; /* start of array */
@@ -395,6 +396,7 @@ check_info_json(char const *file, char const *fnamchk)
     char *array_field = NULL; /* for extraction of array fields */
     char *array_saveptr = NULL; /* for strtok_r() on array_dup */
     char *array_val = NULL; /* for extraction of array values */
+    char *array_val_esc = NULL; /* for malloc_json_decode_str() */
     struct json_field *info_field; /* temporary use to determine type of value if .info.json field */
     struct json_field *common_field; /* temporary use to determine type of value if common field */
     size_t loc = 0;
@@ -471,7 +473,7 @@ check_info_json(char const *file, char const *fnamchk)
 
     /*
      * Begin to parse the file, field by field. Note that as of 1 March 2022
-     * this is not complete and there some files that are validly formed will
+     * this is not complete and some files that are validly formed will
      * trip the parser up. These will be fixed in a future commit.
      */
     do {
@@ -584,6 +586,7 @@ check_info_json(char const *file, char const *fnamchk)
 		array_val = strtok_r(NULL, ":,", &array_saveptr);
 		if (array_val == NULL) {
 		    err(27, __func__, "array element %s without value", array_field);
+		    not_reached();
 		}
 		/* remove leading spaces from value */
 		while (*array_val && isspace(*array_val))
@@ -605,11 +608,24 @@ check_info_json(char const *file, char const *fnamchk)
 		if (*end == '"')
 		    *end = '\0';
 
-		if (get_info_json_field(file, array_field, array_val)) {
+		/*
+		 * We have to determine if characters were properly escaped
+		 * according to the JSON spec.
+		 */
+		array_val_esc = malloc_json_decode_str(array_val, NULL, strict);
+		if (array_dup == NULL) {
+		    err(28, __func__, "malloc_json_decode_str() failed: invalidly formed value '%s' or malloc failure in file %s", array_val, file);
+		    not_reached();
+		}
+		if (get_info_json_field(file, array_field, array_val_esc)) {
 		} else {
 		    warn(__func__, "found invalid field in array");
 		    ++issues;
 		}
+
+		/* free the decoded array value */
+		free(array_val_esc);
+		array_val_esc = NULL;
 
 	    } while (true);
 	    /*
@@ -627,7 +643,7 @@ check_info_json(char const *file, char const *fnamchk)
 	    /* extract the value */
 	    val = strtok_r(NULL, ",\0", &saveptr);
 	    if (val == NULL) {
-		err(28, __func__, "unable to find value in file %s for field %s", file, p);
+		err(29, __func__, "unable to find value in file %s for field %s", file, p);
 		not_reached();
 	    }
 
@@ -655,20 +671,32 @@ check_info_json(char const *file, char const *fnamchk)
 		    end = val + strlen(val) - 1;
 		    if (*end == '"')
 			*end = '\0';
-
 		    /*
 		     * after removing the spaces and a single '"' at the beginning and end,
 		     * if we find a '"' in the field we know it's erroneous.
 		     */
 	    }
 
+	    /*
+	     * We have to determine if characters were properly escaped
+	     * according to the JSON spec.
+	     */
+	    val_esc = malloc_json_decode_str(val, NULL, strict);
+	    if (val_esc == NULL) {
+		err(30, __func__, "malloc_json_decode_str() failed: invalidly formed value '%s' or malloc failure in file %s", val, file);
+		not_reached();
+	    }
 	    /* handle regular field */
-	    if (get_common_json_field(program_basename, file, p, val)) {
-	    } else if (get_info_json_field(file, p, val)) {
+	    if (get_common_json_field(program_basename, file, p, val_esc)) {
+	    } else if (get_info_json_field(file, p, val_esc)) {
 	    } else {
 		warn(__func__, "invalid field '%s' found in file %s", p, file);
 		++issues;
 	    }
+
+	    /* free the JSON decoded value */
+	    free(val_esc);
+	    val_esc = NULL;
 	}
     } while (true); /* end do while */
 
@@ -747,7 +775,7 @@ get_info_json_field(char const *file, char *name, char *val)
      * firewall
      */
     if (file == NULL || name == NULL || val == NULL) {
-	err(29, __func__, "passed NULL arg(s)");
+	err(31, __func__, "passed NULL arg(s)");
 	not_reached();
     }
 
@@ -795,13 +823,13 @@ add_found_info_json_field(char const *name, char const *val)
      * firewall
      */
     if (name == NULL || val == NULL) {
-	err(30, __func__, "passed NULL arg(s)");
+	err(32, __func__, "passed NULL arg(s)");
 	not_reached();
     }
 
     field_in_table = find_json_field_in_table(info_json_fields, name, &loc);
     if (field_in_table == NULL) {
-	err(31, __func__, "called add_found_info_json_field() on field '%s' not specific to .info.json", name);
+	err(33, __func__, "called add_found_info_json_field() on field '%s' not specific to .info.json", name);
 	not_reached();
     }
     /*
@@ -823,7 +851,7 @@ add_found_info_json_field(char const *name, char const *val)
 		 * this shouldn't happen as if add_json_value() gets an error
 		 * it'll abort but just to be safe we check here too
 		 */
-		err(32, __func__, "error adding json value '%s' to field '%s'", val, field->name);
+		err(34, __func__, "error adding json value '%s' to field '%s'", val, field->name);
 		not_reached();
 	    }
 
@@ -843,7 +871,7 @@ add_found_info_json_field(char const *name, char const *val)
 	 * we should never get here because if new_json_field gets NULL it
 	 * aborts the program.
 	 */
-	err(33, __func__, "error creating new struct json_field * for field '%s' value '%s'", name, val);
+	err(35, __func__, "error creating new struct json_field * for field '%s' value '%s'", name, val);
 	not_reached();
     }
 
@@ -889,7 +917,7 @@ check_found_info_json_fields(char const *file, bool test)
      * firewall
      */
     if (file == NULL) {
-	err(34, __func__, "passed NULL file");
+	err(36, __func__, "passed NULL file");
 	not_reached();
     }
 
@@ -898,7 +926,7 @@ check_found_info_json_fields(char const *file, bool test)
 	 * first make sure the name != NULL and strlen() > 0
 	 */
 	if (field->name == NULL || !strlen(field->name)) {
-	    err(35, __func__, "found NULL or empty field in found_info_json_fields list");
+	    err(37, __func__, "found NULL or empty field in found_info_json_fields list");
 	    not_reached();
 	}
 
@@ -913,7 +941,7 @@ check_found_info_json_fields(char const *file, bool test)
 	 * info list is not a info field name.
 	 */
 	if (info_field == NULL) {
-	    err(36, __func__, "illegal field name '%s' in found_info_json_fields list", field->name);
+	    err(38, __func__, "illegal field name '%s' in found_info_json_fields list", field->name);
 	    not_reached();
 	}
 
