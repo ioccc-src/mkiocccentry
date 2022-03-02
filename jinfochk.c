@@ -616,7 +616,7 @@ check_info_json(char const *file, char const *fnamchk)
 		 * according to the JSON spec.
 		 */
 		array_val_esc = malloc_json_decode_str(array_val, NULL, strict);
-		if (array_dup == NULL) {
+		if (array_val_esc == NULL) {
 		    err(28, __func__, "malloc_json_decode_str() failed: invalidly formed value '%s' or malloc failure in file %s", array_val, file);
 		    not_reached();
 		}
