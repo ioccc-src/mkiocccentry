@@ -714,7 +714,9 @@ get_author_json_field(char const *file, char *name, char *val)
  * check_found_author_json_fields - found_author_json_fields table value check
  *
  * Verify that all the fields in the found_author_json_fields table have
- * values that are valid.
+ * values that are valid and that all fields that are required are in the file
+ * (TODO as of 2 March 2022 this is not actually done because arrays are not yet
+ * parsed: we have to extract all fields first before this test can be added).
  *
  *  given:
  *
@@ -786,7 +788,14 @@ check_found_author_json_fields(char const *file, bool test)
 		 * too: this warning only notes the reason the test will fail.
 		 */
 	    }
-	    /* first we do checks on the field type */
+
+	    /*
+	     * First we do checks on the field type. We only have to check
+	     * numbers and bools: because for strings there's nothing to
+	     * check: we remove the outermost '"'s and then use strcmp() whereas
+	     * for numbers and bools we want to make sure that they're actually
+	     * valid values.
+	     */
 	    switch (author_field->field_type) {
 		case JSON_BOOL:
 		    if (strcmp(val, "false") && strcmp(val, "true")) {
@@ -813,7 +822,6 @@ check_found_author_json_fields(char const *file, bool test)
 		default:
 		    break;
 	    }
-
 
 	    if (!strcmp(field->name, "IOCCC_author_version")) {
 		if (!test && strcmp(val, AUTHOR_VERSION)) {

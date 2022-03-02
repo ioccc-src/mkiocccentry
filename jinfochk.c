@@ -890,7 +890,7 @@ add_found_info_json_field(char const *name, char const *val)
  * check_found_info_json_fields - found_info_json_fields table value check
  *
  * Verify that all the fields in the found_info_json_fields table have values
- * that are valid.
+ * that are valid and that all fields that are required are in the file.
  *
  *  given:
  *
@@ -967,7 +967,18 @@ check_found_info_json_fields(char const *file, bool test)
 		 * too: this warning only notes the reason the test will fail.
 		 */
 	    }
-	    /* first we do checks on the field type */
+
+	    /*
+	     * First we do checks on the field type. We only have to check
+	     * numbers and bools: because for strings there's nothing to
+	     * check: we remove the outermost '"'s and then use strcmp() whereas
+	     * for numbers and bools we want to make sure that they're actually
+	     * valid values.
+	     *
+	     * A note on the booleans checked later: perhaps a table could be
+	     * used for easier assignment but for now we do strcmp() on each
+	     * name individually.
+	     */
 	    switch (info_field->field_type) {
 		case JSON_BOOL:
 		    if (strcmp(val, "false") && strcmp(val, "true")) {
@@ -1013,6 +1024,12 @@ check_found_info_json_fields(char const *file, bool test)
 		    warn(__func__, "first char of title '%c' invalid", *val);
 		    ++issues;
 		} else {
+		    /*
+		     * XXX this will not detect ',' in the title which is
+		     * actually an invalid char: this is because strtok_r()
+		     * removes the ',' in the parsing. This has to be fixed at a
+		     * later date.
+		     */
 		    span = strspn(val, TAIL_TITLE_CHARS);
 		    if (span != val_length) {
 			warn(__func__, "invalid chars found in title \"%s\"", val);
@@ -1075,12 +1092,6 @@ check_found_info_json_fields(char const *file, bool test)
 			    break;
 		    }
 		}
-
-	    /*
-	     * The next checks for boolean names could be cleaned up: for now
-	     * we use strcmp() on each and every name but perhaps a table for
-	     * booleans should be formed for easier assignment.
-	     */
 	    } else if (!strcmp(field->name, "rule_2a_size")) {
 		info.rule_2a_size = string_to_long_long(val);
 	    } else if (!strcmp(field->name, "rule_2b_size")) {
@@ -1125,7 +1136,6 @@ check_found_info_json_fields(char const *file, bool test)
 
     /*
      * Now we have to do some additional sanity tests like bool mismatches etc.
-     *
      *
      * If Makefile override is set to true and there are no problems found with
      * the Makefile there's a mismatch: check and report if this is the case.
@@ -1174,8 +1184,6 @@ check_found_info_json_fields(char const *file, bool test)
 	    ++issues;
 	}
     }
-
-
 
     return issues;
 }
