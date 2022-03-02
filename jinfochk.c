@@ -461,8 +461,11 @@ check_info_json(char const *file, char const *fnamchk)
     /* remove closing brace (and any whitespace after it) */
     *p = '\0';
 
-    /* check that the new last char is NOT a ',' */
-    if (!check_last_json_char(file, data_dup, strict, &p, ',')) {
+    /*
+     * Check that the new last char is NOT a ','. Don't do strict checking
+     * because we want the end spaces to be trimmed off first.
+     */
+    if (!check_last_json_char(file, data_dup, false, &p, ',')) {
 	err(22, __func__, "last char is a ',' in file %s", file);
 	not_reached();
     }
