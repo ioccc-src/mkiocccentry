@@ -471,7 +471,7 @@ struct location loc[] = {
  *
  * This table ends in a NULL entry.
  */
-struct utf8_ascii_map hmap[BYTE_VALUES] =
+struct utf8_ascii_map hmap[] =
 {
     /* \x00 -\x0f */
     {"\x00", ""},		/* NUL */
