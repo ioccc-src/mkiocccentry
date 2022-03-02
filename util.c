@@ -2422,7 +2422,7 @@ read_all(FILE *stream, size_t *psize)
  *		  NUL character was found before the final byte, or
  *		  the string is not NUL terminated
  *
- * NOTE: If you are using is_string() to deetct if read_all() read an internal
+ * NOTE: If you are using is_string() to detect if read_all() read an internal
  *	 NUL byte, be sure to check for ONE EXTRA BYTE.  See the read_all()
  *	 comment above for an example.
  */
