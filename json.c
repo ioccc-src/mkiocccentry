@@ -1715,7 +1715,7 @@ json_filename(int type)
 
 
 /*
- * check_first_json_char - check if first char is '{'
+ * check_first_json_char - check if first char is ch
  *
  * given:
  *
@@ -1724,14 +1724,14 @@ json_filename(int type)
  *	strict		- true ==> disallow anything (including whitespace) before the first '{'.
  *	first		- if != NULL set *first to the first character
  *
- *  Returns 0 if first character is '{' and 1 if it is not.
+ *  Returns 0 if first character is ch and 1 if it is not.
  *
  *  Sets *first to the first character (for debugging purposes).
  *
  *  Does not return on NULL.
  */
 int
-check_first_json_char(char const *file, char *data, bool strict, char **first)
+check_first_json_char(char const *file, char *data, bool strict, char **first, char ch)
 {
     /*
      * firewall
@@ -1752,14 +1752,14 @@ check_first_json_char(char const *file, char *data, bool strict, char **first)
 	*first = data;
     }
 
-    if (*data != '{')
+    if (*data != ch)
 	return 1;
     return 0;
 }
 
 
 /*
- * check_last_json_char - check if last char is '}'
+ * check_last_json_char - check if last char is ch 
  *
  * given:
  *
@@ -1767,13 +1767,14 @@ check_first_json_char(char const *file, char *data, bool strict, char **first)
  *	data		- the data read in from the file
  *	strict		- true ==> permit only a single trailing newline ("\n") after the last '}'.
  *	last		- if != NULL set *last to last char
+ *	ch		- the char to check that the last char is
  *
- *  Returns 0 if last character is '}' and 1 if it is not.
+ *  Returns 0 if last character is ch and 1 if it is not.
  *
  *  Does not return on error.
  */
 int
-check_last_json_char(char const *file, char *data, bool strict, char **last)
+check_last_json_char(char const *file, char *data, bool strict, char **last, char ch)
 {
     char *p;
 
@@ -1800,7 +1801,7 @@ check_last_json_char(char const *file, char *data, bool strict, char **last)
     if (last != NULL) {
 	*last = p;
     }
-    if (*p != '}')
+    if (*p != ch)
 	return 1;
 
     return 0;
@@ -2268,10 +2269,10 @@ new_json_field(char const *name, char const *val)
  * This function returns the newly allocated struct json_value * with the value
  * strdup()d and added to the struct json_field * values list.
  *
- * If the value of the field is already in the field we simply increment the
- * counter of the value.
+ * NOTE: If the value of the field is already in the field we still add the
+ * value.
  *
- * NOTE: This function does not return on error.
+ * This function does not return on error.
  *
  */
 struct json_value *
@@ -2288,16 +2289,7 @@ add_json_value(struct json_field *field, char const *val)
 	not_reached();
     }
 
-    /* try locating the value's value in the field's value list */
-    for (value = field->values; value; value = value->next) {
-	if (!strcmp(value->value, val)) {
-	    value->count++;
-	    return value;
-	}
-    }
-
-    /* if we get here then the value has not been seen yet */
-
+    /* allocate new json_value */
     errno = 0;
     new_value = calloc(1, sizeof *new_value);
     if (new_value == NULL) {
@@ -2311,9 +2303,16 @@ add_json_value(struct json_field *field, char const *val)
 	not_reached();
     }
 
-    new_value->count = 1;
-    new_value->next = field->values;
-    field->values = new_value;
+    /* find end of list */
+    for (value = field->values; value != NULL && value->next != NULL; value = value->next)
+	; /* satisfy warnings */
+
+    /* append new value to values list (field->values) */
+    if (!value) {
+	field->values = new_value;
+    } else {
+	value->next = new_value;
+    }
 
     return new_value;
 }

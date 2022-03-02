@@ -4317,16 +4317,16 @@ get_author_info(struct info *infop, char *ioccc_id, struct author **author_set_p
 	    j = 0; /* set j to 0 for when there's more than one author */
 
 	    /*
-	     * request IOCCC winner handle
+	     * request IOCCC author handle
 	     */
-	    author_set[i].winner_handle = NULL;
-	    author_set[i].winner_handle = prompt(need_hints ?
+	    author_set[i].author_handle = NULL;
+	    author_set[i].author_handle = prompt(need_hints ?
 		"Enter author's previous IOCCC winner handle, or press return if none" :
 		"Enter author's previous IOCCC winner handle", &len);
 	    if (len == 0) {
 		dbg(DBG_VHIGH, "IOCCC winner handle not given");
 	    } else {
-		dbg(DBG_VHIGH, "IOCCC winner handle: %s", author_set[i].winner_handle);
+		dbg(DBG_VHIGH, "IOCCC winner handle: %s", author_set[i].author_handle);
 	    }
 
 	    /*
@@ -4348,9 +4348,9 @@ get_author_info(struct info *infop, char *ioccc_id, struct author **author_set_p
 		/*
 		 * free storage
 		 */
-		if (author_set[i].winner_handle != NULL) {
-		    free(author_set[i].winner_handle);
-		    author_set[i].winner_handle = NULL;
+		if (author_set[i].author_handle != NULL) {
+		    free(author_set[i].author_handle);
+		    author_set[i].author_handle = NULL;
 		}
 		continue;
 	    }
@@ -4359,7 +4359,7 @@ get_author_info(struct info *infop, char *ioccc_id, struct author **author_set_p
 	     * IOCCC winner handle, if given, must start with a alphanumeric character
 	     */
 	    if (len > 0 &&
-		(!isascii(author_set[i].winner_handle[0]) || !isalnum(author_set[i].winner_handle[0]))) {
+		(!isascii(author_set[i].author_handle[0]) || !isalnum(author_set[i].author_handle[0]))) {
 		fpara(stderr,
 		      "",
 		      "IOCCC winner handles must start with an alphanumeric character:",
@@ -4367,9 +4367,9 @@ get_author_info(struct info *infop, char *ioccc_id, struct author **author_set_p
 		      "    A-Z a-z 0-9",
 		      "",
 		      NULL);
-		if (author_set[i].winner_handle != NULL) {
-		    free(author_set[i].winner_handle);
-		    author_set[i].winner_handle = NULL;
+		if (author_set[i].author_handle != NULL) {
+		    free(author_set[i].author_handle);
+		    author_set[i].author_handle = NULL;
 		}
 		continue;
 	    }
@@ -4378,12 +4378,12 @@ get_author_info(struct info *infop, char *ioccc_id, struct author **author_set_p
 	     * IOCCC winner handle must only use POSIX Fully portable characters: A-Z a-z 0-9 . _ - and the + character
 	     */
 	    for (j=0; j < (int)len; ++j) {
-		if (!isascii(author_set[i].winner_handle[j]) ||
-		    (!isalnum(author_set[i].winner_handle[j]) &&
-		     author_set[i].winner_handle[j] != '.' &&
-		     author_set[i].winner_handle[j] != '_' &&
-		     author_set[i].winner_handle[j] != '-' &&
-		     author_set[i].winner_handle[j] != '+')) {
+		if (!isascii(author_set[i].author_handle[j]) ||
+		    (!isalnum(author_set[i].author_handle[j]) &&
+		     author_set[i].author_handle[j] != '.' &&
+		     author_set[i].author_handle[j] != '_' &&
+		     author_set[i].author_handle[j] != '-' &&
+		     author_set[i].author_handle[j] != '+')) {
 		    fpara(stderr,
 			  "",
 			  "IOCCC winner handles consist of POSIX Fully portable characters and +:",
@@ -4391,19 +4391,19 @@ get_author_info(struct info *infop, char *ioccc_id, struct author **author_set_p
 			  "    A-Z a-z 0-9 . _ - +",
 			  "",
 			  NULL);
-		    if (author_set[i].winner_handle != NULL) {
-			free(author_set[i].winner_handle);
-			author_set[i].winner_handle = NULL;
+		    if (author_set[i].author_handle != NULL) {
+			free(author_set[i].author_handle);
+			author_set[i].author_handle = NULL;
 		    }
 		    break;
 		}
 	    }
-	} while (author_set[i].winner_handle == NULL && need_retry);
-	if (author_set[i].winner_handle == NULL) {
+	} while (author_set[i].author_handle == NULL && need_retry);
+	if (author_set[i].author_handle == NULL) {
 	    errp(145, __func__, "retry prompt is disabled");
 	    not_reached();
 	}
-	dbg(DBG_MED, "Author #%d IOCCC winner handle: %s", i, author_set[i].winner_handle);
+	dbg(DBG_MED, "Author #%d IOCCC winner handle: %s", i, author_set[i].author_handle);
 
 	/*
 	 * verify the information for this author
@@ -4422,8 +4422,8 @@ get_author_info(struct info *infop, char *ioccc_id, struct author **author_set_p
 						 printf("GitHub username: %s\n", author_set[i].github)) <= 0 ||
 	    ((author_set[i].affiliation[0] == '\0') ? printf("Affiliation not given\n") :
 						      printf("Affiliation: %s\n", author_set[i].affiliation)) <= 0 ||
-	    ((author_set[i].winner_handle[0] == '\0') ? printf("IOCCC winner handle\n\n") :
-						        printf("IOCCC winner handle: %s\n\n", author_set[i].winner_handle)) <= 0) {
+	    ((author_set[i].author_handle[0] == '\0') ? printf("IOCCC winner handle\n\n") :
+						        printf("IOCCC winner handle: %s\n\n", author_set[i].author_handle)) <= 0) {
 	    errp(146, __func__, "error while printing author #%d information\n", i);
 	    not_reached();
 	}
@@ -5285,7 +5285,7 @@ write_author(struct info *infop, int author_count, struct author *authorp, char 
 	    json_fprintf_value_string(author_stream, "\t\t\t", "twitter", " : ", strnull(authorp[i].twitter), ",\n") &&
 	    json_fprintf_value_string(author_stream, "\t\t\t", "github", " : ", strnull(authorp[i].github), ",\n") &&
 	    json_fprintf_value_string(author_stream, "\t\t\t", "affiliation", " : ", strnull(authorp[i].affiliation), ",\n") &&
-	    json_fprintf_value_string(author_stream, "\t\t\t", "winner_handle", " : ", strnull(authorp[i].winner_handle), ",\n") &&
+	    json_fprintf_value_string(author_stream, "\t\t\t", "author_handle", " : ", strnull(authorp[i].author_handle), ",\n") &&
 	    json_fprintf_value_long(author_stream, "\t\t\t", "author_number", " : ", authorp[i].author_num, "\n") &&
 	    fprintf(author_stream, "\t\t}%s\n", (((i + 1) < author_count) ? "," : "")) > 0;
 	if (ret < 0) {

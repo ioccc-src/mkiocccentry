@@ -67,8 +67,6 @@ struct json_value
 {
     char *value;
 
-    size_t count;
-
     struct json_value *next;
 };
 
@@ -172,7 +170,7 @@ struct author {
     char *twitter;		/* author twitter handle or or empty string ==> not provided */
     char *github;		/* author GitHub username or or empty string ==> not provided */
     char *affiliation;		/* author affiliation or or empty string ==> not provided */
-    char *winner_handle;	/* previous IOCCC winner handle, or empty string ==> not provided */
+    char *author_handle;	/* IOCCC handle (for winning entries) or empty string ==> not provided */
     int author_num;		/* author number */
 
     struct json_common common;	/* fields that are common to this struct author and struct info (below) */
@@ -235,8 +233,8 @@ extern char *malloc_json_decode_str(char const *str, size_t *retlen, bool strict
 /* jinfochk and jauthchk related */
 extern struct json_field *find_json_field_in_table(struct json_field *table, char const *name, size_t *loc);
 extern char const *json_filename(int type);
-extern int check_first_json_char(char const *file, char *data, bool strict, char **first);
-extern int check_last_json_char(char const *file, char *data, bool strict, char **last);
+extern int check_first_json_char(char const *file, char *data, bool strict, char **first, char ch);
+extern int check_last_json_char(char const *file, char *data, bool strict, char **last, char ch);
 extern struct json_field *add_found_common_json_field(char const *name, char const *val);
 extern void check_common_json_fields_table(void);
 extern int get_common_json_field(char const *program, char const *file, char *name, char *val);

@@ -43,6 +43,14 @@
  */
 #include "limit_ioccc.h"
 
+struct manifest_file {
+    char *filename;	    /* filename of the file */
+    size_t count;	    /* number of times this filename is in the list */
+
+    struct manifest_file *next;	    /* the next in the list */
+};
+
+static struct manifest_file *manifest_files; /* list of files in the manifest: to detect if any filenames are duplicates */
 
 /*
  * usage message
@@ -94,6 +102,9 @@ static int get_info_json_field(char const *file, char *name, char *val);
 static int check_found_info_json_fields(char const *file, bool test);
 static void check_info_json_fields_table(void);
 static void free_found_info_json_fields(void);
+static struct manifest_file *add_manifest_file(char const *filename);
+static void free_manifest_files_list(void);
+static void free_manifest_file(struct manifest_file *file);
 
 
 #endif /* INCLUDE_JINFOCHK_H */

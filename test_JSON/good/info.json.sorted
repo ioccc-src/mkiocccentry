@@ -4,7 +4,7 @@
 		{"author_JSON" : ".author.json"},
 		{"c_src" : "prog.c"},
 		{"extra_file" : "extra1"},
-		{"extra_file" : "extra2"}
+		{"extra_file" : "extra2"},
 		{"info_JSON" : ".info.json"},
 		{"remarks" : "remarks.md"}
 	],
