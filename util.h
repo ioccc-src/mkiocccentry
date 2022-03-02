@@ -59,6 +59,14 @@ struct location {
 };
 
 /*
+ * map UTF-8 to POXIS Fully portable characters (and +)
+ */
+struct utf8_ascii_map {
+    char *utf8_str;	/* UTF-8 string encode - use \x hex as needed */
+    char *ascii_str;	/* ASCII good enough replacement for utf8_str */
+};
+
+/*
  * definitions
  */
 #define LITLEN(x) (sizeof(x)-1)	/* length of a literal string w/o the NUL byte */
@@ -100,6 +108,7 @@ struct location {
  * global variables
  */
 extern struct location loc[];		/* location/country codes */
+extern struct utf8_ascii_map hmap[];	/* name to author handle map */
 
 /*
  * external function declarations
