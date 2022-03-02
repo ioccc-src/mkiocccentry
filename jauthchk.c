@@ -37,7 +37,7 @@ struct json_field author_json_fields[] =
     { "twitter",		NULL, 0, 5, false, JSON_ARRAY_STRING,	NULL },
     { "github",			NULL, 0, 5, false, JSON_ARRAY_STRING,	NULL },
     { "affiliation",		NULL, 0, 5, false, JSON_ARRAY_STRING,	NULL },
-    { "winner_handle",		NULL, 0, 5, false, JSON_ARRAY_STRING,	NULL },
+    { "author_handle",		NULL, 0, 5, false, JSON_ARRAY_STRING,	NULL },
     { "author_number",		NULL, 0, 5, false, JSON_ARRAY_NUMBER,	NULL },
     { NULL,			NULL, 0, 0, false, JSON_NULL,		NULL } /* this **MUST** be last */
 };
