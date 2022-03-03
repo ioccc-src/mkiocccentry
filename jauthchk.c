@@ -383,8 +383,8 @@ check_author_json(char const *file, char const *fnamchk)
     char *array = NULL; /* array extraction */
     char *array_start = NULL; /* start of array */
     char *array_dup = NULL; /* strdup()d copy of array */
-    struct json_field *author_field; /* temporary use to determine type of value if .author.json field */
-    struct json_field *common_field; /* temporary use to determine type of value if common field */
+    struct json_field *author_field; /* temporary use to determine type of value of .author.json field */
+    struct json_field *common_field; /* temporary use to determine type of value of common field */
     size_t loc = 0;
 
     /*
@@ -493,8 +493,13 @@ check_author_json(char const *file, char const *fnamchk)
 	    ++p;
 
 	/* remove a single '"' if one exists at the beginning (*p == '"') */
-	if (*p == '"')
+	if (*p == '"') {
 	    ++p;
+	} else {
+	    /* if no '"' there's a problem */
+	    warn(__func__, "found no leading '\"' for field '%s' in file %s", p, file);
+	    ++issues;
+	}
 
 	/* if empty string, break out of loop */
 	if (!*p)
@@ -506,8 +511,13 @@ check_author_json(char const *file, char const *fnamchk)
 	    *end-- = '\0';
 
 	/* remove a single '"' if one exists at the end (*end == '"') */
-	if (*end == '"')
+	if (*end == '"') {
 	    *end = '\0';
+	} else {
+	    /* if no trailing '"' there's also a problem */
+	    warn(__func__, "found no trailing '\"': '%s' in file %s", p, file);
+	    ++issues;
+	}
 
 
 	/* if string is empty break out of loop */
@@ -611,27 +621,73 @@ check_author_json(char const *file, char const *fnamchk)
 	     */
 	    if ((common_field && (common_field->field_type == JSON_STRING || common_field->field_type == JSON_ARRAY_STRING)) ||
 		(author_field && (author_field->field_type == JSON_STRING || author_field->field_type == JSON_ARRAY_STRING))) {
-		    /* remove a single '"' at the beginning of the value */
-		    if (*val == '"')
-			++val;
+		    /* make sure there is a '"' if not a null object */
+		    if (strchr(val, '"') == NULL && strcmp(val, "null")) {
+			warn(__func__, "string field '%s' value '%s' does not have any '\"'s in file %s", p, val, file);
+			++issues;
+			continue;
+		    }
 
-		    /* if nothing left break out of loop */
-		    if (!*val)
-			break;
+		    /* remove a single '"' at the beginning of the value */
+		    if (*val == '"') {
+			++val;
+		    } else if (strcmp(val, "null")) {
+			/*
+			 * If no '"' and the value is not exactly "null" (null
+			 * object) it's an issue
+			 */
+			warn(__func__, "found non-null string field '%s' without '\"' at the beginning in file %s", p, file);
+			++issues;
+			continue;
+		    }
+
+		    /* if nothing left continue to the next iteration of loop */
+		    if (!*val) {
+			warn(__func__, "found empty string in file %s", file);
+			++issues;
+			continue;
+		    }
 
 		    /* also remove a trailing '"' at the end of the value. */
 		    end = val + strlen(val) - 1;
-		    if (*end == '"')
+		    if (*end == '"') {
 			*end = '\0';
+		    } else if (strcmp(val, "null")) {
+			/*
+			 * if there's no trailing '"' and it's not a null object
+			 * ("null") then it's an issue
+			 */
+			warn(__func__, "found non-null string field '%s' without '\"' at the end in file %s", p, file);
+			++issues;
+			continue;
+		    }
 
-		    /* if nothing left break out of loop */
-		    if (!*val)
-			break;
+		    /*
+		     * if nothing left it's an issue: continue to next iteration
+		     * of the loop
+		     */
+		    if (!*val) {
+			warn(__func__, "found empty string value for field '%s' in file %s", p, file);
+			++issues;
+			continue;
+		    }
 
 		    /*
 		     * after removing the spaces and a single '"' at the beginning and end,
-		     * if we find a '"' in the field we know it's erroneous.
+		     * if we find an unescaped '"' in the field we know it's
+		     * erroneous: the json decode function will flag this as an
+		     * issue and an error will be issued.
 		     */
+	    } else {
+		/*
+		 * if we get here then we have to make sure there aren't any
+		 * '"'s.
+		 */
+		if (strchr(val, '"') != NULL) {
+		    warn(__func__, "found '\"' in non-string field '%s' value '%s' in file %s", p, val, file);
+		    ++issues;
+		    continue;
+		}
 	    }
 
 	    /*
