@@ -611,6 +611,12 @@ check_info_json(char const *file, char const *fnamchk)
 		not_reached();
 	    }
 
+
+	    if (!check_last_json_char(file, array_dup, false, &p, ',')) {
+		warn(__func__, "last array element ends with ',' in file %s", file);
+		++issues;
+	    }
+
 	    do {
 		array_field = strtok_r(array_val?NULL:array_dup, "{ \t\n", &array_saveptr);
 		if (array_field == NULL) {
