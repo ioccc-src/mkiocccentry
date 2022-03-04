@@ -617,23 +617,7 @@ struct utf8_ascii_map hmap[] =
     {"~", ""},			/* ^ */
     {"\x7f", ""},		/* DEL */
 
-    /* XXX - more table entries needed */
-
-    /* \x80 -\x8f */
-
-    /* \x90 -\x9f */
-
-    /* \xa0 -\xaf */
-
-    /* \xb0 -\xbf */
-
-    /* \xc0 -\xcf */
-
-    /* \xd0 -\xdf */
-
-    /* \xe0 -\xef */
-
-    /* \xf0 -\xff */
+    /* XXX - more UTF-8 table entries needed */
 
     {0, NULL}		/* MUST BE LAST */
 };
