@@ -89,7 +89,7 @@ extern struct json_field author_json_fields[];
  * forward declarations
  */
 static void usage(int exitcode, char const *name, char const *str) __attribute__((noreturn));
-static void sanity_chk(char const *file, char const *fnamchk);
+static void jauthchk_sanity_chk(char const *file, char const *fnamchk);
 static int check_author_json(char const *file, char const *fnamchk);
 static struct json_field *add_found_author_json_field(char const *name, char const *val);
 static int get_author_json_field(char const *file, char *name, char *val);
