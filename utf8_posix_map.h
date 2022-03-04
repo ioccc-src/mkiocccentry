@@ -50,14 +50,14 @@
  * map certain UTF-8 strings into safe lower case POSIX portable filenames plus +.
  */
 struct utf8_posix_map {
-    char *utf8_str;	/* UTF-8 string encode - use \x hex as needed */
-    char *posix_str;	/* POSIX portable filenames plus + replacement for utf8_str */
+    const char * const utf8_str;	/* UTF-8 string encode - use \x hex as needed */
+    const char * const posix_str;	/* POSIX portable filenames plus + replacement for utf8_str */
 };
 
 /*
  * global variables
  */
-extern struct utf8_ascii_map hmap[];	/* name to author handle map */
+extern struct utf8_posix_map const hmap[];	/* name to author handle map */
 
 
 #endif				/* INCLUDE_UTF8_POSIX_MAP_H */

@@ -146,8 +146,10 @@ all: ${TARGETS} ${TEST_TARGETS}
 rule_count.o: rule_count.c Makefile
 	${CC} ${CFLAGS} -DMKIOCCCENTRY_USE rule_count.c -c
 
-mkiocccentry: mkiocccentry.c mkiocccentry.h rule_count.o dbg.o util.o json.o location.o Makefile
-	${CC} ${CFLAGS} mkiocccentry.c rule_count.o dbg.o util.o json.o location.o -o $@
+mkiocccentry: mkiocccentry.c mkiocccentry.h rule_count.o dbg.o util.o json.o location.o \
+	utf8_posix_map.o Makefile
+	${CC} ${CFLAGS} mkiocccentry.c rule_count.o dbg.o util.o json.o location.o \
+		utf8_posix_map.o -o $@
 
 iocccsize: iocccsize.c rule_count.o dbg.o Makefile
 	${CC} ${CFLAGS} -DMKIOCCCENTRY_USE iocccsize.c rule_count.o dbg.o -o $@
