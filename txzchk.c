@@ -20,6 +20,7 @@
 #include <unistd.h>
 #include <string.h>
 #include <ctype.h>
+#include <stdint.h>
 
 /*
  * Our header file - #includes the header files we need
@@ -201,9 +202,9 @@ show_txz_info(char const *txzpath)
 	dbg(DBG_HIGH, "txzchk: %s: empty remarks.md:\t\t%d", txzpath, txz_info.empty_remarks_md);
 	dbg(DBG_MED, "txzchk: %s: has Makefile:\t\t\t%d", txzpath, txz_info.has_Makefile);
 	dbg(DBG_HIGH, "txzchk: %s: empty Makefile:\t\t\t%d", txzpath, txz_info.empty_Makefile);
-	dbg(DBG_MED, "txzchk: %s: size:\t\t\t\t%lld", txzpath, (long long)txz_info.size);
-	dbg(DBG_MED, "txzchk: %s: size of all files:\t\t%lld", txzpath, (long long)txz_info.file_sizes);
-	dbg(DBG_MED, "txzchk: %s: rounded files size:\t\t%lld", txzpath, (long long)txz_info.rounded_file_size);
+	dbg(DBG_MED, "txzchk: %s: size:\t\t\t\t%jd", txzpath, (intmax_t)txz_info.size);
+	dbg(DBG_MED, "txzchk: %s: size of all files:\t\t%jd", txzpath, (intmax_t)txz_info.file_sizes);
+	dbg(DBG_MED, "txzchk: %s: rounded files size:\t\t%jd", txzpath, (intmax_t)txz_info.rounded_file_size);
 	dbg(DBG_MED, "txzchk: %s: total files:\t\t\t%d", txzpath, txz_info.total_files);
 	dbg(DBG_MED, "txzchk: %s: incorrect directory found:\t%d", txzpath, txz_info.correct_directory != txz_info.total_files);
 	dbg(DBG_MED, "txzchk: %s: invalid dot files found:\t\t%d", txzpath, txz_info.dot_files);
@@ -576,12 +577,13 @@ check_all_files(char const *dir_name)
 	err(16, __func__, "%s: total size of all files rounded up to multiple of 1024 < 0!", txzpath);
 	not_reached();
     } else if (txz_info.rounded_file_size > MAX_DIR_KSIZE) {
-	warn("txzchk", "%s: total size of files %lld rounded up to multiple of 1024 %lld > %d", txzpath, (long long) txz_info.file_sizes,
-		(long long) txz_info.rounded_file_size, MAX_DIR_KSIZE);
+	warn("txzchk", "%s: total size of files %jd rounded up to multiple of 1024 %jd > %d",
+		       txzpath, (intmax_t)txz_info.file_sizes,
+		       (intmax_t) txz_info.rounded_file_size, MAX_DIR_KSIZE);
 	++txz_info.total_issues;
     } else if (!quiet) {
-	printf("txzchk: %s total size of files %lld rounded up to 1024 multiple: %lld OK\n", txzpath, (long long) txz_info.file_sizes,
-		(long long) txz_info.rounded_file_size);
+	printf("txzchk: %s total size of files %jd rounded up to 1024 multiple: %jd OK\n",
+		txzpath, (intmax_t) txz_info.file_sizes, (intmax_t) txz_info.rounded_file_size);
     }
 
 
@@ -1177,18 +1179,18 @@ check_tarball(char const *tar, char const *fnamchk)
 	      "The compressed tarball exceeds the maximum allowed size, sorry.",
 	      "",
 	      NULL);
-	err(25, __func__, "%s: The compressed tarball size %lld > %ld",
-		 txzpath, (long long)txz_info.size, (long)MAX_TARBALL_LEN);
+	err(25, __func__, "%s: The compressed tarball size %jd > %jd",
+		 txzpath, (intmax_t)txz_info.size, (intmax_t)MAX_TARBALL_LEN);
 	not_reached();
     }
     else if (!quiet) {
 	errno = 0;
-	ret = printf("txzchk: %s size of %lld bytes OK\n", txzpath, (long long) txz_info.size);
+	ret = printf("txzchk: %s size of %jd bytes OK\n", txzpath, (intmax_t) txz_info.size);
 	if (ret <= 0) {
 	    warnp("txzchk", "unable to tell user how big the tarball %s is", txzpath);
 	}
     }
-    dbg(DBG_MED, "txzchk: %s size in bytes: %lld", txzpath, (long long)txz_info.size);
+    dbg(DBG_MED, "txzchk: %s size in bytes: %jd", txzpath, (intmax_t)txz_info.size);
 
     /*
      * free cmd for tar (if -f wasn't specified) command

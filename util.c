@@ -788,7 +788,7 @@ exists(char const *path)
 	dbg(DBG_HIGH, "path %s does not exist, stat returned: %d", path, ret);
 	return false;
     }
-    dbg(DBG_VHIGH, "path %s size: %ld", path, (long)buf.st_size);
+    dbg(DBG_VHIGH, "path %s size: %jd", path, (intmax_t)buf.st_size);
     return true;
 }
 
@@ -828,7 +828,7 @@ is_file(char const *path)
 	dbg(DBG_HIGH, "path %s does not exist, stat returned: %d", path, ret);
 	return false;
     }
-    dbg(DBG_VHIGH, "path %s size: %ld", path, (long)buf.st_size);
+    dbg(DBG_VHIGH, "path %s size: %jd", path, (intmax_t)buf.st_size);
 
     /*
      * test if path is a regular file
@@ -878,7 +878,7 @@ is_exec(char const *path)
 	dbg(DBG_HIGH, "path %s does not exist, stat returned: %d", path, ret);
 	return false;
     }
-    dbg(DBG_VHIGH, "path %s size: %ld", path, (long)buf.st_size);
+    dbg(DBG_VHIGH, "path %s size: %jd", path, (intmax_t)buf.st_size);
 
     /*
      * test if we are allowed to execute it
@@ -928,7 +928,7 @@ is_dir(char const *path)
 	dbg(DBG_HIGH, "path %s does not exist, stat returned: %d", path, ret);
 	return false;
     }
-    dbg(DBG_VHIGH, "path %s size: %ld", path, (long)buf.st_size);
+    dbg(DBG_VHIGH, "path %s size: %jd", path, (intmax_t)buf.st_size);
 
     /*
      * test if path is a regular directory
@@ -978,7 +978,7 @@ is_read(char const *path)
 	dbg(DBG_HIGH, "path %s does not exist, stat returned: %d", path, ret);
 	return false;
     }
-    dbg(DBG_VHIGH, "path %s size: %ld", path, (long)buf.st_size);
+    dbg(DBG_VHIGH, "path %s size: %jd", path, (intmax_t)buf.st_size);
 
     /*
      * test if we are allowed to execute it
@@ -1029,7 +1029,7 @@ is_write(char const *path)
 	dbg(DBG_HIGH, "path %s does not exist, stat returned: %d", path, ret);
 	return false;
     }
-    dbg(DBG_VHIGH, "path %s size: %ld", path, (long)buf.st_size);
+    dbg(DBG_VHIGH, "path %s size: %jd", path, (intmax_t)buf.st_size);
 
     /*
      * test if we are allowed to execute it
@@ -1083,7 +1083,7 @@ file_size(char const *path)
     /*
      * return file size
      */
-    dbg(DBG_VHIGH, "path %s size: %ld", path, (long)buf.st_size);
+    dbg(DBG_VHIGH, "path %s size: %jd", path, (intmax_t)buf.st_size);
     return buf.st_size;
 }
 
@@ -1294,8 +1294,8 @@ vcmdprintf(char const *format, va_list ap)
 	    free(cmd);
 	    cmd = NULL;
 	}
-	warn(__func__, "stored characters: %ld != size: %ju",
-	     (long)((size_t)(d + 1 - cmd)), (uintmax_t)size);
+	warn(__func__, "stored characters: %jd != size: %ju",
+	     (intmax_t)((size_t)(d + 1 - cmd)), (uintmax_t)size);
 	return NULL;
     }
 
@@ -2008,7 +2008,7 @@ readline(char **linep, FILE * stream)
 	(*linep)[ret - 1] = '\0';	/* clear newline */
 	--ret;
     }
-    dbg(DBG_VVHIGH, "read %ld bytes + newline into %ju byte buffer", (long)ret, (uintmax_t)linecap);
+    dbg(DBG_VVHIGH, "read %jd bytes + newline into %ju byte buffer", (intmax_t)ret, (uintmax_t)linecap);
 
     /*
      * return length of line without the trailing newline
@@ -2062,7 +2062,7 @@ readline_dup(char **linep, bool strip, size_t *lenp, FILE *stream)
 	 */
 	return NULL;
     }
-    dbg(DBG_VVHIGH, "readline returned %ld bytes", (long)len);
+    dbg(DBG_VVHIGH, "readline returned %jd bytes", (intmax_t)len);
 
     /*
      * duplicate the line
@@ -2070,7 +2070,7 @@ readline_dup(char **linep, bool strip, size_t *lenp, FILE *stream)
     errno = 0;			/* pre-clear errno for errp() */
     ret = strdup(*linep);
     if (ret == NULL) {
-	errp(152, __func__, "strdup of read line of %ld bytes failed", (long)len);
+	errp(152, __func__, "strdup of read line of %jd bytes failed", (intmax_t)len);
 	not_reached();
     }
 
@@ -2091,7 +2091,7 @@ readline_dup(char **linep, bool strip, size_t *lenp, FILE *stream)
 		}
 	    }
 	}
-	dbg(DBG_VVHIGH, "readline, after trailing whitespace strip is %ld bytes", (long)len);
+	dbg(DBG_VVHIGH, "readline, after trailing whitespace strip is %jd bytes", (intmax_t)len);
     }
     if (lenp != NULL) {
 	*lenp = (size_t)len;
@@ -2448,22 +2448,22 @@ is_string(char const * const ptr, size_t len)
      * process the result of the NUL byte search
      */
     if (nul_found == NULL) {
-	dbg(DBG_VVHIGH, "is_string: no NUL found from ptr thru ptr[%ld]",
-			(long)(len-1));
+	dbg(DBG_VVHIGH, "is_string: no NUL found from ptr thru ptr[%jd]",
+			(intmax_t)(len-1));
 	return false;
     }
-    if ((nul_found-ptr) != (long)(len-1)) {
-	dbg(DBG_VVHIGH, "is_string: found NUL at ptr[%ld] != ptr[%ld]",
-			(long)(nul_found-ptr),
-			(long)(len-1));
+    if ((intmax_t)(nul_found-ptr) != (intmax_t)(len-1)) {
+	dbg(DBG_VVHIGH, "is_string: found NUL at ptr[%jd] != ptr[%jd]",
+			(intmax_t)(nul_found-ptr),
+			(intmax_t)(len-1));
 	return false;
     }
 
     /*
      * report that ptr is a C-style string of length len
      */
-    dbg(DBG_VVVHIGH, "is_string: is a C-style string of length: %ld",
-		     (long)len);
+    dbg(DBG_VVVHIGH, "is_string: is a C-style string of length: %jd",
+		     (intmax_t)len);
     return true;
 }
 

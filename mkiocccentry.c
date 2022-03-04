@@ -286,9 +286,9 @@ main(int argc, char *argv[])
 	not_reached();
     }
     info.common.tstamp = tp.tv_sec;
-    dbg(DBG_HIGH, "info.common.tstamp: %ld", (long)info.common.tstamp);
+    dbg(DBG_HIGH, "info.common.tstamp: %jd", (intmax_t)info.common.tstamp);
     info.common.usec = tp.tv_usec;
-    dbg(DBG_HIGH, "infop->common.usec: %ld", (long)info.common.usec);
+    dbg(DBG_HIGH, "infop->common.usec: %jd", (intmax_t)info.common.usec);
 
     /*
      * Welcome
@@ -1831,11 +1831,11 @@ warn_rule_2a_size(struct info *infop, char const *prog_c, int mode, RuleCount si
      * File is appears to be too big under Rule 2a warning
      */
     if (mode == RULE_2A_BIG_FILE_WARNING) {
-	dbg(DBG_MED, "prog.c: %s size: %ld > Rule 2a size: %ld", prog_c,
-		     (long)infop->rule_2a_size, (long)RULE_2A_SIZE);
+	dbg(DBG_MED, "prog.c: %s size: %jd > Rule 2a size: %jd", prog_c,
+		     (intmax_t)infop->rule_2a_size, (intmax_t)RULE_2A_SIZE);
 	errno = 0;		/* pre-clear errno for warnp() */
-	ret = fprintf(stderr, "\nWARNING: The prog.c %s size: %ld > Rule 2a maximum: %ld\n", prog_c,
-		      (long)infop->rule_2a_size, (long)RULE_2A_SIZE);
+	ret = fprintf(stderr, "\nWARNING: The prog.c %s size: %jd > Rule 2a maximum: %jd\n", prog_c,
+		      (intmax_t)infop->rule_2a_size, (intmax_t)RULE_2A_SIZE);
 	if (ret <= 0) {
 	    warnp(__func__, "fprintf error when printing prog.c Rule 2a warning");
 	}
@@ -1851,8 +1851,8 @@ warn_rule_2a_size(struct info *infop, char const *prog_c, int mode, RuleCount si
 		err(65, __func__, "please fix your prog.c file: %s", prog_c);
 		not_reached();
 	    }
-	    dbg(DBG_LOW, "user says that their prog.c %s size: %ld > Rule 2a max size: %ld is OK", prog_c,
-		(long)infop->rule_2a_size, (long)RULE_2A_SIZE);
+	    dbg(DBG_LOW, "user says that their prog.c %s size: %jd > Rule 2a max size: %jd is OK", prog_c,
+		(intmax_t)infop->rule_2a_size, (intmax_t)RULE_2A_SIZE);
 	}
 
     /*
@@ -1861,10 +1861,10 @@ warn_rule_2a_size(struct info *infop, char const *prog_c, int mode, RuleCount si
     } else if (mode == RULE_2A_BIG_FILE_WARNING) {
 	if (need_confirm && !ignore_warnings) {
 	    errno = 0;		/* pre-clear errno for warnp() */
-	    ret = fprintf(stderr, "\nInteresting: prog.c: %s file size: %ld != rule_count function size: %ld\n"
+	    ret = fprintf(stderr, "\nInteresting: prog.c: %s file size: %jd != rule_count function size: %jd\n"
 				  "In order to avoid a possible Rule 2a violation, BE SURE TO CLEARLY MENTION THIS IN\n"
 				  "YOUR remarks.md FILE!\n\n",
-				  prog_c, (long)infop->rule_2a_size, (long)size.rule_2a_size);
+				  prog_c, (intmax_t)infop->rule_2a_size, (intmax_t)size.rule_2a_size);
 	    if (ret <= 0) {
 		warnp(__func__, "fprintf error when printing prog.c file size and Rule 2a mismatch");
 	    }
@@ -1873,8 +1873,8 @@ warn_rule_2a_size(struct info *infop, char const *prog_c, int mode, RuleCount si
 		err(66, __func__, "please fix your prog.c file: %s", prog_c);
 		not_reached();
 	    }
-	    dbg(DBG_LOW, "user says that prog.c %s size: %ld != rule_count function size: %ld is OK", prog_c,
-		(long)infop->rule_2a_size, (long)size.rule_2a_size);
+	    dbg(DBG_LOW, "user says that prog.c %s size: %jd != rule_count function size: %jd is OK", prog_c,
+		(intmax_t)infop->rule_2a_size, (intmax_t)size.rule_2a_size);
 	}
 
     /*
@@ -2255,9 +2255,9 @@ check_prog_c(struct info *infop, char const *entry_dir, char const *cp, char con
      * warn if prog.c is empty
      */
     infop->rule_2a_size = file_size(prog_c);
-    dbg(DBG_MED, "Rule 2a size: %ld", (long)infop->rule_2a_size);
+    dbg(DBG_MED, "Rule 2a size: %jd", (intmax_t)infop->rule_2a_size);
     if (infop->rule_2a_size < 0) {
-	err(89, __func__, "file_size error: %ld on prog_c: %s", (long)infop->rule_2a_size, prog_c);
+	err(89, __func__, "file_size error: %jd on prog_c: %s", (intmax_t)infop->rule_2a_size, prog_c);
 	not_reached();
     } else if (infop->rule_2a_size == 0 || infop->rule_2b_size == 0) {
 	warn_empty_prog(prog_c);
@@ -2742,7 +2742,7 @@ check_Makefile(struct info *infop, char const *entry_dir, char const *cp, char c
     }
     filesize = file_size(Makefile);
     if (filesize < 0) {
-	err(101, __func__, "file_size error: %ld on Makefile  %s", (long)filesize, Makefile);
+	err(101, __func__, "file_size error: %jd on Makefile  %s", (intmax_t)filesize, Makefile);
 	not_reached();
     } else if (filesize == 0) {
 	err(102, __func__, "Makefile cannot be empty: %s", Makefile);
@@ -2844,7 +2844,7 @@ check_remarks_md(struct info *infop, char const *entry_dir, char const *cp, char
     }
     filesize = file_size(remarks_md);
     if (filesize < 0) {
-	err(109, __func__, "file_size error: %ld on remarks_md %s", (long)filesize, remarks_md);
+	err(109, __func__, "file_size error: %jd on remarks_md %s", (intmax_t)filesize, remarks_md);
 	not_reached();
     } else if (filesize == 0) {
 	err(110, __func__, "remarks.md cannot be empty: %s", remarks_md);
@@ -4522,7 +4522,7 @@ verify_entry_dir(char const *entry_dir, char const *ls)
 	err(150, __func__, "EOF while reading 1st line from ls: %s", ls);
 	not_reached();
     } else {
-	dbg(DBG_HIGH, "ls 1st line read length: %ld buffer: %s", (long)readline_len, linep);
+	dbg(DBG_HIGH, "ls 1st line read length: %jd buffer: %s", (intmax_t)readline_len, linep);
     }
 
     /*
