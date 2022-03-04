@@ -107,11 +107,21 @@ struct json_field
     size_t max_count;		/* how many of this field is allowed */
     bool found;			/* if this field was found */
 
-    /*
+    /* 
+     * These are used in both checking and parsing: checking that the data is
+     * valid and parsing in that certain data types have to be parsed
+     * differently.
+     * 
      * Data type: one of JSON_NUMBER, JSON_BOOL, JSON_STRING or
      * JSON_ARRAY_ equivalents.
      */
     int field_type;
+    /*
+     * Some strings can be empty but others cannot; there are no other values
+     * that can currently be empty but this is for all lists so we have to
+     * include this bool
+     */
+    bool can_be_empty;	    /* if the value can be empty */
 
     struct json_field *next;	/* the next in the whatever list (XXX don't add to more than one list!) */
 };

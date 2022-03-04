@@ -21,25 +21,24 @@
  * whether it's been added to the found_author_json_fields list, how many times
  * it's been seen and how many are allowed.
  *
- * XXX: As of 27 February 2022 all fields are in the table but because arrays
+ * XXX: As of 4 March 2022 all fields are in the table but because arrays
  * are not yet parsed not all of these values will be dealt with: that is they
- * won't be in the found_author_json list. Additionally the way array elements
- * are defined might very well change.
+ * won't be checked.
  */
 struct json_field author_json_fields[] =
 {
-    { "IOCCC_author_version",	NULL, 0, 1, false, JSON_STRING,		NULL },
-    { "authors",		NULL, 0, 1, false, JSON_ARRAY,		NULL },
-    { "name",			NULL, 0, 5, false, JSON_ARRAY_STRING,	NULL },
-    { "location_code",		NULL, 0, 5, false, JSON_ARRAY_STRING,	NULL },
-    { "email",			NULL, 0, 5, false, JSON_ARRAY_STRING,	NULL },
-    { "url",			NULL, 0, 5, false, JSON_ARRAY_STRING,	NULL },
-    { "twitter",		NULL, 0, 5, false, JSON_ARRAY_STRING,	NULL },
-    { "github",			NULL, 0, 5, false, JSON_ARRAY_STRING,	NULL },
-    { "affiliation",		NULL, 0, 5, false, JSON_ARRAY_STRING,	NULL },
-    { "author_handle",		NULL, 0, 5, false, JSON_ARRAY_STRING,	NULL },
-    { "author_number",		NULL, 0, 5, false, JSON_ARRAY_NUMBER,	NULL },
-    { NULL,			NULL, 0, 0, false, JSON_NULL,		NULL } /* this **MUST** be last */
+    { "IOCCC_author_version",	NULL, 0, 1, false, JSON_STRING,		false, 	NULL },
+    { "authors",		NULL, 0, 1, false, JSON_ARRAY,		false, 	NULL },
+    { "name",			NULL, 0, 5, false, JSON_ARRAY_STRING,	false,  NULL },
+    { "location_code",		NULL, 0, 5, false, JSON_ARRAY_STRING,	false,	NULL },
+    { "email",			NULL, 0, 5, false, JSON_ARRAY_STRING,	true,	NULL },
+    { "url",			NULL, 0, 5, false, JSON_ARRAY_STRING,	true,	NULL },
+    { "twitter",		NULL, 0, 5, false, JSON_ARRAY_STRING,	true,	NULL },
+    { "github",			NULL, 0, 5, false, JSON_ARRAY_STRING,	true,	NULL },
+    { "affiliation",		NULL, 0, 5, false, JSON_ARRAY_STRING,	true,	NULL },
+    { "author_handle",		NULL, 0, 5, false, JSON_ARRAY_STRING,	true,	NULL },
+    { "author_number",		NULL, 0, 5, false, JSON_ARRAY_NUMBER,	false,	NULL },
+    { NULL,			NULL, 0, 0, false, JSON_NULL,		false,	NULL } /* this **MUST** be last */
 };
 
 
@@ -386,6 +385,7 @@ check_author_json(char const *file, char const *fnamchk)
     struct json_field *author_field; /* temporary use to determine type of value of .author.json field */
     struct json_field *common_field; /* temporary use to determine type of value of common field */
     size_t loc = 0;
+    bool can_be_empty = false; /* if field can be empty */
 
     /*
      * firewall
@@ -492,6 +492,10 @@ check_author_json(char const *file, char const *fnamchk)
 	while (*p && isspace(*p))
 	    ++p;
 
+	/* if nothing else to parse break out of the loop */
+	if (!*p)
+	    break;
+
 	/* remove a single '"' if one exists at the beginning (*p == '"') */
 	if (*p == '"') {
 	    ++p;
@@ -519,8 +523,7 @@ check_author_json(char const *file, char const *fnamchk)
 	    ++issues;
 	}
 
-
-	/* if string is empty break out of loop */
+	/* if string is now empty break out of loop */
 	if (!*p)
 	    break;
 
@@ -615,69 +618,87 @@ check_author_json(char const *file, char const *fnamchk)
 	    if (!*val)
 		break;
 
+	    can_be_empty = (common_field && common_field->can_be_empty) || (author_field && author_field->can_be_empty);
 	    /*
 	     * If the field type is a string we have to remove a single '"' and
 	     * from the beginning and end of the value.
 	     */
 	    if ((common_field && (common_field->field_type == JSON_STRING || common_field->field_type == JSON_ARRAY_STRING)) ||
 		(author_field && (author_field->field_type == JSON_STRING || author_field->field_type == JSON_ARRAY_STRING))) {
-		    /* make sure there is a '"' if not a null object */
-		    if (strchr(val, '"') == NULL && strcmp(val, "null")) {
-			warn(__func__, "string field '%s' value '%s' does not have any '\"'s in file %s", p, val, file);
-			++issues;
-			continue;
-		    }
-
-		    /* remove a single '"' at the beginning of the value */
-		    if (*val == '"') {
-			++val;
-		    } else if (strcmp(val, "null")) {
-			/*
-			 * If no '"' and the value is not exactly "null" (null
-			 * object) it's an issue
-			 */
-			warn(__func__, "found non-null string field '%s' without '\"' at the beginning in file %s", p, file);
-			++issues;
-			continue;
-		    }
-
-		    /* if nothing left continue to the next iteration of loop */
-		    if (!*val) {
-			warn(__func__, "found empty string in file %s", file);
-			++issues;
-			continue;
-		    }
-
-		    /* also remove a trailing '"' at the end of the value. */
-		    end = val + strlen(val) - 1;
-		    if (*end == '"') {
-			*end = '\0';
-		    } else if (strcmp(val, "null")) {
-			/*
-			 * if there's no trailing '"' and it's not a null object
-			 * ("null") then it's an issue
-			 */
-			warn(__func__, "found non-null string field '%s' without '\"' at the end in file %s", p, file);
-			++issues;
-			continue;
-		    }
-
-		    /*
-		     * if nothing left it's an issue: continue to next iteration
-		     * of the loop
+		if (!strcmp(val, "\"\"")) {
+		    /* make sure that it's not an empty string ("") */
+		    warn(__func__, "found empty string for field '%s'", p);
+		    ++issues;
+		    continue;
+		} else if (!strcmp(val, "null") && !can_be_empty) {
+		    /* if it's null and it cannot be empty it's an issue */
+		    warn(__func__, "found invalid null value for field '%s' in file %s", p, file);
+		    ++issues;
+		    continue;
+		} else if (strchr(val, '"') == NULL && !can_be_empty) {
+		    /* if there's no '"' and it cannot be empty it's an issue */
+		    warn(__func__, "string field '%s' value '%s' does not have any '\"'s in file %s", p, val, file);
+		    ++issues;
+		    continue;
+		} else if (can_be_empty && strcmp(val, "null") && strchr(val, '"') == NULL) {
+		    /* if it can be empty and it's not 'null' and there's no '"'
+		     * it's an issue.
 		     */
-		    if (!*val) {
-			warn(__func__, "found empty string value for field '%s' in file %s", p, file);
-			++issues;
-			continue;
-		    }
-
+		    warn(__func__, "string field '%s' value that's not 'null' has no '\"'s in file %s: %s", p, file, val);
+		    ++issues;
+		    continue;
+		}
+		    
+		/* remove a single '"' at the beginning of the value */
+		if (*val == '"') {
+		    ++val;
+		} else if (strcmp(val, "null")) {
 		    /*
-		     * after removing the spaces and a single '"' at the beginning and end,
-		     * if we find an unescaped '"' in the field we know it's
-		     * erroneous: the json decode function will flag this as an
-		     * issue and an error will be issued.
+		     * If no '"' and the value is not exactly "null" (null
+		     * object) it's an issue
 		     */
+		    warn(__func__, "found non-null string field '%s' without '\"' at the beginning in file %s", p, file);
+		    ++issues;
+		    continue;
+		}
+
+		/* if nothing left continue to the next iteration of loop */
+		if (!*val) {
+		    warn(__func__, "found empty string field '%s' in file %s", p, file);
+		    ++issues;
+		    continue;
+		}
+
+		/* also remove a trailing '"' at the end of the value. */
+		end = val + strlen(val) - 1;
+		if (*end == '"') {
+		    *end = '\0';
+		} else if (strcmp(val, "null")) {
+		    /*
+		     * if there's no trailing '"' and it's not a null object
+		     * ("null") then it's an issue
+		     */
+		    warn(__func__, "found non-null string field '%s' without '\"' at the end in file %s", p, file);
+		    ++issues;
+		    continue;
+		}
+
+		/*
+		 * if nothing left it's an issue: continue to next iteration
+		 * of the loop
+		 */
+		if (!*val) {
+		    warn(__func__, "found empty string value for field '%s' in file %s", p, file);
+		    ++issues;
+		    continue;
+		}
+
+		/*
+		 * after removing the spaces and a single '"' at the beginning and end,
+		 * if we find an unescaped '"' in the field we know it's
+		 * erroneous: the json decode function will flag this as an
+		 * issue and an error will be issued.
+		 */
 	    } else {
 		/*
 		 * if we get here then we have to make sure there aren't any
