@@ -65,7 +65,7 @@ main(int argc, char *argv[])
     char guard;			/* scanf guard to catch excess amount of input */
     int entry_num;		/* 3rd .-separated token as a number */
     char *timestamp_str;	/* 4th .-separated token - timestamp */
-    long timestamp;		/* 5th .-separated token as a timestamp */
+    intmax_t timestamp;		/* 5th .-separated token as a timestamp */
     char *extension;		/* 6th .-separated token as a filename extension */
     int i;
     bool test_mode = false;	/* true ==> force check to test if it's a test entry filename */
@@ -244,13 +244,13 @@ main(int argc, char *argv[])
 	err(17, __func__, "nothing found after 2nd '.' separated token of entry number");
 	not_reached();
     }
-    ret = sscanf(timestamp_str, "%ld%c", &timestamp, &guard);
+    ret = sscanf(timestamp_str, "%jd%c", &timestamp, &guard);
     if (ret != 1) {
 	err(18, __func__, "3rd '.' separated token: %s is not a timestamp: %s", timestamp_str, filepath);
 	not_reached();
     }
     if (timestamp < MIN_TIMESTAMP) {
-	err(19, __func__, "3rd '.' separated timestamp: %ld is < %ld: %s", timestamp, (long)MIN_TIMESTAMP, filepath);
+	err(19, __func__, "3rd '.' separated timestamp: %jd is < %jd: %s", timestamp, (intmax_t)MIN_TIMESTAMP, filepath);
 	not_reached();
     }
     dbg(DBG_LOW, "timestamp is valid: %ld", timestamp);
