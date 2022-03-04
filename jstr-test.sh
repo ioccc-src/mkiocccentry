@@ -18,6 +18,8 @@ while getopts :hv: flag; do
     :) echo "option -$OPTARG requires an argument" 1>&2
        exit 4
        ;;
+   *)
+       ;;
     esac
 done
 

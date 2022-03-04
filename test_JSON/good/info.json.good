@@ -6,6 +6,7 @@
 	"iocccsize_version" : "28.7 2022-02-01",
 	"IOCCC_contest_id" : "12345678-1234-4321-abcd-1234567890ab",
 	"entry_num" : 0,
+	"author_count" : 1, 
 	"title" : "title-for-entry0",
 	"abstract" : "abstract for entry #0",
 	"tarball" : "entry.12345678-1234-4321-abcd-1234567890ab-0.1645212226.txz",
@@ -38,7 +39,7 @@
 	],
 	"formed_timestamp" : 1645212226,
 	"formed_timestamp_usec" : 13685,
-	"timestamp_epoch" : "Thu Jan  1 00:00:00 1970 UTC",
+	"timestamp_epoch" : "Thu Jan 01 00:00:00 1970 UTC",
 	"min_timestamp" : 1643987926,
 	"formed_UTC" : "Fri Feb 18 19:23:46 2022 UTC"
 }

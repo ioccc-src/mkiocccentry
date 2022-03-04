@@ -1792,7 +1792,7 @@ check_last_json_char(char const *file, char *data, bool strict, char **last, cha
     p = data + strlen(data) - 1;
 
     if (!strict) {
-	if (*p && isspace(*p))
+	while (*p && isspace(*p))
 	    --p;
     }
     else if (*p && *p == '\n') {
