@@ -618,7 +618,7 @@ struct utf8_ascii_map hmap[] =
     {"\x7f", ""},		/* DEL */
 
     {"\xc3\x84", "A"},		/* A with two dots */
-    {"\xc3\xa4", "a"},		/* a with to dots */
+    {"\xc3\xa4", "a"},		/* a with two dots */
 
     /* XXX - more UTF-8 table entries needed */
 
