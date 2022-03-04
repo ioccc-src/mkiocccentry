@@ -50,21 +50,6 @@ typedef unsigned char bool;
 #define false ((bool)(0))
 #endif
 
-/*
- * location/country codes
- */
-struct location {
-    const char * const code;		/* ISO 3166-1 Alpha-2 Code */
-    const char * const name;		/* name (short name lower case) */
-};
-
-/*
- * map UTF-8 to POXIS Fully portable characters (and +)
- */
-struct utf8_ascii_map {
-    char *utf8_str;	/* UTF-8 string encode - use \x hex as needed */
-    char *ascii_str;	/* ASCII good enough replacement for utf8_str */
-};
 
 /*
  * definitions
@@ -96,6 +81,7 @@ struct utf8_ascii_map {
 #define JINFOCHK_PATH_0 "./jinfochk"		    /* default path to jinfochk tool */
 #define JINFOCHK_PATH_1 "/usr/local/bin/jinfochk"   /* default path to jinfochk tool if installed */
 
+
 /*
  * invalid exit codes (values < 0): that may be returned by shell_cmd()
  */
@@ -104,11 +90,6 @@ struct utf8_ascii_map {
 #define FLUSH_FAILED_EXIT (-4)		/* invalid exit code - fflush() failed */
 #define NULL_ARGS_EXIT (-5)		/* invalid exit code - function called with a NULL arg */
 
-/*
- * global variables
- */
-extern struct location loc[];		/* location/country codes */
-extern struct utf8_ascii_map hmap[];	/* name to author handle map */
 
 /*
  * external function declarations

@@ -78,6 +78,11 @@
 #include "dbg.h"
 
 /*
+ * location table
+ */
+#include "location.h"
+
+/*
  * IOCCC size and rule related limitations
  */
 #include "limit_ioccc.h"

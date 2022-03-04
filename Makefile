@@ -130,10 +130,10 @@ TARGETS= mkiocccentry iocccsize dbg_test limit_ioccc.sh fnamchk txzchk jauthchk 
 MANPAGES = mkiocccentry.1 txzchk.1 fnamchk.1 iocccsize.1 jinfochk.1 jauthchk.1
 TEST_TARGETS= dbg_test
 OBJFILES = dbg.o util.o mkiocccentry.o iocccsize.o fnamchk.o txzchk.o jauthchk.o jinfochk.o \
-	json.o jstrencode.o jstrdecode.o rule_count.o
+	json.o jstrencode.o jstrdecode.o rule_count.o location.o utf8_posix_map.o
 SRCFILES = $(patsubst %.o,%.c,$(OBJFILES))
 H_FILES = dbg.h jauthchk.h jinfochk.h json.h jstrdecode.h jstrencode.h limit_ioccc.h \
-	mkiocccentry.h txzchk.h util.h
+	mkiocccentry.h txzchk.h util.h location.h utf8_posix_map.h
 DSYMDIRS = $(patsubst %,%.dSYM,$(TARGETS))
 SH_FILES= iocccsize-test.sh jstr-test.sh limit_ioccc.sh mkiocccentry-test.sh
 
@@ -146,8 +146,8 @@ all: ${TARGETS} ${TEST_TARGETS}
 rule_count.o: rule_count.c Makefile
 	${CC} ${CFLAGS} -DMKIOCCCENTRY_USE rule_count.c -c
 
-mkiocccentry: mkiocccentry.c mkiocccentry.h rule_count.o dbg.o util.o json.o Makefile
-	${CC} ${CFLAGS} mkiocccentry.c rule_count.o dbg.o util.o json.o -o $@
+mkiocccentry: mkiocccentry.c mkiocccentry.h rule_count.o dbg.o util.o json.o location.o Makefile
+	${CC} ${CFLAGS} mkiocccentry.c rule_count.o dbg.o util.o json.o location.o -o $@
 
 iocccsize: iocccsize.c rule_count.o dbg.o Makefile
 	${CC} ${CFLAGS} -DMKIOCCCENTRY_USE iocccsize.c rule_count.o dbg.o -o $@
@@ -369,7 +369,7 @@ depend:
 dbg.o: dbg.c dbg.h
 util.o: util.c dbg.h util.h limit_ioccc.h version.h
 mkiocccentry.o: mkiocccentry.c mkiocccentry.h util.h json.h dbg.h \
-  limit_ioccc.h version.h iocccsize.h
+  location.h limit_ioccc.h version.h iocccsize.h
 iocccsize.o: iocccsize.c iocccsize_err.h iocccsize.h
 fnamchk.o: fnamchk.c fnamchk.h dbg.h util.h limit_ioccc.h version.h
 txzchk.o: txzchk.c txzchk.h util.h dbg.h limit_ioccc.h version.h
@@ -383,3 +383,5 @@ jstrencode.o: jstrencode.c jstrencode.h dbg.h util.h json.h limit_ioccc.h \
 jstrdecode.o: jstrdecode.c jstrdecode.h dbg.h util.h json.h limit_ioccc.h \
   version.h
 rule_count.o: rule_count.c iocccsize_err.h iocccsize.h
+location.o: location.c location.h
+utf8_posix_map.o: utf8_posix_map.c utf8_posix_map.h
