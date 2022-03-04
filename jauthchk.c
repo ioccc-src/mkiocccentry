@@ -140,7 +140,7 @@ main(int argc, char **argv)
 	para("", "Performing sanity checks on your environment ...", NULL);
     }
 
-    sanity_chk(file, fnamchk);
+    jauthchk_sanity_chk(file, fnamchk);
     if (!quiet) {
 	para("... environment looks OK", "", NULL);
     }
@@ -222,7 +222,7 @@ check_author_json_fields_table(void)
 
 
 /*
- * sanity_chk - perform basic sanity checks
+ * jauthchk_sanity_chk - perform basic sanity checks
  *
  * We perform basic sanity checks on paths.
  *
@@ -234,7 +234,7 @@ check_author_json_fields_table(void)
  * NOTE: This function does not return on error or if things are not sane.
  */
 static void
-sanity_chk(char const *file, char const *fnamchk)
+jauthchk_sanity_chk(char const *file, char const *fnamchk)
 {
     /*
      * firewall

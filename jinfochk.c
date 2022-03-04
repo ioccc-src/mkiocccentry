@@ -155,7 +155,7 @@ main(int argc, char **argv)
 	       false, NULL, false, NULL);
 
 
-    sanity_chk(file, fnamchk);
+    jinfochk_sanity_chk(file, fnamchk);
     if (!quiet) {
 	para("... environment looks OK", "", NULL);
     }
@@ -233,7 +233,7 @@ check_info_json_fields_table(void)
 }
 
 /*
- * sanity_chk - perform basic sanity checks
+ * jinfochk_sanity_chk - perform basic sanity checks
  *
  * We perform basic sanity checks on paths.
  *
@@ -245,7 +245,7 @@ check_info_json_fields_table(void)
  * NOTE: This function does not return on error or if things are not sane.
  */
 static void
-sanity_chk(char const *file, char const *fnamchk)
+jinfochk_sanity_chk(char const *file, char const *fnamchk)
 {
     /*
      * firewall

@@ -181,7 +181,7 @@ static void warn_wordbuf(char const *prog_c);
 static void warn_ungetc(char const *prog_c);
 static void warn_rule_2b_size(struct info *infop, char const *prog_c);
 static RuleCount check_prog_c(struct info *infop, char const *entry_dir, char const *cp, char const *prog_c);
-static void sanity_chk(struct info *infop, char const *work_dir, char const *tar, char const *cp,
+static void mkiocccentry_sanity_chk(struct info *infop, char const *work_dir, char const *tar, char const *cp,
 		       char const *ls, char const *txzchk, char const *fnamchk, char const *jinfochk, char const *jauthchk);
 static char *prompt(char const *str, size_t *lenp);
 static char *get_contest_id(bool *testp, bool *read_answers_flag_used);

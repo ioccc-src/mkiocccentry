@@ -324,7 +324,7 @@ main(int argc, char *argv[])
      * environment sanity checks
      */
     para("", "Performing sanity checks on your environment ...", NULL);
-    sanity_chk(&info, work_dir, tar, cp, ls, txzchk, fnamchk, jinfochk, jauthchk);
+    mkiocccentry_sanity_chk(&info, work_dir, tar, cp, ls, txzchk, fnamchk, jinfochk, jauthchk);
     para("... environment looks OK", "", NULL);
 
     /*
@@ -754,7 +754,7 @@ usage(int exitcode, char const *str, char const *program)
 
 
 /*
- * sanity_chk - perform basic sanity checks
+ * mkiocccentry_sanity_chk - perform basic sanity checks
  *
  * We perform basic sanity checks on paths and the IOCCC contest ID.
  *
@@ -773,7 +773,7 @@ usage(int exitcode, char const *str, char const *program)
  * NOTE: This function does not return on error or if things are not sane.
  */
 static void
-sanity_chk(struct info *infop, char const *work_dir, char const *tar, char const *cp, char const *ls,
+mkiocccentry_sanity_chk(struct info *infop, char const *work_dir, char const *tar, char const *cp, char const *ls,
 	   char const *txzchk, char const *fnamchk, char const *jinfochk, char const *jauthchk)
 {
     /*
