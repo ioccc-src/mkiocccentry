@@ -253,7 +253,7 @@ main(int argc, char *argv[])
 	err(19, __func__, "3rd '.' separated timestamp: %jd is < %jd: %s", timestamp, (intmax_t)MIN_TIMESTAMP, filepath);
 	not_reached();
     }
-    dbg(DBG_LOW, "timestamp is valid: %ld", timestamp);
+    dbg(DBG_LOW, "timestamp is valid: %jd", timestamp);
 
     /*
      * 4th .-separated token must be the filename extension

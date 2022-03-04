@@ -317,7 +317,7 @@ malloc_json_encode(char const *ptr, size_t len, size_t *retlen)
 	if (retlen != NULL) {
 	    *retlen = 0;
 	}
-	warn(__func__, "malloc of %ld bytes failed", (uintmax_t)(mlen + 1 + 1));
+	warn(__func__, "malloc of %ju bytes failed", (uintmax_t)(mlen + 1 + 1));
 	return NULL;
     }
     ret[mlen] = '\0';   /* terminate string */
@@ -1292,7 +1292,7 @@ malloc_json_decode(char const *ptr, size_t len, size_t *retlen, bool strict)
 	if (retlen != NULL) {
 	    *retlen = 0;
 	}
-	warn(__func__, "malloc of %ld bytes failed", (uintmax_t)(mlen + 1 + 1));
+	warn(__func__, "malloc of %ju bytes failed", (uintmax_t)(mlen + 1 + 1));
 	return NULL;
     }
     ret[mlen] = '\0';   /* terminate string */

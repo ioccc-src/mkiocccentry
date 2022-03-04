@@ -2298,7 +2298,7 @@ read_all(FILE *stream, size_t *psize)
 	return NULL;
     }
     size = INITIAL_BUF_SIZE;
-    dbg(DBG_VVHIGH, "%s: calloc cycle: %ld new size: 0x%lx", __func__, realloc_cycle, (uintmax_t)size);
+    dbg(DBG_VVHIGH, "%s: calloc cycle: %ld new size: %ju", __func__, realloc_cycle, (uintmax_t)size);
     ++realloc_cycle;
 
     /*
@@ -2364,7 +2364,7 @@ read_all(FILE *stream, size_t *psize)
 	     * note expanded buffer size
 	     */
 	    size += READ_ALL_CHUNK;
-	    dbg(DBG_VVHIGH, "%s: realloc cycle: %ld new size: 0x%lx", __func__, realloc_cycle, (uintmax_t)size);
+	    dbg(DBG_VVHIGH, "%s: realloc cycle: %ld new size: %ju", __func__, realloc_cycle, (uintmax_t)size);
 	    ++realloc_cycle;
 	}
 
@@ -2391,7 +2391,7 @@ read_all(FILE *stream, size_t *psize)
 	     */
 	    break;
 	}
-	dbg(DBG_VVHIGH, "%s: read cycle: %ld read count: 0x%lx", __func__, read_cycle, (uintmax_t)read_cycle);
+	dbg(DBG_VVHIGH, "%s: read cycle: %ld read count: %ju", __func__, read_cycle, (uintmax_t)read_cycle);
 	++read_cycle;
     } while (true);
 
