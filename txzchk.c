@@ -27,11 +27,6 @@
  */
 #include "txzchk.h"
 
-/*
- * definitions
- */
-#define REQUIRED_ARGS (1)	/* number of required arguments on the command line */
-
 
 int
 main(int argc, char **argv)
@@ -144,7 +139,7 @@ main(int argc, char **argv)
     if (!quiet) {
 	para("", "Performing sanity checks on your environment ...", NULL);
     }
-    sanity_chk(tar, fnamchk);
+    txzchk_sanity_chk(tar, fnamchk);
     if (!quiet) {
 	para("... environment looks OK", NULL);
     }
@@ -258,7 +253,7 @@ usage(int exitcode, char const *str, char const *prog)
 
 
 /*
- * sanity_chk - perform basic sanity checks
+ * txzchk_sanity_chk - perform basic sanity checks
  *
  * We perform basic sanity checks on paths.
  *
@@ -270,7 +265,7 @@ usage(int exitcode, char const *str, char const *prog)
  * NOTE: This function does not return on error or if things are not sane.
  */
 static void
-sanity_chk(char const *tar, char const *fnamchk)
+txzchk_sanity_chk(char const *tar, char const *fnamchk)
 {
     /*
      * firewall
@@ -427,7 +422,7 @@ sanity_chk(char const *tar, char const *fnamchk)
 
 
 /*
- * check_file - checks on the current file only
+ * check_txz_file - checks on the current file only
  *
  * given:
  *
@@ -442,7 +437,7 @@ sanity_chk(char const *tar, char const *fnamchk)
  *
  */
 static void
-check_file(char const *txzpath, char *p, char const *dir_name, struct file *file)
+check_txz_file(char const *txzpath, char *p, char const *dir_name, struct txz_file *file)
 {
     size_t j;
 
@@ -499,14 +494,14 @@ check_file(char const *txzpath, char *p, char const *dir_name, struct file *file
  *
  *	txzpath		- the tarball (or text file) we're checking
  *	size		- size of the file
- *	file		- the struct file we're checking
+ *	file		- the struct txz_file we're checking
  *
  * Returns void.
  *
  * Does not return on error (NULL pointers passed in).
  */
 static void
-check_empty_file(char const *txzpath, off_t size, struct file *file)
+check_empty_file(char const *txzpath, off_t size, struct txz_file *file)
 {
     /*
      * firewall
@@ -547,7 +542,7 @@ check_empty_file(char const *txzpath, off_t size, struct file *file)
 
 
 /*
- * check_all_files - check files list after parsing tarball (or text file)
+ * check_all_txz_files - check txz_files list after parsing tarball (or text file)
  *
  * given:
  *
@@ -560,9 +555,9 @@ check_empty_file(char const *txzpath, off_t size, struct file *file)
  *
  */
 static void
-check_all_files(char const *dir_name)
+check_all_txz_files(char const *dir_name)
 {
-    struct file *file; /* to iterate through files list */
+    struct txz_file *file; /* to iterate through files list */
 
     /* report total file size */
     if (txz_info.file_sizes < 0) {
@@ -590,7 +585,7 @@ check_all_files(char const *dir_name)
     /*
      * now go through the files list and detect any additional issues
      */
-    for (file = files; file != NULL; file = file->next) {
+    for (file = txz_files; file != NULL; file = file->next) {
 	if (!strcmp(file->basename, ".info.json")) {
 	    txz_info.has_info_json = true;
 	} else if (!strcmp(file->basename, ".author.json")) {
@@ -675,7 +670,7 @@ check_all_files(char const *dir_name)
  * Does not return on error.
  */
 static void
-check_directories(struct file *file, char const *dir_name, char const *txzpath)
+check_directories(struct txz_file *file, char const *dir_name, char const *txzpath)
 {
     unsigned dir_count = 0; /* number of directories in the path */
     int prev = '\0';
@@ -698,7 +693,7 @@ check_directories(struct file *file, char const *dir_name, char const *txzpath)
     if (strstr(file->filename, "..")) { /* check for '..' in path */
 	/*
 	 * Note that this check does NOT detect a file in the form of "../.file"
-	 * but since the basename of each file is checked in check_file() this
+	 * but since the basename of each file is checked in check_txz_file() this
 	 * is okay.
 	 */
 	++txz_info.total_issues;
@@ -776,7 +771,7 @@ check_directories(struct file *file, char const *dir_name, char const *txzpath)
 
 
 /*
- * parse_linux_line - parse linux tar output
+ * parse_linux_txz_line - parse linux tar output
  *
  * given:
  *
@@ -788,16 +783,16 @@ check_directories(struct file *file, char const *dir_name, char const *txzpath)
  *	saveptr	    - pointer to char * to save context between each strtok_r() call
  *
  * If everything goes okay the line will be completely parsed and the calling
- * function (parse_line()) will return to its caller (parse_all_lines()) which
+ * function (parse_txz_line()) will return to its caller (parse_all_lines()) which
  * will in turn read the next line.
  *
  * This function does not return on error.
  */
 static void
-parse_linux_line(char *p, char *linep, char *line_dup, char const *dir_name, char const *txzpath, char **saveptr)
+parse_linux_txz_line(char *p, char *linep, char *line_dup, char const *dir_name, char const *txzpath, char **saveptr)
 {
     off_t current_file_size = 0;
-    struct file *file = NULL;
+    struct txz_file *file = NULL;
     int i = 0;
 
     /*
@@ -863,24 +858,24 @@ parse_linux_line(char *p, char *linep, char *line_dup, char const *dir_name, cha
     }
 
     /* p should now contain the filename. */
-    file = alloc_file(p);
+    file = alloc_txz_file(p);
 
     /*
      * although we could check these later we check here because the
-     * add_file_to_list() function doesn't add the same file (basename) more
+     * add_txz_file_to_list() function doesn't add the same file (basename) more
      * than once: it simply increments the times it's been seen.
      */
     check_empty_file(txzpath, current_file_size, file);
 
     /* checks on this specific file */
-    check_file(txzpath, p, dir_name, file);
+    check_txz_file(txzpath, p, dir_name, file);
 
-    add_file_to_list(file);
+    add_txz_file_to_list(file);
 }
 
 
 /*
- * parse_bsd_line - parse macOS/BSD tar output
+ * parse_bsd_txz_line - parse macOS/BSD tar output
  *
  * given:
  *
@@ -892,16 +887,16 @@ parse_linux_line(char *p, char *linep, char *line_dup, char const *dir_name, cha
  *	saveptr	    - pointer to char * to save context between each strtok_r() call
  *
  * If everything goes okay the line will be completely parsed and the calling
- * function (parse_line()) will return to its caller (parse_all_lines()) which
+ * function (parse_txz_line()) will return to its caller (parse_all_lines()) which
  * will in turn read the next line.
  *
  * This function does not return on error.
  */
 static void
-parse_bsd_line(char *p, char *linep, char *line_dup, char const *dir_name, char const *txzpath, char **saveptr)
+parse_bsd_txz_line(char *p, char *linep, char *line_dup, char const *dir_name, char const *txzpath, char **saveptr)
 {
     off_t current_file_size = 0;
-    struct file *file = NULL;
+    struct txz_file *file = NULL;
     int i = 0;
 
     /*
@@ -972,24 +967,24 @@ parse_bsd_line(char *p, char *linep, char *line_dup, char const *dir_name, char 
     }
 
     /* p should now contain the filename. */
-    file = alloc_file(p);
+    file = alloc_txz_file(p);
 
     /*
      * although we could check these later we check here because the
-     * add_file_to_list() function doesn't add the same file (basename) more
+     * add_txz_file_to_list() function doesn't add the same file (basename) more
      * than once: it simply increments the times it's been seen.
      */
     check_empty_file(txzpath, current_file_size, file);
 
     /* checks on this specific file */
-    check_file(txzpath, p, dir_name, file);
+    check_txz_file(txzpath, p, dir_name, file);
 
-    add_file_to_list(file);
+    add_txz_file_to_list(file);
 }
 
 
 /*
- * parse_line  - parse a line in the tarball listing
+ * parse_txz_line  - parse a line in the tarball listing
  *
  * given:
  *
@@ -1004,7 +999,7 @@ parse_bsd_line(char *p, char *linep, char *line_dup, char const *dir_name, char 
  *  Function does not return on error.
  */
 static void
-parse_line(char *linep, char *line_dup, char const *dir_name, char const *txzpath, int *dir_count)
+parse_txz_line(char *linep, char *line_dup, char const *dir_name, char const *txzpath, int *dir_count)
 {
     char *p = NULL; /* each field in the line extracted from strtok_r() */
     char *saveptr = NULL; /* for strtok_r() context */
@@ -1055,10 +1050,10 @@ parse_line(char *linep, char *line_dup, char const *dir_name, char const *txzpat
     }
     if (strchr(p, '/') != NULL) {
 	/* found linux output */
-	parse_linux_line(p, linep, line_dup, dir_name, txzpath, &saveptr);
+	parse_linux_txz_line(p, linep, line_dup, dir_name, txzpath, &saveptr);
     } else {
 	/* assume macOS/BSD output */
-	parse_bsd_line(p, linep, line_dup, dir_name, txzpath, &saveptr);
+	parse_bsd_txz_line(p, linep, line_dup, dir_name, txzpath, &saveptr);
     }
 }
 
@@ -1169,7 +1164,7 @@ check_tarball(char const *tar, char const *fnamchk)
     txz_info.size = file_size(txzpath);
     /* report size if too big or !quiet */
     if (txz_info.size < 0) {
-	err(24, __func__, "%s: impossible error: sanity_chk() found tarball but file_size() did not", txzpath);
+	err(24, __func__, "%s: impossible error: txzchk_sanity_chk() found tarball but file_size() did not", txzpath);
 	not_reached();
     }
     else if (txz_info.size > MAX_TARBALL_LEN) {
@@ -1275,7 +1270,7 @@ check_tarball(char const *tar, char const *fnamchk)
 	 * add line to list (to parse once the list of files has been shown to
 	 * the user).
 	 */
-	add_line(linep, line_num);
+	add_txz_line(linep, line_num);
 
 	if (text_file_flag_used) {
 	    errno = 0;
@@ -1296,18 +1291,18 @@ check_tarball(char const *tar, char const *fnamchk)
     /*
      * now parse the lines, reporting any issue that have to be done while parsing
      */
-    parse_all_lines(dir_name, txzpath);
+    parse_all_txz_lines(dir_name, txzpath);
 
     /*
      * check files list and report any additional issues
      */
-    check_all_files(dir_name);
+    check_all_txz_files(dir_name);
 
     /* free the files list */
-    free_file_list();
+    free_txz_files_list();
 
-    /* free lines list */
-    free_lines();
+    /* free txz_lines list */
+    free_txz_lines();
 
     /*
      * close down pipe
@@ -1351,7 +1346,7 @@ has_special_bits(char const *str)
 
 
 /*
- * add_line - add line to lines list
+ * add_txz_line - add line to txz_lines list
  *
  * given:
  *
@@ -1365,9 +1360,9 @@ has_special_bits(char const *str)
  * This function returns void.
  */
 static void
-add_line(char const *str, int line_num)
+add_txz_line(char const *str, int line_num)
 {
-    struct line *line;
+    struct txz_line *line;
 
     /*
      * firewall
@@ -1380,7 +1375,7 @@ add_line(char const *str, int line_num)
     errno = 0;
     line = calloc(1, sizeof *line);
     if (line == NULL) {
-	errp(31, __func__, "unable to allocate struct line *");
+	errp(31, __func__, "unable to allocate struct txz_line *");
 	not_reached();
     }
 
@@ -1393,13 +1388,13 @@ add_line(char const *str, int line_num)
     line->line_num = line_num;
 
     dbg(DBG_MED, "adding line %s to lines list", line->line);
-    line->next = lines;
-    lines = line;
+    line->next = txz_lines;
+    txz_lines = line;
 }
 
 
 /*
- * parse_all_lines - parse lines, reporting any issues found
+ * parse_all_txz_lines - parse txz_lines, reporting any issues found
  *
  * given:
  *
@@ -1412,9 +1407,9 @@ add_line(char const *str, int line_num)
  * This function does not return on error.
  */
 static void
-parse_all_lines(char const *dir_name, char const *txzpath)
+parse_all_txz_lines(char const *dir_name, char const *txzpath)
 {
-    struct line *line = NULL;	/* for lines list */
+    struct txz_line *line = NULL;	/* for txz_lines list */
     char *line_dup = NULL;	/* strdup()d line */
     int dir_count = 0;		/* number of directories detected */
 
@@ -1426,7 +1421,7 @@ parse_all_lines(char const *dir_name, char const *txzpath)
 	not_reached();
     }
 
-    for (line = lines; line; line = line->next) {
+    for (line = txz_lines; line; line = line->next) {
 	if (line->line == NULL) {
 	    warn("txzchk", "encountered NULL string on line %d", line->line_num);
 	    continue;
@@ -1437,7 +1432,7 @@ parse_all_lines(char const *dir_name, char const *txzpath)
 	    not_reached();
 	}
 
-	parse_line(line->line, line_dup, dir_name, txzpath, &dir_count);
+	parse_txz_line(line->line, line_dup, dir_name, txzpath, &dir_count);
 	free(line_dup);
 	line_dup = NULL;
     }
@@ -1445,23 +1440,23 @@ parse_all_lines(char const *dir_name, char const *txzpath)
 
 
 /*
- * free_lines - free lines list
+ * free_txz_lines - free txz_lines list
  *
- * The purpose of the lines list is so that we can show the list of files in the
- * tarball together without interspersing it with any warnings. Thus we show the
- * files list, adding each line to the list in the process, and then after that
- * we can iterate through the lines and show any warnings. After that we report
- * any issues that haven't been reported yet (some warnings have to be issued
- * while parsing the lines).
+ * The purpose of the txz_lines list is so that we can show the list of files in
+ * the tarball together without interspersing it with any warnings. Thus we show
+ * the files list, adding each line to the list in the process, and then after
+ * that we can iterate through the lines and show any warnings. After that we
+ * report any issues that haven't been reported yet (some warnings have to be
+ * issued while parsing the lines).
  *
  * This function returns void.
  */
 static void
-free_lines(void)
+free_txz_lines(void)
 {
-    struct line *line, *next_line;
+    struct txz_line *line, *next_line;
 
-    for (line = lines; line != NULL; line = next_line) {
+    for (line = txz_lines; line != NULL; line = next_line) {
 	next_line = line->next;
 	if (line->line) {
 	    free(line->line);
@@ -1472,26 +1467,26 @@ free_lines(void)
 	line = NULL;
     }
 
-    lines = NULL;
+    txz_lines = NULL;
 }
 
 
 /*
- * alloc_file - allocate a struct file *
+ * alloc_txz_file - allocate a struct txz_file *
  *
  * given:
  *
  *	p	- file path
  *
- * Returns the newly allocated struct file * with the file information. The
+ * Returns the newly allocated struct txz_file * with the file information. The
  * function does NOT add it to the list!
  *
  * This function does not return on error.
  */
-static struct file *
-alloc_file(char const *p)
+static struct txz_file *
+alloc_txz_file(char const *p)
 {
-    struct file *file; /* the file structure */
+    struct txz_file *file; /* the file structure */
 
     /*
      * firewall
@@ -1503,7 +1498,7 @@ alloc_file(char const *p)
     errno = 0;
     file = calloc(1, sizeof *file);
     if (file == NULL) {
-	errp(36, __func__, "%s: unable to allocate a struct file *", txzpath);
+	errp(36, __func__, "%s: unable to allocate a struct txz_file *", txzpath);
 	not_reached();
     }
 
@@ -1526,11 +1521,11 @@ alloc_file(char const *p)
 
 
 /*
- * add_file_to_list - add a filename to the linked list
+ * add_txz_file_to_list - add a filename to the linked list
  *
  * given:
  *
- *	file		    - pointer to struct file which should already have the name
+ *	file		    - pointer to struct txz_file which should already have the name
  *
  * If the function finds this filename already in the list (basename!) it
  * increments the count and does not add it to the list; else it adds it to the
@@ -1539,9 +1534,9 @@ alloc_file(char const *p)
  * This function does not return on error.
  */
 static void
-add_file_to_list(struct file *file)
+add_txz_file_to_list(struct txz_file *file)
 {
-    struct file *ptr; /* used to iterate through list to find duplicate files */
+    struct txz_file *ptr; /* used to iterate through list to find duplicate files */
 
     /*
      * firewall
@@ -1554,7 +1549,7 @@ add_file_to_list(struct file *file)
     /* always increment total files count */
     ++txz_info.total_files;
 
-    for (ptr = files; ptr != NULL; ptr = ptr->next)
+    for (ptr = txz_files; ptr != NULL; ptr = ptr->next)
     {
 	if (!strcmp(ptr->basename, file->basename)) {
 	    dbg(DBG_MED, "incrementing count of filename %s", file->basename);
@@ -1565,20 +1560,20 @@ add_file_to_list(struct file *file)
     file->count++;
     /* lazily add to list */
     dbg(DBG_MED, "adding filename %s (basename %s) to list of files", file->filename, file->basename);
-    file->next = files;
-    files = file;
+    file->next = txz_files;
+    txz_files = file;
 }
 
 
 /*
- * free_file_list - free the file linked list
+ * free_txz_files_list - free the file linked list
  */
 static void
-free_file_list(void)
+free_txz_files_list(void)
 {
-    struct file *file, *next_file;
+    struct txz_file *file, *next_file;
 
-    for (file = files; file != NULL; file = next_file) {
+    for (file = txz_files; file != NULL; file = next_file) {
 	next_file = file->next;
 	if (file->filename) {
 	    free(file->filename);
@@ -1593,5 +1588,5 @@ free_file_list(void)
 	file = NULL;
     }
 
-    files = NULL;
+    txz_files = NULL;
 }

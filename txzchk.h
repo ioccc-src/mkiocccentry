@@ -34,6 +34,10 @@
  */
 #include "limit_ioccc.h"
 
+/*
+ * definitions
+ */
+#define REQUIRED_ARGS (1)	/* number of required arguments on the command line */
 
 
 /* variable specific to txzchk */
@@ -70,22 +74,22 @@ struct txz_info {
 
 static struct txz_info txz_info;
 
-struct file {
+struct txz_file {
     char *basename;
     char *filename;
     unsigned count;
-    struct file *next;
+    struct txz_file *next;
 };
 
-static struct file *files;
+static struct txz_file *txz_files;
 
-struct line {
+struct txz_line {
     char *line;
     int line_num;
-    struct line *next;
+    struct txz_line *next;
 };
 
-static struct line *lines;
+static struct txz_line *txz_lines;
 
 
 /*
@@ -115,23 +119,23 @@ static const char * const usage_msg =
  * function prototypes
  */
 static void usage(int exitcode, char const *name, char const *str) __attribute__((noreturn));
-static void sanity_chk(char const *tar, char const *fnamchk);
-static void parse_line(char *linep, char *line_dup, char const *dir_name, char const *txzpath, int *dir_count);
-static void parse_linux_line(char *p, char *line, char *line_dup, char const *dir_name, char const *txzpath, char **saveptr);
-static void parse_bsd_line(char *p, char *line, char *line_dup, char const *dir_name, char const *txzpath, char **saveptr);
+static void txzchk_sanity_chk(char const *tar, char const *fnamchk);
+static void parse_txz_line(char *linep, char *line_dup, char const *dir_name, char const *txzpath, int *dir_count);
+static void parse_linux_txz_line(char *p, char *line, char *line_dup, char const *dir_name, char const *txzpath, char **saveptr);
+static void parse_bsd_txz_line(char *p, char *line, char *line_dup, char const *dir_name, char const *txzpath, char **saveptr);
 static unsigned check_tarball(char const *tar, char const *fnamchk);
 static void show_txz_info(char const *txzpath);
-static void check_empty_file(char const *txzpath, off_t size, struct file *file);
-static void check_file(char const *txzpath, char *p, char const *dir_name, struct file *file);
-static void check_all_files(char const *dir_name);
-static void check_directories(struct file *file, char const *dir_name, char const *txzpath);
+static void check_empty_file(char const *txzpath, off_t size, struct txz_file *file);
+static void check_txz_file(char const *txzpath, char *p, char const *dir_name, struct txz_file *file);
+static void check_all_txz_files(char const *dir_name);
+static void check_directories(struct txz_file *file, char const *dir_name, char const *txzpath);
 static bool has_special_bits(char const *str);
-static void add_line(char const *str, int line_num);
-static void parse_all_lines(char const *dir_name, char const *txzpath);
-static void free_lines(void);
-static struct file *alloc_file(char const *p);
-static void add_file_to_list(struct file *file);
-static void free_file_list(void);
+static void add_txz_line(char const *str, int line_num);
+static void parse_all_txz_lines(char const *dir_name, char const *txzpath);
+static void free_txz_lines(void);
+static struct txz_file *alloc_txz_file(char const *p);
+static void add_txz_file_to_list(struct txz_file *file);
+static void free_txz_files_list(void);
 
 
 #endif /* INCLUDE_TXZCHK_H */
