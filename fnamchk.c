@@ -129,7 +129,7 @@ main(int argc, char *argv[])
 	not_reached();
     }
 
-
+    /* collect arg */
     filepath = argv[optind];
     dbg(DBG_LOW, "filepath: %s", filepath);
 
