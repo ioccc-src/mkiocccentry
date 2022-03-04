@@ -204,8 +204,8 @@ check_info_json_fields_table(void)
 	switch (info_json_fields[loc].field_type) {
 	    case JSON_NULL:
 		if (info_json_fields[loc].name != NULL) {
-		    err(5, __func__, "found JSON_NULL element with non NULL name '%s' location %lu in info_json_fields table",
-			    info_json_fields[loc].name, (unsigned long)loc);
+		    err(5, __func__, "found JSON_NULL element with non NULL name '%s' location %ju in info_json_fields table",
+			    info_json_fields[loc].name, (uintmax_t)loc);
 		    not_reached();
 		}
 		break;
@@ -219,7 +219,7 @@ check_info_json_fields_table(void)
 		/* these are all the valid types */
 		break;
 	    default:
-		err(6, __func__, "found invalid data_type in info_json_fields table location %lu", (unsigned long)loc);
+		err(6, __func__, "found invalid data_type in info_json_fields table location %ju", (uintmax_t)loc);
 		not_reached();
 		break;
 	}
@@ -425,7 +425,7 @@ check_info_json(char const *file, char const *fnamchk)
 	err(18, __func__, "zero length data in file %s", file);
 	not_reached();
     }
-    dbg(DBG_HIGH, "%s read length: %lu", file, (unsigned long)length);
+    dbg(DBG_HIGH, "%s read length: %ju", file, (uintmax_t)length);
 
     /* close the stream as we no longer need it, having read in all the file */
     errno = 0;
@@ -1286,8 +1286,8 @@ check_found_info_json_fields(char const *file, bool test)
 	dbg(DBG_VHIGH, "checking field '%s' in file %s", field->name, file);
 	/* make sure the field is not over the limit allowed */
 	if (info_field->max_count > 0 && info_field->count > info_field->max_count) {
-	    warn(__func__, "field '%s' found %lu times but is only allowed %lu time%s", info_field->name,
-		    (unsigned long)info_field->count, (unsigned long)info_field->max_count, info_field->max_count==1?"":"s");
+	    warn(__func__, "field '%s' found %ju times but is only allowed %ju time%s", info_field->name,
+		    (uintmax_t)info_field->count, (uintmax_t)info_field->max_count, info_field->max_count==1?"":"s");
 	    ++issues;
 	}
 
@@ -1350,8 +1350,8 @@ check_found_info_json_fields(char const *file, bool test)
 		    warn(__func__, "title length zero");
 		    ++issues;
 		} else if (val_length > MAX_TITLE_LEN) {
-		    warn(__func__, "title length %lu > max %d",
-				      (unsigned long)val_length, MAX_TITLE_LEN);
+		    warn(__func__, "title length %ju > max %d",
+				      (uintmax_t)val_length, MAX_TITLE_LEN);
 		    ++issues;
 		}
 
@@ -1377,8 +1377,8 @@ check_found_info_json_fields(char const *file, bool test)
 		    warn(__func__, "abstract value zero length");
 		    ++issues;
 		} else if (val_length > MAX_ABSTRACT_LEN) {
-		    warn(__func__, "abstract length %lu > max %d",
-				      (unsigned long)val_length, MAX_ABSTRACT_LEN);
+		    warn(__func__, "abstract length %ju > max %d",
+				      (uintmax_t)val_length, MAX_ABSTRACT_LEN);
 		    ++issues;
 		}
 	    } else if (!strcmp(field->name, "info_JSON")) {
@@ -1392,7 +1392,7 @@ check_found_info_json_fields(char const *file, bool test)
 		    not_reached();
 		}
 	    } else if (!strcmp(field->name, "author_JSON")) {
-	    	if (strcmp(val, ".author.json")) {
+		if (strcmp(val, ".author.json")) {
 		    warn(__func__, "found invalid author_JSON value: '%s'", val);
 		    ++issues;
 		}
@@ -1435,7 +1435,7 @@ check_found_info_json_fields(char const *file, bool test)
 		size_t j;
 
 		if (val_length > MAX_BASENAME_LEN) {
-		    warn(__func__, "extra file name length %lu > the limit %lu", (unsigned long)val_length, (unsigned long)MAX_BASENAME_LEN);
+		    warn(__func__, "extra file name length %ju > the limit %ju", (uintmax_t)val_length, (uintmax_t)MAX_BASENAME_LEN);
 		    ++issues;
 		}
 		if (!isascii(*val) || !isalnum(*val)) {
@@ -1559,7 +1559,7 @@ check_found_info_json_fields(char const *file, bool test)
      */
     for (manifest_file = manifest_files; manifest_file; manifest_file = manifest_file->next) {
 	if (manifest_file->count > 1) {
-	    warn(__func__, "found duplicate file '%s' (count: %lu)", manifest_file->filename, (unsigned long)manifest_file->count);
+	    warn(__func__, "found duplicate file '%s' (count: %ju)", manifest_file->filename, (uintmax_t)manifest_file->count);
 	    ++issues;
 	}
     }

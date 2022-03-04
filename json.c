@@ -297,7 +297,7 @@ malloc_json_encode(char const *ptr, size_t len, size_t *retlen)
 	if (retlen != NULL) {
 	    *retlen = 0;
 	}
-	warn(__func__, "len: %lu must be > 0", (unsigned long) len);
+	warn(__func__, "len: %ju must be > 0", (uintmax_t) len);
 	return NULL;
     }
 
@@ -317,7 +317,7 @@ malloc_json_encode(char const *ptr, size_t len, size_t *retlen)
 	if (retlen != NULL) {
 	    *retlen = 0;
 	}
-	warn(__func__, "malloc of %ld bytes failed", (unsigned long)(mlen + 1 + 1));
+	warn(__func__, "malloc of %ld bytes failed", (uintmax_t)(mlen + 1 + 1));
 	return NULL;
     }
     ret[mlen] = '\0';   /* terminate string */
@@ -343,8 +343,8 @@ malloc_json_encode(char const *ptr, size_t len, size_t *retlen)
     /*
      * return result
      */
-    dbg(DBG_VVVHIGH, "returning from malloc_json_encode(ptr, %lu, *%lu)",
-		     (unsigned long)len, (unsigned long)mlen);
+    dbg(DBG_VVVHIGH, "returning from malloc_json_encode(ptr, %ju, *%ju)",
+		     (uintmax_t)len, (uintmax_t)mlen);
     if (retlen != NULL) {
 	*retlen = mlen;
     }
@@ -388,7 +388,7 @@ malloc_json_encode_str(char const *str, size_t *retlen)
 	if (retlen != NULL) {
 	    *retlen = 0;
 	}
-	warn(__func__, "len: %lu must be > 0", (unsigned long) len);
+	warn(__func__, "len: %ju must be > 0", (uintmax_t) len);
 	return NULL;
     }
 
@@ -445,8 +445,8 @@ jencchk(void)
      * assert: table must be 256 elements long
      */
     if (sizeof(jenc)/sizeof(jenc[0]) != BYTE_VALUES) {
-	err(151, __func__, "jenc table as %lu elements instead of %d",
-			   (unsigned long)sizeof(jenc)/sizeof(jenc[0]), BYTE_VALUES);
+	err(151, __func__, "jenc table as %ju elements instead of %d",
+			   (uintmax_t)sizeof(jenc)/sizeof(jenc[0]), BYTE_VALUES);
 	not_reached();
     }
 
@@ -475,9 +475,9 @@ jencchk(void)
      */
     for (i=0; i < BYTE_VALUES; ++i) {
 	if (strlen(jenc[i].enc) != jenc[i].len) {
-	    err(154, __func__, "jenc[0x%02x].enc length: %lu != jenc[0x%02x].len: %lu",
-			       i, (unsigned long)strlen(jenc[i].enc),
-			       i, (unsigned long)jenc[i].len);
+	    err(154, __func__, "jenc[0x%02x].enc length: %ju != jenc[0x%02x].len: %ju",
+			       i, (uintmax_t)strlen(jenc[i].enc),
+			       i, (uintmax_t)jenc[i].len);
 	    not_reached();
 	}
     }
@@ -487,9 +487,9 @@ jencchk(void)
      */
     for (i=0x00; i <= 0x07; ++i) {
 	if (jenc[i].len != LITLEN("\\uxxxx")) {
-	    err(155, __func__, "jenc[0x%02x].enc length: %lu != %lu",
-			       i, (unsigned long)strlen(jenc[i].enc),
-			       (unsigned long)LITLEN("\\uxxxx"));
+	    err(155, __func__, "jenc[0x%02x].enc length: %ju != %ju",
+			       i, (uintmax_t)strlen(jenc[i].enc),
+			       (uintmax_t)LITLEN("\\uxxxx"));
 	    not_reached();
 	}
 	ret = sscanf(jenc[i].enc, "\\u%04x%c", &hexval, &guard);
@@ -509,9 +509,9 @@ jencchk(void)
     indx = 0x08;
     encstr = "\\b";
     if (jenc[indx].len != LITLEN("\\b")) {
-	err(158, __func__, "jenc[0x%02x].enc length: %lu != %lu",
-			   indx, (unsigned long)strlen(jenc[indx].enc),
-			   (unsigned long)strlen(encstr));
+	err(158, __func__, "jenc[0x%02x].enc length: %ju != %ju",
+			   indx, (uintmax_t)strlen(jenc[indx].enc),
+			   (uintmax_t)strlen(encstr));
 	not_reached();
     }
     if (strcmp(jenc[indx].enc, encstr) != 0) {
@@ -525,9 +525,9 @@ jencchk(void)
     indx = 0x09;
     encstr = "\\t";
     if (jenc[indx].len != LITLEN("\\b")) {
-	err(160, __func__, "jenc[0x%02x].enc length: %lu != %lu",
-			   indx, (unsigned long)strlen(jenc[indx].enc),
-			   (unsigned long)strlen(encstr));
+	err(160, __func__, "jenc[0x%02x].enc length: %ju != %ju",
+			   indx, (uintmax_t)strlen(jenc[indx].enc),
+			   (uintmax_t)strlen(encstr));
 	not_reached();
     }
     if (strcmp(jenc[indx].enc, encstr) != 0) {
@@ -541,9 +541,9 @@ jencchk(void)
     indx = 0x0a;
     encstr = "\\n";
     if (jenc[indx].len != strlen(encstr)) {
-	err(162, __func__, "jenc[0x%02x].enc length: %lu != %lu",
-			   indx, (unsigned long)strlen(jenc[indx].enc),
-			   (unsigned long)strlen(encstr));
+	err(162, __func__, "jenc[0x%02x].enc length: %ju != %ju",
+			   indx, (uintmax_t)strlen(jenc[indx].enc),
+			   (uintmax_t)strlen(encstr));
 	not_reached();
     }
     if (strcmp(jenc[indx].enc, encstr) != 0) {
@@ -557,9 +557,9 @@ jencchk(void)
     indx = 0x0b;
     encstr = "\\u000b";
     if (jenc[indx].len != strlen(encstr)) {
-	err(164, __func__, "jenc[0x%02x].enc length: %lu != %lu",
-			   indx, (unsigned long)strlen(jenc[indx].enc),
-			   (unsigned long)strlen(encstr));
+	err(164, __func__, "jenc[0x%02x].enc length: %ju != %ju",
+			   indx, (uintmax_t)strlen(jenc[indx].enc),
+			   (uintmax_t)strlen(encstr));
 	not_reached();
     }
     if (strcmp(jenc[indx].enc, encstr) != 0) {
@@ -573,9 +573,9 @@ jencchk(void)
     indx = 0x0c;
     encstr = "\\f";
     if (jenc[indx].len != strlen(encstr)) {
-	err(166, __func__, "jenc[0x%02x].enc length: %lu != %lu",
-			   indx, (unsigned long)strlen(jenc[indx].enc),
-			   (unsigned long)strlen(encstr));
+	err(166, __func__, "jenc[0x%02x].enc length: %ju != %ju",
+			   indx, (uintmax_t)strlen(jenc[indx].enc),
+			   (uintmax_t)strlen(encstr));
 	not_reached();
     }
     if (strcmp(jenc[indx].enc, encstr) != 0) {
@@ -589,9 +589,9 @@ jencchk(void)
     indx = 0x0d;
     encstr = "\\r";
     if (jenc[indx].len != strlen(encstr)) {
-	err(168, __func__, "jenc[0x%02x].enc length: %lu != %lu",
-			   indx, (unsigned long)strlen(jenc[indx].enc),
-			   (unsigned long)strlen(encstr));
+	err(168, __func__, "jenc[0x%02x].enc length: %ju != %ju",
+			   indx, (uintmax_t)strlen(jenc[indx].enc),
+			   (uintmax_t)strlen(encstr));
 	not_reached();
     }
     if (strcmp(jenc[indx].enc, encstr) != 0) {
@@ -604,9 +604,9 @@ jencchk(void)
      */
     for (i=0x0e; i <= 0x1f; ++i) {
 	if (jenc[i].len != LITLEN("\\uxxxx")) {
-	    err(170, __func__, "jenc[0x%02x].enc length: %lu != %lu",
-			       i, (unsigned long)strlen(jenc[i].enc),
-			       (unsigned long)LITLEN("\\uxxxx"));
+	    err(170, __func__, "jenc[0x%02x].enc length: %ju != %ju",
+			       i, (uintmax_t)strlen(jenc[i].enc),
+			       (uintmax_t)LITLEN("\\uxxxx"));
 	    not_reached();
 	}
 	ret = sscanf(jenc[i].enc, "\\u%04x%c", &hexval, &guard);
@@ -625,8 +625,8 @@ jencchk(void)
      */
     for (i=0x20; i <= 0x21; ++i) {
 	if (jenc[i].len != 1) {
-	    err(173, __func__, "jenc[0x%02x].enc length: %lu != %d",
-			       i, (unsigned long)strlen(jenc[i].enc), 1);
+	    err(173, __func__, "jenc[0x%02x].enc length: %ju != %d",
+			       i, (uintmax_t)strlen(jenc[i].enc), 1);
 	    not_reached();
 	}
 	if ((unsigned int)(jenc[i].enc[0]) != i) {
@@ -641,9 +641,9 @@ jencchk(void)
     indx = 0x22;
     encstr = "\\\"";
     if (jenc[indx].len != strlen(encstr)) {
-	err(175, __func__, "jenc[0x%02x].enc length: %lu != %lu",
-			   indx, (unsigned long)strlen(jenc[indx].enc),
-			   (unsigned long)strlen(encstr));
+	err(175, __func__, "jenc[0x%02x].enc length: %ju != %ju",
+			   indx, (uintmax_t)strlen(jenc[indx].enc),
+			   (uintmax_t)strlen(encstr));
 	not_reached();
     }
     if (strcmp(jenc[indx].enc, encstr) != 0) {
@@ -656,8 +656,8 @@ jencchk(void)
      */
     for (i=0x23; i <= 0x25; ++i) {
 	if (jenc[i].len != 1) {
-	    err(177, __func__, "jenc[0x%02x].enc length: %lu != %d",
-			       i, (unsigned long)strlen(jenc[i].enc), 1);
+	    err(177, __func__, "jenc[0x%02x].enc length: %ju != %d",
+			       i, (uintmax_t)strlen(jenc[i].enc), 1);
 	    not_reached();
 	}
 	if ((unsigned int)(jenc[i].enc[0]) != i) {
@@ -672,9 +672,9 @@ jencchk(void)
     indx = 0x26;
     encstr = "\\u0026";
     if (jenc[indx].len != strlen(encstr)) {
-	err(179, __func__, "jenc[0x%02x].enc length: %lu != %lu",
-			   indx, (unsigned long)strlen(jenc[indx].enc),
-			   (unsigned long)strlen(encstr));
+	err(179, __func__, "jenc[0x%02x].enc length: %ju != %ju",
+			   indx, (uintmax_t)strlen(jenc[indx].enc),
+			   (uintmax_t)strlen(encstr));
 	not_reached();
     }
     if (strcmp(jenc[indx].enc, encstr) != 0) {
@@ -687,8 +687,8 @@ jencchk(void)
      */
     for (i=0x27; i <= 0x2e; ++i) {
 	if (jenc[i].len != 1) {
-	    err(181, __func__, "jenc[0x%02x].enc length: %lu != %d",
-			       i, (unsigned long)strlen(jenc[i].enc), 1);
+	    err(181, __func__, "jenc[0x%02x].enc length: %ju != %d",
+			       i, (uintmax_t)strlen(jenc[i].enc), 1);
 	    not_reached();
 	}
 	if ((unsigned int)(jenc[i].enc[0]) != i) {
@@ -703,9 +703,9 @@ jencchk(void)
     indx = 0x2f;
     encstr = "\\/";
     if (jenc[indx].len != strlen(encstr)) {
-	err(183, __func__, "jenc[0x%02x].enc length: %lu != %lu",
-			   indx, (unsigned long)strlen(jenc[indx].enc),
-			   (unsigned long)strlen(encstr));
+	err(183, __func__, "jenc[0x%02x].enc length: %ju != %ju",
+			   indx, (uintmax_t)strlen(jenc[indx].enc),
+			   (uintmax_t)strlen(encstr));
 	not_reached();
     }
     if (strcmp(jenc[indx].enc, encstr) != 0) {
@@ -718,8 +718,8 @@ jencchk(void)
      */
     for (i=0x30; i <= 0x3b; ++i) {
 	if (jenc[i].len != 1) {
-	    err(185, __func__, "jenc[0x%02x].enc length: %lu != %d",
-			       i, (unsigned long)strlen(jenc[i].enc), 1);
+	    err(185, __func__, "jenc[0x%02x].enc length: %ju != %d",
+			       i, (uintmax_t)strlen(jenc[i].enc), 1);
 	    not_reached();
 	}
 	if ((unsigned int)(jenc[i].enc[0]) != i) {
@@ -734,9 +734,9 @@ jencchk(void)
     indx = 0x3c;
     encstr = "\\u003c";
     if (jenc[indx].len != strlen(encstr)) {
-	err(187, __func__, "jenc[0x%02x].enc length: %lu != %lu",
-			   indx, (unsigned long)strlen(jenc[indx].enc),
-			   (unsigned long)strlen(encstr));
+	err(187, __func__, "jenc[0x%02x].enc length: %ju != %ju",
+			   indx, (uintmax_t)strlen(jenc[indx].enc),
+			   (uintmax_t)strlen(encstr));
 	not_reached();
     }
     if (strcmp(jenc[indx].enc, encstr) != 0) {
@@ -749,8 +749,8 @@ jencchk(void)
      */
     for (i=0x3d; i <= 0x3d; ++i) {
 	if (jenc[i].len != 1) {
-	    err(189, __func__, "jenc[0x%02x].enc length: %lu != %d",
-			       i, (unsigned long)strlen(jenc[i].enc), 1);
+	    err(189, __func__, "jenc[0x%02x].enc length: %ju != %d",
+			       i, (uintmax_t)strlen(jenc[i].enc), 1);
 	    not_reached();
 	}
 	if ((unsigned int)(jenc[i].enc[0]) != i) {
@@ -765,9 +765,9 @@ jencchk(void)
     indx = 0x3e;
     encstr = "\\u003e";
     if (jenc[indx].len != strlen(encstr)) {
-	err(191, __func__, "jenc[0x%02x].enc length: %lu != %lu",
-			   indx, (unsigned long)strlen(jenc[indx].enc),
-			   (unsigned long)strlen(encstr));
+	err(191, __func__, "jenc[0x%02x].enc length: %ju != %ju",
+			   indx, (uintmax_t)strlen(jenc[indx].enc),
+			   (uintmax_t)strlen(encstr));
 	not_reached();
     }
     if (strcmp(jenc[indx].enc, encstr) != 0) {
@@ -780,8 +780,8 @@ jencchk(void)
      */
     for (i=0x3f; i <= 0x5b; ++i) {
 	if (jenc[i].len != 1) {
-	    err(193, __func__, "jenc[0x%02x].enc length: %lu != %d",
-			       i, (unsigned long)strlen(jenc[i].enc), 1);
+	    err(193, __func__, "jenc[0x%02x].enc length: %ju != %d",
+			       i, (uintmax_t)strlen(jenc[i].enc), 1);
 	    not_reached();
 	}
 	if ((unsigned int)(jenc[i].enc[0]) != i) {
@@ -796,9 +796,9 @@ jencchk(void)
     indx = 0x5c;
     encstr = "\\\\";
     if (jenc[indx].len != strlen(encstr)) {
-	err(195, __func__, "jenc[0x%02x].enc length: %lu != %lu",
-			   indx, (unsigned long)strlen(jenc[indx].enc),
-			   (unsigned long)strlen(encstr));
+	err(195, __func__, "jenc[0x%02x].enc length: %ju != %ju",
+			   indx, (uintmax_t)strlen(jenc[indx].enc),
+			   (uintmax_t)strlen(encstr));
 	not_reached();
     }
     if (strcmp(jenc[indx].enc, encstr) != 0) {
@@ -811,8 +811,8 @@ jencchk(void)
      */
     for (i=0x5d; i <= 0x7e; ++i) {
 	if (jenc[i].len != 1) {
-	    err(197, __func__, "jenc[0x%02x].enc length: %lu != %d",
-			       i, (unsigned long)strlen(jenc[i].enc), 1);
+	    err(197, __func__, "jenc[0x%02x].enc length: %ju != %d",
+			       i, (uintmax_t)strlen(jenc[i].enc), 1);
 	    not_reached();
 	}
 	if ((unsigned int)(jenc[i].enc[0]) != i) {
@@ -826,9 +826,9 @@ jencchk(void)
      */
     for (i=0x7f; i <= 0xff; ++i) {
 	if (jenc[i].len != LITLEN("\\uxxxx")) {
-	    err(199, __func__, "jenc[0x%02x].enc length: %lu != %lu",
-			       i, (unsigned long)strlen(jenc[i].enc),
-			       (unsigned long)LITLEN("\\uxxxx"));
+	    err(199, __func__, "jenc[0x%02x].enc length: %ju != %ju",
+			       i, (uintmax_t)strlen(jenc[i].enc),
+			       (uintmax_t)LITLEN("\\uxxxx"));
 	    not_reached();
 	}
 	ret = sscanf(jenc[i].enc, "\\u%04x%c", &hexval, &guard);
@@ -849,17 +849,17 @@ jencchk(void)
     memset(str, 0, sizeof(str));    /* clear all bytes in str, including the final \0 */
     mstr = malloc_json_encode(str, 1,  &mlen);
     if (mstr == NULL) {
-	err(202, __func__, "malloc_json_encode(0x00, 1, *mlen: %lu) == NULL", (unsigned long)mlen);
+	err(202, __func__, "malloc_json_encode(0x00, 1, *mlen: %ju) == NULL", (uintmax_t)mlen);
 	not_reached();
     }
     if (mlen != jenc[0].len) {
-	err(203, __func__, "malloc_json_encode(0x00, 1, *mlen: %lu != %lu)",
-			   (unsigned long)mlen, (unsigned long)(jenc[0].len));
+	err(203, __func__, "malloc_json_encode(0x00, 1, *mlen: %ju != %ju)",
+			   (uintmax_t)mlen, (uintmax_t)(jenc[0].len));
 	not_reached();
     }
     if (strcmp(jenc[0].enc, mstr) != 0) {
-	err(204, __func__, "malloc_json_encode(0x00, 1, *mlen: %lu) != <%s>",
-			   (unsigned long)mlen, jenc[0].enc);
+	err(204, __func__, "malloc_json_encode(0x00, 1, *mlen: %ju) != <%s>",
+			   (uintmax_t)mlen, jenc[0].enc);
 	not_reached();
     }
     /* free the malloced encoded string */
@@ -885,18 +885,18 @@ jencchk(void)
 	mstr = malloc_json_encode_str(str, &mlen);
 	/* check encoding result */
 	if (mstr == NULL) {
-	    err(205, __func__, "malloc_json_encode_str(0x%02x, *mlen: %lu) == NULL",
-			       i, (unsigned long)mlen);
+	    err(205, __func__, "malloc_json_encode_str(0x%02x, *mlen: %ju) == NULL",
+			       i, (uintmax_t)mlen);
 	    not_reached();
 	}
 	if (mlen != jenc[i].len) {
-	    err(206, __func__, "malloc_json_encode_str(0x%02x, *mlen %lu != %lu)",
-			       i, (unsigned long)mlen, (unsigned long)jenc[i].len);
+	    err(206, __func__, "malloc_json_encode_str(0x%02x, *mlen %ju != %ju)",
+			       i, (uintmax_t)mlen, (uintmax_t)jenc[i].len);
 	    not_reached();
 	}
 	if (strcmp(jenc[i].enc, mstr) != 0) {
-	    err(207, __func__, "malloc_json_encode_str(0x%02x, *mlen: %lu) != <%s>", i,
-			       (unsigned long)mlen, jenc[i].enc);
+	    err(207, __func__, "malloc_json_encode_str(0x%02x, *mlen: %ju) != <%s>", i,
+			       (uintmax_t)mlen, jenc[i].enc);
 	    not_reached();
 	}
 	dbg(DBG_VVHIGH, "testing malloc_json_encode_str(0x%02x, *mlen) encoded to <%s>", i, mstr);
@@ -908,18 +908,18 @@ jencchk(void)
 	/* test malloc_json_decode_str() */
 	mstr2 = malloc_json_decode_str(mstr, &mlen2, true);
 	if (mstr2 == NULL) {
-	    err(208, __func__, "malloc_json_decode_str(<%s>, *mlen: %lu, true) == NULL",
-			       mstr, (unsigned long)mlen2);
+	    err(208, __func__, "malloc_json_decode_str(<%s>, *mlen: %ju, true) == NULL",
+			       mstr, (uintmax_t)mlen2);
 	    not_reached();
 	}
 	if (mlen2 != 1) {
-	    err(209, __func__, "malloc_json_decode_str(<%s>, *mlen2 %lu != 1, true)",
-			       mstr, (unsigned long)mlen2);
+	    err(209, __func__, "malloc_json_decode_str(<%s>, *mlen2 %ju != 1, true)",
+			       mstr, (uintmax_t)mlen2);
 	    not_reached();
 	}
 	if ((uint8_t)(mstr2[0]) != i) {
-	    err(210, __func__, "malloc_json_decode_str(<%s>, *mlen: %lu, true): 0x%02x != 0x%02x",
-			       mstr, (unsigned long)mlen2, (uint8_t)(mstr2[0]), i);
+	    err(210, __func__, "malloc_json_decode_str(<%s>, *mlen: %ju, true): 0x%02x != 0x%02x",
+			       mstr, (uintmax_t)mlen2, (uint8_t)(mstr2[0]), i);
 	    not_reached();
 	}
 
@@ -930,18 +930,18 @@ jencchk(void)
 	/* test malloc_json_decode_str() */
 	mstr3 = malloc_json_decode_str(mstr, &mlen3, false);
 	if (mstr3 == NULL) {
-	    err(211, __func__, "malloc_json_decode_str(<%s>, *mlen: %lu, false) == NULL",
-			       mstr, (unsigned long)mlen3);
+	    err(211, __func__, "malloc_json_decode_str(<%s>, *mlen: %ju, false) == NULL",
+			       mstr, (uintmax_t)mlen3);
 	    not_reached();
 	}
 	if (mlen3 != 1) {
-	    err(212, __func__, "malloc_json_decode_str(<%s>, *mlen3 %lu != 1, false)",
-			       mstr, (unsigned long)mlen3);
+	    err(212, __func__, "malloc_json_decode_str(<%s>, *mlen3 %ju != 1, false)",
+			       mstr, (uintmax_t)mlen3);
 	    not_reached();
 	}
 	if ((uint8_t)(mstr3[0]) != i) {
-	    err(213, __func__, "malloc_json_decode_str(<%s>, *mlen: %lu, false): 0x%02x != 0x%02x",
-			       mstr, (unsigned long)mlen3, (uint8_t)(mstr3[0]), i);
+	    err(213, __func__, "malloc_json_decode_str(<%s>, *mlen: %ju, false): 0x%02x != 0x%02x",
+			       mstr, (uintmax_t)mlen3, (uint8_t)(mstr3[0]), i);
 	    not_reached();
 	}
 
@@ -1054,7 +1054,7 @@ malloc_json_decode(char const *ptr, size_t len, size_t *retlen, bool strict)
 	if (retlen != NULL) {
 	    *retlen = 0;
 	}
-	warn(__func__, "len: %lu must be > 0", (unsigned long) len);
+	warn(__func__, "len: %ju must be > 0", (uintmax_t) len);
 	return NULL;
     }
 
@@ -1086,7 +1086,7 @@ malloc_json_decode(char const *ptr, size_t len, size_t *retlen, bool strict)
 		    if (retlen != NULL) {
 			*retlen = 0;
 		    }
-		    warn(__func__, "strict encoding at %lu found un-escaped char: 0x%02x", (unsigned long)i, (uint8_t)c);
+		    warn(__func__, "strict encoding at %ju found un-escaped char: 0x%02x", (uintmax_t)i, (uint8_t)c);
 		    return NULL;
 		}
 		switch (c) {
@@ -1100,7 +1100,7 @@ malloc_json_decode(char const *ptr, size_t len, size_t *retlen, bool strict)
 		    if (retlen != NULL) {
 			*retlen = 0;
 		    }
-		    warn(__func__, "strict encoding at %lu found un-escaped char: %c", (unsigned long)i, c);
+		    warn(__func__, "strict encoding at %ju found un-escaped char: %c", (uintmax_t)i, c);
 		    return NULL;
 		    break;
 
@@ -1292,7 +1292,7 @@ malloc_json_decode(char const *ptr, size_t len, size_t *retlen, bool strict)
 	if (retlen != NULL) {
 	    *retlen = 0;
 	}
-	warn(__func__, "malloc of %ld bytes failed", (unsigned long)(mlen + 1 + 1));
+	warn(__func__, "malloc of %ld bytes failed", (uintmax_t)(mlen + 1 + 1));
 	return NULL;
     }
     ret[mlen] = '\0';   /* terminate string */
@@ -1471,8 +1471,8 @@ malloc_json_decode(char const *ptr, size_t len, size_t *retlen, bool strict)
     /*
      * return result
      */
-    dbg(DBG_VVVHIGH, "returning from malloc_json_decode(ptr, %lu, *%lu)",
-		     (unsigned long)len, (unsigned long)mlen);
+    dbg(DBG_VVVHIGH, "returning from malloc_json_decode(ptr, %ju, *%ju)",
+		     (uintmax_t)len, (uintmax_t)mlen);
     if (retlen != NULL) {
 	*retlen = mlen;
     }
@@ -1528,7 +1528,7 @@ malloc_json_decode_str(char const *str, size_t *retlen, bool strict)
 	if (retlen != NULL) {
 	    *retlen = 0;
 	}
-	warn(__func__, "len: %lu must be > 0", (unsigned long) len);
+	warn(__func__, "len: %ju must be > 0", (uintmax_t) len);
 	return NULL;
     }
 
@@ -1652,8 +1652,8 @@ check_common_json_fields_table(void)
 	switch (common_json_fields[loc].field_type) {
 	    case JSON_NULL:
 		if (common_json_fields[loc].name != NULL) {
-		    err(215, __func__, "found JSON_NULL element with non NULL name '%s' location %lu in common_json_fields table",
-                            common_json_fields[loc].name, (unsigned long)loc);
+		    err(215, __func__, "found JSON_NULL element with non NULL name '%s' location %ju in common_json_fields table",
+                            common_json_fields[loc].name, (uintmax_t)loc);
 		    not_reached();
 		}
 		break;
@@ -1667,7 +1667,7 @@ check_common_json_fields_table(void)
 		/* these are all the valid types */
 		break;
 	    default:
-		err(216, __func__, "found invalid data_type in common_json_fields table location %lu", (unsigned long)loc);
+		err(216, __func__, "found invalid data_type in common_json_fields table location %ju", (uintmax_t)loc);
 		not_reached();
 		break;
 	}
@@ -2014,7 +2014,8 @@ check_found_common_json_fields(char const *program, char const *file, char const
 	 * uncommon fields some are allowed more than once.
 	 */
 	if (common_field->count > common_field->max_count) {
-	    warn(__func__, "field '%s' found %lu times but is only allowed once", common_field->name, (unsigned long)common_field->count);
+	    warn(__func__, "field '%s' found %ju times but is only allowed once",
+			   common_field->name, (uintmax_t)common_field->count);
 	    ++issues;
 	}
 

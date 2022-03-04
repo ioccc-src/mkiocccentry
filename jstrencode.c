@@ -133,7 +133,7 @@ main(int argc, char *argv[])
 	    input = argv[i];
 	    inputlen = strlen(input);
 	    dbg(DBG_LOW, "processing arg: %d: <%s>", i-optind, input);
-	    dbg(DBG_MED, "arg length: %lu", (unsigned long)inputlen);
+	    dbg(DBG_MED, "arg length: %ju", (uintmax_t)inputlen);
 
 	    /*
 	     * encode
@@ -147,12 +147,12 @@ main(int argc, char *argv[])
 	     * print encode buffer
 	     */
 	    } else {
-		dbg(DBG_MED, "encode length: %lu", (unsigned long)bufsiz);
+		dbg(DBG_MED, "encode length: %ju", (uintmax_t)bufsiz);
 		errno = 0;		/* pre-clear errno for warnp() */
 		outputlen = fwrite(buf, 1, bufsiz, stdout);
 		if (outputlen != bufsiz) {
-		    warnp(__func__, "error: write of %lu bytes of arg: %d returned: %lu",
-				    (unsigned long)bufsiz, i-optind, (unsigned long)outputlen);
+		    warnp(__func__, "error: write of %ju bytes of arg: %d returned: %ju",
+				    (uintmax_t)bufsiz, i-optind, (uintmax_t)outputlen);
 		    error = true;
 		}
 	    }
@@ -180,7 +180,7 @@ main(int argc, char *argv[])
 	    warn(__func__, "error while reading data in stdin");
 	    error = true;
 	}
-	dbg(DBG_MED, "stdin read length: %lu", (unsigned long)inputlen);
+	dbg(DBG_MED, "stdin read length: %ju", (uintmax_t)inputlen);
 
 	/*
 	 * encode data read from stdin
@@ -194,15 +194,15 @@ main(int argc, char *argv[])
 	 * print encode buffer
 	 */
 	} else {
-	    dbg(DBG_MED, "encode length: %lu", (unsigned long)bufsiz);
+	    dbg(DBG_MED, "encode length: %ju", (uintmax_t)bufsiz);
 	    errno = 0;		/* pre-clear errno for warnp() */
 	    outputlen = fwrite(buf, 1, bufsiz, stdout);
 	    if (outputlen != bufsiz) {
-		warnp(__func__, "error: write of %lu bytes of stdin data: returned: %lu",
-			        (unsigned long)bufsiz, (unsigned long)outputlen);
+		warnp(__func__, "error: write of %ju bytes of stdin data: returned: %ju",
+			        (uintmax_t)bufsiz, (uintmax_t)outputlen);
 		error = true;
 	    }
-	    dbg(DBG_MED, "stdout write length: %lu", (unsigned long)outputlen);
+	    dbg(DBG_MED, "stdout write length: %ju", (uintmax_t)outputlen);
 	}
 
 	/*

@@ -1222,7 +1222,7 @@ vcmdprintf(char const *format, va_list ap)
     errno = 0;			/* pre-clear errno for warnp() */
     cmd = (char *)malloc(size);	/* trailing zero included in size */
     if (cmd == NULL) {
-	warnp(__func__, "malloc from vcmdprintf of %lu bytes failed", (unsigned long)size);
+	warnp(__func__, "malloc from vcmdprintf of %ju bytes failed", (uintmax_t)size);
 	return NULL;
     }
 
@@ -1294,8 +1294,8 @@ vcmdprintf(char const *format, va_list ap)
 	    free(cmd);
 	    cmd = NULL;
 	}
-	warn(__func__, "stored characters: %ld != size: %lu",
-	     (long)((size_t)(d + 1 - cmd)), (unsigned long)size);
+	warn(__func__, "stored characters: %ld != size: %ju",
+	     (long)((size_t)(d + 1 - cmd)), (uintmax_t)size);
 	return NULL;
     }
 
@@ -2008,7 +2008,7 @@ readline(char **linep, FILE * stream)
 	(*linep)[ret - 1] = '\0';	/* clear newline */
 	--ret;
     }
-    dbg(DBG_VVHIGH, "read %ld bytes + newline into %lu byte buffer", (long)ret, (unsigned long)linecap);
+    dbg(DBG_VVHIGH, "read %ld bytes + newline into %ju byte buffer", (long)ret, (uintmax_t)linecap);
 
     /*
      * return length of line without the trailing newline
@@ -2294,11 +2294,11 @@ read_all(FILE *stream, size_t *psize)
     dbg(DBG_VVHIGH, "%s: about to start calloc cycle: %ld", __func__, realloc_cycle);
     buf = calloc(INITIAL_BUF_SIZE, 1);
     if (buf == NULL) {
-	warnp(__func__, "calloc of %lu bytes failed", (unsigned long)INITIAL_BUF_SIZE);
+	warnp(__func__, "calloc of %ju bytes failed", (uintmax_t)INITIAL_BUF_SIZE);
 	return NULL;
     }
     size = INITIAL_BUF_SIZE;
-    dbg(DBG_VVHIGH, "%s: calloc cycle: %ld new size: 0x%lx", __func__, realloc_cycle, (unsigned long)size);
+    dbg(DBG_VVHIGH, "%s: calloc cycle: %ld new size: 0x%lx", __func__, realloc_cycle, (uintmax_t)size);
     ++realloc_cycle;
 
     /*
@@ -2336,8 +2336,8 @@ read_all(FILE *stream, size_t *psize)
 	    tmp = realloc(buf, size + READ_ALL_CHUNK);
 	    if (tmp == NULL) {
 		/* report realloc failure */
-		warnp(__func__, "realloc from %lu bytes to %lu bytes failed",
-				(unsigned long)size, (unsigned long)(size + READ_ALL_CHUNK));
+		warnp(__func__, "realloc from %ju bytes to %ju bytes failed",
+				(uintmax_t)size, (uintmax_t)(size + READ_ALL_CHUNK));
 		/* free up the previous buffer */
 		if (buf != NULL) {
 		    free(buf);
@@ -2364,7 +2364,7 @@ read_all(FILE *stream, size_t *psize)
 	     * note expanded buffer size
 	     */
 	    size += READ_ALL_CHUNK;
-	    dbg(DBG_VVHIGH, "%s: realloc cycle: %ld new size: 0x%lx", __func__, realloc_cycle, (unsigned long)size);
+	    dbg(DBG_VVHIGH, "%s: realloc cycle: %ld new size: 0x%lx", __func__, realloc_cycle, (uintmax_t)size);
 	    ++realloc_cycle;
 	}
 
@@ -2379,9 +2379,9 @@ read_all(FILE *stream, size_t *psize)
 
 	    /* report the I/O condition */
 	    if (feof(stream)) {
-		dbg(DBG_HIGH, "normal EOF reading stream at: %lu bytes", (unsigned long)used);
+		dbg(DBG_HIGH, "normal EOF reading stream at: %ju bytes", (uintmax_t)used);
 	    } else if (ferror(stream)) {
-		warnp(__func__, "I/O error detected while reading stream at: %lu bytes", (unsigned long)used);
+		warnp(__func__, "I/O error detected while reading stream at: %ju bytes", (uintmax_t)used);
 	    } else {
 		warnp(__func__, "fread returned 0 although neither the EOF nor ERROR flag were set: assuming EOF anyway");
 	    }
@@ -2391,7 +2391,7 @@ read_all(FILE *stream, size_t *psize)
 	     */
 	    break;
 	}
-	dbg(DBG_VVHIGH, "%s: read cycle: %ld read count: 0x%lx", __func__, read_cycle, (unsigned long)read_cycle);
+	dbg(DBG_VVHIGH, "%s: read cycle: %ld read count: 0x%lx", __func__, read_cycle, (uintmax_t)read_cycle);
 	++read_cycle;
     } while (true);
 

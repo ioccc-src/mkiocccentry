@@ -39,6 +39,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <string.h>
+#include <stdint.h>
 
 /*
  * Our header file - #includes the header files we need
@@ -172,8 +173,8 @@ main(int argc, char *argv[])
 	    not_reached();
 	}
 	if (len != LITLEN("test-")+MAX_ENTRY_CHARS) {
-	    err(6, __func__, "2nd '-' separated token length: %lu != %lu: %s",
-			     (unsigned long)len, (unsigned long)(LITLEN("test-")+MAX_ENTRY_CHARS), filepath);
+	    err(6, __func__, "2nd '-' separated token length: %ju != %ju: %s",
+			     (uintmax_t)len, (uintmax_t)(LITLEN("test-")+MAX_ENTRY_CHARS), filepath);
 	    not_reached();
 	}
 	ret = sscanf(uuid, "test-%d%c", &entry_num, &guard);
@@ -206,8 +207,8 @@ main(int argc, char *argv[])
 	}
 
 	if (len != UUID_LEN+1+MAX_ENTRY_CHARS) {
-	    err(11, __func__, "2nd '-' separated token length: %lu != %lu: %s",
-			     (unsigned long)len, (unsigned long)(UUID_LEN+1+MAX_ENTRY_CHARS), filepath);
+	    err(11, __func__, "2nd '-' separated token length: %ju != %ju: %s",
+			     (uintmax_t)len, (uintmax_t)(UUID_LEN+1+MAX_ENTRY_CHARS), filepath);
 	    not_reached();
 	}
 	ret = sscanf(uuid, "%8x-%4x-%1x%3x-%1x%3x-%8x%4x-%d%c", &a, &b, &version, &c, &variant, &d, &e, &f, &entry_num, &guard);

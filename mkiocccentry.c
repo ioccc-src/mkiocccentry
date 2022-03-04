@@ -1322,7 +1322,7 @@ prompt(char const *str, size_t *lenp)
 	err(47, __func__, "EOF while reading prompt input");
 	not_reached();
     }
-    dbg(DBG_VHIGH, "received a %lu byte response", (unsigned long)len);
+    dbg(DBG_VHIGH, "received a %ju byte response", (uintmax_t)len);
 
     /*
      * save length if requested
@@ -1468,8 +1468,8 @@ get_contest_id(bool *testp, bool *read_answers_flag_used)
 	     * reject improper input length
 	     */
 	    errno = 0;		/* pre-clear errno for warnp() */
-	    ret = fprintf(stderr, "\nIOCCC contest ID are %d characters in length, you entered %lu\n\n",
-				  UUID_LEN, (unsigned long)len);
+	    ret = fprintf(stderr, "\nIOCCC contest ID are %d characters in length, you entered %ju\n\n",
+				  UUID_LEN, (uintmax_t)len);
 	    if (ret <= 0) {
 		warnp(__func__, "fprintf error while improper input length");
 	    }
@@ -1685,7 +1685,7 @@ mk_entry_dir(char const *work_dir, char const *ioccc_id, int entry_num, char **t
     errno = 0;			/* pre-clear errno for errp() */
     entry_dir = (char *)malloc(entry_dir_len + 1);
     if (entry_dir == NULL) {
-	errp(56, __func__, "malloc #0 of %lu bytes failed", (unsigned long)(entry_dir_len + 1));
+	errp(56, __func__, "malloc #0 of %ju bytes failed", (uintmax_t)(entry_dir_len + 1));
 	not_reached();
     }
     errno = 0;			/* pre-clear errno for errp() */
@@ -1734,7 +1734,7 @@ mk_entry_dir(char const *work_dir, char const *ioccc_id, int entry_num, char **t
     errno = 0;			/* pre-clear errno for errp() */
     *tarball_path = (char *)malloc(tarball_len + 1);
     if (*tarball_path == NULL) {
-	errp(60, __func__, "malloc #1 of %lu bytes failed", (unsigned long)(tarball_len + 1));
+	errp(60, __func__, "malloc #1 of %ju bytes failed", (uintmax_t)(tarball_len + 1));
 	not_reached();
     }
     errno = 0;			/* pre-clear errno for errp() */
@@ -2129,8 +2129,8 @@ warn_rule_2b_size(struct info *infop, char const *prog_c)
      */
     if (need_confirm && !ignore_warnings) {
 	errno = 0;
-	ret = fprintf(stderr, "\nWARNING: The prog.c %s size: %lu > Rule 2b maximum: %lu\n", prog_c,
-		      (unsigned long)infop->rule_2b_size, (unsigned long)RULE_2B_SIZE);
+	ret = fprintf(stderr, "\nWARNING: The prog.c %s size: %ju > Rule 2b maximum: %ju\n", prog_c,
+		      (uintmax_t)infop->rule_2b_size, (uintmax_t)RULE_2B_SIZE);
 	if (ret <= 0) {
 	    errp(79, __func__, "printf error printing prog.c size > Rule 2b maximum");
 	    not_reached();
@@ -2147,8 +2147,8 @@ warn_rule_2b_size(struct info *infop, char const *prog_c)
 	    err(80, __func__, "please fix your prog.c file: %s", prog_c);
 	    not_reached();
 	}
-	dbg(DBG_LOW, "user says that their prog.c %s size: %lu > Rule 2B max size: %lu is OK", prog_c,
-	    (unsigned long)infop->rule_2b_size, (unsigned long)RULE_2B_SIZE);
+	dbg(DBG_LOW, "user says that their prog.c %s size: %ju > Rule 2B max size: %ju is OK", prog_c,
+	    (uintmax_t)infop->rule_2b_size, (uintmax_t)RULE_2B_SIZE);
     }
 }
 
@@ -2243,7 +2243,7 @@ check_prog_c(struct info *infop, char const *entry_dir, char const *cp, char con
     }
     size = rule_count(prog_stream);
     infop->rule_2b_size = size.rule_2b_size;
-    dbg(DBG_MED, "prog.c: %s Rule 2b size: %lu", prog_c, (unsigned long)infop->rule_2b_size);
+    dbg(DBG_MED, "prog.c: %s Rule 2b size: %ju", prog_c, (uintmax_t)infop->rule_2b_size);
     errno = 0;			/* pre-clear errno for errp() */
     ret = fclose(prog_stream);
     if (ret != 0) {
@@ -2363,7 +2363,7 @@ check_prog_c(struct info *infop, char const *entry_dir, char const *cp, char con
     errno = 0;			/* pre-clear errno for errp() */
     infop->prog_c = strdup("prog.c");
     if (infop->prog_c == NULL) {
-	errp(91, __func__, "malloc #2 of %lu bytes failed", (unsigned long)(LITLEN("prog.c") + 1));
+	errp(91, __func__, "malloc #2 of %ju bytes failed", (uintmax_t)(LITLEN("prog.c") + 1));
 	not_reached();
     }
     return size;
@@ -2776,7 +2776,7 @@ check_Makefile(struct info *infop, char const *entry_dir, char const *cp, char c
     errno = 0;			/* pre-clear errno for errp() */
     infop->Makefile = strdup("Makefile");
     if (infop->Makefile == NULL) {
-	errp(104, __func__, "malloc #1 of %lu bytes failed", (unsigned long)(LITLEN("Makefile") + 1));
+	errp(104, __func__, "malloc #1 of %ju bytes failed", (uintmax_t)(LITLEN("Makefile") + 1));
 	not_reached();
     }
     return;
@@ -2868,7 +2868,7 @@ check_remarks_md(struct info *infop, char const *entry_dir, char const *cp, char
     errno = 0;			/* pre-clear errno for errp() */
     infop->remarks_md = strdup("remarks.md");
     if (infop->remarks_md == NULL) {
-	errp(112, __func__, "malloc #1 of %lu bytes failed", (unsigned long)(LITLEN("remarks.md") + 1));
+	errp(112, __func__, "malloc #1 of %ju bytes failed", (uintmax_t)(LITLEN("remarks.md") + 1));
 	not_reached();
     }
 
@@ -2992,8 +2992,8 @@ check_extra_data_files(struct info *infop, char const *entry_dir, char const *cp
 		  "The basename of an extra file is too long.",
 		  "",
 		  NULL);
-	    err(120, __func__, "basename of extra data file: %s is %lu characters an is > the limit: %lu",
-			       args[i], (unsigned long)base_len, (unsigned long)MAX_BASENAME_LEN);
+	    err(120, __func__, "basename of extra data file: %s is %ju characters an is > the limit: %ju",
+			       args[i], (uintmax_t)base_len, (uintmax_t)MAX_BASENAME_LEN);
 	    not_reached();
 	}
 
@@ -3027,8 +3027,8 @@ check_extra_data_files(struct info *infop, char const *entry_dir, char const *cp
 		      "    A-Z a-z 0-9 . _ - +",
 		      "",
 		      NULL);
-		err(122, __func__, "basename of %s character %lu is NOT a POSIX Fully portable character nor +",
-				   args[i], (unsigned long)j);
+		err(122, __func__, "basename of %s character %ju is NOT a POSIX Fully portable character nor +",
+				   args[i], (uintmax_t)j);
 		not_reached();
 	    }
 	}
@@ -3041,7 +3041,7 @@ check_extra_data_files(struct info *infop, char const *entry_dir, char const *cp
 	errno = 0;		/* pre-clear errno for errp() */
 	dest = (char *)malloc(dest_len + 1);
 	if (dest == NULL) {
-	    errp(123, __func__, "malloc #0 of %lu bytes failed", (unsigned long)(dest_len + 1));
+	    errp(123, __func__, "malloc #0 of %ju bytes failed", (uintmax_t)(dest_len + 1));
 	    not_reached();
 	}
 	ret = snprintf(dest, dest_len, "%s/%s", entry_dir, base);
@@ -5027,7 +5027,7 @@ write_info(struct info *infop, char const *entry_dir, char const *jinfochk, char
     errno = 0;			/* pre-clear errno for errp() */
     infop->common.utctime = (char *)calloc(utctime_len + 1, 1); /* + 1 for paranoia padding */
     if (infop->common.utctime == NULL) {
-	errp(162, __func__, "calloc of %lu bytes failed", (unsigned long)utctime_len + 1);
+	errp(162, __func__, "calloc of %ju bytes failed", (uintmax_t)utctime_len + 1);
 	not_reached();
     }
 
@@ -5054,7 +5054,7 @@ write_info(struct info *infop, char const *entry_dir, char const *jinfochk, char
     errno = 0;			/* pre-clear errno for errp() */
     info_path = (char *)malloc(info_path_len + 1);
     if (info_path == NULL) {
-	errp(164, __func__, "malloc of %lu bytes failed", (unsigned long)info_path_len + 1);
+	errp(164, __func__, "malloc of %ju bytes failed", (uintmax_t)info_path_len + 1);
 	not_reached();
     }
     errno = 0;			/* pre-clear errno for errp() */
@@ -5233,7 +5233,7 @@ write_author(struct info *infop, int author_count, struct author *authorp, char 
     errno = 0;			/* pre-clear errno for errp() */
     author_path = (char *)malloc(author_path_len + 1);
     if (author_path == NULL) {
-	errp(176, __func__, "malloc of %lu bytes failed", (unsigned long)author_path_len + 1);
+	errp(176, __func__, "malloc of %ju bytes failed", (uintmax_t)author_path_len + 1);
 	not_reached();
     }
     errno = 0;			/* pre-clear errno for errp() */
@@ -5450,8 +5450,8 @@ form_tarball(char const *work_dir, char const *entry_dir, char const *tarball_pa
 	      "The compressed tarball exceeds the maximum allowed size, sorry.",
 	      "",
 	      NULL);
-	err(189, __func__, "The compressed tarball: %s size: %lu > %ld",
-		 basename_tarball_path, (unsigned long)buf.st_size, (long)MAX_TARBALL_LEN);
+	err(189, __func__, "The compressed tarball: %s size: %ju > %jd",
+		 basename_tarball_path, (uintmax_t)buf.st_size, (intmax_t)MAX_TARBALL_LEN);
 	not_reached();
     }
 

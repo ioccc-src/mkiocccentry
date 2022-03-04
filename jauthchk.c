@@ -192,8 +192,8 @@ check_author_json_fields_table(void)
 	switch (author_json_fields[loc].field_type) {
 	    case JSON_NULL:
 		if (author_json_fields[loc].name != NULL) {
-		    err(5, __func__, "found JSON_NULL element with non NULL name '%s' location %lu in author_json_fields table",
-                            author_json_fields[loc].name, (unsigned long)loc);
+		    err(5, __func__, "found JSON_NULL element with non NULL name '%s' location %ju in author_json_fields table",
+                            author_json_fields[loc].name, (uintmax_t)loc);
 		    not_reached();
 		}
 		break;
@@ -207,7 +207,7 @@ check_author_json_fields_table(void)
 		/* these are all the valid types */
 		break;
 	    default:
-		err(6, __func__, "found invalid data_type in author_json_fields table location %lu", (unsigned long)loc);
+		err(6, __func__, "found invalid data_type in author_json_fields table location %ju", (uintmax_t)loc);
 		not_reached();
 		break;
 	}
@@ -409,7 +409,7 @@ check_author_json(char const *file, char const *fnamchk)
 	err(18, __func__, "zero length data in file %s", file);
 	not_reached();
     }
-    dbg(DBG_MED, "%s read length: %lu", file, (unsigned long)length);
+    dbg(DBG_MED, "%s read length: %ju", file, (uintmax_t)length);
 
     /* close the stream as we no longer need it, having read in all the file */
     errno = 0;
@@ -879,8 +879,8 @@ check_found_author_json_fields(char const *file, bool test)
 	dbg(DBG_VHIGH, "checking field '%s' in file %s", field->name, file);
 	/* make sure the field is not over the limit allowed */
 	if (author_field->max_count > 0 && author_field->count > author_field->max_count) {
-	    warn(__func__, "field '%s' found %lu times but is only allowed %lu time%s", author_field->name,
-		    (unsigned long)author_field->count, (unsigned long)author_field->max_count, author_field->max_count==1?"":"s");
+	    warn(__func__, "field '%s' found %ju times but is only allowed %ju time%s", author_field->name,
+		    (uintmax_t)author_field->count, (uintmax_t)author_field->max_count, author_field->max_count==1?"":"s");
 	    ++issues;
 	}
 
