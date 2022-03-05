@@ -62,12 +62,14 @@
 struct utf8_posix_map {
     const char * const utf8_str;	/* UTF-8 string encode - use \x hex as needed */
     const char * const posix_str;	/* POSIX portable filenames plus + replacement for utf8_str */
+    int utf8_str_len;			/* length of utf8_str or -1 ==> needs computing by check_utf8_posix_map() */
+    int posix_str_len;			/* length of posix_str or -1 ==> needs computing by check_utf8_posix_map() */
 };
 
 /*
  * global variables
  */
-extern struct utf8_posix_map const hmap[];	/* name to author handle map */
+extern struct utf8_posix_map hmap[];	/* name to author handle map */
 extern size_t SIZEOF_UTF8_POSIX_MAP;
 
 /*

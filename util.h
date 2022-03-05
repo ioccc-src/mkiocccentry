@@ -60,6 +60,7 @@ typedef unsigned char bool;
 #define TAIL_TITLE_CHARS "abcdefghijklmnopqrstuvwxyz0123456789_+-"	/* [a-z0-9_+-] */
 /* for string to int functions */
 #define LLONG_MAX_BASE10_DIGITS (19)
+#define TBLLEN(x) (sizeof(x)/sizeof((x)[0]))	/* number of elements in an initialized table array */
 
 
 /*
