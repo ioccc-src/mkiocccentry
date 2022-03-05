@@ -45,6 +45,16 @@
 #if !defined(INCLUDE_UTF8_POSIX_MAP_H)
 #    define  INCLUDE_UTF8_POSIX_MAP_H
 
+/*
+ * util - utility functions and definitions
+ */
+#include "util.h"
+
+/*
+ * dbg - debug, warning and error reporting facility
+ */
+#include "dbg.h"
+
 
 /*
  * map certain UTF-8 strings into safe lower case POSIX portable filenames plus +.
@@ -58,6 +68,11 @@ struct utf8_posix_map {
  * global variables
  */
 extern struct utf8_posix_map const hmap[];	/* name to author handle map */
+extern size_t SIZEOF_UTF8_POSIX_MAP;
 
+/*
+ * function prototypes
+ */
+extern void check_utf8_posix_map(void);
 
 #endif				/* INCLUDE_UTF8_POSIX_MAP_H */

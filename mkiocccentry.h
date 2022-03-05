@@ -83,6 +83,16 @@
 #include "location.h"
 
 /*
+ * UTF-8 -> POSIX map
+ */
+#include "utf8_posix_map.h"
+
+/*
+ * IOCCC tables sanity checkers
+ */
+#include "sanity.h"
+
+/*
  * IOCCC size and rule related limitations
  */
 #include "limit_ioccc.h"

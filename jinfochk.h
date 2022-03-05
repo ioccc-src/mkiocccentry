@@ -39,6 +39,11 @@
 #include "json.h"
 
 /*
+ * sanity
+ */
+#include "sanity.h"
+
+/*
  * IOCCC size and rule related limitations
  */
 #include "limit_ioccc.h"
@@ -81,9 +86,9 @@ static const char * const usage_msg =
 /*
  * globals
  */
-int verbosity_level = DBG_DEFAULT;	    /* debug level set by -v */
-char const *program = NULL;		    /* our name */
-char *program_basename = NULL;		    /* our basename */
+int verbosity_level;	    /* debug level set by -v */
+static char const *program = NULL;		    /* our name */
+static char *program_basename = NULL;		    /* our basename */
 static bool quiet = false;		    /* true ==> quiet mode */
 static struct info info;		    /* .info.json struct */
 static bool strict = false;		    /* true ==> disallow anything before/after the '{' and '}' in the file */
@@ -91,6 +96,7 @@ static bool test = false;		    /* true ==> some tests are not performed */
 static struct json_field *found_info_json_fields; /* list of fields specific to .info.json that have been found */
 extern struct json_field info_json_fields[];
 
+extern size_t SIZEOF_INFO_JSON_FIELDS_TABLE;
 /*
  * forward declarations
  */
@@ -100,7 +106,6 @@ static int check_info_json(char const *file, char const *fnamchk);
 static struct json_field *add_found_info_json_field(char const *name, char const *val);
 static int get_info_json_field(char const *file, char *name, char *val);
 static int check_found_info_json_fields(char const *file, bool test);
-static void check_info_json_fields_table(void);
 static void free_found_info_json_fields(void);
 static struct manifest_file *add_manifest_file(char const *filename);
 static void free_manifest_files_list(void);

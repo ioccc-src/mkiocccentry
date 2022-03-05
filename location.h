@@ -33,6 +33,16 @@
 #if !defined(INCLUDE_LOCATION_H)
 #    define  INCLUDE_LOCATION_H
 
+/*
+ * util - utility functions and definitions
+ */
+#include "util.h"
+
+/*
+ * dbg - debug, warning and error reporting facility
+ */
+#include "dbg.h"
+
 
 /*
  * location/country codes
@@ -46,6 +56,6 @@ struct location {
  * global variables
  */
 extern struct location loc[];		/* location/country codes */
-
+extern size_t SIZEOF_LOCATION_TABLE;
 
 #endif				/* INCLUDE_LOCATION_H */

@@ -75,15 +75,16 @@ static const char * const usage_msg =
 /*
  * globals
  */
-int verbosity_level = DBG_DEFAULT;		/* debug level set by -v */
-char const *program = NULL;			/* our name */
-char *program_basename = NULL;			/* our basename */
+int verbosity_level;		/* debug level set by -v */
+static char const *program = NULL;			/* our name */
+static char *program_basename = NULL;			/* our basename */
 static bool quiet = false;			/* true ==> quiet mode */
 struct author author;			/* the .author.json struct */
 static bool strict = false;			/* true ==> disallow anything before/after the '{' and '}' */
 static bool test = false;			/* true ==> some tests are not performed */
 static struct json_field *found_author_json_fields;	/* list of fields specific to .author.json found */
 extern struct json_field author_json_fields[];
+extern size_t SIZEOF_AUTHOR_JSON_FIELDS_TABLE;	/* number of elements in the author_json_fields table */
 
 /*
  * forward declarations
@@ -94,7 +95,6 @@ static int check_author_json(char const *file, char const *fnamchk);
 static struct json_field *add_found_author_json_field(char const *name, char const *val);
 static int get_author_json_field(char const *file, char *name, char *val);
 static int check_found_author_json_fields(char const *file, bool test);
-static void check_author_json_fields_table(void);
 static void free_found_author_json_fields(void);
 
 
