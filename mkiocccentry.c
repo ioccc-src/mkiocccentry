@@ -3242,7 +3242,6 @@ get_title(struct info *infop)
 {
     char *title = NULL;		/* entry title to return or NULL */
     size_t len;			/* length of title */
-    size_t span;		/* span of valid characters in title */
     int ret;			/* libc function return */
 
     /*
@@ -3337,33 +3336,9 @@ get_title(struct info *infop)
 	}
 
 	/*
-	 * verify that the title starts with [a-z0-9]
+	 * verify that the title has only POSIX portable filename plus chars
 	 */
-	if (!isascii(title[0]) || (!islower(title[0]) && !isdigit(title[0]))) {
-	    /*
-	     * reject title whose first char is not [a-z0-9]
-	     */
-	    fpara(stderr,
-		  "",
-		  "That title does not start with a lower case ASCII letter [a-z] or digit [0-9]:",
-		  "",
-		  NULL);
-
-	    /*
-	     * free storage
-	     */
-	    if (title != NULL) {
-		free(title);
-		title = NULL;
-	    }
-	    continue;
-	}
-
-	/*
-	 * verify that the title characters are from the valid character set
-	 */
-	span = strspn(title, TAIL_TITLE_CHARS);
-	if (span != len) {
+	if (posix_plus_safe(title, true, false, true) == false) {
 
 	    /*
 	     * reject invalid chars in title
@@ -3372,7 +3347,7 @@ get_title(struct info *infop)
 		  "",
 		  "Your title contains invalid characters.  A title must match the following regex:",
 		  "",
-		  "    [a-z0-9][a-z0-9-]*",
+		  "    ^[0-9a-z][0-9a-z._+-]*$",
 		  "",
 		  "That is, it must start with a lower case letter ASCII [a-z] or digit [0-9]",
 		  "followed by zero or more lower case letters ASCII [a-z], digits [0-9],",

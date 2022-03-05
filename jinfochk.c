@@ -1216,7 +1216,6 @@ check_found_info_json_fields(char const *file, bool test)
     size_t loc = 0;	/* location in the info_json_fields table */
     size_t val_length = 0;
     int issues = 0;
-    size_t span;
 
     /*
      * firewall
@@ -1230,7 +1229,7 @@ check_found_info_json_fields(char const *file, bool test)
 	/*
 	 * first make sure the name != NULL and strlen() > 0
 	 */
-	if (field->name == NULL || !strlen(field->name)) {
+	if (field->name == NULL || strlen(field->name) <= 0) {
 	    err(41, __func__, "found NULL or empty field in found_info_json_fields list");
 	    not_reached();
 	}
@@ -1313,6 +1312,7 @@ check_found_info_json_fields(char const *file, bool test)
 		    ++issues;
 		}
 	    } else if (!strcmp(field->name, "title")) {
+		/* check for valid title length */
 		if (!val_length) {
 		    warn(__func__, "title length zero");
 		    ++issues;
@@ -1322,22 +1322,10 @@ check_found_info_json_fields(char const *file, bool test)
 		    ++issues;
 		}
 
-		/* check for valid chars only */
-		if (!isascii(*val) || (!islower(*val) && !isdigit(*val))) {
-		    warn(__func__, "first char of title '%c' invalid", *val);
+		/* check for valid title chars */
+		if (posix_plus_safe(val, true, false, true) == false) {
+		    warn(__func__, "title: '%s' does not match regexp ^[0-9a-z][0-9a-z._+-]*$", val);
 		    ++issues;
-		} else {
-		    /*
-		     * XXX this will not detect ',' in the title which is
-		     * actually an invalid char: this is because strtok_r()
-		     * removes the ',' in the parsing. This has to be fixed at a
-		     * later date.
-		     */
-		    span = strspn(val, TAIL_TITLE_CHARS);
-		    if (span != val_length) {
-			warn(__func__, "invalid chars found in title \"%s\"", val);
-			++issues;
-		    }
 		}
 	    } else if (!strcmp(field->name, "abstract")) {
 		if (!val_length) {
@@ -1591,3 +1579,4 @@ usage(int exitcode, char const *str, char const *prog)
     exit(exitcode); /*ooo*/
     not_reached();
 }
+/* vim: set tabstop=8 softtabstop=4 shiftwidth=4 noexpandtab : */
