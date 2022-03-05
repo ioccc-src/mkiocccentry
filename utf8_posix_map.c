@@ -786,15 +786,15 @@ struct utf8_posix_map hmap[] =
     { "\xca\xad", "nn" , -1, -1},	/*  U+02AD - ʭ - LATIN LETTER BIDENTAL PERCUSSIVE */
     { "\xca\xae", "y" , -1, -1},	/*  U+02AE - ʮ - LATIN SMALL LETTER TURNED H WITH FISHHOOK */
     { "\xca\xaf", "y" , -1, -1},	/*  U+02AF - ʯ - LATIN SMALL LETTER TURNED H WITH FISHHOOK AND TAIL */
-    { "\xca\xb0", "h" , -1, -1},	/*  U+02B0 - ʰ - MODIFIER LETTER SMALL H */
-    { "\xca\xb1", "h" , -1, -1},	/*  U+02B1 - ʱ - MODIFIER LETTER SMALL H WITH HOOK */
-    { "\xca\xb2", "j" , -1, -1},	/*  U+02B2 - ʲ - MODIFIER LETTER SMALL J */
-    { "\xca\xb3", "r" , -1, -1},	/*  U+02B3 - ʳ - MODIFIER LETTER SMALL R */
-    { "\xca\xb4", "r" , -1, -1},	/*  U+02B4 - ʴ - MODIFIER LETTER SMALL TURNED R */
-    { "\xca\xb5", "r" , -1, -1},	/*  U+02B5 - ʵ - MODIFIER LETTER SMALL TURNED R WITH HOOK */
-    { "\xca\xb6", "r" , -1, -1},	/*  U+02B6 - ʶ - MODIFIER LETTER SMALL CAPITAL INVERTED R */
-    { "\xca\xb7", "w" , -1, -1},	/*  U+02B7 - ʷ - MODIFIER LETTER SMALL W */
-    { "\xca\xb8", "y" , -1, -1},	/*  U+02B8 - ʸ - MODIFIER LETTER SMALL Y */
+    { "\xca\xb0", "" , -1, -1},		/*  U+02B0 - ʰ - MODIFIER LETTER SMALL H */
+    { "\xca\xb1", "" , -1, -1},		/*  U+02B1 - ʱ - MODIFIER LETTER SMALL H WITH HOOK */
+    { "\xca\xb2", "" , -1, -1},		/*  U+02B2 - ʲ - MODIFIER LETTER SMALL J */
+    { "\xca\xb3", "" , -1, -1},		/*  U+02B3 - ʳ - MODIFIER LETTER SMALL R */
+    { "\xca\xb4", "" , -1, -1},		/*  U+02B4 - ʴ - MODIFIER LETTER SMALL TURNED R */
+    { "\xca\xb5", "" , -1, -1},		/*  U+02B5 - ʵ - MODIFIER LETTER SMALL TURNED R WITH HOOK */
+    { "\xca\xb6", "" , -1, -1},		/*  U+02B6 - ʶ - MODIFIER LETTER SMALL CAPITAL INVERTED R */
+    { "\xca\xb7", "" , -1, -1},		/*  U+02B7 - ʷ - MODIFIER LETTER SMALL W */
+    { "\xca\xb8", "" , -1, -1},		/*  U+02B8 - ʸ - MODIFIER LETTER SMALL Y */
     { "\xca\xb9", "" , -1, -1},		/*  U+02B9 - ʹ - MODIFIER LETTER PRIME */
     { "\xca\xba", "" , -1, -1},		/*  U+02BA - ʺ - MODIFIER LETTER DOUBLE PRIME */
     { "\xca\xbb", "" , -1, -1},		/*  U+02BB - ʻ - MODIFIER LETTER TURNED COMMA */
@@ -807,64 +807,64 @@ struct utf8_posix_map hmap[] =
     { "\xcb\x82", "" , -1, -1},		/*  U+02C2 - ˂ - MODIFIER LETTER LEFT ARROWHEAD */
     { "\xcb\x83", "" , -1, -1},		/*  U+02C3 - ˃ - MODIFIER LETTER RIGHT ARROWHEAD */
     { "\xcb\x84", "" , -1, -1},		/*  U+02C4 - ˄ - MODIFIER LETTER UP ARROWHEAD */
-    { "\xcb\x85", "v" , -1, -1},	/*  U+02C5 - ˅ - MODIFIER LETTER DOWN ARROWHEAD */
+    { "\xcb\x85", "" , -1, -1},		/*  U+02C5 - ˅ - MODIFIER LETTER DOWN ARROWHEAD */
     { "\xcb\x86", "" , -1, -1},		/*  U+02C6 - ˆ - MODIFIER LETTER CIRCUMFLEX ACCENT */
     { "\xcb\x87", "" , -1, -1},		/*  U+02C7 - ˇ - CARON */
     { "\xcb\x88", "" , -1, -1},		/*  U+02C8 - ˈ - MODIFIER LETTER VERTICAL LINE */
     { "\xcb\x89", "" , -1, -1},		/*  U+02C9 - ˉ - MODIFIER LETTER MACRON */
     { "\xcb\x8a", "" , -1, -1},		/*  U+02CA - ˊ - MODIFIER LETTER ACUTE ACCENT */
     { "\xcb\x8b", "" , -1, -1},		/*  U+02CB - ˋ - MODIFIER LETTER GRAVE ACCENT */
-    { "\xcb\x8c", "." , -1, -1},	/*  U+02CC - ˌ - MODIFIER LETTER LOW VERTICAL LINE */
-    { "\xcb\x8d", "_" , -1, -1},	/*  U+02CD - ˍ - MODIFIER LETTER LOW MACRON */
+    { "\xcb\x8c", "" , -1, -1},		/*  U+02CC - ˌ - MODIFIER LETTER LOW VERTICAL LINE */
+    { "\xcb\x8d", "" , -1, -1},		/*  U+02CD - ˍ - MODIFIER LETTER LOW MACRON */
     { "\xcb\x8e", "" , -1, -1},		/*  U+02CE - ˎ - MODIFIER LETTER LOW GRAVE ACCENT */
     { "\xcb\x8f", "" , -1, -1},		/*  U+02CF - ˏ - MODIFIER LETTER LOW ACUTE ACCENT */
     { "\xcb\x90", "" , -1, -1},		/*  U+02D0 - ː - MODIFIER LETTER TRIANGULAR COLON */
     { "\xcb\x91", "" , -1, -1},		/*  U+02D1 - ˑ - MODIFIER LETTER HALF TRIANGULAR COLON */
-    { "\xcb\x92", "c" , -1, -1},	/*  U+02D2 - ˒ - MODIFIER LETTER CENTRED RIGHT HALF RING */
-    { "\xcb\x93", "c" , -1, -1},	/*  U+02D3 - ˓ - MODIFIER LETTER CENTRED LEFT HALF RING */
-    { "\xcb\x94", "t" , -1, -1},	/*  U+02D4 - ˔ - MODIFIER LETTER UP TACK */
-    { "\xcb\x95", "t" , -1, -1},	/*  U+02D5 - ˕ - MODIFIER LETTER DOWN TACK */
-    { "\xcb\x96", "+" , -1, -1},	/*  U+02D6 - ˖ - MODIFIER LETTER PLUS SIGN */
-    { "\xcb\x97", "-" , -1, -1},	/*  U+02D7 - ˗ - MODIFIER LETTER MINUS SIGN */
+    { "\xcb\x92", "" , -1, -1},		/*  U+02D2 - ˒ - MODIFIER LETTER CENTRED RIGHT HALF RING */
+    { "\xcb\x93", "" , -1, -1},		/*  U+02D3 - ˓ - MODIFIER LETTER CENTRED LEFT HALF RING */
+    { "\xcb\x94", "" , -1, -1},		/*  U+02D4 - ˔ - MODIFIER LETTER UP TACK */
+    { "\xcb\x95", "" , -1, -1},		/*  U+02D5 - ˕ - MODIFIER LETTER DOWN TACK */
+    { "\xcb\x96", "" , -1, -1},		/*  U+02D6 - ˖ - MODIFIER LETTER PLUS SIGN */
+    { "\xcb\x97", "" , -1, -1},		/*  U+02D7 - ˗ - MODIFIER LETTER MINUS SIGN */
     { "\xcb\x98", "" , -1, -1},		/*  U+02D8 - ˘ - BREVE */
-    { "\xcb\x99", "." , -1, -1},	/*  U+02D9 - ˙ - DOT ABOVE */
-    { "\xcb\x9a", "o" , -1, -1},	/*  U+02DA - ˚ - RING ABOVE */
+    { "\xcb\x99", "" , -1, -1},		/*  U+02D9 - ˙ - DOT ABOVE */
+    { "\xcb\x9a", "" , -1, -1},		/*  U+02DA - ˚ - RING ABOVE */
     { "\xcb\x9b", "" , -1, -1},		/*  U+02DB - ˛ - OGONEK */
     { "\xcb\x9c", "" , -1, -1},		/*  U+02DC - ˜ - SMALL TILDE */
     { "\xcb\x9d", "" , -1, -1},		/*  U+02DD - ˝ - DOUBLE ACUTE ACCENT */
     { "\xcb\x9e", "" , -1, -1},		/*  U+02DE - ˞ - MODIFIER LETTER RHOTIC HOOK */
-    { "\xcb\x9f", "x" , -1, -1},	/*  U+02DF - ˟ - MODIFIER LETTER CROSS ACCENT */
-    { "\xcb\xa0", "y" , -1, -1},	/*  U+02E0 - ˠ - MODIFIER LETTER SMALL GAMMA */
-    { "\xcb\xa1", "l" , -1, -1},	/*  U+02E1 - ˡ - MODIFIER LETTER SMALL L */
-    { "\xcb\xa2", "s" , -1, -1},	/*  U+02E2 - ˢ - MODIFIER LETTER SMALL S */
-    { "\xcb\xa3", "x" , -1, -1},	/*  U+02E3 - ˣ - MODIFIER LETTER SMALL X */
+    { "\xcb\x9f", "" , -1, -1},		/*  U+02DF - ˟ - MODIFIER LETTER CROSS ACCENT */
+    { "\xcb\xa0", "" , -1, -1},		/*  U+02E0 - ˠ - MODIFIER LETTER SMALL GAMMA */
+    { "\xcb\xa1", "" , -1, -1},		/*  U+02E1 - ˡ - MODIFIER LETTER SMALL L */
+    { "\xcb\xa2", "" , -1, -1},		/*  U+02E2 - ˢ - MODIFIER LETTER SMALL S */
+    { "\xcb\xa3", "" , -1, -1},		/*  U+02E3 - ˣ - MODIFIER LETTER SMALL X */
     { "\xcb\xa4", "" , -1, -1},		/*  U+02E4 - ˤ - MODIFIER LETTER SMALL REVERSED GLOTTAL STOP */
-    { "\xcb\xa5", "t" , -1, -1},	/*  U+02E5 - ˥ - MODIFIER LETTER EXTRA-HIGH TONE BAR */
-    { "\xcb\xa6", "t" , -1, -1},	/*  U+02E6 - ˦ - MODIFIER LETTER HIGH TONE BAR */
-    { "\xcb\xa7", "t" , -1, -1},	/*  U+02E7 - ˧ - MODIFIER LETTER MID TONE BAR */
-    { "\xcb\xa8", "l" , -1, -1},	/*  U+02E8 - ˨ - MODIFIER LETTER LOW TONE BAR */
-    { "\xcb\xa9", "j" , -1, -1},	/*  U+02E9 - ˩ - MODIFIER LETTER EXTRA-LOW TONE BAR */
-    { "\xcb\xaa", "l" , -1, -1},	/*  U+02EA - ˪ - MODIFIER LETTER YIN DEPARTING TONE MARK */
-    { "\xcb\xab", "h" , -1, -1},	/*  U+02EB - ˫ - MODIFIER LETTER YANG DEPARTING TONE MARK */
-    { "\xcb\xac", "v" , -1, -1},	/*  U+02EC - ˬ - MODIFIER LETTER VOICING */
+    { "\xcb\xa5", "" , -1, -1},		/*  U+02E5 - ˥ - MODIFIER LETTER EXTRA-HIGH TONE BAR */
+    { "\xcb\xa6", "" , -1, -1},		/*  U+02E6 - ˦ - MODIFIER LETTER HIGH TONE BAR */
+    { "\xcb\xa7", "" , -1, -1},		/*  U+02E7 - ˧ - MODIFIER LETTER MID TONE BAR */
+    { "\xcb\xa8", "" , -1, -1},		/*  U+02E8 - ˨ - MODIFIER LETTER LOW TONE BAR */
+    { "\xcb\xa9", "" , -1, -1},		/*  U+02E9 - ˩ - MODIFIER LETTER EXTRA-LOW TONE BAR */
+    { "\xcb\xaa", "" , -1, -1},		/*  U+02EA - ˪ - MODIFIER LETTER YIN DEPARTING TONE MARK */
+    { "\xcb\xab", "" , -1, -1},		/*  U+02EB - ˫ - MODIFIER LETTER YANG DEPARTING TONE MARK */
+    { "\xcb\xac", "" , -1, -1},		/*  U+02EC - ˬ - MODIFIER LETTER VOICING */
     { "\xcb\xad", "" , -1, -1},		/*  U+02ED - ˭ - MODIFIER LETTER UNASPIRATED */
     { "\xcb\xae", "" , -1, -1},		/*  U+02EE - ˮ - MODIFIER LETTER DOUBLE APOSTROPHE */
-    { "\xcb\xaf", "v" , -1, -1},	/*  U+02EF - ˯ - MODIFIER LETTER LOW DOWN ARROWHEAD */
+    { "\xcb\xaf", "" , -1, -1},		/*  U+02EF - ˯ - MODIFIER LETTER LOW DOWN ARROWHEAD */
     { "\xcb\xb0", "" , -1, -1},		/*  U+02F0 - ˰ - MODIFIER LETTER LOW UP ARROWHEAD */
     { "\xcb\xb1", "" , -1, -1},		/*  U+02F1 - ˱ - MODIFIER LETTER LOW LEFT ARROWHEAD */
     { "\xcb\xb2", "" , -1, -1},		/*  U+02F2 - ˲ - MODIFIER LETTER LOW RIGHT ARROWHEAD */
-    { "\xcb\xb3", "o" , -1, -1},	/*  U+02F3 - ˳ - MODIFIER LETTER LOW RING */
+    { "\xcb\xb3", "" , -1, -1},		/*  U+02F3 - ˳ - MODIFIER LETTER LOW RING */
     { "\xcb\xb4", "" , -1, -1},		/*  U+02F4 - ˴ - MODIFIER LETTER MIDDLE GRAVE ACCENT */
     { "\xcb\xb5", "" , -1, -1},		/*  U+02F5 - ˵ - MODIFIER LETTER MIDDLE DOUBLE GRAVE ACCENT */
     { "\xcb\xb6", "" , -1, -1},		/*  U+02F6 - ˶ - MODIFIER LETTER MIDDLE DOUBLE ACUTE ACCENT */
     { "\xcb\xb7", "" , -1, -1},		/*  U+02F7 - ˷ - MODIFIER LETTER LOW TILDE */
     { "\xcb\xb8", "" , -1, -1},		/*  U+02F8 - ˸ - MODIFIER LETTER RAISED COLON */
-    { "\xcb\xb9", "r" , -1, -1},	/*  U+02F9 - ˹ - MODIFIER LETTER BEGIN HIGH TONE */
-    { "\xcb\xba", "r" , -1, -1},	/*  U+02FA - ˺ - MODIFIER LETTER END HIGH TONE */
-    { "\xcb\xbb", "l" , -1, -1},	/*  U+02FB - ˻ - MODIFIER LETTER BEGIN LOW TONE */
-    { "\xcb\xbc", "l" , -1, -1},	/*  U+02FC - ˼ - MODIFIER LETTER END LOW TONE */
-    { "\xcb\xbd", "u" , -1, -1},	/*  U+02FD - ˽ - MODIFIER LETTER SHELF */
-    { "\xcb\xbe", "l" , -1, -1},	/*  U+02FE - ˾ - MODIFIER LETTER OPEN SHELF */
+    { "\xcb\xb9", "" , -1, -1},		/*  U+02F9 - ˹ - MODIFIER LETTER BEGIN HIGH TONE */
+    { "\xcb\xba", "" , -1, -1},		/*  U+02FA - ˺ - MODIFIER LETTER END HIGH TONE */
+    { "\xcb\xbb", "" , -1, -1},		/*  U+02FB - ˻ - MODIFIER LETTER BEGIN LOW TONE */
+    { "\xcb\xbc", "" , -1, -1},		/*  U+02FC - ˼ - MODIFIER LETTER END LOW TONE */
+    { "\xcb\xbd", "" , -1, -1},		/*  U+02FD - ˽ - MODIFIER LETTER SHELF */
+    { "\xcb\xbe", "" , -1, -1},		/*  U+02FE - ˾ - MODIFIER LETTER OPEN SHELF */
     { "\xcb\xbf", "" , -1, -1},		/*  U+02FF - ˿ - MODIFIER LETTER LOW LEFT ARROW */
     { "\xcc\x80", "" , -1, -1},		/*  U+0300 - >̀ - COMBINING GRAVE ACCENT */
     { "\xcc\x81", "" , -1, -1},		/*  U+0301 - >́ - COMBINING ACUTE ACCENT */
