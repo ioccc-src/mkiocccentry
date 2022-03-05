@@ -1770,7 +1770,7 @@ check_common_json_fields_table(void)
 	not_reached();
     }
     if (common_json_fields[i].name != NULL) {
-	err(334, __func__, "no final NULL element found in common_json_fields table");
+	err(218, __func__, "no final NULL element found in common_json_fields table");
 	not_reached();
     }
 }
@@ -1797,7 +1797,7 @@ check_info_json_fields_table(void)
 	switch (info_json_fields[i].field_type) {
 	    case JSON_NULL:
 		if (info_json_fields[i].name != NULL) {
-		    err(5, __func__, "found JSON_NULL element with non NULL name '%s' location %ju in info_json_fields table",
+		    err(219, __func__, "found JSON_NULL element with non NULL name '%s' location %ju in info_json_fields table",
 			    info_json_fields[i].name, (uintmax_t)i);
 		    not_reached();
 		}
@@ -1812,19 +1812,19 @@ check_info_json_fields_table(void)
 		/* these are all the valid types */
 		break;
 	    default:
-		err(6, __func__, "found invalid data_type in info_json_fields table location %ju", (uintmax_t)i);
+		err(220, __func__, "found invalid data_type in info_json_fields table location %ju", (uintmax_t)i);
 		not_reached();
 		break;
 	}
     }
 
     if (max - 1 != i) {
-	err(7, __func__, "found embedded NULL element in info_json_fields table");
+	err(221, __func__, "found embedded NULL element in info_json_fields table");
 	not_reached();
     }
 
     if (info_json_fields[i].name != NULL) {
-	err(334, __func__, "no final NULL element found in info_json_fields table");
+	err(222, __func__, "no final NULL element found in info_json_fields table");
 	not_reached();
     }
 
@@ -1852,7 +1852,7 @@ check_author_json_fields_table(void)
 	switch (author_json_fields[i].field_type) {
 	    case JSON_NULL:
 		if (author_json_fields[i].name != NULL) {
-		    err(5, __func__, "found JSON_NULL element with non NULL name '%s' location %ju in author_json_fields table",
+		    err(223, __func__, "found JSON_NULL element with non NULL name '%s' location %ju in author_json_fields table",
                             author_json_fields[i].name, (uintmax_t)i);
 		    not_reached();
 		}
@@ -1867,18 +1867,18 @@ check_author_json_fields_table(void)
 		/* these are all the valid types */
 		break;
 	    default:
-		err(6, __func__, "found invalid data_type in author_json_fields table location %ju", (uintmax_t)i);
+		err(224, __func__, "found invalid data_type in author_json_fields table location %ju", (uintmax_t)i);
 		not_reached();
 		break;
 	}
     }
 
     if (max - 1 != i) {
-	err(7, __func__, "found embedded NULL element in author_json_fields table");
+	err(225, __func__, "found embedded NULL element in author_json_fields table");
 	not_reached();
     }
     if (author_json_fields[i].name != NULL) {
-	err(334, __func__, "no final NULL element found in author_json_fields table");
+	err(226, __func__, "no final NULL element found in author_json_fields table");
 	not_reached();
     }
 }
@@ -1944,10 +1944,10 @@ check_first_json_char(char const *file, char *data, bool strict, char **first, c
      * firewall
      */
     if (data == NULL || strlen(data) == 0) {
-	err(218, __func__, "passed NULL or zero length data");
+	err(227, __func__, "passed NULL or zero length data");
 	not_reached();
     } else if (file == NULL || first == NULL) {
-	err(219, __func__, "passed NULL arg(s)");
+	err(228, __func__, "passed NULL arg(s)");
 	not_reached();
     }
 
@@ -1989,10 +1989,10 @@ check_last_json_char(char const *file, char *data, bool strict, char **last, cha
      * firewall
      */
     if (data == NULL || strlen(data) == 0) {
-	err(220, __func__, "passed NULL or zero length data");
+	err(229, __func__, "passed NULL or zero length data");
 	not_reached();
     } else if (file == NULL || last == NULL) {
-	err(221, __func__, "passed NULL arg(s)");
+	err(230, __func__, "passed NULL arg(s)");
 	not_reached();
     }
 
@@ -2045,13 +2045,13 @@ add_found_common_json_field(char const *name, char const *val)
      * firewall
      */
     if (name == NULL || val == NULL) {
-	err(222, __func__, "passed NULL arg(s)");
+	err(231, __func__, "passed NULL arg(s)");
 	not_reached();
     }
 
     field_in_table = find_json_field_in_table(common_json_fields, name, &loc);
     if (field_in_table == NULL) {
-	err(223, __func__, "called add_found_common_json_field() on uncommon field '%s'", name);
+	err(232, __func__, "called add_found_common_json_field() on uncommon field '%s'", name);
 	not_reached();
     }
     /*
@@ -2064,7 +2064,7 @@ add_found_common_json_field(char const *name, char const *val)
 	if (field->name && !strcmp(field->name, name)) {
 	    field->count++;
 	    if (add_json_value(field, val) == NULL) {
-		err(224, __func__, "couldn't add value '%s' to field '%s'", val, field->name);
+		err(233, __func__, "couldn't add value '%s' to field '%s'", val, field->name);
 		not_reached();
 	    }
 	    return field;
@@ -2074,7 +2074,7 @@ add_found_common_json_field(char const *name, char const *val)
     field = new_json_field(name, val);
     if (field == NULL) {
 	/* this should NEVER be reached but we check just to be sure */
-	err(225, __func__, "new_json_field() returned NULL pointer");
+	err(234, __func__, "new_json_field() returned NULL pointer");
 	not_reached();
     }
 
@@ -2118,7 +2118,7 @@ get_common_json_field(char const *program, char const *file, char *name, char *v
      * firewall
      */
     if (program == NULL || file == NULL || name == NULL || val == NULL) {
-	err(226, __func__, "passed NULL arg(s)");
+	err(235, __func__, "passed NULL arg(s)");
 	not_reached();
     }
 
@@ -2178,7 +2178,7 @@ check_found_common_json_fields(char const *program, char const *file, char const
      * firewall
      */
     if (program == NULL || file == NULL || fnamchk == NULL) {
-	err(227, __func__, "passed NULL arg(s)");
+	err(236, __func__, "passed NULL arg(s)");
 	not_reached();
     }
 
@@ -2196,7 +2196,7 @@ check_found_common_json_fields(char const *program, char const *file, char const
 	 * first make sure the name != NULL and strlen() > 0
 	 */
 	if (field->name == NULL || !strlen(field->name)) {
-	    err(228, __func__, "found NULL or empty field in found_common_json_fields list");
+	    err(237, __func__, "found NULL or empty field in found_common_json_fields list");
 	    not_reached();
 	}
 
@@ -2211,7 +2211,7 @@ check_found_common_json_fields(char const *program, char const *file, char const
 	 * common list is not a common field name.
 	 */
 	if (common_field == NULL) {
-	    err(229, __func__, "illegal field name '%s' in found_common_json_fields list", field->name);
+	    err(238, __func__, "illegal field name '%s' in found_common_json_fields list", field->name);
 	    not_reached();
 	}
 
@@ -2449,26 +2449,26 @@ new_json_field(char const *name, char const *val)
      * firewall
      */
     if (name == NULL || val == NULL) {
-	err(230, __func__, "passed NULL arg(s)");
+	err(239, __func__, "passed NULL arg(s)");
 	not_reached();
     }
 
     errno = 0;
     field = calloc(1, sizeof *field);
     if (field == NULL) {
-	errp(231, __func__, "error allocating new struct json_field * for field '%s' and value '%s': %s", name, val, strerror(errno));
+	errp(240, __func__, "error allocating new struct json_field * for field '%s' and value '%s': %s", name, val, strerror(errno));
 	not_reached();
     }
 
     errno = 0;
     field->name = strdup(name);
     if (field->name == NULL) {
-	errp(232, __func__, "unable to strdup() field name '%s': %s", name, strerror(errno));
+	errp(241, __func__, "unable to strdup() field name '%s': %s", name, strerror(errno));
 	not_reached();
     }
 
     if (add_json_value(field, val) == NULL) {
-	err(233, __func__, "error adding value '%s' to field '%s'", val, name);
+	err(242, __func__, "error adding value '%s' to field '%s'", val, name);
 	not_reached();
     }
 
@@ -2505,7 +2505,7 @@ add_json_value(struct json_field *field, char const *val)
      * firewall
      */
     if (field == NULL || val == NULL) {
-	err(234, __func__, "passed NULL arg(s)");
+	err(243, __func__, "passed NULL arg(s)");
 	not_reached();
     }
 
@@ -2513,13 +2513,13 @@ add_json_value(struct json_field *field, char const *val)
     errno = 0;
     new_value = calloc(1, sizeof *new_value);
     if (new_value == NULL) {
-	errp(235, __func__, "error allocating new value '%s' for field '%s': %s", val, field->name, strerror(errno));
+	errp(244, __func__, "error allocating new value '%s' for field '%s': %s", val, field->name, strerror(errno));
 	not_reached();
     }
     errno = 0;
     new_value->value = strdup(val);
     if (new_value->value == NULL) {
-	errp(236, __func__, "error strdup()ing value '%s' for field '%s': %s", val, field->name, strerror(errno));
+	errp(245, __func__, "error strdup()ing value '%s' for field '%s': %s", val, field->name, strerror(errno));
 	not_reached();
     }
 
@@ -2558,7 +2558,7 @@ free_json_field_values(struct json_field *field)
      * firewall
      */
     if (field == NULL) {
-	err(237, __func__, "passed NULL field");
+	err(246, __func__, "passed NULL field");
 	not_reached();
     }
 
@@ -2624,7 +2624,7 @@ free_json_field(struct json_field *field)
      * firewall
      */
     if (field == NULL) {
-	err(238, __func__, "passed NULL field");
+	err(247, __func__, "passed NULL field");
 	not_reached();
     }
 
@@ -2659,7 +2659,7 @@ free_info(struct info *infop)
      * firewall
      */
     if (infop == NULL) {
-	err(239, __func__, "called with NULL arg(s)");
+	err(248, __func__, "called with NULL arg(s)");
 	not_reached();
     }
 
@@ -2751,11 +2751,11 @@ free_author_array(struct author *author_set, int author_count)
      * firewall
      */
     if (author_set == NULL) {
-	err(240, __func__, "called with NULL arg(s)");
+	err(249, __func__, "called with NULL arg(s)");
 	not_reached();
     }
     if (author_count < 0) {
-	err(241, __func__, "author_count: %d < 0", author_count);
+	err(10, __func__, "author_count: %d < 0", author_count);
 	not_reached();
     }
 
