@@ -17,45 +17,6 @@
  */
 #include "jinfochk.h"
 
-/*
- * .info.json fields table used to determine if a name belongs in the file,
- * whether it's been added to the found_info_json_fields list, how many times
- * it's been seen and how many are allowed.
- *
- */
-struct json_field info_json_fields[] =
-{
-    { "IOCCC_info_version",	NULL, 0, 1, false, JSON_STRING,		false, NULL },
-    { "title",			NULL, 0, 1, false, JSON_STRING,		false, NULL },
-    { "abstract",		NULL, 0, 1, false, JSON_STRING,		false, NULL },
-    { "rule_2a_size",		NULL, 0, 1, false, JSON_NUMBER,		false, NULL },
-    { "rule_2b_size",		NULL, 0, 1, false, JSON_NUMBER,		false, NULL },
-    { "empty_override",		NULL, 0, 1, false, JSON_BOOL,		false, NULL },
-    { "rule_2a_override",	NULL, 0, 1, false, JSON_BOOL,		false, NULL },
-    { "rule_2a_mismatch",	NULL, 0, 1, false, JSON_BOOL,		false, NULL },
-    { "rule_2b_override",	NULL, 0, 1, false, JSON_BOOL,		false, NULL },
-    { "highbit_warning",	NULL, 0, 1, false, JSON_BOOL,		false, NULL },
-    { "nul_warning",		NULL, 0, 1, false, JSON_BOOL,		false, NULL },
-    { "trigraph_warning",	NULL, 0, 1, false, JSON_BOOL,		false, NULL },
-    { "wordbuf_warning",	NULL, 0, 1, false, JSON_BOOL,		false, NULL },
-    { "ungetc_warning",		NULL, 0, 1, false, JSON_BOOL,		false, NULL },
-    { "Makefile_override",	NULL, 0, 1, false, JSON_BOOL,		false, NULL },
-    { "first_rule_is_all",	NULL, 0, 1, false, JSON_BOOL,		false, NULL },
-    { "found_all_rule",		NULL, 0, 1, false, JSON_BOOL,		false, NULL },
-    { "found_clean_rule",	NULL, 0, 1, false, JSON_BOOL,		false, NULL },
-    { "found_clobber_rule",	NULL, 0, 1, false, JSON_BOOL,		false, NULL },
-    { "found_try_rule",		NULL, 0, 1, false, JSON_BOOL,		false, NULL },
-    { "manifest",		NULL, 0, 1, false, JSON_ARRAY,		false, NULL },
-    { "info_JSON",		NULL, 0, 1, false, JSON_ARRAY_STRING,	false,	NULL },
-    { "author_JSON",		NULL, 0, 1, false, JSON_ARRAY_STRING,	false,	NULL },
-    { "c_src",			NULL, 0, 1, false, JSON_ARRAY_STRING,	false,	NULL },
-    { "Makefile",		NULL, 0, 1, false, JSON_ARRAY_STRING,	false,	NULL },
-    { "remarks",		NULL, 0, 1, false, JSON_ARRAY_STRING,	false,	NULL },
-    { "extra_file",		NULL, 0, 0, false, JSON_ARRAY_STRING,	false,	NULL },
-    { NULL,			NULL, 0, 0, false, JSON_NULL,		false,	NULL } /* this **MUST** be last */
-};
-
-
 int
 main(int argc, char **argv)
 {
@@ -175,63 +136,10 @@ main(int argc, char **argv)
     exit(issues != 0 && !test); /*ooo*/
 }
 
-
-/*
- * check_info_json_fields_table	 - sanity check info_json_fields table
- *
- * This function checks if JSON_NULL is used on any field other than the NULL
- * field. It also makes sure that each field_type is valid. Additionally it
- * makes sure that there are no NULL elements before the final element.
- *
- * These sanity checks are performed on the info_json_fields table.
- *
- * NOTE: More tests might be devised later on but this is a good start (28 Feb
- * 2022).
- *
- * This function does not return on error.
- */
-static void
-check_info_json_fields_table(void)
-{
-    size_t loc;
-    size_t max = sizeof(info_json_fields)/sizeof(info_json_fields[0]);
-
-    for (loc = 0; loc < max - 1 && info_json_fields[loc].name != NULL; ++loc) {
-	switch (info_json_fields[loc].field_type) {
-	    case JSON_NULL:
-		if (info_json_fields[loc].name != NULL) {
-		    err(5, __func__, "found JSON_NULL element with non NULL name '%s' location %ju in info_json_fields table",
-			    info_json_fields[loc].name, (uintmax_t)loc);
-		    not_reached();
-		}
-		break;
-	    case JSON_NUMBER:
-	    case JSON_BOOL:
-	    case JSON_STRING:
-	    case JSON_ARRAY:
-	    case JSON_ARRAY_NUMBER:
-	    case JSON_ARRAY_BOOL:
-	    case JSON_ARRAY_STRING:
-		/* these are all the valid types */
-		break;
-	    default:
-		err(6, __func__, "found invalid data_type in info_json_fields table location %ju", (uintmax_t)loc);
-		not_reached();
-		break;
-	}
-    }
-
-    if (max - 1 != loc) {
-	err(7, __func__, "found embedded NULL element in info_json_fields table");
-	not_reached();
-    }
-
-}
-
 /*
  * jinfochk_sanity_chk - perform basic sanity checks
  *
- * We perform basic sanity checks on paths.
+ * We perform basic sanity checks on paths and tables.
  *
  * given:
  *
@@ -349,11 +257,8 @@ jinfochk_sanity_chk(char const *file, char const *fnamchk)
 	not_reached();
     }
 
-    /* check the common_json_fields table */
-    check_common_json_fields_table();
 
-    /* check our info_json_fields table */
-    check_info_json_fields_table();
+    ioccc_sanity_chk();
 
     return;
 }

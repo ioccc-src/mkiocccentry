@@ -1524,5 +1524,38 @@ struct utf8_posix_map const hmap[] =
 
     /* more UTF-8 table entries can be added here */
 
-    {0, NULL}		/* MUST BE LAST */
+    {NULL, NULL}		/* MUST BE LAST */
 };
+
+size_t SIZEOF_UTF8_POSIX_MAP = sizeof(hmap)/sizeof(hmap[0]);
+
+/* check_utf8_posix_map	    - make sure that there are no embedded NULL elements
+ *			      in hmap and that the last element is NULL
+ *
+ * This function verifies that the only NULL element in the table is the very
+ * last element: if it's not there or there's another NULL element it's a
+ * problem that has to be fixed.
+ *
+ */
+void
+check_utf8_posix_map(void)
+{
+    size_t max = SIZEOF_UTF8_POSIX_MAP;
+
+    size_t i;
+
+    for (i = 0; i < max - 1 && hmap[i].utf8_str != NULL; )
+	++i;
+
+    if (max - 1 != i) {
+	err(10, __func__, "found embedded NULL element in UTF-8 POSIX map");
+	not_reached();
+    }
+
+    if (hmap[i].utf8_str != NULL || hmap[i].posix_str != NULL) {
+	err(11, __func__, "no final NULL element in UTF-8 POSIX map");
+	not_reached();
+    }
+}
+
+

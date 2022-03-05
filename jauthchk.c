@@ -16,32 +16,6 @@
  */
 #include "jauthchk.h"
 
-/*
- * .author.json fields table used to determine if a name belongs in the file,
- * whether it's been added to the found_author_json_fields list, how many times
- * it's been seen and how many are allowed.
- *
- * XXX: As of 4 March 2022 all fields are in the table but because arrays
- * are not yet parsed not all of these values will be dealt with: that is they
- * won't be checked.
- */
-struct json_field author_json_fields[] =
-{
-    { "IOCCC_author_version",	NULL, 0, 1, false, JSON_STRING,		false, 	NULL },
-    { "authors",		NULL, 0, 1, false, JSON_ARRAY,		false, 	NULL },
-    { "name",			NULL, 0, 5, false, JSON_ARRAY_STRING,	false,  NULL },
-    { "location_code",		NULL, 0, 5, false, JSON_ARRAY_STRING,	false,	NULL },
-    { "email",			NULL, 0, 5, false, JSON_ARRAY_STRING,	true,	NULL },
-    { "url",			NULL, 0, 5, false, JSON_ARRAY_STRING,	true,	NULL },
-    { "twitter",		NULL, 0, 5, false, JSON_ARRAY_STRING,	true,	NULL },
-    { "github",			NULL, 0, 5, false, JSON_ARRAY_STRING,	true,	NULL },
-    { "affiliation",		NULL, 0, 5, false, JSON_ARRAY_STRING,	true,	NULL },
-    { "author_handle",		NULL, 0, 5, false, JSON_ARRAY_STRING,	true,	NULL },
-    { "author_number",		NULL, 0, 5, false, JSON_ARRAY_NUMBER,	false,	NULL },
-    { NULL,			NULL, 0, 0, false, JSON_NULL,		false,	NULL } /* this **MUST** be last */
-};
-
-
 int
 main(int argc, char **argv)
 {
@@ -166,58 +140,6 @@ main(int argc, char **argv)
     exit(issues != 0 && !test); /*ooo*/
 }
 
-
-/*
- * check_author_json_fields_table - perform author_json_fields table sanity checks
- *
- * This function checks if JSON_NULL is used on any field other than the NULL
- * field. It also makes sure that each field_type is valid.  Additionally it
- * makes sure that there are no NULL elements before the final element.
- *
- * The checks are performed on the author_json_fields table.
- *
- * NOTE: More tests might be devised later on but this is a good start (28 Feb
- * 2022).
- *
- * This function does not return on error.
- */
-static void
-check_author_json_fields_table(void)
-{
-    size_t loc;
-    size_t max = sizeof(author_json_fields)/sizeof(author_json_fields[0]);
-
-    for (loc = 0; loc < max - 1 && author_json_fields[loc].name != NULL; ++loc) {
-	switch (author_json_fields[loc].field_type) {
-	    case JSON_NULL:
-		if (author_json_fields[loc].name != NULL) {
-		    err(5, __func__, "found JSON_NULL element with non NULL name '%s' location %ju in author_json_fields table",
-                            author_json_fields[loc].name, (uintmax_t)loc);
-		    not_reached();
-		}
-		break;
-	    case JSON_NUMBER:
-	    case JSON_BOOL:
-	    case JSON_STRING:
-	    case JSON_ARRAY:
-	    case JSON_ARRAY_NUMBER:
-	    case JSON_ARRAY_BOOL:
-	    case JSON_ARRAY_STRING:
-		/* these are all the valid types */
-		break;
-	    default:
-		err(6, __func__, "found invalid data_type in author_json_fields table location %ju", (uintmax_t)loc);
-		not_reached();
-		break;
-	}
-    }
-
-    if (max - 1 != loc) {
-	err(7, __func__, "found embedded NULL element in author_json_fields table");
-	not_reached();
-    }
-
-}
 
 
 /*

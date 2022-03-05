@@ -127,6 +127,7 @@ struct json_field
 };
 
 extern struct json_field common_json_fields[];
+extern size_t SIZEOF_COMMON_JSON_FIELDS_TABLE;
 
 /*
  * linked list of the common json fields found in the .info.json and
@@ -240,13 +241,18 @@ extern void jencchk(void);
 extern bool json_putc(uint8_t const c, FILE *stream);
 extern char *malloc_json_decode(char const *ptr, size_t len, size_t *retlen, bool strict);
 extern char *malloc_json_decode_str(char const *str, size_t *retlen, bool strict);
+
 /* jinfochk and jauthchk related */
 extern struct json_field *find_json_field_in_table(struct json_field *table, char const *name, size_t *loc);
 extern char const *json_filename(int type);
+/* checks on the JSON fields tables */
+extern void check_json_fields_tables(void);
+extern void check_common_json_fields_table(void);
+extern void check_author_json_fields_table(void);
+extern void check_info_json_fields_table(void);
 extern int check_first_json_char(char const *file, char *data, bool strict, char **first, char ch);
 extern int check_last_json_char(char const *file, char *data, bool strict, char **last, char ch);
 extern struct json_field *add_found_common_json_field(char const *name, char const *val);
-extern void check_common_json_fields_table(void);
 extern int get_common_json_field(char const *program, char const *file, char *name, char *val);
 extern int check_found_common_json_fields(char const *program, char const *file, char const *fnamchk, bool test);
 extern struct json_field *new_json_field(char const *name, char const *val);

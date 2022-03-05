@@ -38,6 +38,8 @@
 
 /*
  * location
+ *
+ * #includes the header files we need.
  */
 #include "location.h"
 
@@ -437,3 +439,35 @@ struct location loc[] = {
     {"ZZ", "User-assigned code ZZ"},	/* User-assigned code */
     {NULL, NULL}		/* MUST BE LAST */
 };
+
+size_t SIZEOF_LOCATION_TABLE = sizeof(loc)/sizeof(loc[0]);
+/* check_location_table	    - make sure that there are no embedded NULL elements
+ *			      in the location table and that the last element is
+ *			      NULL
+ *
+ * This function verifies that the only NULL element in the table is the very
+ * last element: if it's not there or there's another NULL element it's a
+ * problem that has to be fixed.
+ *
+ */
+void
+check_location_table(void)
+{
+    size_t max = SIZEOF_LOCATION_TABLE;
+
+    size_t i;
+
+    for (i = 0; i < max - 1 && loc[i].code != NULL; )
+	++i;
+
+    if (max - 1 != i) {
+	err(333, __func__, "found embedded NULL element in location table");
+	not_reached();
+    }
+    if (loc[i].code != NULL || loc[i].name != NULL) {
+	err(334, __func__, "no final NULL element found in location table");
+	not_reached();
+    }
+}
+
+

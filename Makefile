@@ -130,7 +130,7 @@ TARGETS= mkiocccentry iocccsize dbg_test limit_ioccc.sh fnamchk txzchk jauthchk 
 MANPAGES = mkiocccentry.1 txzchk.1 fnamchk.1 iocccsize.1 jinfochk.1 jauthchk.1
 TEST_TARGETS= dbg_test
 OBJFILES = dbg.o util.o mkiocccentry.o iocccsize.o fnamchk.o txzchk.o jauthchk.o jinfochk.o \
-	json.o jstrencode.o jstrdecode.o rule_count.o location.o utf8_posix_map.o
+	json.o jstrencode.o jstrdecode.o rule_count.o location.o utf8_posix_map.o sanity.o
 SRCFILES = $(patsubst %.o,%.c,$(OBJFILES))
 H_FILES = dbg.h jauthchk.h jinfochk.h json.h jstrdecode.h jstrencode.h limit_ioccc.h \
 	mkiocccentry.h txzchk.h util.h location.h utf8_posix_map.h
@@ -146,10 +146,13 @@ all: ${TARGETS} ${TEST_TARGETS}
 rule_count.o: rule_count.c Makefile
 	${CC} ${CFLAGS} -DMKIOCCCENTRY_USE rule_count.c -c
 
+sanity.o: sanity.c sanity.h location.h utf8_posix_map.h Makefile
+	${CC} ${CFLAGS} sanity.c -c
+
 mkiocccentry: mkiocccentry.c mkiocccentry.h rule_count.o dbg.o util.o json.o location.o \
-	utf8_posix_map.o Makefile
+	utf8_posix_map.o sanity.o Makefile
 	${CC} ${CFLAGS} mkiocccentry.c rule_count.o dbg.o util.o json.o location.o \
-		utf8_posix_map.o -o $@
+		utf8_posix_map.o sanity.o -o $@
 
 iocccsize: iocccsize.c rule_count.o dbg.o Makefile
 	${CC} ${CFLAGS} -DMKIOCCCENTRY_USE iocccsize.c rule_count.o dbg.o -o $@
@@ -160,14 +163,14 @@ dbg_test: dbg.c Makefile
 fnamchk: fnamchk.c fnamchk.h dbg.o util.o Makefile
 	${CC} ${CFLAGS} fnamchk.c dbg.o util.o -o $@
 
-txzchk: txzchk.c txzchk.h rule_count.o dbg.o util.o Makefile
-	${CC} ${CFLAGS} txzchk.c rule_count.o dbg.o util.o -o $@
+txzchk: txzchk.c txzchk.h rule_count.o dbg.o util.o location.o json.o utf8_posix_map.o sanity.o Makefile
+	${CC} ${CFLAGS} txzchk.c rule_count.o dbg.o util.o location.o json.o utf8_posix_map.o sanity.o -o $@
 
-jauthchk: jauthchk.c jauthchk.h json.h rule_count.o json.o dbg.o util.o Makefile
-	${CC} ${CFLAGS} jauthchk.c rule_count.o json.o dbg.o util.o -o $@
+jauthchk: jauthchk.c jauthchk.h json.h rule_count.o json.o dbg.o util.o sanity.o location.o utf8_posix_map.o Makefile
+	${CC} ${CFLAGS} jauthchk.c rule_count.o json.o dbg.o util.o sanity.o location.o utf8_posix_map.o -o $@
 
-jinfochk: jinfochk.c jinfochk.h rule_count.o json.o dbg.o util.o Makefile
-	${CC} ${CFLAGS} jinfochk.c rule_count.o json.o dbg.o util.o -o $@
+jinfochk: jinfochk.c jinfochk.h rule_count.o json.o dbg.o util.o sanity.o location.o utf8_posix_map.o Makefile
+	${CC} ${CFLAGS} jinfochk.c rule_count.o json.o dbg.o util.o sanity.o location.o utf8_posix_map.o -o $@
 
 jstrencode: jstrencode.c jstrencode.h dbg.o json.o util.o Makefile
 	${CC} ${CFLAGS} jstrencode.c dbg.o json.o util.o -o $@
@@ -371,19 +374,23 @@ depend:
 dbg.o: dbg.c dbg.h
 util.o: util.c dbg.h util.h limit_ioccc.h version.h
 mkiocccentry.o: mkiocccentry.c mkiocccentry.h util.h json.h dbg.h \
-  location.h limit_ioccc.h version.h iocccsize.h
+  location.h utf8_posix_map.h sanity.h limit_ioccc.h version.h \
+  iocccsize.h
 iocccsize.o: iocccsize.c iocccsize_err.h iocccsize.h
 fnamchk.o: fnamchk.c fnamchk.h dbg.h util.h limit_ioccc.h version.h
-txzchk.o: txzchk.c txzchk.h util.h dbg.h limit_ioccc.h version.h
+txzchk.o: txzchk.c txzchk.h util.h dbg.h sanity.h location.h \
+  utf8_posix_map.h json.h limit_ioccc.h version.h
 jauthchk.o: jauthchk.c jauthchk.h dbg.h util.h json.h limit_ioccc.h \
   version.h
-jinfochk.o: jinfochk.c jinfochk.h dbg.h util.h json.h limit_ioccc.h \
-  version.h
+jinfochk.o: jinfochk.c jinfochk.h dbg.h util.h json.h sanity.h location.h \
+  utf8_posix_map.h limit_ioccc.h version.h
 json.o: json.c dbg.h util.h limit_ioccc.h version.h json.h
 jstrencode.o: jstrencode.c jstrencode.h dbg.h util.h json.h limit_ioccc.h \
   version.h
 jstrdecode.o: jstrdecode.c jstrdecode.h dbg.h util.h json.h limit_ioccc.h \
   version.h
 rule_count.o: rule_count.c iocccsize_err.h iocccsize.h
-location.o: location.c location.h
-utf8_posix_map.o: utf8_posix_map.c utf8_posix_map.h
+location.o: location.c location.h util.h dbg.h
+utf8_posix_map.o: utf8_posix_map.c utf8_posix_map.h util.h dbg.h
+sanity.o: sanity.c sanity.h util.h dbg.h location.h utf8_posix_map.h \
+  json.h

@@ -30,6 +30,11 @@
 #include "dbg.h"
 
 /*
+ * sanity
+ */
+#include "sanity.h"
+
+/*
  * IOCCC size and rule related limitations
  */
 #include "limit_ioccc.h"

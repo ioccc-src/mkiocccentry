@@ -756,7 +756,8 @@ usage(int exitcode, char const *str, char const *program)
 /*
  * mkiocccentry_sanity_chk - perform basic sanity checks
  *
- * We perform basic sanity checks on paths and the IOCCC contest ID.
+ * We perform basic sanity checks on paths and the IOCCC contest ID as well as
+ * the IOCCC toolkit tables.
  *
  * given:
  *
@@ -1225,6 +1226,10 @@ mkiocccentry_sanity_chk(struct info *infop, char const *work_dir, char const *ta
      * obtain version string from IOCCCSIZE_VERSION
      */
     infop->common.iocccsize_ver = IOCCCSIZE_VERSION;
+
+    /* we also check that all the tables across the IOCCC toolkit are sane */
+    ioccc_sanity_chk();
+
     return;
 }
 

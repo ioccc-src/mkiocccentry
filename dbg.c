@@ -652,7 +652,7 @@ warn_or_err(int exitcode, const char *name, bool test, const char *fmt, ...)
     if (test == true) {
 
 	/*
-	 * issue a wanring as the calling function
+	 * issue a warning as the calling function
 	 */
 	warn(name, fmt, ap);
 
@@ -729,7 +729,7 @@ warnp_or_errp(int exitcode, const char *name, bool test, const char *fmt, ...)
     if (test == true) {
 
 	/*
-	 * issue a wanring as the calling function
+	 * issue a warning as the calling function
 	 */
 	warnp(name, fmt, ap);
 
