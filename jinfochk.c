@@ -1399,8 +1399,6 @@ check_found_info_json_fields(char const *file, bool test)
 		    not_reached();
 		}
 	    } else if (!strcmp(field->name, "extra_file")) {
-		size_t j;
-
 		if (val_length > MAX_BASENAME_LEN) {
 		    warn(__func__, "extra file name length %ju > the limit %ju", (uintmax_t)val_length, (uintmax_t)MAX_BASENAME_LEN);
 		    ++issues;
@@ -1409,17 +1407,12 @@ check_found_info_json_fields(char const *file, bool test)
 		    warn(__func__, "extra data file: %s starts with an invalid character: %c", val, *val);
 		    ++issues;
 		}
-		for (j = 0; j < val_length; ++j) {
-		    if (!isascii(val[j]) ||
-			(!isalnum(val[j]) &&
-			 val[j] != '.' &&
-			 val[j] != '_' &&
-			 val[j] != '-' &&
-			 val[j] != '+')) {
-			    warn(__func__, "extra data file: '%s' does not only consist of POSIX Fully portable characters and +", val);
-			    ++issues;
-			    break;
-		    }
+	        /* extra_file must use only POSIX portable filename plus chars */
+		/* XXX - should the lower_only (2nd) arg to posix_plus_safe() be true or false? */
+		if (posix_plus_safe(val, false, false, true) == false) {
+		    warn(__func__, "extra data file: '%s' does not match regexp ^[0-9A-Za-z][0-9A-Za-z._+-]*$", val);
+		    ++issues;
+		    break;
 		}
 		manifest_file = add_manifest_file(val);
 		if (manifest_file == NULL) {

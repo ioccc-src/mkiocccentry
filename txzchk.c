@@ -444,7 +444,7 @@ txzchk_sanity_chk(char const *tar, char const *fnamchk)
 static void
 check_txz_file(char const *txzpath, char *p, char const *dir_name, struct txz_file *file)
 {
-    size_t j;
+    bool allowed_dot_file = false;	/* true ==> basename is an allowed . file */
 
     /*
      * firewall
@@ -455,39 +455,74 @@ check_txz_file(char const *txzpath, char *p, char const *dir_name, struct txz_fi
     }
 
     /*
+     * identify if file is an allowed . file
+     */
+    if ((strcmp(file->basename, ".info.json") == 0) || (strcmp(file->basename, ".author.json") == 0)) {
+	allowed_dot_file = true;
+    }
+
+    /*
      * check for dot files but note that a basename of only '.' also counts as a
      * filename with just '.': so if the file starts with a '.' and it's not
      * ".author.json" and not ".info.json" then it's a dot file; if it's ONLY
      * '.' it counts as BOTH a dot file AND a file called just '.' (which would
      * likely be a directory but is abuse nonetheless).
      */
-    if (*(file->basename) == '.' && strcmp(file->basename, ".info.json") && strcmp(file->basename, ".author.json")) {
+    if (*(file->basename) == '.' && allowed_dot_file == false) {
 	++txz_info.total_issues;
 	warn("txzchk", "%s: found non .author.json and .info.json dot file %s", txzpath, file->basename);
 	txz_info.dot_files++;
     }
     /* check for files called '.' without anything after the full stop */
-    if (*(file->basename) == '.' && !file->basename[1]) {
+    if (*(file->basename) == '.' && file->basename[1] == '\0') {
 	++txz_info.total_issues;
 	++txz_info.named_dot;
 	warn("txzchk", "%s: found file called '.' in path %s", txzpath, file->filename);
     }
 
     /*
-     * filename (full path) must only use POSIX Fully portable characters: A-Z
-     * a-z 0-9 . _ - + characters and (for directories) '/'.
+     * filename must use only POSIX portable filename plus chars plus /
      */
-    for (j = 0; j < strlen(file->filename); ++j) {
-	if (!isascii(file->filename[j]) ||
-	    (!isalnum(file->filename[j]) && file->filename[j] != '.' && file->filename[j] != '_' &&
-	     file->filename[j] != '-' && file->filename[j] != '+' && file->filename[j] != '/')) {
-		++txz_info.total_issues; /* report it once and consider it only one issue */
-		++txz_info.invalid_chars;
-		warn("txzchk", "%s: found non portable characters in file %s", txzpath, file->filename);
-		break; /* only count one character per filename */
+    /* XXX - should the lower_only (2nd) arg to posix_plus_safe() be true or false? */
+    if (posix_plus_safe(file->filename, false, true, false) == false) {
+	++txz_info.total_issues; /* report it once and consider it only one issue */
+	++txz_info.invalid_chars;
+	warn(__func__, "%s: file does not match regexp ^[/0-9a-z][/0-9a-z._+-]*$: %s",
+		       txzpath, file->filename);
+    }
+
+    /*
+     * case: basename is allowed to begin with dot
+     */
+    if (allowed_dot_file == true) {
+	/*
+	 * after the . the basename must use only POSIX portable filename plus chars
+	 */
+	/* XXX - should the lower_only (2nd) arg to posix_plus_safe() be true or false? */
+	if (posix_plus_safe(file->basename+1, false, false, true) == false) {
+	    ++txz_info.total_issues; /* report it once and consider it only one issue */
+	    ++txz_info.invalid_chars;
+	    warn(__func__, "%s: file basename does not match regexp ^\\.[0-9A-Za-z][0-9A-Za-z._+-]*$: %s",
+			   txzpath, file->basename);
+	}
+
+    /*
+     * case: basename is NOT allowed to begin with dot
+     */
+    } else {
+	/*
+	 * basename must use only POSIX portable filename plus chars
+	 */
+	/* XXX - should the lower_only (2nd) arg to posix_plus_safe() be true or false? */
+	if (posix_plus_safe(file->basename, false, false, true) == false) {
+	    ++txz_info.total_issues; /* report it once and consider it only one issue */
+	    ++txz_info.invalid_chars;
+	    warn(__func__, "%s: file basename does not match regexp ^[0-9A-Za-z][0-9A-Za-z._+-]*$: %s",
+			   txzpath, file->basename);
 	}
     }
 
+    /* check the dirs in the path */
     check_directories(file, dir_name, txzpath);
 }
 

@@ -270,13 +270,29 @@ main(int argc, char *argv[])
     dbg(DBG_LOW, "filename extension is valid: %s", extension);
 
     /*
+     * filepath must use only POSIX portable filename plus chars plus /
+     */
+    if (posix_plus_safe(filepath, false, true, false) == false) {
+	err(22, __func__, "filepoath: posix_plus_safe(%s, false, true, false) is false", filepath);
+	not_reached();
+    }
+
+    /*
+     * filename must use only lower case POSIX portable filename plus chars
+     */
+    if (posix_plus_safe(filename, true, false, true) == false) {
+	err(23, __func__, "basename: posix_plus_safe(%s, true, false, true) is false", filename);
+	not_reached();
+    }
+
+    /*
      * All is OK with the filepath - print entry directory basename
      */
     dbg(DBG_LOW, "filepath passes all checks: %s", filepath);
     errno = 0;		/* pre-clear errno for errp() */
     ret = printf("%s\n", uuid);
     if (ret <= 0) {
-	errp(22, __func__, "printf of entry directory basename failed");
+	errp(24, __func__, "printf of entry directory basename failed");
 	not_reached();
     }
 
