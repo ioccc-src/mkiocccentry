@@ -1570,7 +1570,7 @@ struct json_field common_json_fields[] =
     { "min_timestamp",		    NULL, 0, 1, false, JSON_NUMBER, false, NULL },
     { "formed_UTC",		    NULL, 0, 1, false, JSON_STRING, false, NULL },
     { "test_mode",		    NULL, 0, 1, false, JSON_BOOL,   false, NULL },
-    { NULL,			    NULL, 0, 0, false, JSON_NULL,   false, NULL } /* XXX this **MUST** be last! */
+    { NULL,			    NULL, 0, 0, false, JSON_NULL,   false, NULL } /* this **MUST** be last! */
 };
 
 size_t SIZEOF_COMMON_JSON_FIELDS_TABLE = sizeof(common_json_fields)/sizeof(common_json_fields[0]);
