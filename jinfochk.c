@@ -1037,7 +1037,7 @@ add_found_info_json_field(char const *name, char const *val)
 	if (field->name && !strcmp(field->name, name)) {
 	    /*
 	     * we found a field already in the list: add the value (even if this
-	     * value was already in the list as this might need to be reported).
+	     * value was already in the list as this is needed in some cases).
 	     */
 	    value = add_json_value(field, val);
 	    if (value == NULL) {
@@ -1519,7 +1519,7 @@ check_found_info_json_fields(char const *file, bool test)
      * so I can see everything.
      */
     for (loc = 0; !test && info_json_fields[loc].name != NULL; ++loc) {
-	if (!info_json_fields[loc].found) {
+	if (!info_json_fields[loc].found && info_json_fields[loc].max_count > 0) {
 	    warn(__func__, "field '%s' not found in found_info_json_fields list", info_json_fields[loc].name);
 	    ++issues;
 	}

@@ -101,7 +101,8 @@ struct json_field
      * In other words this is done as part of the checks after the field:value
      * pairs have been extracted.
      *
-     * NOTE: A max_count == 0 means that there's no limit.
+     * NOTE: A max_count == 0 means that there's no limit and that it's not
+     * required.
      */
     size_t count;		/* how many of this field in the list (or how many values) */
     size_t max_count;		/* how many of this field is allowed */

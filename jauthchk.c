@@ -940,7 +940,7 @@ add_found_author_json_field(char const *name, char const *val)
 	if (field->name && !strcmp(field->name, name)) {
 	    /*
 	     * we found a field already in the list, add the value (even if this
-	     * value was already in the list as this might need to be reported).
+	     * value was already in the list as this is needed in some cases).
 	     */
 	    value = add_json_value(field, val);
 	    if (value == NULL) {

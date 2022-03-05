@@ -2374,7 +2374,7 @@ check_found_common_json_fields(char const *program, char const *file, char const
      * so I can see everything.
      */
     for (loc = 0; !test && common_json_fields[loc].name != NULL; ++loc) {
-	if (!common_json_fields[loc].found) {
+	if (!common_json_fields[loc].found && common_json_fields[loc].max_count > 0) {
 	    warn(__func__, "field '%s' not found in found_common_json_fields list", common_json_fields[loc].name);
 	    ++issues;
 	}
