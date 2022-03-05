@@ -599,6 +599,9 @@ check_info_json(char const *file, char const *fnamchk)
 		while (*array_val && isspace(*array_val))
 		    ++array_val;
 
+		if (!*array_val)
+		    break;
+
 		/*
 		 * remove any spaces at the end of the value (prior to the
 		 * closing '}'
