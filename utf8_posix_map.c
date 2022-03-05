@@ -1568,17 +1568,21 @@ check_utf8_posix_map(void)
 	/* fill in string lengths */
 	hmap[i].utf8_str_len = strlen(hmap[i].utf8_str);
 	hmap[i].posix_str_len = strlen(hmap[i].posix_str);
+
+	/* POSIX portable plus + check on posix_str if string is not empty */
+	if (hmap[i].posix_str_len > 0 && posix_plus_safe(hmap[i].posix_str, true, false, false) == false) {
+	    err(13, __func__, "hmap[%lu] is not POSIX portable plus + safe", (uintmax_t)i);
+	    not_reached();
+	}
     }
 
     /*
      * check final NULL at end of table
      */
     if (hmap[max-1].utf8_str != NULL || hmap[max-1].posix_str != NULL) {
-	err(13, __func__, "no final NULL element at hmap[%ju]", (uintmax_t)(max-1));
+	err(14, __func__, "no final NULL element at hmap[%ju]", (uintmax_t)(max-1));
 	not_reached();
     }
     dbg(DBG_VVHIGH, "hmap[0..%ju] sane and ready", (uintmax_t)(max-1));
     return;
 }
-
-

@@ -2217,7 +2217,9 @@ parse_verbosity(char const *program, char const *arg)
     return verbosity;
 }
 
-/* is_number	    - if the string str is a number
+
+/*
+ * is_number	    - if the string str is a number
  *
  * given:
  *
@@ -2261,7 +2263,9 @@ is_number(char const *str)
     return strspn(str, "0123456789") == strlen(str);
 }
 
-/* string_to_bool	- convert string to a bool
+
+/*
+ * string_to_bool	- convert string to a bool
  *
  * given:
  *
@@ -2283,4 +2287,174 @@ string_to_bool(char const *str)
     }
 
     return !strcmp(str, "true");
+}
+
+
+/*
+ * posix_plus_safe - if string is a valid POSIX portable safe + filename
+ *
+ * If slash_ok is true:
+ *
+ *	If first is true:
+ *
+ *	    If lower_only is true, then the string must match:
+ *
+ *		^[/0-9a-z][0-9a-z._+-]*$
+ *
+ *	   If lower_only is false, then the string must match:
+ *
+ *		^[/0-9A-Za-z][0-9A-Za-z._+-]*$
+ *
+ *	If first is false:
+ *
+ *	    If lower_only is true, then the string must match:
+ *
+ *		^[/0-9a-z._+-]*$
+ *
+ *	   If lower_only is false, then the string must match:
+ *
+ *		^[/0-9A-Za-z._+-]*$
+ *
+ * If slash_ok is false:
+ *
+ *	If first is true:
+ *
+ *	    If lower_only is true, then the string must match:
+ *
+ *		^[0-9a-z][0-9a-z._+-]*$
+ *
+ *	   If lower_only is false, then the string must match:
+ *
+ *		^[0-9A-Za-z][0-9A-Za-z._+-]*$
+ *
+ *	If first is false:
+ *
+ *	    If lower_only is true, then the string must match:
+ *
+ *		^[0-9a-z._+-]*$
+ *
+ *	   If lower_only is false, then the string must match:
+ *
+ *		^[0-9A-Za-z._+-]*$
+ *
+ * given:
+ *	str		- string to test
+ *	lower_only	- true ==> only lower case characters are allowed
+ *			- false ==> both UPPER and lower case characters are allowed
+ *	slash_ok	- true ==> / is allowed as str can be a path
+ *			  false ==> / is NOT allowed, str is a basename only
+ *	first		- first ==> true, str is at beginning, perform 1st char check
+ *			  false ==> false, str may be in the middle, skip 1st char check
+ *
+ * returns:
+ *	true ==> str is a valid POSIX portable safe + filename, AND
+ *		 the case of str matches lower_only and slash_ok conditions
+ *	false ==> an unsafe issue was found, or
+ *		  str is an empty string, or
+ *		  str is NULL
+ */
+bool
+posix_plus_safe(char const *str, bool lower_only, bool slash_ok, bool first)
+{
+    size_t len;		/* length of str */
+    size_t start = 0;	/* starting position of full string scan */
+    size_t i;
+
+    /*
+     * firewall
+     */
+    if (str == NULL) {
+	dbg(DBG_VVHIGH, "str is NULL");
+	return false;
+    }
+    len = strlen(str);
+    if (len <= 0) {
+	dbg(DBG_VVHIGH, "str is an empty string");
+	return false;
+    }
+
+    /*
+     * special case: first character is /
+     */
+    if (first == true) {
+	if (str[0] == '/') {
+		if (slash_ok == false) {
+		    dbg(DBG_VVHIGH, "str[0]: slash_ok is false and 1st character is /");
+		    return false;
+		}
+
+	/*
+	 * special case: first character is not /, so it must be alphanumeric
+	 */
+	} else {
+	    /* ASCII non-/ check */
+	    if (!isascii(str[0])) {
+		dbg(DBG_VVHIGH, "str[0]: 1st character is non-ASCII: 0x%02x", (unsigned int)str[0]);
+		return false;
+	    }
+	    /* alphanumeric non-/ check */
+	    if (!isalnum(str[0])) {
+		dbg(DBG_VVHIGH, "str[0]: 1st character not alphanumeric: 0x%02x", (unsigned int)str[0]);
+		return false;
+	    }
+	    /* special case: lower_only is true, alphanumeric lower case only */
+	    if (lower_only == true && isupper(str[0])) {
+		dbg(DBG_VVHIGH, "str[0]: lower_only is true and 1st character is upper case: 0x%02x",
+				(unsigned int)str[0]);
+		return false;
+	    }
+	}
+	/* 1st character already checked, scan beyond 1st character next */
+	start = 1;
+    }
+
+    /*
+     * Beyond the 1st character, they must be POSIX portable filename or +
+     */
+    for (i=start; i < len-1; ++i) {
+
+	/*
+	 * special case: / check
+	 */
+	if (str[i] == '/') {
+		if (slash_ok == false) {
+		    dbg(DBG_VVHIGH, "slash_ok is false and / found at str[%jd]",
+				    (uintmax_t)i);
+		    return false;
+		}
+
+	/*
+	 * case: non-/ check
+	 */
+	} else {
+	    /* ASCII non-/ check */
+	    if (!isascii(str[i])) {
+		dbg(DBG_VVHIGH, "str[%jd]: character is non-ASCII: 0x%02x",
+				(uintmax_t)i, (unsigned int)str[i]);
+		return false;
+	    }
+	    /* alphanumeric nor [._+-] nor non-/ check */
+	    if (!isalnum(str[i]) && str[i] != '.' && str[i] != '_' && str[i] != '+' && str[i] != '-') {
+		dbg(DBG_VVHIGH, "str[%jd]: 1st character not alphanumeric nor ._+-: 0x%02x",
+				(uintmax_t)i, (unsigned int)str[i]);
+		return false;
+	    }
+	    /* special case: lower_only is true, alphanumeric lower case only */
+	    if (lower_only == true && isupper(str[i])) {
+		dbg(DBG_VVHIGH, "str[%jd]: lower_only is true and 1st character is upper case: 0x%02x",
+				(uintmax_t)i, (unsigned int)str[i]);
+		return false;
+	    }
+	}
+    }
+
+    /*
+     * all is well
+     */
+    dbg(DBG_VVVHIGH, "lower_only: %s slash_ok: %s first: %s str is valid: <%s>",
+		     (lower_only ? "true" : "false"),
+		     (slash_ok ? "true" : "false"),
+		     (first ? "true" : "false"),
+		     str);
+    return true;
 }
