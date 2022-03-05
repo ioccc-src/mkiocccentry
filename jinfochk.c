@@ -565,7 +565,7 @@ check_info_json(char const *file, char const *fnamchk)
 
 		/* if nothing left break out of loop */
 		if (!*array_field) {
-		    /* 
+		    /*
 		     * the continue can cause additional problems if there's
 		     * more in the file but we warn instead of error during
 		     * development.
@@ -613,7 +613,7 @@ check_info_json(char const *file, char const *fnamchk)
 		/* remove a single '}' if one exists at the end (*end == '}') */
 		if (*end == '}')
 		    *end-- = '\0';
- 
+
 		/* if empty value break out of loop */
 		if (!*array_val)
 		    break;
@@ -789,7 +789,7 @@ check_info_json(char const *file, char const *fnamchk)
 		    ++issues;
 		    continue;
 		}
-		    
+
 		/* remove a single '"' at the beginning of the value */
 		if (*val == '"') {
 		    ++val;
@@ -863,7 +863,7 @@ check_info_json(char const *file, char const *fnamchk)
 		err(31, __func__, "malloc_json_decode_str(): invalidly formed field '%s' value '%s' or malloc failure in file %s", p, val, file);
 		not_reached();
 	    }
-	    
+
 	    /* if empty value, free value and break out of loop */
 	    if (!*val_esc) {
 		free(val_esc);

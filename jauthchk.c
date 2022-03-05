@@ -570,7 +570,7 @@ check_author_json(char const *file, char const *fnamchk)
 		    ++issues;
 		    continue;
 		}
-		    
+
 		/* remove a single '"' at the beginning of the value */
 		if (*val == '"') {
 		    ++val;
@@ -659,7 +659,7 @@ check_author_json(char const *file, char const *fnamchk)
 		warn(__func__, "invalid field '%s' found in file %s", p, file);
 		++issues;
 	    }
-	    
+
 	    /* free the JSON decoded value */
 	    free(val_esc);
 	    val_esc = NULL;

@@ -95,7 +95,7 @@
  *
  * The following is NOT the version of this mkiocccentry tool!
  *
- * XXX These MUST be here and **NOT** in version.h or mkiocccentry.h!
+ * NOTE: These MUST be here and **NOT** in version.h nor in mkiocccentry.h!
  */
 #define MKIOCCCENTRY_ANSWERS_VERSION "MKIOCCCENTRY_ANSWERS-IOCCCMOCK-1.0"
 /* Answers file EOF marker */

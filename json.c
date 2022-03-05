@@ -1625,8 +1625,8 @@ size_t SIZEOF_INFO_JSON_FIELDS_TABLE = sizeof(info_json_fields)/sizeof(info_json
  */
 struct json_field author_json_fields[] =
 {
-    { "IOCCC_author_version",	NULL, 0, 1, false, JSON_STRING,		false, 	NULL },
-    { "authors",		NULL, 0, 1, false, JSON_ARRAY,		false, 	NULL },
+    { "IOCCC_author_version",	NULL, 0, 1, false, JSON_STRING,		false,	NULL },
+    { "authors",		NULL, 0, 1, false, JSON_ARRAY,		false,	NULL },
     { "name",			NULL, 0, 5, false, JSON_ARRAY_STRING,	false,  NULL },
     { "location_code",		NULL, 0, 5, false, JSON_ARRAY_STRING,	false,	NULL },
     { "email",			NULL, 0, 5, false, JSON_ARRAY_STRING,	true,	NULL },
@@ -1649,7 +1649,7 @@ size_t SIZEOF_AUTHOR_JSON_FIELDS_TABLE = sizeof(author_json_fields)/sizeof(autho
  *	name			    - the name to check
  *	loc			    - if != NULL set to index
  *
- * XXX The table MUST end with NULL!
+ * NOTE: The table MUST end with NULL!
  *
  * NOTE: If loc != NULL and the name is not found in the table then in the
  * calling function loc will be the number of entries in the table. To get the
@@ -1672,7 +1672,7 @@ find_json_field_in_table(struct json_field *table, char const *name, size_t *loc
     }
 
     /* zero length name is equivalent to NULL */
-    if (!strlen(name)) {
+    if (strlen(name) <= 0) {
 	name = NULL;
     }
 
@@ -1966,7 +1966,7 @@ check_first_json_char(char const *file, char *data, bool strict, char **first, c
 
 
 /*
- * check_last_json_char - check if last char is ch 
+ * check_last_json_char - check if last char is ch
  *
  * given:
  *
@@ -2614,8 +2614,7 @@ free_found_common_json_fields(void)
  *
  * NOTE: This function does not return on NULL.
  *
- * XXX It is the caller's responsibility to remove it from the list(s) it is in!
- *
+ * NOTE: It is the caller's responsibility to remove it from the list(s) it is in!
  */
 void
 free_json_field(struct json_field *field)
