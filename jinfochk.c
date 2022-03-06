@@ -1391,10 +1391,6 @@ check_found_info_json_fields(char const *file, bool test)
 		    warn(__func__, "extra file name length %ju > the limit %ju", (uintmax_t)val_length, (uintmax_t)MAX_BASENAME_LEN);
 		    ++issues;
 		}
-		if (!isascii(*val) || !isalnum(*val)) {
-		    warn(__func__, "extra data file: %s starts with an invalid character: %c", val, *val);
-		    ++issues;
-		}
 	        /* extra_file must use only POSIX portable filename and + chars */
 		/* XXX - should the lower_only (2nd) arg to posix_plus_safe() be true or false? */
 		if (posix_plus_safe(val, false, false, true) == false) {

@@ -2291,7 +2291,7 @@ string_to_bool(char const *str)
 
 
 /*
- * posix_plus_safe - if string is a valid POSIX portable safe + filename
+ * posix_plus_safe - if string is a valid POSIX portable safe plus + chars
  *
  * If slash_ok is true:
  *

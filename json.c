@@ -2292,7 +2292,7 @@ check_found_common_json_fields(char const *program, char const *file, char const
 		}
 	    } else if (!strcmp(field->name, "timestamp_epoch")) {
 		/*
-		 * XXX FIXME check for both "Thu Jan 01 00:00:00 1970 UTC" and also
+		 * XXX - FIXME check for both "Thu Jan 01 00:00:00 1970 UTC" and also
 		 * "Thu Jan  1 00:00:00 1970 UTC" because many of the test_JSON
 		 * files have the second form: once the tools are completed
 		 * remove ALT_TIMESTAMP_EPOCH in its entirety.
@@ -2365,7 +2365,7 @@ check_found_common_json_fields(char const *program, char const *file, char const
      * are those that will potentially have more than allowed whereas here we're
      * making sure every field that is required is actually in the list.
      *
-     * XXX We don't check for this in test mode because most if not all of the
+     * XXX - We don't check for this in test mode because most if not all of the
      * files in test_JSON were created before some of the fields were common and
      * since the judges (and the tools) will never use test mode to verify an
      * entry this is not a problem. As I add tests I will not be using test mode
