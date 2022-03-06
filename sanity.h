@@ -7,7 +7,7 @@
  * txzchk, mkiocccentry_sanity_chk() for mkiocccentry etc.
  *
  * "Because sometimes we're all a little insane, some of us are a lot insane and
- * code is often very insane." :-)
+ * code is very often very insane." :-)
  *
  */
 
@@ -32,7 +32,7 @@
 #include "location.h"
 
 /*
- * UTF-8 -> POSIX map
+ * UTF-8 POSIX map
  */
 #include "utf8_posix_map.h"
 

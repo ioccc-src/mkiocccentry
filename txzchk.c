@@ -468,7 +468,7 @@ check_txz_file(char const *txzpath, char *p, char const *dir_name, struct txz_fi
      * '.' it counts as BOTH a dot file AND a file called just '.' (which would
      * likely be a directory but is abuse nonetheless).
      */
-    if (*(file->basename) == '.' && allowed_dot_file == false) {
+    if (*(file->basename) == '.' && !allowed_dot_file) {
 	++txz_info.total_issues;
 	warn("txzchk", "%s: found non .author.json and .info.json dot file %s", txzpath, file->basename);
 	txz_info.dot_files++;
@@ -484,7 +484,7 @@ check_txz_file(char const *txzpath, char *p, char const *dir_name, struct txz_fi
      * filename must use only POSIX portable filename and + chars plus /
      */
     /* XXX - should the lower_only (2nd) arg to posix_plus_safe() be true or false? */
-    if (posix_plus_safe(file->filename, false, true, false) == false) {
+    if (!posix_plus_safe(file->filename, false, true, false)) {
 	++txz_info.total_issues; /* report it once and consider it only one issue */
 	++txz_info.invalid_chars;
 	warn(__func__, "%s: file does not match regexp ^[/0-9a-z][/0-9a-z._+-]*$: %s",
@@ -494,12 +494,12 @@ check_txz_file(char const *txzpath, char *p, char const *dir_name, struct txz_fi
     /*
      * case: basename is allowed to begin with dot
      */
-    if (allowed_dot_file == true) {
+    if (allowed_dot_file) {
 	/*
 	 * after the . the basename must use only POSIX portable filename and + chars
 	 */
 	/* XXX - should the lower_only (2nd) arg to posix_plus_safe() be true or false? */
-	if (posix_plus_safe(file->basename+1, false, false, true) == false) {
+	if (!posix_plus_safe(file->basename+1, false, false, true)) {
 	    ++txz_info.total_issues; /* report it once and consider it only one issue */
 	    ++txz_info.invalid_chars;
 	    warn(__func__, "%s: file basename does not match regexp ^\\.[0-9A-Za-z][0-9A-Za-z._+-]*$: %s",
@@ -514,7 +514,7 @@ check_txz_file(char const *txzpath, char *p, char const *dir_name, struct txz_fi
 	 * basename must use only POSIX portable filename and + chars
 	 */
 	/* XXX - should the lower_only (2nd) arg to posix_plus_safe() be true or false? */
-	if (posix_plus_safe(file->basename, false, false, true) == false) {
+	if (!posix_plus_safe(file->basename, false, false, true)) {
 	    ++txz_info.total_issues; /* report it once and consider it only one issue */
 	    ++txz_info.invalid_chars;
 	    warn(__func__, "%s: file basename does not match regexp ^[0-9A-Za-z][0-9A-Za-z._+-]*$: %s",

@@ -19,7 +19,7 @@ RM= rm
 #
 CSTD= -std=gnu17
 
-# How to optimzie and set debug levels
+# How to optimize and set debug levels
 #
 COPT= -O3 -g3
 
@@ -27,12 +27,12 @@ COPT= -O3 -g3
 #
 CWARN= -Wall -Wextra -pedantic
 
-# Add various -Wno-foo flags to CSLIENCE to silence,
+# Add various -Wno-foo flags to CSILENCE to silence,
 # if needed, common compiler warnings.
 #
-CSLIENCE=
+CSILENCE=
 
-# Add and -Dfoo line defines here
+# Add -Dfoo line defines here
 #
 CDEFINE=
 
@@ -42,8 +42,8 @@ COTHER=
 
 # compile and link options
 #
-CFLAGS= ${CSTD} ${COPT} ${CWARN} ${CSLIENCE} ${CDEFINE} ${COTHER}
-LFLAGS=
+CFLAGS= ${CSTD} ${COPT} ${CWARN} ${CSILENCE} ${CDEFINE} ${COTHER}
+LDFLAGS=
 
 # list any data files supplied with the entry
 #
