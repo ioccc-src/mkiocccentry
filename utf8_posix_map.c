@@ -1,6 +1,6 @@
 /* vim: set tabstop=8 softtabstop=4 shiftwidth=4 noexpandtab : */
 /*
- * utf8_posix_map - translate certain UTF-8 into POSIX+ safe filenames
+ * utf8_posix_map - translate UTF-8 into POSIX portable filename and + chars
  *
  * "Because even POSIX needs an extra plus." :-)
  *
