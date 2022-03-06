@@ -87,7 +87,20 @@ TRUE= true
 
 # C source standards being used
 #
-# NOTE: feature test macros are required for some systems: e.g., CentOS
+# NOTE: The use of -std=gnu11 is because there are a few older systems
+#	that do not have compilers that (yet) support gnu17.  And while
+#	there may be even more out of date systems that do not support
+#	gnu11, we have to draw the line somewhere.
+#
+# NOTE: The code in the mkiocccentry repo is to help you form and
+#	submit a compressed tarball that needs the IOCCC requirements.
+#	Your IOCCC entry is free to require older C standards, or
+#	even not specify a C standard at all.  Moreover, your entry's
+#	Makefile, can do what it needs to do, perhaps by using the
+#	Makefile.example as a basis.
+#
+# XXX - In 2024 we will change the STD_SRC line to - XXX
+# XXX STD_SRC= -std=gnu17 - XXX
 #
 STD_SRC= -D_DEFAULT_SOURCE -D_POSIX_C_SOURCE=200809L -D_XOPEN_SOURCE -std=gnu11
 
