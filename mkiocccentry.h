@@ -148,7 +148,8 @@ static const char * const usage_msg1 =
     "\t-F /path/to/fnamchk\tpath to fnamchk executable used by txzchk (def: %s)";
 static const char * const usage_msg2 =
     "\t-j /path/to/jinfochk	path to jinfochk executable used by txzchk (def: %s)\n"
-    "\t-J /path/to/jauthchk	path to jauthchk executable used by txzchk (def: %s)\n";
+    "\t-J /path/to/jauthchk	path to jauthchk executable used by txzchk (def: %s)\n"
+    "\t-q\t\t\tquiet mode: suppress some messages\n";
 static const char * const usage_msg3 =
     "\t-a answers\t\twrite answers to a file for easier updating of an entry\n"
     "\t-A answers\t\twrite answers file even if it already exists\n"
@@ -177,6 +178,7 @@ int verbosity_level = DBG_DEFAULT;	/* debug level set by -v */
 static bool need_confirm = true;	/* true ==> ask for confirmations */
 static bool need_hints = true;		/* true ==> show hints */
 static bool need_retry = true;		/* true ==> re-prompt for input on error */
+static bool quiet = false;		/* true ==> suppress some messages */
 static bool ignore_warnings = false;	/* true ==> ignore all warnings (this does NOT mean the judges will! :) */
 static FILE *input_stream = NULL;	/* input file: stdin or answers file  */
 static unsigned answers_errors;		/* > 0 ==> output errors on answers file */
@@ -195,7 +197,7 @@ static void warn_wordbuf(char const *prog_c);
 static void warn_ungetc(char const *prog_c);
 static void warn_rule_2b_size(struct info *infop, char const *prog_c);
 static RuleCount check_prog_c(struct info *infop, char const *entry_dir, char const *cp, char const *prog_c);
-static void mkiocccentry_sanity_chk(struct info *infop, char const *work_dir, char const *tar, char const *cp,
+static void mkiocccentry_sanity_chks(struct info *infop, char const *work_dir, char const *tar, char const *cp,
 		       char const *ls, char const *txzchk, char const *fnamchk, char const *jinfochk, char const *jauthchk);
 static char *prompt(char const *str, size_t *lenp);
 static char *get_contest_id(bool *testp, bool *read_answers_flag_used);

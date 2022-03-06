@@ -112,7 +112,7 @@ main(int argc, char **argv)
 	       false, NULL, false, NULL);
 
 
-    jinfochk_sanity_chk(file, fnamchk);
+    jinfochk_sanity_chks(file, fnamchk);
     if (!quiet) {
 	para("... environment looks OK", "", NULL);
     }
@@ -137,7 +137,7 @@ main(int argc, char **argv)
 }
 
 /*
- * jinfochk_sanity_chk - perform basic sanity checks
+ * jinfochk_sanity_chks - perform basic sanity checks
  *
  * We perform basic sanity checks on paths and tables.
  *
@@ -149,7 +149,7 @@ main(int argc, char **argv)
  * NOTE: This function does not return on error or if things are not sane.
  */
 static void
-jinfochk_sanity_chk(char const *file, char const *fnamchk)
+jinfochk_sanity_chks(char const *file, char const *fnamchk)
 {
     /*
      * firewall
@@ -257,8 +257,8 @@ jinfochk_sanity_chk(char const *file, char const *fnamchk)
 	not_reached();
     }
 
-
-    ioccc_sanity_chk();
+    /* we also check that all the tables across the IOCCC toolkit are sane */
+    ioccc_sanity_chks();
 
     return;
 }
@@ -413,7 +413,7 @@ check_info_json(char const *file, char const *fnamchk)
 	    ++p;
 	} else {
 	    /* if no '"' there's a problem */
-	    warn(__func__, "found no leading '\"' for field '%s' in file %s", p, file);
+	    warn(__func__, "found no leading '\"' for field '%s' in file %s: '%c'", p, file, *p);
 	    ++issues;
 	    continue;
 	}
@@ -432,7 +432,7 @@ check_info_json(char const *file, char const *fnamchk)
 	    *end = '\0';
 	} else {
 	    /* if no trailing '"' there's also a problem */
-	    warn(__func__, "found no trailing '\"': '%s' in file %s", p, file);
+	    warn(__func__, "found no trailing '\"': '%s' in file %s: '%c'", p, file, *p);
 	    ++issues;
 	}
 
@@ -461,7 +461,7 @@ check_info_json(char const *file, char const *fnamchk)
 	 * which is an error regardless of test mode.
 	 */
 	if (info_field == NULL && common_field == NULL) {
-	    err(21, __func__, "invalid field '%s'", p);
+	    err(21, __func__, "invalid field '%s' in file %s", p, file);
 	    not_reached();
 	}
 
@@ -519,7 +519,7 @@ check_info_json(char const *file, char const *fnamchk)
 
 
 	    if (!check_last_json_char(file, array_dup, false, &p, ',')) {
-		warn(__func__, "last array element ends with ',' in file %s", file);
+		warn(__func__, "last array element ends with ',' in file %s: '%c'", file, *p);
 		++issues;
 	    }
 
@@ -539,7 +539,7 @@ check_info_json(char const *file, char const *fnamchk)
 		    ++array_field;
 		} else {
 		    /* if no '"' there's a problem */
-		    warn(__func__, "found no leading '\"' in array field '%s' in file %s", array_field, file);
+		    warn(__func__, "found no leading '\"' in array field in file %s: '%s'", file, array_field);
 		    ++issues;
 		    break;
 		}
@@ -558,7 +558,7 @@ check_info_json(char const *file, char const *fnamchk)
 		    *end = '\0';
 		} else {
 		    /* if there's no trailing '"' there's also a problem */
-		    warn(__func__, "found no trailing '\"' in array field '%s' in file %s", array_field, file);
+		    warn(__func__, "found no trailing '\"' in array field in file %s: '%s'", file, array_field);
 		    ++issues;
 		    break;
 		}
@@ -573,7 +573,7 @@ check_info_json(char const *file, char const *fnamchk)
 		     * TODO: Make this an error once all testing has been
 		     * finished.
 		     */
-		    warn(__func__, "found empty array field in file %s", file);
+		    warn(__func__, "found empty array field in file %s: '%s'", file, array_field);
 		    ++issues;
 		    continue;
 		}
@@ -584,7 +584,7 @@ check_info_json(char const *file, char const *fnamchk)
 		 * error regardless of test mode.
 		 */
 		if (array_info_field == NULL) {
-		    err(27, __func__, "invalid field '%s' in manifest array", array_field);
+		    err(27, __func__, "invalid field '%s' in manifest array of file %s", array_field, file);
 		    not_reached();
 		}
 
@@ -622,24 +622,24 @@ check_info_json(char const *file, char const *fnamchk)
 		if (array_info_field->field_type == JSON_ARRAY_STRING) {
 		    if (!strcmp(array_val, "\"\"")) {
 			/* make sure that it's not an empty string ("") */
-			warn(__func__, "found empty string for array field '%s'", array_field);
+			warn(__func__, "found empty string for array field '%s': '%s'", array_field, array_val);
 			++issues;
 			continue;
 		    } else if (!strcmp(array_val, "null") && !can_be_empty) {
 			/* if it's null and it cannot be empty it's an issue */
-			warn(__func__, "found invalid null value for field '%s' in file %s", array_field, file);
+			warn(__func__, "found invalid null value for field '%s' in file %s: '%s'", array_field, file, array_val);
 			++issues;
 			continue;
 		    } else if (strchr(array_val, '"') == NULL && !can_be_empty) {
 			/* if there's no '"' and it cannot be empty it's an issue */
-			warn(__func__, "string field '%s' value '%s' does not have any '\"'s in file %s", array_field, array_val, file);
+			warn(__func__, "string field '%s' value does not have any '\"'s in file %s: '%s'", array_field, file, array_val);
 			++issues;
 			continue;
 		    } else if (can_be_empty && strcmp(array_val, "null") && strchr(array_val, '"') == NULL) {
 			/* if it can be empty and it's not 'null' and there's no '"'
 			 * it's an issue.
 			 */
-			warn(__func__, "string field '%s' value that's not 'null' has no '\"'s in file %s: %s", array_field, file, array_val);
+			warn(__func__, "string field '%s' value that's not 'null' has no '\"'s in file %s: '%s'", array_field, file, array_val);
 			++issues;
 			continue;
 		    }
@@ -648,7 +648,7 @@ check_info_json(char const *file, char const *fnamchk)
 		    if (*array_val == '"') {
 			++array_val;
 		    } else if (!strcmp(array_val, "null") && !can_be_empty) {
-			warn(__func__, "found invalid null value for field '%s' in file %s", array_field, file);
+			warn(__func__, "found invalid null value for field '%s' in file %s: '%s'", array_field, file, array_val);
 			++issues;
 			continue;
 		    } else if (strcmp(array_val, "null")) {
@@ -656,7 +656,7 @@ check_info_json(char const *file, char const *fnamchk)
 			 * If no '"' and the value is not exactly "null" (null
 			 * object) it's an issue
 			 */
-			warn(__func__, "found non-null string field '%s' without '\"' at the beginning in file %s", array_field, file);
+			warn(__func__, "found non-null string field '%s' without '\"' at the beginning in file %s: '%s'", array_field, file, array_val);
 			++issues;
 			continue;
 		    }
@@ -670,7 +670,7 @@ check_info_json(char const *file, char const *fnamchk)
 			 * if there's no trailing '"' and it's not a null object
 			 * ("null") then it's an issue
 			 */
-			warn(__func__, "found non-null string field '%s' without '\"' at the end in file %s", array_field, file);
+			warn(__func__, "found non-null string field '%s' without '\"' at the end in file %s: '%s'", array_field, file, array_val);
 			++issues;
 			continue;
 		    }
@@ -680,7 +680,7 @@ check_info_json(char const *file, char const *fnamchk)
 		     * of the loop
 		     */
 		    if (!*array_val) {
-			warn(__func__, "found empty string value for array field '%s' in file %s", array_field, file);
+			warn(__func__, "found empty string value for array field '%s' in file %s: '%s'", array_field, file, array_val);
 			++issues;
 			continue;
 		    }
@@ -693,7 +693,7 @@ check_info_json(char const *file, char const *fnamchk)
 		     * non-string array is added to the array.
 		     */
 		    if (strchr(array_val, '"') != NULL) {
-			warn(__func__, "found '\"' in non-string array field '%s' value '%s' in file %s", array_field, array_val, file);
+			warn(__func__, "found '\"' in non-string array field '%s' value in file %s: '%s'", array_field, file, array_val);
 			++issues;
 			continue;
 		    }
@@ -718,7 +718,7 @@ check_info_json(char const *file, char const *fnamchk)
 
 		if (!get_info_json_field(file, array_field, array_val_esc)) {
 		    /* this should actually never be reached */
-		    warn(__func__, "found invalid field in array");
+		    warn(__func__, "found invalid field in array in file %s: '%s'", file, array_field);
 		    ++issues;
 		}
 
@@ -768,24 +768,24 @@ check_info_json(char const *file, char const *fnamchk)
 		(info_field && (info_field->field_type == JSON_STRING || info_field->field_type == JSON_ARRAY_STRING))) {
 		if (!strcmp(val, "\"\"")) {
 		    /* make sure that it's not an empty string ("") */
-		    warn(__func__, "found empty string for field '%s'", p);
+		    warn(__func__, "found empty string for field '%s': '%s'", p, val);
 		    ++issues;
 		    continue;
 		} else if (!strcmp(val, "null") && !can_be_empty) {
 		    /* if it's null and it cannot be empty it's an issue */
-		    warn(__func__, "found invalid null value for field '%s' in file %s", p, file);
+		    warn(__func__, "found invalid null value for field '%s' in file %s: '%s'", p, file, val);
 		    ++issues;
 		    continue;
 		} else if (strchr(val, '"') == NULL && !can_be_empty) {
 		    /* if there's no '"' and it cannot be empty it's an issue */
-		    warn(__func__, "string field '%s' value '%s' does not have any '\"'s in file %s", p, val, file);
+		    warn(__func__, "string field '%s' value does not have any '\"'s in file %s: '%s'", p, file, val);
 		    ++issues;
 		    continue;
 		} else if (can_be_empty && strcmp(val, "null") && strchr(val, '"') == NULL) {
 		    /* if it can be empty and it's not 'null' and there's no '"'
 		     * it's an issue.
 		     */
-		    warn(__func__, "string field '%s' value that's not 'null' has no '\"'s in file %s: %s", p, file, val);
+		    warn(__func__, "string field '%s' value that's not 'null' has no '\"'s in file %s: '%s'", p, file, val);
 		    ++issues;
 		    continue;
 		}
@@ -798,14 +798,14 @@ check_info_json(char const *file, char const *fnamchk)
 		     * If no '"' and the value is not exactly "null" (null
 		     * object) it's an issue
 		     */
-		    warn(__func__, "found non-null string field '%s' without '\"' at the beginning in file %s", p, file);
+		    warn(__func__, "found non-null string field '%s' without '\"' at the beginning in file %s: '%s'", p, file, val);
 		    ++issues;
 		    continue;
 		}
 
 		/* if nothing left continue to the next iteration of loop */
 		if (!*val) {
-		    warn(__func__, "found empty string field '%s' in file %s", p, file);
+		    warn(__func__, "found empty string field '%s' in file %s: '%s'", p, file, val);
 		    ++issues;
 		    continue;
 		}
@@ -819,7 +819,7 @@ check_info_json(char const *file, char const *fnamchk)
 		     * if there's no trailing '"' and it's not a null object
 		     * ("null") then it's an issue
 		     */
-		    warn(__func__, "found non-null string field '%s' without '\"' at the end in file %s", p, file);
+		    warn(__func__, "found non-null string field '%s' without '\"' at the end in file %s: '%s'", p, file, val);
 		    ++issues;
 		    continue;
 		}
@@ -829,7 +829,7 @@ check_info_json(char const *file, char const *fnamchk)
 		 * of the loop
 		 */
 		if (!*val) {
-		    warn(__func__, "found empty string value for field '%s' in file %s", p, file);
+		    warn(__func__, "found empty string value for field '%s' in file %s: '%s'", p, file, val);
 		    ++issues;
 		    continue;
 		}
@@ -847,7 +847,7 @@ check_info_json(char const *file, char const *fnamchk)
 		 * '"'s.
 		 */
 		if (strchr(val, '"') != NULL) {
-		    warn(__func__, "found '\"' in non-string field '%s' value '%s' in file %s", p, val, file);
+		    warn(__func__, "found '\"' in non-string field '%s' value in file %s: '%s'", p, file, val);
 		    ++issues;
 		    continue;
 		}
@@ -1284,7 +1284,7 @@ check_found_info_json_fields(char const *file, bool test)
 	    switch (info_field->field_type) {
 		case JSON_BOOL:
 		    if (strcmp(val, "false") && strcmp(val, "true")) {
-			warn(__func__, "bool field '%s' has invalid value '%s' in file %s", info_field->name, val, file);
+			warn(__func__, "bool field '%s' has non boolean value in file %s: '%s'", info_field->name, file, val);
 			++issues;
 			continue;
 		    } else {
@@ -1293,7 +1293,7 @@ check_found_info_json_fields(char const *file, bool test)
 		    break;
 		case JSON_NUMBER:
 		    if (!is_number(val)) {
-			warn(__func__, "number field '%s' has non-number value '%s' in file %s", info_field->name, val, file);
+			warn(__func__, "number field '%s' has non-number value in file %s: '%s'", info_field->name, file, val);
 			++issues;
 			continue;
 		    } else {
@@ -1308,37 +1308,37 @@ check_found_info_json_fields(char const *file, bool test)
 
 	    if (!strcmp(field->name, "IOCCC_info_version")) {
 		if (!test && strcmp(val, INFO_VERSION)) {
-		    warn(__func__, "IOCCC_info_version \"%s\" != INFO_VERSION \"%s\" in file %s", val, INFO_VERSION, file);
+		    warn(__func__, "IOCCC_info_version != INFO_VERSION \"%s\" in file %s: \"%s\"", INFO_VERSION, file, val);
 		    ++issues;
 		}
 	    } else if (!strcmp(field->name, "title")) {
 		/* check for valid title length */
 		if (!val_length) {
-		    warn(__func__, "title length zero");
+		    warn(__func__, "title length zero in file %s", file);
 		    ++issues;
 		} else if (val_length > MAX_TITLE_LEN) {
-		    warn(__func__, "title length %ju > max %d",
-				      (uintmax_t)val_length, MAX_TITLE_LEN);
+		    warn(__func__, "title length %ju > max %d in file %s: '%s'",
+				      (uintmax_t)val_length, MAX_TITLE_LEN, file, val);
 		    ++issues;
 		}
 
 		/* check for valid title chars */
-		if (posix_plus_safe(val, true, false, true) == false) {
-		    warn(__func__, "title: '%s' does not match regexp ^[0-9a-z][0-9a-z._+-]*$", val);
+		if (!posix_plus_safe(val, true, false, true)) {
+		    warn(__func__, "title does not match regexp ^[0-9a-z][0-9a-z._+-]*$ in file %s: '%s'", file, val);
 		    ++issues;
 		}
 	    } else if (!strcmp(field->name, "abstract")) {
 		if (!val_length) {
-		    warn(__func__, "abstract value zero length");
+		    warn(__func__, "abstract value zero length in file %s", file);
 		    ++issues;
 		} else if (val_length > MAX_ABSTRACT_LEN) {
-		    warn(__func__, "abstract length %ju > max %d",
-				      (uintmax_t)val_length, MAX_ABSTRACT_LEN);
+		    warn(__func__, "abstract length %ju > max %d in file %s: '%s'",
+				      (uintmax_t)val_length, MAX_ABSTRACT_LEN, file, val);
 		    ++issues;
 		}
 	    } else if (!strcmp(field->name, "info_JSON")) {
 		if (strcmp(val, ".info.json")) {
-		    warn(__func__, "found invalid info_JSON value: '%s'", val);
+		    warn(__func__, "found invalid info_JSON value in file %s: '%s'", file, val);
 		    ++issues;
 		}
 		manifest_file = add_manifest_file(val);
@@ -1348,7 +1348,7 @@ check_found_info_json_fields(char const *file, bool test)
 		}
 	    } else if (!strcmp(field->name, "author_JSON")) {
 		if (strcmp(val, ".author.json")) {
-		    warn(__func__, "found invalid author_JSON value: '%s'", val);
+		    warn(__func__, "found invalid author_JSON value in file %s: '%s'", file, val);
 		    ++issues;
 		}
 		manifest_file = add_manifest_file(val);
@@ -1358,7 +1358,7 @@ check_found_info_json_fields(char const *file, bool test)
 		}
 	    } else if (!strcmp(field->name, "c_src")) {
 		if (strcmp(val, "prog.c")) {
-		    warn(__func__, "found invalid c_src value: '%s'", val);
+		    warn(__func__, "found invalid c_src value in file %s: '%s'", file, val);
 		    ++issues;
 		}
 		manifest_file = add_manifest_file(val);
@@ -1368,7 +1368,7 @@ check_found_info_json_fields(char const *file, bool test)
 		}
 	    } else if (!strcmp(field->name, "Makefile")) {
 		if (strcmp(val, "Makefile")) {
-		    warn(__func__, "found invalid Makefile value: '%s'", val);
+		    warn(__func__, "found invalid Makefile value in file %s: '%s'", file, val);
 		    ++issues;
 		}
 		manifest_file = add_manifest_file(val);
@@ -1378,7 +1378,7 @@ check_found_info_json_fields(char const *file, bool test)
 		}
 	    } else if (!strcmp(field->name, "remarks")) {
 		if (strcmp(val, "remarks.md")) {
-		    warn(__func__, "found invalid remarks value: '%s'", val);
+		    warn(__func__, "found invalid remarks value in file %s: '%s'", file, val);
 		    ++issues;
 		}
 		manifest_file = add_manifest_file(val);
@@ -1388,19 +1388,19 @@ check_found_info_json_fields(char const *file, bool test)
 		}
 	    } else if (!strcmp(field->name, "extra_file")) {
 		if (val_length > MAX_BASENAME_LEN) {
-		    warn(__func__, "extra file name length %ju > the limit %ju", (uintmax_t)val_length, (uintmax_t)MAX_BASENAME_LEN);
+		    warn(__func__, "extra file name length %ju > the limit %ju: '%s'", (uintmax_t)val_length, (uintmax_t)MAX_BASENAME_LEN, val);
 		    ++issues;
 		}
 	        /* extra_file must use only POSIX portable filename and + chars */
 		/* XXX - should the lower_only (2nd) arg to posix_plus_safe() be true or false? */
-		if (posix_plus_safe(val, false, false, true) == false) {
-		    warn(__func__, "extra data file: '%s' does not match regexp ^[0-9A-Za-z][0-9A-Za-z._+-]*$", val);
+		if (!posix_plus_safe(val, false, false, true)) {
+		    warn(__func__, "extra data file does not match regexp ^[0-9A-Za-z][0-9A-Za-z._+-]*$ in file %s: '%s'", file, val);
 		    ++issues;
 		    break;
 		}
 		manifest_file = add_manifest_file(val);
 		if (manifest_file == NULL) {
-		    err(49, __func__, "couldn't add extra_file file '%s'", val);
+		    err(49, __func__, "couldn't add extra_file file '%s' in file %s", val, file);
 		    not_reached();
 		}
 	    } else if (!strcmp(field->name, "rule_2a_size")) {
@@ -1439,7 +1439,7 @@ check_found_info_json_fields(char const *file, bool test)
 		info.found_try_rule = string_to_bool(val);
 	    } else if (strcmp(field->name, "manifest")) {
 		/* this should never actually be reached but just in case */
-		warn(__func__, "found invalid field '%s'", field->name);
+		warn(__func__, "found invalid field in file %s: '%s'", file, field->name);
 		++issues;
 	    }
 	}
@@ -1453,7 +1453,7 @@ check_found_info_json_fields(char const *file, bool test)
      */
     if (info.Makefile_override && info.first_rule_is_all && info.found_all_rule &&
 	    info.found_clean_rule && info.found_clobber_rule && info.found_try_rule) {
-	warn(__func__, "Makefile_override == true but all expected Makefile rules found and 'all:' is first");
+	warn(__func__, "Makefile_override == true but all expected Makefile rules found and 'all:' is first in file %s", file);
 	++issues;
     }
 
@@ -1462,13 +1462,13 @@ check_found_info_json_fields(char const *file, bool test)
      * there's a mismatch: check this and report if this is the case.
      */
     if (!info.found_all_rule && info.first_rule_is_all) {
-	warn(__func__, "'all:' rule not found but first_rule_is_all == true");
+	warn(__func__, "'all:' rule not found but first_rule_is_all == true in file %s", file);
 	++issues;
     }
 
     /* if empty_override == true and prog.c is not size 0 there's a problem */
     if (info.empty_override && info.rule_2a_size > 0 && info.rule_2b_size > 0) {
-	warn(__func__, "empty_override == true but prog.c size > 0");
+	warn(__func__, "empty_override == true but prog.c size > 0 in file %s", file);
 	++issues;
     }
 
@@ -1477,7 +1477,7 @@ check_found_info_json_fields(char const *file, bool test)
      * there's a problem.
      */
     if (!info.empty_override && (info.rule_2a_size == 0 || info.rule_2b_size == 0)) {
-	warn(__func__, "empty_override == false but rule 2a and/or rule 2b size == 0");
+	warn(__func__, "empty_override == false but rule 2a and/or rule 2b size == 0 in file %s", file);
 	++issues;
     }
 
@@ -1497,7 +1497,7 @@ check_found_info_json_fields(char const *file, bool test)
      */
     for (loc = 0; !test && info_json_fields[loc].name != NULL; ++loc) {
 	if (!info_json_fields[loc].found && info_json_fields[loc].max_count > 0) {
-	    warn(__func__, "field '%s' not found in found_info_json_fields list", info_json_fields[loc].name);
+	    warn(__func__, "required field not found in found_info_json_fields list in file %s: '%s'", file, info_json_fields[loc].name);
 	    ++issues;
 	}
     }
@@ -1509,7 +1509,7 @@ check_found_info_json_fields(char const *file, bool test)
      */
     for (manifest_file = manifest_files; manifest_file; manifest_file = manifest_file->next) {
 	if (manifest_file->count > 1) {
-	    warn(__func__, "found duplicate file '%s' (count: %ju)", manifest_file->filename, (uintmax_t)manifest_file->count);
+	    warn(__func__, "found duplicate file (count: %ju) in file %s: '%s'", (uintmax_t)manifest_file->count, file, manifest_file->filename);
 	    ++issues;
 	}
     }

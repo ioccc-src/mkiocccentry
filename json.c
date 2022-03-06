@@ -2219,8 +2219,8 @@ check_found_common_json_fields(char const *program, char const *file, char const
 	 * uncommon fields some are allowed more than once.
 	 */
 	if (common_field->count > common_field->max_count) {
-	    warn(__func__, "field '%s' found %ju times but is only allowed once",
-			   common_field->name, (uintmax_t)common_field->count);
+	    warn(__func__, "field '%s' found %ju times but is only allowed once in file %s",
+			   common_field->name, (uintmax_t)common_field->count, file);
 	    ++issues;
 	}
 
@@ -2229,7 +2229,7 @@ check_found_common_json_fields(char const *program, char const *file, char const
 	    val_length = strlen(val);
 
 	    if (!val_length) {
-		warn(__func__, "empty value found for field '%s' in file %s", field->name, file);
+		warn(__func__, "empty value found for field '%s' in file %s: '%s'", field->name, file, val);
 		/* don't increase issues because the below checks will do that
 		 * too: this warning only notes the reason the test will fail.
 		 */
@@ -2238,7 +2238,7 @@ check_found_common_json_fields(char const *program, char const *file, char const
 	    switch (common_field->field_type) {
 		case JSON_BOOL:
 		    if (strcmp(val, "false") && strcmp(val, "true")) {
-			warn(__func__, "bool field '%s' has no boolean value '%s' in file %s", common_field->name, val, file);
+			warn(__func__, "bool field '%s' has non boolean value in file %s: '%s'", common_field->name, file, val);
 			++issues;
 			continue;
 		    }
@@ -2247,7 +2247,7 @@ check_found_common_json_fields(char const *program, char const *file, char const
 		    break; /* arrays are not handled yet */
 		case JSON_NUMBER:
 		    if (!is_number(val)) {
-			warn(__func__, "number field '%s' has non-number value '%s' in file %s", common_field->name, val, file);
+			warn(__func__, "number field '%s' has non-number value in file %s: '%s'", common_field->name, file, val);
 			++issues;
 			continue;
 		    }
@@ -2260,34 +2260,34 @@ check_found_common_json_fields(char const *program, char const *file, char const
 
 	    if (!strcmp(field->name, "ioccc_contest")) {
 		if (strcmp(val, IOCCC_CONTEST)) {
-		    warn(__func__, "ioccc_contest \"%s\" != \"%s\" in file %s", val, IOCCC_CONTEST, file);
+		    warn(__func__, "ioccc_contest != \"%s\" in file %s: \"%s\"", IOCCC_CONTEST, file, val);
 		    ++issues;
 		}
 	    } else if (!strcmp(field->name, "ioccc_year")) {
 		year = string_to_int(val);
 		if (year != IOCCC_YEAR) {
-		    warn(__func__, "ioccc_year %d != IOCCC_YEAR %d", year, IOCCC_YEAR);
+		    warn(__func__, "ioccc_year != IOCCC_YEAR %d in file %s: '%s' (%d)", IOCCC_YEAR, file, val, year);
 		    ++issues;
 		}
 	    } else if (!strcmp(field->name, "mkiocccentry_version")) {
 		if (!test && strcmp(val, MKIOCCCENTRY_VERSION)) {
-		    warn(__func__, "mkiocccentry_version \"%s\" != MKIOCCCENTRY_VERSION \"%s\"", val, MKIOCCCENTRY_VERSION);
+		    warn(__func__, "mkiocccentry_version != MKIOCCCENTRY_VERSION \"%s\" in file %s: \"%s\"", MKIOCCCENTRY_VERSION, file, val);
 		    ++issues;
 		}
 	    } else if (!strcmp(field->name, "iocccsize_version")) {
 		if (!test && strcmp(val, IOCCCSIZE_VERSION)) {
-		    warn(__func__, "iocccsize_version \"%s\" != IOCCCSIZE_VERSION \"%s\"", val, IOCCCSIZE_VERSION);
+		    warn(__func__, "iocccsize_version != IOCCCSIZE_VERSION \"%s\" in file %s: \"%s\"", IOCCCSIZE_VERSION, file, val);
 		    ++issues;
 		}
 	    } else if (!strcmp(field->name, "IOCCC_contest_id")) {
 		if (!valid_contest_id(val)) {
-		    warn(__func__, "IOCCC_contest_id \"%s\" is invalid", val);
+		    warn(__func__, "IOCCC_contest_id is invalid in file %s: \"%s\"", file, val);
 		    ++issues;
 		}
 	    } else if (!strcmp(field->name, "min_timestamp")) {
 		ts = string_to_long(val);
 		if (ts != MIN_TIMESTAMP) {
-		    warn(__func__, "min_timestamp '%ld' != MIN_TIMESTAMP '%ld'", ts, MIN_TIMESTAMP);
+		    warn(__func__, "min_timestamp != MIN_TIMESTAMP '%ld' in file %s: '%s' (%ld)", MIN_TIMESTAMP, file, val, ts);
 		    ++issues;
 		}
 	    } else if (!strcmp(field->name, "timestamp_epoch")) {
@@ -2298,38 +2298,38 @@ check_found_common_json_fields(char const *program, char const *file, char const
 		 * remove ALT_TIMESTAMP_EPOCH in its entirety.
 		 */
 		if (strcmp(val, TIMESTAMP_EPOCH) && strcmp(val, ALT_TIMESTAMP_EPOCH)) {
-		    warn(__func__, "timestamp_epoch \"%s\" != TIMESTAMP_EPOCH \"%s\"", val, TIMESTAMP_EPOCH);
+		    warn(__func__, "timestamp_epoch != TIMESTAMP_EPOCH \"%s\" in file %s: \"%s\"", TIMESTAMP_EPOCH, file, val);
 		    ++issues;
 		}
 	    } else if (!strcmp(field->name, "formed_timestamp_usec")) {
 		errno = 0;
 		ts = string_to_long(val);
 		if (ts < 0 || ts > 999999) {
-		    warnp(__func__, "formed_timestamp_usec '%ld' out of range of >= 0 && <= 999999", ts);
+		    warnp(__func__, "formed_timestamp_usec out of range of >= 0 && <= 999999 in file %s: '%ld'", file, ts);
 		    ++issues;
 		}
 	    } else if (!strcmp(field->name, "entry_num")) {
 		entry_num = string_to_int(val);
 		if (!(entry_num >= 0 && entry_num <= MAX_ENTRY_NUM)) {
-		    warn(__func__, "entry number %d out of range", entry_num);
+		    warn(__func__, "entry number out of range in file %s: %d", file, entry_num);
 		    ++issues;
 		}
 	    } else if (!strcmp(field->name, "author_count")) {
 		author_count = string_to_int(val);
 		if (!(author_count > 0 && author_count <= MAX_AUTHORS)) {
-		    warn(__func__, "author count %d out of range of > 1 && <= %d", author_count, MAX_AUTHORS);
+		    warn(__func__, "author count out of range of > 1 && <= %d in file %s: '%s' (%d)", MAX_AUTHORS, file, val, author_count);
 		    ++issues;
 		}
 	    } else if (!strcmp(field->name, "formed_UTC")) {
 		p = strptime(val, FORMED_UTC_FMT, &tm);
 		if (p == NULL) {
-		    warn(__func__, "formed_UTC \"%s\" does not match FORMED_UTC_FMT \"%s\"", val, FORMED_UTC_FMT);
+		    warn(__func__, "formed_UTC does not match FORMED_UTC_FMT \"%s\": \"%s\"", FORMED_UTC_FMT, val);
 		    ++issues;
 		}
 	    } else if (!strcmp(field->name, "formed_timestamp")) {
 		ts = string_to_long(val);
 		if (ts < MIN_TIMESTAMP) {
-		    warn(__func__, "formed_timestamp '%ld' < MIN_TIMESTAMP '%ld'", ts, MIN_TIMESTAMP);
+		    warn(__func__, "formed_timestamp < MIN_TIMESTAMP '%ld' in file %s: '%s' (%ld)", MIN_TIMESTAMP, file, val, ts);
 		    ++issues;
 		}
 	    } else if (!strcmp(field->name, "tarball")) {
@@ -2373,14 +2373,14 @@ check_found_common_json_fields(char const *program, char const *file, char const
      */
     for (loc = 0; !test && common_json_fields[loc].name != NULL; ++loc) {
 	if (!common_json_fields[loc].found && common_json_fields[loc].max_count > 0) {
-	    warn(__func__, "field '%s' not found in found_common_json_fields list", common_json_fields[loc].name);
+	    warn(__func__, "required field not found in found_common_json_fields list in file %s: '%s'", file, common_json_fields[loc].name);
 	    ++issues;
 	}
     }
 
     /* test consistency of test_mode and tarball field */
     if (tarball_field == NULL) {
-	warn(__func__, "didn't find tarball path in file %s", file);
+	warn(__func__, "required field not found in found_common_json_fields list in file %s: 'tarball'", file);
 	++issues;
     } else if (test_mode) {
 	/*

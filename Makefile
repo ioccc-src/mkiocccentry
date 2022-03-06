@@ -106,7 +106,7 @@ CFLAGS= ${STD_SRC} ${COPT} -pedantic -Wall -Wextra -Werror
 #CFLAGS= ${STD_SRC} ${COPT} -pedantic -Wall -Wextra -Werror
 
 # NOTE: There are some things clang -Weverything warns about that are not relevant
-# 	and this for the -Weverything case, we exclude several directives
+# 	and thus for the -Weverything case, we exclude several directives
 #
 #CFLAGS= ${STD_SRC} ${COPT} -pedantic -Wall -Wextra -Werror -Weverything \
 #     -Wno-poison-system-directories -Wno-unreachable-code-break -Wno-padded

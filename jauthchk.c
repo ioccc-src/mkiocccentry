@@ -113,7 +113,7 @@ main(int argc, char **argv)
 	para("", "Performing sanity checks on your environment ...", NULL);
     }
 
-    jauthchk_sanity_chk(file, fnamchk);
+    jauthchk_sanity_chks(file, fnamchk);
     if (!quiet) {
 	para("... environment looks OK", "", NULL);
     }
@@ -142,7 +142,7 @@ main(int argc, char **argv)
 
 
 /*
- * jauthchk_sanity_chk - perform basic sanity checks
+ * jauthchk_sanity_chks - perform basic sanity checks
  *
  * We perform basic sanity checks on paths.
  *
@@ -154,7 +154,7 @@ main(int argc, char **argv)
  * NOTE: This function does not return on error or if things are not sane.
  */
 static void
-jauthchk_sanity_chk(char const *file, char const *fnamchk)
+jauthchk_sanity_chks(char const *file, char const *fnamchk)
 {
     /*
      * firewall
@@ -262,11 +262,8 @@ jauthchk_sanity_chk(char const *file, char const *fnamchk)
 	not_reached();
     }
 
-    /* check the common_json_fields table */
-    check_common_json_fields_table();
-
-    /* check our author_json_fields table */
-    check_author_json_fields_table();
+    /* we also check that all the tables across the IOCCC toolkit are sane */
+    ioccc_sanity_chks();
 
     return;
 }
@@ -422,7 +419,7 @@ check_author_json(char const *file, char const *fnamchk)
 	    ++p;
 	} else {
 	    /* if no '"' there's a problem */
-	    warn(__func__, "found no leading '\"' for field '%s' in file %s", p, file);
+	    warn(__func__, "found no leading '\"' for field '%s' in file %s: '%c'", p, file, *p);
 	    ++issues;
 	}
 
@@ -440,7 +437,7 @@ check_author_json(char const *file, char const *fnamchk)
 	    *end = '\0';
 	} else {
 	    /* if no trailing '"' there's also a problem */
-	    warn(__func__, "found no trailing '\"': '%s' in file %s", p, file);
+	    warn(__func__, "found no trailing '\"': '%s' in file %s: '%c'", p, file, *p);
 	    ++issues;
 	}
 
@@ -548,24 +545,24 @@ check_author_json(char const *file, char const *fnamchk)
 		(author_field && (author_field->field_type == JSON_STRING || author_field->field_type == JSON_ARRAY_STRING))) {
 		if (!strcmp(val, "\"\"")) {
 		    /* make sure that it's not an empty string ("") */
-		    warn(__func__, "found empty string for field '%s'", p);
+		    warn(__func__, "found empty string for field '%s' in file %s: '%s'", p, file, val);
 		    ++issues;
 		    continue;
 		} else if (!strcmp(val, "null") && !can_be_empty) {
 		    /* if it's null and it cannot be empty it's an issue */
-		    warn(__func__, "found invalid null value for field '%s' in file %s", p, file);
+		    warn(__func__, "found invalid null value for field '%s' in file %s: '%s'", p, file, val);
 		    ++issues;
 		    continue;
 		} else if (strchr(val, '"') == NULL && !can_be_empty) {
 		    /* if there's no '"' and it cannot be empty it's an issue */
-		    warn(__func__, "string field '%s' value '%s' does not have any '\"'s in file %s", p, val, file);
+		    warn(__func__, "string field '%s' does not have any '\"'s in file %s: '%s'", p, file, val);
 		    ++issues;
 		    continue;
 		} else if (can_be_empty && strcmp(val, "null") && strchr(val, '"') == NULL) {
 		    /* if it can be empty and it's not 'null' and there's no '"'
 		     * it's an issue.
 		     */
-		    warn(__func__, "string field '%s' value that's not 'null' has no '\"'s in file %s: %s", p, file, val);
+		    warn(__func__, "string field '%s' value that's not 'null' has no '\"'s in file %s: '%s'", p, file, val);
 		    ++issues;
 		    continue;
 		}
@@ -578,14 +575,14 @@ check_author_json(char const *file, char const *fnamchk)
 		     * If no '"' and the value is not exactly "null" (null
 		     * object) it's an issue
 		     */
-		    warn(__func__, "found non-null string field '%s' without '\"' at the beginning in file %s", p, file);
+		    warn(__func__, "found non-null string field '%s' without '\"' at the beginning in file %s: '%s'", p, file, val);
 		    ++issues;
 		    continue;
 		}
 
 		/* if nothing left continue to the next iteration of loop */
 		if (!*val) {
-		    warn(__func__, "found empty string field '%s' in file %s", p, file);
+		    warn(__func__, "found empty string value for field '%s' in file %s: '%s'", p, file, val);
 		    ++issues;
 		    continue;
 		}
@@ -599,7 +596,7 @@ check_author_json(char const *file, char const *fnamchk)
 		     * if there's no trailing '"' and it's not a null object
 		     * ("null") then it's an issue
 		     */
-		    warn(__func__, "found non-null string field '%s' without '\"' at the end in file %s", p, file);
+		    warn(__func__, "found non-null string field '%s' without '\"' at the end in file %s: '%s'", p, file, val);
 		    ++issues;
 		    continue;
 		}
@@ -626,7 +623,7 @@ check_author_json(char const *file, char const *fnamchk)
 		 * '"'s.
 		 */
 		if (strchr(val, '"') != NULL) {
-		    warn(__func__, "found '\"' in non-string field '%s' value '%s' in file %s", p, val, file);
+		    warn(__func__, "found '\"' in non-string field '%s' in file %s: '%s'", p, file, val);
 		    ++issues;
 		    continue;
 		}
@@ -655,7 +652,7 @@ check_author_json(char const *file, char const *fnamchk)
 	    } else if (get_author_json_field(file, p, val_esc)) {
 	    } else {
 		/* this should actually never be reached */
-		warn(__func__, "invalid field '%s' found in file %s", p, file);
+		warn(__func__, "invalid field found in file %s: '%s'", file, p);
 		++issues;
 	    }
 
@@ -821,8 +818,8 @@ check_found_author_json_fields(char const *file, bool test)
 	dbg(DBG_VHIGH, "checking field '%s' in file %s", field->name, file);
 	/* make sure the field is not over the limit allowed */
 	if (author_field->max_count > 0 && author_field->count > author_field->max_count) {
-	    warn(__func__, "field '%s' found %ju times but is only allowed %ju time%s", author_field->name,
-		    (uintmax_t)author_field->count, (uintmax_t)author_field->max_count, author_field->max_count==1?"":"s");
+	    warn(__func__, "field found %ju times but is only allowed %ju time%s in file %s: '%s'",
+		    (uintmax_t)author_field->count, (uintmax_t)author_field->max_count, author_field->max_count==1?"":"s", file, author_field->name);
 	    ++issues;
 	}
 
@@ -831,7 +828,7 @@ check_found_author_json_fields(char const *file, bool test)
 	    val_length = strlen(val);
 
 	    if (!val_length) {
-		warn(__func__, "empty value found for field '%s' in file %s", field->name, file);
+		warn(__func__, "empty value found for field '%s' in file %s: '%s'", field->name, file, val);
 		/* don't increase issues because the below checks will do that
 		 * too: this warning only notes the reason the test will fail.
 		 */
@@ -847,7 +844,7 @@ check_found_author_json_fields(char const *file, bool test)
 	    switch (author_field->field_type) {
 		case JSON_BOOL:
 		    if (strcmp(val, "false") && strcmp(val, "true")) {
-			warn(__func__, "bool field '%s' has invalid value '%s' in file %s", author_field->name, val, file);
+			warn(__func__, "bool field '%s' has non boolean value in file %s: '%s'", author_field->name, file, val);
 			++issues;
 			continue;
 		    } else {
@@ -858,7 +855,7 @@ check_found_author_json_fields(char const *file, bool test)
 		    break; /* arrays are not handled yet */
 		case JSON_NUMBER:
 		    if (!is_number(val)) {
-			warn(__func__, "number field '%s' has non-number value '%s' in file %s", author_field->name, val, file);
+			warn(__func__, "number field '%s' has non-number value in file %s: '%s'", author_field->name, file, val);
 			++issues;
 			continue;
 		    } else {
@@ -873,12 +870,12 @@ check_found_author_json_fields(char const *file, bool test)
 
 	    if (!strcmp(field->name, "IOCCC_author_version")) {
 		if (!test && strcmp(val, AUTHOR_VERSION)) {
-		    warn(__func__, "IOCCC_author_version \"%s\" != \"%s\" in file %s", val, AUTHOR_VERSION, file);
+		    warn(__func__, "IOCCC_author_version != \"%s\" in file %s: \"%s\"", AUTHOR_VERSION, file, val);
 		    ++issues;
 		}
 	    } else {
 		/* this should never actually be reached but just in case */
-		warn(__func__, "found invalid field '%s'", field->name);
+		warn(__func__, "found invalid field in file %s: '%s'", file, field->name);
 		++issues;
 	    }
 	}
@@ -1006,7 +1003,7 @@ free_found_author_json_fields(void)
  * usage - print usage to stderr
  *
  * Example:
- *      usage(3, "missing required argument(s), program: %s", program);
+ *      usage(3, "missing required argument(s), program: '%s'", program);
  *
  * given:
  *	exitcode        value to exit with

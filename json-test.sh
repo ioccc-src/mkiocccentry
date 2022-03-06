@@ -29,7 +29,7 @@ exit codes:
     0 - all is well
     1 - at least one test failed
     2 - help mode exit
-    3 - invalid command linw
+    3 - invalid command line
     >= 4 - internal error"
 export JINFOCHK="./jinfochk"
 export JAUTHCHK="./jauthchk"
@@ -221,7 +221,7 @@ run_test()
     # parse args
     #
     if [[ $# -ne 5 ]]; then
-	echo "$0: ERROR: expected 5 args to run_test, founbd $#" 1>&2
+	echo "$0: ERROR: expected 5 args to run_test, found $#" 1>&2
 	exit 4
     fi
     typeset test_prog="$1"
@@ -242,11 +242,11 @@ run_test()
 	exit 4
     fi
     if [[ $pass_fail != pass && $pass_fail != fail ]]; then
-	echo "$0: in run_test: pass_fail neither pass nor fail: $pass_fail" 1>&2
+	echo "$0: in run_test: pass_fail neither 'pass' nor 'fail': $pass_fail" 1>&2
 	exit 4
     fi
     if [[ $strict != strict && $strict != notstrict ]]; then
-	echo "$0: in run_test: strict neither strict nor notstrict: $strict" 1>&2
+	echo "$0: in run_test: strict strict neither 'strict' nor 'notstrict': $strict" 1>&2
 	exit 4
     fi
     if [[ ! -e $test_prog ]]; then
@@ -258,7 +258,7 @@ run_test()
 	exit 4
     fi
     if [[ ! -r $test_prog ]]; then
-	echo "$0: in run_test: json_test_file not readabke: $json_test_file"
+	echo "$0: in run_test: json_test_file not readable: $json_test_file"
 	exit 4
     fi
 

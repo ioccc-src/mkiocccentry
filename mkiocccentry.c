@@ -149,7 +149,7 @@ main(int argc, char *argv[])
      */
     input_stream = stdin;	/* default to reading from standard in */
     program = argv[0];
-    while ((i = getopt(argc, argv, "hv:VTt:c:l:a:i:A:WC:F:j:J:")) != -1) {
+    while ((i = getopt(argc, argv, "hv:VTt:c:l:a:i:A:WC:F:j:J:q")) != -1) {
 	switch (i) {
 	case 'h':		/* -h - print help to stderr and exit 0 */
 	    usage(1, "-h help mode", program);
@@ -224,6 +224,9 @@ main(int argc, char *argv[])
 	    jauthchk_flag_used = true;
 	    jauthchk = optarg;
 	    break;
+	case 'q':
+	    quiet = true;
+	    break;
 	default:
 	    usage(3, "invalid -flag", program); /*ooo*/
 	    not_reached();
@@ -293,11 +296,13 @@ main(int argc, char *argv[])
     /*
      * Welcome
      */
-    errno = 0;			/* pre-clear errno for errp() */
-    ret = printf("Welcome to mkiocccentry version: %s\n", MKIOCCCENTRY_VERSION);
-    if (ret <= 0) {
-	errp(3, __func__, "printf error printing the welcome string");
-	not_reached();
+    if (!quiet) {
+	errno = 0;			/* pre-clear errno for errp() */
+	ret = printf("Welcome to mkiocccentry version: %s\n", MKIOCCCENTRY_VERSION);
+	if (ret <= 0) {
+	    errp(3, __func__, "printf error printing the welcome string");
+	    not_reached();
+	}
     }
 
     /*
@@ -317,16 +322,20 @@ main(int argc, char *argv[])
 	     "you any additional warnings, you should note that The Judges will NOT",
 	     "ignore warnings! If this was unintentional, run the program again",
 	     "without specifying -W. We cannot stress the importance of this enough!",
+	     "",
 	     NULL);
     }
 
     /*
      * environment sanity checks
      */
-    para("", "Performing sanity checks on your environment ...", NULL);
-    mkiocccentry_sanity_chk(&info, work_dir, tar, cp, ls, txzchk, fnamchk, jinfochk, jauthchk);
-    para("... environment looks OK", "", NULL);
-
+    if (!quiet) {
+	para("", "Performing sanity checks on your environment ...", NULL);
+    }
+    mkiocccentry_sanity_chks(&info, work_dir, tar, cp, ls, txzchk, fnamchk, jinfochk, jauthchk);
+    if (!quiet) {
+	para("... environment looks OK", "", NULL);
+    }
     /*
      * if -a answers was specified and answers file exists, prompt user if they
      * want to overwrite it; if they don't tell them how to use it and abort.
@@ -437,30 +446,48 @@ main(int argc, char *argv[])
     /*
      * check prog.c
      */
-    para("", "Checking prog.c ...", NULL);
+    if (!quiet) {
+	para("", "Checking prog.c ...", NULL);
+    }
     size = check_prog_c(&info, entry_dir, cp, prog_c);
-    para("... completed prog.c check.", "", NULL);
+    if (!quiet) {
+	para("... completed prog.c check.", "", NULL);
+    }
 
     /*
      * check Makefile
      */
-    para("Checking Makefile ...", NULL);
-    check_Makefile(&info, entry_dir, cp, Makefile);
-    para("... completed Makefile check.", "", NULL);
+    if (!quiet) {
+	para("Checking Makefile ...", NULL);
+    }
 
+    check_Makefile(&info, entry_dir, cp, Makefile);
+
+    if (!quiet) {
+	para("... completed Makefile check.", "", NULL);
+    }
     /*
      * check remarks.md
      */
-    para("Checking remarks.md ...", NULL);
+    if (!quiet) {
+	para("Checking remarks.md ...", NULL);
+    }
     check_remarks_md(&info, entry_dir, cp, remarks_md);
-    para("... completed remarks.md check.", "", NULL);
+    if (!quiet) {
+	para("... completed remarks.md check.", "", NULL);
+    }
 
     /*
      * check, if needed, extra data files
      */
-    para("Checking extra data files ...", NULL);
+    if (!quiet) {
+	para("Checking extra data files ...", NULL);
+    }
+
     check_extra_data_files(&info, entry_dir, cp, extra_count, extra_list);
-    para("... completed extra data files check.", "", NULL);
+    if (!quiet) {
+	para("... completed extra data files check.", "", NULL);
+    }
 
     /*
      * obtain the title
@@ -531,16 +558,23 @@ main(int argc, char *argv[])
     /*
      * write the .info.json file
      */
-    para("", "Forming the .info.json file ...", NULL);
+    if (!quiet) {
+	para("", "Forming the .info.json file ...", NULL);
+    }
     write_info(&info, entry_dir, jinfochk, fnamchk, author_count);
-    para("... completed the .info.json file.", "", NULL);
-
+    if (!quiet) {
+	para("... completed the .info.json file.", "", NULL);
+    }
     /*
      * write the .author.json file
      */
-    para("", "Forming the .author.json file ...", NULL);
+    if (!quiet) {
+	para("", "Forming the .author.json file ...", NULL);
+    }
     write_author(&info, author_count, author_set, entry_dir, jauthchk);
-    para("... completed .author.json file.", "", NULL);
+    if (!quiet) {
+	para("... completed .author.json file.", "", NULL);
+    }
 
     /*
      * finalize the answers file: either write the final answers (if writing
@@ -754,7 +788,7 @@ usage(int exitcode, char const *str, char const *program)
 
 
 /*
- * mkiocccentry_sanity_chk - perform basic sanity checks
+ * mkiocccentry_sanity_chks - perform basic sanity checks
  *
  * We perform basic sanity checks on paths and the IOCCC contest ID as well as
  * the IOCCC toolkit tables.
@@ -774,7 +808,7 @@ usage(int exitcode, char const *str, char const *program)
  * NOTE: This function does not return on error or if things are not sane.
  */
 static void
-mkiocccentry_sanity_chk(struct info *infop, char const *work_dir, char const *tar, char const *cp, char const *ls,
+mkiocccentry_sanity_chks(struct info *infop, char const *work_dir, char const *tar, char const *cp, char const *ls,
 	   char const *txzchk, char const *fnamchk, char const *jinfochk, char const *jauthchk)
 {
     /*
@@ -1228,7 +1262,7 @@ mkiocccentry_sanity_chk(struct info *infop, char const *work_dir, char const *ta
     infop->common.iocccsize_ver = IOCCCSIZE_VERSION;
 
     /* we also check that all the tables across the IOCCC toolkit are sane */
-    ioccc_sanity_chk();
+    ioccc_sanity_chks();
 
     return;
 }
@@ -3523,7 +3557,6 @@ get_author_info(struct info *infop, char *ioccc_id, struct author **author_set_p
     char guard;			/* scanf guard to catch excess amount of input */
     char *p;
     int i = 0;
-    int j = 0;
 
     /*
      * firewall
@@ -4274,7 +4307,6 @@ get_author_info(struct info *infop, char *ioccc_id, struct author **author_set_p
 	 * ask for IOCCC winner handle
 	 */
 	do {
-	    j = 0; /* set j to 0 for when there's more than one author */
 
 	    /*
 	     * request IOCCC author handle
@@ -5108,7 +5140,9 @@ write_info(struct info *infop, char const *entry_dir, char const *jinfochk, char
 	not_reached();
     }
 
-    para("... all appears well with the .info.json file.", NULL);
+    if (!quiet) {
+	para("... all appears well with the .info.json file.", NULL);
+    }
 
     /*
      * free storage
@@ -5268,7 +5302,9 @@ write_author(struct info *infop, int author_count, struct author *authorp, char 
 			   jauthchk, author_path, WEXITSTATUS(exit_code));
 	not_reached();
     }
-    para("... all appears well with the .author.json file.", NULL);
+    if (!quiet) {
+	para("... all appears well with the .author.json file.", NULL);
+    }
 
 
     /*
@@ -5354,10 +5390,15 @@ form_tarball(char const *work_dir, char const *entry_dir, char const *tarball_pa
      *		       (modern flags to force a username/groupname are not very portable),
      *		       and we don't want special files, symlinks, etc.
      */
-    para("",
-	 "About to run the tar command to form the compressed tarball ...",
-	 "",
-	 NULL);
+    if (!quiet) {
+	para("",
+	     "About to run the tar command to form the compressed tarball ...",
+	     "",
+	     NULL);
+    } else {
+	para("", NULL);
+    }
+
     basename_entry_dir = base_name(entry_dir);
     basename_tarball_path = base_name(tarball_path);
     dbg(DBG_HIGH, "about to perform: %s --format=v7 -cJf %s -- %s",

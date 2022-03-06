@@ -1,13 +1,13 @@
 /*
  * sanity: the IOCCC source code sanity checker
  *
- * Each IOCCC tool in the mkiocccentry repo should run the sanity_chk()
+ * Each IOCCC tool in the mkiocccentry repo should run the sanity_chks()
  * function to verify that certain things are in a sane state. This should be
- * done via each tool's sanity checker function e.g. txzchk_sanity_chk() for
- * txzchk, mkiocccentry_sanity_chk() for mkiocccentry etc.
+ * done via each tool's sanity checker function e.g. txzchk_sanity_chks() for
+ * txzchk, mkiocccentry_sanity_chks() for mkiocccentry etc.
  *
  * "Because sometimes we're all a little insane, some of us are a lot insane and
- * code is often very insane." :-)
+ * code is very often very insane." :-)
  *
  */
 
@@ -32,7 +32,7 @@
 #include "location.h"
 
 /*
- * UTF-8 -> POSIX map
+ * UTF-8 POSIX map
  */
 #include "utf8_posix_map.h"
 
@@ -44,11 +44,8 @@
 /*
  * function prototypes
  */
-extern void ioccc_sanity_chk(); /* all *_sanity_chk() functions should call this */
+extern void ioccc_sanity_chks(void); /* all *_sanity_chks() functions should call this */
 
-extern void check_utf8_posix_map(void);
-extern void check_location_table(void);
-extern void check_common_json_fields_table(void);
 
 
 #endif /* INCLUDE_SANITY_H */
