@@ -139,7 +139,7 @@ main(int argc, char **argv)
     if (!quiet) {
 	para("", "Performing sanity checks on your environment ...", NULL);
     }
-    txzchk_sanity_chk(tar, fnamchk);
+    txzchk_sanity_chks(tar, fnamchk);
     if (!quiet) {
 	para("... environment looks OK", NULL);
     }
@@ -253,7 +253,7 @@ usage(int exitcode, char const *str, char const *prog)
 
 
 /*
- * txzchk_sanity_chk - perform basic sanity checks
+ * txzchk_sanity_chks - perform basic sanity checks
  *
  * We perform basic sanity checks on paths and the IOCCC contest ID as well as
  * the IOCCC toolkit tables. Note that these tables are not used in txzchk but
@@ -267,7 +267,7 @@ usage(int exitcode, char const *str, char const *prog)
  * NOTE: This function does not return on error or if things are not sane.
  */
 static void
-txzchk_sanity_chk(char const *tar, char const *fnamchk)
+txzchk_sanity_chks(char const *tar, char const *fnamchk)
 {
     /*
      * firewall
@@ -420,7 +420,7 @@ txzchk_sanity_chk(char const *tar, char const *fnamchk)
     }
 
     /* we also check that all the tables across the IOCCC toolkit are sane */
-    ioccc_sanity_chk();
+    ioccc_sanity_chks();
 
     return;
 }
@@ -1204,7 +1204,7 @@ check_tarball(char const *tar, char const *fnamchk)
     txz_info.size = file_size(txzpath);
     /* report size if too big or !quiet */
     if (txz_info.size < 0) {
-	err(24, __func__, "%s: impossible error: txzchk_sanity_chk() found tarball but file_size() did not", txzpath);
+	err(24, __func__, "%s: impossible error: txzchk_sanity_chks() found tarball but file_size() did not", txzpath);
 	not_reached();
     }
     else if (txz_info.size > MAX_TARBALL_LEN) {

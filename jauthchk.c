@@ -113,7 +113,7 @@ main(int argc, char **argv)
 	para("", "Performing sanity checks on your environment ...", NULL);
     }
 
-    jauthchk_sanity_chk(file, fnamchk);
+    jauthchk_sanity_chks(file, fnamchk);
     if (!quiet) {
 	para("... environment looks OK", "", NULL);
     }
@@ -142,7 +142,7 @@ main(int argc, char **argv)
 
 
 /*
- * jauthchk_sanity_chk - perform basic sanity checks
+ * jauthchk_sanity_chks - perform basic sanity checks
  *
  * We perform basic sanity checks on paths.
  *
@@ -154,7 +154,7 @@ main(int argc, char **argv)
  * NOTE: This function does not return on error or if things are not sane.
  */
 static void
-jauthchk_sanity_chk(char const *file, char const *fnamchk)
+jauthchk_sanity_chks(char const *file, char const *fnamchk)
 {
     /*
      * firewall
@@ -262,11 +262,8 @@ jauthchk_sanity_chk(char const *file, char const *fnamchk)
 	not_reached();
     }
 
-    /* check the common_json_fields table */
-    check_common_json_fields_table();
-
-    /* check our author_json_fields table */
-    check_author_json_fields_table();
+    /* we also check that all the tables across the IOCCC toolkit are sane */
+    ioccc_sanity_chks();
 
     return;
 }

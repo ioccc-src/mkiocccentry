@@ -39,7 +39,7 @@
 #include "json.h"
 
 /*
- * sanity
+ * sanity - sanity checks on the IOCCC toolkit
  */
 #include "sanity.h"
 
@@ -101,7 +101,7 @@ extern size_t SIZEOF_INFO_JSON_FIELDS_TABLE;
  * forward declarations
  */
 static void usage(int exitcode, char const *name, char const *str) __attribute__((noreturn));
-static void jinfochk_sanity_chk(char const *file, char const *fnamchk);
+static void jinfochk_sanity_chks(char const *file, char const *fnamchk);
 static int check_info_json(char const *file, char const *fnamchk);
 static struct json_field *add_found_info_json_field(char const *name, char const *val);
 static int get_info_json_field(char const *file, char *name, char *val);

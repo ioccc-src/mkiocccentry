@@ -332,7 +332,7 @@ main(int argc, char *argv[])
     if (!quiet) {
 	para("", "Performing sanity checks on your environment ...", NULL);
     }
-    mkiocccentry_sanity_chk(&info, work_dir, tar, cp, ls, txzchk, fnamchk, jinfochk, jauthchk);
+    mkiocccentry_sanity_chks(&info, work_dir, tar, cp, ls, txzchk, fnamchk, jinfochk, jauthchk);
     if (!quiet) {
 	para("... environment looks OK", "", NULL);
     }
@@ -788,7 +788,7 @@ usage(int exitcode, char const *str, char const *program)
 
 
 /*
- * mkiocccentry_sanity_chk - perform basic sanity checks
+ * mkiocccentry_sanity_chks - perform basic sanity checks
  *
  * We perform basic sanity checks on paths and the IOCCC contest ID as well as
  * the IOCCC toolkit tables.
@@ -808,7 +808,7 @@ usage(int exitcode, char const *str, char const *program)
  * NOTE: This function does not return on error or if things are not sane.
  */
 static void
-mkiocccentry_sanity_chk(struct info *infop, char const *work_dir, char const *tar, char const *cp, char const *ls,
+mkiocccentry_sanity_chks(struct info *infop, char const *work_dir, char const *tar, char const *cp, char const *ls,
 	   char const *txzchk, char const *fnamchk, char const *jinfochk, char const *jauthchk)
 {
     /*
@@ -1262,7 +1262,7 @@ mkiocccentry_sanity_chk(struct info *infop, char const *work_dir, char const *ta
     infop->common.iocccsize_ver = IOCCCSIZE_VERSION;
 
     /* we also check that all the tables across the IOCCC toolkit are sane */
-    ioccc_sanity_chk();
+    ioccc_sanity_chks();
 
     return;
 }

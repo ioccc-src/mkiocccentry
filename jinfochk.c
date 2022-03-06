@@ -112,7 +112,7 @@ main(int argc, char **argv)
 	       false, NULL, false, NULL);
 
 
-    jinfochk_sanity_chk(file, fnamchk);
+    jinfochk_sanity_chks(file, fnamchk);
     if (!quiet) {
 	para("... environment looks OK", "", NULL);
     }
@@ -137,7 +137,7 @@ main(int argc, char **argv)
 }
 
 /*
- * jinfochk_sanity_chk - perform basic sanity checks
+ * jinfochk_sanity_chks - perform basic sanity checks
  *
  * We perform basic sanity checks on paths and tables.
  *
@@ -149,7 +149,7 @@ main(int argc, char **argv)
  * NOTE: This function does not return on error or if things are not sane.
  */
 static void
-jinfochk_sanity_chk(char const *file, char const *fnamchk)
+jinfochk_sanity_chks(char const *file, char const *fnamchk)
 {
     /*
      * firewall
@@ -257,8 +257,8 @@ jinfochk_sanity_chk(char const *file, char const *fnamchk)
 	not_reached();
     }
 
-
-    ioccc_sanity_chk();
+    /* we also check that all the tables across the IOCCC toolkit are sane */
+    ioccc_sanity_chks();
 
     return;
 }

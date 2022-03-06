@@ -58,4 +58,9 @@ struct location {
 extern struct location loc[];		/* location/country codes */
 extern size_t SIZEOF_LOCATION_TABLE;
 
+/*
+ * function prototypes
+ */
+extern void check_location_table(void);
+
 #endif				/* INCLUDE_LOCATION_H */
