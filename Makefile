@@ -88,9 +88,12 @@ TRUE= true
 # C source standards being used
 #
 # NOTE: The use of -std=gnu11 is because there are a few older systems
-#	that do not have compilers that (yet) support gnu17.  And while
-#	there may be even more out of date systems that do not support
-#	gnu11, we have to draw the line somewhere.
+#	in larte 2021 that do not have compilers that (yet) support gnu17.
+#	While there may be even more out of date systems that do not
+#	support gnu11, we have to draw the line somewhere.
+#
+# NOTE: The -D_* lines in STD_SRC are due to a few older systems in
+#	late 2021 that need those defines to compile this code.
 #
 # NOTE: The code in the mkiocccentry repo is to help you form and
 #	submit a compressed tarball that needs the IOCCC requirements.
@@ -99,8 +102,10 @@ TRUE= true
 #	Makefile, can do what it needs to do, perhaps by using the
 #	Makefile.example as a basis.
 #
-# XXX - In 2024 we will change the STD_SRC line to - XXX
-# XXX STD_SRC= -std=gnu17 - XXX
+# XXX - XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX - XXX
+# XXX - In 2024 we will change the STD_SRC line to be just - XXX
+# XXX - STD_SRC= -std=gnu17				   - XXX
+# XXX - XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX - XXX
 #
 STD_SRC= -D_DEFAULT_SOURCE -D_POSIX_C_SOURCE=200809L -D_XOPEN_SOURCE -std=gnu11
 
