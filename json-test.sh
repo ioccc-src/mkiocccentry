@@ -311,14 +311,14 @@ run_test()
     #
     if [[ $pass_fail == pass ]]; then
 	if [[ $status -ne 0 ]]; then
-	    echo "$0: Warning: in run_test: $test_prog -v $debug_level $json_test_file exit code: $status != 0" 1>&2
+	    echo "$0: Warning: in run_test: FAIL: $test_prog -v $debug_level $json_test_file exit code: $status != 0" 1>&2
 	    EXIT_CODE=1
 	elif [[ $V_FLAG -ge 5 ]]; then
 	    echo "$0: debug[5]: in run_test: PASS: $test_prog -v $debug_level $json_test_file" 1>&2
 	fi
     elif [[ $pass_fail == fail ]]; then
 	if [[ $status -eq 0 ]]; then
-	    echo "$0: Warning: in run_test: $test_prog -v $debug_level $json_test_file exit code: $status == 0" 1>&2
+	    echo "$0: Warning: in run_test: FAIL: $test_prog -v $debug_level $json_test_file exit code: $status == 0" 1>&2
 	    EXIT_CODE=1
 	elif [[ $V_FLAG -ge 5 ]]; then
 	    echo "$0: debug[5]: in run_test: PASS: $test_prog -v $debug_level $json_test_file" 1>&2
