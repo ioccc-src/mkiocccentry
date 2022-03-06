@@ -3557,7 +3557,6 @@ get_author_info(struct info *infop, char *ioccc_id, struct author **author_set_p
     char guard;			/* scanf guard to catch excess amount of input */
     char *p;
     int i = 0;
-    int j = 0;
 
     /*
      * firewall
@@ -4308,7 +4307,6 @@ get_author_info(struct info *infop, char *ioccc_id, struct author **author_set_p
 	 * ask for IOCCC winner handle
 	 */
 	do {
-	    j = 0; /* set j to 0 for when there's more than one author */
 
 	    /*
 	     * request IOCCC author handle
