@@ -481,7 +481,7 @@ check_txz_file(char const *txzpath, char *p, char const *dir_name, struct txz_fi
     }
 
     /*
-     * filename must use only POSIX portable filename plus chars plus /
+     * filename must use only POSIX portable filename and + chars plus /
      */
     /* XXX - should the lower_only (2nd) arg to posix_plus_safe() be true or false? */
     if (posix_plus_safe(file->filename, false, true, false) == false) {
@@ -496,7 +496,7 @@ check_txz_file(char const *txzpath, char *p, char const *dir_name, struct txz_fi
      */
     if (allowed_dot_file == true) {
 	/*
-	 * after the . the basename must use only POSIX portable filename plus chars
+	 * after the . the basename must use only POSIX portable filename and + chars
 	 */
 	/* XXX - should the lower_only (2nd) arg to posix_plus_safe() be true or false? */
 	if (posix_plus_safe(file->basename+1, false, false, true) == false) {
@@ -511,7 +511,7 @@ check_txz_file(char const *txzpath, char *p, char const *dir_name, struct txz_fi
      */
     } else {
 	/*
-	 * basename must use only POSIX portable filename plus chars
+	 * basename must use only POSIX portable filename and + chars
 	 */
 	/* XXX - should the lower_only (2nd) arg to posix_plus_safe() be true or false? */
 	if (posix_plus_safe(file->basename, false, false, true) == false) {

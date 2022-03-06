@@ -270,7 +270,7 @@ main(int argc, char *argv[])
     dbg(DBG_LOW, "filename extension is valid: %s", extension);
 
     /*
-     * filepath must use only POSIX portable filename plus chars plus /
+     * filepath must use only POSIX portable filename and + chars /
      */
     if (posix_plus_safe(filepath, false, true, false) == false) {
 	err(22, __func__, "filepoath: posix_plus_safe(%s, false, true, false) is false", filepath);
@@ -278,7 +278,7 @@ main(int argc, char *argv[])
     }
 
     /*
-     * filename must use only lower case POSIX portable filename plus chars
+     * filename must use only lower case POSIX portable filename and + chars
      */
     if (posix_plus_safe(filename, true, false, true) == false) {
 	err(23, __func__, "basename: posix_plus_safe(%s, true, false, true) is false", filename);
