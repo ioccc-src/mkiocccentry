@@ -110,9 +110,8 @@
 /*
  * definitions
  *
- * XXX: the MKIOCCCENTRY_ANSWERS_VERSION and MKIOCCCENTRY_ANSWERS_EOF have to be
- * defined in mkiocccentry.c
- *
+ * NOTE: MKIOCCCENTRY_ANSWERS_VERSION and MKIOCCCENTRY_ANSWERS_EOF must be defined
+ *	 in mkiocccentry.c and not here.
  */
 #define REQUIRED_ARGS (4)	/* number of required arguments on the command line */
 #define ISO_3166_1_CODE_URL0 "https://en.wikipedia.org/wiki/ISO_3166-1#Officially_assigned_code_elements"
@@ -122,7 +121,7 @@
 #define ISO_3166_1_CODE_URL4 "https://www.iso.org/glossary-for-iso-3166.html"
 #define IOCCC_REGISTER_URL "https://register.ioccc.org/NOT/a/real/URL"	/* XXX - change to real URL when ready */
 #define IOCCC_SUBMIT_URL "https://submit.ioccc.org/NOT/a/real/URL"	/* XXX - change to real URL when ready */
-/* XXX: The next two are for the warn_rule_2a_size() function. Do **NOT** change these values! */
+/* NOTE: The next two are for the warn_rule_2a_size() function. Do **NOT** change these values! */
 #define RULE_2A_BIG_FILE_WARNING (0)	/* warn that prog.c appears to be too big under Rule 2a */
 #define RULE_2A_IOCCCSIZE_MISMATCH (1)	/* warn that prog.c iocccsize size differs from the file size */
 

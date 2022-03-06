@@ -868,8 +868,6 @@ jencchk(void)
 	mstr = NULL;
     }
 
-    /* XXX = test decoding \u0000 */
-
     /*
      * finally try to encode every possible string with a single non-NUL character
      */
@@ -1619,7 +1617,7 @@ size_t SIZEOF_INFO_JSON_FIELDS_TABLE = sizeof(info_json_fields)/sizeof(info_json
  * whether it's been added to the found_author_json_fields list, how many times
  * it's been seen and how many are allowed.
  *
- * XXX: As of 4 March 2022 all fields are in the table but because arrays
+ * XXX - As of 4 March 2022 all fields are in the table but because arrays
  * are not yet parsed not all of these values will be dealt with: that is they
  * won't be checked.
  */

@@ -126,8 +126,7 @@ main(int argc, char **argv)
     }
 
     /*
-     * XXX - TODO Once the authors array is parsed we have to call
-     * free_author_array()
+     * XXX - TODO Once the authors array is parsed we have to call free_author_array()
      */
 
     if (issues != 0 && !test) {

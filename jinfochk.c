@@ -1493,7 +1493,7 @@ check_found_info_json_fields(char const *file, bool test)
      * are those that will potentially have more than allowed whereas here we're
      * making sure every field that is required is actually in the list.
      *
-     * XXX We don't check for this in test mode because most if not all of the
+     * XXX - We don't check for this in test mode because most if not all of the
      * files in test_JSON were created before some of the fields were common and
      * since the judges (and the tools) will never use test mode to verify an
      * entry this is not a problem. As I add tests I will not be using test mode
@@ -1509,7 +1509,7 @@ check_found_info_json_fields(char const *file, bool test)
     /*
      * Check for duplicate files in the manifest.
      *
-     * XXX This should probably be in its own function.
+     * XXX - This should probably be in its own function.
      */
     for (manifest_file = manifest_files; manifest_file; manifest_file = manifest_file->next) {
 	if (manifest_file->count > 1) {
