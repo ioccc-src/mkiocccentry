@@ -2,27 +2,60 @@
 #
 # prog - an example Makefile
 #
+# IMPORTANT: You need to change this Makefile, including
+#	     removing this comment!
+#
 # We suggest you rename this file to Makefile before using.
-# Modify as needed before submitting with your entry, including
-# changing comments such as these.
+#
+# Modify this Makefile as needed before submitting with your entry.
 
 # utilities
 #
+SHELL= bash
 CC= cc
 RM= rm
 
+# The standard to compile against
+#
+CSTD= -std=gnu17
+
+# How to optimzie and set debug levels
+#
+COPT= -O3 -g3
+
+# How to handle compiler warnings
+#
+CWARN= -Wall -Wextra -pedantic
+
+# Add various -Wno-foo flags to CSLIENCE to silence,
+# if needed, common compiler warnings.
+#
+CSLIENCE=
+
+# Add and -Dfoo line defines here
+#
+CDEFINE=
+
+# other compiler options
+#
+COTHER=
+
 # compile and link options
 #
-CFLAGS= -O3 -g3 -Wall -Wextra -pedantic
+CFLAGS= ${CSTD} ${COPT} ${CWARN} ${CSLIENCE} ${CDEFINE} ${COTHER}
 LFLAGS=
+
+# list any data files supplied with the entry
+#
+DATA=
 
 # default rule - compile the program
 #
 # The all rule should be the 1st rule.
 #
-all: prog
+all: prog ${DATA}
 
-# rules, not file targets
+# list of rules that are not file targets
 #
 .PHONY: all clean clobber install try
 
@@ -47,7 +80,10 @@ clobber: clean
 install: all
 	@echo you have got to be kidding
 
-# suggested way to try running the program
+# one suggested way to run the program
 #
-try: prog
-	./prog some argument
+try: prog ${DATA}
+	@# remove these comments
+	@# notice how we do not assume . is in the path
+	@# change this next line as needed
+	./prog some arguments ${DATA}
