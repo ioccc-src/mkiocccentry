@@ -1308,7 +1308,7 @@ check_found_info_json_fields(char const *file, bool test)
 
 	    if (!strcmp(field->name, "IOCCC_info_version")) {
 		if (!test && strcmp(val, INFO_VERSION)) {
-		    warn(__func__, "IOCCC_info_version \"%s\" != \"%s\" in file %s", val, INFO_VERSION, file);
+		    warn(__func__, "IOCCC_info_version \"%s\" != INFO_VERSION \"%s\" in file %s", val, INFO_VERSION, file);
 		    ++issues;
 		}
 	    } else if (!strcmp(field->name, "title")) {
