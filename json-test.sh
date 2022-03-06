@@ -29,7 +29,7 @@ exit codes:
     0 - all is well
     1 - at least one test failed
     2 - help mode exit
-    3 - invalid command linw
+    3 - invalid command line
     >= 4 - internal error"
 export JINFOCHK="./jinfochk"
 export JAUTHCHK="./jauthchk"
