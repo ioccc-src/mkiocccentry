@@ -339,7 +339,7 @@ if [[ -n $RUN_JINFOCHK ]]; then
     if [[ $V_FLAG -ge 3 ]]; then
 	echo "$0: debug[3]: about to run jinfochk notstrict tests that must pass" 1>&2
     fi
-    find $JSON_INFO_TREE/good -type f -print | while read file; do
+    find "$JSON_INFO_TREE/good" -type f -print | while read -r file; do
         run_test "$JINFOCHK" "$DBG_LEVEL" pass notstrict "$file"
     done
 
@@ -348,7 +348,7 @@ if [[ -n $RUN_JINFOCHK ]]; then
     if [[ $V_FLAG -ge 3 ]]; then
 	echo "$0: debug[3]: about to run jinfochk notstrict tests that must fail" 1>&2
     fi
-    find $JSON_INFO_TREE/bad -type f -print | while read file; do
+    find "$JSON_INFO_TREE/bad" -type f -print | while read -r file; do
         run_test "$JINFOCHK" "$DBG_LEVEL" fail notstrict "$file"
     done
 
@@ -357,7 +357,7 @@ if [[ -n $RUN_JINFOCHK ]]; then
     if [[ $V_FLAG -ge 3 ]]; then
 	echo "$0: debug[3]: about to run jinfochk strict tests that must pass" 1>&2
     fi
-    find $JSON_INFO_TREE/strict-good -type f -print | while read file; do
+    find "$JSON_INFO_TREE/strict-good" -type f -print | while read -r file; do
         run_test "$JINFOCHK" "$DBG_LEVEL" pass strict "$file"
     done
 
@@ -366,7 +366,7 @@ if [[ -n $RUN_JINFOCHK ]]; then
     if [[ $V_FLAG -ge 3 ]]; then
 	"$0: debug[3]: about to run strict jinfochk tests that must fail" 1>&2
     fi
-    find $JSON_INFO_TREE/strict-bad -type f -print | while read file; do
+    find "$JSON_INFO_TREE/strict-bad" -type f -print | while read -r file; do
         run_test "$JINFOCHK" "$DBG_LEVEL" fail strict "$file"
     done
 fi
@@ -380,7 +380,7 @@ if [[ -n $RUN_JAUTHCHK ]]; then
     if [[ $V_FLAG -ge 3 ]]; then
 	echo "$0: debug[3]: about to run jauthchk notstrict tests that must pass" 1>&2
     fi
-    find $JSON_AUTH_TREE/good -type f -print | while read file; do
+    find "$JSON_AUTH_TREE/good" -type f -print | while read -r file; do
         run_test "$JAUTHCHK" "$DBG_LEVEL" pass notstrict "$file"
     done
 
@@ -389,7 +389,7 @@ if [[ -n $RUN_JAUTHCHK ]]; then
     if [[ $V_FLAG -ge 3 ]]; then
 	echo "$0: debug[3]: about to run jauthchk notstrict tests that must fail" 1>&2
     fi
-    find $JSON_AUTH_TREE/bad -type f -print | while read file; do
+    find "$JSON_AUTH_TREE/bad" -type f -print | while read -r file; do
         run_test "$JAUTHCHK" "$DBG_LEVEL" fail notstrict "$file"
     done
 
@@ -398,7 +398,7 @@ if [[ -n $RUN_JAUTHCHK ]]; then
     if [[ $V_FLAG -ge 3 ]]; then
 	echo "$0: debug[3]: about to run jauthchk strict tests that must pass" 1>&2
     fi
-    find $JSON_AUTH_TREE/strict-good -type f -print | while read file; do
+    find "$JSON_AUTH_TREE/strict-good" -type f -print | while read -r file; do
         run_test "$JAUTHCHK" "$DBG_LEVEL" pass strict "$file"
     done
 
@@ -407,7 +407,7 @@ if [[ -n $RUN_JAUTHCHK ]]; then
     if [[ $V_FLAG -ge 3 ]]; then
 	"$0: debug[3]: about to run strict jauthchk tests that must fail" 1>&2
     fi
-    find $JSON_AUTH_TREE/strict-bad -type f -print | while read file; do
+    find "$JSON_AUTH_TREE/strict-bad" -type f -print | while read -r file; do
         run_test "$JAUTHCHK" "$DBG_LEVEL" fail strict "$file"
     done
 fi
