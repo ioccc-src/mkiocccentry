@@ -100,7 +100,7 @@ answers >>answers.txt
 
 # run the test, looking for an exit
 #
-yes | ./mkiocccentry -i answers.txt -- "${work_dir}" "${src_dir}"/{prog.c,Makefile,remarks.md,extra1,extra2}
+yes | ./mkiocccentry -q -i answers.txt -- "${work_dir}" "${src_dir}"/{prog.c,Makefile,remarks.md,extra1,extra2}
 status=$?
 if [[ ${status} -ne 0 ]]; then
     echo "$0: FATAL: mkiocccentry non-zero exit code: $status" 1>&2
@@ -110,7 +110,7 @@ fi
 # delete the work directory for next test
 find "${work_dir_esc}" -mindepth 1 -depth -delete
 # test empty prog.c, ignoring the warning about it
-yes | ./mkiocccentry -W -i answers.txt -- "${work_dir}" "${src_dir}"/{empty.c,Makefile,remarks.md,extra1,extra2}
+yes | ./mkiocccentry -q -W -i answers.txt -- "${work_dir}" "${src_dir}"/{empty.c,Makefile,remarks.md,extra1,extra2}
 status=$?
 if [[ ${status} -ne 0 ]]; then
     echo "$0: FATAL: mkiocccentry non-zero exit code: $status" 1>&2
