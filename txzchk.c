@@ -19,6 +19,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <string.h>
+#include <strings.h>	/* for strcasecmp() */
 #include <ctype.h>
 #include <stdint.h>
 
@@ -1461,7 +1462,7 @@ parse_all_txz_lines(char const *dir_name, char const *txzpath)
 	not_reached();
     }
 
-    for (line = txz_lines; line; line = line->next) {
+    for (line = txz_lines; line != NULL; line = line->next) {
 	if (line->line == NULL) {
 	    warn("txzchk", "encountered NULL string on line %d", line->line_num);
 	    continue;
@@ -1574,14 +1575,14 @@ alloc_txz_file(char const *p)
  * This function does not return on error.
  */
 static void
-add_txz_file_to_list(struct txz_file *file)
+add_txz_file_to_list(struct txz_file *txzfile)
 {
-    struct txz_file *ptr; /* used to iterate through list to find duplicate files */
+    struct txz_file *file; /* used to iterate through list to find duplicate files */
 
     /*
      * firewall
      */
-    if (file == NULL || !file->filename || !file->basename) {
+    if (txzfile == NULL || !txzfile->filename || !txzfile->basename) {
 	err(39, __func__, "called with NULL pointer(s)");
 	not_reached();
     }
@@ -1589,19 +1590,19 @@ add_txz_file_to_list(struct txz_file *file)
     /* always increment total files count */
     ++txz_info.total_files;
 
-    for (ptr = txz_files; ptr != NULL; ptr = ptr->next)
+    for (file = txz_files; file != NULL; file = file->next)
     {
-	if (!strcmp(ptr->basename, file->basename)) {
-	    dbg(DBG_MED, "incrementing count of filename %s", file->basename);
-	    ptr->count++;
+	if (!strcasecmp(file->basename, txzfile->basename)) {
+	    dbg(DBG_MED, "incrementing count of filename %s", txzfile->basename);
+	    file->count++;
 	    return;
 	}
     }
-    file->count++;
+    txzfile->count++;
     /* lazily add to list */
-    dbg(DBG_MED, "adding filename %s (basename %s) to list of files", file->filename, file->basename);
-    file->next = txz_files;
-    txz_files = file;
+    dbg(DBG_MED, "adding filename %s (basename %s) to list of files", txzfile->filename, txzfile->basename);
+    txzfile->next = txz_files;
+    txz_files = txzfile;
 }
 
 

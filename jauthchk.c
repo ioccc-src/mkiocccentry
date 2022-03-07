@@ -932,7 +932,7 @@ add_found_author_json_field(char const *name, char const *val)
     author_json_fields[loc].found = true;
 
 
-    for (field = found_author_json_fields; field; field = field->next) {
+    for (field = found_author_json_fields; field != NULL; field = field->next) {
 	if (field->name && !strcmp(field->name, name)) {
 	    /*
 	     * we found a field already in the list, add the value (even if this

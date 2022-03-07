@@ -2391,7 +2391,7 @@ check_found_common_json_fields(char const *program, char const *file, char const
 	 * Note: Although having the tarball path more than once is considered
 	 * an issue we still check each value to be complete.
 	 */
-	for (value = tarball_field->values; value; value = value->next) {
+	for (value = tarball_field->values; value != NULL; value = value->next) {
 	    char const *val = value->value;
 
 	    exit_code = shell_cmd(__func__, true, "% -t % >/dev/null", fnamchk, val);
@@ -2408,7 +2408,7 @@ check_found_common_json_fields(char const *program, char const *file, char const
 	 * Note: Although having the tarball path more than once is considered
 	 * an issue we still check each value to be complete.
 	 */
-	for (value = tarball_field->values; value; value = value->next) {
+	for (value = tarball_field->values; value != NULL; value = value->next) {
 	    char const *val = value->value;
 
 	    exit_code = shell_cmd(__func__, true, "% -u % >/dev/null", fnamchk, val);
