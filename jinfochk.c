@@ -759,8 +759,8 @@ check_info_json(char const *file, char const *fnamchk)
 
 	    can_be_empty = (common_field && common_field->can_be_empty) || (info_field && info_field->can_be_empty);
 	    /*
-	     * If the field type is a string we have to remove a single '"' and
-	     * from the beginning and end of the value.
+	     * If the field type is a string we have to remove a single '"' from
+	     * the beginning and end of the value.
 	     */
 	    if ((common_field && (common_field->field_type == JSON_STRING || common_field->field_type == JSON_ARRAY_STRING)) ||
 		(info_field && (info_field->field_type == JSON_STRING || info_field->field_type == JSON_ARRAY_STRING))) {
