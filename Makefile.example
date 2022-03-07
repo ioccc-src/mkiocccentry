@@ -17,6 +17,12 @@ RM= rm
 
 # The standard to compile against
 #
+# Your IOCCC entry is free to require older C standards, or
+# even not specify a C standard at all.  We suggest trying
+# for -std=gnu17, but that is not a requirement and you won't
+# be penalized if you name CSTD empty or use another
+# well known and reasonably widely implemented C standard.
+#
 CSTD= -std=gnu17
 
 # How to optimize and set debug levels
