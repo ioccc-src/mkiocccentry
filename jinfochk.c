@@ -1,8 +1,16 @@
 /* vim: set tabstop=8 softtabstop=4 shiftwidth=4 noexpandtab : */
 /*
- * jinfochk - IOCCC JSON .info.json checker and validator
+ * jinfochk - IOCCC JSON .info.json checker and validator. Invoked by
+ * mkiocccentry after the .info.json file has been created but prior to forming
+ * the tarball.
  *
  * "Because sometimes even the IOCCC Judges need some help." :-)
+ *
+ * Written in 2022 by:
+ *
+ *	@xexyl
+ *	https://xexyl.net		Cody Boone Ferguson
+ *	https://ioccc.xexyl.net
  */
 
 
@@ -134,7 +142,7 @@ main(int argc, char **argv)
     /*
      * All Done!!! - Jessica Noll, age 2
      */
-    exit(issues != 0 && !test); /*ooo*/
+    exit(issues != 0); /*ooo*/
 }
 
 /*
@@ -385,9 +393,7 @@ check_info_json(char const *file, char const *fnamchk)
     ++p;
 
     /*
-     * Begin to parse the file, field by field. Note that as of 1 March 2022
-     * this is not complete and some files that are validly formed will
-     * trip the parser up. These will be fixed in a future commit.
+     * Begin to parse the file, field by field.
      */
     do {
 	/* we have to skip leading whitespace */
@@ -397,16 +403,16 @@ check_info_json(char const *file, char const *fnamchk)
 	/* get the next field */
 	p = strtok_r(val?NULL:p, ":,", &saveptr);
 	/* if NULL pointer or empty string, break out of loop */
-	if (p == NULL || !*p) {
+	if (p == NULL || *p == '\0') {
 	    break;
 	}
 
 	/* skip leading whitespace on the field */
-	while (*p && isspace(*p))
+	while (*p != '\0' && isspace(*p))
 	    ++p;
 
 	/* if nothing else to parse break out of the loop */
-	if (!*p)
+	if (*p == '\0')
 	    break;
 
 	/* remove a single '"' if one exists at the beginning (*p == '"') */
@@ -466,8 +472,6 @@ check_info_json(char const *file, char const *fnamchk)
 	    not_reached();
 	}
 
-
-
 	/* manifest array is handled specially */
 	if (!strcmp(p, "manifest")) {
 	    if (!info_field) {
@@ -485,7 +489,7 @@ check_info_json(char const *file, char const *fnamchk)
 	    }
 
 	    /* find start of array */
-	    array_start = strtok_r(NULL, ":[{", &saveptr);
+	    array_start = strtok_r(NULL, "{", &saveptr);
 	    if (array_start == NULL) {
 		err(23, __func__, "unable to find beginning of array");
 		not_reached();
@@ -495,6 +499,7 @@ check_info_json(char const *file, char const *fnamchk)
 	    if (!*array_start)
 		break;
 
+
 	    /* extract the array */
 	    array = strtok_r(NULL, "]", &saveptr);
 	    if (array == NULL) {
@@ -502,7 +507,8 @@ check_info_json(char const *file, char const *fnamchk)
 		not_reached();
 	    }
 
-	    if (!*array) {
+	    /* the array cannot be empty */
+	    if (*array == '\0') {
 		err(25, __func__, "empty array in file %s", file);
 		not_reached();
 	    }
@@ -515,14 +521,15 @@ check_info_json(char const *file, char const *fnamchk)
 		not_reached();
 	    }
 
-
+	    /* the last array element cannot end with a ',' */
 	    if (!check_last_json_char(file, array_dup, false, &p, ',')) {
 		warn(__func__, "last array element ends with ',' in file %s: '%c'", file, *p);
 		++issues;
 	    }
 
+
 	    do {
-		array_field = strtok_r(array_val?NULL:array_dup, "{ \t\n", &array_saveptr);
+		array_field = strtok_r(array_val?NULL:array_dup, "{ :\t\n},", &array_saveptr);
 		if (array_field == NULL) {
 		    /* not necessarily an error */
 		    break;
@@ -530,6 +537,7 @@ check_info_json(char const *file, char const *fnamchk)
 		/* skip leading whitespace on the field */
 		while (*array_field && isspace(*array_field))
 		    ++array_field;
+
 
 		/* remove a single '"' if one exists at the beginning
 		 * (*array_field == '"') */
@@ -563,17 +571,8 @@ check_info_json(char const *file, char const *fnamchk)
 
 		/* if nothing left break out of loop */
 		if (!*array_field) {
-		    /*
-		     * the continue can cause additional problems if there's
-		     * more in the file but we warn instead of error during
-		     * development.
-		     *
-		     * TODO: Make this an error once all testing has been
-		     * finished.
-		     */
-		    warn(__func__, "found empty array field in file %s: '%s'", file, array_field);
-		    ++issues;
-		    continue;
+		    err(27, __func__, "found empty array field in file %s: '%s'", file, array_field);
+		    not_reached();
 		}
 
 		array_info_field = find_json_field_in_table(info_json_fields, array_field, &loc);
@@ -582,15 +581,16 @@ check_info_json(char const *file, char const *fnamchk)
 		 * error regardless of test mode.
 		 */
 		if (array_info_field == NULL) {
-		    err(27, __func__, "invalid field '%s' in manifest array of file %s", array_field, file);
+		    err(28, __func__, "invalid field '%s' in manifest array of file %s", array_field, file);
 		    not_reached();
 		}
 
+		/* only some array fields can have empty values (null string) */
 		can_be_empty = array_info_field->can_be_empty;
 
 		array_val = strtok_r(NULL, ":,", &array_saveptr);
 		if (array_val == NULL) {
-		    err(28, __func__, "array element %s without value", array_field);
+		    err(29, __func__, "array element %s without value", array_field);
 		    not_reached();
 		}
 		/* remove leading spaces from value */
@@ -702,7 +702,7 @@ check_info_json(char const *file, char const *fnamchk)
 		 */
 		array_val_esc = malloc_json_decode_str(array_val, NULL, strict);
 		if (array_val_esc == NULL) {
-		    err(29, __func__, "malloc_json_decode(): invalidly formed field '%s' value '%s' or malloc failure in file %s",
+		    err(30, __func__, "malloc_json_decode(): invalidly formed field '%s' value '%s' or malloc failure in file %s",
 			    array_field, array_val, file);
 		    not_reached();
 		}
@@ -736,7 +736,7 @@ check_info_json(char const *file, char const *fnamchk)
 	    /* extract the value */
 	    val = strtok_r(NULL, ",\0", &saveptr);
 	    if (val == NULL) {
-		err(30, __func__, "unable to find value in file %s for field '%s'", file, p);
+		err(31, __func__, "unable to find value in file %s for field '%s'", file, p);
 		not_reached();
 	    }
 
@@ -759,8 +759,8 @@ check_info_json(char const *file, char const *fnamchk)
 
 	    can_be_empty = (common_field && common_field->can_be_empty) || (info_field && info_field->can_be_empty);
 	    /*
-	     * If the field type is a string we have to remove a single '"' and
-	     * from the beginning and end of the value.
+	     * If the field type is a string we have to remove a single '"' from
+	     * the beginning and end of the value.
 	     */
 	    if ((common_field && (common_field->field_type == JSON_STRING || common_field->field_type == JSON_ARRAY_STRING)) ||
 		(info_field && (info_field->field_type == JSON_STRING || info_field->field_type == JSON_ARRAY_STRING))) {
@@ -858,7 +858,7 @@ check_info_json(char const *file, char const *fnamchk)
 	     */
 	    val_esc = malloc_json_decode_str(val, NULL, strict);
 	    if (val_esc == NULL) {
-		err(31, __func__, "malloc_json_decode_str(): invalidly formed field '%s' value '%s' or malloc failure in file %s", p, val, file);
+		err(32, __func__, "malloc_json_decode_str(): invalidly formed field '%s' value '%s' or malloc failure in file %s", p, val, file);
 		not_reached();
 	    }
 
@@ -967,7 +967,7 @@ get_info_json_field(char const *file, char *name, char *val)
      * firewall
      */
     if (file == NULL || name == NULL || val == NULL) {
-	err(32, __func__, "passed NULL arg(s)");
+	err(33, __func__, "passed NULL arg(s)");
 	not_reached();
     }
 
@@ -1015,13 +1015,13 @@ add_found_info_json_field(char const *name, char const *val)
      * firewall
      */
     if (name == NULL || val == NULL) {
-	err(33, __func__, "passed NULL arg(s)");
+	err(34, __func__, "passed NULL arg(s)");
 	not_reached();
     }
 
     field_in_table = find_json_field_in_table(info_json_fields, name, &loc);
     if (field_in_table == NULL) {
-	err(34, __func__, "called add_found_info_json_field() on field '%s' not specific to .info.json", name);
+	err(35, __func__, "called add_found_info_json_field() on field '%s' not specific to .info.json", name);
 	not_reached();
     }
     /*
@@ -1043,7 +1043,7 @@ add_found_info_json_field(char const *name, char const *val)
 		 * this shouldn't happen as if add_json_value() gets an error
 		 * it'll abort but just to be safe we check here too
 		 */
-		err(35, __func__, "error adding json value '%s' to field '%s'", val, field->name);
+		err(36, __func__, "error adding json value '%s' to field '%s'", val, field->name);
 		not_reached();
 	    }
 
@@ -1063,7 +1063,7 @@ add_found_info_json_field(char const *name, char const *val)
 	 * we should never get here because if new_json_field gets NULL it
 	 * aborts the program.
 	 */
-	err(36, __func__, "error creating new struct json_field * for field '%s' value '%s'", name, val);
+	err(37, __func__, "error creating new struct json_field * for field '%s' value '%s'", name, val);
 	not_reached();
     }
 
@@ -1116,22 +1116,29 @@ add_manifest_file(char const *filename)
 	}
     }
 
+    /* allocate a struct for the file */
     errno = 0;
     manifest_file = calloc(1, sizeof *manifest_file);
     if (manifest_file == NULL) {
-	err(37, __func__, "calloc() error allocating struct manifest_file * for filename %s", filename);
+	err(38, __func__, "calloc() error allocating struct manifest_file * for filename %s", filename);
 	not_reached();
     }
 
+    /* record the filename */
     errno = 0;
     manifest_file->filename = strdup(filename);
     if (manifest_file->filename == NULL) {
-	err(38, __func__, "strdup() error on filename %s", filename);
+	err(39, __func__, "strdup() error on filename %s", filename);
 	not_reached();
     }
 
+    /*
+     * we have to keep track of the number of times this file exists in the
+     * manifest
+     */
     manifest_file->count = 1;
 
+    /* prepend it to the list */
     manifest_file->next = manifest_files_list;
     manifest_files_list = manifest_file;
 
@@ -1155,7 +1162,7 @@ free_manifest_file(struct manifest_file *file)
      * firewall
      */
     if (file == NULL) {
-	err(39, __func__, "passed NULL file");
+	err(40, __func__, "passed NULL file");
 	not_reached();
     }
 
@@ -1219,7 +1226,7 @@ check_found_info_json_fields(char const *file, bool test)
      * firewall
      */
     if (file == NULL) {
-	err(40, __func__, "passed NULL file");
+	err(41, __func__, "passed NULL file");
 	not_reached();
     }
 
@@ -1228,7 +1235,7 @@ check_found_info_json_fields(char const *file, bool test)
 	 * first make sure the name != NULL and strlen() > 0
 	 */
 	if (field->name == NULL || strlen(field->name) <= 0) {
-	    err(41, __func__, "found NULL or empty field in found_info_json_fields list");
+	    err(42, __func__, "found NULL or empty field in found_info_json_fields list");
 	    not_reached();
 	}
 
@@ -1243,7 +1250,7 @@ check_found_info_json_fields(char const *file, bool test)
 	 * info list is not a info field name.
 	 */
 	if (info_field == NULL) {
-	    err(42, __func__, "illegal field name '%s' in found_info_json_fields list", field->name);
+	    err(43, __func__, "illegal field name '%s' in found_info_json_fields list", field->name);
 	    not_reached();
 	}
 
@@ -1264,7 +1271,7 @@ check_found_info_json_fields(char const *file, bool test)
 		 * manifest has an empty value in a sense so we only do this for
 		 * fields that aren't manifest.
 		 */
-		err(43, __func__, "empty value found for field '%s' in file %s", field->name, file);
+		err(44, __func__, "empty value found for field '%s' in file %s", field->name, file);
 		not_reached();
 	    }
 
@@ -1341,7 +1348,7 @@ check_found_info_json_fields(char const *file, bool test)
 		}
 		manifest_file = add_manifest_file(val);
 		if (manifest_file == NULL) {
-		    err(44, __func__, "couldn't add info_JSON file '%s'", val);
+		    err(45, __func__, "couldn't add info_JSON file '%s'", val);
 		    not_reached();
 		}
 	    } else if (!strcmp(field->name, "author_JSON")) {
@@ -1351,7 +1358,7 @@ check_found_info_json_fields(char const *file, bool test)
 		}
 		manifest_file = add_manifest_file(val);
 		if (manifest_file == NULL) {
-		    err(45, __func__, "couldn't add author_JSON file '%s'", val);
+		    err(46, __func__, "couldn't add author_JSON file '%s'", val);
 		    not_reached();
 		}
 	    } else if (!strcmp(field->name, "c_src")) {
@@ -1361,7 +1368,7 @@ check_found_info_json_fields(char const *file, bool test)
 		}
 		manifest_file = add_manifest_file(val);
 		if (manifest_file == NULL) {
-		    err(46, __func__, "couldn't add c_src file '%s'", val);
+		    err(47, __func__, "couldn't add c_src file '%s'", val);
 		    not_reached();
 		}
 	    } else if (!strcmp(field->name, "Makefile")) {
@@ -1371,7 +1378,7 @@ check_found_info_json_fields(char const *file, bool test)
 		}
 		manifest_file = add_manifest_file(val);
 		if (manifest_file == NULL) {
-		    err(47, __func__, "couldn't add Makefile file '%s'", val);
+		    err(48, __func__, "couldn't add Makefile file '%s'", val);
 		    not_reached();
 		}
 	    } else if (!strcmp(field->name, "remarks")) {
@@ -1381,7 +1388,7 @@ check_found_info_json_fields(char const *file, bool test)
 		}
 		manifest_file = add_manifest_file(val);
 		if (manifest_file == NULL) {
-		    err(48, __func__, "couldn't add remarks file '%s'", val);
+		    err(49, __func__, "couldn't add remarks file '%s'", val);
 		    not_reached();
 		}
 	    } else if (!strcmp(field->name, "extra_file")) {
@@ -1398,7 +1405,7 @@ check_found_info_json_fields(char const *file, bool test)
 		}
 		manifest_file = add_manifest_file(val);
 		if (manifest_file == NULL) {
-		    err(49, __func__, "couldn't add extra_file file '%s' in file %s", val, file);
+		    err(50, __func__, "couldn't add extra_file file '%s' in file %s", val, file);
 		    not_reached();
 		}
 	    } else if (!strcmp(field->name, "rule_2a_size")) {

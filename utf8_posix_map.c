@@ -1551,13 +1551,13 @@ struct utf8_posix_map hmap[] =
 /*
  * global variables
  */
-static bool utf8_posix_map_checked = false;	/* true ==> check_utf8_posix_map() run was sucessful */
+static bool utf8_posix_map_checked = false;	/* true ==> check_utf8_posix_map() run was successfully */
 static bool seeded = false;			/* ture ==> default_handle() as needed random() */
 static char state[STATE_LEN+1];			/* srandom() state */
 
 
 /*
- * check_utf8_posix_map	- fill in string lenths and sanity checl hmap[]
+ * check_utf8_posix_map	- fill in string lengths and sanity check hmap[]
  *
  * This function verifies that the only NULL element in the table is the very
  * last element: if it's not there or there's another NULL element it's a

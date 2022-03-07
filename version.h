@@ -109,7 +109,7 @@
 /*
  * official jinfochk version
  */
-#define JINFOCHK_VERSION "0.12 2022-03-04"	/* format: major.minor YYYY-MM-DD */
+#define JINFOCHK_VERSION "0.13 2022-03-07"	/* format: major.minor YYYY-MM-DD */
 
 /*
  * official jauthchk version

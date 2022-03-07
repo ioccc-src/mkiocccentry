@@ -136,7 +136,7 @@ main(int argc, char **argv)
     /*
      * All Done!!! - Jessica Noll, age 2
      */
-    exit(issues != 0 && !test); /*ooo*/
+    exit(issues != 0); /*ooo*/
 }
 
 

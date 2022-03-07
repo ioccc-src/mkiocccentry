@@ -5,9 +5,8 @@ jinfochk \- IOCCC tool to validate .info.json file found within an entry directo
 \fBjinfochk [\-h] [\-v level] [\-V] [\-T] [\-q] [\-t] file
 .SH DESCRIPTION
 \fBjinfochk\fP is primarily used by other tools (not humans).
-As such it should behave like \fBfnamchk(1)\fP in that if all is well, it should not print anything and simply exit 0.
-If there are problems found with the \fI.info.json\fP file, then warning messages should be printed to \fBstderr\fP AND the \fBjinfochk\fP tool should exit with a non-zero status.
-The use of a -v level may be use to assist in debugging.
+It behaves like \fBfnamchk(1)\fP in that if all is well, it does not print anything and simply exit 0.
+If there are problems found with the \fI.info.json\fP file, then warning messages are printed to \fBstderr\fP AND the \fBjinfochk\fP tool exits with a non-zero status.
 .PP
 The \fBjinfochk\fP tool is primarily a stand alone tool.
 As a sanity check, the \fBmkiocccentry(1)\fP program executes \fBjinfochk\fP AFTER the \fI.info.json\fP file has been created and before the compressed tarball is formed.
@@ -54,4 +53,16 @@ Source file with JSON data and function definitions.
 .RE
 .SH BUGS
 .PP
-If you have an issue with the tool you can open an issue at \fI\<https://github.com/ioccc-src/mkiocccentry/issues\>\fP.
+Cody Boone Ferguson wrote it! :)
+.PP
+On a more serious note, if you have an issue with the tool you can report it at \fI\<https://github.com/ioccc-src/mkiocccentry/issues\>\fP.
+.SH EXAMPLES
+.PP
+.nf
+Run the tool on the \fB.info.json\fP file \fItest_work/test-0/.info.json\fP:
+
+.RS
+\fB
+ ./jinfochk test_work/test-0/.info.json\fP
+.fi
+.RE
