@@ -3,6 +3,12 @@
  * jinfochk - IOCCC JSON .info.json checker and validator
  *
  * "Because sometimes even the IOCCC Judges need some help." :-)
+ *
+ * Written in 2022 by:
+ *
+ *	@xexyl
+ *	https://xexyl.net		Cody Boone Ferguson
+ *	https://ioccc.xexyl.net
  */
 
 
@@ -134,7 +140,7 @@ main(int argc, char **argv)
     /*
      * All Done!!! - Jessica Noll, age 2
      */
-    exit(issues != 0 && !test); /*ooo*/
+    exit(issues != 0); /*ooo*/
 }
 
 /*

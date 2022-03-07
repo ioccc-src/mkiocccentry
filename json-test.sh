@@ -279,10 +279,10 @@ run_test()
 	    echo "$0: debug[5]: in run_test: about to run: $test_prog -v $debug_level -s -- $json_test_file" 1>&2
 	fi
 	if [[ $debug_level -gt 0 ]]; then
-	    "$test_prog" -v "$debug_level" -s -- "$json_test_file"
+	    "$test_prog" -t -v "$debug_level" -s -- "$json_test_file"
 	    status="$?"
 	else
-	    "$test_prog" -v 0 -q -s -- "$json_test_file"
+	    "$test_prog" -t -v 0 -q -s -- "$json_test_file"
 	    status="$?"
 	fi
 	if [[ $V_FLAG -ge 7 ]]; then
@@ -296,10 +296,10 @@ run_test()
 	    echo "$0: debug[5]: in run_test: about to run: $test_prog -v $debug_level -- $json_test_file" 1>&2
 	fi
 	if [[ $debug_level -gt 0 ]]; then
-	    "$test_prog" -v "$debug_level" -- "$json_test_file"
+	    "$test_prog" -t -v "$debug_level" -- "$json_test_file"
 	    status="$?"
 	else
-	    "$test_prog" -v 0 -q -- "$json_test_file"
+	    "$test_prog" -t -v 0 -q -- "$json_test_file"
 	    status="$?"
 	fi
 	if [[ $V_FLAG -ge 7 ]]; then
