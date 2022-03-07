@@ -10,6 +10,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <string.h>
+#include <strings.h>	/* for strcasecmp() */
 #include <ctype.h>
 
 /*
@@ -469,9 +470,6 @@ check_info_json(char const *file, char const *fnamchk)
 
 	/* manifest array is handled specially */
 	if (!strcmp(p, "manifest")) {
-	    /* TODO The below only extracts the array: it does not yet parse it.
-	     * This will come in a future commit.
-	     */
 	    if (!info_field) {
 		err(22, __func__, "manifest field not found in info_json_fields table");
 		not_reached();
@@ -928,7 +926,7 @@ check_info_json(char const *file, char const *fnamchk)
     free_found_common_json_fields();
 
     /*
-     * free the manifest_files list
+     * free the manifest files list: manifest_files_list.
      *
      * NOTE: After this the list will be NULL.
      */
@@ -1033,7 +1031,7 @@ add_found_info_json_field(char const *name, char const *val)
     info_json_fields[loc].count++;
     info_json_fields[loc].found = true;
 
-    for (field = found_info_json_fields; field; field = field->next) {
+    for (field = found_info_json_fields; field != NULL; field = field->next) {
 	if (field->name && !strcmp(field->name, name)) {
 	    /*
 	     * we found a field already in the list: add the value (even if this
@@ -1079,11 +1077,11 @@ add_found_info_json_field(char const *name, char const *val)
     return field;
 }
 
-/* add_manifest_file	- add filename to manifest_files list
+/* add_manifest_file	- add filename to manifest_files_list list
  *
  * given:
  *
- *	filename	- name of file to add to manifest_files list
+ *	filename	- name of file to add to manifest_files_list list
  *
  * This list is used to detect if any filenames are duplicates.
  *
@@ -1098,8 +1096,8 @@ add_found_info_json_field(char const *name, char const *val)
 static struct manifest_file *
 add_manifest_file(char const *filename)
 {
-    struct manifest_file *ptr = NULL; /* to check if the file already is in the manifest files list */
-    struct manifest_file *file = NULL; /* the newly allocated manifest_file * */
+    struct manifest_file *file = NULL; /* to check if the manifest_file already is in the manifest_files_list */
+    struct manifest_file *manifest_file = NULL; /* the newly allocated manifest_file * */
 
     /*
      * firewall
@@ -1109,35 +1107,35 @@ add_manifest_file(char const *filename)
 	return NULL;
     }
 
-    for (ptr = manifest_files; ptr != NULL; ptr = ptr->next)
+    for (file = manifest_files_list; file != NULL; file = file->next)
     {
-	if (!strcmp(ptr->filename, filename)) {
+	if (!strcasecmp(file->filename, filename)) {
 	    dbg(DBG_MED, "incrementing count of filename %s", filename);
-	    ptr->count++;
-	    return ptr;
+	    file->count++;
+	    return file;
 	}
     }
 
     errno = 0;
-    file = calloc(1, sizeof *file);
-    if (file == NULL) {
+    manifest_file = calloc(1, sizeof *manifest_file);
+    if (manifest_file == NULL) {
 	err(37, __func__, "calloc() error allocating struct manifest_file * for filename %s", filename);
 	not_reached();
     }
 
     errno = 0;
-    file->filename = strdup(filename);
-    if (file->filename == NULL) {
+    manifest_file->filename = strdup(filename);
+    if (manifest_file->filename == NULL) {
 	err(38, __func__, "strdup() error on filename %s", filename);
 	not_reached();
     }
 
-    file->count = 1;
+    manifest_file->count = 1;
 
-    file->next = manifest_files;
-    manifest_files = file;
+    manifest_file->next = manifest_files_list;
+    manifest_files_list = manifest_file;
 
-    return file;
+    return manifest_file;
 }
 
 /* free_manifest_file	    - free a struct manifest_file *
@@ -1169,16 +1167,16 @@ free_manifest_file(struct manifest_file *file)
 }
 
 
-/* free_manifest_files_list	- free the manifest_files list
+/* free_manifest_files_list	- free the manifest files list: manifest_files_list
  *
- * NOTE: If the manifest_files list is NULL this function does nothing.
+ * NOTE: If the manifest_files_list list is NULL this function does nothing.
  */
 static void
 free_manifest_files_list(void)
 {
     struct manifest_file *file, *next_file;
 
-    for (file = manifest_files; file != NULL; file = next_file) {
+    for (file = manifest_files_list; file != NULL; file = next_file) {
 	next_file = file->next;
 
 	free_manifest_file(file);
@@ -1186,7 +1184,7 @@ free_manifest_files_list(void)
 	file = NULL;
     }
 
-    manifest_files = NULL;
+    manifest_files_list = NULL;
 }
 
 
@@ -1507,7 +1505,7 @@ check_found_info_json_fields(char const *file, bool test)
      *
      * XXX - This should probably be in its own function.
      */
-    for (manifest_file = manifest_files; manifest_file; manifest_file = manifest_file->next) {
+    for (manifest_file = manifest_files_list; manifest_file != NULL; manifest_file = manifest_file->next) {
 	if (manifest_file->count > 1) {
 	    warn(__func__, "found duplicate file (count: %ju) in file %s: '%s'", (uintmax_t)manifest_file->count, file, manifest_file->filename);
 	    ++issues;

@@ -131,6 +131,6 @@ extern int parse_verbosity(char const *program, char const *arg);
 extern bool is_number(char const *str);
 extern bool string_to_bool(char const *str);
 extern bool posix_plus_safe(char const *str, bool lower_only, bool slash_ok, bool first);
-
+extern char *find_matching_quote(char *q);
 
 #endif				/* INCLUDE_UTIL_H */

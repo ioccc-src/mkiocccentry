@@ -1084,7 +1084,7 @@ malloc_json_decode(char const *ptr, size_t len, size_t *retlen, bool strict)
 		    if (retlen != NULL) {
 			*retlen = 0;
 		    }
-		    warn(__func__, "strict encoding at %ju found un-escaped char: 0x%02x", (uintmax_t)i, (uint8_t)c);
+		    warn(__func__, "strict encoding at %ju found unescaped char: 0x%02x", (uintmax_t)i, (uint8_t)c);
 		    return NULL;
 		}
 		switch (c) {
@@ -1098,7 +1098,7 @@ malloc_json_decode(char const *ptr, size_t len, size_t *retlen, bool strict)
 		    if (retlen != NULL) {
 			*retlen = 0;
 		    }
-		    warn(__func__, "strict encoding at %ju found un-escaped char: %c", (uintmax_t)i, c);
+		    warn(__func__, "strict encoding at %ju found unescaped char: %c", (uintmax_t)i, c);
 		    return NULL;
 		    break;
 
@@ -2391,7 +2391,7 @@ check_found_common_json_fields(char const *program, char const *file, char const
 	 * Note: Although having the tarball path more than once is considered
 	 * an issue we still check each value to be complete.
 	 */
-	for (value = tarball_field->values; value; value = value->next) {
+	for (value = tarball_field->values; value != NULL; value = value->next) {
 	    char const *val = value->value;
 
 	    exit_code = shell_cmd(__func__, true, "% -t % >/dev/null", fnamchk, val);
@@ -2408,7 +2408,7 @@ check_found_common_json_fields(char const *program, char const *file, char const
 	 * Note: Although having the tarball path more than once is considered
 	 * an issue we still check each value to be complete.
 	 */
-	for (value = tarball_field->values; value; value = value->next) {
+	for (value = tarball_field->values; value != NULL; value = value->next) {
 	    char const *val = value->value;
 
 	    exit_code = shell_cmd(__func__, true, "% -u % >/dev/null", fnamchk, val);

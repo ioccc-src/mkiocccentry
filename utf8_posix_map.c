@@ -48,6 +48,7 @@
 
 #include <stdio.h>
 #include <stdint.h>
+#include <stdlib.h>
 #include <strings.h>
 #include <sys/time.h>
 #include <unistd.h>
@@ -1667,7 +1668,7 @@ default_handle(char const *name)
     }
     namelen = strlen(name);
     if (namelen <= 0) {
-	err(15, __func__, "empty name");
+	err(16, __func__, "empty name");
 	not_reached();
     }
 
@@ -1766,7 +1767,7 @@ default_handle(char const *name)
 	    errno = 0;		/* pre-clear errno for errp() */
 	    cret = gettimeofday(&tp, NULL);
 	    if (cret < 0) {
-		errp(16, __func__, "gettimeofday failed");
+		errp(17, __func__, "gettimeofday failed");
 		not_reached();
 	    }
 
@@ -1777,7 +1778,7 @@ default_handle(char const *name)
 	    errno = 0;		/* pre-clear errno for errp() */
 	    iret = initstate((unsigned)tmp, state, STATE_LEN);
 	    if (iret == NULL) {
-		errp(17, __func__, "srandom failed");
+		errp(18, __func__, "srandom failed");
 		not_reached();
 	    }
 
@@ -1801,7 +1802,7 @@ default_handle(char const *name)
 	errno = 0;		/* pre-clear errno for errp() */
 	ret = calloc(def_len+1, 1);
 	if (ret == NULL) {
-	    errp(18, __func__, "calloc faiked for %ju bytes", (uintmax_t)(def_len+1));
+	    errp(19, __func__, "calloc faiked for %ju bytes", (uintmax_t)(def_len+1));
 	    not_reached();
 	}
 
@@ -1810,7 +1811,7 @@ default_handle(char const *name)
 	 */
 	cret = snprintf(ret, def_len, "jrandom+%08lx%08lx%08lx", a, b, c);
 	if (cret <= 0) {
-	    errp(19, __func__, "snprintf failed, returned: %d", cret);
+	    errp(20, __func__, "snprintf failed, returned: %d", cret);
 	    not_reached();
 	}
 
@@ -1825,7 +1826,7 @@ default_handle(char const *name)
 	errno = 0;		/* pre-clear errno for errp() */
 	ret = calloc(def_len+1, 1);
 	if (ret == NULL) {
-	    errp(20, __func__, "calloc faiked for %ju bytes", (uintmax_t)(def_len+1));
+	    errp(21, __func__, "calloc faiked for %ju bytes", (uintmax_t)(def_len+1));
 	    not_reached();
 	}
 
@@ -1870,7 +1871,7 @@ default_handle(char const *name)
 		     * firewall - do not copy beyond end of malloced buffer
 		     */
 		    if (cur_len + m->posix_str_len > def_len) {
-			err(21, __func__, "attempt to copy to buf[%ju] %ju bytes: would go beyond malloced len: %ju",
+			err(22, __func__, "attempt to copy to buf[%ju] %ju bytes: would go beyond malloced len: %ju",
 					   (uintmax_t)cur_len, (uintmax_t)m->posix_str_len, (uintmax_t)def_len);
 			not_reached();
 		    }
@@ -1881,7 +1882,7 @@ default_handle(char const *name)
 		    errno = 0;		/* pre-clear errno for errp() */
 		    pret = strncpy(ret+cur_len, m->posix_str, m->posix_str_len);
 		    if (pret == NULL) {
-			errp(22, __func__, "strncpy() returned NULL");
+			errp(23, __func__, "strncpy() returned NULL");
 			not_reached();
 		    }
 
@@ -1927,7 +1928,7 @@ default_handle(char const *name)
      */
     len = strlen(ret);
     if (len <= 0) {
-	err(23, __func__, "default author handle length: %ju <= 0", (uintmax_t)len);
+	err(24, __func__, "default author handle length: %ju <= 0", (uintmax_t)len);
 	not_reached();
     }
     dbg(DBG_VVHIGH, "actual default handle length: %ju", (uintmax_t)len);
@@ -1936,7 +1937,7 @@ default_handle(char const *name)
      * sanity check: default author handle cannot be too long
      */
     if (len > MAX_HANDLE) {
-	err(24, __func__, "default author handle length: %ju > MAX_HANDLE: %d",
+	err(25, __func__, "default author handle length: %ju > MAX_HANDLE: %d",
 			   (uintmax_t)len, MAX_HANDLE);
 	not_reached();
     }
@@ -1946,7 +1947,7 @@ default_handle(char const *name)
      */
     safe = posix_plus_safe(ret, true, false, true);
     if (safe == false) {
-	err(25, __func__, "default author handle contains unsafe chars: <%s>", ret);
+	err(26, __func__, "default author handle contains unsafe chars: <%s>", ret);
 	not_reached();
     }
 

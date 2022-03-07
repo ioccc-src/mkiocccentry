@@ -55,7 +55,7 @@ struct manifest_file {
     struct manifest_file *next;	    /* the next in the list */
 };
 
-static struct manifest_file *manifest_files; /* list of files in the manifest: to detect if any filenames are duplicates */
+static struct manifest_file *manifest_files_list; /* list of files in the manifest: to detect if any filenames are duplicates */
 
 /*
  * usage message

@@ -2458,3 +2458,35 @@ posix_plus_safe(char const *str, bool lower_only, bool slash_ok, bool first)
 		     str);
     return true;
 }
+
+/* find_matching_quote	find the next unescaped '"'
+ *
+ * Assuming *q == '"' find the matching (closing) '"' (i.e. the next unescaped
+ * '"') and return a pointer to it (or NULL if not found). If *q != '"' && *q !=
+ * '\0' it will return 'q'; else it'll return q updated to either the end of the
+ * string (which means NULL return value) or the matching unescaped '"'.
+ *
+ * NOTE: This function does not return on NULL pointer passed in but it can
+ * return a NULL pointer: this happens if no matching '"' is found (or the
+ * string was empty in the first place).
+ */
+char *
+find_matching_quote(char *q)
+{
+    /*
+     * firewall
+     */
+    if (q == NULL) {
+	err(172, __func__, "passed NULL pointer");
+	not_reached();
+    }
+
+    for (++q; *q && *q != '"'; ++q)
+	if (*q == '\\')
+	    ++q;
+
+    if (!*q)
+	return NULL;
+
+    return q;
+}
