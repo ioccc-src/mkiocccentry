@@ -111,8 +111,8 @@ STD_SRC= -D_DEFAULT_SOURCE -D_POSIX_C_SOURCE=200809L -D_XOPEN_SOURCE=500 -std=gn
 
 # optimization and debug level
 #
-COPT= -O3 -g3
-#COPT= -O0 -g
+#COPT= -O3 -g3
+COPT= -O0 -g
 
 # how to compile
 #
