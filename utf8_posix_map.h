@@ -76,5 +76,7 @@ extern size_t SIZEOF_UTF8_POSIX_MAP;
  * function prototypes
  */
 extern void check_utf8_posix_map(void);
+extern char *default_handle(char const *name);
+
 
 #endif				/* INCLUDE_UTF8_POSIX_MAP_H */

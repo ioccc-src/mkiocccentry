@@ -183,10 +183,10 @@ struct author {
     char *twitter;		/* author twitter handle or or empty string ==> not provided */
     char *github;		/* author GitHub username or or empty string ==> not provided */
     char *affiliation;		/* author affiliation or or empty string ==> not provided */
-    char *author_handle;	/* IOCCC author handle (for winning entries) */
-    int author_num;		/* author number */
     bool past_winner;		/* true ==> author claimns to have won before, false ==> author claims not a prev winner */
     bool default_handle;	/* true ==> default author_handle accepted, false ==> author_handle entered */
+    char *author_handle;	/* IOCCC author handle (for winning entries) */
+    int author_num;		/* author number */
 
     struct json_common common;	/* fields that are common to this struct author and struct info (below) */
 };
@@ -268,7 +268,6 @@ extern void free_json_field(struct json_field *field);
 /* these free() functions are also used in mkiocccentry.c */
 extern void free_info(struct info *infop);
 extern void free_author_array(struct author *authorp, int author_count);
-extern char * default_handle(char const *name, int author_num, int entry_num, char const *ioccc_id);
 
 
 #endif /* INCLUDE_JSON_H */

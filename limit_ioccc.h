@@ -51,6 +51,7 @@
 #define MAX_ENTRY_NUM (9)		/* entry numbers from 0 to MAX_ENTRY_NUM */
 #define MAX_ENTRY_CHARS (1)		/* characters that represent the maximum entry number */
 #define MAX_AUTHORS (5)			/* maximum number of authors of an entry */
+#define MAX_AUTHORS_CHARS (1)		/* characters that represent the author number */
 #define MAX_NAME_LEN (48)		/* max author name length */
 #define MAX_EMAIL_LEN (48)		/* max Email address length */
 #define MAX_URL_LEN (64)		/* max home URL, including http:// or https:// */

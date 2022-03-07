@@ -322,6 +322,8 @@ main(int argc, char *argv[])
 	     "you any additional warnings, you should note that The Judges will NOT",
 	     "ignore warnings! If this was unintentional, run the program again",
 	     "without specifying -W. We cannot stress the importance of this enough!",
+	     "Well, OK we can over-stress most things, but you get the point.",
+	     "Do not use the -W option!",
 	     "",
 	     NULL);
     }
@@ -403,13 +405,11 @@ main(int argc, char *argv[])
 
     dbg(DBG_LOW, "formed entry directory: %s", entry_dir);
 
-
     /*
      * if -a, open the answers file. We only do it after verifying that we can
      * make the entry directory because if we get input before and find out the
      * directory already exists then the answers file will have invalid data.
      */
-
     if (answers_flag_used && answers != NULL && strlen(answers) > 0) {
 
 	errno = 0;			/* pre-clear errno for errp() */
@@ -483,7 +483,6 @@ main(int argc, char *argv[])
     if (!quiet) {
 	para("Checking extra data files ...", NULL);
     }
-
     check_extra_data_files(&info, entry_dir, cp, extra_count, extra_list);
     if (!quiet) {
 	para("... completed extra data files check.", "", NULL);
@@ -1461,7 +1460,6 @@ get_contest_id(bool *testp, bool *read_answers_flag_used)
 	    dbg(DBG_HIGH, "found answers header");
 	    seen_answers_header = true;
 	    *read_answers_flag_used = true;
-	    need_retry = false;
 	    need_confirm = false;
 	    need_hints = false;
 
@@ -1557,7 +1555,7 @@ get_contest_id(bool *testp, bool *read_answers_flag_used)
 		  "",
 		  NULL);
 	}
-    } while (ret != 8 && need_retry);
+    } while (ret != 8);
 
     /*
      * report on the result of the contest ID validation
@@ -1658,7 +1656,7 @@ get_entry_num(struct info *infop)
 	    entry_str = NULL;
 	}
 
-    } while ((entry_num < 0 || entry_num > MAX_ENTRY_NUM) && need_retry);
+    } while ((entry_num < 0 || entry_num > MAX_ENTRY_NUM));
 
     /*
      * report on the result of the entry number validation
@@ -3236,7 +3234,7 @@ yes_or_no(char const *question)
 	    response = NULL;
 	}
 
-    } while (response == NULL && need_retry);
+    } while (response == NULL);
     if (response == NULL) {
 	errp(129, __func__, "retry prompt is disabled");
 	not_reached();
@@ -3398,7 +3396,7 @@ get_title(struct info *infop)
 	    }
 	    continue;
 	}
-    } while (title == NULL && need_retry);
+    } while (title == NULL);
 
     /*
      * check the result of the title validation
@@ -3514,7 +3512,7 @@ get_abstract(struct info *infop)
 	    }
 	    continue;
 	}
-    } while (abstract == NULL && need_retry);
+    } while (abstract == NULL);
 
     /*
      * check the result of the abstract validation
@@ -3555,6 +3553,7 @@ get_author_info(struct info *infop, char *ioccc_id, struct author **author_set_p
     size_t len;			/* length of reply */
     int ret;			/* libc function return */
     char guard;			/* scanf guard to catch excess amount of input */
+    char *def_handle = NULL;	/* default author handle computed from name */
     char *p;
     int i = 0;
 
@@ -3607,7 +3606,7 @@ get_author_info(struct info *infop, char *ioccc_id, struct author **author_set_p
 	    author_count_str = NULL;
 	}
 
-    } while ((author_count < 1 || author_count > MAX_AUTHORS) && need_retry);
+    } while ((author_count < 1 || author_count > MAX_AUTHORS));
 
     if (author_count < 1 || author_count > MAX_AUTHORS) {
 	errp(135, __func__, "retry prompt is disabled");
@@ -3652,7 +3651,7 @@ get_author_info(struct info *infop, char *ioccc_id, struct author **author_set_p
 	     "",
 	     "    See the following URLs for information on ISO 3166-1 Alpha-2 codes:",
 	     "",
-	     "If you wish your location/country to be anonymous, use the User-assigned code: XX",
+	     "If you wish your location/country to be anonymous, use the code: XX",
 	     "",
 	     NULL);
 	errno = 0;		/* pre-clear errno for warnp() */
@@ -3686,6 +3685,8 @@ get_author_info(struct info *infop, char *ioccc_id, struct author **author_set_p
 	     "We will ask a twitter handle (must start with @), or press return to skip, or if don't have one.",
 	     "We will ask a GitHub account (must start with @), or press return to skip, or if don't have one.",
 	     "We will ask for an affiliation (company, school, org) of the author, or press return to skip, or if don't have one.",
+	     "We will ask if you have won the IOCCC before. Your answer will not affect your chances of winning.",
+	     "We will ask you for a author handle. You should select the default unless you have won the IOCCC before.",
 	     NULL);
     }
 
@@ -3759,13 +3760,12 @@ get_author_info(struct info *infop, char *ioccc_id, struct author **author_set_p
 		    author_set[i].name = NULL;
 		}
 	    }
-	} while (author_set[i].name == NULL && need_retry);
+	} while (author_set[i].name == NULL);
 	if (author_set[i].name == NULL) {
 	    errp(137, __func__, "retry prompt is disabled");
 	    not_reached();
 	}
 	dbg(DBG_MED, "Author #%d Name %s", i, author_set[i].name);
-
 
 	/*
 	 * obtain author location/country code
@@ -3925,8 +3925,7 @@ get_author_info(struct info *infop, char *ioccc_id, struct author **author_set_p
 		    yorn = true;
 		}
 	    }
-	} while ((author_set[i].location_code == NULL || author_set[i].location_name == NULL || !yorn) &&
-		 need_retry);
+	} while ((author_set[i].location_code == NULL || author_set[i].location_name == NULL || !yorn));
 	if (author_set[i].location_code == NULL || author_set[i].location_name == NULL || !yorn) {
 	    errp(138, __func__, "retry prompt is disabled");
 	    not_reached();
@@ -4002,7 +4001,7 @@ get_author_info(struct info *infop, char *ioccc_id, struct author **author_set_p
 		    continue;
 		}
 	    }
-	} while (author_set[i].email == NULL && need_retry);
+	} while (author_set[i].email == NULL);
 	if (author_set[i].email == NULL) {
 	    errp(139, __func__, "retry prompt is disabled");
 	    not_reached();
@@ -4090,7 +4089,7 @@ get_author_info(struct info *infop, char *ioccc_id, struct author **author_set_p
 		    continue;
 		}
 	    }
-	} while (author_set[i].url == NULL && need_retry);
+	} while (author_set[i].url == NULL);
 	if (author_set[i].url == NULL) {
 	    errp(140, __func__, "retry prompt is disabled");
 	    not_reached();
@@ -4167,7 +4166,7 @@ get_author_info(struct info *infop, char *ioccc_id, struct author **author_set_p
 		    continue;
 		}
 	    }
-	} while (author_set[i].twitter == NULL && need_retry);
+	} while (author_set[i].twitter == NULL);
 	if (author_set[i].twitter == NULL) {
 	    errp(141, __func__, "retry prompt is disabled");
 	    not_reached();
@@ -4246,7 +4245,7 @@ get_author_info(struct info *infop, char *ioccc_id, struct author **author_set_p
 		    continue;
 		}
 	    }
-	} while (author_set[i].github == NULL && need_retry);
+	} while (author_set[i].github == NULL);
 	if (author_set[i].github == NULL) {
 	    errp(142, __func__, "retry prompt is disabled");
 	    not_reached();
@@ -4296,7 +4295,7 @@ get_author_info(struct info *infop, char *ioccc_id, struct author **author_set_p
 		}
 		continue;
 	    }
-	} while (author_set[i].affiliation == NULL && need_retry);
+	} while (author_set[i].affiliation == NULL);
 	if (author_set[i].affiliation == NULL) {
 	    errp(143, __func__, "retry prompt is disabled");
 	    not_reached();
@@ -4304,22 +4303,105 @@ get_author_info(struct info *infop, char *ioccc_id, struct author **author_set_p
 	dbg(DBG_MED, "Author #%d affiliation: %s", i, author_set[i].affiliation);
 
 	/*
-	 * ask for IOCCC winner handle
+	 * ask if they are a past IOCCC winner
+	 */
+	if (need_hints) {
+	    para("",
+	        "Please note: Your next answer will not affect your chances of winning the IOCCC.",
+		"We just need to know if you are a past IOCCC winner in case you do win.",
+		"This will simply help us identify all of your winning entries on the IOCCC web site.",
+		"",
+		NULL);
+	}
+	author_set[i].past_winner = yes_or_no("Are you a past IOCCC winner? [yn]");
+
+	/*
+	 * ask for IOCCC author handle
 	 */
 	do {
 
 	    /*
+	     * past IOCCC winner extra prompt
+	     */
+	    if (author_set[i].past_winner == true) {
+
+		/*
+		 * explain to the past IOCCC winner
+		 */
+		if (need_hints) {
+		    /* XXX - update XXX's to show how past IOCCC winner can find their IOCCC winner handle - XXX */
+		    para("",
+		         "As a self-declared past IOCCC winner, we recommend that you enter your",
+			 "IOCCC winner handle instead of just pressing return, unless of course, the",
+			 "below mentioned default IOCCC author handle happens to be your IOCCC winner handle. :-)",
+			 "",
+			 "If you do not know your IOCCC winner handle, then you can find your IOCCC winner handle",
+			 "by doing the following:",
+			 "",
+			 "     XXX - explain how - XXX",
+			 "",
+			 "By entering your IOCCC winner handle, you will help us match up this entry",
+			 "on the web site should you happen to win (again) with this entry.",
+			 NULL);
+		}
+	    }
+
+	    /*
+	     * determine the default author handle from the name so we can use it in a promot
+	     */
+	    def_handle = default_handle(author_set[i].name);
+	    if (def_handle == NULL) {
+		err(143, __func__, "default_handle() returned NULL!");
+		not_reached();
+	    }
+	    dbg(DBG_VHIGH, "default IOCCC author handle: <%s>", def_handle);
+	    if (need_hints) {
+		errno = 0;		/* pre-clear errno for warnp() */
+		ret = printf("\nThe default IOCCC author handle for author #%d is:\n\n    %s\n\n", i, def_handle);
+		if (ret <= 0) {
+		    warnp(__func__, "fprintf error while printing default IOCCC author handle");
+		}
+	    }
+
+	    /*
 	     * request IOCCC author handle
 	     */
-	    author_set[i].author_handle = NULL;
-	    author_set[i].author_handle = prompt(need_hints ?
-		"Enter author's previous IOCCC winner handle, or press return if none" :
-		"Enter author's previous IOCCC winner handle", &len);
+	    author_set[i].author_handle =
+	        prompt("Enter author's IOCCC author handle, or press return to use the default", &len);
+
+	    /*
+	     * case: accept default IOCCC author handle
+	     */
 	    if (len == 0) {
-		dbg(DBG_VHIGH, "IOCCC winner handle not given");
+		/* note accepting the default IOCCC author handle */
+		dbg(DBG_VHIGH, "will use default IOCCC author handle");
+		author_set[i].default_handle = true;
+
+		/* free storage of prompt */
+		if (author_set[i].author_handle != NULL) {
+		    free(author_set[i].author_handle);
+		    author_set[i].author_handle = NULL;
+		}
+
+		/* use default IOCCC author handle */
+		author_set[i].author_handle = def_handle;
+
+	    /*
+	     * case: accept user input
+	     */
 	    } else {
-		dbg(DBG_VHIGH, "IOCCC winner handle: %s", author_set[i].author_handle);
+
+		/* note using user supplied IOCCC author handle */
+		dbg(DBG_VHIGH, "will use IOCCC author handle enttered by user");
+		author_set[i].default_handle = false;
+
+		/* free storage of unused default IOCCC author handle */
+		if (def_handle != NULL) {
+		    free(def_handle);
+		    def_handle = NULL;
+		}
 	    }
+	    dbg(DBG_VHIGH, "IOCCC author handle: %s", author_set[i].author_handle);
 
 	    /*
 	     * reject if too long
@@ -4331,10 +4413,10 @@ get_author_info(struct info *infop, char *ioccc_id, struct author **author_set_p
 		 */
 		errno = 0;		/* pre-clear errno for warnp() */
 		ret =
-		    fprintf(stderr, "\nSorry ( tm Canada :-) ), we limit IOCCC winner handles to %d characters\n\n",
+		    fprintf(stderr, "\nSorry ( tm Canada :-) ), we limit IOCCC author handles to %d characters\n\n",
 			    MAX_HANDLE);
 		if (ret <= 0) {
-		    warnp(__func__, "fprintf error while printing IOCCC winner handle length limit");
+		    warnp(__func__, "fprintf error while printing IOCCC author handle length limit");
 		}
 
 		/*
@@ -4348,7 +4430,7 @@ get_author_info(struct info *infop, char *ioccc_id, struct author **author_set_p
 	    }
 
 	    /*
-	     * IOCCC winner handle must use only lower case POSIX portable filename and + chars
+	     * IOCCC author handle must use only lower case POSIX portable filename and + chars
 	     */
 	    if (len > 0 &&
 	        posix_plus_safe(author_set[i].author_handle, false, false, true) == false) {
@@ -4365,12 +4447,12 @@ get_author_info(struct info *infop, char *ioccc_id, struct author **author_set_p
 		    }
 		    break;
 	    }
-	} while (author_set[i].author_handle == NULL && need_retry);
+	} while (author_set[i].author_handle == NULL);
 	if (author_set[i].author_handle == NULL) {
 	    errp(144, __func__, "retry prompt is disabled");
 	    not_reached();
 	}
-	dbg(DBG_MED, "Author #%d IOCCC winner handle: %s", i, author_set[i].author_handle);
+	dbg(DBG_MED, "Author #%d IOCCC author handle: %s", i, author_set[i].author_handle);
 
 	/*
 	 * verify the information for this author
@@ -4389,8 +4471,12 @@ get_author_info(struct info *infop, char *ioccc_id, struct author **author_set_p
 						 printf("GitHub username: %s\n", author_set[i].github)) <= 0 ||
 	    ((author_set[i].affiliation[0] == '\0') ? printf("Affiliation not given\n") :
 						      printf("Affiliation: %s\n", author_set[i].affiliation)) <= 0 ||
-	    ((author_set[i].author_handle[0] == '\0') ? printf("IOCCC winner handle\n\n") :
-						        printf("IOCCC winner handle: %s\n\n", author_set[i].author_handle)) <= 0) {
+	    ((author_set[i].past_winner == true) ? printf("Author claims to be a past IOCCC winner\n") :
+						   printf("Author claims to not be a past IOCCC winner\n")) <= 0 ||
+	    ((author_set[i].default_handle == true) ? printf("Default IOCCC author handle was accepted\n") :
+						      printf("IOCCC author handle was manually entered\n"))  <= 0 ||
+	    ((author_set[i].author_handle[0] == '\0') ? printf("IOCCC author handle\n\n") :
+						        printf("IOCCC author handle: %s\n\n", author_set[i].author_handle)) <= 0) {
 	    errp(145, __func__, "error while printing author #%d information\n", i);
 	    not_reached();
 	}
@@ -5254,6 +5340,8 @@ write_author(struct info *infop, int author_count, struct author *authorp, char 
 	    json_fprintf_value_string(author_stream, "\t\t\t", "twitter", " : ", strnull(authorp[i].twitter), ",\n") &&
 	    json_fprintf_value_string(author_stream, "\t\t\t", "github", " : ", strnull(authorp[i].github), ",\n") &&
 	    json_fprintf_value_string(author_stream, "\t\t\t", "affiliation", " : ", strnull(authorp[i].affiliation), ",\n") &&
+	    json_fprintf_value_bool(author_stream, "\t\t\t", "past_winner", " : ", authorp[i].past_winner, ",\n") &&
+	    json_fprintf_value_bool(author_stream, "\t\t\t", "default_handle", " : ", authorp[i].default_handle, ",\n") &&
 	    json_fprintf_value_string(author_stream, "\t\t\t", "author_handle", " : ", strnull(authorp[i].author_handle), ",\n") &&
 	    json_fprintf_value_long(author_stream, "\t\t\t", "author_number", " : ", authorp[i].author_num, "\n") &&
 	    fprintf(author_stream, "\t\t}%s\n", (((i + 1) < author_count) ? "," : "")) > 0;

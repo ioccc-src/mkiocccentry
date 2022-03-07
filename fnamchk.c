@@ -41,10 +41,17 @@
 #include <string.h>
 #include <stdint.h>
 
+
 /*
  * Our header file - #includes the header files we need
  */
 #include "fnamchk.h"
+
+
+/*
+ * utf8_posix_map include
+ */
+#include "utf8_posix_map.h"
 
 
 int

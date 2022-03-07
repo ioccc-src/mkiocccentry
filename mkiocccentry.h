@@ -177,7 +177,6 @@ static const char * const usage_msg4 =
 int verbosity_level = DBG_DEFAULT;	/* debug level set by -v */
 static bool need_confirm = true;	/* true ==> ask for confirmations */
 static bool need_hints = true;		/* true ==> show hints */
-static bool need_retry = true;		/* true ==> re-prompt for input on error */
 static bool quiet = false;		/* true ==> suppress some messages */
 static bool ignore_warnings = false;	/* true ==> ignore all warnings (this does NOT mean the judges will! :) */
 static FILE *input_stream = NULL;	/* input file: stdin or answers file  */

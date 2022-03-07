@@ -49,14 +49,15 @@ test
 title-for-entry0
 abstract for entry #0
 5
-author0 middle0 last0
+author0 middle0 thisisaveryverylonglastname0
 AU
 user0@example.com
 https://host0.example.com/index.html
 @twitter0
 @github0
 an affiliation for #0 author
-author0-last0
+n
+
 author1 middle1a middle1b last1
 UK
 
@@ -64,15 +65,17 @@ UK
 
 
 
-
-author2 middle2 last2
+n
+replaced-author1-handle
+Author2 å∫ç∂´ƒ© LAST2
 US
 user2@example.com
 http://host2.example.com/index.html
 @twitter2
 @github2
 an affiliation for #2 author
-author2-last2
+y
+
 author3 middle3 last3
 AU
 user0@example.com
@@ -80,15 +83,17 @@ https://host0.example.com/index.html
 @twitter3
 @github3
 an affiliation for #3 author
+y
 author3-last3
-author4 middle4 last4
+@#$%^
 AU
 user0@example.com
 https://host0.example.com/index.html
 @twitter4
 @github4
 an affiliation for #4 author
-author4-last4
+n
+
 ANSWERS_EOF
 EOF
 }

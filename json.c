@@ -1632,6 +1632,8 @@ struct json_field author_json_fields[] =
     { "twitter",		NULL, 0, 5, false, JSON_ARRAY_STRING,	true,	NULL },
     { "github",			NULL, 0, 5, false, JSON_ARRAY_STRING,	true,	NULL },
     { "affiliation",		NULL, 0, 5, false, JSON_ARRAY_STRING,	true,	NULL },
+    { "past_winner",		NULL, 0, 1, false, JSON_BOOL,		true,	NULL },
+    { "default_handle",		NULL, 0, 1, false, JSON_BOOL,		true,	NULL },
     { "author_handle",		NULL, 0, 5, false, JSON_ARRAY_STRING,	true,	NULL },
     { "author_number",		NULL, 0, 5, false, JSON_ARRAY_NUMBER,	false,	NULL },
     { NULL,			NULL, 0, 0, false, JSON_NULL,		false,	NULL } /* this **MUST** be last */
@@ -2787,6 +2789,10 @@ free_author_array(struct author *author_set, int author_count)
 	if (author_set[i].affiliation != NULL) {
 	    free(author_set[i].affiliation);
 	    author_set[i].affiliation = NULL;
+	}
+	if (author_set[i].author_handle != NULL) {
+	    free(author_set[i].author_handle);
+	    author_set[i].author_handle = NULL;
 	}
     }
 

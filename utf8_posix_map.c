@@ -48,11 +48,21 @@
 
 #include <stdio.h>
 #include <stdint.h>
+#include <strings.h>
+#include <sys/time.h>
+#include <unistd.h>
+
 
 /*
  * utf8_posix_map include
  */
 #include "utf8_posix_map.h"
+
+
+/*
+ * IOCCC limits
+ */
+#include "limit_ioccc.h"
 
 
 /*
@@ -81,8 +91,10 @@
  */
 struct utf8_posix_map hmap[] =
 {
-    /* \x00 -\x0f */
-    {"\x00", "", -1, -1},		/* NUL */
+    /* \x00 - special case */
+    {"\x00", "",  0,  0},		/* NUL */
+
+    /* \x01 -\x0f */
     {"\x01", "", -1, -1},		/* SOH */
     {"\x02", "", -1, -1},		/* STX */
     {"\x03", "", -1, -1},		/* ETX */
@@ -1530,24 +1542,45 @@ struct utf8_posix_map hmap[] =
 
 
 /*
+ * random state info
+ */
+#define STATE_LEN (256)		/* size of random() state machine */
+#define RANDOM_VAL_LEN (8)	/* hex characters produced by 31-bit random() values */
+
+/*
+ * global variables
+ */
+static bool utf8_posix_map_checked = false;	/* true ==> check_utf8_posix_map() run was sucessful */
+static bool seeded = false;			/* ture ==> default_handle() as needed random() */
+static char state[STATE_LEN+1];			/* srandom() state */
+
+
+/*
  * check_utf8_posix_map	- fill in string lenths and sanity checl hmap[]
  *
  * This function verifies that the only NULL element in the table is the very
  * last element: if it's not there or there's another NULL element it's a
  * problem that has to be fixed.
- *
  */
 void
 check_utf8_posix_map(void)
 {
-    size_t max;		/* number of elements in hmap[] */
+    size_t max = 0;		/* number of elements in hmap[] */
     size_t i;
+
+    /*
+     * firewall - check if we already ran to completion
+     */
+    max = TBLLEN(hmap);
+    if (utf8_posix_map_checked == true) {
+	dbg(DBG_VVVHIGH, "hmap[0..%ju] was already setup, returning", (uintmax_t)(max-1));
+	return;
+    }
 
     /*
      * check hmap[] for non-NULL thru next to last table entry
      * and fill in table lengths
      */
-    max = TBLLEN(hmap);
     if (max <= 0) {
 	err(10, __func__, "bogus hmap length: %ju <= 0", (uintmax_t)max);
     }
@@ -1583,6 +1616,343 @@ check_utf8_posix_map(void)
 	err(14, __func__, "no final NULL element at hmap[%ju]", (uintmax_t)(max-1));
 	not_reached();
     }
+    utf8_posix_map_checked = true;
     dbg(DBG_VVHIGH, "hmap[0..%ju] sane and ready", (uintmax_t)(max-1));
     return;
+}
+
+
+/*
+ * default_handle - compute a default handle given name and UUID
+ *
+ * A default author handle attempted to be computed from the author name, using
+ * the utf8_posix_map hmap[] to translate certain UTF-8 strings in the name
+ * into POSIX+ safe strings.  If for some reason the translation results in
+ * an empty string, a string using the author_num, entry_num and ioccc_id
+ * will be returned.  If the translation results in a string that would
+ * be too long, the string will be truncated.
+ *
+ * In all cases the return will be a non-NULL malloced string that
+ * is NUL terminated, not empty, and consiting of only POSIX portable
+ * filename and + chars.
+ *
+ * given:
+ *	name		- name of the author
+ *
+ * retunrs:
+ *	malloced default handle
+ *
+ * Does not return on error nor NULL pointers nor invalid args.
+ */
+char *
+default_handle(char const *name)
+{
+    size_t def_len = 0;		/* default handle length */
+    size_t namelen = 0;		/* length of name */
+    char *ret = NULL;		/* malloc string to return */
+    struct utf8_posix_map *m;	/* pointer into hmap[] table */
+    bool safe = false;		/* true ==> default handle has safe characters */
+    size_t cur_len = 0;		/* current default handle length that is bring formed */
+    size_t len = 0;		/* string length of computed default handle */
+    int cret;			/* gettimeofday() or snprintf() return value */
+    char *pret;			/* stpncpy() return */
+    size_t i;
+
+    /*
+     * firewall
+     */
+    if (name == NULL) {
+	err(15, __func__, "passed NULL arg");
+	not_reached();
+    }
+    namelen = strlen(name);
+    if (namelen <= 0) {
+	err(15, __func__, "empty name");
+	not_reached();
+    }
+
+    /*
+     * setup hmap[] - OK to call if already set up
+     */
+    check_utf8_posix_map();
+
+    /*
+     * determine length of default handle
+     */
+    def_len = 0;
+    i = 0;
+    while (i < namelen) {
+
+	/*
+	 * search for a hmap[] match
+	 */
+	for (m=hmap; m->utf8_str != NULL; ++m) {
+
+	    /* skip special cases */
+	    if (m->utf8_str_len <= 0) {
+		continue;
+	    }
+
+	    /* skip if there is not a posix_str for this entry */
+	    if (m->posix_str == NULL) {
+		continue;
+	    }
+
+	    /* skip if map entry is too long for remainder of string */
+	    if (i + m->utf8_str_len > namelen) {
+		continue;
+	    }
+
+	    /* skip if there isn't match with the rest of the string */
+	    if (strncasecmp(m->utf8_str, name+i, m->utf8_str_len) != 0) {
+		continue;
+	    }
+
+	    /* match found: add to default handle length */
+	    def_len += m->posix_str_len;
+
+	    /*
+	     * advance string position
+	     */
+	    i += m->utf8_str_len;
+
+	    /* stop hmap[] scan on this match */
+	    break;
+	}
+
+	/*
+	 * if no hmap[] match was found, skip this string byte
+	 */
+        if (m->utf8_str == NULL) {
+	    ++i;
+	}
+    }
+    dbg(DBG_VVHIGH, "estimated default handle <%s> length: %ju", name, def_len);
+
+    /*
+     * case: estimated default handle is empty
+     *
+     * If the hmap[] translation of name would be empty, then
+     * for a malloced string of hex characters our of 3 calls random().
+     */
+    if (def_len <= 0) {
+
+	long a;		/* 1st call to random() */
+	long b;		/* 2nd call to random() */
+	long c;		/* 3rd call to random() */
+
+        /*
+	 * NOTE: We do not need a very strong, let alone, cryptographically
+	 *	 sound, random number generator.  We just need to generate
+	 *	 some characters that are unlikely to be pseudo-randomly
+	 *	 picked by another user.  Even if there happens to be a
+	 *	 match, this is OK as the IOCCC judges can sort it out
+	 *	 when it comes time to judge entries.  We just need a
+	 *	 somewhat reasonanble j-random string in the event
+	 *	 that we cannot use a translation of the name.
+	 */
+
+	/*
+	 * if needed, first seed our PRNG
+	 */
+	if (seeded == false) {
+	    struct timeval tp;	/* the time, now */
+	    uintmax_t tmp;	/* temp value from time for xor folding */
+	    char *iret;		/* initstate() return value */
+
+	    /*
+	     * determine now
+	     */
+	    errno = 0;		/* pre-clear errno for errp() */
+	    cret = gettimeofday(&tp, NULL);
+	    if (cret < 0) {
+		errp(16, __func__, "gettimeofday failed");
+		not_reached();
+	    }
+
+	    /*
+	     * initialize our random state from stuff that hopefully is somewhat variable
+	     */
+	    tmp = (uintmax_t)tp.tv_sec + (uintmax_t)tp.tv_usec + (uintmax_t)getpid() + (uintmax_t)getppid();
+	    errno = 0;		/* pre-clear errno for errp() */
+	    iret = initstate((unsigned)tmp, state, STATE_LEN);
+	    if (iret == NULL) {
+		errp(17, __func__, "srandom failed");
+		not_reached();
+	    }
+
+	    /*
+	     * note that we are now seeded
+	     */
+	    seeded = true;
+	}
+
+	/*
+	 * obtain our 3 random() values
+	 */
+	a = random();
+	b = random();
+	c = random();
+
+	/*
+	 * malloc the random default author handle
+	 */
+	def_len = LITLEN("jrandom+") + 3*RANDOM_VAL_LEN;
+	errno = 0;		/* pre-clear errno for errp() */
+	ret = calloc(def_len+1, 1);
+	if (ret == NULL) {
+	    errp(18, __func__, "calloc faiked for %ju bytes", (uintmax_t)(def_len+1));
+	    not_reached();
+	}
+
+	/*
+	 * format the random handle
+	 */
+	cret = snprintf(ret, def_len, "jrandom+%08lx%08lx%08lx", a, b, c);
+	if (cret <= 0) {
+	    errp(19, __func__, "snprintf failed, returned: %d", cret);
+	    not_reached();
+	}
+
+    /*
+     * case: we can translate into a default random handle
+     */
+    } else {
+
+	/*
+	 * malloc the default default author handle
+	 */
+	errno = 0;		/* pre-clear errno for errp() */
+	ret = calloc(def_len+1, 1);
+	if (ret == NULL) {
+	    errp(20, __func__, "calloc faiked for %ju bytes", (uintmax_t)(def_len+1));
+	    not_reached();
+	}
+
+	/*
+	 * form default handle from hmap[] translations
+	 */
+	cur_len = 0;
+	i = 0;
+	while (i < namelen) {
+
+	    /*
+	     * search for a hmap[] match
+	     */
+	    for (m=hmap; m->utf8_str != NULL; ++m) {
+
+		/* skip special cases */
+		if (m->utf8_str_len <= 0) {
+		    continue;
+		}
+
+		/* skip if there is not a posix_str for this entry */
+		if (m->posix_str == NULL) {
+		    continue;
+		}
+
+		/* skip if map entry is too long for remainder of string */
+		if (i + m->utf8_str_len > namelen) {
+		    continue;
+		}
+
+		/* skip if there isn't match with the rest of the string */
+		if (strncasecmp(m->utf8_str, name+i, m->utf8_str_len) != 0) {
+		    continue;
+		}
+
+		/*
+		 * match found: copy translated chars to handle, if there are any
+		 */
+		if (m->posix_str_len > 0) {
+
+		    /*
+		     * firewall - do not copy beyond end of malloced buffer
+		     */
+		    if (cur_len + m->posix_str_len > def_len) {
+			err(21, __func__, "attempt to copy to buf[%ju] %ju bytes: would go beyond malloced len: %ju",
+					   (uintmax_t)cur_len, (uintmax_t)m->posix_str_len, (uintmax_t)def_len);
+			not_reached();
+		    }
+
+		    /*
+		     * copy translation into the default author handle buffer
+		     */
+		    errno = 0;		/* pre-clear errno for errp() */
+		    pret = strncpy(ret+cur_len, m->posix_str, m->posix_str_len);
+		    if (pret == NULL) {
+			errp(22, __func__, "strncpy() returned NULL");
+			not_reached();
+		    }
+
+		    /*
+		     * advance our copy position
+		     */
+		    cur_len += m->posix_str_len;
+		}
+
+		/*
+		 * advance our string position
+		 */
+		i += m->utf8_str_len;
+
+		/* stop hmap[] scan on this match */
+		break;
+	    }
+
+	    /*
+	     * if no hmap[] match was found, skip this string byte
+	     */
+	    if (m->utf8_str == NULL) {
+		++i;
+	    }
+	}
+	ret[cur_len] = '\0';	/* paranoia */
+	dbg(DBG_VVHIGH, "current default handle length: %ju", (uintmax_t)cur_len);
+	dbg(DBG_VHIGH, "current computed default handle: <%s>", ret);
+
+	/*
+	 * truncate translated default author handle if needed
+	 */
+	if (cur_len > MAX_HANDLE) {
+	    cur_len = MAX_HANDLE;
+	    ret[cur_len] = '\0';
+	    dbg(DBG_VVHIGH, "default handle truncated to length: %ju", (uintmax_t)cur_len);
+	}
+    }
+    dbg(DBG_VHIGH, "computed default handle: <%s>", ret);
+
+    /*
+     * sanity check: default author handle cannot be empty
+     */
+    len = strlen(ret);
+    if (len <= 0) {
+	err(23, __func__, "default author handle length: %ju <= 0", (uintmax_t)len);
+	not_reached();
+    }
+    dbg(DBG_VVHIGH, "actual default handle length: %ju", (uintmax_t)len);
+
+    /*
+     * sanity check: default author handle cannot be too long
+     */
+    if (len > MAX_HANDLE) {
+	err(24, __func__, "default author handle length: %ju > MAX_HANDLE: %d",
+			   (uintmax_t)len, MAX_HANDLE);
+	not_reached();
+    }
+
+    /*
+     * sanity check: default author handle have only POSIX portable safe plus + chars
+     */
+    safe = posix_plus_safe(ret, true, false, true);
+    if (safe == false) {
+	err(25, __func__, "default author handle contains unsafe chars: <%s>", ret);
+	not_reached();
+    }
+
+    /*
+     * return default author handle
+     */
+    dbg(DBG_HIGH, "retruning default handle: <%s>", ret);
+    return ret;
 }
