@@ -3680,11 +3680,11 @@ get_author_info(struct info *infop, char *ioccc_id, struct author **author_set_p
 	    warnp(__func__, "puts error printing ISO 3166-1 URL4");
 	}
 	para("",
-	     "We will ask for the author(s) Email address. Press return if you don't want to provide it, or if don't have one.",
-	     "We will ask for a home URL (starting with http:// or https://), or press return to skip, or if don't have one.",
-	     "We will ask a twitter handle (must start with @), or press return to skip, or if don't have one.",
-	     "We will ask a GitHub account (must start with @), or press return to skip, or if don't have one.",
-	     "We will ask for an affiliation (company, school, org) of the author, or press return to skip, or if don't have one.",
+	     "We will ask for the author(s) Email address. Press return if you don't want to provide it.",
+	     "We will ask for a home URL (starting with http:// or https://), or press return to skip.",
+	     "We will ask a twitter handle (must start with @), or press return to skip.",
+	     "We will ask a GitHub account (must start with @), or press return to skip.",
+	     "We will ask for an affiliation (company, school, group) of the author.",
 	     "We will ask if you have won the IOCCC before. Your answer will not affect your chances of winning.",
 	     "We will ask you for a author handle. You should select the default unless you have won the IOCCC before.",
 	     NULL);
