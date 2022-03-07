@@ -466,7 +466,6 @@ check_info_json(char const *file, char const *fnamchk)
 	    not_reached();
 	}
 
-
 	/* manifest array is handled specially */
 	if (!strcmp(p, "manifest")) {
 	    if (!info_field) {
@@ -484,7 +483,7 @@ check_info_json(char const *file, char const *fnamchk)
 	    }
 
 	    /* find start of array */
-	    array_start = strtok_r(NULL, ":[{", &saveptr);
+	    array_start = strtok_r(NULL, "{", &saveptr);
 	    if (array_start == NULL) {
 		err(23, __func__, "unable to find beginning of array");
 		not_reached();
@@ -523,7 +522,7 @@ check_info_json(char const *file, char const *fnamchk)
 
 
 	    do {
-		array_field = strtok_r(array_val?NULL:array_dup, "{ \t\n", &array_saveptr);
+		array_field = strtok_r(array_val?NULL:array_dup, "{ :\t\n},", &array_saveptr);
 		if (array_field == NULL) {
 		    /* not necessarily an error */
 		    break;
