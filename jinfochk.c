@@ -1,6 +1,8 @@
 /* vim: set tabstop=8 softtabstop=4 shiftwidth=4 noexpandtab : */
 /*
- * jinfochk - IOCCC JSON .info.json checker and validator
+ * jinfochk - IOCCC JSON .info.json checker and validator. Invoked by
+ * mkiocccentry after the .info.json file has been created but prior to forming
+ * the tarball.
  *
  * "Because sometimes even the IOCCC Judges need some help." :-)
  *
