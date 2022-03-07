@@ -393,9 +393,7 @@ check_info_json(char const *file, char const *fnamchk)
     ++p;
 
     /*
-     * Begin to parse the file, field by field. Note that as of 1 March 2022
-     * this is not complete and some files that are validly formed will
-     * trip the parser up. These will be fixed in a future commit.
+     * Begin to parse the file, field by field.
      */
     do {
 	/* we have to skip leading whitespace */
@@ -509,6 +507,7 @@ check_info_json(char const *file, char const *fnamchk)
 		not_reached();
 	    }
 
+	    /* the array cannot be empty */
 	    if (*array == '\0') {
 		err(25, __func__, "empty array in file %s", file);
 		not_reached();
@@ -522,7 +521,7 @@ check_info_json(char const *file, char const *fnamchk)
 		not_reached();
 	    }
 
-
+	    /* the last array element cannot end with a ',' */
 	    if (!check_last_json_char(file, array_dup, false, &p, ',')) {
 		warn(__func__, "last array element ends with ',' in file %s: '%c'", file, *p);
 		++issues;
@@ -572,17 +571,8 @@ check_info_json(char const *file, char const *fnamchk)
 
 		/* if nothing left break out of loop */
 		if (!*array_field) {
-		    /*
-		     * the continue can cause additional problems if there's
-		     * more in the file but we warn instead of error during
-		     * development.
-		     *
-		     * TODO: Make this an error once all testing has been
-		     * finished.
-		     */
-		    warn(__func__, "found empty array field in file %s: '%s'", file, array_field);
-		    ++issues;
-		    continue;
+		    err(35, __func__, "found empty array field in file %s: '%s'", file, array_field);
+		    not_reached();
 		}
 
 		array_info_field = find_json_field_in_table(info_json_fields, array_field, &loc);
@@ -595,6 +585,7 @@ check_info_json(char const *file, char const *fnamchk)
 		    not_reached();
 		}
 
+		/* only some array fields can have empty values (null string) */
 		can_be_empty = array_info_field->can_be_empty;
 
 		array_val = strtok_r(NULL, ":,", &array_saveptr);
@@ -1125,6 +1116,7 @@ add_manifest_file(char const *filename)
 	}
     }
 
+    /* allocate a struct for the file */
     errno = 0;
     manifest_file = calloc(1, sizeof *manifest_file);
     if (manifest_file == NULL) {
@@ -1132,6 +1124,7 @@ add_manifest_file(char const *filename)
 	not_reached();
     }
 
+    /* record the filename */
     errno = 0;
     manifest_file->filename = strdup(filename);
     if (manifest_file->filename == NULL) {
@@ -1139,8 +1132,13 @@ add_manifest_file(char const *filename)
 	not_reached();
     }
 
+    /*
+     * we have to keep track of the number of times this file exists in the
+     * manifest
+     */
     manifest_file->count = 1;
 
+    /* prepend it to the list */
     manifest_file->next = manifest_files_list;
     manifest_files_list = manifest_file;
 
