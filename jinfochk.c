@@ -397,16 +397,16 @@ check_info_json(char const *file, char const *fnamchk)
 	/* get the next field */
 	p = strtok_r(val?NULL:p, ":,", &saveptr);
 	/* if NULL pointer or empty string, break out of loop */
-	if (p == NULL || !*p) {
+	if (p == NULL || *p == '\0') {
 	    break;
 	}
 
 	/* skip leading whitespace on the field */
-	while (*p && isspace(*p))
+	while (*p != '\0' && isspace(*p))
 	    ++p;
 
 	/* if nothing else to parse break out of the loop */
-	if (!*p)
+	if (*p == '\0')
 	    break;
 
 	/* remove a single '"' if one exists at the beginning (*p == '"') */
@@ -467,7 +467,6 @@ check_info_json(char const *file, char const *fnamchk)
 	}
 
 
-
 	/* manifest array is handled specially */
 	if (!strcmp(p, "manifest")) {
 	    if (!info_field) {
@@ -495,6 +494,7 @@ check_info_json(char const *file, char const *fnamchk)
 	    if (!*array_start)
 		break;
 
+
 	    /* extract the array */
 	    array = strtok_r(NULL, "]", &saveptr);
 	    if (array == NULL) {
@@ -502,7 +502,7 @@ check_info_json(char const *file, char const *fnamchk)
 		not_reached();
 	    }
 
-	    if (!*array) {
+	    if (*array == '\0') {
 		err(25, __func__, "empty array in file %s", file);
 		not_reached();
 	    }
@@ -521,6 +521,7 @@ check_info_json(char const *file, char const *fnamchk)
 		++issues;
 	    }
 
+
 	    do {
 		array_field = strtok_r(array_val?NULL:array_dup, "{ \t\n", &array_saveptr);
 		if (array_field == NULL) {
@@ -530,6 +531,7 @@ check_info_json(char const *file, char const *fnamchk)
 		/* skip leading whitespace on the field */
 		while (*array_field && isspace(*array_field))
 		    ++array_field;
+
 
 		/* remove a single '"' if one exists at the beginning
 		 * (*array_field == '"') */
