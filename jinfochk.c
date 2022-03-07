@@ -470,9 +470,6 @@ check_info_json(char const *file, char const *fnamchk)
 
 	/* manifest array is handled specially */
 	if (!strcmp(p, "manifest")) {
-	    /* TODO The below only extracts the array: it does not yet parse it.
-	     * This will come in a future commit.
-	     */
 	    if (!info_field) {
 		err(22, __func__, "manifest field not found in info_json_fields table");
 		not_reached();
