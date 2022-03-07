@@ -1571,7 +1571,7 @@ struct json_field common_json_fields[] =
     { NULL,			    NULL, 0, 0, false, JSON_NULL,   false, NULL } /* this **MUST** be last! */
 };
 
-size_t SIZEOF_COMMON_JSON_FIELDS_TABLE = sizeof(common_json_fields)/sizeof(common_json_fields[0]);
+size_t SIZEOF_COMMON_JSON_FIELDS_TABLE = TBLLEN(common_json_fields);
 
 /*
  * .info.json fields table used to determine if a name belongs in the file,
@@ -1610,7 +1610,7 @@ struct json_field info_json_fields[] =
     { "extra_file",		NULL, 0, 0, false, JSON_ARRAY_STRING,	false,	NULL },
     { NULL,			NULL, 0, 0, false, JSON_NULL,		false,	NULL } /* this **MUST** be last */
 };
-size_t SIZEOF_INFO_JSON_FIELDS_TABLE = sizeof(info_json_fields)/sizeof(info_json_fields[0]);
+size_t SIZEOF_INFO_JSON_FIELDS_TABLE = TBLLEN(info_json_fields);
 
 /*
  * .author.json fields table used to determine if a name belongs in the file,
@@ -1638,7 +1638,7 @@ struct json_field author_json_fields[] =
     { "author_number",		NULL, 0, 5, false, JSON_ARRAY_NUMBER,	false,	NULL },
     { NULL,			NULL, 0, 0, false, JSON_NULL,		false,	NULL } /* this **MUST** be last */
 };
-size_t SIZEOF_AUTHOR_JSON_FIELDS_TABLE = sizeof(author_json_fields)/sizeof(author_json_fields[0]);
+size_t SIZEOF_AUTHOR_JSON_FIELDS_TABLE = TBLLEN(author_json_fields);
 
 
 /* find_json_field_in_table	    - find field 'name' in json table
@@ -1672,7 +1672,7 @@ find_json_field_in_table(struct json_field *table, char const *name, size_t *loc
     }
 
     /* zero length name is equivalent to NULL */
-    if (strlen(name) <= 0) {
+    if (name != NULL && strlen(name) <= 0) {
 	name = NULL;
     }
 
@@ -1766,7 +1766,7 @@ check_common_json_fields_table(void)
 	}
     }
     if (max - 1 != i) {
-	err(217, __func__, "found embedded NULL element in common_json_fields table");
+	err(217, __func__, "found embedded NULL element in common_json_fields table at location %ju", (uintmax_t)i);
 	not_reached();
     }
     if (common_json_fields[i].name != NULL) {
@@ -1819,7 +1819,7 @@ check_info_json_fields_table(void)
     }
 
     if (max - 1 != i) {
-	err(221, __func__, "found embedded NULL element in info_json_fields table");
+	err(221, __func__, "found embedded NULL element in info_json_fields table at location %ju", (uintmax_t)i);
 	not_reached();
     }
 
@@ -1874,7 +1874,7 @@ check_author_json_fields_table(void)
     }
 
     if (max - 1 != i) {
-	err(225, __func__, "found embedded NULL element in author_json_fields table");
+	err(225, __func__, "found embedded NULL element in author_json_fields table at location %ju", (uintmax_t)i);
 	not_reached();
     }
     if (author_json_fields[i].name != NULL) {
