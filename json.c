@@ -1557,10 +1557,8 @@ struct json_field common_json_fields[] =
     { "ioccc_contest",		    NULL, 0, 1, false, JSON_STRING, false, NULL },
     { "ioccc_year",		    NULL, 0, 1, false, JSON_NUMBER, false, NULL },
     { "mkiocccentry_version",	    NULL, 0, 1, false, JSON_STRING, false, NULL },
-    { "iocccsize_version",	    NULL, 0, 1, false, JSON_STRING, false, NULL },
     { "IOCCC_contest_id",	    NULL, 0, 1, false, JSON_STRING, false, NULL },
     { "entry_num",		    NULL, 0, 1, false, JSON_NUMBER, false, NULL },
-    { "author_count",		    NULL, 0, 1, false, JSON_NUMBER, false, NULL },
     { "tarball",		    NULL, 0, 1, false, JSON_STRING, false, NULL },
     { "formed_timestamp",	    NULL, 0, 1, false, JSON_NUMBER, false, NULL },
     { "formed_timestamp_usec",	    NULL, 0, 1, false, JSON_NUMBER, false, NULL },
@@ -1582,6 +1580,7 @@ size_t SIZEOF_COMMON_JSON_FIELDS_TABLE = TBLLEN(common_json_fields);
 struct json_field info_json_fields[] =
 {
     { "IOCCC_info_version",	NULL, 0, 1, false, JSON_STRING,		false, NULL },
+    { "iocccsize_version",	NULL, 0, 1, false, JSON_STRING,		false, NULL },
     { "title",			NULL, 0, 1, false, JSON_STRING,		false, NULL },
     { "abstract",		NULL, 0, 1, false, JSON_STRING,		false, NULL },
     { "rule_2a_size",		NULL, 0, 1, false, JSON_NUMBER,		false, NULL },
@@ -1624,6 +1623,7 @@ size_t SIZEOF_INFO_JSON_FIELDS_TABLE = TBLLEN(info_json_fields);
 struct json_field author_json_fields[] =
 {
     { "IOCCC_author_version",	NULL, 0, 1, false, JSON_STRING,		false,	NULL },
+    { "author_count",		NULL, 0, 1, false, JSON_NUMBER,		false,  NULL },
     { "authors",		NULL, 0, 1, false, JSON_ARRAY,		false,	NULL },
     { "name",			NULL, 0, 5, false, JSON_ARRAY_STRING,	false,  NULL },
     { "location_code",		NULL, 0, 5, false, JSON_ARRAY_STRING,	false,	NULL },
@@ -2160,7 +2160,6 @@ check_found_common_json_fields(char const *program, char const *file, char const
 {
     int year = 0;	/* ioccc_year: IOCCC year as an integer */
     int entry_num = -1;	/* entry_num: entry number as an integer */
-    int author_count = 0; /* author count */
     long ts = 0;	/* formed_timestamp_usec: microseconds as an integer */
     struct tm tm;	/* formed_timestamp: formatted as a time structure */
     int exit_code = 0;	/* tarball: exit code from fnamchk command */
@@ -2276,11 +2275,6 @@ check_found_common_json_fields(char const *program, char const *file, char const
 		    warn(__func__, "mkiocccentry_version != MKIOCCCENTRY_VERSION \"%s\" in file %s: \"%s\"", MKIOCCCENTRY_VERSION, file, val);
 		    ++issues;
 		}
-	    } else if (!strcmp(field->name, "iocccsize_version")) {
-		if (!test && strcmp(val, IOCCCSIZE_VERSION)) {
-		    warn(__func__, "iocccsize_version != IOCCCSIZE_VERSION \"%s\" in file %s: \"%s\"", IOCCCSIZE_VERSION, file, val);
-		    ++issues;
-		}
 	    } else if (!strcmp(field->name, "IOCCC_contest_id")) {
 		if (!valid_contest_id(val)) {
 		    warn(__func__, "IOCCC_contest_id is invalid in file %s: \"%s\"", file, val);
@@ -2314,12 +2308,6 @@ check_found_common_json_fields(char const *program, char const *file, char const
 		entry_num = string_to_int(val);
 		if (!(entry_num >= 0 && entry_num <= MAX_ENTRY_NUM)) {
 		    warn(__func__, "entry number out of range in file %s: %d", file, entry_num);
-		    ++issues;
-		}
-	    } else if (!strcmp(field->name, "author_count")) {
-		author_count = string_to_int(val);
-		if (!(author_count > 0 && author_count <= MAX_AUTHORS)) {
-		    warn(__func__, "author count out of range of > 1 && <= %d in file %s: '%s' (%d)", MAX_AUTHORS, file, val, author_count);
 		    ++issues;
 		}
 	    } else if (!strcmp(field->name, "formed_UTC")) {
@@ -2366,14 +2354,8 @@ check_found_common_json_fields(char const *program, char const *file, char const
      * we don't do that here. This is because the fields that are in the list
      * are those that will potentially have more than allowed whereas here we're
      * making sure every field that is required is actually in the list.
-     *
-     * XXX - We don't check for this in test mode because most if not all of the
-     * files in test_JSON were created before some of the fields were common and
-     * since the judges (and the tools) will never use test mode to verify an
-     * entry this is not a problem. As I add tests I will not be using test mode
-     * so I can see everything.
      */
-    for (loc = 0; !test && common_json_fields[loc].name != NULL; ++loc) {
+    for (loc = 0; common_json_fields[loc].name != NULL; ++loc) {
 	if (!common_json_fields[loc].found && common_json_fields[loc].max_count > 0) {
 	    warn(__func__, "required field not found in found_common_json_fields list in file %s: '%s'", file, common_json_fields[loc].name);
 	    ++issues;
