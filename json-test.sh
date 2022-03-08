@@ -312,6 +312,12 @@ run_test()
     if [[ $pass_fail == pass ]]; then
 	if [[ $status -ne 0 ]]; then
 	    echo "$0: Warning: in run_test: FAIL: $test_prog -v $debug_level $json_test_file exit code: $status != 0" 1>&2
+	    echo "$0: Warning: the above mentioned test FAILED when it should have PASSED" 1>&2
+	    if [[ $V_FLAG -lt 3 ]]; then
+		echo "$0: Warning: for more details try: $test_prog -v 3 -- $json_test_file" 1>&2
+	    else
+		echo "$0: Warning: for more details try: $test_prog -v $V_FLAG -- $json_test_file" 1>&2
+	    fi
 	    EXIT_CODE=1
 	elif [[ $V_FLAG -ge 5 ]]; then
 	    echo "$0: debug[5]: in run_test: PASS: $test_prog -v $debug_level $json_test_file" 1>&2
@@ -319,6 +325,12 @@ run_test()
     elif [[ $pass_fail == fail ]]; then
 	if [[ $status -eq 0 ]]; then
 	    echo "$0: Warning: in run_test: FAIL: $test_prog -v $debug_level $json_test_file exit code: $status == 0" 1>&2
+	    echo "$0: Warning: the above mentioned test PASSED when it should have FAILED" 1>&2
+	    if [[ $V_FLAG -lt 3 ]]; then
+		echo "$0: Warning: for more details try: $test_prog -v 3 -- $json_test_file" 1>&2
+	    else
+		echo "$0: Warning: for more details try: $test_prog -v $V_FLAG -- $json_test_file" 1>&2
+	    fi
 	    EXIT_CODE=1
 	elif [[ $V_FLAG -ge 5 ]]; then
 	    echo "$0: debug[5]: in run_test: PASS: $test_prog -v $debug_level $json_test_file" 1>&2
