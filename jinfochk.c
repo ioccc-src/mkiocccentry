@@ -317,6 +317,7 @@ check_info_json(char const *file, char const *fnamchk)
     struct json_field *common_field; /* temporary use to determine type of value if common field */
     size_t loc = 0;
     bool can_be_empty = false; /* if field can be empty */
+    bool is_json_string = false; /* if field is a json string type */
 
     /*
      * firewall
@@ -592,6 +593,8 @@ check_info_json(char const *file, char const *fnamchk)
 
 		/* only some array fields can have empty values (null string) */
 		can_be_empty = array_info_field->can_be_empty;
+		is_json_string = array_info_field->field_type == JSON_ARRAY_STRING;
+
 
 		array_val = strtok_r(NULL, ":,", &array_saveptr);
 		if (array_val == NULL) {
@@ -622,7 +625,7 @@ check_info_json(char const *file, char const *fnamchk)
 		    break;
 
 		/* if the field type is a string we have to remove outer '"'s */
-		if (array_info_field->field_type == JSON_ARRAY_STRING) {
+		if (is_json_string) {
 		    if (!strcmp(array_val, "\"\"")) {
 			/* make sure that it's not an empty string ("") */
 			warn(__func__, "found empty string for array field '%s': '%s'", array_field, array_val);
@@ -720,7 +723,6 @@ check_info_json(char const *file, char const *fnamchk)
 		}
 
 		if (!get_info_json_field(file, array_field, array_val_esc)) {
-		    /* this should actually never be reached */
 		    warn(__func__, "found invalid field in array in file %s: '%s'", file, array_field);
 		    ++issues;
 		}
@@ -763,12 +765,13 @@ check_info_json(char const *file, char const *fnamchk)
 		break;
 
 	    can_be_empty = (common_field && common_field->can_be_empty) || (info_field && info_field->can_be_empty);
+	    is_json_string = (common_field && common_field->field_type == JSON_STRING) || (info_field && info_field->field_type == JSON_STRING);
+
 	    /*
 	     * If the field type is a string we have to remove a single '"' from
 	     * the beginning and end of the value.
 	     */
-	    if ((common_field && (common_field->field_type == JSON_STRING || common_field->field_type == JSON_ARRAY_STRING)) ||
-		(info_field && (info_field->field_type == JSON_STRING || info_field->field_type == JSON_ARRAY_STRING))) {
+	    if (is_json_string) {
 		if (!strcmp(val, "\"\"")) {
 		    /* make sure that it's not an empty string ("") */
 		    warn(__func__, "found empty string for field '%s': '%s'", p, val);
@@ -1321,6 +1324,11 @@ check_found_info_json_fields(char const *file, bool test)
 		    warn(__func__, "IOCCC_info_version != INFO_VERSION \"%s\" in file %s: \"%s\"", INFO_VERSION, file, val);
 		    ++issues;
 		}
+	    } else if (!strcmp(field->name, "iocccsize_version")) {
+		if (!test && strcmp(val, IOCCCSIZE_VERSION)) {
+		    warn(__func__, "iocccsize_version != IOCCCSIZE_VERSION \"%s\" in file %s: \"%s\"", IOCCCSIZE_VERSION, file, val);
+		    ++issues;
+		}
 	    } else if (!strcmp(field->name, "title")) {
 		/* check for valid title length */
 		if (!val_length) {
@@ -1498,14 +1506,8 @@ check_found_info_json_fields(char const *file, bool test)
      * we don't do that here. This is because the fields that are in the list
      * are those that will potentially have more than allowed whereas here we're
      * making sure every field that is required is actually in the list.
-     *
-     * XXX - We don't check for this in test mode because most if not all of the
-     * files in test_JSON were created before some of the fields were common and
-     * since the judges (and the tools) will never use test mode to verify an
-     * entry this is not a problem. As I add tests I will not be using test mode
-     * so I can see everything.
      */
-    for (loc = 0; !test && info_json_fields[loc].name != NULL; ++loc) {
+    for (loc = 0; info_json_fields[loc].name != NULL; ++loc) {
 	if (!info_json_fields[loc].found && info_json_fields[loc].max_count > 0) {
 	    warn(__func__, "required field not found in found_info_json_fields list in file %s: '%s'", file, info_json_fields[loc].name);
 	    ++issues;

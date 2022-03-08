@@ -787,6 +787,7 @@ check_found_author_json_fields(char const *file, bool test)
     size_t loc = 0;	/* location in the author_json_fields table */
     int issues = 0;
     size_t val_length = 0;  /* current value length */
+    int author_count = 0;
 
     /*
      * firewall
@@ -876,6 +877,12 @@ check_found_author_json_fields(char const *file, bool test)
 	    if (!strcmp(field->name, "IOCCC_author_version")) {
 		if (!test && strcmp(val, AUTHOR_VERSION)) {
 		    warn(__func__, "IOCCC_author_version != \"%s\" in file %s: \"%s\"", AUTHOR_VERSION, file, val);
+		    ++issues;
+		}
+	    } else if (!strcmp(field->name, "author_count")) {
+		author_count = string_to_int(val);
+		if (!(author_count > 0 && author_count <= MAX_AUTHORS)) {
+		    warn(__func__, "author count out of range of > 1 && <= %d in file %s: '%s' (%d)", MAX_AUTHORS, file, val, author_count);
 		    ++issues;
 		}
 	    } else {
