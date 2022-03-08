@@ -45,7 +45,7 @@ main(int argc, char **argv)
      * parse args
      */
     program = argv[0];
-    while ((i = getopt(argc, argv, "hv:VqF:t:fT")) != -1) {
+    while ((i = getopt(argc, argv, "hv:qVF:t:fT")) != -1) {
 	switch (i) {
 	case 'h':		/* -h - print help to stderr and exit 0 */
 	    usage(0, "-h help mode", program);
@@ -56,6 +56,9 @@ main(int argc, char **argv)
 	     * parse verbosity
 	     */
 	    verbosity_level = parse_verbosity(program, optarg);
+	    break;
+	case 'q':
+	    quiet = true;
 	    break;
 	case 'V':		/* -V - print version and exit */
 	    errno = 0;		/* pre-clear errno for warnp() */
@@ -74,9 +77,6 @@ main(int argc, char **argv)
 	    tar = optarg;
 	    tar_flag_used = true;
 	    break;
-	case 'q':
-	    quiet = true;
-	    break;
 	case 'f':
 	    text_file_flag_used = true; /* don't rely on tar: just read file as if it was a text file */
 	    break;
@@ -93,6 +93,11 @@ main(int argc, char **argv)
 	    usage(1, "invalid -flag", program); /*ooo*/
 	    not_reached();
 	 }
+    }
+    /* be warn(), warnp() and msg() quiet of -q and -v 0 */
+    if (quiet == true && verbosity_level <= 0) {
+	msg_output_allowed = false;
+	warn_output_allowed = false;
     }
     /* must have the exact required number of args */
     if (argc - optind != REQUIRED_ARGS) {

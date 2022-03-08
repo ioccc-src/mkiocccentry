@@ -71,7 +71,7 @@ main(int argc, char *argv[])
      * parse args
      */
     program = argv[0];
-    while ((i = getopt(argc, argv, "hv:VtnT")) != -1) {
+    while ((i = getopt(argc, argv, "hv:qVtnT")) != -1) {
 	switch (i) {
 	case 'h':		/* -h - print help to stderr and exit 0 */
 	    usage(2, "-h help mode", program); /*ooo*/
@@ -82,6 +82,9 @@ main(int argc, char *argv[])
 	     * parse verbosity
 	     */
 	    verbosity_level = parse_verbosity(program, optarg);
+	    break;
+	case 'q':
+	    quiet = true;
 	    break;
 	case 'V':		/* -V - print version and exit */
 	    errno = 0;		/* pre-clear errno for warnp() */
@@ -115,6 +118,11 @@ main(int argc, char *argv[])
 	    usage(2, "invalid -flag", program); /*ooo*/
 	    not_reached();
 	 }
+    }
+    /* be warn(), warnp() and msg() quiet of -q and -v 0 */
+    if (quiet == true && verbosity_level <= 0) {
+	msg_output_allowed = false;
+	warn_output_allowed = false;
     }
 
     /*

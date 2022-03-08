@@ -72,12 +72,13 @@
  * usage message, split into strings that are small enough to be supported by C standards
  */
 static char usage0[] =
-"usage: iocccsize [-h] [-i] [-v level] [-V] prog.c\n"
-"usage: iocccsize [-h] [-i] [-v level] [-V] < prog.c\n"
+"usage: iocccsize [-h] [-i] [-v level] [-q] [-V] prog.c\n"
+"usage: iocccsize [-h] [-i] [-v level] [-q] [-V] < prog.c\n"
 "\n"
 "-i\t\tignored for backward compatibility\n"
 "-h\t\tprint usage message in stderr and exit 2\n"
 "-v level\tset debug level (def: none)\n"
+"-q\t\tquiet mode, unless verbosity level > 0 (def: not quiet)\n"
 "-V\t\tprint version and exit 3\n"
 "\n";
 static char usage1[] =
@@ -93,7 +94,13 @@ static char usage1[] =
 "\t4 - invalid command line\n"
 "\t>= 5 - some internal error occurred\n";
 
-int verbosity_level = 0;
+int verbosity_level = DBG_DEFAULT;	/* debug level set by -v */
+bool msg_output_allowed = true;		/* false ==> disable output from msg() */
+bool dbg_output_allowed = true;		/* false ==> disable output from dbg() */
+bool warn_output_allowed = true;	/* false ==> disable output from warn() and warnp() */
+bool err_output_allowed = true;		/* false ==> disable output from err() and errp() */
+bool usage_output_allowed = true;	/* false ==> disable output from vfprintf_usage() */
+static bool quiet = false;		/* true ==> only show errors, and warnings of -v > 0 */
 
 
 int
@@ -104,7 +111,7 @@ main(int argc, char **argv)
 	RuleCount count;		/* rule_count() processing results */
 	int ch;
 
-	while ((ch = getopt(argc, argv, "6ihv:V")) != -1) {
+	while ((ch = getopt(argc, argv, "6ihv:aV")) != -1) {
 		switch (ch) {
 		case 'i': /* ignored for backward compatibility */
 			break;
@@ -116,6 +123,10 @@ main(int argc, char **argv)
 			    iocccsize_errx(4, "cannot parse -v arg: %s", optarg);
 			    not_reached();
 			}
+			break;
+
+		case 'q':
+			quiet = true;
 			break;
 
 		case 'V':
@@ -137,6 +148,11 @@ main(int argc, char **argv)
 			exit(4); /*ooo*/
 			break;
 		}
+	}
+	/* be warn(), warnp() and msg() quiet of -q and -v 0 */
+	if (quiet == true && verbosity_level <= 0) {
+	    msg_output_allowed = false;
+	    warn_output_allowed = false;
 	}
 
 	if (optind + 1 == argc) {

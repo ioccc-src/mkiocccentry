@@ -46,11 +46,16 @@
 
 
 /* variable specific to txzchk */
-static char const *txzpath = NULL;		    /* the current tarball being checked */
-static char const *program = NULL;		    /* our name */
-int verbosity_level = DBG_DEFAULT;	    /* debug level set by -v */
-static bool quiet = false;			    /* true ==> only show errors and warnings */
-static bool text_file_flag_used = false;	    /* true ==> assume txzpath is a text file */
+static char const *txzpath = NULL;		/* the current tarball being checked */
+static char const *program = NULL;		/* our name */
+int verbosity_level = DBG_DEFAULT;		/* debug level set by -v */
+bool msg_output_allowed = true;			/* false ==> disable output from msg() */
+bool dbg_output_allowed = true;			/* false ==> disable output from dbg() */
+bool warn_output_allowed = true;		/* false ==> disable output from warn() and warnp() */
+bool err_output_allowed = true;			/* false ==> disable output from err() and errp() */
+bool usage_output_allowed = true;		/* false ==> disable output from vfprintf_usage() */
+static bool quiet = false;			/* true ==> only show errors, and warnings of -v > 0 */
+static bool text_file_flag_used = false;	/* true ==> assume txzpath is a text file */
 
 /*
  * information about the tarball
@@ -103,10 +108,11 @@ static struct txz_line *txz_lines;
  * Use the usage() function to print the usage_msgX strings.
  */
 static const char * const usage_msg =
-    "usage: %s [-h] [-v level] [-V] [-t tar] [-F fnamchk] [-f] txzpath\n"
+    "usage: %s [-h] [-v level] [-q] [-V] [-t tar] [-F fnamchk] [-f] txzpath\n"
     "\n"
     "\t-h\t\t\tprint help message and exit 0\n"
     "\t-v level\t\tset verbosity level: (def level: %d)\n"
+    "\t-q\t\t\tquiet mode, unless verbosity level > 0 (def: not quiet)\n"
     "\t-V\t\t\tprint version string and exit\n"
     "\t-T\t\t\tshow IOCCC toolset chain release repository tag\n"
     "\n"

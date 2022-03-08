@@ -37,13 +37,19 @@
 /*
  * definitions
  */
-#define VERSION "1.4 2022-02-23"
+#define VERSION "1.5 2022-03-07"
 
 
 /*
  * globals
  */
 int verbosity_level = DBG_DEFAULT;	/* debug level set by -v */
+bool msg_output_allowed = true;		/* false ==> disable output from msg() */
+bool dbg_output_allowed = true;		/* false ==> disable output from dbg() */
+bool warn_output_allowed = true;	/* false ==> disable output from warn() and warnp() */
+bool err_output_allowed = true;		/* false ==> disable output from err() and errp() */
+bool usage_output_allowed = true;	/* false ==> disable output from vfprintf_usage() */
+static bool quiet = false;		/* true ==> only show errors, and warnings of -v > 0 */
 
 
 /*
@@ -107,13 +113,15 @@ msg(char const *fmt, ...)
     }
 
     /*
-     * print the message
+     * print the message, is allowed
      */
-    ret = vfprintf(stderr, fmt, ap);
-    if (ret <= 0) {
-	fprintf(stderr, "[%s vfprintf returned error: %d]", __func__, ret);
+    if (msg_output_allowed == true) {
+	ret = vfprintf(stderr, fmt, ap);
+	if (ret <= 0) {
+	    fprintf(stderr, "[%s vfprintf returned error: %d]", __func__, ret);
+	}
+	fputc('\n', stderr);
     }
-    fputc('\n', stderr);
 
     /*
      * clean up stdarg stuff
@@ -169,24 +177,26 @@ dbg(int level, char const *fmt, ...)
     }
 
     /*
-     * print the debug message if allowed by the verbosity level
+     * print the debug message if allowed and allowed by the verbosity level
      */
-    if (level <= verbosity_level) {
-	ret = fprintf(stderr, "debug[%d]: ", level);
-	if (ret < 0) {
-	    warn(__func__, "\nin dbg(%d, %s ...): fprintf returned error: %d\n", level, fmt, ret);
-	}
-	ret = vfprintf(stderr, fmt, ap);
-	if (ret < 0) {
-	    warn(__func__, "\nin dbg(%d, %s ...): vfprintf returned error: %d\n", level, fmt, ret);
-	}
-	ret = fputc('\n', stderr);
-	if (ret != '\n') {
-	    warn(__func__, "\nin dbg(%d, %s ...): fputc returned error: %d\n", level, fmt, ret);
-	}
-	ret = fflush(stderr);
-	if (ret < 0) {
-	    warn(__func__, "\nin dbg(%d, %s ...): fflush returned error: %d\n", level, fmt, ret);
+    if (dbg_output_allowed == true) {
+	if (level <= verbosity_level) {
+	    ret = fprintf(stderr, "debug[%d]: ", level);
+	    if (ret < 0) {
+		warn(__func__, "\nin dbg(%d, %s ...): fprintf returned error: %d\n", level, fmt, ret);
+	    }
+	    ret = vfprintf(stderr, fmt, ap);
+	    if (ret < 0) {
+		warn(__func__, "\nin dbg(%d, %s ...): vfprintf returned error: %d\n", level, fmt, ret);
+	    }
+	    ret = fputc('\n', stderr);
+	    if (ret != '\n') {
+		warn(__func__, "\nin dbg(%d, %s ...): fputc returned error: %d\n", level, fmt, ret);
+	    }
+	    ret = fflush(stderr);
+	    if (ret < 0) {
+		warn(__func__, "\nin dbg(%d, %s ...): fflush returned error: %d\n", level, fmt, ret);
+	    }
 	}
     }
 
@@ -244,31 +254,37 @@ warn(char const *name, char const *fmt, ...)
      */
     if (name == NULL) {
 	name = "((NULL name))";
-	(void) fprintf(stderr, "\nWarning: in warn(): called with NULL name, forcing name: %s\n", name);
+	if (warn_output_allowed == true) {
+	    (void) fprintf(stderr, "\nWarning: in warn(): called with NULL name, forcing name: %s\n", name);
+	}
     }
     if (fmt == NULL) {
 	fmt = "((NULL fmt))";
-	(void) fprintf(stderr, "\nWarning: in warn(): called with NULL fmt, forcing fmt: %s\n", fmt);
+	if (warn_output_allowed == true) {
+	    (void) fprintf(stderr, "\nWarning: in warn(): called with NULL fmt, forcing fmt: %s\n", fmt);
+	}
     }
 
     /*
-     * issue the warning
+     * issue the warning, if allowed
      */
-    ret = fprintf(stderr, "Warning: %s: ", name);
-    if (ret < 0) {
-	(void) fprintf(stderr, "\nWarning: in warn(%s, %s ...): fprintf returned error: %d\n", name, fmt, ret);
-    }
-    ret = vfprintf(stderr, fmt, ap);
-    if (ret < 0) {
-	(void) fprintf(stderr, "\nWarning: in warn(%s, %s ...): vfprintf returned error: %d\n", name, fmt, ret);
-    }
-    ret = fputc('\n', stderr);
-    if (ret != '\n') {
-	(void) fprintf(stderr, "\nWarning: in warn(%s, %s ...): fputc returned error: %d\n", name, fmt, ret);
-    }
-    ret = fflush(stderr);
-    if (ret < 0) {
-	(void) fprintf(stderr, "\nWarning: in warn(%s, %s ...): fflush returned error: %d\n", name, fmt, ret);
+    if (warn_output_allowed == true) {
+	ret = fprintf(stderr, "Warning: %s: ", name);
+	if (ret < 0) {
+	    (void) fprintf(stderr, "\nWarning: in warn(%s, %s ...): fprintf returned error: %d\n", name, fmt, ret);
+	}
+	ret = vfprintf(stderr, fmt, ap);
+	if (ret < 0) {
+	    (void) fprintf(stderr, "\nWarning: in warn(%s, %s ...): vfprintf returned error: %d\n", name, fmt, ret);
+	}
+	ret = fputc('\n', stderr);
+	if (ret != '\n') {
+	    (void) fprintf(stderr, "\nWarning: in warn(%s, %s ...): fputc returned error: %d\n", name, fmt, ret);
+	}
+	ret = fflush(stderr);
+	if (ret < 0) {
+	    (void) fprintf(stderr, "\nWarning: in warn(%s, %s ...): fflush returned error: %d\n", name, fmt, ret);
+	}
     }
 
     /*
@@ -323,29 +339,37 @@ warnp(char const *name, char const *fmt, ...)
     /* firewall */
     if (name == NULL) {
 	name = "((NULL name))";
-	(void) fprintf(stderr, "\nWarning: in warn(): called with NULL name, forcing name: %s\n", name);
+	if (warn_output_allowed == true) {
+	    (void) fprintf(stderr, "\nWarning: in warn(): called with NULL name, forcing name: %s\n", name);
+	}
     }
     if (fmt == NULL) {
 	fmt = "((NULL fmt))";
-	(void) fprintf(stderr, "\nWarning: in warn(): called with NULL fmt, forcing fmt: %s\n", fmt);
+	if (warn_output_allowed == true) {
+	    (void) fprintf(stderr, "\nWarning: in warn(): called with NULL fmt, forcing fmt: %s\n", fmt);
+	}
     }
 
-    /* issue the warning */
-    ret = fprintf(stderr, "Warning: %s: ", name);
-    if (ret < 0) {
-	(void) fprintf(stderr, "\nWarning: in warn(%s, %s ...): fprintf returned error: %d\n", name, fmt, ret);
-    }
-    ret = vfprintf(stderr, fmt, ap);
-    if (ret < 0) {
-	(void) fprintf(stderr, "\nWarning: in warn(%s, %s ...): vfprintf returned error: %d\n", name, fmt, ret);
-    }
-    ret = fprintf(stderr, "errno[%d]: %s\n", saved_errno, strerror(saved_errno));
-    if (ret < 0) {
-	(void) fprintf(stderr, "\nWarning: in warn(%s, %s ...): fprintf with errno returned error: %d\n", name, fmt, ret);
-    }
-    ret = fflush(stderr);
-    if (ret < 0) {
-	(void) fprintf(stderr, "\nWarning: in warn(%s, %s ...): fflush returned error: %d\n", name, fmt, ret);
+    /*
+     * issue the warning, if allowed
+     */
+    if (warn_output_allowed == true) {
+	ret = fprintf(stderr, "Warning: %s: ", name);
+	if (ret < 0) {
+	    (void) fprintf(stderr, "\nWarning: in warn(%s, %s ...): fprintf returned error: %d\n", name, fmt, ret);
+	}
+	ret = vfprintf(stderr, fmt, ap);
+	if (ret < 0) {
+	    (void) fprintf(stderr, "\nWarning: in warn(%s, %s ...): vfprintf returned error: %d\n", name, fmt, ret);
+	}
+	ret = fprintf(stderr, "errno[%d]: %s\n", saved_errno, strerror(saved_errno));
+	if (ret < 0) {
+	    (void) fprintf(stderr, "\nWarning: in warn(%s, %s ...): fprintf with errno returned error: %d\n", name, fmt, ret);
+	}
+	ret = fflush(stderr);
+	if (ret < 0) {
+	    (void) fprintf(stderr, "\nWarning: in warn(%s, %s ...): fflush returned error: %d\n", name, fmt, ret);
+	}
     }
 
     /*
@@ -408,23 +432,25 @@ err(int exitcode, char const *name, char const *fmt, ...)
     }
 
     /*
-     * issue the FATAL error
+     * issue the FATAL error, if allowed
      */
-    ret = fprintf(stderr, "FATAL[%d]: %s: ", exitcode, name);
-    if (ret < 0) {
-	warn(__func__, "\nin err(%d, %s, %s ...): fprintf returned error: %d\n", exitcode, name, fmt, ret);
-    }
-    ret = vfprintf(stderr, fmt, ap);
-    if (ret < 0) {
-	warn(__func__, "\nin err(%d, %s, %s ...): vfprintf returned error: %d\n", exitcode, name, fmt, ret);
-    }
-    ret = fputc('\n', stderr);
-    if (ret != '\n') {
-	warn(__func__, "\nin err(%d, %s, %s ...): fputc returned error: %d\n", exitcode, name, fmt, ret);
-    }
-    ret = fflush(stderr);
-    if (ret < 0) {
-	warn(__func__, "\nin err(%d, %s, %s ...): fflush returned error: %d\n", exitcode, name, fmt, ret);
+    if (err_output_allowed == true) {
+	ret = fprintf(stderr, "FATAL[%d]: %s: ", exitcode, name);
+	if (ret < 0) {
+	    warn(__func__, "\nin err(%d, %s, %s ...): fprintf returned error: %d\n", exitcode, name, fmt, ret);
+	}
+	ret = vfprintf(stderr, fmt, ap);
+	if (ret < 0) {
+	    warn(__func__, "\nin err(%d, %s, %s ...): vfprintf returned error: %d\n", exitcode, name, fmt, ret);
+	}
+	ret = fputc('\n', stderr);
+	if (ret != '\n') {
+	    warn(__func__, "\nin err(%d, %s, %s ...): fputc returned error: %d\n", exitcode, name, fmt, ret);
+	}
+	ret = fflush(stderr);
+	if (ret < 0) {
+	    warn(__func__, "\nin err(%d, %s, %s ...): fflush returned error: %d\n", exitcode, name, fmt, ret);
+	}
     }
 
     /*
@@ -491,27 +517,29 @@ errp(int exitcode, char const *name, char const *fmt, ...)
     }
 
     /*
-     * issue the FATAL error
+     * issue the FATAL error, if allowed
      */
-    ret = fprintf(stderr, "FATAL[%d]: %s: ", exitcode, name);
-    if (ret < 0) {
-	warn(__func__, "\nin err(%d, %s, %s ...): fprintf #0 returned error: %d\n", exitcode, name, fmt, ret);
-    }
-    ret = vfprintf(stderr, fmt, ap);
-    if (ret < 0) {
-	warn(__func__, "\nin err(%d, %s, %s ...): vfprintf returned error: %d\n", exitcode, name, fmt, ret);
-    }
-    ret = fprintf(stderr, " errno[%d]: %s", saved_errno, strerror(saved_errno));
-    if (ret < 0) {
-	warn(__func__, "\nin err(%d, %s, %s ...): fprintf #1  returned error: %d\n", exitcode, name, fmt, ret);
-    }
-    ret = fputc('\n', stderr);
-    if (ret != '\n') {
-	warn(__func__, "\nin err(%d, %s, %s ...): fputc returned error: %d\n", exitcode, name, fmt, ret);
-    }
-    ret = fflush(stderr);
-    if (ret < 0) {
-	warn(__func__, "\nin err(%d, %s, %s ...): fflush returned error: %d\n", exitcode, name, fmt, ret);
+    if (err_output_allowed == true) {
+	ret = fprintf(stderr, "FATAL[%d]: %s: ", exitcode, name);
+	if (ret < 0) {
+	    warn(__func__, "\nin err(%d, %s, %s ...): fprintf #0 returned error: %d\n", exitcode, name, fmt, ret);
+	}
+	ret = vfprintf(stderr, fmt, ap);
+	if (ret < 0) {
+	    warn(__func__, "\nin err(%d, %s, %s ...): vfprintf returned error: %d\n", exitcode, name, fmt, ret);
+	}
+	ret = fprintf(stderr, " errno[%d]: %s", saved_errno, strerror(saved_errno));
+	if (ret < 0) {
+	    warn(__func__, "\nin err(%d, %s, %s ...): fprintf #1  returned error: %d\n", exitcode, name, fmt, ret);
+	}
+	ret = fputc('\n', stderr);
+	if (ret != '\n') {
+	    warn(__func__, "\nin err(%d, %s, %s ...): fputc returned error: %d\n", exitcode, name, fmt, ret);
+	}
+	ret = fflush(stderr);
+	if (ret < 0) {
+	    warn(__func__, "\nin err(%d, %s, %s ...): fflush returned error: %d\n", exitcode, name, fmt, ret);
+	}
     }
 
     /*
@@ -567,19 +595,21 @@ vfprintf_usage(int exitcode, FILE *stream, char const *fmt, ...)
     va_start(ap, fmt);
 
     /*
-     * issue the usage message
+     * issue the usage message, if allowed
      */
-    ret = vfprintf(stream, fmt, ap);
-    if (ret < 0) {
-	(void) fprintf(stream, "\nWarning: in vfprintf_usage(%d, stream, %s ...): vfprintf error: %d\n", exitcode, fmt, ret);
-    }
-    ret = fputc('\n', stderr);
-    if (ret != '\n') {
-	(void) fprintf(stream, "\nWarning: in vfprintf_usage(%d, stream, %s ...): fputc error: %d\n", exitcode, fmt, ret);
-    }
-    ret = fflush(stream);
-    if (ret < 0) {
-	(void) fprintf(stream, "\nWarning: in vfprintf_usage(%d, stream, %s ...): fflush error: %d\n", exitcode, fmt, ret);
+    if (usage_output_allowed == true) {
+	ret = vfprintf(stream, fmt, ap);
+	if (ret < 0) {
+	    (void) fprintf(stream, "\nWarning: in vfprintf_usage(%d, stream, %s ...): vfprintf error: %d\n", exitcode, fmt, ret);
+	}
+	ret = fputc('\n', stderr);
+	if (ret != '\n') {
+	    (void) fprintf(stream, "\nWarning: in vfprintf_usage(%d, stream, %s ...): fputc error: %d\n", exitcode, fmt, ret);
+	}
+	ret = fflush(stream);
+	if (ret < 0) {
+	    (void) fprintf(stream, "\nWarning: in vfprintf_usage(%d, stream, %s ...): fflush error: %d\n", exitcode, fmt, ret);
+	}
     }
 
     /*
@@ -774,7 +804,7 @@ main(int argc, char *argv[])
      * parse args
      */
     program = argv[0];
-    while ((i = getopt(argc, argv, "hv:e:")) != -1) {
+    while ((i = getopt(argc, argv, "hv:qe:")) != -1) {
 	switch (i) {
 	case 'h':	/* -h - print help to stderr and exit 0 */
 	    /* exit(0); */
@@ -790,6 +820,9 @@ main(int argc, char *argv[])
 		err(1, __func__, "cannot parse -v arg: %s error: %s", optarg, strerror(errno)); /*ooo*/
 		not_reached();
 	    }
+	    break;
+	case 'q':
+	    quiet = true;
 	    break;
 	case 'e':	/* -e errno - force errno */
 	    /* parse errno */
@@ -808,6 +841,11 @@ main(int argc, char *argv[])
 	    vfprintf_usage(3, stderr, usage, program, VERSION); /*ooo*/
 	    not_reached();
 	}
+    }
+    /* be warn(), warnp() and msg() quiet of -q and -v 0 */
+    if (quiet == true && verbosity_level <= 0) {
+	msg_output_allowed = false;
+	warn_output_allowed = false;
     }
     /* must have 2 or 3 args */
     switch (argc-optind) {

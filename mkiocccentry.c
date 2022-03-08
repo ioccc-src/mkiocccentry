@@ -149,7 +149,7 @@ main(int argc, char *argv[])
      */
     input_stream = stdin;	/* default to reading from standard in */
     program = argv[0];
-    while ((i = getopt(argc, argv, "hv:VTt:c:l:a:i:A:WC:F:j:J:q")) != -1) {
+    while ((i = getopt(argc, argv, "hv:qVTt:c:l:a:i:A:WC:F:j:J:")) != -1) {
 	switch (i) {
 	case 'h':		/* -h - print help to stderr and exit 0 */
 	    usage(1, "-h help mode", program);
@@ -160,6 +160,9 @@ main(int argc, char *argv[])
 	     * parse verbosity
 	     */
 	    verbosity_level = parse_verbosity(program, optarg);
+	    break;
+	case 'q':
+	    quiet = true;
 	    break;
 	case 'V':		/* -V - print version and exit */
 	    errno = 0;		/* pre-clear errno for warnp() */
@@ -224,13 +227,15 @@ main(int argc, char *argv[])
 	    jauthchk_flag_used = true;
 	    jauthchk = optarg;
 	    break;
-	case 'q':
-	    quiet = true;
-	    break;
 	default:
 	    usage(3, "invalid -flag", program); /*ooo*/
 	    not_reached();
 	 }
+    }
+    /* be warn(), warnp() and msg() quiet of -q and -v 0 */
+    if (quiet == true && verbosity_level <= 0) {
+	msg_output_allowed = false;
+	warn_output_allowed = false;
     }
     /* must have at least the required number of args */
     if (argc - optind < REQUIRED_ARGS) {

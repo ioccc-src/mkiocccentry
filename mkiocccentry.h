@@ -136,10 +136,10 @@ static const char * const usage_msg0 =
     "\noptions:\n"
     "\t-h\t\t\tprint help message and exit 0\n"
     "\t-v level\t\tset verbosity level: (def level: %d)\n"
+    "\t-q\t\t\tquiet mode, unless verbosity level > 0 (def: not quiet)\n"
     "\t-V\t\t\tprint version string and exit\n"
     "\t-T\t\t\tshow IOCCC toolset chain release repository tag\n"
     "\t-W\t\t\tignore all warnings (this does NOT mean the judges will! :) )\n";
-
 static const char * const usage_msg1 =
     "\t-t /path/to/tar\t\tpath to tar executable that supports the -J (xz) option (def: %s)\n"
     "\t-c /path/to/cp\t\tpath to cp executable (def: %s)\n"
@@ -148,8 +148,7 @@ static const char * const usage_msg1 =
     "\t-F /path/to/fnamchk\tpath to fnamchk executable used by txzchk (def: %s)";
 static const char * const usage_msg2 =
     "\t-j /path/to/jinfochk	path to jinfochk executable used by txzchk (def: %s)\n"
-    "\t-J /path/to/jauthchk	path to jauthchk executable used by txzchk (def: %s)\n"
-    "\t-q\t\t\tquiet mode: suppress some messages\n";
+    "\t-J /path/to/jauthchk	path to jauthchk executable used by txzchk (def: %s)\n";
 static const char * const usage_msg3 =
     "\t-a answers\t\twrite answers to a file for easier updating of an entry\n"
     "\t-A answers\t\twrite answers file even if it already exists\n"
@@ -175,6 +174,11 @@ static const char * const usage_msg4 =
  * globals
  */
 int verbosity_level = DBG_DEFAULT;	/* debug level set by -v */
+bool msg_output_allowed = true;		/* false ==> disable output from msg() */
+bool dbg_output_allowed = true;		/* false ==> disable output from dbg() */
+bool warn_output_allowed = true;	/* false ==> disable output from warn() and warnp() */
+bool err_output_allowed = true;		/* false ==> disable output from err() and errp() */
+bool usage_output_allowed = true;	/* false ==> disable output from vfprintf_usage() */
 static bool need_confirm = true;	/* true ==> ask for confirmations */
 static bool need_hints = true;		/* true ==> show hints */
 static bool quiet = false;		/* true ==> suppress some messages */

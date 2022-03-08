@@ -114,7 +114,12 @@ typedef unsigned char bool;
 /*
  * external variables
  */
-extern int verbosity_level;	/* print debug messages <= verbosity_level */
+extern int verbosity_level;		/* print debug messages <= verbosity_level */
+extern bool msg_output_allowed;		/* false ==> disable output from msg() */
+extern bool dbg_output_allowed;		/* false ==> disable output from dbg() */
+extern bool warn_output_allowed;	/* false ==> disable output from warn() and warnp() */
+extern bool err_output_allowed;		/* false ==> disable output from err() and errp() */
+extern bool usage_output_allowed;	/* false ==> disable output from vfprintf_usage() */
 
 
 /*

@@ -43,7 +43,7 @@ main(int argc, char **argv)
      */
     program = argv[0];
     program_basename = base_name(program);
-    while ((i = getopt(argc, argv, "hv:VqsF:tT")) != -1) {
+    while ((i = getopt(argc, argv, "hv:qVsF:tT")) != -1) {
 	switch (i) {
 	case 'h':		/* -h - print help to stderr and exit 0 */
 	    usage(1, "-h help mode", program); /*ooo*/
@@ -54,6 +54,9 @@ main(int argc, char **argv)
 	     * parse verbosity
 	     */
 	    verbosity_level = parse_verbosity(program, optarg);
+	    break;
+	case 'q':
+	    quiet = true;
 	    break;
 	case 'V':		/* -V - print version and exit */
 	    errno = 0;		/* pre-clear errno for warnp() */
@@ -73,9 +76,6 @@ main(int argc, char **argv)
 	    exit(0); /*ooo*/
 	    not_reached();
 	    break;
-	case 'q':
-	    quiet = true;
-	    break;
 	case 's':
 	    strict = true;
 	    break;
@@ -90,6 +90,11 @@ main(int argc, char **argv)
 	    usage(1, "invalid -flag", program); /*ooo*/
 	    not_reached();
 	 }
+    }
+    /* be warn(), warnp() and msg() quiet of -q and -v 0 */
+    if (quiet == true && verbosity_level <= 0) {
+	msg_output_allowed = false;
+	warn_output_allowed = false;
     }
     /* must have the exact required number of args */
     if (argc - optind != REQUIRED_ARGS) {

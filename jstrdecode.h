@@ -64,12 +64,13 @@
  * Use the usage() function to print the these usage_msgX strings.
  */
 static const char * const usage_msg =
-    "usage: %s [-h] [-v level] [-V] [-T] [-t] [-n] [-s] [string ...]\n"
+    "usage: %s [-h] [-v level] [-q] [-V] [-T] [-t] [-n] [-s] [string ...]\n"
     "\n"
     "\t-h\t\tprint help message and exit 0\n"
     "\t-v level\tset verbosity level (def level: %d)\n"
+    "\t-q\t\tquiet mode, unless verbosity level > 0 (def: not quiet)\n"
     "\t-V\t\tprint version string and exit 0\n"
-    "\t-T\t\t\tshow IOCCC toolset chain release repository tag\n"
+    "\t-T\t\tshow IOCCC toolset chain release repository tag\n"
     "\t-t\t\tperform jencchk test on code JSON decode/decode functions\n"
     "\t-n\t\tdo not output newline after decode output\n"
     "\t-s\t\tdecode using strict mode (def: not strict)\n"
@@ -83,6 +84,12 @@ static const char * const usage_msg =
  * globals
  */
 int verbosity_level = DBG_DEFAULT;	/* debug level set by -v */
+bool msg_output_allowed = true;		/* false ==> disable output from msg() */
+bool dbg_output_allowed = true;		/* false ==> disable output from dbg() */
+bool warn_output_allowed = true;	/* false ==> disable output from warn() and warnp() */
+bool err_output_allowed = true;		/* false ==> disable output from err() and errp() */
+bool usage_output_allowed = true;	/* false ==> disable output from vfprintf_usage() */
+static bool quiet = false;		/* true ==> only show errors, and warnings of -v > 0 */
 
 
 /*
