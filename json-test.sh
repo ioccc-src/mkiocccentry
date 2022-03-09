@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# json-test.sh - test jauthchk and jinfochk on JSON test fileds
+# json-test.sh - test jauthchk and jinfochk on JSON test files
 
 # setup
 #
@@ -113,9 +113,18 @@ if [[ -z $RUN_JINFOCHK && -z $RUN_JAUTHCHK ]]; then
     exit 3
 fi
 
-# remove logfile so that each run does not have previous runs
+# remove logfile so that each run starts out with an empty file
 #
-rm -f "$LOGFILE"
+# shellcheck disable=SC2188
+> "$LOGFILE"
+if [[ ! -f "${LOGFILE}" ]]; then
+    echo "$0: ERROR: couldn't create log file" 1>&2
+    exit 5
+fi
+if [[ ! -w "${LOGFILE}" ]]; then
+    echo "$0: ERROR: log file not writeable" 1>&2
+    exit 5
+fi
 
 # jinfochk test checks
 #
