@@ -37,6 +37,7 @@ export RUN_JINFOCHK="true"
 export RUN_JAUTHCHK="true"
 export EXIT_CODE=0
 export JSON_TREE="./test_JSON"
+export LOGFILE="./json-test.log"
 
 # parse args
 #
@@ -111,6 +112,10 @@ if [[ -z $RUN_JINFOCHK && -z $RUN_JAUTHCHK ]]; then
     echo "$0: ERROR: cannot specify both -t jinfo_only and -t jauth_only" 1>&2
     exit 3
 fi
+
+# remove logfile so that each run does not have previous runs
+#
+rm -f "$LOGFILE"
 
 # jinfochk test checks
 #
@@ -311,12 +316,12 @@ run_test()
     #
     if [[ $pass_fail == pass ]]; then
 	if [[ $status -ne 0 ]]; then
-	    echo "$0: Warning: in run_test: FAIL: $test_prog -v $debug_level $json_test_file exit code: $status != 0" 1>&2
-	    echo "$0: Warning: the above mentioned test FAILED when it should have PASSED" 1>&2
+	    echo "$0: Warning: in run_test: FAIL: $test_prog -v $debug_level $json_test_file exit code: $status != 0" | tee -a "$LOGFILE"
+	    echo "$0: Warning: the above mentioned test FAILED when it should have PASSED" | tee -a "$LOGFILE"
 	    if [[ $V_FLAG -lt 3 ]]; then
-		echo "$0: Warning: for more details try: $test_prog -v 3 -- $json_test_file" 1>&2
+		echo "$0: Warning: for more details try: $test_prog -v 3 -- $json_test_file" | tee -a "$LOGFILE"
 	    else
-		echo "$0: Warning: for more details try: $test_prog -v $V_FLAG -- $json_test_file" 1>&2
+		echo "$0: Warning: for more details try: $test_prog -v $V_FLAG -- $json_test_file" | tee -a "$LOGFILE"
 	    fi
 	    EXIT_CODE=1
 	elif [[ $V_FLAG -ge 5 ]]; then
@@ -324,12 +329,12 @@ run_test()
 	fi
     elif [[ $pass_fail == fail ]]; then
 	if [[ $status -eq 0 ]]; then
-	    echo "$0: Warning: in run_test: FAIL: $test_prog -v $debug_level $json_test_file exit code: $status == 0" 1>&2
-	    echo "$0: Warning: the above mentioned test PASSED when it should have FAILED" 1>&2
+	    echo "$0: Warning: in run_test: FAIL: $test_prog -v $debug_level $json_test_file exit code: $status == 0" | tee -a "$LOGFILE"
+	    echo "$0: Warning: the above mentioned test PASSED when it should have FAILED" | tee -a "$LOGFILE"
 	    if [[ $V_FLAG -lt 3 ]]; then
-		echo "$0: Warning: for more details try: $test_prog -v 3 -- $json_test_file" 1>&2
+		echo "$0: Warning: for more details try: $test_prog -v 3 -- $json_test_file" | tee -a "$LOGFILE"
 	    else
-		echo "$0: Warning: for more details try: $test_prog -v $V_FLAG -- $json_test_file" 1>&2
+		echo "$0: Warning: for more details try: $test_prog -v $V_FLAG -- $json_test_file" | tee -a "$LOGFILE"
 	    fi
 	    EXIT_CODE=1
 	elif [[ $V_FLAG -ge 5 ]]; then

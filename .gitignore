@@ -18,6 +18,7 @@ test-set
 test_src
 test_work
 txzchk
+json-test.log
 
 # Prerequisites
 *.d
