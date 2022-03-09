@@ -1233,11 +1233,27 @@ malloc_json_decode(char const *ptr, size_t len, size_t *retlen, bool strict)
 		    }
 
 		    /*
-		     * count \uxxxx set as 1 character
+		     * case: \u00xx is 1 character
 		     */
-		    ++mlen;
-		    i += 5;
+		    if (a == '0' && b == '0') {
+			++mlen;
+			i += 5;
+
+		    /*
+		     * case: count \uxxxx as 2 characters
+		     */
+		    } else {
+			mlen += 2;
+			i += 5;
+		    }
 		    break;
+
+		/*
+		 * case: \uxxxx is invalid because xxxx is not HEX
+		 */
+		} else {
+			warn(__func__, "\\u, not foolowed by 4 hex chars");
+			return NULL;
 		}
 		break;
 
@@ -1408,9 +1424,9 @@ malloc_json_decode(char const *ptr, size_t len, size_t *retlen, bool strict)
 		 * case: \u00xx
 		 */
 		if (xa == 0 && xb == 0) {
+		    /* single byte \u00xx */
 		    i += 5;
 		    *p++ = (char)((xc << 4) | xd);
-		    break;
 
 		/*
 		 * case: \uxxxx
@@ -1418,37 +1434,20 @@ malloc_json_decode(char const *ptr, size_t len, size_t *retlen, bool strict)
 		} else {
 
 		    /*
-		     * case: strict mode: found non UTF-8 encoded character
+		     * paranoia
 		     */
-		    if (strict == true) {
+		    if (p+1 >= beyond) {
 			/* error - clear malloced length */
 			if (retlen != NULL) {
 			    *retlen = 0;
 			}
-			warn(__func__, "strict mode: found non-UTF-8 \\u encoding: \\u%c%c%c%c", a,b,c,d);
+			warn(__func__, "ran beyond end of decoded string for non-UTF-8 \\u encoding");
 			return NULL;
-
-		    /*
-		     * case; non-strict mode: found non UTF-8 encoded character
-		     */
-		    } else {
-
-			/*
-			 * paranoia
-			 */
-			if (p+1 >= beyond) {
-			    /* error - clear malloced length */
-			    if (retlen != NULL) {
-				*retlen = 0;
-			    }
-			    warn(__func__, "ran beyond end of decoded string for non-UTF-8 \\u encoding");
-			    return NULL;
-			}
-			i += 5;
-			*p++ = (char)((xa << 4) | xb);
-			*p++ = (char)((xc << 4) | xd);
-			break;
 		    }
+		    /* double byte \uxxxx */
+		    i += 5;
+		    *p++ = (char)((xa << 4) | xb);
+		    *p++ = (char)((xc << 4) | xd);
 		}
 		break;
 
