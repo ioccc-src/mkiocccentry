@@ -135,26 +135,12 @@ CFLAGS= ${STD_SRC} ${COPT} -pedantic -Wall -Wextra -Werror
 #CFLAGS= ${STD_SRC} -O0 -g -pedantic -Wall -Wextra -Werror -fsanitize=address -fno-omit-frame-pointer
 
 # NOTE: For valgrind, run with:
-#	valgrind --leak-check=yes --track-origins=yes --leak-resolution=high --read-var-info=yes \
-#	    --leak-check=full --show-leak-kinds=all
-# and
-#	CFLAGS= ${STD_SRC} -O0 -g -pedantic -Wall -Wextra -Werror
-#
-# NOTE: To use valgrind, compile with:
-#
-#	make clobber all CFLAGS="-D_DEFAULT_SOURCE -D_POSIX_C_SOURCE=200809L -D_XOPEN_SOURCE=500 -std=gnu11 -O0 -g -pedantic -Wall -Wextra -Werror"
-#
-# Which sets the CFLAGS to the value of ${STD_SRC} followed by the appropriate
-# CFLAGS. After that you can run the program like:
 #
 #	valgrind --leak-check=yes --track-origins=yes --leak-resolution=high --read-var-info=yes \
 #           --leak-check=full --show-leak-kinds=all ./mkiocccentry ...
 #
 # NOTE: Replace mkiocccentry with whichever tool you want to test and the ...
 # with the arguments and options you want.
-#
-# XXX If the STD_SRC ever changes this compiler invocation should change as
-# well.
 #
 
 # where and what to install
@@ -385,11 +371,21 @@ test: all iocccsize-test.sh dbg_test mkiocccentry-test.sh jstr-test.sh Makefile
 	@echo
 	@echo "All tests PASSED"
 
-test-mkiocccentry:
+test-mkiocccentry: all mkiocccentry-test.sh Makefile
 	@echo "RUNNING: mkiocccentry-test.sh"
 	./mkiocccentry-test.sh
 	@echo "PASSED: mkiocccentry-test.sh"
 
+# run json-test.sh on test_JSON files
+#
+# Currently this is very chatty but the important parts will also be written to
+# json-test.log for evaluation.
+#
+# NOTE: The verbose and debug options are important to see more information and
+# this is important even when all cases are resolved as we want to see if there
+# are any problems if new files are added.
+test-jinfochk: all jinfochk Makefile
+	./json-test.sh -t jinfo_only -v 1 -D 1 -d test_JSON
 
 tags: ${SRCFILES} ${H_FILES} Makefile
 	-${CTAGS} -- ${SRCFILES} ${H_FILES} 2>&1 | \

@@ -94,7 +94,7 @@ struct json_field
      *
      * Number of times this field has been seen in the list, how many are
      * actually allowed and whether the field has been found: This is for the
-     * tables that say tell many times a field has been seen, how many times it
+     * tables that say many times a field has been seen, how many times it
      * is allowed and whether or not it's been seen (it is true that this could
      * simply be count > 0 but this is to be more clear, however slight).
      *
