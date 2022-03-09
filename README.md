@@ -58,6 +58,8 @@ For more information and examples, try:
 	    man ./jinfochk.1
 
 
+NOTE: This tool is currently unfinished.
+
 
 ##  jauthchk
 

@@ -565,7 +565,7 @@ main(int argc, char *argv[])
     if (!quiet) {
 	para("", "Forming the .info.json file ...", NULL);
     }
-    write_info(&info, entry_dir, jinfochk, fnamchk, author_count);
+    write_info(&info, entry_dir, jinfochk, fnamchk);
     if (!quiet) {
 	para("... completed the .info.json file.", "", NULL);
     }
@@ -5007,7 +5007,6 @@ json_fprintf_value_bool(FILE *stream, char const *lead, char const *name, char c
  *      entry_dir       - path to entry directory
  *      jinfochk	- path to jinfochk tool
  *      fnamchk		- path to fnamchk tool
- *      author_count	- number of authors
  *
  * returns:
  *	true
@@ -5015,7 +5014,7 @@ json_fprintf_value_bool(FILE *stream, char const *lead, char const *name, char c
  * This function does not return on error.
  */
 static void
-write_info(struct info *infop, char const *entry_dir, char const *jinfochk, char const *fnamchk, int author_count)
+write_info(struct info *infop, char const *entry_dir, char const *jinfochk, char const *fnamchk)
 {
     struct tm *timeptr;		/* localtime return */
     char *info_path;		/* path to .info.json file */
@@ -5037,13 +5036,6 @@ write_info(struct info *infop, char const *entry_dir, char const *jinfochk, char
     }
     if (infop->extra_count < 0) {
 	warn(__func__, "extra_count %d < 0", infop->extra_count);
-    }
-    if (author_count <= 0) {
-	err(157, __func__, "author_count %d <= 0", author_count);
-	not_reached();
-    } else if (author_count > MAX_AUTHORS) {
-	err(158, __func__, "author count %d > max authors %d", author_count, MAX_AUTHORS);
-	not_reached();
     }
 
 
