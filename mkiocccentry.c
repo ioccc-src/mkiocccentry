@@ -5049,7 +5049,7 @@ write_info(struct info *infop, char const *entry_dir, char const *jinfochk, char
     errno = 0;			/* pre-clear errno for errp() */
     infop->common.epoch = strdup(TIMESTAMP_EPOCH);
     if (infop->common.epoch == NULL) {
-	errp(159, __func__, "strdup of %s failed", TIMESTAMP_EPOCH);
+	errp(157, __func__, "strdup of %s failed", TIMESTAMP_EPOCH);
 	not_reached();
     }
     dbg(DBG_VVHIGH, "infop->common.epoch: %s", infop->common.epoch);
@@ -5060,13 +5060,13 @@ write_info(struct info *infop, char const *entry_dir, char const *jinfochk, char
     errno = 0;			/* pre-clear errno for errp() */
     ret = setenv("TZ", "UTC", 1);
     if (ret < 0) {
-	errp(160, __func__, "cannot set TZ=UTC");
+	errp(158, __func__, "cannot set TZ=UTC");
 	not_reached();
     }
     errno = 0;			/* pre-clear errno for errp() */
     timeptr = gmtime(&(infop->common.tstamp));
     if (timeptr == NULL) {
-	errp(161, __func__, "localtime #1 returned NULL");
+	errp(159, __func__, "localtime #1 returned NULL");
 	not_reached();
     }
 
@@ -5077,7 +5077,7 @@ write_info(struct info *infop, char const *entry_dir, char const *jinfochk, char
     errno = 0;			/* pre-clear errno for errp() */
     infop->common.utctime = (char *)calloc(utctime_len + 1, 1); /* + 1 for paranoia padding */
     if (infop->common.utctime == NULL) {
-	errp(162, __func__, "calloc of %ju bytes failed", (uintmax_t)utctime_len + 1);
+	errp(160, __func__, "calloc of %ju bytes failed", (uintmax_t)utctime_len + 1);
 	not_reached();
     }
 
@@ -5092,7 +5092,7 @@ write_info(struct info *infop, char const *entry_dir, char const *jinfochk, char
     errno = 0;			/* pre-clear errno for errp() */
     strftime_ret = strftime(infop->common.utctime, utctime_len, "%a %b %d %H:%M:%S %Y UTC", timeptr);
     if (strftime_ret == 0) {
-	errp(163, __func__, "strftime returned 0");
+	errp(161, __func__, "strftime returned 0");
 	not_reached();
     }
     dbg(DBG_VHIGH, "infop->common.utctime: %s", infop->common.utctime);
@@ -5104,20 +5104,20 @@ write_info(struct info *infop, char const *entry_dir, char const *jinfochk, char
     errno = 0;			/* pre-clear errno for errp() */
     info_path = (char *)malloc(info_path_len + 1);
     if (info_path == NULL) {
-	errp(164, __func__, "malloc of %ju bytes failed", (uintmax_t)info_path_len + 1);
+	errp(162, __func__, "malloc of %ju bytes failed", (uintmax_t)info_path_len + 1);
 	not_reached();
     }
     errno = 0;			/* pre-clear errno for errp() */
     ret = snprintf(info_path, info_path_len, "%s/.info.json", entry_dir);
     if (ret <= 0) {
-	errp(165, __func__, "snprintf #0 error: %d", ret);
+	errp(163, __func__, "snprintf #0 error: %d", ret);
 	not_reached();
     }
     dbg(DBG_HIGH, ".info.json path: %s", info_path);
     errno = 0;			/* pre-clear errno for errp() */
     info_stream = fopen(info_path, "w");
     if (info_stream == NULL) {
-	errp(166, __func__, "failed to open for writing: %s", info_path);
+	errp(164, __func__, "failed to open for writing: %s", info_path);
 	not_reached();
     }
 
@@ -5156,7 +5156,7 @@ write_info(struct info *infop, char const *entry_dir, char const *jinfochk, char
 	json_fprintf_value_bool(info_stream, "\t", "test_mode", " : ", infop->common.test_mode, ",\n") &&
 	fprintf(info_stream, "\t\"manifest\" : [\n") > 0;
     if (!ret) {
-	errp(167, __func__, "fprintf error writing leading part of info to %s", info_path);
+	errp(165, __func__, "fprintf error writing leading part of info to %s", info_path);
 	not_reached();
     }
 
@@ -5170,7 +5170,7 @@ write_info(struct info *infop, char const *entry_dir, char const *jinfochk, char
 	  json_fprintf_value_string(info_stream, "\t\t{", "remarks", " : ", infop->remarks_md,
 				    ((infop->extra_count > 0) ?  "},\n" : "}\n"));
     if (!ret) {
-	errp(168, __func__, "fprintf error writing mandatory filename to %s", info_path);
+	errp(166, __func__, "fprintf error writing mandatory filename to %s", info_path);
 	not_reached();
     }
 
@@ -5180,7 +5180,7 @@ write_info(struct info *infop, char const *entry_dir, char const *jinfochk, char
     for (i=0, q=infop->extra_file; i < infop->extra_count && *q != NULL; ++i, ++q) {
         if (json_fprintf_value_string(info_stream, "\t\t{", "extra_file", " : ", *q,
 				     (((i+1) < infop->extra_count) ? "},\n" : "}\n")) != true) {
-	    errp(169, __func__, "fprintf error writing extra filename[%d] to %s", i, info_path);
+	    errp(167, __func__, "fprintf error writing extra filename[%d] to %s", i, info_path);
 	    not_reached();
 	}
     }
@@ -5197,7 +5197,7 @@ write_info(struct info *infop, char const *entry_dir, char const *jinfochk, char
 	json_fprintf_value_string(info_stream, "\t", "formed_UTC", " : ", infop->common.utctime, "\n") &&
 	fprintf(info_stream, "}\n") > 0;
     if (!ret) {
-	errp(170, __func__, "fprintf error writing trailing part of info to %s", info_path);
+	errp(168, __func__, "fprintf error writing trailing part of info to %s", info_path);
 	not_reached();
     }
 
@@ -5207,7 +5207,7 @@ write_info(struct info *infop, char const *entry_dir, char const *jinfochk, char
     errno = 0;			/* pre-clear errno for errp() */
     ret = fclose(info_stream);
     if (ret < 0) {
-	errp(171, __func__, "fclose error");
+	errp(169, __func__, "fclose error");
 	not_reached();
     }
 
@@ -5217,7 +5217,7 @@ write_info(struct info *infop, char const *entry_dir, char const *jinfochk, char
     dbg(DBG_HIGH, "about to perform: %s -q -s -F %s -- %s", jinfochk, fnamchk, info_path);
     exit_code = shell_cmd(__func__, true, "% -q -s -F % -- %", jinfochk, fnamchk, info_path);
     if (exit_code != 0) {
-	err(172, __func__, "%s -q -s -F %s -- %s failed with exit code: %d",
+	err(170, __func__, "%s -q -s -F %s -- %s failed with exit code: %d",
 			   jinfochk, fnamchk, info_path, WEXITSTATUS(exit_code));
 	not_reached();
     }
@@ -5265,14 +5265,14 @@ write_author(struct info *infop, int author_count, struct author *authorp, char 
      * firewall
      */
     if (infop == NULL || authorp == NULL || entry_dir == NULL || jauthchk == NULL) {
-	err(173, __func__, "called with NULL arg(s)");
+	err(171, __func__, "called with NULL arg(s)");
 	not_reached();
     }
     if (author_count <= 0) {
-	err(174, __func__, "author_count %d <= 0", author_count);
+	err(172, __func__, "author_count %d <= 0", author_count);
 	not_reached();
     } else if (author_count > MAX_AUTHORS) {
-	err(175, __func__, "author count %d > max authors %d", author_count, MAX_AUTHORS);
+	err(173, __func__, "author count %d > max authors %d", author_count, MAX_AUTHORS);
 	not_reached();
     }
 
@@ -5284,20 +5284,20 @@ write_author(struct info *infop, int author_count, struct author *authorp, char 
     errno = 0;			/* pre-clear errno for errp() */
     author_path = (char *)malloc(author_path_len + 1);
     if (author_path == NULL) {
-	errp(176, __func__, "malloc of %ju bytes failed", (uintmax_t)author_path_len + 1);
+	errp(174, __func__, "malloc of %ju bytes failed", (uintmax_t)author_path_len + 1);
 	not_reached();
     }
     errno = 0;			/* pre-clear errno for errp() */
     ret = snprintf(author_path, author_path_len, "%s/.author.json", entry_dir);
     if (ret <= 0) {
-	errp(177, __func__, "snprintf #0 error: %d", ret);
+	errp(175, __func__, "snprintf #0 error: %d", ret);
 	not_reached();
     }
     dbg(DBG_HIGH, ".author.json path: %s", author_path);
     errno = 0;			/* pre-clear errno for errp() */
     author_stream = fopen(author_path, "w");
     if (author_stream == NULL) {
-	errp(178, __func__, "failed to open for writing: %s", author_path);
+	errp(176, __func__, "failed to open for writing: %s", author_path);
 	not_reached();
     }
 
@@ -5317,7 +5317,7 @@ write_author(struct info *infop, int author_count, struct author *authorp, char 
 	json_fprintf_value_bool(author_stream, "\t", "test_mode", " : ", infop->common.test_mode, ",\n") &&
 	fprintf(author_stream, "\t\"authors\" : [\n") > 0;
     if (!ret) {
-	errp(179, __func__, "fprintf error writing leading part of authorship to %s", author_path);
+	errp(177, __func__, "fprintf error writing leading part of authorship to %s", author_path);
 	not_reached();
     }
 
@@ -5341,7 +5341,7 @@ write_author(struct info *infop, int author_count, struct author *authorp, char 
 	    json_fprintf_value_long(author_stream, "\t\t\t", "author_number", " : ", authorp[i].author_num, "\n") &&
 	    fprintf(author_stream, "\t\t}%s\n", (((i + 1) < author_count) ? "," : "")) > 0;
 	if (ret < 0) {
-	    errp(180, __func__, "fprintf error writing author info to %s", author_path);
+	    errp(178, __func__, "fprintf error writing author info to %s", author_path);
 	    not_reached();
 	}
     }
@@ -5358,7 +5358,7 @@ write_author(struct info *infop, int author_count, struct author *authorp, char 
 	json_fprintf_value_string(author_stream, "\t", "formed_UTC", " : ", infop->common.utctime, "\n") &&
 	fprintf(author_stream, "}\n") > 0;
     if (!ret) {
-	errp(181, __func__, "fprintf error writing trailing part of authorship to %s", author_path);
+	errp(179, __func__, "fprintf error writing trailing part of authorship to %s", author_path);
 	not_reached();
     }
 
@@ -5368,7 +5368,7 @@ write_author(struct info *infop, int author_count, struct author *authorp, char 
     errno = 0;			/* pre-clear errno for errp() */
     ret = fclose(author_stream);
     if (ret < 0) {
-	errp(182, __func__, "fclose error");
+	errp(180, __func__, "fclose error");
 	not_reached();
     }
 
@@ -5381,7 +5381,7 @@ write_author(struct info *infop, int author_count, struct author *authorp, char 
     dbg(DBG_HIGH, "about to perform: %s -q -s -- %s", jauthchk, author_path);
     exit_code = shell_cmd(__func__, true, "% -q -s -- %", jauthchk, author_path);
     if (exit_code != 0) {
-	err(183, __func__, "%s -q -s -- %s failed with exit code: %d",
+	err(181, __func__, "%s -q -s -- %s failed with exit code: %d",
 			   jauthchk, author_path, WEXITSTATUS(exit_code));
 	not_reached();
     }
@@ -5435,7 +5435,7 @@ form_tarball(char const *work_dir, char const *entry_dir, char const *tarball_pa
      */
     if (work_dir == NULL || entry_dir == NULL || tarball_path == NULL || tar == NULL || ls == NULL ||
         txzchk == NULL || fnamchk == NULL) {
-	err(184, __func__, "called with NULL arg(s)");
+	err(182, __func__, "called with NULL arg(s)");
 	not_reached();
     }
 
@@ -5451,7 +5451,7 @@ form_tarball(char const *work_dir, char const *entry_dir, char const *tarball_pa
     errno = 0;			/* pre-clear errno for errp() */
     cwd = open(".", O_RDONLY|O_DIRECTORY|O_CLOEXEC);
     if (cwd < 0) {
-	errp(185, __func__, "cannot open .");
+	errp(183, __func__, "cannot open .");
 	not_reached();
     }
 
@@ -5461,7 +5461,7 @@ form_tarball(char const *work_dir, char const *entry_dir, char const *tarball_pa
     errno = 0;			/* pre-clear errno for errp() */
     ret = chdir(work_dir);
     if (ret < 0) {
-	errp(186, __func__, "cannot cd %s", work_dir);
+	errp(184, __func__, "cannot cd %s", work_dir);
 	not_reached();
     }
 
@@ -5489,7 +5489,7 @@ form_tarball(char const *work_dir, char const *entry_dir, char const *tarball_pa
     exit_code = shell_cmd(__func__, true, "% --format=v7 -cJf % -- %",
 				    tar, basename_tarball_path, basename_entry_dir);
     if (exit_code != 0) {
-	err(187, __func__, "%s --format=v7 -cJf %s -- %s failed with exit code: %d",
+	err(185, __func__, "%s --format=v7 -cJf %s -- %s failed with exit code: %d",
 			   tar, basename_tarball_path, basename_entry_dir, WEXITSTATUS(exit_code));
 	not_reached();
     }
@@ -5500,7 +5500,7 @@ form_tarball(char const *work_dir, char const *entry_dir, char const *tarball_pa
     errno = 0;			/* pre-clear errno for errp() */
     ret = stat(basename_tarball_path, &buf);
     if (ret != 0) {
-	errp(188, __func__, "stat of the compressed tarball failed: %s", basename_tarball_path);
+	errp(186, __func__, "stat of the compressed tarball failed: %s", basename_tarball_path);
 	not_reached();
     }
     if (buf.st_size > MAX_TARBALL_LEN) {
@@ -5509,7 +5509,7 @@ form_tarball(char const *work_dir, char const *entry_dir, char const *tarball_pa
 	      "The compressed tarball exceeds the maximum allowed size, sorry.",
 	      "",
 	      NULL);
-	err(189, __func__, "The compressed tarball: %s size: %ju > %jd",
+	err(187, __func__, "The compressed tarball: %s size: %ju > %jd",
 		 basename_tarball_path, (uintmax_t)buf.st_size, (intmax_t)MAX_TARBALL_LEN);
 	not_reached();
     }
@@ -5520,13 +5520,13 @@ form_tarball(char const *work_dir, char const *entry_dir, char const *tarball_pa
     errno = 0;			/* pre-clear errno for errp() */
     ret = fchdir(cwd);
     if (ret < 0) {
-	errp(190, __func__, "cannot fchdir to the previous current directory");
+	errp(188, __func__, "cannot fchdir to the previous current directory");
 	not_reached();
     }
     errno = 0;			/* pre-clear errno for errp() */
     ret = close(cwd);
     if (ret < 0) {
-	errp(191, __func__, "close of previous current directory failed");
+	errp(189, __func__, "close of previous current directory failed");
 	not_reached();
     }
 
@@ -5538,7 +5538,7 @@ form_tarball(char const *work_dir, char const *entry_dir, char const *tarball_pa
     exit_code = shell_cmd(__func__, true, "% -q -F % -- %/../%",
 					  txzchk, fnamchk, entry_dir, basename_tarball_path);
     if (exit_code != 0) {
-	err(192, __func__, "%s -q -F %s -- %s/../%s failed with exit code: %d",
+	err(190, __func__, "%s -q -F %s -- %s/../%s failed with exit code: %d",
 			   txzchk, fnamchk, entry_dir, basename_tarball_path, WEXITSTATUS(exit_code));
 	not_reached();
     }
@@ -5585,13 +5585,13 @@ remind_user(char const *work_dir, char const *entry_dir, char const *tar, char c
      * firewall
      */
     if (work_dir == NULL || entry_dir == NULL || tar == NULL || tarball_path == NULL) {
-	err(193, __func__, "called with NULL arg(s)");
+	err(191, __func__, "called with NULL arg(s)");
 	not_reached();
     }
 
     entry_dir_esc = cmdprintf("%", entry_dir);
     if (entry_dir_esc == NULL) {
-	err(194, __func__, "failed to cmdprintf: entry_dir");
+	err(192, __func__, "failed to cmdprintf: entry_dir");
 	not_reached();
     }
 
@@ -5604,14 +5604,14 @@ remind_user(char const *work_dir, char const *entry_dir, char const *tar, char c
 	 NULL);
     ret = printf("    rm -rf %s%s\n", entry_dir[0] == '-' ? "-- " : "", entry_dir_esc);
     if (ret <= 0) {
-	errp(195, __func__, "printf #0 error");
+	errp(193, __func__, "printf #0 error");
 	not_reached();
     }
     free(entry_dir_esc);
 
     work_dir_esc = cmdprintf("%", work_dir);
     if (work_dir_esc == NULL) {
-	err(196, __func__, "failed to cmdprintf: work_dir");
+	err(194, __func__, "failed to cmdprintf: work_dir");
 	not_reached();
     }
 
@@ -5622,7 +5622,7 @@ remind_user(char const *work_dir, char const *entry_dir, char const *tar, char c
 	 NULL);
     ret = printf("    %s -Jtvf %s%s/%s\n", tar, work_dir[0] == '-' ? "./" : "", work_dir_esc, tarball_path);
     if (ret <= 0) {
-	errp(197, __func__, "printf #2 error");
+	errp(195, __func__, "printf #2 error");
 	not_reached();
     }
     free(work_dir_esc);
@@ -5656,7 +5656,7 @@ remind_user(char const *work_dir, char const *entry_dir, char const *tar, char c
 	     NULL);
 	ret = printf("    %s/%s\n", work_dir, tarball_path);
 	if (ret <= 0) {
-	    errp(198, __func__, "printf #2 error");
+	    errp(196, __func__, "printf #2 error");
 	    not_reached();
 	}
     }
@@ -5672,7 +5672,7 @@ remind_user(char const *work_dir, char const *entry_dir, char const *tar, char c
 	     NULL);
 	ret = printf("    %s\n\n", IOCCC_SUBMIT_URL);
 	if (ret < 0) {
-	    errp(199, __func__, "printf #4 error");
+	    errp(197, __func__, "printf #4 error");
 	    not_reached();
 	}
     }
