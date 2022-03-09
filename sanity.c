@@ -56,7 +56,7 @@ ioccc_sanity_chks(void)
      * final element is in fact NULL.
      *
      * NOTE: The below function calls dbg() for each table it checks so we don't
-     * duplicate that message here.
+     * duplicate those messages here.
      */
     check_json_fields_tables();
 }
