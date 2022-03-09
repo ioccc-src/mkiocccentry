@@ -332,6 +332,7 @@ run_test()
 	    else
 		echo "$0: Warning: for more details try: $test_prog -v $V_FLAG -- $json_test_file" | tee -a "$LOGFILE"
 	    fi
+	    echo | tee -a "${LOGFILE}"
 	    EXIT_CODE=1
 	elif [[ $V_FLAG -ge 5 ]]; then
 	    echo "$0: debug[5]: in run_test: PASS: $test_prog -v $debug_level $json_test_file" 1>&2
@@ -345,6 +346,7 @@ run_test()
 	    else
 		echo "$0: Warning: for more details try: $test_prog -v $V_FLAG -- $json_test_file" | tee -a "$LOGFILE"
 	    fi
+	    echo | tee -a "${LOGFILE}"
 	    EXIT_CODE=1
 	elif [[ $V_FLAG -ge 5 ]]; then
 	    echo "$0: debug[5]: in run_test: PASS: $test_prog -v $debug_level $json_test_file" 1>&2
