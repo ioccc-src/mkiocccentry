@@ -462,6 +462,8 @@ check_txz_file(char const *txzpath, char *p, char const *dir_name, struct txz_fi
 
     /*
      * identify if file is an allowed . file
+     *
+     * NOTE: Files that are allowed to begin with . must also lower case.
      */
     if ((strcmp(file->basename, ".info.json") == 0) || (strcmp(file->basename, ".author.json") == 0)) {
 	allowed_dot_file = true;
@@ -489,7 +491,6 @@ check_txz_file(char const *txzpath, char *p, char const *dir_name, struct txz_fi
     /*
      * filename must use only POSIX portable filename and + chars plus /
      */
-    /* XXX - should the lower_only (2nd) arg to posix_plus_safe() be true or false? */
     if (!posix_plus_safe(file->filename, false, true, false)) {
 	++txz_info.total_issues; /* report it once and consider it only one issue */
 	++txz_info.invalid_chars;
@@ -502,13 +503,12 @@ check_txz_file(char const *txzpath, char *p, char const *dir_name, struct txz_fi
      */
     if (allowed_dot_file) {
 	/*
-	 * after the . the basename must use only POSIX portable filename and + chars
+	 * after the . the basename must use only lower case POSIX portable filename and + chars
 	 */
-	/* XXX - should the lower_only (2nd) arg to posix_plus_safe() be true or false? */
-	if (!posix_plus_safe(file->basename+1, false, false, true)) {
+	if (!posix_plus_safe(file->basename+1, true, false, true)) {
 	    ++txz_info.total_issues; /* report it once and consider it only one issue */
 	    ++txz_info.invalid_chars;
-	    warn(__func__, "%s: file basename does not match regexp ^\\.[0-9A-Za-z][0-9A-Za-z._+-]*$: %s",
+	    warn(__func__, "%s: file basename does not match regexp ^\\.[0-9a-z][0-9a-z._+-]*$: %s",
 			   txzpath, file->basename);
 	}
 
@@ -519,7 +519,6 @@ check_txz_file(char const *txzpath, char *p, char const *dir_name, struct txz_fi
 	/*
 	 * basename must use only POSIX portable filename and + chars
 	 */
-	/* XXX - should the lower_only (2nd) arg to posix_plus_safe() be true or false? */
 	if (!posix_plus_safe(file->basename, false, false, true)) {
 	    ++txz_info.total_issues; /* report it once and consider it only one issue */
 	    ++txz_info.invalid_chars;
