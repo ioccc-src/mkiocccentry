@@ -2343,7 +2343,21 @@ check_found_common_json_fields(char const *program, char const *file, char const
 		    dbg(DBG_LOW, "set test_mode to %s", test_mode?"true":"false");
 		}
 
+	    } else {
+		/*
+		 * This should never actually be reached but if it is it
+		 * suggests that a field was not added to be checked: if it's
+		 * not a valid field we would have already detected and aborted
+		 * earlier in this loop so we don't have to check for that.
+		 */
+		warn(__func__, "found unhandled common field in file %s: '%s'", file, field->name);
+		/*
+		 * NOTE: Don't increment issues because this doesn't mean
+		 * there's anything wrong with the .author.json file but rather
+		 * that the field isn't verified.
+		 */
 	    }
+
 	}
     }
 

@@ -309,6 +309,7 @@ check_author_json(char const *file, char const *fnamchk)
     struct json_field *common_field; /* temporary use to determine type of value of common field */
     size_t loc = 0;
     bool can_be_empty = false; /* if field can be empty */
+    bool is_json_string = false; /* if json field is supposed to have a string value */
 
     /*
      * firewall
@@ -469,10 +470,21 @@ check_author_json(char const *file, char const *fnamchk)
 	/*
 	 * If both author_field and common_field == NULL it's an invalid field
 	 * which is an error regardless of test mode.
+	 *
+	 * XXX However we only warn because for testing if the program
+	 * aborts we won't get all the tests in. When we're sure this program is
+	 * complete we can make this an error.
+	 *
+	 * NOTE: The way we do the below checks means that we can safely have
+	 * author_field == NULL && common_field == NULL: the only times we
+	 * dereference it is determining if the field can be empty and if it's a
+	 * json string but we do a test that it's not NULL as part of the
+	 * assignment of those two bools.
+	 *
 	 */
 	if (author_field == NULL && common_field == NULL) {
-	    err(21, __func__, "invalid field '%s'", p);
-	    not_reached();
+	    warn(__func__, "invalid field '%s' in file %s", p, file);
+	    ++issues;
 	}
 
 	if (!strcmp(p, "authors")) {
@@ -480,14 +492,14 @@ check_author_json(char const *file, char const *fnamchk)
 	     * This will come in a future commit.
 	     */
 	    if (!author_field) {
-		err(22, __func__, "authors field not found in author_json_fields table");
+		err(21, __func__, "authors field not found in author_json_fields table");
 		not_reached();
 	    }
 
 	    /* find start of array */
 	    array_start = strtok_r(NULL, ":[{", &saveptr);
 	    if (array_start == NULL) {
-		err(23, __func__, "unable to find beginning of array");
+		err(22, __func__, "unable to find beginning of array");
 		not_reached();
 	    }
 
@@ -498,12 +510,12 @@ check_author_json(char const *file, char const *fnamchk)
 	    /* extract the array */
 	    array = strtok_r(NULL, "]", &saveptr);
 	    if (array == NULL) {
-		err(24, __func__, "unable to extract array in file %s", file);
+		err(23, __func__, "unable to extract array in file %s", file);
 		not_reached();
 	    }
 
 	    if (!*array) {
-		err(25, __func__, "empty array in file %s", file);
+		err(24, __func__, "empty array in file %s", file);
 		not_reached();
 	    }
 
@@ -511,7 +523,7 @@ check_author_json(char const *file, char const *fnamchk)
 	    errno = 0;
 	    array_dup = strdup(array);
 	    if (array_dup == NULL) {
-		errp(26, __func__, "strdup() on array failed: %s", strerror(errno));
+		errp(25, __func__, "strdup() on array failed: %s", strerror(errno));
 		not_reached();
 	    }
 	    /* Update p to go beyond the array. */
@@ -520,7 +532,7 @@ check_author_json(char const *file, char const *fnamchk)
 	    /* extract the value */
 	    val = strtok_r(NULL, ",", &saveptr);
 	    if (val == NULL) {
-		err(27, __func__, "unable to find value in file %s for field %s", file, p);
+		err(26, __func__, "unable to find value in file %s for field %s", file, p);
 		not_reached();
 	    }
 
@@ -542,12 +554,13 @@ check_author_json(char const *file, char const *fnamchk)
 		break;
 
 	    can_be_empty = (common_field && common_field->can_be_empty) || (author_field && author_field->can_be_empty);
+	    is_json_string = (common_field && (common_field->field_type == JSON_STRING || common_field->field_type == JSON_ARRAY_STRING)) ||
+			     (author_field && (author_field->field_type == JSON_STRING || author_field->field_type == JSON_ARRAY_STRING));
 	    /*
 	     * If the field type is a string we have to remove a single '"' and
 	     * from the beginning and end of the value.
 	     */
-	    if ((common_field && (common_field->field_type == JSON_STRING || common_field->field_type == JSON_ARRAY_STRING)) ||
-		(author_field && (author_field->field_type == JSON_STRING || author_field->field_type == JSON_ARRAY_STRING))) {
+	    if (is_json_string) {
 		if (!strcmp(val, "\"\"")) {
 		    /* make sure that it's not an empty string ("") */
 		    warn(__func__, "found empty string for field '%s' in file %s: '%s'", p, file, val);
@@ -640,7 +653,7 @@ check_author_json(char const *file, char const *fnamchk)
 	     */
 	    val_esc = malloc_json_decode_str(val, NULL, strict);
 	    if (val_esc == NULL) {
-		err(28, __func__, "malloc_json_decode(): invalidly formed field '%s' value '%s' or malloc failure in file %s",
+		err(27, __func__, "malloc_json_decode(): invalidly formed field '%s' value '%s' or malloc failure in file %s",
 			p, val, file);
 		not_reached();
 	    }
@@ -742,7 +755,7 @@ get_author_json_field(char const *file, char *name, char *val)
      * firewall
      */
     if (file == NULL || name == NULL || val == NULL) {
-	err(29, __func__, "passed NULL arg(s)");
+	err(28, __func__, "passed NULL arg(s)");
 	not_reached();
     }
 
@@ -793,7 +806,7 @@ check_found_author_json_fields(char const *file, bool test)
      * firewall
      */
     if (file == NULL) {
-	err(30, __func__, "passed NULL file");
+	err(29, __func__, "passed NULL file");
 	not_reached();
     }
 
@@ -802,7 +815,7 @@ check_found_author_json_fields(char const *file, bool test)
 	 * first make sure the name != NULL and strlen() > 0
 	 */
 	if (field->name == NULL || !strlen(field->name)) {
-	    err(31, __func__, "found NULL or empty field in found_author_json_fields list");
+	    err(30, __func__, "found NULL or empty field in found_author_json_fields list");
 	    not_reached();
 	}
 
@@ -817,7 +830,7 @@ check_found_author_json_fields(char const *file, bool test)
 	 * author list is not a author field name.
 	 */
 	if (author_field == NULL) {
-	    err(32, __func__, "illegal field name '%s' in found_author_json_fields list", field->name);
+	    err(31, __func__, "illegal field name '%s' in found_author_json_fields list", field->name);
 	    not_reached();
 	}
 
@@ -835,8 +848,10 @@ check_found_author_json_fields(char const *file, bool test)
 
 	    if (!val_length) {
 		warn(__func__, "empty value found for field '%s' in file %s: '%s'", field->name, file, val);
-		/* don't increase issues because the below checks will do that
-		 * too: this warning only notes the reason the test will fail.
+		/*
+		 * NOTE: don't increase issues because the below checks will do
+		 * that too: this warning only notes the reason the test will
+		 * fail.
 		 */
 	    }
 
@@ -886,9 +901,18 @@ check_found_author_json_fields(char const *file, bool test)
 		    ++issues;
 		}
 	    } else {
-		/* this should never actually be reached but just in case */
-		warn(__func__, "found invalid field in file %s: '%s'", file, field->name);
-		++issues;
+		/*
+		 * This should never actually be reached but if it is it
+		 * suggests that a field was not added to be checked: if it's
+		 * not a valid field we would have already detected and aborted
+		 * earlier in this loop so we don't have to check for that.
+		 */
+		warn(__func__, "found unhandled author field in file %s: '%s'", file, field->name);
+		/*
+		 * NOTE: Don't increment issues because this doesn't mean
+		 * there's anything wrong with the .author.json file but rather
+		 * that the field isn't verified.
+		 */
 	    }
 	}
     }
@@ -927,13 +951,13 @@ add_found_author_json_field(char const *name, char const *val)
      * firewall
      */
     if (name == NULL || val == NULL) {
-	err(33, __func__, "passed NULL arg(s)");
+	err(32, __func__, "passed NULL arg(s)");
 	not_reached();
     }
 
     field_in_table = find_json_field_in_table(author_json_fields, name, &loc);
     if (field_in_table == NULL) {
-	err(34, __func__, "called add_found_author_json_field() on field '%s' not specific to .author.json", name);
+	err(33, __func__, "called add_found_author_json_field() on field '%s' not specific to .author.json", name);
 	not_reached();
     }
     /*
@@ -956,7 +980,7 @@ add_found_author_json_field(char const *name, char const *val)
 		 * this shouldn't happen as if add_json_value() gets an error
 		 * it'll abort but just to be safe we check here too
 		 */
-		err(35, __func__, "error adding json value '%s' to field '%s'", val, field->name);
+		err(34, __func__, "error adding json value '%s' to field '%s'", val, field->name);
 		not_reached();
 	    }
 
@@ -976,7 +1000,7 @@ add_found_author_json_field(char const *name, char const *val)
 	 * we should never get here because if new_json_field gets NULL it
 	 * aborts the program.
 	 */
-	err(36, __func__, "error creating new struct json_field * for field '%s' value '%s'", name, val);
+	err(35, __func__, "error creating new struct json_field * for field '%s' value '%s'", name, val);
 	not_reached();
     }
 
