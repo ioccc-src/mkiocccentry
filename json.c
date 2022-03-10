@@ -2286,13 +2286,7 @@ check_found_common_json_fields(char const *program, char const *file, char const
 		    ++issues;
 		}
 	    } else if (!strcmp(field->name, "timestamp_epoch")) {
-		/*
-		 * XXX - FIXME check for both "Thu Jan 01 00:00:00 1970 UTC" and also
-		 * "Thu Jan  1 00:00:00 1970 UTC" because many of the test_JSON
-		 * files have the second form: once the tools are completed
-		 * remove ALT_TIMESTAMP_EPOCH in its entirety.
-		 */
-		if (strcmp(val, TIMESTAMP_EPOCH) && strcmp(val, ALT_TIMESTAMP_EPOCH)) {
+		if (strcmp(val, TIMESTAMP_EPOCH)) {
 		    warn(__func__, "timestamp_epoch != TIMESTAMP_EPOCH \"%s\" in file %s: \"%s\"", TIMESTAMP_EPOCH, file, val);
 		    ++issues;
 		}
