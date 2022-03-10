@@ -2411,7 +2411,7 @@ posix_plus_safe(char const *str, bool lower_only, bool slash_ok, bool first)
     /*
      * Beyond the 1st character, they must be POSIX portable filename or +
      */
-    for (i=start; i < len-1; ++i) {
+    for (i=start; i < len; ++i) {
 
 	/*
 	 * special case: / check

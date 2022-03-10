@@ -2167,7 +2167,11 @@ check_found_common_json_fields(char const *program, char const *file, char const
     struct json_field *field; /* current field in found_common_json_fields list */
     struct json_value *value; /* current value in current field's values list */
     struct json_field *common_field = NULL; /* element in the common_json_fields table */
-    struct json_field *tarball_field = NULL;
+    struct json_field *tarball_field = NULL; /* for checks after initial loop */
+    char *tarball_val = NULL; /* for checks after initial loop */
+    char *entry_num_val = NULL; /* for checks after initial loop */
+    char *contest_id_val = NULL; /* for checks after initial loop */
+    char *formed_timestamp_val = NULL; /* for checks after initial loop */
     size_t loc = 0;	/* location in the common_json_fields table */
     size_t val_length = 0; /* current value length */
     bool test_mode = false; /* will be set to true if test_mode value is true */
@@ -2275,6 +2279,8 @@ check_found_common_json_fields(char const *program, char const *file, char const
 		    ++issues;
 		}
 	    } else if (!strcmp(field->name, "IOCCC_contest_id")) {
+		/* we need this for tarball, contest id and entry num matching test */
+		contest_id_val = contest_id_val != NULL ? contest_id_val : val;
 		if (!valid_contest_id(val)) {
 		    warn(__func__, "IOCCC_contest_id is invalid in file %s: \"%s\"", file, val);
 		    ++issues;
@@ -2286,13 +2292,7 @@ check_found_common_json_fields(char const *program, char const *file, char const
 		    ++issues;
 		}
 	    } else if (!strcmp(field->name, "timestamp_epoch")) {
-		/*
-		 * XXX - FIXME check for both "Thu Jan 01 00:00:00 1970 UTC" and also
-		 * "Thu Jan  1 00:00:00 1970 UTC" because many of the test_JSON
-		 * files have the second form: once the tools are completed
-		 * remove ALT_TIMESTAMP_EPOCH in its entirety.
-		 */
-		if (strcmp(val, TIMESTAMP_EPOCH) && strcmp(val, ALT_TIMESTAMP_EPOCH)) {
+		if (strcmp(val, TIMESTAMP_EPOCH)) {
 		    warn(__func__, "timestamp_epoch != TIMESTAMP_EPOCH \"%s\" in file %s: \"%s\"", TIMESTAMP_EPOCH, file, val);
 		    ++issues;
 		}
@@ -2304,6 +2304,8 @@ check_found_common_json_fields(char const *program, char const *file, char const
 		    ++issues;
 		}
 	    } else if (!strcmp(field->name, "entry_num")) {
+		/* we need this for tarball, contest id and entry num matching test */
+		entry_num_val = entry_num_val != NULL ? entry_num_val : val;
 		entry_num = string_to_int(val);
 		if (!(entry_num >= 0 && entry_num <= MAX_ENTRY_NUM)) {
 		    warn(__func__, "entry number out of range in file %s: %d", file, entry_num);
@@ -2316,6 +2318,8 @@ check_found_common_json_fields(char const *program, char const *file, char const
 		    ++issues;
 		}
 	    } else if (!strcmp(field->name, "formed_timestamp")) {
+		/* we need this for tarball, contest id and entry num matching test */
+		formed_timestamp_val = formed_timestamp_val != NULL ? formed_timestamp_val : val;
 		ts = string_to_long(val);
 		if (ts < MIN_TIMESTAMP) {
 		    warn(__func__, "formed_timestamp < MIN_TIMESTAMP '%ld' in file %s: '%s' (%ld)", MIN_TIMESTAMP, file, val, ts);
@@ -2327,6 +2331,8 @@ check_found_common_json_fields(char const *program, char const *file, char const
 		 * test_mode == true
 		 */
 		tarball_field = field;
+		/* we need this for tarball, contest id and entry num matching test */
+		tarball_val = tarball_val != NULL ? tarball_val: val;
 	    } else if (!strcmp(field->name, "test_mode")) {
 		/*
 		 * Only set to the value if !test_mode: this is so that if
@@ -2414,6 +2420,40 @@ check_found_common_json_fields(char const *program, char const *file, char const
 	    }
 	}
 
+    }
+
+    /*
+     * We have to verify that contest_id and entry_num matches the tarball.
+     *
+     * NOTE: This resolves test_JSON/info.json/bad/info.tarball-0.json.
+     */
+    if (tarball_val != NULL && contest_id_val != NULL && entry_num_val != NULL && formed_timestamp_val != NULL) {
+	int ret;
+	char *str = NULL;
+
+	errno = 0;
+	str = calloc(1, strlen(tarball_val)+strlen(entry_num_val) + strlen(formed_timestamp_val) + 1);
+	if (str == NULL) {
+	    err(35, __func__, "couldn't allocate memory to verify that contest_id and entry_num matches the tarball");
+	    not_reached();
+	}
+
+	errno = 0;
+	ret = sprintf(str, "entry.%s-%s.%s.txz", contest_id_val, entry_num_val, formed_timestamp_val);
+	if (ret <= 0) {
+	    warn(__func__, "couldn't write entry.%s-%s.%s.txz to string for tarball match test", contest_id_val, entry_num_val, formed_timestamp_val);
+	    ++issues;
+	} else {
+	    if (strcmp(str, tarball_val)) {
+		warn(__func__, "tarball '%s' does not match entry.%s-%s.%s.txz", tarball_val, contest_id_val, entry_num_val, formed_timestamp_val);
+		++issues;
+	    }
+	}
+	free(str);
+	str = NULL;
+    } else {
+	warn(__func__, "couldn't verify tarball matches IOCCC_contest_id, entry_num and formed_timestamp due to one or more missing fields");
+	++issues;
     }
 
     return issues;

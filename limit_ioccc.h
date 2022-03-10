@@ -66,7 +66,6 @@
 #define UUID_VERSION (4)		/* version 4 - random UUID */
 #define UUID_VARIANT (0xa)		/* variant 1 - encoded as 0xa */
 #define TIMESTAMP_EPOCH "Thu Jan 01 00:00:00 1970 UTC"	/* gettimeofday epoch */
-#define ALT_TIMESTAMP_EPOCH "Thu Jan  1 00:00:00 1970 UTC"	/* gettimeofday epoch */
 #define MAX_TIMESTAMP_LEN (48)		/* 28 + 20 more padding for locate */
 
 /*
