@@ -499,23 +499,9 @@ check_txz_file(char const *txzpath, char *p, char const *dir_name, struct txz_fi
     }
 
     /*
-     * case: basename is allowed to begin with dot
-     */
-    if (allowed_dot_file) {
-	/*
-	 * after the . the basename must use only lower case POSIX portable filename and + chars
-	 */
-	if (!posix_plus_safe(file->basename+1, true, false, true)) {
-	    ++txz_info.total_issues; /* report it once and consider it only one issue */
-	    ++txz_info.invalid_chars;
-	    warn(__func__, "%s: file basename does not match regexp ^\\.[0-9a-z][0-9a-z._+-]*$: %s",
-			   txzpath, file->basename);
-	}
-
-    /*
      * case: basename is NOT allowed to begin with dot
      */
-    } else {
+    if (!allowed_dot_file) {
 	/*
 	 * basename must use only POSIX portable filename and + chars
 	 */

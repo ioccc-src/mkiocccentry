@@ -2279,7 +2279,9 @@ check_found_common_json_fields(char const *program, char const *file, char const
 		    ++issues;
 		}
 	    } else if (!strcmp(field->name, "IOCCC_contest_id")) {
-		/* we need this for tarball, contest id and entry num matching test */
+		/*
+		 * We need this for verifying that the tarball matches the contest id, entry num and formed timestamp
+		 */
 		contest_id_val = contest_id_val != NULL ? contest_id_val : val;
 		if (!valid_contest_id(val)) {
 		    warn(__func__, "IOCCC_contest_id is invalid in file %s: \"%s\"", file, val);
@@ -2304,7 +2306,9 @@ check_found_common_json_fields(char const *program, char const *file, char const
 		    ++issues;
 		}
 	    } else if (!strcmp(field->name, "entry_num")) {
-		/* we need this for tarball, contest id and entry num matching test */
+		/*
+		 * We need this for verifying that the tarball matches the contest id, entry num and formed timestamp
+		 */
 		entry_num_val = entry_num_val != NULL ? entry_num_val : val;
 		entry_num = string_to_int(val);
 		if (!(entry_num >= 0 && entry_num <= MAX_ENTRY_NUM)) {
@@ -2318,7 +2322,9 @@ check_found_common_json_fields(char const *program, char const *file, char const
 		    ++issues;
 		}
 	    } else if (!strcmp(field->name, "formed_timestamp")) {
-		/* we need this for tarball, contest id and entry num matching test */
+		/*
+		 * We need this for verifying that the tarball matches the contest id, entry num and formed timestamp
+		 */
 		formed_timestamp_val = formed_timestamp_val != NULL ? formed_timestamp_val : val;
 		ts = string_to_long(val);
 		if (ts < MIN_TIMESTAMP) {
@@ -2331,7 +2337,9 @@ check_found_common_json_fields(char const *program, char const *file, char const
 		 * test_mode == true
 		 */
 		tarball_field = field;
-		/* we need this for tarball, contest id and entry num matching test */
+		/*
+		 * We need this for verifying that the tarball matches the contest id, entry num and formed timestamp
+		 */
 		tarball_val = tarball_val != NULL ? tarball_val: val;
 	    } else if (!strcmp(field->name, "test_mode")) {
 		/*
@@ -2423,18 +2431,20 @@ check_found_common_json_fields(char const *program, char const *file, char const
     }
 
     /*
-     * We have to verify that contest_id and entry_num matches the tarball.
+     * We have to verify that tarball matches the contest id, entry num and
+     * formed timestamp.
      *
-     * NOTE: This resolves test_JSON/info.json/bad/info.tarball-0.json.
+     * NOTE: This resolves test_JSON/info.json/bad/info.tarball-0.json as well
+     * as some others.
      */
     if (tarball_val != NULL && contest_id_val != NULL && entry_num_val != NULL && formed_timestamp_val != NULL) {
 	int ret;
 	char *str = NULL;
 
 	errno = 0;
-	str = calloc(1, strlen(tarball_val)+strlen(entry_num_val) + strlen(formed_timestamp_val) + 1);
+	str = calloc(1, strlen(tarball_val) + strlen(contest_id_val) + strlen(entry_num_val) + strlen(formed_timestamp_val) + 1);
 	if (str == NULL) {
-	    err(35, __func__, "couldn't allocate memory to verify that contest_id and entry_num matches the tarball");
+	    err(239, __func__, "couldn't allocate memory to verify that contest_id and entry_num matches the tarball");
 	    not_reached();
 	}
 
@@ -2484,26 +2494,26 @@ new_json_field(char const *name, char const *val)
      * firewall
      */
     if (name == NULL || val == NULL) {
-	err(239, __func__, "passed NULL arg(s)");
+	err(240, __func__, "passed NULL arg(s)");
 	not_reached();
     }
 
     errno = 0;
     field = calloc(1, sizeof *field);
     if (field == NULL) {
-	errp(240, __func__, "error allocating new struct json_field * for field '%s' and value '%s': %s", name, val, strerror(errno));
+	errp(241, __func__, "error allocating new struct json_field * for field '%s' and value '%s': %s", name, val, strerror(errno));
 	not_reached();
     }
 
     errno = 0;
     field->name = strdup(name);
     if (field->name == NULL) {
-	errp(241, __func__, "unable to strdup() field name '%s': %s", name, strerror(errno));
+	errp(242, __func__, "unable to strdup() field name '%s': %s", name, strerror(errno));
 	not_reached();
     }
 
     if (add_json_value(field, val) == NULL) {
-	err(242, __func__, "error adding value '%s' to field '%s'", val, name);
+	err(243, __func__, "error adding value '%s' to field '%s'", val, name);
 	not_reached();
     }
 
@@ -2540,7 +2550,7 @@ add_json_value(struct json_field *field, char const *val)
      * firewall
      */
     if (field == NULL || val == NULL) {
-	err(243, __func__, "passed NULL arg(s)");
+	err(244, __func__, "passed NULL arg(s)");
 	not_reached();
     }
 
@@ -2548,13 +2558,13 @@ add_json_value(struct json_field *field, char const *val)
     errno = 0;
     new_value = calloc(1, sizeof *new_value);
     if (new_value == NULL) {
-	errp(244, __func__, "error allocating new value '%s' for field '%s': %s", val, field->name, strerror(errno));
+	errp(245, __func__, "error allocating new value '%s' for field '%s': %s", val, field->name, strerror(errno));
 	not_reached();
     }
     errno = 0;
     new_value->value = strdup(val);
     if (new_value->value == NULL) {
-	errp(245, __func__, "error strdup()ing value '%s' for field '%s': %s", val, field->name, strerror(errno));
+	errp(246, __func__, "error strdup()ing value '%s' for field '%s': %s", val, field->name, strerror(errno));
 	not_reached();
     }
 
@@ -2593,7 +2603,7 @@ free_json_field_values(struct json_field *field)
      * firewall
      */
     if (field == NULL) {
-	err(246, __func__, "passed NULL field");
+	err(247, __func__, "passed NULL field");
 	not_reached();
     }
 
@@ -2658,7 +2668,7 @@ free_json_field(struct json_field *field)
      * firewall
      */
     if (field == NULL) {
-	err(247, __func__, "passed NULL field");
+	err(248, __func__, "passed NULL field");
 	not_reached();
     }
 
@@ -2693,7 +2703,7 @@ free_info(struct info *infop)
      * firewall
      */
     if (infop == NULL) {
-	err(248, __func__, "called with NULL arg(s)");
+	err(249, __func__, "called with NULL arg(s)");
 	not_reached();
     }
 
@@ -2785,11 +2795,11 @@ free_author_array(struct author *author_set, int author_count)
      * firewall
      */
     if (author_set == NULL) {
-	err(249, __func__, "called with NULL arg(s)");
+	err(10, __func__, "called with NULL arg(s)");
 	not_reached();
     }
     if (author_count < 0) {
-	err(10, __func__, "author_count: %d < 0", author_count);
+	err(11, __func__, "author_count: %d < 0", author_count);
 	not_reached();
     }
 
