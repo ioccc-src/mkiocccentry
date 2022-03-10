@@ -2451,6 +2451,9 @@ check_found_common_json_fields(char const *program, char const *file, char const
 	}
 	free(str);
 	str = NULL;
+    } else {
+	warn(__func__, "couldn't verify tarball matches IOCCC_contest_id, entry_num and formed_timestamp due to one or more missing fields");
+	++issues;
     }
 
     return issues;
