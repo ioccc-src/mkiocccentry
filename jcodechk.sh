@@ -29,11 +29,12 @@
 
 # setup
 #
-export USAGE="usage: $0 [-h] [-v level] [-D dbg_level] jchktool file.json
+export USAGE="usage: $0 [-h] [-v level] [-D dbg_level] [-s] jchktool file.json
 
     -h			print help and exit 2
     -v level		set verbosity level for this script: (def level: 0)
     -D dbg_level	set verbosity level to pass to jchktool (def: level: 0)
+    -s			strict mode: be more strict on what is allowed (def: not strict)
 
     jchktool		path to a JSON check tool such as ./jinfochk or ./jauthchk
     file.json		a JSON filename to check
@@ -53,12 +54,13 @@ exit codes:
 export EXIT_CODE=0
 export JSON_TREE="./test_JSON"
 export LOGFILE="./json-test.log"
+export STRICT=""
 
 # parse args
 #
 export V_FLAG="0"
 export DBG_LEVEL="0"
-while getopts :hv:D: flag; do
+while getopts :hv:D:s flag; do
     case "$flag" in
     h) echo "$USAGE" 1>&2
        exit 5
@@ -66,6 +68,8 @@ while getopts :hv:D: flag; do
     v) V_FLAG="$OPTARG";
        ;;
     D) DBG_LEVEL="$OPTARG";
+       ;;
+    s) STRICT="-s"
        ;;
     \?) echo "$0: ERROR: invalid option: -$OPTARG" 1>&2
        exit 6
@@ -169,9 +173,9 @@ fi
 # run the jchktool and capture the output
 #
 if [[ $V_FLAG -ge 3 ]]; then
-    echo "$0: debug[3]: about to execute: $JCHKTOOL -v $DBG_LEVEL -- $FILE_JSON > $TMPFILE 2>&1" 1>&2
+    echo "$0: debug[3]: about to execute: $JCHKTOOL -v $DBG_LEVEL $STRICT -- $FILE_JSON > $TMPFILE 2>&1" 1>&2
 fi
-"$JCHKTOOL" -v "$DBG_LEVEL" -- "$FILE_JSON" > "$TMPFILE" 2>&1
+"$JCHKTOOL" -v "$DBG_LEVEL" "$STRICT" -- "$FILE_JSON" > "$TMPFILE" 2>&1
 status="$?"
 if [[ $V_FLAG -ge 3 ]]; then
     echo "$0: debug[3]: jchktool exit code: $status" 1>&2
@@ -202,9 +206,11 @@ if [[ $CODE_FOUND != "$CODE_EXPECTED" ]]; then
 	echo "$0: debug[3]: difference between codes expected and codes generated follows:" 1>&2
 	diff -y <( echo "$CODE_EXPECTED" ) <( echo "$CODE_FOUND" ) 1>&2
     fi
+    rm -f "$TMPFILE"
     exit 1
 fi
 if [[ $V_FLAG -ge 1 ]]; then
     echo "$0: debug[1]: all codes generated are expected" 1>&2
 fi
+rm -f "$TMPFILE"
 exit 0

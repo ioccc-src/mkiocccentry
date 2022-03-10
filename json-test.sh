@@ -5,13 +5,14 @@
 # setup
 #
 export USAGE="usage: $0 [-h] [-v level] [-D dbg_level] [-j jinfochk] [-J jauthchk]
-		      [-t jinfo_only | -t jauth_only] [-d json_tree]
+		      [-C jcodechk.sh] [-t jinfo_only | -t jauth_only] [-d json_tree]
 
     -h				print help and exit 2
     -v level			set verbosity level for this script: (def level: 0)
     -D dbg_level		set verbosity level for tests (def: level: 0)
     -j /path/to/jinfochk	path to jinfochk executable (def: ./jinfochk)
     -J /path/to/jauthchk	path to jauthchk executable (def: ./jauthchk)
+    -C /path/to/jcodechk.sh	path to the jcodechk.sh executable (def: ./jcodechk.sh)
     -t jinfo_only		run only jinfochk tests (def: run both)
     -t jauth_only		run only jauthchk tests (def: run both)
     -d json_tree		tree where JSON test files are to be found (def: ./test_JSON)
@@ -33,6 +34,7 @@ exit codes:
     >= 4 - internal error"
 export JINFOCHK="./jinfochk"
 export JAUTHCHK="./jauthchk"
+export JCODECHK="./jcodechk.sh"
 export RUN_JINFOCHK="true"
 export RUN_JAUTHCHK="true"
 export EXIT_CODE=0
@@ -43,7 +45,7 @@ export LOGFILE="./json-test.log"
 #
 export V_FLAG="0"
 export DBG_LEVEL="0"
-while getopts :hv:D:j:J:t:d: flag; do
+while getopts :hv:D:j:J:C:t:d: flag; do
     case "$flag" in
     h) echo "$USAGE" 1>&2
        exit 2
@@ -55,6 +57,8 @@ while getopts :hv:D:j:J:t:d: flag; do
     j) JINFOCHK="$OPTARG";
        ;;
     J) JAUTHCHK="$OPTARG";
+       ;;
+    C) JCODECHK="$OPTARG";
        ;;
     t) if [[ $OPTARG == jinfo_only ]]; then
 	    RUN_JAUTHCHK=
@@ -115,8 +119,7 @@ fi
 
 # remove logfile so that each run starts out with an empty file
 #
-# shellcheck disable=SC2188
-> "$LOGFILE"
+touch "$LOGFILE"
 if [[ ! -f "${LOGFILE}" ]]; then
     echo "$0: ERROR: couldn't create log file" 1>&2
     exit 5
@@ -218,6 +221,21 @@ if [[ -n $RUN_JAUTHCHK ]]; then
     fi
 fi
 
+# check that the jcodechk.sh tool is available
+#
+if [[ ! -e $JCODECHK ]]; then
+    echo "$0: ERROR: jcodechk.sh not found: $JCODECHK" 1>&2
+    exit 4
+fi
+if [[ ! -f $JCODECHK ]]; then
+    echo "$0: ERROR: jcodechk.sh not a file: $JCODECHK" 1>&2
+    exit 4
+fi
+if [[ ! -x $JCODECHK ]]; then
+    echo "$0: ERROR: jcodechk.sh not exeutable: $JCODECHK" 1>&2
+    exit 4
+fi
+
 # run_test - run a single test
 #
 # usage:
@@ -243,6 +261,7 @@ run_test()
     typeset pass_fail="$3"
     typeset strict="$4"
     typeset json_test_file="$5"
+    typeset json_code="$json_test_file.code"
     if [[ ! -e $test_prog ]]; then
 	echo "$0: in run_test: test_prog not found: $test_prog"
 	exit 4
@@ -325,32 +344,76 @@ run_test()
     #
     if [[ $pass_fail == pass ]]; then
 	if [[ $status -ne 0 ]]; then
-	    echo "$0: Warning: in run_test: FAIL: $test_prog -v $debug_level $json_test_file exit code: $status != 0" | tee -a "$LOGFILE"
-	    echo "$0: Warning: the above mentioned test FAILED when it should have PASSED" | tee -a "$LOGFILE"
+	    echo "$0: Warning: in run_test: FAIL: $test_prog -v $debug_level $json_test_file exit code: $status != 0" | tee -a "$LOGFILE" 1>&2
+	    echo "$0: Warning: the above mentioned test FAILED when it should have PASSED" | tee -a "$LOGFILE" 1>&2
 	    if [[ $V_FLAG -lt 3 ]]; then
-		echo "$0: Warning: for more details try: $test_prog -v 3 -- $json_test_file" | tee -a "$LOGFILE"
+		echo "$0: Warning: for more details try: $test_prog -v 3 -- $json_test_file" | tee -a "$LOGFILE" 1>&2
 	    else
-		echo "$0: Warning: for more details try: $test_prog -v $V_FLAG -- $json_test_file" | tee -a "$LOGFILE"
+		echo "$0: Warning: for more details try: $test_prog -v $V_FLAG -- $json_test_file" | tee -a "$LOGFILE" 1>&2
 	    fi
-	    echo | tee -a "${LOGFILE}"
+	    echo | tee -a "${LOGFILE}" 1>&2
 	    EXIT_CODE=1
 	elif [[ $V_FLAG -ge 5 ]]; then
 	    echo "$0: debug[5]: in run_test: PASS: $test_prog -v $debug_level $json_test_file" 1>&2
 	fi
     elif [[ $pass_fail == fail ]]; then
 	if [[ $status -eq 0 ]]; then
-	    echo "$0: Warning: in run_test: FAIL: $test_prog -v $debug_level $json_test_file exit code: $status == 0" | tee -a "$LOGFILE"
-	    echo "$0: Warning: the above mentioned test PASSED when it should have FAILED" | tee -a "$LOGFILE"
+	    echo "$0: Warning: in run_test: FAIL: $test_prog -v $debug_level $json_test_file exit code: $status == 0" | tee -a "$LOGFILE" 1>&2
+	    echo "$0: Warning: the above mentioned test PASSED when it should have FAILED" | tee -a "$LOGFILE" 1>&2
 	    if [[ $V_FLAG -lt 3 ]]; then
-		echo "$0: Warning: for more details try: $test_prog -v 3 -- $json_test_file" | tee -a "$LOGFILE"
+		echo "$0: Warning: for more details try: $test_prog -v 3 -- $json_test_file" | tee -a "$LOGFILE" 1>&2
 	    else
-		echo "$0: Warning: for more details try: $test_prog -v $V_FLAG -- $json_test_file" | tee -a "$LOGFILE"
+		echo "$0: Warning: for more details try: $test_prog -v $V_FLAG -- $json_test_file" | tee -a "$LOGFILE" 1>&2
 	    fi
-	    echo | tee -a "${LOGFILE}"
+	    echo | tee -a "${LOGFILE}" 1>&2
 	    EXIT_CODE=1
 	elif [[ $V_FLAG -ge 5 ]]; then
 	    echo "$0: debug[5]: in run_test: PASS: $test_prog -v $debug_level $json_test_file" 1>&2
 	fi
+    fi
+
+    # If an expected code file exists, use jcodechk.sh to check the codes
+    #
+    # We run jcodechk.sh at a -v 3 minimum so the log file might capture code difference information
+    #
+    if [[ -f $json_code ]]; then
+	if [[ $strict == strict ]]; then
+	    if [[ $V_FLAG -lt 3 ]]; then
+		"$JCODECHK" -v 3 -D "$debug_level" -s -- "$test_prog" "$json_test_file" 2>&1 | tee -a "$LOGFILE" 1>&2
+		status="$?"
+	    else
+		if [[ $V_FLAG -ge 5 ]]; then
+		    echo "$0: debug[5]: about run: $JCODECHK -v $V_FLAG 3 -D $debug_level -s -- $test_prog $json_test_file" 1>&2
+		fi
+		"$JCODECHK" -v "$V_FLAG" -D "$debug_level" -s -- "$test_prog" "$json_test_file" 2>&1 | tee -a "$LOGFILE" 1>&2
+		status="$?"
+	    fi
+	else
+	    if [[ $V_FLAG -lt 3 ]]; then
+		"$JCODECHK" -v 3 -D "$debug_level" -- "$test_prog" "$json_test_file" 2>&1 | tee -a "$LOGFILE" 1>&2
+		status="$?"
+	    else
+		if [[ $V_FLAG -ge 5 ]]; then
+		    echo "$0: debug[5]: about run: $JCODECHK -v $V_FLAG 3 -D $debug_level -- $test_prog $json_test_file" 1>&2
+		fi
+		"$JCODECHK" -v "$V_FLAG" -D "$debug_level" -- "$test_prog" "$json_test_file" 2>&1 | tee -a "$LOGFILE" 1>&2
+		status="$?"
+	    fi
+	fi
+	case "$status" in
+	0) if [[ $V_FLAG -ge 5 ]]; then
+		echo "$0: debug[5]: PASS: jcodechk.sh matched JSON codes" | tee -a "$LOGFILE" 1>&2
+	   fi
+	   ;;
+	1) echo "$0: Warning: FAIL: JSON codes for $json_test_file do not match expected code list in $json_code" | tee -a "$LOGFILE" 1>&2
+	   EXIT_CODE=1
+	   ;;
+	*) echo "$0: ERROR: FAIL: jcodechk.sh exit status: $status > 1" | tee -a "$LOGFILE" 1>&2
+	   EXIT_CODE=1
+	   ;;
+	esac
+    elif [[ $V_FLAG -ge 7 ]]; then
+	echo "$0: debug[7]: skipping jcodechk.sh, code list not found: $json_code" 1>&2
     fi
 
     # return
