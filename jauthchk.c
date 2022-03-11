@@ -1,8 +1,27 @@
 /* vim: set tabstop=8 softtabstop=4 shiftwidth=4 noexpandtab : */
 /*
- * jauthchk - IOCCC JSON .author.json checker and validator
+ * jauthchk - IOCCC JSON .author.json checker and validator. Invoked by
+ * mkiocccentry after the .author.json file has been created but prior to
+ * forming the tarball. The .author.json file is not formed if the jinfochk tool
+ * fails to validate the .info.json file.
  *
  * "Because sometimes even the IOCCC Judges need some help." :-)
+ *
+ * This tool is currently being worked on by:
+ *
+ *	@xexyl
+ *	https://xexyl.net		Cody Boone Ferguson
+ *	https://ioccc.xexyl.net
+ *
+ * NOTE: This tool and jinfochk is (and are) very much a work(s) in progress and
+ * as of 10 March 2022 it was decided that the parsing should be done via
+ * flex(1) and bison(1) which will require some time and thought. In time the
+ * two tools will be merged into one which can parse one or both of .author.json
+ * and/or .info.json. This is because some fields MUST be the same value in
+ * both files.
+ *
+ * Additionally there will likely be a jparse tool that will take a block of
+ * memory from either stdin or a file and attempt to parse it as json.
  */
 
 #include <stdio.h>
@@ -58,11 +77,11 @@ main(int argc, char **argv)
 	    exit(0); /*ooo*/
 	    not_reached();
 	    break;
-	case 'T':		/* -T (IOCCC toolset chain release repository tag) */
+	case 'T':		/* -T (IOCCC toolkit chain release repository tag) */
 	    errno = 0;		/* pre-clear errno for warnp() */
-	    ret = printf("%s\n", IOCCC_TOOLSET_RELEASE);
+	    ret = printf("%s\n", IOCCC_TOOLKIT_RELEASE);
 	    if (ret <= 0) {
-		warnp(__func__, "printf error printing IOCCC toolset release repository tag");
+		warnp(__func__, "printf error printing IOCCC toolkit release repository tag");
 	    }
 	    exit(0); /*ooo*/
 	    not_reached();
@@ -814,7 +833,7 @@ check_found_author_json_fields(char const *file, bool test)
 	/*
 	 * first make sure the name != NULL and strlen() > 0
 	 */
-	if (field->name == NULL || !strlen(field->name)) {
+	if (field->name == NULL || strlen(field->name) <= 0) {
 	    err(30, __func__, "found NULL or empty field in found_author_json_fields list");
 	    not_reached();
 	}
@@ -844,6 +863,12 @@ check_found_author_json_fields(char const *file, bool test)
 
 	for (value = field->values; value != NULL; value = value->next) {
 	    char *val = value->value;
+
+	    if (val == NULL) {
+		err(32, __func__, "NULL pointer val for field '%s' in file %s", field->name, file);
+		not_reached();
+	    }
+
 	    val_length = strlen(val);
 
 	    if (!val_length) {
@@ -951,13 +976,13 @@ add_found_author_json_field(char const *name, char const *val)
      * firewall
      */
     if (name == NULL || val == NULL) {
-	err(32, __func__, "passed NULL arg(s)");
+	err(33, __func__, "passed NULL arg(s)");
 	not_reached();
     }
 
     field_in_table = find_json_field_in_table(author_json_fields, name, &loc);
     if (field_in_table == NULL) {
-	err(33, __func__, "called add_found_author_json_field() on field '%s' not specific to .author.json", name);
+	err(34, __func__, "called add_found_author_json_field() on field '%s' not specific to .author.json", name);
 	not_reached();
     }
     /*
@@ -980,7 +1005,7 @@ add_found_author_json_field(char const *name, char const *val)
 		 * this shouldn't happen as if add_json_value() gets an error
 		 * it'll abort but just to be safe we check here too
 		 */
-		err(34, __func__, "error adding json value '%s' to field '%s'", val, field->name);
+		err(35, __func__, "error adding json value '%s' to field '%s'", val, field->name);
 		not_reached();
 	    }
 
@@ -1000,7 +1025,7 @@ add_found_author_json_field(char const *name, char const *val)
 	 * we should never get here because if new_json_field gets NULL it
 	 * aborts the program.
 	 */
-	err(35, __func__, "error creating new struct json_field * for field '%s' value '%s'", name, val);
+	err(36, __func__, "error creating new struct json_field * for field '%s' value '%s'", name, val);
 	not_reached();
     }
 

@@ -2,15 +2,26 @@
 /*
  * jinfochk - IOCCC JSON .info.json checker and validator. Invoked by
  * mkiocccentry after the .info.json file has been created but prior to forming
- * the tarball.
+ * the .author.json file, validating it with jauthchk and then forming the
+ * tarball.
  *
  * "Because sometimes even the IOCCC Judges need some help." :-)
  *
- * Written in 2022 by:
+ * This tool is currently being worked on by:
  *
  *	@xexyl
  *	https://xexyl.net		Cody Boone Ferguson
  *	https://ioccc.xexyl.net
+ *
+ * NOTE: This tool and jauthchk is (and are) very much a work(s) in progress and
+ * as of 10 March 2022 it was decided that the parsing should be done via
+ * flex(1) and bison(1) which will require some time and thought. In time the
+ * two tools will be merged into one which can parse one or both of .info.json
+ * and/or .author.json. This is because some fields MUST be the same value in
+ * both files.
+ *
+ * Additionally there will likely be a jparse tool that will take a block of
+ * memory from either stdin or a file and attempt to parse it as json.
  */
 
 
@@ -67,11 +78,11 @@ main(int argc, char **argv)
 	    exit(0); /*ooo*/
 	    not_reached();
 	    break;
-	case 'T':		/* -T (IOCCC toolset chain release repository tag) */
+	case 'T':		/* -T (IOCCC toolkit chain release repository tag) */
 	    errno = 0;		/* pre-clear errno for warnp() */
-	    ret = printf("%s\n", IOCCC_TOOLSET_RELEASE);
+	    ret = printf("%s\n", IOCCC_TOOLKIT_RELEASE);
 	    if (ret <= 0) {
-		warnp(__func__, "printf error printing IOCCC toolset release repository tag");
+		warnp(__func__, "printf error printing IOCCC toolkit release repository tag");
 	    }
 	    exit(0); /*ooo*/
 	    not_reached();
@@ -1293,14 +1304,20 @@ check_found_info_json_fields(char const *file, bool test)
 
 	for (value = field->values; value != NULL; value = value->next) {
 	    char *val = value->value;
+
+	    if (val == NULL) {
+		err(42, __func__, "NULL pointer val for field '%s' in file %s", field->name, file);
+		not_reached();
+	    }
+
 	    val_length = strlen(val);
 
-	    if (!val_length && strcmp(field->name, "manifest")) {
+	    if (val_length <= 0 && strcmp(field->name, "manifest")) {
 		/*
 		 * manifest has an empty value in a sense so we only do this for
 		 * fields that aren't manifest.
 		 */
-		err(42, __func__, "empty value found for field '%s' in file %s", field->name, file);
+		err(43, __func__, "empty value found for field '%s' in file %s", field->name, file);
 		not_reached();
 	    }
 
@@ -1382,7 +1399,7 @@ check_found_info_json_fields(char const *file, bool test)
 		}
 		manifest_file = add_manifest_file(val);
 		if (manifest_file == NULL) {
-		    err(43, __func__, "couldn't add info_JSON file '%s'", val);
+		    err(44, __func__, "couldn't add info_JSON file '%s'", val);
 		    not_reached();
 		}
 	    } else if (!strcmp(field->name, "author_JSON")) {
@@ -1392,7 +1409,7 @@ check_found_info_json_fields(char const *file, bool test)
 		}
 		manifest_file = add_manifest_file(val);
 		if (manifest_file == NULL) {
-		    err(44, __func__, "couldn't add author_JSON file '%s'", val);
+		    err(45, __func__, "couldn't add author_JSON file '%s'", val);
 		    not_reached();
 		}
 	    } else if (!strcmp(field->name, "c_src")) {
@@ -1402,7 +1419,7 @@ check_found_info_json_fields(char const *file, bool test)
 		}
 		manifest_file = add_manifest_file(val);
 		if (manifest_file == NULL) {
-		    err(45, __func__, "couldn't add c_src file '%s'", val);
+		    err(46, __func__, "couldn't add c_src file '%s'", val);
 		    not_reached();
 		}
 	    } else if (!strcmp(field->name, "Makefile")) {
@@ -1412,7 +1429,7 @@ check_found_info_json_fields(char const *file, bool test)
 		}
 		manifest_file = add_manifest_file(val);
 		if (manifest_file == NULL) {
-		    err(46, __func__, "couldn't add Makefile file '%s'", val);
+		    err(47, __func__, "couldn't add Makefile file '%s'", val);
 		    not_reached();
 		}
 	    } else if (!strcmp(field->name, "remarks")) {
@@ -1422,7 +1439,7 @@ check_found_info_json_fields(char const *file, bool test)
 		}
 		manifest_file = add_manifest_file(val);
 		if (manifest_file == NULL) {
-		    err(47, __func__, "couldn't add remarks file '%s'", val);
+		    err(48, __func__, "couldn't add remarks file '%s'", val);
 		    not_reached();
 		}
 	    } else if (!strcmp(field->name, "extra_file")) {
@@ -1439,7 +1456,7 @@ check_found_info_json_fields(char const *file, bool test)
 		}
 		manifest_file = add_manifest_file(val);
 		if (manifest_file == NULL) {
-		    err(48, __func__, "couldn't add extra_file file '%s' in file %s", val, file);
+		    err(49, __func__, "couldn't add extra_file file '%s' in file %s", val, file);
 		    not_reached();
 		}
 	    } else if (!strcmp(field->name, "rule_2a_size")) {

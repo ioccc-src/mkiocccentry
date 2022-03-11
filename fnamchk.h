@@ -70,7 +70,7 @@ static const char * const usage_msg =
     "\t-v level\t\tset verbosity level: (def level: %d)\n"
     "\t-q\t\t\tquiet mode, unless verbosity level > 0 (def: not quiet)\n"
     "\t-V\t\t\tprint version string and exit\n"
-    "\t-T\t\t\tshow IOCCC toolset chain release repository tag\n"
+    "\t-T\t\t\tshow IOCCC toolkit chain release repository tag\n"
     "\t-t\t\t\tfilename must match test entry filename\n"
     "\t-u\t\t\tfilename must match real entry filename\n"
     "\n"

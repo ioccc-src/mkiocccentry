@@ -2230,6 +2230,12 @@ check_found_common_json_fields(char const *program, char const *file, char const
 
 	for (value = field->values; value != NULL; value = value->next) {
 	    char *val = value->value;
+
+	    if (val == NULL) {
+		err(239, __func__, "NULL pointer val for field '%s' in file %s", field->name, file);
+		not_reached();
+	    }
+
 	    val_length = strlen(val);
 
 	    if (!val_length) {
@@ -2444,7 +2450,7 @@ check_found_common_json_fields(char const *program, char const *file, char const
 	errno = 0;
 	str = calloc(1, strlen(tarball_val) + strlen(contest_id_val) + strlen(entry_num_val) + strlen(formed_timestamp_val) + 1);
 	if (str == NULL) {
-	    err(239, __func__, "couldn't allocate memory to verify that contest_id and entry_num matches the tarball");
+	    err(240, __func__, "couldn't allocate memory to verify that contest_id and entry_num matches the tarball");
 	    not_reached();
 	}
 
@@ -2494,26 +2500,26 @@ new_json_field(char const *name, char const *val)
      * firewall
      */
     if (name == NULL || val == NULL) {
-	err(240, __func__, "passed NULL arg(s)");
+	err(241, __func__, "passed NULL arg(s)");
 	not_reached();
     }
 
     errno = 0;
     field = calloc(1, sizeof *field);
     if (field == NULL) {
-	errp(241, __func__, "error allocating new struct json_field * for field '%s' and value '%s': %s", name, val, strerror(errno));
+	errp(242, __func__, "error allocating new struct json_field * for field '%s' and value '%s': %s", name, val, strerror(errno));
 	not_reached();
     }
 
     errno = 0;
     field->name = strdup(name);
     if (field->name == NULL) {
-	errp(242, __func__, "unable to strdup() field name '%s': %s", name, strerror(errno));
+	errp(243, __func__, "unable to strdup() field name '%s': %s", name, strerror(errno));
 	not_reached();
     }
 
     if (add_json_value(field, val) == NULL) {
-	err(243, __func__, "error adding value '%s' to field '%s'", val, name);
+	err(244, __func__, "error adding value '%s' to field '%s'", val, name);
 	not_reached();
     }
 
@@ -2550,7 +2556,7 @@ add_json_value(struct json_field *field, char const *val)
      * firewall
      */
     if (field == NULL || val == NULL) {
-	err(244, __func__, "passed NULL arg(s)");
+	err(245, __func__, "passed NULL arg(s)");
 	not_reached();
     }
 
@@ -2558,13 +2564,13 @@ add_json_value(struct json_field *field, char const *val)
     errno = 0;
     new_value = calloc(1, sizeof *new_value);
     if (new_value == NULL) {
-	errp(245, __func__, "error allocating new value '%s' for field '%s': %s", val, field->name, strerror(errno));
+	errp(246, __func__, "error allocating new value '%s' for field '%s': %s", val, field->name, strerror(errno));
 	not_reached();
     }
     errno = 0;
     new_value->value = strdup(val);
     if (new_value->value == NULL) {
-	errp(246, __func__, "error strdup()ing value '%s' for field '%s': %s", val, field->name, strerror(errno));
+	errp(247, __func__, "error strdup()ing value '%s' for field '%s': %s", val, field->name, strerror(errno));
 	not_reached();
     }
 
@@ -2603,7 +2609,7 @@ free_json_field_values(struct json_field *field)
      * firewall
      */
     if (field == NULL) {
-	err(247, __func__, "passed NULL field");
+	err(248, __func__, "passed NULL field");
 	not_reached();
     }
 
@@ -2668,7 +2674,7 @@ free_json_field(struct json_field *field)
      * firewall
      */
     if (field == NULL) {
-	err(248, __func__, "passed NULL field");
+	err(249, __func__, "passed NULL field");
 	not_reached();
     }
 
@@ -2703,7 +2709,7 @@ free_info(struct info *infop)
      * firewall
      */
     if (infop == NULL) {
-	err(249, __func__, "called with NULL arg(s)");
+	err(10, __func__, "called with NULL arg(s)");
 	not_reached();
     }
 
@@ -2795,11 +2801,11 @@ free_author_array(struct author *author_set, int author_count)
      * firewall
      */
     if (author_set == NULL) {
-	err(10, __func__, "called with NULL arg(s)");
+	err(11, __func__, "called with NULL arg(s)");
 	not_reached();
     }
     if (author_count < 0) {
-	err(11, __func__, "author_count: %d < 0", author_count);
+	err(12, __func__, "author_count: %d < 0", author_count);
 	not_reached();
     }
 

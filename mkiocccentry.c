@@ -173,11 +173,11 @@ main(int argc, char *argv[])
 	    exit(0); /*ooo*/
 	    not_reached();
 	    break;
-	case 'T':		/* -T (IOCCC toolset chain release repository tag) */
+	case 'T':		/* -T (IOCCC toolkit chain release repository tag) */
 	    errno = 0;		/* pre-clear errno for warnp() */
-	    ret = printf("%s\n", IOCCC_TOOLSET_RELEASE);
+	    ret = printf("%s\n", IOCCC_TOOLKIT_RELEASE);
 	    if (ret <= 0) {
-		warnp(__func__, "printf error printing IOCCC toolset release repository tag");
+		warnp(__func__, "printf error printing IOCCC toolkit release repository tag");
 	    }
 	    exit(0); /*ooo*/
 	    not_reached();
