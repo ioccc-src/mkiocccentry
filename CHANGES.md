@@ -1,4 +1,4 @@
-# Major changes to the IOCCC entry tool set
+# Major changes to the IOCCC entry toolkit
 
 ## Release 0.1
 

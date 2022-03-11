@@ -2,15 +2,26 @@
 /*
  * jinfochk - IOCCC JSON .info.json checker and validator. Invoked by
  * mkiocccentry after the .info.json file has been created but prior to forming
- * the tarball.
+ * the .author.json file, validating it with jauthchk and then forming the
+ * tarball.
  *
  * "Because sometimes even the IOCCC Judges need some help." :-)
  *
- * Written in 2022 by:
+ * This tool is currently being worked on by:
  *
  *	@xexyl
  *	https://xexyl.net		Cody Boone Ferguson
  *	https://ioccc.xexyl.net
+ *
+ * NOTE: This tool and jauthchk is (and are) very much a work(s) in progress and
+ * as of 10 March 2022 it was decided that the parsing should be done via
+ * flex(1) and bison(1) which will require some time and thought. In time the
+ * two tools will be merged into one which can parse one or both of .info.json
+ * and/or .author.json. This is because some fields MUST be the same value in
+ * both files.
+ *
+ * Additionally there will likely be a jparse tool that will take a block of
+ * memory from either stdin or a file and attempt to parse it as json.
  */
 
 
@@ -71,7 +82,7 @@ static const char * const usage_msg =
 "\t-v level\t\tset verbosity level: (def level: %d)\n"
 "\t-q\t\t\tquiet mode, unless verbosity level > 0 (def: not quiet)\n"
 "\t-V\t\t\tprint version string and exit\n"
-"\t-T\t\t\tshow IOCCC toolset chain release repository tag\n"
+"\t-T\t\t\tshow IOCCC toolkit chain release repository tag\n"
 "\t-s\t\t\tstrict mode: be more strict on what is allowed (def: not strict)\n"
 "\t-F /path/to/fnamchk\tpath to fnamchk tool (def: %s)\n"
 "\t-t\t\t\ttest mode: only issue warnings in some cases\n"

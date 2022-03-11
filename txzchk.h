@@ -114,7 +114,7 @@ static const char * const usage_msg =
     "\t-v level\t\tset verbosity level: (def level: %d)\n"
     "\t-q\t\t\tquiet mode, unless verbosity level > 0 (def: not quiet)\n"
     "\t-V\t\t\tprint version string and exit\n"
-    "\t-T\t\t\tshow IOCCC toolset chain release repository tag\n"
+    "\t-T\t\t\tshow IOCCC toolkit chain release repository tag\n"
     "\n"
     "\t-t /path/to/tar\t\tpath to tar executable that supports the -J (xz) option (def: %s)\n"
     "\t-F /path/to/fnamchk\tpath to tool that checks if txzpath is a valid compressed tarball name\n"
