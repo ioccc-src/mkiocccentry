@@ -65,7 +65,7 @@
 /*
  * overall IOCCC entry toolkit release version
  */
-#define IOCCC_TOOLSET_RELEASE "0.2"		/* format: major.minor */
+#define IOCCC_TOOLKIT_RELEASE "0.2"		/* format: major.minor */
 
 
 /*

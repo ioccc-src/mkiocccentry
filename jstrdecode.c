@@ -98,7 +98,7 @@ main(int argc, char *argv[])
 	    break;
 	case 'T':		/* -T (IOCCC toolkit chain release repository tag) */
 	    errno = 0;		/* pre-clear errno for warnp() */
-	    ret = printf("%s\n", IOCCC_TOOLSET_RELEASE);
+	    ret = printf("%s\n", IOCCC_TOOLKIT_RELEASE);
 	    if (ret <= 0) {
 		warnp(__func__, "printf error printing IOCCC toolkit release repository tag");
 	    }
