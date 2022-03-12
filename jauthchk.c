@@ -42,10 +42,11 @@ main(int argc, char **argv)
     extern int optind;			/* argv index of the next arg */
     char *file;				/* file argument to check */
     int ret;				/* libc return code */
-    int i;				/* return value of getopt() */
     int issues;				/* issues found */
     char *fnamchk = FNAMCHK_PATH_0;	/* path to fnamchk executable */
     bool fnamchk_flag_used = false;	/* true ==> -F fnamchk used */
+    int code;				/* a JSON error code */
+    int i;				/* return value of getopt() */
 
 
     /*
@@ -53,7 +54,7 @@ main(int argc, char **argv)
      */
     program = argv[0];
     program_basename = base_name(program);
-    while ((i = getopt(argc, argv, "hv:VqsF:tT")) != -1) {
+    while ((i = getopt(argc, argv, "hv:VqsF:tTW:")) != -1) {
 	switch (i) {
 	case 'h':		/* -h - print help to stderr and exit 0 */
 	    usage(1, "-h help mode", program); /*ooo*/
@@ -95,6 +96,18 @@ main(int argc, char **argv)
 	    break;
 	case 't':
 	    test = true;
+	    break;
+	case 'W':
+	    /* parse ignore code */
+	    errno = 0;
+	    code = (int)strtol(optarg, NULL, 0);
+	    if (errno != 0) {
+		/* exit(1); */
+		err(1, __func__, "cannot parse -W arg: %s error: %s", optarg, strerror(errno)); /*ooo*/
+		not_reached();
+	    }
+	    /* add code to ignore_code_setp[] */
+	    add_ignore_code(code);
 	    break;
 	default:
 	    usage(1, "invalid -flag", program); /*ooo*/

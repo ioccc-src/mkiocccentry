@@ -2,7 +2,7 @@
 .SH NAME
 jauthchk \- IOCCC tool to validate .author.json file found within an entry directory
 .SH SYNOPSIS
-\fBjauthchk [\-h] [\-v level] [\-V] [\-T] [\-q] file
+\fBjauthchk [\-h] [\-v level] [\-V] [\-T] [\-q] [\-W code] .. file
 .SH DESCRIPTION
 \fBjauthchk\fP is primarily used by other tools (not humans).
 As such it should behave like \fBfnamchk(1)\fP in that if all is well, it should not print anything and simply exit 0.
@@ -31,6 +31,10 @@ Show IOCCC toolkit chain release repository tag.
 \fB\-q\fP
 Quiet mode.
 Don't show welcome messages etc. (primarily used with \fBmkiocccentry\fP).
+.PP
+\fB\-W code\fP
+Add code to the list of JSON codes to ignore.
+To ignore more than one JSON code, use multiple \fB\-W code\fP on the command line.
 .SH EXIT STATUS
 .PP
 \fBmain()\fP returns 1 for issues found and 0 for success.

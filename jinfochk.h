@@ -76,7 +76,7 @@ static struct manifest_file *manifest_files_list; /* list of files in the manife
  * Use the usage() function to print the these usage_msgX strings.
  */
 static const char * const usage_msg =
-"usage: %s [-h] [-v level] [-q] [-V] [-T] [-s] [-F fnamchk] [-t] file\n"
+"usage: %s [-h] [-v level] [-q] [-V] [-T] [-s] [-F fnamchk] [-t] [-W code] ... file\n"
 "\n"
 "\t-h\t\t\tprint help message and exit 0\n"
 "\t-v level\t\tset verbosity level: (def level: %d)\n"
@@ -86,6 +86,7 @@ static const char * const usage_msg =
 "\t-s\t\t\tstrict mode: be more strict on what is allowed (def: not strict)\n"
 "\t-F /path/to/fnamchk\tpath to fnamchk tool (def: %s)\n"
 "\t-t\t\t\ttest mode: only issue warnings in some cases\n"
+"\t-W code\t\t\tAdd code to the list of JSON error code to ignore\n"
 "\n"
 "\tfile\t\t\tpath to a .info.json file\n"
 "\n"

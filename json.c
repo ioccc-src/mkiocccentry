@@ -213,6 +213,28 @@ static int hexval[BYTE_VALUES] = {
     -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
 };
 
+/*
+ * JSON error codes to ignore
+ *
+ * When a tool is given command line argumwents of the form:
+ *
+ *	.. -W 123 -W 1345 -W 56 ...
+ *
+ * this means the tool will ignore {JSON-0123}, {JSON-1345}, and {JSON-0056}.
+ * The code_ignore_settable holds the JSON codes to ignore.
+ *
+ * NOTE: A NULL ignore_code_set means that the set has not been setup.
+ */
+struct ignore_code *ignore_code_set = NULL;
+
+
+/*
+ * static functions
+ */
+static void alloc_code_ignore_set(void);
+static int cmp_codes(const void *a, const void *b);
+static void expand_code_ignore_set(void);
+
 
 /*
  * malloc_json_encode - return a JSON encoding of a block of memory
@@ -2928,5 +2950,254 @@ free_author_array(struct author *author_set, int author_count)
     }
 
     memset(author_set, 0, sizeof *author_set);
+    return;
+}
+
+
+/*
+ * alloc_code_ignore_set - allocate the initial JSON ignore code set
+ *
+ * This function will setup the ignore_code_set table.  If the ignore_code_set
+ * table is already setup, this function will do nothing.
+ *
+ * NOTE: This function does not return on error.
+ */
+static void
+alloc_code_ignore_set(void)
+{
+    struct ignore_code *tbl = NULL;	/* allocated struct ignore_code */
+    int i;
+
+    /*
+     * firewall - do nothing if already setup
+     */
+    if (ignore_code_set != NULL) {
+	dbg(DBG_VVHIGH, "ignore_code_set already set up");
+	return;
+    }
+
+    /*
+     * allocate the initial ignore_code_set[]
+     */
+    errno = 0;			/* pre-clear errno for errp() */
+    tbl = malloc(sizeof(struct ignore_code));
+    if (tbl == NULL) {
+	errp(13, __func__, "failed to malloc struct ignore_code");
+	not_reached();
+    }
+
+    /*
+     * allocate an initial block of ignode codes
+     */
+    errno = 0;			/* pre-clear errno for errp() */
+    tbl->code = malloc((IGNORE_CODE_CHUNK+1+1) * sizeof(int));
+    if (tbl->code == NULL) {
+	errp(14, __func__, "cannot allocate %d ignore codes", IGNORE_CODE_CHUNK+1+1);
+	not_reached();
+    }
+
+    /*
+     * initialize
+     */
+    tbl->next_free = 0;
+    tbl->alloc = IGNORE_CODE_CHUNK + 1;		/* report one less for the guard code */
+    for (i=0; i < tbl->alloc; ++i) {
+	tbl->code[i] = -1;	/* -1 is not a valid ignore code */
+    }
+    ignore_code_set = tbl;
+}
+
+
+/*
+ * cmp_codes - compare two codes for reverse sorting ignore_code_set[]
+ *
+ * This function will allow qsort() to reverse sort the codes in ignore_code_set[].
+ *
+ * given:
+ *	a	- pointer to 1st code to compare
+ *	b	- pointer to 2nd code to compare
+ *
+ * returns:
+ *	-1	a > b
+ *	0	a == b
+ *	1	a < b
+ */
+static int
+cmp_codes(const void *a, const void *b)
+{
+    /*
+     * firewall
+     */
+    if (a == NULL || b == NULL) {
+	err(15, __func__, "NULL arg(s)");
+	not_reached();
+    }
+
+    /*
+     * compare for reverse sort
+     */
+    if (*(int *)a < *(int *)b) {
+	return 1;	/* a < b */
+    } else if (*(int *)a > *(int *)b) {
+	return -1;	/* a > b */
+    }
+    return 0;	/* a == b */
+}
+
+
+/*
+ * expand_code_ignore_set - expand the size of alloc_code_ignore_set[]
+ *
+ * This function will expand the alloc_code_ignore_set[] by IGNORE_CODE_CHUNK
+ * JSON error codes, and set those new codes (in the end of the table) to -1
+ * to indicate that they are not valid codes.
+ *
+ * NOTE: This function does not return on error.
+ */
+static void
+expand_code_ignore_set(void)
+{
+    int *p;	/* reallocated code set */
+    int i;
+
+    /*
+     * setup ignore_code_set if needed
+     */
+    alloc_code_ignore_set();
+    if (ignore_code_set == NULL) {
+	err(16, __func__, "ignore_code_set is NULL after allocation");
+	not_reached();
+    }
+
+    /*
+     * if no room, expand the table
+     */
+    if (ignore_code_set->next_free >= ignore_code_set->alloc) {
+	p = realloc(ignore_code_set->code, (ignore_code_set->alloc+IGNORE_CODE_CHUNK+1) * sizeof(int));
+	errno = 0;			/* pre-clear errno for errp() */
+	if (p == NULL) {
+	    errp(17, __func__, "cannot expand ignore_code_set from %d to %d codes",
+				ignore_code_set->alloc+1, ignore_code_set->alloc+IGNORE_CODE_CHUNK+1);
+	    not_reached();
+	}
+	for (i=ignore_code_set->alloc; i < ignore_code_set->alloc+IGNORE_CODE_CHUNK; ++i) {
+	    p[i] = -1;	/* -1 is not a valid ignore code */
+	}
+	ignore_code_set->code = p;
+	ignore_code_set->alloc = ignore_code_set->alloc + IGNORE_CODE_CHUNK;	/* report one less for the guard code */
+    }
+    return;
+}
+
+
+/*
+ * is_code_ignored - determine of a code is to be ignored
+ *
+ * given:
+ *	code	- code to test if code should be ignored
+ *
+ * returns:
+ *	true ==> code is in ignore_code_set[] and should be ignored
+ *	false ==> code is not in ignore_code_set[] and should NOT be igored
+ */
+bool
+is_code_ignored(int code)
+{
+    int i;
+
+    /*
+     * firewall
+     */
+    if (code < 0) {
+	err(18, __func__, "code %d < 0", code);
+	not_reached();
+    }
+
+    /*
+     * setup ignore_code_set if needed
+     */
+    alloc_code_ignore_set();
+    if (ignore_code_set == NULL) {
+	err(19, __func__, "ignore_code_set is NULL after allocation");
+	not_reached();
+    }
+
+    /*
+     * search ignore_code_set[] for the code
+     */
+    for (i=0; i < ignore_code_set->next_free; ++i) {
+
+	/* look for match */
+	if (ignore_code_set->code[i] == code) {
+	    dbg(DBG_VVVHIGH, "code %d is in ignore_code_set[]", code);
+	    return true;	/* report code should be ignored */
+	}
+
+	/* look for going beyond sorted values */
+	if (ignore_code_set->code[i] <= code) {
+	     break;
+	}
+    }
+    return false;	/* report code should NOT be ignored */
+}
+
+
+/*
+ * add_ignore_code - add a JSON error code to be ignored
+ *
+ * If code >= 0 and is not in alloc_code_ignore_set[], then
+ * this function will add it and then reverse sort
+ * the alloc_code_ignore_set[] table.
+ *
+ * If needed, the alloc_code_ignore_set[] will be initialized
+ * or expanded as needed.
+ *
+ * given:
+ *	code	- code to ignore
+ *
+ * NOTE: This function does not return on error.
+ */
+void
+add_ignore_code(int code)
+{
+    /*
+     * firewall
+     */
+    if (code < 0) {
+	err(20, __func__, "code %d < 0", code);
+	not_reached();
+    }
+
+    /*
+     * allocate or expand alloc_code_ignore_set[] if needed
+     */
+    if (ignore_code_set == NULL || ignore_code_set->next_free >= ignore_code_set->alloc) {
+	expand_code_ignore_set();
+    }
+    if (ignore_code_set == NULL) {
+	err(21, __func__, "ignore_code_set is NULL after allocation or expansion");
+	not_reached();
+    }
+
+    /*
+     * verify that code is not aleady in alloc_code_ignore_set[]
+     */
+    if (is_code_ignored(code) == true) {
+	/* nothing to do it code is alreay added */
+	dbg(DBG_VVVHIGH, "code %d is already in ignore_code_set[]", code);
+	return;
+    }
+
+    /*
+     * add the code to the alloc_code_ignore_set[]
+     */
+    ignore_code_set->code[ignore_code_set->next_free] = code;
+    ++ignore_code_set->next_free;
+
+    /*
+     * reverse sort the alloc_code_ignore_set[]
+     */
+    qsort(ignore_code_set->code, ignore_code_set->next_free, sizeof(int), cmp_codes);
+    dbg(DBG_VHIGH, "code %d added to ignore_code_set[]", code);
     return;
 }

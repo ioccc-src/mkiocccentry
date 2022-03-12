@@ -235,6 +235,25 @@ struct info {
     struct json_common common;	/* fields that are common to this struct info and struct author (above) */
 };
 
+/*
+ * JSON error codes to ignore
+ *
+ * When a tool is given command line argumwents of the form:
+ *
+ *	.. -W 123 -W 1345 -W 56 ...
+ *
+ * this means the tool will ignore {JSON-0123}, {JSON-1345}, and {JSON-0056}.
+ * The code_ignore[] table holds the JSON codes to ignore.
+ */
+#define IGNORE_CODE_CHUNK (64)	/* number of codes to calloc or realloc at a time */
+
+struct ignore_code {
+    int next_free;	/* the index of the next alloved but free JSON error code */
+    int alloc;		/* number of JSON error codes allocated */
+    int *code;		/* pointer to the allocated list of codes, or NULL (not allocated) */
+};
+extern struct ignore_code *ignore_code_set;
+
 
 /*
  * external function declarations
@@ -270,6 +289,9 @@ extern void free_json_field(struct json_field *field);
 /* these free() functions are also used in mkiocccentry.c */
 extern void free_info(struct info *infop);
 extern void free_author_array(struct author *authorp, int author_count);
+/* ignore code funcions */
+extern bool is_code_ignored(int code);
+extern void add_ignore_code(int code);
 
 
 #endif /* INCLUDE_JSON_H */
