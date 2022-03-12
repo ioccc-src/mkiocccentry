@@ -1639,6 +1639,86 @@ struct json_field author_json_fields[] =
 };
 size_t SIZEOF_AUTHOR_JSON_FIELDS_TABLE = TBLLEN(author_json_fields);
 
+/*
+ * jwarn - issue a JSON warning message
+ *
+ * given:
+ *	program	name of program e.g. jinfochk, jauthchk etc.
+ *	name	name of function issuing the warning
+ *	code	warning code
+ *	line	line number of the calling file (__LINE__ macro)
+ *	fmt	format of the warning
+ *	...	optional format args
+ *
+ * Example:
+ *
+ *	jwarn(program, __func__, 1, __LINE__, "unexpected foobar: %d", value);
+ *
+ * NOTE: We warn with extra newlines to help internal fault messages stand out.
+ *	 Normally one should NOT include newlines in warn messages.
+ */
+void
+jwarn(char const *program, char const *name, int code, int line, char const *fmt, ...)
+{
+    va_list ap;		/* argument pointer */
+    int ret;		/* libc function return code */
+    int saved_errno;	/* errno at function start */
+
+    /*
+     * save errno so we can restore it before returning
+     */
+    saved_errno = errno;
+
+    /*
+     * start the var arg setup and fetch our first arg
+     */
+    va_start(ap, fmt);
+
+    /*
+     * firewall
+     */
+    if (program == NULL) {
+	program = "((NULL program))";
+	warn(__func__, "\nWarning: in jwarn(): called with NULL program, forcing name: %s\n", program);
+    }
+    if (name == NULL) {
+	name = "((NULL name))";
+	warn(__func__, "\nWarning: in jwarn(): called with NULL name, forcing name: %s\n", name);
+    }
+    if (fmt == NULL) {
+	fmt = "((NULL fmt))";
+	warn(__func__, "\nWarning: in jwarn(): called with NULL fmt, forcing fmt: %s\n", fmt);
+    }
+
+    ret = fprintf(stderr, "%s: %s: {JSON-%04d}: line %d: ", program, name, code, line);
+    if (ret < 0) {
+	(void) fprintf(stderr, "\nWarning: in jwarn(%s, %s, %d, %d, %s, ...): fprintf returned error: %d\n", program, name, code, line, fmt, ret);
+    }
+    ret = vfprintf(stderr, fmt, ap);
+    if (ret < 0) {
+	(void) fprintf(stderr, "\nWarning: in jwarn(%s, %s, %d, %d, %s, ...): fprintf returned error: %d\n", program, name, code, line, fmt, ret);
+    }
+    ret = fputc('\n', stderr);
+    if (ret != '\n') {
+	(void) fprintf(stderr, "\nWarning: in jwarn(%s, %s, %d, %d, %s, ...): fputc returned error: %d\n", program, name, code, line, fmt, ret);
+    }
+    ret = fflush(stderr);
+    if (ret < 0) {
+	(void) fprintf(stderr, "\nWarning: in jwarn(%s, %s, %d, %d, %s, ...): fflush returned error: %d\n", program, name, code, line, fmt, ret);
+    }
+
+    /*
+     * clean up stdarg stuff
+     */
+    va_end(ap);
+
+    /*
+     * restore previous errno value
+     */
+    errno = saved_errno;
+    return;
+}
+
 
 /* find_json_field_in_table	    - find field 'name' in json table
  *

@@ -261,6 +261,8 @@ extern int get_common_json_field(char const *program, char const *file, char *na
 extern int check_found_common_json_fields(char const *program, char const *file, char const *fnamchk, bool test);
 extern struct json_field *new_json_field(char const *name, char const *val);
 extern struct json_value *add_json_value(struct json_field *field, char const *val);
+extern void jwarn(const char *program, char const *name, int code, int line, const char *fmt, ...) \
+	__attribute__((format(printf, 5, 6)));		/* 2=format 3=params */
 /* free() functions */
 extern void free_json_field_values(struct json_field *field);
 extern void free_found_common_json_fields(void);
