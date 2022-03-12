@@ -232,7 +232,7 @@ if [[ ! -f $JCODECHK ]]; then
     exit 4
 fi
 if [[ ! -x $JCODECHK ]]; then
-    echo "$0: ERROR: jcodechk.sh not exeutable: $JCODECHK" 1>&2
+    echo "$0: ERROR: jcodechk.sh not executable: $JCODECHK" 1>&2
     exit 4
 fi
 
