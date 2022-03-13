@@ -58,7 +58,19 @@
 #define AUTHOR_JSON_FILENAME ".author.json"
 #define INVALID_JSON_FILENAME "null"
 
+/* for the formed_UTC check */
 #define FORMED_UTC_FMT "%a %b %d %H:%M:%S %Y UTC"   /* format for strptime() of formed_UTC */
+
+/*
+ * JSON warn code defines and variables for jwarn()
+ */
+#define JSON_CODE_RESERVED_MIN (0)	/* reserved code: all normal codes should be >= JSON_CODE_MIN && <= JSON_CODE_MAX via JSON_CODE macro */
+#define JSON_CODE_RESERVED_MAX (99)	/* reserved code: all normal codes should be >= JSON_CODE_MIN && <= JSON_CODE_MAX via JSON_CODE macro */
+#define JSON_CODE_MIN (1+JSON_CODE_RESERVED_MAX)	/* the minimum json code for jwarn() > the reserved */
+#define JSON_CODE_MAX (9999+JSON_CODE_RESERVED_MAX)	/* the maximum json code for jwarn() > the reserved */
+#define JSON_CODE(x) ((x)+JSON_CODE_RESERVED_MAX)	/* for distinguishing that this is a JSON warn code rather than some other purpose */
+#define JSON_CODE_RESERVED(x) (x)	/* for distinguishing that this is a JSON reserved warn code rather than some other purpose */
+extern bool show_full_json_warnings;
 
 /*
  * JSON value: a linked list of all values of the same json_field (below)
@@ -66,6 +78,8 @@
 struct json_value
 {
     char *value;
+
+    int line_num;	    /* the 'line number': actually the field number in the list */
 
     struct json_value *next;
 };
@@ -123,6 +137,7 @@ struct json_field
      * include this bool
      */
     bool can_be_empty;	    /* if the value can be empty */
+
 
     /* NOTE: don't add to more than one list */
     struct json_field *next;	/* the next in the whatever list */
@@ -275,13 +290,13 @@ extern void check_author_json_fields_table(void);
 extern void check_info_json_fields_table(void);
 extern int check_first_json_char(char const *file, char *data, bool strict, char **first, char ch);
 extern int check_last_json_char(char const *file, char *data, bool strict, char **last, char ch);
-extern struct json_field *add_found_common_json_field(char const *name, char const *val);
-extern int get_common_json_field(char const *program, char const *file, char *name, char *val);
+extern struct json_field *add_found_common_json_field(char const *name, char const *val, int line_num);
+extern int get_common_json_field(char const *program, char const *file, char *name, char *val, int line_num);
 extern int check_found_common_json_fields(char const *program, char const *file, char const *fnamchk, bool test);
-extern struct json_field *new_json_field(char const *name, char const *val);
-extern struct json_value *add_json_value(struct json_field *field, char const *val);
-extern void jwarn(const char *program, char const *name, int code, int line, const char *fmt, ...) \
-	__attribute__((format(printf, 5, 6)));		/* 2=format 3=params */
+extern struct json_field *new_json_field(char const *name, char const *val, int line_num);
+extern struct json_value *add_json_value(struct json_field *field, char const *val, int line_num);
+extern void jwarn(int code, const char *program, char const *name, char const *filename, char const *line, int line_num, const char *fmt, ...) \
+	__attribute__((format(printf, 7, 8)));		/* 7=format 8=params */
 /* free() functions */
 extern void free_json_field_values(struct json_field *field);
 extern void free_found_common_json_fields(void);
@@ -289,7 +304,7 @@ extern void free_json_field(struct json_field *field);
 /* these free() functions are also used in mkiocccentry.c */
 extern void free_info(struct info *infop);
 extern void free_author_array(struct author *authorp, int author_count);
-/* ignore code funcions */
+/* ignore code functions */
 extern bool is_code_ignored(int code);
 extern void add_ignore_code(int code);
 

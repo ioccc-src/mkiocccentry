@@ -54,7 +54,7 @@ main(int argc, char **argv)
      */
     program = argv[0];
     program_basename = base_name(program);
-    while ((i = getopt(argc, argv, "hv:VqsF:tTW:")) != -1) {
+    while ((i = getopt(argc, argv, "hv:VqsF:tTW:w")) != -1) {
 	switch (i) {
 	case 'h':		/* -h - print help to stderr and exit 0 */
 	    usage(1, "-h help mode", program); /*ooo*/
@@ -108,6 +108,9 @@ main(int argc, char **argv)
 	    }
 	    /* add code to ignore_code_setp[] */
 	    add_ignore_code(code);
+	    break;
+	case 'w':
+	    show_full_json_warnings = true;
 	    break;
 	default:
 	    usage(1, "invalid -flag", program); /*ooo*/
@@ -342,6 +345,7 @@ check_author_json(char const *file, char const *fnamchk)
     size_t loc = 0;
     bool can_be_empty = false; /* if field can be empty */
     bool is_json_string = false; /* if json field is supposed to have a string value */
+    int line_num = 1; /* the 'line number' of the value */
 
     /*
      * firewall
@@ -698,8 +702,8 @@ check_author_json(char const *file, char const *fnamchk)
 	    }
 
 	    /* handle regular field */
-	    if (get_common_json_field(program_basename, file, p, val_esc)) {
-	    } else if (get_author_json_field(file, p, val_esc)) {
+	    if (get_common_json_field(program_basename, file, p, val_esc, line_num)) {
+	    } else if (get_author_json_field(file, p, val_esc, line_num)) {
 	    } else {
 		/* this should actually never be reached */
 		warn(__func__, "invalid field found in file %s: '%s'", file, p);
@@ -709,6 +713,8 @@ check_author_json(char const *file, char const *fnamchk)
 	    /* free the JSON decoded value */
 	    free(val_esc);
 	    val_esc = NULL;
+
+	    ++line_num;
 	}
     } while (true);
 
@@ -766,9 +772,10 @@ check_author_json(char const *file, char const *fnamchk)
  *
  * given:
  *
- *	file	- the file being parsed (path to)
- *	name	- the field name
- *	val	- the value of the field
+ *	file	    - the file being parsed (path to)
+ *	name	    - the field name
+ *	val	    - the value of the field
+ *	line_num    - the 'line number' of the value
  *
  * returns:
  *	1 ==> if the name is a .info.json field
@@ -777,7 +784,7 @@ check_author_json(char const *file, char const *fnamchk)
  * NOTE: Does not return on error (NULL pointers).
  */
 int
-get_author_json_field(char const *file, char *name, char *val)
+get_author_json_field(char const *file, char *name, char *val, int line_num)
 {
     int ret = 1;	/* return value: 1 ==> known field, 0 ==> not a common field */
     struct json_field *field = NULL; /* the field in the author_json_fields table if found */
@@ -797,7 +804,7 @@ get_author_json_field(char const *file, char *name, char *val)
     field = find_json_field_in_table(author_json_fields, name, &loc);
     if (field != NULL) {
 	dbg(DBG_MED, "found field '%s' with value '%s'", field->name, val);
-	add_found_author_json_field(field->name, val);
+	add_found_author_json_field(field->name, val, line_num);
     } else {
 	ret = 0;
     }
@@ -968,6 +975,7 @@ check_found_author_json_fields(char const *file, bool test)
  *
  *	name			- field name
  *	val			- field value
+ *	line_num		- the 'line number' of the value
  *
  * Returns the newly allocated struct json_field * added to the
  * found_author_json_fields list.
@@ -978,7 +986,7 @@ check_found_author_json_fields(char const *file, bool test)
  *
  */
 static struct json_field *
-add_found_author_json_field(char const *name, char const *val)
+add_found_author_json_field(char const *name, char const *val, int line_num)
 {
     struct json_field *field = NULL; /* iterate through fields list to find the field (or if not found, create a new field) */
     struct json_value *value = NULL; /* the new value */
@@ -1012,7 +1020,7 @@ add_found_author_json_field(char const *name, char const *val)
 	     * we found a field already in the list, add the value (even if this
 	     * value was already in the list as this is needed in some cases).
 	     */
-	    value = add_json_value(field, val);
+	    value = add_json_value(field, val, line_num);
 	    if (value == NULL) {
 		/*
 		 * this shouldn't happen as if add_json_value() gets an error
@@ -1032,7 +1040,7 @@ add_found_author_json_field(char const *name, char const *val)
      * okay we got here which means we have to create a new field in the list
      * with the value passed in
      */
-    field = new_json_field(name, val);
+    field = new_json_field(name, val, line_num);
     if (field == NULL) {
 	/*
 	 * we should never get here because if new_json_field gets NULL it

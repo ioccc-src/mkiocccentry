@@ -2,7 +2,7 @@
 .SH NAME
 jinfochk \- IOCCC tool to validate .info.json file found within an entry directory
 .SH SYNOPSIS
-\fBjinfochk [\-h] [\-v level] [\-V] [\-T] [\-q] [\-t] [\-W code] ... file
+\fBjinfochk [\-h] [\-v level] [\-V] [\-T] [\-q] [\-t] [\-W code] [\-w] ... file
 .SH DESCRIPTION
 \fBjinfochk\fP is primarily used by other tools (not humans).
 It behaves like \fBfnamchk(1)\fP in that if all is well, it does not print anything and simply exit 0.
@@ -34,6 +34,10 @@ Don't show welcome messages etc. (primarily used with \fBmkiocccentry\fP).
 \fB\-W code\fP
 Add code to the list of JSON codes to ignore.
 To ignore more than one JSON code, use multiple \fB\-W code\fP on the command line.
+.PP
+\fB\-w\fP
+Show complete warning information.
+Note that this currently is not used but will be in a future commit.
 .SH EXIT STATUS
 .PP
 \fBmain()\fP returns 1 for issues found and 0 for success.

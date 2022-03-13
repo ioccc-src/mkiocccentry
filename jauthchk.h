@@ -71,7 +71,7 @@
  * Use the usage() function to print the these usage_msgX strings.
  */
 static const char * const usage_msg =
-"usage: %s [-h] [-v level] [-V] [-q] [-T]  [-s] [-F fnamchk] [-t] [-W code] ... file\n"
+"usage: %s [-h] [-v level] [-V] [-q] [-T]  [-s] [-F fnamchk] [-t] [-W code] [-w] ... file\n"
 "\n"
 "\t-h\t\tprint help message and exit 0\n"
 "\t-v level\tset verbosity level: (def level: %d)\n"
@@ -82,6 +82,7 @@ static const char * const usage_msg =
 "\t-F /path/to/fnamchk\tpath to fnamchk tool (def: %s)\n"
 "\t-t\t\t\ttest mode: only issue warnings in some cases\n"
 "\t-W code\t\t\tAdd code to the list of JSON error code to ignore\n"
+"\t-w\t\t\tshow detailed warnings\n"
 "\n"
 "\tfile\t\tpath to a .author.json file\n"
 "\n"
@@ -117,8 +118,8 @@ extern size_t SIZEOF_AUTHOR_JSON_FIELDS_TABLE;		/* number of elements in the aut
 static void usage(int exitcode, char const *name, char const *str) __attribute__((noreturn));
 static void jauthchk_sanity_chks(char const *file, char const *fnamchk);
 static int check_author_json(char const *file, char const *fnamchk);
-static struct json_field *add_found_author_json_field(char const *name, char const *val);
-static int get_author_json_field(char const *file, char *name, char *val);
+static struct json_field *add_found_author_json_field(char const *name, char const *val, int line_num);
+static int get_author_json_field(char const *file, char *name, char *val, int line_num);
 static int check_found_author_json_fields(char const *file, bool test);
 static void free_found_author_json_fields(void);
 
