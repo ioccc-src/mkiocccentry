@@ -76,7 +76,7 @@ static struct manifest_file *manifest_files_list; /* list of files in the manife
  * Use the usage() function to print the these usage_msgX strings.
  */
 static const char * const usage_msg =
-"usage: %s [-h] [-v level] [-q] [-V] [-T] [-s] [-F fnamchk] [-t] [-W code] ... file\n"
+"usage: %s [-h] [-v level] [-q] [-V] [-T] [-s] [-F fnamchk] [-t] [-W code] [-w] ... file\n"
 "\n"
 "\t-h\t\t\tprint help message and exit 0\n"
 "\t-v level\t\tset verbosity level: (def level: %d)\n"
@@ -87,6 +87,7 @@ static const char * const usage_msg =
 "\t-F /path/to/fnamchk\tpath to fnamchk tool (def: %s)\n"
 "\t-t\t\t\ttest mode: only issue warnings in some cases\n"
 "\t-W code\t\t\tAdd code to the list of JSON error code to ignore\n"
+"\t-w\t\t\tshow detailed warnings\n"
 "\n"
 "\tfile\t\t\tpath to a .info.json file\n"
 "\n"
@@ -122,8 +123,8 @@ extern size_t SIZEOF_INFO_JSON_FIELDS_TABLE;
 static void usage(int exitcode, char const *name, char const *str) __attribute__((noreturn));
 static void jinfochk_sanity_chks(char const *file, char const *fnamchk);
 static int check_info_json(char const *file, char const *fnamchk);
-static struct json_field *add_found_info_json_field(char const *name, char const *val);
-static int get_info_json_field(char const *file, char *name, char *val);
+static struct json_field *add_found_info_json_field(char const *name, char const *val, int line_num);
+static int get_info_json_field(char const *file, char *name, char *val, int line_num);
 static int check_found_info_json_fields(char const *file, bool test);
 static void free_found_info_json_fields(void);
 static struct manifest_file *add_manifest_file(char const *filename);

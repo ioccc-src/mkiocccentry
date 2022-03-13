@@ -95,7 +95,7 @@ main(int argc, char **argv)
 	 }
     }
     /* be warn(), warnp() and msg() quiet of -q and -v 0 */
-    if (quiet == true && verbosity_level <= 0) {
+    if (quiet && verbosity_level <= 0) {
 	msg_output_allowed = false;
 	warn_output_allowed = false;
     }

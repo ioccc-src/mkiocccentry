@@ -79,7 +79,6 @@
  * include all ISO 3166 codes.  Please pardon any typos.
  * Spelling corrections welcome.
  *
- * This function does not return on error.
  */
 struct location loc[] = {
     {"AA", "User-assigned code AA"},	/* User-assigned code */
@@ -450,6 +449,7 @@ size_t SIZEOF_LOCATION_TABLE = TBLLEN(loc);
  * last element: if it's not there or there's another NULL element it's a
  * problem that has to be fixed.
  *
+ * This function does not return on error.
  */
 void
 check_location_table(void)
