@@ -253,7 +253,7 @@ struct info {
 /*
  * JSON error codes to ignore
  *
- * When a tool is given command line argumwents of the form:
+ * When a tool is given command line arguments of the form:
  *
  *	.. -W 123 -W 1345 -W 56 ...
  *
@@ -263,7 +263,7 @@ struct info {
 #define IGNORE_CODE_CHUNK (64)	/* number of codes to calloc or realloc at a time */
 
 struct ignore_code {
-    int next_free;	/* the index of the next alloved but free JSON error code */
+    int next_free;	/* the index of the next allowed but free JSON error code */
     int alloc;		/* number of JSON error codes allocated */
     int *code;		/* pointer to the allocated list of codes, or NULL (not allocated) */
 };
