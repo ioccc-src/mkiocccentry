@@ -1687,9 +1687,9 @@ bool show_full_json_warnings = false;
  *	jwarn(JSON_CODE(1), program, __func__, file, line, __LINE__, "unexpected foobar: %d", value);
  *
  * XXX As of 13 March 2022 the line will be empty but in time this should be
- * changed to be the offending JSON text and the offending JSON line number.
- * Instead the field and values are usually shown as part of the optional format
- * args.
+ * changed to be the offending JSON text and the offending JSON line number
+ * (which currently is done but the way it's done might change). Instead the
+ * field and values are usually shown as part of the optional format args.
  *
  * NOTE: We warn with extra newlines to help internal fault messages stand out.
  *	 Normally one should NOT include newlines in warn messages.
