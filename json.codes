@@ -23,12 +23,13 @@
 #	# program: (jinfochk|jauthchk|jchk) <function>
 #	{JSON-XXXX}: <file>: <line num>: <warning>
 #
-# Where jchk means it exists in both jinfochk and jauthchk and otherwise it's
-# the specific tool; function is the calling function e.g. check_info_json()
-# or check_author_json() (both of which will change once a proper json parser
-# is implemented); file is the offending json file; line number the line number
-# of the offending line (currently each field extracted is a new line number
-# which starts at 1) and warning is the actual warning.
+# Where jchk means it (the JSON code) exists in both jinfochk and jauthchk (in
+# other words it's reused) and otherwise it's the specific tool; function is the
+# calling function for example check_info_json() or check_author_json() (both
+# of which will change once a proper json parser is implemented); file is the
+# offending json file; line number the line number of the offending line
+# (currently each field extracted is a new line number which starts at 1) and
+# warning is the actual warning.
 #
 # NOTE: The current output of these tools are more verbose but I only want the
 # warn messages themselves and the tool which will generate it: not the fields
