@@ -67,7 +67,7 @@
 #define JSON_CODE_RESERVED_MIN (0)	/* reserved code: all normal codes should be >= JSON_CODE_MIN && <= JSON_CODE_MAX via JSON_CODE macro */
 #define JSON_CODE_RESERVED_MAX (99)	/* reserved code: all normal codes should be >= JSON_CODE_MIN && <= JSON_CODE_MAX via JSON_CODE macro */
 #define JSON_CODE_MIN (1+JSON_CODE_RESERVED_MAX)	/* the minimum json code for jwarn() > the reserved */
-#define JSON_CODE_MAX (9999+JSON_CODE_RESERVED_MAX)	/* the maximum json code for jwarn() > the reserved */
+#define JSON_CODE_MAX (9999)	/* the maximum json code for jwarn() > the reserved */
 #define JSON_CODE(x) ((x)+JSON_CODE_RESERVED_MAX)	/* for distinguishing that this is a JSON warn code rather than some other purpose */
 #define JSON_CODE_RESERVED(x) (x)	/* for distinguishing that this is a JSON reserved warn code rather than some other purpose */
 extern bool show_full_json_warnings;
@@ -253,7 +253,7 @@ struct info {
 /*
  * JSON error codes to ignore
  *
- * When a tool is given command line argumwents of the form:
+ * When a tool is given command line arguments of the form:
  *
  *	.. -W 123 -W 1345 -W 56 ...
  *
@@ -263,7 +263,7 @@ struct info {
 #define IGNORE_CODE_CHUNK (64)	/* number of codes to calloc or realloc at a time */
 
 struct ignore_code {
-    int next_free;	/* the index of the next alloved but free JSON error code */
+    int next_free;	/* the index of the next allowed but free JSON error code */
     int alloc;		/* number of JSON error codes allocated */
     int *code;		/* pointer to the allocated list of codes, or NULL (not allocated) */
 };
