@@ -80,7 +80,7 @@ main(int argc, char **argv)
 	case 'f':
 	    text_file_flag_used = true; /* don't rely on tar: just read file as if it was a text file */
 	    break;
-	case 'T':		/* -T (IOCCC toolkit chain release repository tag) */
+	case 'T':		/* -T (IOCCC toolkit release repository tag) */
 	    errno = 0;		/* pre-clear errno for warnp() */
 	    ret = printf("%s\n", IOCCC_TOOLKIT_RELEASE);
 	    if (ret <= 0) {

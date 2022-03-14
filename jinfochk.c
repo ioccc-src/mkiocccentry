@@ -79,7 +79,7 @@ main(int argc, char **argv)
 	    exit(0); /*ooo*/
 	    not_reached();
 	    break;
-	case 'T':		/* -T (IOCCC toolkit chain release repository tag) */
+	case 'T':		/* -T (IOCCC toolkit release repository tag) */
 	    errno = 0;		/* pre-clear errno for warnp() */
 	    ret = printf("%s\n", IOCCC_TOOLKIT_RELEASE);
 	    if (ret <= 0) {
@@ -1010,7 +1010,7 @@ check_info_json(char const *file, char const *fnamchk)
  *	file	    - the file being parsed (path to)
  *	name	    - the field name
  *	val	    - the value of the field
- *	line_num    - if field is valid add the number to the field
+ *	line_num    - if field is valid add the number to the field's value
  *
  * returns:
  *	1 ==> if the name is a .info.json field
