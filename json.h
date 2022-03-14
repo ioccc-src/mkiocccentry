@@ -64,12 +64,32 @@
 /*
  * JSON warn code defines and variables for jwarn()
  */
+
+/*
+ * Codes 0 - 99 are reserved for special purposes so all normal codes should be
+ * >= JSON_CODE_MIN && <= JSON_CODE_MAX via the JSON_CODE macro.
+ */
 #define JSON_CODE_RESERVED_MIN (0)	/* reserved code: all normal codes should be >= JSON_CODE_MIN && <= JSON_CODE_MAX via JSON_CODE macro */
 #define JSON_CODE_RESERVED_MAX (99)	/* reserved code: all normal codes should be >= JSON_CODE_MIN && <= JSON_CODE_MAX via JSON_CODE macro */
-#define JSON_CODE_MIN (1+JSON_CODE_RESERVED_MAX)	/* the minimum json code for jwarn() > the reserved */
-#define JSON_CODE_MAX (9999)	/* the maximum json code for jwarn() > the reserved */
-#define JSON_CODE(x) ((x)+JSON_CODE_RESERVED_MAX)	/* for distinguishing that this is a JSON warn code rather than some other purpose */
-#define JSON_CODE_RESERVED(x) (x)	/* for distinguishing that this is a JSON reserved warn code rather than some other purpose */
+/*
+ * The minimum code for jwarn() is the JSON_CODE_RESERVED_MAX (currently 99) + 1.
+ * However this does not mean that calls to jwarn() cannot use <= the
+ * JSON_CODE_RESERVED_MAX: it's just for special purposes e.g. codes that are
+ * used in more than one location.
+ */
+#define JSON_CODE_MIN (1+JSON_CODE_RESERVED_MAX)
+/* The maximum json code for jwarn(). This was arbitrarily selected. */
+#define JSON_CODE_MAX (9999)
+/* the number of unreserved JSON codes for jwarn(): the max - the min + 1 */
+#define NUM_UNRESERVED_JSON_CODES (JSON_CODE_MAX-JSON_CODE_MIN)
+/*
+ * To distinguish that this is a JSON warn code rather than any other type of
+ * number we use these macro.
+ */
+#define JSON_CODE(x) ((x)+JSON_CODE_RESERVED_MAX)
+/* reserved JSON code */
+#define JSON_CODE_RESERVED(x) (x)
+
 extern bool show_full_json_warnings;
 
 /*
