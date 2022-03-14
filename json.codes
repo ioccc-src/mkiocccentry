@@ -1,0 +1,80 @@
+# This document lists JSON warning codes and their meanings. The format of this
+# file might change as right now I just want to get JSON codes I have added
+# documented.
+#
+# TIP: To easily get a list of warnings and associated notes currently known
+# TIP: try:
+# TIP:
+# TIP:		grep -E '^# program|^{JSON-|^### NOTE:' json.codes
+# TIP:
+# TIP: If the format changes I will do my best to update the above tip as well
+# TIP: but as of 14 March 2022 it works fine. However the most important line is
+# TIP: the {JSON-XXXX} line which will probably not change format much if at
+# TIP: all.
+#
+# TIP: To get a list of any hints try:
+# TIP:
+# TIP:		grep '^# TIP:' json.codes
+#
+#
+# The format as of 14 March 2022 is:
+#
+#
+#	# program: (jinfochk|jauthchk|jchk) <function>
+#	{JSON-XXXX}: <file>: <line num>: <warning>
+#
+# Where jchk means it exists in both jinfochk and jauthchk and otherwise it's
+# the specific tool; function is the calling function e.g. check_info_json()
+# or check_author_json() (both of which will change once a proper json parser
+# is implemented); file is the offending json file; line number the line number
+# of the offending line (currently each field extracted is a new line number
+# which starts at 1) and warning is the actual warning.
+#
+# NOTE: The current output of these tools are more verbose but I only want the
+# warn messages themselves and the tool which will generate it: not the fields
+# and values but the issues themselves. Not many are currently (14 March 2022)
+# in this file because not many have been added to the functions yet. Also note
+# that the <file> and <line num> fields in this file do not really matter but
+# are simply used for demonstration purposes.
+#
+# NOTE: In the warnings below I might at times use some C printf style format
+# specifiers but I won't necessarily have everything there so it's not to be
+# taken literally! Also note that for some I have notes of interest under some
+# warnings.
+#
+# NOTE: I will try and keep these sorted and I will also do my best to remember
+# to update the file when more codes have been added but like everyone else I'm
+# human and it's entirely possible I neglect these especially if I'm distracted,
+# have a lot on my mind (I almost always do) or some other reason. Sorry about
+# this!
+#
+# NOTE: As of 14 March 2022 the reserved JSON codes are from 0 - 99 and the only
+# use right now is for warnings that are triggered when parsing the files. Thus
+# the first warning when verifying a file (after parsing) is JSON-0100.
+#
+# NOTE: If it's still not obvious this file is very very much a work in
+# progress!
+
+
+###
+### JSON WARNING CODES BELOW (LAST UPDATED: 14 MARCH 2022)
+###
+
+# program: jchk check_(info|author)_json
+{JSON-0001}: test_work/test-0/.info.json: 1: invalid field
+
+# program: jchk check_(info|author)_json
+{JSON-0002}: test_work/test-0/.info.json: 1: found no leading '"' in field
+
+# program: jchk check_(info|author)_json
+{JSON-0003}: test_work/test-0/.info.json: 1: found no trailing '"' in field
+
+# program: jchk check_found_(info|author|common)_json_fields
+{JSON-0100}: test_work/test-0/.info.json: 3: field found %ju times but is only allowed %ju time(s):
+### NOTE: The message above will currently (14 March 2022) be seen for each
+### NOTE: time the field is there including the valid ones.
+
+
+###
+### JSON WARNING CODES ABOVE
+###

@@ -2385,9 +2385,9 @@ check_found_common_json_fields(char const *program, char const *file, char const
 		not_reached();
 	    }
 
-	    if (field->count > common_field->max_count) {
-		jwarn(JSON_CODE(1), program, __func__, file, NULL, value->line_num, "field '%s' found %ju times but is only allowed once",
-			       common_field->name, (uintmax_t)common_field->count);
+	    if (common_field->max_count > 0 && common_field->count > common_field->max_count) {
+		jwarn(JSON_CODE(1), program, __func__, file, NULL, value->line_num, "field '%s' found %ju times but is only allowed %ju time%s", common_field->name,
+		    (uintmax_t)common_field->count, (uintmax_t)common_field->max_count, common_field->max_count==1?"":"s");
 		++issues;
 	    }
 

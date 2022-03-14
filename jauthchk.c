@@ -461,7 +461,7 @@ check_author_json(char const *file, char const *fnamchk)
 	    ++p;
 	} else {
 	    /* if no '"' there's a problem */
-	    warn(__func__, "found no leading '\"' for field '%s' in file %s: '%c'", p, file, *p);
+	    jwarn(JSON_CODE_RESERVED(2), program, __func__, file, NULL, line_num, "found no leading '\"' for field '%s': '%c'", p, *p);
 	    ++issues;
 	}
 
@@ -479,7 +479,7 @@ check_author_json(char const *file, char const *fnamchk)
 	    *end = '\0';
 	} else {
 	    /* if no trailing '"' there's also a problem */
-	    warn(__func__, "found no trailing '\"': '%s' in file %s: '%c'", p, file, *p);
+	    jwarn(JSON_CODE_RESERVED(3), program, __func__, file, NULL, line_num, "found no trailing '\"' in field '%s': '%c'", p, *p);
 	    ++issues;
 	}
 
@@ -519,7 +519,7 @@ check_author_json(char const *file, char const *fnamchk)
 	 *
 	 */
 	if (author_field == NULL && common_field == NULL) {
-	    warn(__func__, "invalid field '%s' in file %s", p, file);
+	    jwarn(JSON_CODE_RESERVED(1), program, __func__, file, NULL, line_num, "invalid field '%s'", p);
 	    ++issues;
 	}
 
@@ -874,13 +874,6 @@ check_found_author_json_fields(char const *file, bool test)
 	}
 
 	dbg(DBG_VHIGH, "checking field '%s' in file %s", field->name, file);
-	/* make sure the field is not over the limit allowed */
-	if (author_field->max_count > 0 && author_field->count > author_field->max_count) {
-	    warn(__func__, "field found %ju times but is only allowed %ju time%s in file %s: '%s'",
-		    (uintmax_t)author_field->count, (uintmax_t)author_field->max_count, author_field->max_count==1?"":"s", file, author_field->name);
-	    ++issues;
-	}
-
 	for (value = field->values; value != NULL; value = value->next) {
 	    char *val = value->value;
 
@@ -900,8 +893,16 @@ check_found_author_json_fields(char const *file, bool test)
 		 */
 	    }
 
+	    /* make sure the field is not over the limit allowed */
+	    if (author_field->max_count > 0 && author_field->count > author_field->max_count) {
+		jwarn(JSON_CODE(1), program, __func__, file, NULL, value->line_num, "field '%s' found %ju times but is only allowed %ju time%s",
+			author_field->name, (uintmax_t)author_field->count, (uintmax_t)author_field->max_count, author_field->max_count==1?"":"s");
+		++issues;
+	    }
+
+
 	    /*
-	     * First we do checks on the field type. We only have to check
+	     * Now we have to do checks on the field type. We only have to check
 	     * numbers and bools: because for strings there's nothing to
 	     * check: we remove the outermost '"'s and then use strcmp() whereas
 	     * for numbers and bools we want to make sure that they're actually
