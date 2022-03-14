@@ -2377,7 +2377,7 @@ check_found_common_json_fields(char const *program, char const *file, char const
 	    }
 
 	    if (field->count > common_field->max_count) {
-		jwarn(JSON_CODE(1), program, __func__, file, "", value->line_num, "field '%s' found %ju times but is only allowed once",
+		jwarn(JSON_CODE(1), program, __func__, file, NULL, value->line_num, "field '%s' found %ju times but is only allowed once",
 			       common_field->name, (uintmax_t)common_field->count);
 		++issues;
 	    }
@@ -2519,8 +2519,8 @@ check_found_common_json_fields(char const *program, char const *file, char const
 		warn(__func__, "found unhandled common field in file %s: '%s'", file, field->name);
 		/*
 		 * NOTE: Don't increment issues because this doesn't mean
-		 * there's anything wrong with the .author.json file but rather
-		 * that the field isn't verified.
+		 * there's anything wrong with the json file but rather that the
+		 * field isn't verified.
 		 */
 	    }
 
