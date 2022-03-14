@@ -1745,30 +1745,39 @@ jwarn(int code, char const *program, char const *name, char const *filename, cha
     }
 
 
+    errno = 0;
     ret = fprintf(stderr, "# program: %s %s\n", program, name);
     if (ret < 0) {
-	(void) fprintf(stderr, "\nWarning: in jwarn(%d, %s, %s, %s, %s, %d, %s, ...): fprintf returned error: %d\n", code, program, name,
-		filename, line, line_num, fmt, ret);
+	(void) fprintf(stderr, "\nWarning: in jwarn(%d, %s, %s, %s, %s, %d, %s, ...): fprintf returned error: %s\n", code, program, name,
+		filename, line, line_num, fmt, strerror(errno));
     }
+
+    errno = 0;
     ret = fprintf(stderr, "{JSON-%04d}: %s: %d: ", code, filename, line_num);
     if (ret < 0) {
-	(void) fprintf(stderr, "\nWarning: in jwarn(%d, %s, %s, %s, %s, %d, %s, ...): fprintf returned error: %d\n", code, program, name,
-		filename, line, line_num, fmt, ret);
+	(void) fprintf(stderr, "\nWarning: in jwarn(%d, %s, %s, %s, %s, %d, %s, ...): fprintf returned error: %s\n", code, program, name,
+		filename, line, line_num, fmt, strerror(errno));
     }
+
+    errno = 0;
     ret = vfprintf(stderr, fmt, ap);
     if (ret < 0) {
-	(void) fprintf(stderr, "\nWarning: in jwarn(%d, %s, %s, %s, %s, %d, %s, ...): fprintf returned error: %d\n", code, program, name,
-		filename, line, line_num, fmt, ret);
+	(void) fprintf(stderr, "\nWarning: in jwarn(%d, %s, %s, %s, %s, %d, %s, ...): fprintf returned error: %s\n", code, program, name,
+		filename, line, line_num, fmt, strerror(errno));
     }
+
+    errno = 0;
     ret = fputc('\n', stderr);
     if (ret != '\n') {
-	(void) fprintf(stderr, "\nWarning: in jwarn(%d, %s, %s, %s, %s, %d, %s, ...): fputc returned error: %d\n", code, program, name,
-		filename, line, line_num, fmt, ret);
+	(void) fprintf(stderr, "\nWarning: in jwarn(%d, %s, %s, %s, %s, %d, %s, ...): fputc returned error: %s\n", code, program, name,
+		filename, line, line_num, fmt, strerror(errno));
     }
+
+    errno = 0;
     ret = fflush(stderr);
     if (ret < 0) {
-	(void) fprintf(stderr, "\nWarning: in jwarn(%d, %s, %s, %s, %s, %d, %s, ...): fflush returned error: %d\n", code, program, name,
-		filename, line, line_num, fmt, ret);
+	(void) fprintf(stderr, "\nWarning: in jwarn(%d, %s, %s, %s, %s, %d, %s, ...): fflush returned error: %s\n", code, program, name,
+		filename, line, line_num, fmt, strerror(errno));
     }
 
     /*
