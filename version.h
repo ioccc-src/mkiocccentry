@@ -99,34 +99,34 @@
 /*
  * official fnamchk version
  */
-#define FNAMCHK_VERSION "0.5 2022-03-04"	/* format: major.minor YYYY-MM-DD */
+#define FNAMCHK_VERSION "0.6 2022-03-15"	/* format: major.minor YYYY-MM-DD */
 
 /*
  * official txzchk version
  */
-#define TXZCHK_VERSION "0.9 2022-03-04"		/* format: major.minor YYYY-MM-DD */
+#define TXZCHK_VERSION "0.10 2022-03-15"	/* format: major.minor YYYY-MM-DD */
 
 /*
  * official jinfochk version
  */
-#define JINFOCHK_VERSION "0.13 2022-03-07"	/* format: major.minor YYYY-MM-DD */
+#define JINFOCHK_VERSION "0.14 2022-03-15"	/* format: major.minor YYYY-MM-DD */
 
 /*
  * official jauthchk version
  */
-#define JAUTHCHK_VERSION "0.12 2022-03-04"	/* format: major.minor YYYY-MM-DD */
+#define JAUTHCHK_VERSION "0.13 2022-03-15"	/* format: major.minor YYYY-MM-DD */
 
 
 /*
  * official jstrencode version
  */
-#define JSTRENCODE_VERSION "0.3 2022-03-04"	/* format: major.minor YYYY-MM-DD */
+#define JSTRENCODE_VERSION "0.4 2022-03-15"	/* format: major.minor YYYY-MM-DD */
 
 
 /*
  * official jstrdecode version
  */
-#define JSTRDECODE_VERSION "0.3 2022-03-04"	/* format: major.minor YYYY-MM-DD */
+#define JSTRDECODE_VERSION "0.4 2022-03-15"	/* format: major.minor YYYY-MM-DD */
 
 
 #endif /* INCLUDE_VERSION_H */

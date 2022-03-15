@@ -189,6 +189,10 @@ struct json_common
      */
     char *mkiocccentry_ver;	/* mkiocccentry version (MKIOCCCENTRY_VERSION) */
     char const *iocccsize_ver;	/* iocccsize version (compiled in, same as iocccsize -V) */
+    char const *jinfochk_ver;	/* jinfochk version (compiled in, same as jinfochk -V) */
+    char const *jauthchk_ver;	/* jautochk version (compiled in, same as jautochk -V) */
+    char const *fnamchk_ver;	/* fnamchk version (compiled in, same as fnamchk -V) */
+    char const *txzchk_ver;	/* txzchk version (compiled in, same as txzchk -V) */
     /*
      * entry
      */

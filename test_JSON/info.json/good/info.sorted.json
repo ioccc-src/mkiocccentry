@@ -26,6 +26,7 @@
 	"ioccc_contest" : "IOCCCMOCK",
 	"ioccc_year" : 2022,
 	"iocccsize_version" : "28.10 2022-03-15",
+	"jinfochk_version" : "0.14 2022-03-15",
 	"min_timestamp" : 1643987926,
 	"mkiocccentry_version" : "0.40 2022-03-15",
 	"nul_warning" : false,
@@ -40,5 +41,7 @@
 	"title" : "title-for-entry0",
 	"trigraph_warning" : false,
 	"ungetc_warning" : false,
+	"fnamchk_version" : "0.6 2022-03-15",
+	"txzchk_version" : "0.10 2022-03-15",
 	"wordbuf_warning" : false
 }

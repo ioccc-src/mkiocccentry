@@ -213,6 +213,7 @@ static int hexval[BYTE_VALUES] = {
     -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
 };
 
+
 /*
  * JSON error codes to ignore
  *
@@ -226,6 +227,114 @@ static int hexval[BYTE_VALUES] = {
  * NOTE: A NULL ignore_code_set means that the set has not been setup.
  */
 struct ignore_code *ignore_code_set = NULL;
+
+
+/*
+ * Common JSON fields table used to determine if a name is a common field,
+ * whether it's been added to the found_common_json_fields list, how many times
+ * it has been seen and how many are allowed.
+ */
+struct json_field common_json_fields[] =
+{
+    { "ioccc_contest",		    NULL, 0, 1, false, JSON_STRING, false, NULL },
+    { "ioccc_year",		    NULL, 0, 1, false, JSON_NUMBER, false, NULL },
+    { "mkiocccentry_version",	    NULL, 0, 1, false, JSON_STRING, false, NULL },
+    { "IOCCC_contest_id",	    NULL, 0, 1, false, JSON_STRING, false, NULL },
+    { "entry_num",		    NULL, 0, 1, false, JSON_NUMBER, false, NULL },
+    { "tarball",		    NULL, 0, 1, false, JSON_STRING, false, NULL },
+    { "formed_timestamp",	    NULL, 0, 1, false, JSON_NUMBER, false, NULL },
+    { "formed_timestamp_usec",	    NULL, 0, 1, false, JSON_NUMBER, false, NULL },
+    { "timestamp_epoch",	    NULL, 0, 1, false, JSON_STRING, false, NULL },
+    { "min_timestamp",		    NULL, 0, 1, false, JSON_NUMBER, false, NULL },
+    { "formed_UTC",		    NULL, 0, 1, false, JSON_STRING, false, NULL },
+    { "test_mode",		    NULL, 0, 1, false, JSON_BOOL,   false, NULL },
+    { NULL,			    NULL, 0, 0, false, JSON_NULL,   false, NULL } /* this **MUST** be last! */
+};
+size_t SIZEOF_COMMON_JSON_FIELDS_TABLE = TBLLEN(common_json_fields);
+
+
+/*
+ * .info.json fields table used to determine if a name belongs in the file,
+ * whether it's been added to the found_info_json_fields list, how many times
+ * it's been seen and how many are allowed.
+ *
+ */
+struct json_field info_json_fields[] =
+{
+    { "IOCCC_info_version",	NULL, 0, 1, false, JSON_STRING,		false, NULL },
+    { "iocccsize_version",	NULL, 0, 1, false, JSON_STRING,		false, NULL },
+    { "jinfochk_version",	NULL, 0, 1, false, JSON_STRING,		false, NULL },
+    { "fnamchk_version",	NULL, 0, 1, false, JSON_STRING,		false, NULL },
+    { "txzchk_version",		NULL, 0, 1, false, JSON_STRING,		false, NULL },
+    { "title",			NULL, 0, 1, false, JSON_STRING,		false, NULL },
+    { "abstract",		NULL, 0, 1, false, JSON_STRING,		false, NULL },
+    { "rule_2a_size",		NULL, 0, 1, false, JSON_NUMBER,		false, NULL },
+    { "rule_2b_size",		NULL, 0, 1, false, JSON_NUMBER,		false, NULL },
+    { "empty_override",		NULL, 0, 1, false, JSON_BOOL,		false, NULL },
+    { "rule_2a_override",	NULL, 0, 1, false, JSON_BOOL,		false, NULL },
+    { "rule_2a_mismatch",	NULL, 0, 1, false, JSON_BOOL,		false, NULL },
+    { "rule_2b_override",	NULL, 0, 1, false, JSON_BOOL,		false, NULL },
+    { "highbit_warning",	NULL, 0, 1, false, JSON_BOOL,		false, NULL },
+    { "nul_warning",		NULL, 0, 1, false, JSON_BOOL,		false, NULL },
+    { "trigraph_warning",	NULL, 0, 1, false, JSON_BOOL,		false, NULL },
+    { "wordbuf_warning",	NULL, 0, 1, false, JSON_BOOL,		false, NULL },
+    { "ungetc_warning",		NULL, 0, 1, false, JSON_BOOL,		false, NULL },
+    { "Makefile_override",	NULL, 0, 1, false, JSON_BOOL,		false, NULL },
+    { "first_rule_is_all",	NULL, 0, 1, false, JSON_BOOL,		false, NULL },
+    { "found_all_rule",		NULL, 0, 1, false, JSON_BOOL,		false, NULL },
+    { "found_clean_rule",	NULL, 0, 1, false, JSON_BOOL,		false, NULL },
+    { "found_clobber_rule",	NULL, 0, 1, false, JSON_BOOL,		false, NULL },
+    { "found_try_rule",		NULL, 0, 1, false, JSON_BOOL,		false, NULL },
+    { "manifest",		NULL, 0, 1, false, JSON_ARRAY,		false, NULL },
+    { "info_JSON",		NULL, 0, 1, false, JSON_ARRAY_STRING,	false,	NULL },
+    { "author_JSON",		NULL, 0, 1, false, JSON_ARRAY_STRING,	false,	NULL },
+    { "c_src",			NULL, 0, 1, false, JSON_ARRAY_STRING,	false,	NULL },
+    { "Makefile",		NULL, 0, 1, false, JSON_ARRAY_STRING,	false,	NULL },
+    { "remarks",		NULL, 0, 1, false, JSON_ARRAY_STRING,	false,	NULL },
+    { "extra_file",		NULL, 0, 0, false, JSON_ARRAY_STRING,	false,	NULL },
+    { NULL,			NULL, 0, 0, false, JSON_NULL,		false,	NULL } /* this **MUST** be last */
+};
+size_t SIZEOF_INFO_JSON_FIELDS_TABLE = TBLLEN(info_json_fields);
+
+
+/*
+ * .author.json fields table used to determine if a name belongs in the file,
+ * whether it's been added to the found_author_json_fields list, how many times
+ * it's been seen and how many are allowed.
+ *
+ * XXX - As of 4 March 2022 all fields are in the table but because arrays
+ * are not yet parsed not all of these values will be dealt with: that is they
+ * won't be checked.
+ */
+struct json_field author_json_fields[] =
+{
+    { "IOCCC_author_version",	NULL, 0, 1, false, JSON_STRING,		false,	NULL },
+    { "jauthchk_version",	NULL, 0, 1, false, JSON_STRING,		false,	NULL },
+    { "author_count",		NULL, 0, 1, false, JSON_NUMBER,		false,  NULL },
+    { "authors",		NULL, 0, 1, false, JSON_ARRAY,		false,	NULL },
+    { "name",			NULL, 0, 5, false, JSON_ARRAY_STRING,	false,  NULL },
+    { "location_code",		NULL, 0, 5, false, JSON_ARRAY_STRING,	false,	NULL },
+    { "email",			NULL, 0, 5, false, JSON_ARRAY_STRING,	true,	NULL },
+    { "url",			NULL, 0, 5, false, JSON_ARRAY_STRING,	true,	NULL },
+    { "twitter",		NULL, 0, 5, false, JSON_ARRAY_STRING,	true,	NULL },
+    { "github",			NULL, 0, 5, false, JSON_ARRAY_STRING,	true,	NULL },
+    { "affiliation",		NULL, 0, 5, false, JSON_ARRAY_STRING,	true,	NULL },
+    { "past_winner",		NULL, 0, 1, false, JSON_BOOL,		true,	NULL },
+    { "default_handle",		NULL, 0, 1, false, JSON_BOOL,		true,	NULL },
+    { "author_handle",		NULL, 0, 5, false, JSON_ARRAY_STRING,	true,	NULL },
+    { "author_number",		NULL, 0, 5, false, JSON_ARRAY_NUMBER,	false,	NULL },
+    { NULL,			NULL, 0, 0, false, JSON_NULL,		false,	NULL } /* this **MUST** be last */
+};
+size_t SIZEOF_AUTHOR_JSON_FIELDS_TABLE = TBLLEN(author_json_fields);
+
+
+/*
+ * global for jwarn(): -w in jinfochk/jauthchk says to show full warning
+ *
+ * XXX This currently is not used because there are some problems that have to
+ * be resolved first that will take more time and thought.
+ */
+bool show_full_json_warnings = false;
 
 
 /*
@@ -1566,108 +1675,6 @@ malloc_json_decode_str(char const *str, size_t *retlen, bool strict)
      */
     return ret;
 }
-
-
-/*
- * Common JSON fields table used to determine if a name is a common field,
- * whether it's been added to the found_common_json_fields list, how many times
- * it has been seen and how many are allowed.
- */
-struct json_field common_json_fields[] =
-{
-    { "ioccc_contest",		    NULL, 0, 1, false, JSON_STRING, false, NULL },
-    { "ioccc_year",		    NULL, 0, 1, false, JSON_NUMBER, false, NULL },
-    { "mkiocccentry_version",	    NULL, 0, 1, false, JSON_STRING, false, NULL },
-    { "IOCCC_contest_id",	    NULL, 0, 1, false, JSON_STRING, false, NULL },
-    { "entry_num",		    NULL, 0, 1, false, JSON_NUMBER, false, NULL },
-    { "tarball",		    NULL, 0, 1, false, JSON_STRING, false, NULL },
-    { "formed_timestamp",	    NULL, 0, 1, false, JSON_NUMBER, false, NULL },
-    { "formed_timestamp_usec",	    NULL, 0, 1, false, JSON_NUMBER, false, NULL },
-    { "timestamp_epoch",	    NULL, 0, 1, false, JSON_STRING, false, NULL },
-    { "min_timestamp",		    NULL, 0, 1, false, JSON_NUMBER, false, NULL },
-    { "formed_UTC",		    NULL, 0, 1, false, JSON_STRING, false, NULL },
-    { "test_mode",		    NULL, 0, 1, false, JSON_BOOL,   false, NULL },
-    { NULL,			    NULL, 0, 0, false, JSON_NULL,   false, NULL } /* this **MUST** be last! */
-};
-
-size_t SIZEOF_COMMON_JSON_FIELDS_TABLE = TBLLEN(common_json_fields);
-
-/*
- * .info.json fields table used to determine if a name belongs in the file,
- * whether it's been added to the found_info_json_fields list, how many times
- * it's been seen and how many are allowed.
- *
- */
-struct json_field info_json_fields[] =
-{
-    { "IOCCC_info_version",	NULL, 0, 1, false, JSON_STRING,		false, NULL },
-    { "iocccsize_version",	NULL, 0, 1, false, JSON_STRING,		false, NULL },
-    { "title",			NULL, 0, 1, false, JSON_STRING,		false, NULL },
-    { "abstract",		NULL, 0, 1, false, JSON_STRING,		false, NULL },
-    { "rule_2a_size",		NULL, 0, 1, false, JSON_NUMBER,		false, NULL },
-    { "rule_2b_size",		NULL, 0, 1, false, JSON_NUMBER,		false, NULL },
-    { "empty_override",		NULL, 0, 1, false, JSON_BOOL,		false, NULL },
-    { "rule_2a_override",	NULL, 0, 1, false, JSON_BOOL,		false, NULL },
-    { "rule_2a_mismatch",	NULL, 0, 1, false, JSON_BOOL,		false, NULL },
-    { "rule_2b_override",	NULL, 0, 1, false, JSON_BOOL,		false, NULL },
-    { "highbit_warning",	NULL, 0, 1, false, JSON_BOOL,		false, NULL },
-    { "nul_warning",		NULL, 0, 1, false, JSON_BOOL,		false, NULL },
-    { "trigraph_warning",	NULL, 0, 1, false, JSON_BOOL,		false, NULL },
-    { "wordbuf_warning",	NULL, 0, 1, false, JSON_BOOL,		false, NULL },
-    { "ungetc_warning",		NULL, 0, 1, false, JSON_BOOL,		false, NULL },
-    { "Makefile_override",	NULL, 0, 1, false, JSON_BOOL,		false, NULL },
-    { "first_rule_is_all",	NULL, 0, 1, false, JSON_BOOL,		false, NULL },
-    { "found_all_rule",		NULL, 0, 1, false, JSON_BOOL,		false, NULL },
-    { "found_clean_rule",	NULL, 0, 1, false, JSON_BOOL,		false, NULL },
-    { "found_clobber_rule",	NULL, 0, 1, false, JSON_BOOL,		false, NULL },
-    { "found_try_rule",		NULL, 0, 1, false, JSON_BOOL,		false, NULL },
-    { "manifest",		NULL, 0, 1, false, JSON_ARRAY,		false, NULL },
-    { "info_JSON",		NULL, 0, 1, false, JSON_ARRAY_STRING,	false,	NULL },
-    { "author_JSON",		NULL, 0, 1, false, JSON_ARRAY_STRING,	false,	NULL },
-    { "c_src",			NULL, 0, 1, false, JSON_ARRAY_STRING,	false,	NULL },
-    { "Makefile",		NULL, 0, 1, false, JSON_ARRAY_STRING,	false,	NULL },
-    { "remarks",		NULL, 0, 1, false, JSON_ARRAY_STRING,	false,	NULL },
-    { "extra_file",		NULL, 0, 0, false, JSON_ARRAY_STRING,	false,	NULL },
-    { NULL,			NULL, 0, 0, false, JSON_NULL,		false,	NULL } /* this **MUST** be last */
-};
-size_t SIZEOF_INFO_JSON_FIELDS_TABLE = TBLLEN(info_json_fields);
-
-/*
- * .author.json fields table used to determine if a name belongs in the file,
- * whether it's been added to the found_author_json_fields list, how many times
- * it's been seen and how many are allowed.
- *
- * XXX - As of 4 March 2022 all fields are in the table but because arrays
- * are not yet parsed not all of these values will be dealt with: that is they
- * won't be checked.
- */
-struct json_field author_json_fields[] =
-{
-    { "IOCCC_author_version",	NULL, 0, 1, false, JSON_STRING,		false,	NULL },
-    { "author_count",		NULL, 0, 1, false, JSON_NUMBER,		false,  NULL },
-    { "authors",		NULL, 0, 1, false, JSON_ARRAY,		false,	NULL },
-    { "name",			NULL, 0, 5, false, JSON_ARRAY_STRING,	false,  NULL },
-    { "location_code",		NULL, 0, 5, false, JSON_ARRAY_STRING,	false,	NULL },
-    { "email",			NULL, 0, 5, false, JSON_ARRAY_STRING,	true,	NULL },
-    { "url",			NULL, 0, 5, false, JSON_ARRAY_STRING,	true,	NULL },
-    { "twitter",		NULL, 0, 5, false, JSON_ARRAY_STRING,	true,	NULL },
-    { "github",			NULL, 0, 5, false, JSON_ARRAY_STRING,	true,	NULL },
-    { "affiliation",		NULL, 0, 5, false, JSON_ARRAY_STRING,	true,	NULL },
-    { "past_winner",		NULL, 0, 1, false, JSON_BOOL,		true,	NULL },
-    { "default_handle",		NULL, 0, 1, false, JSON_BOOL,		true,	NULL },
-    { "author_handle",		NULL, 0, 5, false, JSON_ARRAY_STRING,	true,	NULL },
-    { "author_number",		NULL, 0, 5, false, JSON_ARRAY_NUMBER,	false,	NULL },
-    { NULL,			NULL, 0, 0, false, JSON_NULL,		false,	NULL } /* this **MUST** be last */
-};
-size_t SIZEOF_AUTHOR_JSON_FIELDS_TABLE = TBLLEN(author_json_fields);
-
-/*
- * global for jwarn(): -w in jinfochk/jauthchk says to show full warning
- *
- * XXX This currently is not used because there are some problems that have to
- * be resolved first that will take more time and thought.
- */
-bool show_full_json_warnings = false;
 
 /*
  * jwarn - issue a JSON warning message

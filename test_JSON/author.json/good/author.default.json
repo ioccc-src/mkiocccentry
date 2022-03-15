@@ -3,7 +3,7 @@
 	"ioccc_contest" : "IOCCCMOCK",
 	"ioccc_year" : 2022,
 	"mkiocccentry_version" : "0.40 2022-03-15",
-	"iocccsize_version" : "28.10 2022-03-15",
+	"jauthchk_version" : "0.13 2022-03-15",
 	"IOCCC_contest_id" : "test",
 	"tarball" : "entry.test-0.1646499821.txz",
 	"entry_num" : 0,
