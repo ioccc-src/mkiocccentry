@@ -27,7 +27,7 @@
 	"ioccc_year" : 2022,
 	"iocccsize_version" : "28.9 2022-02-23",
 	"min_timestamp" : 1643987926,
-	"mkiocccentry_version" : "0.39 2022-03-04",
+	"mkiocccentry_version" : "0.40 2022-03-15",
 	"nul_warning" : false,
 	"rule_2a_mismatch" : false,
 	"rule_2a_override" : false,

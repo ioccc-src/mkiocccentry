@@ -77,7 +77,7 @@
 /*
  * official mkiocccentry version
  */
-#define MKIOCCCENTRY_VERSION "0.39 2022-03-04"	/* format: major.minor YYYY-MM-DD */
+#define MKIOCCCENTRY_VERSION "0.40 2022-03-15"	/* format: major.minor YYYY-MM-DD */
 
 
 /*
