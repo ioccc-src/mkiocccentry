@@ -1,0 +1,81 @@
+# This document lists JSON errors codes and their meanings. The format of this
+# file might change as right now I just want to get JSON codes I have added
+# documented.
+#
+# TIP: To easily get a list of errors and associated notes currently known
+# TIP: try:
+# TIP:
+# TIP:		grep -E '^# program|^JSON\[|^### NOTE:' json_err.codes
+# TIP:
+# TIP: If the format changes I will do my best to update the above tip as well
+# TIP: but as of 15 March 2022 it works fine. However the most important line is
+# TIP: the JSON[XXXX] line which will probably not change format much if at
+# TIP: all.
+#
+# TIP: To get a list of any hints try:
+# TIP:
+# TIP:		grep '^# TIP:' json_err.codes
+#
+#
+# The format as of 15 March 2022 is:
+#
+#	# program: (jinfochk|jauthchk|jchk) <function>
+#	JSON[XXXX]: <file>: <line num> <error>
+#
+# Where jchk means it (the JSON code) exists in both jinfochk and jauthchk or
+# more specifically if the code can happen in more than one program; and
+# otherwise it's the specific tool; function is the calling function for example
+# check_info_json() or check_author_json() (both of which will change once a
+# proper json parser is implemented); file is the offending json file; line
+# number the line number of the offending line (currently each field extracted
+# is a new line number which starts at 1 but for certain checks the C source
+# file's line will be used instead) and error is the actual error.
+#
+# NOTE: As of 15 March 2022 (the day of creation of this file and the jerr() and
+# jerrp() functions) most errors in json parsing uses err() or errp() and not
+# the json equivalents. This will be changed in time.
+#
+# NOTE: In the errors below I might at times use some C printf style format
+# specifiers but I won't necessarily have everything there so it's not to be
+# taken literally! Also note that for some I have notes of interest under some
+# errors.
+#
+# NOTE: I will try and keep these sorted and I will also do my best to remember
+# to update the file when more codes have been added but like everyone else I'm
+# human and it's entirely possible I neglect these especially if I'm distracted,
+# have a lot on my mind (I almost always do) or some other reason. Sorry about
+# this!
+#
+# NOTE: As of 15 March 2022 the reserved JSON codes are from 0 - 99 and the only
+# use right now is for errors that are triggered when parsing the files and also
+# verifying the json tables are sane. Thus the first error when verifying a file
+# (after parsing) is JSON-0100.
+#
+# NOTE: Despite the fact codes 0 - 999 are 0-padded the numbers are not octal (0
+# notwithstanding) but decimal and we explicitly parse the codes as decimal!
+#
+# NOTE: If it's still not obvious this file is very very much a work in
+# progress!
+
+
+###
+### JSON ERROR CODES BELOW (LAST UPDATED: 14 MARCH 2022)
+###
+
+
+# program: jchk check_common_json_fields_table
+JSON[0001]: json.c: %d: found JSON_NULL element with non NULL name '%s' location %ju in common_json_fields table; fix table and recompile
+
+# program: jchk check_common_json_fields_table
+JSON[0002]: json.c: %d: found invalid data_type in (common|info|author)_json_fields table location %ju; fix table and recompile
+
+# program: jchk check_(common|info|author)_json_fields_table
+JSON[0003]: json.c: %d: found embedded NULL element in (common|info|author)_json_fields table at location %ju; fix table and recompile
+
+# program: jchk check_common_json_fields_table
+JSON[0004]: json.c: %d: no final NULL element found in (common|info|author)_json_fields table; fix table and recompile
+
+
+###
+### JSON ERROR CODES ABOVE
+###

@@ -311,12 +311,20 @@ extern void check_info_json_fields_table(void);
 extern int check_first_json_char(char const *file, char *data, bool strict, char **first, char ch);
 extern int check_last_json_char(char const *file, char *data, bool strict, char **last, char ch);
 extern struct json_field *add_found_common_json_field(char const *name, char const *val, int line_num);
-extern int get_common_json_field(char const *program, char const *file, char *name, char *val, int line_num);
+extern int add_common_json_field(char const *program, char const *file, char *name, char *val, int line_num);
 extern int check_found_common_json_fields(char const *program, char const *file, char const *fnamchk, bool test);
 extern struct json_field *new_json_field(char const *name, char const *val, int line_num);
 extern struct json_value *add_json_value(struct json_field *field, char const *val, int line_num);
 extern void jwarn(int code, const char *program, char const *name, char const *filename, char const *line, int line_num, const char *fmt, ...) \
 	__attribute__((format(printf, 7, 8)));		/* 7=format 8=params */
+extern void jwarnp(int code, const char *program, char const *name, char const *filename, char const *line, int line_num, const char *fmt, ...) \
+	__attribute__((format(printf, 7, 8)));		/* 7=format 8=params */
+extern void jerr(int exitcode, char const *program, const char *name, char const *filename, char const *line, int line_num, const char *fmt, ...) \
+	__attribute__((noreturn)) __attribute__((format(printf, 7, 8))); /* 7=format 8=params */
+extern void jerrp(int exitcode, char const *program, const char *name, char const *filename, char const *line, int line_num, const char *fmt, ...) \
+	__attribute__((noreturn)) __attribute__((format(printf, 7, 8))); /* 7=format 8=params */
+
+
 /* free() functions */
 extern void free_json_field_values(struct json_field *field);
 extern void free_found_common_json_fields(void);
