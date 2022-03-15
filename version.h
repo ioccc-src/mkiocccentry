@@ -71,7 +71,7 @@
 /*
  * official iocccsize version
  */
-#define IOCCCSIZE_VERSION "28.9 2022-02-23"	/* format: major.minor YYYY-MM-DD */
+#define IOCCCSIZE_VERSION "28.10 2022-04-15"	/* format: major.minor YYYY-MM-DD */
 
 
 /*
