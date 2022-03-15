@@ -158,7 +158,7 @@ H_FILES = dbg.h jauthchk.h jinfochk.h json.h jstrdecode.h jstrencode.h limit_ioc
 	mkiocccentry.h txzchk.h util.h location.h utf8_posix_map.h
 DSYMDIRS = $(patsubst %,%.dSYM,$(TARGETS))
 SH_FILES= iocccsize-test.sh jstr-test.sh limit_ioccc.sh mkiocccentry-test.sh json-test.sh \
-	  jcodechk.sh
+	  jcodechk.sh vermod.sh
 
 all: ${TARGETS} ${TEST_TARGETS}
 
@@ -410,11 +410,12 @@ mkiocccentry.o: mkiocccentry.c mkiocccentry.h util.h json.h dbg.h \
   location.h utf8_posix_map.h sanity.h limit_ioccc.h version.h \
   iocccsize.h
 iocccsize.o: iocccsize.c iocccsize_err.h iocccsize.h
-fnamchk.o: fnamchk.c fnamchk.h dbg.h util.h limit_ioccc.h version.h
+fnamchk.o: fnamchk.c fnamchk.h dbg.h util.h limit_ioccc.h version.h \
+  utf8_posix_map.h
 txzchk.o: txzchk.c txzchk.h util.h dbg.h sanity.h location.h \
   utf8_posix_map.h json.h limit_ioccc.h version.h
-jauthchk.o: jauthchk.c jauthchk.h dbg.h util.h json.h limit_ioccc.h \
-  version.h
+jauthchk.o: jauthchk.c jauthchk.h dbg.h util.h json.h sanity.h location.h \
+  utf8_posix_map.h limit_ioccc.h version.h
 jinfochk.o: jinfochk.c jinfochk.h dbg.h util.h json.h sanity.h location.h \
   utf8_posix_map.h limit_ioccc.h version.h
 json.o: json.c dbg.h util.h limit_ioccc.h version.h json.h
@@ -424,6 +425,7 @@ jstrdecode.o: jstrdecode.c jstrdecode.h dbg.h util.h json.h limit_ioccc.h \
   version.h
 rule_count.o: rule_count.c iocccsize_err.h iocccsize.h
 location.o: location.c location.h util.h dbg.h
-utf8_posix_map.o: utf8_posix_map.c utf8_posix_map.h util.h dbg.h
+utf8_posix_map.o: utf8_posix_map.c utf8_posix_map.h util.h dbg.h \
+  limit_ioccc.h version.h
 sanity.o: sanity.c sanity.h util.h dbg.h location.h utf8_posix_map.h \
   json.h
