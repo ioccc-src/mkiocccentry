@@ -9,7 +9,7 @@
 		{"remarks" : "remarks.md"}
 	],
 	"IOCCC_contest_id" : "12345678-1234-4321-abcd-1234567890ab",
-	"IOCCC_info_version" : "1.8 2022-02-13",
+	"IOCCC_info_version" : "1.9 2022-03-15",
 	"Makefile_override" : false,
 	"abstract" : "abstract for entry #0",
 	"empty_override" : true,

@@ -85,7 +85,7 @@
  *
  * The following is NOT the version of this mkiocccentry tool!
  */
-#define INFO_VERSION "1.8 2022-02-13"		/* format: major.minor YYYY-MM-DD */
+#define INFO_VERSION "1.9 2022-03-15"		/* format: major.minor YYYY-MM-DD */
 
 
 /*
