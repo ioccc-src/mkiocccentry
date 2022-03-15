@@ -35,150 +35,6 @@
  */
 #include "jauthchk.h"
 
-int
-main(int argc, char **argv)
-{
-    extern char *optarg;		/* option argument */
-    extern int optind;			/* argv index of the next arg */
-    char *file;				/* file argument to check */
-    int ret;				/* libc return code */
-    int issues;				/* issues found */
-    char *fnamchk = FNAMCHK_PATH_0;	/* path to fnamchk executable */
-    bool fnamchk_flag_used = false;	/* true ==> -F fnamchk used */
-    int code;				/* a JSON error code */
-    int i;				/* return value of getopt() */
-
-
-    /*
-     * parse args
-     */
-    program = argv[0];
-    program_basename = base_name(program);
-    while ((i = getopt(argc, argv, "hv:VqsF:tTW:w")) != -1) {
-	switch (i) {
-	case 'h':		/* -h - print help to stderr and exit 0 */
-	    usage(1, "-h help mode", program); /*ooo*/
-	    not_reached();
-	    break;
-	case 'v':		/* -v verbosity */
-	    /*
-	     * parse verbosity
-	     */
-	    verbosity_level = parse_verbosity(program, optarg);
-	    break;
-	case 'q':
-	    quiet = true;
-	    break;
-	case 'V':		/* -V - print version and exit */
-	    errno = 0;		/* pre-clear errno for warnp() */
-	    ret = printf("%s\n", JAUTHCHK_VERSION);
-	    if (ret <= 0) {
-		warnp(__func__, "printf error printing version string: %s", JAUTHCHK_VERSION);
-	    }
-	    exit(0); /*ooo*/
-	    not_reached();
-	    break;
-	case 'T':		/* -T (IOCCC toolkit release repository tag) */
-	    errno = 0;		/* pre-clear errno for warnp() */
-	    ret = printf("%s\n", IOCCC_TOOLKIT_RELEASE);
-	    if (ret <= 0) {
-		warnp(__func__, "printf error printing IOCCC toolkit release repository tag");
-	    }
-	    exit(0); /*ooo*/
-	    not_reached();
-	    break;
-	case 's':
-	    strict = true;
-	    break;
-	case 'F':
-	    fnamchk_flag_used = true;
-	    fnamchk = optarg;
-	    break;
-	case 't':
-	    test = true;
-	    break;
-	case 'W':
-	    /* parse ignore code */
-	    errno = 0;
-	    code = (int)strtol(optarg, NULL, 0);
-	    if (errno != 0) {
-		/* exit(1); */
-		err(1, __func__, "cannot parse -W arg: %s error: %s", optarg, strerror(errno)); /*ooo*/
-		not_reached();
-	    }
-	    /* add code to ignore_code_setp[] */
-	    add_ignore_code(code);
-	    break;
-	case 'w':
-	    show_full_json_warnings = true;
-	    break;
-	default:
-	    usage(1, "invalid -flag", program); /*ooo*/
-	    not_reached();
-	 }
-    }
-    /* be warn(), warnp() and msg() quiet of -q and -v 0 */
-    if (quiet && verbosity_level <= 0) {
-	msg_output_allowed = false;
-	warn_output_allowed = false;
-    }
-    /* must have the exact required number of args */
-    if (argc - optind != REQUIRED_ARGS) {
-	usage(1, "wrong number of arguments", program); /*ooo*/
-	not_reached();
-    }
-    file = argv[optind];
-    dbg(DBG_LOW, "JSON file: %s", file);
-
-    /*
-     * Welcome
-     */
-    if (!quiet) {
-	errno = 0;			/* pre-clear errno for errp() */
-	ret = printf("Welcome to jauthchk version: %s\n", JAUTHCHK_VERSION);
-	if (ret <= 0) {
-	    errp(4, __func__, "printf error printing the welcome string");
-	    not_reached();
-	}
-    }
-
-    /* we have to find the fnamchk util */
-    find_utils(false, NULL, false, NULL, false, NULL, false, NULL, fnamchk_flag_used, &fnamchk,
-	       false, NULL, false, NULL);
-
-    /*
-     * environment sanity checks
-     */
-    if (!quiet) {
-	para("", "Performing sanity checks on your environment ...", NULL);
-    }
-
-    jauthchk_sanity_chks(file, fnamchk);
-    if (!quiet) {
-	para("... environment looks OK", "", NULL);
-    }
-
-    issues = check_author_json(file, fnamchk);
-
-    if (program_basename != NULL) {
-	free(program_basename);
-	program_basename = NULL;
-    }
-
-    /*
-     * XXX - TODO Once the authors array is parsed we have to call free_author_array()
-     */
-
-    if (issues != 0 && !test) {
-	dbg(DBG_LOW, "%s is invalid", file);
-    }
-
-    /*
-     * All Done!!! - Jessica Noll, age 2
-     */
-    exit(issues != 0); /*ooo*/
-}
-
 
 
 /*
@@ -1120,4 +976,148 @@ usage(int exitcode, char const *str, char const *prog)
     vfprintf_usage(exitcode, stderr, usage_msg, prog, DBG_DEFAULT, FNAMCHK_PATH_0, JAUTHCHK_VERSION);
     exit(exitcode); /*ooo*/
     not_reached();
+}
+
+int
+main(int argc, char **argv)
+{
+    extern char *optarg;		/* option argument */
+    extern int optind;			/* argv index of the next arg */
+    char *file;				/* file argument to check */
+    int ret;				/* libc return code */
+    int issues;				/* issues found */
+    char *fnamchk = FNAMCHK_PATH_0;	/* path to fnamchk executable */
+    bool fnamchk_flag_used = false;	/* true ==> -F fnamchk used */
+    int code;				/* a JSON error code */
+    int i;				/* return value of getopt() */
+
+
+    /*
+     * parse args
+     */
+    program = argv[0];
+    program_basename = base_name(program);
+    while ((i = getopt(argc, argv, "hv:VqsF:tTW:w")) != -1) {
+	switch (i) {
+	case 'h':		/* -h - print help to stderr and exit 0 */
+	    usage(1, "-h help mode", program); /*ooo*/
+	    not_reached();
+	    break;
+	case 'v':		/* -v verbosity */
+	    /*
+	     * parse verbosity
+	     */
+	    verbosity_level = parse_verbosity(program, optarg);
+	    break;
+	case 'q':
+	    quiet = true;
+	    break;
+	case 'V':		/* -V - print version and exit */
+	    errno = 0;		/* pre-clear errno for warnp() */
+	    ret = printf("%s\n", JAUTHCHK_VERSION);
+	    if (ret <= 0) {
+		warnp(__func__, "printf error printing version string: %s", JAUTHCHK_VERSION);
+	    }
+	    exit(0); /*ooo*/
+	    not_reached();
+	    break;
+	case 'T':		/* -T (IOCCC toolkit release repository tag) */
+	    errno = 0;		/* pre-clear errno for warnp() */
+	    ret = printf("%s\n", IOCCC_TOOLKIT_RELEASE);
+	    if (ret <= 0) {
+		warnp(__func__, "printf error printing IOCCC toolkit release repository tag");
+	    }
+	    exit(0); /*ooo*/
+	    not_reached();
+	    break;
+	case 's':
+	    strict = true;
+	    break;
+	case 'F':
+	    fnamchk_flag_used = true;
+	    fnamchk = optarg;
+	    break;
+	case 't':
+	    test = true;
+	    break;
+	case 'W':
+	    /* parse ignore code */
+	    errno = 0;
+	    code = (int)strtol(optarg, NULL, 0);
+	    if (errno != 0) {
+		/* exit(1); */
+		err(1, __func__, "cannot parse -W arg: %s error: %s", optarg, strerror(errno)); /*ooo*/
+		not_reached();
+	    }
+	    /* add code to ignore_code_setp[] */
+	    add_ignore_code(code);
+	    break;
+	case 'w':
+	    show_full_json_warnings = true;
+	    break;
+	default:
+	    usage(1, "invalid -flag", program); /*ooo*/
+	    not_reached();
+	 }
+    }
+    /* be warn(), warnp() and msg() quiet of -q and -v 0 */
+    if (quiet && verbosity_level <= 0) {
+	msg_output_allowed = false;
+	warn_output_allowed = false;
+    }
+    /* must have the exact required number of args */
+    if (argc - optind != REQUIRED_ARGS) {
+	usage(1, "wrong number of arguments", program); /*ooo*/
+	not_reached();
+    }
+    file = argv[optind];
+    dbg(DBG_LOW, "JSON file: %s", file);
+
+    /*
+     * Welcome
+     */
+    if (!quiet) {
+	errno = 0;			/* pre-clear errno for errp() */
+	ret = printf("Welcome to jauthchk version: %s\n", JAUTHCHK_VERSION);
+	if (ret <= 0) {
+	    errp(4, __func__, "printf error printing the welcome string");
+	    not_reached();
+	}
+    }
+
+    /* we have to find the fnamchk util */
+    find_utils(false, NULL, false, NULL, false, NULL, false, NULL, fnamchk_flag_used, &fnamchk,
+	       false, NULL, false, NULL);
+
+    /*
+     * environment sanity checks
+     */
+    if (!quiet) {
+	para("", "Performing sanity checks on your environment ...", NULL);
+    }
+
+    jauthchk_sanity_chks(file, fnamchk);
+    if (!quiet) {
+	para("... environment looks OK", "", NULL);
+    }
+
+    issues = check_author_json(file, fnamchk);
+
+    if (program_basename != NULL) {
+	free(program_basename);
+	program_basename = NULL;
+    }
+
+    /*
+     * XXX - TODO Once the authors array is parsed we have to call free_author_array()
+     */
+
+    if (issues != 0 && !test) {
+	dbg(DBG_LOW, "%s is invalid", file);
+    }
+
+    /*
+     * All Done!!! - Jessica Noll, age 2
+     */
+    exit(issues != 0); /*ooo*/
 }
