@@ -1745,30 +1745,39 @@ jwarn(int code, char const *program, char const *name, char const *filename, cha
     }
 
 
+    errno = 0;
     ret = fprintf(stderr, "# program: %s %s\n", program, name);
     if (ret < 0) {
-	(void) fprintf(stderr, "\nWarning: in jwarn(%d, %s, %s, %s, %s, %d, %s, ...): fprintf returned error: %d\n", code, program, name,
-		filename, line, line_num, fmt, ret);
+	(void) fprintf(stderr, "\nWarning: in jwarn(%d, %s, %s, %s, %s, %d, %s, ...): fprintf returned error: %s\n", code, program, name,
+		filename, line, line_num, fmt, strerror(errno));
     }
+
+    errno = 0;
     ret = fprintf(stderr, "{JSON-%04d}: %s: %d: ", code, filename, line_num);
     if (ret < 0) {
-	(void) fprintf(stderr, "\nWarning: in jwarn(%d, %s, %s, %s, %s, %d, %s, ...): fprintf returned error: %d\n", code, program, name,
-		filename, line, line_num, fmt, ret);
+	(void) fprintf(stderr, "\nWarning: in jwarn(%d, %s, %s, %s, %s, %d, %s, ...): fprintf returned error: %s\n", code, program, name,
+		filename, line, line_num, fmt, strerror(errno));
     }
+
+    errno = 0;
     ret = vfprintf(stderr, fmt, ap);
     if (ret < 0) {
-	(void) fprintf(stderr, "\nWarning: in jwarn(%d, %s, %s, %s, %s, %d, %s, ...): fprintf returned error: %d\n", code, program, name,
-		filename, line, line_num, fmt, ret);
+	(void) fprintf(stderr, "\nWarning: in jwarn(%d, %s, %s, %s, %s, %d, %s, ...): fprintf returned error: %s\n", code, program, name,
+		filename, line, line_num, fmt, strerror(errno));
     }
+
+    errno = 0;
     ret = fputc('\n', stderr);
     if (ret != '\n') {
-	(void) fprintf(stderr, "\nWarning: in jwarn(%d, %s, %s, %s, %s, %d, %s, ...): fputc returned error: %d\n", code, program, name,
-		filename, line, line_num, fmt, ret);
+	(void) fprintf(stderr, "\nWarning: in jwarn(%d, %s, %s, %s, %s, %d, %s, ...): fputc returned error: %s\n", code, program, name,
+		filename, line, line_num, fmt, strerror(errno));
     }
+
+    errno = 0;
     ret = fflush(stderr);
     if (ret < 0) {
-	(void) fprintf(stderr, "\nWarning: in jwarn(%d, %s, %s, %s, %s, %d, %s, ...): fflush returned error: %d\n", code, program, name,
-		filename, line, line_num, fmt, ret);
+	(void) fprintf(stderr, "\nWarning: in jwarn(%d, %s, %s, %s, %s, %d, %s, ...): fflush returned error: %s\n", code, program, name,
+		filename, line, line_num, fmt, strerror(errno));
     }
 
     /*
@@ -2376,9 +2385,9 @@ check_found_common_json_fields(char const *program, char const *file, char const
 		not_reached();
 	    }
 
-	    if (field->count > common_field->max_count) {
-		jwarn(JSON_CODE(1), program, __func__, file, "", value->line_num, "field '%s' found %ju times but is only allowed once",
-			       common_field->name, (uintmax_t)common_field->count);
+	    if (common_field->max_count > 0 && common_field->count > common_field->max_count) {
+		jwarn(JSON_CODE(1), program, __func__, file, NULL, value->line_num, "field '%s' found %ju times but is only allowed %ju time%s", common_field->name,
+		    (uintmax_t)common_field->count, (uintmax_t)common_field->max_count, common_field->max_count==1?"":"s");
 		++issues;
 	    }
 
@@ -2519,8 +2528,8 @@ check_found_common_json_fields(char const *program, char const *file, char const
 		warn(__func__, "found unhandled common field in file %s: '%s'", file, field->name);
 		/*
 		 * NOTE: Don't increment issues because this doesn't mean
-		 * there's anything wrong with the .author.json file but rather
-		 * that the field isn't verified.
+		 * there's anything wrong with the json file but rather that the
+		 * field isn't verified.
 		 */
 	    }
 

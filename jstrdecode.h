@@ -70,7 +70,7 @@ static const char * const usage_msg =
     "\t-v level\tset verbosity level (def level: %d)\n"
     "\t-q\t\tquiet mode, unless verbosity level > 0 (def: not quiet)\n"
     "\t-V\t\tprint version string and exit 0\n"
-    "\t-T\t\tshow IOCCC toolkit chain release repository tag\n"
+    "\t-T\t\tshow IOCCC toolkit release repository tag\n"
     "\t-t\t\tperform jencchk test on code JSON decode/decode functions\n"
     "\t-n\t\tdo not output newline after decode output\n"
     "\t-s\t\tdecode using strict mode (def: not strict)\n"

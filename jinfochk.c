@@ -79,7 +79,7 @@ main(int argc, char **argv)
 	    exit(0); /*ooo*/
 	    not_reached();
 	    break;
-	case 'T':		/* -T (IOCCC toolkit chain release repository tag) */
+	case 'T':		/* -T (IOCCC toolkit release repository tag) */
 	    errno = 0;		/* pre-clear errno for warnp() */
 	    ret = printf("%s\n", IOCCC_TOOLKIT_RELEASE);
 	    if (ret <= 0) {
@@ -118,7 +118,7 @@ main(int argc, char **argv)
 	 }
     }
     /* be warn(), warnp() and msg() quiet of -q and -v 0 */
-    if (quiet == true && verbosity_level <= 0) {
+    if (quiet && verbosity_level <= 0) {
 	msg_output_allowed = false;
 	warn_output_allowed = false;
     }
@@ -453,9 +453,8 @@ check_info_json(char const *file, char const *fnamchk)
 	    ++p;
 	} else {
 	    /* if no '"' there's a problem */
-	    warn(__func__, "found no leading '\"' for field '%s' in file %s: '%c'", p, file, *p);
+	    jwarn(JSON_CODE_RESERVED(2), program, __func__, file, NULL, line_num, "found no leading '\"' for field '%s': '%c'", p, *p);
 	    ++issues;
-	    continue;
 	}
 
 	/* if empty string, break out of loop */
@@ -472,7 +471,7 @@ check_info_json(char const *file, char const *fnamchk)
 	    *end = '\0';
 	} else {
 	    /* if no trailing '"' there's also a problem */
-	    warn(__func__, "found no trailing '\"': '%s' in file %s: '%c'", p, file, *p);
+	    jwarn(JSON_CODE_RESERVED(3), program, __func__, file, NULL, line_num, "found no trailing '\"' in field '%s': '%c'", p, *p);
 	    ++issues;
 	}
 
@@ -512,7 +511,7 @@ check_info_json(char const *file, char const *fnamchk)
 	 *
 	 */
 	if (info_field == NULL && common_field == NULL) {
-	    warn(__func__, "invalid field '%s' in file %s", p, file);
+	    jwarn(JSON_CODE_RESERVED(1), program, __func__, file, NULL, line_num, "invalid field '%s'", p);
 	    ++issues;
 	}
 
@@ -1010,7 +1009,7 @@ check_info_json(char const *file, char const *fnamchk)
  *	file	    - the file being parsed (path to)
  *	name	    - the field name
  *	val	    - the value of the field
- *	line_num    - if field is valid add the number to the field
+ *	line_num    - if field is valid add the number to the field's value
  *
  * returns:
  *	1 ==> if the name is a .info.json field
@@ -1318,13 +1317,6 @@ check_found_info_json_fields(char const *file, bool test)
 	}
 
 	dbg(DBG_VHIGH, "checking field '%s' in file %s", field->name, file);
-	/* make sure the field is not over the limit allowed */
-	if (info_field->max_count > 0 && info_field->count > info_field->max_count) {
-	    warn(__func__, "field '%s' found %ju times but is only allowed %ju time%s", info_field->name,
-		    (uintmax_t)info_field->count, (uintmax_t)info_field->max_count, info_field->max_count==1?"":"s");
-	    ++issues;
-	}
-
 	for (value = field->values; value != NULL; value = value->next) {
 	    char *val = value->value;
 
@@ -1343,6 +1335,14 @@ check_found_info_json_fields(char const *file, bool test)
 		err(43, __func__, "empty value found for field '%s' in file %s", field->name, file);
 		not_reached();
 	    }
+
+	    /* make sure the field is not over the limit allowed */
+	    if (info_field->max_count > 0 && info_field->count > info_field->max_count) {
+		jwarn(JSON_CODE(1), program, __func__, file, NULL, value->line_num, "field '%s' found %ju times but is only allowed %ju time%s",
+			info_field->name, (uintmax_t)info_field->count, (uintmax_t)info_field->max_count, info_field->max_count==1?"":"s");
+		++issues;
+	    }
+
 
 	    /*
 	     * First we do checks on the field type. We only have to check

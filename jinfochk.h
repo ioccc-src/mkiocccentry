@@ -82,7 +82,7 @@ static const char * const usage_msg =
 "\t-v level\t\tset verbosity level: (def level: %d)\n"
 "\t-q\t\t\tquiet mode, unless verbosity level > 0 (def: not quiet)\n"
 "\t-V\t\t\tprint version string and exit\n"
-"\t-T\t\t\tshow IOCCC toolkit chain release repository tag\n"
+"\t-T\t\t\tshow IOCCC toolkit release repository tag\n"
 "\t-s\t\t\tstrict mode: be more strict on what is allowed (def: not strict)\n"
 "\t-F /path/to/fnamchk\tpath to fnamchk tool (def: %s)\n"
 "\t-t\t\t\ttest mode: only issue warnings in some cases\n"
