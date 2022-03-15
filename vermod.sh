@@ -223,31 +223,17 @@ fi
 
 # replace string in files
 #
-# case: -n (noop)
-#
-status=0
-if [[ -n $NOOP ]]; then
-    if [[ $V_FLAG -ge 1 ]]; then
-	echo "$0: debug[1]: rpl -s -v -x'.json' -R -- $OLD_VER $NEW_VER $JSON_TREE" 1>&2
-	rpl -s -v -x'.json' -R -- "$OLD_VER" "$NEW_VER" "$JSON_TREE"
-	status="$?"
-    else
-	rpl -s -x'.json' -R -- "$OLD_VER" "$NEW_VER" "$JSON_TREE"
-	status="$?"
-    fi
-else
-    if [[ $V_FLAG -ge 1 ]]; then
-	echo "$0: debug[1]: rpl -v -x'.json' -R -- $OLD_VER $NEW_VER $JSON_TREE" 1>&2
-	rpl -v -x'.json' -R -- "$OLD_VER" "$NEW_VER" "$JSON_TREE"
-	status="$?"
-    else
-	rpl -x'.json' -R -- "$OLD_VER" "$NEW_VER" "$JSON_TREE"
-	status="$?"
-    fi
+if [[ $V_FLAG -ge 1 ]]; then
+    echo "$0: debug[1]: rpl -q -x'.json' -R -- $OLD_VER $NEW_VER $JSON_TREE" 1>&2
 fi
-if [[ $status -ne 0 ]]; then
-    echo "$0: ERROR: rpl non-zero exit status: $status" 1>&2
-    exit 1
+status=0
+if [[ -z $NOOP ]]; then
+    rpl -q -x'.json' -R -- "$OLD_VER" "$NEW_VER" "$JSON_TREE"
+    status="$?"
+    if [[ $status -ne 0 ]]; then
+	echo "$0: ERROR: rpl non-zero exit status: $status" 1>&2
+	exit 1
+    fi
 fi
 
 # All Done!!! -- Jessica Noll, Age 2
