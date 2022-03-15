@@ -1,0 +1,78 @@
+{
+	"IOCCC_author_version" : "1.12 2022-03-15",
+	"ioccc_contest" : "IOCCCMOCK",
+	"ioccc_year" : 2022,
+	"mkiocccentry_version" : "0.40 2022-03-15",
+	"jauthchk_version" : "0.13 2022-03-15",
+	"IOCCC_contest_id" : "test",
+	"tarball" : "entry.test-0.1646499821.txz",
+	"entry_num" : 0,
+	"author_count" : 5,
+	"test_mode" : true,
+	"authors" : [
+		{
+			"name" : "author0 middle0 last0",
+			"location_code" : "AU",
+			"location_name" : "Australia",
+			"email" : "user0@example.com",
+			"url" : "https:\/\/host0.example.com\/index.html",
+			"twitter" : "@twitter0",
+			"github" : "@github0",
+			"affiliation" : "an affiliation for #0 author",
+			"author_handle" : "author0-last0",
+			"author_number" : 0
+		},
+		{
+			"name" : "author1 middle1a middle1b last1",
+			"location_code" : "UK",
+			"location_name" : "United Kingdom",
+			"email" : null,
+			"url" : null,
+			"twitter" : null,
+			"github" : null,
+			"affiliation" : null,
+			"author_handle" : null,
+			"author_number" : 1
+		},
+		{
+			"name" : "author2 middle2 last2",
+			"location_code" : "US",
+			"location_name" : "United States of America",
+			"email" : "user2@example.com",
+			"url" : "http:\/\/host2.example.com\/index.html",
+			"twitter" : "@twitter2",
+			"github" : "@github2",
+			"affiliation" : "an affiliation for #2 author",
+			"author_handle" : "author2-last2",
+			"author_number" : 2
+		},
+		{
+			"name" : "author3 middle3 last3",
+			"location_code" : "AU",
+			"location_name" : "Australia",
+			"email" : "user0@example.com",
+			"url" : "https:\/\/host0.example.com\/index.html",
+			"twitter" : "@twitter3",
+			"github" : "@github3",
+			"affiliation" : "an affiliation for #3 author",
+			"author_handle" : "author3-last3",
+			"author_number" : 3
+		{
+			"name" : "author4 middle4 last4",
+			"location_code" : "AU",
+			"location_name" : "Australia",
+			"email" : "user0@example.com",
+			"url" : "https:\/\/host0.example.com\/index.html",
+			"twitter" : "@twitter4",
+			"github" : "@github4",
+			"affiliation" : "an affiliation for #4 author",
+			"author_handle" : "author4-last4",
+			"author_number" : 4
+		}
+	],
+	"formed_timestamp" : 1646499821,
+	"formed_timestamp_usec" : 908365,
+	"timestamp_epoch" : "Thu Jan 01 00:00:00 1970 UTC",
+	"min_timestamp" : 1643987926,
+	"formed_UTC" : "Sat Mar 05 17:03:41 2022 UTC"
+}
