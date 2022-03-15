@@ -242,6 +242,11 @@ warn(char const *name, char const *fmt, ...)
     int ret;		/* libc function return code */
     int saved_errno;	/* errno at function start */
 
+    if (!warn_output_allowed) {
+	/* if warn output not allowed return without doing anything */
+	return;
+    }
+
     /*
      * save errno so we can restore it before returning
      */
@@ -261,44 +266,38 @@ warn(char const *name, char const *fmt, ...)
      */
     if (name == NULL) {
 	name = "((NULL name))";
-	if (warn_output_allowed == true) {
-	    (void) fprintf(stderr, "\nWarning: in warn(): called with NULL name, forcing name: %s\n", name);
-	}
+	(void) fprintf(stderr, "\nWarning: in warn(): called with NULL name, forcing name: %s\n", name);
     }
     if (fmt == NULL) {
 	fmt = "((NULL fmt))";
-	if (warn_output_allowed == true) {
-	    (void) fprintf(stderr, "\nWarning: in warn(): called with NULL fmt, forcing fmt: %s\n", fmt);
-	}
+	(void) fprintf(stderr, "\nWarning: in warn(): called with NULL fmt, forcing fmt: %s\n", fmt);
     }
 
     /*
      * issue the warning, if allowed
      */
-    if (warn_output_allowed) {
-	errno = 0;
-	ret = fprintf(stderr, "Warning: %s: ", name);
-	if (ret < 0) {
-	    (void) fprintf(stderr, "\nWarning: in warn(%s, %s, ...): fprintf returned error: %s\n", name, fmt, strerror(errno));
-	}
+    errno = 0;
+    ret = fprintf(stderr, "Warning: %s: ", name);
+    if (ret < 0) {
+	(void) fprintf(stderr, "\nWarning: in warn(%s, %s, ...): fprintf returned error: %s\n", name, fmt, strerror(errno));
+    }
 
-	errno = 0;
-	ret = vfprintf(stderr, fmt, ap);
-	if (ret < 0) {
-	    (void) fprintf(stderr, "\nWarning: in warn(%s, %s, ...): vfprintf returned error: %s\n", name, fmt, strerror(errno));
-	}
+    errno = 0;
+    ret = vfprintf(stderr, fmt, ap);
+    if (ret < 0) {
+	(void) fprintf(stderr, "\nWarning: in warn(%s, %s, ...): vfprintf returned error: %s\n", name, fmt, strerror(errno));
+    }
 
-	errno = 0;
-	ret = fputc('\n', stderr);
-	if (ret != '\n') {
-	    (void) fprintf(stderr, "\nWarning: in warn(%s, %s, ...): fputc returned error: %s\n", name, fmt, strerror(errno));
-	}
+    errno = 0;
+    ret = fputc('\n', stderr);
+    if (ret != '\n') {
+	(void) fprintf(stderr, "\nWarning: in warn(%s, %s, ...): fputc returned error: %s\n", name, fmt, strerror(errno));
+    }
 
-	errno = 0;
-	ret = fflush(stderr);
-	if (ret < 0) {
-	    (void) fprintf(stderr, "\nWarning: in warn(%s, %s, ...): fflush returned error: %s\n", name, fmt, strerror(errno));
-	}
+    errno = 0;
+    ret = fflush(stderr);
+    if (ret < 0) {
+	(void) fprintf(stderr, "\nWarning: in warn(%s, %s, ...): fflush returned error: %s\n", name, fmt, strerror(errno));
     }
 
     /*
@@ -336,6 +335,10 @@ warnp(char const *name, char const *fmt, ...)
     int ret;		/* libc function return code */
     int saved_errno;	/* errno at function start */
 
+    if (!warn_output_allowed) {
+	/* if warn output is not allowed return without doing anything */
+	return;
+    }
     /*
      * save errno so we can restore it before returning
      */
@@ -353,44 +356,38 @@ warnp(char const *name, char const *fmt, ...)
     /* firewall */
     if (name == NULL) {
 	name = "((NULL name))";
-	if (warn_output_allowed == true) {
-	    (void) fprintf(stderr, "\nWarning: in warn(): called with NULL name, forcing name: %s\n", name);
-	}
+	(void) fprintf(stderr, "\nWarning: in warn(): called with NULL name, forcing name: %s\n", name);
     }
     if (fmt == NULL) {
 	fmt = "((NULL fmt))";
-	if (warn_output_allowed == true) {
-	    (void) fprintf(stderr, "\nWarning: in warn(): called with NULL fmt, forcing fmt: %s\n", fmt);
-	}
+	(void) fprintf(stderr, "\nWarning: in warn(): called with NULL fmt, forcing fmt: %s\n", fmt);
     }
 
     /*
      * issue the warning, if allowed
      */
-    if (warn_output_allowed) {
-	errno = 0;
-	ret = fprintf(stderr, "Warning: %s: ", name);
-	if (ret < 0) {
-	    (void) fprintf(stderr, "\nWarning: in warn(%s, %s, ...): fprintf returned error: %s\n", name, fmt, strerror(errno));
-	}
+    errno = 0;
+    ret = fprintf(stderr, "Warning: %s: ", name);
+    if (ret < 0) {
+	(void) fprintf(stderr, "\nWarning: in warn(%s, %s, ...): fprintf returned error: %s\n", name, fmt, strerror(errno));
+    }
 
-	errno = 0;
-	ret = vfprintf(stderr, fmt, ap);
-	if (ret < 0) {
-	    (void) fprintf(stderr, "\nWarning: in warn(%s, %s, ...): vfprintf returned error: %s\n", name, fmt, strerror(errno));
-	}
+    errno = 0;
+    ret = vfprintf(stderr, fmt, ap);
+    if (ret < 0) {
+	(void) fprintf(stderr, "\nWarning: in warn(%s, %s, ...): vfprintf returned error: %s\n", name, fmt, strerror(errno));
+    }
 
-	errno = 0;
-	ret = fprintf(stderr, "errno[%d]: %s\n", saved_errno, strerror(saved_errno));
-	if (ret < 0) {
-	    (void) fprintf(stderr, "\nWarning: in warn(%s, %s, ...): fprintf with errno returned error: %s\n", name, fmt, strerror(errno));
-	}
+    errno = 0;
+    ret = fprintf(stderr, "errno[%d]: %s\n", saved_errno, strerror(saved_errno));
+    if (ret < 0) {
+	(void) fprintf(stderr, "\nWarning: in warn(%s, %s, ...): fprintf with errno returned error: %s\n", name, fmt, strerror(errno));
+    }
 
-	errno = 0;
-	ret = fflush(stderr);
-	if (ret < 0) {
-	    (void) fprintf(stderr, "\nWarning: in warn(%s, %s, ...): fflush returned error: %s\n", name, fmt, strerror(errno));
-	}
+    errno = 0;
+    ret = fflush(stderr);
+    if (ret < 0) {
+	(void) fprintf(stderr, "\nWarning: in warn(%s, %s, ...): fflush returned error: %s\n", name, fmt, strerror(errno));
     }
 
     /*
