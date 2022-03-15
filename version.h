@@ -93,7 +93,7 @@
  *
  * The following is NOT the version of this mkiocccentry tool!
  */
-#define AUTHOR_VERSION "1.11 2022-02-23"	/* format: major.minor YYYY-MM-DD */
+#define AUTHOR_VERSION "1.12 2022-03-15"	/* format: major.minor YYYY-MM-DD */
 
 
 /*
