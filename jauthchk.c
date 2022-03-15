@@ -1080,7 +1080,7 @@ main(int argc, char **argv)
 	errno = 0;			/* pre-clear errno for errp() */
 	ret = printf("Welcome to jauthchk version: %s\n", JAUTHCHK_VERSION);
 	if (ret <= 0) {
-	    errp(4, __func__, "printf error printing the welcome string");
+	    errp(37, __func__, "printf error printing the welcome string");
 	    not_reached();
 	}
     }

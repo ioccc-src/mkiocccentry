@@ -383,6 +383,7 @@ check_info_json(char const *file, char const *fnamchk)
 		not_reached();
 	    }
 
+
 	    /*
 	     * Add the manifest field to the found_info_json_fields list: it can
 	     * have an empty value as all we care about is that it's been seen;
@@ -1621,7 +1622,7 @@ main(int argc, char **argv)
 	errno = 0;			/* pre-clear errno for errp() */
 	ret = printf("Welcome to jinfochk version: %s\n", JINFOCHK_VERSION);
 	if (ret <= 0) {
-	    errp(4, __func__, "printf error printing the welcome string");
+	    errp(51, __func__, "printf error printing the welcome string");
 	    not_reached();
 	}
 

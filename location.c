@@ -462,11 +462,11 @@ check_location_table(void)
 	++i;
 
     if (max - 1 != i) {
-	err(333, __func__, "found embedded NULL element in location table");
+	err(333, __func__, "found embedded NULL element in location table; fix table in location.c and recompile");
 	not_reached();
     }
     if (loc[i].code != NULL || loc[i].name != NULL) {
-	err(10, __func__, "no final NULL element found in location table");
+	err(10, __func__, "no final NULL element found in location table.c; fix table in location.c and recompile");
 	not_reached();
     }
 }
