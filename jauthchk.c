@@ -702,8 +702,8 @@ check_author_json(char const *file, char const *fnamchk)
 	    }
 
 	    /* handle regular field */
-	    if (get_common_json_field(program_basename, file, p, val_esc, line_num)) {
-	    } else if (get_author_json_field(file, p, val_esc, line_num)) {
+	    if (add_common_json_field(program_basename, file, p, val_esc, line_num)) {
+	    } else if (add_author_json_field(file, p, val_esc, line_num)) {
 	    } else {
 		/* this should actually never be reached */
 		warn(__func__, "invalid field found in file %s: '%s'", file, p);
@@ -765,10 +765,10 @@ check_author_json(char const *file, char const *fnamchk)
 
 
 /*
- * get_author_json_field - check field name
+ * add_author_json_field - check field name
  *
- * Check if name is a .info.json field, and check if name is found
- * in the found_author_json list.
+ * Check if name is a .author.json field and if it is add it to the
+ * found_author_json_fields list.
  *
  * given:
  *
@@ -784,7 +784,7 @@ check_author_json(char const *file, char const *fnamchk)
  * NOTE: Does not return on error (NULL pointers).
  */
 int
-get_author_json_field(char const *file, char *name, char *val, int line_num)
+add_author_json_field(char const *file, char *name, char *val, int line_num)
 {
     int ret = 1;	/* return value: 1 ==> known field, 0 ==> not a common field */
     struct json_field *field = NULL; /* the field in the author_json_fields table if found */

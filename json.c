@@ -2241,7 +2241,7 @@ add_found_common_json_field(char const *name, char const *val, int line_num)
 
 
 /*
- * get_common_json_field - add name, if it is common, to the common list
+ * add_common_json_field - add name, if it is common, to the common list
  *
  * This function will determine of a name is common to both the .info.json
  * as well as to .author.json.  If it is, then it will be added to the
@@ -2262,7 +2262,7 @@ add_found_common_json_field(char const *name, char const *val, int line_num)
  * NOTE: Does not return on error (NULL pointers).
  */
 int
-get_common_json_field(char const *program, char const *file, char *name, char *val, int line_num)
+add_common_json_field(char const *program, char const *file, char *name, char *val, int line_num)
 {
     int ret = 1;	/* return value: 1 ==> known field, 0 ==> not a common field */
     struct json_field *field = NULL; /* the field in the common_json_fields table if found */
