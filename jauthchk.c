@@ -1041,9 +1041,14 @@ main(int argc, char **argv)
 	    test = true;
 	    break;
 	case 'W':
-	    /* parse ignore code */
+	    /* parse ignore code
+	     *
+	     * NOTE: Although the JSON warn codes 0 - 999 are 0-padded the warn
+	     * codes are _NOT_ in octal (0 notwithstanding but 0 is reserved)
+	     * and we explicitly parse them as decimal!
+	     */
 	    errno = 0;
-	    code = (int)strtol(optarg, NULL, 0);
+	    code = (int)strtol(optarg, NULL, 10);
 	    if (errno != 0) {
 		/* exit(1); */
 		err(1, __func__, "cannot parse -W arg: %s error: %s", optarg, strerror(errno)); /*ooo*/

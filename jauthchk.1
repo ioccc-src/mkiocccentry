@@ -35,6 +35,7 @@ Don't show welcome messages etc. (primarily used with \fBmkiocccentry\fP).
 \fB\-W code\fP
 Add code to the list of JSON codes to ignore.
 To ignore more than one JSON code, use multiple \fB\-W code\fP on the command line.
+Note: 0 (which is reserved) notwithstanding the code is in decimal (not octal) despite the fact the codes up through 999 are 0-padded and we explicitly parse the codes as decimal, not octal.
 .PP
 \fB\-w\fP
 Show complete warning information.
