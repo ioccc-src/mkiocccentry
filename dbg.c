@@ -363,9 +363,6 @@ warnp(char const *name, char const *fmt, ...)
 	(void) fprintf(stderr, "\nWarning: in warn(): called with NULL fmt, forcing fmt: %s\n", fmt);
     }
 
-    /*
-     * issue the warning, if allowed
-     */
     errno = 0;
     ret = fprintf(stderr, "Warning: %s: ", name);
     if (ret < 0) {
@@ -528,17 +525,17 @@ errp(int exitcode, char const *name, char const *fmt, ...)
 
     /* firewall */
     if (exitcode < 0) {
-	warn(__func__, "\nin err(): called with exitcode <0: %d\n", exitcode);
+	warn(__func__, "\nin errp(): called with exitcode <0: %d\n", exitcode);
 	exitcode = 255;
-	warn(__func__, "\nin err(): forcing exit code: %d\n", exitcode);
+	warn(__func__, "\nin errp(): forcing exit code: %d\n", exitcode);
     }
     if (name == NULL) {
 	name = "((NULL name))";
-	warn(__func__, "\nin err(): called with NULL name, forcing name: %s\n", name);
+	warn(__func__, "\nin errp(): called with NULL name, forcing name: %s\n", name);
     }
     if (fmt == NULL) {
 	fmt = "((NULL fmt))";
-	warn(__func__, "\nin err(): called with NULL fmt, forcing fmt: %s\n", fmt);
+	warn(__func__, "\nin errp(): called with NULL fmt, forcing fmt: %s\n", fmt);
     }
 
     /*
@@ -548,31 +545,31 @@ errp(int exitcode, char const *name, char const *fmt, ...)
 	errno = 0;
 	ret = fprintf(stderr, "FATAL[%d]: %s: ", exitcode, name);
 	if (ret < 0) {
-	    warn(__func__, "\nin err(%d, %s, %s, ...): fprintf #0 returned error: %s\n", exitcode, name, fmt, strerror(errno));
+	    warn(__func__, "\nin errp(%d, %s, %s, ...): fprintf #0 returned error: %s\n", exitcode, name, fmt, strerror(errno));
 	}
 
 	errno = 0;
 	ret = vfprintf(stderr, fmt, ap);
 	if (ret < 0) {
-	    warn(__func__, "\nin err(%d, %s, %s, ...): vfprintf returned error: %s\n", exitcode, name, fmt, strerror(errno));
+	    warn(__func__, "\nin errp(%d, %s, %s, ...): vfprintf returned error: %s\n", exitcode, name, fmt, strerror(errno));
 	}
 
 	errno = 0;
 	ret = fprintf(stderr, " errno[%d]: %s", saved_errno, strerror(saved_errno));
 	if (ret < 0) {
-	    warn(__func__, "\nin err(%d, %s, %s, ...): fprintf #1  returned error: %s\n", exitcode, name, fmt, strerror(errno));
+	    warn(__func__, "\nin errp(%d, %s, %s, ...): fprintf #1  returned error: %s\n", exitcode, name, fmt, strerror(errno));
 	}
 
 	errno = 0;
 	ret = fputc('\n', stderr);
 	if (ret != '\n') {
-	    warn(__func__, "\nin err(%d, %s, %s, ...): fputc returned error: %s\n", exitcode, name, fmt, strerror(errno));
+	    warn(__func__, "\nin errp(%d, %s, %s, ...): fputc returned error: %s\n", exitcode, name, fmt, strerror(errno));
 	}
 
 	errno = 0;
 	ret = fflush(stderr);
 	if (ret < 0) {
-	    warn(__func__, "\nin err(%d, %s, %s, ...): fflush returned error: %s\n", exitcode, name, fmt, strerror(errno));
+	    warn(__func__, "\nin errp(%d, %s, %s, ...): fflush returned error: %s\n", exitcode, name, fmt, strerror(errno));
 	}
     }
 

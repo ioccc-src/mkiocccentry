@@ -5,7 +5,7 @@
 # TIP: To easily get a list of warnings and associated notes currently known
 # TIP: try:
 # TIP:
-# TIP:		grep -E '^# program|^{JSON-|^### NOTE:' json.codes
+# TIP:		grep -E '^# program|^{JSON-|^### NOTE:' json_warn.codes
 # TIP:
 # TIP: If the format changes I will do my best to update the above tip as well
 # TIP: but as of 14 March 2022 it works fine. However the most important line is
@@ -14,7 +14,7 @@
 #
 # TIP: To get a list of any hints try:
 # TIP:
-# TIP:		grep '^# TIP:' json.codes
+# TIP:		grep '^# TIP:' json_warn.codes
 #
 #
 # The format as of 14 March 2022 is:
