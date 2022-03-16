@@ -669,7 +669,7 @@ add_author_json_field(char const *file, char *name, char *val, int line_num)
 
 
 /*
- * check_found_author_json_fields - found_author_json_fields table value check
+ * check_found_author_json_fields - found_author_json_fields table value checks
  *
  * Verify that all the fields in the found_author_json_fields table have
  * values that are valid and that all fields that are required are in the file
@@ -796,6 +796,11 @@ check_found_author_json_fields(char const *file, bool test)
 		    warn(__func__, "IOCCC_author_version != \"%s\" in file %s: \"%s\"", AUTHOR_VERSION, file, val);
 		    ++issues;
 		}
+	    } else if (!strcmp(field->name, "jauthchk_version")) {
+		if (!test && strcmp(val, JAUTHCHK_VERSION)) {
+		    warn(__func__, "jauthchk_version != JAUTHCHK_VERSION \"%s\" in file %s: \"%s\"", JAUTHCHK_VERSION, file, val);
+		    ++issues;
+		}
 	    } else if (!strcmp(field->name, "author_count")) {
 		author_count = string_to_int(val);
 		if (!(author_count > 0 && author_count <= MAX_AUTHORS)) {
@@ -821,7 +826,6 @@ check_found_author_json_fields(char const *file, bool test)
 
     return issues;
 }
-
 
 /*
  * add_found_author_json_field - add field:value to found_author_json_fields list
@@ -870,7 +874,6 @@ add_found_author_json_field(char const *name, char const *val, int line_num)
     author_json_fields[loc].count++;
     author_json_fields[loc].found = true;
 
-
     for (field = found_author_json_fields; field != NULL; field = field->next) {
 	if (field->name && !strcmp(field->name, name)) {
 	    /*
@@ -916,7 +919,6 @@ add_found_author_json_field(char const *name, char const *val, int line_num)
     return field;
 }
 
-
 /*
  * free_found_author_json_fields - free the authors json fields list
  *
@@ -936,7 +938,6 @@ free_found_author_json_fields(void)
 
     found_author_json_fields = NULL;
 }
-
 
 /*
  * usage - print usage to stderr
@@ -990,7 +991,6 @@ main(int argc, char **argv)
     bool fnamchk_flag_used = false;	/* true ==> -F fnamchk used */
     int code;				/* a JSON error code */
     int i;				/* return value of getopt() */
-
 
     /*
      * parse args
@@ -1114,7 +1114,8 @@ main(int argc, char **argv)
     }
 
     /*
-     * XXX - TODO Once the authors array is parsed we have to call free_author_array()
+     * XXX - TODO Once the authors array is parsed we have to call
+     * free_author_array() (maybe: it will depend on how it's done).
      */
 
     if (issues != 0 && !test) {

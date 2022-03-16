@@ -1122,7 +1122,7 @@ free_manifest_files_list(void)
 
 
 /*
- * check_found_info_json_fields - found_info_json_fields table value check
+ * check_found_info_json_fields - found_info_json_fields table value checks
  *
  * Verify that all the fields in the found_info_json_fields table have values
  * that are valid and that all fields that are required are in the file.
@@ -1247,6 +1247,16 @@ check_found_info_json_fields(char const *file, bool test)
 	    if (!strcmp(field->name, "IOCCC_info_version")) {
 		if (!test && strcmp(val, INFO_VERSION)) {
 		    warn(__func__, "IOCCC_info_version != INFO_VERSION \"%s\" in file %s: \"%s\"", INFO_VERSION, file, val);
+		    ++issues;
+		}
+	    } else if (!strcmp(field->name, "jinfochk_version")) {
+		if (!test && strcmp(val, JINFOCHK_VERSION)) {
+		    warn(__func__, "jinfochk_version != JINFOCHK_VERSION \"%s\" in file %s: \"%s\"", JINFOCHK_VERSION, file, val);
+		    ++issues;
+		}
+	    } else if (!strcmp(field->name, "txzchk_version")) {
+		if (!test && strcmp(val, TXZCHK_VERSION)) {
+		    warn(__func__, "txzchk_version != TXZCHK_VERSION \"%s\" in file %s: \"%s\"", TXZCHK_VERSION, file, val);
 		    ++issues;
 		}
 	    } else if (!strcmp(field->name, "iocccsize_version")) {

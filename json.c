@@ -215,9 +215,9 @@ static int hexval[BYTE_VALUES] = {
 
 
 /*
- * JSON error codes to ignore
+ * JSON warn (NOT error) codes to ignore
  *
- * When a tool is given command line argumwents of the form:
+ * When a tool is given command line arguments of the form:
  *
  *	.. -W 123 -W 1345 -W 56 ...
  *
@@ -239,6 +239,7 @@ struct json_field common_json_fields[] =
     { "ioccc_contest",		    NULL, 0, 1, false, JSON_STRING, false, NULL },
     { "ioccc_year",		    NULL, 0, 1, false, JSON_NUMBER, false, NULL },
     { "mkiocccentry_version",	    NULL, 0, 1, false, JSON_STRING, false, NULL },
+    { "fnamchk_version",	    NULL, 0, 1, false, JSON_STRING, false, NULL },
     { "IOCCC_contest_id",	    NULL, 0, 1, false, JSON_STRING, false, NULL },
     { "entry_num",		    NULL, 0, 1, false, JSON_NUMBER, false, NULL },
     { "tarball",		    NULL, 0, 1, false, JSON_STRING, false, NULL },
@@ -262,9 +263,8 @@ size_t SIZEOF_COMMON_JSON_FIELDS_TABLE = TBLLEN(common_json_fields);
 struct json_field info_json_fields[] =
 {
     { "IOCCC_info_version",	NULL, 0, 1, false, JSON_STRING,		false, NULL },
-    { "iocccsize_version",	NULL, 0, 1, false, JSON_STRING,		false, NULL },
     { "jinfochk_version",	NULL, 0, 1, false, JSON_STRING,		false, NULL },
-    { "fnamchk_version",	NULL, 0, 1, false, JSON_STRING,		false, NULL },
+    { "iocccsize_version",	NULL, 0, 1, false, JSON_STRING,		false, NULL },
     { "txzchk_version",		NULL, 0, 1, false, JSON_STRING,		false, NULL },
     { "title",			NULL, 0, 1, false, JSON_STRING,		false, NULL },
     { "abstract",		NULL, 0, 1, false, JSON_STRING,		false, NULL },
@@ -304,7 +304,10 @@ size_t SIZEOF_INFO_JSON_FIELDS_TABLE = TBLLEN(info_json_fields);
  *
  * XXX - As of 4 March 2022 all fields are in the table but because arrays
  * are not yet parsed not all of these values will be dealt with: that is they
- * won't be checked.
+ * won't be checked. Additionally as of some days back (it's now 16 March 2022)
+ * it was decided that a more general JSON parser should be implemented via
+ * flex(1) and bison(1) so the parsers in jinfochk.c and jauthchk.c will be
+ * removed and a single parser will be made (probably in this file).
  */
 struct json_field author_json_fields[] =
 {
@@ -2675,7 +2678,7 @@ add_common_json_field(char const *program, char const *file, char *name, char *v
 
 
 /*
- * check_found_common_json_fields - found_common_json_fields table check
+ * check_found_common_json_fields - found_common_json_fields table checks
  *
  * The found_common_json_fields table will be checked to determine if
  * all fields have a valid value. It also checks that the expected fields are in
@@ -2793,8 +2796,6 @@ check_found_common_json_fields(char const *program, char const *file, char const
 			continue;
 		    }
 		    break;
-		case JSON_ARRAY_BOOL:
-		    break; /* arrays are not handled yet */
 		case JSON_NUMBER:
 		    if (!is_number(val)) {
 			warn(__func__, "number field '%s' has non-number value in file %s: '%s'", common_field->name, file, val);
@@ -2802,8 +2803,9 @@ check_found_common_json_fields(char const *program, char const *file, char const
 			continue;
 		    }
 		    break;
-		case JSON_ARRAY_NUMBER:
-		    break; /* arrays are not handled yet */
+		case JSON_ARRAY_BOOL: /* there aren't any arrays common to both .info.json and .author.json */
+		case JSON_ARRAY_NUMBER: /* there aren't any arrays common to both .info.json and .author.json */
+		case JSON_ARRAY_STRING: /* there aren't any arrays common to both .info.json and .author.json */
 		default:
 		    break;
 	    }
@@ -2822,6 +2824,11 @@ check_found_common_json_fields(char const *program, char const *file, char const
 	    } else if (!strcmp(field->name, "mkiocccentry_version")) {
 		if (!test && strcmp(val, MKIOCCCENTRY_VERSION)) {
 		    warn(__func__, "mkiocccentry_version != MKIOCCCENTRY_VERSION \"%s\" in file %s: \"%s\"", MKIOCCCENTRY_VERSION, file, val);
+		    ++issues;
+		}
+	    } else if (!strcmp(field->name, "fnamchk_version")) {
+		if (!test && strcmp(val, FNAMCHK_VERSION)) {
+		    warn(__func__, "fnamchk_version != FNAMCHK_VERSION \"%s\" in file %s: \"%s\"", FNAMCHK_VERSION, file, val);
 		    ++issues;
 		}
 	    } else if (!strcmp(field->name, "IOCCC_contest_id")) {
@@ -3330,7 +3337,7 @@ free_info(struct info *infop)
 
 
 /*
- * free_author_array - free storage related to a struct author
+ * free_author_array - free storage related to a struct author *
  *
  * given:
  *      author_set      - pointer to a struct author array
