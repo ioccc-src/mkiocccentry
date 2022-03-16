@@ -43,9 +43,9 @@ export USAGE="usage: $0 [-h] [-v level] [-d test_dir] [-i limit_ioccc.sh.sh]
     -Q            Do not double quite string (def: add double quotes around old_ver and new_ver when making changes)
 
     -n            No op: change no files (def: change files)
-    -l            List files that change/will change (def: don not list)
+    -l            List files that change/will change (def: do not list)
                      NOTE: Useful with -n to show what would change
-    -L            List files that do not/will not change (def: don not list)
+    -L            List files that do not/will not change (def: do not list)
                      NOTE: Useful with -n to show what will not change
 
     old_ver       Old version string to change from

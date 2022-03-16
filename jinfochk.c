@@ -314,7 +314,7 @@ check_info_json(char const *file, char const *fnamchk)
 	    ++p;
 	} else {
 	    /* if no '"' there's a problem */
-	    jwarn(JSON_CODE_RESERVED(2), program, __func__, file, NULL, line_num, "found no leading '\"' for field '%s': '%c'", p, *p);
+	    warn(__func__, "found no leading '\"' for field '%s' in file %s line number %d: '%c'", p, file, line_num, *p);
 	    ++issues;
 	}
 
@@ -332,7 +332,7 @@ check_info_json(char const *file, char const *fnamchk)
 	    *end = '\0';
 	} else {
 	    /* if no trailing '"' there's also a problem */
-	    jwarn(JSON_CODE_RESERVED(3), program, __func__, file, NULL, line_num, "found no trailing '\"' in field '%s': '%c'", p, *p);
+	    warn(__func__, "found no trailing '\"' for field '%s' in file %s line number %d: '%c'", p, file, line_num, *p);
 	    ++issues;
 	}
 
@@ -941,13 +941,13 @@ add_found_info_json_field(char const *name, char const *val, int line_num)
      * firewall
      */
     if (name == NULL || val == NULL) {
-	err(33, __func__, "passed NULL arg(s)");
+	jerr(JSON_CODE_RESERVED(6), NULL, __func__, __FILE__, NULL, __LINE__, "passed NULL arg(s)");
 	not_reached();
     }
 
     field_in_table = find_json_field_in_table(info_json_fields, name, &loc);
     if (field_in_table == NULL) {
-	err(34, __func__, "called add_found_info_json_field() on field '%s' not specific to .info.json", name);
+	err(33, __func__, "called add_found_info_json_field() on field '%s' not specific to .info.json", name);
 	not_reached();
     }
     /*
@@ -969,7 +969,7 @@ add_found_info_json_field(char const *name, char const *val, int line_num)
 		 * this shouldn't happen as if add_json_value() gets an error
 		 * it'll abort but just to be safe we check here too
 		 */
-		err(35, __func__, "error adding json value '%s' to field '%s'", val, field->name);
+		jerr(JSON_CODE_RESERVED(7), NULL, __func__, __FILE__, NULL, __LINE__, "couldn't add value '%s' to field '%s'", val, field->name);
 		not_reached();
 	    }
 
@@ -989,7 +989,7 @@ add_found_info_json_field(char const *name, char const *val, int line_num)
 	 * we should never get here because if new_json_field gets NULL it
 	 * aborts the program.
 	 */
-	err(36, __func__, "error creating new struct json_field * for field '%s' value '%s'", name, val);
+	jerr(JSON_CODE_RESERVED(8), NULL, __func__, __FILE__, NULL, __LINE__, "error creating new struct json_field * for field '%s' value '%s'", name, val);
 	not_reached();
     }
 
@@ -1046,7 +1046,7 @@ add_manifest_file(char const *filename)
     errno = 0;
     manifest_file = calloc(1, sizeof *manifest_file);
     if (manifest_file == NULL) {
-	err(37, __func__, "calloc() error allocating struct manifest_file * for filename %s", filename);
+	err(34, __func__, "calloc() error allocating struct manifest_file * for filename %s", filename);
 	not_reached();
     }
 
@@ -1054,7 +1054,7 @@ add_manifest_file(char const *filename)
     errno = 0;
     manifest_file->filename = strdup(filename);
     if (manifest_file->filename == NULL) {
-	err(38, __func__, "strdup() error on filename %s", filename);
+	err(35, __func__, "strdup() error on filename %s", filename);
 	not_reached();
     }
 
@@ -1088,7 +1088,7 @@ free_manifest_file(struct manifest_file *file)
      * firewall
      */
     if (file == NULL) {
-	err(39, __func__, "passed NULL file");
+	err(36, __func__, "passed NULL file");
 	not_reached();
     }
 
@@ -1122,7 +1122,7 @@ free_manifest_files_list(void)
 
 
 /*
- * check_found_info_json_fields - found_info_json_fields table value check
+ * check_found_info_json_fields - found_info_json_fields table value checks
  *
  * Verify that all the fields in the found_info_json_fields table have values
  * that are valid and that all fields that are required are in the file.
@@ -1152,7 +1152,7 @@ check_found_info_json_fields(char const *file, bool test)
      * firewall
      */
     if (file == NULL) {
-	err(40, __func__, "passed NULL file");
+	err(37, __func__, "passed NULL file");
 	not_reached();
     }
 
@@ -1161,7 +1161,7 @@ check_found_info_json_fields(char const *file, bool test)
 	 * first make sure the name != NULL and strlen() > 0
 	 */
 	if (field->name == NULL || strlen(field->name) <= 0) {
-	    err(41, __func__, "found NULL or empty field in found_info_json_fields list");
+	    jerr(JSON_CODE_RESERVED(9), NULL, __func__, __FILE__, NULL, __LINE__, "found NULL or empty field in found_info_json_fields list");
 	    not_reached();
 	}
 
@@ -1176,7 +1176,7 @@ check_found_info_json_fields(char const *file, bool test)
 	 * info list is not a info field name.
 	 */
 	if (info_field == NULL) {
-	    err(42, __func__, "illegal field name '%s' in found_info_json_fields list", field->name);
+	    err(38, __func__, "illegal field name '%s' in found_info_json_fields list", field->name);
 	    not_reached();
 	}
 
@@ -1185,7 +1185,7 @@ check_found_info_json_fields(char const *file, bool test)
 	    char *val = value->value;
 
 	    if (val == NULL) {
-		err(43, __func__, "NULL pointer val for field '%s' in file %s", field->name, file);
+		err(39, __func__, "NULL pointer val for field '%s' in file %s", field->name, file);
 		not_reached();
 	    }
 
@@ -1196,7 +1196,7 @@ check_found_info_json_fields(char const *file, bool test)
 		 * manifest has an empty value in a sense so we only do this for
 		 * fields that aren't manifest.
 		 */
-		err(44, __func__, "empty value found for field '%s' in file %s", field->name, file);
+		err(40, __func__, "empty value found for field '%s' in file %s", field->name, file);
 		not_reached();
 	    }
 
@@ -1249,6 +1249,16 @@ check_found_info_json_fields(char const *file, bool test)
 		    warn(__func__, "IOCCC_info_version != INFO_VERSION \"%s\" in file %s: \"%s\"", INFO_VERSION, file, val);
 		    ++issues;
 		}
+	    } else if (!strcmp(field->name, "jinfochk_version")) {
+		if (!test && strcmp(val, JINFOCHK_VERSION)) {
+		    warn(__func__, "jinfochk_version != JINFOCHK_VERSION \"%s\" in file %s: \"%s\"", JINFOCHK_VERSION, file, val);
+		    ++issues;
+		}
+	    } else if (!strcmp(field->name, "txzchk_version")) {
+		if (!test && strcmp(val, TXZCHK_VERSION)) {
+		    warn(__func__, "txzchk_version != TXZCHK_VERSION \"%s\" in file %s: \"%s\"", TXZCHK_VERSION, file, val);
+		    ++issues;
+		}
 	    } else if (!strcmp(field->name, "iocccsize_version")) {
 		if (!test && strcmp(val, IOCCCSIZE_VERSION)) {
 		    warn(__func__, "iocccsize_version != IOCCCSIZE_VERSION \"%s\" in file %s: \"%s\"", IOCCCSIZE_VERSION, file, val);
@@ -1286,7 +1296,7 @@ check_found_info_json_fields(char const *file, bool test)
 		}
 		manifest_file = add_manifest_file(val);
 		if (manifest_file == NULL) {
-		    err(45, __func__, "couldn't add info_JSON file '%s'", val);
+		    err(41, __func__, "couldn't add info_JSON file '%s'", val);
 		    not_reached();
 		}
 	    } else if (!strcmp(field->name, "author_JSON")) {
@@ -1296,7 +1306,7 @@ check_found_info_json_fields(char const *file, bool test)
 		}
 		manifest_file = add_manifest_file(val);
 		if (manifest_file == NULL) {
-		    err(46, __func__, "couldn't add author_JSON file '%s'", val);
+		    err(42, __func__, "couldn't add author_JSON file '%s'", val);
 		    not_reached();
 		}
 	    } else if (!strcmp(field->name, "c_src")) {
@@ -1306,7 +1316,7 @@ check_found_info_json_fields(char const *file, bool test)
 		}
 		manifest_file = add_manifest_file(val);
 		if (manifest_file == NULL) {
-		    err(47, __func__, "couldn't add c_src file '%s'", val);
+		    err(43, __func__, "couldn't add c_src file '%s'", val);
 		    not_reached();
 		}
 	    } else if (!strcmp(field->name, "Makefile")) {
@@ -1316,7 +1326,7 @@ check_found_info_json_fields(char const *file, bool test)
 		}
 		manifest_file = add_manifest_file(val);
 		if (manifest_file == NULL) {
-		    err(48, __func__, "couldn't add Makefile file '%s'", val);
+		    err(44, __func__, "couldn't add Makefile file '%s'", val);
 		    not_reached();
 		}
 	    } else if (!strcmp(field->name, "remarks")) {
@@ -1326,7 +1336,7 @@ check_found_info_json_fields(char const *file, bool test)
 		}
 		manifest_file = add_manifest_file(val);
 		if (manifest_file == NULL) {
-		    err(49, __func__, "couldn't add remarks file '%s'", val);
+		    err(45, __func__, "couldn't add remarks file '%s'", val);
 		    not_reached();
 		}
 	    } else if (!strcmp(field->name, "extra_file")) {
@@ -1343,7 +1353,7 @@ check_found_info_json_fields(char const *file, bool test)
 		}
 		manifest_file = add_manifest_file(val);
 		if (manifest_file == NULL) {
-		    err(50, __func__, "couldn't add extra_file file '%s' in file %s", val, file);
+		    err(46, __func__, "couldn't add extra_file file '%s' in file %s", val, file);
 		    not_reached();
 		}
 	    } else if (!strcmp(field->name, "rule_2a_size")) {
@@ -1628,7 +1638,7 @@ main(int argc, char **argv)
 	errno = 0;			/* pre-clear errno for errp() */
 	ret = printf("Welcome to jinfochk version: %s\n", JINFOCHK_VERSION);
 	if (ret <= 0) {
-	    errp(51, __func__, "printf error printing the welcome string");
+	    errp(47, __func__, "printf error printing the welcome string");
 	    not_reached();
 	}
 

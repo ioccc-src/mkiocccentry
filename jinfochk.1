@@ -1,4 +1,4 @@
-.TH jinfochk 1 "14 February 2022" "jinfochk" "IOCCC tools"
+.TH jinfochk 1 "16 March 2022" "jinfochk" "IOCCC tools"
 .SH NAME
 jinfochk \- IOCCC tool to validate .info.json file found within an entry directory
 .SH SYNOPSIS
@@ -34,7 +34,7 @@ Don't show welcome messages etc. (primarily used with \fBmkiocccentry\fP).
 \fB\-W code\fP
 Add code to the list of JSON codes to ignore.
 To ignore more than one JSON code, use multiple \fB\-W code\fP on the command line.
-Note: 0 (which is reserved) notwithstanding the code is in decimal (not octal) despite the fact the codes up through 999 are 0-padded and we explicitly parse the codes as decimal, not octal.
+Note: 0 (which is reserved) notwithstanding the code is in decimal (not octal) despite the fact the codes up through 999 are 0-padded; we explicitly parse the codes as decimal, not octal.
 .PP
 \fB\-w\fP
 Show complete warning information.
@@ -62,9 +62,7 @@ Source file with JSON data and function definitions.
 .RE
 .SH BUGS
 .PP
-Cody Boone Ferguson wrote it! :)
-.PP
-On a more serious note, if you have an issue with the tool you can report it at \fI\<https://github.com/ioccc-src/mkiocccentry/issues\>\fP.
+This tool is not yet finished so expect issues with it.
 .SH EXAMPLES
 .PP
 .nf

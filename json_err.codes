@@ -46,12 +46,13 @@
 # have a lot on my mind (I almost always do) or some other reason. Sorry about
 # this!
 #
-# NOTE: As of 15 March 2022 the reserved JSON codes are from 0 - 99 and the only
-# use right now is for errors that are triggered when parsing the files and also
-# verifying the json tables are sane. Thus the first error when verifying a file
-# (after parsing) is JSON-0100.
+# NOTE: As of 16 March 2022 the reserved JSON codes are from 0 - 99 and the only
+# use right now is for errors that are triggered when verifying that the JSON
+# tables are sane and for shared errors across json.c, jinfochk.c and jauthchk.c
+# (where the message is the same except for different filename and function
+# names).
 #
-# NOTE: Despite the fact codes 0 - 999 are 0-padded the numbers are not octal (0
+# NOTE: Despite the fact codes 0 - 999 are 0-padded the numbers are NOT octal (0
 # notwithstanding) but decimal and we explicitly parse the codes as decimal!
 #
 # NOTE: If it's still not obvious this file is very very much a work in
@@ -59,9 +60,8 @@
 
 
 ###
-### JSON ERROR CODES BELOW (LAST UPDATED: 14 MARCH 2022)
+### JSON ERROR CODES BELOW (LAST UPDATED: 16 MARCH 2022)
 ###
-
 
 # program: jchk check_common_json_fields_table
 JSON[0001]: json.c: %d: found JSON_NULL element with non NULL name '%s' location %ju in common_json_fields table; fix table and recompile
@@ -75,6 +75,27 @@ JSON[0003]: json.c: %d: found embedded NULL element in (common|info|author)_json
 # program: jchk check_common_json_fields_table
 JSON[0004]: json.c: %d: no final NULL element found in (common|info|author)_json_fields table; fix table and recompile
 
+# program: jchk find_json_field_in_table
+JSON[0005]: json.c: %d: passed NULL table
+### NOTE: The line number here is in the function find_json_field_in_table()
+### NOTE: itself and not the calling function. This is not that helpful but
+### NOTE: based on the tool being used it shouldn't be hard to determine which
+### NOTE: which table should have been passed in: in
+### NOTE: add_found_(author|common|info)_json_field() it should be the
+### NOTE: (author|common|info)_json_fields and this should actually never
+### NOTE: happen.
+
+# program: jchk add_found_(author|common|info)_json_field
+JSON[0006]: (jauthchk|json|jinfochk).c: %d: passed NULL arg(s)
+
+# program: jchk add_found_(author|common|info)_json_field
+JSON[0007]: (jauthchk|json|jinfochk).c: %d: couldn't add value '%s' to field '%s'
+
+# program: jchk add_found_(author|common|info)_json_field
+JSON[0008]: (jauthchk|json|jinfochk).c: %d: error creating new struct json_field * for field '%s' value '%s'
+
+# program: jchk check_found_(author|common|info)_json_fields
+JSON[0009]: (jauthchk|json|jinfochk).c: %d: found NULL or empty field in found_(author|common|info)_json_fields list
 
 ###
 ### JSON ERROR CODES ABOVE

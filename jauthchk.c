@@ -317,7 +317,7 @@ check_author_json(char const *file, char const *fnamchk)
 	    ++p;
 	} else {
 	    /* if no '"' there's a problem */
-	    jwarn(JSON_CODE_RESERVED(2), program, __func__, file, NULL, line_num, "found no leading '\"' for field '%s': '%c'", p, *p);
+	    warn(__func__, "found no leading '\"' for field '%s' in file %s line number %d: '%c'", p, file, line_num, *p);
 	    ++issues;
 	}
 
@@ -335,7 +335,7 @@ check_author_json(char const *file, char const *fnamchk)
 	    *end = '\0';
 	} else {
 	    /* if no trailing '"' there's also a problem */
-	    jwarn(JSON_CODE_RESERVED(3), program, __func__, file, NULL, line_num, "found no trailing '\"' in field '%s': '%c'", p, *p);
+	    warn(__func__, "found no trailing '\"' for field '%s' in file %s line number %d: '%c'", p, file, line_num, *p);
 	    ++issues;
 	}
 
@@ -669,7 +669,7 @@ add_author_json_field(char const *file, char *name, char *val, int line_num)
 
 
 /*
- * check_found_author_json_fields - found_author_json_fields table value check
+ * check_found_author_json_fields - found_author_json_fields table value checks
  *
  * Verify that all the fields in the found_author_json_fields table have
  * values that are valid and that all fields that are required are in the file
@@ -710,7 +710,7 @@ check_found_author_json_fields(char const *file, bool test)
 	 * first make sure the name != NULL and strlen() > 0
 	 */
 	if (field->name == NULL || strlen(field->name) <= 0) {
-	    err(30, __func__, "found NULL or empty field in found_author_json_fields list");
+	    jerr(JSON_CODE_RESERVED(9), NULL, __func__, __FILE__, NULL, __LINE__, "found NULL or empty field in found_author_json_fields list");
 	    not_reached();
 	}
 
@@ -725,7 +725,7 @@ check_found_author_json_fields(char const *file, bool test)
 	 * author list is not a author field name.
 	 */
 	if (author_field == NULL) {
-	    err(31, __func__, "illegal field name '%s' in found_author_json_fields list", field->name);
+	    err(30, __func__, "illegal field name '%s' in found_author_json_fields list", field->name);
 	    not_reached();
 	}
 
@@ -734,7 +734,7 @@ check_found_author_json_fields(char const *file, bool test)
 	    char *val = value->value;
 
 	    if (val == NULL) {
-		err(32, __func__, "NULL pointer val for field '%s' in file %s", field->name, file);
+		err(31, __func__, "NULL pointer val for field '%s' in file %s", field->name, file);
 		not_reached();
 	    }
 
@@ -796,6 +796,11 @@ check_found_author_json_fields(char const *file, bool test)
 		    warn(__func__, "IOCCC_author_version != \"%s\" in file %s: \"%s\"", AUTHOR_VERSION, file, val);
 		    ++issues;
 		}
+	    } else if (!strcmp(field->name, "jauthchk_version")) {
+		if (!test && strcmp(val, JAUTHCHK_VERSION)) {
+		    warn(__func__, "jauthchk_version != JAUTHCHK_VERSION \"%s\" in file %s: \"%s\"", JAUTHCHK_VERSION, file, val);
+		    ++issues;
+		}
 	    } else if (!strcmp(field->name, "author_count")) {
 		author_count = string_to_int(val);
 		if (!(author_count > 0 && author_count <= MAX_AUTHORS)) {
@@ -821,7 +826,6 @@ check_found_author_json_fields(char const *file, bool test)
 
     return issues;
 }
-
 
 /*
  * add_found_author_json_field - add field:value to found_author_json_fields list
@@ -854,13 +858,13 @@ add_found_author_json_field(char const *name, char const *val, int line_num)
      * firewall
      */
     if (name == NULL || val == NULL) {
-	err(33, __func__, "passed NULL arg(s)");
+	jerr(JSON_CODE_RESERVED(6), NULL, __func__, __FILE__, NULL, __LINE__, "passed NULL arg(s)");
 	not_reached();
     }
 
     field_in_table = find_json_field_in_table(author_json_fields, name, &loc);
     if (field_in_table == NULL) {
-	err(34, __func__, "called add_found_author_json_field() on field '%s' not specific to .author.json", name);
+	err(32, __func__, "called add_found_author_json_field() on field '%s' not specific to .author.json", name);
 	not_reached();
     }
     /*
@@ -869,7 +873,6 @@ add_found_author_json_field(char const *name, char const *val, int line_num)
      */
     author_json_fields[loc].count++;
     author_json_fields[loc].found = true;
-
 
     for (field = found_author_json_fields; field != NULL; field = field->next) {
 	if (field->name && !strcmp(field->name, name)) {
@@ -883,7 +886,7 @@ add_found_author_json_field(char const *name, char const *val, int line_num)
 		 * this shouldn't happen as if add_json_value() gets an error
 		 * it'll abort but just to be safe we check here too
 		 */
-		err(35, __func__, "error adding json value '%s' to field '%s'", val, field->name);
+		jerr(JSON_CODE_RESERVED(7), NULL, __func__, __FILE__, NULL, __LINE__, "couldn't add value '%s' to field '%s'", val, field->name);
 		not_reached();
 	    }
 
@@ -903,7 +906,7 @@ add_found_author_json_field(char const *name, char const *val, int line_num)
 	 * we should never get here because if new_json_field gets NULL it
 	 * aborts the program.
 	 */
-	err(36, __func__, "error creating new struct json_field * for field '%s' value '%s'", name, val);
+	jerr(JSON_CODE_RESERVED(8), NULL, __func__, __FILE__, NULL, __LINE__, "error creating new struct json_field * for field '%s' value '%s'", name, val);
 	not_reached();
     }
 
@@ -915,7 +918,6 @@ add_found_author_json_field(char const *name, char const *val, int line_num)
 
     return field;
 }
-
 
 /*
  * free_found_author_json_fields - free the authors json fields list
@@ -936,7 +938,6 @@ free_found_author_json_fields(void)
 
     found_author_json_fields = NULL;
 }
-
 
 /*
  * usage - print usage to stderr
@@ -990,7 +991,6 @@ main(int argc, char **argv)
     bool fnamchk_flag_used = false;	/* true ==> -F fnamchk used */
     int code;				/* a JSON error code */
     int i;				/* return value of getopt() */
-
 
     /*
      * parse args
@@ -1085,7 +1085,7 @@ main(int argc, char **argv)
 	errno = 0;			/* pre-clear errno for errp() */
 	ret = printf("Welcome to jauthchk version: %s\n", JAUTHCHK_VERSION);
 	if (ret <= 0) {
-	    errp(37, __func__, "printf error printing the welcome string");
+	    errp(33, __func__, "printf error printing the welcome string");
 	    not_reached();
 	}
     }
@@ -1114,7 +1114,8 @@ main(int argc, char **argv)
     }
 
     /*
-     * XXX - TODO Once the authors array is parsed we have to call free_author_array()
+     * XXX - TODO Once the authors array is parsed we have to call
+     * free_author_array() (maybe: it will depend on how it's done).
      */
 
     if (issues != 0 && !test) {

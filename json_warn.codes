@@ -49,9 +49,12 @@
 # have a lot on my mind (I almost always do) or some other reason. Sorry about
 # this!
 #
-# NOTE: As of 14 March 2022 the reserved JSON codes are from 0 - 99 and the only
-# use right now is for warnings that are triggered when parsing the files. Thus
-# the first warning when verifying a file (after parsing) is JSON-0100.
+# NOTE: As of 16 March 2022 the reserved JSON codes are from 0 - 99 and the only
+# use right now is for invalid fields (which will possibly become an error and if
+# that happens the code will probably be scrapped or a new use for it will be
+# found). The first warning code that's not reserved (and the only one that
+# exists right now) is JSON-0100 and it is when a field is found more times than
+# it is allowed to exist.
 #
 # NOTE: Despite the fact codes 0 - 999 are 0-padded the numbers are not octal (0
 # notwithstanding) but decimal and we explicitly parse the codes as decimal!
@@ -67,11 +70,6 @@
 # program: jchk check_(info|author)_json
 {JSON-0001}: test_work/test-0/.info.json: 1: invalid field
 
-# program: jchk check_(info|author)_json
-{JSON-0002}: test_work/test-0/.info.json: 1: found no leading '"' in field
-
-# program: jchk check_(info|author)_json
-{JSON-0003}: test_work/test-0/.info.json: 1: found no trailing '"' in field
 
 # program: jchk check_found_(info|author|common)_json_fields
 {JSON-0100}: test_work/test-0/.info.json: 3: field found %ju times but is only allowed %ju time(s):
