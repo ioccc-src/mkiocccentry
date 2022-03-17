@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 #
-# A simple mkiocccentry test, or an example of how
-# to automate the process!
+# A simple mkiocccentry test, or an example of how to automate the process!
 
 # working locations - adjust as needed
 #
@@ -17,22 +16,87 @@ if [[ ${status} -ne 0 ]]; then
     exit 250
 fi
 
+# firewall
+#
+if [[ ! -d ${work_dir} ]]; then
+    echo "$0: FATAL: work_dir not found: ${work_dir}" 1>&2
+    exit 250
+fi
+if [[ ! -d ${src_dir} ]]; then
+    echo "$0: FATAL: src_dir not found: ${src_dir}" 1>&2
+    exit 250
+fi
+if [[ ! -x ./mkiocccentry ]]; then
+    echo "$0: FATAL: execurable not found: ./mkiocccentry" 1>&2
+    exit 250
+fi
+
 # clean out the work_dir area
 work_dir_esc="${work_dir}"
 test "${work_dir:0:1}" = "-" && work_dir_esc=./"${work_dir}"
 find "${work_dir_esc}" -mindepth 1 -depth -delete
 
-# Form entries that are unlikely to win the IOCCC :-)
-#
-test -f "${src_dir}"/prog.c || {
-cat >"${src_dir}"/prog.c <<"EOF"
-#include <stdio.h>
-int main() { puts("Hello, World!"); }
+# Answers as of mkiocccentry version: v0.40 2022-03-15
+answers() {
+cat <<"EOF"
+test
+0
+title-for-entry0
+abstract for entry #0
+5
+author0 middle0 thisisaveryverylonglastname0
+AU
+user0@example.com
+https://host0.example.com/index.html
+@twitter0
+@github0
+an affiliation for #0 author
+n
+
+author1 middle1a middle1b last1
+UK
+
+
+
+
+
+n
+replaced-author1-handle
+Author2 å∫ç∂´ƒ© LAST2
+US
+user2@example.com
+http://host2.example.com/index.html
+@twitter2
+@github2
+an affiliation for #2 author
+y
+
+author3 middle3 last3
+AU
+user0@example.com
+https://host0.example.com/index.html
+@twitter3
+@github3
+an affiliation for #3 author
+y
+author3-last3
+@#$%^
+AU
+user0@example.com
+https://host0.example.com/index.html
+@twitter4
+@github4
+an affiliation for #4 author
+n
+
+ANSWERS_EOF
 EOF
 }
-rm -f "${src_dir}"/empty.c
-# shellcheck disable=SC2188
-> "${src_dir}"/empty.c
+rm -f answers.txt
+# Retrieve the answers version from mkiocccentry.c and write to answers file:
+grep -E '^#define MKIOCCCENTRY_ANSWERS_VERSION' mkiocccentry.c | cut -d' ' -f3 | sed 's/"//g' >answers.txt
+# Append answers + EOF marker
+answers >>answers.txt
 
 # fake some required files
 #
@@ -41,11 +105,33 @@ test -f "${src_dir}"/remarks.md || cat README.md >"${src_dir}"/remarks.md
 test -f "${src_dir}"/extra1 || echo "123" >"${src_dir}"/extra1
 test -f "${src_dir}"/extra2 || echo "456" >"${src_dir}"/extra2
 
-# Answers as of mkiocccentry version: v0.33 2022-02-03
+# delete the work directory for next test
+find "${work_dir_esc}" -mindepth 1 -depth -delete
+rm -f "${src_dir}"/empty.c
+:> "${src_dir}"/empty.c
+# test empty prog.c, ignoring the warning about it
+yes | ./mkiocccentry -q -W -i answers.txt -- "${work_dir}" "${src_dir}"/{empty.c,Makefile,remarks.md,extra1,extra2}
+status=$?
+if [[ ${status} -ne 0 ]]; then
+    echo "$0: FATAL: mkiocccentry non-zero exit code: $status" 1>&2
+    exit "${status}"
+fi
+rm -f "${src_dir}"/empty.c
+
+# Form entries that are unlikely to win the IOCCC :-)
+#
+test -f "${src_dir}"/prog.c || {
+cat >"${src_dir}"/prog.c <<"EOF"
+#include <stdio.h>
+int main(void) { puts("Hello, World!"); }
+EOF
+}
+
+# Answers as of mkiocccentry version: v0.40 2022-03-15
 answers() {
 cat <<"EOF"
 test
-0
+1
 title-for-entry0
 abstract for entry #0
 5
@@ -112,17 +198,81 @@ if [[ ${status} -ne 0 ]]; then
     exit "${status}"
 fi
 
-# delete the work directory for next test
-find "${work_dir_esc}" -mindepth 1 -depth -delete
-# test empty prog.c, ignoring the warning about it
-yes | ./mkiocccentry -q -W -i answers.txt -- "${work_dir}" "${src_dir}"/{empty.c,Makefile,remarks.md,extra1,extra2}
+# Answers as of mkiocccentry version: v0.40 2022-03-15
+answers() {
+cat <<"EOF"
+12345678-1234-4321-abcd-1234567890ab
+2
+title-for-entry0
+abstract for entry #0
+5
+author0 middle0 thisisaveryverylonglastname0
+AU
+user0@example.com
+https://host0.example.com/index.html
+@twitter0
+@github0
+an affiliation for #0 author
+n
+
+author1 middle1a middle1b last1
+UK
+
+
+
+
+
+n
+replaced-author1-handle
+Author2 å∫ç∂´ƒ© LAST2
+US
+user2@example.com
+http://host2.example.com/index.html
+@twitter2
+@github2
+an affiliation for #2 author
+y
+
+author3 middle3 last3
+AU
+user0@example.com
+https://host0.example.com/index.html
+@twitter3
+@github3
+an affiliation for #3 author
+y
+author3-last3
+@#$%^
+AU
+user0@example.com
+https://host0.example.com/index.html
+@twitter4
+@github4
+an affiliation for #4 author
+n
+
+ANSWERS_EOF
+EOF
+}
+rm -f answers.txt
+# Retrieve the answers version from mkiocccentry.c and write to answers file:
+grep -E '^#define MKIOCCCENTRY_ANSWERS_VERSION' mkiocccentry.c | cut -d' ' -f3 | sed 's/"//g' >answers.txt
+# Append answers + EOF marker
+answers >>answers.txt
+
+# fake a few more files
+#
+test -f "${src_dir}"/foo || cat LICENSE >"${src_dir}"/foo
+test -f "${src_dir}"/bar || cat CODE_OF_CONDUCT.md >"${src_dir}"/bar
+
+# run the test, looking for an exit
+#
+yes | ./mkiocccentry -q -i answers.txt -- "${work_dir}" "${src_dir}"/{prog.c,Makefile,remarks.md,extra1,extra2,foo,bar}
 status=$?
 if [[ ${status} -ne 0 ]]; then
     echo "$0: FATAL: mkiocccentry non-zero exit code: $status" 1>&2
     exit "${status}"
 fi
-
-
 
 # All Done!!! -- Jessica Noll, Age 2
 #
