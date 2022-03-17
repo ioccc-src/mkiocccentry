@@ -71,7 +71,7 @@ struct txz_info {
     bool empty_remarks_md;		    /* true ==> remarks.md size == 0 */
     bool has_Makefile;			    /* true ==> has a Makefile */
     bool empty_Makefile;		    /* true ==> Makefile size == 0 */
-    unsigned invalid_chars;		    /* > 0 ==> invalid characters found in one or more files */
+    unsigned invalid_chars;		    /* > 0 ==> invalid characters found in this number of filenames */
     off_t size;				    /* size of the tarball itself */
     off_t file_sizes;			    /* total size of all the files combined */
     off_t rounded_file_size;		    /* file sizes rounded up to 1024 multiple */
