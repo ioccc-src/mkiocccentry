@@ -27,7 +27,7 @@ if [[ ! -d ${src_dir} ]]; then
     exit 250
 fi
 if [[ ! -x ./mkiocccentry ]]; then
-    echo "$0: FATAL: execurable not found: ./mkiocccentry" 1>&2
+    echo "$0: FATAL: executable not found: ./mkiocccentry" 1>&2
     exit 250
 fi
 
