@@ -461,31 +461,14 @@ check_txz_file(char const *txzpath, char *p, char const *dir_name, struct txz_fi
     }
 
     /*
-     * identify if file is an allowed . file
+     * identify if file is an allowed '.' file
      *
-     * NOTE: Files that are allowed to begin with . must also lower case.
+     * NOTE: Files that are allowed to begin with '.' must also be lower case.
+     * In other words if any of the letters in ".info.json" or ".author.json"
+     * are upper case the file is an invalid dot file.
      */
-    if ((strcmp(file->basename, ".info.json") == 0) || (strcmp(file->basename, ".author.json") == 0)) {
+    if (!strcmp(file->basename, ".info.json") || !strcmp(file->basename, ".author.json")) {
 	allowed_dot_file = true;
-    }
-
-    /*
-     * check for dot files but note that a basename of only '.' also counts as a
-     * filename with just '.': so if the file starts with a '.' and it's not
-     * ".author.json" and not ".info.json" then it's a dot file; if it's ONLY
-     * '.' it counts as BOTH a dot file AND a file called just '.' (which would
-     * likely be a directory but is abuse nonetheless).
-     */
-    if (*(file->basename) == '.' && !allowed_dot_file) {
-	++txz_info.total_issues;
-	warn("txzchk", "%s: found non .author.json and .info.json dot file %s", txzpath, file->basename);
-	txz_info.dot_files++;
-    }
-    /* check for files called '.' without anything after the full stop */
-    if (*(file->basename) == '.' && file->basename[1] == '\0') {
-	++txz_info.total_issues;
-	++txz_info.named_dot;
-	warn("txzchk", "%s: found file called '.' in path %s", txzpath, file->filename);
     }
 
     /*
@@ -499,9 +482,30 @@ check_txz_file(char const *txzpath, char *p, char const *dir_name, struct txz_fi
     }
 
     /*
-     * case: basename is NOT allowed to begin with dot
+     * case: basename is NOT allowed to begin with a dot.
      */
     if (!allowed_dot_file) {
+	/*
+	 * Check for dot files but note that a basename of only '.' also counts
+	 * as a filename with just '.': so if the file starts with a '.' and
+	 * it's not ".author.json" and not ".info.json" then it's an invalid dot
+	 * file; if it's ONLY '.' it counts as BOTH an invalid dot file AND a
+	 * file called just '.' (which would likely be a directory but is abuse
+	 * nonetheless).
+	 */
+	if (*(file->basename) == '.') {
+	    ++txz_info.total_issues;
+	    warn("txzchk", "%s: found non .author.json and .info.json dot file %s", txzpath, file->basename);
+	    txz_info.dot_files++;
+
+	    /* check for files called '.' without anything after the dot */
+	    if (file->basename[1] == '\0') {
+		++txz_info.total_issues;
+		++txz_info.named_dot;
+		warn("txzchk", "%s: found file called '.' in path %s", txzpath, file->filename);
+	    }
+	}
+
 	/*
 	 * basename must use only POSIX portable filename and + chars
 	 */
@@ -538,8 +542,11 @@ check_empty_file(char const *txzpath, off_t size, struct txz_file *file)
      * firewall
      */
 
-    if (txzpath == NULL || file == NULL || file->basename == NULL || file->filename == NULL) {
+    if (txzpath == NULL || file == NULL) {
 	err(14, __func__, "called with NULL arg(s)");
+	not_reached();
+    } else if (file->basename == NULL || file->filename == NULL) {
+	err(15, __func__, "file->basename == NULL || file->filename == NULL which should never happen");
 	not_reached();
     }
 
@@ -584,6 +591,8 @@ check_empty_file(char const *txzpath, off_t size, struct txz_file *file)
  * Returns void. Ignores empty files (though these should not be in the list at
  * all).
  *
+ * Does not return on NULL filenames or basenames (neither of which should ever
+ * happen).
  */
 static void
 check_all_txz_files(char const *dir_name)
@@ -592,7 +601,7 @@ check_all_txz_files(char const *dir_name)
 
     /* report total file size */
     if (txz_info.file_sizes < 0) {
-	err(15, __func__, "%s: total size of all files < 0!", txzpath);
+	err(16, __func__, "%s: total size of all files < 0!", txzpath);
 	not_reached();
     } else if (txz_info.file_sizes == 0) {
 	warn("txzchk", "%s: total size of all files == 0", txzpath);
@@ -600,7 +609,7 @@ check_all_txz_files(char const *dir_name)
     }
     txz_info.rounded_file_size = round_to_multiple(txz_info.file_sizes, 1024);
     if (txz_info.rounded_file_size < 0) {
-	err(16, __func__, "%s: total size of all files rounded up to multiple of 1024 < 0!", txzpath);
+	err(17, __func__, "%s: total size of all files rounded up to multiple of 1024 < 0!", txzpath);
 	not_reached();
     } else if (txz_info.rounded_file_size > MAX_DIR_KSIZE) {
 	warn("txzchk", "%s: total size of files %jd rounded up to multiple of 1024 %jd > %d",
@@ -614,9 +623,17 @@ check_all_txz_files(char const *dir_name)
 
 
     /*
-     * now go through the files list and detect any additional issues
+     * Now go through the files list to verify the required files are there and
+     * also to detect any additional issues.
      */
     for (file = txz_files; file != NULL; file = file->next) {
+	if (file->basename == NULL) {
+	    err(18, __func__, "found NULL file->basename in txz_files list");
+	    not_reached();
+	} else if (file->filename == NULL) {
+	    err(19, __func__, "found NULL file->filename in txz_files list");
+	    not_reached();
+	}
 	if (!strcmp(file->basename, ".info.json")) {
 	    txz_info.has_info_json = true;
 	} else if (!strcmp(file->basename, ".author.json")) {
@@ -669,10 +686,9 @@ check_all_txz_files(char const *dir_name)
 
     /*
      * Report total number of non .author.json and .info.json dot files.
-     * Don't increment the number of issues as this was done when iterating
-     * through the linked list above.
+     * Don't increment the number of issues as this was done in
+     * check_txz_file().
      */
-
     if (txz_info.dot_files > 0) {
 	warn("txzchk", "%s: found a total of %u unacceptable dot file%s", txzpath, txz_info.dot_files, txz_info.dot_files==1?"":"s");
     }
@@ -712,7 +728,7 @@ check_directories(struct txz_file *file, char const *dir_name, char const *txzpa
      * firewall
      */
     if (txzpath == NULL || file == NULL || file->filename == NULL) {
-	err(17, __func__, "passed NULL arg(s)");
+	err(20, __func__, "passed NULL arg(s)");
 	not_reached();
     }
 
@@ -831,7 +847,7 @@ parse_linux_txz_line(char *p, char *linep, char *line_dup, char const *dir_name,
      */
 
     if (p == NULL || linep == NULL || line_dup == NULL || txzpath == NULL || saveptr == NULL) {
-	err(18, __func__, "called with NULL arg(s)");
+	err(21, __func__, "called with NULL arg(s)");
 	not_reached();
     }
 
@@ -935,7 +951,7 @@ parse_bsd_txz_line(char *p, char *linep, char *line_dup, char const *dir_name, c
      */
 
     if (p == NULL || linep == NULL || line_dup == NULL || txzpath == NULL || saveptr == NULL) {
-	err(19, __func__, "called with NULL arg(s)");
+	err(22, __func__, "called with NULL arg(s)");
 	not_reached();
     }
 
@@ -1040,7 +1056,7 @@ parse_txz_line(char *linep, char *line_dup, char const *dir_name, char const *tx
      */
 
     if (linep == NULL || line_dup == NULL || txzpath == NULL || dir_count == NULL) {
-	err(20, __func__, "called with NULL arg(s)");
+	err(23, __func__, "called with NULL arg(s)");
 	not_reached();
     }
     /*
@@ -1123,7 +1139,7 @@ check_tarball(char const *tar, char const *fnamchk)
      * firewall
      */
     if ((!text_file_flag_used && tar == NULL) || fnamchk == NULL || txzpath == NULL) {
-	err(21, __func__, "called with NULL arg(s)");
+	err(24, __func__, "called with NULL arg(s)");
 	not_reached();
     }
 
@@ -1163,7 +1179,7 @@ check_tarball(char const *tar, char const *fnamchk)
 	 */
 	fnamchk_stream = pipe_open(__func__, true, "% -- %", fnamchk, txzpath);
 	if (fnamchk_stream == NULL) {
-	    err(22, __func__, "popen for reading failed for: %s -- %s", fnamchk, txzpath);
+	    err(25, __func__, "popen for reading failed for: %s -- %s", fnamchk, txzpath);
 	    not_reached();
 	}
 
@@ -1186,7 +1202,7 @@ check_tarball(char const *tar, char const *fnamchk)
 	fnamchk_stream = NULL;
 
 	if (dir_name == NULL || !strlen(dir_name)) {
-	    err(23, __func__, "txzchk: %s: unexpected NULL pointer from %s", txzpath, cmd);
+	    err(26, __func__, "txzchk: %s: unexpected NULL pointer from %s", txzpath, cmd);
 	    not_reached();
 	}
     }
@@ -1195,7 +1211,7 @@ check_tarball(char const *tar, char const *fnamchk)
     txz_info.size = file_size(txzpath);
     /* report size if too big or !quiet */
     if (txz_info.size < 0) {
-	err(24, __func__, "%s: impossible error: txzchk_sanity_chks() found tarball but file_size() did not", txzpath);
+	err(27, __func__, "%s: impossible error: txzchk_sanity_chks() found tarball but file_size() did not", txzpath);
 	not_reached();
     }
     else if (txz_info.size > MAX_TARBALL_LEN) {
@@ -1205,7 +1221,7 @@ check_tarball(char const *tar, char const *fnamchk)
 	      "The compressed tarball exceeds the maximum allowed size, sorry.",
 	      "",
 	      NULL);
-	err(25, __func__, "%s: The compressed tarball size %jd > %jd",
+	err(28, __func__, "%s: The compressed tarball size %jd > %jd",
 		 txzpath, (intmax_t)txz_info.size, (intmax_t)MAX_TARBALL_LEN);
 	not_reached();
     }
@@ -1228,7 +1244,7 @@ check_tarball(char const *tar, char const *fnamchk)
 	input_stream = fopen(txzpath, "r");
 	errno = 0;
 	if (input_stream == NULL) {
-	    errp(26, __func__, "fopen of %s failed", txzpath);
+	    errp(29, __func__, "fopen of %s failed", txzpath);
 	    not_reached();
 	}
 	errno = 0;
@@ -1245,7 +1261,7 @@ check_tarball(char const *tar, char const *fnamchk)
 	errno = 0;			/* pre-clear errno for errp() */
 	exit_code = shell_cmd(__func__, true, "% -tJvf %", tar, txzpath);
 	if (exit_code != 0) {
-	    errp(27, __func__, "%s -tJvf %s failed with exit code: %d",
+	    errp(30, __func__, "%s -tJvf %s failed with exit code: %d",
 			      tar, txzpath, WEXITSTATUS(exit_code));
 	    not_reached();
 	}
@@ -1255,7 +1271,7 @@ check_tarball(char const *tar, char const *fnamchk)
 	 */
 	input_stream = pipe_open(__func__, true, "% -tJvf %", tar, txzpath);
 	if (input_stream == NULL) {
-	    err(28, __func__, "popen for reading failed for: %s -tJvf %s",
+	    err(31, __func__, "popen for reading failed for: %s -tJvf %s",
 			      tar, txzpath);
 	    not_reached();
 	}
@@ -1368,7 +1384,7 @@ has_special_bits(char const *str)
      * firewall
      */
     if (str == NULL) {
-	err(29, __func__, "called with NULL arg(s)");
+	err(32, __func__, "called with NULL arg(s)");
 	not_reached();
     }
 
@@ -1399,21 +1415,21 @@ add_txz_line(char const *str, int line_num)
      * firewall
      */
     if (str == NULL) {
-	err(30, __func__, "passed NULL arg");
+	err(33, __func__, "passed NULL arg");
 	not_reached();
     }
 
     errno = 0;
     line = calloc(1, sizeof *line);
     if (line == NULL) {
-	errp(31, __func__, "unable to allocate struct txz_line *");
+	errp(34, __func__, "unable to allocate struct txz_line *");
 	not_reached();
     }
 
     errno = 0;
     line->line = strdup(str);
     if (line->line == NULL) {
-	errp(32, __func__, "unable to strdup string '%s' for lines list", str);
+	errp(35, __func__, "unable to strdup string '%s' for lines list", str);
 	not_reached();
     }
     line->line_num = line_num;
@@ -1448,7 +1464,7 @@ parse_all_txz_lines(char const *dir_name, char const *txzpath)
      * firewall
      */
     if (txzpath == NULL) {
-	err(33, __func__, "passed NULL arg");
+	err(36, __func__, "passed NULL arg");
 	not_reached();
     }
 
@@ -1459,7 +1475,7 @@ parse_all_txz_lines(char const *dir_name, char const *txzpath)
 	}
 	line_dup = strdup(line->line);
 	if (line_dup == NULL) {
-	    err(34, __func__, "%s: duplicating %s failed", txzpath, line->line);
+	    err(37, __func__, "%s: duplicating %s failed", txzpath, line->line);
 	    not_reached();
 	}
 
@@ -1523,27 +1539,27 @@ alloc_txz_file(char const *p)
      * firewall
      */
     if (p == NULL) {
-	err(35, __func__, "passed NULL path");
+	err(38, __func__, "passed NULL path");
 	not_reached();
     }
     errno = 0;
     file = calloc(1, sizeof *file);
     if (file == NULL) {
-	errp(36, __func__, "%s: unable to allocate a struct txz_file *", txzpath);
+	errp(39, __func__, "%s: unable to allocate a struct txz_file *", txzpath);
 	not_reached();
     }
 
     errno = 0;
     file->filename = strdup(p);
     if (!file->filename) {
-	errp(37, __func__, "%s: unable to strdup filename %s", txzpath, p);
+	errp(40, __func__, "%s: unable to strdup filename %s", txzpath, p);
 	not_reached();
     }
 
     errno = 0;
     file->basename = strdup(base_name(p)?base_name(p):"");
     if (!file->basename || !strlen(file->basename)) {
-	errp(38, __func__, "%s: unable to strdup basename of filename %s", txzpath, p);
+	errp(41, __func__, "%s: unable to strdup basename of filename %s", txzpath, p);
 	not_reached();
     }
 
@@ -1573,7 +1589,7 @@ add_txz_file_to_list(struct txz_file *txzfile)
      * firewall
      */
     if (txzfile == NULL || !txzfile->filename || !txzfile->basename) {
-	err(39, __func__, "called with NULL pointer(s)");
+	err(42, __func__, "called with NULL pointer(s)");
 	not_reached();
     }
 
