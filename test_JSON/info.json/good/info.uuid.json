@@ -7,11 +7,11 @@
 	"jinfochk_version" : "0.14 2022-03-15",
 	"fnamchk_version" : "0.6 2022-03-15",
 	"txzchk_version" : "0.10 2022-03-15",
-	"IOCCC_contest_id" : "test",
+	"IOCCC_contest_id" : "12345678-1234-4321-abcd-1234567890ab",
 	"entry_num" : 0,
 	"title" : "title-for-entry0",
 	"abstract" : "abstract for entry #0",
-	"tarball" : "entry.test-0.1647471231.txz",
+	"tarball" : "entry.12345678-1234-4321-abcd-1234567890ab-0.1645212226.txz",
 	"rule_2a_size" : 0,
 	"rule_2b_size" : 0,
 	"empty_override" : true,
@@ -29,7 +29,7 @@
 	"found_clean_rule" : true,
 	"found_clobber_rule" : true,
 	"found_try_rule" : true,
-	"test_mode" : true,
+	"test_mode" : false,
 	"manifest" : [
 		{"info_JSON" : ".info.json"},
 		{"author_JSON" : ".author.json"},
@@ -39,9 +39,9 @@
 		{"extra_file" : "extra1"},
 		{"extra_file" : "extra2"}
 	],
-	"formed_timestamp" : 1647471231,
-	"formed_timestamp_usec" : 50036,
+	"formed_timestamp" : 1645212226,
+	"formed_timestamp_usec" : 13685,
 	"timestamp_epoch" : "Thu Jan 01 00:00:00 1970 UTC",
 	"min_timestamp" : 1643987926,
-	"formed_UTC" : "Wed Mar 16 22:53:51 2022 UTC"
+	"formed_UTC" : "Fri Feb 18 19:23:46 2022 UTC"
 }
