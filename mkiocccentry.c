@@ -4352,7 +4352,7 @@ get_author_info(struct info *infop, char *ioccc_id, struct author **author_set_p
 	    }
 
 	    /*
-	     * determine the default author handle from the name so we can use it in a promot
+	     * determine the default author handle from the name so we can use it in a prompt
 	     */
 	    def_handle = default_handle(author_set[i].name);
 	    if (def_handle == NULL) {
@@ -4397,7 +4397,7 @@ get_author_info(struct info *infop, char *ioccc_id, struct author **author_set_p
 	    } else {
 
 		/* note using user supplied IOCCC author handle */
-		dbg(DBG_VHIGH, "will use IOCCC author handle enttered by user");
+		dbg(DBG_VHIGH, "will use IOCCC author handle entered by user");
 		author_set[i].default_handle = false;
 
 		/* free storage of unused default IOCCC author handle */
@@ -4468,8 +4468,8 @@ get_author_info(struct info *infop, char *ioccc_id, struct author **author_set_p
 	    printf("Location/country code: %s (%s)\n", author_set[i].location_code, author_set[i].location_name) <= 0 ||
 	    ((author_set[i].email[0] == '\0') ? printf("Email not given\n") :
 						printf("Email: %s\n", author_set[i].email)) <= 0 ||
-	    ((author_set[i].url[0] == '\0') ? printf("Url not given\n") :
-					      printf("Url: %s\n", author_set[i].url)) <= 0 ||
+	    ((author_set[i].url[0] == '\0') ? printf("URL not given\n") :
+					      printf("URL: %s\n", author_set[i].url)) <= 0 ||
 	    ((author_set[i].twitter[0] == '\0') ? printf("Twitter handle not given\n") :
 						  printf("Twitter handle: %s\n", author_set[i].twitter)) <= 0 ||
 	    ((author_set[i].github[0] == '\0') ? printf("GitHub username not given\n") :
