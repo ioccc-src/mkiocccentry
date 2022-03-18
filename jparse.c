@@ -95,6 +95,11 @@ main(int argc, char *argv[])
 	    output_newline = false;
 	    break;
 	case 's':
+	    /*
+	     * XXX currently this is unused as json parsing is not done yet and
+	     * this is why the compiler flags for jparse.c has (for now) include
+	     * -Wno-unused-but-set-variable.
+	     */
 	    strict = true;
 	    break;
 	default:
@@ -102,6 +107,10 @@ main(int argc, char *argv[])
 	    not_reached();
 	}
     }
+
+    /* perform IOCCC sanity checks */
+    ioccc_sanity_chks();
+
     /* warn(), warnp() and msg() are quiet if -q and -v 0 */
     if (quiet && verbosity_level <= 0) {
 	msg_output_allowed = false;
