@@ -349,6 +349,7 @@ install: all
 	${INSTALL} -m 0644 ${MANPAGES} ${MANDIR}
 
 test: all iocccsize-test.sh dbg_test mkiocccentry-test.sh jstr-test.sh Makefile
+	@chmod +x iocccsize-test.sh mkiocccentry-test.sh jstr-test.sh
 	@echo "RUNNING: iocccsize-test.sh"
 	./iocccsize-test.sh -v 1
 	@echo "PASSED: iocccsize-test.sh"
