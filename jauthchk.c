@@ -726,7 +726,7 @@ check_found_author_json_fields(char const *file, bool test)
 	 * author list is not a author field name.
 	 */
 	if (author_field == NULL) {
-	    err(30, __func__, "illegal field name '%s' in found_author_json_fields list", field->name);
+	    jerr(JSON_CODE_RESERVED(10), NULL, __func__, __FILE__, NULL, __LINE__, "illegal field name '%s' in found_author_json_fields list", field->name);
 	    not_reached();
 	}
 
@@ -735,7 +735,7 @@ check_found_author_json_fields(char const *file, bool test)
 	    char *val = value->value;
 
 	    if (val == NULL) {
-		err(31, __func__, "NULL pointer val for field '%s' in file %s", field->name, file);
+		jerr(JSON_CODE_RESERVED(11), NULL, __func__, __FILE__, NULL, __LINE__, "NULL pointer val for field '%s' in file %s", field->name, file);
 		not_reached();
 	    }
 
@@ -865,7 +865,7 @@ add_found_author_json_field(char const *name, char const *val, int line_num)
 
     field_in_table = find_json_field_in_table(author_json_fields, name, &loc);
     if (field_in_table == NULL) {
-	err(32, __func__, "called add_found_author_json_field() on field '%s' not specific to .author.json", name);
+	err(30, __func__, "called add_found_author_json_field() on field '%s' not specific to .author.json", name);
 	not_reached();
     }
     /*
@@ -1086,7 +1086,7 @@ main(int argc, char **argv)
 	errno = 0;			/* pre-clear errno for errp() */
 	ret = printf("Welcome to jauthchk version: %s\n", JAUTHCHK_VERSION);
 	if (ret <= 0) {
-	    errp(33, __func__, "printf error printing the welcome string");
+	    errp(31, __func__, "printf error printing the welcome string");
 	    not_reached();
 	}
     }

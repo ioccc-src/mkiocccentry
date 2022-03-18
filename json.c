@@ -2763,7 +2763,7 @@ check_found_common_json_fields(char const *program, char const *file, char const
 	 * common list is not a common field name.
 	 */
 	if (common_field == NULL) {
-	    err(225, __func__, "illegal field name '%s' in found_common_json_fields list", field->name);
+	    jerr(JSON_CODE_RESERVED(10), NULL, __func__, __FILE__, NULL, __LINE__, "illegal field name '%s' in found_common_json_fields list", field->name);
 	    not_reached();
 	}
 
@@ -2776,7 +2776,7 @@ check_found_common_json_fields(char const *program, char const *file, char const
 	    char *val = value->value;
 
 	    if (val == NULL) {
-		err(226, __func__, "NULL pointer val for field '%s' in file %s", field->name, file);
+		jerr(JSON_CODE_RESERVED(11), NULL, __func__, __FILE__, NULL, __LINE__, "NULL pointer val for field '%s' in file %s", field->name, file);
 		not_reached();
 	    }
 
@@ -3005,7 +3005,7 @@ check_found_common_json_fields(char const *program, char const *file, char const
 	errno = 0;
 	str = calloc(1, strlen(tarball_val) + strlen(contest_id_val) + strlen(entry_num_val) + strlen(formed_timestamp_val) + 1);
 	if (str == NULL) {
-	    err(227, __func__, "couldn't allocate memory to verify that contest_id and entry_num matches the tarball");
+	    err(225, __func__, "couldn't allocate memory to verify that contest_id and entry_num matches the tarball");
 	    not_reached();
 	}
 
@@ -3056,26 +3056,26 @@ new_json_field(char const *name, char const *val, int line_num)
      * firewall
      */
     if (name == NULL || val == NULL) {
-	err(228, __func__, "passed NULL arg(s)");
+	err(226, __func__, "passed NULL arg(s)");
 	not_reached();
     }
 
     errno = 0;
     field = calloc(1, sizeof *field);
     if (field == NULL) {
-	errp(229, __func__, "error allocating new struct json_field * for field '%s' and value '%s': %s", name, val, strerror(errno));
+	errp(227, __func__, "error allocating new struct json_field * for field '%s' and value '%s': %s", name, val, strerror(errno));
 	not_reached();
     }
 
     errno = 0;
     field->name = strdup(name);
     if (field->name == NULL) {
-	errp(230, __func__, "unable to strdup() field name '%s': %s", name, strerror(errno));
+	errp(228, __func__, "unable to strdup() field name '%s': %s", name, strerror(errno));
 	not_reached();
     }
 
     if (add_json_value(field, val, line_num) == NULL) {
-	err(231, __func__, "error adding value '%s' to field '%s'", val, name);
+	err(229, __func__, "error adding value '%s' to field '%s'", val, name);
 	not_reached();
     }
 
@@ -3113,7 +3113,7 @@ add_json_value(struct json_field *field, char const *val, int line_num)
      * firewall
      */
     if (field == NULL || val == NULL) {
-	err(232, __func__, "passed NULL arg(s)");
+	err(230, __func__, "passed NULL arg(s)");
 	not_reached();
     }
 
@@ -3121,13 +3121,13 @@ add_json_value(struct json_field *field, char const *val, int line_num)
     errno = 0;
     new_value = calloc(1, sizeof *new_value);
     if (new_value == NULL) {
-	errp(233, __func__, "error allocating new value '%s' for field '%s': %s", val, field->name, strerror(errno));
+	errp(231, __func__, "error allocating new value '%s' for field '%s': %s", val, field->name, strerror(errno));
 	not_reached();
     }
     errno = 0;
     new_value->value = strdup(val);
     if (new_value->value == NULL) {
-	errp(234, __func__, "error strdup()ing value '%s' for field '%s': %s", val, field->name, strerror(errno));
+	errp(232, __func__, "error strdup()ing value '%s' for field '%s': %s", val, field->name, strerror(errno));
 	not_reached();
     }
 
@@ -3168,7 +3168,7 @@ free_json_field_values(struct json_field *field)
      * firewall
      */
     if (field == NULL) {
-	err(235, __func__, "passed NULL field");
+	err(233, __func__, "passed NULL field");
 	not_reached();
     }
 
@@ -3233,7 +3233,7 @@ free_json_field(struct json_field *field)
      * firewall
      */
     if (field == NULL) {
-	err(236, __func__, "passed NULL field");
+	err(234, __func__, "passed NULL field");
 	not_reached();
     }
 
@@ -3268,7 +3268,7 @@ free_info(struct info *infop)
      * firewall
      */
     if (infop == NULL) {
-	err(237, __func__, "called with NULL arg(s)");
+	err(235, __func__, "called with NULL arg(s)");
 	not_reached();
     }
 
@@ -3360,11 +3360,11 @@ free_author_array(struct author *author_set, int author_count)
      * firewall
      */
     if (author_set == NULL) {
-	err(238, __func__, "called with NULL arg(s)");
+	err(236, __func__, "called with NULL arg(s)");
 	not_reached();
     }
     if (author_count < 0) {
-	err(239, __func__, "author_count: %d < 0", author_count);
+	err(237, __func__, "author_count: %d < 0", author_count);
 	not_reached();
     }
 
@@ -3439,7 +3439,7 @@ alloc_code_ignore_set(void)
     errno = 0;			/* pre-clear errno for errp() */
     tbl = malloc(sizeof(struct ignore_code));
     if (tbl == NULL) {
-	errp(240, __func__, "failed to malloc struct ignore_code");
+	errp(238, __func__, "failed to malloc struct ignore_code");
 	not_reached();
     }
 
@@ -3449,7 +3449,7 @@ alloc_code_ignore_set(void)
     errno = 0;			/* pre-clear errno for errp() */
     tbl->code = malloc((IGNORE_CODE_CHUNK+1+1) * sizeof(int));
     if (tbl->code == NULL) {
-	errp(241, __func__, "cannot allocate %d ignore codes", IGNORE_CODE_CHUNK+1+1);
+	errp(239, __func__, "cannot allocate %d ignore codes", IGNORE_CODE_CHUNK+1+1);
 	not_reached();
     }
 
@@ -3486,7 +3486,7 @@ cmp_codes(const void *a, const void *b)
      * firewall
      */
     if (a == NULL || b == NULL) {
-	err(242, __func__, "NULL arg(s)");
+	err(240, __func__, "NULL arg(s)");
 	not_reached();
     }
 
@@ -3522,7 +3522,7 @@ expand_code_ignore_set(void)
      */
     alloc_code_ignore_set();
     if (ignore_code_set == NULL) {
-	err(243, __func__, "ignore_code_set is NULL after allocation");
+	err(241, __func__, "ignore_code_set is NULL after allocation");
 	not_reached();
     }
 
@@ -3533,7 +3533,7 @@ expand_code_ignore_set(void)
 	p = realloc(ignore_code_set->code, (ignore_code_set->alloc+IGNORE_CODE_CHUNK+1) * sizeof(int));
 	errno = 0;			/* pre-clear errno for errp() */
 	if (p == NULL) {
-	    errp(244, __func__, "cannot expand ignore_code_set from %d to %d codes",
+	    errp(242, __func__, "cannot expand ignore_code_set from %d to %d codes",
 				ignore_code_set->alloc+1, ignore_code_set->alloc+IGNORE_CODE_CHUNK+1);
 	    not_reached();
 	}
@@ -3566,7 +3566,7 @@ is_code_ignored(int code)
      * firewall
      */
     if (code < 0) {
-	err(245, __func__, "code %d < 0", code);
+	err(243, __func__, "code %d < 0", code);
 	not_reached();
     }
 
@@ -3575,7 +3575,7 @@ is_code_ignored(int code)
      */
     alloc_code_ignore_set();
     if (ignore_code_set == NULL) {
-	err(246, __func__, "ignore_code_set is NULL after allocation");
+	err(244, __func__, "ignore_code_set is NULL after allocation");
 	not_reached();
     }
 
@@ -3621,7 +3621,7 @@ add_ignore_code(int code)
      * firewall
      */
     if (code < 0) {
-	err(247, __func__, "code %d < 0", code);
+	err(245, __func__, "code %d < 0", code);
 	not_reached();
     }
 
@@ -3632,7 +3632,7 @@ add_ignore_code(int code)
 	expand_code_ignore_set();
     }
     if (ignore_code_set == NULL) {
-	err(248, __func__, "ignore_code_set is NULL after allocation or expansion");
+	err(246, __func__, "ignore_code_set is NULL after allocation or expansion");
 	not_reached();
     }
 

@@ -60,7 +60,7 @@
 
 
 ###
-### JSON ERROR CODES BELOW (LAST UPDATED: 16 MARCH 2022)
+### JSON ERROR CODES BELOW (LAST UPDATED: 18 MARCH 2022)
 ###
 
 # program: jchk check_common_json_fields_table
@@ -96,6 +96,13 @@ JSON[0008]: (jauthchk|json|jinfochk).c: %d: error creating new struct json_field
 
 # program: jchk check_found_(author|common|info)_json_fields
 JSON[0009]: (jauthchk|json|jinfochk).c: %d: found NULL or empty field in found_(author|common|info)_json_fields list
+
+# program: jchk check_found_(author|common|info)_json_fields
+JSON[0010]: (jauthchk|json|jinfochk).c: %d: illegal field name '%s' in found_(author|common|info)_json_fields list
+
+# program: jchk check_found_(author|common|info)_json_fields
+JSON[0011]: (jauthchk|json|jinfochk).c: %d: NULL pointer val for field '%s'
+
 
 ###
 ### JSON ERROR CODES ABOVE
