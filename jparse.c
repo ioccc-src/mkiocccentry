@@ -50,6 +50,7 @@ main(int argc, char **argv)
     bool output_newline = true;	/* true ==> output newline after writing input to stdout */
     bool strict = false;	/* true ==> strict mode (currently unused: this is for when a JSON parser is added) */
     bool is_stdin = false;	/* true ==> argv[i] is '-' */
+    bool is_normal_file = true;	/* true ==> if argv[i] is a regular file */
     int ret;			/* libc return code */
     int i;
 
@@ -135,10 +136,18 @@ main(int argc, char **argv)
 	     */
 	    dbg(DBG_LOW, "processing arg: %d: <%s>", i-optind, argv[i]);
 	    is_stdin = !strcmp(argv[i], "-");
+	    is_normal_file = is_stdin?true:is_file(argv[i]);
 
-	    errno = 0;
-	    input_stream = is_stdin ? stdin : fopen(argv[i], "r");
-	    if (input_stream != NULL) {
+	    /*
+	     * only attempt to read it if it's a regular file (including stdin)
+	     */
+	    if (is_normal_file) {
+		errno = 0;
+		input_stream = is_stdin ? stdin : fopen(argv[i], "r");
+		if (input_stream == NULL) {
+		    err(35, __func__, "couldn't open file %s", argv[i]);
+		    not_reached();
+		}
 		if (input_stream == stdin) {
 		    dbg(DBG_LOW, "about to read all data from stdin");
 		} else {
@@ -177,21 +186,17 @@ main(int argc, char **argv)
 		    input_stream = NULL;
 		}
 		if (input == NULL) {
-		    err(35, __func__, "error reading data in file %s", argv[i]);
+		    err(36, __func__, "error reading data in file %s", argv[i]);
 		    not_reached();
 		}
 		/* scan for embedded NUL bytes (before EOF) */
 		if (!is_string(input, length + 1)) {
-		    err(36, __func__, "found NUL byte before EOF: %s", argv[i]);
+		    err(37, __func__, "found NUL byte before EOF: %s", argv[i]);
 		    not_reached();
 		}
 		dbg(DBG_MED, "file length: %ju", (uintmax_t)length);
-	    } else if (errno == ENOENT) {
-		/*
-		 * Only if the file does not exist do we read it as a string
-		 * itself.
-		 */
-		dbg(DBG_LOW, "about to read all string from arg %d", i-optind);
+	    } else {
+		dbg(DBG_LOW, "about to read arg %d as a string", i-optind);
 		input = argv[i];
 		length = strlen(input);
 		/*
@@ -200,19 +205,11 @@ main(int argc, char **argv)
 		 * in case there's something funny going on.
 		 */
 		if (!is_string(input, length + 1)) {
-		    err(37, __func__, "found NUL byte before end of string");
+		    err(38, __func__, "found NUL byte before end of string");
 		    not_reached();
 		}
 		dbg(DBG_MED, "arg length: %ju", (uintmax_t)length);
-	    } else {
-		/*
-		 * File does exist but we couldn't open it: report error and
-		 * exit.
-		 */
-		err(38, __func__, "couldn't open file %s", argv[i]);
-		not_reached();
 	    }
-
 	    /*
 	     * If we get here just print out the string or file to stdout.
 	     */
