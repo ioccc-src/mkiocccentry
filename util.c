@@ -208,9 +208,10 @@ exists(char const *path)
     /*
      * test for existence of path
      */
+    errno = 0;
     ret = stat(path, &buf);
     if (ret < 0) {
-	dbg(DBG_HIGH, "path %s does not exist, stat returned: %d", path, ret);
+	dbg(DBG_HIGH, "path %s does not exist, stat returned: %s", path, strerror(errno));
 	return false;
     }
     dbg(DBG_VHIGH, "path %s size: %jd", path, (intmax_t)buf.st_size);
@@ -248,9 +249,10 @@ is_file(char const *path)
     /*
      * test for existence of path
      */
+    errno = 0;
     ret = stat(path, &buf);
     if (ret < 0) {
-	dbg(DBG_HIGH, "path %s does not exist, stat returned: %d", path, ret);
+	dbg(DBG_HIGH, "path %s does not exist, stat returned: %s", path, strerror(errno));
 	return false;
     }
     dbg(DBG_VHIGH, "path %s size: %jd", path, (intmax_t)buf.st_size);
@@ -298,9 +300,10 @@ is_exec(char const *path)
     /*
      * test for existence of path
      */
+    errno = 0;
     ret = stat(path, &buf);
     if (ret < 0) {
-	dbg(DBG_HIGH, "path %s does not exist, stat returned: %d", path, ret);
+	dbg(DBG_HIGH, "path %s does not exist, stat returned: %s", path, strerror(errno));
 	return false;
     }
     dbg(DBG_VHIGH, "path %s size: %jd", path, (intmax_t)buf.st_size);
@@ -348,9 +351,10 @@ is_dir(char const *path)
     /*
      * test for existence of path
      */
+    errno = 0;
     ret = stat(path, &buf);
     if (ret < 0) {
-	dbg(DBG_HIGH, "path %s does not exist, stat returned: %d", path, ret);
+	dbg(DBG_HIGH, "path %s does not exist, stat returned: %s", path, strerror(errno));
 	return false;
     }
     dbg(DBG_VHIGH, "path %s size: %jd", path, (intmax_t)buf.st_size);
@@ -398,9 +402,10 @@ is_read(char const *path)
     /*
      * test for existence of path
      */
+    errno = 0;
     ret = stat(path, &buf);
     if (ret < 0) {
-	dbg(DBG_HIGH, "path %s does not exist, stat returned: %d", path, ret);
+	dbg(DBG_HIGH, "path %s does not exist, stat returned: %s", path, strerror(errno));
 	return false;
     }
     dbg(DBG_VHIGH, "path %s size: %jd", path, (intmax_t)buf.st_size);
@@ -449,9 +454,10 @@ is_write(char const *path)
     /*
      * test for existence of path
      */
+    errno = 0;
     ret = stat(path, &buf);
     if (ret < 0) {
-	dbg(DBG_HIGH, "path %s does not exist, stat returned: %d", path, ret);
+	dbg(DBG_HIGH, "path %s does not exist, stat returned: %s", path, strerror(errno));
 	return false;
     }
     dbg(DBG_VHIGH, "path %s size: %jd", path, (intmax_t)buf.st_size);
@@ -499,9 +505,10 @@ file_size(char const *path)
     /*
      * test for existence of path
      */
+    errno = 0;
     ret = stat(path, &buf);
     if (ret < 0) {
-	dbg(DBG_HIGH, "path %s does not exist, stat returned: %d", path, ret);
+	dbg(DBG_HIGH, "path %s does not exist, stat returned: %s", path, strerror(errno));
 	return -1;
     }
 
