@@ -432,3 +432,5 @@ utf8_posix_map.o: utf8_posix_map.c utf8_posix_map.h util.h dbg.h \
   limit_ioccc.h version.h
 sanity.o: sanity.c sanity.h util.h dbg.h location.h utf8_posix_map.h \
   json.h
+jparse.o: jparse.c jparse.h dbg.h util.h json.h sanity.h location.h \
+  utf8_posix_map.h limit_ioccc.h version.h
