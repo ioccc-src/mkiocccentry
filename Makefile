@@ -148,14 +148,14 @@ CFLAGS= ${STD_SRC} ${COPT} -pedantic -Wall -Wextra -Werror
 MANDIR = /usr/local/share/man/man1
 DESTDIR= /usr/local/bin
 TARGETS= mkiocccentry iocccsize dbg_test limit_ioccc.sh fnamchk txzchk jauthchk jinfochk \
-	jstrencode jstrdecode
+	jstrencode jstrdecode jparse
 MANPAGES = mkiocccentry.1 txzchk.1 fnamchk.1 iocccsize.1 jinfochk.1 jauthchk.1
 TEST_TARGETS= dbg_test
 OBJFILES = dbg.o util.o mkiocccentry.o iocccsize.o fnamchk.o txzchk.o jauthchk.o jinfochk.o \
-	json.o jstrencode.o jstrdecode.o rule_count.o location.o utf8_posix_map.o sanity.o
+	json.o jstrencode.o jstrdecode.o rule_count.o location.o utf8_posix_map.o sanity.o jparse.o
 SRCFILES = $(patsubst %.o,%.c,$(OBJFILES))
 H_FILES = dbg.h jauthchk.h jinfochk.h json.h jstrdecode.h jstrencode.h limit_ioccc.h \
-	mkiocccentry.h txzchk.h util.h location.h utf8_posix_map.h
+	mkiocccentry.h txzchk.h util.h location.h utf8_posix_map.h jparse.h
 DSYMDIRS = $(patsubst %,%.dSYM,$(TARGETS))
 SH_FILES= iocccsize-test.sh jstr-test.sh limit_ioccc.sh mkiocccentry-test.sh json-test.sh \
 	  jcodechk.sh vermod.sh
@@ -200,6 +200,9 @@ jstrencode: jstrencode.c jstrencode.h dbg.o json.o util.o Makefile
 
 jstrdecode: jstrdecode.c jstrdecode.h dbg.o json.o util.o Makefile
 	${CC} ${CFLAGS} jstrdecode.c dbg.o json.o util.o -o $@
+
+jparse: jparse.c jparse.h json.h json.o dbg.o util.o sanity.o location.o utf8_posix_map.o  Makefile
+	${CC} ${CFLAGS} -Wno-unused-but-set-variable jparse.c json.o dbg.o util.o sanity.o location.o utf8_posix_map.o -o $@
 
 limit_ioccc.sh: limit_ioccc.h version.h Makefile
 	${RM} -f $@
@@ -346,6 +349,7 @@ install: all
 	${INSTALL} -m 0644 ${MANPAGES} ${MANDIR}
 
 test: all iocccsize-test.sh dbg_test mkiocccentry-test.sh jstr-test.sh Makefile
+	@chmod +x iocccsize-test.sh mkiocccentry-test.sh jstr-test.sh
 	@echo "RUNNING: iocccsize-test.sh"
 	./iocccsize-test.sh -v 1
 	@echo "PASSED: iocccsize-test.sh"
@@ -429,3 +433,5 @@ utf8_posix_map.o: utf8_posix_map.c utf8_posix_map.h util.h dbg.h \
   limit_ioccc.h version.h
 sanity.o: sanity.c sanity.h util.h dbg.h location.h utf8_posix_map.h \
   json.h
+jparse.o: jparse.c jparse.h dbg.h util.h json.h sanity.h location.h \
+  utf8_posix_map.h limit_ioccc.h version.h

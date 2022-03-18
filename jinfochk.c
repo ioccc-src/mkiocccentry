@@ -238,6 +238,7 @@ check_info_json(char const *file, char const *fnamchk)
     if (ret != 0) {
 	warnp(__func__, "error in fclose to %s file %s", json_filename(INFO_JSON), file);
     }
+    stream = NULL;
 
     /* scan for embedded NUL bytes (before EOF) */
     if (!is_string(data, length+1)) {
@@ -1176,7 +1177,7 @@ check_found_info_json_fields(char const *file, bool test)
 	 * info list is not a info field name.
 	 */
 	if (info_field == NULL) {
-	    err(38, __func__, "illegal field name '%s' in found_info_json_fields list", field->name);
+	    jerr(JSON_CODE_RESERVED(10), NULL, __func__, __FILE__, NULL, __LINE__, "illegal field name '%s' in found_info_json_fields list", field->name);
 	    not_reached();
 	}
 
@@ -1185,7 +1186,7 @@ check_found_info_json_fields(char const *file, bool test)
 	    char *val = value->value;
 
 	    if (val == NULL) {
-		err(39, __func__, "NULL pointer val for field '%s' in file %s", field->name, file);
+		jerr(JSON_CODE_RESERVED(11), NULL, __func__, __FILE__, NULL, __LINE__, "NULL pointer val for field '%s' in file %s", field->name, file);
 		not_reached();
 	    }
 
@@ -1196,7 +1197,7 @@ check_found_info_json_fields(char const *file, bool test)
 		 * manifest has an empty value in a sense so we only do this for
 		 * fields that aren't manifest.
 		 */
-		err(40, __func__, "empty value found for field '%s' in file %s", field->name, file);
+		err(38, __func__, "empty value found for field '%s' in file %s", field->name, file);
 		not_reached();
 	    }
 
@@ -1296,7 +1297,7 @@ check_found_info_json_fields(char const *file, bool test)
 		}
 		manifest_file = add_manifest_file(val);
 		if (manifest_file == NULL) {
-		    err(41, __func__, "couldn't add info_JSON file '%s'", val);
+		    err(39, __func__, "couldn't add info_JSON file '%s'", val);
 		    not_reached();
 		}
 	    } else if (!strcmp(field->name, "author_JSON")) {
@@ -1306,7 +1307,7 @@ check_found_info_json_fields(char const *file, bool test)
 		}
 		manifest_file = add_manifest_file(val);
 		if (manifest_file == NULL) {
-		    err(42, __func__, "couldn't add author_JSON file '%s'", val);
+		    err(40, __func__, "couldn't add author_JSON file '%s'", val);
 		    not_reached();
 		}
 	    } else if (!strcmp(field->name, "c_src")) {
@@ -1316,7 +1317,7 @@ check_found_info_json_fields(char const *file, bool test)
 		}
 		manifest_file = add_manifest_file(val);
 		if (manifest_file == NULL) {
-		    err(43, __func__, "couldn't add c_src file '%s'", val);
+		    err(41, __func__, "couldn't add c_src file '%s'", val);
 		    not_reached();
 		}
 	    } else if (!strcmp(field->name, "Makefile")) {
@@ -1326,7 +1327,7 @@ check_found_info_json_fields(char const *file, bool test)
 		}
 		manifest_file = add_manifest_file(val);
 		if (manifest_file == NULL) {
-		    err(44, __func__, "couldn't add Makefile file '%s'", val);
+		    err(42, __func__, "couldn't add Makefile file '%s'", val);
 		    not_reached();
 		}
 	    } else if (!strcmp(field->name, "remarks")) {
@@ -1336,7 +1337,7 @@ check_found_info_json_fields(char const *file, bool test)
 		}
 		manifest_file = add_manifest_file(val);
 		if (manifest_file == NULL) {
-		    err(45, __func__, "couldn't add remarks file '%s'", val);
+		    err(43, __func__, "couldn't add remarks file '%s'", val);
 		    not_reached();
 		}
 	    } else if (!strcmp(field->name, "extra_file")) {
@@ -1353,7 +1354,7 @@ check_found_info_json_fields(char const *file, bool test)
 		}
 		manifest_file = add_manifest_file(val);
 		if (manifest_file == NULL) {
-		    err(46, __func__, "couldn't add extra_file file '%s' in file %s", val, file);
+		    err(44, __func__, "couldn't add extra_file file '%s' in file %s", val, file);
 		    not_reached();
 		}
 	    } else if (!strcmp(field->name, "rule_2a_size")) {
@@ -1638,7 +1639,7 @@ main(int argc, char **argv)
 	errno = 0;			/* pre-clear errno for errp() */
 	ret = printf("Welcome to jinfochk version: %s\n", JINFOCHK_VERSION);
 	if (ret <= 0) {
-	    errp(47, __func__, "printf error printing the welcome string");
+	    errp(45, __func__, "printf error printing the welcome string");
 	    not_reached();
 	}
 
