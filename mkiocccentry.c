@@ -832,7 +832,7 @@ mkiocccentry_sanity_chks(struct info *infop, char const *work_dir, char const *t
 	      "",
 	      "We cannot find a tar program.",
 	      "",
-	      "A tar program that supports the -J (xz) option is required to build an compressed tarball.",
+	      "A tar program that supports the -J (xz) option is required to build a compressed tarball.",
 	      "Perhaps you need to use:",
 	      "",
 	      "    mkiocccentry -t /path/to/tar ...",
