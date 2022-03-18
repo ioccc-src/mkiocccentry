@@ -238,6 +238,7 @@ check_info_json(char const *file, char const *fnamchk)
     if (ret != 0) {
 	warnp(__func__, "error in fclose to %s file %s", json_filename(INFO_JSON), file);
     }
+    stream = NULL;
 
     /* scan for embedded NUL bytes (before EOF) */
     if (!is_string(data, length+1)) {
