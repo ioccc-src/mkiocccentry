@@ -173,7 +173,7 @@ main(int argc, char *argv[])
 		}
 		/* scan for embedded NUL bytes (before EOF) */
 		if (!is_string(input, length + 1)) {
-		    err(36, __func__, "found NUL bytes before EOF: %s", argv[i]);
+		    err(36, __func__, "found NUL byte before EOF: %s", argv[i]);
 		    not_reached();
 		}
 		dbg(DBG_MED, "file length: %ju", (uintmax_t)length);
@@ -191,7 +191,7 @@ main(int argc, char *argv[])
 		 * in case there's something funny going on.
 		 */
 		if (!is_string(input, length + 1)) {
-		    err(37, __func__, "found NUL bytes before end of string");
+		    err(37, __func__, "found NUL byte before end of string");
 		    not_reached();
 		}
 		dbg(DBG_MED, "arg length: %ju", (uintmax_t)length);
