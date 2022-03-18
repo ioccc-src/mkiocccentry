@@ -128,5 +128,9 @@
  */
 #define JSTRDECODE_VERSION "0.4 2022-03-15"	/* format: major.minor YYYY-MM-DD */
 
+/*
+ * official jparse version
+ */
+#define JPARSE_VERSION "0.1 2022-03-17"
 
 #endif /* INCLUDE_VERSION_H */

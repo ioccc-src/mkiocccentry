@@ -19,6 +19,7 @@ test_src
 test_work
 txzchk
 json-test.log
+jparse
 
 # Prerequisites
 *.d
