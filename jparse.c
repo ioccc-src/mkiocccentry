@@ -38,7 +38,7 @@
 
 
 int
-main(int argc, char *argv[])
+main(int argc, char **argv)
 {
     char const *program = NULL;	/* our name */
     extern char *optarg;	/* option argument */
