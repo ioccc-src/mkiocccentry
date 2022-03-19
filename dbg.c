@@ -49,7 +49,7 @@ bool dbg_output_allowed = true;		/* false ==> disable output from dbg() */
 bool warn_output_allowed = true;	/* false ==> disable output from warn() and warnp() */
 bool err_output_allowed = true;		/* false ==> disable output from err() and errp() */
 bool usage_output_allowed = true;	/* false ==> disable output from vfprintf_usage() */
-static bool quiet = false;		/* true ==> only show errors, and warnings of -v > 0 */
+static bool quiet = false;		/* true ==> only show errors, and warnings if -v > 0 */
 
 
 /*
