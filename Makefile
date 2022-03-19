@@ -89,21 +89,21 @@ BISON = bison
 
 # User specific configurations
 #
-# This retrieves any user specific configurations in the file makefile.config
+# This retrieves any user specific configurations in the file makefile.local
 # (added to .gitignore).
 #
 # This was added by @xexyl on 19 March 2022 for when he starts using flex(1) and
 # bison(1) under macOS (not a problem with his linux boxes) as the macOS
 # versions are out of date; however he uses MacPorts which has an unusual prefix
 # (/opt/local) so instead of assuming the path of flex and bison is the same
-# (since it's not always) I can have my makefile.config override the path to the
+# (since it's not always) I can have my makefile.local override the path to the
 # tools I need.
 #
 # The - before include means it's not an error if the file does not exist (which
 # it won't in most if not all systems but my MacBook Pro). Lower case name
 # because I don't need it at the beginning of the directory listing.
 #
-# NOTE: This is what my makefile.config looks like so you can see how it works:
+# NOTE: This is what my makefile.local looks like so you can see how it works:
 # 
 #	FLEX = /opt/local/bin/flex
 #	BISON = /opt/local/bin/bison
@@ -111,7 +111,7 @@ BISON = bison
 # After this whenever ${FLEX} and ${BISON} are referenced it will translate to
 # the tools under /opt/local/bin.
 #
--include makefile.config
+-include makefile.local
 
 # C source standards being used
 #

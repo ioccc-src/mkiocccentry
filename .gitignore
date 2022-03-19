@@ -78,7 +78,7 @@ dkms.conf
 Makefile.orig
 
 # user specific Makefile config
-makefile.config
+makefile.local
 
 # macOS files
 .DS_Store
