@@ -21,13 +21,14 @@
 #
 #
 #	# program: (jinfochk|jauthchk|jchk) <function>
-#	{JSON-XXXX}: <file>: <line num>: <warning>
+#	{JSON-XXXX}: <source file>: <line num>: <warning>
 #
 # Where jchk means it (the JSON code) exists in both jinfochk and jauthchk (in
 # other words it's reused) and otherwise it's the specific tool; function is the
-# calling function for example check_info_json() or check_author_json() (both
-# of which will change once a proper json parser is implemented); file is the
-# offending json file; line number the line number of the offending line
+# calling function for example check_info_json() or check_author_json() (both of
+# which will change once a proper json parser is implemented); file is the
+# source file but the offending json filename will be in the warning message
+# (where applicable); line number the line number of the offending line
 # (currently each field extracted is a new line number which starts at 1) and
 # warning is the actual warning.
 #
@@ -64,7 +65,7 @@
 
 
 ###
-### JSON WARNING CODES BELOW (LAST UPDATED: 14 MARCH 2022)
+### JSON WARNING CODES BELOW (LAST UPDATED: 19 MARCH 2022)
 ###
 
 # program: jchk check_(info|author)_json
@@ -72,7 +73,7 @@
 
 
 # program: jchk check_found_(info|author|common)_json_fields
-{JSON-0100}: test_work/test-0/.info.json: 3: field found %ju times but is only allowed %ju time(s):
+{JSON-0100}: test_work/test-0/.info.json: 3: field found %ju times but is only allowed %ju time(s) in file %s: %s
 ### NOTE: The message above will currently (14 March 2022) be seen for each
 ### NOTE: time the field is there including the valid ones.
 

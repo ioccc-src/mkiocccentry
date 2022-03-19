@@ -2569,9 +2569,10 @@ check_last_json_char(char const *file, char *data, bool strict, char **last, cha
  *
  * given:
  *
- *	name	    - name of the field
- *	val	    - value of the field
- *	line_num    - 'line number' of the value
+ *	json_filename	- json file being parsed (the path to)
+ *	name		- name of the field
+ *	val		- value of the field
+ *	line_num	- 'line number' of the value
  *
  * Allocates a struct json_field * and add it to the found_json_common_fields
  * list. This will be used for reporting errors after parsing the file as well
@@ -2583,7 +2584,7 @@ check_last_json_char(char const *file, char *data, bool strict, char **last, cha
  * value added to the values list.
  */
 struct json_field *
-add_found_common_json_field(char const *name, char const *val, int line_num)
+add_found_common_json_field(char const *json_filename, char const *name, char const *val, int line_num)
 {
     struct json_field *field; /* newly allocated field */
     struct json_field *field_in_table = NULL;
@@ -2592,13 +2593,14 @@ add_found_common_json_field(char const *name, char const *val, int line_num)
     /*
      * firewall
      */
-    if (name == NULL || val == NULL) {
+    if (json_filename == NULL || name == NULL || val == NULL) {
 	jerr(JSON_CODE_RESERVED(6), NULL, __func__, __FILE__, NULL, __LINE__, "passed NULL arg(s)");
 	not_reached();
     }
 
     field_in_table = find_json_field_in_table(common_json_fields, name, &loc);
     if (field_in_table == NULL) {
+	jerr(JSON_CODE_RESERVED(12), NULL, __func__, json_filename, NULL, __LINE__, "couldn't add value '%s' to field '%s' file %s", val, name, json_filename);
 	err(222, __func__, "called add_found_common_json_field() on uncommon field '%s'", name);
 	not_reached();
     }
@@ -2611,18 +2613,18 @@ add_found_common_json_field(char const *name, char const *val, int line_num)
     for (field = found_common_json_fields; field != NULL; field = field->next) {
 	if (field->name && !strcmp(field->name, name)) {
 	    field->count++;
-	    if (add_json_value(field, val, line_num) == NULL) {
-		jerr(JSON_CODE_RESERVED(7), NULL, __func__, __FILE__, NULL, __LINE__, "couldn't add value '%s' to field '%s'", val, field->name);
+	    if (add_json_value(json_filename, field, val, line_num) == NULL) {
+		jerr(JSON_CODE_RESERVED(7), NULL, __func__, __FILE__, NULL, __LINE__, "couldn't add value '%s' to field '%s' file %s", val, field->name, json_filename);
 		not_reached();
 	    }
 	    return field;
 	}
     }
 
-    field = new_json_field(name, val, line_num);
+    field = new_json_field(json_filename, name, val, line_num);
     if (field == NULL) {
 	/* this should NEVER be reached but we check just to be sure */
-	jerr(JSON_CODE_RESERVED(8), NULL, __func__, __FILE__, NULL, __LINE__, "error creating new struct json_field * for field '%s' value '%s'", name, val);
+	jerr(JSON_CODE_RESERVED(8), NULL, __func__, __FILE__, NULL, __LINE__, "error creating new struct json_field * for field '%s' value '%s' file %s", name, val, json_filename);
 	not_reached();
     }
 
@@ -2644,29 +2646,30 @@ add_found_common_json_field(char const *name, char const *val, int line_num)
  *
  * given:
  *
- *	program	    - which util called this (jinfochk or jauthchk)
- *	file	    - the file being parsed (path to)
- *	name	    - the field name
- *	val	    - the value of the field
- *	line_num    - the 'line number' of the value
+ *	program		- which util called this (jinfochk or jauthchk)
+ *	json_filename	- the file being parsed (path to)
+ *	name		- the field name
+ *	val		- the value of the field
+ *	line_num	- the 'line number' of the value
  *
  * returns:
- *	1 ==> if the name is common to both files
- *	0 ==> if it's not one of the common field names
+ *	true ==> if the name is common to both files and the field was added to
+ *		 the found list
+ *	false ==> if it's not one of the common field names
  *
  * NOTE: Does not return on error (NULL pointers).
  */
-int
-add_common_json_field(char const *program, char const *file, char *name, char *val, int line_num)
+bool
+add_common_json_field(char const *program, char const *json_filename, char *name, char *val, int line_num)
 {
-    int ret = 1;	/* return value: 1 ==> known field, 0 ==> not a common field */
+    bool ret = true;	/* return value: true ==> known field and added to list, false ==> not a common field */
     struct json_field *field = NULL; /* the field in the common_json_fields table if found */
     size_t loc = 0; /* location in the common_json_fields table */
 
     /*
      * firewall
      */
-    if (program == NULL || file == NULL || name == NULL || val == NULL) {
+    if (program == NULL || json_filename == NULL || name == NULL || val == NULL) {
 	err(223, __func__, "passed NULL arg(s)");
 	not_reached();
     }
@@ -2677,9 +2680,9 @@ add_common_json_field(char const *program, char const *file, char *name, char *v
     field = find_json_field_in_table(common_json_fields, name, &loc);
     if (field != NULL) {
 	dbg(DBG_HIGH, "found common field '%s' value '%s'", field->name, val);
-	add_found_common_json_field(field->name, val, line_num);
+	add_found_common_json_field(json_filename, field->name, val, line_num);
     } else {
-	ret = 0;
+	ret = false;
     }
     return ret;
 }
@@ -2694,9 +2697,9 @@ add_common_json_field(char const *program, char const *file, char *name, char *v
  *
  * given:
  *
- *	program	- which util called this (jinfochk or jauthchk)
- *	file	- the file being parsed (path to)
- *	fnamchk	- path to fnamchk util
+ *	program		- which util called this (jinfochk or jauthchk)
+ *	json_filename	- the file being parsed (path to)
+ *	fnamchk		- path to fnamchk util
  *
  * returns:
  *	>0 ==> the number of issues found
@@ -2705,7 +2708,7 @@ add_common_json_field(char const *program, char const *file, char *name, char *v
  * NOTE: Does not return on error (NULL pointers).
  */
 int
-check_found_common_json_fields(char const *program, char const *file, char const *fnamchk, bool test)
+check_found_common_json_fields(char const *program, char const *json_filename, char const *fnamchk, bool test)
 {
     int year = 0;	/* ioccc_year: IOCCC year as an integer */
     int entry_num = -1;	/* entry_num: entry number as an integer */
@@ -2729,7 +2732,7 @@ check_found_common_json_fields(char const *program, char const *file, char const
     /*
      * firewall
      */
-    if (program == NULL || file == NULL || fnamchk == NULL) {
+    if (program == NULL || json_filename == NULL || fnamchk == NULL) {
 	err(224, __func__, "passed NULL arg(s)");
 	not_reached();
     }
@@ -2748,7 +2751,7 @@ check_found_common_json_fields(char const *program, char const *file, char const
 	 * first make sure the name != NULL and strlen() > 0
 	 */
 	if (field->name == NULL || !strlen(field->name)) {
-	    jerr(JSON_CODE_RESERVED(9), NULL, __func__, __FILE__, NULL, __LINE__, "found NULL or empty field in found_common_json_fields list");
+	    jerr(JSON_CODE_RESERVED(9), NULL, __func__, __FILE__, NULL, __LINE__, "found NULL or empty field in found_common_json_fields list in file %s", json_filename);
 	    not_reached();
 	}
 
@@ -2763,7 +2766,7 @@ check_found_common_json_fields(char const *program, char const *file, char const
 	 * common list is not a common field name.
 	 */
 	if (common_field == NULL) {
-	    jerr(JSON_CODE_RESERVED(10), NULL, __func__, __FILE__, NULL, __LINE__, "illegal field name '%s' in found_common_json_fields list", field->name);
+	    jerr(JSON_CODE_RESERVED(10), NULL, __func__, __FILE__, NULL, __LINE__, "illegal field name '%s' in found_common_json_fields list in file %s", field->name, json_filename);
 	    not_reached();
 	}
 
@@ -2776,13 +2779,12 @@ check_found_common_json_fields(char const *program, char const *file, char const
 	    char *val = value->value;
 
 	    if (val == NULL) {
-		jerr(JSON_CODE_RESERVED(11), NULL, __func__, __FILE__, NULL, __LINE__, "NULL pointer val for field '%s' in file %s", field->name, file);
+		jerr(JSON_CODE_RESERVED(11), NULL, __func__, __FILE__, NULL, __LINE__, "NULL pointer val for field '%s' in file %s", field->name, json_filename);
 		not_reached();
 	    }
 
 	    if (common_field->max_count > 0 && common_field->count > common_field->max_count) {
-		jwarn(JSON_CODE(1), program, __func__, file, NULL, value->line_num, "field '%s' found %ju times but is only allowed %ju time%s", common_field->name,
-		    (uintmax_t)common_field->count, (uintmax_t)common_field->max_count, common_field->max_count==1?"":"s");
+		jwarn(JSON_CODE(1), program, __func__, __FILE__, NULL, value->line_num, "field '%s' found %ju times but is only allowed %ju time%s in file %s", common_field->name, (uintmax_t)common_field->count, (uintmax_t)common_field->max_count, common_field->max_count==1?"":"s", json_filename);
 		++issues;
 	    }
 
@@ -2790,7 +2792,7 @@ check_found_common_json_fields(char const *program, char const *file, char const
 	    val_length = strlen(val);
 
 	    if (!val_length) {
-		warn(__func__, "empty value found for field '%s' in file %s: '%s'", field->name, file, val);
+		warn(__func__, "empty value found for field '%s' in file %s: '%s'", field->name, json_filename, val);
 		/* don't increase issues because the below checks will do that
 		 * too: this warning only notes the reason the test will fail.
 		 */
@@ -2799,14 +2801,14 @@ check_found_common_json_fields(char const *program, char const *file, char const
 	    switch (common_field->field_type) {
 		case JSON_BOOL:
 		    if (strcmp(val, "false") && strcmp(val, "true")) {
-			warn(__func__, "bool field '%s' has non boolean value in file %s: '%s'", common_field->name, file, val);
+			warn(__func__, "bool field '%s' has non boolean value in file %s: '%s'", common_field->name, json_filename, val);
 			++issues;
 			continue;
 		    }
 		    break;
 		case JSON_NUMBER:
 		    if (!is_number(val)) {
-			warn(__func__, "number field '%s' has non-number value in file %s: '%s'", common_field->name, file, val);
+			warn(__func__, "number field '%s' has non-number value in file %s: '%s'", common_field->name, json_filename, val);
 			++issues;
 			continue;
 		    }
@@ -2820,23 +2822,23 @@ check_found_common_json_fields(char const *program, char const *file, char const
 
 	    if (!strcmp(field->name, "ioccc_contest")) {
 		if (strcmp(val, IOCCC_CONTEST)) {
-		    warn(__func__, "ioccc_contest != \"%s\" in file %s: \"%s\"", IOCCC_CONTEST, file, val);
+		    warn(__func__, "ioccc_contest != \"%s\" in file %s: \"%s\"", IOCCC_CONTEST, json_filename, val);
 		    ++issues;
 		}
 	    } else if (!strcmp(field->name, "ioccc_year")) {
 		year = string_to_int(val);
 		if (year != IOCCC_YEAR) {
-		    warn(__func__, "ioccc_year != IOCCC_YEAR %d in file %s: '%s' (%d)", IOCCC_YEAR, file, val, year);
+		    warn(__func__, "ioccc_year != IOCCC_YEAR %d in file %s: '%s' (%d)", IOCCC_YEAR, json_filename, val, year);
 		    ++issues;
 		}
 	    } else if (!strcmp(field->name, "mkiocccentry_version")) {
 		if (!test && strcmp(val, MKIOCCCENTRY_VERSION)) {
-		    warn(__func__, "mkiocccentry_version != MKIOCCCENTRY_VERSION \"%s\" in file %s: \"%s\"", MKIOCCCENTRY_VERSION, file, val);
+		    warn(__func__, "mkiocccentry_version != MKIOCCCENTRY_VERSION \"%s\" in file %s: \"%s\"", MKIOCCCENTRY_VERSION, json_filename, val);
 		    ++issues;
 		}
 	    } else if (!strcmp(field->name, "fnamchk_version")) {
 		if (!test && strcmp(val, FNAMCHK_VERSION)) {
-		    warn(__func__, "fnamchk_version != FNAMCHK_VERSION \"%s\" in file %s: \"%s\"", FNAMCHK_VERSION, file, val);
+		    warn(__func__, "fnamchk_version != FNAMCHK_VERSION \"%s\" in file %s: \"%s\"", FNAMCHK_VERSION, json_filename, val);
 		    ++issues;
 		}
 	    } else if (!strcmp(field->name, "IOCCC_contest_id")) {
@@ -2845,25 +2847,25 @@ check_found_common_json_fields(char const *program, char const *file, char const
 		 */
 		contest_id_val = contest_id_val != NULL ? contest_id_val : val;
 		if (!valid_contest_id(val)) {
-		    warn(__func__, "IOCCC_contest_id is invalid in file %s: \"%s\"", file, val);
+		    warn(__func__, "IOCCC_contest_id is invalid in file %s: \"%s\"", json_filename, val);
 		    ++issues;
 		}
 	    } else if (!strcmp(field->name, "min_timestamp")) {
 		ts = string_to_long(val);
 		if (ts != MIN_TIMESTAMP) {
-		    warn(__func__, "min_timestamp != MIN_TIMESTAMP '%ld' in file %s: '%s' (%ld)", MIN_TIMESTAMP, file, val, ts);
+		    warn(__func__, "min_timestamp != MIN_TIMESTAMP '%ld' in file %s: '%s' (%ld)", MIN_TIMESTAMP, json_filename, val, ts);
 		    ++issues;
 		}
 	    } else if (!strcmp(field->name, "timestamp_epoch")) {
 		if (strcmp(val, TIMESTAMP_EPOCH)) {
-		    warn(__func__, "timestamp_epoch != TIMESTAMP_EPOCH \"%s\" in file %s: \"%s\"", TIMESTAMP_EPOCH, file, val);
+		    warn(__func__, "timestamp_epoch != TIMESTAMP_EPOCH \"%s\" in file %s: \"%s\"", TIMESTAMP_EPOCH, json_filename, val);
 		    ++issues;
 		}
 	    } else if (!strcmp(field->name, "formed_timestamp_usec")) {
 		errno = 0;
 		ts = string_to_long(val);
 		if (ts < 0 || ts > 999999) {
-		    warnp(__func__, "formed_timestamp_usec out of range of >= 0 && <= 999999 in file %s: '%ld'", file, ts);
+		    warnp(__func__, "formed_timestamp_usec out of range of >= 0 && <= 999999 in file %s: '%ld'", json_filename, ts);
 		    ++issues;
 		}
 	    } else if (!strcmp(field->name, "entry_num")) {
@@ -2873,7 +2875,7 @@ check_found_common_json_fields(char const *program, char const *file, char const
 		entry_num_val = entry_num_val != NULL ? entry_num_val : val;
 		entry_num = string_to_int(val);
 		if (!(entry_num >= 0 && entry_num <= MAX_ENTRY_NUM)) {
-		    warn(__func__, "entry number out of range in file %s: %d", file, entry_num);
+		    warn(__func__, "entry number out of range in file %s: %d", json_filename, entry_num);
 		    ++issues;
 		}
 	    } else if (!strcmp(field->name, "formed_UTC")) {
@@ -2889,7 +2891,7 @@ check_found_common_json_fields(char const *program, char const *file, char const
 		formed_timestamp_val = formed_timestamp_val != NULL ? formed_timestamp_val : val;
 		ts = string_to_long(val);
 		if (ts < MIN_TIMESTAMP) {
-		    warn(__func__, "formed_timestamp < MIN_TIMESTAMP '%ld' in file %s: '%s' (%ld)", MIN_TIMESTAMP, file, val, ts);
+		    warn(__func__, "formed_timestamp < MIN_TIMESTAMP '%ld' in file %s: '%s' (%ld)", MIN_TIMESTAMP, json_filename, val, ts);
 		    ++issues;
 		}
 	    } else if (!strcmp(field->name, "tarball")) {
@@ -2924,7 +2926,7 @@ check_found_common_json_fields(char const *program, char const *file, char const
 		 * not a valid field we would have already detected and aborted
 		 * earlier in this loop so we don't have to check for that.
 		 */
-		warn(__func__, "found unhandled common field in file %s: '%s'", file, field->name);
+		warn(__func__, "found unhandled common field in file %s: '%s'", json_filename, field->name);
 		/*
 		 * NOTE: Don't increment issues because this doesn't mean
 		 * there's anything wrong with the json file but rather that the
@@ -2945,14 +2947,14 @@ check_found_common_json_fields(char const *program, char const *file, char const
      */
     for (loc = 0; common_json_fields[loc].name != NULL; ++loc) {
 	if (!common_json_fields[loc].found && common_json_fields[loc].max_count > 0) {
-	    warn(__func__, "required field not found in found_common_json_fields list in file %s: '%s'", file, common_json_fields[loc].name);
+	    warn(__func__, "required field not found in found_common_json_fields list in file %s: '%s'", json_filename, common_json_fields[loc].name);
 	    ++issues;
 	}
     }
 
     /* test consistency of test_mode and tarball field */
     if (tarball_field == NULL) {
-	warn(__func__, "required field not found in found_common_json_fields list in file %s: 'tarball'", file);
+	warn(__func__, "required field not found in found_common_json_fields list in file %s: 'tarball'", json_filename);
 	++issues;
     } else if (test_mode) {
 	/*
@@ -3048,14 +3050,14 @@ check_found_common_json_fields(char const *program, char const *file, char const
  * check if the field is already in the list.
  */
 struct json_field *
-new_json_field(char const *name, char const *val, int line_num)
+new_json_field(char const *json_filename, char const *name, char const *val, int line_num)
 {
     struct json_field *field; /* the new field */
 
     /*
      * firewall
      */
-    if (name == NULL || val == NULL) {
+    if (json_filename == NULL || name == NULL || val == NULL) {
 	err(226, __func__, "passed NULL arg(s)");
 	not_reached();
     }
@@ -3074,7 +3076,7 @@ new_json_field(char const *name, char const *val, int line_num)
 	not_reached();
     }
 
-    if (add_json_value(field, val, line_num) == NULL) {
+    if (add_json_value(json_filename, field, val, line_num) == NULL) {
 	err(229, __func__, "error adding value '%s' to field '%s'", val, name);
 	not_reached();
     }
@@ -3090,6 +3092,7 @@ new_json_field(char const *name, char const *val, int line_num)
  *
  * given:
  *
+ *	json_filename	- path to the json file being parsed
  *	field		- the field to add to
  *	val		- the value to add
  *	line_num	- the 'line number' of the value
@@ -3104,7 +3107,7 @@ new_json_field(char const *name, char const *val, int line_num)
  *
  */
 struct json_value *
-add_json_value(struct json_field *field, char const *val, int line_num)
+add_json_value(char const *json_filename, struct json_field *field, char const *val, int line_num)
 {
     struct json_value *new_value = NULL;    /* the newly allocated value */
     struct json_value *value = NULL;	    /* the current list of values in field */
@@ -3112,7 +3115,7 @@ add_json_value(struct json_field *field, char const *val, int line_num)
     /*
      * firewall
      */
-    if (field == NULL || val == NULL) {
+    if (json_filename == NULL || field == NULL || val == NULL) {
 	err(230, __func__, "passed NULL arg(s)");
 	not_reached();
     }
@@ -3121,7 +3124,7 @@ add_json_value(struct json_field *field, char const *val, int line_num)
     errno = 0;
     new_value = calloc(1, sizeof *new_value);
     if (new_value == NULL) {
-	errp(231, __func__, "error allocating new value '%s' for field '%s': %s", val, field->name, strerror(errno));
+	errp(231, __func__, "error allocating new value '%s' for field '%s' in file %s: %s", val, field->name, json_filename, strerror(errno));
 	not_reached();
     }
     errno = 0;
