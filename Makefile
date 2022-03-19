@@ -84,19 +84,48 @@ SEQCEXIT= seqcexit
 SHELLCHECK= shellcheck
 TR= tr
 TRUE= true
+FLEX = flex
+BISON = bison
+
+# User specific configurations
+#
+# This retrieves any user specific configurations in the file makefile.config
+# (added to .gitignore).
+#
+# This was added by @xexyl on 19 March 2022 for when he starts using flex(1) and
+# bison(1) under macOS (not a problem with his linux boxes) as the macOS
+# versions are out of date; however he uses MacPorts which has an unusual prefix
+# (/opt/local) so instead of assuming the path of flex and bison is the same
+# (since it's not always) I can have my makefile.config override the path to the
+# tools I need.
+#
+# The - before include means it's not an error if the file does not exist (which
+# it won't in most if not all systems but my MacBook Pro). Lower case name
+# because I don't need it at the beginning of the directory listing.
+#
+# NOTE: This is what my makefile.config looks like so you can see how it works:
+# 
+#	FLEX = /opt/local/bin/flex
+#	BISON = /opt/local/bin/bison
+#
+# After this whenever ${FLEX} and ${BISON} are referenced it will translate to
+# the tools under /opt/local/bin.
+#
+-include makefile.config
 
 # C source standards being used
 #
 # NOTE: The use of -std=gnu11 is because there are a few older systems
-#	in larte 2021 that do not have compilers that (yet) support gnu17.
+#	in late 2021 that do not have compilers that (yet) support gnu17.
 #	While there may be even more out of date systems that do not
 #	support gnu11, we have to draw the line somewhere.
 #
 # NOTE: The -D_* lines in STD_SRC are due to a few older systems in
-#	late 2021 that need those defines to compile this code.
+#	late 2021 that need those defines to compile this code. CentOS
+#	7 is such a system.
 #
 # NOTE: The code in the mkiocccentry repo is to help you form and
-#	submit a compressed tarball that needs the IOCCC requirements.
+#	submit a compressed tarball that meets the IOCCC requirements.
 #	Your IOCCC entry is free to require older C standards, or
 #	even not specify a C standard at all.  Moreover, your entry's
 #	Makefile, can do what it needs to do, perhaps by using the

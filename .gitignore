@@ -77,5 +77,8 @@ dkms.conf
 # Makefile backup (make depend specific)
 Makefile.orig
 
+# user specific Makefile config
+makefile.config
+
 # macOS files
 .DS_Store
