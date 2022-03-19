@@ -118,9 +118,9 @@ extern size_t SIZEOF_AUTHOR_JSON_FIELDS_TABLE;		/* number of elements in the aut
 static void usage(int exitcode, char const *name, char const *str) __attribute__((noreturn));
 static void jauthchk_sanity_chks(char const *file, char const *fnamchk);
 static int check_author_json(char const *file, char const *fnamchk);
-static struct json_field *add_found_author_json_field(char const *name, char const *val, int line_num);
-static int add_author_json_field(char const *file, char *name, char *val, int line_num);
-static int check_found_author_json_fields(char const *file, bool test);
+static struct json_field *add_found_author_json_field(char const *json_filename, char const *name, char const *val, int line_num);
+static bool add_author_json_field(char const *file, char *name, char *val, int line_num);
+static int check_found_author_json_fields(char const *json_filename, bool test);
 static void free_found_author_json_fields(void);
 
 

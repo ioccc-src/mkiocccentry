@@ -20,17 +20,19 @@
 # The format as of 15 March 2022 is:
 #
 #	# program: (jinfochk|jauthchk|jchk) <function>
-#	JSON[XXXX]: <file>: <line num> <error>
+#	JSON[XXXX]: <source file>: <line num> <error>
 #
 # Where jchk means it (the JSON code) exists in both jinfochk and jauthchk or
 # more specifically if the code can happen in more than one program; and
 # otherwise it's the specific tool; function is the calling function for example
 # check_info_json() or check_author_json() (both of which will change once a
-# proper json parser is implemented); file is the offending json file; line
-# number the line number of the offending line (currently each field extracted
-# is a new line number which starts at 1 but for certain checks the C source
-# file's line will be used instead) and error is the actual error.
-#
+# proper json parser is implemented); file is the source file of the function
+# but the offending json filename will be in the error messages (where
+# applicable); line number the line number of the offending line in the json
+# file (currently each field extracted is a new line number which starts at 1
+# but for certain checks the C source file's line will be used instead) and
+# error is the actual error which as stated usually has the json filename.
+
 # NOTE: As of 15 March 2022 (the day of creation of this file and the jerr() and
 # jerrp() functions) most errors in json parsing uses err() or errp() and not
 # the json equivalents. This will be changed in time.
@@ -60,7 +62,7 @@
 
 
 ###
-### JSON ERROR CODES BELOW (LAST UPDATED: 18 MARCH 2022)
+### JSON ERROR CODES BELOW (LAST UPDATED: 19 MARCH 2022)
 ###
 
 # program: jchk check_common_json_fields_table
@@ -89,19 +91,19 @@ JSON[0005]: json.c: %d: passed NULL table
 JSON[0006]: (jauthchk|json|jinfochk).c: %d: passed NULL arg(s)
 
 # program: jchk add_found_(author|common|info)_json_field
-JSON[0007]: (jauthchk|json|jinfochk).c: %d: couldn't add value '%s' to field '%s'
+JSON[0007]: (jauthchk|json|jinfochk).c: %d: couldn't add value '%s' to field '%s' file %s
 
 # program: jchk add_found_(author|common|info)_json_field
-JSON[0008]: (jauthchk|json|jinfochk).c: %d: error creating new struct json_field * for field '%s' value '%s'
+JSON[0008]: (jauthchk|json|jinfochk).c: %d: error creating new struct json_field for field '%s' value '%s' file %s
 
 # program: jchk check_found_(author|common|info)_json_fields
-JSON[0009]: (jauthchk|json|jinfochk).c: %d: found NULL or empty field in found_(author|common|info)_json_fields list
+JSON[0009]: (jauthchk|json|jinfochk).c: %d: found NULL or empty field in found_(author|common|info)_json_fields list in file %s
 
 # program: jchk check_found_(author|common|info)_json_fields
-JSON[0010]: (jauthchk|json|jinfochk).c: %d: illegal field name '%s' in found_(author|common|info)_json_fields list
+JSON[0010]: (jauthchk|json|jinfochk).c: %d: illegal field name '%s' in found_(author|common|info)_json_fields list in file %s
 
 # program: jchk check_found_(author|common|info)_json_fields
-JSON[0011]: (jauthchk|json|jinfochk).c: %d: NULL pointer val for field '%s'
+JSON[0011]: (jauthchk|json|jinfochk).c: %d: NULL pointer val for field '%s' in file %s
 
 
 ###

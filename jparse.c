@@ -87,7 +87,7 @@ main(int argc, char **argv)
 	    errno = 0;		/* pre-clear errno for warnp() */
 	    ret = printf("%s\n", IOCCC_TOOLKIT_RELEASE);
 	    if (ret <= 0) {
-		warnp(__func__, "printf error printing IOCCC toolkit release repository tag");
+		warnp(__func__, "printf error printing IOCCC toolkit release repository tag: %s", IOCCC_TOOLKIT_RELEASE);
 	    }
 	    exit(0); /*ooo*/
 	    not_reached();
@@ -264,10 +264,10 @@ main(int argc, char **argv)
 	}
 
 	dbg(DBG_MED, "string length: %ju", (uintmax_t)length);
-	errno = 0;		/* pre-clear errno for warnp() */
+	errno = 0;		/* pre-clear errno for errp() */
 	outputlen = fwrite(input, 1, length, stdout);
 	if (outputlen != length) {
-	    err(42, __func__, "error: write of %ju bytes of stdin data: returned: %ju",
+	    errp(42, __func__, "error: write of %ju bytes of stdin data: returned: %ju",
 			    (uintmax_t)length, (uintmax_t)outputlen);
 	    not_reached();
 	}
@@ -309,10 +309,10 @@ print_newline(bool output_newline)
     int ret;
 
     if (output_newline) {
-	errno = 0;		/* pre-clear errno for warnp() */
+	errno = 0;		/* pre-clear errno for errp() */
 	ret = putchar('\n');
 	if (ret != '\n') {
-	    err(43, __func__, "error while writing newline");
+	    errp(43, __func__, "error while writing newline");
 	    not_reached();
 	}
     }

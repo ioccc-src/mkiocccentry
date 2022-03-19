@@ -629,28 +629,28 @@ check_author_json(char const *file, char const *fnamchk)
  *
  * given:
  *
- *	file	    - the file being parsed (path to)
- *	name	    - the field name
- *	val	    - the value of the field
- *	line_num    - the 'line number' of the value
+ *	json_filename	- the file being parsed (path to)
+ *	name		- the field name
+ *	val		- the value of the field
+ *	line_num	- the 'line number' of the value
  *
  * returns:
- *	1 ==> if the name is a .info.json field
- *	0 ==> if it's not one of the .info.json fields
+ *	true ==> if the name is a .author.json field and it's added to the list
+ *	false ==> if it's not one of the .author.json fields
  *
  * NOTE: Does not return on error (NULL pointers).
  */
-int
-add_author_json_field(char const *file, char *name, char *val, int line_num)
+bool
+add_author_json_field(char const *json_filename, char *name, char *val, int line_num)
 {
-    int ret = 1;	/* return value: 1 ==> known field, 0 ==> not a common field */
+    bool ret = true;	/* return value: true ==> known field and added, false ==> not a common field */
     struct json_field *field = NULL; /* the field in the author_json_fields table if found */
     size_t loc = 0; /* location in the author_json_fields table */
 
     /*
      * firewall
      */
-    if (file == NULL || name == NULL || val == NULL) {
+    if (json_filename == NULL || name == NULL || val == NULL) {
 	err(28, __func__, "passed NULL arg(s)");
 	not_reached();
     }
@@ -661,9 +661,9 @@ add_author_json_field(char const *file, char *name, char *val, int line_num)
     field = find_json_field_in_table(author_json_fields, name, &loc);
     if (field != NULL) {
 	dbg(DBG_MED, "found field '%s' with value '%s'", field->name, val);
-	add_found_author_json_field(field->name, val, line_num);
+	add_found_author_json_field(json_filename, field->name, val, line_num);
     } else {
-	ret = 0;
+	ret = false;
     }
     return ret;
 }
@@ -679,8 +679,8 @@ add_author_json_field(char const *file, char *name, char *val, int line_num)
  *
  *  given:
  *
- *	    file	- .author.json file we're checking
- *	    test	- if test mode: ignore some checks
+ *	    json_filename   - .author.json file we're checking
+ *	    test	    - if test mode: ignore some checks
  *
  *
  * returns:
@@ -688,7 +688,7 @@ add_author_json_field(char const *file, char *name, char *val, int line_num)
  *	0 ==> if no issues were found
  */
 int
-check_found_author_json_fields(char const *file, bool test)
+check_found_author_json_fields(char const *json_filename, bool test)
 {
     struct json_field *field; /* current field in found_author_json_fields list */
     struct json_value *value; /* current value in current field's values list */
@@ -701,8 +701,8 @@ check_found_author_json_fields(char const *file, bool test)
     /*
      * firewall
      */
-    if (file == NULL) {
-	err(29, __func__, "passed NULL file");
+    if (json_filename == NULL) {
+	err(29, __func__, "passed NULL json_filename");
 	not_reached();
     }
 
@@ -711,7 +711,7 @@ check_found_author_json_fields(char const *file, bool test)
 	 * first make sure the name != NULL and strlen() > 0
 	 */
 	if (field->name == NULL || strlen(field->name) <= 0) {
-	    jerr(JSON_CODE_RESERVED(9), NULL, __func__, __FILE__, NULL, __LINE__, "found NULL or empty field in found_author_json_fields list");
+	    jerr(JSON_CODE_RESERVED(9), NULL, __func__, __FILE__, NULL, __LINE__, "found NULL or empty field in found_author_json_fields list in file %s", json_filename);
 	    not_reached();
 	}
 
@@ -726,23 +726,23 @@ check_found_author_json_fields(char const *file, bool test)
 	 * author list is not a author field name.
 	 */
 	if (author_field == NULL) {
-	    jerr(JSON_CODE_RESERVED(10), NULL, __func__, __FILE__, NULL, __LINE__, "illegal field name '%s' in found_author_json_fields list", field->name);
+	    jerr(JSON_CODE_RESERVED(10), NULL, __func__, __FILE__, NULL, __LINE__, "illegal field name '%s' in found_author_json_fields list in file %s", field->name, json_filename);
 	    not_reached();
 	}
 
-	dbg(DBG_VHIGH, "checking field '%s' in file %s", field->name, file);
+	dbg(DBG_VHIGH, "checking field '%s' in file %s", field->name, json_filename);
 	for (value = field->values; value != NULL; value = value->next) {
 	    char *val = value->value;
 
 	    if (val == NULL) {
-		jerr(JSON_CODE_RESERVED(11), NULL, __func__, __FILE__, NULL, __LINE__, "NULL pointer val for field '%s' in file %s", field->name, file);
+		jerr(JSON_CODE_RESERVED(11), NULL, __func__, __FILE__, NULL, __LINE__, "NULL pointer val for field '%s' in file %s", field->name, json_filename);
 		not_reached();
 	    }
 
 	    val_length = strlen(val);
 
 	    if (!val_length) {
-		warn(__func__, "empty value found for field '%s' in file %s: '%s'", field->name, file, val);
+		warn(__func__, "empty value found for field '%s' in file %s: '%s'", field->name, json_filename, val);
 		/*
 		 * NOTE: don't increase issues because the below checks will do
 		 * that too: this warning only notes the reason the test will
@@ -752,8 +752,7 @@ check_found_author_json_fields(char const *file, bool test)
 
 	    /* make sure the field is not over the limit allowed */
 	    if (author_field->max_count > 0 && author_field->count > author_field->max_count) {
-		jwarn(JSON_CODE(1), program, __func__, file, NULL, value->line_num, "field '%s' found %ju times but is only allowed %ju time%s",
-			author_field->name, (uintmax_t)author_field->count, (uintmax_t)author_field->max_count, author_field->max_count==1?"":"s");
+		jwarn(JSON_CODE(1), program, __func__, __FILE__, NULL, value->line_num, "field '%s' found %ju times but is only allowed %ju time%s in file %s", author_field->name, (uintmax_t)author_field->count, (uintmax_t)author_field->max_count, author_field->max_count==1?"":"s", json_filename);
 		++issues;
 	    }
 
@@ -768,7 +767,7 @@ check_found_author_json_fields(char const *file, bool test)
 	    switch (author_field->field_type) {
 		case JSON_BOOL:
 		    if (strcmp(val, "false") && strcmp(val, "true")) {
-			warn(__func__, "bool field '%s' has non boolean value in file %s: '%s'", author_field->name, file, val);
+			warn(__func__, "bool field '%s' has non boolean value in file %s: '%s'", author_field->name, json_filename, val);
 			++issues;
 			continue;
 		    } else {
@@ -779,7 +778,7 @@ check_found_author_json_fields(char const *file, bool test)
 		    break; /* arrays are not handled yet */
 		case JSON_NUMBER:
 		    if (!is_number(val)) {
-			warn(__func__, "number field '%s' has non-number value in file %s: '%s'", author_field->name, file, val);
+			warn(__func__, "number field '%s' has non-number value in file %s: '%s'", author_field->name, json_filename, val);
 			++issues;
 			continue;
 		    } else {
@@ -794,18 +793,18 @@ check_found_author_json_fields(char const *file, bool test)
 
 	    if (!strcmp(field->name, "IOCCC_author_version")) {
 		if (!test && strcmp(val, AUTHOR_VERSION)) {
-		    warn(__func__, "IOCCC_author_version != \"%s\" in file %s: \"%s\"", AUTHOR_VERSION, file, val);
+		    warn(__func__, "IOCCC_author_version != \"%s\" in file %s: \"%s\"", AUTHOR_VERSION, json_filename, val);
 		    ++issues;
 		}
 	    } else if (!strcmp(field->name, "jauthchk_version")) {
 		if (!test && strcmp(val, JAUTHCHK_VERSION)) {
-		    warn(__func__, "jauthchk_version != JAUTHCHK_VERSION \"%s\" in file %s: \"%s\"", JAUTHCHK_VERSION, file, val);
+		    warn(__func__, "jauthchk_version != JAUTHCHK_VERSION \"%s\" in file %s: \"%s\"", JAUTHCHK_VERSION, json_filename, val);
 		    ++issues;
 		}
 	    } else if (!strcmp(field->name, "author_count")) {
 		author_count = string_to_int(val);
 		if (!(author_count > 0 && author_count <= MAX_AUTHORS)) {
-		    warn(__func__, "author count out of range of > 1 && <= %d in file %s: '%s' (%d)", MAX_AUTHORS, file, val, author_count);
+		    warn(__func__, "author count out of range of > 1 && <= %d in file %s: '%s' (%d)", MAX_AUTHORS, json_filename, val, author_count);
 		    ++issues;
 		}
 	    } else {
@@ -815,7 +814,7 @@ check_found_author_json_fields(char const *file, bool test)
 		 * not a valid field we would have already detected and aborted
 		 * earlier in this loop so we don't have to check for that.
 		 */
-		warn(__func__, "found unhandled author field in file %s: '%s'", file, field->name);
+		warn(__func__, "found unhandled author field in file %s: '%s'", json_filename, field->name);
 		/*
 		 * NOTE: Don't increment issues because this doesn't mean
 		 * there's anything wrong with the .author.json file but rather
@@ -838,6 +837,7 @@ check_found_author_json_fields(char const *file, bool test)
  *	name			- field name
  *	val			- field value
  *	line_num		- the 'line number' of the value
+ *	filename		- filename being parsed
  *
  * Returns the newly allocated struct json_field * added to the
  * found_author_json_fields list.
@@ -848,7 +848,7 @@ check_found_author_json_fields(char const *file, bool test)
  *
  */
 static struct json_field *
-add_found_author_json_field(char const *name, char const *val, int line_num)
+add_found_author_json_field(char const *json_filename, char const *name, char const *val, int line_num)
 {
     struct json_field *field = NULL; /* iterate through fields list to find the field (or if not found, create a new field) */
     struct json_value *value = NULL; /* the new value */
@@ -858,14 +858,14 @@ add_found_author_json_field(char const *name, char const *val, int line_num)
     /*
      * firewall
      */
-    if (name == NULL || val == NULL) {
+    if (name == NULL || val == NULL || json_filename == NULL) {
 	jerr(JSON_CODE_RESERVED(6), NULL, __func__, __FILE__, NULL, __LINE__, "passed NULL arg(s)");
 	not_reached();
     }
 
     field_in_table = find_json_field_in_table(author_json_fields, name, &loc);
     if (field_in_table == NULL) {
-	err(30, __func__, "called add_found_author_json_field() on field '%s' not specific to .author.json", name);
+	err(30, __func__, "called add_found_author_json_field() on field '%s' not specific to .author.json in file %s", name, json_filename);
 	not_reached();
     }
     /*
@@ -881,13 +881,13 @@ add_found_author_json_field(char const *name, char const *val, int line_num)
 	     * we found a field already in the list, add the value (even if this
 	     * value was already in the list as this is needed in some cases).
 	     */
-	    value = add_json_value(field, val, line_num);
+	    value = add_json_value(json_filename, field, val, line_num);
 	    if (value == NULL) {
 		/*
 		 * this shouldn't happen as if add_json_value() gets an error
 		 * it'll abort but just to be safe we check here too
 		 */
-		jerr(JSON_CODE_RESERVED(7), NULL, __func__, __FILE__, NULL, __LINE__, "couldn't add value '%s' to field '%s'", val, field->name);
+		jerr(JSON_CODE_RESERVED(7), NULL, __func__, __FILE__, NULL, __LINE__, "couldn't add value '%s' to field '%s' file %s", val, field->name, json_filename);
 		not_reached();
 	    }
 
@@ -901,13 +901,13 @@ add_found_author_json_field(char const *name, char const *val, int line_num)
      * okay we got here which means we have to create a new field in the list
      * with the value passed in
      */
-    field = new_json_field(name, val, line_num);
+    field = new_json_field(json_filename, name, val, line_num);
     if (field == NULL) {
 	/*
 	 * we should never get here because if new_json_field gets NULL it
 	 * aborts the program.
 	 */
-	jerr(JSON_CODE_RESERVED(8), NULL, __func__, __FILE__, NULL, __LINE__, "error creating new struct json_field * for field '%s' value '%s'", name, val);
+	jerr(JSON_CODE_RESERVED(8), NULL, __func__, __FILE__, NULL, __LINE__, "error creating new struct json_field * for field '%s' value '%s' file %s", name, val, json_filename);
 	not_reached();
     }
 
