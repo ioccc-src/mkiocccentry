@@ -267,7 +267,7 @@ main(int argc, char **argv)
 	errno = 0;		/* pre-clear errno for errp() */
 	outputlen = fwrite(input, 1, length, stdout);
 	if (outputlen != length) {
-	    err(42, __func__, "error: write of %ju bytes of stdin data: returned: %ju",
+	    errp(42, __func__, "error: write of %ju bytes of stdin data: returned: %ju",
 			    (uintmax_t)length, (uintmax_t)outputlen);
 	    not_reached();
 	}
@@ -312,7 +312,7 @@ print_newline(bool output_newline)
 	errno = 0;		/* pre-clear errno for errp() */
 	ret = putchar('\n');
 	if (ret != '\n') {
-	    err(43, __func__, "error while writing newline");
+	    errp(43, __func__, "error while writing newline");
 	    not_reached();
 	}
     }
