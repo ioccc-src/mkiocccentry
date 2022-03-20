@@ -235,7 +235,7 @@ main(int argc, char **argv)
      * parse args
      */
     program = argv[0];
-    while ((i = getopt(argc, argv, "hv:qVnsTS:")) != -1) {
+    while ((i = getopt(argc, argv, "hv:qVnSTs:")) != -1) {
 	switch (i) {
 	case 'h':		/* -h - print help to stderr and exit 0 */
 	    usage(2, "-h help mode", program); /*ooo*/
@@ -271,7 +271,7 @@ main(int argc, char **argv)
 	case 'n':
 	    output_newline = false;
 	    break;
-	case 's':
+	case 'S':
 	    /*
 	     * XXX currently this is unused as json parsing is not done yet and
 	     * this is why the compiler flags for jparse.c has (for now) include
@@ -280,7 +280,7 @@ main(int argc, char **argv)
 	    strict = true;
 	    dbg(DBG_MED, "enabling strict mode");
 	    break;
-	case 'S':
+	case 's':
 	    /*
 	     * So we don't trigger missing arg. Maybe there's another way but
 	     * nothing is coming to my mind right now.
@@ -295,7 +295,7 @@ main(int argc, char **argv)
 	     * and some not strict after each string is parsed the strict mode
 	     * is disabled so that so that another -s has to be specified prior
 	     * to the string. This does mean that if you want strict parsing of
-	     * files and you specify the -S option then you must have -s after
+	     * files and you specify the -s option then you must have -S after
 	     * the string args.
 	     *
 	     * But the question is: should it be this way or should it be
@@ -303,7 +303,7 @@ main(int argc, char **argv)
 	     * specifically disables strict mode so that one can not worry about
 	     * having to specify -s repeatedly? I think it might be better this
 	     * way but I'm not sure what letter should do it. Perhaps -x? If we
-	     * didn't use -S for string it could be S but we do so that won't
+	     * didn't use -S for strict it could be S but we do so that won't
 	     * work.
 	     */
 	    dbg(DBG_MED, "disabling strict mode");
