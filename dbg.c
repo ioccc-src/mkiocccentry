@@ -37,7 +37,7 @@
 /*
  * definitions
  */
-#define VERSION "1.5 2022-03-07"
+#define VERSION "1.6 2022-03-20"
 
 
 /*
@@ -59,10 +59,11 @@ static bool quiet = false;		/* true ==> only show errors, and warnings if -v > 0
  * This is just an example of usage: there is no mkiocccentry functionality here.
  */
 static char const * const usage =
-"usage: %s [-h] [-v level] [-e errno] foo bar [baz]\n"
+"usage: %s [-h] [-v level] [-q] [-e errno] foo bar [baz]\n"
 "\n"
 "\t-h\t\tprint help message and exit 0\n"
 "\t-v level\tset verbosity level: (def level: 0)\n"
+"\t-q\t\tquiet mode, unless verbosity level > 0 (def: not quiet)\n"
 "\t-e errno\tsimulate setting of errno to cause errp() to be involved\n"
 "\n"
 "\tfoo\t\ta required arg\n"
