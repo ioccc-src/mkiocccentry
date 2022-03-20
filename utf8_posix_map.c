@@ -1624,7 +1624,7 @@ check_utf8_posix_map(void)
 
 
 /*
- * default_handle - compute a default handle given name and UUID
+ * default_handle - compute a default handle given name
  *
  * A default author handle attempted to be computed from the author name, using
  * the utf8_posix_map hmap[] to translate certain UTF-8 strings in the name
