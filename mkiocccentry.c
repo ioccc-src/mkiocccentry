@@ -2349,7 +2349,7 @@ check_prog_c(struct info *infop, char const *entry_dir, char const *cp, char con
     }
 
     /*
-     * sanity check on unknown tri-graph(s)
+     * sanity check on unknown trigraph(s)
      */
     if (size.trigraph_warning) {
 	warn_trigraph(prog_c);
@@ -2674,8 +2674,8 @@ warn_Makefile(char const *Makefile, struct info *infop)
 	    fpara(stderr,
 		  "  The Makefile appears to not have a clobber rule.",
 		  "    The clobber rule should restore the directory to the original submission state.",
-		  "    The clobber role should depend on the clean rule, it could remove the entry's program,",
-		  "    clean up after program execution (if needed), and restore the entire directory back",
+		  "    The clobber role should depend on the clean rule and should remove the entry's program,",
+		  "    clean up after program execution (if needed) and restore the entire directory back",
 		  "    to the original submission state.",
 		  "",
 		  NULL);
@@ -5217,10 +5217,10 @@ write_info(struct info *infop, char const *entry_dir, char const *jinfochk, char
     /*
      * perform the jinfochk which will indirectly show the user the tarball contents
      */
-    dbg(DBG_HIGH, "about to perform: %s -q -s -F %s -- %s", jinfochk, fnamchk, info_path);
-    exit_code = shell_cmd(__func__, true, "% -q -s -F % -- %", jinfochk, fnamchk, info_path);
+    dbg(DBG_HIGH, "about to perform: %s -q -S -F %s -- %s", jinfochk, fnamchk, info_path);
+    exit_code = shell_cmd(__func__, true, "% -q -S -F % -- %", jinfochk, fnamchk, info_path);
     if (exit_code != 0) {
-	err(170, __func__, "%s -q -s -F %s -- %s failed with exit code: %d",
+	err(170, __func__, "%s -q -S -F %s -- %s failed with exit code: %d",
 			   jinfochk, fnamchk, info_path, WEXITSTATUS(exit_code));
 	not_reached();
     }
@@ -5383,10 +5383,10 @@ write_author(struct info *infop, int author_count, struct author *authorp, char 
     /*
      * perform the jauthchk which will indirectly show the user the tarball contents
      */
-    dbg(DBG_HIGH, "about to perform: %s -q -s -- %s", jauthchk, author_path);
-    exit_code = shell_cmd(__func__, true, "% -q -s -- %", jauthchk, author_path);
+    dbg(DBG_HIGH, "about to perform: %s -q -S -- %s", jauthchk, author_path);
+    exit_code = shell_cmd(__func__, true, "% -q -S -- %", jauthchk, author_path);
     if (exit_code != 0) {
-	err(181, __func__, "%s -q -s -- %s failed with exit code: %d",
+	err(181, __func__, "%s -q -S -- %s failed with exit code: %d",
 			   jauthchk, author_path, WEXITSTATUS(exit_code));
 	not_reached();
     }
