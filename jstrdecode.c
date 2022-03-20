@@ -72,7 +72,7 @@ main(int argc, char *argv[])
      * parse args
      */
     program = argv[0];
-    while ((i = getopt(argc, argv, "hv:qVtnsT")) != -1) {
+    while ((i = getopt(argc, argv, "hv:qVtnST")) != -1) {
 	switch (i) {
 	case 'h':		/* -h - print help to stderr and exit 0 */
 	    usage(2, "-h help mode", program); /*ooo*/
@@ -115,7 +115,7 @@ main(int argc, char *argv[])
 	case 'n':
 	    nloutput = false;
 	    break;
-	case 's':
+	case 'S':
 	    strict = true;
 	    break;
 	default:

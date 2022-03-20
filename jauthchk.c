@@ -998,7 +998,7 @@ main(int argc, char **argv)
      */
     program = argv[0];
     program_basename = base_name(program);
-    while ((i = getopt(argc, argv, "hv:VqsF:tTW:w")) != -1) {
+    while ((i = getopt(argc, argv, "hv:VqSF:tTW:w")) != -1) {
 	switch (i) {
 	case 'h':		/* -h - print help to stderr and exit 0 */
 	    usage(1, "-h help mode", program); /*ooo*/
@@ -1031,7 +1031,7 @@ main(int argc, char **argv)
 	    exit(0); /*ooo*/
 	    not_reached();
 	    break;
-	case 's':
+	case 'S':
 	    strict = true;
 	    break;
 	case 'F':
