@@ -104,7 +104,7 @@ BISON = bison
 # because I don't need it at the beginning of the directory listing.
 #
 # NOTE: This is what my makefile.local looks like so you can see how it works:
-# 
+#
 #	FLEX = /opt/local/bin/flex
 #	BISON = /opt/local/bin/bison
 #
@@ -179,7 +179,7 @@ DESTDIR= /usr/local/bin
 TARGETS= mkiocccentry iocccsize dbg_test limit_ioccc.sh fnamchk txzchk jauthchk jinfochk \
 	jstrencode jstrdecode jparse
 MANPAGES = mkiocccentry.1 txzchk.1 fnamchk.1 iocccsize.1 jinfochk.1 jauthchk.1
-TEST_TARGETS= dbg_test
+TEST_TARGETS= dbg_test utf8_test
 OBJFILES = dbg.o util.o mkiocccentry.o iocccsize.o fnamchk.o txzchk.o jauthchk.o jinfochk.o \
 	json.o jstrencode.o jstrdecode.o rule_count.o location.o utf8_posix_map.o sanity.o jparse.o
 SRCFILES = $(patsubst %.o,%.c,$(OBJFILES))
@@ -232,6 +232,9 @@ jstrdecode: jstrdecode.c jstrdecode.h dbg.o json.o util.o Makefile
 
 jparse: jparse.c jparse.h json.h json.o dbg.o util.o sanity.o location.o utf8_posix_map.o  Makefile
 	${CC} ${CFLAGS} -Wno-unused-but-set-variable jparse.c json.o dbg.o util.o sanity.o location.o utf8_posix_map.o -o $@
+
+utf8_test: utf8_test.c utf8_posix_map.o dbg.o util.o
+	${CC} ${CFLAGS} utf8_test.c utf8_posix_map.o dbg.o util.o -o $@
 
 limit_ioccc.sh: limit_ioccc.h version.h Makefile
 	${RM} -f $@
