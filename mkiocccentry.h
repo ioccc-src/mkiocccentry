@@ -134,25 +134,25 @@
 static const char * const usage_msg0 =
     "usage: %s [options] work_dir prog.c Makefile remarks.md [file ...]\n"
     "\noptions:\n"
-    "\t-h\t\t\tprint help message and exit 0\n"
-    "\t-v level\t\tset verbosity level: (def level: %d)\n"
-    "\t-q\t\t\tquiet mode, unless verbosity level > 0 (def: not quiet)\n"
-    "\t-V\t\t\tprint version string and exit\n"
-    "\t-T\t\t\tshow IOCCC toolkit release repository tag\n"
-    "\t-W\t\t\tignore all warnings (this does NOT mean the judges will! :) )\n";
+    "\t-h\t\tprint help message and exit 0\n"
+    "\t-v level\tset verbosity level: (def level: %d)\n"
+    "\t-q\t\tquiet mode, unless verbosity level > 0 (def: not quiet)\n"
+    "\t-V\t\tprint version string and exit\n"
+    "\t-T\t\tshow IOCCC toolkit release repository tag\n"
+    "\t-W\t\tignore all warnings (this does NOT mean the judges will! :) )\n";
 static const char * const usage_msg1 =
-    "\t-t /path/to/tar\t\tpath to tar executable that supports the -J (xz) option (def: %s)\n"
-    "\t-c /path/to/cp\t\tpath to cp executable (def: %s)\n"
-    "\t-l /path/to/ls\t\tpath to ls executable (def: %s)\n"
-    "\t-C /path/to/txzchk\tpath to txzchk executable (def: %s)\n"
-    "\t-F /path/to/fnamchk\tpath to fnamchk executable used by txzchk (def: %s)";
+    "\t-t tar\t\tpath to tar executable that supports the -J (xz) option (def: %s)\n"
+    "\t-c cp\t\tpath to cp executable (def: %s)\n"
+    "\t-l ls\t\tpath to ls executable (def: %s)\n"
+    "\t-C txzchk\tpath to txzchk executable (def: %s)\n"
+    "\t-F fnamchk\tpath to fnamchk executable used by txzchk (def: %s)";
 static const char * const usage_msg2 =
-    "\t-j /path/to/jinfochk	path to jinfochk executable used by txzchk (def: %s)\n"
-    "\t-J /path/to/jauthchk	path to jauthchk executable used by txzchk (def: %s)\n";
+    "\t-j jinfochk	path to jinfochk executable used by txzchk (def: %s)\n"
+    "\t-J jauthchk	path to jauthchk executable used by txzchk (def: %s)\n";
 static const char * const usage_msg3 =
-    "\t-a answers\t\twrite answers to a file for easier updating of an entry\n"
-    "\t-A answers\t\twrite answers file even if it already exists\n"
-    "\t-i answers\t\tread answers from file previously written by -a|-A answers\n\n"
+    "\t-a answers\twrite answers to a file for easier updating of an entry\n"
+    "\t-A answers\twrite answers file even if it already exists\n"
+    "\t-i answers\tread answers from file previously written by -a|-A answers\n\n"
     "\t    NOTE: One cannot use both -a/-A answers and -i answers at the same time.\n"
     "\n"
     "\twork_dir\tdirectory where the entry directory and tarball are formed\n"
