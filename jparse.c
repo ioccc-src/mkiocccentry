@@ -36,6 +36,188 @@
  */
 #define REQUIRED_ARGS (0)	/* number of required arguments on the command line */
 
+/* parse_file	    - parses file file
+ *
+ * given:
+ *
+ *	filename    - filename to parse
+ *
+ * If filename is NULL or the filename is not a readable file (or is empty) or
+ * if the file is not a C string or if read_all() returns NULL the function
+ * warns but does nothing else.
+ *
+ * NOTE: Until the JSON parser is written this only prints the string out.
+ */
+static void
+parse_file(char const *filename)
+{
+    size_t length = 0;		/* bytes read if file is a regular file and can be read */
+    size_t outputlen = 0;	/* number of bytes sent to stdout */
+    FILE *input_stream = NULL;	/* FILE * that refers to filename if filename is a regular readable file */
+    char *input = NULL;		/* data of read in file */
+    bool is_stdin = false;	/* true if reading from stdin (filename == "-") */
+    int ret;
+
+    /*
+     * firewall
+     */
+    if (filename == NULL) {
+	/* this should actually never happen */
+	warn(__func__, "passed NULL filename");
+	++num_errors;
+	return;
+    } else if (*filename == '\0') { /* strlen(filename) == 0 */
+	warn(__func__, "passed empty filename");
+	++num_errors;
+	return;
+    }
+
+    is_stdin = !strcmp(filename, "-");
+    if (!is_stdin && !is_file(filename)) {
+	warn(__func__, "passed filename that's not actually a file: %s", filename);
+	++num_errors;
+	return;
+    } else if (!is_stdin && !is_read(filename)) {
+	warn(__func__, "passed filename not readable file: %s", filename);
+	++num_errors;
+	return;
+    }
+
+    errno = 0;
+    input_stream = is_stdin ? stdin : fopen(filename, "r");
+    if (input_stream == NULL) {
+	warnp(__func__, "couldn't open file %s, ignoring", filename);
+	++num_errors;
+	return;
+    }
+
+    dbg(DBG_MED, "about to read from %s", is_stdin?"stdin":filename);
+    input = read_all(input_stream, &length);
+
+    if (input_stream == stdin) {
+	/*
+	 * If it's stdin we have to clear the EOF and error flags:
+	 * this is because if the user specifies - again they would
+	 * get an error like:
+	 *
+	 *	    Warning: read_all: EOF found at start of reading stream
+	 *	    FATAL[35]: main: error reading data in file -
+	 *
+	 * But that's an error itself.
+	 */
+	clearerr(stdin);
+    } else {
+	/*
+	 * If it's not stdin we close the stream as we no longer need
+	 * it: we either read in all the data or there was an error but
+	 * we close the file before we check for NULL input (meaning
+	 * read_all() failed).
+	 */
+	errno = 0;
+	ret = fclose(input_stream);
+	if (ret != 0) {
+	    warnp(__func__, "error in fclose on file %s", filename);
+	}
+	input_stream = NULL;
+    }
+
+    if (input == NULL) {
+	warn(__func__, "error while reading data from %s", is_stdin?"stdin":filename);
+	++num_errors;
+	return;
+    }
+    dbg(DBG_MED, "%s read length: %ju", is_stdin?"stdin":filename, (uintmax_t)length);
+
+    if (!is_string(input, length + 1)) {
+	warn(__func__, "found NUL byte before EOF");
+	++num_errors;
+	return;
+    }
+
+    /*
+     * If we get here just write the file's contents to stdout.
+     */
+    errno = 0;		/* pre-clear errno for warnp() */
+    outputlen = fwrite(input, 1, length, stdout);
+    if (outputlen != length) {
+	warnp(__func__, "error: write of %ju bytes of file %s returned: %ju",
+			(uintmax_t)length, filename, (uintmax_t)outputlen);
+	++num_errors;
+    }
+
+    dbg(DBG_MED, "%s write length: %ju", is_stdin?"stdin":filename, (uintmax_t)outputlen);
+
+    if (input != NULL) {
+	/*
+	 * We KNOW input != NULL and it's okay to free a NULL pointer but we
+	 * check anyway.
+	 */
+	free(input);
+	input = NULL;
+    }
+
+    print_newline();
+}
+
+/* parse_string	    - parse string as a JSON block
+ *
+ * given:
+ *
+ *	string	    - the string to parse as JSON
+ *
+ * NOTE: Until the JSON parser is written this only writes the string to stdout.
+ */
+static void
+parse_string(char const *string)
+{
+    size_t length = string != NULL ? strlen(string) : 0; /* length of string */
+    size_t outputlen = 0; /* number of bytes sent to stdout */
+
+    /*
+     * firewall
+     */
+    if (string == NULL) {
+	/* this should never happen */
+	warn(__func__, "passed NULL string");
+	return;
+    } else if (*string == '\0') /* strlen(string) == 0 */ {
+	warn(__func__, "passed empty string");
+	return;
+    }
+
+    /*
+     * If we get here just write the string to stdout.
+     */
+    errno = 0;		/* pre-clear errno for warnp() */
+    outputlen = fwrite(string, 1, length, stdout);
+    if (outputlen != length) {
+	warnp(__func__, "error: write of %ju bytes of string %s returned: %ju",
+			(uintmax_t)length, string, (uintmax_t)outputlen);
+	++num_errors;
+    }
+
+    print_newline();
+}
+
+/* print_newline	- prints a newline to stdout if -n not specified
+ *
+ * NOTE: We have this in a function because the same code is used every time we
+ * print something out as long as -n was not specified.
+ */
+static void
+print_newline(void)
+{
+    int ret;
+
+    if (output_newline) {
+	errno = 0;		/* pre-clear errno for errp() */
+	ret = putchar('\n');
+	if (ret != '\n') {
+	    errp(43, __func__, "error while writing newline");
+	    not_reached();
+	}
+    }
+}
 
 int
 main(int argc, char **argv)
@@ -43,14 +225,8 @@ main(int argc, char **argv)
     char const *program = NULL;	/* our name */
     extern char *optarg;	/* option argument */
     extern int optind;		/* argv index of the next arg */
-    char *input;		/* argument to process */
-    size_t length;		/* length of input string or file */
-    FILE *input_stream = NULL;	/* file to read */
-    size_t outputlen;		/* length of write of file or input string */
-    bool output_newline = true;	/* true ==> output newline after writing input to stdout */
     bool strict = false;	/* true ==> strict mode (currently unused: this is for when a JSON parser is added) */
-    bool is_stdin = false;	/* true ==> argv[i] is '-' */
-    bool is_normal_file = true;	/* true ==> if argv[i] is a regular file */
+    bool string_flag_used = false; /* -S string was used */
     int ret;			/* libc return code */
     int i;
 
@@ -59,7 +235,7 @@ main(int argc, char **argv)
      * parse args
      */
     program = argv[0];
-    while ((i = getopt(argc, argv, "hv:qVnsT")) != -1) {
+    while ((i = getopt(argc, argv, "hv:qVnsTS:")) != -1) {
 	switch (i) {
 	case 'h':		/* -h - print help to stderr and exit 0 */
 	    usage(2, "-h help mode", program); /*ooo*/
@@ -102,6 +278,36 @@ main(int argc, char **argv)
 	     * -Wno-unused-but-set-variable.
 	     */
 	    strict = true;
+	    dbg(DBG_MED, "enabling strict mode");
+	    break;
+	case 'S':
+	    /*
+	     * So we don't trigger missing arg. Maybe there's another way but
+	     * nothing is coming to my mind right now.
+	     */
+	    string_flag_used = true;
+
+	    /* parse arg as a string */
+	    parse_string(optarg);
+	    /*
+	     * XXX Rather than having an option to disable strict mode so that
+	     * in the same invocation we can test some strings in strict mode
+	     * and some not strict after each string is parsed the strict mode
+	     * is disabled so that so that another -s has to be specified prior
+	     * to the string. This does mean that if you want strict parsing of
+	     * files and you specify the -S option then you must have -s after
+	     * the string args.
+	     *
+	     * But the question is: should it be this way or should it be
+	     * another design choice? For example should there be an option that
+	     * specifically disables strict mode so that one can not worry about
+	     * having to specify -s repeatedly? I think it might be better this
+	     * way but I'm not sure what letter should do it. Perhaps -x? If we
+	     * didn't use -S for string it could be S but we do so that won't
+	     * work.
+	     */
+	    dbg(DBG_MED, "disabling strict mode");
+	    strict = false;
 	    break;
 	default:
 	    usage(2, "invalid -flag", program); /*ooo*/
@@ -127,196 +333,21 @@ main(int argc, char **argv)
 	 * process each argument in order
 	 */
 	for (i=optind; i < argc; ++i) {
-
-	    /*
-	     * Obtain argument string.
-	     *
-	     * NOTE: If it's the name of a file we read from the file instead.
-	     * If it's "-" we set the file to stdin.
-	     */
-	    dbg(DBG_LOW, "processing arg: %d: <%s>", i-optind, argv[i]);
-	    is_stdin = !strcmp(argv[i], "-");
-	    is_normal_file = is_stdin?true:is_file(argv[i]);
-
-	    /*
-	     * only attempt to read it if it's a regular file (including stdin)
-	     */
-	    if (is_normal_file) {
-		errno = 0;
-		input_stream = is_stdin ? stdin : fopen(argv[i], "r");
-		if (input_stream == NULL) {
-		    err(35, __func__, "couldn't open file %s", argv[i]);
-		    not_reached();
-		}
-		if (input_stream == stdin) {
-		    dbg(DBG_LOW, "about to read all data from stdin");
-		} else {
-		    dbg(DBG_LOW, "about to read all data from file %s", argv[i]);
-		}
-		/*
-		 * Read in the file (stdin or otherwise) entirely before
-		 * anything else.
-		 */
-		input = read_all(input_stream, &length);
-
-		if (input_stream == stdin) {
-		    /*
-		     * If it's stdin we have to clear the EOF and error flags:
-		     * this is because if the user specifies - again they would
-		     * get an error like:
-		     *
-		     *	    Warning: read_all: EOF found at start of reading stream
-		     *	    FATAL[35]: main: error reading data in file -
-		     *
-		     * But that's an error itself.
-		     */
-		    clearerr(stdin);
-		} else {
-		    /*
-		     * If it's not stdin we close the stream as we no longer need
-		     * it: we either read in all the data or there was an error but
-		     * we close the file before we check for NULL input (meaning
-		     * read_all() failed).
-		     */
-		    errno = 0;
-		    ret = fclose(input_stream);
-		    if (ret != 0) {
-			warnp(__func__, "error in fclose on file %s", argv[i]);
-		    }
-		    input_stream = NULL;
-		}
-		if (input == NULL) {
-		    err(36, __func__, "error reading data in file %s", argv[i]);
-		    not_reached();
-		}
-		/* scan for embedded NUL bytes (before EOF) */
-		if (!is_string(input, length + 1)) {
-		    err(37, __func__, "found NUL byte before EOF: %s", argv[i]);
-		    not_reached();
-		}
-		dbg(DBG_MED, "file length: %ju", (uintmax_t)length);
-	    } else {
-		dbg(DBG_LOW, "about to read arg %d as a string", i-optind);
-		input = argv[i];
-		length = strlen(input);
-		/*
-		 * Scan for embedded NUL bytes before EOF: this is probably not
-		 * needed when reading from the command line but we do it just
-		 * in case there's something funny going on.
-		 */
-		if (!is_string(input, length + 1)) {
-		    err(38, __func__, "found NUL byte before end of string");
-		    not_reached();
-		}
-		dbg(DBG_MED, "arg length: %ju", (uintmax_t)length);
-	    }
-	    /*
-	     * If we get here just print out the string or file to stdout.
-	     */
-	    errno = 0;		/* pre-clear errno for warnp() */
-	    outputlen = fwrite(input, 1, length, stdout);
-	    if (outputlen != length) {
-		err(39, __func__, "error: write of %ju bytes of arg: %d returned: %ju",
-				(uintmax_t)length, i-optind, (uintmax_t)outputlen);
-		not_reached();
-	    }
-
-	    /*
-	     * we also print a newline if -n not specified
-	     */
-	    print_newline(output_newline);
-
-	    /*
-	     * free string
-	     */
-	    if (input == NULL) {
-		free(input);
-		input = NULL;
-	    }
+	    parse_file(argv[i]);
 	}
 
-    /*
-     * case: process data from stdin
-     */
-    } else {
-	/*
-	 * read all of stdin
-	 */
-	dbg(DBG_LOW, "about to read all data from stdin");
-	input = read_all(stdin, &length);
-	if (input == NULL) {
-	    err(40, __func__, "error while reading data in stdin");
-	    not_reached();
-	}
-	dbg(DBG_MED, "stdin read length: %ju", (uintmax_t)length);
-
-	/*
-	 * Warn if string data contains an embedded NUL byte.
-	 *
-	 * NOTE: The read_all will ensure that at least one extra byte
-	 *	 will have been allocated and set to NUL. Thus in order
-	 *	 to correctly check if data contains an embedded NUL byte,
-	 *	 we MUST check for a length of length+1!
-	 */
-	if (!is_string(input, length+1)) {
-	    err(41, __func__, "data contains an embedded NUL byte");
-	    not_reached();
-	}
-
-	dbg(DBG_MED, "string length: %ju", (uintmax_t)length);
-	errno = 0;		/* pre-clear errno for errp() */
-	outputlen = fwrite(input, 1, length, stdout);
-	if (outputlen != length) {
-	    errp(42, __func__, "error: write of %ju bytes of stdin data: returned: %ju",
-			    (uintmax_t)length, (uintmax_t)outputlen);
-	    not_reached();
-	}
-	dbg(DBG_MED, "stdout write length: %ju", (uintmax_t)outputlen);
-
-	/*
-	 * unless -n specified we output a newline after each arg processed
-	 */
-	print_newline(output_newline);
-
-	/*
-	 * free string
-	 */
-	if (input == NULL) {
-	    free(input);
-	    input = NULL;
-	}
+    } else if (!string_flag_used) {
+	usage(2, "no file specified", program); /*ooo*/
+	not_reached();
     }
+
 
     /*
      * All Done!!! - Jessica Noll, age 2
      */
-    exit(0); /*ooo*/
+    exit(num_errors != 0); /*ooo*/
 }
 
-/* print_newline	- prints a newline to stdout
- *
- * given:
- *
- *
- *	output_newline	- true ==> print out a newline after output
- *
- * NOTE: We have this in a function because the same code is used every time we
- * print something out as long as -n was not specified.
- */
-static void
-print_newline(bool output_newline)
-{
-    int ret;
-
-    if (output_newline) {
-	errno = 0;		/* pre-clear errno for errp() */
-	ret = putchar('\n');
-	if (ret != '\n') {
-	    errp(43, __func__, "error while writing newline");
-	    not_reached();
-	}
-    }
-}
 
 /*
  * usage - print usage to stderr
