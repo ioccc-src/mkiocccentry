@@ -69,13 +69,13 @@
 /*
  * How to translate certain UTF-8 strings into safe lower case
  * POSIX portable filenames plus +.  This table helps us convert
- * cerain UTF-8 strings into strings that match this regular expression:
+ * certain UTF-8 strings into strings that match this regular expression:
  *
  *	^[0-9a-z][0-9a-z._+-]*$
  *
- * This table is NOT lingusitic.  This table is NOT intended to be
- * an accurate translaton of alphabets.  This table maps some UTF-8 byte
- * strings into characters that look sort likelike lower case POSIX portable
+ * This table is NOT linguistic.  This table is NOT intended to be
+ * an accurate translation of alphabets.  This table maps some UTF-8 byte
+ * strings into characters that look somewhat like lower case POSIX portable
  * filenames plus +.
  *
  * We use this table to convert author handles into some ASCII that
@@ -1552,7 +1552,7 @@ struct utf8_posix_map hmap[] =
  * file variables
  */
 static bool utf8_posix_map_checked = false;	/* true ==> check_utf8_posix_map() run was successfully */
-static bool seeded = false;			/* ture ==> default_handle() as needed random() */
+static bool seeded = false;			/* true ==> default_handle() as needed random() */
 static char state[STATE_LEN+1];			/* srandom() state */
 
 
@@ -1634,7 +1634,7 @@ check_utf8_posix_map(void)
  * be too long, the string will be truncated.
  *
  * In all cases the return will be a non-NULL malloced string that
- * is NUL terminated, not empty, and consiting of only POSIX portable
+ * is NUL terminated, not empty, and consisting of only POSIX portable
  * filename and + chars.
  *
  * given:
@@ -1656,7 +1656,7 @@ default_handle(char const *name)
     size_t cur_len = 0;		/* current default handle length that is bring formed */
     size_t len = 0;		/* string length of computed default handle */
     int cret;			/* gettimeofday() or snprintf() return value */
-    char *pret;			/* stpncpy() return */
+    char *pret;			/* strncpy() return */
     size_t i;
 
     /*
@@ -1749,7 +1749,7 @@ default_handle(char const *name)
 	 *	 picked by another user.  Even if there happens to be a
 	 *	 match, this is OK as the IOCCC judges can sort it out
 	 *	 when it comes time to judge entries.  We just need a
-	 *	 somewhat reasonanble j-random string in the event
+	 *	 somewhat reasonable j-random string in the event
 	 *	 that we cannot use a translation of the name.
 	 */
 
@@ -1802,7 +1802,7 @@ default_handle(char const *name)
 	errno = 0;		/* pre-clear errno for errp() */
 	ret = calloc(def_len+1, 1);
 	if (ret == NULL) {
-	    errp(19, __func__, "calloc faiked for %ju bytes", (uintmax_t)(def_len+1));
+	    errp(19, __func__, "calloc failed for %ju bytes", (uintmax_t)(def_len+1));
 	    not_reached();
 	}
 
@@ -1826,7 +1826,7 @@ default_handle(char const *name)
 	errno = 0;		/* pre-clear errno for errp() */
 	ret = calloc(def_len+1, 1);
 	if (ret == NULL) {
-	    errp(21, __func__, "calloc faiked for %ju bytes", (uintmax_t)(def_len+1));
+	    errp(21, __func__, "calloc failed for %ju bytes", (uintmax_t)(def_len+1));
 	    not_reached();
 	}
 
