@@ -8,6 +8,10 @@
  *	https://xexyl.net		Cody Boone Ferguson
  *	https://ioccc.xexyl.net
  *
+ * ...and it is VERY incomplete! It's easy to trigger a parser error because
+ * it's incomplete and there's a lot to change and do as I learn more about flex
+ * and bison. It's a work in progress that will be developed over some time.
+ *
  */
 
 
