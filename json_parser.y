@@ -5,24 +5,12 @@
 #include <inttypes.h>
 #include <stdio.h>
 
-#include "util.h"
-#include "dbg.h"
-#include "json.h"
+#include "json_parser.h"
 
 int yylex(void);
 void yyerror(char const *error);
 extern int yylineno;
 extern char *yytext;
-
-/*
- * globals
- */
-int verbosity_level = DBG_DEFAULT;	/* debug level set by -v */
-bool msg_output_allowed = true;		/* false ==> disable output from msg() */
-bool dbg_output_allowed = true;		/* false ==> disable output from dbg() */
-bool warn_output_allowed = true;	/* false ==> disable output from warn() and warnp() */
-bool err_output_allowed = true;		/* false ==> disable output from err() and errp() */
-bool usage_output_allowed = true;	/* false ==> disable output from vfprintf_usage() */
 
 
 %}

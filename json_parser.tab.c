@@ -67,33 +67,21 @@
 
 
 /* First part of user prologue.  */
-#line 2 "json_parser.y"
+#line 4 "json_parser.y"
 
 #include <inttypes.h>
 #include <stdio.h>
 
-#include "util.h"
-#include "dbg.h"
-#include "json.h"
+#include "json_parser.h"
 
 int yylex(void);
 void yyerror(char const *error);
 extern int yylineno;
 extern char *yytext;
 
-/*
- * globals
- */
-int verbosity_level = DBG_DEFAULT;	/* debug level set by -v */
-bool msg_output_allowed = true;		/* false ==> disable output from msg() */
-bool dbg_output_allowed = true;		/* false ==> disable output from dbg() */
-bool warn_output_allowed = true;	/* false ==> disable output from warn() and warnp() */
-bool err_output_allowed = true;		/* false ==> disable output from err() and errp() */
-bool usage_output_allowed = true;	/* false ==> disable output from vfprintf_usage() */
 
 
-
-#line 97 "json_parser.tab.c"
+#line 85 "json_parser.tab.c"
 
 # ifndef YY_CAST
 #  ifdef __cplusplus
@@ -539,9 +527,9 @@ static const yytype_int8 yytranslate[] =
 /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_int8 yyrline[] =
 {
-       0,    45,    45,    45,    47,    48,    49,    50,    51,    52,
-      53,    56,    57,    60,    61,    64,    67,    68,    71,    72,
-      75
+       0,    35,    35,    35,    37,    38,    39,    40,    41,    42,
+      43,    46,    47,    50,    51,    54,    57,    58,    61,    62,
+      65
 };
 #endif
 
@@ -1122,7 +1110,7 @@ yyreduce:
   switch (yyn)
     {
 
-#line 1126 "json_parser.tab.c"
+#line 1114 "json_parser.tab.c"
 
       default: break;
     }
@@ -1315,7 +1303,7 @@ yyreturnlab:
   return yyresult;
 }
 
-#line 80 "json_parser.y"
+#line 70 "json_parser.y"
 
 
 /* Section 3: C code */
