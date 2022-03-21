@@ -79,20 +79,20 @@ extern int yydebug;
 
 /* Value type.  */
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
-#line 35 "json_parser.y"
+#line 45 "json_parser.y"
 union json_type
 {
-#line 35 "json_parser.y"
+#line 45 "json_parser.y"
 
-  char *text;
+  char *string;
   uintmax_t uintmax;
-  intmax_t intmax;
+  intmax_t number;
   bool boolean;
 
 #line 93 "json_parser.tab.h"
 
 };
-#line 35 "json_parser.y"
+#line 45 "json_parser.y"
 typedef union json_type YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define YYSTYPE_IS_DECLARED 1

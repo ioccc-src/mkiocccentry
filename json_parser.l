@@ -1,11 +1,13 @@
 /* json_parser - flex grammar
  *
  * XXX This is VERY incomplete and there are errors; it's VERY MUCH a work in
- * progress and the issues will be resolved in time.
+ * progress (oxymoron though that is) and the issues will be resolved in time.
  *
- * Even the grammar is incomplete and the actions of the grammar that does exist
- * might very well be incomplete too. This will be worked on over some time in
- * small bits and bytes (as if there's such a thing as a large byte)).
+ * Even the grammar is incomplete and some of it is possibly wrong. The actions
+ * that do exist are likely incomplete and wrong as well.
+ *
+ * I'm not sure when I will be adding the more and it's very possible that I
+ * won't add all at once.
  *
  * Right now it's very easy to trigger a parser error because it's very
  * incomplete. To call this a first draft is to compliment it; this is simply
@@ -37,7 +39,10 @@
 #include "json_parser.tab.h"
 %}
 
-/* Section 2: Patterns (regular expressions) and actions */
+/* Section 2: Patterns (regular expressions) and actions.
+ *
+ * XXX Again there are likely errors here and it's probably incomplete as well.
+ */
 JSON_STRING		\"[^"]*\"
 JSON_DIGIT		[0-9]
 JSON_DIGITS		{JSON_DIGIT}+
@@ -59,7 +64,11 @@ JSON_COMMA		","
 
 /* Actions.
  *
- * For now we just print out what it is and return the type.
+ * For now we just print out what it is and return the type. Once again this is
+ * incomplete!
+ *
+ * After printing whatever it is there is currently a parser error; this is
+ * expected right now.
  */
 %%
 {JSON_WHITESPACE}	    { printf("whitespace: \"%s\"\n", yytext); return JSON_WHITESPACE; }
@@ -68,12 +77,12 @@ JSON_COMMA		","
 {JSON_NULL}		    { printf("null: '%s'\n", yytext); return JSON_NULL; }
 {JSON_TRUE}		    { printf("true: '%s'\n", yytext); return JSON_TRUE; }
 {JSON_FALSE}		    { printf("false: '%s'\n", yytext); return JSON_FALSE; }
-{JSON_OPEN_BRACE}	    { printf("open brace: '%c'", *yytext); return JSON_OPEN_BRACE; }
-{JSON_CLOSE_BRACE}	    { printf("close brace: '%c'", *yytext); return JSON_CLOSE_BRACE;}
-{JSON_OPEN_BRACKET}	    { printf("open bracket: '%c'", *yytext); return JSON_OPEN_BRACKET; }
-{JSON_CLOSE_BRACKET}	    { printf("close bracket: '%c'", *yytext); return JSON_CLOSE_BRACKET; }
-{JSON_EQUALS}		    { printf("equals: '%c'", *yytext); return JSON_EQUALS; }
-{JSON_COMMA}		    { printf("comma: '%c'", *yytext); return JSON_COMMA; }
+{JSON_OPEN_BRACE}	    { printf("open brace: '%c'\n", *yytext); return JSON_OPEN_BRACE; }
+{JSON_CLOSE_BRACE}	    { printf("close brace: '%c'\n", *yytext); return JSON_CLOSE_BRACE;}
+{JSON_OPEN_BRACKET}	    { printf("open bracket: '%c'\n", *yytext); return JSON_OPEN_BRACKET; }
+{JSON_CLOSE_BRACKET}	    { printf("close bracket: '%c'\n", *yytext); return JSON_CLOSE_BRACKET; }
+{JSON_EQUALS}		    { printf("equals: '%c'\n", *yytext); return JSON_EQUALS; }
+{JSON_COMMA}		    { printf("comma: '%c'\n", *yytext); return JSON_COMMA; }
 %%
 
 /* Section 3: Code that's copied to the generated scanner */

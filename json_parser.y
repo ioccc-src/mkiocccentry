@@ -1,11 +1,14 @@
 /* json_parser - bison grammar
  *
  * XXX This is VERY incomplete and there are errors; it's VERY MUCH a work in
- * progress and the issues will be resolved in time.
+ * progress (oxymoron though that is) and the issues will be resolved in
+ * time.
  *
- * Even the grammar is incomplete and there are no actions yet. I'm not sure
- * when I will be adding the actions and it's very possible that I won't add all
- * at once.
+ * Even the grammar is incomplete and there are no actions yet. I'm sure some of
+ * what exists is also wrong.
+ *
+ * I'm not sure when I will be adding the actions and it's very possible that I
+ * won't add all at once.
  *
  * Right now it's very easy to trigger a parser error because it's very
  * incomplete. To call this a first draft is to compliment it; this is simply
@@ -25,6 +28,12 @@ extern int yylineno;
 extern char *yytext;
 %}
 
+/*
+ * Token types.
+ *
+ * It's very possible that this is incomplete and everything here is subject to
+ * change.
+ */
 %token JSON_WHITESPACE JSON_LETTER
 %token JSON_SIGN JSON_EQUALS JSON_DIGIT JSON_DIGITS JSON_INTEGER JSON_EXPONENT
 %token JSON_OPEN_BRACE JSON_CLOSE_BRACE JSON_OPEN_BRACKET JSON_CLOSE_BRACKET
@@ -32,14 +41,21 @@ extern char *yytext;
 %token <string> JSON_STRING;
 %token <number> JSON_NUMBER;
 
+/* This union is NOT correct and it absolutely will change! */
 %union json_type {
-  char *text;
+  char *string;
   uintmax_t uintmax;
-  intmax_t intmax;
+  intmax_t number;
   bool boolean;
 }
 
-/* Section 2: Rules */
+/* Section 2: Rules
+ *
+ * Not all rules are here and no actions are defined yet. As well some of the
+ * rules are probably wrong.
+ *
+ * Again this is very incomplete and there are errors!
+ */
 %%
 json:		%empty |
 		json_element ;
@@ -89,5 +105,14 @@ main(void)
 void
 yyerror(char const *err)
 {
+    /*
+     * We use dbg() instead of err() but in the future it'll probably use the
+     * jerr() function or some other error function. Right now it doesn't use
+     * err() because I don't believe the seqcexit tool acts on .l/.y files so
+     * the codes wouldn't be sequenced.
+     *
+     * Currently all you have to do to trigger this function being called is
+     * typing anything after the program starts as once more it's incomplete!
+     */
     dbg(DBG_NONE, "JSON parser error: %s\n", err);
 }

@@ -67,7 +67,7 @@
 
 
 /* First part of user prologue.  */
-#line 16 "json_parser.y"
+#line 19 "json_parser.y"
 
 #include <inttypes.h>
 #include <stdio.h>
@@ -525,9 +525,9 @@ static const yytype_int8 yytranslate[] =
 /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_int8 yyrline[] =
 {
-       0,    44,    44,    45,    47,    48,    49,    50,    51,    52,
-      53,    56,    57,    60,    61,    64,    67,    68,    71,    72,
-      75
+       0,    60,    60,    61,    63,    64,    65,    66,    67,    68,
+      69,    72,    73,    76,    77,    80,    83,    84,    87,    88,
+      91
 };
 #endif
 
@@ -1301,7 +1301,7 @@ yyreturnlab:
   return yyresult;
 }
 
-#line 80 "json_parser.y"
+#line 96 "json_parser.y"
 
 
 /* Section 3: C code */
@@ -1314,5 +1314,14 @@ main(void)
 void
 yyerror(char const *err)
 {
+    /*
+     * We use dbg() instead of err() but in the future it'll probably use the
+     * jerr() function or some other error function. Right now it doesn't use
+     * err() because I don't believe the seqcexit tool acts on .l/.y files so
+     * the codes wouldn't be sequenced.
+     *
+     * Currently all you have to do to trigger this function being called is
+     * typing anything after the program starts as once more it's incomplete!
+     */
     dbg(DBG_NONE, "JSON parser error: %s\n", err);
 }
