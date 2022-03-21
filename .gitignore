@@ -21,6 +21,7 @@ txzchk
 json-test.log
 jparse
 utf8_test
+json_parser
 
 # Prerequisites
 *.d

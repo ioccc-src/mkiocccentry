@@ -447,8 +447,8 @@ check_author_json(char const *file, char const *fnamchk)
 		break;
 
 	    can_be_empty = (common_field && common_field->can_be_empty) || (author_field && author_field->can_be_empty);
-	    is_json_string = (common_field && (common_field->field_type == JSON_STRING || common_field->field_type == JSON_ARRAY_STRING)) ||
-			     (author_field && (author_field->field_type == JSON_STRING || author_field->field_type == JSON_ARRAY_STRING));
+	    is_json_string = (common_field && (common_field->field_type == JSON_CHARS || common_field->field_type == JSON_ARRAY_CHARS)) ||
+			     (author_field && (author_field->field_type == JSON_CHARS || author_field->field_type == JSON_ARRAY_CHARS));
 	    /*
 	     * If the field type is a string we have to remove a single '"' and
 	     * from the beginning and end of the value.
@@ -776,7 +776,7 @@ check_found_author_json_fields(char const *json_filename, bool test)
 		    break;
 		case JSON_ARRAY_BOOL:
 		    break; /* arrays are not handled yet */
-		case JSON_NUMBER:
+		case JSON_NUM:
 		    if (!is_number(val)) {
 			warn(__func__, "number field '%s' has non-number value in file %s: '%s'", author_field->name, json_filename, val);
 			++issues;

@@ -104,14 +104,14 @@ struct json_value
     struct json_value *next;
 };
 
-#define JSON_NUMBER	    (0)	    /* json field is supposed to be a number */
+#define JSON_NUM	    (0)	    /* json field is supposed to be a number */
 #define JSON_BOOL	    (1)	    /* json field is supposed to be a boolean */
-#define JSON_STRING	    (2)	    /* json field is supposed to be a string */
+#define JSON_CHARS	    (2)	    /* json field is supposed to be a string */
 #define JSON_ARRAY	    (3)	    /* json field is supposed to be an array */
 #define JSON_ARRAY_NUMBER   (5)	    /* json field is supposed to be a number in an array */
 #define JSON_ARRAY_BOOL	    (6)	    /* json field is supposed to be a bool in an array (NB: not used) */
-#define JSON_ARRAY_STRING   (7)	    /* json field is supposed to be a string in an array */
-#define JSON_NULL	    (-1)    /* json field is NULL (not null): used internally to mark end of the tables */
+#define JSON_ARRAY_CHARS   (7)	    /* json field is supposed to be a string in an array */
+#define JSON_EOT	    (-1)    /* json field is NULL (not null): used internally to mark end of the tables */
 
 /*
  * JSON field: a JSON field consists of the name and all the values (if more
@@ -147,7 +147,7 @@ struct json_field
      * valid and parsing in that certain data types have to be parsed
      * differently.
      *
-     * Data type: one of JSON_NUMBER, JSON_BOOL, JSON_STRING or
+     * Data type: one of JSON_NUM, JSON_BOOL, JSON_CHARS or
      * JSON_ARRAY_ equivalents.
      */
     int field_type;

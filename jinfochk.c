@@ -506,7 +506,7 @@ check_info_json(char const *file, char const *fnamchk)
 
 		/* only some array fields can have empty values (null string) */
 		can_be_empty = array_info_field && array_info_field->can_be_empty;
-		is_json_string = array_info_field && array_info_field->field_type == JSON_ARRAY_STRING;
+		is_json_string = array_info_field && array_info_field->field_type == JSON_ARRAY_CHARS;
 
 
 		array_val = strtok_r(NULL, ":,", &array_saveptr);
@@ -679,7 +679,7 @@ check_info_json(char const *file, char const *fnamchk)
 		break;
 
 	    can_be_empty = (common_field && common_field->can_be_empty) || (info_field && info_field->can_be_empty);
-	    is_json_string = (common_field && common_field->field_type == JSON_STRING) || (info_field && info_field->field_type == JSON_STRING);
+	    is_json_string = (common_field && common_field->field_type == JSON_CHARS) || (info_field && info_field->field_type == JSON_CHARS);
 
 	    /*
 	     * If the field type is a string we have to remove a single '"' from
@@ -1229,7 +1229,7 @@ check_found_info_json_fields(char const *json_filename, bool test)
 			dbg(DBG_VHIGH, "... %s is a bool", val);
 		    }
 		    break;
-		case JSON_NUMBER:
+		case JSON_NUM:
 		    if (!is_number(val)) {
 			warn(__func__, "number field '%s' has non-number value in file %s: '%s'", info_field->name, json_filename, val);
 			++issues;
