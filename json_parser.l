@@ -1,4 +1,16 @@
-/* json_parser - flex grammar */
+/* json_parser - flex grammar
+ *
+ * XXX This is VERY incomplete and there are errors; it's VERY MUCH a work in
+ * progress and the issues will be resolved in time.
+ *
+ * Even the grammar is incomplete and the actions of the grammar that does exist
+ * might very well be incomplete too. This will be worked on over some time in
+ * small bits and bytes (as if there's such a thing as a large byte)).
+ *
+ * Right now it's very easy to trigger a parser error because it's very
+ * incomplete. To call this a first draft is to compliment it; this is simply
+ * a starting point for much more to come at a later time.
+ */
 
 /* Section 1: Declarations and option settings */
 
@@ -33,12 +45,12 @@ JSON_INTEGER		{JSON_DIGITS}
 JSON_NUMBER		{JSON_DIGITS}"."?{JSON_DIGITS}*{JSON_EXPONENT}?
 JSON_SIGN		[+-]
 JSON_LETTER		[a-zA-Z]
-JSON_EXPONENT	""?[Ee][-+]?[0-9]+
-JSON_WHITESPACE	[ \t\r\n]+
+JSON_EXPONENT		""?[Ee][-+]?[0-9]+
+JSON_WHITESPACE		[ \t\r\n]+
 JSON_TRUE		"true"
 JSON_FALSE		"false"
 JSON_NULL		"null"
-JSON_OPEN_BRACE	"{"
+JSON_OPEN_BRACE		"{"
 JSON_CLOSE_BRACE	"}"
 JSON_OPEN_BRACKET	"["
 JSON_CLOSE_BRACKET	"]"

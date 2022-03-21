@@ -1,4 +1,16 @@
-/* json_parser - bison grammar */
+/* json_parser - bison grammar
+ *
+ * XXX This is VERY incomplete and there are errors; it's VERY MUCH a work in
+ * progress and the issues will be resolved in time.
+ *
+ * Even the grammar is incomplete and there are no actions yet. I'm not sure
+ * when I will be adding the actions and it's very possible that I won't add all
+ * at once.
+ *
+ * Right now it's very easy to trigger a parser error because it's very
+ * incomplete. To call this a first draft is to compliment it; this is simply
+ * a starting point for much more to come at a later time.
+ */
 
 /* Section 1: Declarations */
 %{
@@ -11,8 +23,6 @@ int yylex(void);
 void yyerror(char const *error);
 extern int yylineno;
 extern char *yytext;
-
-
 %}
 
 %token JSON_WHITESPACE JSON_LETTER
@@ -30,9 +40,9 @@ extern char *yytext;
 }
 
 /* Section 2: Rules */
-%start json
 %%
-json:		%empty | json_element ;
+json:		%empty |
+		json_element ;
 
 json_value:	json_object |
 		json_array  |
@@ -73,6 +83,7 @@ json_element:	JSON_WHITESPACE json_value JSON_WHITESPACE
 int
 main(void)
 {
+    yyparse();
 }
 
 void

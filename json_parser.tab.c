@@ -67,7 +67,7 @@
 
 
 /* First part of user prologue.  */
-#line 4 "json_parser.y"
+#line 16 "json_parser.y"
 
 #include <inttypes.h>
 #include <stdio.h>
@@ -79,9 +79,7 @@ void yyerror(char const *error);
 extern int yylineno;
 extern char *yytext;
 
-
-
-#line 85 "json_parser.tab.c"
+#line 83 "json_parser.tab.c"
 
 # ifndef YY_CAST
 #  ifdef __cplusplus
@@ -527,9 +525,9 @@ static const yytype_int8 yytranslate[] =
 /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_int8 yyrline[] =
 {
-       0,    35,    35,    35,    37,    38,    39,    40,    41,    42,
-      43,    46,    47,    50,    51,    54,    57,    58,    61,    62,
-      65
+       0,    44,    44,    45,    47,    48,    49,    50,    51,    52,
+      53,    56,    57,    60,    61,    64,    67,    68,    71,    72,
+      75
 };
 #endif
 
@@ -1110,7 +1108,7 @@ yyreduce:
   switch (yyn)
     {
 
-#line 1114 "json_parser.tab.c"
+#line 1112 "json_parser.tab.c"
 
       default: break;
     }
@@ -1303,13 +1301,14 @@ yyreturnlab:
   return yyresult;
 }
 
-#line 70 "json_parser.y"
+#line 80 "json_parser.y"
 
 
 /* Section 3: C code */
 int
 main(void)
 {
+    yyparse();
 }
 
 void
