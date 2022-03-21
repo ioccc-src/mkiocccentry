@@ -474,8 +474,8 @@ char *yytext;
  * Even the grammar is incomplete and some of it is possibly wrong. The actions
  * that do exist are likely incomplete and wrong as well.
  *
- * I'm not sure when I will be adding the more and it's very possible that I
- * won't add all at once.
+ * I'm not sure when I will be adding more and it's very possible that I won't
+ * add all at once.
  *
  * Right now it's very easy to trigger a parser error because it's very
  * incomplete. To call this a first draft is to compliment it; this is simply
