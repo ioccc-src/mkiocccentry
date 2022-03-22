@@ -236,10 +236,12 @@ jparse: jparse.c jparse.h json.h json.o dbg.o util.o sanity.o location.o utf8_po
 utf8_test: utf8_test.c utf8_posix_map.o dbg.o util.o
 	${CC} ${CFLAGS} utf8_test.c utf8_posix_map.o dbg.o util.o -o $@
 
-json_parser: json_parser.l json_parser.y json_parser.h util.o dbg.o Makefile
+parser:
 	${BISON} -d json_parser.y
-	${FLEX} -o json_parser.yy.c json_parser.l
-	${CC} ${CFLAGS} -Wno-unused-function -Wno-unneeded-internal-declaration json_parser.yy.c json_parser.tab.c \
+	${FLEX} -o json_parser.c json_parser.l
+
+json_parser: parser json_parser.h json_parser.c json_parser.tab.c util.o dbg.o Makefile
+	${CC} ${CFLAGS} -Wno-unused-function -Wno-unneeded-internal-declaration json_parser.c json_parser.tab.c \
 	    util.o dbg.o -o $@
 
 limit_ioccc.sh: limit_ioccc.h version.h Makefile

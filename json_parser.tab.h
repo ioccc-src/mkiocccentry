@@ -54,45 +54,43 @@ extern int yydebug;
     YYEOF = 0,                     /* "end of file"  */
     YYerror = 256,                 /* error  */
     YYUNDEF = 257,                 /* "invalid token"  */
-    JSON_WHITESPACE = 258,         /* JSON_WHITESPACE  */
-    JSON_LETTER = 259,             /* JSON_LETTER  */
-    JSON_SIGN = 260,               /* JSON_SIGN  */
-    JSON_EQUALS = 261,             /* JSON_EQUALS  */
-    JSON_DIGIT = 262,              /* JSON_DIGIT  */
-    JSON_DIGITS = 263,             /* JSON_DIGITS  */
-    JSON_INTEGER = 264,            /* JSON_INTEGER  */
-    JSON_EXPONENT = 265,           /* JSON_EXPONENT  */
-    JSON_OPEN_BRACE = 266,         /* JSON_OPEN_BRACE  */
-    JSON_CLOSE_BRACE = 267,        /* JSON_CLOSE_BRACE  */
-    JSON_OPEN_BRACKET = 268,       /* JSON_OPEN_BRACKET  */
-    JSON_CLOSE_BRACKET = 269,      /* JSON_CLOSE_BRACKET  */
-    JSON_COMMA = 270,              /* JSON_COMMA  */
-    JSON_COLON = 271,              /* JSON_COLON  */
-    JSON_TRUE = 272,               /* JSON_TRUE  */
-    JSON_FALSE = 273,              /* JSON_FALSE  */
-    JSON_NULL = 274,               /* JSON_NULL  */
-    JSON_STRING = 275,             /* JSON_STRING  */
-    JSON_NUMBER = 276              /* JSON_NUMBER  */
+    JSON_LETTER = 258,             /* JSON_LETTER  */
+    JSON_SIGN = 259,               /* JSON_SIGN  */
+    JSON_EQUALS = 260,             /* JSON_EQUALS  */
+    JSON_DIGIT = 261,              /* JSON_DIGIT  */
+    JSON_DIGITS = 262,             /* JSON_DIGITS  */
+    JSON_INTEGER = 263,            /* JSON_INTEGER  */
+    JSON_EXPONENT = 264,           /* JSON_EXPONENT  */
+    JSON_OPEN_BRACE = 265,         /* JSON_OPEN_BRACE  */
+    JSON_CLOSE_BRACE = 266,        /* JSON_CLOSE_BRACE  */
+    JSON_OPEN_BRACKET = 267,       /* JSON_OPEN_BRACKET  */
+    JSON_CLOSE_BRACKET = 268,      /* JSON_CLOSE_BRACKET  */
+    JSON_COMMA = 269,              /* JSON_COMMA  */
+    JSON_COLON = 270,              /* JSON_COLON  */
+    JSON_NULL = 271,               /* JSON_NULL  */
+    JSON_STRING = 272,             /* JSON_STRING  */
+    JSON_NUMBER = 273,             /* JSON_NUMBER  */
+    JSON_BOOLEAN = 274             /* JSON_BOOLEAN  */
   };
   typedef enum yytokentype yytoken_kind_t;
 #endif
 
 /* Value type.  */
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
-#line 46 "json_parser.y"
+#line 76 "json_parser.y"
 union json_type
 {
-#line 46 "json_parser.y"
+#line 76 "json_parser.y"
 
   char *string;
   uintmax_t uintmax;
   intmax_t number;
   bool boolean;
 
-#line 93 "json_parser.tab.h"
+#line 91 "json_parser.tab.h"
 
 };
-#line 46 "json_parser.y"
+#line 76 "json_parser.y"
 typedef union json_type YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define YYSTYPE_IS_DECLARED 1
