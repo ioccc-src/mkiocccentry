@@ -26,6 +26,8 @@ int yylex(void);
 void yyerror(char const *error);
 extern int yylineno;
 extern char *yytext;
+#define YYDEBUG 1
+int yydebug = 1;
 %}
 
 /*
@@ -38,8 +40,7 @@ extern char *yytext;
 %token JSON_SIGN JSON_EQUALS JSON_DIGIT JSON_DIGITS JSON_INTEGER JSON_EXPONENT
 %token JSON_OPEN_BRACE JSON_CLOSE_BRACE JSON_OPEN_BRACKET JSON_CLOSE_BRACKET
 %token JSON_COMMA JSON_COLON JSON_TRUE JSON_FALSE JSON_NULL
-%token <string> JSON_STRING;
-%token <number> JSON_NUMBER;
+%token JSON_STRING JSON_NUMBER
 
 /* This union is NOT correct and it absolutely will change! */
 %union json_type {

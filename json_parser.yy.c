@@ -795,18 +795,18 @@ case 1:
 /* rule 1 can match eol */
 YY_RULE_SETUP
 #line 74 "json_parser.l"
-{ printf("whitespace: \"%s\"\n", yytext); return JSON_WHITESPACE; }
+{ printf("whitespace: '%s'\n", yytext); return JSON_WHITESPACE; }
 	YY_BREAK
 case 2:
 /* rule 2 can match eol */
 YY_RULE_SETUP
 #line 75 "json_parser.l"
-{ printf("string: \"%s\"\n", yytext); return JSON_STRING; }
+{ printf("string: '%s'\n", yytext); return JSON_STRING; }
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
 #line 76 "json_parser.l"
-{ printf("number (as string): %s\n", yytext); return JSON_NUMBER; }
+{ printf("number: '%s'\n", yytext); return JSON_NUMBER; }
 	YY_BREAK
 case 4:
 YY_RULE_SETUP

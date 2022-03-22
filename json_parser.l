@@ -71,9 +71,9 @@ JSON_COMMA		","
  * expected right now.
  */
 %%
-{JSON_WHITESPACE}	    { printf("whitespace: \"%s\"\n", yytext); return JSON_WHITESPACE; }
-{JSON_STRING}		    { printf("string: \"%s\"\n", yytext); return JSON_STRING; }
-{JSON_NUMBER}		    { printf("number (as string): %s\n", yytext); return JSON_NUMBER; }
+{JSON_WHITESPACE}	    { printf("whitespace: '%s'\n", yytext); return JSON_WHITESPACE; }
+{JSON_STRING}		    { printf("string: '%s'\n", yytext); return JSON_STRING; }
+{JSON_NUMBER}		    { printf("number: '%s'\n", yytext); return JSON_NUMBER; }
 {JSON_NULL}		    { printf("null: '%s'\n", yytext); return JSON_NULL; }
 {JSON_TRUE}		    { printf("true: '%s'\n", yytext); return JSON_TRUE; }
 {JSON_FALSE}		    { printf("false: '%s'\n", yytext); return JSON_FALSE; }

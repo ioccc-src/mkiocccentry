@@ -78,8 +78,10 @@ int yylex(void);
 void yyerror(char const *error);
 extern int yylineno;
 extern char *yytext;
+#define YYDEBUG 1
+int yydebug = 1;
 
-#line 83 "json_parser.tab.c"
+#line 85 "json_parser.tab.c"
 
 # ifndef YY_CAST
 #  ifdef __cplusplus
@@ -525,9 +527,9 @@ static const yytype_int8 yytranslate[] =
 /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_int8 yyrline[] =
 {
-       0,    60,    60,    61,    63,    64,    65,    66,    67,    68,
-      69,    72,    73,    76,    77,    80,    83,    84,    87,    88,
-      91
+       0,    61,    61,    62,    64,    65,    66,    67,    68,    69,
+      70,    73,    74,    77,    78,    81,    84,    85,    88,    89,
+      92
 };
 #endif
 
@@ -1108,7 +1110,7 @@ yyreduce:
   switch (yyn)
     {
 
-#line 1112 "json_parser.tab.c"
+#line 1114 "json_parser.tab.c"
 
       default: break;
     }
@@ -1301,7 +1303,7 @@ yyreturnlab:
   return yyresult;
 }
 
-#line 96 "json_parser.y"
+#line 97 "json_parser.y"
 
 
 /* Section 3: C code */
