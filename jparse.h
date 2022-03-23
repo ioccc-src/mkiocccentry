@@ -11,10 +11,11 @@
  *	https://ioccc.xexyl.net
  *
  * NOTE: This is _very incomplete_ and right now all it does is reads from either
- * stdin, the command line or a file. It does not parse anything yet as the JSON
- * parser is not made yet. All this does now is check that it's a C string and
- * print it out if it is. It's an error if it's not a C string.
+ * stdin, the command line or a file, running yyparse() on it. The grammar is
+ * incomplete, there are some things that are allowed that are not valid JSON
+ * and various other things need to be done.
  *
+ * This is very much a work in progress!
  */
 
 
