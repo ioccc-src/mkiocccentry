@@ -230,19 +230,17 @@ jstrencode: jstrencode.c jstrencode.h dbg.o json.o util.o Makefile
 jstrdecode: jstrdecode.c jstrdecode.h dbg.o json.o util.o Makefile
 	${CC} ${CFLAGS} jstrdecode.c dbg.o json.o util.o -o $@
 
-jparse: jparse.c jparse.h json.h json.o dbg.o util.o sanity.o location.o utf8_posix_map.o  Makefile
-	${CC} ${CFLAGS} -Wno-unused-but-set-variable jparse.c json.o dbg.o util.o sanity.o location.o utf8_posix_map.o -o $@
+jparse: jparse.c jparse.h jparse.tab.c jparse.tab.h util.o dbg.o sanity.o json.o utf8_posix_map.o location.o Makefile
+	${CC} ${CFLAGS} -Wno-unused-function -Wno-unneeded-internal-declaration jparse.c jparse.tab.c \
+	    util.o dbg.o sanity.o json.o utf8_posix_map.o location.o -o $@
 
 utf8_test: utf8_test.c utf8_posix_map.o dbg.o util.o
 	${CC} ${CFLAGS} utf8_test.c utf8_posix_map.o dbg.o util.o -o $@
 
-parser:
-	${BISON} -d json_parser.y
-	${FLEX} -o json_parser.c json_parser.l
+parser: jparse.y jparse.l
+	${BISON} -d jparse.y
+	${FLEX} -o jparse.c jparse.l
 
-json_parser: parser json_parser.h json_parser.c json_parser.tab.c util.o dbg.o sanity.o json.o utf8_posix_map.o location.o Makefile
-	${CC} ${CFLAGS} -Wno-unused-function -Wno-unneeded-internal-declaration json_parser.c json_parser.tab.c \
-	    util.o dbg.o sanity.o json.o utf8_posix_map.o location.o -o $@
 
 limit_ioccc.sh: limit_ioccc.h version.h Makefile
 	${RM} -f $@
@@ -475,3 +473,5 @@ sanity.o: sanity.c sanity.h util.h dbg.h location.h utf8_posix_map.h \
   json.h
 jparse.o: jparse.c jparse.h dbg.h util.h json.h sanity.h location.h \
   utf8_posix_map.h limit_ioccc.h version.h
+jparse.tab.o: jparse.tab.c jparse.h dbg.h util.h json.h sanity.h \
+  location.h utf8_posix_map.h limit_ioccc.h version.h jparse.tab.h

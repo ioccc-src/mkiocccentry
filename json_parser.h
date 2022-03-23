@@ -73,9 +73,6 @@ void print_newline(void);
 static void usage(int exitcode, char const *name, char const *str) __attribute__((noreturn));
 
 
-void parse_file(char const *filename);
-void parse_string(char const *string);
-
 /*
  * usage message
  *

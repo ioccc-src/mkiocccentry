@@ -1,3 +1,4 @@
+/* vim: set tabstop=8 softtabstop=4 shiftwidth=4 noexpandtab : */
 /* json_parser - bison grammar
  *
  * XXX This is VERY incomplete but the .info.json and .author.json files
@@ -5,7 +6,7 @@
  * parsing but passing the input of .info.json or .author.json to this program
  * and you'll end up seeing e.g.:
  *
- *	./json_parser< test_work/12345678-1234-4321-abcd-1234567890ab-2/.info.json
+ *	./json_parser test_work/12345678-1234-4321-abcd-1234567890ab-2/.info.json
  *
  *	[...]
  *	Now at end of input.
@@ -54,7 +55,7 @@
 #include <inttypes.h>
 #include <stdio.h>
 #include <unistd.h> /* getopt */
-#include "json_parser.h"
+#include "jparse.h"
 
 int yylex(void);
 void yyerror(char const *error, ...);
@@ -62,6 +63,9 @@ extern int yylineno;
 extern char *yytext;
 extern FILE *yyin;
 void usage(int exitcode, char const *name, char const *str) __attribute__((noreturn));
+void parse_file(char const *filename);
+void parse_string(char const *string);
+void print_newline(void);
 /* debug information during development */
 #define YYDEBUG 1
 int yydebug = 1;

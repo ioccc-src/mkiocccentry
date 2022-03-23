@@ -473,7 +473,7 @@ char *yytext;
  * parsing but passing the input of .info.json or .author.json to this program
  * and you'll end up seeing e.g.:
  *
- *	./json_parser< test_work/12345678-1234-4321-abcd-1234567890ab-2/.info.json
+ *	./json_parser test_work/12345678-1234-4321-abcd-1234567890ab-2/.info.json
  *
  *	[...]
  *	Now at end of input.
