@@ -53,13 +53,15 @@
 %{
 #include <inttypes.h>
 #include <stdio.h>
-
+#include <unistd.h> /* getopt */
 #include "json_parser.h"
 
 int yylex(void);
 void yyerror(char const *error, ...);
 extern int yylineno;
 extern char *yytext;
+extern FILE *yyin;
+void usage(int exitcode, char const *name, char const *str) __attribute__((noreturn));
 /* debug information during development */
 #define YYDEBUG 1
 int yydebug = 1;
@@ -96,7 +98,8 @@ int yydebug = 1;
  */
 %%
 json:		%empty |
-		json_element
+		json_element |
+		JSON_OPEN_BRACE JSON_CLOSE_BRACE
 		;
 
 json_value:	json_object |
@@ -132,10 +135,144 @@ json_element:	json_value
 %%
 
 /* Section 3: C code */
+
+/*
+ * definitions
+ */
+#define REQUIRED_ARGS (0)	/* number of required arguments on the command line */
+
+
 int
-main(void)
+main(int argc, char **argv)
 {
-    yyparse();
+    char const *program = NULL;	    /* our name */
+    extern char *optarg;	    /* option argument */
+    extern int optind;		    /* argv index of the next arg */
+    bool strict = false;	    /* true ==> strict mode (currently unused: this is for when a JSON parser is added) */
+    bool string_flag_used = false;  /* true ==> -S string was used */
+    int ret;			    /* libc return code */
+    int i;
+
+
+    /*
+     * parse args
+     */
+    program = argv[0];
+    while ((i = getopt(argc, argv, "hv:qVnSTs:")) != -1) {
+	switch (i) {
+	case 'h':		/* -h - print help to stderr and exit 0 */
+	    usage(2, "-h help mode", program); /*ooo*/
+	    not_reached();
+	    break;
+	case 'v':		/* -v verbosity */
+	    /*
+	     * parse verbosity
+	     */
+	    verbosity_level = parse_verbosity(program, optarg);
+	    break;
+	case 'q':
+	    quiet = true;
+	    break;
+	case 'V':		/* -V - print version and exit */
+	    errno = 0;		/* pre-clear errno for warnp() */
+	    ret = printf("%s\n", JPARSE_VERSION);
+	    if (ret <= 0) {
+		warnp(__func__, "printf error printing version string: %s", JPARSE_VERSION);
+	    }
+	    exit(0); /*ooo*/
+	    not_reached();
+	    break;
+	case 'T':		/* -T (IOCCC toolkit release repository tag) */
+	    errno = 0;		/* pre-clear errno for warnp() */
+	    ret = printf("%s\n", IOCCC_TOOLKIT_RELEASE);
+	    if (ret <= 0) {
+		warnp(__func__, "printf error printing IOCCC toolkit release repository tag: %s", IOCCC_TOOLKIT_RELEASE);
+	    }
+	    exit(0); /*ooo*/
+	    not_reached();
+	    break;
+	case 'n':
+	    output_newline = false;
+	    break;
+	case 'S':
+	    /*
+	     * XXX currently this is unused as json parsing is not done yet.
+	     */
+	    strict = true;
+	    /* the if is only to prevent the warning that it's not yet used */
+	    if (strict)
+		dbg(DBG_MED, "enabling strict mode");
+	    break;
+	case 's':
+	    /*
+	     * So we don't trigger missing arg. Maybe there's another way but
+	     * nothing is coming to my mind right now.
+	     */
+	    string_flag_used = true;
+
+	    /* parse arg as a string */
+	    parse_string(optarg);
+	    /*
+	     * XXX Rather than having an option to disable strict mode so that
+	     * in the same invocation we can test some strings in strict mode
+	     * and some not strict after each string is parsed the strict mode
+	     * is disabled so that so that another -s has to be specified prior
+	     * to the string. This does mean that if you want strict parsing of
+	     * files and you specify the -s option then you must have -S after
+	     * the string args.
+	     *
+	     * But the question is: should it be this way or should it be
+	     * another design choice? For example should there be an option that
+	     * specifically disables strict mode so that one can not worry about
+	     * having to specify -s repeatedly? I think it might be better this
+	     * way but I'm not sure what letter should do it. Perhaps -x? If we
+	     * didn't use -S for strict it could be S but we do so that won't
+	     * work.
+	     */
+
+	    /* the if is only to prevent the warning that it's not yet used */
+	    if (!strict)
+		dbg(DBG_MED, "disabling strict mode");
+	    strict = false;
+	    break;
+	default:
+	    usage(2, "invalid -flag", program); /*ooo*/
+	    not_reached();
+	}
+    }
+
+    /* perform IOCCC sanity checks */
+    ioccc_sanity_chks();
+
+    /* warn(), warnp() and msg() are quiet if -q and -v 0 */
+    if (quiet && verbosity_level <= 0) {
+	msg_output_allowed = false;
+	warn_output_allowed = false;
+    }
+
+    /*
+     * case: process arguments on command line
+     */
+    if (argc - optind > 0) {
+
+	/*
+	 * process each argument in order
+	 */
+	for (i=optind; i < argc; ++i) {
+	    parse_file(argv[i]);
+	}
+
+    } else if (!string_flag_used) {
+	usage(2, "no file specified", program); /*ooo*/
+	not_reached();
+    }
+
+
+    /*
+     * All Done!!! - Jessica Noll, age 2
+     */
+    exit(num_errors != 0); /*ooo*/
+
 }
 
 void
@@ -151,5 +288,45 @@ yyerror(char const *err, ...)
      * typing anything after the program starts as once more it's incomplete!
      */
     dbg(DBG_NONE, "JSON parser error (num errors: %d): %s\n", yynerrs, err);
+}
+
+/*
+ * usage - print usage to stderr
+ *
+ * Example:
+ *      usage(3, "missing required argument(s), program: %s", program);
+ *
+ * given:
+ *	exitcode        value to exit with
+ *	str		top level usage message
+ *	program		our program name
+ *
+ * NOTE: We warn with extra newlines to help internal fault messages stand out.
+ *       Normally one should NOT include newlines in warn messages.
+ *
+ * This function does not return.
+ */
+static void
+usage(int exitcode, char const *str, char const *prog)
+{
+    /*
+     * firewall
+     */
+    if (str == NULL) {
+	str = "((NULL str))";
+	warn(__func__, "\nin usage(): program was NULL, forcing it to be: %s\n", str);
+    }
+    if (prog == NULL) {
+	prog = "((NULL prog))";
+	warn(__func__, "\nin usage(): program was NULL, forcing it to be: %s\n", prog);
+    }
+
+    /*
+     * print the formatted usage stream
+     */
+    vfprintf_usage(DO_NOT_EXIT, stderr, "%s\n", str);
+    vfprintf_usage(exitcode, stderr, usage_msg, prog, DBG_DEFAULT, JPARSE_VERSION);
+    exit(exitcode); /*ooo*/
+    not_reached();
 }
 

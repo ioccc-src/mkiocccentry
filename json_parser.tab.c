@@ -71,18 +71,20 @@
 
 #include <inttypes.h>
 #include <stdio.h>
-
+#include <unistd.h> /* getopt */
 #include "json_parser.h"
 
 int yylex(void);
 void yyerror(char const *error, ...);
 extern int yylineno;
 extern char *yytext;
+extern FILE *yyin;
+void usage(int exitcode, char const *name, char const *str) __attribute__((noreturn));
 /* debug information during development */
 #define YYDEBUG 1
 int yydebug = 1;
 
-#line 86 "json_parser.tab.c"
+#line 88 "json_parser.tab.c"
 
 # ifndef YY_CAST
 #  ifdef __cplusplus
@@ -441,18 +443,18 @@ union yyalloc
 #endif /* !YYCOPY_NEEDED */
 
 /* YYFINAL -- State number of the termination state.  */
-#define YYFINAL  17
+#define YYFINAL  19
 /* YYLAST -- Last index in YYTABLE.  */
-#define YYLAST   18
+#define YYLAST   24
 
 /* YYNTOKENS -- Number of terminals.  */
 #define YYNTOKENS  20
 /* YYNNTS -- Number of nonterminals.  */
 #define YYNNTS  9
 /* YYNRULES -- Number of rules.  */
-#define YYNRULES  17
+#define YYNRULES  18
 /* YYNSTATES -- Number of states.  */
-#define YYNSTATES  26
+#define YYNSTATES  28
 
 /* YYMAXUTOK -- Last valid token kind.  */
 #define YYMAXUTOK   274
@@ -501,10 +503,10 @@ static const yytype_int8 yytranslate[] =
 
 #if YYDEBUG
 /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
-static const yytype_int8 yyrline[] =
+static const yytype_uint8 yyrline[] =
 {
-       0,    98,    98,    99,   102,   103,   104,   105,   106,   107,
-     110,   113,   114,   117,   120,   123,   124,   127
+       0,   100,   100,   101,   102,   105,   106,   107,   108,   109,
+     110,   113,   116,   117,   120,   123,   126,   127,   130
 };
 #endif
 
@@ -533,7 +535,7 @@ yysymbol_name (yysymbol_kind_t yysymbol)
 }
 #endif
 
-#define YYPACT_NINF (-16)
+#define YYPACT_NINF (-12)
 
 #define yypact_value_is_default(Yyn) \
   ((Yyn) == YYPACT_NINF)
@@ -547,9 +549,9 @@ yysymbol_name (yysymbol_kind_t yysymbol)
    STATE-NUM.  */
 static const yytype_int8 yypact[] =
 {
-      -9,   -15,    -9,   -16,   -16,   -16,   -16,     4,   -16,   -16,
-     -16,   -16,   -10,    -5,    -3,    -1,     1,   -16,    -9,   -16,
-     -15,   -16,    -9,   -16,   -16,   -16
+      -9,    -6,     5,   -12,   -12,   -12,   -12,     2,   -12,   -12,
+     -12,   -12,   -12,   -11,    -5,    -2,    -4,     1,     4,   -12,
+       5,   -12,    -4,   -12,     5,   -12,   -12,   -12
 };
 
 /* YYDEFACT[STATE-NUM] -- Default reduction number in state STATE-NUM.
@@ -557,21 +559,21 @@ static const yytype_int8 yypact[] =
    means the default is an error.  */
 static const yytype_int8 yydefact[] =
 {
-       2,     0,     0,     9,     6,     7,     8,     0,    17,     4,
-       5,     3,     0,     0,    11,     0,    15,     1,     0,    10,
-       0,    14,     0,    13,    12,    16
+       2,     0,     0,    10,     7,     8,     9,     0,    18,     5,
+       6,     3,     4,     0,     0,    12,     0,     0,    16,     1,
+       0,    11,     0,    15,     0,    14,    13,    17
 };
 
 /* YYPGOTO[NTERM-NUM].  */
 static const yytype_int8 yypgoto[] =
 {
-     -16,   -16,   -16,   -16,    -7,   -16,   -16,    -8,     0
+     -12,   -12,   -12,   -12,    -3,   -12,   -12,    -8,     0
 };
 
 /* YYDEFGOTO[NTERM-NUM].  */
 static const yytype_int8 yydefgoto[] =
 {
-       0,     7,     8,     9,    13,    14,    10,    15,    16
+       0,     7,     8,     9,    14,    15,    10,    17,    18
 };
 
 /* YYTABLE[YYPACT[STATE-NUM]] -- What to do in state STATE-NUM.  If
@@ -579,14 +581,16 @@ static const yytype_int8 yydefgoto[] =
    number is the opposite.  If YYTABLE_NINF, syntax error.  */
 static const yytype_int8 yytable[] =
 {
-      11,     1,    12,     2,    17,    18,    19,     3,     4,     5,
-       6,    20,    21,    24,    25,    22,     0,     0,    23
+      11,     1,    19,     2,    20,    12,    21,     3,     4,     5,
+       6,    13,    22,    13,    23,    16,    27,     2,    24,    26,
+      25,     3,     4,     5,     6
 };
 
 static const yytype_int8 yycheck[] =
 {
-       0,    10,    17,    12,     0,    15,    11,    16,    17,    18,
-      19,    14,    13,    20,    22,    14,    -1,    -1,    18
+       0,    10,     0,    12,    15,    11,    11,    16,    17,    18,
+      19,    17,    14,    17,    13,    10,    24,    12,    14,    22,
+      20,    16,    17,    18,    19
 };
 
 /* YYSTOS[STATE-NUM] -- The symbol kind of the accessing symbol of
@@ -594,22 +598,22 @@ static const yytype_int8 yycheck[] =
 static const yytype_int8 yystos[] =
 {
        0,    10,    12,    16,    17,    18,    19,    21,    22,    23,
-      26,    28,    17,    24,    25,    27,    28,     0,    15,    11,
-      14,    13,    14,    28,    24,    27
+      26,    28,    11,    17,    24,    25,    10,    27,    28,     0,
+      15,    11,    14,    13,    14,    28,    24,    27
 };
 
 /* YYR1[RULE-NUM] -- Symbol kind of the left-hand side of rule RULE-NUM.  */
 static const yytype_int8 yyr1[] =
 {
-       0,    20,    21,    21,    22,    22,    22,    22,    22,    22,
-      23,    24,    24,    25,    26,    27,    27,    28
+       0,    20,    21,    21,    21,    22,    22,    22,    22,    22,
+      22,    23,    24,    24,    25,    26,    27,    27,    28
 };
 
 /* YYR2[RULE-NUM] -- Number of symbols on the right-hand side of rule RULE-NUM.  */
 static const yytype_int8 yyr2[] =
 {
-       0,     2,     0,     1,     1,     1,     1,     1,     1,     1,
-       3,     1,     3,     3,     3,     1,     3,     1
+       0,     2,     0,     1,     2,     1,     1,     1,     1,     1,
+       1,     3,     1,     3,     3,     3,     1,     3,     1
 };
 
 
@@ -1554,7 +1558,7 @@ yyreduce:
     switch (yyn)
       {
 
-#line 1558 "json_parser.tab.c"
+#line 1562 "json_parser.tab.c"
 
         default: break;
       }
@@ -1789,14 +1793,148 @@ yyreturnlab:
   return yyresult;
 }
 
-#line 132 "json_parser.y"
+#line 135 "json_parser.y"
 
 
 /* Section 3: C code */
+
+/*
+ * definitions
+ */
+#define REQUIRED_ARGS (0)	/* number of required arguments on the command line */
+
+
 int
-main(void)
+main(int argc, char **argv)
 {
-    yyparse();
+    char const *program = NULL;	    /* our name */
+    extern char *optarg;	    /* option argument */
+    extern int optind;		    /* argv index of the next arg */
+    bool strict = false;	    /* true ==> strict mode (currently unused: this is for when a JSON parser is added) */
+    bool string_flag_used = false;  /* true ==> -S string was used */
+    int ret;			    /* libc return code */
+    int i;
+
+
+    /*
+     * parse args
+     */
+    program = argv[0];
+    while ((i = getopt(argc, argv, "hv:qVnSTs:")) != -1) {
+	switch (i) {
+	case 'h':		/* -h - print help to stderr and exit 0 */
+	    usage(2, "-h help mode", program); /*ooo*/
+	    not_reached();
+	    break;
+	case 'v':		/* -v verbosity */
+	    /*
+	     * parse verbosity
+	     */
+	    verbosity_level = parse_verbosity(program, optarg);
+	    break;
+	case 'q':
+	    quiet = true;
+	    break;
+	case 'V':		/* -V - print version and exit */
+	    errno = 0;		/* pre-clear errno for warnp() */
+	    ret = printf("%s\n", JPARSE_VERSION);
+	    if (ret <= 0) {
+		warnp(__func__, "printf error printing version string: %s", JPARSE_VERSION);
+	    }
+	    exit(0); /*ooo*/
+	    not_reached();
+	    break;
+	case 'T':		/* -T (IOCCC toolkit release repository tag) */
+	    errno = 0;		/* pre-clear errno for warnp() */
+	    ret = printf("%s\n", IOCCC_TOOLKIT_RELEASE);
+	    if (ret <= 0) {
+		warnp(__func__, "printf error printing IOCCC toolkit release repository tag: %s", IOCCC_TOOLKIT_RELEASE);
+	    }
+	    exit(0); /*ooo*/
+	    not_reached();
+	    break;
+	case 'n':
+	    output_newline = false;
+	    break;
+	case 'S':
+	    /*
+	     * XXX currently this is unused as json parsing is not done yet.
+	     */
+	    strict = true;
+	    /* the if is only to prevent the warning that it's not yet used */
+	    if (strict)
+		dbg(DBG_MED, "enabling strict mode");
+	    break;
+	case 's':
+	    /*
+	     * So we don't trigger missing arg. Maybe there's another way but
+	     * nothing is coming to my mind right now.
+	     */
+	    string_flag_used = true;
+
+	    /* parse arg as a string */
+	    parse_string(optarg);
+	    /*
+	     * XXX Rather than having an option to disable strict mode so that
+	     * in the same invocation we can test some strings in strict mode
+	     * and some not strict after each string is parsed the strict mode
+	     * is disabled so that so that another -s has to be specified prior
+	     * to the string. This does mean that if you want strict parsing of
+	     * files and you specify the -s option then you must have -S after
+	     * the string args.
+	     *
+	     * But the question is: should it be this way or should it be
+	     * another design choice? For example should there be an option that
+	     * specifically disables strict mode so that one can not worry about
+	     * having to specify -s repeatedly? I think it might be better this
+	     * way but I'm not sure what letter should do it. Perhaps -x? If we
+	     * didn't use -S for strict it could be S but we do so that won't
+	     * work.
+	     */
+
+	    /* the if is only to prevent the warning that it's not yet used */
+	    if (!strict)
+		dbg(DBG_MED, "disabling strict mode");
+	    strict = false;
+	    break;
+	default:
+	    usage(2, "invalid -flag", program); /*ooo*/
+	    not_reached();
+	}
+    }
+
+    /* perform IOCCC sanity checks */
+    ioccc_sanity_chks();
+
+    /* warn(), warnp() and msg() are quiet if -q and -v 0 */
+    if (quiet && verbosity_level <= 0) {
+	msg_output_allowed = false;
+	warn_output_allowed = false;
+    }
+
+    /*
+     * case: process arguments on command line
+     */
+    if (argc - optind > 0) {
+
+	/*
+	 * process each argument in order
+	 */
+	for (i=optind; i < argc; ++i) {
+	    parse_file(argv[i]);
+	}
+
+    } else if (!string_flag_used) {
+	usage(2, "no file specified", program); /*ooo*/
+	not_reached();
+    }
+
+
+    /*
+     * All Done!!! - Jessica Noll, age 2
+     */
+    exit(num_errors != 0); /*ooo*/
+
 }
 
 void
@@ -1812,5 +1950,45 @@ yyerror(char const *err, ...)
      * typing anything after the program starts as once more it's incomplete!
      */
     dbg(DBG_NONE, "JSON parser error (num errors: %d): %s\n", yynerrs, err);
+}
+
+/*
+ * usage - print usage to stderr
+ *
+ * Example:
+ *      usage(3, "missing required argument(s), program: %s", program);
+ *
+ * given:
+ *	exitcode        value to exit with
+ *	str		top level usage message
+ *	program		our program name
+ *
+ * NOTE: We warn with extra newlines to help internal fault messages stand out.
+ *       Normally one should NOT include newlines in warn messages.
+ *
+ * This function does not return.
+ */
+static void
+usage(int exitcode, char const *str, char const *prog)
+{
+    /*
+     * firewall
+     */
+    if (str == NULL) {
+	str = "((NULL str))";
+	warn(__func__, "\nin usage(): program was NULL, forcing it to be: %s\n", str);
+    }
+    if (prog == NULL) {
+	prog = "((NULL prog))";
+	warn(__func__, "\nin usage(): program was NULL, forcing it to be: %s\n", prog);
+    }
+
+    /*
+     * print the formatted usage stream
+     */
+    vfprintf_usage(DO_NOT_EXIT, stderr, "%s\n", str);
+    vfprintf_usage(exitcode, stderr, usage_msg, prog, DBG_DEFAULT, JPARSE_VERSION);
+    exit(exitcode); /*ooo*/
+    not_reached();
 }
 

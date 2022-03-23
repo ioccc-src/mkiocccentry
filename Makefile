@@ -240,9 +240,9 @@ parser:
 	${BISON} -d json_parser.y
 	${FLEX} -o json_parser.c json_parser.l
 
-json_parser: parser json_parser.h json_parser.c json_parser.tab.c util.o dbg.o Makefile
+json_parser: parser json_parser.h json_parser.c json_parser.tab.c util.o dbg.o sanity.o json.o utf8_posix_map.o location.o Makefile
 	${CC} ${CFLAGS} -Wno-unused-function -Wno-unneeded-internal-declaration json_parser.c json_parser.tab.c \
-	    util.o dbg.o -o $@
+	    util.o dbg.o sanity.o json.o utf8_posix_map.o location.o -o $@
 
 limit_ioccc.sh: limit_ioccc.h version.h Makefile
 	${RM} -f $@
