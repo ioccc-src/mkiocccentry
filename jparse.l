@@ -119,7 +119,7 @@ JSON_COMMA		","
 /* Section 3: Code that's copied to the generated scanner */
 
 
-/* parse_string	    - parse string as a JSON block
+/* parse_json_string	    - parse string as a JSON block
  *
  * given:
  *
@@ -128,7 +128,7 @@ JSON_COMMA		","
  * NOTE: Until the JSON parser is written this only writes the string to stdout.
  */
 void
-parse_string(char const *string)
+parse_json_string(char const *string)
 {
     /*
      * firewall
@@ -155,7 +155,7 @@ parse_string(char const *string)
 }
 
 
-/* parse_file	    - parses file file
+/* parse_json_file	    - parses file file
  *
  * given:
  *
@@ -168,7 +168,7 @@ parse_string(char const *string)
  * NOTE: Until the JSON parser is written this only prints the string out.
  */
 void
-parse_file(char const *filename)
+parse_json_file(char const *filename)
 {
     bool is_stdin = false;	/* true if reading from stdin (filename == "-") */
     int ret;

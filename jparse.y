@@ -63,8 +63,8 @@ extern int yylineno;
 extern char *yytext;
 extern FILE *yyin;
 void usage(int exitcode, char const *name, char const *str) __attribute__((noreturn));
-void parse_file(char const *filename);
-void parse_string(char const *string);
+void parse_json_file(char const *filename);
+void parse_json_string(char const *string);
 void print_newline(void);
 /* debug information during development */
 #define YYDEBUG 1
@@ -215,7 +215,7 @@ main(int argc, char **argv)
 	    string_flag_used = true;
 
 	    /* parse arg as a string */
-	    parse_string(optarg);
+	    parse_json_string(optarg);
 	    /*
 	     * XXX Rather than having an option to disable strict mode so that
 	     * in the same invocation we can test some strings in strict mode
@@ -263,7 +263,7 @@ main(int argc, char **argv)
 	 * process each argument in order
 	 */
 	for (i=optind; i < argc; ++i) {
-	    parse_file(argv[i]);
+	    parse_json_file(argv[i]);
 	}
 
     } else if (!string_flag_used) {
