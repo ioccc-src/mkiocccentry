@@ -406,7 +406,7 @@ static const YY_CHAR yy_ec[256] =
 
 static const YY_CHAR yy_meta[23] =
     {   0,
-        1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
+        1,    2,    1,    1,    1,    1,    1,    1,    1,    1,
         1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
         1,    1
     } ;
@@ -544,10 +544,8 @@ extern bool output_newline;		/* true ==> -n not specified, output new line after
  * a type (above) but we don't do anything with it here with actions because
  * returning it to the parser causes parser errors.
  *
- * Something that's not addressed yet is strings can span newlines which is
- * invalid JSON. This will be addressed at another time.
  */
-#line 550 "jparse.c"
+#line 548 "jparse.c"
 
 #define INITIAL 0
 
@@ -764,9 +762,9 @@ YY_DECL
 		}
 
 	{
-#line 105 "jparse.l"
+#line 103 "jparse.l"
 
-#line 769 "jparse.c"
+#line 767 "jparse.c"
 
 	while ( /*CONSTCOND*/1 )		/* loops until end-of-file is reached */
 		{
@@ -824,67 +822,66 @@ do_action:	/* This label is used only to access EOF actions. */
 			goto yy_find_action;
 
 case 1:
-/* rule 1 can match eol */
 YY_RULE_SETUP
-#line 106 "jparse.l"
+#line 104 "jparse.l"
 { printf("string: '%s'\n", yytext); yylval.string = strdup(yytext); return JSON_STRING; }
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
-#line 107 "jparse.l"
+#line 105 "jparse.l"
 { printf("number: '%s'\n", yytext); yylval.number = strtoimax(yytext, NULL, 10); return JSON_NUMBER; }
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 108 "jparse.l"
+#line 106 "jparse.l"
 { printf("null: '%s'\n", yytext); return JSON_NULL; }
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 109 "jparse.l"
+#line 107 "jparse.l"
 { printf("true: '%s'\n", yytext); yylval.boolean = string_to_bool(yytext); return JSON_BOOLEAN; }
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 110 "jparse.l"
+#line 108 "jparse.l"
 { printf("open brace: '%c'\n", *yytext); return JSON_OPEN_BRACE; }
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 111 "jparse.l"
+#line 109 "jparse.l"
 { printf("close brace: '%c'\n", *yytext); return JSON_CLOSE_BRACE;}
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 112 "jparse.l"
+#line 110 "jparse.l"
 { printf("open bracket: '%c'\n", *yytext); return JSON_OPEN_BRACKET; }
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 113 "jparse.l"
+#line 111 "jparse.l"
 { printf("close bracket: '%c'\n", *yytext); return JSON_CLOSE_BRACKET; }
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 114 "jparse.l"
+#line 112 "jparse.l"
 { printf("equals: '%c'\n", *yytext); return JSON_COLON; }
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
-#line 115 "jparse.l"
+#line 113 "jparse.l"
 { printf("comma: '%c'\n", *yytext); return JSON_COMMA; }
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
-#line 116 "jparse.l"
+#line 114 "jparse.l"
 { printf("char: '%c'\n", *yytext); }
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
-#line 117 "jparse.l"
+#line 115 "jparse.l"
 ECHO;
 	YY_BREAK
-#line 887 "jparse.c"
+#line 884 "jparse.c"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 
@@ -1889,7 +1886,7 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 117 "jparse.l"
+#line 115 "jparse.l"
 
 
 /* Section 3: Code that's copied to the generated scanner */

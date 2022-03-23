@@ -67,7 +67,7 @@
 
 
 /* First part of user prologue.  */
-#line 54 "jparse.y"
+#line 51 "jparse.y"
 
 #include <inttypes.h>
 #include <stdio.h>
@@ -508,8 +508,8 @@ static const yytype_int8 yytranslate[] =
 /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_uint8 yyrline[] =
 {
-       0,   104,   104,   105,   106,   109,   110,   111,   112,   113,
-     114,   117,   120,   121,   124,   127,   130,   131,   134
+       0,   101,   101,   102,   103,   106,   107,   108,   109,   110,
+     111,   114,   117,   118,   121,   124,   127,   128,   131
 };
 #endif
 
@@ -1796,16 +1796,10 @@ yyreturnlab:
   return yyresult;
 }
 
-#line 139 "jparse.y"
+#line 136 "jparse.y"
 
 
 /* Section 3: C code */
-
-/*
- * definitions
- */
-#define REQUIRED_ARGS (0)	/* number of required arguments on the command line */
-
 
 int
 main(int argc, char **argv)

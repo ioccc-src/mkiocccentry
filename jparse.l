@@ -69,7 +69,7 @@ extern bool output_newline;		/* true ==> -n not specified, output new line after
  * NOTE: There are likely errors here and it's probably incomplete as well.
  */
 JSON_WHITESPACE         [ \t\r\n]+
-JSON_STRING		\"[^"]*\"
+JSON_STRING		\"[^"\n]*\"
 JSON_DIGIT		[0-9]
 JSON_DIGITS		{JSON_DIGIT}+
 JSON_INTEGER		{JSON_DIGITS}
@@ -99,8 +99,6 @@ JSON_COMMA		","
  * a type (above) but we don't do anything with it here with actions because
  * returning it to the parser causes parser errors.
  *
- * Something that's not addressed yet is strings can span newlines which is
- * invalid JSON. This will be addressed at another time.
  */
 %%
 {JSON_STRING}		    { printf("string: '%s'\n", yytext); yylval.string = strdup(yytext); return JSON_STRING; }

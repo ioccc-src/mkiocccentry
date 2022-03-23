@@ -31,12 +31,9 @@
  * defined it does not return the token as this will cause the parser to run
  * into problems on even the most basic json file.
  *
- * Something that's not addressed yet is strings can span newlines which is
- * invalid JSON. This will be addressed at another time.
- *
- * Additionally the memory returned by strdup() (json_parser.l action for
- * JSON_STRING) will not yet be freed but since the parser doesn't do anything
- * but just finishes until a parse error or EOF this is not a problem.
+ * The memory returned by strdup() (json_parser.l action for JSON_STRING) will
+ * not yet be freed but since the parser doesn't do anything but just finishes
+ * until a parse error or EOF this is not a problem.
  *
  * I'm not sure when I will be adding more and I won't add all at once but
  * rather a bit each time. This is a work in progress!
@@ -74,8 +71,8 @@ int yydebug = 1;
 /*
  * Token types.
  *
- * It's very possible that this is incomplete and everything here is subject to
- * change.
+ * XXX It's very possible that this is incomplete and everything here is subject
+ * to change.
  */
 
 /* This union is NOT correct and it absolutely will change! */
@@ -95,8 +92,8 @@ int yydebug = 1;
 
 /* Section 2: Rules
  *
- * Not all rules are here and no actions are defined yet. As well some of the
- * rules are probably wrong.
+ * XXX Not all rules are here and no actions are defined yet. As well some of
+ * the rules are probably wrong.
  *
  * Again this is very incomplete and there are errors!
  */
@@ -139,12 +136,6 @@ json_element:	json_value
 %%
 
 /* Section 3: C code */
-
-/*
- * definitions
- */
-#define REQUIRED_ARGS (0)	/* number of required arguments on the command line */
-
 
 int
 main(int argc, char **argv)
