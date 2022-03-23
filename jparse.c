@@ -222,12 +222,12 @@ print_newline(void)
 int
 main(int argc, char **argv)
 {
-    char const *program = NULL;	/* our name */
-    extern char *optarg;	/* option argument */
-    extern int optind;		/* argv index of the next arg */
-    bool strict = false;	/* true ==> strict mode (currently unused: this is for when a JSON parser is added) */
-    bool string_flag_used = false; /* -S string was used */
-    int ret;			/* libc return code */
+    char const *program = NULL;	    /* our name */
+    extern char *optarg;	    /* option argument */
+    extern int optind;		    /* argv index of the next arg */
+    bool strict = false;	    /* true ==> strict mode (currently unused: this is for when a JSON parser is added) */
+    bool string_flag_used = false;  /* true ==> -S string was used */
+    int ret;			    /* libc return code */
     int i;
 
 
