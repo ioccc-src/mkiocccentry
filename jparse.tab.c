@@ -67,12 +67,12 @@
 
 
 /* First part of user prologue.  */
-#line 53 "json_parser.y"
+#line 51 "jparse.y"
 
 #include <inttypes.h>
 #include <stdio.h>
 #include <unistd.h> /* getopt */
-#include "json_parser.h"
+#include "jparse.h"
 
 int yylex(void);
 void yyerror(char const *error, ...);
@@ -80,11 +80,14 @@ extern int yylineno;
 extern char *yytext;
 extern FILE *yyin;
 void usage(int exitcode, char const *name, char const *str) __attribute__((noreturn));
+void parse_json_file(char const *filename);
+void parse_json_string(char const *string);
+void print_newline(void);
 /* debug information during development */
 #define YYDEBUG 1
 int yydebug = 1;
 
-#line 88 "json_parser.tab.c"
+#line 91 "jparse.tab.c"
 
 # ifndef YY_CAST
 #  ifdef __cplusplus
@@ -107,7 +110,7 @@ int yydebug = 1;
 #  endif
 # endif
 
-#include "json_parser.tab.h"
+#include "jparse.tab.h"
 /* Symbol kind.  */
 enum yysymbol_kind_t
 {
@@ -505,8 +508,8 @@ static const yytype_int8 yytranslate[] =
 /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_uint8 yyrline[] =
 {
-       0,   100,   100,   101,   102,   105,   106,   107,   108,   109,
-     110,   113,   116,   117,   120,   123,   126,   127,   130
+       0,   101,   101,   102,   103,   106,   107,   108,   109,   110,
+     111,   114,   117,   118,   121,   124,   127,   128,   131
 };
 #endif
 
@@ -1558,7 +1561,7 @@ yyreduce:
     switch (yyn)
       {
 
-#line 1562 "json_parser.tab.c"
+#line 1565 "jparse.tab.c"
 
         default: break;
       }
@@ -1793,16 +1796,10 @@ yyreturnlab:
   return yyresult;
 }
 
-#line 135 "json_parser.y"
+#line 136 "jparse.y"
 
 
 /* Section 3: C code */
-
-/*
- * definitions
- */
-#define REQUIRED_ARGS (0)	/* number of required arguments on the command line */
-
 
 int
 main(int argc, char **argv)
@@ -1873,7 +1870,7 @@ main(int argc, char **argv)
 	    string_flag_used = true;
 
 	    /* parse arg as a string */
-	    parse_string(optarg);
+	    parse_json_string(optarg);
 	    /*
 	     * XXX Rather than having an option to disable strict mode so that
 	     * in the same invocation we can test some strings in strict mode
@@ -1921,7 +1918,7 @@ main(int argc, char **argv)
 	 * process each argument in order
 	 */
 	for (i=optind; i < argc; ++i) {
-	    parse_file(argv[i]);
+	    parse_json_file(argv[i]);
 	}
 
     } else if (!string_flag_used) {

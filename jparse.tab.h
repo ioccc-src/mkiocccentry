@@ -35,8 +35,8 @@
    especially those whose name start with YY_ or yy_.  They are
    private implementation details that can be changed or removed.  */
 
-#ifndef YY_YY_JSON_PARSER_TAB_H_INCLUDED
-# define YY_YY_JSON_PARSER_TAB_H_INCLUDED
+#ifndef YY_YY_JPARSE_TAB_H_INCLUDED
+# define YY_YY_JPARSE_TAB_H_INCLUDED
 /* Debug traces.  */
 #ifndef YYDEBUG
 # define YYDEBUG 0
@@ -77,20 +77,20 @@ extern int yydebug;
 
 /* Value type.  */
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
-#line 78 "json_parser.y"
+#line 79 "jparse.y"
 union json_type
 {
-#line 78 "json_parser.y"
+#line 79 "jparse.y"
 
   char *string;
   uintmax_t uintmax;
   intmax_t number;
   bool boolean;
 
-#line 91 "json_parser.tab.h"
+#line 91 "jparse.tab.h"
 
 };
-#line 78 "json_parser.y"
+#line 79 "jparse.y"
 typedef union json_type YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define YYSTYPE_IS_DECLARED 1
@@ -103,4 +103,4 @@ extern YYSTYPE yylval;
 int yyparse (void);
 
 
-#endif /* !YY_YY_JSON_PARSER_TAB_H_INCLUDED  */
+#endif /* !YY_YY_JPARSE_TAB_H_INCLUDED  */

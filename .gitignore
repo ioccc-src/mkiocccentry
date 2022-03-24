@@ -84,3 +84,7 @@ makefile.local
 
 # macOS files
 .DS_Store
+
+# vim swap files
+.*.sw[nop]
+.sw[nop]

@@ -195,6 +195,27 @@ all: ${TARGETS} ${TEST_TARGETS}
 #
 .PHONY: all configure clean clobber install test reset_min_timestamp
 
+# Remove built-in rules that cause overwriting jparse.c from bison/yacc. Perhaps
+# bison/yacc should write to jparse.c and flex should write to something else
+# but I'm not sure what yet.
+#
+# NOTES: When ever I (@xexyl) update jparse.y or jparse.l I have to run make
+# parser and this will regenerate the jparse source files. If I don't do this
+# then the changes won't take effect but having it this allows for those without
+# flex and bison (or different versions or some other problems I'm unaware of)
+# to compile the code.
+#
+# To help remind me I have made jparse depend on jparse.l and jparse.y (it does
+# not need to use them but whenever they're modified jparse will be recompiled
+# so it shouldn't be a problem as the lexer/parser files are in the repo and so
+# are the source files and header files).
+#
+# Eventually the need for these tools should be gone or limited and this won't
+# be an issue but for now it is.
+%.c: %.y
+%.c: %.l
+
+
 rule_count.o: rule_count.c Makefile
 	${CC} ${CFLAGS} -DMKIOCCCENTRY_USE rule_count.c -c
 
@@ -230,17 +251,17 @@ jstrencode: jstrencode.c jstrencode.h dbg.o json.o util.o Makefile
 jstrdecode: jstrdecode.c jstrdecode.h dbg.o json.o util.o Makefile
 	${CC} ${CFLAGS} jstrdecode.c dbg.o json.o util.o -o $@
 
-jparse: jparse.c jparse.h json.h json.o dbg.o util.o sanity.o location.o utf8_posix_map.o  Makefile
-	${CC} ${CFLAGS} -Wno-unused-but-set-variable jparse.c json.o dbg.o util.o sanity.o location.o utf8_posix_map.o -o $@
+jparse: jparse.c jparse.h jparse.tab.c jparse.tab.h jparse.y jparse.l util.o dbg.o sanity.o json.o utf8_posix_map.o location.o Makefile
+	${CC} ${CFLAGS} -Wno-unused-function -Wno-unneeded-internal-declaration jparse.c jparse.tab.c \
+	    util.o dbg.o sanity.o json.o utf8_posix_map.o location.o -o $@
 
 utf8_test: utf8_test.c utf8_posix_map.o dbg.o util.o
 	${CC} ${CFLAGS} utf8_test.c utf8_posix_map.o dbg.o util.o -o $@
 
-json_parser: json_parser.l json_parser.y json_parser.h util.o dbg.o Makefile
-	${BISON} -d json_parser.y
-	${FLEX} -o json_parser.yy.c json_parser.l
-	${CC} ${CFLAGS} -Wno-unused-function -Wno-unneeded-internal-declaration json_parser.yy.c json_parser.tab.c \
-	    util.o dbg.o -o $@
+parser: jparse.y jparse.l
+	${BISON} -d jparse.y
+	${FLEX} -o jparse.c jparse.l
+
 
 limit_ioccc.sh: limit_ioccc.h version.h Makefile
 	${RM} -f $@
@@ -473,3 +494,5 @@ sanity.o: sanity.c sanity.h util.h dbg.h location.h utf8_posix_map.h \
   json.h
 jparse.o: jparse.c jparse.h dbg.h util.h json.h sanity.h location.h \
   utf8_posix_map.h limit_ioccc.h version.h
+jparse.tab.o: jparse.tab.c jparse.h dbg.h util.h json.h sanity.h \
+  location.h utf8_posix_map.h limit_ioccc.h version.h jparse.tab.h

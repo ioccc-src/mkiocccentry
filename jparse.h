@@ -11,10 +11,11 @@
  *	https://ioccc.xexyl.net
  *
  * NOTE: This is _very incomplete_ and right now all it does is reads from either
- * stdin, the command line or a file. It does not parse anything yet as the JSON
- * parser is not made yet. All this does now is check that it's a C string and
- * print it out if it is. It's an error if it's not a C string.
+ * stdin, the command line or a file, running yyparse() on it. The grammar is
+ * incomplete, there are some things that are allowed that are not valid JSON
+ * and various other things need to be done.
  *
+ * This is very much a work in progress!
  */
 
 
@@ -84,15 +85,13 @@ bool err_output_allowed = true;		/* false ==> disable output from err() and errp
 bool usage_output_allowed = true;	/* false ==> disable output from vfprintf_usage() */
 bool output_newline = true;		/* true ==> -n not specified, output new line after each arg processed */
 static bool quiet = false;		/* true ==> only show errors, and warnings if -v > 0 */
-static unsigned num_errors = 0;		/* > 0 number of errors encountered */
+unsigned num_errors = 0;		/* > 0 number of errors encountered */
 
 
 /*
  * function prototypes
  */
-static void parse_file(char const *filename);
-static void parse_string(char const *string);
-static void print_newline(void);
+void print_newline(void);
 static void usage(int exitcode, char const *name, char const *str) __attribute__((noreturn));
 
 
