@@ -1857,7 +1857,7 @@ default_handle(char const *name)
 		    continue;
 		}
 
-		/* skip if there isn't match with the rest of the string */
+		/* skip if there isn't a match with the rest of the string */
 		if (strncasecmp(m->utf8_str, name+i, m->utf8_str_len) != 0) {
 		    continue;
 		}
@@ -1943,7 +1943,8 @@ default_handle(char const *name)
     }
 
     /*
-     * sanity check: default author handle have only POSIX portable safe plus + chars
+     * sanity check: default author handle must have only POSIX portable safe
+     * plus + chars
      */
     safe = posix_plus_safe(ret, true, false, true);
     if (safe == false) {
@@ -1954,6 +1955,6 @@ default_handle(char const *name)
     /*
      * return default author handle
      */
-    dbg(DBG_HIGH, "retruning default handle: <%s>", ret);
+    dbg(DBG_HIGH, "returning default handle: <%s>", ret);
     return ret;
 }
