@@ -355,8 +355,8 @@ static void yynoreturn yy_fatal_error ( const char* msg  );
 	(yy_hold_char) = *yy_cp; \
 	*yy_cp = '\0'; \
 	(yy_c_buf_p) = yy_cp;
-#define YY_NUM_RULES 12
-#define YY_END_OF_BUFFER 13
+#define YY_NUM_RULES 11
+#define YY_END_OF_BUFFER 12
 /* This struct is not used in this scanner,
    but its presence is necessary. */
 struct yy_trans_info
@@ -364,12 +364,12 @@ struct yy_trans_info
 	flex_int32_t yy_verify;
 	flex_int32_t yy_nxt;
 	};
-static const flex_int16_t yy_accept[35] =
+static const flex_int16_t yy_accept[34] =
     {   0,
-        0,    0,   13,   11,   12,   11,   10,    2,    9,    7,
-        8,   11,   11,   11,    5,    6,    0,    1,    2,    2,
-        0,    0,    0,    0,    2,    0,    2,    0,    0,    0,
-        0,    3,    4,    0
+        0,    0,   12,   11,   11,   10,    2,    9,    7,    8,
+       11,   11,   11,    5,    6,    0,    1,    2,    2,    0,
+        0,    0,    0,    2,    0,    2,    0,    0,    0,    0,
+        3,    4,    0
     } ;
 
 static const YY_CHAR yy_ec[256] =
@@ -411,44 +411,44 @@ static const YY_CHAR yy_meta[23] =
         1,    1
     } ;
 
-static const flex_int16_t yy_base[36] =
+static const flex_int16_t yy_base[35] =
     {   0,
-        0,    0,   50,   51,   51,   46,   51,   17,   51,   51,
-       51,   36,   27,   29,   51,   51,   42,   51,   18,    0,
-       25,   29,   28,   22,   26,   34,   33,   20,   22,   23,
-       21,   51,   51,   51,   27
+        0,    0,   50,   51,   46,   51,   17,   51,   51,   51,
+       36,   27,   29,   51,   51,   42,   51,   18,    0,   25,
+       29,   28,   22,   26,   34,   33,   20,   22,   23,   21,
+       51,   51,   51,   27
     } ;
 
-static const flex_int16_t yy_def[36] =
+static const flex_int16_t yy_def[35] =
     {   0,
-       34,    1,   34,   34,   34,   35,   34,   34,   34,   34,
-       34,   34,   34,   34,   34,   34,   35,   34,   34,    8,
-       34,   34,   34,   34,   34,   34,   34,   34,   34,   34,
-       34,   34,   34,    0,   34
+       33,    1,   33,   33,   34,   33,   33,   33,   33,   33,
+       33,   33,   33,   33,   33,   34,   33,   33,    7,   33,
+       33,   33,   33,   33,   33,   33,   33,   33,   33,   33,
+       33,   33,    0,   33
     } ;
 
 static const flex_int16_t yy_nxt[74] =
     {   0,
-        4,    5,    6,    4,    7,    4,    8,    9,    4,   10,
-       11,    4,    4,   12,    4,   13,    4,    4,   14,    4,
-       15,   16,   19,   20,   25,   21,   21,   17,   26,   21,
-       21,   27,   25,   33,   21,   33,   32,   31,   21,   27,
-       27,   30,   29,   28,   18,   24,   23,   22,   18,   34,
-        3,   34,   34,   34,   34,   34,   34,   34,   34,   34,
-       34,   34,   34,   34,   34,   34,   34,   34,   34,   34,
-       34,   34,   34
+        4,    4,    5,    4,    6,    4,    7,    8,    4,    9,
+       10,    4,    4,   11,    4,   12,    4,    4,   13,    4,
+       14,   15,   18,   19,   24,   20,   20,   16,   25,   20,
+       20,   26,   24,   32,   20,   32,   31,   30,   20,   26,
+       26,   29,   28,   27,   17,   23,   22,   21,   17,   33,
+        3,   33,   33,   33,   33,   33,   33,   33,   33,   33,
+       33,   33,   33,   33,   33,   33,   33,   33,   33,   33,
+       33,   33,   33
     } ;
 
 static const flex_int16_t yy_chk[74] =
     {   0,
         1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
         1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
-        1,    1,    8,    8,   19,    8,   19,   35,   21,    8,
-       19,   21,   25,   31,   25,   30,   29,   28,   25,   27,
-       26,   24,   23,   22,   17,   14,   13,   12,    6,    3,
-       34,   34,   34,   34,   34,   34,   34,   34,   34,   34,
-       34,   34,   34,   34,   34,   34,   34,   34,   34,   34,
-       34,   34,   34
+        1,    1,    7,    7,   18,    7,   18,   34,   20,    7,
+       18,   20,   24,   30,   24,   29,   28,   27,   24,   26,
+       25,   23,   22,   21,   16,   13,   12,   11,    5,    3,
+       33,   33,   33,   33,   33,   33,   33,   33,   33,   33,
+       33,   33,   33,   33,   33,   33,   33,   33,   33,   33,
+       33,   33,   33
     } ;
 
 static yy_state_type yy_last_accepting_state;
@@ -791,7 +791,7 @@ yy_match:
 			while ( yy_chk[yy_base[yy_current_state] + yy_c] != yy_current_state )
 				{
 				yy_current_state = (int) yy_def[yy_current_state];
-				if ( yy_current_state >= 35 )
+				if ( yy_current_state >= 34 )
 					yy_c = yy_meta[yy_c];
 				}
 			yy_current_state = yy_nxt[yy_base[yy_current_state] + yy_c];
@@ -874,14 +874,9 @@ YY_RULE_SETUP
 case 11:
 YY_RULE_SETUP
 #line 114 "jparse.l"
-{ printf("char: '%c'\n", *yytext); }
-	YY_BREAK
-case 12:
-YY_RULE_SETUP
-#line 115 "jparse.l"
 ECHO;
 	YY_BREAK
-#line 884 "jparse.c"
+#line 879 "jparse.c"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 
@@ -1178,7 +1173,7 @@ static int yy_get_next_buffer (void)
 		while ( yy_chk[yy_base[yy_current_state] + yy_c] != yy_current_state )
 			{
 			yy_current_state = (int) yy_def[yy_current_state];
-			if ( yy_current_state >= 35 )
+			if ( yy_current_state >= 34 )
 				yy_c = yy_meta[yy_c];
 			}
 		yy_current_state = yy_nxt[yy_base[yy_current_state] + yy_c];
@@ -1206,11 +1201,11 @@ static int yy_get_next_buffer (void)
 	while ( yy_chk[yy_base[yy_current_state] + yy_c] != yy_current_state )
 		{
 		yy_current_state = (int) yy_def[yy_current_state];
-		if ( yy_current_state >= 35 )
+		if ( yy_current_state >= 34 )
 			yy_c = yy_meta[yy_c];
 		}
 	yy_current_state = yy_nxt[yy_base[yy_current_state] + yy_c];
-	yy_is_jam = (yy_current_state == 34);
+	yy_is_jam = (yy_current_state == 33);
 
 		return yy_is_jam ? 0 : yy_current_state;
 }
@@ -1886,7 +1881,7 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 115 "jparse.l"
+#line 114 "jparse.l"
 
 
 /* Section 3: Code that's copied to the generated scanner */
@@ -1898,7 +1893,8 @@ void yyfree (void * ptr )
  *
  *	string	    - the string to parse as JSON
  *
- * NOTE: Until the JSON parser is written this only writes the string to stdout.
+ * NOTE: Until the JSON parser is finished this only parses the string (and not
+ * necessarily correctly) but it does not build a parse tree.
  */
 void
 parse_json_string(char const *string)
@@ -1938,7 +1934,8 @@ parse_json_string(char const *string)
  * if the file is not a C string or if read_all() returns NULL the function
  * warns but does nothing else.
  *
- * NOTE: Until the JSON parser is written this only prints the string out.
+ * NOTE: Until the JSON parser is finished this only parses the file (and not
+ * necessarily correctly) but it does not build a parse tree.
  */
 void
 parse_json_file(char const *filename)
