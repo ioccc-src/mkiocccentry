@@ -19,9 +19,6 @@
  * two tools will be merged into one which can parse one or both of .info.json
  * and/or .author.json. This is because some fields MUST be the same value in
  * both files.
- *
- * Additionally there will likely be a jparse tool that will take a block of
- * memory from either stdin or a file and attempt to parse it as json.
  */
 
 

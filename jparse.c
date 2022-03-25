@@ -1962,6 +1962,8 @@ void
 parse_json_file(char const *filename)
 {
     bool is_stdin = false;	/* true if reading from stdin (filename == "-") */
+    char *data = NULL;		/* used to determine if there are NUL bytes in the file */
+    size_t len = 0;		/* length of data read */
     int ret;
 
     /*
@@ -1997,6 +1999,20 @@ parse_json_file(char const *filename)
 	return;
     }
 
+    data = read_all(yyin, &len);
+    if (data == NULL) {
+	err(35, __func__, "couldn't read in %s", is_stdin?"stdin":filename);
+	not_reached();
+    }
+    if (!is_string(data, len + 1)) {
+	err(36, __func__, "found embedded NUL byte in %s", is_stdin?"stdin":filename);
+	not_reached();
+    }
+
+    free(data);
+    data = NULL;
+    rewind(yyin);
+
     yyrestart(yyin);
     yyparse();
 
@@ -2026,7 +2042,7 @@ print_newline(void)
 	errno = 0;		/* pre-clear errno for errp() */
 	ret = putchar('\n');
 	if (ret != '\n') {
-	    errp(43, __func__, "error while writing newline");
+	    errp(37, __func__, "error while writing newline");
 	    not_reached();
 	}
     }
