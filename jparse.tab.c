@@ -121,32 +121,30 @@ enum yysymbol_kind_t
   YYSYMBOL_YYUNDEF = 2,                    /* "invalid token"  */
   YYSYMBOL_JSON_LETTER = 3,                /* JSON_LETTER  */
   YYSYMBOL_JSON_SIGN = 4,                  /* JSON_SIGN  */
-  YYSYMBOL_JSON_EQUALS = 5,                /* JSON_EQUALS  */
-  YYSYMBOL_JSON_DIGIT = 6,                 /* JSON_DIGIT  */
-  YYSYMBOL_JSON_DIGITS = 7,                /* JSON_DIGITS  */
-  YYSYMBOL_JSON_INTEGER = 8,               /* JSON_INTEGER  */
-  YYSYMBOL_JSON_EXPONENT = 9,              /* JSON_EXPONENT  */
-  YYSYMBOL_JSON_OPEN_BRACE = 10,           /* JSON_OPEN_BRACE  */
-  YYSYMBOL_JSON_CLOSE_BRACE = 11,          /* JSON_CLOSE_BRACE  */
-  YYSYMBOL_JSON_OPEN_BRACKET = 12,         /* JSON_OPEN_BRACKET  */
-  YYSYMBOL_JSON_CLOSE_BRACKET = 13,        /* JSON_CLOSE_BRACKET  */
-  YYSYMBOL_JSON_COMMA = 14,                /* JSON_COMMA  */
-  YYSYMBOL_JSON_COLON = 15,                /* JSON_COLON  */
-  YYSYMBOL_JSON_NULL = 16,                 /* JSON_NULL  */
-  YYSYMBOL_JSON_STRING = 17,               /* JSON_STRING  */
-  YYSYMBOL_JSON_INTMAX = 18,               /* JSON_INTMAX  */
-  YYSYMBOL_JSON_UINTMAX = 19,              /* JSON_UINTMAX  */
-  YYSYMBOL_JSON_LONG_DOUBLE = 20,          /* JSON_LONG_DOUBLE  */
-  YYSYMBOL_JSON_BOOLEAN = 21,              /* JSON_BOOLEAN  */
-  YYSYMBOL_YYACCEPT = 22,                  /* $accept  */
-  YYSYMBOL_json = 23,                      /* json  */
-  YYSYMBOL_json_value = 24,                /* json_value  */
-  YYSYMBOL_json_object = 25,               /* json_object  */
-  YYSYMBOL_json_members = 26,              /* json_members  */
-  YYSYMBOL_json_member = 27,               /* json_member  */
-  YYSYMBOL_json_array = 28,                /* json_array  */
-  YYSYMBOL_json_elements = 29,             /* json_elements  */
-  YYSYMBOL_json_element = 30               /* json_element  */
+  YYSYMBOL_JSON_DIGIT = 5,                 /* JSON_DIGIT  */
+  YYSYMBOL_JSON_DIGITS = 6,                /* JSON_DIGITS  */
+  YYSYMBOL_JSON_EXPONENT = 7,              /* JSON_EXPONENT  */
+  YYSYMBOL_JSON_OPEN_BRACE = 8,            /* JSON_OPEN_BRACE  */
+  YYSYMBOL_JSON_CLOSE_BRACE = 9,           /* JSON_CLOSE_BRACE  */
+  YYSYMBOL_JSON_OPEN_BRACKET = 10,         /* JSON_OPEN_BRACKET  */
+  YYSYMBOL_JSON_CLOSE_BRACKET = 11,        /* JSON_CLOSE_BRACKET  */
+  YYSYMBOL_JSON_COMMA = 12,                /* JSON_COMMA  */
+  YYSYMBOL_JSON_COLON = 13,                /* JSON_COLON  */
+  YYSYMBOL_JSON_NULL = 14,                 /* JSON_NULL  */
+  YYSYMBOL_JSON_STRING = 15,               /* JSON_STRING  */
+  YYSYMBOL_JSON_INTMAX = 16,               /* JSON_INTMAX  */
+  YYSYMBOL_JSON_UINTMAX = 17,              /* JSON_UINTMAX  */
+  YYSYMBOL_JSON_LONG_DOUBLE = 18,          /* JSON_LONG_DOUBLE  */
+  YYSYMBOL_JSON_BOOLEAN = 19,              /* JSON_BOOLEAN  */
+  YYSYMBOL_YYACCEPT = 20,                  /* $accept  */
+  YYSYMBOL_json = 21,                      /* json  */
+  YYSYMBOL_json_value = 22,                /* json_value  */
+  YYSYMBOL_json_object = 23,               /* json_object  */
+  YYSYMBOL_json_members = 24,              /* json_members  */
+  YYSYMBOL_json_member = 25,               /* json_member  */
+  YYSYMBOL_json_array = 26,                /* json_array  */
+  YYSYMBOL_json_elements = 27,             /* json_elements  */
+  YYSYMBOL_json_element = 28               /* json_element  */
 };
 typedef enum yysymbol_kind_t yysymbol_kind_t;
 
@@ -454,7 +452,7 @@ union yyalloc
 #define YYLAST   28
 
 /* YYNTOKENS -- Number of terminals.  */
-#define YYNTOKENS  22
+#define YYNTOKENS  20
 /* YYNNTS -- Number of nonterminals.  */
 #define YYNNTS  9
 /* YYNRULES -- Number of rules.  */
@@ -463,7 +461,7 @@ union yyalloc
 #define YYNSTATES  30
 
 /* YYMAXUTOK -- Last valid token kind.  */
-#define YYMAXUTOK   276
+#define YYMAXUTOK   274
 
 
 /* YYTRANSLATE(TOKEN-NUM) -- Symbol number corresponding to TOKEN-NUM
@@ -504,7 +502,7 @@ static const yytype_int8 yytranslate[] =
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     1,     2,     3,     4,
        5,     6,     7,     8,     9,    10,    11,    12,    13,    14,
-      15,    16,    17,    18,    19,    20,    21
+      15,    16,    17,    18,    19
 };
 
 #if YYDEBUG
@@ -531,19 +529,18 @@ yysymbol_name (yysymbol_kind_t yysymbol)
   static const char *const yy_sname[] =
   {
   "end of file", "error", "invalid token", "JSON_LETTER", "JSON_SIGN",
-  "JSON_EQUALS", "JSON_DIGIT", "JSON_DIGITS", "JSON_INTEGER",
-  "JSON_EXPONENT", "JSON_OPEN_BRACE", "JSON_CLOSE_BRACE",
-  "JSON_OPEN_BRACKET", "JSON_CLOSE_BRACKET", "JSON_COMMA", "JSON_COLON",
-  "JSON_NULL", "JSON_STRING", "JSON_INTMAX", "JSON_UINTMAX",
-  "JSON_LONG_DOUBLE", "JSON_BOOLEAN", "$accept", "json", "json_value",
-  "json_object", "json_members", "json_member", "json_array",
+  "JSON_DIGIT", "JSON_DIGITS", "JSON_EXPONENT", "JSON_OPEN_BRACE",
+  "JSON_CLOSE_BRACE", "JSON_OPEN_BRACKET", "JSON_CLOSE_BRACKET",
+  "JSON_COMMA", "JSON_COLON", "JSON_NULL", "JSON_STRING", "JSON_INTMAX",
+  "JSON_UINTMAX", "JSON_LONG_DOUBLE", "JSON_BOOLEAN", "$accept", "json",
+  "json_value", "json_object", "json_members", "json_member", "json_array",
   "json_elements", "json_element", YY_NULLPTR
   };
   return yy_sname[yysymbol];
 }
 #endif
 
-#define YYPACT_NINF (-12)
+#define YYPACT_NINF (-10)
 
 #define yypact_value_is_default(Yyn) \
   ((Yyn) == YYPACT_NINF)
@@ -557,9 +554,9 @@ yysymbol_name (yysymbol_kind_t yysymbol)
    STATE-NUM.  */
 static const yytype_int8 yypact[] =
 {
-      -9,     3,     7,   -12,   -12,   -12,   -12,   -12,   -12,     2,
-     -12,   -12,   -12,   -12,   -12,   -11,    -6,    -8,    -4,     5,
-       1,   -12,     7,   -12,    -4,   -12,     7,   -12,   -12,   -12
+      -7,     5,     9,   -10,   -10,   -10,   -10,   -10,   -10,     2,
+     -10,   -10,   -10,   -10,   -10,    -9,    -4,    -6,    -2,     4,
+       6,   -10,     9,   -10,    -2,   -10,     9,   -10,   -10,   -10
 };
 
 /* YYDEFACT[STATE-NUM] -- Default reduction number in state STATE-NUM.
@@ -575,7 +572,7 @@ static const yytype_int8 yydefact[] =
 /* YYPGOTO[NTERM-NUM].  */
 static const yytype_int8 yypgoto[] =
 {
-     -12,   -12,   -12,   -12,    -3,   -12,   -12,   -10,     0
+     -10,   -10,   -10,   -10,    -8,   -10,   -10,    -5,     0
 };
 
 /* YYDEFGOTO[NTERM-NUM].  */
@@ -590,32 +587,32 @@ static const yytype_int8 yydefgoto[] =
 static const yytype_int8 yytable[] =
 {
       13,     1,    21,     2,    22,    23,    24,     3,     4,     5,
-       6,     7,     8,    15,    14,    26,    29,    18,    25,     2,
-      15,    28,    27,     3,     4,     5,     6,     7,     8
+       6,     7,     8,    15,    14,    25,    28,    18,    26,     2,
+      15,    29,    27,     3,     4,     5,     6,     7,     8
 };
 
 static const yytype_int8 yycheck[] =
 {
-       0,    10,     0,    12,    15,    11,    14,    16,    17,    18,
-      19,    20,    21,    17,    11,    14,    26,    10,    13,    12,
-      17,    24,    22,    16,    17,    18,    19,    20,    21
+       0,     8,     0,    10,    13,     9,    12,    14,    15,    16,
+      17,    18,    19,    15,     9,    11,    24,     8,    12,    10,
+      15,    26,    22,    14,    15,    16,    17,    18,    19
 };
 
 /* YYSTOS[STATE-NUM] -- The symbol kind of the accessing symbol of
    state STATE-NUM.  */
 static const yytype_int8 yystos[] =
 {
-       0,    10,    12,    16,    17,    18,    19,    20,    21,    23,
-      24,    25,    28,    30,    11,    17,    26,    27,    10,    29,
-      30,     0,    15,    11,    14,    13,    14,    30,    26,    29
+       0,     8,    10,    14,    15,    16,    17,    18,    19,    21,
+      22,    23,    26,    28,     9,    15,    24,    25,     8,    27,
+      28,     0,    13,     9,    12,    11,    12,    28,    24,    27
 };
 
 /* YYR1[RULE-NUM] -- Symbol kind of the left-hand side of rule RULE-NUM.  */
 static const yytype_int8 yyr1[] =
 {
-       0,    22,    23,    23,    23,    24,    24,    24,    24,    24,
-      24,    24,    24,    25,    26,    26,    27,    28,    29,    29,
-      30
+       0,    20,    21,    21,    21,    22,    22,    22,    22,    22,
+      22,    22,    22,    23,    24,    24,    25,    26,    27,    27,
+      28
 };
 
 /* YYR2[RULE-NUM] -- Number of symbols on the right-hand side of rule RULE-NUM.  */
@@ -1568,7 +1565,7 @@ yyreduce:
     switch (yyn)
       {
 
-#line 1572 "jparse.tab.c"
+#line 1569 "jparse.tab.c"
 
         default: break;
       }

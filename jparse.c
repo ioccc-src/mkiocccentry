@@ -1939,6 +1939,7 @@ parse_json_string(char const *string)
     yyparse();
 
     yy_delete_buffer(bp);
+    bp = NULL;
 
     print_newline();
 }
