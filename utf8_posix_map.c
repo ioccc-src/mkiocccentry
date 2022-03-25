@@ -1552,8 +1552,8 @@ struct utf8_posix_map hmap[] =
  * file variables
  */
 static bool utf8_posix_map_checked = false;	/* true ==> check_utf8_posix_map() run was successfully */
-static bool seeded = false;			/* true ==> default_handle() as needed random() */
-static char state[STATE_LEN+1];			/* srandom() state */
+static bool seeded = false;			/* true ==> default_handle() was seeded for random() */
+static char state[STATE_LEN+1];			/* random() state */
 
 
 /*
@@ -1594,7 +1594,7 @@ check_utf8_posix_map(void)
 	    not_reached();
 	}
 	if (hmap[i].posix_str == NULL) {
-	    err(12, __func__, "found posix_str NULL pointer not at end (hmap[%lu]) of hmap[%ju]; fix table in utf8_posix_map.c and recompile",
+	    err(12, __func__, "found posix_str NULL pointer not at end (hmap[%ju]) of hmap[%ju]; fix table in utf8_posix_map.c and recompile",
 			      (uintmax_t)max, (uintmax_t)i);
 	    not_reached();
 	}
@@ -1605,7 +1605,7 @@ check_utf8_posix_map(void)
 
 	/* POSIX portable plus + check on posix_str if string is not empty */
 	if (hmap[i].posix_str_len > 0 && posix_plus_safe(hmap[i].posix_str, true, false, false) == false) {
-	    err(13, __func__, "hmap[%lu] is not POSIX portable plus + safe; fix table in utf8_posix_map.c and recompile", (uintmax_t)i);
+	    err(13, __func__, "hmap[%ju] is not POSIX portable plus + safe; fix table in utf8_posix_map.c and recompile", (uintmax_t)i);
 	    not_reached();
 	}
     }
