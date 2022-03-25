@@ -288,7 +288,7 @@ main(int argc, char *argv[])
      * filepath must use only POSIX portable filename and + chars /
      */
     if (posix_plus_safe(filepath, false, true, false) == false) {
-	err(22, __func__, "filepoath: posix_plus_safe(%s, false, true, false) is false", filepath);
+	err(22, __func__, "filepath: posix_plus_safe(%s, false, true, false) is false", filepath);
 	not_reached();
     }
 

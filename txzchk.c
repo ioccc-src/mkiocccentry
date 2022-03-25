@@ -1076,16 +1076,19 @@ parse_txz_line(char *linep, char *line_dup, char const *dir_name, char const *tx
 	warn("txzchk", "%s: found a non-directory non-regular non-hard-lined item: %s", txzpath, linep);
 	++txz_info.total_issues;
     }
+
     /* extract each field, one at a time, to do various tests */
     p = strtok_r(linep, " \t", &saveptr);
     if (p == NULL) {
 	warn("txzchk", "%s: NULL pointer encountered trying to parse line, reading next line", txzpath);
 	return;
     }
+
     if (has_special_bits(p)) {
 	warn("txzchk", "%s: found special bits on line: %s", txzpath, line_dup);
 	++txz_info.total_issues;
     }
+
     /*
      * we have to check this next field for a '/': this will tell us whether to
      * parse it for linux or for macOS/BSD.
@@ -1117,7 +1120,7 @@ parse_txz_line(char *linep, char *line_dup, char const *dir_name, char const *tx
  *
  * returns:
  *
- *	number of total number of issues found (txz_info.total_issues).
+ *	total number of issues found (txz_info.total_issues).
  *
  * NOTE: Does not return on error.
  */
@@ -1613,7 +1616,7 @@ add_txz_file_to_list(struct txz_file *txzfile)
 
 
 /*
- * free_txz_files_list - free the file linked list
+ * free_txz_files_list - free the txz_files linked list
  */
 static void
 free_txz_files_list(void)

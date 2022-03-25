@@ -466,7 +466,7 @@ check_location_table(void)
 	not_reached();
     }
     if (loc[i].code != NULL || loc[i].name != NULL) {
-	err(10, __func__, "no final NULL element found in location table.c; fix table in %s and recompile", __FILE__);
+	err(10, __func__, "no final NULL element found in location table; fix table in %s and recompile", __FILE__);
 	not_reached();
     }
 }

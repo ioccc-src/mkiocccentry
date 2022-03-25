@@ -3041,11 +3041,10 @@ check_extra_data_files(struct info *infop, char const *entry_dir, char const *cp
 	/*
 	 * basename must use only POSIX portable filename and + chars
 	 */
-	/* XXX - should the lower_only (2nd) arg to posix_plus_safe() be true or false? */
 	if (posix_plus_safe(base, false, false, true) == false) {
 	    fpara(stderr,
 		  "",
-		  "The basename of an extra file must the following match regexp:",
+		  "The basename of an extra file must match the following regexp:",
 		  "",
 		  "    ^[0-9A-Za-z][0-9A-Za-z._+-]*$",
 		  "",

@@ -66,6 +66,7 @@ void print_newline(void);
 /* debug information during development */
 #define YYDEBUG 1
 int yydebug = 1;
+int token_type = 0;
 %}
 
 /*
@@ -75,19 +76,29 @@ int yydebug = 1;
  * to change.
  */
 
-/* This union is NOT correct and it absolutely will change! */
+/* This union is not complete and will need to be fixed in one or more ways as
+ * well. For example it might (not sure) be better if there was JSON_NUMBER but
+ * depending on a type variable the proper member in the union would be
+ * addressd, thereby simplifying the rules below. Perhaps this will be the int
+ * token_type above (I am not yet entirely sure of the use of this but it might
+ * be of value though it might also have to change) that's also used in the
+ * lexer but I really don't know. This will come at a later date.
+ */
 %union json_type {
   char *string;
   uintmax_t uintmax;
-  intmax_t number;
+  intmax_t intmax;
+  long double ldouble;
   bool boolean;
 }
 %token JSON_LETTER
-%token JSON_SIGN JSON_EQUALS JSON_DIGIT JSON_DIGITS JSON_INTEGER JSON_EXPONENT
+%token JSON_SIGN JSON_DIGIT JSON_DIGITS JSON_EXPONENT
 %token JSON_OPEN_BRACE JSON_CLOSE_BRACE JSON_OPEN_BRACKET JSON_CLOSE_BRACKET
 %token JSON_COMMA JSON_COLON JSON_NULL
 %token <string> JSON_STRING
-%token <number> JSON_NUMBER
+%token <intmax> JSON_INTMAX
+%token <uintmax> JSON_UINTMAX
+%token <ldouble> JSON_LONG_DOUBLE
 %token <boolean> JSON_BOOLEAN
 
 /* Section 2: Rules
@@ -95,7 +106,7 @@ int yydebug = 1;
  * XXX Not all rules are here and no actions are defined yet. As well some of
  * the rules are probably wrong.
  *
- * Again this is very incomplete and there are errors!
+ * Again this is very incomplete and there are possible errors!
  */
 %%
 json:		%empty |
@@ -106,7 +117,9 @@ json:		%empty |
 json_value:	json_object |
 		json_array  |
 		JSON_STRING |
-		JSON_NUMBER |
+		JSON_INTMAX |
+		JSON_UINTMAX |
+		JSON_LONG_DOUBLE |
 		JSON_BOOLEAN   |
 		JSON_NULL
 		;

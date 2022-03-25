@@ -19,9 +19,6 @@
  * two tools will be merged into one which can parse one or both of .info.json
  * and/or .author.json. This is because some fields MUST be the same value in
  * both files.
- *
- * Additionally there will likely be a jparse tool that will take a block of
- * memory from either stdin or a file and attempt to parse it as json.
  */
 
 
@@ -1345,7 +1342,6 @@ check_found_info_json_fields(char const *json_filename, bool test)
 		    ++issues;
 		}
 	        /* extra_file must use only POSIX portable filename and + chars */
-		/* XXX - should the lower_only (2nd) arg to posix_plus_safe() be true or false? */
 		if (!posix_plus_safe(val, false, false, true)) {
 		    warn(__func__, "extra data file does not match regexp ^[0-9A-Za-z][0-9A-Za-z._+-]*$ in file %s: '%s'", json_filename, val);
 		    ++issues;
