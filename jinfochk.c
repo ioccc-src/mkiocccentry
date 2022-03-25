@@ -1345,7 +1345,6 @@ check_found_info_json_fields(char const *json_filename, bool test)
 		    ++issues;
 		}
 	        /* extra_file must use only POSIX portable filename and + chars */
-		/* XXX - should the lower_only (2nd) arg to posix_plus_safe() be true or false? */
 		if (!posix_plus_safe(val, false, false, true)) {
 		    warn(__func__, "extra data file does not match regexp ^[0-9A-Za-z][0-9A-Za-z._+-]*$ in file %s: '%s'", json_filename, val);
 		    ++issues;
