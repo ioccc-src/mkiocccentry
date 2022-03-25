@@ -1925,15 +1925,18 @@ parse_json_string(char const *string)
     if (string == NULL) {
 	/* this should never happen */
 	warn(__func__, "passed NULL string");
+	++num_errors;
 	return;
     } else if (*string == '\0') /* strlen(string) == 0 */ {
 	warn(__func__, "passed empty string");
+	++num_errors;
 	return;
     }
 
     bp = yy_scan_string(string);
     if (bp == NULL) {
 	warn(__func__, "unable to scan string");
+	++num_errors;
 	return;
     }
     yyparse();
@@ -2001,12 +2004,14 @@ parse_json_file(char const *filename)
 
     data = read_all(yyin, &len);
     if (data == NULL) {
-	err(35, __func__, "couldn't read in %s", is_stdin?"stdin":filename);
-	not_reached();
+	warn(__func__, "couldn't read in %s", is_stdin?"stdin":filename);
+	++num_errors;
+	return;
     }
     if (!is_string(data, len + 1)) {
-	err(36, __func__, "found embedded NUL byte in %s", is_stdin?"stdin":filename);
-	not_reached();
+	warn(__func__, "found embedded NUL byte in %s", is_stdin?"stdin":filename);
+	++num_errors;
+	return;
     }
 
     free(data);
