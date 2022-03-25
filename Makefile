@@ -181,7 +181,8 @@ TARGETS= mkiocccentry iocccsize dbg_test limit_ioccc.sh fnamchk txzchk jauthchk 
 MANPAGES = mkiocccentry.1 txzchk.1 fnamchk.1 iocccsize.1 jinfochk.1 jauthchk.1
 TEST_TARGETS= dbg_test utf8_test
 OBJFILES = dbg.o util.o mkiocccentry.o iocccsize.o fnamchk.o txzchk.o jauthchk.o jinfochk.o \
-	json.o jstrencode.o jstrdecode.o rule_count.o location.o utf8_posix_map.o sanity.o jparse.o
+	json.o jstrencode.o jstrdecode.o rule_count.o location.o utf8_posix_map.o sanity.o jparse.o \
+	jparse.tab.o
 SRCFILES = $(patsubst %.o,%.c,$(OBJFILES))
 H_FILES = dbg.h jauthchk.h jinfochk.h json.h jstrdecode.h jstrencode.h limit_ioccc.h \
 	mkiocccentry.h txzchk.h util.h location.h utf8_posix_map.h jparse.h
@@ -492,7 +493,6 @@ utf8_posix_map.o: utf8_posix_map.c utf8_posix_map.h util.h dbg.h \
   limit_ioccc.h version.h
 sanity.o: sanity.c sanity.h util.h dbg.h location.h utf8_posix_map.h \
   json.h
-jparse.o: jparse.c jparse.h dbg.h util.h json.h sanity.h location.h \
-  utf8_posix_map.h limit_ioccc.h version.h
+jparse.o: jparse.c util.h dbg.h jparse.tab.h
 jparse.tab.o: jparse.tab.c jparse.h dbg.h util.h json.h sanity.h \
   location.h utf8_posix_map.h limit_ioccc.h version.h jparse.tab.h
