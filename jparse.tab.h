@@ -69,28 +69,31 @@ extern int yydebug;
     JSON_COLON = 270,              /* JSON_COLON  */
     JSON_NULL = 271,               /* JSON_NULL  */
     JSON_STRING = 272,             /* JSON_STRING  */
-    JSON_NUMBER = 273,             /* JSON_NUMBER  */
-    JSON_BOOLEAN = 274             /* JSON_BOOLEAN  */
+    JSON_INTMAX = 273,             /* JSON_INTMAX  */
+    JSON_UINTMAX = 274,            /* JSON_UINTMAX  */
+    JSON_LONG_DOUBLE = 275,        /* JSON_LONG_DOUBLE  */
+    JSON_BOOLEAN = 276             /* JSON_BOOLEAN  */
   };
   typedef enum yytokentype yytoken_kind_t;
 #endif
 
 /* Value type.  */
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
-#line 79 "jparse.y"
+#line 87 "jparse.y"
 union json_type
 {
-#line 79 "jparse.y"
+#line 87 "jparse.y"
 
   char *string;
   uintmax_t uintmax;
-  intmax_t number;
+  intmax_t intmax;
+  long double ldouble;
   bool boolean;
 
-#line 91 "jparse.tab.h"
+#line 94 "jparse.tab.h"
 
 };
-#line 79 "jparse.y"
+#line 87 "jparse.y"
 typedef union json_type YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define YYSTYPE_IS_DECLARED 1

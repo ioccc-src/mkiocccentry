@@ -37,9 +37,17 @@
  * without flex can compile the code. Even if everyone had flex(1) though under
  * macOS you have to pass -ll to the compiler to link in the flex library
  * whereas in other systems you have to use -lfl which would cause a lot of
- * problems.
+ * problems. Another way is to provide 'int yywrap() { return 1; }' but this is
+ * unnecessary.
  */
 %option noyywrap
+
+/*
+ * currently disabled but this might be an idea when everything is in working
+ * order.
+ *
+ * %option nodefault
+ */
 
 %{
 /* Declarations etc. go here.
@@ -61,6 +69,7 @@ YY_BUFFER_STATE bp;
 extern FILE *yyin;
 extern unsigned num_errors;		/* > 0 number of errors encountered */
 extern bool output_newline;		/* true ==> -n not specified, output new line after each arg processed */
+extern int token_type;			/* for braces, brackets etc.: '{', '}', '[', ']', ':' and so on */
 %}
 
 /*
@@ -72,11 +81,11 @@ JSON_WHITESPACE         [ \t\r\n]+
 JSON_STRING		\"[^"\n]*\"
 JSON_DIGIT		[0-9]
 JSON_DIGITS		{JSON_DIGIT}+
-JSON_INTEGER		{JSON_DIGITS}
-JSON_NUMBER		{JSON_DIGITS}"."?{JSON_DIGITS}*{JSON_EXPONENT}?
-JSON_SIGN		[+-]
+JSON_EXPONENT		[Ee][-+]?[0-9]+
+JSON_INTMAX		[-+]?{JSON_DIGITS}
+JSON_UINTMAX		{JSON_DIGITS}
+JSON_LONG_DOUBLE	[-+]?{JSON_DIGITS}"."{JSON_DIGITS}{JSON_EXPONENT}?
 JSON_LETTER		[a-zA-Z]
-JSON_EXPONENT		""?[Ee][-+]?[0-9]+
 JSON_BOOLEAN		"true"|"false"
 JSON_NULL		"null"
 JSON_OPEN_BRACE		"{"
@@ -91,26 +100,30 @@ JSON_COMMA		","
  * For now we just print out what it is and return the type. Once again this is
  * incomplete!
  *
- * A word about previous versions which had JSON_WHITESPACE. This caused
- * problems in that the parser expected whitespace in specific places which
- * means that a lot of different combinations would have to be added to the
- * rules to get every possible combination. It might be that whitespace has to
- * be added to this file but I'm not sure of this yet. Whitespace does exist as
- * a type (above) but we don't do anything with it here with actions because
- * returning it to the parser causes parser errors.
+ * A word about previous versions which had (that is returned) JSON_WHITESPACE.
+ * This caused problems in that the parser expected whitespace in specific
+ * places which means that a lot of different combinations would have to be
+ * added to the rules to get every possible combination. It might be that
+ * whitespace has to be added to this file but I'm not sure of this yet.
+ * Whitespace does exist as a type (above) but we don't do anything with it here
+ * with actions because returning it to the parser causes parser errors; instead
+ * it's just ignored. I'm not sure if there will be a need to change this but
+ * for now it's not used.
  *
  */
 %%
 {JSON_STRING}		    { printf("string: '%s'\n", yytext); yylval.string = strdup(yytext); return JSON_STRING; }
-{JSON_NUMBER}		    { printf("number: '%s'\n", yytext); yylval.number = strtoimax(yytext, NULL, 10); return JSON_NUMBER; }
+{JSON_UINTMAX}		    { printf("uintmax: '%s'\n", yytext); yylval.uintmax = strtoumax(yytext, NULL, 10); return JSON_UINTMAX; }
+{JSON_INTMAX}		    { printf("intmax: '%s'\n", yytext); yylval.intmax = strtoimax(yytext, NULL, 10); return JSON_INTMAX; }
+{JSON_LONG_DOUBLE}	    { printf("long double: '%s'\n", yytext); yylval.ldouble = strtold(yytext, NULL); return JSON_LONG_DOUBLE; }
 {JSON_NULL}		    { printf("null: '%s'\n", yytext); return JSON_NULL; }
 {JSON_BOOLEAN}		    { printf("true: '%s'\n", yytext); yylval.boolean = string_to_bool(yytext); return JSON_BOOLEAN; }
-{JSON_OPEN_BRACE}	    { printf("open brace: '%c'\n", *yytext); return JSON_OPEN_BRACE; }
-{JSON_CLOSE_BRACE}	    { printf("close brace: '%c'\n", *yytext); return JSON_CLOSE_BRACE;}
-{JSON_OPEN_BRACKET}	    { printf("open bracket: '%c'\n", *yytext); return JSON_OPEN_BRACKET; }
-{JSON_CLOSE_BRACKET}	    { printf("close bracket: '%c'\n", *yytext); return JSON_CLOSE_BRACKET; }
-{JSON_COLON}		    { printf("equals: '%c'\n", *yytext); return JSON_COLON; }
-{JSON_COMMA}		    { printf("comma: '%c'\n", *yytext); return JSON_COMMA; }
+{JSON_OPEN_BRACE}	    { printf("open brace: '%c'\n", *yytext); token_type = '{'; return JSON_OPEN_BRACE; }
+{JSON_CLOSE_BRACE}	    { printf("close brace: '%c'\n", *yytext); token_type = '}'; return JSON_CLOSE_BRACE;}
+{JSON_OPEN_BRACKET}	    { printf("open bracket: '%c'\n", *yytext); token_type = '['; return JSON_OPEN_BRACKET; }
+{JSON_CLOSE_BRACKET}	    { printf("close bracket: '%c'\n", *yytext); token_type = ']'; return JSON_CLOSE_BRACKET; }
+{JSON_COLON}		    { printf("equals/colon: '%c'\n", *yytext); token_type = ':'; return JSON_COLON; }
+{JSON_COMMA}		    { printf("comma: '%c'\n", *yytext); token_type = ','; return JSON_COMMA; }
 %%
 
 /* Section 3: Code that's copied to the generated scanner */
