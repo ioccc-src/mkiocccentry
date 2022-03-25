@@ -2042,7 +2042,7 @@ print_newline(void)
 	errno = 0;		/* pre-clear errno for errp() */
 	ret = putchar('\n');
 	if (ret != '\n') {
-	    errp(37, __func__, "error while writing newline");
+	    errp(43, __func__, "error while writing newline");
 	    not_reached();
 	}
     }
