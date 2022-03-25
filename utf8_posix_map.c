@@ -1561,7 +1561,8 @@ static char state[STATE_LEN+1];			/* random() state */
  *
  * This function verifies that the only NULL element in the table is the very
  * last element: if it's not there or there's another NULL element it's a
- * problem that has to be fixed.
+ * problem that has to be fixed. It also checks that the table is not empty and
+ * additionally it sets the length of each utf8_str and posix_str in the table.
  */
 void
 check_utf8_posix_map(void)
@@ -1584,6 +1585,7 @@ check_utf8_posix_map(void)
      */
     if (max <= 0) {
 	err(10, __func__, "bogus hmap length: %ju <= 0", (uintmax_t)max);
+	not_reached();
     }
     for (i = 0; i < max - 1; ++i) {
 

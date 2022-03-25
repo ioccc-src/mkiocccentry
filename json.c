@@ -2252,7 +2252,7 @@ check_json_fields_tables(void)
  * This function checks if JSON_EOT is used on any field other than the NULL
  * field. It also makes sure that each field_type is valid. Additionally it
  * makes sure that there are no NULL elements before the final element and that
- * the final element _IS_ NULL.
+ * the final element _IS_ NULL. It also makes sure the table is not empty.
  *
  * These sanity checks are performed on the common_json_fields table.
  *
@@ -2263,6 +2263,11 @@ check_common_json_fields_table(void)
 {
     size_t i;
     size_t max = SIZEOF_COMMON_JSON_FIELDS_TABLE;
+
+    if (max <= 0) {
+	err(216, __func__, "bogus common_json_fields table length: %ju <= 0", (uintmax_t)max);
+	not_reached();
+    }
 
     for (i = 0; i < max-1 && common_json_fields[i].name != NULL; ++i) {
 	switch (common_json_fields[i].field_type) {
@@ -2304,7 +2309,7 @@ check_common_json_fields_table(void)
  * This function checks if JSON_EOT is used on any field other than the NULL
  * field. It also makes sure that each field_type is valid. Additionally it
  * makes sure that there are no NULL elements before the final element and that
- * the final element _IS_ NULL.
+ * the final element _IS_ NULL. It also makes sure the table is not empty.
  *
  * These sanity checks are performed on the info_json_fields table.
  *
@@ -2316,6 +2321,11 @@ check_info_json_fields_table(void)
     size_t i;
     size_t max = SIZEOF_INFO_JSON_FIELDS_TABLE;
     bool found_manifest = false;
+
+    if (max <= 0) {
+	err(217, __func__, "bogus info_json_fields table length: %ju <= 0", (uintmax_t)max);
+	not_reached();
+    }
 
     for (i = 0; i < max - 1 && info_json_fields[i].name != NULL; ++i) {
 	if (info_json_fields[i].name != NULL && !strcmp(info_json_fields[i].name, "manifest")) {
@@ -2356,7 +2366,7 @@ check_info_json_fields_table(void)
 	not_reached();
     }
     if (!found_manifest) {
-	err(216, __func__, "'manifest' field not found in info_json_fields table; fix table in json.c and recompile");
+	err(218, __func__, "'manifest' field not found in info_json_fields table; fix table in json.c and recompile");
 	not_reached();
     }
 }
@@ -2367,7 +2377,7 @@ check_info_json_fields_table(void)
  * This function checks if JSON_EOT is used on any field other than the NULL
  * field. It also makes sure that each field_type is valid.  Additionally it
  * makes sure that there are no NULL elements before the final element and that
- * the final element _IS_ NULL.
+ * the final element _IS_ NULL. It also makes sure the table is not empty.
  *
  * The sanity checks are performed on the author_json_fields table.
  *
@@ -2379,6 +2389,11 @@ check_author_json_fields_table(void)
     size_t i;
     size_t max = SIZEOF_AUTHOR_JSON_FIELDS_TABLE;
     bool found_authors = false;
+
+    if (max <= 0) {
+	err(219, __func__, "bogus author_json_fields table length: %ju <= 0", (uintmax_t)max);
+	not_reached();
+    }
 
     for (i = 0; i < max - 1 && author_json_fields[i].name != NULL; ++i) {
 	if (author_json_fields[i].name != NULL && !strcmp(author_json_fields[i].name, "authors")) {
@@ -2418,7 +2433,7 @@ check_author_json_fields_table(void)
 	not_reached();
     }
     if (!found_authors) {
-	err(217, __func__, "'authors' field not found in authors_json_fields table; fix table in json.c and recompile");
+	err(220, __func__, "'authors' field not found in authors_json_fields table; fix table in json.c and recompile");
 	not_reached();
     }
 
@@ -2487,10 +2502,10 @@ check_first_json_char(char const *file, char *data, bool strict, char **first, c
      * firewall
      */
     if (data == NULL || strlen(data) == 0) {
-	err(218, __func__, "passed NULL or zero length data");
+	err(221, __func__, "passed NULL or zero length data");
 	not_reached();
     } else if (file == NULL || first == NULL) {
-	err(219, __func__, "passed NULL arg(s)");
+	err(222, __func__, "passed NULL arg(s)");
 	not_reached();
     }
 
@@ -2536,10 +2551,10 @@ check_last_json_char(char const *file, char *data, bool strict, char **last, cha
      * firewall
      */
     if (data == NULL || strlen(data) == 0) {
-	err(220, __func__, "passed NULL or zero length data");
+	err(223, __func__, "passed NULL or zero length data");
 	not_reached();
     } else if (file == NULL || last == NULL) {
-	err(221, __func__, "passed NULL arg(s)");
+	err(224, __func__, "passed NULL arg(s)");
 	not_reached();
     }
 
@@ -2601,7 +2616,7 @@ add_found_common_json_field(char const *json_filename, char const *name, char co
     field_in_table = find_json_field_in_table(common_json_fields, name, &loc);
     if (field_in_table == NULL) {
 	jerr(JSON_CODE_RESERVED(12), NULL, __func__, json_filename, NULL, __LINE__, "couldn't add value '%s' to field '%s' file %s", val, name, json_filename);
-	err(222, __func__, "called add_found_common_json_field() on uncommon field '%s'", name);
+	err(225, __func__, "called add_found_common_json_field() on uncommon field '%s'", name);
 	not_reached();
     }
     /*
@@ -2670,7 +2685,7 @@ add_common_json_field(char const *program, char const *json_filename, char *name
      * firewall
      */
     if (program == NULL || json_filename == NULL || name == NULL || val == NULL) {
-	err(223, __func__, "passed NULL arg(s)");
+	err(226, __func__, "passed NULL arg(s)");
 	not_reached();
     }
 
@@ -2733,7 +2748,7 @@ check_found_common_json_fields(char const *program, char const *json_filename, c
      * firewall
      */
     if (program == NULL || json_filename == NULL || fnamchk == NULL) {
-	err(224, __func__, "passed NULL arg(s)");
+	err(227, __func__, "passed NULL arg(s)");
 	not_reached();
     }
 
@@ -3007,7 +3022,7 @@ check_found_common_json_fields(char const *program, char const *json_filename, c
 	errno = 0;
 	str = calloc(1, strlen(tarball_val) + strlen(contest_id_val) + strlen(entry_num_val) + strlen(formed_timestamp_val) + 1);
 	if (str == NULL) {
-	    err(225, __func__, "couldn't allocate memory to verify that contest_id and entry_num matches the tarball");
+	    err(228, __func__, "couldn't allocate memory to verify that contest_id and entry_num matches the tarball");
 	    not_reached();
 	}
 
@@ -3058,26 +3073,26 @@ new_json_field(char const *json_filename, char const *name, char const *val, int
      * firewall
      */
     if (json_filename == NULL || name == NULL || val == NULL) {
-	err(226, __func__, "passed NULL arg(s)");
+	err(229, __func__, "passed NULL arg(s)");
 	not_reached();
     }
 
     errno = 0;
     field = calloc(1, sizeof *field);
     if (field == NULL) {
-	errp(227, __func__, "error allocating new struct json_field * for field '%s' and value '%s': %s", name, val, strerror(errno));
+	errp(230, __func__, "error allocating new struct json_field * for field '%s' and value '%s': %s", name, val, strerror(errno));
 	not_reached();
     }
 
     errno = 0;
     field->name = strdup(name);
     if (field->name == NULL) {
-	errp(228, __func__, "unable to strdup() field name '%s': %s", name, strerror(errno));
+	errp(231, __func__, "unable to strdup() field name '%s': %s", name, strerror(errno));
 	not_reached();
     }
 
     if (add_json_value(json_filename, field, val, line_num) == NULL) {
-	err(229, __func__, "error adding value '%s' to field '%s'", val, name);
+	err(232, __func__, "error adding value '%s' to field '%s'", val, name);
 	not_reached();
     }
 
@@ -3116,7 +3131,7 @@ add_json_value(char const *json_filename, struct json_field *field, char const *
      * firewall
      */
     if (json_filename == NULL || field == NULL || val == NULL) {
-	err(230, __func__, "passed NULL arg(s)");
+	err(233, __func__, "passed NULL arg(s)");
 	not_reached();
     }
 
@@ -3124,13 +3139,13 @@ add_json_value(char const *json_filename, struct json_field *field, char const *
     errno = 0;
     new_value = calloc(1, sizeof *new_value);
     if (new_value == NULL) {
-	errp(231, __func__, "error allocating new value '%s' for field '%s' in file %s: %s", val, field->name, json_filename, strerror(errno));
+	errp(234, __func__, "error allocating new value '%s' for field '%s' in file %s: %s", val, field->name, json_filename, strerror(errno));
 	not_reached();
     }
     errno = 0;
     new_value->value = strdup(val);
     if (new_value->value == NULL) {
-	errp(232, __func__, "error strdup()ing value '%s' for field '%s': %s", val, field->name, strerror(errno));
+	errp(235, __func__, "error strdup()ing value '%s' for field '%s': %s", val, field->name, strerror(errno));
 	not_reached();
     }
 
@@ -3171,7 +3186,7 @@ free_json_field_values(struct json_field *field)
      * firewall
      */
     if (field == NULL) {
-	err(233, __func__, "passed NULL field");
+	err(236, __func__, "passed NULL field");
 	not_reached();
     }
 
@@ -3236,7 +3251,7 @@ free_json_field(struct json_field *field)
      * firewall
      */
     if (field == NULL) {
-	err(234, __func__, "passed NULL field");
+	err(237, __func__, "passed NULL field");
 	not_reached();
     }
 
@@ -3271,7 +3286,7 @@ free_info(struct info *infop)
      * firewall
      */
     if (infop == NULL) {
-	err(235, __func__, "called with NULL arg(s)");
+	err(238, __func__, "called with NULL arg(s)");
 	not_reached();
     }
 
@@ -3363,11 +3378,11 @@ free_author_array(struct author *author_set, int author_count)
      * firewall
      */
     if (author_set == NULL) {
-	err(236, __func__, "called with NULL arg(s)");
+	err(239, __func__, "called with NULL arg(s)");
 	not_reached();
     }
     if (author_count < 0) {
-	err(237, __func__, "author_count: %d < 0", author_count);
+	err(240, __func__, "author_count: %d < 0", author_count);
 	not_reached();
     }
 
@@ -3442,7 +3457,7 @@ alloc_code_ignore_set(void)
     errno = 0;			/* pre-clear errno for errp() */
     tbl = malloc(sizeof(struct ignore_code));
     if (tbl == NULL) {
-	errp(238, __func__, "failed to malloc struct ignore_code");
+	errp(241, __func__, "failed to malloc struct ignore_code");
 	not_reached();
     }
 
@@ -3452,7 +3467,7 @@ alloc_code_ignore_set(void)
     errno = 0;			/* pre-clear errno for errp() */
     tbl->code = malloc((IGNORE_CODE_CHUNK+1+1) * sizeof(int));
     if (tbl->code == NULL) {
-	errp(239, __func__, "cannot allocate %d ignore codes", IGNORE_CODE_CHUNK+1+1);
+	errp(242, __func__, "cannot allocate %d ignore codes", IGNORE_CODE_CHUNK+1+1);
 	not_reached();
     }
 
@@ -3489,7 +3504,7 @@ cmp_codes(const void *a, const void *b)
      * firewall
      */
     if (a == NULL || b == NULL) {
-	err(240, __func__, "NULL arg(s)");
+	err(243, __func__, "NULL arg(s)");
 	not_reached();
     }
 
@@ -3525,7 +3540,7 @@ expand_code_ignore_set(void)
      */
     alloc_code_ignore_set();
     if (ignore_code_set == NULL) {
-	err(241, __func__, "ignore_code_set is NULL after allocation");
+	err(244, __func__, "ignore_code_set is NULL after allocation");
 	not_reached();
     }
 
@@ -3536,7 +3551,7 @@ expand_code_ignore_set(void)
 	p = realloc(ignore_code_set->code, (ignore_code_set->alloc+IGNORE_CODE_CHUNK+1) * sizeof(int));
 	errno = 0;			/* pre-clear errno for errp() */
 	if (p == NULL) {
-	    errp(242, __func__, "cannot expand ignore_code_set from %d to %d codes",
+	    errp(245, __func__, "cannot expand ignore_code_set from %d to %d codes",
 				ignore_code_set->alloc+1, ignore_code_set->alloc+IGNORE_CODE_CHUNK+1);
 	    not_reached();
 	}
@@ -3569,7 +3584,7 @@ is_code_ignored(int code)
      * firewall
      */
     if (code < 0) {
-	err(243, __func__, "code %d < 0", code);
+	err(246, __func__, "code %d < 0", code);
 	not_reached();
     }
 
@@ -3578,7 +3593,7 @@ is_code_ignored(int code)
      */
     alloc_code_ignore_set();
     if (ignore_code_set == NULL) {
-	err(244, __func__, "ignore_code_set is NULL after allocation");
+	err(247, __func__, "ignore_code_set is NULL after allocation");
 	not_reached();
     }
 
@@ -3624,7 +3639,7 @@ add_ignore_code(int code)
      * firewall
      */
     if (code < 0) {
-	err(245, __func__, "code %d < 0", code);
+	err(248, __func__, "code %d < 0", code);
 	not_reached();
     }
 
@@ -3635,7 +3650,7 @@ add_ignore_code(int code)
 	expand_code_ignore_set();
     }
     if (ignore_code_set == NULL) {
-	err(246, __func__, "ignore_code_set is NULL after allocation or expansion");
+	err(249, __func__, "ignore_code_set is NULL after allocation or expansion");
 	not_reached();
     }
 
