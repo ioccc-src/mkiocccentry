@@ -96,6 +96,10 @@ rm -f answers.txt
 # Retrieve the answers version from mkiocccentry.c and write to answers file:
 grep -E '^#define MKIOCCCENTRY_ANSWERS_VERSION' mkiocccentry.c | cut -d' ' -f3 | sed 's/"//g' >answers.txt
 # Append answers + EOF marker
+#
+# shellcheck disable=SC2218
+# We disable this shellcheck warning because we redefine answers and this trips
+# it up.
 answers >>answers.txt
 
 # fake some required files
@@ -187,6 +191,10 @@ rm -f answers.txt
 # Retrieve the answers version from mkiocccentry.c and write to answers file:
 grep -E '^#define MKIOCCCENTRY_ANSWERS_VERSION' mkiocccentry.c | cut -d' ' -f3 | sed 's/"//g' >answers.txt
 # Append answers + EOF marker
+#
+# shellcheck disable=SC2218
+# We disable this shellcheck warning because we redefine answers and this trips
+# it up.
 answers >>answers.txt
 
 # run the test, looking for an exit
@@ -258,6 +266,10 @@ rm -f answers.txt
 # Retrieve the answers version from mkiocccentry.c and write to answers file:
 grep -E '^#define MKIOCCCENTRY_ANSWERS_VERSION' mkiocccentry.c | cut -d' ' -f3 | sed 's/"//g' >answers.txt
 # Append answers + EOF marker
+#
+# shellcheck disable=SC2218
+# We disable this shellcheck warning because we redefine answers and this trips
+# it up.
 answers >>answers.txt
 
 # fake a few more files

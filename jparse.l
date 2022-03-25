@@ -111,7 +111,6 @@ JSON_COMMA		","
 {JSON_CLOSE_BRACKET}	    { printf("close bracket: '%c'\n", *yytext); return JSON_CLOSE_BRACKET; }
 {JSON_COLON}		    { printf("equals: '%c'\n", *yytext); return JSON_COLON; }
 {JSON_COMMA}		    { printf("comma: '%c'\n", *yytext); return JSON_COMMA; }
-.			    { printf("char: '%c'\n", *yytext); }
 %%
 
 /* Section 3: Code that's copied to the generated scanner */
@@ -123,7 +122,8 @@ JSON_COMMA		","
  *
  *	string	    - the string to parse as JSON
  *
- * NOTE: Until the JSON parser is written this only writes the string to stdout.
+ * NOTE: Until the JSON parser is finished this only parses the string (and not
+ * necessarily correctly) but it does not build a parse tree.
  */
 void
 parse_json_string(char const *string)
@@ -163,7 +163,8 @@ parse_json_string(char const *string)
  * if the file is not a C string or if read_all() returns NULL the function
  * warns but does nothing else.
  *
- * NOTE: Until the JSON parser is written this only prints the string out.
+ * NOTE: Until the JSON parser is finished this only parses the file (and not
+ * necessarily correctly) but it does not build a parse tree.
  */
 void
 parse_json_file(char const *filename)
