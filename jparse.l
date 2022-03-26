@@ -113,9 +113,9 @@ JSON_COMMA		","
  */
 %%
 {JSON_STRING}		    { printf("string: '%s'\n", yytext); yylval.string = strdup(yytext); return JSON_STRING; }
-{JSON_UINTMAX}		    { printf("uintmax: '%s'\n", yytext); yylval.uintmax = strtoumax(yytext, NULL, 10); return JSON_UINTMAX; }
-{JSON_INTMAX}		    { printf("intmax: '%s'\n", yytext); yylval.intmax = strtoimax(yytext, NULL, 10); return JSON_INTMAX; }
-{JSON_LONG_DOUBLE}	    { printf("long double: '%s'\n", yytext); yylval.ldouble = strtold(yytext, NULL); return JSON_LONG_DOUBLE; }
+{JSON_UINTMAX}		    { printf("uintmax: '%s'\n", yytext); yylval.uintmax = string_to_uintmax(yytext); return JSON_UINTMAX; }
+{JSON_INTMAX}		    { printf("intmax: '%s'\n", yytext); yylval.intmax = string_to_intmax(yytext); return JSON_INTMAX; }
+{JSON_LONG_DOUBLE}	    { printf("long double: '%s'\n", yytext); yylval.ldouble = string_to_float(yytext); return JSON_LONG_DOUBLE; }
 {JSON_NULL}		    { printf("null: '%s'\n", yytext); return JSON_NULL; }
 {JSON_BOOLEAN}		    { printf("true: '%s'\n", yytext); yylval.boolean = string_to_bool(yytext); return JSON_BOOLEAN; }
 {JSON_OPEN_BRACE}	    { printf("open brace: '%c'\n", *yytext); token_type = '{'; return JSON_OPEN_BRACE; }

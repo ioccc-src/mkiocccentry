@@ -33,7 +33,8 @@
 
 
 #include <sys/types.h>
-
+#include <float.h> /* for long doubles */
+#include <inttypes.h> /* uintmax_t and intmax_t */
 
 /*
  * standard truth :-)
@@ -123,9 +124,12 @@ extern bool is_string(char const * const ptr, size_t len);
 extern char const *strnull(char const * const str);
 extern long string_to_long(char const *str);
 extern long long string_to_long_long(char const *str);
+extern intmax_t string_to_intmax(char const *str);
 extern int string_to_int(char const *str);
 extern unsigned long string_to_unsigned_long(char const *str);
 extern unsigned long long string_to_unsigned_long_long(char const *str);
+extern uintmax_t string_to_uintmax(char const *str);
+extern long double string_to_float(char const *str);
 extern bool valid_contest_id(char *str);
 extern int parse_verbosity(char const *program, char const *arg);
 extern bool is_number(char const *str);

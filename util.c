@@ -2119,7 +2119,120 @@ string_to_unsigned_long_long(char const *str)
     }
 
     return num;
+}
 
+/*
+ * string_to_intmax   -	convert str to intmax_t and check for errors
+ *
+ * given:
+ *
+ *	str	-   the string to convert to an intmax_t.
+ *
+ * Returns string 'str' as a long long int.
+ *
+ * Does not return on error or NULL pointer.
+ */
+intmax_t
+string_to_intmax(char const *str)
+{
+    intmax_t num;
+
+    /*
+     * firewall
+     */
+    if (str == NULL) {
+	err(170, __func__, "passed NULL arg");
+	not_reached();
+    }
+
+    errno = 0;
+    num = strtoimax(str, NULL, 10);
+
+    if (errno != 0) {
+	errp(171, __func__, "error converting string \"%s\" to intmax_t: %s", str, strerror(errno));
+	not_reached();
+    }
+    else if (num <= INTMAX_MIN || num >= INTMAX_MAX) {
+	err(172, __func__, "number %s out of range for intmax_t (must be > %jd && < %jd)", str, INTMAX_MIN, INTMAX_MAX);
+	not_reached();
+    }
+    return num;
+}
+
+
+/*
+ * string_to_uintmax - string to uintmax_t with error checks
+ *
+ * given:
+ *
+ *	str	- the string to convert to uintmax_t
+ *
+ * Returns str as an unsigned long long.
+ *
+ * Does not return on error.
+ */
+
+uintmax_t string_to_uintmax(char const *str)
+{
+    uintmax_t num;
+
+    /*
+     * firewall
+     */
+    if (str == NULL) {
+	err(173, __func__, "passed NULL arg");
+	not_reached();
+    }
+
+    errno = 0;
+    num = strtoumax(str, NULL, 10);
+    if (errno != 0) {
+	errp(174, __func__, "strtoumax(%s): %s", str, strerror(errno));
+	not_reached();
+    } else if (num >= UINTMAX_MAX) {
+	err(175, __func__, "strtoumax(%s): too big", str);
+	not_reached();
+    }
+
+    return num;
+}
+
+/*
+ * string_to_float - string to long double with error checks
+ *
+ * given:
+ *
+ *	str	- the string to convert to a quad_t
+ *
+ * Returns str as an unsigned long long.
+ *
+ * Does not return on error.
+ */
+long double
+string_to_float(char const *str)
+{
+    long double num;
+
+    /*
+     * firewall
+     */
+    if (str == NULL) {
+	err(176, __func__, "passed NULL arg");
+	not_reached();
+    }
+
+    errno = 0;
+    num = strtold(str, NULL);
+
+    if (errno != 0) {
+	errp(177, __func__, "error converting string \"%s\" to long double : %s", str, strerror(errno));
+	not_reached();
+    }
+    else if (num <= LDBL_MIN || num >= LDBL_MAX) {
+	err(178, __func__, "number %s out of range for long double (must be > %Lf && < %Lf)", str, LDBL_MIN, LDBL_MAX);
+	not_reached();
+    }
+    return num;
 }
 
 
@@ -2250,7 +2363,7 @@ is_number(char const *str)
      * firewall
      */
     if (str == NULL) {
-	err(170, __func__, "passed NULL string");
+	err(179, __func__, "passed NULL string");
 	not_reached();
     }
 
@@ -2289,7 +2402,7 @@ string_to_bool(char const *str)
      * firewall
      */
     if (str == NULL) {
-	err(171, __func__, "passed NULL string");
+	err(180, __func__, "passed NULL string");
 	not_reached();
     }
 
@@ -2425,7 +2538,7 @@ posix_plus_safe(char const *str, bool lower_only, bool slash_ok, bool first)
 	 */
 	if (str[i] == '/') {
 		if (slash_ok == false) {
-		    dbg(DBG_VVHIGH, "slash_ok is false and / found at str[%jd]",
+		    dbg(DBG_VVHIGH, "slash_ok is false and / found at str[%ju]",
 				    (uintmax_t)i);
 		    return false;
 		}
@@ -2436,19 +2549,19 @@ posix_plus_safe(char const *str, bool lower_only, bool slash_ok, bool first)
 	} else {
 	    /* ASCII non-/ check */
 	    if (!isascii(str[i])) {
-		dbg(DBG_VVHIGH, "str[%jd]: character is non-ASCII: 0x%02x",
+		dbg(DBG_VVHIGH, "str[%ju]: character is non-ASCII: 0x%02x",
 				(uintmax_t)i, (unsigned int)str[i]);
 		return false;
 	    }
 	    /* alphanumeric nor [._+-] nor non-/ check */
 	    if (!isalnum(str[i]) && str[i] != '.' && str[i] != '_' && str[i] != '+' && str[i] != '-') {
-		dbg(DBG_VVHIGH, "str[%jd]: 1st character not alphanumeric nor ._+-: 0x%02x",
+		dbg(DBG_VVHIGH, "str[%ju]: 1st character not alphanumeric nor ._+-: 0x%02x",
 				(uintmax_t)i, (unsigned int)str[i]);
 		return false;
 	    }
 	    /* special case: lower_only is true, alphanumeric lower case only */
 	    if (lower_only == true && isupper(str[i])) {
-		dbg(DBG_VVHIGH, "str[%jd]: lower_only is true and 1st character is upper case: 0x%02x",
+		dbg(DBG_VVHIGH, "str[%ju]: lower_only is true and 1st character is upper case: 0x%02x",
 				(uintmax_t)i, (unsigned int)str[i]);
 		return false;
 	    }
@@ -2484,7 +2597,7 @@ find_matching_quote(char *q)
      * firewall
      */
     if (q == NULL) {
-	err(172, __func__, "passed NULL pointer");
+	err(181, __func__, "passed NULL pointer");
 	not_reached();
     }
 

@@ -839,17 +839,17 @@ YY_RULE_SETUP
 case 2:
 YY_RULE_SETUP
 #line 116 "jparse.l"
-{ printf("uintmax: '%s'\n", yytext); yylval.uintmax = strtoumax(yytext, NULL, 10); return JSON_UINTMAX; }
+{ printf("uintmax: '%s'\n", yytext); yylval.uintmax = string_to_uintmax(yytext); return JSON_UINTMAX; }
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
 #line 117 "jparse.l"
-{ printf("intmax: '%s'\n", yytext); yylval.intmax = strtoimax(yytext, NULL, 10); return JSON_INTMAX; }
+{ printf("intmax: '%s'\n", yytext); yylval.intmax = string_to_intmax(yytext); return JSON_INTMAX; }
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
 #line 118 "jparse.l"
-{ printf("long double: '%s'\n", yytext); yylval.ldouble = strtold(yytext, NULL); return JSON_LONG_DOUBLE; }
+{ printf("long double: '%s'\n", yytext); yylval.ldouble = string_to_float(yytext); return JSON_LONG_DOUBLE; }
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
