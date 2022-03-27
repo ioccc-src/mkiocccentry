@@ -17,8 +17,8 @@
  * as of 10 March 2022 it was decided that the parsing should be done via
  * flex(1) and bison(1) which will require some time and thought. In time the
  * two tools will be merged into one which can parse one or both of .author.json
- * and/or .info.json. This is because some fields MUST be the same value in
- * both files.
+ * and .info.json. This is because some fields MUST be the same value in both
+ * files.
  */
 
 #include <stdio.h>
@@ -107,7 +107,7 @@ jauthchk_sanity_chks(char const *file, char const *fnamchk)
 	      "",
 	      "We cannot find fnamchk.",
 	      "",
-	      "A fnamchk program performs a sanity check on the compressed tarball filename.",
+	      "The fnamchk program performs a sanity check on the compressed tarball filename.",
 	      "Perhaps you need to use:",
 	      "",
 	      "    jauthchk -F /path/to/fnamchk ...",

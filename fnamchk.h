@@ -51,6 +51,11 @@
  */
 #include "limit_ioccc.h"
 
+/*
+ * utf8_posix_map include
+ */
+#include "utf8_posix_map.h"
+
 
 /*
  * definitions

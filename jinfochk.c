@@ -16,9 +16,9 @@
  * NOTE: This tool and jauthchk is (and are) very much a work(s) in progress and
  * as of 10 March 2022 it was decided that the parsing should be done via
  * flex(1) and bison(1) which will require some time and thought. In time the
- * two tools will be merged into one which can parse one or both of .info.json
- * and/or .author.json. This is because some fields MUST be the same value in
- * both files.
+ * two tools will be merged into one which can parse one or both .info.json and
+ * .author.json. This is because some fields MUST be the same value in both
+ * files.
  */
 
 
@@ -107,7 +107,7 @@ jinfochk_sanity_chks(char const *file, char const *fnamchk)
 	      "",
 	      "We cannot find fnamchk.",
 	      "",
-	      "A fnamchk program performs a sanity check on the compressed tarball filename.",
+	      "The fnamchk program performs a sanity check on the compressed tarball filename.",
 	      "Perhaps you need to use:",
 	      "",
 	      "    jinfochk -F /path/to/fnamchk ...",
