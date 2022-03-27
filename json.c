@@ -3690,7 +3690,7 @@ add_ignore_code(int code)
  *	malloced struct integer with C integer values based on JSON string
  *
  * NOTE: This function will not return on malloc error.
- * NOTE: This function will never return NULL.
+ * NOTE: This function will not return NULL.
  */
 struct integer *
 malloc_json_conv_int(char const *str, size_t len)
@@ -4100,13 +4100,13 @@ malloc_json_conv_int(char const *str, size_t len)
  *	NOTE: retlen, if non-NULL, is set to 0 on error
  *
  * NOTE: This function will not return on malloc error.
- * NOTE: This function will never return NULL.
+ * NOTE: This function will not return NULL.
  */
 struct integer *
 malloc_json_conv_int_str(char const *str, size_t *retlen)
 {
-    void *ret = NULL;	    /* malloced encoding string or NULL */
-    size_t len = 0;	    /* length of string to encode */
+    struct integer *ret = NULL;	    /* malloced encoding string or NULL */
+    size_t len = 0;		    /* length of string to encode */
 
     /*
      * firewall
@@ -4127,7 +4127,7 @@ malloc_json_conv_int_str(char const *str, size_t *retlen)
      */
     ret = malloc_json_conv_int(str, len);
     if (ret == NULL) {
-	err(203, __func__, "malloc_json_conv_int returned NULL");
+	err(203, __func__, "malloc_json_conv_int() returned NULL");
 	not_reached();
     }
 
