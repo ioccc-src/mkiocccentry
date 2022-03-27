@@ -571,7 +571,7 @@ jencchk(void)
      * assert: bits in byte must be 8
      */
     if (BITS_IN_BYTE != 8) {
-	err(150, __func__, "BITS_IN_BYTE: %d != 8", BITS_IN_BYTE);
+	err(100, __func__, "BITS_IN_BYTE: %d != 8", BITS_IN_BYTE);
 	not_reached();
     }
 
@@ -3675,4 +3675,132 @@ add_ignore_code(int code)
     qsort(ignore_code_set->code, ignore_code_set->next_free, sizeof(int), cmp_codes);
     dbg(DBG_VHIGH, "code %d added to ignore_code_set[]", code);
     return;
+}
+
+
+/*
+ * malloc_json_conv_int - convert JSON decoding to an intger
+ *
+ * given:
+ *	str	a JSON integer string
+ *	len	length starting at str of the JSON string
+ *
+ * returns:
+ *	malloced struct integer with C integer values based on JSON string
+ *
+ * NOTE: This function will not return on malloc error.
+ * NOTE: This function will never return NULL.
+ */
+struct integer *
+malloc_json_conv_int(char const *str, size_t len)
+{
+    struct integer *ret = NULL;	    /* malloced decoding string or NULL */
+    char *endptr;		    /* first invalid character or str */
+
+    /*
+     * malloc the return integer
+     */
+    errno = 0;			/* pre-clear errno for errp() */
+    ret = malloc(sizeof(struct integer));
+    if (ret == NULL) {
+	errp(248, __func__, "malloc #0 error allocating %ju bytes", (uintmax_t)sizeof(struct integer));
+	not_reached();
+    }
+
+    /*
+     * initialize the return integer
+     */
+    memset(ret, 0, sizeof(struct integer));
+    ret->as_str = NULL;
+    ret->converted = false;
+    ret->is_negative = false;
+    ret->int_sized = false;
+    ret->uint_sized = false;
+    ret->long_sized = false;
+    ret->ulong_sized = false;
+    ret->longlong_sized = false;
+    ret->ulonglong_sized = false;
+    ret->size_sized = false;
+    ret->ssize_sized = false;
+    ret->off_sized = false;
+    ret->maxint_sized = false;
+    ret->umaxint_sized = false;
+
+    /*
+     * firewall
+     */
+    if (str == NULL) {
+	warn(__func__, "called with NULL str");
+	return ret;
+    }
+    if (len <= 0) {
+	warn(__func__, "called with len: %ju <= 0", (uintmax_t)len);
+	return ret;
+    }
+    if (str[0] == '\0') {
+	warn(__func__, "called with empty string");
+	return ret;
+    }
+
+    /*
+     * duplicate the JSON integer string
+     */
+    errno = 0;			/* pre-clear errno for errp() */
+    ret->as_str = malloc(len+1+1);
+    if (ret->as_str == NULL) {
+	errp(248, __func__, "malloc #1 error allocating %ju bytes", (uintmax_t)(len+1+1));
+	not_reached();
+    }
+    strncpy(ret->as_str, str, len+1);
+    ret->as_str[len] = '\0';	/* paranoia */
+
+    /*
+     * determine if negative
+     */
+    if (str[0] == '-') {
+	ret->is_negative = true;
+    }
+
+    /*
+     * attempt to convert to the largest possible integer
+     */
+    if (ret->is_negative) {
+
+	/* case: negative, try for largest signed integer */
+	errno = 0;			/* pre-clear errno for errp() */
+	ret->as_maxint = strtoimax(ret->as_str, &endptr, 10);
+	if (errno != 0 || endptr == str || endptr == NULL || *endptr != '\0') {
+	    ret->converted = false;
+	    return ret;
+	}
+	ret->converted = true;
+	ret->as_maxint = true;
+
+	/* XXX - more code here - XXX */
+
+    } else {
+
+	/* case: non-negative, try for largest unsigned integer */
+	errno = 0;			/* pre-clear errno for errp() */
+	ret->as_umaxint = strtoumax(ret->as_str, &endptr, 10);
+	if (errno != 0 || endptr == str || endptr == NULL || *endptr != '\0') {
+	    ret->converted = false;
+	    return ret;
+	}
+	ret->converted = true;
+	ret->as_umaxint = true;
+
+	/* see if uintmax_t small enough to fit into a intmax_t */
+	if (ret->as_umaxint >= 0 && ret->as_umaxint <= INTMAX_MAX) {
+	    ret->as_maxint = (intmax_t)ret->as_umaxint;
+	    ret->maxint_sized = true;
+	}
+
+	/* XXX - more code here - XXX */
+    }
+
+    /*
+     * return converted integer
+     */
+    return ret;
 }

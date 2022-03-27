@@ -298,11 +298,9 @@ extern struct ignore_code *ignore_code_set;
  * parsed JSON integer
  */
 struct integer {
-    bool valid;			/* true ==> JSON string is a valid integer */
-    char *integer_as_str;	/* pointer to malloced JSON integer string */
+    char *as_str;		/* pointer to malloced JSON integer string */
 
     bool converted;		/* true ==> able to convert JSON integer to some form of C integer type */
-
     bool is_negative;		/* true ==> integer < 0 */
 
     bool int_sized;		/* true ==> converted JSON integer to C int */
@@ -385,6 +383,8 @@ extern void free_author_array(struct author *authorp, int author_count);
 /* ignore code functions */
 extern bool is_code_ignored(int code);
 extern void add_ignore_code(int code);
+/* JSON conversion functions */
+extern struct integer * malloc_json_conv_int(char const *str, size_t len);
 
 
 #endif /* INCLUDE_JSON_H */
