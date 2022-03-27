@@ -298,12 +298,46 @@ extern struct ignore_code *ignore_code_set;
 
 /*
  * parsed JSON integer
+ *
+ * NOTE: The as_str is normally the same as the string that was passed to, say, the
+ *	 malloc_json_conv_int() function.  It can differ in a few ways.  The end of the
+ *	 string passed to malloc_json_conv_int(str, len) does not need to be NUL terminated,
+ *	 whereas as_str will be NUL terminated at the end of the string.
+ *	 If the characters pointer at by str start with whitespace or have trailing
+ *	 whitespace, then as_str will hove those characters trimmed off.
+ *	 Normally the bison / flex code that would call malloc_json_conv_int(str, len)
+ *	 will ONLY have the JSON integer string, we note this in case some other
+ *	 future code that is not a careful calls malloc_json_conv_int(str, len).
  */
 struct integer {
-    char *as_str;		/* pointer to malloced JSON integer string */
+    char *as_str;		/* malloced JSON integer string, trimmed if needed, that was converted */
 
     bool converted;		/* true ==> able to convert JSON integer to some form of C integer type */
     bool is_negative;		/* true ==> integer < 0 */
+
+    bool int8_sized;		/* true ==> converted JSON integer to C int8_t */
+    int8_t as_int8;		/* JSON integer in int form, if int8_sized == true */
+
+    bool uint8_sized;		/* true ==> converted JSON integer to C uint8_t */
+    uint8_t as_uint8;		/* JSON integer in int form, if uint8_sized == true */
+
+    bool int16_sized;		/* true ==> converted JSON integer to C int16_t */
+    int16_t as_int16;		/* JSON integer in int form, if int16_sized == true */
+
+    bool uint16_sized;		/* true ==> converted JSON integer to C uint16_t */
+    uint16_t as_uint16;		/* JSON integer in int form, if uint16_sized == true */
+
+    bool int32_sized;		/* true ==> converted JSON integer to C int32_t */
+    int32_t as_int32;		/* JSON integer in int form, if int32_sized == true */
+
+    bool uint32_sized;		/* true ==> converted JSON integer to C uint32_t */
+    uint32_t as_uint32;		/* JSON integer in int form, if uint32_sized == true */
+
+    bool int64_sized;		/* true ==> converted JSON integer to C int64_t */
+    int64_t as_int64;		/* JSON integer in int form, if int64_sized == true */
+
+    bool uint64_sized;		/* true ==> converted JSON integer to C uint64_t */
+    uint64_t as_uint64;		/* JSON integer in int form, if uint64_sized == true */
 
     bool int_sized;		/* true ==> converted JSON integer to C int */
     int as_int;			/* JSON integer in int form, if int_sized == true */
@@ -323,11 +357,11 @@ struct integer {
     bool ulonglong_sized;	/* true ==> converted JSON integer to C unsigned long long */
     unsigned long long as_ulonglong;	/* JSON integer in unsigned long long form, if ulonglong_sized a== true */
 
-    bool size_sized;		/* true ==> converted JSON integer to C size_t */
-    size_t as_size;		/* JSON integer in size_t form, if size_sized == true */
-
     bool ssize_sized;		/* true ==> converted JSON integer to C ssize_t */
     ssize_t as_ssize;		/* JSON integer in ssize_t form, if ssize_sized == true */
+
+    bool size_sized;		/* true ==> converted JSON integer to C size_t */
+    size_t as_size;		/* JSON integer in size_t form, if size_sized == true */
 
     bool off_sized;		/* true ==> converted JSON integer to C off_t */
     off_t as_off;		/* JSON integer in off_t form, if off_sized == true */
@@ -386,7 +420,8 @@ extern void free_author_array(struct author *authorp, int author_count);
 extern bool is_code_ignored(int code);
 extern void add_ignore_code(int code);
 /* JSON conversion functions */
-extern struct integer * malloc_json_conv_int(char const *str, size_t len);
+extern struct integer *malloc_json_conv_int(char const *str, size_t len);
+extern struct integer *malloc_json_conv_int_str(char const *str, size_t *retlen);
 
 
 #endif /* INCLUDE_JSON_H */

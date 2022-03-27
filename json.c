@@ -43,6 +43,7 @@
 #include <ctype.h>
 #include <stdint.h>
 #include <time.h>
+#include <limits.h>
 
 /*
  * dbg - debug, warning and error reporting facility
@@ -3696,6 +3697,8 @@ malloc_json_conv_int(char const *str, size_t len)
 {
     struct integer *ret = NULL;	    /* malloced decoding string or NULL */
     char *endptr;		    /* first invalid character or str */
+    size_t digits = 0;		    /* number of digits in JSON integer not including leading sign */
+    size_t i;
 
     /*
      * malloc the return integer
@@ -3714,14 +3717,22 @@ malloc_json_conv_int(char const *str, size_t len)
     ret->as_str = NULL;
     ret->converted = false;
     ret->is_negative = false;
+    ret->int8_sized = false;
+    ret->uint8_sized = false;
+    ret->int16_sized = false;
+    ret->uint16_sized = false;
+    ret->int32_sized = false;
+    ret->uint32_sized = false;
+    ret->int64_sized = false;
+    ret->uint64_sized = false;
     ret->int_sized = false;
     ret->uint_sized = false;
     ret->long_sized = false;
     ret->ulong_sized = false;
     ret->longlong_sized = false;
     ret->ulonglong_sized = false;
-    ret->size_sized = false;
     ret->ssize_sized = false;
+    ret->size_sized = false;
     ret->off_sized = false;
     ret->maxint_sized = false;
     ret->umaxint_sized = false;
@@ -3742,9 +3753,6 @@ malloc_json_conv_int(char const *str, size_t len)
 	return ret;
     }
 
-    /* XXX - skip any leading spaces - XXX */
-    /* XXX - trim off any trailing spaces - XXX */
-
     /*
      * duplicate the JSON integer string
      */
@@ -3756,12 +3764,98 @@ malloc_json_conv_int(char const *str, size_t len)
     }
     strncpy(ret->as_str, str, len+1);
     ret->as_str[len] = '\0';	/* paranoia */
+    ret->as_str[len+1] = '\0';	/* paranoia */
 
     /*
-     * determine if negative
+     * paranoia
+     *
+     * While the common use of this function is via bison/flex produced C code,
+     * we want to keep the general case working where this function might
+     * someday be called from some other code.  For such a future case we
+     * want to trim off leading and trailing whitespace so that the code below
+     * checking for < 0 and the code checking the conversion into uintmax_t
+     * or into intmax_t is not confused.
      */
-    if (str[0] == '-') {
+    /* skip over any leading space */
+    for (i=0; i < len; ++i) {
+	if (!isascii(ret->as_str[i]) || !isspace(ret->as_str[i])) {
+	    break;
+	}
+    }
+    /* trim any leading space */
+    len -= i;
+    ret->as_str += i;
+    if (len <= 0) {
+	warn(__func__, "called with string containing only whitespace");
+	return ret;
+    }
+    /* trim off any trailing whitespace */
+    while (len > 0 && isascii(ret->as_str[len-1]) && isspace(ret->as_str[len-1])) {
+	/* trim trailing whitespace */
+	ret->as_str[len-1] = '\0';
+	--len;
+    }
+    if (len <= 0) {
+	warn(__func__, "called with string with all whitespace");
+	return ret;
+    }
+
+    /*
+     * determine if JSON integer negative
+     */
+    if (ret->as_str[0] == '-') {
+
+	/* parse JSON integer that is < 0 */
 	ret->is_negative = true;
+
+	/*
+	 * paranoia
+	 *
+	 * The only characters beyond the - remaining should be only digits.
+	 * This shouldn't happen via the bison / flex code that has an integer
+	 * regexp, but we check anyway as a matter of defense in depth.
+	 */
+	digits = strspn(ret->as_str+1, "0123456789");
+	if (digits != len-1) {
+	    warn(__func__, "called with string with - followed by non-digits: <%s>", ret->as_str);
+	    return ret;
+	}
+
+    /* case: JSON integer is >= 0 */
+    } else {
+
+	/* parse JSON integer that is >= 0 */
+	ret->is_negative = false;
+
+	/*
+	 * paranoia
+	 *
+	 * Integers with leading + are not allowed in JSON due to fundamental design
+	 * flaws by the JSON designers.  We check for and skip a leading + just in
+	 * case this code is called by some other code.
+	 */
+	if (ret->as_str[0] == '+') {
+	    /* skip leading + */
+	    ret->as_str++;
+	    len--;
+	    if (len <= 0) {
+		warn(__func__, "called with string with only a +");
+		return ret;
+	    }
+	}
+
+	/*
+	 * paranoia
+	 *
+	 * The only characters beyond the remaining should be only digits.
+	 * This shouldn't happen via the bison / flex code, but we check anyway
+	 * as a matter of defense in depth.
+	 */
+	digits = strspn(ret->as_str, "0123456789");
+	if (digits != len) {
+	    warn(__func__, "called with string containing non-digits: <%s>", ret->as_str);
+	    return ret;
+	}
     }
 
     /*
@@ -3779,13 +3873,88 @@ malloc_json_conv_int(char const *str, size_t len)
 	ret->converted = true;
 	ret->as_maxint = true;
 
-	/* if intmax_t value is small enough to fit into a off_t */
-	if (ret->as_maxint >= (intmax_t)OFF_MIN && ret->as_maxint <= (intmax_t)OFF_MAX) {
-	    ret->as_off = (off_t)ret->as_maxint;
-	    ret->off_sized = true;
+	/* case int8_t: range check */
+	if (ret->as_maxint >= (intmax_t)INT8_MIN && ret->as_maxint <= (intmax_t)INT8_MAX) {
+	    ret->int8_sized = true;
+	    ret->as_int8 = (int8_t)ret->as_maxint;
 	}
 
-	/* XXX - more code here - XXX */
+	/* case uint8_t: cannot be because JSON string is < 0 */
+	ret->uint8_sized = false;
+
+	/* case int16_t: range check */
+	if (ret->as_maxint >= (intmax_t)INT16_MIN && ret->as_maxint <= (intmax_t)INT16_MAX) {
+	    ret->int16_sized = true;
+	    ret->as_int16 = (int16_t)ret->as_maxint;
+	}
+
+	/* case uint16_t: cannot be because JSON string is < 0 */
+	ret->uint16_sized = false;
+
+	/* case int32_t: range check */
+	if (ret->as_maxint >= (intmax_t)INT32_MIN && ret->as_maxint <= (intmax_t)INT32_MAX) {
+	    ret->int32_sized = true;
+	    ret->as_int32 = (int32_t)ret->as_maxint;
+	}
+
+	/* case uint32_t: cannot be because JSON string is < 0 */
+	ret->uint32_sized = false;
+
+	/* case int64_t: range check */
+	if (ret->as_maxint >= (intmax_t)INT64_MIN && ret->as_maxint <= (intmax_t)INT64_MAX) {
+	    ret->int64_sized = true;
+	    ret->as_int64 = (int64_t)ret->as_maxint;
+	}
+
+	/* case uint64_t: cannot be because JSON string is < 0 */
+	ret->uint64_sized = false;
+
+	/* case int: range check */
+	if (ret->as_maxint >= (intmax_t)INT_MIN && ret->as_maxint <= (intmax_t)INT_MAX) {
+	    ret->int_sized = true;
+	    ret->as_int = (int)ret->as_maxint;
+	}
+
+	/* case unsigned int: cannot be because JSON string is < 0 */
+	ret->uint_sized = false;
+
+	/* case long: range check */
+	if (ret->as_maxint >= (intmax_t)LONG_MIN && ret->as_maxint <= (intmax_t)LONG_MAX) {
+	    ret->long_sized = true;
+	    ret->as_long = (long)ret->as_maxint;
+	}
+
+	/* case unsigned long: cannot be because JSON string is < 0 */
+	ret->long_sized = false;
+
+	/* case long long: range check */
+	if (ret->as_maxint >= (intmax_t)LLONG_MIN && ret->as_maxint <= (intmax_t)LLONG_MAX) {
+	    ret->longlong_sized = true;
+	    ret->as_longlong = (long long)ret->as_maxint;
+	}
+
+	/* case unsigned long long: cannot be because JSON string is < 0 */
+	ret->ulonglong_sized = false;
+
+	/* case size_t: cannot be because JSON string is < 0 */
+	ret->size_sized = false;
+
+	/* case ssize_t: range check */
+	if (ret->as_maxint >= (intmax_t)SSIZE_MIN && ret->as_maxint <= (intmax_t)SSIZE_MAX) {
+	    ret->ssize_sized = true;
+	    ret->as_ssize = (ssize_t)ret->as_maxint;
+	}
+
+	/* case off_t: range check */
+	if (ret->as_maxint >= (intmax_t)OFF_MIN && ret->as_maxint <= (intmax_t)OFF_MAX) {
+	    ret->off_sized = true;
+	    ret->as_off = (off_t)ret->as_maxint;
+	}
+
+	/* case intmax_t: was handled by the above call to strtoimax() */
+
+	/* case uintmax_t: cannot be because JSON string is < 0 */
+	ret->umaxint_sized = false;
 
     } else {
 
@@ -3799,23 +3968,178 @@ malloc_json_conv_int(char const *str, size_t len)
 	ret->converted = true;
 	ret->as_umaxint = true;
 
-	/* if uintmax_t value is small enough to fit into a intmax_t */
-	if (ret->as_umaxint >= 0 && ret->as_umaxint <= (uintmax_t)INTMAX_MAX) {
-	    ret->as_maxint = (intmax_t)ret->as_umaxint;
-	    ret->maxint_sized = true;
+	/* case int8_t: bounds check */
+	if (ret->as_umaxint <= (uintmax_t)INT8_MAX) {
+	    ret->int8_sized = true;
+	    ret->as_int8 = (int8_t)ret->as_ssize;
 	}
 
-	/* if uintmax_t value is small enough to fit into a off_t */
-	if (ret->as_umaxint >= 0 && ret->as_umaxint <= (uintmax_t)OFF_MAX) {
-	    ret->as_off = (off_t)ret->as_umaxint;
+	/* case uint8_t: bounds check */
+	if (ret->as_umaxint <= (uintmax_t)UINT8_MAX) {
+	    ret->uint8_sized = true;
+	    ret->as_uint8 = (uint8_t)ret->as_ssize;
+	}
+
+	/* case int16_t: bounds check */
+	if (ret->as_umaxint <= (uintmax_t)INT16_MAX) {
+	    ret->int16_sized = true;
+	    ret->as_int16 = (int16_t)ret->as_ssize;
+	}
+
+	/* case uint16_t: bounds check */
+	if (ret->as_umaxint <= (uintmax_t)UINT16_MAX) {
+	    ret->uint16_sized = true;
+	    ret->as_uint16 = (uint16_t)ret->as_ssize;
+	}
+
+	/* case int32_t: bounds check */
+	if (ret->as_umaxint <= (uintmax_t)INT32_MAX) {
+	    ret->int32_sized = true;
+	    ret->as_int32 = (int32_t)ret->as_ssize;
+	}
+
+	/* case uint32_t: bounds check */
+	if (ret->as_umaxint <= (uintmax_t)UINT32_MAX) {
+	    ret->uint32_sized = true;
+	    ret->as_uint32 = (uint32_t)ret->as_ssize;
+	}
+
+	/* case int64_t: bounds check */
+	if (ret->as_umaxint <= (uintmax_t)INT64_MAX) {
+	    ret->int64_sized = true;
+	    ret->as_int64 = (int64_t)ret->as_ssize;
+	}
+
+	/* case uint64_t: bounds check */
+	if (ret->as_umaxint <= (uintmax_t)UINT64_MAX) {
+	    ret->uint64_sized = true;
+	    ret->as_uint64 = (uint64_t)ret->as_ssize;
+	}
+
+	/* case int: bounds check */
+	if (ret->as_umaxint <= (uintmax_t)INT_MAX) {
+	    ret->int_sized = true;
+	    ret->as_int = (int)ret->as_ssize;
+	}
+
+	/* case unsigned int: bounds check */
+	if (ret->as_umaxint <= (uintmax_t)UINT_MAX) {
+	    ret->uint_sized = true;
+	    ret->as_uint = (unsigned int)ret->as_ssize;
+	}
+
+	/* case long: bounds check */
+	if (ret->as_umaxint <= (uintmax_t)LONG_MAX) {
+	    ret->long_sized = true;
+	    ret->as_long = (long)ret->as_ssize;
+	}
+
+	/* case unsigned long: bounds check */
+	if (ret->as_umaxint <= (uintmax_t)ULONG_MAX) {
+	    ret->ulong_sized = true;
+	    ret->as_ulong = (unsigned long)ret->as_ssize;
+	}
+
+	/* case long long: bounds check */
+	if (ret->as_umaxint <= (uintmax_t)LLONG_MAX) {
+	    ret->longlong_sized = true;
+	    ret->as_longlong = (long long)ret->as_ssize;
+	}
+
+	/* case unsigned long long: bounds check */
+	if (ret->as_umaxint <= (uintmax_t)ULLONG_MAX) {
+	    ret->ulonglong_sized = true;
+	    ret->as_ulonglong = (unsigned long long)ret->as_ssize;
+	}
+
+	/* case ssize_t: bounds check */
+	if (ret->as_umaxint <= (uintmax_t)SSIZE_MAX) {
+	    ret->ssize_sized = true;
+	    ret->as_ssize = (ssize_t)ret->as_ssize;
+	}
+
+	/* case size_t: bounds check */
+	if (ret->as_umaxint <= (uintmax_t)SIZE_MAX) {
+	    ret->size_sized = true;
+	    ret->as_size = (size_t)ret->as_ssize;
+	}
+
+	/* case off_t: bounds check */
+	if (ret->as_umaxint <= (uintmax_t)OFF_MAX) {
 	    ret->off_sized = true;
+	    ret->as_off = (off_t)ret->as_umaxint;
 	}
 
-	/* XXX - more code here - XXX */
+	/* case intmax_t: bounds check */
+	if (ret->as_umaxint <= (uintmax_t)INTMAX_MAX) {
+	    ret->maxint_sized = true;
+	    ret->as_maxint = (intmax_t)ret->as_umaxint;
+	}
+
+	/* case uintmax_t: was handled by the above call to strtoumax() */
     }
 
     /*
      * return converted integer
+     */
+    return ret;
+}
+
+
+/*
+ * malloc_json_conv_int_str - convert JSON integer string to C integer value
+ *
+ * This is an simplified interface for malloc_json_conv_int().
+ *
+ * given:
+ *	str	a JSON integer string to convert
+ *	retlen	address of where to store length of str, if retlen != NULL
+ *
+ * returns:
+ *	malloced struct integer with C integer values based on JSON string
+ *	NOTE: retlen, if non-NULL, is set to 0 on error
+ *
+ * NOTE: This function will not return on malloc error.
+ * NOTE: This function will never return NULL.
+ */
+struct integer *
+malloc_json_conv_int_str(char const *str, size_t *retlen)
+{
+    void *ret = NULL;	    /* malloced encoding string or NULL */
+    size_t len = 0;	    /* length of string to encode */
+
+    /*
+     * firewall
+     *
+     * NOTE: We will let the malloc_json_conv_int() handle the arg firewall
+     */
+    if (str == NULL) {
+	warn(__func__, "called with NULL str");
+    } else {
+	len = strlen(str);
+    }
+    if (len <= 0) {
+	warn(__func__, "called with len: %ju <= 0", (uintmax_t)len);
+    }
+
+    /*
+     * convert to malloc_json_encode() call
+     */
+    ret = malloc_json_conv_int(str, len);
+    if (ret == NULL) {
+	err(203, __func__, "malloc_json_conv_int returned NULL");
+	not_reached();
+    }
+
+    /*
+     * save length if allowed
+     */
+    if (retlen != NULL) {
+	*retlen = len;
+    }
+
+    /*
+     * return encoded result or NULL
      */
     return ret;
 }
