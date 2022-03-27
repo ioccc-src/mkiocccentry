@@ -1056,7 +1056,7 @@ mkiocccentry_sanity_chks(struct info *infop, char const *work_dir, char const *t
 	      "",
 	      "We cannot find a fnamchk tool.",
 	      "",
-	      "A fnamchk program performs a sanity check on the compressed tarball.",
+	      "The fnamchk program performs a sanity check on the compressed tarball filename.",
 	      "Perhaps you need to use:",
 	      "",
 	      "    mkiocccentry -F /path/to/fnamchk ...",
