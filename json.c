@@ -3742,6 +3742,9 @@ malloc_json_conv_int(char const *str, size_t len)
 	return ret;
     }
 
+    /* XXX - skip any leading spaces - XXX */
+    /* XXX - trim off any trailing spaces - XXX */
+
     /*
      * duplicate the JSON integer string
      */
@@ -3797,13 +3800,13 @@ malloc_json_conv_int(char const *str, size_t len)
 	ret->as_umaxint = true;
 
 	/* if uintmax_t value is small enough to fit into a intmax_t */
-	if (ret->as_umaxint >= 0 && ret->as_umaxint <= INTMAX_MAX) {
+	if (ret->as_umaxint >= 0 && ret->as_umaxint <= (uintmax_t)INTMAX_MAX) {
 	    ret->as_maxint = (intmax_t)ret->as_umaxint;
 	    ret->maxint_sized = true;
 	}
 
 	/* if uintmax_t value is small enough to fit into a off_t */
-	if (ret->as_umaxint >= (uintmax_t)OFF_MIN && ret->as_umaxint <= (uintmax_t)OFF_MAX) {
+	if (ret->as_umaxint >= 0 && ret->as_umaxint <= (uintmax_t)OFF_MAX) {
 	    ret->as_off = (off_t)ret->as_umaxint;
 	    ret->off_sized = true;
 	}
