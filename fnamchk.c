@@ -48,11 +48,6 @@
 #include "fnamchk.h"
 
 
-/*
- * utf8_posix_map include
- */
-#include "utf8_posix_map.h"
-
 
 int
 main(int argc, char *argv[])
