@@ -2366,7 +2366,7 @@ check_info_json_fields_table(void)
 	not_reached();
     }
     if (!found_manifest) {
-	err(169, __func__, "'manifest' field not found in info_json_fields table; fix table in json.c and recompile");
+	err(169, __func__, "'manifest' field not found in info_json_fields table; fix table in %s and recompile", __FILE__);
 	not_reached();
     }
 }
@@ -2433,7 +2433,7 @@ check_author_json_fields_table(void)
 	not_reached();
     }
     if (!found_authors) {
-	err(171, __func__, "'authors' field not found in authors_json_fields table; fix table in json.c and recompile");
+	err(171, __func__, "'authors' field not found in authors_json_fields table; fix table in %s and recompile", __FILE__);
 	not_reached();
     }
 
