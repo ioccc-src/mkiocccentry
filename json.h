@@ -295,6 +295,52 @@ extern struct ignore_code *ignore_code_set;
 
 
 /*
+ * parsed JSON integer
+ */
+struct integer {
+    bool valid;			/* true ==> JSON string is a valid integer */
+    char *integer_as_str;	/* pointer to malloced JSON integer string */
+
+    bool converted;		/* true ==> able to convert JSON integer to some form of C integer type */
+
+    bool is_negative;		/* true ==> integer < 0 */
+
+    bool int_sized;		/* true ==> converted JSON integer to C int */
+    int as_int;			/* JSON integer in int form, if int_sized == true */
+
+    bool uint_sized;		/* true ==> converted JSON integer to C unsigned int */
+    unsigned int as_uint;	/* JSON integer in unsigned int form, if uint_sized == true */
+
+    bool long_sized;		/* true ==> converted JSON integer to C long */
+    long as_long;		/* JSON integer in long form, if long_sized == true */
+
+    bool ulong_sized;		/* true ==> converted JSON integer to C unsigned long */
+    unsigned long as_ulong;	/* JSON integer in unsigned long form, if long_sized == true */
+
+    bool longlong_sized;	/* true ==> converted JSON integer to C long long */
+    long long as_longlong;	/* JSON integer in long long form, if longlong_sized longlong_sized == true */
+
+    bool ulonglong_sized;	/* true ==> converted JSON integer to C unsigned long long */
+    unsigned long long as_ulonglong;	/* JSON integer in unsigned long long form, if ulonglong_sized a== true */
+
+    bool size_sized;		/* true ==> converted JSON integer to C size_t */
+    size_t as_size;		/* JSON integer in size_t form, if size_sized == true */
+
+    bool ssize_sized;		/* true ==> converted JSON integer to C ssize_t */
+    ssize_t as_ssize;		/* JSON integer in ssize_t form, if ssize_sized == true */
+
+    bool off_sized;		/* true ==> converted JSON integer to C off_t */
+    off_t as_off;		/* JSON integer in off_t form, if off_sized == true */
+
+    bool maxint_sized;		/* true ==> converted JSON integer to C maxint_t */
+    intmax_t as_maxint;		/* JSON integer in as_maxint form, if maxint_sized == true */
+
+    bool umaxint_sized;		/* true ==> converted JSON integer to C umaxint_t */
+    uintmax_t as_umaxint;	/* JSON integer in as_umaxint form, if umaxint_sized == true */
+};
+
+
+/*
  * external function declarations
  */
 extern char *malloc_json_encode(char const *ptr, size_t len, size_t *retlen);
