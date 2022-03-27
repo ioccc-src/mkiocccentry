@@ -180,15 +180,15 @@ TARGETS= mkiocccentry iocccsize dbg_test limit_ioccc.sh fnamchk txzchk jauthchk 
 	jstrencode jstrdecode jparse
 MANPAGES = mkiocccentry.1 txzchk.1 fnamchk.1 iocccsize.1 jinfochk.1 jauthchk.1
 TEST_TARGETS= dbg_test utf8_test
-OBJFILES = dbg.o util.o mkiocccentry.o iocccsize.o fnamchk.o txzchk.o jauthchk.o jinfochk.o \
-	json.o jstrencode.o jstrdecode.o rule_count.o location.o utf8_posix_map.o sanity.o jparse.o \
-	jparse.tab.o
-FLEXFILES = jparse.l
-BISONFILES = jparse.y
-SRCFILES = $(patsubst %.o,%.c,$(OBJFILES))
-H_FILES = dbg.h jauthchk.h jinfochk.h json.h jstrdecode.h jstrencode.h limit_ioccc.h \
+OBJFILES= dbg.o util.o mkiocccentry.o iocccsize.o fnamchk.o txzchk.o jauthchk.o jinfochk.o \
+	json.o jstrencode.o jstrdecode.o rule_count.o location.o utf8_posix_map.o sanity.o
+SPECIAL_OBJ= jparse.o jparse.tab.o
+FLEXFILES= jparse.l
+BISONFILES= jparse.y
+SRCFILES= $(patsubst %.o,%.c,$(OBJFILES))
+H_FILES= dbg.h jauthchk.h jinfochk.h json.h jstrdecode.h jstrencode.h limit_ioccc.h \
 	mkiocccentry.h txzchk.h util.h location.h utf8_posix_map.h jparse.h
-DSYMDIRS = $(patsubst %,%.dSYM,$(TARGETS))
+DSYMDIRS= $(patsubst %,%.dSYM,$(TARGETS))
 SH_FILES= iocccsize-test.sh jstr-test.sh limit_ioccc.sh mkiocccentry-test.sh json-test.sh \
 	  jcodechk.sh vermod.sh
 
@@ -261,6 +261,12 @@ jparse: jparse.c jparse.h jparse.tab.c jparse.tab.h jparse.y jparse.l util.o dbg
 utf8_test: utf8_test.c utf8_posix_map.o dbg.o util.o
 	${CC} ${CFLAGS} utf8_test.c utf8_posix_map.o dbg.o util.o -o $@
 
+# NOTE: This temporary rule produces the following C code files:
+#
+# jparse.tab.h
+# jparse.tab.c
+# jparse.c
+#
 parser: jparse.y jparse.l
 	${BISON} -d jparse.y
 	${FLEX} -o jparse.c jparse.l
@@ -293,9 +299,14 @@ seqcexit: ${SRCFILES} ${FLEXFILES} ${BISONFILES}
 	@HAVE_SEQCEXIT=`command -v seqcexit`; if [[ -z "$$HAVE_SEQCEXIT" ]]; then \
 		echo 'If you have not bothered to install the seqcexit tool, then' 1>&2; \
 		echo 'you may not run this rule.'; 1>&2; \
+		echo ''; 1>&2; \
+		echo 'See the following GitHub repo for seqcexit:'; 1>&2; \
+		echo ''; 1>&2; \
+		echo 'https://github.com/lcn2/seqcexit'; 1>&2; \
 		exit 1; \
 	fi
-	${SEQCEXIT} ${SRCFILES} ${FLEXFILES} ${BISONFILES}
+	${SEQCEXIT} -c ${FLEXFILES} ${BISONFILES}
+	${SEQCEXIT} ${SRCFILES}
 
 shellcheck: ${SH_FILES}
 	${SHELLCHECK} -f gcc ${SH_FILES}
@@ -399,6 +410,7 @@ configure:
 
 clean:
 	${RM} -f ${OBJFILES}
+	${RM} -f ${SPECIAL_OBJ}
 	${RM} -rf ${DSYMDIRS}
 
 clobber distclean: clean
