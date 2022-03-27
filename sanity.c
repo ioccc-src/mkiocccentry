@@ -35,7 +35,8 @@ ioccc_sanity_chks(void)
 {
     /*
      * Check that the UTF-8 POSIX map is sane: that there are no embedded NULL
-     * elements and that the final element is in fact NULL.
+     * elements and that the final element is in fact NULL. It also sets up the
+     * length of the source and target strings.
      */
     dbg(DBG_MED, "Running sanity checks on UTF-8 POSIX map ...");
     check_utf8_posix_map();
@@ -53,7 +54,8 @@ ioccc_sanity_chks(void)
      * Check that the JSON fields tables are sane: that there are no
      * embedded NULL elements, that the only JSON_NULL type is the final
      * element, that the other elements have valid field types and that the
-     * final element is in fact NULL.
+     * final element is in fact NULL. As well it makes sure the tables are not
+     * empty.
      *
      * NOTE: The below function calls dbg() for each table it checks so we don't
      * duplicate those messages here.
