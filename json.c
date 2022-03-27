@@ -3679,7 +3679,7 @@ add_ignore_code(int code)
 
 
 /*
- * malloc_json_conv_int - convert JSON decoding to an intger
+ * malloc_json_conv_int - convert JSON integer string to C integer value
  *
  * given:
  *	str	a JSON integer string
@@ -3776,6 +3776,12 @@ malloc_json_conv_int(char const *str, size_t len)
 	ret->converted = true;
 	ret->as_maxint = true;
 
+	/* if intmax_t value is small enough to fit into a off_t */
+	if (ret->as_maxint >= (intmax_t)OFF_MIN && ret->as_maxint <= (intmax_t)OFF_MAX) {
+	    ret->as_off = (off_t)ret->as_maxint;
+	    ret->off_sized = true;
+	}
+
 	/* XXX - more code here - XXX */
 
     } else {
@@ -3790,10 +3796,16 @@ malloc_json_conv_int(char const *str, size_t len)
 	ret->converted = true;
 	ret->as_umaxint = true;
 
-	/* see if uintmax_t small enough to fit into a intmax_t */
+	/* if uintmax_t value is small enough to fit into a intmax_t */
 	if (ret->as_umaxint >= 0 && ret->as_umaxint <= INTMAX_MAX) {
 	    ret->as_maxint = (intmax_t)ret->as_umaxint;
 	    ret->maxint_sized = true;
+	}
+
+	/* if uintmax_t value is small enough to fit into a off_t */
+	if (ret->as_umaxint >= (uintmax_t)OFF_MIN && ret->as_umaxint <= (uintmax_t)OFF_MAX) {
+	    ret->as_off = (off_t)ret->as_umaxint;
+	    ret->off_sized = true;
 	}
 
 	/* XXX - more code here - XXX */

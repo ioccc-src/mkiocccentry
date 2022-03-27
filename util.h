@@ -34,7 +34,7 @@
 
 #include <sys/types.h>
 #include <float.h> /* for long doubles */
-#include <inttypes.h> /* uintmax_t and intmax_t */
+#include <inttypes.h> /* uintmax_t and intmax_t and perhaps SIZE_MAX */
 
 /*
  * standard truth :-)
@@ -50,6 +50,39 @@ typedef unsigned char bool;
 #undef false
 #define false ((bool)(0))
 #endif
+
+
+/*
+ * off_t MAX and MIN
+ */
+#if !defined(OFF_MAX)
+#define OFF_MAX (~((off_t)1 << (sizeof(off_t) * BITS_IN_BYTE - 1)))
+#endif /* OFF_MAX */
+#if !defined(OFF_MIN)
+#define OFF_MIN (((off_t)1 << (sizeof(off_t) * BITS_IN_BYTE - 1)))
+#endif /* OFF_MIN */
+
+
+/*
+ * size_t MAX and MIN
+ */
+#if !defined(SIZE_MAX)
+#define SIZE_MAX (~((size_t)0))
+#endif /* SIZE_MAX */
+#if !defined(SIZE_MIN)
+#define SIZE_MIN ((size_t)(0))
+#endif /* SIZE_MIN */
+
+
+/*
+ * ssize_t MAX and MIN
+ */
+#if !defined(SSIZE_MAX)
+#define SSIZE_MAX (~((ssize_t)1 << (sizeof(ssize_t) * BITS_IN_BYTE - 1)))
+#endif /* SSIZE_MAX */
+#if !defined(SSIZE_MIN)
+#define SSIZE_MIN (((ssize_t)1 << (sizeof(ssize_t) * BITS_IN_BYTE - 1)))
+#endif /* SSIZE_MIN */
 
 
 /*

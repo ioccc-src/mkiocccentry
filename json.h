@@ -69,8 +69,10 @@
  * Codes 0 - 99 are reserved for special purposes so all normal codes should be
  * >= JSON_CODE_MIN && <= JSON_CODE_MAX via the JSON_CODE macro.
  */
-#define JSON_CODE_RESERVED_MIN (0)	/* reserved code: all normal codes should be >= JSON_CODE_MIN && <= JSON_CODE_MAX via JSON_CODE macro */
-#define JSON_CODE_RESERVED_MAX (99)	/* reserved code: all normal codes should be >= JSON_CODE_MIN && <= JSON_CODE_MAX via JSON_CODE macro */
+/* reserved code: all normal codes should be >= JSON_CODE_MIN && <= JSON_CODE_MAX via JSON_CODE macro */
+#define JSON_CODE_RESERVED_MIN (0)
+/* reserved code: all normal codes should be >= JSON_CODE_MIN && <= JSON_CODE_MAX via JSON_CODE macro */
+#define JSON_CODE_RESERVED_MAX (99)
 /*
  * The minimum code for jwarn() is the JSON_CODE_RESERVED_MAX (currently 99) + 1.
  * However this does not mean that calls to jwarn() cannot use <= the
@@ -110,7 +112,7 @@ struct json_value
 #define JSON_ARRAY	    (3)	    /* json field is supposed to be an array */
 #define JSON_ARRAY_NUMBER   (5)	    /* json field is supposed to be a number in an array */
 #define JSON_ARRAY_BOOL	    (6)	    /* json field is supposed to be a bool in an array (NB: not used) */
-#define JSON_ARRAY_CHARS   (7)	    /* json field is supposed to be a string in an array */
+#define JSON_ARRAY_CHARS    (7)	    /* json field is supposed to be a string in an array */
 #define JSON_EOT	    (-1)    /* json field is NULL (not null): used internally to mark end of the tables */
 
 /*
@@ -222,7 +224,7 @@ struct author {
     char *twitter;		/* author twitter handle or or empty string ==> not provided */
     char *github;		/* author GitHub username or or empty string ==> not provided */
     char *affiliation;		/* author affiliation or or empty string ==> not provided */
-    bool past_winner;		/* true ==> author claimns to have won before, false ==> author claims not a prev winner */
+    bool past_winner;		/* true ==> author claims to have won before, false ==> author claims not a prev winner */
     bool default_handle;	/* true ==> default author_handle accepted, false ==> author_handle entered */
     char *author_handle;	/* IOCCC author handle (for winning entries) */
     int author_num;		/* author number */
