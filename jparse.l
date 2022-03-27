@@ -129,6 +129,43 @@ JSON_COMMA		","
 /* Section 3: Code that's copied to the generated scanner */
 
 
+/* clearerr_or_fclose
+ *
+ * This function calls clearerr() or fclose() depending on if file is stdin or
+ * some other file.
+ *
+ * given:
+ *
+ *	filename    - the filename of file
+ *	file	    - the FILE * (stdin or another file)
+ *
+ *
+ * NOTE: This function will do not return on NULL pointers.
+ */
+void
+clearerr_or_fclose(char const *filename, FILE *file)
+{
+    int ret;
+
+    /*
+     * firewall
+     */
+    if (filename == NULL || file == NULL) {
+	err(35, __func__, "passed NULL arg(s)");
+	not_reached();
+    }
+
+    if (file == stdin)
+	clearerr(file);
+    else {
+	errno = 0;
+	ret = fclose(file);
+	if (ret != 0) {
+	    warnp(__func__, "error in fclose on file %s", filename);
+	}
+    }
+}
+
 /* parse_json_string	    - parse string as a JSON block
  *
  * given:
@@ -137,6 +174,11 @@ JSON_COMMA		","
  *
  * NOTE: Until the JSON parser is finished this only parses the string (and not
  * necessarily correctly) but it does not build a parse tree.
+ *
+ * NOTE: The reason this is in the scanner and not the parser is because
+ * YY_BUFFER_STATE is part of the scanner and not the parser. There might be a
+ * better way to go about this but I'll know more later on about this. Like
+ * everything else here it's subject to change!
  */
 void
 parse_json_string(char const *string)
@@ -181,7 +223,13 @@ parse_json_string(char const *string)
  * warns but does nothing else.
  *
  * NOTE: Until the JSON parser is finished this only parses the file (and not
- * necessarily correctly) but it does not build a parse tree.
+* necessarily correctly) but it does not build a parse tree.
+ *
+ * NOTE: The reason this is in the scanner and not the parser is because
+ * YY_BUFFER_STATE is part of the scanner and not the parser and that's required
+ * for the parse_json_string() function so I think both ought to be here. There
+ * might be a better way to go about that but I'll know more later on about
+ * this. Like everything else here it's subject to change!
  */
 void
 parse_json_file(char const *filename)
@@ -189,7 +237,6 @@ parse_json_file(char const *filename)
     bool is_stdin = false;	/* true if reading from stdin (filename == "-") */
     char *data = NULL;		/* used to determine if there are NUL bytes in the file */
     size_t len = 0;		/* length of data read */
-    int ret;
 
     /*
      * firewall
@@ -228,11 +275,13 @@ parse_json_file(char const *filename)
     if (data == NULL) {
 	warn(__func__, "couldn't read in %s", is_stdin?"stdin":filename);
 	++num_errors;
+	clearerr_or_fclose(filename, yyin);
 	return;
     }
     if (!is_string(data, len + 1)) {
 	warn(__func__, "found embedded NUL byte in %s", is_stdin?"stdin":filename);
 	++num_errors;
+	clearerr_or_fclose(filename, yyin);
 	return;
     }
 
@@ -243,15 +292,7 @@ parse_json_file(char const *filename)
     yyrestart(yyin);
     yyparse();
 
-    if (yyin == stdin)
-	clearerr(yyin);
-    else {
-	errno = 0;
-	ret = fclose(yyin);
-	if (ret != 0) {
-	    warnp(__func__, "error in fclose on file %s", filename);
-	}
-    }
+    clearerr_or_fclose(filename, yyin);
     print_newline();
 }
 
@@ -269,7 +310,7 @@ print_newline(void)
 	errno = 0;		/* pre-clear errno for errp() */
 	ret = putchar('\n');
 	if (ret != '\n') {
-	    errp(37, __func__, "error while writing newline");
+	    errp(36, __func__, "error while writing newline");
 	    not_reached();
 	}
     }

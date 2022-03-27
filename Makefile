@@ -183,6 +183,8 @@ TEST_TARGETS= dbg_test utf8_test
 OBJFILES = dbg.o util.o mkiocccentry.o iocccsize.o fnamchk.o txzchk.o jauthchk.o jinfochk.o \
 	json.o jstrencode.o jstrdecode.o rule_count.o location.o utf8_posix_map.o sanity.o jparse.o \
 	jparse.tab.o
+FLEXFILES = jparse.l
+BISONFILES = jparse.y
 SRCFILES = $(patsubst %.o,%.c,$(OBJFILES))
 H_FILES = dbg.h jauthchk.h jinfochk.h json.h jstrdecode.h jstrencode.h limit_ioccc.h \
 	mkiocccentry.h txzchk.h util.h location.h utf8_posix_map.h jparse.h
@@ -287,13 +289,13 @@ limit_ioccc.sh: limit_ioccc.h version.h Makefile
 	    echo "export TRIGRAPHS="; \
 	fi >> $@
 
-seqcexit: ${SRCFILES}
+seqcexit: ${SRCFILES} ${FLEXFILES} ${BISONFILES}
 	@HAVE_SEQCEXIT=`command -v seqcexit`; if [[ -z "$$HAVE_SEQCEXIT" ]]; then \
 		echo 'If you have not bothered to install the seqcexit tool, then' 1>&2; \
 		echo 'you may not run this rule.'; 1>&2; \
 		exit 1; \
 	fi
-	${SEQCEXIT} ${SRCFILES}
+	${SEQCEXIT} ${SRCFILES} ${FLEXFILES} ${BISONFILES}
 
 shellcheck: ${SH_FILES}
 	${SHELLCHECK} -f gcc ${SH_FILES}
