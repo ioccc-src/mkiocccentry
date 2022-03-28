@@ -3872,7 +3872,7 @@ malloc_json_conv_int(char const *str, size_t len)
 	    return ret;
 	}
 	ret->converted = true;
-	ret->as_maxint = true;
+	ret->maxint_sized = true;
 	dbg(DBG_VVHIGH, "strtoimax for <%s> returned: %jd", ret->as_str, ret->as_maxint);
 
 	/* case int8_t: range check */
@@ -3969,7 +3969,7 @@ malloc_json_conv_int(char const *str, size_t len)
 	    return ret;
 	}
 	ret->converted = true;
-	ret->as_umaxint = true;
+	ret->umaxint_sized = true;
 	dbg(DBG_VVHIGH, "strtoumax for <%s> returned: %ju", ret->as_str, ret->as_umaxint);
 
 	/* case int8_t: bounds check */
