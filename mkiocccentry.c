@@ -149,7 +149,7 @@ main(int argc, char *argv[])
      */
     input_stream = stdin;	/* default to reading from standard in */
     program = argv[0];
-    while ((i = getopt(argc, argv, "hv:qVTt:c:l:a:i:A:WC:F:j:J:")) != -1) {
+    while ((i = getopt(argc, argv, "hv:qVt:c:l:a:i:A:WC:F:j:J:")) != -1) {
 	switch (i) {
 	case 'h':		/* -h - print help to stderr and exit 0 */
 	    usage(1, "-h help mode", program);
@@ -169,15 +169,6 @@ main(int argc, char *argv[])
 	    ret = printf("%s\n", MKIOCCCENTRY_VERSION);
 	    if (ret <= 0) {
 		warnp(__func__, "printf error printing version string: %s", MKIOCCCENTRY_VERSION);
-	    }
-	    exit(0); /*ooo*/
-	    not_reached();
-	    break;
-	case 'T':		/* -T (IOCCC toolkit release repository tag) */
-	    errno = 0;		/* pre-clear errno for warnp() */
-	    ret = printf("%s\n", IOCCC_TOOLKIT_RELEASE);
-	    if (ret <= 0) {
-		warnp(__func__, "printf error printing IOCCC toolkit release repository tag");
 	    }
 	    exit(0); /*ooo*/
 	    not_reached();

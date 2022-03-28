@@ -108,18 +108,17 @@ static struct txz_line *txz_lines;
  * Use the usage() function to print the usage_msgX strings.
  */
 static const char * const usage_msg =
-    "usage: %s [-h] [-v level] [-q] [-V] [-t tar] [-F fnamchk] [-f] txzpath\n"
+    "usage: %s [-h] [-v level] [-q] [-V] [-t tar] [-F fnamchk] [-T] txzpath\n"
     "\n"
     "\t-h\t\tprint help message and exit 0\n"
     "\t-v level\tset verbosity level: (def level: %d)\n"
     "\t-q\t\tquiet mode, unless verbosity level > 0 (def: not quiet)\n"
     "\t-V\t\tprint version string and exit\n"
-    "\t-T\t\tshow IOCCC toolkit release repository tag\n"
     "\n"
     "\t-t tar\t\tpath to tar executable that supports the -J (xz) option (def: %s)\n"
     "\t-F fnamchk\tpath to tool that checks if txzpath is a valid compressed tarball name\n"
     "\t\t\tfilename (def: %s)\n\n"
-    "\t-f\t\tassume txzpath is a text file with tar listing (for testing different formats)\n\n"
+    "\t-T\t\tassume txzpath is a text file with tar listing (for testing different formats)\n\n"
     "\ttxzpath\t\tpath to an IOCCC compressed tarball\n"
     "\n"
     "txzchk version: %s\n";

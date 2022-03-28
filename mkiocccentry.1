@@ -2,7 +2,7 @@
 .SH NAME
 mkiocccentry \- make an IOCCC compressed tarball for an IOCCC entry
 .SH SYNOPSIS
-\fBmkiocccentry [\-h] [\-v level] [\-V] [\-T] [\-t tar] [\-c cp] [\-l ls] [\-C txzchk] [\-F fnamchk] [{\-a|\-A|\-i} answers] [\-j jinfochk] [\-J jauthchk] [\-W] [\-q] work_dir prog.c Makefile remarks.md [file ...]\fP
+\fBmkiocccentry [\-h] [\-v level] [\-V] [\-t tar] [\-c cp] [\-l ls] [\-C txzchk] [\-F fnamchk] [{\-a|\-A|\-i} answers] [\-j jinfochk] [\-J jauthchk] [\-W] [\-q] work_dir prog.c Makefile remarks.md [file ...]\fP
 .SH DESCRIPTION
 \fBmkiocccentry\fP gathers your source file, Makefile, remarks as well as any other files and creates a XZ compressed tarball.
 The tool runs \fBiocccsize\fP and it also runs a test on the Makefile to verify that everything seems in order.
@@ -26,9 +26,6 @@ Show IOCCC toolkit release repository tag.
 .PP
 \fB\-V\fP
 Show version and exit.
-.PP
-\fB\-T\fP
-Show IOCCC toolkit release repository tag.
 .PP
 \fB\-t\fP
 Specify path to tar that accepts the \fB\-J\fP option.

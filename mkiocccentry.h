@@ -138,7 +138,6 @@ static const char * const usage_msg0 =
     "\t-v level\tset verbosity level: (def level: %d)\n"
     "\t-q\t\tquiet mode, unless verbosity level > 0 (def: not quiet)\n"
     "\t-V\t\tprint version string and exit\n"
-    "\t-T\t\tshow IOCCC toolkit release repository tag\n"
     "\t-W\t\tignore all warnings (this does NOT mean the judges will! :) )\n";
 static const char * const usage_msg1 =
     "\t-t tar\t\tpath to tar executable that supports the -J (xz) option (def: %s)\n"

@@ -71,13 +71,12 @@
  * Use the usage() function to print the these usage_msgX strings.
  */
 static const char * const usage_msg =
-"usage: %s [-h] [-v level] [-V] [-q] [-T]  [-S] [-F fnamchk] [-t] [-W code] [-w] ... file\n"
+"usage: %s [-h] [-v level] [-V] [-q] [-S] [-F fnamchk] [-t] [-W code] [-w] ... file\n"
 "\n"
 "\t-h\t\tprint help message and exit 0\n"
 "\t-v level\tset verbosity level: (def level: %d)\n"
 "\t-q\t\tquiet mode, unless verbosity level > 0 (def: not quiet)\n"
 "\t-V\t\tprint version string and exit\n"
-"\t-T\t\tshow IOCCC toolkit release repository tag\n"
 "\t-S\t\tstrict mode: be more strict on what is allowed (def: not strict)\n"
 "\t-F fnamchk\tpath to fnamchk tool (def: %s)\n"
 "\t-t\t\ttest mode: only issue warnings in some cases\n"

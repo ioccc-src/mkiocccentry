@@ -63,11 +63,6 @@
 
 
 /*
- * overall IOCCC entry toolkit release version
- */
-#define IOCCC_TOOLKIT_RELEASE "0.2"		/* format: major.minor */
-
-/*
  * official iocccsize version
  */
 #define IOCCCSIZE_VERSION "28.10 2022-03-15"	/* format: major.minor YYYY-MM-DD */

@@ -995,7 +995,7 @@ main(int argc, char **argv)
      */
     program = argv[0];
     program_basename = base_name(program);
-    while ((i = getopt(argc, argv, "hv:VqSF:tTW:w")) != -1) {
+    while ((i = getopt(argc, argv, "hv:VqSF:tW:w")) != -1) {
 	switch (i) {
 	case 'h':		/* -h - print help to stderr and exit 0 */
 	    usage(1, "-h help mode", program); /*ooo*/
@@ -1015,15 +1015,6 @@ main(int argc, char **argv)
 	    ret = printf("%s\n", JAUTHCHK_VERSION);
 	    if (ret <= 0) {
 		warnp(__func__, "printf error printing version string: %s", JAUTHCHK_VERSION);
-	    }
-	    exit(0); /*ooo*/
-	    not_reached();
-	    break;
-	case 'T':		/* -T (IOCCC toolkit release repository tag) */
-	    errno = 0;		/* pre-clear errno for warnp() */
-	    ret = printf("%s\n", IOCCC_TOOLKIT_RELEASE);
-	    if (ret <= 0) {
-		warnp(__func__, "printf error printing IOCCC toolkit release repository tag");
 	    }
 	    exit(0); /*ooo*/
 	    not_reached();
