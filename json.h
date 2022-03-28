@@ -316,28 +316,28 @@ struct integer {
     bool is_negative;		/* true ==> integer < 0 */
 
     bool int8_sized;		/* true ==> converted JSON integer to C int8_t */
-    int8_t as_int8;		/* JSON integer in int form, if int8_sized == true */
+    int8_t as_int8;		/* JSON integer in int8_t form, if int8_sized == true */
 
     bool uint8_sized;		/* true ==> converted JSON integer to C uint8_t */
-    uint8_t as_uint8;		/* JSON integer in int form, if uint8_sized == true */
+    uint8_t as_uint8;		/* JSON integer in uint8_t form, if uint8_sized == true */
 
     bool int16_sized;		/* true ==> converted JSON integer to C int16_t */
-    int16_t as_int16;		/* JSON integer in int form, if int16_sized == true */
+    int16_t as_int16;		/* JSON integer in int16_t form, if int16_sized == true */
 
     bool uint16_sized;		/* true ==> converted JSON integer to C uint16_t */
-    uint16_t as_uint16;		/* JSON integer in int form, if uint16_sized == true */
+    uint16_t as_uint16;		/* JSON integer in uint16_t form, if uint16_sized == true */
 
     bool int32_sized;		/* true ==> converted JSON integer to C int32_t */
-    int32_t as_int32;		/* JSON integer in int form, if int32_sized == true */
+    int32_t as_int32;		/* JSON integer in int32_t form, if int32_sized == true */
 
     bool uint32_sized;		/* true ==> converted JSON integer to C uint32_t */
-    uint32_t as_uint32;		/* JSON integer in int form, if uint32_sized == true */
+    uint32_t as_uint32;		/* JSON integer in uint32_t form, if uint32_sized == true */
 
     bool int64_sized;		/* true ==> converted JSON integer to C int64_t */
-    int64_t as_int64;		/* JSON integer in int form, if int64_sized == true */
+    int64_t as_int64;		/* JSON integer in int64_t form, if int64_sized == true */
 
     bool uint64_sized;		/* true ==> converted JSON integer to C uint64_t */
-    uint64_t as_uint64;		/* JSON integer in int form, if uint64_sized == true */
+    uint64_t as_uint64;		/* JSON integer in uint64_t form, if uint64_sized == true */
 
     bool int_sized;		/* true ==> converted JSON integer to C int */
     int as_int;			/* JSON integer in int form, if int_sized == true */

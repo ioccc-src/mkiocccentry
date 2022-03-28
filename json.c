@@ -44,12 +44,12 @@
 #include <stdint.h>
 #include <time.h>
 #include <limits.h>
+#include <inttypes.h>
 
 /*
  * dbg - debug, warning and error reporting facility
  */
 #include "dbg.h"
-
 
 /*
  * util - utility functions
@@ -3866,12 +3866,14 @@ malloc_json_conv_int(char const *str, size_t len)
 	/* case: negative, try for largest signed integer */
 	errno = 0;			/* pre-clear errno for errp() */
 	ret->as_maxint = strtoimax(ret->as_str, &endptr, 10);
-	if (errno != 0 || endptr == str || endptr == NULL || *endptr != '\0') {
+	if (errno != 0 || endptr == ret->as_str || endptr == NULL || *endptr != '\0') {
+	    dbg(DBG_VVHIGH, "strtoimax failed to convert");
 	    ret->converted = false;
 	    return ret;
 	}
 	ret->converted = true;
 	ret->as_maxint = true;
+	dbg(DBG_VVHIGH, "strtoimax for <%s> returned: %jd", ret->as_str, ret->as_maxint);
 
 	/* case int8_t: range check */
 	if (ret->as_maxint >= (intmax_t)INT8_MIN && ret->as_maxint <= (intmax_t)INT8_MAX) {
@@ -3961,107 +3963,109 @@ malloc_json_conv_int(char const *str, size_t len)
 	/* case: non-negative, try for largest unsigned integer */
 	errno = 0;			/* pre-clear errno for errp() */
 	ret->as_umaxint = strtoumax(ret->as_str, &endptr, 10);
-	if (errno != 0 || endptr == str || endptr == NULL || *endptr != '\0') {
+	if (errno != 0 || endptr == ret->as_str || endptr == NULL || *endptr != '\0') {
+	    dbg(DBG_VVHIGH, "strtoumax failed to convert");
 	    ret->converted = false;
 	    return ret;
 	}
 	ret->converted = true;
 	ret->as_umaxint = true;
+	dbg(DBG_VVHIGH, "strtoumax for <%s> returned: %ju", ret->as_str, ret->as_umaxint);
 
 	/* case int8_t: bounds check */
 	if (ret->as_umaxint <= (uintmax_t)INT8_MAX) {
 	    ret->int8_sized = true;
-	    ret->as_int8 = (int8_t)ret->as_ssize;
+	    ret->as_int8 = (int8_t)ret->as_umaxint;
 	}
 
 	/* case uint8_t: bounds check */
 	if (ret->as_umaxint <= (uintmax_t)UINT8_MAX) {
 	    ret->uint8_sized = true;
-	    ret->as_uint8 = (uint8_t)ret->as_ssize;
+	    ret->as_uint8 = (uint8_t)ret->as_umaxint;
 	}
 
 	/* case int16_t: bounds check */
 	if (ret->as_umaxint <= (uintmax_t)INT16_MAX) {
 	    ret->int16_sized = true;
-	    ret->as_int16 = (int16_t)ret->as_ssize;
+	    ret->as_int16 = (int16_t)ret->as_umaxint;
 	}
 
 	/* case uint16_t: bounds check */
 	if (ret->as_umaxint <= (uintmax_t)UINT16_MAX) {
 	    ret->uint16_sized = true;
-	    ret->as_uint16 = (uint16_t)ret->as_ssize;
+	    ret->as_uint16 = (uint16_t)ret->as_umaxint;
 	}
 
 	/* case int32_t: bounds check */
 	if (ret->as_umaxint <= (uintmax_t)INT32_MAX) {
 	    ret->int32_sized = true;
-	    ret->as_int32 = (int32_t)ret->as_ssize;
+	    ret->as_int32 = (int32_t)ret->as_umaxint;
 	}
 
 	/* case uint32_t: bounds check */
 	if (ret->as_umaxint <= (uintmax_t)UINT32_MAX) {
 	    ret->uint32_sized = true;
-	    ret->as_uint32 = (uint32_t)ret->as_ssize;
+	    ret->as_uint32 = (uint32_t)ret->as_umaxint;
 	}
 
 	/* case int64_t: bounds check */
 	if (ret->as_umaxint <= (uintmax_t)INT64_MAX) {
 	    ret->int64_sized = true;
-	    ret->as_int64 = (int64_t)ret->as_ssize;
+	    ret->as_int64 = (int64_t)ret->as_umaxint;
 	}
 
 	/* case uint64_t: bounds check */
 	if (ret->as_umaxint <= (uintmax_t)UINT64_MAX) {
 	    ret->uint64_sized = true;
-	    ret->as_uint64 = (uint64_t)ret->as_ssize;
+	    ret->as_uint64 = (uint64_t)ret->as_umaxint;
 	}
 
 	/* case int: bounds check */
 	if (ret->as_umaxint <= (uintmax_t)INT_MAX) {
 	    ret->int_sized = true;
-	    ret->as_int = (int)ret->as_ssize;
+	    ret->as_int = (int)ret->as_umaxint;
 	}
 
 	/* case unsigned int: bounds check */
 	if (ret->as_umaxint <= (uintmax_t)UINT_MAX) {
 	    ret->uint_sized = true;
-	    ret->as_uint = (unsigned int)ret->as_ssize;
+	    ret->as_uint = (unsigned int)ret->as_umaxint;
 	}
 
 	/* case long: bounds check */
 	if (ret->as_umaxint <= (uintmax_t)LONG_MAX) {
 	    ret->long_sized = true;
-	    ret->as_long = (long)ret->as_ssize;
+	    ret->as_long = (long)ret->as_umaxint;
 	}
 
 	/* case unsigned long: bounds check */
 	if (ret->as_umaxint <= (uintmax_t)ULONG_MAX) {
 	    ret->ulong_sized = true;
-	    ret->as_ulong = (unsigned long)ret->as_ssize;
+	    ret->as_ulong = (unsigned long)ret->as_umaxint;
 	}
 
 	/* case long long: bounds check */
 	if (ret->as_umaxint <= (uintmax_t)LLONG_MAX) {
 	    ret->longlong_sized = true;
-	    ret->as_longlong = (long long)ret->as_ssize;
+	    ret->as_longlong = (long long)ret->as_umaxint;
 	}
 
 	/* case unsigned long long: bounds check */
 	if (ret->as_umaxint <= (uintmax_t)ULLONG_MAX) {
 	    ret->ulonglong_sized = true;
-	    ret->as_ulonglong = (unsigned long long)ret->as_ssize;
+	    ret->as_ulonglong = (unsigned long long)ret->as_umaxint;
 	}
 
 	/* case ssize_t: bounds check */
 	if (ret->as_umaxint <= (uintmax_t)SSIZE_MAX) {
 	    ret->ssize_sized = true;
-	    ret->as_ssize = (ssize_t)ret->as_ssize;
+	    ret->as_ssize = (ssize_t)ret->as_umaxint;
 	}
 
 	/* case size_t: bounds check */
 	if (ret->as_umaxint <= (uintmax_t)SIZE_MAX) {
 	    ret->size_sized = true;
-	    ret->as_size = (size_t)ret->as_ssize;
+	    ret->as_size = (size_t)ret->as_umaxint;
 	}
 
 	/* case off_t: bounds check */
