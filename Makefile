@@ -419,7 +419,7 @@ clean:
 
 clobber distclean: clean
 	${RM} -f ${TARGETS} ${TEST_TARGETS}
-	${RM} -f answers.txt j-test.out j-test2.out
+	${RM} -f answers.txt j-test.out j-test2.out json-test.log
 	${RM} -rf test-iocccsize test_src test_work tags dbg_test.out
 
 install: all
