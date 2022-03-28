@@ -177,17 +177,18 @@ CFLAGS= ${STD_SRC} ${COPT} -pedantic -Wall -Wextra -Werror
 MANDIR = /usr/local/share/man/man1
 DESTDIR= /usr/local/bin
 TARGETS= mkiocccentry iocccsize dbg_test limit_ioccc.sh fnamchk txzchk jauthchk jinfochk \
-	jstrencode jstrdecode jparse
+	jstrencode jstrdecode utf8_test jparse jint
 MANPAGES = mkiocccentry.1 txzchk.1 fnamchk.1 iocccsize.1 jinfochk.1 jauthchk.1
 TEST_TARGETS= dbg_test utf8_test
 OBJFILES= dbg.o util.o mkiocccentry.o iocccsize.o fnamchk.o txzchk.o jauthchk.o jinfochk.o \
-	json.o jstrencode.o jstrdecode.o rule_count.o location.o utf8_posix_map.o sanity.o
+	json.o jstrencode.o jstrdecode.o rule_count.o location.o utf8_posix_map.o sanity.o \
+	utf8_test.o jint.o
 SPECIAL_OBJ= jparse.o jparse.tab.o
 FLEXFILES= jparse.l
 BISONFILES= jparse.y
 SRCFILES= $(patsubst %.o,%.c,$(OBJFILES))
 H_FILES= dbg.h jauthchk.h jinfochk.h json.h jstrdecode.h jstrencode.h limit_ioccc.h \
-	mkiocccentry.h txzchk.h util.h location.h utf8_posix_map.h jparse.h
+	mkiocccentry.h txzchk.h util.h location.h utf8_posix_map.h jparse.h jint.h
 DSYMDIRS= $(patsubst %,%.dSYM,$(TARGETS))
 SH_FILES= iocccsize-test.sh jstr-test.sh limit_ioccc.sh mkiocccentry-test.sh json-test.sh \
 	  jcodechk.sh vermod.sh
@@ -253,6 +254,9 @@ jstrencode: jstrencode.c jstrencode.h dbg.o json.o util.o Makefile
 
 jstrdecode: jstrdecode.c jstrdecode.h dbg.o json.o util.o Makefile
 	${CC} ${CFLAGS} jstrdecode.c dbg.o json.o util.o -o $@
+
+jint: jint.c dbg.o json.o util.o Makefile
+	${CC} ${CFLAGS} jint.c dbg.o json.o util.o -o $@
 
 jparse: jparse.c jparse.h jparse.tab.c jparse.tab.h jparse.y jparse.l util.o dbg.o sanity.o json.o utf8_posix_map.o location.o Makefile
 	${CC} ${CFLAGS} -Wno-unused-function -Wno-unneeded-internal-declaration jparse.c jparse.tab.c \

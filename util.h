@@ -126,6 +126,16 @@ typedef unsigned char bool;
 
 
 /*
+ * fpr() and pr() related macros
+ */
+#define fprint(stream, fmt, ...) fpr((stream), __func__, (fmt), __VA_ARGS__)
+#define ffpstr(stream, fmt) fpr((stream), __func__, (fmt))
+/**/
+#define print(fmt, ...) pr(__func__, (fmt), __VA_ARGS__)
+#define prstr(fmt) pr(__func__, (fmt))
+
+
+/*
  * external function declarations
  */
 extern char *base_name(char const *path);
@@ -142,6 +152,10 @@ extern int shell_cmd(char const *name, bool abort_on_error, char const *format, 
 extern FILE *pipe_open(char const *name, bool abort_on_error, char const *format, ...);
 extern void para(char const *line, ...);
 extern void fpara(FILE * stream, char const *line, ...);
+extern void fpr(FILE *stream, char const *name, char const *fmt, ...)
+	__attribute__((format(printf, 3, 4)));		/* 3=format 4=params */
+extern void pr(char const *name, char const *fmt, ...)
+	__attribute__((format(printf, 2, 3)));		/* 2=format 3=params */
 extern ssize_t readline(char **linep, FILE * stream);
 extern char *readline_dup(char **linep, bool strip, size_t *lenp, FILE * stream);
 extern void find_utils(bool tar_flag_used, char **tar, bool cp_flag_used, char **cp,

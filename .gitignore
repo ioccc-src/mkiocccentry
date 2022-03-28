@@ -6,6 +6,10 @@ fnamchk
 iocccsize
 jauthchk
 jinfochk
+jint
+jparse
+json-test.log
+json_parser
 jstr-test.out
 jstrdecode
 jstrencode
@@ -18,10 +22,7 @@ test-set
 test_src
 test_work
 txzchk
-json-test.log
-jparse
 utf8_test
-json_parser
 
 # Prerequisites
 *.d

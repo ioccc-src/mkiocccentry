@@ -3927,7 +3927,7 @@ malloc_json_conv_int(char const *str, size_t len)
 	}
 
 	/* case unsigned long: cannot be because JSON string is < 0 */
-	ret->long_sized = false;
+	ret->ulong_sized = false;
 
 	/* case long long: range check */
 	if (ret->as_maxint >= (intmax_t)LLONG_MIN && ret->as_maxint <= (intmax_t)LLONG_MAX) {

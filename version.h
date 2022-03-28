@@ -67,18 +67,15 @@
  */
 #define IOCCC_TOOLKIT_RELEASE "0.2"		/* format: major.minor */
 
-
 /*
  * official iocccsize version
  */
 #define IOCCCSIZE_VERSION "28.10 2022-03-15"	/* format: major.minor YYYY-MM-DD */
 
-
 /*
  * official mkiocccentry version
  */
 #define MKIOCCCENTRY_VERSION "0.40 2022-03-15"	/* format: major.minor YYYY-MM-DD */
-
 
 /*
  * Version of info for JSON the .info.json file.
@@ -87,14 +84,12 @@
  */
 #define INFO_VERSION "1.9 2022-03-15"		/* format: major.minor YYYY-MM-DD */
 
-
 /*
  * Version of info for JSON the .author.json file.
  *
  * The following is NOT the version of this mkiocccentry tool!
  */
 #define AUTHOR_VERSION "1.12 2022-03-15"	/* format: major.minor YYYY-MM-DD */
-
 
 /*
  * official fnamchk version
@@ -116,7 +111,6 @@
  */
 #define JAUTHCHK_VERSION "0.13 2022-03-15"	/* format: major.minor YYYY-MM-DD */
 
-
 /*
  * official jstrencode version
  */
@@ -132,5 +126,10 @@
  * official jparse version
  */
 #define JPARSE_VERSION "0.1 2022-03-17"
+
+/*
+ * official jint version
+ */
+#define JINT_VERSION "0.1 2022-03-27"
 
 #endif /* INCLUDE_VERSION_H */

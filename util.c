@@ -1362,6 +1362,147 @@ fpara(FILE * stream, char const *line, ...)
 
 
 /*
+ * fpr - call fprintf, flush and check the result
+ *
+ * given:
+ *      stream  - open file stream to print on
+ *	name	- name of calling function
+ *	fmt	- fprintf format
+ *	...	- optional fprintf args
+ *
+ * NOTE: This function calls warnp() and warn() on errors.
+ */
+void
+fpr(FILE *stream, char const *name, char const *fmt, ...)
+{
+    va_list ap;			/* stdarg block */
+    int fret;			/* vfprintf function return value */
+    int ret;			/* libc function return value */
+
+    /*
+     * stdarg setup
+     */
+    va_start(ap, fmt);
+
+    /*
+     * firewall
+     */
+    if (stream == NULL) {
+	warn(__func__, "stream is NULL");
+	return;
+    }
+    if (name == NULL) {
+	warn(__func__, "name is NULL, using ((NULL))");
+	name = "((NULL))";
+    }
+    if (fmt == NULL) {
+	warn(__func__, "called from %s: fmt is NULL", name);
+	return;
+    }
+
+    /*
+     * fprintf
+     */
+    errno = 0;			/* pre-clear errno for warnp() */
+    fret = vfprintf(stream, fmt, ap);
+    if (fret <= 0 || errno != 0) {
+	warnp(__func__, "called from %s: vfprintf returned: %d <= 0", name, fret);
+    }
+
+    /*
+     * stdarg cleanup
+     */
+    va_end(ap);
+
+    /*
+     * flush the paragraph onto the stream
+     */
+    clearerr(stream);		/* pre-clear ferror() status */
+    errno = 0;			/* pre-clear errno for warnp() */
+    ret = fflush(stream);
+    if (ret == EOF) {
+	if (ferror(stream)) {
+	    warnp(__func__, "called from %s: error flushing stream", name);
+	} else if (feof(stream)) {
+	    warnp(__func__, "called from %s: EOF while flushing stream", name);
+	} else {
+	    warnp(__func__, "called from %s: unexpected fflush error while flushing stream", name);
+	}
+    }
+    dbg(DBG_VVVHIGH, "called from %s: %s() returned: %d", name, __func__, fret);
+    return;
+}
+
+
+/*
+ * pr - call printf, flush and check the result
+ *
+ * given:
+ *	name	- name of calling function
+ *	fmt	- printf format
+ *	...	- optional printf args
+ *
+ * NOTE: This function calls warnp() and warn() on errors.
+ */
+void
+pr(char const *name, char const *fmt, ...)
+{
+    va_list ap;			/* stdarg block */
+    int fret;			/* vfprintf function return value */
+    int ret;			/* libc function return value */
+
+    /*
+     * stdarg setup
+     */
+    va_start(ap, fmt);
+
+    /*
+     * firewall
+     */
+    if (name == NULL) {
+	warn(__func__, "name is NULL, using ((NULL))");
+	name = "((NULL))";
+    }
+    if (fmt == NULL) {
+	warn(__func__, "called from %s: fmt is NULL", name);
+	return;
+    }
+
+    /*
+     * fprintf
+     */
+    errno = 0;			/* pre-clear errno for warnp() */
+    fret = vprintf(fmt, ap);
+    if (fret <= 0 || errno != 0) {
+	warnp(__func__, "called from %s: vprintf returned: %d <= 0", name, fret);
+    }
+
+    /*
+     * stdarg cleanup
+     */
+    va_end(ap);
+
+    /*
+     * flush the paragraph onto the stream
+     */
+    clearerr(stdout);		/* pre-clear ferror() status */
+    errno = 0;			/* pre-clear errno for warnp() */
+    ret = fflush(stdout);
+    if (ret == EOF) {
+	if (ferror(stdout)) {
+	    warnp(__func__, "called from %s: error flushing stdout", name);
+	} else if (feof(stdout)) {
+	    warnp(__func__, "called from %s: EOF while flushing stdout", name);
+	} else {
+	    warnp(__func__, "called from %s: unexpected fflush error while flushing stdout", name);
+	}
+    }
+    dbg(DBG_VVVHIGH, "called from %s: %s() returned: %d", name, __func__, fret);
+    return;
+}
+
+
+/*
  * readline - read a line from a stream
  *
  * Read a line from an open stream.  Malloc or realloc the line
