@@ -65,13 +65,12 @@
  * Use the usage() function to print the these usage_msgX strings.
  */
 static const char * const usage_msg =
-    "usage: %s [-h] [-v level] [-q] [-V] [-T] [-t] [-n] [string ...]\n"
+    "usage: %s [-h] [-v level] [-q] [-V] [-t] [-n] [string ...]\n"
     "\n"
     "\t-h\t\tprint help message and exit 0\n"
     "\t-v level\tset verbosity level: (def level: %d)\n"
     "\t-q\t\tquiet mode, unless verbosity level > 0 (def: not quiet)\n"
     "\t-V\t\tprint version string and exit 0\n"
-    "\t-T\t\tshow IOCCC toolkit release repository tag\n"
     "\t-t\t\tperform jencchk test on code JSON encode/decode functions\n"
     "\t-n\t\tdo not output newline after encode output\n"
     "\n"

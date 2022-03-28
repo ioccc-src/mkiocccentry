@@ -45,7 +45,7 @@ main(int argc, char **argv)
      * parse args
      */
     program = argv[0];
-    while ((i = getopt(argc, argv, "hv:qVF:t:fT")) != -1) {
+    while ((i = getopt(argc, argv, "hv:qVF:t:T")) != -1) {
 	switch (i) {
 	case 'h':		/* -h - print help to stderr and exit 0 */
 	    usage(0, "-h help mode", program);
@@ -77,17 +77,8 @@ main(int argc, char **argv)
 	    tar = optarg;
 	    tar_flag_used = true;
 	    break;
-	case 'f':
+	case 'T':
 	    text_file_flag_used = true; /* don't rely on tar: just read file as if it was a text file */
-	    break;
-	case 'T':		/* -T (IOCCC toolkit release repository tag) */
-	    errno = 0;		/* pre-clear errno for warnp() */
-	    ret = printf("%s\n", IOCCC_TOOLKIT_RELEASE);
-	    if (ret <= 0) {
-		warnp(__func__, "printf error printing IOCCC toolkit release repository tag");
-	    }
-	    exit(0); /*ooo*/
-	    not_reached();
 	    break;
 	default:
 	    usage(1, "invalid -flag", program); /*ooo*/
@@ -129,7 +120,7 @@ main(int argc, char **argv)
      * On some systems where /usr/bin != /bin, the distribution made the mistake of
      * moving historic critical applications, look to see if the alternate path works instead.
      *
-     * If -f was used we don't actually need tar(1) so we test for that
+     * If -T was used we don't actually need tar(1) so we test for that
      * specifically.
      */
 
@@ -1113,7 +1104,7 @@ parse_txz_line(char *linep, char *line_dup, char const *dir_name, char const *tx
  *
  * given:
  *
- *	tar		- path to executable tar program (if -f was not
+ *	tar		- path to executable tar program (if -T was not
  *			  specified)
  *	fnamchk		- path to fnamchk tool
  *
@@ -1129,7 +1120,7 @@ check_tarball(char const *tar, char const *fnamchk)
 {
     unsigned line_num = 0; /* line number of tar output */
     char *cmd = NULL;	/* fnamchk and tar -tJvf */
-    FILE *input_stream = NULL; /* pipe for tar output (or if -f specified read as a text file) */
+    FILE *input_stream = NULL; /* pipe for tar output (or if -T specified read as a text file) */
     FILE *fnamchk_stream = NULL; /* pipe for fnamchk output */
     char *linep = NULL;		/* allocated line read from tar (or text file) */
     char *dir_name = NULL;	/* line read from fnamchk (directory name) */
@@ -1238,7 +1229,7 @@ check_tarball(char const *tar, char const *fnamchk)
     dbg(DBG_MED, "txzchk: %s size in bytes: %jd", txzpath, (intmax_t)txz_info.size);
 
     /*
-     * free cmd for tar (if -f wasn't specified) command
+     * free cmd for tar (if -T wasn't specified) command
      */
     free(cmd);
     cmd = NULL;
@@ -1256,7 +1247,7 @@ check_tarball(char const *tar, char const *fnamchk)
 	    warnp(__func__, "setvbuf failed for %s", txzpath);
 	}
 
-    } else { /* if -f not specified we have to do more to set up input stream */
+    } else { /* if -T not specified we have to do more to set up input stream */
 
 	/*
 	 * execute the tar command
@@ -1270,7 +1261,7 @@ check_tarball(char const *tar, char const *fnamchk)
 	}
 
 	/*
-	 * If we get here -f was not specified so open pipe to tar command.
+	 * If we get here -T was not specified so open pipe to tar command.
 	 */
 	input_stream = pipe_open(__func__, true, "% -tJvf %", tar, txzpath);
 	if (input_stream == NULL) {
@@ -1333,7 +1324,7 @@ check_tarball(char const *tar, char const *fnamchk)
 
     } while (readline_len >= 0);
     /*
-     * free cmd (it'll be NULL if -f was specified but this is safe)
+     * free cmd (it'll be NULL if -T was specified but this is safe)
      */
     free(cmd);
     cmd = NULL;
