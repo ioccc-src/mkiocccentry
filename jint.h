@@ -70,8 +70,8 @@ static const char * const usage_msg =
     "\t-v level\tset verbosity level (def level: %d)\n"
     "\t-V\t\tprint version string and exit 2\n"
     "\t-q\t\tquiet mode, unless verbosity level > 0 (def: not quiet)\n"
-    "\t-t\t\tperform JSON integer conversion test suite (def: do not test)\n"
-    "\t-S\t\tstrict testing for all struct Integer element, implies -t\n"
+    "\t-t\t\tperform JSON integer conversion test suite, implies -q (def: do not test)\n"
+    "\t-S\t\tstrict testing for all struct Integer element, implies -t -q\n"
     "\t\t\t    (def: test only 8, 16, 32, 64 bit signed & unsigned ints)\n"
     "\n"
     "\tNOTE: The -S mode is for information purposes only, and may fail\n"
@@ -109,12 +109,22 @@ bool err_output_allowed = true;		/* false ==> disable output from err() and errp
 bool usage_output_allowed = true;	/* false ==> disable output from vfprintf_usage() */
 static bool quiet = false;		/* true ==> only show errors, and warnings if -v > 0 */
 
+/*
+ * externals
+ */
+extern int const test_count;		/* number of tests to perform */
+extern char *test_set[];		/* test strings */
+extern struct integer test_result[];	/* struct integer conversions of test strings */
 
 /*
  * function prototypes
  */
 static void prinfo(bool sized, intmax_t value, char const *scomm, char const *vcomm);
 static void pruinfo(bool sized, uintmax_t value, char const *scomm, char const *vcomm);
+#if defined(JINT_TEST_ENABLED)
+static void check_val(bool *testp, char const *type, int testnum, bool size_a, bool size_b, intmax_t val_a, intmax_t val_b);
+static void check_uval(bool *testp, char const *type, int testnum, bool size_a, bool size_b, uintmax_t val_a, uintmax_t val_b);
+#endif /* JINT_TEST_ENABLED */
 static void usage(int exitcode, char const *name, char const *str) __attribute__((noreturn));
 
 

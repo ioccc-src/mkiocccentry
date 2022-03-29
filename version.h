@@ -111,7 +111,6 @@
  */
 #define JSTRENCODE_VERSION "0.4 2022-03-15"	/* format: major.minor YYYY-MM-DD */
 
-
 /*
  * official jstrdecode version
  */
@@ -125,6 +124,7 @@
 /*
  * official jint version
  */
-#define JINT_VERSION "0.1 2022-03-27"
+#define JINT_VERSION "0.2 2022-03-29"
+
 
 #endif /* INCLUDE_VERSION_H */

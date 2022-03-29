@@ -77,6 +77,7 @@ CP= cp
 CTAGS= ctags
 GREP= grep
 INSTALL= install
+MV= mv
 RM= rm
 RPL= rpl
 SED= sed
@@ -182,7 +183,7 @@ MANPAGES = mkiocccentry.1 txzchk.1 fnamchk.1 iocccsize.1 jinfochk.1 jauthchk.1
 TEST_TARGETS= dbg_test utf8_test
 OBJFILES= dbg.o util.o mkiocccentry.o iocccsize.o fnamchk.o txzchk.o jauthchk.o jinfochk.o \
 	json.o jstrencode.o jstrdecode.o rule_count.o location.o utf8_posix_map.o sanity.o \
-	utf8_test.o jint.o
+	utf8_test.o jint.o jint.test.o
 SPECIAL_OBJ= jparse.o jparse.tab.o
 FLEXFILES= jparse.l
 BISONFILES= jparse.y
@@ -197,7 +198,7 @@ all: ${TARGETS} ${TEST_TARGETS}
 
 # rules, not file targets
 #
-.PHONY: all configure clean clobber install test reset_min_timestamp
+.PHONY: all configure clean clobber install test reset_min_timestamp rebuild_jint_test
 
 # Remove built-in rules that cause overwriting jparse.c from bison/yacc. Perhaps
 # bison/yacc should write to jparse.c and flex should write to something else
@@ -255,8 +256,11 @@ jstrencode: jstrencode.c jstrencode.h dbg.o json.o util.o Makefile
 jstrdecode: jstrdecode.c jstrdecode.h dbg.o json.o util.o Makefile
 	${CC} ${CFLAGS} jstrdecode.c dbg.o json.o util.o -o $@
 
-jint: jint.c dbg.o json.o util.o Makefile
-	${CC} ${CFLAGS} jint.c dbg.o json.o util.o -o $@
+jint.test.o: jint.test.c
+	${CC} ${CFLAGS} -DJINT_TEST_ENABLED jint.test.c -c
+
+jint: jint.c dbg.o json.o util.o jint.test.o Makefile
+	${CC} ${CFLAGS} -DJINT_TEST_ENABLED jint.c dbg.o json.o util.o jint.test.o -o $@
 
 jparse: jparse.c jparse.h jparse.tab.c jparse.tab.h jparse.y jparse.l util.o dbg.o sanity.o json.o utf8_posix_map.o location.o Makefile
 	${CC} ${CFLAGS} -Wno-unused-function -Wno-unneeded-internal-declaration jparse.c jparse.tab.c \
@@ -275,6 +279,17 @@ parser: jparse.y jparse.l
 	${BISON} -d jparse.y
 	${FLEX} -o jparse.c jparse.l
 
+# rebuild jint.test.c
+#
+rebuild_jint_test: jint.testset jint.c dbg.o json.o util.o
+	${RM} -f jint.set.tmp jint_gen
+	${CC} ${CFLAGS} jint.c dbg.o json.o util.o -o jint_gen
+	${SED} -n -e '1,/DO NOT REMOVE THIS LINE/p' < jint.test.c > jint.set.tmp
+	echo '#if defined(JINT_TEST_ENABLED)' >> jint.set.tmp
+	./jint_gen -- $$(<jint.testset) >> jint.set.tmp
+	echo '#endif /* JINT_TEST_ENABLED */' >> jint.set.tmp
+	${MV} -f jint.set.tmp jint.test.c
+	${RM} -f jint_gen
 
 limit_ioccc.sh: limit_ioccc.h version.h Makefile
 	${RM} -f $@
@@ -421,12 +436,13 @@ clobber distclean: clean
 	${RM} -f ${TARGETS} ${TEST_TARGETS}
 	${RM} -f answers.txt j-test.out j-test2.out json-test.log
 	${RM} -rf test-iocccsize test_src test_work tags dbg_test.out
+	${RM} -f jint.set.tmp jint_gen
 
 install: all
 	${INSTALL} -m 0555 ${TARGETS} ${DESTDIR}
 	${INSTALL} -m 0644 ${MANPAGES} ${MANDIR}
 
-test: all iocccsize-test.sh dbg_test mkiocccentry-test.sh jstr-test.sh Makefile
+test: all iocccsize-test.sh dbg_test mkiocccentry-test.sh jstr-test.sh jint Makefile
 	@chmod +x iocccsize-test.sh mkiocccentry-test.sh jstr-test.sh
 	@echo "RUNNING: iocccsize-test.sh"
 	./iocccsize-test.sh -v 1
@@ -451,6 +467,10 @@ test: all iocccsize-test.sh dbg_test mkiocccentry-test.sh jstr-test.sh Makefile
 	@echo "RUNNING jstr-test.sh"
 	./jstr-test.sh
 	@echo "PASSED: jstr-test.sh"
+	@echo
+	@echo "RUNNING jint -t"
+	./jint -t
+	@echo "PASSED jint -t"
 	@echo
 	@echo "All tests PASSED"
 

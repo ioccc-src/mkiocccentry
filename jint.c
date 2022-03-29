@@ -65,6 +65,10 @@ main(int argc, char *argv[])
     bool strict = false;	/* true ==> JSON decode in strict mode */
     struct integer *ival = NULL;	/* malloc_json_conv_int_str() return */
     int arg_cnt = 0;		/* number of args to process */
+#if defined(JINT_TEST_ENABLED)
+    char *test = NULL;		/* test string */
+    bool test_error = false;	/* true ==> current JSON integer conversion test error */
+#endif /* JINT_TEST_ENABLED */
     int i;
 
     /*
@@ -94,9 +98,11 @@ main(int argc, char *argv[])
 	    break;
 	case 't':		/* -t - validate the contents of the jenc[] table */
 	    test_mode = true;
+	    quiet = true;	/* -t implies -q */
 	    break;
 	case 'S':		/* -S - strict mode */
 	    test_mode = true;	/* -S implies -t */
+	    quiet = true;	/* -S implies -q */
 	    strict = true;
 	    break;
 	default:
@@ -120,20 +126,205 @@ main(int argc, char *argv[])
     dbg(DBG_MED, "test mode: %s", (test_mode == true) ? "enabled" : "disabled");
     dbg(DBG_MED, "strict mode: %s", (strict == true) ? "enabled" : "disabled");
 
+#if defined(JINT_TEST_ENABLED)
     /*
      * case: test node
      */
     if (test_mode == true) {
-	err(5, __func__, "test node not yet implemented - XXX");
-	not_reached();
+
+	/*
+	 * process all test cases
+	 */
+	for (i=0; i < test_count; ++i) {
+
+	    /*
+	     * firewall - test string cannot be NULL
+	     */
+	    test = test_set[i];
+	    if (test == NULL) {
+		err(10, __func__, "test_set[%d] == NULL", i);
+		not_reached();
+	    }
+	    inputlen = strlen(test);
+	    test_error = false;
+	    dbg(DBG_HIGH, "test[%d] string: <%s>", i, test);
+
+	    /*
+	     * convert test into struct integer
+	     */
+	    ival = malloc_json_conv_int_str(test, &retlen);
+	    if (ival == NULL) {
+		err(6, __func__, "malloc_json_conv_int_str() is not supposed to return NULL!");
+		not_reached();
+	    }
+	    if (inputlen != retlen) {
+		err(7, __func__, "test[%d] inputlen: %ju != retlen: %ju",
+				 i, (uintmax_t)inputlen, (uintmax_t)retlen);
+		not_reached();
+	    }
+
+	    /*
+	     * perform tests for both strict and non-strict testing
+	     */
+
+	    /* test: top level booleans */
+	    if (test_result[i].converted != ival->converted) {
+		dbg(DBG_VHIGH, "test_result[%d].converted: %d != ival.converted: %d",
+			     i, test_result[i].converted, ival->converted);
+		test_error = true;
+	    } else {
+		dbg(DBG_VVHIGH, "test_result[%d].converted: %d == ival.converted: %d",
+			        i, test_result[i].converted, ival->converted);
+	    }
+	    if (test_result[i].is_negative != ival->is_negative) {
+		dbg(DBG_VHIGH, "test_result[%d].is_negative: %d != ival.is_negative: %d",
+			     i, test_result[i].is_negative, ival->is_negative);
+		test_error = true;
+	    } else {
+		dbg(DBG_VVHIGH, "test_result[%d].is_negative: %d == ival.is_negative: %d",
+			        i, test_result[i].is_negative, ival->is_negative);
+	    }
+
+	    /* test: int8_t */
+	    check_val(&test_error, "int8", i,
+				   test_result[i].int8_sized, ival->int8_sized,
+				   test_result[i].as_int8, ival->as_int8);
+
+	    /* test: uint8_t */
+	    check_uval(&test_error, "uint8", i,
+				    test_result[i].uint8_sized, ival->uint8_sized,
+				    test_result[i].as_uint8, ival->as_uint8);
+
+	    /* test: int16_t */
+	    check_val(&test_error, "int16", i,
+				   test_result[i].int16_sized, ival->int16_sized,
+				   test_result[i].as_int16, ival->as_int16);
+
+	    /* test: uint16_t */
+	    check_uval(&test_error, "uint16", i,
+				    test_result[i].uint16_sized, ival->uint16_sized,
+				    test_result[i].as_uint16, ival->as_uint16);
+
+	    /* test: int32_t */
+	    check_val(&test_error, "int32", i,
+				   test_result[i].int32_sized, ival->int32_sized,
+				   test_result[i].as_int32, ival->as_int32);
+
+	    /* test: uint32_t */
+	    check_uval(&test_error, "uint32", i,
+				    test_result[i].uint32_sized, ival->uint32_sized,
+				    test_result[i].as_uint32, ival->as_uint32);
+
+	    /* test: int64_t */
+	    check_val(&test_error, "int64", i,
+				   test_result[i].int64_sized, ival->int64_sized,
+				   test_result[i].as_int64, ival->as_int64);
+
+	    /* test: uint64_t */
+	    check_uval(&test_error, "uint64", i,
+				    test_result[i].uint64_sized, ival->uint64_sized,
+				    test_result[i].as_uint64, ival->as_uint64);
+
+	    /*
+	     * tests for strict mode only
+	     */
+	    if (strict == true) {
+
+		/* test: int */
+		check_val(&test_error, "int", i,
+				       test_result[i].int_sized, ival->int_sized,
+				       test_result[i].as_int, ival->as_int);
+
+		/* test: unsigned int */
+		check_uval(&test_error, "uint", i,
+					test_result[i].uint_sized, ival->uint_sized,
+					test_result[i].as_uint, ival->as_uint);
+
+		/* test: long */
+		check_val(&test_error, "long", i,
+				       test_result[i].long_sized, ival->long_sized,
+				       test_result[i].as_long, ival->as_long);
+
+		/* test: unsigned long */
+		check_uval(&test_error, "ulong", i,
+					test_result[i].ulong_sized, ival->ulong_sized,
+					test_result[i].as_ulong, ival->as_ulong);
+
+		/* test: long long */
+		check_val(&test_error, "longlong", i,
+				       test_result[i].longlong_sized, ival->longlong_sized,
+				       test_result[i].as_longlong, ival->as_longlong);
+
+		/* test: unsigned long long */
+		check_uval(&test_error, "ulonglong", i,
+					test_result[i].ulonglong_sized, ival->ulonglong_sized,
+					test_result[i].as_ulonglong, ival->as_ulonglong);
+
+		/* test: ssize_t */
+		check_val(&test_error, "ssize", i,
+				       test_result[i].ssize_sized, ival->ssize_sized,
+				       test_result[i].as_ssize, ival->as_ssize);
+
+		/* test: size_t */
+		check_uval(&test_error, "size", i,
+					test_result[i].size_sized, ival->size_sized,
+					test_result[i].as_size, ival->as_size);
+
+		/* test: off_t */
+		check_val(&test_error, "off", i,
+				       test_result[i].off_sized, ival->off_sized,
+				       test_result[i].as_off, ival->as_off);
+	    }
+
+	    /*
+	     * final tests for both strict and non-strict testing
+	     */
+
+	    /* test: intmax_t */
+	    check_val(&test_error, "intmax", i,
+				   test_result[i].maxint_sized, ival->maxint_sized,
+				   test_result[i].as_maxint, ival->as_maxint);
+
+	    /* test: uintmax_t */
+	    check_uval(&test_error, "uintmax", i,
+				    test_result[i].umaxint_sized, ival->umaxint_sized,
+				    test_result[i].as_umaxint, ival->as_umaxint);
+
+	    /*
+	     * if this test failed, force non-zero exit
+	     */
+	    if (test_error == true) {
+		dbg(DBG_MED, "test %d failed", i);
+		error = true;
+	    } else {
+		dbg(DBG_HIGH, "test %d passed", i);
+	    }
+	}
+
+	/*
+	 * exit according to test results
+	 */
+	if (error == true) {
+	    dbg(DBG_LOW, "some tests FAILED");
+	    if (strict == true) {
+		err(2, __func__, "some test(s) failed in strict mode"); /*ooo*/
+		not_reached();
+	    }
+	    err(1, __func__, "some test(s) failed in non-strict mode"); /*ooo*/
+	    not_reached();
+	}
+	dbg(DBG_LOW, "all tests PASSED");
+	exit(0);
     }
+#endif /* JINT_TEST_ENABLED */
 
     /*
      * case: non-test mode, output beginning of test_set[], unless -q
      */
     if (quiet == false) {
 	print("#define TEST_COUNT (%d)\n\n", arg_cnt);
-	prstr("char test_set[TEST_COUNT+1] = {\n");
+	prstr("int const test_count = TEST_COUNT;\n\n");
+	prstr("char *test_set[TEST_COUNT+1] = {\n");
     }
 
     /*
@@ -159,7 +350,7 @@ main(int argc, char *argv[])
      */
     if (quiet == false) {
 	prstr("    NULL\n");
-	prstr("}\n");
+	prstr("};\n");
     }
 
     /*
@@ -381,7 +572,7 @@ main(int argc, char *argv[])
 	/*
 	 * close test_result[] array
 	 */
-	prstr("}\n");
+	prstr("};\n");
     }
 
     /*
@@ -392,6 +583,142 @@ main(int argc, char *argv[])
     }
     exit(0); /*ooo*/
 }
+
+
+#if defined(JINT_TEST_ENABLED)
+/*
+ * check_val - test an aspect of conversion into struct integer for signed value
+ *
+ * If the reference matches the converted for a given test aspect, this
+ * function just returns, else *testp is false.
+ *
+ * given:
+ *	testp	- pointer to set to false if aspect of conversion fails
+ *	type	- test aspect name type
+ *	testnum	- test number
+ *	size_a	- reference (test_result[i]) conversion into type boolean
+ *	size_b	- converted (ival->) type boolean
+ *	val_a	- signed reference (test_result[i]) conversion into type value
+ *	val_b	- signed reference (ival->) conversion into type value
+ *
+ * NOTE: This function will warn in error.
+ */
+static void
+check_val(bool *testp, char const *type, int testnum, bool size_a, bool size_b, intmax_t val_a, intmax_t val_b)
+{
+    /*
+     * firewall
+     */
+    if (testp == NULL) {
+	warn(__func__, "testp is NULL");
+	return;
+    }
+    if (type == NULL) {
+	warn(__func__, "type is NULL");
+	return;
+    }
+
+    /*
+     * compare booleans
+     */
+    if (size_a != size_b) {
+	dbg(DBG_VHIGH, "test_result[%d].%s_sized: %s != ival->%s_sized: %s",
+		       testnum,
+		       type, size_a ? "true" : "false",
+		       type, size_b ? "true" : "false");
+	*testp = true; /* test failed */
+    } else {
+	dbg(DBG_VVHIGH, "test_result[%d].%s_sized: %s == ival->%s_sized: %s",
+		        testnum,
+		        type, size_a ? "true" : "false",
+		        type, size_b ? "true" : "false");
+    }
+
+    /*
+     * compare values
+     */
+    if (size_a == true && val_a != val_b) {
+	dbg(DBG_VHIGH, "test_result[%d].as_%s: %jd != ival->as_%s: %jd",
+		       testnum,
+		       type, val_a,
+		       type, val_b);
+	*testp = true; /* test failed */
+    } else if (size_a == true) {
+	dbg(DBG_VVHIGH, "test_result[%d].as_%s: %jd == ival->as_%s: %jd",
+		        testnum,
+		        type, val_a,
+		        type, val_b);
+    }
+    return;
+}
+
+
+/*
+ * check_uval - test an aspect of conversion into struct integer for unsigned value
+ *
+ * If the reference matches the converted for a given test aspect, this
+ * function just returns, else *testp is false.
+ *
+ * given:
+ *	testp	- pointer to set to false if aspect of conversion fails
+ *	type	- test aspect name type
+ *	testnum	- test number
+ *	size_a	- reference (test_result[i]) conversion into type boolean
+ *	size_b	- converted (ival->) type boolean
+ *	val_a	- unsigned reference (test_result[i]) conversion into type value
+ *	val_b	- unsigned reference (ival->) conversion into type value
+ *
+ * NOTE: This function will warn in error.
+ */
+static void
+check_uval(bool *testp, char const *type, int testnum, bool size_a, bool size_b, uintmax_t val_a, uintmax_t val_b)
+{
+    /*
+     * firewall
+     */
+    if (testp == NULL) {
+	warn(__func__, "testp is NULL");
+	return;
+    }
+    if (type == NULL) {
+	warn(__func__, "type is NULL");
+	return;
+    }
+
+    /*
+     * compare booleans
+     */
+    if (size_a != size_b) {
+	dbg(DBG_VHIGH, "test_result[%d].%s_sized: %s != ival->%s_sized: %s",
+		       testnum,
+		       type, size_a ? "true" : "false",
+		       type, size_b ? "true" : "false");
+	*testp = true; /* test failed */
+    } else {
+	dbg(DBG_VVHIGH, "test_result[%d].%s_sized: %s == ival->%s_sized: %s",
+		        testnum,
+		        type, size_a ? "true" : "false",
+		        type, size_b ? "true" : "false");
+    }
+
+    /*
+     * compare values
+     */
+    if (size_a == true && val_a != val_b) {
+	dbg(DBG_VHIGH, "test_result[%d].as_%s: %ju != ival->as_%s: %ju",
+		       testnum,
+		       type, val_a,
+		       type, val_b);
+	*testp = true; /* test failed */
+    } else {
+	dbg(DBG_VVHIGH, "test_result[%d].as_%s: %ju == ival->as_%s: %ju",
+		        testnum,
+		        type, val_a,
+		       type, val_b);
+    }
+    return;
+}
+#endif /* JINT_TEST_ENABLED */
 
 
 /*
