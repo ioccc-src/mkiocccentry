@@ -558,7 +558,7 @@ main(int argc, char *argv[])
 	/*
 	 * free buffer
 	 */
-	if (ival == NULL) {
+	if (ival != NULL) {
 	    free(ival);
 	    ival = NULL;
 	}
