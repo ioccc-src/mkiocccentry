@@ -117,8 +117,8 @@ main(int argc, char *argv[])
 	usage(4, "without -t, requires at least 1 argument", program); /*ooo*/
 	not_reached();
     }
-    dbg(3, "test mode: %s", (test_mode == true) ? "enabled" : "disabled");
-    dbg(3, "strict mode: %s", (strict == true) ? "enabled" : "disabled");
+    dbg(DBG_MED, "test mode: %s", (test_mode == true) ? "enabled" : "disabled");
+    dbg(DBG_MED, "strict mode: %s", (strict == true) ? "enabled" : "disabled");
 
     /*
      * case: test node
