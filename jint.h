@@ -72,7 +72,7 @@ static const char * const usage_msg =
     "\t-q\t\tquiet mode, unless verbosity level > 0 (def: not quiet)\n"
     "\t-t\t\tperform JSON integer conversion test suite, implies -q (def: do not test)\n"
     "\t-S\t\tstrict testing for all struct Integer element, implies -t -q\n"
-    "\t\t\t    (def: test only 8, 16, 32, 64 bit signed & unsigned ints)\n"
+    "\t\t\t    (def: test only 8, 16, 32, 64 bit signed & unsigned integer types)\n"
     "\n"
     "\tNOTE: The -S mode is for information purposes only, and may fail\n"
     "\t      on your system due to hardware and system differences.\n"

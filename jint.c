@@ -421,133 +421,133 @@ main(int argc, char *argv[])
 	     */
 	    prinfo(ival->int8_sized, ival->as_int8,
 	           "true ==> converted JSON integer to C int8_t",
-		   "JSON integer in int8_t form");
+		   "JSON integer value in int8_t form");
 
 	    /*
 	     * print uint8_t info
 	     */
 	    pruinfo(ival->uint8_sized, ival->as_uint8,
 	            "true ==> converted JSON integer to C uint8_t",
-		    "JSON integer in uint8_t form");
+		    "JSON integer value in uint8_t form");
 
 	    /*
 	     * print int16_t info
 	     */
 	    prinfo(ival->int16_sized, ival->as_int16,
 	           "true ==> converted JSON integer to C int16_t",
-		   "JSON integer in int16_t form");
+		   "JSON integer value in int16_t form");
 
 	    /*
 	     * print uint16_t info
 	     */
 	    pruinfo(ival->uint16_sized, ival->as_uint16,
 	            "true ==> converted JSON integer to C uint16_t",
-		    "JSON integer in uint16_t form");
+		    "JSON integer value in uint16_t form");
 
 	    /*
 	     * print int32_t info
 	     */
 	    prinfo(ival->int32_sized, ival->as_int32,
 	           "true ==> converted JSON integer to C int32_t",
-		   "JSON integer in int32_t form");
+		   "JSON integer value in int32_t form");
 
 	    /*
 	     * print uint32_t info
 	     */
 	    pruinfo(ival->uint32_sized, ival->as_uint32,
 	            "true ==> converted JSON integer to C uint32_t",
-		    "JSON integer in uint32_t form");
+		    "JSON integer value in uint32_t form");
 
 	    /*
 	     * print int64_t info
 	     */
 	    prinfo(ival->int64_sized, ival->as_int64,
 	           "true ==> converted JSON integer to C int64_t",
-		   "JSON integer in int64_t form");
+		   "JSON integer value in int64_t form");
 
 	    /*
 	     * print uint64_t info
 	     */
 	    pruinfo(ival->uint64_sized, ival->as_uint64,
 	            "true ==> converted JSON integer to C uint64_t",
-		    "JSON integer in uint64_t form");
+		    "JSON integer value in uint64_t form");
 
 	    /*
 	     * print int info
 	     */
 	    prinfo(ival->int_sized, ival->as_int,
 	           "true ==> converted JSON integer to C int",
-		   "JSON integer in int form");
+		   "JSON integer value in int form");
 
 	    /*
 	     * print unsigned int info
 	     */
 	    pruinfo(ival->uint_sized, ival->as_uint,
 	            "true ==> converted JSON integer to C unsigned int",
-		    "JSON integer in unsigned int form");
+		    "JSON integer value in unsigned int form");
 
 	    /*
 	     * print long info
 	     */
 	    prinfo(ival->long_sized, ival->as_long,
 	           "true ==> converted JSON integer to C long",
-		   "JSON integer in long form");
+		   "JSON integer value in long form");
 
 	    /*
 	     * print unsigned long info
 	     */
 	    pruinfo(ival->ulong_sized, ival->as_ulong,
 	            "true ==> converted JSON integer to C unsigned long",
-		    "JSON integer in unsigned long form");
+		    "JSON integer value in unsigned long form");
 
 	    /*
 	     * print long long info
 	     */
 	    prinfo(ival->longlong_sized, ival->as_longlong,
 	           "true ==> converted JSON integer to C long long",
-		   "JSON integer in long long form");
+		   "JSON integer value in long long form");
 
 	    /*
 	     * print unsigned long long info
 	     */
 	    pruinfo(ival->ulonglong_sized, ival->as_ulonglong,
 	            "true ==> converted JSON integer to C unsigned long long",
-		    "JSON integer in unsigned long long form");
+		    "JSON integer value in unsigned long long form");
 
 	    /*
 	     * print ssize_t info
 	     */
 	    prinfo(ival->ssize_sized, ival->as_ssize,
 	           "true ==> converted JSON integer to C ssize_t",
-		   "JSON integer in ssize_t form");
+		   "JSON integer value in ssize_t form");
 
 	    /*
 	     * print size_t info
 	     */
 	    pruinfo(ival->size_sized, ival->as_size,
 	            "true ==> converted JSON integer to C size_t",
-		    "JSON integer in size_t form");
+		    "JSON integer value in size_t form");
 
 	    /*
 	     * print off_t info
 	     */
 	    prinfo(ival->off_sized, ival->as_off,
 	           "true ==> converted JSON integer to C off_t",
-		   "JSON integer in off_t form");
+		   "JSON integer value in off_t form");
 
 	    /*
 	     * print intmax_t info
 	     */
 	    prinfo(ival->maxint_sized, ival->as_maxint,
 	           "true ==> converted JSON integer to C intmax_t",
-		   "JSON integer in intmax_t form");
+		   "JSON integer value in intmax_t form");
 
 	    /*
 	     * print uintmax_t info
 	     */
 	    pruinfo(ival->umaxint_sized, ival->as_umaxint,
 	            "true ==> converted JSON integer to C uintmax_t",
-		    "JSON integer in uintmax_t form");
+		    "JSON integer value in uintmax_t form");
 
 	    /*
 	     * close struct integer element with }

@@ -312,65 +312,95 @@ extern struct ignore_code *ignore_code_set;
 struct integer {
     char *as_str;		/* malloced JSON integer string, trimmed if needed, that was converted */
 
-    bool converted;		/* true ==> able to convert JSON integer to some form of C integer type */
-    bool is_negative;		/* true ==> integer < 0 */
+    bool converted;		/* true ==> able to convert JSON integer string to some form of C integer */
+    bool is_negative;		/* true ==> value < 0 */
 
     bool int8_sized;		/* true ==> converted JSON integer to C int8_t */
-    int8_t as_int8;		/* JSON integer in int8_t form, if int8_sized == true */
+    int8_t as_int8;		/* JSON integer value in int8_t form, if int8_sized == true */
 
     bool uint8_sized;		/* true ==> converted JSON integer to C uint8_t */
-    uint8_t as_uint8;		/* JSON integer in uint8_t form, if uint8_sized == true */
+    uint8_t as_uint8;		/* JSON integer value in uint8_t form, if uint8_sized == true */
 
     bool int16_sized;		/* true ==> converted JSON integer to C int16_t */
-    int16_t as_int16;		/* JSON integer in int16_t form, if int16_sized == true */
+    int16_t as_int16;		/* JSON integer value in int16_t form, if int16_sized == true */
 
     bool uint16_sized;		/* true ==> converted JSON integer to C uint16_t */
-    uint16_t as_uint16;		/* JSON integer in uint16_t form, if uint16_sized == true */
+    uint16_t as_uint16;		/* JSON integer value in uint16_t form, if uint16_sized == true */
 
     bool int32_sized;		/* true ==> converted JSON integer to C int32_t */
-    int32_t as_int32;		/* JSON integer in int32_t form, if int32_sized == true */
+    int32_t as_int32;		/* JSON integer value in int32_t form, if int32_sized == true */
 
     bool uint32_sized;		/* true ==> converted JSON integer to C uint32_t */
-    uint32_t as_uint32;		/* JSON integer in uint32_t form, if uint32_sized == true */
+    uint32_t as_uint32;		/* JSON integer value in uint32_t form, if uint32_sized == true */
 
     bool int64_sized;		/* true ==> converted JSON integer to C int64_t */
-    int64_t as_int64;		/* JSON integer in int64_t form, if int64_sized == true */
+    int64_t as_int64;		/* JSON integer value in int64_t form, if int64_sized == true */
 
     bool uint64_sized;		/* true ==> converted JSON integer to C uint64_t */
-    uint64_t as_uint64;		/* JSON integer in uint64_t form, if uint64_sized == true */
+    uint64_t as_uint64;		/* JSON integer value in uint64_t form, if uint64_sized == true */
 
     bool int_sized;		/* true ==> converted JSON integer to C int */
-    int as_int;			/* JSON integer in int form, if int_sized == true */
+    int as_int;			/* JSON integer value in int form, if int_sized == true */
 
     bool uint_sized;		/* true ==> converted JSON integer to C unsigned int */
-    unsigned int as_uint;	/* JSON integer in unsigned int form, if uint_sized == true */
+    unsigned int as_uint;	/* JSON integer value in unsigned int form, if uint_sized == true */
 
     bool long_sized;		/* true ==> converted JSON integer to C long */
-    long as_long;		/* JSON integer in long form, if long_sized == true */
+    long as_long;		/* JSON integer value in long form, if long_sized == true */
 
     bool ulong_sized;		/* true ==> converted JSON integer to C unsigned long */
-    unsigned long as_ulong;	/* JSON integer in unsigned long form, if long_sized == true */
+    unsigned long as_ulong;	/* JSON integer value in unsigned long form, if long_sized == true */
 
     bool longlong_sized;	/* true ==> converted JSON integer to C long long */
-    long long as_longlong;	/* JSON integer in long long form, if longlong_sized longlong_sized == true */
+    long long as_longlong;	/* JSON integer value in long long form, if longlong_sized longlong_sized == true */
 
     bool ulonglong_sized;	/* true ==> converted JSON integer to C unsigned long long */
-    unsigned long long as_ulonglong;	/* JSON integer in unsigned long long form, if ulonglong_sized a== true */
+    unsigned long long as_ulonglong;	/* JSON integer value in unsigned long long form, if ulonglong_sized a== true */
 
     bool ssize_sized;		/* true ==> converted JSON integer to C ssize_t */
-    ssize_t as_ssize;		/* JSON integer in ssize_t form, if ssize_sized == true */
+    ssize_t as_ssize;		/* JSON integer value in ssize_t form, if ssize_sized == true */
 
     bool size_sized;		/* true ==> converted JSON integer to C size_t */
-    size_t as_size;		/* JSON integer in size_t form, if size_sized == true */
+    size_t as_size;		/* JSON integer value in size_t form, if size_sized == true */
 
     bool off_sized;		/* true ==> converted JSON integer to C off_t */
-    off_t as_off;		/* JSON integer in off_t form, if off_sized == true */
+    off_t as_off;		/* JSON integer value in off_t form, if off_sized == true */
 
     bool maxint_sized;		/* true ==> converted JSON integer to C maxint_t */
-    intmax_t as_maxint;		/* JSON integer in as_maxint form, if maxint_sized == true */
+    intmax_t as_maxint;		/* JSON integer value in as_maxint form, if maxint_sized == true */
 
     bool umaxint_sized;		/* true ==> converted JSON integer to C umaxint_t */
-    uintmax_t as_umaxint;	/* JSON integer in as_umaxint form, if umaxint_sized == true */
+    uintmax_t as_umaxint;	/* JSON integer value in as_umaxint form, if umaxint_sized == true */
+};
+
+
+/*
+ * parsed JSON floating point value
+ *
+ * NOTE: The as_str is normally the same as the string that was passed to, say, the
+ *	 malloc_json_conv_float() function.  It can differ in a few ways.  The end of the
+ *	 string passed to malloc_json_conv_float(str, len) does not need to be NUL terminated,
+ *	 whereas as_str will be NUL terminated at the end of the string.
+ *	 If the characters pointer at by str start with whitespace or have trailing
+ *	 whitespace, then as_str will hove those characters trimmed off.
+ *	 Normally the bison / flex code that would call malloc_json_conv_float(str, len)
+ *	 will ONLY have the JSON integer string, we note this in case some other
+ *	 future code that is not a careful calls malloc_json_conv_float(str, len).
+ */
+struct floating {
+    char *as_str;		/* malloced JSON floating point string, trimmed if needed, that was converted */
+
+    bool converted;		/* true ==> able to convert JSON floating point string to some form of C floating point */
+    bool is_negative;		/* true ==> value < 0 */
+
+    bool float_sized;		/* true ==> converted JSON float to C float */
+    float as_float;		/* JSON floating point value in float form, if float_sized  == true */
+
+    bool double_sized;		/* true ==> converted JSON float to C double */
+    double as_double;		/* JSON floating point value in double form, if double_sized  == true */
+
+    bool longdouble_sized;	/* true ==> converted JSON float to C long double */
+    long double as_longdouble;	/* JSON floating point value in long double form, if longdouble_sized  == true */
 };
 
 
