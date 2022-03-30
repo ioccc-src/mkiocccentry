@@ -178,6 +178,8 @@ clearerr_or_fclose(char const *filename, FILE *file)
  * YY_BUFFER_STATE is part of the scanner and not the parser. There might be a
  * better way to go about this but I'll know more later on about this. Like
  * everything else here it's subject to change!
+ *
+ * NOTE: This function only warns on error.
  */
 void
 parse_json_string(char const *string)
@@ -230,6 +232,8 @@ parse_json_string(char const *string)
  * for the parse_json_string() function so I think both ought to be here. There
  * might be a better way to go about that but I'll know more later on about
  * this. Like everything else here it's subject to change!
+ *
+ * NOTE: This function only warns on error.
  */
 void
 parse_json_file(char const *filename)
