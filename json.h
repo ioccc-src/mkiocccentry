@@ -452,6 +452,8 @@ extern void add_ignore_code(int code);
 /* JSON conversion functions */
 extern struct integer *malloc_json_conv_int(char const *str, size_t len);
 extern struct integer *malloc_json_conv_int_str(char const *str, size_t *retlen);
+extern struct floating *malloc_json_conv_float(char const *str, size_t len);
+extern struct floating *malloc_json_conv_float_str(char const *str, size_t *retlen);
 
 
 #endif /* INCLUDE_JSON_H */
