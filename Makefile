@@ -464,13 +464,13 @@ test: all iocccsize-test.sh dbg_test mkiocccentry-test.sh jstr-test.sh jint Make
 	./mkiocccentry-test.sh
 	@echo "PASSED: mkiocccentry-test.sh"
 	@echo
-	@echo "RUNNING jstr-test.sh"
+	@echo "RUNNING: jstr-test.sh"
 	./jstr-test.sh
 	@echo "PASSED: jstr-test.sh"
 	@echo
-	@echo "RUNNING jint -t"
+	@echo "RUNNING: jint -t"
 	./jint -t
-	@echo "PASSED jint -t"
+	@echo "PASSED: jint -t"
 	@echo
 	@echo "All tests PASSED"
 
