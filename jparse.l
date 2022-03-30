@@ -40,7 +40,7 @@
  * problems. Another way is to provide 'int yywrap() { return 1; }' but this is
  * unnecessary.
  */
-%option noyywrap
+%option noyywrap yylineno
 
 /*
  * currently disabled but this might be an idea when everything is in working
@@ -78,14 +78,13 @@ extern int token_type;			/* for braces, brackets etc.: '{', '}', '[', ']', ':' a
  * NOTE: There are likely errors here and it's probably incomplete as well.
  */
 JSON_WHITESPACE         [ \t\r\n]+
-JSON_STRING		\"[^"\n]*\"
+JSON_STRING		"(\"(((?=\\)\\([\"\\\/bfnrt]|u[0-9a-fA-F]{4}))|[^\"\\\0-\x1F\x7F]+)*\")"
 JSON_DIGIT		[0-9]
 JSON_DIGITS		{JSON_DIGIT}+
 JSON_EXPONENT		[Ee][-+]?[0-9]+
 JSON_INTMAX		-?{JSON_DIGITS}
 JSON_UINTMAX		{JSON_DIGITS}
 JSON_LONG_DOUBLE	-?{JSON_DIGITS}"."{JSON_DIGITS}{JSON_EXPONENT}?
-JSON_LETTER		[a-zA-Z]
 JSON_BOOLEAN		"true"|"false"
 JSON_NULL		"null"
 JSON_OPEN_BRACE		"{"
@@ -179,6 +178,8 @@ clearerr_or_fclose(char const *filename, FILE *file)
  * YY_BUFFER_STATE is part of the scanner and not the parser. There might be a
  * better way to go about this but I'll know more later on about this. Like
  * everything else here it's subject to change!
+ *
+ * NOTE: This function only warns on error.
  */
 void
 parse_json_string(char const *string)
@@ -197,6 +198,7 @@ parse_json_string(char const *string)
 	return;
     }
 
+    yylineno = 1;
     bp = yy_scan_string(string);
     if (bp == NULL) {
 	warn(__func__, "unable to scan string");
@@ -230,6 +232,8 @@ parse_json_string(char const *string)
  * for the parse_json_string() function so I think both ought to be here. There
  * might be a better way to go about that but I'll know more later on about
  * this. Like everything else here it's subject to change!
+ *
+ * NOTE: This function only warns on error.
  */
 void
 parse_json_file(char const *filename)
@@ -290,6 +294,7 @@ parse_json_file(char const *filename)
     rewind(yyin);
 
     yyrestart(yyin);
+    yylineno = 1;
     yyparse();
 
     clearerr_or_fclose(filename, yyin);

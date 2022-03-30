@@ -286,7 +286,7 @@ yyerror(char const *err, ...)
      * Currently all you have to do to trigger this function being called is
      * typing anything after the program starts as once more it's incomplete!
      */
-    dbg(DBG_NONE, "JSON parser error (num errors: %d): %s\n", yynerrs, err);
+    dbg(DBG_NONE, "JSON parser error (num errors: %d) on line %d: %s\n", yynerrs, yylineno, err);
 }
 
 /*

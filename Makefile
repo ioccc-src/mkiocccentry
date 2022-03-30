@@ -200,23 +200,22 @@ all: ${TARGETS} ${TEST_TARGETS}
 #
 .PHONY: all configure clean clobber install test reset_min_timestamp rebuild_jint_test
 
-# Remove built-in rules that cause overwriting jparse.c from bison/yacc. Perhaps
-# bison/yacc should write to jparse.c and flex should write to something else
-# but I'm not sure what yet.
+# Remove built-in rules that cause overwriting jparse.c from bison/yacc. The
+# reason I (@xexyl) have flex write to jparse.c instead of bison is that bison
+# would write to jparse.h as well and we use that as the header file for the
+# tool so that would be overwritten.
 #
 # NOTES: When ever I (@xexyl) update jparse.y or jparse.l I have to run make
 # parser and this will regenerate the jparse source files. If I don't do this
 # then the changes won't take effect but having it this allows for those without
 # flex and bison (or different versions or some other problems I'm unaware of)
-# to compile the code.
+# to compile the code. In time the Makefile will try and generate these files
+# but fallback to the provided files if this fails.
 #
-# To help remind me I have made jparse depend on jparse.l and jparse.y (it does
-# not need to use them but whenever they're modified jparse will be recompiled
-# so it shouldn't be a problem as the lexer/parser files are in the repo and so
-# are the source files and header files).
-#
-# Eventually the need for these tools should be gone or limited and this won't
-# be an issue but for now it is.
+# To help remind me to run make parser I have made jparse depend on jparse.l and
+# jparse.y (it does not need to use them but whenever they're modified jparse
+# will be recompiled so it shouldn't be a problem as the lexer/parser files are
+# in the repo and so are the source files and header files).
 %.c: %.y
 %.c: %.l
 
