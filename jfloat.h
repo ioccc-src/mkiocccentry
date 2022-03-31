@@ -64,7 +64,7 @@
  * Use the usage() function to print the these usage_msgX strings.
  */
 static const char * const usage_msg =
-    "usage: %s [-h] [-v level] [-V] [-q] [-t] [-S] [int ...]\n"
+    "usage: %s [-h] [-v level] [-V] [-q] [-t] [-S] [float ...]\n"
     "\n"
     "\t-h\t\tprint help message and exit 0\n"
     "\t-v level\tset verbosity level (def level: %d)\n"
@@ -82,7 +82,7 @@ static const char * const usage_msg =
     "\tNOTE: Without -t, this program will output C code suitable for building\n"
     "\t      a JSON floating point conversion test suite.\n"
     "\n"
-    "\tint ...\tconvert JSON floating point strings\n"
+    "\tfloat ...\tconvert JSON floating point strings\n"
     "\n"
     "\tNOTE: Without -t, at least 1 argument is required.\n"
     "\t      With -t, no command arguments are allowed\n"

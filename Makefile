@@ -555,6 +555,9 @@ utf8_posix_map.o: utf8_posix_map.c utf8_posix_map.h util.h dbg.h \
   limit_ioccc.h version.h
 sanity.o: sanity.c sanity.h util.h dbg.h location.h utf8_posix_map.h \
   json.h
-jparse.o: jparse.c util.h dbg.h jparse.tab.h
-jparse.tab.o: jparse.tab.c jparse.h dbg.h util.h json.h sanity.h \
-  location.h utf8_posix_map.h limit_ioccc.h version.h jparse.tab.h
+utf8_test.o: utf8_test.c utf8_posix_map.h util.h dbg.h limit_ioccc.h \
+  version.h
+jint.o: jint.c jint.h dbg.h util.h json.h limit_ioccc.h version.h
+jint.test.o: jint.test.c json.h
+jfloat.o: jfloat.c jfloat.h dbg.h util.h json.h limit_ioccc.h version.h
+jfloat.test.o: jfloat.test.c json.h
