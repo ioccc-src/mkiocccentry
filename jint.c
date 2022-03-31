@@ -314,7 +314,7 @@ main(int argc, char *argv[])
 	    not_reached();
 	}
 	dbg(DBG_LOW, "all tests PASSED");
-	exit(13);
+	exit(0); /*ooo*/
     }
 #endif /* JINT_TEST_ENABLED */
 
