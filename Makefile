@@ -178,18 +178,18 @@ CFLAGS= ${STD_SRC} ${COPT} -pedantic -Wall -Wextra -Werror
 MANDIR = /usr/local/share/man/man1
 DESTDIR= /usr/local/bin
 TARGETS= mkiocccentry iocccsize dbg_test limit_ioccc.sh fnamchk txzchk jauthchk jinfochk \
-	jstrencode jstrdecode utf8_test jparse jint
+	jstrencode jstrdecode utf8_test jparse jint jfloat
 MANPAGES = mkiocccentry.1 txzchk.1 fnamchk.1 iocccsize.1 jinfochk.1 jauthchk.1
 TEST_TARGETS= dbg_test utf8_test
 OBJFILES= dbg.o util.o mkiocccentry.o iocccsize.o fnamchk.o txzchk.o jauthchk.o jinfochk.o \
 	json.o jstrencode.o jstrdecode.o rule_count.o location.o utf8_posix_map.o sanity.o \
-	utf8_test.o jint.o jint.test.o
+	utf8_test.o jint.o jint.test.o jfloat.o jfloat.test.o
 SPECIAL_OBJ= jparse.o jparse.tab.o
 FLEXFILES= jparse.l
 BISONFILES= jparse.y
 SRCFILES= $(patsubst %.o,%.c,$(OBJFILES))
 H_FILES= dbg.h jauthchk.h jinfochk.h json.h jstrdecode.h jstrencode.h limit_ioccc.h \
-	mkiocccentry.h txzchk.h util.h location.h utf8_posix_map.h jparse.h jint.h
+	mkiocccentry.h txzchk.h util.h location.h utf8_posix_map.h jparse.h jint.h jfloat.h
 DSYMDIRS= $(patsubst %,%.dSYM,$(TARGETS))
 SH_FILES= iocccsize-test.sh jstr-test.sh limit_ioccc.sh mkiocccentry-test.sh json-test.sh \
 	  jcodechk.sh vermod.sh
@@ -198,7 +198,8 @@ all: ${TARGETS} ${TEST_TARGETS}
 
 # rules, not file targets
 #
-.PHONY: all configure clean clobber install test reset_min_timestamp rebuild_jint_test
+.PHONY: all configure clean clobber install test reset_min_timestamp rebuild_jint_test \
+	rebuild_jfloat_test
 
 # Remove built-in rules that cause overwriting jparse.c from bison/yacc. The
 # reason I (@xexyl) have flex write to jparse.c instead of bison is that bison
@@ -261,6 +262,12 @@ jint.test.o: jint.test.c
 jint: jint.c dbg.o json.o util.o jint.test.o Makefile
 	${CC} ${CFLAGS} -DJINT_TEST_ENABLED jint.c dbg.o json.o util.o jint.test.o -o $@
 
+jfloat.test.o: jfloat.test.c
+	${CC} ${CFLAGS} -DJFLOAT_TEST_ENABLED jfloat.test.c -c
+
+jfloat: jfloat.c dbg.o json.o util.o jfloat.test.o Makefile
+	${CC} ${CFLAGS} -DJFLOAT_TEST_ENABLED jfloat.c dbg.o json.o util.o jfloat.test.o -o $@
+
 jparse: jparse.c jparse.h jparse.tab.c jparse.tab.h jparse.y jparse.l util.o dbg.o sanity.o json.o utf8_posix_map.o location.o Makefile
 	${CC} ${CFLAGS} -Wno-unused-function -Wno-unneeded-internal-declaration jparse.c jparse.tab.c \
 	    util.o dbg.o sanity.o json.o utf8_posix_map.o location.o -o $@
@@ -289,6 +296,18 @@ rebuild_jint_test: jint.testset jint.c dbg.o json.o util.o
 	echo '#endif /* JINT_TEST_ENABLED */' >> jint.set.tmp
 	${MV} -f jint.set.tmp jint.test.c
 	${RM} -f jint_gen
+
+# rebuild jfloat.test.c
+#
+rebuild_jfloat_test: jfloat.testset jfloat.c dbg.o json.o util.o
+	${RM} -f jfloat.set.tmp jfloat_gen
+	${CC} ${CFLAGS} jfloat.c dbg.o json.o util.o -o jfloat_gen
+	${SED} -n -e '1,/DO NOT REMOVE THIS LINE/p' < jfloat.test.c > jfloat.set.tmp
+	echo '#if defined(JFLOAT_TEST_ENABLED)' >> jfloat.set.tmp
+	./jfloat_gen -- $$(<jfloat.testset) >> jfloat.set.tmp
+	echo '#endif /* JFLOAT_TEST_ENABLED */' >> jfloat.set.tmp
+	${MV} -f jfloat.set.tmp jfloat.test.c
+	${RM} -f jfloat_gen
 
 limit_ioccc.sh: limit_ioccc.h version.h Makefile
 	${RM} -f $@
@@ -436,12 +455,13 @@ clobber distclean: clean
 	${RM} -f answers.txt j-test.out j-test2.out json-test.log
 	${RM} -rf test-iocccsize test_src test_work tags dbg_test.out
 	${RM} -f jint.set.tmp jint_gen
+	${RM} -f jfloat.set.tmp jfloat_gen
 
 install: all
 	${INSTALL} -m 0555 ${TARGETS} ${DESTDIR}
 	${INSTALL} -m 0644 ${MANPAGES} ${MANDIR}
 
-test: all iocccsize-test.sh dbg_test mkiocccentry-test.sh jstr-test.sh jint Makefile
+test: all iocccsize-test.sh dbg_test mkiocccentry-test.sh jstr-test.sh jint jfloat Makefile
 	@chmod +x iocccsize-test.sh mkiocccentry-test.sh jstr-test.sh
 	@echo "RUNNING: iocccsize-test.sh"
 	./iocccsize-test.sh -v 1
@@ -470,6 +490,10 @@ test: all iocccsize-test.sh dbg_test mkiocccentry-test.sh jstr-test.sh jint Make
 	@echo "RUNNING: jint -t"
 	./jint -t
 	@echo "PASSED: jint -t"
+	@echo
+	@echo "RUNNING: jfloat -t"
+	./jfloat -t
+	@echo "PASSED: jfloat -t"
 	@echo
 	@echo "All tests PASSED"
 

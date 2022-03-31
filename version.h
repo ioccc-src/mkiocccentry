@@ -124,7 +124,12 @@
 /*
  * official jint version
  */
-#define JINT_VERSION "0.2 2022-03-29"
+#define JINT_VERSION "0.3 2022-03-30"
+
+/*
+ * official jfloat version
+ */
+#define JFLOAT_VERSION "0.2 2022-03-30"
 
 
 #endif /* INCLUDE_VERSION_H */

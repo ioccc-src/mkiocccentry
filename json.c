@@ -4265,9 +4265,9 @@ malloc_json_conv_float(char const *str, size_t len)
     }
     ret->converted = true;
     ret->longdouble_sized = true;
-    dbg(DBG_VVHIGH, "strtold for <%s> returned as %%Lg: %Lg", ret->as_str, ret->as_longdouble);
-    dbg(DBG_VVHIGH, "strtold for <%s> returned as %%Le: %Le", ret->as_str, ret->as_longdouble);
-    dbg(DBG_VVHIGH, "strtold for <%s> returned as %%Lf: %Lf", ret->as_str, ret->as_longdouble);
+    dbg(DBG_VVHIGH, "strtold for <%s> returned as %%Lg: %.22Lg", ret->as_str, ret->as_longdouble);
+    dbg(DBG_VVHIGH, "strtold for <%s> returned as %%Le: %.22Le", ret->as_str, ret->as_longdouble);
+    dbg(DBG_VVHIGH, "strtold for <%s> returned as %%Lf: %.22Lf", ret->as_str, ret->as_longdouble);
 
     /*
      * note if value < 0
@@ -4286,9 +4286,9 @@ malloc_json_conv_float(char const *str, size_t len)
 	dbg(DBG_VVHIGH, "strtod for <%s> failed", ret->as_str);
     } else {
 	ret->double_sized = true;
-	dbg(DBG_VVHIGH, "strtod for <%s> returned as %%lg: %lg", ret->as_str, ret->as_double);
-	dbg(DBG_VVHIGH, "strtod for <%s> returned as %%le: %le", ret->as_str, ret->as_double);
-	dbg(DBG_VVHIGH, "strtod for <%s> returned as %%lf: %lf", ret->as_str, ret->as_double);
+	dbg(DBG_VVHIGH, "strtod for <%s> returned as %%lg: %.22lg", ret->as_str, ret->as_double);
+	dbg(DBG_VVHIGH, "strtod for <%s> returned as %%le: %.22le", ret->as_str, ret->as_double);
+	dbg(DBG_VVHIGH, "strtod for <%s> returned as %%lf: %.22lf", ret->as_str, ret->as_double);
     }
 
     /*
@@ -4301,9 +4301,9 @@ malloc_json_conv_float(char const *str, size_t len)
 	dbg(DBG_VVHIGH, "strtof for <%s> failed", ret->as_str);
     } else {
 	ret->float_sized = true;
-	dbg(DBG_VVHIGH, "strtof for <%s> returned as %%g: %g", ret->as_str, ret->as_float);
-	dbg(DBG_VVHIGH, "strtof for <%s> returned as %%e: %e", ret->as_str, ret->as_float);
-	dbg(DBG_VVHIGH, "strtof for <%s> returned as %%f: %f", ret->as_str, ret->as_float);
+	dbg(DBG_VVHIGH, "strtof for <%s> returned as %%g: %.22g", ret->as_str, ret->as_float);
+	dbg(DBG_VVHIGH, "strtof for <%s> returned as %%e: %.22e", ret->as_str, ret->as_float);
+	dbg(DBG_VVHIGH, "strtof for <%s> returned as %%f: %.22f", ret->as_str, ret->as_float);
     }
 
     /*

@@ -5,6 +5,7 @@ entry.*.tx[zt]
 fnamchk
 iocccsize
 jauthchk
+jfloat
 jinfochk
 jint
 jparse

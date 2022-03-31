@@ -413,7 +413,7 @@ main(int argc, char *argv[])
 	     */
 	    print("\t%s,\t/* true ==> able to convert JSON integer to some form of C integer type */\n",
 		  ival->converted ? "true" : "false");
-	    print("\t%s,\t/* true ==> integer < 0 */\n",
+	    print("\t%s,\t/* true ==> value < 0 */\n",
 		  ival->is_negative ? "true" : "false");
 
 	    /*
