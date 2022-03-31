@@ -119,17 +119,17 @@
 /*
  * official jparse version
  */
-#define JPARSE_VERSION "0.1 2022-03-17"
+#define JPARSE_VERSION "0.1 2022-03-17"		/* format: major.minor YYYY-MM-DD */
 
 /*
  * official jint version
  */
-#define JINT_VERSION "0.3 2022-03-30"
+#define JINT_VERSION "0.4 2022-03-31"		/* format: major.minor YYYY-MM-DD */
 
 /*
  * official jfloat version
  */
-#define JFLOAT_VERSION "0.2 2022-03-30"
+#define JFLOAT_VERSION "0.3 2022-03-31"		/* format: major.minor YYYY-MM-DD */
 
 
 #endif /* INCLUDE_VERSION_H */

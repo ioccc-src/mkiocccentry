@@ -456,6 +456,7 @@ clobber distclean: clean
 	${RM} -rf test-iocccsize test_src test_work tags dbg_test.out
 	${RM} -f jint.set.tmp jint_gen
 	${RM} -f jfloat.set.tmp jfloat_gen
+	${RM} -rf jint_gen.dSYM jfloat_gen.dSYM
 
 install: all
 	${INSTALL} -m 0555 ${TARGETS} ${DESTDIR}

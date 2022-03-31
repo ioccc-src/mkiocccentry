@@ -314,7 +314,7 @@ main(int argc, char *argv[])
 	    not_reached();
 	}
 	dbg(DBG_LOW, "all tests PASSED");
-	exit(13);
+	exit(0); /*ooo*/
     }
 #endif /* JINT_TEST_ENABLED */
 
@@ -383,11 +383,11 @@ main(int argc, char *argv[])
 	 */
 	ival = malloc_json_conv_int_str(input, &retlen);
 	if (ival == NULL) {
-	    err(14, __func__, "malloc_json_conv_int_str() is not supposed to return NULL!");
+	    err(13, __func__, "malloc_json_conv_int_str() is not supposed to return NULL!");
 	    not_reached();
 	}
 	if (inputlen != retlen) {
-	    err(15, __func__, "inputlen: %ju != retlen: %ju", (uintmax_t)inputlen, (uintmax_t)retlen);
+	    err(14, __func__, "inputlen: %ju != retlen: %ju", (uintmax_t)inputlen, (uintmax_t)retlen);
 	    not_reached();
 	}
 
@@ -579,7 +579,7 @@ main(int argc, char *argv[])
      * All Done!!! - Jessica Noll, age 2
      */
     if (error == true) {
-	exit(16);
+	exit(15);
     }
     exit(0); /*ooo*/
 }
@@ -739,7 +739,7 @@ prinfo(bool sized, intmax_t value, char const *scomm, char const *vcomm)
      * firewall
      */
     if (scomm == NULL || vcomm == NULL) {
-	err(17, __func__, "NULL arg(s)");
+	err(16, __func__, "NULL arg(s)");
 	not_reached();
     }
 
@@ -781,7 +781,7 @@ pruinfo(bool sized, uintmax_t value, char const *scomm, char const *vcomm)
      * firewall
      */
     if (scomm == NULL || vcomm == NULL) {
-	err(18, __func__, "NULL arg(s)");
+	err(17, __func__, "NULL arg(s)");
 	not_reached();
     }
 
