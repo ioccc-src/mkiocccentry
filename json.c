@@ -4175,7 +4175,7 @@ malloc_json_conv_float(char const *str, size_t len)
     errno = 0;			/* pre-clear errno for errp() */
     ret = malloc(sizeof(struct floating));
     if (ret == NULL) {
-	errp(201, __func__, "malloc #0 error allocating %ju bytes", (uintmax_t)sizeof(struct floating));
+	errp(204, __func__, "malloc #0 error allocating %ju bytes", (uintmax_t)sizeof(struct floating));
 	not_reached();
     }
 
@@ -4215,7 +4215,7 @@ malloc_json_conv_float(char const *str, size_t len)
     errno = 0;			/* pre-clear errno for errp() */
     ret->as_str = malloc(len+1+1);
     if (ret->as_str == NULL) {
-	errp(202, __func__, "malloc #1 error allocating %ju bytes", (uintmax_t)(len+1+1));
+	errp(205, __func__, "malloc #1 error allocating %ju bytes", (uintmax_t)(len+1+1));
 	not_reached();
     }
     strncpy(ret->as_str, str, len+1);
@@ -4354,7 +4354,7 @@ malloc_json_conv_float_str(char const *str, size_t *retlen)
      */
     ret = malloc_json_conv_float(str, len);
     if (ret == NULL) {
-	err(203, __func__, "malloc_json_conv_float() returned NULL");
+	err(206, __func__, "malloc_json_conv_float() returned NULL");
 	not_reached();
     }
 
