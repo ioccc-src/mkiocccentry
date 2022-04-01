@@ -391,7 +391,10 @@ struct integer {
  *	 future code that is not a careful calls malloc_json_conv_float(str, len).
  */
 struct floating {
-    char *as_str;		/* malloced JSON floating point string, trimmed if needed, that was converted */
+    char *as_str;		/* malloced JSON floating point string, whitespace trimmed if needed */
+
+    size_t orig_len;		/* length of original JSON floating point string */
+    size_t as_str_len;		/* length of as_str */
 
     bool converted;		/* true ==> able to convert JSON floating point string to some form of C floating point */
     bool is_negative;		/* true ==> value < 0 */

@@ -168,6 +168,26 @@ main(int argc, char *argv[])
 	     * perform tests for both strict and non-strict testing
 	     */
 
+	    /*
+	     * test string lengths
+	     */
+	    if (test_result[i].orig_len != inputlen) {
+		dbg(DBG_VHIGH, "test_result[%d].orig_len: %ju != inputlen: %ju",
+			     i, (uintmax_t)test_result[i].orig_len, (uintmax_t)inputlen);
+		test_error = true;
+	    } else {
+		dbg(DBG_VVHIGH, "test_result[%d].orig_len: %ju == inputlen: %ju",
+			     i, (uintmax_t)test_result[i].orig_len, (uintmax_t)inputlen);
+	    }
+	    if (test_result[i].as_str_len != retlen) {
+		dbg(DBG_VHIGH, "test_result[%d].as_str_len: %ju != retlen: %ju",
+			     i, (uintmax_t)test_result[i].as_str_len, (uintmax_t)retlen);
+		test_error = true;
+	    } else {
+		dbg(DBG_VVHIGH, "test_result[%d].as_str_len: %ju == retlen: %ju",
+			     i, (uintmax_t)test_result[i].as_str_len, (uintmax_t)retlen);
+	    }
+
 	    /* test: top level booleans */
 	    if (test_result[i].converted != ival->converted) {
 		dbg(DBG_VHIGH, "test_result[%d].converted: %d != ival.converted: %d",
@@ -316,8 +336,14 @@ main(int argc, char *argv[])
 	    /*
 	     * output as_str
 	     */
-	    print("\t/* malloced JSON floating point string trimmed if needed, that was converted */\n"
+	    print("\t/* malloced JSON floating point string, whitespace trimmed if needed */\n"
 		  "\t\"%s\",\n\n", input);
+
+	    /*
+	     * print JSON string lengths
+	     */
+	    print("\t%ju,\t/* length of original JSON floating point string */\n", (uintmax_t)inputlen);
+	    print("\t%ju,\t/* length of as_str */\n\n", (uintmax_t)inputlen);
 
 	    /*
 	     * print bool converted and bool is_negative
