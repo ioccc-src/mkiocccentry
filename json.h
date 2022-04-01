@@ -310,7 +310,10 @@ extern struct ignore_code *ignore_code_set;
  *	 future code that is not a careful calls malloc_json_conv_int(str, len).
  */
 struct integer {
-    char *as_str;		/* malloced JSON integer string, trimmed if needed, that was converted */
+    char *as_str;		/* malloced JSON integer string, whitespace trimmed if needed */
+
+    size_t orig_len;		/* length of original JSON integer string */
+    size_t as_str_len;		/* length of as_str */
 
     bool converted;		/* true ==> able to convert JSON integer string to some form of C integer */
     bool is_negative;		/* true ==> value < 0 */

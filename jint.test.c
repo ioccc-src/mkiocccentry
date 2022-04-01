@@ -152,11 +152,14 @@ char *test_set[TEST_COUNT+1] = {
 struct integer test_result[TEST_COUNT] = {
     /* test_result[0]: "-8589934594" */
     {
-	/* malloced JSON integer string trimmed if needed, that was converted */
-	"-8589934594",
+	"-8589934594",	/* malloced JSON integer string, whitespace trimmed if needed */
+
+	11,	/* length of original JSON integer string */
+	11,	/* length of as_str */
 
 	true,	/* true ==> able to convert JSON integer to some form of C integer type */
 	true,	/* true ==> value < 0 */
+
 
 	false,	/* true ==> converted JSON integer to C int8_t */
 	0,	/* no JSON integer value in int8_t form */
@@ -218,11 +221,14 @@ struct integer test_result[TEST_COUNT] = {
 
     /* test_result[1]: "-8589934593" */
     {
-	/* malloced JSON integer string trimmed if needed, that was converted */
-	"-8589934593",
+	"-8589934593",	/* malloced JSON integer string, whitespace trimmed if needed */
+
+	11,	/* length of original JSON integer string */
+	11,	/* length of as_str */
 
 	true,	/* true ==> able to convert JSON integer to some form of C integer type */
 	true,	/* true ==> value < 0 */
+
 
 	false,	/* true ==> converted JSON integer to C int8_t */
 	0,	/* no JSON integer value in int8_t form */
@@ -284,11 +290,14 @@ struct integer test_result[TEST_COUNT] = {
 
     /* test_result[2]: "-8589934592" */
     {
-	/* malloced JSON integer string trimmed if needed, that was converted */
-	"-8589934592",
+	"-8589934592",	/* malloced JSON integer string, whitespace trimmed if needed */
+
+	11,	/* length of original JSON integer string */
+	11,	/* length of as_str */
 
 	true,	/* true ==> able to convert JSON integer to some form of C integer type */
 	true,	/* true ==> value < 0 */
+
 
 	false,	/* true ==> converted JSON integer to C int8_t */
 	0,	/* no JSON integer value in int8_t form */
@@ -350,11 +359,14 @@ struct integer test_result[TEST_COUNT] = {
 
     /* test_result[3]: "-8589934591" */
     {
-	/* malloced JSON integer string trimmed if needed, that was converted */
-	"-8589934591",
+	"-8589934591",	/* malloced JSON integer string, whitespace trimmed if needed */
+
+	11,	/* length of original JSON integer string */
+	11,	/* length of as_str */
 
 	true,	/* true ==> able to convert JSON integer to some form of C integer type */
 	true,	/* true ==> value < 0 */
+
 
 	false,	/* true ==> converted JSON integer to C int8_t */
 	0,	/* no JSON integer value in int8_t form */
@@ -416,11 +428,14 @@ struct integer test_result[TEST_COUNT] = {
 
     /* test_result[4]: "-8589934590" */
     {
-	/* malloced JSON integer string trimmed if needed, that was converted */
-	"-8589934590",
+	"-8589934590",	/* malloced JSON integer string, whitespace trimmed if needed */
+
+	11,	/* length of original JSON integer string */
+	11,	/* length of as_str */
 
 	true,	/* true ==> able to convert JSON integer to some form of C integer type */
 	true,	/* true ==> value < 0 */
+
 
 	false,	/* true ==> converted JSON integer to C int8_t */
 	0,	/* no JSON integer value in int8_t form */
@@ -482,11 +497,14 @@ struct integer test_result[TEST_COUNT] = {
 
     /* test_result[5]: "-4294967298" */
     {
-	/* malloced JSON integer string trimmed if needed, that was converted */
-	"-4294967298",
+	"-4294967298",	/* malloced JSON integer string, whitespace trimmed if needed */
+
+	11,	/* length of original JSON integer string */
+	11,	/* length of as_str */
 
 	true,	/* true ==> able to convert JSON integer to some form of C integer type */
 	true,	/* true ==> value < 0 */
+
 
 	false,	/* true ==> converted JSON integer to C int8_t */
 	0,	/* no JSON integer value in int8_t form */
@@ -548,11 +566,14 @@ struct integer test_result[TEST_COUNT] = {
 
     /* test_result[6]: "-4294967297" */
     {
-	/* malloced JSON integer string trimmed if needed, that was converted */
-	"-4294967297",
+	"-4294967297",	/* malloced JSON integer string, whitespace trimmed if needed */
+
+	11,	/* length of original JSON integer string */
+	11,	/* length of as_str */
 
 	true,	/* true ==> able to convert JSON integer to some form of C integer type */
 	true,	/* true ==> value < 0 */
+
 
 	false,	/* true ==> converted JSON integer to C int8_t */
 	0,	/* no JSON integer value in int8_t form */
@@ -614,11 +635,14 @@ struct integer test_result[TEST_COUNT] = {
 
     /* test_result[7]: "-4294967296" */
     {
-	/* malloced JSON integer string trimmed if needed, that was converted */
-	"-4294967296",
+	"-4294967296",	/* malloced JSON integer string, whitespace trimmed if needed */
+
+	11,	/* length of original JSON integer string */
+	11,	/* length of as_str */
 
 	true,	/* true ==> able to convert JSON integer to some form of C integer type */
 	true,	/* true ==> value < 0 */
+
 
 	false,	/* true ==> converted JSON integer to C int8_t */
 	0,	/* no JSON integer value in int8_t form */
@@ -680,11 +704,14 @@ struct integer test_result[TEST_COUNT] = {
 
     /* test_result[8]: "-4294967295" */
     {
-	/* malloced JSON integer string trimmed if needed, that was converted */
-	"-4294967295",
+	"-4294967295",	/* malloced JSON integer string, whitespace trimmed if needed */
+
+	11,	/* length of original JSON integer string */
+	11,	/* length of as_str */
 
 	true,	/* true ==> able to convert JSON integer to some form of C integer type */
 	true,	/* true ==> value < 0 */
+
 
 	false,	/* true ==> converted JSON integer to C int8_t */
 	0,	/* no JSON integer value in int8_t form */
@@ -746,11 +773,14 @@ struct integer test_result[TEST_COUNT] = {
 
     /* test_result[9]: "-4294967294" */
     {
-	/* malloced JSON integer string trimmed if needed, that was converted */
-	"-4294967294",
+	"-4294967294",	/* malloced JSON integer string, whitespace trimmed if needed */
+
+	11,	/* length of original JSON integer string */
+	11,	/* length of as_str */
 
 	true,	/* true ==> able to convert JSON integer to some form of C integer type */
 	true,	/* true ==> value < 0 */
+
 
 	false,	/* true ==> converted JSON integer to C int8_t */
 	0,	/* no JSON integer value in int8_t form */
@@ -812,11 +842,14 @@ struct integer test_result[TEST_COUNT] = {
 
     /* test_result[10]: "-2147483650" */
     {
-	/* malloced JSON integer string trimmed if needed, that was converted */
-	"-2147483650",
+	"-2147483650",	/* malloced JSON integer string, whitespace trimmed if needed */
+
+	11,	/* length of original JSON integer string */
+	11,	/* length of as_str */
 
 	true,	/* true ==> able to convert JSON integer to some form of C integer type */
 	true,	/* true ==> value < 0 */
+
 
 	false,	/* true ==> converted JSON integer to C int8_t */
 	0,	/* no JSON integer value in int8_t form */
@@ -878,11 +911,14 @@ struct integer test_result[TEST_COUNT] = {
 
     /* test_result[11]: "-2147483649" */
     {
-	/* malloced JSON integer string trimmed if needed, that was converted */
-	"-2147483649",
+	"-2147483649",	/* malloced JSON integer string, whitespace trimmed if needed */
+
+	11,	/* length of original JSON integer string */
+	11,	/* length of as_str */
 
 	true,	/* true ==> able to convert JSON integer to some form of C integer type */
 	true,	/* true ==> value < 0 */
+
 
 	false,	/* true ==> converted JSON integer to C int8_t */
 	0,	/* no JSON integer value in int8_t form */
@@ -944,11 +980,14 @@ struct integer test_result[TEST_COUNT] = {
 
     /* test_result[12]: "-2147483648" */
     {
-	/* malloced JSON integer string trimmed if needed, that was converted */
-	"-2147483648",
+	"-2147483648",	/* malloced JSON integer string, whitespace trimmed if needed */
+
+	11,	/* length of original JSON integer string */
+	11,	/* length of as_str */
 
 	true,	/* true ==> able to convert JSON integer to some form of C integer type */
 	true,	/* true ==> value < 0 */
+
 
 	false,	/* true ==> converted JSON integer to C int8_t */
 	0,	/* no JSON integer value in int8_t form */
@@ -1010,11 +1049,14 @@ struct integer test_result[TEST_COUNT] = {
 
     /* test_result[13]: "-2147483647" */
     {
-	/* malloced JSON integer string trimmed if needed, that was converted */
-	"-2147483647",
+	"-2147483647",	/* malloced JSON integer string, whitespace trimmed if needed */
+
+	11,	/* length of original JSON integer string */
+	11,	/* length of as_str */
 
 	true,	/* true ==> able to convert JSON integer to some form of C integer type */
 	true,	/* true ==> value < 0 */
+
 
 	false,	/* true ==> converted JSON integer to C int8_t */
 	0,	/* no JSON integer value in int8_t form */
@@ -1076,11 +1118,14 @@ struct integer test_result[TEST_COUNT] = {
 
     /* test_result[14]: "-2147483646" */
     {
-	/* malloced JSON integer string trimmed if needed, that was converted */
-	"-2147483646",
+	"-2147483646",	/* malloced JSON integer string, whitespace trimmed if needed */
+
+	11,	/* length of original JSON integer string */
+	11,	/* length of as_str */
 
 	true,	/* true ==> able to convert JSON integer to some form of C integer type */
 	true,	/* true ==> value < 0 */
+
 
 	false,	/* true ==> converted JSON integer to C int8_t */
 	0,	/* no JSON integer value in int8_t form */
@@ -1142,11 +1187,14 @@ struct integer test_result[TEST_COUNT] = {
 
     /* test_result[15]: "-131074" */
     {
-	/* malloced JSON integer string trimmed if needed, that was converted */
-	"-131074",
+	"-131074",	/* malloced JSON integer string, whitespace trimmed if needed */
+
+	7,	/* length of original JSON integer string */
+	7,	/* length of as_str */
 
 	true,	/* true ==> able to convert JSON integer to some form of C integer type */
 	true,	/* true ==> value < 0 */
+
 
 	false,	/* true ==> converted JSON integer to C int8_t */
 	0,	/* no JSON integer value in int8_t form */
@@ -1208,11 +1256,14 @@ struct integer test_result[TEST_COUNT] = {
 
     /* test_result[16]: "-131073" */
     {
-	/* malloced JSON integer string trimmed if needed, that was converted */
-	"-131073",
+	"-131073",	/* malloced JSON integer string, whitespace trimmed if needed */
+
+	7,	/* length of original JSON integer string */
+	7,	/* length of as_str */
 
 	true,	/* true ==> able to convert JSON integer to some form of C integer type */
 	true,	/* true ==> value < 0 */
+
 
 	false,	/* true ==> converted JSON integer to C int8_t */
 	0,	/* no JSON integer value in int8_t form */
@@ -1274,11 +1325,14 @@ struct integer test_result[TEST_COUNT] = {
 
     /* test_result[17]: "-131072" */
     {
-	/* malloced JSON integer string trimmed if needed, that was converted */
-	"-131072",
+	"-131072",	/* malloced JSON integer string, whitespace trimmed if needed */
+
+	7,	/* length of original JSON integer string */
+	7,	/* length of as_str */
 
 	true,	/* true ==> able to convert JSON integer to some form of C integer type */
 	true,	/* true ==> value < 0 */
+
 
 	false,	/* true ==> converted JSON integer to C int8_t */
 	0,	/* no JSON integer value in int8_t form */
@@ -1340,11 +1394,14 @@ struct integer test_result[TEST_COUNT] = {
 
     /* test_result[18]: "-131071" */
     {
-	/* malloced JSON integer string trimmed if needed, that was converted */
-	"-131071",
+	"-131071",	/* malloced JSON integer string, whitespace trimmed if needed */
+
+	7,	/* length of original JSON integer string */
+	7,	/* length of as_str */
 
 	true,	/* true ==> able to convert JSON integer to some form of C integer type */
 	true,	/* true ==> value < 0 */
+
 
 	false,	/* true ==> converted JSON integer to C int8_t */
 	0,	/* no JSON integer value in int8_t form */
@@ -1406,11 +1463,14 @@ struct integer test_result[TEST_COUNT] = {
 
     /* test_result[19]: "-131070" */
     {
-	/* malloced JSON integer string trimmed if needed, that was converted */
-	"-131070",
+	"-131070",	/* malloced JSON integer string, whitespace trimmed if needed */
+
+	7,	/* length of original JSON integer string */
+	7,	/* length of as_str */
 
 	true,	/* true ==> able to convert JSON integer to some form of C integer type */
 	true,	/* true ==> value < 0 */
+
 
 	false,	/* true ==> converted JSON integer to C int8_t */
 	0,	/* no JSON integer value in int8_t form */
@@ -1472,11 +1532,14 @@ struct integer test_result[TEST_COUNT] = {
 
     /* test_result[20]: "-65538" */
     {
-	/* malloced JSON integer string trimmed if needed, that was converted */
-	"-65538",
+	"-65538",	/* malloced JSON integer string, whitespace trimmed if needed */
+
+	6,	/* length of original JSON integer string */
+	6,	/* length of as_str */
 
 	true,	/* true ==> able to convert JSON integer to some form of C integer type */
 	true,	/* true ==> value < 0 */
+
 
 	false,	/* true ==> converted JSON integer to C int8_t */
 	0,	/* no JSON integer value in int8_t form */
@@ -1538,11 +1601,14 @@ struct integer test_result[TEST_COUNT] = {
 
     /* test_result[21]: "-65537" */
     {
-	/* malloced JSON integer string trimmed if needed, that was converted */
-	"-65537",
+	"-65537",	/* malloced JSON integer string, whitespace trimmed if needed */
+
+	6,	/* length of original JSON integer string */
+	6,	/* length of as_str */
 
 	true,	/* true ==> able to convert JSON integer to some form of C integer type */
 	true,	/* true ==> value < 0 */
+
 
 	false,	/* true ==> converted JSON integer to C int8_t */
 	0,	/* no JSON integer value in int8_t form */
@@ -1604,11 +1670,14 @@ struct integer test_result[TEST_COUNT] = {
 
     /* test_result[22]: "-65536" */
     {
-	/* malloced JSON integer string trimmed if needed, that was converted */
-	"-65536",
+	"-65536",	/* malloced JSON integer string, whitespace trimmed if needed */
+
+	6,	/* length of original JSON integer string */
+	6,	/* length of as_str */
 
 	true,	/* true ==> able to convert JSON integer to some form of C integer type */
 	true,	/* true ==> value < 0 */
+
 
 	false,	/* true ==> converted JSON integer to C int8_t */
 	0,	/* no JSON integer value in int8_t form */
@@ -1670,11 +1739,14 @@ struct integer test_result[TEST_COUNT] = {
 
     /* test_result[23]: "-65535" */
     {
-	/* malloced JSON integer string trimmed if needed, that was converted */
-	"-65535",
+	"-65535",	/* malloced JSON integer string, whitespace trimmed if needed */
+
+	6,	/* length of original JSON integer string */
+	6,	/* length of as_str */
 
 	true,	/* true ==> able to convert JSON integer to some form of C integer type */
 	true,	/* true ==> value < 0 */
+
 
 	false,	/* true ==> converted JSON integer to C int8_t */
 	0,	/* no JSON integer value in int8_t form */
@@ -1736,11 +1808,14 @@ struct integer test_result[TEST_COUNT] = {
 
     /* test_result[24]: "-65534" */
     {
-	/* malloced JSON integer string trimmed if needed, that was converted */
-	"-65534",
+	"-65534",	/* malloced JSON integer string, whitespace trimmed if needed */
+
+	6,	/* length of original JSON integer string */
+	6,	/* length of as_str */
 
 	true,	/* true ==> able to convert JSON integer to some form of C integer type */
 	true,	/* true ==> value < 0 */
+
 
 	false,	/* true ==> converted JSON integer to C int8_t */
 	0,	/* no JSON integer value in int8_t form */
@@ -1802,11 +1877,14 @@ struct integer test_result[TEST_COUNT] = {
 
     /* test_result[25]: "-32770" */
     {
-	/* malloced JSON integer string trimmed if needed, that was converted */
-	"-32770",
+	"-32770",	/* malloced JSON integer string, whitespace trimmed if needed */
+
+	6,	/* length of original JSON integer string */
+	6,	/* length of as_str */
 
 	true,	/* true ==> able to convert JSON integer to some form of C integer type */
 	true,	/* true ==> value < 0 */
+
 
 	false,	/* true ==> converted JSON integer to C int8_t */
 	0,	/* no JSON integer value in int8_t form */
@@ -1868,11 +1946,14 @@ struct integer test_result[TEST_COUNT] = {
 
     /* test_result[26]: "-32769" */
     {
-	/* malloced JSON integer string trimmed if needed, that was converted */
-	"-32769",
+	"-32769",	/* malloced JSON integer string, whitespace trimmed if needed */
+
+	6,	/* length of original JSON integer string */
+	6,	/* length of as_str */
 
 	true,	/* true ==> able to convert JSON integer to some form of C integer type */
 	true,	/* true ==> value < 0 */
+
 
 	false,	/* true ==> converted JSON integer to C int8_t */
 	0,	/* no JSON integer value in int8_t form */
@@ -1934,11 +2015,14 @@ struct integer test_result[TEST_COUNT] = {
 
     /* test_result[27]: "-32768" */
     {
-	/* malloced JSON integer string trimmed if needed, that was converted */
-	"-32768",
+	"-32768",	/* malloced JSON integer string, whitespace trimmed if needed */
+
+	6,	/* length of original JSON integer string */
+	6,	/* length of as_str */
 
 	true,	/* true ==> able to convert JSON integer to some form of C integer type */
 	true,	/* true ==> value < 0 */
+
 
 	false,	/* true ==> converted JSON integer to C int8_t */
 	0,	/* no JSON integer value in int8_t form */
@@ -2000,11 +2084,14 @@ struct integer test_result[TEST_COUNT] = {
 
     /* test_result[28]: "-32767" */
     {
-	/* malloced JSON integer string trimmed if needed, that was converted */
-	"-32767",
+	"-32767",	/* malloced JSON integer string, whitespace trimmed if needed */
+
+	6,	/* length of original JSON integer string */
+	6,	/* length of as_str */
 
 	true,	/* true ==> able to convert JSON integer to some form of C integer type */
 	true,	/* true ==> value < 0 */
+
 
 	false,	/* true ==> converted JSON integer to C int8_t */
 	0,	/* no JSON integer value in int8_t form */
@@ -2066,11 +2153,14 @@ struct integer test_result[TEST_COUNT] = {
 
     /* test_result[29]: "-32766" */
     {
-	/* malloced JSON integer string trimmed if needed, that was converted */
-	"-32766",
+	"-32766",	/* malloced JSON integer string, whitespace trimmed if needed */
+
+	6,	/* length of original JSON integer string */
+	6,	/* length of as_str */
 
 	true,	/* true ==> able to convert JSON integer to some form of C integer type */
 	true,	/* true ==> value < 0 */
+
 
 	false,	/* true ==> converted JSON integer to C int8_t */
 	0,	/* no JSON integer value in int8_t form */
@@ -2132,11 +2222,14 @@ struct integer test_result[TEST_COUNT] = {
 
     /* test_result[30]: "-514" */
     {
-	/* malloced JSON integer string trimmed if needed, that was converted */
-	"-514",
+	"-514",	/* malloced JSON integer string, whitespace trimmed if needed */
+
+	4,	/* length of original JSON integer string */
+	4,	/* length of as_str */
 
 	true,	/* true ==> able to convert JSON integer to some form of C integer type */
 	true,	/* true ==> value < 0 */
+
 
 	false,	/* true ==> converted JSON integer to C int8_t */
 	0,	/* no JSON integer value in int8_t form */
@@ -2198,11 +2291,14 @@ struct integer test_result[TEST_COUNT] = {
 
     /* test_result[31]: "-513" */
     {
-	/* malloced JSON integer string trimmed if needed, that was converted */
-	"-513",
+	"-513",	/* malloced JSON integer string, whitespace trimmed if needed */
+
+	4,	/* length of original JSON integer string */
+	4,	/* length of as_str */
 
 	true,	/* true ==> able to convert JSON integer to some form of C integer type */
 	true,	/* true ==> value < 0 */
+
 
 	false,	/* true ==> converted JSON integer to C int8_t */
 	0,	/* no JSON integer value in int8_t form */
@@ -2264,11 +2360,14 @@ struct integer test_result[TEST_COUNT] = {
 
     /* test_result[32]: "-512" */
     {
-	/* malloced JSON integer string trimmed if needed, that was converted */
-	"-512",
+	"-512",	/* malloced JSON integer string, whitespace trimmed if needed */
+
+	4,	/* length of original JSON integer string */
+	4,	/* length of as_str */
 
 	true,	/* true ==> able to convert JSON integer to some form of C integer type */
 	true,	/* true ==> value < 0 */
+
 
 	false,	/* true ==> converted JSON integer to C int8_t */
 	0,	/* no JSON integer value in int8_t form */
@@ -2330,11 +2429,14 @@ struct integer test_result[TEST_COUNT] = {
 
     /* test_result[33]: "-511" */
     {
-	/* malloced JSON integer string trimmed if needed, that was converted */
-	"-511",
+	"-511",	/* malloced JSON integer string, whitespace trimmed if needed */
+
+	4,	/* length of original JSON integer string */
+	4,	/* length of as_str */
 
 	true,	/* true ==> able to convert JSON integer to some form of C integer type */
 	true,	/* true ==> value < 0 */
+
 
 	false,	/* true ==> converted JSON integer to C int8_t */
 	0,	/* no JSON integer value in int8_t form */
@@ -2396,11 +2498,14 @@ struct integer test_result[TEST_COUNT] = {
 
     /* test_result[34]: "-510" */
     {
-	/* malloced JSON integer string trimmed if needed, that was converted */
-	"-510",
+	"-510",	/* malloced JSON integer string, whitespace trimmed if needed */
+
+	4,	/* length of original JSON integer string */
+	4,	/* length of as_str */
 
 	true,	/* true ==> able to convert JSON integer to some form of C integer type */
 	true,	/* true ==> value < 0 */
+
 
 	false,	/* true ==> converted JSON integer to C int8_t */
 	0,	/* no JSON integer value in int8_t form */
@@ -2462,11 +2567,14 @@ struct integer test_result[TEST_COUNT] = {
 
     /* test_result[35]: "-258" */
     {
-	/* malloced JSON integer string trimmed if needed, that was converted */
-	"-258",
+	"-258",	/* malloced JSON integer string, whitespace trimmed if needed */
+
+	4,	/* length of original JSON integer string */
+	4,	/* length of as_str */
 
 	true,	/* true ==> able to convert JSON integer to some form of C integer type */
 	true,	/* true ==> value < 0 */
+
 
 	false,	/* true ==> converted JSON integer to C int8_t */
 	0,	/* no JSON integer value in int8_t form */
@@ -2528,11 +2636,14 @@ struct integer test_result[TEST_COUNT] = {
 
     /* test_result[36]: "-257" */
     {
-	/* malloced JSON integer string trimmed if needed, that was converted */
-	"-257",
+	"-257",	/* malloced JSON integer string, whitespace trimmed if needed */
+
+	4,	/* length of original JSON integer string */
+	4,	/* length of as_str */
 
 	true,	/* true ==> able to convert JSON integer to some form of C integer type */
 	true,	/* true ==> value < 0 */
+
 
 	false,	/* true ==> converted JSON integer to C int8_t */
 	0,	/* no JSON integer value in int8_t form */
@@ -2594,11 +2705,14 @@ struct integer test_result[TEST_COUNT] = {
 
     /* test_result[37]: "-256" */
     {
-	/* malloced JSON integer string trimmed if needed, that was converted */
-	"-256",
+	"-256",	/* malloced JSON integer string, whitespace trimmed if needed */
+
+	4,	/* length of original JSON integer string */
+	4,	/* length of as_str */
 
 	true,	/* true ==> able to convert JSON integer to some form of C integer type */
 	true,	/* true ==> value < 0 */
+
 
 	false,	/* true ==> converted JSON integer to C int8_t */
 	0,	/* no JSON integer value in int8_t form */
@@ -2660,11 +2774,14 @@ struct integer test_result[TEST_COUNT] = {
 
     /* test_result[38]: "-255" */
     {
-	/* malloced JSON integer string trimmed if needed, that was converted */
-	"-255",
+	"-255",	/* malloced JSON integer string, whitespace trimmed if needed */
+
+	4,	/* length of original JSON integer string */
+	4,	/* length of as_str */
 
 	true,	/* true ==> able to convert JSON integer to some form of C integer type */
 	true,	/* true ==> value < 0 */
+
 
 	false,	/* true ==> converted JSON integer to C int8_t */
 	0,	/* no JSON integer value in int8_t form */
@@ -2726,11 +2843,14 @@ struct integer test_result[TEST_COUNT] = {
 
     /* test_result[39]: "-254" */
     {
-	/* malloced JSON integer string trimmed if needed, that was converted */
-	"-254",
+	"-254",	/* malloced JSON integer string, whitespace trimmed if needed */
+
+	4,	/* length of original JSON integer string */
+	4,	/* length of as_str */
 
 	true,	/* true ==> able to convert JSON integer to some form of C integer type */
 	true,	/* true ==> value < 0 */
+
 
 	false,	/* true ==> converted JSON integer to C int8_t */
 	0,	/* no JSON integer value in int8_t form */
@@ -2792,11 +2912,14 @@ struct integer test_result[TEST_COUNT] = {
 
     /* test_result[40]: "-130" */
     {
-	/* malloced JSON integer string trimmed if needed, that was converted */
-	"-130",
+	"-130",	/* malloced JSON integer string, whitespace trimmed if needed */
+
+	4,	/* length of original JSON integer string */
+	4,	/* length of as_str */
 
 	true,	/* true ==> able to convert JSON integer to some form of C integer type */
 	true,	/* true ==> value < 0 */
+
 
 	false,	/* true ==> converted JSON integer to C int8_t */
 	0,	/* no JSON integer value in int8_t form */
@@ -2858,11 +2981,14 @@ struct integer test_result[TEST_COUNT] = {
 
     /* test_result[41]: "-129" */
     {
-	/* malloced JSON integer string trimmed if needed, that was converted */
-	"-129",
+	"-129",	/* malloced JSON integer string, whitespace trimmed if needed */
+
+	4,	/* length of original JSON integer string */
+	4,	/* length of as_str */
 
 	true,	/* true ==> able to convert JSON integer to some form of C integer type */
 	true,	/* true ==> value < 0 */
+
 
 	false,	/* true ==> converted JSON integer to C int8_t */
 	0,	/* no JSON integer value in int8_t form */
@@ -2924,11 +3050,14 @@ struct integer test_result[TEST_COUNT] = {
 
     /* test_result[42]: "-128" */
     {
-	/* malloced JSON integer string trimmed if needed, that was converted */
-	"-128",
+	"-128",	/* malloced JSON integer string, whitespace trimmed if needed */
+
+	4,	/* length of original JSON integer string */
+	4,	/* length of as_str */
 
 	true,	/* true ==> able to convert JSON integer to some form of C integer type */
 	true,	/* true ==> value < 0 */
+
 
 	true,	/* true ==> converted JSON integer to C int8_t */
 	-128,	/* JSON integer value in int8_t form */
@@ -2990,11 +3119,14 @@ struct integer test_result[TEST_COUNT] = {
 
     /* test_result[43]: "-127" */
     {
-	/* malloced JSON integer string trimmed if needed, that was converted */
-	"-127",
+	"-127",	/* malloced JSON integer string, whitespace trimmed if needed */
+
+	4,	/* length of original JSON integer string */
+	4,	/* length of as_str */
 
 	true,	/* true ==> able to convert JSON integer to some form of C integer type */
 	true,	/* true ==> value < 0 */
+
 
 	true,	/* true ==> converted JSON integer to C int8_t */
 	-127,	/* JSON integer value in int8_t form */
@@ -3056,11 +3188,14 @@ struct integer test_result[TEST_COUNT] = {
 
     /* test_result[44]: "-126" */
     {
-	/* malloced JSON integer string trimmed if needed, that was converted */
-	"-126",
+	"-126",	/* malloced JSON integer string, whitespace trimmed if needed */
+
+	4,	/* length of original JSON integer string */
+	4,	/* length of as_str */
 
 	true,	/* true ==> able to convert JSON integer to some form of C integer type */
 	true,	/* true ==> value < 0 */
+
 
 	true,	/* true ==> converted JSON integer to C int8_t */
 	-126,	/* JSON integer value in int8_t form */
@@ -3122,11 +3257,14 @@ struct integer test_result[TEST_COUNT] = {
 
     /* test_result[45]: "-2" */
     {
-	/* malloced JSON integer string trimmed if needed, that was converted */
-	"-2",
+	"-2",	/* malloced JSON integer string, whitespace trimmed if needed */
+
+	2,	/* length of original JSON integer string */
+	2,	/* length of as_str */
 
 	true,	/* true ==> able to convert JSON integer to some form of C integer type */
 	true,	/* true ==> value < 0 */
+
 
 	true,	/* true ==> converted JSON integer to C int8_t */
 	-2,	/* JSON integer value in int8_t form */
@@ -3188,11 +3326,14 @@ struct integer test_result[TEST_COUNT] = {
 
     /* test_result[46]: "-1" */
     {
-	/* malloced JSON integer string trimmed if needed, that was converted */
-	"-1",
+	"-1",	/* malloced JSON integer string, whitespace trimmed if needed */
+
+	2,	/* length of original JSON integer string */
+	2,	/* length of as_str */
 
 	true,	/* true ==> able to convert JSON integer to some form of C integer type */
 	true,	/* true ==> value < 0 */
+
 
 	true,	/* true ==> converted JSON integer to C int8_t */
 	-1,	/* JSON integer value in int8_t form */
@@ -3254,11 +3395,14 @@ struct integer test_result[TEST_COUNT] = {
 
     /* test_result[47]: "0" */
     {
-	/* malloced JSON integer string trimmed if needed, that was converted */
-	"0",
+	"0",	/* malloced JSON integer string, whitespace trimmed if needed */
+
+	1,	/* length of original JSON integer string */
+	1,	/* length of as_str */
 
 	true,	/* true ==> able to convert JSON integer to some form of C integer type */
 	false,	/* true ==> value < 0 */
+
 
 	true,	/* true ==> converted JSON integer to C int8_t */
 	0,	/* JSON integer value in int8_t form */
@@ -3320,11 +3464,14 @@ struct integer test_result[TEST_COUNT] = {
 
     /* test_result[48]: "1" */
     {
-	/* malloced JSON integer string trimmed if needed, that was converted */
-	"1",
+	"1",	/* malloced JSON integer string, whitespace trimmed if needed */
+
+	1,	/* length of original JSON integer string */
+	1,	/* length of as_str */
 
 	true,	/* true ==> able to convert JSON integer to some form of C integer type */
 	false,	/* true ==> value < 0 */
+
 
 	true,	/* true ==> converted JSON integer to C int8_t */
 	1,	/* JSON integer value in int8_t form */
@@ -3386,11 +3533,14 @@ struct integer test_result[TEST_COUNT] = {
 
     /* test_result[49]: "2" */
     {
-	/* malloced JSON integer string trimmed if needed, that was converted */
-	"2",
+	"2",	/* malloced JSON integer string, whitespace trimmed if needed */
+
+	1,	/* length of original JSON integer string */
+	1,	/* length of as_str */
 
 	true,	/* true ==> able to convert JSON integer to some form of C integer type */
 	false,	/* true ==> value < 0 */
+
 
 	true,	/* true ==> converted JSON integer to C int8_t */
 	2,	/* JSON integer value in int8_t form */
@@ -3452,11 +3602,14 @@ struct integer test_result[TEST_COUNT] = {
 
     /* test_result[50]: "126" */
     {
-	/* malloced JSON integer string trimmed if needed, that was converted */
-	"126",
+	"126",	/* malloced JSON integer string, whitespace trimmed if needed */
+
+	3,	/* length of original JSON integer string */
+	3,	/* length of as_str */
 
 	true,	/* true ==> able to convert JSON integer to some form of C integer type */
 	false,	/* true ==> value < 0 */
+
 
 	true,	/* true ==> converted JSON integer to C int8_t */
 	126,	/* JSON integer value in int8_t form */
@@ -3518,11 +3671,14 @@ struct integer test_result[TEST_COUNT] = {
 
     /* test_result[51]: "127" */
     {
-	/* malloced JSON integer string trimmed if needed, that was converted */
-	"127",
+	"127",	/* malloced JSON integer string, whitespace trimmed if needed */
+
+	3,	/* length of original JSON integer string */
+	3,	/* length of as_str */
 
 	true,	/* true ==> able to convert JSON integer to some form of C integer type */
 	false,	/* true ==> value < 0 */
+
 
 	true,	/* true ==> converted JSON integer to C int8_t */
 	127,	/* JSON integer value in int8_t form */
@@ -3584,11 +3740,14 @@ struct integer test_result[TEST_COUNT] = {
 
     /* test_result[52]: "128" */
     {
-	/* malloced JSON integer string trimmed if needed, that was converted */
-	"128",
+	"128",	/* malloced JSON integer string, whitespace trimmed if needed */
+
+	3,	/* length of original JSON integer string */
+	3,	/* length of as_str */
 
 	true,	/* true ==> able to convert JSON integer to some form of C integer type */
 	false,	/* true ==> value < 0 */
+
 
 	false,	/* true ==> converted JSON integer to C int8_t */
 	0,	/* no JSON integer value in int8_t form */
@@ -3650,11 +3809,14 @@ struct integer test_result[TEST_COUNT] = {
 
     /* test_result[53]: "129" */
     {
-	/* malloced JSON integer string trimmed if needed, that was converted */
-	"129",
+	"129",	/* malloced JSON integer string, whitespace trimmed if needed */
+
+	3,	/* length of original JSON integer string */
+	3,	/* length of as_str */
 
 	true,	/* true ==> able to convert JSON integer to some form of C integer type */
 	false,	/* true ==> value < 0 */
+
 
 	false,	/* true ==> converted JSON integer to C int8_t */
 	0,	/* no JSON integer value in int8_t form */
@@ -3716,11 +3878,14 @@ struct integer test_result[TEST_COUNT] = {
 
     /* test_result[54]: "130" */
     {
-	/* malloced JSON integer string trimmed if needed, that was converted */
-	"130",
+	"130",	/* malloced JSON integer string, whitespace trimmed if needed */
+
+	3,	/* length of original JSON integer string */
+	3,	/* length of as_str */
 
 	true,	/* true ==> able to convert JSON integer to some form of C integer type */
 	false,	/* true ==> value < 0 */
+
 
 	false,	/* true ==> converted JSON integer to C int8_t */
 	0,	/* no JSON integer value in int8_t form */
@@ -3782,11 +3947,14 @@ struct integer test_result[TEST_COUNT] = {
 
     /* test_result[55]: "254" */
     {
-	/* malloced JSON integer string trimmed if needed, that was converted */
-	"254",
+	"254",	/* malloced JSON integer string, whitespace trimmed if needed */
+
+	3,	/* length of original JSON integer string */
+	3,	/* length of as_str */
 
 	true,	/* true ==> able to convert JSON integer to some form of C integer type */
 	false,	/* true ==> value < 0 */
+
 
 	false,	/* true ==> converted JSON integer to C int8_t */
 	0,	/* no JSON integer value in int8_t form */
@@ -3848,11 +4016,14 @@ struct integer test_result[TEST_COUNT] = {
 
     /* test_result[56]: "255" */
     {
-	/* malloced JSON integer string trimmed if needed, that was converted */
-	"255",
+	"255",	/* malloced JSON integer string, whitespace trimmed if needed */
+
+	3,	/* length of original JSON integer string */
+	3,	/* length of as_str */
 
 	true,	/* true ==> able to convert JSON integer to some form of C integer type */
 	false,	/* true ==> value < 0 */
+
 
 	false,	/* true ==> converted JSON integer to C int8_t */
 	0,	/* no JSON integer value in int8_t form */
@@ -3914,11 +4085,14 @@ struct integer test_result[TEST_COUNT] = {
 
     /* test_result[57]: "256" */
     {
-	/* malloced JSON integer string trimmed if needed, that was converted */
-	"256",
+	"256",	/* malloced JSON integer string, whitespace trimmed if needed */
+
+	3,	/* length of original JSON integer string */
+	3,	/* length of as_str */
 
 	true,	/* true ==> able to convert JSON integer to some form of C integer type */
 	false,	/* true ==> value < 0 */
+
 
 	false,	/* true ==> converted JSON integer to C int8_t */
 	0,	/* no JSON integer value in int8_t form */
@@ -3980,11 +4154,14 @@ struct integer test_result[TEST_COUNT] = {
 
     /* test_result[58]: "257" */
     {
-	/* malloced JSON integer string trimmed if needed, that was converted */
-	"257",
+	"257",	/* malloced JSON integer string, whitespace trimmed if needed */
+
+	3,	/* length of original JSON integer string */
+	3,	/* length of as_str */
 
 	true,	/* true ==> able to convert JSON integer to some form of C integer type */
 	false,	/* true ==> value < 0 */
+
 
 	false,	/* true ==> converted JSON integer to C int8_t */
 	0,	/* no JSON integer value in int8_t form */
@@ -4046,11 +4223,14 @@ struct integer test_result[TEST_COUNT] = {
 
     /* test_result[59]: "258" */
     {
-	/* malloced JSON integer string trimmed if needed, that was converted */
-	"258",
+	"258",	/* malloced JSON integer string, whitespace trimmed if needed */
+
+	3,	/* length of original JSON integer string */
+	3,	/* length of as_str */
 
 	true,	/* true ==> able to convert JSON integer to some form of C integer type */
 	false,	/* true ==> value < 0 */
+
 
 	false,	/* true ==> converted JSON integer to C int8_t */
 	0,	/* no JSON integer value in int8_t form */
@@ -4112,11 +4292,14 @@ struct integer test_result[TEST_COUNT] = {
 
     /* test_result[60]: "510" */
     {
-	/* malloced JSON integer string trimmed if needed, that was converted */
-	"510",
+	"510",	/* malloced JSON integer string, whitespace trimmed if needed */
+
+	3,	/* length of original JSON integer string */
+	3,	/* length of as_str */
 
 	true,	/* true ==> able to convert JSON integer to some form of C integer type */
 	false,	/* true ==> value < 0 */
+
 
 	false,	/* true ==> converted JSON integer to C int8_t */
 	0,	/* no JSON integer value in int8_t form */
@@ -4178,11 +4361,14 @@ struct integer test_result[TEST_COUNT] = {
 
     /* test_result[61]: "511" */
     {
-	/* malloced JSON integer string trimmed if needed, that was converted */
-	"511",
+	"511",	/* malloced JSON integer string, whitespace trimmed if needed */
+
+	3,	/* length of original JSON integer string */
+	3,	/* length of as_str */
 
 	true,	/* true ==> able to convert JSON integer to some form of C integer type */
 	false,	/* true ==> value < 0 */
+
 
 	false,	/* true ==> converted JSON integer to C int8_t */
 	0,	/* no JSON integer value in int8_t form */
@@ -4244,11 +4430,14 @@ struct integer test_result[TEST_COUNT] = {
 
     /* test_result[62]: "512" */
     {
-	/* malloced JSON integer string trimmed if needed, that was converted */
-	"512",
+	"512",	/* malloced JSON integer string, whitespace trimmed if needed */
+
+	3,	/* length of original JSON integer string */
+	3,	/* length of as_str */
 
 	true,	/* true ==> able to convert JSON integer to some form of C integer type */
 	false,	/* true ==> value < 0 */
+
 
 	false,	/* true ==> converted JSON integer to C int8_t */
 	0,	/* no JSON integer value in int8_t form */
@@ -4310,11 +4499,14 @@ struct integer test_result[TEST_COUNT] = {
 
     /* test_result[63]: "513" */
     {
-	/* malloced JSON integer string trimmed if needed, that was converted */
-	"513",
+	"513",	/* malloced JSON integer string, whitespace trimmed if needed */
+
+	3,	/* length of original JSON integer string */
+	3,	/* length of as_str */
 
 	true,	/* true ==> able to convert JSON integer to some form of C integer type */
 	false,	/* true ==> value < 0 */
+
 
 	false,	/* true ==> converted JSON integer to C int8_t */
 	0,	/* no JSON integer value in int8_t form */
@@ -4376,11 +4568,14 @@ struct integer test_result[TEST_COUNT] = {
 
     /* test_result[64]: "514" */
     {
-	/* malloced JSON integer string trimmed if needed, that was converted */
-	"514",
+	"514",	/* malloced JSON integer string, whitespace trimmed if needed */
+
+	3,	/* length of original JSON integer string */
+	3,	/* length of as_str */
 
 	true,	/* true ==> able to convert JSON integer to some form of C integer type */
 	false,	/* true ==> value < 0 */
+
 
 	false,	/* true ==> converted JSON integer to C int8_t */
 	0,	/* no JSON integer value in int8_t form */
@@ -4442,11 +4637,14 @@ struct integer test_result[TEST_COUNT] = {
 
     /* test_result[65]: "32766" */
     {
-	/* malloced JSON integer string trimmed if needed, that was converted */
-	"32766",
+	"32766",	/* malloced JSON integer string, whitespace trimmed if needed */
+
+	5,	/* length of original JSON integer string */
+	5,	/* length of as_str */
 
 	true,	/* true ==> able to convert JSON integer to some form of C integer type */
 	false,	/* true ==> value < 0 */
+
 
 	false,	/* true ==> converted JSON integer to C int8_t */
 	0,	/* no JSON integer value in int8_t form */
@@ -4508,11 +4706,14 @@ struct integer test_result[TEST_COUNT] = {
 
     /* test_result[66]: "32767" */
     {
-	/* malloced JSON integer string trimmed if needed, that was converted */
-	"32767",
+	"32767",	/* malloced JSON integer string, whitespace trimmed if needed */
+
+	5,	/* length of original JSON integer string */
+	5,	/* length of as_str */
 
 	true,	/* true ==> able to convert JSON integer to some form of C integer type */
 	false,	/* true ==> value < 0 */
+
 
 	false,	/* true ==> converted JSON integer to C int8_t */
 	0,	/* no JSON integer value in int8_t form */
@@ -4574,11 +4775,14 @@ struct integer test_result[TEST_COUNT] = {
 
     /* test_result[67]: "32768" */
     {
-	/* malloced JSON integer string trimmed if needed, that was converted */
-	"32768",
+	"32768",	/* malloced JSON integer string, whitespace trimmed if needed */
+
+	5,	/* length of original JSON integer string */
+	5,	/* length of as_str */
 
 	true,	/* true ==> able to convert JSON integer to some form of C integer type */
 	false,	/* true ==> value < 0 */
+
 
 	false,	/* true ==> converted JSON integer to C int8_t */
 	0,	/* no JSON integer value in int8_t form */
@@ -4640,11 +4844,14 @@ struct integer test_result[TEST_COUNT] = {
 
     /* test_result[68]: "32769" */
     {
-	/* malloced JSON integer string trimmed if needed, that was converted */
-	"32769",
+	"32769",	/* malloced JSON integer string, whitespace trimmed if needed */
+
+	5,	/* length of original JSON integer string */
+	5,	/* length of as_str */
 
 	true,	/* true ==> able to convert JSON integer to some form of C integer type */
 	false,	/* true ==> value < 0 */
+
 
 	false,	/* true ==> converted JSON integer to C int8_t */
 	0,	/* no JSON integer value in int8_t form */
@@ -4706,11 +4913,14 @@ struct integer test_result[TEST_COUNT] = {
 
     /* test_result[69]: "32770" */
     {
-	/* malloced JSON integer string trimmed if needed, that was converted */
-	"32770",
+	"32770",	/* malloced JSON integer string, whitespace trimmed if needed */
+
+	5,	/* length of original JSON integer string */
+	5,	/* length of as_str */
 
 	true,	/* true ==> able to convert JSON integer to some form of C integer type */
 	false,	/* true ==> value < 0 */
+
 
 	false,	/* true ==> converted JSON integer to C int8_t */
 	0,	/* no JSON integer value in int8_t form */
@@ -4772,11 +4982,14 @@ struct integer test_result[TEST_COUNT] = {
 
     /* test_result[70]: "65534" */
     {
-	/* malloced JSON integer string trimmed if needed, that was converted */
-	"65534",
+	"65534",	/* malloced JSON integer string, whitespace trimmed if needed */
+
+	5,	/* length of original JSON integer string */
+	5,	/* length of as_str */
 
 	true,	/* true ==> able to convert JSON integer to some form of C integer type */
 	false,	/* true ==> value < 0 */
+
 
 	false,	/* true ==> converted JSON integer to C int8_t */
 	0,	/* no JSON integer value in int8_t form */
@@ -4838,11 +5051,14 @@ struct integer test_result[TEST_COUNT] = {
 
     /* test_result[71]: "65535" */
     {
-	/* malloced JSON integer string trimmed if needed, that was converted */
-	"65535",
+	"65535",	/* malloced JSON integer string, whitespace trimmed if needed */
+
+	5,	/* length of original JSON integer string */
+	5,	/* length of as_str */
 
 	true,	/* true ==> able to convert JSON integer to some form of C integer type */
 	false,	/* true ==> value < 0 */
+
 
 	false,	/* true ==> converted JSON integer to C int8_t */
 	0,	/* no JSON integer value in int8_t form */
@@ -4904,11 +5120,14 @@ struct integer test_result[TEST_COUNT] = {
 
     /* test_result[72]: "65536" */
     {
-	/* malloced JSON integer string trimmed if needed, that was converted */
-	"65536",
+	"65536",	/* malloced JSON integer string, whitespace trimmed if needed */
+
+	5,	/* length of original JSON integer string */
+	5,	/* length of as_str */
 
 	true,	/* true ==> able to convert JSON integer to some form of C integer type */
 	false,	/* true ==> value < 0 */
+
 
 	false,	/* true ==> converted JSON integer to C int8_t */
 	0,	/* no JSON integer value in int8_t form */
@@ -4970,11 +5189,14 @@ struct integer test_result[TEST_COUNT] = {
 
     /* test_result[73]: "65537" */
     {
-	/* malloced JSON integer string trimmed if needed, that was converted */
-	"65537",
+	"65537",	/* malloced JSON integer string, whitespace trimmed if needed */
+
+	5,	/* length of original JSON integer string */
+	5,	/* length of as_str */
 
 	true,	/* true ==> able to convert JSON integer to some form of C integer type */
 	false,	/* true ==> value < 0 */
+
 
 	false,	/* true ==> converted JSON integer to C int8_t */
 	0,	/* no JSON integer value in int8_t form */
@@ -5036,11 +5258,14 @@ struct integer test_result[TEST_COUNT] = {
 
     /* test_result[74]: "65538" */
     {
-	/* malloced JSON integer string trimmed if needed, that was converted */
-	"65538",
+	"65538",	/* malloced JSON integer string, whitespace trimmed if needed */
+
+	5,	/* length of original JSON integer string */
+	5,	/* length of as_str */
 
 	true,	/* true ==> able to convert JSON integer to some form of C integer type */
 	false,	/* true ==> value < 0 */
+
 
 	false,	/* true ==> converted JSON integer to C int8_t */
 	0,	/* no JSON integer value in int8_t form */
@@ -5102,11 +5327,14 @@ struct integer test_result[TEST_COUNT] = {
 
     /* test_result[75]: "131070" */
     {
-	/* malloced JSON integer string trimmed if needed, that was converted */
-	"131070",
+	"131070",	/* malloced JSON integer string, whitespace trimmed if needed */
+
+	6,	/* length of original JSON integer string */
+	6,	/* length of as_str */
 
 	true,	/* true ==> able to convert JSON integer to some form of C integer type */
 	false,	/* true ==> value < 0 */
+
 
 	false,	/* true ==> converted JSON integer to C int8_t */
 	0,	/* no JSON integer value in int8_t form */
@@ -5168,11 +5396,14 @@ struct integer test_result[TEST_COUNT] = {
 
     /* test_result[76]: "131071" */
     {
-	/* malloced JSON integer string trimmed if needed, that was converted */
-	"131071",
+	"131071",	/* malloced JSON integer string, whitespace trimmed if needed */
+
+	6,	/* length of original JSON integer string */
+	6,	/* length of as_str */
 
 	true,	/* true ==> able to convert JSON integer to some form of C integer type */
 	false,	/* true ==> value < 0 */
+
 
 	false,	/* true ==> converted JSON integer to C int8_t */
 	0,	/* no JSON integer value in int8_t form */
@@ -5234,11 +5465,14 @@ struct integer test_result[TEST_COUNT] = {
 
     /* test_result[77]: "131072" */
     {
-	/* malloced JSON integer string trimmed if needed, that was converted */
-	"131072",
+	"131072",	/* malloced JSON integer string, whitespace trimmed if needed */
+
+	6,	/* length of original JSON integer string */
+	6,	/* length of as_str */
 
 	true,	/* true ==> able to convert JSON integer to some form of C integer type */
 	false,	/* true ==> value < 0 */
+
 
 	false,	/* true ==> converted JSON integer to C int8_t */
 	0,	/* no JSON integer value in int8_t form */
@@ -5300,11 +5534,14 @@ struct integer test_result[TEST_COUNT] = {
 
     /* test_result[78]: "131073" */
     {
-	/* malloced JSON integer string trimmed if needed, that was converted */
-	"131073",
+	"131073",	/* malloced JSON integer string, whitespace trimmed if needed */
+
+	6,	/* length of original JSON integer string */
+	6,	/* length of as_str */
 
 	true,	/* true ==> able to convert JSON integer to some form of C integer type */
 	false,	/* true ==> value < 0 */
+
 
 	false,	/* true ==> converted JSON integer to C int8_t */
 	0,	/* no JSON integer value in int8_t form */
@@ -5366,11 +5603,14 @@ struct integer test_result[TEST_COUNT] = {
 
     /* test_result[79]: "131074" */
     {
-	/* malloced JSON integer string trimmed if needed, that was converted */
-	"131074",
+	"131074",	/* malloced JSON integer string, whitespace trimmed if needed */
+
+	6,	/* length of original JSON integer string */
+	6,	/* length of as_str */
 
 	true,	/* true ==> able to convert JSON integer to some form of C integer type */
 	false,	/* true ==> value < 0 */
+
 
 	false,	/* true ==> converted JSON integer to C int8_t */
 	0,	/* no JSON integer value in int8_t form */
@@ -5432,11 +5672,14 @@ struct integer test_result[TEST_COUNT] = {
 
     /* test_result[80]: "2147483646" */
     {
-	/* malloced JSON integer string trimmed if needed, that was converted */
-	"2147483646",
+	"2147483646",	/* malloced JSON integer string, whitespace trimmed if needed */
+
+	10,	/* length of original JSON integer string */
+	10,	/* length of as_str */
 
 	true,	/* true ==> able to convert JSON integer to some form of C integer type */
 	false,	/* true ==> value < 0 */
+
 
 	false,	/* true ==> converted JSON integer to C int8_t */
 	0,	/* no JSON integer value in int8_t form */
@@ -5498,11 +5741,14 @@ struct integer test_result[TEST_COUNT] = {
 
     /* test_result[81]: "2147483647" */
     {
-	/* malloced JSON integer string trimmed if needed, that was converted */
-	"2147483647",
+	"2147483647",	/* malloced JSON integer string, whitespace trimmed if needed */
+
+	10,	/* length of original JSON integer string */
+	10,	/* length of as_str */
 
 	true,	/* true ==> able to convert JSON integer to some form of C integer type */
 	false,	/* true ==> value < 0 */
+
 
 	false,	/* true ==> converted JSON integer to C int8_t */
 	0,	/* no JSON integer value in int8_t form */
@@ -5564,11 +5810,14 @@ struct integer test_result[TEST_COUNT] = {
 
     /* test_result[82]: "2147483648" */
     {
-	/* malloced JSON integer string trimmed if needed, that was converted */
-	"2147483648",
+	"2147483648",	/* malloced JSON integer string, whitespace trimmed if needed */
+
+	10,	/* length of original JSON integer string */
+	10,	/* length of as_str */
 
 	true,	/* true ==> able to convert JSON integer to some form of C integer type */
 	false,	/* true ==> value < 0 */
+
 
 	false,	/* true ==> converted JSON integer to C int8_t */
 	0,	/* no JSON integer value in int8_t form */
@@ -5630,11 +5879,14 @@ struct integer test_result[TEST_COUNT] = {
 
     /* test_result[83]: "2147483649" */
     {
-	/* malloced JSON integer string trimmed if needed, that was converted */
-	"2147483649",
+	"2147483649",	/* malloced JSON integer string, whitespace trimmed if needed */
+
+	10,	/* length of original JSON integer string */
+	10,	/* length of as_str */
 
 	true,	/* true ==> able to convert JSON integer to some form of C integer type */
 	false,	/* true ==> value < 0 */
+
 
 	false,	/* true ==> converted JSON integer to C int8_t */
 	0,	/* no JSON integer value in int8_t form */
@@ -5696,11 +5948,14 @@ struct integer test_result[TEST_COUNT] = {
 
     /* test_result[84]: "2147483650" */
     {
-	/* malloced JSON integer string trimmed if needed, that was converted */
-	"2147483650",
+	"2147483650",	/* malloced JSON integer string, whitespace trimmed if needed */
+
+	10,	/* length of original JSON integer string */
+	10,	/* length of as_str */
 
 	true,	/* true ==> able to convert JSON integer to some form of C integer type */
 	false,	/* true ==> value < 0 */
+
 
 	false,	/* true ==> converted JSON integer to C int8_t */
 	0,	/* no JSON integer value in int8_t form */
@@ -5762,11 +6017,14 @@ struct integer test_result[TEST_COUNT] = {
 
     /* test_result[85]: "4294967294" */
     {
-	/* malloced JSON integer string trimmed if needed, that was converted */
-	"4294967294",
+	"4294967294",	/* malloced JSON integer string, whitespace trimmed if needed */
+
+	10,	/* length of original JSON integer string */
+	10,	/* length of as_str */
 
 	true,	/* true ==> able to convert JSON integer to some form of C integer type */
 	false,	/* true ==> value < 0 */
+
 
 	false,	/* true ==> converted JSON integer to C int8_t */
 	0,	/* no JSON integer value in int8_t form */
@@ -5828,11 +6086,14 @@ struct integer test_result[TEST_COUNT] = {
 
     /* test_result[86]: "4294967295" */
     {
-	/* malloced JSON integer string trimmed if needed, that was converted */
-	"4294967295",
+	"4294967295",	/* malloced JSON integer string, whitespace trimmed if needed */
+
+	10,	/* length of original JSON integer string */
+	10,	/* length of as_str */
 
 	true,	/* true ==> able to convert JSON integer to some form of C integer type */
 	false,	/* true ==> value < 0 */
+
 
 	false,	/* true ==> converted JSON integer to C int8_t */
 	0,	/* no JSON integer value in int8_t form */
@@ -5894,11 +6155,14 @@ struct integer test_result[TEST_COUNT] = {
 
     /* test_result[87]: "4294967296" */
     {
-	/* malloced JSON integer string trimmed if needed, that was converted */
-	"4294967296",
+	"4294967296",	/* malloced JSON integer string, whitespace trimmed if needed */
+
+	10,	/* length of original JSON integer string */
+	10,	/* length of as_str */
 
 	true,	/* true ==> able to convert JSON integer to some form of C integer type */
 	false,	/* true ==> value < 0 */
+
 
 	false,	/* true ==> converted JSON integer to C int8_t */
 	0,	/* no JSON integer value in int8_t form */
@@ -5960,11 +6224,14 @@ struct integer test_result[TEST_COUNT] = {
 
     /* test_result[88]: "4294967297" */
     {
-	/* malloced JSON integer string trimmed if needed, that was converted */
-	"4294967297",
+	"4294967297",	/* malloced JSON integer string, whitespace trimmed if needed */
+
+	10,	/* length of original JSON integer string */
+	10,	/* length of as_str */
 
 	true,	/* true ==> able to convert JSON integer to some form of C integer type */
 	false,	/* true ==> value < 0 */
+
 
 	false,	/* true ==> converted JSON integer to C int8_t */
 	0,	/* no JSON integer value in int8_t form */
@@ -6026,11 +6293,14 @@ struct integer test_result[TEST_COUNT] = {
 
     /* test_result[89]: "4294967298" */
     {
-	/* malloced JSON integer string trimmed if needed, that was converted */
-	"4294967298",
+	"4294967298",	/* malloced JSON integer string, whitespace trimmed if needed */
+
+	10,	/* length of original JSON integer string */
+	10,	/* length of as_str */
 
 	true,	/* true ==> able to convert JSON integer to some form of C integer type */
 	false,	/* true ==> value < 0 */
+
 
 	false,	/* true ==> converted JSON integer to C int8_t */
 	0,	/* no JSON integer value in int8_t form */
@@ -6092,11 +6362,14 @@ struct integer test_result[TEST_COUNT] = {
 
     /* test_result[90]: "8589934590" */
     {
-	/* malloced JSON integer string trimmed if needed, that was converted */
-	"8589934590",
+	"8589934590",	/* malloced JSON integer string, whitespace trimmed if needed */
+
+	10,	/* length of original JSON integer string */
+	10,	/* length of as_str */
 
 	true,	/* true ==> able to convert JSON integer to some form of C integer type */
 	false,	/* true ==> value < 0 */
+
 
 	false,	/* true ==> converted JSON integer to C int8_t */
 	0,	/* no JSON integer value in int8_t form */
@@ -6158,11 +6431,14 @@ struct integer test_result[TEST_COUNT] = {
 
     /* test_result[91]: "8589934591" */
     {
-	/* malloced JSON integer string trimmed if needed, that was converted */
-	"8589934591",
+	"8589934591",	/* malloced JSON integer string, whitespace trimmed if needed */
+
+	10,	/* length of original JSON integer string */
+	10,	/* length of as_str */
 
 	true,	/* true ==> able to convert JSON integer to some form of C integer type */
 	false,	/* true ==> value < 0 */
+
 
 	false,	/* true ==> converted JSON integer to C int8_t */
 	0,	/* no JSON integer value in int8_t form */
@@ -6224,11 +6500,14 @@ struct integer test_result[TEST_COUNT] = {
 
     /* test_result[92]: "8589934592" */
     {
-	/* malloced JSON integer string trimmed if needed, that was converted */
-	"8589934592",
+	"8589934592",	/* malloced JSON integer string, whitespace trimmed if needed */
+
+	10,	/* length of original JSON integer string */
+	10,	/* length of as_str */
 
 	true,	/* true ==> able to convert JSON integer to some form of C integer type */
 	false,	/* true ==> value < 0 */
+
 
 	false,	/* true ==> converted JSON integer to C int8_t */
 	0,	/* no JSON integer value in int8_t form */
@@ -6290,11 +6569,14 @@ struct integer test_result[TEST_COUNT] = {
 
     /* test_result[93]: "8589934593" */
     {
-	/* malloced JSON integer string trimmed if needed, that was converted */
-	"8589934593",
+	"8589934593",	/* malloced JSON integer string, whitespace trimmed if needed */
+
+	10,	/* length of original JSON integer string */
+	10,	/* length of as_str */
 
 	true,	/* true ==> able to convert JSON integer to some form of C integer type */
 	false,	/* true ==> value < 0 */
+
 
 	false,	/* true ==> converted JSON integer to C int8_t */
 	0,	/* no JSON integer value in int8_t form */
@@ -6356,11 +6638,14 @@ struct integer test_result[TEST_COUNT] = {
 
     /* test_result[94]: "8589934594" */
     {
-	/* malloced JSON integer string trimmed if needed, that was converted */
-	"8589934594",
+	"8589934594",	/* malloced JSON integer string, whitespace trimmed if needed */
+
+	10,	/* length of original JSON integer string */
+	10,	/* length of as_str */
 
 	true,	/* true ==> able to convert JSON integer to some form of C integer type */
 	false,	/* true ==> value < 0 */
+
 
 	false,	/* true ==> converted JSON integer to C int8_t */
 	0,	/* no JSON integer value in int8_t form */

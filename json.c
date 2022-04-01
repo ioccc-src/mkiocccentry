@@ -3748,6 +3748,7 @@ malloc_json_conv_int(char const *str, size_t len)
 	warn(__func__, "called with len: %ju <= 0", (uintmax_t)len);
 	return ret;
     }
+    ret->orig_len = len;	/* save original length */
     if (str[0] == '\0') {
 	warn(__func__, "called with empty string");
 	return ret;
@@ -3799,6 +3800,7 @@ malloc_json_conv_int(char const *str, size_t len)
 	warn(__func__, "called with string with all whitespace");
 	return ret;
     }
+    ret->as_str_len = len;	/* save length of as_str */
 
     /*
      * determine if JSON integer negative

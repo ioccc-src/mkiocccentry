@@ -157,10 +157,25 @@ main(int argc, char *argv[])
 		err(11, __func__, "malloc_json_conv_int_str() is not supposed to return NULL!");
 		not_reached();
 	    }
-	    if (inputlen != retlen) {
-		err(12, __func__, "test[%d] inputlen: %ju != retlen: %ju",
-				 i, (uintmax_t)inputlen, (uintmax_t)retlen);
-		not_reached();
+
+	    /*
+	     * test string lengths
+	     */
+	    if (test_result[i].orig_len != inputlen) {
+		dbg(DBG_VHIGH, "test_result[%d].orig_len: %ju != inputlen: %ju",
+			     i, (uintmax_t)test_result[i].orig_len, (uintmax_t)inputlen);
+		test_error = true;
+	    } else {
+		dbg(DBG_VVHIGH, "test_result[%d].orig_len: %ju == inputlen: %ju",
+			     i, (uintmax_t)test_result[i].orig_len, (uintmax_t)inputlen);
+	    }
+	    if (test_result[i].as_str_len != retlen) {
+		dbg(DBG_VHIGH, "test_result[%d].as_str_len: %ju != retlen: %ju",
+			     i, (uintmax_t)test_result[i].as_str_len, (uintmax_t)retlen);
+		test_error = true;
+	    } else {
+		dbg(DBG_VVHIGH, "test_result[%d].as_str_len: %ju == retlen: %ju",
+			     i, (uintmax_t)test_result[i].as_str_len, (uintmax_t)retlen);
 	    }
 
 	    /*
@@ -386,10 +401,6 @@ main(int argc, char *argv[])
 	    err(13, __func__, "malloc_json_conv_int_str() is not supposed to return NULL!");
 	    not_reached();
 	}
-	if (inputlen != retlen) {
-	    err(14, __func__, "inputlen: %ju != retlen: %ju", (uintmax_t)inputlen, (uintmax_t)retlen);
-	    not_reached();
-	}
 
 	/*
 	 * output struct integer element, unless -q
@@ -403,17 +414,23 @@ main(int argc, char *argv[])
 	    prstr("    {\n");
 
 	    /*
-	     * output as_str
+	     * print JSON string
 	     */
-	    print("\t/* malloced JSON integer string trimmed if needed, that was converted */\n"
-		  "\t\"%s\",\n\n", input);
+	    print("\t\"%s\",\t/* malloced JSON integer string, whitespace trimmed if needed */\n\n",
+		  ival->as_str);
+
+	    /*
+	     * print JSON string lengths
+	     */
+	    print("\t%ju,\t/* length of original JSON integer string */\n", (uintmax_t)inputlen);
+	    print("\t%ju,\t/* length of as_str */\n\n", (uintmax_t)inputlen);
 
 	    /*
 	     * print bool converted and bool is_negative
 	     */
 	    print("\t%s,\t/* true ==> able to convert JSON integer to some form of C integer type */\n",
 		  ival->converted ? "true" : "false");
-	    print("\t%s,\t/* true ==> value < 0 */\n",
+	    print("\t%s,\t/* true ==> value < 0 */\n\n",
 		  ival->is_negative ? "true" : "false");
 
 	    /*
