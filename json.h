@@ -411,6 +411,23 @@ struct floating {
 
 
 /*
+ * parsed JSON string
+ */
+struct string {
+    char *as_str;		/* malloced non-decoded JSON string, NUL terminated */
+    char *str;			/* malloced decoded JSON string, NUL terminated */
+
+    size_t str_len;		/* length of str, not including final NUL */
+    size_t as_str_len;		/* length of as_str, not including final NUL */
+
+    bool converted;		/* true ==> able to decode JSON string */
+    bool has_nul;		/* true ==> decoded JSON string as a NUL inside it */
+
+    bool same;			/* non-decoded JSON string same as decoded JSON string */
+};
+
+
+/*
  * external function declarations
  */
 extern char *malloc_json_encode(char const *ptr, size_t len, size_t *retlen);
