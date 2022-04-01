@@ -74,21 +74,22 @@
 #include <unistd.h> /* getopt */
 #include "jparse.h"
 
-int yylex(void);
-void yyerror(char const *error, ...);
-extern int yylineno;
-extern char *yytext;
-extern FILE *yyin;
-void usage(int exitcode, char const *name, char const *str) __attribute__((noreturn));
-void parse_json_file(char const *filename);
-void parse_json_string(char const *string);
-void print_newline(void);
+int verbosity_level = DBG_DEFAULT;	/* debug level set by -v */
+bool msg_output_allowed = true;		/* false ==> disable output from msg() */
+bool dbg_output_allowed = true;		/* false ==> disable output from dbg() */
+bool warn_output_allowed = true;	/* false ==> disable output from warn() and warnp() */
+bool err_output_allowed = true;		/* false ==> disable output from err() and errp() */
+bool usage_output_allowed = true;	/* false ==> disable output from vfprintf_usage() */
+bool output_newline = true;		/* true ==> -n not specified, output new line after each arg processed */
+unsigned num_errors = 0;		/* > 0 number of errors encountered */
+
+
 /* debug information during development */
 #define YYDEBUG 1
 int yydebug = 1;
 int token_type = 0;
 
-#line 92 "jparse.tab.c"
+#line 93 "jparse.tab.c"
 
 # ifndef YY_CAST
 #  ifdef __cplusplus
@@ -509,9 +510,9 @@ static const yytype_int8 yytranslate[] =
 /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_uint8 yyrline[] =
 {
-       0,   112,   112,   113,   114,   117,   118,   119,   120,   121,
-     122,   123,   124,   127,   130,   131,   134,   137,   140,   141,
-     144
+       0,   113,   113,   114,   115,   118,   119,   120,   121,   122,
+     123,   124,   125,   128,   131,   132,   135,   138,   141,   142,
+     145
 };
 #endif
 
@@ -1565,7 +1566,7 @@ yyreduce:
     switch (yyn)
       {
 
-#line 1569 "jparse.tab.c"
+#line 1570 "jparse.tab.c"
 
         default: break;
       }
@@ -1800,7 +1801,7 @@ yyreturnlab:
   return yyresult;
 }
 
-#line 149 "jparse.y"
+#line 150 "jparse.y"
 
 
 /* Section 3: C code */

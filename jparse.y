@@ -54,15 +54,16 @@
 #include <unistd.h> /* getopt */
 #include "jparse.h"
 
-int yylex(void);
-void yyerror(char const *error, ...);
-extern int yylineno;
-extern char *yytext;
-extern FILE *yyin;
-void usage(int exitcode, char const *name, char const *str) __attribute__((noreturn));
-void parse_json_file(char const *filename);
-void parse_json_string(char const *string);
-void print_newline(void);
+int verbosity_level = DBG_DEFAULT;	/* debug level set by -v */
+bool msg_output_allowed = true;		/* false ==> disable output from msg() */
+bool dbg_output_allowed = true;		/* false ==> disable output from dbg() */
+bool warn_output_allowed = true;	/* false ==> disable output from warn() and warnp() */
+bool err_output_allowed = true;		/* false ==> disable output from err() and errp() */
+bool usage_output_allowed = true;	/* false ==> disable output from vfprintf_usage() */
+bool output_newline = true;		/* true ==> -n not specified, output new line after each arg processed */
+unsigned num_errors = 0;		/* > 0 number of errors encountered */
+
+
 /* debug information during development */
 #define YYDEBUG 1
 int yydebug = 1;
