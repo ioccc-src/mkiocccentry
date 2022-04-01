@@ -77,22 +77,34 @@ static const char * const usage_msg =
 /*
  * globals
  */
-int verbosity_level = DBG_DEFAULT;	/* debug level set by -v */
-bool msg_output_allowed = true;		/* false ==> disable output from msg() */
-bool dbg_output_allowed = true;		/* false ==> disable output from dbg() */
-bool warn_output_allowed = true;	/* false ==> disable output from warn() and warnp() */
-bool err_output_allowed = true;		/* false ==> disable output from err() and errp() */
-bool usage_output_allowed = true;	/* false ==> disable output from vfprintf_usage() */
-bool output_newline = true;		/* true ==> -n not specified, output new line after each arg processed */
+extern int verbosity_level;	/* debug level set by -v */
+extern bool msg_output_allowed;		/* false ==> disable output from msg() */
+extern bool dbg_output_allowed;		/* false ==> disable output from dbg() */
+extern bool warn_output_allowed;	/* false ==> disable output from warn() and warnp() */
+extern bool err_output_allowed;		/* false ==> disable output from err() and errp() */
+extern bool usage_output_allowed;	/* false ==> disable output from vfprintf_usage() */
+extern bool output_newline;		/* true ==> -n not specified, output new line after each arg processed */
+extern unsigned num_errors;		/* > 0 number of errors encountered */
 static bool quiet = false;		/* true ==> only show errors, and warnings if -v > 0 */
-unsigned num_errors = 0;		/* > 0 number of errors encountered */
-
+/* lexer and parser specific variables */
+extern int yylineno;			/* line number in lexer */
+extern char *yytext;			/* current text */
+extern FILE *yyin;			/* input file lexer/parser reads from */
+extern int oldstate;
+extern unsigned num_errors;		/* > 0 number of errors encountered */
+extern bool output_newline;		/* true ==> -n not specified, output new line after each arg processed */
+extern int token_type;			/* for braces, brackets etc.: '{', '}', '[', ']', ':' and so on */
 
 /*
  * function prototypes
  */
 void print_newline(void);
 static void usage(int exitcode, char const *name, char const *str) __attribute__((noreturn));
-
+/* lexer specific */
+void yyerror(char const *s, ...);
+int yylex(void);
+/* parser specific */
+void parse_json_file(char const *filename);
+void parse_json_string(char const *string);
 
 #endif /* INCLUDE_JPARSE_H */
