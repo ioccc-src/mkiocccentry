@@ -398,7 +398,7 @@ main(int argc, char *argv[])
 	 */
 	ival = malloc_json_conv_int_str(input, &retlen);
 	if (ival == NULL) {
-	    err(13, __func__, "malloc_json_conv_int_str() is not supposed to return NULL!");
+	    err(12, __func__, "malloc_json_conv_int_str() is not supposed to return NULL!");
 	    not_reached();
 	}
 
@@ -596,7 +596,7 @@ main(int argc, char *argv[])
      * All Done!!! - Jessica Noll, age 2
      */
     if (error == true) {
-	exit(15);
+	exit(13);
     }
     exit(0); /*ooo*/
 }
@@ -756,7 +756,7 @@ prinfo(bool sized, intmax_t value, char const *scomm, char const *vcomm)
      * firewall
      */
     if (scomm == NULL || vcomm == NULL) {
-	err(16, __func__, "NULL arg(s)");
+	err(14, __func__, "NULL arg(s)");
 	not_reached();
     }
 
@@ -798,7 +798,7 @@ pruinfo(bool sized, uintmax_t value, char const *scomm, char const *vcomm)
      * firewall
      */
     if (scomm == NULL || vcomm == NULL) {
-	err(17, __func__, "NULL arg(s)");
+	err(15, __func__, "NULL arg(s)");
 	not_reached();
     }
 
