@@ -376,7 +376,7 @@ struct json_common
     char *mkiocccentry_ver;	/* mkiocccentry version (MKIOCCCENTRY_VERSION) */
     char const *iocccsize_ver;	/* iocccsize version (compiled in, same as iocccsize -V) */
     char const *jinfochk_ver;	/* jinfochk version (compiled in, same as jinfochk -V) */
-    char const *jauthchk_ver;	/* jautochk version (compiled in, same as jautochk -V) */
+    char const *jauthchk_ver;	/* jauthchk version (compiled in, same as jauthchk -V) */
     char const *fnamchk_ver;	/* fnamchk version (compiled in, same as fnamchk -V) */
     char const *txzchk_ver;	/* txzchk version (compiled in, same as txzchk -V) */
     /*
@@ -435,7 +435,7 @@ struct info {
     bool rule_2b_override;	/* true ==> Rule 2b override requested */
     bool highbit_warning;	/* true ==> high bit character(s) detected */
     bool nul_warning;		/* true ==> NUL character(s) detected */
-    bool trigraph_warning;	/* true ==> unknown or invalid tri-graph(s) detected */
+    bool trigraph_warning;	/* true ==> unknown or invalid trigraph(s) detected */
     bool wordbuf_warning;	/* true ==> word buffer overflow detected */
     bool ungetc_warning;	/* true ==> ungetc warning detected */
     bool Makefile_override;	/* true ==> Makefile rule override requested */
