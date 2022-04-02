@@ -43,6 +43,10 @@
 
 
 /*
+ * definitions
+ */
+
+/*
  * byte as octet constants
  */
 #define BITS_IN_BYTE (8)	    /* assume 8 bit bytes */
@@ -58,35 +62,44 @@
 #define AUTHOR_JSON_FILENAME ".author.json"
 #define INVALID_JSON_FILENAME "null"
 
-/* for the formed_UTC check */
-#define FORMED_UTC_FMT "%a %b %d %H:%M:%S %Y UTC"   /* format for strptime() of formed_UTC */
+#define FORMED_UTC_FMT "%a %b %d %H:%M:%S %Y UTC"   /* format of strptime() for formed_UTC check */
 
 /*
- * JSON warn code defines and variables for jwarn()
+ * JSON warn/error code constants and macros for the jwarn() and jerr()
+ * functions
  */
 
 /*
- * Codes 0 - 99 are reserved for special purposes so all normal codes should be
+ * Codes 0 - 199 are reserved for special purposes so all normal codes should be
  * >= JSON_CODE_MIN && <= JSON_CODE_MAX via the JSON_CODE macro.
+ *
+ * NOTE: The reason 200 codes are reserved is because it's more than enough ever
+ * and we don't want to have to ever change the codes after the parser and
+ * checkers are complete as this would cause problems for the tools as well as
+ * the test suites. Previously the range was 0 - 99 and although this is also
+ * probably more than enough we want to be sure that there is never a problem
+ * and we cannot imagine how 200 codes will ever not be a large enough range but
+ * if the use of reserved codes change this might not be the case for just 100
+ * (unlikely though that is).
  */
 /* reserved code: all normal codes should be >= JSON_CODE_MIN && <= JSON_CODE_MAX via JSON_CODE macro */
 #define JSON_CODE_RESERVED_MIN (0)
 /* reserved code: all normal codes should be >= JSON_CODE_MIN && <= JSON_CODE_MAX via JSON_CODE macro */
-#define JSON_CODE_RESERVED_MAX (99)
+#define JSON_CODE_RESERVED_MAX (199)
 /*
- * The minimum code for jwarn() is the JSON_CODE_RESERVED_MAX (currently 99) + 1.
+ * The minimum code for jwarn() is the JSON_CODE_RESERVED_MAX (currently 199) + 1.
  * However this does not mean that calls to jwarn() cannot use <= the
  * JSON_CODE_RESERVED_MAX: it's just for special purposes e.g. codes that are
  * used in more than one location.
  */
 #define JSON_CODE_MIN (1+JSON_CODE_RESERVED_MAX)
-/* The maximum json code for jwarn(). This was arbitrarily selected. */
+/* The maximum json code for jwarn()/jerr(). This was arbitrarily selected. */
 #define JSON_CODE_MAX (9999)
-/* the number of unreserved JSON codes for jwarn(): the max - the min + 1 */
+/* the number of unreserved JSON codes for jwarn()/jerr(): the max - the min + 1 */
 #define NUM_UNRESERVED_JSON_CODES (JSON_CODE_MAX-JSON_CODE_MIN)
 /*
- * To distinguish that this is a JSON warn code rather than any other type of
- * number we use these macro.
+ * To distinguish that a number is a JSON warn/error code rather than any other
+ * type of number we use these macros.
  */
 #define JSON_CODE(x) ((x)+JSON_CODE_RESERVED_MAX)
 /* reserved JSON code */
