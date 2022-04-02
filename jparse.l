@@ -120,43 +120,6 @@ JSON_COMMA		","
 /* Section 3: Code that's copied to the generated scanner */
 
 
-/* clearerr_or_fclose
- *
- * This function calls clearerr() or fclose() depending on if file is stdin or
- * some other file.
- *
- * given:
- *
- *	filename    - the filename of file
- *	file	    - the FILE * (stdin or another file)
- *
- *
- * NOTE: This function will do not return on NULL pointers.
- */
-void
-clearerr_or_fclose(char const *filename, FILE *file)
-{
-    int ret;
-
-    /*
-     * firewall
-     */
-    if (filename == NULL || file == NULL) {
-	err(35, __func__, "passed NULL arg(s)");
-	not_reached();
-    }
-
-    if (file == stdin)
-	clearerr(file);
-    else {
-	errno = 0;
-	ret = fclose(file);
-	if (ret != 0) {
-	    warnp(__func__, "error in fclose on file %s", filename);
-	}
-    }
-}
-
 /* parse_json_string	    - parse string as a JSON block
  *
  * given:
@@ -202,7 +165,7 @@ parse_json_string(char const *string)
     yy_delete_buffer(bp);
     bp = NULL;
 
-    print_newline();
+    print_newline(output_newline);
 }
 
 
@@ -290,26 +253,7 @@ parse_json_file(char const *filename)
     yyparse();
 
     clearerr_or_fclose(filename, yyin);
-    print_newline();
+    print_newline(output_newline);
 }
 
-/* print_newline	- prints a newline to stdout if -n not specified
- *
- * NOTE: We have this in a function because the same code is used every time we
- * print something out as long as -n was not specified.
- */
-void
-print_newline(void)
-{
-    int ret;
-
-    if (output_newline) {
-	errno = 0;		/* pre-clear errno for errp() */
-	ret = putchar('\n');
-	if (ret != '\n') {
-	    errp(36, __func__, "error while writing newline");
-	    not_reached();
-	}
-    }
-}
 

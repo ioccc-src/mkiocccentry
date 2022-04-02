@@ -98,7 +98,6 @@ extern int token_type;			/* for braces, brackets etc.: '{', '}', '[', ']', ':' a
 /*
  * function prototypes
  */
-void print_newline(void);
 static void usage(int exitcode, char const *name, char const *str) __attribute__((noreturn));
 /* lexer specific */
 void yyerror(char const *s, ...);

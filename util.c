@@ -2751,3 +2751,70 @@ find_matching_quote(char *q)
 
     return q;
 }
+
+/* clearerr_or_fclose
+ *
+ * This function calls clearerr() or fclose() depending on if file is stdin or
+ * some other file.
+ *
+ * given:
+ *
+ *	filename    - the filename of file
+ *	file	    - the FILE * (stdin or another file)
+ *
+ *
+ * NOTE: This function will not return on NULL pointers.
+ */
+void
+clearerr_or_fclose(char const *filename, FILE *file)
+{
+    int ret;
+
+    /*
+     * firewall
+     */
+    if (filename == NULL || file == NULL) {
+	err(182, __func__, "passed NULL arg(s)");
+	not_reached();
+    }
+
+    if (file == stdin)
+	clearerr(file);
+    else {
+	errno = 0;
+	ret = fclose(file);
+	if (ret != 0) {
+	    warnp(__func__, "error in fclose on file %s", filename);
+	}
+    }
+}
+
+/* print_newline	- prints a newline to stdout if output_newline == true
+ *
+ * given:
+ *
+ *	output_newline	- true ==> write a newline of output
+ *
+ * This function is used when we want to print a newline after some input. This
+ * is currently only used in jparse if -n is not specified but there are other
+ * tools that have this same functionality and they could make use of this too.
+ * The reason it is not in jparse.l or jparse.y is because I'm trying to keep
+ * the lexer and parser as clutter free as possible and this doesn't seem to
+ * belong there with that in mind.
+ *
+ * This function does not return on error.
+ */
+void
+print_newline(bool output_newline)
+{
+    int ret;
+
+    if (output_newline) {
+	errno = 0;		/* pre-clear errno for errp() */
+	ret = putchar('\n');
+	if (ret != '\n') {
+	    errp(183, __func__, "error while writing newline");
+	    not_reached();
+	}
+    }
+}
