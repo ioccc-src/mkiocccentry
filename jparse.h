@@ -61,7 +61,7 @@ static const char * const usage_msg =
     "\n"
     "\t-h\t\tprint help message and exit 0\n"
     "\t-v level\tset verbosity level (def level: %d)\n"
-    "\t-q\t\tquiet mode, unless verbosity level > 0 (def: not quiet)\n"
+    "\t-q\t\tquiet mode: silence msg(), warn(), warnp() if -v 0 (def: not quiet)\n"
     "\t-V\t\tprint version string and exit 0\n"
     "\t-T\t\tshow IOCCC toolkit release repository tag\n"
     "\t-n\t\tdo not output newline after decode output\n"
@@ -77,15 +77,8 @@ static const char * const usage_msg =
 /*
  * globals
  */
-extern int verbosity_level;	/* debug level set by -v */
-extern bool msg_output_allowed;		/* false ==> disable output from msg() */
-extern bool dbg_output_allowed;		/* false ==> disable output from dbg() */
-extern bool warn_output_allowed;	/* false ==> disable output from warn() and warnp() */
-extern bool err_output_allowed;		/* false ==> disable output from err() and errp() */
-extern bool usage_output_allowed;	/* false ==> disable output from vfprintf_usage() */
 extern bool output_newline;		/* true ==> -n not specified, output new line after each arg processed */
 extern unsigned num_errors;		/* > 0 number of errors encountered */
-static bool quiet = false;		/* true ==> only show errors, and warnings if -v > 0 */
 /* lexer and parser specific variables */
 extern int yylineno;			/* line number in lexer */
 extern char *yytext;			/* current text */

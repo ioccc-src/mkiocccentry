@@ -1009,6 +1009,7 @@ main(int argc, char **argv)
 	    break;
 	case 'q':
 	    quiet = true;
+	    msg_warn_silent = true;
 	    break;
 	case 'V':		/* -V - print version and exit */
 	    errno = 0;		/* pre-clear errno for warnp() */
@@ -1053,11 +1054,6 @@ main(int argc, char **argv)
 	    usage(1, "invalid -flag", program); /*ooo*/
 	    not_reached();
 	 }
-    }
-    /* be warn(), warnp() and msg() quiet of -q and -v 0 */
-    if (quiet && verbosity_level <= 0) {
-	msg_output_allowed = false;
-	warn_output_allowed = false;
     }
     /* must have the exact required number of args */
     if (argc - optind != REQUIRED_ARGS) {

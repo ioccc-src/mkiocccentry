@@ -2,7 +2,7 @@
 .SH NAME
 fnamchk \- IOCCC compressed tarball filename sanity check tool
 .SH SYNOPSIS
-\fBfnamchk [\-h] [\-v level] [\-V] [\-t|\-u] filepath
+\fBfnamchk [\-h] [\-v level] [\-q] [\-V] [\-t|\-u] filepath
 .SH DESCRIPTION
 \fBfnamchk\fP verifies that an IOCCC compressed tarball is properly named.
 .PP
@@ -38,6 +38,10 @@ Set verbosity level.
 .PP
 \fB\-V\fP
 Show version and exit.
+.PP
+\fB\-q\fP
+Quiet mode.
+Silence msg(), warn(), warnp() if verbosity level is 0.
 .PP
 \fB\-t\fP
 If the filename does not start with the test mode filename format, issue an error.

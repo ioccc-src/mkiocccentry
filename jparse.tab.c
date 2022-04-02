@@ -74,12 +74,6 @@
 #include <unistd.h> /* getopt */
 #include "jparse.h"
 
-int verbosity_level = DBG_DEFAULT;	/* debug level set by -v */
-bool msg_output_allowed = true;		/* false ==> disable output from msg() */
-bool dbg_output_allowed = true;		/* false ==> disable output from dbg() */
-bool warn_output_allowed = true;	/* false ==> disable output from warn() and warnp() */
-bool err_output_allowed = true;		/* false ==> disable output from err() and errp() */
-bool usage_output_allowed = true;	/* false ==> disable output from vfprintf_usage() */
 bool output_newline = true;		/* true ==> -n not specified, output new line after each arg processed */
 unsigned num_errors = 0;		/* > 0 number of errors encountered */
 
@@ -89,7 +83,7 @@ unsigned num_errors = 0;		/* > 0 number of errors encountered */
 int yydebug = 1;
 int token_type = 0;
 
-#line 93 "jparse.tab.c"
+#line 87 "jparse.tab.c"
 
 # ifndef YY_CAST
 #  ifdef __cplusplus
@@ -510,9 +504,9 @@ static const yytype_int8 yytranslate[] =
 /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_uint8 yyrline[] =
 {
-       0,   113,   113,   114,   115,   118,   119,   120,   121,   122,
-     123,   124,   125,   128,   131,   132,   135,   138,   141,   142,
-     145
+       0,   107,   107,   108,   109,   112,   113,   114,   115,   116,
+     117,   118,   119,   122,   125,   126,   129,   132,   135,   136,
+     139
 };
 #endif
 
@@ -1566,7 +1560,7 @@ yyreduce:
     switch (yyn)
       {
 
-#line 1570 "jparse.tab.c"
+#line 1564 "jparse.tab.c"
 
         default: break;
       }
@@ -1801,7 +1795,7 @@ yyreturnlab:
   return yyresult;
 }
 
-#line 150 "jparse.y"
+#line 144 "jparse.y"
 
 
 /* Section 3: C code */
@@ -1835,7 +1829,7 @@ main(int argc, char **argv)
 	    verbosity_level = parse_verbosity(program, optarg);
 	    break;
 	case 'q':
-	    quiet = true;
+	    msg_warn_silent = true;
 	    break;
 	case 'V':		/* -V - print version and exit */
 	    errno = 0;		/* pre-clear errno for warnp() */
@@ -1898,12 +1892,6 @@ main(int argc, char **argv)
 
     /* perform IOCCC sanity checks */
     ioccc_sanity_chks();
-
-    /* warn(), warnp() and msg() are quiet if -q and -v 0 */
-    if (quiet && verbosity_level <= 0) {
-	msg_output_allowed = false;
-	warn_output_allowed = false;
-    }
 
     /*
      * case: process arguments on command line

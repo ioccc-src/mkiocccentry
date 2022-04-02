@@ -54,12 +54,6 @@
 #include <unistd.h> /* getopt */
 #include "jparse.h"
 
-int verbosity_level = DBG_DEFAULT;	/* debug level set by -v */
-bool msg_output_allowed = true;		/* false ==> disable output from msg() */
-bool dbg_output_allowed = true;		/* false ==> disable output from dbg() */
-bool warn_output_allowed = true;	/* false ==> disable output from warn() and warnp() */
-bool err_output_allowed = true;		/* false ==> disable output from err() and errp() */
-bool usage_output_allowed = true;	/* false ==> disable output from vfprintf_usage() */
 bool output_newline = true;		/* true ==> -n not specified, output new line after each arg processed */
 unsigned num_errors = 0;		/* > 0 number of errors encountered */
 
@@ -180,7 +174,7 @@ main(int argc, char **argv)
 	    verbosity_level = parse_verbosity(program, optarg);
 	    break;
 	case 'q':
-	    quiet = true;
+	    msg_warn_silent = true;
 	    break;
 	case 'V':		/* -V - print version and exit */
 	    errno = 0;		/* pre-clear errno for warnp() */
@@ -243,12 +237,6 @@ main(int argc, char **argv)
 
     /* perform IOCCC sanity checks */
     ioccc_sanity_chks();
-
-    /* warn(), warnp() and msg() are quiet if -q and -v 0 */
-    if (quiet && verbosity_level <= 0) {
-	msg_output_allowed = false;
-	warn_output_allowed = false;
-    }
 
     /*
      * case: process arguments on command line

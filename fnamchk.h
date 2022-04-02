@@ -73,7 +73,7 @@ static const char * const usage_msg =
     "\n"
     "\t-h\t\t\tprint help message and exit 0\n"
     "\t-v level\t\tset verbosity level: (def level: %d)\n"
-    "\t-q\t\t\tquiet mode, unless verbosity level > 0 (def: not quiet)\n"
+    "\t-q\t\t\tquiet mode: silence msg(), warn(), warnp() if -v 0 (def: not quiet)\n"
     "\t-V\t\t\tprint version string and exit\n"
     "\t-t\t\t\tfilename must match test entry filename\n"
     "\t-u\t\t\tfilename must match real entry filename\n"
@@ -84,17 +84,9 @@ static const char * const usage_msg =
     "fnamchk version: %s\n";
 
 
-
 /*
  * globals
  */
-int verbosity_level = DBG_DEFAULT;	/* debug level set by -v */
-bool msg_output_allowed = true;		/* false ==> disable output from msg() */
-bool dbg_output_allowed = true;		/* false ==> disable output from dbg() */
-bool warn_output_allowed = true;	/* false ==> disable output from warn() and warnp() */
-bool err_output_allowed = true;		/* false ==> disable output from err() and errp() */
-bool usage_output_allowed = true;	/* false ==> disable output from vfprintf_usage() */
-static bool quiet = false;		/* true ==> only show errors, and warnings if -v > 0 */
 
 
 /*

@@ -77,10 +77,10 @@ extern int yydebug;
 
 /* Value type.  */
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
-#line 88 "jparse.y"
+#line 82 "jparse.y"
 union json_type
 {
-#line 88 "jparse.y"
+#line 82 "jparse.y"
 
   char *string;
   uintmax_t uintmax;
@@ -91,7 +91,7 @@ union json_type
 #line 92 "jparse.tab.h"
 
 };
-#line 88 "jparse.y"
+#line 82 "jparse.y"
 typedef union json_type YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define YYSTYPE_IS_DECLARED 1

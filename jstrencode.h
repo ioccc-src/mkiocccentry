@@ -69,7 +69,7 @@ static const char * const usage_msg =
     "\n"
     "\t-h\t\tprint help message and exit 0\n"
     "\t-v level\tset verbosity level: (def level: %d)\n"
-    "\t-q\t\tquiet mode, unless verbosity level > 0 (def: not quiet)\n"
+    "\t-q\t\tquiet mode: silence msg(), warn(), warnp() if -v 0 (def: not quiet)\n"
     "\t-V\t\tprint version string and exit 0\n"
     "\t-t\t\tperform jencchk test on code JSON encode/decode functions\n"
     "\t-n\t\tdo not output newline after encode output\n"
@@ -82,13 +82,7 @@ static const char * const usage_msg =
 /*
  * globals
  */
-int verbosity_level = DBG_DEFAULT;	/* debug level set by -v */
-bool msg_output_allowed = true;		/* false ==> disable output from msg() */
-bool dbg_output_allowed = true;		/* false ==> disable output from dbg() */
-bool warn_output_allowed = true;	/* false ==> disable output from warn() and warnp() */
-bool err_output_allowed = true;		/* false ==> disable output from err() and errp() */
-bool usage_output_allowed = true;	/* false ==> disable output from vfprintf_usage() */
-static bool quiet = false;		/* true ==> only show errors, and warnings if -v > 0 */
+
 
 
 /*

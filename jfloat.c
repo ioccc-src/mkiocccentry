@@ -96,25 +96,23 @@ main(int argc, char *argv[])
 	    break;
 	case 'q':
 	    quiet = true;
+	    msg_warn_silent = true;
 	    break;
 	case 't':		/* -t - validate the contents of the jenc[] table */
 	    test_mode = true;
 	    quiet = true;	/* -t implies -q */
+	    msg_warn_silent = true;
 	    break;
 	case 'S':		/* -S - strict mode */
 	    test_mode = true;	/* -S implies -t */
 	    quiet = true;	/* -S implies -q */
+	    msg_warn_silent = true;
 	    strict = true;
 	    break;
 	default:
 	    usage(4, "invalid -flag", program); /*ooo*/
 	    not_reached();
 	 }
-    }
-    /* be warn(), warnp() and msg() quiet of -q and -v 0 */
-    if (quiet == true && verbosity_level <= 0) {
-	msg_output_allowed = false;
-	warn_output_allowed = false;
     }
     arg_cnt = argc - optind;
     if (test_mode == true && arg_cnt != 0) {

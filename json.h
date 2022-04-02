@@ -258,8 +258,8 @@ struct string {
     bool converted;		/* true ==> able to decode JSON string */
     bool has_nul;		/* true ==> decoded JSON string as a NUL byte inside it */
 
-    bool same;			/* true => original JSON string same as decoded JSON string */
-    bool posix_plus;		/* true => decoded JSON string is POSIX portable safe plus + chars */
+    bool same;			/* true => original JSON string same as decoded string, no decoding required */
+    bool posix_plus;		/* true => decoded JSON string has only POSIX portable safe plus + chars */
 };
 
 

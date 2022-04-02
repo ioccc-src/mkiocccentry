@@ -136,7 +136,8 @@ static const char * const usage_msg0 =
     "\noptions:\n"
     "\t-h\t\tprint help message and exit 0\n"
     "\t-v level\tset verbosity level: (def level: %d)\n"
-    "\t-q\t\tquiet mode, unless verbosity level > 0 (def: not quiet)\n"
+    "\t-q\t\tquiet mode (def: not quiet)\n"
+    "\t\t\t    NOTE: -q will also silence msg(), warn(), warnp() if -v 0\n"
     "\t-V\t\tprint version string and exit\n"
     "\t-W\t\tignore all warnings (this does NOT mean the judges will! :) )\n";
 static const char * const usage_msg1 =
@@ -172,15 +173,10 @@ static const char * const usage_msg4 =
 /*
  * globals
  */
-int verbosity_level = DBG_DEFAULT;	/* debug level set by -v */
-bool msg_output_allowed = true;		/* false ==> disable output from msg() */
-bool dbg_output_allowed = true;		/* false ==> disable output from dbg() */
-bool warn_output_allowed = true;	/* false ==> disable output from warn() and warnp() */
-bool err_output_allowed = true;		/* false ==> disable output from err() and errp() */
-bool usage_output_allowed = true;	/* false ==> disable output from vfprintf_usage() */
+bool quiet = false;			/* true ==> quiet mode */
+/**/
 static bool need_confirm = true;	/* true ==> ask for confirmations */
 static bool need_hints = true;		/* true ==> show hints */
-static bool quiet = false;		/* true ==> suppress some messages */
 static bool ignore_warnings = false;	/* true ==> ignore all warnings (this does NOT mean the judges will! :) */
 static FILE *input_stream = NULL;	/* input file: stdin or answers file  */
 static unsigned answers_errors;		/* > 0 ==> output errors on answers file */

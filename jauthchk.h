@@ -75,7 +75,8 @@ static const char * const usage_msg =
 "\n"
 "\t-h\t\tprint help message and exit 0\n"
 "\t-v level\tset verbosity level: (def level: %d)\n"
-"\t-q\t\tquiet mode, unless verbosity level > 0 (def: not quiet)\n"
+"\t-q\t\tquiet mode (def: not quiet)\n"
+"\t\t\t    NOTE: -q will also silence msg(), warn(), warnp() if -v 0\n"
 "\t-V\t\tprint version string and exit\n"
 "\t-S\t\tstrict mode: be more strict on what is allowed (def: not strict)\n"
 "\t-F fnamchk\tpath to fnamchk tool (def: %s)\n"
@@ -95,15 +96,10 @@ static const char * const usage_msg =
 /*
  * globals
  */
-int verbosity_level = DBG_DEFAULT;	/* debug level set by -v */
-bool msg_output_allowed = true;		/* false ==> disable output from msg() */
-bool dbg_output_allowed = true;		/* false ==> disable output from dbg() */
-bool warn_output_allowed = true;	/* false ==> disable output from warn() and warnp() */
-bool err_output_allowed = true;		/* false ==> disable output from err() and errp() */
-bool usage_output_allowed = true;	/* false ==> disable output from vfprintf_usage() */
+bool quiet = false;			/* true ==> quiet mode */
+/**/
 static char const *program = NULL;			/* our name */
 static char *program_basename = NULL;			/* our basename */
-static bool quiet = false;				/* true ==> quiet mode */
 struct author author;					/* the .author.json struct */
 static bool strict = false;				/* true ==> disallow anything before/after the '{' and '}' */
 static bool test = false;				/* true ==> some tests are not performed */

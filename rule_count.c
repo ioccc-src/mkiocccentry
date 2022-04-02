@@ -61,12 +61,9 @@
 #define COMMENT_EOL		1
 #define COMMENT_BLOCK		2
 
-extern int verbosity_level;		/* debug level set by -v */
-extern bool msg_output_allowed;		/* false ==> disable output from msg() */
-extern bool dbg_output_allowed;		/* false ==> disable output from dbg() */
-extern bool warn_output_allowed;	/* false ==> disable output from warn() and warnp() */
-extern bool err_output_allowed;		/* false ==> disable output from err() and errp() */
-extern bool usage_output_allowed;	/* false ==> disable output from vfprintf_usage() */
+/*
+ * globals
+ */
 char const * const iocccsize_version = IOCCCSIZE_VERSION;
 
 /*

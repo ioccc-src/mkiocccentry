@@ -31,17 +31,8 @@
 #include "dbg.h"		/* debug, warning, error and usage macros */
 
 
-#if defined(DBG_TEST)
-#include <getopt.h>
-
 /*
- * definitions
- */
-#define VERSION "1.6 2022-03-20"
-
-
-/*
- * globals
+ * set global debugging defaults
  */
 int verbosity_level = DBG_DEFAULT;	/* debug level set by -v */
 bool msg_output_allowed = true;		/* false ==> disable output from msg() */
@@ -49,7 +40,16 @@ bool dbg_output_allowed = true;		/* false ==> disable output from dbg() */
 bool warn_output_allowed = true;	/* false ==> disable output from warn() and warnp() */
 bool err_output_allowed = true;		/* false ==> disable output from err() and errp() */
 bool usage_output_allowed = true;	/* false ==> disable output from vfprintf_usage() */
-static bool quiet = false;		/* true ==> only show errors, and warnings if -v > 0 */
+bool msg_warn_silent = false;		/* true ==> silence msg(), warn(), warnp() if verbosity_level == 0 */
+
+
+#if defined(DBG_TEST)
+#include <getopt.h>
+
+/*
+ * definitions
+ */
+#define VERSION "1.7 2022-04-02"
 
 
 /*
@@ -63,7 +63,7 @@ static char const * const usage =
 "\n"
 "\t-h\t\tprint help message and exit 0\n"
 "\t-v level\tset verbosity level: (def level: 0)\n"
-"\t-q\t\tquiet mode, unless verbosity level > 0 (def: not quiet)\n"
+"\t-q\t\tquiet mode: silence msg(), warn(), warnp() if -v 0 (def: not quiet)\n"
 "\t-e errno\tsimulate setting of errno to cause errp() to be involved\n"
 "\n"
 "\tfoo\t\ta required arg\n"
@@ -114,9 +114,9 @@ msg(char const *fmt, ...)
     }
 
     /*
-     * print the message, is allowed
+     * print the message, if allowed
      */
-    if (msg_output_allowed == true) {
+    if (msg_output_allowed == true && (msg_warn_silent == false || verbosity_level > 0)) {
 	ret = vfprintf(stderr, fmt, ap);
 	if (ret <= 0) {
 	    fprintf(stderr, "[%s vfprintf returned error: %d]", __func__, ret);
@@ -259,46 +259,59 @@ warn(char const *name, char const *fmt, ...)
     va_start(ap, fmt);
 
     /*
+     * silence warn() if -q and -v 0
+     */
+    if (msg_warn_silent == true && verbosity_level <= 0) {
+	warn_output_allowed = false;
+    }
+
+    /*
      * NOTE: We cannot use warn because this is the warn function!
      */
 
     /*
-     * firewall
+     * print the warning, if allowed
      */
-    if (name == NULL) {
-	name = "((NULL name))";
-	(void) fprintf(stderr, "\nWarning: in warn(): called with NULL name, forcing name: %s\n", name);
-    }
-    if (fmt == NULL) {
-	fmt = "((NULL fmt))";
-	(void) fprintf(stderr, "\nWarning: in warn(): called with NULL fmt, forcing fmt: %s\n", fmt);
-    }
+    if (warn_output_allowed == true && (msg_warn_silent == false || verbosity_level > 0)) {
 
-    /*
-     * issue the warning, if allowed
-     */
-    errno = 0;
-    ret = fprintf(stderr, "Warning: %s: ", name);
-    if (ret < 0) {
-	(void) fprintf(stderr, "\nWarning: in warn(%s, %s, ...): fprintf returned error: %s\n", name, fmt, strerror(errno));
-    }
+	/*
+	 * firewall
+	 */
+	if (name == NULL) {
+	    name = "((NULL name))";
+	    (void) fprintf(stderr, "\nWarning: in warn(): called with NULL name, forcing name: %s\n", name);
+	}
+	if (fmt == NULL) {
+	    fmt = "((NULL fmt))";
+	    (void) fprintf(stderr, "\nWarning: in warn(): called with NULL fmt, forcing fmt: %s\n", fmt);
+	}
 
-    errno = 0;
-    ret = vfprintf(stderr, fmt, ap);
-    if (ret < 0) {
-	(void) fprintf(stderr, "\nWarning: in warn(%s, %s, ...): vfprintf returned error: %s\n", name, fmt, strerror(errno));
-    }
+	/*
+	 * issue the warning, if allowed
+	 */
+	errno = 0;
+	ret = fprintf(stderr, "Warning: %s: ", name);
+	if (ret < 0) {
+	    (void) fprintf(stderr, "\nWarning: in warn(%s, %s, ...): fprintf returned error: %s\n", name, fmt, strerror(errno));
+	}
 
-    errno = 0;
-    ret = fputc('\n', stderr);
-    if (ret != '\n') {
-	(void) fprintf(stderr, "\nWarning: in warn(%s, %s, ...): fputc returned error: %s\n", name, fmt, strerror(errno));
-    }
+	errno = 0;
+	ret = vfprintf(stderr, fmt, ap);
+	if (ret < 0) {
+	    (void) fprintf(stderr, "\nWarning: in warn(%s, %s, ...): vfprintf returned error: %s\n", name, fmt, strerror(errno));
+	}
 
-    errno = 0;
-    ret = fflush(stderr);
-    if (ret < 0) {
-	(void) fprintf(stderr, "\nWarning: in warn(%s, %s, ...): fflush returned error: %s\n", name, fmt, strerror(errno));
+	errno = 0;
+	ret = fputc('\n', stderr);
+	if (ret != '\n') {
+	    (void) fprintf(stderr, "\nWarning: in warn(%s, %s, ...): fputc returned error: %s\n", name, fmt, strerror(errno));
+	}
+
+	errno = 0;
+	ret = fflush(stderr);
+	if (ret < 0) {
+	    (void) fprintf(stderr, "\nWarning: in warn(%s, %s, ...): fflush returned error: %s\n", name, fmt, strerror(errno));
+	}
     }
 
     /*
@@ -351,41 +364,59 @@ warnp(char const *name, char const *fmt, ...)
     va_start(ap, fmt);
 
     /*
+     * silence warn() if -q and -v 0
+     */
+    if (msg_warn_silent == true && verbosity_level <= 0) {
+	warn_output_allowed = false;
+    }
+
+    /*
      * NOTE: We cannot use warn because this is the warn function!
      */
 
-    /* firewall */
-    if (name == NULL) {
-	name = "((NULL name))";
-	(void) fprintf(stderr, "\nWarning: in warn(): called with NULL name, forcing name: %s\n", name);
-    }
-    if (fmt == NULL) {
-	fmt = "((NULL fmt))";
-	(void) fprintf(stderr, "\nWarning: in warn(): called with NULL fmt, forcing fmt: %s\n", fmt);
-    }
+    /*
+     * print the warning, if allowed
+     */
+    if (warn_output_allowed == true && (msg_warn_silent == false || verbosity_level > 0)) {
 
-    errno = 0;
-    ret = fprintf(stderr, "Warning: %s: ", name);
-    if (ret < 0) {
-	(void) fprintf(stderr, "\nWarning: in warn(%s, %s, ...): fprintf returned error: %s\n", name, fmt, strerror(errno));
-    }
 
-    errno = 0;
-    ret = vfprintf(stderr, fmt, ap);
-    if (ret < 0) {
-	(void) fprintf(stderr, "\nWarning: in warn(%s, %s, ...): vfprintf returned error: %s\n", name, fmt, strerror(errno));
-    }
+	/* firewall */
+	if (name == NULL) {
+	    name = "((NULL name))";
+	    (void) fprintf(stderr, "\nWarning: in warn(): called with NULL name, forcing name: %s\n", name);
+	}
+	if (fmt == NULL) {
+	    fmt = "((NULL fmt))";
+	    (void) fprintf(stderr, "\nWarning: in warn(): called with NULL fmt, forcing fmt: %s\n", fmt);
+	}
 
-    errno = 0;
-    ret = fprintf(stderr, "errno[%d]: %s\n", saved_errno, strerror(saved_errno));
-    if (ret < 0) {
-	(void) fprintf(stderr, "\nWarning: in warn(%s, %s, ...): fprintf with errno returned error: %s\n", name, fmt, strerror(errno));
-    }
+	errno = 0;
+	ret = fprintf(stderr, "Warning: %s: ", name);
+	if (ret < 0) {
+	    (void) fprintf(stderr, "\nWarning: in warn(%s, %s, ...): fprintf returned error: %s\n",
+				   name, fmt, strerror(errno));
+	}
 
-    errno = 0;
-    ret = fflush(stderr);
-    if (ret < 0) {
-	(void) fprintf(stderr, "\nWarning: in warn(%s, %s, ...): fflush returned error: %s\n", name, fmt, strerror(errno));
+	errno = 0;
+	ret = vfprintf(stderr, fmt, ap);
+	if (ret < 0) {
+	    (void) fprintf(stderr, "\nWarning: in warn(%s, %s, ...): vfprintf returned error: %s\n",
+				   name, fmt, strerror(errno));
+	}
+
+	errno = 0;
+	ret = fprintf(stderr, "errno[%d]: %s\n", saved_errno, strerror(saved_errno));
+	if (ret < 0) {
+	    (void) fprintf(stderr, "\nWarning: in warn(%s, %s, ...): fprintf with errno returned error: %s\n",
+				   name, fmt, strerror(errno));
+	}
+
+	errno = 0;
+	ret = fflush(stderr);
+	if (ret < 0) {
+	    (void) fprintf(stderr, "\nWarning: in warn(%s, %s, ...): fflush returned error: %s\n",
+				   name, fmt, strerror(errno));
+	}
     }
 
     /*
@@ -854,7 +885,7 @@ main(int argc, char *argv[])
 	    }
 	    break;
 	case 'q':
-	    quiet = true;
+	    msg_warn_silent = true;
 	    break;
 	case 'e':	/* -e errno - force errno */
 	    /* parse errno */
@@ -873,11 +904,6 @@ main(int argc, char *argv[])
 	    vfprintf_usage(3, stderr, usage, program, VERSION); /*ooo*/
 	    not_reached();
 	}
-    }
-    /* be warn(), warnp() and msg() quiet of -q and -v 0 */
-    if (quiet == true && verbosity_level <= 0) {
-	msg_output_allowed = false;
-	warn_output_allowed = false;
     }
     /* must have 2 or 3 args */
     switch (argc-optind) {
@@ -899,6 +925,31 @@ main(int argc, char *argv[])
     baz = argv[optind+1];
     dbg(DBG_LOW, "baz: %s", baz);
     dbg(DBG_LOW, "bar: %s", bar);
+
+    /*
+     * report on dbg state, if debugging
+     */
+    dbg(DBG_MED, "verbosity_level: %d", verbosity_level);
+    dbg(DBG_MED, "msg_output_allowed: %s", msg_output_allowed ? "true" : "false");
+    dbg(DBG_MED, "dbg_output_allowed: %s", dbg_output_allowed ? "true" : "false");
+    dbg(DBG_MED, "warn_output_allowed: %s", warn_output_allowed ? "true" : "false");
+    dbg(DBG_MED, "err_output_allowed: %s", err_output_allowed ? "true" : "false");
+    dbg(DBG_MED, "usage_output_allowed: %s", usage_output_allowed ? "true" : "false");
+    dbg(DBG_MED, "msg_warn_silent: %s", msg_warn_silent ? "true" : "false");
+    dbg(DBG_MED, "msg() output: %s",
+	(msg_output_allowed == true && (msg_warn_silent == false || verbosity_level > 0)) ?
+	"allowed" : "silenced");
+    dbg(DBG_MED, "warn() output: %s",
+	(warn_output_allowed == true && (msg_warn_silent == false || verbosity_level > 0)) ?
+	"allowed" : "silenced");
+
+    /*
+     * simulate warnings
+     */
+    warn(program, "simulated call to warn()");
+    warnp(program, "simulated call to warnp()");
+    warn_or_err(129, program, true, "simulated call to warn_or_err(129, %s, true, ...)", program); /*ooo*/
+    warnp_or_errp(130, program, true, "simulated call to warnp_or_errp129, %s, true, ...)", program); /*ooo*/
 
     /*
      * simulate an error
