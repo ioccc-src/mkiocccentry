@@ -177,10 +177,10 @@ CFLAGS= ${STD_SRC} ${COPT} -pedantic -Wall -Wextra -Werror
 #
 MANDIR = /usr/local/share/man/man1
 DESTDIR= /usr/local/bin
-TARGETS= mkiocccentry iocccsize dbg_test limit_ioccc.sh fnamchk txzchk jauthchk jinfochk \
+TARGETS= mkiocccentry iocccsize dbg limit_ioccc.sh fnamchk txzchk jauthchk jinfochk \
 	jstrencode jstrdecode utf8_test jparse jint jfloat
 MANPAGES = mkiocccentry.1 txzchk.1 fnamchk.1 iocccsize.1 jinfochk.1 jauthchk.1
-TEST_TARGETS= dbg_test utf8_test
+TEST_TARGETS= dbg utf8_test
 OBJFILES= dbg.o util.o mkiocccentry.o iocccsize.o fnamchk.o txzchk.o jauthchk.o jinfochk.o \
 	json.o jstrencode.o jstrdecode.o rule_count.o location.o utf8_posix_map.o sanity.o \
 	utf8_test.o jint.o jint.test.o jfloat.o jfloat.test.o
@@ -235,7 +235,7 @@ mkiocccentry: mkiocccentry.c mkiocccentry.h rule_count.o dbg.o util.o json.o loc
 iocccsize: iocccsize.c rule_count.o dbg.o Makefile
 	${CC} ${CFLAGS} -DMKIOCCCENTRY_USE iocccsize.c rule_count.o dbg.o -o $@
 
-dbg_test: dbg.c Makefile
+dbg: dbg.c Makefile
 	${CC} ${CFLAGS} -DDBG_TEST dbg.c -o $@
 
 fnamchk: fnamchk.c fnamchk.h dbg.o util.o Makefile
@@ -453,7 +453,7 @@ clean:
 clobber distclean: clean
 	${RM} -f ${TARGETS} ${TEST_TARGETS}
 	${RM} -f answers.txt j-test.out j-test2.out json-test.log
-	${RM} -rf test-iocccsize test_src test_work tags dbg_test.out
+	${RM} -rf test-iocccsize test_src test_work tags dbg.out
 	${RM} -f jint.set.tmp jint_gen
 	${RM} -f jfloat.set.tmp jfloat_gen
 	${RM} -rf jint_gen.dSYM jfloat_gen.dSYM
@@ -462,23 +462,23 @@ install: all
 	${INSTALL} -m 0555 ${TARGETS} ${DESTDIR}
 	${INSTALL} -m 0644 ${MANPAGES} ${MANDIR}
 
-test: all iocccsize-test.sh dbg_test mkiocccentry-test.sh jstr-test.sh jint jfloat Makefile
+test: all iocccsize-test.sh dbg mkiocccentry-test.sh jstr-test.sh jint jfloat Makefile
 	@chmod +x iocccsize-test.sh mkiocccentry-test.sh jstr-test.sh
 	@echo "RUNNING: iocccsize-test.sh"
 	./iocccsize-test.sh -v 1
 	@echo "PASSED: iocccsize-test.sh"
 	@echo
 	@echo "This next test is supposed to fail with the error: FATAL[5]: main: simulated error, ..."
-	@echo "RUNNING: dbg_test"
-	@${RM} -f dbg_test.out
-	@status=`./dbg_test -e 2 foo bar baz 2>dbg_test.out; echo "$$?"`; \
+	@echo "RUNNING: dbg"
+	@${RM} -f dbg.out
+	@status=`./dbg -e 2 foo bar baz 2>dbg.out; echo "$$?"`; \
 	    if [ "$$status" != 5 ]; then \
-		echo "exit status of dbg_test: $$status != 5"; \
+		echo "exit status of dbg: $$status != 5"; \
 		exit 1; \
 	    fi
-	@${GREP} -q '^FATAL\[5\]: main: simulated error, foo: foo bar: bar errno\[2\]: No such file or directory$$' dbg_test.out
-	@${RM} -f dbg_test.out
-	@echo "PASSED: dbg_test"
+	@${GREP} -q '^FATAL\[5\]: main: simulated error, foo: foo bar: bar errno\[2\]: No such file or directory$$' dbg.out
+	@${RM} -f dbg.out
+	@echo "PASSED: dbg"
 	@echo
 	@echo "RUNNING: mkiocccentry-test.sh"
 	./mkiocccentry-test.sh
