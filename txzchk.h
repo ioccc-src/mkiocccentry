@@ -54,7 +54,7 @@ bool dbg_output_allowed = true;			/* false ==> disable output from dbg() */
 bool warn_output_allowed = true;		/* false ==> disable output from warn() and warnp() */
 bool err_output_allowed = true;			/* false ==> disable output from err() and errp() */
 bool usage_output_allowed = true;		/* false ==> disable output from vfprintf_usage() */
-static bool quiet = false;			/* true ==> only show errors, and warnings if -v > 0 */
+static bool quiet = false;			/* true ==> only show errors and warnings if -v > 0 */
 static bool text_file_flag_used = false;	/* true ==> assume txzpath is a text file */
 
 /*
@@ -112,7 +112,7 @@ static const char * const usage_msg =
     "\n"
     "\t-h\t\tprint help message and exit 0\n"
     "\t-v level\tset verbosity level: (def level: %d)\n"
-    "\t-q\t\tquiet mode, unless verbosity level > 0 (def: not quiet)\n"
+    "\t-q\t\tquiet mode if verbosity level == 0 (def: not quiet)\n"
     "\t-V\t\tprint version string and exit\n"
     "\n"
     "\t-t tar\t\tpath to tar executable that supports the -J (xz) option (def: %s)\n"

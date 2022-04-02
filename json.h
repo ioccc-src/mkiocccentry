@@ -43,6 +43,10 @@
 
 
 /*
+ * definitions
+ */
+
+/*
  * byte as octet constants
  */
 #define BITS_IN_BYTE (8)	    /* assume 8 bit bytes */
@@ -58,223 +62,51 @@
 #define AUTHOR_JSON_FILENAME ".author.json"
 #define INVALID_JSON_FILENAME "null"
 
-/* for the formed_UTC check */
-#define FORMED_UTC_FMT "%a %b %d %H:%M:%S %Y UTC"   /* format for strptime() of formed_UTC */
+#define FORMED_UTC_FMT "%a %b %d %H:%M:%S %Y UTC"   /* format of strptime() for formed_UTC check */
 
 /*
- * JSON warn code defines and variables for jwarn()
+ * JSON warn/error code struct, variables, constants and macros for the jwarn()
+ * and jerr() functions. Functions are prototyped later in the file.
  */
+extern bool show_full_json_warnings;
 
 /*
- * Codes 0 - 99 are reserved for special purposes so all normal codes should be
+ * JSON warn / error codes
+ *
+ * Codes 0 - 199 are reserved for special purposes so all normal codes should be
  * >= JSON_CODE_MIN && <= JSON_CODE_MAX via the JSON_CODE macro.
+ *
+ * NOTE: The reason 200 codes are reserved is because it's more than enough ever
+ * and we don't want to have to ever change the codes after the parser and
+ * checkers are complete as this would cause problems for the tools as well as
+ * the test suites. Previously the range was 0 - 99 and although this is also
+ * probably more than enough we want to be sure that there is never a problem
+ * and we cannot imagine how 200 codes will ever not be a large enough range but
+ * if the use of reserved codes change this might not be the case for just 100
+ * (unlikely though that is).
  */
 /* reserved code: all normal codes should be >= JSON_CODE_MIN && <= JSON_CODE_MAX via JSON_CODE macro */
 #define JSON_CODE_RESERVED_MIN (0)
 /* reserved code: all normal codes should be >= JSON_CODE_MIN && <= JSON_CODE_MAX via JSON_CODE macro */
-#define JSON_CODE_RESERVED_MAX (99)
+#define JSON_CODE_RESERVED_MAX (199)
 /*
- * The minimum code for jwarn() is the JSON_CODE_RESERVED_MAX (currently 99) + 1.
+ * The minimum code for jwarn() is the JSON_CODE_RESERVED_MAX (currently 199) + 1.
  * However this does not mean that calls to jwarn() cannot use <= the
  * JSON_CODE_RESERVED_MAX: it's just for special purposes e.g. codes that are
  * used in more than one location.
  */
 #define JSON_CODE_MIN (1+JSON_CODE_RESERVED_MAX)
-/* The maximum json code for jwarn(). This was arbitrarily selected. */
+/* The maximum json code for jwarn()/jerr(). This was arbitrarily selected. */
 #define JSON_CODE_MAX (9999)
-/* the number of unreserved JSON codes for jwarn(): the max - the min + 1 */
+/* the number of unreserved JSON codes for jwarn()/jerr(): the max - the min + 1 */
 #define NUM_UNRESERVED_JSON_CODES (JSON_CODE_MAX-JSON_CODE_MIN)
 /*
- * To distinguish that this is a JSON warn code rather than any other type of
- * number we use these macro.
+ * To distinguish that a number is a JSON warn/error code rather than any other
+ * type of number we use these macros.
  */
 #define JSON_CODE(x) ((x)+JSON_CODE_RESERVED_MAX)
 /* reserved JSON code */
 #define JSON_CODE_RESERVED(x) (x)
-
-extern bool show_full_json_warnings;
-
-/*
- * JSON value: a linked list of all values of the same json_field (below)
- */
-struct json_value
-{
-    char *value;
-
-    int line_num;	    /* the 'line number': actually the field number in the list */
-
-    struct json_value *next;
-};
-
-#define JSON_NUM	    (0)	    /* json field is supposed to be a number */
-#define JSON_BOOL	    (1)	    /* json field is supposed to be a boolean */
-#define JSON_CHARS	    (2)	    /* json field is supposed to be a string */
-#define JSON_ARRAY	    (3)	    /* json field is supposed to be an array */
-#define JSON_ARRAY_NUMBER   (5)	    /* json field is supposed to be a number in an array */
-#define JSON_ARRAY_BOOL	    (6)	    /* json field is supposed to be a bool in an array (NB: not used) */
-#define JSON_ARRAY_CHARS    (7)	    /* json field is supposed to be a string in an array */
-#define JSON_EOT	    (-1)    /* json field is NULL (not null): used internally to mark end of the tables */
-
-/*
- * JSON field: a JSON field consists of the name and all the values (if more
- * than one field of the same name is found in the file).
- */
-struct json_field
-{
-    char *name;			/* field name */
-    struct json_value *values;	/* linked list of values */
-
-    /*
-     * the below are for the tables: common_json_fields, info_json_fields and
-     * author_json_fields:
-     *
-     * Number of times this field has been seen in the list, how many are
-     * actually allowed and whether the field has been found: This is for the
-     * tables that say many times a field has been seen, how many times it
-     * is allowed and whether or not it's been seen (it is true that this could
-     * simply be count > 0 but this is to be more clear, however slight).
-     *
-     * In other words this is done as part of the checks after the field:value
-     * pairs have been extracted.
-     *
-     * NOTE: A max_count == 0 means that there's no limit and that it's not
-     * required.
-     */
-    size_t count;		/* how many of this field in the list (or how many values) */
-    size_t max_count;		/* how many of this field is allowed */
-    bool found;			/* if this field was found */
-
-    /*
-     * These are used in both checking and parsing: checking that the data is
-     * valid and parsing in that certain data types have to be parsed
-     * differently.
-     *
-     * Data type: one of JSON_NUM, JSON_BOOL, JSON_CHARS or
-     * JSON_ARRAY_ equivalents.
-     */
-    int field_type;
-    /*
-     * Some strings can be empty but others cannot; there are no other values
-     * that can currently be empty but this is for all lists so we have to
-     * include this bool
-     */
-    bool can_be_empty;	    /* if the value can be empty */
-
-
-    /* NOTE: don't add to more than one list */
-    struct json_field *next;	/* the next in the whatever list */
-};
-
-extern struct json_field common_json_fields[];
-extern size_t SIZEOF_COMMON_JSON_FIELDS_TABLE;
-
-/*
- * linked list of the common json fields found in the .info.json and
- * .author.json files.
- *
- * A common json field is a field that is supposed to be in both .info.json and
- * .author.json.
- */
-struct json_field *found_common_json_fields;
-
-/*
- * common json fields - for use in mkiocccentry.
- *
- * NOTE: We don't use the json_field or json_value fields because this struct is
- * for mkiocccentry which is in control of what's written whereas for jinfochk
- * and jauthchk we don't have control of what's in the file.
- */
-struct json_common
-{
-    /*
-     * version
-     */
-    char *mkiocccentry_ver;	/* mkiocccentry version (MKIOCCCENTRY_VERSION) */
-    char const *iocccsize_ver;	/* iocccsize version (compiled in, same as iocccsize -V) */
-    char const *jinfochk_ver;	/* jinfochk version (compiled in, same as jinfochk -V) */
-    char const *jauthchk_ver;	/* jautochk version (compiled in, same as jautochk -V) */
-    char const *fnamchk_ver;	/* fnamchk version (compiled in, same as fnamchk -V) */
-    char const *txzchk_ver;	/* txzchk version (compiled in, same as txzchk -V) */
-    /*
-     * entry
-     */
-    char *ioccc_id;		/* IOCCC contest ID */
-    int entry_num;		/* IOCCC entry number */
-    char *tarball;		/* tarball filename */
-    bool test_mode;		/* true ==> test mode entered */
-
-    /*
-     * time
-     */
-    time_t tstamp;		/* seconds since epoch when .info json was formed (see gettimeofday(2)) */
-    int usec;			/* microseconds since the tstamp second */
-    char *epoch;		/* epoch of tstamp, currently: Thu Jan 1 00:00:00 1970 UTC */
-    char *utctime;		/* UTC converted string for tstamp (see strftime(3)) */
-};
-
-/*
- * author info
- */
-struct author {
-    char *name;			/* name of the author */
-    char *location_code;	/* author location/country code */
-    char const *location_name;	/* name of author location/country */
-    char *email;		/* Email address of author or or empty string ==> not provided */
-    char *url;			/* home URL of author or or empty string ==> not provided */
-    char *twitter;		/* author twitter handle or or empty string ==> not provided */
-    char *github;		/* author GitHub username or or empty string ==> not provided */
-    char *affiliation;		/* author affiliation or or empty string ==> not provided */
-    bool past_winner;		/* true ==> author claims to have won before, false ==> author claims not a prev winner */
-    bool default_handle;	/* true ==> default author_handle accepted, false ==> author_handle entered */
-    char *author_handle;	/* IOCCC author handle (for winning entries) */
-    int author_num;		/* author number */
-
-    struct json_common common;	/* fields that are common to this struct author and struct info (below) */
-};
-
-/*
- * info for JSON
- *
- * Information we will collect in order to form the .info json file.
- */
-struct info {
-    /*
-     * entry
-     */
-    char *title;		/* entry title */
-    char *abstract;		/* entry abstract */
-    off_t rule_2a_size;		/* Rule 2a size of prog.c */
-    size_t rule_2b_size;	/* Rule 2b size of prog.c */
-    bool empty_override;	/* true ==> empty prog.c override requested */
-    bool rule_2a_override;	/* true ==> Rule 2a override requested */
-    bool rule_2a_mismatch;	/* true ==> file size != rule_count function size */
-    bool rule_2b_override;	/* true ==> Rule 2b override requested */
-    bool highbit_warning;	/* true ==> high bit character(s) detected */
-    bool nul_warning;		/* true ==> NUL character(s) detected */
-    bool trigraph_warning;	/* true ==> unknown or invalid tri-graph(s) detected */
-    bool wordbuf_warning;	/* true ==> word buffer overflow detected */
-    bool ungetc_warning;	/* true ==> ungetc warning detected */
-    bool Makefile_override;	/* true ==> Makefile rule override requested */
-    bool first_rule_is_all;	/* true ==> Makefile first rule is all */
-    bool found_all_rule;	/* true ==> Makefile has an all rule */
-    bool found_clean_rule;	/* true ==> Makefile has clean rule */
-    bool found_clobber_rule;	/* true ==> Makefile has a clobber rule */
-    bool found_try_rule;	/* true ==> Makefile has a try rule */
-    bool test_mode;		/* true ==> contest ID is test */
-    /*
-     * filenames
-     */
-    char *prog_c;		/* prog.c filename */
-    char *Makefile;		/* Makefile filename */
-    char *remarks_md;		/* remarks.md filename */
-    int extra_count;		/* number of extra files */
-    char **extra_file;		/* list of extra filenames followed by NULL */
-    /*
-     * time
-     */
-
-    struct json_common common;	/* fields that are common to this struct info and struct author (above) */
-};
 
 /*
  * JSON error codes to ignore
@@ -283,18 +115,21 @@ struct info {
  *
  *	.. -W 123 -W 1345 -W 56 ...
  *
- * this means the tool will ignore {JSON-0123}, {JSON-1345}, and {JSON-0056}.
- * The code_ignore[] table holds the JSON codes to ignore.
+ * this means the tool will ignore {JSON-0123}, {JSON-1345} and {JSON-0056}.
+ * The ignore_json_code_set[] table holds the JSON codes to ignore.
  */
-#define IGNORE_CODE_CHUNK (64)	/* number of codes to calloc or realloc at a time */
+#define IGNORE_JSON_CODE_CHUNK (64)	/* number of codes to calloc or realloc at a time */
 
-struct ignore_code {
+struct ignore_json_code {
     int next_free;	/* the index of the next allowed but free JSON error code */
     int alloc;		/* number of JSON error codes allocated */
     int *code;		/* pointer to the allocated list of codes, or NULL (not allocated) */
 };
-extern struct ignore_code *ignore_code_set;
+extern struct ignore_json_code *ignore_json_code_set;
 
+/*
+ * JSON parser related structs
+ */
 
 /*
  * parsed JSON integer
@@ -303,7 +138,7 @@ extern struct ignore_code *ignore_code_set;
  *	 malloc_json_conv_int() function.  It can differ in a few ways.  The end of the
  *	 string passed to malloc_json_conv_int(str, len) does not need to be NUL terminated,
  *	 whereas as_str will be NUL terminated at the end of the string.
- *	 If the characters pointer at by str start with whitespace or have trailing
+ *	 If the characters pointed at by str start with whitespace or have trailing
  *	 whitespace, then as_str will hove those characters trimmed off.
  *	 Normally the bison / flex code that would call malloc_json_conv_int(str, len)
  *	 will ONLY have the JSON integer string, we note this in case some other
@@ -384,8 +219,8 @@ struct integer {
  *	 malloc_json_conv_float() function.  It can differ in a few ways.  The end of the
  *	 string passed to malloc_json_conv_float(str, len) does not need to be NUL terminated,
  *	 whereas as_str will be NUL terminated at the end of the string.
- *	 If the characters pointer at by str start with whitespace or have trailing
- *	 whitespace, then as_str will hove those characters trimmed off.
+ *	 If the characters pointed at by str start with whitespace or have trailing
+ *	 whitespace, then as_str will have those characters trimmed off.
  *	 Normally the bison / flex code that would call malloc_json_conv_float(str, len)
  *	 will ONLY have the JSON integer string, we note this in case some other
  *	 future code that is not a careful calls malloc_json_conv_float(str, len).
@@ -425,6 +260,204 @@ struct string {
 
     bool same;			/* true => original JSON string same as decoded JSON string */
     bool posix_plus;		/* true => decoded JSON string is POSIX portable safe plus + chars */
+};
+
+
+/*
+ * JSON value: a linked list of all values of the same json_field (below).
+ *
+ * NOTE: As the parser is built this struct (and struct json_field below) might
+ * be removed. This will depend upon how the parser builds the tree and this has
+ * not been decided yet.
+ */
+struct json_value
+{
+    char *value;
+
+    int line_num;	    /* the 'line number': actually the field number in the list */
+
+    struct json_value *next;
+};
+
+/*
+ * defines of the JSON types for the json fields tables.
+ *
+ * NOTE: As the parser is built these might be removed entirely. The parser
+ * already has very similarly named tokens so this quite possibly will happen
+ * but this has not been worked out yet.
+ */
+#define JSON_NUM	    (0)	    /* json field is supposed to be a number */
+#define JSON_BOOL	    (1)	    /* json field is supposed to be a boolean */
+#define JSON_CHARS	    (2)	    /* json field is supposed to be a string */
+#define JSON_ARRAY	    (3)	    /* json field is supposed to be an array */
+#define JSON_ARRAY_NUMBER   (5)	    /* json field is supposed to be a number in an array */
+#define JSON_ARRAY_BOOL	    (6)	    /* json field is supposed to be a bool in an array (NB: not used) */
+#define JSON_ARRAY_CHARS    (7)	    /* json field is supposed to be a string in an array */
+#define JSON_EOT	    (-1)    /* json field is NULL (not null): used internally to mark end of the tables */
+
+/*
+ * JSON field: a JSON field consists of the name and all the values (if more
+ * than one field of the same name is found in the file).
+ *
+ * NOTE: As the parser is built this struct (and struct json_value above) might
+ * be removed. This will depend upon how the parser builds the tree and this has
+ * not been decided yet.
+ */
+struct json_field
+{
+    char *name;			/* field name */
+    struct json_value *values;	/* linked list of values */
+
+    /*
+     * the below are for the tables: common_json_fields, info_json_fields and
+     * author_json_fields:
+     *
+     * Number of times this field has been seen in the list, how many are
+     * actually allowed and whether the field has been found: This is for the
+     * tables that say many times a field has been seen, how many times it
+     * is allowed and whether or not it's been seen (it is true that this could
+     * simply be count > 0 but this is to be more clear, however slight).
+     *
+     * In other words this is done as part of the checks after the field:value
+     * pairs have been extracted.
+     *
+     * NOTE: A max_count == 0 means that there's no limit and that it's not
+     * required.
+     */
+    size_t count;		/* how many of this field in the list (or how many values) */
+    size_t max_count;		/* how many of this field is allowed */
+    bool found;			/* if this field was found */
+
+    /*
+     * These are used in both checking and parsing: checking that the data is
+     * valid and parsing in that certain data types have to be parsed
+     * differently.
+     *
+     * Data type: one of JSON_NUM, JSON_BOOL, JSON_CHARS or
+     * JSON_ARRAY_ equivalents.
+     */
+    int field_type;
+    /*
+     * Some strings can be empty but others cannot; there are no other values
+     * that can currently be empty but this is for all lists so we have to
+     * include this bool
+     */
+    bool can_be_empty;	    /* if the value can be empty */
+
+
+    /* NOTE: don't add to more than one list */
+    struct json_field *next;	/* the next in the whatever list */
+};
+
+extern struct json_field common_json_fields[];
+extern size_t SIZEOF_COMMON_JSON_FIELDS_TABLE;
+
+/*
+ * linked list of the common json fields found in the .info.json and
+ * .author.json files.
+ *
+ * A common json field is a field that is supposed to be in both .info.json and
+ * .author.json.
+ */
+struct json_field *found_common_json_fields;
+
+/*
+ * common json fields - for use in mkiocccentry.
+ *
+ * NOTE: We don't use the json_field or json_value fields because this struct is
+ * for mkiocccentry which is in control of what's written whereas for jinfochk
+ * and jauthchk we don't have control of what's in the file.
+ */
+struct json_common
+{
+    /*
+     * version
+     */
+    char *mkiocccentry_ver;	/* mkiocccentry version (MKIOCCCENTRY_VERSION) */
+    char const *iocccsize_ver;	/* iocccsize version (compiled in, same as iocccsize -V) */
+    char const *jinfochk_ver;	/* jinfochk version (compiled in, same as jinfochk -V) */
+    char const *jauthchk_ver;	/* jauthchk version (compiled in, same as jauthchk -V) */
+    char const *fnamchk_ver;	/* fnamchk version (compiled in, same as fnamchk -V) */
+    char const *txzchk_ver;	/* txzchk version (compiled in, same as txzchk -V) */
+    /*
+     * entry
+     */
+    char *ioccc_id;		/* IOCCC contest ID */
+    int entry_num;		/* IOCCC entry number */
+    char *tarball;		/* tarball filename */
+    bool test_mode;		/* true ==> test mode entered */
+
+    /*
+     * time
+     */
+    time_t tstamp;		/* seconds since epoch when .info json was formed (see gettimeofday(2)) */
+    int usec;			/* microseconds since the tstamp second */
+    char *epoch;		/* epoch of tstamp, currently: Thu Jan 1 00:00:00 1970 UTC */
+    char *utctime;		/* UTC converted string for tstamp (see strftime(3)) */
+};
+
+/*
+ * author info
+ */
+struct author {
+    char *name;			/* name of the author */
+    char *location_code;	/* author location/country code */
+    char const *location_name;	/* name of author location/country */
+    char *email;		/* Email address of author or or empty string ==> not provided */
+    char *url;			/* home URL of author or or empty string ==> not provided */
+    char *twitter;		/* author twitter handle or or empty string ==> not provided */
+    char *github;		/* author GitHub username or or empty string ==> not provided */
+    char *affiliation;		/* author affiliation or or empty string ==> not provided */
+    bool past_winner;		/* true ==> author claims to have won before, false ==> author claims not a prev winner */
+    bool default_handle;	/* true ==> default author_handle accepted, false ==> author_handle entered */
+    char *author_handle;	/* IOCCC author handle (for winning entries) */
+    int author_num;		/* author number */
+
+    struct json_common common;	/* fields that are common to this struct author and struct info (below) */
+};
+
+/*
+ * info for JSON
+ *
+ * Information we will collect in order to form the .info json file.
+ */
+struct info {
+    /*
+     * entry
+     */
+    char *title;		/* entry title */
+    char *abstract;		/* entry abstract */
+    off_t rule_2a_size;		/* Rule 2a size of prog.c */
+    size_t rule_2b_size;	/* Rule 2b size of prog.c */
+    bool empty_override;	/* true ==> empty prog.c override requested */
+    bool rule_2a_override;	/* true ==> Rule 2a override requested */
+    bool rule_2a_mismatch;	/* true ==> file size != rule_count function size */
+    bool rule_2b_override;	/* true ==> Rule 2b override requested */
+    bool highbit_warning;	/* true ==> high bit character(s) detected */
+    bool nul_warning;		/* true ==> NUL character(s) detected */
+    bool trigraph_warning;	/* true ==> unknown or invalid trigraph(s) detected */
+    bool wordbuf_warning;	/* true ==> word buffer overflow detected */
+    bool ungetc_warning;	/* true ==> ungetc warning detected */
+    bool Makefile_override;	/* true ==> Makefile rule override requested */
+    bool first_rule_is_all;	/* true ==> Makefile first rule is all */
+    bool found_all_rule;	/* true ==> Makefile has an all rule */
+    bool found_clean_rule;	/* true ==> Makefile has clean rule */
+    bool found_clobber_rule;	/* true ==> Makefile has a clobber rule */
+    bool found_try_rule;	/* true ==> Makefile has a try rule */
+    bool test_mode;		/* true ==> contest ID is test */
+    /*
+     * filenames
+     */
+    char *prog_c;		/* prog.c filename */
+    char *Makefile;		/* Makefile filename */
+    char *remarks_md;		/* remarks.md filename */
+    int extra_count;		/* number of extra files */
+    char **extra_file;		/* list of extra filenames followed by NULL */
+    /*
+     * time
+     */
+
+    struct json_common common;	/* fields that are common to this struct info and struct author (above) */
 };
 
 
@@ -471,8 +504,8 @@ extern void free_json_field(struct json_field *field);
 extern void free_info(struct info *infop);
 extern void free_author_array(struct author *authorp, int author_count);
 /* ignore code functions */
-extern bool is_code_ignored(int code);
-extern void add_ignore_code(int code);
+extern bool is_json_code_ignored(int code);
+extern void ignore_json_code(int code);
 /* JSON conversion functions */
 extern struct integer *malloc_json_conv_int(char const *str, size_t len);
 extern struct integer *malloc_json_conv_int_str(char const *str, size_t *retlen);

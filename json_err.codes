@@ -1,5 +1,5 @@
 # This document lists JSON errors codes and their meanings. The format of this
-# file might change as right now I just want to get JSON codes I have added
+# file might change as right now we just want to get JSON codes we have added
 # documented.
 #
 # TIP: To easily get a list of errors and associated notes currently known
@@ -7,7 +7,7 @@
 # TIP:
 # TIP:		grep -E '^# program|^JSON\[|^### NOTE:' json_err.codes
 # TIP:
-# TIP: If the format changes I will do my best to update the above tip as well
+# TIP: If the format changes we will do our best to update the above tip as well
 # TIP: but as of 15 March 2022 it works fine. However the most important line is
 # TIP: the JSON[XXXX] line which will probably not change format much if at
 # TIP: all.
@@ -37,22 +37,31 @@
 # jerrp() functions) most errors in json parsing uses err() or errp() and not
 # the json equivalents. This will be changed in time.
 #
-# NOTE: In the errors below I might at times use some C printf style format
-# specifiers but I won't necessarily have everything there so it's not to be
-# taken literally! Also note that for some I have notes of interest under some
+# NOTE: In the errors below we might at times use some C printf style format
+# specifiers but we won't necessarily have everything there so it's not to be
+# taken literally! Also note that for some we have notes of interest under some
 # errors.
 #
-# NOTE: I will try and keep these sorted and I will also do my best to remember
-# to update the file when more codes have been added but like everyone else I'm
-# human and it's entirely possible I neglect these especially if I'm distracted,
-# have a lot on my mind (I almost always do) or some other reason. Sorry about
-# this!
+# NOTE: We will try and keep these sorted and we will also do our best to
+# remember to update the file when more codes have been added but like everyone
+# else we're human and it's entirely possible we neglect these especially if
+# we're distracted, have a lot on my mind (which is almost always the case for
+# more than 0 of us) or some other reason. Sorry about this!
 #
-# NOTE: As of 16 March 2022 the reserved JSON codes are from 0 - 99 and the only
+# NOTE: As of 2 April 2022 the reserved JSON codes are from 0 - 199 and the only
 # use right now is for errors that are triggered when verifying that the JSON
 # tables are sane and for shared errors across json.c, jinfochk.c and jauthchk.c
 # (where the message is the same except for different filename and function
-# names).
+# names). 
+# 
+# NOTE: The reason 200 codes are reserved is because it's more than enough ever
+# and we don't want to have to ever change the codes after the parser and
+# checkers are complete as this would cause problems for the tools as well as
+# the test suites. Previously the range was 0 - 99 and although this is also
+# probably more than enough we want to be sure that there is never a problem and
+# we cannot imagine how 200 codes will ever not be a large enough range but if
+# the use of reserved codes change this might not be the case for just 100
+# (unlikely though that is).
 #
 # NOTE: Despite the fact codes 0 - 999 are 0-padded the numbers are NOT octal (0
 # notwithstanding) but decimal and we explicitly parse the codes as decimal!
