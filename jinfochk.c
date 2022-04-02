@@ -1594,8 +1594,8 @@ main(int argc, char **argv)
 		err(1, __func__, "cannot parse -W arg: %s error: %s", optarg, strerror(errno)); /*ooo*/
 		not_reached();
 	    }
-	    /* add code to ignore_code_setp[] */
-	    add_ignore_code(code);
+	    /* add code to ignore_json_code_set[] */
+	    ignore_json_code(code);
 	    break;
 	case 'w':
 	    show_full_json_warnings = true;

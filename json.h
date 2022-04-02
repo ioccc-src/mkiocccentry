@@ -65,11 +65,14 @@
 #define FORMED_UTC_FMT "%a %b %d %H:%M:%S %Y UTC"   /* format of strptime() for formed_UTC check */
 
 /*
- * JSON warn/error code constants and macros for the jwarn() and jerr()
- * functions
+ * JSON warn/error code struct, variables, constants and macros for the jwarn()
+ * and jerr() functions. Functions are prototyped later in the file.
  */
+extern bool show_full_json_warnings;
 
 /*
+ * JSON warn / error codes
+ *
  * Codes 0 - 199 are reserved for special purposes so all normal codes should be
  * >= JSON_CODE_MIN && <= JSON_CODE_MAX via the JSON_CODE macro.
  *
@@ -105,7 +108,26 @@
 /* reserved JSON code */
 #define JSON_CODE_RESERVED(x) (x)
 
-extern bool show_full_json_warnings;
+/*
+ * JSON error codes to ignore
+ *
+ * When a tool is given command line arguments of the form:
+ *
+ *	.. -W 123 -W 1345 -W 56 ...
+ *
+ * this means the tool will ignore {JSON-0123}, {JSON-1345} and {JSON-0056}.
+ * The ignore_json_code_set[] table holds the JSON codes to ignore.
+ */
+#define IGNORE_JSON_CODE_CHUNK (64)	/* number of codes to calloc or realloc at a time */
+
+struct ignore_json_code {
+    int next_free;	/* the index of the next allowed but free JSON error code */
+    int alloc;		/* number of JSON error codes allocated */
+    int *code;		/* pointer to the allocated list of codes, or NULL (not allocated) */
+};
+extern struct ignore_json_code *ignore_json_code_set;
+
+
 
 /*
  * JSON value: a linked list of all values of the same json_field (below)
@@ -289,25 +311,6 @@ struct info {
     struct json_common common;	/* fields that are common to this struct info and struct author (above) */
 };
 
-/*
- * JSON error codes to ignore
- *
- * When a tool is given command line arguments of the form:
- *
- *	.. -W 123 -W 1345 -W 56 ...
- *
- * this means the tool will ignore {JSON-0123}, {JSON-1345}, and {JSON-0056}.
- * The code_ignore[] table holds the JSON codes to ignore.
- */
-#define IGNORE_CODE_CHUNK (64)	/* number of codes to calloc or realloc at a time */
-
-struct ignore_code {
-    int next_free;	/* the index of the next allowed but free JSON error code */
-    int alloc;		/* number of JSON error codes allocated */
-    int *code;		/* pointer to the allocated list of codes, or NULL (not allocated) */
-};
-extern struct ignore_code *ignore_code_set;
-
 
 /*
  * parsed JSON integer
@@ -484,8 +487,8 @@ extern void free_json_field(struct json_field *field);
 extern void free_info(struct info *infop);
 extern void free_author_array(struct author *authorp, int author_count);
 /* ignore code functions */
-extern bool is_code_ignored(int code);
-extern void add_ignore_code(int code);
+extern bool is_json_code_ignored(int code);
+extern void ignore_json_code(int code);
 /* JSON conversion functions */
 extern struct integer *malloc_json_conv_int(char const *str, size_t len);
 extern struct integer *malloc_json_conv_int_str(char const *str, size_t *retlen);
