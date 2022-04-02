@@ -303,7 +303,7 @@ extern struct ignore_code *ignore_code_set;
  *	 malloc_json_conv_int() function.  It can differ in a few ways.  The end of the
  *	 string passed to malloc_json_conv_int(str, len) does not need to be NUL terminated,
  *	 whereas as_str will be NUL terminated at the end of the string.
- *	 If the characters pointer at by str start with whitespace or have trailing
+ *	 If the characters pointed at by str start with whitespace or have trailing
  *	 whitespace, then as_str will hove those characters trimmed off.
  *	 Normally the bison / flex code that would call malloc_json_conv_int(str, len)
  *	 will ONLY have the JSON integer string, we note this in case some other
@@ -384,8 +384,8 @@ struct integer {
  *	 malloc_json_conv_float() function.  It can differ in a few ways.  The end of the
  *	 string passed to malloc_json_conv_float(str, len) does not need to be NUL terminated,
  *	 whereas as_str will be NUL terminated at the end of the string.
- *	 If the characters pointer at by str start with whitespace or have trailing
- *	 whitespace, then as_str will hove those characters trimmed off.
+ *	 If the characters pointed at by str start with whitespace or have trailing
+ *	 whitespace, then as_str will have those characters trimmed off.
  *	 Normally the bison / flex code that would call malloc_json_conv_float(str, len)
  *	 will ONLY have the JSON integer string, we note this in case some other
  *	 future code that is not a careful calls malloc_json_conv_float(str, len).
