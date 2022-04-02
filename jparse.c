@@ -2118,6 +2118,7 @@ parse_json_file(char const *filename)
     yyparse();
 
     clearerr_or_fclose(filename, yyin);
+    yyin = NULL;
     print_newline(output_newline);
 }
 
