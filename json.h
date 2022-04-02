@@ -421,9 +421,10 @@ struct string {
     size_t as_str_len;		/* length of as_str, not including final NUL */
 
     bool converted;		/* true ==> able to decode JSON string */
-    bool has_nul;		/* true ==> decoded JSON string as a NUL inside it */
+    bool has_nul;		/* true ==> decoded JSON string as a NUL byte inside it */
 
-    bool same;			/* non-decoded JSON string same as decoded JSON string */
+    bool same;			/* true => original JSON string same as decoded JSON string */
+    bool posix_plus;		/* true => decoded JSON string is POSIX portable safe plus + chars */
 };
 
 
