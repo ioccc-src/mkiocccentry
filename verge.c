@@ -270,7 +270,7 @@ malloc_vers(char *str, long **pvers)
     }
 
     /*
-     * skip leading non-digits
+     * trim leading non-digits
      */
     for (i=0; i < len; ++i) {
 	if (isascii(wstr[i]) && isdigit(wstr[i])) {
@@ -279,11 +279,6 @@ malloc_vers(char *str, long **pvers)
 	}
     }
     if (i == len) {
-	/* free memory */
-	if (wstr != NULL) {
-	    free(wstr);
-	    wstr = NULL;
-	}
 	/* report invalid version string */
 	dbg(DBG_MED, "version string contained no digits: <%s>", wstr);
 	return 0;
@@ -292,7 +287,18 @@ malloc_vers(char *str, long **pvers)
     len -= i;
 
     /*
-     * trim off trailing non-digits
+     * trim at and beyond any whitespace
+     */
+    for (i=0; i < len; ++i) {
+	if (isascii(wstr[i]) && isspace(wstr[i])) {
+	    wstr[i] = '\0';
+	    len = i;
+	    break;
+	}
+    }
+
+    /*
+     * trim trailing non-digits
      */
     for (i=len-1; i > 0; --i) {
 	if (isascii(wstr[i]) && isdigit(wstr[i])) {
@@ -315,11 +321,6 @@ malloc_vers(char *str, long **pvers)
 	    dot = false;
 	} else if (wstr[i] == '.') {
 	    if (dot == true) {
-		/* free memory */
-		if (wstr != NULL) {
-		    free(wstr);
-		    wstr = NULL;
-		}
 		/* report invalid version string */
 		dbg(DBG_MED, "trimmed version string contains 2 dots in a row: <%s>", wstr);
 		return 0;
@@ -327,11 +328,6 @@ malloc_vers(char *str, long **pvers)
 	    dot = true;
 	    ++dot_count;
 	} else {
-	    /* free memory */
-	    if (wstr != NULL) {
-		free(wstr);
-		wstr = NULL;
-	    }
 	    /* report invalid version string */
 	    dbg(DBG_MED, "trimmed version string contains non-version character: wstr[%ju] = <%c>: <%s>",
 			 i, wstr[i], wstr);
@@ -363,12 +359,6 @@ malloc_vers(char *str, long **pvers)
 	dbg(DBG_VVHIGH, "version level %ju word: <%s>", (uintmax_t)i, word);
 	(*pvers)[i] = string_to_long(word);
 	dbg(DBG_VHIGH, "version level %ju: %ld", (uintmax_t)i, (*pvers)[i]);
-    }
-
-    /* free memory */
-    if (wstr != NULL) {
-	free(wstr);
-	wstr = NULL;
     }
 
     /*
