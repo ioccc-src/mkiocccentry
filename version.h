@@ -131,5 +131,15 @@
  */
 #define JFLOAT_VERSION "0.3 2022-03-31"		/* format: major.minor YYYY-MM-DD */
 
+/*
+ * minimum bison version needed to build the JSON parser
+ */
+#define BISON_VERSION "3.8.2"			/* from: bison -V 2>&1 | head -n 1 | awk '{print $NF}' */
+
+/*
+ * minimum flex version needed to build the JSON parser
+ */
+#define FLEX_VERSION "2.6.4"			/* from: flex -V 2>&1 | head -n 1 | awk '{print $NF}' */
+
 
 #endif /* INCLUDE_VERSION_H */
