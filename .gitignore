@@ -24,6 +24,7 @@ test_src
 test_work
 txzchk
 utf8_test
+verge
 
 # Prerequisites
 *.d

@@ -179,19 +179,20 @@ CFLAGS= ${STD_SRC} ${COPT} -pedantic -Wall -Wextra -Werror
 MANDIR = /usr/local/share/man/man1
 DESTDIR= /usr/local/bin
 TARGETS= mkiocccentry iocccsize dbg limit_ioccc.sh fnamchk txzchk jauthchk jinfochk \
-	jstrencode jstrdecode utf8_test jparse jint jfloat
+	jstrencode jstrdecode utf8_test jparse jint jfloat verge
 MANPAGES = mkiocccentry.1 txzchk.1 fnamchk.1 iocccsize.1 jinfochk.1 jauthchk.1
 TEST_TARGETS= dbg utf8_test
 OBJFILES= dbg.o util.o mkiocccentry.o iocccsize.o fnamchk.o txzchk.o jauthchk.o jinfochk.o \
 	json.o jstrencode.o jstrdecode.o rule_count.o location.o sanity.o \
-	utf8_test.o jint.o jint.test.o jfloat.o jfloat.test.o
+	utf8_test.o jint.o jint.test.o jfloat.o jfloat.test.o verge.o
 LESS_PICKY_SRC= utf8_posix_map.c
 SPECIAL_OBJ= jparse.o jparse.tab.o utf8_posix_map.o
 FLEXFILES= jparse.l
 BISONFILES= jparse.y
 SRCFILES= $(patsubst %.o,%.c,$(OBJFILES))
 H_FILES= dbg.h jauthchk.h jinfochk.h json.h jstrdecode.h jstrencode.h limit_ioccc.h \
-	mkiocccentry.h txzchk.h util.h location.h utf8_posix_map.h jparse.h jint.h jfloat.h
+	mkiocccentry.h txzchk.h util.h location.h utf8_posix_map.h jparse.h jint.h jfloat.h \
+	verge.h
 DSYMDIRS= $(patsubst %,%.dSYM,$(TARGETS))
 SH_FILES= iocccsize-test.sh jstr-test.sh limit_ioccc.sh mkiocccentry-test.sh json-test.sh \
 	  jcodechk.sh vermod.sh
@@ -276,6 +277,9 @@ jparse: jparse.c jparse.h jparse.tab.c jparse.tab.h jparse.y jparse.l util.o dbg
 
 utf8_test: utf8_test.c utf8_posix_map.o dbg.o util.o
 	${CC} ${CFLAGS} utf8_test.c utf8_posix_map.o dbg.o util.o -o $@
+
+verge: verge.c dbg.o util.o
+	${CC} ${CFLAGS} verge.c dbg.o util.o -o $@
 
 # NOTE: This temporary rule produces the following C code files:
 #

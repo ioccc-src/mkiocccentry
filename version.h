@@ -141,5 +141,10 @@
  */
 #define FLEX_VERSION "2.6.4"			/* from: flex -V 2>&1 | head -n 1 | awk '{print $NF}' */
 
+/*
+ * official verge tool version
+ */
+#define VERGE_VERSION "0.1 2022-04-02"		/* format: major.minor YYYY-MM-DD */
+
 
 #endif /* INCLUDE_VERSION_H */
