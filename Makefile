@@ -72,12 +72,15 @@
 # utilities
 #
 AWK= awk
+BISON = bison
 CC= cc
 CP= cp
 CTAGS= ctags
+FLEX = flex
 GREP= grep
 INSTALL= install
 MV= mv
+PICKY= picky
 RM= rm
 RPL= rpl
 SED= sed
@@ -85,8 +88,6 @@ SEQCEXIT= seqcexit
 SHELLCHECK= shellcheck
 TR= tr
 TRUE= true
-FLEX = flex
-BISON = bison
 
 # User specific configurations
 #
@@ -182,9 +183,10 @@ TARGETS= mkiocccentry iocccsize dbg limit_ioccc.sh fnamchk txzchk jauthchk jinfo
 MANPAGES = mkiocccentry.1 txzchk.1 fnamchk.1 iocccsize.1 jinfochk.1 jauthchk.1
 TEST_TARGETS= dbg utf8_test
 OBJFILES= dbg.o util.o mkiocccentry.o iocccsize.o fnamchk.o txzchk.o jauthchk.o jinfochk.o \
-	json.o jstrencode.o jstrdecode.o rule_count.o location.o utf8_posix_map.o sanity.o \
+	json.o jstrencode.o jstrdecode.o rule_count.o location.o sanity.o \
 	utf8_test.o jint.o jint.test.o jfloat.o jfloat.test.o
-SPECIAL_OBJ= jparse.o jparse.tab.o
+LESS_PICKY_SRC= utf8_posix_map.c
+SPECIAL_OBJ= jparse.o jparse.tab.o utf8_posix_map.o
 FLEXFILES= jparse.l
 BISONFILES= jparse.y
 SRCFILES= $(patsubst %.o,%.c,$(OBJFILES))
@@ -199,7 +201,7 @@ all: ${TARGETS} ${TEST_TARGETS}
 # rules, not file targets
 #
 .PHONY: all configure clean clobber install test reset_min_timestamp rebuild_jint_test \
-	rebuild_jfloat_test
+	rebuild_jfloat_test picky
 
 # Remove built-in rules that cause overwriting jparse.c from bison/yacc. The
 # reason I (@xexyl) have flex write to jparse.c instead of bison is that bison
@@ -517,6 +519,20 @@ test-jinfochk: all jinfochk Makefile
 tags: ${SRCFILES} ${H_FILES} Makefile
 	-${CTAGS} -- ${SRCFILES} ${H_FILES} 2>&1 | \
 	     ${GREP} -E -v 'Duplicate entry|Second entry ignored'
+
+picky: ${SRCFILES} ${H_FILES} Makefile
+	@if ! command -v ${PICKY} >/dev/null 2>&1; then \
+	    echo "The picky command not found." 1>&2; \
+	    echo "The picky command is required for this rule." 1>&2; \
+	    echo "We recommend you install picky v2.6 or later" 1>&2; \
+	    echo "from this URL:" 1>&2; \
+	    echo 1>&2; \
+	    echo "http://grail.eecs.csuohio.edu/~somos/picky.html" 1>&2; \
+	    echo 1>&2; \
+	    exit 1; \
+	fi
+	${PICKY} -w132 -u -s -t8 -v -e -- ${SRCFILES} ${H_FILES}
+	${PICKY} -w132 -u -s -t8 -v -e -8 -- ${LESS_PICKY_SRC}
 
 depend:
 	@LINE="`grep -n '^### DO NOT CHANGE' Makefile|awk -F : '{print $$1}'`"; \

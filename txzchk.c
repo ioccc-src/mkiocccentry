@@ -121,9 +121,11 @@ main(int argc, char **argv)
      */
 
     if (!text_file_flag_used)
-	find_utils(tar_flag_used, &tar, false, NULL, false, NULL, false, NULL, fnamchk_flag_used, &fnamchk, false, NULL, false, NULL);
+	find_utils(tar_flag_used, &tar, false, NULL, false, NULL, false, NULL,
+		   fnamchk_flag_used, &fnamchk, false, NULL, false, NULL);
     else
-	find_utils(false, NULL, false, NULL, false, NULL, false, NULL, fnamchk_flag_used, &fnamchk, false, NULL, false, NULL);
+	find_utils(false, NULL, false, NULL, false, NULL, false, NULL,
+		   fnamchk_flag_used, &fnamchk, false, NULL, false, NULL);
 
 
     /*
@@ -677,7 +679,8 @@ check_all_txz_files(char const *dir_name)
      * check_txz_file().
      */
     if (txz_info.dot_files > 0) {
-	warn("txzchk", "%s: found a total of %u unacceptable dot file%s", txzpath, txz_info.dot_files, txz_info.dot_files==1?"":"s");
+	warn("txzchk", "%s: found a total of %u unacceptable dot file%s",
+		       txzpath, txz_info.dot_files, txz_info.dot_files==1?"":"s");
     }
 
     /*

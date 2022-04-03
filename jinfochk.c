@@ -548,14 +548,16 @@ check_info_json(char const *file, char const *fnamchk)
 			continue;
 		    } else if (strchr(array_val, '"') == NULL && !can_be_empty) {
 			/* if there's no '"' and it cannot be empty it's an issue */
-			warn(__func__, "string field '%s' value does not have any '\"'s in file %s: '%s'", array_field, file, array_val);
+			warn(__func__, "string field '%s' value does not have any '\"'s in file %s: '%s'",
+				       array_field, file, array_val);
 			++issues;
 			continue;
 		    } else if (can_be_empty && strcmp(array_val, "null") && strchr(array_val, '"') == NULL) {
 			/* if it can be empty and it's not 'null' and there's no '"'
 			 * it's an issue.
 			 */
-			warn(__func__, "string field '%s' value that's not 'null' has no '\"'s in file %s: '%s'", array_field, file, array_val);
+			warn(__func__, "string field '%s' value that's not 'null' has "
+				       "no '\"'s in file %s: '%s'", array_field, file, array_val);
 			++issues;
 			continue;
 		    }
@@ -572,7 +574,8 @@ check_info_json(char const *file, char const *fnamchk)
 			 * If no '"' and the value is not exactly "null" (null
 			 * object) it's an issue
 			 */
-			warn(__func__, "found non-null string field '%s' without '\"' at the beginning in file %s: '%s'", array_field, file, array_val);
+			warn(__func__, "found non-null string field '%s' without '\"' at "
+				       "the beginning in file %s: '%s'", array_field, file, array_val);
 			++issues;
 			continue;
 		    }
@@ -586,7 +589,8 @@ check_info_json(char const *file, char const *fnamchk)
 			 * if there's no trailing '"' and it's not a null object
 			 * ("null") then it's an issue
 			 */
-			warn(__func__, "found non-null string field '%s' without '\"' at the end in file %s: '%s'", array_field, file, array_val);
+			warn(__func__, "found non-null string field '%s' without '\"' at the end in file %s: '%s'",
+				       array_field, file, array_val);
 			++issues;
 			continue;
 		    }
@@ -596,7 +600,8 @@ check_info_json(char const *file, char const *fnamchk)
 		     * of the loop
 		     */
 		    if (!*array_val) {
-			warn(__func__, "found empty string value for array field '%s' in file %s: '%s'", array_field, file, array_val);
+			warn(__func__, "found empty string value for array field '%s' in file %s: '%s'",
+				       array_field, file, array_val);
 			++issues;
 			continue;
 		    }
@@ -609,7 +614,8 @@ check_info_json(char const *file, char const *fnamchk)
 		     * non-string array is added to the array.
 		     */
 		    if (strchr(array_val, '"') != NULL) {
-			warn(__func__, "found '\"' in non-string array field '%s' value in file %s: '%s'", array_field, file, array_val);
+			warn(__func__, "found '\"' in non-string array field '%s' value in file %s: '%s'",
+				       array_field, file, array_val);
 			++issues;
 			continue;
 		    }
@@ -676,7 +682,8 @@ check_info_json(char const *file, char const *fnamchk)
 		break;
 
 	    can_be_empty = (common_field && common_field->can_be_empty) || (info_field && info_field->can_be_empty);
-	    is_json_string = (common_field && common_field->field_type == JSON_CHARS) || (info_field && info_field->field_type == JSON_CHARS);
+	    is_json_string = (common_field && common_field->field_type == JSON_CHARS) ||
+			     (info_field && info_field->field_type == JSON_CHARS);
 
 	    /*
 	     * If the field type is a string we have to remove a single '"' from
@@ -777,7 +784,8 @@ check_info_json(char const *file, char const *fnamchk)
 	     */
 	    val_esc = malloc_json_decode_str(val, NULL, strict);
 	    if (val_esc == NULL) {
-		err(31, __func__, "malloc_json_decode_str(): invalidly formed field '%s' value '%s' or malloc failure in file %s", p, val, file);
+		err(31, __func__, "malloc_json_decode_str(): invalidly formed field '%s' value '%s' or "
+				  "malloc failure in file %s", p, val, file);
 		not_reached();
 	    }
 
@@ -945,7 +953,8 @@ add_found_info_json_field(char const *json_filename, char const *name, char cons
 
     field_in_table = find_json_field_in_table(info_json_fields, name, &loc);
     if (field_in_table == NULL) {
-	err(33, __func__, "called add_found_info_json_field() on field '%s' not specific to .info.json in file %s", name, json_filename);
+	err(33, __func__, "called add_found_info_json_field() on field '%s' not specific "
+			  "to .info.json in file %s", name, json_filename);
 	not_reached();
     }
     /*
@@ -967,7 +976,9 @@ add_found_info_json_field(char const *json_filename, char const *name, char cons
 		 * this shouldn't happen as if add_json_value() gets an error
 		 * it'll abort but just to be safe we check here too
 		 */
-		jerr(JSON_CODE_RESERVED(7), NULL, __func__, __FILE__, NULL, __LINE__, "couldn't add value '%s' to field '%s' file %s", val, field->name, json_filename);
+		jerr(JSON_CODE_RESERVED(7), NULL, __func__, __FILE__, NULL, __LINE__,
+					    "couldn't add value '%s' to field '%s' file %s",
+					    val, field->name, json_filename);
 		not_reached();
 	    }
 
@@ -987,7 +998,9 @@ add_found_info_json_field(char const *json_filename, char const *name, char cons
 	 * we should never get here because if new_json_field gets NULL it
 	 * aborts the program.
 	 */
-	jerr(JSON_CODE_RESERVED(8), NULL, __func__, __FILE__, NULL, __LINE__, "error creating new struct json_field * for field '%s' value '%s' file %s", name, val, json_filename);
+	jerr(JSON_CODE_RESERVED(8), NULL, __func__, __FILE__, NULL, __LINE__,
+				    "error creating new struct json_field * for field '%s' value '%s' file %s",
+				    name, val, json_filename);
 	not_reached();
     }
 
@@ -1159,7 +1172,9 @@ check_found_info_json_fields(char const *json_filename, bool test)
 	 * first make sure the name != NULL and strlen() > 0
 	 */
 	if (field->name == NULL || strlen(field->name) <= 0) {
-	    jerr(JSON_CODE_RESERVED(9), NULL, __func__, __FILE__, NULL, __LINE__, "found NULL or empty field in found_info_json_fields list in file %s", json_filename);
+	    jerr(JSON_CODE_RESERVED(9), NULL, __func__, __FILE__, NULL, __LINE__,
+				        "found NULL or empty field in found_info_json_fields list in file %s",
+					json_filename);
 	    not_reached();
 	}
 
@@ -1174,7 +1189,9 @@ check_found_info_json_fields(char const *json_filename, bool test)
 	 * info list is not a info field name.
 	 */
 	if (info_field == NULL) {
-	    jerr(JSON_CODE_RESERVED(10), NULL, __func__, __FILE__, NULL, __LINE__, "illegal field name '%s' in found_info_json_fields list in file %s", field->name, json_filename);
+	    jerr(JSON_CODE_RESERVED(10), NULL, __func__, __FILE__, NULL, __LINE__,
+					 "illegal field name '%s' in found_info_json_fields list in file %s",
+					 field->name, json_filename);
 	    not_reached();
 	}
 
@@ -1183,7 +1200,9 @@ check_found_info_json_fields(char const *json_filename, bool test)
 	    char *val = value->value;
 
 	    if (val == NULL) {
-		jerr(JSON_CODE_RESERVED(11), NULL, __func__, __FILE__, NULL, __LINE__, "NULL pointer val for field '%s' in file %s", field->name, json_filename);
+		jerr(JSON_CODE_RESERVED(11), NULL, __func__, __FILE__, NULL, __LINE__,
+					     "NULL pointer val for field '%s' in file %s",
+					     field->name, json_filename);
 		not_reached();
 	    }
 
@@ -1200,7 +1219,11 @@ check_found_info_json_fields(char const *json_filename, bool test)
 
 	    /* make sure the field is not over the limit allowed */
 	    if (info_field->max_count > 0 && info_field->count > info_field->max_count) {
-		jwarn(JSON_CODE(1), program, __func__, __FILE__, NULL, value->line_num, "field '%s' found %ju times but is only allowed %ju time%s in file %s", info_field->name, (uintmax_t)info_field->count, (uintmax_t)info_field->max_count, info_field->max_count==1?"":"s", json_filename);
+		jwarn(JSON_CODE(1), program, __func__, __FILE__, NULL, value->line_num,
+				    "field '%s' found %ju times but is only allowed %ju time%s in file %s",
+				    info_field->name, (uintmax_t)info_field->count,
+				    (uintmax_t)info_field->max_count,
+				    info_field->max_count==1?"":"s", json_filename);
 		++issues;
 	    }
 
@@ -1219,7 +1242,8 @@ check_found_info_json_fields(char const *json_filename, bool test)
 	    switch (info_field->field_type) {
 		case JSON_BOOL:
 		    if (strcmp(val, "false") && strcmp(val, "true")) {
-			warn(__func__, "bool field '%s' has non boolean value in file %s: '%s'", info_field->name, json_filename, val);
+			warn(__func__, "bool field '%s' has non boolean value in file %s: '%s'",
+				       info_field->name, json_filename, val);
 			++issues;
 			continue;
 		    } else {
@@ -1228,7 +1252,8 @@ check_found_info_json_fields(char const *json_filename, bool test)
 		    break;
 		case JSON_NUM:
 		    if (!is_number(val)) {
-			warn(__func__, "number field '%s' has non-number value in file %s: '%s'", info_field->name, json_filename, val);
+			warn(__func__, "number field '%s' has non-number value in file %s: '%s'",
+				       info_field->name, json_filename, val);
 			++issues;
 			continue;
 		    } else {
@@ -1243,22 +1268,26 @@ check_found_info_json_fields(char const *json_filename, bool test)
 
 	    if (!strcmp(field->name, "IOCCC_info_version")) {
 		if (!test && strcmp(val, INFO_VERSION)) {
-		    warn(__func__, "IOCCC_info_version != INFO_VERSION \"%s\" in file %s: \"%s\"", INFO_VERSION, json_filename, val);
+		    warn(__func__, "IOCCC_info_version != INFO_VERSION \"%s\" in file %s: \"%s\"",
+				   INFO_VERSION, json_filename, val);
 		    ++issues;
 		}
 	    } else if (!strcmp(field->name, "jinfochk_version")) {
 		if (!test && strcmp(val, JINFOCHK_VERSION)) {
-		    warn(__func__, "jinfochk_version != JINFOCHK_VERSION \"%s\" in file %s: \"%s\"", JINFOCHK_VERSION, json_filename, val);
+		    warn(__func__, "jinfochk_version != JINFOCHK_VERSION \"%s\" in file %s: \"%s\"",
+				   JINFOCHK_VERSION, json_filename, val);
 		    ++issues;
 		}
 	    } else if (!strcmp(field->name, "txzchk_version")) {
 		if (!test && strcmp(val, TXZCHK_VERSION)) {
-		    warn(__func__, "txzchk_version != TXZCHK_VERSION \"%s\" in file %s: \"%s\"", TXZCHK_VERSION, json_filename, val);
+		    warn(__func__, "txzchk_version != TXZCHK_VERSION \"%s\" in file %s: \"%s\"",
+				    TXZCHK_VERSION, json_filename, val);
 		    ++issues;
 		}
 	    } else if (!strcmp(field->name, "iocccsize_version")) {
 		if (!test && strcmp(val, IOCCCSIZE_VERSION)) {
-		    warn(__func__, "iocccsize_version != IOCCCSIZE_VERSION \"%s\" in file %s: \"%s\"", IOCCCSIZE_VERSION, json_filename, val);
+		    warn(__func__, "iocccsize_version != IOCCCSIZE_VERSION \"%s\" in file %s: \"%s\"",
+				   IOCCCSIZE_VERSION, json_filename, val);
 		    ++issues;
 		}
 	    } else if (!strcmp(field->name, "title")) {
@@ -1338,12 +1367,14 @@ check_found_info_json_fields(char const *json_filename, bool test)
 		}
 	    } else if (!strcmp(field->name, "extra_file")) {
 		if (val_length > MAX_BASENAME_LEN) {
-		    warn(__func__, "extra file name length %ju > the limit %ju: '%s'", (uintmax_t)val_length, (uintmax_t)MAX_BASENAME_LEN, val);
+		    warn(__func__, "extra file name length %ju > the limit %ju: '%s'",
+				   (uintmax_t)val_length, (uintmax_t)MAX_BASENAME_LEN, val);
 		    ++issues;
 		}
 	        /* extra_file must use only POSIX portable filename and + chars */
 		if (!posix_plus_safe(val, false, false, true)) {
-		    warn(__func__, "extra data file does not match regexp ^[0-9A-Za-z][0-9A-Za-z._+-]*$ in file %s: '%s'", json_filename, val);
+		    warn(__func__, "extra data file does not match regexp ^[0-9A-Za-z][0-9A-Za-z._+-]*$ "
+				   "in file %s: '%s'", json_filename, val);
 		    ++issues;
 		    break;
 		}
@@ -1411,7 +1442,8 @@ check_found_info_json_fields(char const *json_filename, bool test)
      */
     if (info.Makefile_override && info.first_rule_is_all && info.found_all_rule &&
 	    info.found_clean_rule && info.found_clobber_rule && info.found_try_rule) {
-	warn(__func__, "Makefile_override == true but all expected Makefile rules found and 'all:' is first in file %s", json_filename);
+	warn(__func__, "Makefile_override == true but all expected Makefile rules found "
+		       "and 'all:' is first in file %s", json_filename);
 	++issues;
     }
 
@@ -1449,7 +1481,8 @@ check_found_info_json_fields(char const *json_filename, bool test)
      */
     for (loc = 0; info_json_fields[loc].name != NULL; ++loc) {
 	if (!info_json_fields[loc].found && info_json_fields[loc].max_count > 0) {
-	    warn(__func__, "required field not found in found_info_json_fields list in file %s: '%s'", json_filename, info_json_fields[loc].name);
+	    warn(__func__, "required field not found in found_info_json_fields list "
+			   "in file %s: '%s'", json_filename, info_json_fields[loc].name);
 	    ++issues;
 	}
     }
@@ -1461,7 +1494,8 @@ check_found_info_json_fields(char const *json_filename, bool test)
      */
     for (manifest_file = manifest_files_list; manifest_file != NULL; manifest_file = manifest_file->next) {
 	if (manifest_file->count > 1) {
-	    warn(__func__, "found duplicate file (count: %ju) in file %s: '%s'", (uintmax_t)manifest_file->count, json_filename, manifest_file->filename);
+	    warn(__func__, "found duplicate file (count: %ju) in file %s: '%s'",
+			   (uintmax_t)manifest_file->count, json_filename, manifest_file->filename);
 	    ++issues;
 	}
     }

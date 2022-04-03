@@ -486,13 +486,17 @@ extern bool add_common_json_field(char const *program, char const *json_filename
 extern int check_found_common_json_fields(char const *program, char const *json_filename, char const *fnamchk, bool test);
 extern struct json_field *new_json_field(char const *json_filename, char const *name, char const *val, int line_num);
 extern struct json_value *add_json_value(char const *json_filename, struct json_field *field, char const *val, int line_num);
-extern void jwarn(int code, const char *program, char const *name, char const *filename, char const *line, int line_num, const char *fmt, ...) \
+extern void jwarn(int code, const char *program, char const *name, char const *filename, char const *line,
+		  int line_num, const char *fmt, ...) \
 	__attribute__((format(printf, 7, 8)));		/* 7=format 8=params */
-extern void jwarnp(int code, const char *program, char const *name, char const *filename, char const *line, int line_num, const char *fmt, ...) \
+extern void jwarnp(int code, const char *program, char const *name, char const *filename, char const *line,
+		   int line_num, const char *fmt, ...) \
 	__attribute__((format(printf, 7, 8)));		/* 7=format 8=params */
-extern void jerr(int exitcode, char const *program, const char *name, char const *filename, char const *line, int line_num, const char *fmt, ...) \
+extern void jerr(int exitcode, char const *program, const char *name, char const *filename, char const *line,
+		 int line_num, const char *fmt, ...) \
 	__attribute__((noreturn)) __attribute__((format(printf, 7, 8))); /* 7=format 8=params */
-extern void jerrp(int exitcode, char const *program, const char *name, char const *filename, char const *line, int line_num, const char *fmt, ...) \
+extern void jerrp(int exitcode, char const *program, const char *name, char const *filename, char const *line,
+		  int line_num, const char *fmt, ...) \
 	__attribute__((noreturn)) __attribute__((format(printf, 7, 8))); /* 7=format 8=params */
 
 
