@@ -312,8 +312,8 @@ malloc_vers(char *str, long **pvers)
     /*
      * we now have a string that start and ends with digits
      *
-     * Inspect the remaining string for digits and .'s only.
-     * Also reject string if we find more than 2 ..'s in a row.
+     * Inspect the remaining string for digits and '.'s only.
+     * Also reject string if we find more than 2 '.'s in a row.
      */
     dbg(DBG_HIGH, "trimmed version string: <%s>", wstr);
     for (i=0; i < len; ++i) {
@@ -350,7 +350,7 @@ malloc_vers(char *str, long **pvers)
     }
 
     /*
-     * tokenize version string using . delimiters
+     * tokenize version string using '.' delimiters
      */
     for (i=0, word=strtok_r(wstr, ".", &brkt);
          i <= dot_count && word != NULL;

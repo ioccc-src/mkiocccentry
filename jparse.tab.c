@@ -1923,12 +1923,7 @@ yyerror(char const *err, ...)
 {
     /*
      * We use dbg() instead of err() but in the future it'll probably use the
-     * jerr() function or some other error function. Right now it doesn't use
-     * err() because I don't believe the seqcexit tool acts on .l/.y files so
-     * the codes wouldn't be sequenced.
-     *
-     * Currently all you have to do to trigger this function being called is
-     * typing anything after the program starts as once more it's incomplete!
+     * jerr() function or some other error function.
      */
     dbg(DBG_NONE, "JSON parser error (num errors: %d) on line %d: %s\n", yynerrs, yylineno, err);
 }

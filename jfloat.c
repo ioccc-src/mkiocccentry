@@ -149,7 +149,7 @@ main(int argc, char *argv[])
 	    dbg(DBG_HIGH, "test[%d] string: <%s>", i, test);
 
 	    /*
-	     * convert test into struct floatinh
+	     * convert test into struct floating
 	     */
 	    ival = malloc_json_conv_float_str(test, &retlen);
 	    if (ival == NULL) {
@@ -304,7 +304,7 @@ main(int argc, char *argv[])
 	dbg(DBG_MED, "arg length: %ju", (uintmax_t)inputlen);
 
 	/*
-	 * Convert the JSON floating ppint string
+	 * Convert the JSON floating point string
 	 *
 	 * We call the malloc_json_conv_float_str() interface, which in
 	 * turn calls the malloc_json_conv_float() interface in order
