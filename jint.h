@@ -92,7 +92,7 @@ static const char * const usage_msg =
     "    0\tall is OK\n"
     "    1\t-t without -S given and JSON integer conversion test suite failed\n"
     "    2\t-t -S given and JSON integer conversion test suite failed\n"
-    "    3\t-h and help string printed or -V given\n"
+    "    3\t-h and help string printed or -V and version string printed\n"
     "    4\tcommand line error\n"
     "    >=5\tinternal error\n"
     "\n"
