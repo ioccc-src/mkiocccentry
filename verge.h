@@ -71,8 +71,9 @@ static const char * const usage_msg =
     "    0\t1st version >= 2nd version\n"
     "    1\t1st version < 2nd version\n"
     "    2\t1st and/or 2nd version is an invalid version\n"
-    "    3\tcommand line error\n"
-    "    >=4\tinternal error\n"
+    "    3\tprint help or version string\n"
+    "    4\tcommand line error\n"
+    "    >=5\tinternal error\n"
     "\n"
     "verge version: %s\n";
 

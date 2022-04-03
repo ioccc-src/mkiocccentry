@@ -215,7 +215,7 @@ malloc_vers(char *str, long **pvers)
      * firewall
      */
     if (str == NULL || pvers == NULL) {
-	err(4, __func__, "NULL arg(s)");
+	err(5, __func__, "NULL arg(s)");
 	not_reached();
     }
     len = strlen(str);
@@ -230,7 +230,7 @@ malloc_vers(char *str, long **pvers)
     errno = 0;		/* pre-clear errno for errp() */
     wstr = strdup(str);
     if (wstr == NULL) {
-	errp(5, __func__, "cannot strdup: <%s>", str);
+	errp(6, __func__, "cannot strdup: <%s>", str);
 	not_reached();
     }
 
@@ -296,7 +296,7 @@ malloc_vers(char *str, long **pvers)
     errno = 0;		/* pre-clear errno for errp() */
     *pvers = (long *)calloc(dot_count+1+1, sizeof(long));
     if (*pvers == NULL) {
-	errp(6, __func__, "cannot calloc %ju longs", (uintmax_t)dot_count+1+1);
+	errp(7, __func__, "cannot calloc %ju longs", (uintmax_t)dot_count+1+1);
 	not_reached();
     }
 
