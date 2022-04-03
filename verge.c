@@ -135,6 +135,16 @@ main(int argc, char *argv[])
 	    dbg(DBG_MED, "version 1 level %d: %ld > version 2 level %d: %ld",
 			  i, vlevel1[i], i, vlevel2[i]);
 	    dbg(DBG_LOW, "%s > %s", ver1, ver2);
+	    /* free memory */
+	    if (vlevel1 != NULL) {
+		free(vlevel1);
+		vlevel1 = NULL;
+	    }
+	    if (vlevel2 != NULL) {
+		free(vlevel2);
+		vlevel2 = NULL;
+	    }
+	    /* report ver1 > ver2 */
 	    exit(0); /*ooo*/
 
 	} else if (vlevel1[i] < vlevel2[i]) {
@@ -143,6 +153,16 @@ main(int argc, char *argv[])
 	    dbg(DBG_MED, "version 1 level %d: %ld < version 2 level %d: %ld",
 			  i, vlevel1[i], i, vlevel2[i]);
 	    dbg(DBG_LOW, "%s < %s", ver1, ver2);
+	    /* free memory */
+	    if (vlevel1 != NULL) {
+		free(vlevel1);
+		vlevel1 = NULL;
+	    }
+	    if (vlevel2 != NULL) {
+		free(vlevel2);
+		vlevel2 = NULL;
+	    }
+	    /* report ver1 < ver2 */
 	    exit(1); /*ooo*/
 
 	} else {
@@ -156,6 +176,18 @@ main(int argc, char *argv[])
 		 (ver1_levels > ver2_levels) ? ver2_levels : ver1_levels);
 
     /*
+     * free memory
+     */
+    if (vlevel1 != NULL) {
+	free(vlevel1);
+	vlevel1 = NULL;
+    }
+    if (vlevel2 != NULL) {
+	free(vlevel2);
+	vlevel2 = NULL;
+    }
+
+    /*
      * ver1 matches ver2 to the extent that they share the same level
      *
      * The presence of sub-levels will determine the final comparison
@@ -165,6 +197,7 @@ main(int argc, char *argv[])
 	dbg(DBG_MED, "version 1 level count: %d < version level count: %d",
 		     ver1_levels, ver2_levels);
 	dbg(DBG_LOW, "%s < %s", ver1, ver2);
+	/* report ver1 < ver2 */
 	exit(1); /*ooo*/
 
     } else if (ver1_levels > ver2_levels) {
@@ -172,6 +205,7 @@ main(int argc, char *argv[])
 	dbg(DBG_MED, "version 1 level count: %d > version level count: %d",
 		     ver1_levels, ver2_levels);
 	dbg(DBG_LOW, "%s > %s", ver1, ver2);
+	/* report ver1 > ver2 */
 	exit(0); /*ooo*/
 
     }
@@ -182,6 +216,7 @@ main(int argc, char *argv[])
     dbg(DBG_MED, "version 1 level count: %d == version level count: %d",
 		 ver1_levels, ver2_levels);
     dbg(DBG_LOW, "%s == %s", ver1, ver2);
+    /* report ver1 == ver2 */
     exit(0); /*ooo*/
 }
 
@@ -244,6 +279,12 @@ malloc_vers(char *str, long **pvers)
 	}
     }
     if (i == len) {
+	/* free memory */
+	if (wstr != NULL) {
+	    free(wstr);
+	    wstr = NULL;
+	}
+	/* report invalid version string */
 	dbg(DBG_MED, "version string contained no digits: <%s>", wstr);
 	return 0;
     }
@@ -274,12 +315,24 @@ malloc_vers(char *str, long **pvers)
 	    dot = false;
 	} else if (wstr[i] == '.') {
 	    if (dot == true) {
+		/* free memory */
+		if (wstr != NULL) {
+		    free(wstr);
+		    wstr = NULL;
+		}
+		/* report invalid version string */
 		dbg(DBG_MED, "trimmed version string contains 2 dots in a row: <%s>", wstr);
 		return 0;
 	    }
 	    dot = true;
 	    ++dot_count;
 	} else {
+	    /* free memory */
+	    if (wstr != NULL) {
+		free(wstr);
+		wstr = NULL;
+	    }
+	    /* report invalid version string */
 	    dbg(DBG_MED, "trimmed version string contains non-version character: wstr[%ju] = <%c>: <%s>",
 			 i, wstr[i], wstr);
 	    return 0;
@@ -310,6 +363,12 @@ malloc_vers(char *str, long **pvers)
 	dbg(DBG_VVHIGH, "version level %ju word: <%s>", (uintmax_t)i, word);
 	(*pvers)[i] = string_to_long(word);
 	dbg(DBG_VHIGH, "version level %ju: %ld", (uintmax_t)i, (*pvers)[i]);
+    }
+
+    /* free memory */
+    if (wstr != NULL) {
+	free(wstr);
+	wstr = NULL;
     }
 
     /*
