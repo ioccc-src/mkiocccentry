@@ -272,7 +272,7 @@ jfloat: jfloat.c dbg.o json.o util.o jfloat.test.o Makefile
 	${CC} ${CFLAGS} -DJFLOAT_TEST_ENABLED jfloat.c dbg.o json.o util.o jfloat.test.o -o $@
 
 jparse: jparse.c jparse.h jparse.tab.c jparse.tab.h jparse.y jparse.l util.o dbg.o sanity.o json.o utf8_posix_map.o location.o Makefile
-	${CC} ${CFLAGS} -Wno-unused-function -Wno-unneeded-internal-declaration -Wno-unused-variable jparse.c jparse.tab.c \
+	${CC} ${CFLAGS} -Wno-unused-function -Wno-unneeded-internal-declaration jparse.c jparse.tab.c \
 	    util.o dbg.o sanity.o json.o utf8_posix_map.o location.o -o $@
 
 utf8_test: utf8_test.c utf8_posix_map.o dbg.o util.o
