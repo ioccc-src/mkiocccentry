@@ -75,12 +75,14 @@
 
 AWK= awk
 BISON = bison
+CAT= cat
 CC= cc
 CP= cp
 CTAGS= ctags
 FLEX = flex
 GREP= grep
 INSTALL= install
+MAKE= make
 MV= mv
 PICKY= picky
 RM= rm
@@ -165,15 +167,17 @@ TEST_TARGETS= dbg utf8_test
 OBJFILES= dbg.o util.o mkiocccentry.o iocccsize.o fnamchk.o txzchk.o jauthchk.o jinfochk.o \
 	json.o jstrencode.o jstrdecode.o rule_count.o location.o sanity.o \
 	utf8_test.o jint.o jint.test.o jfloat.o jfloat.test.o verge.o
-LESS_PICKY_SRC= utf8_posix_map.c
-SPECIAL_OBJ= jparse.o jparse.tab.o utf8_posix_map.o
+LESS_PICKY_CSRC= utf8_posix_map.c
+LESS_PICKY_OBJ= utf8_posix_map.o
+GENERATED_CSRC= jparse.c jparse.tab.c
+GENERATED_OBJ= jparse.o jparse.tab.o
 FLEXFILES= jparse.l
 BISONFILES= jparse.y
 SRCFILES= $(patsubst %.o,%.c,$(OBJFILES))
-SRCFILES+= $(patsubst %.o,%.c,$(SPECIAL_OBJ))
+ALL_CSRC= ${LESS_PICKY_CSRC} ${GENERATED_CSRC} ${SRCFILES}
 H_FILES= dbg.h jauthchk.h jinfochk.h json.h jstrdecode.h jstrencode.h limit_ioccc.h \
 	mkiocccentry.h txzchk.h util.h location.h utf8_posix_map.h jparse.h jint.h jfloat.h \
-	verge.h
+	verge.h sorry.tm.ca.h
 DSYMDIRS= $(patsubst %,%.dSYM,$(TARGETS))
 SH_FILES= iocccsize-test.sh jstr-test.sh limit_ioccc.sh mkiocccentry-test.sh json-test.sh \
 	  jcodechk.sh vermod.sh bfok.sh
@@ -234,18 +238,18 @@ all: ${TARGETS} ${TEST_TARGETS}
 	rebuild_jfloat_test picky parser
 
 
-####################################
-# rules to compile and build files #
-####################################
+#####################################
+# rules to compile and build source #
+#####################################
 
 rule_count.o: rule_count.c Makefile
 	${CC} ${CFLAGS} -DMKIOCCCENTRY_USE rule_count.c -c
 
-sanity.o: sanity.c sanity.h location.h utf8_posix_map.h
+sanity.o: sanity.c sanity.h location.h utf8_posix_map.h Makefile
 	${CC} ${CFLAGS} sanity.c -c
 
 mkiocccentry: mkiocccentry.c mkiocccentry.h rule_count.o dbg.o util.o json.o location.o \
-	utf8_posix_map.o sanity.o
+	utf8_posix_map.o sanity.o Makefile
 	${CC} ${CFLAGS} mkiocccentry.c rule_count.o dbg.o util.o json.o location.o \
 		utf8_posix_map.o sanity.o -o $@
 
@@ -255,23 +259,22 @@ iocccsize: iocccsize.c rule_count.o dbg.o Makefile
 dbg: dbg.c Makefile
 	${CC} ${CFLAGS} -DDBG_TEST dbg.c -o $@
 
-fnamchk: fnamchk.c fnamchk.h dbg.o util.o
+fnamchk: fnamchk.c fnamchk.h dbg.o util.o Makefile
 	${CC} ${CFLAGS} fnamchk.c dbg.o util.o -o $@
 
-txzchk: txzchk.c txzchk.h rule_count.o dbg.o util.o location.o json.o utf8_posix_map.o sanity.o
+txzchk: txzchk.c txzchk.h rule_count.o dbg.o util.o location.o json.o utf8_posix_map.o sanity.o Makefile
 	${CC} ${CFLAGS} txzchk.c rule_count.o dbg.o util.o location.o json.o utf8_posix_map.o sanity.o -o $@
 
-jauthchk: jauthchk.c jauthchk.h json.h rule_count.o json.o dbg.o util.o sanity.o location.o \
-	  utf8_posix_map.o
+jauthchk: jauthchk.c jauthchk.h json.h rule_count.o json.o dbg.o util.o sanity.o location.o utf8_posix_map.o Makefile
 	${CC} ${CFLAGS} jauthchk.c rule_count.o json.o dbg.o util.o sanity.o location.o utf8_posix_map.o -o $@
 
-jinfochk: jinfochk.c jinfochk.h rule_count.o json.o dbg.o util.o sanity.o location.o utf8_posix_map.o
+jinfochk: jinfochk.c jinfochk.h rule_count.o json.o dbg.o util.o sanity.o location.o utf8_posix_map.o Makefile
 	${CC} ${CFLAGS} jinfochk.c rule_count.o json.o dbg.o util.o sanity.o location.o utf8_posix_map.o -o $@
 
-jstrencode: jstrencode.c jstrencode.h dbg.o json.o util.o
+jstrencode: jstrencode.c jstrencode.h dbg.o json.o util.o Makefile
 	${CC} ${CFLAGS} jstrencode.c dbg.o json.o util.o -o $@
 
-jstrdecode: jstrdecode.c jstrdecode.h dbg.o json.o util.o
+jstrdecode: jstrdecode.c jstrdecode.h dbg.o json.o util.o Makefile
 	${CC} ${CFLAGS} jstrdecode.c dbg.o json.o util.o -o $@
 
 jint.test.o: jint.test.c Makefile
@@ -291,10 +294,10 @@ jparse: jparse.c jparse.h jparse.tab.c jparse.tab.h jparse.y jparse.l util.o dbg
 	${CC} ${CFLAGS} -Wno-unused-function -Wno-unneeded-internal-declaration jparse.c jparse.tab.c \
 	    util.o dbg.o sanity.o json.o utf8_posix_map.o location.o -o $@
 
-utf8_test: utf8_test.c utf8_posix_map.o dbg.o util.o
+utf8_test: utf8_test.c utf8_posix_map.o dbg.o util.o Makefile
 	${CC} ${CFLAGS} utf8_test.c utf8_posix_map.o dbg.o util.o -o $@
 
-verge: verge.c dbg.o util.o
+verge: verge.c dbg.o util.o Makefile
 	${CC} ${CFLAGS} verge.c dbg.o util.o -o $@
 
 limit_ioccc.sh: limit_ioccc.h version.h Makefile
@@ -384,16 +387,74 @@ jparse.c: jparse.l jparse.tab.h bfok.sh jparse.ref.c Makefile
 # repo tools - rules mostly intended to be used by the mkiocccentry repo #
 ##########################################################################
 
+# things to do and check before a release, pull request and/or git commit
+#
+prep:
+	@echo "=-=-=-=-= ${MAKE} prep start =-=-=-=-="
+	@echo
+	@echo "=-=-= ${MAKE} clobber =-=-="
+	@echo
+	${MAKE} clobber
+	@echo
+	@echo "=-=-= ${MAKE} parser =-=-="
+	@echo
+	${MAKE} parser
+	@echo
+	@echo "=-=-= ${MAKE} seqcexit =-=-="
+	@echo
+	${MAKE} seqcexit
+	@echo
+	@echo "=-=-= ${MAKE} all =-=-="
+	@echo
+	${MAKE} all
+	@echo
+	@echo "=-=-= ${MAKE} use_ref =-=-="
+	@echo
+	${MAKE} use_ref
+	@echo
+	@echo "=-=-= ${MAKE} all (again) =-=-="
+	@echo
+	${MAKE} all
+	@echo
+	@echo "=-=-= ${MAKE} shellcheck =-=-="
+	@echo
+	${MAKE} shellcheck
+	@echo
+	@echo "=-=-= ${MAKE} picky =-=-="
+	@echo
+	${MAKE} picky
+	@echo
+	@echo "=-=-= ${MAKE} test =-=-="
+	@echo
+	${MAKE} test
+	@echo
+	@echo "=-=-=-=-= ${MAKE} prep end =-=-=-=-="
+
 # force the rebuild of the JSON parser and form reference copies of JSON parser C code
 #
-parser: jparse.y jparse.l Makefile
+parser: jparse.y jparse.l sorry.tm.ca.h Makefile
 	${BISON} -d jparse.y
-	${RM} -f jparse.tab.ref.h jparse.tab.ref.c
-	${CP} -f -v jparse.tab.h jparse.tab.ref.h
-	${CP} -f -v jparse.tab.c jparse.tab.ref.c
+	${RM} -f jparse.tab.ref.c jparse.tab.ref.h
+	${CP} -f -v sorry.tm.ca.h jparse.tab.ref.c
+	echo '#line 1 "jparse.tab.c"' >> jparse.tab.ref.c
+	${CAT} jparse.tab.c >> jparse.tab.ref.c
+	${CP} -f -v sorry.tm.ca.h jparse.tab.ref.h
+	echo '#line 1 "jparse.tab.h"' >> jparse.tab.ref.h
+	${CAT} jparse.tab.h >> jparse.tab.ref.h
 	${FLEX} -o jparse.c jparse.l
 	${RM} -f jparse.ref.c
-	${CP} -f -v jparse.c jparse.ref.c
+	${CP} -f -v sorry.tm.ca.h jparse.ref.c
+	${CAT} jparse.c >> jparse.ref.c
+
+# force use of reference C code from bison and flex
+#
+use_ref: jparse.tab.ref.c jparse.tab.ref.h jparse.ref.c
+	${RM} -f jparse.tab.c
+	${CP} -f -v jparse.tab.ref.c jparse.tab.c
+	${RM} -f jparse.tab.h
+	${CP} -f -v jparse.tab.ref.h jparse.tab.h
+	${RM} -f jparse.c
+	${CP} -f -v jparse.ref.c jparse.c
 
 # rebuild jint.test.c
 #
@@ -421,7 +482,7 @@ rebuild_jfloat_test: jfloat.testset jfloat.c dbg.o json.o util.o Makefile
 
 # sequence exit codes
 #
-seqcexit: ${SRCFILES} ${FLEXFILES} ${BISONFILES} Makefile
+seqcexit: ${ALL_CSRC} ${FLEXFILES} ${BISONFILES} Makefile
 	@HAVE_SEQCEXIT=`command -v ${SEQCEXIT}`; if [[ -z "$$HAVE_SEQCEXIT" ]]; then \
 	    echo 'If you have not installed the seqcexit tool, then' 1>&2; \
 	    echo 'you may not run this rule.'; 1>&2; \
@@ -433,9 +494,9 @@ seqcexit: ${SRCFILES} ${FLEXFILES} ${BISONFILES} Makefile
 	    exit 1; \
 	fi
 	${SEQCEXIT} -c -- ${FLEXFILES} ${BISONFILES}
-	${SEQCEXIT} -- ${SRCFILES}
+	${SEQCEXIT} -- ${ALL_CSRC}
 
-picky: ${SRCFILES} ${H_FILES} Makefile
+picky: ${ALL_CSRC} ${H_FILES} Makefile
 	@if ! command -v ${PICKY} >/dev/null 2>&1; then \
 	    echo "The picky command not found." 1>&2; \
 	    echo "The picky command is required for this rule." 1>&2; \
@@ -447,7 +508,7 @@ picky: ${SRCFILES} ${H_FILES} Makefile
 	    exit 1; \
 	fi
 	${PICKY} -w132 -u -s -t8 -v -e -- ${SRCFILES} ${H_FILES}
-	${PICKY} -w132 -u -s -t8 -v -e -8 -- ${LESS_PICKY_SRC}
+	${PICKY} -w132 -u -s -t8 -v -e -8 -- ${LESS_PICKY_CSRC}
 
 # inspect and verify shell scripts
 #
@@ -619,7 +680,8 @@ configure:
 
 clean:
 	${RM} -f ${OBJFILES}
-	${RM} -f ${SPECIAL_OBJ}
+	${RM} -f ${GENERATED_OBJ}
+	${RM} -f ${LESS_PICKY_OBJ}
 	${RM} -rf ${DSYMDIRS}
 
 clobber: clean
@@ -636,8 +698,8 @@ install: all
 	${INSTALL} -m 0555 ${TARGETS} ${DESTDIR}
 	${INSTALL} -m 0644 ${MANPAGES} ${MANDIR}
 
-tags: ${SRCFILES} ${H_FILES}
-	-${CTAGS} -- ${SRCFILES} ${H_FILES} 2>&1 | \
+tags: ${ALL_CSRC} ${H_FILES}
+	-${CTAGS} -- ${ALL_CSRC} ${H_FILES} 2>&1 | \
 	     ${GREP} -E -v 'Duplicate entry|Second entry ignored'
 
 depend:
@@ -648,7 +710,7 @@ depend:
         fi;                                                                     \
         mv -f Makefile Makefile.orig;head -n $$LINE Makefile.orig > Makefile;   \
         echo "Generating dependencies.";					\
-        ${CC} ${CFLAGS} -MM ${SRCFILES} >> Makefile
+        ${CC} ${CFLAGS} -MM ${ALL_CSRC} >> Makefile
 	@echo "Make depend completed.";
 
 
