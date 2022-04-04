@@ -411,6 +411,7 @@ prep:
 	@echo "=-=-= ${MAKE} use_ref =-=-="
 	@echo
 	${MAKE} use_ref
+	${RM} -f ${GENERATED_OBJ}
 	@echo
 	@echo "=-=-= ${MAKE} all (again) =-=-="
 	@echo
