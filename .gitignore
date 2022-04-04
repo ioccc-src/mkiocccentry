@@ -15,6 +15,7 @@ jstr-test.out
 jstrdecode
 jstrencode
 limit_ioccc.sh
+makefile.local
 mkiocccentry
 orig.iocccsize
 tags
