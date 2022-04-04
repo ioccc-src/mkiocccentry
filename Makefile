@@ -387,7 +387,7 @@ jparse.c: jparse.l jparse.tab.h bfok.sh jparse.ref.c Makefile
 # repo tools - rules mostly intended to be used by the mkiocccentry repo #
 ##########################################################################
 
-# things to do and check before a release, pull request and/or git commit
+# things to do before a release, forming a pull, and/or updating the GitHub repo
 #
 prep:
 	@echo "=-=-=-=-= ${MAKE} prep start =-=-=-=-="
