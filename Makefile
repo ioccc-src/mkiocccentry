@@ -170,6 +170,7 @@ SPECIAL_OBJ= jparse.o jparse.tab.o utf8_posix_map.o
 FLEXFILES= jparse.l
 BISONFILES= jparse.y
 SRCFILES= $(patsubst %.o,%.c,$(OBJFILES))
+SRCFILES+= $(patsubst %.o,%.c,$(SPECIAL_OBJ))
 H_FILES= dbg.h jauthchk.h jinfochk.h json.h jstrdecode.h jstrencode.h limit_ioccc.h \
 	mkiocccentry.h txzchk.h util.h location.h utf8_posix_map.h jparse.h jint.h jfloat.h \
 	verge.h
@@ -677,8 +678,6 @@ jstrdecode.o: jstrdecode.c jstrdecode.h dbg.h util.h json.h limit_ioccc.h \
   version.h
 rule_count.o: rule_count.c iocccsize_err.h iocccsize.h
 location.o: location.c location.h util.h dbg.h
-utf8_posix_map.o: utf8_posix_map.c utf8_posix_map.h util.h dbg.h \
-  limit_ioccc.h version.h
 sanity.o: sanity.c sanity.h util.h dbg.h location.h utf8_posix_map.h \
   json.h
 utf8_test.o: utf8_test.c utf8_posix_map.h util.h dbg.h limit_ioccc.h \
@@ -687,3 +686,10 @@ jint.o: jint.c jint.h dbg.h util.h json.h limit_ioccc.h version.h
 jint.test.o: jint.test.c json.h
 jfloat.o: jfloat.c jfloat.h dbg.h util.h json.h limit_ioccc.h version.h
 jfloat.test.o: jfloat.test.c json.h
+verge.o: verge.c verge.h dbg.h util.h limit_ioccc.h version.h
+jparse.o: jparse.c jparse.h dbg.h util.h json.h sanity.h location.h \
+  utf8_posix_map.h limit_ioccc.h version.h jparse.tab.h
+jparse.tab.o: jparse.tab.c jparse.h dbg.h util.h json.h sanity.h \
+  location.h utf8_posix_map.h limit_ioccc.h version.h jparse.tab.h
+utf8_posix_map.o: utf8_posix_map.c utf8_posix_map.h util.h dbg.h \
+  limit_ioccc.h version.h
