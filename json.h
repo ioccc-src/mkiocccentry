@@ -89,6 +89,8 @@ extern bool show_full_json_warnings;
 #define JSON_CODE_RESERVED_MIN (0)
 /* reserved code: all normal codes should be >= JSON_CODE_MIN && <= JSON_CODE_MAX via JSON_CODE macro */
 #define JSON_CODE_RESERVED_MAX (199)
+/* based on minimum reserved code, form an invalid json code number */
+#define JSON_CODE_INVALID (JSON_CODE_RESERVED_MIN - 1)
 /*
  * The minimum code for jwarn() is the JSON_CODE_RESERVED_MAX (currently 199) + 1.
  * However this does not mean that calls to jwarn() cannot use <= the
@@ -118,7 +120,7 @@ extern bool show_full_json_warnings;
  * this means the tool will ignore {JSON-0123}, {JSON-1345} and {JSON-0056}.
  * The ignore_json_code_set[] table holds the JSON codes to ignore.
  */
-#define IGNORE_JSON_CODE_CHUNK (64)	/* number of codes to calloc or realloc at a time */
+#define JSON_CODE_IGNORE_CHUNK (64)	/* number of codes to calloc or realloc at a time */
 
 struct ignore_json_code {
     int next_free;	/* the index of the next allowed but free JSON error code */

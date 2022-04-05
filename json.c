@@ -3545,9 +3545,9 @@ alloc_json_code_ignore_set(void)
      * allocate an initial block of ignore codes
      */
     errno = 0;			/* pre-clear errno for errp() */
-    tbl->code = malloc((IGNORE_JSON_CODE_CHUNK+1+1) * sizeof(int));
+    tbl->code = malloc((JSON_CODE_IGNORE_CHUNK+1+1) * sizeof(int));
     if (tbl->code == NULL) {
-	errp(193, __func__, "cannot allocate %d ignore codes", IGNORE_JSON_CODE_CHUNK+1+1);
+	errp(193, __func__, "cannot allocate %d ignore codes", JSON_CODE_IGNORE_CHUNK+1+1);
 	not_reached();
     }
 
@@ -3555,7 +3555,7 @@ alloc_json_code_ignore_set(void)
      * initialize
      */
     tbl->next_free = 0;
-    tbl->alloc = IGNORE_JSON_CODE_CHUNK + 1;		/* report one less for the guard code */
+    tbl->alloc = JSON_CODE_IGNORE_CHUNK + 1;		/* report one less for the guard code */
     for (i=0; i < tbl->alloc; ++i) {
 	tbl->code[i] = -1;	/* -1 is not a valid ignore code */
     }
@@ -3604,7 +3604,7 @@ cmp_codes(const void *a, const void *b)
  * expand_json_code_ignore_set - expand the size of alloc json_code_ignore_set[]
  *
  * This function will expand the allocated  json_code_ignore_set[] by
- * IGNORE_JSON_CODE_CHUNK JSON error codes, and set those new codes (in the end
+ * JSON_CODE_IGNORE_CHUNK JSON error codes, and set those new codes (in the end
  * of the table) to -1 to indicate that they are not valid codes.
  *
  * NOTE: This function does not return on error.
@@ -3628,19 +3628,19 @@ expand_json_code_ignore_set(void)
      * if no room, expand the table
      */
     if (ignore_json_code_set->next_free >= ignore_json_code_set->alloc) {
-	p = realloc(ignore_json_code_set->code, (ignore_json_code_set->alloc+IGNORE_JSON_CODE_CHUNK+1) * sizeof(int));
+	p = realloc(ignore_json_code_set->code, (ignore_json_code_set->alloc+JSON_CODE_IGNORE_CHUNK+1) * sizeof(int));
 	errno = 0;			/* pre-clear errno for errp() */
 	if (p == NULL) {
 	    errp(196, __func__, "cannot expand ignore_json_code_set from %d to %d codes",
-				ignore_json_code_set->alloc+1, ignore_json_code_set->alloc+IGNORE_JSON_CODE_CHUNK+1);
+				ignore_json_code_set->alloc+1, ignore_json_code_set->alloc+JSON_CODE_IGNORE_CHUNK+1);
 	    not_reached();
 	}
-	for (i=ignore_json_code_set->alloc; i < ignore_json_code_set->alloc+IGNORE_JSON_CODE_CHUNK; ++i) {
-	    p[i] = -1;	/* -1 is not a valid ignore code */
+	for (i=ignore_json_code_set->alloc; i < ignore_json_code_set->alloc+JSON_CODE_IGNORE_CHUNK; ++i) {
+	    p[i] = JSON_CODE_INVALID; /* JSON_CODE_INVALID (JSON_CODE_RESERVED_MIN - 1) is not a valid ignore code */
 	}
 	ignore_json_code_set->code = p;
 	/* report one less for the guard code */
-	ignore_json_code_set->alloc = ignore_json_code_set->alloc + IGNORE_JSON_CODE_CHUNK;
+	ignore_json_code_set->alloc = ignore_json_code_set->alloc + JSON_CODE_IGNORE_CHUNK;
     }
     return;
 }
