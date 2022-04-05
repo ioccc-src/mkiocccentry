@@ -383,9 +383,9 @@ jparse.c: jparse.l jparse.tab.h bfok.sh jparse.ref.c Makefile
 	fi
 
 
-##########################################################################
-# repo tools - rules mostly intended to be used by the mkiocccentry repo #
-##########################################################################
+###################################################################
+# repo tools - rules for those who maintain the mkiocccentry repo #
+###################################################################
 
 # things to do before a release, forming a pull, and/or updating the GitHub repo
 #
@@ -435,19 +435,35 @@ prep:
 #
 parser: jparse.y jparse.l sorry.tm.ca.h Makefile
 	${BISON} -d jparse.y
-	${RM} -f jparse.tab.ref.c jparse.tab.ref.h
+	${FLEX} -o jparse.c jparse.l
+	@if [[ ! -s jparse.tab.c ]]; then \
+	    echo "jparse.tab.c missing of empty"; 1>&2 \
+	    exit 1; \
+	fi
+	@if [[ ! -s jparse.tab.h ]]; then \
+	    echo "jparse.tab.h missing of empty"; 1>&2 \
+	    exit 1; \
+	fi
+	@if [[ ! -s jparse.c ]]; then \
+	    echo "jparse.c missing of empty"; 1>&2 \
+	    exit 1; \
+	fi
+	${RM} -f jparse.tab.ref.c
 	${CP} -f -v sorry.tm.ca.h jparse.tab.ref.c
 	echo '#line 1 "jparse.tab.c"' >> jparse.tab.ref.c
 	${CAT} jparse.tab.c >> jparse.tab.ref.c
+	${RM} -f jparse.tab.ref.h
 	${CP} -f -v sorry.tm.ca.h jparse.tab.ref.h
 	echo '#line 1 "jparse.tab.h"' >> jparse.tab.ref.h
 	${CAT} jparse.tab.h >> jparse.tab.ref.h
-	${FLEX} -o jparse.c jparse.l
 	${RM} -f jparse.ref.c
 	${CP} -f -v sorry.tm.ca.h jparse.ref.c
+	@# NOTE: jparse.c already begins with: "#line 1 jparse.c"
 	${CAT} jparse.c >> jparse.ref.c
 
-# force use of reference C code from bison and flex
+# restore reference code that was produced by previous successful make parse
+#
+# This rule forces the use of reference copies of JSON parser C code.
 #
 use_ref: jparse.tab.ref.c jparse.tab.ref.h jparse.ref.c
 	${RM} -f jparse.tab.c
