@@ -323,7 +323,7 @@ limit_ioccc.sh: limit_ioccc.h version.h Makefile
 	    echo "export TRIGRAPHS="; \
 	fi >> $@
 
-# How to crrate jparse.tab.h and jparse.tab.c
+# How to create jparse.tab.h and jparse.tab.c
 #
 # Convert jparse.y into jparse.tab.as well as jparse.tab.c via bison,
 # if bison is found and has a recent enough version, otherwise
