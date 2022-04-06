@@ -5203,6 +5203,10 @@ write_info(struct info *infop, char const *entry_dir, char const *jinfochk, char
     /*
      * perform the jinfochk which will indirectly show the user the tarball contents
      */
+    if (!quiet) {
+	para("",
+	    "Checking the format of .info.json ...", NULL);
+    }
     dbg(DBG_HIGH, "about to perform: %s -q -S -F %s -- %s", jinfochk, fnamchk, info_path);
     exit_code = shell_cmd(__func__, true, "% -q -S -F % -- %", jinfochk, fnamchk, info_path);
     if (exit_code != 0) {
@@ -5363,8 +5367,10 @@ write_author(struct info *infop, int author_count, struct author *authorp, char 
 	not_reached();
     }
 
-    para("",
-	"Checking the format of .author.json ...", NULL);
+    if (!quiet) {
+	para("",
+	    "Checking the format of .author.json ...", NULL);
+    }
 
     /*
      * perform the jauthchk which will indirectly show the user the tarball contents
