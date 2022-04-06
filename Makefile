@@ -323,6 +323,12 @@ limit_ioccc.sh: limit_ioccc.h version.h Makefile
 	    echo "export TRIGRAPHS="; \
 	fi >> $@
 
+# How to crrate jparse.tab.h and jparse.tab.c
+#
+# Convert jparse.y into jparse.tab.as well as jparse.tab.c via bison,
+# if bison is found and has a recent enough version, otherwise
+# use a pre-built reference copies stored in jparse.tab.ref.h and jparse.tab.ref.c.
+#
 jparse.tab.h jparse.tab.c: jparse.y bfok.sh jparse.tab.ref.h jparse.tab.ref.c Makefile
 	${RM} -f jparse.tab.h jparse.tab.c
 	@if `./bfok.sh ${BFOK_DIRS} 2>/dev/null`; then \
@@ -356,6 +362,12 @@ jparse.tab.h jparse.tab.c: jparse.y bfok.sh jparse.tab.ref.h jparse.tab.ref.c Ma
 	    ${CP} -f -v jparse.tab.ref.c jparse.tab.c; \
 	fi
 
+# How to create jparse.c
+#
+# Convert jparse.l into jparse.c via flex,
+# if flex found and has a recent enough version, otherwise
+# use a pre-built reference copy stored in jparse.ref.cr
+#
 jparse.c: jparse.l jparse.tab.h bfok.sh jparse.ref.c Makefile
 	${RM} -f jparse.c
 	@if `./bfok.sh ${BFOK_DIRS} 2>/dev/null`; then \
@@ -437,15 +449,15 @@ parser: jparse.y jparse.l sorry.tm.ca.h Makefile
 	${BISON} -d jparse.y
 	${FLEX} -o jparse.c jparse.l
 	@if [[ ! -s jparse.tab.c ]]; then \
-	    echo "jparse.tab.c missing of empty"; 1>&2 \
+	    echo "jparse.tab.c missing or empty"; 1>&2 \
 	    exit 1; \
 	fi
 	@if [[ ! -s jparse.tab.h ]]; then \
-	    echo "jparse.tab.h missing of empty"; 1>&2 \
+	    echo "jparse.tab.h missing or empty"; 1>&2 \
 	    exit 1; \
 	fi
 	@if [[ ! -s jparse.c ]]; then \
-	    echo "jparse.c missing of empty"; 1>&2 \
+	    echo "jparse.c missing or empty"; 1>&2 \
 	    exit 1; \
 	fi
 	${RM} -f jparse.tab.ref.c
