@@ -511,7 +511,7 @@ rebuild_jfloat_test: jfloat.testset jfloat.c dbg.o json.o util.o Makefile
 
 # sequence exit codes
 #
-seqcexit: ${ALL_CSRC} ${FLEXFILES} ${BISONFILES} Makefile
+seqcexit: Makefile
 	@HAVE_SEQCEXIT=`command -v ${SEQCEXIT}`; if [[ -z "$$HAVE_SEQCEXIT" ]]; then \
 	    echo 'If you have not installed the seqcexit tool, then' 1>&2; \
 	    echo 'you may not run this rule.'; 1>&2; \
