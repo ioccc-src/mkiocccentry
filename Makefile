@@ -473,7 +473,7 @@ parser: jparse.y jparse.l sorry.tm.ca.h Makefile
 	@# NOTE: jparse.c already begins with: "#line 1 jparse.c"
 	${CAT} jparse.c >> jparse.ref.c
 
-# restore reference code that was produced by previous successful make parse
+# restore reference code that was produced by previous successful make parser
 #
 # This rule forces the use of reference copies of JSON parser C code.
 #
