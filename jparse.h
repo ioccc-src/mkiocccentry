@@ -93,10 +93,10 @@ extern int token_type;			/* for braces, brackets etc.: '{', '}', '[', ']', ':' a
  */
 static void usage(int exitcode, char const *name, char const *str) __attribute__((noreturn));
 /* lexer specific */
-void yyerror(char const *s, ...);
 int yylex(void);
 /* parser specific */
 void parse_json_file(char const *filename);
 void parse_json_string(char const *string);
+void yyerror(char const *format, ...);
 
 #endif /* INCLUDE_JPARSE_H */

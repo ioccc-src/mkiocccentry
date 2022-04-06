@@ -1925,13 +1925,23 @@ main(int argc, char **argv)
 }
 
 void
-yyerror(char const *err, ...)
+yyerror(char const *format, ...)
 {
+    va_list ap;
+
+    va_start(ap, format);
+
     /*
-     * We use dbg() instead of err() but in the future it'll probably use the
-     * jerr() function or some other error function.
+     * We use fprintf and vfprintf instead of err() but in the future it'll
+     * probably use an error function of some kind, perhaps a variant of jerr()
+     * (the parser cannot provide all the information that the jerr() function
+     * expects).
      */
-    dbg(DBG_NONE, "JSON parser error (num errors: %d) on line %d: %s\n", yynerrs, yylineno, err);
+    fprintf(stderr, "JSON parser error (num errors: %d) on line %d: ", yynerrs, yylineno);
+    vfprintf(stderr, format, ap);
+    fprintf(stderr, "\n");
+
+    va_end(ap);
 }
 
 /*
