@@ -83,6 +83,7 @@ FLEX = flex
 GREP= grep
 INSTALL= install
 MAKE= make
+MKTEMP= mktemp
 MV= mv
 PICKY= picky
 RM= rm
@@ -170,6 +171,7 @@ OBJFILES= dbg.o util.o mkiocccentry.o iocccsize.o fnamchk.o txzchk.o jauthchk.o 
 LESS_PICKY_CSRC= utf8_posix_map.c
 LESS_PICKY_OBJ= utf8_posix_map.o
 GENERATED_CSRC= jparse.c jparse.tab.c
+GENERATED_HSRC= jparse.tab.h
 GENERATED_OBJ= jparse.o jparse.tab.o
 FLEXFILES= jparse.l
 BISONFILES= jparse.y
@@ -289,10 +291,14 @@ jfloat.test.o: jfloat.test.c Makefile
 jfloat: jfloat.c dbg.o json.o util.o jfloat.test.o Makefile
 	${CC} ${CFLAGS} -DJFLOAT_TEST_ENABLED jfloat.c dbg.o json.o util.o jfloat.test.o -o $@
 
-jparse: jparse.c jparse.h jparse.tab.c jparse.tab.h jparse.y jparse.l util.o dbg.o sanity.o json.o \
-	utf8_posix_map.o location.o Makefile
-	${CC} ${CFLAGS} -Wno-unused-function -Wno-unneeded-internal-declaration jparse.c jparse.tab.c \
-	    util.o dbg.o sanity.o json.o utf8_posix_map.o location.o -o $@
+jparse.o: jparse.c jparse.h Makefile
+	${CC} ${CFLAGS} jparse.c -Wno-unused-function -Wno-unneeded-internal-declaration -c
+
+jparse.tab.o: jparse.tab.c jparse.tab.h Makefile
+	${CC} ${CFLAGS} jparse.tab.c -Wno-unused-function -Wno-unneeded-internal-declaration -c
+
+jparse: jparse.o jparse.tab.o util.o dbg.o sanity.o json.o utf8_posix_map.o location.o Makefile
+	${CC} ${CFLAGS} jparse.o jparse.tab.o util.o dbg.o sanity.o json.o utf8_posix_map.o location.o -o $@
 
 utf8_test: utf8_test.c utf8_posix_map.o dbg.o util.o Makefile
 	${CC} ${CFLAGS} utf8_test.c utf8_posix_map.o dbg.o util.o -o $@
@@ -329,11 +335,13 @@ limit_ioccc.sh: limit_ioccc.h version.h Makefile
 # if bison is found and has a recent enough version, otherwise
 # use a pre-built reference copies stored in jparse.tab.ref.h and jparse.tab.ref.c.
 #
-jparse.tab.h jparse.tab.c: jparse.y bfok.sh jparse.tab.ref.h jparse.tab.ref.c Makefile
+jparse.tab.h jparse.tab.c: jparse.y bfok.sh limit_ioccc.sh verge jparse.tab.ref.h jparse.tab.ref.c Makefile
 	${RM} -f jparse.tab.h jparse.tab.c
 	@if `./bfok.sh ${BFOK_DIRS} 2>/dev/null`; then \
 	    BISON_PATH="`./bfok.sh ${BFOK_DIRS} -p bison 2>/dev/null`"; \
-	    if [[ -z $$BISON_PATH ]]; then \
+	    TMP_JPARSE_TAB_H="`${MKTEMP} -t jparse.tab.h`"; \
+	    TMP_JPARSE_TAB_C="`${MKTEMP} -t jparse.tab.c`"; \
+	    if [[ -z $$BISON_PATH || -z $$TMP_JPARSE_TAB_H || -z $$TMP_JPARSE_TAB_C ]]; then \
 	        echo "failed to discover the bison path" 1>&2; \
 	        echo "will use backup files instead" 1>&2; \
 		echo "${CP} -f -v jparse.tab.ref.h jparse.tab.h"; \
@@ -343,7 +351,28 @@ jparse.tab.h jparse.tab.c: jparse.y bfok.sh jparse.tab.ref.h jparse.tab.ref.c Ma
 	    else \
 		echo "$$BISON_PATH -d jparse.y"; \
 		"$$BISON_PATH" -d jparse.y; \
-		if [[ ! -s jparse.tab.h || ! -s jparse.tab.c ]]; then \
+		if [[ -s jparse.tab.c && -s jparse.tab.h ]]; then \
+		    echo '# pre-pending comment and line number reset to jparse.tab.c'; \
+		    echo "${CP} -f -v sorry.tm.ca.h $$TMP_JPARSE_TAB_C"; \
+		    ${CP} -f -v sorry.tm.ca.h "$$TMP_JPARSE_TAB_C"; \
+		    echo "echo '#line 1 \"jparse.tab.c\"' >> $$TMP_JPARSE_TAB_C"; \
+		    echo '#line 1 "jparse.tab.c"' >> "$$TMP_JPARSE_TAB_C"; \
+		    echo "${CAT} jparse.tab.c >> $$TMP_JPARSE_TAB_C"; \
+		    ${CAT} jparse.tab.c >> "$$TMP_JPARSE_TAB_C"; \
+		    echo "${MV} -f -v $$TMP_JPARSE_TAB_C jparse.tab.c"; \
+		    ${MV} -f -v "$$TMP_JPARSE_TAB_C" jparse.tab.c; \
+		    echo '# jparse.tab.c pre-pended and line number reset'; \
+		    echo '# pre-pending comment and line number reset to jparse.tab.h'; \
+		    echo "${CP} -f -v sorry.tm.ca.h $$TMP_JPARSE_TAB_H"; \
+		    ${CP} -f -v sorry.tm.ca.h "$$TMP_JPARSE_TAB_H"; \
+		    echo "echo '#line 1 \"jparse.tab.h\"' >> $$TMP_JPARSE_TAB_H"; \
+		    echo '#line 1 "jparse.tab.h"' >> "$$TMP_JPARSE_TAB_H"; \
+		    echo "${CAT} jparse.tab.h >> $$TMP_JPARSE_TAB_H"; \
+		    ${CAT} jparse.tab.h >> "$$TMP_JPARSE_TAB_H"; \
+		    echo "${MV} -f -v $$TMP_JPARSE_TAB_H jparse.tab.h"; \
+		    ${MV} -f -v "$$TMP_JPARSE_TAB_H" jparse.tab.h; \
+		    echo '# jparse.tab.h pre-pended and line number reset'; \
+		else \
 		    echo "unable to form jparse.tab.h and/or jparse.tab.c"; \
 		    echo "will use the backup file jparse.tab.h" 1>&2; \
 		    echo "${CP} -f -v jparse.tab.ref.h jparse.tab.h"; \
@@ -368,11 +397,12 @@ jparse.tab.h jparse.tab.c: jparse.y bfok.sh jparse.tab.ref.h jparse.tab.ref.c Ma
 # if flex found and has a recent enough version, otherwise
 # use a pre-built reference copy stored in jparse.ref.cr
 #
-jparse.c: jparse.l jparse.tab.h bfok.sh jparse.ref.c Makefile
+jparse.c: jparse.l jparse.tab.h bfok.sh limit_ioccc.sh verge jparse.ref.c Makefile
 	${RM} -f jparse.c
 	@if `./bfok.sh ${BFOK_DIRS} 2>/dev/null`; then \
 	    FLEX_PATH="`./bfok.sh ${BFOK_DIRS} -p flex 2>/dev/null`"; \
-	    if [[ -z $$FLEX_PATH ]]; then \
+	    TMP_JPARSE_C="`${MKTEMP} -t jparse.c`"; \
+	    if [[ -z $$FLEX_PATH || -z $$TMP_JPARSE_C ]]; then \
 	        echo "failed to discover the flex path" 1>&2; \
 	        echo "will use backup files" 1>&2; \
 		echo "${CP} -f -v jparse.ref.c jparse.c"; \
@@ -380,7 +410,18 @@ jparse.c: jparse.l jparse.tab.h bfok.sh jparse.ref.c Makefile
 	    else \
 		echo "$$FLEX_PATH -o jparse.c jparse.l"; \
 		"$$FLEX_PATH" -o jparse.c jparse.l; \
-		if [[ ! -s jparse.c ]]; then \
+		if [[ -s jparse.c ]]; then \
+		    echo '# pre-pending comment and line number reset to jparse.c'; \
+		    echo "${CP} -f -v sorry.tm.ca.h $$TMP_JPARSE_C"; \
+		    ${CP} -f -v sorry.tm.ca.h "$$TMP_JPARSE_C"; \
+		    echo "echo '#line 1 \"jparse.c\"' >> $$TMP_JPARSE_C"; \
+		    echo '#line 1 "jparse.c"' >> "$$TMP_JPARSE_C"; \
+		    echo "${CAT} jparse.c >> $$TMP_JPARSE_C"; \
+		    ${CAT} jparse.c >> "$$TMP_JPARSE_C"; \
+		    echo "${MV} -f -v $$TMP_JPARSE_C jparse.c"; \
+		    ${MV} -f -v "$$TMP_JPARSE_C" jparse.c; \
+		    echo '# jparse.c pre-pended and line number reset'; \
+		else \
 		    echo "unable to form jparse.c"; \
 		    echo "will use the backup file jparse.ref.c" 1>&2; \
 		    echo "${CP} -f -v jparse.ref.c jparse.c"; \
@@ -408,22 +449,22 @@ prep:
 	@echo
 	${MAKE} clobber
 	@echo
-	@echo "=-=-= ${MAKE} parser =-=-="
-	@echo
-	${MAKE} parser
-	@echo
 	@echo "=-=-= ${MAKE} seqcexit =-=-="
 	@echo
 	${MAKE} seqcexit
-	@echo
-	@echo "=-=-= ${MAKE} all =-=-="
-	@echo
-	${MAKE} all
 	@echo
 	@echo "=-=-= ${MAKE} use_ref =-=-="
 	@echo
 	${MAKE} use_ref
 	${RM} -f ${GENERATED_OBJ}
+	@echo
+	@echo "=-=-= ${MAKE} all =-=-="
+	@echo
+	${MAKE} all
+	@echo
+	@echo "=-=-= ${MAKE} parser =-=-="
+	@echo
+	${MAKE} parser
 	@echo
 	@echo "=-=-= ${MAKE} all (again) =-=-="
 	@echo
@@ -445,36 +486,75 @@ prep:
 
 # force the rebuild of the JSON parser and form reference copies of JSON parser C code
 #
-# XXX Currently if one does not do make parser use_ref the apology added to the
-# parser files will be removed. Using make prep will do both, preventing this
-# problem.
-parser: jparse.y jparse.l sorry.tm.ca.h Makefile
+parser: jparse.y jparse.l sorry.tm.ca.h limit_ioccc.sh verge Makefile
 	${BISON} -d jparse.y
 	${FLEX} -o jparse.c jparse.l
-	@if [[ ! -s jparse.tab.c ]]; then \
-	    echo "jparse.tab.c missing or empty"; 1>&2 \
-	    exit 1; \
-	fi
-	@if [[ ! -s jparse.tab.h ]]; then \
-	    echo "jparse.tab.h missing or empty"; 1>&2 \
-	    exit 1; \
-	fi
-	@if [[ ! -s jparse.c ]]; then \
-	    echo "jparse.c missing or empty"; 1>&2 \
-	    exit 1; \
+	@if [[ -s jparse.tab.c ]]; then \
+	    TMP_JPARSE_TAB_C="`${MKTEMP} -t jparse.tab.c`"; \
+	    if [[ -z $$TMP_JPARSE_TAB_C ]]; then \
+		echo "${MKTEMP} -t jparse.tab.c failed" 1>&2; \
+		exit 1; \
+	    fi; \
+	    echo "# pre-pending comment and line number reset to jparse.tab.c"; \
+	    echo "${CP} -f -v sorry.tm.ca.h $$TMP_JPARSE_TAB_C"; \
+	    ${CP} -f -v sorry.tm.ca.h "$$TMP_JPARSE_TAB_C"; \
+	    echo "echo '#line 1 \"jparse.tab.c\"' >> $$TMP_JPARSE_TAB_C"; \
+	    echo '#line 1 "jparse.tab.c"' >> "$$TMP_JPARSE_TAB_C"; \
+	    echo "${CAT} jparse.tab.c >> $$TMP_JPARSE_TAB_C"; \
+	    ${CAT} jparse.tab.c >> "$$TMP_JPARSE_TAB_C"; \
+	    echo "${MV} -f -v $$TMP_JPARSE_TAB_C jparse.tab.c"; \
+	    ${MV} -f -v "$$TMP_JPARSE_TAB_C" jparse.tab.c; \
+	    echo "# jparse.tab.c pre-pended and line number reset"; \
+	else \
+	    echo "jparse.tab.c missing or empty" 1>&2; \
+	    exit 2; \
 	fi
 	${RM} -f jparse.tab.ref.c
-	${CP} -f -v sorry.tm.ca.h jparse.tab.ref.c
-	echo '#line 1 "jparse.tab.c"' >> jparse.tab.ref.c
-	${CAT} jparse.tab.c >> jparse.tab.ref.c
+	${CP} -f -v jparse.tab.c jparse.tab.ref.c
+	@if [[ -s jparse.tab.h ]]; then \
+	    TMP_JPARSE_TAB_H="`${MKTEMP} -t jparse.tab.h`"; \
+	    if [[ -z $$TMP_JPARSE_TAB_H ]]; then \
+		echo "${MKTEMP} -t jparse.tab.h failed" 1>&2; \
+		exit 3; \
+	    fi; \
+	    echo '# pre-pending comment and line number reset to jparse.tab.h'; \
+	    echo "${CP} -f -v sorry.tm.ca.h $$TMP_JPARSE_TAB_H"; \
+	    ${CP} -f -v sorry.tm.ca.h "$$TMP_JPARSE_TAB_H"; \
+	    echo "echo '#line 1 \"jparse.tab.h\"' >> $$TMP_JPARSE_TAB_H"; \
+	    echo '#line 1 "jparse.tab.h"' >> "$$TMP_JPARSE_TAB_H"; \
+	    echo "${CAT} jparse.tab.h >> $$TMP_JPARSE_TAB_H"; \
+	    ${CAT} jparse.tab.h >> "$$TMP_JPARSE_TAB_H"; \
+	    echo "${MV} -f -v $$TMP_JPARSE_TAB_H jparse.tab.h"; \
+	    ${MV} -f -v "$$TMP_JPARSE_TAB_H" jparse.tab.h; \
+	    echo '# jparse.tab.h pre-pended and line number reset'; \
+	else \
+	    echo "jparse.tab.h missing or empty" 1>&2; \
+	    exit 3; \
+	fi
 	${RM} -f jparse.tab.ref.h
-	${CP} -f -v sorry.tm.ca.h jparse.tab.ref.h
-	echo '#line 1 "jparse.tab.h"' >> jparse.tab.ref.h
-	${CAT} jparse.tab.h >> jparse.tab.ref.h
+	${CP} -f -v jparse.tab.h jparse.tab.ref.h
+	@if [[ -s jparse.c ]]; then \
+	    TMP_JPARSE_C="`${MKTEMP} -t jparse.c`"; \
+	    if [[ -z $$TMP_JPARSE_C ]]; then \
+		echo "${MKTEMP} -t jparse.c failed" 1>&2; \
+		exit 4; \
+	    fi; \
+	    echo '# pre-pending comment and line number reset to jparse.c'; \
+	    echo "${CP} -f -v sorry.tm.ca.h $$TMP_JPARSE_C"; \
+	    ${CP} -f -v sorry.tm.ca.h "$$TMP_JPARSE_C"; \
+	    echo "echo '#line 1 \"jparse.c\"' >> $$TMP_JPARSE_C"; \
+	    echo '#line 1 "jparse.c"' >> "$$TMP_JPARSE_C"; \
+	    echo "${CAT} jparse.c >> $$TMP_JPARSE_C"; \
+	    ${CAT} jparse.c >> "$$TMP_JPARSE_C"; \
+	    echo "${MV} -f -v $$TMP_JPARSE_C jparse.c"; \
+	    ${MV} -f -v "$$TMP_JPARSE_C" jparse.c; \
+	    echo '# jparse.c pre-pended and line number reset'; \
+	else \
+	    echo "jparse.c missing or empty" 1>&2; \
+	    exit 5; \
+	fi
 	${RM} -f jparse.ref.c
-	${CP} -f -v sorry.tm.ca.h jparse.ref.c
-	@# NOTE: jparse.c already begins with: "#line 1 jparse.c"
-	${CAT} jparse.c >> jparse.ref.c
+	${CP} -f -v jparse.c jparse.ref.c
 
 # restore reference code that was produced by previous successful make parser
 #
@@ -724,6 +804,7 @@ clean:
 
 clobber: clean
 	${RM} -f ${TARGETS} ${TEST_TARGETS}
+	${RM} -f ${GENERATED_CSRC} ${GENERATED_HSRC}
 	${RM} -f answers.txt j-test.out j-test2.out json-test.log
 	${RM} -rf test-iocccsize test_src test_work tags dbg.out
 	${RM} -f jint.set.tmp jint_gen
@@ -757,6 +838,12 @@ depend:
 ###############
 
 ### DO NOT CHANGE MANUALLY BEYOND THIS LINE
+utf8_posix_map.o: utf8_posix_map.c utf8_posix_map.h util.h dbg.h \
+  limit_ioccc.h version.h
+jparse.o: jparse.c jparse.h dbg.h util.h json.h sanity.h location.h \
+  utf8_posix_map.h limit_ioccc.h version.h jparse.tab.h
+jparse.tab.o: jparse.tab.c jparse.h dbg.h util.h json.h sanity.h \
+  location.h utf8_posix_map.h limit_ioccc.h version.h jparse.tab.h
 dbg.o: dbg.c dbg.h
 util.o: util.c dbg.h util.h limit_ioccc.h version.h
 mkiocccentry.o: mkiocccentry.c mkiocccentry.h util.h json.h dbg.h \
@@ -787,9 +874,3 @@ jint.test.o: jint.test.c json.h
 jfloat.o: jfloat.c jfloat.h dbg.h util.h json.h limit_ioccc.h version.h
 jfloat.test.o: jfloat.test.c json.h
 verge.o: verge.c verge.h dbg.h util.h limit_ioccc.h version.h
-jparse.o: jparse.c jparse.h dbg.h util.h json.h sanity.h location.h \
-  utf8_posix_map.h limit_ioccc.h version.h jparse.tab.h
-jparse.tab.o: jparse.tab.c jparse.h dbg.h util.h json.h sanity.h \
-  location.h utf8_posix_map.h limit_ioccc.h version.h jparse.tab.h
-utf8_posix_map.o: utf8_posix_map.c utf8_posix_map.h util.h dbg.h \
-  limit_ioccc.h version.h

@@ -13,6 +13,7 @@
  * Thanks in advance for your understanding, and sorry (tm Canada :-)).
  */
 #line 1 "jparse.c"
+#line 1 "jparse.c"
 
 #line 3 "jparse.c"
 

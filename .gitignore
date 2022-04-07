@@ -9,6 +9,9 @@ jfloat
 jinfochk
 jint
 jparse
+jparse.c
+jparse.tab.c
+jparse.tab.h
 json-test.log
 json_parser
 jstr-test.out
