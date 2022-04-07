@@ -2831,7 +2831,6 @@ static void
 check_remarks_md(struct info *infop, char const *entry_dir, char const *cp, char const *remarks_md)
 {
     off_t filesize = 0;		/* size of remarks.md */
-    char *cmd = NULL;		/* cp prog_c entry_dir/prog.c */
     int exit_code;		/* exit code from shell_cmd() */
 
     /*
@@ -2899,14 +2898,6 @@ check_remarks_md(struct info *infop, char const *entry_dir, char const *cp, char
     if (infop->remarks_md == NULL) {
 	errp(112, __func__, "malloc #1 of %ju bytes failed", (uintmax_t)(LITLEN("remarks.md") + 1));
 	not_reached();
-    }
-
-    /*
-     * free storage
-     */
-    if (cmd != NULL) {
-	free(cmd);
-	cmd = NULL;
     }
     return;
 }
