@@ -195,10 +195,10 @@ main(int argc, char **argv)
 	     * XXX Rather than having an option to disable strict mode so that
 	     * in the same invocation we can test some strings in strict mode
 	     * and some not strict after each string is parsed the strict mode
-	     * is disabled so that so that another -s has to be specified prior
-	     * to the string. This does mean that if you want strict parsing of
-	     * files and you specify the -s option then you must have -S after
-	     * the string args.
+	     * is disabled so that another -s has to be specified prior to the
+	     * string. This does mean that if you want strict parsing of files
+	     * and you specify the -s option then you must have -S after the
+	     * string args.
 	     *
 	     * But the question is: should it be this way or should it be
 	     * another design choice? For example should there be an option that
@@ -255,10 +255,12 @@ yyerror(char const *format, ...)
     va_start(ap, format);
 
     /*
-     * We use fprintf and vfprintf instead of err() but in the future it'll
-     * probably use an error function of some kind, perhaps a variant of jerr()
-     * (the parser cannot provide all the information that the jerr() function
-     * expects).
+     * We use fprintf and vfprintf instead of err() but in the future this might
+     * use an error function of some kind, perhaps a variant of jerr() (a
+     * variant because the parser cannot provide all the information that the
+     * jerr() function expects). In the validation code we will likely use
+     * jerr(). It's possible that the function jerr() will change as well but
+     * this will be decided after the parser is complete.
      */
     fprintf(stderr, "JSON parser error (num errors: %d) on line %d: ", yynerrs, yylineno);
     vfprintf(stderr, format, ap);

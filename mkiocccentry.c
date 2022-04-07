@@ -2831,7 +2831,6 @@ static void
 check_remarks_md(struct info *infop, char const *entry_dir, char const *cp, char const *remarks_md)
 {
     off_t filesize = 0;		/* size of remarks.md */
-    char *cmd = NULL;		/* cp prog_c entry_dir/prog.c */
     int exit_code;		/* exit code from shell_cmd() */
 
     /*
@@ -2899,14 +2898,6 @@ check_remarks_md(struct info *infop, char const *entry_dir, char const *cp, char
     if (infop->remarks_md == NULL) {
 	errp(112, __func__, "malloc #1 of %ju bytes failed", (uintmax_t)(LITLEN("remarks.md") + 1));
 	not_reached();
-    }
-
-    /*
-     * free storage
-     */
-    if (cmd != NULL) {
-	free(cmd);
-	cmd = NULL;
     }
     return;
 }
@@ -4300,7 +4291,7 @@ get_author_info(struct info *infop, char *ioccc_id, struct author **author_set_p
 	    para("",
 	        "Please note: Your next answer will not affect your chances of winning the IOCCC.",
 		"We just need to know if you are a past IOCCC winner in case you do win.",
-		"This will simply help us identify all of your winning entries on the IOCCC web site.",
+		"This will simply help us identify all of your winning entries on the IOCCC website.",
 		"",
 		NULL);
 	}
@@ -4332,7 +4323,7 @@ get_author_info(struct info *infop, char *ioccc_id, struct author **author_set_p
 			 "     XXX - explain how - XXX",
 			 "",
 			 "By entering your IOCCC winner handle, you will help us match up this entry",
-			 "on the web site should you happen to win (again) with this entry.",
+			 "on the website should you happen to win (again) with this entry.",
 			 NULL);
 		}
 	    }
