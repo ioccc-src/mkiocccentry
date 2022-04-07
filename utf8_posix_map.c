@@ -6,7 +6,7 @@
  *
  * An author_handle, for an IOCCC winner, will be used to form
  * a winner_handle.  These winner_handle's will become part of a
- * JSON filename on the www.ioccc.org web site.  For this reason,
+ * JSON filename on the www.ioccc.org website.  For this reason,
  * (and other reasons), we must restrict an author_handle to
  * only lower case POSIX portable filenames, with the addition of the +,
  * and restrictions on leading characters.
