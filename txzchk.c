@@ -1118,7 +1118,6 @@ static unsigned
 check_tarball(char const *tar, char const *fnamchk)
 {
     unsigned line_num = 0; /* line number of tar output */
-    char *cmd = NULL;	/* fnamchk and tar -tJvf */
     FILE *input_stream = NULL; /* pipe for tar output (or if -T specified read as a text file) */
     FILE *fnamchk_stream = NULL; /* pipe for fnamchk output */
     char *linep = NULL;		/* allocated line read from tar (or text file) */
@@ -1195,7 +1194,7 @@ check_tarball(char const *tar, char const *fnamchk)
 	fnamchk_stream = NULL;
 
 	if (dir_name == NULL || !strlen(dir_name)) {
-	    err(26, __func__, "txzchk: %s: unexpected NULL pointer from %s", txzpath, cmd);
+	    err(26, __func__, "txzchk: unexpected NULL pointer from fnamchk -- %s", txzpath);
 	    not_reached();
 	}
     }
@@ -1227,12 +1226,6 @@ check_tarball(char const *tar, char const *fnamchk)
     }
     dbg(DBG_MED, "txzchk: %s size in bytes: %jd", txzpath, (intmax_t)txz_info.size);
 
-    /*
-     * free cmd for tar (if -T wasn't specified) command
-     */
-    free(cmd);
-    cmd = NULL;
-
     if (text_file_flag_used) {
 	input_stream = fopen(txzpath, "r");
 	errno = 0;
@@ -1246,10 +1239,15 @@ check_tarball(char const *tar, char const *fnamchk)
 	    warnp(__func__, "setvbuf failed for %s", txzpath);
 	}
 
-    } else { /* if -T not specified we have to do more to set up input stream */
+    } else {
+	/*
+	 * -T was not specified so we have to execute tar: if it fails it's an
+	 * error and we abort; else we open a pipe to read the output of the
+	 * command.
+	 */
 
 	/*
-	 * execute the tar command
+	 * first execute the tar command
 	 */
 	errno = 0;			/* pre-clear errno for errp() */
 	exit_code = shell_cmd(__func__, true, "% -tJvf %", tar, txzpath);
@@ -1259,9 +1257,7 @@ check_tarball(char const *tar, char const *fnamchk)
 	    not_reached();
 	}
 
-	/*
-	 * If we get here -T was not specified so open pipe to tar command.
-	 */
+	/* now open a pipe to tar command (tar -tJvf) to read from */
 	input_stream = pipe_open(__func__, true, "% -tJvf %", tar, txzpath);
 	if (input_stream == NULL) {
 	    err(31, __func__, "popen for reading failed for: %s -tJvf %s",
@@ -1322,11 +1318,6 @@ check_tarball(char const *tar, char const *fnamchk)
 
 
     } while (readline_len >= 0);
-    /*
-     * free cmd (it'll be NULL if -T was specified but this is safe)
-     */
-    free(cmd);
-    cmd = NULL;
 
     /*
      * now parse the lines, reporting any issue that have to be done while parsing
