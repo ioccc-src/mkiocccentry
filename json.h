@@ -265,6 +265,24 @@ struct string {
 };
 
 /*
+ * element_type - JSON element type - an enum for each union element member in struct json
+ */
+enum element_type {
+    JTYPE_EOT = -1,		/* special end of the table value */
+    JTYPE_UNSET = 0,		/* JSON element has not been set */
+    JTYPE_INT,			/* JSON element is an integer - see struct integer */
+    JTYPE_FLOAT,		/* JSON element is a float - see struct floating */
+    JTYPE_STRING,		/* JSON element is a string - see struct string */
+    JTYPE_BOOL,			/* JSON element is a boolean - see struct boolean */
+    JTYPE_NULL,			/* JSON element is a null - see struct null */
+    JTYPE_OBJECT,		/* JSON element is a { memmbers } */
+    JTYPE_ARRAY,		/* JSON element is a [ elements ] */
+#if 0 /* XXX - data types to be written */
+    XXX -  ??? - XXX
+#endif /* XXX - data types to be written */
+};
+
+/*
  * struct json - a struct for the JSON parser tree
  *
  * For the parse tree we have at least one struct and probably an union but this
@@ -276,18 +294,31 @@ struct string {
  * different names already this will work well - at least for now.
  */
 struct json {
-    struct string *string;	/* json element is a string */
-    struct integer *integer;	/* json element is either a signed or unsigned integer */
-    struct floating *floating;	/* json element is a floating point */
-    bool boolean;		/* for true or false. It might be helpful to have a struct boolean but this hasn't been made yet */
+    enum element_type type;		/* union element specifier */
+    union json_union {
+	struct string string;		/* JTYPE_INT - value is a string */
+	struct integer integer;		/* JTYPE_FLOAT - value is either a signed or unsigned integer */
+	struct floating floating;	/* JTYPE_STRING - value is a floating point */
+#if 0 /* XXX - data types to be written */
+	struct boolean boolean;		/* JTYPE_BOOL - value is a JSON boolean */
+	struct jnull jnull;		/* JTYPE_NULL - value is a JSON null value */
+	struct object object;		/* JTYPE_OBJECT - value is a JSON { memmbers } */
+	struct array array;		/* JTYPE_ARRAY - value is a JSON [ elements ] */
+	XXX -  ??? - XXX
+#endif /* XXX - data types to be written */
+    } element;
 
     /*
      * These are for the tree but this might or might not be necessary; this is
      * not yet decided. It's also possible that this will be needed but done
      * differently.
+     *
+     * Some JSON elements such as JTYPE_OBJECT and JTYPE_ARRAY have parse tree children.
+     * Those parse tree children would have this element as their parent.
      */
-    struct json *left;
-    struct json *right;
+    struct json *left;		/* left JSON parse tree member or NULL if none */
+    struct json *right;		/* right JSON parse tree member or NULL if none */
+    struct json *parent;	/* parent JSON parse tree member or NULL tree root */
 
     /* TODO: An important thing must be considered when the parser is complete
      * but prior to the validating the json object: the structs json_field and
