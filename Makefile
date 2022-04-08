@@ -559,10 +559,6 @@ parser: jparse.y jparse.l sorry.tm.ca.h limit_ioccc.sh verge Makefile
 # restore reference code that was produced by previous successful make parser
 #
 # This rule forces the use of reference copies of JSON parser C code.
-#
-# XXX Currently if you do make parser not followed by running this rule the
-# apology added with make parser will not be added to all the files. Using make
-# prep will do both, preventing the problem.
 use_ref: jparse.tab.ref.c jparse.tab.ref.h jparse.ref.c
 	${RM} -f jparse.tab.c
 	${CP} -f -v jparse.tab.ref.c jparse.tab.c
@@ -597,9 +593,6 @@ rebuild_jfloat_test: jfloat.testset jfloat.c dbg.o json.o util.o Makefile
 
 # sequence exit codes
 #
-# XXX Currently running this rule followed by make will remove the apology from
-# some of the jparse related files. Using make prep (which runs make seqcexit)
-# will fix this problem. You can also do make seqcexit parser use_ref.
 seqcexit: Makefile
 	@HAVE_SEQCEXIT=`command -v ${SEQCEXIT}`; if [[ -z "$$HAVE_SEQCEXIT" ]]; then \
 	    echo 'If you have not installed the seqcexit tool, then' 1>&2; \
