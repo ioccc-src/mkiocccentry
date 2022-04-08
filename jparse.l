@@ -184,7 +184,7 @@ parse_json_file(char const *filename)
      * firewall
      */
     if (filename == NULL) {
-	/* this should actually never happen */
+	/* this should actually never happen if called from jparse */
 	warn(__func__, "passed NULL filename");
 	++num_errors;
 	return;
