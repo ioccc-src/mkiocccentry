@@ -275,7 +275,7 @@ enum element_type {
     JTYPE_STRING,		/* JSON element is a string - see struct string */
     JTYPE_BOOL,			/* JSON element is a boolean - see struct boolean */
     JTYPE_NULL,			/* JSON element is a null - see struct null */
-    JTYPE_OBJECT,		/* JSON element is a { memmbers } */
+    JTYPE_OBJECT,		/* JSON element is a { members } */
     JTYPE_ARRAY,		/* JSON element is a [ elements ] */
 #if 0 /* XXX - data types to be written */
     XXX -  ??? - XXX
@@ -302,23 +302,19 @@ struct json {
 #if 0 /* XXX - data types to be written */
 	struct boolean boolean;		/* JTYPE_BOOL - value is a JSON boolean */
 	struct jnull jnull;		/* JTYPE_NULL - value is a JSON null value */
-	struct object object;		/* JTYPE_OBJECT - value is a JSON { memmbers } */
+	struct object object;		/* JTYPE_OBJECT - value is a JSON { members } */
 	struct array array;		/* JTYPE_ARRAY - value is a JSON [ elements ] */
 	XXX -  ??? - XXX
 #endif /* XXX - data types to be written */
     } element;
 
     /*
-     * These are for the tree but this might or might not be necessary; this is
-     * not yet decided. It's also possible that this will be needed but done
-     * differently.
-     *
      * Some JSON elements such as JTYPE_OBJECT and JTYPE_ARRAY have parse tree children.
      * Those parse tree children would have this element as their parent.
      */
     struct json *left;		/* left JSON parse tree member or NULL if none */
     struct json *right;		/* right JSON parse tree member or NULL if none */
-    struct json *parent;	/* parent JSON parse tree member or NULL tree root */
+    struct json *parent;	/* parent JSON parse tree member or NULL if tree root */
 
     /* TODO: An important thing must be considered when the parser is complete
      * but prior to the validating the json object: the structs json_field and
