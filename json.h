@@ -260,25 +260,51 @@ struct string {
     bool converted;		/* true ==> able to decode JSON string, false ==> str is invalid or not decoded */
     bool same;			/* true => original JSON string same as decoded string, no decoding required */
 
-    bool has_nul;		/* true ==> decoded JSON string as a NUL byte inside it */
+    bool has_nul;		/* true ==> decoded JSON string has a NUL byte inside it */
     bool posix_plus;		/* true => decoded JSON string has only POSIX portable safe plus + chars */
 };
 
-
 /*
- * JSON value: a linked list of all values of the same json_field (below).
+ * struct json - a struct for the JSON parser tree
  *
- * NOTE: As the parser is built this struct (and struct json_field below) might
- * be removed. This will depend upon how the parser builds the tree and this has
- * not been decided yet.
+ * For the parse tree we have at least one struct and probably an union but this
+ * is the first version of it. It's not complete and will have to be changed and
+ * probably in many ways.
+ *
+ * But why is it called just 'struct json'? I decided upon this because it seems
+ * that the name is fitting for json files and since other structs have
+ * different names already this will work well - at least for now.
  */
-struct json_value
-{
-    char *value;
+struct json {
+    struct string *string;	/* json element is a string */
+    struct integer *integer;	/* json element is either a signed or unsigned integer */
+    struct floating *floating;	/* json element is a floating point */
+    bool boolean;		/* for true or false. It might be helpful to have a struct boolean but this hasn't been made yet */
 
-    int line_num;	    /* the 'line number': actually the field number in the list */
+    /*
+     * These are for the tree but this might or might not be necessary; this is
+     * not yet decided. It's also possible that this will be needed but done
+     * differently.
+     */
+    struct json *left;
+    struct json *right;
 
-    struct json_value *next;
+    /* TODO: An important thing must be considered when the parser is complete
+     * but prior to the validating the json object: the structs json_field and
+     * json_value below are of (json and otherwise) value in that they're used
+     * to set up a table of valid fields per json file as well as to know how
+     * many times each field has been seen.
+     *
+     * However those structs are incompatible with this struct so either a set
+     * of routines that will translate back and forth (for the validation
+     * processes) or else somehow those structs have to be integrated into this
+     * one. The latter is complicated because of the tables but the former is
+     * very possibly complicated too but because the former is probably less
+     * complicated this is what I'm thinking about right now. On the other hand
+     * it might be that something else can be done for the tables in which case
+     * the structs might not be so useful after all. This is TBD at a later
+     * date.
+     */
 };
 
 /*
@@ -297,13 +323,32 @@ struct json_value
 #define JSON_ARRAY_CHARS    (7)	    /* json field is supposed to be a string in an array */
 #define JSON_EOT	    (-1)    /* json field is NULL (not null): used internally to mark end of the tables */
 
+
+/*
+ * JSON value: a linked list of all values of the same json_field (below).
+ *
+ * NOTE: As the parser is built this struct (and struct json_field below) might
+ * be removed. This will depend upon how the parser builds the tree and this has
+ * not been decided yet. Notice the TODO comment in the struct json above for
+ * more information on this.
+ */
+struct json_value
+{
+    char *value;
+
+    int line_num;	    /* the 'line number': actually the field number in the list */
+
+    struct json_value *next;
+};
+
 /*
  * JSON field: a JSON field consists of the name and all the values (if more
  * than one field of the same name is found in the file).
  *
  * NOTE: As the parser is built this struct (and struct json_value above) might
  * be removed. This will depend upon how the parser builds the tree and this has
- * not been decided yet.
+ * not been decided yet. Notice the TODO comment in the struct json above for
+ * more information on this.
  */
 struct json_field
 {

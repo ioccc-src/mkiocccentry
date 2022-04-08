@@ -66,17 +66,33 @@ int token_type = 0;
  * be of value though it might also have to change) that's also used in the
  * lexer but I really don't know yet. This will come at a later date.
  *
- * Actually there will be use of struct integer, struct floating and struct
- * string but these will have to come later; struct integer and struct floating
- * are complete but struct string is not and I still have to work out more
- * specifics here.
+ * Actually there will be use of the struct json. This function will almost
+ * certainly be modified but it currently holds a struct integer *,
+ * struct floating *, struct string *, a bool and a set of pointers for children
+ * (because it's very possible that it'll be a tree though this is not yet
+ * decided either).
+ *
+ * The struct integer and struct floating are complete but struct string is not
+ * and I'm thinking it might be useful to have a struct boolean as well. Even
+ * without these incomplete and missing structs struct json is not complete and
+ * will absolutely change in some ways (more probably many ways). The specifics
+ * have to be worked out still!
+ *
+ * As for the struct json * there's no allocation/free functions yet and I'm not
+ * even sure how this will work with the lexer which means that it's also not
+ * decided in the parser.
+ *
+ * The details with struct json (the internals and the usage here) are not yet
+ * decided (especially here but the struct is not complete yet either). Thus the
+ * struct json * is not even used here yet.
  */
 %union json_type {
-  char *string;
-  uintmax_t uintmax;
-  intmax_t intmax;
-  long double ldouble;
-  bool boolean;
+    struct json *json;
+    char *string;
+    uintmax_t uintmax;
+    intmax_t intmax;
+    long double ldouble;
+    bool boolean;
 }
 %token JSON_OPEN_BRACE JSON_CLOSE_BRACE JSON_OPEN_BRACKET JSON_CLOSE_BRACKET
 %token JSON_COMMA JSON_COLON JSON_NULL
