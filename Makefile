@@ -352,7 +352,7 @@ jparse.tab.h jparse.tab.c: jparse.y bfok.sh limit_ioccc.sh verge jparse.tab.ref.
 		echo "$$BISON_PATH -d jparse.y"; \
 		"$$BISON_PATH" -d jparse.y; \
 		if [[ -s jparse.tab.c && -s jparse.tab.h ]]; then \
-		    echo '# pre-pending comment and line number reset to jparse.tab.c'; \
+		    echo '# prepending comment and line number reset to jparse.tab.c'; \
 		    echo "${CP} -f -v sorry.tm.ca.h $$TMP_JPARSE_TAB_C"; \
 		    ${CP} -f -v sorry.tm.ca.h "$$TMP_JPARSE_TAB_C"; \
 		    echo "echo '#line 1 \"jparse.tab.c\"' >> $$TMP_JPARSE_TAB_C"; \
@@ -361,8 +361,8 @@ jparse.tab.h jparse.tab.c: jparse.y bfok.sh limit_ioccc.sh verge jparse.tab.ref.
 		    ${CAT} jparse.tab.c >> "$$TMP_JPARSE_TAB_C"; \
 		    echo "${MV} -f -v $$TMP_JPARSE_TAB_C jparse.tab.c"; \
 		    ${MV} -f -v "$$TMP_JPARSE_TAB_C" jparse.tab.c; \
-		    echo '# jparse.tab.c pre-pended and line number reset'; \
-		    echo '# pre-pending comment and line number reset to jparse.tab.h'; \
+		    echo '# jparse.tab.c prepended and line number reset'; \
+		    echo '# prepending comment and line number reset to jparse.tab.h'; \
 		    echo "${CP} -f -v sorry.tm.ca.h $$TMP_JPARSE_TAB_H"; \
 		    ${CP} -f -v sorry.tm.ca.h "$$TMP_JPARSE_TAB_H"; \
 		    echo "echo '#line 1 \"jparse.tab.h\"' >> $$TMP_JPARSE_TAB_H"; \
@@ -371,7 +371,7 @@ jparse.tab.h jparse.tab.c: jparse.y bfok.sh limit_ioccc.sh verge jparse.tab.ref.
 		    ${CAT} jparse.tab.h >> "$$TMP_JPARSE_TAB_H"; \
 		    echo "${MV} -f -v $$TMP_JPARSE_TAB_H jparse.tab.h"; \
 		    ${MV} -f -v "$$TMP_JPARSE_TAB_H" jparse.tab.h; \
-		    echo '# jparse.tab.h pre-pended and line number reset'; \
+		    echo '# jparse.tab.h prepended and line number reset'; \
 		else \
 		    echo "unable to form jparse.tab.h and/or jparse.tab.c"; \
 		    echo "will use the backup file jparse.tab.h" 1>&2; \
@@ -411,7 +411,7 @@ jparse.c: jparse.l jparse.tab.h bfok.sh limit_ioccc.sh verge jparse.ref.c Makefi
 		echo "$$FLEX_PATH -o jparse.c jparse.l"; \
 		"$$FLEX_PATH" -o jparse.c jparse.l; \
 		if [[ -s jparse.c ]]; then \
-		    echo '# pre-pending comment and line number reset to jparse.c'; \
+		    echo '# prepending comment and line number reset to jparse.c'; \
 		    echo "${CP} -f -v sorry.tm.ca.h $$TMP_JPARSE_C"; \
 		    ${CP} -f -v sorry.tm.ca.h "$$TMP_JPARSE_C"; \
 		    echo "echo '#line 1 \"jparse.c\"' >> $$TMP_JPARSE_C"; \
@@ -420,7 +420,7 @@ jparse.c: jparse.l jparse.tab.h bfok.sh limit_ioccc.sh verge jparse.ref.c Makefi
 		    ${CAT} jparse.c >> "$$TMP_JPARSE_C"; \
 		    echo "${MV} -f -v $$TMP_JPARSE_C jparse.c"; \
 		    ${MV} -f -v "$$TMP_JPARSE_C" jparse.c; \
-		    echo '# jparse.c pre-pended and line number reset'; \
+		    echo '# jparse.c prepended and line number reset'; \
 		else \
 		    echo "unable to form jparse.c"; \
 		    echo "will use the backup file jparse.ref.c" 1>&2; \
@@ -495,7 +495,7 @@ parser: jparse.y jparse.l sorry.tm.ca.h limit_ioccc.sh verge Makefile
 		echo "${MKTEMP} -t jparse.tab.c failed" 1>&2; \
 		exit 1; \
 	    fi; \
-	    echo "# pre-pending comment and line number reset to jparse.tab.c"; \
+	    echo "# prepending comment and line number reset to jparse.tab.c"; \
 	    echo "${CP} -f -v sorry.tm.ca.h $$TMP_JPARSE_TAB_C"; \
 	    ${CP} -f -v sorry.tm.ca.h "$$TMP_JPARSE_TAB_C"; \
 	    echo "echo '#line 1 \"jparse.tab.c\"' >> $$TMP_JPARSE_TAB_C"; \
@@ -504,7 +504,7 @@ parser: jparse.y jparse.l sorry.tm.ca.h limit_ioccc.sh verge Makefile
 	    ${CAT} jparse.tab.c >> "$$TMP_JPARSE_TAB_C"; \
 	    echo "${MV} -f -v $$TMP_JPARSE_TAB_C jparse.tab.c"; \
 	    ${MV} -f -v "$$TMP_JPARSE_TAB_C" jparse.tab.c; \
-	    echo "# jparse.tab.c pre-pended and line number reset"; \
+	    echo "# jparse.tab.c prepended and line number reset"; \
 	else \
 	    echo "jparse.tab.c missing or empty" 1>&2; \
 	    exit 2; \
@@ -517,7 +517,7 @@ parser: jparse.y jparse.l sorry.tm.ca.h limit_ioccc.sh verge Makefile
 		echo "${MKTEMP} -t jparse.tab.h failed" 1>&2; \
 		exit 3; \
 	    fi; \
-	    echo '# pre-pending comment and line number reset to jparse.tab.h'; \
+	    echo '# prepending comment and line number reset to jparse.tab.h'; \
 	    echo "${CP} -f -v sorry.tm.ca.h $$TMP_JPARSE_TAB_H"; \
 	    ${CP} -f -v sorry.tm.ca.h "$$TMP_JPARSE_TAB_H"; \
 	    echo "echo '#line 1 \"jparse.tab.h\"' >> $$TMP_JPARSE_TAB_H"; \
@@ -526,7 +526,7 @@ parser: jparse.y jparse.l sorry.tm.ca.h limit_ioccc.sh verge Makefile
 	    ${CAT} jparse.tab.h >> "$$TMP_JPARSE_TAB_H"; \
 	    echo "${MV} -f -v $$TMP_JPARSE_TAB_H jparse.tab.h"; \
 	    ${MV} -f -v "$$TMP_JPARSE_TAB_H" jparse.tab.h; \
-	    echo '# jparse.tab.h pre-pended and line number reset'; \
+	    echo '# jparse.tab.h prepended and line number reset'; \
 	else \
 	    echo "jparse.tab.h missing or empty" 1>&2; \
 	    exit 3; \
@@ -539,7 +539,7 @@ parser: jparse.y jparse.l sorry.tm.ca.h limit_ioccc.sh verge Makefile
 		echo "${MKTEMP} -t jparse.c failed" 1>&2; \
 		exit 4; \
 	    fi; \
-	    echo '# pre-pending comment and line number reset to jparse.c'; \
+	    echo '# prepending comment and line number reset to jparse.c'; \
 	    echo "${CP} -f -v sorry.tm.ca.h $$TMP_JPARSE_C"; \
 	    ${CP} -f -v sorry.tm.ca.h "$$TMP_JPARSE_C"; \
 	    echo "echo '#line 1 \"jparse.c\"' >> $$TMP_JPARSE_C"; \
@@ -548,7 +548,7 @@ parser: jparse.y jparse.l sorry.tm.ca.h limit_ioccc.sh verge Makefile
 	    ${CAT} jparse.c >> "$$TMP_JPARSE_C"; \
 	    echo "${MV} -f -v $$TMP_JPARSE_C jparse.c"; \
 	    ${MV} -f -v "$$TMP_JPARSE_C" jparse.c; \
-	    echo '# jparse.c pre-pended and line number reset'; \
+	    echo '# jparse.c prepended and line number reset'; \
 	else \
 	    echo "jparse.c missing or empty" 1>&2; \
 	    exit 5; \
