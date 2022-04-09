@@ -120,7 +120,7 @@ extern int verbosity_level;		/* print debug messages <= verbosity_level */
 extern bool msg_output_allowed;		/* false ==> disable output from msg() */
 extern bool dbg_output_allowed;		/* false ==> disable output from dbg() */
 extern bool warn_output_allowed;	/* false ==> disable output from warn() and warnp() */
-extern bool err_output_allowed;		/* false ==> disable output from err() and errp() */
+extern bool err_output_allowed;		/* false ==> disable output from err(), errp(), werr() and werrp() */
 extern bool usage_output_allowed;	/* false ==> disable output from vfprintf_usage() */
 extern bool msg_warn_silent;		/* true ==> silence msg(), warn(), warnp() if verbosity_level == 0 */
 
@@ -143,6 +143,12 @@ extern void err(int exitcode, const char *name, const char *fmt, ...) \
 	__attribute__((noreturn)) __attribute__((format(printf, 3, 4))); /* 3=format 4=params */
 extern void errp(int exitcode, const char *name, const char *fmt, ...) \
 	__attribute__((noreturn)) __attribute__((format(printf, 3, 4))); /* 3=format 4=params */
+
+extern void werr(int error_code, const char *name, const char *fmt, ...) \
+	__attribute__((format(printf, 3, 4))); /* 3=format 4=params */
+extern void werrp(int error_code, const char *name, const char *fmt, ...) \
+	__attribute__((format(printf, 3, 4))); /* 3=format 4=params */
+
 
 extern void vfprintf_usage(int exitcode, FILE *stream, const char *fmt, ...) \
 	__attribute__((format(printf, 3, 4)));		/* 3=format 4=params */
