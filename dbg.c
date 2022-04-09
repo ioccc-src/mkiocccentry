@@ -617,6 +617,176 @@ errp(int exitcode, char const *name, char const *fmt, ...)
     not_reached();
 }
 
+/*
+ * werr - issue an error message as a warning
+ *
+ * given:
+ *	error_code	error code
+ *	name		name of function issuing the error
+ *	fmt		format of the warning
+ *	...		optional format args
+ *
+ * Example:
+ *
+ *	werr(1, __func__, "bad foobar: %s", message);
+ *
+ * NOTE: We warn with extra newlines to help internal fault messages stand out.
+ *	 Normally one should NOT include newlines in warn messages.
+ */
+void
+werr(int error_code, char const *name, char const *fmt, ...)
+{
+    va_list ap;		/* argument pointer */
+    int ret;		/* libc function return code */
+
+    /*
+     * start the var arg setup and fetch our first arg
+     */
+    va_start(ap, fmt);
+
+    /*
+     * firewall
+     */
+    if (error_code < 0) {
+	warn(__func__, "\nin werr(): called with error_code <0: %d\n", error_code);
+	error_code = 255;
+	warn(__func__, "\nin werr(): forcing error code: %d\n", error_code);
+    }
+    if (name == NULL) {
+	name = "((NULL name))";
+	warn(__func__, "\nin werr(): called with NULL name, forcing name: %s\n", name);
+    }
+    if (fmt == NULL) {
+	fmt = "((NULL fmt))";
+	warn(__func__, "\nin werr(): called with NULL fmt, forcing fmt: %s\n", fmt);
+    }
+
+    /*
+     * issue the error if allowed
+     */
+    if (err_output_allowed) {
+	errno = 0;
+	ret = fprintf(stderr, "ERROR[%d]: %s: ", error_code, name);
+	if (ret < 0) {
+	    warn(__func__, "\nin werr(%d, %s, %s, ...): fprintf returned error: %s\n", error_code, name, fmt, strerror(errno));
+	}
+
+	errno = 0;
+	ret = vfprintf(stderr, fmt, ap);
+	if (ret < 0) {
+	    warn(__func__, "\nin werr(%d, %s, %s, ...): vfprintf returned error: %s\n", error_code, name, fmt, strerror(errno));
+	}
+
+	errno = 0;
+	ret = fputc('\n', stderr);
+	if (ret != '\n') {
+	    warn(__func__, "\nin werr(%d, %s, %s, ...): fputc returned error: %s\n", error_code, name, fmt, strerror(errno));
+	}
+
+	errno = 0;
+	ret = fflush(stderr);
+	if (ret < 0) {
+	    warn(__func__, "\nin werr(%d, %s, %s, ...): fflush returned error: %s\n", error_code, name, fmt, strerror(errno));
+	}
+    }
+
+    /*
+     * clean up stdarg stuff
+     */
+    va_end(ap);
+}
+
+
+/*
+ * werrp - issue an error message with errno information
+ *
+ * given:
+ *	error_code	error code
+ *	name		name of function issuing the warning
+ *	fmt		format of the warning
+ *	...		optional format args
+ *
+ * Example:
+ *
+ *	werrp(1, __func__, "bad foobar: %s", message);
+ *
+ * NOTE: We warn with extra newlines to help internal fault messages stand out.
+ *	 Normally one should NOT include newlines in warn messages.
+ */
+void
+werrp(int error_code, char const *name, char const *fmt, ...)
+{
+    va_list ap;		/* argument pointer */
+    int ret;		/* libc function return code */
+    int saved_errno;	/* errno value when called */
+
+    /*
+     * save errno in case we need it for strerror()
+     */
+    saved_errno = errno;
+
+    /*
+     * start the var arg setup and fetch our first arg
+     */
+    va_start(ap, fmt);
+
+    /* firewall */
+    if (error_code < 0) {
+	warn(__func__, "\nin werrp(): called with error_code <0: %d\n", error_code);
+	error_code = 255;
+	warn(__func__, "\nin werrp(): forcing exit code: %d\n", error_code);
+    }
+    if (name == NULL) {
+	name = "((NULL name))";
+	warn(__func__, "\nin werrp(): called with NULL name, forcing name: %s\n", name);
+    }
+    if (fmt == NULL) {
+	fmt = "((NULL fmt))";
+	warn(__func__, "\nin werrp(): called with NULL fmt, forcing fmt: %s\n", fmt);
+    }
+
+    /*
+     * issue the error, if allowed
+     */
+    if (err_output_allowed) {
+	errno = 0;
+	ret = fprintf(stderr, "ERROR[%d]: %s: ", error_code, name);
+	if (ret < 0) {
+	    warn(__func__, "\nin werrp(%d, %s, %s, ...): fprintf #0 returned error: %s\n", error_code, name, fmt, strerror(errno));
+	}
+
+	errno = 0;
+	ret = vfprintf(stderr, fmt, ap);
+	if (ret < 0) {
+	    warn(__func__, "\nin werrp(%d, %s, %s, ...): vfprintf returned error: %s\n", error_code, name, fmt, strerror(errno));
+	}
+
+	errno = 0;
+	ret = fprintf(stderr, " errno[%d]: %s", saved_errno, strerror(saved_errno));
+	if (ret < 0) {
+	    warn(__func__, "\nin werrp(%d, %s, %s, ...): fprintf #1  returned error: %s\n", error_code, name, fmt, strerror(errno));
+	}
+
+	errno = 0;
+	ret = fputc('\n', stderr);
+	if (ret != '\n') {
+	    warn(__func__, "\nin werrp(%d, %s, %s, ...): fputc returned error: %s\n", error_code, name, fmt, strerror(errno));
+	}
+
+	errno = 0;
+	ret = fflush(stderr);
+	if (ret < 0) {
+	    warn(__func__, "\nin werrp(%d, %s, %s, ...): fflush returned error: %s\n", error_code, name, fmt, strerror(errno));
+	}
+    }
+
+    /*
+     * clean up stdarg stuff
+     */
+    va_end(ap);
+}
+
+
 
 /*
  * vfprintf_usage - print command line usage and perhaps exit
