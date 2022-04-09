@@ -283,15 +283,10 @@ enum element_type {
 };
 
 /*
- * struct json - a struct for the JSON parser tree
+ * struct json - struct for the JSON parser tree
  *
- * For the parse tree we have at least one struct and probably an union but this
- * is the first version of it. It's not complete and will have to be changed and
- * probably in many ways.
- *
- * But why is it called just 'struct json'? I decided upon this because it seems
- * that the name is fitting for json files and since other structs have
- * different names already this will work well - at least for now.
+ * For the parse tree we have this struct and its associated union. At the risk
+ * of stating the obvious this is incomplete but it's a good start.
  */
 struct json {
     enum element_type type;		/* union element specifier */
@@ -301,7 +296,7 @@ struct json {
 	struct floating floating;	/* JTYPE_STRING - value is a floating point */
 #if 0 /* XXX - data types to be written */
 	struct boolean boolean;		/* JTYPE_BOOL - value is a JSON boolean */
-	struct jnull jnull;		/* JTYPE_NULL - value is a JSON null value */
+	struct null null;		/* JTYPE_NULL - value is a JSON null value */
 	struct object object;		/* JTYPE_OBJECT - value is a JSON { members } */
 	struct array array;		/* JTYPE_ARRAY - value is a JSON [ elements ] */
 	XXX -  ??? - XXX
@@ -316,7 +311,8 @@ struct json {
     struct json *right;		/* right JSON parse tree member or NULL if none */
     struct json *parent;	/* parent JSON parse tree member or NULL if tree root */
 
-    /* TODO: An important thing must be considered when the parser is complete
+    /*
+     * TODO: An important thing must be considered when the parser is complete
      * but prior to the validating the json object: the structs json_field and
      * json_value below are of (json and otherwise) value in that they're used
      * to set up a table of valid fields per json file as well as to know how
@@ -325,21 +321,26 @@ struct json {
      * However those structs are incompatible with this struct so either a set
      * of routines that will translate back and forth (for the validation
      * processes) or else somehow those structs have to be integrated into this
-     * one. The latter is complicated because of the tables but the former is
-     * very possibly complicated too but because the former is probably less
-     * complicated this is what I'm thinking about right now. On the other hand
-     * it might be that something else can be done for the tables in which case
-     * the structs might not be so useful after all. This is TBD at a later
-     * date.
+     * one. The latter will not work well at all so although the former is also
+     * complicated it's going to have to be done or else the tables will have to
+     * be removed entirely. This is TBD at a later date.
      */
 };
 
 /*
  * defines of the JSON types for the json fields tables.
  *
- * NOTE: As the parser is built these might be removed entirely. The parser
- * already has very similarly named tokens so this quite possibly will happen
- * but this has not been worked out yet.
+ * NOTE: As the parser is built these might be removed entirely: the parser
+ * already has very similarly named tokens and the enum above does as well so
+ * this quite possibly will happen. However because the current version of
+ * jinfochk and jauthchk rely on the tables (based these constants and the
+ * structs json_field and json_value) and because we won't want to cause make
+ * test to fail we have them in here. Another possibility is to comment out the
+ * execution of jinfochk and jauthchk so that we can get rid of these but I'd
+ * rather keep these and the structs json_value and json_field and the
+ * associated tables as well as the checks in json.c, jinfochk.c and jauthchk.c
+ * because I hope to make use of them once the parser is complete; see above for
+ * how I'm currently thinking about it (it's 9 April 2022).
  */
 #define JSON_NUM	    (0)	    /* json field is supposed to be a number */
 #define JSON_BOOL	    (1)	    /* json field is supposed to be a boolean */
@@ -349,7 +350,6 @@ struct json {
 #define JSON_ARRAY_BOOL	    (6)	    /* json field is supposed to be a bool in an array (NB: not used) */
 #define JSON_ARRAY_CHARS    (7)	    /* json field is supposed to be a string in an array */
 #define JSON_EOT	    (-1)    /* json field is NULL (not null): used internally to mark end of the tables */
-
 
 /*
  * JSON value: a linked list of all values of the same json_field (below).
