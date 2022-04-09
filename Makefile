@@ -488,7 +488,7 @@ prep:
 #
 parser: jparse.y jparse.l Makefile
 	${RM} -f jparse.tab.c jparse.tab.h
-	${MAKE} jparse.tab.h jparse.tab.c
+	${MAKE} jparse.tab.c jparse.tab.h
 	@if [[ -s jparse.tab.c ]]; then \
 	    echo "${RM} -f jparse.tab.ref.c"; \
 	    ${RM} -f jparse.tab.ref.c; \
