@@ -992,8 +992,8 @@ usage(int exitcode, char const *str, char const *prog)
     /*
      * print the formatted usage stream
      */
-    vfprintf_usage(DO_NOT_EXIT, stderr, "%s\n", str);
-    vfprintf_usage(exitcode, stderr, usage_msg, prog, DBG_DEFAULT, FNAMCHK_PATH_0, JAUTHCHK_VERSION);
+    fprintf_usage(DO_NOT_EXIT, stderr, "%s\n", str);
+    fprintf_usage(exitcode, stderr, usage_msg, prog, DBG_DEFAULT, FNAMCHK_PATH_0, JAUTHCHK_VERSION);
     exit(exitcode); /*ooo*/
     not_reached();
 }

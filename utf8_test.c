@@ -113,7 +113,7 @@ main(int argc, char *argv[])
 	switch (i) {
 	case 'h':	/* -h - print help to stderr and exit 0 */
 	    /* exit(0); */
-	    vfprintf_usage(0, stderr, usage, program, VERSION); /*ooo*/
+	    fprintf_usage(0, stderr, usage, program, VERSION); /*ooo*/
 	    not_reached();
 	    break;
 	case 'v':	/* -v verbosity */
@@ -130,17 +130,17 @@ main(int argc, char *argv[])
 	    msg_warn_silent = true;
 	    break;
 	default:
-	    vfprintf_usage(DO_NOT_EXIT, stderr, "invalid -flag");
+	    fprintf_usage(DO_NOT_EXIT, stderr, "invalid -flag");
 	    /* exit(3); */
-	    vfprintf_usage(3, stderr, usage, program, VERSION); /*ooo*/
+	    fprintf_usage(3, stderr, usage, program, VERSION); /*ooo*/
 	    not_reached();
 	}
     }
     /* must have 1 or more */
     if (argc-optind <= 0) {
-	vfprintf_usage(DO_NOT_EXIT, stderr, "requires 1 or more arguments");
+	fprintf_usage(DO_NOT_EXIT, stderr, "requires 1 or more arguments");
 	/* exit(4); */
-	vfprintf_usage(4, stderr, usage, program, VERSION); /*ooo*/
+	fprintf_usage(4, stderr, usage, program, VERSION); /*ooo*/
 	not_reached();
     }
 

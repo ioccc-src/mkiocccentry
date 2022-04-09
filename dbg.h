@@ -108,7 +108,7 @@ typedef unsigned char bool;
 #define DBG_DEFAULT (DBG_NONE)	/* default debugging level */
 
 #define FORCED_EXIT (255)	/* exit(255) on bad exit code */
-#define DO_NOT_EXIT (-1)	/* do not let vfprintf_usage() exit */
+#define DO_NOT_EXIT (-1)	/* do not let fprintf_usage() exit */
 
 
 /*
@@ -117,12 +117,14 @@ typedef unsigned char bool;
  * NOTE: These variables are initialized to defaults in dbg.c.
  */
 extern int verbosity_level;		/* print debug messages <= verbosity_level */
-extern bool msg_output_allowed;		/* false ==> disable output from msg() */
-extern bool dbg_output_allowed;		/* false ==> disable output from dbg() */
-extern bool warn_output_allowed;	/* false ==> disable output from warn() and warnp() */
-extern bool err_output_allowed;		/* false ==> disable output from err(), errp(), werr() and werrp() */
-extern bool usage_output_allowed;	/* false ==> disable output from vfprintf_usage() */
-extern bool msg_warn_silent;		/* true ==> silence msg(), warn(), warnp() if verbosity_level == 0 */
+extern bool msg_output_allowed;		/* false ==> disable output from msg(), vmsg() */
+extern bool dbg_output_allowed;		/* false ==> disable output from dbg(), vdbg() */
+extern bool warn_output_allowed;	/* false ==> disable output from warn(), vwarn(), warnp(), vwarnp */
+extern bool err_output_allowed;		/* false ==> disable output from err(), verr(), errp(), verrp(), */
+					/*				 werr(), vwerr(), werrp(), vwerrp() */
+extern bool usage_output_allowed;	/* false ==> disable output from fprintf_usage(), vfprintf_usage() */
+extern bool msg_warn_silent;		/* true ==> silence msg(), vmsg(), warn(), vwarn(), */
+					/*				 warnp(), vwarnp() if verbosity_level == 0 */
 
 
 /*
@@ -130,33 +132,47 @@ extern bool msg_warn_silent;		/* true ==> silence msg(), warn(), warnp() if verb
  */
 extern void msg(const char *fmt, ...) \
 	__attribute__((format(printf, 1, 2)));		/* 1=format 2=params */
+extern void vmsg(char const *fmt, va_list ap);
 
 extern void dbg(int level, const char *fmt, ...) \
 	__attribute__((format(printf, 2, 3)));		/* 2=format 3=params */
+extern void vdbg(int level, char const *fmt, va_list ap);
 
 extern void warn(const char *name, const char *fmt, ...) \
 	__attribute__((format(printf, 2, 3)));		/* 2=format 3=params */
+extern void vwarn(char const *name, char const *fmt, va_list ap);
+
 extern void warnp(const char *name, const char *fmt, ...) \
 	__attribute__((format(printf, 2, 3)));		/* 2=format 3=params */
+extern void vwarnp(char const *name, char const *fmt, va_list ap);
 
 extern void err(int exitcode, const char *name, const char *fmt, ...) \
 	__attribute__((noreturn)) __attribute__((format(printf, 3, 4))); /* 3=format 4=params */
+extern void verr(int exitcode, char const *name, char const *fmt, va_list ap);
+
 extern void errp(int exitcode, const char *name, const char *fmt, ...) \
 	__attribute__((noreturn)) __attribute__((format(printf, 3, 4))); /* 3=format 4=params */
+extern void verrp(int exitcode, char const *name, char const *fmt, va_list ap);
 
 extern void werr(int error_code, const char *name, const char *fmt, ...) \
 	__attribute__((format(printf, 3, 4))); /* 3=format 4=params */
+extern void vwerr(int error_code, char const *name, char const *fmt, va_list ap);
+
 extern void werrp(int error_code, const char *name, const char *fmt, ...) \
 	__attribute__((format(printf, 3, 4))); /* 3=format 4=params */
+extern void vwerrp(int error_code, char const *name, char const *fmt, va_list ap);
 
-
-extern void vfprintf_usage(int exitcode, FILE *stream, const char *fmt, ...) \
+extern void fprintf_usage(int exitcode, FILE *stream, const char *fmt, ...) \
 	__attribute__((format(printf, 3, 4)));		/* 3=format 4=params */
+extern void vfprintf_usage(int exitcode, FILE *stream, char const *fmt, va_list ap);
 
 extern void warn_or_err(int exitcode, const char *name, bool test, const char *fmt, ...) \
 	__attribute__((format(printf, 4, 5)));		/* 4=format 5=params */
+extern void vwarn_or_err(int exitcode, const char *name, bool test, const char *fmt, va_list ap);
+
 extern void warnp_or_errp(int exitcode, const char *name, bool test, const char *fmt, ...) \
 	__attribute__((format(printf, 4, 5)));		/* 4=format 5=params */
+extern void vwarnp_or_errp(int exitcode, const char *name, bool test, const char *fmt, va_list ap);
 
 
 #endif				/* INCLUDE_DBG_H */

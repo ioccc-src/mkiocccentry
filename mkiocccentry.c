@@ -767,12 +767,12 @@ usage(int exitcode, char const *str, char const *program)
     /*
      * print the formatted usage stream
      */
-    vfprintf_usage(DO_NOT_EXIT, stderr, "%s\n", str);
-    vfprintf_usage(DO_NOT_EXIT, stderr, usage_msg0, program, DBG_DEFAULT);
-    vfprintf_usage(DO_NOT_EXIT, stderr, usage_msg1, TAR_PATH_0, CP_PATH_0, LS_PATH_0, TXZCHK_PATH_0, FNAMCHK_PATH_0);
-    vfprintf_usage(DO_NOT_EXIT, stderr, usage_msg2, JINFOCHK_PATH_0, JAUTHCHK_PATH_0);
-    vfprintf_usage(DO_NOT_EXIT, stderr, "%s", usage_msg3);
-    vfprintf_usage(exitcode, stderr, usage_msg4, MKIOCCCENTRY_VERSION);
+    fprintf_usage(DO_NOT_EXIT, stderr, "%s\n", str);
+    fprintf_usage(DO_NOT_EXIT, stderr, usage_msg0, program, DBG_DEFAULT);
+    fprintf_usage(DO_NOT_EXIT, stderr, usage_msg1, TAR_PATH_0, CP_PATH_0, LS_PATH_0, TXZCHK_PATH_0, FNAMCHK_PATH_0);
+    fprintf_usage(DO_NOT_EXIT, stderr, usage_msg2, JINFOCHK_PATH_0, JAUTHCHK_PATH_0);
+    fprintf_usage(DO_NOT_EXIT, stderr, "%s", usage_msg3);
+    fprintf_usage(exitcode, stderr, usage_msg4, MKIOCCCENTRY_VERSION);
     exit(exitcode); /*ooo*/
     not_reached();
 }
