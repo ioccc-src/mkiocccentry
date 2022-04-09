@@ -329,25 +329,25 @@ limit_ioccc.sh: limit_ioccc.h version.h Makefile
 	    echo "export TRIGRAPHS="; \
 	fi >> $@
 
-# How to create jparse.tab.h and jparse.tab.c
+# How to create jparse.tab.c and jparse.tab.h
 #
 # Convert jparse.y into jparse.tab.as well as jparse.tab.c via bison,
 # if bison is found and has a recent enough version, otherwise
 # use a pre-built reference copies stored in jparse.tab.ref.h and jparse.tab.ref.c.
 #
-jparse.tab.h jparse.tab.c: jparse.y bfok.sh limit_ioccc.sh verge jparse.tab.ref.h jparse.tab.ref.c Makefile
-	${RM} -f jparse.tab.h jparse.tab.c
+jparse.tab.c jparse.tab.h: jparse.y bfok.sh limit_ioccc.sh verge jparse.tab.ref.c jparse.tab.ref.h Makefile
+	${RM} -f jparse.tab.c jparse.tab.h
 	@if `./bfok.sh ${BFOK_DIRS} 2>/dev/null`; then \
 	    BISON_PATH="`./bfok.sh ${BFOK_DIRS} -p bison 2>/dev/null`"; \
-	    TMP_JPARSE_TAB_H="`${MKTEMP} -t jparse.tab.h`"; \
 	    TMP_JPARSE_TAB_C="`${MKTEMP} -t jparse.tab.c`"; \
+	    TMP_JPARSE_TAB_H="`${MKTEMP} -t jparse.tab.h`"; \
 	    if [[ -z $$BISON_PATH || -z $$TMP_JPARSE_TAB_H || -z $$TMP_JPARSE_TAB_C ]]; then \
 	        echo "failed to discover the bison path" 1>&2; \
 	        echo "will use backup files instead" 1>&2; \
-		echo "${CP} -f -v jparse.tab.ref.h jparse.tab.h"; \
-		${CP} -f -v jparse.tab.ref.h jparse.tab.h; \
 		echo "${CP} -f -v jparse.tab.ref.c jparse.tab.c"; \
 		${CP} -f -v jparse.tab.ref.c jparse.tab.c; \
+		echo "${CP} -f -v jparse.tab.ref.h jparse.tab.h"; \
+		${CP} -f -v jparse.tab.ref.h jparse.tab.h; \
 	    else \
 		echo "$$BISON_PATH -d jparse.y"; \
 		"$$BISON_PATH" -d jparse.y; \
@@ -374,21 +374,21 @@ jparse.tab.h jparse.tab.c: jparse.y bfok.sh limit_ioccc.sh verge jparse.tab.ref.
 		    echo '# jparse.tab.h prepended and line number reset'; \
 		else \
 		    echo "unable to form jparse.tab.h and/or jparse.tab.c"; \
-		    echo "will use the backup file jparse.tab.h" 1>&2; \
-		    echo "${CP} -f -v jparse.tab.ref.h jparse.tab.h"; \
-		    ${CP} -f -v jparse.tab.ref.h jparse.tab.h; \
 		    echo "will use the backup file jparse.tab.c" 1>&2; \
 		    echo "${CP} -f -v jparse.tab.ref.c jparse.tab.c"; \
 		    ${CP} -f -v jparse.tab.ref.c jparse.tab.c; \
+		    echo "will use the backup file jparse.tab.h" 1>&2; \
+		    echo "${CP} -f -v jparse.tab.ref.h jparse.tab.h"; \
+		    ${CP} -f -v jparse.tab.ref.h jparse.tab.h; \
 		fi; \
 	    fi; \
 	else \
 	    echo "no bison, with version >= BISON_VERSION in limit_ioccc.sh, found" 1>&2; \
 	    echo "will move both backup files in place instead" 1>&2; \
-	    echo "${CP} -f -v jparse.tab.ref.h jparse.tab.h"; \
-	    ${CP} -f -v jparse.tab.ref.h jparse.tab.h; \
 	    echo "${CP} -f -v jparse.tab.ref.c jparse.tab.c"; \
 	    ${CP} -f -v jparse.tab.ref.c jparse.tab.c; \
+	    echo "${CP} -f -v jparse.tab.ref.h jparse.tab.h"; \
+	    ${CP} -f -v jparse.tab.ref.h jparse.tab.h; \
 	fi
 
 # How to create jparse.c
@@ -486,75 +486,38 @@ prep:
 
 # force the rebuild of the JSON parser and form reference copies of JSON parser C code
 #
-parser: jparse.y jparse.l sorry.tm.ca.h limit_ioccc.sh verge Makefile
-	${BISON} -d jparse.y
-	${FLEX} -o jparse.c jparse.l
+parser: jparse.y jparse.l Makefile
+	${RM} -f jparse.tab.c jparse.tab.h
+	${MAKE} jparse.tab.h jparse.tab.c
 	@if [[ -s jparse.tab.c ]]; then \
-	    TMP_JPARSE_TAB_C="`${MKTEMP} -t jparse.tab.c`"; \
-	    if [[ -z $$TMP_JPARSE_TAB_C ]]; then \
-		echo "${MKTEMP} -t jparse.tab.c failed" 1>&2; \
-		exit 1; \
-	    fi; \
-	    echo "# prepending comment and line number reset to jparse.tab.c"; \
-	    echo "${CP} -f -v sorry.tm.ca.h $$TMP_JPARSE_TAB_C"; \
-	    ${CP} -f -v sorry.tm.ca.h "$$TMP_JPARSE_TAB_C"; \
-	    echo "echo '#line 1 \"jparse.tab.c\"' >> $$TMP_JPARSE_TAB_C"; \
-	    echo '#line 1 "jparse.tab.c"' >> "$$TMP_JPARSE_TAB_C"; \
-	    echo "${CAT} jparse.tab.c >> $$TMP_JPARSE_TAB_C"; \
-	    ${CAT} jparse.tab.c >> "$$TMP_JPARSE_TAB_C"; \
-	    echo "${MV} -f -v $$TMP_JPARSE_TAB_C jparse.tab.c"; \
-	    ${MV} -f -v "$$TMP_JPARSE_TAB_C" jparse.tab.c; \
-	    echo "# jparse.tab.c prepended and line number reset"; \
+	    echo "${RM} -f jparse.tab.ref.c"; \
+	    ${RM} -f jparse.tab.ref.c; \
+	    echo "${CP} -f -v jparse.tab.c jparse.tab.ref.c"; \
+	    ${CP} -f -v jparse.tab.c jparse.tab.ref.c; \
 	else \
-	    echo "jparse.tab.c missing or empty" 1>&2; \
-	    exit 2; \
+	    echo "jparse.tab.c is missing or empty, cannot update jparse.tab.ref.c" 1>&2; \
+	    exit 1; \
 	fi
-	${RM} -f jparse.tab.ref.c
-	${CP} -f -v jparse.tab.c jparse.tab.ref.c
 	@if [[ -s jparse.tab.h ]]; then \
-	    TMP_JPARSE_TAB_H="`${MKTEMP} -t jparse.tab.h`"; \
-	    if [[ -z $$TMP_JPARSE_TAB_H ]]; then \
-		echo "${MKTEMP} -t jparse.tab.h failed" 1>&2; \
-		exit 3; \
-	    fi; \
-	    echo '# prepending comment and line number reset to jparse.tab.h'; \
-	    echo "${CP} -f -v sorry.tm.ca.h $$TMP_JPARSE_TAB_H"; \
-	    ${CP} -f -v sorry.tm.ca.h "$$TMP_JPARSE_TAB_H"; \
-	    echo "echo '#line 1 \"jparse.tab.h\"' >> $$TMP_JPARSE_TAB_H"; \
-	    echo '#line 1 "jparse.tab.h"' >> "$$TMP_JPARSE_TAB_H"; \
-	    echo "${CAT} jparse.tab.h >> $$TMP_JPARSE_TAB_H"; \
-	    ${CAT} jparse.tab.h >> "$$TMP_JPARSE_TAB_H"; \
-	    echo "${MV} -f -v $$TMP_JPARSE_TAB_H jparse.tab.h"; \
-	    ${MV} -f -v "$$TMP_JPARSE_TAB_H" jparse.tab.h; \
-	    echo '# jparse.tab.h prepended and line number reset'; \
+	    echo "${RM} -f jparse.tab.ref.h"; \
+	    ${RM} -f jparse.tab.ref.h; \
+	    echo "${CP} -f -v jparse.tab.h jparse.tab.ref.h"; \
+	    ${CP} -f -v jparse.tab.h jparse.tab.ref.h; \
 	else \
-	    echo "jparse.tab.h missing or empty" 1>&2; \
-	    exit 3; \
+	    echo "jparse.tab.h is missing or empty, cannot update jparse.tab.ref.h" 1>&2; \
+	    exit 1; \
 	fi
-	${RM} -f jparse.tab.ref.h
-	${CP} -f -v jparse.tab.h jparse.tab.ref.h
+	${RM} -f jparse.c
+	${MAKE} jparse.c
 	@if [[ -s jparse.c ]]; then \
-	    TMP_JPARSE_C="`${MKTEMP} -t jparse.c`"; \
-	    if [[ -z $$TMP_JPARSE_C ]]; then \
-		echo "${MKTEMP} -t jparse.c failed" 1>&2; \
-		exit 4; \
-	    fi; \
-	    echo '# prepending comment and line number reset to jparse.c'; \
-	    echo "${CP} -f -v sorry.tm.ca.h $$TMP_JPARSE_C"; \
-	    ${CP} -f -v sorry.tm.ca.h "$$TMP_JPARSE_C"; \
-	    echo "echo '#line 1 \"jparse.c\"' >> $$TMP_JPARSE_C"; \
-	    echo '#line 1 "jparse.c"' >> "$$TMP_JPARSE_C"; \
-	    echo "${CAT} jparse.c >> $$TMP_JPARSE_C"; \
-	    ${CAT} jparse.c >> "$$TMP_JPARSE_C"; \
-	    echo "${MV} -f -v $$TMP_JPARSE_C jparse.c"; \
-	    ${MV} -f -v "$$TMP_JPARSE_C" jparse.c; \
-	    echo '# jparse.c prepended and line number reset'; \
+	    echo "${RM} -f jparse.ref.c"; \
+	    ${RM} -f jparse.ref.c; \
+	    echo "${CP} -f -v jparse.c jparse.ref.c"; \
+	    ${CP} -f -v jparse.c jparse.ref.c; \
 	else \
-	    echo "jparse.c missing or empty" 1>&2; \
-	    exit 5; \
+	    echo "jparse.c is missing or empty, cannot update jparse.ref.c" 1>&2; \
+	    exit 1; \
 	fi
-	${RM} -f jparse.ref.c
-	${CP} -f -v jparse.c jparse.ref.c
 
 # restore reference code that was produced by previous successful make parser
 #
