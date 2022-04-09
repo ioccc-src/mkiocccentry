@@ -279,25 +279,29 @@ vdbg(int level, char const *fmt, va_list ap)
 	    errno = 0;
 	    ret = fprintf(stderr, "debug[%d]: ", level);
 	    if (ret < 0) {
-		warn(__func__, "\nin vdbg(%d, %s ...): fprintf returned error: %s\n", level, fmt, strerror(errno));
+		warn(__func__, "\nin vdbg(%d, %s ...): fprintf returned error: %s\n",
+			       level, fmt, strerror(errno));
 	    }
 
 	    errno = 0;
 	    ret = vfprintf(stderr, fmt, ap);
 	    if (ret < 0) {
-		warn(__func__, "\nin vdbg(%d, %s ...): vfprintf returned error: %s\n", level, fmt, strerror(errno));
+		warn(__func__, "\nin vdbg(%d, %s ...): vfprintf returned error: %s\n",
+			       level, fmt, strerror(errno));
 	    }
 
 	    errno = 0;
 	    ret = fputc('\n', stderr);
 	    if (ret != '\n') {
-		warn(__func__, "\nin vdbg(%d, %s ...): fputc returned error: %s\n", level, fmt, strerror(errno));
+		warn(__func__, "\nin vdbg(%d, %s ...): fputc returned error: %s\n",
+			       level, fmt, strerror(errno));
 	    }
 
 	    errno = 0;
 	    ret = fflush(stderr);
 	    if (ret < 0) {
-		warn(__func__, "\nin vdbg(%d, %s ...): fflush returned error: %s\n", level, fmt, strerror(errno));
+		warn(__func__, "\nin vdbg(%d, %s ...): fflush returned error: %s\n",
+			       level, fmt, strerror(errno));
 	    }
 	}
     }
@@ -440,25 +444,29 @@ vwarn(char const *name, char const *fmt, va_list ap)
 	errno = 0;
 	ret = fprintf(stderr, "Warning: %s: ", name);
 	if (ret < 0) {
-	    (void) fprintf(stderr, "\nWarning: in vwarn(%s, %s, ...): fprintf returned error: %s\n", name, fmt, strerror(errno));
+	    (void) fprintf(stderr, "\nWarning: in vwarn(%s, %s, ...): fprintf returned error: %s\n",
+				   name, fmt, strerror(errno));
 	}
 
 	errno = 0;
 	ret = vfprintf(stderr, fmt, ap);
 	if (ret < 0) {
-	    (void) fprintf(stderr, "\nWarning: in vwarn(%s, %s, ...): vfprintf returned error: %s\n", name, fmt, strerror(errno));
+	    (void) fprintf(stderr, "\nWarning: in vwarn(%s, %s, ...): vfprintf returned error: %s\n",
+				   name, fmt, strerror(errno));
 	}
 
 	errno = 0;
 	ret = fputc('\n', stderr);
 	if (ret != '\n') {
-	    (void) fprintf(stderr, "\nWarning: in vwarn(%s, %s, ...): fputc returned error: %s\n", name, fmt, strerror(errno));
+	    (void) fprintf(stderr, "\nWarning: in vwarn(%s, %s, ...): fputc returned error: %s\n",
+				   name, fmt, strerror(errno));
 	}
 
 	errno = 0;
 	ret = fflush(stderr);
 	if (ret < 0) {
-	    (void) fprintf(stderr, "\nWarning: in vwarn(%s, %s, ...): fflush returned error: %s\n", name, fmt, strerror(errno));
+	    (void) fprintf(stderr, "\nWarning: in vwarn(%s, %s, ...): fflush returned error: %s\n",
+				   name, fmt, strerror(errno));
 	}
     }
 
@@ -738,25 +746,29 @@ verr(int exitcode, char const *name, char const *fmt, va_list ap)
 	errno = 0;
 	ret = fprintf(stderr, "FATAL[%d]: %s: ", exitcode, name);
 	if (ret < 0) {
-	    warn(__func__, "\nin verr(%d, %s, %s, ...): fprintf returned error: %s\n", exitcode, name, fmt, strerror(errno));
+	    warn(__func__, "\nin verr(%d, %s, %s, ...): fprintf returned error: %s\n",
+			   exitcode, name, fmt, strerror(errno));
 	}
 
 	errno = 0;
 	ret = vfprintf(stderr, fmt, ap);
 	if (ret < 0) {
-	    warn(__func__, "\nin verr(%d, %s, %s, ...): vfprintf returned error: %s\n", exitcode, name, fmt, strerror(errno));
+	    warn(__func__, "\nin verr(%d, %s, %s, ...): vfprintf returned error: %s\n",
+			   exitcode, name, fmt, strerror(errno));
 	}
 
 	errno = 0;
 	ret = fputc('\n', stderr);
 	if (ret != '\n') {
-	    warn(__func__, "\nin verr(%d, %s, %s, ...): fputc returned error: %s\n", exitcode, name, fmt, strerror(errno));
+	    warn(__func__, "\nin verr(%d, %s, %s, ...): fputc returned error: %s\n",
+			   exitcode, name, fmt, strerror(errno));
 	}
 
 	errno = 0;
 	ret = fflush(stderr);
 	if (ret < 0) {
-	    warn(__func__, "\nin verr(%d, %s, %s, ...): fflush returned error: %s\n", exitcode, name, fmt, strerror(errno));
+	    warn(__func__, "\nin verr(%d, %s, %s, ...): fflush returned error: %s\n",
+			   exitcode, name, fmt, strerror(errno));
 	}
     }
 
@@ -880,31 +892,36 @@ verrp(int exitcode, char const *name, char const *fmt, va_list ap)
 	errno = 0;
 	ret = fprintf(stderr, "FATAL[%d]: %s: ", exitcode, name);
 	if (ret < 0) {
-	    warn(__func__, "\nin verrp(%d, %s, %s, ...): fprintf #0 returned error: %s\n", exitcode, name, fmt, strerror(errno));
+	    warn(__func__, "\nin verrp(%d, %s, %s, ...): fprintf #0 returned error: %s\n",
+			   exitcode, name, fmt, strerror(errno));
 	}
 
 	errno = 0;
 	ret = vfprintf(stderr, fmt, ap);
 	if (ret < 0) {
-	    warn(__func__, "\nin verrp(%d, %s, %s, ...): vfprintf returned error: %s\n", exitcode, name, fmt, strerror(errno));
+	    warn(__func__, "\nin verrp(%d, %s, %s, ...): vfprintf returned error: %s\n",
+			   exitcode, name, fmt, strerror(errno));
 	}
 
 	errno = 0;
 	ret = fprintf(stderr, " errno[%d]: %s", saved_errno, strerror(saved_errno));
 	if (ret < 0) {
-	    warn(__func__, "\nin verrp(%d, %s, %s, ...): fprintf #1  returned error: %s\n", exitcode, name, fmt, strerror(errno));
+	    warn(__func__, "\nin verrp(%d, %s, %s, ...): fprintf #1  returned error: %s\n",
+			   exitcode, name, fmt, strerror(errno));
 	}
 
 	errno = 0;
 	ret = fputc('\n', stderr);
 	if (ret != '\n') {
-	    warn(__func__, "\nin verrp(%d, %s, %s, ...): fputc returned error: %s\n", exitcode, name, fmt, strerror(errno));
+	    warn(__func__, "\nin verrp(%d, %s, %s, ...): fputc returned error: %s\n",
+			   exitcode, name, fmt, strerror(errno));
 	}
 
 	errno = 0;
 	ret = fflush(stderr);
 	if (ret < 0) {
-	    warn(__func__, "\nin verrp(%d, %s, %s, ...): fflush returned error: %s\n", exitcode, name, fmt, strerror(errno));
+	    warn(__func__, "\nin verrp(%d, %s, %s, ...): fflush returned error: %s\n",
+			   exitcode, name, fmt, strerror(errno));
 	}
     }
 
@@ -1016,25 +1033,29 @@ vwerr(int error_code, char const *name, char const *fmt, va_list ap)
 	errno = 0;
 	ret = fprintf(stderr, "ERROR[%d]: %s: ", error_code, name);
 	if (ret < 0) {
-	    warn(__func__, "\nin vwerr(%d, %s, %s, ...): fprintf returned error: %s\n", error_code, name, fmt, strerror(errno));
+	    warn(__func__, "\nin vwerr(%d, %s, %s, ...): fprintf returned error: %s\n",
+			   error_code, name, fmt, strerror(errno));
 	}
 
 	errno = 0;
 	ret = vfprintf(stderr, fmt, ap);
 	if (ret < 0) {
-	    warn(__func__, "\nin vwerr(%d, %s, %s, ...): vfprintf returned error: %s\n", error_code, name, fmt, strerror(errno));
+	    warn(__func__, "\nin vwerr(%d, %s, %s, ...): vfprintf returned error: %s\n",
+			   error_code, name, fmt, strerror(errno));
 	}
 
 	errno = 0;
 	ret = fputc('\n', stderr);
 	if (ret != '\n') {
-	    warn(__func__, "\nin vwerr(%d, %s, %s, ...): fputc returned error: %s\n", error_code, name, fmt, strerror(errno));
+	    warn(__func__, "\nin vwerr(%d, %s, %s, ...): fputc returned error: %s\n",
+			   error_code, name, fmt, strerror(errno));
 	}
 
 	errno = 0;
 	ret = fflush(stderr);
 	if (ret < 0) {
-	    warn(__func__, "\nin vwerr(%d, %s, %s, ...): fflush returned error: %s\n", error_code, name, fmt, strerror(errno));
+	    warn(__func__, "\nin vwerr(%d, %s, %s, ...): fflush returned error: %s\n",
+			   error_code, name, fmt, strerror(errno));
 	}
     }
     return;
@@ -1143,31 +1164,36 @@ vwerrp(int error_code, char const *name, char const *fmt, va_list ap)
 	errno = 0;
 	ret = fprintf(stderr, "ERROR[%d]: %s: ", error_code, name);
 	if (ret < 0) {
-	    warn(__func__, "\nin vwerrp(%d, %s, %s, ...): fprintf #0 returned error: %s\n", error_code, name, fmt, strerror(errno));
+	    warn(__func__, "\nin vwerrp(%d, %s, %s, ...): fprintf #0 returned error: %s\n",
+			   error_code, name, fmt, strerror(errno));
 	}
 
 	errno = 0;
 	ret = vfprintf(stderr, fmt, ap);
 	if (ret < 0) {
-	    warn(__func__, "\nin vwerrp(%d, %s, %s, ...): vfprintf returned error: %s\n", error_code, name, fmt, strerror(errno));
+	    warn(__func__, "\nin vwerrp(%d, %s, %s, ...): vfprintf returned error: %s\n",
+			   error_code, name, fmt, strerror(errno));
 	}
 
 	errno = 0;
 	ret = fprintf(stderr, " errno[%d]: %s", saved_errno, strerror(saved_errno));
 	if (ret < 0) {
-	    warn(__func__, "\nin vwerrp(%d, %s, %s, ...): fprintf #1  returned error: %s\n", error_code, name, fmt, strerror(errno));
+	    warn(__func__, "\nin vwerrp(%d, %s, %s, ...): fprintf #1  returned error: %s\n",
+			    error_code, name, fmt, strerror(errno));
 	}
 
 	errno = 0;
 	ret = fputc('\n', stderr);
 	if (ret != '\n') {
-	    warn(__func__, "\nin vwerrp(%d, %s, %s, ...): fputc returned error: %s\n", error_code, name, fmt, strerror(errno));
+	    warn(__func__, "\nin vwerrp(%d, %s, %s, ...): fputc returned error: %s\n",
+			   error_code, name, fmt, strerror(errno));
 	}
 
 	errno = 0;
 	ret = fflush(stderr);
 	if (ret < 0) {
-	    warn(__func__, "\nin vwerrp(%d, %s, %s, ...): fflush returned error: %s\n", error_code, name, fmt, strerror(errno));
+	    warn(__func__, "\nin vwerrp(%d, %s, %s, ...): fflush returned error: %s\n",
+			   error_code, name, fmt, strerror(errno));
 	}
     }
     return;
@@ -1277,15 +1303,18 @@ vfprintf_usage(int exitcode, FILE *stream, char const *fmt, va_list ap)
     if (usage_output_allowed == true) {
 	ret = vfprintf(stream, fmt, ap);
 	if (ret < 0) {
-	    (void) fprintf(stream, "\nWarning: in vfprintf_usage(%d, stream, %s ...): vfprintf error: %d\n", exitcode, fmt, ret);
+	    (void) fprintf(stream, "\nWarning: in vfprintf_usage(%d, stream, %s ...): vfprintf error: %d\n",
+				   exitcode, fmt, ret);
 	}
 	ret = fputc('\n', stderr);
 	if (ret != '\n') {
-	    (void) fprintf(stream, "\nWarning: in vfprintf_usage(%d, stream, %s ...): fputc error: %d\n", exitcode, fmt, ret);
+	    (void) fprintf(stream, "\nWarning: in vfprintf_usage(%d, stream, %s ...): fputc error: %d\n",
+				   exitcode, fmt, ret);
 	}
 	ret = fflush(stream);
 	if (ret < 0) {
-	    (void) fprintf(stream, "\nWarning: in vfprintf_usage(%d, stream, %s ...): fflush error: %d\n", exitcode, fmt, ret);
+	    (void) fprintf(stream, "\nWarning: in vfprintf_usage(%d, stream, %s ...): fflush error: %d\n",
+				   exitcode, fmt, ret);
 	}
     }
 
