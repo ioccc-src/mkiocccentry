@@ -328,7 +328,7 @@ struct json_member {
  *
  (	foo.value[i-1].parent == foo
  */
-struct array {
+struct json_array {
     int len;			/* number of JSON values in the array, 0 ==> empty array */
 
     struct json *value;		/* array of JSON values, NULL ==> empty array */
@@ -367,7 +367,7 @@ struct json {
 	struct json_null null;		/* JTYPE_NULL - value is a JSON null value */
 	struct json_object object;	/* JTYPE_OBJECT - value is a JSON { members } */
 	struct json_member member;	/* JTYPE_MEMBER - value is a JSON member: name : value */
-	struct array array;		/* JTYPE_ARRAY - value is a JSON [ elements ] */
+	struct json_array array;	/* JTYPE_ARRAY - value is a JSON [ elements ] */
     } element;
 
     struct json *parent;	/* parent JSON parse tree member, or NULL if tree root */
