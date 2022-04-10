@@ -63,7 +63,7 @@ main(int argc, char *argv[])
     bool error = false;		/* true ==> JSON integer conversion test suite error */
     bool test_mode = false;	/* true ==> perform JSON integer conversion test suite */
     bool strict = false;	/* true ==> JSON decode in strict mode */
-    struct integer *ival = NULL;	/* malloc_json_conv_int_str() return */
+    struct json_integer *ival = NULL;	/* malloc_json_conv_int_str() return */
     int arg_cnt = 0;		/* number of args to process */
 #if defined(JINT_TEST_ENABLED)
     char *test = NULL;		/* test string */
@@ -147,7 +147,7 @@ main(int argc, char *argv[])
 	    dbg(DBG_HIGH, "test[%d] string: <%s>", i, test);
 
 	    /*
-	     * convert test into struct integer
+	     * convert test into struct json_integer
 	     */
 	    ival = malloc_json_conv_int_str(test, &retlen);
 	    if (ival == NULL) {
@@ -370,7 +370,7 @@ main(int argc, char *argv[])
      */
     if (quiet == false) {
 	prstr("\n");
-	prstr("struct integer test_result[TEST_COUNT] = {\n");
+	prstr("struct json_integer test_result[TEST_COUNT] = {\n");
     }
 
     /*
@@ -400,12 +400,12 @@ main(int argc, char *argv[])
 	}
 
 	/*
-	 * output struct integer element, unless -q
+	 * output struct json_integer element, unless -q
 	 */
 	if (quiet == false) {
 
 	    /*
-	     * use a comment to remind us of the value that produced this struct integer element
+	     * use a comment to remind us of the value that produced this struct json_integer element
 	     */
 	    print("    /* test_result[%d]: \"%s\" */\n", i-optind, input);
 	    prstr("    {\n");
@@ -564,7 +564,7 @@ main(int argc, char *argv[])
 		    "JSON integer value in uintmax_t form");
 
 	    /*
-	     * close struct integer element with }
+	     * close struct json_integer element with }
 	     */
 	    prstr("    },\n\n");
 	}
@@ -601,7 +601,7 @@ main(int argc, char *argv[])
 
 #if defined(JINT_TEST_ENABLED)
 /*
- * check_val - test an aspect of conversion into struct integer for signed value
+ * check_val - test an aspect of conversion into struct json_integer for signed value
  *
  * If the reference matches the converted for a given test aspect, this
  * function just returns, else *testp is false.
@@ -668,7 +668,7 @@ check_val(bool *testp, char const *type, int testnum, bool size_a, bool size_b, 
 
 
 /*
- * check_uval - test an aspect of conversion into struct integer for unsigned value
+ * check_uval - test an aspect of conversion into struct json_integer for unsigned value
  *
  * If the reference matches the converted for a given test aspect, this
  * function just returns, else *testp is false.
@@ -736,7 +736,7 @@ check_uval(bool *testp, char const *type, int testnum, bool size_a, bool size_b,
 
 
 /*
- * prinfo - print information about a struct integer signed element
+ * prinfo - print information about a struct json_integer signed element
  *
  * given:
  *	sized	- boolean indicating if the value was set
@@ -778,7 +778,7 @@ prinfo(bool sized, intmax_t value, char const *scomm, char const *vcomm)
 
 
 /*
- * pruinfo - print information about a struct integer unsigned element
+ * pruinfo - print information about a struct json_integer unsigned element
  *
  * given:
  *	sized	- boolean indicating if the value was set

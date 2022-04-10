@@ -149,7 +149,7 @@ char *test_set[TEST_COUNT+1] = {
     NULL
 };
 
-struct integer test_result[TEST_COUNT] = {
+struct json_integer test_result[TEST_COUNT] = {
     /* test_result[0]: "-8589934594" */
     {
 	"-8589934594",	/* malloced JSON integer string, whitespace trimmed if needed */

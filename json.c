@@ -3765,15 +3765,15 @@ ignore_json_code(int code)
  *	len	length starting at str of the JSON string
  *
  * returns:
- *	malloced struct integer with C integer values based on JSON string
+ *	malloced struct json_integer with C integer values based on JSON string
  *
  * NOTE: This function will not return on malloc error.
  * NOTE: This function will not return NULL.
  */
-struct integer *
+struct json_integer *
 malloc_json_conv_int(char const *str, size_t len)
 {
-    struct integer *ret = NULL;	    /* malloced decoding string or NULL */
+    struct json_integer *ret = NULL;	    /* malloced decoding string or NULL */
     char *endptr;		    /* first invalid character or str */
     size_t digits = 0;		    /* number of digits in JSON integer not including leading sign */
     size_t i;
@@ -3782,16 +3782,16 @@ malloc_json_conv_int(char const *str, size_t len)
      * malloc the return integer
      */
     errno = 0;			/* pre-clear errno for errp() */
-    ret = malloc(sizeof(struct integer));
+    ret = malloc(sizeof(struct json_integer));
     if (ret == NULL) {
-	errp(201, __func__, "malloc #0 error allocating %ju bytes", (uintmax_t)sizeof(struct integer));
+	errp(201, __func__, "malloc #0 error allocating %ju bytes", (uintmax_t)sizeof(struct json_integer));
 	not_reached();
     }
 
     /*
      * initialize the return integer
      */
-    memset(ret, 0, sizeof(struct integer));
+    memset(ret, 0, sizeof(struct json_integer));
     ret->as_str = NULL;
     ret->converted = false;
     ret->is_negative = false;
@@ -4180,16 +4180,16 @@ malloc_json_conv_int(char const *str, size_t len)
  *	retlen	address of where to store length of str, if retlen != NULL
  *
  * returns:
- *	malloced struct integer with C integer values based on JSON string
+ *	malloced struct json_integer with C integer values based on JSON string
  *	NOTE: retlen, if non-NULL, is set to 0 on error
  *
  * NOTE: This function will not return on malloc error.
  * NOTE: This function will not return NULL.
  */
-struct integer *
+struct json_integer *
 malloc_json_conv_int_str(char const *str, size_t *retlen)
 {
-    struct integer *ret = NULL;	    /* malloced encoding string or NULL */
+    struct json_integer *ret = NULL;	    /* malloced encoding string or NULL */
     size_t len = 0;		    /* length of string to encode */
 
     /*
@@ -4262,7 +4262,7 @@ malloc_json_conv_float(char const *str, size_t len)
     /*
      * initialize the return integer
      */
-    memset(ret, 0, sizeof(struct integer));
+    memset(ret, 0, sizeof(struct json_integer));
     ret->as_str = NULL;
     ret->converted = false;
     ret->is_negative = false;

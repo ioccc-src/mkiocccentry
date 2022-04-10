@@ -109,7 +109,7 @@ bool quiet = false;			/* true ==> quiet mode */
  */
 extern int const test_count;		/* number of tests to perform */
 extern char *test_set[];		/* test strings */
-extern struct integer test_result[];	/* struct integer conversions of test strings */
+extern struct json_integer test_result[];	/* struct integer conversions of test strings */
 
 /*
  * function prototypes
