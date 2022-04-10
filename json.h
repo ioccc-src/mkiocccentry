@@ -287,6 +287,55 @@ struct null {
 
 
 /*
+ * JSON object
+ *
+ * JSON object is one of:
+ *
+ *	{ }
+ *	{ members }
+ */
+struct object {
+    struct json *head;		/* first value in the members list, or NULL ==> empty list */
+};
+
+
+/*
+ * JSON member
+ *
+ * A JSON member is of the form:
+ *
+ *	name : value
+ */
+struct member {
+    struct json *name;		/* JSON string name */
+    struct json *value;		/* JSON value */
+};
+
+
+/*
+ * JSON ordered array of values
+ *
+ * A JSON arras is of the form:
+ *
+ *	[ ]
+ *	[ values ]
+ *
+ * The i-th value in the array, if i < len, is:
+ *
+ *	foo.value[i-1]
+ *
+ * That value is a link back to this array object:
+ *
+ (	foo.value[i-1].parent == foo
+ */
+struct array {
+    int len;			/* number of JSON values in the array, 0 ==> empty array */
+
+    struct json *value;		/* array of JSON values, NULL ==> empty array */
+};
+
+
+/*
  * element_type - JSON element type - an enum for each union element member in struct json
  */
 enum element_type {
@@ -298,10 +347,8 @@ enum element_type {
     JTYPE_BOOL,			/* JSON element is a boolean - see struct boolean */
     JTYPE_NULL,			/* JSON element is a null - see struct null */
     JTYPE_OBJECT,		/* JSON element is a { members } */
+    JTYPE_MEMBER,		/* JSON element is a member */
     JTYPE_ARRAY,		/* JSON element is a [ elements ] */
-#if 0 /* XXX - data types to be written */
-    XXX -  ??? - XXX
-#endif /* XXX - data types to be written */
 };
 
 /*
@@ -318,38 +365,27 @@ struct json {
 	struct floating floating;	/* JTYPE_STRING - value is a floating point */
 	struct boolean boolean;		/* JTYPE_BOOL - value is a JSON boolean */
 	struct null null;		/* JTYPE_NULL - value is a JSON null value */
-#if 0 /* XXX - data types to be written */
 	struct object object;		/* JTYPE_OBJECT - value is a JSON { members } */
+	struct member member;		/* JTYPE_MEMBER - value is a JSON member: name : value */
 	struct array array;		/* JTYPE_ARRAY - value is a JSON [ elements ] */
-	XXX -  ??? - XXX
-#endif /* XXX - data types to be written */
     } element;
 
-    /*
-     * Some JSON elements such as JTYPE_OBJECT and JTYPE_ARRAY have parse tree children.
-     * Those parse tree children would have this element as their parent.
-     */
-    struct json *left;		/* left JSON parse tree member or NULL if none */
-    struct json *right;		/* right JSON parse tree member or NULL if none */
-    struct json *parent;	/* parent JSON parse tree member or NULL if tree root */
+    struct json *parent;	/* parent JSON parse tree member, or NULL if tree root */
 
     /*
-     * TODO: An important thing must be considered when the parser is complete
-     * but prior to the validating the json object: the structs json_field and
-     * json_value below are of (json and otherwise) value in that they're used
-     * to set up a table of valid fields per json file as well as to know how
-     * many times each field has been seen.
+     * If this is part of a element list, then these point forward/backward.
+     * Element lists are NULL terminated.  The 1st member of the list will have
+     * the prev pointing back to a struct json pf element_type JTYPE_OBJECT.
      *
-     * However those structs are incompatible with this struct so either a set
-     * of routines that will translate back and forth (for the validation
-     * processes) or else somehow those structs have to be integrated into this
-     * one. The latter will not work well at all so although the former is also
-     * complicated it's going to have to be done or else the tables will have to
-     * be removed entirely. This is TBD at a later date.
+     * If this is NOT of a element list, then both prev and next will be NULL.
      */
+    struct json *prev;		/* previous JSON list member if part of elements list */
+    struct json *next;		/* next JSON list member if part of elements list */
 };
 
 /*
+ * XXX - this probably should be replaced with enum element_type - XXX
+ *
  * defines of the JSON types for the json fields tables.
  *
  * NOTE: As the parser is built these might be removed entirely: the parser
