@@ -370,17 +370,15 @@ struct json {
 	struct json_array array;	/* JTYPE_ARRAY - value is a JSON [ elements ] */
     } element;
 
-    struct json *parent;	/* parent JSON parse tree member, or NULL if tree root */
-
     /*
-     * If this is part of a element list, then these point forward/backward.
-     * Element lists are NULL terminated.  The 1st member of the list will have
-     * the prev pointing back to a struct json pf element_type JTYPE_OBJECT.
+     * JSON parse tree double links
      *
-     * If this is NOT of a element list, then both prev and next will be NULL.
+     * NOTE: If a pointer is NULL, then it means you have reached the end of the linked list
+     *	     and/or at the end/top/bottom of the tree.
      */
-    struct json *prev;		/* previous JSON list member if part of elements list */
-    struct json *next;		/* next JSON list member if part of elements list */
+    struct json *parent;	/* parent node in the JSON parse tree, or NULL if tree root or unlinked */
+    struct json *prev;		/* previous in a JSON parse tree linked list, or NULL is link head or unlinked */
+    struct json *next;		/* next in a JSON parse tree linked list, or NULL is link tail or unlinked */
 };
 
 /*
