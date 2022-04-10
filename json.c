@@ -4237,15 +4237,15 @@ malloc_json_conv_int_str(char const *str, size_t *retlen)
  *	len	length starting at str of the JSON string
  *
  * returns:
- *	malloced struct floating with C floating point values based on JSON string
+ *	malloced struct json_floating with C floating point values based on JSON string
  *
  * NOTE: This function will not return on malloc error.
  * NOTE: This function will not return NULL.
  */
-struct floating *
+struct json_floating *
 malloc_json_conv_float(char const *str, size_t len)
 {
-    struct floating *ret = NULL;	    /* malloced decoding string or NULL */
+    struct json_floating *ret = NULL;	    /* malloced decoding string or NULL */
     char *endptr;		    /* first invalid character or str */
     size_t i;
 
@@ -4253,9 +4253,9 @@ malloc_json_conv_float(char const *str, size_t len)
      * malloc the return integer
      */
     errno = 0;			/* pre-clear errno for errp() */
-    ret = malloc(sizeof(struct floating));
+    ret = malloc(sizeof(struct json_floating));
     if (ret == NULL) {
-	errp(204, __func__, "malloc #0 error allocating %ju bytes", (uintmax_t)sizeof(struct floating));
+	errp(204, __func__, "malloc #0 error allocating %ju bytes", (uintmax_t)sizeof(struct json_floating));
 	not_reached();
     }
 
@@ -4403,16 +4403,16 @@ malloc_json_conv_float(char const *str, size_t len)
  *	retlen	address of where to store length of str, if retlen != NULL
  *
  * returns:
- *	malloced struct floating with C floating point values based on JSON string
+ *	malloced struct json_floating with C floating point values based on JSON string
  *	NOTE: retlen, if non-NULL, is set to 0 on error
  *
  * NOTE: This function will not return on malloc error.
  * NOTE: This function will not return NULL.
  */
-struct floating *
+struct json_floating *
 malloc_json_conv_float_str(char const *str, size_t *retlen)
 {
-    struct floating *ret = NULL;	    /* malloced encoding string or NULL */
+    struct json_floating *ret = NULL;	    /* malloced encoding string or NULL */
     size_t len = 0;		    /* length of string to encode */
 
     /*

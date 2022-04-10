@@ -68,11 +68,11 @@ int token_type = 0;
  *
  * Actually there will be use of the struct json. This function will almost
  * certainly be modified but it currently holds a struct integer *,
- * struct floating *, struct string *, a bool and a set of pointers for children
+ * struct json_floating *, struct string *, a bool and a set of pointers for children
  * (because it's very possible that it'll be a tree though this is not yet
  * decided either).
  *
- * The struct integer and struct floating are complete but struct string is not
+ * The struct integer and struct json_floating are complete but struct string is not
  * and I'm thinking it might be useful to have a struct boolean as well. Even
  * without these incomplete and missing structs struct json is not complete and
  * will absolutely change in some ways (more probably many ways). The specifics

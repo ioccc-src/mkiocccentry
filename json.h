@@ -227,7 +227,7 @@ struct json_integer {
  *	 will ONLY have the JSON integer string, we note this in case some other
  *	 future code that is not a careful calls malloc_json_conv_float(str, len).
  */
-struct floating {
+struct json_floating {
     char *as_str;		/* malloced JSON floating point string, whitespace trimmed if needed */
 
     size_t orig_len;		/* length of original JSON floating point string */
@@ -342,7 +342,7 @@ enum element_type {
     JTYPE_EOT = -1,		/* special end of the table value */
     JTYPE_UNSET = 0,		/* JSON element has not been set */
     JTYPE_INT,			/* JSON element is an integer - see struct json_integer */
-    JTYPE_FLOAT,		/* JSON element is a float - see struct floating */
+    JTYPE_FLOAT,		/* JSON element is a float - see struct json_floating */
     JTYPE_STRING,		/* JSON element is a string - see struct string */
     JTYPE_BOOL,			/* JSON element is a boolean - see struct boolean */
     JTYPE_NULL,			/* JSON element is a null - see struct null */
@@ -361,8 +361,8 @@ struct json {
     enum element_type type;		/* union element specifier */
     union json_union {
 	struct string string;		/* JTYPE_INT - value is a string */
-	struct json_integer integer;		/* JTYPE_FLOAT - value is either a signed or unsigned integer */
-	struct floating floating;	/* JTYPE_STRING - value is a floating point */
+	struct json_integer integer;	/* JTYPE_FLOAT - value is either a signed or unsigned integer */
+	struct json_floating floating;	/* JTYPE_STRING - value is a floating point */
 	struct boolean boolean;		/* JTYPE_BOOL - value is a JSON boolean */
 	struct null null;		/* JTYPE_NULL - value is a JSON null value */
 	struct object object;		/* JTYPE_OBJECT - value is a JSON { members } */
@@ -646,8 +646,8 @@ extern void ignore_json_code(int code);
 /* JSON conversion functions */
 extern struct json_integer *malloc_json_conv_int(char const *str, size_t len);
 extern struct json_integer *malloc_json_conv_int_str(char const *str, size_t *retlen);
-extern struct floating *malloc_json_conv_float(char const *str, size_t len);
-extern struct floating *malloc_json_conv_float_str(char const *str, size_t *retlen);
+extern struct json_floating *malloc_json_conv_float(char const *str, size_t len);
+extern struct json_floating *malloc_json_conv_float_str(char const *str, size_t *retlen);
 
 
 #endif /* INCLUDE_JSON_H */

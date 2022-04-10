@@ -64,7 +64,7 @@ main(int argc, char *argv[])
     bool error = false;		/* true ==> JSON floating point conversion test suite error */
     bool test_mode = false;	/* true ==> perform JSON floating point conversion test suite */
     bool strict = false;	/* true ==> JSON decode in strict mode */
-    struct floating *ival = NULL;	/* malloc_json_conv_float_str() return */
+    struct json_floating *ival = NULL;	/* malloc_json_conv_float_str() return */
     int arg_cnt = 0;		/* number of args to process */
 #if defined(JFLOAT_TEST_ENABLED)
     char *test = NULL;		/* test string */
@@ -149,7 +149,7 @@ main(int argc, char *argv[])
 	    dbg(DBG_HIGH, "test[%d] string: <%s>", i, test);
 
 	    /*
-	     * convert test into struct floating
+	     * convert test into struct json_floating
 	     */
 	    ival = malloc_json_conv_float_str(test, &retlen);
 	    if (ival == NULL) {
@@ -287,7 +287,7 @@ main(int argc, char *argv[])
      */
     if (quiet == false) {
 	prstr("\n");
-	prstr("struct floating test_result[TEST_COUNT] = {\n");
+	prstr("struct json_floating test_result[TEST_COUNT] = {\n");
     }
 
     /*
@@ -321,12 +321,12 @@ main(int argc, char *argv[])
 	}
 
 	/*
-	 * output struct floating element, unless -q
+	 * output struct json_floating element, unless -q
 	 */
 	if (quiet == false) {
 
 	    /*
-	     * use a comment to remind us of the value that produced this struct floating element
+	     * use a comment to remind us of the value that produced this struct json_floating element
 	     */
 	    print("    /* test_result[%d]: \"%s\" */\n", i-optind, input);
 	    prstr("    {\n");
@@ -373,7 +373,7 @@ main(int argc, char *argv[])
 		   "JSON floating point value in long double form");
 
 	    /*
-	     * close struct floating element with }
+	     * close struct json_floating element with }
 	     */
 	    prstr("    },\n\n");
 	}
@@ -410,7 +410,7 @@ main(int argc, char *argv[])
 
 #if defined(JFLOAT_TEST_ENABLED)
 /*
- * check_val - test an aspect of conversion into struct floating for signed value
+ * check_val - test an aspect of conversion into struct json_floating for signed value
  *
  * If the reference matches the converted for a given test aspect, this
  * function just returns, else *testp is false.
@@ -520,7 +520,7 @@ check_val(bool *testp, char const *type, int testnum, bool size_a, bool size_b,
 
 
 /*
- * prinfo - print information about a struct floating signed element
+ * prinfo - print information about a struct json_floating signed element
  *
  * given:
  *	sized	- boolean indicating if the value was set

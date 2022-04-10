@@ -339,7 +339,7 @@ char *test_set[TEST_COUNT+1] = {
     NULL
 };
 
-struct floating test_result[TEST_COUNT] = {
+struct json_floating test_result[TEST_COUNT] = {
     /* test_result[0]: "-8589934594" */
     {
 	/* malloced JSON floating point string, whitespace trimmed if needed */

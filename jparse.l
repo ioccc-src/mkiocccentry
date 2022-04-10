@@ -11,7 +11,7 @@
  *
  * The JSON_STRING action that uses strdup() will be changed to use struct
  * string at a later date (sometime after struct string is finished). Similar
- * will be done for the numbers: struct integer and struct floating. These
+ * will be done for the numbers: struct integer and struct json_floating. These
  * structs are finished but will not be integrated until later on.
  *
  * I'm not sure when I will be adding more and I won't add all at once but
