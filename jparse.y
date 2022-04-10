@@ -73,7 +73,7 @@ int token_type = 0;
  * decided either).
  *
  * The struct integer and struct json_floating are complete but struct json_string is not
- * and I'm thinking it might be useful to have a struct boolean as well. Even
+ * and I'm thinking it might be useful to have a struct json_boolean as well. Even
  * without these incomplete and missing structs struct json is not complete and
  * will absolutely change in some ways (more probably many ways). The specifics
  * have to be worked out still!
