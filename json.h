@@ -279,7 +279,7 @@ struct json_boolean {
 /*
  * parsed JSON null
  */
-struct null {
+struct json_null {
     char *as_str;		/* malloced JSON floating point string, whitespace trimmed if needed */
 
     bool converted;		/* true ==> able to decode JSON null, false ==> as_str is invalid or not decoded */
@@ -345,7 +345,7 @@ enum element_type {
     JTYPE_FLOAT,		/* JSON element is a float - see struct json_floating */
     JTYPE_STRING,		/* JSON element is a string - see struct json_string */
     JTYPE_BOOL,			/* JSON element is a boolean - see struct json_boolean */
-    JTYPE_NULL,			/* JSON element is a null - see struct null */
+    JTYPE_NULL,			/* JSON element is a null - see struct json_null */
     JTYPE_OBJECT,		/* JSON element is a { members } */
     JTYPE_MEMBER,		/* JSON element is a member */
     JTYPE_ARRAY,		/* JSON element is a [ elements ] */
@@ -364,7 +364,7 @@ struct json {
 	struct json_integer integer;	/* JTYPE_FLOAT - value is either a signed or unsigned integer */
 	struct json_floating floating;	/* JTYPE_STRING - value is a floating point */
 	struct json_boolean boolean;	/* JTYPE_BOOL - value is a JSON boolean */
-	struct null null;		/* JTYPE_NULL - value is a JSON null value */
+	struct json_null null;		/* JTYPE_NULL - value is a JSON null value */
 	struct object object;		/* JTYPE_OBJECT - value is a JSON { members } */
 	struct member member;		/* JTYPE_MEMBER - value is a JSON member: name : value */
 	struct array array;		/* JTYPE_ARRAY - value is a JSON [ elements ] */
