@@ -69,6 +69,7 @@ main(int argc, char *argv[])
     char *timestamp_str;	/* 4th .-separated token - timestamp */
     intmax_t timestamp;		/* 5th .-separated token as a timestamp */
     char *extension;		/* 6th .-separated token as a filename extension */
+    char *ext = "txz";		/* user supplied extension (def: txz): used for testing purposes only */
     int i;
     bool test_mode = false;	/* true ==> force check to test if it's a test entry filename */
     bool uuid_mode = false;	/* true ==> force check to test if it's a UUID entry filename */
@@ -78,7 +79,7 @@ main(int argc, char *argv[])
      * parse args
      */
     program = argv[0];
-    while ((i = getopt(argc, argv, "hv:qVtqu")) != -1) {
+    while ((i = getopt(argc, argv, "hv:qVtquE:")) != -1) {
 	switch (i) {
 	case 'h':		/* -h - print help to stderr and exit 0 */
 	    usage(1, "-h help mode", program); /*ooo*/
@@ -108,9 +109,13 @@ main(int argc, char *argv[])
 	case 'u': /* force check to verify that the filename is a UUID (real) entry filename */
 	    uuid_mode = true;
 	    break;
+	case 'E': /* force extension check to be optarg instead of "txz": used for test suite for txzchk */
+	    ext = optarg;
+	    break;
 	default:
 	    usage(1, "invalid -flag", program); /*ooo*/
 	    not_reached();
+	    break;
 	 }
     }
     /* must have the exact required number of args */
@@ -259,8 +264,8 @@ main(int argc, char *argv[])
 	err(20, __func__, "nothing found after 3rd '.' separated token of timestamp");
 	not_reached();
     }
-    if (strcmp(extension, "txz") != 0) {
-	err(21, __func__, "final 4th '.' separated token filename extension: %s != txz: %s", extension, filepath);
+    if (strcmp(extension, ext) != 0) {
+	err(21, __func__, "final 4th '.' separated token filename extension: %s != %s: %s", extension, ext, filepath);
 	not_reached();
     }
     dbg(DBG_LOW, "filename extension is valid: %s", extension);

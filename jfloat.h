@@ -1,6 +1,6 @@
 /* vim: set tabstop=8 softtabstop=4 shiftwidth=4 noexpandtab : */
 /*
- * jint - convert JSON integer strings
+ * jfloat - convert JSON floating point strings
  *
  * "Because the JSON co-founders flawed minimalism is sub-minimal." :-)
  *
