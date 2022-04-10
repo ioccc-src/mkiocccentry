@@ -264,6 +264,28 @@ struct string {
     bool posix_plus;		/* true => decoded JSON string has only POSIX portable safe plus + chars */
 };
 
+
+/*
+ * parsed JSON boolean
+ */
+struct boolean {
+    char *as_str;		/* malloced JSON floating point string, whitespace trimmed if needed */
+
+    bool converted;		/* true ==> able to decode JSON boolean, false ==> as_str is invalid or not decoded */
+    bool value;			/* converted JSON boolean value */
+};
+
+
+/*
+ * parsed JSON null
+ */
+struct null {
+    char *as_str;		/* malloced JSON floating point string, whitespace trimmed if needed */
+
+    bool converted;		/* true ==> able to decode JSON null, false ==> as_str is invalid or not decoded */
+};
+
+
 /*
  * element_type - JSON element type - an enum for each union element member in struct json
  */
@@ -294,9 +316,9 @@ struct json {
 	struct string string;		/* JTYPE_INT - value is a string */
 	struct integer integer;		/* JTYPE_FLOAT - value is either a signed or unsigned integer */
 	struct floating floating;	/* JTYPE_STRING - value is a floating point */
-#if 0 /* XXX - data types to be written */
 	struct boolean boolean;		/* JTYPE_BOOL - value is a JSON boolean */
 	struct null null;		/* JTYPE_NULL - value is a JSON null value */
+#if 0 /* XXX - data types to be written */
 	struct object object;		/* JTYPE_OBJECT - value is a JSON { members } */
 	struct array array;		/* JTYPE_ARRAY - value is a JSON [ elements ] */
 	XXX -  ??? - XXX
