@@ -294,7 +294,7 @@ struct json_null {
  *	{ }
  *	{ members }
  */
-struct object {
+struct json_object {
     struct json *head;		/* first value in the members list, or NULL ==> empty list */
 };
 
@@ -365,7 +365,7 @@ struct json {
 	struct json_floating floating;	/* JTYPE_STRING - value is a floating point */
 	struct json_boolean boolean;	/* JTYPE_BOOL - value is a JSON boolean */
 	struct json_null null;		/* JTYPE_NULL - value is a JSON null value */
-	struct object object;		/* JTYPE_OBJECT - value is a JSON { members } */
+	struct json_object object;	/* JTYPE_OBJECT - value is a JSON { members } */
 	struct member member;		/* JTYPE_MEMBER - value is a JSON member: name : value */
 	struct array array;		/* JTYPE_ARRAY - value is a JSON [ elements ] */
     } element;
