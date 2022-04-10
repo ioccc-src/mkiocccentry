@@ -1789,7 +1789,7 @@ static void yynoreturn yy_fatal_error (const char* msg )
 		} \
 	while ( 0 )
 
-/* Accessor  methods (get/set functions) to struct members. */
+/* Accessor  methods (get/set functions) to struct json_members. */
 
 /** Get the current line number.
  * 

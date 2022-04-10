@@ -306,7 +306,7 @@ struct json_object {
  *
  *	name : value
  */
-struct member {
+struct json_member {
     struct json *name;		/* JSON string name */
     struct json *value;		/* JSON value */
 };
@@ -366,7 +366,7 @@ struct json {
 	struct json_boolean boolean;	/* JTYPE_BOOL - value is a JSON boolean */
 	struct json_null null;		/* JTYPE_NULL - value is a JSON null value */
 	struct json_object object;	/* JTYPE_OBJECT - value is a JSON { members } */
-	struct member member;		/* JTYPE_MEMBER - value is a JSON member: name : value */
+	struct json_member member;	/* JTYPE_MEMBER - value is a JSON member: name : value */
 	struct array array;		/* JTYPE_ARRAY - value is a JSON [ elements ] */
     } element;
 
