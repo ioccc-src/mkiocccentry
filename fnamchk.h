@@ -69,12 +69,13 @@
  * Use the usage() function to print the these usage_msgX strings.
  */
 static const char * const usage_msg =
-    "usage: %s [-h] [-v level] [-q] [-V] [-t|-u] filepath\n"
+    "usage: %s [-h] [-v level] [-q] [-V] [-E ext] [-t|-u] filepath\n"
     "\n"
     "\t-h\t\t\tprint help message and exit 0\n"
     "\t-v level\t\tset verbosity level: (def level: %d)\n"
     "\t-q\t\t\tquiet mode: silence msg(), warn(), warnp() if -v 0 (def: not quiet)\n"
     "\t-V\t\t\tprint version string and exit\n"
+    "\t-E ext\t\t\tchange extension to test (def: txz)\n"
     "\t-t\t\t\tfilename must match test entry filename\n"
     "\t-u\t\t\tfilename must match real entry filename\n"
     "\n"

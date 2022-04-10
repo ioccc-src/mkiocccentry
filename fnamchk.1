@@ -1,33 +1,40 @@
-.TH fnamchk 1 "13 February 2022" "fnamchk" "IOCCC tools"
+.TH fnamchk 1 "10 April 2022" "fnamchk" "IOCCC tools"
 .SH NAME
 fnamchk \- IOCCC compressed tarball filename sanity check tool
 .SH SYNOPSIS
-\fBfnamchk [\-h] [\-v level] [\-q] [\-V] [\-t|\-u] filepath
+\fBfnamchk [\-h] [\-v level] [\-q] [\-V] [\-E ext] [\-t|\-u] filepath
 .SH DESCRIPTION
 \fBfnamchk\fP verifies that an IOCCC compressed tarball is properly named.
 .PP
-The program validates that the filename is correct, in either the form of \fI"entry." ("test" or a valid UUID) "\-" entry_number "." timestamp ".txz"
-\fP where \fBentry_number\fP is an integer between 0 and MAX_ENTRY_NUM (see \fIlimit_ioccc.h\fP) and where \fBtimestamp\fP is an integer number of seconds since the epoch.
+The program validates that the filename is correct, in the form of \fBentry.contest_ID\-entry_num.timestamp.ext\fP where
+\fBcontest_ID\fP is either \fItest\fP or a valid UUID (see below), \fBentry_number\fP is an integer from \fB0\fP through \fBMAX_ENTRY_NUM\fP (see \fIlimit_ioccc.h\fP) inclusive, \fBtimestamp\fP is an integer of the number of seconds since the epoch and \fBext\fP is either \fBtxz\fP or the user supplied extension from the \fB\-E\fP option.
 .PP
-More specifically, the filename must:
+More specifically, the filename \fBmust\fP:
+.PP
 .RS
-Start with "entry."
+Start with "\fBentry\fP".
 .PP
-Followed by either test or a UUID string of the form xxxxxxxx-xxxx-4xxx-axxx-xxxxxxxxxxxx
-Where "x" are [0-9-f] characters. And yes, there is a "4" (UUID version 4) and an "a" (UUID variant 1) in there.
+Followed by "\fB.\fP".
 .PP
-Followed by "\-"
+Followed by either "\fBtest\fP" \fIOR\fP a UUID string in the form of \fBxxxxxxxx-xxxx-4xxx-axxx-xxxxxxxxxxxx\fP where \fBx\fP is a hexadecimal digit in the range \fB[0-9a-f]\fP.
+And yes, there is a \fB4\fP (UUID version 4) and an \fBa\fP (UUID variant 1) in there.
 .PP
-Followed by an decimal entry number between 0 and MAX_ENTRY_NUM (see \fIlimit_ioccc.h\fP) inclusive.
+Followed by "\fB\-\fP".
 .PP
-Followed by "."
+Followed by a decimal entry number from \fB0\fP through \fBMAX_ENTRY_NUM\fP (see \fIlimit_ioccc.h\fP) inclusive.
+.PP
+Followed by "\fB.\fP".
 .PP
 Followed by a positive non-zero 64-bit decimal integer.
 .PP
-End with ".txz".
+Followed by "\fB.\fP".
+.PP
+Followed by "\fBtxz\fP" (or the user supplied extension from option \fB\-E\fP).
 .RE
 .PP
-It is indirectly invoked via the \fBtxzchk(1)\fP utility (which is called by \fBmkiocccentry(1)\fP) and it will also be directly executed by the judges during the judging process of the contests.
+NOTE: The quotes above should not be in the filename; they're there only to help distinguish the punctuation from the rest of the format.
+.PP
+It is indirectly invoked via the \fBtxzchk(1)\fP utility which is called by \fBmkiocccentry(1)\fP and it will also be directly executed by the judges during the judging process of the contests.
 .SH OPTIONS
 .PP
 \fB\-h\fP
@@ -35,6 +42,7 @@ Show help and exit.
 .PP
 \fB\-v\fP
 Set verbosity level.
+Default: \fBDBG_DEFAULT\fP \-> \fBDBG_NONE\fP \-> \fB0\fP.
 .PP
 \fB\-V\fP
 Show version and exit.
@@ -42,22 +50,31 @@ Show version and exit.
 \fB\-q\fP
 Quiet mode.
 Silence msg(), warn(), warnp() if verbosity level is 0.
+Default: \fBfalse\fP.
+.PP
+\fB\-E\fP
+Change extension to test (without the dot!).
+This is used for \fBTESTING\fP purposes only!
 .PP
 \fB\-t\fP
 If the filename does not start with the test mode filename format, issue an error.
-In other words the filename has to start with \fB"entry.test-"\fP or it's an error.
+In other words the filename has to start with \fBentry.test-\fP or it's an error.
 .PP
 \fB\-u\fP
 If the filename does not start with the normal filename format, issue an error.
-In other words if the filename starts with \fB"entry.test-"\fP it is an error.
+In other words if the filename starts with \fBentry.test-\fP it is an error.
 .SH EXIT STATUS
 .PP
 \fBmain()\fP returns 0 on success; if there's an error the end is not reached.
-If there's an error the error message is printed; else the output will be the name of the required directory in the tarball.
+If there is an error the error message is printed prior to exiting; else the output will be the name of the required directory in the tarball (this is used by \fBtxzchk(1)\fP).
 .SH FILES
 \fIfnamchk.c\fP
 .RS
 Source file to the \fBfnamchk\fP tool.
+.RE
+\fIfnamchk.h\fP
+.RS
+Header file for the \fBfnamchk\fP tool.
 .RE
 \fIlimit_ioccc.h\fP
 .RS
@@ -71,7 +88,7 @@ If you have an issue with the tool you can open an issue at \fI\<https://github.
 .SH EXAMPLES
 .PP
 .nf
-Run the program on the tarball \fIentry.test.0.1644094311.txz\fP:
+Run the program on the filename \fIentry.test.0.1644094311.txz\fP:
 
 .RS
 \fB
@@ -80,7 +97,7 @@ Run the program on the tarball \fIentry.test.0.1644094311.txz\fP:
 .RE
 .PP
 .nf
-Run the program on the tarball \fItest.tar\fP, which will fail:
+Run the program on the filename \fItest.tar\fP, which will fail:
 
 .RS
 \fB
@@ -89,7 +106,7 @@ Run the program on the tarball \fItest.tar\fP, which will fail:
 .RE
 .PP
 .nf
-Run the program on the tarball \fIentry.test.0.1644094311.txz\fP with the option \fI\-u\fP which will fail:
+Run the program on the filename \fIentry.test.0.1644094311.txz\fP with the option \fI\-u\fP which will fail:
 
 .RS
 \fB
@@ -98,7 +115,7 @@ Run the program on the tarball \fIentry.test.0.1644094311.txz\fP with the option
 .RE
 .PP
 .nf
-Run the program on the tarball \fIentry.test.0.1644094311.txz\fP with the option \fI\-t\fP which will pass:
+Run the program on the filename \fIentry.test.0.1644094311.txz\fP with the option \fI\-t\fP which will pass:
 
 .RS
 \fB
@@ -106,4 +123,24 @@ Run the program on the tarball \fIentry.test.0.1644094311.txz\fP with the option
 .fi
 .RE
 .PP
-The above will print \fBtest\-0\fP.
+The above will print "\fBtest\-0\fP".
+.PP
+.nf
+Run the program on the file \fIentry.test.0.1644094311.txt\fP with the option \fI\-t\fP which will pass:
+
+.RS
+\fB
+ ./fnamchk -E txt -t entry.test-0.1644094311.txt\fP
+.fi
+.RE
+.PP
+The above will print "\fBtest\-0\fP".
+.PP
+.nf
+Run the program on the file \fIentry.test.0.1644094311.txz\fP with the options \fI\-t\fP and \fI\-E txt\fP which will fail:
+
+.RS
+\fB
+ ./fnamchk -E txt -t entry.test-0.1644094311.txz\fP
+.fi
+.RE
