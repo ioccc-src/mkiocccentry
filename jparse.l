@@ -10,7 +10,7 @@
  * and some that have been added do not yet check for errors.
  *
  * The JSON_STRING action that uses strdup() will be changed to use struct
- * string at a later date (sometime after struct string is finished). Similar
+ * string at a later date (sometime after struct json_string is finished). Similar
  * will be done for the numbers: struct integer and struct json_floating. These
  * structs are finished but will not be integrated until later on.
  *

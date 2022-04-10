@@ -250,7 +250,7 @@ struct json_floating {
 /*
  * parsed JSON string
  */
-struct string {
+struct json_string {
     char *as_str;		/* malloced non-decoded JSON string, NUL terminated */
     char *str;			/* malloced decoded JSON string, NUL terminated */
 
@@ -343,7 +343,7 @@ enum element_type {
     JTYPE_UNSET = 0,		/* JSON element has not been set */
     JTYPE_INT,			/* JSON element is an integer - see struct json_integer */
     JTYPE_FLOAT,		/* JSON element is a float - see struct json_floating */
-    JTYPE_STRING,		/* JSON element is a string - see struct string */
+    JTYPE_STRING,		/* JSON element is a string - see struct json_string */
     JTYPE_BOOL,			/* JSON element is a boolean - see struct boolean */
     JTYPE_NULL,			/* JSON element is a null - see struct null */
     JTYPE_OBJECT,		/* JSON element is a { members } */
@@ -360,7 +360,7 @@ enum element_type {
 struct json {
     enum element_type type;		/* union element specifier */
     union json_union {
-	struct string string;		/* JTYPE_INT - value is a string */
+	struct json_string string;	/* JTYPE_INT - value is a string */
 	struct json_integer integer;	/* JTYPE_FLOAT - value is either a signed or unsigned integer */
 	struct json_floating floating;	/* JTYPE_STRING - value is a floating point */
 	struct boolean boolean;		/* JTYPE_BOOL - value is a JSON boolean */

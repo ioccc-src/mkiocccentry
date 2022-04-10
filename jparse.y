@@ -15,7 +15,7 @@
  * The memory returned by strdup() (json_parser.l action for JSON_STRING) will
  * not yet be freed but since the parser doesn't do anything but just finishes
  * until a parse error or EOF (or end of string) this is not a problem. Actually
- * struct string will be used in this case so the way strings are handled will
+ * struct json_string will be used in this case so the way strings are handled will
  * be changed anyway.
  *
  * I'm not sure when I will be adding more and I won't add all at once but
@@ -68,11 +68,11 @@ int token_type = 0;
  *
  * Actually there will be use of the struct json. This function will almost
  * certainly be modified but it currently holds a struct integer *,
- * struct json_floating *, struct string *, a bool and a set of pointers for children
+ * struct json_floating *, struct json_string *, a bool and a set of pointers for children
  * (because it's very possible that it'll be a tree though this is not yet
  * decided either).
  *
- * The struct integer and struct json_floating are complete but struct string is not
+ * The struct integer and struct json_floating are complete but struct json_string is not
  * and I'm thinking it might be useful to have a struct boolean as well. Even
  * without these incomplete and missing structs struct json is not complete and
  * will absolutely change in some ways (more probably many ways). The specifics
