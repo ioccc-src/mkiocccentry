@@ -61,7 +61,8 @@
  */
 #include "limit_ioccc.h"
 
-struct manifest_file {
+struct manifest_file
+{
     char *filename;	    /* filename of the file */
     size_t count;	    /* number of times this filename is in the list */
 

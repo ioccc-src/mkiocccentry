@@ -47,7 +47,8 @@
 /*
  * location/country codes
  */
-struct location {
+struct location
+{
     const char * const code;		/* ISO 3166-1 Alpha-2 Code */
     const char * const name;		/* name (short name lower case) */
 };

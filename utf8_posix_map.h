@@ -59,7 +59,8 @@
 /*
  * map certain UTF-8 strings into safe lower case POSIX portable filenames plus +.
  */
-struct utf8_posix_map {
+struct utf8_posix_map
+{
     const char * const utf8_str;	/* UTF-8 string encode - use \x hex as needed */
     const char * const posix_str;	/* POSIX portable filenames plus + replacement for utf8_str */
     int utf8_str_len;			/* length of utf8_str or -1 ==> needs computing by check_utf8_posix_map() */

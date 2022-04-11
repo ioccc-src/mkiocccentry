@@ -65,7 +65,8 @@ typedef unsigned char bool;
 /*
  * rule_count() processing results
  */
-typedef struct {
+typedef struct
+{
 	off_t rule_2a_size;	/* official IOCCC Rule 2a calculated size */
 	size_t rule_2b_size;	/* official IOCCC Rule 2b calculated size */
 	size_t keywords;	/* keyword count - for -v mode */

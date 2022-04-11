@@ -122,7 +122,8 @@ extern bool show_full_json_warnings;
  */
 #define JSON_CODE_IGNORE_CHUNK (64)	/* number of codes to calloc or realloc at a time */
 
-struct ignore_json_code {
+struct ignore_json_code
+{
     int next_free;	/* the index of the next allowed but free JSON error code */
     int alloc;		/* number of JSON error codes allocated */
     int *code;		/* pointer to the allocated list of codes, or NULL (not allocated) */
@@ -146,7 +147,8 @@ extern struct ignore_json_code *ignore_json_code_set;
  *	 will ONLY have the JSON integer string, we note this in case some other
  *	 future code that is not a careful calls malloc_json_conv_int(str, len).
  */
-struct json_integer {
+struct json_integer
+{
     char *as_str;		/* malloced JSON integer string, whitespace trimmed if needed */
 
     size_t orig_len;		/* length of original JSON integer string */
@@ -227,7 +229,8 @@ struct json_integer {
  *	 will ONLY have the JSON integer string, we note this in case some other
  *	 future code that is not a careful calls malloc_json_conv_float(str, len).
  */
-struct json_floating {
+struct json_floating
+{
     char *as_str;		/* malloced JSON floating point string, whitespace trimmed if needed */
 
     size_t orig_len;		/* length of original JSON floating point string */
@@ -250,7 +253,8 @@ struct json_floating {
 /*
  * parsed JSON string
  */
-struct json_string {
+struct json_string
+{
     char *as_str;		/* malloced non-decoded JSON string, NUL terminated */
     char *str;			/* malloced decoded JSON string, NUL terminated */
 
@@ -268,7 +272,8 @@ struct json_string {
 /*
  * parsed JSON boolean
  */
-struct json_boolean {
+struct json_boolean
+{
     char *as_str;		/* malloced JSON floating point string, whitespace trimmed if needed */
 
     bool converted;		/* true ==> able to decode JSON boolean, false ==> as_str is invalid or not decoded */
@@ -279,7 +284,8 @@ struct json_boolean {
 /*
  * parsed JSON null
  */
-struct json_null {
+struct json_null
+{
     char *as_str;		/* malloced JSON floating point string, whitespace trimmed if needed */
 
     bool converted;		/* true ==> able to decode JSON null, false ==> as_str is invalid or not decoded */
@@ -294,7 +300,8 @@ struct json_null {
  *	{ }
  *	{ members }
  */
-struct json_object {
+struct json_object
+{
     struct json *head;		/* first value in the members list, or NULL ==> empty list */
 };
 
@@ -306,7 +313,8 @@ struct json_object {
  *
  *	name : value
  */
-struct json_member {
+struct json_member
+{
     struct json *name;		/* JSON string name */
     struct json *value;		/* JSON value */
 };
@@ -328,7 +336,8 @@ struct json_member {
  *
  (	foo.value[i-1].parent == foo
  */
-struct json_array {
+struct json_array
+{
     int len;			/* number of JSON values in the array, 0 ==> empty array */
 
     struct json *value;		/* array of JSON values, NULL ==> empty array */
@@ -357,7 +366,8 @@ enum element_type {
  * For the parse tree we have this struct and its associated union. At the risk
  * of stating the obvious this is incomplete but it's a good start.
  */
-struct json {
+struct json
+{
     enum element_type type;		/* union element specifier */
     union json_union {
 	struct json_string string;	/* JTYPE_INT - value is a string */
@@ -530,7 +540,8 @@ struct json_common
 /*
  * author info
  */
-struct author {
+struct author
+{
     char *name;			/* name of the author */
     char *location_code;	/* author location/country code */
     char const *location_name;	/* name of author location/country */
@@ -552,7 +563,8 @@ struct author {
  *
  * Information we will collect in order to form the .info json file.
  */
-struct info {
+struct info
+{
     /*
      * entry
      */

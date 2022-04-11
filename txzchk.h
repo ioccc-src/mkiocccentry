@@ -55,7 +55,8 @@ static char const *ext = "txz";			/* force extension in fnamchk to be this value
 /*
  * information about the tarball
  */
-struct txz_info {
+struct txz_info
+{
     bool has_info_json;			    /* true ==> has a .info.json file */
     bool empty_info_json;		    /* true ==> .info.json size == 0 */
     bool has_author_json;		    /* true ==> has an .author.json file */
@@ -79,7 +80,8 @@ struct txz_info {
 
 static struct txz_info txz_info;
 
-struct txz_file {
+struct txz_file
+{
     char *basename;
     char *filename;
     unsigned count;
@@ -88,7 +90,8 @@ struct txz_file {
 
 static struct txz_file *txz_files;
 
-struct txz_line {
+struct txz_line
+{
     char *line;
     int line_num;
     struct txz_line *next;
