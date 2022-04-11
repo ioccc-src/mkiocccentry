@@ -315,7 +315,7 @@ struct json_member {
 /*
  * JSON ordered array of values
  *
- * A JSON arras is of the form:
+ * A JSON array is of the form:
  *
  *	[ ]
  *	[ values ]

@@ -45,7 +45,7 @@ main(int argc, char **argv)
      * parse args
      */
     program = argv[0];
-    while ((i = getopt(argc, argv, "hv:qVF:t:T")) != -1) {
+    while ((i = getopt(argc, argv, "hv:qVF:t:TE:")) != -1) {
 	switch (i) {
 	case 'h':		/* -h - print help to stderr and exit 0 */
 	    usage(0, "-h help mode", program);
@@ -80,6 +80,9 @@ main(int argc, char **argv)
 	    break;
 	case 'T':
 	    text_file_flag_used = true; /* don't rely on tar: just read file as if it was a text file */
+	    break;
+	case 'E':
+	    ext = optarg;
 	    break;
 	default:
 	    usage(1, "invalid -flag", program); /*ooo*/
@@ -1146,7 +1149,7 @@ check_tarball(char const *tar, char const *fnamchk)
      * execute the fnamchk command
      */
     errno = 0;			/* pre-clear errno for errp() */
-    exit_code = shell_cmd(__func__, true, "% %", fnamchk, txzpath);
+    exit_code = shell_cmd(__func__, true, "% -E % -- %", fnamchk, ext, txzpath);
     if (exit_code != 0) {
 	warnp("txzchk", "%s: %s %s failed with exit code: %d", txzpath, fnamchk, txzpath, WEXITSTATUS(exit_code));
 	++txz_info.total_issues;
@@ -1169,7 +1172,7 @@ check_tarball(char const *tar, char const *fnamchk)
 	/*
 	 * form pipe to the fnamchk command
 	 */
-	fnamchk_stream = pipe_open(__func__, true, "% -- %", fnamchk, txzpath);
+	fnamchk_stream = pipe_open(__func__, true, "% -E % -- %", fnamchk, ext, txzpath);
 	if (fnamchk_stream == NULL) {
 	    err(25, __func__, "popen for reading failed for: %s -- %s", fnamchk, txzpath);
 	    not_reached();

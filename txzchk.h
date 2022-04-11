@@ -44,13 +44,13 @@
  */
 #define REQUIRED_ARGS (1)	/* number of required arguments on the command line */
 
-
-/* variable specific to txzchk */
+/* globals specific to txzchk */
 bool quiet = false;				/* true ==> quiet mode */
 /**/
 static char const *txzpath = NULL;		/* the current tarball being checked */
 static char const *program = NULL;		/* our name */
 static bool text_file_flag_used = false;	/* true ==> assume txzpath is a text file */
+static char const *ext = "txz";			/* force extension in fnamchk to be this value */
 
 /*
  * information about the tarball
@@ -103,7 +103,7 @@ static struct txz_line *txz_lines;
  * Use the usage() function to print the usage_msgX strings.
  */
 static const char * const usage_msg =
-    "usage: %s [-h] [-v level] [-q] [-V] [-t tar] [-F fnamchk] [-T] txzpath\n"
+    "usage: %s [-h] [-v level] [-q] [-V] [-t tar] [-F fnamchk] [-T] [-E ext] txzpath\n"
     "\n"
     "\t-h\t\tprint help message and exit 0\n"
     "\t-v level\tset verbosity level: (def level: %d)\n"
@@ -114,7 +114,8 @@ static const char * const usage_msg =
     "\t-t tar\t\tpath to tar executable that supports the -J (xz) option (def: %s)\n"
     "\t-F fnamchk\tpath to tool that checks if txzpath is a valid compressed tarball name\n"
     "\t\t\tfilename (def: %s)\n\n"
-    "\t-T\t\tassume txzpath is a text file with tar listing (for testing different formats)\n\n"
+    "\t-T\t\tassume txzpath is a text file with tar listing (for testing different formats)\n"
+    "\t-E ext\t\tchange extension to test (def: txz)\n\n"
     "\ttxzpath\t\tpath to an IOCCC compressed tarball\n"
     "\n"
     "txzchk version: %s\n";
