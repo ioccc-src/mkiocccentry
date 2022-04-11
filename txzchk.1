@@ -2,7 +2,7 @@
 .SH NAME
 txzchk \- sanity checker tool used on IOCCC compressed tarballs
 .SH SYNOPSIS
-\fBtxzchk [\-h] [\-v level] [\-q] [\-V] [\-t tar] [\-F fnamchk] [\-T] txzpath
+\fBtxzchk [\-h] [\-v level] [\-q] [\-V] [\-t tar] [\-F fnamchk] [\-T] [\-E ext] txzpath
 .SH DESCRIPTION
 \fBtxzchk\fP runs a series of sanity tests on IOCCC compressed tarballs and it is invoked by \fBmkiocccentry(1)\fP after forming the tarball.
 .PP
@@ -36,6 +36,10 @@ If this option is not specified the program looks under the current working dire
 .PP
 \fB\-T\fP
 Assume txzpath is a text file; use \fBfopen(3)\fP and \fBfclose(3)\fP instead of \fBpopen(3)\fP and \fBpclose(3)\fP and don't require \fBtar\fP program.
+.PP
+\fB\-E\fP
+Change extension to test (without the dot!).
+This is used in conjunction with \fb\-T\fP above for \fBTESTING\fP purposes only!
 .SH EXIT STATUS
 .PP
 \fBmain()\fP returns 1 for errors or issues found; 0 for success.
@@ -75,5 +79,14 @@ Run the program on the tarball \fIentry.test-1.1644094311.txz\fP, specifying an 
 .RS
 \fB
  ./txzchk -t /path/to/tar -F ./filenamechk entry.test-1.1644094311.txz\fP
+.fi
+.RE
+.PP
+.nf
+Run the program on the file \fIentry.test-1.1644094311.txt\fP, specifying that it's a text file (which means \fB\-T\fP and \fB-E\fP have to be used):
+
+.RS
+\fB
+ ./txzchk -T -E txt entry.test-1.1644094311.txt\fP
 .fi
 .RE
