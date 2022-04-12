@@ -430,7 +430,6 @@ txzchk_sanity_chks(char const *tar, char const *fnamchk)
  * given:
  *
  *	txzpath		- the tarball (or text file) we're processing
- *	p		- the path
  *	dir_name	- the directory name (if fnamchk passed - else NULL)
  *	file		- file structure
  *
@@ -440,14 +439,14 @@ txzchk_sanity_chks(char const *tar, char const *fnamchk)
  *
  */
 static void
-check_txz_file(char const *txzpath, char *p, char const *dir_name, struct txz_file *file)
+check_txz_file(char const *txzpath, char const *dir_name, struct txz_file *file)
 {
     bool allowed_dot_file = false;	/* true ==> basename is an allowed . file */
 
     /*
      * firewall
      */
-    if (txzpath == NULL || p == NULL || file == NULL || file->basename == NULL || file->filename == NULL) {
+    if (txzpath == NULL || file == NULL || file->basename == NULL || file->filename == NULL) {
 	err(13, __func__, "passed NULL arg(s)");
 	not_reached();
     }
@@ -908,7 +907,7 @@ parse_linux_txz_line(char *p, char *linep, char *line_dup, char const *dir_name,
     check_empty_file(txzpath, current_file_size, file);
 
     /* checks on this specific file */
-    check_txz_file(txzpath, p, dir_name, file);
+    check_txz_file(txzpath, dir_name, file);
 
     add_txz_file_to_list(file);
 }
@@ -1017,7 +1016,7 @@ parse_bsd_txz_line(char *p, char *linep, char *line_dup, char const *dir_name, c
     check_empty_file(txzpath, current_file_size, file);
 
     /* checks on this specific file */
-    check_txz_file(txzpath, p, dir_name, file);
+    check_txz_file(txzpath, dir_name, file);
 
     add_txz_file_to_list(file);
 }
@@ -1510,7 +1509,7 @@ free_txz_lines(void)
  *
  * given:
  *
- *	p	- file path
+ *	path	- file path
  *
  * Returns the newly allocated struct txz_file * with the file information. The
  * function does NOT add it to the list!
@@ -1518,14 +1517,14 @@ free_txz_lines(void)
  * This function does not return on error.
  */
 static struct txz_file *
-alloc_txz_file(char const *p)
+alloc_txz_file(char const *path)
 {
     struct txz_file *file; /* the file structure */
 
     /*
      * firewall
      */
-    if (p == NULL) {
+    if (path == NULL) {
 	err(38, __func__, "passed NULL path");
 	not_reached();
     }
@@ -1537,16 +1536,16 @@ alloc_txz_file(char const *p)
     }
 
     errno = 0;
-    file->filename = strdup(p);
+    file->filename = strdup(path);
     if (!file->filename) {
-	errp(40, __func__, "%s: unable to strdup filename %s", txzpath, p);
+	errp(40, __func__, "%s: unable to strdup filename %s", txzpath, path);
 	not_reached();
     }
 
     errno = 0;
-    file->basename = strdup(base_name(p)?base_name(p):"");
+    file->basename = strdup(base_name(path)?base_name(path):"");
     if (!file->basename || !strlen(file->basename)) {
-	errp(41, __func__, "%s: unable to strdup basename of filename %s", txzpath, p);
+	errp(41, __func__, "%s: unable to strdup basename of filename %s", txzpath, path);
 	not_reached();
     }
 
