@@ -1186,7 +1186,7 @@ check_found_info_json_fields(char const *json_filename, bool test)
 	 * If the field is not allowed in the list then it suggests there is a
 	 * problem in the code because only info fields should be added to the
 	 * list in the first place. Thus it's an error if a field that's in the
-	 * info list is not a info field name.
+	 * info list is not an info field name.
 	 */
 	if (info_field == NULL) {
 	    jerr(JSON_CODE_RESERVED(10), NULL, __func__, __FILE__, NULL, __LINE__,
