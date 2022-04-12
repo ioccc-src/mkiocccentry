@@ -89,7 +89,7 @@ static const char * const usage_msg =
 /*
  * function prototypes
  */
-static int malloc_vers(char *str, long **pvers);
+static size_t malloc_vers(char *str, long **pvers);
 static void usage(int exitcode, char const *name, char const *str) __attribute__((noreturn));
 
 
