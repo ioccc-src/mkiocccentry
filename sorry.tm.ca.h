@@ -16,5 +16,5 @@
  * P.S. In 2022 April 04, when this comment was created, none of the people
  *	working on this repo were Canadian.  But some of them have several
  *	good friends who live in, or are from Canada. Those friends say sorry
- *	in a fun and friendly way, so we honor those friends in this comment.
+ *	in a fun and friendly way, so we honour those friends in this comment.
  */
