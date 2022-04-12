@@ -83,7 +83,6 @@ extern unsigned num_errors;		/* > 0 number of errors encountered */
 extern int yylineno;			/* line number in lexer */
 extern char *yytext;			/* current text */
 extern FILE *yyin;			/* input file lexer/parser reads from */
-extern int oldstate;
 extern unsigned num_errors;		/* > 0 number of errors encountered */
 extern bool output_newline;		/* true ==> -n not specified, output new line after each arg processed */
 extern int token_type;			/* for braces, brackets etc.: '{', '}', '[', ']', ':' and so on */
