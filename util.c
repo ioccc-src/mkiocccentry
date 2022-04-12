@@ -2720,38 +2720,6 @@ posix_plus_safe(char const *str, bool lower_only, bool slash_ok, bool first)
     return true;
 }
 
-/* find_matching_quote	find the next unescaped '"'
- *
- * Assuming *q == '"' find the matching (closing) '"' (i.e. the next unescaped
- * '"') and return a pointer to it (or NULL if not found). If *q != '"' && *q !=
- * '\0' it will return 'q'; else it'll return q updated to either the end of the
- * string (which means NULL return value) or the matching unescaped '"'.
- *
- * NOTE: This function does not return on NULL pointer passed in but it can
- * return a NULL pointer: this happens if no matching '"' is found (or the
- * string was empty in the first place).
- */
-char *
-find_matching_quote(char *q)
-{
-    /*
-     * firewall
-     */
-    if (q == NULL) {
-	err(181, __func__, "passed NULL pointer");
-	not_reached();
-    }
-
-    for (++q; *q && *q != '"'; ++q)
-	if (*q == '\\')
-	    ++q;
-
-    if (!*q)
-	return NULL;
-
-    return q;
-}
-
 /* clearerr_or_fclose
  *
  * This function calls clearerr() or fclose() depending on if file is stdin or
@@ -2774,7 +2742,7 @@ clearerr_or_fclose(char const *filename, FILE *file)
      * firewall
      */
     if (filename == NULL || file == NULL) {
-	err(182, __func__, "passed NULL arg(s)");
+	err(181, __func__, "passed NULL arg(s)");
 	not_reached();
     }
 
@@ -2813,7 +2781,7 @@ print_newline(bool output_newline)
 	errno = 0;		/* pre-clear errno for errp() */
 	ret = putchar('\n');
 	if (ret != '\n') {
-	    errp(183, __func__, "error while writing newline");
+	    errp(182, __func__, "error while writing newline");
 	    not_reached();
 	}
     }
