@@ -6,7 +6,7 @@
  *
  * We will form the IOCCC entry compressed tarball "by hand" in C.
  * Not in some high level language, but standard vanilla C.
- * Why?  Because this is a obfuscated C contest.  But then why isn't
+ * Why?  Because this is an obfuscated C contest.  But then why isn't
  * this code obfuscated?  Because the IOCCC judges prefer to write
  * in robust unobfuscated code.  Besides, the IOCCC was started
  * as an ironic commentary on the Bourne shell source and finger daemon

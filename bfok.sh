@@ -165,7 +165,7 @@ if [[ ! -f $VERGE ]]; then
     exit 3
 fi
 if [[ ! -x $VERGE ]]; then
-    echo "$0: ERROR: verge not a executable: $VERGE" 1>&2
+    echo "$0: ERROR: verge not an executable: $VERGE" 1>&2
     exit 3
 fi
 

@@ -6,7 +6,7 @@
  *
  * We will form the IOCCC entry compressed tarball "by hand" in C.
  * Not in some high level language, but standard vanilla C.
- * Why?  Because this is a obfuscated C contest.  But then why isn't
+ * Why?  Because this is an obfuscated C contest.  But then why isn't
  * this code obfuscated?  Because the IOCCC judges prefer to write
  * in robust unobfuscated code.  Besides, the IOCCC was started
  * as an ironic commentary on the Bourne shell source and finger daemon
@@ -3668,7 +3668,7 @@ get_author_info(struct info *infop, char *ioccc_id, struct author **author_set_p
 	     "We will ask a GitHub account (must start with @), or press return to skip.",
 	     "We will ask for an affiliation (company, school, group) of the author.",
 	     "We will ask if you have won the IOCCC before. Your answer will not affect your chances of winning.",
-	     "We will ask you for a author handle. You should select the default unless you have won the IOCCC before.",
+	     "We will ask you for an author handle. You should select the default unless you have won the IOCCC before.",
 	     NULL);
     }
 

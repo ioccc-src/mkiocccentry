@@ -235,7 +235,7 @@ main(int argc, char *argv[])
  *
  * NOTE: This function does not return on malloc failure or arg error.
  */
-static int
+static size_t
 malloc_vers(char *str, long **pvers)
 {
     char *wstr = NULL;		/* working malloced copy of orig_str */

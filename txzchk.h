@@ -136,14 +136,14 @@ static void parse_bsd_txz_line(char *p, char *line, char *line_dup, char const *
 static unsigned check_tarball(char const *tar, char const *fnamchk);
 static void show_txz_info(char const *txzpath);
 static void check_empty_file(char const *txzpath, off_t size, struct txz_file *file);
-static void check_txz_file(char const *txzpath, char *p, char const *dir_name, struct txz_file *file);
+static void check_txz_file(char const *txzpath, char const *dir_name, struct txz_file *file);
 static void check_all_txz_files(char const *dir_name);
 static void check_directories(struct txz_file *file, char const *dir_name, char const *txzpath);
 static bool has_special_bits(char const *str);
 static void add_txz_line(char const *str, int line_num);
 static void parse_all_txz_lines(char const *dir_name, char const *txzpath);
 static void free_txz_lines(void);
-static struct txz_file *alloc_txz_file(char const *p);
+static struct txz_file *alloc_txz_file(char const *path);
 static void add_txz_file_to_list(struct txz_file *file);
 static void free_txz_files_list(void);
 

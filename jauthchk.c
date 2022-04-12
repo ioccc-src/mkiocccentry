@@ -724,7 +724,7 @@ check_found_author_json_fields(char const *json_filename, bool test)
 	 * If the field is not allowed in the list then it suggests there is a
 	 * problem in the code because only author fields should be added to the
 	 * list in the first place. Thus it's an error if a field that's in the
-	 * author list is not a author field name.
+	 * author list is not an author field name.
 	 */
 	if (author_field == NULL) {
 	    jerr(JSON_CODE_RESERVED(10), NULL, __func__, __FILE__, NULL, __LINE__,
