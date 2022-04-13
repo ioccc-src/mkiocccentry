@@ -2308,7 +2308,6 @@ check_common_json_fields_table(void)
 		break;
 	    case JTYPE_INT:
 	    case JTYPE_FLOAT:
-	    case JTYPE_INT|JTYPE_FLOAT:
 	    case JTYPE_BOOL:
 	    case JTYPE_STRING:
 	    case JTYPE_ARRAY:
@@ -2377,7 +2376,6 @@ check_info_json_fields_table(void)
 		break;
 	    case JTYPE_INT:
 	    case JTYPE_FLOAT:
-	    case JTYPE_INT|JTYPE_FLOAT:
 	    case JTYPE_BOOL:
 	    case JTYPE_STRING:
 	    case JTYPE_ARRAY:

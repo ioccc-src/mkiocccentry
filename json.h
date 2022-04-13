@@ -348,16 +348,16 @@ struct json_array
  * element_type - JSON element type - an enum for each union element member in struct json
  */
 enum element_type {
-    JTYPE_EOT	    = -1,	/* special end of the table value */
-    JTYPE_UNSET	    = 0,	/* JSON element has not been set */
-    JTYPE_INT	    = 1,	/* JSON element is an integer - see struct json_integer */
-    JTYPE_FLOAT	    = 2,	/* JSON element is a float - see struct json_floating */
-    JTYPE_STRING    = 4,	/* JSON element is a string - see struct json_string */
-    JTYPE_BOOL	    = 8,	/* JSON element is a boolean - see struct json_boolean */
-    JTYPE_NULL	    = 16,	/* JSON element is a null - see struct json_null */
-    JTYPE_OBJECT    = 32,	/* JSON element is a { members } */
-    JTYPE_MEMBER    = 64,	/* JSON element is a member */
-    JTYPE_ARRAY	    = 128,	/* JSON element is a [ elements ] */
+    JTYPE_EOT	    = -1,   /* special end of the table value */
+    JTYPE_UNSET	    = 0,    /* JSON element has not been set */
+    JTYPE_INT,		    /* JSON element is an integer - see struct json_integer */
+    JTYPE_FLOAT,	    /* JSON element is a float - see struct json_floating */
+    JTYPE_STRING,	    /* JSON element is a string - see struct json_string */
+    JTYPE_BOOL,		    /* JSON element is a boolean - see struct json_boolean */
+    JTYPE_NULL,		    /* JSON element is a null - see struct json_null */
+    JTYPE_OBJECT,	    /* JSON element is a { members } */
+    JTYPE_MEMBER,	    /* JSON element is a member */
+    JTYPE_ARRAY,	    /* JSON element is a [ elements ] */
 };
 
 /*
