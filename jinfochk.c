@@ -503,7 +503,7 @@ check_info_json(char const *file, char const *fnamchk)
 
 		/* only some array fields can have empty values (null string) */
 		can_be_empty = array_info_field && array_info_field->can_be_empty;
-		is_json_string = array_info_field && array_info_field->field_type == JSON_ARRAY_CHARS;
+		is_json_string = array_info_field && array_info_field->field_type == JTYPE_STRING;
 
 
 		array_val = strtok_r(NULL, ":,", &array_saveptr);
@@ -682,8 +682,8 @@ check_info_json(char const *file, char const *fnamchk)
 		break;
 
 	    can_be_empty = (common_field && common_field->can_be_empty) || (info_field && info_field->can_be_empty);
-	    is_json_string = (common_field && common_field->field_type == JSON_CHARS) ||
-			     (info_field && info_field->field_type == JSON_CHARS);
+	    is_json_string = (common_field && common_field->field_type == JTYPE_STRING) ||
+			     (info_field && info_field->field_type == JTYPE_STRING);
 
 	    /*
 	     * If the field type is a string we have to remove a single '"' from
@@ -1240,7 +1240,7 @@ check_found_info_json_fields(char const *json_filename, bool test)
 	     * name individually.
 	     */
 	    switch (info_field->field_type) {
-		case JSON_BOOL:
+		case JTYPE_BOOL:
 		    if (strcmp(val, "false") && strcmp(val, "true")) {
 			warn(__func__, "bool field '%s' has non boolean value in file %s: '%s'",
 				       info_field->name, json_filename, val);
@@ -1250,7 +1250,7 @@ check_found_info_json_fields(char const *json_filename, bool test)
 			dbg(DBG_VHIGH, "... %s is a bool", val);
 		    }
 		    break;
-		case JSON_NUM:
+		case JTYPE_INT|JTYPE_FLOAT:
 		    if (!is_number(val)) {
 			warn(__func__, "number field '%s' has non-number value in file %s: '%s'",
 				       info_field->name, json_filename, val);
@@ -1261,8 +1261,6 @@ check_found_info_json_fields(char const *json_filename, bool test)
 		    }
 		    break;
 		default:
-		case JSON_ARRAY_NUMBER: /* no array fields are of number type */
-		case JSON_ARRAY_BOOL: /* no array fields are of bool type */
 		    break;
 	    }
 

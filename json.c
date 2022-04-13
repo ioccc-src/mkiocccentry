@@ -237,20 +237,20 @@ struct ignore_json_code *ignore_json_code_set = NULL;
  */
 struct json_field common_json_fields[] =
 {
-    { "ioccc_contest",		    NULL, 0, 1, false, JSON_CHARS, false, NULL },
-    { "ioccc_year",		    NULL, 0, 1, false, JSON_NUM, false, NULL },
-    { "mkiocccentry_version",	    NULL, 0, 1, false, JSON_CHARS, false, NULL },
-    { "fnamchk_version",	    NULL, 0, 1, false, JSON_CHARS, false, NULL },
-    { "IOCCC_contest_id",	    NULL, 0, 1, false, JSON_CHARS, false, NULL },
-    { "entry_num",		    NULL, 0, 1, false, JSON_NUM, false, NULL },
-    { "tarball",		    NULL, 0, 1, false, JSON_CHARS, false, NULL },
-    { "formed_timestamp",	    NULL, 0, 1, false, JSON_NUM, false, NULL },
-    { "formed_timestamp_usec",	    NULL, 0, 1, false, JSON_NUM, false, NULL },
-    { "timestamp_epoch",	    NULL, 0, 1, false, JSON_CHARS, false, NULL },
-    { "min_timestamp",		    NULL, 0, 1, false, JSON_NUM, false, NULL },
-    { "formed_UTC",		    NULL, 0, 1, false, JSON_CHARS, false, NULL },
-    { "test_mode",		    NULL, 0, 1, false, JSON_BOOL,   false, NULL },
-    { NULL,			    NULL, 0, 0, false, JSON_EOT,   false, NULL } /* this **MUST** be last! */
+    { "ioccc_contest",		    NULL, 0, 1, false, JTYPE_STRING, false, NULL },
+    { "ioccc_year",		    NULL, 0, 1, false, JTYPE_INT|JTYPE_FLOAT, false, NULL },
+    { "mkiocccentry_version",	    NULL, 0, 1, false, JTYPE_STRING, false, NULL },
+    { "fnamchk_version",	    NULL, 0, 1, false, JTYPE_STRING, false, NULL },
+    { "IOCCC_contest_id",	    NULL, 0, 1, false, JTYPE_STRING, false, NULL },
+    { "entry_num",		    NULL, 0, 1, false, JTYPE_INT|JTYPE_FLOAT, false, NULL },
+    { "tarball",		    NULL, 0, 1, false, JTYPE_STRING, false, NULL },
+    { "formed_timestamp",	    NULL, 0, 1, false, JTYPE_INT|JTYPE_FLOAT, false, NULL },
+    { "formed_timestamp_usec",	    NULL, 0, 1, false, JTYPE_INT|JTYPE_FLOAT, false, NULL },
+    { "timestamp_epoch",	    NULL, 0, 1, false, JTYPE_STRING, false, NULL },
+    { "min_timestamp",		    NULL, 0, 1, false, JTYPE_INT|JTYPE_FLOAT, false, NULL },
+    { "formed_UTC",		    NULL, 0, 1, false, JTYPE_STRING, false, NULL },
+    { "test_mode",		    NULL, 0, 1, false, JTYPE_BOOL,   false, NULL },
+    { NULL,			    NULL, 0, 0, false, JTYPE_EOT,   false, NULL } /* this **MUST** be last! */
 };
 size_t SIZEOF_COMMON_JSON_FIELDS_TABLE = TBLLEN(common_json_fields);
 
@@ -263,37 +263,37 @@ size_t SIZEOF_COMMON_JSON_FIELDS_TABLE = TBLLEN(common_json_fields);
  */
 struct json_field info_json_fields[] =
 {
-    { "IOCCC_info_version",	NULL, 0, 1, false, JSON_CHARS,		false, NULL },
-    { "jinfochk_version",	NULL, 0, 1, false, JSON_CHARS,		false, NULL },
-    { "iocccsize_version",	NULL, 0, 1, false, JSON_CHARS,		false, NULL },
-    { "txzchk_version",		NULL, 0, 1, false, JSON_CHARS,		false, NULL },
-    { "title",			NULL, 0, 1, false, JSON_CHARS,		false, NULL },
-    { "abstract",		NULL, 0, 1, false, JSON_CHARS,		false, NULL },
-    { "rule_2a_size",		NULL, 0, 1, false, JSON_NUM,		false, NULL },
-    { "rule_2b_size",		NULL, 0, 1, false, JSON_NUM,		false, NULL },
-    { "empty_override",		NULL, 0, 1, false, JSON_BOOL,		false, NULL },
-    { "rule_2a_override",	NULL, 0, 1, false, JSON_BOOL,		false, NULL },
-    { "rule_2a_mismatch",	NULL, 0, 1, false, JSON_BOOL,		false, NULL },
-    { "rule_2b_override",	NULL, 0, 1, false, JSON_BOOL,		false, NULL },
-    { "highbit_warning",	NULL, 0, 1, false, JSON_BOOL,		false, NULL },
-    { "nul_warning",		NULL, 0, 1, false, JSON_BOOL,		false, NULL },
-    { "trigraph_warning",	NULL, 0, 1, false, JSON_BOOL,		false, NULL },
-    { "wordbuf_warning",	NULL, 0, 1, false, JSON_BOOL,		false, NULL },
-    { "ungetc_warning",		NULL, 0, 1, false, JSON_BOOL,		false, NULL },
-    { "Makefile_override",	NULL, 0, 1, false, JSON_BOOL,		false, NULL },
-    { "first_rule_is_all",	NULL, 0, 1, false, JSON_BOOL,		false, NULL },
-    { "found_all_rule",		NULL, 0, 1, false, JSON_BOOL,		false, NULL },
-    { "found_clean_rule",	NULL, 0, 1, false, JSON_BOOL,		false, NULL },
-    { "found_clobber_rule",	NULL, 0, 1, false, JSON_BOOL,		false, NULL },
-    { "found_try_rule",		NULL, 0, 1, false, JSON_BOOL,		false, NULL },
-    { "manifest",		NULL, 0, 1, false, JSON_ARRAY,		false, NULL },
-    { "info_JSON",		NULL, 0, 1, false, JSON_ARRAY_CHARS,	false,	NULL },
-    { "author_JSON",		NULL, 0, 1, false, JSON_ARRAY_CHARS,	false,	NULL },
-    { "c_src",			NULL, 0, 1, false, JSON_ARRAY_CHARS,	false,	NULL },
-    { "Makefile",		NULL, 0, 1, false, JSON_ARRAY_CHARS,	false,	NULL },
-    { "remarks",		NULL, 0, 1, false, JSON_ARRAY_CHARS,	false,	NULL },
-    { "extra_file",		NULL, 0, 0, false, JSON_ARRAY_CHARS,	false,	NULL },
-    { NULL,			NULL, 0, 0, false, JSON_EOT,		false,	NULL } /* this **MUST** be last */
+    { "IOCCC_info_version",	NULL, 0, 1, false, JTYPE_STRING,		false, NULL },
+    { "jinfochk_version",	NULL, 0, 1, false, JTYPE_STRING,		false, NULL },
+    { "iocccsize_version",	NULL, 0, 1, false, JTYPE_STRING,		false, NULL },
+    { "txzchk_version",		NULL, 0, 1, false, JTYPE_STRING,		false, NULL },
+    { "title",			NULL, 0, 1, false, JTYPE_STRING,		false, NULL },
+    { "abstract",		NULL, 0, 1, false, JTYPE_STRING,		false, NULL },
+    { "rule_2a_size",		NULL, 0, 1, false, JTYPE_INT|JTYPE_FLOAT,		false, NULL },
+    { "rule_2b_size",		NULL, 0, 1, false, JTYPE_INT|JTYPE_FLOAT,		false, NULL },
+    { "empty_override",		NULL, 0, 1, false, JTYPE_BOOL,		false, NULL },
+    { "rule_2a_override",	NULL, 0, 1, false, JTYPE_BOOL,		false, NULL },
+    { "rule_2a_mismatch",	NULL, 0, 1, false, JTYPE_BOOL,		false, NULL },
+    { "rule_2b_override",	NULL, 0, 1, false, JTYPE_BOOL,		false, NULL },
+    { "highbit_warning",	NULL, 0, 1, false, JTYPE_BOOL,		false, NULL },
+    { "nul_warning",		NULL, 0, 1, false, JTYPE_BOOL,		false, NULL },
+    { "trigraph_warning",	NULL, 0, 1, false, JTYPE_BOOL,		false, NULL },
+    { "wordbuf_warning",	NULL, 0, 1, false, JTYPE_BOOL,		false, NULL },
+    { "ungetc_warning",		NULL, 0, 1, false, JTYPE_BOOL,		false, NULL },
+    { "Makefile_override",	NULL, 0, 1, false, JTYPE_BOOL,		false, NULL },
+    { "first_rule_is_all",	NULL, 0, 1, false, JTYPE_BOOL,		false, NULL },
+    { "found_all_rule",		NULL, 0, 1, false, JTYPE_BOOL,		false, NULL },
+    { "found_clean_rule",	NULL, 0, 1, false, JTYPE_BOOL,		false, NULL },
+    { "found_clobber_rule",	NULL, 0, 1, false, JTYPE_BOOL,		false, NULL },
+    { "found_try_rule",		NULL, 0, 1, false, JTYPE_BOOL,		false, NULL },
+    { "manifest",		NULL, 0, 1, false, JTYPE_ARRAY,		false, NULL },
+    { "info_JSON",		NULL, 0, 1, false, JTYPE_STRING,	false,	NULL },
+    { "author_JSON",		NULL, 0, 1, false, JTYPE_STRING,	false,	NULL },
+    { "c_src",			NULL, 0, 1, false, JTYPE_STRING,	false,	NULL },
+    { "Makefile",		NULL, 0, 1, false, JTYPE_STRING,	false,	NULL },
+    { "remarks",		NULL, 0, 1, false, JTYPE_STRING,	false,	NULL },
+    { "extra_file",		NULL, 0, 0, false, JTYPE_STRING,	false,	NULL },
+    { NULL,			NULL, 0, 0, false, JTYPE_EOT,		false,	NULL } /* this **MUST** be last */
 };
 size_t SIZEOF_INFO_JSON_FIELDS_TABLE = TBLLEN(info_json_fields);
 
@@ -312,22 +312,22 @@ size_t SIZEOF_INFO_JSON_FIELDS_TABLE = TBLLEN(info_json_fields);
  */
 struct json_field author_json_fields[] =
 {
-    { "IOCCC_author_version",	NULL, 0, 1, false, JSON_CHARS,		false,	NULL },
-    { "jauthchk_version",	NULL, 0, 1, false, JSON_CHARS,		false,	NULL },
-    { "author_count",		NULL, 0, 1, false, JSON_NUM,		false,  NULL },
-    { "authors",		NULL, 0, 1, false, JSON_ARRAY,		false,	NULL },
-    { "name",			NULL, 0, 5, false, JSON_ARRAY_CHARS,	false,  NULL },
-    { "location_code",		NULL, 0, 5, false, JSON_ARRAY_CHARS,	false,	NULL },
-    { "email",			NULL, 0, 5, false, JSON_ARRAY_CHARS,	true,	NULL },
-    { "url",			NULL, 0, 5, false, JSON_ARRAY_CHARS,	true,	NULL },
-    { "twitter",		NULL, 0, 5, false, JSON_ARRAY_CHARS,	true,	NULL },
-    { "github",			NULL, 0, 5, false, JSON_ARRAY_CHARS,	true,	NULL },
-    { "affiliation",		NULL, 0, 5, false, JSON_ARRAY_CHARS,	true,	NULL },
-    { "past_winner",		NULL, 0, 1, false, JSON_BOOL,		true,	NULL },
-    { "default_handle",		NULL, 0, 1, false, JSON_BOOL,		true,	NULL },
-    { "author_handle",		NULL, 0, 5, false, JSON_ARRAY_CHARS,	true,	NULL },
-    { "author_number",		NULL, 0, 5, false, JSON_ARRAY_NUMBER,	false,	NULL },
-    { NULL,			NULL, 0, 0, false, JSON_EOT,		false,	NULL } /* this **MUST** be last */
+    { "IOCCC_author_version",	NULL, 0, 1, false, JTYPE_STRING,		false,	NULL },
+    { "jauthchk_version",	NULL, 0, 1, false, JTYPE_STRING,		false,	NULL },
+    { "author_count",		NULL, 0, 1, false, JTYPE_INT,		false,  NULL },
+    { "authors",		NULL, 0, 1, false, JTYPE_ARRAY,		false,	NULL },
+    { "name",			NULL, 0, 5, false, JTYPE_STRING,	false,  NULL },
+    { "location_code",		NULL, 0, 5, false, JTYPE_STRING,	false,	NULL },
+    { "email",			NULL, 0, 5, false, JTYPE_STRING,	true,	NULL },
+    { "url",			NULL, 0, 5, false, JTYPE_STRING,	true,	NULL },
+    { "twitter",		NULL, 0, 5, false, JTYPE_STRING,	true,	NULL },
+    { "github",			NULL, 0, 5, false, JTYPE_STRING,	true,	NULL },
+    { "affiliation",		NULL, 0, 5, false, JTYPE_STRING,	true,	NULL },
+    { "past_winner",		NULL, 0, 1, false, JTYPE_BOOL,		true,	NULL },
+    { "default_handle",		NULL, 0, 1, false, JTYPE_BOOL,		true,	NULL },
+    { "author_handle",		NULL, 0, 5, false, JTYPE_STRING,	true,	NULL },
+    { "author_number",		NULL, 0, 5, false, JTYPE_INT,	false,	NULL },
+    { NULL,			NULL, 0, 0, false, JTYPE_EOT,		false,	NULL } /* this **MUST** be last */
 };
 size_t SIZEOF_AUTHOR_JSON_FIELDS_TABLE = TBLLEN(author_json_fields);
 
@@ -2249,7 +2249,7 @@ find_json_field_in_table(struct json_field *table, char const *name, size_t *loc
  * check_info_json_fields_table() and check_author_json_fields_table() to make
  * sure that they're all sane.
  *
- * This means that the only element with the JSON_EOT type is the last element,
+ * This means that the only element with the JTYPE_EOT type is the last element,
  * that the field types are valid (see json.h), that there are no embedded NULL
  * elements (name == NULL) and that the final element _IS_ NULL.
  *
@@ -2275,7 +2275,7 @@ check_json_fields_tables(void)
 /* check_common_json_fields_table	    - perform some sanity checks on the
  *					      common_json_fields table
  *
- * This function checks if JSON_EOT is used on any field other than the NULL
+ * This function checks if JTYPE_EOT is used on any field other than the NULL
  * field. It also makes sure that each field_type is valid. Additionally it
  * makes sure that there are no NULL elements before the final element and that
  * the final element _IS_ NULL. It also makes sure the table is not empty.
@@ -2297,22 +2297,19 @@ check_common_json_fields_table(void)
 
     for (i = 0; i < max-1 && common_json_fields[i].name != NULL; ++i) {
 	switch (common_json_fields[i].field_type) {
-	    case JSON_EOT:
+	    case JTYPE_EOT:
 		if (common_json_fields[i].name != NULL) {
 		    jerr(JSON_CODE_RESERVED(1), NULL, __func__, __FILE__, NULL, __LINE__,
-						"found JSON_EOT element with non NULL name '%s' location %ju "
+						"found JTYPE_EOT element with non NULL name '%s' location %ju "
 						"in common_json_fields table; fix table and recompile",
                             common_json_fields[i].name, (uintmax_t)i);
 		    not_reached();
 		}
 		break;
-	    case JSON_NUM:
-	    case JSON_BOOL:
-	    case JSON_CHARS:
-	    case JSON_ARRAY:
-	    case JSON_ARRAY_NUMBER:
-	    case JSON_ARRAY_BOOL:
-	    case JSON_ARRAY_CHARS:
+	    case JTYPE_INT|JTYPE_FLOAT:
+	    case JTYPE_BOOL:
+	    case JTYPE_STRING:
+	    case JTYPE_ARRAY:
 		/* these are all the valid types */
 		break;
 	    default:
@@ -2340,7 +2337,7 @@ check_common_json_fields_table(void)
 /*
  * check_info_json_fields_table	 - sanity check info_json_fields table
  *
- * This function checks if JSON_EOT is used on any field other than the NULL
+ * This function checks if JTYPE_EOT is used on any field other than the NULL
  * field. It also makes sure that each field_type is valid. Additionally it
  * makes sure that there are no NULL elements before the final element and that
  * the final element _IS_ NULL. It also makes sure the table is not empty.
@@ -2367,22 +2364,19 @@ check_info_json_fields_table(void)
 	}
 
 	switch (info_json_fields[i].field_type) {
-	    case JSON_EOT:
+	    case JTYPE_EOT:
 		if (info_json_fields[i].name != NULL) {
 		    jerr(JSON_CODE_RESERVED(1), NULL, __func__, __FILE__, NULL, __LINE__,
-						"found JSON_EOT element with non NULL name '%s' location %ju "
+						"found JTYPE_EOT element with non NULL name '%s' location %ju "
 						"in info_json_fields table; fix table and recompile",
 			    info_json_fields[i].name, (uintmax_t)i);
 		    not_reached();
 		}
 		break;
-	    case JSON_NUM:
-	    case JSON_BOOL:
-	    case JSON_CHARS:
-	    case JSON_ARRAY:
-	    case JSON_ARRAY_NUMBER:
-	    case JSON_ARRAY_BOOL:
-	    case JSON_ARRAY_CHARS:
+	    case JTYPE_INT|JTYPE_FLOAT:
+	    case JTYPE_BOOL:
+	    case JTYPE_STRING:
+	    case JTYPE_ARRAY:
 		/* these are all the valid types */
 		break;
 	    default:
@@ -2417,7 +2411,7 @@ check_info_json_fields_table(void)
 /*
  * check_author_json_fields_table - perform author_json_fields table sanity checks
  *
- * This function checks if JSON_EOT is used on any field other than the NULL
+ * This function checks if JTYPE_EOT is used on any field other than the NULL
  * field. It also makes sure that each field_type is valid.  Additionally it
  * makes sure that there are no NULL elements before the final element and that
  * the final element _IS_ NULL. It also makes sure the table is not empty.
@@ -2444,22 +2438,20 @@ check_author_json_fields_table(void)
 	}
 
 	switch (author_json_fields[i].field_type) {
-	    case JSON_EOT:
+	    case JTYPE_EOT:
 		if (author_json_fields[i].name != NULL) {
 		    jerr(JSON_CODE_RESERVED(1), NULL, __func__, __FILE__, NULL, __LINE__,
-						"found JSON_EOT element with non NULL name '%s' location %ju "
+						"found JTYPE_EOT element with non NULL name '%s' location %ju "
 						"in author_json_fields table; fix table and recompile",
                             author_json_fields[i].name, (uintmax_t)i);
 		    not_reached();
 		}
 		break;
-	    case JSON_NUM:
-	    case JSON_BOOL:
-	    case JSON_CHARS:
-	    case JSON_ARRAY:
-	    case JSON_ARRAY_NUMBER:
-	    case JSON_ARRAY_BOOL:
-	    case JSON_ARRAY_CHARS:
+	    case JTYPE_INT:
+	    case JTYPE_FLOAT:
+	    case JTYPE_BOOL:
+	    case JTYPE_STRING:
+	    case JTYPE_ARRAY:
 		/* these are all the valid types */
 		break;
 	    default:
@@ -2881,7 +2873,7 @@ check_found_common_json_fields(char const *program, char const *json_filename, c
 	    }
 	    /* first we do checks on the field type */
 	    switch (common_field->field_type) {
-		case JSON_BOOL:
+		case JTYPE_BOOL:
 		    if (strcmp(val, "false") && strcmp(val, "true")) {
 			warn(__func__, "bool field '%s' has non boolean value in file %s: '%s'",
 				       common_field->name, json_filename, val);
@@ -2889,7 +2881,7 @@ check_found_common_json_fields(char const *program, char const *json_filename, c
 			continue;
 		    }
 		    break;
-		case JSON_NUM:
+		case JTYPE_INT|JTYPE_FLOAT:
 		    if (!is_number(val)) {
 			warn(__func__, "number field '%s' has non-number value in file %s: '%s'",
 				       common_field->name, json_filename, val);
@@ -2897,9 +2889,6 @@ check_found_common_json_fields(char const *program, char const *json_filename, c
 			continue;
 		    }
 		    break;
-		case JSON_ARRAY_BOOL: /* there aren't any arrays common to both .info.json and .author.json */
-		case JSON_ARRAY_NUMBER: /* there aren't any arrays common to both .info.json and .author.json */
-		case JSON_ARRAY_CHARS: /* there aren't any arrays common to both .info.json and .author.json */
 		default:
 		    break;
 	    }
