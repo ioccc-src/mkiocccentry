@@ -237,20 +237,20 @@ struct ignore_json_code *ignore_json_code_set = NULL;
  */
 struct json_field common_json_fields[] =
 {
-    { "ioccc_contest",		    NULL, 0, 1, false, JTYPE_STRING, false, NULL },
-    { "ioccc_year",		    NULL, 0, 1, false, JTYPE_INT|JTYPE_FLOAT, false, NULL },
-    { "mkiocccentry_version",	    NULL, 0, 1, false, JTYPE_STRING, false, NULL },
-    { "fnamchk_version",	    NULL, 0, 1, false, JTYPE_STRING, false, NULL },
-    { "IOCCC_contest_id",	    NULL, 0, 1, false, JTYPE_STRING, false, NULL },
-    { "entry_num",		    NULL, 0, 1, false, JTYPE_INT|JTYPE_FLOAT, false, NULL },
-    { "tarball",		    NULL, 0, 1, false, JTYPE_STRING, false, NULL },
-    { "formed_timestamp",	    NULL, 0, 1, false, JTYPE_INT|JTYPE_FLOAT, false, NULL },
-    { "formed_timestamp_usec",	    NULL, 0, 1, false, JTYPE_INT|JTYPE_FLOAT, false, NULL },
-    { "timestamp_epoch",	    NULL, 0, 1, false, JTYPE_STRING, false, NULL },
-    { "min_timestamp",		    NULL, 0, 1, false, JTYPE_INT|JTYPE_FLOAT, false, NULL },
-    { "formed_UTC",		    NULL, 0, 1, false, JTYPE_STRING, false, NULL },
-    { "test_mode",		    NULL, 0, 1, false, JTYPE_BOOL,   false, NULL },
-    { NULL,			    NULL, 0, 0, false, JTYPE_EOT,   false, NULL } /* this **MUST** be last! */
+    { "ioccc_contest",		    NULL, 0, 1, false, JTYPE_STRING,	false, NULL },
+    { "ioccc_year",		    NULL, 0, 1, false, JTYPE_INT,	false, NULL },
+    { "mkiocccentry_version",	    NULL, 0, 1, false, JTYPE_STRING,	false, NULL },
+    { "fnamchk_version",	    NULL, 0, 1, false, JTYPE_STRING,	false, NULL },
+    { "IOCCC_contest_id",	    NULL, 0, 1, false, JTYPE_STRING,	false, NULL },
+    { "entry_num",		    NULL, 0, 1, false, JTYPE_INT,	false, NULL },
+    { "tarball",		    NULL, 0, 1, false, JTYPE_STRING,	false, NULL },
+    { "formed_timestamp",	    NULL, 0, 1, false, JTYPE_INT,	false, NULL },
+    { "formed_timestamp_usec",	    NULL, 0, 1, false, JTYPE_INT,	false, NULL },
+    { "timestamp_epoch",	    NULL, 0, 1, false, JTYPE_STRING,	false, NULL },
+    { "min_timestamp",		    NULL, 0, 1, false, JTYPE_INT,	false, NULL },
+    { "formed_UTC",		    NULL, 0, 1, false, JTYPE_STRING,	false, NULL },
+    { "test_mode",		    NULL, 0, 1, false, JTYPE_BOOL,	false, NULL },
+    { NULL,			    NULL, 0, 0, false, JTYPE_EOT,	false, NULL } /* this **MUST** be last! */
 };
 size_t SIZEOF_COMMON_JSON_FIELDS_TABLE = TBLLEN(common_json_fields);
 
@@ -263,37 +263,37 @@ size_t SIZEOF_COMMON_JSON_FIELDS_TABLE = TBLLEN(common_json_fields);
  */
 struct json_field info_json_fields[] =
 {
-    { "IOCCC_info_version",	NULL, 0, 1, false, JTYPE_STRING,		false, NULL },
-    { "jinfochk_version",	NULL, 0, 1, false, JTYPE_STRING,		false, NULL },
-    { "iocccsize_version",	NULL, 0, 1, false, JTYPE_STRING,		false, NULL },
-    { "txzchk_version",		NULL, 0, 1, false, JTYPE_STRING,		false, NULL },
-    { "title",			NULL, 0, 1, false, JTYPE_STRING,		false, NULL },
-    { "abstract",		NULL, 0, 1, false, JTYPE_STRING,		false, NULL },
-    { "rule_2a_size",		NULL, 0, 1, false, JTYPE_INT|JTYPE_FLOAT,		false, NULL },
-    { "rule_2b_size",		NULL, 0, 1, false, JTYPE_INT|JTYPE_FLOAT,		false, NULL },
-    { "empty_override",		NULL, 0, 1, false, JTYPE_BOOL,		false, NULL },
-    { "rule_2a_override",	NULL, 0, 1, false, JTYPE_BOOL,		false, NULL },
-    { "rule_2a_mismatch",	NULL, 0, 1, false, JTYPE_BOOL,		false, NULL },
-    { "rule_2b_override",	NULL, 0, 1, false, JTYPE_BOOL,		false, NULL },
-    { "highbit_warning",	NULL, 0, 1, false, JTYPE_BOOL,		false, NULL },
-    { "nul_warning",		NULL, 0, 1, false, JTYPE_BOOL,		false, NULL },
-    { "trigraph_warning",	NULL, 0, 1, false, JTYPE_BOOL,		false, NULL },
-    { "wordbuf_warning",	NULL, 0, 1, false, JTYPE_BOOL,		false, NULL },
-    { "ungetc_warning",		NULL, 0, 1, false, JTYPE_BOOL,		false, NULL },
-    { "Makefile_override",	NULL, 0, 1, false, JTYPE_BOOL,		false, NULL },
-    { "first_rule_is_all",	NULL, 0, 1, false, JTYPE_BOOL,		false, NULL },
-    { "found_all_rule",		NULL, 0, 1, false, JTYPE_BOOL,		false, NULL },
-    { "found_clean_rule",	NULL, 0, 1, false, JTYPE_BOOL,		false, NULL },
-    { "found_clobber_rule",	NULL, 0, 1, false, JTYPE_BOOL,		false, NULL },
-    { "found_try_rule",		NULL, 0, 1, false, JTYPE_BOOL,		false, NULL },
-    { "manifest",		NULL, 0, 1, false, JTYPE_ARRAY,		false, NULL },
-    { "info_JSON",		NULL, 0, 1, false, JTYPE_STRING,	false,	NULL },
-    { "author_JSON",		NULL, 0, 1, false, JTYPE_STRING,	false,	NULL },
-    { "c_src",			NULL, 0, 1, false, JTYPE_STRING,	false,	NULL },
-    { "Makefile",		NULL, 0, 1, false, JTYPE_STRING,	false,	NULL },
-    { "remarks",		NULL, 0, 1, false, JTYPE_STRING,	false,	NULL },
-    { "extra_file",		NULL, 0, 0, false, JTYPE_STRING,	false,	NULL },
-    { NULL,			NULL, 0, 0, false, JTYPE_EOT,		false,	NULL } /* this **MUST** be last */
+    { "IOCCC_info_version",	NULL, 0, 1, false, JTYPE_STRING,    false,  NULL },
+    { "jinfochk_version",	NULL, 0, 1, false, JTYPE_STRING,    false,  NULL },
+    { "iocccsize_version",	NULL, 0, 1, false, JTYPE_STRING,    false,  NULL },
+    { "txzchk_version",		NULL, 0, 1, false, JTYPE_STRING,    false,  NULL },
+    { "title",			NULL, 0, 1, false, JTYPE_STRING,    false,  NULL },
+    { "abstract",		NULL, 0, 1, false, JTYPE_STRING,    false,  NULL },
+    { "rule_2a_size",		NULL, 0, 1, false, JTYPE_INT,	    false,  NULL },
+    { "rule_2b_size",		NULL, 0, 1, false, JTYPE_INT,	    false,  NULL },
+    { "empty_override",		NULL, 0, 1, false, JTYPE_BOOL,	    false,  NULL },
+    { "rule_2a_override",	NULL, 0, 1, false, JTYPE_BOOL,	    false,  NULL },
+    { "rule_2a_mismatch",	NULL, 0, 1, false, JTYPE_BOOL,	    false,  NULL },
+    { "rule_2b_override",	NULL, 0, 1, false, JTYPE_BOOL,	    false,  NULL },
+    { "highbit_warning",	NULL, 0, 1, false, JTYPE_BOOL,	    false,  NULL },
+    { "nul_warning",		NULL, 0, 1, false, JTYPE_BOOL,	    false,  NULL },
+    { "trigraph_warning",	NULL, 0, 1, false, JTYPE_BOOL,	    false,  NULL },
+    { "wordbuf_warning",	NULL, 0, 1, false, JTYPE_BOOL,	    false,  NULL },
+    { "ungetc_warning",		NULL, 0, 1, false, JTYPE_BOOL,	    false,  NULL },
+    { "Makefile_override",	NULL, 0, 1, false, JTYPE_BOOL,	    false,  NULL },
+    { "first_rule_is_all",	NULL, 0, 1, false, JTYPE_BOOL,	    false,  NULL },
+    { "found_all_rule",		NULL, 0, 1, false, JTYPE_BOOL,	    false,  NULL },
+    { "found_clean_rule",	NULL, 0, 1, false, JTYPE_BOOL,	    false,  NULL },
+    { "found_clobber_rule",	NULL, 0, 1, false, JTYPE_BOOL,	    false,  NULL },
+    { "found_try_rule",		NULL, 0, 1, false, JTYPE_BOOL,	    false,  NULL },
+    { "manifest",		NULL, 0, 1, false, JTYPE_ARRAY,	    false,  NULL },
+    { "info_JSON",		NULL, 0, 1, false, JTYPE_STRING,    false,  NULL },
+    { "author_JSON",		NULL, 0, 1, false, JTYPE_STRING,    false,  NULL },
+    { "c_src",			NULL, 0, 1, false, JTYPE_STRING,    false,  NULL },
+    { "Makefile",		NULL, 0, 1, false, JTYPE_STRING,    false,  NULL },
+    { "remarks",		NULL, 0, 1, false, JTYPE_STRING,    false,  NULL },
+    { "extra_file",		NULL, 0, 0, false, JTYPE_STRING,    false,  NULL },
+    { NULL,			NULL, 0, 0, false, JTYPE_EOT,	    false,  NULL } /* this **MUST** be last */
 };
 size_t SIZEOF_INFO_JSON_FIELDS_TABLE = TBLLEN(info_json_fields);
 
@@ -2306,6 +2306,8 @@ check_common_json_fields_table(void)
 		    not_reached();
 		}
 		break;
+	    case JTYPE_INT:
+	    case JTYPE_FLOAT:
 	    case JTYPE_INT|JTYPE_FLOAT:
 	    case JTYPE_BOOL:
 	    case JTYPE_STRING:
@@ -2373,6 +2375,8 @@ check_info_json_fields_table(void)
 		    not_reached();
 		}
 		break;
+	    case JTYPE_INT:
+	    case JTYPE_FLOAT:
 	    case JTYPE_INT|JTYPE_FLOAT:
 	    case JTYPE_BOOL:
 	    case JTYPE_STRING:
@@ -2881,7 +2885,34 @@ check_found_common_json_fields(char const *program, char const *json_filename, c
 			continue;
 		    }
 		    break;
-		case JTYPE_INT|JTYPE_FLOAT:
+		case JTYPE_INT:
+		    /*
+		     * XXX - important notes on is_number() - XXX
+		     *
+		     * The is_number() function does not allow for floating
+		     * point numbers and in fact it's very rudimentary as the
+		     * comments there suggest.
+		     *
+		     * This function was added as a simple way for validating
+		     * json numbers that we might encounter in the IOCCC json
+		     * files none of which are floating point. This is why
+		     * is_number() did not allow for floating point.
+		     *
+		     * In the future we will make use of the struct integer and
+		     * struct floating point via the json parser (the real one -
+		     * not the one currently unfinished one in place in this
+		     * file json.c, jauthchk.c and jinfochk.c) and not only will
+		     * this function have to change (most likely drastically)
+		     * but these tests on the data types probably won't even be
+		     * needed because the parser explicitly extracts the type
+		     * based on regular expressions.
+		     *
+		     * If however one were to want to check for either JTYPE_INT
+		     * or JTYPE_FLOAT one could just use the bitwise OR like
+		     * JTYPE_INT|JTYPE_FLOAT. This however is unnecessary.
+		     * There's no case statement for JTYPE_FLOAT as there's no
+		     * check to be done though one could easily be devised.
+		     */
 		    if (!is_number(val)) {
 			warn(__func__, "number field '%s' has non-number value in file %s: '%s'",
 				       common_field->name, json_filename, val);
