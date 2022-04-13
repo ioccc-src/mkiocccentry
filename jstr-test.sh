@@ -104,7 +104,7 @@ else
     EXIT_CODE=5
 fi
 
-# test some text foles in the encoding and decoding pipe
+# test some text holes in the encoding and decoding pipe
 #
 echo "$0: about to run test #6"
 export SRC_SET="jstr-test.sh dbg.c dbg.h fnamchk.c iocccsize.c jauthchk.c"
@@ -122,7 +122,7 @@ else
     EXIT_CODE=6
 fi
 
-# test some text foles in the encoding and decoding pipe in strict mode
+# test some text holes in the encoding and decoding pipe in strict mode
 #
 echo "$0: about to run test #7"
 export SRC_SET="jstr-test.sh dbg.c dbg.h fnamchk.c iocccsize.c jauthchk.c"
