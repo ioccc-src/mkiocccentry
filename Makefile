@@ -175,12 +175,20 @@ GENERATED_HSRC= jparse.tab.h
 GENERATED_OBJ= jparse.o jparse.tab.o
 FLEXFILES= jparse.l
 BISONFILES= jparse.y
-SRCFILES= $(patsubst %.o,%.c,$(OBJFILES))
+# This is a simpler way to do:
+#
+#   SRCFILES =  $(patsubst %.o,%.c,$(OBJFILES))
+#
+SRCFILES= $(OBJFILES:.o=.c)
 ALL_CSRC= ${LESS_PICKY_CSRC} ${GENERATED_CSRC} ${SRCFILES}
 H_FILES= dbg.h jauthchk.h jinfochk.h json.h jstrdecode.h jstrencode.h limit_ioccc.h \
 	mkiocccentry.h txzchk.h util.h location.h utf8_posix_map.h jparse.h jint.h jfloat.h \
 	verge.h sorry.tm.ca.h
-DSYMDIRS= $(patsubst %,%.dSYM,$(TARGETS))
+# This is a simpler way to do:
+#
+#   DSYMDIRS= $(patsubst %,%.dSYM,$(TARGETS))
+#
+DSYMDIRS= $(TARGETS:=.dSYM)
 SH_FILES= iocccsize-test.sh jstr-test.sh limit_ioccc.sh mkiocccentry-test.sh json-test.sh \
 	  jcodechk.sh vermod.sh bfok.sh
 
