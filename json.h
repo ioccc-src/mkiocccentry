@@ -348,16 +348,16 @@ struct json_array
  * element_type - JSON element type - an enum for each union element member in struct json
  */
 enum element_type {
-    JTYPE_EOT = -1,		/* special end of the table value */
-    JTYPE_UNSET = 0,		/* JSON element has not been set */
-    JTYPE_INT,			/* JSON element is an integer - see struct json_integer */
-    JTYPE_FLOAT,		/* JSON element is a float - see struct json_floating */
-    JTYPE_STRING,		/* JSON element is a string - see struct json_string */
-    JTYPE_BOOL,			/* JSON element is a boolean - see struct json_boolean */
-    JTYPE_NULL,			/* JSON element is a null - see struct json_null */
-    JTYPE_OBJECT,		/* JSON element is a { members } */
-    JTYPE_MEMBER,		/* JSON element is a member */
-    JTYPE_ARRAY,		/* JSON element is a [ elements ] */
+    JTYPE_EOT	    = -1,   /* special end of the table value */
+    JTYPE_UNSET	    = 0,    /* JSON element has not been set */
+    JTYPE_INT,		    /* JSON element is an integer - see struct json_integer */
+    JTYPE_FLOAT,	    /* JSON element is a float - see struct json_floating */
+    JTYPE_STRING,	    /* JSON element is a string - see struct json_string */
+    JTYPE_BOOL,		    /* JSON element is a boolean - see struct json_boolean */
+    JTYPE_NULL,		    /* JSON element is a null - see struct json_null */
+    JTYPE_OBJECT,	    /* JSON element is a { members } */
+    JTYPE_MEMBER,	    /* JSON element is a member */
+    JTYPE_ARRAY,	    /* JSON element is a [ elements ] */
 };
 
 /*
@@ -391,31 +391,6 @@ struct json
     struct json *next;		/* next in a JSON parse tree linked list, or NULL is link tail or unlinked */
 };
 
-/*
- * XXX - this probably should be replaced with enum element_type - XXX
- *
- * defines of the JSON types for the json fields tables.
- *
- * NOTE: As the parser is built these might be removed entirely: the parser
- * already has very similarly named tokens and the enum above does as well so
- * this quite possibly will happen. However because the current version of
- * jinfochk and jauthchk rely on the tables (based these constants and the
- * structs json_field and json_value) and because we won't want to cause make
- * test to fail we have them in here. Another possibility is to comment out the
- * execution of jinfochk and jauthchk so that we can get rid of these but I'd
- * rather keep these and the structs json_value and json_field and the
- * associated tables as well as the checks in json.c, jinfochk.c and jauthchk.c
- * because I hope to make use of them once the parser is complete; see above for
- * how I'm currently thinking about it (it's 9 April 2022).
- */
-#define JSON_NUM	    (0)	    /* json field is supposed to be a number */
-#define JSON_BOOL	    (1)	    /* json field is supposed to be a boolean */
-#define JSON_CHARS	    (2)	    /* json field is supposed to be a string */
-#define JSON_ARRAY	    (3)	    /* json field is supposed to be an array */
-#define JSON_ARRAY_NUMBER   (5)	    /* json field is supposed to be a number in an array */
-#define JSON_ARRAY_BOOL	    (6)	    /* json field is supposed to be a bool in an array (NB: not used) */
-#define JSON_ARRAY_CHARS    (7)	    /* json field is supposed to be a string in an array */
-#define JSON_EOT	    (-1)    /* json field is NULL (not null): used internally to mark end of the tables */
 
 /*
  * JSON value: a linked list of all values of the same json_field (below).

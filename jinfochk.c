@@ -503,7 +503,7 @@ check_info_json(char const *file, char const *fnamchk)
 
 		/* only some array fields can have empty values (null string) */
 		can_be_empty = array_info_field && array_info_field->can_be_empty;
-		is_json_string = array_info_field && array_info_field->field_type == JSON_ARRAY_CHARS;
+		is_json_string = array_info_field && array_info_field->field_type == JTYPE_STRING;
 
 
 		array_val = strtok_r(NULL, ":,", &array_saveptr);
@@ -682,8 +682,8 @@ check_info_json(char const *file, char const *fnamchk)
 		break;
 
 	    can_be_empty = (common_field && common_field->can_be_empty) || (info_field && info_field->can_be_empty);
-	    is_json_string = (common_field && common_field->field_type == JSON_CHARS) ||
-			     (info_field && info_field->field_type == JSON_CHARS);
+	    is_json_string = (common_field && common_field->field_type == JTYPE_STRING) ||
+			     (info_field && info_field->field_type == JTYPE_STRING);
 
 	    /*
 	     * If the field type is a string we have to remove a single '"' from
@@ -1240,7 +1240,7 @@ check_found_info_json_fields(char const *json_filename, bool test)
 	     * name individually.
 	     */
 	    switch (info_field->field_type) {
-		case JSON_BOOL:
+		case JTYPE_BOOL:
 		    if (strcmp(val, "false") && strcmp(val, "true")) {
 			warn(__func__, "bool field '%s' has non boolean value in file %s: '%s'",
 				       info_field->name, json_filename, val);
@@ -1250,7 +1250,34 @@ check_found_info_json_fields(char const *json_filename, bool test)
 			dbg(DBG_VHIGH, "... %s is a bool", val);
 		    }
 		    break;
-		case JSON_NUM:
+		case JTYPE_INT:
+		    /*
+		     * XXX - important notes on is_number() - XXX
+		     *
+		     * The is_number() function does not allow for floating
+		     * point numbers and in fact it's very rudimentary as the
+		     * comments there suggest.
+		     *
+		     * This function was added as a simple way for validating
+		     * json numbers that we might encounter in the IOCCC json
+		     * files none of which are floating point. This is why
+		     * is_number() did not allow for floating point.
+		     *
+		     * In the future we will make use of the struct integer and
+		     * struct floating point via the json parser (the real one -
+		     * not the one currently unfinished one in place in this
+		     * file jinfochk.c, jauthchk.c and json.c) and not only will
+		     * this function have to change (most likely drastically)
+		     * but these tests on the data types probably won't even be
+		     * needed because the parser explicitly extracts the type
+		     * based on regular expressions.
+		     *
+		     * If however one were to want to check for either JTYPE_INT
+		     * or JTYPE_FLOAT one could just use the bitwise OR like
+		     * JTYPE_INT|JTYPE_FLOAT. This however is unnecessary.
+		     * There's no case statement for JTYPE_FLOAT as there's no
+		     * check to be done though one could easily be devised.
+		     */
 		    if (!is_number(val)) {
 			warn(__func__, "number field '%s' has non-number value in file %s: '%s'",
 				       info_field->name, json_filename, val);
@@ -1261,8 +1288,6 @@ check_found_info_json_fields(char const *json_filename, bool test)
 		    }
 		    break;
 		default:
-		case JSON_ARRAY_NUMBER: /* no array fields are of number type */
-		case JSON_ARRAY_BOOL: /* no array fields are of bool type */
 		    break;
 	    }
 
