@@ -163,7 +163,23 @@ MANDIR = /usr/local/share/man/man1
 DESTDIR= /usr/local/bin
 TARGETS= mkiocccentry iocccsize dbg limit_ioccc.sh fnamchk txzchk jauthchk jinfochk \
 	jstrencode jstrdecode utf8_test jparse jint jfloat verge
-MANPAGES = mkiocccentry.1 txzchk.1 fnamchk.1 iocccsize.1 jinfochk.1 jauthchk.1
+
+# man pages
+#
+# Currently we explicitly specify a variable for man page targets as not all
+# targets have a man page but probably all targets should have a man page. When
+# this is done we can change the below two uncommented lines to be just:
+#
+#   MANPAGES = $(TARGETS:=.1)
+# 
+# But until then it must be the next two lines (alternatively we could
+# explicitly specify the man pages but this makes it simpler). When a new man
+# page is written the MAN_TARGETS should have the tool name (without any
+# extension) added to it.  Eventually MAN_TARGETS can be removed entirely and
+# MANPAGES will act on TARGETS.
+MAN_TARGETS = mkiocccentry txzchk fnamchk iocccsize jinfochk jauthchk
+MANPAGES= $(MAN_TARGETS:=.1)
+
 TEST_TARGETS= dbg utf8_test
 OBJFILES= dbg.o util.o mkiocccentry.o iocccsize.o fnamchk.o txzchk.o jauthchk.o jinfochk.o \
 	json.o jstrencode.o jstrdecode.o rule_count.o location.o sanity.o \
@@ -778,8 +794,8 @@ clobber: clean
 distclean nuke: clobber
 
 install: all
-	${INSTALL} -m 0555 ${TARGETS} ${DESTDIR}
-	${INSTALL} -m 0644 ${MANPAGES} ${MANDIR}
+	${INSTALL} -v -m 0555 ${TARGETS} ${DESTDIR}
+	${INSTALL} -v -m 0644 ${MANPAGES} ${MANDIR} 2>/dev/null
 
 tags: ${ALL_CSRC} ${H_FILES}
 	-${CTAGS} -- ${ALL_CSRC} ${H_FILES} 2>&1 | \
