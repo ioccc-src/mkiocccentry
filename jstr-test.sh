@@ -112,6 +112,7 @@ SRC_SET="$SRC_SET jinfochk.c json.c json.h jstrdecode.c jstrencode.c"
 SRC_SET="$SRC_SET limit_ioccc.h mkiocccentry.c txzchk.c util.c util.h"
 echo "cat \$SRC_SET | ./jstrencode -v $V_FLAG -n | ./jstrdecode -v $V_FLAG -n > $TEST_FILE"
 # shellcheck disable=SC2086
+# shellcheck disable=SC2002
 cat $SRC_SET | ./jstrencode -v "$V_FLAG" -n | ./jstrdecode -v "$V_FLAG" -n > "$TEST_FILE"
 # shellcheck disable=SC2086
 cat $SRC_SET > "$TEST_FILE2"
@@ -130,6 +131,7 @@ SRC_SET="$SRC_SET jinfochk.c json.c json.h jstrdecode.c jstrencode.c"
 SRC_SET="$SRC_SET limit_ioccc.h mkiocccentry.c txzchk.c util.c util.h"
 echo "cat \$SRC_SET | ./jstrencode -v $V_FLAG -n | ./jstrdecode -v $V_FLAG -n -S > $TEST_FILE"
 # shellcheck disable=SC2086
+# shellcheck disable=SC2002
 cat $SRC_SET | ./jstrencode -v "$V_FLAG" -n | ./jstrdecode -v "$V_FLAG" -n -S > "$TEST_FILE"
 # shellcheck disable=SC2086
 cat $SRC_SET > "$TEST_FILE2"
