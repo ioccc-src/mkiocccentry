@@ -1,4 +1,3 @@
-/* vim: set tabstop=8 softtabstop=4 shiftwidth=4 noexpandtab : */
 /*
  * util - IOCCC entry common utility functions
  *
@@ -1699,8 +1698,8 @@ readline_dup(char **linep, bool strip, size_t *lenp, FILE *stream)
  */
 void
 find_utils(bool tar_flag_used, char **tar, bool cp_flag_used, char **cp, bool ls_flag_used, char **ls,
-	bool txzchk_flag_used, char **txzchk, bool fnamchk_flag_used, char **fnamchk,
-	bool jinfochk_flag_used, char **jinfochk, bool jauthchk_flag_used, char **jauthchk)
+	   bool txzchk_flag_used, char **txzchk, bool fnamchk_flag_used, char **fnamchk,
+	   bool jinfochk_flag_used, char **jinfochk, bool jauthchk_flag_used, char **jauthchk)
 {
     /*
      * guess where tar, cp and ls utilities are located
@@ -2480,7 +2479,7 @@ parse_verbosity(char const *program, char const *arg)
 
 
 /*
- * is_number	    - if the string str is a number
+ * is_integer	    - if the string str is an integer
  *
  * given:
  *
@@ -2491,14 +2490,14 @@ parse_verbosity(char const *program, char const *arg)
  *
  * returns:
  *
- *	true	==> str is a number
- *	false	==> str is not a number
+ *	true	==> str is an integer
+ *	false	==> str is not an integer
  *
  * NOTE: This function does not return on error (str == NULL). An empty string
- * is considered not a number.
+ *	 is considered not an integer.
  */
 bool
-is_number(char const *str)
+is_integer(char const *str)
 {
     /*
      * firewall
@@ -2604,8 +2603,8 @@ string_to_bool(char const *str)
  *			- false ==> both UPPER and lower case characters are allowed
  *	slash_ok	- true ==> / is allowed as str can be a path
  *			  false ==> / is NOT allowed, str is a basename only
- *	first		- first ==> true, str is at beginning, perform 1st char check
- *			  false ==> false, str may be in the middle, skip 1st char check
+ *	first		- true ==> str is at beginning, perform 1st char check
+ *			  false ==> str may be in the middle, skip 1st char check
  *
  * returns:
  *	true ==> str is a valid POSIX portable safe + filename, AND
@@ -2630,7 +2629,7 @@ posix_plus_safe(char const *str, bool lower_only, bool slash_ok, bool first)
     }
     len = strlen(str);
     if (len <= 0) {
-	dbg(DBG_VVHIGH, "str is an empty string");
+	dbg(DBG_VVHIGH, "posix_plus_safe(): str is an empty string");
 	return false;
     }
 
@@ -2696,13 +2695,13 @@ posix_plus_safe(char const *str, bool lower_only, bool slash_ok, bool first)
 	    }
 	    /* alphanumeric nor [._+-] nor non-/ check */
 	    if (!isalnum(str[i]) && str[i] != '.' && str[i] != '_' && str[i] != '+' && str[i] != '-') {
-		dbg(DBG_VVHIGH, "str[%ju]: 1st character not alphanumeric nor ._+-: 0x%02x",
+		dbg(DBG_VVHIGH, "str[%ju]: character not alphanumeric nor ._+-: 0x%02x",
 				(uintmax_t)i, (unsigned int)str[i]);
 		return false;
 	    }
 	    /* special case: lower_only is true, alphanumeric lower case only */
 	    if (lower_only == true && isupper(str[i])) {
-		dbg(DBG_VVHIGH, "str[%ju]: lower_only is true and 1st character is upper case: 0x%02x",
+		dbg(DBG_VVHIGH, "str[%ju]: lower_only is true and character is upper case: 0x%02x",
 				(uintmax_t)i, (unsigned int)str[i]);
 		return false;
 	    }
@@ -2720,7 +2719,218 @@ posix_plus_safe(char const *str, bool lower_only, bool slash_ok, bool first)
     return true;
 }
 
-/* clearerr_or_fclose
+
+/*
+ * posix_safe_chk - test a string for various POSIX related tests
+ *
+ * given:
+ *	str		- string to test
+ *	len		- length of str to test
+ *	*slash		- set to true ==> a / was found
+ *			  set to false ==> no / was found
+ *	*posix_safe	- set to true ==> all chars are POSIX portable safe plus +/
+ *			- set to false ==> one or more chars are not portable safe plus +/
+ *	*first_alphanum	- set to true ==> 1st char is alphanumeric
+ *			  set to false ==> 1st char is not alphanumeric
+ *	*upper		- set to true ==> UPPER case chars found
+ *			- set to false ==> no UPPER case chars found
+ *
+ * NOTE: This function does not return when given NULL ptr
+ */
+void
+posix_safe_chk(char const *str, size_t len, bool *slash, bool *posix_safe, bool *first_alphanum, bool *upper)
+{
+    bool found_unsafe = false;		/* true ==> found non-ASCII or non-POSIX portable safe plus +/ */
+    size_t i;
+
+    /*
+     * firewall
+     */
+    if (str == NULL || slash == NULL || posix_safe == NULL || first_alphanum == NULL || upper == NULL) {
+	err(181, __func__, "called with NULL arg(s)");
+	not_reached();
+    }
+
+    /*
+     * assume all tests will fail
+     */
+    *slash = false;
+    *posix_safe = false;
+    *first_alphanum = false;
+    *upper = false;
+
+    /*
+     * empty string fails all tests
+     */
+    if (len <= 0) {
+	dbg(DBG_VVHIGH, "posix_safe_chk(.., false, false, false, false) returning: str is an empty string");
+	return;
+    }
+
+    /*
+     * test 1st character
+     */
+    if (isascii(str[0])) {
+
+	/*
+	 * case: 1st character is /
+	 */
+	if (str[0] == '/') {
+	    *slash = true;
+	    dbg(DBG_VVVHIGH, "posix_safe_chk(): str[0] is /: 0x%02x", (unsigned int)str[0]);
+
+	/*
+	 * case: 1st character is alphanumeric
+	 */
+	} else if (isalnum(str[0])) {
+	    *first_alphanum = true;
+	    if (isupper(str[0])) {
+		*upper = true;
+		dbg(DBG_VVVHIGH, "posix_safe_chk(): str[0] is UPPER CASE alphanumeric: 0x%02x", (unsigned int)str[0]);
+	    } else {
+		dbg(DBG_VVVHIGH, "posix_safe_chk(): str[0] is alphanumeric: 0x%02x", (unsigned int)str[0]);
+	    }
+
+	/*
+	 * case: 1st character is non-alphanumeric portable POSIX safe plus +
+	 */
+	} else if (str[0] == '.' || str[0] == '_' || str[0] == '+') {
+	    dbg(DBG_VVVHIGH, "posix_safe_chk(): str[0] is ASCII non-alphanumeric POSIX portable safe plus +: 0x%02x",
+			     (unsigned int)str[0]);
+
+	/*
+	 * case: 1st character is not POSIX portable safe plus +
+	 */
+	} else {
+	    found_unsafe = true;
+	    dbg(DBG_VVVHIGH, "posix_safe_chk(): str[0] is not POSIX portable safe plus +/: 0x%02x",
+			     (unsigned int)str[0]);
+	}
+
+    /*
+     * case: 1st character is not ASCII
+     */
+    } else {
+	found_unsafe = true;
+	dbg(DBG_VVVHIGH, "posix_safe_chk(): str[0] is non-ASCII: 0x%02x",
+			 (unsigned int)str[0]);
+    }
+
+    /*
+     * example 2nd to last characters
+     */
+    for (i=1; i < len; ++i) {
+
+	/*
+	 * test character
+	 */
+	if (isascii(str[i])) {
+
+	    /*
+	     * case: / check
+	     */
+	    if (str[i] == '/') {
+		if (*slash == false) {
+		    dbg(DBG_VVVHIGH, "posix_safe_chk(): found 1st / at str[%ju]: 0x%02x",
+				     (uintmax_t)i, (unsigned int)str[i]);
+		}
+		*slash = true;
+
+	    /*
+	     * case: character is alphanumeric
+	     */
+	    } else if (isalnum(str[i])) {
+		if (*upper == false) {
+		    dbg(DBG_VVVHIGH, "posix_safe_chk(): found 1st UPPER case at str[%ju]: 0x%02x",
+				     (uintmax_t)i, (unsigned int)str[i]);
+		    *upper = true;
+		}
+
+	    /*
+	     * case: is not POSIX portable safe plus +
+	     */
+	    } else if (str[i] != '.' && str[i] != '_' && str[i] != '+' && str[i] != '-') {
+		if (found_unsafe == false) {
+		    dbg(DBG_VVVHIGH, "posix_safe_chk(): str[%ju] found 1st non-POSIX portable safe plus +/: 0x%02x",
+				      (uintmax_t)i, (unsigned int)str[i]);
+		}
+		found_unsafe = true;
+	    }
+
+	/*
+	 * case: character is non-ASCII
+	 */
+	} else {
+	    if (found_unsafe == false) {
+		dbg(DBG_VVVHIGH, "posix_safe_chk(): str[%ju] found 1st non-ASCII: 0x%02x",
+				  (uintmax_t)i, (unsigned int)str[i]);
+	    }
+	    found_unsafe = true;
+	}
+    }
+
+    /*
+     * report non-POSIX portable safe plus + maybe /
+     */
+    if (found_unsafe == false) {
+	*posix_safe = true;
+	dbg(DBG_VVHIGH, "posix_safe_chk(..., %s, %s, %s, %s): string is NOT POSIX portable safe plus +/",
+		    (slash ? "true" : "false"),
+		    (posix_safe ? "true" : "false"),
+		    (first_alphanum ? "true" : "false"),
+		    (upper ? "true" : "false"));
+
+    /*
+     * report POSIX portable safe plus + safe with maybe /
+     */
+    } else {
+	dbg(DBG_VVHIGH, "posix_safe_chk(..., %s, %s, %s, %s): string is POSIX portable safe plus +/: <%s>",
+		    (slash ? "true" : "false"),
+		    (posix_safe ? "true" : "false"),
+		    (first_alphanum ? "true" : "false"),
+		    (upper ? "true" : "false"),
+		    str);
+    }
+    return;
+}
+
+
+/*
+ * find_matching_quote	find the next unescaped '"'
+ *
+ * Assuming *q == '"' find the matching (closing) '"' (i.e. the next unescaped
+ * '"') and return a pointer to it (or NULL if not found). If *q != '"' && *q !=
+ * '\0' it will return 'q'; else it'll return q updated to either the end of the
+ * string (which means NULL return value) or the matching unescaped '"'.
+ *
+ * NOTE: This function does not return on NULL pointer passed in but it can
+ * return a NULL pointer: this happens if no matching '"' is found (or the
+ * string was empty in the first place).
+ */
+char *
+find_matching_quote(char *q)
+{
+    /*
+     * firewall
+     */
+    if (q == NULL) {
+	err(182, __func__, "passed NULL pointer");
+	not_reached();
+    }
+
+    for (++q; *q && *q != '"'; ++q)
+	if (*q == '\\')
+	    ++q;
+
+    if (!*q)
+	return NULL;
+
+    return q;
+}
+
+
+/*
+ * clearerr_or_fclose
  *
  * This function calls clearerr() or fclose() depending on if file is stdin or
  * some other file.
@@ -2742,7 +2952,7 @@ clearerr_or_fclose(char const *filename, FILE *file)
      * firewall
      */
     if (filename == NULL || file == NULL) {
-	err(181, __func__, "passed NULL arg(s)");
+	err(183, __func__, "passed NULL arg(s)");
 	not_reached();
     }
 
@@ -2757,7 +2967,9 @@ clearerr_or_fclose(char const *filename, FILE *file)
     }
 }
 
-/* print_newline	- prints a newline to stdout if output_newline == true
+
+/*
+ * print_newline	- prints a newline to stdout if output_newline == true
  *
  * given:
  *
@@ -2781,7 +2993,7 @@ print_newline(bool output_newline)
 	errno = 0;		/* pre-clear errno for errp() */
 	ret = putchar('\n');
 	if (ret != '\n') {
-	    errp(182, __func__, "error while writing newline");
+	    errp(184, __func__, "error while writing newline");
 	    not_reached();
 	}
     }

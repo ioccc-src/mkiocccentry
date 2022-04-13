@@ -120,10 +120,11 @@ extern struct json_floating test_result[];	/* struct json_floating conversions o
 /*
  * function prototypes
  */
-static void prinfo(bool sized, long double value, char const *scomm, char const *vcomm);
+static void prinfo(bool sized, long double value, bool intval, char const *scomm,
+		   char const *vcomm, char const *sintval);
 #if defined(JFLOAT_TEST_ENABLED)
 static void check_val(bool *testp, char const *type, int testnum, bool size_a, bool size_b,
-		      long double val_a, long double val_b, bool strict);
+		      long double val_a, long double val_b, bool int_a, bool int_b, bool strict);
 #endif /* JFLOAT_TEST_ENABLED */
 static void usage(int exitcode, char const *name, char const *str) __attribute__((noreturn));
 

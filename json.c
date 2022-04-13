@@ -45,6 +45,7 @@
 #include <time.h>
 #include <limits.h>
 #include <inttypes.h>
+#include <math.h>
 
 /*
  * dbg - debug, warning and error reporting facility
@@ -2884,34 +2885,7 @@ check_found_common_json_fields(char const *program, char const *json_filename, c
 		    }
 		    break;
 		case JTYPE_INT:
-		    /*
-		     * XXX - important notes on is_number() - XXX
-		     *
-		     * The is_number() function does not allow for floating
-		     * point numbers and in fact it's very rudimentary as the
-		     * comments there suggest.
-		     *
-		     * This function was added as a simple way for validating
-		     * json numbers that we might encounter in the IOCCC json
-		     * files none of which are floating point. This is why
-		     * is_number() did not allow for floating point.
-		     *
-		     * In the future we will make use of the struct integer and
-		     * struct floating point via the json parser (the real one -
-		     * not the one currently unfinished one in place in this
-		     * file json.c, jauthchk.c and jinfochk.c) and not only will
-		     * this function have to change (most likely drastically)
-		     * but these tests on the data types probably won't even be
-		     * needed because the parser explicitly extracts the type
-		     * based on regular expressions.
-		     *
-		     * If however one were to want to check for either JTYPE_INT
-		     * or JTYPE_FLOAT one could just use the bitwise OR like
-		     * JTYPE_INT|JTYPE_FLOAT. This however is unnecessary.
-		     * There's no case statement for JTYPE_FLOAT as there's no
-		     * check to be done though one could easily be devised.
-		     */
-		    if (!is_number(val)) {
+		    if (!is_integer(val)) {
 			warn(__func__, "number field '%s' has non-number value in file %s: '%s'",
 				       common_field->name, json_filename, val);
 			++issues;
@@ -3800,16 +3774,16 @@ malloc_json_conv_int(char const *str, size_t len)
      * malloc the return integer
      */
     errno = 0;			/* pre-clear errno for errp() */
-    ret = malloc(sizeof(struct json_integer));
+    ret = malloc(sizeof(*ret));
     if (ret == NULL) {
-	errp(201, __func__, "malloc #0 error allocating %ju bytes", (uintmax_t)sizeof(struct json_integer));
+	errp(201, __func__, "malloc #0 error allocating %ju bytes", (uintmax_t)sizeof(*ret));
 	not_reached();
     }
 
     /*
      * initialize the return integer
      */
-    memset(ret, 0, sizeof(struct json_integer));
+    memset(ret, 0, sizeof(*ret));
     ret->as_str = NULL;
     ret->converted = false;
     ret->is_negative = false;
@@ -4271,25 +4245,28 @@ malloc_json_conv_float(char const *str, size_t len)
      * malloc the return integer
      */
     errno = 0;			/* pre-clear errno for errp() */
-    ret = malloc(sizeof(struct json_floating));
+    ret = malloc(sizeof(*ret));
     if (ret == NULL) {
-	errp(204, __func__, "malloc #0 error allocating %ju bytes", (uintmax_t)sizeof(struct json_floating));
+	errp(204, __func__, "malloc #0 error allocating %ju bytes", (uintmax_t)sizeof(*ret));
 	not_reached();
     }
 
     /*
      * initialize the return integer
      */
-    memset(ret, 0, sizeof(struct json_integer));
+    memset(ret, 0, sizeof(*ret));
     ret->as_str = NULL;
     ret->converted = false;
     ret->is_negative = false;
     ret->float_sized = false;
     ret->as_float = 0.0;
+    ret->as_float_int = false;
     ret->double_sized = false;
     ret->as_double = 0.0;
+    ret->as_double_int = false;
     ret->longdouble_sized = false;
     ret->as_longdouble = 0.0;
+    ret->as_longdouble_int = false;
 
     /*
      * firewall
@@ -4363,9 +4340,11 @@ malloc_json_conv_float(char const *str, size_t len)
     }
     ret->converted = true;
     ret->longdouble_sized = true;
+    ret->as_longdouble_int = (ret->as_longdouble == floorl(ret->as_longdouble));
     dbg(DBG_VVHIGH, "strtold for <%s> returned as %%Lg: %.22Lg", ret->as_str, ret->as_longdouble);
     dbg(DBG_VVHIGH, "strtold for <%s> returned as %%Le: %.22Le", ret->as_str, ret->as_longdouble);
     dbg(DBG_VVHIGH, "strtold for <%s> returned as %%Lf: %.22Lf", ret->as_str, ret->as_longdouble);
+    dbg(DBG_VVHIGH, "strtold returned an integer value: %s", ret->as_longdouble_int ? "true" : "false");
 
     /*
      * note if value < 0
@@ -4384,9 +4363,11 @@ malloc_json_conv_float(char const *str, size_t len)
 	dbg(DBG_VVHIGH, "strtod for <%s> failed", ret->as_str);
     } else {
 	ret->double_sized = true;
+	ret->as_double_int = (ret->as_double == floorl(ret->as_double));
 	dbg(DBG_VVHIGH, "strtod for <%s> returned as %%lg: %.22lg", ret->as_str, ret->as_double);
 	dbg(DBG_VVHIGH, "strtod for <%s> returned as %%le: %.22le", ret->as_str, ret->as_double);
 	dbg(DBG_VVHIGH, "strtod for <%s> returned as %%lf: %.22lf", ret->as_str, ret->as_double);
+	dbg(DBG_VVHIGH, "strtod returned an integer value: %s", ret->as_double_int ? "true" : "false");
     }
 
     /*
@@ -4399,9 +4380,11 @@ malloc_json_conv_float(char const *str, size_t len)
 	dbg(DBG_VVHIGH, "strtof for <%s> failed", ret->as_str);
     } else {
 	ret->float_sized = true;
+	ret->as_float_int = (ret->as_longdouble == floorl(ret->as_longdouble));
 	dbg(DBG_VVHIGH, "strtof for <%s> returned as %%g: %.22g", ret->as_str, ret->as_float);
 	dbg(DBG_VVHIGH, "strtof for <%s> returned as %%e: %.22e", ret->as_str, ret->as_float);
 	dbg(DBG_VVHIGH, "strtof for <%s> returned as %%f: %.22f", ret->as_str, ret->as_float);
+	dbg(DBG_VVHIGH, "strtof returned an integer value: %s", ret->as_float_int ? "true" : "false");
     }
 
     /*
@@ -4453,6 +4436,176 @@ malloc_json_conv_float_str(char const *str, size_t *retlen)
     ret = malloc_json_conv_float(str, len);
     if (ret == NULL) {
 	err(206, __func__, "malloc_json_conv_float() returned NULL");
+	not_reached();
+    }
+
+    /*
+     * save length if allowed
+     */
+    if (retlen != NULL) {
+	*retlen = len;
+    }
+
+    /*
+     * return encoded result or NULL
+     */
+    return ret;
+}
+
+
+/*
+ * malloc_json_conv_string - convert JSON encoded string to C string
+ *
+ * given:
+ *	str	a JSON encoded string
+ *	len	length starting at str of the JSON string
+ *	strict	true ==> strict decoding based on how malloc_json_decode() decodes
+ *	        false ==> permit a wider use of \-escaping and un-decoded char
+ *
+ * returns:
+ *	malloced struct json_string with decoded values based on JSON encoded string
+ *
+ * NOTE: This function will not return on malloc error.
+ * NOTE: This function will not return NULL.
+ */
+struct json_string *
+malloc_json_conv_string(char const *str, size_t len, bool strict)
+{
+    struct json_string *ret = NULL;	    /* malloced decoding string or NULL */
+
+    /*
+     * malloc the return string
+     */
+    errno = 0;			/* pre-clear errno for errp() */
+    ret = malloc(sizeof(*ret));
+    if (ret == NULL) {
+	errp(207, __func__, "malloc #0 error allocating %ju bytes", (uintmax_t)sizeof(*ret));
+	not_reached();
+    }
+
+    /*
+     * initialize the return string
+     */
+    memset(ret, 0, sizeof(*ret));
+    ret->as_str = NULL;
+    ret->str = NULL;
+    ret->converted = false;
+    ret->same = false;
+    ret->has_nul = false;
+    ret->slash = false;
+    ret->posix_safe = false;
+    ret->first_alphanum = false;
+    ret->upper = false;
+
+    /*
+     * firewall
+     */
+    if (str == NULL) {
+	warn(__func__, "called with NULL str");
+	return ret;
+    }
+    if (len <= 0) {
+	warn(__func__, "called with len: %ju <= 0", (uintmax_t)len);
+	return ret;
+    }
+    if (str[0] == '\0') {
+	warn(__func__, "called with empty string");
+	return ret;
+    }
+
+    /*
+     * duplicate the JSON encoded string
+     */
+    errno = 0;			/* pre-clear errno for errp() */
+    ret->as_str = malloc(len+1+1);
+    if (ret->as_str == NULL) {
+	errp(208, __func__, "malloc #1 error allocating %ju bytes", (uintmax_t)(len+1+1));
+	not_reached();
+    }
+    memcpy(ret->as_str, str, len+1);
+    ret->as_str[len] = '\0';	/* paranoia */
+    ret->as_str[len+1] = '\0';	/* paranoia */
+    ret->as_str_len = len;
+
+    /*
+     * decode the JSON encoded string
+     */
+    ret->str = malloc_json_decode_str(ret->as_str, &(ret->str_len), strict);
+    if (ret->str == NULL) {
+	warn(__func__, "JSON string decode for %s mode failed for: <%s>",
+		       (strict ? "strict" : "non-strict"), ret->as_str);
+	return ret;
+    }
+    ret->converted = true;	/* JSON decoding successful */
+
+    /*
+     * determine if decoded string is identical to the original JSON encoded string
+     */
+    if (ret->as_str_len == ret->str_len && memcmp(ret->as_str, ret->str, ret->as_str_len) == 0) {
+	ret->same = true;	/* decoded string same an original JSON encoded string */
+    }
+
+    /*
+     * determine if decoded JSON string is a C string
+     */
+    ret->has_nul = is_string(ret->str, ret->str_len);
+
+    /*
+     * determine POSIX state of the decoded string
+     */
+    posix_safe_chk(ret->str, ret->str_len, &ret->slash, &ret->posix_safe, &ret->first_alphanum, &ret->upper);
+
+    /*
+     * return converted floating point value
+     */
+    return ret;
+}
+
+
+/*
+ * malloc_json_conv_string_str - convert JSON floating point string to C integer value
+ *
+ * This is an simplified interface for malloc_json_conv_float().
+ *
+ * given:
+ *	str	a JSON encoded string
+ *	retlen	length starting at str of the JSON string
+ *	strict	true ==> strict decoding based on how malloc_json_decode() decodes
+ *	        false ==> permit a wider use of \-escaping and un-decoded char
+ *
+ * returns:
+ *	malloced struct json_floating with C floating point values based on JSON string
+ *	NOTE: retlen, if non-NULL, is set to 0 on error
+ *
+ * NOTE: This function will not return on malloc error.
+ * NOTE: This function will not return NULL.
+ */
+struct json_string *
+malloc_json_conv_string_str(char const *str, size_t *retlen, bool strict)
+{
+    struct json_string *ret = NULL;	    /* malloced encoding string or NULL */
+    size_t len = 0;			    /* length of string to encode */
+
+    /*
+     * firewall
+     *
+     * NOTE: We will let the malloc_json_conv_string() handle the arg firewall
+     */
+    if (str == NULL) {
+	warn(__func__, "called with NULL str");
+    } else {
+	len = strlen(str);
+    }
+    if (len <= 0) {
+	warn(__func__, "called with len: %ju <= 0", (uintmax_t)len);
+    }
+
+    /*
+     * convert to malloc_json_conv_string() call
+     */
+    ret = malloc_json_conv_string(str, len, strict);
+    if (ret == NULL) {
+	err(209, __func__, "malloc_json_conv_string() returned NULL");
 	not_reached();
     }
 

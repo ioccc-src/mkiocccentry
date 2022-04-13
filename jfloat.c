@@ -207,17 +207,20 @@ main(int argc, char *argv[])
 	    /* test: float */
 	    check_val(&test_error, "float", i,
 				   test_result[i].float_sized, ival->float_sized,
-				   test_result[i].as_float, ival->as_float, strict);
+				   test_result[i].as_float, ival->as_float,
+				   test_result[i].as_float_int, ival->as_float_int, strict);
 
 	    /* test: double */
 	    check_val(&test_error, "double", i,
 				    test_result[i].double_sized, ival->double_sized,
-				    test_result[i].as_double, ival->as_double, strict);
+				    test_result[i].as_double, ival->as_double,
+				    test_result[i].as_double_int, ival->as_double_int, strict);
 
 	    /* test: long double */
 	    check_val(&test_error, "longdouble", i,
 				   test_result[i].longdouble_sized, ival->longdouble_sized,
-				   test_result[i].as_longdouble, ival->as_longdouble, strict);
+				   test_result[i].as_longdouble, ival->as_longdouble,
+				   test_result[i].as_longdouble_int, ival->as_longdouble_int, strict);
 
 	    /*
 	     * if this test failed, force non-zero exit
@@ -354,23 +357,26 @@ main(int argc, char *argv[])
 	    /*
 	     * print float info
 	     */
-	    prinfo(ival->float_sized, ival->as_float,
+	    prinfo(ival->float_sized, ival->as_float, ival->as_float_int,
 	           "true ==> converted JSON floating point to C float",
-		   "JSON floating point value in float form");
+		   "JSON floating point value in float form",
+		   "if float_sized == true, true ==> as_float is an integer");
 
 	    /*
 	     * print double info
 	     */
-	    prinfo(ival->double_sized, ival->as_double,
+	    prinfo(ival->double_sized, ival->as_double, ival->as_double_int,
 	            "true ==> converted JSON floating point to C double",
-		    "JSON floating point value in double form");
+		    "JSON floating point value in double form",
+		    "if double_sized == true, true ==> as_double is an integer");
 
 	    /*
 	     * print long double info
 	     */
-	    prinfo(ival->longdouble_sized, ival->as_longdouble,
+	    prinfo(ival->longdouble_sized, ival->as_longdouble, ival->as_float_int,
 	           "true ==> converted JSON floating point to C long double",
-		   "JSON floating point value in long double form");
+		   "JSON floating point value in long double form",
+		   "if float_sized == true, true ==> as_float is an integer");
 
 	    /*
 	     * close struct json_floating element with }
@@ -423,13 +429,15 @@ main(int argc, char *argv[])
  *	size_b	- converted (ival->) type boolean
  *	val_a	- signed reference (test_result[i]) conversion into type value
  *	val_b	- signed reference (ival->) conversion into type value
+ *	int_a	- reference (test_result[i]) is an integer
+ *	int_b	- reference (ival->) is an integer
  *	strict	- test for strict match
  *
  * NOTE: This function will warn in error.
  */
 static void
 check_val(bool *testp, char const *type, int testnum, bool size_a, bool size_b,
-	 long double val_a, long double val_b, bool strict)
+	 long double val_a, long double val_b, bool int_a, bool int_b, bool strict)
 {
     long double diff;		/* absolute difference between val_a and val_b */
     long double diff_part;	/* absolute difference between val_a and val_b as 1 part of val_a */
@@ -460,6 +468,18 @@ check_val(bool *testp, char const *type, int testnum, bool size_a, bool size_b,
 		        testnum,
 		        type, size_a ? "true" : "false",
 		        type, size_b ? "true" : "false");
+    }
+    if (int_a != int_b) {
+	dbg(DBG_VHIGH, "test_result[%d].%s_int: %s != ival->%s_int: %s",
+		       testnum,
+		       type, int_a ? "true" : "false",
+		       type, int_b ? "true" : "false");
+	*testp = true; /* test failed */
+    } else {
+	dbg(DBG_VVHIGH, "test_result[%d].%s_int: %s == ival->%s_int: %s",
+		        testnum,
+		        type, int_a ? "true" : "false",
+		        type, int_b ? "true" : "false");
     }
 
     /*
@@ -525,18 +545,20 @@ check_val(bool *testp, char const *type, int testnum, bool size_a, bool size_b,
  * given:
  *	sized	- boolean indicating if the value was set
  *	value	- value to be printed as an intmax_t
+ *	intval	- boolean indicating if the value an integer
  *	scomm	- comment relating to the sized boolean
  *	vcomm	- comment relating to the value as an intmax_t
+ *	sintval	- comment relating to the intval boolean
  *
  * NOTE: This function does not return on error.
  */
 static void
-prinfo(bool sized, long double value, char const *scomm, char const *vcomm)
+prinfo(bool sized, long double value, bool intval, char const *scomm, char const *vcomm, char const *sintval)
 {
     /*
      * firewall
      */
-    if (scomm == NULL || vcomm == NULL) {
+    if (scomm == NULL || vcomm == NULL || sintval == NULL) {
 	err(16, __func__, "NULL arg(s)");
 	not_reached();
     }
@@ -548,6 +570,7 @@ prinfo(bool sized, long double value, char const *scomm, char const *vcomm)
     if (sized == true) {
 	print("\ttrue,\t/* %s */\n", scomm);
 	print("\t%.22Lg,\t/* %s */\n", value, vcomm);
+	print("\t%s,\t/* %s */\n", intval ? "true" : "false", sintval);
 
     /*
      * case: sized is false - no value to print
@@ -555,6 +578,7 @@ prinfo(bool sized, long double value, char const *scomm, char const *vcomm)
     } else {
 	print("\tfalse,\t/* %s */\n", scomm);
 	print("\t0,\t/* no %s */\n", vcomm);
+	print("\tfalse,\t/* %s */\n", sintval);
 
     }
     return;

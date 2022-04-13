@@ -241,12 +241,15 @@ struct json_floating
 
     bool float_sized;		/* true ==> converted JSON float to C float */
     float as_float;		/* JSON floating point value in float form, if float_sized  == true */
+    bool as_float_int;		/* if float_sized == true, true ==> as_float is an integer */
 
     bool double_sized;		/* true ==> converted JSON float to C double */
     double as_double;		/* JSON floating point value in double form, if double_sized  == true */
+    bool as_double_int;		/* if double_sized == true, true ==> as_double is an integer */
 
     bool longdouble_sized;	/* true ==> converted JSON float to C long double */
     long double as_longdouble;	/* JSON floating point value in long double form, if longdouble_sized  == true */
+    bool as_longdouble_int;	/* if longdouble_sized == true, true ==> as_longdouble is an integer */
 };
 
 
@@ -258,14 +261,18 @@ struct json_string
     char *as_str;		/* malloced non-decoded JSON string, NUL terminated */
     char *str;			/* malloced decoded JSON string, NUL terminated */
 
-    size_t str_len;		/* length of str, not including final NUL */
     size_t as_str_len;		/* length of as_str, not including final NUL */
+    size_t str_len;		/* length of str, not including final NUL */
 
     bool converted;		/* true ==> able to decode JSON string, false ==> str is invalid or not decoded */
     bool same;			/* true => original JSON string same as decoded string, no decoding required */
 
     bool has_nul;		/* true ==> decoded JSON string has a NUL byte inside it */
-    bool posix_plus;		/* true => decoded JSON string has only POSIX portable safe plus + chars */
+
+    bool slash;			/* true ==> / was found after decoding */
+    bool posix_safe;		/* true ==> all chars are POSIX portable safe plus + and maybe / after decoding */
+    bool first_alphanum;	/* true ==> 1st char is alphanumeric after decoding */
+    bool upper;			/* true ==> UPPER case chars found after decoding */
 };
 
 
@@ -633,6 +640,8 @@ extern struct json_integer *malloc_json_conv_int(char const *str, size_t len);
 extern struct json_integer *malloc_json_conv_int_str(char const *str, size_t *retlen);
 extern struct json_floating *malloc_json_conv_float(char const *str, size_t len);
 extern struct json_floating *malloc_json_conv_float_str(char const *str, size_t *retlen);
+extern struct json_string *malloc_json_conv_string(char const *str, size_t len, bool strict);
+extern struct json_string *malloc_json_conv_string_str(char const *str, size_t *retlen, bool strict);
 
 
 #endif /* INCLUDE_JSON_H */

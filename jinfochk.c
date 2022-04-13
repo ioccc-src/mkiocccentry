@@ -1251,40 +1251,13 @@ check_found_info_json_fields(char const *json_filename, bool test)
 		    }
 		    break;
 		case JTYPE_INT:
-		    /*
-		     * XXX - important notes on is_number() - XXX
-		     *
-		     * The is_number() function does not allow for floating
-		     * point numbers and in fact it's very rudimentary as the
-		     * comments there suggest.
-		     *
-		     * This function was added as a simple way for validating
-		     * json numbers that we might encounter in the IOCCC json
-		     * files none of which are floating point. This is why
-		     * is_number() did not allow for floating point.
-		     *
-		     * In the future we will make use of the struct integer and
-		     * struct floating point via the json parser (the real one -
-		     * not the one currently unfinished one in place in this
-		     * file jinfochk.c, jauthchk.c and json.c) and not only will
-		     * this function have to change (most likely drastically)
-		     * but these tests on the data types probably won't even be
-		     * needed because the parser explicitly extracts the type
-		     * based on regular expressions.
-		     *
-		     * If however one were to want to check for either JTYPE_INT
-		     * or JTYPE_FLOAT one could just use the bitwise OR like
-		     * JTYPE_INT|JTYPE_FLOAT. This however is unnecessary.
-		     * There's no case statement for JTYPE_FLOAT as there's no
-		     * check to be done though one could easily be devised.
-		     */
-		    if (!is_number(val)) {
+		    if (!is_integer(val)) {
 			warn(__func__, "number field '%s' has non-number value in file %s: '%s'",
 				       info_field->name, json_filename, val);
 			++issues;
 			continue;
 		    } else {
-			dbg(DBG_VHIGH, "... %s is a number", val);
+			dbg(DBG_VHIGH, "... %s is an integer", val);
 		    }
 		    break;
 		default:
