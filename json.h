@@ -271,7 +271,7 @@ struct json_string
 
     bool slash;			/* true ==> / was found after decoding */
     bool posix_safe;		/* true ==> all chars are POSIX portable safe plus + and maybe / after decoding */
-    bool first_alphanum;	/* true ==> 1st char is alphanumeric after decoding */
+    bool first_alphanum;	/* true ==> first char is alphanumeric after decoding */
     bool upper;			/* true ==> UPPER case chars found after decoding */
 };
 

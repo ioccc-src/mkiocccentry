@@ -594,7 +594,7 @@ cmdprintf(char const *format, ...)
 char *
 vcmdprintf(char const *format, va_list ap)
 {
-    va_list ap2;		/* copy of original va_list for 2nd pass */
+    va_list ap2;		/* copy of original va_list for second pass */
     size_t size = 0;
     char const *next;
     char const *p;
@@ -614,7 +614,7 @@ vcmdprintf(char const *format, va_list ap)
     }
 
     /*
-     * copy va_list for 2nd pass
+     * copy va_list for second pass
      */
     va_copy(ap2, ap);
 
@@ -1114,7 +1114,7 @@ pipe_open(char const *name, bool abort_on_error, char const *format, ...)
  *      para("line 1", "line 2", "", "prev line 3 was an empty line", NULL);
  *
  * given:
- *      line    - 1st paragraph line to print
+ *      line    - first paragraph line to print
  *      ...     - strings as paragraph lines to print
  *      NULL    - end of string list
  *
@@ -1242,7 +1242,7 @@ para(char const *line, ...)
  *
  * given:
  *      stream  - open file stream to print a paragraph onto
- *      line    - 1st paragraph line to print
+ *      line    - first paragraph line to print
  *      ...     - strings as paragraph lines to print
  *      NULL    - end of string list
  *
@@ -2603,8 +2603,8 @@ string_to_bool(char const *str)
  *			- false ==> both UPPER and lower case characters are allowed
  *	slash_ok	- true ==> / is allowed as str can be a path
  *			  false ==> / is NOT allowed, str is a basename only
- *	first		- true ==> str is at beginning, perform 1st char check
- *			  false ==> str may be in the middle, skip 1st char check
+ *	first		- true ==> str is at beginning, perform first char check
+ *			  false ==> str may be in the middle, skip first char check
  *
  * returns:
  *	true ==> str is a valid POSIX portable safe + filename, AND
@@ -2639,7 +2639,7 @@ posix_plus_safe(char const *str, bool lower_only, bool slash_ok, bool first)
     if (first == true) {
 	if (str[0] == '/') {
 		if (slash_ok == false) {
-		    dbg(DBG_VVHIGH, "str[0]: slash_ok is false and 1st character is /");
+		    dbg(DBG_VVHIGH, "str[0]: slash_ok is false and first character is /");
 		    return false;
 		}
 
@@ -2649,27 +2649,27 @@ posix_plus_safe(char const *str, bool lower_only, bool slash_ok, bool first)
 	} else {
 	    /* ASCII non-/ check */
 	    if (!isascii(str[0])) {
-		dbg(DBG_VVHIGH, "str[0]: 1st character is non-ASCII: 0x%02x", (unsigned int)str[0]);
+		dbg(DBG_VVHIGH, "str[0]: first character is non-ASCII: 0x%02x", (unsigned int)str[0]);
 		return false;
 	    }
 	    /* alphanumeric non-/ check */
 	    if (!isalnum(str[0])) {
-		dbg(DBG_VVHIGH, "str[0]: 1st character not alphanumeric: 0x%02x", (unsigned int)str[0]);
+		dbg(DBG_VVHIGH, "str[0]: first character not alphanumeric: 0x%02x", (unsigned int)str[0]);
 		return false;
 	    }
 	    /* special case: lower_only is true, alphanumeric lower case only */
 	    if (lower_only == true && isupper(str[0])) {
-		dbg(DBG_VVHIGH, "str[0]: lower_only is true and 1st character is upper case: 0x%02x",
+		dbg(DBG_VVHIGH, "str[0]: lower_only is true and first character is upper case: 0x%02x",
 				(unsigned int)str[0]);
 		return false;
 	    }
 	}
-	/* 1st character already checked, scan beyond 1st character next */
+	/* first character already checked, scan beyond first character next */
 	start = 1;
     }
 
     /*
-     * Beyond the 1st character, they must be POSIX portable filename or +
+     * Beyond the first character, they must be POSIX portable filename or +
      */
     for (i=start; i < len; ++i) {
 
@@ -2730,8 +2730,8 @@ posix_plus_safe(char const *str, bool lower_only, bool slash_ok, bool first)
  *			  set to false ==> no / was found
  *	*posix_safe	- set to true ==> all chars are POSIX portable safe plus +/
  *			- set to false ==> one or more chars are not portable safe plus +/
- *	*first_alphanum	- set to true ==> 1st char is alphanumeric
- *			  set to false ==> 1st char is not alphanumeric
+ *	*first_alphanum	- set to true ==> first char is alphanumeric
+ *			  set to false ==> first char is not alphanumeric
  *	*upper		- set to true ==> UPPER case chars found
  *			- set to false ==> no UPPER case chars found
  *
@@ -2768,19 +2768,19 @@ posix_safe_chk(char const *str, size_t len, bool *slash, bool *posix_safe, bool 
     }
 
     /*
-     * test 1st character
+     * test first character
      */
     if (isascii(str[0])) {
 
 	/*
-	 * case: 1st character is /
+	 * case: first character is /
 	 */
 	if (str[0] == '/') {
 	    *slash = true;
 	    dbg(DBG_VVVHIGH, "posix_safe_chk(): str[0] is /: 0x%02x", (unsigned int)str[0]);
 
 	/*
-	 * case: 1st character is alphanumeric
+	 * case: first character is alphanumeric
 	 */
 	} else if (isalnum(str[0])) {
 	    *first_alphanum = true;
@@ -2792,14 +2792,14 @@ posix_safe_chk(char const *str, size_t len, bool *slash, bool *posix_safe, bool 
 	    }
 
 	/*
-	 * case: 1st character is non-alphanumeric portable POSIX safe plus +
+	 * case: first character is non-alphanumeric portable POSIX safe plus +
 	 */
 	} else if (str[0] == '.' || str[0] == '_' || str[0] == '+') {
 	    dbg(DBG_VVVHIGH, "posix_safe_chk(): str[0] is ASCII non-alphanumeric POSIX portable safe plus +: 0x%02x",
 			     (unsigned int)str[0]);
 
 	/*
-	 * case: 1st character is not POSIX portable safe plus +
+	 * case: first character is not POSIX portable safe plus +
 	 */
 	} else {
 	    found_unsafe = true;
@@ -2808,7 +2808,7 @@ posix_safe_chk(char const *str, size_t len, bool *slash, bool *posix_safe, bool 
 	}
 
     /*
-     * case: 1st character is not ASCII
+     * case: first character is not ASCII
      */
     } else {
 	found_unsafe = true;
@@ -2817,7 +2817,7 @@ posix_safe_chk(char const *str, size_t len, bool *slash, bool *posix_safe, bool 
     }
 
     /*
-     * example 2nd to last characters
+     * example second to last characters
      */
     for (i=1; i < len; ++i) {
 
@@ -2831,7 +2831,7 @@ posix_safe_chk(char const *str, size_t len, bool *slash, bool *posix_safe, bool 
 	     */
 	    if (str[i] == '/') {
 		if (*slash == false) {
-		    dbg(DBG_VVVHIGH, "posix_safe_chk(): found 1st / at str[%ju]: 0x%02x",
+		    dbg(DBG_VVVHIGH, "posix_safe_chk(): found first / at str[%ju]: 0x%02x",
 				     (uintmax_t)i, (unsigned int)str[i]);
 		}
 		*slash = true;
@@ -2841,7 +2841,7 @@ posix_safe_chk(char const *str, size_t len, bool *slash, bool *posix_safe, bool 
 	     */
 	    } else if (isalnum(str[i])) {
 		if (*upper == false) {
-		    dbg(DBG_VVVHIGH, "posix_safe_chk(): found 1st UPPER case at str[%ju]: 0x%02x",
+		    dbg(DBG_VVVHIGH, "posix_safe_chk(): found first UPPER case at str[%ju]: 0x%02x",
 				     (uintmax_t)i, (unsigned int)str[i]);
 		    *upper = true;
 		}
@@ -2851,7 +2851,7 @@ posix_safe_chk(char const *str, size_t len, bool *slash, bool *posix_safe, bool 
 	     */
 	    } else if (str[i] != '.' && str[i] != '_' && str[i] != '+' && str[i] != '-') {
 		if (found_unsafe == false) {
-		    dbg(DBG_VVVHIGH, "posix_safe_chk(): str[%ju] found 1st non-POSIX portable safe plus +/: 0x%02x",
+		    dbg(DBG_VVVHIGH, "posix_safe_chk(): str[%ju] found first non-POSIX portable safe plus +/: 0x%02x",
 				      (uintmax_t)i, (unsigned int)str[i]);
 		}
 		found_unsafe = true;
@@ -2862,7 +2862,7 @@ posix_safe_chk(char const *str, size_t len, bool *slash, bool *posix_safe, bool 
 	 */
 	} else {
 	    if (found_unsafe == false) {
-		dbg(DBG_VVVHIGH, "posix_safe_chk(): str[%ju] found 1st non-ASCII: 0x%02x",
+		dbg(DBG_VVVHIGH, "posix_safe_chk(): str[%ju] found first non-ASCII: 0x%02x",
 				  (uintmax_t)i, (unsigned int)str[i]);
 	    }
 	    found_unsafe = true;

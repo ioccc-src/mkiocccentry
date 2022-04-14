@@ -119,7 +119,7 @@ main(int argc, char *argv[])
 	usage(4, "without -t, no args allowed", program); /*ooo*/
 	not_reached();
     } else if (test_mode == false && arg_cnt < REQUIRED_ARGS) {
-	usage(4, "without -t, requires at least 1 argument", program); /*ooo*/
+	usage(4, "without -t, requires at least one argument", program); /*ooo*/
 	not_reached();
     }
     dbg(DBG_MED, "test mode: %s", (test_mode == true) ? "enabled" : "disabled");
@@ -440,7 +440,7 @@ check_val(bool *testp, char const *type, int testnum, bool size_a, bool size_b,
 	 long double val_a, long double val_b, bool int_a, bool int_b, bool strict)
 {
     long double diff;		/* absolute difference between val_a and val_b */
-    long double diff_part;	/* absolute difference between val_a and val_b as 1 part of val_a */
+    long double diff_part;	/* absolute difference between val_a and val_b as one part of val_a */
 
     /*
      * firewall
@@ -505,7 +505,7 @@ check_val(bool *testp, char const *type, int testnum, bool size_a, bool size_b,
 	    }
 
 	/*
-	 * case non-strict: test for match to 1 part in MATCH_PRECISION
+	 * case non-strict: test for match to one part in MATCH_PRECISION
 	 */
 	} else {
 

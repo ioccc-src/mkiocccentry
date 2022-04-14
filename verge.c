@@ -1,6 +1,6 @@
 /* vim: set tabstop=8 softtabstop=4 shiftwidth=4 noexpandtab : */
 /*
- * verge - determine if 1st version is >= 2nd version
+ * verge - determine if first version is >= second version
  *
  * "Because the JSON co-founders flawed minimalism is sub-minimal." :-)
  *
@@ -58,12 +58,12 @@ main(int argc, char *argv[])
     extern char *optarg;	/* option argument */
     extern int optind;		/* argv index of the next arg */
     int arg_cnt = 0;		/* number of args to process */
-    char *ver1 = NULL;		/* 1st version string */
-    char *ver2 = NULL;		/* 2nd version string */
-    int ver1_levels = 0;	/* number of version levels for 1st version string */
-    int ver2_levels = 0;	/* number of version levels for 2nd version string */
-    long *vlevel1 = NULL;	/* malloced version levels from 1st version string */
-    long *vlevel2 = NULL;	/* malloced version levels from 2nd version string */
+    char *ver1 = NULL;		/* first version string */
+    char *ver2 = NULL;		/* second version string */
+    int ver1_levels = 0;	/* number of version levels for first version string */
+    int ver2_levels = 0;	/* number of version levels for second version string */
+    long *vlevel1 = NULL;	/* malloced version levels from first version string */
+    long *vlevel2 = NULL;	/* malloced version levels from second version string */
     int i;
 
     /*
@@ -95,29 +95,29 @@ main(int argc, char *argv[])
     }
     arg_cnt = argc - optind;
     if (arg_cnt != REQUIRED_ARGS) {
-	usage(4, "2 args are required", program); /*ooo*/
+	usage(4, "two args are required", program); /*ooo*/
 	not_reached();
     }
     ver1 = argv[optind];
     ver2 = argv[optind+1];
-    dbg(DBG_LOW, "1st version: <%s>", ver1);
-    dbg(DBG_LOW, "2nd version: <%s>", ver2);
+    dbg(DBG_LOW, "first version: <%s>", ver1);
+    dbg(DBG_LOW, "second version: <%s>", ver2);
 
     /*
-     * convert 1st version string
+     * convert first version string
      */
     ver1_levels = malloc_vers(ver1, &vlevel1);
     if (ver1_levels <= 0) {
-	err(2, program, "1st version string is invalid"); /*ooo*/
+	err(2, program, "first version string is invalid"); /*ooo*/
 	not_reached();
     }
 
     /*
-     * convert 2nd version string
+     * convert second version string
      */
     ver2_levels = malloc_vers(ver2, &vlevel2);
     if (ver2_levels <= 0) {
-	err(2, program, "2nd version string is invalid"); /*ooo*/
+	err(2, program, "second version string is invalid"); /*ooo*/
 	not_reached();
     }
 
@@ -274,7 +274,7 @@ malloc_vers(char *str, long **pvers)
      */
     for (i=0; i < len; ++i) {
 	if (isascii(wstr[i]) && isdigit(wstr[i])) {
-	    /* stop on 1st digit */
+	    /* stop on first digit */
 	    break;
 	}
     }
@@ -302,7 +302,7 @@ malloc_vers(char *str, long **pvers)
      */
     for (i=len-1; i > 0; --i) {
 	if (isascii(wstr[i]) && isdigit(wstr[i])) {
-	    /* stop on 1st digit */
+	    /* stop on first digit */
 	    break;
 	}
     }

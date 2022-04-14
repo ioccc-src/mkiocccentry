@@ -1616,7 +1616,7 @@ get_entry_num(struct info *infop)
 	    para("",
 		 "As in C, Entry numbers start with 0.  If you are updating a previous entry, PLEASE",
 		 "use the same entry number that you previously uploaded so we know which entry we",
-		 "should replace. If this is your 1st entry to this given IOCCC, enter 0.",
+		 "should replace. If this is your first entry to this given IOCCC, enter 0.",
 		 "",
 		 NULL);
 	}
@@ -2402,7 +2402,7 @@ check_prog_c(struct info *infop, char const *entry_dir, char const *cp, char con
 /*
  * inspect_Makefile - inspect the rule contents of Makefile
  *
- * Determine if the 1st rule contains all.  Determine if there is a clean rule.
+ * Determine if the first rule contains all.  Determine if there is a clean rule.
  * Determine if there is a clobber rule.  Determine if there is a try rule.
  *
  * NOTE: This is a simplistic Makefile line parser.  It is possible to
@@ -2524,7 +2524,7 @@ inspect_Makefile(char const *Makefile, struct info *infop)
 		infop->found_all_rule = true;
 		if (rulenum == 1) {
 		    /*
-		     * all rule is in 1st rule line
+		     * all rule is in first rule line
 		     */
 		    infop->first_rule_is_all = true;
 		    break;
@@ -2683,7 +2683,7 @@ warn_Makefile(char const *Makefile, struct info *infop)
 	fpara(stderr,
 	      "Makefiles must have the following Makefile rules:",
 	      "",
-	      "    all - compile the entry, must be the 1st entry",
+	      "    all - compile the entry, must be the first entry",
 	      "    clean - remove intermediate compilation files",
 	      "    clobber - clean, remove compiled entry, restore to the original entry state",
 	      "    try - invoke the entry at least once",
@@ -2914,7 +2914,7 @@ check_remarks_md(struct info *infop, char const *entry_dir, char const *cp, char
  *      entry_dir       - newly created entry directory (by mk_entry_dir()) under work_dir
  *      cp              - cp utility path
  *      count           - number of extra data files arguments
- *      args            - pointer to an array of strings starting with 1st extra data file
+ *      args            - pointer to an array of strings starting with first extra data file
  *
  * This function does not return on error.
  */
@@ -4549,15 +4549,15 @@ verify_entry_dir(char const *entry_dir, char const *ls)
     }
 
     /*
-     * read the 1st line - contains the total kibibyte (2^10) block line
+     * read the first line - contains the total kibibyte (2^10) block line
      */
-    dbg(DBG_HIGH, "reading 1st line from popen of ls of entry_dir: %s", entry_dir);
+    dbg(DBG_HIGH, "reading first line from popen of ls of entry_dir: %s", entry_dir);
     readline_len = readline(&linep, ls_stream);
     if (readline_len < 0) {
-	err(150, __func__, "EOF while reading 1st line from ls: %s", ls);
+	err(150, __func__, "EOF while reading first line from ls: %s", ls);
 	not_reached();
     } else {
-	dbg(DBG_HIGH, "ls 1st line read length: %jd buffer: %s", (intmax_t)readline_len, linep);
+	dbg(DBG_HIGH, "ls first line read length: %jd buffer: %s", (intmax_t)readline_len, linep);
     }
 
     /*

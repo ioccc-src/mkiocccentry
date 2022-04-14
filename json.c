@@ -1162,14 +1162,14 @@ malloc_json_decode(char const *ptr, size_t len, size_t *retlen, bool strict)
     size_t mlen = 0;	    /* length of malloced encoded string */
     char *p = NULL;	    /* next place to encode */
     char n = 0;		    /* next character beyond a \\ */
-    char a = 0;		    /* 1st hex character after \u */
-    int xa = 0;		    /* 1st hex character numeric value */
-    char b = 0;		    /* 2nd hex character after \u */
-    int xb = 0;		    /* 2nd hex character numeric value */
-    char c = 0;		    /* character to decode or 3rd hex character after \u */
+    char a = 0;		    /* first hex character after \u */
+    int xa = 0;		    /* first hex character numeric value */
+    char b = 0;		    /* second hex character after \u */
+    int xb = 0;		    /* second hex character numeric value */
+    char c = 0;		    /* character to decode or third hex character after \u */
     int xc = 0;		    /* 3nd hex character numeric value */
-    char d = 0;		    /* 4th hex character after \u */
-    int xd = 0;		    /* 4th hex character numeric value */
+    char d = 0;		    /* fourth hex character after \u */
+    int xd = 0;		    /* fourth hex character numeric value */
     size_t i;
 
     /*
@@ -3561,8 +3561,8 @@ alloc_json_code_ignore_set(void)
  * This function will allow qsort() to reverse sort the codes in ignore_json_code_set[].
  *
  * given:
- *	a	- pointer to 1st code to compare
- *	b	- pointer to 2nd code to compare
+ *	a	- pointer to first code to compare
+ *	b	- pointer to second code to compare
  *
  * returns:
  *	-1	a > b
