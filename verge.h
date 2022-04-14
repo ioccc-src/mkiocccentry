@@ -1,6 +1,6 @@
 /* vim: set tabstop=8 softtabstop=4 shiftwidth=4 noexpandtab : */
 /*
- * verge - determine if 1st version is >= 2nd version
+ * verge - determine if first version is >= second version
  *
  * "Because the JSON co-founders flawed minimalism is sub-minimal." :-)
  *
@@ -64,13 +64,13 @@ static const char * const usage_msg =
     "\t-v level\tset verbosity level (def level: %d)\n"
     "\t-V\t\tprint version string and exit 3\n"
     "\n"
-    "\tver.sion.1\t1st version\n"
-    "\tver.sion.2\t2nd version\n"
+    "\tver.sion.1\tfirst version\n"
+    "\tver.sion.2\tsecond version\n"
     "\n"
     "Exit codes:\n"
-    "    0\t1st version >= 2nd version\n"
-    "    1\t1st version < 2nd version\n"
-    "    2\t1st and/or 2nd version is an invalid version\n"
+    "    0\tfirst version >= second version\n"
+    "    1\tfirst version < second version\n"
+    "    2\tfirst and/or second version is an invalid version\n"
     "    3\t-h and help string printed or -V and version string printed\n"
     "    4\tcommand line error\n"
     "    >=5\tinternal error\n"

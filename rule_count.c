@@ -259,7 +259,7 @@ rule_count(FILE *fp_in)
 				}
 			}
 
-			/* Unknown trigraph, push back the 3rd character. */
+			/* Unknown trigraph, push back the third character. */
 			if (*t == '\0') {
 				if (ch != EOF && ungetc(ch, fp_in) == EOF) {
 					counts.ungetc_warning = true;

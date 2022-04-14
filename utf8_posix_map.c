@@ -1743,9 +1743,9 @@ default_handle(char const *name)
      */
     if (def_len <= 0) {
 
-	long a;		/* 1st call to random() */
-	long b;		/* 2nd call to random() */
-	long c;		/* 3rd call to random() */
+	long a;		/* first call to random() */
+	long b;		/* second call to random() */
+	long c;		/* third call to random() */
 
         /*
 	 * NOTE: We do not need a very strong, let alone, cryptographically
