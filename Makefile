@@ -99,6 +99,17 @@ TRUE= true
 # Makefile parameters #
 #######################
 
+# linker options
+#
+# We need the following linker options for some systems:
+#
+#   -lm for floorl() under CentOS 7.
+#
+# If any more linker options are needed we will try documenting the reason why
+# here.
+#
+LDFLAGS = -lm
+
 # C source standards being used
 #
 # NOTE: The use of -std=gnu11 is because there are a few older systems
@@ -122,32 +133,52 @@ TRUE= true
 # XXX - STD_SRC= -std=gnu17				   - XXX
 # XXX - XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX - XXX
 #
-STD_SRC= -D_DEFAULT_SOURCE -D_POSIX_C_SOURCE=200809L -D_XOPEN_SOURCE=500 -std=gnu11
+STD_SRC= -D_DEFAULT_SOURCE -D_ISOC99_SOURCE -D_POSIX_C_SOURCE=200809L -D_XOPEN_SOURCE=600 -std=gnu11
 
 # optimization and debug level
 #
 #COPT= -O3 -g3
 COPT= -O0 -g
 
+# We disable specific warnings for some systems that differ from the others. Not
+# all warnings are disabled here because there's at least one warning that only
+# is needed in a few rules but others are needed in more. The following is the
+# list of the warnings we disable _after_ enabling -Wall -Wextra -Werror:
+#
+#   -Wno-unused-command-line-argument
+#
+# This is needed because under CentOS we need -lm for floorl() (as described
+# above); however under macOS you will get:
+#
+# 	clang: error: -lm: 'linker' input unused
+# 	[-Werror,-Wunused-command-line-argument]
+# 	make: *** [sanity.o] Error 1
+#
+# for any object that does not need -lm and since many objects need to link in
+# json.o (which is where the -lm is needed) we disable the warning here instead
+# as it otherwise becomes very tedious.
+#
+# Additionally, the following are triggered with -Weverything but are entirely
+# irrelevant to us. Although we don't enable -Weverything we have it here to
+# make it not a problem in case we ever do enable it:
+#
+#   -Wno-poison-system-directories -Wno-unreachable-code-break -Wno-padded
+#
+WARN_FLAGS= -Wall -Wextra -Werror -Wno-unused-command-line-argument \
+	    -Wno-poison-system-directories -Wno-unreachable-code-break -Wno-padded
+
+
 # how to compile
 #
-#CFLAGS= ${STD_SRC} ${COPT} -pedantic -Wall -Wextra
-CFLAGS= ${STD_SRC} ${COPT} -pedantic -Wall -Wextra -Werror
-
 # We test by forcing warnings to be errors so you don't have to (allegedly :-) )
 #
-#CFLAGS= ${STD_SRC} ${COPT} -pedantic -Wall -Wextra -Werror
+CFLAGS= ${STD_SRC} ${COPT} -pedantic ${WARN_FLAGS} ${LDFLAGS}
 
-# NOTE: There are some things clang -Weverything warns about that are not relevant
-#	and thus for the -Weverything case, we exclude several directives
-#
-#CFLAGS= ${STD_SRC} ${COPT} -pedantic -Wall -Wextra -Werror -Weverything \
-#     -Wno-poison-system-directories -Wno-unreachable-code-break -Wno-padded
 
 # NOTE: If you use ASAN, set this environment var:
 #	ASAN_OPTIONS="detect_stack_use_after_return=1"
 #
-#CFLAGS= ${STD_SRC} -O0 -g -pedantic -Wall -Wextra -Werror -fsanitize=address -fno-omit-frame-pointer
+#CFLAGS= ${STD_SRC} -O0 -g -pedantic ${WARN_FLAGS} -fsanitize=address -fno-omit-frame-pointer
 
 # NOTE: For valgrind, run with:
 #
@@ -171,7 +202,7 @@ TARGETS= mkiocccentry iocccsize dbg limit_ioccc.sh fnamchk txzchk jauthchk jinfo
 # this is done we can change the below two uncommented lines to be just:
 #
 #   MANPAGES = $(TARGETS:=.1)
-# 
+#
 # But until then it must be the next two lines (alternatively we could
 # explicitly specify the man pages but this makes it simpler). When a new man
 # page is written the MAN_TARGETS should have the tool name (without any
