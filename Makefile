@@ -358,7 +358,7 @@ jparse: jparse.o jparse.tab.o util.o dbg.o sanity.o json.o utf8_posix_map.o loca
 utf8_test: utf8_test.c utf8_posix_map.o dbg.o util.o Makefile
 	${CC} ${CFLAGS} utf8_test.c utf8_posix_map.o dbg.o util.o -o $@
 
-verge: verge.c dbg.o util.o Makefile
+verge: verge.c verge.h dbg.o util.o Makefile
 	${CC} ${CFLAGS} verge.c dbg.o util.o -o $@
 
 limit_ioccc.sh: limit_ioccc.h version.h Makefile
