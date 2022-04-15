@@ -58,14 +58,14 @@
  * Use the usage() function to print the these usage_msgX strings.
  */
 static const char * const usage_msg =
-    "usage: %s [-h] [-v level] [-V] ver.sion.1 ver.sion.2\n"
+    "usage: %s [-h] [-v level] [-V] major.minor.patch-1 major.minor.patch-2\n"
     "\n"
-    "\t-h\t\tprint help message and exit 3\n"
-    "\t-v level\tset verbosity level (def level: %d)\n"
-    "\t-V\t\tprint version string and exit 3\n"
+    "\t-h\t\t\tprint help message and exit 3\n"
+    "\t-v level\t\tset verbosity level (def level: %d)\n"
+    "\t-V\t\t\tprint version string and exit 3\n"
     "\n"
-    "\tver.sion.1\tfirst version\n"
-    "\tver.sion.2\tsecond version\n"
+    "\tmajor.minor.patch-1\tfirst version  (example: 0.1.1)\n"
+    "\tmajor.minor.patch-2\tsecond version (example: 1.3.2)\n"
     "\n"
     "Exit codes:\n"
     "    0\tfirst version >= second version\n"

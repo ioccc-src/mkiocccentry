@@ -337,13 +337,13 @@ jstrdecode: jstrdecode.c jstrdecode.h dbg.o json.o util.o Makefile
 jint.test.o: jint.test.c Makefile
 	${CC} ${CFLAGS} -DJINT_TEST_ENABLED jint.test.c -c
 
-jint: jint.c dbg.o json.o util.o jint.test.o Makefile
+jint: jint.c jint.h dbg.o json.o util.o jint.test.o Makefile
 	${CC} ${CFLAGS} -DJINT_TEST_ENABLED jint.c dbg.o json.o util.o jint.test.o -o $@
 
 jfloat.test.o: jfloat.test.c Makefile
 	${CC} ${CFLAGS} -DJFLOAT_TEST_ENABLED jfloat.test.c -c
 
-jfloat: jfloat.c dbg.o json.o util.o jfloat.test.o Makefile
+jfloat: jfloat.c jfloat.h dbg.o json.o util.o jfloat.test.o Makefile
 	${CC} ${CFLAGS} -DJFLOAT_TEST_ENABLED jfloat.c dbg.o json.o util.o jfloat.test.o -o $@
 
 jparse.o: jparse.c jparse.h Makefile
@@ -358,7 +358,7 @@ jparse: jparse.o jparse.tab.o util.o dbg.o sanity.o json.o utf8_posix_map.o loca
 utf8_test: utf8_test.c utf8_posix_map.o dbg.o util.o Makefile
 	${CC} ${CFLAGS} utf8_test.c utf8_posix_map.o dbg.o util.o -o $@
 
-verge: verge.c dbg.o util.o Makefile
+verge: verge.c verge.h dbg.o util.o Makefile
 	${CC} ${CFLAGS} verge.c dbg.o util.o -o $@
 
 limit_ioccc.sh: limit_ioccc.h version.h Makefile
@@ -450,7 +450,7 @@ jparse.tab.c jparse.tab.h: jparse.y bfok.sh limit_ioccc.sh verge jparse.tab.ref.
 #
 # Convert jparse.l into jparse.c via flex,
 # if flex found and has a recent enough version, otherwise
-# use a pre-built reference copy stored in jparse.ref.cr
+# use a pre-built reference copy stored in jparse.ref.c
 #
 jparse.c: jparse.l jparse.tab.h bfok.sh limit_ioccc.sh verge jparse.ref.c Makefile
 	${RM} -f jparse.c
@@ -657,7 +657,7 @@ shellcheck: ${SH_FILES} .shellcheckrc Makefile
 # Only run this rule when you wish to invalidate all timestamps
 # prior to now, such as when you make a fundamental change to a
 # critical JSON format, or make a fundamental change the compressed
-# tarball file structure, or make an critical change to limit_ioccc.h
+# tarball file structure, or make a critical change to limit_ioccc.h
 # that is MORE restrictive.
 #
 # DO NOT run this rule simply for a new IOCCC!
@@ -677,10 +677,9 @@ reset_min_timestamp:
 	@echo
 	@echo 'WARNING: This rule will invalidate all timestamps prior to now.'
 	@echo 'WARNING: Only run this rule when you wish to invalidate all timestamps'
-	@echo 'WARNING: because you make a fundamental change to a critical JSON format'
-	@echo 'WARNING: when you make a fundamental change to a critical JSON format'
-	@echo 'WARNING: or make a fundamental change the compressed tarball file structure,'
-	@echo 'WARNING: make an critical change to limit_ioccc.h that is MORE restrictive.'
+	@echo 'WARNING: because you made a fundamental change to a critical JSON format,'
+	@echo 'WARNING: made a fundamental change to the compressed tarball file structure,'
+	@echo 'WARNING: or made a critical change to limit_ioccc.h that is MORE restrictive.'
 	@echo
 	@echo 'WARNING: DO NOT run this rule simply for a new IOCCC!'
 	@echo

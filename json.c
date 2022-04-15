@@ -1293,7 +1293,7 @@ malloc_json_decode(char const *ptr, size_t len, size_t *retlen, bool strict)
 	} else {
 
 	    /*
-	     * there must be at least 1 more character beyond \
+	     * there must be at least one more character beyond \
 	     */
 	    if (i+1 >= len) {
 		/* error - clear malloced length */
@@ -1334,7 +1334,7 @@ malloc_json_decode(char const *ptr, size_t len, size_t *retlen, bool strict)
 	    case 'u':
 
 		/*
-		 * there must be at least 5 more characters beyond \
+		 * there must be at least five more characters beyond \
 		 */
 		if (i+5 >= len) {
 		    /* error - clear malloced length */
@@ -1541,7 +1541,7 @@ malloc_json_decode(char const *ptr, size_t len, size_t *retlen, bool strict)
 	    case 'u':
 
 		/*
-		 * there must be at least 5 more characters beyond \
+		 * there must be at least five more characters beyond \
 		 */
 		if (i+5 >= len) {
 		    /* error - clear malloced length */

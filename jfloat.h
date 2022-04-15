@@ -85,7 +85,7 @@ static const char * const usage_msg =
     "\n"
     "\tfloat ...\tconvert JSON floating point strings\n"
     "\n"
-    "\tNOTE: Without -t, at least 1 argument is required.\n"
+    "\tNOTE: Without -t, at least one argument is required.\n"
     "\t      With -t, no command arguments are allowed\n"
     "\n"
     "Exit codes:\n"

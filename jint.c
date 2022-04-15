@@ -117,7 +117,7 @@ main(int argc, char *argv[])
 	usage(4, "without -t, no args allowed", program); /*ooo*/
 	not_reached();
     } else if (test_mode == false && arg_cnt < REQUIRED_ARGS) {
-	usage(4, "without -t, requires at least 1 argument", program); /*ooo*/
+	usage(4, "without -t, requires at least one argument", program); /*ooo*/
 	not_reached();
     }
     dbg(DBG_MED, "test mode: %s", (test_mode == true) ? "enabled" : "disabled");
