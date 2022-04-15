@@ -343,7 +343,7 @@ jint: jint.c jint.h dbg.o json.o util.o jint.test.o Makefile
 jfloat.test.o: jfloat.test.c Makefile
 	${CC} ${CFLAGS} -DJFLOAT_TEST_ENABLED jfloat.test.c -c
 
-jfloat: jfloat.c dbg.o json.o util.o jfloat.test.o Makefile
+jfloat: jfloat.c jfloat.h dbg.o json.o util.o jfloat.test.o Makefile
 	${CC} ${CFLAGS} -DJFLOAT_TEST_ENABLED jfloat.c dbg.o json.o util.o jfloat.test.o -o $@
 
 jparse.o: jparse.c jparse.h Makefile
