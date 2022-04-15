@@ -450,7 +450,7 @@ jparse.tab.c jparse.tab.h: jparse.y bfok.sh limit_ioccc.sh verge jparse.tab.ref.
 #
 # Convert jparse.l into jparse.c via flex,
 # if flex found and has a recent enough version, otherwise
-# use a pre-built reference copy stored in jparse.ref.cr
+# use a pre-built reference copy stored in jparse.ref.c
 #
 jparse.c: jparse.l jparse.tab.h bfok.sh limit_ioccc.sh verge jparse.ref.c Makefile
 	${RM} -f jparse.c
