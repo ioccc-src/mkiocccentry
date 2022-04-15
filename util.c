@@ -1813,7 +1813,7 @@ round_to_multiple(off_t num, off_t multiple)
  *
  * This function will always add at least one extra byte of allocated
  * data to the end of the malloced buffer (zeroized as mentioned above).
- * These extra bytes(s) WILL be set to NUL.  Thus, a file or stread
+ * These extra bytes(s) WILL be set to NUL.  Thus, a file or stream
  * without a NUL byte will return a NUL terminated C-style string.
  *
  * If no data is read, the malloc buffer will still be NUL terminated.
@@ -1831,7 +1831,7 @@ round_to_multiple(off_t num, off_t multiple)
  *	if (is_string(data, len+1) == true) {
  *	    .. data has no internal NUL byte ..
  *	} else {
- *	    .. data has at least 1 internal NUL byte ..
+ *	    .. data has at least one internal NUL byte ..
  }	}
  *
  * Because files can contain NUL bytes, the strlen() function on

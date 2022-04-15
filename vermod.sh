@@ -112,7 +112,7 @@ done
 #
 shift $(( OPTIND - 1 ));
 if [[ $# -ne 2 ]]; then
-    echo "$0: ERROR: expected two arguments, found $#" 1>&2
+    echo "$0: ERROR: expected 2 arguments, found $#" 1>&2
     exit 6
 fi
 OLD_VER="$QUOTE$1$QUOTE"
