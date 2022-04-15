@@ -95,3 +95,6 @@ makefile.local
 # vim swap files
 .*.sw[nop]
 .sw[nop]
+
+# temporary files
+*.tmp
