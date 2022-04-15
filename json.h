@@ -341,7 +341,7 @@ struct json_member
  *
  * That value is a link back to this array object:
  *
- (	foo.value[i-1].parent == foo
+ *	foo.value[i-1].parent == foo
  */
 struct json_array
 {
