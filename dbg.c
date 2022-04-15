@@ -1639,7 +1639,7 @@ main(int argc, char *argv[])
 	    not_reached();
 	}
     }
-    /* must have 2 or 3 args */
+    /* must have two or three args */
     switch (argc-optind) {
     case 2:
 	break;
@@ -1647,7 +1647,7 @@ main(int argc, char *argv[])
 	bar = argv[optind+2];
 	break;
     default:
-	fprintf_usage(DO_NOT_EXIT, stderr, "requires 2 or 3 arguments");
+	fprintf_usage(DO_NOT_EXIT, stderr, "requires two or three arguments");
 	/* exit(4); */
 	fprintf_usage(4, stderr, usage, program, VERSION); /*ooo*/
 	not_reached();
