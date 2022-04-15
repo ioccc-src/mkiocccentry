@@ -657,7 +657,7 @@ shellcheck: ${SH_FILES} .shellcheckrc Makefile
 # Only run this rule when you wish to invalidate all timestamps
 # prior to now, such as when you make a fundamental change to a
 # critical JSON format, or make a fundamental change the compressed
-# tarball file structure, or make an critical change to limit_ioccc.h
+# tarball file structure, or make a critical change to limit_ioccc.h
 # that is MORE restrictive.
 #
 # DO NOT run this rule simply for a new IOCCC!
@@ -677,10 +677,9 @@ reset_min_timestamp:
 	@echo
 	@echo 'WARNING: This rule will invalidate all timestamps prior to now.'
 	@echo 'WARNING: Only run this rule when you wish to invalidate all timestamps'
-	@echo 'WARNING: because you make a fundamental change to a critical JSON format'
-	@echo 'WARNING: when you make a fundamental change to a critical JSON format'
-	@echo 'WARNING: or make a fundamental change the compressed tarball file structure,'
-	@echo 'WARNING: make an critical change to limit_ioccc.h that is MORE restrictive.'
+	@echo 'WARNING: because you made a fundamental change to a critical JSON format,'
+	@echo 'WARNING: made a fundamental change to the compressed tarball file structure,'
+	@echo 'WARNING: or made a critical change to limit_ioccc.h that is MORE restrictive.'
 	@echo
 	@echo 'WARNING: DO NOT run this rule simply for a new IOCCC!'
 	@echo
