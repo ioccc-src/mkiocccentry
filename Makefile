@@ -337,7 +337,7 @@ jstrdecode: jstrdecode.c jstrdecode.h dbg.o json.o util.o Makefile
 jint.test.o: jint.test.c Makefile
 	${CC} ${CFLAGS} -DJINT_TEST_ENABLED jint.test.c -c
 
-jint: jint.c dbg.o json.o util.o jint.test.o Makefile
+jint: jint.c jint.h dbg.o json.o util.o jint.test.o Makefile
 	${CC} ${CFLAGS} -DJINT_TEST_ENABLED jint.c dbg.o json.o util.o jint.test.o -o $@
 
 jfloat.test.o: jfloat.test.c Makefile
