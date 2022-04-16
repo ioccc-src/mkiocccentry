@@ -444,8 +444,8 @@ check_author_json(char const *file, char const *fnamchk)
 		break;
 
 	    can_be_empty = (common_field && common_field->can_be_empty) || (author_field && author_field->can_be_empty);
-	    is_json_string = (common_field && common_field->field_type == JTYPE_STRING) ||
-			     (author_field && (author_field->field_type == JTYPE_STRING));
+	    is_json_string = (common_field && common_field->field_type == JSON_STRING) ||
+			     (author_field && (author_field->field_type == JSON_STRING));
 	    /*
 	     * If the field type is a string we have to remove a single '"' and
 	     * from the beginning and end of the value.
@@ -772,7 +772,7 @@ check_found_author_json_fields(char const *json_filename, bool test)
 	     * valid values.
 	     */
 	    switch (author_field->field_type) {
-		case JTYPE_BOOL:
+		case JSON_BOOL:
 		    if (strcmp(val, "false") && strcmp(val, "true")) {
 			warn(__func__, "bool field '%s' has non boolean value in file %s: '%s'",
 				       author_field->name, json_filename, val);
@@ -782,7 +782,7 @@ check_found_author_json_fields(char const *json_filename, bool test)
 			dbg(DBG_VHIGH, "%s is a bool", val);
 		    }
 		    break;
-		case JTYPE_INT:
+		case JSON_INT:
 		    if (!is_integer(val)) {
 			warn(__func__, "number field '%s' has non-number value in file %s: '%s'",
 				       author_field->name, json_filename, val);

@@ -136,18 +136,18 @@ enum yysymbol_kind_t
   YYSYMBOL_YYEOF = 0,                      /* "end of file"  */
   YYSYMBOL_YYerror = 1,                    /* error  */
   YYSYMBOL_YYUNDEF = 2,                    /* "invalid token"  */
-  YYSYMBOL_JSON_OPEN_BRACE = 3,            /* JSON_OPEN_BRACE  */
-  YYSYMBOL_JSON_CLOSE_BRACE = 4,           /* JSON_CLOSE_BRACE  */
-  YYSYMBOL_JSON_OPEN_BRACKET = 5,          /* JSON_OPEN_BRACKET  */
-  YYSYMBOL_JSON_CLOSE_BRACKET = 6,         /* JSON_CLOSE_BRACKET  */
-  YYSYMBOL_JSON_COMMA = 7,                 /* JSON_COMMA  */
-  YYSYMBOL_JSON_COLON = 8,                 /* JSON_COLON  */
-  YYSYMBOL_JSON_NULL = 9,                  /* JSON_NULL  */
-  YYSYMBOL_JSON_STRING = 10,               /* JSON_STRING  */
-  YYSYMBOL_JSON_INTMAX = 11,               /* JSON_INTMAX  */
-  YYSYMBOL_JSON_UINTMAX = 12,              /* JSON_UINTMAX  */
-  YYSYMBOL_JSON_LONG_DOUBLE = 13,          /* JSON_LONG_DOUBLE  */
-  YYSYMBOL_JSON_BOOLEAN = 14,              /* JSON_BOOLEAN  */
+  YYSYMBOL_JTYPE_OPEN_BRACE = 3,           /* JTYPE_OPEN_BRACE  */
+  YYSYMBOL_JTYPE_CLOSE_BRACE = 4,          /* JTYPE_CLOSE_BRACE  */
+  YYSYMBOL_JTYPE_OPEN_BRACKET = 5,         /* JTYPE_OPEN_BRACKET  */
+  YYSYMBOL_JTYPE_CLOSE_BRACKET = 6,        /* JTYPE_CLOSE_BRACKET  */
+  YYSYMBOL_JTYPE_COMMA = 7,                /* JTYPE_COMMA  */
+  YYSYMBOL_JTYPE_COLON = 8,                /* JTYPE_COLON  */
+  YYSYMBOL_JTYPE_NULL = 9,                 /* JTYPE_NULL  */
+  YYSYMBOL_JTYPE_STRING = 10,              /* JTYPE_STRING  */
+  YYSYMBOL_JTYPE_UINTMAX = 11,             /* JTYPE_UINTMAX  */
+  YYSYMBOL_JTYPE_INTMAX = 12,              /* JTYPE_INTMAX  */
+  YYSYMBOL_JTYPE_LONG_DOUBLE = 13,         /* JTYPE_LONG_DOUBLE  */
+  YYSYMBOL_JTYPE_BOOLEAN = 14,             /* JTYPE_BOOLEAN  */
   YYSYMBOL_YYACCEPT = 15,                  /* $accept  */
   YYSYMBOL_json = 16,                      /* json  */
   YYSYMBOL_json_value = 17,                /* json_value  */
@@ -520,9 +520,9 @@ static const yytype_int8 yytranslate[] =
 /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_uint8 yyrline[] =
 {
-       0,   112,   112,   113,   114,   117,   118,   119,   120,   121,
-     122,   123,   124,   127,   130,   131,   134,   137,   140,   141,
-     144
+       0,   103,   103,   104,   105,   108,   109,   110,   111,   112,
+     113,   114,   115,   118,   121,   122,   125,   128,   131,   132,
+     135
 };
 #endif
 
@@ -539,12 +539,12 @@ yysymbol_name (yysymbol_kind_t yysymbol)
 {
   static const char *const yy_sname[] =
   {
-  "end of file", "error", "invalid token", "JSON_OPEN_BRACE",
-  "JSON_CLOSE_BRACE", "JSON_OPEN_BRACKET", "JSON_CLOSE_BRACKET",
-  "JSON_COMMA", "JSON_COLON", "JSON_NULL", "JSON_STRING", "JSON_INTMAX",
-  "JSON_UINTMAX", "JSON_LONG_DOUBLE", "JSON_BOOLEAN", "$accept", "json",
-  "json_value", "json_object", "json_members", "json_member", "json_array",
-  "json_elements", "json_element", YY_NULLPTR
+  "end of file", "error", "invalid token", "JTYPE_OPEN_BRACE",
+  "JTYPE_CLOSE_BRACE", "JTYPE_OPEN_BRACKET", "JTYPE_CLOSE_BRACKET",
+  "JTYPE_COMMA", "JTYPE_COLON", "JTYPE_NULL", "JTYPE_STRING",
+  "JTYPE_UINTMAX", "JTYPE_INTMAX", "JTYPE_LONG_DOUBLE", "JTYPE_BOOLEAN",
+  "$accept", "json", "json_value", "json_object", "json_members",
+  "json_member", "json_array", "json_elements", "json_element", YY_NULLPTR
   };
   return yy_sname[yysymbol];
 }
@@ -574,7 +574,7 @@ static const yytype_int8 yypact[] =
    means the default is an error.  */
 static const yytype_int8 yydefact[] =
 {
-       2,     0,     0,    12,     7,     8,     9,    10,    11,     0,
+       2,     0,     0,    12,     7,     9,     8,    10,    11,     0,
       20,     5,     6,     3,     4,     0,     0,    14,     0,     0,
       18,     1,     0,    13,     0,    17,     0,    16,    15,    19
 };
@@ -1810,7 +1810,7 @@ yyreturnlab:
   return yyresult;
 }
 
-#line 147 "jparse.y"
+#line 138 "jparse.y"
 
 /* Section 3: C code */
 int

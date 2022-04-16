@@ -9,7 +9,7 @@
  * there might be some grammar that's not correct. Not all actions are complete
  * and some that have been added do not yet check for errors.
  *
- * The JSON_STRING action that uses strdup() will be changed to use struct
+ * The JTYPE_STRING action that uses strdup() will be changed to use struct
  * string at a later date (sometime after struct json_string is finished). Similar
  * will be done for the numbers: struct integer and struct json_floating. These
  * structs are finished but will not be integrated until later on.
@@ -71,41 +71,43 @@ YY_BUFFER_STATE bs;
  * NOTE: There are possibly (likely?) errors here and it's entirely possible
  * it's incomplete as well.
  */
-JSON_WHITESPACE         [ \t\r\n]+
-JSON_STRING		"(\"(((?=\\)\\([\"\\\/bfnrt]|u[0-9a-fA-F]{4}))|[^\"\\\0-\x1F\x7F]+)*\")"
-JSON_DIGIT		[0-9]
-JSON_DIGITS		{JSON_DIGIT}+
-JSON_EXPONENT		[Ee][-+]?[0-9]+
-JSON_INTMAX		-?{JSON_DIGITS}
-JSON_UINTMAX		{JSON_DIGITS}
-JSON_LONG_DOUBLE	-?{JSON_DIGITS}"."{JSON_DIGITS}{JSON_EXPONENT}?
-JSON_BOOLEAN		"true"|"false"
-JSON_NULL		"null"
-JSON_OPEN_BRACE		"{"
-JSON_CLOSE_BRACE	"}"
-JSON_OPEN_BRACKET	"["
-JSON_CLOSE_BRACKET	"]"
-JSON_COLON		":"
-JSON_COMMA		","
+JTYPE_WHITESPACE         [ \t\r\n]+
+JTYPE_STRING		"(\"(((?=\\)\\([\"\\\/bfnrt]|u[0-9a-fA-F]{4}))|[^\"\\\0-\x1F\x7F]+)*\")"
+JTYPE_DIGIT		[0-9]
+JTYPE_DIGITS		{JTYPE_DIGIT}+
+JTYPE_EXPONENT		[Ee][-+]?[0-9]+
+JTYPE_INTMAX		-?{JTYPE_DIGITS}
+JTYPE_UINTMAX		{JTYPE_DIGITS}
+JTYPE_LONG_DOUBLE	-?{JTYPE_DIGITS}"."{JTYPE_DIGITS}{JTYPE_EXPONENT}?
+JTYPE_BOOLEAN		"true"|"false"
+JTYPE_NULL		"null"
+JTYPE_OPEN_BRACE		"{"
+JTYPE_CLOSE_BRACE	"}"
+JTYPE_OPEN_BRACKET	"["
+JTYPE_CLOSE_BRACKET	"]"
+JTYPE_COLON		":"
+JTYPE_COMMA		","
 
 /* Actions.
  *
- * For now we just print out what it is and return the type. Once again this is
- * incomplete!
+ * TODO: Below we have to assign to yylval.json the appropriate values based on
+ * yytext.
+ *
+ * For now we just print the type and value and then return the type.
  */
 %%
-{JSON_STRING}		    { printf("string: '%s'\n", yytext); yylval.string = strdup(yytext); return JSON_STRING; }
-{JSON_UINTMAX}		    { printf("uintmax: '%s'\n", yytext); yylval.uintmax = string_to_uintmax(yytext); return JSON_UINTMAX; }
-{JSON_INTMAX}		    { printf("intmax: '%s'\n", yytext); yylval.intmax = string_to_intmax(yytext); return JSON_INTMAX; }
-{JSON_LONG_DOUBLE}	    { printf("long double: '%s'\n", yytext); yylval.ldouble = string_to_float(yytext); return JSON_LONG_DOUBLE; }
-{JSON_NULL}		    { printf("null: '%s'\n", yytext); return JSON_NULL; }
-{JSON_BOOLEAN}		    { printf("true: '%s'\n", yytext); yylval.boolean = string_to_bool(yytext); return JSON_BOOLEAN; }
-{JSON_OPEN_BRACE}	    { printf("open brace: '%c'\n", *yytext); token_type = '{'; return JSON_OPEN_BRACE; }
-{JSON_CLOSE_BRACE}	    { printf("close brace: '%c'\n", *yytext); token_type = '}'; return JSON_CLOSE_BRACE;}
-{JSON_OPEN_BRACKET}	    { printf("open bracket: '%c'\n", *yytext); token_type = '['; return JSON_OPEN_BRACKET; }
-{JSON_CLOSE_BRACKET}	    { printf("close bracket: '%c'\n", *yytext); token_type = ']'; return JSON_CLOSE_BRACKET; }
-{JSON_COLON}		    { printf("equals/colon: '%c'\n", *yytext); token_type = ':'; return JSON_COLON; }
-{JSON_COMMA}		    { printf("comma: '%c'\n", *yytext); token_type = ','; return JSON_COMMA; }
+{JTYPE_STRING}		    { printf("string: '%s'\n", yytext); return JTYPE_STRING; }
+{JTYPE_UINTMAX}		    { printf("uintmax: '%s'\n", yytext); return JTYPE_UINTMAX; }
+{JTYPE_INTMAX}		    { printf("intmax: '%s'\n", yytext); return JTYPE_INTMAX; }
+{JTYPE_LONG_DOUBLE}	    { printf("long double: '%s'\n", yytext); return JTYPE_LONG_DOUBLE; }
+{JTYPE_NULL}		    { printf("null: '%s'\n", yytext); return JTYPE_NULL; }
+{JTYPE_BOOLEAN}		    { printf("true: '%s'\n", yytext); return JTYPE_BOOLEAN; }
+{JTYPE_OPEN_BRACE}	    { printf("open brace: '%c'\n", *yytext); token_type = '{'; return JTYPE_OPEN_BRACE; }
+{JTYPE_CLOSE_BRACE}	    { printf("close brace: '%c'\n", *yytext); token_type = '}'; return JTYPE_CLOSE_BRACE;}
+{JTYPE_OPEN_BRACKET}	    { printf("open bracket: '%c'\n", *yytext); token_type = '['; return JTYPE_OPEN_BRACKET; }
+{JTYPE_CLOSE_BRACKET}	    { printf("close bracket: '%c'\n", *yytext); token_type = ']'; return JTYPE_CLOSE_BRACKET; }
+{JTYPE_COLON}		    { printf("equals/colon: '%c'\n", *yytext); token_type = ':'; return JTYPE_COLON; }
+{JTYPE_COMMA}		    { printf("comma: '%c'\n", *yytext); token_type = ','; return JTYPE_COMMA; }
 %%
 
 /* Section 3: Code that's copied to the generated scanner */

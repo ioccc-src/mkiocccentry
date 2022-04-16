@@ -562,7 +562,7 @@ char *yytext;
  * there might be some grammar that's not correct. Not all actions are complete
  * and some that have been added do not yet check for errors.
  *
- * The JSON_STRING action that uses strdup() will be changed to use struct
+ * The JTYPE_STRING action that uses strdup() will be changed to use struct
  * string at a later date (sometime after struct json_string is finished). Similar
  * will be done for the numbers: struct integer and struct json_floating. These
  * structs are finished but will not be integrated until later on.
@@ -620,10 +620,12 @@ YY_BUFFER_STATE bs;
  */
 /* Actions.
  *
- * For now we just print out what it is and return the type. Once again this is
- * incomplete!
+ * TODO: Below we have to assign to yylval.json the appropriate values based on
+ * yytext.
+ *
+ * For now we just print the type and value and then return the type.
  */
-#line 605 "jparse.c"
+#line 607 "jparse.c"
 
 #define INITIAL 0
 
@@ -840,9 +842,9 @@ YY_DECL
 		}
 
 	{
-#line 96 "jparse.l"
+#line 98 "jparse.l"
 
-#line 824 "jparse.c"
+#line 826 "jparse.c"
 
 	while ( /*CONSTCOND*/1 )		/* loops until end-of-file is reached */
 		{
@@ -911,70 +913,70 @@ do_action:	/* This label is used only to access EOF actions. */
 
 case 1:
 YY_RULE_SETUP
-#line 97 "jparse.l"
-{ printf("string: '%s'\n", yytext); yylval.string = strdup(yytext); return JSON_STRING; }
+#line 99 "jparse.l"
+{ printf("string: '%s'\n", yytext); return JTYPE_STRING; }
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
-#line 98 "jparse.l"
-{ printf("uintmax: '%s'\n", yytext); yylval.uintmax = string_to_uintmax(yytext); return JSON_UINTMAX; }
+#line 100 "jparse.l"
+{ printf("uintmax: '%s'\n", yytext); return JTYPE_UINTMAX; }
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 99 "jparse.l"
-{ printf("intmax: '%s'\n", yytext); yylval.intmax = string_to_intmax(yytext); return JSON_INTMAX; }
+#line 101 "jparse.l"
+{ printf("intmax: '%s'\n", yytext); return JTYPE_INTMAX; }
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 100 "jparse.l"
-{ printf("long double: '%s'\n", yytext); yylval.ldouble = string_to_float(yytext); return JSON_LONG_DOUBLE; }
+#line 102 "jparse.l"
+{ printf("long double: '%s'\n", yytext); return JTYPE_LONG_DOUBLE; }
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 101 "jparse.l"
-{ printf("null: '%s'\n", yytext); return JSON_NULL; }
+#line 103 "jparse.l"
+{ printf("null: '%s'\n", yytext); return JTYPE_NULL; }
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 102 "jparse.l"
-{ printf("true: '%s'\n", yytext); yylval.boolean = string_to_bool(yytext); return JSON_BOOLEAN; }
+#line 104 "jparse.l"
+{ printf("true: '%s'\n", yytext); return JTYPE_BOOLEAN; }
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 103 "jparse.l"
-{ printf("open brace: '%c'\n", *yytext); token_type = '{'; return JSON_OPEN_BRACE; }
+#line 105 "jparse.l"
+{ printf("open brace: '%c'\n", *yytext); token_type = '{'; return JTYPE_OPEN_BRACE; }
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 104 "jparse.l"
-{ printf("close brace: '%c'\n", *yytext); token_type = '}'; return JSON_CLOSE_BRACE;}
+#line 106 "jparse.l"
+{ printf("close brace: '%c'\n", *yytext); token_type = '}'; return JTYPE_CLOSE_BRACE;}
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 105 "jparse.l"
-{ printf("open bracket: '%c'\n", *yytext); token_type = '['; return JSON_OPEN_BRACKET; }
+#line 107 "jparse.l"
+{ printf("open bracket: '%c'\n", *yytext); token_type = '['; return JTYPE_OPEN_BRACKET; }
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
-#line 106 "jparse.l"
-{ printf("close bracket: '%c'\n", *yytext); token_type = ']'; return JSON_CLOSE_BRACKET; }
+#line 108 "jparse.l"
+{ printf("close bracket: '%c'\n", *yytext); token_type = ']'; return JTYPE_CLOSE_BRACKET; }
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
-#line 107 "jparse.l"
-{ printf("equals/colon: '%c'\n", *yytext); token_type = ':'; return JSON_COLON; }
+#line 109 "jparse.l"
+{ printf("equals/colon: '%c'\n", *yytext); token_type = ':'; return JTYPE_COLON; }
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
-#line 108 "jparse.l"
-{ printf("comma: '%c'\n", *yytext); token_type = ','; return JSON_COMMA; }
+#line 110 "jparse.l"
+{ printf("comma: '%c'\n", *yytext); token_type = ','; return JTYPE_COMMA; }
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
-#line 109 "jparse.l"
+#line 111 "jparse.l"
 ECHO;
 	YY_BREAK
-#line 956 "jparse.c"
+#line 958 "jparse.c"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 
@@ -1991,7 +1993,7 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 109 "jparse.l"
+#line 111 "jparse.l"
 
 
 /* Section 3: Code that's copied to the generated scanner */
