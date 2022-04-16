@@ -377,9 +377,9 @@ struct json
 {
     enum element_type type;		/* union element specifier */
     union json_union {
-	struct json_string string;	/* JTYPE_INT - value is a string */
-	struct json_integer integer;	/* JTYPE_FLOAT - value is either a signed or unsigned integer */
-	struct json_floating floating;	/* JTYPE_STRING - value is a floating point */
+	struct json_string string;	/* JTYPE_STRING - value is a string */
+	struct json_integer integer;	/* JTYPE_INT - value is either a signed or unsigned integer */
+	struct json_floating floating;	/* JTYPE_FLOAT - value is a floating point */
 	struct json_boolean boolean;	/* JTYPE_BOOL - value is a JSON boolean */
 	struct json_null null;		/* JTYPE_NULL - value is a JSON null value */
 	struct json_object object;	/* JTYPE_OBJECT - value is a JSON { members } */
