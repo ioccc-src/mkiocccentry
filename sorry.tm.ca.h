@@ -13,8 +13,9 @@
  * grabbing at you to try and swallow you whole after putting you in its hideous
  * mouth.
  *
- * Instead work on the bison *.y and flex *.l source files. See the Makefile for
- * more info on how the code below was generated.
+ * OK, it might not give you nightmares but why take the risk? The point is
+ * don't work on this file! Instead work on the bison *.y and flex *.l source
+ * files. See the Makefile for more info on how the code below was generated.
  *
  * Thanks in advance for your understanding, and sorry (tm Canada :-)).
  *
