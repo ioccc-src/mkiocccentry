@@ -355,16 +355,16 @@ struct json_array
  * element_type - JSON element type - an enum for each union element member in struct json
  */
 enum element_type {
-    JTYPE_EOT	    = -1,   /* special end of the table value */
-    JTYPE_UNSET	    = 0,    /* JSON element has not been set */
-    JTYPE_INT,		    /* JSON element is an integer - see struct json_integer */
-    JTYPE_FLOAT,	    /* JSON element is a float - see struct json_floating */
-    JTYPE_STRING,	    /* JSON element is a string - see struct json_string */
-    JTYPE_BOOL,		    /* JSON element is a boolean - see struct json_boolean */
-    JTYPE_NULL,		    /* JSON element is a null - see struct json_null */
-    JTYPE_OBJECT,	    /* JSON element is a { members } */
-    JTYPE_MEMBER,	    /* JSON element is a member */
-    JTYPE_ARRAY,	    /* JSON element is a [ elements ] */
+    JSON_EOT	    = -1,   /* special end of the table value */
+    JSON_UNSET	    = 0,    /* JSON element has not been set */
+    JSON_INT,		    /* JSON element is an integer - see struct json_integer */
+    JSON_FLOAT,	    /* JSON element is a float - see struct json_floating */
+    JSON_STRING,	    /* JSON element is a string - see struct json_string */
+    JSON_BOOL,		    /* JSON element is a boolean - see struct json_boolean */
+    JSON_NULL,		    /* JSON element is a null - see struct json_null */
+    JSON_OBJECT,	    /* JSON element is a { members } */
+    JSON_MEMBER,	    /* JSON element is a member */
+    JSON_ARRAY,	    /* JSON element is a [ elements ] */
 };
 
 /*
@@ -377,14 +377,14 @@ struct json
 {
     enum element_type type;		/* union element specifier */
     union json_union {
-	struct json_string string;	/* JTYPE_STRING - value is a string */
-	struct json_integer integer;	/* JTYPE_INT - value is either a signed or unsigned integer */
-	struct json_floating floating;	/* JTYPE_FLOAT - value is a floating point */
-	struct json_boolean boolean;	/* JTYPE_BOOL - value is a JSON boolean */
-	struct json_null null;		/* JTYPE_NULL - value is a JSON null value */
-	struct json_object object;	/* JTYPE_OBJECT - value is a JSON { members } */
-	struct json_member member;	/* JTYPE_MEMBER - value is a JSON member: name : value */
-	struct json_array array;	/* JTYPE_ARRAY - value is a JSON [ elements ] */
+	struct json_string string;	/* JSON_STRING - value is a string */
+	struct json_integer integer;	/* JSON_INT - value is either a signed or unsigned integer */
+	struct json_floating floating;	/* JSON_FLOAT - value is a floating point */
+	struct json_boolean boolean;	/* JSON_BOOL - value is a JSON boolean */
+	struct json_null null;		/* JSON_NULL - value is a JSON null value */
+	struct json_object object;	/* JSON_OBJECT - value is a JSON { members } */
+	struct json_member member;	/* JSON_MEMBER - value is a JSON member: name : value */
+	struct json_array array;	/* JSON_ARRAY - value is a JSON [ elements ] */
     } element;
 
     /*
