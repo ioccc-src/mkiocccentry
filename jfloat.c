@@ -64,7 +64,8 @@ main(int argc, char *argv[])
     bool error = false;		/* true ==> JSON floating point conversion test suite error */
     bool test_mode = false;	/* true ==> perform JSON floating point conversion test suite */
     bool strict = false;	/* true ==> JSON decode in strict mode */
-    struct json_floating *ival = NULL;	/* malloc_json_conv_float_str() return */
+    struct json *node = NULL;		/* malloced JSON parser tree node */
+    struct json_floating *item = NULL;	/* floating element in JSON parser tree node */
     int arg_cnt = 0;		/* number of args to process */
 #if defined(JFLOAT_TEST_ENABLED)
     char *test = NULL;		/* test string */
@@ -151,11 +152,12 @@ main(int argc, char *argv[])
 	    /*
 	     * convert test into struct json_floating
 	     */
-	    ival = malloc_json_conv_float_str(test, &retlen);
-	    if (ival == NULL) {
+	    node = malloc_json_conv_float_str(test, &retlen);
+	    if (node == NULL) {
 		err(11, __func__, "malloc_json_conv_float_str() is not supposed to return NULL!");
 		not_reached();
 	    }
+	    item = &(node->element.floating);
 	    if (inputlen != retlen) {
 		err(12, __func__, "test[%d] inputlen: %ju != retlen: %ju",
 				 i, (uintmax_t)inputlen, (uintmax_t)retlen);
@@ -187,40 +189,40 @@ main(int argc, char *argv[])
 	    }
 
 	    /* test: top level booleans */
-	    if (test_result[i].converted != ival->converted) {
-		dbg(DBG_VHIGH, "test_result[%d].converted: %d != ival.converted: %d",
-			     i, test_result[i].converted, ival->converted);
+	    if (test_result[i].converted != item->converted) {
+		dbg(DBG_VHIGH, "test_result[%d].converted: %d != item.converted: %d",
+			     i, test_result[i].converted, item->converted);
 		test_error = true;
 	    } else {
-		dbg(DBG_VVHIGH, "test_result[%d].converted: %d == ival.converted: %d",
-			        i, test_result[i].converted, ival->converted);
+		dbg(DBG_VVHIGH, "test_result[%d].converted: %d == item.converted: %d",
+			        i, test_result[i].converted, item->converted);
 	    }
-	    if (test_result[i].is_negative != ival->is_negative) {
-		dbg(DBG_VHIGH, "test_result[%d].is_negative: %d != ival.is_negative: %d",
-			     i, test_result[i].is_negative, ival->is_negative);
+	    if (test_result[i].is_negative != item->is_negative) {
+		dbg(DBG_VHIGH, "test_result[%d].is_negative: %d != item.is_negative: %d",
+			     i, test_result[i].is_negative, item->is_negative);
 		test_error = true;
 	    } else {
-		dbg(DBG_VVHIGH, "test_result[%d].is_negative: %d == ival.is_negative: %d",
-			        i, test_result[i].is_negative, ival->is_negative);
+		dbg(DBG_VVHIGH, "test_result[%d].is_negative: %d == item.is_negative: %d",
+			        i, test_result[i].is_negative, item->is_negative);
 	    }
 
 	    /* test: float */
 	    check_val(&test_error, "float", i,
-				   test_result[i].float_sized, ival->float_sized,
-				   test_result[i].as_float, ival->as_float,
-				   test_result[i].as_float_int, ival->as_float_int, strict);
+				   test_result[i].float_sized, item->float_sized,
+				   test_result[i].as_float, item->as_float,
+				   test_result[i].as_float_int, item->as_float_int, strict);
 
 	    /* test: double */
 	    check_val(&test_error, "double", i,
-				    test_result[i].double_sized, ival->double_sized,
-				    test_result[i].as_double, ival->as_double,
-				    test_result[i].as_double_int, ival->as_double_int, strict);
+				    test_result[i].double_sized, item->double_sized,
+				    test_result[i].as_double, item->as_double,
+				    test_result[i].as_double_int, item->as_double_int, strict);
 
 	    /* test: long double */
 	    check_val(&test_error, "longdouble", i,
-				   test_result[i].longdouble_sized, ival->longdouble_sized,
-				   test_result[i].as_longdouble, ival->as_longdouble,
-				   test_result[i].as_longdouble_int, ival->as_longdouble_int, strict);
+				   test_result[i].longdouble_sized, item->longdouble_sized,
+				   test_result[i].as_longdouble, item->as_longdouble,
+				   test_result[i].as_longdouble_int, item->as_longdouble_int, strict);
 
 	    /*
 	     * if this test failed, force non-zero exit
@@ -313,11 +315,12 @@ main(int argc, char *argv[])
 	 * turn calls the malloc_json_conv_float() interface in order
 	 * to check the inputlen vs *retlen value.
 	 */
-	ival = malloc_json_conv_float_str(input, &retlen);
-	if (ival == NULL) {
+	node = malloc_json_conv_float_str(input, &retlen);
+	if (node == NULL) {
 	    err(13, __func__, "malloc_json_conv_flot_str() is not supposed to return NULL!");
 	    not_reached();
 	}
+	item = &(node->element.floating);
 	if (inputlen != retlen) {
 	    err(14, __func__, "inputlen: %ju != retlen: %ju", (uintmax_t)inputlen, (uintmax_t)retlen);
 	    not_reached();
@@ -350,14 +353,14 @@ main(int argc, char *argv[])
 	     * print bool converted and bool is_negative
 	     */
 	    print("\t%s,\t/* true ==> able to convert JSON floating point to some form of C floating point type */\n",
-		  ival->converted ? "true" : "false");
+		  item->converted ? "true" : "false");
 	    print("\t%s,\t/* true ==> value < 0 */\n",
-		  ival->is_negative ? "true" : "false");
+		  item->is_negative ? "true" : "false");
 
 	    /*
 	     * print float info
 	     */
-	    prinfo(ival->float_sized, ival->as_float, ival->as_float_int,
+	    prinfo(item->float_sized, item->as_float, item->as_float_int,
 	           "true ==> converted JSON floating point to C float",
 		   "JSON floating point value in float form",
 		   "if float_sized == true, true ==> as_float is an integer");
@@ -365,7 +368,7 @@ main(int argc, char *argv[])
 	    /*
 	     * print double info
 	     */
-	    prinfo(ival->double_sized, ival->as_double, ival->as_double_int,
+	    prinfo(item->double_sized, item->as_double, item->as_double_int,
 	            "true ==> converted JSON floating point to C double",
 		    "JSON floating point value in double form",
 		    "if double_sized == true, true ==> as_double is an integer");
@@ -373,7 +376,7 @@ main(int argc, char *argv[])
 	    /*
 	     * print long double info
 	     */
-	    prinfo(ival->longdouble_sized, ival->as_longdouble, ival->as_float_int,
+	    prinfo(item->longdouble_sized, item->as_longdouble, item->as_float_int,
 	           "true ==> converted JSON floating point to C long double",
 		   "JSON floating point value in long double form",
 		   "if float_sized == true, true ==> as_float is an integer");
@@ -387,9 +390,9 @@ main(int argc, char *argv[])
 	/*
 	 * free buffer
 	 */
-	if (ival != NULL) {
-	    free(ival);
-	    ival = NULL;
+	if (item != NULL) {
+	    free(item);
+	    item = NULL;
 	}
     }
 
@@ -426,11 +429,11 @@ main(int argc, char *argv[])
  *	type	- test aspect name type
  *	testnum	- test number
  *	size_a	- reference (test_result[i]) conversion into type boolean
- *	size_b	- converted (ival->) type boolean
+ *	size_b	- converted (item->) type boolean
  *	val_a	- signed reference (test_result[i]) conversion into type value
- *	val_b	- signed reference (ival->) conversion into type value
+ *	val_b	- signed reference (item->) conversion into type value
  *	int_a	- reference (test_result[i]) is an integer
- *	int_b	- reference (ival->) is an integer
+ *	int_b	- reference (item->) is an integer
  *	strict	- test for strict match
  *
  * NOTE: This function will warn in error.
@@ -458,25 +461,25 @@ check_val(bool *testp, char const *type, int testnum, bool size_a, bool size_b,
      * compare booleans
      */
     if (size_a != size_b) {
-	dbg(DBG_VHIGH, "test_result[%d].%s_sized: %s != ival->%s_sized: %s",
+	dbg(DBG_VHIGH, "test_result[%d].%s_sized: %s != item->%s_sized: %s",
 		       testnum,
 		       type, size_a ? "true" : "false",
 		       type, size_b ? "true" : "false");
 	*testp = true; /* test failed */
     } else {
-	dbg(DBG_VVHIGH, "test_result[%d].%s_sized: %s == ival->%s_sized: %s",
+	dbg(DBG_VVHIGH, "test_result[%d].%s_sized: %s == item->%s_sized: %s",
 		        testnum,
 		        type, size_a ? "true" : "false",
 		        type, size_b ? "true" : "false");
     }
     if (int_a != int_b) {
-	dbg(DBG_VHIGH, "test_result[%d].%s_int: %s != ival->%s_int: %s",
+	dbg(DBG_VHIGH, "test_result[%d].%s_int: %s != item->%s_int: %s",
 		       testnum,
 		       type, int_a ? "true" : "false",
 		       type, int_b ? "true" : "false");
 	*testp = true; /* test failed */
     } else {
-	dbg(DBG_VVHIGH, "test_result[%d].%s_int: %s == ival->%s_int: %s",
+	dbg(DBG_VVHIGH, "test_result[%d].%s_int: %s == item->%s_int: %s",
 		        testnum,
 		        type, int_a ? "true" : "false",
 		        type, int_b ? "true" : "false");
@@ -492,13 +495,13 @@ check_val(bool *testp, char const *type, int testnum, bool size_a, bool size_b,
 	 */
 	if (strict == true) {
 	    if (val_a != val_b) {
-		dbg(DBG_VHIGH, "test_result[%d].as_%s: %.22Lg != ival->as_%s: %.22Lg",
+		dbg(DBG_VHIGH, "test_result[%d].as_%s: %.22Lg != item->as_%s: %.22Lg",
 			       testnum,
 			       type, val_a,
 			       type, val_b);
 		*testp = true; /* test failed */
 	    } else {
-		dbg(DBG_VVHIGH, "test_result[%d].as_%s: %.22Lg == ival->as_%s: %.22Lg",
+		dbg(DBG_VVHIGH, "test_result[%d].as_%s: %.22Lg == item->as_%s: %.22Lg",
 				testnum,
 				type, val_a,
 				type, val_b);
@@ -521,13 +524,13 @@ check_val(bool *testp, char const *type, int testnum, bool size_a, bool size_b,
 
 	    /* compare difference as part of the whole */
 	    if (diff_part <= MATCH_PRECISION) {
-		dbg(DBG_VVHIGH, "test_result[%d].as_%s: %.22Lg similar to ival->as_%s: %.22Lg diff precision: %.22Lg",
+		dbg(DBG_VVHIGH, "test_result[%d].as_%s: %.22Lg similar to item->as_%s: %.22Lg diff precision: %.22Lg",
 				testnum,
 				type, val_a,
 				type, val_b, diff_part);
 
 	    } else {
-		dbg(DBG_VHIGH, "test_result[%d].as_%s: %.22Lg not similar to ival->as_%s: %.22Lg diff precision: %.22Lg",
+		dbg(DBG_VHIGH, "test_result[%d].as_%s: %.22Lg not similar to item->as_%s: %.22Lg diff precision: %.22Lg",
 			       testnum,
 			       type, val_a,
 			       type, val_b, diff_part);

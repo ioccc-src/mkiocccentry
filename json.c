@@ -3757,55 +3757,67 @@ ignore_json_code(int code)
  *	len	length starting at str of the JSON string
  *
  * returns:
- *	malloced struct json_integer with C integer values based on JSON string
+ *	malloced JSON parser tree node converted JSON integer
+ *
+ * NOTE: It is the responsibility of the calling function to link this
+ *	 malloced JSON parser tree node into the JSON parse tree.
  *
  * NOTE: This function will not return on malloc error.
  * NOTE: This function will not return NULL.
  */
-struct json_integer *
+struct json *
 malloc_json_conv_int(char const *str, size_t len)
 {
-    struct json_integer *ret = NULL;	    /* malloced decoding string or NULL */
+    struct json *ret = NULL;		    /* JSON parser tree node to return */
+    struct json_integer *item = NULL;	    /* malloced decoding string or NULL */
     char *endptr;		    /* first invalid character or str */
     size_t digits = 0;		    /* number of digits in JSON integer not including leading sign */
     size_t i;
 
     /*
-     * malloc the return integer
+     * allocate the JSON parse tree element
      */
     errno = 0;			/* pre-clear errno for errp() */
-    ret = malloc(sizeof(*ret));
+    ret = calloc(1, sizeof(*ret));
     if (ret == NULL) {
-	errp(201, __func__, "malloc #0 error allocating %ju bytes", (uintmax_t)sizeof(*ret));
+	errp(201, __func__, "calloc #0 error allocating %ju bytes", (uintmax_t)sizeof(*ret));
 	not_reached();
     }
 
     /*
-     * initialize the return integer
+     * initialize the JSON parse tree element
      */
-    memset(ret, 0, sizeof(*ret));
-    ret->as_str = NULL;
-    ret->converted = false;
-    ret->is_negative = false;
-    ret->int8_sized = false;
-    ret->uint8_sized = false;
-    ret->int16_sized = false;
-    ret->uint16_sized = false;
-    ret->int32_sized = false;
-    ret->uint32_sized = false;
-    ret->int64_sized = false;
-    ret->uint64_sized = false;
-    ret->int_sized = false;
-    ret->uint_sized = false;
-    ret->long_sized = false;
-    ret->ulong_sized = false;
-    ret->longlong_sized = false;
-    ret->ulonglong_sized = false;
-    ret->ssize_sized = false;
-    ret->size_sized = false;
-    ret->off_sized = false;
-    ret->maxint_sized = false;
-    ret->umaxint_sized = false;
+    ret->type = JSON_INT;
+    ret->parent = NULL;
+    ret->prev = NULL;
+    ret->next = NULL;
+
+    /*
+     * initialize the JSON element
+     */
+    item = &(ret->element.integer);
+    item->as_str = NULL;
+    item->converted = false;
+    item->is_negative = false;
+    item->int8_sized = false;
+    item->uint8_sized = false;
+    item->int16_sized = false;
+    item->uint16_sized = false;
+    item->int32_sized = false;
+    item->uint32_sized = false;
+    item->int64_sized = false;
+    item->uint64_sized = false;
+    item->int_sized = false;
+    item->uint_sized = false;
+    item->long_sized = false;
+    item->ulong_sized = false;
+    item->longlong_sized = false;
+    item->ulonglong_sized = false;
+    item->ssize_sized = false;
+    item->size_sized = false;
+    item->off_sized = false;
+    item->maxint_sized = false;
+    item->umaxint_sized = false;
 
     /*
      * firewall
@@ -3818,7 +3830,7 @@ malloc_json_conv_int(char const *str, size_t len)
 	warn(__func__, "called with len: %ju <= 0", (uintmax_t)len);
 	return ret;
     }
-    ret->orig_len = len;	/* save original length */
+    item->orig_len = len;	/* save original length */
     if (str[0] == '\0') {
 	warn(__func__, "called with empty string");
 	return ret;
@@ -3828,14 +3840,14 @@ malloc_json_conv_int(char const *str, size_t len)
      * duplicate the JSON integer string
      */
     errno = 0;			/* pre-clear errno for errp() */
-    ret->as_str = malloc(len+1+1);
-    if (ret->as_str == NULL) {
+    item->as_str = malloc(len+1+1);
+    if (item->as_str == NULL) {
 	errp(202, __func__, "malloc #1 error allocating %ju bytes", (uintmax_t)(len+1+1));
 	not_reached();
     }
-    strncpy(ret->as_str, str, len+1);
-    ret->as_str[len] = '\0';	/* paranoia */
-    ret->as_str[len+1] = '\0';	/* paranoia */
+    strncpy(item->as_str, str, len+1);
+    item->as_str[len] = '\0';	/* paranoia */
+    item->as_str[len+1] = '\0';	/* paranoia */
 
     /*
      * paranoia
@@ -3849,36 +3861,36 @@ malloc_json_conv_int(char const *str, size_t len)
      */
     /* skip over any leading space */
     for (i=0; i < len; ++i) {
-	if (!isascii(ret->as_str[i]) || !isspace(ret->as_str[i])) {
+	if (!isascii(item->as_str[i]) || !isspace(item->as_str[i])) {
 	    break;
 	}
     }
     /* trim any leading space */
     len -= i;
-    ret->as_str += i;
+    item->as_str += i;
     if (len <= 0) {
 	warn(__func__, "called with string containing only whitespace");
 	return ret;
     }
     /* trim off any trailing whitespace */
-    while (len > 0 && isascii(ret->as_str[len-1]) && isspace(ret->as_str[len-1])) {
+    while (len > 0 && isascii(item->as_str[len-1]) && isspace(item->as_str[len-1])) {
 	/* trim trailing whitespace */
-	ret->as_str[len-1] = '\0';
+	item->as_str[len-1] = '\0';
 	--len;
     }
     if (len <= 0) {
 	warn(__func__, "called with string with all whitespace");
 	return ret;
     }
-    ret->as_str_len = len;	/* save length of as_str */
+    item->as_str_len = len;	/* save length of as_str */
 
     /*
      * determine if JSON integer negative
      */
-    if (ret->as_str[0] == '-') {
+    if (item->as_str[0] == '-') {
 
 	/* parse JSON integer that is < 0 */
-	ret->is_negative = true;
+	item->is_negative = true;
 
 	/*
 	 * paranoia
@@ -3887,9 +3899,9 @@ malloc_json_conv_int(char const *str, size_t len)
 	 * This shouldn't happen via the bison / flex code that has an integer
 	 * regexp, but we check anyway as a matter of defense in depth.
 	 */
-	digits = strspn(ret->as_str+1, "0123456789");
+	digits = strspn(item->as_str+1, "0123456789");
 	if (digits != len-1) {
-	    warn(__func__, "called with string with - followed by non-digits: <%s>", ret->as_str);
+	    warn(__func__, "called with string with - followed by non-digits: <%s>", item->as_str);
 	    return ret;
 	}
 
@@ -3897,7 +3909,7 @@ malloc_json_conv_int(char const *str, size_t len)
     } else {
 
 	/* parse JSON integer that is >= 0 */
-	ret->is_negative = false;
+	item->is_negative = false;
 
 	/*
 	 * paranoia
@@ -3906,9 +3918,9 @@ malloc_json_conv_int(char const *str, size_t len)
 	 * flaws by the JSON designers.  We check for and skip a leading + just in
 	 * case this code is called by some other code.
 	 */
-	if (ret->as_str[0] == '+') {
+	if (item->as_str[0] == '+') {
 	    /* skip leading + */
-	    ret->as_str++;
+	    item->as_str++;
 	    len--;
 	    if (len <= 0) {
 		warn(__func__, "called with string with only a +");
@@ -3923,9 +3935,9 @@ malloc_json_conv_int(char const *str, size_t len)
 	 * This shouldn't happen via the bison / flex code, but we check anyway
 	 * as a matter of defense in depth.
 	 */
-	digits = strspn(ret->as_str, "0123456789");
+	digits = strspn(item->as_str, "0123456789");
 	if (digits != len) {
-	    warn(__func__, "called with string containing non-digits: <%s>", ret->as_str);
+	    warn(__func__, "called with string containing non-digits: <%s>", item->as_str);
 	    return ret;
 	}
     }
@@ -3933,230 +3945,230 @@ malloc_json_conv_int(char const *str, size_t len)
     /*
      * attempt to convert to the largest possible integer
      */
-    if (ret->is_negative) {
+    if (item->is_negative) {
 
 	/* case: negative, try for largest signed integer */
 	errno = 0;			/* pre-clear errno for errp() */
-	ret->as_maxint = strtoimax(ret->as_str, &endptr, 10);
-	if (errno != 0 || endptr == ret->as_str || endptr == NULL || *endptr != '\0') {
+	item->as_maxint = strtoimax(item->as_str, &endptr, 10);
+	if (errno != 0 || endptr == item->as_str || endptr == NULL || *endptr != '\0') {
 	    dbg(DBG_VVHIGH, "strtoimax failed to convert");
-	    ret->converted = false;
+	    item->converted = false;
 	    return ret;
 	}
-	ret->converted = true;
-	ret->maxint_sized = true;
-	dbg(DBG_VVHIGH, "strtoimax for <%s> returned: %jd", ret->as_str, ret->as_maxint);
+	item->converted = true;
+	item->maxint_sized = true;
+	dbg(DBG_VVHIGH, "strtoimax for <%s> returned: %jd", item->as_str, item->as_maxint);
 
 	/* case int8_t: range check */
-	if (ret->as_maxint >= (intmax_t)INT8_MIN && ret->as_maxint <= (intmax_t)INT8_MAX) {
-	    ret->int8_sized = true;
-	    ret->as_int8 = (int8_t)ret->as_maxint;
+	if (item->as_maxint >= (intmax_t)INT8_MIN && item->as_maxint <= (intmax_t)INT8_MAX) {
+	    item->int8_sized = true;
+	    item->as_int8 = (int8_t)item->as_maxint;
 	}
 
 	/* case uint8_t: cannot be because JSON string is < 0 */
-	ret->uint8_sized = false;
+	item->uint8_sized = false;
 
 	/* case int16_t: range check */
-	if (ret->as_maxint >= (intmax_t)INT16_MIN && ret->as_maxint <= (intmax_t)INT16_MAX) {
-	    ret->int16_sized = true;
-	    ret->as_int16 = (int16_t)ret->as_maxint;
+	if (item->as_maxint >= (intmax_t)INT16_MIN && item->as_maxint <= (intmax_t)INT16_MAX) {
+	    item->int16_sized = true;
+	    item->as_int16 = (int16_t)item->as_maxint;
 	}
 
 	/* case uint16_t: cannot be because JSON string is < 0 */
-	ret->uint16_sized = false;
+	item->uint16_sized = false;
 
 	/* case int32_t: range check */
-	if (ret->as_maxint >= (intmax_t)INT32_MIN && ret->as_maxint <= (intmax_t)INT32_MAX) {
-	    ret->int32_sized = true;
-	    ret->as_int32 = (int32_t)ret->as_maxint;
+	if (item->as_maxint >= (intmax_t)INT32_MIN && item->as_maxint <= (intmax_t)INT32_MAX) {
+	    item->int32_sized = true;
+	    item->as_int32 = (int32_t)item->as_maxint;
 	}
 
 	/* case uint32_t: cannot be because JSON string is < 0 */
-	ret->uint32_sized = false;
+	item->uint32_sized = false;
 
 	/* case int64_t: range check */
-	if (ret->as_maxint >= (intmax_t)INT64_MIN && ret->as_maxint <= (intmax_t)INT64_MAX) {
-	    ret->int64_sized = true;
-	    ret->as_int64 = (int64_t)ret->as_maxint;
+	if (item->as_maxint >= (intmax_t)INT64_MIN && item->as_maxint <= (intmax_t)INT64_MAX) {
+	    item->int64_sized = true;
+	    item->as_int64 = (int64_t)item->as_maxint;
 	}
 
 	/* case uint64_t: cannot be because JSON string is < 0 */
-	ret->uint64_sized = false;
+	item->uint64_sized = false;
 
 	/* case int: range check */
-	if (ret->as_maxint >= (intmax_t)INT_MIN && ret->as_maxint <= (intmax_t)INT_MAX) {
-	    ret->int_sized = true;
-	    ret->as_int = (int)ret->as_maxint;
+	if (item->as_maxint >= (intmax_t)INT_MIN && item->as_maxint <= (intmax_t)INT_MAX) {
+	    item->int_sized = true;
+	    item->as_int = (int)item->as_maxint;
 	}
 
 	/* case unsigned int: cannot be because JSON string is < 0 */
-	ret->uint_sized = false;
+	item->uint_sized = false;
 
 	/* case long: range check */
-	if (ret->as_maxint >= (intmax_t)LONG_MIN && ret->as_maxint <= (intmax_t)LONG_MAX) {
-	    ret->long_sized = true;
-	    ret->as_long = (long)ret->as_maxint;
+	if (item->as_maxint >= (intmax_t)LONG_MIN && item->as_maxint <= (intmax_t)LONG_MAX) {
+	    item->long_sized = true;
+	    item->as_long = (long)item->as_maxint;
 	}
 
 	/* case unsigned long: cannot be because JSON string is < 0 */
-	ret->ulong_sized = false;
+	item->ulong_sized = false;
 
 	/* case long long: range check */
-	if (ret->as_maxint >= (intmax_t)LLONG_MIN && ret->as_maxint <= (intmax_t)LLONG_MAX) {
-	    ret->longlong_sized = true;
-	    ret->as_longlong = (long long)ret->as_maxint;
+	if (item->as_maxint >= (intmax_t)LLONG_MIN && item->as_maxint <= (intmax_t)LLONG_MAX) {
+	    item->longlong_sized = true;
+	    item->as_longlong = (long long)item->as_maxint;
 	}
 
 	/* case unsigned long long: cannot be because JSON string is < 0 */
-	ret->ulonglong_sized = false;
+	item->ulonglong_sized = false;
 
 	/* case size_t: cannot be because JSON string is < 0 */
-	ret->size_sized = false;
+	item->size_sized = false;
 
 	/* case ssize_t: range check */
-	if (ret->as_maxint >= (intmax_t)SSIZE_MIN && ret->as_maxint <= (intmax_t)SSIZE_MAX) {
-	    ret->ssize_sized = true;
-	    ret->as_ssize = (ssize_t)ret->as_maxint;
+	if (item->as_maxint >= (intmax_t)SSIZE_MIN && item->as_maxint <= (intmax_t)SSIZE_MAX) {
+	    item->ssize_sized = true;
+	    item->as_ssize = (ssize_t)item->as_maxint;
 	}
 
 	/* case off_t: range check */
-	if (ret->as_maxint >= (intmax_t)OFF_MIN && ret->as_maxint <= (intmax_t)OFF_MAX) {
-	    ret->off_sized = true;
-	    ret->as_off = (off_t)ret->as_maxint;
+	if (item->as_maxint >= (intmax_t)OFF_MIN && item->as_maxint <= (intmax_t)OFF_MAX) {
+	    item->off_sized = true;
+	    item->as_off = (off_t)item->as_maxint;
 	}
 
 	/* case intmax_t: was handled by the above call to strtoimax() */
 
 	/* case uintmax_t: cannot be because JSON string is < 0 */
-	ret->umaxint_sized = false;
+	item->umaxint_sized = false;
 
     } else {
 
 	/* case: non-negative, try for largest unsigned integer */
 	errno = 0;			/* pre-clear errno for errp() */
-	ret->as_umaxint = strtoumax(ret->as_str, &endptr, 10);
-	if (errno != 0 || endptr == ret->as_str || endptr == NULL || *endptr != '\0') {
+	item->as_umaxint = strtoumax(item->as_str, &endptr, 10);
+	if (errno != 0 || endptr == item->as_str || endptr == NULL || *endptr != '\0') {
 	    dbg(DBG_VVHIGH, "strtoumax failed to convert");
-	    ret->converted = false;
+	    item->converted = false;
 	    return ret;
 	}
-	ret->converted = true;
-	ret->umaxint_sized = true;
-	dbg(DBG_VVHIGH, "strtoumax for <%s> returned: %ju", ret->as_str, ret->as_umaxint);
+	item->converted = true;
+	item->umaxint_sized = true;
+	dbg(DBG_VVHIGH, "strtoumax for <%s> returned: %ju", item->as_str, item->as_umaxint);
 
 	/* case int8_t: bounds check */
-	if (ret->as_umaxint <= (uintmax_t)INT8_MAX) {
-	    ret->int8_sized = true;
-	    ret->as_int8 = (int8_t)ret->as_umaxint;
+	if (item->as_umaxint <= (uintmax_t)INT8_MAX) {
+	    item->int8_sized = true;
+	    item->as_int8 = (int8_t)item->as_umaxint;
 	}
 
 	/* case uint8_t: bounds check */
-	if (ret->as_umaxint <= (uintmax_t)UINT8_MAX) {
-	    ret->uint8_sized = true;
-	    ret->as_uint8 = (uint8_t)ret->as_umaxint;
+	if (item->as_umaxint <= (uintmax_t)UINT8_MAX) {
+	    item->uint8_sized = true;
+	    item->as_uint8 = (uint8_t)item->as_umaxint;
 	}
 
 	/* case int16_t: bounds check */
-	if (ret->as_umaxint <= (uintmax_t)INT16_MAX) {
-	    ret->int16_sized = true;
-	    ret->as_int16 = (int16_t)ret->as_umaxint;
+	if (item->as_umaxint <= (uintmax_t)INT16_MAX) {
+	    item->int16_sized = true;
+	    item->as_int16 = (int16_t)item->as_umaxint;
 	}
 
 	/* case uint16_t: bounds check */
-	if (ret->as_umaxint <= (uintmax_t)UINT16_MAX) {
-	    ret->uint16_sized = true;
-	    ret->as_uint16 = (uint16_t)ret->as_umaxint;
+	if (item->as_umaxint <= (uintmax_t)UINT16_MAX) {
+	    item->uint16_sized = true;
+	    item->as_uint16 = (uint16_t)item->as_umaxint;
 	}
 
 	/* case int32_t: bounds check */
-	if (ret->as_umaxint <= (uintmax_t)INT32_MAX) {
-	    ret->int32_sized = true;
-	    ret->as_int32 = (int32_t)ret->as_umaxint;
+	if (item->as_umaxint <= (uintmax_t)INT32_MAX) {
+	    item->int32_sized = true;
+	    item->as_int32 = (int32_t)item->as_umaxint;
 	}
 
 	/* case uint32_t: bounds check */
-	if (ret->as_umaxint <= (uintmax_t)UINT32_MAX) {
-	    ret->uint32_sized = true;
-	    ret->as_uint32 = (uint32_t)ret->as_umaxint;
+	if (item->as_umaxint <= (uintmax_t)UINT32_MAX) {
+	    item->uint32_sized = true;
+	    item->as_uint32 = (uint32_t)item->as_umaxint;
 	}
 
 	/* case int64_t: bounds check */
-	if (ret->as_umaxint <= (uintmax_t)INT64_MAX) {
-	    ret->int64_sized = true;
-	    ret->as_int64 = (int64_t)ret->as_umaxint;
+	if (item->as_umaxint <= (uintmax_t)INT64_MAX) {
+	    item->int64_sized = true;
+	    item->as_int64 = (int64_t)item->as_umaxint;
 	}
 
 	/* case uint64_t: bounds check */
-	if (ret->as_umaxint <= (uintmax_t)UINT64_MAX) {
-	    ret->uint64_sized = true;
-	    ret->as_uint64 = (uint64_t)ret->as_umaxint;
+	if (item->as_umaxint <= (uintmax_t)UINT64_MAX) {
+	    item->uint64_sized = true;
+	    item->as_uint64 = (uint64_t)item->as_umaxint;
 	}
 
 	/* case int: bounds check */
-	if (ret->as_umaxint <= (uintmax_t)INT_MAX) {
-	    ret->int_sized = true;
-	    ret->as_int = (int)ret->as_umaxint;
+	if (item->as_umaxint <= (uintmax_t)INT_MAX) {
+	    item->int_sized = true;
+	    item->as_int = (int)item->as_umaxint;
 	}
 
 	/* case unsigned int: bounds check */
-	if (ret->as_umaxint <= (uintmax_t)UINT_MAX) {
-	    ret->uint_sized = true;
-	    ret->as_uint = (unsigned int)ret->as_umaxint;
+	if (item->as_umaxint <= (uintmax_t)UINT_MAX) {
+	    item->uint_sized = true;
+	    item->as_uint = (unsigned int)item->as_umaxint;
 	}
 
 	/* case long: bounds check */
-	if (ret->as_umaxint <= (uintmax_t)LONG_MAX) {
-	    ret->long_sized = true;
-	    ret->as_long = (long)ret->as_umaxint;
+	if (item->as_umaxint <= (uintmax_t)LONG_MAX) {
+	    item->long_sized = true;
+	    item->as_long = (long)item->as_umaxint;
 	}
 
 	/* case unsigned long: bounds check */
-	if (ret->as_umaxint <= (uintmax_t)ULONG_MAX) {
-	    ret->ulong_sized = true;
-	    ret->as_ulong = (unsigned long)ret->as_umaxint;
+	if (item->as_umaxint <= (uintmax_t)ULONG_MAX) {
+	    item->ulong_sized = true;
+	    item->as_ulong = (unsigned long)item->as_umaxint;
 	}
 
 	/* case long long: bounds check */
-	if (ret->as_umaxint <= (uintmax_t)LLONG_MAX) {
-	    ret->longlong_sized = true;
-	    ret->as_longlong = (long long)ret->as_umaxint;
+	if (item->as_umaxint <= (uintmax_t)LLONG_MAX) {
+	    item->longlong_sized = true;
+	    item->as_longlong = (long long)item->as_umaxint;
 	}
 
 	/* case unsigned long long: bounds check */
-	if (ret->as_umaxint <= (uintmax_t)ULLONG_MAX) {
-	    ret->ulonglong_sized = true;
-	    ret->as_ulonglong = (unsigned long long)ret->as_umaxint;
+	if (item->as_umaxint <= (uintmax_t)ULLONG_MAX) {
+	    item->ulonglong_sized = true;
+	    item->as_ulonglong = (unsigned long long)item->as_umaxint;
 	}
 
 	/* case ssize_t: bounds check */
-	if (ret->as_umaxint <= (uintmax_t)SSIZE_MAX) {
-	    ret->ssize_sized = true;
-	    ret->as_ssize = (ssize_t)ret->as_umaxint;
+	if (item->as_umaxint <= (uintmax_t)SSIZE_MAX) {
+	    item->ssize_sized = true;
+	    item->as_ssize = (ssize_t)item->as_umaxint;
 	}
 
 	/* case size_t: bounds check */
-	if (ret->as_umaxint <= (uintmax_t)SIZE_MAX) {
-	    ret->size_sized = true;
-	    ret->as_size = (size_t)ret->as_umaxint;
+	if (item->as_umaxint <= (uintmax_t)SIZE_MAX) {
+	    item->size_sized = true;
+	    item->as_size = (size_t)item->as_umaxint;
 	}
 
 	/* case off_t: bounds check */
-	if (ret->as_umaxint <= (uintmax_t)OFF_MAX) {
-	    ret->off_sized = true;
-	    ret->as_off = (off_t)ret->as_umaxint;
+	if (item->as_umaxint <= (uintmax_t)OFF_MAX) {
+	    item->off_sized = true;
+	    item->as_off = (off_t)item->as_umaxint;
 	}
 
 	/* case intmax_t: bounds check */
-	if (ret->as_umaxint <= (uintmax_t)INTMAX_MAX) {
-	    ret->maxint_sized = true;
-	    ret->as_maxint = (intmax_t)ret->as_umaxint;
+	if (item->as_umaxint <= (uintmax_t)INTMAX_MAX) {
+	    item->maxint_sized = true;
+	    item->as_maxint = (intmax_t)item->as_umaxint;
 	}
 
 	/* case uintmax_t: was handled by the above call to strtoumax() */
     }
 
     /*
-     * return converted integer
+     * return the JSON parse tree element
      */
     return ret;
 }
@@ -4172,16 +4184,20 @@ malloc_json_conv_int(char const *str, size_t len)
  *	retlen	address of where to store length of str, if retlen != NULL
  *
  * returns:
- *	malloced struct json_integer with C integer values based on JSON string
- *	NOTE: retlen, if non-NULL, is set to 0 on error
+ *	malloced JSON parser tree node converted JSON integer
+ *
+ * NOTE: It is the responsibility of the calling function to link this
+ *	 malloced JSON parser tree node into the JSON parse tree.
+ *
+ * NOTE: retlen, if non-NULL, is set to 0 on error
  *
  * NOTE: This function will not return on malloc error.
  * NOTE: This function will not return NULL.
  */
-struct json_integer *
+struct json *
 malloc_json_conv_int_str(char const *str, size_t *retlen)
 {
-    struct json_integer *ret = NULL;	    /* malloced encoding string or NULL */
+    struct json *ret = NULL;	    /* JSON parser tree node to return */
     size_t len = 0;		    /* length of string to encode */
 
     /*
@@ -4215,58 +4231,69 @@ malloc_json_conv_int_str(char const *str, size_t *retlen)
     }
 
     /*
-     * return encoded result or NULL
+     * return the JSON parse tree element
      */
     return ret;
 }
 
 
 /*
- * malloc_json_conv_float - convert JSON integer string to C floating point value
+ * malloc_json_conv_float - convert JSON floating point string to C floating point value
  *
  * given:
  *	str	a JSON integer floating point string
  *	len	length starting at str of the JSON string
  *
  * returns:
- *	malloced struct json_floating with C floating point values based on JSON string
+ *	malloced JSON parser tree node converted JSON floating point string
+ *
+ * NOTE: It is the responsibility of the calling function to link this
+ *	 malloced JSON parser tree node into the JSON parse tree.
  *
  * NOTE: This function will not return on malloc error.
  * NOTE: This function will not return NULL.
  */
-struct json_floating *
+struct json *
 malloc_json_conv_float(char const *str, size_t len)
 {
-    struct json_floating *ret = NULL;	    /* malloced decoding string or NULL */
-    char *endptr;		    /* first invalid character or str */
+    struct json *ret = NULL;		    /* JSON parser tree node to return */
+    struct json_floating *item = NULL;	    /* malloced decoding string or NULL */
+    char *endptr;			    /* first invalid character or str */
     size_t i;
 
     /*
-     * malloc the return integer
+     * allocate the JSON parse tree element
      */
     errno = 0;			/* pre-clear errno for errp() */
-    ret = malloc(sizeof(*ret));
+    ret = calloc(1, sizeof(*ret));
     if (ret == NULL) {
-	errp(204, __func__, "malloc #0 error allocating %ju bytes", (uintmax_t)sizeof(*ret));
+	errp(204, __func__, "calloc #0 error allocating %ju bytes", (uintmax_t)sizeof(*ret));
 	not_reached();
     }
 
     /*
-     * initialize the return integer
+     * initialize the JSON parse tree element
      */
-    memset(ret, 0, sizeof(*ret));
-    ret->as_str = NULL;
-    ret->converted = false;
-    ret->is_negative = false;
-    ret->float_sized = false;
-    ret->as_float = 0.0;
-    ret->as_float_int = false;
-    ret->double_sized = false;
-    ret->as_double = 0.0;
-    ret->as_double_int = false;
-    ret->longdouble_sized = false;
-    ret->as_longdouble = 0.0;
-    ret->as_longdouble_int = false;
+    ret->type = JSON_FLOAT;
+    ret->parent = NULL;
+    ret->prev = NULL;
+    ret->next = NULL;
+
+    /*
+     * initialize the JSON element
+     */
+    item = &(ret->element.floating);
+    item->converted = false;
+    item->is_negative = false;
+    item->float_sized = false;
+    item->as_float = 0.0;
+    item->as_float_int = false;
+    item->double_sized = false;
+    item->as_double = 0.0;
+    item->as_double_int = false;
+    item->longdouble_sized = false;
+    item->as_longdouble = 0.0;
+    item->as_longdouble_int = false;
 
     /*
      * firewall
@@ -4288,14 +4315,14 @@ malloc_json_conv_float(char const *str, size_t len)
      * duplicate the JSON floating point string
      */
     errno = 0;			/* pre-clear errno for errp() */
-    ret->as_str = malloc(len+1+1);
-    if (ret->as_str == NULL) {
+    item->as_str = malloc(len+1+1);
+    if (item->as_str == NULL) {
 	errp(205, __func__, "malloc #1 error allocating %ju bytes", (uintmax_t)(len+1+1));
 	not_reached();
     }
-    strncpy(ret->as_str, str, len+1);
-    ret->as_str[len] = '\0';	/* paranoia */
-    ret->as_str[len+1] = '\0';	/* paranoia */
+    strncpy(item->as_str, str, len+1);
+    item->as_str[len] = '\0';	/* paranoia */
+    item->as_str[len+1] = '\0';	/* paranoia */
 
     /*
      * paranoia
@@ -4306,21 +4333,21 @@ malloc_json_conv_float(char const *str, size_t len)
      */
     /* skip over any leading space */
     for (i=0; i < len; ++i) {
-	if (!isascii(ret->as_str[i]) || !isspace(ret->as_str[i])) {
+	if (!isascii(item->as_str[i]) || !isspace(item->as_str[i])) {
 	    break;
 	}
     }
     /* trim any leading space */
     len -= i;
-    ret->as_str += i;
+    item->as_str += i;
     if (len <= 0) {
 	warn(__func__, "called with string containing only whitespace");
 	return ret;
     }
     /* trim off any trailing whitespace */
-    while (len > 0 && isascii(ret->as_str[len-1]) && isspace(ret->as_str[len-1])) {
+    while (len > 0 && isascii(item->as_str[len-1]) && isspace(item->as_str[len-1])) {
 	/* trim trailing whitespace */
-	ret->as_str[len-1] = '\0';
+	item->as_str[len-1] = '\0';
 	--len;
     }
     if (len <= 0) {
@@ -4332,63 +4359,63 @@ malloc_json_conv_float(char const *str, size_t len)
      * convert to largest floating point value
      */
     errno = 0;			/* pre-clear errno for errp() */
-    ret->as_longdouble = strtold(ret->as_str, &endptr);
-    if (errno != 0 || endptr == ret->as_str || endptr == NULL || *endptr != '\0') {
+    item->as_longdouble = strtold(item->as_str, &endptr);
+    if (errno != 0 || endptr == item->as_str || endptr == NULL || *endptr != '\0') {
 	dbg(DBG_VVHIGH, "strtold failed to convert");
-	ret->converted = false;
+	item->converted = false;
 	return ret;
     }
-    ret->converted = true;
-    ret->longdouble_sized = true;
-    ret->as_longdouble_int = (ret->as_longdouble == floorl(ret->as_longdouble));
-    dbg(DBG_VVHIGH, "strtold for <%s> returned as %%Lg: %.22Lg", ret->as_str, ret->as_longdouble);
-    dbg(DBG_VVHIGH, "strtold for <%s> returned as %%Le: %.22Le", ret->as_str, ret->as_longdouble);
-    dbg(DBG_VVHIGH, "strtold for <%s> returned as %%Lf: %.22Lf", ret->as_str, ret->as_longdouble);
-    dbg(DBG_VVHIGH, "strtold returned an integer value: %s", ret->as_longdouble_int ? "true" : "false");
+    item->converted = true;
+    item->longdouble_sized = true;
+    item->as_longdouble_int = (item->as_longdouble == floorl(item->as_longdouble));
+    dbg(DBG_VVHIGH, "strtold for <%s> returned as %%Lg: %.22Lg", item->as_str, item->as_longdouble);
+    dbg(DBG_VVHIGH, "strtold for <%s> returned as %%Le: %.22Le", item->as_str, item->as_longdouble);
+    dbg(DBG_VVHIGH, "strtold for <%s> returned as %%Lf: %.22Lf", item->as_str, item->as_longdouble);
+    dbg(DBG_VVHIGH, "strtold returned an integer value: %s", item->as_longdouble_int ? "true" : "false");
 
     /*
      * note if value < 0
      */
-    if (ret->as_longdouble < 0) {
-	ret->is_negative = true;
+    if (item->as_longdouble < 0) {
+	item->is_negative = true;
     }
 
     /*
      * convert to double
      */
     errno = 0;			/* pre-clear conversion test */
-    ret->as_double = strtod(ret->as_str, &endptr);
-    if (errno != 0 || endptr == ret->as_str || endptr == NULL || *endptr != '\0') {
-	ret->double_sized = false;
-	dbg(DBG_VVHIGH, "strtod for <%s> failed", ret->as_str);
+    item->as_double = strtod(item->as_str, &endptr);
+    if (errno != 0 || endptr == item->as_str || endptr == NULL || *endptr != '\0') {
+	item->double_sized = false;
+	dbg(DBG_VVHIGH, "strtod for <%s> failed", item->as_str);
     } else {
-	ret->double_sized = true;
-	ret->as_double_int = (ret->as_double == floorl(ret->as_double));
-	dbg(DBG_VVHIGH, "strtod for <%s> returned as %%lg: %.22lg", ret->as_str, ret->as_double);
-	dbg(DBG_VVHIGH, "strtod for <%s> returned as %%le: %.22le", ret->as_str, ret->as_double);
-	dbg(DBG_VVHIGH, "strtod for <%s> returned as %%lf: %.22lf", ret->as_str, ret->as_double);
-	dbg(DBG_VVHIGH, "strtod returned an integer value: %s", ret->as_double_int ? "true" : "false");
+	item->double_sized = true;
+	item->as_double_int = (item->as_double == floorl(item->as_double));
+	dbg(DBG_VVHIGH, "strtod for <%s> returned as %%lg: %.22lg", item->as_str, item->as_double);
+	dbg(DBG_VVHIGH, "strtod for <%s> returned as %%le: %.22le", item->as_str, item->as_double);
+	dbg(DBG_VVHIGH, "strtod for <%s> returned as %%lf: %.22lf", item->as_str, item->as_double);
+	dbg(DBG_VVHIGH, "strtod returned an integer value: %s", item->as_double_int ? "true" : "false");
     }
 
     /*
      * convert to float
      */
     errno = 0;			/* pre-clear conversion test */
-    ret->as_float = strtof(ret->as_str, &endptr);
-    if (errno != 0 || endptr == ret->as_str || endptr == NULL || *endptr != '\0') {
-	ret->float_sized = false;
-	dbg(DBG_VVHIGH, "strtof for <%s> failed", ret->as_str);
+    item->as_float = strtof(item->as_str, &endptr);
+    if (errno != 0 || endptr == item->as_str || endptr == NULL || *endptr != '\0') {
+	item->float_sized = false;
+	dbg(DBG_VVHIGH, "strtof for <%s> failed", item->as_str);
     } else {
-	ret->float_sized = true;
-	ret->as_float_int = (ret->as_longdouble == floorl(ret->as_longdouble));
-	dbg(DBG_VVHIGH, "strtof for <%s> returned as %%g: %.22g", ret->as_str, ret->as_float);
-	dbg(DBG_VVHIGH, "strtof for <%s> returned as %%e: %.22e", ret->as_str, ret->as_float);
-	dbg(DBG_VVHIGH, "strtof for <%s> returned as %%f: %.22f", ret->as_str, ret->as_float);
-	dbg(DBG_VVHIGH, "strtof returned an integer value: %s", ret->as_float_int ? "true" : "false");
+	item->float_sized = true;
+	item->as_float_int = (item->as_longdouble == floorl(item->as_longdouble));
+	dbg(DBG_VVHIGH, "strtof for <%s> returned as %%g: %.22g", item->as_str, item->as_float);
+	dbg(DBG_VVHIGH, "strtof for <%s> returned as %%e: %.22e", item->as_str, item->as_float);
+	dbg(DBG_VVHIGH, "strtof for <%s> returned as %%f: %.22f", item->as_str, item->as_float);
+	dbg(DBG_VVHIGH, "strtof returned an integer value: %s", item->as_float_int ? "true" : "false");
     }
 
     /*
-     * return converted floating point value
+     * return the JSON parse tree element
      */
     return ret;
 }
@@ -4404,17 +4431,21 @@ malloc_json_conv_float(char const *str, size_t len)
  *	retlen	address of where to store length of str, if retlen != NULL
  *
  * returns:
- *	malloced struct json_floating with C floating point values based on JSON string
- *	NOTE: retlen, if non-NULL, is set to 0 on error
+ *	malloced JSON parser tree node converted JSON JSON floating point string
+ *
+ * NOTE: It is the responsibility of the calling function to link this
+ *	 malloced JSON parser tree node into the JSON parse tree.
+ *
+ * NOTE: retlen, if non-NULL, is set to 0 on error
  *
  * NOTE: This function will not return on malloc error.
  * NOTE: This function will not return NULL.
  */
-struct json_floating *
+struct json *
 malloc_json_conv_float_str(char const *str, size_t *retlen)
 {
-    struct json_floating *ret = NULL;	    /* malloced encoding string or NULL */
-    size_t len = 0;		    /* length of string to encode */
+    struct json *ret = NULL;		    /* JSON parser tree node to return */
+    size_t len = 0;			    /* length of string to encode */
 
     /*
      * firewall
@@ -4447,7 +4478,7 @@ malloc_json_conv_float_str(char const *str, size_t *retlen)
     }
 
     /*
-     * return encoded result or NULL
+     * return the JSON parse tree element
      */
     return ret;
 }
@@ -4463,39 +4494,51 @@ malloc_json_conv_float_str(char const *str, size_t *retlen)
  *	        false ==> permit a wider use of \-escaping and un-decoded char
  *
  * returns:
- *	malloced struct json_string with decoded values based on JSON encoded string
+ *	malloced JSON parser tree node converted JSON encoded string
+ *
+ * NOTE: It is the responsibility of the calling function to link this
+ *	 malloced JSON parser tree node into the JSON parse tree.
  *
  * NOTE: This function will not return on malloc error.
  * NOTE: This function will not return NULL.
  */
-struct json_string *
+struct json *
 malloc_json_conv_string(char const *str, size_t len, bool strict)
 {
-    struct json_string *ret = NULL;	    /* malloced decoding string or NULL */
+    struct json_string *item = NULL;	    /* malloced decoding string or NULL */
+    struct json *ret = NULL;		    /* JSON parser tree node to return */
 
     /*
-     * malloc the return string
+     * allocate the JSON parse tree element
      */
     errno = 0;			/* pre-clear errno for errp() */
-    ret = malloc(sizeof(*ret));
+    ret = calloc(1, sizeof(*ret));
     if (ret == NULL) {
-	errp(207, __func__, "malloc #0 error allocating %ju bytes", (uintmax_t)sizeof(*ret));
+	errp(207, __func__, "calloc #0 error allocating %ju bytes", (uintmax_t)sizeof(*ret));
 	not_reached();
     }
 
     /*
-     * initialize the return string
+     * initialize the JSON parse tree element
      */
-    memset(ret, 0, sizeof(*ret));
-    ret->as_str = NULL;
-    ret->str = NULL;
-    ret->converted = false;
-    ret->same = false;
-    ret->has_nul = false;
-    ret->slash = false;
-    ret->posix_safe = false;
-    ret->first_alphanum = false;
-    ret->upper = false;
+    ret->type = JSON_STRING;
+    ret->parent = NULL;
+    ret->prev = NULL;
+    ret->next = NULL;
+
+    /*
+     * initialize the JSON element
+     */
+    item = &(ret->element.string);
+    item->as_str = NULL;
+    item->str = NULL;
+    item->converted = false;
+    item->same = false;
+    item->has_nul = false;
+    item->slash = false;
+    item->posix_safe = false;
+    item->first_alphanum = false;
+    item->upper = false;
 
     /*
      * firewall
@@ -4517,53 +4560,53 @@ malloc_json_conv_string(char const *str, size_t len, bool strict)
      * duplicate the JSON encoded string
      */
     errno = 0;			/* pre-clear errno for errp() */
-    ret->as_str = malloc(len+1+1);
-    if (ret->as_str == NULL) {
+    item->as_str = malloc(len+1+1);
+    if (item->as_str == NULL) {
 	errp(208, __func__, "malloc #1 error allocating %ju bytes", (uintmax_t)(len+1+1));
 	not_reached();
     }
-    memcpy(ret->as_str, str, len+1);
-    ret->as_str[len] = '\0';	/* paranoia */
-    ret->as_str[len+1] = '\0';	/* paranoia */
-    ret->as_str_len = len;
+    memcpy(item->as_str, str, len+1);
+    item->as_str[len] = '\0';	/* paranoia */
+    item->as_str[len+1] = '\0';	/* paranoia */
+    item->as_str_len = len;
 
     /*
      * decode the JSON encoded string
      */
-    ret->str = malloc_json_decode_str(ret->as_str, &(ret->str_len), strict);
-    if (ret->str == NULL) {
+    item->str = malloc_json_decode_str(item->as_str, &(item->str_len), strict);
+    if (item->str == NULL) {
 	warn(__func__, "JSON string decode for %s mode failed for: <%s>",
-		       (strict ? "strict" : "non-strict"), ret->as_str);
+		       (strict ? "strict" : "non-strict"), item->as_str);
 	return ret;
     }
-    ret->converted = true;	/* JSON decoding successful */
+    item->converted = true;	/* JSON decoding successful */
 
     /*
      * determine if decoded string is identical to the original JSON encoded string
      */
-    if (ret->as_str_len == ret->str_len && memcmp(ret->as_str, ret->str, ret->as_str_len) == 0) {
-	ret->same = true;	/* decoded string same an original JSON encoded string */
+    if (item->as_str_len == item->str_len && memcmp(item->as_str, item->str, item->as_str_len) == 0) {
+	item->same = true;	/* decoded string same an original JSON encoded string */
     }
 
     /*
      * determine if decoded JSON string is a C string
      */
-    ret->has_nul = is_string(ret->str, ret->str_len);
+    item->has_nul = is_string(item->str, item->str_len);
 
     /*
      * determine POSIX state of the decoded string
      */
-    posix_safe_chk(ret->str, ret->str_len, &ret->slash, &ret->posix_safe, &ret->first_alphanum, &ret->upper);
+    posix_safe_chk(item->str, item->str_len, &item->slash, &item->posix_safe, &item->first_alphanum, &item->upper);
 
     /*
-     * return converted floating point value
+     * return the JSON parse tree element
      */
     return ret;
 }
 
 
 /*
- * malloc_json_conv_string_str - convert JSON floating point string to C integer value
+ * malloc_json_conv_string_str - convert JSON string to C integer value
  *
  * This is an simplified interface for malloc_json_conv_float().
  *
@@ -4574,16 +4617,20 @@ malloc_json_conv_string(char const *str, size_t len, bool strict)
  *	        false ==> permit a wider use of \-escaping and un-decoded char
  *
  * returns:
- *	malloced struct json_floating with C floating point values based on JSON string
- *	NOTE: retlen, if non-NULL, is set to 0 on error
+ *	malloced JSON parser tree node converted JSON string
+ *
+ * NOTE: It is the responsibility of the calling function to link this
+ *	 malloced JSON parser tree node into the JSON parse tree.
+ *
+ * NOTE: retlen, if non-NULL, is set to 0 on error
  *
  * NOTE: This function will not return on malloc error.
  * NOTE: This function will not return NULL.
  */
-struct json_string *
+struct json *
 malloc_json_conv_string_str(char const *str, size_t *retlen, bool strict)
 {
-    struct json_string *ret = NULL;	    /* malloced encoding string or NULL */
+    struct json *ret = NULL;		    /* JSON parser tree node to return */
     size_t len = 0;			    /* length of string to encode */
 
     /*
@@ -4617,7 +4664,7 @@ malloc_json_conv_string_str(char const *str, size_t *retlen, bool strict)
     }
 
     /*
-     * return encoded result or NULL
+     * return the JSON parse tree element
      */
     return ret;
 }

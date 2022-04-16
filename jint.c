@@ -63,7 +63,8 @@ main(int argc, char *argv[])
     bool error = false;		/* true ==> JSON integer conversion test suite error */
     bool test_mode = false;	/* true ==> perform JSON integer conversion test suite */
     bool strict = false;	/* true ==> JSON decode in strict mode */
-    struct json_integer *ival = NULL;	/* malloc_json_conv_int_str() return */
+    struct json *node = NULL;	/* malloced JSON parser tree node */
+    struct json_integer *item = NULL;	/* integer element in JSON parser tree node */
     int arg_cnt = 0;		/* number of args to process */
 #if defined(JINT_TEST_ENABLED)
     char *test = NULL;		/* test string */
@@ -149,11 +150,12 @@ main(int argc, char *argv[])
 	    /*
 	     * convert test into struct json_integer
 	     */
-	    ival = malloc_json_conv_int_str(test, &retlen);
-	    if (ival == NULL) {
+	    node = malloc_json_conv_int_str(test, &retlen);
+	    if (node == NULL) {
 		err(11, __func__, "malloc_json_conv_int_str() is not supposed to return NULL!");
 		not_reached();
 	    }
+	    item = &(node->element.integer);
 
 	    /*
 	     * test string lengths
@@ -180,62 +182,62 @@ main(int argc, char *argv[])
 	     */
 
 	    /* test: top level booleans */
-	    if (test_result[i].converted != ival->converted) {
-		dbg(DBG_VHIGH, "test_result[%d].converted: %d != ival.converted: %d",
-			     i, test_result[i].converted, ival->converted);
+	    if (test_result[i].converted != item->converted) {
+		dbg(DBG_VHIGH, "test_result[%d].converted: %d != item.converted: %d",
+			     i, test_result[i].converted, item->converted);
 		test_error = true;
 	    } else {
-		dbg(DBG_VVHIGH, "test_result[%d].converted: %d == ival.converted: %d",
-			        i, test_result[i].converted, ival->converted);
+		dbg(DBG_VVHIGH, "test_result[%d].converted: %d == item.converted: %d",
+			        i, test_result[i].converted, item->converted);
 	    }
-	    if (test_result[i].is_negative != ival->is_negative) {
-		dbg(DBG_VHIGH, "test_result[%d].is_negative: %d != ival.is_negative: %d",
-			     i, test_result[i].is_negative, ival->is_negative);
+	    if (test_result[i].is_negative != item->is_negative) {
+		dbg(DBG_VHIGH, "test_result[%d].is_negative: %d != item.is_negative: %d",
+			     i, test_result[i].is_negative, item->is_negative);
 		test_error = true;
 	    } else {
-		dbg(DBG_VVHIGH, "test_result[%d].is_negative: %d == ival.is_negative: %d",
-			        i, test_result[i].is_negative, ival->is_negative);
+		dbg(DBG_VVHIGH, "test_result[%d].is_negative: %d == item.is_negative: %d",
+			        i, test_result[i].is_negative, item->is_negative);
 	    }
 
 	    /* test: int8_t */
 	    check_val(&test_error, "int8", i,
-				   test_result[i].int8_sized, ival->int8_sized,
-				   test_result[i].as_int8, ival->as_int8);
+				   test_result[i].int8_sized, item->int8_sized,
+				   test_result[i].as_int8, item->as_int8);
 
 	    /* test: uint8_t */
 	    check_uval(&test_error, "uint8", i,
-				    test_result[i].uint8_sized, ival->uint8_sized,
-				    test_result[i].as_uint8, ival->as_uint8);
+				    test_result[i].uint8_sized, item->uint8_sized,
+				    test_result[i].as_uint8, item->as_uint8);
 
 	    /* test: int16_t */
 	    check_val(&test_error, "int16", i,
-				   test_result[i].int16_sized, ival->int16_sized,
-				   test_result[i].as_int16, ival->as_int16);
+				   test_result[i].int16_sized, item->int16_sized,
+				   test_result[i].as_int16, item->as_int16);
 
 	    /* test: uint16_t */
 	    check_uval(&test_error, "uint16", i,
-				    test_result[i].uint16_sized, ival->uint16_sized,
-				    test_result[i].as_uint16, ival->as_uint16);
+				    test_result[i].uint16_sized, item->uint16_sized,
+				    test_result[i].as_uint16, item->as_uint16);
 
 	    /* test: int32_t */
 	    check_val(&test_error, "int32", i,
-				   test_result[i].int32_sized, ival->int32_sized,
-				   test_result[i].as_int32, ival->as_int32);
+				   test_result[i].int32_sized, item->int32_sized,
+				   test_result[i].as_int32, item->as_int32);
 
 	    /* test: uint32_t */
 	    check_uval(&test_error, "uint32", i,
-				    test_result[i].uint32_sized, ival->uint32_sized,
-				    test_result[i].as_uint32, ival->as_uint32);
+				    test_result[i].uint32_sized, item->uint32_sized,
+				    test_result[i].as_uint32, item->as_uint32);
 
 	    /* test: int64_t */
 	    check_val(&test_error, "int64", i,
-				   test_result[i].int64_sized, ival->int64_sized,
-				   test_result[i].as_int64, ival->as_int64);
+				   test_result[i].int64_sized, item->int64_sized,
+				   test_result[i].as_int64, item->as_int64);
 
 	    /* test: uint64_t */
 	    check_uval(&test_error, "uint64", i,
-				    test_result[i].uint64_sized, ival->uint64_sized,
-				    test_result[i].as_uint64, ival->as_uint64);
+				    test_result[i].uint64_sized, item->uint64_sized,
+				    test_result[i].as_uint64, item->as_uint64);
 
 	    /*
 	     * tests for strict mode only
@@ -244,48 +246,48 @@ main(int argc, char *argv[])
 
 		/* test: int */
 		check_val(&test_error, "int", i,
-				       test_result[i].int_sized, ival->int_sized,
-				       test_result[i].as_int, ival->as_int);
+				       test_result[i].int_sized, item->int_sized,
+				       test_result[i].as_int, item->as_int);
 
 		/* test: unsigned int */
 		check_uval(&test_error, "uint", i,
-					test_result[i].uint_sized, ival->uint_sized,
-					test_result[i].as_uint, ival->as_uint);
+					test_result[i].uint_sized, item->uint_sized,
+					test_result[i].as_uint, item->as_uint);
 
 		/* test: long */
 		check_val(&test_error, "long", i,
-				       test_result[i].long_sized, ival->long_sized,
-				       test_result[i].as_long, ival->as_long);
+				       test_result[i].long_sized, item->long_sized,
+				       test_result[i].as_long, item->as_long);
 
 		/* test: unsigned long */
 		check_uval(&test_error, "ulong", i,
-					test_result[i].ulong_sized, ival->ulong_sized,
-					test_result[i].as_ulong, ival->as_ulong);
+					test_result[i].ulong_sized, item->ulong_sized,
+					test_result[i].as_ulong, item->as_ulong);
 
 		/* test: long long */
 		check_val(&test_error, "longlong", i,
-				       test_result[i].longlong_sized, ival->longlong_sized,
-				       test_result[i].as_longlong, ival->as_longlong);
+				       test_result[i].longlong_sized, item->longlong_sized,
+				       test_result[i].as_longlong, item->as_longlong);
 
 		/* test: unsigned long long */
 		check_uval(&test_error, "ulonglong", i,
-					test_result[i].ulonglong_sized, ival->ulonglong_sized,
-					test_result[i].as_ulonglong, ival->as_ulonglong);
+					test_result[i].ulonglong_sized, item->ulonglong_sized,
+					test_result[i].as_ulonglong, item->as_ulonglong);
 
 		/* test: ssize_t */
 		check_val(&test_error, "ssize", i,
-				       test_result[i].ssize_sized, ival->ssize_sized,
-				       test_result[i].as_ssize, ival->as_ssize);
+				       test_result[i].ssize_sized, item->ssize_sized,
+				       test_result[i].as_ssize, item->as_ssize);
 
 		/* test: size_t */
 		check_uval(&test_error, "size", i,
-					test_result[i].size_sized, ival->size_sized,
-					test_result[i].as_size, ival->as_size);
+					test_result[i].size_sized, item->size_sized,
+					test_result[i].as_size, item->as_size);
 
 		/* test: off_t */
 		check_val(&test_error, "off", i,
-				       test_result[i].off_sized, ival->off_sized,
-				       test_result[i].as_off, ival->as_off);
+				       test_result[i].off_sized, item->off_sized,
+				       test_result[i].as_off, item->as_off);
 	    }
 
 	    /*
@@ -294,13 +296,13 @@ main(int argc, char *argv[])
 
 	    /* test: intmax_t */
 	    check_val(&test_error, "intmax", i,
-				   test_result[i].maxint_sized, ival->maxint_sized,
-				   test_result[i].as_maxint, ival->as_maxint);
+				   test_result[i].maxint_sized, item->maxint_sized,
+				   test_result[i].as_maxint, item->as_maxint);
 
 	    /* test: uintmax_t */
 	    check_uval(&test_error, "uintmax", i,
-				    test_result[i].umaxint_sized, ival->umaxint_sized,
-				    test_result[i].as_umaxint, ival->as_umaxint);
+				    test_result[i].umaxint_sized, item->umaxint_sized,
+				    test_result[i].as_umaxint, item->as_umaxint);
 
 	    /*
 	     * if this test failed, force non-zero exit
@@ -393,11 +395,12 @@ main(int argc, char *argv[])
 	 * turn calls the malloc_json_conv_int() interface in order
 	 * to check the inputlen vs *retlen value.
 	 */
-	ival = malloc_json_conv_int_str(input, &retlen);
-	if (ival == NULL) {
+	node = malloc_json_conv_int_str(input, &retlen);
+	if (node == NULL) {
 	    err(12, __func__, "malloc_json_conv_int_str() is not supposed to return NULL!");
 	    not_reached();
 	}
+	item = &(node->element.integer);
 
 	/*
 	 * output struct json_integer element, unless -q
@@ -414,7 +417,7 @@ main(int argc, char *argv[])
 	     * print JSON string
 	     */
 	    print("\t\"%s\",\t/* malloced JSON integer string, whitespace trimmed if needed */\n\n",
-		  ival->as_str);
+		  item->as_str);
 
 	    /*
 	     * print JSON string lengths
@@ -426,140 +429,140 @@ main(int argc, char *argv[])
 	     * print bool converted and bool is_negative
 	     */
 	    print("\t%s,\t/* true ==> able to convert JSON integer to some form of C integer type */\n",
-		  ival->converted ? "true" : "false");
+		  item->converted ? "true" : "false");
 	    print("\t%s,\t/* true ==> value < 0 */\n\n",
-		  ival->is_negative ? "true" : "false");
+		  item->is_negative ? "true" : "false");
 
 	    /*
 	     * print int8_t info
 	     */
-	    prinfo(ival->int8_sized, ival->as_int8,
+	    prinfo(item->int8_sized, item->as_int8,
 	           "true ==> converted JSON integer to C int8_t",
 		   "JSON integer value in int8_t form");
 
 	    /*
 	     * print uint8_t info
 	     */
-	    pruinfo(ival->uint8_sized, ival->as_uint8,
+	    pruinfo(item->uint8_sized, item->as_uint8,
 	            "true ==> converted JSON integer to C uint8_t",
 		    "JSON integer value in uint8_t form");
 
 	    /*
 	     * print int16_t info
 	     */
-	    prinfo(ival->int16_sized, ival->as_int16,
+	    prinfo(item->int16_sized, item->as_int16,
 	           "true ==> converted JSON integer to C int16_t",
 		   "JSON integer value in int16_t form");
 
 	    /*
 	     * print uint16_t info
 	     */
-	    pruinfo(ival->uint16_sized, ival->as_uint16,
+	    pruinfo(item->uint16_sized, item->as_uint16,
 	            "true ==> converted JSON integer to C uint16_t",
 		    "JSON integer value in uint16_t form");
 
 	    /*
 	     * print int32_t info
 	     */
-	    prinfo(ival->int32_sized, ival->as_int32,
+	    prinfo(item->int32_sized, item->as_int32,
 	           "true ==> converted JSON integer to C int32_t",
 		   "JSON integer value in int32_t form");
 
 	    /*
 	     * print uint32_t info
 	     */
-	    pruinfo(ival->uint32_sized, ival->as_uint32,
+	    pruinfo(item->uint32_sized, item->as_uint32,
 	            "true ==> converted JSON integer to C uint32_t",
 		    "JSON integer value in uint32_t form");
 
 	    /*
 	     * print int64_t info
 	     */
-	    prinfo(ival->int64_sized, ival->as_int64,
+	    prinfo(item->int64_sized, item->as_int64,
 	           "true ==> converted JSON integer to C int64_t",
 		   "JSON integer value in int64_t form");
 
 	    /*
 	     * print uint64_t info
 	     */
-	    pruinfo(ival->uint64_sized, ival->as_uint64,
+	    pruinfo(item->uint64_sized, item->as_uint64,
 	            "true ==> converted JSON integer to C uint64_t",
 		    "JSON integer value in uint64_t form");
 
 	    /*
 	     * print int info
 	     */
-	    prinfo(ival->int_sized, ival->as_int,
+	    prinfo(item->int_sized, item->as_int,
 	           "true ==> converted JSON integer to C int",
 		   "JSON integer value in int form");
 
 	    /*
 	     * print unsigned int info
 	     */
-	    pruinfo(ival->uint_sized, ival->as_uint,
+	    pruinfo(item->uint_sized, item->as_uint,
 	            "true ==> converted JSON integer to C unsigned int",
 		    "JSON integer value in unsigned int form");
 
 	    /*
 	     * print long info
 	     */
-	    prinfo(ival->long_sized, ival->as_long,
+	    prinfo(item->long_sized, item->as_long,
 	           "true ==> converted JSON integer to C long",
 		   "JSON integer value in long form");
 
 	    /*
 	     * print unsigned long info
 	     */
-	    pruinfo(ival->ulong_sized, ival->as_ulong,
+	    pruinfo(item->ulong_sized, item->as_ulong,
 	            "true ==> converted JSON integer to C unsigned long",
 		    "JSON integer value in unsigned long form");
 
 	    /*
 	     * print long long info
 	     */
-	    prinfo(ival->longlong_sized, ival->as_longlong,
+	    prinfo(item->longlong_sized, item->as_longlong,
 	           "true ==> converted JSON integer to C long long",
 		   "JSON integer value in long long form");
 
 	    /*
 	     * print unsigned long long info
 	     */
-	    pruinfo(ival->ulonglong_sized, ival->as_ulonglong,
+	    pruinfo(item->ulonglong_sized, item->as_ulonglong,
 	            "true ==> converted JSON integer to C unsigned long long",
 		    "JSON integer value in unsigned long long form");
 
 	    /*
 	     * print ssize_t info
 	     */
-	    prinfo(ival->ssize_sized, ival->as_ssize,
+	    prinfo(item->ssize_sized, item->as_ssize,
 	           "true ==> converted JSON integer to C ssize_t",
 		   "JSON integer value in ssize_t form");
 
 	    /*
 	     * print size_t info
 	     */
-	    pruinfo(ival->size_sized, ival->as_size,
+	    pruinfo(item->size_sized, item->as_size,
 	            "true ==> converted JSON integer to C size_t",
 		    "JSON integer value in size_t form");
 
 	    /*
 	     * print off_t info
 	     */
-	    prinfo(ival->off_sized, ival->as_off,
+	    prinfo(item->off_sized, item->as_off,
 	           "true ==> converted JSON integer to C off_t",
 		   "JSON integer value in off_t form");
 
 	    /*
 	     * print intmax_t info
 	     */
-	    prinfo(ival->maxint_sized, ival->as_maxint,
+	    prinfo(item->maxint_sized, item->as_maxint,
 	           "true ==> converted JSON integer to C intmax_t",
 		   "JSON integer value in intmax_t form");
 
 	    /*
 	     * print uintmax_t info
 	     */
-	    pruinfo(ival->umaxint_sized, ival->as_umaxint,
+	    pruinfo(item->umaxint_sized, item->as_umaxint,
 	            "true ==> converted JSON integer to C uintmax_t",
 		    "JSON integer value in uintmax_t form");
 
@@ -572,9 +575,9 @@ main(int argc, char *argv[])
 	/*
 	 * free buffer
 	 */
-	if (ival != NULL) {
-	    free(ival);
-	    ival = NULL;
+	if (item != NULL) {
+	    free(item);
+	    item = NULL;
 	}
     }
 
@@ -611,9 +614,9 @@ main(int argc, char *argv[])
  *	type	- test aspect name type
  *	testnum	- test number
  *	size_a	- reference (test_result[i]) conversion into type boolean
- *	size_b	- converted (ival->) type boolean
+ *	size_b	- converted (item->) type boolean
  *	val_a	- signed reference (test_result[i]) conversion into type value
- *	val_b	- signed reference (ival->) conversion into type value
+ *	val_b	- signed reference (item->) conversion into type value
  *
  * NOTE: This function will warn in error.
  */
@@ -636,13 +639,13 @@ check_val(bool *testp, char const *type, int testnum, bool size_a, bool size_b, 
      * compare booleans
      */
     if (size_a != size_b) {
-	dbg(DBG_VHIGH, "test_result[%d].%s_sized: %s != ival->%s_sized: %s",
+	dbg(DBG_VHIGH, "test_result[%d].%s_sized: %s != item->%s_sized: %s",
 		       testnum,
 		       type, size_a ? "true" : "false",
 		       type, size_b ? "true" : "false");
 	*testp = true; /* test failed */
     } else {
-	dbg(DBG_VVHIGH, "test_result[%d].%s_sized: %s == ival->%s_sized: %s",
+	dbg(DBG_VVHIGH, "test_result[%d].%s_sized: %s == item->%s_sized: %s",
 		        testnum,
 		        type, size_a ? "true" : "false",
 		        type, size_b ? "true" : "false");
@@ -652,13 +655,13 @@ check_val(bool *testp, char const *type, int testnum, bool size_a, bool size_b, 
      * compare values
      */
     if (size_a == true && val_a != val_b) {
-	dbg(DBG_VHIGH, "test_result[%d].as_%s: %jd != ival->as_%s: %jd",
+	dbg(DBG_VHIGH, "test_result[%d].as_%s: %jd != item->as_%s: %jd",
 		       testnum,
 		       type, val_a,
 		       type, val_b);
 	*testp = true; /* test failed */
     } else if (size_a == true) {
-	dbg(DBG_VVHIGH, "test_result[%d].as_%s: %jd == ival->as_%s: %jd",
+	dbg(DBG_VVHIGH, "test_result[%d].as_%s: %jd == item->as_%s: %jd",
 		        testnum,
 		        type, val_a,
 		        type, val_b);
@@ -678,9 +681,9 @@ check_val(bool *testp, char const *type, int testnum, bool size_a, bool size_b, 
  *	type	- test aspect name type
  *	testnum	- test number
  *	size_a	- reference (test_result[i]) conversion into type boolean
- *	size_b	- converted (ival->) type boolean
+ *	size_b	- converted (item->) type boolean
  *	val_a	- unsigned reference (test_result[i]) conversion into type value
- *	val_b	- unsigned reference (ival->) conversion into type value
+ *	val_b	- unsigned reference (item->) conversion into type value
  *
  * NOTE: This function will warn in error.
  */
@@ -703,13 +706,13 @@ check_uval(bool *testp, char const *type, int testnum, bool size_a, bool size_b,
      * compare booleans
      */
     if (size_a != size_b) {
-	dbg(DBG_VHIGH, "test_result[%d].%s_sized: %s != ival->%s_sized: %s",
+	dbg(DBG_VHIGH, "test_result[%d].%s_sized: %s != item->%s_sized: %s",
 		       testnum,
 		       type, size_a ? "true" : "false",
 		       type, size_b ? "true" : "false");
 	*testp = true; /* test failed */
     } else {
-	dbg(DBG_VVHIGH, "test_result[%d].%s_sized: %s == ival->%s_sized: %s",
+	dbg(DBG_VVHIGH, "test_result[%d].%s_sized: %s == item->%s_sized: %s",
 		        testnum,
 		        type, size_a ? "true" : "false",
 		        type, size_b ? "true" : "false");
@@ -719,13 +722,13 @@ check_uval(bool *testp, char const *type, int testnum, bool size_a, bool size_b,
      * compare values
      */
     if (size_a == true && val_a != val_b) {
-	dbg(DBG_VHIGH, "test_result[%d].as_%s: %ju != ival->as_%s: %ju",
+	dbg(DBG_VHIGH, "test_result[%d].as_%s: %ju != item->as_%s: %ju",
 		       testnum,
 		       type, val_a,
 		       type, val_b);
 	*testp = true; /* test failed */
     } else {
-	dbg(DBG_VVHIGH, "test_result[%d].as_%s: %ju == ival->as_%s: %ju",
+	dbg(DBG_VVHIGH, "test_result[%d].as_%s: %ju == item->as_%s: %ju",
 		        testnum,
 		        type, val_a,
 		       type, val_b);

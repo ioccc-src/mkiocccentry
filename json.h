@@ -356,19 +356,19 @@ struct json_array
  */
 enum element_type {
     JSON_EOT	    = -1,   /* special end of the table value */
-    JSON_UNSET	    = 0,    /* JSON element has not been set */
+    JSON_UNSET	    = 0,    /* JSON element has not been set - must be the value 0 */
     JSON_INT,		    /* JSON element is an integer - see struct json_integer */
-    JSON_FLOAT,	    /* JSON element is a float - see struct json_floating */
+    JSON_FLOAT,		    /* JSON element is a float - see struct json_floating */
     JSON_STRING,	    /* JSON element is a string - see struct json_string */
     JSON_BOOL,		    /* JSON element is a boolean - see struct json_boolean */
     JSON_NULL,		    /* JSON element is a null - see struct json_null */
     JSON_OBJECT,	    /* JSON element is a { members } */
     JSON_MEMBER,	    /* JSON element is a member */
-    JSON_ARRAY,	    /* JSON element is a [ elements ] */
+    JSON_ARRAY,		    /* JSON element is a [ elements ] */
 };
 
 /*
- * struct json - struct for the JSON parser tree
+ * struct json - element for the JSON parse tree
  *
  * For the parse tree we have this struct and its associated union. At the risk
  * of stating the obvious this is incomplete but it's a good start.
@@ -377,9 +377,9 @@ struct json
 {
     enum element_type type;		/* union element specifier */
     union json_union {
-	struct json_string string;	/* JSON_STRING - value is a string */
 	struct json_integer integer;	/* JSON_INT - value is either a signed or unsigned integer */
 	struct json_floating floating;	/* JSON_FLOAT - value is a floating point */
+	struct json_string string;	/* JSON_STRING - value is a string */
 	struct json_boolean boolean;	/* JSON_BOOL - value is a JSON boolean */
 	struct json_null null;		/* JSON_NULL - value is a JSON null value */
 	struct json_object object;	/* JSON_OBJECT - value is a JSON { members } */
@@ -636,12 +636,12 @@ extern void free_author_array(struct author *authorp, int author_count);
 extern bool is_json_code_ignored(int code);
 extern void ignore_json_code(int code);
 /* JSON conversion functions */
-extern struct json_integer *malloc_json_conv_int(char const *str, size_t len);
-extern struct json_integer *malloc_json_conv_int_str(char const *str, size_t *retlen);
-extern struct json_floating *malloc_json_conv_float(char const *str, size_t len);
-extern struct json_floating *malloc_json_conv_float_str(char const *str, size_t *retlen);
-extern struct json_string *malloc_json_conv_string(char const *str, size_t len, bool strict);
-extern struct json_string *malloc_json_conv_string_str(char const *str, size_t *retlen, bool strict);
+extern struct json *malloc_json_conv_int(char const *str, size_t len);
+extern struct json *malloc_json_conv_int_str(char const *str, size_t *retlen);
+extern struct json *malloc_json_conv_float(char const *str, size_t len);
+extern struct json *malloc_json_conv_float_str(char const *str, size_t *retlen);
+extern struct json *malloc_json_conv_string(char const *str, size_t len, bool strict);
+extern struct json *malloc_json_conv_string_str(char const *str, size_t *retlen, bool strict);
 
 
 #endif /* INCLUDE_JSON_H */
