@@ -1864,7 +1864,7 @@ read_all(FILE *stream, size_t *psize)
      */
     errno = 0;			/* pre-clear errno for warnp() */
     dbg(DBG_VVHIGH, "%s: about to start calloc cycle: %ld", __func__, realloc_cycle);
-    buf = calloc(INITIAL_BUF_SIZE, 1);
+    buf = calloc(INITIAL_BUF_SIZE, sizeof(uint8_t));
     if (buf == NULL) {
 	warnp(__func__, "calloc of %ju bytes failed", (uintmax_t)INITIAL_BUF_SIZE);
 	return NULL;

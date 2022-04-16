@@ -1805,7 +1805,7 @@ default_handle(char const *name)
 	 */
 	def_len = LITLEN("jrandom+") + 3*RANDOM_VAL_LEN;
 	errno = 0;		/* pre-clear errno for errp() */
-	ret = calloc(def_len+1, 1);
+	ret = calloc(def_len+1, sizeof(char));
 	if (ret == NULL) {
 	    errp(19, __func__, "calloc failed for %ju bytes", (uintmax_t)(def_len+1));
 	    not_reached();
@@ -1829,7 +1829,7 @@ default_handle(char const *name)
 	 * malloc the default default author handle
 	 */
 	errno = 0;		/* pre-clear errno for errp() */
-	ret = calloc(def_len+1, 1);
+	ret = calloc(def_len+1, sizeof(char));
 	if (ret == NULL) {
 	    errp(21, __func__, "calloc failed for %ju bytes", (uintmax_t)(def_len+1));
 	    not_reached();

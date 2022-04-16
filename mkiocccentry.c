@@ -5052,7 +5052,7 @@ write_info(struct info *infop, char const *entry_dir, char const *jinfochk, char
      */
     utctime_len = MAX_TIMESTAMP_LEN + 1;    /* + 1 for trailing NUL byte */
     errno = 0;			/* pre-clear errno for errp() */
-    infop->common.utctime = (char *)calloc(utctime_len + 1, 1); /* + 1 for paranoia padding */
+    infop->common.utctime = (char *)calloc(utctime_len + 1, sizeof(char)); /* + 1 for paranoia padding */
     if (infop->common.utctime == NULL) {
 	errp(160, __func__, "calloc of %ju bytes failed", (uintmax_t)utctime_len + 1);
 	not_reached();
