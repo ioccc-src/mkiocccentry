@@ -1629,7 +1629,7 @@ get_entry_num(struct info *infop)
 	ret = sscanf(entry_str, "%d%c", &entry_num, &guard);
 	if (ret != 1 || entry_num < 0 || entry_num > MAX_ENTRY_NUM) {
 	    errno = 0;		/* pre-clear errno for warnp() */
-	    ret = fprintf(stderr, "\nThe entry number must be a number from 0 thru %d, please re-enter.\n", MAX_ENTRY_NUM);
+	    ret = fprintf(stderr, "\nThe entry number must be a number from 0 through %d, please re-enter.\n", MAX_ENTRY_NUM);
 	    if (ret <= 0) {
 		warnp(__func__, "fprintf error while informing about the valid entry number range");
 	    }
@@ -3536,7 +3536,7 @@ get_author_info(struct info *infop, char *ioccc_id, struct author **author_set_p
 	ret = sscanf(author_count_str, "%d%c", &author_count, &guard);
 	if (ret != 1 || author_count < 1 || author_count > MAX_AUTHORS) {
 	    errno = 0;		/* pre-clear errno for warnp() */
-	    ret = fprintf(stderr, "\nThe number of authors must a number from 1 thru %d, please re-enter.\n", MAX_AUTHORS);
+	    ret = fprintf(stderr, "\nThe number of authors must a number from 1 through %d, please re-enter.\n", MAX_AUTHORS);
 	    if (ret <= 0) {
 		warnp(__func__, "fprintf error #0 while printing author number range");
 	    }
