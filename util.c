@@ -2020,7 +2020,7 @@ is_string(char const * const ptr, size_t len)
      * process the result of the NUL byte search
      */
     if (nul_found == NULL) {
-	dbg(DBG_VVHIGH, "is_string: no NUL found from ptr thru ptr[%jd]",
+	dbg(DBG_VVHIGH, "is_string: no NUL found from ptr through ptr[%jd]",
 			(intmax_t)(len-1));
 	return false;
     }
