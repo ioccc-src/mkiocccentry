@@ -138,14 +138,14 @@ extern struct ignore_json_code *ignore_json_code_set;
  * parsed JSON integer
  *
  * NOTE: The as_str is normally the same as the string that was passed to, say, the
- *	 malloc_json_conv_int() function.  It can differ in a few ways.  The end of the
- *	 string passed to malloc_json_conv_int(str, len) does not need to be NUL terminated,
+ *	 calloc_json_conv_int() function.  It can differ in a few ways.  The end of the
+ *	 string passed to calloc_json_conv_int(str, len) does not need to be NUL terminated,
  *	 whereas as_str will be NUL terminated at the end of the string.
  *	 If the characters pointed at by str start with whitespace or have trailing
  *	 whitespace, then as_str will hove those characters trimmed off.
- *	 Normally the bison / flex code that would call malloc_json_conv_int(str, len)
+ *	 Normally the bison / flex code that would call calloc_json_conv_int(str, len)
  *	 will ONLY have the JSON integer string, we note this in case some other
- *	 future code that is not a careful calls malloc_json_conv_int(str, len).
+ *	 future code that is not a careful calls calloc_json_conv_int(str, len).
  */
 struct json_integer
 {
@@ -220,14 +220,14 @@ struct json_integer
  * parsed JSON floating point value
  *
  * NOTE: The as_str is normally the same as the string that was passed to, say, the
- *	 malloc_json_conv_float() function.  It can differ in a few ways.  The end of the
- *	 string passed to malloc_json_conv_float(str, len) does not need to be NUL terminated,
+ *	 calloc_json_conv_float() function.  It can differ in a few ways.  The end of the
+ *	 string passed to calloc_json_conv_float(str, len) does not need to be NUL terminated,
  *	 whereas as_str will be NUL terminated at the end of the string.
  *	 If the characters pointed at by str start with whitespace or have trailing
  *	 whitespace, then as_str will have those characters trimmed off.
- *	 Normally the bison / flex code that would call malloc_json_conv_float(str, len)
+ *	 Normally the bison / flex code that would call calloc_json_conv_float(str, len)
  *	 will ONLY have the JSON integer string, we note this in case some other
- *	 future code that is not a careful calls malloc_json_conv_float(str, len).
+ *	 future code that is not a careful calls calloc_json_conv_float(str, len).
  */
 struct json_floating
 {
@@ -639,16 +639,16 @@ extern void free_author_array(struct author *authorp, int author_count);
 extern bool is_json_code_ignored(int code);
 extern void ignore_json_code(int code);
 /* JSON conversion functions */
-extern struct json *malloc_json_conv_int(char const *str, size_t len);
-extern struct json *malloc_json_conv_int_str(char const *str, size_t *retlen);
-extern struct json *malloc_json_conv_float(char const *str, size_t len);
-extern struct json *malloc_json_conv_float_str(char const *str, size_t *retlen);
-extern struct json *malloc_json_conv_string(char const *str, size_t len, bool strict);
-extern struct json *malloc_json_conv_string_str(char const *str, size_t *retlen, bool strict);
-extern struct json *malloc_json_conv_bool(char const *str, size_t len);
-extern struct json *malloc_json_conv_bool_str(char const *str, size_t *retlen);
-extern struct json *malloc_json_conv_null(char const *str, size_t len);
-extern struct json *malloc_json_conv_null_str(char const *str, size_t *retlen);
+extern struct json *calloc_json_conv_int(char const *str, size_t len);
+extern struct json *calloc_json_conv_int_str(char const *str, size_t *retlen);
+extern struct json *calloc_json_conv_float(char const *str, size_t len);
+extern struct json *calloc_json_conv_float_str(char const *str, size_t *retlen);
+extern struct json *calloc_json_conv_string(char const *str, size_t len, bool strict);
+extern struct json *calloc_json_conv_string_str(char const *str, size_t *retlen, bool strict);
+extern struct json *calloc_json_conv_bool(char const *str, size_t len);
+extern struct json *calloc_json_conv_bool_str(char const *str, size_t *retlen);
+extern struct json *calloc_json_conv_null(char const *str, size_t len);
+extern struct json *calloc_json_conv_null_str(char const *str, size_t *retlen);
 
 
 #endif /* INCLUDE_JSON_H */
