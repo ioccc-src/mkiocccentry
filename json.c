@@ -3750,11 +3750,11 @@ ignore_json_code(int code)
 
 
 /*
- * malloc_json_conv_int - convert JSON integer string to C integer value
+ * malloc_json_conv_int - convert JSON integer string to C integer
  *
  * given:
  *	str	a JSON integer string
- *	len	length starting at str of the JSON string
+ *	len	length, starting at str, of the JSON string
  *
  * returns:
  *	malloced JSON parser tree node converted JSON integer
@@ -3769,9 +3769,9 @@ struct json *
 malloc_json_conv_int(char const *str, size_t len)
 {
     struct json *ret = NULL;		    /* JSON parser tree node to return */
-    struct json_integer *item = NULL;	    /* malloced decoding string or NULL */
-    char *endptr;		    /* first invalid character or str */
-    size_t digits = 0;		    /* number of digits in JSON integer not including leading sign */
+    struct json_integer *item = NULL;	    /* JSON integer element inside JSON parser tree node */
+    char *endptr;			    /* first invalid character or str */
+    size_t digits = 0;			    /* number of digits in JSON integer not including leading sign */
     size_t i;
 
     /*
@@ -4175,7 +4175,7 @@ malloc_json_conv_int(char const *str, size_t len)
 
 
 /*
- * malloc_json_conv_int_str - convert JSON integer string to C integer value
+ * malloc_json_conv_int_str - convert JSON integer string to C integer
  *
  * This is an simplified interface for malloc_json_conv_int().
  *
@@ -4210,9 +4210,6 @@ malloc_json_conv_int_str(char const *str, size_t *retlen)
     } else {
 	len = strlen(str);
     }
-    if (len <= 0) {
-	warn(__func__, "called with len: %ju <= 0", (uintmax_t)len);
-    }
 
     /*
      * convert to malloc_json_conv_int() call
@@ -4238,11 +4235,11 @@ malloc_json_conv_int_str(char const *str, size_t *retlen)
 
 
 /*
- * malloc_json_conv_float - convert JSON floating point string to C floating point value
+ * malloc_json_conv_float - convert JSON floating point string to C floating point
  *
  * given:
  *	str	a JSON integer floating point string
- *	len	length starting at str of the JSON string
+ *	len	length, starting at str, of the JSON string
  *
  * returns:
  *	malloced JSON parser tree node converted JSON floating point string
@@ -4257,7 +4254,7 @@ struct json *
 malloc_json_conv_float(char const *str, size_t len)
 {
     struct json *ret = NULL;		    /* JSON parser tree node to return */
-    struct json_floating *item = NULL;	    /* malloced decoding string or NULL */
+    struct json_floating *item = NULL;	    /* JSON floating point element inside JSON parser tree node */
     char *endptr;			    /* first invalid character or str */
     size_t i;
 
@@ -4422,7 +4419,7 @@ malloc_json_conv_float(char const *str, size_t len)
 
 
 /*
- * malloc_json_conv_float_str - convert JSON floating point string to C integer value
+ * malloc_json_conv_float_str - convert JSON floating point string to C floating point
  *
  * This is an simplified interface for malloc_json_conv_float().
  *
@@ -4444,7 +4441,7 @@ malloc_json_conv_float(char const *str, size_t len)
 struct json *
 malloc_json_conv_float_str(char const *str, size_t *retlen)
 {
-    struct json *ret = NULL;		    /* JSON parser tree node to return */
+    struct json *ret = NULL;		    /* JSON floating point element inside JSON parser tree node */
     size_t len = 0;			    /* length of string to encode */
 
     /*
@@ -4456,9 +4453,6 @@ malloc_json_conv_float_str(char const *str, size_t *retlen)
 	warn(__func__, "called with NULL str");
     } else {
 	len = strlen(str);
-    }
-    if (len <= 0) {
-	warn(__func__, "called with len: %ju <= 0", (uintmax_t)len);
     }
 
     /*
@@ -4489,7 +4483,7 @@ malloc_json_conv_float_str(char const *str, size_t *retlen)
  *
  * given:
  *	str	a JSON encoded string
- *	len	length starting at str of the JSON string
+ *	len	length, starting at str, of the JSON string
  *	strict	true ==> strict decoding based on how malloc_json_decode() decodes
  *	        false ==> permit a wider use of \-escaping and un-decoded char
  *
@@ -4505,8 +4499,8 @@ malloc_json_conv_float_str(char const *str, size_t *retlen)
 struct json *
 malloc_json_conv_string(char const *str, size_t len, bool strict)
 {
-    struct json_string *item = NULL;	    /* malloced decoding string or NULL */
     struct json *ret = NULL;		    /* JSON parser tree node to return */
+    struct json_string *item = NULL;	    /* JSON string element inside JSON parser tree node */
 
     /*
      * allocate the JSON parse tree element
@@ -4606,13 +4600,13 @@ malloc_json_conv_string(char const *str, size_t len, bool strict)
 
 
 /*
- * malloc_json_conv_string_str - convert JSON string to C integer value
+ * malloc_json_conv_string_str - convert JSON string to C string
  *
- * This is an simplified interface for malloc_json_conv_float().
+ * This is an simplified interface for malloc_json_conv_string().
  *
  * given:
  *	str	a JSON encoded string
- *	retlen	length starting at str of the JSON string
+ *	retlen	address of where to store length of str, if retlen != NULL
  *	strict	true ==> strict decoding based on how malloc_json_decode() decodes
  *	        false ==> permit a wider use of \-escaping and un-decoded char
  *
@@ -4643,9 +4637,6 @@ malloc_json_conv_string_str(char const *str, size_t *retlen, bool strict)
     } else {
 	len = strlen(str);
     }
-    if (len <= 0) {
-	warn(__func__, "called with len: %ju <= 0", (uintmax_t)len);
-    }
 
     /*
      * convert to malloc_json_conv_string() call
@@ -4653,6 +4644,164 @@ malloc_json_conv_string_str(char const *str, size_t *retlen, bool strict)
     ret = malloc_json_conv_string(str, len, strict);
     if (ret == NULL) {
 	err(209, __func__, "malloc_json_conv_string() returned NULL");
+	not_reached();
+    }
+
+    /*
+     * save length if allowed
+     */
+    if (retlen != NULL) {
+	*retlen = len;
+    }
+
+    /*
+     * return the JSON parse tree element
+     */
+    return ret;
+}
+
+
+/*
+ * malloc_json_conv_bool - convert JSON encoded boolean to C bool
+ *
+ * given:
+ *	str	a JSON boolean
+ *	len	length, starting at str, of the JSON boolean
+ *
+ * returns:
+ *	malloced JSON parser tree node converted JSON encoded boolean
+ *
+ * NOTE: It is the responsibility of the calling function to link this
+ *	 malloced JSON parser tree node into the JSON parse tree.
+ *
+ * NOTE: This function will not return on malloc error.
+ * NOTE: This function will not return NULL.
+ */
+struct json *
+malloc_json_conv_bool(char const *str, size_t len)
+{
+    struct json *ret = NULL;		    /* JSON parser tree node to return */
+    struct json_boolean *item = NULL;	    /* malloced decoding string or NULL */
+
+    /*
+     * allocate the JSON parse tree element
+     */
+    errno = 0;			/* pre-clear errno for errp() */
+    ret = calloc(1, sizeof(*ret));
+    if (ret == NULL) {
+	errp(210, __func__, "calloc #0 error allocating %ju bytes", (uintmax_t)sizeof(*ret));
+	not_reached();
+    }
+
+    /*
+     * initialize the JSON parse tree element
+     */
+    ret->type = JSON_BOOL;
+    ret->parent = NULL;
+    ret->prev = NULL;
+    ret->next = NULL;
+
+    /*
+     * initialize the JSON element
+     */
+    item = &(ret->element.boolean);
+    item->as_str = NULL;
+    item->converted = false;
+    item->value = false;
+
+    /*
+     * firewall
+     */
+    if (str == NULL) {
+	warn(__func__, "called with NULL str");
+	return ret;
+    }
+    if (len <= 0) {
+	warn(__func__, "called with len: %ju <= 0", (uintmax_t)len);
+	return ret;
+    }
+    if (str[0] == '\0') {
+	warn(__func__, "called with empty string");
+	return ret;
+    }
+
+    /*
+     * duplicate the JSON encoded string
+     */
+    errno = 0;			/* pre-clear errno for errp() */
+    item->as_str = malloc(len+1+1);
+    if (item->as_str == NULL) {
+	errp(211, __func__, "malloc #1 error allocating %ju bytes", (uintmax_t)(len+1+1));
+	not_reached();
+    }
+    memcpy(item->as_str, str, len+1);
+    item->as_str[len] = '\0';	/* paranoia */
+    item->as_str[len+1] = '\0';	/* paranoia */
+    item->as_str_len = len;
+
+    /*
+     * decode the JSON boolean
+     */
+    if (strcmp(item->as_str, "true") == 0) {
+	item->converted = true;
+	item->value = true;
+    } else if (strcmp(item->as_str, "false") == 0) {
+	item->converted = true;
+	item->value = false;
+    } else {
+	warn(__func__, "JSON boolean string neither true nor false: <%s>", item->as_str);
+    }
+
+    /*
+     * return the JSON parse tree element
+     */
+    return ret;
+}
+
+
+/*
+ * malloc_json_conv_bool_str - convert JSON string to C bool
+ *
+ * This is an simplified interface for malloc_json_conv_bool().
+ *
+ * given:
+ *	str	a JSON encoded boolean
+ *	retlen	address of where to store length of str, if retlen != NULL
+ *
+ * returns:
+ *	malloced JSON parser tree node converted JSON boolean
+ *
+ * NOTE: It is the responsibility of the calling function to link this
+ *	 malloced JSON parser tree node into the JSON parse tree.
+ *
+ * NOTE: retlen, if non-NULL, is set to 0 on error
+ *
+ * NOTE: This function will not return on malloc error.
+ * NOTE: This function will not return NULL.
+ */
+struct json *
+malloc_json_conv_bool_str(char const *str, size_t *retlen)
+{
+    struct json *ret = NULL;		    /* JSON parser tree node to return */
+    size_t len = 0;			    /* length of string to encode */
+
+    /*
+     * firewall
+     *
+     * NOTE: We will let the malloc_json_conv_bool() handle the arg firewall
+     */
+    if (str == NULL) {
+	warn(__func__, "called with NULL str");
+    } else {
+	len = strlen(str);
+    }
+
+    /*
+     * convert to malloc_json_conv_bool() call
+     */
+    ret = malloc_json_conv_bool(str, len);
+    if (ret == NULL) {
+	err(212, __func__, "malloc_json_conv_bool() returned NULL");
 	not_reached();
     }
 

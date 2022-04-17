@@ -282,6 +282,7 @@ struct json_string
 struct json_boolean
 {
     char *as_str;		/* malloced JSON floating point string, whitespace trimmed if needed */
+    size_t as_str_len;		/* length of as_str */
 
     bool converted;		/* true ==> able to decode JSON boolean, false ==> as_str is invalid or not decoded */
     bool value;			/* converted JSON boolean value */
@@ -642,6 +643,8 @@ extern struct json *malloc_json_conv_float(char const *str, size_t len);
 extern struct json *malloc_json_conv_float_str(char const *str, size_t *retlen);
 extern struct json *malloc_json_conv_string(char const *str, size_t len, bool strict);
 extern struct json *malloc_json_conv_string_str(char const *str, size_t *retlen, bool strict);
+extern struct json *malloc_json_conv_bool(char const *str, size_t len);
+extern struct json * malloc_json_conv_bool_str(char const *str, size_t *retlen);
 
 
 #endif /* INCLUDE_JSON_H */
