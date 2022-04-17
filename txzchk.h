@@ -103,7 +103,7 @@ static struct txz_line *txz_lines;
 /*
  * usage message
  *
- * Use the usage() function to print the usage_msgX strings.
+ * Use the usage() function to print the usage_msg([0-9]?)+ strings.
  */
 static const char * const usage_msg =
     "usage: %s [-h] [-v level] [-q] [-V] [-t tar] [-F fnamchk] [-T] [-E ext] txzpath\n"
