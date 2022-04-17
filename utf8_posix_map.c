@@ -238,7 +238,7 @@ struct utf8_posix_map hmap[] =
     {"~", "", -1, -1},			/* ^ */
     {"\x7f", "", -1, -1},		/* DEL */
 
-    /* U+0080 thru U+058f */
+    /* U+0080 through U+058f */
     { "\xc2\x80", "" , -1, -1},		/*  U+0080 -   - <control> */
     { "\xc2\x81", "" , -1, -1},		/*  U+0081 -   - <control> */
     { "\xc2\x82", "" , -1, -1},		/*  U+0082 -   - <control> */
@@ -1580,7 +1580,7 @@ check_utf8_posix_map(void)
     }
 
     /*
-     * check hmap[] for non-NULL thru next to last table entry
+     * check hmap[] for non-NULL through next to last table entry
      * and fill in table lengths
      */
     if (max <= 0) {

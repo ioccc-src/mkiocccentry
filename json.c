@@ -1224,11 +1224,11 @@ malloc_json_decode(char const *ptr, size_t len, size_t *retlen, bool strict)
 		    return NULL;
 		}
 		switch (c) {
-		case '"':   /*fallthru*/
-		case '/':   /*fallthru*/
-		case '\\':  /*fallthru*/
-		case '&':   /*fallthru*/
-		case '<':   /*fallthru*/
+		case '"':   /*fallthrough*/
+		case '/':   /*fallthrough*/
+		case '\\':  /*fallthrough*/
+		case '&':   /*fallthrough*/
+		case '<':   /*fallthrough*/
 		case '>':
 		    /* error - clear malloced length */
 		    if (retlen != NULL) {
@@ -1255,10 +1255,10 @@ malloc_json_decode(char const *ptr, size_t len, size_t *retlen, bool strict)
 		 * disallow characters that should have been escaped
 		 */
 		switch (c) {
-		case '\b':  /*fallthru*/
-		case '\t':  /*fallthru*/
-		case '\n':  /*fallthru*/
-		case '\f':  /*fallthru*/
+		case '\b':  /*fallthrough*/
+		case '\t':  /*fallthrough*/
+		case '\n':  /*fallthrough*/
+		case '\f':  /*fallthrough*/
 		case '\r':
 		    /* error - clear malloced length */
 		    if (retlen != NULL) {
@@ -1267,8 +1267,8 @@ malloc_json_decode(char const *ptr, size_t len, size_t *retlen, bool strict)
 		    warn(__func__, "non-strict encoding found \\-escaped char: 0x%02x", (uint8_t)c);
 		    return NULL;
 		    break;
-		case '"':   /*fallthru*/
-		case '/':   /*fallthru*/
+		case '"':   /*fallthrough*/
+		case '/':   /*fallthrough*/
 		case '\\':
 		    /* error - clear malloced length */
 		    if (retlen != NULL) {
@@ -1313,13 +1313,13 @@ malloc_json_decode(char const *ptr, size_t len, size_t *retlen, bool strict)
 	     * process single \c escaped pairs
 	     */
 	    switch (n) {
-	    case 'b':	/*fallthru*/
-	    case 't':	/*fallthru*/
-	    case 'n':	/*fallthru*/
-	    case 'f':	/*fallthru*/
-	    case 'r':	/*fallthru*/
-	    case '"':	/*fallthru*/
-	    case '/':	/*fallthru*/
+	    case 'b':	/*fallthrough*/
+	    case 't':	/*fallthrough*/
+	    case 'n':	/*fallthrough*/
+	    case 'f':	/*fallthrough*/
+	    case 'r':	/*fallthrough*/
+	    case '"':	/*fallthrough*/
+	    case '/':	/*fallthrough*/
 	    case '\\':
 		/*
 		 * count \c escaped pair as 1 character
@@ -1396,8 +1396,8 @@ malloc_json_decode(char const *ptr, size_t len, size_t *retlen, bool strict)
 	    /*
 	     * valid C escape sequence but unusual JSON \-escape character
 	     */
-	    case 'a':	/* ASCII bell */ /*fallthru*/
-	    case 'v':	/* ASCII vertical tab */ /*fallthru*/
+	    case 'a':	/* ASCII bell */ /*fallthrough*/
+	    case 'v':	/* ASCII vertical tab */ /*fallthrough*/
 	    case 'e':	/* ASCII escape */
 
 		/*
@@ -1528,8 +1528,8 @@ malloc_json_decode(char const *ptr, size_t len, size_t *retlen, bool strict)
 		++i;
 		*p++ = 0x0b;  /* no all C compilers understand /e */
 		break;
-	    case '"':	/*fallthru*/
-	    case '/':	/*fallthru*/
+	    case '"':	/*fallthrough*/
+	    case '/':	/*fallthrough*/
 	    case '\\':
 		++i;
 		*p++ = n;	/* escape decodes to itself */

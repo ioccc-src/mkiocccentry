@@ -59,7 +59,7 @@ main(int argc, char *argv[])
     extern int optind;		/* argv index of the next arg */
     char *input;		/* argument to process */
     size_t inputlen;		/* length of argument string */
-    size_t retlen;		/* length of the string given to malloc_json_conv_int_str() */
+    size_t retlen;		/* length of the string given to calloc_json_conv_int_str() */
     bool error = false;		/* true ==> JSON integer conversion test suite error */
     bool test_mode = false;	/* true ==> perform JSON integer conversion test suite */
     bool strict = false;	/* true ==> JSON decode in strict mode */
@@ -150,9 +150,9 @@ main(int argc, char *argv[])
 	    /*
 	     * convert test into struct json_integer
 	     */
-	    node = malloc_json_conv_int_str(test, &retlen);
+	    node = calloc_json_conv_int_str(test, &retlen);
 	    if (node == NULL) {
-		err(11, __func__, "malloc_json_conv_int_str() is not supposed to return NULL!");
+		err(11, __func__, "calloc_json_conv_int_str() is not supposed to return NULL!");
 		not_reached();
 	    }
 	    item = &(node->element.integer);
@@ -391,13 +391,13 @@ main(int argc, char *argv[])
 	/*
 	 * Convert the JSON integer string
 	 *
-	 * We call the malloc_json_conv_int_str() interface, which in
-	 * turn calls the malloc_json_conv_int() interface in order
+	 * We call the calloc_json_conv_int_str() interface, which in
+	 * turn calls the calloc_json_conv_int() interface in order
 	 * to check the inputlen vs *retlen value.
 	 */
-	node = malloc_json_conv_int_str(input, &retlen);
+	node = calloc_json_conv_int_str(input, &retlen);
 	if (node == NULL) {
-	    err(12, __func__, "malloc_json_conv_int_str() is not supposed to return NULL!");
+	    err(12, __func__, "calloc_json_conv_int_str() is not supposed to return NULL!");
 	    not_reached();
 	}
 	item = &(node->element.integer);
