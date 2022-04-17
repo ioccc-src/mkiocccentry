@@ -314,13 +314,16 @@ create_dyn_array(size_t elm_size, intmax_t chunk, intmax_t start_elm_count, bool
      * Check preconditions (firewall) - sanity check args
      */
     if (elm_size <= 0) {
-	    err(65, __func__, "elm_size must be > 0: %ld", elm_size);
+	err(65, __func__, "elm_size must be > 0: %ld", elm_size);
+	not_reached();
     }
     if (chunk <= 0) {
-	    err(66, __func__, "chunk must be > 0: %ld", chunk);
+	err(66, __func__, "chunk must be > 0: %ld", chunk);
+	not_reached();
     }
     if (start_elm_count <= 0) {
-	    err(67, __func__, "start_elm_count must be > 0: %ld", start_elm_count);
+	err(67, __func__, "start_elm_count must be > 0: %ld", start_elm_count);
+	not_reached();
     }
 
     /*
