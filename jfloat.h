@@ -61,7 +61,7 @@
 /*
  * usage message
  *
- * Use the usage() function to print the these usage_msg([0-9]?)+ strings.
+ * Use the usage() function to print the these usage_msgX strings.
  */
 static const char * const usage_msg =
     "usage: %s [-h] [-v level] [-V] [-q] [-t] [-S] [float ...]\n"
@@ -76,7 +76,7 @@ static const char * const usage_msg =
     "\t\t\t    (def: test match to only 1 part in 4194304)\n"
     "\n"
     "\tNOTE: The -S mode is for information purposes only, and may fail\n"
-    "\t      on your system due to hardware and system differences.\n"
+    "\t      on your system due to hardware and/or other system differences.\n"
     "\t      The IOCCC mkiocccentry repo does not need -S to pass in order\n"
     "\t      to be able to create a valid IOCCC entry compressed tarball.\n"
     "\n"
