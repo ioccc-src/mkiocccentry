@@ -76,7 +76,7 @@ static const char * const usage_msg =
     "\t\t\t    (def: test only 8, 16, 32, 64 bit signed and unsigned integer types)\n"
     "\n"
     "\tNOTE: The -S mode is for information purposes only, and may fail\n"
-    "\t      on your system due to hardware and system differences.\n"
+    "\t      on your system due to hardware and/or other system differences.\n"
     "\t      The IOCCC mkiocccentry repo does not need -S to pass in order\n"
     "\t      to be able to create a valid IOCCC entry compressed tarball.\n"
     "\n"
