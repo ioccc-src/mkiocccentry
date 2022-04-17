@@ -3848,6 +3848,7 @@ malloc_json_conv_int(char const *str, size_t len)
     strncpy(item->as_str, str, len+1);
     item->as_str[len] = '\0';	/* paranoia */
     item->as_str[len+1] = '\0';	/* paranoia */
+    item->as_str_len = len;	/* save length of as_str */
 
     /*
      * paranoia

@@ -146,5 +146,10 @@
  */
 #define VERGE_VERSION "0.1 2022-04-02"		/* format: major.minor YYYY-MM-DD */
 
+/*
+ * test the dynamic array facility version
+ */
+#define DYN_ALLOC_TEST_VERSION "1.3 2022-04-16"	 /* format: major.minor YYYY-MM-DD */
+
 
 #endif /* INCLUDE_VERSION_H */

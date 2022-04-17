@@ -150,9 +150,9 @@ COPT= -O0 -g
 # This is needed because under CentOS we need -lm for floorl() (as described
 # above); however under macOS you will get:
 #
-# 	clang: error: -lm: 'linker' input unused
-# 	[-Werror,-Wunused-command-line-argument]
-# 	make: *** [sanity.o] Error 1
+#	clang: error: -lm: 'linker' input unused
+#	[-Werror,-Wunused-command-line-argument]
+#	make: *** [sanity.o] Error 1
 #
 # for any object that does not need -lm and since many objects need to link in
 # json.o (which is where the -lm is needed) we disable the warning here instead
@@ -211,10 +211,11 @@ TARGETS= mkiocccentry iocccsize dbg limit_ioccc.sh fnamchk txzchk jauthchk jinfo
 MAN_TARGETS = mkiocccentry txzchk fnamchk iocccsize jinfochk jauthchk
 MANPAGES= $(MAN_TARGETS:=.1)
 
-TEST_TARGETS= dbg utf8_test
+TEST_TARGETS= dbg utf8_test dyn_alloc_test
 OBJFILES= dbg.o util.o mkiocccentry.o iocccsize.o fnamchk.o txzchk.o jauthchk.o jinfochk.o \
 	json.o jstrencode.o jstrdecode.o rule_count.o location.o sanity.o \
-	utf8_test.o jint.o jint.test.o jfloat.o jfloat.test.o verge.o
+	utf8_test.o jint.o jint.test.o jfloat.o jfloat.test.o verge.o \
+	dyn_alloc.o dyn_alloc_test.o
 LESS_PICKY_CSRC= utf8_posix_map.c
 LESS_PICKY_OBJ= utf8_posix_map.o
 GENERATED_CSRC= jparse.c jparse.tab.c
@@ -230,7 +231,7 @@ SRCFILES= $(OBJFILES:.o=.c)
 ALL_CSRC= ${LESS_PICKY_CSRC} ${GENERATED_CSRC} ${SRCFILES}
 H_FILES= dbg.h jauthchk.h jinfochk.h json.h jstrdecode.h jstrencode.h limit_ioccc.h \
 	mkiocccentry.h txzchk.h util.h location.h utf8_posix_map.h jparse.h jint.h jfloat.h \
-	verge.h sorry.tm.ca.h
+	verge.h sorry.tm.ca.h dyn_alloc.h dyn_alloc_test.h
 # This is a simpler way to do:
 #
 #   DSYMDIRS= $(patsubst %,%.dSYM,$(TARGETS))
@@ -360,6 +361,12 @@ utf8_test: utf8_test.c utf8_posix_map.o dbg.o util.o Makefile
 
 verge: verge.c verge.h dbg.o util.o Makefile
 	${CC} ${CFLAGS} verge.c dbg.o util.o -o $@
+
+dyn_alloc.o: dyn_alloc.c dyn_alloc.h Makefile
+	${CC} ${CFLAGS} dyn_alloc.c -c
+
+dyn_alloc_test: dyn_alloc.o dbg.o util.o Makefile
+	${CC} ${CFLAGS} dyn_alloc_test.c dyn_alloc.o dbg.o util.o -o $@
 
 limit_ioccc.sh: limit_ioccc.h version.h Makefile
 	${RM} -f $@
@@ -784,6 +791,10 @@ test: all iocccsize-test.sh dbg mkiocccentry-test.sh jstr-test.sh jint jfloat Ma
 	./jfloat -t
 	@echo "PASSED: jfloat -t"
 	@echo
+	@echo "RUNNING: dyn_alloc_test"
+	./dyn_alloc_test
+	@echo "PASSED: dyn_alloc_test"
+	@echo
 	@echo "All tests PASSED"
 
 # run json-test.sh on test_JSON files
@@ -819,7 +830,7 @@ clobber: clean
 	${RM} -rf test-iocccsize test_src test_work tags dbg.out
 	${RM} -f jint.set.tmp jint_gen
 	${RM} -f jfloat.set.tmp jfloat_gen
-	${RM} -rf jint_gen.dSYM jfloat_gen.dSYM
+	${RM} -rf jint_gen.dSYM jfloat_gen.dSYM dyn_alloc_test.dSYM
 
 distclean nuke: clobber
 
@@ -884,3 +895,6 @@ jint.test.o: jint.test.c json.h
 jfloat.o: jfloat.c jfloat.h dbg.h util.h json.h limit_ioccc.h version.h
 jfloat.test.o: jfloat.test.c json.h
 verge.o: verge.c verge.h dbg.h util.h limit_ioccc.h version.h
+dyn_alloc.o: dyn_alloc.c dyn_alloc.h dbg.h
+dyn_alloc_test.o: dyn_alloc_test.c dyn_alloc_test.h util.h dbg.h \
+  version.h dyn_alloc.h
