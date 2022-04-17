@@ -4817,3 +4817,157 @@ malloc_json_conv_bool_str(char const *str, size_t *retlen)
      */
     return ret;
 }
+
+
+/*
+ * malloc_json_conv_null - convert JSON encoded nullean to C NULL
+ *
+ * given:
+ *	str	a JSON null
+ *	len	length, starting at str, of the JSON null
+ *
+ * returns:
+ *	malloced JSON parser tree node converted JSON encoded null
+ *
+ * NOTE: It is the responsibility of the calling function to link this
+ *	 malloced JSON parser tree node into the JSON parse tree.
+ *
+ * NOTE: This function will not return on malloc error.
+ * NOTE: This function will not return NULL.
+ */
+struct json *
+malloc_json_conv_null(char const *str, size_t len)
+{
+    struct json *ret = NULL;		    /* JSON parser tree node to return */
+    struct json_null *item = NULL;	    /* malloced decoding string or NULL */
+
+    /*
+     * allocate the JSON parse tree element
+     */
+    errno = 0;			/* pre-clear errno for errp() */
+    ret = calloc(1, sizeof(*ret));
+    if (ret == NULL) {
+	errp(213, __func__, "calloc #0 error allocating %ju bytes", (uintmax_t)sizeof(*ret));
+	not_reached();
+    }
+
+    /*
+     * initialize the JSON parse tree element
+     */
+    ret->type = JSON_NULL;
+    ret->parent = NULL;
+    ret->prev = NULL;
+    ret->next = NULL;
+
+    /*
+     * initialize the JSON element
+     */
+    item = &(ret->element.null);
+    item->as_str = NULL;
+    item->value = NULL;
+
+    /*
+     * firewall
+     */
+    if (str == NULL) {
+	warn(__func__, "called with NULL str");
+	return ret;
+    }
+    if (len <= 0) {
+	warn(__func__, "called with len: %ju <= 0", (uintmax_t)len);
+	return ret;
+    }
+    if (str[0] == '\0') {
+	warn(__func__, "called with empty string");
+	return ret;
+    }
+
+    /*
+     * duplicate the JSON encoded string
+     */
+    errno = 0;			/* pre-clear errno for errp() */
+    item->as_str = malloc(len+1+1);
+    if (item->as_str == NULL) {
+	errp(214, __func__, "malloc #1 error allocating %ju bytes", (uintmax_t)(len+1+1));
+	not_reached();
+    }
+    memcpy(item->as_str, str, len+1);
+    item->as_str[len] = '\0';	/* paranoia */
+    item->as_str[len+1] = '\0';	/* paranoia */
+    item->as_str_len = len;
+
+    /*
+     * decode the JSON nullean
+     */
+    if (strcmp(item->as_str, "null") == 0) {
+	item->converted = true;
+	item->value = NULL;
+    } else {
+	warn(__func__, "JSON null string is not null: <%s>", item->as_str);
+    }
+
+    /*
+     * return the JSON parse tree element
+     */
+    return ret;
+}
+
+
+/*
+ * malloc_json_conv_null_str - convert JSON string to C NULL
+ *
+ * This is an simplified interface for malloc_json_conv_null().
+ *
+ * given:
+ *	str	a JSON encoded null
+ *	retlen	address of where to store length of str, if retlen != NULL
+ *
+ * returns:
+ *	malloced JSON parser tree node converted JSON null
+ *
+ * NOTE: It is the responsibility of the calling function to link this
+ *	 malloced JSON parser tree node into the JSON parse tree.
+ *
+ * NOTE: retlen, if non-NULL, is set to 0 on error
+ *
+ * NOTE: This function will not return on malloc error.
+ * NOTE: This function will not return NULL.
+ */
+struct json *
+malloc_json_conv_null_str(char const *str, size_t *retlen)
+{
+    struct json *ret = NULL;		    /* JSON parser tree node to return */
+    size_t len = 0;			    /* length of string to encode */
+
+    /*
+     * firewall
+     *
+     * NOTE: We will let the malloc_json_conv_null() handle the arg firewall
+     */
+    if (str == NULL) {
+	warn(__func__, "called with NULL str");
+    } else {
+	len = strlen(str);
+    }
+
+    /*
+     * convert to malloc_json_conv_null() call
+     */
+    ret = malloc_json_conv_null(str, len);
+    if (ret == NULL) {
+	err(215, __func__, "malloc_json_conv_null() returned NULL");
+	not_reached();
+    }
+
+    /*
+     * save length if allowed
+     */
+    if (retlen != NULL) {
+	*retlen = len;
+    }
+
+    /*
+     * return the JSON parse tree element
+     */
+    return ret;
+}
