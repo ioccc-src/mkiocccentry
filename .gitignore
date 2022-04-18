@@ -1,14 +1,16 @@
 # mkiocccentry specific
 answers.txt
 dbg
-dbg_test
+dyn_test
 entry.*.tx[zt]
 fnamchk
 iocccsize
 jauthchk
 jfloat
+jfloat_gen
 jinfochk
 jint
+jint_gen
 jparse
 jparse.c
 jparse.tab.c
