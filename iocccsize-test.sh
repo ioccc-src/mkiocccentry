@@ -122,7 +122,7 @@ test_size crlf.c "2 8 1"
 
 #######################################################################
 
-printf 'char str[] = "טיר";\r\n' >test-iocccsize/utf8.c
+printf 'char str[] = "\xe8\xe9\xf8";\r\n' >test-iocccsize/utf8.c
 test_size utf8.c "12 21 1"
 
 #######################################################################
