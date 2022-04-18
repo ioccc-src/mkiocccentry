@@ -4313,7 +4313,7 @@ calloc_json_conv_float(char const *str, size_t len)
     errno = 0;			/* pre-clear errno for errp() */
     item->as_str = calloc(len+1+1, sizeof(char));
     if (item->as_str == NULL) {
-	errp(202, __func__, "calloc #1 error allocating %ju bytes", (uintmax_t)(len+1+1));
+	errp(205, __func__, "calloc #1 error allocating %ju bytes", (uintmax_t)(len+1+1));
 	not_reached();
     }
     strncpy(item->as_str, str, len+1);
@@ -4554,7 +4554,7 @@ calloc_json_conv_string(char const *str, size_t len, bool strict)
     errno = 0;			/* pre-clear errno for errp() */
     item->as_str = calloc(len+1+1, sizeof(char));
     if (item->as_str == NULL) {
-	errp(202, __func__, "calloc #1 error allocating %ju bytes", (uintmax_t)(len+1+1));
+	errp(208, __func__, "calloc #1 error allocating %ju bytes", (uintmax_t)(len+1+1));
 	not_reached();
     }
     strncpy(item->as_str, str, len+1);

@@ -27,8 +27,8 @@
  */
 
 
-#if !defined(INCLUDE_DYN_ALLOC_TEST_H)
-#    define  INCLUDE_DYN_ALLOC_TEST_H
+#if !defined(INCLUDE_DYN_TEST_H)
+#    define  INCLUDE_DYN_TEST_H
 
 
 /*
@@ -45,8 +45,8 @@
  * official versions
  */
 #if defined(STAND_ALONE)
-#undef DYN_ALLOC_TEST_VERSION
-#define DYN_ALLOC_TEST_VERSION "1.3 standalone"
+#undef DYN_TEST_VERSION
+#define DYN_TEST_VERSION "1.3 standalone"
 #else /* STAND_ALONE */
 #include "version.h"
 #endif /* STAND_ALONE */
@@ -54,7 +54,7 @@
 /*
  * dynamic array facility
  */
-#include "dyn_alloc.h"
+#include "dyn_array.h"
 
 
 /*
@@ -77,7 +77,7 @@ static const char * const usage_msg =
     "    3\tcommand line error\n"
     "    =4\tinternal error\n"
     "\n"
-    "dyn_alloc_test version: %s\n";
+    "dyn_test version: %s\n";
 
 
 /*
@@ -89,4 +89,4 @@ static int parse_verbosity(char const *program, char const *arg);
 #endif /* STAND_ALONE */
 
 
-#endif		/* INCLUDE_DYN_ALLOC_TEST_H */
+#endif		/* INCLUDE_DYN_TEST_H */

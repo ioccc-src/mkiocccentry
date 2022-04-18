@@ -211,11 +211,11 @@ TARGETS= mkiocccentry iocccsize dbg limit_ioccc.sh fnamchk txzchk jauthchk jinfo
 MAN_TARGETS = mkiocccentry txzchk fnamchk iocccsize jinfochk jauthchk
 MANPAGES= $(MAN_TARGETS:=.1)
 
-TEST_TARGETS= dbg utf8_test dyn_alloc_test
+TEST_TARGETS= dbg utf8_test dyn_test
 OBJFILES= dbg.o util.o mkiocccentry.o iocccsize.o fnamchk.o txzchk.o jauthchk.o jinfochk.o \
 	json.o jstrencode.o jstrdecode.o rule_count.o location.o sanity.o \
 	utf8_test.o jint.o jint.test.o jfloat.o jfloat.test.o verge.o \
-	dyn_alloc.o dyn_alloc_test.o
+	dyn_array.o dyn_test.o
 LESS_PICKY_CSRC= utf8_posix_map.c
 LESS_PICKY_OBJ= utf8_posix_map.o
 GENERATED_CSRC= jparse.c jparse.tab.c
@@ -231,7 +231,7 @@ SRCFILES= $(OBJFILES:.o=.c)
 ALL_CSRC= ${LESS_PICKY_CSRC} ${GENERATED_CSRC} ${SRCFILES}
 H_FILES= dbg.h jauthchk.h jinfochk.h json.h jstrdecode.h jstrencode.h limit_ioccc.h \
 	mkiocccentry.h txzchk.h util.h location.h utf8_posix_map.h jparse.h jint.h jfloat.h \
-	verge.h sorry.tm.ca.h dyn_alloc.h dyn_alloc_test.h
+	verge.h sorry.tm.ca.h dyn_array.h dyn_test.h
 # This is a simpler way to do:
 #
 #   DSYMDIRS= $(patsubst %,%.dSYM,$(TARGETS))
@@ -306,9 +306,9 @@ rule_count.o: rule_count.c Makefile
 sanity.o: sanity.c sanity.h location.h utf8_posix_map.h Makefile
 	${CC} ${CFLAGS} sanity.c -c
 
-mkiocccentry: mkiocccentry.c mkiocccentry.h rule_count.o dbg.o util.o json.o location.o \
+mkiocccentry: mkiocccentry.c mkiocccentry.h rule_count.o dbg.o util.o dyn_array.o json.o location.o \
 	utf8_posix_map.o sanity.o Makefile
-	${CC} ${CFLAGS} mkiocccentry.c rule_count.o dbg.o util.o json.o location.o \
+	${CC} ${CFLAGS} mkiocccentry.c rule_count.o dbg.o util.o dyn_array.o json.o location.o \
 		utf8_posix_map.o sanity.o -o $@
 
 iocccsize: iocccsize.c rule_count.o dbg.o Makefile
@@ -317,35 +317,35 @@ iocccsize: iocccsize.c rule_count.o dbg.o Makefile
 dbg: dbg.c Makefile
 	${CC} ${CFLAGS} -DDBG_TEST dbg.c -o $@
 
-fnamchk: fnamchk.c fnamchk.h dbg.o util.o Makefile
-	${CC} ${CFLAGS} fnamchk.c dbg.o util.o -o $@
+fnamchk: fnamchk.c fnamchk.h dbg.o util.o dyn_array.o Makefile
+	${CC} ${CFLAGS} fnamchk.c dbg.o util.o dyn_array.o -o $@
 
-txzchk: txzchk.c txzchk.h rule_count.o dbg.o util.o location.o json.o utf8_posix_map.o sanity.o Makefile
-	${CC} ${CFLAGS} txzchk.c rule_count.o dbg.o util.o location.o json.o utf8_posix_map.o sanity.o -o $@
+txzchk: txzchk.c txzchk.h rule_count.o dbg.o util.o dyn_array.o location.o json.o utf8_posix_map.o sanity.o Makefile
+	${CC} ${CFLAGS} txzchk.c rule_count.o dbg.o util.o dyn_array.o location.o json.o utf8_posix_map.o sanity.o -o $@
 
-jauthchk: jauthchk.c jauthchk.h json.h rule_count.o json.o dbg.o util.o sanity.o location.o utf8_posix_map.o Makefile
-	${CC} ${CFLAGS} jauthchk.c rule_count.o json.o dbg.o util.o sanity.o location.o utf8_posix_map.o -o $@
+jauthchk: jauthchk.c jauthchk.h json.h rule_count.o json.o dbg.o util.o dyn_array.o sanity.o location.o utf8_posix_map.o Makefile
+	${CC} ${CFLAGS} jauthchk.c rule_count.o json.o dbg.o util.o dyn_array.o sanity.o location.o utf8_posix_map.o -o $@
 
-jinfochk: jinfochk.c jinfochk.h rule_count.o json.o dbg.o util.o sanity.o location.o utf8_posix_map.o Makefile
-	${CC} ${CFLAGS} jinfochk.c rule_count.o json.o dbg.o util.o sanity.o location.o utf8_posix_map.o -o $@
+jinfochk: jinfochk.c jinfochk.h rule_count.o json.o dbg.o util.o dyn_array.o sanity.o location.o utf8_posix_map.o Makefile
+	${CC} ${CFLAGS} jinfochk.c rule_count.o json.o dbg.o util.o dyn_array.o sanity.o location.o utf8_posix_map.o -o $@
 
-jstrencode: jstrencode.c jstrencode.h dbg.o json.o util.o Makefile
-	${CC} ${CFLAGS} jstrencode.c dbg.o json.o util.o -o $@
+jstrencode: jstrencode.c jstrencode.h dbg.o json.o util.o dyn_array.o Makefile
+	${CC} ${CFLAGS} jstrencode.c dbg.o json.o util.o dyn_array.o -o $@
 
-jstrdecode: jstrdecode.c jstrdecode.h dbg.o json.o util.o Makefile
-	${CC} ${CFLAGS} jstrdecode.c dbg.o json.o util.o -o $@
+jstrdecode: jstrdecode.c jstrdecode.h dbg.o json.o util.o dyn_array.o Makefile
+	${CC} ${CFLAGS} jstrdecode.c dbg.o json.o util.o dyn_array.o -o $@
 
 jint.test.o: jint.test.c Makefile
 	${CC} ${CFLAGS} -DJINT_TEST_ENABLED jint.test.c -c
 
-jint: jint.c jint.h dbg.o json.o util.o jint.test.o Makefile
-	${CC} ${CFLAGS} -DJINT_TEST_ENABLED jint.c dbg.o json.o util.o jint.test.o -o $@
+jint: jint.c jint.h dbg.o json.o util.o dyn_array.o jint.test.o Makefile
+	${CC} ${CFLAGS} -DJINT_TEST_ENABLED jint.c dbg.o json.o util.o dyn_array.o jint.test.o -o $@
 
 jfloat.test.o: jfloat.test.c Makefile
 	${CC} ${CFLAGS} -DJFLOAT_TEST_ENABLED jfloat.test.c -c
 
-jfloat: jfloat.c jfloat.h dbg.o json.o util.o jfloat.test.o Makefile
-	${CC} ${CFLAGS} -DJFLOAT_TEST_ENABLED jfloat.c dbg.o json.o util.o jfloat.test.o -o $@
+jfloat: jfloat.c jfloat.h dbg.o json.o util.o dyn_array.o jfloat.test.o Makefile
+	${CC} ${CFLAGS} -DJFLOAT_TEST_ENABLED jfloat.c dbg.o json.o util.o dyn_array.o jfloat.test.o -o $@
 
 jparse.o: jparse.c jparse.h Makefile
 	${CC} ${CFLAGS} jparse.c -Wno-unused-function -Wno-unneeded-internal-declaration -c
@@ -353,20 +353,20 @@ jparse.o: jparse.c jparse.h Makefile
 jparse.tab.o: jparse.tab.c jparse.tab.h Makefile
 	${CC} ${CFLAGS} jparse.tab.c -Wno-unused-function -Wno-unneeded-internal-declaration -c
 
-jparse: jparse.o jparse.tab.o util.o dbg.o sanity.o json.o utf8_posix_map.o location.o Makefile
-	${CC} ${CFLAGS} jparse.o jparse.tab.o util.o dbg.o sanity.o json.o utf8_posix_map.o location.o -o $@
+jparse: jparse.o jparse.tab.o util.o dyn_array.o dbg.o sanity.o json.o utf8_posix_map.o location.o Makefile
+	${CC} ${CFLAGS} jparse.o jparse.tab.o util.o dyn_array.o dbg.o sanity.o json.o utf8_posix_map.o location.o -o $@
 
-utf8_test: utf8_test.c utf8_posix_map.o dbg.o util.o Makefile
-	${CC} ${CFLAGS} utf8_test.c utf8_posix_map.o dbg.o util.o -o $@
+utf8_test: utf8_test.c utf8_posix_map.o dbg.o util.o dyn_array.o Makefile
+	${CC} ${CFLAGS} utf8_test.c utf8_posix_map.o dbg.o util.o dyn_array.o -o $@
 
-verge: verge.c verge.h dbg.o util.o Makefile
-	${CC} ${CFLAGS} verge.c dbg.o util.o -o $@
+verge: verge.c verge.h dbg.o util.o dyn_array.o Makefile
+	${CC} ${CFLAGS} verge.c dbg.o util.o dyn_array.o -o $@
 
-dyn_alloc.o: dyn_alloc.c dyn_alloc.h Makefile
-	${CC} ${CFLAGS} dyn_alloc.c -c
+dyn_array.o: dyn_array.c dyn_array.h Makefile
+	${CC} ${CFLAGS} dyn_array.c -c
 
-dyn_alloc_test: dyn_alloc.o dbg.o util.o Makefile
-	${CC} ${CFLAGS} dyn_alloc_test.c dyn_alloc.o dbg.o util.o -o $@
+dyn_test: dbg.o util.o dyn_array.o Makefile
+	${CC} ${CFLAGS} dyn_test.c dbg.o util.o dyn_array.o -o $@
 
 limit_ioccc.sh: limit_ioccc.h version.h Makefile
 	${RM} -f $@
@@ -594,9 +594,9 @@ use_ref: jparse.tab.ref.c jparse.tab.ref.h jparse.ref.c
 
 # rebuild jint.test.c
 #
-rebuild_jint_test: jint.testset jint.c dbg.o json.o util.o Makefile
+rebuild_jint_test: jint.testset jint.c dbg.o json.o util.o dyn_array.o Makefile
 	${RM} -f jint.set.tmp jint_gen
-	${CC} ${CFLAGS} jint.c dbg.o json.o util.o -o jint_gen
+	${CC} ${CFLAGS} jint.c dbg.o json.o util.o dyn_array.o -o jint_gen
 	${SED} -n -e '1,/DO NOT REMOVE THIS LINE/p' < jint.test.c > jint.set.tmp
 	echo '#if defined(JINT_TEST_ENABLED)' >> jint.set.tmp
 	./jint_gen -- $$(<jint.testset) >> jint.set.tmp
@@ -606,9 +606,9 @@ rebuild_jint_test: jint.testset jint.c dbg.o json.o util.o Makefile
 
 # rebuild jfloat.test.c
 #
-rebuild_jfloat_test: jfloat.testset jfloat.c dbg.o json.o util.o Makefile
+rebuild_jfloat_test: jfloat.testset jfloat.c dbg.o json.o util.o dyn_array.o Makefile
 	${RM} -f jfloat.set.tmp jfloat_gen
-	${CC} ${CFLAGS} jfloat.c dbg.o json.o util.o -o jfloat_gen
+	${CC} ${CFLAGS} jfloat.c dbg.o json.o util.o dyn_array.o -o jfloat_gen
 	${SED} -n -e '1,/DO NOT REMOVE THIS LINE/p' < jfloat.test.c > jfloat.set.tmp
 	echo '#if defined(JFLOAT_TEST_ENABLED)' >> jfloat.set.tmp
 	./jfloat_gen -- $$(<jfloat.testset) >> jfloat.set.tmp
@@ -791,9 +791,9 @@ test: all iocccsize-test.sh dbg mkiocccentry-test.sh jstr-test.sh jint jfloat Ma
 	./jfloat -t
 	@echo "PASSED: jfloat -t"
 	@echo
-	@echo "RUNNING: dyn_alloc_test"
-	./dyn_alloc_test
-	@echo "PASSED: dyn_alloc_test"
+	@echo "RUNNING: dyn_test"
+	./dyn_test
+	@echo "PASSED: dyn_test"
 	@echo
 	@echo "All tests PASSED"
 
@@ -830,7 +830,7 @@ clobber: clean
 	${RM} -rf test-iocccsize test_src test_work tags dbg.out
 	${RM} -f jint.set.tmp jint_gen
 	${RM} -f jfloat.set.tmp jfloat_gen
-	${RM} -rf jint_gen.dSYM jfloat_gen.dSYM dyn_alloc_test.dSYM
+	${RM} -rf jint_gen.dSYM jfloat_gen.dSYM dyn_test.dSYM
 
 distclean nuke: clobber
 
@@ -895,6 +895,6 @@ jint.test.o: jint.test.c json.h
 jfloat.o: jfloat.c jfloat.h dbg.h util.h json.h limit_ioccc.h version.h
 jfloat.test.o: jfloat.test.c json.h
 verge.o: verge.c verge.h dbg.h util.h limit_ioccc.h version.h
-dyn_alloc.o: dyn_alloc.c dyn_alloc.h dbg.h
-dyn_alloc_test.o: dyn_alloc_test.c dyn_alloc_test.h util.h dbg.h \
-  version.h dyn_alloc.h
+dyn_array.o: dyn_array.c dyn_array.h dbg.h
+dyn_test.o: dyn_test.c dyn_test.h util.h dbg.h \
+  version.h dyn_array.h

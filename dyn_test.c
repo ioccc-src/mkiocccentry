@@ -40,7 +40,7 @@
 /*
  * Our header file - #includes the header files we need
  */
-#include "dyn_alloc_test.h"
+#include "dyn_test.h"
 
 
 /*
@@ -78,9 +78,9 @@ main(int argc, char *argv[])
 	case 'V':		/* -V - print version and exit */
 	    errno = 0;		/* pre-clear errno for warnp() */
 #if defined(STAND_ALONE)
-	    (void) printf("%s\n", DYN_ALLOC_TEST_VERSION);
+	    (void) printf("%s\n", DYN_TEST_VERSION);
 #else /* STAND_ALONE */
-	    print("%s\n", DYN_ALLOC_TEST_VERSION);
+	    print("%s\n", DYN_TEST_VERSION);
 #endif /* STAND_ALONE */
 	    exit(3); /*ooo*/
 	    not_reached();
@@ -98,21 +98,21 @@ main(int argc, char *argv[])
     /*
      * create dynamic array
      */
-    array = create_dyn_array(sizeof(double), CHUNK, CHUNK, "double test");
+    array = dyn_array_create(sizeof(double), CHUNK, CHUNK, "double test");
 
     /*
      * load a million doubles
      */
     for (d = 0.0; d < 1000000.0; d += 1.0) {
-	append_value(array, &d);
+	dyn_array_append_value(array, &d);
     }
 
     /*
      * verify values
      */
     for (i = 0; i < 1000000; ++i) {
-	if ((double) i != get_value(array, double, i)) {
-	    warn(__func__, "value mismatch %d != %f", i, get_value(array, double, i));
+	if ((double) i != dyn_array_value(array, double, i)) {
+	    warn(__func__, "value mismatch %d != %f", i, dyn_array_value(array, double, i));
 	    err = true;
 	}
     }
@@ -162,7 +162,7 @@ usage(int exitcode, char const *str, char const *prog)
      * print the formatted usage stream
      */
     fprintf_usage(DO_NOT_EXIT, stderr, "%s\n", str);
-    fprintf_usage(exitcode, stderr, usage_msg, prog, DBG_DEFAULT, DYN_ALLOC_TEST_VERSION);
+    fprintf_usage(exitcode, stderr, usage_msg, prog, DBG_DEFAULT, DYN_TEST_VERSION);
     exit(exitcode); /*ooo*/
     not_reached();
 }

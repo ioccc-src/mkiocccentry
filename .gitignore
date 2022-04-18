@@ -1,7 +1,7 @@
 # mkiocccentry specific
 answers.txt
 dbg
-dyn_alloc_test
+dyn_test
 entry.*.tx[zt]
 fnamchk
 iocccsize
