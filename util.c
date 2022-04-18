@@ -1911,8 +1911,8 @@ read_all(FILE *stream, size_t *psize)
 	errno = 0;			/* pre-clear errno for warnp() */
 	last_read = fread(read_buf, sizeof(uint8_t), READ_ALL_CHUNK, stream);
 	fread_errno = errno;	/* save errno from fread() call for later reporting if needed */
-	dbg(DBG_VVHIGH, "%s: fread(read_buf, %lu, %d, stream) read cycle: %ld returned: %ld",
-			 __func__, sizeof(uint8_t), READ_ALL_CHUNK, read_cycle, last_read);
+	dbg(DBG_VVHIGH, "%s: fread(read_buf, %ju, %d, stream) read cycle: %ld returned: %jd",
+			 __func__, (uintmax_t)sizeof(uint8_t), READ_ALL_CHUNK, read_cycle, (intmax_t)last_read);
 	++read_cycle;
 
 	/*
@@ -1946,12 +1946,14 @@ read_all(FILE *stream, size_t *psize)
 
 	    /* report the I/O condition */
 	    if (feof(stream)) {
-		dbg(DBG_HIGH, "fread returned: %ld normal EOF reading stream at: %jd bytes", last_read, used);
+		dbg(DBG_HIGH, "fread returned: %ju normal EOF reading stream at: %jd bytes",
+			      (uintmax_t)last_read, used);
 	    } else if (ferror(stream)) {
-		warnp(__func__, "fread returned: %ld I/O error detected while reading stream at: %jd bytes", last_read, used);
+		warnp(__func__, "fread returned: %ju I/O error detected while reading stream at: %jd bytes",
+			        (uintmax_t)last_read, used);
 	    } else {
-		warnp(__func__, "fread returned %ld although neither the EOF nor ERROR flag were set: "
-				"assuming EOF anyway", last_read);
+		warnp(__func__, "fread returned %ju although neither the EOF nor ERROR flag were set: "
+				"assuming EOF anyway", (uintmax_t)last_read);
 	    }
 
 	    /*
@@ -1960,9 +1962,9 @@ read_all(FILE *stream, size_t *psize)
 	    break;
 	}
     } while (true);
-    dbg(DBG_VVHIGH, "%s(stream, psize): last_read: %ld total bytes: %jd allocated: %jd "
+    dbg(DBG_VVHIGH, "%s(stream, psize): last_read: %ju total bytes: %jd allocated: %jd "
 		    "read_cycle: %ld move_cycle: %ld seek_cycle: %ld",
-		    __func__, last_read, dyn_array_tell(array), dyn_array_alloced(array),
+		    __func__, (uintmax_t)last_read, dyn_array_tell(array), dyn_array_alloced(array),
 		    read_cycle, move_cycle, dyn_array_seek_cycle);
 
     /*

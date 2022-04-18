@@ -330,7 +330,7 @@ malloc_vers(char *str, long **pvers)
 	} else {
 	    /* report invalid version string */
 	    dbg(DBG_MED, "trimmed version string contains non-version character: wstr[%ju] = <%c>: <%s>",
-			 i, wstr[i], wstr);
+			 (uintmax_t)i, wstr[i], wstr);
 	    return 0;
 	}
     }

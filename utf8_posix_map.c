@@ -1733,7 +1733,7 @@ default_handle(char const *name)
 	    ++i;
 	}
     }
-    dbg(DBG_VVHIGH, "estimated default handle <%s> length: %ju", name, def_len);
+    dbg(DBG_VVHIGH, "estimated default handle <%s> length: %ju", name, (uintmax_t)def_len);
 
     /*
      * case: estimated default handle is empty
