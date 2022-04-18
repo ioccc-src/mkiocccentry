@@ -74,7 +74,7 @@ static struct manifest_file *manifest_files_list; /* list of files in the manife
 /*
  * usage message
  *
- * Use the usage() function to print the these usage_msg([0-9]?)+ strings.
+ * Use the usage() function to print the usage_msg([0-9]?)+ strings.
  */
 static const char * const usage_msg =
 "usage: %s [-h] [-v level] [-q] [-V] [-S] [-F fnamchk] [-t] [-W code] [-w] ... file\n"

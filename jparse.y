@@ -43,7 +43,6 @@ unsigned num_errors = 0;		/* > 0 number of errors encountered */
 
 
 /* debug information during development */
-#define YYDEBUG 1
 int yydebug = 1;
 
 int token_type = 0;
@@ -196,6 +195,7 @@ main(int argc, char **argv)
 	     */
 	    string_flag_used = true;
 
+	    dbg(DBG_NONE, "Calling parse_json_string(\"%s\"):", optarg);
 	    /* parse arg as a string */
 	    parse_json_string(optarg);
 	    /*
@@ -239,6 +239,7 @@ main(int argc, char **argv)
 	 * process each argument in order
 	 */
 	for (i=optind; i < argc; ++i) {
+	    dbg(DBG_NONE, "Calling parse_json_file(\"%s\"):", argv[i]);
 	    parse_json_file(argv[i]);
 	}
 

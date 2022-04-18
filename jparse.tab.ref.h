@@ -114,17 +114,17 @@ extern int yydebug;
 
 /* Value type.  */
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
-#line 89 "jparse.y"
+#line 88 "jparse.y"
 union json_type
 {
-#line 89 "jparse.y"
+#line 88 "jparse.y"
 
     struct json json;
 
 #line 83 "jparse.tab.h"
 
 };
-#line 89 "jparse.y"
+#line 88 "jparse.y"
 typedef union json_type YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define YYSTYPE_IS_DECLARED 1

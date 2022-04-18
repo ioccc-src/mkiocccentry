@@ -2952,8 +2952,11 @@ clearerr_or_fclose(char const *filename, FILE *file)
     /*
      * firewall
      */
-    if (filename == NULL || file == NULL) {
-	err(183, __func__, "passed NULL arg(s)");
+    if (filename == NULL) {
+	err(183, __func__, "passed NULL filename");
+	not_reached();
+    } else if (file == NULL) {
+	err(184, __func__, "passed NULL file");
 	not_reached();
     }
 
@@ -2994,7 +2997,7 @@ print_newline(bool output_newline)
 	errno = 0;		/* pre-clear errno for errp() */
 	ret = putchar('\n');
 	if (ret != '\n') {
-	    errp(184, __func__, "error while writing newline");
+	    errp(185, __func__, "error while writing newline");
 	    not_reached();
 	}
     }
