@@ -121,12 +121,11 @@ unsigned num_errors = 0;		/* > 0 number of errors encountered */
 
 
 /* debug information during development */
-#define YYDEBUG 1
 int yydebug = 1;
 
 int token_type = 0;
 
-#line 88 "jparse.tab.c"
+#line 87 "jparse.tab.c"
 
 # ifndef YY_CAST
 #  ifdef __cplusplus
@@ -541,9 +540,9 @@ static const yytype_int8 yytranslate[] =
 /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_uint8 yyrline[] =
 {
-       0,   103,   103,   104,   105,   108,   109,   110,   111,   112,
-     113,   114,   115,   118,   121,   122,   125,   128,   131,   132,
-     135
+       0,   102,   102,   103,   104,   107,   108,   109,   110,   111,
+     112,   113,   114,   117,   120,   121,   124,   127,   130,   131,
+     134
 };
 #endif
 
@@ -1596,7 +1595,7 @@ yyreduce:
     switch (yyn)
       {
 
-#line 1558 "jparse.tab.c"
+#line 1557 "jparse.tab.c"
 
         default: break;
       }
@@ -1831,7 +1830,7 @@ yyreturnlab:
   return yyresult;
 }
 
-#line 138 "jparse.y"
+#line 137 "jparse.y"
 
 /* Section 3: C code */
 int
@@ -1893,6 +1892,7 @@ main(int argc, char **argv)
 	     */
 	    string_flag_used = true;
 
+	    dbg(DBG_NONE, "Calling parse_json_string(\"%s\"):", optarg);
 	    /* parse arg as a string */
 	    parse_json_string(optarg);
 	    /*
@@ -1936,6 +1936,7 @@ main(int argc, char **argv)
 	 * process each argument in order
 	 */
 	for (i=optind; i < argc; ++i) {
+	    dbg(DBG_NONE, "Calling parse_json_file(\"%s\"):", argv[i]);
 	    parse_json_file(argv[i]);
 	}
 
