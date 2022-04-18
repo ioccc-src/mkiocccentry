@@ -149,7 +149,7 @@
 /*
  * dynamic array facility version
  */
-#define DYN_TEST_VERSION "1.4 2022-04-17"	 /* format: major.minor YYYY-MM-DD */
+#define DYN_TEST_VERSION "1.5 2022-04-17"	 /* format: major.minor YYYY-MM-DD */
 
 
 #endif /* INCLUDE_VERSION_H */

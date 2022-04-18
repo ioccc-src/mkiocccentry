@@ -109,7 +109,7 @@
 #define dyn_array_addr(array_p, type, index) (((type *)(((struct dyn_array *)(array_p))->data))+(index))
 #define dyn_array_tell(array_p) (((struct dyn_array *)(array_p))->count)
 #define dyn_array_beyond(array_p, type) (dyn_array_addr(array_p, type, dyn_array_tell(array_p)))
-#define dyn_array_alloced(array_p) (((struct dyn_array *)(array_p))->count)
+#define dyn_array_alloced(array_p) (((struct dyn_array *)(array_p))->allocated)
 #define dyn_array_avail(array_p) (dyn_array_alloced(array_p) - dyn_array_tell(array_p))
 #define dyn_array_rewind(array_p) (dyn_array_seek((struct dyn_array *)(array_p), 0, SEEK_SET))
 

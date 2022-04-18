@@ -148,10 +148,12 @@ dyn_array_grow(struct dyn_array *array, intmax_t elms_to_allocate)
     }
     array->data = data;
     array->allocated = new_allocated;
-    dbg(DBG_VHIGH, "expanded dynamic array with %jd new allocated elements of %jd bytes: the "
-		   "number of allocated elements went from %jd to %jd and the size went from %jd to %jd",
-		   elms_to_allocate, array->elm_size, old_allocated,
-		   array->allocated, old_bytes, new_bytes);
+    dbg(DBG_VVVHIGH, "%s(array, %jd): %s: allocated: %jd elements of size: %jd in use: %jd",
+		     __func__, elms_to_allocate,
+		     (moved == true ? "moved" : "not-moved"),
+		     dyn_array_alloced(array),
+		     array->elm_size,
+		     dyn_array_tell(array));
 
     /*
      * Zeroize new elements if requested
@@ -246,16 +248,16 @@ dyn_array_create(size_t elm_size, intmax_t chunk, intmax_t start_elm_count, bool
      * Zeroize allocated data
      */
     if (ret->zeroize == true) {
-	/* +chunk for guard chunk */
-	memset(ret->data, 0, (ret->allocated+chunk) * ret->elm_size);
+	memset(ret->data, 0, number_of_bytes);
     }
 
     /*
      * Return newly allocated array
      */
-    dbg(DBG_HIGH, "initialized empty dynamic array of %jd elements of %jd bytes per element",
-		  ret->allocated, ret->elm_size);
-
+    dbg(DBG_VVHIGH, "%s(%ju, %jd, %jd, %s): initialized empty dynamic array of %jd elements of size: %jd",
+		    __func__, (uintmax_t)elm_size, chunk, start_elm_count,
+		    (zeroize == true ? "true" : "false"),
+		    dyn_array_alloced(ret), ret->elm_size);
     return ret;
 }
 
@@ -330,6 +332,12 @@ dyn_array_append_value(struct dyn_array *array, void *value_to_add)
     p = (unsigned char *) (array->data) + (array->count * array->elm_size);
     memcpy(p, value_to_add, array->elm_size);
     ++array->count;
+    dbg(DBG_VVVHIGH, "%s(array, buf, value): %s: allocated: %jd elements of size: %jd in use: %jd",
+		     __func__,
+		     (moved == true ? "moved" : "not-moved"),
+		     dyn_array_alloced(array),
+		     array->elm_size,
+		     dyn_array_tell(array));
 
     /* return array moved condition */
     return moved;
@@ -412,6 +420,13 @@ dyn_array_append_array(struct dyn_array *array, void *array_to_add_p, intmax_t c
     p = (unsigned char *) (array->data) + (array->count * array->elm_size);
     memcpy(p, array_to_add_p, array->elm_size * count_of_elements_to_add);
     array->count += count_of_elements_to_add;
+    dbg(DBG_VVVHIGH, "%s(array, buf, %jd): %s: allocated: %jd elements of size: %jd in use: %jd",
+		     __func__,
+		     (intmax_t)count_of_elements_to_add,
+		     (moved == true ? "moved" : "not-moved"),
+		     dyn_array_alloced(array),
+		     array->elm_size,
+		     dyn_array_tell(array));
 
     /* return array moved condition */
     return moved;
@@ -569,7 +584,15 @@ dyn_array_seek(struct dyn_array *array, off_t offset, int whence)
     }
 
     /* set new in use count */
-    array->count = offset;
+    array->count = setpoint;
+    dbg(DBG_VVVHIGH, "%s(array, %jd, %s): %s: allocated: %jd elements of size: %jd in use: %jd",
+		     __func__,
+		     (intmax_t)offset,
+		     (whence == SEEK_SET ? "SEEK_SET" : (whence == SEEK_CUR ? "SEEK_CUR" : "SEEK_END")),
+		     (moved == true ? "moved" : "not-moved"),
+		     dyn_array_alloced(array),
+		     array->elm_size,
+		     dyn_array_tell(array));
 
     /* return array moved condition */
     return moved;
@@ -634,7 +657,11 @@ dyn_array_clear(struct dyn_array *array)
      * Set the number of elements in the array to zero
      */
     array->count = 0;
-
+    dbg(DBG_VVVHIGH, "%s(array) not-moved: allocated: %jd elements of size: %jd in use: %jd",
+		     __func__,
+		     dyn_array_alloced(array),
+		     array->elm_size,
+		     dyn_array_tell(array));
     return;
 }
 
@@ -689,5 +716,6 @@ dyn_array_free(struct dyn_array *array)
     array->count = 0;
     array->allocated = 0;
     array->chunk = 0;
+    dbg(DBG_VVVHIGH, "%s(array)", __func__);
     return;
 }
