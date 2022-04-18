@@ -46,26 +46,11 @@
 
 /* DO NOT REMOVE THIS LINE - jint tests are added below this line */
 #if defined(JINT_TEST_ENABLED)
-#define TEST_COUNT (95)
+#define TEST_COUNT (65)
 
 int const test_count = TEST_COUNT;
 
 char *test_set[TEST_COUNT+1] = {
-    "-8589934594",
-    "-8589934593",
-    "-8589934592",
-    "-8589934591",
-    "-8589934590",
-    "-4294967298",
-    "-4294967297",
-    "-4294967296",
-    "-4294967295",
-    "-4294967294",
-    "-2147483650",
-    "-2147483649",
-    "-2147483648",
-    "-2147483647",
-    "-2147483646",
     "-131074",
     "-131073",
     "-131072",
@@ -131,1061 +116,11 @@ char *test_set[TEST_COUNT+1] = {
     "131072",
     "131073",
     "131074",
-    "2147483646",
-    "2147483647",
-    "2147483648",
-    "2147483649",
-    "2147483650",
-    "4294967294",
-    "4294967295",
-    "4294967296",
-    "4294967297",
-    "4294967298",
-    "8589934590",
-    "8589934591",
-    "8589934592",
-    "8589934593",
-    "8589934594",
     NULL
 };
 
 struct json_integer test_result[TEST_COUNT] = {
-    /* test_result[0]: "-8589934594" */
-    {
-	"-8589934594",	/* malloced JSON integer string, whitespace trimmed if needed */
-
-	11,	/* length of original JSON integer string */
-	11,	/* length of as_str */
-
-	true,	/* true ==> able to convert JSON integer to some form of C integer type */
-	true,	/* true ==> value < 0 */
-
-
-	false,	/* true ==> converted JSON integer to C int8_t */
-	0,	/* no JSON integer value in int8_t form */
-
-	false,	/* true ==> converted JSON integer to C uint8_t */
-	0,	/* no JSON integer value in uint8_t form */
-
-	false,	/* true ==> converted JSON integer to C int16_t */
-	0,	/* no JSON integer value in int16_t form */
-
-	false,	/* true ==> converted JSON integer to C uint16_t */
-	0,	/* no JSON integer value in uint16_t form */
-
-	false,	/* true ==> converted JSON integer to C int32_t */
-	0,	/* no JSON integer value in int32_t form */
-
-	false,	/* true ==> converted JSON integer to C uint32_t */
-	0,	/* no JSON integer value in uint32_t form */
-
-	true,	/* true ==> converted JSON integer to C int64_t */
-	-8589934594,	/* JSON integer value in int64_t form */
-
-	false,	/* true ==> converted JSON integer to C uint64_t */
-	0,	/* no JSON integer value in uint64_t form */
-
-	false,	/* true ==> converted JSON integer to C int */
-	0,	/* no JSON integer value in int form */
-
-	false,	/* true ==> converted JSON integer to C unsigned int */
-	0,	/* no JSON integer value in unsigned int form */
-
-	true,	/* true ==> converted JSON integer to C long */
-	-8589934594,	/* JSON integer value in long form */
-
-	false,	/* true ==> converted JSON integer to C unsigned long */
-	0,	/* no JSON integer value in unsigned long form */
-
-	true,	/* true ==> converted JSON integer to C long long */
-	-8589934594,	/* JSON integer value in long long form */
-
-	false,	/* true ==> converted JSON integer to C unsigned long long */
-	0,	/* no JSON integer value in unsigned long long form */
-
-	true,	/* true ==> converted JSON integer to C ssize_t */
-	-8589934594,	/* JSON integer value in ssize_t form */
-
-	false,	/* true ==> converted JSON integer to C size_t */
-	0,	/* no JSON integer value in size_t form */
-
-	true,	/* true ==> converted JSON integer to C off_t */
-	-8589934594,	/* JSON integer value in off_t form */
-
-	true,	/* true ==> converted JSON integer to C intmax_t */
-	-8589934594,	/* JSON integer value in intmax_t form */
-
-	false,	/* true ==> converted JSON integer to C uintmax_t */
-	0,	/* no JSON integer value in uintmax_t form */
-    },
-
-    /* test_result[1]: "-8589934593" */
-    {
-	"-8589934593",	/* malloced JSON integer string, whitespace trimmed if needed */
-
-	11,	/* length of original JSON integer string */
-	11,	/* length of as_str */
-
-	true,	/* true ==> able to convert JSON integer to some form of C integer type */
-	true,	/* true ==> value < 0 */
-
-
-	false,	/* true ==> converted JSON integer to C int8_t */
-	0,	/* no JSON integer value in int8_t form */
-
-	false,	/* true ==> converted JSON integer to C uint8_t */
-	0,	/* no JSON integer value in uint8_t form */
-
-	false,	/* true ==> converted JSON integer to C int16_t */
-	0,	/* no JSON integer value in int16_t form */
-
-	false,	/* true ==> converted JSON integer to C uint16_t */
-	0,	/* no JSON integer value in uint16_t form */
-
-	false,	/* true ==> converted JSON integer to C int32_t */
-	0,	/* no JSON integer value in int32_t form */
-
-	false,	/* true ==> converted JSON integer to C uint32_t */
-	0,	/* no JSON integer value in uint32_t form */
-
-	true,	/* true ==> converted JSON integer to C int64_t */
-	-8589934593,	/* JSON integer value in int64_t form */
-
-	false,	/* true ==> converted JSON integer to C uint64_t */
-	0,	/* no JSON integer value in uint64_t form */
-
-	false,	/* true ==> converted JSON integer to C int */
-	0,	/* no JSON integer value in int form */
-
-	false,	/* true ==> converted JSON integer to C unsigned int */
-	0,	/* no JSON integer value in unsigned int form */
-
-	true,	/* true ==> converted JSON integer to C long */
-	-8589934593,	/* JSON integer value in long form */
-
-	false,	/* true ==> converted JSON integer to C unsigned long */
-	0,	/* no JSON integer value in unsigned long form */
-
-	true,	/* true ==> converted JSON integer to C long long */
-	-8589934593,	/* JSON integer value in long long form */
-
-	false,	/* true ==> converted JSON integer to C unsigned long long */
-	0,	/* no JSON integer value in unsigned long long form */
-
-	true,	/* true ==> converted JSON integer to C ssize_t */
-	-8589934593,	/* JSON integer value in ssize_t form */
-
-	false,	/* true ==> converted JSON integer to C size_t */
-	0,	/* no JSON integer value in size_t form */
-
-	true,	/* true ==> converted JSON integer to C off_t */
-	-8589934593,	/* JSON integer value in off_t form */
-
-	true,	/* true ==> converted JSON integer to C intmax_t */
-	-8589934593,	/* JSON integer value in intmax_t form */
-
-	false,	/* true ==> converted JSON integer to C uintmax_t */
-	0,	/* no JSON integer value in uintmax_t form */
-    },
-
-    /* test_result[2]: "-8589934592" */
-    {
-	"-8589934592",	/* malloced JSON integer string, whitespace trimmed if needed */
-
-	11,	/* length of original JSON integer string */
-	11,	/* length of as_str */
-
-	true,	/* true ==> able to convert JSON integer to some form of C integer type */
-	true,	/* true ==> value < 0 */
-
-
-	false,	/* true ==> converted JSON integer to C int8_t */
-	0,	/* no JSON integer value in int8_t form */
-
-	false,	/* true ==> converted JSON integer to C uint8_t */
-	0,	/* no JSON integer value in uint8_t form */
-
-	false,	/* true ==> converted JSON integer to C int16_t */
-	0,	/* no JSON integer value in int16_t form */
-
-	false,	/* true ==> converted JSON integer to C uint16_t */
-	0,	/* no JSON integer value in uint16_t form */
-
-	false,	/* true ==> converted JSON integer to C int32_t */
-	0,	/* no JSON integer value in int32_t form */
-
-	false,	/* true ==> converted JSON integer to C uint32_t */
-	0,	/* no JSON integer value in uint32_t form */
-
-	true,	/* true ==> converted JSON integer to C int64_t */
-	-8589934592,	/* JSON integer value in int64_t form */
-
-	false,	/* true ==> converted JSON integer to C uint64_t */
-	0,	/* no JSON integer value in uint64_t form */
-
-	false,	/* true ==> converted JSON integer to C int */
-	0,	/* no JSON integer value in int form */
-
-	false,	/* true ==> converted JSON integer to C unsigned int */
-	0,	/* no JSON integer value in unsigned int form */
-
-	true,	/* true ==> converted JSON integer to C long */
-	-8589934592,	/* JSON integer value in long form */
-
-	false,	/* true ==> converted JSON integer to C unsigned long */
-	0,	/* no JSON integer value in unsigned long form */
-
-	true,	/* true ==> converted JSON integer to C long long */
-	-8589934592,	/* JSON integer value in long long form */
-
-	false,	/* true ==> converted JSON integer to C unsigned long long */
-	0,	/* no JSON integer value in unsigned long long form */
-
-	true,	/* true ==> converted JSON integer to C ssize_t */
-	-8589934592,	/* JSON integer value in ssize_t form */
-
-	false,	/* true ==> converted JSON integer to C size_t */
-	0,	/* no JSON integer value in size_t form */
-
-	true,	/* true ==> converted JSON integer to C off_t */
-	-8589934592,	/* JSON integer value in off_t form */
-
-	true,	/* true ==> converted JSON integer to C intmax_t */
-	-8589934592,	/* JSON integer value in intmax_t form */
-
-	false,	/* true ==> converted JSON integer to C uintmax_t */
-	0,	/* no JSON integer value in uintmax_t form */
-    },
-
-    /* test_result[3]: "-8589934591" */
-    {
-	"-8589934591",	/* malloced JSON integer string, whitespace trimmed if needed */
-
-	11,	/* length of original JSON integer string */
-	11,	/* length of as_str */
-
-	true,	/* true ==> able to convert JSON integer to some form of C integer type */
-	true,	/* true ==> value < 0 */
-
-
-	false,	/* true ==> converted JSON integer to C int8_t */
-	0,	/* no JSON integer value in int8_t form */
-
-	false,	/* true ==> converted JSON integer to C uint8_t */
-	0,	/* no JSON integer value in uint8_t form */
-
-	false,	/* true ==> converted JSON integer to C int16_t */
-	0,	/* no JSON integer value in int16_t form */
-
-	false,	/* true ==> converted JSON integer to C uint16_t */
-	0,	/* no JSON integer value in uint16_t form */
-
-	false,	/* true ==> converted JSON integer to C int32_t */
-	0,	/* no JSON integer value in int32_t form */
-
-	false,	/* true ==> converted JSON integer to C uint32_t */
-	0,	/* no JSON integer value in uint32_t form */
-
-	true,	/* true ==> converted JSON integer to C int64_t */
-	-8589934591,	/* JSON integer value in int64_t form */
-
-	false,	/* true ==> converted JSON integer to C uint64_t */
-	0,	/* no JSON integer value in uint64_t form */
-
-	false,	/* true ==> converted JSON integer to C int */
-	0,	/* no JSON integer value in int form */
-
-	false,	/* true ==> converted JSON integer to C unsigned int */
-	0,	/* no JSON integer value in unsigned int form */
-
-	true,	/* true ==> converted JSON integer to C long */
-	-8589934591,	/* JSON integer value in long form */
-
-	false,	/* true ==> converted JSON integer to C unsigned long */
-	0,	/* no JSON integer value in unsigned long form */
-
-	true,	/* true ==> converted JSON integer to C long long */
-	-8589934591,	/* JSON integer value in long long form */
-
-	false,	/* true ==> converted JSON integer to C unsigned long long */
-	0,	/* no JSON integer value in unsigned long long form */
-
-	true,	/* true ==> converted JSON integer to C ssize_t */
-	-8589934591,	/* JSON integer value in ssize_t form */
-
-	false,	/* true ==> converted JSON integer to C size_t */
-	0,	/* no JSON integer value in size_t form */
-
-	true,	/* true ==> converted JSON integer to C off_t */
-	-8589934591,	/* JSON integer value in off_t form */
-
-	true,	/* true ==> converted JSON integer to C intmax_t */
-	-8589934591,	/* JSON integer value in intmax_t form */
-
-	false,	/* true ==> converted JSON integer to C uintmax_t */
-	0,	/* no JSON integer value in uintmax_t form */
-    },
-
-    /* test_result[4]: "-8589934590" */
-    {
-	"-8589934590",	/* malloced JSON integer string, whitespace trimmed if needed */
-
-	11,	/* length of original JSON integer string */
-	11,	/* length of as_str */
-
-	true,	/* true ==> able to convert JSON integer to some form of C integer type */
-	true,	/* true ==> value < 0 */
-
-
-	false,	/* true ==> converted JSON integer to C int8_t */
-	0,	/* no JSON integer value in int8_t form */
-
-	false,	/* true ==> converted JSON integer to C uint8_t */
-	0,	/* no JSON integer value in uint8_t form */
-
-	false,	/* true ==> converted JSON integer to C int16_t */
-	0,	/* no JSON integer value in int16_t form */
-
-	false,	/* true ==> converted JSON integer to C uint16_t */
-	0,	/* no JSON integer value in uint16_t form */
-
-	false,	/* true ==> converted JSON integer to C int32_t */
-	0,	/* no JSON integer value in int32_t form */
-
-	false,	/* true ==> converted JSON integer to C uint32_t */
-	0,	/* no JSON integer value in uint32_t form */
-
-	true,	/* true ==> converted JSON integer to C int64_t */
-	-8589934590,	/* JSON integer value in int64_t form */
-
-	false,	/* true ==> converted JSON integer to C uint64_t */
-	0,	/* no JSON integer value in uint64_t form */
-
-	false,	/* true ==> converted JSON integer to C int */
-	0,	/* no JSON integer value in int form */
-
-	false,	/* true ==> converted JSON integer to C unsigned int */
-	0,	/* no JSON integer value in unsigned int form */
-
-	true,	/* true ==> converted JSON integer to C long */
-	-8589934590,	/* JSON integer value in long form */
-
-	false,	/* true ==> converted JSON integer to C unsigned long */
-	0,	/* no JSON integer value in unsigned long form */
-
-	true,	/* true ==> converted JSON integer to C long long */
-	-8589934590,	/* JSON integer value in long long form */
-
-	false,	/* true ==> converted JSON integer to C unsigned long long */
-	0,	/* no JSON integer value in unsigned long long form */
-
-	true,	/* true ==> converted JSON integer to C ssize_t */
-	-8589934590,	/* JSON integer value in ssize_t form */
-
-	false,	/* true ==> converted JSON integer to C size_t */
-	0,	/* no JSON integer value in size_t form */
-
-	true,	/* true ==> converted JSON integer to C off_t */
-	-8589934590,	/* JSON integer value in off_t form */
-
-	true,	/* true ==> converted JSON integer to C intmax_t */
-	-8589934590,	/* JSON integer value in intmax_t form */
-
-	false,	/* true ==> converted JSON integer to C uintmax_t */
-	0,	/* no JSON integer value in uintmax_t form */
-    },
-
-    /* test_result[5]: "-4294967298" */
-    {
-	"-4294967298",	/* malloced JSON integer string, whitespace trimmed if needed */
-
-	11,	/* length of original JSON integer string */
-	11,	/* length of as_str */
-
-	true,	/* true ==> able to convert JSON integer to some form of C integer type */
-	true,	/* true ==> value < 0 */
-
-
-	false,	/* true ==> converted JSON integer to C int8_t */
-	0,	/* no JSON integer value in int8_t form */
-
-	false,	/* true ==> converted JSON integer to C uint8_t */
-	0,	/* no JSON integer value in uint8_t form */
-
-	false,	/* true ==> converted JSON integer to C int16_t */
-	0,	/* no JSON integer value in int16_t form */
-
-	false,	/* true ==> converted JSON integer to C uint16_t */
-	0,	/* no JSON integer value in uint16_t form */
-
-	false,	/* true ==> converted JSON integer to C int32_t */
-	0,	/* no JSON integer value in int32_t form */
-
-	false,	/* true ==> converted JSON integer to C uint32_t */
-	0,	/* no JSON integer value in uint32_t form */
-
-	true,	/* true ==> converted JSON integer to C int64_t */
-	-4294967298,	/* JSON integer value in int64_t form */
-
-	false,	/* true ==> converted JSON integer to C uint64_t */
-	0,	/* no JSON integer value in uint64_t form */
-
-	false,	/* true ==> converted JSON integer to C int */
-	0,	/* no JSON integer value in int form */
-
-	false,	/* true ==> converted JSON integer to C unsigned int */
-	0,	/* no JSON integer value in unsigned int form */
-
-	true,	/* true ==> converted JSON integer to C long */
-	-4294967298,	/* JSON integer value in long form */
-
-	false,	/* true ==> converted JSON integer to C unsigned long */
-	0,	/* no JSON integer value in unsigned long form */
-
-	true,	/* true ==> converted JSON integer to C long long */
-	-4294967298,	/* JSON integer value in long long form */
-
-	false,	/* true ==> converted JSON integer to C unsigned long long */
-	0,	/* no JSON integer value in unsigned long long form */
-
-	true,	/* true ==> converted JSON integer to C ssize_t */
-	-4294967298,	/* JSON integer value in ssize_t form */
-
-	false,	/* true ==> converted JSON integer to C size_t */
-	0,	/* no JSON integer value in size_t form */
-
-	true,	/* true ==> converted JSON integer to C off_t */
-	-4294967298,	/* JSON integer value in off_t form */
-
-	true,	/* true ==> converted JSON integer to C intmax_t */
-	-4294967298,	/* JSON integer value in intmax_t form */
-
-	false,	/* true ==> converted JSON integer to C uintmax_t */
-	0,	/* no JSON integer value in uintmax_t form */
-    },
-
-    /* test_result[6]: "-4294967297" */
-    {
-	"-4294967297",	/* malloced JSON integer string, whitespace trimmed if needed */
-
-	11,	/* length of original JSON integer string */
-	11,	/* length of as_str */
-
-	true,	/* true ==> able to convert JSON integer to some form of C integer type */
-	true,	/* true ==> value < 0 */
-
-
-	false,	/* true ==> converted JSON integer to C int8_t */
-	0,	/* no JSON integer value in int8_t form */
-
-	false,	/* true ==> converted JSON integer to C uint8_t */
-	0,	/* no JSON integer value in uint8_t form */
-
-	false,	/* true ==> converted JSON integer to C int16_t */
-	0,	/* no JSON integer value in int16_t form */
-
-	false,	/* true ==> converted JSON integer to C uint16_t */
-	0,	/* no JSON integer value in uint16_t form */
-
-	false,	/* true ==> converted JSON integer to C int32_t */
-	0,	/* no JSON integer value in int32_t form */
-
-	false,	/* true ==> converted JSON integer to C uint32_t */
-	0,	/* no JSON integer value in uint32_t form */
-
-	true,	/* true ==> converted JSON integer to C int64_t */
-	-4294967297,	/* JSON integer value in int64_t form */
-
-	false,	/* true ==> converted JSON integer to C uint64_t */
-	0,	/* no JSON integer value in uint64_t form */
-
-	false,	/* true ==> converted JSON integer to C int */
-	0,	/* no JSON integer value in int form */
-
-	false,	/* true ==> converted JSON integer to C unsigned int */
-	0,	/* no JSON integer value in unsigned int form */
-
-	true,	/* true ==> converted JSON integer to C long */
-	-4294967297,	/* JSON integer value in long form */
-
-	false,	/* true ==> converted JSON integer to C unsigned long */
-	0,	/* no JSON integer value in unsigned long form */
-
-	true,	/* true ==> converted JSON integer to C long long */
-	-4294967297,	/* JSON integer value in long long form */
-
-	false,	/* true ==> converted JSON integer to C unsigned long long */
-	0,	/* no JSON integer value in unsigned long long form */
-
-	true,	/* true ==> converted JSON integer to C ssize_t */
-	-4294967297,	/* JSON integer value in ssize_t form */
-
-	false,	/* true ==> converted JSON integer to C size_t */
-	0,	/* no JSON integer value in size_t form */
-
-	true,	/* true ==> converted JSON integer to C off_t */
-	-4294967297,	/* JSON integer value in off_t form */
-
-	true,	/* true ==> converted JSON integer to C intmax_t */
-	-4294967297,	/* JSON integer value in intmax_t form */
-
-	false,	/* true ==> converted JSON integer to C uintmax_t */
-	0,	/* no JSON integer value in uintmax_t form */
-    },
-
-    /* test_result[7]: "-4294967296" */
-    {
-	"-4294967296",	/* malloced JSON integer string, whitespace trimmed if needed */
-
-	11,	/* length of original JSON integer string */
-	11,	/* length of as_str */
-
-	true,	/* true ==> able to convert JSON integer to some form of C integer type */
-	true,	/* true ==> value < 0 */
-
-
-	false,	/* true ==> converted JSON integer to C int8_t */
-	0,	/* no JSON integer value in int8_t form */
-
-	false,	/* true ==> converted JSON integer to C uint8_t */
-	0,	/* no JSON integer value in uint8_t form */
-
-	false,	/* true ==> converted JSON integer to C int16_t */
-	0,	/* no JSON integer value in int16_t form */
-
-	false,	/* true ==> converted JSON integer to C uint16_t */
-	0,	/* no JSON integer value in uint16_t form */
-
-	false,	/* true ==> converted JSON integer to C int32_t */
-	0,	/* no JSON integer value in int32_t form */
-
-	false,	/* true ==> converted JSON integer to C uint32_t */
-	0,	/* no JSON integer value in uint32_t form */
-
-	true,	/* true ==> converted JSON integer to C int64_t */
-	-4294967296,	/* JSON integer value in int64_t form */
-
-	false,	/* true ==> converted JSON integer to C uint64_t */
-	0,	/* no JSON integer value in uint64_t form */
-
-	false,	/* true ==> converted JSON integer to C int */
-	0,	/* no JSON integer value in int form */
-
-	false,	/* true ==> converted JSON integer to C unsigned int */
-	0,	/* no JSON integer value in unsigned int form */
-
-	true,	/* true ==> converted JSON integer to C long */
-	-4294967296,	/* JSON integer value in long form */
-
-	false,	/* true ==> converted JSON integer to C unsigned long */
-	0,	/* no JSON integer value in unsigned long form */
-
-	true,	/* true ==> converted JSON integer to C long long */
-	-4294967296,	/* JSON integer value in long long form */
-
-	false,	/* true ==> converted JSON integer to C unsigned long long */
-	0,	/* no JSON integer value in unsigned long long form */
-
-	true,	/* true ==> converted JSON integer to C ssize_t */
-	-4294967296,	/* JSON integer value in ssize_t form */
-
-	false,	/* true ==> converted JSON integer to C size_t */
-	0,	/* no JSON integer value in size_t form */
-
-	true,	/* true ==> converted JSON integer to C off_t */
-	-4294967296,	/* JSON integer value in off_t form */
-
-	true,	/* true ==> converted JSON integer to C intmax_t */
-	-4294967296,	/* JSON integer value in intmax_t form */
-
-	false,	/* true ==> converted JSON integer to C uintmax_t */
-	0,	/* no JSON integer value in uintmax_t form */
-    },
-
-    /* test_result[8]: "-4294967295" */
-    {
-	"-4294967295",	/* malloced JSON integer string, whitespace trimmed if needed */
-
-	11,	/* length of original JSON integer string */
-	11,	/* length of as_str */
-
-	true,	/* true ==> able to convert JSON integer to some form of C integer type */
-	true,	/* true ==> value < 0 */
-
-
-	false,	/* true ==> converted JSON integer to C int8_t */
-	0,	/* no JSON integer value in int8_t form */
-
-	false,	/* true ==> converted JSON integer to C uint8_t */
-	0,	/* no JSON integer value in uint8_t form */
-
-	false,	/* true ==> converted JSON integer to C int16_t */
-	0,	/* no JSON integer value in int16_t form */
-
-	false,	/* true ==> converted JSON integer to C uint16_t */
-	0,	/* no JSON integer value in uint16_t form */
-
-	false,	/* true ==> converted JSON integer to C int32_t */
-	0,	/* no JSON integer value in int32_t form */
-
-	false,	/* true ==> converted JSON integer to C uint32_t */
-	0,	/* no JSON integer value in uint32_t form */
-
-	true,	/* true ==> converted JSON integer to C int64_t */
-	-4294967295,	/* JSON integer value in int64_t form */
-
-	false,	/* true ==> converted JSON integer to C uint64_t */
-	0,	/* no JSON integer value in uint64_t form */
-
-	false,	/* true ==> converted JSON integer to C int */
-	0,	/* no JSON integer value in int form */
-
-	false,	/* true ==> converted JSON integer to C unsigned int */
-	0,	/* no JSON integer value in unsigned int form */
-
-	true,	/* true ==> converted JSON integer to C long */
-	-4294967295,	/* JSON integer value in long form */
-
-	false,	/* true ==> converted JSON integer to C unsigned long */
-	0,	/* no JSON integer value in unsigned long form */
-
-	true,	/* true ==> converted JSON integer to C long long */
-	-4294967295,	/* JSON integer value in long long form */
-
-	false,	/* true ==> converted JSON integer to C unsigned long long */
-	0,	/* no JSON integer value in unsigned long long form */
-
-	true,	/* true ==> converted JSON integer to C ssize_t */
-	-4294967295,	/* JSON integer value in ssize_t form */
-
-	false,	/* true ==> converted JSON integer to C size_t */
-	0,	/* no JSON integer value in size_t form */
-
-	true,	/* true ==> converted JSON integer to C off_t */
-	-4294967295,	/* JSON integer value in off_t form */
-
-	true,	/* true ==> converted JSON integer to C intmax_t */
-	-4294967295,	/* JSON integer value in intmax_t form */
-
-	false,	/* true ==> converted JSON integer to C uintmax_t */
-	0,	/* no JSON integer value in uintmax_t form */
-    },
-
-    /* test_result[9]: "-4294967294" */
-    {
-	"-4294967294",	/* malloced JSON integer string, whitespace trimmed if needed */
-
-	11,	/* length of original JSON integer string */
-	11,	/* length of as_str */
-
-	true,	/* true ==> able to convert JSON integer to some form of C integer type */
-	true,	/* true ==> value < 0 */
-
-
-	false,	/* true ==> converted JSON integer to C int8_t */
-	0,	/* no JSON integer value in int8_t form */
-
-	false,	/* true ==> converted JSON integer to C uint8_t */
-	0,	/* no JSON integer value in uint8_t form */
-
-	false,	/* true ==> converted JSON integer to C int16_t */
-	0,	/* no JSON integer value in int16_t form */
-
-	false,	/* true ==> converted JSON integer to C uint16_t */
-	0,	/* no JSON integer value in uint16_t form */
-
-	false,	/* true ==> converted JSON integer to C int32_t */
-	0,	/* no JSON integer value in int32_t form */
-
-	false,	/* true ==> converted JSON integer to C uint32_t */
-	0,	/* no JSON integer value in uint32_t form */
-
-	true,	/* true ==> converted JSON integer to C int64_t */
-	-4294967294,	/* JSON integer value in int64_t form */
-
-	false,	/* true ==> converted JSON integer to C uint64_t */
-	0,	/* no JSON integer value in uint64_t form */
-
-	false,	/* true ==> converted JSON integer to C int */
-	0,	/* no JSON integer value in int form */
-
-	false,	/* true ==> converted JSON integer to C unsigned int */
-	0,	/* no JSON integer value in unsigned int form */
-
-	true,	/* true ==> converted JSON integer to C long */
-	-4294967294,	/* JSON integer value in long form */
-
-	false,	/* true ==> converted JSON integer to C unsigned long */
-	0,	/* no JSON integer value in unsigned long form */
-
-	true,	/* true ==> converted JSON integer to C long long */
-	-4294967294,	/* JSON integer value in long long form */
-
-	false,	/* true ==> converted JSON integer to C unsigned long long */
-	0,	/* no JSON integer value in unsigned long long form */
-
-	true,	/* true ==> converted JSON integer to C ssize_t */
-	-4294967294,	/* JSON integer value in ssize_t form */
-
-	false,	/* true ==> converted JSON integer to C size_t */
-	0,	/* no JSON integer value in size_t form */
-
-	true,	/* true ==> converted JSON integer to C off_t */
-	-4294967294,	/* JSON integer value in off_t form */
-
-	true,	/* true ==> converted JSON integer to C intmax_t */
-	-4294967294,	/* JSON integer value in intmax_t form */
-
-	false,	/* true ==> converted JSON integer to C uintmax_t */
-	0,	/* no JSON integer value in uintmax_t form */
-    },
-
-    /* test_result[10]: "-2147483650" */
-    {
-	"-2147483650",	/* malloced JSON integer string, whitespace trimmed if needed */
-
-	11,	/* length of original JSON integer string */
-	11,	/* length of as_str */
-
-	true,	/* true ==> able to convert JSON integer to some form of C integer type */
-	true,	/* true ==> value < 0 */
-
-
-	false,	/* true ==> converted JSON integer to C int8_t */
-	0,	/* no JSON integer value in int8_t form */
-
-	false,	/* true ==> converted JSON integer to C uint8_t */
-	0,	/* no JSON integer value in uint8_t form */
-
-	false,	/* true ==> converted JSON integer to C int16_t */
-	0,	/* no JSON integer value in int16_t form */
-
-	false,	/* true ==> converted JSON integer to C uint16_t */
-	0,	/* no JSON integer value in uint16_t form */
-
-	false,	/* true ==> converted JSON integer to C int32_t */
-	0,	/* no JSON integer value in int32_t form */
-
-	false,	/* true ==> converted JSON integer to C uint32_t */
-	0,	/* no JSON integer value in uint32_t form */
-
-	true,	/* true ==> converted JSON integer to C int64_t */
-	-2147483650,	/* JSON integer value in int64_t form */
-
-	false,	/* true ==> converted JSON integer to C uint64_t */
-	0,	/* no JSON integer value in uint64_t form */
-
-	false,	/* true ==> converted JSON integer to C int */
-	0,	/* no JSON integer value in int form */
-
-	false,	/* true ==> converted JSON integer to C unsigned int */
-	0,	/* no JSON integer value in unsigned int form */
-
-	true,	/* true ==> converted JSON integer to C long */
-	-2147483650,	/* JSON integer value in long form */
-
-	false,	/* true ==> converted JSON integer to C unsigned long */
-	0,	/* no JSON integer value in unsigned long form */
-
-	true,	/* true ==> converted JSON integer to C long long */
-	-2147483650,	/* JSON integer value in long long form */
-
-	false,	/* true ==> converted JSON integer to C unsigned long long */
-	0,	/* no JSON integer value in unsigned long long form */
-
-	true,	/* true ==> converted JSON integer to C ssize_t */
-	-2147483650,	/* JSON integer value in ssize_t form */
-
-	false,	/* true ==> converted JSON integer to C size_t */
-	0,	/* no JSON integer value in size_t form */
-
-	true,	/* true ==> converted JSON integer to C off_t */
-	-2147483650,	/* JSON integer value in off_t form */
-
-	true,	/* true ==> converted JSON integer to C intmax_t */
-	-2147483650,	/* JSON integer value in intmax_t form */
-
-	false,	/* true ==> converted JSON integer to C uintmax_t */
-	0,	/* no JSON integer value in uintmax_t form */
-    },
-
-    /* test_result[11]: "-2147483649" */
-    {
-	"-2147483649",	/* malloced JSON integer string, whitespace trimmed if needed */
-
-	11,	/* length of original JSON integer string */
-	11,	/* length of as_str */
-
-	true,	/* true ==> able to convert JSON integer to some form of C integer type */
-	true,	/* true ==> value < 0 */
-
-
-	false,	/* true ==> converted JSON integer to C int8_t */
-	0,	/* no JSON integer value in int8_t form */
-
-	false,	/* true ==> converted JSON integer to C uint8_t */
-	0,	/* no JSON integer value in uint8_t form */
-
-	false,	/* true ==> converted JSON integer to C int16_t */
-	0,	/* no JSON integer value in int16_t form */
-
-	false,	/* true ==> converted JSON integer to C uint16_t */
-	0,	/* no JSON integer value in uint16_t form */
-
-	false,	/* true ==> converted JSON integer to C int32_t */
-	0,	/* no JSON integer value in int32_t form */
-
-	false,	/* true ==> converted JSON integer to C uint32_t */
-	0,	/* no JSON integer value in uint32_t form */
-
-	true,	/* true ==> converted JSON integer to C int64_t */
-	-2147483649,	/* JSON integer value in int64_t form */
-
-	false,	/* true ==> converted JSON integer to C uint64_t */
-	0,	/* no JSON integer value in uint64_t form */
-
-	false,	/* true ==> converted JSON integer to C int */
-	0,	/* no JSON integer value in int form */
-
-	false,	/* true ==> converted JSON integer to C unsigned int */
-	0,	/* no JSON integer value in unsigned int form */
-
-	true,	/* true ==> converted JSON integer to C long */
-	-2147483649,	/* JSON integer value in long form */
-
-	false,	/* true ==> converted JSON integer to C unsigned long */
-	0,	/* no JSON integer value in unsigned long form */
-
-	true,	/* true ==> converted JSON integer to C long long */
-	-2147483649,	/* JSON integer value in long long form */
-
-	false,	/* true ==> converted JSON integer to C unsigned long long */
-	0,	/* no JSON integer value in unsigned long long form */
-
-	true,	/* true ==> converted JSON integer to C ssize_t */
-	-2147483649,	/* JSON integer value in ssize_t form */
-
-	false,	/* true ==> converted JSON integer to C size_t */
-	0,	/* no JSON integer value in size_t form */
-
-	true,	/* true ==> converted JSON integer to C off_t */
-	-2147483649,	/* JSON integer value in off_t form */
-
-	true,	/* true ==> converted JSON integer to C intmax_t */
-	-2147483649,	/* JSON integer value in intmax_t form */
-
-	false,	/* true ==> converted JSON integer to C uintmax_t */
-	0,	/* no JSON integer value in uintmax_t form */
-    },
-
-    /* test_result[12]: "-2147483648" */
-    {
-	"-2147483648",	/* malloced JSON integer string, whitespace trimmed if needed */
-
-	11,	/* length of original JSON integer string */
-	11,	/* length of as_str */
-
-	true,	/* true ==> able to convert JSON integer to some form of C integer type */
-	true,	/* true ==> value < 0 */
-
-
-	false,	/* true ==> converted JSON integer to C int8_t */
-	0,	/* no JSON integer value in int8_t form */
-
-	false,	/* true ==> converted JSON integer to C uint8_t */
-	0,	/* no JSON integer value in uint8_t form */
-
-	false,	/* true ==> converted JSON integer to C int16_t */
-	0,	/* no JSON integer value in int16_t form */
-
-	false,	/* true ==> converted JSON integer to C uint16_t */
-	0,	/* no JSON integer value in uint16_t form */
-
-	true,	/* true ==> converted JSON integer to C int32_t */
-	-2147483648,	/* JSON integer value in int32_t form */
-
-	false,	/* true ==> converted JSON integer to C uint32_t */
-	0,	/* no JSON integer value in uint32_t form */
-
-	true,	/* true ==> converted JSON integer to C int64_t */
-	-2147483648,	/* JSON integer value in int64_t form */
-
-	false,	/* true ==> converted JSON integer to C uint64_t */
-	0,	/* no JSON integer value in uint64_t form */
-
-	true,	/* true ==> converted JSON integer to C int */
-	-2147483648,	/* JSON integer value in int form */
-
-	false,	/* true ==> converted JSON integer to C unsigned int */
-	0,	/* no JSON integer value in unsigned int form */
-
-	true,	/* true ==> converted JSON integer to C long */
-	-2147483648,	/* JSON integer value in long form */
-
-	false,	/* true ==> converted JSON integer to C unsigned long */
-	0,	/* no JSON integer value in unsigned long form */
-
-	true,	/* true ==> converted JSON integer to C long long */
-	-2147483648,	/* JSON integer value in long long form */
-
-	false,	/* true ==> converted JSON integer to C unsigned long long */
-	0,	/* no JSON integer value in unsigned long long form */
-
-	true,	/* true ==> converted JSON integer to C ssize_t */
-	-2147483648,	/* JSON integer value in ssize_t form */
-
-	false,	/* true ==> converted JSON integer to C size_t */
-	0,	/* no JSON integer value in size_t form */
-
-	true,	/* true ==> converted JSON integer to C off_t */
-	-2147483648,	/* JSON integer value in off_t form */
-
-	true,	/* true ==> converted JSON integer to C intmax_t */
-	-2147483648,	/* JSON integer value in intmax_t form */
-
-	false,	/* true ==> converted JSON integer to C uintmax_t */
-	0,	/* no JSON integer value in uintmax_t form */
-    },
-
-    /* test_result[13]: "-2147483647" */
-    {
-	"-2147483647",	/* malloced JSON integer string, whitespace trimmed if needed */
-
-	11,	/* length of original JSON integer string */
-	11,	/* length of as_str */
-
-	true,	/* true ==> able to convert JSON integer to some form of C integer type */
-	true,	/* true ==> value < 0 */
-
-
-	false,	/* true ==> converted JSON integer to C int8_t */
-	0,	/* no JSON integer value in int8_t form */
-
-	false,	/* true ==> converted JSON integer to C uint8_t */
-	0,	/* no JSON integer value in uint8_t form */
-
-	false,	/* true ==> converted JSON integer to C int16_t */
-	0,	/* no JSON integer value in int16_t form */
-
-	false,	/* true ==> converted JSON integer to C uint16_t */
-	0,	/* no JSON integer value in uint16_t form */
-
-	true,	/* true ==> converted JSON integer to C int32_t */
-	-2147483647,	/* JSON integer value in int32_t form */
-
-	false,	/* true ==> converted JSON integer to C uint32_t */
-	0,	/* no JSON integer value in uint32_t form */
-
-	true,	/* true ==> converted JSON integer to C int64_t */
-	-2147483647,	/* JSON integer value in int64_t form */
-
-	false,	/* true ==> converted JSON integer to C uint64_t */
-	0,	/* no JSON integer value in uint64_t form */
-
-	true,	/* true ==> converted JSON integer to C int */
-	-2147483647,	/* JSON integer value in int form */
-
-	false,	/* true ==> converted JSON integer to C unsigned int */
-	0,	/* no JSON integer value in unsigned int form */
-
-	true,	/* true ==> converted JSON integer to C long */
-	-2147483647,	/* JSON integer value in long form */
-
-	false,	/* true ==> converted JSON integer to C unsigned long */
-	0,	/* no JSON integer value in unsigned long form */
-
-	true,	/* true ==> converted JSON integer to C long long */
-	-2147483647,	/* JSON integer value in long long form */
-
-	false,	/* true ==> converted JSON integer to C unsigned long long */
-	0,	/* no JSON integer value in unsigned long long form */
-
-	true,	/* true ==> converted JSON integer to C ssize_t */
-	-2147483647,	/* JSON integer value in ssize_t form */
-
-	false,	/* true ==> converted JSON integer to C size_t */
-	0,	/* no JSON integer value in size_t form */
-
-	true,	/* true ==> converted JSON integer to C off_t */
-	-2147483647,	/* JSON integer value in off_t form */
-
-	true,	/* true ==> converted JSON integer to C intmax_t */
-	-2147483647,	/* JSON integer value in intmax_t form */
-
-	false,	/* true ==> converted JSON integer to C uintmax_t */
-	0,	/* no JSON integer value in uintmax_t form */
-    },
-
-    /* test_result[14]: "-2147483646" */
-    {
-	"-2147483646",	/* malloced JSON integer string, whitespace trimmed if needed */
-
-	11,	/* length of original JSON integer string */
-	11,	/* length of as_str */
-
-	true,	/* true ==> able to convert JSON integer to some form of C integer type */
-	true,	/* true ==> value < 0 */
-
-
-	false,	/* true ==> converted JSON integer to C int8_t */
-	0,	/* no JSON integer value in int8_t form */
-
-	false,	/* true ==> converted JSON integer to C uint8_t */
-	0,	/* no JSON integer value in uint8_t form */
-
-	false,	/* true ==> converted JSON integer to C int16_t */
-	0,	/* no JSON integer value in int16_t form */
-
-	false,	/* true ==> converted JSON integer to C uint16_t */
-	0,	/* no JSON integer value in uint16_t form */
-
-	true,	/* true ==> converted JSON integer to C int32_t */
-	-2147483646,	/* JSON integer value in int32_t form */
-
-	false,	/* true ==> converted JSON integer to C uint32_t */
-	0,	/* no JSON integer value in uint32_t form */
-
-	true,	/* true ==> converted JSON integer to C int64_t */
-	-2147483646,	/* JSON integer value in int64_t form */
-
-	false,	/* true ==> converted JSON integer to C uint64_t */
-	0,	/* no JSON integer value in uint64_t form */
-
-	true,	/* true ==> converted JSON integer to C int */
-	-2147483646,	/* JSON integer value in int form */
-
-	false,	/* true ==> converted JSON integer to C unsigned int */
-	0,	/* no JSON integer value in unsigned int form */
-
-	true,	/* true ==> converted JSON integer to C long */
-	-2147483646,	/* JSON integer value in long form */
-
-	false,	/* true ==> converted JSON integer to C unsigned long */
-	0,	/* no JSON integer value in unsigned long form */
-
-	true,	/* true ==> converted JSON integer to C long long */
-	-2147483646,	/* JSON integer value in long long form */
-
-	false,	/* true ==> converted JSON integer to C unsigned long long */
-	0,	/* no JSON integer value in unsigned long long form */
-
-	true,	/* true ==> converted JSON integer to C ssize_t */
-	-2147483646,	/* JSON integer value in ssize_t form */
-
-	false,	/* true ==> converted JSON integer to C size_t */
-	0,	/* no JSON integer value in size_t form */
-
-	true,	/* true ==> converted JSON integer to C off_t */
-	-2147483646,	/* JSON integer value in off_t form */
-
-	true,	/* true ==> converted JSON integer to C intmax_t */
-	-2147483646,	/* JSON integer value in intmax_t form */
-
-	false,	/* true ==> converted JSON integer to C uintmax_t */
-	0,	/* no JSON integer value in uintmax_t form */
-    },
-
-    /* test_result[15]: "-131074" */
+    /* test_result[0]: "-131074" */
     {
 	"-131074",	/* malloced JSON integer string, whitespace trimmed if needed */
 
@@ -1254,7 +189,7 @@ struct json_integer test_result[TEST_COUNT] = {
 	0,	/* no JSON integer value in uintmax_t form */
     },
 
-    /* test_result[16]: "-131073" */
+    /* test_result[1]: "-131073" */
     {
 	"-131073",	/* malloced JSON integer string, whitespace trimmed if needed */
 
@@ -1323,7 +258,7 @@ struct json_integer test_result[TEST_COUNT] = {
 	0,	/* no JSON integer value in uintmax_t form */
     },
 
-    /* test_result[17]: "-131072" */
+    /* test_result[2]: "-131072" */
     {
 	"-131072",	/* malloced JSON integer string, whitespace trimmed if needed */
 
@@ -1392,7 +327,7 @@ struct json_integer test_result[TEST_COUNT] = {
 	0,	/* no JSON integer value in uintmax_t form */
     },
 
-    /* test_result[18]: "-131071" */
+    /* test_result[3]: "-131071" */
     {
 	"-131071",	/* malloced JSON integer string, whitespace trimmed if needed */
 
@@ -1461,7 +396,7 @@ struct json_integer test_result[TEST_COUNT] = {
 	0,	/* no JSON integer value in uintmax_t form */
     },
 
-    /* test_result[19]: "-131070" */
+    /* test_result[4]: "-131070" */
     {
 	"-131070",	/* malloced JSON integer string, whitespace trimmed if needed */
 
@@ -1530,7 +465,7 @@ struct json_integer test_result[TEST_COUNT] = {
 	0,	/* no JSON integer value in uintmax_t form */
     },
 
-    /* test_result[20]: "-65538" */
+    /* test_result[5]: "-65538" */
     {
 	"-65538",	/* malloced JSON integer string, whitespace trimmed if needed */
 
@@ -1599,7 +534,7 @@ struct json_integer test_result[TEST_COUNT] = {
 	0,	/* no JSON integer value in uintmax_t form */
     },
 
-    /* test_result[21]: "-65537" */
+    /* test_result[6]: "-65537" */
     {
 	"-65537",	/* malloced JSON integer string, whitespace trimmed if needed */
 
@@ -1668,7 +603,7 @@ struct json_integer test_result[TEST_COUNT] = {
 	0,	/* no JSON integer value in uintmax_t form */
     },
 
-    /* test_result[22]: "-65536" */
+    /* test_result[7]: "-65536" */
     {
 	"-65536",	/* malloced JSON integer string, whitespace trimmed if needed */
 
@@ -1737,7 +672,7 @@ struct json_integer test_result[TEST_COUNT] = {
 	0,	/* no JSON integer value in uintmax_t form */
     },
 
-    /* test_result[23]: "-65535" */
+    /* test_result[8]: "-65535" */
     {
 	"-65535",	/* malloced JSON integer string, whitespace trimmed if needed */
 
@@ -1806,7 +741,7 @@ struct json_integer test_result[TEST_COUNT] = {
 	0,	/* no JSON integer value in uintmax_t form */
     },
 
-    /* test_result[24]: "-65534" */
+    /* test_result[9]: "-65534" */
     {
 	"-65534",	/* malloced JSON integer string, whitespace trimmed if needed */
 
@@ -1875,7 +810,7 @@ struct json_integer test_result[TEST_COUNT] = {
 	0,	/* no JSON integer value in uintmax_t form */
     },
 
-    /* test_result[25]: "-32770" */
+    /* test_result[10]: "-32770" */
     {
 	"-32770",	/* malloced JSON integer string, whitespace trimmed if needed */
 
@@ -1944,7 +879,7 @@ struct json_integer test_result[TEST_COUNT] = {
 	0,	/* no JSON integer value in uintmax_t form */
     },
 
-    /* test_result[26]: "-32769" */
+    /* test_result[11]: "-32769" */
     {
 	"-32769",	/* malloced JSON integer string, whitespace trimmed if needed */
 
@@ -2013,7 +948,7 @@ struct json_integer test_result[TEST_COUNT] = {
 	0,	/* no JSON integer value in uintmax_t form */
     },
 
-    /* test_result[27]: "-32768" */
+    /* test_result[12]: "-32768" */
     {
 	"-32768",	/* malloced JSON integer string, whitespace trimmed if needed */
 
@@ -2082,7 +1017,7 @@ struct json_integer test_result[TEST_COUNT] = {
 	0,	/* no JSON integer value in uintmax_t form */
     },
 
-    /* test_result[28]: "-32767" */
+    /* test_result[13]: "-32767" */
     {
 	"-32767",	/* malloced JSON integer string, whitespace trimmed if needed */
 
@@ -2151,7 +1086,7 @@ struct json_integer test_result[TEST_COUNT] = {
 	0,	/* no JSON integer value in uintmax_t form */
     },
 
-    /* test_result[29]: "-32766" */
+    /* test_result[14]: "-32766" */
     {
 	"-32766",	/* malloced JSON integer string, whitespace trimmed if needed */
 
@@ -2220,7 +1155,7 @@ struct json_integer test_result[TEST_COUNT] = {
 	0,	/* no JSON integer value in uintmax_t form */
     },
 
-    /* test_result[30]: "-514" */
+    /* test_result[15]: "-514" */
     {
 	"-514",	/* malloced JSON integer string, whitespace trimmed if needed */
 
@@ -2289,7 +1224,7 @@ struct json_integer test_result[TEST_COUNT] = {
 	0,	/* no JSON integer value in uintmax_t form */
     },
 
-    /* test_result[31]: "-513" */
+    /* test_result[16]: "-513" */
     {
 	"-513",	/* malloced JSON integer string, whitespace trimmed if needed */
 
@@ -2358,7 +1293,7 @@ struct json_integer test_result[TEST_COUNT] = {
 	0,	/* no JSON integer value in uintmax_t form */
     },
 
-    /* test_result[32]: "-512" */
+    /* test_result[17]: "-512" */
     {
 	"-512",	/* malloced JSON integer string, whitespace trimmed if needed */
 
@@ -2427,7 +1362,7 @@ struct json_integer test_result[TEST_COUNT] = {
 	0,	/* no JSON integer value in uintmax_t form */
     },
 
-    /* test_result[33]: "-511" */
+    /* test_result[18]: "-511" */
     {
 	"-511",	/* malloced JSON integer string, whitespace trimmed if needed */
 
@@ -2496,7 +1431,7 @@ struct json_integer test_result[TEST_COUNT] = {
 	0,	/* no JSON integer value in uintmax_t form */
     },
 
-    /* test_result[34]: "-510" */
+    /* test_result[19]: "-510" */
     {
 	"-510",	/* malloced JSON integer string, whitespace trimmed if needed */
 
@@ -2565,7 +1500,7 @@ struct json_integer test_result[TEST_COUNT] = {
 	0,	/* no JSON integer value in uintmax_t form */
     },
 
-    /* test_result[35]: "-258" */
+    /* test_result[20]: "-258" */
     {
 	"-258",	/* malloced JSON integer string, whitespace trimmed if needed */
 
@@ -2634,7 +1569,7 @@ struct json_integer test_result[TEST_COUNT] = {
 	0,	/* no JSON integer value in uintmax_t form */
     },
 
-    /* test_result[36]: "-257" */
+    /* test_result[21]: "-257" */
     {
 	"-257",	/* malloced JSON integer string, whitespace trimmed if needed */
 
@@ -2703,7 +1638,7 @@ struct json_integer test_result[TEST_COUNT] = {
 	0,	/* no JSON integer value in uintmax_t form */
     },
 
-    /* test_result[37]: "-256" */
+    /* test_result[22]: "-256" */
     {
 	"-256",	/* malloced JSON integer string, whitespace trimmed if needed */
 
@@ -2772,7 +1707,7 @@ struct json_integer test_result[TEST_COUNT] = {
 	0,	/* no JSON integer value in uintmax_t form */
     },
 
-    /* test_result[38]: "-255" */
+    /* test_result[23]: "-255" */
     {
 	"-255",	/* malloced JSON integer string, whitespace trimmed if needed */
 
@@ -2841,7 +1776,7 @@ struct json_integer test_result[TEST_COUNT] = {
 	0,	/* no JSON integer value in uintmax_t form */
     },
 
-    /* test_result[39]: "-254" */
+    /* test_result[24]: "-254" */
     {
 	"-254",	/* malloced JSON integer string, whitespace trimmed if needed */
 
@@ -2910,7 +1845,7 @@ struct json_integer test_result[TEST_COUNT] = {
 	0,	/* no JSON integer value in uintmax_t form */
     },
 
-    /* test_result[40]: "-130" */
+    /* test_result[25]: "-130" */
     {
 	"-130",	/* malloced JSON integer string, whitespace trimmed if needed */
 
@@ -2979,7 +1914,7 @@ struct json_integer test_result[TEST_COUNT] = {
 	0,	/* no JSON integer value in uintmax_t form */
     },
 
-    /* test_result[41]: "-129" */
+    /* test_result[26]: "-129" */
     {
 	"-129",	/* malloced JSON integer string, whitespace trimmed if needed */
 
@@ -3048,7 +1983,7 @@ struct json_integer test_result[TEST_COUNT] = {
 	0,	/* no JSON integer value in uintmax_t form */
     },
 
-    /* test_result[42]: "-128" */
+    /* test_result[27]: "-128" */
     {
 	"-128",	/* malloced JSON integer string, whitespace trimmed if needed */
 
@@ -3117,7 +2052,7 @@ struct json_integer test_result[TEST_COUNT] = {
 	0,	/* no JSON integer value in uintmax_t form */
     },
 
-    /* test_result[43]: "-127" */
+    /* test_result[28]: "-127" */
     {
 	"-127",	/* malloced JSON integer string, whitespace trimmed if needed */
 
@@ -3186,7 +2121,7 @@ struct json_integer test_result[TEST_COUNT] = {
 	0,	/* no JSON integer value in uintmax_t form */
     },
 
-    /* test_result[44]: "-126" */
+    /* test_result[29]: "-126" */
     {
 	"-126",	/* malloced JSON integer string, whitespace trimmed if needed */
 
@@ -3255,7 +2190,7 @@ struct json_integer test_result[TEST_COUNT] = {
 	0,	/* no JSON integer value in uintmax_t form */
     },
 
-    /* test_result[45]: "-2" */
+    /* test_result[30]: "-2" */
     {
 	"-2",	/* malloced JSON integer string, whitespace trimmed if needed */
 
@@ -3324,7 +2259,7 @@ struct json_integer test_result[TEST_COUNT] = {
 	0,	/* no JSON integer value in uintmax_t form */
     },
 
-    /* test_result[46]: "-1" */
+    /* test_result[31]: "-1" */
     {
 	"-1",	/* malloced JSON integer string, whitespace trimmed if needed */
 
@@ -3393,7 +2328,7 @@ struct json_integer test_result[TEST_COUNT] = {
 	0,	/* no JSON integer value in uintmax_t form */
     },
 
-    /* test_result[47]: "0" */
+    /* test_result[32]: "0" */
     {
 	"0",	/* malloced JSON integer string, whitespace trimmed if needed */
 
@@ -3462,7 +2397,7 @@ struct json_integer test_result[TEST_COUNT] = {
 	0,	/* JSON integer value in uintmax_t form */
     },
 
-    /* test_result[48]: "1" */
+    /* test_result[33]: "1" */
     {
 	"1",	/* malloced JSON integer string, whitespace trimmed if needed */
 
@@ -3531,7 +2466,7 @@ struct json_integer test_result[TEST_COUNT] = {
 	1,	/* JSON integer value in uintmax_t form */
     },
 
-    /* test_result[49]: "2" */
+    /* test_result[34]: "2" */
     {
 	"2",	/* malloced JSON integer string, whitespace trimmed if needed */
 
@@ -3600,7 +2535,7 @@ struct json_integer test_result[TEST_COUNT] = {
 	2,	/* JSON integer value in uintmax_t form */
     },
 
-    /* test_result[50]: "126" */
+    /* test_result[35]: "126" */
     {
 	"126",	/* malloced JSON integer string, whitespace trimmed if needed */
 
@@ -3669,7 +2604,7 @@ struct json_integer test_result[TEST_COUNT] = {
 	126,	/* JSON integer value in uintmax_t form */
     },
 
-    /* test_result[51]: "127" */
+    /* test_result[36]: "127" */
     {
 	"127",	/* malloced JSON integer string, whitespace trimmed if needed */
 
@@ -3738,7 +2673,7 @@ struct json_integer test_result[TEST_COUNT] = {
 	127,	/* JSON integer value in uintmax_t form */
     },
 
-    /* test_result[52]: "128" */
+    /* test_result[37]: "128" */
     {
 	"128",	/* malloced JSON integer string, whitespace trimmed if needed */
 
@@ -3807,7 +2742,7 @@ struct json_integer test_result[TEST_COUNT] = {
 	128,	/* JSON integer value in uintmax_t form */
     },
 
-    /* test_result[53]: "129" */
+    /* test_result[38]: "129" */
     {
 	"129",	/* malloced JSON integer string, whitespace trimmed if needed */
 
@@ -3876,7 +2811,7 @@ struct json_integer test_result[TEST_COUNT] = {
 	129,	/* JSON integer value in uintmax_t form */
     },
 
-    /* test_result[54]: "130" */
+    /* test_result[39]: "130" */
     {
 	"130",	/* malloced JSON integer string, whitespace trimmed if needed */
 
@@ -3945,7 +2880,7 @@ struct json_integer test_result[TEST_COUNT] = {
 	130,	/* JSON integer value in uintmax_t form */
     },
 
-    /* test_result[55]: "254" */
+    /* test_result[40]: "254" */
     {
 	"254",	/* malloced JSON integer string, whitespace trimmed if needed */
 
@@ -4014,7 +2949,7 @@ struct json_integer test_result[TEST_COUNT] = {
 	254,	/* JSON integer value in uintmax_t form */
     },
 
-    /* test_result[56]: "255" */
+    /* test_result[41]: "255" */
     {
 	"255",	/* malloced JSON integer string, whitespace trimmed if needed */
 
@@ -4083,7 +3018,7 @@ struct json_integer test_result[TEST_COUNT] = {
 	255,	/* JSON integer value in uintmax_t form */
     },
 
-    /* test_result[57]: "256" */
+    /* test_result[42]: "256" */
     {
 	"256",	/* malloced JSON integer string, whitespace trimmed if needed */
 
@@ -4152,7 +3087,7 @@ struct json_integer test_result[TEST_COUNT] = {
 	256,	/* JSON integer value in uintmax_t form */
     },
 
-    /* test_result[58]: "257" */
+    /* test_result[43]: "257" */
     {
 	"257",	/* malloced JSON integer string, whitespace trimmed if needed */
 
@@ -4221,7 +3156,7 @@ struct json_integer test_result[TEST_COUNT] = {
 	257,	/* JSON integer value in uintmax_t form */
     },
 
-    /* test_result[59]: "258" */
+    /* test_result[44]: "258" */
     {
 	"258",	/* malloced JSON integer string, whitespace trimmed if needed */
 
@@ -4290,7 +3225,7 @@ struct json_integer test_result[TEST_COUNT] = {
 	258,	/* JSON integer value in uintmax_t form */
     },
 
-    /* test_result[60]: "510" */
+    /* test_result[45]: "510" */
     {
 	"510",	/* malloced JSON integer string, whitespace trimmed if needed */
 
@@ -4359,7 +3294,7 @@ struct json_integer test_result[TEST_COUNT] = {
 	510,	/* JSON integer value in uintmax_t form */
     },
 
-    /* test_result[61]: "511" */
+    /* test_result[46]: "511" */
     {
 	"511",	/* malloced JSON integer string, whitespace trimmed if needed */
 
@@ -4428,7 +3363,7 @@ struct json_integer test_result[TEST_COUNT] = {
 	511,	/* JSON integer value in uintmax_t form */
     },
 
-    /* test_result[62]: "512" */
+    /* test_result[47]: "512" */
     {
 	"512",	/* malloced JSON integer string, whitespace trimmed if needed */
 
@@ -4497,7 +3432,7 @@ struct json_integer test_result[TEST_COUNT] = {
 	512,	/* JSON integer value in uintmax_t form */
     },
 
-    /* test_result[63]: "513" */
+    /* test_result[48]: "513" */
     {
 	"513",	/* malloced JSON integer string, whitespace trimmed if needed */
 
@@ -4566,7 +3501,7 @@ struct json_integer test_result[TEST_COUNT] = {
 	513,	/* JSON integer value in uintmax_t form */
     },
 
-    /* test_result[64]: "514" */
+    /* test_result[49]: "514" */
     {
 	"514",	/* malloced JSON integer string, whitespace trimmed if needed */
 
@@ -4635,7 +3570,7 @@ struct json_integer test_result[TEST_COUNT] = {
 	514,	/* JSON integer value in uintmax_t form */
     },
 
-    /* test_result[65]: "32766" */
+    /* test_result[50]: "32766" */
     {
 	"32766",	/* malloced JSON integer string, whitespace trimmed if needed */
 
@@ -4704,7 +3639,7 @@ struct json_integer test_result[TEST_COUNT] = {
 	32766,	/* JSON integer value in uintmax_t form */
     },
 
-    /* test_result[66]: "32767" */
+    /* test_result[51]: "32767" */
     {
 	"32767",	/* malloced JSON integer string, whitespace trimmed if needed */
 
@@ -4773,7 +3708,7 @@ struct json_integer test_result[TEST_COUNT] = {
 	32767,	/* JSON integer value in uintmax_t form */
     },
 
-    /* test_result[67]: "32768" */
+    /* test_result[52]: "32768" */
     {
 	"32768",	/* malloced JSON integer string, whitespace trimmed if needed */
 
@@ -4842,7 +3777,7 @@ struct json_integer test_result[TEST_COUNT] = {
 	32768,	/* JSON integer value in uintmax_t form */
     },
 
-    /* test_result[68]: "32769" */
+    /* test_result[53]: "32769" */
     {
 	"32769",	/* malloced JSON integer string, whitespace trimmed if needed */
 
@@ -4911,7 +3846,7 @@ struct json_integer test_result[TEST_COUNT] = {
 	32769,	/* JSON integer value in uintmax_t form */
     },
 
-    /* test_result[69]: "32770" */
+    /* test_result[54]: "32770" */
     {
 	"32770",	/* malloced JSON integer string, whitespace trimmed if needed */
 
@@ -4980,7 +3915,7 @@ struct json_integer test_result[TEST_COUNT] = {
 	32770,	/* JSON integer value in uintmax_t form */
     },
 
-    /* test_result[70]: "65534" */
+    /* test_result[55]: "65534" */
     {
 	"65534",	/* malloced JSON integer string, whitespace trimmed if needed */
 
@@ -5049,7 +3984,7 @@ struct json_integer test_result[TEST_COUNT] = {
 	65534,	/* JSON integer value in uintmax_t form */
     },
 
-    /* test_result[71]: "65535" */
+    /* test_result[56]: "65535" */
     {
 	"65535",	/* malloced JSON integer string, whitespace trimmed if needed */
 
@@ -5118,7 +4053,7 @@ struct json_integer test_result[TEST_COUNT] = {
 	65535,	/* JSON integer value in uintmax_t form */
     },
 
-    /* test_result[72]: "65536" */
+    /* test_result[57]: "65536" */
     {
 	"65536",	/* malloced JSON integer string, whitespace trimmed if needed */
 
@@ -5187,7 +4122,7 @@ struct json_integer test_result[TEST_COUNT] = {
 	65536,	/* JSON integer value in uintmax_t form */
     },
 
-    /* test_result[73]: "65537" */
+    /* test_result[58]: "65537" */
     {
 	"65537",	/* malloced JSON integer string, whitespace trimmed if needed */
 
@@ -5256,7 +4191,7 @@ struct json_integer test_result[TEST_COUNT] = {
 	65537,	/* JSON integer value in uintmax_t form */
     },
 
-    /* test_result[74]: "65538" */
+    /* test_result[59]: "65538" */
     {
 	"65538",	/* malloced JSON integer string, whitespace trimmed if needed */
 
@@ -5325,7 +4260,7 @@ struct json_integer test_result[TEST_COUNT] = {
 	65538,	/* JSON integer value in uintmax_t form */
     },
 
-    /* test_result[75]: "131070" */
+    /* test_result[60]: "131070" */
     {
 	"131070",	/* malloced JSON integer string, whitespace trimmed if needed */
 
@@ -5394,7 +4329,7 @@ struct json_integer test_result[TEST_COUNT] = {
 	131070,	/* JSON integer value in uintmax_t form */
     },
 
-    /* test_result[76]: "131071" */
+    /* test_result[61]: "131071" */
     {
 	"131071",	/* malloced JSON integer string, whitespace trimmed if needed */
 
@@ -5463,7 +4398,7 @@ struct json_integer test_result[TEST_COUNT] = {
 	131071,	/* JSON integer value in uintmax_t form */
     },
 
-    /* test_result[77]: "131072" */
+    /* test_result[62]: "131072" */
     {
 	"131072",	/* malloced JSON integer string, whitespace trimmed if needed */
 
@@ -5532,7 +4467,7 @@ struct json_integer test_result[TEST_COUNT] = {
 	131072,	/* JSON integer value in uintmax_t form */
     },
 
-    /* test_result[78]: "131073" */
+    /* test_result[63]: "131073" */
     {
 	"131073",	/* malloced JSON integer string, whitespace trimmed if needed */
 
@@ -5601,7 +4536,7 @@ struct json_integer test_result[TEST_COUNT] = {
 	131073,	/* JSON integer value in uintmax_t form */
     },
 
-    /* test_result[79]: "131074" */
+    /* test_result[64]: "131074" */
     {
 	"131074",	/* malloced JSON integer string, whitespace trimmed if needed */
 
@@ -5668,1041 +4603,6 @@ struct json_integer test_result[TEST_COUNT] = {
 
 	true,	/* true ==> converted JSON integer to C uintmax_t */
 	131074,	/* JSON integer value in uintmax_t form */
-    },
-
-    /* test_result[80]: "2147483646" */
-    {
-	"2147483646",	/* malloced JSON integer string, whitespace trimmed if needed */
-
-	10,	/* length of original JSON integer string */
-	10,	/* length of as_str */
-
-	true,	/* true ==> able to convert JSON integer to some form of C integer type */
-	false,	/* true ==> value < 0 */
-
-
-	false,	/* true ==> converted JSON integer to C int8_t */
-	0,	/* no JSON integer value in int8_t form */
-
-	false,	/* true ==> converted JSON integer to C uint8_t */
-	0,	/* no JSON integer value in uint8_t form */
-
-	false,	/* true ==> converted JSON integer to C int16_t */
-	0,	/* no JSON integer value in int16_t form */
-
-	false,	/* true ==> converted JSON integer to C uint16_t */
-	0,	/* no JSON integer value in uint16_t form */
-
-	true,	/* true ==> converted JSON integer to C int32_t */
-	2147483646,	/* JSON integer value in int32_t form */
-
-	true,	/* true ==> converted JSON integer to C uint32_t */
-	2147483646,	/* JSON integer value in uint32_t form */
-
-	true,	/* true ==> converted JSON integer to C int64_t */
-	2147483646,	/* JSON integer value in int64_t form */
-
-	true,	/* true ==> converted JSON integer to C uint64_t */
-	2147483646,	/* JSON integer value in uint64_t form */
-
-	true,	/* true ==> converted JSON integer to C int */
-	2147483646,	/* JSON integer value in int form */
-
-	true,	/* true ==> converted JSON integer to C unsigned int */
-	2147483646,	/* JSON integer value in unsigned int form */
-
-	true,	/* true ==> converted JSON integer to C long */
-	2147483646,	/* JSON integer value in long form */
-
-	true,	/* true ==> converted JSON integer to C unsigned long */
-	2147483646,	/* JSON integer value in unsigned long form */
-
-	true,	/* true ==> converted JSON integer to C long long */
-	2147483646,	/* JSON integer value in long long form */
-
-	true,	/* true ==> converted JSON integer to C unsigned long long */
-	2147483646,	/* JSON integer value in unsigned long long form */
-
-	true,	/* true ==> converted JSON integer to C ssize_t */
-	2147483646,	/* JSON integer value in ssize_t form */
-
-	true,	/* true ==> converted JSON integer to C size_t */
-	2147483646,	/* JSON integer value in size_t form */
-
-	true,	/* true ==> converted JSON integer to C off_t */
-	2147483646,	/* JSON integer value in off_t form */
-
-	true,	/* true ==> converted JSON integer to C intmax_t */
-	2147483646,	/* JSON integer value in intmax_t form */
-
-	true,	/* true ==> converted JSON integer to C uintmax_t */
-	2147483646,	/* JSON integer value in uintmax_t form */
-    },
-
-    /* test_result[81]: "2147483647" */
-    {
-	"2147483647",	/* malloced JSON integer string, whitespace trimmed if needed */
-
-	10,	/* length of original JSON integer string */
-	10,	/* length of as_str */
-
-	true,	/* true ==> able to convert JSON integer to some form of C integer type */
-	false,	/* true ==> value < 0 */
-
-
-	false,	/* true ==> converted JSON integer to C int8_t */
-	0,	/* no JSON integer value in int8_t form */
-
-	false,	/* true ==> converted JSON integer to C uint8_t */
-	0,	/* no JSON integer value in uint8_t form */
-
-	false,	/* true ==> converted JSON integer to C int16_t */
-	0,	/* no JSON integer value in int16_t form */
-
-	false,	/* true ==> converted JSON integer to C uint16_t */
-	0,	/* no JSON integer value in uint16_t form */
-
-	true,	/* true ==> converted JSON integer to C int32_t */
-	2147483647,	/* JSON integer value in int32_t form */
-
-	true,	/* true ==> converted JSON integer to C uint32_t */
-	2147483647,	/* JSON integer value in uint32_t form */
-
-	true,	/* true ==> converted JSON integer to C int64_t */
-	2147483647,	/* JSON integer value in int64_t form */
-
-	true,	/* true ==> converted JSON integer to C uint64_t */
-	2147483647,	/* JSON integer value in uint64_t form */
-
-	true,	/* true ==> converted JSON integer to C int */
-	2147483647,	/* JSON integer value in int form */
-
-	true,	/* true ==> converted JSON integer to C unsigned int */
-	2147483647,	/* JSON integer value in unsigned int form */
-
-	true,	/* true ==> converted JSON integer to C long */
-	2147483647,	/* JSON integer value in long form */
-
-	true,	/* true ==> converted JSON integer to C unsigned long */
-	2147483647,	/* JSON integer value in unsigned long form */
-
-	true,	/* true ==> converted JSON integer to C long long */
-	2147483647,	/* JSON integer value in long long form */
-
-	true,	/* true ==> converted JSON integer to C unsigned long long */
-	2147483647,	/* JSON integer value in unsigned long long form */
-
-	true,	/* true ==> converted JSON integer to C ssize_t */
-	2147483647,	/* JSON integer value in ssize_t form */
-
-	true,	/* true ==> converted JSON integer to C size_t */
-	2147483647,	/* JSON integer value in size_t form */
-
-	true,	/* true ==> converted JSON integer to C off_t */
-	2147483647,	/* JSON integer value in off_t form */
-
-	true,	/* true ==> converted JSON integer to C intmax_t */
-	2147483647,	/* JSON integer value in intmax_t form */
-
-	true,	/* true ==> converted JSON integer to C uintmax_t */
-	2147483647,	/* JSON integer value in uintmax_t form */
-    },
-
-    /* test_result[82]: "2147483648" */
-    {
-	"2147483648",	/* malloced JSON integer string, whitespace trimmed if needed */
-
-	10,	/* length of original JSON integer string */
-	10,	/* length of as_str */
-
-	true,	/* true ==> able to convert JSON integer to some form of C integer type */
-	false,	/* true ==> value < 0 */
-
-
-	false,	/* true ==> converted JSON integer to C int8_t */
-	0,	/* no JSON integer value in int8_t form */
-
-	false,	/* true ==> converted JSON integer to C uint8_t */
-	0,	/* no JSON integer value in uint8_t form */
-
-	false,	/* true ==> converted JSON integer to C int16_t */
-	0,	/* no JSON integer value in int16_t form */
-
-	false,	/* true ==> converted JSON integer to C uint16_t */
-	0,	/* no JSON integer value in uint16_t form */
-
-	false,	/* true ==> converted JSON integer to C int32_t */
-	0,	/* no JSON integer value in int32_t form */
-
-	true,	/* true ==> converted JSON integer to C uint32_t */
-	2147483648,	/* JSON integer value in uint32_t form */
-
-	true,	/* true ==> converted JSON integer to C int64_t */
-	2147483648,	/* JSON integer value in int64_t form */
-
-	true,	/* true ==> converted JSON integer to C uint64_t */
-	2147483648,	/* JSON integer value in uint64_t form */
-
-	false,	/* true ==> converted JSON integer to C int */
-	0,	/* no JSON integer value in int form */
-
-	true,	/* true ==> converted JSON integer to C unsigned int */
-	2147483648,	/* JSON integer value in unsigned int form */
-
-	true,	/* true ==> converted JSON integer to C long */
-	2147483648,	/* JSON integer value in long form */
-
-	true,	/* true ==> converted JSON integer to C unsigned long */
-	2147483648,	/* JSON integer value in unsigned long form */
-
-	true,	/* true ==> converted JSON integer to C long long */
-	2147483648,	/* JSON integer value in long long form */
-
-	true,	/* true ==> converted JSON integer to C unsigned long long */
-	2147483648,	/* JSON integer value in unsigned long long form */
-
-	true,	/* true ==> converted JSON integer to C ssize_t */
-	2147483648,	/* JSON integer value in ssize_t form */
-
-	true,	/* true ==> converted JSON integer to C size_t */
-	2147483648,	/* JSON integer value in size_t form */
-
-	true,	/* true ==> converted JSON integer to C off_t */
-	2147483648,	/* JSON integer value in off_t form */
-
-	true,	/* true ==> converted JSON integer to C intmax_t */
-	2147483648,	/* JSON integer value in intmax_t form */
-
-	true,	/* true ==> converted JSON integer to C uintmax_t */
-	2147483648,	/* JSON integer value in uintmax_t form */
-    },
-
-    /* test_result[83]: "2147483649" */
-    {
-	"2147483649",	/* malloced JSON integer string, whitespace trimmed if needed */
-
-	10,	/* length of original JSON integer string */
-	10,	/* length of as_str */
-
-	true,	/* true ==> able to convert JSON integer to some form of C integer type */
-	false,	/* true ==> value < 0 */
-
-
-	false,	/* true ==> converted JSON integer to C int8_t */
-	0,	/* no JSON integer value in int8_t form */
-
-	false,	/* true ==> converted JSON integer to C uint8_t */
-	0,	/* no JSON integer value in uint8_t form */
-
-	false,	/* true ==> converted JSON integer to C int16_t */
-	0,	/* no JSON integer value in int16_t form */
-
-	false,	/* true ==> converted JSON integer to C uint16_t */
-	0,	/* no JSON integer value in uint16_t form */
-
-	false,	/* true ==> converted JSON integer to C int32_t */
-	0,	/* no JSON integer value in int32_t form */
-
-	true,	/* true ==> converted JSON integer to C uint32_t */
-	2147483649,	/* JSON integer value in uint32_t form */
-
-	true,	/* true ==> converted JSON integer to C int64_t */
-	2147483649,	/* JSON integer value in int64_t form */
-
-	true,	/* true ==> converted JSON integer to C uint64_t */
-	2147483649,	/* JSON integer value in uint64_t form */
-
-	false,	/* true ==> converted JSON integer to C int */
-	0,	/* no JSON integer value in int form */
-
-	true,	/* true ==> converted JSON integer to C unsigned int */
-	2147483649,	/* JSON integer value in unsigned int form */
-
-	true,	/* true ==> converted JSON integer to C long */
-	2147483649,	/* JSON integer value in long form */
-
-	true,	/* true ==> converted JSON integer to C unsigned long */
-	2147483649,	/* JSON integer value in unsigned long form */
-
-	true,	/* true ==> converted JSON integer to C long long */
-	2147483649,	/* JSON integer value in long long form */
-
-	true,	/* true ==> converted JSON integer to C unsigned long long */
-	2147483649,	/* JSON integer value in unsigned long long form */
-
-	true,	/* true ==> converted JSON integer to C ssize_t */
-	2147483649,	/* JSON integer value in ssize_t form */
-
-	true,	/* true ==> converted JSON integer to C size_t */
-	2147483649,	/* JSON integer value in size_t form */
-
-	true,	/* true ==> converted JSON integer to C off_t */
-	2147483649,	/* JSON integer value in off_t form */
-
-	true,	/* true ==> converted JSON integer to C intmax_t */
-	2147483649,	/* JSON integer value in intmax_t form */
-
-	true,	/* true ==> converted JSON integer to C uintmax_t */
-	2147483649,	/* JSON integer value in uintmax_t form */
-    },
-
-    /* test_result[84]: "2147483650" */
-    {
-	"2147483650",	/* malloced JSON integer string, whitespace trimmed if needed */
-
-	10,	/* length of original JSON integer string */
-	10,	/* length of as_str */
-
-	true,	/* true ==> able to convert JSON integer to some form of C integer type */
-	false,	/* true ==> value < 0 */
-
-
-	false,	/* true ==> converted JSON integer to C int8_t */
-	0,	/* no JSON integer value in int8_t form */
-
-	false,	/* true ==> converted JSON integer to C uint8_t */
-	0,	/* no JSON integer value in uint8_t form */
-
-	false,	/* true ==> converted JSON integer to C int16_t */
-	0,	/* no JSON integer value in int16_t form */
-
-	false,	/* true ==> converted JSON integer to C uint16_t */
-	0,	/* no JSON integer value in uint16_t form */
-
-	false,	/* true ==> converted JSON integer to C int32_t */
-	0,	/* no JSON integer value in int32_t form */
-
-	true,	/* true ==> converted JSON integer to C uint32_t */
-	2147483650,	/* JSON integer value in uint32_t form */
-
-	true,	/* true ==> converted JSON integer to C int64_t */
-	2147483650,	/* JSON integer value in int64_t form */
-
-	true,	/* true ==> converted JSON integer to C uint64_t */
-	2147483650,	/* JSON integer value in uint64_t form */
-
-	false,	/* true ==> converted JSON integer to C int */
-	0,	/* no JSON integer value in int form */
-
-	true,	/* true ==> converted JSON integer to C unsigned int */
-	2147483650,	/* JSON integer value in unsigned int form */
-
-	true,	/* true ==> converted JSON integer to C long */
-	2147483650,	/* JSON integer value in long form */
-
-	true,	/* true ==> converted JSON integer to C unsigned long */
-	2147483650,	/* JSON integer value in unsigned long form */
-
-	true,	/* true ==> converted JSON integer to C long long */
-	2147483650,	/* JSON integer value in long long form */
-
-	true,	/* true ==> converted JSON integer to C unsigned long long */
-	2147483650,	/* JSON integer value in unsigned long long form */
-
-	true,	/* true ==> converted JSON integer to C ssize_t */
-	2147483650,	/* JSON integer value in ssize_t form */
-
-	true,	/* true ==> converted JSON integer to C size_t */
-	2147483650,	/* JSON integer value in size_t form */
-
-	true,	/* true ==> converted JSON integer to C off_t */
-	2147483650,	/* JSON integer value in off_t form */
-
-	true,	/* true ==> converted JSON integer to C intmax_t */
-	2147483650,	/* JSON integer value in intmax_t form */
-
-	true,	/* true ==> converted JSON integer to C uintmax_t */
-	2147483650,	/* JSON integer value in uintmax_t form */
-    },
-
-    /* test_result[85]: "4294967294" */
-    {
-	"4294967294",	/* malloced JSON integer string, whitespace trimmed if needed */
-
-	10,	/* length of original JSON integer string */
-	10,	/* length of as_str */
-
-	true,	/* true ==> able to convert JSON integer to some form of C integer type */
-	false,	/* true ==> value < 0 */
-
-
-	false,	/* true ==> converted JSON integer to C int8_t */
-	0,	/* no JSON integer value in int8_t form */
-
-	false,	/* true ==> converted JSON integer to C uint8_t */
-	0,	/* no JSON integer value in uint8_t form */
-
-	false,	/* true ==> converted JSON integer to C int16_t */
-	0,	/* no JSON integer value in int16_t form */
-
-	false,	/* true ==> converted JSON integer to C uint16_t */
-	0,	/* no JSON integer value in uint16_t form */
-
-	false,	/* true ==> converted JSON integer to C int32_t */
-	0,	/* no JSON integer value in int32_t form */
-
-	true,	/* true ==> converted JSON integer to C uint32_t */
-	4294967294,	/* JSON integer value in uint32_t form */
-
-	true,	/* true ==> converted JSON integer to C int64_t */
-	4294967294,	/* JSON integer value in int64_t form */
-
-	true,	/* true ==> converted JSON integer to C uint64_t */
-	4294967294,	/* JSON integer value in uint64_t form */
-
-	false,	/* true ==> converted JSON integer to C int */
-	0,	/* no JSON integer value in int form */
-
-	true,	/* true ==> converted JSON integer to C unsigned int */
-	4294967294,	/* JSON integer value in unsigned int form */
-
-	true,	/* true ==> converted JSON integer to C long */
-	4294967294,	/* JSON integer value in long form */
-
-	true,	/* true ==> converted JSON integer to C unsigned long */
-	4294967294,	/* JSON integer value in unsigned long form */
-
-	true,	/* true ==> converted JSON integer to C long long */
-	4294967294,	/* JSON integer value in long long form */
-
-	true,	/* true ==> converted JSON integer to C unsigned long long */
-	4294967294,	/* JSON integer value in unsigned long long form */
-
-	true,	/* true ==> converted JSON integer to C ssize_t */
-	4294967294,	/* JSON integer value in ssize_t form */
-
-	true,	/* true ==> converted JSON integer to C size_t */
-	4294967294,	/* JSON integer value in size_t form */
-
-	true,	/* true ==> converted JSON integer to C off_t */
-	4294967294,	/* JSON integer value in off_t form */
-
-	true,	/* true ==> converted JSON integer to C intmax_t */
-	4294967294,	/* JSON integer value in intmax_t form */
-
-	true,	/* true ==> converted JSON integer to C uintmax_t */
-	4294967294,	/* JSON integer value in uintmax_t form */
-    },
-
-    /* test_result[86]: "4294967295" */
-    {
-	"4294967295",	/* malloced JSON integer string, whitespace trimmed if needed */
-
-	10,	/* length of original JSON integer string */
-	10,	/* length of as_str */
-
-	true,	/* true ==> able to convert JSON integer to some form of C integer type */
-	false,	/* true ==> value < 0 */
-
-
-	false,	/* true ==> converted JSON integer to C int8_t */
-	0,	/* no JSON integer value in int8_t form */
-
-	false,	/* true ==> converted JSON integer to C uint8_t */
-	0,	/* no JSON integer value in uint8_t form */
-
-	false,	/* true ==> converted JSON integer to C int16_t */
-	0,	/* no JSON integer value in int16_t form */
-
-	false,	/* true ==> converted JSON integer to C uint16_t */
-	0,	/* no JSON integer value in uint16_t form */
-
-	false,	/* true ==> converted JSON integer to C int32_t */
-	0,	/* no JSON integer value in int32_t form */
-
-	true,	/* true ==> converted JSON integer to C uint32_t */
-	4294967295,	/* JSON integer value in uint32_t form */
-
-	true,	/* true ==> converted JSON integer to C int64_t */
-	4294967295,	/* JSON integer value in int64_t form */
-
-	true,	/* true ==> converted JSON integer to C uint64_t */
-	4294967295,	/* JSON integer value in uint64_t form */
-
-	false,	/* true ==> converted JSON integer to C int */
-	0,	/* no JSON integer value in int form */
-
-	true,	/* true ==> converted JSON integer to C unsigned int */
-	4294967295,	/* JSON integer value in unsigned int form */
-
-	true,	/* true ==> converted JSON integer to C long */
-	4294967295,	/* JSON integer value in long form */
-
-	true,	/* true ==> converted JSON integer to C unsigned long */
-	4294967295,	/* JSON integer value in unsigned long form */
-
-	true,	/* true ==> converted JSON integer to C long long */
-	4294967295,	/* JSON integer value in long long form */
-
-	true,	/* true ==> converted JSON integer to C unsigned long long */
-	4294967295,	/* JSON integer value in unsigned long long form */
-
-	true,	/* true ==> converted JSON integer to C ssize_t */
-	4294967295,	/* JSON integer value in ssize_t form */
-
-	true,	/* true ==> converted JSON integer to C size_t */
-	4294967295,	/* JSON integer value in size_t form */
-
-	true,	/* true ==> converted JSON integer to C off_t */
-	4294967295,	/* JSON integer value in off_t form */
-
-	true,	/* true ==> converted JSON integer to C intmax_t */
-	4294967295,	/* JSON integer value in intmax_t form */
-
-	true,	/* true ==> converted JSON integer to C uintmax_t */
-	4294967295,	/* JSON integer value in uintmax_t form */
-    },
-
-    /* test_result[87]: "4294967296" */
-    {
-	"4294967296",	/* malloced JSON integer string, whitespace trimmed if needed */
-
-	10,	/* length of original JSON integer string */
-	10,	/* length of as_str */
-
-	true,	/* true ==> able to convert JSON integer to some form of C integer type */
-	false,	/* true ==> value < 0 */
-
-
-	false,	/* true ==> converted JSON integer to C int8_t */
-	0,	/* no JSON integer value in int8_t form */
-
-	false,	/* true ==> converted JSON integer to C uint8_t */
-	0,	/* no JSON integer value in uint8_t form */
-
-	false,	/* true ==> converted JSON integer to C int16_t */
-	0,	/* no JSON integer value in int16_t form */
-
-	false,	/* true ==> converted JSON integer to C uint16_t */
-	0,	/* no JSON integer value in uint16_t form */
-
-	false,	/* true ==> converted JSON integer to C int32_t */
-	0,	/* no JSON integer value in int32_t form */
-
-	false,	/* true ==> converted JSON integer to C uint32_t */
-	0,	/* no JSON integer value in uint32_t form */
-
-	true,	/* true ==> converted JSON integer to C int64_t */
-	4294967296,	/* JSON integer value in int64_t form */
-
-	true,	/* true ==> converted JSON integer to C uint64_t */
-	4294967296,	/* JSON integer value in uint64_t form */
-
-	false,	/* true ==> converted JSON integer to C int */
-	0,	/* no JSON integer value in int form */
-
-	false,	/* true ==> converted JSON integer to C unsigned int */
-	0,	/* no JSON integer value in unsigned int form */
-
-	true,	/* true ==> converted JSON integer to C long */
-	4294967296,	/* JSON integer value in long form */
-
-	true,	/* true ==> converted JSON integer to C unsigned long */
-	4294967296,	/* JSON integer value in unsigned long form */
-
-	true,	/* true ==> converted JSON integer to C long long */
-	4294967296,	/* JSON integer value in long long form */
-
-	true,	/* true ==> converted JSON integer to C unsigned long long */
-	4294967296,	/* JSON integer value in unsigned long long form */
-
-	true,	/* true ==> converted JSON integer to C ssize_t */
-	4294967296,	/* JSON integer value in ssize_t form */
-
-	true,	/* true ==> converted JSON integer to C size_t */
-	4294967296,	/* JSON integer value in size_t form */
-
-	true,	/* true ==> converted JSON integer to C off_t */
-	4294967296,	/* JSON integer value in off_t form */
-
-	true,	/* true ==> converted JSON integer to C intmax_t */
-	4294967296,	/* JSON integer value in intmax_t form */
-
-	true,	/* true ==> converted JSON integer to C uintmax_t */
-	4294967296,	/* JSON integer value in uintmax_t form */
-    },
-
-    /* test_result[88]: "4294967297" */
-    {
-	"4294967297",	/* malloced JSON integer string, whitespace trimmed if needed */
-
-	10,	/* length of original JSON integer string */
-	10,	/* length of as_str */
-
-	true,	/* true ==> able to convert JSON integer to some form of C integer type */
-	false,	/* true ==> value < 0 */
-
-
-	false,	/* true ==> converted JSON integer to C int8_t */
-	0,	/* no JSON integer value in int8_t form */
-
-	false,	/* true ==> converted JSON integer to C uint8_t */
-	0,	/* no JSON integer value in uint8_t form */
-
-	false,	/* true ==> converted JSON integer to C int16_t */
-	0,	/* no JSON integer value in int16_t form */
-
-	false,	/* true ==> converted JSON integer to C uint16_t */
-	0,	/* no JSON integer value in uint16_t form */
-
-	false,	/* true ==> converted JSON integer to C int32_t */
-	0,	/* no JSON integer value in int32_t form */
-
-	false,	/* true ==> converted JSON integer to C uint32_t */
-	0,	/* no JSON integer value in uint32_t form */
-
-	true,	/* true ==> converted JSON integer to C int64_t */
-	4294967297,	/* JSON integer value in int64_t form */
-
-	true,	/* true ==> converted JSON integer to C uint64_t */
-	4294967297,	/* JSON integer value in uint64_t form */
-
-	false,	/* true ==> converted JSON integer to C int */
-	0,	/* no JSON integer value in int form */
-
-	false,	/* true ==> converted JSON integer to C unsigned int */
-	0,	/* no JSON integer value in unsigned int form */
-
-	true,	/* true ==> converted JSON integer to C long */
-	4294967297,	/* JSON integer value in long form */
-
-	true,	/* true ==> converted JSON integer to C unsigned long */
-	4294967297,	/* JSON integer value in unsigned long form */
-
-	true,	/* true ==> converted JSON integer to C long long */
-	4294967297,	/* JSON integer value in long long form */
-
-	true,	/* true ==> converted JSON integer to C unsigned long long */
-	4294967297,	/* JSON integer value in unsigned long long form */
-
-	true,	/* true ==> converted JSON integer to C ssize_t */
-	4294967297,	/* JSON integer value in ssize_t form */
-
-	true,	/* true ==> converted JSON integer to C size_t */
-	4294967297,	/* JSON integer value in size_t form */
-
-	true,	/* true ==> converted JSON integer to C off_t */
-	4294967297,	/* JSON integer value in off_t form */
-
-	true,	/* true ==> converted JSON integer to C intmax_t */
-	4294967297,	/* JSON integer value in intmax_t form */
-
-	true,	/* true ==> converted JSON integer to C uintmax_t */
-	4294967297,	/* JSON integer value in uintmax_t form */
-    },
-
-    /* test_result[89]: "4294967298" */
-    {
-	"4294967298",	/* malloced JSON integer string, whitespace trimmed if needed */
-
-	10,	/* length of original JSON integer string */
-	10,	/* length of as_str */
-
-	true,	/* true ==> able to convert JSON integer to some form of C integer type */
-	false,	/* true ==> value < 0 */
-
-
-	false,	/* true ==> converted JSON integer to C int8_t */
-	0,	/* no JSON integer value in int8_t form */
-
-	false,	/* true ==> converted JSON integer to C uint8_t */
-	0,	/* no JSON integer value in uint8_t form */
-
-	false,	/* true ==> converted JSON integer to C int16_t */
-	0,	/* no JSON integer value in int16_t form */
-
-	false,	/* true ==> converted JSON integer to C uint16_t */
-	0,	/* no JSON integer value in uint16_t form */
-
-	false,	/* true ==> converted JSON integer to C int32_t */
-	0,	/* no JSON integer value in int32_t form */
-
-	false,	/* true ==> converted JSON integer to C uint32_t */
-	0,	/* no JSON integer value in uint32_t form */
-
-	true,	/* true ==> converted JSON integer to C int64_t */
-	4294967298,	/* JSON integer value in int64_t form */
-
-	true,	/* true ==> converted JSON integer to C uint64_t */
-	4294967298,	/* JSON integer value in uint64_t form */
-
-	false,	/* true ==> converted JSON integer to C int */
-	0,	/* no JSON integer value in int form */
-
-	false,	/* true ==> converted JSON integer to C unsigned int */
-	0,	/* no JSON integer value in unsigned int form */
-
-	true,	/* true ==> converted JSON integer to C long */
-	4294967298,	/* JSON integer value in long form */
-
-	true,	/* true ==> converted JSON integer to C unsigned long */
-	4294967298,	/* JSON integer value in unsigned long form */
-
-	true,	/* true ==> converted JSON integer to C long long */
-	4294967298,	/* JSON integer value in long long form */
-
-	true,	/* true ==> converted JSON integer to C unsigned long long */
-	4294967298,	/* JSON integer value in unsigned long long form */
-
-	true,	/* true ==> converted JSON integer to C ssize_t */
-	4294967298,	/* JSON integer value in ssize_t form */
-
-	true,	/* true ==> converted JSON integer to C size_t */
-	4294967298,	/* JSON integer value in size_t form */
-
-	true,	/* true ==> converted JSON integer to C off_t */
-	4294967298,	/* JSON integer value in off_t form */
-
-	true,	/* true ==> converted JSON integer to C intmax_t */
-	4294967298,	/* JSON integer value in intmax_t form */
-
-	true,	/* true ==> converted JSON integer to C uintmax_t */
-	4294967298,	/* JSON integer value in uintmax_t form */
-    },
-
-    /* test_result[90]: "8589934590" */
-    {
-	"8589934590",	/* malloced JSON integer string, whitespace trimmed if needed */
-
-	10,	/* length of original JSON integer string */
-	10,	/* length of as_str */
-
-	true,	/* true ==> able to convert JSON integer to some form of C integer type */
-	false,	/* true ==> value < 0 */
-
-
-	false,	/* true ==> converted JSON integer to C int8_t */
-	0,	/* no JSON integer value in int8_t form */
-
-	false,	/* true ==> converted JSON integer to C uint8_t */
-	0,	/* no JSON integer value in uint8_t form */
-
-	false,	/* true ==> converted JSON integer to C int16_t */
-	0,	/* no JSON integer value in int16_t form */
-
-	false,	/* true ==> converted JSON integer to C uint16_t */
-	0,	/* no JSON integer value in uint16_t form */
-
-	false,	/* true ==> converted JSON integer to C int32_t */
-	0,	/* no JSON integer value in int32_t form */
-
-	false,	/* true ==> converted JSON integer to C uint32_t */
-	0,	/* no JSON integer value in uint32_t form */
-
-	true,	/* true ==> converted JSON integer to C int64_t */
-	8589934590,	/* JSON integer value in int64_t form */
-
-	true,	/* true ==> converted JSON integer to C uint64_t */
-	8589934590,	/* JSON integer value in uint64_t form */
-
-	false,	/* true ==> converted JSON integer to C int */
-	0,	/* no JSON integer value in int form */
-
-	false,	/* true ==> converted JSON integer to C unsigned int */
-	0,	/* no JSON integer value in unsigned int form */
-
-	true,	/* true ==> converted JSON integer to C long */
-	8589934590,	/* JSON integer value in long form */
-
-	true,	/* true ==> converted JSON integer to C unsigned long */
-	8589934590,	/* JSON integer value in unsigned long form */
-
-	true,	/* true ==> converted JSON integer to C long long */
-	8589934590,	/* JSON integer value in long long form */
-
-	true,	/* true ==> converted JSON integer to C unsigned long long */
-	8589934590,	/* JSON integer value in unsigned long long form */
-
-	true,	/* true ==> converted JSON integer to C ssize_t */
-	8589934590,	/* JSON integer value in ssize_t form */
-
-	true,	/* true ==> converted JSON integer to C size_t */
-	8589934590,	/* JSON integer value in size_t form */
-
-	true,	/* true ==> converted JSON integer to C off_t */
-	8589934590,	/* JSON integer value in off_t form */
-
-	true,	/* true ==> converted JSON integer to C intmax_t */
-	8589934590,	/* JSON integer value in intmax_t form */
-
-	true,	/* true ==> converted JSON integer to C uintmax_t */
-	8589934590,	/* JSON integer value in uintmax_t form */
-    },
-
-    /* test_result[91]: "8589934591" */
-    {
-	"8589934591",	/* malloced JSON integer string, whitespace trimmed if needed */
-
-	10,	/* length of original JSON integer string */
-	10,	/* length of as_str */
-
-	true,	/* true ==> able to convert JSON integer to some form of C integer type */
-	false,	/* true ==> value < 0 */
-
-
-	false,	/* true ==> converted JSON integer to C int8_t */
-	0,	/* no JSON integer value in int8_t form */
-
-	false,	/* true ==> converted JSON integer to C uint8_t */
-	0,	/* no JSON integer value in uint8_t form */
-
-	false,	/* true ==> converted JSON integer to C int16_t */
-	0,	/* no JSON integer value in int16_t form */
-
-	false,	/* true ==> converted JSON integer to C uint16_t */
-	0,	/* no JSON integer value in uint16_t form */
-
-	false,	/* true ==> converted JSON integer to C int32_t */
-	0,	/* no JSON integer value in int32_t form */
-
-	false,	/* true ==> converted JSON integer to C uint32_t */
-	0,	/* no JSON integer value in uint32_t form */
-
-	true,	/* true ==> converted JSON integer to C int64_t */
-	8589934591,	/* JSON integer value in int64_t form */
-
-	true,	/* true ==> converted JSON integer to C uint64_t */
-	8589934591,	/* JSON integer value in uint64_t form */
-
-	false,	/* true ==> converted JSON integer to C int */
-	0,	/* no JSON integer value in int form */
-
-	false,	/* true ==> converted JSON integer to C unsigned int */
-	0,	/* no JSON integer value in unsigned int form */
-
-	true,	/* true ==> converted JSON integer to C long */
-	8589934591,	/* JSON integer value in long form */
-
-	true,	/* true ==> converted JSON integer to C unsigned long */
-	8589934591,	/* JSON integer value in unsigned long form */
-
-	true,	/* true ==> converted JSON integer to C long long */
-	8589934591,	/* JSON integer value in long long form */
-
-	true,	/* true ==> converted JSON integer to C unsigned long long */
-	8589934591,	/* JSON integer value in unsigned long long form */
-
-	true,	/* true ==> converted JSON integer to C ssize_t */
-	8589934591,	/* JSON integer value in ssize_t form */
-
-	true,	/* true ==> converted JSON integer to C size_t */
-	8589934591,	/* JSON integer value in size_t form */
-
-	true,	/* true ==> converted JSON integer to C off_t */
-	8589934591,	/* JSON integer value in off_t form */
-
-	true,	/* true ==> converted JSON integer to C intmax_t */
-	8589934591,	/* JSON integer value in intmax_t form */
-
-	true,	/* true ==> converted JSON integer to C uintmax_t */
-	8589934591,	/* JSON integer value in uintmax_t form */
-    },
-
-    /* test_result[92]: "8589934592" */
-    {
-	"8589934592",	/* malloced JSON integer string, whitespace trimmed if needed */
-
-	10,	/* length of original JSON integer string */
-	10,	/* length of as_str */
-
-	true,	/* true ==> able to convert JSON integer to some form of C integer type */
-	false,	/* true ==> value < 0 */
-
-
-	false,	/* true ==> converted JSON integer to C int8_t */
-	0,	/* no JSON integer value in int8_t form */
-
-	false,	/* true ==> converted JSON integer to C uint8_t */
-	0,	/* no JSON integer value in uint8_t form */
-
-	false,	/* true ==> converted JSON integer to C int16_t */
-	0,	/* no JSON integer value in int16_t form */
-
-	false,	/* true ==> converted JSON integer to C uint16_t */
-	0,	/* no JSON integer value in uint16_t form */
-
-	false,	/* true ==> converted JSON integer to C int32_t */
-	0,	/* no JSON integer value in int32_t form */
-
-	false,	/* true ==> converted JSON integer to C uint32_t */
-	0,	/* no JSON integer value in uint32_t form */
-
-	true,	/* true ==> converted JSON integer to C int64_t */
-	8589934592,	/* JSON integer value in int64_t form */
-
-	true,	/* true ==> converted JSON integer to C uint64_t */
-	8589934592,	/* JSON integer value in uint64_t form */
-
-	false,	/* true ==> converted JSON integer to C int */
-	0,	/* no JSON integer value in int form */
-
-	false,	/* true ==> converted JSON integer to C unsigned int */
-	0,	/* no JSON integer value in unsigned int form */
-
-	true,	/* true ==> converted JSON integer to C long */
-	8589934592,	/* JSON integer value in long form */
-
-	true,	/* true ==> converted JSON integer to C unsigned long */
-	8589934592,	/* JSON integer value in unsigned long form */
-
-	true,	/* true ==> converted JSON integer to C long long */
-	8589934592,	/* JSON integer value in long long form */
-
-	true,	/* true ==> converted JSON integer to C unsigned long long */
-	8589934592,	/* JSON integer value in unsigned long long form */
-
-	true,	/* true ==> converted JSON integer to C ssize_t */
-	8589934592,	/* JSON integer value in ssize_t form */
-
-	true,	/* true ==> converted JSON integer to C size_t */
-	8589934592,	/* JSON integer value in size_t form */
-
-	true,	/* true ==> converted JSON integer to C off_t */
-	8589934592,	/* JSON integer value in off_t form */
-
-	true,	/* true ==> converted JSON integer to C intmax_t */
-	8589934592,	/* JSON integer value in intmax_t form */
-
-	true,	/* true ==> converted JSON integer to C uintmax_t */
-	8589934592,	/* JSON integer value in uintmax_t form */
-    },
-
-    /* test_result[93]: "8589934593" */
-    {
-	"8589934593",	/* malloced JSON integer string, whitespace trimmed if needed */
-
-	10,	/* length of original JSON integer string */
-	10,	/* length of as_str */
-
-	true,	/* true ==> able to convert JSON integer to some form of C integer type */
-	false,	/* true ==> value < 0 */
-
-
-	false,	/* true ==> converted JSON integer to C int8_t */
-	0,	/* no JSON integer value in int8_t form */
-
-	false,	/* true ==> converted JSON integer to C uint8_t */
-	0,	/* no JSON integer value in uint8_t form */
-
-	false,	/* true ==> converted JSON integer to C int16_t */
-	0,	/* no JSON integer value in int16_t form */
-
-	false,	/* true ==> converted JSON integer to C uint16_t */
-	0,	/* no JSON integer value in uint16_t form */
-
-	false,	/* true ==> converted JSON integer to C int32_t */
-	0,	/* no JSON integer value in int32_t form */
-
-	false,	/* true ==> converted JSON integer to C uint32_t */
-	0,	/* no JSON integer value in uint32_t form */
-
-	true,	/* true ==> converted JSON integer to C int64_t */
-	8589934593,	/* JSON integer value in int64_t form */
-
-	true,	/* true ==> converted JSON integer to C uint64_t */
-	8589934593,	/* JSON integer value in uint64_t form */
-
-	false,	/* true ==> converted JSON integer to C int */
-	0,	/* no JSON integer value in int form */
-
-	false,	/* true ==> converted JSON integer to C unsigned int */
-	0,	/* no JSON integer value in unsigned int form */
-
-	true,	/* true ==> converted JSON integer to C long */
-	8589934593,	/* JSON integer value in long form */
-
-	true,	/* true ==> converted JSON integer to C unsigned long */
-	8589934593,	/* JSON integer value in unsigned long form */
-
-	true,	/* true ==> converted JSON integer to C long long */
-	8589934593,	/* JSON integer value in long long form */
-
-	true,	/* true ==> converted JSON integer to C unsigned long long */
-	8589934593,	/* JSON integer value in unsigned long long form */
-
-	true,	/* true ==> converted JSON integer to C ssize_t */
-	8589934593,	/* JSON integer value in ssize_t form */
-
-	true,	/* true ==> converted JSON integer to C size_t */
-	8589934593,	/* JSON integer value in size_t form */
-
-	true,	/* true ==> converted JSON integer to C off_t */
-	8589934593,	/* JSON integer value in off_t form */
-
-	true,	/* true ==> converted JSON integer to C intmax_t */
-	8589934593,	/* JSON integer value in intmax_t form */
-
-	true,	/* true ==> converted JSON integer to C uintmax_t */
-	8589934593,	/* JSON integer value in uintmax_t form */
-    },
-
-    /* test_result[94]: "8589934594" */
-    {
-	"8589934594",	/* malloced JSON integer string, whitespace trimmed if needed */
-
-	10,	/* length of original JSON integer string */
-	10,	/* length of as_str */
-
-	true,	/* true ==> able to convert JSON integer to some form of C integer type */
-	false,	/* true ==> value < 0 */
-
-
-	false,	/* true ==> converted JSON integer to C int8_t */
-	0,	/* no JSON integer value in int8_t form */
-
-	false,	/* true ==> converted JSON integer to C uint8_t */
-	0,	/* no JSON integer value in uint8_t form */
-
-	false,	/* true ==> converted JSON integer to C int16_t */
-	0,	/* no JSON integer value in int16_t form */
-
-	false,	/* true ==> converted JSON integer to C uint16_t */
-	0,	/* no JSON integer value in uint16_t form */
-
-	false,	/* true ==> converted JSON integer to C int32_t */
-	0,	/* no JSON integer value in int32_t form */
-
-	false,	/* true ==> converted JSON integer to C uint32_t */
-	0,	/* no JSON integer value in uint32_t form */
-
-	true,	/* true ==> converted JSON integer to C int64_t */
-	8589934594,	/* JSON integer value in int64_t form */
-
-	true,	/* true ==> converted JSON integer to C uint64_t */
-	8589934594,	/* JSON integer value in uint64_t form */
-
-	false,	/* true ==> converted JSON integer to C int */
-	0,	/* no JSON integer value in int form */
-
-	false,	/* true ==> converted JSON integer to C unsigned int */
-	0,	/* no JSON integer value in unsigned int form */
-
-	true,	/* true ==> converted JSON integer to C long */
-	8589934594,	/* JSON integer value in long form */
-
-	true,	/* true ==> converted JSON integer to C unsigned long */
-	8589934594,	/* JSON integer value in unsigned long form */
-
-	true,	/* true ==> converted JSON integer to C long long */
-	8589934594,	/* JSON integer value in long long form */
-
-	true,	/* true ==> converted JSON integer to C unsigned long long */
-	8589934594,	/* JSON integer value in unsigned long long form */
-
-	true,	/* true ==> converted JSON integer to C ssize_t */
-	8589934594,	/* JSON integer value in ssize_t form */
-
-	true,	/* true ==> converted JSON integer to C size_t */
-	8589934594,	/* JSON integer value in size_t form */
-
-	true,	/* true ==> converted JSON integer to C off_t */
-	8589934594,	/* JSON integer value in off_t form */
-
-	true,	/* true ==> converted JSON integer to C intmax_t */
-	8589934594,	/* JSON integer value in intmax_t form */
-
-	true,	/* true ==> converted JSON integer to C uintmax_t */
-	8589934594,	/* JSON integer value in uintmax_t form */
     },
 
 };

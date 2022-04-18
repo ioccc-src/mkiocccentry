@@ -571,14 +571,6 @@ main(int argc, char *argv[])
 	     */
 	    prstr("    },\n\n");
 	}
-
-	/*
-	 * free buffer
-	 */
-	if (item != NULL) {
-	    free(item);
-	    item = NULL;
-	}
     }
 
     /*
