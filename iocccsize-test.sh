@@ -207,7 +207,7 @@ test_size quote0.c "16 24 1"
 #######################################################################
 
 cat <<EOF >test-iocccsize/quote1.c
-char squote = '\'';
+char squote = '\\'';
 EOF
 test_size quote1.c "12 20 1"
 
@@ -299,7 +299,7 @@ cat <<EOF >test-iocccsize/hello.c
 int
 main(int argc, char **argv)
 {
-	(void) printf("Hello world!\n");
+	(void) printf("Hello world!\\n");
 	return 0;
 }
 EOF
@@ -315,7 +315,7 @@ cat <<EOF >test-iocccsize/hello_digraph.c
 int
 main(int argc, char **argv)
 <%
-	(void) printf("Hello world!\n");
+	(void) printf("Hello world!\\n");
 	return 0;
 %>
 EOF
@@ -335,7 +335,7 @@ cat <<EOF >test-iocccsize/hello_trigraph.c
 int
 main(int argc, char **argv)
 ??<
-	(void) printf("Hello world!\n");
+	(void) printf("Hello world!\\n");
 	return 0;
 ??>
 EOF
@@ -425,7 +425,7 @@ main(int argc, char **argv)
 {
 	int i;
 	for (i = 0; i < 3; i++) {
-		(void) printf("%d\n", i);
+		(void) printf("%d\\n", i);
 	}
 	return 0;
 }
@@ -443,7 +443,7 @@ main(int argc, char **argv)
 {
 	int i;
 	for (i=0;i<3;i++) {
-		(void) printf("%d\n", i);
+		(void) printf("%d\\n", i);
 	}
 	return 0;
 }

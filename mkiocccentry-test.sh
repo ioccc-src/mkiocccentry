@@ -64,7 +64,7 @@ n
 replaced-author1-handle
 EOF
 # Avoid triggering an out of date shellcheck bug by using encoded hex characters
-printf "Author2 \xc3\xa5\xe2\x88\xab\xc3\xa7\xe2\x88\x82\xc2\xb4\xc6\x92\xc2\xa9 LAST2\n"
+printf "Author2 \\xc3\\xa5\\xe2\\x88\\xab\\xc3\\xa7\\xe2\\x88\\x82\\xc2\\xb4\\xc6\\x92\\xc2\\xa9 LAST2\\n"
 cat <<"EOF"
 US
 user2@example.com
@@ -162,7 +162,7 @@ n
 replaced-author1-handle
 EOF
 # Avoid triggering an out of date shellcheck bug by using encoded hex characters
-printf "Author2 \xc3\xa5\xe2\x88\xab\xc3\xa7\xe2\x88\x82\xc2\xb4\xc6\x92\xc2\xa9 LAST2\n"
+printf "Author2 \\xc3\\xa5\\xe2\\x88\\xab\\xc3\\xa7\\xe2\\x88\\x82\\xc2\\xb4\\xc6\\x92\\xc2\\xa9 LAST2\\n"
 cat <<"EOF"
 US
 user2@example.com
@@ -240,7 +240,7 @@ n
 replaced-author1-handle
 EOF
 # Avoid triggering an out of date shellcheck bug by using encoded hex characters
-printf "Author2 \xc3\xa5\xe2\x88\xab\xc3\xa7\xe2\x88\x82\xc2\xb4\xc6\x92\xc2\xa9 LAST2\n"
+printf "Author2 \\xc3\\xa5\\xe2\\x88\\xab\\xc3\\xa7\\xe2\\x88\\x82\\xc2\\xb4\\xc6\\x92\\xc2\\xa9 LAST2\\n"
 cat <<"EOF"
 US
 user2@example.com
