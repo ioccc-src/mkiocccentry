@@ -1843,13 +1843,16 @@ round_to_multiple(off_t num, off_t multiple)
 void *
 read_all(FILE *stream, size_t *psize)
 {
-    uint8_t *buf = NULL;    /* allocated buffer to return */
-    uint8_t *tmp = NULL;    /* temporary reallocation buffer */
-    size_t size = 0;	    /* size of the buffer allocated */
-    size_t used = 0;	    /* amount of data read into the buffer */
-    size_t last_read = 0;   /* amount last fread read from open stream */
-    long read_cycle = 0;    /* number of read cycles */
-    long realloc_cycle = 0; /* number of realloc cycles */
+    struct dyn_array *array = NULL;	/* dynamic array for file content */
+    long dyn_array_seek_cycle = 0;	/* number of dyn_array_seek() calls */
+    long move_cycle = 0;		/* number of realloc cycles that moved data */
+    bool moved = false;			/* true ==> location of the elements array moved during realloc() */
+    uint8_t *read_buf = NULL;		/* where next to read data into */
+    long read_cycle = 0;		/* number of read cycles */
+    size_t last_read = 0;		/* amount last fread read from open stream */
+    intmax_t used = 0;		        /* amount of data read into the buffer */
+    uint8_t *ret = NULL;		/* buffer containing the while file to return */
+    int fread_errno = 0;		/* errno after fread() call */
 
     /*
      * firewall
@@ -1858,20 +1861,6 @@ read_all(FILE *stream, size_t *psize)
 	err(153, __func__, "called with NULL stream");
 	not_reached();
     }
-
-    /*
-     * allocate the initial zeroized buffer
-     */
-    errno = 0;			/* pre-clear errno for warnp() */
-    dbg(DBG_VVHIGH, "%s: about to start calloc cycle: %ld", __func__, realloc_cycle);
-    buf = calloc(INITIAL_BUF_SIZE, sizeof(uint8_t));
-    if (buf == NULL) {
-	warnp(__func__, "calloc of %ju bytes failed", (uintmax_t)INITIAL_BUF_SIZE);
-	return NULL;
-    }
-    size = INITIAL_BUF_SIZE;
-    dbg(DBG_VVHIGH, "%s: calloc cycle: %ld new size: %ju", __func__, realloc_cycle, (uintmax_t)size);
-    ++realloc_cycle;
 
     /*
      * quick return with no data if stream is already in ERROR or EOF state
@@ -1891,71 +1880,78 @@ read_all(FILE *stream, size_t *psize)
     }
 
     /*
+     * create the dynamic array
+     */
+    array = dyn_array_create(sizeof(uint8_t), READ_ALL_CHUNK, INITIAL_BUF_SIZE, true);
+    ++dyn_array_seek_cycle;
+
+    /*
      * read until stream EOF or ERROR
      */
     do {
 
 	/*
-	 * expand buffer as needed for the next potential read
+	 * expand buffer by a READ_ALL_CHUNK
 	 */
-	if (used + READ_ALL_CHUNK + 1 > size) {
-
-	    /*
-	     * realloc buffer
-	     */
-	    dbg(DBG_VVHIGH, "%s: about to start realloc cycle: %ld", __func__, realloc_cycle);
-	    errno = 0;			/* pre-clear errno for warnp() */
-	    tmp = realloc(buf, size + READ_ALL_CHUNK);
-	    if (tmp == NULL) {
-		/* report realloc failure */
-		warnp(__func__, "realloc from %ju bytes to %ju bytes failed",
-				(uintmax_t)size, (uintmax_t)(size + READ_ALL_CHUNK));
-		/* free up the previous buffer */
-		if (buf != NULL) {
-		    free(buf);
-		    buf = NULL;
-		}
-		/* toss data we might have collected as we cannot read all of the stream */
-		size = 0;
-		used = 0;
-		/* record empty size, if requested */
-		if (psize != NULL) {
-		    *psize = 0;
-		}
-		/* return failure to read all of the stream */
-		return NULL;
-	    }
-	    buf = tmp;
-
-	    /*
-	     * zeroize expanded chunk of data
-	     */
-	    memset(buf+size, 0, READ_ALL_CHUNK);
-
-	    /*
-	     * note expanded buffer size
-	     */
-	    size += READ_ALL_CHUNK;
-	    dbg(DBG_VVHIGH, "%s: realloc cycle: %ld new size: %ju", __func__, realloc_cycle, (uintmax_t)size);
-	    ++realloc_cycle;
+	used = dyn_array_tell(array);
+	moved = dyn_array_seek(array, READ_ALL_CHUNK, SEEK_CUR);
+	if (moved == true) {
+	    ++move_cycle;
+	    dbg(DBG_VVVHIGH, "dyn_array_seek() caused a realloc data move, count: %ld", move_cycle);
 	}
+	dbg(DBG_VVHIGH, "%s: dyn_array_seek cycle: %ld new size: %jd", __func__,
+			dyn_array_seek_cycle, dyn_array_tell(array));
+	++dyn_array_seek_cycle;
 
 	/*
 	 * try to read more data from the stream
 	 */
 	dbg(DBG_VVHIGH, "%s: about to start read cycle: %ld", __func__, read_cycle);
+	read_buf = dyn_array_addr(array, uint8_t, used);
 	errno = 0;			/* pre-clear errno for warnp() */
-	last_read = fread(buf+used, 1, READ_ALL_CHUNK, stream);
-	used += last_read;	/* record newly read data, if any */
+	last_read = fread(read_buf, sizeof(uint8_t), READ_ALL_CHUNK, stream);
+	fread_errno = errno;	/* save errno from fread() call for later reporting if needed */
+	dbg(DBG_VVHIGH, "%s: fread(read_buf, %lu, %d, stream) read cycle: %ld returned: %ld",
+			 __func__, sizeof(uint8_t), READ_ALL_CHUNK, read_cycle, last_read);
+	++read_cycle;
+
+	/*
+	 * account for the amount of data read
+	 */
+	if (last_read > 0) {
+	    if (last_read != READ_ALL_CHUNK) {
+		/* update the dynamic array size based on amount of read in last read */
+		moved = dyn_array_seek(array, last_read-READ_ALL_CHUNK, SEEK_CUR);
+		if (moved == true) {
+		    ++move_cycle;
+		    dbg(DBG_VVVHIGH, "dyn_array_seek() caused a realloc data move, count: %ld", move_cycle);
+		}
+	    }
+	/* case: no data read */
+	} else {
+		/* restore old dynamic array size */
+		moved = dyn_array_seek(array, used, SEEK_SET);
+		if (moved == true) {
+		    ++move_cycle;
+		    dbg(DBG_VVVHIGH, "dyn_array_seek() caused a realloc data move, count: %ld", move_cycle);
+		}
+	}
+	used = dyn_array_tell(array);
+
+	/*
+	 * look for I/O errors and EOF
+	 */
+	errno = fread_errno;	/* restore errno from fread() call */
 	if (last_read == 0 || ferror(stream) || feof(stream)) {
 
 	    /* report the I/O condition */
 	    if (feof(stream)) {
-		dbg(DBG_HIGH, "normal EOF reading stream at: %ju bytes", (uintmax_t)used);
+		dbg(DBG_HIGH, "fread returned: %ld normal EOF reading stream at: %jd bytes", last_read, used);
 	    } else if (ferror(stream)) {
-		warnp(__func__, "I/O error detected while reading stream at: %ju bytes", (uintmax_t)used);
+		warnp(__func__, "fread returned: %ld I/O error detected while reading stream at: %jd bytes", last_read, used);
 	    } else {
-		warnp(__func__, "fread returned 0 although neither the EOF nor ERROR flag were set: assuming EOF anyway");
+		warnp(__func__, "fread returned %ld although neither the EOF nor ERROR flag were set: "
+				"assuming EOF anyway", last_read);
 	    }
 
 	    /*
@@ -1963,9 +1959,11 @@ read_all(FILE *stream, size_t *psize)
 	     */
 	    break;
 	}
-	dbg(DBG_VVHIGH, "%s: read cycle: %ld read count: %ju", __func__, read_cycle, (uintmax_t)read_cycle);
-	++read_cycle;
     } while (true);
+    dbg(DBG_VVHIGH, "%s(stream, psize): last_read: %ld total bytes: %jd allocated: %jd "
+		    "read_cycle: %ld move_cycle: %ld seek_cycle: %ld",
+		    __func__, last_read, dyn_array_tell(array), dyn_array_alloced(array),
+		    read_cycle, move_cycle, dyn_array_seek_cycle);
 
     /*
      * report the amount of data actually read, if requested
@@ -1977,7 +1975,8 @@ read_all(FILE *stream, size_t *psize)
     /*
      * return the malloced buffer
      */
-    return buf;
+    ret = dyn_array_addr(array, uint8_t, 0);
+    return ret;
 }
 
 

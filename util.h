@@ -37,6 +37,11 @@
 #include <inttypes.h> /* uintmax_t and intmax_t and perhaps SIZE_MAX */
 
 /*
+ * dynamic array facility
+ */
+#include "dyn_array.h"
+
+/*
  * standard truth :-)
  */
 #if defined(__STDC_VERSION__) && (__STDC_VERSION__ >= 199901L)
