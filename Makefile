@@ -90,6 +90,7 @@ RM= rm
 RPL= rpl
 SED= sed
 SEQCEXIT= seqcexit
+SHELL= bash
 SHELLCHECK= shellcheck
 TR= tr
 TRUE= true
@@ -627,10 +628,12 @@ seqcexit: Makefile
 	    echo ''; 1>&2; \
 	    echo '    https://github.com/lcn2/seqcexit'; 1>&2; \
 	    echo ''; 1>&2; \
-	    exit 1; \
+	else \
+	    echo "${SEQCEXIT} -c -- ${FLEXFILES} ${BISONFILES}"; \
+	    ${SEQCEXIT} -c -- ${FLEXFILES} ${BISONFILES}; \
+	    echo "${SEQCEXIT} -- ${ALL_CSRC}"; \
+	    ${SEQCEXIT} -- ${ALL_CSRC}; \
 	fi
-	${SEQCEXIT} -c -- ${FLEXFILES} ${BISONFILES}
-	${SEQCEXIT} -- ${ALL_CSRC}
 
 picky: ${ALL_CSRC} ${H_FILES} Makefile
 	@if ! command -v ${PICKY} >/dev/null 2>&1; then \
@@ -641,10 +644,12 @@ picky: ${ALL_CSRC} ${H_FILES} Makefile
 	    echo 1>&2; \
 	    echo "http://grail.eecs.csuohio.edu/~somos/picky.html" 1>&2; \
 	    echo 1>&2; \
-	    exit 1; \
+	else \
+	    echo "${PICKY} -w132 -u -s -t8 -v -e -- ${SRCFILES} ${H_FILES}"; \
+	    ${PICKY} -w132 -u -s -t8 -v -e -- ${SRCFILES} ${H_FILES}; \
+	    echo "${PICKY} -w132 -u -s -t8 -v -e -8 -- ${LESS_PICKY_CSRC}"; \
+	    ${PICKY} -w132 -u -s -t8 -v -e -8 -- ${LESS_PICKY_CSRC}; \
 	fi
-	${PICKY} -w132 -u -s -t8 -v -e -- ${SRCFILES} ${H_FILES}
-	${PICKY} -w132 -u -s -t8 -v -e -8 -- ${LESS_PICKY_CSRC}
 
 # inspect and verify shell scripts
 #
@@ -657,9 +662,10 @@ shellcheck: ${SH_FILES} .shellcheckrc Makefile
 	    echo ''; 1>&2; \
 	    echo '    https://github.com/koalaman/shellcheck.net'; 1>&2; \
 	    echo ''; 1>&2; \
-	    exit 1; \
+	else \
+	    echo "${SHELLCHECK} -f gcc -- ${SH_FILES}"; \
+	    ${SHELLCHECK} -f gcc -- ${SH_FILES}; \
 	fi
-	${SHELLCHECK} -f gcc -- ${SH_FILES}
 
 # Only run this rule when you wish to invalidate all timestamps
 # prior to now, such as when you make a fundamental change to a
