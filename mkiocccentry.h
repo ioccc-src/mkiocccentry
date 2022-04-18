@@ -129,7 +129,7 @@
 /*
  * usage message
  *
- * Use the usage() function to print the these usage_msg([0-9]?)+ strings.
+ * Use the usage() function to print the usage_msg([0-9]?)+ strings.
  */
 static const char * const usage_msg0 =
     "usage: %s [options] work_dir prog.c Makefile remarks.md [file ...]\n"

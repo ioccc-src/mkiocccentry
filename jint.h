@@ -61,7 +61,7 @@
 /*
  * usage message
  *
- * Use the usage() function to print the these usage_msg([0-9]?)+ strings.
+ * Use the usage() function to print the usage_msg([0-9]?)+ strings.
  */
 static const char * const usage_msg =
     "usage: %s [-h] [-v level] [-V] [-q] [-t] [-S] [int ...]\n"
