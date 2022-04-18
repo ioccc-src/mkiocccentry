@@ -150,7 +150,7 @@ dyn_array_grow(struct dyn_array *array, intmax_t elms_to_allocate)
     array->allocated = new_allocated;
     dbg(DBG_VVVHIGH, "%s(array, %jd): %s: allocated: %jd elements of size: %jd in use: %jd",
 		     __func__, elms_to_allocate,
-		     (moved == true ? "moved" : "not-moved"),
+		     (moved == true ? "moved" : "in-place"),
 		     dyn_array_alloced(array),
 		     array->elm_size,
 		     dyn_array_tell(array));
@@ -254,7 +254,7 @@ dyn_array_create(size_t elm_size, intmax_t chunk, intmax_t start_elm_count, bool
     /*
      * Return newly allocated array
      */
-    dbg(DBG_VVHIGH, "%s(%ju, %jd, %jd, %s): initialized empty dynamic array of %jd elements of size: %jd",
+    dbg(DBG_VVHIGH, "%s(%ju, %jd, %jd, %s): initialized empty dynamic array, allocated: %jd elements of size: %jd",
 		    __func__, (uintmax_t)elm_size, chunk, start_elm_count,
 		    (zeroize == true ? "true" : "false"),
 		    dyn_array_alloced(ret), ret->elm_size);
@@ -334,7 +334,7 @@ dyn_array_append_value(struct dyn_array *array, void *value_to_add)
     ++array->count;
     dbg(DBG_VVVHIGH, "%s(array, buf, value): %s: allocated: %jd elements of size: %jd in use: %jd",
 		     __func__,
-		     (moved == true ? "moved" : "not-moved"),
+		     (moved == true ? "moved" : "in-place"),
 		     dyn_array_alloced(array),
 		     array->elm_size,
 		     dyn_array_tell(array));
@@ -423,7 +423,7 @@ dyn_array_append_array(struct dyn_array *array, void *array_to_add_p, intmax_t c
     dbg(DBG_VVVHIGH, "%s(array, buf, %jd): %s: allocated: %jd elements of size: %jd in use: %jd",
 		     __func__,
 		     (intmax_t)count_of_elements_to_add,
-		     (moved == true ? "moved" : "not-moved"),
+		     (moved == true ? "moved" : "in-place"),
 		     dyn_array_alloced(array),
 		     array->elm_size,
 		     dyn_array_tell(array));
@@ -589,7 +589,7 @@ dyn_array_seek(struct dyn_array *array, off_t offset, int whence)
 		     __func__,
 		     (intmax_t)offset,
 		     (whence == SEEK_SET ? "SEEK_SET" : (whence == SEEK_CUR ? "SEEK_CUR" : "SEEK_END")),
-		     (moved == true ? "moved" : "not-moved"),
+		     (moved == true ? "moved" : "in-place"),
 		     dyn_array_alloced(array),
 		     array->elm_size,
 		     dyn_array_tell(array));
