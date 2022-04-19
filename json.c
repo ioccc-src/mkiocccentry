@@ -359,11 +359,14 @@ static void expand_json_code_ignore_set(void);
  *
  *      old			new
  *      ----------------------------
+ *	\x00-\x07		\u0000 - \u0007
  *	<backspace>		\b	(\x08)
  *	<horizontal_tab>	\t	(\x09)
  *	<newline>		\n	(\x0a)
+ *	\x0b			\u000b <vertical_tab>
  *	<form_feed>		\f	(\x0c)
  *	<enter>			\r	(\x0d)
+ *	\x0e-\x1f		\u000e - \x001f
  *	"			\"	(\x22)
  *	/			\/	(\x2f)
  *	\			\\	(\x5c)
@@ -377,15 +380,15 @@ static void expand_json_code_ignore_set(void);
  *	<		\u003c		(\x3c)
  *	>		\u003e		(\x3e)
  *
- * These escape characters are implied by JSON to let humans
- * view JSON without worrying about characters that might
- * not display / might not be printable:
+ * The JSON spec:
+ *
+ *	https://www.json.org/json-en.html
+ *
+ * is UTF-8 character based, but for now, we encoded non-ASCII
+ * bytes as followed:
  *
  *      old			new
  *      ----------------------------
- *	\x00-\x07		\u0000 - \u0007
- *	\x0b			\u000b <vertical_tab>
- *	\x0e-\x1f		\u000e - \x001f
  *	\x7f-\xff		\u007f - \u00ff
  *
  * See:
