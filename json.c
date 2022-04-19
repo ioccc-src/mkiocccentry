@@ -397,13 +397,6 @@ static void expand_json_code_ignore_set(void);
  * XXX - Optimize this function to not encode UTF-8 characters
  *	 that are not strictly needed by the JSON spec.
  *
- * See:
- *
- *	https://developpaper.com/escape-and-unicode-encoding-in-json-serialization/
- *
- * NOTE: We chose to not escape '%' as was suggested by the above URL
- *	 because it is neither required by JSON nor implied by JSON.
- *
  * NOTE: While there exist C escapes for characters such as '\v',
  *	 due to flaws in the JSON spec, we must encode such characters
  *	 using the \uffff notation.
