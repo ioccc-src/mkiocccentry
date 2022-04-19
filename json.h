@@ -258,15 +258,16 @@ struct json_floating
  */
 struct json_string
 {
-    char *as_str;		/* malloced non-decoded JSON string, NUL terminated */
+    char *as_str;		/* malloced non-decoded JSON string, NUL terminated (perhaps sans JSON "s) */
     char *str;			/* malloced decoded JSON string, NUL terminated */
 
     size_t as_str_len;		/* length of as_str, not including final NUL */
     size_t str_len;		/* length of str, not including final NUL */
 
     bool converted;		/* true ==> able to decode JSON string, false ==> str is invalid or not decoded */
-    bool same;			/* true => original JSON string same as decoded string, no decoding required */
+    bool quote;			/* The original JSON string included surrounding "'s */
 
+    bool same;			/* true => as_str same as str, JSON decoding not required */
     bool has_nul;		/* true ==> decoded JSON string has a NUL byte inside it */
 
     bool slash;			/* true ==> / was found after decoding */
@@ -643,8 +644,8 @@ extern struct json *calloc_json_conv_int(char const *str, size_t len);
 extern struct json *calloc_json_conv_int_str(char const *str, size_t *retlen);
 extern struct json *calloc_json_conv_float(char const *str, size_t len);
 extern struct json *calloc_json_conv_float_str(char const *str, size_t *retlen);
-extern struct json *calloc_json_conv_string(char const *str, size_t len, bool strict);
-extern struct json *calloc_json_conv_string_str(char const *str, size_t *retlen, bool strict);
+extern struct json *calloc_json_conv_string(char const *str, size_t len, bool strict, bool quote);
+extern struct json *calloc_json_conv_string_str(char const *str, size_t *retlen, bool strict, bool quote);
 extern struct json *calloc_json_conv_bool(char const *str, size_t len);
 extern struct json *calloc_json_conv_bool_str(char const *str, size_t *retlen);
 extern struct json *calloc_json_conv_null(char const *str, size_t len);

@@ -4484,6 +4484,8 @@ calloc_json_conv_float_str(char const *str, size_t *retlen)
  *	len	length, starting at str, of the JSON string
  *	strict	true ==> strict decoding based on how malloc_json_decode() decodes
  *	        false ==> permit a wider use of \-escaping and un-decoded char
+ *	quote	true ==> ignore JSON double quotes, both str[0] & str[len-1] must be "
+ *		false ==> the entire str is to be converted
  *
  * returns:
  *	malloced JSON parser tree node converted JSON encoded string
@@ -4495,7 +4497,7 @@ calloc_json_conv_float_str(char const *str, size_t *retlen)
  * NOTE: This function will not return NULL.
  */
 struct json *
-calloc_json_conv_string(char const *str, size_t len, bool strict)
+calloc_json_conv_string(char const *str, size_t len, bool strict, bool quote)
 {
     struct json *ret = NULL;		    /* JSON parser tree node to return */
     struct json_string *item = NULL;	    /* JSON string element inside JSON parser tree node */
@@ -4525,6 +4527,7 @@ calloc_json_conv_string(char const *str, size_t len, bool strict)
     item->as_str = NULL;
     item->str = NULL;
     item->converted = false;
+    item->quote = false;
     item->same = false;
     item->has_nul = false;
     item->slash = false;
@@ -4539,13 +4542,51 @@ calloc_json_conv_string(char const *str, size_t len, bool strict)
 	warn(__func__, "called with NULL str");
 	return ret;
     }
-    if (len <= 0) {
-	warn(__func__, "called with len: %ju <= 0", (uintmax_t)len);
-	return ret;
-    }
-    if (str[0] == '\0') {
-	warn(__func__, "called with empty string");
-	return ret;
+
+    /*
+     * case: JSON surrounding "'s are to be ignored
+     */
+    if (quote == true) {
+
+	/*
+	 * firewall
+	 */
+	if (len <= 2) {
+	    warn(__func__, "quote === true: called with len: %ju <= 2", (uintmax_t)len);
+	    return ret;
+	}
+	if (str[0] != '"') {
+	    warn(__func__, "quote === true: string does NOT start with a \"");
+	    return ret;
+	}
+	if (str[len-1] != '"') {
+	    warn(__func__, "quote === true: string does NOT end with a \"");
+	    return ret;
+	}
+
+	/*
+	 * ignore JSON surrounding "'s
+	 */
+	item->quote = true;
+	++str;
+	len -= 2;
+
+    /*
+     * case: the entire string is to be processed
+     */
+    } else {
+
+	/*
+	 * firewall
+	 */
+	if (len <= 0) {
+	    warn(__func__, "quote === false: called with len: %ju <= 0", (uintmax_t)len);
+	    return ret;
+	}
+	if (str[0] == '\0') {
+	    warn(__func__, "quote === false: called with empty string");
+	    return ret;
+	}
     }
 
     /*
@@ -4563,10 +4604,13 @@ calloc_json_conv_string(char const *str, size_t len, bool strict)
     /*
      * decode the JSON encoded string
      */
+    /* decode the entire string */
     item->str = malloc_json_decode_str(item->as_str, &(item->str_len), strict);
     if (item->str == NULL) {
-	warn(__func__, "JSON string decode for %s mode failed for: <%s>",
-		       (strict ? "strict" : "non-strict"), item->as_str);
+	warn(__func__, "quote === %s: JSON string decode for %s mode failed for: <%s>",
+		       (quote ? "true" : "false"),
+		       (strict ? "strict" : "non-strict"),
+		       item->as_str);
 	return ret;
     }
     item->converted = true;	/* JSON decoding successful */
@@ -4575,7 +4619,7 @@ calloc_json_conv_string(char const *str, size_t len, bool strict)
      * determine if decoded string is identical to the original JSON encoded string
      */
     if (item->as_str_len == item->str_len && memcmp(item->as_str, item->str, item->as_str_len) == 0) {
-	item->same = true;	/* decoded string same an original JSON encoded string */
+	item->same = true;	/* decoded string same an original JSON encoded string (perhaps sans "'s) */
     }
 
     /*
@@ -4605,6 +4649,8 @@ calloc_json_conv_string(char const *str, size_t len, bool strict)
  *	retlen	address of where to store length of str, if retlen != NULL
  *	strict	true ==> strict decoding based on how malloc_json_decode() decodes
  *	        false ==> permit a wider use of \-escaping and un-decoded char
+ *	quote	true ==> ignore JSON double quotes, both str[0] & str[len-1] must be "
+ *		false ==> the entire str is to be converted
  *
  * returns:
  *	malloced JSON parser tree node converted JSON string
@@ -4618,7 +4664,7 @@ calloc_json_conv_string(char const *str, size_t len, bool strict)
  * NOTE: This function will not return NULL.
  */
 struct json *
-calloc_json_conv_string_str(char const *str, size_t *retlen, bool strict)
+calloc_json_conv_string_str(char const *str, size_t *retlen, bool strict, bool quote)
 {
     struct json *ret = NULL;		    /* JSON parser tree node to return */
     size_t len = 0;			    /* length of string to encode */
@@ -4637,7 +4683,7 @@ calloc_json_conv_string_str(char const *str, size_t *retlen, bool strict)
     /*
      * convert to calloc_json_conv_string() call
      */
-    ret = calloc_json_conv_string(str, len, strict);
+    ret = calloc_json_conv_string(str, len, strict, quote);
     if (ret == NULL) {
 	err(209, __func__, "calloc_json_conv_string() returned NULL");
 	not_reached();
