@@ -992,7 +992,7 @@ YY_RULE_SETUP
 case 7:
 YY_RULE_SETUP
 #line 131 "jparse.l"
-{ printf("\ntrue: '%s'\n", yytext); return JTYPE_BOOLEAN; }
+{ printf("\nboolean: '%s'\n", yytext); return JTYPE_BOOLEAN; }
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
