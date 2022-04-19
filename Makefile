@@ -503,7 +503,8 @@ jparse.c: jparse.l jparse.tab.h bfok.sh limit_ioccc.sh verge jparse.ref.c Makefi
 # repo tools - rules for those who maintain the mkiocccentry repo #
 ###################################################################
 
-# things to do before a release, forming a pull, and/or updating the GitHub repo
+# things to do before a release, forming a pull request and/or updating the
+# GitHub repo
 #
 prep:
 	@echo "=-=-=-=-= ${MAKE} prep start =-=-=-=-="
@@ -621,8 +622,8 @@ rebuild_jfloat_test: jfloat.testset jfloat.c dbg.o json.o util.o dyn_array.o Mak
 #
 seqcexit: Makefile
 	@HAVE_SEQCEXIT=`command -v ${SEQCEXIT}`; if [[ -z "$$HAVE_SEQCEXIT" ]]; then \
-	    echo 'If you have not installed the seqcexit tool, then' 1>&2; \
-	    echo 'you may not run this rule.'; 1>&2; \
+	    echo 'The seqcexit tool could not be found.' 1>&2; \
+	    echo 'The seqcexit tool is required for this rule.'; 1>&2; \
 	    echo ''; 1>&2; \
 	    echo 'See the following GitHub repo for seqcexit:'; 1>&2; \
 	    echo ''; 1>&2; \
@@ -637,8 +638,8 @@ seqcexit: Makefile
 
 picky: ${ALL_CSRC} ${H_FILES} Makefile
 	@if ! command -v ${PICKY} >/dev/null 2>&1; then \
-	    echo "The picky command not found." 1>&2; \
-	    echo "The picky command is required for this rule." 1>&2; \
+	    echo "The picky tool could not found." 1>&2; \
+	    echo "The picky tool is required for this rule." 1>&2; \
 	    echo "We recommend you install picky v2.6 or later" 1>&2; \
 	    echo "from this URL:" 1>&2; \
 	    echo 1>&2; \
@@ -655,13 +656,14 @@ picky: ${ALL_CSRC} ${H_FILES} Makefile
 #
 shellcheck: ${SH_FILES} .shellcheckrc Makefile
 	@HAVE_SHELLCHECK=`command -v ${SHELLCHECK}`; if [[ -z "$$HAVE_SHELLCHECK" ]]; then \
-	    echo 'If you have not installed the shellcheck tool, then' 1>&2; \
-	    echo 'you may not run this rule.'; 1>&2; \
+	    echo 'The shellcheck command could not found.' 1>&2; \
+	    echo 'The shellcheck command is required to run this rule.'; 1>&2; \
 	    echo ''; 1>&2; \
 	    echo 'See the following GitHub repo for shellcheck:'; 1>&2; \
 	    echo ''; 1>&2; \
 	    echo '    https://github.com/koalaman/shellcheck.net'; 1>&2; \
 	    echo ''; 1>&2; \
+	    echo 'Or use the package manager in your OS to install it.' 1>&2; \
 	else \
 	    echo "${SHELLCHECK} -f gcc -- ${SH_FILES}"; \
 	    ${SHELLCHECK} -f gcc -- ${SH_FILES}; \
@@ -676,7 +678,7 @@ shellcheck: ${SH_FILES} .shellcheckrc Makefile
 # DO NOT run this rule simply for a new IOCCC!
 #
 # Yes, we make it very hard to run this rule for good reason.
-# Only IOCCC judges can perform the ALL the steps needed to complete this action.
+# Only IOCCC judges can perform ALL the steps needed to complete this action.
 #
 reset_min_timestamp:
 	@HAVE_RPL=`command -v rpl`; if [[ -z "$$HAVE_RPL" ]]; then \
