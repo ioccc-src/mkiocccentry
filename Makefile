@@ -471,8 +471,8 @@ jparse.c: jparse.l jparse.tab.h bfok.sh limit_ioccc.sh verge jparse.ref.c Makefi
 		echo "${CP} -f -v jparse.ref.c jparse.c"; \
 		${CP} -f -v jparse.ref.c jparse.c; \
 	    else \
-		echo "$$FLEX_PATH -o jparse.c jparse.l"; \
-		"$$FLEX_PATH" -o jparse.c jparse.l; \
+		echo "$$FLEX_PATH -8 -o jparse.c jparse.l"; \
+		"$$FLEX_PATH" -8 -o jparse.c jparse.l; \
 		if [[ -s jparse.c ]]; then \
 		    echo '# prepending comment and line number reset to jparse.c'; \
 		    echo "${CP} -f -v sorry.tm.ca.h $$TMP_JPARSE_C"; \
