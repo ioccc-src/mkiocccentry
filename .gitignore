@@ -1,5 +1,6 @@
 # mkiocccentry specific
 answers.txt
+build.log
 dbg
 dyn_test
 entry.*.tx[zt]

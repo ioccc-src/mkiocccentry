@@ -92,6 +92,7 @@ SED= sed
 SEQCEXIT= seqcexit
 SHELL= bash
 SHELLCHECK= shellcheck
+TEE= tee
 TR= tr
 TRUE= true
 
@@ -239,7 +240,8 @@ H_FILES= dbg.h jauthchk.h jinfochk.h json.h jstrdecode.h jstrencode.h limit_iocc
 #
 DSYMDIRS= $(TARGETS:=.dSYM)
 SH_FILES= iocccsize-test.sh jstr-test.sh limit_ioccc.sh mkiocccentry-test.sh json-test.sh \
-	  jcodechk.sh vermod.sh bfok.sh
+	  jcodechk.sh vermod.sh bfok.sh prep.sh
+BUILD_LOG= build.log
 
 # Where bfok.sh looks for bison and flex with a version
 #
@@ -294,7 +296,7 @@ all: ${TARGETS} ${TEST_TARGETS}
 # rules, not file targets
 #
 .PHONY: all configure clean clobber install test reset_min_timestamp rebuild_jint_test \
-	rebuild_jfloat_test picky parser
+	rebuild_jfloat_test picky parser build bfok clean_generated_obj prep_clobber
 
 
 #####################################
@@ -503,50 +505,21 @@ jparse.c: jparse.l jparse.tab.h bfok.sh limit_ioccc.sh verge jparse.ref.c Makefi
 # repo tools - rules for those who maintain the mkiocccentry repo #
 ###################################################################
 
-# things to do before a release, forming a pull request and/or updating the
-# GitHub repo
+# things to do before a release, forming a pull request and/or updating the GitHub repo
 #
-prep:
-	@echo "=-=-=-=-= ${MAKE} prep start =-=-=-=-="
-	@echo
-	@echo "=-=-= ${MAKE} clobber =-=-="
-	@echo
-	${MAKE} clobber
-	@echo
-	@echo "=-=-= ${MAKE} seqcexit =-=-="
-	@echo
-	${MAKE} seqcexit
-	@echo
-	@echo "=-=-= ${MAKE} use_ref =-=-="
-	@echo
-	${MAKE} use_ref
-	${RM} -f ${GENERATED_OBJ}
-	@echo
-	@echo "=-=-= ${MAKE} all =-=-="
-	@echo
-	${MAKE} all
-	@echo
-	@echo "=-=-= ${MAKE} parser =-=-="
-	@echo
-	${MAKE} parser
-	@echo
-	@echo "=-=-= ${MAKE} all (again) =-=-="
-	@echo
-	${MAKE} all
-	@echo
-	@echo "=-=-= ${MAKE} shellcheck =-=-="
-	@echo
-	${MAKE} shellcheck
-	@echo
-	@echo "=-=-= ${MAKE} picky =-=-="
-	@echo
-	${MAKE} picky
-	@echo
-	@echo "=-=-= ${MAKE} test =-=-="
-	@echo
-	${MAKE} test
-	@echo
-	@echo "=-=-=-=-= ${MAKE} prep end =-=-=-=-="
+# Run thru all of the prep steps.  If some step failed along the way, exit non-zero at the end.
+#
+prep: prep.sh
+	${RM} -f ${BUILD_LOG}
+	./prep.sh 2>&1 | ${TEE} ${BUILD_LOG}
+
+# things to do before a release, forming a pull request and/or updating the GitHub repo
+#
+# Run thru all of the prep steps.  If a step fails, exit immediately.
+#
+build: prep.sh
+	${RM} -f ${BUILD_LOG}
+	./prep.sh -e 2>&1 | ${TEE} ${BUILD_LOG}
 
 # force the rebuild of the JSON parser and form reference copies of JSON parser C code
 #
@@ -629,6 +602,7 @@ seqcexit: Makefile
 	    echo ''; 1>&2; \
 	    echo '    https://github.com/lcn2/seqcexit'; 1>&2; \
 	    echo ''; 1>&2; \
+	    exit 1; \
 	else \
 	    echo "${SEQCEXIT} -c -- ${FLEXFILES} ${BISONFILES}"; \
 	    ${SEQCEXIT} -c -- ${FLEXFILES} ${BISONFILES}; \
@@ -645,6 +619,7 @@ picky: ${ALL_CSRC} ${H_FILES} Makefile
 	    echo 1>&2; \
 	    echo "http://grail.eecs.csuohio.edu/~somos/picky.html" 1>&2; \
 	    echo 1>&2; \
+	    exit 1; \
 	else \
 	    echo "${PICKY} -w132 -u -s -t8 -v -e -- ${SRCFILES} ${H_FILES}"; \
 	    ${PICKY} -w132 -u -s -t8 -v -e -- ${SRCFILES} ${H_FILES}; \
@@ -664,6 +639,7 @@ shellcheck: ${SH_FILES} .shellcheckrc Makefile
 	    echo '    https://github.com/koalaman/shellcheck.net'; 1>&2; \
 	    echo ''; 1>&2; \
 	    echo 'Or use the package manager in your OS to install it.' 1>&2; \
+	    exit 1; \
 	else \
 	    echo "${SHELLCHECK} -f gcc -- ${SH_FILES}"; \
 	    ${SHELLCHECK} -f gcc -- ${SH_FILES}; \
@@ -817,6 +793,27 @@ test: all iocccsize-test.sh dbg mkiocccentry-test.sh jstr-test.sh jint jfloat Ma
 test-jinfochk: all jinfochk Makefile
 	./json-test.sh -t jinfo_only -v 1 -D 1 -d test_JSON
 
+# rule used by prep.sh
+#
+bfok: bfok.sh limit_ioccc.sh verge
+	./bfok.sh ${BFOK_DIRS}
+
+# rule used by prep.sh and make clean
+#
+clean_generated_obj:
+	${RM} -f ${GENERATED_OBJ}
+
+# rule used by prep.sh and make clobber
+#
+prep_clobber:
+	${RM} -f ${TARGETS} ${TEST_TARGETS}
+	${RM} -f ${GENERATED_CSRC} ${GENERATED_HSRC}
+	${RM} -f answers.txt j-test.out j-test2.out json-test.log
+	${RM} -rf test-iocccsize test_src test_work tags dbg.out
+	${RM} -f jint.set.tmp jint_gen
+	${RM} -f jfloat.set.tmp jfloat_gen
+	${RM} -rf jint_gen.dSYM jfloat_gen.dSYM dyn_test.dSYM
+
 
 ###################################
 # standard Makefile utility rules #
@@ -825,20 +822,14 @@ test-jinfochk: all jinfochk Makefile
 configure:
 	@echo nothing to configure
 
-clean:
+clean: clean_generated_obj
 	${RM} -f ${OBJFILES}
 	${RM} -f ${GENERATED_OBJ}
 	${RM} -f ${LESS_PICKY_OBJ}
 	${RM} -rf ${DSYMDIRS}
 
-clobber: clean
-	${RM} -f ${TARGETS} ${TEST_TARGETS}
-	${RM} -f ${GENERATED_CSRC} ${GENERATED_HSRC}
-	${RM} -f answers.txt j-test.out j-test2.out json-test.log
-	${RM} -rf test-iocccsize test_src test_work tags dbg.out
-	${RM} -f jint.set.tmp jint_gen
-	${RM} -f jfloat.set.tmp jfloat_gen
-	${RM} -rf jint_gen.dSYM jfloat_gen.dSYM dyn_test.dSYM
+clobber: clean prep_clobber
+	${RM} -f ${BUILD_LOG}
 
 distclean nuke: clobber
 
