@@ -158,7 +158,7 @@ make_action() {
     #
     else
 	echo
-	echo "=-=-= OK: $MAKE $RULE =-=-="
+	echo "=-=-= PASS: $MAKE $RULE =-=-="
 	echo
     fi
     return 0;
@@ -166,7 +166,7 @@ make_action() {
 
 # perform make actions
 #
-echo "=-=-=-=-= Start: prep =-=-=-=-="
+echo "=-=-=-=-= Start: $0 =-=-=-=-="
 echo
 make_action 10 prep_clobber
 make_action 11 seqcexit
@@ -180,10 +180,10 @@ make_action 18 shellcheck
 make_action 19 picky
 make_action 20 test
 if [[ $EXIT_CODE -eq 0 ]]; then
-    echo "=-=-=-=-= OK: prep =-=-=-=-="
+    echo "=-=-=-=-= PASS: $0 =-=-=-=-="
     echo
 else
-    echo "=-=-=-=-= FALL: prep =-=-=-=-="
+    echo "=-=-=-=-= FALL: $0 =-=-=-=-="
     echo
     echo "=-=-=-=-= Will exit: $EXIT_CODE =-=-=-=-="
     echo
