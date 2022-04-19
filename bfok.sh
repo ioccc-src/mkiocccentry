@@ -61,7 +61,7 @@ Exit codes:
     5    -h and help string printed or -V and version string printed
     6    Command line usage error
     >=7  internal error"
-export BFOK_VERSION="0.1 2022-04-03"
+export BFOK_VERSION="0.2 2022-04-19"
 export V_FLAG="0"
 export BISON_BASENAME="bison"
 export FLEX_BASENAME="flex"
@@ -87,7 +87,7 @@ while getopts :hv:Vb:f:l:g:B:F:p: flag; do
        ;;
     v) V_FLAG="$OPTARG";
        ;;
-    V) print "$BFOK_VERSION"
+    V) echo "$BFOK_VERSION"
        exit 5
        ;;
     b) BISON_BASENAME="$OPTARG";
