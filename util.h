@@ -168,8 +168,6 @@ extern void find_utils(bool tar_flag_used, char **tar, bool cp_flag_used, char *
 		       bool fnamchk_flag_used, char **fnamchk, bool jinfochk_flag_used,
 		       char **jinfochk, bool jauthchk_flag_used, char **jauthchk);
 extern off_t round_to_multiple(off_t num, off_t multiple);
-extern char *malloc_json_encode(char const *ptr, size_t len, size_t *retlen);
-extern char *malloc_json_str(char const *str, size_t *retlen);
 extern void jencchk(void);
 extern void *read_all(FILE *stream, size_t *psize);
 extern bool is_string(char const * const ptr, size_t len);
