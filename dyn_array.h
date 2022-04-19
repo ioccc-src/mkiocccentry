@@ -76,7 +76,7 @@
  *	struct dyn_array *array_p;
  *	intmax_t pos;
  *
- *	pos = dyn_array_tell((array_p);
+ *	pos = dyn_array_tell(array_p);
  *
  * Address of the element just beyond the elements in use:
  *
@@ -90,14 +90,14 @@
  *	struct dyn_array *array_p;
  *	intmax_t size;
  *
- *	size = dyn_array_alloced((array_p);
+ *	size = dyn_array_alloced(array_p);
  *
  * Number of elements available (allocated but not in use) for the dynamic array:
  *
  *	struct dyn_array *array_p;
  *	intmax_t avail;
  *
- *	avail = dyn_array_avail((array_p);
+ *	avail = dyn_array_avail(array_p);
  *
  * Rewind a dynamic array back to zero elements:
  *

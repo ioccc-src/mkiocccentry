@@ -128,7 +128,7 @@ JTYPE_COMMA		","
 {JTYPE_INTMAX}		    { printf("\nintmax: '%s'\n", yytext); return JTYPE_INTMAX; }
 {JTYPE_LONG_DOUBLE}	    { printf("\nlong double: '%s'\n", yytext); return JTYPE_LONG_DOUBLE; }
 {JTYPE_NULL}		    { printf("\nnull: '%s'\n", yytext); return JTYPE_NULL; }
-{JTYPE_BOOLEAN}		    { printf("\ntrue: '%s'\n", yytext); return JTYPE_BOOLEAN; }
+{JTYPE_BOOLEAN}		    { printf("\nboolean: '%s'\n", yytext); return JTYPE_BOOLEAN; }
 {JTYPE_OPEN_BRACE}	    { printf("\nopen brace: '%c'\n", *yytext); token_type = '{'; return JTYPE_OPEN_BRACE; }
 {JTYPE_CLOSE_BRACE}	    { printf("\nclose brace: '%c'\n", *yytext); token_type = '}'; return JTYPE_CLOSE_BRACE;}
 {JTYPE_OPEN_BRACKET}	    { printf("\nopen bracket: '%c'\n", *yytext); token_type = '['; return JTYPE_OPEN_BRACKET; }
