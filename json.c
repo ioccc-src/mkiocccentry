@@ -4551,8 +4551,8 @@ calloc_json_conv_string(char const *str, size_t len, bool strict, bool quote)
 	/*
 	 * firewall
 	 */
-	if (len <= 2) {
-	    warn(__func__, "quote === true: called with len: %ju <= 2", (uintmax_t)len);
+	if (len < 2) {
+	    warn(__func__, "quote === true: called with len: %ju < 2", (uintmax_t)len);
 	    return ret;
 	}
 	if (str[0] != '"') {
@@ -4570,23 +4570,6 @@ calloc_json_conv_string(char const *str, size_t len, bool strict, bool quote)
 	item->quote = true;
 	++str;
 	len -= 2;
-
-    /*
-     * case: the entire string is to be processed
-     */
-    } else {
-
-	/*
-	 * firewall
-	 */
-	if (len <= 0) {
-	    warn(__func__, "quote === false: called with len: %ju <= 0", (uintmax_t)len);
-	    return ret;
-	}
-	if (str[0] == '\0') {
-	    warn(__func__, "quote === false: called with empty string");
-	    return ret;
-	}
     }
 
     /*
