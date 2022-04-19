@@ -391,6 +391,12 @@ static void expand_json_code_ignore_set(void);
  *      ----------------------------
  *	\x7f-\xff		\u007f - \u00ff
  *
+ * This is OK in that it does not violate the JSON spec, it just
+ * makes encoded strings with UTF-8 longer than they need to be.
+ *
+ * XXX - Optimize this function to not encode UTF-8 characters
+ *	 that are not strictly needed by the JSON spec.
+ *
  * See:
  *
  *	https://developpaper.com/escape-and-unicode-encoding-in-json-serialization/
