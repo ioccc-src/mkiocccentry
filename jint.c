@@ -62,7 +62,7 @@ main(int argc, char *argv[])
     size_t retlen;		/* length of the string given to json_conv_int_str() */
     bool error = false;		/* true ==> JSON integer conversion test suite error */
     bool test_mode = false;	/* true ==> perform JSON integer conversion test suite */
-    bool strict = false;	/* true ==> JSON decode in strict mode */
+    bool strict = false;	/* true ==> strict testing for all struct integer element, implies -t -q */
     struct json *node = NULL;	/* malloced JSON parser tree node */
     struct json_integer *item = NULL;	/* integer element in JSON parser tree node */
     int arg_cnt = 0;		/* number of args to process */
