@@ -132,7 +132,7 @@ main(int argc, char *argv[])
 	    /*
 	     * decode
 	     */
-	    buf = malloc_json_decode_str(input, &bufsiz);
+	    buf = json_decode_str(input, &bufsiz);
 	    if (buf == NULL) {
 		warn(__func__, "error while encoding processing arg: %d", i-optind);
 		error = true;
@@ -192,7 +192,7 @@ main(int argc, char *argv[])
 	/*
 	 * decode data read from stdin
 	 */
-	buf = malloc_json_decode(input, inputlen, &bufsiz);
+	buf = json_decode(input, inputlen, &bufsiz);
 	if (buf == NULL) {
 	    warn(__func__, "error while encoding stdin buffer");
 	    error = true;

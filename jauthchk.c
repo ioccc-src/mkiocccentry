@@ -188,7 +188,7 @@ check_author_json(char const *file, char const *fnamchk)
     char *p = NULL;	/* for field extraction */
     char *end = NULL;	/* temporary use: end of strings (p, field) for removing spaces */
     char *val = NULL;	/* current field's value being parsed */
-    char *val_esc = NULL; /* for malloc_json_decode_str() on val */
+    char *val_esc = NULL; /* for json_decode_str() on val */
     char *saveptr = NULL; /* for strtok_r() usage */
     char *array = NULL; /* array extraction */
     char *array_start = NULL; /* start of array */
@@ -540,9 +540,9 @@ check_author_json(char const *file, char const *fnamchk)
 	     * We have to determine if characters were properly escaped
 	     * according to the JSON spec.
 	     */
-	    val_esc = malloc_json_decode_str(val, NULL);
+	    val_esc = json_decode_str(val, NULL);
 	    if (val_esc == NULL) {
-		err(27, __func__, "malloc_json_decode(): invalidly formed field '%s' value '%s' or malloc failure in file %s",
+		err(27, __func__, "json_decode(): invalidly formed field '%s' value '%s' or malloc failure in file %s",
 			p, val, file);
 		not_reached();
 	    }

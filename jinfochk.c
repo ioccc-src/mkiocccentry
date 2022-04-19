@@ -187,7 +187,7 @@ check_info_json(char const *file, char const *fnamchk)
     char *p = NULL;	/* for field extraction */
     char *end = NULL;	/* temporary use: end of strings (p, field) for removing spaces */
     char *val = NULL;	/* current field's value being parsed */
-    char *val_esc = NULL; /* for malloc_json_decode_str() */
+    char *val_esc = NULL; /* for json_decode_str() */
     char *saveptr = NULL; /* for strtok_r() usage */
     char *array = NULL; /* array extraction */
     char *array_start = NULL; /* start of array */
@@ -195,7 +195,7 @@ check_info_json(char const *file, char const *fnamchk)
     char *array_field = NULL; /* for extraction of array fields */
     char *array_saveptr = NULL; /* for strtok_r() on array_dup */
     char *array_val = NULL; /* for extraction of array values */
-    char *array_val_esc = NULL; /* for malloc_json_decode_str() */
+    char *array_val_esc = NULL; /* for json_decode_str() */
     struct json_field *info_field; /* temporary use to determine type of value of .info.json field */
     struct json_field *array_info_field; /* temporary use to determine type of value of array .info.json field */
     struct json_field *common_field; /* temporary use to determine type of value if common field */
@@ -623,9 +623,9 @@ check_info_json(char const *file, char const *fnamchk)
 		 * We have to determine if characters were properly escaped
 		 * according to the JSON spec.
 		 */
-		array_val_esc = malloc_json_decode_str(array_val, NULL);
+		array_val_esc = json_decode_str(array_val, NULL);
 		if (array_val_esc == NULL) {
-		    err(29, __func__, "malloc_json_decode(): invalidly formed field '%s' value '%s' or malloc failure in file %s",
+		    err(29, __func__, "json_decode(): invalidly formed field '%s' value '%s' or malloc failure in file %s",
 			    array_field, array_val, file);
 		    not_reached();
 		}
@@ -781,9 +781,9 @@ check_info_json(char const *file, char const *fnamchk)
 	     * We have to determine if characters were properly escaped
 	     * according to the JSON spec.
 	     */
-	    val_esc = malloc_json_decode_str(val, NULL);
+	    val_esc = json_decode_str(val, NULL);
 	    if (val_esc == NULL) {
-		err(31, __func__, "malloc_json_decode_str(): invalidly formed field '%s' value '%s' or "
+		err(31, __func__, "json_decode_str(): invalidly formed field '%s' value '%s' or "
 				  "malloc failure in file %s", p, val, file);
 		not_reached();
 	    }
