@@ -71,14 +71,13 @@
  * Use the usage() function to print the usage_msg([0-9]?)+ strings.
  */
 static const char * const usage_msg =
-"usage: %s [-h] [-v level] [-V] [-q] [-S] [-F fnamchk] [-t] [-W code] [-w] ... file\n"
+"usage: %s [-h] [-v level] [-V] [-q] [-F fnamchk] [-t] [-W code] [-w] ... file\n"
 "\n"
 "\t-h\t\tprint help message and exit 0\n"
 "\t-v level\tset verbosity level: (def level: %d)\n"
 "\t-q\t\tquiet mode (def: not quiet)\n"
 "\t\t\t    NOTE: -q will also silence msg(), warn(), warnp() if -v 0\n"
 "\t-V\t\tprint version string and exit\n"
-"\t-S\t\tstrict mode: be more strict on what is allowed (def: not strict)\n"
 "\t-F fnamchk\tpath to fnamchk tool (def: %s)\n"
 "\t-t\t\ttest mode: only issue warnings in some cases\n"
 "\t-W code\t\tAdd code to the list of JSON error code to ignore\n"
@@ -101,7 +100,6 @@ bool quiet = false;			/* true ==> quiet mode */
 static char const *program = NULL;			/* our name */
 static char *program_basename = NULL;			/* our basename */
 struct author author;					/* the .author.json struct */
-static bool strict = false;				/* true ==> disallow anything before/after the '{' and '}' */
 static bool test = false;				/* true ==> some tests are not performed */
 static struct json_field *found_author_json_fields;	/* list of fields specific to .author.json found */
 extern struct json_field author_json_fields[];

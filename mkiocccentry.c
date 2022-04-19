@@ -5140,10 +5140,10 @@ write_info(struct info *infop, char const *entry_dir, char const *jinfochk, char
 	para("",
 	    "Checking the format of .info.json ...", NULL);
     }
-    dbg(DBG_HIGH, "about to perform: %s -q -S -F %s -- %s", jinfochk, fnamchk, info_path);
-    exit_code = shell_cmd(__func__, true, "% -q -S -F % -- %", jinfochk, fnamchk, info_path);
+    dbg(DBG_HIGH, "about to perform: %s -q -F %s -- %s", jinfochk, fnamchk, info_path);
+    exit_code = shell_cmd(__func__, true, "% -q -F % -- %", jinfochk, fnamchk, info_path);
     if (exit_code != 0) {
-	err(156, __func__, "%s -q -S -F %s -- %s failed with exit code: %d",
+	err(156, __func__, "%s -q -F %s -- %s failed with exit code: %d",
 			   jinfochk, fnamchk, info_path, WEXITSTATUS(exit_code));
 	not_reached();
     }
@@ -5308,10 +5308,10 @@ write_author(struct info *infop, int author_count, struct author *authorp, char 
     /*
      * perform the jauthchk which will indirectly show the user the tarball contents
      */
-    dbg(DBG_HIGH, "about to perform: %s -q -S -- %s", jauthchk, author_path);
-    exit_code = shell_cmd(__func__, true, "% -q -S -- %", jauthchk, author_path);
+    dbg(DBG_HIGH, "about to perform: %s -q -- %s", jauthchk, author_path);
+    exit_code = shell_cmd(__func__, true, "% -q -- %", jauthchk, author_path);
     if (exit_code != 0) {
-	err(167, __func__, "%s -q -S -- %s failed with exit code: %d",
+	err(167, __func__, "%s -q -- %s failed with exit code: %d",
 			   jauthchk, author_path, WEXITSTATUS(exit_code));
 	not_reached();
     }

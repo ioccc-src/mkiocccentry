@@ -2,7 +2,7 @@
 .SH NAME
 jauthchk \- IOCCC tool to validate .author.json file found within an entry directory
 .SH SYNOPSIS
-\fBjauthchk [\-h] [\-v level] [\-V] [\-q] [\-W code] [\-S] [\-w] ... file
+\fBjauthchk [\-h] [\-v level] [\-V] [\-q] [\-W code] [\-w] ... file
 .SH DESCRIPTION
 \fBjauthchk\fP is primarily used by other tools (not humans).
 As such it should behave like \fBfnamchk(1)\fP in that if all is well, it should not print anything and simply exit 0.
@@ -33,10 +33,6 @@ Silence msg(), warn(), warnp() if verbosity level is 0.
 Add code to the list of JSON codes to ignore.
 To ignore more than one JSON code, use multiple \fB\-W code\fP on the command line.
 Note: 0 (which is reserved) notwithstanding the code is in decimal (not octal) despite the fact the codes up through 999 are 0-padded; we explicitly parse the codes as decimal, not octal.
-.PP
-\fB\-S\fP
-String mode.
-Note that because the json parser is not written this does not matter yet.
 .PP
 \fB\-w\fP
 Show complete warning information.

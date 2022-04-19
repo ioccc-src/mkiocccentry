@@ -64,7 +64,7 @@
  * Use the usage() function to print the usage_msg([0-9]?)+ strings.
  */
 static const char * const usage_msg =
-    "usage: %s [-h] [-v level] [-q] [-V] [-t] [-n] [-S] [string ...]\n"
+    "usage: %s [-h] [-v level] [-q] [-V] [-t] [-n] [string ...]\n"
     "\n"
     "\t-h\t\tprint help message and exit 0\n"
     "\t-v level\tset verbosity level (def level: %d)\n"
@@ -72,7 +72,6 @@ static const char * const usage_msg =
     "\t-V\t\tprint version string and exit 0\n"
     "\t-t\t\tperform jencchk test on code JSON decode/decode functions\n"
     "\t-n\t\tdo not output newline after decode output\n"
-    "\t-S\t\tdecode using strict mode (def: not strict)\n"
     "\n"
     "\t[string ...]\tdecode strings on command line (def: read stdin)\n"
     "\n"

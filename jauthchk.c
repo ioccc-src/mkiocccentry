@@ -251,7 +251,7 @@ check_author_json(char const *file, char const *fnamchk)
      * what comes after the '{' (in parsing); that is to say we proceed in
      * parsing after the first '{' but after the '}' we don't continue.
      */
-    if (check_last_json_char(file, data_dup, strict, &p, '}')) {
+    if (check_last_json_char(file, data_dup, &p, '}')) {
 	err(18, __func__, "last character in file %s not a '}': '%c'", file, *p);
 	not_reached();
     }
@@ -261,17 +261,16 @@ check_author_json(char const *file, char const *fnamchk)
     *p = '\0';
 
     /*
-     * Check that the new last char is NOT a ','. Don't do strict checking
-     * because we want the end spaces to be trimmed off first.
+     * Check that the new last char is NOT a ','.
      */
-    if (!check_last_json_char(file, data_dup, false, &p, ',')) {
+    if (!check_last_json_char(file, data_dup, &p, ',')) {
 	err(19, __func__, "last char is a ',' in file %s", file);
 	not_reached();
     }
 
 
     /* verify that the very first character is a '{' */
-    if (check_first_json_char(file, data_dup, strict, &p, '{')) {
+    if (check_first_json_char(file, data_dup, &p, '{')) {
 	err(20, __func__, "first character in file %s not a '{': '%c'", file, *p);
 	not_reached();
     }
@@ -541,7 +540,7 @@ check_author_json(char const *file, char const *fnamchk)
 	     * We have to determine if characters were properly escaped
 	     * according to the JSON spec.
 	     */
-	    val_esc = malloc_json_decode_str(val, NULL, strict);
+	    val_esc = malloc_json_decode_str(val, NULL);
 	    if (val_esc == NULL) {
 		err(27, __func__, "malloc_json_decode(): invalidly formed field '%s' value '%s' or malloc failure in file %s",
 			p, val, file);
@@ -1010,7 +1009,7 @@ main(int argc, char **argv)
      */
     program = argv[0];
     program_basename = base_name(program);
-    while ((i = getopt(argc, argv, "hv:VqSF:tW:w")) != -1) {
+    while ((i = getopt(argc, argv, "hv:VqnF:tW:w")) != -1) {
 	switch (i) {
 	case 'h':		/* -h - print help to stderr and exit 0 */
 	    usage(1, "-h help mode", program); /*ooo*/
@@ -1034,9 +1033,6 @@ main(int argc, char **argv)
 	    }
 	    exit(0); /*ooo*/
 	    not_reached();
-	    break;
-	case 'S':
-	    strict = true;
 	    break;
 	case 'F':
 	    fnamchk_flag_used = true;

@@ -572,10 +572,8 @@ jencchk(void)
     char str[2];	/* character string to encode */
     char *mstr = NULL;	/* malloced encoding string */
     size_t mlen = 0;	/* length of malloced encoding string */
-    char *mstr2 = NULL;	/* malloced strict decoding string */
-    size_t mlen2 = 0;	/* length of malloced strict decoding string */
-    char *mstr3 = NULL;	/* malloced non-strict decoding string */
-    size_t mlen3 = 0;	/* length of malloced non-strict decoding string */
+    char *mstr2 = NULL;	/* malloced decoding string */
+    size_t mlen2 = 0;	/* length of malloced decoding string */
     unsigned int i;
 
     /*
@@ -1045,11 +1043,11 @@ jencchk(void)
 	dbg(DBG_VVHIGH, "testing malloc_json_encode_str(0x%02x, *mlen) encoded to <%s>", i, mstr);
 
 	/*
-	 * test strict decoding the JSON encoded string
+	 * test decoding the JSON encoded string
 	 */
 	dbg(DBG_VVVHIGH, "testing malloc_json_decode_str(<%s>, *mlen, true)", mstr);
 	/* test malloc_json_decode_str() */
-	mstr2 = malloc_json_decode_str(mstr, &mlen2, true);
+	mstr2 = malloc_json_decode_str(mstr, &mlen2);
 	if (mstr2 == NULL) {
 	    err(159, __func__, "malloc_json_decode_str(<%s>, *mlen: %ju, true) == NULL",
 			       mstr, (uintmax_t)mlen2);
@@ -1066,28 +1064,6 @@ jencchk(void)
 	    not_reached();
 	}
 
-	/*
-	 * test non-strict decoding the JSON encoded string
-	 */
-	dbg(DBG_VVVHIGH, "testing malloc_json_decode_str(<%s>, *mlen, false)", mstr);
-	/* test malloc_json_decode_str() */
-	mstr3 = malloc_json_decode_str(mstr, &mlen3, false);
-	if (mstr3 == NULL) {
-	    err(162, __func__, "malloc_json_decode_str(<%s>, *mlen: %ju, false) == NULL",
-			       mstr, (uintmax_t)mlen3);
-	    not_reached();
-	}
-	if (mlen3 != 1) {
-	    err(163, __func__, "malloc_json_decode_str(<%s>, *mlen3 %ju != 1, false)",
-			       mstr, (uintmax_t)mlen3);
-	    not_reached();
-	}
-	if ((uint8_t)(mstr3[0]) != i) {
-	    err(164, __func__, "malloc_json_decode_str(<%s>, *mlen: %ju, false): 0x%02x != 0x%02x",
-			       mstr, (uintmax_t)mlen3, (uint8_t)(mstr3[0]), i);
-	    not_reached();
-	}
-
 	/* free the malloced encoded string */
 	if (mstr != NULL) {
 	    free(mstr);
@@ -1096,10 +1072,6 @@ jencchk(void)
 	if (mstr2 != NULL) {
 	    free(mstr2);
 	    mstr2 = NULL;
-	}
-	if (mstr3 != NULL) {
-	    free(mstr3);
-	    mstr3 = NULL;
 	}
     }
 
@@ -1154,17 +1126,13 @@ json_putc(uint8_t const c, FILE *stream)
  *	ptr	start of memory block to decode
  *	len	length of block to decode in bytes
  *	retlen	address of where to store malloced length, if retlen != NULL
- *	strict	true ==> strict decoding based on how malloc_json_encode() encodes
- *	        false ==> permit a wider use of \-escaping and un-encoded char
- *
- *		    NOTE: strict == false implies a strict reading of the JSON spec
  *
  * returns:
  *	malloced JSON decoding of a block, or NULL ==> error
  *	NOTE: retlen, if non-NULL, is set to 0 on error
  */
 char *
-malloc_json_decode(char const *ptr, size_t len, size_t *retlen, bool strict)
+malloc_json_decode(char const *ptr, size_t len, size_t *retlen)
 {
     char *ret = NULL;	    /* malloced encoding string or NULL */
     char *beyond = NULL;    /* beyond the end of the malloced encoding string */
@@ -1217,83 +1185,38 @@ malloc_json_decode(char const *ptr, size_t len, size_t *retlen, bool strict)
         if (c != '\\') {
 
 	    /*
-	     * case: strict encoding based on malloc_json_encode() \-escapes
+	     * disallow characters that should have been escaped
 	     */
-	    if (strict == true) {
-
-		/*
-		 * disallow characters that should have been escaped
-		 */
-		if (c <= 0x1f || c >= 0x7f) {
-		    /* error - clear malloced length */
-		    if (retlen != NULL) {
-			*retlen = 0;
-		    }
-		    warn(__func__, "strict encoding at %ju found unescaped char: 0x%02x", (uintmax_t)i, (uint8_t)c);
-		    return NULL;
+	    switch (c) {
+	    case '\b':  /*fallthrough*/
+	    case '\t':  /*fallthrough*/
+	    case '\n':  /*fallthrough*/
+	    case '\f':  /*fallthrough*/
+	    case '\r':
+		/* error - clear malloced length */
+		if (retlen != NULL) {
+		    *retlen = 0;
 		}
-		switch (c) {
-		case '"':   /*fallthrough*/
-		case '/':   /*fallthrough*/
-		case '\\':  /*fallthrough*/
-		case '&':   /*fallthrough*/
-		case '<':   /*fallthrough*/
-		case '>':
-		    /* error - clear malloced length */
-		    if (retlen != NULL) {
-			*retlen = 0;
-		    }
-		    warn(__func__, "strict encoding at %ju found unescaped char: %c", (uintmax_t)i, c);
-		    return NULL;
-		    break;
-
-		/*
-		 * count a valid character
-		 */
-		default:
-		    ++mlen;
-		    break;
+		warn(__func__, "found \\-escaped char: 0x%02x", (uint8_t)c);
+		return NULL;
+		break;
+	    case '"':   /*fallthrough*/
+	    case '/':   /*fallthrough*/
+	    case '\\':
+		/* error - clear malloced length */
+		if (retlen != NULL) {
+		    *retlen = 0;
 		}
+		warn(__func__, "found \\-escaped char: %c", c);
+		return NULL;
+		break;
 
 	    /*
-	     * case: non-strict encoding - only what JSON mandates
+	     * count a valid character
 	     */
-	    } else {
-
-		/*
-		 * disallow characters that should have been escaped
-		 */
-		switch (c) {
-		case '\b':  /*fallthrough*/
-		case '\t':  /*fallthrough*/
-		case '\n':  /*fallthrough*/
-		case '\f':  /*fallthrough*/
-		case '\r':
-		    /* error - clear malloced length */
-		    if (retlen != NULL) {
-			*retlen = 0;
-		    }
-		    warn(__func__, "non-strict encoding found \\-escaped char: 0x%02x", (uint8_t)c);
-		    return NULL;
-		    break;
-		case '"':   /*fallthrough*/
-		case '/':   /*fallthrough*/
-		case '\\':
-		    /* error - clear malloced length */
-		    if (retlen != NULL) {
-			*retlen = 0;
-		    }
-		    warn(__func__, "non-strict encoding found \\-escaped char: %c", c);
-		    return NULL;
-		    break;
-
-		/*
-		 * count a valid character
-		 */
-		default:
-		    ++mlen;
-		    break;
-		}
+	    default:
+		++mlen;
+		break;
 	    }
 
 	/*
@@ -1364,20 +1287,6 @@ malloc_json_decode(char const *ptr, size_t len, size_t *retlen, bool strict)
 		if (isxdigit(a) && isxdigit(b) && isxdigit(c) && isxdigit(d)) {
 
 		    /*
-		     * case: strict encoding - the 4 hex characters must be lower case
-		     */
-		    if (strict == true &&
-		        (isupper(a) || isupper(b) || isupper(c) || isupper(d))) {
-			/* error - clear malloced length */
-			if (retlen != NULL) {
-			    *retlen = 0;
-			}
-			warn(__func__, "strict mode found \\u, some of the  4 hex chars are UPPERCASE: 0x%02X%02X%02X%02X",
-				       (uint8_t)a, (uint8_t)b, (uint8_t)c, (uint8_t)d);
-			return NULL;
-		    }
-
-		    /*
 		     * case: \u00xx is 1 character
 		     */
 		    if (a == '0' && b == '0') {
@@ -1400,32 +1309,6 @@ malloc_json_decode(char const *ptr, size_t len, size_t *retlen, bool strict)
 			warn(__func__, "\\u, not foolowed by 4 hex chars");
 			return NULL;
 		}
-		break;
-
-	    /*
-	     * valid C escape sequence but unusual JSON \-escape character
-	     */
-	    case 'a':	/* ASCII bell */ /*fallthrough*/
-	    case 'v':	/* ASCII vertical tab */ /*fallthrough*/
-	    case 'e':	/* ASCII escape */
-
-		/*
-		 * case: strict mode - invalid unusual \-escape character
-		 */
-		if (strict == true) {
-		    /* error - clear malloced length */
-		    if (retlen != NULL) {
-			*retlen = 0;
-		    }
-		    warn(__func__, "strict mode found an unusual JSON \\-escape: \\%c", (uint8_t)c);
-		    return NULL;
-		}
-
-		/*
-		 * case: non-strict - count \c escaped pair as 1 character
-		 */
-		++mlen;
-		++i;
 		break;
 
 	    /*
@@ -1462,8 +1345,7 @@ malloc_json_decode(char const *ptr, size_t len, size_t *retlen, bool strict)
      * JSON string decode
      *
      * In the above counting code, prior to the malloc for the decoded string,
-     * we determined that the JSON encoded string is valid.  We can now safely
-     * decode regardless of strict mode.
+     * we determined that the JSON encoded string is valid.
      */
     for (i=0, p=ret; i < len; ++i) {
 
@@ -1630,10 +1512,6 @@ malloc_json_decode(char const *ptr, size_t len, size_t *retlen, bool strict)
  * given:
  *	str	a string to decode
  *	retlen	address of where to store malloced length, if retlen != NULL
- *	strict	true ==> strict decoding based on how malloc_json_decode() decodes
- *	        false ==> permit a wider use of \-escaping and un-decoded char
- *
- *		    NOTE: strict == false implies a strict reading of the JSON spec
  *
  * returns:
  *	malloced JSON decoding of a block, or NULL ==> error
@@ -1648,7 +1526,7 @@ malloc_json_decode(char const *ptr, size_t len, size_t *retlen, bool strict)
  *	 be used instead!
  */
 char *
-malloc_json_decode_str(char const *str, size_t *retlen, bool strict)
+malloc_json_decode_str(char const *str, size_t *retlen)
 {
     void *ret = NULL;	    /* malloced decoding string or NULL */
     size_t len = 0;	    /* length of string to decode */
@@ -1677,7 +1555,7 @@ malloc_json_decode_str(char const *str, size_t *retlen, bool strict)
     /*
      * convert to malloc_json_decode() call
      */
-    ret = malloc_json_decode(str, len, retlen, strict);
+    ret = malloc_json_decode(str, len, retlen);
     if (ret == NULL) {
 	dbg(DBG_VVHIGH, "returning NULL for decoding of: <%s>", str);
     } else {
@@ -1753,7 +1631,7 @@ jwarn(int code, char const *program, char const *name, char const *filename, cha
 	warn(__func__, "\nWarning: in jwarn(): called with NULL fmt, forcing fmt: %s\n", fmt);
     }
     if (code < JSON_CODE_RESERVED_MIN) {
-	err(165, __func__, "invalid JSON code passed to jwarn(): %d", code);
+	err(162, __func__, "invalid JSON code passed to jwarn(): %d", code);
 	not_reached();
     }
     if (line == NULL) {
@@ -1882,7 +1760,7 @@ jwarnp(int code, char const *program, char const *name, char const *filename, ch
 	warn(__func__, "\nWarning: in jwarn(): called with NULL fmt, forcing fmt: %s\n", fmt);
     }
     if (code < JSON_CODE_RESERVED_MIN) {
-	err(166, __func__, "invalid JSON code passed to jwarn(): %d", code);
+	err(163, __func__, "invalid JSON code passed to jwarn(): %d", code);
 	not_reached();
     }
     if (line == NULL) {
@@ -2301,7 +2179,7 @@ check_common_json_fields_table(void)
     size_t max = SIZEOF_COMMON_JSON_FIELDS_TABLE;
 
     if (max <= 0) {
-	err(167, __func__, "bogus common_json_fields table length: %ju <= 0", (uintmax_t)max);
+	err(164, __func__, "bogus common_json_fields table length: %ju <= 0", (uintmax_t)max);
 	not_reached();
     }
 
@@ -2365,7 +2243,7 @@ check_info_json_fields_table(void)
     bool found_manifest = false;
 
     if (max <= 0) {
-	err(168, __func__, "bogus info_json_fields table length: %ju <= 0", (uintmax_t)max);
+	err(165, __func__, "bogus info_json_fields table length: %ju <= 0", (uintmax_t)max);
 	not_reached();
     }
 
@@ -2414,7 +2292,7 @@ check_info_json_fields_table(void)
 	not_reached();
     }
     if (!found_manifest) {
-	err(169, __func__, "'manifest' field not found in info_json_fields table; "
+	err(166, __func__, "'manifest' field not found in info_json_fields table; "
 			   "fix table in %s and recompile", __FILE__);
 	not_reached();
     }
@@ -2440,7 +2318,7 @@ check_author_json_fields_table(void)
     bool found_authors = false;
 
     if (max <= 0) {
-	err(170, __func__, "bogus author_json_fields table length: %ju <= 0", (uintmax_t)max);
+	err(167, __func__, "bogus author_json_fields table length: %ju <= 0", (uintmax_t)max);
 	not_reached();
     }
 
@@ -2488,7 +2366,7 @@ check_author_json_fields_table(void)
 	not_reached();
     }
     if (!found_authors) {
-	err(171, __func__, "'authors' field not found in authors_json_fields table; fix table in %s and recompile", __FILE__);
+	err(168, __func__, "'authors' field not found in authors_json_fields table; fix table in %s and recompile", __FILE__);
 	not_reached();
     }
 
@@ -2537,7 +2415,6 @@ json_filename(int type)
  *
  *	file		- path to file
  *	data		- the data read in from the file
- *	strict		- true ==> disallow anything (including whitespace) before the first '{'.
  *	first		- if != NULL set *first to the first character
  *
  * Returns 0 if first character is ch and 1 if it is not.
@@ -2551,23 +2428,24 @@ json_filename(int type)
  * any json error codes.
  */
 int
-check_first_json_char(char const *file, char *data, bool strict, char **first, char ch)
+check_first_json_char(char const *file, char *data, char **first, char ch)
 {
     /*
      * firewall
      */
     if (data == NULL || strlen(data) == 0) {
-	err(172, __func__, "passed NULL or zero length data");
+	err(169, __func__, "passed NULL or zero length data");
 	not_reached();
     } else if (file == NULL || first == NULL) {
-	err(173, __func__, "passed NULL arg(s)");
+	err(170, __func__, "passed NULL arg(s)");
 	not_reached();
     }
 
-    if (!strict) {
-	while (*data && isspace(*data))
-	    ++data;
+    /* ignore leading whitespace */
+    while (*data && isspace(*data)) {
+	++data;
     }
+
     if (first != NULL) {
 	*first = data;
     }
@@ -2585,7 +2463,6 @@ check_first_json_char(char const *file, char *data, bool strict, char **first, c
  *
  *	file		- path to file
  *	data		- the data read in from the file
- *	strict		- true ==> permit only a single trailing newline ("\n") after the last '}'.
  *	last		- if != NULL set *last to last char
  *	ch		- the char to check that the last char is
  *
@@ -2598,7 +2475,7 @@ check_first_json_char(char const *file, char *data, bool strict, char **first, c
  * any json error codes.
  */
 int
-check_last_json_char(char const *file, char *data, bool strict, char **last, char ch)
+check_last_json_char(char const *file, char *data, char **last, char ch)
 {
     char *p;
 
@@ -2606,22 +2483,20 @@ check_last_json_char(char const *file, char *data, bool strict, char **last, cha
      * firewall
      */
     if (data == NULL || strlen(data) == 0) {
-	err(174, __func__, "passed NULL or zero length data");
+	err(171, __func__, "passed NULL or zero length data");
 	not_reached();
     } else if (file == NULL || last == NULL) {
-	err(175, __func__, "passed NULL arg(s)");
+	err(172, __func__, "passed NULL arg(s)");
 	not_reached();
     }
 
     p = data + strlen(data) - 1;
 
-    if (!strict) {
-	while (*p && isspace(*p))
-	    --p;
-    }
-    else if (*p && *p == '\n') {
+    /* ignore trailing whitespace */
+    while (*p && isspace(*p)) {
 	--p;
     }
+
     if (last != NULL) {
 	*last = p;
     }
@@ -2673,7 +2548,7 @@ add_found_common_json_field(char const *json_filename, char const *name, char co
 	jerr(JSON_CODE_RESERVED(12), NULL, __func__, json_filename, NULL, __LINE__,
 				    "couldn't add value '%s' to field '%s' file %s",
 				    val, name, json_filename);
-	err(176, __func__, "called add_found_common_json_field() on uncommon field '%s'", name);
+	err(173, __func__, "called add_found_common_json_field() on uncommon field '%s'", name);
 	not_reached();
     }
     /*
@@ -2746,7 +2621,7 @@ add_common_json_field(char const *program, char const *json_filename, char *name
      * firewall
      */
     if (program == NULL || json_filename == NULL || name == NULL || val == NULL) {
-	err(177, __func__, "passed NULL arg(s)");
+	err(174, __func__, "passed NULL arg(s)");
 	not_reached();
     }
 
@@ -2809,7 +2684,7 @@ check_found_common_json_fields(char const *program, char const *json_filename, c
      * firewall
      */
     if (program == NULL || json_filename == NULL || fnamchk == NULL) {
-	err(178, __func__, "passed NULL arg(s)");
+	err(175, __func__, "passed NULL arg(s)");
 	not_reached();
     }
 
@@ -3098,7 +2973,7 @@ check_found_common_json_fields(char const *program, char const *json_filename, c
 	errno = 0;
 	str = calloc(1, strlen(tarball_val) + strlen(contest_id_val) + strlen(entry_num_val) + strlen(formed_timestamp_val) + 1);
 	if (str == NULL) {
-	    err(179, __func__, "couldn't allocate memory to verify that contest_id and entry_num matches the tarball");
+	    err(176, __func__, "couldn't allocate memory to verify that contest_id and entry_num matches the tarball");
 	    not_reached();
 	}
 
@@ -3152,14 +3027,14 @@ new_json_field(char const *json_filename, char const *name, char const *val, int
      * firewall
      */
     if (json_filename == NULL || name == NULL || val == NULL) {
-	err(180, __func__, "passed NULL arg(s)");
+	err(177, __func__, "passed NULL arg(s)");
 	not_reached();
     }
 
     errno = 0;
     field = calloc(1, sizeof *field);
     if (field == NULL) {
-	errp(181, __func__, "error allocating new struct json_field * for field '%s' and value '%s': %s",
+	errp(178, __func__, "error allocating new struct json_field * for field '%s' and value '%s': %s",
 		  name, val, strerror(errno));
 	not_reached();
     }
@@ -3167,12 +3042,12 @@ new_json_field(char const *json_filename, char const *name, char const *val, int
     errno = 0;
     field->name = strdup(name);
     if (field->name == NULL) {
-	errp(182, __func__, "unable to strdup() field name '%s': %s", name, strerror(errno));
+	errp(179, __func__, "unable to strdup() field name '%s': %s", name, strerror(errno));
 	not_reached();
     }
 
     if (add_json_value(json_filename, field, val, line_num) == NULL) {
-	err(183, __func__, "error adding value '%s' to field '%s'", val, name);
+	err(180, __func__, "error adding value '%s' to field '%s'", val, name);
 	not_reached();
     }
 
@@ -3211,7 +3086,7 @@ add_json_value(char const *json_filename, struct json_field *field, char const *
      * firewall
      */
     if (json_filename == NULL || field == NULL || val == NULL) {
-	err(184, __func__, "passed NULL arg(s)");
+	err(181, __func__, "passed NULL arg(s)");
 	not_reached();
     }
 
@@ -3219,14 +3094,14 @@ add_json_value(char const *json_filename, struct json_field *field, char const *
     errno = 0;
     new_value = calloc(1, sizeof *new_value);
     if (new_value == NULL) {
-	errp(185, __func__, "error allocating new value '%s' for field '%s' in file %s: %s",
+	errp(182, __func__, "error allocating new value '%s' for field '%s' in file %s: %s",
 		  val, field->name, json_filename, strerror(errno));
 	not_reached();
     }
     errno = 0;
     new_value->value = strdup(val);
     if (new_value->value == NULL) {
-	errp(186, __func__, "error strdup()ing value '%s' for field '%s': %s", val, field->name, strerror(errno));
+	errp(183, __func__, "error strdup()ing value '%s' for field '%s': %s", val, field->name, strerror(errno));
 	not_reached();
     }
 
@@ -3267,7 +3142,7 @@ free_json_field_values(struct json_field *field)
      * firewall
      */
     if (field == NULL) {
-	err(187, __func__, "passed NULL field");
+	err(184, __func__, "passed NULL field");
 	not_reached();
     }
 
@@ -3332,7 +3207,7 @@ free_json_field(struct json_field *field)
      * firewall
      */
     if (field == NULL) {
-	err(188, __func__, "passed NULL field");
+	err(185, __func__, "passed NULL field");
 	not_reached();
     }
 
@@ -3367,7 +3242,7 @@ free_info(struct info *infop)
      * firewall
      */
     if (infop == NULL) {
-	err(189, __func__, "called with NULL arg(s)");
+	err(186, __func__, "called with NULL arg(s)");
 	not_reached();
     }
 
@@ -3459,11 +3334,11 @@ free_author_array(struct author *author_set, int author_count)
      * firewall
      */
     if (author_set == NULL) {
-	err(190, __func__, "called with NULL arg(s)");
+	err(187, __func__, "called with NULL arg(s)");
 	not_reached();
     }
     if (author_count < 0) {
-	err(191, __func__, "author_count: %d < 0", author_count);
+	err(188, __func__, "author_count: %d < 0", author_count);
 	not_reached();
     }
 
@@ -3538,7 +3413,7 @@ alloc_json_code_ignore_set(void)
     errno = 0;			/* pre-clear errno for errp() */
     tbl = malloc(sizeof(struct ignore_json_code));
     if (tbl == NULL) {
-	errp(192, __func__, "failed to malloc struct ignore_json_code");
+	errp(189, __func__, "failed to malloc struct ignore_json_code");
 	not_reached();
     }
 
@@ -3548,7 +3423,7 @@ alloc_json_code_ignore_set(void)
     errno = 0;			/* pre-clear errno for errp() */
     tbl->code = malloc((JSON_CODE_IGNORE_CHUNK+1+1) * sizeof(int));
     if (tbl->code == NULL) {
-	errp(193, __func__, "cannot allocate %d ignore codes", JSON_CODE_IGNORE_CHUNK+1+1);
+	errp(190, __func__, "cannot allocate %d ignore codes", JSON_CODE_IGNORE_CHUNK+1+1);
 	not_reached();
     }
 
@@ -3585,7 +3460,7 @@ cmp_codes(const void *a, const void *b)
      * firewall
      */
     if (a == NULL || b == NULL) {
-	err(194, __func__, "NULL arg(s)");
+	err(191, __func__, "NULL arg(s)");
 	not_reached();
     }
 
@@ -3621,7 +3496,7 @@ expand_json_code_ignore_set(void)
      */
     alloc_json_code_ignore_set();
     if (ignore_json_code_set == NULL) {
-	err(195, __func__, "ignore_json_code_set is NULL after allocation");
+	err(192, __func__, "ignore_json_code_set is NULL after allocation");
 	not_reached();
     }
 
@@ -3632,7 +3507,7 @@ expand_json_code_ignore_set(void)
 	p = realloc(ignore_json_code_set->code, (ignore_json_code_set->alloc+JSON_CODE_IGNORE_CHUNK+1) * sizeof(int));
 	errno = 0;			/* pre-clear errno for errp() */
 	if (p == NULL) {
-	    errp(196, __func__, "cannot expand ignore_json_code_set from %d to %d codes",
+	    errp(193, __func__, "cannot expand ignore_json_code_set from %d to %d codes",
 				ignore_json_code_set->alloc+1, ignore_json_code_set->alloc+JSON_CODE_IGNORE_CHUNK+1);
 	    not_reached();
 	}
@@ -3666,7 +3541,7 @@ is_json_code_ignored(int code)
      * firewall
      */
     if (code < 0) {
-	err(197, __func__, "code %d < 0", code);
+	err(194, __func__, "code %d < 0", code);
 	not_reached();
     }
 
@@ -3675,7 +3550,7 @@ is_json_code_ignored(int code)
      */
     alloc_json_code_ignore_set();
     if (ignore_json_code_set == NULL) {
-	err(198, __func__, "ignore_json_code_set is NULL after allocation");
+	err(195, __func__, "ignore_json_code_set is NULL after allocation");
 	not_reached();
     }
 
@@ -3719,7 +3594,7 @@ ignore_json_code(int code)
      * firewall
      */
     if (code < 0) {
-	err(199, __func__, "code %d < 0", code);
+	err(196, __func__, "code %d < 0", code);
 	not_reached();
     }
 
@@ -3730,7 +3605,7 @@ ignore_json_code(int code)
 	expand_json_code_ignore_set();
     }
     if (ignore_json_code_set == NULL) {
-	err(200, __func__, "ignore_json_code_set is NULL after allocation or expansion");
+	err(197, __func__, "ignore_json_code_set is NULL after allocation or expansion");
 	not_reached();
     }
 
@@ -3789,7 +3664,7 @@ calloc_json_conv_int(char const *str, size_t len)
     errno = 0;			/* pre-clear errno for errp() */
     ret = calloc(1, sizeof(*ret));
     if (ret == NULL) {
-	errp(201, __func__, "calloc #0 error allocating %ju bytes", (uintmax_t)sizeof(*ret));
+	errp(198, __func__, "calloc #0 error allocating %ju bytes", (uintmax_t)sizeof(*ret));
 	not_reached();
     }
 
@@ -3851,7 +3726,7 @@ calloc_json_conv_int(char const *str, size_t len)
     errno = 0;			/* pre-clear errno for errp() */
     item->as_str = calloc(len+1+1, sizeof(char));
     if (item->as_str == NULL) {
-	errp(202, __func__, "calloc #1 error allocating %ju bytes", (uintmax_t)(len+1+1));
+	errp(199, __func__, "calloc #1 error allocating %ju bytes", (uintmax_t)(len+1+1));
 	not_reached();
     }
     strncpy(item->as_str, str, len+1);
@@ -4224,7 +4099,7 @@ calloc_json_conv_int_str(char const *str, size_t *retlen)
      */
     ret = calloc_json_conv_int(str, len);
     if (ret == NULL) {
-	err(203, __func__, "calloc_json_conv_int() returned NULL");
+	err(200, __func__, "calloc_json_conv_int() returned NULL");
 	not_reached();
     }
 
@@ -4272,7 +4147,7 @@ calloc_json_conv_float(char const *str, size_t len)
     errno = 0;			/* pre-clear errno for errp() */
     ret = calloc(1, sizeof(*ret));
     if (ret == NULL) {
-	errp(204, __func__, "calloc #0 error allocating %ju bytes", (uintmax_t)sizeof(*ret));
+	errp(201, __func__, "calloc #0 error allocating %ju bytes", (uintmax_t)sizeof(*ret));
 	not_reached();
     }
 
@@ -4322,7 +4197,7 @@ calloc_json_conv_float(char const *str, size_t len)
     errno = 0;			/* pre-clear errno for errp() */
     item->as_str = calloc(len+1+1, sizeof(char));
     if (item->as_str == NULL) {
-	errp(205, __func__, "calloc #1 error allocating %ju bytes", (uintmax_t)(len+1+1));
+	errp(202, __func__, "calloc #1 error allocating %ju bytes", (uintmax_t)(len+1+1));
 	not_reached();
     }
     strncpy(item->as_str, str, len+1);
@@ -4467,7 +4342,7 @@ calloc_json_conv_float_str(char const *str, size_t *retlen)
      */
     ret = calloc_json_conv_float(str, len);
     if (ret == NULL) {
-	err(206, __func__, "calloc_json_conv_float() returned NULL");
+	err(203, __func__, "calloc_json_conv_float() returned NULL");
 	not_reached();
     }
 
@@ -4491,8 +4366,6 @@ calloc_json_conv_float_str(char const *str, size_t *retlen)
  * given:
  *	str	a JSON encoded string
  *	len	length, starting at str, of the JSON string
- *	strict	true ==> strict decoding based on how malloc_json_decode() decodes
- *	        false ==> permit a wider use of \-escaping and un-decoded char
  *	quote	true ==> ignore JSON double quotes, both str[0] & str[len-1] must be "
  *		false ==> the entire str is to be converted
  *
@@ -4506,7 +4379,7 @@ calloc_json_conv_float_str(char const *str, size_t *retlen)
  * NOTE: This function will not return NULL.
  */
 struct json *
-calloc_json_conv_string(char const *str, size_t len, bool strict, bool quote)
+calloc_json_conv_string(char const *str, size_t len, bool quote)
 {
     struct json *ret = NULL;		    /* JSON parser tree node to return */
     struct json_string *item = NULL;	    /* JSON string element inside JSON parser tree node */
@@ -4517,7 +4390,7 @@ calloc_json_conv_string(char const *str, size_t len, bool strict, bool quote)
     errno = 0;			/* pre-clear errno for errp() */
     ret = calloc(1, sizeof(*ret));
     if (ret == NULL) {
-	errp(207, __func__, "calloc #0 error allocating %ju bytes", (uintmax_t)sizeof(*ret));
+	errp(204, __func__, "calloc #0 error allocating %ju bytes", (uintmax_t)sizeof(*ret));
 	not_reached();
     }
 
@@ -4587,7 +4460,7 @@ calloc_json_conv_string(char const *str, size_t len, bool strict, bool quote)
     errno = 0;			/* pre-clear errno for errp() */
     item->as_str = calloc(len+1+1, sizeof(char));
     if (item->as_str == NULL) {
-	errp(208, __func__, "calloc #1 error allocating %ju bytes", (uintmax_t)(len+1+1));
+	errp(205, __func__, "calloc #1 error allocating %ju bytes", (uintmax_t)(len+1+1));
 	not_reached();
     }
     strncpy(item->as_str, str, len+1);
@@ -4597,12 +4470,10 @@ calloc_json_conv_string(char const *str, size_t len, bool strict, bool quote)
      * decode the JSON encoded string
      */
     /* decode the entire string */
-    item->str = malloc_json_decode_str(item->as_str, &(item->str_len), strict);
+    item->str = malloc_json_decode_str(item->as_str, &(item->str_len));
     if (item->str == NULL) {
-	warn(__func__, "quote === %s: JSON string decode for %s mode failed for: <%s>",
-		       (quote ? "true" : "false"),
-		       (strict ? "strict" : "non-strict"),
-		       item->as_str);
+	warn(__func__, "quote === %s: JSON string decode failed for: <%s>",
+		       (quote ? "true" : "false"), item->as_str);
 	return ret;
     }
     item->converted = true;	/* JSON decoding successful */
@@ -4639,8 +4510,6 @@ calloc_json_conv_string(char const *str, size_t len, bool strict, bool quote)
  * given:
  *	str	a JSON encoded string
  *	retlen	address of where to store length of str, if retlen != NULL
- *	strict	true ==> strict decoding based on how malloc_json_decode() decodes
- *	        false ==> permit a wider use of \-escaping and un-decoded char
  *	quote	true ==> ignore JSON double quotes, both str[0] & str[len-1] must be "
  *		false ==> the entire str is to be converted
  *
@@ -4656,7 +4525,7 @@ calloc_json_conv_string(char const *str, size_t len, bool strict, bool quote)
  * NOTE: This function will not return NULL.
  */
 struct json *
-calloc_json_conv_string_str(char const *str, size_t *retlen, bool strict, bool quote)
+calloc_json_conv_string_str(char const *str, size_t *retlen, bool quote)
 {
     struct json *ret = NULL;		    /* JSON parser tree node to return */
     size_t len = 0;			    /* length of string to encode */
@@ -4675,9 +4544,9 @@ calloc_json_conv_string_str(char const *str, size_t *retlen, bool strict, bool q
     /*
      * convert to calloc_json_conv_string() call
      */
-    ret = calloc_json_conv_string(str, len, strict, quote);
+    ret = calloc_json_conv_string(str, len, quote);
     if (ret == NULL) {
-	err(209, __func__, "calloc_json_conv_string() returned NULL");
+	err(206, __func__, "calloc_json_conv_string() returned NULL");
 	not_reached();
     }
 
@@ -4723,7 +4592,7 @@ calloc_json_conv_bool(char const *str, size_t len)
     errno = 0;			/* pre-clear errno for errp() */
     ret = calloc(1, sizeof(*ret));
     if (ret == NULL) {
-	errp(210, __func__, "calloc #0 error allocating %ju bytes", (uintmax_t)sizeof(*ret));
+	errp(207, __func__, "calloc #0 error allocating %ju bytes", (uintmax_t)sizeof(*ret));
 	not_reached();
     }
 
@@ -4765,7 +4634,7 @@ calloc_json_conv_bool(char const *str, size_t len)
     errno = 0;			/* pre-clear errno for errp() */
     item->as_str = malloc(len+1+1);
     if (item->as_str == NULL) {
-	errp(211, __func__, "malloc #1 error allocating %ju bytes", (uintmax_t)(len+1+1));
+	errp(208, __func__, "malloc #1 error allocating %ju bytes", (uintmax_t)(len+1+1));
 	not_reached();
     }
     memcpy(item->as_str, str, len+1);
@@ -4835,7 +4704,7 @@ calloc_json_conv_bool_str(char const *str, size_t *retlen)
      */
     ret = calloc_json_conv_bool(str, len);
     if (ret == NULL) {
-	err(212, __func__, "calloc_json_conv_bool() returned NULL");
+	err(209, __func__, "calloc_json_conv_bool() returned NULL");
 	not_reached();
     }
 
@@ -4881,7 +4750,7 @@ calloc_json_conv_null(char const *str, size_t len)
     errno = 0;			/* pre-clear errno for errp() */
     ret = calloc(1, sizeof(*ret));
     if (ret == NULL) {
-	errp(213, __func__, "calloc #0 error allocating %ju bytes", (uintmax_t)sizeof(*ret));
+	errp(210, __func__, "calloc #0 error allocating %ju bytes", (uintmax_t)sizeof(*ret));
 	not_reached();
     }
 
@@ -4922,7 +4791,7 @@ calloc_json_conv_null(char const *str, size_t len)
     errno = 0;			/* pre-clear errno for errp() */
     item->as_str = malloc(len+1+1);
     if (item->as_str == NULL) {
-	errp(214, __func__, "malloc #1 error allocating %ju bytes", (uintmax_t)(len+1+1));
+	errp(211, __func__, "malloc #1 error allocating %ju bytes", (uintmax_t)(len+1+1));
 	not_reached();
     }
     memcpy(item->as_str, str, len+1);
@@ -4989,7 +4858,7 @@ calloc_json_conv_null_str(char const *str, size_t *retlen)
      */
     ret = calloc_json_conv_null(str, len);
     if (ret == NULL) {
-	err(215, __func__, "calloc_json_conv_null() returned NULL");
+	err(212, __func__, "calloc_json_conv_null() returned NULL");
 	not_reached();
     }
 

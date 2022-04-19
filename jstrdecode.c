@@ -63,7 +63,6 @@ main(int argc, char *argv[])
     size_t outputlen;		/* length of write of decode buffer */
     bool error = false;		/* true ==> error while performing JSON decode */
     bool nloutput = true;	/* true ==> output newline after JSON decode */
-    bool strict = false;	/* true ==> JSON decode in strict mode */
     int ret;			/* libc return code */
     int i;
 
@@ -72,7 +71,7 @@ main(int argc, char *argv[])
      * parse args
      */
     program = argv[0];
-    while ((i = getopt(argc, argv, "hv:qVtnS")) != -1) {
+    while ((i = getopt(argc, argv, "hv:qVtn")) != -1) {
 	switch (i) {
 	case 'h':		/* -h - print help to stderr and exit 0 */
 	    usage(2, "-h help mode", program); /*ooo*/
@@ -106,9 +105,6 @@ main(int argc, char *argv[])
 	case 'n':
 	    nloutput = false;
 	    break;
-	case 'S':
-	    strict = true;
-	    break;
 	default:
 	    usage(2, "invalid -flag", program); /*ooo*/
 	    not_reached();
@@ -136,7 +132,7 @@ main(int argc, char *argv[])
 	    /*
 	     * decode
 	     */
-	    buf = malloc_json_decode_str(input, &bufsiz, strict);
+	    buf = malloc_json_decode_str(input, &bufsiz);
 	    if (buf == NULL) {
 		warn(__func__, "error while encoding processing arg: %d", i-optind);
 		error = true;
@@ -196,7 +192,7 @@ main(int argc, char *argv[])
 	/*
 	 * decode data read from stdin
 	 */
-	buf = malloc_json_decode(input, inputlen, &bufsiz, strict);
+	buf = malloc_json_decode(input, inputlen, &bufsiz);
 	if (buf == NULL) {
 	    warn(__func__, "error while encoding stdin buffer");
 	    error = true;
