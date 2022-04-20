@@ -632,8 +632,10 @@ YY_BUFFER_STATE bs;
  * if there aren't any other errors.
  */
 /*
- * XXX JTYPE_WHITESPACE might not be needed but until this is determined I'm
- * keeping it in. For now when whitespace is encountered we print the string:
+ * XXX JTYPE_WHITESPACE is not needed but for testing I have the whitespace here
+ * and below in the actions print out that it is whitespace and what characters
+ * (though newlines and other non-printable whitespace chars are not translated
+ * to escape sequences). The text looks like:
  *
  *	whitespace: '<whitespace chars>'
  *
@@ -672,7 +674,7 @@ YY_BUFFER_STATE bs;
  *
  * For now we just print the type and value and then return the type.
  */
-#line 633 "jparse.c"
+#line 635 "jparse.c"
 
 #define INITIAL 0
 
@@ -889,9 +891,9 @@ YY_DECL
 		}
 
 	{
-#line 124 "jparse.l"
+#line 126 "jparse.l"
 
-#line 852 "jparse.c"
+#line 854 "jparse.c"
 
 	while ( /*CONSTCOND*/1 )		/* loops until end-of-file is reached */
 		{
@@ -961,75 +963,75 @@ do_action:	/* This label is used only to access EOF actions. */
 case 1:
 /* rule 1 can match eol */
 YY_RULE_SETUP
-#line 125 "jparse.l"
+#line 127 "jparse.l"
 { printf("\nwhitespace: '%s'\n", yytext); }
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
-#line 126 "jparse.l"
+#line 128 "jparse.l"
 { printf("\nstring: '%s'\n", yytext); return JTYPE_STRING; }
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 127 "jparse.l"
+#line 129 "jparse.l"
 { printf("\nuintmax: '%s'\n", yytext); return JTYPE_UINTMAX; }
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 128 "jparse.l"
+#line 130 "jparse.l"
 { printf("\nintmax: '%s'\n", yytext); return JTYPE_INTMAX; }
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 129 "jparse.l"
+#line 131 "jparse.l"
 { printf("\nlong double: '%s'\n", yytext); return JTYPE_LONG_DOUBLE; }
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 130 "jparse.l"
+#line 132 "jparse.l"
 { printf("\nnull: '%s'\n", yytext); return JTYPE_NULL; }
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 131 "jparse.l"
+#line 133 "jparse.l"
 { printf("\nboolean: '%s'\n", yytext); return JTYPE_BOOLEAN; }
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 132 "jparse.l"
+#line 134 "jparse.l"
 { printf("\nopen brace: '%c'\n", *yytext); token_type = '{'; return JTYPE_OPEN_BRACE; }
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 133 "jparse.l"
+#line 135 "jparse.l"
 { printf("\nclose brace: '%c'\n", *yytext); token_type = '}'; return JTYPE_CLOSE_BRACE;}
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
-#line 134 "jparse.l"
+#line 136 "jparse.l"
 { printf("\nopen bracket: '%c'\n", *yytext); token_type = '['; return JTYPE_OPEN_BRACKET; }
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
-#line 135 "jparse.l"
+#line 137 "jparse.l"
 { printf("\nclose bracket: '%c'\n", *yytext); token_type = ']'; return JTYPE_CLOSE_BRACKET; }
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
-#line 136 "jparse.l"
+#line 138 "jparse.l"
 { printf("\nequals/colon: '%c'\n", *yytext); token_type = ':'; return JTYPE_COLON; }
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
-#line 137 "jparse.l"
+#line 139 "jparse.l"
 { printf("\ncomma: '%c'\n", *yytext); token_type = ','; return JTYPE_COMMA; }
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
-#line 138 "jparse.l"
+#line 140 "jparse.l"
 ECHO;
 	YY_BREAK
-#line 990 "jparse.c"
+#line 992 "jparse.c"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 
@@ -2046,7 +2048,7 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 138 "jparse.l"
+#line 140 "jparse.l"
 
 
 /* Section 3: Code that's copied to the generated scanner */
