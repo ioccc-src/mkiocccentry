@@ -183,7 +183,7 @@ if [[ $EXIT_CODE -eq 0 ]]; then
     echo "=-=-=-=-= PASS: $0 =-=-=-=-="
     echo
 else
-    echo "=-=-=-=-= FALL: $0 =-=-=-=-="
+    echo "=-=-=-=-= FAIL: $0 =-=-=-=-="
     echo
     echo "=-=-=-=-= Will exit: $EXIT_CODE =-=-=-=-="
     echo

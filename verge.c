@@ -62,8 +62,8 @@ main(int argc, char *argv[])
     char *ver2 = NULL;		/* second version string */
     int ver1_levels = 0;	/* number of version levels for first version string */
     int ver2_levels = 0;	/* number of version levels for second version string */
-    long *vlevel1 = NULL;	/* malloced version levels from first version string */
-    long *vlevel2 = NULL;	/* malloced version levels from second version string */
+    long *vlevel1 = NULL;	/* allocated version levels from first version string */
+    long *vlevel2 = NULL;	/* allocated version levels from second version string */
     int i;
 
     /*
@@ -222,23 +222,23 @@ main(int argc, char *argv[])
 
 
 /*
- * malloc_vers - convert version string into a malloced array or version numbers
+ * malloc_vers - convert version string into a allocated array or version numbers
  *
  * given:
  *	ver	version string
- *	pvers	pointer to malloced array of versions
+ *	pvers	pointer to allocated array of versions
  *
  * returns:
- *	> 0  ==> number of version integers in malloced array of versions
+ *	> 0  ==> number of version integers in allocated array of versions
  *	0 <= ==> string was not a valid version string,
- *		 array of versions not malloced
+ *		 array of versions not allocated
  *
  * NOTE: This function does not return on malloc failure or arg error.
  */
 static size_t
 malloc_vers(char *str, long **pvers)
 {
-    char *wstr = NULL;		/* working malloced copy of orig_str */
+    char *wstr = NULL;		/* working allocated copy of orig_str */
     size_t len;			/* length of version string */
     bool dot = false;		/* true ==> previous character was dot */
     size_t dot_count = 0;	/* number of .'s in version string */

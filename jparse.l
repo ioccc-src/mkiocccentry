@@ -60,8 +60,10 @@ YY_BUFFER_STATE bs;
  */
 
 /*
- * XXX JTYPE_WHITESPACE might not be needed but until this is determined I'm
- * keeping it in. For now when whitespace is encountered we print the string:
+ * XXX JTYPE_WHITESPACE is not needed but for testing I have the whitespace here
+ * and below in the actions print out that it is whitespace and what characters
+ * (though newlines and other non-printable whitespace chars are not translated
+ * to escape sequences). The text looks like:
  *
  *	whitespace: '<whitespace chars>'
  *

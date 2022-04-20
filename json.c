@@ -404,18 +404,18 @@ static void expand_json_code_ignore_set(void);
  * given:
  *	ptr	start of memory block to encode
  *	len	length of block to encode in bytes
- *	retlen	address of where to store malloced length, if retlen != NULL
+ *	retlen	address of where to store allocated length, if retlen != NULL
  *
  * returns:
- *	malloced JSON encoding of a block, or NULL ==> error
+ *	allocated JSON encoding of a block, or NULL ==> error
  *	NOTE: retlen, if non-NULL, is set to 0 on error
  */
 char *
 json_encode(char const *ptr, size_t len, size_t *retlen)
 {
-    char *ret = NULL;	    /* malloced encoding string or NULL */
-    char *beyond = NULL;    /* beyond the end of the malloced encoding string */
-    size_t mlen = 0;	    /* length of malloced encoded string */
+    char *ret = NULL;	    /* allocated encoding string or NULL */
+    char *beyond = NULL;    /* beyond the end of the allocated encoding string */
+    size_t mlen = 0;	    /* length of allocated encoded string */
     char *p;		    /* next place to encode */
     size_t i;
 
@@ -423,7 +423,7 @@ json_encode(char const *ptr, size_t len, size_t *retlen)
      * firewall
      */
     if (ptr == NULL) {
-	/* error - clear malloced length */
+	/* error - clear allocated length */
 	if (retlen != NULL) {
 	    *retlen = 0;
 	}
@@ -431,7 +431,7 @@ json_encode(char const *ptr, size_t len, size_t *retlen)
 	return NULL;
     }
     if (len <= 0) {
-	/* error - clear malloced length */
+	/* error - clear allocated length */
 	if (retlen != NULL) {
 	    *retlen = 0;
 	}
@@ -440,7 +440,7 @@ json_encode(char const *ptr, size_t len, size_t *retlen)
     }
 
     /*
-     * count the bytes that will be in the encoded malloced string
+     * count the bytes that will be in the encoded allocated string
      */
     for (i=0; i < len; ++i) {
 	mlen += jenc[(uint8_t)(ptr[i])].len;
@@ -451,7 +451,7 @@ json_encode(char const *ptr, size_t len, size_t *retlen)
      */
     ret = malloc(mlen + 1 + 1);
     if (ret == NULL) {
-	/* error - clear malloced length */
+	/* error - clear allocated length */
 	if (retlen != NULL) {
 	    *retlen = 0;
 	}
@@ -467,11 +467,11 @@ json_encode(char const *ptr, size_t len, size_t *retlen)
      */
     for (i=0, p=ret; i < len; ++i) {
 	if (p+jenc[(uint8_t)(ptr[i])].len > beyond) {
-	    /* error - clear malloced length */
+	    /* error - clear allocated length */
 	    if (retlen != NULL) {
 		*retlen = 0;
 	    }
-	    warn(__func__, "encoding ran beyond end of malloced encoded string");
+	    warn(__func__, "encoding ran beyond end of allocated encoded string");
 	    return NULL;
 	}
 	strcpy(p, jenc[(uint8_t)(ptr[i])].enc);
@@ -497,23 +497,23 @@ json_encode(char const *ptr, size_t len, size_t *retlen)
  *
  * given:
  *	str	a string to encode
- *	retlen	address of where to store malloced length, if retlen != NULL
+ *	retlen	address of where to store allocated length, if retlen != NULL
  *
  * returns:
- *	malloced JSON encoding of a block, or NULL ==> error
+ *	allocated JSON encoding of a block, or NULL ==> error
  *	NOTE: retlen, if non-NULL, is set to 0 on error
  */
 char *
 json_encode_str(char const *str, size_t *retlen)
 {
-    void *ret = NULL;	    /* malloced encoding string or NULL */
+    void *ret = NULL;	    /* allocated encoding string or NULL */
     size_t len = 0;	    /* length of string to encode */
 
     /*
      * firewall
      */
     if (str == NULL) {
-	/* error - clear malloced length */
+	/* error - clear allocated length */
 	if (retlen != NULL) {
 	    *retlen = 0;
 	}
@@ -522,7 +522,7 @@ json_encode_str(char const *str, size_t *retlen)
     }
     len = strlen(str);
     if (len <= 0) {
-	/* error - clear malloced length */
+	/* error - clear allocated length */
 	if (retlen != NULL) {
 	    *retlen = 0;
 	}
@@ -563,10 +563,10 @@ jencchk(void)
     char const *encstr;	/* encoding string */
     int ret;		/* libc function return value */
     char str[2];	/* character string to encode */
-    char *mstr = NULL;	/* malloced encoding string */
-    size_t mlen = 0;	/* length of malloced encoding string */
-    char *mstr2 = NULL;	/* malloced decoding string */
-    size_t mlen2 = 0;	/* length of malloced decoding string */
+    char *mstr = NULL;	/* allocated encoding string */
+    size_t mlen = 0;	/* length of allocated encoding string */
+    char *mstr2 = NULL;	/* allocated decoding string */
+    size_t mlen2 = 0;	/* length of allocated decoding string */
     unsigned int i;
 
     /*
@@ -998,7 +998,7 @@ jencchk(void)
 			   (uintmax_t)mlen, jenc[0].enc);
 	not_reached();
     }
-    /* free the malloced encoded string */
+    /* free the allocated encoded string */
     if (mstr != NULL) {
 	free(mstr);
 	mstr = NULL;
@@ -1057,7 +1057,7 @@ jencchk(void)
 	    not_reached();
 	}
 
-	/* free the malloced encoded string */
+	/* free the allocated encoded string */
 	if (mstr != NULL) {
 	    free(mstr);
 	    mstr = NULL;
@@ -1118,18 +1118,18 @@ json_putc(uint8_t const c, FILE *stream)
  * given:
  *	ptr	start of memory block to decode
  *	len	length of block to decode in bytes
- *	retlen	address of where to store malloced length, if retlen != NULL
+ *	retlen	address of where to store allocated length, if retlen != NULL
  *
  * returns:
- *	malloced JSON decoding of a block, or NULL ==> error
+ *	allocated JSON decoding of a block, or NULL ==> error
  *	NOTE: retlen, if non-NULL, is set to 0 on error
  */
 char *
 json_decode(char const *ptr, size_t len, size_t *retlen)
 {
-    char *ret = NULL;	    /* malloced encoding string or NULL */
-    char *beyond = NULL;    /* beyond the end of the malloced encoding string */
-    size_t mlen = 0;	    /* length of malloced encoded string */
+    char *ret = NULL;	    /* allocated encoding string or NULL */
+    char *beyond = NULL;    /* beyond the end of the allocated encoding string */
+    size_t mlen = 0;	    /* length of allocated encoded string */
     char *p = NULL;	    /* next place to encode */
     char n = 0;		    /* next character beyond a \\ */
     char a = 0;		    /* first hex character after \u */
@@ -1146,7 +1146,7 @@ json_decode(char const *ptr, size_t len, size_t *retlen)
      * firewall
      */
     if (ptr == NULL) {
-	/* error - clear malloced length */
+	/* error - clear allocated length */
 	if (retlen != NULL) {
 	    *retlen = 0;
 	}
@@ -1154,7 +1154,7 @@ json_decode(char const *ptr, size_t len, size_t *retlen)
 	return NULL;
     }
     if (len <= 0) {
-	/* error - clear malloced length */
+	/* error - clear allocated length */
 	if (retlen != NULL) {
 	    *retlen = 0;
 	}
@@ -1163,7 +1163,7 @@ json_decode(char const *ptr, size_t len, size_t *retlen)
     }
 
     /*
-     * count the bytes that will be in the decoded malloced string
+     * count the bytes that will be in the decoded allocated string
      */
     for (i=0; i < len; ++i) {
 
@@ -1186,7 +1186,7 @@ json_decode(char const *ptr, size_t len, size_t *retlen)
 	    case '\n':  /*fallthrough*/
 	    case '\f':  /*fallthrough*/
 	    case '\r':
-		/* error - clear malloced length */
+		/* error - clear allocated length */
 		if (retlen != NULL) {
 		    *retlen = 0;
 		}
@@ -1196,7 +1196,7 @@ json_decode(char const *ptr, size_t len, size_t *retlen)
 	    case '"':   /*fallthrough*/
 	    case '/':   /*fallthrough*/
 	    case '\\':
-		/* error - clear malloced length */
+		/* error - clear allocated length */
 		if (retlen != NULL) {
 		    *retlen = 0;
 		}
@@ -1221,7 +1221,7 @@ json_decode(char const *ptr, size_t len, size_t *retlen)
 	     * there must be at least one more character beyond \
 	     */
 	    if (i+1 >= len) {
-		/* error - clear malloced length */
+		/* error - clear allocated length */
 		if (retlen != NULL) {
 		    *retlen = 0;
 		}
@@ -1262,7 +1262,7 @@ json_decode(char const *ptr, size_t len, size_t *retlen)
 		 * there must be at least five more characters beyond \
 		 */
 		if (i+5 >= len) {
-		    /* error - clear malloced length */
+		    /* error - clear allocated length */
 		    if (retlen != NULL) {
 			*retlen = 0;
 		    }
@@ -1308,7 +1308,7 @@ json_decode(char const *ptr, size_t len, size_t *retlen)
 	     * found invalid JSON \-escape character
 	     */
 	    default:
-		/* error - clear malloced length */
+		/* error - clear allocated length */
 		if (retlen != NULL) {
 		    *retlen = 0;
 		}
@@ -1319,11 +1319,11 @@ json_decode(char const *ptr, size_t len, size_t *retlen)
     }
 
     /*
-     * malloced decoded string
+     * allocated decoded string
      */
     ret = malloc(mlen + 1 + 1);
     if (ret == NULL) {
-	/* error - clear malloced length */
+	/* error - clear allocated length */
 	if (retlen != NULL) {
 	    *retlen = 0;
 	}
@@ -1351,7 +1351,7 @@ json_decode(char const *ptr, size_t len, size_t *retlen)
 	 * paranoia
 	 */
 	if (p >= beyond) {
-	    /* error - clear malloced length */
+	    /* error - clear allocated length */
 	    if (retlen != NULL) {
 		*retlen = 0;
 	    }
@@ -1428,7 +1428,7 @@ json_decode(char const *ptr, size_t len, size_t *retlen)
 		 * there must be at least five more characters beyond \
 		 */
 		if (i+5 >= len) {
-		    /* error - clear malloced length */
+		    /* error - clear allocated length */
 		    if (retlen != NULL) {
 			*retlen = 0;
 		    }
@@ -1457,7 +1457,7 @@ json_decode(char const *ptr, size_t len, size_t *retlen)
 		     * paranoia
 		     */
 		    if (p+1 >= beyond) {
-			/* error - clear malloced length */
+			/* error - clear allocated length */
 			if (retlen != NULL) {
 			    *retlen = 0;
 			}
@@ -1475,7 +1475,7 @@ json_decode(char const *ptr, size_t len, size_t *retlen)
 	     * unknown \c escaped pairs
 	     */
 	    default:
-		/* error - clear malloced length */
+		/* error - clear allocated length */
 		if (retlen != NULL) {
 		    *retlen = 0;
 		}
@@ -1504,10 +1504,10 @@ json_decode(char const *ptr, size_t len, size_t *retlen)
  *
  * given:
  *	str	a string to decode
- *	retlen	address of where to store malloced length, if retlen != NULL
+ *	retlen	address of where to store allocated length, if retlen != NULL
  *
  * returns:
- *	malloced JSON decoding of a block, or NULL ==> error
+ *	allocated JSON decoding of a block, or NULL ==> error
  *
  * NOTE: retlen, if non-NULL, is set to 0 on error
  *
@@ -1521,14 +1521,14 @@ json_decode(char const *ptr, size_t len, size_t *retlen)
 char *
 json_decode_str(char const *str, size_t *retlen)
 {
-    void *ret = NULL;	    /* malloced decoding string or NULL */
+    void *ret = NULL;	    /* allocated decoding string or NULL */
     size_t len = 0;	    /* length of string to decode */
 
     /*
      * firewall
      */
     if (str == NULL) {
-	/* error - clear malloced length */
+	/* error - clear allocated length */
 	if (retlen != NULL) {
 	    *retlen = 0;
 	}
@@ -1537,7 +1537,7 @@ json_decode_str(char const *str, size_t *retlen)
     }
     len = strlen(str);
     if (len <= 0) {
-	/* error - clear malloced length */
+	/* error - clear allocated length */
 	if (retlen != NULL) {
 	    *retlen = 0;
 	}
@@ -3634,10 +3634,10 @@ ignore_json_code(int code)
  *	len	length, starting at str, of the JSON string
  *
  * returns:
- *	malloced JSON parser tree node converted JSON integer
+ *	allocated JSON parser tree node converted JSON integer
  *
  * NOTE: It is the responsibility of the calling function to link this
- *	 malloced JSON parser tree node into the JSON parse tree.
+ *	 allocated JSON parser tree node into the JSON parse tree.
  *
  * NOTE: This function will not return on malloc error.
  * NOTE: This function will not return NULL.
@@ -4060,10 +4060,10 @@ json_conv_int(char const *str, size_t len)
  *	retlen	address of where to store length of str, if retlen != NULL
  *
  * returns:
- *	malloced JSON parser tree node converted JSON integer
+ *	allocated JSON parser tree node converted JSON integer
  *
  * NOTE: It is the responsibility of the calling function to link this
- *	 malloced JSON parser tree node into the JSON parse tree.
+ *	 allocated JSON parser tree node into the JSON parse tree.
  *
  * NOTE: retlen, if non-NULL, is set to 0 on error
  *
@@ -4118,10 +4118,10 @@ json_conv_int_str(char const *str, size_t *retlen)
  *	len	length, starting at str, of the JSON string
  *
  * returns:
- *	malloced JSON parser tree node converted JSON floating point string
+ *	allocated JSON parser tree node converted JSON floating point string
  *
  * NOTE: It is the responsibility of the calling function to link this
- *	 malloced JSON parser tree node into the JSON parse tree.
+ *	 allocated JSON parser tree node into the JSON parse tree.
  *
  * NOTE: This function will not return on malloc error.
  * NOTE: This function will not return NULL.
@@ -4303,10 +4303,10 @@ json_conv_float(char const *str, size_t len)
  *	retlen	address of where to store length of str, if retlen != NULL
  *
  * returns:
- *	malloced JSON parser tree node converted JSON JSON floating point string
+ *	allocated JSON parser tree node converted JSON JSON floating point string
  *
  * NOTE: It is the responsibility of the calling function to link this
- *	 malloced JSON parser tree node into the JSON parse tree.
+ *	 allocated JSON parser tree node into the JSON parse tree.
  *
  * NOTE: retlen, if non-NULL, is set to 0 on error
  *
@@ -4363,10 +4363,10 @@ json_conv_float_str(char const *str, size_t *retlen)
  *		false ==> the entire str is to be converted
  *
  * returns:
- *	malloced JSON parser tree node converted JSON encoded string
+ *	allocated JSON parser tree node converted JSON encoded string
  *
  * NOTE: It is the responsibility of the calling function to link this
- *	 malloced JSON parser tree node into the JSON parse tree.
+ *	 allocated JSON parser tree node into the JSON parse tree.
  *
  * NOTE: This function will not return on malloc error.
  * NOTE: This function will not return NULL.
@@ -4507,10 +4507,10 @@ json_conv_string(char const *str, size_t len, bool quote)
  *		false ==> the entire str is to be converted
  *
  * returns:
- *	malloced JSON parser tree node converted JSON string
+ *	allocated JSON parser tree node converted JSON string
  *
  * NOTE: It is the responsibility of the calling function to link this
- *	 malloced JSON parser tree node into the JSON parse tree.
+ *	 allocated JSON parser tree node into the JSON parse tree.
  *
  * NOTE: retlen, if non-NULL, is set to 0 on error
  *
@@ -4565,10 +4565,10 @@ json_conv_string_str(char const *str, size_t *retlen, bool quote)
  *	len	length, starting at str, of the JSON boolean
  *
  * returns:
- *	malloced JSON parser tree node converted JSON encoded boolean
+ *	allocated JSON parser tree node converted JSON encoded boolean
  *
  * NOTE: It is the responsibility of the calling function to link this
- *	 malloced JSON parser tree node into the JSON parse tree.
+ *	 allocated JSON parser tree node into the JSON parse tree.
  *
  * NOTE: This function will not return on malloc error.
  * NOTE: This function will not return NULL.
@@ -4577,7 +4577,7 @@ struct json *
 json_conv_bool(char const *str, size_t len)
 {
     struct json *ret = NULL;		    /* JSON parser tree node to return */
-    struct json_boolean *item = NULL;	    /* malloced decoding string or NULL */
+    struct json_boolean *item = NULL;	    /* allocated decoding string or NULL */
 
     /*
      * allocate the JSON parse tree element
@@ -4665,10 +4665,10 @@ json_conv_bool(char const *str, size_t len)
  *	retlen	address of where to store length of str, if retlen != NULL
  *
  * returns:
- *	malloced JSON parser tree node converted JSON boolean
+ *	allocated JSON parser tree node converted JSON boolean
  *
  * NOTE: It is the responsibility of the calling function to link this
- *	 malloced JSON parser tree node into the JSON parse tree.
+ *	 allocated JSON parser tree node into the JSON parse tree.
  *
  * NOTE: retlen, if non-NULL, is set to 0 on error
  *
@@ -4723,10 +4723,10 @@ json_conv_bool_str(char const *str, size_t *retlen)
  *	len	length, starting at str, of the JSON null
  *
  * returns:
- *	malloced JSON parser tree node converted JSON encoded null
+ *	allocated JSON parser tree node converted JSON encoded null
  *
  * NOTE: It is the responsibility of the calling function to link this
- *	 malloced JSON parser tree node into the JSON parse tree.
+ *	 allocated JSON parser tree node into the JSON parse tree.
  *
  * NOTE: This function will not return on malloc error.
  * NOTE: This function will not return NULL.
@@ -4735,7 +4735,7 @@ struct json *
 json_conv_null(char const *str, size_t len)
 {
     struct json *ret = NULL;		    /* JSON parser tree node to return */
-    struct json_null *item = NULL;	    /* malloced decoding string or NULL */
+    struct json_null *item = NULL;	    /* allocated decoding string or NULL */
 
     /*
      * allocate the JSON parse tree element
@@ -4819,10 +4819,10 @@ json_conv_null(char const *str, size_t len)
  *	retlen	address of where to store length of str, if retlen != NULL
  *
  * returns:
- *	malloced JSON parser tree node converted JSON null
+ *	allocated JSON parser tree node converted JSON null
  *
  * NOTE: It is the responsibility of the calling function to link this
- *	 malloced JSON parser tree node into the JSON parse tree.
+ *	 allocated JSON parser tree node into the JSON parse tree.
  *
  * NOTE: retlen, if non-NULL, is set to 0 on error
  *
