@@ -439,12 +439,14 @@ jparse.tab.c jparse.tab.h: jparse.y bfok.sh limit_ioccc.sh verge jparse.tab.ref.
 		    echo '# jparse.tab.h prepended and line number reset'; \
 		else \
 		    echo "unable to form jparse.tab.h and/or jparse.tab.c"; \
-		    echo "will use the backup file jparse.tab.c" 1>&2; \
-		    echo "${CP} -f -v jparse.tab.ref.c jparse.tab.c"; \
-		    ${CP} -f -v jparse.tab.ref.c jparse.tab.c; \
-		    echo "will use the backup file jparse.tab.h" 1>&2; \
-		    echo "${CP} -f -v jparse.tab.ref.h jparse.tab.h"; \
-		    ${CP} -f -v jparse.tab.ref.h jparse.tab.h; \
+		    echo "if you've not modified jparse.y you can run:"; \
+		    echo; \
+		    echo "	make use_ref all"; \
+		    echo ; \
+		    echo "to use the backup files. If you do this please"; \
+		    echo "consider reporting this as a bug. If you've"; \
+		    echo "modified jparse.y please fix it and rerun this rule."; \
+		    exit 1; \
 		fi; \
 	    fi; \
 	else \
@@ -488,14 +490,19 @@ jparse.c: jparse.l jparse.tab.h bfok.sh limit_ioccc.sh verge jparse.ref.c Makefi
 		    echo '# jparse.c prepended and line number reset'; \
 		else \
 		    echo "unable to form jparse.c"; \
-		    echo "will use the backup file jparse.ref.c" 1>&2; \
-		    echo "${CP} -f -v jparse.ref.c jparse.c"; \
-		    ${CP} -f -v jparse.ref.c jparse.c; \
+		    echo "if you've not modified jparse.l you can run:"; \
+		    echo; \
+		    echo "	make use_ref all"; \
+		    echo ; \
+		    echo "to use the backup file. If you do this please"; \
+		    echo "consider reporting this as a bug. If you've"; \
+		    echo "modified jparse.l please fix it and rerun this rule."; \
+		    exit 1; \
 		fi; \
 	    fi; \
 	else \
 	    echo "no flex, with version >= FLEX_VERSION in limit_ioccc.sh, found" 1>&2; \
-	    echo "will move both backup file in place instead" 1>&2; \
+	    echo "will move backup file in place instead" 1>&2; \
 	    echo "${CP} -f -v jparse.ref.c jparse.c"; \
 	    ${CP} -f -v jparse.ref.c jparse.c; \
 	fi
