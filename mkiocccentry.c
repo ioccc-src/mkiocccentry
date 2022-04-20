@@ -1272,7 +1272,7 @@ mkiocccentry_sanity_chks(struct info *infop, char const *work_dir, char const *t
  *
  *
  * returns:
- *      malloced input string with newline and trailing whitespace removed
+ *      allocated input string with newline and trailing whitespace removed
  *	if lenp != NULL, *lenp will be set to the length of the response
  *
  * NOTE: This function will NOT return NULL.
@@ -1285,7 +1285,7 @@ prompt(char const *str, size_t *lenp)
     char *linep = NULL;		/* readline_dup line buffer */
     int ret;			/* libc function return value */
     size_t len;			/* length of input */
-    char *buf;			/* malloced input string */
+    char *buf;			/* allocated input string */
 
     /*
      * firewall
@@ -1370,7 +1370,7 @@ prompt(char const *str, size_t *lenp)
     }
 
     /*
-     * return malloced input buffer
+     * return allocated input buffer
      */
     return buf;
 }
@@ -1380,7 +1380,7 @@ prompt(char const *str, size_t *lenp)
  * get IOCCC ID or test
  *
  * This function will prompt the user for a contest ID, validate it and return it
- * as a malloced string.  If the contest ID is the special value "test", then
+ * as a allocated string.  If the contest ID is the special value "test", then
  * *testp will be set to true, otherwise it will be set to false.
  *
  * given:
@@ -1388,7 +1388,7 @@ prompt(char const *str, size_t *lenp)
  *      testp   - pointer to boolean for test mode
  *
  * returns:
- *      malloced contest ID string
+ *      allocated contest ID string
  *      *testp ==> contest ID is "test", else contest ID is a UUID.
  *
  * This function does not return on error or if the contest ID is malformed.
@@ -1396,7 +1396,7 @@ prompt(char const *str, size_t *lenp)
 static char *
 get_contest_id(bool *testp, bool *read_answers_flag_used)
 {
-    char *malloc_ret;		/* malloced return string */
+    char *malloc_ret;		/* allocated return string */
     size_t len;			/* input string length */
     int ret;			/* libc function return */
     unsigned int a, b, c, d, e, f;	/* parts of the UUID string */
@@ -1668,7 +1668,7 @@ get_entry_num(struct info *infop)
  *      work_dir        - working directory under which the entry directory is formed
  *      ioccc_id        - IOCCC entry ID (or test)
  *      entry_num       - entry number
- *      tarball_path    - pointer to the malloced path to where the compressed tarball will be formed
+ *      tarball_path    - pointer to the allocated path to where the compressed tarball will be formed
  *      tstamp          - now as a timestamp
  *
  * returns:
@@ -1681,7 +1681,7 @@ mk_entry_dir(char const *work_dir, char const *ioccc_id, int entry_num, char **t
 {
     size_t entry_dir_len;	/* length of entry directory */
     size_t tarball_len;		/* length of the compressed tarball path */
-    char *entry_dir = NULL;	/* malloced entry directory path */
+    char *entry_dir = NULL;	/* allocated entry directory path */
     int ret;			/* libc function return */
 
     /*
@@ -3229,13 +3229,13 @@ yes_or_no(char const *question)
  * get_title - get the title of the entry
  *
  * Ask the user for an entry title, validate the response
- * and return the malloced title.
+ * and return the allocated title.
  *
  * given:
  *      infop   - pointer to info structure
  *
  * returns:
- *      malloced and validated title
+ *      allocated and validated title
  *
  * This function does not return on error.
  */
@@ -3370,7 +3370,7 @@ get_title(struct info *infop)
 
 
     /*
-     * returned malloced title
+     * returned allocated title
      */
     return title;
 }
@@ -3380,13 +3380,13 @@ get_title(struct info *infop)
  * get_abstract - get the abstract of the entry
  *
  * Ask the user for an entry abstract, validate the response
- * and return the malloced abstract.
+ * and return the allocated abstract.
  *
  * given:
  *      infop           - pointer to info structure
  *
  * returns:
- *      malloced and validated abstract
+ *      allocated and validated abstract
  *
  * This function does not return on error.
  */
@@ -3478,7 +3478,7 @@ get_abstract(struct info *infop)
     } while (abstract == NULL);
 
     /*
-     * returned malloced abstract
+     * returned allocated abstract
      */
     return abstract;
 }

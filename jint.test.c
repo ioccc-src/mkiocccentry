@@ -122,7 +122,7 @@ char *test_set[TEST_COUNT+1] = {
 struct json_integer test_result[TEST_COUNT] = {
     /* test_result[0]: "-131074" */
     {
-	"-131074",	/* malloced JSON integer string, whitespace trimmed if needed */
+	"-131074",	/* allocated JSON integer string, whitespace trimmed if needed */
 
 	7,	/* length of original JSON integer string */
 	7,	/* length of as_str */
@@ -191,7 +191,7 @@ struct json_integer test_result[TEST_COUNT] = {
 
     /* test_result[1]: "-131073" */
     {
-	"-131073",	/* malloced JSON integer string, whitespace trimmed if needed */
+	"-131073",	/* allocated JSON integer string, whitespace trimmed if needed */
 
 	7,	/* length of original JSON integer string */
 	7,	/* length of as_str */
@@ -260,7 +260,7 @@ struct json_integer test_result[TEST_COUNT] = {
 
     /* test_result[2]: "-131072" */
     {
-	"-131072",	/* malloced JSON integer string, whitespace trimmed if needed */
+	"-131072",	/* allocated JSON integer string, whitespace trimmed if needed */
 
 	7,	/* length of original JSON integer string */
 	7,	/* length of as_str */
@@ -329,7 +329,7 @@ struct json_integer test_result[TEST_COUNT] = {
 
     /* test_result[3]: "-131071" */
     {
-	"-131071",	/* malloced JSON integer string, whitespace trimmed if needed */
+	"-131071",	/* allocated JSON integer string, whitespace trimmed if needed */
 
 	7,	/* length of original JSON integer string */
 	7,	/* length of as_str */
@@ -398,7 +398,7 @@ struct json_integer test_result[TEST_COUNT] = {
 
     /* test_result[4]: "-131070" */
     {
-	"-131070",	/* malloced JSON integer string, whitespace trimmed if needed */
+	"-131070",	/* allocated JSON integer string, whitespace trimmed if needed */
 
 	7,	/* length of original JSON integer string */
 	7,	/* length of as_str */
@@ -467,7 +467,7 @@ struct json_integer test_result[TEST_COUNT] = {
 
     /* test_result[5]: "-65538" */
     {
-	"-65538",	/* malloced JSON integer string, whitespace trimmed if needed */
+	"-65538",	/* allocated JSON integer string, whitespace trimmed if needed */
 
 	6,	/* length of original JSON integer string */
 	6,	/* length of as_str */
@@ -536,7 +536,7 @@ struct json_integer test_result[TEST_COUNT] = {
 
     /* test_result[6]: "-65537" */
     {
-	"-65537",	/* malloced JSON integer string, whitespace trimmed if needed */
+	"-65537",	/* allocated JSON integer string, whitespace trimmed if needed */
 
 	6,	/* length of original JSON integer string */
 	6,	/* length of as_str */
@@ -605,7 +605,7 @@ struct json_integer test_result[TEST_COUNT] = {
 
     /* test_result[7]: "-65536" */
     {
-	"-65536",	/* malloced JSON integer string, whitespace trimmed if needed */
+	"-65536",	/* allocated JSON integer string, whitespace trimmed if needed */
 
 	6,	/* length of original JSON integer string */
 	6,	/* length of as_str */
@@ -674,7 +674,7 @@ struct json_integer test_result[TEST_COUNT] = {
 
     /* test_result[8]: "-65535" */
     {
-	"-65535",	/* malloced JSON integer string, whitespace trimmed if needed */
+	"-65535",	/* allocated JSON integer string, whitespace trimmed if needed */
 
 	6,	/* length of original JSON integer string */
 	6,	/* length of as_str */
@@ -743,7 +743,7 @@ struct json_integer test_result[TEST_COUNT] = {
 
     /* test_result[9]: "-65534" */
     {
-	"-65534",	/* malloced JSON integer string, whitespace trimmed if needed */
+	"-65534",	/* allocated JSON integer string, whitespace trimmed if needed */
 
 	6,	/* length of original JSON integer string */
 	6,	/* length of as_str */
@@ -812,7 +812,7 @@ struct json_integer test_result[TEST_COUNT] = {
 
     /* test_result[10]: "-32770" */
     {
-	"-32770",	/* malloced JSON integer string, whitespace trimmed if needed */
+	"-32770",	/* allocated JSON integer string, whitespace trimmed if needed */
 
 	6,	/* length of original JSON integer string */
 	6,	/* length of as_str */
@@ -881,7 +881,7 @@ struct json_integer test_result[TEST_COUNT] = {
 
     /* test_result[11]: "-32769" */
     {
-	"-32769",	/* malloced JSON integer string, whitespace trimmed if needed */
+	"-32769",	/* allocated JSON integer string, whitespace trimmed if needed */
 
 	6,	/* length of original JSON integer string */
 	6,	/* length of as_str */
@@ -950,7 +950,7 @@ struct json_integer test_result[TEST_COUNT] = {
 
     /* test_result[12]: "-32768" */
     {
-	"-32768",	/* malloced JSON integer string, whitespace trimmed if needed */
+	"-32768",	/* allocated JSON integer string, whitespace trimmed if needed */
 
 	6,	/* length of original JSON integer string */
 	6,	/* length of as_str */
@@ -1019,7 +1019,7 @@ struct json_integer test_result[TEST_COUNT] = {
 
     /* test_result[13]: "-32767" */
     {
-	"-32767",	/* malloced JSON integer string, whitespace trimmed if needed */
+	"-32767",	/* allocated JSON integer string, whitespace trimmed if needed */
 
 	6,	/* length of original JSON integer string */
 	6,	/* length of as_str */
@@ -1088,7 +1088,7 @@ struct json_integer test_result[TEST_COUNT] = {
 
     /* test_result[14]: "-32766" */
     {
-	"-32766",	/* malloced JSON integer string, whitespace trimmed if needed */
+	"-32766",	/* allocated JSON integer string, whitespace trimmed if needed */
 
 	6,	/* length of original JSON integer string */
 	6,	/* length of as_str */
@@ -1157,7 +1157,7 @@ struct json_integer test_result[TEST_COUNT] = {
 
     /* test_result[15]: "-514" */
     {
-	"-514",	/* malloced JSON integer string, whitespace trimmed if needed */
+	"-514",	/* allocated JSON integer string, whitespace trimmed if needed */
 
 	4,	/* length of original JSON integer string */
 	4,	/* length of as_str */
@@ -1226,7 +1226,7 @@ struct json_integer test_result[TEST_COUNT] = {
 
     /* test_result[16]: "-513" */
     {
-	"-513",	/* malloced JSON integer string, whitespace trimmed if needed */
+	"-513",	/* allocated JSON integer string, whitespace trimmed if needed */
 
 	4,	/* length of original JSON integer string */
 	4,	/* length of as_str */
@@ -1295,7 +1295,7 @@ struct json_integer test_result[TEST_COUNT] = {
 
     /* test_result[17]: "-512" */
     {
-	"-512",	/* malloced JSON integer string, whitespace trimmed if needed */
+	"-512",	/* allocated JSON integer string, whitespace trimmed if needed */
 
 	4,	/* length of original JSON integer string */
 	4,	/* length of as_str */
@@ -1364,7 +1364,7 @@ struct json_integer test_result[TEST_COUNT] = {
 
     /* test_result[18]: "-511" */
     {
-	"-511",	/* malloced JSON integer string, whitespace trimmed if needed */
+	"-511",	/* allocated JSON integer string, whitespace trimmed if needed */
 
 	4,	/* length of original JSON integer string */
 	4,	/* length of as_str */
@@ -1433,7 +1433,7 @@ struct json_integer test_result[TEST_COUNT] = {
 
     /* test_result[19]: "-510" */
     {
-	"-510",	/* malloced JSON integer string, whitespace trimmed if needed */
+	"-510",	/* allocated JSON integer string, whitespace trimmed if needed */
 
 	4,	/* length of original JSON integer string */
 	4,	/* length of as_str */
@@ -1502,7 +1502,7 @@ struct json_integer test_result[TEST_COUNT] = {
 
     /* test_result[20]: "-258" */
     {
-	"-258",	/* malloced JSON integer string, whitespace trimmed if needed */
+	"-258",	/* allocated JSON integer string, whitespace trimmed if needed */
 
 	4,	/* length of original JSON integer string */
 	4,	/* length of as_str */
@@ -1571,7 +1571,7 @@ struct json_integer test_result[TEST_COUNT] = {
 
     /* test_result[21]: "-257" */
     {
-	"-257",	/* malloced JSON integer string, whitespace trimmed if needed */
+	"-257",	/* allocated JSON integer string, whitespace trimmed if needed */
 
 	4,	/* length of original JSON integer string */
 	4,	/* length of as_str */
@@ -1640,7 +1640,7 @@ struct json_integer test_result[TEST_COUNT] = {
 
     /* test_result[22]: "-256" */
     {
-	"-256",	/* malloced JSON integer string, whitespace trimmed if needed */
+	"-256",	/* allocated JSON integer string, whitespace trimmed if needed */
 
 	4,	/* length of original JSON integer string */
 	4,	/* length of as_str */
@@ -1709,7 +1709,7 @@ struct json_integer test_result[TEST_COUNT] = {
 
     /* test_result[23]: "-255" */
     {
-	"-255",	/* malloced JSON integer string, whitespace trimmed if needed */
+	"-255",	/* allocated JSON integer string, whitespace trimmed if needed */
 
 	4,	/* length of original JSON integer string */
 	4,	/* length of as_str */
@@ -1778,7 +1778,7 @@ struct json_integer test_result[TEST_COUNT] = {
 
     /* test_result[24]: "-254" */
     {
-	"-254",	/* malloced JSON integer string, whitespace trimmed if needed */
+	"-254",	/* allocated JSON integer string, whitespace trimmed if needed */
 
 	4,	/* length of original JSON integer string */
 	4,	/* length of as_str */
@@ -1847,7 +1847,7 @@ struct json_integer test_result[TEST_COUNT] = {
 
     /* test_result[25]: "-130" */
     {
-	"-130",	/* malloced JSON integer string, whitespace trimmed if needed */
+	"-130",	/* allocated JSON integer string, whitespace trimmed if needed */
 
 	4,	/* length of original JSON integer string */
 	4,	/* length of as_str */
@@ -1916,7 +1916,7 @@ struct json_integer test_result[TEST_COUNT] = {
 
     /* test_result[26]: "-129" */
     {
-	"-129",	/* malloced JSON integer string, whitespace trimmed if needed */
+	"-129",	/* allocated JSON integer string, whitespace trimmed if needed */
 
 	4,	/* length of original JSON integer string */
 	4,	/* length of as_str */
@@ -1985,7 +1985,7 @@ struct json_integer test_result[TEST_COUNT] = {
 
     /* test_result[27]: "-128" */
     {
-	"-128",	/* malloced JSON integer string, whitespace trimmed if needed */
+	"-128",	/* allocated JSON integer string, whitespace trimmed if needed */
 
 	4,	/* length of original JSON integer string */
 	4,	/* length of as_str */
@@ -2054,7 +2054,7 @@ struct json_integer test_result[TEST_COUNT] = {
 
     /* test_result[28]: "-127" */
     {
-	"-127",	/* malloced JSON integer string, whitespace trimmed if needed */
+	"-127",	/* allocated JSON integer string, whitespace trimmed if needed */
 
 	4,	/* length of original JSON integer string */
 	4,	/* length of as_str */
@@ -2123,7 +2123,7 @@ struct json_integer test_result[TEST_COUNT] = {
 
     /* test_result[29]: "-126" */
     {
-	"-126",	/* malloced JSON integer string, whitespace trimmed if needed */
+	"-126",	/* allocated JSON integer string, whitespace trimmed if needed */
 
 	4,	/* length of original JSON integer string */
 	4,	/* length of as_str */
@@ -2192,7 +2192,7 @@ struct json_integer test_result[TEST_COUNT] = {
 
     /* test_result[30]: "-2" */
     {
-	"-2",	/* malloced JSON integer string, whitespace trimmed if needed */
+	"-2",	/* allocated JSON integer string, whitespace trimmed if needed */
 
 	2,	/* length of original JSON integer string */
 	2,	/* length of as_str */
@@ -2261,7 +2261,7 @@ struct json_integer test_result[TEST_COUNT] = {
 
     /* test_result[31]: "-1" */
     {
-	"-1",	/* malloced JSON integer string, whitespace trimmed if needed */
+	"-1",	/* allocated JSON integer string, whitespace trimmed if needed */
 
 	2,	/* length of original JSON integer string */
 	2,	/* length of as_str */
@@ -2330,7 +2330,7 @@ struct json_integer test_result[TEST_COUNT] = {
 
     /* test_result[32]: "0" */
     {
-	"0",	/* malloced JSON integer string, whitespace trimmed if needed */
+	"0",	/* allocated JSON integer string, whitespace trimmed if needed */
 
 	1,	/* length of original JSON integer string */
 	1,	/* length of as_str */
@@ -2399,7 +2399,7 @@ struct json_integer test_result[TEST_COUNT] = {
 
     /* test_result[33]: "1" */
     {
-	"1",	/* malloced JSON integer string, whitespace trimmed if needed */
+	"1",	/* allocated JSON integer string, whitespace trimmed if needed */
 
 	1,	/* length of original JSON integer string */
 	1,	/* length of as_str */
@@ -2468,7 +2468,7 @@ struct json_integer test_result[TEST_COUNT] = {
 
     /* test_result[34]: "2" */
     {
-	"2",	/* malloced JSON integer string, whitespace trimmed if needed */
+	"2",	/* allocated JSON integer string, whitespace trimmed if needed */
 
 	1,	/* length of original JSON integer string */
 	1,	/* length of as_str */
@@ -2537,7 +2537,7 @@ struct json_integer test_result[TEST_COUNT] = {
 
     /* test_result[35]: "126" */
     {
-	"126",	/* malloced JSON integer string, whitespace trimmed if needed */
+	"126",	/* allocated JSON integer string, whitespace trimmed if needed */
 
 	3,	/* length of original JSON integer string */
 	3,	/* length of as_str */
@@ -2606,7 +2606,7 @@ struct json_integer test_result[TEST_COUNT] = {
 
     /* test_result[36]: "127" */
     {
-	"127",	/* malloced JSON integer string, whitespace trimmed if needed */
+	"127",	/* allocated JSON integer string, whitespace trimmed if needed */
 
 	3,	/* length of original JSON integer string */
 	3,	/* length of as_str */
@@ -2675,7 +2675,7 @@ struct json_integer test_result[TEST_COUNT] = {
 
     /* test_result[37]: "128" */
     {
-	"128",	/* malloced JSON integer string, whitespace trimmed if needed */
+	"128",	/* allocated JSON integer string, whitespace trimmed if needed */
 
 	3,	/* length of original JSON integer string */
 	3,	/* length of as_str */
@@ -2744,7 +2744,7 @@ struct json_integer test_result[TEST_COUNT] = {
 
     /* test_result[38]: "129" */
     {
-	"129",	/* malloced JSON integer string, whitespace trimmed if needed */
+	"129",	/* allocated JSON integer string, whitespace trimmed if needed */
 
 	3,	/* length of original JSON integer string */
 	3,	/* length of as_str */
@@ -2813,7 +2813,7 @@ struct json_integer test_result[TEST_COUNT] = {
 
     /* test_result[39]: "130" */
     {
-	"130",	/* malloced JSON integer string, whitespace trimmed if needed */
+	"130",	/* allocated JSON integer string, whitespace trimmed if needed */
 
 	3,	/* length of original JSON integer string */
 	3,	/* length of as_str */
@@ -2882,7 +2882,7 @@ struct json_integer test_result[TEST_COUNT] = {
 
     /* test_result[40]: "254" */
     {
-	"254",	/* malloced JSON integer string, whitespace trimmed if needed */
+	"254",	/* allocated JSON integer string, whitespace trimmed if needed */
 
 	3,	/* length of original JSON integer string */
 	3,	/* length of as_str */
@@ -2951,7 +2951,7 @@ struct json_integer test_result[TEST_COUNT] = {
 
     /* test_result[41]: "255" */
     {
-	"255",	/* malloced JSON integer string, whitespace trimmed if needed */
+	"255",	/* allocated JSON integer string, whitespace trimmed if needed */
 
 	3,	/* length of original JSON integer string */
 	3,	/* length of as_str */
@@ -3020,7 +3020,7 @@ struct json_integer test_result[TEST_COUNT] = {
 
     /* test_result[42]: "256" */
     {
-	"256",	/* malloced JSON integer string, whitespace trimmed if needed */
+	"256",	/* allocated JSON integer string, whitespace trimmed if needed */
 
 	3,	/* length of original JSON integer string */
 	3,	/* length of as_str */
@@ -3089,7 +3089,7 @@ struct json_integer test_result[TEST_COUNT] = {
 
     /* test_result[43]: "257" */
     {
-	"257",	/* malloced JSON integer string, whitespace trimmed if needed */
+	"257",	/* allocated JSON integer string, whitespace trimmed if needed */
 
 	3,	/* length of original JSON integer string */
 	3,	/* length of as_str */
@@ -3158,7 +3158,7 @@ struct json_integer test_result[TEST_COUNT] = {
 
     /* test_result[44]: "258" */
     {
-	"258",	/* malloced JSON integer string, whitespace trimmed if needed */
+	"258",	/* allocated JSON integer string, whitespace trimmed if needed */
 
 	3,	/* length of original JSON integer string */
 	3,	/* length of as_str */
@@ -3227,7 +3227,7 @@ struct json_integer test_result[TEST_COUNT] = {
 
     /* test_result[45]: "510" */
     {
-	"510",	/* malloced JSON integer string, whitespace trimmed if needed */
+	"510",	/* allocated JSON integer string, whitespace trimmed if needed */
 
 	3,	/* length of original JSON integer string */
 	3,	/* length of as_str */
@@ -3296,7 +3296,7 @@ struct json_integer test_result[TEST_COUNT] = {
 
     /* test_result[46]: "511" */
     {
-	"511",	/* malloced JSON integer string, whitespace trimmed if needed */
+	"511",	/* allocated JSON integer string, whitespace trimmed if needed */
 
 	3,	/* length of original JSON integer string */
 	3,	/* length of as_str */
@@ -3365,7 +3365,7 @@ struct json_integer test_result[TEST_COUNT] = {
 
     /* test_result[47]: "512" */
     {
-	"512",	/* malloced JSON integer string, whitespace trimmed if needed */
+	"512",	/* allocated JSON integer string, whitespace trimmed if needed */
 
 	3,	/* length of original JSON integer string */
 	3,	/* length of as_str */
@@ -3434,7 +3434,7 @@ struct json_integer test_result[TEST_COUNT] = {
 
     /* test_result[48]: "513" */
     {
-	"513",	/* malloced JSON integer string, whitespace trimmed if needed */
+	"513",	/* allocated JSON integer string, whitespace trimmed if needed */
 
 	3,	/* length of original JSON integer string */
 	3,	/* length of as_str */
@@ -3503,7 +3503,7 @@ struct json_integer test_result[TEST_COUNT] = {
 
     /* test_result[49]: "514" */
     {
-	"514",	/* malloced JSON integer string, whitespace trimmed if needed */
+	"514",	/* allocated JSON integer string, whitespace trimmed if needed */
 
 	3,	/* length of original JSON integer string */
 	3,	/* length of as_str */
@@ -3572,7 +3572,7 @@ struct json_integer test_result[TEST_COUNT] = {
 
     /* test_result[50]: "32766" */
     {
-	"32766",	/* malloced JSON integer string, whitespace trimmed if needed */
+	"32766",	/* allocated JSON integer string, whitespace trimmed if needed */
 
 	5,	/* length of original JSON integer string */
 	5,	/* length of as_str */
@@ -3641,7 +3641,7 @@ struct json_integer test_result[TEST_COUNT] = {
 
     /* test_result[51]: "32767" */
     {
-	"32767",	/* malloced JSON integer string, whitespace trimmed if needed */
+	"32767",	/* allocated JSON integer string, whitespace trimmed if needed */
 
 	5,	/* length of original JSON integer string */
 	5,	/* length of as_str */
@@ -3710,7 +3710,7 @@ struct json_integer test_result[TEST_COUNT] = {
 
     /* test_result[52]: "32768" */
     {
-	"32768",	/* malloced JSON integer string, whitespace trimmed if needed */
+	"32768",	/* allocated JSON integer string, whitespace trimmed if needed */
 
 	5,	/* length of original JSON integer string */
 	5,	/* length of as_str */
@@ -3779,7 +3779,7 @@ struct json_integer test_result[TEST_COUNT] = {
 
     /* test_result[53]: "32769" */
     {
-	"32769",	/* malloced JSON integer string, whitespace trimmed if needed */
+	"32769",	/* allocated JSON integer string, whitespace trimmed if needed */
 
 	5,	/* length of original JSON integer string */
 	5,	/* length of as_str */
@@ -3848,7 +3848,7 @@ struct json_integer test_result[TEST_COUNT] = {
 
     /* test_result[54]: "32770" */
     {
-	"32770",	/* malloced JSON integer string, whitespace trimmed if needed */
+	"32770",	/* allocated JSON integer string, whitespace trimmed if needed */
 
 	5,	/* length of original JSON integer string */
 	5,	/* length of as_str */
@@ -3917,7 +3917,7 @@ struct json_integer test_result[TEST_COUNT] = {
 
     /* test_result[55]: "65534" */
     {
-	"65534",	/* malloced JSON integer string, whitespace trimmed if needed */
+	"65534",	/* allocated JSON integer string, whitespace trimmed if needed */
 
 	5,	/* length of original JSON integer string */
 	5,	/* length of as_str */
@@ -3986,7 +3986,7 @@ struct json_integer test_result[TEST_COUNT] = {
 
     /* test_result[56]: "65535" */
     {
-	"65535",	/* malloced JSON integer string, whitespace trimmed if needed */
+	"65535",	/* allocated JSON integer string, whitespace trimmed if needed */
 
 	5,	/* length of original JSON integer string */
 	5,	/* length of as_str */
@@ -4055,7 +4055,7 @@ struct json_integer test_result[TEST_COUNT] = {
 
     /* test_result[57]: "65536" */
     {
-	"65536",	/* malloced JSON integer string, whitespace trimmed if needed */
+	"65536",	/* allocated JSON integer string, whitespace trimmed if needed */
 
 	5,	/* length of original JSON integer string */
 	5,	/* length of as_str */
@@ -4124,7 +4124,7 @@ struct json_integer test_result[TEST_COUNT] = {
 
     /* test_result[58]: "65537" */
     {
-	"65537",	/* malloced JSON integer string, whitespace trimmed if needed */
+	"65537",	/* allocated JSON integer string, whitespace trimmed if needed */
 
 	5,	/* length of original JSON integer string */
 	5,	/* length of as_str */
@@ -4193,7 +4193,7 @@ struct json_integer test_result[TEST_COUNT] = {
 
     /* test_result[59]: "65538" */
     {
-	"65538",	/* malloced JSON integer string, whitespace trimmed if needed */
+	"65538",	/* allocated JSON integer string, whitespace trimmed if needed */
 
 	5,	/* length of original JSON integer string */
 	5,	/* length of as_str */
@@ -4262,7 +4262,7 @@ struct json_integer test_result[TEST_COUNT] = {
 
     /* test_result[60]: "131070" */
     {
-	"131070",	/* malloced JSON integer string, whitespace trimmed if needed */
+	"131070",	/* allocated JSON integer string, whitespace trimmed if needed */
 
 	6,	/* length of original JSON integer string */
 	6,	/* length of as_str */
@@ -4331,7 +4331,7 @@ struct json_integer test_result[TEST_COUNT] = {
 
     /* test_result[61]: "131071" */
     {
-	"131071",	/* malloced JSON integer string, whitespace trimmed if needed */
+	"131071",	/* allocated JSON integer string, whitespace trimmed if needed */
 
 	6,	/* length of original JSON integer string */
 	6,	/* length of as_str */
@@ -4400,7 +4400,7 @@ struct json_integer test_result[TEST_COUNT] = {
 
     /* test_result[62]: "131072" */
     {
-	"131072",	/* malloced JSON integer string, whitespace trimmed if needed */
+	"131072",	/* allocated JSON integer string, whitespace trimmed if needed */
 
 	6,	/* length of original JSON integer string */
 	6,	/* length of as_str */
@@ -4469,7 +4469,7 @@ struct json_integer test_result[TEST_COUNT] = {
 
     /* test_result[63]: "131073" */
     {
-	"131073",	/* malloced JSON integer string, whitespace trimmed if needed */
+	"131073",	/* allocated JSON integer string, whitespace trimmed if needed */
 
 	6,	/* length of original JSON integer string */
 	6,	/* length of as_str */
@@ -4538,7 +4538,7 @@ struct json_integer test_result[TEST_COUNT] = {
 
     /* test_result[64]: "131074" */
     {
-	"131074",	/* malloced JSON integer string, whitespace trimmed if needed */
+	"131074",	/* allocated JSON integer string, whitespace trimmed if needed */
 
 	6,	/* length of original JSON integer string */
 	6,	/* length of as_str */

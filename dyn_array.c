@@ -231,7 +231,7 @@ dyn_array_create(size_t elm_size, intmax_t chunk, intmax_t start_elm_count, bool
     ret->chunk = chunk;
 
     /*
-     * determine the size of the malloced area
+     * determine the size of the allocated area
      */
     /* +chunk for guard chunk */
     number_of_bytes = (ret->allocated+chunk) * elm_size;

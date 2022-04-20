@@ -64,7 +64,7 @@ main(int argc, char *argv[])
     bool error = false;		/* true ==> JSON floating point conversion test suite error */
     bool test_mode = false;	/* true ==> perform JSON floating point conversion test suite */
     bool strict = false;	/* true ==> JSON decode in strict mode */
-    struct json *node = NULL;		/* malloced JSON parser tree node */
+    struct json *node = NULL;		/* allocated JSON parser tree node */
     struct json_floating *item = NULL;	/* floating element in JSON parser tree node */
     int arg_cnt = 0;		/* number of args to process */
 #if defined(JFLOAT_TEST_ENABLED)
@@ -340,7 +340,7 @@ main(int argc, char *argv[])
 	    /*
 	     * output as_str
 	     */
-	    print("\t/* malloced JSON floating point string, whitespace trimmed if needed */\n"
+	    print("\t/* allocated JSON floating point string, whitespace trimmed if needed */\n"
 		  "\t\"%s\",\n\n", input);
 
 	    /*

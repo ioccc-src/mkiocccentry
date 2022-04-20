@@ -70,7 +70,7 @@
  *      path    - path to form the basename from
  *
  * returns:
- *      malloced basename
+ *      allocated basename
  *
  * This function does not return on error.
  */
@@ -531,7 +531,7 @@ file_size(char const *path)
  *      ...    - args to give after the format
  *
  * returns:
- *	malloced shell command line, or
+ *	allocated shell command line, or
  *	NULL ==> error
  */
 char *
@@ -582,7 +582,7 @@ cmdprintf(char const *format, ...)
  *      ap     - va_list of arguments for format
  *
  * returns:
- *	malloced shell command line, or
+ *	allocated shell command line, or
  *	NULL ==> error
  *
  * NOTE: This code is based on an enhancement request by GitHub user @ilyakurdyukov:
@@ -828,7 +828,7 @@ shell_cmd(char const *name, bool abort_on_error, char const *format, ...)
     errno = 0;			/* pre-clear errno for errp() */
     ret = fflush(stdout);
     if (ret < 0) {
-	/* free malloced command storage */
+	/* free allocated command storage */
 	if (cmd != NULL) {
 	    free(cmd);
 	    cmd = NULL;
@@ -851,7 +851,7 @@ shell_cmd(char const *name, bool abort_on_error, char const *format, ...)
     errno = 0;			/* pre-clear errno for errp() */
     ret = fflush(stderr);
     if (ret < 0) {
-	/* free malloced command storage */
+	/* free allocated command storage */
 	if (cmd != NULL) {
 	    free(cmd);
 	    cmd = NULL;
@@ -874,7 +874,7 @@ shell_cmd(char const *name, bool abort_on_error, char const *format, ...)
     errno = 0;			/* pre-clear errno for errp() */
     exit_code = system(cmd);
     if (exit_code < 0) {
-	/* free malloced command storage */
+	/* free allocated command storage */
 	if (cmd != NULL) {
 	    free(cmd);
 	    cmd = NULL;
@@ -893,7 +893,7 @@ shell_cmd(char const *name, bool abort_on_error, char const *format, ...)
      * case: exit code 127 usually means the fork/exec was unable to invoke the shell
      */
     } else if (exit_code == 127) {
-	/* free malloced command storage */
+	/* free allocated command storage */
 	if (cmd != NULL) {
 	    free(cmd);
 	    cmd = NULL;
@@ -910,7 +910,7 @@ shell_cmd(char const *name, bool abort_on_error, char const *format, ...)
     }
 
     /*
-     * free malloced command storage
+     * free allocated command storage
      */
     if (cmd != NULL) {
 	free(cmd);
@@ -1013,7 +1013,7 @@ pipe_open(char const *name, bool abort_on_error, char const *format, ...)
     errno = 0;			/* pre-clear errno for errp() */
     ret = fflush(stdout);
     if (ret < 0) {
-	/* free malloced command storage */
+	/* free allocated command storage */
 	if (cmd != NULL) {
 	    free(cmd);
 	    cmd = NULL;
@@ -1036,7 +1036,7 @@ pipe_open(char const *name, bool abort_on_error, char const *format, ...)
     errno = 0;			/* pre-clear errno for errp() */
     ret = fflush(stderr);
     if (ret < 0) {
-	/* free malloced command storage */
+	/* free allocated command storage */
 	if (cmd != NULL) {
 	    free(cmd);
 	    cmd = NULL;
@@ -1059,7 +1059,7 @@ pipe_open(char const *name, bool abort_on_error, char const *format, ...)
     errno = 0;			/* pre-clear errno for errp() */
     stream = popen(cmd, "r");
     if (stream == NULL) {
-	/* free malloced command storage */
+	/* free allocated command storage */
 	if (cmd != NULL) {
 	    free(cmd);
 	    cmd = NULL;
@@ -1085,7 +1085,7 @@ pipe_open(char const *name, bool abort_on_error, char const *format, ...)
     }
 
     /*
-     * free malloced command storage
+     * free allocated command storage
      */
     if (cmd != NULL) {
 	free(cmd);
@@ -1508,7 +1508,7 @@ pr(char const *name, char const *fmt, ...)
  * buffer as needed.  Remove the trailing newline that was read.
  *
  * given:
- *      linep   - malloced line buffer (may be realloced) or ptr to NULL
+ *      linep   - allocated line buffer (may be realloced) or ptr to NULL
  *                NULL ==> getline() will malloc() the linep buffer
  *                else ==> getline() might realloc() the linep buffer
  *      stream - file stream to read from
@@ -1590,20 +1590,20 @@ readline(char **linep, FILE * stream)
 
 
 /*
- * readline_dup - read a line from a stream and duplicate to a malloced buffer.
+ * readline_dup - read a line from a stream and duplicate to a allocated buffer.
  *
  * given:
- *      linep   - malloced line buffer (may be realloced) or ptr to NULL
+ *      linep   - allocated line buffer (may be realloced) or ptr to NULL
  *                NULL ==> getline() will malloc() the linep buffer
  *                else ==> getline() might realloc() the linep buffer
  *      strip   - true ==> remove trailing whitespace,
  *                false ==> only remove the trailing newline
- *      lenp    - != NULL ==> pointer to length of final length of line malloced,
+ *      lenp    - != NULL ==> pointer to length of final length of line allocated,
  *                NULL ==> do not return length of line
  *      stream - file stream to read from
  *
  * returns:
- *      malloced buffer containing the input without a trailing newline,
+ *      allocated buffer containing the input without a trailing newline,
  *      and if strip == true, without trailing whitespace,
  *      or NULL ==> EOF
  *
@@ -1613,7 +1613,7 @@ char *
 readline_dup(char **linep, bool strip, size_t *lenp, FILE *stream)
 {
     ssize_t len;		/* getline return and our modified size return */
-    char *ret;			/* malloced input */
+    char *ret;			/* allocated input */
     ssize_t i;
 
     /*
@@ -1670,7 +1670,7 @@ readline_dup(char **linep, bool strip, size_t *lenp, FILE *stream)
     }
 
     /*
-     * return the malloced string
+     * return the allocated string
      */
     return ret;
 }
@@ -1805,14 +1805,14 @@ round_to_multiple(off_t num, off_t multiple)
  * This function will update *psize, if it was non-NULL, to indicate
  * the amount of data that was read from stream before EOF.
  *
- * The malloced buffer may be larger than the amount of data read.
+ * The allocated buffer may be larger than the amount of data read.
  * In this case *psize (if psize != NULL) will contain the exact
  * amount of data read, ignoring any extra allocated data.
- * Any extra unused space in the malloced buffer will be zeroized
+ * Any extra unused space in the allocated buffer will be zeroized
  * before returning.
  *
  * This function will always add at least one extra byte of allocated
- * data to the end of the malloced buffer (zeroized as mentioned above).
+ * data to the end of the allocated buffer (zeroized as mentioned above).
  * These extra bytes(s) WILL be set to NUL.  Thus, a file or stream
  * without a NUL byte will return a NUL terminated C-style string.
  *
@@ -1835,7 +1835,7 @@ round_to_multiple(off_t num, off_t multiple)
  }	}
  *
  * Because files can contain NUL bytes, the strlen() function on
- * the malloced buffer may return a different length than the
+ * the allocated buffer may return a different length than the
  * amount of data read from stream.  This is also why the function
  * returns a pointer to void.
  *
@@ -1975,7 +1975,7 @@ read_all(FILE *stream, size_t *psize)
     }
 
     /*
-     * return the malloced buffer
+     * return the allocated buffer
      */
     ret = dyn_array_addr(array, uint8_t, 0);
     return ret;

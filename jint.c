@@ -63,7 +63,7 @@ main(int argc, char *argv[])
     bool error = false;		/* true ==> JSON integer conversion test suite error */
     bool test_mode = false;	/* true ==> perform JSON integer conversion test suite */
     bool strict = false;	/* true ==> strict testing for all struct integer element, implies -t -q */
-    struct json *node = NULL;	/* malloced JSON parser tree node */
+    struct json *node = NULL;	/* allocated JSON parser tree node */
     struct json_integer *item = NULL;	/* integer element in JSON parser tree node */
     int arg_cnt = 0;		/* number of args to process */
 #if defined(JINT_TEST_ENABLED)
@@ -416,7 +416,7 @@ main(int argc, char *argv[])
 	    /*
 	     * print JSON string
 	     */
-	    print("\t\"%s\",\t/* malloced JSON integer string, whitespace trimmed if needed */\n\n",
+	    print("\t\"%s\",\t/* allocated JSON integer string, whitespace trimmed if needed */\n\n",
 		  item->as_str);
 
 	    /*

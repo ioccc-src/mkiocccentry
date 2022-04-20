@@ -149,7 +149,7 @@ extern struct ignore_json_code *ignore_json_code_set;
  */
 struct json_integer
 {
-    char *as_str;		/* malloced JSON integer string, whitespace trimmed if needed */
+    char *as_str;		/* allocated JSON integer string, whitespace trimmed if needed */
 
     size_t orig_len;		/* length of original JSON integer string */
     size_t as_str_len;		/* length of as_str */
@@ -231,7 +231,7 @@ struct json_integer
  */
 struct json_floating
 {
-    char *as_str;		/* malloced JSON floating point string, whitespace trimmed if needed */
+    char *as_str;		/* allocated JSON floating point string, whitespace trimmed if needed */
 
     size_t orig_len;		/* length of original JSON floating point string */
     size_t as_str_len;		/* length of as_str */
@@ -258,8 +258,8 @@ struct json_floating
  */
 struct json_string
 {
-    char *as_str;		/* malloced non-decoded JSON string, NUL terminated (perhaps sans JSON "s) */
-    char *str;			/* malloced decoded JSON string, NUL terminated */
+    char *as_str;		/* allocated non-decoded JSON string, NUL terminated (perhaps sans JSON "s) */
+    char *str;			/* allocated decoded JSON string, NUL terminated */
 
     size_t as_str_len;		/* length of as_str, not including final NUL */
     size_t str_len;		/* length of str, not including final NUL */
@@ -282,7 +282,7 @@ struct json_string
  */
 struct json_boolean
 {
-    char *as_str;		/* malloced JSON floating point string, whitespace trimmed if needed */
+    char *as_str;		/* allocated JSON floating point string, whitespace trimmed if needed */
     size_t as_str_len;		/* length of as_str */
 
     bool converted;		/* true ==> able to decode JSON boolean, false ==> as_str is invalid or not decoded */
@@ -295,7 +295,7 @@ struct json_boolean
  */
 struct json_null
 {
-    char *as_str;		/* malloced JSON floating point string, whitespace trimmed if needed */
+    char *as_str;		/* allocated JSON floating point string, whitespace trimmed if needed */
     size_t as_str_len;		/* length of as_str */
 
     bool converted;		/* true ==> able to decode JSON null, false ==> as_str is invalid or not decoded */

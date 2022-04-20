@@ -1638,7 +1638,7 @@ check_utf8_posix_map(void)
  * will be returned.  If the translation results in a string that would
  * be too long, the string will be truncated.
  *
- * In all cases the return will be a non-NULL malloced string that
+ * In all cases the return will be a non-NULL allocated string that
  * is NUL terminated, not empty, and consisting of only POSIX portable
  * filename and + chars.
  *
@@ -1646,7 +1646,7 @@ check_utf8_posix_map(void)
  *	name		- name of the author
  *
  * returns:
- *	malloced default handle
+ *	allocated default handle
  *
  * Does not return on error nor NULL pointers nor invalid args.
  */
@@ -1739,7 +1739,7 @@ default_handle(char const *name)
      * case: estimated default handle is empty
      *
      * If the hmap[] translation of name would be empty, then
-     * for a malloced string of hex characters our of 3 calls random().
+     * for a allocated string of hex characters our of 3 calls random().
      */
     if (def_len <= 0) {
 
@@ -1873,10 +1873,10 @@ default_handle(char const *name)
 		if (m->posix_str_len > 0) {
 
 		    /*
-		     * firewall - do not copy beyond end of malloced buffer
+		     * firewall - do not copy beyond end of allocated buffer
 		     */
 		    if (cur_len + m->posix_str_len > def_len) {
-			err(22, __func__, "attempt to copy to buf[%ju] %ju bytes: would go beyond malloced len: %ju",
+			err(22, __func__, "attempt to copy to buf[%ju] %ju bytes: would go beyond allocated len: %ju",
 					   (uintmax_t)cur_len, (uintmax_t)m->posix_str_len, (uintmax_t)def_len);
 			not_reached();
 		    }
