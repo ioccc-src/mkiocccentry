@@ -3627,6 +3627,108 @@ ignore_json_code(int code)
 
 
 /*
+ * json_conv_free - free JSON parser tree node
+ *
+ * given:
+ *	node	pointer to JSON parser tree node to free
+ *
+ * NOTE: This function will free the internals of a JSON parser tree node.
+ *	 It is up to the caller to free the struct json if needed.
+ *
+ * NOTE: This function does NOT walk the JSON parser tree, so it will
+ *	 ignore links form this node to other JSON parser tree nodes.
+ *
+ * NOTE: If the pointer to allocated storage == NULL,
+ *	 this function does nothing.
+ *
+ * NOTE: This function does nothing if node == NULL.
+ *
+ * NOTE: This function does nothing if the node type is invalid.
+ */
+void
+json_conv_free(struct json *node)
+{
+    /*
+     * firewall - nothing to do for a NULL node
+     */
+    if (node == NULL) {
+	return;
+    }
+
+    /*
+     * free internals based in node type
+     */
+    switch (node->type) {
+
+    case JSON_EOT:	/* special end of the table value */
+	/* nothing to free */
+	break;
+
+    case JSON_UNSET:	/* JSON element has not been set - must be the value 0 */
+	/* nothing to free */
+	break;
+
+    case JSON_INT:	/* JSON element is an integer - see struct json_integer */
+	if (node->element.integer.as_str != NULL) {
+	    free(node->element.integer.as_str);
+	    node->element.integer.as_str = NULL;
+	}
+	break;
+
+    case JSON_FLOAT:	/* JSON element is a float - see struct json_floating */
+	if (node->element.floating.as_str != NULL) {
+	    free(node->element.floating.as_str);
+	    node->element.floating.as_str = NULL;
+	}
+	break;
+
+    case JSON_STRING:	/* JSON element is a string - see struct json_string */
+	if (node->element.string.as_str != NULL) {
+	    free(node->element.string.as_str);
+	    node->element.string.as_str = NULL;
+	}
+	if (node->element.string.str != NULL) {
+	    free(node->element.string.str);
+	    node->element.string.str = NULL;
+	}
+	break;
+
+    case JSON_BOOL:	/* JSON element is a boolean - see struct json_boolean */
+	if (node->element.boolean.as_str != NULL) {
+	    free(node->element.boolean.as_str);
+	    node->element.boolean.as_str = NULL;
+	}
+	break;
+
+    case JSON_NULL:	/* JSON element is a null - see struct json_null */
+	if (node->element.null.as_str != NULL) {
+	    free(node->element.null.as_str);
+	    node->element.null.as_str = NULL;
+	}
+	break;
+
+    case JSON_OBJECT:	/* JSON element is a { members } */
+	/* XXX - update when struct json_object is defined - XXX */
+	break;
+
+    case JSON_MEMBER:	/* JSON element is a member */
+	/* XXX - update when struct json_member is defined - XXX */
+	break;
+
+    case JSON_ARRAY:	/* JSON element is a [ elements ] */
+	/* XXX - update when struct json_array is defined - XXX */
+	break;
+
+    default:
+	/* nothing we can free */
+	warn(__func__, "node type is unknown: %d", node->type);
+	break;
+    }
+    return;
+}
+
+
+/*
  * json_conv_int - convert JSON integer string to C integer
  *
  * given:
@@ -3745,7 +3847,7 @@ json_conv_int(char const *str, size_t len)
     len -= i;
     item->as_str += i;
     if (len <= 0) {
-	warn(__func__, "called with string containing only whitespace");
+	dbg(DBG_HIGH, "%s: called with string containing only whitespace: <%s>", __func__, item->as_str);
 	return ret;
     }
     /* trim off any trailing whitespace */
@@ -3755,7 +3857,7 @@ json_conv_int(char const *str, size_t len)
 	--len;
     }
     if (len <= 0) {
-	warn(__func__, "called with string with all whitespace");
+	dbg(DBG_HIGH, "%s: called with string containing all whitespace: <%s>", __func__, item->as_str);
 	return ret;
     }
     item->as_str_len = len;	/* save length of as_str */
@@ -3768,6 +3870,21 @@ json_conv_int(char const *str, size_t len)
 	/* parse JSON integer that is < 0 */
 	item->is_negative = true;
 
+        /*
+	 * JSON spec detail: lone - invalid JSON
+	 */
+	if (len <= 1 || item->as_str[1] == '\0') {
+	    dbg(DBG_HIGH, "%s called with just -: <%s>", __func__, item->as_str);
+	    return ret;
+
+        /*
+	 * JSON spec detail: leading -0 followed by digits - invalid JSON
+	 */
+	} else if (len > 2 && item->as_str[1] == '0' && isascii(item->as_str[2]) && isdigit(item->as_str[2])) {
+	    dbg(DBG_HIGH, "%s called with -0 followed by more digits: <%s>", __func__, item->as_str);
+	    return ret;
+	}
+
 	/*
 	 * paranoia
 	 *
@@ -3777,7 +3894,7 @@ json_conv_int(char const *str, size_t len)
 	 */
 	digits = strspn(item->as_str+1, "0123456789");
 	if (digits != len-1) {
-	    warn(__func__, "called with string with - followed by non-digits: <%s>", item->as_str);
+	    dbg(DBG_HIGH, "%s: called with string with - followed by non-digits: <%s>", __func__, item->as_str);
 	    return ret;
 	}
 
@@ -3787,21 +3904,12 @@ json_conv_int(char const *str, size_t len)
 	/* parse JSON integer that is >= 0 */
 	item->is_negative = false;
 
-	/*
-	 * paranoia
-	 *
-	 * Integers with leading + are not allowed in JSON due to fundamental design
-	 * flaws by the JSON designers.  We check for and skip a leading + just in
-	 * case this code is called by some other code.
+        /*
+	 * JSON spec detail: leading 0 followed by digits - invalid JSON
 	 */
-	if (item->as_str[0] == '+') {
-	    /* skip leading + */
-	    item->as_str++;
-	    len--;
-	    if (len <= 0) {
-		warn(__func__, "called with string with only a +");
-		return ret;
-	    }
+	if (len > 1 && item->as_str[0] == '0' && isascii(item->as_str[1]) && isdigit(item->as_str[1])) {
+	    dbg(DBG_HIGH, "%s called with 0 followed by more digits: <%s>", __func__, item->as_str);
+	    return ret;
 	}
 
 	/*
@@ -3813,7 +3921,7 @@ json_conv_int(char const *str, size_t len)
 	 */
 	digits = strspn(item->as_str, "0123456789");
 	if (digits != len) {
-	    warn(__func__, "called with string containing non-digits: <%s>", item->as_str);
+	    dbg(DBG_HIGH, "%s: called with string containing non-digits: <%s>", __func__, item->as_str);
 	    return ret;
 	}
     }
@@ -4132,6 +4240,9 @@ json_conv_float(char const *str, size_t len)
     struct json *ret = NULL;		    /* JSON parser tree node to return */
     struct json_floating *item = NULL;	    /* JSON floating point element inside JSON parser tree node */
     char *endptr;			    /* first invalid character or str */
+    char *e_found = NULL;		    /* strchr() search for e */
+    char *cap_e_found = NULL;		    /* strchr() search for E */
+    char *e = NULL;			    /* strrchr() search for 2nd e or E */
     size_t i;
 
     /*
@@ -4158,6 +4269,7 @@ json_conv_float(char const *str, size_t len)
     item = &(ret->element.floating);
     item->converted = false;
     item->is_negative = false;
+    item->is_e_notation = false;
     item->float_sized = false;
     item->as_float = 0.0;
     item->as_float_int = false;
@@ -4213,7 +4325,8 @@ json_conv_float(char const *str, size_t len)
     len -= i;
     item->as_str += i;
     if (len <= 0) {
-	warn(__func__, "called with string containing only whitespace");
+	dbg(DBG_HIGH, "%s: called with string containing only whitespace: <%s>",
+		      __func__, item->as_str);
 	return ret;
     }
     /* trim off any trailing whitespace */
@@ -4223,8 +4336,172 @@ json_conv_float(char const *str, size_t len)
 	--len;
     }
     if (len <= 0) {
-	warn(__func__, "called with string with all whitespace");
+	dbg(DBG_HIGH, "%s: called with string with all whitespace: <%s>",
+		      __func__, item->as_str);
 	return ret;
+    }
+
+    /*
+     * JSON spec detail: floating point numbers cannot start with .
+     */
+    if (item->as_str[0] == '.') {
+	dbg(DBG_HIGH, "%s: floating point numbers cannot start with .: <%s>",
+		       __func__, item->as_str);
+	return ret;
+
+    /*
+     * JSON spec detail: floating point numbers cannot end with .
+     */
+    } else if (item->as_str[len-1] == '.') {
+	dbg(DBG_HIGH, "%s: floating point numbers cannot end with .: <%s>",
+		      __func__, item->as_str);
+	return ret;
+
+    /*
+     * JSON spec detail: floating point numbers cannot end with -
+     */
+    } else if (item->as_str[len-1] == '-') {
+	dbg(DBG_HIGH, "%s: floating point numbers cannot end with -: <%s>",
+		      __func__, item->as_str);
+	return ret;
+
+    /*
+     * JSON spec detail: floating point numbers cannot end with +
+     */
+    } else if (item->as_str[len-1] == '+') {
+	dbg(DBG_HIGH, "%s: floating point numbers cannot end with +: <%s>",
+		      __func__, item->as_str);
+	return ret;
+
+    /*
+     * JSON spec detail: floating point numbers must end in a digit
+     */
+    } else if (!isascii(item->as_str[len-1]) || !isdigit(item->as_str[len-1])) {
+	dbg(DBG_HIGH, "%s: floating point numbers must end in a digit: <%s>",
+		       __func__, item->as_str);
+	return ret;
+    }
+
+    /*
+     * detect use of e notation
+     */
+    e_found = strchr(item->as_str, 'e');
+    cap_e_found = strchr(item->as_str, 'E');
+    /* case: both e and E found */
+    if (e_found != NULL && cap_e_found != NULL) {
+
+	dbg(DBG_HIGH, "%s: floating point numbers cannot use both e and E: <%s>",
+			  __func__, item->as_str);
+	return ret;
+
+    /* case: just e found, no E */
+    } else if (e_found != NULL) {
+
+	/* firewall - search for two e's */
+	e = strrchr(item->as_str, 'e');
+	if (e_found != e) {
+	    dbg(DBG_HIGH, "%s: floating point numbers cannot have more than one e: <%s>",
+			  __func__, item->as_str);
+	    return ret;
+	}
+
+	/* note e notation */
+	item->is_e_notation = true;
+
+    /* case: just E found, no e */
+    } else if (cap_e_found != NULL) {
+
+	/* firewall - search for two E's */
+	e = strrchr(item->as_str, 'E');
+	if (cap_e_found != e) {
+	    dbg(DBG_HIGH, "%s: floating point numbers cannot have more than one E: <%s>",
+			  __func__, item->as_str);
+	    return ret;
+	}
+
+	/* note e notation */
+	item->is_e_notation = true;
+    }
+
+    /*
+     * perform additional JSON number checks on e notation
+     *
+     * NOTE: If item->is_e_notation == true, then e points to the e or E
+     */
+    if (item->is_e_notation == true) {
+
+	/*
+	 * JSON spec detail: e notation number cannot start with e or E
+	 */
+	if (e == item->as_str) {
+	    dbg(DBG_HIGH, "%s: e notation numbers cannot start with e or E: <%s>",
+			  __func__, item->as_str);
+	    return ret;
+
+	/*
+	 * JSON spec detail: e notation number cannot end with e or E
+	 */
+	} else if (e == &(item->as_str[len-1])) {
+	    dbg(DBG_HIGH, "%s: e notation numbers cannot end with e or E: <%s>",
+			  __func__, item->as_str);
+	    return ret;
+
+	/*
+	 * JSON spec detail: e notation number cannot have e or E after .
+	 */
+	} else if (e > item->as_str && e[-1] == '.') {
+	    dbg(DBG_HIGH, "%s: e notation numbers cannot have . before e or E: <%s>",
+			  __func__, item->as_str);
+	    return ret;
+
+	/*
+	 * JSON spec detail: e notation number must have digit before e or E
+	 */
+	} else if (e > item->as_str && (!isascii(e[-1]) || !isdigit(e[-1]))) {
+	    dbg(DBG_HIGH, "%s: e notation numbers must have digit before e or E: <%s>",
+			  __func__, item->as_str);
+	    return ret;
+
+	/*
+	 * case: e notation number with a leading + in the exponent
+	 *
+	 * NOTE: From "floating point numbers cannot end with +" we know + is not at the end.
+	 */
+	} else if (e[1] == '+') {
+
+	    /*
+	     * JSON spec detail: e notation number with e+ or E+ must be followed by a digit
+	     */
+	    if (e+1 < &(item->as_str[len-1]) && (!isascii(e[2]) || !isdigit(e[2]))) {
+		dbg(DBG_HIGH, "%s: :e notation number with e+ or E+ must be followed by a digit <%s>",
+			      __func__, item->as_str);
+		return ret;
+	    }
+
+	/*
+	 * case: e notation number with a leading - in the exponent
+	 *
+	 * NOTE: From "floating point numbers cannot end with -" we know - is not at the end.
+	 */
+	} else if (e[1] == '-') {
+
+	    /*
+	     * JSON spec detail: e notation number with e- or E- must be followed by a digit
+	     */
+	    if (e+1 < &(item->as_str[len-1]) && (!isascii(e[2]) || !isdigit(e[2]))) {
+		dbg(DBG_HIGH, "%s: :e notation number with e- or E- must be followed by a digit <%s>",
+			      __func__, item->as_str);
+		return ret;
+	    }
+
+	/*
+	 * JSON spec detail: e notation number must have + or - or digit after e or E
+	 */
+	} else if (!isascii(e[1]) || !isdigit(e[1])) {
+	    dbg(DBG_HIGH, "%s: e notation numbers must follow e or E with + or - or digit: <%s>",
+			  __func__, item->as_str);
+	    return ret;
+	}
     }
 
     /*

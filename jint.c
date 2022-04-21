@@ -571,6 +571,15 @@ main(int argc, char *argv[])
 	     */
 	    prstr("    },\n\n");
 	}
+
+	/*
+	 * free node
+	 */
+	if (node != NULL) {
+	    json_conv_free(node);
+	    free(node);
+	    node = NULL;
+	}
     }
 
     /*

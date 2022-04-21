@@ -350,6 +350,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	true,	/* true ==> value < 0 */
+	false,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	-8589934592,	/* JSON floating point value in float form */
@@ -374,6 +375,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	true,	/* true ==> value < 0 */
+	false,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	-8589934592,	/* JSON floating point value in float form */
@@ -398,6 +400,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	true,	/* true ==> value < 0 */
+	true,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	-8589934592,	/* JSON floating point value in float form */
@@ -422,6 +425,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	true,	/* true ==> value < 0 */
+	false,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	-8589934592,	/* JSON floating point value in float form */
@@ -446,6 +450,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	true,	/* true ==> value < 0 */
+	false,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	-8589934592,	/* JSON floating point value in float form */
@@ -470,6 +475,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	true,	/* true ==> value < 0 */
+	true,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	-8589934592,	/* JSON floating point value in float form */
@@ -494,6 +500,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	true,	/* true ==> value < 0 */
+	false,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	-8589934592,	/* JSON floating point value in float form */
@@ -518,6 +525,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	true,	/* true ==> value < 0 */
+	false,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	-8589934592,	/* JSON floating point value in float form */
@@ -542,6 +550,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	true,	/* true ==> value < 0 */
+	true,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	-8589934592,	/* JSON floating point value in float form */
@@ -566,6 +575,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	true,	/* true ==> value < 0 */
+	false,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	-8589934592,	/* JSON floating point value in float form */
@@ -590,6 +600,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	true,	/* true ==> value < 0 */
+	false,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	-8589934592,	/* JSON floating point value in float form */
@@ -614,6 +625,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	true,	/* true ==> value < 0 */
+	true,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	-8589934592,	/* JSON floating point value in float form */
@@ -638,6 +650,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	true,	/* true ==> value < 0 */
+	false,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	-8589934592,	/* JSON floating point value in float form */
@@ -662,6 +675,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	true,	/* true ==> value < 0 */
+	false,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	-8589934592,	/* JSON floating point value in float form */
@@ -686,6 +700,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	true,	/* true ==> value < 0 */
+	true,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	-8589934592,	/* JSON floating point value in float form */
@@ -710,6 +725,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	true,	/* true ==> value < 0 */
+	false,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	-4294967296,	/* JSON floating point value in float form */
@@ -734,6 +750,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	true,	/* true ==> value < 0 */
+	false,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	-4294967296,	/* JSON floating point value in float form */
@@ -758,6 +775,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	true,	/* true ==> value < 0 */
+	true,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	-4294967296,	/* JSON floating point value in float form */
@@ -782,6 +800,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	true,	/* true ==> value < 0 */
+	false,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	-4294967296,	/* JSON floating point value in float form */
@@ -806,6 +825,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	true,	/* true ==> value < 0 */
+	false,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	-4294967296,	/* JSON floating point value in float form */
@@ -830,6 +850,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	true,	/* true ==> value < 0 */
+	true,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	-4294967296,	/* JSON floating point value in float form */
@@ -854,6 +875,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	true,	/* true ==> value < 0 */
+	false,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	-4294967296,	/* JSON floating point value in float form */
@@ -878,6 +900,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	true,	/* true ==> value < 0 */
+	false,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	-4294967296,	/* JSON floating point value in float form */
@@ -902,6 +925,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	true,	/* true ==> value < 0 */
+	true,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	-4294967296,	/* JSON floating point value in float form */
@@ -926,6 +950,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	true,	/* true ==> value < 0 */
+	false,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	-4294967296,	/* JSON floating point value in float form */
@@ -950,6 +975,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	true,	/* true ==> value < 0 */
+	false,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	-4294967296,	/* JSON floating point value in float form */
@@ -974,6 +1000,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	true,	/* true ==> value < 0 */
+	true,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	-4294967296,	/* JSON floating point value in float form */
@@ -998,6 +1025,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	true,	/* true ==> value < 0 */
+	false,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	-4294967296,	/* JSON floating point value in float form */
@@ -1022,6 +1050,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	true,	/* true ==> value < 0 */
+	false,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	-4294967296,	/* JSON floating point value in float form */
@@ -1046,6 +1075,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	true,	/* true ==> value < 0 */
+	true,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	-4294967296,	/* JSON floating point value in float form */
@@ -1070,6 +1100,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	true,	/* true ==> value < 0 */
+	false,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	-2147483648,	/* JSON floating point value in float form */
@@ -1094,6 +1125,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	true,	/* true ==> value < 0 */
+	false,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	-2147483648,	/* JSON floating point value in float form */
@@ -1118,6 +1150,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	true,	/* true ==> value < 0 */
+	true,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	-2147483648,	/* JSON floating point value in float form */
@@ -1142,6 +1175,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	true,	/* true ==> value < 0 */
+	false,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	-2147483648,	/* JSON floating point value in float form */
@@ -1166,6 +1200,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	true,	/* true ==> value < 0 */
+	false,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	-2147483648,	/* JSON floating point value in float form */
@@ -1190,6 +1225,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	true,	/* true ==> value < 0 */
+	true,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	-2147483648,	/* JSON floating point value in float form */
@@ -1214,6 +1250,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	true,	/* true ==> value < 0 */
+	false,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	-2147483648,	/* JSON floating point value in float form */
@@ -1238,6 +1275,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	true,	/* true ==> value < 0 */
+	false,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	-2147483648,	/* JSON floating point value in float form */
@@ -1262,6 +1300,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	true,	/* true ==> value < 0 */
+	true,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	-2147483648,	/* JSON floating point value in float form */
@@ -1286,6 +1325,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	true,	/* true ==> value < 0 */
+	false,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	-2147483648,	/* JSON floating point value in float form */
@@ -1310,6 +1350,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	true,	/* true ==> value < 0 */
+	false,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	-2147483648,	/* JSON floating point value in float form */
@@ -1334,6 +1375,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	true,	/* true ==> value < 0 */
+	true,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	-2147483648,	/* JSON floating point value in float form */
@@ -1358,6 +1400,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	true,	/* true ==> value < 0 */
+	false,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	-2147483648,	/* JSON floating point value in float form */
@@ -1382,6 +1425,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	true,	/* true ==> value < 0 */
+	false,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	-2147483648,	/* JSON floating point value in float form */
@@ -1406,6 +1450,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	true,	/* true ==> value < 0 */
+	true,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	-2147483648,	/* JSON floating point value in float form */
@@ -1430,6 +1475,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	true,	/* true ==> value < 0 */
+	false,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	-131074,	/* JSON floating point value in float form */
@@ -1454,6 +1500,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	true,	/* true ==> value < 0 */
+	false,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	-131074.09375,	/* JSON floating point value in float form */
@@ -1478,6 +1525,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	true,	/* true ==> value < 0 */
+	true,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	-131074.203125,	/* JSON floating point value in float form */
@@ -1502,6 +1550,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	true,	/* true ==> value < 0 */
+	false,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	-131073,	/* JSON floating point value in float form */
@@ -1526,6 +1575,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	true,	/* true ==> value < 0 */
+	false,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	-131073.09375,	/* JSON floating point value in float form */
@@ -1550,6 +1600,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	true,	/* true ==> value < 0 */
+	true,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	-131073.203125,	/* JSON floating point value in float form */
@@ -1574,6 +1625,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	true,	/* true ==> value < 0 */
+	false,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	-131072,	/* JSON floating point value in float form */
@@ -1598,6 +1650,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	true,	/* true ==> value < 0 */
+	false,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	-131072.09375,	/* JSON floating point value in float form */
@@ -1622,6 +1675,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	true,	/* true ==> value < 0 */
+	true,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	-131072.203125,	/* JSON floating point value in float form */
@@ -1646,6 +1700,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	true,	/* true ==> value < 0 */
+	false,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	-131071,	/* JSON floating point value in float form */
@@ -1670,6 +1725,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	true,	/* true ==> value < 0 */
+	false,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	-131071.1015625,	/* JSON floating point value in float form */
@@ -1694,6 +1750,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	true,	/* true ==> value < 0 */
+	true,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	-131071.203125,	/* JSON floating point value in float form */
@@ -1718,6 +1775,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	true,	/* true ==> value < 0 */
+	false,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	-131070,	/* JSON floating point value in float form */
@@ -1742,6 +1800,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	true,	/* true ==> value < 0 */
+	false,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	-131070.1015625,	/* JSON floating point value in float form */
@@ -1766,6 +1825,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	true,	/* true ==> value < 0 */
+	true,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	-131070.203125,	/* JSON floating point value in float form */
@@ -1790,6 +1850,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	true,	/* true ==> value < 0 */
+	false,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	-65538,	/* JSON floating point value in float form */
@@ -1814,6 +1875,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	true,	/* true ==> value < 0 */
+	false,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	-65538.1015625,	/* JSON floating point value in float form */
@@ -1838,6 +1900,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	true,	/* true ==> value < 0 */
+	true,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	-65538.203125,	/* JSON floating point value in float form */
@@ -1862,6 +1925,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	true,	/* true ==> value < 0 */
+	false,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	-65537,	/* JSON floating point value in float form */
@@ -1886,6 +1950,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	true,	/* true ==> value < 0 */
+	false,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	-65537.1015625,	/* JSON floating point value in float form */
@@ -1910,6 +1975,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	true,	/* true ==> value < 0 */
+	true,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	-65537.203125,	/* JSON floating point value in float form */
@@ -1934,6 +2000,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	true,	/* true ==> value < 0 */
+	false,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	-65536,	/* JSON floating point value in float form */
@@ -1958,6 +2025,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	true,	/* true ==> value < 0 */
+	false,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	-65536.1015625,	/* JSON floating point value in float form */
@@ -1982,6 +2050,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	true,	/* true ==> value < 0 */
+	true,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	-65536.203125,	/* JSON floating point value in float form */
@@ -2006,6 +2075,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	true,	/* true ==> value < 0 */
+	false,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	-65535,	/* JSON floating point value in float form */
@@ -2030,6 +2100,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	true,	/* true ==> value < 0 */
+	false,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	-65535.1015625,	/* JSON floating point value in float form */
@@ -2054,6 +2125,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	true,	/* true ==> value < 0 */
+	true,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	-65535.19921875,	/* JSON floating point value in float form */
@@ -2078,6 +2150,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	true,	/* true ==> value < 0 */
+	false,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	-65534,	/* JSON floating point value in float form */
@@ -2102,6 +2175,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	true,	/* true ==> value < 0 */
+	false,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	-65534.1015625,	/* JSON floating point value in float form */
@@ -2126,6 +2200,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	true,	/* true ==> value < 0 */
+	true,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	-65534.19921875,	/* JSON floating point value in float form */
@@ -2150,6 +2225,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	true,	/* true ==> value < 0 */
+	false,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	-32770,	/* JSON floating point value in float form */
@@ -2174,6 +2250,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	true,	/* true ==> value < 0 */
+	false,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	-32770.1015625,	/* JSON floating point value in float form */
@@ -2198,6 +2275,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	true,	/* true ==> value < 0 */
+	true,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	-32770.19921875,	/* JSON floating point value in float form */
@@ -2222,6 +2300,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	true,	/* true ==> value < 0 */
+	false,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	-32769,	/* JSON floating point value in float form */
@@ -2246,6 +2325,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	true,	/* true ==> value < 0 */
+	false,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	-32769.1015625,	/* JSON floating point value in float form */
@@ -2270,6 +2350,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	true,	/* true ==> value < 0 */
+	true,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	-32769.19921875,	/* JSON floating point value in float form */
@@ -2294,6 +2375,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	true,	/* true ==> value < 0 */
+	false,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	-32768,	/* JSON floating point value in float form */
@@ -2318,6 +2400,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	true,	/* true ==> value < 0 */
+	false,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	-32768.1015625,	/* JSON floating point value in float form */
@@ -2342,6 +2425,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	true,	/* true ==> value < 0 */
+	true,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	-32768.19921875,	/* JSON floating point value in float form */
@@ -2366,6 +2450,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	true,	/* true ==> value < 0 */
+	false,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	-32767,	/* JSON floating point value in float form */
@@ -2390,6 +2475,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	true,	/* true ==> value < 0 */
+	false,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	-32767.099609375,	/* JSON floating point value in float form */
@@ -2414,6 +2500,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	true,	/* true ==> value < 0 */
+	true,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	-32767.19921875,	/* JSON floating point value in float form */
@@ -2438,6 +2525,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	true,	/* true ==> value < 0 */
+	false,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	-32766,	/* JSON floating point value in float form */
@@ -2462,6 +2550,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	true,	/* true ==> value < 0 */
+	false,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	-32766.099609375,	/* JSON floating point value in float form */
@@ -2486,6 +2575,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	true,	/* true ==> value < 0 */
+	true,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	-32766.19921875,	/* JSON floating point value in float form */
@@ -2510,6 +2600,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	true,	/* true ==> value < 0 */
+	false,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	-514,	/* JSON floating point value in float form */
@@ -2534,6 +2625,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	true,	/* true ==> value < 0 */
+	false,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	-514.0999755859375,	/* JSON floating point value in float form */
@@ -2558,6 +2650,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	true,	/* true ==> value < 0 */
+	true,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	-514.20001220703125,	/* JSON floating point value in float form */
@@ -2582,6 +2675,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	true,	/* true ==> value < 0 */
+	false,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	-513,	/* JSON floating point value in float form */
@@ -2606,6 +2700,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	true,	/* true ==> value < 0 */
+	false,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	-513.0999755859375,	/* JSON floating point value in float form */
@@ -2630,6 +2725,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	true,	/* true ==> value < 0 */
+	true,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	-513.20001220703125,	/* JSON floating point value in float form */
@@ -2654,6 +2750,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	true,	/* true ==> value < 0 */
+	false,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	-512,	/* JSON floating point value in float form */
@@ -2678,6 +2775,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	true,	/* true ==> value < 0 */
+	false,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	-512.0999755859375,	/* JSON floating point value in float form */
@@ -2702,6 +2800,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	true,	/* true ==> value < 0 */
+	true,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	-512.20001220703125,	/* JSON floating point value in float form */
@@ -2726,6 +2825,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	true,	/* true ==> value < 0 */
+	false,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	-511,	/* JSON floating point value in float form */
@@ -2750,6 +2850,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	true,	/* true ==> value < 0 */
+	false,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	-511.100006103515625,	/* JSON floating point value in float form */
@@ -2774,6 +2875,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	true,	/* true ==> value < 0 */
+	true,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	-511.20001220703125,	/* JSON floating point value in float form */
@@ -2798,6 +2900,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	true,	/* true ==> value < 0 */
+	false,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	-510,	/* JSON floating point value in float form */
@@ -2822,6 +2925,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	true,	/* true ==> value < 0 */
+	false,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	-510.100006103515625,	/* JSON floating point value in float form */
@@ -2846,6 +2950,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	true,	/* true ==> value < 0 */
+	true,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	-510.20001220703125,	/* JSON floating point value in float form */
@@ -2870,6 +2975,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	true,	/* true ==> value < 0 */
+	false,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	-258,	/* JSON floating point value in float form */
@@ -2894,6 +3000,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	true,	/* true ==> value < 0 */
+	false,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	-258.100006103515625,	/* JSON floating point value in float form */
@@ -2918,6 +3025,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	true,	/* true ==> value < 0 */
+	true,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	-258.20001220703125,	/* JSON floating point value in float form */
@@ -2942,6 +3050,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	true,	/* true ==> value < 0 */
+	false,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	-257,	/* JSON floating point value in float form */
@@ -2966,6 +3075,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	true,	/* true ==> value < 0 */
+	false,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	-257.100006103515625,	/* JSON floating point value in float form */
@@ -2990,6 +3100,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	true,	/* true ==> value < 0 */
+	true,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	-257.20001220703125,	/* JSON floating point value in float form */
@@ -3014,6 +3125,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	true,	/* true ==> value < 0 */
+	false,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	-256,	/* JSON floating point value in float form */
@@ -3038,6 +3150,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	true,	/* true ==> value < 0 */
+	false,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	-256.100006103515625,	/* JSON floating point value in float form */
@@ -3062,6 +3175,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	true,	/* true ==> value < 0 */
+	true,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	-256.20001220703125,	/* JSON floating point value in float form */
@@ -3086,6 +3200,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	true,	/* true ==> value < 0 */
+	false,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	-255,	/* JSON floating point value in float form */
@@ -3110,6 +3225,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	true,	/* true ==> value < 0 */
+	false,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	-255.100006103515625,	/* JSON floating point value in float form */
@@ -3134,6 +3250,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	true,	/* true ==> value < 0 */
+	true,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	-255.1999969482421875,	/* JSON floating point value in float form */
@@ -3158,6 +3275,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	true,	/* true ==> value < 0 */
+	false,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	-254,	/* JSON floating point value in float form */
@@ -3182,6 +3300,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	true,	/* true ==> value < 0 */
+	false,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	-254.100006103515625,	/* JSON floating point value in float form */
@@ -3206,6 +3325,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	true,	/* true ==> value < 0 */
+	true,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	-254.1999969482421875,	/* JSON floating point value in float form */
@@ -3230,6 +3350,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	true,	/* true ==> value < 0 */
+	false,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	-130,	/* JSON floating point value in float form */
@@ -3254,6 +3375,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	true,	/* true ==> value < 0 */
+	false,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	-130.100006103515625,	/* JSON floating point value in float form */
@@ -3278,6 +3400,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	true,	/* true ==> value < 0 */
+	true,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	-130.1999969482421875,	/* JSON floating point value in float form */
@@ -3302,6 +3425,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	true,	/* true ==> value < 0 */
+	false,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	-129,	/* JSON floating point value in float form */
@@ -3326,6 +3450,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	true,	/* true ==> value < 0 */
+	false,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	-129.100006103515625,	/* JSON floating point value in float form */
@@ -3350,6 +3475,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	true,	/* true ==> value < 0 */
+	true,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	-129.1999969482421875,	/* JSON floating point value in float form */
@@ -3374,6 +3500,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	true,	/* true ==> value < 0 */
+	false,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	-128,	/* JSON floating point value in float form */
@@ -3398,6 +3525,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	true,	/* true ==> value < 0 */
+	false,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	-128.100006103515625,	/* JSON floating point value in float form */
@@ -3422,6 +3550,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	true,	/* true ==> value < 0 */
+	true,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	-128.1999969482421875,	/* JSON floating point value in float form */
@@ -3446,6 +3575,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	true,	/* true ==> value < 0 */
+	false,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	-127,	/* JSON floating point value in float form */
@@ -3470,6 +3600,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	true,	/* true ==> value < 0 */
+	false,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	-127.09999847412109375,	/* JSON floating point value in float form */
@@ -3494,6 +3625,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	true,	/* true ==> value < 0 */
+	true,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	-127.1999969482421875,	/* JSON floating point value in float form */
@@ -3518,6 +3650,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	true,	/* true ==> value < 0 */
+	false,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	-126,	/* JSON floating point value in float form */
@@ -3542,6 +3675,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	true,	/* true ==> value < 0 */
+	false,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	-126.09999847412109375,	/* JSON floating point value in float form */
@@ -3566,6 +3700,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	true,	/* true ==> value < 0 */
+	true,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	-126.1999969482421875,	/* JSON floating point value in float form */
@@ -3590,6 +3725,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	true,	/* true ==> value < 0 */
+	false,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	-2,	/* JSON floating point value in float form */
@@ -3614,6 +3750,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	true,	/* true ==> value < 0 */
+	false,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	-2.099999904632568359375,	/* JSON floating point value in float form */
@@ -3638,6 +3775,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	true,	/* true ==> value < 0 */
+	true,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	-2.200000047683715820312,	/* JSON floating point value in float form */
@@ -3662,6 +3800,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	true,	/* true ==> value < 0 */
+	false,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	-1,	/* JSON floating point value in float form */
@@ -3686,6 +3825,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	true,	/* true ==> value < 0 */
+	false,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	-1.100000023841857910156,	/* JSON floating point value in float form */
@@ -3710,6 +3850,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	true,	/* true ==> value < 0 */
+	true,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	-1.200000047683715820312,	/* JSON floating point value in float form */
@@ -3734,6 +3875,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	false,	/* true ==> value < 0 */
+	false,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	0,	/* JSON floating point value in float form */
@@ -3758,6 +3900,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	false,	/* true ==> value < 0 */
+	false,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	0.1000000014901161193848,	/* JSON floating point value in float form */
@@ -3782,6 +3925,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	false,	/* true ==> value < 0 */
+	true,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	0.2000000029802322387695,	/* JSON floating point value in float form */
@@ -3806,6 +3950,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	false,	/* true ==> value < 0 */
+	false,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	1,	/* JSON floating point value in float form */
@@ -3830,6 +3975,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	false,	/* true ==> value < 0 */
+	false,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	1.100000023841857910156,	/* JSON floating point value in float form */
@@ -3854,6 +4000,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	false,	/* true ==> value < 0 */
+	true,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	1.200000047683715820312,	/* JSON floating point value in float form */
@@ -3878,6 +4025,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	false,	/* true ==> value < 0 */
+	false,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	2,	/* JSON floating point value in float form */
@@ -3902,6 +4050,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	false,	/* true ==> value < 0 */
+	false,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	2.099999904632568359375,	/* JSON floating point value in float form */
@@ -3926,6 +4075,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	false,	/* true ==> value < 0 */
+	true,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	2.200000047683715820312,	/* JSON floating point value in float form */
@@ -3950,6 +4100,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	false,	/* true ==> value < 0 */
+	false,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	126,	/* JSON floating point value in float form */
@@ -3974,6 +4125,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	false,	/* true ==> value < 0 */
+	false,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	126.09999847412109375,	/* JSON floating point value in float form */
@@ -3998,6 +4150,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	false,	/* true ==> value < 0 */
+	true,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	126.1999969482421875,	/* JSON floating point value in float form */
@@ -4022,6 +4175,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	false,	/* true ==> value < 0 */
+	false,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	127,	/* JSON floating point value in float form */
@@ -4046,6 +4200,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	false,	/* true ==> value < 0 */
+	false,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	127.09999847412109375,	/* JSON floating point value in float form */
@@ -4070,6 +4225,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	false,	/* true ==> value < 0 */
+	true,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	127.1999969482421875,	/* JSON floating point value in float form */
@@ -4094,6 +4250,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	false,	/* true ==> value < 0 */
+	false,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	128,	/* JSON floating point value in float form */
@@ -4118,6 +4275,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	false,	/* true ==> value < 0 */
+	false,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	128.100006103515625,	/* JSON floating point value in float form */
@@ -4142,6 +4300,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	false,	/* true ==> value < 0 */
+	true,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	128.1999969482421875,	/* JSON floating point value in float form */
@@ -4166,6 +4325,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	false,	/* true ==> value < 0 */
+	false,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	129,	/* JSON floating point value in float form */
@@ -4190,6 +4350,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	false,	/* true ==> value < 0 */
+	false,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	129.100006103515625,	/* JSON floating point value in float form */
@@ -4214,6 +4375,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	false,	/* true ==> value < 0 */
+	true,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	129.1999969482421875,	/* JSON floating point value in float form */
@@ -4238,6 +4400,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	false,	/* true ==> value < 0 */
+	false,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	130,	/* JSON floating point value in float form */
@@ -4262,6 +4425,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	false,	/* true ==> value < 0 */
+	false,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	130.100006103515625,	/* JSON floating point value in float form */
@@ -4286,6 +4450,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	false,	/* true ==> value < 0 */
+	true,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	130.1999969482421875,	/* JSON floating point value in float form */
@@ -4310,6 +4475,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	false,	/* true ==> value < 0 */
+	false,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	254,	/* JSON floating point value in float form */
@@ -4334,6 +4500,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	false,	/* true ==> value < 0 */
+	false,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	254.100006103515625,	/* JSON floating point value in float form */
@@ -4358,6 +4525,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	false,	/* true ==> value < 0 */
+	true,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	254.1999969482421875,	/* JSON floating point value in float form */
@@ -4382,6 +4550,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	false,	/* true ==> value < 0 */
+	false,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	255,	/* JSON floating point value in float form */
@@ -4406,6 +4575,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	false,	/* true ==> value < 0 */
+	false,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	255.100006103515625,	/* JSON floating point value in float form */
@@ -4430,6 +4600,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	false,	/* true ==> value < 0 */
+	true,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	255.1999969482421875,	/* JSON floating point value in float form */
@@ -4454,6 +4625,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	false,	/* true ==> value < 0 */
+	false,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	256,	/* JSON floating point value in float form */
@@ -4478,6 +4650,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	false,	/* true ==> value < 0 */
+	false,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	256.100006103515625,	/* JSON floating point value in float form */
@@ -4502,6 +4675,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	false,	/* true ==> value < 0 */
+	true,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	256.20001220703125,	/* JSON floating point value in float form */
@@ -4526,6 +4700,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	false,	/* true ==> value < 0 */
+	false,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	257,	/* JSON floating point value in float form */
@@ -4550,6 +4725,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	false,	/* true ==> value < 0 */
+	false,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	257.100006103515625,	/* JSON floating point value in float form */
@@ -4574,6 +4750,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	false,	/* true ==> value < 0 */
+	true,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	257.20001220703125,	/* JSON floating point value in float form */
@@ -4598,6 +4775,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	false,	/* true ==> value < 0 */
+	false,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	258,	/* JSON floating point value in float form */
@@ -4622,6 +4800,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	false,	/* true ==> value < 0 */
+	false,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	258.100006103515625,	/* JSON floating point value in float form */
@@ -4646,6 +4825,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	false,	/* true ==> value < 0 */
+	true,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	258.20001220703125,	/* JSON floating point value in float form */
@@ -4670,6 +4850,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	false,	/* true ==> value < 0 */
+	false,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	510,	/* JSON floating point value in float form */
@@ -4694,6 +4875,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	false,	/* true ==> value < 0 */
+	false,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	510.100006103515625,	/* JSON floating point value in float form */
@@ -4718,6 +4900,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	false,	/* true ==> value < 0 */
+	true,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	510.20001220703125,	/* JSON floating point value in float form */
@@ -4742,6 +4925,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	false,	/* true ==> value < 0 */
+	false,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	511,	/* JSON floating point value in float form */
@@ -4766,6 +4950,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	false,	/* true ==> value < 0 */
+	false,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	511.100006103515625,	/* JSON floating point value in float form */
@@ -4790,6 +4975,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	false,	/* true ==> value < 0 */
+	true,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	511.20001220703125,	/* JSON floating point value in float form */
@@ -4814,6 +5000,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	false,	/* true ==> value < 0 */
+	false,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	512,	/* JSON floating point value in float form */
@@ -4838,6 +5025,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	false,	/* true ==> value < 0 */
+	false,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	512.0999755859375,	/* JSON floating point value in float form */
@@ -4862,6 +5050,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	false,	/* true ==> value < 0 */
+	true,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	512.20001220703125,	/* JSON floating point value in float form */
@@ -4886,6 +5075,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	false,	/* true ==> value < 0 */
+	false,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	513,	/* JSON floating point value in float form */
@@ -4910,6 +5100,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	false,	/* true ==> value < 0 */
+	false,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	513.0999755859375,	/* JSON floating point value in float form */
@@ -4934,6 +5125,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	false,	/* true ==> value < 0 */
+	true,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	513.20001220703125,	/* JSON floating point value in float form */
@@ -4958,6 +5150,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	false,	/* true ==> value < 0 */
+	false,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	514,	/* JSON floating point value in float form */
@@ -4982,6 +5175,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	false,	/* true ==> value < 0 */
+	false,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	514.0999755859375,	/* JSON floating point value in float form */
@@ -5006,6 +5200,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	false,	/* true ==> value < 0 */
+	true,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	514.20001220703125,	/* JSON floating point value in float form */
@@ -5030,6 +5225,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	false,	/* true ==> value < 0 */
+	false,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	32766,	/* JSON floating point value in float form */
@@ -5054,6 +5250,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	false,	/* true ==> value < 0 */
+	false,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	32766.099609375,	/* JSON floating point value in float form */
@@ -5078,6 +5275,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	false,	/* true ==> value < 0 */
+	true,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	32766.19921875,	/* JSON floating point value in float form */
@@ -5102,6 +5300,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	false,	/* true ==> value < 0 */
+	false,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	32767,	/* JSON floating point value in float form */
@@ -5126,6 +5325,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	false,	/* true ==> value < 0 */
+	false,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	32767.099609375,	/* JSON floating point value in float form */
@@ -5150,6 +5350,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	false,	/* true ==> value < 0 */
+	true,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	32767.19921875,	/* JSON floating point value in float form */
@@ -5174,6 +5375,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	false,	/* true ==> value < 0 */
+	false,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	32768,	/* JSON floating point value in float form */
@@ -5198,6 +5400,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	false,	/* true ==> value < 0 */
+	false,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	32768.1015625,	/* JSON floating point value in float form */
@@ -5222,6 +5425,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	false,	/* true ==> value < 0 */
+	true,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	32768.19921875,	/* JSON floating point value in float form */
@@ -5246,6 +5450,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	false,	/* true ==> value < 0 */
+	false,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	32769,	/* JSON floating point value in float form */
@@ -5270,6 +5475,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	false,	/* true ==> value < 0 */
+	false,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	32769.1015625,	/* JSON floating point value in float form */
@@ -5294,6 +5500,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	false,	/* true ==> value < 0 */
+	true,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	32769.19921875,	/* JSON floating point value in float form */
@@ -5318,6 +5525,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	false,	/* true ==> value < 0 */
+	false,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	32770,	/* JSON floating point value in float form */
@@ -5342,6 +5550,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	false,	/* true ==> value < 0 */
+	false,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	32770.1015625,	/* JSON floating point value in float form */
@@ -5366,6 +5575,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	false,	/* true ==> value < 0 */
+	true,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	32770.19921875,	/* JSON floating point value in float form */
@@ -5390,6 +5600,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	false,	/* true ==> value < 0 */
+	false,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	65534,	/* JSON floating point value in float form */
@@ -5414,6 +5625,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	false,	/* true ==> value < 0 */
+	false,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	65534.1015625,	/* JSON floating point value in float form */
@@ -5438,6 +5650,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	false,	/* true ==> value < 0 */
+	true,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	65534.19921875,	/* JSON floating point value in float form */
@@ -5462,6 +5675,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	false,	/* true ==> value < 0 */
+	false,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	65535,	/* JSON floating point value in float form */
@@ -5486,6 +5700,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	false,	/* true ==> value < 0 */
+	false,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	65535.1015625,	/* JSON floating point value in float form */
@@ -5510,6 +5725,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	false,	/* true ==> value < 0 */
+	true,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	65535.19921875,	/* JSON floating point value in float form */
@@ -5534,6 +5750,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	false,	/* true ==> value < 0 */
+	false,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	65536,	/* JSON floating point value in float form */
@@ -5558,6 +5775,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	false,	/* true ==> value < 0 */
+	false,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	65536.1015625,	/* JSON floating point value in float form */
@@ -5582,6 +5800,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	false,	/* true ==> value < 0 */
+	true,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	65536.203125,	/* JSON floating point value in float form */
@@ -5606,6 +5825,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	false,	/* true ==> value < 0 */
+	false,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	65537,	/* JSON floating point value in float form */
@@ -5630,6 +5850,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	false,	/* true ==> value < 0 */
+	false,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	65537.1015625,	/* JSON floating point value in float form */
@@ -5654,6 +5875,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	false,	/* true ==> value < 0 */
+	true,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	65537.203125,	/* JSON floating point value in float form */
@@ -5678,6 +5900,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	false,	/* true ==> value < 0 */
+	false,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	65538,	/* JSON floating point value in float form */
@@ -5702,6 +5925,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	false,	/* true ==> value < 0 */
+	false,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	65538.1015625,	/* JSON floating point value in float form */
@@ -5726,6 +5950,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	false,	/* true ==> value < 0 */
+	true,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	65538.203125,	/* JSON floating point value in float form */
@@ -5750,6 +5975,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	false,	/* true ==> value < 0 */
+	false,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	131070,	/* JSON floating point value in float form */
@@ -5774,6 +6000,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	false,	/* true ==> value < 0 */
+	false,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	131070.1015625,	/* JSON floating point value in float form */
@@ -5798,6 +6025,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	false,	/* true ==> value < 0 */
+	true,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	131070.203125,	/* JSON floating point value in float form */
@@ -5822,6 +6050,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	false,	/* true ==> value < 0 */
+	false,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	131071,	/* JSON floating point value in float form */
@@ -5846,6 +6075,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	false,	/* true ==> value < 0 */
+	false,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	131071.1015625,	/* JSON floating point value in float form */
@@ -5870,6 +6100,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	false,	/* true ==> value < 0 */
+	true,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	131071.203125,	/* JSON floating point value in float form */
@@ -5894,6 +6125,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	false,	/* true ==> value < 0 */
+	false,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	131072,	/* JSON floating point value in float form */
@@ -5918,6 +6150,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	false,	/* true ==> value < 0 */
+	false,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	131072.09375,	/* JSON floating point value in float form */
@@ -5942,6 +6175,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	false,	/* true ==> value < 0 */
+	true,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	131072.203125,	/* JSON floating point value in float form */
@@ -5966,6 +6200,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	false,	/* true ==> value < 0 */
+	false,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	131073,	/* JSON floating point value in float form */
@@ -5990,6 +6225,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	false,	/* true ==> value < 0 */
+	false,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	131073.09375,	/* JSON floating point value in float form */
@@ -6014,6 +6250,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	false,	/* true ==> value < 0 */
+	true,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	131073.203125,	/* JSON floating point value in float form */
@@ -6038,6 +6275,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	false,	/* true ==> value < 0 */
+	false,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	131074,	/* JSON floating point value in float form */
@@ -6062,6 +6300,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	false,	/* true ==> value < 0 */
+	false,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	131074.09375,	/* JSON floating point value in float form */
@@ -6086,6 +6325,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	false,	/* true ==> value < 0 */
+	true,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	131074.203125,	/* JSON floating point value in float form */
@@ -6110,6 +6350,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	false,	/* true ==> value < 0 */
+	false,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	2147483648,	/* JSON floating point value in float form */
@@ -6134,6 +6375,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	false,	/* true ==> value < 0 */
+	false,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	2147483648,	/* JSON floating point value in float form */
@@ -6158,6 +6400,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	false,	/* true ==> value < 0 */
+	true,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	2147483648,	/* JSON floating point value in float form */
@@ -6182,6 +6425,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	false,	/* true ==> value < 0 */
+	false,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	2147483648,	/* JSON floating point value in float form */
@@ -6206,6 +6450,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	false,	/* true ==> value < 0 */
+	false,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	2147483648,	/* JSON floating point value in float form */
@@ -6230,6 +6475,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	false,	/* true ==> value < 0 */
+	true,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	2147483648,	/* JSON floating point value in float form */
@@ -6254,6 +6500,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	false,	/* true ==> value < 0 */
+	false,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	2147483648,	/* JSON floating point value in float form */
@@ -6278,6 +6525,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	false,	/* true ==> value < 0 */
+	false,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	2147483648,	/* JSON floating point value in float form */
@@ -6302,6 +6550,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	false,	/* true ==> value < 0 */
+	true,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	2147483648,	/* JSON floating point value in float form */
@@ -6326,6 +6575,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	false,	/* true ==> value < 0 */
+	false,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	2147483648,	/* JSON floating point value in float form */
@@ -6350,6 +6600,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	false,	/* true ==> value < 0 */
+	false,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	2147483648,	/* JSON floating point value in float form */
@@ -6374,6 +6625,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	false,	/* true ==> value < 0 */
+	true,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	2147483648,	/* JSON floating point value in float form */
@@ -6398,6 +6650,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	false,	/* true ==> value < 0 */
+	false,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	2147483648,	/* JSON floating point value in float form */
@@ -6422,6 +6675,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	false,	/* true ==> value < 0 */
+	false,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	2147483648,	/* JSON floating point value in float form */
@@ -6446,6 +6700,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	false,	/* true ==> value < 0 */
+	true,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	2147483648,	/* JSON floating point value in float form */
@@ -6470,6 +6725,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	false,	/* true ==> value < 0 */
+	false,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	4294967296,	/* JSON floating point value in float form */
@@ -6494,6 +6750,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	false,	/* true ==> value < 0 */
+	false,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	4294967296,	/* JSON floating point value in float form */
@@ -6518,6 +6775,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	false,	/* true ==> value < 0 */
+	true,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	4294967296,	/* JSON floating point value in float form */
@@ -6542,6 +6800,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	false,	/* true ==> value < 0 */
+	false,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	4294967296,	/* JSON floating point value in float form */
@@ -6566,6 +6825,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	false,	/* true ==> value < 0 */
+	false,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	4294967296,	/* JSON floating point value in float form */
@@ -6590,6 +6850,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	false,	/* true ==> value < 0 */
+	true,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	4294967296,	/* JSON floating point value in float form */
@@ -6614,6 +6875,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	false,	/* true ==> value < 0 */
+	false,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	4294967296,	/* JSON floating point value in float form */
@@ -6638,6 +6900,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	false,	/* true ==> value < 0 */
+	false,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	4294967296,	/* JSON floating point value in float form */
@@ -6662,6 +6925,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	false,	/* true ==> value < 0 */
+	true,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	4294967296,	/* JSON floating point value in float form */
@@ -6686,6 +6950,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	false,	/* true ==> value < 0 */
+	false,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	4294967296,	/* JSON floating point value in float form */
@@ -6710,6 +6975,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	false,	/* true ==> value < 0 */
+	false,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	4294967296,	/* JSON floating point value in float form */
@@ -6734,6 +7000,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	false,	/* true ==> value < 0 */
+	true,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	4294967296,	/* JSON floating point value in float form */
@@ -6758,6 +7025,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	false,	/* true ==> value < 0 */
+	false,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	4294967296,	/* JSON floating point value in float form */
@@ -6782,6 +7050,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	false,	/* true ==> value < 0 */
+	false,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	4294967296,	/* JSON floating point value in float form */
@@ -6806,6 +7075,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	false,	/* true ==> value < 0 */
+	true,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	4294967296,	/* JSON floating point value in float form */
@@ -6830,6 +7100,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	false,	/* true ==> value < 0 */
+	false,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	8589934592,	/* JSON floating point value in float form */
@@ -6854,6 +7125,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	false,	/* true ==> value < 0 */
+	false,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	8589934592,	/* JSON floating point value in float form */
@@ -6878,6 +7150,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	false,	/* true ==> value < 0 */
+	true,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	8589934592,	/* JSON floating point value in float form */
@@ -6902,6 +7175,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	false,	/* true ==> value < 0 */
+	false,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	8589934592,	/* JSON floating point value in float form */
@@ -6926,6 +7200,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	false,	/* true ==> value < 0 */
+	false,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	8589934592,	/* JSON floating point value in float form */
@@ -6950,6 +7225,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	false,	/* true ==> value < 0 */
+	true,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	8589934592,	/* JSON floating point value in float form */
@@ -6974,6 +7250,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	false,	/* true ==> value < 0 */
+	false,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	8589934592,	/* JSON floating point value in float form */
@@ -6998,6 +7275,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	false,	/* true ==> value < 0 */
+	false,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	8589934592,	/* JSON floating point value in float form */
@@ -7022,6 +7300,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	false,	/* true ==> value < 0 */
+	true,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	8589934592,	/* JSON floating point value in float form */
@@ -7046,6 +7325,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	false,	/* true ==> value < 0 */
+	false,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	8589934592,	/* JSON floating point value in float form */
@@ -7070,6 +7350,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	false,	/* true ==> value < 0 */
+	false,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	8589934592,	/* JSON floating point value in float form */
@@ -7094,6 +7375,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	false,	/* true ==> value < 0 */
+	true,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	8589934592,	/* JSON floating point value in float form */
@@ -7118,6 +7400,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	false,	/* true ==> value < 0 */
+	false,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	8589934592,	/* JSON floating point value in float form */
@@ -7142,6 +7425,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	false,	/* true ==> value < 0 */
+	false,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	8589934592,	/* JSON floating point value in float form */
@@ -7166,6 +7450,7 @@ struct json_floating test_result[TEST_COUNT] = {
 
 	true,	/* true ==> able to convert JSON floating point to some form of C floating point type */
 	false,	/* true ==> value < 0 */
+	true,	/* true ==> e notation used */
 
 	true,	/* true ==> converted JSON floating point to C float */
 	8589934592,	/* JSON floating point value in float form */

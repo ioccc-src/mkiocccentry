@@ -238,6 +238,7 @@ struct json_floating
 
     bool converted;		/* true ==> able to convert JSON floating point string to some form of C floating point */
     bool is_negative;		/* true ==> value < 0 */
+    bool is_e_notation;		/* true ==> e notation used */
 
     bool float_sized;		/* true ==> converted JSON float to C float */
     float as_float;		/* JSON floating point value in float form, if float_sized  == true */
@@ -640,6 +641,7 @@ extern void free_author_array(struct author *authorp, int author_count);
 extern bool is_json_code_ignored(int code);
 extern void ignore_json_code(int code);
 /* JSON conversion functions */
+extern void json_conv_free(struct json *node);
 extern struct json *json_conv_int(char const *str, size_t len);
 extern struct json *json_conv_int_str(char const *str, size_t *retlen);
 extern struct json *json_conv_float(char const *str, size_t len);

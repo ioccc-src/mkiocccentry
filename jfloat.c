@@ -205,6 +205,14 @@ main(int argc, char *argv[])
 		dbg(DBG_VVHIGH, "test_result[%d].is_negative: %d == item.is_negative: %d",
 			        i, test_result[i].is_negative, item->is_negative);
 	    }
+	    if (test_result[i].is_e_notation != item->is_e_notation) {
+		dbg(DBG_VHIGH, "test_result[%d].is_e_notation: %d != item.is_e_notation: %d",
+			     i, test_result[i].is_e_notation, item->is_e_notation);
+		test_error = true;
+	    } else {
+		dbg(DBG_VVHIGH, "test_result[%d].is_e_notation: %d == item.is_e_notation: %d",
+			        i, test_result[i].is_e_notation, item->is_e_notation);
+	    }
 
 	    /* test: float */
 	    check_val(&test_error, "float", i,
@@ -350,12 +358,14 @@ main(int argc, char *argv[])
 	    print("\t%ju,\t/* length of as_str */\n\n", (uintmax_t)inputlen);
 
 	    /*
-	     * print bool converted and bool is_negative
+	     * print bool converted, bool is_negative and e notation booleans
 	     */
 	    print("\t%s,\t/* true ==> able to convert JSON floating point to some form of C floating point type */\n",
 		  item->converted ? "true" : "false");
 	    print("\t%s,\t/* true ==> value < 0 */\n",
 		  item->is_negative ? "true" : "false");
+	    print("\t%s,\t/* true ==> e notation used */\n",
+		  item->is_e_notation ? "true" : "false");
 
 	    /*
 	     * print float info
@@ -388,11 +398,12 @@ main(int argc, char *argv[])
 	}
 
 	/*
-	 * free buffer
+	 * free node
 	 */
-	if (item != NULL) {
-	    free(item);
-	    item = NULL;
+	if (node != NULL) {
+	    json_conv_free(node);
+	    free(node);
+	    node = NULL;
 	}
     }
 

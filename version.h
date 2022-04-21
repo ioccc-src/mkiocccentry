@@ -124,12 +124,12 @@
 /*
  * official jint version
  */
-#define JINT_VERSION "0.4 2022-03-31"		/* format: major.minor YYYY-MM-DD */
+#define JINT_VERSION "0.5 2022-04-20"		/* format: major.minor YYYY-MM-DD */
 
 /*
  * official jfloat version
  */
-#define JFLOAT_VERSION "0.4 2022-04-13"		/* format: major.minor YYYY-MM-DD */
+#define JFLOAT_VERSION "0.5 2022-04-20"		/* format: major.minor YYYY-MM-DD */
 
 /*
  * minimum bison version needed to build the JSON parser
