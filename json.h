@@ -54,83 +54,6 @@
 #define BYTE_VALUES (MAX_BYTE+1)    /* number of different combinations of bytes */
 
 /*
- * the next five are for the json_filename() function
- */
-#define INFO_JSON	(0)	    /* file is assumed to be a .info.json file */
-#define AUTHOR_JSON	(1)	    /* file is assumed to be a .author.json file */
-#define INFO_JSON_FILENAME ".info.json"
-#define AUTHOR_JSON_FILENAME ".author.json"
-#define INVALID_JSON_FILENAME "null"
-
-#define FORMED_UTC_FMT "%a %b %d %H:%M:%S %Y UTC"   /* format of strptime() for formed_UTC check */
-
-/*
- * JSON warn/error code struct, variables, constants and macros for the jwarn()
- * and jerr() functions. Functions are prototyped later in the file.
- */
-extern bool show_full_json_warnings;
-
-/*
- * JSON warn / error codes
- *
- * Codes 0 - 199 are reserved for special purposes so all normal codes should be
- * >= JSON_CODE_MIN && <= JSON_CODE_MAX via the JSON_CODE macro.
- *
- * NOTE: The reason 200 codes are reserved is because it's more than enough ever
- * and we don't want to have to ever change the codes after the parser and
- * checkers are complete as this would cause problems for the tools as well as
- * the test suites. Previously the range was 0 - 99 and although this is also
- * probably more than enough we want to be sure that there is never a problem
- * and we cannot imagine how 200 codes will ever not be a large enough range but
- * if the use of reserved codes change this might not be the case for just 100
- * (unlikely though that is).
- */
-/* reserved code: all normal codes should be >= JSON_CODE_MIN && <= JSON_CODE_MAX via JSON_CODE macro */
-#define JSON_CODE_RESERVED_MIN (0)
-/* reserved code: all normal codes should be >= JSON_CODE_MIN && <= JSON_CODE_MAX via JSON_CODE macro */
-#define JSON_CODE_RESERVED_MAX (199)
-/* based on minimum reserved code, form an invalid json code number */
-#define JSON_CODE_INVALID (JSON_CODE_RESERVED_MIN - 1)
-/*
- * The minimum code for jwarn() is the JSON_CODE_RESERVED_MAX (currently 199) + 1.
- * However this does not mean that calls to jwarn() cannot use <= the
- * JSON_CODE_RESERVED_MAX: it's just for special purposes e.g. codes that are
- * used in more than one location.
- */
-#define JSON_CODE_MIN (1+JSON_CODE_RESERVED_MAX)
-/* The maximum json code for jwarn()/jerr(). This was arbitrarily selected. */
-#define JSON_CODE_MAX (9999)
-/* the number of unreserved JSON codes for jwarn()/jerr(): the max - the min + 1 */
-#define NUM_UNRESERVED_JSON_CODES (JSON_CODE_MAX-JSON_CODE_MIN)
-/*
- * To distinguish that a number is a JSON warn/error code rather than any other
- * type of number we use these macros.
- */
-#define JSON_CODE(x) ((x)+JSON_CODE_RESERVED_MAX)
-/* reserved JSON code */
-#define JSON_CODE_RESERVED(x) (x)
-
-/*
- * JSON error codes to ignore
- *
- * When a tool is given command line arguments of the form:
- *
- *	.. -W 123 -W 1345 -W 56 ...
- *
- * this means the tool will ignore {JSON-0123}, {JSON-1345} and {JSON-0056}.
- * The ignore_json_code_set[] table holds the JSON codes to ignore.
- */
-#define JSON_CODE_IGNORE_CHUNK (64)	/* number of codes to calloc or realloc at a time */
-
-struct ignore_json_code
-{
-    int next_free;	/* the index of the next allowed but free JSON error code */
-    int alloc;		/* number of JSON error codes allocated */
-    int *code;		/* pointer to the allocated list of codes, or NULL (not allocated) */
-};
-extern struct ignore_json_code *ignore_json_code_set;
-
-/*
  * JSON parser related structs
  */
 
@@ -375,8 +298,7 @@ enum element_type {
 /*
  * struct json - element for the JSON parse tree
  *
- * For the parse tree we have this struct and its associated union. At the risk
- * of stating the obvious this is incomplete but it's a good start.
+ * For the parse tree we have this struct and its associated union.
  */
 struct json
 {
@@ -395,98 +317,13 @@ struct json
     /*
      * JSON parse tree double links
      *
-     * NOTE: If a pointer is NULL, then it means you have reached the end of the linked list
-     *	     and/or at the end/top/bottom of the tree.
+     * NOTE: If a pointer is NULL then it means you have reached the end of the
+     *	     linked list and/or at the end/top/bottom of the tree.
      */
     struct json *parent;	/* parent node in the JSON parse tree, or NULL if tree root or unlinked */
     struct json *prev;		/* previous in a JSON parse tree linked list, or NULL is link head or unlinked */
     struct json *next;		/* next in a JSON parse tree linked list, or NULL is link tail or unlinked */
 };
-
-
-/*
- * JSON value: a linked list of all values of the same json_field (below).
- *
- * NOTE: As the parser is built this struct (and struct json_field below) might
- * be removed. This will depend upon how the parser builds the tree and this has
- * not been decided yet. Notice the TODO comment in the struct json above for
- * more information on this.
- */
-struct json_value
-{
-    char *value;
-
-    int line_num;	    /* the 'line number': actually the field number in the list */
-
-    struct json_value *next;
-};
-
-/*
- * JSON field: a JSON field consists of the name and all the values (if more
- * than one field of the same name is found in the file).
- *
- * NOTE: As the parser is built this struct (and struct json_value above) might
- * be removed. This will depend upon how the parser builds the tree and this has
- * not been decided yet. Notice the TODO comment in the struct json above for
- * more information on this.
- */
-struct json_field
-{
-    char *name;			/* field name */
-    struct json_value *values;	/* linked list of values */
-
-    /*
-     * the below are for the tables: common_json_fields, info_json_fields and
-     * author_json_fields:
-     *
-     * Number of times this field has been seen in the list, how many are
-     * actually allowed and whether the field has been found: This is for the
-     * tables that say many times a field has been seen, how many times it
-     * is allowed and whether or not it's been seen (it is true that this could
-     * simply be count > 0 but this is to be more clear, however slight).
-     *
-     * In other words this is done as part of the checks after the field:value
-     * pairs have been extracted.
-     *
-     * NOTE: A max_count == 0 means that there's no limit and that it's not
-     * required.
-     */
-    size_t count;		/* how many of this field in the list (or how many values) */
-    size_t max_count;		/* how many of this field is allowed */
-    bool found;			/* if this field was found */
-
-    /*
-     * These are used in both checking and parsing: checking that the data is
-     * valid and parsing in that certain data types have to be parsed
-     * differently.
-     *
-     * Data type: one of JSON_NUM, JSON_BOOL, JSON_CHARS or
-     * JSON_ARRAY_ equivalents.
-     */
-    int field_type;
-    /*
-     * Some strings can be empty but others cannot; there are no other values
-     * that can currently be empty but this is for all lists so we have to
-     * include this bool
-     */
-    bool can_be_empty;	    /* if the value can be empty */
-
-
-    /* NOTE: don't add to more than one list */
-    struct json_field *next;	/* the next in the whatever list */
-};
-
-extern struct json_field common_json_fields[];
-extern size_t SIZEOF_COMMON_JSON_FIELDS_TABLE;
-
-/*
- * linked list of the common json fields found in the .info.json and
- * .author.json files.
- *
- * A common json field is a field that is supposed to be in both .info.json and
- * .author.json.
- */
-struct json_field *found_common_json_fields;
 
 /*
  * common json fields - for use in mkiocccentry.
@@ -590,56 +427,14 @@ struct info
     struct json_common common;	/* fields that are common to this struct info and struct author (above) */
 };
 
-
 /*
  * external function declarations
  */
 extern char *json_encode(char const *ptr, size_t len, size_t *retlen);
 extern char *json_encode_str(char const *str, size_t *retlen);
 extern void jencchk(void);
-extern bool json_putc(uint8_t const c, FILE *stream);
 extern char *json_decode(char const *ptr, size_t len, size_t *retlen);
 extern char *json_decode_str(char const *str, size_t *retlen);
-
-/* jinfochk and jauthchk related */
-extern struct json_field *find_json_field_in_table(struct json_field *table, char const *name, size_t *loc);
-extern char const *json_filename(int type);
-/* checks on the JSON fields tables */
-extern void check_json_fields_tables(void);
-extern void check_common_json_fields_table(void);
-extern void check_author_json_fields_table(void);
-extern void check_info_json_fields_table(void);
-extern int check_first_json_char(char const *file, char *data, char **first, char ch);
-extern int check_last_json_char(char const *file, char *data, char **last, char ch);
-extern struct json_field *add_found_common_json_field(char const *json_filename, char const *name, char const *val, int line_num);
-extern bool add_common_json_field(char const *program, char const *json_filename, char *name, char *val, int line_num);
-extern int check_found_common_json_fields(char const *program, char const *json_filename, char const *fnamchk, bool test);
-extern struct json_field *new_json_field(char const *json_filename, char const *name, char const *val, int line_num);
-extern struct json_value *add_json_value(char const *json_filename, struct json_field *field, char const *val, int line_num);
-extern void jwarn(int code, const char *program, char const *name, char const *filename, char const *line,
-		  int line_num, const char *fmt, ...) \
-	__attribute__((format(printf, 7, 8)));		/* 7=format 8=params */
-extern void jwarnp(int code, const char *program, char const *name, char const *filename, char const *line,
-		   int line_num, const char *fmt, ...) \
-	__attribute__((format(printf, 7, 8)));		/* 7=format 8=params */
-extern void jerr(int exitcode, char const *program, const char *name, char const *filename, char const *line,
-		 int line_num, const char *fmt, ...) \
-	__attribute__((noreturn)) __attribute__((format(printf, 7, 8))); /* 7=format 8=params */
-extern void jerrp(int exitcode, char const *program, const char *name, char const *filename, char const *line,
-		  int line_num, const char *fmt, ...) \
-	__attribute__((noreturn)) __attribute__((format(printf, 7, 8))); /* 7=format 8=params */
-
-
-/* free() functions */
-extern void free_json_field_values(struct json_field *field);
-extern void free_found_common_json_fields(void);
-extern void free_json_field(struct json_field *field);
-/* these free() functions are also used in mkiocccentry.c */
-extern void free_info(struct info *infop);
-extern void free_author_array(struct author *authorp, int author_count);
-/* ignore code functions */
-extern bool is_json_code_ignored(int code);
-extern void ignore_json_code(int code);
 /* JSON conversion functions */
 extern void json_conv_free(struct json *node);
 extern struct json *json_conv_int(char const *str, size_t len);
@@ -652,6 +447,18 @@ extern struct json *json_conv_bool(char const *str, size_t len);
 extern struct json *json_conv_bool_str(char const *str, size_t *retlen);
 extern struct json *json_conv_null(char const *str, size_t len);
 extern struct json *json_conv_null_str(char const *str, size_t *retlen);
+/* functions to create json files */
+extern bool json_putc(uint8_t const c, FILE *stream);
+extern bool json_fprintf_str(FILE *stream, char const *str);
+extern bool json_fprintf_value_string(FILE *stream, char const *lead, char const *name, char const *middle, char const *value,
+				      char const *tail);
+extern bool json_fprintf_value_long(FILE *stream, char const *lead, char const *name, char const *middle, long value,
+				    char const *tail);
+extern bool json_fprintf_value_bool(FILE *stream, char const *lead, char const *name, char const *middle, bool value,
+				    char const *tail);
 
+/* these general JSON free() functions are used in mkiocccentry */
+extern void free_info(struct info *infop);
+extern void free_author_array(struct author *authorp, int author_count);
 
 #endif /* INCLUDE_JSON_H */

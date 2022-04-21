@@ -63,5 +63,6 @@ extern size_t SIZEOF_LOCATION_TABLE;
  * function prototypes
  */
 extern void check_location_table(void);
+extern char const *lookup_location_name(char const *upper_code);
 
 #endif				/* INCLUDE_LOCATION_H */
