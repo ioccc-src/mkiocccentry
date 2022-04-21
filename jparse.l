@@ -81,7 +81,7 @@ JTYPE_WHITESPACE	[ \t\r\n]+
  * let the conversion routines do the actual JSON checks: this way it keeps the
  * regex simple and we don't have to worry about any complexities.
  */
-JTYPE_STRING		\"([^"\n]|\")*\"
+JTYPE_STRING           \"[^"\n]*\"
 JTYPE_DIGIT		[0-9]
 JTYPE_DIGITS		{JTYPE_DIGIT}+
 JTYPE_EXPONENT		[Ee][-+]?[0-9]+
