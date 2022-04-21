@@ -472,3 +472,44 @@ check_location_table(void)
 }
 
 
+/*
+ * lookup_location_name - convert a ISO 3166-1 Alpha-2 into a location name
+ *
+ * given:
+ *      upper_code      - ISO 3166-1 Alpha-2 in UPPER CASE
+ *
+ * return:
+ *      location name or NULL ==> unlisted code
+ *
+ * This function does not return on error.
+ */
+char const *
+lookup_location_name(char const *upper_code)
+{
+    struct location *p;		/* entry in the location table */
+
+    /*
+     * firewall
+     */
+    if (upper_code == NULL) {
+	err(11, __func__, "called with NULL arg(s)");
+	not_reached();
+    }
+
+    /*
+     * search location table for the code
+     */
+    for (p = &loc[0]; p->code != NULL && p->name != NULL; ++p) {
+	if (strcmp(upper_code, p->code) == 0) {
+	    dbg(DBG_VHIGH, "code %s name found: %s", p->code, p->name);
+	    break;
+	}
+    }
+
+    /*
+     * return name or NULL
+     */
+    return p->name;
+}
+
+

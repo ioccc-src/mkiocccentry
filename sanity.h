@@ -42,6 +42,15 @@
 #include "json.h"
 
 /*
+ * jparsefuncs.h - functions and variables that are specific to the JSON parser
+ *
+ * NOTE: This does not include the json struct.
+ *
+ */
+#include "jparsefuncs.h"
+
+
+/*
  * function prototypes
  */
 extern void ioccc_sanity_chks(void); /* all *_sanity_chks() functions should call this */

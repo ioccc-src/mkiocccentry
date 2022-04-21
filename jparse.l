@@ -72,31 +72,16 @@ YY_BUFFER_STATE bs;
 JTYPE_WHITESPACE	[ \t\r\n]+
 
 /*
- * XXX This next pattern is NOT used in the parser or scanner and IT IS INVALID.
- * It's only here for reference of what would be a basic string WITHOUT THE
- * JSON RULES. This is why it's only in a comment and this comment will be
- * removed once the JTYPE_STRING regex is correct.
+ * XXX JTYPE_STRING is NOT correct! It does capture basic strings but it does
+ * not address everything correctly.
  *
- *	JTYPE_QUOTED_TEXT	\"[^"\n]*\"
+ * Now one might ask questions about the tighter restrictions on JSON strings
+ * and why we don't even consider them. This is a good question but the answer
+ * is simple: once more is done with the parser structs and functions we will
+ * let the conversion routines do the actual JSON checks: this way it keeps the
+ * regex simple and we don't have to worry about any complexities.
  */
-
-/*
- * NOTE: JTYPE_HEX does not have \\ prepended to the 'u' because the regex for
- * JTYPE_STRING already has the \\ as it also checks for \- escape characters.
- * Currently JTYPE_HEX is not actually used but will very likely be used to
- * break the JTYPE_STRING regex up to make it easier for a human (like me) to
- * parse. At this point it might in fact have the \\ prepended to the 'u' but
- * this is not decided.
- */
-JTYPE_HEX		u[0-9a-fA-F]{4}
-/*
- * NOTE: JTYPE_UNICODE is for invalid unicode characters but is not yet used.
- * It's also possible that it's incorrect: this is to be determined later as I
- * break down the JTYPE_STRING regex to make it easier for a human (like me) to
- * parse.
- */
-JTYPE_UNICODE		[^\"\\\0-\x1F\x7F]+
-JTYPE_STRING		"(\"(((?=\\)\\([\"\\\/bfnrt]|u[0-9a-fA-F]{4}))|[^\"\\\0-\x1F\x7F]+)*\")"
+JTYPE_STRING           \"[^"\n]*\"
 JTYPE_DIGIT		[0-9]
 JTYPE_DIGITS		{JTYPE_DIGIT}+
 JTYPE_EXPONENT		[Ee][-+]?[0-9]+

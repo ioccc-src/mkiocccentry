@@ -206,19 +206,11 @@ static void warn_Makefile(char const *Makefile, struct info *infop);
 static void check_Makefile(struct info *infop, char const *entry_dir, char const *cp, char const *Makefile);
 static void check_remarks_md(struct info *infop, char const *entry_dir, char const *cp, char const *remarks_md);
 static void check_extra_data_files(struct info *infop, char const *entry_dir, char const *cp, int count, char **args);
-static char const *lookup_location_name(char const *upper_code);
 static bool yes_or_no(char const *question);
 static char *get_title(struct info *infop);
 static char *get_abstract(struct info *infop);
 static int get_author_info(struct info *infop, char *ioccc_id, struct author **author_set);
 static void verify_entry_dir(char const *entry_dir, char const *ls);
-static bool json_fprintf_str(FILE *stream, char const *str);
-static bool json_fprintf_value_string(FILE *stream, char const *lead, char const *name, char const *middle, char const *value,
-				      char const *tail);
-static bool json_fprintf_value_long(FILE *stream, char const *lead, char const *name, char const *middle, long value,
-				    char const *tail);
-static bool json_fprintf_value_bool(FILE *stream, char const *lead, char const *name, char const *middle, bool value,
-				    char const *tail);
 static void write_info(struct info *infop, char const *entry_dir, char const *jinfochk, char const *fnamchk);
 static void write_author(struct info *infop, int author_count, struct author *authorp, char const *entry_dir, char const *jauthchk);
 static void form_tarball(char const *work_dir, char const *entry_dir, char const *tarball_path, char const *tar,
