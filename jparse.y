@@ -101,7 +101,8 @@ int token_type = 0;
 %%
 json:		%empty |
 		json_element |
-		JTYPE_OPEN_BRACE JTYPE_CLOSE_BRACE
+		JTYPE_OPEN_BRACE JTYPE_CLOSE_BRACE |
+		JTYPE_OPEN_BRACKET JTYPE_CLOSE_BRACKET
 		;
 
 json_value:	json_object |
