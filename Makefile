@@ -430,7 +430,8 @@ jparse.tab.c jparse.tab.h: jparse.y bfok.sh limit_ioccc.sh verge jparse.tab.ref.
 	    else \
 		echo "$$BISON_PATH -d jparse.y"; \
 		"$$BISON_PATH" -d jparse.y; \
-		if [[ -s jparse.tab.c && -s jparse.tab.h ]]; then \
+		status="$$?"; \
+		if [[ $$status -eq 0 && -s jparse.tab.c && -s jparse.tab.h ]]; then \
 		    echo '# prepending comment and line number reset to jparse.tab.c'; \
 		    echo "${CP} -f -v sorry.tm.ca.h $$TMP_JPARSE_TAB_C"; \
 		    ${CP} -f -v sorry.tm.ca.h "$$TMP_JPARSE_TAB_C"; \
@@ -491,7 +492,8 @@ jparse.c: jparse.l jparse.tab.h bfok.sh limit_ioccc.sh verge jparse.ref.c Makefi
 	    else \
 		echo "$$FLEX_PATH -8 -o jparse.c jparse.l"; \
 		"$$FLEX_PATH" -8 -o jparse.c jparse.l; \
-		if [[ -s jparse.c ]]; then \
+		status="$$?"; \
+		if [[ $$status -eq 0 && -s jparse.c ]]; then \
 		    echo '# prepending comment and line number reset to jparse.c'; \
 		    echo "${CP} -f -v sorry.tm.ca.h $$TMP_JPARSE_C"; \
 		    ${CP} -f -v sorry.tm.ca.h "$$TMP_JPARSE_C"; \
@@ -535,7 +537,7 @@ jparse.c: jparse.l jparse.tab.h bfok.sh limit_ioccc.sh verge jparse.ref.c Makefi
 prep: prep.sh
 	${RM} -f ${BUILD_LOG}
 	./prep.sh 2>&1 | ${TEE} ${BUILD_LOG}
-	@echo NOTE: The above details were saved to ${BUILD_LOG}.
+	@echo NOTE: The above details were saved in the file: ${BUILD_LOG}
 
 # things to do before a release, forming a pull request and/or updating the
 # GitHub repo.
