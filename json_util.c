@@ -31,7 +31,7 @@
 
 
 /*
- * static declaractions
+ * static declarations
  */
 static void alloc_json_code_ignore_set(void);
 static int cmp_codes(const void *a, const void *b);
