@@ -198,4 +198,8 @@ extern void posix_safe_chk(char const *str, size_t len, bool *slash, bool *posix
 extern void clearerr_or_fclose(char const *filename, FILE *file);
 extern void print_newline(bool output_newline);
 
+/* find non-whitespace text */
+extern size_t scan_text(char *ptr, size_t len, char **first);
+extern size_t scan_text_str(char *str, char **first);
+
 #endif				/* INCLUDE_UTIL_H */

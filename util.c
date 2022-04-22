@@ -3043,3 +3043,113 @@ print_newline(bool output_newline)
 	}
     }
 }
+
+
+/*
+ * find_text - find text within a field of whitespace and trailing NUL bytes
+ *
+ * given:
+ *	ptr	    address to start looking for text
+ *	len	    amount of data to search thru
+ *	**first	    if non-NULL and return > 0, location if first non-whitespace/non-NUL text
+ *
+ * returns:
+ *	number of non-whitespace/non-NUL bytes found, or
+ *	0 if no non-whitespace/non-NUL bytes found, or if buf == NULL
+ */
+size_t
+scan_text(char *ptr, size_t len, char **first)
+{
+    size_t ret = 0;	/* number of non-whitespace/non-NUL bytes found */
+    size_t i;
+
+    /*
+     * firewall
+     */
+    if (ptr == NULL) {
+	warn(__func__, "ptr is NULL");
+	return 0;
+    }
+    if (len <= 0) {
+	return 0;
+    }
+
+    /*
+     * scan the buffer for non-whitespace/non-NUL
+     */
+    for (i=0; i < len; ++i) {
+	if ((!isascii(ptr[i]) || !isspace(ptr[i])) && ptr[i] != '\0') {
+	    break;
+	}
+    }
+
+    /*
+     * case: only whitespace found
+     */
+    if (i >= len) {
+	return 0;
+    }
+
+    /*
+     * note the first non-whitespace character if required
+     */
+    if (first != NULL) {
+	*first = ptr+i;
+    }
+
+    /*
+     * determine the length of non-whitespace/non-NUL
+     */
+    while (i < len) {
+	++ret;
+	if ((!isascii(ptr[i]) || !isspace(ptr[i])) && ptr[i] != '\0') {
+	    break;
+	}
+    }
+
+    /*
+     * return length
+     */
+    return ret;
+}
+
+
+/*
+ * find_text - find text within a field of whitespace and trailing NUL bytes
+ *
+ * given:
+ *	str	    address of a NUL terminated string to start looking for text
+ *	**first	    if non-NULL and return > 0, location if first non-whitespace/non-NUL text
+ *
+ * returns:
+ *	number of non-whitespace/non-NUL bytes found, or
+ *	0 if no non-whitespace/non-NUL bytes found, or if buf == NULL
+ */
+size_t
+scan_text_str(char *str, char **first)
+{
+    size_t ret = 0;	/* number of non-whitespace/non-NUL bytes found */
+    size_t len = 0;	/* length of str */
+
+    /*
+     * firewall
+     */
+    if (str == NULL) {
+	warn(__func__, "str is NULL");
+	return 0;
+    }
+    if (len <= 0) {
+	return 0;
+    }
+
+    /*
+     * convert to json_conv_null() call
+     */
+    len = strlen(str);
+    ret = scan_text(str, len, first);
+
+    /*
+     * return the JSON parse tree element
+     */
+    return ret;
+}

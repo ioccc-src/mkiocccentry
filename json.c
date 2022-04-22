@@ -2400,7 +2400,7 @@ json_conv_string(char const *ptr, size_t len, bool quote)
      */
     item = &(ret->element.string);
     item->as_str = NULL;
-    item->ptr = NULL;
+    item->str = NULL;
     item->converted = false;
     item->quote = false;
     item->same = false;
@@ -2463,8 +2463,8 @@ json_conv_string(char const *ptr, size_t len, bool quote)
      * decode the JSON encoded string
      */
     /* decode the entire string */
-    item->ptr = json_decode_str(item->as_str, &(item->str_len));
-    if (item->ptr == NULL) {
+    item->str = json_decode_str(item->as_str, &(item->str_len));
+    if (item->str == NULL) {
 	warn(__func__, "quote === %s: JSON string decode failed for: <%s>",
 		       (quote ? "true" : "false"), item->as_str);
 	return ret;
@@ -2474,19 +2474,19 @@ json_conv_string(char const *ptr, size_t len, bool quote)
     /*
      * determine if decoded string is identical to the original JSON encoded string
      */
-    if (item->as_str_len == item->str_len && memcmp(item->as_str, item->ptr, item->as_str_len) == 0) {
+    if (item->as_str_len == item->str_len && memcmp(item->as_str, item->str, item->as_str_len) == 0) {
 	item->same = true;	/* decoded string same an original JSON encoded string (perhaps sans '"'s) */
     }
 
     /*
      * determine if decoded JSON string is a C string
      */
-    item->has_nul = is_string(item->ptr, item->str_len);
+    item->has_nul = is_string(item->str, item->str_len);
 
     /*
      * determine POSIX state of the decoded string
      */
-    posix_safe_chk(item->ptr, item->str_len, &item->slash, &item->posix_safe, &item->first_alphanum, &item->upper);
+    posix_safe_chk(item->str, item->str_len, &item->slash, &item->posix_safe, &item->first_alphanum, &item->upper);
 
     /*
      * return the JSON parse tree element
