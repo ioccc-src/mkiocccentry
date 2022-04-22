@@ -99,7 +99,6 @@ bool quiet = false;			/* true ==> quiet mode */
 /**/
 static char const *program = NULL;			/* our name */
 static char *program_basename = NULL;			/* our basename */
-struct author author;					/* the .author.json struct */
 static bool test = false;				/* true ==> some tests are not performed */
 static struct json_field *found_author_json_fields;	/* list of fields specific to .author.json found */
 extern struct json_field author_json_fields[];

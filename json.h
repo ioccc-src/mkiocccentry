@@ -43,19 +43,22 @@
 
 
 /*
- * definitions
+ * JSON parser related structures
  */
 
-/*
- * byte as octet constants
- */
-#define BITS_IN_BYTE (8)	    /* assume 8 bit bytes */
-#define MAX_BYTE (0xff)		    /* maximum byte value */
-#define BYTE_VALUES (MAX_BYTE+1)    /* number of different combinations of bytes */
 
 /*
- * JSON parser related structs
+ * JSON encoding of an octet in a JSON string
+ *
+ * XXX - this table assumes we process on a byte basis - XXX
+ * XXX - consider an approach that allowed for smaller UTF-8 non-ASCII encoding - XXX
  */
+struct encode {
+    const u_int8_t byte;    /* 8 bit character to encode */
+    const size_t len;	    /* length of encoding */
+    const char * const enc; /* JSON encoding of val */
+};
+
 
 /*
  * parsed JSON integer
@@ -69,6 +72,8 @@
  *	 Normally the bison / flex code that would call json_conv_int(str, len)
  *	 will ONLY have the JSON integer string, we note this in case some other
  *	 future code that is not a careful calls json_conv_int(str, len).
+ *
+ * XXX - combine struct json_integer and struct json_floating into a single struct json_number - XXX
  */
 struct json_integer
 {
@@ -151,6 +156,8 @@ struct json_integer
  *	 Normally the bison / flex code that would call json_conv_float(str, len)
  *	 will ONLY have the JSON integer string, we note this in case some other
  *	 future code that is not a careful calls json_conv_float(str, len).
+ *
+ * XXX - combine struct json_integer and struct json_floating into a single struct json_number - XXX
  */
 struct json_floating
 {
@@ -325,107 +332,14 @@ struct json
     struct json *next;		/* next in a JSON parse tree linked list, or NULL is link tail or unlinked */
 };
 
+
 /*
- * common json fields - for use in mkiocccentry.
+ * external data structures
  *
- * NOTE: We don't use the json_field or json_value fields here because this
- * struct is for mkiocccentry which is in control of what's written whereas for
- * jinfochk and jauthchk we don't have control of what's in the file and we
- * can't prove that it wasn't made by hand or some other utility.
+ * XXX - this table assumes we process on a byte basis - XXX
+ * XXX - consider an approach that allowed for smaller UTF-8 non-ASCII encoding - XXX
  */
-struct json_common
-{
-    /*
-     * version
-     */
-    char *mkiocccentry_ver;	/* mkiocccentry version (MKIOCCCENTRY_VERSION) */
-    char const *iocccsize_ver;	/* iocccsize version (compiled in, same as iocccsize -V) */
-    char const *jinfochk_ver;	/* jinfochk version (compiled in, same as jinfochk -V) */
-    char const *jauthchk_ver;	/* jauthchk version (compiled in, same as jauthchk -V) */
-    char const *fnamchk_ver;	/* fnamchk version (compiled in, same as fnamchk -V) */
-    char const *txzchk_ver;	/* txzchk version (compiled in, same as txzchk -V) */
-    /*
-     * entry
-     */
-    char *ioccc_id;		/* IOCCC contest ID */
-    int entry_num;		/* IOCCC entry number */
-    char *tarball;		/* tarball filename */
-    bool test_mode;		/* true ==> test mode entered */
-
-    /*
-     * time
-     */
-    time_t tstamp;		/* seconds since epoch when .info json was formed (see gettimeofday(2)) */
-    int usec;			/* microseconds since the tstamp second */
-    char *epoch;		/* epoch of tstamp, currently: Thu Jan 1 00:00:00 1970 UTC */
-    char *utctime;		/* UTC converted string for tstamp (see strftime(3)) */
-};
-
-/*
- * author info
- */
-struct author
-{
-    char *name;			/* name of the author */
-    char *location_code;	/* author location/country code */
-    char const *location_name;	/* name of author location/country */
-    char *email;		/* Email address of author or or empty string ==> not provided */
-    char *url;			/* home URL of author or or empty string ==> not provided */
-    char *twitter;		/* author twitter handle or or empty string ==> not provided */
-    char *github;		/* author GitHub username or or empty string ==> not provided */
-    char *affiliation;		/* author affiliation or or empty string ==> not provided */
-    bool past_winner;		/* true ==> author claims to have won before, false ==> author claims not a prev winner */
-    bool default_handle;	/* true ==> default author_handle accepted, false ==> author_handle entered */
-    char *author_handle;	/* IOCCC author handle (for winning entries) */
-    int author_num;		/* author number */
-
-    struct json_common common;	/* fields that are common to this struct author and struct info (below) */
-};
-
-/*
- * info for JSON
- *
- * Information we will collect in order to form the .info json file.
- */
-struct info
-{
-    /*
-     * entry
-     */
-    char *title;		/* entry title */
-    char *abstract;		/* entry abstract */
-    off_t rule_2a_size;		/* Rule 2a size of prog.c */
-    size_t rule_2b_size;	/* Rule 2b size of prog.c */
-    bool empty_override;	/* true ==> empty prog.c override requested */
-    bool rule_2a_override;	/* true ==> Rule 2a override requested */
-    bool rule_2a_mismatch;	/* true ==> file size != rule_count function size */
-    bool rule_2b_override;	/* true ==> Rule 2b override requested */
-    bool highbit_warning;	/* true ==> high bit character(s) detected */
-    bool nul_warning;		/* true ==> NUL character(s) detected */
-    bool trigraph_warning;	/* true ==> unknown or invalid trigraph(s) detected */
-    bool wordbuf_warning;	/* true ==> word buffer overflow detected */
-    bool ungetc_warning;	/* true ==> ungetc warning detected */
-    bool Makefile_override;	/* true ==> Makefile rule override requested */
-    bool first_rule_is_all;	/* true ==> Makefile first rule is all */
-    bool found_all_rule;	/* true ==> Makefile has an all rule */
-    bool found_clean_rule;	/* true ==> Makefile has clean rule */
-    bool found_clobber_rule;	/* true ==> Makefile has a clobber rule */
-    bool found_try_rule;	/* true ==> Makefile has a try rule */
-    bool test_mode;		/* true ==> contest ID is test */
-    /*
-     * filenames
-     */
-    char *prog_c;		/* prog.c filename */
-    char *Makefile;		/* Makefile filename */
-    char *remarks_md;		/* remarks.md filename */
-    int extra_count;		/* number of extra files */
-    char **extra_file;		/* list of extra filenames followed by NULL */
-    /*
-     * time
-     */
-
-    struct json_common common;	/* fields that are common to this struct info and struct author (above) */
-};
+extern struct encode jenc[];
 
 /*
  * external function declarations
@@ -447,18 +361,6 @@ extern struct json *json_conv_bool(char const *str, size_t len);
 extern struct json *json_conv_bool_str(char const *str, size_t *retlen);
 extern struct json *json_conv_null(char const *str, size_t len);
 extern struct json *json_conv_null_str(char const *str, size_t *retlen);
-/* functions to create json files */
-extern bool json_putc(uint8_t const c, FILE *stream);
-extern bool json_fprintf_str(FILE *stream, char const *str);
-extern bool json_fprintf_value_string(FILE *stream, char const *lead, char const *name, char const *middle, char const *value,
-				      char const *tail);
-extern bool json_fprintf_value_long(FILE *stream, char const *lead, char const *name, char const *middle, long value,
-				    char const *tail);
-extern bool json_fprintf_value_bool(FILE *stream, char const *lead, char const *name, char const *middle, bool value,
-				    char const *tail);
 
-/* these general JSON free() functions are used in mkiocccentry */
-extern void free_info(struct info *infop);
-extern void free_author_array(struct author *authorp, int author_count);
 
 #endif /* INCLUDE_JSON_H */

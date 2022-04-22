@@ -1084,18 +1084,24 @@ main(int argc, char **argv)
 	    errp(31, __func__, "printf error printing the welcome string");
 	    not_reached();
 	}
+
+	/*
+	 * environment sanity checks
+	 */
+	para("", "Performing sanity checks on your environment ...", NULL);
+    }
+
+    /*
+     * validate JSON encoding table
+     */
+    jencchk();
+    if (!quiet) {
+	para("", "... JSON encoding table looks OK ...", NULL);
     }
 
     /* we have to find the fnamchk util */
     find_utils(false, NULL, false, NULL, false, NULL, false, NULL, fnamchk_flag_used, &fnamchk,
 	       false, NULL, false, NULL);
-
-    /*
-     * environment sanity checks
-     */
-    if (!quiet) {
-	para("", "Performing sanity checks on your environment ...", NULL);
-    }
 
     jauthchk_sanity_chks(file, fnamchk);
     if (!quiet) {

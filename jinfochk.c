@@ -1645,7 +1645,7 @@ main(int argc, char **argv)
     /*
      * Welcome
      */
-	if (!quiet) {
+    if (!quiet) {
 	errno = 0;			/* pre-clear errno for errp() */
 	ret = printf("Welcome to jinfochk version: %s\n", JINFOCHK_VERSION);
 	if (ret <= 0) {
@@ -1659,7 +1659,15 @@ main(int argc, char **argv)
 	para("", "Performing sanity checks on your environment ...", NULL);
     }
 
-    /* we have to find the fnamchk util */
+    /*
+     * validate JSON encoding table
+     */
+    jencchk();
+    if (!quiet) {
+	para("", "... JSON encoding table looks OK ...", NULL);
+    }
+
+    /* we have to find the proper utility programs */
     find_utils(false, NULL, false, NULL, false, NULL, false, NULL, fnamchk_flag_used, &fnamchk,
 	       false, NULL, false, NULL);
 

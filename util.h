@@ -100,6 +100,13 @@ typedef unsigned char bool;
 #define LLONG_MAX_BASE10_DIGITS (19)
 #define TBLLEN(x) (sizeof(x)/sizeof((x)[0]))	/* number of elements in an initialized table array */
 
+/*
+ * byte as octet constants
+ */
+#define BITS_IN_BYTE (8)	    /* assume 8 bit bytes */
+#define MAX_BYTE (0xff)		    /* maximum byte value */
+#define BYTE_VALUES (MAX_BYTE+1)    /* number of different combinations of bytes */
+
 
 /*
  * paths to utilities the IOCCC tools use (including our own tools fnamchk,
@@ -143,6 +150,7 @@ typedef unsigned char bool;
 /*
  * external function declarations
  */
+extern int const hexval[];
 extern char *base_name(char const *path);
 extern bool exists(char const *path);
 extern bool is_file(char const *path);

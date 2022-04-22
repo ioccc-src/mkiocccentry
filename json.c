@@ -1,6 +1,6 @@
 /* vim: set tabstop=8 softtabstop=4 shiftwidth=4 noexpandtab : */
 /*
- * json - JSON functions supporting mkiocccentry code
+ * json - JSON parse tree supporting functions
  *
  * JSON related functions to support formation of .info.json files
  * and .author.json files, their related check tools, test code,
@@ -70,13 +70,11 @@
 
 /*
  * JSON encoding of an octet in a JSON string
+ *
+ * XXX - this table assumes we process on a byte basis - XXX
+ * XXX - consider an approach that allowed for smaller UTF-8 non-ASCII encoding - XXX
  */
-struct encode {
-    u_int8_t byte;	    /* 8 bit character to encode */
-    size_t len;		    /* length of encoding */
-    const char * const enc; /* JSON encoding of val */
-};
-static struct encode jenc[BYTE_VALUES] = {
+struct encode jenc[BYTE_VALUES] = {
     /* \x00 - \x0f */
     {0x00, 6, "\\u0000"}, {0x01, 6, "\\u0001"}, {0x02, 6, "\\u0002"}, {0x03, 6, "\\u0003"},
     {0x04, 6, "\\u0004"}, {0x05, 6, "\\u0005"}, {0x06, 6, "\\u0006"}, {0x07, 6, "\\u0007"},
@@ -172,47 +170,6 @@ static struct encode jenc[BYTE_VALUES] = {
     {0xf4, 6, "\\u00f4"}, {0xf5, 6, "\\u00f5"}, {0xf6, 6, "\\u00f6"}, {0xf7, 6, "\\u00f7"},
     {0xf8, 6, "\\u00f8"}, {0xf9, 6, "\\u00f9"}, {0xfa, 6, "\\u00fa"}, {0xfb, 6, "\\u00fb"},
     {0xfc, 6, "\\u00fc"}, {0xfd, 6, "\\u00fd"}, {0xfe, 6, "\\u00fe"}, {0xff, 6, "\\u00ff"}
-};
-
-
-/*
- * hexval - concert ASCII character to hex value
- *
- * NOTE: -1 means the ASCII character is not a value hex character
- */
-static int hexval[BYTE_VALUES] = {
-    /* \x00 - \x0f */
-    -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
-    /* \x10 - \x1f */
-    -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
-    /* \x20 - \x2f */
-    -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
-    /* \x30 - \x3f */
-     0,  1,  2,  3,  4,  5,  6,  7,  8,  9, -1, -1, -1, -1, -1, -1,
-    /* \x40 - \x4f */
-    -1, 10, 11, 12, 13, 14, 15, -1, -1, -1, -1, -1, -1, -1, -1, -1,
-    /* \x50 - \x5f */
-    -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
-    /* \x60 - \x6f */
-    -1, 10, 11, 12, 13, 14, 15, -1, -1, -1, -1, -1, -1, -1, -1, -1,
-    /* \x70 - \x7f */
-    -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
-    /* \x80 - \x8f */
-    -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
-    /* \x90 - \x9f */
-    -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
-    /* \xa0 - \xaf */
-    -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
-    /* \xb0 - \xbf */
-    -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
-    /* \xc0 - \xcf */
-    -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
-    /* \xd0 - \xdf */
-    -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
-    /* \xe0 - \xef */
-    -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
-    /* \xf0 - \xff */
-    -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
 };
 
 
@@ -1393,165 +1350,6 @@ json_decode_str(char const *str, size_t *retlen)
 
 
 /*
- * free_info - free info and related sub-elements
- *
- * given:
- *      infop   - pointer to info structure to free
- *
- * This function does not return on error.
- */
-void
-free_info(struct info *infop)
-{
-    int i;
-
-    /*
-     * firewall
-     */
-    if (infop == NULL) {
-	err(162, __func__, "called with NULL arg(s)");
-	not_reached();
-    }
-
-    /*
-     * free version values
-     */
-    if (infop->common.mkiocccentry_ver != NULL) {
-	free(infop->common.mkiocccentry_ver);
-	infop->common.mkiocccentry_ver = NULL;
-    }
-
-    /*
-     * free entry values
-     */
-    if (infop->common.ioccc_id != NULL) {
-	free(infop->common.ioccc_id);
-	infop->common.ioccc_id = NULL;
-    }
-    if (infop->title != NULL) {
-	free(infop->title);
-	infop->title = NULL;
-    }
-    if (infop->abstract != NULL) {
-	free(infop->abstract);
-	infop->abstract = NULL;
-    }
-
-    /*
-     * free filenames
-     */
-    if (infop->prog_c != NULL) {
-	free(infop->prog_c);
-	infop->prog_c = NULL;
-    }
-    if (infop->Makefile != NULL) {
-	free(infop->Makefile);
-	infop->Makefile = NULL;
-    }
-    if (infop->remarks_md != NULL) {
-	free(infop->remarks_md);
-	infop->remarks_md = NULL;
-    }
-    if (infop->extra_file != NULL) {
-	for (i = 0; i < infop->extra_count; ++i) {
-	    if (infop->extra_file[i] != NULL) {
-		free(infop->extra_file[i]);
-		infop->extra_file[i] = NULL;
-	    }
-	}
-	free(infop->extra_file);
-	infop->extra_file = NULL;
-    }
-
-    if (infop->common.tarball != NULL) {
-	free(infop->common.tarball);
-	infop->common.tarball = NULL;
-    }
-
-    /*
-     * free time values
-     */
-    if (infop->common.epoch != NULL) {
-	free(infop->common.epoch);
-	infop->common.epoch = NULL;
-    }
-    if (infop->common.utctime != NULL) {
-	free(infop->common.utctime);
-	infop->common.utctime = NULL;
-    }
-    memset(infop, 0, sizeof *infop);
-
-    return;
-}
-
-
-/*
- * free_author_array - free storage related to a struct author *
- *
- * given:
- *      author_set      - pointer to a struct author array
- *      author_count    - length of author array
- */
-void
-free_author_array(struct author *author_set, int author_count)
-{
-    int i;
-
-    /*
-     * firewall
-     */
-    if (author_set == NULL) {
-	err(163, __func__, "called with NULL arg(s)");
-	not_reached();
-    }
-    if (author_count < 0) {
-	err(164, __func__, "author_count: %d < 0", author_count);
-	not_reached();
-    }
-
-    /*
-     * free elements of each array member
-     */
-    for (i = 0; i < author_count; ++i) {
-	if (author_set[i].name != NULL) {
-	    free(author_set[i].name);
-	    author_set[i].name = NULL;
-	}
-	if (author_set[i].location_code != NULL) {
-	    free(author_set[i].location_code);
-	    author_set[i].location_code = NULL;
-	}
-	if (author_set[i].email != NULL) {
-	    free(author_set[i].email);
-	    author_set[i].email = NULL;
-	}
-	if (author_set[i].url != NULL) {
-	    free(author_set[i].url);
-	    author_set[i].url = NULL;
-	}
-	if (author_set[i].twitter != NULL) {
-	    free(author_set[i].twitter);
-	    author_set[i].twitter = NULL;
-	}
-	if (author_set[i].github != NULL) {
-	    free(author_set[i].github);
-	    author_set[i].github = NULL;
-	}
-	if (author_set[i].affiliation != NULL) {
-	    free(author_set[i].affiliation);
-	    author_set[i].affiliation = NULL;
-	}
-	if (author_set[i].author_handle != NULL) {
-	    free(author_set[i].author_handle);
-	    author_set[i].author_handle = NULL;
-	}
-    }
-
-    memset(author_set, 0, sizeof *author_set);
-    return;
-}
-
-/*
  * json_conv_free - free JSON parser tree node
  *
  * given:
@@ -1684,7 +1482,7 @@ json_conv_int(char const *str, size_t len)
     errno = 0;			/* pre-clear errno for errp() */
     ret = calloc(1, sizeof(*ret));
     if (ret == NULL) {
-	errp(165, __func__, "calloc #0 error allocating %ju bytes", (uintmax_t)sizeof(*ret));
+	errp(162, __func__, "calloc #0 error allocating %ju bytes", (uintmax_t)sizeof(*ret));
 	not_reached();
     }
 
@@ -1746,7 +1544,7 @@ json_conv_int(char const *str, size_t len)
     errno = 0;			/* pre-clear errno for errp() */
     item->as_str = calloc(len+1+1, sizeof(char));
     if (item->as_str == NULL) {
-	errp(166, __func__, "calloc #1 error allocating %ju bytes", (uintmax_t)(len+1+1));
+	errp(163, __func__, "calloc #1 error allocating %ju bytes", (uintmax_t)(len+1+1));
 	not_reached();
     }
     strncpy(item->as_str, str, len+1);
@@ -2125,7 +1923,7 @@ json_conv_int_str(char const *str, size_t *retlen)
      */
     ret = json_conv_int(str, len);
     if (ret == NULL) {
-	err(167, __func__, "json_conv_int() returned NULL");
+	err(164, __func__, "json_conv_int() returned NULL");
 	not_reached();
     }
 
@@ -2176,7 +1974,7 @@ json_conv_float(char const *str, size_t len)
     errno = 0;			/* pre-clear errno for errp() */
     ret = calloc(1, sizeof(*ret));
     if (ret == NULL) {
-	errp(168, __func__, "calloc #0 error allocating %ju bytes", (uintmax_t)sizeof(*ret));
+	errp(165, __func__, "calloc #0 error allocating %ju bytes", (uintmax_t)sizeof(*ret));
 	not_reached();
     }
 
@@ -2227,7 +2025,7 @@ json_conv_float(char const *str, size_t len)
     errno = 0;			/* pre-clear errno for errp() */
     item->as_str = calloc(len+1+1, sizeof(char));
     if (item->as_str == NULL) {
-	errp(169, __func__, "calloc #1 error allocating %ju bytes", (uintmax_t)(len+1+1));
+	errp(166, __func__, "calloc #1 error allocating %ju bytes", (uintmax_t)(len+1+1));
 	not_reached();
     }
     strncpy(item->as_str, str, len+1);
@@ -2537,7 +2335,7 @@ json_conv_float_str(char const *str, size_t *retlen)
      */
     ret = json_conv_float(str, len);
     if (ret == NULL) {
-	err(170, __func__, "json_conv_float() returned NULL");
+	err(167, __func__, "json_conv_float() returned NULL");
 	not_reached();
     }
 
@@ -2585,7 +2383,7 @@ json_conv_string(char const *str, size_t len, bool quote)
     errno = 0;			/* pre-clear errno for errp() */
     ret = calloc(1, sizeof(*ret));
     if (ret == NULL) {
-	errp(171, __func__, "calloc #0 error allocating %ju bytes", (uintmax_t)sizeof(*ret));
+	errp(168, __func__, "calloc #0 error allocating %ju bytes", (uintmax_t)sizeof(*ret));
 	not_reached();
     }
 
@@ -2655,7 +2453,7 @@ json_conv_string(char const *str, size_t len, bool quote)
     errno = 0;			/* pre-clear errno for errp() */
     item->as_str = calloc(len+1+1, sizeof(char));
     if (item->as_str == NULL) {
-	errp(172, __func__, "calloc #1 error allocating %ju bytes", (uintmax_t)(len+1+1));
+	errp(169, __func__, "calloc #1 error allocating %ju bytes", (uintmax_t)(len+1+1));
 	not_reached();
     }
     strncpy(item->as_str, str, len+1);
@@ -2741,7 +2539,7 @@ json_conv_string_str(char const *str, size_t *retlen, bool quote)
      */
     ret = json_conv_string(str, len, quote);
     if (ret == NULL) {
-	err(173, __func__, "json_conv_string() returned NULL");
+	err(170, __func__, "json_conv_string() returned NULL");
 	not_reached();
     }
 
@@ -2787,7 +2585,7 @@ json_conv_bool(char const *str, size_t len)
     errno = 0;			/* pre-clear errno for errp() */
     ret = calloc(1, sizeof(*ret));
     if (ret == NULL) {
-	errp(174, __func__, "calloc #0 error allocating %ju bytes", (uintmax_t)sizeof(*ret));
+	errp(171, __func__, "calloc #0 error allocating %ju bytes", (uintmax_t)sizeof(*ret));
 	not_reached();
     }
 
@@ -2829,7 +2627,7 @@ json_conv_bool(char const *str, size_t len)
     errno = 0;			/* pre-clear errno for errp() */
     item->as_str = malloc(len+1+1);
     if (item->as_str == NULL) {
-	errp(175, __func__, "malloc #1 error allocating %ju bytes", (uintmax_t)(len+1+1));
+	errp(172, __func__, "malloc #1 error allocating %ju bytes", (uintmax_t)(len+1+1));
 	not_reached();
     }
     memcpy(item->as_str, str, len+1);
@@ -2899,7 +2697,7 @@ json_conv_bool_str(char const *str, size_t *retlen)
      */
     ret = json_conv_bool(str, len);
     if (ret == NULL) {
-	err(176, __func__, "json_conv_bool() returned NULL");
+	err(173, __func__, "json_conv_bool() returned NULL");
 	not_reached();
     }
 
@@ -2945,7 +2743,7 @@ json_conv_null(char const *str, size_t len)
     errno = 0;			/* pre-clear errno for errp() */
     ret = calloc(1, sizeof(*ret));
     if (ret == NULL) {
-	errp(177, __func__, "calloc #0 error allocating %ju bytes", (uintmax_t)sizeof(*ret));
+	errp(174, __func__, "calloc #0 error allocating %ju bytes", (uintmax_t)sizeof(*ret));
 	not_reached();
     }
 
@@ -2986,7 +2784,7 @@ json_conv_null(char const *str, size_t len)
     errno = 0;			/* pre-clear errno for errp() */
     item->as_str = malloc(len+1+1);
     if (item->as_str == NULL) {
-	errp(178, __func__, "malloc #1 error allocating %ju bytes", (uintmax_t)(len+1+1));
+	errp(175, __func__, "malloc #1 error allocating %ju bytes", (uintmax_t)(len+1+1));
 	not_reached();
     }
     memcpy(item->as_str, str, len+1);
@@ -3053,7 +2851,7 @@ json_conv_null_str(char const *str, size_t *retlen)
      */
     ret = json_conv_null(str, len);
     if (ret == NULL) {
-	err(179, __func__, "json_conv_null() returned NULL");
+	err(176, __func__, "json_conv_null() returned NULL");
 	not_reached();
     }
 
@@ -3069,390 +2867,3 @@ json_conv_null_str(char const *str, size_t *retlen)
      */
     return ret;
 }
-
-/*
- * json_putc - print a UTF-8 character with JSON encoding
- *
- * given:
- *	stream	- string to print on
- *	c	- UTF-8 character to encode
- *
- * returns:
- *	true ==> stream print was OK,
- *	false ==> error printing to stream
- */
-bool
-json_putc(uint8_t const c, FILE *stream)
-{
-    int ret;			/* libc function return */
-
-    /*
-     * firewall
-     */
-    if (stream == NULL) {
-	warn(__func__, "called with NULL arg(s)");
-	return false;
-    }
-
-    /*
-     * write JSON encoding to stream
-     */
-    ret = fprintf(stream, "%s", jenc[c].enc);
-    if (ret <= 0) {
-	warnp(__func__, "fprintf #1 error");
-	return false;
-    }
-    return true;
-}
-
-
-
-/*
- * json_fprintf_str - print a JSON string
- *
- * Print on stream:
- *
- * If str == NULL:
- *
- *	null
- *
- * else str != NULL:
- *
- *	str with JSON string encoding surrounded by '"'s
- *
- * See:
- *
- *	https://www.json.org/json-en.html
- *
- * given:
- *	stream	- open file stream to print on
- *	str	- the string to JSON encode or NULL
- *
- * returns:
- *	true ==> stream print was OK,
- *	false ==> error printing to stream
- *
- * This function does not return on error.
- */
-bool
-json_fprintf_str(FILE *stream, char const *str)
-{
-    int ret;			/* libc function return */
-    char const *p;
-
-    /*
-     * firewall
-     */
-    if (stream == NULL) {
-	warn(__func__, "called with NULL arg(s)");
-	return false;
-    }
-
-    /*
-     * case: NULL
-     */
-    if (str == NULL) {
-	errno = 0;			/* pre-clear errno for warnp() */
-	ret = fprintf(stream, "null");
-	if (ret <= 0) {
-	    warnp(__func__, "fprintf #0 error for null");
-	    return false;
-	}
-	return true;
-    }
-
-    /*
-     * print leading double-quote
-     */
-    errno = 0;			/* pre-clear errno for warnp() */
-    ret = fputc('"', stream);
-    if (ret == EOF) {
-	warnp(__func__, "fputc #0 error for leading double-quote");
-	return false;
-    }
-
-    /*
-     * print name, JSON encoded
-     */
-    for (p=str; *p != '\0'; ++p) {
-	if (json_putc(*p, stream) != true) {
-	    warnp(__func__, "json_putc #0 error");
-	    return false;
-	}
-    }
-
-    /*
-     * print trailing double-quote
-     */
-    errno = 0;			/* pre-clear errno for warnp() */
-    ret = fputc('"', stream);
-    if (ret == EOF) {
-	warnp(__func__, "fputc #1 error for trailing double-quote");
-	return false;
-    }
-    return true;
-}
-
-
-/*
- * json_fprintf_value_string - print name value (as a string) pair
- *
- * On a stream, we will print:
- *
- *	lead "name_encoded " middle "value_encoded" tail
- *
- * given:
- *	stream	- open file stream to print on
- *	lead	- leading whitespace string to print
- *	name	- name string to JSON encode or NULL
- *	middle	- middle string (often " : " )l
- *	value	- value string to JSON encode or NULL
- *	tail	- tailing string to print (often ",\n")
- *
- * returns:
- *	true
- *
- * returns:
- *	true ==> stream print was OK,
- *	false ==> error printing to stream
- *
- * This function does not return on error.
- */
-bool
-json_fprintf_value_string(FILE *stream, char const *lead, char const *name, char const *middle, char const *value,
-			  char const *tail)
-{
-    int ret;			/* libc function return */
-
-    /*
-     * firewall
-     */
-    if (stream == NULL || lead == NULL || middle == NULL || tail == NULL) {
-	warn(__func__, "called with NULL arg(s)");
-	return false;
-    }
-
-    /*
-     * print leading string
-     */
-    errno = 0;			/* pre-clear errno for warnp() */
-    ret = fprintf(stream, "%s", lead);
-    if (ret < 0) { /* compare < 0 only in case lead is an empty string */
-	warn(__func__, "fprintf printing lead");
-	return false;
-    }
-
-    /*
-     * print name as a JSON encoded string
-     */
-    if (json_fprintf_str(stream, name) != true) {
-	warn(__func__, "json_fprintf_str error printing name");
-	return false;
-    }
-
-    /*
-     * print middle string
-     */
-    errno = 0;			/* pre-clear errno for warnp() */
-    ret = fprintf(stream, "%s", middle);
-    if (ret < 0) { /* compare < 0 only in case middle is an empty string */
-	warn(__func__, "fprintf printing middle");
-	return false;
-    }
-
-    /*
-     * print value as a JSON encoded string
-     */
-    if (json_fprintf_str(stream, value) != true) {
-	warn(__func__, "json_fprintf_str for value as a string");
-	return false;
-    }
-
-    /*
-     * print trailing string
-     */
-    errno = 0;			/* pre-clear errno for warnp() */
-    ret = fprintf(stream, "%s", tail);
-    if (ret < 0) { /* compare < 0 only in case tail is an empty string */
-	warn(__func__, "fprintf printing end of line");
-	return false;
-    }
-    return true;
-}
-
-
-/*
- * json_fprintf_value_long - print name value (as a long integer) pair
- *
- * On a stream, we will print:
- *
- *	lead "name_encoded" middle long_value tail
- *
- * given:
- *	stream	- open file stream to print on
- *	lead	- leading whitespace string to print
- *	name	- name string to JSON encode or NULL
- *	middle	- middle string (often " : " )l
- *	value	- value as long
- *	tail	- tailing string to print (often ",\n")
- *
- * returns:
- *	true
- *
- * returns:
- *	true ==> stream print was OK,
- *	false ==> error printing to stream
- *
- * This function does not return on error.
- */
-bool
-json_fprintf_value_long(FILE *stream, char const *lead, char const *name, char const *middle, long value,
-			char const *tail)
-{
-    int ret;			/* libc function return */
-
-    /*
-     * firewall
-     */
-    if (stream == NULL || lead == NULL || middle == NULL || tail == NULL) {
-	warn(__func__, "called with NULL arg(s)");
-	return false;
-    }
-
-    /*
-     * print leading string
-     */
-    errno = 0;			/* pre-clear errno for warnp() */
-    ret = fprintf(stream, "%s", lead);
-    if (ret < 0) { /* compare < 0 only in case lead is an empty string */
-	warnp(__func__, "fprintf printing lead");
-	return false;
-    }
-
-    /*
-     * print name as a JSON encoded string
-     */
-    if (json_fprintf_str(stream, name) != true) {
-	warnp(__func__, "json_fprintf_str error printing name");
-	return false;
-    }
-
-    /*
-     * print middle string
-     */
-    errno = 0;			/* pre-clear errno for warnp() */
-    ret = fprintf(stream, "%s", middle);
-    if (ret < 0) { /* compare < 0 only in case middle is an empty string */
-	warnp(__func__, "fprintf printing middle");
-	return false;
-    }
-
-    /*
-     * print value as a JSON long
-     */
-    errno = 0;			/* pre-clear errno for warnp() */
-    ret = fprintf(stream, "%ld", value);
-    if (ret <= 0) {
-	warnp(__func__, "fprintf for value as a long");
-	return false;
-    }
-
-    /*
-     * print trailing string
-     */
-    errno = 0;			/* pre-clear errno for warnp() */
-    ret = fprintf(stream, "%s", tail);
-    if (ret < 0) { /* compare < 0 only in case tail is an empty string */
-	warnp(__func__, "fprintf printing end of line");
-	return false;
-    }
-    return true;
-}
-
-
-/*
- * json_fprintf_value_bool - print name value (as a boolean) pair
- *
- * On a stream, we will print:
- *
- *	lead "name_encoded" middle true tail
- * or:
- *	lead "name_encoded" middle false tail
- *
- * given:
- *	stream	- open file stream to print on
- *	lead	- leading whitespace string to print
- *	name	- name string to JSON encode or NULL
- *	middle	- middle string (often " : " )l
- *	value	- value as boolean
- *	tail	- tailing string to print (often ",\n")
- *
- * returns:
- *	true ==> stream print was OK,
- *	false ==> error printing to stream
- */
-bool
-json_fprintf_value_bool(FILE *stream, char const *lead, char const *name, char const *middle, bool value,
-			char const *tail)
-{
-    int ret;			/* libc function return */
-
-    /*
-     * firewall
-     */
-    if (stream == NULL || lead == NULL || middle == NULL || tail == NULL) {
-	warn(__func__, "called with NULL arg(s)");
-	return false;
-    }
-
-    /*
-     * print leading string
-     */
-    errno = 0;			/* pre-clear errno for warnp() */
-    ret = fprintf(stream, "%s", lead);
-    if (ret < 0) { /* compare < 0 only in case lead is an empty string */
-	warnp(__func__, "fprintf printing lead");
-	return false;
-    }
-
-    /*
-     * print name as a JSON encoded string
-     */
-    if (json_fprintf_str(stream, name) != true) {
-	warn(__func__, "json_fprintf_str error printing name");
-	return false;
-    }
-
-    /*
-     * print middle string
-     */
-    errno = 0;			/* pre-clear errno for warnp() */
-    ret = fprintf(stream, "%s", middle);
-    if (ret < 0) { /* compare < 0 only in case middle is an empty string */
-	warnp(__func__, "fprintf printing middle");
-	return false;
-    }
-
-    /*
-     * print value as a JSON boolean
-     */
-    errno = 0;			/* pre-clear errno for warnp() */
-    ret = fprintf(stream, "%s", (value) ? "true" : "false");
-    if (ret <= 0) {
-	warnp(__func__, "fprintf for value as a boolean");
-	return false;
-    }
-
-    /*
-     * print trailing string
-     */
-    errno = 0;			/* pre-clear errno for warnp() */
-    ret = fprintf(stream, "%s", tail);
-    if (ret < 0) { /* compare < 0 only in case tail is an empty string */
-	warnp(__func__, "fprintf printing end of line");
-	return false;
-    }
-    return true;
-}
-
-

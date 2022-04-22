@@ -52,6 +52,11 @@
 #include "json.h"
 
 /*
+ * json_entry - supporting mkiocccentry JSON files
+ */
+#include "json_entry.h"
+
+/*
  * sanity - sanity checks on the IOCCC toolkit
  */
 #include "sanity.h"

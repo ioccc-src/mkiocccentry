@@ -1243,11 +1243,6 @@ mkiocccentry_sanity_chks(struct info *infop, char const *work_dir, char const *t
     }
 
     /*
-     * validate JSON encoding table
-     */
-    jencchk();
-
-    /*
      * obtain version string from IOCCCSIZE_VERSION
      */
     infop->common.iocccsize_ver = IOCCCSIZE_VERSION;
