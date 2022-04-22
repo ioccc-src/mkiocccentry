@@ -431,8 +431,8 @@ jparse.tab.c jparse.tab.h: jparse.y bfok.sh limit_ioccc.sh verge jparse.tab.ref.
 		echo "${CP} -f -v jparse.tab.ref.h jparse.tab.h"; \
 		${CP} -f -v jparse.tab.ref.h jparse.tab.h; \
 	    else \
-		echo "$$BISON_PATH -d jparse.y"; \
-		"$$BISON_PATH" -d jparse.y; \
+		echo "$$BISON_PATH -d -Wyacc -Dparse.error=verbose -Dparse.lac=full jparse.y"; \
+		"$$BISON_PATH" -d -Wyacc -Dparse.error=verbose -Dparse.lac=full jparse.y; \
 		status="$$?"; \
 		if [[ $$status -eq 0 && -s jparse.tab.c && -s jparse.tab.h ]]; then \
 		    echo '# prepending comment and line number reset to jparse.tab.c'; \

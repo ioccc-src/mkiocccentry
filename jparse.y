@@ -25,13 +25,13 @@
 /* Section 1: Declarations */
 
 /*
- * More detailed error reporting.
+ * More detailed error reporting is enabled via the -D option as POSIX Yacc does
+ * not support the %define directive:
  *
- * NOTE: This is very verbose and will be removed when things are finished.
+ *	-Dparse.error=verbose -Dparse.lac=full
+ *
+ * NOTE: It's very verbose and will be removed when things are finished.
  */
-%define parse.error detailed
-%define parse.lac full
-
 %{
 #include <inttypes.h>
 #include <stdio.h>
@@ -99,7 +99,7 @@ int token_type = 0;
  * there are also possibly errors!
  */
 %%
-json:		%empty
+json:		/* empty */
 		| json_element
 		| JSON_OPEN_BRACE JSON_CLOSE_BRACE
 		| JSON_OPEN_BRACKET JSON_CLOSE_BRACKET
