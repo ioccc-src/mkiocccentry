@@ -92,11 +92,15 @@ int token_type = 0;
 %token JSON_COMMA JSON_COLON JSON_NULL JSON_STRING
 %token JSON_UINTMAX JSON_INTMAX JSON_LONG_DOUBLE JSON_TRUE JSON_FALSE
 
+
 /* Section 2: Rules
  *
- * XXX Not all rules are here and no actions are defined yet. As well some of
- * the rules are probably wrong. Again this is (possibly very) incomplete and
- * there are also possibly errors!
+ * XXX I believe all the rules are here but there are no actions. However the
+ * json_number should be simplified to e.g. JSON_INTEGER | JSON_FLOAT or
+ * something like that. This will require a regex change in the flex grammar
+ * which will happen later.
+ *
+ * There are no actions here so this is incomplete in that way too.
  */
 %%
 json:		/* empty */
@@ -105,16 +109,18 @@ json:		/* empty */
 		| JSON_OPEN_BRACKET JSON_CLOSE_BRACKET
 		;
 
-json_value:	json_object
+json_value:	  json_object
 		| json_array
 		| JSON_STRING
-		| JSON_INTMAX
-		| JSON_UINTMAX
-		| JSON_LONG_DOUBLE
+		| json_number
 		| JSON_TRUE
 		| JSON_FALSE
 		| JSON_NULL
 		;
+
+json_number:	JSON_INTMAX
+		| JSON_UINTMAX
+		| JSON_LONG_DOUBLE ;
 
 json_object:	JSON_OPEN_BRACE json_members JSON_CLOSE_BRACE
 		;
