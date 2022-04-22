@@ -3146,7 +3146,7 @@ find_text_str(char *str, char **first)
      * convert to json_conv_null() call
      */
     len = strlen(str);
-    ret = scan_text(str, len, first);
+    ret = find_text(str, len, first);
 
     /*
      * return the JSON parse tree element
