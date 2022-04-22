@@ -3058,7 +3058,7 @@ print_newline(bool output_newline)
  *	0 if no non-whitespace/non-NUL bytes found, or if buf == NULL
  */
 size_t
-scan_text(char *ptr, size_t len, char **first)
+find_text(char *ptr, size_t len, char **first)
 {
     size_t ret = 0;	/* number of non-whitespace/non-NUL bytes found */
     size_t i;
@@ -3126,7 +3126,7 @@ scan_text(char *ptr, size_t len, char **first)
  *	0 if no non-whitespace/non-NUL bytes found, or if buf == NULL
  */
 size_t
-scan_text_str(char *str, char **first)
+find_text_str(char *str, char **first)
 {
     size_t ret = 0;	/* number of non-whitespace/non-NUL bytes found */
     size_t len = 0;	/* length of str */
