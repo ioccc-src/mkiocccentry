@@ -34,6 +34,7 @@
  */
 #include "jinfochk.h"
 
+
 /*
  * jinfochk_sanity_chks - perform basic sanity checks
  *

@@ -41,11 +41,20 @@
  */
 #include "util.h"
 
-
 /*
  * json - json file structs
  */
 #include "json.h"
+
+/*
+ * json_entry - supporting mkiocccentry JSON files
+ */
+#include "json_entry.h"
+
+/*
+ * json_util - general JSON utility support functions
+ */
+#include "json_util.h"
 
 /*
  * sanity - sanity checks on the IOCCC toolkit

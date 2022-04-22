@@ -33,7 +33,6 @@
 #include "jauthchk.h"
 
 
-
 /*
  * jauthchk_sanity_chks - perform basic sanity checks
  *

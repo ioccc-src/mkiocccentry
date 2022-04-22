@@ -2,7 +2,7 @@
 #
 # mkiocccentry and related tools - how to form an IOCCC entry
 #
-# For mkiocccentry:
+# For the mkiocccentry utility:
 #
 # Copyright (c) 2021,2022 by Landon Curt Noll.  All Rights Reserved.
 #
@@ -30,7 +30,7 @@
 ####
 
 ####
-# For iocccsize:
+# For the iocccsize utility:
 #
 # This IOCCC size tool source file.  See below for the VERSION string.
 #
@@ -41,7 +41,7 @@
 ####
 
 ####
-# dbg - example of how to use usage(), dbg(), warn(), err(), vfprintf_usage(), etc.
+# For the dbg facility:
 #
 # Copyright (c) 1989,1997,2018-2022 by Landon Curt Noll.  All Rights Reserved.
 #
@@ -217,7 +217,7 @@ TEST_TARGETS= dbg utf8_test dyn_test
 OBJFILES= dbg.o util.o mkiocccentry.o iocccsize.o fnamchk.o txzchk.o jauthchk.o jinfochk.o \
 	json.o jstrencode.o jstrdecode.o rule_count.o location.o sanity.o \
 	utf8_test.o jint.o jint.test.o jfloat.o jfloat.test.o verge.o \
-	dyn_array.o dyn_test.o jparsefuncs.o json_entry.o
+	dyn_array.o dyn_test.o json_chk.o json_entry.o
 LESS_PICKY_CSRC= utf8_posix_map.c
 LESS_PICKY_OBJ= utf8_posix_map.o
 GENERATED_CSRC= jparse.c jparse.tab.c
@@ -233,14 +233,14 @@ SRCFILES= $(OBJFILES:.o=.c)
 ALL_CSRC= ${LESS_PICKY_CSRC} ${GENERATED_CSRC} ${SRCFILES}
 H_FILES= dbg.h jauthchk.h jinfochk.h json.h jstrdecode.h jstrencode.h limit_ioccc.h \
 	mkiocccentry.h txzchk.h util.h location.h utf8_posix_map.h jparse.h jint.h jfloat.h \
-	verge.h sorry.tm.ca.h dyn_array.h dyn_test.h json_entry.h
+	verge.h sorry.tm.ca.h dyn_array.h dyn_test.h json_entry.h json_util.o
 # This is a simpler way to do:
 #
 #   DSYMDIRS= $(patsubst %,%.dSYM,$(TARGETS))
 #
 DSYMDIRS= $(TARGETS:=.dSYM)
 SH_FILES= iocccsize-test.sh jstr-test.sh limit_ioccc.sh mkiocccentry-test.sh json-test.sh \
-	  jcodechk.sh vermod.sh bfok.sh prep.sh
+	  jcodechk.sh vermod.sh bfok.sh prep.sh json_util.h
 BUILD_LOG= build.log
 
 # Where bfok.sh looks for bison and flex with a version
@@ -306,13 +306,13 @@ all: ${TARGETS} ${TEST_TARGETS}
 rule_count.o: rule_count.c Makefile
 	${CC} ${CFLAGS} -DMKIOCCCENTRY_USE rule_count.c -c
 
-sanity.o: sanity.c Makefile
-	${CC} ${CFLAGS} jparsefuncs.o sanity.c -c
+sanity.o: sanity.c json_chk.o Makefile
+	${CC} ${CFLAGS} sanity.c json_chk.o -c
 
-mkiocccentry: mkiocccentry.c rule_count.o dbg.o util.o dyn_array.o json.o json_entry.o \
-	location.o utf8_posix_map.o sanity.o Makefile
+mkiocccentry: mkiocccentry.c rule_count.o dbg.o util.o dyn_array.o json.o json_entry.o json_chk.o \
+	json_util.o location.o utf8_posix_map.o sanity.o Makefile
 	${CC} ${CFLAGS} mkiocccentry.c rule_count.o dbg.o util.o dyn_array.o json.o json_entry.o \
-	    jparsefuncs.o location.o utf8_posix_map.o sanity.o -o $@
+	    json_chk.o json_util.o location.o utf8_posix_map.o sanity.o -o $@
 
 iocccsize: iocccsize.c rule_count.o dbg.o Makefile
 	${CC} ${CFLAGS} -DMKIOCCCENTRY_USE iocccsize.c rule_count.o dbg.o -o $@
@@ -323,20 +323,20 @@ dbg: dbg.c Makefile
 fnamchk: fnamchk.c dbg.o util.o dyn_array.o Makefile
 	${CC} ${CFLAGS} fnamchk.c dbg.o util.o dyn_array.o -o $@
 
-txzchk: txzchk.c rule_count.o dbg.o util.o dyn_array.o location.o json.o utf8_posix_map.o \
-	sanity.o Makefile
-	${CC} ${CFLAGS} txzchk.c rule_count.o dbg.o util.o dyn_array.o location.o json.o utf8_posix_map.o \
-	    jparsefuncs.o sanity.o -o $@
+txzchk: txzchk.c rule_count.o dbg.o util.o dyn_array.o location.o json.o json_chk.o json_util.o \
+	utf8_posix_map.o sanity.o Makefile
+	${CC} ${CFLAGS} txzchk.c rule_count.o dbg.o util.o dyn_array.o location.o json.o \
+	    json_chk.o json_util.o utf8_posix_map.o sanity.o -o $@
 
-jauthchk: jauthchk.c rule_count.o json.o json_entry.o dbg.o util.o dyn_array.o \
-	sanity.o location.o utf8_posix_map.o Makefile
-	${CC} ${CFLAGS} jauthchk.c rule_count.o json.o json_entry.o dbg.o util.o dyn_array.o sanity.o \
-	    jparsefuncs.o location.o utf8_posix_map.o -o $@
-
-jinfochk: jinfochk.c rule_count.o json.o json_entry.o dbg.o util.o \
+jauthchk: jauthchk.c rule_count.o json.o json_entry.o dbg.o util.o json_util.o \
 	dyn_array.o sanity.o location.o utf8_posix_map.o Makefile
-	${CC} ${CFLAGS} jinfochk.c rule_count.o json.o json_entry.o dbg.o util.o dyn_array.o sanity.o \
-	    jparsefuncs.o location.o utf8_posix_map.o -o $@
+	${CC} ${CFLAGS} jauthchk.c rule_count.o json.o json_entry.o dbg.o util.o json_util.o \
+	    dyn_array.o sanity.o json_chk.o location.o utf8_posix_map.o -o $@
+
+jinfochk: jinfochk.c rule_count.o json.o json_entry.o dbg.o util.o json_util.o \
+	dyn_array.o sanity.o location.o utf8_posix_map.o Makefile
+	${CC} ${CFLAGS} jinfochk.c rule_count.o json.o json_entry.o dbg.o util.o json_util.o \
+	    dyn_array.o sanity.o json_chk.o location.o utf8_posix_map.o -o $@
 
 jstrencode: jstrencode.c dbg.o json.o util.o dyn_array.o Makefile
 	${CC} ${CFLAGS} jstrencode.c dbg.o json.o util.o dyn_array.o -o $@
@@ -359,8 +359,11 @@ jfloat: jfloat.c dbg.o json.o util.o dyn_array.o jfloat.test.o Makefile
 jparse.o: jparse.c Makefile
 	${CC} ${CFLAGS} jparse.c -Wno-unused-function -Wno-unneeded-internal-declaration -c
 
-jparsefuncs.o: jparsefuncs.c Makefile
-	${CC} ${CFLAGS} jparsefuncs.c -Wno-unused-function -Wno-unneeded-internal-declaration -c
+json_chk.o: json_chk.c Makefile
+	${CC} ${CFLAGS} json_chk.c -Wno-unused-function -Wno-unneeded-internal-declaration -c
+
+json_util.o: json_util.c Makefile
+	${CC} ${CFLAGS} json_util.c -Wno-unused-function -Wno-unneeded-internal-declaration -c
 
 json_entry.o: json_entry.c Makefile
 	${CC} ${CFLAGS} json_entry.c -Wno-unused-function -Wno-unneeded-internal-declaration -c
@@ -368,10 +371,10 @@ json_entry.o: json_entry.c Makefile
 jparse.tab.o: jparse.tab.c Makefile
 	${CC} ${CFLAGS} jparse.tab.c -Wno-unused-function -Wno-unneeded-internal-declaration -c
 
-jparse: jparse.o jparse.tab.o util.o dyn_array.o dbg.o sanity.o json.o json_entry.o jparsefuncs.o \
-	utf8_posix_map.o location.o Makefile
+jparse: jparse.o jparse.tab.o util.o dyn_array.o dbg.o sanity.o json.o json_entry.o json_chk.o \
+	json_util.o utf8_posix_map.o location.o Makefile
 	${CC} ${CFLAGS} jparse.o jparse.tab.o util.o dyn_array.o dbg.o sanity.o \
-	    json.o json_entry.o jparsefuncs.o utf8_posix_map.o location.o -o $@
+	    json.o json_entry.o json_chk.o json_util.o utf8_posix_map.o location.o -o $@
 
 utf8_test: utf8_test.c utf8_posix_map.o dbg.o util.o dyn_array.o Makefile
 	${CC} ${CFLAGS} utf8_test.c utf8_posix_map.o dbg.o util.o dyn_array.o -o $@
@@ -890,26 +893,26 @@ depend: all
 utf8_posix_map.o: utf8_posix_map.c utf8_posix_map.h util.h dyn_array.h \
   dbg.h limit_ioccc.h version.h
 jparse.o: jparse.c jparse.h dbg.h util.h dyn_array.h json.h sanity.h \
-  location.h utf8_posix_map.h jparsefuncs.h limit_ioccc.h version.h \
+  location.h utf8_posix_map.h json_chk.h limit_ioccc.h version.h \
   jparse.tab.h
 jparse.tab.o: jparse.tab.c jparse.h dbg.h util.h dyn_array.h json.h \
-  sanity.h location.h utf8_posix_map.h jparsefuncs.h limit_ioccc.h \
+  sanity.h location.h utf8_posix_map.h json_chk.h limit_ioccc.h \
   version.h jparse.tab.h
 dbg.o: dbg.c dbg.h
 util.o: util.c dbg.h util.h dyn_array.h limit_ioccc.h version.h
 mkiocccentry.o: mkiocccentry.c mkiocccentry.h util.h dyn_array.h dbg.h \
-  json_entry.h location.h utf8_posix_map.h sanity.h json.h jparsefuncs.h \
+  json_entry.h location.h utf8_posix_map.h sanity.h json.h json_chk.h \
   limit_ioccc.h version.h iocccsize.h
 iocccsize.o: iocccsize.c iocccsize_err.h iocccsize.h
 fnamchk.o: fnamchk.c fnamchk.h dbg.h util.h dyn_array.h limit_ioccc.h \
   version.h utf8_posix_map.h
 txzchk.o: txzchk.c txzchk.h util.h dyn_array.h dbg.h sanity.h location.h \
-  utf8_posix_map.h json.h jparsefuncs.h limit_ioccc.h version.h
+  utf8_posix_map.h json.h json_chk.h limit_ioccc.h version.h
 jauthchk.o: jauthchk.c jauthchk.h dbg.h util.h dyn_array.h json.h \
-  sanity.h location.h utf8_posix_map.h jparsefuncs.h limit_ioccc.h \
+  sanity.h location.h utf8_posix_map.h json_chk.h limit_ioccc.h \
   version.h
 jinfochk.o: jinfochk.c jinfochk.h dbg.h util.h dyn_array.h json.h \
-  json_entry.h sanity.h location.h utf8_posix_map.h jparsefuncs.h \
+  json_entry.h sanity.h location.h utf8_posix_map.h json_chk.h \
   limit_ioccc.h version.h
 json.o: json.c dbg.h util.h dyn_array.h limit_ioccc.h version.h json.h
 jstrencode.o: jstrencode.c jstrencode.h dbg.h util.h dyn_array.h json.h \
@@ -919,7 +922,7 @@ jstrdecode.o: jstrdecode.c jstrdecode.h dbg.h util.h dyn_array.h json.h \
 rule_count.o: rule_count.c iocccsize_err.h iocccsize.h
 location.o: location.c location.h util.h dyn_array.h dbg.h
 sanity.o: sanity.c sanity.h util.h dyn_array.h dbg.h location.h \
-  utf8_posix_map.h json.h jparsefuncs.h limit_ioccc.h version.h
+  utf8_posix_map.h json.h json_chk.h limit_ioccc.h version.h
 utf8_test.o: utf8_test.c utf8_posix_map.h util.h dyn_array.h dbg.h \
   limit_ioccc.h version.h
 jint.o: jint.c jint.h dbg.h util.h dyn_array.h json.h limit_ioccc.h \
@@ -931,6 +934,6 @@ jfloat.test.o: jfloat.test.c json.h
 verge.o: verge.c verge.h dbg.h util.h dyn_array.h limit_ioccc.h version.h
 dyn_array.o: dyn_array.c dyn_array.h util.h dbg.h
 dyn_test.o: dyn_test.c dyn_test.h util.h dyn_array.h dbg.h version.h
-jparsefuncs.o: jparsefuncs.c jparsefuncs.h util.h dyn_array.h dbg.h \
+json_chk.o: json_chk.c json_chk.h util.h dyn_array.h dbg.h \
   json.h limit_ioccc.h version.h
 json_entry.o: json_entry.c dbg.h util.h dyn_array.h json.h json_entry.h

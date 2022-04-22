@@ -42,12 +42,9 @@
 #include "json.h"
 
 /*
- * jparsefuncs.h - functions and variables that are specific to the JSON parser
- *
- * NOTE: This does not include the json struct.
- *
+ * json_ckk - support jinfochk and jauthchk services
  */
-#include "jparsefuncs.h"
+#include "json_chk.h"
 
 
 /*
