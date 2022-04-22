@@ -233,14 +233,14 @@ SRCFILES= $(OBJFILES:.o=.c)
 ALL_CSRC= ${LESS_PICKY_CSRC} ${GENERATED_CSRC} ${SRCFILES}
 H_FILES= dbg.h jauthchk.h jinfochk.h json.h jstrdecode.h jstrencode.h limit_ioccc.h \
 	mkiocccentry.h txzchk.h util.h location.h utf8_posix_map.h jparse.h jint.h jfloat.h \
-	verge.h sorry.tm.ca.h dyn_array.h dyn_test.h json_entry.h json_util.o
+	verge.h sorry.tm.ca.h dyn_array.h dyn_test.h json_entry.h json_util.h
 # This is a simpler way to do:
 #
 #   DSYMDIRS= $(patsubst %,%.dSYM,$(TARGETS))
 #
 DSYMDIRS= $(TARGETS:=.dSYM)
 SH_FILES= iocccsize-test.sh jstr-test.sh limit_ioccc.sh mkiocccentry-test.sh json-test.sh \
-	  jcodechk.sh vermod.sh bfok.sh prep.sh json_util.h
+	  jcodechk.sh vermod.sh bfok.sh prep.sh
 BUILD_LOG= build.log
 
 # Where bfok.sh looks for bison and flex with a version
