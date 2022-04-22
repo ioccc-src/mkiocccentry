@@ -50,7 +50,7 @@ ioccc_sanity_chks(void)
 
     /*
      * Check that the JSON fields tables are sane: that there are no
-     * embedded NULL elements, that the only JSON_NULL type is the final
+     * embedded NULL elements, that the only JTYPE_NULL type is the final
      * element, that the other elements have valid field types and that the
      * final element is in fact NULL. As well it makes sure the tables are not
      * empty.

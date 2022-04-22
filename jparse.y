@@ -12,7 +12,7 @@
  * There are no actions yet. I'm not sure when I will be adding the actions and
  * it's very likely that I won't add all at once.
  *
- * The memory returned by strdup() (json_parser.l action for JTYPE_STRING) will
+ * The memory returned by strdup() (json_parser.l action for JSON_STRING) will
  * not yet be freed but since the parser doesn't do anything but just finishes
  * until a parse error or EOF (or end of string) this is not a problem. Actually
  * struct json_string will be used in this case so the way strings are handled will
@@ -58,7 +58,7 @@ int token_type = 0;
 /* This union is not complete and will need to be fixed in one or more ways as
  * well.
  *
- * For example it might (not sure) be better if there was JTYPE_NUMBER but
+ * For example it might (not sure) be better if there was JSON_NUMBER but
  * depending on a type variable the proper member in the union would be
  * addressd, thereby simplifying the rules below. Perhaps this will be the int
  * token_type above (I am not yet entirely sure of the use of that but it might
@@ -88,9 +88,9 @@ int token_type = 0;
 %union json_type {
     struct json json;
 }
-%token JTYPE_OPEN_BRACE JTYPE_CLOSE_BRACE JTYPE_OPEN_BRACKET JTYPE_CLOSE_BRACKET
-%token JTYPE_COMMA JTYPE_COLON JTYPE_NULL JTYPE_STRING
-%token JTYPE_UINTMAX JTYPE_INTMAX JTYPE_LONG_DOUBLE JTYPE_BOOLEAN
+%token JSON_OPEN_BRACE JSON_CLOSE_BRACE JSON_OPEN_BRACKET JSON_CLOSE_BRACKET
+%token JSON_COMMA JSON_COLON JSON_NULL JSON_STRING
+%token JSON_UINTMAX JSON_INTMAX JSON_LONG_DOUBLE JSON_TRUE JSON_FALSE
 
 /* Section 2: Rules
  *
@@ -99,37 +99,38 @@ int token_type = 0;
  * there are also possibly errors!
  */
 %%
-json:		%empty |
-		json_element |
-		JTYPE_OPEN_BRACE JTYPE_CLOSE_BRACE |
-		JTYPE_OPEN_BRACKET JTYPE_CLOSE_BRACKET
+json:		%empty
+		| json_element
+		| JSON_OPEN_BRACE JSON_CLOSE_BRACE
+		| JSON_OPEN_BRACKET JSON_CLOSE_BRACKET
 		;
 
-json_value:	json_object |
-		json_array  |
-		JTYPE_STRING |
-		JTYPE_INTMAX |
-		JTYPE_UINTMAX |
-		JTYPE_LONG_DOUBLE |
-		JTYPE_BOOLEAN   |
-		JTYPE_NULL
+json_value:	json_object
+		| json_array
+		| JSON_STRING
+		| JSON_INTMAX
+		| JSON_UINTMAX
+		| JSON_LONG_DOUBLE
+		| JSON_TRUE
+		| JSON_FALSE
+		| JSON_NULL
 		;
 
-json_object:	JTYPE_OPEN_BRACE json_members JTYPE_CLOSE_BRACE
+json_object:	JSON_OPEN_BRACE json_members JSON_CLOSE_BRACE
 		;
 
-json_members:	json_member |
-		json_member JTYPE_COMMA json_members
+json_members:	json_member
+		| json_member JSON_COMMA json_members
 		;
 
-json_member:	JTYPE_STRING JTYPE_COLON json_element
+json_member:	JSON_STRING JSON_COLON json_element
 		;
 
-json_array:	JTYPE_OPEN_BRACKET json_elements JTYPE_CLOSE_BRACKET
+json_array:	JSON_OPEN_BRACKET json_elements JSON_CLOSE_BRACKET
 		;
 
-json_elements:	json_element |
-		json_element JTYPE_COMMA json_elements
+json_elements:	json_element
+		| json_element JSON_COMMA json_elements
 		;
 
 json_element:	json_value

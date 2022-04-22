@@ -96,18 +96,19 @@ extern int yydebug;
     YYEOF = 0,                     /* "end of file"  */
     YYerror = 256,                 /* error  */
     YYUNDEF = 257,                 /* "invalid token"  */
-    JTYPE_OPEN_BRACE = 258,        /* JTYPE_OPEN_BRACE  */
-    JTYPE_CLOSE_BRACE = 259,       /* JTYPE_CLOSE_BRACE  */
-    JTYPE_OPEN_BRACKET = 260,      /* JTYPE_OPEN_BRACKET  */
-    JTYPE_CLOSE_BRACKET = 261,     /* JTYPE_CLOSE_BRACKET  */
-    JTYPE_COMMA = 262,             /* JTYPE_COMMA  */
-    JTYPE_COLON = 263,             /* JTYPE_COLON  */
-    JTYPE_NULL = 264,              /* JTYPE_NULL  */
-    JTYPE_STRING = 265,            /* JTYPE_STRING  */
-    JTYPE_UINTMAX = 266,           /* JTYPE_UINTMAX  */
-    JTYPE_INTMAX = 267,            /* JTYPE_INTMAX  */
-    JTYPE_LONG_DOUBLE = 268,       /* JTYPE_LONG_DOUBLE  */
-    JTYPE_BOOLEAN = 269            /* JTYPE_BOOLEAN  */
+    JSON_OPEN_BRACE = 258,         /* JSON_OPEN_BRACE  */
+    JSON_CLOSE_BRACE = 259,        /* JSON_CLOSE_BRACE  */
+    JSON_OPEN_BRACKET = 260,       /* JSON_OPEN_BRACKET  */
+    JSON_CLOSE_BRACKET = 261,      /* JSON_CLOSE_BRACKET  */
+    JSON_COMMA = 262,              /* JSON_COMMA  */
+    JSON_COLON = 263,              /* JSON_COLON  */
+    JSON_NULL = 264,               /* JSON_NULL  */
+    JSON_STRING = 265,             /* JSON_STRING  */
+    JSON_UINTMAX = 266,            /* JSON_UINTMAX  */
+    JSON_INTMAX = 267,             /* JSON_INTMAX  */
+    JSON_LONG_DOUBLE = 268,        /* JSON_LONG_DOUBLE  */
+    JSON_TRUE = 269,               /* JSON_TRUE  */
+    JSON_FALSE = 270               /* JSON_FALSE  */
   };
   typedef enum yytokentype yytoken_kind_t;
 #endif
@@ -121,7 +122,7 @@ union json_type
 
     struct json json;
 
-#line 83 "jparse.tab.h"
+#line 84 "jparse.tab.h"
 
 };
 #line 88 "jparse.y"
