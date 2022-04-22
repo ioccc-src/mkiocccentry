@@ -1455,8 +1455,8 @@ json_conv_free(struct json *node)
  * json_conv_int - convert JSON integer string to C integer
  *
  * given:
- *	str	a JSON integer string
- *	len	length, starting at str, of the JSON string
+ *	ptr	pointer to buffer containing a JSON integer string
+ *	len	length, starting at ptr, of the JSON string
  *
  * returns:
  *	allocated JSON parser tree node converted JSON integer
@@ -1468,11 +1468,11 @@ json_conv_free(struct json *node)
  * NOTE: This function will not return NULL.
  */
 struct json *
-json_conv_int(char const *str, size_t len)
+json_conv_int(char const *ptr, size_t len)
 {
     struct json *ret = NULL;		    /* JSON parser tree node to return */
     struct json_integer *item = NULL;	    /* JSON integer element inside JSON parser tree node */
-    char *endptr;			    /* first invalid character or str */
+    char *endptr;			    /* first invalid character or ptr */
     size_t digits = 0;			    /* number of digits in JSON integer not including leading sign */
     size_t i;
 
@@ -1524,8 +1524,8 @@ json_conv_int(char const *str, size_t len)
     /*
      * firewall
      */
-    if (str == NULL) {
-	warn(__func__, "called with NULL str");
+    if (ptr == NULL) {
+	warn(__func__, "called with NULL ptr");
 	return ret;
     }
     if (len <= 0) {
@@ -1533,7 +1533,7 @@ json_conv_int(char const *str, size_t len)
 	return ret;
     }
     item->orig_len = len;	/* save original length */
-    if (str[0] == '\0') {
+    if (ptr[0] == '\0') {
 	warn(__func__, "called with empty string");
 	return ret;
     }
@@ -1547,7 +1547,7 @@ json_conv_int(char const *str, size_t len)
 	errp(163, __func__, "calloc #1 error allocating %ju bytes", (uintmax_t)(len+1+1));
 	not_reached();
     }
-    strncpy(item->as_str, str, len+1);
+    strncpy(item->as_str, ptr, len+1);
     item->as_str_len = len;	/* save length of as_str */
 
     /*
@@ -1945,8 +1945,8 @@ json_conv_int_str(char const *str, size_t *retlen)
  * json_conv_float - convert JSON floating point string to C floating point
  *
  * given:
- *	str	a JSON integer floating point string
- *	len	length, starting at str, of the JSON string
+ *	ptr	pointer to buffer containing a JSON integer floating point string
+ *	len	length, starting at ptr, of the JSON string
  *
  * returns:
  *	allocated JSON parser tree node converted JSON floating point string
@@ -1958,11 +1958,11 @@ json_conv_int_str(char const *str, size_t *retlen)
  * NOTE: This function will not return NULL.
  */
 struct json *
-json_conv_float(char const *str, size_t len)
+json_conv_float(char const *ptr, size_t len)
 {
     struct json *ret = NULL;		    /* JSON parser tree node to return */
     struct json_floating *item = NULL;	    /* JSON floating point element inside JSON parser tree node */
-    char *endptr;			    /* first invalid character or str */
+    char *endptr;			    /* first invalid character or ptr */
     char *e_found = NULL;		    /* strchr() search for e */
     char *cap_e_found = NULL;		    /* strchr() search for E */
     char *e = NULL;			    /* strrchr() search for 2nd e or E */
@@ -2006,15 +2006,15 @@ json_conv_float(char const *str, size_t len)
     /*
      * firewall
      */
-    if (str == NULL) {
-	warn(__func__, "called with NULL str");
+    if (ptr == NULL) {
+	warn(__func__, "called with NULL ptr");
 	return ret;
     }
     if (len <= 0) {
 	warn(__func__, "called with len: %ju <= 0", (uintmax_t)len);
 	return ret;
     }
-    if (str[0] == '\0') {
+    if (ptr[0] == '\0') {
 	warn(__func__, "called with empty string");
 	return ret;
     }
@@ -2028,7 +2028,7 @@ json_conv_float(char const *str, size_t len)
 	errp(166, __func__, "calloc #1 error allocating %ju bytes", (uintmax_t)(len+1+1));
 	not_reached();
     }
-    strncpy(item->as_str, str, len+1);
+    strncpy(item->as_str, ptr, len+1);
     item->as_str_len = len;	/* save length of as_str */
 
     /*
@@ -2357,10 +2357,10 @@ json_conv_float_str(char const *str, size_t *retlen)
  * json_conv_string - convert JSON encoded string to C string
  *
  * given:
- *	str	a JSON encoded string
- *	len	length, starting at str, of the JSON string
- *	quote	true ==> ignore JSON double quotes, both str[0] & str[len-1] must be "
- *		false ==> the entire str is to be converted
+ *	ptr	pointer to buffer containing a JSON encoded string
+ *	len	length, starting at ptr, of the JSON string
+ *	quote	true ==> ignore JSON double quotes, both ptr[0] & ptr[len-1] must be "
+ *		false ==> the entire ptr is to be converted
  *
  * returns:
  *	allocated JSON parser tree node converted JSON encoded string
@@ -2372,7 +2372,7 @@ json_conv_float_str(char const *str, size_t *retlen)
  * NOTE: This function will not return NULL.
  */
 struct json *
-json_conv_string(char const *str, size_t len, bool quote)
+json_conv_string(char const *ptr, size_t len, bool quote)
 {
     struct json *ret = NULL;		    /* JSON parser tree node to return */
     struct json_string *item = NULL;	    /* JSON string element inside JSON parser tree node */
@@ -2400,7 +2400,7 @@ json_conv_string(char const *str, size_t len, bool quote)
      */
     item = &(ret->element.string);
     item->as_str = NULL;
-    item->str = NULL;
+    item->ptr = NULL;
     item->converted = false;
     item->quote = false;
     item->same = false;
@@ -2413,8 +2413,8 @@ json_conv_string(char const *str, size_t len, bool quote)
     /*
      * firewall
      */
-    if (str == NULL) {
-	warn(__func__, "called with NULL str");
+    if (ptr == NULL) {
+	warn(__func__, "called with NULL ptr");
 	return ret;
     }
 
@@ -2430,11 +2430,11 @@ json_conv_string(char const *str, size_t len, bool quote)
 	    warn(__func__, "quote === true: called with len: %ju < 2", (uintmax_t)len);
 	    return ret;
 	}
-	if (str[0] != '"') {
+	if (ptr[0] != '"') {
 	    warn(__func__, "quote === true: string does NOT start with a \"");
 	    return ret;
 	}
-	if (str[len-1] != '"') {
+	if (ptr[len-1] != '"') {
 	    warn(__func__, "quote === true: string does NOT end with a \"");
 	    return ret;
 	}
@@ -2443,7 +2443,7 @@ json_conv_string(char const *str, size_t len, bool quote)
 	 * ignore JSON surrounding '"'s
 	 */
 	item->quote = true;
-	++str;
+	++ptr;
 	len -= 2;
     }
 
@@ -2456,15 +2456,15 @@ json_conv_string(char const *str, size_t len, bool quote)
 	errp(169, __func__, "calloc #1 error allocating %ju bytes", (uintmax_t)(len+1+1));
 	not_reached();
     }
-    strncpy(item->as_str, str, len+1);
+    strncpy(item->as_str, ptr, len+1);
     item->as_str_len = len;	/* save length of as_str */
 
     /*
      * decode the JSON encoded string
      */
     /* decode the entire string */
-    item->str = json_decode_str(item->as_str, &(item->str_len));
-    if (item->str == NULL) {
+    item->ptr = json_decode_str(item->as_str, &(item->str_len));
+    if (item->ptr == NULL) {
 	warn(__func__, "quote === %s: JSON string decode failed for: <%s>",
 		       (quote ? "true" : "false"), item->as_str);
 	return ret;
@@ -2474,19 +2474,19 @@ json_conv_string(char const *str, size_t len, bool quote)
     /*
      * determine if decoded string is identical to the original JSON encoded string
      */
-    if (item->as_str_len == item->str_len && memcmp(item->as_str, item->str, item->as_str_len) == 0) {
+    if (item->as_str_len == item->str_len && memcmp(item->as_str, item->ptr, item->as_str_len) == 0) {
 	item->same = true;	/* decoded string same an original JSON encoded string (perhaps sans '"'s) */
     }
 
     /*
      * determine if decoded JSON string is a C string
      */
-    item->has_nul = is_string(item->str, item->str_len);
+    item->has_nul = is_string(item->ptr, item->str_len);
 
     /*
      * determine POSIX state of the decoded string
      */
-    posix_safe_chk(item->str, item->str_len, &item->slash, &item->posix_safe, &item->first_alphanum, &item->upper);
+    posix_safe_chk(item->ptr, item->str_len, &item->slash, &item->posix_safe, &item->first_alphanum, &item->upper);
 
     /*
      * return the JSON parse tree element
@@ -2561,8 +2561,8 @@ json_conv_string_str(char const *str, size_t *retlen, bool quote)
  * json_conv_bool - convert JSON encoded boolean to C bool
  *
  * given:
- *	str	a JSON boolean
- *	len	length, starting at str, of the JSON boolean
+ *	ptr	pointer to buffer containing a JSON boolean
+ *	len	length, starting at ptr, of the JSON boolean
  *
  * returns:
  *	allocated JSON parser tree node converted JSON encoded boolean
@@ -2574,7 +2574,7 @@ json_conv_string_str(char const *str, size_t *retlen, bool quote)
  * NOTE: This function will not return NULL.
  */
 struct json *
-json_conv_bool(char const *str, size_t len)
+json_conv_bool(char const *ptr, size_t len)
 {
     struct json *ret = NULL;		    /* JSON parser tree node to return */
     struct json_boolean *item = NULL;	    /* allocated decoding string or NULL */
@@ -2608,15 +2608,15 @@ json_conv_bool(char const *str, size_t len)
     /*
      * firewall
      */
-    if (str == NULL) {
-	warn(__func__, "called with NULL str");
+    if (ptr == NULL) {
+	warn(__func__, "called with NULL ptr");
 	return ret;
     }
     if (len <= 0) {
 	warn(__func__, "called with len: %ju <= 0", (uintmax_t)len);
 	return ret;
     }
-    if (str[0] == '\0') {
+    if (ptr[0] == '\0') {
 	warn(__func__, "called with empty string");
 	return ret;
     }
@@ -2630,7 +2630,7 @@ json_conv_bool(char const *str, size_t len)
 	errp(172, __func__, "malloc #1 error allocating %ju bytes", (uintmax_t)(len+1+1));
 	not_reached();
     }
-    memcpy(item->as_str, str, len+1);
+    memcpy(item->as_str, ptr, len+1);
     item->as_str[len] = '\0';	/* paranoia */
     item->as_str[len+1] = '\0';	/* paranoia */
     item->as_str_len = len;
@@ -2719,8 +2719,8 @@ json_conv_bool_str(char const *str, size_t *retlen)
  * json_conv_null - convert JSON encoded nullean to C NULL
  *
  * given:
- *	str	a JSON null
- *	len	length, starting at str, of the JSON null
+ *	ptr	pointer to buffer containing a JSON null
+ *	len	length, starting at ptr, of the JSON null
  *
  * returns:
  *	allocated JSON parser tree node converted JSON encoded null
@@ -2732,7 +2732,7 @@ json_conv_bool_str(char const *str, size_t *retlen)
  * NOTE: This function will not return NULL.
  */
 struct json *
-json_conv_null(char const *str, size_t len)
+json_conv_null(char const *ptr, size_t len)
 {
     struct json *ret = NULL;		    /* JSON parser tree node to return */
     struct json_null *item = NULL;	    /* allocated decoding string or NULL */
@@ -2765,15 +2765,15 @@ json_conv_null(char const *str, size_t len)
     /*
      * firewall
      */
-    if (str == NULL) {
-	warn(__func__, "called with NULL str");
+    if (ptr == NULL) {
+	warn(__func__, "called with NULL ptr");
 	return ret;
     }
     if (len <= 0) {
 	warn(__func__, "called with len: %ju <= 0", (uintmax_t)len);
 	return ret;
     }
-    if (str[0] == '\0') {
+    if (ptr[0] == '\0') {
 	warn(__func__, "called with empty string");
 	return ret;
     }
@@ -2787,7 +2787,7 @@ json_conv_null(char const *str, size_t len)
 	errp(175, __func__, "malloc #1 error allocating %ju bytes", (uintmax_t)(len+1+1));
 	not_reached();
     }
-    memcpy(item->as_str, str, len+1);
+    memcpy(item->as_str, ptr, len+1);
     item->as_str[len] = '\0';	/* paranoia */
     item->as_str[len+1] = '\0';	/* paranoia */
     item->as_str_len = len;

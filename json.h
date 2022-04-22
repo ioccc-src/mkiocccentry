@@ -351,15 +351,15 @@ extern char *json_decode(char const *ptr, size_t len, size_t *retlen);
 extern char *json_decode_str(char const *str, size_t *retlen);
 /* JSON conversion functions */
 extern void json_conv_free(struct json *node);
-extern struct json *json_conv_int(char const *str, size_t len);
+extern struct json *json_conv_int(char const *ptr, size_t len);
 extern struct json *json_conv_int_str(char const *str, size_t *retlen);
-extern struct json *json_conv_float(char const *str, size_t len);
+extern struct json *json_conv_float(char const *ptr, size_t len);
 extern struct json *json_conv_float_str(char const *str, size_t *retlen);
-extern struct json *json_conv_string(char const *str, size_t len, bool quote);
+extern struct json *json_conv_string(char const *ptr, size_t len, bool quote);
 extern struct json *json_conv_string_str(char const *str, size_t *retlen, bool quote);
-extern struct json *json_conv_bool(char const *str, size_t len);
+extern struct json *json_conv_bool(char const *ptr, size_t len);
 extern struct json *json_conv_bool_str(char const *str, size_t *retlen);
-extern struct json *json_conv_null(char const *str, size_t len);
+extern struct json *json_conv_null(char const *ptr, size_t len);
 extern struct json *json_conv_null_str(char const *str, size_t *retlen);
 
 
