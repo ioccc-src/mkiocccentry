@@ -531,7 +531,7 @@ jparse.c: jparse.l jparse.tab.h bfok.sh limit_ioccc.sh verge jparse.ref.c Makefi
 # repo tools - rules for those who maintain the mkiocccentry repo #
 ###################################################################
 
-# things to do before a release, forming a pull request and/or updating the
+# Things to do before a release, forming a pull request and/or updating the
 # GitHub repo
 #
 # Run through all of the prep steps.  If some step failed along the way, exit
@@ -542,7 +542,7 @@ prep: prep.sh
 	./prep.sh 2>&1 | ${TEE} ${BUILD_LOG}
 	@echo NOTE: The above details were saved in the file: ${BUILD_LOG}
 
-# things to do before a release, forming a pull request and/or updating the
+# Things to do before a release, forming a pull request and/or updating the
 # GitHub repo.
 #
 # Run through all of the prep steps.  If a step fails, exit immediately.
@@ -550,10 +550,9 @@ prep: prep.sh
 build release pull: prep.sh
 	${RM} -f ${BUILD_LOG}
 	./prep.sh -e 2>&1 | ${TEE} ${BUILD_LOG}
-	@echo NOTE: The above details were saved to ${BUILD_LOG}.
+	@echo NOTE: The above details were saved in the file: ${BUILD_LOG}
 
-# force the rebuild of the JSON parser and form reference copies of JSON parser
-# C code.
+# Force the rebuild of the JSON parser and form reference copies of JSON parser C code.
 #
 parser: jparse.y jparse.l Makefile
 	${RM} -f jparse.tab.c jparse.tab.h
