@@ -9,7 +9,7 @@
  * there might be some grammar that's not correct. Not all actions are complete
  * and some that have been added do not yet check for errors.
  *
- * The JTYPE_STRING action that uses strdup() will be changed to use struct
+ * The JSON_STRING action that uses strdup() will be changed to use struct
  * string at a later date (sometime after struct json_string is finished). Similar
  * will be done for the numbers: struct integer and struct json_floating. These
  * structs are finished but will not be integrated until later on.
@@ -54,13 +54,13 @@ YY_BUFFER_STATE bs;
 /*
  * Section 2: Patterns (regular expressions) and actions.
  *
- * NOTE: I'm aware of at least one error here (the JTYPE_STRING regex is
+ * NOTE: I'm aware of at least one error here (the JSON_STRING regex is
  * incorrect), it's likely that the list incomplete as well and I'd be surprised
  * if there aren't any other errors.
  */
 
 /*
- * XXX JTYPE_WHITESPACE is not needed but for testing I have the whitespace here
+ * XXX JSON_WHITESPACE is not needed but for testing I have the whitespace here
  * and below in the actions print out that it is whitespace and what characters
  * (though newlines and other non-printable whitespace chars are not translated
  * to escape sequences). The text looks like:
@@ -69,10 +69,10 @@ YY_BUFFER_STATE bs;
  *
  * to help distinguish it from other patterns.
  */
-JTYPE_WHITESPACE	[ \t\r\n]+
+JSON_WHITESPACE	[ \t\r\n]+
 
 /*
- * XXX JTYPE_STRING is NOT correct! It does capture basic strings but it does
+ * XXX JSON_STRING is NOT correct! It does capture basic strings but it does
  * not address everything correctly.
  *
  * Now one might ask questions about the tighter restrictions on JSON strings
@@ -81,21 +81,22 @@ JTYPE_WHITESPACE	[ \t\r\n]+
  * let the conversion routines do the actual JSON checks: this way it keeps the
  * regex simple and we don't have to worry about any complexities.
  */
-JTYPE_STRING           \"[^"\n]*\"
-JTYPE_DIGIT		[0-9]
-JTYPE_DIGITS		{JTYPE_DIGIT}+
-JTYPE_EXPONENT		[Ee][-+]?[0-9]+
-JTYPE_INTMAX		-?{JTYPE_DIGITS}
-JTYPE_UINTMAX		{JTYPE_DIGITS}
-JTYPE_LONG_DOUBLE	-?{JTYPE_DIGITS}"."{JTYPE_DIGITS}{JTYPE_EXPONENT}?
-JTYPE_BOOLEAN		"true"|"false"
-JTYPE_NULL		"null"
-JTYPE_OPEN_BRACE	"{"
-JTYPE_CLOSE_BRACE	"}"
-JTYPE_OPEN_BRACKET	"["
-JTYPE_CLOSE_BRACKET	"]"
-JTYPE_COLON		":"
-JTYPE_COMMA		","
+JSON_STRING           \"[^"\n]*\"
+JSON_DIGIT		[0-9]
+JSON_DIGITS		{JSON_DIGIT}+
+JSON_EXPONENT		[Ee][-+]?[0-9]+
+JSON_INTMAX		-?{JSON_DIGITS}
+JSON_UINTMAX		{JSON_DIGITS}
+JSON_LONG_DOUBLE	-?{JSON_DIGITS}"."{JSON_DIGITS}{JSON_EXPONENT}?
+JSON_TRUE		"true"
+JSON_FALSE		"false"
+JSON_NULL		"null"
+JSON_OPEN_BRACE	"{"
+JSON_CLOSE_BRACE	"}"
+JSON_OPEN_BRACKET	"["
+JSON_CLOSE_BRACKET	"]"
+JSON_COLON		":"
+JSON_COMMA		","
 
 /* Actions.
  *
@@ -109,19 +110,20 @@ JTYPE_COMMA		","
  * For now we just print the type and value and then return the type.
  */
 %%
-{JTYPE_WHITESPACE}	    { printf("\nwhitespace: '%s'\n", yytext); }
-{JTYPE_STRING}		    { printf("\nstring: '%s'\n", yytext); return JTYPE_STRING; }
-{JTYPE_UINTMAX}		    { printf("\nuintmax: '%s'\n", yytext); return JTYPE_UINTMAX; }
-{JTYPE_INTMAX}		    { printf("\nintmax: '%s'\n", yytext); return JTYPE_INTMAX; }
-{JTYPE_LONG_DOUBLE}	    { printf("\nlong double: '%s'\n", yytext); return JTYPE_LONG_DOUBLE; }
-{JTYPE_NULL}		    { printf("\nnull: '%s'\n", yytext); return JTYPE_NULL; }
-{JTYPE_BOOLEAN}		    { printf("\nboolean: '%s'\n", yytext); return JTYPE_BOOLEAN; }
-{JTYPE_OPEN_BRACE}	    { printf("\nopen brace: '%c'\n", *yytext); token_type = '{'; return JTYPE_OPEN_BRACE; }
-{JTYPE_CLOSE_BRACE}	    { printf("\nclose brace: '%c'\n", *yytext); token_type = '}'; return JTYPE_CLOSE_BRACE;}
-{JTYPE_OPEN_BRACKET}	    { printf("\nopen bracket: '%c'\n", *yytext); token_type = '['; return JTYPE_OPEN_BRACKET; }
-{JTYPE_CLOSE_BRACKET}	    { printf("\nclose bracket: '%c'\n", *yytext); token_type = ']'; return JTYPE_CLOSE_BRACKET; }
-{JTYPE_COLON}		    { printf("\nequals/colon: '%c'\n", *yytext); token_type = ':'; return JTYPE_COLON; }
-{JTYPE_COMMA}		    { printf("\ncomma: '%c'\n", *yytext); token_type = ','; return JTYPE_COMMA; }
+{JSON_WHITESPACE}	    { printf("\nwhitespace: '%s'\n", yytext); }
+{JSON_STRING}		    { printf("\nstring: '%s'\n", yytext); return JSON_STRING; }
+{JSON_UINTMAX}		    { printf("\nuintmax: '%s'\n", yytext); return JSON_UINTMAX; }
+{JSON_INTMAX}		    { printf("\nintmax: '%s'\n", yytext); return JSON_INTMAX; }
+{JSON_LONG_DOUBLE}	    { printf("\nlong double: '%s'\n", yytext); return JSON_LONG_DOUBLE; }
+{JSON_NULL}		    { printf("\nnull: '%s'\n", yytext); return JSON_NULL; }
+{JSON_TRUE}		    { printf("\ntrue: '%s'\n", yytext); return JSON_TRUE; }
+{JSON_FALSE}		    { printf("\nfalse: '%s'\n", yytext); return JSON_FALSE; }
+{JSON_OPEN_BRACE}	    { printf("\nopen brace: '%c'\n", *yytext); token_type = '{'; return JSON_OPEN_BRACE; }
+{JSON_CLOSE_BRACE}	    { printf("\nclose brace: '%c'\n", *yytext); token_type = '}'; return JSON_CLOSE_BRACE;}
+{JSON_OPEN_BRACKET}	    { printf("\nopen bracket: '%c'\n", *yytext); token_type = '['; return JSON_OPEN_BRACKET; }
+{JSON_CLOSE_BRACKET}	    { printf("\nclose bracket: '%c'\n", *yytext); token_type = ']'; return JSON_CLOSE_BRACKET; }
+{JSON_COLON}		    { printf("\nequals/colon: '%c'\n", *yytext); token_type = ':'; return JSON_COLON; }
+{JSON_COMMA}		    { printf("\ncomma: '%c'\n", *yytext); token_type = ','; return JSON_COMMA; }
 %%
 
 /* Section 3: Code that's copied to the generated scanner */

@@ -323,7 +323,7 @@ dbg: dbg.c Makefile
 fnamchk: fnamchk.c dbg.o util.o dyn_array.o Makefile
 	${CC} ${CFLAGS} fnamchk.c dbg.o util.o dyn_array.o -o $@
 
-txzchk: txzchk.c rule_count.o dbg.o util.o dyn_array.o location.o json.o json_chk.o json_util.o \
+txzchk: txzchk.c txzchk.h rule_count.o dbg.o util.o dyn_array.o location.o json.o json_chk.o json_util.o \
 	utf8_posix_map.o sanity.o Makefile
 	${CC} ${CFLAGS} txzchk.c rule_count.o dbg.o util.o dyn_array.o location.o json.o \
 	    json_chk.o json_util.o utf8_posix_map.o sanity.o -o $@
@@ -431,8 +431,8 @@ jparse.tab.c jparse.tab.h: jparse.y bfok.sh limit_ioccc.sh verge jparse.tab.ref.
 		echo "${CP} -f -v jparse.tab.ref.h jparse.tab.h"; \
 		${CP} -f -v jparse.tab.ref.h jparse.tab.h; \
 	    else \
-		echo "$$BISON_PATH -d jparse.y"; \
-		"$$BISON_PATH" -d jparse.y; \
+		echo "$$BISON_PATH -d -Wyacc -Dparse.error=verbose -Dparse.lac=full jparse.y"; \
+		"$$BISON_PATH" -d -Wyacc -Dparse.error=verbose -Dparse.lac=full jparse.y; \
 		status="$$?"; \
 		if [[ $$status -eq 0 && -s jparse.tab.c && -s jparse.tab.h ]]; then \
 		    echo '# prepending comment and line number reset to jparse.tab.c'; \
@@ -892,27 +892,27 @@ depend: all
 utf8_posix_map.o: utf8_posix_map.c utf8_posix_map.h util.h dyn_array.h \
   dbg.h limit_ioccc.h version.h
 jparse.o: jparse.c jparse.h dbg.h util.h dyn_array.h json.h sanity.h \
-  location.h utf8_posix_map.h json_chk.h limit_ioccc.h version.h \
-  jparse.tab.h
-jparse.tab.o: jparse.tab.c jparse.h dbg.h util.h dyn_array.h json.h \
-  sanity.h location.h utf8_posix_map.h json_chk.h limit_ioccc.h \
+  location.h utf8_posix_map.h json_chk.h json_util.h limit_ioccc.h \
   version.h jparse.tab.h
+jparse.tab.o: jparse.tab.c jparse.h dbg.h util.h dyn_array.h json.h \
+  sanity.h location.h utf8_posix_map.h json_chk.h json_util.h \
+  limit_ioccc.h version.h jparse.tab.h
 dbg.o: dbg.c dbg.h
 util.o: util.c dbg.h util.h dyn_array.h limit_ioccc.h version.h
 mkiocccentry.o: mkiocccentry.c mkiocccentry.h util.h dyn_array.h dbg.h \
   json_entry.h location.h utf8_posix_map.h sanity.h json.h json_chk.h \
-  limit_ioccc.h version.h iocccsize.h
+  json_util.h limit_ioccc.h version.h iocccsize.h
 iocccsize.o: iocccsize.c iocccsize_err.h iocccsize.h
 fnamchk.o: fnamchk.c fnamchk.h dbg.h util.h dyn_array.h limit_ioccc.h \
   version.h utf8_posix_map.h
 txzchk.o: txzchk.c txzchk.h util.h dyn_array.h dbg.h sanity.h location.h \
-  utf8_posix_map.h json.h json_chk.h limit_ioccc.h version.h
+  utf8_posix_map.h json.h json_chk.h json_util.h limit_ioccc.h version.h
 jauthchk.o: jauthchk.c jauthchk.h dbg.h util.h dyn_array.h json.h \
-  sanity.h location.h utf8_posix_map.h json_chk.h limit_ioccc.h \
-  version.h
+  json_entry.h json_util.h sanity.h location.h utf8_posix_map.h \
+  json_chk.h limit_ioccc.h version.h
 jinfochk.o: jinfochk.c jinfochk.h dbg.h util.h dyn_array.h json.h \
-  json_entry.h sanity.h location.h utf8_posix_map.h json_chk.h \
-  limit_ioccc.h version.h
+  json_entry.h json_util.h sanity.h location.h utf8_posix_map.h \
+  json_chk.h limit_ioccc.h version.h
 json.o: json.c dbg.h util.h dyn_array.h limit_ioccc.h version.h json.h
 jstrencode.o: jstrencode.c jstrencode.h dbg.h util.h dyn_array.h json.h \
   limit_ioccc.h version.h
@@ -921,7 +921,7 @@ jstrdecode.o: jstrdecode.c jstrdecode.h dbg.h util.h dyn_array.h json.h \
 rule_count.o: rule_count.c iocccsize_err.h iocccsize.h
 location.o: location.c location.h util.h dyn_array.h dbg.h
 sanity.o: sanity.c sanity.h util.h dyn_array.h dbg.h location.h \
-  utf8_posix_map.h json.h json_chk.h limit_ioccc.h version.h
+  utf8_posix_map.h json.h json_chk.h json_util.h limit_ioccc.h version.h
 utf8_test.o: utf8_test.c utf8_posix_map.h util.h dyn_array.h dbg.h \
   limit_ioccc.h version.h
 jint.o: jint.c jint.h dbg.h util.h dyn_array.h json.h limit_ioccc.h \
@@ -933,6 +933,6 @@ jfloat.test.o: jfloat.test.c json.h
 verge.o: verge.c verge.h dbg.h util.h dyn_array.h limit_ioccc.h version.h
 dyn_array.o: dyn_array.c dyn_array.h util.h dbg.h
 dyn_test.o: dyn_test.c dyn_test.h util.h dyn_array.h dbg.h version.h
-json_chk.o: json_chk.c json_chk.h util.h dyn_array.h dbg.h \
-  json.h limit_ioccc.h version.h
+json_chk.o: json_chk.c json_chk.h util.h dyn_array.h dbg.h json.h \
+  json_util.h limit_ioccc.h version.h
 json_entry.o: json_entry.c dbg.h util.h dyn_array.h json.h json_entry.h

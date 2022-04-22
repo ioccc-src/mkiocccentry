@@ -1383,29 +1383,29 @@ json_conv_free(struct json *node)
      */
     switch (node->type) {
 
-    case JSON_EOT:	/* special end of the table value */
+    case JTYPE_EOT:	/* special end of the table value */
 	/* nothing to free */
 	break;
 
-    case JSON_UNSET:	/* JSON element has not been set - must be the value 0 */
+    case JTYPE_UNSET:	/* JSON element has not been set - must be the value 0 */
 	/* nothing to free */
 	break;
 
-    case JSON_INT:	/* JSON element is an integer - see struct json_integer */
+    case JTYPE_INT:	/* JSON element is an integer - see struct json_integer */
 	if (node->element.integer.as_str != NULL) {
 	    free(node->element.integer.as_str);
 	    node->element.integer.as_str = NULL;
 	}
 	break;
 
-    case JSON_FLOAT:	/* JSON element is a float - see struct json_floating */
+    case JTYPE_FLOAT:	/* JSON element is a float - see struct json_floating */
 	if (node->element.floating.as_str != NULL) {
 	    free(node->element.floating.as_str);
 	    node->element.floating.as_str = NULL;
 	}
 	break;
 
-    case JSON_STRING:	/* JSON element is a string - see struct json_string */
+    case JTYPE_STRING:	/* JSON element is a string - see struct json_string */
 	if (node->element.string.as_str != NULL) {
 	    free(node->element.string.as_str);
 	    node->element.string.as_str = NULL;
@@ -1416,29 +1416,29 @@ json_conv_free(struct json *node)
 	}
 	break;
 
-    case JSON_BOOL:	/* JSON element is a boolean - see struct json_boolean */
+    case JTYPE_BOOL:	/* JSON element is a boolean - see struct json_boolean */
 	if (node->element.boolean.as_str != NULL) {
 	    free(node->element.boolean.as_str);
 	    node->element.boolean.as_str = NULL;
 	}
 	break;
 
-    case JSON_NULL:	/* JSON element is a null - see struct json_null */
+    case JTYPE_NULL:	/* JSON element is a null - see struct json_null */
 	if (node->element.null.as_str != NULL) {
 	    free(node->element.null.as_str);
 	    node->element.null.as_str = NULL;
 	}
 	break;
 
-    case JSON_OBJECT:	/* JSON element is a { members } */
+    case JTYPE_OBJECT:	/* JSON element is a { members } */
 	/* XXX - update when struct json_object is defined - XXX */
 	break;
 
-    case JSON_MEMBER:	/* JSON element is a member */
+    case JTYPE_MEMBER:	/* JSON element is a member */
 	/* XXX - update when struct json_member is defined - XXX */
 	break;
 
-    case JSON_ARRAY:	/* JSON element is a [ elements ] */
+    case JTYPE_ARRAY:	/* JSON element is a [ elements ] */
 	/* XXX - update when struct json_array is defined - XXX */
 	break;
 
@@ -1489,7 +1489,7 @@ json_conv_int(char const *str, size_t len)
     /*
      * initialize the JSON parse tree element
      */
-    ret->type = JSON_INT;
+    ret->type = JTYPE_INT;
     ret->parent = NULL;
     ret->prev = NULL;
     ret->next = NULL;
@@ -1981,7 +1981,7 @@ json_conv_float(char const *str, size_t len)
     /*
      * initialize the JSON parse tree element
      */
-    ret->type = JSON_FLOAT;
+    ret->type = JTYPE_FLOAT;
     ret->parent = NULL;
     ret->prev = NULL;
     ret->next = NULL;
@@ -2390,7 +2390,7 @@ json_conv_string(char const *str, size_t len, bool quote)
     /*
      * initialize the JSON parse tree element
      */
-    ret->type = JSON_STRING;
+    ret->type = JTYPE_STRING;
     ret->parent = NULL;
     ret->prev = NULL;
     ret->next = NULL;
@@ -2592,7 +2592,7 @@ json_conv_bool(char const *str, size_t len)
     /*
      * initialize the JSON parse tree element
      */
-    ret->type = JSON_BOOL;
+    ret->type = JTYPE_BOOL;
     ret->parent = NULL;
     ret->prev = NULL;
     ret->next = NULL;
@@ -2750,7 +2750,7 @@ json_conv_null(char const *str, size_t len)
     /*
      * initialize the JSON parse tree element
      */
-    ret->type = JSON_NULL;
+    ret->type = JTYPE_NULL;
     ret->parent = NULL;
     ret->prev = NULL;
     ret->next = NULL;

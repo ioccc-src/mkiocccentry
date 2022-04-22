@@ -111,8 +111,8 @@ struct json_field
      * valid and parsing in that certain data types have to be parsed
      * differently.
      *
-     * Data type: one of JSON_NUM, JSON_BOOL, JSON_CHARS or
-     * JSON_ARRAY_ equivalents.
+     * Data type: one of JSON_NUM, JTYPE_BOOL, JSON_CHARS or
+     * JTYPE_ARRAY_ equivalents.
      */
     int field_type;
     /*
@@ -160,8 +160,6 @@ extern struct json_field *new_json_field(char const *json_filename, char const *
 extern struct json_value *add_json_value(char const *json_filename, struct json_field *field, char const *val, int line_num);
 
 /* warning and error specific functions */
-
-
 extern void jwarn(int code, const char *program, char const *name, char const *filename, char const *line,
 		  int line_num, const char *fmt, ...) \
 	__attribute__((format(printf, 7, 8)));		/* 7=format 8=params */

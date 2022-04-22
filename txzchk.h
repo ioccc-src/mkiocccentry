@@ -39,14 +39,16 @@
  */
 #include "limit_ioccc.h"
 
+
 /*
  * definitions
  */
 #define REQUIRED_ARGS (1)	/* number of required arguments on the command line */
 
-/* globals specific to txzchk */
+
+/* globals */
 bool quiet = false;				/* true ==> quiet mode */
-/**/
+/* globals specific to txzchk */
 static char const *txzpath = NULL;		/* the current tarball being checked */
 static char const *program = NULL;		/* our name */
 static bool text_file_flag_used = false;	/* true ==> assume txzpath is a text file */
@@ -75,29 +77,51 @@ struct txz_info
     unsigned dot_files;			    /* number of dot files that aren't .author.json and .info.json */
     unsigned named_dot;			    /* number of files called just '.' */
     unsigned total_files;		    /* total files in the tarball */
-    int total_issues;			    /* number of total issues in tarball */
+    unsigned total_issues;		    /* number of total issues in tarball */
 };
 
-static struct txz_info txz_info;
+static struct txz_info txz_info;	    /* all the information collected from txzpath */
 
+/*
+ * txz_file - struct for each file
+ *
+ * This struct is for the txz_files linked list which is all the files the
+ * tarball has (according to tar -tJvf or if -T specified what was read from
+ * each line of the text file).
+ *
+ * Once the tar/text file output has been parsed we go through this list to
+ * determine if the appropriate files exist, to check that only one of each file
+ * exists, the correct directory is found (and no directory changes are there)
+ * and check other conditions. See the function check_all_txz_files().
+ */
 struct txz_file
 {
-    char *basename;
-    char *filename;
-    unsigned count;
-    struct txz_file *next;
+    char *basename;			    /* basename of _this_ file */
+    char *filename;			    /* full path of _this_ file */
+    unsigned count;			    /* number of times _this_ file has been seen */
+    struct txz_file *next;		    /* the next file in the txz_files list */
 };
 
-static struct txz_file *txz_files;
+static struct txz_file *txz_files;	    /* linked list of the files in the tarball */
 
+/*
+ * struct txz_line - a line of output from tar -tJvf or the text file
+ *
+ * This struct defines a line of output for the txz_lines linked list. After all
+ * lines from tar or the text file are added to the list, we parse each line (by
+ * calling parse_txz_line() which calls either parse_linux_txz_line() or
+ * parse_bsd_txz_line() depending on the line format), doing various checks and
+ * adds each file to the txz_files list for further checks after the initial
+ * tests are complete.
+ */
 struct txz_line
 {
-    char *line;
-    int line_num;
-    struct txz_line *next;
+    char *line;				/* copy of the line */
+    int line_num;			/* line number */
+    struct txz_line *next;		/* pointer to the next line or NULL if last line */
 };
 
-static struct txz_line *txz_lines;
+static struct txz_line *txz_lines;	/* all the lines read */
 
 
 /*
@@ -122,7 +146,6 @@ static const char * const usage_msg =
     "\ttxzpath\t\tpath to an IOCCC compressed tarball\n"
     "\n"
     "txzchk version: %s\n";
-
 
 
 /*

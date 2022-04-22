@@ -416,8 +416,8 @@ static void yynoreturn yy_fatal_error ( const char* msg  );
 	(yy_hold_char) = *yy_cp; \
 	*yy_cp = '\0'; \
 	(yy_c_buf_p) = yy_cp;
-#define YY_NUM_RULES 14
-#define YY_END_OF_BUFFER 15
+#define YY_NUM_RULES 15
+#define YY_END_OF_BUFFER 16
 /* This struct is not used in this scanner,
    but its presence is necessary. */
 struct yy_trans_info
@@ -425,12 +425,12 @@ struct yy_trans_info
 	flex_int32_t yy_verify;
 	flex_int32_t yy_nxt;
 	};
-static const flex_int16_t yy_accept[38] =
+static const flex_int16_t yy_accept[39] =
     {   0,
-        0,    0,   15,   14,    1,   14,   13,   14,    3,   12,
-       10,   11,   14,   14,   14,    8,    9,    1,    0,    2,
+        0,    0,   16,   15,    1,   15,   14,   15,    3,   13,
+       11,   12,   15,   15,   15,    9,   10,    1,    0,    2,
         4,    0,    3,    0,    0,    0,    5,    0,    0,    0,
-        0,    0,    6,    7,    0,    5,    0
+        0,    0,    6,    7,    0,    5,    8,    0
     } ;
 
 static const YY_CHAR yy_ec[256] =
@@ -472,20 +472,20 @@ static const YY_CHAR yy_meta[25] =
         1,    1,    1,    1
     } ;
 
-static const flex_int16_t yy_base[39] =
+static const flex_int16_t yy_base[40] =
     {   0,
         0,    0,   58,   59,   23,   53,   59,   47,   19,   59,
        59,   59,   41,   32,   34,   59,   59,   27,   48,   59,
        23,   42,   25,   33,   32,   26,   26,   27,   29,   30,
-       31,   29,   59,   59,   34,   33,   59,   38
+       31,   29,   59,   59,   34,   33,   59,   59,   38
     } ;
 
-static const flex_int16_t yy_def[39] =
+static const flex_int16_t yy_def[40] =
     {   0,
-       37,    1,   37,   37,   37,   38,   37,   37,   37,   37,
-       37,   37,   37,   37,   37,   37,   37,   37,   38,   37,
-       37,   37,   37,   37,   37,   37,   37,   37,   37,   37,
-       37,   37,   37,   37,   37,   37,    0,   37
+       38,    1,   38,   38,   38,   39,   38,   38,   38,   38,
+       38,   38,   38,   38,   38,   38,   38,   38,   39,   38,
+       38,   38,   38,   38,   38,   38,   38,   38,   38,   38,
+       38,   38,   38,   38,   38,   38,   38,    0,   38
     } ;
 
 static const flex_int16_t yy_nxt[84] =
@@ -494,11 +494,11 @@ static const flex_int16_t yy_nxt[84] =
         4,   11,   12,    4,    4,   13,    4,   14,    4,    4,
        15,    4,   16,   17,   18,   18,   22,   23,   18,   18,
        22,   21,   22,   23,   27,   35,   31,   35,   19,   36,
-       31,   36,   36,   34,   34,   33,   32,   30,   29,   28,
-       27,   20,   26,   25,   24,   21,   20,   37,    3,   37,
-       37,   37,   37,   37,   37,   37,   37,   37,   37,   37,
-       37,   37,   37,   37,   37,   37,   37,   37,   37,   37,
-       37,   37,   37
+       31,   36,   36,   37,   34,   33,   32,   30,   29,   28,
+       27,   20,   26,   25,   24,   21,   20,   38,    3,   38,
+       38,   38,   38,   38,   38,   38,   38,   38,   38,   38,
+       38,   38,   38,   38,   38,   38,   38,   38,   38,   38,
+       38,   38,   38
     } ;
 
 static const flex_int16_t yy_chk[84] =
@@ -506,18 +506,18 @@ static const flex_int16_t yy_chk[84] =
         1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
         1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
         1,    1,    1,    1,    5,    5,    9,    9,   18,   18,
-       21,   21,   23,   23,   27,   31,   27,   31,   38,   31,
+       21,   21,   23,   23,   27,   31,   27,   31,   39,   31,
        27,   36,   35,   32,   30,   29,   28,   26,   25,   24,
-       22,   19,   15,   14,   13,    8,    6,    3,   37,   37,
-       37,   37,   37,   37,   37,   37,   37,   37,   37,   37,
-       37,   37,   37,   37,   37,   37,   37,   37,   37,   37,
-       37,   37,   37
+       22,   19,   15,   14,   13,    8,    6,    3,   38,   38,
+       38,   38,   38,   38,   38,   38,   38,   38,   38,   38,
+       38,   38,   38,   38,   38,   38,   38,   38,   38,   38,
+       38,   38,   38
     } ;
 
 /* Table of booleans, true if rule could match eol. */
-static const flex_int32_t yy_rule_can_match_eol[15] =
+static const flex_int32_t yy_rule_can_match_eol[16] =
     {   0,
-1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,     };
+1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,     };
 
 static yy_state_type yy_last_accepting_state;
 static char *yy_last_accepting_cpos;
@@ -545,7 +545,7 @@ char *yytext;
  * there might be some grammar that's not correct. Not all actions are complete
  * and some that have been added do not yet check for errors.
  *
- * The JTYPE_STRING action that uses strdup() will be changed to use struct
+ * The JSON_STRING action that uses strdup() will be changed to use struct
  * string at a later date (sometime after struct json_string is finished). Similar
  * will be done for the numbers: struct integer and struct json_floating. These
  * structs are finished but will not be integrated until later on.
@@ -584,12 +584,12 @@ YY_BUFFER_STATE bs;
 /*
  * Section 2: Patterns (regular expressions) and actions.
  *
- * NOTE: I'm aware of at least one error here (the JTYPE_STRING regex is
+ * NOTE: I'm aware of at least one error here (the JSON_STRING regex is
  * incorrect), it's likely that the list incomplete as well and I'd be surprised
  * if there aren't any other errors.
  */
 /*
- * XXX JTYPE_WHITESPACE is not needed but for testing I have the whitespace here
+ * XXX JSON_WHITESPACE is not needed but for testing I have the whitespace here
  * and below in the actions print out that it is whitespace and what characters
  * (though newlines and other non-printable whitespace chars are not translated
  * to escape sequences). The text looks like:
@@ -599,7 +599,7 @@ YY_BUFFER_STATE bs;
  * to help distinguish it from other patterns.
  */
 /*
- * XXX JTYPE_STRING is NOT correct! It does capture basic strings but it does
+ * XXX JSON_STRING is NOT correct! It does capture basic strings but it does
  * not address everything correctly.
  *
  * Now one might ask questions about the tighter restrictions on JSON strings
@@ -836,7 +836,7 @@ YY_DECL
 		}
 
 	{
-#line 111 "jparse.l"
+#line 112 "jparse.l"
 
 #line 799 "jparse.c"
 
@@ -865,7 +865,7 @@ yy_match:
 			while ( yy_chk[yy_base[yy_current_state] + yy_c] != yy_current_state )
 				{
 				yy_current_state = (int) yy_def[yy_current_state];
-				if ( yy_current_state >= 38 )
+				if ( yy_current_state >= 39 )
 					yy_c = yy_meta[yy_c];
 				}
 			yy_current_state = yy_nxt[yy_base[yy_current_state] + yy_c];
@@ -908,75 +908,80 @@ do_action:	/* This label is used only to access EOF actions. */
 case 1:
 /* rule 1 can match eol */
 YY_RULE_SETUP
-#line 112 "jparse.l"
+#line 113 "jparse.l"
 { printf("\nwhitespace: '%s'\n", yytext); }
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
-#line 113 "jparse.l"
-{ printf("\nstring: '%s'\n", yytext); return JTYPE_STRING; }
+#line 114 "jparse.l"
+{ printf("\nstring: '%s'\n", yytext); return JSON_STRING; }
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 114 "jparse.l"
-{ printf("\nuintmax: '%s'\n", yytext); return JTYPE_UINTMAX; }
+#line 115 "jparse.l"
+{ printf("\nuintmax: '%s'\n", yytext); return JSON_UINTMAX; }
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 115 "jparse.l"
-{ printf("\nintmax: '%s'\n", yytext); return JTYPE_INTMAX; }
+#line 116 "jparse.l"
+{ printf("\nintmax: '%s'\n", yytext); return JSON_INTMAX; }
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 116 "jparse.l"
-{ printf("\nlong double: '%s'\n", yytext); return JTYPE_LONG_DOUBLE; }
+#line 117 "jparse.l"
+{ printf("\nlong double: '%s'\n", yytext); return JSON_LONG_DOUBLE; }
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 117 "jparse.l"
-{ printf("\nnull: '%s'\n", yytext); return JTYPE_NULL; }
+#line 118 "jparse.l"
+{ printf("\nnull: '%s'\n", yytext); return JSON_NULL; }
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 118 "jparse.l"
-{ printf("\nboolean: '%s'\n", yytext); return JTYPE_BOOLEAN; }
+#line 119 "jparse.l"
+{ printf("\ntrue: '%s'\n", yytext); return JSON_TRUE; }
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 119 "jparse.l"
-{ printf("\nopen brace: '%c'\n", *yytext); token_type = '{'; return JTYPE_OPEN_BRACE; }
+#line 120 "jparse.l"
+{ printf("\nfalse: '%s'\n", yytext); return JSON_FALSE; }
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 120 "jparse.l"
-{ printf("\nclose brace: '%c'\n", *yytext); token_type = '}'; return JTYPE_CLOSE_BRACE;}
+#line 121 "jparse.l"
+{ printf("\nopen brace: '%c'\n", *yytext); token_type = '{'; return JSON_OPEN_BRACE; }
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
-#line 121 "jparse.l"
-{ printf("\nopen bracket: '%c'\n", *yytext); token_type = '['; return JTYPE_OPEN_BRACKET; }
+#line 122 "jparse.l"
+{ printf("\nclose brace: '%c'\n", *yytext); token_type = '}'; return JSON_CLOSE_BRACE;}
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
-#line 122 "jparse.l"
-{ printf("\nclose bracket: '%c'\n", *yytext); token_type = ']'; return JTYPE_CLOSE_BRACKET; }
+#line 123 "jparse.l"
+{ printf("\nopen bracket: '%c'\n", *yytext); token_type = '['; return JSON_OPEN_BRACKET; }
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
-#line 123 "jparse.l"
-{ printf("\nequals/colon: '%c'\n", *yytext); token_type = ':'; return JTYPE_COLON; }
+#line 124 "jparse.l"
+{ printf("\nclose bracket: '%c'\n", *yytext); token_type = ']'; return JSON_CLOSE_BRACKET; }
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
-#line 124 "jparse.l"
-{ printf("\ncomma: '%c'\n", *yytext); token_type = ','; return JTYPE_COMMA; }
+#line 125 "jparse.l"
+{ printf("\nequals/colon: '%c'\n", *yytext); token_type = ':'; return JSON_COLON; }
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
-#line 125 "jparse.l"
+#line 126 "jparse.l"
+{ printf("\ncomma: '%c'\n", *yytext); token_type = ','; return JSON_COMMA; }
+	YY_BREAK
+case 15:
+YY_RULE_SETUP
+#line 127 "jparse.l"
 ECHO;
 	YY_BREAK
-#line 937 "jparse.c"
+#line 942 "jparse.c"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 
@@ -1273,7 +1278,7 @@ static int yy_get_next_buffer (void)
 		while ( yy_chk[yy_base[yy_current_state] + yy_c] != yy_current_state )
 			{
 			yy_current_state = (int) yy_def[yy_current_state];
-			if ( yy_current_state >= 38 )
+			if ( yy_current_state >= 39 )
 				yy_c = yy_meta[yy_c];
 			}
 		yy_current_state = yy_nxt[yy_base[yy_current_state] + yy_c];
@@ -1301,11 +1306,11 @@ static int yy_get_next_buffer (void)
 	while ( yy_chk[yy_base[yy_current_state] + yy_c] != yy_current_state )
 		{
 		yy_current_state = (int) yy_def[yy_current_state];
-		if ( yy_current_state >= 38 )
+		if ( yy_current_state >= 39 )
 			yy_c = yy_meta[yy_c];
 		}
 	yy_current_state = yy_nxt[yy_base[yy_current_state] + yy_c];
-	yy_is_jam = (yy_current_state == 37);
+	yy_is_jam = (yy_current_state == 38);
 
 		return yy_is_jam ? 0 : yy_current_state;
 }
@@ -1993,7 +1998,7 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 125 "jparse.l"
+#line 127 "jparse.l"
 
 
 /* Section 3: Code that's copied to the generated scanner */
