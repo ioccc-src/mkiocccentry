@@ -74,12 +74,10 @@
 #############
 
 AWK= awk
-BISON = bison
 CAT= cat
 CC= cc
 CP= cp
 CTAGS= ctags
-FLEX = flex
 GREP= grep
 INSTALL= install
 MAKE= make
@@ -240,28 +238,44 @@ H_FILES= dbg.h jauthchk.h jinfochk.h json.h jstrdecode.h jstrencode.h limit_iocc
 #
 DSYMDIRS= $(TARGETS:=.dSYM)
 SH_FILES= iocccsize-test.sh jstr-test.sh limit_ioccc.sh mkiocccentry-test.sh json-test.sh \
-	  jcodechk.sh vermod.sh bfok.sh prep.sh
+	  jcodechk.sh vermod.sh prep.sh run_bison.sh run_flex.sh
 BUILD_LOG= build.log
 
-# Where bfok.sh looks for bison and flex with a version
+# the basename of bison (or yacc) to look for
+#
+BISON_BASENAME = bison
+#BISON_BASENAME = yacc
+
+# Where run_bison.sh will search for bison with a recent enough version
 #
 # The -B arguments specify where to look for bison with a version,
 # that is >= the minimum version (see BISON_VERSION in limit_ioccc.sh),
 # before searching for bison on $PATH.
 #
-# The -F arguments specify where to look for flex with a version,
-# that is >= the minimum version (see FLEX_VERSION in limit_ioccc.sh),
-# before searching for flex on $PATH.
-#
 # NOTE: If is OK if these directories do not exist.
 #
-BFOK_DIRS= \
+BISON_DIRS= \
 	-B /opt/homebrew/opt/bison/bin \
 	-B /opt/homebrew/bin \
 	-B /opt/local/bin \
 	-B /usr/local/opt \
 	-B /usr/local/bin \
-	-B . \
+	-B .
+
+# the basename of flex (or lex) to look for
+#
+FLEX_BASENAME= flex
+#FLEX_BASENAME= lex
+
+# Where run_flex.sh will search for flex with a recent enough version
+#
+# The -F arguments specify where to look for flex with a version,
+# that is >= the minimum version (see FLEX_VERSION in limit_ioccc.sh),
+# before searching for bison on $PATH.
+#
+# NOTE: If is OK if these directories do not exist.
+#
+FLEX_DIRS= \
 	-F /opt/homebrew/opt/flex/bin \
 	-F /opt/homebrew/bin \
 	-F /opt/local/bin \
@@ -296,7 +310,7 @@ all: ${TARGETS} ${TEST_TARGETS}
 # rules, not file targets
 #
 .PHONY: all configure clean clobber install test reset_min_timestamp rebuild_jint_test \
-	rebuild_jfloat_test picky parser build bfok clean_generated_obj prep_clobber
+	rebuild_jfloat_test picky parser build clean_generated_obj prep_clobber
 
 
 #####################################
@@ -417,64 +431,8 @@ limit_ioccc.sh: limit_ioccc.h version.h Makefile
 # if bison is found and has a recent enough version, otherwise
 # use a pre-built reference copies stored in jparse.tab.ref.h and jparse.tab.ref.c.
 #
-jparse.tab.c jparse.tab.h: jparse.y bfok.sh limit_ioccc.sh verge jparse.tab.ref.c jparse.tab.ref.h Makefile
-	${RM} -f jparse.tab.c jparse.tab.h
-	@if `./bfok.sh ${BFOK_DIRS} 2>/dev/null`; then \
-	    BISON_PATH="`./bfok.sh ${BFOK_DIRS} -p bison 2>/dev/null`"; \
-	    TMP_JPARSE_TAB_C="`${MKTEMP} -t jparse.tab.c`"; \
-	    TMP_JPARSE_TAB_H="`${MKTEMP} -t jparse.tab.h`"; \
-	    if [[ -z $$BISON_PATH || -z $$TMP_JPARSE_TAB_H || -z $$TMP_JPARSE_TAB_C ]]; then \
-	        echo "failed to discover the bison path" 1>&2; \
-	        echo "will use backup files instead" 1>&2; \
-		echo "${CP} -f -v jparse.tab.ref.c jparse.tab.c"; \
-		${CP} -f -v jparse.tab.ref.c jparse.tab.c; \
-		echo "${CP} -f -v jparse.tab.ref.h jparse.tab.h"; \
-		${CP} -f -v jparse.tab.ref.h jparse.tab.h; \
-	    else \
-		echo "$$BISON_PATH -d -Wyacc -Dparse.error=verbose -Dparse.lac=full jparse.y"; \
-		"$$BISON_PATH" -d -Wyacc -Dparse.error=verbose -Dparse.lac=full jparse.y; \
-		status="$$?"; \
-		if [[ $$status -eq 0 && -s jparse.tab.c && -s jparse.tab.h ]]; then \
-		    echo '# prepending comment and line number reset to jparse.tab.c'; \
-		    echo "${CP} -f -v sorry.tm.ca.h $$TMP_JPARSE_TAB_C"; \
-		    ${CP} -f -v sorry.tm.ca.h "$$TMP_JPARSE_TAB_C"; \
-		    echo "echo '#line 1 \"jparse.tab.c\"' >> $$TMP_JPARSE_TAB_C"; \
-		    echo '#line 1 "jparse.tab.c"' >> "$$TMP_JPARSE_TAB_C"; \
-		    echo "${CAT} jparse.tab.c >> $$TMP_JPARSE_TAB_C"; \
-		    ${CAT} jparse.tab.c >> "$$TMP_JPARSE_TAB_C"; \
-		    echo "${MV} -f -v $$TMP_JPARSE_TAB_C jparse.tab.c"; \
-		    ${MV} -f -v "$$TMP_JPARSE_TAB_C" jparse.tab.c; \
-		    echo '# jparse.tab.c prepended and line number reset'; \
-		    echo '# prepending comment and line number reset to jparse.tab.h'; \
-		    echo "${CP} -f -v sorry.tm.ca.h $$TMP_JPARSE_TAB_H"; \
-		    ${CP} -f -v sorry.tm.ca.h "$$TMP_JPARSE_TAB_H"; \
-		    echo "echo '#line 1 \"jparse.tab.h\"' >> $$TMP_JPARSE_TAB_H"; \
-		    echo '#line 1 "jparse.tab.h"' >> "$$TMP_JPARSE_TAB_H"; \
-		    echo "${CAT} jparse.tab.h >> $$TMP_JPARSE_TAB_H"; \
-		    ${CAT} jparse.tab.h >> "$$TMP_JPARSE_TAB_H"; \
-		    echo "${MV} -f -v $$TMP_JPARSE_TAB_H jparse.tab.h"; \
-		    ${MV} -f -v "$$TMP_JPARSE_TAB_H" jparse.tab.h; \
-		    echo '# jparse.tab.h prepended and line number reset'; \
-		else \
-		    echo "unable to form jparse.tab.h and/or jparse.tab.c"; \
-		    echo "if you've not modified jparse.y you can run:"; \
-		    echo; \
-		    echo "	make use_ref all"; \
-		    echo ; \
-		    echo "to use the backup files. If you do this please"; \
-		    echo "consider reporting this as a bug. If you've"; \
-		    echo "modified jparse.y please fix it and rerun this rule."; \
-		    exit 1; \
-		fi; \
-	    fi; \
-	else \
-	    echo "no bison, with version >= BISON_VERSION in limit_ioccc.sh, found" 1>&2; \
-	    echo "will move both backup files in place instead" 1>&2; \
-	    echo "${CP} -f -v jparse.tab.ref.c jparse.tab.c"; \
-	    ${CP} -f -v jparse.tab.ref.c jparse.tab.c; \
-	    echo "${CP} -f -v jparse.tab.ref.h jparse.tab.h"; \
-	    ${CP} -f -v jparse.tab.ref.h jparse.tab.h; \
-	fi
+jparse.tab.c jparse.tab.h: jparse.y run_bison.sh limit_ioccc.sh verge jparse.tab.ref.c jparse.tab.ref.h Makefile
+	./run_bison.sh ${BISON_DIRS} -p jparse -v 1 -- -d -Wyacc -Dparse.error=verbose -Dparse.lac=full
 
 # How to create jparse.c
 #
@@ -482,49 +440,8 @@ jparse.tab.c jparse.tab.h: jparse.y bfok.sh limit_ioccc.sh verge jparse.tab.ref.
 # if flex found and has a recent enough version, otherwise
 # use a pre-built reference copy stored in jparse.ref.c
 #
-jparse.c: jparse.l jparse.tab.h bfok.sh limit_ioccc.sh verge jparse.ref.c Makefile
-	${RM} -f jparse.c
-	@if `./bfok.sh ${BFOK_DIRS} 2>/dev/null`; then \
-	    FLEX_PATH="`./bfok.sh ${BFOK_DIRS} -p flex 2>/dev/null`"; \
-	    TMP_JPARSE_C="`${MKTEMP} -t jparse.c`"; \
-	    if [[ -z $$FLEX_PATH || -z $$TMP_JPARSE_C ]]; then \
-	        echo "failed to discover the flex path" 1>&2; \
-	        echo "will use backup files" 1>&2; \
-		echo "${CP} -f -v jparse.ref.c jparse.c"; \
-		${CP} -f -v jparse.ref.c jparse.c; \
-	    else \
-		echo "$$FLEX_PATH -8 -o jparse.c jparse.l"; \
-		"$$FLEX_PATH" -8 -o jparse.c jparse.l; \
-		status="$$?"; \
-		if [[ $$status -eq 0 && -s jparse.c ]]; then \
-		    echo '# prepending comment and line number reset to jparse.c'; \
-		    echo "${CP} -f -v sorry.tm.ca.h $$TMP_JPARSE_C"; \
-		    ${CP} -f -v sorry.tm.ca.h "$$TMP_JPARSE_C"; \
-		    echo "echo '#line 1 \"jparse.c\"' >> $$TMP_JPARSE_C"; \
-		    echo '#line 1 "jparse.c"' >> "$$TMP_JPARSE_C"; \
-		    echo "${CAT} jparse.c >> $$TMP_JPARSE_C"; \
-		    ${CAT} jparse.c >> "$$TMP_JPARSE_C"; \
-		    echo "${MV} -f -v $$TMP_JPARSE_C jparse.c"; \
-		    ${MV} -f -v "$$TMP_JPARSE_C" jparse.c; \
-		    echo '# jparse.c prepended and line number reset'; \
-		else \
-		    echo "unable to form jparse.c"; \
-		    echo "if you've not modified jparse.l you can run:"; \
-		    echo; \
-		    echo "	make use_ref all"; \
-		    echo ; \
-		    echo "to use the backup file. If you do this please"; \
-		    echo "consider reporting this as a bug. If you've"; \
-		    echo "modified jparse.l please fix it and rerun this rule."; \
-		    exit 1; \
-		fi; \
-	    fi; \
-	else \
-	    echo "no flex, with version >= FLEX_VERSION in limit_ioccc.sh, found" 1>&2; \
-	    echo "will move backup file in place instead" 1>&2; \
-	    echo "${CP} -f -v jparse.ref.c jparse.c"; \
-	    ${CP} -f -v jparse.ref.c jparse.c; \
-	fi
+jparse.c: jparse.l jparse.tab.h run_flex.sh limit_ioccc.sh verge jparse.ref.c Makefile
+	./run_flex.sh ${FLEX_DIRS} -p jparse -v 1 -- -d -8 -o jparse.c
 
 
 ###################################################################
@@ -557,35 +474,8 @@ build release pull: prep.sh
 parser: jparse.y jparse.l Makefile
 	${RM} -f jparse.tab.c jparse.tab.h
 	${MAKE} jparse.tab.c jparse.tab.h
-	@if [[ -s jparse.tab.c ]]; then \
-	    echo "${RM} -f jparse.tab.ref.c"; \
-	    ${RM} -f jparse.tab.ref.c; \
-	    echo "${CP} -f -v jparse.tab.c jparse.tab.ref.c"; \
-	    ${CP} -f -v jparse.tab.c jparse.tab.ref.c; \
-	else \
-	    echo "jparse.tab.c is missing or empty, cannot update jparse.tab.ref.c" 1>&2; \
-	    exit 1; \
-	fi
-	@if [[ -s jparse.tab.h ]]; then \
-	    echo "${RM} -f jparse.tab.ref.h"; \
-	    ${RM} -f jparse.tab.ref.h; \
-	    echo "${CP} -f -v jparse.tab.h jparse.tab.ref.h"; \
-	    ${CP} -f -v jparse.tab.h jparse.tab.ref.h; \
-	else \
-	    echo "jparse.tab.h is missing or empty, cannot update jparse.tab.ref.h" 1>&2; \
-	    exit 1; \
-	fi
 	${RM} -f jparse.c
 	${MAKE} jparse.c
-	@if [[ -s jparse.c ]]; then \
-	    echo "${RM} -f jparse.ref.c"; \
-	    ${RM} -f jparse.ref.c; \
-	    echo "${CP} -f -v jparse.c jparse.ref.c"; \
-	    ${CP} -f -v jparse.c jparse.ref.c; \
-	else \
-	    echo "jparse.c is missing or empty, cannot update jparse.ref.c" 1>&2; \
-	    exit 1; \
-	fi
 
 # restore reference code that was produced by previous successful make parser
 #
@@ -823,11 +713,6 @@ test: all iocccsize-test.sh dbg mkiocccentry-test.sh jstr-test.sh jint jfloat Ma
 #
 test-jinfochk: all jinfochk Makefile
 	./json-test.sh -t jinfo_only -v 1 -D 1 -d test_JSON
-
-# rule used by prep.sh
-#
-bfok: bfok.sh limit_ioccc.sh verge
-	./bfok.sh ${BFOK_DIRS}
 
 # rule used by prep.sh and make clean
 #
