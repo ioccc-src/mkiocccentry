@@ -804,8 +804,8 @@ vcmdprintf(char const *format, va_list ap)
  *	>= ==> exit code, <0 ==> *_EXIT failure (if flag == false)
  *
  * NOTE: The values *_EXIT are < 0, and therefore do not match a valid exit code.
- *	 Moreover if flag == false, a simple check if the return was < 0 will allow the calling
- *	 function to determine if this function failed.
+ *	 Moreover if abort_on_error == false, a simple check if the return was <
+ *	 0 will allow the calling function to determine if this function failed.
  */
 int
 shell_cmd(char const *name, bool abort_on_error, char const *format, ...)
@@ -1819,14 +1819,13 @@ round_to_multiple(off_t num, off_t multiple)
 {
     off_t mod;
 
-    if (!multiple || !num || num < 0) {
+    if (!multiple || num <= 0) {
 	return num;
     }
 
     mod = num % multiple;
-    if (!mod) {
+    if (!mod)
         return num;
-    }
 
     return num + multiple - mod;
 }
