@@ -172,13 +172,12 @@ make_action 10 prep_clobber
 make_action 11 seqcexit
 make_action 12 use_ref
 make_action 13 clean_generated_obj
-make_action 14 bfok
-make_action 15 all
-make_action 16 parser
-make_action 17 all
-make_action 18 shellcheck
-make_action 19 picky
-make_action 20 test
+make_action 14 all
+make_action 15 parser
+make_action 16 all
+make_action 17 shellcheck
+make_action 18 picky
+make_action 19 test
 if [[ $EXIT_CODE -eq 0 ]]; then
     echo "=-=-=-=-= PASS: $0 =-=-=-=-="
     echo
