@@ -146,6 +146,12 @@ typedef unsigned char bool;
 #define print(fmt, ...) pr(__func__, (fmt), __VA_ARGS__)
 #define prstr(fmt) pr(__func__, (fmt))
 
+/* utility macros for find_text functions */
+#define is_all_text(buf, len) (find_text((buf), (len), NULL) == (len))
+#define is_all_text_str(str) (is_all_text((str), strlen(str)))
+#define is_all_whitespace(buf, len) (find_text((buf), (len), NULL) == 0)
+#define is_all_whitespace_str(str) (is_all_whitespace((str), strlen(str)))
+
 
 /*
  * external function declarations
@@ -199,7 +205,7 @@ extern void clearerr_or_fclose(char const *filename, FILE *file);
 extern void print_newline(bool output_newline);
 
 /* find non-whitespace text */
-extern size_t find_text(char *ptr, size_t len, char **first);
-extern size_t find_text_str(char *str, char **first);
+extern size_t find_text(char const *ptr, size_t len, char **first);
+extern size_t find_text_str(char const *str, char **first);
 
 #endif				/* INCLUDE_UTIL_H */
