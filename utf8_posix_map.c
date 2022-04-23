@@ -1655,7 +1655,7 @@ default_handle(char const *name)
 {
     size_t def_len = 0;		/* default handle length */
     size_t namelen = 0;		/* length of name */
-    char *ret = NULL;		/* malloc string to return */
+    char *ret = NULL;		/* calloc string to return */
     struct utf8_posix_map *m;	/* pointer into hmap[] table */
     bool safe = false;		/* true ==> default handle has safe characters */
     size_t cur_len = 0;		/* current default handle length that is bring formed */
@@ -1801,7 +1801,7 @@ default_handle(char const *name)
 	c = random();
 
 	/*
-	 * malloc the random default author handle
+	 * calloc the random default author handle
 	 */
 	def_len = LITLEN("jrandom+") + 3*RANDOM_VAL_LEN;
 	errno = 0;		/* pre-clear errno for errp() */
@@ -1826,7 +1826,7 @@ default_handle(char const *name)
     } else {
 
 	/*
-	 * malloc the default default author handle
+	 * calloc the default default author handle
 	 */
 	errno = 0;		/* pre-clear errno for errp() */
 	ret = calloc(def_len+1, sizeof(char));
