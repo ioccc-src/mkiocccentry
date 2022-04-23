@@ -154,7 +154,7 @@ if [[ $V_FLAG -ge 5 ]]; then
     echo "$0: debug[5]: V_FLAG: $V_FLAG" 1>&2
     echo "$0: debug[5]: test_dir: $JSON_TREE" 1>&2
     echo "$0: debug[5]: limit_ioccc.sh: $LIMIT_SH" 1>&2
-    echo "$0: debug[5]: rpm: $RPL_CMD" 1>&2
+    echo "$0: debug[5]: rpl: $RPL_CMD" 1>&2
     echo "$0: debug[5]: OLD_FLAG: <$OLD_FLAG>" 1>&2
     echo "$0: debug[5]: FORCE: <$FORCE>" 1>&2
     echo "$0: debug[5]: QUOTE: <$QUOTE>" 1>&2
