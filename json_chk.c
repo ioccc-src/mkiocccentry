@@ -270,7 +270,7 @@ check_common_json_fields_table(void)
 		break;
 	    default:
 		jerr(JSON_CODE_RESERVED(2), NULL, __func__, __FILE__, NULL, __LINE__,
-					    "found invalid data_type in common_json_fields table location %ju; "
+					    "found invalid data_type in common_json_fields table at location %ju; "
 					    "fix table and recompile", (uintmax_t)i);
 		not_reached();
 		break;

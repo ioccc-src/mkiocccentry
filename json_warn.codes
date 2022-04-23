@@ -19,18 +19,18 @@
 #
 # The format as of 14 March 2022 is:
 #
+#	# program: (jchk|jinfochk|jauthchk) <function>
+#	{JSON-XXXX}: <(JSON|source)_file>: <line_num>: <warning>
 #
-#	# program: (jinfochk|jauthchk|jchk) <function>
-#	{JSON-XXXX}: <source file>: <line num>: <warning>
-#
-# Where jchk means it (the JSON code) exists in both jinfochk and jauthchk (in
-# other words it's reused) and otherwise it's the specific tool; function is the
-# calling function for example check_info_json() or check_author_json() (both of
-# which will change once a proper json parser is implemented); file is the
-# source file but the offending json filename will be in the warning message
-# (where applicable); line number the line number of the offending line
-# (currently each field extracted is a new line number which starts at 1) and
-# warning is the actual warning.
+# Where jchk means the JSON code is used in both jinfochk and jauthchk; function
+# is the calling function (check_info_json(), check_author_json() etc.); XXXX is
+# the warning code (not the message); (JSON|source)_file is either the source
+# file of the calling function or the problematic JSON file (where applicable
+# the warning message will include the JSON file as well); line_num is the line
+# number of the offending line in the JSON file (currently each field extracted
+# is a new line number which starts at 1) OR the line number in the source file;
+# and warning is the actual warning which as stated usually has the JSON
+# filename.
 #
 # NOTE: The current output of these tools are more verbose but we only want the
 # warn messages themselves and the tool which will generate it: not the fields
