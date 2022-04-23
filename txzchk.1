@@ -1,16 +1,16 @@
-.TH txzchk 1 "11 April 2022" "txzchk" "IOCCC tools"
+.TH txzchk 1 "23 April 2022" "txzchk" "IOCCC tools"
 .SH NAME
 txzchk \- sanity checker tool used on IOCCC compressed tarballs
 .SH SYNOPSIS
 \fBtxzchk [\-h] [\-v level] [\-q] [\-V] [\-t tar] [\-F fnamchk] [\-T] [\-E ext] txzpath
 .SH DESCRIPTION
-\fBtxzchk\fP runs a series of sanity tests on IOCCC compressed tarballs and it is invoked by \fBmkiocccentry(1)\fP after forming the tarball.
+\fBtxzchk\fP runs a series of sanity tests on IOCCC compressed tarballs.
+It is invoked by \fBmkiocccentry(1)\fP after the tarball is formed, reporting any issues found and exiting the program accordingly; if \fBtxzchk\fP does not return 0 \fBmkiocccentry\fP will exit with an error.
 .PP
-The program runs \fBtar \-tJvf\fP on the \fItxzpath\fP to list (it does NOT extract) and parses the output of the command, performing a variety of tests on the tarball.
-It also runs the IOCCC tool \fBfnamchk(1)\fP on the file, verifying that the tarball is properly named.
+The program runs \fBtar \-tJvf\fP on the \fItxzpath\fP to list (it does \fBNOT\fP extract) and parses the output of the command, performing a variety of tests on the tarball.
+\fBtxzchk\fP runs the IOCCC tool \fBfnamchk(1)\fP on the file, verifying that the tarball is properly named.
 .PP
-It will also be directly executed by The Judges during the judging process of the contest.
-This is an important part of the judging process.
+As an important part of the judging process, The Judges will directly execute this tool on every entry's tarball.
 .SH OPTIONS
 .PP
 \fB\-h\fP
@@ -21,7 +21,7 @@ Set verbosity level.
 .PP
 \fB\-q\fP
 Suppresses some of the output.
-This does not include warnings, errors or the output of the \fBtar\fP command.
+Warnings, errors and the output of the \fBtar\fP command are still shown.
 .PP
 \fB\-V\fP
 Show version and exit.
@@ -38,7 +38,7 @@ If this option is not specified the program looks under the current working dire
 Assume txzpath is a text file; use \fBfopen(3)\fP and \fBfclose(3)\fP instead of \fBpopen(3)\fP and \fBpclose(3)\fP and don't require \fBtar\fP program.
 .PP
 \fB\-E\fP
-Change extension to test (without the dot!).
+Change extension for \fBfnamchk(1)\fP to validate (don't include the dot).
 This is used in conjunction with \fb\-T\fP above for \fBTESTING\fP purposes only!
 .SH EXIT STATUS
 .PP

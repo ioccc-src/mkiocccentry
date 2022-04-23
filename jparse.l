@@ -162,6 +162,10 @@ parse_json_string(char const *string)
 	warn(__func__, "passed empty string");
 	++num_errors;
 	return;
+    } else if (is_all_whitespace_str(string)) {
+	warn(__func__, "string has only whitespace");
+	++num_errors;
+	return;
     }
 
     yylineno = 1;
@@ -171,8 +175,8 @@ parse_json_string(char const *string)
 	++num_errors;
 	return;
     }
-
     dbg(DBG_NONE, "*** BEGIN PARSE:\n'\n%s\n'", string);
+
     yyparse();
 
     yy_delete_buffer(bs);
@@ -264,6 +268,10 @@ parse_json_file(char const *filename)
 	warn(__func__, "found embedded NUL byte in %s", is_stdin?"stdin":filename);
 	++num_errors;
 	clearerr_or_fclose(filename, yyin);
+	return;
+    } else if (is_all_whitespace_str(data)) {
+	warn(__func__, "file has only whitespace");
+	++num_errors;
 	return;
     }
 

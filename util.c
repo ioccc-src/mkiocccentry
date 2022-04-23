@@ -804,8 +804,8 @@ vcmdprintf(char const *format, va_list ap)
  *	>= ==> exit code, <0 ==> *_EXIT failure (if flag == false)
  *
  * NOTE: The values *_EXIT are < 0, and therefore do not match a valid exit code.
- *	 Moreover if flag == false, a simple check if the return was < 0 will allow the calling
- *	 function to determine if this function failed.
+ *	 Moreover if abort_on_error == false, a simple check if the return was <
+ *	 0 will allow the calling function to determine if this function failed.
  */
 int
 shell_cmd(char const *name, bool abort_on_error, char const *format, ...)
@@ -1819,14 +1819,13 @@ round_to_multiple(off_t num, off_t multiple)
 {
     off_t mod;
 
-    if (!multiple || !num || num < 0) {
+    if (!multiple || num <= 0) {
 	return num;
     }
 
     mod = num % multiple;
-    if (!mod) {
+    if (!mod)
         return num;
-    }
 
     return num + multiple - mod;
 }
@@ -3050,7 +3049,7 @@ print_newline(bool output_newline)
  *
  * given:
  *	ptr	    address to start looking for text
- *	len	    amount of data to search thru
+ *	len	    amount of data to search through
  *	**first	    if non-NULL and return > 0, location if first non-whitespace/non-NUL text
  *
  * returns:
@@ -3058,7 +3057,7 @@ print_newline(bool output_newline)
  *	0 if no non-whitespace/non-NUL bytes found, or if buf == NULL
  */
 size_t
-find_text(char *ptr, size_t len, char **first)
+find_text(char const *ptr, size_t len, char **first)
 {
     size_t ret = 0;	/* number of non-whitespace/non-NUL bytes found */
     size_t i;
@@ -3094,7 +3093,7 @@ find_text(char *ptr, size_t len, char **first)
      * note the first non-whitespace character if required
      */
     if (first != NULL) {
-	*first = ptr+i;
+	*first = (char *)ptr+i;
     }
 
     /*
@@ -3126,7 +3125,7 @@ find_text(char *ptr, size_t len, char **first)
  *	0 if no non-whitespace/non-NUL bytes found, or if buf == NULL
  */
 size_t
-find_text_str(char *str, char **first)
+find_text_str(char const *str, char **first)
 {
     size_t ret = 0;	/* number of non-whitespace/non-NUL bytes found */
     size_t len = 0;	/* length of str */

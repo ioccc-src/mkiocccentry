@@ -106,7 +106,7 @@ main(int argc, char *argv[])
     /*
      * convert first version string
      */
-    ver1_levels = malloc_vers(ver1, &vlevel1);
+    ver1_levels = allocate_vers(ver1, &vlevel1);
     if (ver1_levels <= 0) {
 	err(2, program, "first version string is invalid"); /*ooo*/
 	not_reached();
@@ -115,7 +115,7 @@ main(int argc, char *argv[])
     /*
      * convert second version string
      */
-    ver2_levels = malloc_vers(ver2, &vlevel2);
+    ver2_levels = allocate_vers(ver2, &vlevel2);
     if (ver2_levels <= 0) {
 	err(2, program, "second version string is invalid"); /*ooo*/
 	not_reached();
@@ -222,7 +222,7 @@ main(int argc, char *argv[])
 
 
 /*
- * malloc_vers - convert version string into a allocated array or version numbers
+ * allocate_vers - convert version string into a allocated array or version numbers
  *
  * given:
  *	ver	version string
@@ -233,10 +233,10 @@ main(int argc, char *argv[])
  *	0 <= ==> string was not a valid version string,
  *		 array of versions not allocated
  *
- * NOTE: This function does not return on malloc failure or arg error.
+ * NOTE: This function does not return on allocation failures or NULL args.
  */
 static size_t
-malloc_vers(char *str, long **pvers)
+allocate_vers(char *str, long **pvers)
 {
     char *wstr = NULL;		/* working allocated copy of orig_str */
     size_t len;			/* length of version string */
@@ -255,7 +255,7 @@ malloc_vers(char *str, long **pvers)
     }
     len = strlen(str);
     if (len <= 0) {
-	dbg(DBG_MED, "version string was an empty string");
+	dbg(DBG_MED, "version string is empty");
 	return 0;
     }
 
@@ -335,7 +335,7 @@ malloc_vers(char *str, long **pvers)
 	}
     }
     dbg(DBG_MED, "trimmed version string is in valid format: <%s>", wstr);
-    dbg(DBG_HIGH, "trimmed version string has %ju .'s in it: <%s>", (uintmax_t)dot_count, wstr);
+    dbg(DBG_HIGH, "trimmed version string has %ju '.'s in it: <%s>", (uintmax_t)dot_count, wstr);
 
     /*
      * we now know the version string is in valid format: ([0-9]+\.)*[0-9]+

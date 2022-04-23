@@ -61,7 +61,7 @@ static struct ignore_json_code *ignore_json_code_set = NULL;
  *	code	    warning code
  *	program	    name of program e.g. jinfochk, jauthchk etc.
  *	name	    name of function issuing the warning
- *	filename    filename of json file, "stdin" or NULL
+ *	filename    file with the problem (can be stdin)
  *	line	    JSON line
  *	line_num    the offending line number in the json file
  *	fmt	    format of the warning
@@ -78,6 +78,8 @@ static struct ignore_json_code *ignore_json_code_set = NULL;
  *
  * NOTE: We warn with extra newlines to help internal fault messages stand out.
  *	 Normally one should NOT include newlines in warn messages.
+ *
+ * NOTE: In some cases the file noted is the source file that raised the issue.
  *
  * This function does not return on code < JSON_CODE_RESERVED_MIN (0).
  */
@@ -190,7 +192,7 @@ jwarn(int code, char const *program, char const *name, char const *filename, cha
  *	code	    warning code
  *	program	    name of program e.g. jinfochk, jauthchk etc.
  *	name	    name of function issuing the warning
- *	filename    filename of json file, "stdin" or NULL
+ *	filename    file with the problem (can be stdin)
  *	line	    JSON line
  *	line_num    the offending line number in the json file
  *	fmt	    format of the warning
@@ -207,6 +209,8 @@ jwarn(int code, char const *program, char const *name, char const *filename, cha
  *
  * NOTE: We warn with extra newlines to help internal fault messages stand out.
  *	 Normally one should NOT include newlines in warn messages.
+ *
+ * NOTE: In some cases the file noted is the source file that raised the issue.
  *
  * This function does not return on code < JSON_CODE_RESERVED_MIN (0).
  */
@@ -328,7 +332,7 @@ jwarnp(int code, char const *program, char const *name, char const *filename, ch
  *	exitcode	value to exit with
  *	program		program or NULL (will be set to "jchk")
  *	name		name of function issuing the error
- *	filename	file with the problem
+ *	filename	file with the problem (can be stdin)
  *	line		line with the problem (or NULL)
  *	line_num	line number with the problem or -1
  *	fmt		format of the warning
@@ -340,6 +344,8 @@ jwarnp(int code, char const *program, char const *name, char const *filename, ch
  *
  * NOTE: We warn with extra newlines to help internal fault messages stand out.
  *	 Normally one should NOT include newlines in warn messages.
+ *
+ * NOTE: In some cases the file noted is the source file that raised the issue.
  *
  * This function does not return.
  */
@@ -444,7 +450,7 @@ jerr(int exitcode, char const *program, char const *name, char const *filename, 
  *	exitcode	value to exit with
  *	program		program or NULL (will be set to "jchk")
  *	name		name of function issuing the warning
- *	filename	file with the problem
+ *	filename	file with the problem (can be stdin)
  *	line		line with the problem or NULL
  *	line_num	line number of the problem or -1
  *	fmt		format of the warning
@@ -456,6 +462,8 @@ jerr(int exitcode, char const *program, char const *name, char const *filename, 
  *
  * NOTE: We warn with extra newlines to help internal fault messages stand out.
  *	 Normally one should NOT include newlines in warn messages.
+ *
+ * NOTE: In some cases the file noted is the source file that raised the issue.
  *
  * This function does not return.
  */
