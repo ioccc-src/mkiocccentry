@@ -3050,7 +3050,7 @@ print_newline(bool output_newline)
  *
  * given:
  *	ptr	    address to start looking for text
- *	len	    amount of data to search thru
+ *	len	    amount of data to search through
  *	**first	    if non-NULL and return > 0, location if first non-whitespace/non-NUL text
  *
  * returns:
