@@ -406,7 +406,7 @@ on_path() {
 
 # use_flex_backup - use backup flex C files in place of flex generated C files
 #
-# warning: use_bison_backup references arguments, but none are ever passed. [SC2120]
+# warning: use_flex_backup references arguments, but none are ever passed. [SC2120]
 # shellcheck disable=SC2120
 use_flex_backup() {
 
