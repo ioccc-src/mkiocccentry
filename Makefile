@@ -238,7 +238,7 @@ H_FILES= dbg.h jauthchk.h jinfochk.h json.h jstrdecode.h jstrencode.h limit_iocc
 #
 DSYMDIRS= $(TARGETS:=.dSYM)
 SH_FILES= iocccsize-test.sh jstr-test.sh limit_ioccc.sh mkiocccentry-test.sh json-test.sh \
-	  jcodechk.sh vermod.sh prep.sh run_bison.sh run_flex.sh
+	  jcodechk.sh vermod.sh prep.sh run_bison.sh run_flex.sh reset_tstamp.sh
 BUILD_LOG= build.log
 
 # the basename of bison (or yacc) to look for
@@ -577,87 +577,8 @@ shellcheck: ${SH_FILES} .shellcheckrc Makefile
 # Yes, we make it very hard to run this rule for good reason.
 # Only IOCCC judges can perform ALL the steps needed to complete this action.
 #
-reset_min_timestamp:
-	@HAVE_RPL=`command -v rpl`; if [[ -z "$$HAVE_RPL" ]]; then \
-	    echo 'If you have not bothered to install the rpl tool, then' 1>&2; \
-	    echo 'you may not run this rule.'; 1>&2; \
-	    exit 1; \
-	fi
-	@echo
-	@echo 'Yes, we make it very hard to run this rule for good reasson.'
-	@echo 'Only IOCCC judges can perform the ALL the steps needed to complete this action.'
-	@echo
-	@echo 'WARNING: This rule will invalidate all timestamps prior to now.'
-	@echo 'WARNING: Only run this rule when you wish to invalidate all timestamps'
-	@echo 'WARNING: because you made a fundamental change to a critical JSON format,'
-	@echo 'WARNING: made a fundamental change to the compressed tarball file structure,'
-	@echo 'WARNING: or made a critical change to limit_ioccc.h that is MORE restrictive.'
-	@echo
-	@echo 'WARNING: DO NOT run this rule simply for a new IOCCC!'
-	@echo
-	@echo 'WARNING: If you wish to do this, please enter the following phrase:'
-	@echo
-	@echo '    Please invalidate all IOCCC timestamps prior to now'
-	@echo
-	@read answer && \
-	    if [[ "$$answer" != 'Please invalidate all IOCCC timestamps prior to now' ]]; then \
-		echo 'Wise choice, MIN_TIMESTAMP was not changed.' 1>&2; \
-		exit 2; \
-	    fi
-	@echo
-	@echo 'WARNING: Are you sure you want to invalidate all existing compressed tarballs'
-	@echo 'WARNING: and all prior .info.JSON files that have been made,'
-	@echo 'WARNING: and all prior .author.JSON files that have been made,'
-	@echo 'WARNING: forcing everyone to rebuild their compressed tarball entries?'
-	@echo
-	@echo 'WARNING: If you really wish to do this, please enter the following phrase:'
-	@echo
-	@echo '    I understand this'
-	@echo
-	@echo 'WARNING: followed by the phrase:'
-	@echo
-	@echo '    and say sorry to those with existing IOCCC compressed tarballs'
-	@echo
-	@read answer && \
-	    if [[ "$$answer" != 'I understand this and say sorry to those with existing IOCCC compressed tarballs' ]]; then \
-		echo 'Wise choice, MIN_TIMESTAMP was not changed.' 1>&2; \
-		exit 3; \
-	    fi
-	@echo
-	@echo 'WARNING: Enter the phrase that is required (even if you are from that very nice place):'
-	@echo
-	@read answer && \
-	    if [[ "$$answer" != 'Sorry (tm Canada) :=)' ]]; then \
-		echo 'Wise choice, MIN_TIMESTAMP was not changed.' 1>&2; \
-		exit 4; \
-	    fi
-	@echo
-	@echo -n 'WARNING: Enter the existing value of MIN_TIMESTAMP: '
-	@read OLD_MIN_TIMESTAMP &&\
-	    now=`/bin/date '+%s'` &&\
-	    if ${GREP} "$$OLD_MIN_TIMESTAMP" limit_ioccc.h; then\
-		echo; \
-		echo "We guess that you do really really do want to change MIN_TIMESTAMP"; \
-		echo; \
-	        ${TRUE};\
-	    else\
-	        echo 'Invalid value of MIN_TIMESTAMP' 1>&2;\
-		exit 5;\
-	    fi &&\
-	    ${RPL} -w -p \
-	       "#define MIN_TIMESTAMP ((time_t)$$OLD_MIN_TIMESTAMP)"\
-	       "#define MIN_TIMESTAMP ((time_t)$$now)" limit_ioccc.h;\
-	    echo;\
-	    echo "This line in limit_ioccc.h, as it exists now, is:";\
-	    echo;\
-	    ${GREP} '^#define MIN_TIMESTAMP' limit_ioccc.h;\
-	    echo;\
-	    echo 'WARNING: You still need to:';\
-	    echo;\
-	    echo '    make clobber all test';\
-	    echo;\
-	    echo 'WARNING: And if all is well, commit and push the change to the GitHib repo!';\
-	    echo
+reset_min_timestamp: reset_tstamp.sh
+	./reset_tstamp.sh
 
 # perform all of the mkiocccentry repo required tests
 #

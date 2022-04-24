@@ -82,7 +82,7 @@
 	"ioccc_contest" : "IOCCCMOCK",
 	"ioccc_year" : 2022,
 	"jauthchk_version" : "0.13 2022-03-15",
-	"min_timestamp" : 1643987926,
+	"min_timestamp" : 1650779341,
 	"mkiocccentry_version" : "0.40 2022-03-15",
 	"tarball" : "entry.12345678-1234-4321-abcd-1234567890ab-0.1647469509.txz",
 	"test_mode" : true,
