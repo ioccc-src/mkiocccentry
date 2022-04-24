@@ -464,7 +464,7 @@ add_sorry() {
 
     # obtain a temporary filename
     #
-    TMP_FILE=$(mktemp -t "$FILE")
+    TMP_FILE=$(mktemp -t "$FILE.XXXXXXXX")
     status="$?"
     if [[ $status -ne 0 ]]; then
 	echo "$0: ERROR: mktemp -r $FILE exit code: $status" 1>&2
