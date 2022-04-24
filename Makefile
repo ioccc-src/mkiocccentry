@@ -238,7 +238,7 @@ H_FILES= dbg.h jauthchk.h jinfochk.h json.h jstrdecode.h jstrencode.h limit_iocc
 #
 DSYMDIRS= $(TARGETS:=.dSYM)
 SH_FILES= iocccsize-test.sh jstr-test.sh limit_ioccc.sh mkiocccentry-test.sh json-test.sh \
-	  jcodechk.sh vermod.sh prep.sh run_bison.sh run_flex.sh reset_tstamp.sh
+	  jcodechk.sh vermod.sh prep.sh run_bison.sh run_flex.sh reset_tstamp.sh test.sh
 BUILD_LOG= build.log
 
 # the basename of bison (or yacc) to look for
@@ -582,46 +582,8 @@ reset_min_timestamp: reset_tstamp.sh
 
 # perform all of the mkiocccentry repo required tests
 #
-test: all iocccsize-test.sh dbg mkiocccentry-test.sh jstr-test.sh jint jfloat Makefile
-	@chmod +x iocccsize-test.sh mkiocccentry-test.sh jstr-test.sh
-	@echo "RUNNING: iocccsize-test.sh"
-	./iocccsize-test.sh -v 1
-	@echo "PASSED: iocccsize-test.sh"
-	@echo
-	@echo "This next test is supposed to fail with the error: FATAL[5]: main: simulated error, ..."
-	@echo
-	@echo "RUNNING: dbg"
-	@${RM} -f dbg.out
-	@status=`./dbg -e 2 foo bar baz 2>dbg.out; echo "$$?"`; \
-	    if [ "$$status" != 5 ]; then \
-		echo "exit status of dbg: $$status != 5"; \
-		exit 1; \
-	    fi
-	@${GREP} -q '^FATAL\[5\]: main: simulated error, foo: foo bar: bar errno\[2\]: No such file or directory$$' dbg.out
-	@${RM} -f dbg.out
-	@echo "PASSED: dbg"
-	@echo
-	@echo "RUNNING: mkiocccentry-test.sh"
-	./mkiocccentry-test.sh
-	@echo "PASSED: mkiocccentry-test.sh"
-	@echo
-	@echo "RUNNING: jstr-test.sh"
-	./jstr-test.sh
-	@echo "PASSED: jstr-test.sh"
-	@echo
-	@echo "RUNNING: jint -t"
-	./jint -t
-	@echo "PASSED: jint -t"
-	@echo
-	@echo "RUNNING: jfloat -t"
-	./jfloat -t
-	@echo "PASSED: jfloat -t"
-	@echo
-	@echo "RUNNING: dyn_test"
-	./dyn_test
-	@echo "PASSED: dyn_test"
-	@echo
-	@echo "All tests PASSED"
+test: test.sh iocccsize-test.sh dbg mkiocccentry-test.sh jstr-test.sh jint jfloat dyn_test Makefile
+	./test.sh
 
 # run json-test.sh on test_JSON files
 #
