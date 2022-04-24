@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# run_bison.sh - try to run bison - use backup output files if needed
+# run_bison.sh - try to run bison but use backup output files if needed
 #
 # Copyright (c) 2022 by Landon Curt Noll.  All Rights Reserved.
 #
@@ -32,43 +32,39 @@
 export USAGE="usage: $0 [-h] [-v level] [-V] [-b bison] [-l limit_ioccc.sh]
 		        [-g verge] [-p prefix] [-s sorry.h] [-B dir] .. -- [bison_flags ..]
 
-    -h              print help and exit 8
-    -v level        set debug level (def: 0)
-    -V              print version and exit 8
-    -b bison        bison tool basename (def: bison)
-    -l limit_ioccc.sh   version info file (def: ./limit_ioccc.sh)
+    -h		    print help and exit 8
+    -v level	    set debug level (def: 0)
+    -V		    print version and exit 8
+    -b bison	    bison tool basename (def: bison)
+    -l limit.sh	    version info file (def: ./limit_ioccc.sh)
     -g verge	    path to verge tool (def: ./verge)
-    -p prefix	    The prefix of files to be used (def: jparse)
+    -p prefix	    the prefix of files to be used (def: jparse)
 			NOTE: If the final arg is bison:
-			NOTE:    The bison input file will be prefix.y
-			NOTE:	 If bison cannot be used, then these backup files are used:
+			NOTE: The bison input file will be prefix.y
+			NOTE: If bison cannot be used, these backup
+			NOTE: files are used:
 			NOTE:
-			NOTE:		prefix.tab.c prefix.tab.h
+			NOTE:	 prefix.tab.c prefix.tab.h
 			NOTE:
-    -s sorry.h	    File to prepend to C output (def: sorry.tm.ca.h)
-    -B dir          1st look for bison in dir (def: look just along \$PATH)
+    -s sorry.h	    file to prepend to C output (def: sorry.tm.ca.h)
+    -B dir          first look for bison in dir (def: look just along \$PATH)
 		        NOTE: Multiple -B dir are allowed.
 		        NOTE: Search is performed in dir order before the \$PATH path.
 			NOTE: If dir is missing or not searchable, dir is ignored.
 			NOTE: This is ignored if the final arg is NOT bison.
-    --		    End of $0 flags
+    --		    end of $0 flags
     bison_flags ..  optional flags to give to bison for the prefix.y argument
 
 Exit codes:
     0    bison output files formed or backup files used instead
-
     2    good bison found and ran but failed to form proper output files
     3    bison input file missing or not readable:         backup file(s) had to be used
-
     4    backup file(s) are missing, or are not readable
     5    failed to use backup file(s) to form the bison C output file(s)
-
-    6    limit_ioccc.sh sorry file missing or not readable, or verge missing or not executable
+    6    limit_ioccc.sh or sorry file missing/not readable or verge missing/not executable
     7    BISON_VERSION missing or empty from limit_ioccc.sh
-
     8    -h and help string printed or -V and version string printed
     9    Command line usage error
-
     >=10  internal error"
 export RUN_BISON_VERSION="0.3 2022-04-22"
 export PREFIX="jparse"
@@ -161,7 +157,7 @@ if [[ ! -x $VERGE ]]; then
     exit 6
 fi
 if [[ ! -e $SORRY_H ]]; then
-    echo "$0: ERROR: sorry file file not found: $SORRY_H" 1>&2
+    echo "$0: ERROR: sorry file not found: $SORRY_H" 1>&2
     exit 6
 fi
 if [[ ! -f $SORRY_H ]]; then
@@ -458,7 +454,7 @@ use_bison_backup() {
 	exit 4
     fi
 
-    # copy bison backup bison C files in place
+    # copy bison backup C files in place
     #
     echo "Warning: We are forced to use $BISON_BASENAME backup files instead of $BISON_BASENAME C output!" 1>&2
     echo "cp -f -v $BISON_BACKUP_C $BISON_C"
@@ -495,7 +491,7 @@ add_sorry() {
 
     # obtain a temporary filename
     #
-    TMP_FILE=$(mktemp -t "$FILE")
+    TMP_FILE=$(mktemp -t "$FILE.XXXXXXXX")
     status="$?"
     if [[ $status -ne 0 ]]; then
 	echo "$0: ERROR: mktemp -r $FILE exit code: $status" 1>&2

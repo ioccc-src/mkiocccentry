@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# run_flex.sh - try to run flex - use backup output files if needed
+# run_flex.sh - try to run flex but use backup output files if needed
 #
 # Copyright (c) 2022 by Landon Curt Noll.  All Rights Reserved.
 #
@@ -35,13 +35,14 @@ export USAGE="usage: $0 [-h] [-v level] [-V] [-f flex] [-l limit_ioccc.sh]
     -h              print help and exit 8
     -v level        set debug level (def: 0)
     -V              print version and exit 8
-    -f flex        flex tool basename (def: flex)
-    -l limit_ioccc.sh   version info file (def: ./limit_ioccc.sh)
+    -f flex	    flex tool basename (def: flex)
+    -l limit.sh	    version info file (def: ./limit_ioccc.sh)
     -g verge	    path to verge tool (def: ./verge)
     -p prefix	    The prefix of files to be used (def: jparse)
 			NOTE: If the final arg is flex:
-			NOTE:    The flex input file will be prefix.y
-			NOTE:	 If flex cannot be used, then these backup files are used:
+			NOTE: The flex input file will be prefix.y
+			NOTE: If flex cannot be used, these backup
+			NOTE: files are used:
 			NOTE:
 			NOTE:		prefix.c
 			NOTE:
@@ -52,23 +53,18 @@ export USAGE="usage: $0 [-h] [-v level] [-V] [-f flex] [-l limit_ioccc.sh]
 			NOTE: If dir is missing or not searchable, dir is ignored.
 			NOTE: This is ignored if the final arg is NOT flex.
     --		    End of $0 flags
-    flex_flags ..  optional flags to give to flex for the prefix.y argument
+    flex_flags ..   optional flags to give to flex for the prefix.y argument
 
 Exit codes:
     0    flex output files formed or backup files used instead
-
     2    good flex found and ran but failed to form proper output files
     3    flex input file missing or not readable:         backup file(s) had to be used
-
     4    backup file(s) are missing, or are not readable
     5    failed to use backup file(s) to form the flex C output file(s)
-
-    6    limit_ioccc.sh sorry file missing or not readable, or verge missing or not executable
+    6    limit_ioccc.sh or sorry file missing/not readable or verge missing/not executable
     7    FLEX_VERSION missing or empty from limit_ioccc.sh
-
     8    -h and help string printed or -V and version string printed
     9    Command line usage error
-
     >=10  internal error"
 export RUN_FLEX_VERSION="0.3 2022-04-22"
 export PREFIX="jparse"
@@ -161,7 +157,7 @@ if [[ ! -x $VERGE ]]; then
     exit 6
 fi
 if [[ ! -e $SORRY_H ]]; then
-    echo "$0: ERROR: sorry file file not found: $SORRY_H" 1>&2
+    echo "$0: ERROR: sorry file not found: $SORRY_H" 1>&2
     exit 6
 fi
 if [[ ! -f $SORRY_H ]]; then
@@ -406,7 +402,7 @@ on_path() {
 
 # use_flex_backup - use backup flex C files in place of flex generated C files
 #
-# warning: use_bison_backup references arguments, but none are ever passed. [SC2120]
+# warning: use_flex_backup references arguments, but none are ever passed. [SC2120]
 # shellcheck disable=SC2120
 use_flex_backup() {
 
@@ -417,7 +413,7 @@ use_flex_backup() {
 	exit 12
     fi
 
-    # look for flex backup flex C files
+    # look for backup flex C files
     #
     FLEX_BACKUP_C="$PREFIX.ref.c"
     FLEX_C="$PREFIX.c"
@@ -434,7 +430,7 @@ use_flex_backup() {
 	exit 4
     fi
 
-    # copy flex backup flex C files in place
+    # copy backup flex C files in place
     #
     echo "# Warning: We are forced to use $FLEX_BASENAME backup files instead of $FLEX_BASENAME C output!" 1>&2
     echo "cp -f -v $FLEX_BACKUP_C $FLEX_C"
@@ -464,7 +460,7 @@ add_sorry() {
 
     # obtain a temporary filename
     #
-    TMP_FILE=$(mktemp -t "$FILE")
+    TMP_FILE=$(mktemp -t "$FILE.XXXXXXXX")
     status="$?"
     if [[ $status -ne 0 ]]; then
 	echo "$0: ERROR: mktemp -r $FILE exit code: $status" 1>&2
