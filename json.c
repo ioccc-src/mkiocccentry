@@ -190,7 +190,7 @@ struct encode jenc[BYTE_VALUES] = {
  *	<form_feed>		\f	(\x0c)
  *	<enter>			\r	(\x0d)
  *	\x0e-\x1f		\u000e - \x001f
- *	"			\"	(\x22)
+ *	<double_quote>		\"	(\x22)
  *	/			\/	(\x2f)
  *	\			\\	(\x5c)
  *
@@ -2716,7 +2716,7 @@ json_conv_bool_str(char const *str, size_t *retlen)
 
 
 /*
- * json_conv_null - convert JSON encoded nullean to C NULL
+ * json_conv_null - convert JSON encoded null to C NULL
  *
  * given:
  *	ptr	pointer to buffer containing a JSON null
@@ -2793,7 +2793,7 @@ json_conv_null(char const *ptr, size_t len)
     item->as_str_len = len;
 
     /*
-     * decode the JSON nullean
+     * decode the JSON null
      */
     if (strcmp(item->as_str, "null") == 0) {
 	item->converted = true;
