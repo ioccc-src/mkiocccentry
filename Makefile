@@ -432,7 +432,7 @@ limit_ioccc.sh: limit_ioccc.h version.h Makefile
 # use a pre-built reference copies stored in jparse.tab.ref.h and jparse.tab.ref.c.
 #
 jparse.tab.c jparse.tab.h: jparse.y run_bison.sh limit_ioccc.sh verge jparse.tab.ref.c jparse.tab.ref.h Makefile
-	./run_bison.sh ${BISON_DIRS} -p jparse -v 1 -- -d -Wyacc -Dparse.error=verbose -Dparse.lac=full
+	./run_bison.sh ${BISON_DIRS} -p jparse -v 1 -- -d
 
 # How to create jparse.c
 #

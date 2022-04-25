@@ -25,12 +25,26 @@
 /* Section 1: Declarations */
 
 /*
- * More detailed error reporting is enabled via the -D option as POSIX Yacc does
- * not support the %define directive:
+ * We enable verbose error messages during development but once the parser is
+ * complete we will disable this as it's very verbose.
  *
- *	-Dparse.error=verbose -Dparse.lac=full
+ * NOTE: Previously we used the -D option to bison because the %define is not
+ * POSIX Yacc portable but we no longer do that because we make use of another
+ * feature that's not POSIX Yacc portable that we deem worth it as it produces
+ * easier to read error messages.
+ */
+%define parse.error verbose
+%define parse.lac full
+
+/*
+ * XXX should we use:
  *
- * NOTE: It's very verbose and will be removed when things are finished.
+ *	%define api.value.type {struct json}
+ *
+ * ?
+ *
+ * I'm not sure of the specifics behind this yet so this cannot be decided
+ * for now. See also the comments for %union below.
  */
 %{
 #include <inttypes.h>
@@ -48,12 +62,6 @@ int yydebug = 1;
 int token_type = 0;
 %}
 
-/*
- * Token types.
- *
- * XXX It's very possible that this is incomplete and everything here is subject
- * to change.
- */
 
 /* This union is not complete and will need to be fixed in one or more ways as
  * well.
@@ -66,16 +74,16 @@ int token_type = 0;
  * lexer but I really don't know yet. This will come at a later date.
  *
  * Actually there will be use of the struct json. This function will almost
- * certainly be modified but it currently holds a struct integer *,
- * struct json_floating *, struct json_string *, a bool and a set of pointers for children
- * (because it's very possible that it'll be a tree though this is not yet
- * decided either).
+ * certainly be modified but it currently holds a struct integer *, struct
+ * json_floating *, struct json_string *, a bool and a set of pointers for
+ * children (because it's very possible that it'll be a tree though this is not
+ * yet decided either).
  *
- * The struct integer and struct json_floating are complete but struct json_string is not
- * and I'm thinking it might be useful to have a struct json_boolean as well. Even
- * without these incomplete and missing structs struct json is not complete and
- * will absolutely change in some ways (more probably many ways). The specifics
- * have to be worked out still!
+ * The struct integer and struct json_floating are complete but struct
+ * json_string is not and I'm thinking it might be useful to have a struct
+ * json_boolean as well. Even without these incomplete and missing structs
+ * struct json is not complete and will absolutely change in some ways (more
+ * probably many ways). The specifics have to be worked out still!
  *
  * As for the struct json * there's no allocation/free functions yet and I'm not
  * even sure how this will work with the lexer which means that it's also not
@@ -84,13 +92,38 @@ int token_type = 0;
  * The details with struct json (the internals and the usage here) are not yet
  * decided (especially here but the struct is not complete yet either). Thus the
  * struct json * is not even used here yet.
+ *
+ * XXX It might be an idea to use the struct feature as described in the bison
+ * info manual at '* Structured Value Type::  Providing a structured semantic'
+ * value type under 'Defining Language Semantics' but this is not yet determined
+ * either. See also the XXX comment above about the 'api.value.type' possibly
+ * being 'struct json'. Again this is very much a work in progress!
  */
 %union json_type {
     struct json json;
 }
-%token JSON_OPEN_BRACE JSON_CLOSE_BRACE JSON_OPEN_BRACKET JSON_CLOSE_BRACKET
-%token JSON_COMMA JSON_COLON JSON_NULL JSON_STRING
-%token JSON_UINTMAX JSON_INTMAX JSON_LONG_DOUBLE JSON_TRUE JSON_FALSE
+
+/*
+ * Terminal symbols (token kind)
+ *
+ * For most of the terminal symbols we use string literals to identify them as
+ * this makes it easier to read error messages. This feature is not POSIX Yacc
+ * compatible but we've decided that the benefit outweighs this fact.
+ *
+ * XXX We will be changing the number types into a single type later on but
+ * everything else should be okay though that might prove to be false later on.
+ */
+%token JSON_OPEN_BRACE "{"
+%token JSON_CLOSE_BRACE "}"
+%token JSON_OPEN_BRACKET "["
+%token JSON_CLOSE_BRACKET "]"
+%token JSON_COMMA ","
+%token JSON_COLON ":"
+%token JSON_NULL "null"
+%token JSON_TRUE "true"
+%token JSON_FALSE "false"
+%token JSON_STRING
+%token JSON_UINTMAX JSON_INTMAX JSON_LONG_DOUBLE
 
 
 /* Section 2: Rules
