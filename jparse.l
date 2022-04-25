@@ -81,7 +81,7 @@ JSON_WHITESPACE	[ \t\r\n]+
  * let the conversion routines do the actual JSON checks: this way it keeps the
  * regex simple and we don't have to worry about any complexities.
  */
-JSON_STRING           \"[^"\n]*\"
+JSON_STRING		\"[^\n"]+\"
 JSON_DIGIT		[0-9]
 JSON_DIGITS		{JSON_DIGIT}+
 JSON_EXPONENT		[Ee][-+]?[0-9]+
@@ -91,7 +91,7 @@ JSON_LONG_DOUBLE	-?{JSON_DIGITS}"."{JSON_DIGITS}{JSON_EXPONENT}?
 JSON_TRUE		"true"
 JSON_FALSE		"false"
 JSON_NULL		"null"
-JSON_OPEN_BRACE	"{"
+JSON_OPEN_BRACE		"{"
 JSON_CLOSE_BRACE	"}"
 JSON_OPEN_BRACKET	"["
 JSON_CLOSE_BRACKET	"]"
