@@ -431,7 +431,7 @@ limit_ioccc.sh: limit_ioccc.h version.h Makefile
 # if bison is found and has a recent enough version, otherwise
 # use a pre-built reference copies stored in jparse.tab.ref.h and jparse.tab.ref.c.
 #
-jparse.tab.c jparse.tab.h: jparse.y run_bison.sh limit_ioccc.sh verge jparse.tab.ref.c jparse.tab.ref.h Makefile
+jparse.tab.c jparse.tab.h: jparse.y jparse.h sorry.tm.ca.h run_bison.sh limit_ioccc.sh verge jparse.tab.ref.c jparse.tab.ref.h Makefile
 	./run_bison.sh ${BISON_DIRS} -p jparse -v 1 -- -d
 
 # How to create jparse.c
@@ -440,7 +440,7 @@ jparse.tab.c jparse.tab.h: jparse.y run_bison.sh limit_ioccc.sh verge jparse.tab
 # if flex found and has a recent enough version, otherwise
 # use a pre-built reference copy stored in jparse.ref.c
 #
-jparse.c: jparse.l jparse.tab.h run_flex.sh limit_ioccc.sh verge jparse.ref.c Makefile
+jparse.c: jparse.l jparse.h sorry.tm.ca.h jparse.tab.h run_flex.sh limit_ioccc.sh verge jparse.ref.c Makefile
 	./run_flex.sh ${FLEX_DIRS} -p jparse -v 1 -- -d -8 -o jparse.c
 
 
