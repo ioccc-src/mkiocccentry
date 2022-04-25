@@ -31,6 +31,14 @@
 
 
 /*
+ * XXX The code that acts on struct json_field and struct json_value and the
+ * structs themselves might be removed once the JSON parser is written.  This
+ * will be determined after the parser is finished. Thus much of this file might
+ * be removed or dramatically changed.
+ */
+
+
+/*
  * Common JSON fields table used to determine if a name is a common field,
  * whether it's been added to the found_common_json_fields list, how many times
  * it has been seen and how many are allowed.
@@ -59,7 +67,6 @@ size_t SIZEOF_COMMON_JSON_FIELDS_TABLE = TBLLEN(common_json_fields);
  * .info.json fields table used to determine if a name belongs in the file,
  * whether it's been added to the found_info_json_fields list, how many times
  * it's been seen and how many are allowed.
- *
  */
 struct json_field info_json_fields[] =
 {
@@ -136,7 +143,9 @@ size_t SIZEOF_AUTHOR_JSON_FIELDS_TABLE = TBLLEN(author_json_fields);
  * global for jwarn(): -w in jinfochk/jauthchk says to show full warning
  *
  * XXX This currently is not used because there are some problems that have to
- * be resolved first that will take more time and thought.
+ * be resolved first that will take more time and thought. Before this can even
+ * be done the JSON parser has to be finished and that's not close to being done
+ * either.
  */
 bool show_full_json_warnings = false;
 
