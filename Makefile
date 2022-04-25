@@ -474,8 +474,16 @@ build release pull: prep.sh
 parser: jparse.y jparse.l Makefile
 	${RM} -f jparse.tab.c jparse.tab.h
 	${MAKE} jparse.tab.c jparse.tab.h
+	${MAKE} jparse.tab.o
 	${RM} -f jparse.c
 	${MAKE} jparse.c
+	${MAKE} jparse.o
+	${RM} -f jparse.tab.ref.c
+	${CP} -f -v jparse.tab.c jparse.tab.ref.c
+	${RM} -f jparse.tab.ref.h
+	${CP} -f -v jparse.tab.h jparse.tab.ref.h
+	${RM} -f jparse.ref.c
+	${CP} -f -v jparse.c jparse.ref.c
 
 # restore reference code that was produced by previous successful make parser
 #
