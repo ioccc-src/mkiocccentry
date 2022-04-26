@@ -241,6 +241,16 @@ SH_FILES= iocccsize-test.sh jstr-test.sh limit_ioccc.sh mkiocccentry-test.sh jso
 	  jcodechk.sh vermod.sh prep.sh run_bison.sh run_flex.sh reset_tstamp.sh test.sh
 BUILD_LOG= build.log
 
+# RUN_O_FLAG - determine if the bison and flex backup files should be used
+#
+# RUN_O_FLAG=		use bison and flex backup files,
+#			    if bison and/or flex not found or too old
+# RUN_O_FLAG= -o	do not use bison and flex backup files,
+#			    instead fail if bison and/or flex not found or too old
+#
+RUN_O_FLAG=
+#RUN_O_FLAG= -o
+
 # the basename of bison (or yacc) to look for
 #
 BISON_BASENAME = bison
@@ -431,8 +441,9 @@ limit_ioccc.sh: limit_ioccc.h version.h Makefile
 # if bison is found and has a recent enough version, otherwise
 # use a pre-built reference copies stored in jparse.tab.ref.h and jparse.tab.ref.c.
 #
-jparse.tab.c jparse.tab.h: jparse.y jparse.h sorry.tm.ca.h run_bison.sh limit_ioccc.sh verge jparse.tab.ref.c jparse.tab.ref.h Makefile
-	./run_bison.sh ${BISON_DIRS} -p jparse -v 1 -- -d
+jparse.tab.c jparse.tab.h: jparse.y jparse.h sorry.tm.ca.h run_bison.sh limit_ioccc.sh verge \
+	jparse.tab.ref.c jparse.tab.ref.h Makefile
+	./run_bison.sh -b ${BISON_BASENAME} ${BISON_DIRS} -p jparse -v 1 ${RUN_O_FLAG} -- -d
 
 # How to create jparse.c
 #
@@ -441,7 +452,7 @@ jparse.tab.c jparse.tab.h: jparse.y jparse.h sorry.tm.ca.h run_bison.sh limit_io
 # use a pre-built reference copy stored in jparse.ref.c
 #
 jparse.c: jparse.l jparse.h sorry.tm.ca.h jparse.tab.h run_flex.sh limit_ioccc.sh verge jparse.ref.c Makefile
-	./run_flex.sh ${FLEX_DIRS} -p jparse -v 1 -- -d -8 -o jparse.c
+	./run_flex.sh -f ${FLEX_BASENAME} ${FLEX_DIRS} -p jparse -v 1 ${RUN_O_FLAG} -- -d -8 -o jparse.c
 
 
 ###################################################################
@@ -463,10 +474,12 @@ prep: prep.sh
 # GitHub repo.
 #
 # Run through all of the prep steps.  If a step fails, exit immediately.
+# Moreover, the reference copies of JSON parser C code will not be used,
+# so if bison and/or flex is not found or is too old, this rule will fail.
 #
 build release pull: prep.sh
 	${RM} -f ${BUILD_LOG}
-	./prep.sh -e 2>&1 | ${TEE} ${BUILD_LOG}
+	./prep.sh -e -o 2>&1 | ${TEE} ${BUILD_LOG}
 	@echo NOTE: The above details were saved in the file: ${BUILD_LOG}
 
 # Force the rebuild of the JSON parser and form reference copies of JSON parser C code.
@@ -484,6 +497,11 @@ parser: jparse.y jparse.l Makefile
 	${CP} -f -v jparse.tab.h jparse.tab.ref.h
 	${RM} -f jparse.ref.c
 	${CP} -f -v jparse.c jparse.ref.c
+
+# Force the rebuild of the JSON parser, do NOT use reference copies of JSON parser C code.
+#
+parser-o: jparse.y jparse.l Makefile
+	${MAKE} parser RUN_O_FLAG='-o'
 
 # restore reference code that was produced by previous successful make parser
 #

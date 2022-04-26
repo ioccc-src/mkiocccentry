@@ -29,12 +29,13 @@
 
 # setup
 #
-export USAGE="usage: $0 [-h] [-v level] [-V] [-b bison] [-l limit_ioccc.sh]
+export USAGE="usage: $0 [-h] [-v level] [-V] [-o] [-b bison] [-l limit_ioccc.sh]
 		        [-g verge] [-p prefix] [-s sorry.h] [-B dir] .. -- [bison_flags ..]
 
     -h		    print help and exit 8
     -v level	    set debug level (def: 0)
     -V		    print version and exit 8
+    -o		    do NOT use backup files, fail if bison cannot be used (def: use)
     -b bison	    bison tool basename (def: bison)
     -l limit.sh	    version info file (def: ./limit_ioccc.sh)
     -g verge	    path to verge tool (def: ./verge)
@@ -57,6 +58,7 @@ export USAGE="usage: $0 [-h] [-v level] [-V] [-b bison] [-l limit_ioccc.sh]
 
 Exit codes:
     0    bison output files formed or backup files used instead
+    1	 bison not found or too old and -o used
     2    good bison found and ran but failed to form proper output files
     3    bison input file missing or not readable:         backup file(s) had to be used
     4    backup file(s) are missing, or are not readable
@@ -75,10 +77,11 @@ export VERGE="./verge"
 export BISON_VERSION=
 declare -a BISON_DIRS=()
 export SORRY_H="sorry.tm.ca.h"
+export O_FLAG=
 
 # parse args
 #
-while getopts :hv:Vb:l:g:p:s:B: flag; do
+while getopts :hv:Vob:l:g:p:s:B: flag; do
     case "$flag" in
     h) echo "$USAGE" 1>&2
        exit 8
@@ -87,6 +90,8 @@ while getopts :hv:Vb:l:g:p:s:B: flag; do
        ;;
     V) echo "$RUN_BISON_VERSION"
        exit 8
+       ;;
+    o) O_FLAG="-o"
        ;;
     b) BISON_BASENAME="$OPTARG";
        ;;
@@ -412,6 +417,8 @@ on_path() {
 
 # use_bison_backup - use backup bison C files in place of bison generated C files
 #
+# NOTE: If -o was given, then we will exit instead of using backup bison C files.
+#
 # warning: use_bison_backup references arguments, but none are ever passed. [SC2120]
 # shellcheck disable=SC2120
 use_bison_backup() {
@@ -421,6 +428,13 @@ use_bison_backup() {
     if [[ $# -ne 0 ]]; then
 	echo "$0: ERROR: use_bison_backup function expects 0 args, found $#" 1>&2
 	exit 12
+    fi
+
+    # If -o, exit instead of using backup bison C files
+    #
+    if [[ -n $O_FLAG ]]; then
+	echo "$0: ERROR: unable to find or use bison and -o given" 1>&2
+	exit 1
     fi
 
     # look for bison backup bison C files
