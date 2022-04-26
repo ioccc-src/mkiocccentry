@@ -215,7 +215,7 @@ TEST_TARGETS= dbg utf8_test dyn_test
 OBJFILES= dbg.o util.o mkiocccentry.o iocccsize.o fnamchk.o txzchk.o jauthchk.o jinfochk.o \
 	json.o jstrencode.o jstrdecode.o rule_count.o location.o sanity.o \
 	utf8_test.o jint.o jint.test.o jfloat.o jfloat.test.o verge.o \
-	dyn_array.o dyn_test.o json_chk.o json_entry.o
+	dyn_array.o dyn_test.o json_chk.o json_entry.o dbg_test.o
 LESS_PICKY_CSRC= utf8_posix_map.c
 LESS_PICKY_OBJ= utf8_posix_map.o
 GENERATED_CSRC= jparse.c jparse.tab.c
@@ -240,6 +240,16 @@ DSYMDIRS= $(TARGETS:=.dSYM)
 SH_FILES= iocccsize-test.sh jstr-test.sh limit_ioccc.sh mkiocccentry-test.sh json-test.sh \
 	  jcodechk.sh vermod.sh prep.sh run_bison.sh run_flex.sh reset_tstamp.sh test.sh
 BUILD_LOG= build.log
+
+# RUN_O_FLAG - determine if the bison and flex backup files should be used
+#
+# RUN_O_FLAG=		use bison and flex backup files,
+#			    if bison and/or flex not found or too old
+# RUN_O_FLAG= -o	do not use bison and flex backup files,
+#			    instead fail if bison and/or flex not found or too old
+#
+RUN_O_FLAG=
+#RUN_O_FLAG= -o
 
 # the basename of bison (or yacc) to look for
 #
@@ -323,78 +333,124 @@ rule_count.o: rule_count.c Makefile
 sanity.o: sanity.c json_chk.o Makefile
 	${CC} ${CFLAGS} sanity.c json_chk.o -c
 
-mkiocccentry: mkiocccentry.c rule_count.o dbg.o util.o dyn_array.o json.o json_entry.o json_chk.o \
+mkiocccentry.o: mkiocccentry.c Makefile
+	${CC} ${CFLAGS} mkiocccentry.c -c
+
+mkiocccentry: mkiocccentry.o rule_count.o dbg.o util.o dyn_array.o json.o json_entry.o json_chk.o \
 	json_util.o location.o utf8_posix_map.o sanity.o Makefile
-	${CC} ${CFLAGS} mkiocccentry.c rule_count.o dbg.o util.o dyn_array.o json.o json_entry.o \
+	${CC} ${CFLAGS} mkiocccentry.o rule_count.o dbg.o util.o dyn_array.o json.o json_entry.o \
 	    json_chk.o json_util.o location.o utf8_posix_map.o sanity.o -o $@
 
-iocccsize: iocccsize.c rule_count.o dbg.o Makefile
-	${CC} ${CFLAGS} -DMKIOCCCENTRY_USE iocccsize.c rule_count.o dbg.o -o $@
+iocccsize.o: iocccsize.c Makefile
+	${CC} ${CFLAGS} -DMKIOCCCENTRY_USE iocccsize.c -c
 
-dbg: dbg.c Makefile
-	${CC} ${CFLAGS} -DDBG_TEST dbg.c -o $@
+iocccsize: iocccsize.o rule_count.o dbg.o Makefile
+	${CC} ${CFLAGS} iocccsize.o rule_count.o dbg.o -o $@
 
-fnamchk: fnamchk.c dbg.o util.o dyn_array.o Makefile
-	${CC} ${CFLAGS} fnamchk.c dbg.o util.o dyn_array.o -o $@
+dbg.o: dbg.c Makefile
+	${CC} ${CFLAGS} dbg.c -c
 
-txzchk: txzchk.c txzchk.h rule_count.o dbg.o util.o dyn_array.o location.o json.o json_chk.o json_util.o \
+dbg_test.c: dbg.c Makefile
+	${RM} -f dbg_test.c
+	${CP} -f -v dbg.c dbg_test.c
+
+dbg_test.o: dbg_test.c Makefile
+	${CC} ${CFLAGS} -DDBG_TEST dbg_test.c -c
+
+dbg: dbg_test.o Makefile
+	${CC} ${CFLAGS} dbg_test.o -o $@
+
+fnamchk.o: fnamchk.c Makefile
+	${CC} ${CFLAGS} fnamchk.c -c
+
+fnamchk: fnamchk.o dbg.o util.o dyn_array.o Makefile
+	${CC} ${CFLAGS} fnamchk.o dbg.o util.o dyn_array.o -o $@
+
+txzchk.o: txzchk.c Makefile
+	${CC} ${CFLAGS} txzchk.c -c
+
+txzchk: txzchk.o rule_count.o dbg.o util.o dyn_array.o location.o json.o json_chk.o json_util.o \
 	utf8_posix_map.o sanity.o Makefile
-	${CC} ${CFLAGS} txzchk.c rule_count.o dbg.o util.o dyn_array.o location.o json.o \
+	${CC} ${CFLAGS} txzchk.o rule_count.o dbg.o util.o dyn_array.o location.o json.o \
 	    json_chk.o json_util.o utf8_posix_map.o sanity.o -o $@
 
-jauthchk: jauthchk.c rule_count.o json.o json_entry.o dbg.o util.o json_util.o \
+jauthchk.o: jauthchk.c Makefile
+	${CC} ${CFLAGS} jauthchk.c -c
+
+jauthchk: jauthchk.o rule_count.o json.o json_entry.o dbg.o util.o json_util.o \
 	dyn_array.o sanity.o location.o utf8_posix_map.o Makefile
-	${CC} ${CFLAGS} jauthchk.c rule_count.o json.o json_entry.o dbg.o util.o json_util.o \
+	${CC} ${CFLAGS} jauthchk.o rule_count.o json.o json_entry.o dbg.o util.o json_util.o \
 	    dyn_array.o sanity.o json_chk.o location.o utf8_posix_map.o -o $@
 
-jinfochk: jinfochk.c rule_count.o json.o json_entry.o dbg.o util.o json_util.o \
+jinfochk.o: jinfochk.c Makefile
+	${CC} ${CFLAGS} jinfochk.c -c
+
+jinfochk: jinfochk.o rule_count.o json.o json_entry.o dbg.o util.o json_util.o \
 	dyn_array.o sanity.o location.o utf8_posix_map.o Makefile
-	${CC} ${CFLAGS} jinfochk.c rule_count.o json.o json_entry.o dbg.o util.o json_util.o \
+	${CC} ${CFLAGS} jinfochk.o rule_count.o json.o json_entry.o dbg.o util.o json_util.o \
 	    dyn_array.o sanity.o json_chk.o location.o utf8_posix_map.o -o $@
 
-jstrencode: jstrencode.c dbg.o json.o util.o dyn_array.o Makefile
-	${CC} ${CFLAGS} jstrencode.c dbg.o json.o util.o dyn_array.o -o $@
+jstrencode.o: jstrencode.c Makefile
+	${CC} ${CFLAGS} jstrencode.c -c
 
-jstrdecode: jstrdecode.c dbg.o json.o util.o dyn_array.o Makefile
-	${CC} ${CFLAGS} jstrdecode.c dbg.o json.o util.o dyn_array.o -o $@
+jstrencode: jstrencode.o dbg.o json.o util.o dyn_array.o Makefile
+	${CC} ${CFLAGS} jstrencode.o dbg.o json.o util.o dyn_array.o -o $@
+
+jstrdecode.o: jstrdecode.c Makefile
+	${CC} ${CFLAGS} jstrdecode.c -c
+
+jstrdecode: jstrdecode.o dbg.o json.o util.o dyn_array.o Makefile
+	${CC} ${CFLAGS} jstrdecode.o dbg.o json.o util.o dyn_array.o -o $@
 
 jint.test.o: jint.test.c Makefile
 	${CC} ${CFLAGS} -DJINT_TEST_ENABLED jint.test.c -c
 
-jint: jint.c dbg.o json.o util.o dyn_array.o jint.test.o Makefile
-	${CC} ${CFLAGS} -DJINT_TEST_ENABLED jint.c dbg.o json.o util.o dyn_array.o jint.test.o -o $@
+jint.o: jint.c Makefile
+	${CC} ${CFLAGS} -DJINT_TEST_ENABLED jint.c -c
+
+jint: jint.o dbg.o json.o util.o dyn_array.o jint.test.o Makefile
+	${CC} ${CFLAGS} jint.o dbg.o json.o util.o dyn_array.o jint.test.o -o $@
 
 jfloat.test.o: jfloat.test.c Makefile
 	${CC} ${CFLAGS} -DJFLOAT_TEST_ENABLED jfloat.test.c -c
 
-jfloat: jfloat.c dbg.o json.o util.o dyn_array.o jfloat.test.o Makefile
-	${CC} ${CFLAGS} -DJFLOAT_TEST_ENABLED jfloat.c dbg.o json.o util.o dyn_array.o jfloat.test.o -o $@
+jfloat.o: jfloat.c Makefile
+	${CC} ${CFLAGS} -DJFLOAT_TEST_ENABLED jfloat.c -c
+
+jfloat: jfloat.o dbg.o json.o util.o dyn_array.o jfloat.test.o Makefile
+	${CC} ${CFLAGS} jfloat.o dbg.o json.o util.o dyn_array.o jfloat.test.o -o $@
 
 jparse.o: jparse.c Makefile
-	${CC} ${CFLAGS} jparse.c -Wno-unused-function -Wno-unneeded-internal-declaration -c
+	${CC} ${CFLAGS} -Wno-unused-function -Wno-unneeded-internal-declaration jparse.c -c
 
 json_chk.o: json_chk.c Makefile
-	${CC} ${CFLAGS} json_chk.c -Wno-unused-function -Wno-unneeded-internal-declaration -c
+	${CC} ${CFLAGS} -Wno-unused-function -Wno-unneeded-internal-declaration json_chk.c -c
 
 json_util.o: json_util.c Makefile
-	${CC} ${CFLAGS} json_util.c -Wno-unused-function -Wno-unneeded-internal-declaration -c
+	${CC} ${CFLAGS} -Wno-unused-function -Wno-unneeded-internal-declaration json_util.c -c
 
 json_entry.o: json_entry.c Makefile
-	${CC} ${CFLAGS} json_entry.c -Wno-unused-function -Wno-unneeded-internal-declaration -c
+	${CC} ${CFLAGS} -Wno-unused-function -Wno-unneeded-internal-declaration json_entry.c -c
 
 jparse.tab.o: jparse.tab.c Makefile
-	${CC} ${CFLAGS} jparse.tab.c -Wno-unused-function -Wno-unneeded-internal-declaration -c
+	${CC} ${CFLAGS} -Wno-unused-function -Wno-unneeded-internal-declaration jparse.tab.c -c
 
 jparse: jparse.o jparse.tab.o util.o dyn_array.o dbg.o sanity.o json.o json_entry.o json_chk.o \
 	json_util.o utf8_posix_map.o location.o Makefile
 	${CC} ${CFLAGS} jparse.o jparse.tab.o util.o dyn_array.o dbg.o sanity.o \
 	    json.o json_entry.o json_chk.o json_util.o utf8_posix_map.o location.o -o $@
 
-utf8_test: utf8_test.c utf8_posix_map.o dbg.o util.o dyn_array.o Makefile
-	${CC} ${CFLAGS} utf8_test.c utf8_posix_map.o dbg.o util.o dyn_array.o -o $@
+utf8_test.o: utf8_test.c Makefile
+	${CC} ${CFLAGS} utf8_test.c -c
 
-verge: verge.c dbg.o util.o dyn_array.o Makefile
-	${CC} ${CFLAGS} verge.c dbg.o util.o dyn_array.o -o $@
+utf8_test: utf8_test.o utf8_posix_map.o dbg.o util.o dyn_array.o Makefile
+	${CC} ${CFLAGS} utf8_test.o utf8_posix_map.o dbg.o util.o dyn_array.o -o $@
+
+verge.o: verge.c Makefile
+	${CC} ${CFLAGS} verge.c -c
+
+verge: verge.o dbg.o util.o dyn_array.o Makefile
+	${CC} ${CFLAGS} verge.o dbg.o util.o dyn_array.o -o $@
 
 dyn_array.o: dyn_array.c Makefile
 	${CC} ${CFLAGS} dyn_array.c -c
@@ -431,8 +487,9 @@ limit_ioccc.sh: limit_ioccc.h version.h Makefile
 # if bison is found and has a recent enough version, otherwise
 # use a pre-built reference copies stored in jparse.tab.ref.h and jparse.tab.ref.c.
 #
-jparse.tab.c jparse.tab.h: jparse.y run_bison.sh limit_ioccc.sh verge jparse.tab.ref.c jparse.tab.ref.h Makefile
-	./run_bison.sh ${BISON_DIRS} -p jparse -v 1 -- -d
+jparse.tab.c jparse.tab.h: jparse.y jparse.h sorry.tm.ca.h run_bison.sh limit_ioccc.sh verge \
+	jparse.tab.ref.c jparse.tab.ref.h Makefile
+	./run_bison.sh -b ${BISON_BASENAME} ${BISON_DIRS} -p jparse -v 1 ${RUN_O_FLAG} -- -d
 
 # How to create jparse.c
 #
@@ -440,8 +497,8 @@ jparse.tab.c jparse.tab.h: jparse.y run_bison.sh limit_ioccc.sh verge jparse.tab
 # if flex found and has a recent enough version, otherwise
 # use a pre-built reference copy stored in jparse.ref.c
 #
-jparse.c: jparse.l jparse.tab.h run_flex.sh limit_ioccc.sh verge jparse.ref.c Makefile
-	./run_flex.sh ${FLEX_DIRS} -p jparse -v 1 -- -d -8 -o jparse.c
+jparse.c: jparse.l jparse.h sorry.tm.ca.h jparse.tab.h run_flex.sh limit_ioccc.sh verge jparse.ref.c Makefile
+	./run_flex.sh -f ${FLEX_BASENAME} ${FLEX_DIRS} -p jparse -v 1 ${RUN_O_FLAG} -- -d -8 -o jparse.c
 
 
 ###################################################################
@@ -463,10 +520,12 @@ prep: prep.sh
 # GitHub repo.
 #
 # Run through all of the prep steps.  If a step fails, exit immediately.
+# Moreover, the reference copies of JSON parser C code will not be used,
+# so if bison and/or flex is not found or is too old, this rule will fail.
 #
 build release pull: prep.sh
 	${RM} -f ${BUILD_LOG}
-	./prep.sh -e 2>&1 | ${TEE} ${BUILD_LOG}
+	./prep.sh -e -o 2>&1 | ${TEE} ${BUILD_LOG}
 	@echo NOTE: The above details were saved in the file: ${BUILD_LOG}
 
 # Force the rebuild of the JSON parser and form reference copies of JSON parser C code.
@@ -474,8 +533,21 @@ build release pull: prep.sh
 parser: jparse.y jparse.l Makefile
 	${RM} -f jparse.tab.c jparse.tab.h
 	${MAKE} jparse.tab.c jparse.tab.h
+	${MAKE} jparse.tab.o
 	${RM} -f jparse.c
 	${MAKE} jparse.c
+	${MAKE} jparse.o
+	${RM} -f jparse.tab.ref.c
+	${CP} -f -v jparse.tab.c jparse.tab.ref.c
+	${RM} -f jparse.tab.ref.h
+	${CP} -f -v jparse.tab.h jparse.tab.ref.h
+	${RM} -f jparse.ref.c
+	${CP} -f -v jparse.c jparse.ref.c
+
+# Force the rebuild of the JSON parser, do NOT use reference copies of JSON parser C code.
+#
+parser-o: jparse.y jparse.l Makefile
+	${MAKE} parser RUN_O_FLAG='-o'
 
 # restore reference code that was produced by previous successful make parser
 #
@@ -612,6 +684,7 @@ prep_clobber:
 	${RM} -f jint.set.tmp jint_gen
 	${RM} -f jfloat.set.tmp jfloat_gen
 	${RM} -rf jint_gen.dSYM jfloat_gen.dSYM dyn_test.dSYM
+	${RM} -f dbg_test.c
 
 
 ###################################

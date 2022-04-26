@@ -29,12 +29,13 @@
 
 # setup
 #
-export USAGE="usage: $0 [-h] [-v level] [-V] [-f flex] [-l limit_ioccc.sh]
+export USAGE="usage: $0 [-h] [-v level] [-V] [-o] [-f flex] [-l limit_ioccc.sh]
 		        [-g verge] [-p prefix] [-s sorry.h] [-F dir] .. -- [flex_flags ..]
 
     -h              print help and exit 8
     -v level        set debug level (def: 0)
     -V              print version and exit 8
+    -o		    do NOT use backup files, fail if flex cannot be used (def: use)
     -f flex	    flex tool basename (def: flex)
     -l limit.sh	    version info file (def: ./limit_ioccc.sh)
     -g verge	    path to verge tool (def: ./verge)
@@ -57,6 +58,7 @@ export USAGE="usage: $0 [-h] [-v level] [-V] [-f flex] [-l limit_ioccc.sh]
 
 Exit codes:
     0    flex output files formed or backup files used instead
+    1	 flex not found or too old and -o used
     2    good flex found and ran but failed to form proper output files
     3    flex input file missing or not readable:         backup file(s) had to be used
     4    backup file(s) are missing, or are not readable
@@ -78,7 +80,7 @@ export SORRY_H="sorry.tm.ca.h"
 
 # parse args
 #
-while getopts :hv:Vf:l:g:p:s:F: flag; do
+while getopts :hv:Vof:l:g:p:s:F: flag; do
     case "$flag" in
     h) echo "$USAGE" 1>&2
        exit 8
@@ -87,6 +89,8 @@ while getopts :hv:Vf:l:g:p:s:F: flag; do
        ;;
     V) echo "$RUN_FLEX_VERSION"
        exit 8
+       ;;
+    o) O_FLAG="-o"
        ;;
     f) FLEX_BASENAME="$OPTARG";
        ;;
@@ -402,6 +406,8 @@ on_path() {
 
 # use_flex_backup - use backup flex C files in place of flex generated C files
 #
+# NOTE: If -o was given, then we will exit instead of using backup flex C files.
+#
 # warning: use_flex_backup references arguments, but none are ever passed. [SC2120]
 # shellcheck disable=SC2120
 use_flex_backup() {
@@ -411,6 +417,13 @@ use_flex_backup() {
     if [[ $# -ne 0 ]]; then
 	echo "$0: ERROR: use_flex_backup function expects 0 args, found $#" 1>&2
 	exit 12
+    fi
+
+    # If -o, exit instead of using backup flex C files
+    #
+    if [[ -n $O_FLAG ]]; then
+	echo "$0: ERROR: unable to find or use flex and -o given" 1>&2
+	exit 1
     fi
 
     # look for backup flex C files

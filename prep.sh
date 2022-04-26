@@ -28,13 +28,14 @@
 
 # setup
 #
-export USAGE="usage: $0 [-h] [-v level] [-V] [-e] [-m make] [-M Makefile]
+export USAGE="usage: $0 [-h] [-v level] [-V] [-e] [-o] [-m make] [-M Makefile]
 
     -h              print help and exit 5
     -v level        flag ignored
     -V              print version and exit 5
 
     -e		    exit in 1st make action error (def: exit only at end)
+    -o		    do NOT use backup files, fail if bison cannot be used (def: use)
     -m make	    make command (def: make)
     -M Makefile	    path to Makefile (def: ./Makefile)
 
@@ -51,10 +52,11 @@ export PREP_VERSION="0.1 2022-04-19"
 export V_FLAG="0"
 export E_FLAG=
 export EXIT_CODE="0"
+export O_FLAG=
 
 # parse args
 #
-while getopts :hv:Vem:M: flag; do
+while getopts :hv:Veom:M: flag; do
     case "$flag" in
     h) echo "$USAGE" 1>&2
        exit 1
@@ -69,6 +71,8 @@ while getopts :hv:Vem:M: flag; do
     M) MAKEFILE="$OPTARG";
        ;;
     e) E_FLAG="-e"
+       ;;
+    o) O_FLAG="-o"
        ;;
     \?) echo "$0: ERROR: invalid option: -$OPTARG" 1>&2
        exit 2
@@ -173,7 +177,11 @@ make_action 11 seqcexit
 make_action 12 use_ref
 make_action 13 clean_generated_obj
 make_action 14 all
-make_action 15 parser
+if [[ -z $O_FLAG ]]; then
+    make_action 15 parser
+else
+    make_action 15 parser-o
+fi
 make_action 16 all
 make_action 17 shellcheck
 make_action 18 picky
