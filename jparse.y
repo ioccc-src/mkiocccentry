@@ -52,6 +52,13 @@
  *
  *	ugly_lval.type = ...
  *
+ * A negative consequence here is that because of the api.prefix being set to
+ * ugly_ there's a typedef that might suggest our struct json is ugly (beyond
+ * the original ugliness of JSON that is):
+ *
+ *	typedef struct json UGLY_STYPE;
+ *
+ * Whether this is a problem will be decided later.
  */
 %define api.value.type {struct json}
 
