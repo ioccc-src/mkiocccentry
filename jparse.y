@@ -43,17 +43,18 @@
  * point it out in an ironic way by changing the prefix yy to ugly_.
  */
 %define api.prefix {ugly_}
-
 /*
- * XXX should we use:
+ * We use our struct json (see json.h for its definition) instead of bison
+ * %union.
  *
- *	%define api.value.type {struct json}
+ * This means that to access the struct json's union type in the lexer we can do
+ * (because the prefix is ugly_ as described above):
  *
- * ?
+ *	ugly_lval.type = ...
  *
- * I'm not sure of the specifics behind this yet so this cannot be decided
- * for now. See also the comments for %union below.
  */
+%define api.value.type {struct json}
+
 %{
 #include <inttypes.h>
 #include <stdio.h>
@@ -70,46 +71,6 @@ int yydebug = 1;
 int token_type = 0;
 %}
 
-
-/* This union is not complete and will need to be fixed in one or more ways as
- * well.
- *
- * For example it might (not sure) be better if there was JSON_NUMBER but
- * depending on a type variable the proper member in the union would be
- * addressd, thereby simplifying the rules below. Perhaps this will be the int
- * token_type above (I am not yet entirely sure of the use of that but it might
- * be of value though it might also have to change) that's also used in the
- * lexer but I really don't know yet. This will come at a later date.
- *
- * Actually there will be use of the struct json. This function will almost
- * certainly be modified but it currently holds a struct integer *, struct
- * json_floating *, struct json_string *, a bool and a set of pointers for
- * children (because it's very possible that it'll be a tree though this is not
- * yet decided either).
- *
- * The struct integer and struct json_floating are complete but struct
- * json_string is not and I'm thinking it might be useful to have a struct
- * json_boolean as well. Even without these incomplete and missing structs
- * struct json is not complete and will absolutely change in some ways (more
- * probably many ways). The specifics have to be worked out still!
- *
- * As for the struct json * there's no allocation/free functions yet and I'm not
- * even sure how this will work with the lexer which means that it's also not
- * decided in the parser.
- *
- * The details with struct json (the internals and the usage here) are not yet
- * decided (especially here but the struct is not complete yet either). Thus the
- * struct json * is not even used here yet.
- *
- * XXX It might be an idea to use the struct feature as described in the bison
- * info manual at '* Structured Value Type::  Providing a structured semantic'
- * value type under 'Defining Language Semantics' but this is not yet determined
- * either. See also the XXX comment above about the 'api.value.type' possibly
- * being 'struct json'. Again this is very much a work in progress!
- */
-%union json_type {
-    struct json json;
-}
 
 /*
  * Terminal symbols (token kind)

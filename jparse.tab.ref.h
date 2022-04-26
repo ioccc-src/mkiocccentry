@@ -122,18 +122,7 @@ extern int ugly_debug;
 
 /* Value type.  */
 #if ! defined UGLY_STYPE && ! defined UGLY_STYPE_IS_DECLARED
-#line 110 "jparse.y"
-union json_type
-{
-#line 110 "jparse.y"
-
-    struct json json;
-
-#line 92 "jparse.tab.h"
-
-};
-#line 110 "jparse.y"
-typedef union json_type UGLY_STYPE;
+typedef struct json UGLY_STYPE;
 # define UGLY_STYPE_IS_TRIVIAL 1
 # define UGLY_STYPE_IS_DECLARED 1
 #endif

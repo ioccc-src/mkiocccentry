@@ -32,6 +32,9 @@
 /*
  * As we utterly object to the hideous code that bison and flex generate we
  * point it out in an ironic way by changing the prefix yy to ugly_.
+ *
+ * This means that for some symbols later in the file we use ugly_ instead of
+ * yy. For example it's ugly_lval instead of yylval.
  */
 %option prefix="ugly_"
 
@@ -116,13 +119,13 @@ JSON_COMMA		","
  */
 %%
 {JSON_WHITESPACE}	    { printf("\nwhitespace: '%s'\n", yytext); }
-{JSON_STRING}		    { printf("\nstring: '%s'\n", yytext); return JSON_STRING; }
-{JSON_UINTMAX}		    { printf("\nuintmax: '%s'\n", yytext); return JSON_UINTMAX; }
-{JSON_INTMAX}		    { printf("\nintmax: '%s'\n", yytext); return JSON_INTMAX; }
-{JSON_LONG_DOUBLE}	    { printf("\nlong double: '%s'\n", yytext); return JSON_LONG_DOUBLE; }
-{JSON_NULL}		    { printf("\nnull: '%s'\n", yytext); return JSON_NULL; }
-{JSON_TRUE}		    { printf("\ntrue: '%s'\n", yytext); return JSON_TRUE; }
-{JSON_FALSE}		    { printf("\nfalse: '%s'\n", yytext); return JSON_FALSE; }
+{JSON_STRING}		    { printf("\nstring: '%s'\n", yytext); ugly_lval.type = JTYPE_STRING; return JSON_STRING; }
+{JSON_UINTMAX}		    { printf("\nuintmax: '%s'\n", yytext); ugly_lval.type = JTYPE_INT; return JSON_UINTMAX; }
+{JSON_INTMAX}		    { printf("\nintmax: '%s'\n", yytext); ugly_lval.type = JTYPE_INT; return JSON_INTMAX; }
+{JSON_LONG_DOUBLE}	    { printf("\nlong double: '%s'\n", yytext); ugly_lval.type = JTYPE_FLOAT; return JSON_LONG_DOUBLE; }
+{JSON_NULL}		    { printf("\nnull: '%s'\n", yytext); ugly_lval.type = JTYPE_NULL; return JSON_NULL; }
+{JSON_TRUE}		    { printf("\ntrue: '%s'\n", yytext); ugly_lval.type = JTYPE_BOOL; return JSON_TRUE; }
+{JSON_FALSE}		    { printf("\nfalse: '%s'\n", yytext); ugly_lval.type = JTYPE_BOOL; return JSON_FALSE; }
 {JSON_OPEN_BRACE}	    { printf("\nopen brace: '%c'\n", *yytext); token_type = '{'; return JSON_OPEN_BRACE; }
 {JSON_CLOSE_BRACE}	    { printf("\nclose brace: '%c'\n", *yytext); token_type = '}'; return JSON_CLOSE_BRACE;}
 {JSON_OPEN_BRACKET}	    { printf("\nopen bracket: '%c'\n", *yytext); token_type = '['; return JSON_OPEN_BRACKET; }
