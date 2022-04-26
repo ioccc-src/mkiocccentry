@@ -94,7 +94,7 @@ static const char * const usage_msg =
 extern bool output_newline;		/* true ==> -n not specified, output new line after each arg processed */
 extern unsigned num_errors;		/* > 0 number of errors encountered */
 /* lexer and parser specific variables */
-extern int yylineno;			/* line number in lexer */
+extern int ugly_lineno;			/* line number in lexer */
 extern char *yytext;			/* current text */
 extern FILE *yyin;			/* input file lexer/parser reads from */
 extern unsigned num_errors;		/* > 0 number of errors encountered */

@@ -29,6 +29,11 @@
  * unnecessary.
  */
 %option noyywrap yylineno
+/*
+ * As we utterly object to the hideous code that bison and flex generate we
+ * point it out in an ironic way by changing the prefix yy to ugly_.
+ */
+%option prefix="ugly_"
 
 /*
  * Currently disabled but this might be an idea when everything is in working
@@ -168,7 +173,7 @@ parse_json_string(char const *string)
 	return;
     }
 
-    yylineno = 1;
+    ugly_lineno = 1;
     bs = yy_scan_string(string);
     if (bs == NULL) {
 	warn(__func__, "unable to scan string");
@@ -177,7 +182,7 @@ parse_json_string(char const *string)
     }
     dbg(DBG_NONE, "*** BEGIN PARSE:\n'\n%s\n'", string);
 
-    yyparse();
+    ugly_parse();
 
     yy_delete_buffer(bs);
     bs = NULL;
@@ -284,8 +289,8 @@ parse_json_file(char const *filename)
     /* now parse the file */
     rewind(yyin);
     yyrestart(yyin);
-    yylineno = 1;
-    yyparse();
+    ugly_lineno = 1;
+    ugly_parse();
 
     clearerr_or_fclose(filename, yyin);
     yyin = NULL;

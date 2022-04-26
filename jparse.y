@@ -34,7 +34,15 @@
  * easier to read error messages.
  */
 %define parse.error verbose
+/*
+ * We enable lookahead correction parser for improved errors
+ */
 %define parse.lac full
+/*
+ * As we utterly object to the hideous code that bison and flex generate we
+ * point it out in an ironic way by changing the prefix yy to ugly_.
+ */
+%define api.prefix {ugly_}
 
 /*
  * XXX should we use:
@@ -311,7 +319,7 @@ yyerror(char const *format, ...)
      * jerr(). It's possible that the function jerr() will change as well but
      * this will be decided after the parser is complete.
      */
-    fprintf(stderr, "JSON parser error (num errors: %d) on line %d: ", yynerrs, yylineno);
+    fprintf(stderr, "JSON parser error (num errors: %d) on line %d: ", yynerrs, ugly_lineno);
     vfprintf(stderr, format, ap);
     fprintf(stderr, "\n");
 
