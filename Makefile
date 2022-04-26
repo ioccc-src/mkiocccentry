@@ -777,3 +777,4 @@ dyn_test.o: dyn_test.c dyn_test.h util.h dyn_array.h dbg.h version.h
 json_chk.o: json_chk.c json_chk.h util.h dyn_array.h dbg.h json.h \
   json_util.h limit_ioccc.h version.h
 json_entry.o: json_entry.c dbg.h util.h dyn_array.h json.h json_entry.h
+dbg_test.o: dbg_test.c dbg.h
