@@ -34,7 +34,8 @@
  * point it out in an ironic way by changing the prefix yy to ugly_.
  *
  * This means that for some symbols later in the file we use ugly_ instead of
- * yy. For example it's ugly_lval instead of yylval.
+ * yy. For example it's ugly_lval instead of yylval and best of all ugly_parse()
+ * for it is an ugly parser.
  */
 %option prefix="ugly_"
 
