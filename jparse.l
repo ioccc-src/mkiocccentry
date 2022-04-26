@@ -29,6 +29,15 @@
  * unnecessary.
  */
 %option noyywrap yylineno
+/*
+ * As we utterly object to the hideous code that bison and flex generate we
+ * point it out in an ironic way by changing the prefix yy to ugly_.
+ *
+ * This means that for some symbols later in the file we use ugly_ instead of
+ * yy. For example it's ugly_lval instead of yylval and best of all ugly_parse()
+ * for it is an ugly parser.
+ */
+%option prefix="ugly_"
 
 /*
  * Currently disabled but this might be an idea when everything is in working
@@ -111,13 +120,13 @@ JSON_COMMA		","
  */
 %%
 {JSON_WHITESPACE}	    { printf("\nwhitespace: '%s'\n", yytext); }
-{JSON_STRING}		    { printf("\nstring: '%s'\n", yytext); return JSON_STRING; }
-{JSON_UINTMAX}		    { printf("\nuintmax: '%s'\n", yytext); return JSON_UINTMAX; }
-{JSON_INTMAX}		    { printf("\nintmax: '%s'\n", yytext); return JSON_INTMAX; }
-{JSON_LONG_DOUBLE}	    { printf("\nlong double: '%s'\n", yytext); return JSON_LONG_DOUBLE; }
-{JSON_NULL}		    { printf("\nnull: '%s'\n", yytext); return JSON_NULL; }
-{JSON_TRUE}		    { printf("\ntrue: '%s'\n", yytext); return JSON_TRUE; }
-{JSON_FALSE}		    { printf("\nfalse: '%s'\n", yytext); return JSON_FALSE; }
+{JSON_STRING}		    { printf("\nstring: '%s'\n", yytext); ugly_lval.type = JTYPE_STRING; return JSON_STRING; }
+{JSON_UINTMAX}		    { printf("\nuintmax: '%s'\n", yytext); ugly_lval.type = JTYPE_INT; return JSON_UINTMAX; }
+{JSON_INTMAX}		    { printf("\nintmax: '%s'\n", yytext); ugly_lval.type = JTYPE_INT; return JSON_INTMAX; }
+{JSON_LONG_DOUBLE}	    { printf("\nlong double: '%s'\n", yytext); ugly_lval.type = JTYPE_FLOAT; return JSON_LONG_DOUBLE; }
+{JSON_NULL}		    { printf("\nnull: '%s'\n", yytext); ugly_lval.type = JTYPE_NULL; return JSON_NULL; }
+{JSON_TRUE}		    { printf("\ntrue: '%s'\n", yytext); ugly_lval.type = JTYPE_BOOL; return JSON_TRUE; }
+{JSON_FALSE}		    { printf("\nfalse: '%s'\n", yytext); ugly_lval.type = JTYPE_BOOL; return JSON_FALSE; }
 {JSON_OPEN_BRACE}	    { printf("\nopen brace: '%c'\n", *yytext); token_type = '{'; return JSON_OPEN_BRACE; }
 {JSON_CLOSE_BRACE}	    { printf("\nclose brace: '%c'\n", *yytext); token_type = '}'; return JSON_CLOSE_BRACE;}
 {JSON_OPEN_BRACKET}	    { printf("\nopen bracket: '%c'\n", *yytext); token_type = '['; return JSON_OPEN_BRACKET; }
@@ -168,7 +177,7 @@ parse_json_string(char const *string)
 	return;
     }
 
-    yylineno = 1;
+    ugly_lineno = 1;
     bs = yy_scan_string(string);
     if (bs == NULL) {
 	warn(__func__, "unable to scan string");
@@ -177,7 +186,7 @@ parse_json_string(char const *string)
     }
     dbg(DBG_NONE, "*** BEGIN PARSE:\n'\n%s\n'", string);
 
-    yyparse();
+    ugly_parse();
 
     yy_delete_buffer(bs);
     bs = NULL;
@@ -284,8 +293,8 @@ parse_json_file(char const *filename)
     /* now parse the file */
     rewind(yyin);
     yyrestart(yyin);
-    yylineno = 1;
-    yyparse();
+    ugly_lineno = 1;
+    ugly_parse();
 
     clearerr_or_fclose(filename, yyin);
     yyin = NULL;

@@ -11,9 +11,9 @@
  *	https://ioccc.xexyl.net
  *
  * NOTE: This is _very incomplete_ and right now all it does is reads from either
- * stdin, the command line or a file, running yyparse() on it. The grammar is
- * incomplete, there are some things that are allowed that are not valid JSON
- * and various other things need to be done.
+ * stdin, the command line or a file, running yyparse() (actually ugly_parse())
+ * on it. The grammar is incomplete, there are some things that are allowed that
+ * are not valid JSON and many other things need to be done.
  *
  * This is very much a work in progress!
  */
@@ -94,7 +94,7 @@ static const char * const usage_msg =
 extern bool output_newline;		/* true ==> -n not specified, output new line after each arg processed */
 extern unsigned num_errors;		/* > 0 number of errors encountered */
 /* lexer and parser specific variables */
-extern int yylineno;			/* line number in lexer */
+extern int ugly_lineno;			/* line number in lexer */
 extern char *yytext;			/* current text */
 extern FILE *yyin;			/* input file lexer/parser reads from */
 extern unsigned num_errors;		/* > 0 number of errors encountered */
