@@ -26,8 +26,8 @@
  * definitions
  */
 
-/* NOTE: YYDEBUG MUST be defined prior to #including jparse.tab.h! */
-#define YYDEBUG 1
+/* NOTE: UGLY_DEBUG MUST be defined prior to #including jparse.tab.h! */
+#define UGLY_DEBUG 1
 
 
 /*

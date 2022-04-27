@@ -874,8 +874,8 @@ int yy_flex_debug = 1;
 
 static const flex_int16_t yy_rule_linenum[13] =
     {   0,
-      120,  121,  122,  123,  124,  125,  126,  127,  128,  129,
-      130,  131
+      142,  143,  144,  145,  146,  147,  148,  149,  150,  151,
+      152,  153
     } ;
 
 /* The intent behind this definition is that it'll catch
@@ -922,6 +922,31 @@ char *yytext;
  * This means that for some symbols later in the file we use ugly_ instead of
  * yy. For example it's ugly_lval instead of yylval and best of all ugly_parse()
  * for it is an ugly parser.
+ *
+ * A negative consequence here is that because of the prefix being set to
+ * ugly_ there's a typedef in the parser that _might suggest_ that _our struct
+ * json_ is ugly:
+ *
+ *	typedef struct json UGLY_STYPE;
+ *
+ * At first glance this is a valid concern. However we argue that even if this
+ * is so the struct might well have to be ugly because it's for a json parser; a
+ * json parser necessarily has to be ugly due to the spec: one could easily be
+ * forgiven for wondering if the author of the json specification was on drugs
+ * at the time of writing.
+ *
+ * Please note that we're _ABSOLUTELY NOT_ saying that they were and we use the
+ * term very loosely as well: we do not want to and we are not accusing anyone
+ * of being on drugs (we rather find addiction a real tragedy and anyone with an
+ * addition should be treated well and given the help they need) but the fact is
+ * that the JSON specification is barmy and those who are in favour of it must
+ * surely be in the JSON Barmy Army (otherwise known as the Barmy Army of the
+ * Jocular Sillies On Narcotics :-)).
+ *
+ * Thus as much as we find the specification objectionable we rather feel sorry
+ * for those who are indeed in the JSON Barmy Army and we apologise to them in a
+ * light and fun way and we hope that they're not terribly humour impaired.
+
  */
 /*
  * Currently disabled but this might be an idea when everything is in working
@@ -929,7 +954,7 @@ char *yytext;
  *
  * %option nodefault
  */
-#line 50 "jparse.l"
+#line 75 "jparse.l"
 /* Declarations etc. go here.
  *
  * Code is copied verbatim near the top of the generated code.
@@ -941,7 +966,7 @@ char *yytext;
 #include "jparse.h"
 
 YY_BUFFER_STATE bs;
-#line 900 "jparse.c"
+#line 925 "jparse.c"
 /*
  * Section 2: Patterns (regular expressions) and actions.
  *
@@ -960,14 +985,11 @@ YY_BUFFER_STATE bs;
  * to help distinguish it from other patterns.
  */
 /*
- * XXX JSON_STRING is NOT correct! It does capture basic strings but it does
- * not address everything correctly.
- *
- * Now one might ask questions about the tighter restrictions on JSON strings
- * and why we don't even consider them. This is a good question but the answer
- * is simple: once more is done with the parser structs and functions we will
- * let the conversion routines do the actual JSON checks: this way it keeps the
- * regex simple and we don't have to worry about any complexities.
+ * NOTE: On the subject of JSON_STRING one might ask the question about the
+ * tighter restrictions on JSON strings and why we don't even consider them.
+ * This is a good question but the answer is simple: the JSON string conversion
+ * routines actually do these checks. This simplifies the parser regex and so we
+ * don't have to worry about complicating the parser unnecessarily.
  */
 /* Actions.
  *
@@ -980,7 +1002,7 @@ YY_BUFFER_STATE bs;
  *
  * For now we just print the type and value and then return the type.
  */
-#line 939 "jparse.c"
+#line 961 "jparse.c"
 
 #define INITIAL 0
 
@@ -1260,9 +1282,9 @@ YY_DECL
 
 	{
 /* %% [7.0] user's declarations go here */
-#line 119 "jparse.l"
+#line 141 "jparse.l"
 
-#line 1221 "jparse.c"
+#line 1243 "jparse.c"
 
 	while ( /*CONSTCOND*/1 )		/* loops until end-of-file is reached */
 		{
@@ -1355,70 +1377,70 @@ do_action:	/* This label is used only to access EOF actions. */
 case 1:
 /* rule 1 can match eol */
 YY_RULE_SETUP
-#line 120 "jparse.l"
+#line 142 "jparse.l"
 { printf("\nwhitespace: '%s'\n", yytext); }
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
-#line 121 "jparse.l"
+#line 143 "jparse.l"
 { printf("\nstring: '%s'\n", yytext); ugly_lval.type = JTYPE_STRING; return JSON_STRING; }
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 122 "jparse.l"
+#line 144 "jparse.l"
 { printf("\nnumber: '%s'\n", yytext); ugly_lval.type = JTYPE_NUMBER; return JSON_NUMBER; }
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 123 "jparse.l"
+#line 145 "jparse.l"
 { printf("\nnull: '%s'\n", yytext); ugly_lval.type = JTYPE_NULL; return JSON_NULL; }
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 124 "jparse.l"
+#line 146 "jparse.l"
 { printf("\ntrue: '%s'\n", yytext); ugly_lval.type = JTYPE_BOOL; return JSON_TRUE; }
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 125 "jparse.l"
+#line 147 "jparse.l"
 { printf("\nfalse: '%s'\n", yytext); ugly_lval.type = JTYPE_BOOL; return JSON_FALSE; }
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 126 "jparse.l"
+#line 148 "jparse.l"
 { printf("\nopen brace: '%c'\n", *yytext); token_type = '{'; return JSON_OPEN_BRACE; }
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 127 "jparse.l"
+#line 149 "jparse.l"
 { printf("\nclose brace: '%c'\n", *yytext); token_type = '}'; return JSON_CLOSE_BRACE;}
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 128 "jparse.l"
+#line 150 "jparse.l"
 { printf("\nopen bracket: '%c'\n", *yytext); token_type = '['; return JSON_OPEN_BRACKET; }
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
-#line 129 "jparse.l"
+#line 151 "jparse.l"
 { printf("\nclose bracket: '%c'\n", *yytext); token_type = ']'; return JSON_CLOSE_BRACKET; }
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
-#line 130 "jparse.l"
+#line 152 "jparse.l"
 { printf("\nequals/colon: '%c'\n", *yytext); token_type = ':'; return JSON_COLON; }
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
-#line 131 "jparse.l"
+#line 153 "jparse.l"
 { printf("\ncomma: '%c'\n", *yytext); token_type = ','; return JSON_COMMA; }
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
-#line 132 "jparse.l"
+#line 154 "jparse.l"
 ECHO;
 	YY_BREAK
-#line 1377 "jparse.c"
+#line 1399 "jparse.c"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 
@@ -2578,7 +2600,7 @@ void yyfree (void * ptr )
 
 /* %ok-for-header */
 
-#line 132 "jparse.l"
+#line 154 "jparse.l"
 
 
 /* Section 3: Code that's copied to the generated scanner */

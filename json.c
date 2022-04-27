@@ -1646,7 +1646,8 @@ json_conv_int_str(char const *str, size_t *retlen)
  * given:
  *	ptr	pointer to buffer containing a JSON encoded string
  *	len	length, starting at ptr, of the JSON string
- *	quote	true ==> ignore JSON double quotes, both ptr[0] & ptr[len-1] must be "
+ *	quote	true ==> ignore JSON double quotes, both ptr[0] & ptr[len-1]
+ *		must be '"'
  *		false ==> the entire ptr is to be converted
  *
  * returns:
