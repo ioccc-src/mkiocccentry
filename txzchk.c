@@ -853,6 +853,7 @@ parse_linux_txz_line(char *p, char *linep, char *line_dup, char const *dir_name,
     }
     if (p == NULL) {
 	warn("txzchk", "encountered NULL pointer when parsing line %s", line_dup);
+	++txz_info.total_issues;
 	return;
     }
     ++p;
@@ -871,6 +872,7 @@ parse_linux_txz_line(char *p, char *linep, char *line_dup, char const *dir_name,
     p = strtok_r(NULL, " \t", saveptr);
     if (p == NULL) {
 	warn("txzchk", "%s: NULL pointer encountered trying to parse line, reading next line", txzpath);
+	++txz_info.total_issues;
 	return;
     }
 
@@ -878,6 +880,7 @@ parse_linux_txz_line(char *p, char *linep, char *line_dup, char const *dir_name,
     current_file_size = strtoll(p, NULL, 10);
     if (errno != 0) {
 	warnp("txzchk", "%s: trying to parse file size in on line: %s, string: %s, reading next line", txzpath, line_dup, p);
+	++txz_info.total_issues;
     } else if (current_file_size < 0) {
 	warn("txzchk", "%s: file size < 0", txzpath);
 	++txz_info.total_issues;
@@ -892,6 +895,7 @@ parse_linux_txz_line(char *p, char *linep, char *line_dup, char const *dir_name,
 	p = strtok_r(NULL, " \t", saveptr);
 	if (p == NULL) {
 	    warn("txzchk", "%s: NULL pointer trying to parse line, reading next line", txzpath);
+	    ++txz_info.total_issues;
 	    return;
 	}
     }
@@ -950,6 +954,7 @@ parse_bsd_txz_line(char *p, char *linep, char *line_dup, char const *dir_name, c
     p = strtok_r(NULL, " \t", saveptr);
     if (p == NULL) {
 	warn("txzchk", "%s: NULL pointer encountered trying to parse line, reading next line", txzpath);
+	++txz_info.total_issues;
 	return;
     }
     /*
@@ -970,6 +975,7 @@ parse_bsd_txz_line(char *p, char *linep, char *line_dup, char const *dir_name, c
     p = strtok_r(NULL, " \t", saveptr);
     if (p == NULL) {
 	warn("txzchk", "%s: NULL pointer encountered trying to parse line, reading next line", txzpath);
+	++txz_info.total_issues;
 	return;
     }
     for (; p && *p && isdigit(*p); )
@@ -983,6 +989,7 @@ parse_bsd_txz_line(char *p, char *linep, char *line_dup, char const *dir_name, c
     p = strtok_r(NULL, " \t", saveptr);
     if (p == NULL) {
 	warn("txzchk", "%s: NULL pointer encountered trying to parse line, reading next line", txzpath);
+	++txz_info.total_issues;
 	return;
     }
 
@@ -1001,6 +1008,7 @@ parse_bsd_txz_line(char *p, char *linep, char *line_dup, char const *dir_name, c
 	p = strtok_r(NULL, " \t", saveptr);
 	if (p == NULL) {
 	    warn("txzchk", "%s: NULL pointer trying to parse line, reading next line", txzpath);
+	    ++txz_info.total_issues;
 	    return;
 	}
     }
@@ -1073,6 +1081,7 @@ parse_txz_line(char *linep, char *line_dup, char const *dir_name, char const *tx
     p = strtok_r(linep, " \t", &saveptr);
     if (p == NULL) {
 	warn("txzchk", "%s: NULL pointer encountered trying to parse line, reading next line", txzpath);
+	++txz_info.total_issues;
 	return;
     }
 
@@ -1088,6 +1097,7 @@ parse_txz_line(char *linep, char *line_dup, char const *dir_name, char const *tx
     p = strtok_r(NULL, " \t", &saveptr);
     if (p == NULL) {
 	warn("txzchk", "%s: NULL pointer encountered trying to parse line, reading next line", txzpath);
+	++txz_info.total_issues;
 	return;
     }
     if (strchr(p, '/') != NULL) {
@@ -1457,6 +1467,7 @@ parse_all_txz_lines(char const *dir_name, char const *txzpath)
     for (line = txz_lines; line != NULL; line = line->next) {
 	if (line->line == NULL) {
 	    warn("txzchk", "encountered NULL string on line %d", line->line_num);
+	    ++txz_info.total_issues;
 	    continue;
 	}
 	line_dup = strdup(line->line);

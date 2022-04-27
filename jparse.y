@@ -43,6 +43,7 @@
  * point it out in an ironic way by changing the prefix yy to ugly_.
  */
 %define api.prefix {ugly_}
+
 /*
  * We use our struct json (see json.h for its definition) instead of bison
  * %union.
@@ -53,12 +54,27 @@
  *	ugly_lval.type = ...
  *
  * A negative consequence here is that because of the api.prefix being set to
- * ugly_ there's a typedef that might suggest our struct json is ugly (beyond
- * the original ugliness of JSON that is):
+ * ugly_ there's a typedef that _might suggest_ that _our struct json_ is ugly:
  *
  *	typedef struct json UGLY_STYPE;
  *
- * Whether this is a problem will be decided later.
+ * At first glance this is a valid concern. However we argue that even if this
+ * is so the struct might well have to be ugly because it's for a json parser; a
+ * json parser necessarily has to be ugly due to the spec: one could easily be
+ * forgiven for wondering if the author of the json specification was on drugs
+ * at the time of writing.
+ *
+ * Please note that we're _ABSOLUTELY NOT_ saying that they were and we use the
+ * term very loosely as well: we do not want to and we are not accusing anyone
+ * of being on drugs (we rather find addiction a real tragedy and anyone with an
+ * addition should be treated well and given the help they need) but the fact is
+ * that the JSON specification is barmy and those who are in favour of it must
+ * surely be in the JSON Barmy Army (otherwise known as the Barmy Army of the
+ * Jocular Sillies On Narcotics :-)).
+ *
+ * Thus as much as we find the specification objectionable we rather feel sorry
+ * for those who are indeed in the JSON Barmy Army and we apologise to them in a
+ * light way and fun way and we hope that they're not terribly humour impaired.
  */
 %define api.value.type {struct json}
 
@@ -104,12 +120,7 @@ int token_type = 0;
 
 /* Section 2: Rules
  *
- * XXX I believe all the rules are here but there are no actions. However the
- * json_number should be simplified to e.g. JSON_INTEGER | JSON_FLOAT or
- * something like that. This will require a regex change in the flex grammar
- * which will happen later.
- *
- * There are no actions here so this is incomplete in that way too.
+ * XXX I believe all the rules are here but there are no actions yet.
  */
 %%
 json:		/* empty */

@@ -36,6 +36,31 @@
  * This means that for some symbols later in the file we use ugly_ instead of
  * yy. For example it's ugly_lval instead of yylval and best of all ugly_parse()
  * for it is an ugly parser.
+ *
+ * A negative consequence here is that because of the prefix being set to
+ * ugly_ there's a typedef in the parser that _might suggest_ that _our struct
+ * json_ is ugly:
+ *
+ *	typedef struct json UGLY_STYPE;
+ *
+ * At first glance this is a valid concern. However we argue that even if this
+ * is so the struct might well have to be ugly because it's for a json parser; a
+ * json parser necessarily has to be ugly due to the spec: one could easily be
+ * forgiven for wondering if the author of the json specification was on drugs
+ * at the time of writing.
+ *
+ * Please note that we're _ABSOLUTELY NOT_ saying that they were and we use the
+ * term very loosely as well: we do not want to and we are not accusing anyone
+ * of being on drugs (we rather find addiction a real tragedy and anyone with an
+ * addition should be treated well and given the help they need) but the fact is
+ * that the JSON specification is barmy and those who are in favour of it must
+ * surely be in the JSON Barmy Army (otherwise known as the Barmy Army of the
+ * Jocular Sillies On Narcotics :-)).
+ *
+ * Thus as much as we find the specification objectionable we rather feel sorry
+ * for those who are indeed in the JSON Barmy Army and we apologise to them in a
+ * light and fun way and we hope that they're not terribly humour impaired.
+
  */
 %option prefix="ugly_"
 
@@ -81,14 +106,11 @@ YY_BUFFER_STATE bs;
 JSON_WHITESPACE	[ \t\r\n]+
 
 /*
- * XXX JSON_STRING is NOT correct! It does capture basic strings but it does
- * not address everything correctly.
- *
- * Now one might ask questions about the tighter restrictions on JSON strings
- * and why we don't even consider them. This is a good question but the answer
- * is simple: once more is done with the parser structs and functions we will
- * let the conversion routines do the actual JSON checks: this way it keeps the
- * regex simple and we don't have to worry about any complexities.
+ * NOTE: On the subject of JSON_STRING one might ask the question about the
+ * tighter restrictions on JSON strings and why we don't even consider them.
+ * This is a good question but the answer is simple: the JSON string conversion
+ * routines actually do these checks. This simplifies the parser regex and so we
+ * don't have to worry about complicating the parser unnecessarily.
  */
 JSON_STRING		\"([^\n"]|\\\")*\"
 JSON_INTEGER		-?([1-9][0-9]*|0)
