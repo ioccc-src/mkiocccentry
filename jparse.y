@@ -120,12 +120,7 @@ int token_type = 0;
 
 /* Section 2: Rules
  *
- * XXX I believe all the rules are here but there are no actions. However the
- * json_number should be simplified to e.g. JSON_INTEGER | JSON_FLOAT or
- * something like that. This will require a regex change in the flex grammar
- * which will happen later.
- *
- * There are no actions here so this is incomplete in that way too.
+ * XXX I believe all the rules are here but there are no actions yet.
  */
 %%
 json:		/* empty */
