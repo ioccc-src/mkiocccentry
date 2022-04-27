@@ -110,6 +110,6 @@ int yylex(void);
 /* parser specific */
 void parse_json_file(char const *filename);
 void parse_json_string(char const *string);
-void yyerror(char const *format, ...);
+void ugly_error(char const *format, ...);
 
 #endif /* INCLUDE_JPARSE_H */
