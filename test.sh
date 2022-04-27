@@ -45,7 +45,7 @@ Exit codes:
     4	 ./dbg not found or not executable
     5    ./mkiocccentry-test.sh not found or not executable
     6    ./jstr-test.sh not found or not executable
-    7    ./jint or ./jfloat not found or not executable
+    7    ./jnumber not found or not executable
     8    ./dyn_test not found or not executable
 
     >=20  some test failed"
@@ -139,32 +139,16 @@ if [[ ! -x ./jstr-test.sh ]]; then
     exit 6
 fi
 #
-# XXX - Both ./jint and ./jfloat will be replaced by ./jnumber
-# XXX	So we use the same 'exit 7' code for both of them.
-#
-if [[ ! -e ./jint ]]; then
-    echo "$0: ERROR: ./jint file not found" 1>&2
+if [[ ! -e ./jnumber ]]; then
+    echo "$0: ERROR: ./jnumber file not found" 1>&2
     exit 7
 fi
-if [[ ! -f ./jint ]]; then
-    echo "$0: ERROR: ./jint is not a file" 1>&2
+if [[ ! -f ./jnumber ]]; then
+    echo "$0: ERROR: ./jnumber is not a file" 1>&2
     exit 7
 fi
-if [[ ! -x ./jint ]]; then
-    echo "$0: ERROR: ./jint is not executable" 1>&2
-    exit 7
-fi
-#
-if [[ ! -e ./jfloat ]]; then
-    echo "$0: ERROR: ./jfloat file not found" 1>&2
-    exit 7
-fi
-if [[ ! -f ./jfloat ]]; then
-    echo "$0: ERROR: ./jfloat is not a file" 1>&2
-    exit 7
-fi
-if [[ ! -x ./jfloat ]]; then
-    echo "$0: ERROR: ./jfloat is not executable" 1>&2
+if [[ ! -x ./jnumber ]]; then
+    echo "$0: ERROR: ./jnumber is not executable" 1>&2
     exit 7
 fi
 #
@@ -273,48 +257,22 @@ else
     echo "PASSED: jstr-test.sh"
 fi
 
-# jint
+# jnumber
 #
 echo
-echo "RUNNING: jint -t"
+echo "RUNNING: jnumber -t"
 echo
-echo "./jint -t"
-./jint -t
+echo "./jnumber -t"
+./jnumber -t
 status="$?"
 if [[ $status -ne 0 ]]; then
-    echo "$0: ERROR: jint non-zero exit code: $status" 1>&2
+    echo "$0: ERROR: jnumber non-zero exit code: $status" 1>&2
     FAILURE_SUMMARY="$FAILURE_SUMMARY
-    jint non-zero exit code: $status"
-    #
-    # XXX - Both ./jint and ./jfloat will be replaced by ./jnumber
-    # XXX	So we use the same 'exit 7' code for both of them.
-    #
+    jnumber non-zero exit code: $status"
     EXIT_CODE="25"
 else
     echo
-    echo "PASSED: jint -t"
-fi
-
-# jfloat
-#
-echo
-echo "RUNNING: jfloat -t"
-echo
-echo "./jfloat -t"
-./jfloat -t
-status="$?"
-if [[ $status -ne 0 ]]; then
-    echo "$0: ERROR: jfloat non-zero exit code: $status" 1>&2
-    FAILURE_SUMMARY="$FAILURE_SUMMARY
-    jfloat non-zero exit code: $status"
-    #
-    # XXX - Both ./jint and ./jfloat will be replaced by ./jnumber
-    # XXX	So we use the same 'exit 7' code for both of them.
-    #
-    EXIT_CODE="25"
-else
-    echo
-    echo "PASSED: jfloat -t"
+    echo "PASSED: jnumber -t"
 fi
 
 # dyn_test

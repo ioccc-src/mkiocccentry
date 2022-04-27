@@ -193,7 +193,7 @@ CFLAGS= ${STD_SRC} ${COPT} -pedantic ${WARN_FLAGS} ${LDFLAGS}
 MANDIR = /usr/local/share/man/man1
 DESTDIR= /usr/local/bin
 TARGETS= mkiocccentry iocccsize dbg limit_ioccc.sh fnamchk txzchk jauthchk jinfochk \
-	jstrencode jstrdecode utf8_test jparse jint jfloat verge
+	jstrencode jstrdecode utf8_test jparse verge jnumber
 
 # man pages
 #
@@ -214,7 +214,7 @@ MANPAGES= $(MAN_TARGETS:=.1)
 TEST_TARGETS= dbg utf8_test dyn_test
 OBJFILES= dbg.o util.o mkiocccentry.o iocccsize.o fnamchk.o txzchk.o jauthchk.o jinfochk.o \
 	json.o jstrencode.o jstrdecode.o rule_count.o location.o sanity.o \
-	utf8_test.o jint.o jint.test.o jfloat.o jfloat.test.o verge.o \
+	utf8_test.o verge.o \
 	dyn_array.o dyn_test.o json_chk.o json_entry.o dbg_test.o
 LESS_PICKY_CSRC= utf8_posix_map.c
 LESS_PICKY_OBJ= utf8_posix_map.o
@@ -230,7 +230,7 @@ BISONFILES= jparse.y
 SRCFILES= $(OBJFILES:.o=.c)
 ALL_CSRC= ${LESS_PICKY_CSRC} ${GENERATED_CSRC} ${SRCFILES}
 H_FILES= dbg.h jauthchk.h jinfochk.h json.h jstrdecode.h jstrencode.h limit_ioccc.h \
-	mkiocccentry.h txzchk.h util.h location.h utf8_posix_map.h jparse.h jint.h jfloat.h \
+	mkiocccentry.h txzchk.h util.h location.h utf8_posix_map.h jparse.h \
 	verge.h sorry.tm.ca.h dyn_array.h dyn_test.h json_entry.h json_util.h
 # This is a simpler way to do:
 #
@@ -319,8 +319,8 @@ all: ${TARGETS} ${TEST_TARGETS}
 
 # rules, not file targets
 #
-.PHONY: all configure clean clobber install test reset_min_timestamp rebuild_jint_test \
-	rebuild_jfloat_test picky parser build clean_generated_obj prep_clobber
+.PHONY: all configure clean clobber install test reset_min_timestamp \
+	picky parser build clean_generated_obj prep_clobber
 
 
 #####################################
@@ -402,6 +402,8 @@ jstrdecode.o: jstrdecode.c Makefile
 jstrdecode: jstrdecode.o dbg.o json.o util.o dyn_array.o Makefile
 	${CC} ${CFLAGS} jstrdecode.o dbg.o json.o util.o dyn_array.o -o $@
 
+# XXX - jint is going away
+#
 jint.test.o: jint.test.c Makefile
 	${CC} ${CFLAGS} -DJINT_TEST_ENABLED jint.test.c -c
 
@@ -411,6 +413,8 @@ jint.o: jint.c Makefile
 jint: jint.o dbg.o json.o util.o dyn_array.o jint.test.o Makefile
 	${CC} ${CFLAGS} jint.o dbg.o json.o util.o dyn_array.o jint.test.o -o $@
 
+# XXX - jfloat is going away
+#
 jfloat.test.o: jfloat.test.c Makefile
 	${CC} ${CFLAGS} -DJFLOAT_TEST_ENABLED jfloat.test.c -c
 
@@ -419,6 +423,11 @@ jfloat.o: jfloat.c Makefile
 
 jfloat: jfloat.o dbg.o json.o util.o dyn_array.o jfloat.test.o Makefile
 	${CC} ${CFLAGS} jfloat.o dbg.o json.o util.o dyn_array.o jfloat.test.o -o $@
+
+# XXX - stub until we make jnumber.c
+#
+jnumber: Makefile
+	${CP} -f -v /usr/bin/true $@
 
 jparse.o: jparse.c Makefile
 	${CC} ${CFLAGS} -Wno-unused-function -Wno-unneeded-internal-declaration jparse.c -c
@@ -560,6 +569,8 @@ use_ref: jparse.tab.ref.c jparse.tab.ref.h jparse.ref.c
 	${RM} -f jparse.c
 	${CP} -f -v jparse.ref.c jparse.c
 
+# XXX - jint is going away
+#
 # rebuild jint.test.c
 #
 rebuild_jint_test: jint.testset jint.c dbg.o json.o util.o dyn_array.o Makefile
@@ -572,6 +583,8 @@ rebuild_jint_test: jint.testset jint.c dbg.o json.o util.o dyn_array.o Makefile
 	${MV} -f jint.set.tmp jint.test.c
 	${RM} -f jint_gen
 
+# XXX - jfloat is going away
+#
 # rebuild jfloat.test.c
 #
 rebuild_jfloat_test: jfloat.testset jfloat.c dbg.o json.o util.o dyn_array.o Makefile
@@ -583,6 +596,11 @@ rebuild_jfloat_test: jfloat.testset jfloat.c dbg.o json.o util.o dyn_array.o Mak
 	echo '#endif /* JFLOAT_TEST_ENABLED */' >> jfloat.set.tmp
 	${MV} -f jfloat.set.tmp jfloat.test.c
 	${RM} -f jfloat_gen
+
+# XXX - stub until we make jnumber.c
+#
+rebuild_jnumber_test: Makefile
+	${CP} -f -v /usr/bin/true $@
 
 # sequence exit codes
 #
@@ -654,7 +672,7 @@ reset_min_timestamp: reset_tstamp.sh
 
 # perform all of the mkiocccentry repo required tests
 #
-test: test.sh iocccsize-test.sh dbg mkiocccentry-test.sh jstr-test.sh jint jfloat dyn_test Makefile
+test: test.sh iocccsize-test.sh dbg mkiocccentry-test.sh jstr-test.sh jnumber dyn_test Makefile
 	./test.sh
 
 # run json-test.sh on test_JSON files
@@ -681,10 +699,16 @@ prep_clobber:
 	${RM} -f ${GENERATED_CSRC} ${GENERATED_HSRC}
 	${RM} -f answers.txt j-test.out j-test2.out json-test.log
 	${RM} -rf test-iocccsize test_src test_work tags dbg.out
+	${RM} -f dbg_test.c
+	${RM} -rf dyn_test.dSYM
+	${RM} -f jnumber jnumber_gen
+	${RM} -f jnumber.set.tmp jnumber_gen
+	${RM} -rf jnumber.dSYM jnumber_gen.dSYM
+	# XXX - remove legacy code - XXX
+	${RM} -f jint jfloat
 	${RM} -f jint.set.tmp jint_gen
 	${RM} -f jfloat.set.tmp jfloat_gen
-	${RM} -rf jint_gen.dSYM jfloat_gen.dSYM dyn_test.dSYM
-	${RM} -f dbg_test.c
+	${RM} -rf jint_gen.dSYM jfloat_gen.dSYM
 
 
 ###################################
@@ -699,6 +723,9 @@ clean: clean_generated_obj
 	${RM} -f ${GENERATED_OBJ}
 	${RM} -f ${LESS_PICKY_OBJ}
 	${RM} -rf ${DSYMDIRS}
+	# XXX - remove legacy code - XXX
+	${RM} -f jint.o jint.test.o jint_gen.o
+	${RM} -f jfloat.o jfloat.test.o jfloat_gen.o
 
 clobber: clean prep_clobber
 	${RM} -f ${BUILD_LOG}
@@ -765,12 +792,6 @@ sanity.o: sanity.c sanity.h util.h dyn_array.h dbg.h location.h \
   utf8_posix_map.h json.h json_chk.h json_util.h limit_ioccc.h version.h
 utf8_test.o: utf8_test.c utf8_posix_map.h util.h dyn_array.h dbg.h \
   limit_ioccc.h version.h
-jint.o: jint.c jint.h dbg.h util.h dyn_array.h json.h limit_ioccc.h \
-  version.h
-jint.test.o: jint.test.c json.h
-jfloat.o: jfloat.c jfloat.h dbg.h util.h dyn_array.h json.h limit_ioccc.h \
-  version.h
-jfloat.test.o: jfloat.test.c json.h
 verge.o: verge.c verge.h dbg.h util.h dyn_array.h limit_ioccc.h version.h
 dyn_array.o: dyn_array.c dyn_array.h util.h dbg.h
 dyn_test.o: dyn_test.c dyn_test.h util.h dyn_array.h dbg.h version.h

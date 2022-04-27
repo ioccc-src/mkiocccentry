@@ -99,7 +99,7 @@ int token_type = 0;
 %token JSON_TRUE "true"
 %token JSON_FALSE "false"
 %token JSON_STRING
-%token JSON_UINTMAX JSON_INTMAX JSON_LONG_DOUBLE
+%token JSON_NUMBER
 
 
 /* Section 2: Rules
@@ -127,9 +127,7 @@ json_value:	  json_object
 		| JSON_NULL
 		;
 
-json_number:	JSON_INTMAX
-		| JSON_UINTMAX
-		| JSON_LONG_DOUBLE ;
+json_number:	JSON_NUMBER ;
 
 json_object:	JSON_OPEN_BRACE json_members JSON_CLOSE_BRACE
 		;

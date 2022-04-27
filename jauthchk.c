@@ -780,7 +780,7 @@ check_found_author_json_fields(char const *json_filename, bool test)
 			dbg(DBG_VHIGH, "%s is a bool", val);
 		    }
 		    break;
-		case JTYPE_INT:
+		case JTYPE_NUMBER:
 		    if (!is_integer(val)) {
 			warn(__func__, "number field '%s' has non-number value in file %s: '%s'",
 				       author_field->name, json_filename, val);

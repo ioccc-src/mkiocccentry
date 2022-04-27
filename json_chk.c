@@ -46,16 +46,16 @@
 struct json_field common_json_fields[] =
 {
     { "ioccc_contest",		    NULL, 0, 1, false, JTYPE_STRING,	false, NULL },
-    { "ioccc_year",		    NULL, 0, 1, false, JTYPE_INT,	false, NULL },
+    { "ioccc_year",		    NULL, 0, 1, false, JTYPE_NUMBER,	false, NULL },
     { "mkiocccentry_version",	    NULL, 0, 1, false, JTYPE_STRING,	false, NULL },
     { "fnamchk_version",	    NULL, 0, 1, false, JTYPE_STRING,	false, NULL },
     { "IOCCC_contest_id",	    NULL, 0, 1, false, JTYPE_STRING,	false, NULL },
-    { "entry_num",		    NULL, 0, 1, false, JTYPE_INT,	false, NULL },
+    { "entry_num",		    NULL, 0, 1, false, JTYPE_NUMBER,	false, NULL },
     { "tarball",		    NULL, 0, 1, false, JTYPE_STRING,	false, NULL },
-    { "formed_timestamp",	    NULL, 0, 1, false, JTYPE_INT,	false, NULL },
-    { "formed_timestamp_usec",	    NULL, 0, 1, false, JTYPE_INT,	false, NULL },
+    { "formed_timestamp",	    NULL, 0, 1, false, JTYPE_NUMBER,	false, NULL },
+    { "formed_timestamp_usec",	    NULL, 0, 1, false, JTYPE_NUMBER,	false, NULL },
     { "timestamp_epoch",	    NULL, 0, 1, false, JTYPE_STRING,	false, NULL },
-    { "min_timestamp",		    NULL, 0, 1, false, JTYPE_INT,	false, NULL },
+    { "min_timestamp",		    NULL, 0, 1, false, JTYPE_NUMBER,	false, NULL },
     { "formed_UTC",		    NULL, 0, 1, false, JTYPE_STRING,	false, NULL },
     { "test_mode",		    NULL, 0, 1, false, JTYPE_BOOL,	false, NULL },
     { NULL,			    NULL, 0, 0, false, JTYPE_EOT,	false, NULL } /* this **MUST** be last! */
@@ -76,8 +76,8 @@ struct json_field info_json_fields[] =
     { "txzchk_version",		NULL, 0, 1, false, JTYPE_STRING,    false,  NULL },
     { "title",			NULL, 0, 1, false, JTYPE_STRING,    false,  NULL },
     { "abstract",		NULL, 0, 1, false, JTYPE_STRING,    false,  NULL },
-    { "rule_2a_size",		NULL, 0, 1, false, JTYPE_INT,	    false,  NULL },
-    { "rule_2b_size",		NULL, 0, 1, false, JTYPE_INT,	    false,  NULL },
+    { "rule_2a_size",		NULL, 0, 1, false, JTYPE_NUMBER,    false,  NULL },
+    { "rule_2b_size",		NULL, 0, 1, false, JTYPE_NUMBER,    false,  NULL },
     { "empty_override",		NULL, 0, 1, false, JTYPE_BOOL,	    false,  NULL },
     { "rule_2a_override",	NULL, 0, 1, false, JTYPE_BOOL,	    false,  NULL },
     { "rule_2a_mismatch",	NULL, 0, 1, false, JTYPE_BOOL,	    false,  NULL },
@@ -119,9 +119,9 @@ size_t SIZEOF_INFO_JSON_FIELDS_TABLE = TBLLEN(info_json_fields);
  */
 struct json_field author_json_fields[] =
 {
-    { "IOCCC_author_version",	NULL, 0, 1, false, JTYPE_STRING,		false,	NULL },
-    { "jauthchk_version",	NULL, 0, 1, false, JTYPE_STRING,		false,	NULL },
-    { "author_count",		NULL, 0, 1, false, JTYPE_INT,		false,  NULL },
+    { "IOCCC_author_version",	NULL, 0, 1, false, JTYPE_STRING,	false,	NULL },
+    { "jauthchk_version",	NULL, 0, 1, false, JTYPE_STRING,	false,	NULL },
+    { "author_count",		NULL, 0, 1, false, JTYPE_NUMBER,	false,  NULL },
     { "authors",		NULL, 0, 1, false, JTYPE_ARRAY,		false,	NULL },
     { "name",			NULL, 0, 5, false, JTYPE_STRING,	false,  NULL },
     { "location_code",		NULL, 0, 5, false, JTYPE_STRING,	false,	NULL },
@@ -133,7 +133,7 @@ struct json_field author_json_fields[] =
     { "past_winner",		NULL, 0, 1, false, JTYPE_BOOL,		true,	NULL },
     { "default_handle",		NULL, 0, 1, false, JTYPE_BOOL,		true,	NULL },
     { "author_handle",		NULL, 0, 5, false, JTYPE_STRING,	true,	NULL },
-    { "author_number",		NULL, 0, 5, false, JTYPE_INT,	false,	NULL },
+    { "author_number",		NULL, 0, 5, false, JTYPE_NUMBER,	false,	NULL },
     { NULL,			NULL, 0, 0, false, JTYPE_EOT,		false,	NULL } /* this **MUST** be last */
 };
 size_t SIZEOF_AUTHOR_JSON_FIELDS_TABLE = TBLLEN(author_json_fields);
@@ -270,8 +270,7 @@ check_common_json_fields_table(void)
 		    not_reached();
 		}
 		break;
-	    case JTYPE_INT:
-	    case JTYPE_FLOAT:
+	    case JTYPE_NUMBER:
 	    case JTYPE_BOOL:
 	    case JTYPE_STRING:
 	    case JTYPE_ARRAY:
@@ -339,8 +338,7 @@ check_info_json_fields_table(void)
 		    not_reached();
 		}
 		break;
-	    case JTYPE_INT:
-	    case JTYPE_FLOAT:
+	    case JTYPE_NUMBER:
 	    case JTYPE_BOOL:
 	    case JTYPE_STRING:
 	    case JTYPE_ARRAY:
@@ -415,8 +413,7 @@ check_author_json_fields_table(void)
 		    not_reached();
 		}
 		break;
-	    case JTYPE_INT:
-	    case JTYPE_FLOAT:
+	    case JTYPE_NUMBER:
 	    case JTYPE_BOOL:
 	    case JTYPE_STRING:
 	    case JTYPE_ARRAY:
@@ -846,7 +843,7 @@ check_found_common_json_fields(char const *program, char const *json_filename, c
 			continue;
 		    }
 		    break;
-		case JTYPE_INT:
+		case JTYPE_NUMBER:
 		    if (!is_integer(val)) {
 			warn(__func__, "number field '%s' has non-number value in file %s: '%s'",
 				       common_field->name, json_filename, val);

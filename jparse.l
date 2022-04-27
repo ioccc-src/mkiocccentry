@@ -90,13 +90,11 @@ JSON_WHITESPACE	[ \t\r\n]+
  * let the conversion routines do the actual JSON checks: this way it keeps the
  * regex simple and we don't have to worry about any complexities.
  */
-JSON_STRING		\"[^\n"]+\"
-JSON_DIGIT		[0-9]
-JSON_DIGITS		{JSON_DIGIT}+
+JSON_STRING		\"([^\n"]|\\\")*\"
+JSON_INTEGER		-?([1-9][0-9]*|0)
+JSON_FRACTION		"."[0-9]+
 JSON_EXPONENT		[Ee][-+]?[0-9]+
-JSON_INTMAX		-?{JSON_DIGITS}
-JSON_UINTMAX		{JSON_DIGITS}
-JSON_LONG_DOUBLE	-?{JSON_DIGITS}"."{JSON_DIGITS}{JSON_EXPONENT}?
+JSON_NUMBER		({JSON_INTEGER}|{JSON_INTEGER}{JSON_FRACTION}|{JSON_INTEGER}{JSON_FRACTION}{JSON_EXPONENT})
 JSON_TRUE		"true"
 JSON_FALSE		"false"
 JSON_NULL		"null"
@@ -121,9 +119,7 @@ JSON_COMMA		","
 %%
 {JSON_WHITESPACE}	    { printf("\nwhitespace: '%s'\n", yytext); }
 {JSON_STRING}		    { printf("\nstring: '%s'\n", yytext); ugly_lval.type = JTYPE_STRING; return JSON_STRING; }
-{JSON_UINTMAX}		    { printf("\nuintmax: '%s'\n", yytext); ugly_lval.type = JTYPE_INT; return JSON_UINTMAX; }
-{JSON_INTMAX}		    { printf("\nintmax: '%s'\n", yytext); ugly_lval.type = JTYPE_INT; return JSON_INTMAX; }
-{JSON_LONG_DOUBLE}	    { printf("\nlong double: '%s'\n", yytext); ugly_lval.type = JTYPE_FLOAT; return JSON_LONG_DOUBLE; }
+{JSON_NUMBER}		    { printf("\nnumber: '%s'\n", yytext); ugly_lval.type = JTYPE_NUMBER; return JSON_NUMBER; }
 {JSON_NULL}		    { printf("\nnull: '%s'\n", yytext); ugly_lval.type = JTYPE_NULL; return JSON_NULL; }
 {JSON_TRUE}		    { printf("\ntrue: '%s'\n", yytext); ugly_lval.type = JTYPE_BOOL; return JSON_TRUE; }
 {JSON_FALSE}		    { printf("\nfalse: '%s'\n", yytext); ugly_lval.type = JTYPE_BOOL; return JSON_FALSE; }

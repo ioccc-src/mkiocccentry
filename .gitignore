@@ -8,11 +8,9 @@ entry.*.tx[zt]
 fnamchk
 iocccsize
 jauthchk
-jfloat
-jfloat_gen
 jinfochk
-jint
-jint_gen
+jnumber
+jnumber_gen
 jparse
 jparse.c
 jparse.tab.c

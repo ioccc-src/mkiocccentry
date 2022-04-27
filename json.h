@@ -64,26 +64,29 @@ struct encode {
  * parsed JSON integer
  *
  * NOTE: The as_str is normally the same as the string that was passed to, say, the
- *	 json_conv_int() function.  It can differ in a few ways.  The end of the
- *	 string passed to json_conv_int(str, len) does not need to be NUL terminated,
+ *	 json_conv_number() function.  It can differ in a few ways.  The end of the
+ *	 string passed to json_conv_number(ptr, len) does not need to be NUL terminated,
  *	 whereas as_str will be NUL terminated at the end of the string.
  *	 If the characters pointed at by str start with whitespace or have trailing
  *	 whitespace, then as_str will hove those characters trimmed off.
- *	 Normally the bison / flex code that would call json_conv_int(str, len)
+ *	 Normally the bison / flex code that would call json_conv_number(ptr, len)
  *	 will ONLY have the JSON integer string, we note this in case some other
- *	 future code that is not a careful calls json_conv_int(str, len).
- *
- * XXX - combine struct json_integer and struct json_floating into a single struct json_number - XXX
+ *	 future code that is not a careful calls json_conv_number(str, len).
  */
-struct json_integer
+struct json_number
 {
     char *as_str;		/* allocated JSON integer string, whitespace trimmed if needed */
 
-    size_t orig_len;		/* length of original JSON integer string */
+    size_t orig_len;		/* length of original JSON floating point string */
     size_t as_str_len;		/* length of as_str */
 
     bool converted;		/* true ==> able to convert JSON integer string to some form of C integer */
     bool is_negative;		/* true ==> value < 0 */
+
+    bool is_floating;		/* true ==> as_str had a . in it */
+    bool is_e_notation;		/* true ==> e notation used */
+
+    /* integer values */
 
     bool int8_sized;		/* true ==> converted JSON integer to C int8_t */
     int8_t as_int8;		/* JSON integer value in int8_t form, if int8_sized == true */
@@ -141,34 +144,8 @@ struct json_integer
 
     bool umaxint_sized;		/* true ==> converted JSON integer to C umaxint_t */
     uintmax_t as_umaxint;	/* JSON integer value in as_umaxint form, if umaxint_sized == true */
-};
 
-
-/*
- * parsed JSON floating point value
- *
- * NOTE: The as_str is normally the same as the string that was passed to, say, the
- *	 json_conv_float() function.  It can differ in a few ways.  The end of the
- *	 string passed to json_conv_float(str, len) does not need to be NUL terminated,
- *	 whereas as_str will be NUL terminated at the end of the string.
- *	 If the characters pointed at by str start with whitespace or have trailing
- *	 whitespace, then as_str will have those characters trimmed off.
- *	 Normally the bison / flex code that would call json_conv_float(str, len)
- *	 will ONLY have the JSON integer string, we note this in case some other
- *	 future code that is not a careful calls json_conv_float(str, len).
- *
- * XXX - combine struct json_integer and struct json_floating into a single struct json_number - XXX
- */
-struct json_floating
-{
-    char *as_str;		/* allocated JSON floating point string, whitespace trimmed if needed */
-
-    size_t orig_len;		/* length of original JSON floating point string */
-    size_t as_str_len;		/* length of as_str */
-
-    bool converted;		/* true ==> able to convert JSON floating point string to some form of C floating point */
-    bool is_negative;		/* true ==> value < 0 */
-    bool is_e_notation;		/* true ==> e notation used */
+    /* floating point values */
 
     bool float_sized;		/* true ==> converted JSON float to C float */
     float as_float;		/* JSON floating point value in float form, if float_sized  == true */
@@ -235,20 +212,6 @@ struct json_null
 
 
 /*
- * JSON object
- *
- * JSON object is one of:
- *
- *	{ }
- *	{ members }
- */
-struct json_object
-{
-    struct json *head;		/* first value in the members list, or NULL ==> empty list */
-};
-
-
-/*
  * JSON member
  *
  * A JSON member is of the form:
@@ -259,6 +222,20 @@ struct json_member
 {
     struct json *name;		/* JSON string name */
     struct json *value;		/* JSON value */
+};
+
+
+/*
+ * JSON object
+ *
+ * JSON object is one of:
+ *
+ *	{ }
+ *	{ members }
+ */
+struct json_object
+{
+    struct json *head;		/* first value in the members list, or NULL ==> empty list */
 };
 
 
@@ -292,13 +269,12 @@ struct json_array
 enum element_type {
     JTYPE_EOT	    = -1,   /* special end of the table value */
     JTYPE_UNSET	    = 0,    /* JSON element has not been set - must be the value 0 */
-    JTYPE_INT,		    /* JSON element is an integer - see struct json_integer */
-    JTYPE_FLOAT,	    /* JSON element is a float - see struct json_floating */
+    JTYPE_NUMBER,	    /* JSON element is an number - see struct json_integer */
     JTYPE_STRING,	    /* JSON element is a string - see struct json_string */
     JTYPE_BOOL,		    /* JSON element is a boolean - see struct json_boolean */
     JTYPE_NULL,		    /* JSON element is a null - see struct json_null */
-    JTYPE_OBJECT,	    /* JSON element is a { members } */
     JTYPE_MEMBER,	    /* JSON element is a member */
+    JTYPE_OBJECT,	    /* JSON element is a { members } */
     JTYPE_ARRAY,	    /* JSON element is a [ elements ] */
 };
 
@@ -311,13 +287,12 @@ struct json
 {
     enum element_type type;		/* union element specifier */
     union json_union {
-	struct json_integer integer;	/* JTYPE_INT - value is either a signed or unsigned integer */
-	struct json_floating floating;	/* JTYPE_FLOAT - value is a floating point */
+	struct json_number number;	/* JTYPE_NUMBER - value is number (integer or floating point) */
 	struct json_string string;	/* JTYPE_STRING - value is a string */
 	struct json_boolean boolean;	/* JTYPE_BOOL - value is a JSON boolean */
 	struct json_null null;		/* JTYPE_NULL - value is a JSON null value */
-	struct json_object object;	/* JTYPE_OBJECT - value is a JSON { members } */
 	struct json_member member;	/* JTYPE_MEMBER - value is a JSON member: name : value */
+	struct json_object object;	/* JTYPE_OBJECT - value is a JSON { members } */
 	struct json_array array;	/* JTYPE_ARRAY - value is a JSON [ elements ] */
     } element;
 
@@ -351,10 +326,8 @@ extern char *json_decode(char const *ptr, size_t len, size_t *retlen);
 extern char *json_decode_str(char const *str, size_t *retlen);
 /* JSON conversion functions */
 extern void json_conv_free(struct json *node);
-extern struct json *json_conv_int(char const *ptr, size_t len);
-extern struct json *json_conv_int_str(char const *str, size_t *retlen);
-extern struct json *json_conv_float(char const *ptr, size_t len);
-extern struct json *json_conv_float_str(char const *str, size_t *retlen);
+extern struct json *json_conv_number(char const *ptr, size_t len);
+extern struct json *json_conv_number_str(char const *str, size_t *retlen);
 extern struct json *json_conv_string(char const *ptr, size_t len, bool quote);
 extern struct json *json_conv_string_str(char const *str, size_t *retlen, bool quote);
 extern struct json *json_conv_bool(char const *ptr, size_t len);
