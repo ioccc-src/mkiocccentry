@@ -33,13 +33,14 @@
  * BTW: If you don't agree with us that it's ugly we want to point out that it
  * even admits it and we ask you why it would call itself ugly if it's not. :-)
  *
- * On the other hand the fact the parser IS for JSON might suggest that the
- * parser SHOULD be ugly. And SINCE IT IS UGLY if one were to ignore the fact
- * that bison and flex do not care what they are parsing this same person could
- * argue, obviously by some perverted logical fallacies, that bison and flex did
- * their job well. :-)
- *
  * Thanks in advance for your understanding, and sorry (tm Canada :-)).
+ *
+ * Of course, on the other hand, the fact the parser IS for JSON might suggest
+ * that the parser SHOULD be ugly and since IT IS UGLY this apology might be
+ * superfluous. If one were to ignore the fact that bison and flex do not care
+ * what they are parsing this same person could argue, obviously by some
+ * perverted logical fallacies, that bison and flex did their job well. :-) This
+ * logic is as barmy as JSON, though, and so we must still say we're sorry.
  *
  * P.S. In 2022 April 04, when this comment was initially formed, none of the
  *	people	working on this repo were Canadian.  But some of them have
