@@ -600,7 +600,6 @@ rebuild_jfloat_test: jfloat.testset jfloat.c dbg.o json.o util.o dyn_array.o Mak
 # XXX - stub until we make jnumber.c
 #
 rebuild_jnumber_test: Makefile
-	${CP} -f -v /usr/bin/true $@
 
 # sequence exit codes
 #
