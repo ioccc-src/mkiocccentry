@@ -126,7 +126,7 @@
 #define yychar          ugly_char
 
 /* First part of user prologue.  */
-#line 81 "jparse.y"
+#line 80 "jparse.y"
 
 #include <inttypes.h>
 #include <stdio.h>
@@ -184,16 +184,17 @@ enum yysymbol_kind_t
   YYSYMBOL_JSON_FALSE = 11,                /* "false"  */
   YYSYMBOL_JSON_STRING = 12,               /* JSON_STRING  */
   YYSYMBOL_JSON_NUMBER = 13,               /* JSON_NUMBER  */
-  YYSYMBOL_YYACCEPT = 14,                  /* $accept  */
-  YYSYMBOL_json = 15,                      /* json  */
-  YYSYMBOL_json_value = 16,                /* json_value  */
-  YYSYMBOL_json_number = 17,               /* json_number  */
-  YYSYMBOL_json_object = 18,               /* json_object  */
-  YYSYMBOL_json_members = 19,              /* json_members  */
-  YYSYMBOL_json_member = 20,               /* json_member  */
-  YYSYMBOL_json_array = 21,                /* json_array  */
-  YYSYMBOL_json_elements = 22,             /* json_elements  */
-  YYSYMBOL_json_element = 23               /* json_element  */
+  YYSYMBOL_JSON_INVALID_TOKEN = 14,        /* JSON_INVALID_TOKEN  */
+  YYSYMBOL_YYACCEPT = 15,                  /* $accept  */
+  YYSYMBOL_json = 16,                      /* json  */
+  YYSYMBOL_json_value = 17,                /* json_value  */
+  YYSYMBOL_json_number = 18,               /* json_number  */
+  YYSYMBOL_json_object = 19,               /* json_object  */
+  YYSYMBOL_json_members = 20,              /* json_members  */
+  YYSYMBOL_json_member = 21,               /* json_member  */
+  YYSYMBOL_json_array = 22,                /* json_array  */
+  YYSYMBOL_json_elements = 23,             /* json_elements  */
+  YYSYMBOL_json_element = 24               /* json_element  */
 };
 typedef enum yysymbol_kind_t yysymbol_kind_t;
 
@@ -501,7 +502,7 @@ union yyalloc
 #define YYLAST   38
 
 /* YYNTOKENS -- Number of terminals.  */
-#define YYNTOKENS  14
+#define YYNTOKENS  15
 /* YYNNTS -- Number of nonterminals.  */
 #define YYNNTS  10
 /* YYNRULES -- Number of rules.  */
@@ -510,7 +511,7 @@ union yyalloc
 #define YYNSTATES  32
 
 /* YYMAXUTOK -- Last valid token kind.  */
-#define YYMAXUTOK   268
+#define YYMAXUTOK   269
 
 
 /* YYTRANSLATE(TOKEN-NUM) -- Symbol number corresponding to TOKEN-NUM
@@ -550,16 +551,16 @@ static const yytype_int8 yytranslate[] =
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     1,     2,     3,     4,
-       5,     6,     7,     8,     9,    10,    11,    12,    13
+       5,     6,     7,     8,     9,    10,    11,    12,    13,    14
 };
 
 #if UGLY_DEBUG
 /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_uint8 yyrline[] =
 {
-       0,   126,   126,   127,   128,   129,   132,   133,   134,   135,
-     136,   137,   138,   141,   143,   146,   147,   150,   153,   156,
-     157,   160
+       0,   123,   123,   124,   125,   126,   129,   130,   131,   132,
+     133,   134,   135,   138,   140,   143,   144,   147,   150,   153,
+     154,   157
 };
 #endif
 
@@ -577,9 +578,9 @@ static const char *const yytname[] =
 {
   "\"end of file\"", "error", "\"invalid token\"", "\"{\"", "\"}\"",
   "\"[\"", "\"]\"", "\",\"", "\":\"", "\"null\"", "\"true\"", "\"false\"",
-  "JSON_STRING", "JSON_NUMBER", "$accept", "json", "json_value",
-  "json_number", "json_object", "json_members", "json_member",
-  "json_array", "json_elements", "json_element", YY_NULLPTR
+  "JSON_STRING", "JSON_NUMBER", "JSON_INVALID_TOKEN", "$accept", "json",
+  "json_value", "json_number", "json_object", "json_members",
+  "json_member", "json_array", "json_elements", "json_element", YY_NULLPTR
 };
 
 static const char *
@@ -655,18 +656,18 @@ static const yytype_int8 yycheck[] =
    state STATE-NUM.  */
 static const yytype_int8 yystos[] =
 {
-       0,     3,     5,     9,    10,    11,    12,    13,    15,    16,
-      17,    18,    21,    23,     4,    12,    19,    20,     3,     5,
-       6,    22,    23,     0,     8,     4,     7,     6,     7,    23,
-      19,    22
+       0,     3,     5,     9,    10,    11,    12,    13,    16,    17,
+      18,    19,    22,    24,     4,    12,    20,    21,     3,     5,
+       6,    23,    24,     0,     8,     4,     7,     6,     7,    24,
+      20,    23
 };
 
 /* YYR1[RULE-NUM] -- Symbol kind of the left-hand side of rule RULE-NUM.  */
 static const yytype_int8 yyr1[] =
 {
-       0,    14,    15,    15,    15,    15,    16,    16,    16,    16,
-      16,    16,    16,    17,    18,    19,    19,    20,    21,    22,
-      22,    23
+       0,    15,    16,    16,    16,    16,    17,    17,    17,    17,
+      17,    17,    17,    18,    19,    20,    20,    21,    22,    23,
+      23,    24
 };
 
 /* YYR2[RULE-NUM] -- Number of symbols on the right-hand side of rule RULE-NUM.  */
@@ -1668,7 +1669,7 @@ yyreduce:
     switch (yyn)
       {
 
-#line 1621 "jparse.tab.c"
+#line 1622 "jparse.tab.c"
 
         default: break;
       }
@@ -1903,7 +1904,7 @@ yyreturnlab:
   return yyresult;
 }
 
-#line 163 "jparse.y"
+#line 160 "jparse.y"
 
 /* Section 3: C code */
 int
@@ -2026,7 +2027,7 @@ main(int argc, char **argv)
 }
 
 void
-yyerror(char const *format, ...)
+ugly_error(char const *format, ...)
 {
     va_list ap;
 
@@ -2040,7 +2041,7 @@ yyerror(char const *format, ...)
      * jerr(). It's possible that the function jerr() will change as well but
      * this will be decided after the parser is complete.
      */
-    fprintf(stderr, "JSON parser error (num errors: %d) on line %d: ", yynerrs, ugly_lineno);
+    fprintf(stderr, "JSON parser error on line %d: ", ugly_lineno);
     vfprintf(stderr, format, ap);
     fprintf(stderr, "\n");
 

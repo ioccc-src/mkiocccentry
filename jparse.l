@@ -28,7 +28,7 @@
  * problems. Another way is to provide 'int yywrap() { return 1; }' but this is
  * unnecessary.
  */
-%option noyywrap yylineno
+%option noyywrap yylineno nodefault
 /*
  * As we utterly object to the hideous code that bison and flex generate we
  * point it out in an ironic way by changing the prefix yy to ugly_.
@@ -83,14 +83,11 @@
 #include "jparse.h"
 
 YY_BUFFER_STATE bs;
+void ugly_error(char const *format, ...);
 %}
 
 /*
  * Section 2: Patterns (regular expressions) and actions.
- *
- * NOTE: I'm aware of at least one error here (the JSON_STRING regex is
- * incorrect), it's likely that the list incomplete as well and I'd be surprised
- * if there aren't any other errors.
  */
 
 /*
@@ -129,14 +126,8 @@ JSON_COMMA		","
 
 /* Actions.
  *
- * TODO: Below we have to assign to yylval.json the appropriate values based on
- * yytext.
- *
- * NOTE: The integer (signed and unsigned), floating point and boolean types
- * might need to be redesigned as well for struct integer, struct floating and
- * struct boolean: not sure yet. The same might be said for null.
- *
- * For now we just print the type and value and then return the type.
+ * TODO: We have to do more than just assigning the token type (by which we mean
+ * ugly_lval.type). These things will be done later.
  */
 %%
 {JSON_WHITESPACE}	    { printf("\nwhitespace: '%s'\n", yytext); }
@@ -151,6 +142,7 @@ JSON_COMMA		","
 {JSON_CLOSE_BRACKET}	    { printf("\nclose bracket: '%c'\n", *yytext); token_type = ']'; return JSON_CLOSE_BRACKET; }
 {JSON_COLON}		    { printf("\nequals/colon: '%c'\n", *yytext); token_type = ':'; return JSON_COLON; }
 {JSON_COMMA}		    { printf("\ncomma: '%c'\n", *yytext); token_type = ','; return JSON_COMMA; }
+.*			    { ugly_error("invalid input: %s\n", yytext); return JSON_INVALID_TOKEN; }
 %%
 
 /* Section 3: Code that's copied to the generated scanner */

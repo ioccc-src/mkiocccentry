@@ -77,7 +77,6 @@
  * light way and fun way and we hope that they're not terribly humour impaired.
  */
 %define api.value.type {struct json}
-
 %{
 #include <inttypes.h>
 #include <stdio.h>
@@ -101,9 +100,6 @@ int token_type = 0;
  * For most of the terminal symbols we use string literals to identify them as
  * this makes it easier to read error messages. This feature is not POSIX Yacc
  * compatible but we've decided that the benefit outweighs this fact.
- *
- * XXX We will be changing the number types into a single type later on but
- * everything else should be okay though that might prove to be false later on.
  */
 %token JSON_OPEN_BRACE "{"
 %token JSON_CLOSE_BRACE "}"
@@ -116,6 +112,7 @@ int token_type = 0;
 %token JSON_FALSE "false"
 %token JSON_STRING
 %token JSON_NUMBER
+%token JSON_INVALID_TOKEN
 
 
 /* Section 2: Rules
@@ -282,7 +279,7 @@ main(int argc, char **argv)
 }
 
 void
-yyerror(char const *format, ...)
+ugly_error(char const *format, ...)
 {
     va_list ap;
 
@@ -296,7 +293,7 @@ yyerror(char const *format, ...)
      * jerr(). It's possible that the function jerr() will change as well but
      * this will be decided after the parser is complete.
      */
-    fprintf(stderr, "JSON parser error (num errors: %d) on line %d: ", yynerrs, ugly_lineno);
+    fprintf(stderr, "JSON parser error on line %d: ", ugly_lineno);
     vfprintf(stderr, format, ap);
     fprintf(stderr, "\n");
 
