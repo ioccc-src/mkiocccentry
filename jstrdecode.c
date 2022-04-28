@@ -50,6 +50,80 @@
 #define REQUIRED_ARGS (0)	/* number of required arguments on the command line */
 
 
+/*
+ * jstrdecode_stdin	- decodes stdin
+ *
+ *
+ * XXX This function should probably be jstrdecode_file() and decode any file.
+ */
+static
+bool jstrdecode_stdin(void)
+{
+    bool error = false;
+    char *input;		/* argument to process */
+    size_t inputlen;		/* length of input buffer */
+    size_t outputlen;		/* length of write of decode buffer */
+    size_t bufsiz;		/* length of the buffer */
+    char *buf;			/* decode buffer */
+
+    /*
+     * read all of stdin
+     */
+    dbg(DBG_LOW, "about to decode all data on stdin");
+    input = read_all(stdin, &inputlen);
+    if (input == NULL) {
+	warn(__func__, "error while reading data in stdin");
+	error = true;
+    }
+    dbg(DBG_MED, "stdin read length: %ju", (uintmax_t)inputlen);
+
+    /*
+     * warn if encode data contains an embedded NUL byte
+     *
+     * NOTE: The read_all will ensure that at least one extra byte
+     *	 will have been allocated and set to NUL.  Thus in order
+     *	 to correctly check if data contains an embedded NUL byte,
+     *	 we MUST check for a length of inputlen+1!
+     */
+    if (is_string(input, inputlen+1) == false) {
+	warn(__func__, "encoded data that was read contains a NUL byte");
+	error = true;
+    }
+
+    /*
+     * decode data read from stdin
+     */
+    buf = json_decode(input, inputlen, &bufsiz);
+    if (buf == NULL) {
+	warn(__func__, "error while encoding stdin buffer");
+	error = true;
+
+    /*
+     * print decode buffer
+     */
+    } else {
+	dbg(DBG_MED, "decode length: %ju", (uintmax_t)bufsiz);
+	errno = 0;		/* pre-clear errno for warnp() */
+	outputlen = fwrite(buf, 1, bufsiz, stdout);
+	if (outputlen != bufsiz) {
+	    warnp(__func__, "error: write of %ju bytes of stdin data: returned: %ju",
+			    (uintmax_t)bufsiz, (uintmax_t)outputlen);
+	    error = true;
+	}
+	dbg(DBG_MED, "stdout write length: %ju", (uintmax_t)outputlen);
+    }
+
+    /*
+     * free buffer
+     */
+    if (buf == NULL) {
+	free(buf);
+	buf = NULL;
+    }
+
+    return error;
+}
+
 int
 main(int argc, char *argv[])
 {
@@ -125,38 +199,43 @@ main(int argc, char *argv[])
 	     * obtain argument string
 	     */
 	    input = argv[i];
-	    inputlen = strlen(input);
-	    dbg(DBG_LOW, "processing arg: %d: <%s>", i-optind, input);
-	    dbg(DBG_MED, "arg length: %ju", (uintmax_t)inputlen);
-
-	    /*
-	     * decode
-	     */
-	    buf = json_decode_str(input, &bufsiz);
-	    if (buf == NULL) {
-		warn(__func__, "error while encoding processing arg: %d", i-optind);
-		error = true;
-
-	    /*
-	     * print decode buffer
-	     */
+	    if (!strcmp(input, "-")) {
+		/* decode stdin */
+		error = jstrdecode_stdin();
 	    } else {
-		dbg(DBG_MED, "decode length: %ju", (uintmax_t)bufsiz);
-		errno = 0;		/* pre-clear errno for warnp() */
-		outputlen = fwrite(buf, 1, bufsiz, stdout);
-		if (outputlen != bufsiz) {
-		    warnp(__func__, "error: write of %ju bytes of arg: %d returned: %ju",
-				    (uintmax_t)bufsiz, i-optind, (uintmax_t)outputlen);
-		    error = true;
-		}
-	    }
+		inputlen = strlen(input);
+		dbg(DBG_LOW, "processing arg: %d: <%s>", i-optind, input);
+		dbg(DBG_MED, "arg length: %ju", (uintmax_t)inputlen);
 
-	    /*
-	     * free buffer
-	     */
-	    if (buf == NULL) {
-		free(buf);
-		buf = NULL;
+		/*
+		 * decode
+		 */
+		buf = json_decode_str(input, &bufsiz);
+		if (buf == NULL) {
+		    warn(__func__, "error while encoding processing arg: %d", i-optind);
+		    error = true;
+
+		/*
+		 * print decode buffer
+		 */
+		} else {
+		    dbg(DBG_MED, "decode length: %ju", (uintmax_t)bufsiz);
+		    errno = 0;		/* pre-clear errno for warnp() */
+		    outputlen = fwrite(buf, 1, bufsiz, stdout);
+		    if (outputlen != bufsiz) {
+			warnp(__func__, "error: write of %ju bytes of arg: %d returned: %ju",
+					(uintmax_t)bufsiz, i-optind, (uintmax_t)outputlen);
+			error = true;
+		    }
+		}
+
+		/*
+		 * free buffer
+		 */
+		if (buf == NULL) {
+		    free(buf);
+		    buf = NULL;
+		}
 	    }
 	}
 
@@ -164,61 +243,7 @@ main(int argc, char *argv[])
      * case: process data on stdin
      */
     } else {
-
-	/*
-	 * read all of stdin
-	 */
-	dbg(DBG_LOW, "about to decode all data on stdin");
-	input = read_all(stdin, &inputlen);
-	if (input == NULL) {
-	    warn(__func__, "error while reading data in stdin");
-	    error = true;
-	}
-	dbg(DBG_MED, "stdin read length: %ju", (uintmax_t)inputlen);
-
-	/*
-	 * warn if encode data contains an embedded NUL byte
-	 *
-	 * NOTE: The read_all will ensure that at least one extra byte
-	 *	 will have been allocated and set to NUL.  Thus in order
-	 *	 to correctly check if data contains an embedded NUL byte,
-	 *	 we MUST check for a length of inputlen+1!
-	 */
-	if (is_string(input, inputlen+1) == false) {
-	    warn(__func__, "encoded data that was read contains a NUL byte");
-	    error = true;
-	}
-
-	/*
-	 * decode data read from stdin
-	 */
-	buf = json_decode(input, inputlen, &bufsiz);
-	if (buf == NULL) {
-	    warn(__func__, "error while encoding stdin buffer");
-	    error = true;
-
-	/*
-	 * print decode buffer
-	 */
-	} else {
-	    dbg(DBG_MED, "decode length: %ju", (uintmax_t)bufsiz);
-	    errno = 0;		/* pre-clear errno for warnp() */
-	    outputlen = fwrite(buf, 1, bufsiz, stdout);
-	    if (outputlen != bufsiz) {
-		warnp(__func__, "error: write of %ju bytes of stdin data: returned: %ju",
-			        (uintmax_t)bufsiz, (uintmax_t)outputlen);
-		error = true;
-	    }
-	    dbg(DBG_MED, "stdout write length: %ju", (uintmax_t)outputlen);
-	}
-
-	/*
-	 * free buffer
-	 */
-	if (buf == NULL) {
-	    free(buf);
-	    buf = NULL;
-	}
+	error = jstrdecode_stdin();
     }
 
     /*

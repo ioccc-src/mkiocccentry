@@ -70,10 +70,11 @@ static const char * const usage_msg =
     "\t-v level\tset verbosity level (def level: %d)\n"
     "\t-q\t\tquiet mode: silence msg(), warn(), warnp() if -v 0 (def: not quiet)\n"
     "\t-V\t\tprint version string and exit 0\n"
-    "\t-t\t\tperform jencchk test on code JSON decode/decode functions\n"
+    "\t-t\t\tperform jencchk test on code JSON decode/encode functions\n"
     "\t-n\t\tdo not output newline after decode output\n"
     "\n"
     "\t[string ...]\tdecode strings on command line (def: read stdin)\n"
+    "\t\t\tNOTE: - means read from stdin\n"
     "\n"
     "jstrdecode version: %s\n";
 
@@ -86,6 +87,7 @@ static const char * const usage_msg =
 /*
  * function prototypes
  */
+static bool jstrdecode_stdin(void);
 static void usage(int exitcode, char const *name, char const *str) __attribute__((noreturn));
 
 

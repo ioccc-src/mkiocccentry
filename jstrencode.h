@@ -75,6 +75,7 @@ static const char * const usage_msg =
     "\t-n\t\tdo not output newline after encode output\n"
     "\n"
     "\t[string ...]\tencode strings on command line (def: read stdin)\n"
+    "\t\t\tNOTE: - means read from stdin\n"
     "\n"
     "jstrencode version: %s\n";
 
@@ -88,6 +89,7 @@ static const char * const usage_msg =
 /*
  * forward declarations
  */
+static bool jstrencode_stdin(void);
 static void usage(int exitcode, char const *name, char const *str) __attribute__((noreturn));
 
 
