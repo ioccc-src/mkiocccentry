@@ -34,7 +34,7 @@ export USAGE="usage: $0 [-h] [-v level] [-V] [-e] [-o] [-m make] [-M Makefile]
     -v level        flag ignored
     -V              print version and exit 5
 
-    -e		    exit in 1st make action error (def: exit only at end)
+    -e		    exit in first make action error (def: exit only at end)
     -o		    do NOT use backup files, fail if bison cannot be used (def: use)
     -m make	    make command (def: make)
     -M Makefile	    path to Makefile (def: ./Makefile)

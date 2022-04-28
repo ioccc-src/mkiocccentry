@@ -192,8 +192,9 @@ CFLAGS= ${STD_SRC} ${COPT} -pedantic ${WARN_FLAGS} ${LDFLAGS}
 #
 MANDIR = /usr/local/share/man/man1
 DESTDIR= /usr/local/bin
-TARGETS= mkiocccentry iocccsize dbg limit_ioccc.sh fnamchk txzchk jauthchk jinfochk \
+TARGETS= mkiocccentry iocccsize dbg fnamchk txzchk jauthchk jinfochk \
 	jstrencode jstrdecode utf8_test jparse verge jnumber
+SH_TARGETS=limit_ioccc.sh
 
 # man pages
 #
@@ -208,7 +209,7 @@ TARGETS= mkiocccentry iocccsize dbg limit_ioccc.sh fnamchk txzchk jauthchk jinfo
 # page is written the MAN_TARGETS should have the tool name (without any
 # extension) added to it.  Eventually MAN_TARGETS can be removed entirely and
 # MANPAGES will act on TARGETS.
-MAN_TARGETS = mkiocccentry txzchk fnamchk iocccsize jinfochk jauthchk
+MAN_TARGETS = mkiocccentry txzchk fnamchk iocccsize jinfochk jauthchk jstrdecode jstrencode
 MANPAGES= $(MAN_TARGETS:=.1)
 
 TEST_TARGETS= dbg utf8_test dyn_test
@@ -302,7 +303,7 @@ FLEX_DIRS= \
 #
 # The - before include means it's not an error if the file does not exist.
 #
-# We put this directive just before the 1st all rule so that you may override
+# We put this directive just before the first all rule so that you may override
 # or modify any of the above Makefile variables.  To override a value, use := symbols.
 # For example:
 #
@@ -732,7 +733,7 @@ clobber: clean prep_clobber
 distclean nuke: clobber
 
 install: all
-	${INSTALL} -v -m 0555 ${TARGETS} ${DESTDIR}
+	${INSTALL} -v -m 0555 ${TARGETS} ${SH_TARGETS} ${DESTDIR}
 	${INSTALL} -v -m 0644 ${MANPAGES} ${MANDIR} 2>/dev/null
 
 tags: ${ALL_CSRC} ${H_FILES}

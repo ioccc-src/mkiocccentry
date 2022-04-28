@@ -49,6 +49,63 @@
  */
 #define REQUIRED_ARGS (0)	/* number of required arguments on the command line */
 
+/*
+ * jstrencode_stdin	- encodes stdin
+ *
+ *
+ * XXX This function should probably be jstrencode_file() and encode any file.
+ */
+static
+bool jstrencode_stdin(void)
+{
+    char *input;		/* argument to process */
+    size_t inputlen;		/* length of input buffer */
+    char *buf;			/* encode buffer */
+    size_t bufsiz;		/* length of the buffer */
+    size_t outputlen;		/* length of write of encode buffer */
+    bool error = false;		/* true ==> error while performing JSON encode */
+
+    dbg(DBG_LOW, "about to encode all data on stdin");
+    input = read_all(stdin, &inputlen);
+    if (input == NULL) {
+	warn(__func__, "error while reading data in stdin");
+	error = true;
+    }
+    dbg(DBG_MED, "stdin read length: %ju", (uintmax_t)inputlen);
+
+    /*
+     * encode data read from stdin
+     */
+    buf = json_encode(input, inputlen, &bufsiz);
+    if (buf == NULL) {
+	warn(__func__, "error while encoding stdin buffer");
+	error = true;
+
+    /*
+     * print encode buffer
+     */
+    } else {
+	dbg(DBG_MED, "encode length: %ju", (uintmax_t)bufsiz);
+	errno = 0;		/* pre-clear errno for warnp() */
+	outputlen = fwrite(buf, 1, bufsiz, stdout);
+	if (outputlen != bufsiz) {
+	    warnp(__func__, "error: write of %ju bytes of stdin data: returned: %ju",
+			    (uintmax_t)bufsiz, (uintmax_t)outputlen);
+	    error = true;
+	}
+	dbg(DBG_MED, "stdout write length: %ju", (uintmax_t)outputlen);
+    }
+
+    /*
+     * free buffer
+     */
+    if (buf == NULL) {
+	free(buf);
+	buf = NULL;
+    }
+
+    return error;
+}
 
 int
 main(int argc, char *argv[])
@@ -125,38 +182,43 @@ main(int argc, char *argv[])
 	     * obtain argument string
 	     */
 	    input = argv[i];
-	    inputlen = strlen(input);
-	    dbg(DBG_LOW, "processing arg: %d: <%s>", i-optind, input);
-	    dbg(DBG_MED, "arg length: %ju", (uintmax_t)inputlen);
-
-	    /*
-	     * encode
-	     */
-	    buf = json_encode_str(input, &bufsiz);
-	    if (buf == NULL) {
-		warn(__func__, "error while encoding processing arg: %d", i-optind);
-		error = true;
-
-	    /*
-	     * print encode buffer
-	     */
+	    if (!strcmp(input, "-")) {
+		/* encode stdin */
+		error = jstrencode_stdin();
 	    } else {
-		dbg(DBG_MED, "encode length: %ju", (uintmax_t)bufsiz);
-		errno = 0;		/* pre-clear errno for warnp() */
-		outputlen = fwrite(buf, 1, bufsiz, stdout);
-		if (outputlen != bufsiz) {
-		    warnp(__func__, "error: write of %ju bytes of arg: %d returned: %ju",
-				    (uintmax_t)bufsiz, i-optind, (uintmax_t)outputlen);
-		    error = true;
-		}
-	    }
+		inputlen = strlen(input);
+		dbg(DBG_LOW, "processing arg: %d: <%s>", i-optind, input);
+		dbg(DBG_MED, "arg length: %ju", (uintmax_t)inputlen);
 
-	    /*
-	     * free buffer
-	     */
-	    if (buf == NULL) {
-		free(buf);
-		buf = NULL;
+		/*
+		 * encode
+		 */
+		buf = json_encode_str(input, &bufsiz);
+		if (buf == NULL) {
+		    warn(__func__, "error while encoding processing arg: %d", i-optind);
+		    error = true;
+
+		/*
+		 * print encode buffer
+		 */
+		} else {
+		    dbg(DBG_MED, "encode length: %ju", (uintmax_t)bufsiz);
+		    errno = 0;		/* pre-clear errno for warnp() */
+		    outputlen = fwrite(buf, 1, bufsiz, stdout);
+		    if (outputlen != bufsiz) {
+			warnp(__func__, "error: write of %ju bytes of arg: %d returned: %ju",
+					(uintmax_t)bufsiz, i-optind, (uintmax_t)outputlen);
+			error = true;
+		    }
+		}
+
+		/*
+		 * free buffer
+		 */
+		if (buf == NULL) {
+		    free(buf);
+		    buf = NULL;
+		}
 	    }
 	}
 
@@ -164,48 +226,10 @@ main(int argc, char *argv[])
      * case: process data on stdin
      */
     } else {
-
 	/*
 	 * read all of stdin
 	 */
-	dbg(DBG_LOW, "about to encode all data on stdin");
-	input = read_all(stdin, &inputlen);
-	if (input == NULL) {
-	    warn(__func__, "error while reading data in stdin");
-	    error = true;
-	}
-	dbg(DBG_MED, "stdin read length: %ju", (uintmax_t)inputlen);
-
-	/*
-	 * encode data read from stdin
-	 */
-	buf = json_encode(input, inputlen, &bufsiz);
-	if (buf == NULL) {
-	    warn(__func__, "error while encoding stdin buffer");
-	    error = true;
-
-	/*
-	 * print encode buffer
-	 */
-	} else {
-	    dbg(DBG_MED, "encode length: %ju", (uintmax_t)bufsiz);
-	    errno = 0;		/* pre-clear errno for warnp() */
-	    outputlen = fwrite(buf, 1, bufsiz, stdout);
-	    if (outputlen != bufsiz) {
-		warnp(__func__, "error: write of %ju bytes of stdin data: returned: %ju",
-			        (uintmax_t)bufsiz, (uintmax_t)outputlen);
-		error = true;
-	    }
-	    dbg(DBG_MED, "stdout write length: %ju", (uintmax_t)outputlen);
-	}
-
-	/*
-	 * free buffer
-	 */
-	if (buf == NULL) {
-	    free(buf);
-	    buf = NULL;
-	}
+	error = jstrencode_stdin();
     }
 
     /*

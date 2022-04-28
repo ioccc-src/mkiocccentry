@@ -48,7 +48,7 @@ export USAGE="usage: $0 [-h] [-v level] [-V] [-o] [-f flex] [-l limit_ioccc.sh]
 			NOTE:		prefix.c
 			NOTE:
     -s sorry.h	    File to prepend to C output (def: sorry.tm.ca.h)
-    -F dir          1st look for flex in dir (def: look just along \$PATH)
+    -F dir          first look for flex in dir (def: look just along \$PATH)
 		        NOTE: Multiple -B dir are allowed.
 		        NOTE: Search is performed in dir order before the \$PATH path.
 			NOTE: If dir is missing or not searchable, dir is ignored.
