@@ -1,0 +1,74 @@
+.TH jstrencode 1 "28 April 2022" "jstrencode" "IOCCC tools"
+.SH NAME
+jstrencode \- encode JSON encoded strings
+.SH SYNOPSIS
+\fBjstrencode [\-h] [\-v level] [\-q] [\-V] [\-t] [\-n] [string ...]
+.SH DESCRIPTION
+\fBjstrencode\fP encodes JSON encoded strings given on the command line.
+If given the \fB\-t\fP option it performs a test on the JSON encode and encode functions.
+.PP
+By default the program reads from \fBstdin\fP.
+.SH OPTIONS
+.PP
+\fB\-h\fP
+Show help and exit.
+.PP
+\fB\-v\fP
+Set verbosity level.
+.PP
+\fB\-q\fP
+Suppresses some of the output (def: not quiet).
+.PP
+\fB\-V\fP
+Show version and exit.
+.PP
+\fB\-t\fP
+Run tests on the JSON encode/encode functions.
+.PP
+\fB\-n\fP
+Do not output a newline after the encode function.
+.SH EXIT STATUS
+.PP
+\fBmain()\fP returns 1 for errors or issues found; 0 for success.
+.SH FILES
+\fIjstrencode.c\fP
+.RS
+Source file of the \fBjstrencode\fP tool.
+.RE
+\fIjstrencode.h\fP
+.RS
+Header file of the \fBjstrencode\fP tool.
+.RE
+.SH BUGS
+.PP
+If you have an issue with the tool you can report it at \fI\<https://github.com/ioccc-src/mkiocccentry/issues\>\fP.
+.SH EXAMPLES
+.PP
+.nf
+Encode the JSON string \fB{ "test_mode" : false }\fP:
+.RS
+\fB
+ ./jstrencode { "test_mode" : false }\fP
+.fi
+.RE
+.PP
+.nf
+Encode a string containing an escaped \fB"\fP from \fBstdin\fP (send \fBEOF\fP, usually ctrl-d or \fB^D\fP, to encode):
+.RS
+\fB
+ ./jstrencode
+ {"test\\"ing":false}
+ ^D
+.fi
+.RE
+.PP
+.nf
+Encode just a negative number:
+.RS
+\fB
+ ./jstrencode -- -5
+.fi
+.RE
+.SH SEE ALSO
+.PP
+For the decode counterpart, see \fBjstrdecode(1)\fP.

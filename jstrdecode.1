@@ -1,0 +1,74 @@
+.TH jstrdecode 1 "28 April 2022" "jstrdecode" "IOCCC tools"
+.SH NAME
+jstrdecode \- decode JSON encoded strings
+.SH SYNOPSIS
+\fBjstrdecode [\-h] [\-v level] [\-q] [\-V] [\-t] [\-n] [string ...]
+.SH DESCRIPTION
+\fBjstrdecode\fP decodes JSON encoded strings given on the command line.
+If given the \fB\-t\fP option it performs a test on the JSON decode and encode functions.
+.PP
+By default the program reads from \fBstdin\fP.
+.SH OPTIONS
+.PP
+\fB\-h\fP
+Show help and exit.
+.PP
+\fB\-v\fP
+Set verbosity level.
+.PP
+\fB\-q\fP
+Suppresses some of the output (def: not quiet).
+.PP
+\fB\-V\fP
+Show version and exit.
+.PP
+\fB\-t\fP
+Run tests on the JSON decode/encode functions.
+.PP
+\fB\-n\fP
+Do not output a newline after the decode function.
+.SH EXIT STATUS
+.PP
+\fBmain()\fP returns 1 for errors or issues found; 0 for success.
+.SH FILES
+\fIjstrdecode.c\fP
+.RS
+Source file of the \fBjstrdecode\fP tool.
+.RE
+\fIjstrdecode.h\fP
+.RS
+Header file of the \fBjstrdecode\fP tool.
+.RE
+.SH BUGS
+.PP
+If you have an issue with the tool you can report it at \fI\<https://github.com/ioccc-src/mkiocccentry/issues\>\fP.
+.SH EXAMPLES
+.PP
+.nf
+Decode the JSON string \fB{ "test_mode" : false }\fP:
+.RS
+\fB
+ ./jstrdecode { "test_mode" : false }\fP
+.fi
+.RE
+.PP
+.nf
+Decode input from \fBstdin\fP (send \fBEOF\fP, usually ctrl-d or \fB^D\fP, to decode):
+.RS
+\fB
+ ./jstrdecode
+ -5
+ ^D
+.fi
+.RE
+.PP
+.nf
+Decode just a negative number:
+.RS
+\fB
+ ./jstrdecode -- -5
+.fi
+.RE
+.SH SEE ALSO
+.PP
+For the encode counterpart, see \fBjstrencode(1)\fP.
