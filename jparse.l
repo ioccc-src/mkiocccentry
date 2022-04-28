@@ -132,7 +132,7 @@ JSON_COMMA		","
 {JSON_CLOSE_BRACKET}	    { printf("\nclose bracket: '%c'\n", *yytext); token_type = ']'; return JSON_CLOSE_BRACKET; }
 {JSON_COLON}		    { printf("\nequals/colon: '%c'\n", *yytext); token_type = ':'; return JSON_COLON; }
 {JSON_COMMA}		    { printf("\ncomma: '%c'\n", *yytext); token_type = ','; return JSON_COMMA; }
-.*			    { ugly_error("invalid input: %s\n", yytext); return JSON_INVALID_TOKEN; }
+.			    { ugly_error("invalid input: %s\n", yytext); return JSON_INVALID_TOKEN; }
 %%
 
 /* Section 3: Code that's copied to the generated scanner */
