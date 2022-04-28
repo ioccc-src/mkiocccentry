@@ -977,7 +977,7 @@ json_decode(char const *ptr, size_t len, size_t *retlen)
 		if (retlen != NULL) {
 		    *retlen = 0;
 		}
-		warn(__func__, "found \\-escaped char: 0x%02x", (uint8_t)c);
+		warn(__func__, "found non-\\-escaped char: 0x%02x", (uint8_t)c);
 		return NULL;
 		break;
 	    case '"':   /*fallthrough*/
@@ -1535,7 +1535,7 @@ json_conv_number(char const *ptr, size_t len)
 	warn(__func__, "called with len: %ju <= 0", (uintmax_t)len);
 	return ret;
     }
-    item->orig_len = len;	/* save original length */
+    item->as_str_len = len;	/* save original length */
     if (ptr[0] == '\0') {
 	warn(__func__, "called with empty string");
 	return ret;

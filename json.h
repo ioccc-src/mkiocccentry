@@ -63,28 +63,49 @@ struct encode {
 /*
  * parsed JSON integer
  *
- * NOTE: The as_str is normally the same as the string that was passed to, say, the
- *	 json_conv_number() function.  It can differ in a few ways.  The end of the
- *	 string passed to json_conv_number(ptr, len) does not need to be NUL terminated,
- *	 whereas as_str will be NUL terminated at the end of the string.
- *	 If the characters pointed at by str start with whitespace or have trailing
- *	 whitespace, then as_str will hove those characters trimmed off.
- *	 Normally the bison / flex code that would call json_conv_number(ptr, len)
- *	 will ONLY have the JSON integer string, we note this in case some other
- *	 future code that is not a careful calls json_conv_number(str, len).
+ * When converted == false, then all other fields in this structure may be invalid.
+ * So you must check the boolean of converted and only use values if converted == true.
+ *
+ * If converted == false, then the JSON number string was not able to be
+ * converted into a C numeric value (neither integer, nor floating point), OR
+ * the JSON number string was invalid (mal-formed), or the JSON number string
+ * was too large or otherwise could not be converted into a C numeric value
+ * by the standard libc conversion functions.
+ *
+ * If the allocation of as_str failed, as_str == NULL and converted == false.
+ * The non-NULL as_str allocated will be NUL byte terminated.
+ *
+ * While the parser is not designed to do so, it is possible that as_str
+ * may begin with whitespace and end with whitespace and NUL bytes.
+ *
+ * The first will point to the first non-whitespace character, where the
+ * actual JSON number string starts.  The as_str_len will be the original
+ * length argument passed to json_conv_number().  The number_len will be
+ * the number of bytes, starting with first, that contain the actual
+ * JSON number string.
+ *
+ * If is_floating == false, then the JSON number was attempted to be parsed
+ * as an integer.  In this case the "integer values" fields will be used and
+ * the "floating point values" fields will be unused (set to false, or 0.0);
+ *
+ * If is_floating == then, then the JSON number was attempted to be parsed
+ * as an floating point value.  In this case the "floating point values" fields
+ * will be used, and the "integer values" fields will be unused (set to false, or 0).
  */
 struct json_number
 {
-    char *as_str;		/* allocated JSON integer string, whitespace trimmed if needed */
-
-    size_t orig_len;		/* length of original JSON floating point string */
-    size_t as_str_len;		/* length of as_str */
-
     bool converted;		/* true ==> able to convert JSON integer string to some form of C integer */
+
+    char *as_str;		/* allocated copy of the original allocated JSON number, NUL terminated */
+    char *first;		/* first whitespace character */
+
+    size_t as_str_len;		/* length of as_str */
+    size_t number_len;		/* length of JSON number, w/o leading or trailing whitespace and NUL bytes */
+
     bool is_negative;		/* true ==> value < 0 */
 
-    bool is_floating;		/* true ==> as_str had a . in it */
-    bool is_e_notation;		/* true ==> e notation used */
+    bool is_floating;		/* true ==> as_str had a . in it such as 1.234, false ==> no . found */
+    bool is_e_notation;		/* true ==> e notation used such as 1e10, no e notation found */
 
     /* integer values */
 
@@ -163,16 +184,23 @@ struct json_number
 
 /*
  * parsed JSON string
+ *
+ * When converted == false, then all other fields in this structure may be invalid.
+ * So you must check the boolean of converted and only use values if converted == true.
+ *
+ * If the allocation of as_str failed, as_str == NULL and converted == false.
+ * The non-NULL as_str allocated will be NUL byte terminated.
  */
 struct json_string
 {
+    bool converted;		/* true ==> able to decode JSON string, false ==> str is invalid or not decoded */
+
     char *as_str;		/* allocated non-decoded JSON string, NUL terminated (perhaps sans JSON "s) */
     char *str;			/* allocated decoded JSON string, NUL terminated */
 
     size_t as_str_len;		/* length of as_str, not including final NUL */
     size_t str_len;		/* length of str, not including final NUL */
 
-    bool converted;		/* true ==> able to decode JSON string, false ==> str is invalid or not decoded */
     bool quote;			/* The original JSON string included surrounding "'s */
 
     bool same;			/* true => as_str same as str, JSON decoding not required */
@@ -187,26 +215,34 @@ struct json_string
 
 /*
  * parsed JSON boolean
+ *
+ * When converted == false, then all other fields in this structure may be invalid.
+ * So you must check the boolean of converted and only use values if converted == true.
  */
 struct json_boolean
 {
-    char *as_str;		/* allocated JSON floating point string, whitespace trimmed if needed */
+    bool converted;		/* true ==> able to decode JSON boolean, false ==> as_str is invalid or not decoded */
+
+    char *as_str;		/* allocated JSON boolean string, NUL terminated */
     size_t as_str_len;		/* length of as_str */
 
-    bool converted;		/* true ==> able to decode JSON boolean, false ==> as_str is invalid or not decoded */
     bool value;			/* converted JSON boolean value */
 };
 
 
 /*
  * parsed JSON null
+ *
+ * When converted == false, then all other fields in this structure may be invalid.
+ * So you must check the boolean of converted and only use values if converted == true.
  */
 struct json_null
 {
-    char *as_str;		/* allocated JSON floating point string, whitespace trimmed if needed */
+    bool converted;		/* true ==> able to decode JSON null, false ==> as_str is invalid or not decoded */
+
+    char *as_str;		/* allocated JSON null string, NUL terminated */
     size_t as_str_len;		/* length of as_str */
 
-    bool converted;		/* true ==> able to decode JSON null, false ==> as_str is invalid or not decoded */
     void *value;		/* NULL */
 };
 
@@ -214,12 +250,18 @@ struct json_null
 /*
  * JSON member
  *
+ * When converted == false, then all other fields in this structure may be invalid.
+ * So you must check the boolean of converted and only use values if converted == true.
+ *
  * A JSON member is of the form:
  *
  *	name : value
  */
 struct json_member
 {
+
+    bool converted;		/* true ==> able to decode JSON member */
+
     struct json *name;		/* JSON string name */
     struct json *value;		/* JSON value */
 };
@@ -232,9 +274,14 @@ struct json_member
  *
  *	{ }
  *	{ members }
+ *
+ * When converted == false, then all other fields in this structure may be invalid.
+ * So you must check the boolean of converted and only use values if converted == true.
  */
 struct json_object
 {
+    bool converted;		/* true ==> able to decode JSON object */
+
     struct json *head;		/* first value in the members list, or NULL ==> empty list */
 };
 
@@ -254,9 +301,14 @@ struct json_object
  * That value is a link back to this array object:
  *
  *	foo.value[i-1].parent == foo
+ *
+ * When converted == false, then all other fields in this structure may be invalid.
+ * So you must check the boolean of converted and only use values if converted == true.
  */
 struct json_array
 {
+    bool converted;		/* true ==> able to decode JSON array */
+
     int len;			/* number of JSON values in the array, 0 ==> empty array */
 
     struct json *value;		/* array of JSON values, NULL ==> empty array */
