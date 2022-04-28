@@ -192,8 +192,9 @@ CFLAGS= ${STD_SRC} ${COPT} -pedantic ${WARN_FLAGS} ${LDFLAGS}
 #
 MANDIR = /usr/local/share/man/man1
 DESTDIR= /usr/local/bin
-TARGETS= mkiocccentry iocccsize dbg limit_ioccc.sh fnamchk txzchk jauthchk jinfochk \
+TARGETS= mkiocccentry iocccsize dbg fnamchk txzchk jauthchk jinfochk \
 	jstrencode jstrdecode utf8_test jparse verge jnumber
+SH_TARGETS=limit_ioccc.sh
 
 # man pages
 #
@@ -732,7 +733,7 @@ clobber: clean prep_clobber
 distclean nuke: clobber
 
 install: all
-	${INSTALL} -v -m 0555 ${TARGETS} ${DESTDIR}
+	${INSTALL} -v -m 0555 ${TARGETS} ${SH_TARGETS} ${DESTDIR}
 	${INSTALL} -v -m 0644 ${MANPAGES} ${MANDIR} 2>/dev/null
 
 tags: ${ALL_CSRC} ${H_FILES}
