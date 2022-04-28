@@ -302,7 +302,7 @@ FLEX_DIRS= \
 #
 # The - before include means it's not an error if the file does not exist.
 #
-# We put this directive just before the 1st all rule so that you may override
+# We put this directive just before the first all rule so that you may override
 # or modify any of the above Makefile variables.  To override a value, use := symbols.
 # For example:
 #
