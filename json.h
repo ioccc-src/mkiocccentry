@@ -61,7 +61,7 @@ struct encode {
 
 
 /*
- * parsed JSON integer
+ * parsed JSON number
  *
  * When converted == false, then all other fields in this structure may be invalid.
  * So you must check the boolean of converted and only use values if converted == true.
@@ -94,7 +94,7 @@ struct encode {
  */
 struct json_number
 {
-    bool converted;		/* true ==> able to convert JSON integer string to some form of C integer */
+    bool converted;		/* true ==> able to convert JSON number string to some form of C value */
 
     char *as_str;		/* allocated copy of the original allocated JSON number, NUL terminated */
     char *first;		/* first whitespace character */
@@ -321,7 +321,7 @@ struct json_array
 enum element_type {
     JTYPE_EOT	    = -1,   /* special end of the table value */
     JTYPE_UNSET	    = 0,    /* JSON element has not been set - must be the value 0 */
-    JTYPE_NUMBER,	    /* JSON element is an number - see struct json_integer */
+    JTYPE_NUMBER,	    /* JSON element is an number - see struct json_number */
     JTYPE_STRING,	    /* JSON element is a string - see struct json_string */
     JTYPE_BOOL,		    /* JSON element is a boolean - see struct json_boolean */
     JTYPE_NULL,		    /* JSON element is a null - see struct json_null */
