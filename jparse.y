@@ -72,12 +72,12 @@
  *
  * BTW: If you want to see all the symbols (re?)defined to something ugly run:
  *
- *	grep -i 'define[[:space:]].*ugly_' *.c
+ *	grep -i '#[[:space:]]*define[[:space:]].*ugly_' *.c
  *
  * after generating the files; and if you want to see only what was changed from
  * yy or YY to refer to ugly_ or UGLY_:
  *
- *	grep -i '#[[:space:]]*define yy.*ugly_' *.c
+ *	grep -i '#[[:space:]]*define[[:space:]]*yy.*ugly_' *.c
  *
  * This will help you find the right symbols should you need them. If (as is
  * likely to happen) the parser is split into another repo for a json parser by

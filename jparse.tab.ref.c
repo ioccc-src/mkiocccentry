@@ -126,7 +126,7 @@
 #define yychar          ugly_char
 
 /* First part of user prologue.  */
-#line 72 "jparse.y"
+#line 89 "jparse.y"
 
 #include <inttypes.h>
 #include <stdio.h>
@@ -138,7 +138,7 @@ unsigned num_errors = 0;		/* > 0 number of errors encountered */
 
 
 /* debug information during development */
-int yydebug = 1;
+int ugly_debug = 1;
 
 int token_type = 0;
 
@@ -558,9 +558,9 @@ static const yytype_int8 yytranslate[] =
 /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_uint8 yyrline[] =
 {
-       0,   115,   115,   116,   117,   118,   121,   122,   123,   124,
-     125,   126,   127,   130,   132,   135,   136,   139,   142,   145,
-     146,   149
+       0,   132,   132,   133,   134,   135,   138,   139,   140,   141,
+     142,   143,   144,   147,   149,   152,   153,   156,   159,   162,
+     163,   166
 };
 #endif
 
@@ -1904,7 +1904,7 @@ yyreturnlab:
   return yyresult;
 }
 
-#line 152 "jparse.y"
+#line 169 "jparse.y"
 
 /* Section 3: C code */
 int
