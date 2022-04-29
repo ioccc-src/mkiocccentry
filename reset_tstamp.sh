@@ -137,14 +137,14 @@ export HAVE_RPL
 HAVE_RPL="$(command -v rpl)"
 if [[ -z "$HAVE_RPL" ]]; then
     echo "$0: ERROR: rpl not found" 1>&2
-    echo "$0: ERROR: If do no thave the rpl tool, then you may not perform this actiob." 1>&2
+    echo "$0: ERROR: If do not have the rpl tool, then you may not perform this action." 1>&2
     exit 1
 fi
 
 # Phase 0 of verification
 #
 echo
-echo 'Yes, we make it very hard to run this rule for good reasson.'
+echo 'Yes, we make it very hard to run this rule for good reason.'
 echo 'Only IOCCC judges can perform the ALL the steps needed to complete this action.'
 echo
 echo 'WARNING: This rule will invalidate all timestamps prior to now.'
@@ -237,7 +237,7 @@ echo "%0: notice: You still need to:"
 echo
 echo '    make clobber all test'
 echo
-echo "%0: notice: And if all is well, commit and push the change to the GitHib repo!"
+echo "%0: notice: And if all is well, commit and push the change to the GitHub repo!"
 echo
 
 # All Done!!! -- Jessica Noll, Age 2
