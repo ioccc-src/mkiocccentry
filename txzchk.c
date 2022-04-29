@@ -87,7 +87,7 @@ main(int argc, char **argv)
 	default:
 	    usage(1, "invalid -flag", program); /*ooo*/
 	    not_reached();
-	 }
+	}
     }
     /* must have the exact required number of args */
     if (argc - optind != REQUIRED_ARGS) {
