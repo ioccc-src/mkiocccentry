@@ -742,7 +742,7 @@ check_found_author_json_fields(char const *json_filename, bool test)
 
 	    val_length = strlen(val);
 
-	    if (!val_length) {
+	    if (val_length <= 0) {
 		warn(__func__, "empty value found for field '%s' in file %s: '%s'", field->name, json_filename, val);
 		/*
 		 * NOTE: don't increase issues because the below checks will do
@@ -781,7 +781,7 @@ check_found_author_json_fields(char const *json_filename, bool test)
 		    }
 		    break;
 		case JTYPE_NUMBER:
-		    if (!is_integer(val)) {
+		    if (!is_decimal(val, val_length)) {
 			warn(__func__, "number field '%s' has non-number value in file %s: '%s'",
 				       author_field->name, json_filename, val);
 			++issues;

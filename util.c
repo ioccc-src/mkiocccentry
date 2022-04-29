@@ -2520,48 +2520,139 @@ parse_verbosity(char const *program, char const *arg)
 
 
 /*
- * is_integer	    - if the string str is an integer
+ * is_decimal	    - if the buffer is an base 10 integer in ASCII
  *
  * given:
  *
- *	str	    - string to check
+ *	ptr	    - pointer to buffer containing an integer in ASCII
+ *	len	    - length, starting at ptr
  *
  * For our purposes a number is defined as: a string that starts with either a
  * '-' or '+' and beyond that no other characters but [0-9] (any count).
  *
+ * This function tests only for the following regex:
+ *
+ *	[+-]?[0-9]+
+ *
+ * In particular these are NOT considered ASCII integers bu this function:
+ *
+ *	[0-9a-fA-F]+		<== may return false if we find a [a-fA-F]
+ *	0x[0-9a-fA-F]+		<== will return false due to 'x'
+ *	0b[01]*			<== will return false due to 'b'
+ *	[0-9]*.0*		<== will return false due to '.'
+ *	~[0-9]+			<== will return false due to '~'
+ *
+ * We know that some so-called specifications for data exchange do not
+ * allow for a leading +.  Others might not allow for 0 followed by
+ * digits, 'x' or even 'b'.  This function is more general on one hand,
+ * are more specific on the other hand, from any "amateur open mic specification"
+ * that you might encounter at your local developer pub. :-)
+ *
  * returns:
  *
- *	true	==> str is an integer
- *	false	==> str is not an integer
- *
- * NOTE: This function does not return on error (str == NULL). An empty string
- *	 is considered not an integer.
+ *	true	==> ptr points to an base 10 integer in ASCII
+ *	false	==> ptr does NOT point to an base 10 integer in ASCII, or if ptr is NULL, or len <= 0
  */
 bool
-is_integer(char const *str)
+is_decimal(char const *ptr, size_t len)
 {
+    size_t i;
+
     /*
      * firewall
      */
-    if (str == NULL) {
-	err(179, __func__, "passed NULL string");
-	not_reached();
+    if (ptr == NULL) {
+	warn(__func__, "passed NULL ptr");
+	return false;
+    }
+    if (len <= 0) {
+	warn(__func__, "len <= 0: %ju", (intmax_t)len);
+	return false;
     }
 
-    switch (*str) {
+    /*
+     * case: leading - or + is OK
+     */
+    switch (*ptr) {
 	case '-':
 	case '+':
-	    str++;
+	    ptr++;
 	    break;
 	default:
 	    break;
     }
 
-    if (!strlen(str)) {
-	return false;
+    /*
+     * test for ASCII base 10 digits
+     *
+     * NOTE: We cannot use strspn() nor strcspn() because we cannot count on if the
+     *	     ASCII integer being immediately followed by a NUL byte.
+     *
+     * NOTE: Alas, there is no strnspn() nor strncspn() in the standard due to
+     *	     "reasons other than technical reasons" *sigh*.
+     */
+    for (i=0; i < len; ++i) {
+	if (!isascii(ptr[i]) || !isdigit(ptr[i])) {
+	    /* found a non-ASCII digit */
+	    return false;
+	}
     }
 
-    return strspn(str, "0123456789") == strlen(str);
+    /*
+     * ptr points to an base 10 integer in ASCII
+     */
+    return true;
+}
+
+
+/*
+ * is_decimal_str	    - if the string str is an base 10 integer in ASCII
+ *
+ * given:
+ *
+ *	str	    - pointer to buffer containing an integer in ASCII
+ *	retlen	    - address of where to store length of str, if retlen != NULL
+ *
+ * returns:
+ *
+ *	true	==> str points to an base 10 integer in ASCII
+ *	false	==> str does NOT point to an base 10 integer in ASCII, or if str is NULL, or str is empty
+ *
+ * NOTE: This function calls is_decimal().  See that function for details on what is or
+ *	 is not considered an integer
+ */
+bool
+is_decimal_str(char const *str, size_t *retlen)
+{
+    size_t len = 0;		/* length of string to test */
+    bool ret = false;		/* if str to an base 10 integer in ASCII */
+
+    /*
+     * firewall
+     */
+    if (str == NULL) {
+	warn(__func__, "passed NULL str");
+	return false;
+    } else {
+	len = strlen(str);
+    }
+
+    /*
+     * convert to is_decimal() call
+     */
+    ret = is_decimal(str, len);
+
+    /*
+     * save length if allowed
+     */
+    if (retlen != NULL) {
+	*retlen = len;
+    }
+
+    /*
+     * return test of ASCII base 10 digits
+     */
+    return ret;
 }
 
 
@@ -2583,7 +2674,7 @@ string_to_bool(char const *str)
      * firewall
      */
     if (str == NULL) {
-	err(180, __func__, "passed NULL string");
+	err(179, __func__, "passed NULL string");
 	not_reached();
     }
 
@@ -2788,7 +2879,7 @@ posix_safe_chk(char const *str, size_t len, bool *slash, bool *posix_safe, bool 
      * firewall
      */
     if (str == NULL || slash == NULL || posix_safe == NULL || first_alphanum == NULL || upper == NULL) {
-	err(181, __func__, "called with NULL arg(s)");
+	err(180, __func__, "called with NULL arg(s)");
 	not_reached();
     }
 
@@ -2955,7 +3046,7 @@ find_matching_quote(char *q)
      * firewall
      */
     if (q == NULL) {
-	err(182, __func__, "passed NULL pointer");
+	err(181, __func__, "passed NULL pointer");
 	not_reached();
     }
 
@@ -2993,10 +3084,10 @@ clearerr_or_fclose(char const *filename, FILE *file)
      * firewall
      */
     if (filename == NULL) {
-	err(183, __func__, "passed NULL filename");
+	err(182, __func__, "passed NULL filename");
 	not_reached();
     } else if (file == NULL) {
-	err(184, __func__, "passed NULL file");
+	err(183, __func__, "passed NULL file");
 	not_reached();
     }
 
@@ -3037,7 +3128,7 @@ print_newline(bool output_newline)
 	errno = 0;		/* pre-clear errno for errp() */
 	ret = putchar('\n');
 	if (ret != '\n') {
-	    errp(185, __func__, "error while writing newline");
+	    errp(184, __func__, "error while writing newline");
 	    not_reached();
 	}
     }

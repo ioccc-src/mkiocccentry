@@ -196,7 +196,8 @@ extern uintmax_t string_to_uintmax(char const *str);
 extern long double string_to_float(char const *str);
 extern bool valid_contest_id(char *str);
 extern int parse_verbosity(char const *program, char const *arg);
-extern bool is_integer(char const *str);
+extern bool is_decimal(char const *ptr, size_t len);
+extern bool is_decimal_str(char const *str, size_t *retlen);
 extern bool string_to_bool(char const *str);
 extern bool posix_plus_safe(char const *str, bool lower_only, bool slash_ok, bool first);
 extern void posix_safe_chk(char const *str, size_t len, bool *slash, bool *posix_safe,

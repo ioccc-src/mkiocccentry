@@ -827,7 +827,7 @@ check_found_common_json_fields(char const *program, char const *json_filename, c
 
 	    val_length = strlen(val);
 
-	    if (!val_length) {
+	    if (val_length <= 0) {
 		warn(__func__, "empty value found for field '%s' in file %s: '%s'", field->name, json_filename, val);
 		/* don't increase issues because the below checks will do that
 		 * too: this warning only notes the reason the test will fail.
@@ -844,7 +844,7 @@ check_found_common_json_fields(char const *program, char const *json_filename, c
 		    }
 		    break;
 		case JTYPE_NUMBER:
-		    if (!is_integer(val)) {
+		    if (!is_decimal(val, val_length)) {
 			warn(__func__, "number field '%s' has non-number value in file %s: '%s'",
 				       common_field->name, json_filename, val);
 			++issues;
