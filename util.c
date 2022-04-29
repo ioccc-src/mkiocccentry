@@ -689,12 +689,12 @@ vcmdprintf(char const *format, va_list ap)
     size += (size_t)(f - format);
 
     /*
-     * malloc storage or return NULL
+     * calloc storage or return NULL
      */
-    errno = 0;			/* pre-clear errno for warnp() */
-    cmd = (char *)malloc(size);	/* trailing zero included in size */
+    errno = 0;			    /* pre-clear errno for warnp() */
+    cmd = (char *)calloc(1, size);  /* NOTE: the trailing NUL byte is included in size */
     if (cmd == NULL) {
-	warnp(__func__, "malloc from vcmdprintf of %ju bytes failed", (uintmax_t)size);
+	warnp(__func__, "calloc from vcmdprintf of %ju bytes failed", (uintmax_t)size);
 	return NULL;
     }
 
@@ -786,7 +786,7 @@ vcmdprintf(char const *format, va_list ap)
  * given:
  *	name		- name of the calling function
  *	abort_on_error	- false ==> return exit code if able to successfully call system(), or
- *			    return MALLOC_FAILED_EXIT malloc() failure,
+ *			    return CALLOC_FAILED_EXIT malloc() failure,
  *			    return FLUSH_FAILED_EXIT on fflush failure,
  *			    return SYSTEM_FAILED_EXIT if system() failed,
  *			    return NULL_ARGS_EXIT if NULL pointers were passed
@@ -852,13 +852,13 @@ shell_cmd(char const *name, bool abort_on_error, char const *format, ...)
     if (cmd == NULL) {
 	/* exit or error return depending on abort_on_error */
 	if (abort_on_error) {
-	    errp(112, name, "malloc failed in vcmdprintf()");
+	    errp(112, name, "calloc failed in vcmdprintf()");
 	    not_reached();
 	} else {
-	    dbg(DBG_MED, "called from %s: malloc failed in vcmdprintf(): %s, returning: %d < 0",
-			 name, strerror(errno), MALLOC_FAILED_EXIT);
+	    dbg(DBG_MED, "called from %s: calloc failed in vcmdprintf(): %s, returning: %d < 0",
+			 name, strerror(errno), CALLOC_FAILED_EXIT);
 	    va_end(ap);
-	    return MALLOC_FAILED_EXIT;
+	    return CALLOC_FAILED_EXIT;
 	}
     }
 
@@ -1037,11 +1037,11 @@ pipe_open(char const *name, bool abort_on_error, char const *format, ...)
     if (cmd == NULL) {
 	/* exit or error return depending on abort */
 	if (abort_on_error) {
-	    errp(119, name, "malloc failed in vcmdprintf()");
+	    errp(119, name, "calloc failed in vcmdprintf()");
 	    not_reached();
 	} else {
-	    dbg(DBG_MED, "called from %s: malloc failed in vcmdprintf(): %s returning: %d < 0",
-			 name, strerror(errno), MALLOC_FAILED_EXIT);
+	    dbg(DBG_MED, "called from %s: calloc failed in vcmdprintf(): %s returning: %d < 0",
+			 name, strerror(errno), CALLOC_FAILED_EXIT);
 	    va_end(ap);
 	    return NULL;
 	}
