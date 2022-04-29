@@ -95,8 +95,8 @@ extern bool output_newline;		/* true ==> -n not specified, output new line after
 extern unsigned num_errors;		/* > 0 number of errors encountered */
 /* lexer and parser specific variables */
 extern int ugly_lineno;			/* line number in lexer */
-extern char *yytext;			/* current text */
-extern FILE *yyin;			/* input file lexer/parser reads from */
+extern char *ugly_text;			/* current text */
+extern FILE *ugly_in;			/* input file lexer/parser reads from */
 extern unsigned num_errors;		/* > 0 number of errors encountered */
 extern bool output_newline;		/* true ==> -n not specified, output new line after each arg processed */
 extern int token_type;			/* for braces, brackets etc.: '{', '}', '[', ']', ':' and so on */
@@ -106,7 +106,7 @@ extern int token_type;			/* for braces, brackets etc.: '{', '}', '[', ']', ':' a
  */
 static void usage(int exitcode, char const *name, char const *str) __attribute__((noreturn));
 /* lexer specific */
-int yylex(void);
+int ugly_lex(void);
 /* parser specific */
 void parse_json_file(char const *filename);
 void parse_json_string(char const *string);

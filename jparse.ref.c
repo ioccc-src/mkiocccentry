@@ -1366,67 +1366,67 @@ case 1:
 /* rule 1 can match eol */
 YY_RULE_SETUP
 #line 123 "jparse.l"
-{ printf("\nwhitespace: '%s'\n", yytext); }
+{ printf("\nwhitespace: '%s'\n", ugly_text); }
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
 #line 124 "jparse.l"
-{ printf("\nstring: '%s'\n", yytext); ugly_lval.type = JTYPE_STRING; return JSON_STRING; }
+{ printf("\nstring: '%s'\n", ugly_text); ugly_lval.type = JTYPE_STRING; return JSON_STRING; }
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
 #line 125 "jparse.l"
-{ printf("\nnumber: '%s'\n", yytext); ugly_lval.type = JTYPE_NUMBER; return JSON_NUMBER; }
+{ printf("\nnumber: '%s'\n", ugly_text); ugly_lval.type = JTYPE_NUMBER; return JSON_NUMBER; }
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
 #line 126 "jparse.l"
-{ printf("\nnull: '%s'\n", yytext); ugly_lval.type = JTYPE_NULL; return JSON_NULL; }
+{ printf("\nnull: '%s'\n", ugly_text); ugly_lval.type = JTYPE_NULL; return JSON_NULL; }
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
 #line 127 "jparse.l"
-{ printf("\ntrue: '%s'\n", yytext); ugly_lval.type = JTYPE_BOOL; return JSON_TRUE; }
+{ printf("\ntrue: '%s'\n", ugly_text); ugly_lval.type = JTYPE_BOOL; return JSON_TRUE; }
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
 #line 128 "jparse.l"
-{ printf("\nfalse: '%s'\n", yytext); ugly_lval.type = JTYPE_BOOL; return JSON_FALSE; }
+{ printf("\nfalse: '%s'\n", ugly_text); ugly_lval.type = JTYPE_BOOL; return JSON_FALSE; }
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
 #line 129 "jparse.l"
-{ printf("\nopen brace: '%c'\n", *yytext); token_type = '{'; return JSON_OPEN_BRACE; }
+{ printf("\nopen brace: '%c'\n", *ugly_text); token_type = '{'; return JSON_OPEN_BRACE; }
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
 #line 130 "jparse.l"
-{ printf("\nclose brace: '%c'\n", *yytext); token_type = '}'; return JSON_CLOSE_BRACE;}
+{ printf("\nclose brace: '%c'\n", *ugly_text); token_type = '}'; return JSON_CLOSE_BRACE;}
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
 #line 131 "jparse.l"
-{ printf("\nopen bracket: '%c'\n", *yytext); token_type = '['; return JSON_OPEN_BRACKET; }
+{ printf("\nopen bracket: '%c'\n", *ugly_text); token_type = '['; return JSON_OPEN_BRACKET; }
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
 #line 132 "jparse.l"
-{ printf("\nclose bracket: '%c'\n", *yytext); token_type = ']'; return JSON_CLOSE_BRACKET; }
+{ printf("\nclose bracket: '%c'\n", *ugly_text); token_type = ']'; return JSON_CLOSE_BRACKET; }
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
 #line 133 "jparse.l"
-{ printf("\nequals/colon: '%c'\n", *yytext); token_type = ':'; return JSON_COLON; }
+{ printf("\nequals/colon: '%c'\n", *ugly_text); token_type = ':'; return JSON_COLON; }
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
 #line 134 "jparse.l"
-{ printf("\ncomma: '%c'\n", *yytext); token_type = ','; return JSON_COMMA; }
+{ printf("\ncomma: '%c'\n", *ugly_text); token_type = ','; return JSON_COMMA; }
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
 #line 135 "jparse.l"
-{ ugly_error("invalid input: %s\n", yytext); return JSON_INVALID_TOKEN; }
+{ ugly_error("invalid input: %s\n", ugly_text); return JSON_INVALID_TOKEN; }
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
@@ -2714,30 +2714,30 @@ parse_json_file(char const *filename)
     }
 
     errno = 0;
-    yyin = is_stdin ? stdin : fopen(filename, "r");
-    if (yyin == NULL) {
+    ugly_in = is_stdin ? stdin : fopen(filename, "r");
+    if (ugly_in == NULL) {
 	warnp(__func__, "couldn't open file %s, ignoring", filename);
 	++num_errors;
 	return;
     }
 
-    data = read_all(yyin, &len);
+    data = read_all(ugly_in, &len);
     if (data == NULL) {
 	warn(__func__, "couldn't read in %s", is_stdin?"stdin":filename);
 	++num_errors;
-	clearerr_or_fclose(filename, yyin);
+	clearerr_or_fclose(filename, ugly_in);
 	return;
     }
     else if (len <= 0) {
 	warn(__func__, "%s is empty", is_stdin?"stdin":filename);
 	++num_errors;
-	clearerr_or_fclose(filename, yyin);
+	clearerr_or_fclose(filename, ugly_in);
 	return;
     }
     else if (!is_string(data, len + 1)) {
 	warn(__func__, "found embedded NUL byte in %s", is_stdin?"stdin":filename);
 	++num_errors;
-	clearerr_or_fclose(filename, yyin);
+	clearerr_or_fclose(filename, ugly_in);
 	return;
     } else if (is_all_whitespace_str(data)) {
 	warn(__func__, "file has only whitespace");
@@ -2752,13 +2752,13 @@ parse_json_file(char const *filename)
     data = NULL;
 
     /* now parse the file */
-    rewind(yyin);
-    yyrestart(yyin);
+    rewind(ugly_in);
+    yyrestart(ugly_in);
     ugly_lineno = 1;
     ugly_parse();
 
-    clearerr_or_fclose(filename, yyin);
-    yyin = NULL;
+    clearerr_or_fclose(filename, ugly_in);
+    ugly_in = NULL;
     dbg(DBG_NONE, "*** END PARSE");
     print_newline(output_newline);
 

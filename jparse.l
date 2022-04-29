@@ -24,7 +24,7 @@
  * problems. Another way is to provide 'int yywrap() { return 1; }' but this is
  * unnecessary.
  */
-%option noyywrap yylineno nodefault
+%option noyywrap yylineno nodefault 8bit
 
 /*
  * As we utterly object to the hideous code that bison and flex generate we
@@ -57,7 +57,21 @@
  * Thus as much as we find the specification objectionable we rather feel sorry
  * for those poor lost souls who are indeed in the JSON Barmy Army and we
  * apologise to them in a light and fun way and with hope that they're not
- * terribly humour impaired.
+ * terribly humour impaired. :-)
+ *
+ * BTW: If you want to see all the symbols (re?)defined to something ugly run:
+ *
+ *	grep -i 'define[[:space:]].*ugly_' *.c
+ *
+ * after generating the files; and if you want to see only what was changed from
+ * yy or YY to refer to ugly_ or UGLY_:
+ *
+ *	grep -i '#[[:space:]]*define yy.*ugly_' *.c
+ *
+ * This will help you find the right symbols should you need them. If (as is
+ * likely to happen) the parser is split into another repo for a json parser by
+ * itself I will possibly remove this prefix: this is as satire for the IOCCC
+ * (though we all believe that the generated code is in fact ugly).
  */
 %option prefix="ugly_"
 
@@ -120,19 +134,19 @@ JSON_COMMA		","
  * ugly_lval.type). These things will be done later.
  */
 %%
-{JSON_WHITESPACE}	    { printf("\nwhitespace: '%s'\n", yytext); }
-{JSON_STRING}		    { printf("\nstring: '%s'\n", yytext); ugly_lval.type = JTYPE_STRING; return JSON_STRING; }
-{JSON_NUMBER}		    { printf("\nnumber: '%s'\n", yytext); ugly_lval.type = JTYPE_NUMBER; return JSON_NUMBER; }
-{JSON_NULL}		    { printf("\nnull: '%s'\n", yytext); ugly_lval.type = JTYPE_NULL; return JSON_NULL; }
-{JSON_TRUE}		    { printf("\ntrue: '%s'\n", yytext); ugly_lval.type = JTYPE_BOOL; return JSON_TRUE; }
-{JSON_FALSE}		    { printf("\nfalse: '%s'\n", yytext); ugly_lval.type = JTYPE_BOOL; return JSON_FALSE; }
-{JSON_OPEN_BRACE}	    { printf("\nopen brace: '%c'\n", *yytext); token_type = '{'; return JSON_OPEN_BRACE; }
-{JSON_CLOSE_BRACE}	    { printf("\nclose brace: '%c'\n", *yytext); token_type = '}'; return JSON_CLOSE_BRACE;}
-{JSON_OPEN_BRACKET}	    { printf("\nopen bracket: '%c'\n", *yytext); token_type = '['; return JSON_OPEN_BRACKET; }
-{JSON_CLOSE_BRACKET}	    { printf("\nclose bracket: '%c'\n", *yytext); token_type = ']'; return JSON_CLOSE_BRACKET; }
-{JSON_COLON}		    { printf("\nequals/colon: '%c'\n", *yytext); token_type = ':'; return JSON_COLON; }
-{JSON_COMMA}		    { printf("\ncomma: '%c'\n", *yytext); token_type = ','; return JSON_COMMA; }
-.			    { ugly_error("invalid input: %s\n", yytext); return JSON_INVALID_TOKEN; }
+{JSON_WHITESPACE}	    { printf("\nwhitespace: '%s'\n", ugly_text); }
+{JSON_STRING}		    { printf("\nstring: '%s'\n", ugly_text); ugly_lval.type = JTYPE_STRING; return JSON_STRING; }
+{JSON_NUMBER}		    { printf("\nnumber: '%s'\n", ugly_text); ugly_lval.type = JTYPE_NUMBER; return JSON_NUMBER; }
+{JSON_NULL}		    { printf("\nnull: '%s'\n", ugly_text); ugly_lval.type = JTYPE_NULL; return JSON_NULL; }
+{JSON_TRUE}		    { printf("\ntrue: '%s'\n", ugly_text); ugly_lval.type = JTYPE_BOOL; return JSON_TRUE; }
+{JSON_FALSE}		    { printf("\nfalse: '%s'\n", ugly_text); ugly_lval.type = JTYPE_BOOL; return JSON_FALSE; }
+{JSON_OPEN_BRACE}	    { printf("\nopen brace: '%c'\n", *ugly_text); token_type = '{'; return JSON_OPEN_BRACE; }
+{JSON_CLOSE_BRACE}	    { printf("\nclose brace: '%c'\n", *ugly_text); token_type = '}'; return JSON_CLOSE_BRACE;}
+{JSON_OPEN_BRACKET}	    { printf("\nopen bracket: '%c'\n", *ugly_text); token_type = '['; return JSON_OPEN_BRACKET; }
+{JSON_CLOSE_BRACKET}	    { printf("\nclose bracket: '%c'\n", *ugly_text); token_type = ']'; return JSON_CLOSE_BRACKET; }
+{JSON_COLON}		    { printf("\nequals/colon: '%c'\n", *ugly_text); token_type = ':'; return JSON_COLON; }
+{JSON_COMMA}		    { printf("\ncomma: '%c'\n", *ugly_text); token_type = ','; return JSON_COMMA; }
+.			    { ugly_error("invalid input: %s\n", ugly_text); return JSON_INVALID_TOKEN; }
 %%
 
 /* Section 3: Code that's copied to the generated scanner */
@@ -178,7 +192,7 @@ parse_json_string(char const *string)
     }
 
     ugly_lineno = 1;
-    bs = yy_scan_string(string);
+    bs = ugly__scan_string(string);
     if (bs == NULL) {
 	warn(__func__, "unable to scan string");
 	++num_errors;
@@ -188,7 +202,7 @@ parse_json_string(char const *string)
 
     ugly_parse();
 
-    yy_delete_buffer(bs);
+    ugly__delete_buffer(bs);
     bs = NULL;
 
     dbg(DBG_NONE, "*** END PARSE");
@@ -253,30 +267,30 @@ parse_json_file(char const *filename)
     }
 
     errno = 0;
-    yyin = is_stdin ? stdin : fopen(filename, "r");
-    if (yyin == NULL) {
+    ugly_in = is_stdin ? stdin : fopen(filename, "r");
+    if (ugly_in == NULL) {
 	warnp(__func__, "couldn't open file %s, ignoring", filename);
 	++num_errors;
 	return;
     }
 
-    data = read_all(yyin, &len);
+    data = read_all(ugly_in, &len);
     if (data == NULL) {
 	warn(__func__, "couldn't read in %s", is_stdin?"stdin":filename);
 	++num_errors;
-	clearerr_or_fclose(filename, yyin);
+	clearerr_or_fclose(filename, ugly_in);
 	return;
     }
     else if (len <= 0) {
 	warn(__func__, "%s is empty", is_stdin?"stdin":filename);
 	++num_errors;
-	clearerr_or_fclose(filename, yyin);
+	clearerr_or_fclose(filename, ugly_in);
 	return;
     }
     else if (!is_string(data, len + 1)) {
 	warn(__func__, "found embedded NUL byte in %s", is_stdin?"stdin":filename);
 	++num_errors;
-	clearerr_or_fclose(filename, yyin);
+	clearerr_or_fclose(filename, ugly_in);
 	return;
     } else if (is_all_whitespace_str(data)) {
 	warn(__func__, "file has only whitespace");
@@ -291,13 +305,13 @@ parse_json_file(char const *filename)
     data = NULL;
 
     /* now parse the file */
-    rewind(yyin);
-    yyrestart(yyin);
+    rewind(ugly_in);
+    ugly_restart(ugly_in);
     ugly_lineno = 1;
     ugly_parse();
 
-    clearerr_or_fclose(filename, yyin);
-    yyin = NULL;
+    clearerr_or_fclose(filename, ugly_in);
+    ugly_in = NULL;
     dbg(DBG_NONE, "*** END PARSE");
     print_newline(output_newline);
 

@@ -29,15 +29,17 @@
  * We enable lookahead correction parser for improved errors
  */
 %define parse.lac full
-/*
- * As we utterly object to the hideous code that bison and flex generate we
- * point it out in an ironic way by changing the prefix yy to ugly_.
- */
-%define api.prefix {ugly_}
+
 
 /*
  * We use our struct json (see json.h for its definition) instead of bison
  * %union.
+ */
+%define api.value.type {struct json}
+
+/*
+ * As we utterly object to the hideous code that bison and flex generate we
+ * point it out in an ironic way by changing the prefix yy to ugly_.
  *
  * This means that to access the struct json's union type in the lexer we can do
  * (because the prefix is ugly_ as described above):
@@ -66,9 +68,24 @@
  * Thus as much as we find the specification objectionable we rather feel sorry
  * for those poor lost souls who are indeed in the JSON Barmy Army and we
  * apologise to them in a light and fun way and with hope that they're not
- * terribly humour impaired.
+ * terribly humour impaired. :-)
+ *
+ * BTW: If you want to see all the symbols (re?)defined to something ugly run:
+ *
+ *	grep -i 'define[[:space:]].*ugly_' *.c
+ *
+ * after generating the files; and if you want to see only what was changed from
+ * yy or YY to refer to ugly_ or UGLY_:
+ *
+ *	grep -i '#[[:space:]]*define yy.*ugly_' *.c
+ *
+ * This will help you find the right symbols should you need them. If (as is
+ * likely to happen) the parser is split into another repo for a json parser by
+ * itself I will possibly remove this prefix: this is as satire for the IOCCC
+ * (though we all believe that the generated code is in fact ugly).
  */
-%define api.value.type {struct json}
+%define api.prefix {ugly_}
+
 %{
 #include <inttypes.h>
 #include <stdio.h>
@@ -80,7 +97,7 @@ unsigned num_errors = 0;		/* > 0 number of errors encountered */
 
 
 /* debug information during development */
-int yydebug = 1;
+int ugly_debug = 1;
 
 int token_type = 0;
 %}
