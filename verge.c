@@ -281,6 +281,9 @@ allocate_vers(char *str, long **pvers)
     if (i == len) {
 	/* report invalid version string */
 	dbg(DBG_MED, "version string contained no digits: <%s>", wstr);
+	/* free strdup()d string */
+	free(wstr);
+	wstr = NULL;
 	return 0;
     }
     wstr += i;
@@ -323,6 +326,9 @@ allocate_vers(char *str, long **pvers)
 	    if (dot == true) {
 		/* report invalid version string */
 		dbg(DBG_MED, "trimmed version string contains 2 dots in a row: <%s>", wstr);
+		/* free strdup()d string */
+		free(wstr);
+		wstr = NULL;
 		return 0;
 	    }
 	    dot = true;
@@ -331,6 +337,9 @@ allocate_vers(char *str, long **pvers)
 	    /* report invalid version string */
 	    dbg(DBG_MED, "trimmed version string contains non-version character: wstr[%ju] = <%c>: <%s>",
 			 (uintmax_t)i, wstr[i], wstr);
+	    /* free strdup()d string */
+	    free(wstr);
+	    wstr = NULL;
 	    return 0;
 	}
     }
