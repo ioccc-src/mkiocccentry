@@ -508,7 +508,7 @@ add_sorry() {
     TMP_FILE=$(mktemp -t "$FILE.XXXXXXXX")
     status="$?"
     if [[ $status -ne 0 ]]; then
-	echo "$0: ERROR: mktemp -r $FILE exit code: $status" 1>&2
+	echo "$0: ERROR: mktemp -t $FILE exit code: $status" 1>&2
 	exit 14
     fi
     if [[ ! -e $TMP_FILE ]]; then
