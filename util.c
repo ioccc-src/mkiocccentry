@@ -1059,7 +1059,7 @@ pipe_open(char const *name, bool abort_on_error, char const *format, ...)
 	    free(cmd);
 	    cmd = NULL;
 	}
-	/* exit or error return depending on abort */
+	/* exit or error return depending on abort_on_error */
 	if (abort_on_error) {
 	    errp(120, name, "fflush(stdout): error code: %d", ret);
 	    not_reached();
