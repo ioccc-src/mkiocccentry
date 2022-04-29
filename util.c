@@ -2608,6 +2608,8 @@ is_decimal(char const *ptr, size_t len)
 /*
  * is_decimal_str	    - if the string str is an base 10 integer in ASCII
  *
+ * This is an simplified interface for is_decimal().
+ *
  * given:
  *
  *	str	    - pointer to buffer containing an integer in ASCII
@@ -3136,7 +3138,11 @@ print_newline(bool output_newline)
 
 
 /*
- * find_text - find text within a field of whitespace and trailing NUL bytes
+ * find_text - find ASCII text within a field of whitespace and trailing NUL bytes
+ *
+ * Find the first ASCII text, ignoring any leading whitespace is found.
+ * Determine the length, within the len limit, of ASCII text that is
+ * neither whitespace nor NUL byte.
  *
  * given:
  *	ptr	    address to start looking for text
@@ -3205,7 +3211,9 @@ find_text(char const *ptr, size_t len, char **first)
 
 
 /*
- * find_text - find text within a field of whitespace and trailing NUL bytes
+ * find_text_str - find ASCII text within a field of whitespace and trailing NUL bytes
+ *
+ * This is an simplified interface for find_text().
  *
  * given:
  *	str	    address of a NUL terminated string to start looking for text
