@@ -361,6 +361,10 @@ allocate_vers(char *str, long **pvers)
 	dbg(DBG_VHIGH, "version level %ju: %ld", (uintmax_t)i, (*pvers)[i]);
     }
 
+    /* we no longer need the duplicated string */
+    free(wstr);
+    wstr = NULL;
+
     /*
      * return number of version levels
      */
