@@ -1464,6 +1464,9 @@ json_conv_free(struct json *node)
  *
  * NOTE: This function assumes that str points to the start of a JSON number, NOT whitespace.
  *
+ * NOTE: This function assumes that str is a NUL terminated string,
+ *	 even if the NUL is well beyond the end of the JSON number.
+ *
  * NOTE: While it is OK if str as trailing whitespace, str[len-1] must be an ASCII digit.
  *	 It is assumed that str[len-1] is the final JSON number character.
  */
@@ -1498,14 +1501,14 @@ json_process_decimal(struct json_number *item, char const *str, size_t len)
     }
     str_len = strlen(str);
     if (str_len < len) {
-	warn(__func__, "len: %ju < strlen(%s): %ju", (uintmax_t)len, str, (uintmax_t)str_len);
+	warn(__func__, "strlen(%s): %ju < len arg: %ju", str, (uintmax_t)str_len, (uintmax_t)len);
 	return false;	/* processing failed */
     }
 
     /*
      * determine if JSON integer negative
      */
-    if (item->as_str[0] == '-') {
+    if (str[0] == '-') {
 
 	/* parse JSON integer that is < 0 */
 	item->is_negative = true;
@@ -1513,15 +1516,15 @@ json_process_decimal(struct json_number *item, char const *str, size_t len)
         /*
 	 * JSON spec detail: lone - invalid JSON
 	 */
-	if (len <= 1 || item->as_str[1] == '\0') {
-	    dbg(DBG_HIGH, "%s called with just -: <%s>", __func__, item->as_str);
+	if (len <= 1 || str[1] == '\0') {
+	    dbg(DBG_HIGH, "%s called with just -: <%s>", __func__, str);
 	    return false;	/* processing failed */
 
         /*
 	 * JSON spec detail: leading -0 followed by digits - invalid JSON
 	 */
-	} else if (len > 2 && item->as_str[1] == '0' && isascii(item->as_str[2]) && isdigit(item->as_str[2])) {
-	    dbg(DBG_HIGH, "%s called with -0 followed by more digits: <%s>", __func__, item->as_str);
+	} else if (len > 2 && str[1] == '0' && isascii(str[2]) && isdigit(str[2])) {
+	    dbg(DBG_HIGH, "%s called with -0 followed by more digits: <%s>", __func__, str);
 	    return false;	/* processing failed */
 	}
 
@@ -1534,8 +1537,8 @@ json_process_decimal(struct json_number *item, char const *str, size_t len)
         /*
 	 * JSON spec detail: leading 0 followed by digits - invalid JSON
 	 */
-	if (len > 1 && item->as_str[0] == '0' && isascii(item->as_str[1]) && isdigit(item->as_str[1])) {
-	    dbg(DBG_HIGH, "%s called with 0 followed by more digits: <%s>", __func__, item->as_str);
+	if (len > 1 && str[0] == '0' && isascii(str[1]) && isdigit(str[1])) {
+	    dbg(DBG_HIGH, "%s called with 0 followed by more digits: <%s>", __func__, str);
 	    return false;	/* processing failed */
 	}
     }
@@ -1547,15 +1550,15 @@ json_process_decimal(struct json_number *item, char const *str, size_t len)
 
 	/* case: negative, try for largest signed integer */
 	errno = 0;			/* pre-clear errno for errp() */
-	item->as_maxint = strtoimax(item->as_str, &endptr, 10);
-	if (errno != 0 || endptr == item->as_str || endptr == NULL || *endptr != '\0') {
+	item->as_maxint = strtoimax(str, &endptr, 10);
+	if (errno != 0 || endptr == str || endptr == NULL || *endptr != '\0') {
 	    dbg(DBG_VVHIGH, "strtoimax failed to convert");
 	    item->converted = false;
 	    return false;	/* processing failed */
 	}
 	item->converted = true;
 	item->maxint_sized = true;
-	dbg(DBG_VVHIGH, "strtoimax for <%s> returned: %jd", item->as_str, item->as_maxint);
+	dbg(DBG_VVHIGH, "strtoimax for <%s> returned: %jd", str, item->as_maxint);
 
 	/* case int8_t: range check */
 	if (item->as_maxint >= (intmax_t)INT8_MIN && item->as_maxint <= (intmax_t)INT8_MAX) {
@@ -1644,15 +1647,15 @@ json_process_decimal(struct json_number *item, char const *str, size_t len)
 
 	/* case: non-negative, try for largest unsigned integer */
 	errno = 0;			/* pre-clear errno for errp() */
-	item->as_umaxint = strtoumax(item->as_str, &endptr, 10);
-	if (errno != 0 || endptr == item->as_str || endptr == NULL || *endptr != '\0') {
+	item->as_umaxint = strtoumax(str, &endptr, 10);
+	if (errno != 0 || endptr == str || endptr == NULL || *endptr != '\0') {
 	    dbg(DBG_VVHIGH, "strtoumax failed to convert");
 	    item->converted = false;
 	    return false;	/* processing failed */
 	}
 	item->converted = true;
 	item->umaxint_sized = true;
-	dbg(DBG_VVHIGH, "strtoumax for <%s> returned: %ju", item->as_str, item->as_umaxint);
+	dbg(DBG_VVHIGH, "strtoumax for <%s> returned: %ju", str, item->as_umaxint);
 
 	/* case int8_t: bounds check */
 	if (item->as_umaxint <= (uintmax_t)INT8_MAX) {
@@ -1787,6 +1790,9 @@ json_process_decimal(struct json_number *item, char const *str, size_t len)
  *
  * NOTE: This function assumes that str points to the start of a JSON number, NOT whitespace.
  *
+ * NOTE: This function assumes that str is a NUL terminated string,
+ *	 even if the NUL is well beyond the end of the JSON number.
+ *
  * NOTE: While it is OK if str as trailing whitespace, str[len-1] must be an ASCII digit.
  *	 It is assumed that str[len-1] is the final JSON number character.
  */
@@ -1824,71 +1830,71 @@ json_process_floating(struct json_number *item, char const *str, size_t len)
     }
     str_len = strlen(str);
     if (str_len < len) {
-	warn(__func__, "len: %ju < strlen(%s): %ju", (uintmax_t)len, str, (uintmax_t)str_len);
+	warn(__func__, "strlen(%s): %ju < len arg: %ju", str, (uintmax_t)str_len, (uintmax_t)len);
 	return false;	/* processing failed */
     }
 
     /*
      * JSON spec detail: floating point numbers cannot start with .
      */
-    if (item->as_str[0] == '.') {
+    if (str[0] == '.') {
 	dbg(DBG_HIGH, "%s: floating point numbers cannot start with .: <%s>",
-		       __func__, item->as_str);
+		       __func__, str);
 	return false;	/* processing failed */
 
     /*
      * JSON spec detail: floating point numbers cannot end with .
      */
-    } else if (item->as_str[len-1] == '.') {
+    } else if (str[len-1] == '.') {
 	dbg(DBG_HIGH, "%s: floating point numbers cannot end with .: <%s>",
-		      __func__, item->as_str);
+		      __func__, str);
 	return false;	/* processing failed */
 
     /*
      * JSON spec detail: floating point numbers cannot end with -
      */
-    } else if (item->as_str[len-1] == '-') {
+    } else if (str[len-1] == '-') {
 	dbg(DBG_HIGH, "%s: floating point numbers cannot end with -: <%s>",
-		      __func__, item->as_str);
+		      __func__, str);
 	return false;	/* processing failed */
 
     /*
      * JSON spec detail: floating point numbers cannot end with +
      */
-    } else if (item->as_str[len-1] == '+') {
+    } else if (str[len-1] == '+') {
 	dbg(DBG_HIGH, "%s: floating point numbers cannot end with +: <%s>",
-		      __func__, item->as_str);
+		      __func__, str);
 	return false;	/* processing failed */
 
     /*
      * JSON spec detail: floating point numbers must end in a digit
      */
-    } else if (!isascii(item->as_str[len-1]) || !isdigit(item->as_str[len-1])) {
+    } else if (!isascii(str[len-1]) || !isdigit(str[len-1])) {
 	dbg(DBG_HIGH, "%s: floating point numbers must end in a digit: <%s>",
-		       __func__, item->as_str);
+		       __func__, str);
 	return false;	/* processing failed */
     }
 
     /*
      * detect use of e notation
      */
-    e_found = strchr(item->as_str, 'e');
-    cap_e_found = strchr(item->as_str, 'E');
+    e_found = strchr(str, 'e');
+    cap_e_found = strchr(str, 'E');
     /* case: both e and E found */
     if (e_found != NULL && cap_e_found != NULL) {
 
 	dbg(DBG_HIGH, "%s: floating point numbers cannot use both e and E: <%s>",
-			  __func__, item->as_str);
+			  __func__, str);
 	return false;	/* processing failed */
 
     /* case: just e found, no E */
     } else if (e_found != NULL) {
 
 	/* firewall - search for two e's */
-	e = strrchr(item->as_str, 'e');
+	e = strrchr(str, 'e');
 	if (e_found != e) {
 	    dbg(DBG_HIGH, "%s: floating point numbers cannot have more than one e: <%s>",
-			  __func__, item->as_str);
+			  __func__, str);
 	    return false;	/* processing failed */
 	}
 
@@ -1899,10 +1905,10 @@ json_process_floating(struct json_number *item, char const *str, size_t len)
     } else if (cap_e_found != NULL) {
 
 	/* firewall - search for two E's */
-	e = strrchr(item->as_str, 'E');
+	e = strrchr(str, 'E');
 	if (cap_e_found != e) {
 	    dbg(DBG_HIGH, "%s: floating point numbers cannot have more than one E: <%s>",
-			  __func__, item->as_str);
+			  __func__, str);
 	    return false;	/* processing failed */
 	}
 
@@ -1920,33 +1926,33 @@ json_process_floating(struct json_number *item, char const *str, size_t len)
 	/*
 	 * JSON spec detail: e notation number cannot start with e or E
 	 */
-	if (e == item->as_str) {
+	if (e == str) {
 	    dbg(DBG_HIGH, "%s: e notation numbers cannot start with e or E: <%s>",
-			  __func__, item->as_str);
+			  __func__, str);
 	    return false;	/* processing failed */
 
 	/*
 	 * JSON spec detail: e notation number cannot end with e or E
 	 */
-	} else if (e == &(item->as_str[len-1])) {
+	} else if (e == &(str[len-1])) {
 	    dbg(DBG_HIGH, "%s: e notation numbers cannot end with e or E: <%s>",
-			  __func__, item->as_str);
+			  __func__, str);
 	    return false;	/* processing failed */
 
 	/*
 	 * JSON spec detail: e notation number cannot have e or E after .
 	 */
-	} else if (e > item->as_str && e[-1] == '.') {
+	} else if (e > str && e[-1] == '.') {
 	    dbg(DBG_HIGH, "%s: e notation numbers cannot have . before e or E: <%s>",
-			  __func__, item->as_str);
+			  __func__, str);
 	    return false;	/* processing failed */
 
 	/*
 	 * JSON spec detail: e notation number must have digit before e or E
 	 */
-	} else if (e > item->as_str && (!isascii(e[-1]) || !isdigit(e[-1]))) {
+	} else if (e > str && (!isascii(e[-1]) || !isdigit(e[-1]))) {
 	    dbg(DBG_HIGH, "%s: e notation numbers must have digit before e or E: <%s>",
-			  __func__, item->as_str);
+			  __func__, str);
 	    return false;	/* processing failed */
 
 	/*
@@ -1959,9 +1965,9 @@ json_process_floating(struct json_number *item, char const *str, size_t len)
 	    /*
 	     * JSON spec detail: e notation number with e+ or E+ must be followed by a digit
 	     */
-	    if (e+1 < &(item->as_str[len-1]) && (!isascii(e[2]) || !isdigit(e[2]))) {
+	    if (e+1 < &(str[len-1]) && (!isascii(e[2]) || !isdigit(e[2]))) {
 		dbg(DBG_HIGH, "%s: :e notation number with e+ or E+ must be followed by a digit <%s>",
-			      __func__, item->as_str);
+			      __func__, str);
 		return false;	/* processing failed */
 	    }
 
@@ -1975,9 +1981,9 @@ json_process_floating(struct json_number *item, char const *str, size_t len)
 	    /*
 	     * JSON spec detail: e notation number with e- or E- must be followed by a digit
 	     */
-	    if (e+1 < &(item->as_str[len-1]) && (!isascii(e[2]) || !isdigit(e[2]))) {
+	    if (e+1 < &(str[len-1]) && (!isascii(e[2]) || !isdigit(e[2]))) {
 		dbg(DBG_HIGH, "%s: :e notation number with e- or E- must be followed by a digit <%s>",
-			      __func__, item->as_str);
+			      __func__, str);
 		return false;	/* processing failed */
 	    }
 
@@ -1986,7 +1992,7 @@ json_process_floating(struct json_number *item, char const *str, size_t len)
 	 */
 	} else if (!isascii(e[1]) || !isdigit(e[1])) {
 	    dbg(DBG_HIGH, "%s: e notation numbers must follow e or E with + or - or digit: <%s>",
-			  __func__, item->as_str);
+			  __func__, str);
 	    return false;	/* processing failed */
 	}
     }
@@ -1995,8 +2001,8 @@ json_process_floating(struct json_number *item, char const *str, size_t len)
      * convert to largest floating point value
      */
     errno = 0;			/* pre-clear errno for errp() */
-    item->as_longdouble = strtold(item->as_str, &endptr);
-    if (errno != 0 || endptr == item->as_str || endptr == NULL || *endptr != '\0') {
+    item->as_longdouble = strtold(str, &endptr);
+    if (errno != 0 || endptr == str || endptr == NULL || *endptr != '\0') {
 	dbg(DBG_VVHIGH, "strtold failed to convert");
 	item->converted = false;
 	return false;	/* processing failed */
@@ -2004,9 +2010,9 @@ json_process_floating(struct json_number *item, char const *str, size_t len)
     item->converted = true;
     item->longdouble_sized = true;
     item->as_longdouble_int = (item->as_longdouble == floorl(item->as_longdouble));
-    dbg(DBG_VVHIGH, "strtold for <%s> returned as %%Lg: %.22Lg", item->as_str, item->as_longdouble);
-    dbg(DBG_VVHIGH, "strtold for <%s> returned as %%Le: %.22Le", item->as_str, item->as_longdouble);
-    dbg(DBG_VVHIGH, "strtold for <%s> returned as %%Lf: %.22Lf", item->as_str, item->as_longdouble);
+    dbg(DBG_VVHIGH, "strtold for <%s> returned as %%Lg: %.22Lg", str, item->as_longdouble);
+    dbg(DBG_VVHIGH, "strtold for <%s> returned as %%Le: %.22Le", str, item->as_longdouble);
+    dbg(DBG_VVHIGH, "strtold for <%s> returned as %%Lf: %.22Lf", str, item->as_longdouble);
     dbg(DBG_VVHIGH, "strtold returned an integer value: %s", item->as_longdouble_int ? "true" : "false");
 
     /*
@@ -2020,16 +2026,16 @@ json_process_floating(struct json_number *item, char const *str, size_t len)
      * convert to double
      */
     errno = 0;			/* pre-clear conversion test */
-    item->as_double = strtod(item->as_str, &endptr);
-    if (errno != 0 || endptr == item->as_str || endptr == NULL || *endptr != '\0') {
+    item->as_double = strtod(str, &endptr);
+    if (errno != 0 || endptr == str || endptr == NULL || *endptr != '\0') {
 	item->double_sized = false;
-	dbg(DBG_VVHIGH, "strtod for <%s> failed", item->as_str);
+	dbg(DBG_VVHIGH, "strtod for <%s> failed", str);
     } else {
 	item->double_sized = true;
 	item->as_double_int = (item->as_double == floorl(item->as_double));
-	dbg(DBG_VVHIGH, "strtod for <%s> returned as %%lg: %.22lg", item->as_str, item->as_double);
-	dbg(DBG_VVHIGH, "strtod for <%s> returned as %%le: %.22le", item->as_str, item->as_double);
-	dbg(DBG_VVHIGH, "strtod for <%s> returned as %%lf: %.22lf", item->as_str, item->as_double);
+	dbg(DBG_VVHIGH, "strtod for <%s> returned as %%lg: %.22lg", str, item->as_double);
+	dbg(DBG_VVHIGH, "strtod for <%s> returned as %%le: %.22le", str, item->as_double);
+	dbg(DBG_VVHIGH, "strtod for <%s> returned as %%lf: %.22lf", str, item->as_double);
 	dbg(DBG_VVHIGH, "strtod returned an integer value: %s", item->as_double_int ? "true" : "false");
     }
 
@@ -2037,16 +2043,16 @@ json_process_floating(struct json_number *item, char const *str, size_t len)
      * convert to float
      */
     errno = 0;			/* pre-clear conversion test */
-    item->as_float = strtof(item->as_str, &endptr);
-    if (errno != 0 || endptr == item->as_str || endptr == NULL || *endptr != '\0') {
+    item->as_float = strtof(str, &endptr);
+    if (errno != 0 || endptr == str || endptr == NULL || *endptr != '\0') {
 	item->float_sized = false;
-	dbg(DBG_VVHIGH, "strtof for <%s> failed", item->as_str);
+	dbg(DBG_VVHIGH, "strtof for <%s> failed", str);
     } else {
 	item->float_sized = true;
 	item->as_float_int = (item->as_longdouble == floorl(item->as_longdouble));
-	dbg(DBG_VVHIGH, "strtof for <%s> returned as %%g: %.22g", item->as_str, item->as_float);
-	dbg(DBG_VVHIGH, "strtof for <%s> returned as %%e: %.22e", item->as_str, item->as_float);
-	dbg(DBG_VVHIGH, "strtof for <%s> returned as %%f: %.22f", item->as_str, item->as_float);
+	dbg(DBG_VVHIGH, "strtof for <%s> returned as %%g: %.22g", str, item->as_float);
+	dbg(DBG_VVHIGH, "strtof for <%s> returned as %%e: %.22e", str, item->as_float);
+	dbg(DBG_VVHIGH, "strtof for <%s> returned as %%f: %.22f", str, item->as_float);
 	dbg(DBG_VVHIGH, "strtof returned an integer value: %s", item->as_float_int ? "true" : "false");
     }
 
@@ -2104,6 +2110,7 @@ json_conv_number(char const *ptr, size_t len)
      */
     item = &(ret->element.number);
     item->as_str = NULL;
+    item->first = NULL;
     item->converted = false;
     item->is_negative = false;
     item->is_floating = false;
@@ -2166,7 +2173,6 @@ json_conv_number(char const *ptr, size_t len)
 	not_reached();
     }
     strncpy(item->as_str, ptr, len+1);
-    item->as_str_len = len;	/* save length of as_str */
 
     /*
      * ignore whitespace
@@ -2190,26 +2196,26 @@ json_conv_number(char const *ptr, size_t len)
     /*
      * case: JSON number is a base 10 integer in ASCII
      */
-    decimal = is_decimal(item->as_str, item->number_len);
+    decimal = is_decimal(item->first, item->number_len);
     if (decimal == true) {
 
 	/* process JSON number as a base 10 integer in ASCII */
-	success = json_process_decimal(item, item->as_str, item->number_len);
+	success = json_process_decimal(item, item->first, item->number_len);
 	if (success == false) {
-	    warn(__func__, "JSON number as base 10 integer in ASCII processing failed");
+	    warn(__func__, "JSON number as base 10 integer in ASCII processing failed: <%s>", item->first);
 	}
 
     /*
      * case: JSON number is not a base 10 integer in ASCII
      *
-     * The JSON number might be a floating point and/or e-notation number.
+     * The JSON number might be a floating point or e-notation number.
      */
     } else {
 
-	/* process JSON number as floating point and/or e-notation number */
-	success = json_process_floating(item, item->as_str, item->number_len);
+	/* process JSON number as floating point or e-notation number */
+	success = json_process_floating(item, item->first, item->number_len);
 	if (success == false) {
-	    warn(__func__, "JSON number as floating point and/or e-notation number failed");
+	    warn(__func__, "JSON number as floating point or e-notation number failed: <%s>", item->first);
 	}
     }
 
