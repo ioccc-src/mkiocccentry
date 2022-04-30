@@ -58,7 +58,7 @@ exit codes:
     3 - no limit.sh file found, or is not readable
     4 - no test_dir directory found, or is not readable
     5 - usage message printed due to -h
-    6 - command line error
+    6 - command line error and usage message printed
     7 - no *.json files found under test_dir
     8 - new_ver (or old_ver if -o) not found in limit.sh
     >= 9 - internal error"
@@ -113,6 +113,7 @@ done
 shift $(( OPTIND - 1 ));
 if [[ $# -ne 2 ]]; then
     echo "$0: ERROR: expected 2 arguments, found $#" 1>&2
+    echo "$USAGE" 1>&2
     exit 6
 fi
 OLD_VER="$QUOTE$1$QUOTE"
