@@ -493,9 +493,12 @@ limit_ioccc.sh: limit_ioccc.h version.h Makefile
 
 # How to create jparse.tab.c and jparse.tab.h
 #
-# Convert jparse.y into jparse.tab.as well as jparse.tab.c via bison,
-# if bison is found and has a recent enough version, otherwise
-# use a pre-built reference copies stored in jparse.tab.ref.h and jparse.tab.ref.c.
+# Convert jparse.y into jparse.tab.c and jparse.tab.c via bison, if bison is
+# found and has a recent enough version. Otherwise, if RUN_O_FLAG is NOT
+# specified use a pre-built reference copies stored in jparse.tab.ref.h and
+# jparse.tab.ref.c. If it IS specified it is an error.
+#
+# NOTE: The value of RUN_O_FLAG depends on what rule called this rule.
 #
 jparse.tab.c jparse.tab.h: jparse.y jparse.h sorry.tm.ca.h run_bison.sh limit_ioccc.sh verge \
 	jparse.tab.ref.c jparse.tab.ref.h Makefile
@@ -503,9 +506,11 @@ jparse.tab.c jparse.tab.h: jparse.y jparse.h sorry.tm.ca.h run_bison.sh limit_io
 
 # How to create jparse.c
 #
-# Convert jparse.l into jparse.c via flex,
-# if flex found and has a recent enough version, otherwise
-# use a pre-built reference copy stored in jparse.ref.c
+# Convert jparse.l into jparse.c via flex, if flex found and has a recent enough
+# version. Otherwise, if RUN_O_FLAG is NOT set use the pre-built reference copy
+# stored in jparse.ref.c. If it IS specified it is an error.
+#
+# NOTE: The value of RUN_O_FLAG depends on what rule called this rule.
 #
 jparse.c: jparse.l jparse.h sorry.tm.ca.h jparse.tab.h run_flex.sh limit_ioccc.sh verge jparse.ref.c Makefile
 	./run_flex.sh -f ${FLEX_BASENAME} ${FLEX_DIRS} -p jparse -v 1 ${RUN_O_FLAG} -- -d -8 -o jparse.c
@@ -515,30 +520,52 @@ jparse.c: jparse.l jparse.h sorry.tm.ca.h jparse.tab.h run_flex.sh limit_ioccc.s
 # repo tools - rules for those who maintain the mkiocccentry repo #
 ###################################################################
 
-# Things to do before a release, forming a pull request and/or updating the
-# GitHub repo
 #
-# Run through all of the prep steps.  If some step failed along the way, exit
-# non-zero at the end.
+# make build release pull
 #
-prep: prep.sh
-	${RM} -f ${BUILD_LOG}
-	./prep.sh 2>&1 | ${TEE} ${BUILD_LOG}
-	@echo NOTE: The above details were saved in the file: ${BUILD_LOG}
-
 # Things to do before a release, forming a pull request and/or updating the
 # GitHub repo.
 #
-# Run through all of the prep steps.  If a step fails, exit immediately.
-# Moreover, the reference copies of JSON parser C code will not be used,
-# so if bison and/or flex is not found or is too old, this rule will fail.
+# This runs through all of the prep steps, exiting on the first failure.
+#
+# NOTE: The reference copies of the JSON parser C code will NOT be used
+# so if bison and/or flex is not found or too old THIS RULE WILL FAIL!
+#
+# NOTE: Please try this rule BEFORE make prep.
 #
 build release pull: prep.sh
 	${RM} -f ${BUILD_LOG}
 	./prep.sh -e -o 2>&1 | ${TEE} ${BUILD_LOG}
 	@echo NOTE: The above details were saved in the file: ${BUILD_LOG}
 
-# Force the rebuild of the JSON parser and form reference copies of JSON parser C code.
+#
+# make prep
+#
+# Things to do before a release, forming a pull request and/or updating the
+# GitHub repo.
+#
+# This runs through all of the prep steps.  If some step failed along the way,
+# exit non-zero at the end.
+#
+# NOTE: This rule is useful if for example you're not working on the parser and
+# you're on a system without the proper versions of flex and/or bison but you
+# still want to work on the repo. Another example use is if you don't have
+# shellcheck and/or picky and you want to work on the repo.
+#
+# The point is: if you're working on this repo and make build fails, try this
+# rule instead.
+#
+prep: prep.sh
+	${RM} -f ${BUILD_LOG}
+	./prep.sh 2>&1 | ${TEE} ${BUILD_LOG}
+	@echo NOTE: The above details were saved in the file: ${BUILD_LOG}
+
+
+#
+# make parser
+#
+# Force the rebuild of the JSON parser and then form the reference copies of
+# JSON parser C code (if recent enough version of flex and bison are found).
 #
 parser: jparse.y jparse.l Makefile
 	${RM} -f jparse.tab.c jparse.tab.h
@@ -554,7 +581,10 @@ parser: jparse.y jparse.l Makefile
 	${RM} -f jparse.ref.c
 	${CP} -f -v jparse.c jparse.ref.c
 
-# Force the rebuild of the JSON parser, do NOT use reference copies of JSON parser C code.
+#
+# make parser-o: Force the rebuild of the JSON parser.
+#
+# NOTE: This does NOT use the reference copies of JSON parser C code.
 #
 parser-o: jparse.y jparse.l Makefile
 	${MAKE} parser RUN_O_FLAG='-o'
