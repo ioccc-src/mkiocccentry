@@ -1,0 +1,69 @@
+.TH verge 1 "30 April 2022" "verge" "IOCCC tools"
+.SH NAME
+verge \- determine if first version >= second version
+.SH SYNOPSIS
+\fBverge [\-h] [\-v level] [\-V] <major.minor.patch-1> <major.minor.patch-2>
+.SH DESCRIPTION
+\fBverge\fP (short for \fBversion greater than or equal\fP) compares the two versions specified, determining if they're equal or if one is >= the other.
+.PP
+This program requires two arguments but accepts several options.
+.SH OPTIONS
+\fB\-h\fP
+Show help and exit.
+.PP
+\fB\-v\fP
+Set verbosity level.
+.PP
+\fB\-V\fP
+Show version and exit.
+.SH EXIT STATUS
+\fB0\fP
+First version >= second version.
+.br
+\fB1\fP
+First version < second version.
+.br
+\fB2\fP
+First and/or second version is an invalid version string.
+.br
+\fB3\fP
+\fI\-h\fP and help string printed or \fI\-V\fP and version string printed.
+.br
+\fB4\fP
+Command line error.
+.PP
+Anything >= 5 is an internal error.
+.SH FILES
+\fIverge.c\fP
+.RS
+Source file of the \fBverge\fP tool.
+.RE
+\fIverge.h\fP
+.RS
+Header file of the \fBverge\fP tool.
+.RE
+.SH BUGS
+.PP
+If you have an issue with the tool you can report it at \fI\<https://github.com/ioccc-src/mkiocccentry/issues\>\fP.
+.SH EXAMPLES
+.PP
+.nf
+Determine if \fB1.1.3\fP > \fB1.1.4\fP:
+.RS
+\fB
+ ./verge 1.1.3 1.1.4
+ [[ $? -eq 0 ]] && echo 'first version >= second'
+.fi
+.RE
+.PP
+.nf
+Determine if \fB1.1.3\fP < \fB1.1.4\fP:
+.RS
+\fB
+ ./verge 1.1.3 1.1.4
+ [[ $? -eq 1 ]] && echo 'first version < second'
+.fi
+.RE
+.SH NOTES
+This tool is used in the \fBrun_flex.sh\fP and \fBrun_bison.sh\fP scripts to determine if the locally installed flex and bison tools are recent enough to generate the JSON parser from the \fBjparse.l\fP and \fBjparse.y\fP files.
+

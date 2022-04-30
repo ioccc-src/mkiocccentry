@@ -28,14 +28,14 @@
 
 # setup
 #
-export USAGE="usage: $0 [-h] [-v level] [-d test_dir] [-i limit_ioccc.sh.sh]
+export USAGE="usage: $0 [-h] [-v level] [-d test_dir] [-i limit.sh]
 	[-o] [-F] [-Q] [-n] [-l] [-L] old_ver new_ver
 
     -h            Print help and exit
     -v level      Set the debugging level (def: 0)
 
     -d test_dir   Process '*.json' files below dir (def: ./test_JSON)
-    -i limit_ioccc.sh   Use limit.sh to verify new version (def: ./limit_ioccc.sh)
+    -i limit.sh   Use limit.sh to verify new version (def: ./limit_ioccc.sh)
 
     -o            Verify old version (def: verify new version)
     -F            Force change, even if it cannot be verified (def: reject an unverified change)
@@ -58,9 +58,9 @@ exit codes:
     3 - no limit.sh file found, or is not readable
     4 - no test_dir directory found, or is not readable
     5 - usage message printed due to -h
-    6 - command line error
+    6 - command line error and usage message printed
     7 - no *.json files found under test_dir
-    8 - new_ver (or old_ver if -o) not found in limit_ioccc.sh
+    8 - new_ver (or old_ver if -o) not found in limit.sh
     >= 9 - internal error"
 export V_FLAG="0"
 export JSON_TREE="./test_JSON"
@@ -113,6 +113,7 @@ done
 shift $(( OPTIND - 1 ));
 if [[ $# -ne 2 ]]; then
     echo "$0: ERROR: expected 2 arguments, found $#" 1>&2
+    echo "$USAGE" 1>&2
     exit 6
 fi
 OLD_VER="$QUOTE$1$QUOTE"
@@ -122,27 +123,27 @@ export OLD_VER NEW_VER
 # firewall
 #
 if [[ ! -e $JSON_TREE ]]; then
-    echo "$0: ERROR: test_dir does not exist: $JSON_TREE" 1>&2
+    echo "$0: ERROR: test_dir ${JSON_TREE} does not exist: $JSON_TREE" 1>&2
     exit 4
 fi
 if [[ ! -d $JSON_TREE ]]; then
-    echo "$0: ERROR: test_dir is not a directory: $JSON_TREE" 1>&2
+    echo "$0: ERROR: test_dir ${JSON_TREE} is not a directory: $JSON_TREE" 1>&2
     exit 4
 fi
 if [[ ! -r $JSON_TREE ]]; then
-    echo "$0: ERROR: test_dir is not readable: $JSON_TREE" 1>&2
+    echo "$0: ERROR: test_dir ${JSON_TREE} is not readable: $JSON_TREE" 1>&2
     exit 4
 fi
 if [[ ! -e $LIMIT_SH ]]; then
-    echo "$0: ERROR: limit_ioccc.sh does not exist: $LIMIT_SH" 1>&2
+    echo "$0: ERROR: limit.sh ${LIMIT_SH} does not exist: $LIMIT_SH" 1>&2
     exit 3
 fi
 if [[ ! -f $LIMIT_SH ]]; then
-    echo "$0: ERROR: limit_ioccc.sh is not a file: $LIMIT_SH" 1>&2
+    echo "$0: ERROR: limit.sh ${LIMIT_SH} is not a file: $LIMIT_SH" 1>&2
     exit 3
 fi
 if [[ ! -r $LIMIT_SH ]]; then
-    echo "$0: ERROR: limit_ioccc.sh is not a readable file: $LIMIT_SH" 1>&2
+    echo "$0: ERROR: limit.sh ${LIMIT_SH} is not a readable file: $LIMIT_SH" 1>&2
     exit 3
 fi
 RPL_CMD=$(type -P rpl)
@@ -210,7 +211,7 @@ fi
 if [[ -n $LIST_CHANGE && -n $LIST_NOCHANGE ]]; then
     find "$JSON_TREE" -type f -name '*.json' -print 2>/dev/null | sort -u
 
-# case: -l (list .json files that will change)
+# case: -l: list .json files that WILL change
 #
 elif [[ -n $LIST_CHANGE ]]; then
 # shellcheck disable=SC2063
@@ -221,14 +222,14 @@ elif [[ -n $LIST_CHANGE ]]; then
 # filename pattern are searched.
      grep -F -R --include '*.json' -l -- "$OLD_VER" "$JSON_TREE" 2>/dev/null | sort -u
 
-# case: -L (list .json files that will NOT change)
+# case: -L: list .json files that WILL NOT change
 #
 elif [[ -n $LIST_NOCHANGE ]]; then
 # shellcheck disable=SC2063
 #
 # This warning is an example where shellcheck is incorrect. Yes '*.json' is a
 # glob but --include '*.json' is not the actual pattern to search for.
-# Specifically this option if specified says that only files matching the given
+# Specifically this option, if specified, says that only files matching the given
 # filename pattern are searched.
      grep -F -R --include '*.json' -L -- "$OLD_VER" "$JSON_TREE" 2>/dev/null | sort -u
 fi
