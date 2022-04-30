@@ -2534,7 +2534,7 @@ parse_verbosity(char const *program, char const *arg)
  *
  *	[+-]?[0-9]+
  *
- * In particular these are NOT considered ASCII integers bu this function:
+ * In particular these are NOT considered ASCII integers by this function:
  *
  *	[0-9a-fA-F]+		<== may return false if we find a [a-fA-F]
  *	0x[0-9a-fA-F]+		<== will return false due to 'x'
@@ -2545,8 +2545,8 @@ parse_verbosity(char const *program, char const *arg)
  * We know that some so-called specifications for data exchange do not
  * allow for a leading +.  Others might not allow for 0 followed by
  * digits, 'x' or even 'b'.  This function is more general on one hand,
- * are more specific on the other hand, from any "amateur open mic specification"
- * that you might encounter at your local developer pub. :-)
+ * and more specific on the other hand, from any "amateur open mic
+ * specification" that you might encounter at your local developer pub. :-)
  *
  * returns:
  *
@@ -2583,10 +2583,10 @@ is_decimal(char const *ptr, size_t len)
     }
 
     /*
-     * test for ASCII base 10 digits
+     * Test for ASCII base 10 digits
      *
-     * NOTE: We cannot use strspn() nor strcspn() because we cannot count on if the
-     *	     ASCII integer being immediately followed by a NUL byte.
+     * NOTE: We cannot use strspn() nor strcspn() because we cannot assume the
+     *	     ASCII integer is immediately followed by a NUL byte.
      *
      * NOTE: Alas, there is no strnspn() nor strncspn() in the standard due to
      *	     "reasons other than technical reasons" *sigh*.
@@ -3147,7 +3147,8 @@ print_newline(bool output_newline)
  * given:
  *	ptr	    address to start looking for text
  *	len	    amount of data to search through
- *	**first	    if non-NULL and return > 0, location if first non-whitespace/non-NUL text
+ *	**first	    if non-NULL and return > 0, location of first
+ *		    non-whitespace/non-NUL text
  *
  * returns:
  *	number of non-whitespace/non-NUL bytes found, or
