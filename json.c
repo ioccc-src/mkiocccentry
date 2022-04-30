@@ -2085,7 +2085,7 @@ json_conv_number(char const *ptr, size_t len)
     struct json *ret = NULL;		    /* JSON parser tree node to return */
     struct json_number *item = NULL;	    /* JSON number element inside JSON parser tree node */
     bool decimal = false;		    /* true ==> ptr points to a base 10 integer in ASCII */
-    bool success = false;		    /* true ==> processing was sucessful */
+    bool success = false;		    /* true ==> processing was successful */
 
     /*
      * allocate the JSON parse tree element
@@ -2177,9 +2177,9 @@ json_conv_number(char const *ptr, size_t len)
     /*
      * ignore whitespace
      *
-     * Find the first ASCII text, ignoring any leading whitespace is found.
-     * Also the length, within the len limit, of ASCII text that is
-     * neither whitespace nor NUL byte.
+     * Find the first ASCII text, ignoring any leading whitespace if found.
+     * The length, within the len limit, of ASCII text that is neither
+     * whitespace nor NUL byte, is also found.
      *
      * While the common use of this function is via bison/flex produced C code,
      * we want to keep the general case working where this function might
