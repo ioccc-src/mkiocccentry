@@ -123,27 +123,27 @@ export OLD_VER NEW_VER
 # firewall
 #
 if [[ ! -e $JSON_TREE ]]; then
-    echo "$0: ERROR: test_dir ${JSON_TREE} does not exist: $JSON_TREE" 1>&2
+    echo "$0: ERROR: test_dir does not exist: $JSON_TREE" 1>&2
     exit 4
 fi
 if [[ ! -d $JSON_TREE ]]; then
-    echo "$0: ERROR: test_dir ${JSON_TREE} is not a directory: $JSON_TREE" 1>&2
+    echo "$0: ERROR: test_dir is not a directory: $JSON_TREE" 1>&2
     exit 4
 fi
 if [[ ! -r $JSON_TREE ]]; then
-    echo "$0: ERROR: test_dir ${JSON_TREE} is not readable: $JSON_TREE" 1>&2
+    echo "$0: ERROR: test_dir is not readable: $JSON_TREE" 1>&2
     exit 4
 fi
 if [[ ! -e $LIMIT_SH ]]; then
-    echo "$0: ERROR: limit.sh ${LIMIT_SH} does not exist: $LIMIT_SH" 1>&2
+    echo "$0: ERROR: limit.sh does not exist: $LIMIT_SH" 1>&2
     exit 3
 fi
 if [[ ! -f $LIMIT_SH ]]; then
-    echo "$0: ERROR: limit.sh ${LIMIT_SH} is not a file: $LIMIT_SH" 1>&2
+    echo "$0: ERROR: limit.sh is not a file: $LIMIT_SH" 1>&2
     exit 3
 fi
 if [[ ! -r $LIMIT_SH ]]; then
-    echo "$0: ERROR: limit.sh ${LIMIT_SH} is not a readable file: $LIMIT_SH" 1>&2
+    echo "$0: ERROR: limit.sh is not a readable file: $LIMIT_SH" 1>&2
     exit 3
 fi
 RPL_CMD=$(type -P rpl)
