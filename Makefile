@@ -193,7 +193,7 @@ CFLAGS= ${STD_SRC} ${COPT} -pedantic ${WARN_FLAGS} ${LDFLAGS}
 MANDIR = /usr/local/share/man/man1
 DESTDIR= /usr/local/bin
 TARGETS= mkiocccentry iocccsize dbg fnamchk txzchk jauthchk jinfochk \
-	jstrencode jstrdecode utf8_test jparse verge jnumber
+	jstrencode jstrdecode utf8_test jparse verge jnum_chk
 SH_TARGETS=limit_ioccc.sh
 
 # man pages
@@ -216,7 +216,7 @@ TEST_TARGETS= dbg utf8_test dyn_test
 OBJFILES= dbg.o util.o mkiocccentry.o iocccsize.o fnamchk.o txzchk.o jauthchk.o jinfochk.o \
 	json.o jstrencode.o jstrdecode.o rule_count.o location.o sanity.o \
 	utf8_test.o verge.o \
-	dyn_array.o dyn_test.o json_chk.o json_entry.o dbg_test.o
+	dyn_array.o dyn_test.o json_chk.o json_entry.o dbg_test.o jnum_chk.o
 LESS_PICKY_CSRC= utf8_posix_map.c
 LESS_PICKY_OBJ= utf8_posix_map.o
 GENERATED_CSRC= jparse.c jparse.tab.c
@@ -232,7 +232,7 @@ SRCFILES= $(OBJFILES:.o=.c)
 ALL_CSRC= ${LESS_PICKY_CSRC} ${GENERATED_CSRC} ${SRCFILES}
 H_FILES= dbg.h jauthchk.h jinfochk.h json.h jstrdecode.h jstrencode.h limit_ioccc.h \
 	mkiocccentry.h txzchk.h util.h location.h utf8_posix_map.h jparse.h \
-	verge.h sorry.tm.ca.h dyn_array.h dyn_test.h json_entry.h json_util.h
+	verge.h sorry.tm.ca.h dyn_array.h dyn_test.h json_entry.h json_util.h jnum_chk.h
 # This is a simpler way to do:
 #
 #   DSYMDIRS= $(patsubst %,%.dSYM,$(TARGETS))
@@ -321,7 +321,7 @@ all: ${TARGETS} ${TEST_TARGETS}
 # rules, not file targets
 #
 .PHONY: all configure clean clobber install test reset_min_timestamp \
-	picky parser build clean_generated_obj prep_clobber
+	picky parser build clean_generated_obj prep_clobber rebuild_jnum_test
 
 
 #####################################
@@ -425,10 +425,14 @@ jfloat.o: jfloat.c Makefile
 jfloat: jfloat.o dbg.o json.o util.o dyn_array.o jfloat.test.o Makefile
 	${CC} ${CFLAGS} jfloat.o dbg.o json.o util.o dyn_array.o jfloat.test.o -o $@
 
-# XXX - stub until we make jnumber.c
-#
-jnumber: Makefile
-	${CP} -f -v /usr/bin/true $@
+jnum_test.o: jnum_test.c Makefile
+	${CC} ${CFLAGS} jnum_test.c -c
+
+jnum_chk.o: jnum_chk.c Makefile
+	${CC} ${CFLAGS} jnum_chk.c -c
+
+jnum_chk: jnum_chk.o dbg.o json.o util.o dyn_array.o jnum_test.o Makefile
+	${CC} ${CFLAGS} jnum_chk.o dbg.o json.o util.o dyn_array.o jnum_test.o -o $@
 
 jparse.o: jparse.c Makefile
 	${CC} ${CFLAGS} -Wno-unused-function -Wno-unneeded-internal-declaration jparse.c -c
@@ -628,9 +632,9 @@ rebuild_jfloat_test: jfloat.testset jfloat.c dbg.o json.o util.o dyn_array.o Mak
 	${MV} -f jfloat.set.tmp jfloat.test.c
 	${RM} -f jfloat_gen
 
-# XXX - stub until we make jnumber.c
-#
-rebuild_jnumber_test: Makefile
+rebuild_jnum_test: jnum_gen jnum.testset Makefile
+	${RM} -f jnum_test.c
+	./jnum_gen jnum.testset > jnum_test.c
 
 # sequence exit codes
 #
@@ -702,7 +706,7 @@ reset_min_timestamp: reset_tstamp.sh
 
 # perform all of the mkiocccentry repo required tests
 #
-test: test.sh iocccsize-test.sh dbg mkiocccentry-test.sh jstr-test.sh jnumber dyn_test Makefile
+test: test.sh iocccsize-test.sh dbg mkiocccentry-test.sh jstr-test.sh jnum_chk dyn_test Makefile
 	./test.sh
 
 # run json-test.sh on test_JSON files
@@ -731,10 +735,13 @@ prep_clobber:
 	${RM} -rf test-iocccsize test_src test_work tags dbg.out
 	${RM} -f dbg_test.c
 	${RM} -rf dyn_test.dSYM
+	${RM} -f jnum_chk jnum_chk_gen
+	${RM} -f jnum_chk.set.tmp jnum_chk_gen
+	${RM} -rf jnum_chk.dSYM jnum_chk_gen.dSYM
+	# XXX - remove legacy code - XXX
 	${RM} -f jnumber jnumber_gen
 	${RM} -f jnumber.set.tmp jnumber_gen
 	${RM} -rf jnumber.dSYM jnumber_gen.dSYM
-	# XXX - remove legacy code - XXX
 	${RM} -f jint jfloat
 	${RM} -f jint.set.tmp jint_gen
 	${RM} -f jfloat.set.tmp jfloat_gen

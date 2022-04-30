@@ -122,14 +122,14 @@
 #define JPARSE_VERSION "0.1 2022-03-17"		/* format: major.minor YYYY-MM-DD */
 
 /*
- * official jint version
+ * official jnum_chk version
  */
-#define JINT_VERSION "0.5 2022-04-20"		/* format: major.minor YYYY-MM-DD */
+#define JNUM_CHK_VERSION "0.6 2022-04-29"	/* format: major.minor YYYY-MM-DD */
 
 /*
- * official jfloat version
+ * official jnum_gen version
  */
-#define JFLOAT_VERSION "0.5 2022-04-20"		/* format: major.minor YYYY-MM-DD */
+#define JNUM_GEN_VERSION "0.6 2022-04-29"	/* format: major.minor YYYY-MM-DD */
 
 /*
  * minimum bison version needed to build the JSON parser

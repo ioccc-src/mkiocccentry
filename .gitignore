@@ -9,8 +9,8 @@ fnamchk
 iocccsize
 jauthchk
 jinfochk
-jnumber
-jnumber_gen
+jnum_chk
+jnum_gen
 jparse
 jparse.c
 jparse.tab.c

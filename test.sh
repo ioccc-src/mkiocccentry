@@ -45,7 +45,7 @@ Exit codes:
     4	 ./dbg not found or not executable
     5    ./mkiocccentry-test.sh not found or not executable
     6    ./jstr-test.sh not found or not executable
-    7    ./jnumber not found or not executable
+    7    ./jnum_chk not found or not executable
     8    ./dyn_test not found or not executable
 
     >=20  some test failed"
@@ -139,16 +139,16 @@ if [[ ! -x ./jstr-test.sh ]]; then
     exit 6
 fi
 #
-if [[ ! -e ./jnumber ]]; then
-    echo "$0: ERROR: ./jnumber file not found" 1>&2
+if [[ ! -e ./jnum_chk ]]; then
+    echo "$0: ERROR: ./jnum_chk file not found" 1>&2
     exit 7
 fi
-if [[ ! -f ./jnumber ]]; then
-    echo "$0: ERROR: ./jnumber is not a file" 1>&2
+if [[ ! -f ./jnum_chk ]]; then
+    echo "$0: ERROR: ./jnum_chk is not a file" 1>&2
     exit 7
 fi
-if [[ ! -x ./jnumber ]]; then
-    echo "$0: ERROR: ./jnumber is not executable" 1>&2
+if [[ ! -x ./jnum_chk ]]; then
+    echo "$0: ERROR: ./jnum_chk is not executable" 1>&2
     exit 7
 fi
 #
@@ -257,22 +257,22 @@ else
     echo "PASSED: jstr-test.sh"
 fi
 
-# jnumber
+# jnum_chk
 #
 echo
-echo "RUNNING: jnumber -t"
+echo "RUNNING: jnum_chk"
 echo
-echo "./jnumber -t"
-./jnumber -t
+echo "./jnum_chk"
+./jnum_chk
 status="$?"
 if [[ $status -ne 0 ]]; then
-    echo "$0: ERROR: jnumber non-zero exit code: $status" 1>&2
+    echo "$0: ERROR: jnum_chk non-zero exit code: $status" 1>&2
     FAILURE_SUMMARY="$FAILURE_SUMMARY
-    jnumber non-zero exit code: $status"
+    jnum_chk non-zero exit code: $status"
     EXIT_CODE="25"
 else
     echo
-    echo "PASSED: jnumber -t"
+    echo "PASSED: jnum_chk"
 fi
 
 # dyn_test
