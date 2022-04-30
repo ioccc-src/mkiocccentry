@@ -1365,7 +1365,7 @@ check_tarball(char const *tar, char const *fnamchk)
 
 
 /*
- * has_special_bits - determine if the string has any special bits
+ * has_special_bits - determine if the file permission has any special bits
  *
  * given:
  *
