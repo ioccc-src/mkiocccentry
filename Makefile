@@ -403,28 +403,6 @@ jstrdecode.o: jstrdecode.c Makefile
 jstrdecode: jstrdecode.o dbg.o json.o util.o dyn_array.o Makefile
 	${CC} ${CFLAGS} jstrdecode.o dbg.o json.o util.o dyn_array.o -o $@
 
-# XXX - jint is going away
-#
-jint.test.o: jint.test.c Makefile
-	${CC} ${CFLAGS} -DJINT_TEST_ENABLED jint.test.c -c
-
-jint.o: jint.c Makefile
-	${CC} ${CFLAGS} -DJINT_TEST_ENABLED jint.c -c
-
-jint: jint.o dbg.o json.o util.o dyn_array.o jint.test.o Makefile
-	${CC} ${CFLAGS} jint.o dbg.o json.o util.o dyn_array.o jint.test.o -o $@
-
-# XXX - jfloat is going away
-#
-jfloat.test.o: jfloat.test.c Makefile
-	${CC} ${CFLAGS} -DJFLOAT_TEST_ENABLED jfloat.test.c -c
-
-jfloat.o: jfloat.c Makefile
-	${CC} ${CFLAGS} -DJFLOAT_TEST_ENABLED jfloat.c -c
-
-jfloat: jfloat.o dbg.o json.o util.o dyn_array.o jfloat.test.o Makefile
-	${CC} ${CFLAGS} jfloat.o dbg.o json.o util.o dyn_array.o jfloat.test.o -o $@
-
 jnum_test.o: jnum_test.c Makefile
 	${CC} ${CFLAGS} jnum_test.c -c
 
@@ -609,34 +587,6 @@ use_ref: jparse.tab.ref.c jparse.tab.ref.h jparse.ref.c
 	${CP} -f -v jparse.tab.ref.h jparse.tab.h
 	${RM} -f jparse.c
 	${CP} -f -v jparse.ref.c jparse.c
-
-# XXX - jint is going away
-#
-# rebuild jint.test.c
-#
-rebuild_jint_test: jint.testset jint.c dbg.o json.o util.o dyn_array.o Makefile
-	${RM} -f jint.set.tmp jint_gen
-	${CC} ${CFLAGS} jint.c dbg.o json.o util.o dyn_array.o -o jint_gen
-	${SED} -n -e '1,/DO NOT REMOVE THIS LINE/p' < jint.test.c > jint.set.tmp
-	echo '#if defined(JINT_TEST_ENABLED)' >> jint.set.tmp
-	./jint_gen -- $$(<jint.testset) >> jint.set.tmp
-	echo '#endif /* JINT_TEST_ENABLED */' >> jint.set.tmp
-	${MV} -f jint.set.tmp jint.test.c
-	${RM} -f jint_gen
-
-# XXX - jfloat is going away
-#
-# rebuild jfloat.test.c
-#
-rebuild_jfloat_test: jfloat.testset jfloat.c dbg.o json.o util.o dyn_array.o Makefile
-	${RM} -f jfloat.set.tmp jfloat_gen
-	${CC} ${CFLAGS} jfloat.c dbg.o json.o util.o dyn_array.o -o jfloat_gen
-	${SED} -n -e '1,/DO NOT REMOVE THIS LINE/p' < jfloat.test.c > jfloat.set.tmp
-	echo '#if defined(JFLOAT_TEST_ENABLED)' >> jfloat.set.tmp
-	./jfloat_gen -- $$(<jfloat.testset) >> jfloat.set.tmp
-	echo '#endif /* JFLOAT_TEST_ENABLED */' >> jfloat.set.tmp
-	${MV} -f jfloat.set.tmp jfloat.test.c
-	${RM} -f jfloat_gen
 
 rebuild_jnum_test: jnum_gen jnum.testset Makefile
 	${RM} -f jnum_test.c
