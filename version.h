@@ -151,5 +151,9 @@
  */
 #define DYN_TEST_VERSION "1.5 2022-04-17"	 /* format: major.minor YYYY-MM-DD */
 
+/*
+ * debug version
+ */
+#define DBG_VERSION "1.9 2022-05-01"		/* format: major.minor YYYY-MM-DD */
 
 #endif /* INCLUDE_VERSION_H */

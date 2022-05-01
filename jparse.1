@@ -1,0 +1,89 @@
+.TH jparse 1 "01 May 2022" "jparse" "IOCCC tools"
+.SH NAME
+jparse \- IOCCC JSON parser
+.SH SYNOPSIS
+\fBjparse [\-h] [\-v level] [\-q] [\-V] [\-t] [\-n] [string ...]
+.SH DESCRIPTION
+\fBjparse\fP will parse a block of JSON text either from a file or a string passed into the command line.
+.PP
+.SH OPTIONS
+.PP
+\fB\-h\fP
+Show help and exit.
+.PP
+\fB\-v\fP
+Set verbosity level.
+.PP
+\fB\-q\fP
+Suppresses some of the output (def: not quiet).
+.PP
+\fB\-V\fP
+Show version and exit 0.
+.PP
+\fB\-s\fP
+Parse as a string instead of a file.
+.PP
+\fB\-n\fP
+Do not output a newline after the decode function.
+.SH EXIT STATUS
+.PP
+\fB0\fP for success; different non-zero values for error conditions.
+.SH FILES
+\fIjparse.y\fP
+.RS
+\fbbison(1)\fP source file for the \fBjparse\fP tool.
+.RE
+\fIjparse.l\fP
+.RS
+\fbflex(1)\fP source file for the \fBjparse\fP tool.
+.RE
+\fIjparse.h\fP
+.RS
+Header file of the \fBjparse\fP tool.
+.RE
+.SH BUGS
+.PP
+\fBjparse IS INCOMPLETE and does not even create a parse tree yet!\fP
+It is far from being complete.
+Please don't report bugs right now as it's not supposed to work yet.
+Later on we'll be happy to accept bug reports but for now it can be considered a work in progress that is far from complete.
+.PP
+.SH EXAMPLES
+.PP
+.nf
+Parse the JSON string \fB{ "test_mode" : false }\fP:
+.RS
+\fB
+ ./jparse -s '{ "test_mode" : false }'\fP
+.fi
+.RE
+.PP
+.nf
+Parse input from \fBstdin\fP (send \fBEOF\fP, usually ctrl-d or \fB^D\fP, twice, to parse):
+.RS
+\fB
+ ./jparse -
+ []
+ ^D
+ ^D
+.fi
+.RE
+.PP
+.nf
+Parse just a negative number:
+.RS
+\fB
+ ./jparse -s -5
+.fi
+.RE
+.PP
+.nf
+Parse .info.json file:
+.RS
+\fB
+ ./jparse .info.json
+.fi
+.RE
+.SH SEE ALSO
+.PP
+\fBjinfochk(1)\fP and \fBjauthchk(1)\fP.
