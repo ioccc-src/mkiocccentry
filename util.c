@@ -1621,7 +1621,7 @@ readline(char **linep, FILE * stream)
 	(*linep)[ret - 1] = '\0';	/* clear newline */
 	--ret;
     }
-    dbg(DBG_VVHIGH, "read %jd bytes + newline into %ju byte buffer", (intmax_t)ret, (uintmax_t)linecap);
+    dbg(DBG_VVVHIGH, "read %jd bytes + newline into %ju byte buffer", (intmax_t)ret, (uintmax_t)linecap);
 
     /*
      * return length of line without the trailing newline
@@ -3172,10 +3172,10 @@ find_text(char const *ptr, size_t len, char **first)
     }
 
     /*
-     * scan the buffer for non-whitespace/non-NUL
+     * scan the buffer for non-whitespace that is not NUL
      */
     for (i=0; i < len; ++i) {
-	if ((!isascii(ptr[i]) || !isspace(ptr[i])) && ptr[i] != '\0') {
+	if (!isascii(ptr[i]) || !isspace(ptr[i]) || ptr[i] == '\0') {
 	    break;
 	}
     }
@@ -3195,11 +3195,10 @@ find_text(char const *ptr, size_t len, char **first)
     }
 
     /*
-     * determine the length of non-whitespace/non-NUL
+     * determine the length of non-whitespace that is not NUL
      */
-    while (i < len) {
-	++ret;
-	if ((!isascii(ptr[i]) || !isspace(ptr[i])) && ptr[i] != '\0') {
+    for (ret=1, ++i; i < len; ++i, ++ret) {
+	if ((isascii(ptr[i]) && isspace(ptr[i])) || ptr[i] == '\0') {
 	    break;
 	}
     }
@@ -3235,9 +3234,6 @@ find_text_str(char const *str, char **first)
      */
     if (str == NULL) {
 	warn(__func__, "str is NULL");
-	return 0;
-    }
-    if (len <= 0) {
 	return 0;
     }
 
