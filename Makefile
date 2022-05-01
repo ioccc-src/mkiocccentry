@@ -215,7 +215,8 @@ MANPAGES= $(MAN_TARGETS:=.1)
 TEST_TARGETS= dbg utf8_test dyn_test
 OBJFILES= dbg.o util.o mkiocccentry.o iocccsize.o fnamchk.o txzchk.o jauthchk.o jinfochk.o \
 	json.o jstrencode.o jstrdecode.o rule_count.o location.o sanity.o utf8_test.o verge.o \
-	dyn_array.o dyn_test.o json_chk.o json_entry.o dbg_test.o jnum_chk.o jnum_gen.o jnum_test.o
+	dyn_array.o dyn_test.o json_chk.o json_entry.o dbg_test.o jnum_chk.o jnum_gen.o jnum_test.o \
+	json_util.o
 LESS_PICKY_CSRC= utf8_posix_map.c
 LESS_PICKY_OBJ= utf8_posix_map.o
 GENERATED_CSRC= jparse.c jparse.tab.c

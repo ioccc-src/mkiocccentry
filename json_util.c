@@ -602,7 +602,7 @@ alloc_json_code_ignore_set(void)
     errno = 0;			/* pre-clear errno for errp() */
     tbl = malloc(sizeof(struct ignore_json_code));
     if (tbl == NULL) {
-	errp(189, __func__, "failed to malloc struct ignore_json_code");
+	errp(200, __func__, "failed to malloc struct ignore_json_code");
 	not_reached();
     }
 
@@ -612,7 +612,7 @@ alloc_json_code_ignore_set(void)
     errno = 0;			/* pre-clear errno for errp() */
     tbl->code = malloc((JSON_CODE_IGNORE_CHUNK+1+1) * sizeof(int));
     if (tbl->code == NULL) {
-	errp(190, __func__, "cannot allocate %d ignore codes", JSON_CODE_IGNORE_CHUNK+1+1);
+	errp(201, __func__, "cannot allocate %d ignore codes", JSON_CODE_IGNORE_CHUNK+1+1);
 	not_reached();
     }
 
@@ -649,7 +649,7 @@ cmp_codes(const void *a, const void *b)
      * firewall
      */
     if (a == NULL || b == NULL) {
-	err(191, __func__, "NULL arg(s)");
+	err(202, __func__, "NULL arg(s)");
 	not_reached();
     }
 
@@ -685,7 +685,7 @@ expand_json_code_ignore_set(void)
      */
     alloc_json_code_ignore_set();
     if (ignore_json_code_set == NULL) {
-	err(192, __func__, "ignore_json_code_set is NULL after allocation");
+	err(203, __func__, "ignore_json_code_set is NULL after allocation");
 	not_reached();
     }
 
@@ -696,7 +696,7 @@ expand_json_code_ignore_set(void)
 	p = realloc(ignore_json_code_set->code, (ignore_json_code_set->alloc+JSON_CODE_IGNORE_CHUNK+1) * sizeof(int));
 	errno = 0;			/* pre-clear errno for errp() */
 	if (p == NULL) {
-	    errp(193, __func__, "cannot expand ignore_json_code_set from %d to %d codes",
+	    errp(204, __func__, "cannot expand ignore_json_code_set from %d to %d codes",
 				ignore_json_code_set->alloc+1, ignore_json_code_set->alloc+JSON_CODE_IGNORE_CHUNK+1);
 	    not_reached();
 	}
@@ -730,7 +730,7 @@ is_json_code_ignored(int code)
      * firewall
      */
     if (code < 0) {
-	err(194, __func__, "code %d < 0", code);
+	err(205, __func__, "code %d < 0", code);
 	not_reached();
     }
 
@@ -739,7 +739,7 @@ is_json_code_ignored(int code)
      */
     alloc_json_code_ignore_set();
     if (ignore_json_code_set == NULL) {
-	err(195, __func__, "ignore_json_code_set is NULL after allocation");
+	err(206, __func__, "ignore_json_code_set is NULL after allocation");
 	not_reached();
     }
 
@@ -783,7 +783,7 @@ ignore_json_code(int code)
      * firewall
      */
     if (code < 0) {
-	err(196, __func__, "code %d < 0", code);
+	err(207, __func__, "code %d < 0", code);
 	not_reached();
     }
 
@@ -794,7 +794,7 @@ ignore_json_code(int code)
 	expand_json_code_ignore_set();
     }
     if (ignore_json_code_set == NULL) {
-	err(197, __func__, "ignore_json_code_set is NULL after allocation or expansion");
+	err(208, __func__, "ignore_json_code_set is NULL after allocation or expansion");
 	not_reached();
     }
 
