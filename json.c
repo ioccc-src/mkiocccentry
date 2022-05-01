@@ -1552,13 +1552,13 @@ json_process_decimal(struct json_number *item, char const *str, size_t len)
 	errno = 0;			/* pre-clear errno for errp() */
 	item->as_maxint = strtoimax(str, &endptr, 10);
 	if (errno != 0 || endptr == str || endptr == NULL || *endptr != '\0') {
-	    dbg(DBG_VVHIGH, "strtoimax failed to convert");
+	    dbg(DBG_VVVHIGH, "strtoimax failed to convert");
 	    item->converted = false;
 	    return false;	/* processing failed */
 	}
 	item->converted = true;
 	item->maxint_sized = true;
-	dbg(DBG_VVHIGH, "strtoimax for <%s> returned: %jd", str, item->as_maxint);
+	dbg(DBG_VVVHIGH, "strtoimax for <%s> returned: %jd", str, item->as_maxint);
 
 	/* case int8_t: range check */
 	if (item->as_maxint >= (intmax_t)INT8_MIN && item->as_maxint <= (intmax_t)INT8_MAX) {
@@ -1649,13 +1649,13 @@ json_process_decimal(struct json_number *item, char const *str, size_t len)
 	errno = 0;			/* pre-clear errno for errp() */
 	item->as_umaxint = strtoumax(str, &endptr, 10);
 	if (errno != 0 || endptr == str || endptr == NULL || *endptr != '\0') {
-	    dbg(DBG_VVHIGH, "strtoumax failed to convert");
+	    dbg(DBG_VVVHIGH, "strtoumax failed to convert");
 	    item->converted = false;
 	    return false;	/* processing failed */
 	}
 	item->converted = true;
 	item->umaxint_sized = true;
-	dbg(DBG_VVHIGH, "strtoumax for <%s> returned: %ju", str, item->as_umaxint);
+	dbg(DBG_VVVHIGH, "strtoumax for <%s> returned: %ju", str, item->as_umaxint);
 
 	/* case int8_t: bounds check */
 	if (item->as_umaxint <= (uintmax_t)INT8_MAX) {
@@ -2003,17 +2003,17 @@ json_process_floating(struct json_number *item, char const *str, size_t len)
     errno = 0;			/* pre-clear errno for errp() */
     item->as_longdouble = strtold(str, &endptr);
     if (errno != 0 || endptr == str || endptr == NULL || *endptr != '\0') {
-	dbg(DBG_VVHIGH, "strtold failed to convert");
+	dbg(DBG_VVVHIGH, "strtold failed to convert");
 	item->converted = false;
 	return false;	/* processing failed */
     }
     item->converted = true;
     item->longdouble_sized = true;
     item->as_longdouble_int = (item->as_longdouble == floorl(item->as_longdouble));
-    dbg(DBG_VVHIGH, "strtold for <%s> returned as %%Lg: %.22Lg", str, item->as_longdouble);
-    dbg(DBG_VVHIGH, "strtold for <%s> returned as %%Le: %.22Le", str, item->as_longdouble);
-    dbg(DBG_VVHIGH, "strtold for <%s> returned as %%Lf: %.22Lf", str, item->as_longdouble);
-    dbg(DBG_VVHIGH, "strtold returned an integer value: %s", item->as_longdouble_int ? "true" : "false");
+    dbg(DBG_VVVHIGH, "strtold for <%s> returned as %%Lg: %.22Lg", str, item->as_longdouble);
+    dbg(DBG_VVVHIGH, "strtold for <%s> returned as %%Le: %.22Le", str, item->as_longdouble);
+    dbg(DBG_VVVHIGH, "strtold for <%s> returned as %%Lf: %.22Lf", str, item->as_longdouble);
+    dbg(DBG_VVVHIGH, "strtold returned an integer value: %s", item->as_longdouble_int ? "true" : "false");
 
     /*
      * note if value < 0
@@ -2029,14 +2029,14 @@ json_process_floating(struct json_number *item, char const *str, size_t len)
     item->as_double = strtod(str, &endptr);
     if (errno != 0 || endptr == str || endptr == NULL || *endptr != '\0') {
 	item->double_sized = false;
-	dbg(DBG_VVHIGH, "strtod for <%s> failed", str);
+	dbg(DBG_VVVHIGH, "strtod for <%s> failed", str);
     } else {
 	item->double_sized = true;
 	item->as_double_int = (item->as_double == floorl(item->as_double));
-	dbg(DBG_VVHIGH, "strtod for <%s> returned as %%lg: %.22lg", str, item->as_double);
-	dbg(DBG_VVHIGH, "strtod for <%s> returned as %%le: %.22le", str, item->as_double);
-	dbg(DBG_VVHIGH, "strtod for <%s> returned as %%lf: %.22lf", str, item->as_double);
-	dbg(DBG_VVHIGH, "strtod returned an integer value: %s", item->as_double_int ? "true" : "false");
+	dbg(DBG_VVVHIGH, "strtod for <%s> returned as %%lg: %.22lg", str, item->as_double);
+	dbg(DBG_VVVHIGH, "strtod for <%s> returned as %%le: %.22le", str, item->as_double);
+	dbg(DBG_VVVHIGH, "strtod for <%s> returned as %%lf: %.22lf", str, item->as_double);
+	dbg(DBG_VVVHIGH, "strtod returned an integer value: %s", item->as_double_int ? "true" : "false");
     }
 
     /*
@@ -2046,14 +2046,14 @@ json_process_floating(struct json_number *item, char const *str, size_t len)
     item->as_float = strtof(str, &endptr);
     if (errno != 0 || endptr == str || endptr == NULL || *endptr != '\0') {
 	item->float_sized = false;
-	dbg(DBG_VVHIGH, "strtof for <%s> failed", str);
+	dbg(DBG_VVVHIGH, "strtof for <%s> failed", str);
     } else {
 	item->float_sized = true;
 	item->as_float_int = (item->as_longdouble == floorl(item->as_longdouble));
-	dbg(DBG_VVHIGH, "strtof for <%s> returned as %%g: %.22g", str, item->as_float);
-	dbg(DBG_VVHIGH, "strtof for <%s> returned as %%e: %.22e", str, item->as_float);
-	dbg(DBG_VVHIGH, "strtof for <%s> returned as %%f: %.22f", str, item->as_float);
-	dbg(DBG_VVHIGH, "strtof returned an integer value: %s", item->as_float_int ? "true" : "false");
+	dbg(DBG_VVVHIGH, "strtof for <%s> returned as %%g: %.22g", str, item->as_float);
+	dbg(DBG_VVVHIGH, "strtof for <%s> returned as %%e: %.22e", str, item->as_float);
+	dbg(DBG_VVVHIGH, "strtof for <%s> returned as %%f: %.22f", str, item->as_float);
+	dbg(DBG_VVVHIGH, "strtof returned an integer value: %s", item->as_float_int ? "true" : "false");
     }
 
     /*
