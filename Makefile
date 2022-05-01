@@ -209,7 +209,7 @@ SH_TARGETS=limit_ioccc.sh
 # page is written the MAN_TARGETS should have the tool name (without any
 # extension) added to it.  Eventually MAN_TARGETS can be removed entirely and
 # MANPAGES will act on TARGETS.
-MAN_TARGETS = mkiocccentry txzchk fnamchk iocccsize jinfochk jauthchk jstrdecode jstrencode verge
+MAN_TARGETS = mkiocccentry txzchk fnamchk iocccsize jinfochk jauthchk jstrdecode jstrencode verge jparse
 MANPAGES= $(MAN_TARGETS:=.1)
 
 TEST_TARGETS= dbg utf8_test dyn_test
