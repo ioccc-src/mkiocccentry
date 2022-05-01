@@ -53,6 +53,9 @@ typedef unsigned char bool;
 #undef false
 #define false ((bool)(0))
 #endif
+#if !defined(t_or_f)
+#define t_or_f(x) ((x) ? "true" : "false")
+#endif
 
 
 /*
@@ -104,6 +107,7 @@ typedef unsigned char bool;
 #define DBG_VHIGH (7)		/* very verbose debugging */
 #define DBG_VVHIGH (9)		/* very very verbose debugging */
 #define DBG_VVVHIGH (11)	/* very very very verbose debugging */
+#define DBG_VVVVHIGH (13)	/* very very very very verbose debugging */
 
 #define DBG_DEFAULT (DBG_NONE)	/* default debugging level */
 

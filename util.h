@@ -55,6 +55,9 @@ typedef unsigned char bool;
 #undef false
 #define false ((bool)(0))
 #endif
+#if !defined(t_or_f)
+#define t_or_f(x) ((x) ? "true" : "false")
+#endif
 
 
 /*
@@ -141,12 +144,15 @@ typedef unsigned char bool;
  * fpr() and pr() related macros
  */
 #define fprint(stream, fmt, ...) fpr((stream), __func__, (fmt), __VA_ARGS__)
-#define ffpstr(stream, fmt) fpr((stream), __func__, (fmt))
+#define fprstr(stream, fmt) fpr((stream), __func__, (fmt))
 /**/
 #define print(fmt, ...) pr(__func__, (fmt), __VA_ARGS__)
 #define prstr(fmt) pr(__func__, (fmt))
 
-/* utility macros for find_text functions */
+
+/*
+ * utility macros for find_text functions
+ */
 #define is_all_text(buf, len) (find_text((buf), (len), NULL) == (len))
 #define is_all_text_str(str) (is_all_text((str), strlen(str)))
 #define is_all_whitespace(buf, len) (find_text((buf), (len), NULL) == 0)

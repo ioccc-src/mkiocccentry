@@ -2013,7 +2013,7 @@ json_process_floating(struct json_number *item, char const *str, size_t len)
     dbg(DBG_VVVHIGH, "strtold for <%s> returned as %%Lg: %.22Lg", str, item->as_longdouble);
     dbg(DBG_VVVHIGH, "strtold for <%s> returned as %%Le: %.22Le", str, item->as_longdouble);
     dbg(DBG_VVVHIGH, "strtold for <%s> returned as %%Lf: %.22Lf", str, item->as_longdouble);
-    dbg(DBG_VVVHIGH, "strtold returned an integer value: %s", item->as_longdouble_int ? "true" : "false");
+    dbg(DBG_VVVHIGH, "strtold returned an integer value: %s", t_or_f(item->as_longdouble_int));
 
     /*
      * note if value < 0
@@ -2036,7 +2036,7 @@ json_process_floating(struct json_number *item, char const *str, size_t len)
 	dbg(DBG_VVVHIGH, "strtod for <%s> returned as %%lg: %.22lg", str, item->as_double);
 	dbg(DBG_VVVHIGH, "strtod for <%s> returned as %%le: %.22le", str, item->as_double);
 	dbg(DBG_VVVHIGH, "strtod for <%s> returned as %%lf: %.22lf", str, item->as_double);
-	dbg(DBG_VVVHIGH, "strtod returned an integer value: %s", item->as_double_int ? "true" : "false");
+	dbg(DBG_VVVHIGH, "strtod returned an integer value: %s", t_or_f(item->as_double_int));
     }
 
     /*
@@ -2053,7 +2053,7 @@ json_process_floating(struct json_number *item, char const *str, size_t len)
 	dbg(DBG_VVVHIGH, "strtof for <%s> returned as %%g: %.22g", str, item->as_float);
 	dbg(DBG_VVVHIGH, "strtof for <%s> returned as %%e: %.22e", str, item->as_float);
 	dbg(DBG_VVVHIGH, "strtof for <%s> returned as %%f: %.22f", str, item->as_float);
-	dbg(DBG_VVVHIGH, "strtof returned an integer value: %s", item->as_float_int ? "true" : "false");
+	dbg(DBG_VVVHIGH, "strtof returned an integer value: %s", t_or_f(item->as_float_int));
     }
 
     /*
@@ -2402,7 +2402,7 @@ json_conv_string(char const *ptr, size_t len, bool quote)
     item->str = json_decode_str(item->as_str, &(item->str_len));
     if (item->str == NULL) {
 	warn(__func__, "quote === %s: JSON string decode failed for: <%s>",
-		       (quote ? "true" : "false"), item->as_str);
+		       t_or_f(quote), item->as_str);
 	return ret;
     }
     item->converted = true;	/* JSON decoding successful */

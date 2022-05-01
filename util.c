@@ -2846,10 +2846,7 @@ posix_plus_safe(char const *str, bool lower_only, bool slash_ok, bool first)
      * all is well
      */
     dbg(DBG_VVVHIGH, "lower_only: %s slash_ok: %s first: %s str is valid: <%s>",
-		     (lower_only ? "true" : "false"),
-		     (slash_ok ? "true" : "false"),
-		     (first ? "true" : "false"),
-		     str);
+		     t_or_f(lower_only), t_or_f(slash_ok), t_or_f(first), str);
     return true;
 }
 
@@ -3009,21 +3006,14 @@ posix_safe_chk(char const *str, size_t len, bool *slash, bool *posix_safe, bool 
     if (found_unsafe == false) {
 	*posix_safe = true;
 	dbg(DBG_VVHIGH, "posix_safe_chk(..., %s, %s, %s, %s): string is NOT POSIX portable safe plus +/",
-		    (slash ? "true" : "false"),
-		    (posix_safe ? "true" : "false"),
-		    (first_alphanum ? "true" : "false"),
-		    (upper ? "true" : "false"));
+		         t_or_f(slash), t_or_f(posix_safe), t_or_f(first_alphanum), t_or_f(upper));
 
     /*
      * report POSIX portable safe plus + safe with maybe /
      */
     } else {
 	dbg(DBG_VVHIGH, "posix_safe_chk(..., %s, %s, %s, %s): string is POSIX portable safe plus +/: <%s>",
-		    (slash ? "true" : "false"),
-		    (posix_safe ? "true" : "false"),
-		    (first_alphanum ? "true" : "false"),
-		    (upper ? "true" : "false"),
-		    str);
+		        t_or_f(slash), t_or_f(posix_safe), t_or_f(first_alphanum), t_or_f(upper), str);
     }
     return;
 }

@@ -428,7 +428,7 @@ json_fprintf_value_bool(FILE *stream, char const *lead, char const *name, char c
      * print value as a JSON boolean
      */
     errno = 0;			/* pre-clear errno for warnp() */
-    ret = fprintf(stream, "%s", (value) ? "true" : "false");
+    ret = fprintf(stream, "%s", t_or_f(value));
     if (ret <= 0) {
 	warnp(__func__, "fprintf for value as a boolean");
 	return false;
