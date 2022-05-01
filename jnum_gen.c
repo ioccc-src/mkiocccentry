@@ -289,7 +289,7 @@ main(int argc, char *argv[])
 	prstr("    },\n\n");
     }
     prstr("    /* MUST BE LAST */\n");
-    prstr("    { 0 }\n");
+    prstr("    { false }\n");
     prstr("};\n");
 
 
@@ -351,51 +351,53 @@ fpr_number(FILE *stream, struct json_number *item)
     /*
      * print bool converted
      */
-    fprint(stream, "    %s,"
+    fprint(stream, "\t%s,\t"
 		   "\t/* true ==> able to convert JSON number string to some form of C value */\n\n",
 		   t_or_f(item->converted));
 
     /*
      * print JSON string
      */
-    fprint(stream, "    \"%s\","
-		   "\t/* allocated copy of the original allocated JSON number, NUL terminated */\n",
-		   item->as_str);
-    fprint(stream, "    \"%s\","
-		   "\t/* first whitespace character */\n\n",
-		   item->first);
+    fprint(stream, "\t\"%s\",%s"
+		   "/* allocated copy of the original allocated JSON number, NUL terminated */\n",
+		   item->as_str,
+		   (item->as_str_len <= 4 ? "\t\t" : "\t"));
+    fprint(stream, "\t\"%s\",%s"
+		   "/* first whitespace character */\n\n",
+		   item->first,
+		   (item->number_len <= 4 ? "\t\t" : "\t"));
 
     /*
      * print JSON string lengths
      */
-    fprint(stream, "    %ju,"
+    fprint(stream, "\t%ju,\t"
 		   "\t/* length of as_str */\n",
 		   (uintmax_t)item->as_str_len);
-    fprint(stream, "    %ju,"
+    fprint(stream, "\t%ju,\t"
 		   "\t/* length of JSON number, w/o leading or trailing whitespace and NUL bytes */\n\n",
 		   (uintmax_t)item->number_len);
 
     /*
      * print bool is_negative
      */
-    fprint(stream, "    %s,"
+    fprint(stream, "\t%s,\t"
 		   "\t/* true ==> value < 0 */\n\n",
 		   t_or_f(item->is_negative));
 
     /*
      * print bool is_floating and is_e_notation
      */
-    fprint(stream, "    %s,"
+    fprint(stream, "\t%s,\t"
 		   "\t/* true ==> as_str had a . in it such as 1.234, false ==> no . found */\n",
 		   t_or_f(item->is_floating));
-    fprint(stream, "    %s,"
+    fprint(stream, "\t%s,\t"
 		   "\t/* true ==> e notation used such as 1e10, no e notation found */\n\n",
 		   t_or_f(item->is_e_notation));
 
     /*
      * print integer values
      */
-    fprstr(stream, "    /* integer values */\n");
+    fprstr(stream, "\t/* integer values */\n");
 
     /*
      * print int8_t info
@@ -533,7 +535,7 @@ fpr_number(FILE *stream, struct json_number *item)
     /*
      * print floating point values
      */
-    fprstr(stream, "\n    /* floating point values */\n");
+    fprstr(stream, "\n\t/* floating point values */\n");
 
     /*
      * print float info
@@ -589,15 +591,18 @@ fpr_info(FILE *stream, bool sized, intmax_t value, char const *scomm, char const
      */
     fprstr(stream,"\n");
     if (sized == true) {
-	fprint(stream,"    true,\t/* %s */\n", scomm);
-	fprint(stream,"    %jd,\t/* %s */\n", value, vcomm);
+	fprint(stream, "\ttrue,\t\t/* %s */\n", scomm);
+	fprint(stream, "\t%jd,%s/* %s */\n",
+		       value,
+		       (value < -99999 || value > 999999) ? "\t" : "\t\t",
+		       vcomm);
 
     /*
      * case: sized is false - no value to print
      */
     } else {
-	fprint(stream,"    false,\t/* %s */\n", scomm);
-	fprint(stream,"    0,\t\t/* no %s */\n", vcomm);
+	fprint(stream, "\tfalse,\t\t/* %s */\n", scomm);
+	fprint(stream, "\t0,\t\t/* no %s */\n", vcomm);
 
     }
     return;
@@ -632,15 +637,18 @@ fpr_uinfo(FILE *stream, bool sized, uintmax_t value, char const *scomm, char con
      */
     fprstr(stream,"\n");
     if (sized == true) {
-	fprint(stream,"    true,\t/* %s */\n", scomm);
-	fprint(stream,"    %ju,\t/* %s */\n", value, vcomm);
+	fprint(stream, "\ttrue,\t\t/* %s */\n", scomm);
+	fprint(stream, "\t%ju,%s/* %s */\n",
+		       value,
+		       (value > 999999) ? "\t" : "\t\t",
+		       vcomm);
 
     /*
      * case: sized is false - no value to print
      */
     } else {
-	fprint(stream,"    false,\t/* %s */\n", scomm);
-	fprint(stream,"    0,\t\t/* no %s */\n", vcomm);
+	fprint(stream, "\tfalse,\t\t/* %s */\n", scomm);
+	fprint(stream, "\t0,\t\t/* no %s */\n", vcomm);
 
     }
     return;
@@ -677,17 +685,20 @@ fpr_finfo(FILE *stream, bool sized, long double value, bool intval, char const *
      */
     fprstr(stream,"\n");
     if (sized == true) {
-	fprint(stream,"    true,\t\t/* %s */\n", scomm);
-	fprint(stream,"    %.22Lg,\t/* %s */\n", value, vcomm);
-	fprint(stream,"    %s,\t\t/* %s */\n", t_or_f(intval), sintval);
+	fprint(stream, "\ttrue,\t\t/* %s */\n", scomm);
+	fprint(stream, "\t%.22Lg,%s/* %s */\n",
+		       value,
+		       (value <= -100000.0 || value >= 1000000.0) ? "\t" : "\t\t",
+		       vcomm);
+	fprint(stream, "\t%s,\t\t/* %s */\n", t_or_f(intval), sintval);
 
     /*
      * case: sized is false - no value to print
      */
     } else {
-	fprint(stream,"    false,\t\t/* %s */\n", scomm);
-	fprint(stream,"    0,\t/* no %s */\n", vcomm);
-	fprint(stream,"    false,\t\t/* %s */\n", sintval);
+	fprint(stream, "\tfalse,\t\t/* %s */\n", scomm);
+	fprint(stream, "\t0,\t\t/* no %s */\n", vcomm);
+	fprint(stream, "\tfalse,\t\t/* %s */\n", sintval);
 
     }
     return;
