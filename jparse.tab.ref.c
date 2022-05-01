@@ -2015,7 +2015,7 @@ main(int argc, char **argv)
 	}
 
     } else if (!string_flag_used) {
-	usage(2, "no file specified", program); /*ooo*/
+	usage(2, "-s string was not used and file specified", program); /*ooo*/
 	not_reached();
     }
 
