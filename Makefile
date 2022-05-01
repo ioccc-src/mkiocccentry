@@ -214,9 +214,8 @@ MANPAGES= $(MAN_TARGETS:=.1)
 
 TEST_TARGETS= dbg utf8_test dyn_test
 OBJFILES= dbg.o util.o mkiocccentry.o iocccsize.o fnamchk.o txzchk.o jauthchk.o jinfochk.o \
-	json.o jstrencode.o jstrdecode.o rule_count.o location.o sanity.o \
-	utf8_test.o verge.o \
-	dyn_array.o dyn_test.o json_chk.o json_entry.o dbg_test.o jnum_chk.o
+	json.o jstrencode.o jstrdecode.o rule_count.o location.o sanity.o utf8_test.o verge.o \
+	dyn_array.o dyn_test.o json_chk.o json_entry.o dbg_test.o jnum_chk.o jnum_gen.o jnum_test.o
 LESS_PICKY_CSRC= utf8_posix_map.c
 LESS_PICKY_OBJ= utf8_posix_map.o
 GENERATED_CSRC= jparse.c jparse.tab.c
@@ -232,7 +231,8 @@ SRCFILES= $(OBJFILES:.o=.c)
 ALL_CSRC= ${LESS_PICKY_CSRC} ${GENERATED_CSRC} ${SRCFILES}
 H_FILES= dbg.h jauthchk.h jinfochk.h json.h jstrdecode.h jstrencode.h limit_ioccc.h \
 	mkiocccentry.h txzchk.h util.h location.h utf8_posix_map.h jparse.h \
-	verge.h sorry.tm.ca.h dyn_array.h dyn_test.h json_entry.h json_util.h jnum_chk.h
+	verge.h sorry.tm.ca.h dyn_array.h dyn_test.h json_entry.h json_util.h jnum_chk.h \
+	jnum_gen.h
 # This is a simpler way to do:
 #
 #   DSYMDIRS= $(patsubst %,%.dSYM,$(TARGETS))
@@ -548,7 +548,6 @@ prep: prep.sh
 	./prep.sh 2>&1 | ${TEE} ${BUILD_LOG}
 	@echo NOTE: The above details were saved in the file: ${BUILD_LOG}
 
-
 #
 # make parser
 #
@@ -588,9 +587,12 @@ use_ref: jparse.tab.ref.c jparse.tab.ref.h jparse.ref.c
 	${RM} -f jparse.c
 	${CP} -f -v jparse.ref.c jparse.c
 
-rebuild_jnum_test: jnum_gen jnum.testset Makefile
+# use jnum_gen to regenerate test jnum_chk test suite
+#
+rebuild_jnum_test: jnum_gen jnum.testset jnum_header.c Makefile
 	${RM} -f jnum_test.c
-	./jnum_gen jnum.testset > jnum_test.c
+	${CP} -f -v jnum_header.c jnum_test.c
+	./jnum_gen jnum.testset >> jnum_test.c
 
 # sequence exit codes
 #
@@ -794,3 +796,6 @@ json_entry.o: json_entry.c dbg.h util.h dyn_array.h json.h json_entry.h
 dbg_test.o: dbg_test.c dbg.h
 jnum_chk.o: jnum_chk.c jnum_chk.h dbg.h util.h dyn_array.h json.h \
   limit_ioccc.h version.h
+jnum_gen.o: jnum_gen.c jnum_gen.h dbg.h util.h dyn_array.h json.h \
+  limit_ioccc.h version.h
+jnum_test.o: jnum_test.c json.h

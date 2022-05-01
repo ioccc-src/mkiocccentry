@@ -137,7 +137,7 @@ main(int argc, char *argv[])
      */
     str_array = dyn_array_create(sizeof(char *), CHUNK, CHUNK, true);
     if (str_array == NULL) {
-	err(10, program, "dyn_array_create() for str_array returned NULL");
+	err(11, program, "dyn_array_create() for str_array returned NULL");
 	not_reached();
     }
 
@@ -146,7 +146,7 @@ main(int argc, char *argv[])
      */
     result_array = dyn_array_create(sizeof(struct json *), CHUNK, CHUNK, true);
     if (result_array == NULL) {
-	err(10, program, "dyn_array_create() for result_array returned NULL");
+	err(12, program, "dyn_array_create() for result_array returned NULL");
 	not_reached();
     }
 
@@ -161,7 +161,7 @@ main(int argc, char *argv[])
 	errno = 0;		/* pre-clear errno for errp() */
 	line = strdup(readline_buf);
 	if (line == NULL) {
-	    err(10, program, "strdup of readline buffer failed");
+	    err(13, program, "strdup of readline buffer failed");
 	    not_reached();
 	}
 
@@ -201,7 +201,7 @@ main(int argc, char *argv[])
 	dbg(DBG_VVHIGH, "calling json_conv_number(<%*.*s>, %ju)", (int)len, (int)len, first, (uintmax_t)len);
 	node = json_conv_number(first, len);
 	if (node == NULL) {
-	    err(10, program, "json_conv_number() returned NULL");
+	    err(14, program, "json_conv_number() returned NULL");
 	    not_reached();
 	}
 
@@ -221,11 +221,11 @@ main(int argc, char *argv[])
      */
     dbg(DBG_MED, "found %d test cases in filename: %s", count, filename);
     if (dyn_array_tell(str_array) != count) {
-	err(10, program, "expected %jd pointers, found %jd in str_array", (intmax_t)count, dyn_array_tell(str_array));
+	err(15, program, "expected %jd pointers, found %jd in str_array", (intmax_t)count, dyn_array_tell(str_array));
 	not_reached();
     }
     if (dyn_array_tell(result_array) != count) {
-	err(10, program, "expected %jd pointers, found %jd in result_array", (intmax_t)count, dyn_array_tell(result_array));
+	err(16, program, "expected %jd pointers, found %jd in result_array", (intmax_t)count, dyn_array_tell(result_array));
 	not_reached();
     }
 
@@ -235,20 +235,72 @@ main(int argc, char *argv[])
     errno = 0;		/* pre-clear errno for errp() */
     ret = fclose(stream);
     if (ret < 0) {
-	err(10, program, "error in fclose");
+	err(17, program, "error in fclose");
 	not_reached();
     }
 
-    /* XXX - add code here to print test output - XXX */
+    /*
+     * output test count
+     */
+    print("#define TEST_COUNT (%d)\n\n", count);
+    prstr("int const test_count = TEST_COUNT;\n\n");
+
+    /*
+     * output test strings
+     */
+     prstr("char *test_set[TEST_COUNT+1] = {\n");
+    for (i=0; i < count; ++i) {
+	line = dyn_array_value(str_array, char *, i);
+	print("    \"%s\",\n", line);
+    }
+    prstr("    NULL\n");
+    prstr("};\n\n");
+
+    /*
+     * output test results
+     */
+    prstr("struct json_number test_result[TEST_COUNT+1] = {\n");
+    for (i=0; i < count; ++i) {
+
+	/*
+	 * print start of json_number structure
+	 */
+	line = dyn_array_value(str_array, char *, i);
+	print("    /* test_result[%d]: %s */\n", i, line);
+	prstr("    {\n");
+
+	/*
+	 * print bulk of json_number structure
+	 */
+	node = dyn_array_value(result_array, struct json *, i);
+	if (node == NULL) {
+	    err(18, program, "dyn_array_value() returned NULL");
+	    not_reached();
+	}
+	if (node->type != JTYPE_NUMBER) {
+	    err(19, program, "node->type for test %d: %d != %d", i, node->type, JTYPE_NUMBER);
+	    not_reached();
+	}
+	fpr_number(stdout, &node->element.number);
+
+	/*
+	 * print end of json_number structure
+	 */
+	prstr("    },\n\n");
+    }
+    prstr("    /* MUST BE LAST */\n");
+    prstr("    { 0 }\n");
+    prstr("};\n");
+
 
     /*
      * free readline_buf buffers
      */
     for (i=0; i < count; ++i) {
-	readline_buf = dyn_array_value(str_array, char *, i);
-	if (readline_buf != NULL) {
-	    free(readline_buf);
-	    readline_buf = NULL;
+	line = dyn_array_value(str_array, char *, i);
+	if (line != NULL) {
+	    free(line);
+	    line = NULL;
 	}
     }
     dyn_array_free(str_array);
@@ -269,6 +321,376 @@ main(int argc, char *argv[])
      * All Done!!! - Jessica Noll, age 2
      */
     exit(0); /*ooo*/
+}
+
+
+/*
+ * fpr_number - print the contents of struct json_number on a steam
+ *
+ * given:
+ *	stream		open stream to print on
+ *	item		pointer to struct json_number to print
+ *
+ * This function does not return on error.
+ */
+static void
+fpr_number(FILE *stream, struct json_number *item)
+{
+    /*
+     * firewall
+     */
+    if (stream == NULL) {
+	err(20, __func__, "stream is NULL");
+	not_reached();
+    }
+    if (item == NULL) {
+	err(21, __func__, "item is NULL");
+	not_reached();
+    }
+
+    /*
+     * print bool converted
+     */
+    fprint(stream, "    %s,"
+		   "\t/* true ==> able to convert JSON number string to some form of C value */\n\n",
+		   t_or_f(item->converted));
+
+    /*
+     * print JSON string
+     */
+    fprint(stream, "    \"%s\","
+		   "\t/* allocated copy of the original allocated JSON number, NUL terminated */\n",
+		   item->as_str);
+    fprint(stream, "    \"%s\","
+		   "\t/* first whitespace character */\n\n",
+		   item->first);
+
+    /*
+     * print JSON string lengths
+     */
+    fprint(stream, "    %ju,"
+		   "\t/* length of as_str */\n",
+		   (uintmax_t)item->as_str_len);
+    fprint(stream, "    %ju,"
+		   "\t/* length of JSON number, w/o leading or trailing whitespace and NUL bytes */\n\n",
+		   (uintmax_t)item->number_len);
+
+    /*
+     * print bool is_negative
+     */
+    fprint(stream, "    %s,"
+		   "\t/* true ==> value < 0 */\n\n",
+		   t_or_f(item->is_negative));
+
+    /*
+     * print bool is_floating and is_e_notation
+     */
+    fprint(stream, "    %s,"
+		   "\t/* true ==> as_str had a . in it such as 1.234, false ==> no . found */\n",
+		   t_or_f(item->is_floating));
+    fprint(stream, "    %s,"
+		   "\t/* true ==> e notation used such as 1e10, no e notation found */\n\n",
+		   t_or_f(item->is_e_notation));
+
+    /*
+     * print integer values
+     */
+    fprstr(stream, "    /* integer values */\n");
+
+    /*
+     * print int8_t info
+     */
+    fpr_info(stream, item->int8_sized, item->as_int8,
+	   "true ==> converted JSON integer to C int8_t",
+	   "JSON integer value in int8_t form");
+
+    /*
+     * print uint8_t info
+     */
+    fpr_uinfo(stream, item->uint8_sized, item->as_uint8,
+	    "true ==> converted JSON integer to C uint8_t",
+	    "JSON integer value in uint8_t form");
+
+    /*
+     * print int16_t info
+     */
+    fpr_info(stream, item->int16_sized, item->as_int16,
+	   "true ==> converted JSON integer to C int16_t",
+	   "JSON integer value in int16_t form");
+
+    /*
+     * print uint16_t info
+     */
+    fpr_uinfo(stream, item->uint16_sized, item->as_uint16,
+	    "true ==> converted JSON integer to C uint16_t",
+	    "JSON integer value in uint16_t form");
+
+    /*
+     * print int32_t info
+     */
+    fpr_info(stream, item->int32_sized, item->as_int32,
+	   "true ==> converted JSON integer to C int32_t",
+	   "JSON integer value in int32_t form");
+
+    /*
+     * print uint32_t info
+     */
+    fpr_uinfo(stream, item->uint32_sized, item->as_uint32,
+	    "true ==> converted JSON integer to C uint32_t",
+	    "JSON integer value in uint32_t form");
+
+    /*
+     * print int64_t info
+     */
+    fpr_info(stream, item->int64_sized, item->as_int64,
+	   "true ==> converted JSON integer to C int64_t",
+	   "JSON integer value in int64_t form");
+
+    /*
+     * print uint64_t info
+     */
+    fpr_uinfo(stream, item->uint64_sized, item->as_uint64,
+	    "true ==> converted JSON integer to C uint64_t",
+	    "JSON integer value in uint64_t form");
+
+    /*
+     * print int info
+     */
+    fpr_info(stream, item->int_sized, item->as_int,
+	   "true ==> converted JSON integer to C int",
+	   "JSON integer value in int form");
+
+    /*
+     * print unsigned int info
+     */
+    fpr_uinfo(stream, item->uint_sized, item->as_uint,
+	    "true ==> converted JSON integer to C unsigned int",
+	    "JSON integer value in unsigned int form");
+
+    /*
+     * print long info
+     */
+    fpr_info(stream, item->long_sized, item->as_long,
+	   "true ==> converted JSON integer to C long",
+	   "JSON integer value in long form");
+
+    /*
+     * print unsigned long info
+     */
+    fpr_uinfo(stream, item->ulong_sized, item->as_ulong,
+	    "true ==> converted JSON integer to C unsigned long",
+	    "JSON integer value in unsigned long form");
+
+    /*
+     * print long long info
+     */
+    fpr_info(stream, item->longlong_sized, item->as_longlong,
+	   "true ==> converted JSON integer to C long long",
+	   "JSON integer value in long long form");
+
+    /*
+     * print unsigned long long info
+     */
+    fpr_uinfo(stream, item->ulonglong_sized, item->as_ulonglong,
+	    "true ==> converted JSON integer to C unsigned long long",
+	    "JSON integer value in unsigned long long form");
+
+    /*
+     * print ssize_t info
+     */
+    fpr_info(stream, item->ssize_sized, item->as_ssize,
+	   "true ==> converted JSON integer to C ssize_t",
+	   "JSON integer value in ssize_t form");
+
+    /*
+     * print size_t info
+     */
+    fpr_uinfo(stream, item->size_sized, item->as_size,
+	    "true ==> converted JSON integer to C size_t",
+	    "JSON integer value in size_t form");
+
+    /*
+     * print off_t info
+     */
+    fpr_info(stream, item->off_sized, item->as_off,
+	   "true ==> converted JSON integer to C off_t",
+	   "JSON integer value in off_t form");
+
+    /*
+     * print intmax_t info
+     */
+    fpr_info(stream, item->maxint_sized, item->as_maxint,
+	   "true ==> converted JSON integer to C intmax_t",
+	   "JSON integer value in intmax_t form");
+
+    /*
+     * print uintmax_t info
+     */
+    fpr_uinfo(stream, item->umaxint_sized, item->as_umaxint,
+	    "true ==> converted JSON integer to C uintmax_t",
+	    "JSON integer value in uintmax_t form");
+
+    /*
+     * print floating point values
+     */
+    fprstr(stream, "\n    /* floating point values */\n");
+
+    /*
+     * print float info
+     */
+    fpr_finfo(stream, item->float_sized, item->as_float, item->as_float_int,
+	   "true ==> converted JSON floating point to C float",
+	   "JSON floating point value in float form",
+	   "if float_sized == true, true ==> as_float is an integer");
+
+    /*
+     * print double info
+     */
+    fpr_finfo(stream, item->double_sized, item->as_double, item->as_double_int,
+	    "true ==> converted JSON floating point to C double",
+	    "JSON floating point value in double form",
+	    "if double_sized == true, true ==> as_double is an integer");
+
+    /*
+     * print long double info
+     */
+    fpr_finfo(stream, item->longdouble_sized, item->as_longdouble, item->as_float_int,
+	   "true ==> converted JSON floating point to C long double",
+	   "JSON floating point value in long double form",
+	   "if float_sized == true, true ==> as_float is an integer");
+}
+
+
+/*
+ * fpr_info - print information about a struct json_number signed element
+ *
+ * given:
+ *	stream	- open file stream to print on
+ *	sized	- boolean indicating if the value was set
+ *	value	- value to be printed as an intmax_t
+ *	scomm	- comment relating to the sized boolean
+ *	vcomm	- comment relating to the value as an intmax_t
+ *
+ * NOTE: This function does not return on error.
+ */
+static void
+fpr_info(FILE *stream, bool sized, intmax_t value, char const *scomm, char const *vcomm)
+{
+    /*
+     * firewall
+     */
+    if (stream == NULL || scomm == NULL || vcomm == NULL) {
+	err(22, __func__, "NULL arg(s)");
+	not_reached();
+    }
+
+    /*
+     * case: sized is true - value to print
+     */
+    fprstr(stream,"\n");
+    if (sized == true) {
+	fprint(stream,"    true,\t/* %s */\n", scomm);
+	fprint(stream,"    %jd,\t/* %s */\n", value, vcomm);
+
+    /*
+     * case: sized is false - no value to print
+     */
+    } else {
+	fprint(stream,"    false,\t/* %s */\n", scomm);
+	fprint(stream,"    0,\t\t/* no %s */\n", vcomm);
+
+    }
+    return;
+}
+
+
+/*
+ * fpr_uinfo - print information about a struct json_number unsigned element
+ *
+ * given:
+ *	stream	- open file stream to print on
+ *	sized	- boolean indicating if the value was set
+ *	value	- value to be printed as an intmax_t
+ *	scomm	- comment relating to the sized boolean
+ *	vcomm	- comment relating to the value as an intmax_t
+ *
+ * NOTE: This function does not return on error.
+ */
+static void
+fpr_uinfo(FILE *stream, bool sized, uintmax_t value, char const *scomm, char const *vcomm)
+{
+    /*
+     * firewall
+     */
+    if (stream == NULL || scomm == NULL || vcomm == NULL) {
+	err(23, __func__, "NULL arg(s)");
+	not_reached();
+    }
+
+    /*
+     * case: sized is true - value to print
+     */
+    fprstr(stream,"\n");
+    if (sized == true) {
+	fprint(stream,"    true,\t/* %s */\n", scomm);
+	fprint(stream,"    %ju,\t/* %s */\n", value, vcomm);
+
+    /*
+     * case: sized is false - no value to print
+     */
+    } else {
+	fprint(stream,"    false,\t/* %s */\n", scomm);
+	fprint(stream,"    0,\t\t/* no %s */\n", vcomm);
+
+    }
+    return;
+}
+
+
+/*
+ * fpr_finfo - print information about a struct json_number signed element
+ *
+ * given:
+ *	stream	- open file stream to print on
+ *	sized	- boolean indicating if the value was set
+ *	value	- value to be printed as an intmax_t
+ *	intval	- boolean indicating if the value an integer
+ *	scomm	- comment relating to the sized boolean
+ *	vcomm	- comment relating to the value as an intmax_t
+ *	sintval	- comment relating to the intval boolean
+ *
+ * NOTE: This function does not return on error.
+ */
+static void
+fpr_finfo(FILE *stream, bool sized, long double value, bool intval, char const *scomm, char const *vcomm, char const *sintval)
+{
+    /*
+     * firewall
+     */
+    if (stream == NULL || scomm == NULL || vcomm == NULL || sintval == NULL) {
+	err(24, __func__, "NULL arg(s)");
+	not_reached();
+    }
+
+    /*
+     * case: sized is true - value to print
+     */
+    fprstr(stream,"\n");
+    if (sized == true) {
+	fprint(stream,"    true,\t\t/* %s */\n", scomm);
+	fprint(stream,"    %.22Lg,\t/* %s */\n", value, vcomm);
+	fprint(stream,"    %s,\t\t/* %s */\n", t_or_f(intval), sintval);
+
+    /*
+     * case: sized is false - no value to print
+     */
+    } else {
+	fprint(stream,"    false,\t\t/* %s */\n", scomm);
+	fprint(stream,"    0,\t/* no %s */\n", vcomm);
+	fprint(stream,"    false,\t\t/* %s */\n", sintval);
+
+    }
+    return;
 }
 
 

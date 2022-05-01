@@ -114,7 +114,7 @@ main(int argc, char *argv[])
 	 */
 	node = json_conv_number_str(test_set[i], &len);
 	if (node == NULL) {
-	    warn(__func__, "json_conv_number_str(%s, &%ju) returned NULL",
+	    warn(__func__, "json_conv_number_str(\"%s\", &%ju) returned NULL",
 			   test_set[i], (uintmax_t)len);
 	    error = true;
 	    break;
@@ -125,7 +125,7 @@ main(int argc, char *argv[])
 	 */
 	test = chk_test(node, &test_result[i], len, strict);
 	if (test == false) {
-	    warn(__func__, "json_conv_number_str(%s, &%ju) failed",
+	    warn(__func__, "json_conv_number_str(\"%s\", &%ju) failed",
 			   test_set[i], (uintmax_t)len);
 	    error = true;
 	}
@@ -188,9 +188,15 @@ chk_test(struct json *node, struct json_number *test, size_t len, bool strict)
 	return false;
     }
 
+    /* XXX - remove this next block of code - XXX */
+    if (strict == true) {
+	warn(__func__, "strict not implemented yet");
+	return false;
+    }
+
     /* XXX - add code here - XXX */
 
-    return strict;	/* XXX - return the actual test result */
+    return true;	/* XXX - return the actual test result */
 }
 
 
