@@ -38,6 +38,7 @@
 #include <string.h>
 #include <errno.h>
 
+#include "version.h"
 
 /*
  * standard truth :-)
