@@ -198,7 +198,7 @@ echo "./dbg -e 2 foo bar baz >dbg.out 2>&1"
 ./dbg -e 2 foo bar baz >dbg.out 2>&1
 status="$?"
 if [[ $status -ne 5 ]]; then
-    echo "exit status of dbg: $$status != 5";
+    echo "exit status of dbg: $status != 5";
     FAILURE_SUMMARY="$FAILURE_SUMMARY
     exit status of dbg: $status != 5";
     EXIT_CODE="21"
