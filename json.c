@@ -1551,7 +1551,7 @@ json_process_decimal(struct json_number *item, char const *str, size_t len)
 	/* case: negative, try for largest signed integer */
 	errno = 0;			/* pre-clear errno for errp() */
 	item->as_maxint = strtoimax(str, &endptr, 10);
-	if (errno != 0 || endptr == str || endptr == NULL || *endptr != '\0') {
+	if (errno == ERANGE || errno == EINVAL || endptr == str || endptr == NULL) {
 	    dbg(DBG_VVVHIGH, "strtoimax failed to convert");
 	    item->converted = false;
 	    return false;	/* processing failed */
@@ -1648,7 +1648,7 @@ json_process_decimal(struct json_number *item, char const *str, size_t len)
 	/* case: non-negative, try for largest unsigned integer */
 	errno = 0;			/* pre-clear errno for errp() */
 	item->as_umaxint = strtoumax(str, &endptr, 10);
-	if (errno != 0 || endptr == str || endptr == NULL || *endptr != '\0') {
+	if (errno == ERANGE || errno == EINVAL || endptr == str || endptr == NULL) {
 	    dbg(DBG_VVVHIGH, "strtoumax failed to convert");
 	    item->converted = false;
 	    return false;	/* processing failed */
@@ -2002,7 +2002,7 @@ json_process_floating(struct json_number *item, char const *str, size_t len)
      */
     errno = 0;			/* pre-clear errno for errp() */
     item->as_longdouble = strtold(str, &endptr);
-    if (errno != 0 || endptr == str || endptr == NULL || *endptr != '\0') {
+    if (errno == ERANGE || endptr == str || endptr == NULL) {
 	dbg(DBG_VVVHIGH, "strtold failed to convert");
 	item->converted = false;
 	return false;	/* processing failed */
@@ -2027,7 +2027,7 @@ json_process_floating(struct json_number *item, char const *str, size_t len)
      */
     errno = 0;			/* pre-clear conversion test */
     item->as_double = strtod(str, &endptr);
-    if (errno != 0 || endptr == str || endptr == NULL || *endptr != '\0') {
+    if (errno == ERANGE || endptr == str || endptr == NULL) {
 	item->double_sized = false;
 	dbg(DBG_VVVHIGH, "strtod for <%s> failed", str);
     } else {
@@ -2044,7 +2044,7 @@ json_process_floating(struct json_number *item, char const *str, size_t len)
      */
     errno = 0;			/* pre-clear conversion test */
     item->as_float = strtof(str, &endptr);
-    if (errno != 0 || endptr == str || endptr == NULL || *endptr != '\0') {
+    if (errno == ERANGE || endptr == str || endptr == NULL) {
 	item->float_sized = false;
 	dbg(DBG_VVVHIGH, "strtof for <%s> failed", str);
     } else {
@@ -2202,7 +2202,8 @@ json_conv_number(char const *ptr, size_t len)
 	/* process JSON number as a base 10 integer in ASCII */
 	success = json_process_decimal(item, item->first, item->number_len);
 	if (success == false) {
-	    warn(__func__, "JSON number as base 10 integer in ASCII processing failed: <%s>", item->first);
+	    warn(__func__, "JSON number as base 10 integer in ASCII processing failed: <%*.*s>",
+			   (int)item->number_len, (int)item->number_len, item->first);
 	}
 
     /*
@@ -2215,7 +2216,8 @@ json_conv_number(char const *ptr, size_t len)
 	/* process JSON number as floating point or e-notation number */
 	success = json_process_floating(item, item->first, item->number_len);
 	if (success == false) {
-	    warn(__func__, "JSON number as floating point or e-notation number failed: <%s>", item->first);
+	    warn(__func__, "JSON number as floating point or e-notation number failed: <%*.*s>",
+			   (int)item->number_len, (int)item->number_len, item->first);
 	}
     }
 
