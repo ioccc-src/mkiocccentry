@@ -2,7 +2,7 @@
 /*
  * verge - determine if first version is >= second version
  *
- * "Because the JSON co-founders flawed minimalism is sub-minimal." :-)
+ * "Because the JSON co-founders minimalism is sub-minimal." :-)
  *
  * Copyright (c) 2022 by Landon Curt Noll.  All Rights Reserved.
  *

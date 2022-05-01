@@ -2,7 +2,7 @@
 /*
  * jnum_test - JSON number validated conversion test cases
  *
- * "Because the JSON co-founders flawed minimalism is sub-minimal." :-)
+ * "Because the JSON co-founders minimalism is sub-minimal." :-)
  *
  * Copyright (c) 2022 by Landon Curt Noll.  All Rights Reserved.
  *
