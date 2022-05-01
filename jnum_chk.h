@@ -68,7 +68,7 @@ static const char * const usage_msg =
     "\n"
     "\t-h\t\tprint help message and exit 0\n"
     "\t-v level\tset verbosity level (def level: %d)\n"
-    "\t-V\t\tprint version string and exit 2\n"
+    "\t-V\t\tprint version string and exit 3\n"
     "\t-q\t\tquiet mode (def: not quiet)\n"
     "\t\t\t    NOTE: -q will also silence msg(), warn(), warnp() if -v 0\n"
     "\t-S\t\tstrict testing for all struct number elements\n"

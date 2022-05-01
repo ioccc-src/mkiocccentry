@@ -193,7 +193,7 @@ CFLAGS= ${STD_SRC} ${COPT} -pedantic ${WARN_FLAGS} ${LDFLAGS}
 MANDIR = /usr/local/share/man/man1
 DESTDIR= /usr/local/bin
 TARGETS= mkiocccentry iocccsize dbg fnamchk txzchk jauthchk jinfochk \
-	jstrencode jstrdecode utf8_test jparse verge jnum_chk
+	jstrencode jstrdecode utf8_test jparse verge jnum_chk jnum_gen
 SH_TARGETS=limit_ioccc.sh
 
 # man pages
@@ -433,6 +433,12 @@ jnum_chk.o: jnum_chk.c Makefile
 
 jnum_chk: jnum_chk.o dbg.o json.o util.o dyn_array.o jnum_test.o Makefile
 	${CC} ${CFLAGS} jnum_chk.o dbg.o json.o util.o dyn_array.o jnum_test.o -o $@
+
+jnum_gen.o: jnum_gen.c Makefile
+	${CC} ${CFLAGS} jnum_gen.c -c
+
+jnum_gen: jnum_gen.o dbg.o json.o util.o dyn_array.o Makefile
+	${CC} ${CFLAGS} jnum_gen.o dbg.o json.o util.o dyn_array.o -o $@
 
 jparse.o: jparse.c Makefile
 	${CC} ${CFLAGS} -Wno-unused-function -Wno-unneeded-internal-declaration jparse.c -c
@@ -735,13 +741,13 @@ prep_clobber:
 	${RM} -rf test-iocccsize test_src test_work tags dbg.out
 	${RM} -f dbg_test.c
 	${RM} -rf dyn_test.dSYM
-	${RM} -f jnum_chk jnum_chk_gen
-	${RM} -f jnum_chk.set.tmp jnum_chk_gen
-	${RM} -rf jnum_chk.dSYM jnum_chk_gen.dSYM
+	${RM} -f jnum_chk
+	${RM} -rf jnum_chk.dSYM
+	${RM} -f jnum_gen
+	${RM} -rf jnum_gen.dSYM
 	# XXX - remove legacy code - XXX
-	${RM} -f jnumber jnumber_gen
-	${RM} -f jnumber.set.tmp jnumber_gen
-	${RM} -rf jnumber.dSYM jnumber_gen.dSYM
+	${RM} -f jnumber
+	${RM} -rf jnumber.dSYM
 	${RM} -f jint jfloat
 	${RM} -f jint.set.tmp jint_gen
 	${RM} -f jfloat.set.tmp jfloat_gen
@@ -836,3 +842,5 @@ json_chk.o: json_chk.c json_chk.h util.h dyn_array.h dbg.h json.h \
   json_util.h limit_ioccc.h version.h
 json_entry.o: json_entry.c dbg.h util.h dyn_array.h json.h json_entry.h
 dbg_test.o: dbg_test.c dbg.h
+jnum_chk.o: jnum_chk.c jnum_chk.h dbg.h util.h dyn_array.h json.h \
+  limit_ioccc.h version.h

@@ -100,7 +100,7 @@ main(int argc, char *argv[])
     }
     arg_cnt = argc - optind;
     if (arg_cnt != REQUIRED_ARGS) {
-	usage(4, program, "expected %d arguments, found: %d", REQUIRED_ARGS, arg_cnt);
+	usage(4, program, "expected %d arguments, found: %d", REQUIRED_ARGS, arg_cnt); /*ooo*/
     }
     dbg(DBG_MED, "strict mode: %s", (strict == true) ? "enabled" : "disabled");
 

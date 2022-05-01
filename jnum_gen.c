@@ -47,7 +47,7 @@
 /*
  * definitions
  */
-#define REQUIRED_ARGS (1)	/* number of required arguments on the command line */
+#define REQUIRED_ARGS (1)	/* number of required arguments on the command readline_buf */
 #define CHUNK (16)		/* allocate CHUNK elements at a time */
 
 
@@ -60,18 +60,19 @@ main(int argc, char *argv[])
     int arg_cnt = 0;		/* number of args to process */
     char *filename = NULL;	/* name of file containing test cases */
     FILE *stream = NULL;	/* test case open stream */
-    char *line = NULL;		/* test case line buffer */
+    char *readline_buf = NULL;	/* test case readline_buf buffer */
     ssize_t readline_len;	/* readline return length */
     int ret;			/* libc function return */
     int count = 0;		/* test count read from filename */
     char *p = NULL;		/* comment search */
+    char *line = NULL;		/* allocated line with JSON number and/or comment */
     size_t len;			/* length of JSON test number */
     char *first = NULL;		/* start of JSON test number */
     struct json *node = NULL;	/* parsed JSON number */
     struct dyn_array *str_array = NULL;		/* dynamic array of test strings */
     struct dyn_array *result_array = NULL;	/* dynamic array of test results */
     bool moved = false;		/* true ==> realloc() moved data */
-    int linenum = 0;		/* line number from filename */
+    int linenum = 0;		/* readline_buf number from filename */
     int i;
 
     /*
@@ -134,7 +135,7 @@ main(int argc, char *argv[])
     /*
      * create dynamic arrays for test strings
      */
-    str_array = dyn_array_create(sizeof(char *), CHUNK, CHUNK, false);
+    str_array = dyn_array_create(sizeof(char *), CHUNK, CHUNK, true);
     if (str_array == NULL) {
 	err(10, program, "dyn_array_create() for str_array returned NULL");
 	not_reached();
@@ -143,7 +144,7 @@ main(int argc, char *argv[])
     /*
      * create dynamic arrays for test results
      */
-    result_array = dyn_array_create(sizeof(struct json *), CHUNK, CHUNK, false);
+    result_array = dyn_array_create(sizeof(struct json *), CHUNK, CHUNK, true);
     if (result_array == NULL) {
 	err(10, program, "dyn_array_create() for result_array returned NULL");
 	not_reached();
@@ -152,42 +153,52 @@ main(int argc, char *argv[])
     /*
      * process lines from filename
      */
-    while ((readline_len = readline(&line, stream)) >= 0) {
+    while ((readline_len = readline(&readline_buf, stream)) >= 0) {
 
 	/*
-	 * ignore comments
+	 * form line from readline buffer
+	 */
+	errno = 0;		/* pre-clear errno for errp() */
+	line = strdup(readline_buf);
+	if (line == NULL) {
+	    err(10, program, "strdup of readline buffer failed");
+	    not_reached();
+	}
+
+	/*
+	 * trim comments from line
 	 */
 	++linenum;
 	dbg(DBG_VVHIGH, "linenum %d: <%s>", linenum, line);
 	p = strchr(line, '#');
 	if (p != NULL) {
-	    /* strip comment from line */
+	    /* strip comment from readline_buf */
 	    *p = '\0';
 	}
 
 	/*
-	 * look for text to test in the line
+	 * look for text in the line to convert
 	 */
 	len = find_text_str(line, &first);
 	if (len <= 0) {
-	    /* found no JSON number string to test, ignore this line */
-	    dbg(DBG_VHIGH, "found line with only comment and whitespace at line: %d", linenum);
+	    /* found no JSON number string to test, ignore this readline_buf */
+	    dbg(DBG_VHIGH, "only comment and/or whitespace found on line: %d", linenum);
 	    continue;
 	}
-	++count;	/* we have another test */
 
 	/*
 	 * save the test string for printing later
 	 */
-	moved = dyn_array_append_value(str_array, line);
+	moved = dyn_array_append_value(str_array, &line);
 	if (moved == true) {
-	     dbg(DBG_VHIGH, "FYI: dyn_array_append_value(str_array, line) realloc moved data, "
-			    "count: %d line: %d", count, count);
+	     dbg(DBG_VHIGH, "FYI: dyn_array_append_value(str_array, readline_buf) realloc moved data, "
+			    "count: %d readline_buf: %d", count, linenum);
 	}
 
 	/*
 	 * convert the test string
 	 */
+	dbg(DBG_VVHIGH, "calling json_conv_number(<%*.*s>, %ju)", (int)len, (int)len, first, (uintmax_t)len);
 	node = json_conv_number(first, len);
 	if (node == NULL) {
 	    err(10, program, "json_conv_number() returned NULL");
@@ -197,11 +208,12 @@ main(int argc, char *argv[])
 	/*
 	 * save the test result for printing later
 	 */
-	moved = dyn_array_append_value(result_array, node);
+	moved = dyn_array_append_value(result_array, &node);
 	if (moved == true) {
 	     dbg(DBG_VHIGH, "FYI: dyn_array_append_value(result_array, node) realloc moved data, "
-			    "count: %d line: %d", count, count);
+			    "count: %d readline_buf: %d", count, linenum);
 	}
+	++count;	/* count another test */
     }
 
     /*
@@ -230,14 +242,13 @@ main(int argc, char *argv[])
     /* XXX - add code here to print test output - XXX */
 
     /*
-     * free line buffers
+     * free readline_buf buffers
      */
     for (i=0; i < count; ++i) {
-	line = dyn_array_value(str_array, char *, i);
-	if (line != NULL) {
-	    free(line);
-	    line = NULL;
-	    *dyn_array_addr(str_array, char *, i) = NULL;
+	readline_buf = dyn_array_value(str_array, char *, i);
+	if (readline_buf != NULL) {
+	    free(readline_buf);
+	    readline_buf = NULL;
 	}
     }
     dyn_array_free(str_array);
@@ -250,7 +261,6 @@ main(int argc, char *argv[])
 	if (node != NULL) {
 	    free(node);
 	    node = NULL;
-	    *dyn_array_addr(result_array, struct json *, i) = NULL;
 	}
     }
     dyn_array_free(result_array);
