@@ -46,10 +46,6 @@ bool msg_warn_silent = false;		/* true ==> silence msg(), warn(), warnp() if ver
 #if defined(DBG_TEST)
 #include <getopt.h>
 
-/*
- * definitions
- */
-
 
 /*
  * usage message

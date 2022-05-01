@@ -38,7 +38,12 @@
 #include <string.h>
 #include <errno.h>
 
-#include "version.h"
+
+/*
+ * definitions
+ */
+#define DBG_VERSION "1.10 2022-05-01"		/* format: major.minor YYYY-MM-DD */
+
 
 /*
  * standard truth :-)

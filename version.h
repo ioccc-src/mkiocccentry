@@ -153,7 +153,11 @@
 
 /*
  * debug version
+ *
+ * Because the dbg is a self contained system, we cannot define DBG_VERSION here.
+ * See dbg.h for DBG_VERSION value.
  */
-#define DBG_VERSION "1.9 2022-05-01"		/* format: major.minor YYYY-MM-DD */
+#include "dbg.h"
+
 
 #endif /* INCLUDE_VERSION_H */
