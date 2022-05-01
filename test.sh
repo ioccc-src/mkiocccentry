@@ -298,13 +298,11 @@ fi
 if [[ $EXIT_CODE -eq 0 ]]; then
     echo
     echo "All tests PASSED"
-    echo
 else
     echo
     echo "These test(s) failed:"
     echo "$FAILURE_SUMMARY"
     echo
     echo "About to exit: $EXIT_CODE"
-    echo
 fi
 exit "$EXIT_CODE"
