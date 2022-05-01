@@ -2556,6 +2556,7 @@ parse_verbosity(char const *program, char const *arg)
 bool
 is_decimal(char const *ptr, size_t len)
 {
+    size_t start = 0;	/* starting character number for ASCII digits */
     size_t i;
 
     /*
@@ -2576,10 +2577,14 @@ is_decimal(char const *ptr, size_t len)
     switch (*ptr) {
 	case '-':
 	case '+':
-	    ptr++;
+	    start = 1; /* skip sign */
 	    break;
 	default:
 	    break;
+    }
+    if (start >= len) {
+	warn(__func__, "only sign found, no digits");
+	return false;
     }
 
     /*
@@ -2591,7 +2596,7 @@ is_decimal(char const *ptr, size_t len)
      * NOTE: Alas, there is no strnspn() nor strncspn() in the standard due to
      *	     "reasons other than technical reasons" *sigh*.
      */
-    for (i=0; i < len; ++i) {
+    for (i=start; i < len; ++i) {
 	if (!isascii(ptr[i]) || !isdigit(ptr[i])) {
 	    /* found a non-ASCII digit */
 	    return false;
