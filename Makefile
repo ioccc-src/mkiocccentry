@@ -209,7 +209,7 @@ SH_TARGETS=limit_ioccc.sh
 # page is written the MAN_TARGETS should have the tool name (without any
 # extension) added to it.  Eventually MAN_TARGETS can be removed entirely and
 # MANPAGES will act on TARGETS.
-MAN_TARGETS = mkiocccentry txzchk fnamchk iocccsize jinfochk jauthchk jstrdecode jstrencode verge jparse
+MAN_TARGETS = mkiocccentry txzchk fnamchk iocccsize jinfochk jauthchk jstrdecode jstrencode verge jparse limit_ioccc
 MANPAGES= $(MAN_TARGETS:=.1)
 
 TEST_TARGETS= dbg utf8_test dyn_test
@@ -240,7 +240,7 @@ H_FILES= dbg.h jauthchk.h jinfochk.h json.h jstrdecode.h jstrencode.h limit_iocc
 #
 DSYMDIRS= $(TARGETS:=.dSYM)
 SH_FILES= iocccsize-test.sh jstr-test.sh limit_ioccc.sh mkiocccentry-test.sh json-test.sh \
-	  jcodechk.sh vermod.sh prep.sh run_bison.sh run_flex.sh reset_tstamp.sh test.sh
+	  jcodechk.sh vermod.sh prep.sh run_bison.sh run_flex.sh reset_tstamp.sh ioccc-test.sh
 BUILD_LOG= build.log
 
 # RUN_O_FLAG - determine if the bison and flex backup files should be used
@@ -665,8 +665,8 @@ reset_min_timestamp: reset_tstamp.sh
 
 # perform all of the mkiocccentry repo required tests
 #
-test: test.sh iocccsize-test.sh dbg mkiocccentry-test.sh jstr-test.sh jnum_chk dyn_test Makefile
-	./test.sh
+test ioccc-test: ioccc-test.sh iocccsize-test.sh dbg mkiocccentry-test.sh jstr-test.sh jnum_chk dyn_test Makefile
+	./ioccc-test.sh
 
 # run json-test.sh on test_JSON files
 #

@@ -77,6 +77,17 @@
  * likely to happen) the parser is split into another repo for a json parser by
  * itself I will possibly remove this prefix: this is as satire for the IOCCC
  * (though we all believe that the generated code is in fact ugly).
+ *
+ * WARNING: Although we use the prefix ugly_ the scanner and parser will at
+ * times refer to yy and YY and other times refer to ugly_ and UGLY_ (partly
+ * because WE refer to ugly_ and UGLY_). So if you're trying to sift through
+ * that ugly spaghetti code (which we strongly recommend you do not do as it will
+ * likely cause nightmares and massive brain pain) you'll want to check yy/YY as
+ * well as ugly_/UGLY_. But really you oughtn't try and go through that code so
+ * you need only pay attention to the ugly_ and UGLY_ prefixes (in the *.l and
+ * *.y files) which again are satire for the IOCCC. See also the apology in the
+ * generated files or directly looking at sorry.tm.ca.h.
+
  */
 %option prefix="ugly_"
 
@@ -86,13 +97,10 @@
  * Code is copied verbatim near the top of the generated code.
  */
 
-#include <stdio.h>
-
 /* our header file */
 #include "jparse.h"
 
 YY_BUFFER_STATE bs;
-void ugly_error(char const *format, ...);
 %}
 
 /*
@@ -139,19 +147,84 @@ JSON_COMMA		","
  * ugly_lval.type). These things will be done later.
  */
 %%
-{JSON_WHITESPACE}	    { printf("\nwhitespace: '%s'\n", ugly_text); }
-{JSON_STRING}		    { printf("\nstring: '%s'\n", ugly_text); ugly_lval.type = JTYPE_STRING; return JSON_STRING; }
-{JSON_NUMBER}		    { printf("\nnumber: '%s'\n", ugly_text); ugly_lval.type = JTYPE_NUMBER; return JSON_NUMBER; }
-{JSON_NULL}		    { printf("\nnull: '%s'\n", ugly_text); ugly_lval.type = JTYPE_NULL; return JSON_NULL; }
-{JSON_TRUE}		    { printf("\ntrue: '%s'\n", ugly_text); ugly_lval.type = JTYPE_BOOL; return JSON_TRUE; }
-{JSON_FALSE}		    { printf("\nfalse: '%s'\n", ugly_text); ugly_lval.type = JTYPE_BOOL; return JSON_FALSE; }
-{JSON_OPEN_BRACE}	    { printf("\nopen brace: '%c'\n", *ugly_text); token_type = '{'; return JSON_OPEN_BRACE; }
-{JSON_CLOSE_BRACE}	    { printf("\nclose brace: '%c'\n", *ugly_text); token_type = '}'; return JSON_CLOSE_BRACE;}
-{JSON_OPEN_BRACKET}	    { printf("\nopen bracket: '%c'\n", *ugly_text); token_type = '['; return JSON_OPEN_BRACKET; }
-{JSON_CLOSE_BRACKET}	    { printf("\nclose bracket: '%c'\n", *ugly_text); token_type = ']'; return JSON_CLOSE_BRACKET; }
-{JSON_COLON}		    { printf("\nequals/colon: '%c'\n", *ugly_text); token_type = ':'; return JSON_COLON; }
-{JSON_COMMA}		    { printf("\ncomma: '%c'\n", *ugly_text); token_type = ','; return JSON_COMMA; }
-.			    { ugly_error("invalid input: %s\n", ugly_text); return JSON_INVALID_TOKEN; }
+{JSON_WHITESPACE}	{   /*
+			     * Whitespace
+			     *
+			     * Not needed but included for now for debugging
+			     * purposes.
+			     */
+			    printf("\nwhitespace: '%s'\n", ugly_text);
+			}
+
+{JSON_STRING}		{   /* string */
+			    printf("\nstring: '%s'\n", ugly_text);
+			    ugly_lval.type = JTYPE_STRING;
+			    return JSON_STRING;
+			}
+
+{JSON_NUMBER}		{   /* number */
+			    printf("\nnumber: '%s'\n", ugly_text);
+			    ugly_lval.type = JTYPE_NUMBER;
+			    return JSON_NUMBER;
+			}
+
+{JSON_NULL}		{   /* null object */
+			    printf("\nnull: '%s'\n", ugly_text);
+			    ugly_lval.type = JTYPE_NULL;
+			    return JSON_NULL;
+			}
+
+{JSON_TRUE}		{   /* boolean: true */
+			    printf("\ntrue: '%s'\n", ugly_text);
+			    ugly_lval.type = JTYPE_BOOL;
+			    return JSON_TRUE;
+			}
+{JSON_FALSE}		{   /* boolean: false */
+			    printf("\nfalse: '%s'\n", ugly_text);
+			    ugly_lval.type = JTYPE_BOOL;
+			    return JSON_FALSE;
+			}
+
+{JSON_OPEN_BRACE}	{   /* start of object */
+			    printf("\nstart of object: '%c'\n", *ugly_text);
+			    ugly_lval.type = JTYPE_OBJECT;
+			    return JSON_OPEN_BRACE;
+			}
+{JSON_CLOSE_BRACE}	{   /* end of object */
+			    printf("\nend of object: '%c'\n", *ugly_text);
+			    token = '}';
+			    return JSON_CLOSE_BRACE;
+			}
+
+{JSON_OPEN_BRACKET}	{   /* start of array */
+			    printf("\nstart of array: '%c'\n", *ugly_text);
+			    ugly_lval.type = JTYPE_ARRAY;
+			    token = '[';
+			    return JSON_OPEN_BRACKET;
+			}
+{JSON_CLOSE_BRACKET}	{   /* end of array */
+			    printf("\nend of array: '%c'\n", *ugly_text);
+			    token = ']';
+			    return JSON_CLOSE_BRACKET;
+			}
+
+{JSON_COLON}		{   /* colon or 'equals' */
+			    printf("\ncolon (or 'equals' ): '%c'\n", *ugly_text);
+			    token = ':';
+			    return JSON_COLON;
+			}
+
+{JSON_COMMA}		{   /* comma: name/value pair separator */
+			    printf("\ncomma: '%c'\n", *ugly_text);
+			    token = ',';
+			    return JSON_COMMA;
+			}
+
+.			{   /* invalid input: any other character */
+			    ugly_error("invalid input: %s\n", ugly_text);
+			    return JSON_INVALID_TOKEN;
+			}
+
 %%
 
 /* Section 3: Code that's copied to the generated scanner */
