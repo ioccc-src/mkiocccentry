@@ -124,7 +124,7 @@
 /*
  * official jnum_chk version
  */
-#define JNUM_CHK_VERSION "0.7 2022-05-01"	/* format: major.minor YYYY-MM-DD */
+#define JNUM_CHK_VERSION "0.8 2022-05-01"	/* format: major.minor YYYY-MM-DD */
 
 /*
  * official jnum_gen version
