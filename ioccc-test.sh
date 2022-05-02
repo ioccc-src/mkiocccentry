@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# test.sh - perform the complete suite of tests for the mkiocccentry repo
+# ioccc-test.sh - perform the complete suite of tests for the mkiocccentry repo
 #
 # Copyright (c) 2022 by Landon Curt Noll.  All Rights Reserved.
 #
