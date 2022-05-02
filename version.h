@@ -124,12 +124,12 @@
 /*
  * official jnum_chk version
  */
-#define JNUM_CHK_VERSION "0.6 2022-04-29"	/* format: major.minor YYYY-MM-DD */
+#define JNUM_CHK_VERSION "0.7 2022-05-01"	/* format: major.minor YYYY-MM-DD */
 
 /*
  * official jnum_gen version
  */
-#define JNUM_GEN_VERSION "0.6 2022-04-29"	/* format: major.minor YYYY-MM-DD */
+#define JNUM_GEN_VERSION "0.7 2022-05-01"	/* format: major.minor YYYY-MM-DD */
 
 /*
  * minimum bison version needed to build the JSON parser
