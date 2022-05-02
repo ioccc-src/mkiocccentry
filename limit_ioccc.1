@@ -1,0 +1,51 @@
+.TH limit_ioccc.sh 1 "02 May 2022" "limit_ioccc.sh" "IOCCC tools"
+.SH NAME
+limit_ioccc.sh \- select \fIlimit_ioccc.h\fP and \fIversion.h\fP values for shell script use
+.SH SYNOPSIS
+\fBsource limit_ioccc.sh\fP
+.SH DESCRIPTION
+\fBlimit_ioccc.sh\fP contains a list of some of the values that are in the \fIlimit_ioccc.h\fP and \fIversion.h\fP files.
+.PP
+The following is a list of all the variables that are in the file.
+.PP
+\fB*_VERSION\fP values in \fIversion.h\fP and \fBDBG_VERSION\fP in \fIdbg.h\fP.
+.PP
+\fBRULE_2A_SIZE\fP and \fBRULE_2B_SIZE\fP in \fIlimit_ioccc.h\fP.
+These are for the famous rule 2a and rule 2b.
+.PP
+\fBMAX_*\fP in \fIlimit_ioccc.h\fP.
+Some of these are limits in the contest, some are limits on authors and others on entries themselves.
+For example \fBMAX_TWITTER_LEN\fP says how long Twitter handles can be including the \fB@\fP.
+\fBMAX_HANDLE\fP is the maximum length of an IOCCC winner handle.
+\fBMAX_TARBALL_LEN\fP is the maximum size of the compressed tarball in bytes.
+\fBMAX_TIMESTAMP_LEN\fP is for internal use and is of no concern for contestants.
+.PP
+\fBMIN_*\fP values in \fIlimit_ioccc.h\fP.
+Currently there is only one such value and it's worth a special mention: \fBMIN_TIMESTAMP\fP is the timestamp that an entry timestamp must be >= for it to be a valid entry.
+To put it another way: an entry timestamp < \fBMIN_TIMESTAMP\fP is an invalid timestamp and thus invalid entry.
+.PP
+\fBUUID_LEN\fP, \fBUUID_VERSION\fP and \fBUUID_VARIANT\fP in \fIlimit_ioccc.h\fP.
+.PP
+\fBIOCCC_*\fP in \fPlimit_ioccc.h\fP.
+.PP
+\fBTIMESTAMP_EPOCH\fP in \fPlimit_ioccc.h\fP.
+This is the \fBgettimeofday(2)\fP epoch.
+.PP
+\fBDIGRAPHS\fP and \fBTRIGRAPHS\fP, both of which are specific to \fBiocccsize(1)\fP.
+.SH FILES
+\fIlimit_ioccc.h\fP
+.RS
+Limits and other variables specific to the IOCCC.
+.RE
+\fIversion.h\fP
+.RS
+Versions of all the tools except for the debug facility.
+.RE
+\fIdbg.h\fP
+.RS
+The debug facility header file which also has the debug facility version \fBDBG_VERSION\fP.
+.RE
+.SH NOTES
+In order for this file to be generated you first have to run make: it's not included in the repo itself.
+.SH SEE ALSO
+\fBiocccsize(1)\fP, \fBmkiocccentry(1)\fP, \fBtxzchk(1)\fP, \fBjinfochk(1)\fP and \fBjauthchk(1)\fP.
