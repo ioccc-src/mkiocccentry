@@ -104,7 +104,7 @@ unsigned num_errors = 0;		/* > 0 number of errors encountered */
 /* debug information during development */
 int ugly_debug = 1;
 
-int token_type = 0;
+int token = 0;
 %}
 
 
@@ -292,6 +292,14 @@ main(int argc, char **argv)
     exit(num_errors != 0); /*ooo*/
 }
 
+/* ugly_error	- generate an error message for the scanner/parser
+ *
+ * given:
+ *
+ *	format	    printf style format string
+ *	...	    optional parameters based on the format
+ *
+ */
 void
 ugly_error(char const *format, ...)
 {

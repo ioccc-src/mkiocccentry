@@ -22,6 +22,8 @@
 #if !defined(INCLUDE_JPARSE_H)
 #    define  INCLUDE_JPARSE_H
 
+#include <stdio.h>
+
 /*
  * definitions
  */
@@ -99,7 +101,7 @@ extern char *ugly_text;			/* current text */
 extern FILE *ugly_in;			/* input file lexer/parser reads from */
 extern unsigned num_errors;		/* > 0 number of errors encountered */
 extern bool output_newline;		/* true ==> -n not specified, output new line after each arg processed */
-extern int token_type;			/* for braces, brackets etc.: '{', '}', '[', ']', ':' and so on */
+extern int token;			/* for braces, brackets etc.: '{', '}', '[', ']', ':' and so on */
 
 /*
  * function prototypes
