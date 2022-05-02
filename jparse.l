@@ -77,6 +77,17 @@
  * likely to happen) the parser is split into another repo for a json parser by
  * itself I will possibly remove this prefix: this is as satire for the IOCCC
  * (though we all believe that the generated code is in fact ugly).
+ *
+ * WARNING: Although we use the prefix ugly_ the scanner and parser will at
+ * times refer to yy and YY and other times refer to ugly_ and UGLY_ (partly
+ * because WE refer to ugly_ and UGLY_). So if you're trying to sift through
+ * that ugly spaghetti code (which we strongly recommend you do not do as it will
+ * likely cause nightmares and massive brain pain) you'll want to check yy/YY as
+ * well as ugly_/UGLY_. But really you oughtn't try and go through that code so
+ * you need only pay attention to the ugly_ and UGLY_ prefixes (in the *.l and
+ * *.y files) which again are satire for the IOCCC. See also the apology in the
+ * generated files or directly looking at sorry.tm.ca.h.
+
  */
 %option prefix="ugly_"
 
