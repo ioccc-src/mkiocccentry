@@ -665,7 +665,7 @@ reset_min_timestamp: reset_tstamp.sh
 
 # perform all of the mkiocccentry repo required tests
 #
-test ioccc-test ioccc: ioccc-test.sh iocccsize-test.sh dbg mkiocccentry-test.sh jstr-test.sh jnum_chk dyn_test Makefile
+test ioccc-test: ioccc-test.sh iocccsize-test.sh dbg mkiocccentry-test.sh jstr-test.sh jnum_chk dyn_test Makefile
 	./ioccc-test.sh
 
 # run json-test.sh on test_JSON files
