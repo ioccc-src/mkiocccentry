@@ -11,7 +11,7 @@
 	"entry_num" : 0,
 	"title" : "title-for-entry0",
 	"abstract" : "abstract for entry #0",
-	"tarball" : "entry.12345678-1234-4321-abcd-*234567890ab-0.1645212226.txz",
+	"tarball" : "entry.12345678-1234-4321-abcd-*234567890ab-0.1650779341.txz",
 	"rule_2a_size" : 0,
 	"rule_2b_size" : 0,
 	"empty_override" : true,
@@ -39,7 +39,7 @@
 		{"extra_file" : "extra1"},
 		{"extra_file" : "extra2"}
 	],
-	"formed_timestamp" : 1645212226,
+	"formed_timestamp" : 1650779341,
 	"formed_timestamp_usec" : 13685,
 	"timestamp_epoch" : "Thu Jan 01 00:00:00 1970 UTC",
 	"min_timestamp" : 1650779341,
