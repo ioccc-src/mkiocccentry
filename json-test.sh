@@ -18,12 +18,8 @@ export USAGE="usage: $0 [-h] [-v level] [-D dbg_level] [-j jinfochk] [-J jauthch
     -d json_tree		tree where JSON test files are to be found (def: ./test_JSON)
     				  These sub-directories are expected:
 				    json_tree/author.json/bad
-				    json_tree/author.json/strict-good
-				    json_tree/author.json/strict-bad
 				    json_tree/author.json/good
 				    json_tree/info.json/bad
-				    json_tree/info.json/strict-good
-				    json_tree/info.json/strict-bad
 				    json_tree/info.json/good
 
 exit codes:
@@ -156,7 +152,7 @@ if [[ -n $RUN_JINFOCHK ]]; then
 	echo "$0: ERROR: json_tree for jinfochk not readable directory: $JSON_INFO_TREE" 1>&2
 	exit 4
     fi
-    for subdir in bad good strict-bad strict-good; do
+    for subdir in bad good; do
 	if [[ ! -e $JSON_INFO_TREE/$subdir ]]; then
 	    echo "$0: ERROR: json_tree for jinfochk subdir not found: $JSON_INFO_TREE/$subdir" 1>&2
 	    exit 4
@@ -202,7 +198,7 @@ if [[ -n $RUN_JAUTHCHK ]]; then
 	echo "$0: ERROR: json_tree for jauthchk not readable directory: $JSON_AUTH_TREE" 1>&2
 	exit 4
     fi
-    for subdir in bad good strict-bad strict-good; do
+    for subdir in bad good; do
 	if [[ ! -e $JSON_AUTH_TREE/$subdir ]]; then
 	    echo "$0: ERROR: json_tree for jauthchk subdir not found: $JSON_AUTH_TREE/$subdir" 1>&2
 	    exit 4
@@ -239,28 +235,27 @@ fi
 # run_test - run a single test
 #
 # usage:
-#	run_test test_prog debug_level {must_fail|must_pass} json_test_file
+#	run_test test_prog debug_level {fail|pass} json_test_file
 #
 #	run_test	- our function name
 #	test_prog	- path to a test program
 #	debug_level	- the -v debug level to pass to test_prog
-#	must_fail	- test must fail - error if passes
-#	must_pass	- test must pass - error if fails
+#	fail		- test must fail - error if passes
+#	pass		- test must pass - error if fails
 #	json_test_file	- the JSON file to give to test_prog
 #
 run_test()
 {
     # parse args
     #
-    if [[ $# -ne 5 ]]; then
+    if [[ $# -ne 4 ]]; then
 	echo "$0: ERROR: expected 5 args to run_test, found $#" 1>&2
 	exit 4
     fi
     typeset test_prog="$1"
     typeset debug_level="$2"
     typeset pass_fail="$3"
-    typeset strict="$4"
-    typeset json_test_file="$5"
+    typeset json_test_file="$4"
     typeset json_code="$json_test_file.code"
     if [[ ! -e $test_prog ]]; then
 	echo "$0: in run_test: test_prog not found: $test_prog"
@@ -276,10 +271,6 @@ run_test()
     fi
     if [[ $pass_fail != pass && $pass_fail != fail ]]; then
 	echo "$0: in run_test: pass_fail neither 'pass' nor 'fail': $pass_fail" 1>&2
-	exit 4
-    fi
-    if [[ $strict != strict && $strict != notstrict ]]; then
-	echo "$0: in run_test: strict strict neither 'strict' nor 'notstrict': $strict" 1>&2
 	exit 4
     fi
     if [[ ! -e $test_prog ]]; then
@@ -301,43 +292,21 @@ run_test()
 	echo "$0: debug[9]: in run_test: test_prog: $test_prog" 1>&2
 	echo "$0: debug[9]: in run_test: debug_level: $debug_level" 1>&2
 	echo "$0: debug[9]: in run_test: pass or fail: $pass_fail" 1>&2
-	echo "$0: debug[9]: in run_test: strict or notstrict: $strict" 1>&2
 	echo "$0: debug[9]: in run_test: json_test_file: $json_test_file" 1>&2
     fi
 
-    # case: run a strict test
-    #
-    if [[ $strict == strict ]]; then
-	if [[ $V_FLAG -ge 5 ]]; then
-	    echo "$0: debug[5]: in run_test: about to run: $test_prog -v $debug_level -s -- $json_test_file" 1>&2
-	fi
-	if [[ $debug_level -gt 0 ]]; then
-	    "$test_prog" -t -v "$debug_level" -s -- "$json_test_file"
-	    status="$?"
-	else
-	    "$test_prog" -t -v 0 -q -s -- "$json_test_file"
-	    status="$?"
-	fi
-	if [[ $V_FLAG -ge 7 ]]; then
-	    echo "$0: debug[7]: in run_test: test_prog exit code: $status" 1>&2
-	fi
-
-    # case: run a notstrict test
-    #
+    if [[ $V_FLAG -ge 5 ]]; then
+	echo "$0: debug[5]: in run_test: about to run: $test_prog -v $debug_level -- $json_test_file" 1>&2
+    fi
+    if [[ $debug_level -gt 0 ]]; then
+	"$test_prog" -t -v "$debug_level" -- "$json_test_file"
+	status="$?"
     else
-	if [[ $V_FLAG -ge 5 ]]; then
-	    echo "$0: debug[5]: in run_test: about to run: $test_prog -v $debug_level -- $json_test_file" 1>&2
-	fi
-	if [[ $debug_level -gt 0 ]]; then
-	    "$test_prog" -t -v "$debug_level" -- "$json_test_file"
-	    status="$?"
-	else
-	    "$test_prog" -t -v 0 -q -- "$json_test_file"
-	    status="$?"
-	fi
-	if [[ $V_FLAG -ge 7 ]]; then
-	    echo "$0: debug[7]: in run_test: test_prog exit code: $status" 1>&2
-	fi
+	"$test_prog" -t -v 0 -q -- "$json_test_file"
+	status="$?"
+    fi
+    if [[ $V_FLAG -ge 7 ]]; then
+	echo "$0: debug[7]: in run_test: test_prog exit code: $status" 1>&2
     fi
 
     # examine test result
@@ -377,28 +346,15 @@ run_test()
     # We run jcodechk.sh at a -v 3 minimum so the log file might capture code difference information
     #
     if [[ -f $json_code ]]; then
-	if [[ $strict == strict ]]; then
-	    if [[ $V_FLAG -lt 3 ]]; then
-		"$JCODECHK" -v 3 -D "$debug_level" -s -- "$test_prog" "$json_test_file" 2>&1 | tee -a "$LOGFILE" 1>&2
-		status="$?"
-	    else
-		if [[ $V_FLAG -ge 5 ]]; then
-		    echo "$0: debug[5]: about run: $JCODECHK -v $V_FLAG 3 -D $debug_level -s -- $test_prog $json_test_file" 1>&2
-		fi
-		"$JCODECHK" -v "$V_FLAG" -D "$debug_level" -s -- "$test_prog" "$json_test_file" 2>&1 | tee -a "$LOGFILE" 1>&2
-		status="$?"
-	    fi
+	if [[ $V_FLAG -lt 3 ]]; then
+	    "$JCODECHK" -v 3 -D "$debug_level" -- "$test_prog" "$json_test_file" 2>&1 | tee -a "$LOGFILE" 1>&2
+	    status="$?"
 	else
-	    if [[ $V_FLAG -lt 3 ]]; then
-		"$JCODECHK" -v 3 -D "$debug_level" -- "$test_prog" "$json_test_file" 2>&1 | tee -a "$LOGFILE" 1>&2
-		status="$?"
-	    else
-		if [[ $V_FLAG -ge 5 ]]; then
-		    echo "$0: debug[5]: about run: $JCODECHK -v $V_FLAG 3 -D $debug_level -- $test_prog $json_test_file" 1>&2
-		fi
-		"$JCODECHK" -v "$V_FLAG" -D "$debug_level" -- "$test_prog" "$json_test_file" 2>&1 | tee -a "$LOGFILE" 1>&2
-		status="$?"
+	    if [[ $V_FLAG -ge 5 ]]; then
+		echo "$0: debug[5]: about run: $JCODECHK -v $V_FLAG 3 -D $debug_level -- $test_prog $json_test_file" 1>&2
 	    fi
+	    "$JCODECHK" -v "$V_FLAG" -D "$debug_level" -- "$test_prog" "$json_test_file" 2>&1 | tee -a "$LOGFILE" 1>&2
+	    status="$?"
 	fi
 	case "$status" in
 	0) if [[ $V_FLAG -ge 5 ]]; then
@@ -425,40 +381,22 @@ run_test()
 #
 if [[ -n $RUN_JINFOCHK ]]; then
 
-    # run notstrict tests that must pass
+    # run tests that must pass
     #
     if [[ $V_FLAG -ge 3 ]]; then
-	echo "$0: debug[3]: about to run jinfochk notstrict tests that must pass" 1>&2
+	echo "$0: debug[3]: about to run jinfochk tests that must pass" 1>&2
     fi
     find "$JSON_INFO_TREE/good" -type f -print | while read -r file; do
-        run_test "$JINFOCHK" "$DBG_LEVEL" pass notstrict "$file"
+        run_test "$JINFOCHK" "$DBG_LEVEL" pass "$file"
     done
 
-    # run notstrict tests that must fail
+    # run tests that must fail
     #
     if [[ $V_FLAG -ge 3 ]]; then
-	echo "$0: debug[3]: about to run jinfochk notstrict tests that must fail" 1>&2
+	echo "$0: debug[3]: about to run jinfochk tests that must fail" 1>&2
     fi
     find "$JSON_INFO_TREE/bad" -type f -print | while read -r file; do
-        run_test "$JINFOCHK" "$DBG_LEVEL" fail notstrict "$file"
-    done
-
-    # run strict tests that must pass
-    #
-    if [[ $V_FLAG -ge 3 ]]; then
-	echo "$0: debug[3]: about to run jinfochk strict tests that must pass" 1>&2
-    fi
-    find "$JSON_INFO_TREE/strict-good" -type f -print | while read -r file; do
-        run_test "$JINFOCHK" "$DBG_LEVEL" pass strict "$file"
-    done
-
-    # run strict tests that must fail
-    #
-    if [[ $V_FLAG -ge 3 ]]; then
-	"$0: debug[3]: about to run strict jinfochk tests that must fail" 1>&2
-    fi
-    find "$JSON_INFO_TREE/strict-bad" -type f -print | while read -r file; do
-        run_test "$JINFOCHK" "$DBG_LEVEL" fail strict "$file"
+        run_test "$JINFOCHK" "$DBG_LEVEL" fail "$file"
     done
 fi
 
@@ -466,40 +404,22 @@ fi
 #
 if [[ -n $RUN_JAUTHCHK ]]; then
 
-    # run notstrict tests that must pass
+    # run tests that must pass
     #
     if [[ $V_FLAG -ge 3 ]]; then
-	echo "$0: debug[3]: about to run jauthchk notstrict tests that must pass" 1>&2
+	echo "$0: debug[3]: about to run jauthchk tests that must pass" 1>&2
     fi
     find "$JSON_AUTH_TREE/good" -type f -print | while read -r file; do
-        run_test "$JAUTHCHK" "$DBG_LEVEL" pass notstrict "$file"
+        run_test "$JAUTHCHK" "$DBG_LEVEL" pass "$file"
     done
 
-    # run notstrict tests that must fail
+    # run tests that must fail
     #
     if [[ $V_FLAG -ge 3 ]]; then
-	echo "$0: debug[3]: about to run jauthchk notstrict tests that must fail" 1>&2
+	echo "$0: debug[3]: about to run jauthchk tests that must fail" 1>&2
     fi
     find "$JSON_AUTH_TREE/bad" -type f -print | while read -r file; do
-        run_test "$JAUTHCHK" "$DBG_LEVEL" fail notstrict "$file"
-    done
-
-    # run strict tests that must pass
-    #
-    if [[ $V_FLAG -ge 3 ]]; then
-	echo "$0: debug[3]: about to run jauthchk strict tests that must pass" 1>&2
-    fi
-    find "$JSON_AUTH_TREE/strict-good" -type f -print | while read -r file; do
-        run_test "$JAUTHCHK" "$DBG_LEVEL" pass strict "$file"
-    done
-
-    # run strict tests that must fail
-    #
-    if [[ $V_FLAG -ge 3 ]]; then
-	"$0: debug[3]: about to run strict jauthchk tests that must fail" 1>&2
-    fi
-    find "$JSON_AUTH_TREE/strict-bad" -type f -print | while read -r file; do
-        run_test "$JAUTHCHK" "$DBG_LEVEL" fail strict "$file"
+        run_test "$JAUTHCHK" "$DBG_LEVEL" fail "$file"
     done
 fi
 
