@@ -77,14 +77,14 @@
 	"entry_num" : 0,
 	"fnamchk_version" : "0.6 2022-03-15",
 	"formed_UTC" : "Wed Mar 16 22:25:09 2022 UTC",
-	"formed_timestamp" : 1647469509,
+	"formed_timestamp" : 1650779341,
 	"formed_timestamp_usec" : 506171,
 	"ioccc_contest" : "IOCCCMOCK",
 	"ioccc_year" : 2022,
 	"jauthchk_version" : "0.13 2022-03-15",
 	"min_timestamp" : 1650779341,
 	"mkiocccentry_version" : "0.40 2022-03-15",
-	"tarball" : "entry.12345678-1234-4321-abcd-1234567890ab-0.1647469509.txz",
+	"tarball" : "entry.12345678-1234-4321-abcd-1234567890ab-0.1650779341.txz",
 	"test_mode" : true,
 	"timestamp_epoch" : "Thu Jan 01 00:00:00 1970 UTC"
 }

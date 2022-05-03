@@ -126,7 +126,7 @@ dyn_array_grow(struct dyn_array *array, intmax_t elms_to_allocate)
      */
     if ((double)new_bytes > (double)SIZE_MAX) {
 	err(56, __func__, "the total number of bytes occupied by %jd elements of size %ju is too big "
-			  "and does not fit  the bounds of a size_t [%jd,%jd]",
+			  "and does not fit the bounds of a size_t [%jd,%jd]",
 			  new_allocated, (uintmax_t)array->elm_size,
 			  (intmax_t)SIZE_MIN, (intmax_t)SIZE_MAX);
 	not_reached();

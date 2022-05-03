@@ -498,9 +498,13 @@ json_filename(int type)
  *
  * Does not return on NULL.
  *
- * NOTE: don't use jerr() here because this function will very possibly be
- * removed once a proper json parser is implemented so we don't want to use up
- * any json error codes.
+ * XXX This function will almost certainly be removed once the JSON parser is
+ * complete but we need this in right now so that the current jinfochk and
+ * jauthchk code does not fail. These tools could be modified but it seems to be
+ * not worth the time when more important things (like working on the parser and
+ * other problems) should be worked on and resolved. There are some test JSON
+ * files that are in error as a misunderstanding of the JSON spec (earlier on)
+ * but these will be removed in time.
  */
 int
 check_first_json_char(char const *file, char *data, char **first, char ch)
@@ -543,11 +547,19 @@ check_first_json_char(char const *file, char *data, char **first, char ch)
  *
  * Returns 0 if last character is ch and 1 if it is not.
  *
- * Does not return on error.
+ * Does not return on NULL pointers.
  *
- * NOTE: don't use jerr() here because this function will very possibly be
- * removed once a proper json parser is implemented so we don't want to use up
- * any json error codes.
+ * XXX This function will almost certainly be removed once the JSON parser is
+ * complete but we need this in right now so that the current jinfochk and
+ * jauthchk code does not fail. These tools could be modified but it seems to be
+ * not worth the time when more important things (like working on the parser and
+ * other problems) should be worked on and resolved. There are some test JSON
+ * files that are in error as a misunderstanding of the JSON spec (earlier on)
+ * but these will be removed in time.
+ *
+ * XXX On the other hand this function might be useful for something else though
+ * what that might be at this time does not come to mind (and probably won't be
+ * useful in the end). Still for now we need this in.
  */
 int
 check_last_json_char(char const *file, char *data, char **last, char ch)

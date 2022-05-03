@@ -11,7 +11,7 @@
 	"entry_num" : 1,
 	"title" : "title-for-entry0",
 	"abstract" : "abstract for entry #0",
-	"tarball" : "entry.test-1.1647481478.txz",
+	"tarball" : "entry.test-1.1650779341.txz",
 	"rule_2a_size" : 61,
 	"rule_2b_size" : 38,
 	"empty_override" : false,
@@ -39,7 +39,7 @@
 		{"extra_file" : "extra1"},
 		{"extra_file" : "extra2"}
 	],
-	"formed_timestamp" : 1647481478,
+	"formed_timestamp" : 1650779341,
 	"formed_timestamp_usec" : 147527,
 	"timestamp_epoch" : "Thu Jan 01 00:00:00 1970 UTC",
 	"min_timestamp" : 1650779341,
