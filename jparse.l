@@ -97,7 +97,7 @@
  * Code is copied verbatim near the top of the generated code.
  */
 
-/* our header file */
+/* our header file - #includes what we need */
 #include "jparse.h"
 
 YY_BUFFER_STATE bs;
@@ -109,13 +109,13 @@ YY_BUFFER_STATE bs;
 
 /*
  * XXX JSON_WHITESPACE is not needed but for testing I have the whitespace here
- * and below in the actions print out that it is whitespace and what characters
- * (though newlines and other non-printable whitespace chars are not translated
- * to escape sequences). The text looks like:
+ * and below in the actions I print out that it is whitespace and what
+ * characters (though newlines and other non-printable whitespace chars are not
+ * translated to escape sequences). The text looks like:
  *
  *	whitespace: '<whitespace chars>'
  *
- * to help distinguish it from other patterns.
+ * to help distinguish it from other patterns matched.
  */
 JSON_WHITESPACE	[ \t\r\n]+
 
