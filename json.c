@@ -1467,8 +1467,9 @@ json_conv_free(struct json *node)
  * NOTE: This function assumes that str is a NUL terminated string,
  *	 even if the NUL is well beyond the end of the JSON number.
  *
- * NOTE: While it is OK if str as trailing whitespace, str[len-1] must be an ASCII digit.
- *	 It is assumed that str[len-1] is the final JSON number character.
+ * NOTE: While it is OK if str has trailing whitespace, str[len-1] must be an
+ *	 ASCII digit.  It is assumed that str[len-1] is the final JSON number
+ *	 character.
  */
 static bool
 json_process_decimal(struct json_number *item, char const *str, size_t len)
@@ -1793,8 +1794,9 @@ json_process_decimal(struct json_number *item, char const *str, size_t len)
  * NOTE: This function assumes that str is a NUL terminated string,
  *	 even if the NUL is well beyond the end of the JSON number.
  *
- * NOTE: While it is OK if str as trailing whitespace, str[len-1] must be an ASCII digit.
- *	 It is assumed that str[len-1] is the final JSON number character.
+ * NOTE: While it is OK if str has trailing whitespace, str[len-1] must be an
+ *	 ASCII digit.  It is assumed that str[len-1] is the final JSON number
+ *	 character.
  */
 static bool
 json_process_floating(struct json_number *item, char const *str, size_t len)

@@ -47,8 +47,8 @@ main(int argc, char **argv)
     program = argv[0];
     while ((i = getopt(argc, argv, "hv:qVF:t:TE:")) != -1) {
 	switch (i) {
-	case 'h':		/* -h - print help to stderr and exit 0 */
-	    usage(0, "-h help mode", program);
+	case 'h':		/* -h - print help to stderr and exit 3 */
+	    usage(2, "-h help mode", program); /*ooo*/
 	    not_reached();
 	    break;
 	case 'v':		/* -v verbosity */
@@ -67,7 +67,7 @@ main(int argc, char **argv)
 	    if (ret <= 0) {
 		warnp(__func__, "printf error printing version string: %s", TXZCHK_VERSION);
 	    }
-	    exit(0); /*ooo*/
+	    exit(2); /*ooo*/
 	    not_reached();
 	    break;
 	case 'F':
@@ -85,13 +85,13 @@ main(int argc, char **argv)
 	    ext = optarg;
 	    break;
 	default:
-	    usage(1, "invalid -flag", program); /*ooo*/
+	    usage(2, "invalid -flag", program); /*ooo*/
 	    not_reached();
 	}
     }
     /* must have the exact required number of args */
     if (argc - optind != REQUIRED_ARGS) {
-	usage(1, "wrong number of arguments", program); /*ooo*/
+	usage(2, "wrong number of arguments", program); /*ooo*/
 	not_reached();
     }
     txzpath = argv[optind];
@@ -104,8 +104,7 @@ main(int argc, char **argv)
 	errno = 0;			/* pre-clear errno for errp() */
 	ret = printf("Welcome to txzchk version: %s\n", TXZCHK_VERSION);
 	if (ret <= 0) {
-	    errp(1, __func__, "printf error printing the welcome string");
-	    not_reached();
+	    warnp(__func__, "printf error printing the welcome string");
 	}
     }
 
@@ -213,7 +212,7 @@ show_txz_info(char const *txzpath)
  * usage - print usage to stderr
  *
  * Example:
- *      usage(3, "missing required argument(s), program: %s", program);
+ *      usage(2, "missing required argument(s), program: %s", program);
  *
  * given:
  *	exitcode        value to exit with

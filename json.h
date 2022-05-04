@@ -68,7 +68,7 @@ struct encode {
  *
  * If converted == false, then the JSON number string was not able to be
  * converted into a C numeric value (neither integer, nor floating point), OR
- * the JSON number string was invalid (mal-formed), or the JSON number string
+ * the JSON number string was invalid (malformed), or the JSON number string
  * was too large or otherwise could not be converted into a C numeric value
  * by the standard libc conversion functions.
  *
@@ -104,7 +104,7 @@ struct json_number
 
     bool is_negative;		/* true ==> value < 0 */
 
-    bool is_floating;		/* true ==> as_str had a . in it such as 1.234, false ==> no . found */
+    bool is_floating;		/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */
     bool is_e_notation;		/* true ==> e notation used such as 1e10, no e notation found */
 
     /* integer values */

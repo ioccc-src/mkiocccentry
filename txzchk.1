@@ -1,4 +1,4 @@
-.TH txzchk 1 "30 April 2022" "txzchk" "IOCCC tools"
+.TH txzchk 1 "04 April 2022" "txzchk" "IOCCC tools"
 .SH NAME
 txzchk \- sanity checker tool used on IOCCC compressed tarballs
 .SH SYNOPSIS
@@ -42,8 +42,13 @@ Change extension for \fBfnamchk(1)\fP to validate (don't include the dot).
 This is used in conjunction with \fb\-T\fP above for \fBTESTING\fP purposes only!
 .SH EXIT STATUS
 .PP
-\fBmain()\fP returns 1 for errors or issues found; 0 for success.
-If there's either an internal error or parsing error (which could happen with a tar output that's not known for example) the end is not reached.
+An exit code of 0 indicates there were no issues found in the tarball.
+.PP
+An exit code of 1 indicates that the tarball was successfully parsed and there was at least one issue found in the tarball.
+.PP
+An exit code of 2 indicates that the usage string was printed either because \fB\-h\fP was specified or an invalid command line.
+.PP
+Any value > 2 indicates an internal error or an unknown tar listing format.
 .SH FILES
 \fItxzchk.c\fP
 .RS
@@ -78,7 +83,7 @@ Run the program on the tarball \fIentry.test-1.1644094311.txz\fP, specifying an 
 
 .RS
 \fB
- ./txzchk -t /path/to/tar -F ./filenamechk entry.test-1.1644094311.txz\fP
+ ./txzchk -t /path/to/some/tar -F ./filenamechk entry.test-1.1644094311.txz\fP
 .fi
 .RE
 .PP
@@ -90,5 +95,7 @@ Run the program on the file \fIentry.test-1.1644094311.txt\fP, specifying that i
  ./txzchk -T -E txt entry.test-1.1644094311.txt\fP
 .fi
 .RE
+.SH SEE ALSO
+\fBfnamchk(1)\fP, \fBmkiocccentry(1)\fP, \fbtar(1)\fP.
 .SH AUTHOR
 Cody Boone Ferguson.
