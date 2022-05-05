@@ -108,7 +108,7 @@ jinfochk_sanity_chks(char const *file, char const *fnamchk)
 	      "",
 	      "We cannot find fnamchk.",
 	      "",
-	      "The fnamchk program performs a sanity check on the compressed tarball filename.",
+	      "The fnamchk program performs sanity checks on the compressed tarball filename.",
 	      "Perhaps you need to use:",
 	      "",
 	      "    jinfochk -F /path/to/fnamchk ...",
