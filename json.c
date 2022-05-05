@@ -2068,6 +2068,22 @@ json_process_floating(struct json_number *item, char const *str, size_t len)
 /*
  * json_conv_number - convert JSON number string to C numeric value
  *
+ * A JSON string is of the form:
+ *
+ *      ({JSON_INTEGER}|{JSON_INTEGER}{JSON_FRACTION}|{JSON_INTEGER}{JSON_FRACTION}{JSON_EXPONENT}_
+ *
+ * where {JSON_INTEGER} is of the form:
+ *
+ *      -?([1-9][0-9]*|0)
+ *
+ * and where {JSON_FRACTION} is of the form:
+ *
+ *      \.[0-9]+
+ *
+ * and where {JSON_EXPONENT} is of the form:
+ *
+ *      [Ee][-+]?[0-9]+
+ *
  * given:
  *	ptr	pointer to buffer containing a JSON number
  *	len	length, starting at ptr, of the JSON number string
@@ -2233,7 +2249,7 @@ json_conv_number(char const *ptr, size_t len)
 /*
  * json_conv_number_str - convert JSON number string to C numeric value
  *
- * This is an simplified interface for json_conv_int().
+ * This is an simplified interface for json_conv_int().  See that function for details.
  *
  * given:
  *	str	a JSON integer string to convert
@@ -2292,6 +2308,10 @@ json_conv_number_str(char const *str, size_t *retlen)
 
 /*
  * json_conv_string - convert JSON encoded string to C string
+ *
+ * A JSON string is of the form:
+ *
+ *      "([^\n"]|\\")*"
  *
  * given:
  *	ptr	pointer to buffer containing a JSON encoded string
@@ -2436,7 +2456,7 @@ json_conv_string(char const *ptr, size_t len, bool quote)
 /*
  * json_conv_string_str - convert JSON string to C string
  *
- * This is an simplified interface for json_conv_string().
+ * This is an simplified interface for json_conv_string(). See that function for details.
  *
  * given:
  *	str	a JSON encoded string
@@ -2497,6 +2517,11 @@ json_conv_string_str(char const *str, size_t *retlen, bool quote)
 
 /*
  * json_conv_bool - convert JSON encoded boolean to C bool
+ *
+ * A JSON boolean is of the form:
+ *
+ *      true
+ *      false
  *
  * given:
  *	ptr	pointer to buffer containing a JSON boolean
@@ -2596,7 +2621,7 @@ json_conv_bool(char const *ptr, size_t len)
 /*
  * json_conv_bool_str - convert JSON string to C bool
  *
- * This is an simplified interface for json_conv_bool().
+ * This is an simplified interface for json_conv_bool(). See that function for details.
  *
  * given:
  *	str	a JSON encoded boolean
@@ -2655,6 +2680,10 @@ json_conv_bool_str(char const *str, size_t *retlen)
 
 /*
  * json_conv_null - convert JSON encoded null to C NULL
+ *
+ * A JSON null is of the form:
+ *
+ *      null
  *
  * given:
  *	ptr	pointer to buffer containing a JSON null
@@ -2750,7 +2779,7 @@ json_conv_null(char const *ptr, size_t len)
 /*
  * json_conv_null_str - convert JSON string to C NULL
  *
- * This is an simplified interface for json_conv_null().
+ * This is an simplified interface for json_conv_null(). See that function for details.
  *
  * given:
  *	str	a JSON encoded null
@@ -2799,6 +2828,113 @@ json_conv_null_str(char const *str, size_t *retlen)
     if (retlen != NULL) {
 	*retlen = len;
     }
+
+    /*
+     * return the JSON parse tree element
+     */
+    return ret;
+}
+
+
+/*
+ * json_conv_member - convert JSON member into JSON parser tree node
+ *
+ * A JSON member is of the form:
+ *
+ *      name : value
+ *
+ * where name is a JSON string of the form:
+ *
+ *      "([^\n"]|\\")*"
+ *
+ * and where value is any JSON value such as a:
+ *
+ *      JSON object
+ *      JSON array
+ *      JSON string
+ *      JSON number
+ *      JSON boolean
+ *      JSON null
+ *
+ * given:
+ *	name	JSON member string
+ *	value	JSON member value (object, array, string, number, boolean, null)
+ *
+ * returns:
+ *	allocated JSON parser tree node converted JSON encoded null
+ *
+ * NOTE: It is the responsibility of the calling function to link this
+ *	 allocated JSON parser tree node into the JSON parse tree.
+ *
+ * NOTE: This function will not return on malloc error.
+ * NOTE: This function will not return NULL.
+ */
+struct json *
+json_conv_member(struct json * name, struct json *value)
+{
+    struct json *ret = NULL;		    /* JSON parser tree node to return */
+    struct json_member *item = NULL;	    /* allocated JSON member */
+
+    /*
+     * allocate the JSON parse tree element
+     */
+    errno = 0;			/* pre-clear errno for errp() */
+    ret = calloc(1, sizeof(*ret));
+    if (ret == NULL) {
+	errp(174, __func__, "calloc #0 error allocating %ju bytes", (uintmax_t)sizeof(*ret));
+	not_reached();
+    }
+
+    /*
+     * initialize the JSON parse tree element
+     */
+    ret->type = JTYPE_MEMBER;
+    ret->parent = NULL;
+    ret->prev = NULL;
+    ret->next = NULL;
+
+    /*
+     * initialize the JSON element
+     */
+    item = &(ret->element.member);
+    item->converted = false;
+    item->name = NULL;
+    item->value = NULL;
+
+    /*
+     * firewall
+     */
+    if (name == NULL) {
+	warn(__func__, "called with NULL name");
+	return ret;
+    }
+    if (value == NULL) {
+	warn(__func__, "called with NULL value");
+	return ret;
+    }
+    if (name->type != JTYPE_STRING) {
+	warn(__func__, "expected JSON string type: %d found type: %d", JTYPE_STRING, name->type);
+	return ret;
+    }
+    switch (value->type) {
+    case JTYPE_NUMBER:
+    case JTYPE_STRING:
+    case JTYPE_BOOL:
+    case JTYPE_MEMBER:
+    case JTYPE_OBJECT:
+    case JTYPE_ARRAY:
+	break;
+    default:
+	warn(__func__, "expected JSON object, array, string, number, boolean of null, found type: %d", value->type);
+	return ret;
+    }
+
+    /*
+     * link name and value
+     */
+    item->name = name;
+    item->value = value;
+    item->converted = true;
 
     /*
      * return the JSON parse tree element

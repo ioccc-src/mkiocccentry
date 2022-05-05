@@ -91,6 +91,22 @@ struct encode {
  * If is_floating == then, then the JSON number was attempted to be parsed
  * as an floating point value.  In this case the "floating point values" fields
  * will be used, and the "integer values" fields will be unused (set to false, or 0).
+ *
+ * A JSON string is of the form:
+ *
+ *	({JSON_INTEGER}|{JSON_INTEGER}{JSON_FRACTION}|{JSON_INTEGER}{JSON_FRACTION}{JSON_EXPONENT}_
+ *
+ * where {JSON_INTEGER} is of the form:
+ *
+ *	-?([1-9][0-9]*|0)
+ *
+ * and where {JSON_FRACTION} is of the form:
+ *
+ *	\.[0-9]+
+ *
+ * and where {JSON_EXPONENT} is of the form:
+ *
+ *	[Ee][-+]?[0-9]+
  */
 struct json_number
 {
@@ -190,6 +206,10 @@ struct json_number
  *
  * If the allocation of as_str failed, as_str == NULL and converted == false.
  * The non-NULL as_str allocated will be NUL byte terminated.
+ *
+ * A JSON string is of the form:
+ *
+ *	"([^\n"]|\\")*"
  */
 struct json_string
 {
@@ -218,6 +238,11 @@ struct json_string
  *
  * When converted == false, then all other fields in this structure may be invalid.
  * So you must check the boolean of converted and only use values if converted == true.
+ *
+ * A JSON boolean is of the form:
+ *
+ *	true
+ *	false
  */
 struct json_boolean
 {
@@ -235,6 +260,10 @@ struct json_boolean
  *
  * When converted == false, then all other fields in this structure may be invalid.
  * So you must check the boolean of converted and only use values if converted == true.
+ *
+ * A JSON null is of the form:
+ *
+ *	null
  */
 struct json_null
 {
@@ -256,6 +285,19 @@ struct json_null
  * A JSON member is of the form:
  *
  *	name : value
+ *
+ * where name is a JSON string of the form:
+ *
+ *	"([^\n"]|\\")*"
+ *
+ * and where value is any JSON value such as a:
+ *
+ *	JSON object
+ *	JSON array
+ *	JSON string
+ *	JSON number
+ *	JSON boolean
+ *	JSON null
  */
 struct json_member
 {
@@ -353,6 +395,8 @@ struct json
      *
      * NOTE: If a pointer is NULL then it means you have reached the end of the
      *	     linked list and/or at the end/top/bottom of the tree.
+     *
+     * XXX - these pointers are not used and may go away - XXX
      */
     struct json *parent;	/* parent node in the JSON parse tree, or NULL if tree root or unlinked */
     struct json *prev;		/* previous in a JSON parse tree linked list, or NULL is link head or unlinked */
@@ -386,6 +430,7 @@ extern struct json *json_conv_bool(char const *ptr, size_t len);
 extern struct json *json_conv_bool_str(char const *str, size_t *retlen);
 extern struct json *json_conv_null(char const *ptr, size_t len);
 extern struct json *json_conv_null_str(char const *str, size_t *retlen);
+extern struct json *json_conv_member(struct json * name, struct json *value);
 
 
 #endif /* INCLUDE_JSON_H */
