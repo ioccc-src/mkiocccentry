@@ -122,7 +122,7 @@ jauthchk_sanity_chks(char const *file, char const *fnamchk)
     if (!is_file(fnamchk)) {
 	fpara(stderr,
 	      "",
-	      "The fnamchk tool, while it exists, is not a file.",
+	      "The fnamchk tool, while it exists, is not a regular file.",
 	      "",
 	      "Perhaps you need to use another path:",
 	      "",

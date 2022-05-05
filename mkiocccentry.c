@@ -155,7 +155,7 @@ main(int argc, char *argv[])
      */
     input_stream = stdin;	/* default to reading from standard in */
     program = argv[0];
-    while ((i = getopt(argc, argv, "hv:qVt:c:l:a:i:A:WC:F:j:J:")) != -1) {
+    while ((i = getopt(argc, argv, "hv:qVt:c:l:a:i:A:WT:F:j:J:")) != -1) {
 	switch (i) {
 	case 'h':		/* -h - print help to stderr and exit 0 */
 	    usage(1, "-h help mode", program);
@@ -209,7 +209,7 @@ main(int argc, char *argv[])
 	case 'W':		/* -W ignores all warnings (this does NOT the judges will! :) ) */
 	    ignore_warnings = true;
 	    break;
-	case 'C':
+	case 'T':
 	    txzchk_flag_used = true;
 	    txzchk = optarg;
 	    break;
@@ -841,7 +841,7 @@ mkiocccentry_sanity_chks(struct info *infop, char const *work_dir, char const *t
     if (!is_file(tar)) {
 	fpara(stderr,
 	      "",
-	      "The tar, while it exists, is not a file.",
+	      "The tar, while it exists, is not a regular file.",
 	      "",
 	      "Perhaps you need to use another path:",
 	      "",
@@ -897,7 +897,7 @@ mkiocccentry_sanity_chks(struct info *infop, char const *work_dir, char const *t
     if (!is_file(cp)) {
 	fpara(stderr,
 	      "",
-	      "The cp, while it exists, is not a file.",
+	      "The cp, while it exists, is not a regular file.",
 	      "",
 	      "Perhaps you need to use another path:",
 	      "",
@@ -935,7 +935,7 @@ mkiocccentry_sanity_chks(struct info *infop, char const *work_dir, char const *t
     if (!exists(ls)) {
 	fpara(stderr,
 	      "",
-	      "We cannot find a ls program.",
+	      "We cannot find an ls program.",
 	      "",
 	      "A ls program is required to copy files into a directory under work_dir.",
 	      "Perhaps you need to use:",
@@ -953,7 +953,7 @@ mkiocccentry_sanity_chks(struct info *infop, char const *work_dir, char const *t
     if (!is_file(ls)) {
 	fpara(stderr,
 	      "",
-	      "The ls, while it exists, is not a file.",
+	      "The ls, while it exists, is not a regular file.",
 	      "",
 	      "Perhaps you need to use another path:",
 	      "",
@@ -991,9 +991,9 @@ mkiocccentry_sanity_chks(struct info *infop, char const *work_dir, char const *t
     if (!exists(txzchk)) {
 	fpara(stderr,
 	      "",
-	      "We cannot find a txzchk tool.",
+	      "We cannot find txzchk.",
 	      "",
-	      "A txzchk program performs a sanity check on the compressed tarball.",
+	      "The txzchk program performs a sanity check on the compressed tarball.",
 	      "Perhaps you need to use:",
 	      "",
 	      "    mkiocccentry -C /path/to/txzchk ...",
@@ -1009,7 +1009,7 @@ mkiocccentry_sanity_chks(struct info *infop, char const *work_dir, char const *t
     if (!is_file(txzchk)) {
 	fpara(stderr,
 	      "",
-	      "The txzchk tool, while it exists, is not a file.",
+	      "The txzchk tool, while it exists, is not a regular file.",
 	      "",
 	      "Perhaps you need to use another path:",
 	      "",
@@ -1065,7 +1065,7 @@ mkiocccentry_sanity_chks(struct info *infop, char const *work_dir, char const *t
     if (!is_file(fnamchk)) {
 	fpara(stderr,
 	      "",
-	      "The fnamchk tool, while it exists, is not a file.",
+	      "The fnamchk tool, while it exists, is not a regular file.",
 	      "",
 	      "Perhaps you need to use another path:",
 	      "",
@@ -1121,7 +1121,7 @@ mkiocccentry_sanity_chks(struct info *infop, char const *work_dir, char const *t
     if (!is_file(jinfochk)) {
 	fpara(stderr,
 	      "",
-	      "The jinfochk tool, while it exists, is not a file.",
+	      "The jinfochk tool, while it exists, is not a regular file.",
 	      "",
 	      "Perhaps you need to use another path:",
 	      "",
@@ -1177,7 +1177,7 @@ mkiocccentry_sanity_chks(struct info *infop, char const *work_dir, char const *t
     if (!is_file(jauthchk)) {
 	fpara(stderr,
 	      "",
-	      "The jauthchk tool, while it exists, is not a file.",
+	      "The jauthchk tool, while it exists, is not a regular file.",
 	      "",
 	      "Perhaps you need to use another path:",
 	      "",
@@ -2234,7 +2234,7 @@ check_prog_c(struct info *infop, char const *entry_dir, char const *cp, char con
     if (!is_file(prog_c)) {
 	fpara(stderr,
 	      "",
-	      "The prog.c path, while it exists, is not a file.",
+	      "The prog.c path, while it exists, is not a regular file.",
 	      "",
 	      NULL);
 	err(83, __func__, "prog.c is not a file: %s", prog_c);
@@ -2747,7 +2747,7 @@ check_Makefile(struct info *infop, char const *entry_dir, char const *cp, char c
     if (!is_file(Makefile)) {
 	fpara(stderr,
 	       "",
-	       "The Makefile path, while it exists, is not a file.",
+	       "The Makefile path, while it exists, is not a regular file.",
 	       "",
 	       NULL);
 	err(97, __func__, "Makefile is not a file: %s", Makefile);
@@ -2848,7 +2848,7 @@ check_remarks_md(struct info *infop, char const *entry_dir, char const *cp, char
     }
     if (!is_file(remarks_md)) {
 	fpara(stderr, "",
-	      "The remarks.md path, while it exists, is not a file.",
+	      "The remarks.md path, while it exists, is not a regular file.",
 	      "",
 	      NULL);
 	err(105, __func__, "remarks_md is not a file: %s", remarks_md);

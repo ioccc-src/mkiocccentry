@@ -299,7 +299,7 @@ txzchk_sanity_chks(char const *tar, char const *fnamchk)
 	if (!is_file(tar)) {
 	    fpara(stderr,
 		  "",
-		  "The tar, while it exists, is not a file.",
+		  "The tar, while it exists, is not a regular file.",
 		  "",
 		  "Perhaps you need to use another path:",
 		  "",
@@ -351,7 +351,7 @@ txzchk_sanity_chks(char const *tar, char const *fnamchk)
     if (!is_file(fnamchk)) {
 	fpara(stderr,
 	      "",
-	      "The fnamchk, while it exists, is not a file.",
+	      "The fnamchk, while it exists, is not a regular file.",
 	      "",
 	      "Perhaps you need to use another path:",
 	      "",
