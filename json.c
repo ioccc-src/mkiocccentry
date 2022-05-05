@@ -2925,7 +2925,7 @@ json_conv_member(struct json * name, struct json *value)
     case JTYPE_ARRAY:
 	break;
     default:
-	warn(__func__, "expected JSON object, array, string, number, boolean of null, found type: %d", value->type);
+	warn(__func__, "expected JSON object, array, string, number, boolean or null, found type: %d", value->type);
 	return ret;
     }
 
