@@ -141,7 +141,7 @@ main(int argc, char *argv[])
     bool answers_flag_used = false;		/* true ==> -a write answers to answers file */
     bool read_answers_flag_used = false;	/* true ==> -i read answers from answers file */
     bool overwrite_answers_flag_used = false;	/* true ==> don't prompt to overwrite answers if it already exists */
-    bool txzchk_flag_used = false;		/* true ==> -C /path/to/txzchk was given */
+    bool txzchk_flag_used = false;		/* true ==> -T /path/to/txzchk was given */
     bool fnamchk_flag_used = false;		/* true ==> -F /path/to/fnamchk was given */
     bool jinfochk_flag_used = false;		/* true ==> -j /path/to/jinfochk was given */
     bool jauthchk_flag_used = false;		/* true ==> -J /path/to/jauthchk was given */
@@ -996,7 +996,7 @@ mkiocccentry_sanity_chks(struct info *infop, char const *work_dir, char const *t
 	      "The txzchk program performs a sanity check on the compressed tarball.",
 	      "Perhaps you need to use:",
 	      "",
-	      "    mkiocccentry -C /path/to/txzchk ...",
+	      "    mkiocccentry -T /path/to/txzchk ...",
 	      "",
 	      "and/or install the txzchk tool?  You can find the source for txzchk in the mkiocccentry GitHub repo:",
 	      "",
@@ -1013,7 +1013,7 @@ mkiocccentry_sanity_chks(struct info *infop, char const *work_dir, char const *t
 	      "",
 	      "Perhaps you need to use another path:",
 	      "",
-	      "    mkiocccentry -C /path/to/txzchk ...",
+	      "    mkiocccentry -T /path/to/txzchk ...",
 	      "",
 	      "and/or install the txzchk tool?  You can find the source for txzchk in the mkiocccentry GitHub repo:",
 	      "",
@@ -1030,7 +1030,7 @@ mkiocccentry_sanity_chks(struct info *infop, char const *work_dir, char const *t
 	      "",
 	      "We suggest you check the permissions on the txzchk program, or use another path:",
 	      "",
-	      "    mkiocccentry -C /path/to/txzchk ...",
+	      "    mkiocccentry -T /path/to/txzchk ...",
 	      "",
 	      "and/or install the txzchk tool?  You can find the source for txzchk in the mkiocccentry GitHub repo:",
 	      "",

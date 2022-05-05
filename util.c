@@ -1728,8 +1728,8 @@ readline_dup(char **linep, bool strip, size_t *lenp, FILE *stream)
  *	cp		    - if -c cp was not used and cp != NULL set *cp to cp path
  *	ls_flag_used	    - true ==> -l ls was used
  *	ls		    - if -l ls was not used and ls != NULL set *ls to ls path
- *	txzchk_flag_used    - true ==> -C flag used
- *	txzchk		    - if -C txzchk was used and txzchk != NULL set *txzchk to path
+ *	txzchk_flag_used    - true ==> -T flag used
+ *	txzchk		    - if -T txzchk was used and txzchk != NULL set *txzchk to path
  *	fnamchk_flag_used   - true ==> if fnamchk flag was used
  *	fnamchk		    - if fnamchk option used and fnamchk ! NULL set *fnamchk to path
  *	jinfochk_flag_used  - true ==> -j jinfochk was used
