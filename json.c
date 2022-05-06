@@ -323,7 +323,7 @@ json_encode(char const *ptr, size_t len, size_t *retlen)
 /*
  * json_encode_str - return a JSON encoding of a string
  *
- * This is an simplified interface for json_encode().
+ * This is a simplified interface for json_encode().
  *
  * given:
  *	str	a string to encode
@@ -2249,7 +2249,7 @@ json_conv_number(char const *ptr, size_t len)
 /*
  * json_conv_number_str - convert JSON number string to C numeric value
  *
- * This is an simplified interface for json_conv_int().  See that function for details.
+ * This is a simplified interface for json_conv_int().  See that function for details.
  *
  * given:
  *	str	a JSON integer string to convert
@@ -2456,7 +2456,7 @@ json_conv_string(char const *ptr, size_t len, bool quote)
 /*
  * json_conv_string_str - convert JSON string to C string
  *
- * This is an simplified interface for json_conv_string(). See that function for details.
+ * This is a simplified interface for json_conv_string(). See that function for details.
  *
  * given:
  *	str	a JSON encoded string
@@ -2621,7 +2621,7 @@ json_conv_bool(char const *ptr, size_t len)
 /*
  * json_conv_bool_str - convert JSON string to C bool
  *
- * This is an simplified interface for json_conv_bool(). See that function for details.
+ * This is a simplified interface for json_conv_bool(). See that function for details.
  *
  * given:
  *	str	a JSON encoded boolean
@@ -2779,7 +2779,7 @@ json_conv_null(char const *ptr, size_t len)
 /*
  * json_conv_null_str - convert JSON string to C NULL
  *
- * This is an simplified interface for json_conv_null(). See that function for details.
+ * This is a simplified interface for json_conv_null(). See that function for details.
  *
  * given:
  *	str	a JSON encoded null
