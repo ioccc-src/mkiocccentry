@@ -144,7 +144,7 @@ static const char * const usage_msg1 =
     "\t-t tar\t\tpath to tar executable that supports the -J (xz) option (def: %s)\n"
     "\t-c cp\t\tpath to cp executable (def: %s)\n"
     "\t-l ls\t\tpath to ls executable (def: %s)\n"
-    "\t-C txzchk\tpath to txzchk executable (def: %s)\n"
+    "\t-T txzchk\tpath to txzchk executable (def: %s)\n"
     "\t-F fnamchk\tpath to fnamchk executable used by txzchk (def: %s)";
 static const char * const usage_msg2 =
     "\t-j jinfochk	path to jinfochk executable used by txzchk (def: %s)\n"

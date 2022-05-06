@@ -233,11 +233,11 @@ echo "This line in $LIMIT_IOCCC_H as it exists now, is:"
 echo
 grep '^#define MIN_TIMESTAMP' "$LIMIT_IOCCC_H"
 echo
-echo "%0: notice: You still need to:"
+echo "$0: notice: You still need to:"
 echo
 echo '    make clobber all test'
 echo
-echo "%0: notice: And if all is well, commit and push the change to the GitHub repo!"
+echo "$0: notice: And if all is well, commit and push the change to the GitHub repo!"
 echo
 
 # All Done!!! -- Jessica Noll, Age 2

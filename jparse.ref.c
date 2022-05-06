@@ -881,8 +881,8 @@ int yy_flex_debug = 1;
 
 static const flex_int16_t yy_rule_linenum[14] =
     {   0,
-      150,  159,  165,  171,  177,  182,  188,  193,  199,  205,
-      211,  217,  223
+      150,  160,  167,  174,  181,  187,  194,  200,  207,  214,
+      221,  228,  235
     } ;
 
 /* The intent behind this definition is that it'll catch
@@ -1392,7 +1392,8 @@ case 1:
 /* rule 1 can match eol */
 YY_RULE_SETUP
 #line 150 "jparse.l"
-{   /*
+{
+			    /*
 			     * Whitespace
 			     *
 			     * Not needed but included for now for debugging
@@ -1403,8 +1404,9 @@ YY_RULE_SETUP
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
-#line 159 "jparse.l"
-{   /* string */
+#line 160 "jparse.l"
+{
+			    /* string */
 			    printf("\nstring: '%s'\n", ugly_text);
 			    ugly_lval.type = JTYPE_STRING;
 			    return JSON_STRING;
@@ -1412,8 +1414,9 @@ YY_RULE_SETUP
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 165 "jparse.l"
-{   /* number */
+#line 167 "jparse.l"
+{
+			    /* number */
 			    printf("\nnumber: '%s'\n", ugly_text);
 			    ugly_lval.type = JTYPE_NUMBER;
 			    return JSON_NUMBER;
@@ -1421,8 +1424,9 @@ YY_RULE_SETUP
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 171 "jparse.l"
-{   /* null object */
+#line 174 "jparse.l"
+{
+			    /* null object */
 			    printf("\nnull: '%s'\n", ugly_text);
 			    ugly_lval.type = JTYPE_NULL;
 			    return JSON_NULL;
@@ -1430,8 +1434,9 @@ YY_RULE_SETUP
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 177 "jparse.l"
-{   /* boolean: true */
+#line 181 "jparse.l"
+{
+			    /* boolean: true */
 			    printf("\ntrue: '%s'\n", ugly_text);
 			    ugly_lval.type = JTYPE_BOOL;
 			    return JSON_TRUE;
@@ -1439,8 +1444,9 @@ YY_RULE_SETUP
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 182 "jparse.l"
-{   /* boolean: false */
+#line 187 "jparse.l"
+{
+			    /* boolean: false */
 			    printf("\nfalse: '%s'\n", ugly_text);
 			    ugly_lval.type = JTYPE_BOOL;
 			    return JSON_FALSE;
@@ -1448,8 +1454,9 @@ YY_RULE_SETUP
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 188 "jparse.l"
-{   /* start of object */
+#line 194 "jparse.l"
+{
+			    /* start of object */
 			    printf("\nstart of object: '%c'\n", *ugly_text);
 			    ugly_lval.type = JTYPE_OBJECT;
 			    return JSON_OPEN_BRACE;
@@ -1457,8 +1464,9 @@ YY_RULE_SETUP
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 193 "jparse.l"
-{   /* end of object */
+#line 200 "jparse.l"
+{
+			    /* end of object */
 			    printf("\nend of object: '%c'\n", *ugly_text);
 			    token = '}';
 			    return JSON_CLOSE_BRACE;
@@ -1466,8 +1474,9 @@ YY_RULE_SETUP
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 199 "jparse.l"
-{   /* start of array */
+#line 207 "jparse.l"
+{
+			    /* start of array */
 			    printf("\nstart of array: '%c'\n", *ugly_text);
 			    ugly_lval.type = JTYPE_ARRAY;
 			    token = '[';
@@ -1476,8 +1485,9 @@ YY_RULE_SETUP
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
-#line 205 "jparse.l"
-{   /* end of array */
+#line 214 "jparse.l"
+{
+			    /* end of array */
 			    printf("\nend of array: '%c'\n", *ugly_text);
 			    token = ']';
 			    return JSON_CLOSE_BRACKET;
@@ -1485,8 +1495,9 @@ YY_RULE_SETUP
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
-#line 211 "jparse.l"
-{   /* colon or 'equals' */
+#line 221 "jparse.l"
+{
+			    /* colon or 'equals' */
 			    printf("\ncolon (or 'equals' ): '%c'\n", *ugly_text);
 			    token = ':';
 			    return JSON_COLON;
@@ -1494,8 +1505,9 @@ YY_RULE_SETUP
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
-#line 217 "jparse.l"
-{   /* comma: name/value pair separator */
+#line 228 "jparse.l"
+{
+			    /* comma: name/value pair separator */
 			    printf("\ncomma: '%c'\n", *ugly_text);
 			    token = ',';
 			    return JSON_COMMA;
@@ -1503,18 +1515,19 @@ YY_RULE_SETUP
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
-#line 223 "jparse.l"
-{   /* invalid input: any other character */
-			    ugly_error("invalid input: %s\n", ugly_text);
+#line 235 "jparse.l"
+{
+			    /* invalid token: any other character */
+			    ugly_error("\ninvalid token: '%c'\n", *ugly_text);
 			    return JSON_INVALID_TOKEN;
 			}
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
-#line 228 "jparse.l"
+#line 241 "jparse.l"
 YY_FATAL_ERROR( "flex scanner jammed" );
 	YY_BREAK
-#line 1466 "jparse.c"
+#line 1479 "jparse.c"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 
@@ -2674,12 +2687,12 @@ void yyfree (void * ptr )
 
 /* %ok-for-header */
 
-#line 228 "jparse.l"
+#line 241 "jparse.l"
 
 
 /* Section 3: Code that's copied to the generated scanner */
 
-/* parse_json_string	    - parse string as a JSON block
+/* parse_json_block	    - parse string as a JSON block
  *
  * given:
  *
@@ -2697,9 +2710,11 @@ void yyfree (void * ptr )
  * than one string and/or file can then be verified during testing. Once the
  * parser is complete it will use jerr(). Note that this refers to errors
  * unspecific to the parser.
+ *
+ * XXX - see about moving this function to another file - XXX
  */
 void
-parse_json_string(char const *string)
+parse_json_block(char const *string)
 {
     /*
      * firewall
@@ -2753,7 +2768,7 @@ parse_json_string(char const *string)
  *
  * NOTE: The reason this is in the scanner and not the parser is because
  * YY_BUFFER_STATE is part of the scanner and not the parser and that's required
- * for the parse_json_string() function so I think both ought to be here. There
+ * for the parse_json_block() function so I think both ought to be here. There
  * might be a better way to go about that but I'll know more about this later
  * on. Like everything else here this is subject to change!
  *
@@ -2761,6 +2776,8 @@ parse_json_string(char const *string)
  * than one string and/or file can then be verified during testing. Once the
  * parser is complete it will use jerr(). Note that this refers to errors
  * unspecific to the parser.
+ *
+ * XXX - if moved, move this to the file parse_json_block() is moved to - XXX
  */
 void
 parse_json_file(char const *filename)

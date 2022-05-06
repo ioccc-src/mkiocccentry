@@ -129,6 +129,8 @@ typedef unsigned char bool;
 #define JAUTHCHK_PATH_1 "/usr/local/bin/jauthchk"   /* default path to jauthchk tool if installed */
 #define JINFOCHK_PATH_0 "./jinfochk"		    /* default path to jinfochk tool */
 #define JINFOCHK_PATH_1 "/usr/local/bin/jinfochk"   /* default path to jinfochk tool if installed */
+#define JPARSE_PATH_0 "./jparse"		    /* default path to jparse */
+#define JPARSE_PATH_1 "/usr/local/bin/jparse"	    /* default path to jparse tool if installed */
 
 
 /*

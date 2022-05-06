@@ -2,7 +2,7 @@
 .SH NAME
 mkiocccentry \- make an IOCCC compressed tarball for an IOCCC entry
 .SH SYNOPSIS
-\fBmkiocccentry [\-h] [\-v level] [\-V] [\-t tar] [\-c cp] [\-l ls] [\-C txzchk] [\-F fnamchk] [{\-a|\-A|\-i} answers] [\-j jinfochk] [\-J jauthchk] [\-W] [\-q] work_dir prog.c Makefile remarks.md [file ...]\fP
+\fBmkiocccentry [\-h] [\-v level] [\-V] [\-t tar] [\-c cp] [\-l ls] [\-T txzchk] [\-F fnamchk] [{\-a|\-A|\-i} answers] [\-j jinfochk] [\-J jauthchk] [\-W] [\-q] work_dir prog.c Makefile remarks.md [file ...]\fP
 .SH DESCRIPTION
 \fBmkiocccentry\fP gathers your source file, Makefile, remarks as well as any other files and creates a XZ compressed tarball.
 The tool runs \fBiocccsize\fP and it also runs a test on the Makefile to verify that everything seems in order.
@@ -32,19 +32,19 @@ Specify path to tar that accepts the \fB\-J\fP option.
 \fBmkiocccentry\fP checks \fI/usr/bin/tar\fP and \fI/bin/tar\fP if this option is not specified.
 .PP
 \fB\-c\fP
-Specify path to cp program.
+Specify path to cp.
 \fBmkiocccentry\fP checks \fI/usr/bin/cp\fP and \fI/bin/cp\fP if this option is not specified.
 .PP
 \fB\-l\fP
-Specify path to ls program.
+Specify path to ls.
 \fBmkiocccentry\fP checks \fI/usr/bin/ls\fP and \fI/bin/ls\fP if this option is not specified.
 .PP
-\fP\-C\fP
-Specify path to \fBtxzchk\fP tool.
+\fP\-T\fP
+Specify path to the \fBtxzchk\fP tool.
 \fBmkiocccentry\fP checks \fI./txzchk\fP and \fI/usr/local/bin/txzchk\fP if this option is not specified.
 .PP
 \fP\-F\fP
-Specify path to \fBfnamchk\fP tool.
+Specify path to the \fBfnamchk\fP tool.
 \fBmkiocccentry\fP checks \fI./fnamchk\fP and \fI/usr/local/bin/fnamchk\fP if this option is not specified.
 .PP
 \fB\-a\fP
@@ -129,6 +129,6 @@ Run program, specifying alternative path to \fBtar\fP and \fBtxzchk\fP:
 
 .RS
 \fB
- ./mkiocccentry -t /path/to/tar -C /path/to/txzchk
+ ./mkiocccentry -t /path/to/tar -T /path/to/txzchk
 .fi
 .RE

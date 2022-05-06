@@ -75,14 +75,16 @@
 /*
  * Version of info for JSON the .info.json file.
  *
- * The following is NOT the version of this mkiocccentry tool!
+ * The following is NOT the version of this mkiocccentry tool and NOT the
+ * version of the jinfochk tool!
  */
 #define INFO_VERSION "1.9 2022-03-15"		/* format: major.minor YYYY-MM-DD */
 
 /*
  * Version of info for JSON the .author.json file.
  *
- * The following is NOT the version of this mkiocccentry tool!
+ * The following is NOT the version of this mkiocccentry tool and NOT the
+ * version of the jauthchk tool!
  */
 #define AUTHOR_VERSION "1.12 2022-03-15"	/* format: major.minor YYYY-MM-DD */
 

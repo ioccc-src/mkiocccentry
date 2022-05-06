@@ -323,7 +323,7 @@ json_encode(char const *ptr, size_t len, size_t *retlen)
 /*
  * json_encode_str - return a JSON encoding of a string
  *
- * This is an simplified interface for json_encode().
+ * This is a simplified interface for json_encode().
  *
  * given:
  *	str	a string to encode
@@ -2249,7 +2249,7 @@ json_conv_number(char const *ptr, size_t len)
 /*
  * json_conv_number_str - convert JSON number string to C numeric value
  *
- * This is an simplified interface for json_conv_int().  See that function for details.
+ * This is a simplified interface for json_conv_int().  See that function for details.
  *
  * given:
  *	str	a JSON integer string to convert
@@ -2456,13 +2456,13 @@ json_conv_string(char const *ptr, size_t len, bool quote)
 /*
  * json_conv_string_str - convert JSON string to C string
  *
- * This is an simplified interface for json_conv_string(). See that function for details.
+ * This is a simplified interface for json_conv_string(). See that function for details.
  *
  * given:
  *	str	a JSON encoded string
  *	retlen	address of where to store length of str, if retlen != NULL
- *	quote	true ==> ignore JSON double quotes, both str[0] & str[len-1] must be "
- *		false ==> the entire str is to be converted
+ *	quote	true ==> ignore JSON double quotes, both str[0] & str[len-1]
+ *		must be '"', false ==> the entire str is to be converted
  *
  * returns:
  *	allocated JSON parser tree node converted JSON string
@@ -2621,7 +2621,7 @@ json_conv_bool(char const *ptr, size_t len)
 /*
  * json_conv_bool_str - convert JSON string to C bool
  *
- * This is an simplified interface for json_conv_bool(). See that function for details.
+ * This is a simplified interface for json_conv_bool(). See that function for details.
  *
  * given:
  *	str	a JSON encoded boolean
@@ -2779,7 +2779,7 @@ json_conv_null(char const *ptr, size_t len)
 /*
  * json_conv_null_str - convert JSON string to C NULL
  *
- * This is an simplified interface for json_conv_null(). See that function for details.
+ * This is a simplified interface for json_conv_null(). See that function for details.
  *
  * given:
  *	str	a JSON encoded null
@@ -2870,7 +2870,7 @@ json_conv_null_str(char const *str, size_t *retlen)
  * NOTE: This function will not return NULL.
  */
 struct json *
-json_conv_member(struct json * name, struct json *value)
+json_conv_member(struct json *name, struct json *value)
 {
     struct json *ret = NULL;		    /* JSON parser tree node to return */
     struct json_member *item = NULL;	    /* allocated JSON member */

@@ -109,9 +109,28 @@ extern int token;			/* for braces, brackets etc.: '{', '}', '[', ']', ':' and so
 static void usage(int exitcode, char const *name, char const *str) __attribute__((noreturn));
 /* lexer specific */
 int ugly_lex(void);
-/* parser specific */
-void parse_json_file(char const *filename);
-void parse_json_string(char const *string);
+/*
+ * parser specific functions
+ *
+ * XXX - these are incomplete and subject to change - XXX
+ */
 void ugly_error(char const *format, ...);
+void parse_json_file(char const *filename); /* parse a file as JSON */
+void parse_json_block(char const *string);  /* parse a string as a JSON block */
+/*
+ * parse_json functions assume a specific type of data based on the token
+ * returned to the parser (from the lexer) and based on the type they use the
+ * appropriate function to convert and then return a pointer to it (possibly
+ * first linking it into the tree).
+ *
+ * XXX - these are subject to change and are very incomplete as well - XXX
+ */
+struct json *parse_json_name(char const *string, struct json *ast);
+struct json *parse_json_string(char const *string, struct json *ast);
+struct json *parse_json_number(char const *string, struct json *ast);
+struct json *parse_json_bool(char const *string, struct json *ast);
+struct json *parse_json_null(char const *string, struct json *ast);
+struct json *parse_json_array(char const *string, struct json *ast);
+struct json *parse_json_member(char const *string, struct json *ast);
 
 #endif /* INCLUDE_JPARSE_H */
