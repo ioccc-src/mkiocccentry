@@ -2048,7 +2048,6 @@ ugly_error(char const *format, ...)
  *
  * XXX - this function does not belong in this file - XXX
  *
- * XXX - should the function return on conversion error ? - XXX
  */
 struct json *
 parse_json_name(char const *string, struct json *ast)
@@ -2063,6 +2062,17 @@ parse_json_name(char const *string, struct json *ast)
 	not_reached();
     }
 
+    /* XXX - for now we use parse_json_string() and don't do anything else - XXX */
+    name = parse_json_string(string, ast);
+
+    if (name == NULL) {
+	err(34, __func__, "converting JSON name returned NULL: <%s>", string);
+	not_reached();
+    }
+
+    /* XXX - decide what tests should be done on the returned string - XXX */
+
+    /* TODO decide how to use this function or if it's even needed */
     return name;
 }
 
@@ -2096,9 +2106,24 @@ parse_json_string(char const *string, struct json *ast)
      * firewall
      */
     if (string == NULL || ast == NULL) {
-	err(34, __func__, "passed NULL string and/or ast");
+	err(35, __func__, "passed NULL string and/or ast");
 	not_reached();
     }
+
+    /*
+     * we say that quote == true because the pattern in the lexer will include
+     * the '"'s.
+     */
+    str = json_conv_string_str(string, NULL, true);
+    if (str == NULL) {
+	err(36, __func__, "converting JSON string returned NULL: <%s>", string);
+	not_reached();
+    }
+
+    /* XXX - decide what tests should be done on the returned string - XXX */
+
+    /* TODO add to parse tree */
+
     return str;
 }
 
@@ -2120,8 +2145,6 @@ parse_json_string(char const *string, struct json *ast)
  * subject to change.
  *
  * XXX - this function does not belong in this file - XXX
- *
- * XXX - should the function return on conversion error ? - XXX
  */
 struct json *
 parse_json_bool(char const *string, struct json *ast)
@@ -2132,9 +2155,33 @@ parse_json_bool(char const *string, struct json *ast)
      * firewall
      */
     if (string == NULL || ast == NULL) {
-	err(35, __func__, "passed NULL string and/or ast");
+	err(37, __func__, "passed NULL string and/or ast");
 	not_reached();
     }
+
+    boolean = json_conv_bool_str(string, NULL);
+    if (boolean == NULL) {
+	err(38, __func__, "converting JSON bool returned NULL: <%s>", string);
+	not_reached();
+    }
+
+    /*
+     * XXX json_conv_bool_str() calls json_conv_bool() which will warn if the
+     * boolean is neither true nor false. We know that this function should never
+     * be called on anything but the strings "true" or "false" and since the
+     * function will abort if NULL is returned we should check if
+     * boolean->converted == true.
+     *
+     * If it's not we will abort as there's a serious mismatch between the
+     * scanner and the parser.
+     */
+    if (!boolean->element.null.converted) {
+	err(39, __func__, "called on non-boolean string: <%s>", string);
+	not_reached();
+    }
+
+    /* TODO add to parse tree */
+
     return boolean;
 }
 
@@ -2156,8 +2203,6 @@ parse_json_bool(char const *string, struct json *ast)
  * subject to change.
  *
  * XXX - this function does not belong in this file - XXX
- *
- * XXX - should the function return on conversion error ? - XXX
  */
 struct json *
 parse_json_null(char const *string, struct json *ast)
@@ -2168,9 +2213,22 @@ parse_json_null(char const *string, struct json *ast)
      * firewall
      */
     if (string == NULL || ast == NULL) {
-	err(36, __func__, "passed NULL string and/or ast");
+	err(40, __func__, "passed NULL string and/or ast");
 	not_reached();
     }
+
+    null = json_conv_null_str(string, NULL);
+
+    /*
+     * null should not be NULL :-)
+     */
+    if (null == NULL) {
+	err(41, __func__, "null ironically should not be NULL but it is :-)");
+	not_reached();
+    }
+
+    /* TODO add to parse tree */
+
     return null;
 }
 
@@ -2206,9 +2264,16 @@ parse_json_number(char const *string, struct json *ast)
      * firewall
      */
     if (string == NULL || ast == NULL) {
-	err(37, __func__, "passed NULL string and/or ast");
+	err(42, __func__, "passed NULL string and/or ast");
 	not_reached();
     }
+    number = json_conv_number_str(string, NULL);
+    if (number == NULL) {
+	err(43, __func__, "converting JSON number returned NULL: <%s>", string);
+	not_reached();
+    }
+
+    /* XXX - decide what tests should be done on the returned number - XXX */
     return number;
 }
 
@@ -2245,9 +2310,12 @@ parse_json_array(char const *string, struct json *ast)
      * firewall
      */
     if (string == NULL || ast == NULL) {
-	err(38, __func__, "passed NULL string and/or ast");
+	err(44, __func__, "passed NULL string and/or ast");
 	not_reached();
     }
+
+    /* TODO add parsing of array */
+
     return array;
 }
 
@@ -2284,9 +2352,12 @@ parse_json_member(char const *string, struct json *ast)
      * firewall
      */
     if (string == NULL || ast == NULL) {
-	err(39, __func__, "passed NULL string and/or ast");
+	err(45, __func__, "passed NULL string and/or ast");
 	not_reached();
     }
+
+    /* TODO add conversion of JSON member */
+
     return member;
 }
 

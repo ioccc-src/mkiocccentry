@@ -2461,8 +2461,8 @@ json_conv_string(char const *ptr, size_t len, bool quote)
  * given:
  *	str	a JSON encoded string
  *	retlen	address of where to store length of str, if retlen != NULL
- *	quote	true ==> ignore JSON double quotes, both str[0] & str[len-1] must be "
- *		false ==> the entire str is to be converted
+ *	quote	true ==> ignore JSON double quotes, both str[0] & str[len-1]
+ *		must be '"', false ==> the entire str is to be converted
  *
  * returns:
  *	allocated JSON parser tree node converted JSON string
@@ -2870,7 +2870,7 @@ json_conv_null_str(char const *str, size_t *retlen)
  * NOTE: This function will not return NULL.
  */
 struct json *
-json_conv_member(struct json * name, struct json *value)
+json_conv_member(struct json *name, struct json *value)
 {
     struct json *ret = NULL;		    /* JSON parser tree node to return */
     struct json_member *item = NULL;	    /* allocated JSON member */
