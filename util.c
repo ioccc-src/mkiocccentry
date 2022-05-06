@@ -3233,7 +3233,7 @@ find_text_str(char const *str, char **first)
     }
 
     /*
-     * convert to json_conv_null() call
+     * convert to find_text() call
      */
     len = strlen(str);
     ret = find_text(str, len, first);
