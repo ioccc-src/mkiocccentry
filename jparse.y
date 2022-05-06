@@ -183,13 +183,16 @@ json_element:	json_value
 
 %%
 /* Section 3: C code */
+
+/*
+ * XXX - most of main() should be moved to another file - XXX
+ */
 int
 main(int argc, char **argv)
 {
     char const *program = NULL;	    /* our name */
     extern char *optarg;	    /* option argument */
     extern int optind;		    /* argv index of the next arg */
-    bool strict = false;	    /* true ==> strict mode (currently unused: this is for when a JSON parser is added) */
     bool string_flag_used = false;  /* true ==> -S string was used */
     int ret;			    /* libc return code */
     int i;
@@ -199,7 +202,7 @@ main(int argc, char **argv)
      * parse args
      */
     program = argv[0];
-    while ((i = getopt(argc, argv, "hv:qVnSs:")) != -1) {
+    while ((i = getopt(argc, argv, "hv:qVns:")) != -1) {
 	switch (i) {
 	case 'h':		/* -h - print help to stderr and exit 0 */
 	    usage(2, "-h help mode", program); /*ooo*/
@@ -226,15 +229,6 @@ main(int argc, char **argv)
 	case 'n':
 	    output_newline = false;
 	    break;
-	case 'S':
-	    /*
-	     * XXX currently this is unused as json parsing is not done yet.
-	     */
-	    strict = true;
-	    /* the if is only to prevent the warning that it's not yet used */
-	    if (strict)
-		dbg(DBG_MED, "enabling strict mode");
-	    break;
 	case 's':
 	    /*
 	     * So we don't trigger missing arg. Maybe there's another way but
@@ -242,31 +236,9 @@ main(int argc, char **argv)
 	     */
 	    string_flag_used = true;
 
-	    dbg(DBG_NONE, "Calling parse_json_string(\"%s\"):", optarg);
+	    dbg(DBG_NONE, "Calling parse_json_block(\"%s\"):", optarg);
 	    /* parse arg as a string */
-	    parse_json_string(optarg);
-	    /*
-	     * XXX Rather than having an option to disable strict mode so that
-	     * in the same invocation we can test some strings in strict mode
-	     * and some not strict after each string is parsed the strict mode
-	     * is disabled so that another -s has to be specified prior to the
-	     * string. This does mean that if you want strict parsing of files
-	     * and you specify the -s option then you must have -S after the
-	     * string args.
-	     *
-	     * But the question is: should it be this way or should it be
-	     * another design choice? For example should there be an option that
-	     * specifically disables strict mode so that one can not worry about
-	     * having to specify -s repeatedly? I think it might be better this
-	     * way but I'm not sure what letter should do it. Perhaps -x? If we
-	     * didn't use -S for strict it could be S but we do so that won't
-	     * work.
-	     */
-
-	    /* the if is only to prevent the warning that it's not yet used */
-	    if (!strict)
-		dbg(DBG_MED, "disabling strict mode");
-	    strict = false;
+	    parse_json_block(optarg);
 	    break;
 	default:
 	    usage(2, "invalid -flag", program); /*ooo*/
@@ -332,6 +304,268 @@ ugly_error(char const *format, ...)
     va_end(ap);
 }
 
+/* parse_json_name - parse a json string as a name
+ *
+ * given:
+ *
+ *	string	    - the text that triggered the action
+ *	ast	    - the tree to link the struct json * into if not NULL
+ *
+ * Returns a pointer to a struct json unless conversion failed. In that case it
+ * returns a NULL pointer.
+ *
+ * NOTE: This function does not return if passed a NULL pointer.
+ *
+ * XXX This function is not finished. All it does now is return a struct json *
+ * which is actually NULL. It will probably use parse_json_string() when that is
+ * finished. It might be that the function will take different parameters as
+ * well and the names of the parameters and the function are also subject to
+ * change.
+ *
+ * XXX - this function does not belong in this file - XXX
+ *
+ * XXX - should the function return on conversion error ? - XXX
+ */
+struct json *
+parse_json_name(char const *string, struct json *ast)
+{
+    struct json *name = NULL;
+
+    /*
+     * firewall
+     */
+    if (string == NULL || ast == NULL) {
+	err(33, __func__, "passed NULL string and/or ast");
+	not_reached();
+    }
+
+    return name;
+}
+
+/* parse_json_string - parse a json string
+ *
+ * given:
+ *
+ *	string	    - the text that triggered the action
+ *	ast	    - the tree to link the struct json * into if not NULL
+ *
+ * Returns a pointer to a struct json unless conversion failed. In that case it
+ * returns a NULL pointer.
+ *
+ * NOTE: This function does not return if passed a NULL pointer.
+ *
+ * XXX This function is not finished. All it does now is return a struct json *
+ * which is actually NULL. It might be that the function will take different
+ * parameters as well and the names of the parameters and the function are also
+ * subject to change.
+ *
+ * XXX - this function does not belong in this file - XXX
+ *
+ * XXX - should the function return on conversion error ? - XXX
+ */
+struct json *
+parse_json_string(char const *string, struct json *ast)
+{
+    struct json *str = NULL;
+
+    /*
+     * firewall
+     */
+    if (string == NULL || ast == NULL) {
+	err(34, __func__, "passed NULL string and/or ast");
+	not_reached();
+    }
+    return str;
+}
+
+/* parse_json_bool - parse a json bool
+ *
+ * given:
+ *
+ *	string	    - the text that triggered the action
+ *	ast	    - the tree to link the struct json * into if not NULL
+ *
+ * Returns a pointer to a struct json unless conversion failed. In that case it
+ * returns a NULL pointer.
+ *
+ * NOTE: This function does not return if passed a NULL pointer.
+ *
+ * XXX This function is not finished. All it does now is return a struct json *
+ * which is actually NULL. It might be that the function will take different
+ * parameters as well and the names of the parameters and the function are also
+ * subject to change.
+ *
+ * XXX - this function does not belong in this file - XXX
+ *
+ * XXX - should the function return on conversion error ? - XXX
+ */
+struct json *
+parse_json_bool(char const *string, struct json *ast)
+{
+    struct json *boolean = NULL;
+
+    /*
+     * firewall
+     */
+    if (string == NULL || ast == NULL) {
+	err(35, __func__, "passed NULL string and/or ast");
+	not_reached();
+    }
+    return boolean;
+}
+
+/* parse_json_null - parse a json null
+ *
+ * given:
+ *
+ *	string	    - the text that triggered the action
+ *	ast	    - the tree to link the struct json * into if not NULL
+ *
+ * Returns a pointer to a struct json unless conversion failed. In that case it
+ * returns a NULL pointer.
+ *
+ * NOTE: This function does not return if passed a NULL pointer.
+ *
+ * XXX This function is not finished. All it does now is return a struct json *
+ * which is actually NULL. It might be that the function will take different
+ * parameters as well and the names of the parameters and the function are also
+ * subject to change.
+ *
+ * XXX - this function does not belong in this file - XXX
+ *
+ * XXX - should the function return on conversion error ? - XXX
+ */
+struct json *
+parse_json_null(char const *string, struct json *ast)
+{
+    struct json *null = NULL;
+
+    /*
+     * firewall
+     */
+    if (string == NULL || ast == NULL) {
+	err(36, __func__, "passed NULL string and/or ast");
+	not_reached();
+    }
+    return null;
+}
+
+
+
+/* parse_json_number - parse a json number
+ *
+ * given:
+ *
+ *	string	    - the text that triggered the action
+ *	ast	    - the tree to link the struct json * into if not NULL
+ *
+ * Returns a pointer to a struct json unless conversion failed. In that case it
+ * returns a NULL pointer.
+ *
+ * NOTE: This function does not return if passed a NULL pointer.
+ *
+ * XXX This function is not finished. All it does now is return a struct json *
+ * which is actually NULL. It might be that the function will take different
+ * parameters as well and the names of the parameters and the function are also
+ * subject to change.
+ *
+ * XXX - this function does not belong in this file - XXX
+ *
+ * XXX - should the function return on conversion error ? - XXX
+ */
+struct json *
+parse_json_number(char const *string, struct json *ast)
+{
+    struct json *number = NULL;
+
+    /*
+     * firewall
+     */
+    if (string == NULL || ast == NULL) {
+	err(37, __func__, "passed NULL string and/or ast");
+	not_reached();
+    }
+    return number;
+}
+
+
+/* parse_json_array - parse a json array
+ *
+ * given:
+ *
+ *	string	    - the text that triggered the action
+ *	ast	    - the tree to link the struct json * into if not NULL
+ *
+ * Returns a pointer to a struct json unless conversion failed. In that case it
+ * returns a NULL pointer.
+ *
+ * NOTE: This function does not return if passed a NULL pointer.
+ *
+ * XXX This function is not finished. All it does now is return a struct json *
+ * (which will include a dynamic array) but which right now is actually NULL. It
+ * might be that the function will take different parameters as well and the
+ * names of the parameters and the function are also subject to change. This
+ * function will probably rely on parse_json_string() and one or more of the
+ * other functions (depending on the value or in the JSON spec term 'element').
+ *
+ * XXX - this function does not belong in this file - XXX
+ *
+ * XXX - should the function return on conversion error ? - XXX
+ */
+struct json *
+parse_json_array(char const *string, struct json *ast)
+{
+    struct json *array = NULL;
+
+    /*
+     * firewall
+     */
+    if (string == NULL || ast == NULL) {
+	err(38, __func__, "passed NULL string and/or ast");
+	not_reached();
+    }
+    return array;
+}
+
+
+/* parse_json_member - parse a json member
+ *
+ * given:
+ *
+ *	string	    - the text that triggered the action
+ *	ast	    - the tree to link the struct json * into if not NULL
+ *
+ * Returns a pointer to a struct json unless conversion failed. In that case it
+ * returns a NULL pointer.
+ *
+ * NOTE: This function does not return if passed a NULL pointer.
+ *
+ * XXX This function is not finished. All it does now is return a struct json *
+ * which is actually NULL. It might be that the function will take different
+ * parameters as well and the names of the parameters and the function are also
+ * subject to change. This function will probably rely on parse_json_string()
+ * and one or more of the other functions (depending on the value or in the JSON
+ * spec term 'element').
+ *
+ * XXX - this function does not belong in this file - XXX
+ *
+ * XXX - should the function return on conversion error ? - XXX
+ */
+struct json *
+parse_json_member(char const *string, struct json *ast)
+{
+    struct json *member = NULL;
+
+    /*
+     * firewall
+     */
+    if (string == NULL || ast == NULL) {
+	err(39, __func__, "passed NULL string and/or ast");
+	not_reached();
+    }
+    return member;
+}
+
 /*
  * usage - print usage to stderr
  *
@@ -347,6 +581,8 @@ ugly_error(char const *format, ...)
  *       Normally one should NOT include newlines in warn messages.
  *
  * This function does not return.
+ *
+ * XXX - this function does not belong in this file - XXX
  */
 static void
 usage(int exitcode, char const *str, char const *prog)

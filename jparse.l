@@ -242,7 +242,7 @@ JSON_COMMA		","
 
 /* Section 3: Code that's copied to the generated scanner */
 
-/* parse_json_string	    - parse string as a JSON block
+/* parse_json_block	    - parse string as a JSON block
  *
  * given:
  *
@@ -260,9 +260,11 @@ JSON_COMMA		","
  * than one string and/or file can then be verified during testing. Once the
  * parser is complete it will use jerr(). Note that this refers to errors
  * unspecific to the parser.
+ *
+ * XXX - see about moving this function to another file - XXX
  */
 void
-parse_json_string(char const *string)
+parse_json_block(char const *string)
 {
     /*
      * firewall
@@ -316,7 +318,7 @@ parse_json_string(char const *string)
  *
  * NOTE: The reason this is in the scanner and not the parser is because
  * YY_BUFFER_STATE is part of the scanner and not the parser and that's required
- * for the parse_json_string() function so I think both ought to be here. There
+ * for the parse_json_block() function so I think both ought to be here. There
  * might be a better way to go about that but I'll know more about this later
  * on. Like everything else here this is subject to change!
  *
@@ -324,6 +326,8 @@ parse_json_string(char const *string)
  * than one string and/or file can then be verified during testing. Once the
  * parser is complete it will use jerr(). Note that this refers to errors
  * unspecific to the parser.
+ *
+ * XXX - if moved, move this to the file parse_json_block() is moved to - XXX
  */
 void
 parse_json_file(char const *filename)
