@@ -2688,6 +2688,25 @@ string_to_bool(char const *str)
     return !strcmp(str, "true");
 }
 
+/* bool_to_string
+ *
+ * Return string "true" or "false" depending on value of boolean.
+ *
+ * given:
+ *
+ *	boolean	    bool to convert to a string
+ *
+ * Returns "true" if boolean is true; else "false".
+ */
+char const *
+bool_to_string(bool boolean)
+{
+    if (boolean) {
+	return "true";
+    } else {
+	return "false";
+    }
+}
 
 /*
  * posix_plus_safe - if string is a valid POSIX portable safe plus + chars

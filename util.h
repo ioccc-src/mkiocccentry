@@ -207,6 +207,7 @@ extern int parse_verbosity(char const *program, char const *arg);
 extern bool is_decimal(char const *ptr, size_t len);
 extern bool is_decimal_str(char const *str, size_t *retlen);
 extern bool string_to_bool(char const *str);
+extern char const *bool_to_string(bool boolean);
 extern bool posix_plus_safe(char const *str, bool lower_only, bool slash_ok, bool first);
 extern void posix_safe_chk(char const *str, size_t len, bool *slash, bool *posix_safe,
 			   bool *first_alphanum, bool *upper);
