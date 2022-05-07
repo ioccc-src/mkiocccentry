@@ -44,18 +44,12 @@
 
 /*
  * JSON defines
- */
-#define JSON_CHUNK (16)		/* number of pointers to allocate at a time */
-
-
-/*
+ *
  * JSON parser related definitions and structures
  */
+#define JSON_CHUNK (16)			/* number of pointers to allocate at a time */
+#define JSON_DBG_LEVEL (DBG_HIGH)	/* fault JSON debugging level */
 
-/*
- * definitions
- */
-#define JSON_DBG_LEVEL (DBG_NONE)
 
 /*
  * JSON encoding of an octet in a JSON string
