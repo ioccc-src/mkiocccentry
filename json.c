@@ -2838,7 +2838,7 @@ json_conv_member(struct json *name, struct json *value)
  *      { }
  *      { members }
  *
- * The pointer to the i-th JSON member in the JSON objecty, if i < len, is:
+ * The pointer to the i-th JSON member in the JSON object, if i < len, is:
  *
  *      foo.set[i-1]
  *
@@ -2912,7 +2912,7 @@ json_create_object(void)
  *      { }
  *      { members }
  *
- * The pointer to the i-th JSON member in the JSON objecty, if i < len, is:
+ * The pointer to the i-th JSON member in the JSON object, if i < len, is:
  *
  *      foo.set[i-1]
  *
