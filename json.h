@@ -43,6 +43,12 @@
 
 
 /*
+ * JSON defines
+ */
+#define JSON_CHUNK (16)		/* number of pointers to allocate at a time */
+
+
+/*
  * JSON parser related structures
  */
 
@@ -301,7 +307,6 @@ struct json_null
  */
 struct json_member
 {
-
     bool converted;		/* true ==> able to decode JSON member */
 
     struct json *name;		/* JSON string name */
@@ -317,6 +322,10 @@ struct json_member
  *	{ }
  *	{ members }
  *
+ * The pointer to the i-th JSON member in the JSON object, if i < len, is:
+ *
+ *	foo.set[i-1]
+ *
  * When converted == false, then all other fields in this structure may be invalid.
  * So you must check the boolean of converted and only use values if converted == true.
  */
@@ -324,7 +333,10 @@ struct json_object
 {
     bool converted;		/* true ==> able to decode JSON object */
 
-    struct json *head;		/* first value in the members list, or NULL ==> empty list */
+    int len;			/* number of JSON members in the object, 0 ==> empty object */
+    struct json **set;		/* set of JSON members belonging to the object, or NULL */
+
+    struct dyn_array *s;	/* dynamic array managed storage for the JSON object */
 };
 
 
@@ -336,13 +348,9 @@ struct json_object
  *	[ ]
  *	[ values ]
  *
- * The i-th value in the array, if i < len, is:
+ * The pointer to the i-th JSON value in the JSON array, if i < len, is:
  *
- *	foo.value[i-1]
- *
- * That value is a link back to this array object:
- *
- *	foo.value[i-1].parent == foo
+ *	foo.set[i-1]
  *
  * When converted == false, then all other fields in this structure may be invalid.
  * So you must check the boolean of converted and only use values if converted == true.
@@ -351,9 +359,10 @@ struct json_array
 {
     bool converted;		/* true ==> able to decode JSON array */
 
-    int len;			/* number of JSON values in the array, 0 ==> empty array */
+    int len;			/* number of JSON members in the object, 0 ==> empty array */
+    struct json **set;		/* set of JSON values belonging to the object, or NULL */
 
-    struct json *value;		/* array of JSON values, NULL ==> empty array */
+    struct dyn_array *s;	/* dynamic array managed storage for the JSON array */
 };
 
 
@@ -361,7 +370,6 @@ struct json_array
  * element_type - JSON element type - an enum for each union element member in struct json
  */
 enum element_type {
-    JTYPE_EOT	    = -1,   /* special end of the table value */
     JTYPE_UNSET	    = 0,    /* JSON element has not been set - must be the value 0 */
     JTYPE_NUMBER,	    /* JSON element is an number - see struct json_number */
     JTYPE_STRING,	    /* JSON element is a string - see struct json_string */
@@ -395,12 +403,8 @@ struct json
      *
      * NOTE: If a pointer is NULL then it means you have reached the end of the
      *	     linked list and/or at the end/top/bottom of the tree.
-     *
-     * XXX - these pointers are not used and may go away - XXX
      */
     struct json *parent;	/* parent node in the JSON parse tree, or NULL if tree root or unlinked */
-    struct json *prev;		/* previous in a JSON parse tree linked list, or NULL is link head or unlinked */
-    struct json *next;		/* next in a JSON parse tree linked list, or NULL is link tail or unlinked */
 };
 
 
@@ -421,7 +425,6 @@ extern void jencchk(void);
 extern char *json_decode(char const *ptr, size_t len, size_t *retlen);
 extern char *json_decode_str(char const *str, size_t *retlen);
 /* JSON conversion functions */
-extern void json_conv_free(struct json *node);
 extern struct json *json_conv_number(char const *ptr, size_t len);
 extern struct json *json_conv_number_str(char const *str, size_t *retlen);
 extern struct json *json_conv_string(char const *ptr, size_t len, bool quote);
@@ -431,6 +434,12 @@ extern struct json *json_conv_bool_str(char const *str, size_t *retlen);
 extern struct json *json_conv_null(char const *ptr, size_t len);
 extern struct json *json_conv_null_str(char const *str, size_t *retlen);
 extern struct json *json_conv_member(struct json * name, struct json *value);
+extern struct json *json_create_object(void);
+extern bool json_object_add_member(struct json *obj, struct json *member);
+extern struct json *json_create_array(void);
+extern bool json_array_add_value(struct json *obj, struct json *value);
+/* JSON parse node free storage */
+extern void json_free(struct json *node);
 
 
 #endif /* INCLUDE_JSON_H */

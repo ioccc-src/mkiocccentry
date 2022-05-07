@@ -58,7 +58,7 @@ struct json_field common_json_fields[] =
     { "min_timestamp",		    NULL, 0, 1, false, JTYPE_NUMBER,	false, NULL },
     { "formed_UTC",		    NULL, 0, 1, false, JTYPE_STRING,	false, NULL },
     { "test_mode",		    NULL, 0, 1, false, JTYPE_BOOL,	false, NULL },
-    { NULL,			    NULL, 0, 0, false, JTYPE_EOT,	false, NULL } /* this **MUST** be last! */
+    { NULL,			    NULL, 0, 0, false, JTYPE_UNSET,	false, NULL } /* this **MUST** be last! */
 };
 size_t SIZEOF_COMMON_JSON_FIELDS_TABLE = TBLLEN(common_json_fields);
 
@@ -100,7 +100,7 @@ struct json_field info_json_fields[] =
     { "Makefile",		NULL, 0, 1, false, JTYPE_STRING,    false,  NULL },
     { "remarks",		NULL, 0, 1, false, JTYPE_STRING,    false,  NULL },
     { "extra_file",		NULL, 0, 0, false, JTYPE_STRING,    false,  NULL },
-    { NULL,			NULL, 0, 0, false, JTYPE_EOT,	    false,  NULL } /* this **MUST** be last */
+    { NULL,			NULL, 0, 0, false, JTYPE_UNSET,	    false,  NULL } /* this **MUST** be last */
 };
 size_t SIZEOF_INFO_JSON_FIELDS_TABLE = TBLLEN(info_json_fields);
 
@@ -134,7 +134,7 @@ struct json_field author_json_fields[] =
     { "default_handle",		NULL, 0, 1, false, JTYPE_BOOL,		true,	NULL },
     { "author_handle",		NULL, 0, 5, false, JTYPE_STRING,	true,	NULL },
     { "author_number",		NULL, 0, 5, false, JTYPE_NUMBER,	false,	NULL },
-    { NULL,			NULL, 0, 0, false, JTYPE_EOT,		false,	NULL } /* this **MUST** be last */
+    { NULL,			NULL, 0, 0, false, JTYPE_UNSET,		false,	NULL } /* this **MUST** be last */
 };
 size_t SIZEOF_AUTHOR_JSON_FIELDS_TABLE = TBLLEN(author_json_fields);
 
@@ -212,7 +212,7 @@ find_json_field_in_table(struct json_field *table, char const *name, size_t *loc
  * check_info_json_fields_table() and check_author_json_fields_table() to make
  * sure that they're all sane.
  *
- * This means that the only element with the JTYPE_EOT type is the last element,
+ * This means that the only element with the JTYPE_UNSET type is the last element,
  * that the field types are valid (see json.h), that there are no embedded NULL
  * elements (name == NULL) and that the final element _IS_ NULL.
  *
@@ -239,7 +239,7 @@ check_json_fields_tables(void)
 /*
  * check_common_json_fields_table - perform some sanity checks on the common_json_fields table
  *
- * This function checks if JTYPE_EOT is used on any field other than the NULL
+ * This function checks if JTYPE_UNSET is used on any field other than the NULL
  * field. It also makes sure that each field_type is valid. Additionally it
  * makes sure that there are no NULL elements before the final element and that
  * the final element _IS_ NULL. It also makes sure the table is not empty.
@@ -261,10 +261,10 @@ check_common_json_fields_table(void)
 
     for (i = 0; i < max-1 && common_json_fields[i].name != NULL; ++i) {
 	switch (common_json_fields[i].field_type) {
-	    case JTYPE_EOT:
+	    case JTYPE_UNSET:
 		if (common_json_fields[i].name != NULL) {
 		    jerr(JSON_CODE_RESERVED(1), NULL, __func__, __FILE__, NULL, __LINE__,
-						"found JTYPE_EOT element with non NULL name '%s' location %ju "
+						"found JTYPE_UNSET element with non NULL name '%s' location %ju "
 						"in common_json_fields table; fix table and recompile",
                             common_json_fields[i].name, (uintmax_t)i);
 		    not_reached();
@@ -302,7 +302,7 @@ check_common_json_fields_table(void)
 /*
  * check_info_json_fields_table	 - sanity check info_json_fields table
  *
- * This function checks if JTYPE_EOT is used on any field other than the NULL
+ * This function checks if JTYPE_UNSET is used on any field other than the NULL
  * field. It also makes sure that each field_type is valid. Additionally it
  * makes sure that there are no NULL elements before the final element and that
  * the final element _IS_ NULL. It also makes sure the table is not empty.
@@ -329,10 +329,10 @@ check_info_json_fields_table(void)
 	}
 
 	switch (info_json_fields[i].field_type) {
-	    case JTYPE_EOT:
+	    case JTYPE_UNSET:
 		if (info_json_fields[i].name != NULL) {
 		    jerr(JSON_CODE_RESERVED(1), NULL, __func__, __FILE__, NULL, __LINE__,
-						"found JTYPE_EOT element with non NULL name '%s' location %ju "
+						"found JTYPE_UNSET element with non NULL name '%s' location %ju "
 						"in info_json_fields table; fix table and recompile",
 			    info_json_fields[i].name, (uintmax_t)i);
 		    not_reached();
@@ -377,7 +377,7 @@ check_info_json_fields_table(void)
 /*
  * check_author_json_fields_table - perform author_json_fields table sanity checks
  *
- * This function checks if JTYPE_EOT is used on any field other than the NULL
+ * This function checks if JTYPE_UNSET is used on any field other than the NULL
  * field. It also makes sure that each field_type is valid.  Additionally it
  * makes sure that there are no NULL elements before the final element and that
  * the final element _IS_ NULL. It also makes sure the table is not empty.
@@ -404,10 +404,10 @@ check_author_json_fields_table(void)
 	}
 
 	switch (author_json_fields[i].field_type) {
-	    case JTYPE_EOT:
+	    case JTYPE_UNSET:
 		if (author_json_fields[i].name != NULL) {
 		    jerr(JSON_CODE_RESERVED(1), NULL, __func__, __FILE__, NULL, __LINE__,
-						"found JTYPE_EOT element with non NULL name '%s' location %ju "
+						"found JTYPE_UNSET element with non NULL name '%s' location %ju "
 						"in author_json_fields table; fix table and recompile",
                             author_json_fields[i].name, (uintmax_t)i);
 		    not_reached();

@@ -140,7 +140,7 @@ main(int argc, char *argv[])
 	/*
 	 * free converted node
 	 */
-	json_conv_free(node);
+	json_free(node);
 	if (node != NULL) {
 	    free(node);
 	    node = NULL;
