@@ -2091,7 +2091,9 @@ json_conv_number(char const *ptr, size_t len)
 	errp(163, __func__, "calloc #1 error allocating %ju bytes", (uintmax_t)(len+1+1));
 	not_reached();
     }
-    strncpy(item->as_str, ptr, len+1);
+    strncpy(item->as_str, ptr, len);
+    item->as_str[len] = '\0';	/* paranoia */
+    item->as_str[len+1] = '\0';	/* paranoia */
 
     /*
      * ignore whitespace
@@ -2275,6 +2277,7 @@ json_conv_string(char const *ptr, size_t len, bool quote)
     /*
      * case: JSON surrounding '"'s are to be ignored
      */
+    item->as_str_len = len;	/* save length of as_str */
     if (quote == true) {
 
 	/*
@@ -2310,8 +2313,9 @@ json_conv_string(char const *ptr, size_t len, bool quote)
 	errp(166, __func__, "calloc #1 error allocating %ju bytes", (uintmax_t)(len+1+1));
 	not_reached();
     }
-    strncpy(item->as_str, ptr, len+1);
-    item->as_str_len = len;	/* save length of as_str */
+    strncpy(item->as_str, ptr, len);
+    item->as_str[len] = '\0';	/* paranoia */
+    item->as_str[len+1] = '\0';	/* paranoia */
 
     /*
      * decode the JSON encoded string
