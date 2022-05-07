@@ -443,7 +443,7 @@ extern bool json_object_add_member(struct json *obj, struct json *member);
 extern struct json *json_create_array(void);
 extern bool json_array_add_value(struct json *obj, struct json *value);
 /* print the type of json element in the struct json */
-extern char const *json_element_name(enum element_type json_type);
+extern char const *json_element_type_name(enum element_type json_type);
 /* JSON parse node free storage */
 extern void json_free(struct json *node);
 
