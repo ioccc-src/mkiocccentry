@@ -268,6 +268,7 @@ BISON_BASENAME = bison
 #
 BISON_DIRS= \
 	-B /opt/homebrew/opt/bison/bin \
+	-B /usr/local/opt/bison/bin \
 	-B /opt/homebrew/bin \
 	-B /opt/local/bin \
 	-B /usr/local/opt \
@@ -289,6 +290,7 @@ FLEX_BASENAME= flex
 #
 FLEX_DIRS= \
 	-F /opt/homebrew/opt/flex/bin \
+	-F /usr/local/opt/flex/bin \
 	-F /opt/homebrew/bin \
 	-F /opt/local/bin \
 	-F /usr/local/opt \
