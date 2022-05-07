@@ -558,9 +558,9 @@ static const yytype_int8 yytranslate[] =
 /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_uint8 yyrline[] =
 {
-       0,   147,   147,   148,   149,   150,   153,   154,   155,   156,
-     157,   158,   159,   162,   164,   167,   168,   171,   174,   177,
-     178,   181
+       0,   148,   148,   149,   150,   151,   154,   155,   156,   157,
+     158,   159,   160,   163,   166,   169,   170,   173,   176,   179,
+     180,   183
 };
 #endif
 
@@ -1668,8 +1668,14 @@ yyreduce:
     int yychar_backup = yychar;
     switch (yyn)
       {
+  case 17: /* json_member: JSON_STRING ":" json_element  */
+#line 173 "jparse.y"
+                                                    { yyval = *json_conv_member(&yyvsp[-2], &yyvsp[0]); }
+#line 1624 "jparse.tab.c"
+    break;
 
-#line 1622 "jparse.tab.c"
+
+#line 1628 "jparse.tab.c"
 
         default: break;
       }
@@ -1904,7 +1910,7 @@ yyreturnlab:
   return yyresult;
 }
 
-#line 184 "jparse.y"
+#line 186 "jparse.y"
 
 /* Section 3: C code */
 
@@ -2027,6 +2033,12 @@ ugly_error(char const *format, ...)
 
     va_end(ap);
 }
+
+/*
+ * XXX The concept of the below parse_json_() functions might be invalid as the
+ * value of $$ variables in the bison actions is of type struct json * and these
+ * functions take a char const *.
+ */
 
 /* parse_json_name - parse a json string as a name
  *
