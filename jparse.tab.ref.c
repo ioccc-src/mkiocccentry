@@ -2229,7 +2229,7 @@ parse_json_null(char const *string, struct json *ast)
 	not_reached();
     }
     if (!null->element.null.converted) {
-	err(39, __func__, "unable to convert null: <%s>", string);
+	err(42, __func__, "unable to convert null: <%s>", string);
 	not_reached();
     } else {
 	dbg(JSON_DBG_LEVEL, "%s: converted null", __func__);
@@ -2273,12 +2273,12 @@ parse_json_number(char const *string, struct json *ast)
      * firewall
      */
     if (string == NULL || ast == NULL) {
-	err(42, __func__, "passed NULL string and/or ast");
+	err(43, __func__, "passed NULL string and/or ast");
 	not_reached();
     }
     number = json_conv_number_str(string, NULL);
     if (number == NULL) {
-	err(43, __func__, "converting JSON number returned NULL: <%s>", string);
+	err(44, __func__, "converting JSON number returned NULL: <%s>", string);
 	not_reached();
     }
 
@@ -2319,7 +2319,7 @@ parse_json_array(char const *string, struct json *ast)
      * firewall
      */
     if (string == NULL || ast == NULL) {
-	err(44, __func__, "passed NULL string and/or ast");
+	err(45, __func__, "passed NULL string and/or ast");
 	not_reached();
     }
 
@@ -2361,7 +2361,7 @@ parse_json_member(char const *string, struct json *ast)
      * firewall
      */
     if (string == NULL || ast == NULL) {
-	err(45, __func__, "passed NULL string and/or ast");
+	err(46, __func__, "passed NULL string and/or ast");
 	not_reached();
     }
 
