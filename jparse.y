@@ -141,7 +141,8 @@ int token = 0;
 
 /* Section 2: Rules
  *
- * XXX I believe all the rules are here but there are no actions yet.
+ * XXX All the rules should be here but there's only one action (json_member) as
+ * of 07 May 2022.
  */
 %%
 json:		/* empty */
@@ -159,7 +160,8 @@ json_value:	  json_object
 		| JSON_NULL
 		;
 
-json_number:	JSON_NUMBER ;
+json_number:	JSON_NUMBER
+		;
 
 json_object:	JSON_OPEN_BRACE json_members JSON_CLOSE_BRACE
 		;
@@ -168,7 +170,7 @@ json_members:	json_member
 		| json_member JSON_COMMA json_members
 		;
 
-json_member:	JSON_STRING JSON_COLON json_element
+json_member:	JSON_STRING JSON_COLON json_element { $$ = *json_conv_member(&$1, &$3); }
 		;
 
 json_array:	JSON_OPEN_BRACKET json_elements JSON_CLOSE_BRACKET
@@ -303,6 +305,12 @@ ugly_error(char const *format, ...)
 
     va_end(ap);
 }
+
+/*
+ * XXX The concept of the below parse_json_() functions might be invalid as the
+ * value of $$ variables in the bison actions is of type struct json * and these
+ * functions take a char const *.
+ */
 
 /* parse_json_name - parse a json string as a name
  *
