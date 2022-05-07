@@ -102,6 +102,7 @@ extern FILE *ugly_in;			/* input file lexer/parser reads from */
 extern unsigned num_errors;		/* > 0 number of errors encountered */
 extern bool output_newline;		/* true ==> -n not specified, output new line after each arg processed */
 extern int token;			/* for braces, brackets etc.: '{', '}', '[', ']', ':' and so on */
+extern struct json tree;		/* the parse tree */
 
 /*
  * function prototypes
@@ -125,7 +126,6 @@ void parse_json_block(char const *string);  /* parse a string as a JSON block */
  *
  * XXX - these are subject to change and are very incomplete as well - XXX
  */
-struct json *parse_json_name(char const *string, struct json *ast);
 struct json *parse_json_string(char const *string, struct json *ast);
 struct json *parse_json_number(char const *string, struct json *ast);
 struct json *parse_json_bool(char const *string, struct json *ast);

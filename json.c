@@ -3158,7 +3158,7 @@ json_array_add_value(struct json *obj, struct json *value)
  *	json_type   one of the values of the JTYPE_ enum
  *
  * returns:
- *	A constant (read-only) string that names the the JTYPE_ enum.
+ *	A constant (read-only) string that names the JTYPE_ enum.
  *
  * NOTE: This string returned is read only: It's not allocated on the stack.
  */

@@ -135,7 +135,7 @@
 
 bool output_newline = true;		/* true ==> -n not specified, output new line after each arg processed */
 unsigned num_errors = 0;		/* > 0 number of errors encountered */
-
+struct json tree = { 0 };		/* the parse tree */
 
 /* debug information during development */
 int ugly_debug = 1;
@@ -558,9 +558,9 @@ static const yytype_int8 yytranslate[] =
 /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_uint8 yyrline[] =
 {
-       0,   148,   148,   149,   150,   151,   154,   155,   156,   157,
-     158,   159,   160,   163,   166,   169,   170,   173,   176,   179,
-     180,   183
+       0,   151,   151,   152,   153,   154,   157,   158,   159,   160,
+     161,   162,   163,   166,   169,   172,   173,   176,   179,   182,
+     183,   186
 };
 #endif
 
@@ -1668,14 +1668,44 @@ yyreduce:
     int yychar_backup = yychar;
     switch (yyn)
       {
-  case 17: /* json_member: JSON_STRING ":" json_element  */
-#line 173 "jparse.y"
-                                                    { yyval = *json_conv_member(&yyvsp[-2], &yyvsp[0]); }
+  case 8: /* json_value: JSON_STRING  */
+#line 159 "jparse.y"
+                              { yyval = *parse_json_string(ugly_text, &tree); }
 #line 1624 "jparse.tab.c"
     break;
 
+  case 10: /* json_value: "true"  */
+#line 161 "jparse.y"
+                            { yyval = *parse_json_bool(ugly_text, &tree); }
+#line 1630 "jparse.tab.c"
+    break;
 
-#line 1628 "jparse.tab.c"
+  case 11: /* json_value: "false"  */
+#line 162 "jparse.y"
+                             { yyval = *parse_json_bool(ugly_text, &tree); }
+#line 1636 "jparse.tab.c"
+    break;
+
+  case 12: /* json_value: "null"  */
+#line 163 "jparse.y"
+                            { yyval = *parse_json_null(ugly_text, &tree); }
+#line 1642 "jparse.tab.c"
+    break;
+
+  case 13: /* json_number: JSON_NUMBER  */
+#line 166 "jparse.y"
+                            { yyval = *parse_json_number(ugly_text, &tree); }
+#line 1648 "jparse.tab.c"
+    break;
+
+  case 17: /* json_member: JSON_STRING ":" json_element  */
+#line 176 "jparse.y"
+                                                    { yyval = *json_conv_member(&yyvsp[-2], &yyvsp[0]); }
+#line 1654 "jparse.tab.c"
+    break;
+
+
+#line 1658 "jparse.tab.c"
 
         default: break;
       }
@@ -1910,7 +1940,7 @@ yyreturnlab:
   return yyresult;
 }
 
-#line 186 "jparse.y"
+#line 189 "jparse.y"
 
 /* Section 3: C code */
 
@@ -2035,58 +2065,9 @@ ugly_error(char const *format, ...)
 }
 
 /*
- * XXX The concept of the below parse_json_() functions might be invalid as the
- * value of $$ variables in the bison actions is of type struct json * and these
- * functions take a char const *.
+ * XXX these parse_json_() functions don't yet link the structs into the tree.
  */
 
-/* parse_json_name - parse a json string as a name
- *
- * given:
- *
- *	string	    - the text that triggered the action
- *	ast	    - the tree to link the struct json * into if not NULL
- *
- * Returns a pointer to a struct json unless conversion failed. In that case it
- * returns a NULL pointer.
- *
- * NOTE: This function does not return if passed a NULL pointer.
- *
- * XXX This function is not finished. All it does now is return a struct json *
- * which is actually NULL. It will probably use parse_json_string() when that is
- * finished. It might be that the function will take different parameters as
- * well and the names of the parameters and the function are also subject to
- * change.
- *
- * XXX - this function does not belong in this file - XXX
- *
- */
-struct json *
-parse_json_name(char const *string, struct json *ast)
-{
-    struct json *name = NULL;
-
-    /*
-     * firewall
-     */
-    if (string == NULL || ast == NULL) {
-	err(33, __func__, "passed NULL string and/or ast");
-	not_reached();
-    }
-
-    /* XXX - for now we use parse_json_string() and don't do anything else - XXX */
-    name = parse_json_string(string, ast);
-
-    if (name == NULL) {
-	err(34, __func__, "converting JSON name returned NULL: <%s>", string);
-	not_reached();
-    }
-
-    /* XXX - decide what tests should be done on the returned string - XXX */
-
-    /* TODO decide how to use this function or if it's even needed */
-    return name;
-}
 
 /* parse_json_string - parse a json string
  *
@@ -2122,6 +2103,7 @@ parse_json_string(char const *string, struct json *ast)
 	not_reached();
     }
 
+    dbg(JSON_DBG_LEVEL, "%s: about to parse string: <%s>", __func__, string);
     /*
      * we say that quote == true because the pattern in the lexer will include
      * the '"'s.
@@ -2130,6 +2112,12 @@ parse_json_string(char const *string, struct json *ast)
     if (str == NULL) {
 	err(36, __func__, "converting JSON string returned NULL: <%s>", string);
 	not_reached();
+    }
+
+    if (!str->element.string.converted) {
+	warn(__func__, "couldn't decode string: <%s>", string);
+    } else {
+	dbg(JSON_DBG_LEVEL, "%s: decoded string: <%s>", __func__, str->element.string.str);
     }
 
     /* XXX - decide what tests should be done on the returned string - XXX */
@@ -2187,9 +2175,11 @@ parse_json_bool(char const *string, struct json *ast)
      * If it's not we will abort as there's a serious mismatch between the
      * scanner and the parser.
      */
-    if (!boolean->element.null.converted) {
+    if (!boolean->element.boolean.converted) {
 	err(39, __func__, "called on non-boolean string: <%s>", string);
 	not_reached();
+    } else {
+	dbg(JSON_DBG_LEVEL, "%s: <%s> -> %s", __func__, string, bool_to_string(boolean->element.boolean.value));
     }
 
     /* TODO add to parse tree */
@@ -2238,6 +2228,13 @@ parse_json_null(char const *string, struct json *ast)
 	err(41, __func__, "null ironically should not be NULL but it is :-)");
 	not_reached();
     }
+    if (!null->element.null.converted) {
+	err(39, __func__, "unable to convert null: <%s>", string);
+	not_reached();
+    } else {
+	dbg(JSON_DBG_LEVEL, "%s: converted null", __func__);
+    }
+
 
     /* TODO add to parse tree */
 
