@@ -2305,7 +2305,7 @@ json_conv_string(char const *ptr, size_t len, bool quote)
     }
 
     /*
-     * duplicate the JSON integer string
+     * duplicate the JSON string
      */
     errno = 0;			/* pre-clear errno for errp() */
     item->as_str = calloc(len+1+1, sizeof(char));
