@@ -345,6 +345,7 @@ struct json *
 parse_json_string(char const *string, struct json *ast)
 {
     struct json *str = NULL;
+    struct json_string *item = NULL;
 
     /*
      * firewall
@@ -360,19 +361,23 @@ parse_json_string(char const *string, struct json *ast)
      * the '"'s.
      */
     str = json_conv_string_str(string, NULL, true);
+    /* paranoia - these tests should never result in an error */
     if (str == NULL) {
-	err(36, __func__, "converting JSON string returned NULL: <%s>", string);
-	not_reached();
+        err(36, __func__, "converting JSON string returned NULL: <%s>", string);
+        not_reached();
+    } else if (str->type != JTYPE_STRING) {
+        err(37, __func__, "expected JTYPE_STRING, found type: %s", json_element_type_name(str->type));
+        not_reached();
     }
-
-    if (!str->element.string.converted) {
+    item = &(str->element.string);
+    if (!item->converted) {
+	/* XXX should this be a fatal error ? */
 	warn(__func__, "couldn't decode string: <%s>", string);
     } else {
-	dbg(JSON_DBG_LEVEL, "%s: decoded string: <%s>", __func__, str->element.string.str);
+        dbg(JSON_DBG_LEVEL, "%s: decoded string: <%s>", __func__, item->str);
     }
 
-    /* XXX decide what tests should be done on the returned string other than
-     * conversion success */
+    /* XXX Are there any other checks that have to be done ? */
 
     /* TODO add to parse tree */
 
@@ -397,36 +402,41 @@ struct json *
 parse_json_bool(char const *string, struct json *ast)
 {
     struct json *boolean = NULL;
+    struct json_boolean *item = NULL;
 
     /*
      * firewall
      */
     if (string == NULL || ast == NULL) {
-	err(37, __func__, "passed NULL string and/or ast");
+	err(38, __func__, "passed NULL string and/or ast");
 	not_reached();
     }
 
     boolean = json_conv_bool_str(string, NULL);
+    /* paranoia - these tests should never result in an error */
     if (boolean == NULL) {
-	err(38, __func__, "converting JSON bool returned NULL: <%s>", string);
+	err(39, __func__, "converting JSON bool returned NULL: <%s>", string);
 	not_reached();
+    } else if (boolean->type != JTYPE_BOOL) {
+        err(40, __func__, "expected JTYPE_BOOL, found type: %s", json_element_type_name(boolean->type));
+        not_reached();
     }
-
-    /*
-     * XXX json_conv_bool_str() calls json_conv_bool() which will warn if the
-     * boolean is neither true nor false. We know that this function should never
-     * be called on anything but the strings "true" or "false" and since the
-     * function will abort if NULL is returned we should check if
-     * boolean->converted == true.
-     *
-     * If it's not we will abort as there's a serious mismatch between the
-     * scanner and the parser.
-     */
-    if (!boolean->element.boolean.converted) {
-	err(39, __func__, "called on non-boolean string: <%s>", string);
+    item = &(boolean->element.boolean);
+    if (!item->converted) {
+	/*
+	 * XXX json_conv_bool_str() calls json_conv_bool() which will warn if the
+	 * boolean is neither true nor false. We know that this function should never
+	 * be called on anything but the strings "true" or "false" and since the
+	 * function will abort if NULL is returned we should check if
+	 * boolean->converted == true.
+	 *
+	 * If it's not we will abort as there's a serious mismatch between the
+	 * scanner and the parser.
+	 */
+	err(41, __func__, "called on non-boolean string: <%s>", string);
 	not_reached();
     } else {
-	dbg(JSON_DBG_LEVEL, "%s: <%s> -> %s", __func__, string, bool_to_string(boolean->element.boolean.value));
+	dbg(JSON_DBG_LEVEL, "%s: <%s> -> %s", __func__, string, bool_to_string(item->value));
     }
 
     /* TODO add to parse tree */
@@ -452,12 +462,13 @@ struct json *
 parse_json_null(char const *string, struct json *ast)
 {
     struct json *null = NULL;
+    struct json_null *item = NULL;
 
     /*
      * firewall
      */
     if (string == NULL || ast == NULL) {
-	err(40, __func__, "passed NULL string and/or ast");
+	err(42, __func__, "passed NULL string and/or ast");
 	not_reached();
     }
 
@@ -467,14 +478,18 @@ parse_json_null(char const *string, struct json *ast)
      * null should not be NULL :-)
      */
     if (null == NULL) {
-	err(41, __func__, "null ironically should not be NULL but it is :-)");
+	err(43, __func__, "null ironically should not be NULL but it is :-)");
 	not_reached();
+    } else if (null->type != JTYPE_NULL) {
+        err(44, __func__, "expected JTYPE_NULL, found type: %s", json_element_type_name(null->type));
+        not_reached();
     }
-    if (!null->element.null.converted) {
-	err(42, __func__, "unable to convert null: <%s>", string);
-	not_reached();
+    item = &(null->element.null);
+    if (!item->converted) {
+	/* XXX should this be a fatal error ? */
+	warn(__func__, "couldn't decode null: <%s>", string);
     } else {
-	dbg(JSON_DBG_LEVEL, "%s: converted null", __func__);
+        dbg(JSON_DBG_LEVEL, "%s: decoded null: <%s> -> null", __func__, string);
     }
 
 
@@ -503,21 +518,32 @@ struct json *
 parse_json_number(char const *string, struct json *ast)
 {
     struct json *number = NULL;
+    struct json_number *item = NULL;
 
     /*
      * firewall
      */
     if (string == NULL || ast == NULL) {
-	err(43, __func__, "passed NULL string and/or ast");
+	err(45, __func__, "passed NULL string and/or ast");
 	not_reached();
     }
     number = json_conv_number_str(string, NULL);
+    /* paranoia - these tests should never result in an error */
     if (number == NULL) {
-	err(44, __func__, "converting JSON number returned NULL: <%s>", string);
-	not_reached();
+	err(46, __func__, "converting JSON number returned NULL: <%s>", string);
+        not_reached();
+    } else if (number->type != JTYPE_NUMBER) {
+        err(47, __func__, "expected JTYPE_NUMBER, found type: %s", json_element_type_name(number->type));
+        not_reached();
+    }
+    item = &(number->element.number);
+    if (!item->converted) {
+	/* XXX should this be a fatal error ? */
+	warn(__func__, "couldn't decode number string: <%s>", string);
+    } else {
+        dbg(JSON_DBG_LEVEL, "%s: decoded number string: <%s>", __func__, item->as_str);
     }
 
-    /* XXX - decide what tests should be done on the returned number - XXX */
     return number;
 }
 
@@ -550,7 +576,7 @@ parse_json_array(char const *string, struct json *ast)
      * firewall
      */
     if (string == NULL || ast == NULL) {
-	err(45, __func__, "passed NULL string and/or ast");
+	err(48, __func__, "passed NULL string and/or ast");
 	not_reached();
     }
 
@@ -579,20 +605,33 @@ struct json *
 parse_json_member(struct json *name, struct json *value, struct json *ast)
 {
     struct json *member = NULL;
+    struct json_member *item = NULL;
 
     /*
      * firewall
      */
     if (name == NULL || value == NULL || ast == NULL) {
-	err(46, __func__, "passed NULL pointer(s)");
+	err(49, __func__, "passed NULL pointer(s)");
 	not_reached();
     }
 
     member = json_conv_member(name, value);
+    /* paranoia - these tests should never result in an error */
     if (member == NULL) {
-	err(47, __func__, "converting JSON member returned NULL");
+	err(50, __func__, "converting JSON member returned NULL");
 	not_reached();
+    } else if (member->type != JTYPE_MEMBER) {
+        err(51, __func__, "expected JTYPE_MEMBER, found type: %s", json_element_type_name(member->type));
+        not_reached();
     }
+    item = &(member->element.member);
+    if (!item->converted) {
+	/* XXX should this be a fatal error ? */
+	warn(__func__, "couldn't decode member");
+    } else {
+        dbg(JSON_DBG_LEVEL, "%s: decoded member", __func__);
+    }
+
 
     return member;
 }
