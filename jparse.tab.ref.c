@@ -188,13 +188,14 @@ enum yysymbol_kind_t
   YYSYMBOL_YYACCEPT = 15,                  /* $accept  */
   YYSYMBOL_json = 16,                      /* json  */
   YYSYMBOL_json_value = 17,                /* json_value  */
-  YYSYMBOL_json_number = 18,               /* json_number  */
-  YYSYMBOL_json_object = 19,               /* json_object  */
-  YYSYMBOL_json_members = 20,              /* json_members  */
-  YYSYMBOL_json_member = 21,               /* json_member  */
-  YYSYMBOL_json_array = 22,                /* json_array  */
-  YYSYMBOL_json_elements = 23,             /* json_elements  */
-  YYSYMBOL_json_element = 24               /* json_element  */
+  YYSYMBOL_json_string = 18,               /* json_string  */
+  YYSYMBOL_json_number = 19,               /* json_number  */
+  YYSYMBOL_json_object = 20,               /* json_object  */
+  YYSYMBOL_json_members = 21,              /* json_members  */
+  YYSYMBOL_json_member = 22,               /* json_member  */
+  YYSYMBOL_json_array = 23,                /* json_array  */
+  YYSYMBOL_json_elements = 24,             /* json_elements  */
+  YYSYMBOL_json_element = 25               /* json_element  */
 };
 typedef enum yysymbol_kind_t yysymbol_kind_t;
 
@@ -497,18 +498,18 @@ union yyalloc
 #endif /* !YYCOPY_NEEDED */
 
 /* YYFINAL -- State number of the termination state.  */
-#define YYFINAL  23
+#define YYFINAL  24
 /* YYLAST -- Last index in YYTABLE.  */
 #define YYLAST   38
 
 /* YYNTOKENS -- Number of terminals.  */
 #define YYNTOKENS  15
 /* YYNNTS -- Number of nonterminals.  */
-#define YYNNTS  10
+#define YYNNTS  11
 /* YYNRULES -- Number of rules.  */
-#define YYNRULES  21
+#define YYNRULES  22
 /* YYNSTATES -- Number of states.  */
-#define YYNSTATES  32
+#define YYNSTATES  33
 
 /* YYMAXUTOK -- Last valid token kind.  */
 #define YYMAXUTOK   269
@@ -559,8 +560,8 @@ static const yytype_int8 yytranslate[] =
 static const yytype_uint8 yyrline[] =
 {
        0,   151,   151,   152,   153,   154,   157,   158,   159,   160,
-     161,   162,   163,   166,   169,   172,   173,   176,   179,   182,
-     183,   186
+     161,   162,   163,   166,   168,   171,   174,   175,   178,   181,
+     184,   185,   188
 };
 #endif
 
@@ -579,8 +580,9 @@ static const char *const yytname[] =
   "\"end of file\"", "error", "\"invalid token\"", "\"{\"", "\"}\"",
   "\"[\"", "\"]\"", "\",\"", "\":\"", "\"null\"", "\"true\"", "\"false\"",
   "JSON_STRING", "JSON_NUMBER", "JSON_INVALID_TOKEN", "$accept", "json",
-  "json_value", "json_number", "json_object", "json_members",
-  "json_member", "json_array", "json_elements", "json_element", YY_NULLPTR
+  "json_value", "json_string", "json_number", "json_object",
+  "json_members", "json_member", "json_array", "json_elements",
+  "json_element", YY_NULLPTR
 };
 
 static const char *
@@ -590,7 +592,7 @@ yysymbol_name (yysymbol_kind_t yysymbol)
 }
 #endif
 
-#define YYPACT_NINF (-3)
+#define YYPACT_NINF (-7)
 
 #define yypact_value_is_default(Yyn) \
   ((Yyn) == YYPACT_NINF)
@@ -604,10 +606,10 @@ yysymbol_name (yysymbol_kind_t yysymbol)
    STATE-NUM.  */
 static const yytype_int8 yypact[] =
 {
-       9,     1,    -2,    -3,    -3,    -3,    -3,    -3,     2,    -3,
-      -3,    -3,    -3,    -3,    -3,     7,    12,    -1,     5,    20,
-      -3,    21,    19,    -3,    20,    -3,     5,    -3,    20,    -3,
-      -3,    -3
+      10,    12,    -2,    -7,    -7,    -7,    -7,    -7,     5,    -7,
+      -7,    -7,    -7,    -7,    -7,    -7,     4,    13,     7,    -6,
+      25,    -7,    19,    22,    -7,    25,    -7,    -6,    -7,    25,
+      -7,    -7,    -7
 };
 
 /* YYDEFACT[STATE-NUM] -- Default reduction number in state STATE-NUM.
@@ -615,22 +617,24 @@ static const yytype_int8 yypact[] =
    means the default is an error.  */
 static const yytype_int8 yydefact[] =
 {
-       2,     0,     0,    12,    10,    11,     8,    13,     0,    21,
-       9,     6,     7,     3,     4,     0,     0,    15,     0,     0,
-       5,     0,    19,     1,     0,    14,     0,    18,     0,    17,
-      16,    20
+       2,     0,     0,    12,    10,    11,    13,    14,     0,    22,
+       8,     9,     6,     7,     3,     4,     0,     0,    16,     0,
+       0,     5,     0,    20,     1,     0,    15,     0,    19,     0,
+      18,    17,    21
 };
 
 /* YYPGOTO[NTERM-NUM].  */
 static const yytype_int8 yypgoto[] =
 {
-      -3,    -3,    -3,    -3,    -3,     8,    -3,    -3,    10,     0
+      -7,    -7,    -7,    -1,    -7,    -7,     6,    -7,    -7,     3,
+       2
 };
 
 /* YYDEFGOTO[NTERM-NUM].  */
 static const yytype_int8 yydefgoto[] =
 {
-       0,     8,     9,    10,    11,    16,    17,    12,    21,    22
+       0,     8,     9,    10,    11,    12,    17,    18,    13,    22,
+      23
 };
 
 /* YYTABLE[YYPACT[STATE-NUM]] -- What to do in state STATE-NUM.  If
@@ -638,18 +642,18 @@ static const yytype_int8 yydefgoto[] =
    number is the opposite.  If YYTABLE_NINF, syntax error.  */
 static const yytype_int8 yytable[] =
 {
-      13,    18,    23,    19,    20,    14,    26,     3,     4,     5,
-       6,     7,     1,    15,     2,    24,    25,    15,     3,     4,
-       5,     6,     7,    18,    29,    19,    28,    27,     0,     3,
-       4,     5,     6,     7,    30,     0,     0,     0,    31
+      16,    19,    14,    20,    21,    24,     6,     3,     4,     5,
+       6,     7,    25,     1,    27,     2,    15,    26,    16,     3,
+       4,     5,     6,     7,     6,    28,    16,    30,    19,    29,
+      20,     0,    32,    31,     3,     4,     5,     6,     7
 };
 
 static const yytype_int8 yycheck[] =
 {
-       0,     3,     0,     5,     6,     4,     7,     9,    10,    11,
-      12,    13,     3,    12,     5,     8,     4,    12,     9,    10,
-      11,    12,    13,     3,    24,     5,     7,     6,    -1,     9,
-      10,    11,    12,    13,    26,    -1,    -1,    -1,    28
+       1,     3,     0,     5,     6,     0,    12,     9,    10,    11,
+      12,    13,     8,     3,     7,     5,     4,     4,    19,     9,
+      10,    11,    12,    13,    12,     6,    27,    25,     3,     7,
+       5,    -1,    29,    27,     9,    10,    11,    12,    13
 };
 
 /* YYSTOS[STATE-NUM] -- The symbol kind of the accessing symbol of
@@ -657,25 +661,25 @@ static const yytype_int8 yycheck[] =
 static const yytype_int8 yystos[] =
 {
        0,     3,     5,     9,    10,    11,    12,    13,    16,    17,
-      18,    19,    22,    24,     4,    12,    20,    21,     3,     5,
-       6,    23,    24,     0,     8,     4,     7,     6,     7,    24,
-      20,    23
+      18,    19,    20,    23,    25,     4,    18,    21,    22,     3,
+       5,     6,    24,    25,     0,     8,     4,     7,     6,     7,
+      25,    21,    24
 };
 
 /* YYR1[RULE-NUM] -- Symbol kind of the left-hand side of rule RULE-NUM.  */
 static const yytype_int8 yyr1[] =
 {
        0,    15,    16,    16,    16,    16,    17,    17,    17,    17,
-      17,    17,    17,    18,    19,    20,    20,    21,    22,    23,
-      23,    24
+      17,    17,    17,    18,    19,    20,    21,    21,    22,    23,
+      24,    24,    25
 };
 
 /* YYR2[RULE-NUM] -- Number of symbols on the right-hand side of rule RULE-NUM.  */
 static const yytype_int8 yyr2[] =
 {
        0,     2,     0,     1,     2,     2,     1,     1,     1,     1,
-       1,     1,     1,     1,     3,     1,     3,     3,     3,     1,
-       3,     1
+       1,     1,     1,     1,     1,     3,     1,     3,     3,     3,
+       1,     3,     1
 };
 
 
@@ -1668,44 +1672,44 @@ yyreduce:
     int yychar_backup = yychar;
     switch (yyn)
       {
-  case 8: /* json_value: JSON_STRING  */
-#line 159 "jparse.y"
-                              { yyval = *parse_json_string(ugly_text, &tree); }
-#line 1624 "jparse.tab.c"
-    break;
-
   case 10: /* json_value: "true"  */
 #line 161 "jparse.y"
                             { yyval = *parse_json_bool(ugly_text, &tree); }
-#line 1630 "jparse.tab.c"
+#line 1628 "jparse.tab.c"
     break;
 
   case 11: /* json_value: "false"  */
 #line 162 "jparse.y"
                              { yyval = *parse_json_bool(ugly_text, &tree); }
-#line 1636 "jparse.tab.c"
+#line 1634 "jparse.tab.c"
     break;
 
   case 12: /* json_value: "null"  */
 #line 163 "jparse.y"
                             { yyval = *parse_json_null(ugly_text, &tree); }
-#line 1642 "jparse.tab.c"
+#line 1640 "jparse.tab.c"
     break;
 
-  case 13: /* json_number: JSON_NUMBER  */
+  case 13: /* json_string: JSON_STRING  */
 #line 166 "jparse.y"
+                            { yyval = *parse_json_string(ugly_text, &tree); }
+#line 1646 "jparse.tab.c"
+    break;
+
+  case 14: /* json_number: JSON_NUMBER  */
+#line 168 "jparse.y"
                             { yyval = *parse_json_number(ugly_text, &tree); }
-#line 1648 "jparse.tab.c"
+#line 1652 "jparse.tab.c"
     break;
 
-  case 17: /* json_member: JSON_STRING ":" json_element  */
-#line 176 "jparse.y"
+  case 18: /* json_member: json_string ":" json_element  */
+#line 178 "jparse.y"
                                                     { yyval = *parse_json_member(&yyvsp[-2], &yyvsp[0], &tree); }
-#line 1654 "jparse.tab.c"
+#line 1658 "jparse.tab.c"
     break;
 
 
-#line 1658 "jparse.tab.c"
+#line 1662 "jparse.tab.c"
 
         default: break;
       }
@@ -1940,7 +1944,7 @@ yyreturnlab:
   return yyresult;
 }
 
-#line 189 "jparse.y"
+#line 191 "jparse.y"
 
 /* Section 3: C code */
 
@@ -2163,17 +2167,17 @@ parse_json_bool(char const *string, struct json *ast)
      * firewall
      */
     if (string == NULL || ast == NULL) {
-	err(37, __func__, "passed NULL string and/or ast");
+	err(38, __func__, "passed NULL string and/or ast");
 	not_reached();
     }
 
     boolean = json_conv_bool_str(string, NULL);
     /* paranoia - these tests should never result in an error */
     if (boolean == NULL) {
-	err(38, __func__, "converting JSON bool returned NULL: <%s>", string);
+	err(39, __func__, "converting JSON bool returned NULL: <%s>", string);
 	not_reached();
     } else if (boolean->type != JTYPE_BOOL) {
-        err(37, __func__, "expected JTYPE_BOOL, found type: %s", json_element_type_name(boolean->type));
+        err(40, __func__, "expected JTYPE_BOOL, found type: %s", json_element_type_name(boolean->type));
         not_reached();
     }
     item = &(boolean->element.boolean);
@@ -2188,7 +2192,7 @@ parse_json_bool(char const *string, struct json *ast)
 	 * If it's not we will abort as there's a serious mismatch between the
 	 * scanner and the parser.
 	 */
-	err(39, __func__, "called on non-boolean string: <%s>", string);
+	err(41, __func__, "called on non-boolean string: <%s>", string);
 	not_reached();
     } else {
 	dbg(JSON_DBG_LEVEL, "%s: <%s> -> %s", __func__, string, bool_to_string(item->value));
@@ -2223,7 +2227,7 @@ parse_json_null(char const *string, struct json *ast)
      * firewall
      */
     if (string == NULL || ast == NULL) {
-	err(40, __func__, "passed NULL string and/or ast");
+	err(42, __func__, "passed NULL string and/or ast");
 	not_reached();
     }
 
@@ -2233,18 +2237,18 @@ parse_json_null(char const *string, struct json *ast)
      * null should not be NULL :-)
      */
     if (null == NULL) {
-	err(41, __func__, "null ironically should not be NULL but it is :-)");
+	err(43, __func__, "null ironically should not be NULL but it is :-)");
 	not_reached();
     } else if (null->type != JTYPE_NULL) {
-        err(37, __func__, "expected JTYPE_NULL, found type: %s", json_element_type_name(null->type));
+        err(44, __func__, "expected JTYPE_NULL, found type: %s", json_element_type_name(null->type));
         not_reached();
     }
     item = &(null->element.null);
     if (!item->converted) {
 	/* XXX should this be a fatal error ? */
-	warn(__func__, "couldn't decode null: <%s>", string);
+	warn(__func__, "couldn't convert null: <%s>", string);
     } else {
-        dbg(JSON_DBG_LEVEL, "%s: decoded null: <%s> -> null", __func__, string);
+        dbg(JSON_DBG_LEVEL, "%s: convert null: <%s> -> null", __func__, string);
     }
 
 
@@ -2279,24 +2283,24 @@ parse_json_number(char const *string, struct json *ast)
      * firewall
      */
     if (string == NULL || ast == NULL) {
-	err(43, __func__, "passed NULL string and/or ast");
+	err(45, __func__, "passed NULL string and/or ast");
 	not_reached();
     }
     number = json_conv_number_str(string, NULL);
     /* paranoia - these tests should never result in an error */
     if (number == NULL) {
-	err(44, __func__, "converting JSON number returned NULL: <%s>", string);
+	err(46, __func__, "converting JSON number returned NULL: <%s>", string);
         not_reached();
     } else if (number->type != JTYPE_NUMBER) {
-        err(37, __func__, "expected JTYPE_NUMBER, found type: %s", json_element_type_name(number->type));
+        err(47, __func__, "expected JTYPE_NUMBER, found type: %s", json_element_type_name(number->type));
         not_reached();
     }
     item = &(number->element.number);
     if (!item->converted) {
 	/* XXX should this be a fatal error ? */
-	warn(__func__, "couldn't decode number string: <%s>", string);
+	warn(__func__, "couldn't convert number string: <%s>", string);
     } else {
-        dbg(JSON_DBG_LEVEL, "%s: decoded number string: <%s>", __func__, item->as_str);
+        dbg(JSON_DBG_LEVEL, "%s: convert number string: <%s>", __func__, item->as_str);
     }
 
     return number;
@@ -2331,7 +2335,7 @@ parse_json_array(char const *string, struct json *ast)
      * firewall
      */
     if (string == NULL || ast == NULL) {
-	err(45, __func__, "passed NULL string and/or ast");
+	err(48, __func__, "passed NULL string and/or ast");
 	not_reached();
     }
 
@@ -2366,25 +2370,25 @@ parse_json_member(struct json *name, struct json *value, struct json *ast)
      * firewall
      */
     if (name == NULL || value == NULL || ast == NULL) {
-	err(46, __func__, "passed NULL pointer(s)");
+	err(49, __func__, "passed NULL pointer(s)");
 	not_reached();
     }
 
     member = json_conv_member(name, value);
     /* paranoia - these tests should never result in an error */
     if (member == NULL) {
-	err(47, __func__, "converting JSON member returned NULL");
+	err(50, __func__, "converting JSON member returned NULL");
 	not_reached();
     } else if (member->type != JTYPE_MEMBER) {
-        err(37, __func__, "expected JTYPE_MEMBER, found type: %s", json_element_type_name(member->type));
+        err(51, __func__, "expected JTYPE_MEMBER, found type: %s", json_element_type_name(member->type));
         not_reached();
     }
     item = &(member->element.member);
     if (!item->converted) {
 	/* XXX should this be a fatal error ? */
-	warn(__func__, "couldn't decode member");
+	warn(__func__, "couldn't convert member");
     } else {
-        dbg(JSON_DBG_LEVEL, "%s: decoded member", __func__);
+        dbg(JSON_DBG_LEVEL, "%s: convert member", __func__);
     }
 
 

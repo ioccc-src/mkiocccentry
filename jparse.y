@@ -156,12 +156,14 @@ json:		/* empty */
 
 json_value:	  json_object
 		| json_array
-		| JSON_STRING { $$ = *parse_json_string(ugly_text, &tree); }
+		| json_string
 		| json_number
 		| JSON_TRUE { $$ = *parse_json_bool(ugly_text, &tree); }
 		| JSON_FALSE { $$ = *parse_json_bool(ugly_text, &tree); }
 		| JSON_NULL { $$ = *parse_json_null(ugly_text, &tree); }
 		;
+
+json_string:	JSON_STRING { $$ = *parse_json_string(ugly_text, &tree); }
 
 json_number:	JSON_NUMBER { $$ = *parse_json_number(ugly_text, &tree); }
 		;
@@ -173,7 +175,7 @@ json_members:	json_member
 		| json_member JSON_COMMA json_members
 		;
 
-json_member:	JSON_STRING JSON_COLON json_element { $$ = *parse_json_member(&$1, &$3, &tree); }
+json_member:	json_string JSON_COLON json_element { $$ = *parse_json_member(&$1, &$3, &tree); }
 		;
 
 json_array:	JSON_OPEN_BRACKET json_elements JSON_CLOSE_BRACKET
@@ -487,9 +489,9 @@ parse_json_null(char const *string, struct json *ast)
     item = &(null->element.null);
     if (!item->converted) {
 	/* XXX should this be a fatal error ? */
-	warn(__func__, "couldn't decode null: <%s>", string);
+	warn(__func__, "couldn't convert null: <%s>", string);
     } else {
-        dbg(JSON_DBG_LEVEL, "%s: decoded null: <%s> -> null", __func__, string);
+        dbg(JSON_DBG_LEVEL, "%s: convert null: <%s> -> null", __func__, string);
     }
 
 
@@ -539,9 +541,9 @@ parse_json_number(char const *string, struct json *ast)
     item = &(number->element.number);
     if (!item->converted) {
 	/* XXX should this be a fatal error ? */
-	warn(__func__, "couldn't decode number string: <%s>", string);
+	warn(__func__, "couldn't convert number string: <%s>", string);
     } else {
-        dbg(JSON_DBG_LEVEL, "%s: decoded number string: <%s>", __func__, item->as_str);
+        dbg(JSON_DBG_LEVEL, "%s: convert number string: <%s>", __func__, item->as_str);
     }
 
     return number;
@@ -627,9 +629,9 @@ parse_json_member(struct json *name, struct json *value, struct json *ast)
     item = &(member->element.member);
     if (!item->converted) {
 	/* XXX should this be a fatal error ? */
-	warn(__func__, "couldn't decode member");
+	warn(__func__, "couldn't convert member");
     } else {
-        dbg(JSON_DBG_LEVEL, "%s: decoded member", __func__);
+        dbg(JSON_DBG_LEVEL, "%s: convert member", __func__);
     }
 
 
