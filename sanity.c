@@ -36,17 +36,17 @@ ioccc_sanity_chks(void)
      * elements and that the final element is in fact NULL. It also sets up the
      * length of the source and target strings.
      */
-    dbg(DBG_MED, "Running sanity checks on UTF-8 POSIX map ...");
+    dbg(DBG_VVHIGH, "Running sanity checks on UTF-8 POSIX map ...");
     check_utf8_posix_map();
-    dbg(DBG_MED, "... all OK.");
+    dbg(DBG_VVHIGH, "... all OK.");
 
     /*
      * Check that the location table is sane: that there are no embedded NULL
      * elements and that the final element is in fact NULL.
      */
-    dbg(DBG_MED, "Running sanity checks on location table ...");
+    dbg(DBG_VVHIGH, "Running sanity checks on location table ...");
     check_location_table();
-    dbg(DBG_MED, "... all OK.");
+    dbg(DBG_VVHIGH, "... all OK.");
 
     /*
      * Check that the JSON fields tables are sane: that there are no

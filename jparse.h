@@ -131,6 +131,6 @@ struct json *parse_json_number(char const *string, struct json *ast);
 struct json *parse_json_bool(char const *string, struct json *ast);
 struct json *parse_json_null(char const *string, struct json *ast);
 struct json *parse_json_array(char const *string, struct json *ast);
-struct json *parse_json_member(char const *string, struct json *ast);
+struct json *parse_json_member(struct json *name, struct json *value, struct json *ast);
 
 #endif /* INCLUDE_JPARSE_H */

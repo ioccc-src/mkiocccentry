@@ -48,7 +48,7 @@
  * JSON parser related definitions and structures
  */
 #define JSON_CHUNK (16)			/* number of pointers to allocate at a time */
-#define JSON_DBG_LEVEL (DBG_HIGH)	/* fault JSON debugging level */
+#define JSON_DBG_LEVEL (DBG_MED)	/* default JSON debugging level */
 
 
 /*

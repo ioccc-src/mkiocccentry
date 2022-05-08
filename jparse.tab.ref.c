@@ -1700,7 +1700,7 @@ yyreduce:
 
   case 17: /* json_member: JSON_STRING ":" json_element  */
 #line 176 "jparse.y"
-                                                    { yyval = *json_conv_member(&yyvsp[-2], &yyvsp[0]); }
+                                                    { yyval = *parse_json_member(&yyvsp[-2], &yyvsp[0], &tree); }
 #line 1654 "jparse.tab.c"
     break;
 
@@ -1958,6 +1958,18 @@ main(int argc, char **argv)
     int i;
 
 
+    /* XXX for development purposes we override initial verbosity_level to
+     * DBG_MED which we have the JSON_DBG_LEVEL set to. I'd actually like it to
+     * be DBG_LOW because it means I wouldn't have to see as much information.
+     * The thought I had of making a json debug function is good except it has
+     * the same problem as before: it makes the other tools too chatty. On the
+     * other hand though it might be that we could have a boolean (maybe it's
+     * already there) that if false it does not show this debug function output;
+     * if true (which we'd have in jparse) it would show it. That's probably the
+     * best option but it'll come at a later time. For now we simply override
+     * the initial verbosity_level. We can always do the other at another time.
+     */
+    verbosity_level = DBG_MED;
     /*
      * parse args
      */
@@ -2065,7 +2077,9 @@ ugly_error(char const *format, ...)
 }
 
 /*
- * XXX these parse_json_() functions don't yet link the structs into the tree.
+ * XXX - the parse_json_() functions don't yet link the structs into the tree - XXX
+ * XXX - the parameters might or might not have to change - XXX
+ * XXX - these functions don't belong in this file - XXX
  */
 
 
@@ -2076,19 +2090,11 @@ ugly_error(char const *format, ...)
  *	string	    - the text that triggered the action
  *	ast	    - the tree to link the struct json * into if not NULL
  *
- * Returns a pointer to a struct json unless conversion failed. In that case it
- * returns a NULL pointer.
+ * Returns a pointer to a struct json.
  *
  * NOTE: This function does not return if passed a NULL pointer.
  *
- * XXX This function is not finished. All it does now is return a struct json *
- * which is actually NULL. It might be that the function will take different
- * parameters as well and the names of the parameters and the function are also
- * subject to change.
- *
- * XXX - this function does not belong in this file - XXX
- *
- * XXX - should the function return on conversion error ? - XXX
+ * XXX - should this function return if conversion failed ? - XXX
  */
 struct json *
 parse_json_string(char const *string, struct json *ast)
@@ -2120,7 +2126,8 @@ parse_json_string(char const *string, struct json *ast)
 	dbg(JSON_DBG_LEVEL, "%s: decoded string: <%s>", __func__, str->element.string.str);
     }
 
-    /* XXX - decide what tests should be done on the returned string - XXX */
+    /* XXX decide what tests should be done on the returned string other than
+     * conversion success */
 
     /* TODO add to parse tree */
 
@@ -2139,12 +2146,7 @@ parse_json_string(char const *string, struct json *ast)
  *
  * NOTE: This function does not return if passed a NULL pointer.
  *
- * XXX This function is not finished. All it does now is return a struct json *
- * which is actually NULL. It might be that the function will take different
- * parameters as well and the names of the parameters and the function are also
- * subject to change.
- *
- * XXX - this function does not belong in this file - XXX
+ * XXX - should this function return if conversion failed ? - XXX
  */
 struct json *
 parse_json_bool(char const *string, struct json *ast)
@@ -2199,12 +2201,7 @@ parse_json_bool(char const *string, struct json *ast)
  *
  * NOTE: This function does not return if passed a NULL pointer.
  *
- * XXX This function is not finished. All it does now is return a struct json *
- * which is actually NULL. It might be that the function will take different
- * parameters as well and the names of the parameters and the function are also
- * subject to change.
- *
- * XXX - this function does not belong in this file - XXX
+ * XXX - should this function return if conversion failed ? - XXX
  */
 struct json *
 parse_json_null(char const *string, struct json *ast)
@@ -2255,13 +2252,6 @@ parse_json_null(char const *string, struct json *ast)
  *
  * NOTE: This function does not return if passed a NULL pointer.
  *
- * XXX This function is not finished. All it does now is return a struct json *
- * which is actually NULL. It might be that the function will take different
- * parameters as well and the names of the parameters and the function are also
- * subject to change.
- *
- * XXX - this function does not belong in this file - XXX
- *
  * XXX - should the function return on conversion error ? - XXX
  */
 struct json *
@@ -2302,11 +2292,7 @@ parse_json_number(char const *string, struct json *ast)
  * XXX This function is not finished. All it does now is return a struct json *
  * (which will include a dynamic array) but which right now is actually NULL. It
  * might be that the function will take different parameters as well and the
- * names of the parameters and the function are also subject to change. This
- * function will probably rely on parse_json_string() and one or more of the
- * other functions (depending on the value or in the JSON spec term 'element').
- *
- * XXX - this function does not belong in this file - XXX
+ * names of the parameters and the function are also subject to change.
  *
  * XXX - should the function return on conversion error ? - XXX
  */
@@ -2333,7 +2319,8 @@ parse_json_array(char const *string, struct json *ast)
  *
  * given:
  *
- *	string	    - the text that triggered the action
+ *	name	    - the struct json * name of the member
+ *	value	    - the struct json * value of the member
  *	ast	    - the tree to link the struct json * into if not NULL
  *
  * Returns a pointer to a struct json unless conversion failed. In that case it
@@ -2341,31 +2328,26 @@ parse_json_array(char const *string, struct json *ast)
  *
  * NOTE: This function does not return if passed a NULL pointer.
  *
- * XXX This function is not finished. All it does now is return a struct json *
- * which is actually NULL. It might be that the function will take different
- * parameters as well and the names of the parameters and the function are also
- * subject to change. This function will probably rely on parse_json_string()
- * and one or more of the other functions (depending on the value or in the JSON
- * spec term 'element').
- *
- * XXX - this function does not belong in this file - XXX
- *
  * XXX - should the function return on conversion error ? - XXX
  */
 struct json *
-parse_json_member(char const *string, struct json *ast)
+parse_json_member(struct json *name, struct json *value, struct json *ast)
 {
     struct json *member = NULL;
 
     /*
      * firewall
      */
-    if (string == NULL || ast == NULL) {
-	err(46, __func__, "passed NULL string and/or ast");
+    if (name == NULL || value == NULL || ast == NULL) {
+	err(46, __func__, "passed NULL pointer(s)");
 	not_reached();
     }
 
-    /* TODO add conversion of JSON member */
+    member = json_conv_member(name, value);
+    if (member == NULL) {
+	err(47, __func__, "converting JSON member returned NULL");
+	not_reached();
+    }
 
     return member;
 }
