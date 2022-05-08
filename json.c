@@ -3169,35 +3169,35 @@ json_array_add_value(struct json *obj, struct json *value)
 char const *
 json_element_type_name(enum element_type json_type)
 {
-    char const *name = "unset";
+    char const *name = "JTYPE_UNSET";
 
     switch (json_type) {
     case JTYPE_UNSET:
-	name = "unset";
+	name = "JTYPE_UNSET";
 	break;
     case JTYPE_NUMBER:
-	name = "number";
+	name = "JTYPE_NUMBER";
 	break;
     case JTYPE_STRING:
-	name = "string";
+	name = "JTYPE_STRING";
 	break;
     case JTYPE_BOOL:
-	name = "boolean";
+	name = "JTYPE_BOOL";
 	break;
     case JTYPE_NULL:
-	name = "null";
+	name = "JTYPE_NULL";
 	break;
     case JTYPE_MEMBER:
-	name = "member";
+	name = "JTYPE_MEMBER";
 	break;
     case JTYPE_OBJECT:
-	name = "object";
+	name = "JTYPE_OBJECT";
 	break;
     case JTYPE_ARRAY:
-	name = "array";
+	name = "JTYPE_ARRAY";
 	break;
     default:
-	name = "UNKNOWN";
+	name = "((JTYPE_UNKNOWN))";
 	warn(__func__, "called with unknown JSON type: %d", json_type);
 	break;
     }
