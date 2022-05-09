@@ -186,6 +186,7 @@ json_elements:	json_element
 		;
 
 json_element:	json_value
+		;
 
 
 %%
