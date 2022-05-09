@@ -2143,7 +2143,7 @@ json_conv_number(char const *ptr, size_t len)
     }
 
 
-    dbg(JSON_DBG_LEVEL, "JSON return type: %s", json_element_type_name(ret->type));
+    json_dbg(JSON_DBG_LEVEL, __func__, "JSON return type: %s", json_element_type_name(ret->type));
 
     /*
      * return the JSON parse tree element
@@ -2346,7 +2346,7 @@ json_conv_string(char const *ptr, size_t len, bool quote)
      */
     posix_safe_chk(item->str, item->str_len, &item->slash, &item->posix_safe, &item->first_alphanum, &item->upper);
 
-    dbg(JSON_DBG_LEVEL, "JSON return type: %s", json_element_type_name(ret->type));
+    json_dbg(JSON_DBG_LEVEL, __func__, "JSON return type: %s", json_element_type_name(ret->type));
 
     /*
      * return the JSON parse tree element
@@ -2505,7 +2505,7 @@ json_conv_bool(char const *ptr, size_t len)
 	warn(__func__, "JSON boolean string neither true nor false: <%s>", item->as_str);
     }
 
-    dbg(JSON_DBG_LEVEL, "JSON return type: %s", json_element_type_name(ret->type));
+    json_dbg(JSON_DBG_LEVEL, __func__, "JSON return type: %s", json_element_type_name(ret->type));
 
     /*
      * return the JSON parse tree element
@@ -2657,7 +2657,7 @@ json_conv_null(char const *ptr, size_t len)
 	warn(__func__, "JSON null string is not null: <%s>", item->as_str);
     }
 
-    dbg(JSON_DBG_LEVEL, "JSON return type: %s", json_element_type_name(ret->type));
+    json_dbg(JSON_DBG_LEVEL, __func__, "JSON return type: %s", json_element_type_name(ret->type));
 
     /*
      * return the JSON parse tree element
@@ -2806,8 +2806,8 @@ json_conv_member(struct json *name, struct json *value)
     case JTYPE_MEMBER:
     case JTYPE_OBJECT:
     case JTYPE_ARRAY:
-	dbg(JSON_DBG_LEVEL, "%s: JSON name type: %s", __func__, json_element_type_name(name->type));
-	dbg(JSON_DBG_LEVEL, "%s: JSON value type: %s", __func__, json_element_type_name(value->type));
+	json_dbg(JSON_DBG_LEVEL, __func__, "%s: JSON name type: %s", __func__, json_element_type_name(name->type));
+	json_dbg(JSON_DBG_LEVEL, __func__, "%s: JSON value type: %s", __func__, json_element_type_name(value->type));
 	break;
     default:
 	warn(__func__, "expected JSON object, array, string, number, boolean or null, found type: %d", value->type);
@@ -2899,7 +2899,7 @@ json_create_object(void)
     item->set = dyn_array_addr(item->s, struct json *, 0);
     item->converted = true;
 
-    dbg(JSON_DBG_LEVEL, "%s: JSON return type: %s", __func__, json_element_type_name(ret->type));
+    json_dbg(JSON_DBG_LEVEL, __func__, "%s: JSON return type: %s", __func__, json_element_type_name(ret->type));
 
     /*
      * return the JSON parse tree element
@@ -2961,8 +2961,8 @@ json_object_add_member(struct json *obj, struct json *member)
 	return false;
     }
 
-    dbg(JSON_DBG_LEVEL, "%s: JSON object type: %s", __func__, json_element_type_name(obj->type));
-    dbg(JSON_DBG_LEVEL, "%s: JSON member type: %s", __func__, json_element_type_name(member->type));
+    json_dbg(JSON_DBG_LEVEL, __func__, "%s: JSON object type: %s", __func__, json_element_type_name(obj->type));
+    json_dbg(JSON_DBG_LEVEL, __func__, "%s: JSON member type: %s", __func__, json_element_type_name(member->type));
 
     item = &(ret->element.object);
     if (item->s == NULL) {
@@ -3057,7 +3057,7 @@ json_create_array(void)
     item->set = dyn_array_addr(item->s, struct json *, 0);
     item->converted = true;
 
-    dbg(JSON_DBG_LEVEL, "%s: JSON return type: %s", __func__, json_element_type_name(ret->type));
+    json_dbg(JSON_DBG_LEVEL, __func__, "%s: JSON return type: %s", __func__, json_element_type_name(ret->type));
 
     /*
      * return the JSON parse tree element
@@ -3120,8 +3120,8 @@ json_array_add_value(struct json *obj, struct json *value)
     case JTYPE_MEMBER:
     case JTYPE_OBJECT:
     case JTYPE_ARRAY:
-	dbg(JSON_DBG_LEVEL, "%s: JSON value type: %s", __func__, json_element_type_name(value->type));
-	dbg(JSON_DBG_LEVEL, "%s: JSON object type: %s", __func__, json_element_type_name(obj->type));
+	json_dbg(JSON_DBG_LEVEL, __func__, "JSON value type: %s", json_element_type_name(value->type));
+	json_dbg(JSON_DBG_LEVEL, __func__, "JSON object type: %s", json_element_type_name(obj->type));
 	break;
     default:
 	warn(__func__, "expected JSON object, array, string, number, boolean or null, found type: %d", value->type);

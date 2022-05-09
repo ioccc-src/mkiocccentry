@@ -96,6 +96,7 @@ extern bool show_full_json_warnings;
 /*
  * function prototypes
  */
+
 /* warning and error specific functions */
 extern void jwarn(int code, const char *program, char const *name, char const *filename, char const *line,
 		  int line_num, const char *fmt, ...) \
@@ -109,10 +110,12 @@ extern void jerr(int exitcode, char const *program, const char *name, char const
 extern void jerrp(int exitcode, char const *program, const char *name, char const *filename, char const *line,
 		  int line_num, const char *fmt, ...) \
 	__attribute__((noreturn)) __attribute__((format(printf, 7, 8))); /* 7=format 8=params */
-
 /* ignored warnings via the -W option in jinfochk and jauthchk */
 extern bool is_json_code_ignored(int code);
 extern void ignore_json_code(int code);
-
+/* JSON specific debug functions */
+extern void json_dbg(int level, char const *name, const char *fmt, ...) \
+	__attribute__((format(printf, 3, 4)));		/* 3=format 4=params */
+extern void json_vdbg(int level, char const *name, const char *fmt, va_list ap);
 
 #endif /* INCLUDE_JSON_UTIL_H */

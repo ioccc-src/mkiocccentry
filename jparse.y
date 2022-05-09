@@ -235,6 +235,7 @@ main(int argc, char **argv)
 	    break;
 	case 'q':
 	    msg_warn_silent = true;
+	    ugly_debug = 0;
 	    break;
 	case 'V':		/* -V - print version and exit */
 	    errno = 0;		/* pre-clear errno for warnp() */
@@ -255,7 +256,7 @@ main(int argc, char **argv)
 	     */
 	    string_flag_used = true;
 
-	    dbg(DBG_NONE, "Calling parse_json_block(\"%s\"):", optarg);
+	    json_dbg(JSON_DBG_LEVEL, __func__, "Calling parse_json_block(\"%s\"):", optarg);
 	    /* parse arg as a string */
 	    parse_json_block(optarg);
 	    break;
@@ -277,7 +278,7 @@ main(int argc, char **argv)
 	 * process each argument in order
 	 */
 	for (i=optind; i < argc; ++i) {
-	    dbg(DBG_NONE, "Calling parse_json_file(\"%s\"):", argv[i]);
+	    json_dbg(JSON_DBG_LEVEL, __func__, "Calling parse_json_file(\"%s\"):", argv[i]);
 	    parse_json_file(argv[i]);
 	}
 
@@ -326,7 +327,6 @@ ugly_error(char const *format, ...)
 /*
  * XXX - the parse_json_() functions don't yet link the structs into the tree - XXX
  * XXX - the parameters might or might not have to change - XXX
- * XXX - these functions don't belong in this file - XXX
  */
 
 
@@ -357,7 +357,7 @@ parse_json_string(char const *string, struct json *ast)
 	not_reached();
     }
 
-    dbg(JSON_DBG_LEVEL, "%s: about to parse string: <%s>", __func__, string);
+    json_dbg(JSON_DBG_LEVEL, __func__, "about to parse string: <%s>", string);
     /*
      * we say that quote == true because the pattern in the lexer will include
      * the '"'s.
@@ -376,7 +376,7 @@ parse_json_string(char const *string, struct json *ast)
 	/* XXX should this be a fatal error ? */
 	warn(__func__, "couldn't decode string: <%s>", string);
     } else {
-        dbg(JSON_DBG_LEVEL, "%s: decoded string: <%s>", __func__, item->str);
+        json_dbg(JSON_DBG_LEVEL, __func__, "decoded string: <%s>", item->str);
     }
 
     /* XXX Are there any other checks that have to be done ? */
@@ -438,7 +438,7 @@ parse_json_bool(char const *string, struct json *ast)
 	err(41, __func__, "called on non-boolean string: <%s>", string);
 	not_reached();
     } else {
-	dbg(JSON_DBG_LEVEL, "%s: <%s> -> %s", __func__, string, bool_to_string(item->value));
+	json_dbg(JSON_DBG_LEVEL, __func__, "<%s> -> %s", string, bool_to_string(item->value));
     }
 
     /* TODO add to parse tree */
@@ -491,7 +491,7 @@ parse_json_null(char const *string, struct json *ast)
 	/* XXX should this be a fatal error ? */
 	warn(__func__, "couldn't convert null: <%s>", string);
     } else {
-        dbg(JSON_DBG_LEVEL, "%s: convert null: <%s> -> null", __func__, string);
+        json_dbg(JSON_DBG_LEVEL, __func__, "convert null: <%s> -> null", string);
     }
 
 
@@ -543,7 +543,7 @@ parse_json_number(char const *string, struct json *ast)
 	/* XXX should this be a fatal error ? */
 	warn(__func__, "couldn't convert number string: <%s>", string);
     } else {
-        dbg(JSON_DBG_LEVEL, "%s: convert number string: <%s>", __func__, item->as_str);
+        json_dbg(JSON_DBG_LEVEL, __func__, "convert number string: <%s>", item->as_str);
     }
 
     return number;
@@ -631,7 +631,7 @@ parse_json_member(struct json *name, struct json *value, struct json *ast)
 	/* XXX should this be a fatal error ? */
 	warn(__func__, "couldn't convert member");
     } else {
-        dbg(JSON_DBG_LEVEL, "%s: convert member", __func__);
+        json_dbg(JSON_DBG_LEVEL, __func__, "converted member");
     }
 
 

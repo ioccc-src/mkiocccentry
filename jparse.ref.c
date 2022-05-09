@@ -881,8 +881,8 @@ int yy_flex_debug = 1;
 
 static const flex_int16_t yy_rule_linenum[14] =
     {   0,
-      150,  160,  167,  174,  181,  187,  194,  200,  207,  214,
-      221,  228,  235
+      151,  161,  168,  175,  182,  188,  195,  201,  208,  215,
+      222,  229,  236
     } ;
 
 /* The intent behind this definition is that it'll catch
@@ -998,9 +998,10 @@ YY_BUFFER_STATE bs;
  * XXX JSON_WHITESPACE is not needed but for testing I have the whitespace here
  * and below in the actions I print out that it is whitespace and what
  * characters (though newlines and other non-printable whitespace chars are not
- * translated to escape sequences). The text looks like:
+ * translated to escape sequences). The text looks like one of:
  *
- *	whitespace: '<whitespace chars>'
+ *	ignoring 1 whitespace
+ *	ignoring [2-9]+ whitespaces
  *
  * to help distinguish it from other patterns matched.
  */
@@ -1016,7 +1017,7 @@ YY_BUFFER_STATE bs;
  * TODO: We have to do more than just assigning the token type (by which we mean
  * ugly_lval.type). These things will be done later.
  */
-#line 968 "jparse.c"
+#line 969 "jparse.c"
 
 #define INITIAL 0
 
@@ -1296,9 +1297,9 @@ YY_DECL
 
 	{
 /* %% [7.0] user's declarations go here */
-#line 149 "jparse.l"
+#line 150 "jparse.l"
 
-#line 1250 "jparse.c"
+#line 1251 "jparse.c"
 
 	while ( /*CONSTCOND*/1 )		/* loops until end-of-file is reached */
 		{
@@ -1391,7 +1392,7 @@ do_action:	/* This label is used only to access EOF actions. */
 case 1:
 /* rule 1 can match eol */
 YY_RULE_SETUP
-#line 150 "jparse.l"
+#line 151 "jparse.l"
 {
 			    /*
 			     * Whitespace
@@ -1399,85 +1400,85 @@ YY_RULE_SETUP
 			     * Not needed but included for now for debugging
 			     * purposes.
 			     */
-			    printf("\nwhitespace: '%s'\n", ugly_text);
+			    printf("\nignoring %ju whitespace%s\n", strlen(ugly_text), strlen(ugly_text)==1?"":"s");
 			}
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
-#line 160 "jparse.l"
+#line 161 "jparse.l"
 {
 			    /* string */
-			    printf("\nstring: '%s'\n", ugly_text);
+			    printf("\nstring: <%s>\n", ugly_text);
 			    ugly_lval.type = JTYPE_STRING;
 			    return JSON_STRING;
 			}
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 167 "jparse.l"
+#line 168 "jparse.l"
 {
 			    /* number */
-			    printf("\nnumber: '%s'\n", ugly_text);
+			    printf("\nnumber: <%s>\n", ugly_text);
 			    ugly_lval.type = JTYPE_NUMBER;
 			    return JSON_NUMBER;
 			}
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 174 "jparse.l"
+#line 175 "jparse.l"
 {
 			    /* null object */
-			    printf("\nnull: '%s'\n", ugly_text);
+			    printf("\nnull: <%s>\n", ugly_text);
 			    ugly_lval.type = JTYPE_NULL;
 			    return JSON_NULL;
 			}
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 181 "jparse.l"
+#line 182 "jparse.l"
 {
 			    /* boolean: true */
-			    printf("\ntrue: '%s'\n", ugly_text);
+			    printf("\ntrue: <%s>\n", ugly_text);
 			    ugly_lval.type = JTYPE_BOOL;
 			    return JSON_TRUE;
 			}
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 187 "jparse.l"
+#line 188 "jparse.l"
 {
 			    /* boolean: false */
-			    printf("\nfalse: '%s'\n", ugly_text);
+			    printf("\nfalse: <%s>\n", ugly_text);
 			    ugly_lval.type = JTYPE_BOOL;
 			    return JSON_FALSE;
 			}
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 194 "jparse.l"
+#line 195 "jparse.l"
 {
 			    /* start of object */
-			    printf("\nstart of object: '%c'\n", *ugly_text);
+			    printf("\nstart of object: <%c>\n", *ugly_text);
 			    ugly_lval.type = JTYPE_OBJECT;
 			    return JSON_OPEN_BRACE;
 			}
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 200 "jparse.l"
+#line 201 "jparse.l"
 {
 			    /* end of object */
-			    printf("\nend of object: '%c'\n", *ugly_text);
+			    printf("\nend of object: <%c>\n", *ugly_text);
 			    token = '}';
 			    return JSON_CLOSE_BRACE;
 			}
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 207 "jparse.l"
+#line 208 "jparse.l"
 {
 			    /* start of array */
-			    printf("\nstart of array: '%c'\n", *ugly_text);
+			    printf("\nstart of array: <%c>\n", *ugly_text);
 			    ugly_lval.type = JTYPE_ARRAY;
 			    token = '[';
 			    return JSON_OPEN_BRACKET;
@@ -1485,49 +1486,49 @@ YY_RULE_SETUP
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
-#line 214 "jparse.l"
+#line 215 "jparse.l"
 {
 			    /* end of array */
-			    printf("\nend of array: '%c'\n", *ugly_text);
+			    printf("\nend of array: <%c>\n", *ugly_text);
 			    token = ']';
 			    return JSON_CLOSE_BRACKET;
 			}
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
-#line 221 "jparse.l"
+#line 222 "jparse.l"
 {
 			    /* colon or 'equals' */
-			    printf("\ncolon (or 'equals' ): '%c'\n", *ugly_text);
+			    printf("\ncolon (or 'equals' ): <%c>\n", *ugly_text);
 			    token = ':';
 			    return JSON_COLON;
 			}
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
-#line 228 "jparse.l"
+#line 229 "jparse.l"
 {
 			    /* comma: name/value pair separator */
-			    printf("\ncomma: '%c'\n", *ugly_text);
+			    printf("\ncomma: <%c>\n", *ugly_text);
 			    token = ',';
 			    return JSON_COMMA;
 			}
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
-#line 235 "jparse.l"
+#line 236 "jparse.l"
 {
 			    /* invalid token: any other character */
-			    ugly_error("\ninvalid token: '%c'\n", *ugly_text);
+			    ugly_error("\ninvalid token: <%c>\n", *ugly_text);
 			    return JSON_INVALID_TOKEN;
 			}
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
-#line 241 "jparse.l"
+#line 242 "jparse.l"
 YY_FATAL_ERROR( "flex scanner jammed" );
 	YY_BREAK
-#line 1479 "jparse.c"
+#line 1480 "jparse.c"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 
@@ -2687,7 +2688,7 @@ void yyfree (void * ptr )
 
 /* %ok-for-header */
 
-#line 241 "jparse.l"
+#line 242 "jparse.l"
 
 
 /* Section 3: Code that's copied to the generated scanner */
@@ -2741,14 +2742,14 @@ parse_json_block(char const *string)
 	++num_errors;
 	return;
     }
-    dbg(DBG_NONE, "*** BEGIN PARSE:\n'\n%s\n'", string);
+    json_dbg(JSON_DBG_LEVEL, __func__, "*** BEGIN PARSE:\n<\n%s\n>\n", string);
 
     ugly_parse();
 
     ugly__delete_buffer(bs);
     bs = NULL;
 
-    dbg(DBG_NONE, "*** END PARSE");
+    json_dbg(JSON_DBG_LEVEL, __func__, "*** END PARSE");
     print_newline(output_newline);
 }
 
@@ -2785,6 +2786,7 @@ parse_json_file(char const *filename)
     bool is_stdin = false;	/* true if reading from stdin (filename == "-") */
     char *data = NULL;		/* used to determine if there are NUL bytes in the file */
     size_t len = 0;		/* length of data read */
+    int ret;
 
     /*
      * firewall
@@ -2843,22 +2845,23 @@ parse_json_file(char const *filename)
 	return;
     }
 
-    dbg(DBG_NONE, "*** BEGIN PARSE:\n'\n%s\n'", data);
+    parse_json_block(data);
 
     /* free data */
     free(data);
     data = NULL;
 
-    /* now parse the file */
-    rewind(ugly_in);
-    ugly_restart(ugly_in);
-    ugly_lineno = 1;
-    ugly_parse();
+    if (is_stdin)
+	clearerr(stdin);
+    else if (ugly_in != NULL) {
+	errno = 0;
+	ret = fclose(ugly_in);
+	if (ret != 0) {
+	    warnp(__func__, "error in fclose on file %s", filename);
+	}
+	ugly_in = NULL;
+    }
 
-    clearerr_or_fclose(filename, ugly_in);
-    ugly_in = NULL;
-    dbg(DBG_NONE, "*** END PARSE");
     print_newline(output_newline);
-
 }
 

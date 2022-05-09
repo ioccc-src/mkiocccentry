@@ -1310,5 +1310,3 @@ free_json_field(struct json_field *field)
     free(field);
     field = NULL;
 }
-
-

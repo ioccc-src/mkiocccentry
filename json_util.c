@@ -820,3 +820,146 @@ ignore_json_code(int code)
     dbg(DBG_VHIGH, "code %d added to ignore_json_code_set[]", code);
     return;
 }
+
+/*
+ * json_dbg - print JSON debug message if we are verbose enough
+ *
+ * given:
+ *	level	    print message if >= verbosity level
+ *	program	    program name
+ *	name	    function name
+ *	fmt	    printf format
+ *	...
+ *
+ * Example:
+ *
+ *	json_dbg(1, __func__, "foobar information: %d", value);
+ *
+ * NOTE: We warn with extra newlines to help internal fault messages stand out.
+ *	 Normally one should NOT include newlines in warn messages.
+ */
+void
+json_dbg(int level, char const *name, char const *fmt, ...)
+{
+    va_list ap;		/* argument pointer */
+    int saved_errno;	/* errno at function start */
+
+    /*
+     * save errno so we can restore it before returning
+     */
+    saved_errno = errno;
+
+    /*
+     * start the var arg setup and fetch our first arg
+     */
+    va_start(ap, fmt);
+
+    /*
+     * firewall
+     */
+    if (name == NULL) {
+	name = "((NULL name))";
+	warn(__func__, "\nin json_dbg(%d, ...): NULL name, forcing use of: %s\n", level, name);
+    }
+    if (fmt == NULL) {
+	fmt = "((NULL fmt))";
+	warn(__func__, "\nin json_dbg(%d, ...): NULL fmt, forcing use of: %s\n", level, fmt);
+    }
+
+    /*
+     * print the debug message if allowed and allowed by the verbosity level
+     */
+    json_vdbg(level, name, fmt, ap);
+
+    /*
+     * clean up stdarg stuff
+     */
+    va_end(ap);
+
+    /*
+     * restore previous errno value
+     */
+    errno = saved_errno;
+    return;
+}
+
+
+/*
+ * json_vdbg - print debug message if we are verbose enough
+ *
+ * given:
+ *	level	    print message if >= verbosity level
+ *	name	    function name
+ *	ap	    va_list
+ *
+ * Example:
+ *
+ *	json_vdbg(1, "jparse", __func__, "foobar information: %d", ap);
+ *
+ * NOTE: We warn with extra newlines to help internal fault messages stand out.
+ *	 Normally one should NOT include newlines in warn messages.
+ */
+void
+json_vdbg(int level, char const *name, char const *fmt, va_list ap)
+{
+    int ret;		/* libc function return code */
+    int saved_errno;	/* errno at function start */
+
+    /*
+     * save errno so we can restore it before returning
+     */
+    saved_errno = errno;
+
+    /*
+     * firewall
+     */
+    if (name == NULL) {
+	name = "((NULL name))";
+	warn(__func__, "\nin json_vdbg(%d, ...): NULL name, forcing use of: %s\n", level, name);
+    }
+    if (fmt == NULL) {
+	fmt = "((NULL fmt))";
+	warn(__func__, "\nin json_vdbg(%d, ...): NULL fmt, forcing use of: %s\n", level, fmt);
+    }
+
+    /*
+     * print the debug message if allowed and allowed by the verbosity level
+     */
+    if (dbg_output_allowed) {
+	if (level <= verbosity_level) {
+	    errno = 0;
+	    ret = fprintf(stderr, "JSON DEBUG[%d]: ", level);
+	    if (ret < 0) {
+		warn(__func__, "\nin json_vdbg(%d, %s, %s ...): fprintf returned error: %s\n",
+			       level, name, fmt, strerror(errno));
+	    }
+
+	    errno = 0;
+	    ret = vfprintf(stderr, fmt, ap);
+	    if (ret < 0) {
+		warn(__func__, "\nin json_vdbg(%d, %s, %s ...): vfprintf returned error: %s\n",
+			       level, name, fmt, strerror(errno));
+	    }
+
+	    errno = 0;
+	    ret = fputc('\n', stderr);
+	    if (ret != '\n') {
+		warn(__func__, "\nin json_vdbg(%d, %s ...): fputc returned error: %s\n",
+			       level, fmt, strerror(errno));
+	    }
+
+	    errno = 0;
+	    ret = fflush(stderr);
+	    if (ret < 0) {
+		warn(__func__, "\nin json_vdbg(%d, %s, %s ...): fflush returned error: %s\n",
+			       level, name, fmt, strerror(errno));
+	    }
+	}
+    }
+
+    /*
+     * restore previous errno value
+     */
+    errno = saved_errno;
+    return;
+}

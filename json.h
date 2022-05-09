@@ -41,6 +41,10 @@
 #include <time.h>
 #include <stdint.h>
 
+/*
+ * json_util - utility functions related to json
+ */
+#include "json_util.h"
 
 /*
  * JSON defines

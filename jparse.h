@@ -25,6 +25,11 @@
 #include <stdio.h>
 
 /*
+ * json_util - utility functions for json
+ */
+#include "json_util.h"
+
+/*
  * definitions
  */
 
@@ -113,7 +118,7 @@ int ugly_lex(void);
 /*
  * parser specific functions
  *
- * XXX - these are incomplete and subject to change - XXX
+ * XXX - these are all incomplete and subject to change - XXX
  */
 void ugly_error(char const *format, ...);
 void parse_json_file(char const *filename); /* parse a file as JSON */

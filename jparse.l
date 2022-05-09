@@ -111,9 +111,10 @@ YY_BUFFER_STATE bs;
  * XXX JSON_WHITESPACE is not needed but for testing I have the whitespace here
  * and below in the actions I print out that it is whitespace and what
  * characters (though newlines and other non-printable whitespace chars are not
- * translated to escape sequences). The text looks like:
+ * translated to escape sequences). The text looks like one of:
  *
- *	whitespace: '<whitespace chars>'
+ *	ignoring 1 whitespace
+ *	ignoring [2-9]+ whitespaces
  *
  * to help distinguish it from other patterns matched.
  */
@@ -154,87 +155,87 @@ JSON_COMMA		","
 			     * Not needed but included for now for debugging
 			     * purposes.
 			     */
-			    printf("\nwhitespace: '%s'\n", ugly_text);
+			    printf("\nignoring %ju whitespace%s\n", strlen(ugly_text), strlen(ugly_text)==1?"":"s");
 			}
 
 {JSON_STRING}		{
 			    /* string */
-			    printf("\nstring: '%s'\n", ugly_text);
+			    printf("\nstring: <%s>\n", ugly_text);
 			    ugly_lval.type = JTYPE_STRING;
 			    return JSON_STRING;
 			}
 
 {JSON_NUMBER}		{
 			    /* number */
-			    printf("\nnumber: '%s'\n", ugly_text);
+			    printf("\nnumber: <%s>\n", ugly_text);
 			    ugly_lval.type = JTYPE_NUMBER;
 			    return JSON_NUMBER;
 			}
 
 {JSON_NULL}		{
 			    /* null object */
-			    printf("\nnull: '%s'\n", ugly_text);
+			    printf("\nnull: <%s>\n", ugly_text);
 			    ugly_lval.type = JTYPE_NULL;
 			    return JSON_NULL;
 			}
 
 {JSON_TRUE}		{
 			    /* boolean: true */
-			    printf("\ntrue: '%s'\n", ugly_text);
+			    printf("\ntrue: <%s>\n", ugly_text);
 			    ugly_lval.type = JTYPE_BOOL;
 			    return JSON_TRUE;
 			}
 {JSON_FALSE}		{
 			    /* boolean: false */
-			    printf("\nfalse: '%s'\n", ugly_text);
+			    printf("\nfalse: <%s>\n", ugly_text);
 			    ugly_lval.type = JTYPE_BOOL;
 			    return JSON_FALSE;
 			}
 
 {JSON_OPEN_BRACE}	{
 			    /* start of object */
-			    printf("\nstart of object: '%c'\n", *ugly_text);
+			    printf("\nstart of object: <%c>\n", *ugly_text);
 			    ugly_lval.type = JTYPE_OBJECT;
 			    return JSON_OPEN_BRACE;
 			}
 {JSON_CLOSE_BRACE}	{
 			    /* end of object */
-			    printf("\nend of object: '%c'\n", *ugly_text);
+			    printf("\nend of object: <%c>\n", *ugly_text);
 			    token = '}';
 			    return JSON_CLOSE_BRACE;
 			}
 
 {JSON_OPEN_BRACKET}	{
 			    /* start of array */
-			    printf("\nstart of array: '%c'\n", *ugly_text);
+			    printf("\nstart of array: <%c>\n", *ugly_text);
 			    ugly_lval.type = JTYPE_ARRAY;
 			    token = '[';
 			    return JSON_OPEN_BRACKET;
 			}
 {JSON_CLOSE_BRACKET}	{
 			    /* end of array */
-			    printf("\nend of array: '%c'\n", *ugly_text);
+			    printf("\nend of array: <%c>\n", *ugly_text);
 			    token = ']';
 			    return JSON_CLOSE_BRACKET;
 			}
 
 {JSON_COLON}		{
 			    /* colon or 'equals' */
-			    printf("\ncolon (or 'equals' ): '%c'\n", *ugly_text);
+			    printf("\ncolon (or 'equals' ): <%c>\n", *ugly_text);
 			    token = ':';
 			    return JSON_COLON;
 			}
 
 {JSON_COMMA}		{
 			    /* comma: name/value pair separator */
-			    printf("\ncomma: '%c'\n", *ugly_text);
+			    printf("\ncomma: <%c>\n", *ugly_text);
 			    token = ',';
 			    return JSON_COMMA;
 			}
 
 .			{
 			    /* invalid token: any other character */
-			    ugly_error("\ninvalid token: '%c'\n", *ugly_text);
+			    ugly_error("\ninvalid token: <%c>\n", *ugly_text);
 			    return JSON_INVALID_TOKEN;
 			}
 
@@ -291,14 +292,14 @@ parse_json_block(char const *string)
 	++num_errors;
 	return;
     }
-    dbg(DBG_NONE, "*** BEGIN PARSE:\n'\n%s\n'", string);
+    json_dbg(JSON_DBG_LEVEL, __func__, "*** BEGIN PARSE:\n<\n%s\n>\n", string);
 
     ugly_parse();
 
     ugly__delete_buffer(bs);
     bs = NULL;
 
-    dbg(DBG_NONE, "*** END PARSE");
+    json_dbg(JSON_DBG_LEVEL, __func__, "*** END PARSE");
     print_newline(output_newline);
 }
 
@@ -335,6 +336,7 @@ parse_json_file(char const *filename)
     bool is_stdin = false;	/* true if reading from stdin (filename == "-") */
     char *data = NULL;		/* used to determine if there are NUL bytes in the file */
     size_t len = 0;		/* length of data read */
+    int ret;
 
     /*
      * firewall
@@ -393,21 +395,22 @@ parse_json_file(char const *filename)
 	return;
     }
 
-    dbg(DBG_NONE, "*** BEGIN PARSE:\n'\n%s\n'", data);
+    parse_json_block(data);
 
     /* free data */
     free(data);
     data = NULL;
 
-    /* now parse the file */
-    rewind(ugly_in);
-    ugly_restart(ugly_in);
-    ugly_lineno = 1;
-    ugly_parse();
+    if (is_stdin)
+	clearerr(stdin);
+    else if (ugly_in != NULL) {
+	errno = 0;
+	ret = fclose(ugly_in);
+	if (ret != 0) {
+	    warnp(__func__, "error in fclose on file %s", filename);
+	}
+	ugly_in = NULL;
+    }
 
-    clearerr_or_fclose(filename, ugly_in);
-    ugly_in = NULL;
-    dbg(DBG_NONE, "*** END PARSE");
     print_newline(output_newline);
-
 }
