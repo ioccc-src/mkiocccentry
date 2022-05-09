@@ -493,7 +493,7 @@ limit_ioccc.sh: limit_ioccc.h version.h Makefile
 #
 jparse.tab.c jparse.tab.h: jparse.y jparse.h sorry.tm.ca.h run_bison.sh limit_ioccc.sh verge \
 	jparse.tab.ref.c jparse.tab.ref.h Makefile
-	./run_bison.sh -b ${BISON_BASENAME} ${BISON_DIRS} -p jparse -v 1 ${RUN_O_FLAG} -- -d
+	./run_bison.sh -b ${BISON_BASENAME} ${BISON_DIRS} -p jparse -v 1 ${RUN_O_FLAG} -- --report all -d
 
 # How to create jparse.c
 #
@@ -692,7 +692,7 @@ clean_generated_obj:
 prep_clobber:
 	${RM} -f ${TARGETS} ${TEST_TARGETS}
 	${RM} -f ${GENERATED_CSRC} ${GENERATED_HSRC}
-	${RM} -f answers.txt j-test.out j-test2.out json-test.log
+	${RM} -f answers.txt j-test.out j-test2.out json-test.log jparse.output
 	${RM} -rf test-iocccsize test_src test_work tags dbg.out
 	${RM} -f dbg_test.c
 	${RM} -rf dyn_test.dSYM
