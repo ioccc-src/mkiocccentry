@@ -475,14 +475,14 @@ use_bison_backup() {
     cp -f -v "$BISON_BACKUP_C" "$BISON_C"
     status="$?"
     if [[ $status -ne 0 ]]; then
-	ech0 "$0: ERROR: failed to copy $BISON_BACKUP_C to $BISON_C exit code: $status" 1>&2
+	echo "$0: ERROR: failed to copy $BISON_BACKUP_C to $BISON_C exit code: $status" 1>&2
 	exit 5
     fi
     echo "cp -f -v $BISON_BACKUP_H $BISON_H"
     cp -f -v "$BISON_BACKUP_H" "$BISON_H"
     status="$?"
     if [[ $status -ne 0 ]]; then
-	ech0 "$0: ERROR: failed to copy $BISON_BACKUP_H to $BISON_H exit code: $status" 1>&2
+	echo "$0: ERROR: failed to copy $BISON_BACKUP_H to $BISON_H exit code: $status" 1>&2
 	exit 5
     fi
 
