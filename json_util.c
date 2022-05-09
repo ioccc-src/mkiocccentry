@@ -894,7 +894,7 @@ json_dbg(int level, char const *name, char const *fmt, ...)
  *
  * Example:
  *
- *	json_vdbg(1, "jparse", __func__, "foobar information: %d", ap);
+ *	json_vdbg(1, __func__, "foobar information: %d", ap);
  *
  * NOTE: We warn with extra newlines to help internal fault messages stand out.
  *	 Normally one should NOT include newlines in warn messages.
