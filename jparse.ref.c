@@ -2851,6 +2851,10 @@ parse_json_file(char const *filename)
     free(data);
     data = NULL;
 
+    /*
+     * we cannot use clearerr_or_fclose() here as it's possible that ugly_in
+     * will be NULL and so we do it manually instead.
+     */
     if (is_stdin)
 	clearerr(stdin);
     else if (ugly_in != NULL) {
