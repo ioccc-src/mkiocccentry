@@ -38,6 +38,11 @@ static int cmp_codes(const void *a, const void *b);
 static void expand_json_code_ignore_set(void);
 static struct ignore_json_code *ignore_json_code_set;
 
+/*
+ * globals
+ */
+
+int json_verbosity_level = JSON_DBG_NONE;	/* json debug level set by -J in jparse */
 
 /*
  * JSON warn (NOT error) codes to ignore
@@ -926,7 +931,7 @@ json_vdbg(int level, char const *name, char const *fmt, va_list ap)
      * print the debug message if allowed and allowed by the verbosity level
      */
     if (dbg_output_allowed) {
-	if (level <= verbosity_level) {
+	if (level <= json_verbosity_level) {
 	    errno = 0;
 	    ret = fprintf(stderr, "JSON DEBUG[%d]: ", level);
 	    if (ret < 0) {

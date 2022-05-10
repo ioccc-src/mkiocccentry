@@ -25,7 +25,13 @@
  * dbg - debug, warning and error reporting facility
  */
 #include "dbg.h"
-
+/*
+ * JSON debug levels
+ */
+#define JSON_DBG_NONE	(DBG_NONE)	/* no JSON debugging information outside of the parser */
+#define JSON_DBG_LOW	(DBG_LOW)	/* minimal JSON debugging information outside of parser */
+#define JSON_DBG_MED	(DBG_MED)	/* somewhat more JSON debugging information outside of parser */
+#define JSON_DBG_LEVEL	(JSON_DBG_LOW)	/* default JSON debugging level json_verbosity_level */
 
 /*
  * JSON warn / error codes

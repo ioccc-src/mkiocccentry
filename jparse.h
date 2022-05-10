@@ -80,16 +80,18 @@
  * Use the usage() function to print the usage_msg([0-9]?)+ strings.
  */
 static const char * const usage_msg =
-    "usage: %s [-h] [-v level] [-q] [-V] [-s string] [file ...]\n"
+    "usage: %s [-h] [-v level] [-J level] [-q] [-V] [-s string] [file ...]\n"
     "\n"
     "\t-h\t\tprint help message and exit 0\n"
     "\t-v level\tset verbosity level (def level: %d)\n"
+    "\t-J level\tset JSON verbosity level (def level: %d)\n"
+    "\t\t\tNOTE: You must specify this option before -s as -s is processed immediately\n"
     "\t-q\t\tquiet mode: silence msg(), warn(), warnp() if -v 0 (def: not quiet)\n"
     "\t-V\t\tprint version string and exit 0\n"
     "\t-n\t\tdo not output newline after decode output\n"
     "\t-s\t\tread arg as a string\n"
     "\n"
-    "\t[file]\t\tread and parse file (def: parse stdin)\n"
+    "\t[file]\t\tread and parse file\n"
     "\t\t\tNOTE: - means read from stdin\n"
     "\n"
     "jparse version: %s\n";

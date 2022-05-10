@@ -206,23 +206,37 @@ main(int argc, char **argv)
     int i;
 
 
-    /* XXX for development purposes we override initial verbosity_level to
-     * DBG_MED which we have the JSON_DBG_LEVEL set to. I'd actually like it to
-     * be DBG_LOW because it means I wouldn't have to see as much information.
-     * The thought I had of making a json debug function is good except it has
-     * the same problem as before: it makes the other tools too chatty. On the
-     * other hand though it might be that we could have a boolean (maybe it's
-     * already there) that if false it does not show this debug function output;
-     * if true (which we'd have in jparse) it would show it. That's probably the
-     * best option but it'll come at a later time. For now we simply override
-     * the initial verbosity_level. We can always do the other at another time.
+    /*
+     * XXX for development purposes we override the initial json_verbosity_level
+     * to JSON_DBG_LEVEL. This is used in json_vdbg() which is called by
+     * json_dbg().
+     *
+     * This variable is used because it means we don't have to see debug
+     * information unrelated to json if we don't want to - and it also prevents
+     * the problem of other tools having this information printed if they don't
+     * want it.
+     *
+     * On the other hand it also prevents other tools from seeing this
+     * information until an option is added to set this level. I chose -J as
+     * this seems like a good choice: with the exception of mkiocccentry no
+     * other tool uses -j or -J and -J is a good letter for JSON specific
+     * options. If mkiocccentry ever will need this option (which I can imagine
+     * might well happen) another letter will have to be decided upon possibly
+     * for all the tools.
+     *
+     * NOTE: This debug information is outside of the parser so until debugging
+     * information in the parser is disabled you'll still see that upon using
+     * jparse.
+     *
+     * NOTE: Because -s string parses the string at the time of seeing it one
+     * must specify -J prior to -s if they want to change the debug level.
      */
-    verbosity_level = DBG_MED;
+    json_verbosity_level = JSON_DBG_LEVEL;
     /*
      * parse args
      */
     program = argv[0];
-    while ((i = getopt(argc, argv, "hv:qVns:")) != -1) {
+    while ((i = getopt(argc, argv, "hv:qVns:J:")) != -1) {
 	switch (i) {
 	case 'h':		/* -h - print help to stderr and exit 0 */
 	    usage(2, "-h help mode", program); /*ooo*/
@@ -233,6 +247,12 @@ main(int argc, char **argv)
 	     * parse verbosity
 	     */
 	    verbosity_level = parse_verbosity(program, optarg);
+	    break;
+	case 'J': /* -J json_verbosity_level */
+	    /*
+	     * parse json verbosity level
+	     */
+	    json_verbosity_level = parse_verbosity(program, optarg);
 	    break;
 	case 'q':
 	    msg_warn_silent = true;
@@ -258,11 +278,11 @@ main(int argc, char **argv)
 	    string_flag_used = true;
 
 	    json_dbg(JSON_DBG_LEVEL, __func__, "Calling parse_json_block(\"%s\"):", optarg);
-	    /* parse arg as a string */
+	    /* parse arg as a block of json input */
 	    parse_json_block(optarg);
 	    break;
 	default:
-	    usage(2, "invalid -flag", program); /*ooo*/
+	    usage(2, "invalid -flag or missing option argument", program); /*ooo*/
 	    not_reached();
 	}
     }
@@ -284,7 +304,7 @@ main(int argc, char **argv)
 	}
 
     } else if (!string_flag_used) {
-	usage(2, "-s string was not used and file specified", program); /*ooo*/
+	usage(2, "-s string was not used and no file specified", program); /*ooo*/
 	not_reached();
     }
 
@@ -676,7 +696,7 @@ usage(int exitcode, char const *str, char const *prog)
      * print the formatted usage stream
      */
     fprintf_usage(DO_NOT_EXIT, stderr, "%s\n", str);
-    fprintf_usage(exitcode, stderr, usage_msg, prog, DBG_DEFAULT, JPARSE_VERSION);
+    fprintf_usage(exitcode, stderr, usage_msg, prog, DBG_DEFAULT, JSON_DBG_LEVEL, JPARSE_VERSION);
     exit(exitcode); /*ooo*/
     not_reached();
 }
