@@ -101,3 +101,6 @@ makefile.local
 
 # temporary files
 *.tmp
+
+# parser logs
+jparse.output

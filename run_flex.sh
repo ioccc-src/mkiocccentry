@@ -450,7 +450,7 @@ use_flex_backup() {
     cp -f -v "$FLEX_BACKUP_C" "$FLEX_C"
     status="$?"
     if [[ $status -ne 0 ]]; then
-	ech0 "$0: ERROR: failed to copy $FLEX_BACKUP_C to $FLEX_C exit code: $status" 1>&2
+	echo "$0: ERROR: failed to copy $FLEX_BACKUP_C to $FLEX_C exit code: $status" 1>&2
 	exit 5
     fi
 

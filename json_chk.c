@@ -222,17 +222,17 @@ find_json_field_in_table(struct json_field *table, char const *name, size_t *loc
 void
 check_json_fields_tables(void)
 {
-    dbg(DBG_MED, "Running sanity checks on common_json_fields table ...");
+    dbg(DBG_VVHIGH, "Running sanity checks on common_json_fields table ...");
     check_common_json_fields_table();
-    dbg(DBG_MED, "... all OK.");
+    dbg(DBG_VVHIGH, "... all OK.");
 
-    dbg(DBG_MED, "Running sanity checks on info_json_fields table ...");
+    dbg(DBG_VVHIGH, "Running sanity checks on info_json_fields table ...");
     check_info_json_fields_table();
-    dbg(DBG_MED, "... all OK.");
+    dbg(DBG_VVHIGH, "... all OK.");
 
-    dbg(DBG_MED, "Running sanity checks on author_json_fields table ...");
+    dbg(DBG_VVHIGH, "Running sanity checks on author_json_fields table ...");
     check_author_json_fields_table();
-    dbg(DBG_MED, "... all OK.");
+    dbg(DBG_VVHIGH, "... all OK.");
 }
 
 
@@ -1310,5 +1310,3 @@ free_json_field(struct json_field *field)
     free(field);
     field = NULL;
 }
-
-

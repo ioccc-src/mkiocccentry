@@ -2,9 +2,9 @@
 .SH NAME
 jparse \- IOCCC JSON parser
 .SH SYNOPSIS
-\fBjparse [\-h] [\-v level] [\-q] [\-V] [\-t] [\-n] [\-s string] file ...
+\fBjparse [\-h] [\-v level] [\-J level] [\-q] [\-V] [\-t] [\-n] [\-s string] file ...
 .SH DESCRIPTION
-\fBjparse\fP will parse a block of JSON text either from a file or a string passed into the command line.
+\fBjparse\fP will parse a block of JSON text either from a file (\fB\-\fP means \fBstdin\fP) or a string passed to the program via the \fB\-s\fP option.
 .PP
 .SH OPTIONS
 .PP
@@ -14,6 +14,10 @@ Show help and exit.
 \fB\-v\fP
 Set verbosity level.
 .PP
+\fB\-J\fP
+Set JSON verbosity level.
+Note that you need to specify this option prior to \fB\-s\fP because \fP\-s\fP is processed immediately.
+.PP
 \fB\-q\fP
 Suppresses some of the output (def: not quiet).
 .PP
@@ -22,7 +26,7 @@ Show version and exit 0.
 .PP
 \fB\-s\fP
 Parse as a string.
-Anything after the last option is to be considered a file.
+Anything after the last option is considered a file.
 .PP
 \fB\-n\fP
 Do not output a newline after the decode function.
@@ -60,12 +64,11 @@ Parse the JSON string \fB{ "test_mode" : false }\fP:
 .RE
 .PP
 .nf
-Parse input from \fBstdin\fP (send \fBEOF\fP, usually ctrl-d or \fB^D\fP, twice, to parse):
+Parse input from \fBstdin\fP (send \fBEOF\fP, usually ctrl-d or \fB^D\fP, to parse):
 .RS
 \fB
  ./jparse -
  []
- ^D
  ^D
 .fi
 .RE

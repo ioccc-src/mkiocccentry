@@ -188,13 +188,14 @@ enum yysymbol_kind_t
   YYSYMBOL_YYACCEPT = 15,                  /* $accept  */
   YYSYMBOL_json = 16,                      /* json  */
   YYSYMBOL_json_value = 17,                /* json_value  */
-  YYSYMBOL_json_number = 18,               /* json_number  */
-  YYSYMBOL_json_object = 19,               /* json_object  */
-  YYSYMBOL_json_members = 20,              /* json_members  */
-  YYSYMBOL_json_member = 21,               /* json_member  */
-  YYSYMBOL_json_array = 22,                /* json_array  */
-  YYSYMBOL_json_elements = 23,             /* json_elements  */
-  YYSYMBOL_json_element = 24               /* json_element  */
+  YYSYMBOL_json_string = 18,               /* json_string  */
+  YYSYMBOL_json_number = 19,               /* json_number  */
+  YYSYMBOL_json_object = 20,               /* json_object  */
+  YYSYMBOL_json_members = 21,              /* json_members  */
+  YYSYMBOL_json_member = 22,               /* json_member  */
+  YYSYMBOL_json_array = 23,                /* json_array  */
+  YYSYMBOL_json_elements = 24,             /* json_elements  */
+  YYSYMBOL_json_element = 25               /* json_element  */
 };
 typedef enum yysymbol_kind_t yysymbol_kind_t;
 
@@ -497,18 +498,18 @@ union yyalloc
 #endif /* !YYCOPY_NEEDED */
 
 /* YYFINAL -- State number of the termination state.  */
-#define YYFINAL  23
+#define YYFINAL  22
 /* YYLAST -- Last index in YYTABLE.  */
-#define YYLAST   38
+#define YYLAST   31
 
 /* YYNTOKENS -- Number of terminals.  */
 #define YYNTOKENS  15
 /* YYNNTS -- Number of nonterminals.  */
-#define YYNNTS  10
+#define YYNNTS  11
 /* YYNRULES -- Number of rules.  */
-#define YYNRULES  21
+#define YYNRULES  22
 /* YYNSTATES -- Number of states.  */
-#define YYNSTATES  32
+#define YYNSTATES  31
 
 /* YYMAXUTOK -- Last valid token kind.  */
 #define YYMAXUTOK   269
@@ -558,9 +559,9 @@ static const yytype_int8 yytranslate[] =
 /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_uint8 yyrline[] =
 {
-       0,   151,   151,   152,   153,   154,   157,   158,   159,   160,
-     161,   162,   163,   166,   169,   172,   173,   176,   179,   182,
-     183,   186
+       0,   151,   151,   152,   155,   156,   157,   158,   159,   160,
+     161,   164,   166,   169,   170,   173,   174,   177,   180,   181,
+     184,   185,   188
 };
 #endif
 
@@ -579,8 +580,9 @@ static const char *const yytname[] =
   "\"end of file\"", "error", "\"invalid token\"", "\"{\"", "\"}\"",
   "\"[\"", "\"]\"", "\",\"", "\":\"", "\"null\"", "\"true\"", "\"false\"",
   "JSON_STRING", "JSON_NUMBER", "JSON_INVALID_TOKEN", "$accept", "json",
-  "json_value", "json_number", "json_object", "json_members",
-  "json_member", "json_array", "json_elements", "json_element", YY_NULLPTR
+  "json_value", "json_string", "json_number", "json_object",
+  "json_members", "json_member", "json_array", "json_elements",
+  "json_element", YY_NULLPTR
 };
 
 static const char *
@@ -604,10 +606,10 @@ yysymbol_name (yysymbol_kind_t yysymbol)
    STATE-NUM.  */
 static const yytype_int8 yypact[] =
 {
-       9,     1,    -2,    -3,    -3,    -3,    -3,    -3,     2,    -3,
-      -3,    -3,    -3,    -3,    -3,     7,    12,    -1,     5,    20,
-      -3,    21,    19,    -3,    20,    -3,     5,    -3,    20,    -3,
-      -3,    -3
+       9,     1,    -2,    -3,    -3,    -3,    -3,    -3,     6,    -3,
+      -3,    -3,    -3,    -3,    -3,    -3,     7,    12,    10,    -3,
+      17,    19,    -3,     9,    -3,    15,    -3,     9,    -3,    -3,
+      -3
 };
 
 /* YYDEFACT[STATE-NUM] -- Default reduction number in state STATE-NUM.
@@ -615,22 +617,24 @@ static const yytype_int8 yypact[] =
    means the default is an error.  */
 static const yytype_int8 yydefact[] =
 {
-       2,     0,     0,    12,    10,    11,     8,    13,     0,    21,
-       9,     6,     7,     3,     4,     0,     0,    15,     0,     0,
-       5,     0,    19,     1,     0,    14,     0,    18,     0,    17,
-      16,    20
+       2,     0,     0,    10,     8,     9,    11,    12,     0,    22,
+       6,     7,     4,     5,     3,    14,     0,     0,    15,    19,
+       0,    20,     1,     0,    13,     0,    18,     0,    17,    16,
+      21
 };
 
 /* YYPGOTO[NTERM-NUM].  */
 static const yytype_int8 yypgoto[] =
 {
-      -3,    -3,    -3,    -3,    -3,     8,    -3,    -3,    10,     0
+      -3,    -3,    -3,    -1,    -3,    -3,     3,    -3,    -3,     4,
+       2
 };
 
 /* YYDEFGOTO[NTERM-NUM].  */
 static const yytype_int8 yydefgoto[] =
 {
-       0,     8,     9,    10,    11,    16,    17,    12,    21,    22
+       0,     8,     9,    10,    11,    12,    17,    18,    13,    20,
+      21
 };
 
 /* YYTABLE[YYPACT[STATE-NUM]] -- What to do in state STATE-NUM.  If
@@ -638,18 +642,18 @@ static const yytype_int8 yydefgoto[] =
    number is the opposite.  If YYTABLE_NINF, syntax error.  */
 static const yytype_int8 yytable[] =
 {
-      13,    18,    23,    19,    20,    14,    26,     3,     4,     5,
-       6,     7,     1,    15,     2,    24,    25,    15,     3,     4,
-       5,     6,     7,    18,    29,    19,    28,    27,     0,     3,
-       4,     5,     6,     7,    30,     0,     0,     0,    31
+      16,     1,    14,     2,    19,    15,    22,     3,     4,     5,
+       6,     7,     1,     6,     2,    23,    24,    25,     3,     4,
+       5,     6,     7,    26,    16,    28,    27,     6,    29,     0,
+       0,    30
 };
 
 static const yytype_int8 yycheck[] =
 {
-       0,     3,     0,     5,     6,     4,     7,     9,    10,    11,
-      12,    13,     3,    12,     5,     8,     4,    12,     9,    10,
-      11,    12,    13,     3,    24,     5,     7,     6,    -1,     9,
-      10,    11,    12,    13,    26,    -1,    -1,    -1,    28
+       1,     3,     0,     5,     6,     4,     0,     9,    10,    11,
+      12,    13,     3,    12,     5,     8,     4,     7,     9,    10,
+      11,    12,    13,     6,    25,    23,     7,    12,    25,    -1,
+      -1,    27
 };
 
 /* YYSTOS[STATE-NUM] -- The symbol kind of the accessing symbol of
@@ -657,25 +661,25 @@ static const yytype_int8 yycheck[] =
 static const yytype_int8 yystos[] =
 {
        0,     3,     5,     9,    10,    11,    12,    13,    16,    17,
-      18,    19,    22,    24,     4,    12,    20,    21,     3,     5,
-       6,    23,    24,     0,     8,     4,     7,     6,     7,    24,
-      20,    23
+      18,    19,    20,    23,    25,     4,    18,    21,    22,     6,
+      24,    25,     0,     8,     4,     7,     6,     7,    25,    21,
+      24
 };
 
 /* YYR1[RULE-NUM] -- Symbol kind of the left-hand side of rule RULE-NUM.  */
 static const yytype_int8 yyr1[] =
 {
-       0,    15,    16,    16,    16,    16,    17,    17,    17,    17,
-      17,    17,    17,    18,    19,    20,    20,    21,    22,    23,
-      23,    24
+       0,    15,    16,    16,    17,    17,    17,    17,    17,    17,
+      17,    18,    19,    20,    20,    21,    21,    22,    23,    23,
+      24,    24,    25
 };
 
 /* YYR2[RULE-NUM] -- Number of symbols on the right-hand side of rule RULE-NUM.  */
 static const yytype_int8 yyr2[] =
 {
-       0,     2,     0,     1,     2,     2,     1,     1,     1,     1,
-       1,     1,     1,     1,     3,     1,     3,     3,     3,     1,
-       3,     1
+       0,     2,     0,     1,     1,     1,     1,     1,     1,     1,
+       1,     1,     1,     3,     2,     1,     3,     3,     3,     2,
+       1,     3,     1
 };
 
 
@@ -1668,44 +1672,56 @@ yyreduce:
     int yychar_backup = yychar;
     switch (yyn)
       {
-  case 8: /* json_value: JSON_STRING  */
+  case 8: /* json_value: "true"  */
 #line 159 "jparse.y"
-                              { yyval = *parse_json_string(ugly_text, &tree); }
-#line 1624 "jparse.tab.c"
-    break;
-
-  case 10: /* json_value: "true"  */
-#line 161 "jparse.y"
                             { yyval = *parse_json_bool(ugly_text, &tree); }
-#line 1630 "jparse.tab.c"
+#line 1628 "jparse.tab.c"
     break;
 
-  case 11: /* json_value: "false"  */
-#line 162 "jparse.y"
+  case 9: /* json_value: "false"  */
+#line 160 "jparse.y"
                              { yyval = *parse_json_bool(ugly_text, &tree); }
-#line 1636 "jparse.tab.c"
+#line 1634 "jparse.tab.c"
     break;
 
-  case 12: /* json_value: "null"  */
-#line 163 "jparse.y"
+  case 10: /* json_value: "null"  */
+#line 161 "jparse.y"
                             { yyval = *parse_json_null(ugly_text, &tree); }
-#line 1642 "jparse.tab.c"
+#line 1640 "jparse.tab.c"
     break;
 
-  case 13: /* json_number: JSON_NUMBER  */
+  case 11: /* json_string: JSON_STRING  */
+#line 164 "jparse.y"
+                            { yyval = *parse_json_string(ugly_text, &tree); }
+#line 1646 "jparse.tab.c"
+    break;
+
+  case 12: /* json_number: JSON_NUMBER  */
 #line 166 "jparse.y"
                             { yyval = *parse_json_number(ugly_text, &tree); }
-#line 1648 "jparse.tab.c"
+#line 1652 "jparse.tab.c"
     break;
 
-  case 17: /* json_member: JSON_STRING ":" json_element  */
-#line 176 "jparse.y"
-                                                    { yyval = *json_conv_member(&yyvsp[-2], &yyvsp[0]); }
-#line 1654 "jparse.tab.c"
-    break;
-
-
+  case 14: /* json_object: "{" "}"  */
+#line 170 "jparse.y"
+                                                   { yyval = *json_create_object(); }
 #line 1658 "jparse.tab.c"
+    break;
+
+  case 17: /* json_member: json_string ":" json_element  */
+#line 177 "jparse.y"
+                                                    { yyval = *parse_json_member(&yyvsp[-2], &yyvsp[0], &tree); }
+#line 1664 "jparse.tab.c"
+    break;
+
+  case 19: /* json_array: "[" "]"  */
+#line 181 "jparse.y"
+                                                       { yyval = *json_create_array(); }
+#line 1670 "jparse.tab.c"
+    break;
+
+
+#line 1674 "jparse.tab.c"
 
         default: break;
       }
@@ -1940,7 +1956,7 @@ yyreturnlab:
   return yyresult;
 }
 
-#line 189 "jparse.y"
+#line 192 "jparse.y"
 
 /* Section 3: C code */
 
@@ -1959,10 +1975,36 @@ main(int argc, char **argv)
 
 
     /*
+     * XXX for development purposes we override the initial json_verbosity_level
+     * to JSON_DBG_LEVEL. This is used in json_vdbg() which is called by
+     * json_dbg().
+     *
+     * This variable is used because it means we don't have to see debug
+     * information unrelated to json if we don't want to - and it also prevents
+     * the problem of other tools having this information printed if they don't
+     * want it.
+     *
+     * On the other hand it also prevents other tools from seeing this
+     * information until an option is added to set this level. I chose -J as
+     * this seems like a good choice: with the exception of mkiocccentry no
+     * other tool uses -j or -J and -J is a good letter for JSON specific
+     * options. If mkiocccentry ever will need this option (which I can imagine
+     * might well happen) another letter will have to be decided upon possibly
+     * for all the tools.
+     *
+     * NOTE: This debug information is outside of the parser so until debugging
+     * information in the parser is disabled you'll still see that upon using
+     * jparse.
+     *
+     * NOTE: Because -s string parses the string at the time of seeing it one
+     * must specify -J prior to -s if they want to change the debug level.
+     */
+    json_verbosity_level = JSON_DBG_LEVEL;
+    /*
      * parse args
      */
     program = argv[0];
-    while ((i = getopt(argc, argv, "hv:qVns:")) != -1) {
+    while ((i = getopt(argc, argv, "hv:qVns:J:")) != -1) {
 	switch (i) {
 	case 'h':		/* -h - print help to stderr and exit 0 */
 	    usage(2, "-h help mode", program); /*ooo*/
@@ -1974,8 +2016,15 @@ main(int argc, char **argv)
 	     */
 	    verbosity_level = parse_verbosity(program, optarg);
 	    break;
+	case 'J': /* -J json_verbosity_level */
+	    /*
+	     * parse json verbosity level
+	     */
+	    json_verbosity_level = parse_verbosity(program, optarg);
+	    break;
 	case 'q':
 	    msg_warn_silent = true;
+	    ugly_debug = 0;
 	    break;
 	case 'V':		/* -V - print version and exit */
 	    errno = 0;		/* pre-clear errno for warnp() */
@@ -1996,12 +2045,12 @@ main(int argc, char **argv)
 	     */
 	    string_flag_used = true;
 
-	    dbg(DBG_NONE, "Calling parse_json_block(\"%s\"):", optarg);
-	    /* parse arg as a string */
+	    json_dbg(JSON_DBG_LEVEL, __func__, "Calling parse_json_block(\"%s\"):", optarg);
+	    /* parse arg as a block of json input */
 	    parse_json_block(optarg);
 	    break;
 	default:
-	    usage(2, "invalid -flag", program); /*ooo*/
+	    usage(2, "invalid -flag or missing option argument", program); /*ooo*/
 	    not_reached();
 	}
     }
@@ -2018,12 +2067,12 @@ main(int argc, char **argv)
 	 * process each argument in order
 	 */
 	for (i=optind; i < argc; ++i) {
-	    dbg(DBG_NONE, "Calling parse_json_file(\"%s\"):", argv[i]);
+	    json_dbg(JSON_DBG_LEVEL, __func__, "Calling parse_json_file(\"%s\"):", argv[i]);
 	    parse_json_file(argv[i]);
 	}
 
     } else if (!string_flag_used) {
-	usage(2, "-s string was not used and file specified", program); /*ooo*/
+	usage(2, "-s string was not used and no file specified", program); /*ooo*/
 	not_reached();
     }
 
@@ -2065,7 +2114,8 @@ ugly_error(char const *format, ...)
 }
 
 /*
- * XXX these parse_json_() functions don't yet link the structs into the tree.
+ * XXX - the parse_json_() functions don't yet link the structs into the tree - XXX
+ * XXX - the parameters might or might not have to change - XXX
  */
 
 
@@ -2076,24 +2126,17 @@ ugly_error(char const *format, ...)
  *	string	    - the text that triggered the action
  *	ast	    - the tree to link the struct json * into if not NULL
  *
- * Returns a pointer to a struct json unless conversion failed. In that case it
- * returns a NULL pointer.
+ * Returns a pointer to a struct json.
  *
  * NOTE: This function does not return if passed a NULL pointer.
  *
- * XXX This function is not finished. All it does now is return a struct json *
- * which is actually NULL. It might be that the function will take different
- * parameters as well and the names of the parameters and the function are also
- * subject to change.
- *
- * XXX - this function does not belong in this file - XXX
- *
- * XXX - should the function return on conversion error ? - XXX
+ * XXX - should this function return if conversion failed ? - XXX
  */
 struct json *
 parse_json_string(char const *string, struct json *ast)
 {
     struct json *str = NULL;
+    struct json_string *item = NULL;
 
     /*
      * firewall
@@ -2103,24 +2146,29 @@ parse_json_string(char const *string, struct json *ast)
 	not_reached();
     }
 
-    dbg(JSON_DBG_LEVEL, "%s: about to parse string: <%s>", __func__, string);
+    json_dbg(JSON_DBG_LEVEL, __func__, "about to parse string: <%s>", string);
     /*
      * we say that quote == true because the pattern in the lexer will include
      * the '"'s.
      */
     str = json_conv_string_str(string, NULL, true);
+    /* paranoia - these tests should never result in an error */
     if (str == NULL) {
-	err(36, __func__, "converting JSON string returned NULL: <%s>", string);
-	not_reached();
+        err(36, __func__, "converting JSON string returned NULL: <%s>", string);
+        not_reached();
+    } else if (str->type != JTYPE_STRING) {
+        err(37, __func__, "expected JTYPE_STRING, found type: %s", json_element_type_name(str->type));
+        not_reached();
     }
-
-    if (!str->element.string.converted) {
+    item = &(str->element.string);
+    if (!item->converted) {
+	/* XXX should this be a fatal error ? */
 	warn(__func__, "couldn't decode string: <%s>", string);
     } else {
-	dbg(JSON_DBG_LEVEL, "%s: decoded string: <%s>", __func__, str->element.string.str);
+        json_dbg(JSON_DBG_LEVEL, __func__, "decoded string: <%s>", item->str);
     }
 
-    /* XXX - decide what tests should be done on the returned string - XXX */
+    /* XXX Are there any other checks that have to be done ? */
 
     /* TODO add to parse tree */
 
@@ -2139,47 +2187,47 @@ parse_json_string(char const *string, struct json *ast)
  *
  * NOTE: This function does not return if passed a NULL pointer.
  *
- * XXX This function is not finished. All it does now is return a struct json *
- * which is actually NULL. It might be that the function will take different
- * parameters as well and the names of the parameters and the function are also
- * subject to change.
- *
- * XXX - this function does not belong in this file - XXX
+ * XXX - should this function return if conversion failed ? - XXX
  */
 struct json *
 parse_json_bool(char const *string, struct json *ast)
 {
     struct json *boolean = NULL;
+    struct json_boolean *item = NULL;
 
     /*
      * firewall
      */
     if (string == NULL || ast == NULL) {
-	err(37, __func__, "passed NULL string and/or ast");
+	err(38, __func__, "passed NULL string and/or ast");
 	not_reached();
     }
 
     boolean = json_conv_bool_str(string, NULL);
+    /* paranoia - these tests should never result in an error */
     if (boolean == NULL) {
-	err(38, __func__, "converting JSON bool returned NULL: <%s>", string);
+	err(39, __func__, "converting JSON bool returned NULL: <%s>", string);
 	not_reached();
+    } else if (boolean->type != JTYPE_BOOL) {
+        err(40, __func__, "expected JTYPE_BOOL, found type: %s", json_element_type_name(boolean->type));
+        not_reached();
     }
-
-    /*
-     * XXX json_conv_bool_str() calls json_conv_bool() which will warn if the
-     * boolean is neither true nor false. We know that this function should never
-     * be called on anything but the strings "true" or "false" and since the
-     * function will abort if NULL is returned we should check if
-     * boolean->converted == true.
-     *
-     * If it's not we will abort as there's a serious mismatch between the
-     * scanner and the parser.
-     */
-    if (!boolean->element.boolean.converted) {
-	err(39, __func__, "called on non-boolean string: <%s>", string);
+    item = &(boolean->element.boolean);
+    if (!item->converted) {
+	/*
+	 * XXX json_conv_bool_str() calls json_conv_bool() which will warn if the
+	 * boolean is neither true nor false. We know that this function should never
+	 * be called on anything but the strings "true" or "false" and since the
+	 * function will abort if NULL is returned we should check if
+	 * boolean->converted == true.
+	 *
+	 * If it's not we will abort as there's a serious mismatch between the
+	 * scanner and the parser.
+	 */
+	err(41, __func__, "called on non-boolean string: <%s>", string);
 	not_reached();
     } else {
-	dbg(JSON_DBG_LEVEL, "%s: <%s> -> %s", __func__, string, bool_to_string(boolean->element.boolean.value));
+	json_dbg(JSON_DBG_LEVEL, __func__, "<%s> -> %s", string, bool_to_string(item->value));
     }
 
     /* TODO add to parse tree */
@@ -2199,23 +2247,19 @@ parse_json_bool(char const *string, struct json *ast)
  *
  * NOTE: This function does not return if passed a NULL pointer.
  *
- * XXX This function is not finished. All it does now is return a struct json *
- * which is actually NULL. It might be that the function will take different
- * parameters as well and the names of the parameters and the function are also
- * subject to change.
- *
- * XXX - this function does not belong in this file - XXX
+ * XXX - should this function return if conversion failed ? - XXX
  */
 struct json *
 parse_json_null(char const *string, struct json *ast)
 {
     struct json *null = NULL;
+    struct json_null *item = NULL;
 
     /*
      * firewall
      */
     if (string == NULL || ast == NULL) {
-	err(40, __func__, "passed NULL string and/or ast");
+	err(42, __func__, "passed NULL string and/or ast");
 	not_reached();
     }
 
@@ -2225,14 +2269,18 @@ parse_json_null(char const *string, struct json *ast)
      * null should not be NULL :-)
      */
     if (null == NULL) {
-	err(41, __func__, "null ironically should not be NULL but it is :-)");
+	err(43, __func__, "null ironically should not be NULL but it is :-)");
 	not_reached();
+    } else if (null->type != JTYPE_NULL) {
+        err(44, __func__, "expected JTYPE_NULL, found type: %s", json_element_type_name(null->type));
+        not_reached();
     }
-    if (!null->element.null.converted) {
-	err(42, __func__, "unable to convert null: <%s>", string);
-	not_reached();
+    item = &(null->element.null);
+    if (!item->converted) {
+	/* XXX should this be a fatal error ? */
+	warn(__func__, "couldn't convert null: <%s>", string);
     } else {
-	dbg(JSON_DBG_LEVEL, "%s: converted null", __func__);
+        json_dbg(JSON_DBG_LEVEL, __func__, "convert null: <%s> -> null", string);
     }
 
 
@@ -2255,34 +2303,38 @@ parse_json_null(char const *string, struct json *ast)
  *
  * NOTE: This function does not return if passed a NULL pointer.
  *
- * XXX This function is not finished. All it does now is return a struct json *
- * which is actually NULL. It might be that the function will take different
- * parameters as well and the names of the parameters and the function are also
- * subject to change.
- *
- * XXX - this function does not belong in this file - XXX
- *
  * XXX - should the function return on conversion error ? - XXX
  */
 struct json *
 parse_json_number(char const *string, struct json *ast)
 {
     struct json *number = NULL;
+    struct json_number *item = NULL;
 
     /*
      * firewall
      */
     if (string == NULL || ast == NULL) {
-	err(43, __func__, "passed NULL string and/or ast");
+	err(45, __func__, "passed NULL string and/or ast");
 	not_reached();
     }
     number = json_conv_number_str(string, NULL);
+    /* paranoia - these tests should never result in an error */
     if (number == NULL) {
-	err(44, __func__, "converting JSON number returned NULL: <%s>", string);
-	not_reached();
+	err(46, __func__, "converting JSON number returned NULL: <%s>", string);
+        not_reached();
+    } else if (number->type != JTYPE_NUMBER) {
+        err(47, __func__, "expected JTYPE_NUMBER, found type: %s", json_element_type_name(number->type));
+        not_reached();
+    }
+    item = &(number->element.number);
+    if (!item->converted) {
+	/* XXX should this be a fatal error ? */
+	warn(__func__, "couldn't convert number string: <%s>", string);
+    } else {
+        json_dbg(JSON_DBG_LEVEL, __func__, "convert number string: <%s>", item->as_str);
     }
 
-    /* XXX - decide what tests should be done on the returned number - XXX */
     return number;
 }
 
@@ -2302,11 +2354,7 @@ parse_json_number(char const *string, struct json *ast)
  * XXX This function is not finished. All it does now is return a struct json *
  * (which will include a dynamic array) but which right now is actually NULL. It
  * might be that the function will take different parameters as well and the
- * names of the parameters and the function are also subject to change. This
- * function will probably rely on parse_json_string() and one or more of the
- * other functions (depending on the value or in the JSON spec term 'element').
- *
- * XXX - this function does not belong in this file - XXX
+ * names of the parameters and the function are also subject to change.
  *
  * XXX - should the function return on conversion error ? - XXX
  */
@@ -2319,7 +2367,7 @@ parse_json_array(char const *string, struct json *ast)
      * firewall
      */
     if (string == NULL || ast == NULL) {
-	err(45, __func__, "passed NULL string and/or ast");
+	err(48, __func__, "passed NULL string and/or ast");
 	not_reached();
     }
 
@@ -2333,7 +2381,8 @@ parse_json_array(char const *string, struct json *ast)
  *
  * given:
  *
- *	string	    - the text that triggered the action
+ *	name	    - the struct json * name of the member
+ *	value	    - the struct json * value of the member
  *	ast	    - the tree to link the struct json * into if not NULL
  *
  * Returns a pointer to a struct json unless conversion failed. In that case it
@@ -2341,31 +2390,39 @@ parse_json_array(char const *string, struct json *ast)
  *
  * NOTE: This function does not return if passed a NULL pointer.
  *
- * XXX This function is not finished. All it does now is return a struct json *
- * which is actually NULL. It might be that the function will take different
- * parameters as well and the names of the parameters and the function are also
- * subject to change. This function will probably rely on parse_json_string()
- * and one or more of the other functions (depending on the value or in the JSON
- * spec term 'element').
- *
- * XXX - this function does not belong in this file - XXX
- *
  * XXX - should the function return on conversion error ? - XXX
  */
 struct json *
-parse_json_member(char const *string, struct json *ast)
+parse_json_member(struct json *name, struct json *value, struct json *ast)
 {
     struct json *member = NULL;
+    struct json_member *item = NULL;
 
     /*
      * firewall
      */
-    if (string == NULL || ast == NULL) {
-	err(46, __func__, "passed NULL string and/or ast");
+    if (name == NULL || value == NULL || ast == NULL) {
+	err(49, __func__, "passed NULL pointer(s)");
 	not_reached();
     }
 
-    /* TODO add conversion of JSON member */
+    member = json_conv_member(name, value);
+    /* paranoia - these tests should never result in an error */
+    if (member == NULL) {
+	err(50, __func__, "converting JSON member returned NULL");
+	not_reached();
+    } else if (member->type != JTYPE_MEMBER) {
+        err(51, __func__, "expected JTYPE_MEMBER, found type: %s", json_element_type_name(member->type));
+        not_reached();
+    }
+    item = &(member->element.member);
+    if (!item->converted) {
+	/* XXX should this be a fatal error ? */
+	warn(__func__, "couldn't convert member");
+    } else {
+        json_dbg(JSON_DBG_LEVEL, __func__, "converted member");
+    }
+
 
     return member;
 }
@@ -2407,7 +2464,7 @@ usage(int exitcode, char const *str, char const *prog)
      * print the formatted usage stream
      */
     fprintf_usage(DO_NOT_EXIT, stderr, "%s\n", str);
-    fprintf_usage(exitcode, stderr, usage_msg, prog, DBG_DEFAULT, JPARSE_VERSION);
+    fprintf_usage(exitcode, stderr, usage_msg, prog, DBG_DEFAULT, JSON_DBG_LEVEL, JPARSE_VERSION);
     exit(exitcode); /*ooo*/
     not_reached();
 }

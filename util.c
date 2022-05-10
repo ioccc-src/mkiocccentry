@@ -64,9 +64,9 @@
 
 
 /*
- * hexval - concert ASCII character to hex value
+ * hexval - convert ASCII character to hex value
  *
- * NOTE: -1 means the ASCII character is not a value hex character
+ * NOTE: -1 means the ASCII character is not a valid hex character
  */
 int const hexval[BYTE_VALUES] = {
     /* \x00 - \x0f */
