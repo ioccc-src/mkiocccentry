@@ -3209,14 +3209,17 @@ json_element_type_name(enum element_type json_type)
 /*
  * json_free - free storage of a JSON parse tree node
  *
+ * This function operates on a single JSON parse tree node.
+ * See json_tree_free() for a function that frees an entire parse tree.
+ *
  * given:
  *	node	pointer to a JSON parser tree node to free
  *
  * NOTE: This function will free the internals of a JSON parser tree node.
  *	 It is up to the caller to free the struct json if needed.
  *
- * NOTE: This function does NOT walk the JSON parser tree, so it will
- *	 ignore links form this node to other JSON parser tree nodes.
+ * NOTE: This function does NOT walk the JSON parse tree, so it will
+ *	 ignore links form this node to other JSON parse tree nodes.
  *
  * NOTE: If the pointer to allocated storage == NULL,
  *	 this function does nothing.
@@ -3242,87 +3245,126 @@ json_free(struct json *node)
 
     case JTYPE_UNSET:	/* JSON element has not been set - must be the value 0 */
 	/* nothing to free */
+
 	/* nothing internal to zeroize */
 	break;
 
     case JTYPE_NUMBER:	/* JSON element is number - see struct json_number */
-	/* free internal storage */
-	if (node->element.number.as_str != NULL) {
-	    free(node->element.number.as_str);
-	    node->element.number.as_str = NULL;
+	{
+	    struct json_number *item = &(node->element.number);
+
+	    /* free internal storage */
+	    if (item->as_str != NULL) {
+		free(item->as_str);
+		item->as_str = NULL;
+	    }
+
+	    /* zeroize internal element storage */
+	    memset(item, 0, sizeof(struct json_number));
+	    item->converted = false;
 	}
-	/* zeroize internal element storage */
-	memset(&(node->element.number), 0, sizeof(struct json_number));
-	node->element.number.converted = false;
 	break;
 
     case JTYPE_STRING:	/* JSON element is a string - see struct json_string */
-	/* free internal storage */
-	if (node->element.string.as_str != NULL) {
-	    free(node->element.string.as_str);
-	    node->element.string.as_str = NULL;
+	{
+	    struct json_string *item = &(node->element.string);
+
+	    /* free internal storage */
+	    if (item->as_str != NULL) {
+		free(item->as_str);
+		item->as_str = NULL;
+	    }
+	    if (item->str != NULL) {
+		free(item->str);
+		item->str = NULL;
+	    }
+
+	    /* zeroize internal element storage */
+	    memset(item, 0, sizeof(struct json_string));
+	    item->converted = false;
 	}
-	if (node->element.string.str != NULL) {
-	    free(node->element.string.str);
-	    node->element.string.str = NULL;
-	}
-	/* zeroize internal element storage */
-	memset(&(node->element.string), 0, sizeof(struct json_string));
-	node->element.number.converted = false;
 	break;
 
     case JTYPE_BOOL:	/* JSON element is a boolean - see struct json_boolean */
-	/* free internal storage */
-	if (node->element.boolean.as_str != NULL) {
-	    free(node->element.boolean.as_str);
-	    node->element.boolean.as_str = NULL;
+	{
+	    struct json_boolean *item = &(node->element.boolean);
+
+	    /* free internal storage */
+	    if (item->as_str != NULL) {
+		free(item->as_str);
+		item->as_str = NULL;
+	    }
+
+	    /* zeroize internal element storage */
+	    memset(item, 0, sizeof(struct json_boolean));
+	    item->converted = false;
 	}
-	/* zeroize internal element storage */
-	memset(&(node->element.boolean), 0, sizeof(struct json_boolean));
-	node->element.number.converted = false;
 	break;
 
     case JTYPE_NULL:	/* JSON element is a null - see struct json_null */
-	/* free internal storage */
-	if (node->element.null.as_str != NULL) {
-	    free(node->element.null.as_str);
-	    node->element.null.as_str = NULL;
+	{
+	    struct json_null *item = &(node->element.null);
+
+	    /* free internal storage */
+	    if (item->as_str != NULL) {
+		free(item->as_str);
+		item->as_str = NULL;
+	    }
+
+	    /* zeroize internal element storage */
+	    memset(item, 0, sizeof(struct json_null));
+	    item->converted = false;
 	}
-	/* zeroize internal element storage */
-	memset(&(node->element.null), 0, sizeof(struct json_null));
 	break;
 
     case JTYPE_MEMBER:	/* JSON element is a member */
-	/* nothing to free */
-	/* zeroize internal element storage */
-	memset(&(node->element.member), 0, sizeof(struct json_member));
-	node->element.number.converted = false;
+	{
+	    struct json_member *item = &(node->element.member);
+
+	    /* free internal storage */
+	    item->name = NULL;
+	    item->value = NULL;
+
+	    /* zeroize internal element storage */
+	    memset(item, 0, sizeof(struct json_member));
+	    item->converted = false;
+	}
 	break;
 
     case JTYPE_OBJECT:	/* JSON element is a { members } */
-	/* free internal storage */
-	if (node->element.object.s != NULL) {
-	    dyn_array_free(node->element.object.s);
-	    node->element.object.s = NULL;
-	    node->element.object.set = NULL;
-	    node->element.object.len = 0;
+	{
+	    struct json_object *item = &(node->element.object);
+
+	    /* free internal storage */
+	    if (item->s != NULL) {
+		dyn_array_free(item->s);
+		item->s = NULL;
+		item->set = NULL;
+		item->len = 0;
+	    }
+
+	    /* zeroize internal element storage */
+	    memset(item, 0, sizeof(struct json_object));
+	    item->converted = false;
 	}
-	/* zeroize internal element storage */
-	memset(&(node->element.object), 0, sizeof(struct json_object));
-	node->element.number.converted = false;
 	break;
 
     case JTYPE_ARRAY:	/* JSON element is a [ elements ] */
-	/* free internal storage */
-	if (node->element.array.s != NULL) {
-	    dyn_array_free(node->element.array.s);
-	    node->element.array.s = NULL;
-	    node->element.array.set = NULL;
-	    node->element.array.len = 0;
+	{
+	    struct json_array *item = &(node->element.array);
+
+	    /* free internal storage */
+	    if (item->s != NULL) {
+		dyn_array_free(item->s);
+		item->s = NULL;
+		item->set = NULL;
+		item->len = 0;
+	    }
+
+	    /* zeroize internal element storage */
+	    memset(item, 0, sizeof(struct json_array));
+	    item->converted = false;
 	}
-	/* zeroize internal element storage */
-	memset(&(node->element.array), 0, sizeof(struct json_array));
-	node->element.number.converted = false;
 	break;
 
     default:
@@ -3336,5 +3378,112 @@ json_free(struct json *node)
      */
     node->type = JTYPE_UNSET;
     node->parent = NULL;
+    return;
+}
+
+
+/*
+ * json_tree_walk - walk a JSON parse tree calling a function on each node
+ *
+ * Walk a JSON parse tree, Depth-first Post-order (LRN) order.  See:
+ *
+ *	https://en.wikipedia.org/wiki/Tree_traversal#Post-order,_LRN
+ *
+ * Example use - free an entire JSON parse tree
+ *
+ *	json_tree_walk(tree, json_free);
+ *
+ * given:
+ *	node	pointer to a JSON parse tree
+ *	func	function to operate on every node under the JSON parse tree
+ *
+ * NOTE: This function warn, but do nothing if an arg is NULL.
+ *
+ * XXX - make use of JSON_MAX_DEPTH and JSON_MAX_DEPTH - XXX
+ */
+void
+json_tree_walk(struct json *node, void (*func)(struct json *))
+{
+    int i;
+
+    /*
+     * firewall
+     */
+    if (node == NULL) {
+	warn(__func__, "node is NULL");
+	return ;
+    }
+    if (func == NULL) {
+	warn(__func__, "func is NULL");
+	return ;
+    }
+
+    /*
+     * walk based on type of node
+     */
+    switch (node->type) {
+
+    case JTYPE_UNSET:	/* JSON element has not been set - must be the value 0 */
+    case JTYPE_NUMBER:	/* JSON element is number - see struct json_number */
+    case JTYPE_STRING:	/* JSON element is a string - see struct json_string */
+    case JTYPE_BOOL:	/* JSON element is a boolean - see struct json_boolean */
+    case JTYPE_NULL:	/* JSON element is a null - see struct json_null */
+
+	/* perform function operation on this terminal parse tree node */
+	func(node);
+	break;
+
+    case JTYPE_MEMBER:	/* JSON element is a member */
+	{
+	    struct json_member *item = &(node->element.member);
+
+	    /* perform function operation on JSON member name (left branch) node */
+	    json_tree_walk(item->name, func);
+
+	    /* perform function operation on JSON member value (right branch) node */
+	    json_tree_walk(item->value, func);
+	}
+
+	/* finally perform function operation this parent node */
+	func(node);
+	break;
+
+    case JTYPE_OBJECT:	/* JSON element is a { members } */
+	{
+	    struct json_object *item = &(node->element.object);
+
+	    /* perform function operation each object member in order */
+	    if (item->set != NULL) {
+		for (i=0; i < item->len; ++i) {
+		    json_tree_walk(item->set[i], func);
+		}
+	    }
+	}
+
+	/* finally perform function operation this parent node */
+	func(node);
+	break;
+
+    case JTYPE_ARRAY:	/* JSON element is a [ elements ] */
+	{
+	    struct json_array *item = &(node->element.array);
+
+	    /* perform function operation each object member in order */
+	    if (item->set != NULL) {
+		for (i=0; i < item->len; ++i) {
+		    json_tree_walk(item->set[i], func);
+		}
+	    }
+	}
+
+	/* finally perform function operation this parent node */
+	func(node);
+	break;
+
+    default:
+	warn(__func__, "node type is unknown: %d", node->type);
+	/* nothing we can free */
+	break;
+    }
     return;
 }

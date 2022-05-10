@@ -56,6 +56,8 @@ extern int json_verbosity_level;	/* print json debug messages <= json_verbosity_
  * JSON parser related definitions and structures
  */
 #define JSON_CHUNK (16)			/* number of pointers to allocate at a time in dynamic array */
+#define JSON_MAX_DEPTH (1000000)	/* parse tree depth beyond JSON_MAX_DEPTH is insane */
+#define JSON_INFINITE_DEPTH (-1)	/* no limit on parse tree depth to walk */
 
 
 /*
@@ -445,8 +447,9 @@ extern struct json *json_create_array(void);
 extern bool json_array_add_value(struct json *obj, struct json *value);
 /* print the type of json element in the struct json */
 extern char const *json_element_type_name(enum element_type json_type);
-/* JSON parse node free storage */
+/* JSON parse tree functions */
 extern void json_free(struct json *node);
+extern void json_tree_walk(struct json *node, void (*func)(struct json *));
 
 
 #endif /* INCLUDE_JSON_H */
