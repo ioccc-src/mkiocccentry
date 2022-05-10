@@ -155,7 +155,7 @@ JSON_COMMA		","
 			     * Not needed but included for now for debugging
 			     * purposes.
 			     */
-			    printf("\nignoring %ju whitespace%s\n", strlen(ugly_text), strlen(ugly_text)==1?"":"s");
+			    printf("\nignoring %ju whitespace%s\n", (uintmax_t)ugly_leng, yyleng==1?"":"s");
 			}
 
 {JSON_STRING}		{
@@ -235,7 +235,7 @@ JSON_COMMA		","
 
 .			{
 			    /* invalid token: any other character */
-			    ugly_error("\ninvalid token: <%c>\n", *ugly_text);
+			    ugly_error("\ninvalid token: %c\n", *ugly_text);
 			    return JSON_INVALID_TOKEN;
 			}
 
