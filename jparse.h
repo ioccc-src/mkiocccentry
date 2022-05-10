@@ -35,7 +35,7 @@
 
 /* NOTE: UGLY_DEBUG MUST be defined prior to #including jparse.tab.h! */
 #define UGLY_DEBUG 1
-
+#define UGLY__BUFFER_STATE YY_BUFFER_STATE /* see comments in jparse.l as to why we do this here */
 
 /*
  * dbg - debug, warning and error reporting facility

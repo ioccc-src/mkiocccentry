@@ -100,7 +100,12 @@
 /* our header file - #includes what we need */
 #include "jparse.h"
 
-YY_BUFFER_STATE bs;
+/*
+ * An exception where the prefix does not change YY to UGLY_ is YY_BUFFER_STATE
+ * but because it IS ugly we have done it for them in jparse.h so that where one
+ * sees UGLY__BUFFER_STATE it's actually YY_BUFFER_STATE.
+ */
+UGLY__BUFFER_STATE bs;
 %}
 
 /*
