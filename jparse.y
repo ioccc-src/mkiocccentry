@@ -142,6 +142,13 @@ int token = 0;
 /*
  * Section 2: Rules
  *
+ * See https://www.json.org/json-en.html for the JSON specification. We have
+ * tried to make the below grammar as close to the JSON specification as
+ * possible for those who are familiar with it but there might be some minor
+ * differences in order or naming. One that we do not have is whitespace but
+ * that's not needed and would actually cause many complications and parsing
+ * errors. There are some others we do not need to include as well.
+ *
  * XXX All the rules should be here but not all those that need actions have
  * actions. We also don't use the tree though we do refer to it in the
  * parse_json_() functions (some of which might have to change). The actions are
@@ -159,11 +166,6 @@ json_value:	  json_object
 		| JSON_TRUE { $$ = *parse_json_bool(ugly_text, &tree); }
 		| JSON_FALSE { $$ = *parse_json_bool(ugly_text, &tree); }
 		| JSON_NULL { $$ = *parse_json_null(ugly_text, &tree); }
-		;
-
-json_string:	JSON_STRING { $$ = *parse_json_string(ugly_text, &tree); }
-
-json_number:	JSON_NUMBER { $$ = *parse_json_number(ugly_text, &tree); }
 		;
 
 json_object:	JSON_OPEN_BRACE json_members JSON_CLOSE_BRACE
@@ -187,6 +189,13 @@ json_elements:	json_element
 
 json_element:	json_value
 		;
+
+json_string:	JSON_STRING { $$ = *parse_json_string(ugly_text, &tree); }
+
+json_number:	JSON_NUMBER { $$ = *parse_json_number(ugly_text, &tree); }
+		;
+
+
 
 
 %%
