@@ -1553,7 +1553,7 @@ alloc_txz_file(char const *path)
     }
 
     errno = 0;
-    file->basename = strdup(base_name(path)?base_name(path):"");
+    file->basename = base_name(path);
     if (!file->basename || !strlen(file->basename)) {
 	errp(41, __func__, "%s: unable to strdup basename of filename %s", txzpath, path);
 	not_reached();
