@@ -3397,7 +3397,7 @@ json_free(struct json *node)
  *	node	pointer to a JSON parse tree
  *	func	function to operate on every node under the JSON parse tree
  *
- * NOTE: This function warn, but do nothing if an arg is NULL.
+ * NOTE: This function warns but does not do anything if an arg is NULL.
  *
  * XXX - make use of JSON_MAX_DEPTH and JSON_MAX_DEPTH - XXX
  */
@@ -3444,7 +3444,7 @@ json_tree_walk(struct json *node, void (*func)(struct json *))
 	    json_tree_walk(item->value, func);
 	}
 
-	/* finally perform function operation this parent node */
+	/* finally perform function operation on the parent node */
 	func(node);
 	break;
 
@@ -3452,7 +3452,7 @@ json_tree_walk(struct json *node, void (*func)(struct json *))
 	{
 	    struct json_object *item = &(node->element.object);
 
-	    /* perform function operation each object member in order */
+	    /* perform function operation on each object member in order */
 	    if (item->set != NULL) {
 		for (i=0; i < item->len; ++i) {
 		    json_tree_walk(item->set[i], func);
@@ -3460,7 +3460,7 @@ json_tree_walk(struct json *node, void (*func)(struct json *))
 	    }
 	}
 
-	/* finally perform function operation this parent node */
+	/* finally perform function operation on the parent node */
 	func(node);
 	break;
 
@@ -3468,7 +3468,7 @@ json_tree_walk(struct json *node, void (*func)(struct json *))
 	{
 	    struct json_array *item = &(node->element.array);
 
-	    /* perform function operation each object member in order */
+	    /* perform function operation on each object member in order */
 	    if (item->set != NULL) {
 		for (i=0; i < item->len; ++i) {
 		    json_tree_walk(item->set[i], func);
@@ -3476,13 +3476,13 @@ json_tree_walk(struct json *node, void (*func)(struct json *))
 	    }
 	}
 
-	/* finally perform function operation this parent node */
+	/* finally perform function operation on the parent node */
 	func(node);
 	break;
 
     default:
 	warn(__func__, "node type is unknown: %d", node->type);
-	/* nothing we can free */
+	/* nothing we can traverse */
 	break;
     }
     return;
