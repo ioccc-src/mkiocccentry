@@ -88,11 +88,11 @@ If you have an issue with the tool you can open an issue at \fI\<https://github.
 .SH EXAMPLES
 .PP
 .nf
-Run the program on the filename \fIentry.test.0.1644094311.txz\fP:
+Run the program on the filename \fIentry.test.0.1650779341.txz\fP:
 
 .RS
 \fB
- ./fnamchk entry.test-0.1644094311.txz\fP
+ ./fnamchk entry.test-0.1650779341.txz\fP
 .fi
 .RE
 .PP
@@ -106,41 +106,41 @@ Run the program on the filename \fItest.tar\fP, which will fail:
 .RE
 .PP
 .nf
-Run the program on the filename \fIentry.test.0.1644094311.txz\fP with the option \fI\-u\fP which will fail:
+Run the program on the filename \fIentry.test.0.1650779341.txz\fP with the option \fI\-u\fP which will fail:
 
 .RS
 \fB
- ./fnamchk -u entry.test-0.1644094311.txz\fP
+ ./fnamchk -u entry.test-0.1650779341.txz\fP
 .fi
 .RE
 .PP
 .nf
-Run the program on the filename \fIentry.test.0.1644094311.txz\fP with the option \fI\-t\fP which will pass:
+Run the program on the filename \fIentry.test.0.1650779341.txz\fP with the option \fI\-t\fP which will pass:
 
 .RS
 \fB
- ./fnamchk -t entry.test-0.1644094311.txz\fP
-.fi
-.RE
-.PP
-The above will print "\fBtest\-0\fP".
-.PP
-.nf
-Run the program on the file \fIentry.test.0.1644094311.txt\fP with the option \fI\-t\fP which will pass:
-
-.RS
-\fB
- ./fnamchk -E txt -t entry.test-0.1644094311.txt\fP
+ ./fnamchk -t entry.test-0.1650779341.txz\fP
 .fi
 .RE
 .PP
 The above will print "\fBtest\-0\fP".
 .PP
 .nf
-Run the program on the file \fIentry.test.0.1644094311.txz\fP with the options \fI\-t\fP and \fI\-E txt\fP which will fail:
+Run the program on the file \fIentry.test.0.1650779341.txt\fP with the option \fI\-t\fP which will pass:
 
 .RS
 \fB
- ./fnamchk -E txt -t entry.test-0.1644094311.txz\fP
+ ./fnamchk -E txt -t entry.test-0.1650779341.txt\fP
+.fi
+.RE
+.PP
+The above will print "\fBtest\-0\fP".
+.PP
+.nf
+Run the program on the file \fIentry.test.0.1650779341.txz\fP with the options \fI\-t\fP and \fI\-E txt\fP which will fail:
+
+.RS
+\fB
+ ./fnamchk -E txt -t entry.test-0.1650779341.txz
 .fi
 .RE
