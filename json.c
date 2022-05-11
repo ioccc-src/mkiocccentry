@@ -3394,15 +3394,21 @@ json_free(struct json *node)
  *	json_tree_walk(tree, json_free);
  *
  * given:
- *	node	pointer to a JSON parse tree
- *	func	function to operate on every node under the JSON parse tree
+ *	node	    pointer to a JSON parse tree
+ *	callback    function to operate on every node under the JSON parse tree
  *
  * NOTE: This function warns but does not do anything if an arg is NULL.
+ *
+ * NOTE: Although in C ALL functions are pointers which means one can call foo()
+ *	 as foo() or (*foo)() we use the latter format for the callback function
+ *	 to make it clearer that it is in fact a function that's passed in so
+ *	 that we can use this function to do more than one thing. This is also
+ *	 why we call it callback and not something else.
  *
  * XXX - make use of JSON_MAX_DEPTH and JSON_MAX_DEPTH - XXX
  */
 void
-json_tree_walk(struct json *node, void (*func)(struct json *))
+json_tree_walk(struct json *node, void (*callback)(struct json *))
 {
     int i;
 
@@ -3413,8 +3419,8 @@ json_tree_walk(struct json *node, void (*func)(struct json *))
 	warn(__func__, "node is NULL");
 	return ;
     }
-    if (func == NULL) {
-	warn(__func__, "func is NULL");
+    if (callback == NULL) {
+	warn(__func__, "callback is NULL");
 	return ;
     }
 
@@ -3430,7 +3436,7 @@ json_tree_walk(struct json *node, void (*func)(struct json *))
     case JTYPE_NULL:	/* JSON element is a null - see struct json_null */
 
 	/* perform function operation on this terminal parse tree node */
-	func(node);
+	(*callback)(node);
 	break;
 
     case JTYPE_MEMBER:	/* JSON element is a member */
@@ -3438,14 +3444,14 @@ json_tree_walk(struct json *node, void (*func)(struct json *))
 	    struct json_member *item = &(node->element.member);
 
 	    /* perform function operation on JSON member name (left branch) node */
-	    json_tree_walk(item->name, func);
+	    json_tree_walk(item->name, callback);
 
 	    /* perform function operation on JSON member value (right branch) node */
-	    json_tree_walk(item->value, func);
+	    json_tree_walk(item->value, callback);
 	}
 
 	/* finally perform function operation on the parent node */
-	func(node);
+	(*callback)(node);
 	break;
 
     case JTYPE_OBJECT:	/* JSON element is a { members } */
@@ -3455,13 +3461,13 @@ json_tree_walk(struct json *node, void (*func)(struct json *))
 	    /* perform function operation on each object member in order */
 	    if (item->set != NULL) {
 		for (i=0; i < item->len; ++i) {
-		    json_tree_walk(item->set[i], func);
+		    json_tree_walk(item->set[i], callback);
 		}
 	    }
 	}
 
 	/* finally perform function operation on the parent node */
-	func(node);
+	(*callback)(node);
 	break;
 
     case JTYPE_ARRAY:	/* JSON element is a [ elements ] */
@@ -3471,13 +3477,13 @@ json_tree_walk(struct json *node, void (*func)(struct json *))
 	    /* perform function operation on each object member in order */
 	    if (item->set != NULL) {
 		for (i=0; i < item->len; ++i) {
-		    json_tree_walk(item->set[i], func);
+		    json_tree_walk(item->set[i], callback);
 		}
 	    }
 	}
 
 	/* finally perform function operation on the parent node */
-	func(node);
+	(*callback)(node);
 	break;
 
     default:
