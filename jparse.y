@@ -367,11 +367,13 @@ ugly_error(char const *format, ...)
  *	string	    - the text that triggered the action
  *	ast	    - the tree to link the struct json * into if not NULL
  *
- * Returns a pointer to a struct json.
+ * Returns a pointer to a struct json with the converted string.
  *
- * NOTE: This function does not return if passed a NULL pointer.
+ * NOTE: This function does not return if passed a NULL string.
  *
  * XXX - should this function return if conversion failed ? - XXX
+ *
+ * TODO add to parse tree if != NULL
  */
 struct json *
 parse_json_string(char const *string, struct json *ast)
@@ -382,8 +384,8 @@ parse_json_string(char const *string, struct json *ast)
     /*
      * firewall
      */
-    if (string == NULL || ast == NULL) {
-	err(35, __func__, "passed NULL string and/or ast");
+    if (string == NULL) {
+	err(35, __func__, "passed NULL string");
 	not_reached();
     }
 
@@ -411,7 +413,9 @@ parse_json_string(char const *string, struct json *ast)
 
     /* XXX Are there any other checks that have to be done ? */
 
-    /* TODO add to parse tree */
+    /* TODO add to parse tree if != NULL */
+    if (ast != NULL) {
+    }
 
     return str;
 }
@@ -423,12 +427,10 @@ parse_json_string(char const *string, struct json *ast)
  *	string	    - the text that triggered the action
  *	ast	    - the tree to link the struct json * into if not NULL
  *
- * Returns a pointer to a struct json unless conversion failed. In that case it
- * returns a NULL pointer.
+ * Returns a pointer to a struct json with the converted boolean.
  *
- * NOTE: This function does not return if passed a NULL pointer.
- *
- * XXX - should this function return if conversion failed ? - XXX
+ * NOTE: This function does not return if passed a NULL string or conversion
+ * fails.
  */
 struct json *
 parse_json_bool(char const *string, struct json *ast)
@@ -439,8 +441,8 @@ parse_json_bool(char const *string, struct json *ast)
     /*
      * firewall
      */
-    if (string == NULL || ast == NULL) {
-	err(38, __func__, "passed NULL string and/or ast");
+    if (string == NULL) {
+	err(38, __func__, "passed NULL string");
 	not_reached();
     }
 
@@ -471,7 +473,9 @@ parse_json_bool(char const *string, struct json *ast)
 	json_dbg(JSON_DBG_LEVEL, __func__, "<%s> -> %s", string, bool_to_string(item->value));
     }
 
-    /* TODO add to parse tree */
+    if (ast != NULL) {
+	/* TODO add to parse tree if != NULL */
+    }
 
     return boolean;
 }
@@ -483,10 +487,10 @@ parse_json_bool(char const *string, struct json *ast)
  *	string	    - the text that triggered the action
  *	ast	    - the tree to link the struct json * into if not NULL
  *
- * Returns a pointer to a struct json unless conversion failed. In that case it
- * returns a NULL pointer.
+ * Returns a pointer to a struct json unless conversion fails.
  *
- * NOTE: This function does not return if passed a NULL pointer.
+ * NOTE: This function does not return if passed a NULL string or if null
+ * becomes NULL :-)
  *
  * XXX - should this function return if conversion failed ? - XXX
  */
@@ -499,8 +503,8 @@ parse_json_null(char const *string, struct json *ast)
     /*
      * firewall
      */
-    if (string == NULL || ast == NULL) {
-	err(42, __func__, "passed NULL string and/or ast");
+    if (string == NULL) {
+	err(42, __func__, "passed NULL string");
 	not_reached();
     }
 
@@ -525,7 +529,9 @@ parse_json_null(char const *string, struct json *ast)
     }
 
 
-    /* TODO add to parse tree */
+    if (ast != NULL) {
+	/* TODO add to parse tree if != NULL */
+    }
 
     return null;
 }
@@ -539,10 +545,9 @@ parse_json_null(char const *string, struct json *ast)
  *	string	    - the text that triggered the action
  *	ast	    - the tree to link the struct json * into if not NULL
  *
- * Returns a pointer to a struct json unless conversion failed. In that case it
- * returns a NULL pointer.
+ * Returns a pointer to a struct json.
  *
- * NOTE: This function does not return if passed a NULL pointer.
+ * NOTE: This function does not return if passed a NULL string.
  *
  * XXX - should the function return on conversion error ? - XXX
  */
@@ -555,8 +560,8 @@ parse_json_number(char const *string, struct json *ast)
     /*
      * firewall
      */
-    if (string == NULL || ast == NULL) {
-	err(45, __func__, "passed NULL string and/or ast");
+    if (string == NULL) {
+	err(45, __func__, "passed NULL string");
 	not_reached();
     }
     number = json_conv_number_str(string, NULL);
@@ -576,6 +581,10 @@ parse_json_number(char const *string, struct json *ast)
         json_dbg(JSON_DBG_LEVEL, __func__, "convert number string: <%s>", item->as_str);
     }
 
+    if (ast != NULL) {
+	/* TODO add to parse tree if != NULL */
+    }
+
     return number;
 }
 
@@ -587,10 +596,9 @@ parse_json_number(char const *string, struct json *ast)
  *	string	    - the text that triggered the action
  *	ast	    - the tree to link the struct json * into if not NULL
  *
- * Returns a pointer to a struct json unless conversion failed. In that case it
- * returns a NULL pointer.
+ * Returns a pointer to a struct json.
  *
- * NOTE: This function does not return if passed a NULL pointer.
+ * NOTE: This function does not return if passed a NULL string.
  *
  * XXX This function is not finished. All it does now is return a struct json *
  * (which will include a dynamic array) but which right now is actually NULL. It
@@ -607,13 +615,16 @@ parse_json_array(char const *string, struct json *ast)
     /*
      * firewall
      */
-    if (string == NULL || ast == NULL) {
-	err(48, __func__, "passed NULL string and/or ast");
+    if (string == NULL) {
+	err(48, __func__, "passed NULL string");
 	not_reached();
     }
 
     /* TODO add parsing of array */
 
+    if (ast != NULL) {
+	/* TODO add to parse tree if != NULL */
+    }
     return array;
 }
 
@@ -626,10 +637,9 @@ parse_json_array(char const *string, struct json *ast)
  *	value	    - the struct json * value of the member
  *	ast	    - the tree to link the struct json * into if not NULL
  *
- * Returns a pointer to a struct json unless conversion failed. In that case it
- * returns a NULL pointer.
+ * Returns a pointer to a struct json.
  *
- * NOTE: This function does not return if passed a NULL pointer.
+ * NOTE: This function does not return if passed a NULL name or value.
  *
  * XXX - should the function return on conversion error ? - XXX
  */
@@ -642,8 +652,8 @@ parse_json_member(struct json *name, struct json *value, struct json *ast)
     /*
      * firewall
      */
-    if (name == NULL || value == NULL || ast == NULL) {
-	err(49, __func__, "passed NULL pointer(s)");
+    if (name == NULL || value == NULL) {
+	err(49, __func__, "passed NULL name and/or value");
 	not_reached();
     }
 
@@ -664,6 +674,10 @@ parse_json_member(struct json *name, struct json *value, struct json *ast)
         json_dbg(JSON_DBG_LEVEL, __func__, "converted member");
     }
 
+
+    if (ast != NULL) {
+	/* TODO add to parse tree if != NULL */
+    }
 
     return member;
 }
