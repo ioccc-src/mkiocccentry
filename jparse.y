@@ -473,7 +473,7 @@ parse_json_bool(char const *string, struct json *ast)
 	err(41, __func__, "called on non-boolean string: <%s>", string);
 	not_reached();
     } else {
-	json_dbg(JSON_DBG_LEVEL, __func__, "<%s> -> %s", string, bool_to_string(item->value));
+	json_dbg(JSON_DBG_LEVEL, __func__, "<%s> -> %s", string, t_or_f(item->value));
     }
 
     if (ast != NULL) {
