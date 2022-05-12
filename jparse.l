@@ -13,6 +13,9 @@
  *
  * Before the parser can be complete there are still some other things that have
  * to be done. All of this is a work in progress!
+ *
+ * XXX Once the parser is done test older versions of both flex and bison to see
+ * if they can generate the proper code.
  */
 
 /* Section 1: Declarations and option settings */
