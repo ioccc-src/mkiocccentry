@@ -449,7 +449,7 @@ extern bool json_array_add_value(struct json *obj, struct json *value);
 extern char const *json_element_type_name(enum element_type json_type);
 /* JSON parse tree functions */
 extern void json_free(struct json *node);
+extern void json_tree_free(struct json *node);
 extern void json_tree_walk(struct json *node, void (*callback)(struct json *));
-
 
 #endif /* INCLUDE_JSON_H */

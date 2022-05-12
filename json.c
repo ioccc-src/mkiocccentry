@@ -3383,6 +3383,43 @@ json_free(struct json *node)
 
 
 /*
+ * json_tree_free - free storage of a JSON parse tree
+ *
+ * This function uses the json_tree_walk() interface to walk
+ * the JSON parse tree and free all nodes under a given node.
+ *
+ * given:
+ *	node	pointer to a JSON parser tree node to free
+ *
+ * NOTE: This function will free the internals of a JSON parser tree node.
+ *	 It is up to the caller to free the top level struct json if needed.
+ *
+ * NOTE: If the pointer to allocated storage == NULL,
+ *	 this function does nothing.
+ *
+ * NOTE: This function does nothing if node == NULL.
+ *
+ * NOTE: This function does nothing if the node type is invalid.
+ */
+void
+json_tree_free(struct json *node)
+{
+    /*
+     * firewall - nothing to do for a NULL node
+     */
+    if (node == NULL) {
+	return;
+    }
+
+    /*
+     * free the JSON parse tree
+     */
+    json_tree_walk(node, json_free);
+    return;
+}
+
+
+/*
  * json_tree_walk - walk a JSON parse tree calling a function on each node
  *
  * Walk a JSON parse tree, Depth-first Post-order (LRN) order.  See:
