@@ -261,7 +261,7 @@ BISON_BASENAME = bison
 # Where run_bison.sh will search for bison with a recent enough version
 #
 # The -B arguments specify where to look for bison with a version,
-# that is >= the minimum version (see BISON_VERSION in limit_ioccc.sh),
+# that is >= the minimum version (see MIN_BISON_VERSION in limit_ioccc.sh),
 # before searching for bison on $PATH.
 #
 # NOTE: If is OK if these directories do not exist.
@@ -283,7 +283,7 @@ FLEX_BASENAME= flex
 # Where run_flex.sh will search for flex with a recent enough version
 #
 # The -F arguments specify where to look for flex with a version,
-# that is >= the minimum version (see FLEX_VERSION in limit_ioccc.sh),
+# that is >= the minimum version (see MIN_FLEX_VERSION in limit_ioccc.sh),
 # before searching for bison on $PATH.
 #
 # NOTE: If is OK if these directories do not exist.
