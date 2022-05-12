@@ -138,6 +138,7 @@ struct json_field author_json_fields[] =
 };
 size_t SIZEOF_AUTHOR_JSON_FIELDS_TABLE = TBLLEN(author_json_fields);
 
+struct json_field *found_common_json_fields;
 
 /*
  * global for jwarn(): -w in jinfochk/jauthchk says to show full warning
