@@ -64,7 +64,7 @@ Exit codes:
     4    backup file(s) are missing, or are not readable
     5    failed to use backup file(s) to form the bison C output file(s)
     6    limit_ioccc.sh or sorry file missing/not readable or verge missing/not executable
-    7    BISON_VERSION missing or empty from limit_ioccc.sh
+    7    MIN_BISON_VERSION missing or empty from limit_ioccc.sh
     8    -h and help string printed or -V and version string printed
     9    Command line usage error
     >=10  internal error"
@@ -74,7 +74,7 @@ export V_FLAG="0"
 export BISON_BASENAME="bison"
 export LIMIT_IOCCC_SH="./limit_ioccc.sh"
 export VERGE="./verge"
-export BISON_VERSION=
+export MIN_BISON_VERSION=
 declare -a BISON_DIRS=()
 export SORRY_H="sorry.tm.ca.h"
 export O_FLAG=
@@ -179,8 +179,8 @@ fi
 # warning: ShellCheck can't follow non-constant source. Use a directive to specify location. [SC1090]
 # shellcheck disable=SC1090
 source "$LIMIT_IOCCC_SH" >/dev/null 2>&1
-if [[ -z $BISON_VERSION ]]; then
-    echo "$0: ERROR: BISON_VERSION missing or has an empty value from: $LIMIT_IOCCC_SH" 1>&2
+if [[ -z $MIN_BISON_VERSION ]]; then
+    echo "$0: ERROR: MIN_BISON_VERSION missing or has an empty value from: $LIMIT_IOCCC_SH" 1>&2
     exit 7
 fi
 
@@ -193,7 +193,7 @@ if [[ $V_FLAG -ge 5 ]]; then
     echo "$0: debug[5]: BISON_BASENAME=$BISON_BASENAME" 1>&2
     echo "$0: debug[5]: LIMIT_IOCCC_SH=$LIMIT_IOCCC_SH" 1>&2
     echo "$0: debug[5]: VERGE=$VERGE" 1>&2
-    echo "$0: debug[5]: BISON_VERSION=$BISON_VERSION" 1>&2
+    echo "$0: debug[5]: MIN_BISON_VERSION=$MIN_BISON_VERSION" 1>&2
     echo "$0: debug[5]: SORRY_H=$SORRY_H" 1>&2
     for dir in "${BISON_DIRS[@]}"; do
 	echo "$0: debug[5]: BISON_DIRS=$dir" 1>&2
@@ -580,7 +580,7 @@ for dir in "${BISON_DIRS[@]}"; do
 
     # look for a good bison in dir
     #
-    look_for "$BISON_BASENAME" "$BISON_VERSION" "$dir"
+    look_for "$BISON_BASENAME" "$MIN_BISON_VERSION" "$dir"
     status="$?"
     if [[ $status -eq 0 && -n $PATH_FOUND ]]; then
 	BISON_PATH="$PATH_FOUND"
@@ -594,7 +594,7 @@ done
 # if no bison found so far, look on $PATH
 #
 if [[ -z $BISON_PATH ]]; then
-    on_path "$BISON_BASENAME" "$BISON_VERSION"
+    on_path "$BISON_BASENAME" "$MIN_BISON_VERSION"
     status="$?"
     if [[ $status -eq 0 && -n $PATH_FOUND ]]; then
 	BISON_PATH="$PATH_FOUND"

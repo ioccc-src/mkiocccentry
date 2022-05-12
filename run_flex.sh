@@ -64,7 +64,7 @@ Exit codes:
     4    backup file(s) are missing, or are not readable
     5    failed to use backup file(s) to form the flex C output file(s)
     6    limit_ioccc.sh or sorry file missing/not readable or verge missing/not executable
-    7    FLEX_VERSION missing or empty from limit_ioccc.sh
+    7    MIN_FLEX_VERSION missing or empty from limit_ioccc.sh
     8    -h and help string printed or -V and version string printed
     9    Command line usage error
     >=10  internal error"
@@ -74,7 +74,7 @@ export V_FLAG="0"
 export FLEX_BASENAME="flex"
 export LIMIT_IOCCC_SH="./limit_ioccc.sh"
 export VERGE="./verge"
-export FLEX_VERSION=
+export MIN_FLEX_VERSION=
 declare -a FLEX_DIRS=()
 export SORRY_H="sorry.tm.ca.h"
 
@@ -178,8 +178,8 @@ fi
 # warning: ShellCheck can't follow non-constant source. Use a directive to specify location. [SC1090]
 # shellcheck disable=SC1090
 source "$LIMIT_IOCCC_SH" >/dev/null 2>&1
-if [[ -z $FLEX_VERSION ]]; then
-    echo "$0: ERROR: FLEX_VERSION missing or has an empty value from: $LIMIT_IOCCC_SH" 1>&2
+if [[ -z $MIN_FLEX_VERSION ]]; then
+    echo "$0: ERROR: MIN_FLEX_VERSION missing or has an empty value from: $LIMIT_IOCCC_SH" 1>&2
     exit 7
 fi
 
@@ -192,7 +192,7 @@ if [[ $V_FLAG -ge 5 ]]; then
     echo "$0: debug[5]: FLEX_BASENAME=$FLEX_BASENAME" 1>&2
     echo "$0: debug[5]: LIMIT_IOCCC_SH=$LIMIT_IOCCC_SH" 1>&2
     echo "$0: debug[5]: VERGE=$VERGE" 1>&2
-    echo "$0: debug[5]: FLEX_VERSION=$FLEX_VERSION" 1>&2
+    echo "$0: debug[5]: MIN_FLEX_VERSION=$MIN_FLEX_VERSION" 1>&2
     echo "$0: debug[5]: SORRY_H=$SORRY_H" 1>&2
     for dir in "${FLEX_DIRS[@]}"; do
 	echo "$0: debug[5]: FLEX_DIRS=$dir" 1>&2
@@ -548,7 +548,7 @@ for dir in "${FLEX_DIRS[@]}"; do
 
     # look for a good flex in dir
     #
-    look_for "$FLEX_BASENAME" "$FLEX_VERSION" "$dir"
+    look_for "$FLEX_BASENAME" "$MIN_FLEX_VERSION" "$dir"
     status="$?"
     if [[ $status -eq 0 && -n $PATH_FOUND ]]; then
 	FLEX_PATH="$PATH_FOUND"
@@ -562,7 +562,7 @@ done
 # if no flex found so far, look on $PATH
 #
 if [[ -z $FLEX_PATH ]]; then
-    on_path "$FLEX_BASENAME" "$FLEX_VERSION"
+    on_path "$FLEX_BASENAME" "$MIN_FLEX_VERSION"
     status="$?"
     if [[ $status -eq 0 && -n $PATH_FOUND ]]; then
 	FLEX_PATH="$PATH_FOUND"
