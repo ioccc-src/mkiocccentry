@@ -198,7 +198,7 @@ chk_test(int testnum, struct json_number *item, struct json_number *test, size_t
 	return false;
     }
     if (len != test->number_len) {
-	warn(__func__, "len: %ju != test->number_len: %ju", len, test->number_len);
+	warn(__func__, "len: %ju != test->number_len: %ju", (uintmax_t)len, (uintmax_t)test->number_len);
 	return false;
     }
 
