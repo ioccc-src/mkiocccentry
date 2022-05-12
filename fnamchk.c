@@ -298,6 +298,14 @@ main(int argc, char *argv[])
     }
 
     /*
+     * free filename allocated from base_name()
+     */
+    if (filename != NULL) {
+	free(filename);
+	filename = NULL;
+    }
+
+    /*
      * All Done!!! - Jessica Noll, age 2
      *
      */

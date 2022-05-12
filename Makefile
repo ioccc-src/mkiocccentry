@@ -334,8 +334,8 @@ all: ${TARGETS} ${TEST_TARGETS}
 rule_count.o: rule_count.c Makefile
 	${CC} ${CFLAGS} -DMKIOCCCENTRY_USE rule_count.c -c
 
-sanity.o: sanity.c json_chk.o Makefile
-	${CC} ${CFLAGS} sanity.c json_chk.o -c
+sanity.o: sanity.c Makefile
+	${CC} ${CFLAGS} sanity.c -c
 
 mkiocccentry.o: mkiocccentry.c Makefile
 	${CC} ${CFLAGS} mkiocccentry.c -c
@@ -395,7 +395,7 @@ jinfochk: jinfochk.o rule_count.o json.o json_entry.o dbg.o util.o json_util.o \
 	    dyn_array.o sanity.o json_chk.o location.o utf8_posix_map.o -o $@
 
 jstrencode.o: jstrencode.c jstrencode.h json_util.h json_util.c Makefile
-	${CC} ${CFLAGS} jstrencode.c json_util.o -c
+	${CC} ${CFLAGS} jstrencode.c -c
 
 jstrencode: jstrencode.o dbg.o json.o json_util.o util.o dyn_array.o Makefile
 	${CC} ${CFLAGS} jstrencode.o dbg.o json.o json_util.o util.o dyn_array.o -o $@

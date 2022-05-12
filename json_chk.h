@@ -137,7 +137,7 @@ extern size_t SIZEOF_COMMON_JSON_FIELDS_TABLE;
  * A common json field is a field that is supposed to be in both .info.json and
  * .author.json.
  */
-struct json_field *found_common_json_fields;
+extern struct json_field *found_common_json_fields;
 
 
 /* function prototypes */

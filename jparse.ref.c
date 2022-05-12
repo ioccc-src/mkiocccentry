@@ -881,8 +881,8 @@ int yy_flex_debug = 1;
 
 static const flex_int16_t yy_rule_linenum[14] =
     {   0,
-      156,  166,  173,  180,  187,  193,  200,  206,  213,  220,
-      227,  234,  241
+      159,  169,  176,  183,  190,  196,  203,  209,  216,  223,
+      230,  237,  244
     } ;
 
 /* The intent behind this definition is that it'll catch
@@ -908,6 +908,9 @@ char *yytext;
  *
  * Before the parser can be complete there are still some other things that have
  * to be done. All of this is a work in progress!
+ *
+ * XXX Once the parser is done test older versions of both flex and bison to see
+ * if they can generate the proper code.
  */
 /* Section 1: Declarations and option settings */
 /*
@@ -928,11 +931,11 @@ char *yytext;
  *
  * This means that for some symbols later in the file we use ugly_ instead of
  * yy. For example it's ugly_lval instead of yylval and best of all ugly_parse()
- * for it is an ugly parser. Another one is ugly_error() instead of yyerror().
+ * for it _is_ an ugly parser. Another one is ugly_error() instead of yyerror().
  *
  * A negative consequence here is that because of the prefix being set to
- * ugly_ there's a typedef in the parser that _might suggest_ that _our struct
- * json_ is ugly:
+ * ugly_ there's a typedef in the parser that _might_ suggest _our_ struct json
+ * is ugly:
  *
  *	typedef struct json UGLY_STYPE;
  *
@@ -940,15 +943,15 @@ char *yytext;
  * is so the struct might well have to be ugly because it's for a json parser; a
  * json parser necessarily has to be ugly due to the spec: one could easily be
  * forgiven for wondering if the authors of the json specification were on drugs
- * at the time of writing them.
+ * at the time of writing them!
  *
  * Please note that we're _ABSOLUTELY NOT_ saying that they were and we use the
  * term very loosely as well: we do not want to and we are not accusing anyone
  * of being on drugs (we rather find addiction a real tragedy and anyone with an
- * addition should be treated well and given the help they need) but the fact is
- * that the JSON specification is barmy and those who are in favour of it must
- * surely be in the JSON Barmy Army (otherwise known as the Barmy Army Jointly
- * Staying On Narcotics :-)).
+ * addiction should be treated well and given the help they need) but the fact
+ * is that the JSON specification is barmy and those who are in favour of it
+ * must surely be in the JSON Barmy Army (otherwise known as the Barmy Army
+ * Jointly Staying On Narcotics :-)).
  *
  * Thus as much as we find the specification objectionable we rather feel sorry
  * for those poor lost souls who are indeed in the JSON Barmy Army and we
@@ -980,7 +983,7 @@ char *yytext;
  * generated files or directly looking at sorry.tm.ca.h.
 
  */
-#line 95 "jparse.l"
+#line 98 "jparse.l"
 /* Declarations etc. go here.
  *
  * Code is copied verbatim near the top of the generated code.
@@ -995,7 +998,7 @@ char *yytext;
  * sees UGLY__BUFFER_STATE it's actually YY_BUFFER_STATE.
  */
 UGLY__BUFFER_STATE bs;
-#line 947 "jparse.c"
+#line 950 "jparse.c"
 /*
  * Section 2: Patterns (regular expressions) and actions.
  */
@@ -1022,7 +1025,7 @@ UGLY__BUFFER_STATE bs;
  * TODO: We have to do more than just assigning the token type (by which we mean
  * ugly_lval.type). These things will be done later.
  */
-#line 974 "jparse.c"
+#line 977 "jparse.c"
 
 #define INITIAL 0
 
@@ -1302,9 +1305,9 @@ YY_DECL
 
 	{
 /* %% [7.0] user's declarations go here */
-#line 155 "jparse.l"
+#line 158 "jparse.l"
 
-#line 1256 "jparse.c"
+#line 1259 "jparse.c"
 
 	while ( /*CONSTCOND*/1 )		/* loops until end-of-file is reached */
 		{
@@ -1397,7 +1400,7 @@ do_action:	/* This label is used only to access EOF actions. */
 case 1:
 /* rule 1 can match eol */
 YY_RULE_SETUP
-#line 156 "jparse.l"
+#line 159 "jparse.l"
 {
 			    /*
 			     * Whitespace
@@ -1410,7 +1413,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
-#line 166 "jparse.l"
+#line 169 "jparse.l"
 {
 			    /* string */
 			    printf("\nstring: <%s>\n", ugly_text);
@@ -1420,7 +1423,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 173 "jparse.l"
+#line 176 "jparse.l"
 {
 			    /* number */
 			    printf("\nnumber: <%s>\n", ugly_text);
@@ -1430,7 +1433,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 180 "jparse.l"
+#line 183 "jparse.l"
 {
 			    /* null object */
 			    printf("\nnull: <%s>\n", ugly_text);
@@ -1440,7 +1443,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 187 "jparse.l"
+#line 190 "jparse.l"
 {
 			    /* boolean: true */
 			    printf("\ntrue: <%s>\n", ugly_text);
@@ -1450,7 +1453,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 193 "jparse.l"
+#line 196 "jparse.l"
 {
 			    /* boolean: false */
 			    printf("\nfalse: <%s>\n", ugly_text);
@@ -1460,7 +1463,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 200 "jparse.l"
+#line 203 "jparse.l"
 {
 			    /* start of object */
 			    printf("\nstart of object: <%c>\n", *ugly_text);
@@ -1470,7 +1473,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 206 "jparse.l"
+#line 209 "jparse.l"
 {
 			    /* end of object */
 			    printf("\nend of object: <%c>\n", *ugly_text);
@@ -1480,7 +1483,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 213 "jparse.l"
+#line 216 "jparse.l"
 {
 			    /* start of array */
 			    printf("\nstart of array: <%c>\n", *ugly_text);
@@ -1491,7 +1494,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
-#line 220 "jparse.l"
+#line 223 "jparse.l"
 {
 			    /* end of array */
 			    printf("\nend of array: <%c>\n", *ugly_text);
@@ -1501,7 +1504,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
-#line 227 "jparse.l"
+#line 230 "jparse.l"
 {
 			    /* colon or 'equals' */
 			    printf("\ncolon (or 'equals' ): <%c>\n", *ugly_text);
@@ -1511,7 +1514,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
-#line 234 "jparse.l"
+#line 237 "jparse.l"
 {
 			    /* comma: name/value pair separator */
 			    printf("\ncomma: <%c>\n", *ugly_text);
@@ -1521,7 +1524,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
-#line 241 "jparse.l"
+#line 244 "jparse.l"
 {
 			    /* invalid token: any other character */
 			    ugly_error("\ninvalid token: %c\n", *ugly_text);
@@ -1530,10 +1533,10 @@ YY_RULE_SETUP
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
-#line 247 "jparse.l"
+#line 250 "jparse.l"
 YY_FATAL_ERROR( "flex scanner jammed" );
 	YY_BREAK
-#line 1485 "jparse.c"
+#line 1488 "jparse.c"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 
@@ -2693,7 +2696,7 @@ void yyfree (void * ptr )
 
 /* %ok-for-header */
 
-#line 247 "jparse.l"
+#line 250 "jparse.l"
 
 
 /* Section 3: Code that's copied to the generated scanner */

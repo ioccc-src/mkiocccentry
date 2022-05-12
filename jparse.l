@@ -13,6 +13,9 @@
  *
  * Before the parser can be complete there are still some other things that have
  * to be done. All of this is a work in progress!
+ *
+ * XXX Once the parser is done test older versions of both flex and bison to see
+ * if they can generate the proper code.
  */
 
 /* Section 1: Declarations and option settings */
@@ -37,11 +40,11 @@
  *
  * This means that for some symbols later in the file we use ugly_ instead of
  * yy. For example it's ugly_lval instead of yylval and best of all ugly_parse()
- * for it is an ugly parser. Another one is ugly_error() instead of yyerror().
+ * for it _is_ an ugly parser. Another one is ugly_error() instead of yyerror().
  *
  * A negative consequence here is that because of the prefix being set to
- * ugly_ there's a typedef in the parser that _might suggest_ that _our struct
- * json_ is ugly:
+ * ugly_ there's a typedef in the parser that _might_ suggest _our_ struct json
+ * is ugly:
  *
  *	typedef struct json UGLY_STYPE;
  *
@@ -49,15 +52,15 @@
  * is so the struct might well have to be ugly because it's for a json parser; a
  * json parser necessarily has to be ugly due to the spec: one could easily be
  * forgiven for wondering if the authors of the json specification were on drugs
- * at the time of writing them.
+ * at the time of writing them!
  *
  * Please note that we're _ABSOLUTELY NOT_ saying that they were and we use the
  * term very loosely as well: we do not want to and we are not accusing anyone
  * of being on drugs (we rather find addiction a real tragedy and anyone with an
- * addition should be treated well and given the help they need) but the fact is
- * that the JSON specification is barmy and those who are in favour of it must
- * surely be in the JSON Barmy Army (otherwise known as the Barmy Army Jointly
- * Staying On Narcotics :-)).
+ * addiction should be treated well and given the help they need) but the fact
+ * is that the JSON specification is barmy and those who are in favour of it
+ * must surely be in the JSON Barmy Army (otherwise known as the Barmy Army
+ * Jointly Staying On Narcotics :-)).
  *
  * Thus as much as we find the specification objectionable we rather feel sorry
  * for those poor lost souls who are indeed in the JSON Barmy Army and we
