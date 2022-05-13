@@ -3074,7 +3074,7 @@ json_create_array(void)
  *      { }
  *      { members }
  *
- * The pointer to the i-th JSON member in the JSON arrayy, if i < len, is:
+ * The pointer to the i-th JSON member in the JSON array, if i < len, is:
  *
  *      foo.set[i-1]
  *
