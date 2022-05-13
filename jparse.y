@@ -158,7 +158,7 @@ int token = 0;
  * very much subject to change!
  */
 %%
-json:		    /* empty */	|
+json:		    /* empty */		|
 		    json_element
 		    ;
 
