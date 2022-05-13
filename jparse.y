@@ -472,7 +472,38 @@ parse_json_bool(char const *string, struct json *ast)
 	 */
 	err(41, __func__, "called on non-boolean string: <%s>", string);
 	not_reached();
+    } else if (item->as_str == NULL) {
+	/* extra sanity check - make sure the allocated string != NULL */
+	err(42, __func__, "boolean->as_str == NULL");
+	not_reached();
+    } else if (strcmp(item->as_str, "true") && strcmp(item->as_str, "false")) {
+	/*
+	 * extra sanity check - make sure the allocated string is either "true"
+	 * or "false"
+	 */
+	err(43, __func__, "boolean->as_str neither \"true\" nor \"false\"");
+	not_reached();
     } else {
+	/*
+	 * extra sanity checks - convert back and forth as string to bool and
+	 * bool to string and make sure everything matches.
+	 */
+	char const *str = booltostr(item->value);
+	bool tmp = false;
+	if (str == NULL) {
+	    err(44, __func__, "could not convert boolean->value back to a string");
+	    not_reached();
+	} else if (strcmp(str, item->as_str)) {
+	    err(45, __func__, "boolean->as_str != item->value as a string");
+	    not_reached();
+	} else if ((tmp = strtobool(item->as_str)) != item->value) {
+	    err(46, __func__, "mismatch between boolean string and converted value");
+	    not_reached();
+	} else if ((tmp = strtobool(str)) != item->value) {
+	    err(47, __func__, "mismatch between converted string value and converted value");
+	    not_reached();
+	}
+	/* only if we get here do we assume everything is okay */
 	json_dbg(JSON_DBG_LEVEL, __func__, "<%s> -> %s", string, booltostr(item->value));
     }
 
@@ -507,7 +538,7 @@ parse_json_null(char const *string, struct json *ast)
      * firewall
      */
     if (string == NULL) {
-	err(42, __func__, "passed NULL string");
+	err(48, __func__, "passed NULL string");
 	not_reached();
     }
 
@@ -517,10 +548,10 @@ parse_json_null(char const *string, struct json *ast)
      * null should not be NULL :-)
      */
     if (null == NULL) {
-	err(43, __func__, "null ironically should not be NULL but it is :-)");
+	err(49, __func__, "null ironically should not be NULL but it is :-)");
 	not_reached();
     } else if (null->type != JTYPE_NULL) {
-        err(44, __func__, "expected JTYPE_NULL, found type: %s", json_element_type_name(null->type));
+        err(50, __func__, "expected JTYPE_NULL, found type: %s", json_element_type_name(null->type));
         not_reached();
     }
     item = &(null->element.null);
@@ -564,16 +595,16 @@ parse_json_number(char const *string, struct json *ast)
      * firewall
      */
     if (string == NULL) {
-	err(45, __func__, "passed NULL string");
+	err(51, __func__, "passed NULL string");
 	not_reached();
     }
     number = json_conv_number_str(string, NULL);
     /* paranoia - these tests should never result in an error */
     if (number == NULL) {
-	err(46, __func__, "converting JSON number returned NULL: <%s>", string);
+	err(52, __func__, "converting JSON number returned NULL: <%s>", string);
         not_reached();
     } else if (number->type != JTYPE_NUMBER) {
-        err(47, __func__, "expected JTYPE_NUMBER, found type: %s", json_element_type_name(number->type));
+        err(53, __func__, "expected JTYPE_NUMBER, found type: %s", json_element_type_name(number->type));
         not_reached();
     }
     item = &(number->element.number);
@@ -619,7 +650,7 @@ parse_json_array(char const *string, struct json *ast)
      * firewall
      */
     if (string == NULL) {
-	err(48, __func__, "passed NULL string");
+	err(54, __func__, "passed NULL string");
 	not_reached();
     }
 
@@ -656,17 +687,17 @@ parse_json_member(struct json *name, struct json *value, struct json *ast)
      * firewall
      */
     if (name == NULL || value == NULL) {
-	err(49, __func__, "passed NULL name and/or value");
+	err(55, __func__, "passed NULL name and/or value");
 	not_reached();
     }
 
     member = json_conv_member(name, value);
     /* paranoia - these tests should never result in an error */
     if (member == NULL) {
-	err(50, __func__, "converting JSON member returned NULL");
+	err(56, __func__, "converting JSON member returned NULL");
 	not_reached();
     } else if (member->type != JTYPE_MEMBER) {
-        err(51, __func__, "expected JTYPE_MEMBER, found type: %s", json_element_type_name(member->type));
+        err(57, __func__, "expected JTYPE_MEMBER, found type: %s", json_element_type_name(member->type));
         not_reached();
     }
     item = &(member->element.member);
