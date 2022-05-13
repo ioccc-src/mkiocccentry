@@ -257,7 +257,7 @@ dyn_array_create(size_t elm_size, intmax_t chunk, intmax_t start_elm_count, bool
      */
     dbg(DBG_VVHIGH, "%s(%ju, %jd, %jd, %s): initialized empty dynamic array, allocated: %jd elements of size: %ju",
 		    __func__, (uintmax_t)elm_size, chunk, start_elm_count,
-		    t_or_f(zeroize),
+		    booltostr(zeroize),
 		    dyn_array_alloced(ret), (uintmax_t)ret->elm_size);
     return ret;
 }

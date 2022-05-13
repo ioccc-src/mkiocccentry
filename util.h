@@ -35,6 +35,7 @@
 #include <sys/types.h>
 #include <float.h> /* for long doubles */
 #include <inttypes.h> /* uintmax_t and intmax_t and perhaps SIZE_MAX */
+#include <string.h> /* for strcmp */
 
 /*
  * dynamic array facility
@@ -55,10 +56,14 @@ typedef unsigned char bool;
 #undef false
 #define false ((bool)(0))
 #endif
-#if !defined(t_or_f)
-#define t_or_f(x) ((x) ? "true" : "false")
+/* booltostr - convert a boolean to a string */
+#if !defined(booltostr)
+#define booltostr(x) ((x) ? "true" : "false")
 #endif
-
+/* strtobool - convert a string to a boolean */
+#if !defined(strtobool)
+#define strtobool(x) ((x) != NULL && !strcmp((x), "true"))
+#endif
 
 /*
  * off_t MAX and MIN
@@ -206,7 +211,6 @@ extern bool valid_contest_id(char *str);
 extern int parse_verbosity(char const *program, char const *arg);
 extern bool is_decimal(char const *ptr, size_t len);
 extern bool is_decimal_str(char const *str, size_t *retlen);
-extern bool string_to_bool(char const *str);
 extern bool posix_plus_safe(char const *str, bool lower_only, bool slash_ok, bool first);
 extern void posix_safe_chk(char const *str, size_t len, bool *slash, bool *posix_safe,
 			   bool *first_alphanum, bool *upper);

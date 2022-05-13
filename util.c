@@ -2662,33 +2662,6 @@ is_decimal_str(char const *str, size_t *retlen)
     return ret;
 }
 
-
-/*
- * string_to_bool	- convert string to a bool
- *
- * given:
- *
- *	str		- string to convert to bool
- *
- * Returns true if !strcmp(str, "true").
- *
- * This function does not return on NULL str. If strlen(str) == 0 return false.
- */
-bool
-string_to_bool(char const *str)
-{
-    /*
-     * firewall
-     */
-    if (str == NULL) {
-	err(179, __func__, "passed NULL string");
-	not_reached();
-    }
-
-    return !strcmp(str, "true");
-}
-
-
 /*
  * posix_plus_safe - if string is a valid POSIX portable safe plus + chars
  *
@@ -2851,7 +2824,7 @@ posix_plus_safe(char const *str, bool lower_only, bool slash_ok, bool first)
      * all is well
      */
     dbg(DBG_VVVHIGH, "lower_only: %s slash_ok: %s first: %s str is valid: <%s>",
-		     t_or_f(lower_only), t_or_f(slash_ok), t_or_f(first), str);
+		     booltostr(lower_only), booltostr(slash_ok), booltostr(first), str);
     return true;
 }
 
@@ -2883,7 +2856,7 @@ posix_safe_chk(char const *str, size_t len, bool *slash, bool *posix_safe, bool 
      * firewall
      */
     if (str == NULL || slash == NULL || posix_safe == NULL || first_alphanum == NULL || upper == NULL) {
-	err(180, __func__, "called with NULL arg(s)");
+	err(179, __func__, "called with NULL arg(s)");
 	not_reached();
     }
 
@@ -3011,14 +2984,14 @@ posix_safe_chk(char const *str, size_t len, bool *slash, bool *posix_safe, bool 
     if (found_unsafe == false) {
 	*posix_safe = true;
 	dbg(DBG_VVHIGH, "posix_safe_chk(..., %s, %s, %s, %s): string is NOT POSIX portable safe plus +/",
-		         t_or_f(slash), t_or_f(posix_safe), t_or_f(first_alphanum), t_or_f(upper));
+		         booltostr(slash), booltostr(posix_safe), booltostr(first_alphanum), booltostr(upper));
 
     /*
      * report POSIX portable safe plus + safe with maybe /
      */
     } else {
 	dbg(DBG_VVHIGH, "posix_safe_chk(..., %s, %s, %s, %s): string is POSIX portable safe plus +/: <%s>",
-		        t_or_f(slash), t_or_f(posix_safe), t_or_f(first_alphanum), t_or_f(upper), str);
+		        booltostr(slash), booltostr(posix_safe), booltostr(first_alphanum), booltostr(upper), str);
     }
     return;
 }
@@ -3043,7 +3016,7 @@ find_matching_quote(char *q)
      * firewall
      */
     if (q == NULL) {
-	err(181, __func__, "passed NULL pointer");
+	err(180, __func__, "passed NULL pointer");
 	not_reached();
     }
 
@@ -3081,10 +3054,10 @@ clearerr_or_fclose(char const *filename, FILE *file)
      * firewall
      */
     if (filename == NULL) {
-	err(182, __func__, "passed NULL filename");
+	err(181, __func__, "passed NULL filename");
 	not_reached();
     } else if (file == NULL) {
-	err(183, __func__, "passed NULL file");
+	err(182, __func__, "passed NULL file");
 	not_reached();
     }
 
@@ -3125,7 +3098,7 @@ print_newline(bool output_newline)
 	errno = 0;		/* pre-clear errno for errp() */
 	ret = putchar('\n');
 	if (ret != '\n') {
-	    errp(184, __func__, "error while writing newline");
+	    errp(183, __func__, "error while writing newline");
 	    not_reached();
 	}
     }

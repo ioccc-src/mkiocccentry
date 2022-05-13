@@ -1669,12 +1669,12 @@ main(int argc, char *argv[])
      * report on dbg state, if debugging
      */
     dbg(DBG_MED, "verbosity_level: %d", verbosity_level);
-    dbg(DBG_MED, "msg_output_allowed: %s", t_or_f(msg_output_allowed));
-    dbg(DBG_MED, "dbg_output_allowed: %s", t_or_f(dbg_output_allowed));
-    dbg(DBG_MED, "warn_output_allowed: %s", t_or_f(warn_output_allowed));
-    dbg(DBG_MED, "err_output_allowed: %s", t_or_f(err_output_allowed));
-    dbg(DBG_MED, "usage_output_allowed: %s", t_or_f(usage_output_allowed));
-    dbg(DBG_MED, "msg_warn_silent: %s", t_or_f(msg_warn_silent));
+    dbg(DBG_MED, "msg_output_allowed: %s", booltostr(msg_output_allowed));
+    dbg(DBG_MED, "dbg_output_allowed: %s", booltostr(dbg_output_allowed));
+    dbg(DBG_MED, "warn_output_allowed: %s", booltostr(warn_output_allowed));
+    dbg(DBG_MED, "err_output_allowed: %s", booltostr(err_output_allowed));
+    dbg(DBG_MED, "usage_output_allowed: %s", booltostr(usage_output_allowed));
+    dbg(DBG_MED, "msg_warn_silent: %s", booltostr(msg_warn_silent));
     dbg(DBG_MED, "msg() output: %s",
 	(msg_output_allowed == true && (msg_warn_silent == false || verbosity_level > 0)) ?
 	"allowed" : "silenced");

@@ -353,7 +353,7 @@ fpr_number(FILE *stream, struct json_number *item)
      */
     fprint(stream, "\t%s,\t"
 		   "\t/* true ==> able to convert JSON number string to some form of C value */\n\n",
-		   t_or_f(item->converted));
+		   booltostr(item->converted));
 
     /*
      * print JSON string
@@ -382,17 +382,17 @@ fpr_number(FILE *stream, struct json_number *item)
      */
     fprint(stream, "\t%s,\t"
 		   "\t/* true ==> value < 0 */\n\n",
-		   t_or_f(item->is_negative));
+		   booltostr(item->is_negative));
 
     /*
      * print bool is_floating and is_e_notation
      */
     fprint(stream, "\t%s,\t"
 		   "\t/* true ==> as_str had a . in it such as 1.234, false ==> no . found */\n",
-		   t_or_f(item->is_floating));
+		   booltostr(item->is_floating));
     fprint(stream, "\t%s,\t"
 		   "\t/* true ==> e notation used such as 1e10, no e notation found */\n\n",
-		   t_or_f(item->is_e_notation));
+		   booltostr(item->is_e_notation));
 
     /*
      * print integer values
@@ -690,7 +690,7 @@ fpr_finfo(FILE *stream, bool sized, long double value, bool intval, char const *
 		       value,
 		       (value <= -100000.0 || value >= 1000000.0) ? "\t" : "\t\t",
 		       vcomm);
-	fprint(stream, "\t%s,\t\t/* %s */\n", t_or_f(intval), sintval);
+	fprint(stream, "\t%s,\t\t/* %s */\n", booltostr(intval), sintval);
 
     /*
      * case: sized is false - no value to print

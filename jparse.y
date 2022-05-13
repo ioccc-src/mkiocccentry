@@ -467,13 +467,13 @@ parse_json_bool(char const *string, struct json *ast)
 	 * function will abort if NULL is returned we should check if
 	 * boolean->converted == true.
 	 *
-	 * If it's not we will abort as there's a serious mismatch between the
+	 * If it's not we abort as there's a serious mismatch between the
 	 * scanner and the parser.
 	 */
 	err(41, __func__, "called on non-boolean string: <%s>", string);
 	not_reached();
     } else {
-	json_dbg(JSON_DBG_LEVEL, __func__, "<%s> -> %s", string, t_or_f(item->value));
+	json_dbg(JSON_DBG_LEVEL, __func__, "<%s> -> %s", string, booltostr(item->value));
     }
 
     if (ast != NULL) {
