@@ -559,9 +559,9 @@ static const yytype_int8 yytranslate[] =
 /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_uint8 yyrline[] =
 {
-       0,   161,   161,   162,   165,   166,   167,   168,   169,   170,
-     171,   174,   175,   178,   179,   182,   185,   186,   189,   190,
-     193,   196,   198
+       0,   161,   161,   162,   165,   166,   167,   168,   169,   173,
+     177,   183,   187,   194,   195,   200,   209,   213,   221,   222,
+     227,   230,   236
 };
 #endif
 
@@ -1672,55 +1672,71 @@ yyreduce:
     switch (yyn)
       {
   case 8: /* json_value: "true"  */
-#line 169 "jparse.y"
-                            { yyval = *parse_json_bool(ugly_text, &tree); }
-#line 1627 "jparse.tab.c"
+#line 170 "jparse.y"
+                    {
+			yyval = *parse_json_bool(ugly_text, &tree);
+		    }
+#line 1629 "jparse.tab.c"
     break;
 
   case 9: /* json_value: "false"  */
-#line 170 "jparse.y"
-                             { yyval = *parse_json_bool(ugly_text, &tree); }
-#line 1633 "jparse.tab.c"
+#line 174 "jparse.y"
+                    {
+			yyval = *parse_json_bool(ugly_text, &tree);
+		    }
+#line 1637 "jparse.tab.c"
     break;
 
   case 10: /* json_value: "null"  */
-#line 171 "jparse.y"
-                            { yyval = *parse_json_null(ugly_text, &tree); }
-#line 1639 "jparse.tab.c"
-    break;
-
-  case 12: /* json_object: "{" "}"  */
-#line 175 "jparse.y"
-                                                   { yyval = *json_create_object(); }
+#line 178 "jparse.y"
+                    {
+			yyval = *parse_json_null(ugly_text, &tree);
+		    }
 #line 1645 "jparse.tab.c"
     break;
 
+  case 12: /* json_object: "{" "}"  */
+#line 189 "jparse.y"
+                    {
+			yyval = *json_create_object();
+		    }
+#line 1653 "jparse.tab.c"
+    break;
+
   case 15: /* json_member: json_string ":" json_element  */
-#line 182 "jparse.y"
-                                                    { yyval = *parse_json_member(&yyvsp[-2], &yyvsp[0], &tree); }
-#line 1651 "jparse.tab.c"
+#line 203 "jparse.y"
+                    {
+			yyval = *parse_json_member(&yyvsp[-2], &yyvsp[0], &tree);
+		    }
+#line 1661 "jparse.tab.c"
     break;
 
   case 17: /* json_array: "[" "]"  */
-#line 186 "jparse.y"
-                                                       { yyval = *json_create_array(); }
-#line 1657 "jparse.tab.c"
-    break;
-
-  case 21: /* json_string: JSON_STRING  */
-#line 196 "jparse.y"
-                            { yyval = *parse_json_string(ugly_text, &tree); }
-#line 1663 "jparse.tab.c"
-    break;
-
-  case 22: /* json_number: JSON_NUMBER  */
-#line 198 "jparse.y"
-                            { yyval = *parse_json_number(ugly_text, &tree); }
+#line 215 "jparse.y"
+                    {
+			yyval = *json_create_array();
+		    }
 #line 1669 "jparse.tab.c"
     break;
 
+  case 21: /* json_string: JSON_STRING  */
+#line 231 "jparse.y"
+                    {
+			yyval = *parse_json_string(ugly_text, &tree);
+		    }
+#line 1677 "jparse.tab.c"
+    break;
 
-#line 1673 "jparse.tab.c"
+  case 22: /* json_number: JSON_NUMBER  */
+#line 237 "jparse.y"
+                    {
+			yyval = *parse_json_number(ugly_text, &tree);
+		    }
+#line 1685 "jparse.tab.c"
+    break;
+
+
+#line 1689 "jparse.tab.c"
 
         default: break;
       }
@@ -1955,7 +1971,7 @@ yyreturnlab:
   return yyresult;
 }
 
-#line 204 "jparse.y"
+#line 245 "jparse.y"
 
 /* Section 3: C code */
 

@@ -158,45 +158,86 @@ int token = 0;
  * very much subject to change!
  */
 %%
-json:		/* empty */
-		| json_element
-		;
+json:		    /* empty */	|
+		    json_element
+		    ;
 
-json_value:	  json_object
-		| json_array
-		| json_string
-		| json_number
-		| JSON_TRUE { $$ = *parse_json_bool(ugly_text, &tree); }
-		| JSON_FALSE { $$ = *parse_json_bool(ugly_text, &tree); }
-		| JSON_NULL { $$ = *parse_json_null(ugly_text, &tree); }
-		;
+json_value:	    json_object		|
+		    json_array		|
+		    json_string		|
+		    json_number		|
+		    JSON_TRUE
+		    {
+			$$ = *parse_json_bool(ugly_text, &tree);
+		    }			|
+		    JSON_FALSE
+		    {
+			$$ = *parse_json_bool(ugly_text, &tree);
+		    }			|
+		    JSON_NULL
+		    {
+			$$ = *parse_json_null(ugly_text, &tree);
+		    }
+		    ;
 
-json_object:	JSON_OPEN_BRACE json_members JSON_CLOSE_BRACE
-		| JSON_OPEN_BRACE JSON_CLOSE_BRACE { $$ = *json_create_object(); }
-		;
+json_object:	    JSON_OPEN_BRACE
+			json_members
+		    JSON_CLOSE_BRACE	|
 
-json_members:	json_member
-		| json_member JSON_COMMA json_members
-		;
+		    JSON_OPEN_BRACE
+		    JSON_CLOSE_BRACE
+		    {
+			$$ = *json_create_object();
+		    }
+		    ;
 
-json_member:	json_string JSON_COLON json_element { $$ = *parse_json_member(&$1, &$3, &tree); }
-		;
+json_members:	    json_member		|
+		    json_member
+			JSON_COMMA
+		    json_members
+		    ;
 
-json_array:	JSON_OPEN_BRACKET json_elements JSON_CLOSE_BRACKET
-		| JSON_OPEN_BRACKET JSON_CLOSE_BRACKET { $$ = *json_create_array(); }
-		;
+json_member:	    json_string
+			JSON_COLON
+		    json_element
+		    {
+			$$ = *parse_json_member(&$1, &$3, &tree);
+		    }
 
-json_elements:	json_element
-		| json_element JSON_COMMA json_elements
-		;
+		    ;
 
-json_element:	json_value
-		;
+json_array:	    JSON_OPEN_BRACKET
+			json_elements
+		    JSON_CLOSE_BRACKET	|
 
-json_string:	JSON_STRING { $$ = *parse_json_string(ugly_text, &tree); }
+		    JSON_OPEN_BRACKET
+		    JSON_CLOSE_BRACKET
+		    {
+			$$ = *json_create_array();
+		    }
+		    ;
 
-json_number:	JSON_NUMBER { $$ = *parse_json_number(ugly_text, &tree); }
-		;
+
+json_elements:	    json_element	|
+		    json_element
+			JSON_COMMA
+		    json_elements
+		    ;
+
+json_element:	    json_value
+		    ;
+
+json_string:	    JSON_STRING
+		    {
+			$$ = *parse_json_string(ugly_text, &tree);
+		    }
+		    ;
+
+json_number:	    JSON_NUMBER
+		    {
+			$$ = *parse_json_number(ugly_text, &tree);
+		    }
+		    ;
 
 
 
