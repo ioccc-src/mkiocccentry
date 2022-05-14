@@ -462,14 +462,14 @@ check_val(bool *testp, char const *type, int testnum, bool size_a, bool size_b, 
     if (size_a != size_b) {
 	dbg(DBG_VHIGH, "ERROR: test_result[%d].%s_sized: %s != item->%s_sized: %s",
 		       testnum,
-		       type, t_or_f(size_a),
-		       type, t_or_f(size_b));
+		       type, booltostr(size_a),
+		       type, booltostr(size_b));
 	*testp = true; /* test failed */
     } else {
 	dbg(DBG_VVHIGH, "OK: test_result[%d].%s_sized: %s == item->%s_sized: %s",
 		        testnum,
-		        type, t_or_f(size_a),
-		        type, t_or_f(size_b));
+		        type, booltostr(size_a),
+		        type, booltostr(size_b));
     }
 
     /*
@@ -529,14 +529,14 @@ check_uval(bool *testp, char const *type, int testnum, bool size_a, bool size_b,
     if (size_a != size_b) {
 	dbg(DBG_VHIGH, "ERROR: test_result[%d].%s_sized: %s != item->%s_sized: %s",
 		       testnum,
-		       type, t_or_f(size_a),
-		       type, t_or_f(size_b));
+		       type, booltostr(size_a),
+		       type, booltostr(size_b));
 	*testp = true; /* test failed */
     } else {
 	dbg(DBG_VVHIGH, "OK: test_result[%d].%s_sized: %s == item->%s_sized: %s",
 		        testnum,
-		        type, t_or_f(size_a),
-		        type, t_or_f(size_b));
+		        type, booltostr(size_a),
+		        type, booltostr(size_b));
     }
 
     /*
@@ -603,14 +603,14 @@ check_fval(bool *testp, char const *type, int testnum, bool size_a, bool size_b,
     if (size_a != size_b) {
 	dbg(DBG_VHIGH, "ERROR: test_result[%d].%s_sized: %s != item->%s_sized: %s",
 		       testnum,
-		       type, t_or_f(size_a),
-		       type, t_or_f(size_b));
+		       type, booltostr(size_a),
+		       type, booltostr(size_b));
 	*testp = true; /* test failed */
     } else {
 	dbg(DBG_VVHIGH, "OK: test_result[%d].%s_sized: %s == item->%s_sized: %s",
 		        testnum,
-		        type, t_or_f(size_a),
-		        type, t_or_f(size_b));
+		        type, booltostr(size_a),
+		        type, booltostr(size_b));
     }
     if (int_a != int_b) {
 	dbg(DBG_VHIGH, "ERROR: test_result[%d].%s_int: %s != item->%s_int: %s",

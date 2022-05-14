@@ -1507,7 +1507,7 @@ YY_RULE_SETUP
 #line 230 "jparse.l"
 {
 			    /* colon or 'equals' */
-			    printf("\ncolon (or 'equals' ): <%c>\n", *ugly_text);
+			    printf("\ncolon (or 'equals'): <%c>\n", *ugly_text);
 			    token = ':';
 			    return JSON_COLON;
 			}

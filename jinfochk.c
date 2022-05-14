@@ -1396,35 +1396,35 @@ check_found_info_json_fields(char const *json_filename, bool test)
 	    } else if (!strcmp(field->name, "rule_2b_size")) {
 		info.rule_2b_size = string_to_unsigned_long_long(val);
 	    } else if (!strcmp(field->name, "empty_override")) {
-		info.empty_override = string_to_bool(val);
+		info.empty_override = strtobool(val);
 	    } else if (!strcmp(field->name, "rule_2a_override")) {
-		info.rule_2a_override = string_to_bool(val);
+		info.rule_2a_override = strtobool(val);
 	    } else if (!strcmp(field->name, "rule_2a_mismatch")) {
-		info.rule_2a_mismatch = string_to_bool(val);
+		info.rule_2a_mismatch = strtobool(val);
 	    } else if (!strcmp(field->name, "rule_2b_override")) {
-		info.rule_2b_override = string_to_bool(val);
+		info.rule_2b_override = strtobool(val);
 	    } else if (!strcmp(field->name, "highbit_warning")) {
-		info.highbit_warning = string_to_bool(val);
+		info.highbit_warning = strtobool(val);
 	    } else if (!strcmp(field->name, "nul_warning")) {
-		info.nul_warning = string_to_bool(val);
+		info.nul_warning = strtobool(val);
 	    } else if (!strcmp(field->name, "trigraph_warning")) {
-		info.trigraph_warning = string_to_bool(val);
+		info.trigraph_warning = strtobool(val);
 	    } else if (!strcmp(field->name, "wordbuf_warning")) {
-		info.wordbuf_warning = string_to_bool(val);
+		info.wordbuf_warning = strtobool(val);
 	    } else if (!strcmp(field->name, "ungetc_warning")) {
-		info.ungetc_warning = string_to_bool(val);
+		info.ungetc_warning = strtobool(val);
 	    } else if (!strcmp(field->name, "Makefile_override")) {
-		info.Makefile_override = string_to_bool(val);
+		info.Makefile_override = strtobool(val);
 	    } else if (!strcmp(field->name, "first_rule_is_all")) {
-		info.first_rule_is_all = string_to_bool(val);
+		info.first_rule_is_all = strtobool(val);
 	    } else if (!strcmp(field->name, "found_all_rule")) {
-		info.found_all_rule = string_to_bool(val);
+		info.found_all_rule = strtobool(val);
 	    } else if (!strcmp(field->name, "found_clean_rule")) {
-		info.found_clean_rule = string_to_bool(val);
+		info.found_clean_rule = strtobool(val);
 	    } else if (!strcmp(field->name, "found_clobber_rule")) {
-		info.found_clobber_rule = string_to_bool(val);
+		info.found_clobber_rule = strtobool(val);
 	    } else if (!strcmp(field->name, "found_try_rule")) {
-		info.found_try_rule = string_to_bool(val);
+		info.found_try_rule = strtobool(val);
 	    } else if (strcmp(field->name, "manifest")) {
 		/*
 		 * This should never actually be reached but if it is it

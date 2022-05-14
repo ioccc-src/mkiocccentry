@@ -968,7 +968,7 @@ check_found_common_json_fields(char const *program, char const *json_filename, c
 		 * that still will be reported after the loop.
 		 */
 		if (!test_mode) {
-		    test_mode = string_to_bool(val);
+		    test_mode = strtobool(val);
 		    dbg(DBG_LOW, "set test_mode to %s", test_mode?"true":"false");
 		}
 

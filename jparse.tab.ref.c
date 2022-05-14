@@ -559,9 +559,9 @@ static const yytype_int8 yytranslate[] =
 /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_uint8 yyrline[] =
 {
-       0,   161,   161,   162,   165,   166,   167,   168,   169,   170,
-     171,   174,   175,   178,   179,   182,   185,   186,   189,   190,
-     193,   196,   198
+       0,   161,   161,   162,   165,   166,   167,   168,   169,   173,
+     177,   183,   187,   194,   195,   200,   209,   213,   221,   222,
+     227,   230,   236
 };
 #endif
 
@@ -1672,55 +1672,71 @@ yyreduce:
     switch (yyn)
       {
   case 8: /* json_value: "true"  */
-#line 169 "jparse.y"
-                            { yyval = *parse_json_bool(ugly_text, &tree); }
-#line 1627 "jparse.tab.c"
+#line 170 "jparse.y"
+                    {
+			yyval = *parse_json_bool(ugly_text, &tree);
+		    }
+#line 1629 "jparse.tab.c"
     break;
 
   case 9: /* json_value: "false"  */
-#line 170 "jparse.y"
-                             { yyval = *parse_json_bool(ugly_text, &tree); }
-#line 1633 "jparse.tab.c"
+#line 174 "jparse.y"
+                    {
+			yyval = *parse_json_bool(ugly_text, &tree);
+		    }
+#line 1637 "jparse.tab.c"
     break;
 
   case 10: /* json_value: "null"  */
-#line 171 "jparse.y"
-                            { yyval = *parse_json_null(ugly_text, &tree); }
-#line 1639 "jparse.tab.c"
-    break;
-
-  case 12: /* json_object: "{" "}"  */
-#line 175 "jparse.y"
-                                                   { yyval = *json_create_object(); }
+#line 178 "jparse.y"
+                    {
+			yyval = *parse_json_null(ugly_text, &tree);
+		    }
 #line 1645 "jparse.tab.c"
     break;
 
+  case 12: /* json_object: "{" "}"  */
+#line 189 "jparse.y"
+                    {
+			yyval = *json_create_object();
+		    }
+#line 1653 "jparse.tab.c"
+    break;
+
   case 15: /* json_member: json_string ":" json_element  */
-#line 182 "jparse.y"
-                                                    { yyval = *parse_json_member(&yyvsp[-2], &yyvsp[0], &tree); }
-#line 1651 "jparse.tab.c"
+#line 203 "jparse.y"
+                    {
+			yyval = *parse_json_member(&yyvsp[-2], &yyvsp[0], &tree);
+		    }
+#line 1661 "jparse.tab.c"
     break;
 
   case 17: /* json_array: "[" "]"  */
-#line 186 "jparse.y"
-                                                       { yyval = *json_create_array(); }
-#line 1657 "jparse.tab.c"
-    break;
-
-  case 21: /* json_string: JSON_STRING  */
-#line 196 "jparse.y"
-                            { yyval = *parse_json_string(ugly_text, &tree); }
-#line 1663 "jparse.tab.c"
-    break;
-
-  case 22: /* json_number: JSON_NUMBER  */
-#line 198 "jparse.y"
-                            { yyval = *parse_json_number(ugly_text, &tree); }
+#line 215 "jparse.y"
+                    {
+			yyval = *json_create_array();
+		    }
 #line 1669 "jparse.tab.c"
     break;
 
+  case 21: /* json_string: JSON_STRING  */
+#line 231 "jparse.y"
+                    {
+			yyval = *parse_json_string(ugly_text, &tree);
+		    }
+#line 1677 "jparse.tab.c"
+    break;
 
-#line 1673 "jparse.tab.c"
+  case 22: /* json_number: JSON_NUMBER  */
+#line 237 "jparse.y"
+                    {
+			yyval = *parse_json_number(ugly_text, &tree);
+		    }
+#line 1685 "jparse.tab.c"
+    break;
+
+
+#line 1689 "jparse.tab.c"
 
         default: break;
       }
@@ -1955,7 +1971,7 @@ yyreturnlab:
   return yyresult;
 }
 
-#line 204 "jparse.y"
+#line 245 "jparse.y"
 
 /* Section 3: C code */
 
@@ -2222,13 +2238,44 @@ parse_json_bool(char const *string, struct json *ast)
 	 * function will abort if NULL is returned we should check if
 	 * boolean->converted == true.
 	 *
-	 * If it's not we will abort as there's a serious mismatch between the
+	 * If it's not we abort as there's a serious mismatch between the
 	 * scanner and the parser.
 	 */
 	err(41, __func__, "called on non-boolean string: <%s>", string);
 	not_reached();
+    } else if (item->as_str == NULL) {
+	/* extra sanity check - make sure the allocated string != NULL */
+	err(42, __func__, "boolean->as_str == NULL");
+	not_reached();
+    } else if (strcmp(item->as_str, "true") && strcmp(item->as_str, "false")) {
+	/*
+	 * extra sanity check - make sure the allocated string is either "true"
+	 * or "false"
+	 */
+	err(43, __func__, "boolean->as_str neither \"true\" nor \"false\"");
+	not_reached();
     } else {
-	json_dbg(JSON_DBG_LEVEL, __func__, "<%s> -> %s", string, t_or_f(item->value));
+	/*
+	 * extra sanity checks - convert back and forth as string to bool and
+	 * bool to string and make sure everything matches.
+	 */
+	char const *str = booltostr(item->value);
+	bool tmp = false;
+	if (str == NULL) {
+	    err(44, __func__, "could not convert boolean->value back to a string");
+	    not_reached();
+	} else if (strcmp(str, item->as_str)) {
+	    err(45, __func__, "boolean->as_str != item->value as a string");
+	    not_reached();
+	} else if ((tmp = strtobool(item->as_str)) != item->value) {
+	    err(46, __func__, "mismatch between boolean string and converted value");
+	    not_reached();
+	} else if ((tmp = strtobool(str)) != item->value) {
+	    err(47, __func__, "mismatch between converted string value and converted value");
+	    not_reached();
+	}
+	/* only if we get here do we assume everything is okay */
+	json_dbg(JSON_DBG_LEVEL, __func__, "<%s> -> %s", string, booltostr(item->value));
     }
 
     if (ast != NULL) {
@@ -2262,7 +2309,7 @@ parse_json_null(char const *string, struct json *ast)
      * firewall
      */
     if (string == NULL) {
-	err(42, __func__, "passed NULL string");
+	err(48, __func__, "passed NULL string");
 	not_reached();
     }
 
@@ -2272,10 +2319,10 @@ parse_json_null(char const *string, struct json *ast)
      * null should not be NULL :-)
      */
     if (null == NULL) {
-	err(43, __func__, "null ironically should not be NULL but it is :-)");
+	err(49, __func__, "null ironically should not be NULL but it is :-)");
 	not_reached();
     } else if (null->type != JTYPE_NULL) {
-        err(44, __func__, "expected JTYPE_NULL, found type: %s", json_element_type_name(null->type));
+        err(50, __func__, "expected JTYPE_NULL, found type: %s", json_element_type_name(null->type));
         not_reached();
     }
     item = &(null->element.null);
@@ -2319,16 +2366,16 @@ parse_json_number(char const *string, struct json *ast)
      * firewall
      */
     if (string == NULL) {
-	err(45, __func__, "passed NULL string");
+	err(51, __func__, "passed NULL string");
 	not_reached();
     }
     number = json_conv_number_str(string, NULL);
     /* paranoia - these tests should never result in an error */
     if (number == NULL) {
-	err(46, __func__, "converting JSON number returned NULL: <%s>", string);
+	err(52, __func__, "converting JSON number returned NULL: <%s>", string);
         not_reached();
     } else if (number->type != JTYPE_NUMBER) {
-        err(47, __func__, "expected JTYPE_NUMBER, found type: %s", json_element_type_name(number->type));
+        err(53, __func__, "expected JTYPE_NUMBER, found type: %s", json_element_type_name(number->type));
         not_reached();
     }
     item = &(number->element.number);
@@ -2374,7 +2421,7 @@ parse_json_array(char const *string, struct json *ast)
      * firewall
      */
     if (string == NULL) {
-	err(48, __func__, "passed NULL string");
+	err(54, __func__, "passed NULL string");
 	not_reached();
     }
 
@@ -2411,17 +2458,17 @@ parse_json_member(struct json *name, struct json *value, struct json *ast)
      * firewall
      */
     if (name == NULL || value == NULL) {
-	err(49, __func__, "passed NULL name and/or value");
+	err(55, __func__, "passed NULL name and/or value");
 	not_reached();
     }
 
     member = json_conv_member(name, value);
     /* paranoia - these tests should never result in an error */
     if (member == NULL) {
-	err(50, __func__, "converting JSON member returned NULL");
+	err(56, __func__, "converting JSON member returned NULL");
 	not_reached();
     } else if (member->type != JTYPE_MEMBER) {
-        err(51, __func__, "expected JTYPE_MEMBER, found type: %s", json_element_type_name(member->type));
+        err(57, __func__, "expected JTYPE_MEMBER, found type: %s", json_element_type_name(member->type));
         not_reached();
     }
     item = &(member->element.member);
