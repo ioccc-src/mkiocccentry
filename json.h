@@ -442,9 +442,11 @@ extern struct json *json_conv_null(char const *ptr, size_t len);
 extern struct json *json_conv_null_str(char const *str, size_t *retlen);
 extern struct json *json_conv_member(struct json * name, struct json *value);
 extern struct json *json_create_object(void);
-extern bool json_object_add_member(struct json *obj, struct json *member);
+extern bool json_object_add_member(struct json *node, struct json *member);
+extern bool json_object_append_members(struct json *node, struct dyn_array *members);
 extern struct json *json_create_array(void);
-extern bool json_array_add_value(struct json *obj, struct json *value);
+extern bool json_array_add_value(struct json *node, struct json *value);
+extern bool json_array_append_values(struct json *node, struct dyn_array *values);
 /* print the type of json element in the struct json */
 extern char const *json_element_type_name(enum element_type json_type);
 /* JSON parse tree functions */
