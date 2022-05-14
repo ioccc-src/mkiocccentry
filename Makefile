@@ -275,6 +275,29 @@ BISON_DIRS= \
 	-B /usr/local/bin \
 	-B .
 
+# Additional flags to pass to bison
+#
+# For --report all it will generate upon execution (if bison successfully
+# generates the code) the file jparse.output. With --report all --html it will
+# generate a html file which is easier to follow but I'm not sure how portable
+# this is; under CentOS (which does not have the right version but actually
+# normally generates code fine) the error:
+#
+#   jparse.y: error: xsltproc failed with status 127
+#
+# is thrown and since this could happen on other systems even with the
+# appropriate version I have not enabled this.
+#
+# For the -Wcounterexamples it gives counter examples if there are ever
+# shift/reduce conflicts in the grammar. The other warnings are of use as well.
+#
+# NOTE: We include required flags like -d here but we explicitly include them in
+# the run_bison.sh call as well. This is to make sure that they're there and not
+# disabled via a user override or because of a mistake here.
+#
+BISON_FLAGS = -Werror --report all -Wcounterexamples -Wmidrule-values \
+	      -Wprecedence -Wdeprecated -d
+
 # the basename of flex (or lex) to look for
 #
 FLEX_BASENAME= flex
@@ -297,6 +320,12 @@ FLEX_DIRS= \
 	-F /usr/local/bin \
 	-F .
 
+# flags to pass to flex
+#
+# NOTE: We include required flags like -d -8 here but we explicitly include them
+# in the run_flex.sh call as well. This is to make sure that they're there and
+# not disabled via a user override or because of a mistake here.
+FLEX_FLAGS = -d -8
 
 ############################################################
 # User specific configurations - override Makefile values  #
@@ -491,9 +520,12 @@ limit_ioccc.sh: limit_ioccc.h version.h Makefile
 #
 # NOTE: The value of RUN_O_FLAG depends on what rule called this rule.
 #
-jparse.tab.c jparse.tab.h: jparse.y jparse.h sorry.tm.ca.h run_bison.sh limit_ioccc.sh verge \
+# NOTE: Even if BISON_FLAGS has -d we specify it here just in case this is
+# ever overridden or is accidentally removed. This is also why we have them
+# _after_ the ${BISON_FLAGS} in the command line as it's required.
+jparse.tab.c jparse.tab.h bison: jparse.y jparse.h sorry.tm.ca.h run_bison.sh limit_ioccc.sh verge \
 	jparse.tab.ref.c jparse.tab.ref.h Makefile
-	./run_bison.sh -b ${BISON_BASENAME} ${BISON_DIRS} -p jparse -v 1 ${RUN_O_FLAG} -- --report all -d
+	./run_bison.sh -b ${BISON_BASENAME} ${BISON_DIRS} -p jparse -v 1 ${RUN_O_FLAG} -- ${BISON_FLAGS} -d
 
 # How to create jparse.c
 #
@@ -503,8 +535,12 @@ jparse.tab.c jparse.tab.h: jparse.y jparse.h sorry.tm.ca.h run_bison.sh limit_io
 #
 # NOTE: The value of RUN_O_FLAG depends on what rule called this rule.
 #
-jparse.c: jparse.l jparse.h sorry.tm.ca.h jparse.tab.h run_flex.sh limit_ioccc.sh verge jparse.ref.c Makefile
-	./run_flex.sh -f ${FLEX_BASENAME} ${FLEX_DIRS} -p jparse -v 1 ${RUN_O_FLAG} -- -d -8 -o jparse.c
+# NOTE: Even if FLEX_FLAGS has -d -8 we specify them here just in case this is
+# ever overridden or is accidentally removed. This is also why we have them
+# _after_ the ${FLEX_FLAGS} in the command line as they're required.
+#
+jparse.c flex: jparse.l jparse.h sorry.tm.ca.h jparse.tab.h run_flex.sh limit_ioccc.sh verge jparse.ref.c Makefile
+	./run_flex.sh -f ${FLEX_BASENAME} ${FLEX_DIRS} -p jparse -v 1 ${RUN_O_FLAG} -- ${FLEX_FLAGS} -d -8 -o jparse.c
 
 
 ###################################################################
@@ -692,8 +728,9 @@ clean_generated_obj:
 prep_clobber:
 	${RM} -f ${TARGETS} ${TEST_TARGETS}
 	${RM} -f ${GENERATED_CSRC} ${GENERATED_HSRC}
-	${RM} -f answers.txt j-test.out j-test2.out json-test.log jparse.output
+	${RM} -f answers.txt j-test.out j-test2.out json-test.log
 	${RM} -rf test-iocccsize test_src test_work tags dbg.out
+	${RM} -f jparse.output jparse.html
 	${RM} -f dbg_test.c
 	${RM} -rf dyn_test.dSYM
 	${RM} -f jnum_chk
