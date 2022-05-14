@@ -344,14 +344,6 @@ json_encode_str(char const *str, size_t *retlen)
 	return NULL;
     }
     len = strlen(str);
-    if (len <= 0) {
-	/* error - clear allocated length */
-	if (retlen != NULL) {
-	    *retlen = 0;
-	}
-	warn(__func__, "len: %ju must be > 0", (uintmax_t) len);
-	return NULL;
-    }
 
     /*
      * convert to json_encode() call
@@ -1315,14 +1307,6 @@ json_decode_str(char const *str, size_t *retlen)
 	return NULL;
     }
     len = strlen(str);
-    if (len <= 0) {
-	/* error - clear allocated length */
-	if (retlen != NULL) {
-	    *retlen = 0;
-	}
-	warn(__func__, "len: %ju must be > 0", (uintmax_t) len);
-	return NULL;
-    }
 
     /*
      * convert to json_decode() call
