@@ -261,14 +261,6 @@ json_encode(char const *ptr, size_t len, size_t *retlen)
 	warn(__func__, "called with NULL ptr");
 	return NULL;
     }
-    if (len <= 0) {
-	/* error - clear allocated length */
-	if (retlen != NULL) {
-	    *retlen = 0;
-	}
-	warn(__func__, "len: %ju must be > 0", (uintmax_t) len);
-	return NULL;
-    }
 
     /*
      * count the bytes that will be in the encoded allocated string
@@ -946,14 +938,6 @@ json_decode(char const *ptr, size_t len, size_t *retlen)
 	    *retlen = 0;
 	}
 	warn(__func__, "called with NULL ptr");
-	return NULL;
-    }
-    if (len <= 0) {
-	/* error - clear allocated length */
-	if (retlen != NULL) {
-	    *retlen = 0;
-	}
-	warn(__func__, "len: %ju must be > 0", (uintmax_t) len);
 	return NULL;
     }
 
