@@ -92,15 +92,16 @@
 
 
 /*
- * Did you know that the JSON author removed comments from the
- * original JSON spec because the creators claimed they saw people
- * using then to "hold parsing directives"?
+ * Did you know that the JSON author removed comments from the original
+ * JSON spec because the creators claimed they saw people using comments
+ * to hold parsing directives?  See the following URL for details:
  *
  *	https://stackoverflow.com/questions/244777/can-comments-be-used-in-json/10976934#10976934
  *
- * While this decision is not as silly as some of the JSON design
- * mistakes, the IOCCC honors this silly concept by mandating the
- * following parsing directive in the form of specific JSON member:
+ * While this decision is not as silly as some of the other JSON design
+ * mistakes, the IOCCC honors the silly reason to remove comments from
+ * JSON by mandating a parsing directive in the form of this specific
+ * JSON member:
  *
  *	JSON_PARSING_DIRECTIVE_NAME : JSON_PARSING_DIRECTIVE_VALUE
  */
