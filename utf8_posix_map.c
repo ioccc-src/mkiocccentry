@@ -1803,7 +1803,7 @@ default_handle(char const *name)
 	/*
 	 * calloc the random default author handle
 	 */
-	def_len = LITLEN("jrandom+") + 3*RANDOM_VAL_LEN;
+	def_len = LITLEN("jrandom+") + 4*RANDOM_VAL_LEN;
 	errno = 0;		/* pre-clear errno for errp() */
 	ret = calloc(def_len+1, sizeof(char));
 	if (ret == NULL) {
