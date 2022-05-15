@@ -1693,45 +1693,45 @@ yyreduce:
       {
   case 2: /* json: %empty  */
 #line 162 "jparse.y"
-                        { json_dbg(DBG_LOW, __func__, "under json: after /* empty */ before |"); }
+                        { json_dbg(JSON_DBG_LOW, __func__, "under json: after /* empty */ before |"); }
 #line 1647 "jparse.tab.c"
     break;
 
   case 3: /* json: json_element  */
 #line 166 "jparse.y"
-                        { json_dbg(DBG_LOW, __func__, "under json: after json_element before ;"); }
+                        { json_dbg(JSON_DBG_LOW, __func__, "under json: after json_element before ;"); }
 #line 1653 "jparse.tab.c"
     break;
 
   case 4: /* json_value: json_object  */
 #line 170 "jparse.y"
-                        { json_dbg(DBG_LOW, __func__, "under json_value: after json_object before |"); }
+                        { json_dbg(JSON_DBG_LOW, __func__, "under json_value: after json_object before |"); }
 #line 1659 "jparse.tab.c"
     break;
 
   case 5: /* json_value: json_array  */
 #line 174 "jparse.y"
-                        { json_dbg(DBG_LOW, __func__, "under json_value: after json_array before |"); }
+                        { json_dbg(JSON_DBG_LOW, __func__, "under json_value: after json_array before |"); }
 #line 1665 "jparse.tab.c"
     break;
 
   case 6: /* json_value: json_string  */
 #line 178 "jparse.y"
-                        { json_dbg(DBG_LOW, __func__, "under json_value: after json_string before |"); }
+                        { json_dbg(JSON_DBG_LOW, __func__, "under json_value: after json_string before |"); }
 #line 1671 "jparse.tab.c"
     break;
 
   case 7: /* json_value: json_number  */
 #line 182 "jparse.y"
-                        { json_dbg(DBG_LOW, __func__, "under json_value: after json_number before |"); }
+                        { json_dbg(JSON_DBG_LOW, __func__, "under json_value: after json_number before |"); }
 #line 1677 "jparse.tab.c"
     break;
 
   case 8: /* json_value: "true"  */
 #line 186 "jparse.y"
                         {
-			    yyval = *parse_json_bool(ugly_text, &tree);
-			    json_dbg(DBG_LOW, __func__, "under json_value: after JSON_TRUE before |");
+			    yyval = *parse_json_bool(ugly_text);
+			    json_dbg(JSON_DBG_LOW, __func__, "under json_value: after JSON_TRUE before |");
 			}
 #line 1686 "jparse.tab.c"
     break;
@@ -1739,8 +1739,8 @@ yyreduce:
   case 9: /* json_value: "false"  */
 #line 193 "jparse.y"
                         {
-			    yyval = *parse_json_bool(ugly_text, &tree);
-			    json_dbg(DBG_LOW, __func__, "under json_value: after JSON_FALSE before |");
+			    yyval = *parse_json_bool(ugly_text);
+			    json_dbg(JSON_DBG_LOW, __func__, "under json_value: after JSON_FALSE before |");
 			}
 #line 1695 "jparse.tab.c"
     break;
@@ -1748,33 +1748,33 @@ yyreduce:
   case 10: /* json_value: "null"  */
 #line 200 "jparse.y"
                         {
-			    yyval = *parse_json_null(ugly_text, &tree);
-			    json_dbg(DBG_LOW, __func__, "under json_value: after JSON_NULL before ;");
+			    yyval = *parse_json_null(ugly_text);
+			    json_dbg(JSON_DBG_LOW, __func__, "under json_value: after JSON_NULL before ;");
 			}
 #line 1704 "jparse.tab.c"
     break;
 
   case 11: /* $@1: %empty  */
 #line 207 "jparse.y"
-                        { json_dbg(DBG_LOW, __func__, "under json_object: after JSON_OPEN_BRACE before json_members"); }
+                        { json_dbg(JSON_DBG_LOW, __func__, "under json_object: after JSON_OPEN_BRACE before json_members"); }
 #line 1710 "jparse.tab.c"
     break;
 
   case 12: /* $@2: %empty  */
 #line 209 "jparse.y"
-                        { json_dbg(DBG_LOW, __func__, "under json_object: after json_members before JSON_CLOSE_BRACE"); }
+                        { json_dbg(JSON_DBG_LOW, __func__, "under json_object: after json_members before JSON_CLOSE_BRACE"); }
 #line 1716 "jparse.tab.c"
     break;
 
   case 13: /* json_object: "{" $@1 json_members $@2 "}"  */
 #line 211 "jparse.y"
-                        { json_dbg(DBG_LOW, __func__, "under json_object: after JSON_CLOSE_BRACE before |"); }
+                        { json_dbg(JSON_DBG_LOW, __func__, "under json_object: after JSON_CLOSE_BRACE before |"); }
 #line 1722 "jparse.tab.c"
     break;
 
   case 14: /* $@3: %empty  */
 #line 215 "jparse.y"
-                        { json_dbg(DBG_LOW, __func__, "under json_object: after JSON_OPEN_BRACE before JSON_CLOSE_BRACE"); }
+                        { json_dbg(JSON_DBG_LOW, __func__, "under json_object: after JSON_OPEN_BRACE before JSON_CLOSE_BRACE"); }
 #line 1728 "jparse.tab.c"
     break;
 
@@ -1782,44 +1782,44 @@ yyreduce:
 #line 217 "jparse.y"
                         {
 			    yyval = *json_create_object();
-			    json_dbg(DBG_LOW, __func__, "under json_object: after JSON_CLOSE_BRACE before ;");
+			    json_dbg(JSON_DBG_LOW, __func__, "under json_object: after JSON_CLOSE_BRACE before ;");
 			}
 #line 1737 "jparse.tab.c"
     break;
 
   case 16: /* json_members: json_member  */
 #line 224 "jparse.y"
-                        { json_dbg(DBG_LOW, __func__, "under json_members: after json_member before |"); }
+                        { json_dbg(JSON_DBG_LOW, __func__, "under json_members: after json_member before |"); }
 #line 1743 "jparse.tab.c"
     break;
 
   case 17: /* $@4: %empty  */
 #line 228 "jparse.y"
-                        { json_dbg(DBG_LOW, __func__, "under json_members: after json_members before JSON_COMMA"); }
+                        { json_dbg(JSON_DBG_LOW, __func__, "under json_members: after json_members before JSON_COMMA"); }
 #line 1749 "jparse.tab.c"
     break;
 
   case 18: /* $@5: %empty  */
 #line 230 "jparse.y"
-                        { json_dbg(DBG_LOW, __func__, "under json_members: after JSON_COMMA before json_member"); }
+                        { json_dbg(JSON_DBG_LOW, __func__, "under json_members: after JSON_COMMA before json_member"); }
 #line 1755 "jparse.tab.c"
     break;
 
   case 19: /* json_members: json_members $@4 "," $@5 json_member  */
 #line 232 "jparse.y"
-                        { json_dbg(DBG_LOW, __func__, "under json_members: after json_member before ;"); }
+                        { json_dbg(JSON_DBG_LOW, __func__, "under json_members: after json_member before ;"); }
 #line 1761 "jparse.tab.c"
     break;
 
   case 20: /* $@6: %empty  */
 #line 236 "jparse.y"
-                        { json_dbg(DBG_LOW, __func__, "under json_member: after json_string before JSON_COLON"); }
+                        { json_dbg(JSON_DBG_LOW, __func__, "under json_member: after json_string before JSON_COLON"); }
 #line 1767 "jparse.tab.c"
     break;
 
   case 21: /* $@7: %empty  */
 #line 238 "jparse.y"
-                        { json_dbg(DBG_LOW, __func__, "under json_member: after JSON_COLON before json_element"); }
+                        { json_dbg(JSON_DBG_LOW, __func__, "under json_member: after JSON_COLON before json_element"); }
 #line 1773 "jparse.tab.c"
     break;
 
@@ -1827,32 +1827,32 @@ yyreduce:
 #line 240 "jparse.y"
                         {
 			    yyval = *parse_json_member(&yyvsp[-4], &yyvsp[-2], &tree);
-			    json_dbg(DBG_LOW, __func__, "under json_member: after json_element before ;");
+			    json_dbg(JSON_DBG_LOW, __func__, "under json_member: after json_element before ;");
 			}
 #line 1782 "jparse.tab.c"
     break;
 
   case 23: /* $@8: %empty  */
 #line 247 "jparse.y"
-                        { json_dbg(DBG_LOW, __func__, "under json_array: after JSON_OPEN_BRACKET before json_elements"); }
+                        { json_dbg(JSON_DBG_LOW, __func__, "under json_array: after JSON_OPEN_BRACKET before json_elements"); }
 #line 1788 "jparse.tab.c"
     break;
 
   case 24: /* $@9: %empty  */
 #line 249 "jparse.y"
-                        { json_dbg(DBG_LOW, __func__, "under json_array: after json_elements before JSON_CLOSE_BRACKET"); }
+                        { json_dbg(JSON_DBG_LOW, __func__, "under json_array: after json_elements before JSON_CLOSE_BRACKET"); }
 #line 1794 "jparse.tab.c"
     break;
 
   case 25: /* json_array: "[" $@8 json_elements $@9 "]"  */
 #line 251 "jparse.y"
-                        { json_dbg(DBG_LOW, __func__, "under json_array: after JSON_CLOSE_BRACKET before |"); }
+                        { json_dbg(JSON_DBG_LOW, __func__, "under json_array: after JSON_CLOSE_BRACKET before |"); }
 #line 1800 "jparse.tab.c"
     break;
 
   case 26: /* $@10: %empty  */
 #line 255 "jparse.y"
-                        { json_dbg(DBG_LOW, __func__, "under json_array: after JSON_OPEN_BRACKET before JSON_CLOSE_BRACKET"); }
+                        { json_dbg(JSON_DBG_LOW, __func__, "under json_array: after JSON_OPEN_BRACKET before JSON_CLOSE_BRACKET"); }
 #line 1806 "jparse.tab.c"
     break;
 
@@ -1860,46 +1860,46 @@ yyreduce:
 #line 257 "jparse.y"
                         {
 			    yyval = *json_create_array();
-			    json_dbg(DBG_LOW, __func__, "under json_array: after JSON_CLOSE_BRACKET before ;");
+			    json_dbg(JSON_DBG_LOW, __func__, "under json_array: after JSON_CLOSE_BRACKET before ;");
 			}
 #line 1815 "jparse.tab.c"
     break;
 
   case 28: /* json_elements: json_element  */
 #line 265 "jparse.y"
-                        { json_dbg(DBG_LOW, __func__, "under json_elements: after json_element before |"); }
+                        { json_dbg(JSON_DBG_LOW, __func__, "under json_elements: after json_element before |"); }
 #line 1821 "jparse.tab.c"
     break;
 
   case 29: /* $@11: %empty  */
 #line 269 "jparse.y"
-                        { json_dbg(DBG_LOW, __func__, "under json_elements: after json_elements before JSON_COMMA"); }
+                        { json_dbg(JSON_DBG_LOW, __func__, "under json_elements: after json_elements before JSON_COMMA"); }
 #line 1827 "jparse.tab.c"
     break;
 
   case 30: /* $@12: %empty  */
 #line 271 "jparse.y"
-                        { json_dbg(DBG_LOW, __func__, "under json_elements: after JSON_COMMA before json_element"); }
+                        { json_dbg(JSON_DBG_LOW, __func__, "under json_elements: after JSON_COMMA before json_element"); }
 #line 1833 "jparse.tab.c"
     break;
 
   case 31: /* json_elements: json_elements $@11 "," $@12 json_element  */
 #line 273 "jparse.y"
-                        { json_dbg(DBG_LOW, __func__, "under json_elements: after json_element before ;"); }
+                        { json_dbg(JSON_DBG_LOW, __func__, "under json_elements: after json_element before ;"); }
 #line 1839 "jparse.tab.c"
     break;
 
   case 32: /* json_element: json_value  */
 #line 277 "jparse.y"
-                        { json_dbg(DBG_LOW, __func__, "under json_element: after json_value before ;"); }
+                        { json_dbg(JSON_DBG_LOW, __func__, "under json_element: after json_value before ;"); }
 #line 1845 "jparse.tab.c"
     break;
 
   case 33: /* json_string: JSON_STRING  */
 #line 281 "jparse.y"
                         {
-			    yyval = *parse_json_string(ugly_text, &tree);
-			    json_dbg(DBG_LOW, __func__, "under json_string: after JSON_STRING before ;");
+			    yyval = *parse_json_string(ugly_text);
+			    json_dbg(JSON_DBG_LOW, __func__, "under json_string: after JSON_STRING before ;");
 			}
 #line 1854 "jparse.tab.c"
     break;
@@ -1907,8 +1907,8 @@ yyreduce:
   case 34: /* json_number: JSON_NUMBER  */
 #line 288 "jparse.y"
                         {
-			    yyval = *parse_json_number(ugly_text, &tree);
-			    json_dbg(DBG_LOW, __func__, "under json_number: after JSON_NUMBER before ;");
+			    yyval = *parse_json_number(ugly_text);
+			    json_dbg(JSON_DBG_LOW, __func__, "under json_number: after JSON_NUMBER before ;");
 			}
 #line 1863 "jparse.tab.c"
     break;
@@ -2169,7 +2169,7 @@ main(int argc, char **argv)
 
     /*
      * XXX for development purposes we override the initial json_verbosity_level
-     * to JSON_DBG_LEVEL. This is used in json_vdbg() which is called by
+     * to json_verbosity_level. This is used in json_vdbg() which is called by
      * json_dbg().
      *
      * This variable is used because it means we don't have to see debug
@@ -2238,7 +2238,7 @@ main(int argc, char **argv)
 	     */
 	    string_flag_used = true;
 
-	    json_dbg(JSON_DBG_LEVEL, __func__, "Calling parse_json_block(\"%s\"):", optarg);
+	    json_dbg(json_verbosity_level, __func__, "Calling parse_json_block(\"%s\"):", optarg);
 	    /* parse arg as a block of json input */
 	    parse_json_block(optarg);
 	    break;
@@ -2260,7 +2260,7 @@ main(int argc, char **argv)
 	 * process each argument in order
 	 */
 	for (i=optind; i < argc; ++i) {
-	    json_dbg(JSON_DBG_LEVEL, __func__, "Calling parse_json_file(\"%s\"):", argv[i]);
+	    json_dbg(json_verbosity_level, __func__, "Calling parse_json_file(\"%s\"):", argv[i]);
 	    parse_json_file(argv[i]);
 	}
 
@@ -2307,8 +2307,7 @@ ugly_error(char const *format, ...)
 }
 
 /*
- * XXX - the parse_json_() functions don't yet link the structs into the tree - XXX
- * XXX - the parameters might or might not have to change - XXX
+ * XXX - these functions are incomplete and subject to change - XXX
  */
 
 
@@ -2317,18 +2316,14 @@ ugly_error(char const *format, ...)
  * given:
  *
  *	string	    - the text that triggered the action
- *	ast	    - the tree to link the struct json * into if not NULL
  *
  * Returns a pointer to a struct json with the converted string.
  *
- * NOTE: This function does not return if passed a NULL string.
- *
- * XXX - should this function return if conversion failed ? - XXX
- *
- * TODO add to parse tree if != NULL
+ * NOTE: This function does not return if passed a NULL string or if conversion
+ * fails.
  */
 struct json *
-parse_json_string(char const *string, struct json *ast)
+parse_json_string(char const *string)
 {
     struct json *str = NULL;
     struct json_string *item = NULL;
@@ -2341,7 +2336,7 @@ parse_json_string(char const *string, struct json *ast)
 	not_reached();
     }
 
-    json_dbg(JSON_DBG_LEVEL, __func__, "about to parse string: <%s>", string);
+    json_dbg(json_verbosity_level, __func__, "about to parse string: <%s>", string);
     /*
      * we say that quote == true because the pattern in the lexer will include
      * the '"'s.
@@ -2357,17 +2352,13 @@ parse_json_string(char const *string, struct json *ast)
     }
     item = &(str->element.string);
     if (!item->converted) {
-	/* XXX should this be a fatal error ? */
-	warn(__func__, "couldn't decode string: <%s>", string);
+	err(38, __func__, "couldn't decode string: <%s>", string);
+	not_reached();
     } else {
-        json_dbg(JSON_DBG_LEVEL, __func__, "decoded string: <%s>", item->str);
+        json_dbg(json_verbosity_level, __func__, "decoded string: <%s>", item->str);
     }
 
     /* XXX Are there any other checks that have to be done ? */
-
-    /* TODO add to parse tree if != NULL */
-    if (ast != NULL) {
-    }
 
     return str;
 }
@@ -2377,7 +2368,6 @@ parse_json_string(char const *string, struct json *ast)
  * given:
  *
  *	string	    - the text that triggered the action
- *	ast	    - the tree to link the struct json * into if not NULL
  *
  * Returns a pointer to a struct json with the converted boolean.
  *
@@ -2385,7 +2375,7 @@ parse_json_string(char const *string, struct json *ast)
  * fails.
  */
 struct json *
-parse_json_bool(char const *string, struct json *ast)
+parse_json_bool(char const *string)
 {
     struct json *boolean = NULL;
     struct json_boolean *item = NULL;
@@ -2394,17 +2384,17 @@ parse_json_bool(char const *string, struct json *ast)
      * firewall
      */
     if (string == NULL) {
-	err(38, __func__, "passed NULL string");
+	err(39, __func__, "passed NULL string");
 	not_reached();
     }
 
     boolean = json_conv_bool_str(string, NULL);
     /* paranoia - these tests should never result in an error */
     if (boolean == NULL) {
-	err(39, __func__, "converting JSON bool returned NULL: <%s>", string);
+	err(40, __func__, "converting JSON bool returned NULL: <%s>", string);
 	not_reached();
     } else if (boolean->type != JTYPE_BOOL) {
-        err(40, __func__, "expected JTYPE_BOOL, found type: %s", json_element_type_name(boolean->type));
+        err(41, __func__, "expected JTYPE_BOOL, found type: %s", json_element_type_name(boolean->type));
         not_reached();
     }
     item = &(boolean->element.boolean);
@@ -2419,18 +2409,18 @@ parse_json_bool(char const *string, struct json *ast)
 	 * If it's not we abort as there's a serious mismatch between the
 	 * scanner and the parser.
 	 */
-	err(41, __func__, "called on non-boolean string: <%s>", string);
+	err(42, __func__, "called on non-boolean string: <%s>", string);
 	not_reached();
     } else if (item->as_str == NULL) {
 	/* extra sanity check - make sure the allocated string != NULL */
-	err(42, __func__, "boolean->as_str == NULL");
+	err(43, __func__, "boolean->as_str == NULL");
 	not_reached();
     } else if (strcmp(item->as_str, "true") && strcmp(item->as_str, "false")) {
 	/*
 	 * extra sanity check - make sure the allocated string is either "true"
 	 * or "false"
 	 */
-	err(43, __func__, "boolean->as_str neither \"true\" nor \"false\"");
+	err(44, __func__, "boolean->as_str neither \"true\" nor \"false\"");
 	not_reached();
     } else {
 	/*
@@ -2440,24 +2430,20 @@ parse_json_bool(char const *string, struct json *ast)
 	char const *str = booltostr(item->value);
 	bool tmp = false;
 	if (str == NULL) {
-	    err(44, __func__, "could not convert boolean->value back to a string");
+	    err(45, __func__, "could not convert boolean->value back to a string");
 	    not_reached();
 	} else if (strcmp(str, item->as_str)) {
-	    err(45, __func__, "boolean->as_str != item->value as a string");
+	    err(46, __func__, "boolean->as_str != item->value as a string");
 	    not_reached();
 	} else if ((tmp = strtobool(item->as_str)) != item->value) {
-	    err(46, __func__, "mismatch between boolean string and converted value");
+	    err(47, __func__, "mismatch between boolean string and converted value");
 	    not_reached();
 	} else if ((tmp = strtobool(str)) != item->value) {
-	    err(47, __func__, "mismatch between converted string value and converted value");
+	    err(48, __func__, "mismatch between converted string value and converted value");
 	    not_reached();
 	}
 	/* only if we get here do we assume everything is okay */
-	json_dbg(JSON_DBG_LEVEL, __func__, "<%s> -> %s", string, booltostr(item->value));
-    }
-
-    if (ast != NULL) {
-	/* TODO add to parse tree if != NULL */
+	json_dbg(json_verbosity_level, __func__, "<%s> -> %s", string, booltostr(item->value));
     }
 
     return boolean;
@@ -2468,17 +2454,12 @@ parse_json_bool(char const *string, struct json *ast)
  * given:
  *
  *	string	    - the text that triggered the action
- *	ast	    - the tree to link the struct json * into if not NULL
- *
- * Returns a pointer to a struct json unless conversion fails.
  *
  * NOTE: This function does not return if passed a NULL string or if null
  * becomes NULL :-)
- *
- * XXX - should this function return if conversion failed ? - XXX
  */
 struct json *
-parse_json_null(char const *string, struct json *ast)
+parse_json_null(char const *string)
 {
     struct json *null = NULL;
     struct json_null *item = NULL;
@@ -2487,7 +2468,7 @@ parse_json_null(char const *string, struct json *ast)
      * firewall
      */
     if (string == NULL) {
-	err(48, __func__, "passed NULL string");
+	err(49, __func__, "passed NULL string");
 	not_reached();
     }
 
@@ -2497,23 +2478,18 @@ parse_json_null(char const *string, struct json *ast)
      * null should not be NULL :-)
      */
     if (null == NULL) {
-	err(49, __func__, "null ironically should not be NULL but it is :-)");
+	err(50, __func__, "null ironically should not be NULL but it is :-)");
 	not_reached();
     } else if (null->type != JTYPE_NULL) {
-        err(50, __func__, "expected JTYPE_NULL, found type: %s", json_element_type_name(null->type));
+        err(51, __func__, "expected JTYPE_NULL, found type: %s", json_element_type_name(null->type));
         not_reached();
     }
     item = &(null->element.null);
     if (!item->converted) {
-	/* XXX should this be a fatal error ? */
-	warn(__func__, "couldn't convert null: <%s>", string);
+	err(52,__func__, "couldn't convert null: <%s>", string);
+	not_reached();
     } else {
-        json_dbg(JSON_DBG_LEVEL, __func__, "convert null: <%s> -> null", string);
-    }
-
-
-    if (ast != NULL) {
-	/* TODO add to parse tree if != NULL */
+        json_dbg(json_verbosity_level, __func__, "convert null: <%s> -> null", string);
     }
 
     return null;
@@ -2526,16 +2502,14 @@ parse_json_null(char const *string, struct json *ast)
  * given:
  *
  *	string	    - the text that triggered the action
- *	ast	    - the tree to link the struct json * into if not NULL
  *
  * Returns a pointer to a struct json.
  *
- * NOTE: This function does not return if passed a NULL string.
- *
- * XXX - should the function return on conversion error ? - XXX
+ * NOTE: This function does not return if passed a NULL string or if
+ * conversion fails.
  */
 struct json *
-parse_json_number(char const *string, struct json *ast)
+parse_json_number(char const *string)
 {
     struct json *number = NULL;
     struct json_number *item = NULL;
@@ -2544,28 +2518,24 @@ parse_json_number(char const *string, struct json *ast)
      * firewall
      */
     if (string == NULL) {
-	err(51, __func__, "passed NULL string");
+	err(53, __func__, "passed NULL string");
 	not_reached();
     }
     number = json_conv_number_str(string, NULL);
     /* paranoia - these tests should never result in an error */
     if (number == NULL) {
-	err(52, __func__, "converting JSON number returned NULL: <%s>", string);
+	err(54, __func__, "converting JSON number returned NULL: <%s>", string);
         not_reached();
     } else if (number->type != JTYPE_NUMBER) {
-        err(53, __func__, "expected JTYPE_NUMBER, found type: %s", json_element_type_name(number->type));
+        err(55, __func__, "expected JTYPE_NUMBER, found type: %s", json_element_type_name(number->type));
         not_reached();
     }
     item = &(number->element.number);
     if (!item->converted) {
-	/* XXX should this be a fatal error ? */
-	warn(__func__, "couldn't convert number string: <%s>", string);
+	err(56, __func__, "couldn't convert number string: <%s>", string);
+	not_reached();
     } else {
-        json_dbg(JSON_DBG_LEVEL, __func__, "convert number string: <%s>", item->as_str);
-    }
-
-    if (ast != NULL) {
-	/* TODO add to parse tree if != NULL */
+        json_dbg(json_verbosity_level, __func__, "convert number string: <%s>", item->as_str);
     }
 
     return number;
@@ -2587,8 +2557,6 @@ parse_json_number(char const *string, struct json *ast)
  * (which will include a dynamic array) but which right now is actually NULL. It
  * might be that the function will take different parameters as well and the
  * names of the parameters and the function are also subject to change.
- *
- * XXX - should the function return on conversion error ? - XXX
  */
 struct json *
 parse_json_array(char const *string, struct json *ast)
@@ -2599,14 +2567,14 @@ parse_json_array(char const *string, struct json *ast)
      * firewall
      */
     if (string == NULL) {
-	err(54, __func__, "passed NULL string");
+	err(57, __func__, "passed NULL string");
 	not_reached();
     }
 
     /* TODO add parsing of array */
 
     if (ast != NULL) {
-	/* TODO add to parse tree if != NULL */
+	/* XXX add to parse tree if != NULL ? */
     }
     return array;
 }
@@ -2622,9 +2590,8 @@ parse_json_array(char const *string, struct json *ast)
  *
  * Returns a pointer to a struct json.
  *
- * NOTE: This function does not return if passed a NULL name or value.
- *
- * XXX - should the function return on conversion error ? - XXX
+ * NOTE: This function does not return if passed a NULL name or value or if
+ * conversion fails.
  */
 struct json *
 parse_json_member(struct json *name, struct json *value, struct json *ast)
@@ -2636,30 +2603,30 @@ parse_json_member(struct json *name, struct json *value, struct json *ast)
      * firewall
      */
     if (name == NULL || value == NULL) {
-	err(55, __func__, "passed NULL name and/or value");
+	err(58, __func__, "passed NULL name and/or value");
 	not_reached();
     }
 
     member = json_conv_member(name, value);
     /* paranoia - these tests should never result in an error */
     if (member == NULL) {
-	err(56, __func__, "converting JSON member returned NULL");
+	err(59, __func__, "converting JSON member returned NULL");
 	not_reached();
     } else if (member->type != JTYPE_MEMBER) {
-        err(57, __func__, "expected JTYPE_MEMBER, found type: %s", json_element_type_name(member->type));
+        err(60, __func__, "expected JTYPE_MEMBER, found type: %s", json_element_type_name(member->type));
         not_reached();
     }
     item = &(member->element.member);
     if (!item->converted) {
-	/* XXX should this be a fatal error ? */
-	warn(__func__, "couldn't convert member");
+	err(61, __func__, "couldn't convert member");
+	not_reached();
     } else {
-        json_dbg(JSON_DBG_LEVEL, __func__, "converted member");
+        json_dbg(json_verbosity_level, __func__, "converted member");
     }
 
 
     if (ast != NULL) {
-	/* TODO add to parse tree if != NULL */
+	/* XXX add to parse tree if != NULL ? */
     }
 
     return member;
@@ -2702,7 +2669,7 @@ usage(int exitcode, char const *str, char const *prog)
      * print the formatted usage stream
      */
     fprintf_usage(DO_NOT_EXIT, stderr, "%s\n", str);
-    fprintf_usage(exitcode, stderr, usage_msg, prog, DBG_DEFAULT, JSON_DBG_LEVEL, JPARSE_VERSION);
+    fprintf_usage(exitcode, stderr, usage_msg, prog, DBG_DEFAULT, json_verbosity_level, JPARSE_VERSION);
     exit(exitcode); /*ooo*/
     not_reached();
 }

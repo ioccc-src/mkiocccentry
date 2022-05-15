@@ -29,10 +29,11 @@
 
 # setup
 #
-export USAGE="usage: $0 [-h] [-v level] [-V]
+export USAGE="usage: $0 [-h] [-v level] [-J json_level] [-V]
 
     -h              print help and exit 8
     -v level        set debug level (def: 0)
+    -J json_level   set json debug level (def: 0)
     -V              print version and exit 8
 
 Exit codes:
@@ -51,29 +52,32 @@ Exit codes:
     >=20  some test failed"
 export TEST_VERSION="0.462022-04-23"
 export V_FLAG="0"
+export J_FLAG="0"
 export EXIT_CODE="0"
 export FAILURE_SUMMARY=
 
 # parse args
 #
-while getopts :hv:V flag; do
+while getopts :hv:J:V flag; do
     case "$flag" in
-    h) echo "$USAGE" 1>&2
-       exit 1
-       ;;
-    v) V_FLAG="$OPTARG";
-       ;;
-    V) echo "$TEST_VERSION"
-       exit 1
-       ;;
+    h)	echo "$USAGE" 1>&2
+	exit 1
+	;;
+    v)	V_FLAG="$OPTARG";
+	;;
+    J)	J_FLAG="$OPTARG";
+	;;
+    V)	echo "$TEST_VERSION"
+	exit 1
+	;;
     \?) echo "$0: ERROR: invalid option: -$OPTARG" 1>&2
-       exit 2
-       ;;
-    :) echo "$0: ERROR: option -$OPTARG requires an argument" 1>&2
-       exit 2
-       ;;
+	exit 2
+	;;
+    :)	echo "$0: ERROR: option -$OPTARG requires an argument" 1>&2
+	exit 2
+	;;
    *)
-       ;;
+	;;
     esac
 done
 
@@ -263,7 +267,7 @@ echo
 echo "RUNNING: jnum_chk"
 echo
 echo "./jnum_chk"
-./jnum_chk
+./jnum_chk -J "${J_FLAG}"
 status="$?"
 if [[ $status -ne 0 ]]; then
     echo "$0: ERROR: jnum_chk non-zero exit code: $status" 1>&2

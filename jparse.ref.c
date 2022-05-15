@@ -2750,14 +2750,14 @@ parse_json_block(char const *string)
 	++num_errors;
 	return;
     }
-    json_dbg(JSON_DBG_LEVEL, __func__, "*** BEGIN PARSE:\n<\n%s\n>\n", string);
+    json_dbg(json_verbosity_level, __func__, "*** BEGIN PARSE:\n<\n%s\n>\n", string);
 
     ugly_parse();
 
     ugly__delete_buffer(bs);
     bs = NULL;
 
-    json_dbg(JSON_DBG_LEVEL, __func__, "*** END PARSE");
+    json_dbg(json_verbosity_level, __func__, "*** END PARSE");
     print_newline(output_newline);
 }
 

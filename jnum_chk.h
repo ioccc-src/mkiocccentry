@@ -70,10 +70,11 @@
  * Use the usage() function to print the usage_msg([0-9]?)+ strings.
  */
 static const char * const usage_msg =
-    "usage: %s [-h] [-v level] [-V] [-q] [-S]\n"
+    "usage: %s [-h] [-v level] [-J level] [-V] [-q] [-S]\n"
     "\n"
     "\t-h\t\tprint help message and exit 0\n"
     "\t-v level\tset verbosity level (def level: %d)\n"
+    "\t-J level\tset JSON verbosity level (def level: %d)\n"
     "\t-V\t\tprint version string and exit 3\n"
     "\t-q\t\tquiet mode (def: not quiet)\n"
     "\t\t\t    NOTE: -q will also silence msg(), warn(), warnp() if -v 0\n"
