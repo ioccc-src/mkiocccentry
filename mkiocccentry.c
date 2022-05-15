@@ -4655,6 +4655,7 @@ write_info(struct info *infop, char const *entry_dir, char const *jinfochk, char
      */
     errno = 0;			/* pre-clear errno for errp() */
     ret = fprintf(info_stream, "{\n") > 0 &&
+	json_fprintf_value_string(info_stream, "\t", JSON_PARSING_DIRECTIVE_NAME, " : ", JSON_PARSING_DIRECTIVE_VALUE, ",\n") &&
 	json_fprintf_value_string(info_stream, "\t", "IOCCC_info_version", " : ", INFO_VERSION, ",\n") &&
 	json_fprintf_value_string(info_stream, "\t", "ioccc_contest", " : ", IOCCC_CONTEST, ",\n") &&
 	json_fprintf_value_long(info_stream, "\t", "ioccc_year", " : ", (long)IOCCC_YEAR, ",\n") &&
@@ -4842,6 +4843,7 @@ write_author(struct info *infop, int author_count, struct author *authorp, char 
      */
     errno = 0;			/* pre-clear errno for errp() */
     ret = fprintf(author_stream, "{\n") > 0 &&
+	json_fprintf_value_string(author_stream, "\t", JSON_PARSING_DIRECTIVE_NAME, " : ", JSON_PARSING_DIRECTIVE_VALUE, ",\n") &&
 	json_fprintf_value_string(author_stream, "\t", "IOCCC_author_version", " : ", AUTHOR_VERSION, ",\n") &&
 	json_fprintf_value_string(author_stream, "\t", "ioccc_contest", " : ", IOCCC_CONTEST, ",\n") &&
 	json_fprintf_value_long(author_stream, "\t", "ioccc_year", " : ", (long)IOCCC_YEAR, ",\n") &&

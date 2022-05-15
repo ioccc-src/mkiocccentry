@@ -45,6 +45,7 @@
  */
 struct json_field common_json_fields[] =
 {
+    { JSON_PARSING_DIRECTIVE_NAME,  NULL, 0, 1, false, JTYPE_STRING,	false, NULL },
     { "ioccc_contest",		    NULL, 0, 1, false, JTYPE_STRING,	false, NULL },
     { "ioccc_year",		    NULL, 0, 1, false, JTYPE_NUMBER,	false, NULL },
     { "mkiocccentry_version",	    NULL, 0, 1, false, JTYPE_STRING,	false, NULL },

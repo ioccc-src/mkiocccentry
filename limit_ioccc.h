@@ -71,7 +71,7 @@
 /*
  * Be careful not to change this value as it will invalidate all IOCCC timestamps < this value
  */
-#define MIN_TIMESTAMP ((time_t)1650779341)
+#define MIN_TIMESTAMP ((time_t)1652598666)
 
 
 /*
@@ -89,6 +89,23 @@
  *	 that IOCCC_CONTEST opens may be different.
  */
 #define IOCCC_YEAR (2022)
+
+
+/*
+ * Did you know that the JSON author removed comments from the
+ * original JSON spec because the creators claimed they saw people
+ * using then to "hold parsing directives"?
+ *
+ *	https://stackoverflow.com/questions/244777/can-comments-be-used-in-json/10976934#10976934
+ *
+ * While this decision is not as silly as some of the JSON design
+ * mistakes, the IOCCC honors this silly concept by mandating the
+ * following parsing directive in the form of specific JSON member:
+ *
+ *	JSON_PARSING_DIRECTIVE_NAME : JSON_PARSING_DIRECTIVE_VALUE
+ */
+#define JSON_PARSING_DIRECTIVE_NAME "no-comment"
+#define JSON_PARSING_DIRECTIVE_VALUE "mandatory JSON parsing directive"
 
 
 #endif /* ! INCLUDE_LIMIT_IOCCC_H */

@@ -1,4 +1,5 @@
 {
+	"no-comment" : "mandatory JSON parsing directive",
 	"IOCCC_info_version" : "1.9 2022-03-15",
 	"ioccc_contest" : "IOCCCMOCK",
 	"ioccc_year" : 2022,
@@ -42,6 +43,6 @@
 	"formed_timestamp" : 1645219582,
 	"formed_timestamp_usec" : 920407,
 	"timestamp_epoch" : "Thu Jan 01 00:00:00 1970 UTC",
-	"min_timestamp" : 1650779341,
+	"min_timestamp" : 1652598666,
 	"formed_UTC" : "Fri Feb 18 21:26:22 2022 UTC"
 }

@@ -237,6 +237,14 @@ echo "$0: notice: You still need to:"
 echo
 echo '    make clobber all test'
 echo
+echo 'then:'
+echo
+echo "    ./vermod.sh -v 1 -n -Q $OLD_MIN_TIMESTAMP $NOW"
+echo
+echo 'If all is well, then:'
+echo
+echo "    ./vermod.sh -v 1 -Q $OLD_MIN_TIMESTAMP $NOW"
+echo
 echo "$0: notice: And if all is well, commit and push the change to the GitHub repo!"
 echo
 
