@@ -237,10 +237,10 @@ json_member:	    json_string
 		    JSON_COLON
 			{ json_dbg(DBG_LOW, __func__, "under json_member: after JSON_COLON before json_element"); }
 		    json_element
-		    {
-			$$ = *parse_json_member(&$1, &$3, &tree);
-			json_dbg(DBG_LOW, __func__, "under json_member: after json_element before ;");
-		    }
+			{
+			    $$ = *parse_json_member(&$1, &$3, &tree);
+			    json_dbg(DBG_LOW, __func__, "under json_member: after json_element before ;");
+			}
 		    ;
 
 json_array:	    JSON_OPEN_BRACKET

@@ -1825,10 +1825,10 @@ yyreduce:
 
   case 22: /* json_member: json_string $@6 ":" $@7 json_element  */
 #line 240 "jparse.y"
-                    {
-			yyval = *parse_json_member(&yyvsp[-4], &yyvsp[-2], &tree);
-			json_dbg(DBG_LOW, __func__, "under json_member: after json_element before ;");
-		    }
+                        {
+			    yyval = *parse_json_member(&yyvsp[-4], &yyvsp[-2], &tree);
+			    json_dbg(DBG_LOW, __func__, "under json_member: after json_element before ;");
+			}
 #line 1782 "jparse.tab.c"
     break;
 
