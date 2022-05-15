@@ -70,7 +70,7 @@ main(int argc, char *argv[])
      * parse args
      */
     program = argv[0];
-    while ((i = getopt(argc, argv, "hv:VqS")) != -1) {
+    while ((i = getopt(argc, argv, "hv:J:VqS")) != -1) {
 	switch (i) {
 	case 'h':		/* -h - print help to stderr and exit 0 */
 	    usage(3, program, "-h help mode", -1, -1); /*ooo*/
@@ -81,6 +81,12 @@ main(int argc, char *argv[])
 	     * parse verbosity
 	     */
 	    verbosity_level = parse_verbosity(program, optarg);
+	    break;
+	case 'J':		/* -J json_verbosity */
+	    /*
+	     * parse JSON verbosity level
+	     */
+	    json_verbosity_level = parse_verbosity(program, optarg);
 	    break;
 	case 'V':		/* -V - print version and exit */
 	    errno = 0;		/* pre-clear errno for warnp() */
@@ -729,7 +735,7 @@ usage(int exitcode, char const *prog, char const *str, int expected, int argc)
     } else {
 	fprintf_usage(DO_NOT_EXIT, stderr, "%s", str);
     }
-    fprintf_usage(exitcode, stderr, usage_msg, prog, DBG_DEFAULT, JNUM_CHK_VERSION);
+    fprintf_usage(exitcode, stderr, usage_msg, prog, DBG_DEFAULT, JSON_DBG_DEFAULT, JNUM_CHK_VERSION);
     exit(exitcode); /*ooo*/
     not_reached();
 }

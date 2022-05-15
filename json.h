@@ -105,7 +105,7 @@ struct encode {
  * as an floating point value.  In this case the "floating point values" fields
  * will be used, and the "integer values" fields will be unused (set to false, or 0).
  *
- * A JSON string is of the form:
+ * A JSON number string is of the form:
  *
  *	({JSON_INTEGER}|{JSON_INTEGER}{JSON_FRACTION}|{JSON_INTEGER}{JSON_FRACTION}{JSON_EXPONENT}_
  *
