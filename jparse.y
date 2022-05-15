@@ -313,7 +313,7 @@ main(int argc, char **argv)
 
     /*
      * XXX for development purposes we override the initial json_verbosity_level
-     * to JSON_DBG_LEVEL. This is used in json_vdbg() which is called by
+     * to json_verbosity_level. This is used in json_vdbg() which is called by
      * json_dbg().
      *
      * This variable is used because it means we don't have to see debug
@@ -382,7 +382,7 @@ main(int argc, char **argv)
 	     */
 	    string_flag_used = true;
 
-	    json_dbg(JSON_DBG_LEVEL, __func__, "Calling parse_json_block(\"%s\"):", optarg);
+	    json_dbg(json_verbosity_level, __func__, "Calling parse_json_block(\"%s\"):", optarg);
 	    /* parse arg as a block of json input */
 	    parse_json_block(optarg);
 	    break;
@@ -404,7 +404,7 @@ main(int argc, char **argv)
 	 * process each argument in order
 	 */
 	for (i=optind; i < argc; ++i) {
-	    json_dbg(JSON_DBG_LEVEL, __func__, "Calling parse_json_file(\"%s\"):", argv[i]);
+	    json_dbg(json_verbosity_level, __func__, "Calling parse_json_file(\"%s\"):", argv[i]);
 	    parse_json_file(argv[i]);
 	}
 
@@ -485,7 +485,7 @@ parse_json_string(char const *string, struct json *ast)
 	not_reached();
     }
 
-    json_dbg(JSON_DBG_LEVEL, __func__, "about to parse string: <%s>", string);
+    json_dbg(json_verbosity_level, __func__, "about to parse string: <%s>", string);
     /*
      * we say that quote == true because the pattern in the lexer will include
      * the '"'s.
@@ -504,7 +504,7 @@ parse_json_string(char const *string, struct json *ast)
 	/* XXX should this be a fatal error ? */
 	warn(__func__, "couldn't decode string: <%s>", string);
     } else {
-        json_dbg(JSON_DBG_LEVEL, __func__, "decoded string: <%s>", item->str);
+        json_dbg(json_verbosity_level, __func__, "decoded string: <%s>", item->str);
     }
 
     /* XXX Are there any other checks that have to be done ? */
@@ -597,7 +597,7 @@ parse_json_bool(char const *string, struct json *ast)
 	    not_reached();
 	}
 	/* only if we get here do we assume everything is okay */
-	json_dbg(JSON_DBG_LEVEL, __func__, "<%s> -> %s", string, booltostr(item->value));
+	json_dbg(json_verbosity_level, __func__, "<%s> -> %s", string, booltostr(item->value));
     }
 
     if (ast != NULL) {
@@ -652,7 +652,7 @@ parse_json_null(char const *string, struct json *ast)
 	/* XXX should this be a fatal error ? */
 	warn(__func__, "couldn't convert null: <%s>", string);
     } else {
-        json_dbg(JSON_DBG_LEVEL, __func__, "convert null: <%s> -> null", string);
+        json_dbg(json_verbosity_level, __func__, "convert null: <%s> -> null", string);
     }
 
 
@@ -705,7 +705,7 @@ parse_json_number(char const *string, struct json *ast)
 	/* XXX should this be a fatal error ? */
 	warn(__func__, "couldn't convert number string: <%s>", string);
     } else {
-        json_dbg(JSON_DBG_LEVEL, __func__, "convert number string: <%s>", item->as_str);
+        json_dbg(json_verbosity_level, __func__, "convert number string: <%s>", item->as_str);
     }
 
     if (ast != NULL) {
@@ -798,7 +798,7 @@ parse_json_member(struct json *name, struct json *value, struct json *ast)
 	/* XXX should this be a fatal error ? */
 	warn(__func__, "couldn't convert member");
     } else {
-        json_dbg(JSON_DBG_LEVEL, __func__, "converted member");
+        json_dbg(json_verbosity_level, __func__, "converted member");
     }
 
 
@@ -846,7 +846,7 @@ usage(int exitcode, char const *str, char const *prog)
      * print the formatted usage stream
      */
     fprintf_usage(DO_NOT_EXIT, stderr, "%s\n", str);
-    fprintf_usage(exitcode, stderr, usage_msg, prog, DBG_DEFAULT, JSON_DBG_LEVEL, JPARSE_VERSION);
+    fprintf_usage(exitcode, stderr, usage_msg, prog, DBG_DEFAULT, json_verbosity_level, JPARSE_VERSION);
     exit(exitcode); /*ooo*/
     not_reached();
 }
