@@ -131,12 +131,12 @@ void parse_json_block(char const *string);  /* parse a string as a JSON block */
  * appropriate function to convert and then return a pointer to it (possibly
  * first linking it into the tree).
  *
- * XXX - these are subject to change and are very incomplete as well - XXX
+ * XXX - these are subject to change and some are incomplete as well - XXX
  */
-struct json *parse_json_string(char const *string, struct json *ast);
-struct json *parse_json_number(char const *string, struct json *ast);
-struct json *parse_json_bool(char const *string, struct json *ast);
-struct json *parse_json_null(char const *string, struct json *ast);
+struct json *parse_json_string(char const *string);
+struct json *parse_json_number(char const *string);
+struct json *parse_json_bool(char const *string);
+struct json *parse_json_null(char const *string);
 struct json *parse_json_array(char const *string, struct json *ast);
 struct json *parse_json_member(struct json *name, struct json *value, struct json *ast);
 
