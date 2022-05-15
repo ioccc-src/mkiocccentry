@@ -183,9 +183,10 @@ else
     make_action 15 parser-o
 fi
 make_action 16 all
-make_action 17 shellcheck
-make_action 18 picky
-make_action 19 test
+make_action 17 depend
+make_action 18 shellcheck
+make_action 19 picky
+make_action 20 test
 if [[ $EXIT_CODE -eq 0 ]]; then
     echo "=-=-=-=-= PASS: $0 =-=-=-=-="
     echo
