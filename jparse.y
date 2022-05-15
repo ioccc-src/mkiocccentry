@@ -158,85 +158,137 @@ int token = 0;
  * very much subject to change!
  */
 %%
-json:		    /* empty */		|
+json:		    /* empty */
+			{ json_dbg(DBG_LOW, __func__, "under json: after /* empty */ before |"); }
+		    |
+
 		    json_element
+			{ json_dbg(DBG_LOW, __func__, "under json: after json_element before ;"); }
 		    ;
 
-json_value:	    json_object		|
-		    json_array		|
-		    json_string		|
-		    json_number		|
+json_value:	    json_object
+			{ json_dbg(DBG_LOW, __func__, "under json_value: after json_object before |"); }
+		    |
+
+		    json_array
+			{ json_dbg(DBG_LOW, __func__, "under json_value: after json_array before |"); }
+		    |
+
+		    json_string
+			{ json_dbg(DBG_LOW, __func__, "under json_value: after json_string before |"); }
+		    |
+
+		    json_number
+			{ json_dbg(DBG_LOW, __func__, "under json_value: after json_number before |"); }
+		    |
+
 		    JSON_TRUE
-		    {
-			$$ = *parse_json_bool(ugly_text, &tree);
-		    }			|
+			{
+			    $$ = *parse_json_bool(ugly_text, &tree);
+			    json_dbg(DBG_LOW, __func__, "under json_value: after JSON_TRUE before |");
+			}
+		    |
+
 		    JSON_FALSE
-		    {
-			$$ = *parse_json_bool(ugly_text, &tree);
-		    }			|
+			{
+			    $$ = *parse_json_bool(ugly_text, &tree);
+			    json_dbg(DBG_LOW, __func__, "under json_value: after JSON_FALSE before |");
+			}
+		    |
+
 		    JSON_NULL
-		    {
-			$$ = *parse_json_null(ugly_text, &tree);
-		    }
+			{
+			    $$ = *parse_json_null(ugly_text, &tree);
+			    json_dbg(DBG_LOW, __func__, "under json_value: after JSON_NULL before ;");
+			}
 		    ;
 
 json_object:	    JSON_OPEN_BRACE
-			json_members
-		    JSON_CLOSE_BRACE	|
+			{ json_dbg(DBG_LOW, __func__, "under json_object: after JSON_OPEN_BRACE before json_members"); }
+		    json_members
+			{ json_dbg(DBG_LOW, __func__, "under json_object: after json_members before JSON_CLOSE_BRACE"); }
+		    JSON_CLOSE_BRACE
+			{ json_dbg(DBG_LOW, __func__, "under json_object: after JSON_CLOSE_BRACE before |"); }
+		    |
 
 		    JSON_OPEN_BRACE
+			{ json_dbg(DBG_LOW, __func__, "under json_object: after JSON_OPEN_BRACE before JSON_CLOSE_BRACE"); }
 		    JSON_CLOSE_BRACE
-		    {
-			$$ = *json_create_object();
-		    }
+			{
+			    $$ = *json_create_object();
+			    json_dbg(DBG_LOW, __func__, "under json_object: after JSON_CLOSE_BRACE before ;");
+			}
 		    ;
 
-json_members:	    json_member		|
+json_members:	    json_member
+			{ json_dbg(DBG_LOW, __func__, "under json_members: after json_member before |"); }
+		    |
+
 		    json_member
-			JSON_COMMA
+			{ json_dbg(DBG_LOW, __func__, "under json_members: after json_member before JSON_COMMA"); }
+		    JSON_COMMA
+			{ json_dbg(DBG_LOW, __func__, "under json_members: after JSON_COMMA before json_members"); }
 		    json_members
+			{ json_dbg(DBG_LOW, __func__, "under json_members: after json_members before ;"); }
 		    ;
 
 json_member:	    json_string
-			JSON_COLON
+			{ json_dbg(DBG_LOW, __func__, "under json_member: after json_string before JSON_COLON"); }
+		    JSON_COLON
+			{ json_dbg(DBG_LOW, __func__, "under json_member: after JSON_COLON before json_element"); }
 		    json_element
 		    {
 			$$ = *parse_json_member(&$1, &$3, &tree);
+			json_dbg(DBG_LOW, __func__, "under json_member: after json_element before ;");
 		    }
-
 		    ;
 
 json_array:	    JSON_OPEN_BRACKET
-			json_elements
-		    JSON_CLOSE_BRACKET	|
+			{ json_dbg(DBG_LOW, __func__, "under json_array: after JSON_OPEN_BRACKET before json_elements"); }
+		    json_elements
+			{ json_dbg(DBG_LOW, __func__, "under json_array: after json_elements before JSON_CLOSE_BRACKET"); }
+		    JSON_CLOSE_BRACKET
+			{ json_dbg(DBG_LOW, __func__, "under json_array: after JSON_CLOSE_BRACKET before |"); }
+		    |
 
 		    JSON_OPEN_BRACKET
+			{ json_dbg(DBG_LOW, __func__, "under json_array: after JSON_OPEN_BRACKET before JSON_CLOSE_BRACKET"); }
 		    JSON_CLOSE_BRACKET
-		    {
-			$$ = *json_create_array();
-		    }
+			{
+			    $$ = *json_create_array();
+			    json_dbg(DBG_LOW, __func__, "under json_array: after JSON_CLOSE_BRACKET before ;");
+			}
 		    ;
 
 
-json_elements:	    json_element	|
+json_elements:	    json_element
+			{ json_dbg(DBG_LOW, __func__, "under json_elements: after json_element before |"); }
+		    |
+
 		    json_element
-			JSON_COMMA
+			{ json_dbg(DBG_LOW, __func__, "under json_elements: after json_element before JSON_COMMA"); }
+		    JSON_COMMA
+			{ json_dbg(DBG_LOW, __func__, "under json_elements: after JSON_COMMA before json_elements"); }
 		    json_elements
+			{ json_dbg(DBG_LOW, __func__, "under json_elements: after json_elements before ;"); }
 		    ;
 
 json_element:	    json_value
+			{ json_dbg(DBG_LOW, __func__, "under json_element: after json_value before ;"); }
 		    ;
 
 json_string:	    JSON_STRING
-		    {
-			$$ = *parse_json_string(ugly_text, &tree);
-		    }
+			{
+			    $$ = *parse_json_string(ugly_text, &tree);
+			    json_dbg(DBG_LOW, __func__, "under json_string: after JSON_STRING before ;");
+			}
 		    ;
 
 json_number:	    JSON_NUMBER
-		    {
-			$$ = *parse_json_number(ugly_text, &tree);
-		    }
+			{
+			    $$ = *parse_json_number(ugly_text, &tree);
+			    json_dbg(DBG_LOW, __func__, "under json_number: after JSON_NUMBER before ;");
+			}
 		    ;
 
 
