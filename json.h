@@ -406,10 +406,7 @@ struct json
     } element;
 
     /*
-     * JSON parse tree double links
-     *
-     * NOTE: If a pointer is NULL then it means you have reached the end of the
-     *	     linked list and/or at the end/top/bottom of the tree.
+     * JSON parse tree links
      */
     struct json *parent;	/* parent node in the JSON parse tree, or NULL if tree root or unlinked */
 };
