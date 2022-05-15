@@ -224,12 +224,12 @@ json_members:	    json_member
 			{ json_dbg(DBG_LOW, __func__, "under json_members: after json_member before |"); }
 		    |
 
-		    json_member
-			{ json_dbg(DBG_LOW, __func__, "under json_members: after json_member before JSON_COMMA"); }
-		    JSON_COMMA
-			{ json_dbg(DBG_LOW, __func__, "under json_members: after JSON_COMMA before json_members"); }
 		    json_members
-			{ json_dbg(DBG_LOW, __func__, "under json_members: after json_members before ;"); }
+			{ json_dbg(DBG_LOW, __func__, "under json_members: after json_members before JSON_COMMA"); }
+		    JSON_COMMA
+			{ json_dbg(DBG_LOW, __func__, "under json_members: after JSON_COMMA before json_member"); }
+		    json_member
+			{ json_dbg(DBG_LOW, __func__, "under json_members: after json_member before ;"); }
 		    ;
 
 json_member:	    json_string
@@ -265,12 +265,12 @@ json_elements:	    json_element
 			{ json_dbg(DBG_LOW, __func__, "under json_elements: after json_element before |"); }
 		    |
 
-		    json_element
-			{ json_dbg(DBG_LOW, __func__, "under json_elements: after json_element before JSON_COMMA"); }
-		    JSON_COMMA
-			{ json_dbg(DBG_LOW, __func__, "under json_elements: after JSON_COMMA before json_elements"); }
 		    json_elements
-			{ json_dbg(DBG_LOW, __func__, "under json_elements: after json_elements before ;"); }
+			{ json_dbg(DBG_LOW, __func__, "under json_elements: after json_elements before JSON_COMMA"); }
+		    JSON_COMMA
+			{ json_dbg(DBG_LOW, __func__, "under json_elements: after JSON_COMMA before json_element"); }
+		    json_element
+			{ json_dbg(DBG_LOW, __func__, "under json_elements: after json_element before ;"); }
 		    ;
 
 json_element:	    json_value
