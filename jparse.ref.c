@@ -881,8 +881,8 @@ int yy_flex_debug = 1;
 
 static const flex_int16_t yy_rule_linenum[14] =
     {   0,
-      159,  169,  175,  181,  187,  192,  198,  203,  210,  216,
-      223,  230,  237
+      156,  166,  172,  178,  184,  189,  195,  200,  207,  213,
+      220,  227,  234
     } ;
 
 /* The intent behind this definition is that it'll catch
@@ -903,14 +903,13 @@ char *yytext;
  *
  * In addition to the parser not doing anything there's possibly missing grammar and
  * there might be some grammar that's not correct (though we think we have that
- * okay). No actions are complete except perhaps those that return to the parser
- * that it's a token like '{', '}' etc.
- *
- * Before the parser can be complete there are still some other things that have
- * to be done. All of this is a work in progress!
+ * okay).
  *
  * XXX Once the parser is done test older versions of both flex and bison to see
  * if they can generate the proper code.
+ *
+ * This is a work in progress but as of the past few days (it's 16 May 2022 as I
+ * write this) much progress has been made!
  */
 /* Section 1: Declarations and option settings */
 /*
@@ -983,7 +982,7 @@ char *yytext;
  * generated files or directly looking at sorry.tm.ca.h.
 
  */
-#line 98 "jparse.l"
+#line 96 "jparse.l"
 /* Declarations etc. go here.
  *
  * Code is copied verbatim near the top of the generated code.
@@ -998,15 +997,14 @@ char *yytext;
  * sees UGLY__BUFFER_STATE it's actually YY_BUFFER_STATE.
  */
 UGLY__BUFFER_STATE bs;
-#line 950 "jparse.c"
+#line 949 "jparse.c"
 /*
  * Section 2: Patterns (regular expressions) and actions.
  */
 /*
- * XXX JSON_WHITESPACE is not needed but for testing I have the whitespace here
- * and below in the actions I print out that it is whitespace and what
- * characters (though newlines and other non-printable whitespace chars are not
- * translated to escape sequences). The text looks like one of:
+ * XXX JSON_WS is not needed but for testing I have the whitespace here
+ * and below in the actions I print out that it is whitespace and how many are
+ * being ignored. The text looks like one of:
  *
  *	ignoring 1 whitespace
  *	ignoring [2-9]+ whitespaces
@@ -1025,7 +1023,7 @@ UGLY__BUFFER_STATE bs;
  * TODO: We have to do more than just assigning the token type (by which we mean
  * ugly_lval.type). These things will be done later.
  */
-#line 977 "jparse.c"
+#line 975 "jparse.c"
 
 #define INITIAL 0
 
@@ -1305,9 +1303,9 @@ YY_DECL
 
 	{
 /* %% [7.0] user's declarations go here */
-#line 158 "jparse.l"
+#line 155 "jparse.l"
 
-#line 1259 "jparse.c"
+#line 1257 "jparse.c"
 
 	while ( /*CONSTCOND*/1 )		/* loops until end-of-file is reached */
 		{
@@ -1400,7 +1398,7 @@ do_action:	/* This label is used only to access EOF actions. */
 case 1:
 /* rule 1 can match eol */
 YY_RULE_SETUP
-#line 159 "jparse.l"
+#line 156 "jparse.l"
 {
 			    /*
 			     * Whitespace
@@ -1413,7 +1411,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
-#line 169 "jparse.l"
+#line 166 "jparse.l"
 {
 			    /* string */
 			    printf("\nstring: <%s>\n", ugly_text);
@@ -1422,7 +1420,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 175 "jparse.l"
+#line 172 "jparse.l"
 {
 			    /* number */
 			    printf("\nnumber: <%s>\n", ugly_text);
@@ -1431,7 +1429,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 181 "jparse.l"
+#line 178 "jparse.l"
 {
 			    /* null object */
 			    printf("\nnull: <%s>\n", ugly_text);
@@ -1440,7 +1438,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 187 "jparse.l"
+#line 184 "jparse.l"
 {
 			    /* boolean: true */
 			    printf("\ntrue: <%s>\n", ugly_text);
@@ -1449,7 +1447,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 192 "jparse.l"
+#line 189 "jparse.l"
 {
 			    /* boolean: false */
 			    printf("\nfalse: <%s>\n", ugly_text);
@@ -1458,7 +1456,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 198 "jparse.l"
+#line 195 "jparse.l"
 {
 			    /* start of object */
 			    printf("\nstart of object: <%c>\n", *ugly_text);
@@ -1467,7 +1465,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 203 "jparse.l"
+#line 200 "jparse.l"
 {
 			    /* end of object */
 			    printf("\nend of object: <%c>\n", *ugly_text);
@@ -1477,7 +1475,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 210 "jparse.l"
+#line 207 "jparse.l"
 {
 			    /* start of array */
 			    printf("\nstart of array: <%c>\n", *ugly_text);
@@ -1487,7 +1485,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
-#line 216 "jparse.l"
+#line 213 "jparse.l"
 {
 			    /* end of array */
 			    printf("\nend of array: <%c>\n", *ugly_text);
@@ -1497,7 +1495,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
-#line 223 "jparse.l"
+#line 220 "jparse.l"
 {
 			    /* colon or 'equals' */
 			    printf("\ncolon (or 'equals'): <%c>\n", *ugly_text);
@@ -1507,7 +1505,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
-#line 230 "jparse.l"
+#line 227 "jparse.l"
 {
 			    /* comma: name/value pair separator */
 			    printf("\ncomma: <%c>\n", *ugly_text);
@@ -1517,7 +1515,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
-#line 237 "jparse.l"
+#line 234 "jparse.l"
 {
 			    /* invalid token: any other character */
 			    ugly_error("\ninvalid token: %c\n", *ugly_text);
@@ -1526,10 +1524,10 @@ YY_RULE_SETUP
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
-#line 243 "jparse.l"
+#line 240 "jparse.l"
 YY_FATAL_ERROR( "flex scanner jammed" );
 	YY_BREAK
-#line 1481 "jparse.c"
+#line 1479 "jparse.c"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 
@@ -2689,10 +2687,65 @@ void yyfree (void * ptr )
 
 /* %ok-for-header */
 
-#line 243 "jparse.l"
+#line 240 "jparse.l"
 
 
 /* Section 3: Code that's copied to the generated scanner */
+
+/* json_parse
+ *
+ * Given a pointer to char and a length, use the parser to determine if the json
+ * is valid or not.
+ *
+ * given:
+ *
+ *	ptr	    - pointer to start of json blob
+ *	len	    - length of the json blob
+ *	is_valid    - if != NULL set to true or false depending on json validity
+ *
+ * Returns a pointer to the parsed json tree.
+ *
+ * XXX - should this function return on error ? - XXX
+ */
+struct json *
+json_parse(char const *ptr, size_t len, bool *is_valid)
+{
+    struct json *json = NULL;
+    size_t length;
+
+    /*
+     * firewall
+     */
+    if (ptr == NULL) {
+	err(35, __func__, "pointer to JSON blob ptr NULL");
+	not_reached();
+    }
+    else if (len <= 0) {
+	err(36, __func__, "len <= 0");
+	not_reached();
+    }
+
+    /*
+     * additional sanity checks
+     */
+    length = strlen(ptr);
+    if (length < len) {
+	/*
+	 * XXX Is this actually correct? If there is a NUL byte embedded in the
+	 * string and we're wanting to ignore NULs, the strlen could be < the
+	 * length.
+	 */
+	err(37, __func__, "total strlen() %zu < length of len %zu", (uintmax_t)length, (uintmax_t)len);
+	not_reached();
+    }
+
+
+    if (is_valid != NULL) {
+	/* XXX - what final checks should determine if it's valid ? - XXX */
+    }
+
+    return json;
+}
 
 /* parse_json_block	    - parse string as a JSON block
  *

@@ -8,18 +8,16 @@
  *
  * In addition to the parser not doing anything there's possibly missing grammar and
  * there might be some grammar that's not correct (though we think we have that
- * okay). No actions are complete except perhaps those that return to the parser
- * that it's a token like '{', '}' etc.
- *
- * Before the parser can be complete there are still some other things that have
- * to be done. All of this is a work in progress!
+ * okay).
  *
  * XXX Once the parser is done test older versions of both flex and bison to see
  * if they can generate the proper code.
+ *
+ * This is a work in progress but as of the past few days (it's 16 May 2022 as I
+ * write this) much progress has been made!
  */
 
 /* Section 1: Declarations and option settings */
-
 /*
  * noyywrap prevents needing to link in the flex(1) library which means those
  * without flex can compile the code. Even if everyone had flex(1) though under
@@ -116,17 +114,16 @@ UGLY__BUFFER_STATE bs;
  */
 
 /*
- * XXX JSON_WHITESPACE is not needed but for testing I have the whitespace here
- * and below in the actions I print out that it is whitespace and what
- * characters (though newlines and other non-printable whitespace chars are not
- * translated to escape sequences). The text looks like one of:
+ * XXX JSON_WS is not needed but for testing I have the whitespace here
+ * and below in the actions I print out that it is whitespace and how many are
+ * being ignored. The text looks like one of:
  *
  *	ignoring 1 whitespace
  *	ignoring [2-9]+ whitespaces
  *
  * to help distinguish it from other patterns matched.
  */
-JSON_WHITESPACE	[ \t\r\n]+
+JSON_WS			[ \t\r\n]+
 
 /*
  * NOTE: On the subject of JSON_STRING one might ask the question about the
@@ -156,7 +153,7 @@ JSON_COMMA		","
  * ugly_lval.type). These things will be done later.
  */
 %%
-{JSON_WHITESPACE}	{
+{JSON_WS}		{
 			    /*
 			     * Whitespace
 			     *
@@ -243,6 +240,61 @@ JSON_COMMA		","
 %%
 
 /* Section 3: Code that's copied to the generated scanner */
+
+/* json_parse
+ *
+ * Given a pointer to char and a length, use the parser to determine if the json
+ * is valid or not.
+ *
+ * given:
+ *
+ *	ptr	    - pointer to start of json blob
+ *	len	    - length of the json blob
+ *	is_valid    - if != NULL set to true or false depending on json validity
+ *
+ * Returns a pointer to the parsed json tree.
+ *
+ * XXX - should this function return on error ? - XXX
+ */
+struct json *
+json_parse(char const *ptr, size_t len, bool *is_valid)
+{
+    struct json *json = NULL;
+    size_t length;
+
+    /*
+     * firewall
+     */
+    if (ptr == NULL) {
+	err(35, __func__, "pointer to JSON blob ptr NULL");
+	not_reached();
+    }
+    else if (len <= 0) {
+	err(36, __func__, "len <= 0");
+	not_reached();
+    }
+
+    /*
+     * additional sanity checks
+     */
+    length = strlen(ptr);
+    if (length < len) {
+	/*
+	 * XXX Is this actually correct? If there is a NUL byte embedded in the
+	 * string and we're wanting to ignore NULs, the strlen could be < the
+	 * length.
+	 */
+	err(37, __func__, "total strlen() %zu < length of len %zu", (uintmax_t)length, (uintmax_t)len);
+	not_reached();
+    }
+
+
+    if (is_valid != NULL) {
+	/* XXX - what final checks should determine if it's valid ? - XXX */
+    }
+
+    return json;
+}
 
 /* parse_json_block	    - parse string as a JSON block
  *
