@@ -881,8 +881,8 @@ int yy_flex_debug = 1;
 
 static const flex_int16_t yy_rule_linenum[14] =
     {   0,
-      159,  169,  176,  183,  190,  196,  203,  209,  216,  223,
-      230,  237,  244
+      159,  169,  175,  181,  187,  192,  198,  203,  210,  216,
+      223,  230,  237
     } ;
 
 /* The intent behind this definition is that it'll catch
@@ -1417,63 +1417,57 @@ YY_RULE_SETUP
 {
 			    /* string */
 			    printf("\nstring: <%s>\n", ugly_text);
-			    ugly_lval->type = JTYPE_STRING;
 			    return JSON_STRING;
 			}
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 176 "jparse.l"
+#line 175 "jparse.l"
 {
 			    /* number */
 			    printf("\nnumber: <%s>\n", ugly_text);
-			    ugly_lval->type = JTYPE_NUMBER;
 			    return JSON_NUMBER;
 			}
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 183 "jparse.l"
+#line 181 "jparse.l"
 {
 			    /* null object */
 			    printf("\nnull: <%s>\n", ugly_text);
-			    ugly_lval->type = JTYPE_NULL;
 			    return JSON_NULL;
 			}
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 190 "jparse.l"
+#line 187 "jparse.l"
 {
 			    /* boolean: true */
 			    printf("\ntrue: <%s>\n", ugly_text);
-			    ugly_lval->type = JTYPE_BOOL;
 			    return JSON_TRUE;
 			}
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 196 "jparse.l"
+#line 192 "jparse.l"
 {
 			    /* boolean: false */
 			    printf("\nfalse: <%s>\n", ugly_text);
-			    ugly_lval->type = JTYPE_BOOL;
 			    return JSON_FALSE;
 			}
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 203 "jparse.l"
+#line 198 "jparse.l"
 {
 			    /* start of object */
 			    printf("\nstart of object: <%c>\n", *ugly_text);
-			    ugly_lval->type = JTYPE_OBJECT;
 			    return JSON_OPEN_BRACE;
 			}
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 209 "jparse.l"
+#line 203 "jparse.l"
 {
 			    /* end of object */
 			    printf("\nend of object: <%c>\n", *ugly_text);
@@ -1483,18 +1477,17 @@ YY_RULE_SETUP
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 216 "jparse.l"
+#line 210 "jparse.l"
 {
 			    /* start of array */
 			    printf("\nstart of array: <%c>\n", *ugly_text);
-			    ugly_lval->type = JTYPE_ARRAY;
 			    token = '[';
 			    return JSON_OPEN_BRACKET;
 			}
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
-#line 223 "jparse.l"
+#line 216 "jparse.l"
 {
 			    /* end of array */
 			    printf("\nend of array: <%c>\n", *ugly_text);
@@ -1504,7 +1497,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
-#line 230 "jparse.l"
+#line 223 "jparse.l"
 {
 			    /* colon or 'equals' */
 			    printf("\ncolon (or 'equals'): <%c>\n", *ugly_text);
@@ -1514,7 +1507,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
-#line 237 "jparse.l"
+#line 230 "jparse.l"
 {
 			    /* comma: name/value pair separator */
 			    printf("\ncomma: <%c>\n", *ugly_text);
@@ -1524,7 +1517,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
-#line 244 "jparse.l"
+#line 237 "jparse.l"
 {
 			    /* invalid token: any other character */
 			    ugly_error("\ninvalid token: %c\n", *ugly_text);
@@ -1533,10 +1526,10 @@ YY_RULE_SETUP
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
-#line 250 "jparse.l"
+#line 243 "jparse.l"
 YY_FATAL_ERROR( "flex scanner jammed" );
 	YY_BREAK
-#line 1488 "jparse.c"
+#line 1481 "jparse.c"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 
@@ -2696,7 +2689,7 @@ void yyfree (void * ptr )
 
 /* %ok-for-header */
 
-#line 250 "jparse.l"
+#line 243 "jparse.l"
 
 
 /* Section 3: Code that's copied to the generated scanner */
