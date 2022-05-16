@@ -126,7 +126,7 @@
 #define yychar          ugly_char
 
 /* First part of user prologue.  */
-#line 107 "jparse.y"
+#line 103 "jparse.y"
 
 #include <inttypes.h>
 #include <stdio.h>
@@ -571,10 +571,10 @@ static const yytype_int8 yytranslate[] =
 /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_int16 yyrline[] =
 {
-       0,   162,   162,   170,   179,   188,   197,   206,   215,   224,
-     233,   243,   245,   242,   254,   253,   264,   274,   276,   273,
-     285,   287,   284,   298,   300,   297,   309,   308,   320,   330,
-     332,   329,   340,   349,   358
+       0,   158,   158,   166,   175,   184,   193,   202,   211,   220,
+     229,   239,   241,   238,   250,   249,   260,   270,   272,   269,
+     281,   283,   280,   294,   296,   293,   305,   304,   316,   326,
+     328,   325,   336,   345,   354
 };
 #endif
 
@@ -1692,7 +1692,7 @@ yyreduce:
     switch (yyn)
       {
   case 2: /* json: %empty  */
-#line 162 "jparse.y"
+#line 158 "jparse.y"
                         {
 			    yyval = json_alloc(JTYPE_UNSET);
 			    json_dbg(JSON_DBG_MED, __func__, "under json: after /* empty */ returning type: %s",
@@ -1703,7 +1703,7 @@ yyreduce:
     break;
 
   case 3: /* json: json_element  */
-#line 171 "jparse.y"
+#line 167 "jparse.y"
                         {
 			    yyval = yyvsp[0]; /* magic: json becomes the json_element type */
 			    json_dbg(JSON_DBG_MED, __func__, "under json: after json_element returning type: %s",
@@ -1714,7 +1714,7 @@ yyreduce:
     break;
 
   case 4: /* json_value: json_object  */
-#line 180 "jparse.y"
+#line 176 "jparse.y"
                         {
 			    yyval = yyvsp[0]; /* magic: json_value becomes the json_object type */
 			    json_dbg(JSON_DBG_MED, __func__, "under json_value: after json_object returning type: %s",
@@ -1725,7 +1725,7 @@ yyreduce:
     break;
 
   case 5: /* json_value: json_array  */
-#line 189 "jparse.y"
+#line 185 "jparse.y"
                         {
 			    yyval = yyvsp[0]; /* magic: json_value becomes the json_array type */
 			    json_dbg(JSON_DBG_MED, __func__, "under json_value: after json_array returning type: %s",
@@ -1736,7 +1736,7 @@ yyreduce:
     break;
 
   case 6: /* json_value: json_string  */
-#line 198 "jparse.y"
+#line 194 "jparse.y"
                         {
 			    yyval = yyvsp[0]; /* magic: json_value becomes the json_string type */
 			    json_dbg(JSON_DBG_MED, __func__, "under json_value: after json_string returning type: %s",
@@ -1747,7 +1747,7 @@ yyreduce:
     break;
 
   case 7: /* json_value: json_number  */
-#line 207 "jparse.y"
+#line 203 "jparse.y"
                         {
 			    yyval = yyvsp[0]; /* magic: json_value becomes the json_number type */
 			    json_dbg(JSON_DBG_MED, __func__, "under json_value: after json_number returning type: %s",
@@ -1758,7 +1758,7 @@ yyreduce:
     break;
 
   case 8: /* json_value: "true"  */
-#line 216 "jparse.y"
+#line 212 "jparse.y"
                         {
 			    yyval = parse_json_bool(ugly_text);
 			    json_dbg(JSON_DBG_MED, __func__, "under json_value: after JSON_TRUE returning type: %s",
@@ -1769,7 +1769,7 @@ yyreduce:
     break;
 
   case 9: /* json_value: "false"  */
-#line 225 "jparse.y"
+#line 221 "jparse.y"
                         {
 			    yyval = parse_json_bool(ugly_text);
 			    json_dbg(JSON_DBG_MED, __func__, "under json_value: after JSON_FALSE returning type: %s",
@@ -1780,7 +1780,7 @@ yyreduce:
     break;
 
   case 10: /* json_value: "null"  */
-#line 234 "jparse.y"
+#line 230 "jparse.y"
                         {
 			    yyval = parse_json_null(ugly_text);
 			    json_dbg(JSON_DBG_MED, __func__, "under json_value: after JSON_NULL returning type: %s",
@@ -1791,19 +1791,19 @@ yyreduce:
     break;
 
   case 11: /* $@1: %empty  */
-#line 243 "jparse.y"
+#line 239 "jparse.y"
                         { json_dbg(JSON_DBG_LOW, __func__, "under json_object: after JSON_OPEN_BRACE before json_members"); }
 #line 1746 "jparse.tab.c"
     break;
 
   case 12: /* $@2: %empty  */
-#line 245 "jparse.y"
+#line 241 "jparse.y"
                         { json_dbg(JSON_DBG_LOW, __func__, "under json_object: after json_members before JSON_CLOSE_BRACE"); }
 #line 1752 "jparse.tab.c"
     break;
 
   case 13: /* json_object: "{" $@1 json_members $@2 "}"  */
-#line 247 "jparse.y"
+#line 243 "jparse.y"
                         {
 			    json_dbg(JSON_DBG_LOW, __func__, "under json_object: need more code probably here"); /* XXX */
 			    json_dbg(JSON_DBG_LOW, __func__, "under json_object: after JSON_CLOSE_BRACE before |");
@@ -1812,13 +1812,13 @@ yyreduce:
     break;
 
   case 14: /* $@3: %empty  */
-#line 254 "jparse.y"
+#line 250 "jparse.y"
                         { json_dbg(JSON_DBG_LOW, __func__, "under json_object: after JSON_OPEN_BRACE before JSON_CLOSE_BRACE"); }
 #line 1767 "jparse.tab.c"
     break;
 
   case 15: /* json_object: "{" $@3 "}"  */
-#line 256 "jparse.y"
+#line 252 "jparse.y"
                         {
 			    yyval = json_create_object();
 			    json_dbg(JSON_DBG_MED, __func__, "under json_object: after JSON_CLOSE_BRACE returning type: %s",
@@ -1829,7 +1829,7 @@ yyreduce:
     break;
 
   case 16: /* json_members: json_member  */
-#line 265 "jparse.y"
+#line 261 "jparse.y"
                         {
 			    yyval = yyvsp[0]; /* magic: json_members becomes the json_member type */
 			    json_dbg(JSON_DBG_MED, __func__, "under json_members: after json_member returning type: %s",
@@ -1840,19 +1840,19 @@ yyreduce:
     break;
 
   case 17: /* $@4: %empty  */
-#line 274 "jparse.y"
+#line 270 "jparse.y"
                         { json_dbg(JSON_DBG_LOW, __func__, "under json_members: after json_members before JSON_COMMA"); }
 #line 1795 "jparse.tab.c"
     break;
 
   case 18: /* $@5: %empty  */
-#line 276 "jparse.y"
+#line 272 "jparse.y"
                         { json_dbg(JSON_DBG_LOW, __func__, "under json_members: after JSON_COMMA before json_member"); }
 #line 1801 "jparse.tab.c"
     break;
 
   case 19: /* json_members: json_members $@4 "," $@5 json_member  */
-#line 278 "jparse.y"
+#line 274 "jparse.y"
                         {
 			    json_dbg(JSON_DBG_LOW, __func__, "under json_members: need more code probably here"); /* XXX */
 			    json_dbg(JSON_DBG_LOW, __func__, "under json_members: after json_member before ;");
@@ -1861,19 +1861,19 @@ yyreduce:
     break;
 
   case 20: /* $@6: %empty  */
-#line 285 "jparse.y"
+#line 281 "jparse.y"
                         { json_dbg(JSON_DBG_LOW, __func__, "under json_member: after json_string before JSON_COLON"); }
 #line 1816 "jparse.tab.c"
     break;
 
   case 21: /* $@7: %empty  */
-#line 287 "jparse.y"
+#line 283 "jparse.y"
                         { json_dbg(JSON_DBG_LOW, __func__, "under json_member: after JSON_COLON before json_element"); }
 #line 1822 "jparse.tab.c"
     break;
 
   case 22: /* json_member: json_string $@6 ":" $@7 json_element  */
-#line 289 "jparse.y"
+#line 285 "jparse.y"
                         {
 			    yyval = parse_json_member(yyvsp[-4], yyvsp[-2], &tree);
 			    json_dbg(JSON_DBG_MED, __func__, "under json_member: after json_element returning type: %s",
@@ -1884,19 +1884,19 @@ yyreduce:
     break;
 
   case 23: /* $@8: %empty  */
-#line 298 "jparse.y"
+#line 294 "jparse.y"
                         { json_dbg(JSON_DBG_LOW, __func__, "under json_array: after JSON_OPEN_BRACKET before json_elements"); }
 #line 1839 "jparse.tab.c"
     break;
 
   case 24: /* $@9: %empty  */
-#line 300 "jparse.y"
+#line 296 "jparse.y"
                         { json_dbg(JSON_DBG_LOW, __func__, "under json_array: after json_elements before JSON_CLOSE_BRACKET"); }
 #line 1845 "jparse.tab.c"
     break;
 
   case 25: /* json_array: "[" $@8 json_elements $@9 "]"  */
-#line 302 "jparse.y"
+#line 298 "jparse.y"
                         {
 			    json_dbg(JSON_DBG_LOW, __func__, "under json_array: need more code probably here"); /* XXX */
 			    json_dbg(JSON_DBG_LOW, __func__, "under json_array: after JSON_CLOSE_BRACKET before |");
@@ -1905,13 +1905,13 @@ yyreduce:
     break;
 
   case 26: /* $@10: %empty  */
-#line 309 "jparse.y"
+#line 305 "jparse.y"
                         { json_dbg(JSON_DBG_LOW, __func__, "under json_array: after JSON_OPEN_BRACKET before JSON_CLOSE_BRACKET"); }
 #line 1860 "jparse.tab.c"
     break;
 
   case 27: /* json_array: "[" $@10 "]"  */
-#line 311 "jparse.y"
+#line 307 "jparse.y"
                         {
 			    yyval = json_create_array();
 			    json_dbg(JSON_DBG_MED, __func__, "under json_array: after JSON_CLOSE_BRACKET returning type: %s",
@@ -1922,7 +1922,7 @@ yyreduce:
     break;
 
   case 28: /* json_elements: json_element  */
-#line 321 "jparse.y"
+#line 317 "jparse.y"
                         {
 			    yyval = yyvsp[0]; /* magic: json_elements becomes the json_element type */
 			    json_dbg(JSON_DBG_MED, __func__, "under json_elements: after json_element returning type: %s",
@@ -1933,19 +1933,19 @@ yyreduce:
     break;
 
   case 29: /* $@11: %empty  */
-#line 330 "jparse.y"
+#line 326 "jparse.y"
                         { json_dbg(JSON_DBG_LOW, __func__, "under json_elements: after json_elements before JSON_COMMA"); }
 #line 1888 "jparse.tab.c"
     break;
 
   case 30: /* $@12: %empty  */
-#line 332 "jparse.y"
+#line 328 "jparse.y"
                         { json_dbg(JSON_DBG_LOW, __func__, "under json_elements: after JSON_COMMA before json_element"); }
 #line 1894 "jparse.tab.c"
     break;
 
   case 31: /* json_elements: json_elements $@11 "," $@12 json_element  */
-#line 334 "jparse.y"
+#line 330 "jparse.y"
                         {
 			    json_dbg(JSON_DBG_LOW, __func__, "under json_elements: need more code probably here"); /* XXX */
 			    json_dbg(JSON_DBG_LOW, __func__, "under json_elements: after json_element before ;");
@@ -1954,7 +1954,7 @@ yyreduce:
     break;
 
   case 32: /* json_element: json_value  */
-#line 341 "jparse.y"
+#line 337 "jparse.y"
                         {
 			    yyval = yyvsp[0]; /* magic: json_element becomes the json_value type */
 			    json_dbg(JSON_DBG_MED, __func__, "under json_element: after json_value returning type: %s",
@@ -1965,7 +1965,7 @@ yyreduce:
     break;
 
   case 33: /* json_string: JSON_STRING  */
-#line 350 "jparse.y"
+#line 346 "jparse.y"
                         {
 			    yyval = parse_json_string(ugly_text);
 			    json_dbg(JSON_DBG_MED, __func__, "under json_string: after JSON_STRING returning type: %s",
@@ -1976,7 +1976,7 @@ yyreduce:
     break;
 
   case 34: /* json_number: JSON_NUMBER  */
-#line 359 "jparse.y"
+#line 355 "jparse.y"
                         {
 			    yyval = parse_json_number(ugly_text);
 			    json_dbg(JSON_DBG_MED, __func__, "under json_number: after JSON_NUMBER returning type: %s",
@@ -2222,7 +2222,7 @@ yyreturnlab:
   return yyresult;
 }
 
-#line 370 "jparse.y"
+#line 366 "jparse.y"
 
 /* Section 3: C code */
 

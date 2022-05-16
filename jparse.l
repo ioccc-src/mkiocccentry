@@ -8,18 +8,16 @@
  *
  * In addition to the parser not doing anything there's possibly missing grammar and
  * there might be some grammar that's not correct (though we think we have that
- * okay). No actions are complete except perhaps those that return to the parser
- * that it's a token like '{', '}' etc.
- *
- * Before the parser can be complete there are still some other things that have
- * to be done. All of this is a work in progress!
+ * okay).
  *
  * XXX Once the parser is done test older versions of both flex and bison to see
  * if they can generate the proper code.
+ *
+ * This is a work in progress but as of the past few days (it's 16 May 2022 as I
+ * write this) much progress has been made!
  */
 
 /* Section 1: Declarations and option settings */
-
 /*
  * noyywrap prevents needing to link in the flex(1) library which means those
  * without flex can compile the code. Even if everyone had flex(1) though under
@@ -116,17 +114,16 @@ UGLY__BUFFER_STATE bs;
  */
 
 /*
- * XXX JSON_WHITESPACE is not needed but for testing I have the whitespace here
- * and below in the actions I print out that it is whitespace and what
- * characters (though newlines and other non-printable whitespace chars are not
- * translated to escape sequences). The text looks like one of:
+ * XXX JSON_WS is not needed but for testing I have the whitespace here
+ * and below in the actions I print out that it is whitespace and how many are
+ * being ignored. The text looks like one of:
  *
  *	ignoring 1 whitespace
  *	ignoring [2-9]+ whitespaces
  *
  * to help distinguish it from other patterns matched.
  */
-JSON_WHITESPACE	[ \t\r\n]+
+JSON_WS			[ \t\r\n]+
 
 /*
  * NOTE: On the subject of JSON_STRING one might ask the question about the
@@ -156,7 +153,7 @@ JSON_COMMA		","
  * ugly_lval.type). These things will be done later.
  */
 %%
-{JSON_WHITESPACE}	{
+{JSON_WS}		{
 			    /*
 			     * Whitespace
 			     *
