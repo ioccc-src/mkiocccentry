@@ -154,16 +154,7 @@ int token = 0;
  * very much subject to change!
  */
 %%
-json:		    /* empty */
-			{
-			    $$ = json_alloc(JTYPE_UNSET);
-			    json_dbg(JSON_DBG_MED, __func__, "under json: after /* empty */ returning type: %s",
-						   json_element_type_name($$));
-			    json_dbg(JSON_DBG_LOW, __func__, "under json: after /* empty */ before |");
-			}
-		    |
-
-		    json_element
+json:		    json_element
 			{
 			    $$ = $1; /* magic: json becomes the json_element type */
 			    json_dbg(JSON_DBG_MED, __func__, "under json: after json_element returning type: %s",
