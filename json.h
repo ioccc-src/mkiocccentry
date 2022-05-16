@@ -445,7 +445,7 @@ extern struct json *json_create_array(void);
 extern bool json_array_add_value(struct json *node, struct json *value);
 extern bool json_array_append_values(struct json *node, struct dyn_array *values);
 /* print the type of json element in the struct json */
-extern char const *json_element_type_name(enum element_type json_type);
+extern char const *json_element_type_name(struct json *node);
 /* JSON parse tree functions */
 extern void json_free(struct json *node);
 extern void json_tree_free(struct json *node);

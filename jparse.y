@@ -499,7 +499,7 @@ parse_json_string(char const *string)
         err(36, __func__, "converting JSON string returned NULL: <%s>", string);
         not_reached();
     } else if (str->type != JTYPE_STRING) {
-        err(37, __func__, "expected JTYPE_STRING, found type: %s", json_element_type_name(str->type));
+        err(37, __func__, "expected JTYPE_STRING, found type: %s", json_element_type_name(str));
         not_reached();
     }
     item = &(str->element.string);
@@ -546,7 +546,7 @@ parse_json_bool(char const *string)
 	err(40, __func__, "converting JSON bool returned NULL: <%s>", string);
 	not_reached();
     } else if (boolean->type != JTYPE_BOOL) {
-        err(41, __func__, "expected JTYPE_BOOL, found type: %s", json_element_type_name(boolean->type));
+        err(41, __func__, "expected JTYPE_BOOL, found type: %s", json_element_type_name(boolean));
         not_reached();
     }
     item = &(boolean->element.boolean);
@@ -633,7 +633,7 @@ parse_json_null(char const *string)
 	err(50, __func__, "null ironically should not be NULL but it is :-)");
 	not_reached();
     } else if (null->type != JTYPE_NULL) {
-        err(51, __func__, "expected JTYPE_NULL, found type: %s", json_element_type_name(null->type));
+        err(51, __func__, "expected JTYPE_NULL, found type: %s", json_element_type_name(null));
         not_reached();
     }
     item = &(null->element.null);
@@ -679,7 +679,7 @@ parse_json_number(char const *string)
 	err(54, __func__, "converting JSON number returned NULL: <%s>", string);
         not_reached();
     } else if (number->type != JTYPE_NUMBER) {
-        err(55, __func__, "expected JTYPE_NUMBER, found type: %s", json_element_type_name(number->type));
+        err(55, __func__, "expected JTYPE_NUMBER, found type: %s", json_element_type_name(number));
         not_reached();
     }
     item = &(number->element.number);
@@ -765,7 +765,7 @@ parse_json_member(struct json *name, struct json *value, struct json *ast)
 	err(59, __func__, "converting JSON member returned NULL");
 	not_reached();
     } else if (member->type != JTYPE_MEMBER) {
-        err(60, __func__, "expected JTYPE_MEMBER, found type: %s", json_element_type_name(member->type));
+        err(60, __func__, "expected JTYPE_MEMBER, found type: %s", json_element_type_name(member));
         not_reached();
     }
     item = &(member->element.member);
