@@ -260,7 +260,6 @@ struct json *
 json_parse(char const *ptr, size_t len, bool *is_valid)
 {
     struct json *json = NULL;
-    size_t length;
 
     /*
      * firewall
@@ -273,21 +272,6 @@ json_parse(char const *ptr, size_t len, bool *is_valid)
 	err(36, __func__, "len <= 0");
 	not_reached();
     }
-
-    /*
-     * additional sanity checks
-     */
-    length = strlen(ptr);
-    if (length < len) {
-	/*
-	 * XXX Is this actually correct? If there is a NUL byte embedded in the
-	 * string and we're wanting to ignore NULs, the strlen could be < the
-	 * length.
-	 */
-	err(37, __func__, "total strlen() %zu < length of len %zu", (uintmax_t)length, (uintmax_t)len);
-	not_reached();
-    }
-
 
     if (is_valid != NULL) {
 	/* XXX - what final checks should determine if it's valid ? - XXX */
