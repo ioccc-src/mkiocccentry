@@ -19,8 +19,9 @@ Steps to reproduce the behavior (adjust steps as needed):
 **Expected behavior**
 A clear and concise description of what you expected to happen.
 
-**Screenshots**
-If applicable, add screenshots to help explain your problem, or just write n/a.
+**Output**
+If applicable, add command output or screenshots to help explain your problem, or just write n/a.
+If the ouput is very long, attach it as a file (perhaps as a compressed file) to the bug report.
 
 **Environment (please complete the following information, or write n/a where not appliable):**
  - OS: [e.g. macOS, Linux, FreeBSD, n/a, etc.]
