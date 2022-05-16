@@ -233,7 +233,7 @@ JSON_COMMA		","
 
 .			{
 			    /* invalid token: any other character */
-			    ugly_error("\ninvalid token: %c\n", *ugly_text);
+			    ugly_error("\ninvalid token: 0x%02x = <%c>\n", *ugly_text, *ugly_text);
 			    return JSON_INVALID_TOKEN;
 			}
 
