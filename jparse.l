@@ -241,6 +241,61 @@ JSON_COMMA		","
 
 /* Section 3: Code that's copied to the generated scanner */
 
+/* json_parse
+ *
+ * Given a pointer to char and a length, use the parser to determine if the json
+ * is valid or not.
+ *
+ * given:
+ *
+ *	ptr	    - pointer to start of json blob
+ *	len	    - length of the json blob
+ *	is_valid    - if != NULL set to true or false depending on json validity
+ *
+ * Returns a pointer to the parsed json tree.
+ *
+ * XXX - should this function return on error ? - XXX
+ */
+struct json *
+json_parse(char const *ptr, size_t len, bool *is_valid)
+{
+    struct json *json = NULL;
+    size_t length;
+
+    /*
+     * firewall
+     */
+    if (ptr == NULL) {
+	err(35, __func__, "pointer to JSON blob ptr NULL");
+	not_reached();
+    }
+    else if (len <= 0) {
+	err(36, __func__, "len <= 0");
+	not_reached();
+    }
+
+    /*
+     * additional sanity checks
+     */
+    length = strlen(ptr);
+    if (length < len) {
+	/*
+	 * XXX Is this actually correct? If there is a NUL byte embedded in the
+	 * string and we're wanting to ignore NULs, the strlen could be < the
+	 * length.
+	 */
+	err(37, __func__, "total strlen() %zu < length of len %zu", (uintmax_t)length, (uintmax_t)len);
+	not_reached();
+    }
+
+
+    if (is_valid != NULL) {
+	/* XXX - what final checks should determine if it's valid ? - XXX */
+    }
+
+    return json;
+}
+
 /* parse_json_block	    - parse string as a JSON block
  *
  * given:

@@ -139,5 +139,7 @@ struct json *parse_json_bool(char const *string);
 struct json *parse_json_null(char const *string);
 struct json *parse_json_array(char const *string, struct json *ast);
 struct json *parse_json_member(struct json *name, struct json *value, struct json *ast);
+/* json_parse() uses the above functions to parse a json blob */
+struct json *json_parse(char const *ptr, size_t len, bool *is_valid);
 
 #endif /* INCLUDE_JPARSE_H */
