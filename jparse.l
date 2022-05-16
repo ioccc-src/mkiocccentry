@@ -169,41 +169,35 @@ JSON_COMMA		","
 {JSON_STRING}		{
 			    /* string */
 			    printf("\nstring: <%s>\n", ugly_text);
-			    ugly_lval->type = JTYPE_STRING;
 			    return JSON_STRING;
 			}
 
 {JSON_NUMBER}		{
 			    /* number */
 			    printf("\nnumber: <%s>\n", ugly_text);
-			    ugly_lval->type = JTYPE_NUMBER;
 			    return JSON_NUMBER;
 			}
 
 {JSON_NULL}		{
 			    /* null object */
 			    printf("\nnull: <%s>\n", ugly_text);
-			    ugly_lval->type = JTYPE_NULL;
 			    return JSON_NULL;
 			}
 
 {JSON_TRUE}		{
 			    /* boolean: true */
 			    printf("\ntrue: <%s>\n", ugly_text);
-			    ugly_lval->type = JTYPE_BOOL;
 			    return JSON_TRUE;
 			}
 {JSON_FALSE}		{
 			    /* boolean: false */
 			    printf("\nfalse: <%s>\n", ugly_text);
-			    ugly_lval->type = JTYPE_BOOL;
 			    return JSON_FALSE;
 			}
 
 {JSON_OPEN_BRACE}	{
 			    /* start of object */
 			    printf("\nstart of object: <%c>\n", *ugly_text);
-			    ugly_lval->type = JTYPE_OBJECT;
 			    return JSON_OPEN_BRACE;
 			}
 {JSON_CLOSE_BRACE}	{
@@ -216,7 +210,6 @@ JSON_COMMA		","
 {JSON_OPEN_BRACKET}	{
 			    /* start of array */
 			    printf("\nstart of array: <%c>\n", *ugly_text);
-			    ugly_lval->type = JTYPE_ARRAY;
 			    token = '[';
 			    return JSON_OPEN_BRACKET;
 			}
