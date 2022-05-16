@@ -1417,7 +1417,7 @@ YY_RULE_SETUP
 {
 			    /* string */
 			    printf("\nstring: <%s>\n", ugly_text);
-			    ugly_lval.type = JTYPE_STRING;
+			    ugly_lval->type = JTYPE_STRING;
 			    return JSON_STRING;
 			}
 	YY_BREAK
@@ -1427,7 +1427,7 @@ YY_RULE_SETUP
 {
 			    /* number */
 			    printf("\nnumber: <%s>\n", ugly_text);
-			    ugly_lval.type = JTYPE_NUMBER;
+			    ugly_lval->type = JTYPE_NUMBER;
 			    return JSON_NUMBER;
 			}
 	YY_BREAK
@@ -1437,7 +1437,7 @@ YY_RULE_SETUP
 {
 			    /* null object */
 			    printf("\nnull: <%s>\n", ugly_text);
-			    ugly_lval.type = JTYPE_NULL;
+			    ugly_lval->type = JTYPE_NULL;
 			    return JSON_NULL;
 			}
 	YY_BREAK
@@ -1447,7 +1447,7 @@ YY_RULE_SETUP
 {
 			    /* boolean: true */
 			    printf("\ntrue: <%s>\n", ugly_text);
-			    ugly_lval.type = JTYPE_BOOL;
+			    ugly_lval->type = JTYPE_BOOL;
 			    return JSON_TRUE;
 			}
 	YY_BREAK
@@ -1457,7 +1457,7 @@ YY_RULE_SETUP
 {
 			    /* boolean: false */
 			    printf("\nfalse: <%s>\n", ugly_text);
-			    ugly_lval.type = JTYPE_BOOL;
+			    ugly_lval->type = JTYPE_BOOL;
 			    return JSON_FALSE;
 			}
 	YY_BREAK
@@ -1467,7 +1467,7 @@ YY_RULE_SETUP
 {
 			    /* start of object */
 			    printf("\nstart of object: <%c>\n", *ugly_text);
-			    ugly_lval.type = JTYPE_OBJECT;
+			    ugly_lval->type = JTYPE_OBJECT;
 			    return JSON_OPEN_BRACE;
 			}
 	YY_BREAK
@@ -1487,7 +1487,7 @@ YY_RULE_SETUP
 {
 			    /* start of array */
 			    printf("\nstart of array: <%c>\n", *ugly_text);
-			    ugly_lval.type = JTYPE_ARRAY;
+			    ugly_lval->type = JTYPE_ARRAY;
 			    token = '[';
 			    return JSON_OPEN_BRACKET;
 			}

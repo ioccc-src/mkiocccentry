@@ -131,7 +131,7 @@ extern int ugly_debug;
 
 /* Value type.  */
 #if ! defined UGLY_STYPE && ! defined UGLY_STYPE_IS_DECLARED
-typedef struct json UGLY_STYPE;
+typedef struct json * UGLY_STYPE;
 # define UGLY_STYPE_IS_TRIVIAL 1
 # define UGLY_STYPE_IS_DECLARED 1
 #endif

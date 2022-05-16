@@ -38,7 +38,7 @@
  * We use our struct json (see json.h for its definition) instead of bison
  * %union.
  */
-%define api.value.type {struct json}
+%define api.value.type {struct json *}
 
 
 /*
@@ -184,21 +184,21 @@ json_value:	    json_object
 
 		    JSON_TRUE
 			{
-			    $$ = *parse_json_bool(ugly_text);
+			    $$ = parse_json_bool(ugly_text);
 			    json_dbg(JSON_DBG_LOW, __func__, "under json_value: after JSON_TRUE before |");
 			}
 		    |
 
 		    JSON_FALSE
 			{
-			    $$ = *parse_json_bool(ugly_text);
+			    $$ = parse_json_bool(ugly_text);
 			    json_dbg(JSON_DBG_LOW, __func__, "under json_value: after JSON_FALSE before |");
 			}
 		    |
 
 		    JSON_NULL
 			{
-			    $$ = *parse_json_null(ugly_text);
+			    $$ = parse_json_null(ugly_text);
 			    json_dbg(JSON_DBG_LOW, __func__, "under json_value: after JSON_NULL before ;");
 			}
 		    ;
@@ -215,7 +215,7 @@ json_object:	    JSON_OPEN_BRACE
 			{ json_dbg(JSON_DBG_LOW, __func__, "under json_object: after JSON_OPEN_BRACE before JSON_CLOSE_BRACE"); }
 		    JSON_CLOSE_BRACE
 			{
-			    $$ = *json_create_object();
+			    $$ = json_create_object();
 			    json_dbg(JSON_DBG_LOW, __func__, "under json_object: after JSON_CLOSE_BRACE before ;");
 			}
 		    ;
@@ -238,7 +238,7 @@ json_member:	    json_string
 			{ json_dbg(JSON_DBG_LOW, __func__, "under json_member: after JSON_COLON before json_element"); }
 		    json_element
 			{
-			    $$ = *parse_json_member(&$1, &$3, &tree);
+			    $$ = parse_json_member($1, $3, &tree);
 			    json_dbg(JSON_DBG_LOW, __func__, "under json_member: after json_element before ;");
 			}
 		    ;
@@ -255,14 +255,17 @@ json_array:	    JSON_OPEN_BRACKET
 			{ json_dbg(JSON_DBG_LOW, __func__, "under json_array: after JSON_OPEN_BRACKET before JSON_CLOSE_BRACKET"); }
 		    JSON_CLOSE_BRACKET
 			{
-			    $$ = *json_create_array();
+			    $$ = json_create_array();
 			    json_dbg(JSON_DBG_LOW, __func__, "under json_array: after JSON_CLOSE_BRACKET before ;");
 			}
 		    ;
 
 
 json_elements:	    json_element
-			{ json_dbg(JSON_DBG_LOW, __func__, "under json_elements: after json_element before |"); }
+			{
+			    $$ = $1; /* magic: json_elements becomes whatever type json_element is */
+			    json_dbg(JSON_DBG_LOW, __func__, "under json_elements: after json_element before |");
+			}
 		    |
 
 		    json_elements
@@ -270,23 +273,28 @@ json_elements:	    json_element
 		    JSON_COMMA
 			{ json_dbg(JSON_DBG_LOW, __func__, "under json_elements: after JSON_COMMA before json_element"); }
 		    json_element
-			{ json_dbg(JSON_DBG_LOW, __func__, "under json_elements: after json_element before ;"); }
+			{
+			    json_dbg(JSON_DBG_LOW, __func__, "under json_elements: after json_element before ;");
+			}
 		    ;
 
 json_element:	    json_value
-			{ json_dbg(JSON_DBG_LOW, __func__, "under json_element: after json_value before ;"); }
+			{
+			    $$ = $1; /* magic: json_element becomes whatever type json_value is */
+			    json_dbg(JSON_DBG_LOW, __func__, "under json_element: after json_value before ;");
+			}
 		    ;
 
 json_string:	    JSON_STRING
 			{
-			    $$ = *parse_json_string(ugly_text);
+			    $$ = parse_json_string(ugly_text);
 			    json_dbg(JSON_DBG_LOW, __func__, "under json_string: after JSON_STRING before ;");
 			}
 		    ;
 
 json_number:	    JSON_NUMBER
 			{
-			    $$ = *parse_json_number(ugly_text);
+			    $$ = parse_json_number(ugly_text);
 			    json_dbg(JSON_DBG_LOW, __func__, "under json_number: after JSON_NUMBER before ;");
 			}
 		    ;
