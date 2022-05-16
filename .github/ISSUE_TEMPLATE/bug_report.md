@@ -11,22 +11,27 @@ assignees: ''
 A clear and concise description of what the bug is.
 
 **To Reproduce**
-Steps to reproduce the behavior:
-1. Run shell command '...'
-2. Observe the output '...'
-3. Show where in the output the error occurs.
+Steps to reproduce the behavior (adjust steps as needed):
+1. ...
+2. ...
+3. ...
 
 **Expected behavior**
 A clear and concise description of what you expected to happen.
 
 **Screenshots**
-If applicable, add screenshots to help explain your problem.
+If applicable, add screenshots to help explain your problem, or just write n/a.
 
-**Desktop (please complete the following information):**
- - OS: [e.g. macOS, Linux, FreeBSD, etc.]
- - OS distribution: [Apple, RHEL, Debian, Centos, Fedora, FreeBSD, etc.]
- - OS Version: [e.g. 22]
- - Compiler: [gcc, clang, etc.]
+**Environment (please complete the following information, or write n/a where not appliable):**
+ - OS: [e.g. macOS, Linux, FreeBSD, n/a, etc.]
+ - OS distribution: [Apple, RHEL, Debian, Centos, Fedora, FreeBSD, n/a, etc.]
+ - OS Version: [e.g. 12.31.1, n/a]
+ - Compiler: [gcc, clang, n/a, etc.]
+ - Compiler version: [Apple clang version 13.1.6, gcc version 4.8.5, n/a, etc.]
+ - Bison version: [3.8.2, n/a, etc.]
+ - Flex verson: [2.6.4, n/a, etc.]
+ - Shell: [bash. zsh, sh, csh, n/a, etc.]
+ - Airspeed Velocity of an Unladen Swallow: [n/a, :-), X m/s, etc.]
 
 **Additional context**
-Add any other context about the problem here.
+Please add any other context about the problem here.
