@@ -1819,7 +1819,7 @@ json_process_floating(struct json_number *item, char const *str, size_t len)
 	 * JSON spec detail: e notation number cannot have e or E after .
 	 */
 	} else if (e > str && e[-1] == '.') {
-	    dbg(DBG_HIGH, "%s: e notation numbers cannot have . before e or E: <%s>",
+	    dbg(DBG_HIGH, "%s: e notation numbers cannot have '.' before e or E: <%s>",
 			  __func__, str);
 	    return false;	/* processing failed */
 
