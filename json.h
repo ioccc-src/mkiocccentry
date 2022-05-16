@@ -429,6 +429,7 @@ extern void jencchk(void);
 extern char *json_decode(char const *ptr, size_t len, size_t *retlen);
 extern char *json_decode_str(char const *str, size_t *retlen);
 /* JSON conversion functions */
+extern struct json *json_alloc(enum element_type type);
 extern struct json *json_conv_number(char const *ptr, size_t len);
 extern struct json *json_conv_number_str(char const *str, size_t *retlen);
 extern struct json *json_conv_string(char const *ptr, size_t len, bool quote);
