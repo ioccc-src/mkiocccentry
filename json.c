@@ -1940,6 +1940,65 @@ json_process_floating(struct json_number *item, char const *str, size_t len)
 
 
 /*
+ * json_alloc - allocate and initialize the JSON parse tree element
+ *
+ * given:
+ *	type	a valid struct json type
+ *
+ * returns:
+ *	pointer to an initialized the JSON parse tree element
+ *
+ * NOTE: This function will not return on malloc error.
+ * NOTE: This function will not return NULL.
+ */
+struct json *
+json_alloc(enum element_type type)
+{
+    struct json *ret = NULL;		    /* JSON parser tree node to return */
+
+    /*
+     * inspect the struct json type for unknown types
+     */
+    switch (type) {
+    case JTYPE_UNSET:
+    case JTYPE_NUMBER:
+    case JTYPE_STRING:
+    case JTYPE_BOOL:
+    case JTYPE_NULL:
+    case JTYPE_MEMBER:
+    case JTYPE_OBJECT:
+    case JTYPE_ARRAY:
+	break;
+    default:
+	warn(__func__, "called with unknown JSON type: %d", type);
+	break;
+    }
+
+    /*
+     * allocate the JSON parse tree element
+     */
+    errno = 0;			/* pre-clear errno for errp() */
+    ret = calloc(1, sizeof(*ret));
+    if (ret == NULL) {
+	errp(162, __func__, "calloc #0 error allocating %ju bytes", (uintmax_t)sizeof(*ret));
+	not_reached();
+    }
+
+    /*
+     * initialize the JSON parse tree element
+     */
+    ret->type = type;
+    ret->parent = NULL;
+    json_dbg(JSON_DBG_VVHIGH, __func__, "allocated json with type: %s", json_element_type_name(ret));
+
+    /*
+     * return the JSON parse tree element
+     */
+    return ret;
+}
+
+
+/*
  * json_conv_number - convert JSON number string to C numeric value
  *
  * A JSON number string is of the form:
@@ -1977,20 +2036,9 @@ json_conv_number(char const *ptr, size_t len)
     bool success = false;		    /* true ==> processing was successful */
 
     /*
-     * allocate the JSON parse tree element
+     * allocate an initialized JSON parse tree element
      */
-    errno = 0;			/* pre-clear errno for errp() */
-    ret = calloc(1, sizeof(*ret));
-    if (ret == NULL) {
-	errp(162, __func__, "calloc #0 error allocating %ju bytes", (uintmax_t)sizeof(*ret));
-	not_reached();
-    }
-
-    /*
-     * initialize the JSON parse tree element
-     */
-    ret->type = JTYPE_NUMBER;
-    ret->parent = NULL;
+    ret = json_alloc(JTYPE_NUMBER);
 
     /*
      * initialize the JSON element
@@ -2204,20 +2252,9 @@ json_conv_string(char const *ptr, size_t len, bool quote)
     struct json_string *item = NULL;	    /* JSON string element inside JSON parser tree node */
 
     /*
-     * allocate the JSON parse tree element
+     * allocate an initialized JSON parse tree element
      */
-    errno = 0;			/* pre-clear errno for errp() */
-    ret = calloc(1, sizeof(*ret));
-    if (ret == NULL) {
-	errp(165, __func__, "calloc #0 error allocating %ju bytes", (uintmax_t)sizeof(*ret));
-	not_reached();
-    }
-
-    /*
-     * initialize the JSON parse tree element
-     */
-    ret->type = JTYPE_STRING;
-    ret->parent = NULL;
+    ret = json_alloc(JTYPE_STRING);
 
     /*
      * initialize the JSON element
@@ -2278,7 +2315,7 @@ json_conv_string(char const *ptr, size_t len, bool quote)
     errno = 0;			/* pre-clear errno for errp() */
     item->as_str = calloc(len+1+1, sizeof(char));
     if (item->as_str == NULL) {
-	errp(166, __func__, "calloc #1 error allocating %ju bytes", (uintmax_t)(len+1+1));
+	errp(165, __func__, "calloc #1 error allocating %ju bytes", (uintmax_t)(len+1+1));
 	not_reached();
     }
     strncpy(item->as_str, ptr, len);
@@ -2364,7 +2401,7 @@ json_conv_string_str(char const *str, size_t *retlen, bool quote)
      */
     ret = json_conv_string(str, len, quote);
     if (ret == NULL) {
-	err(167, __func__, "json_conv_string() returned NULL");
+	err(166, __func__, "json_conv_string() returned NULL");
 	not_reached();
     }
 
@@ -2407,20 +2444,9 @@ json_conv_bool(char const *ptr, size_t len)
     struct json_boolean *item = NULL;	    /* allocated decoding string or NULL */
 
     /*
-     * allocate the JSON parse tree element
+     * allocate an initialized JSON parse tree element
      */
-    errno = 0;			/* pre-clear errno for errp() */
-    ret = calloc(1, sizeof(*ret));
-    if (ret == NULL) {
-	errp(168, __func__, "calloc #0 error allocating %ju bytes", (uintmax_t)sizeof(*ret));
-	not_reached();
-    }
-
-    /*
-     * initialize the JSON parse tree element
-     */
-    ret->type = JTYPE_BOOL;
-    ret->parent = NULL;
+    ret = json_alloc(JTYPE_BOOL);
 
     /*
      * initialize the JSON element
@@ -2452,7 +2478,7 @@ json_conv_bool(char const *ptr, size_t len)
     errno = 0;			/* pre-clear errno for errp() */
     item->as_str = malloc(len+1+1);
     if (item->as_str == NULL) {
-	errp(169, __func__, "malloc #1 error allocating %ju bytes", (uintmax_t)(len+1+1));
+	errp(167, __func__, "malloc #1 error allocating %ju bytes", (uintmax_t)(len+1+1));
 	not_reached();
     }
     memcpy(item->as_str, ptr, len+1);
@@ -2521,7 +2547,7 @@ json_conv_bool_str(char const *str, size_t *retlen)
      */
     ret = json_conv_bool(str, len);
     if (ret == NULL) {
-	err(170, __func__, "json_conv_bool() returned NULL");
+	err(168, __func__, "json_conv_bool() returned NULL");
 	not_reached();
     }
 
@@ -2563,20 +2589,9 @@ json_conv_null(char const *ptr, size_t len)
     struct json_null *item = NULL;	    /* allocated decoding string or NULL */
 
     /*
-     * allocate the JSON parse tree element
+     * allocate an initialized JSON parse tree element
      */
-    errno = 0;			/* pre-clear errno for errp() */
-    ret = calloc(1, sizeof(*ret));
-    if (ret == NULL) {
-	errp(171, __func__, "calloc #0 error allocating %ju bytes", (uintmax_t)sizeof(*ret));
-	not_reached();
-    }
-
-    /*
-     * initialize the JSON parse tree element
-     */
-    ret->type = JTYPE_NULL;
-    ret->parent = NULL;
+    ret = json_alloc(JTYPE_NULL);
 
     /*
      * initialize the JSON element
@@ -2607,7 +2622,7 @@ json_conv_null(char const *ptr, size_t len)
     errno = 0;			/* pre-clear errno for errp() */
     item->as_str = malloc(len+1+1);
     if (item->as_str == NULL) {
-	errp(172, __func__, "malloc #1 error allocating %ju bytes", (uintmax_t)(len+1+1));
+	errp(169, __func__, "malloc #1 error allocating %ju bytes", (uintmax_t)(len+1+1));
 	not_reached();
     }
     memcpy(item->as_str, ptr, len+1);
@@ -2673,7 +2688,7 @@ json_conv_null_str(char const *str, size_t *retlen)
      */
     ret = json_conv_null(str, len);
     if (ret == NULL) {
-	err(173, __func__, "json_conv_null() returned NULL");
+	err(170, __func__, "json_conv_null() returned NULL");
 	not_reached();
     }
 
@@ -2728,20 +2743,9 @@ json_conv_member(struct json *name, struct json *value)
     struct json_member *item = NULL;	    /* allocated JSON member */
 
     /*
-     * allocate the JSON parse tree element
+     * allocate an initialized JSON parse tree element
      */
-    errno = 0;			/* pre-clear errno for errp() */
-    ret = calloc(1, sizeof(*ret));
-    if (ret == NULL) {
-	errp(174, __func__, "calloc #0 error allocating %ju bytes", (uintmax_t)sizeof(*ret));
-	not_reached();
-    }
-
-    /*
-     * initialize the JSON parse tree element
-     */
-    ret->type = JTYPE_MEMBER;
-    ret->parent = NULL;
+    ret = json_alloc(JTYPE_MEMBER);
 
     /*
      * initialize the JSON element
@@ -2827,20 +2831,9 @@ json_create_object(void)
     struct json_object *item = NULL;	    /* allocated JSON member */
 
     /*
-     * allocate the JSON parse tree element
+     * allocate an initialized JSON parse tree element
      */
-    errno = 0;			/* pre-clear errno for errp() */
-    ret = calloc(1, sizeof(*ret));
-    if (ret == NULL) {
-	errp(175, __func__, "calloc #0 error allocating %ju bytes", (uintmax_t)sizeof(*ret));
-	not_reached();
-    }
-
-    /*
-     * initialize the JSON parse tree element
-     */
-    ret->type = JTYPE_OBJECT;
-    ret->parent = NULL;
+    ret = json_alloc(JTYPE_OBJECT);
 
     /*
      * initialize the JSON object
@@ -2856,7 +2849,7 @@ json_create_object(void)
      */
     item->s = dyn_array_create(sizeof (struct json *), JSON_CHUNK, JSON_CHUNK, true);
     if (item->s == NULL) {
-	errp(176, __func__, "dyn_array_create() returned NULL");
+	errp(171, __func__, "dyn_array_create() returned NULL");
 	not_reached();
     }
 
@@ -3081,20 +3074,9 @@ json_create_array(void)
     struct json_array *item = NULL;	    /* allocated JSON member */
 
     /*
-     * allocate the JSON parse tree element
+     * allocate an initialized JSON parse tree element
      */
-    errno = 0;			/* pre-clear errno for errp() */
-    ret = calloc(1, sizeof(*ret));
-    if (ret == NULL) {
-	errp(177, __func__, "calloc #0 error allocating %ju bytes", (uintmax_t)sizeof(*ret));
-	not_reached();
-    }
-
-    /*
-     * initialize the JSON parse tree element
-     */
-    ret->type = JTYPE_ARRAY;
-    ret->parent = NULL;
+    ret = json_alloc(JTYPE_ARRAY);
 
     /*
      * initialize the JSON array
@@ -3110,7 +3092,7 @@ json_create_array(void)
      */
     item->s = dyn_array_create(sizeof (struct json *), JSON_CHUNK, JSON_CHUNK, true);
     if (item->s == NULL) {
-	errp(178, __func__, "dyn_array_create() returned NULL");
+	errp(172, __func__, "dyn_array_create() returned NULL");
 	not_reached();
     }
 
