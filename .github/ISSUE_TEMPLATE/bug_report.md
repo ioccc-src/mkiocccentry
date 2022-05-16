@@ -12,16 +12,18 @@ A clear and concise description of what the bug is.
 
 **To Reproduce**
 Steps to reproduce the behavior (adjust steps as needed):
+0. ...
 1. ...
 2. ...
-3. ...
 
 **Expected behavior**
 A clear and concise description of what you expected to happen.
+Perhaps state in which step, something different should happen.
 
 **Output**
 If applicable, add command output or screenshots to help explain your problem, or just write n/a.
 If the ouput is very long, attach it as a file (perhaps as a compressed file) to the bug report.
+Indicate from which step(s) the output is from.
 
 **Environment (please complete the following information, or write n/a where not appliable):**
  - OS: [e.g. macOS, Linux, FreeBSD, n/a, etc.]
@@ -36,3 +38,4 @@ If the ouput is very long, attach it as a file (perhaps as a compressed file) to
 
 **Additional context**
 Please add any other context about the problem here.
+Feel free to use [markdown](https://www.markdownguide.org/getting-started/) in your issue report.
