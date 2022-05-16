@@ -209,7 +209,8 @@ SH_TARGETS=limit_ioccc.sh
 # page is written the MAN_TARGETS should have the tool name (without any
 # extension) added to it.  Eventually MAN_TARGETS can be removed entirely and
 # MANPAGES will act on TARGETS.
-MAN_TARGETS = mkiocccentry txzchk fnamchk iocccsize jinfochk jauthchk jstrdecode jstrencode verge jparse limit_ioccc utf8_test
+MAN_TARGETS = mkiocccentry txzchk fnamchk iocccsize jinfochk jauthchk jstrdecode jstrencode \
+	      verge jparse limit_ioccc utf8_test
 MANPAGES= $(MAN_TARGETS:=.1)
 
 TEST_TARGETS= dbg utf8_test dyn_test
@@ -497,7 +498,8 @@ limit_ioccc.sh: limit_ioccc.h version.h Makefile
 	${GREP} -E '^#define (RULE_|MAX_|UUID_|MIN_|IOCCC_)' limit_ioccc.h | \
 	    ${AWK} '{print $$2 "=\"" $$3 "\"" ;}' | ${TR} -d '[a-z]()' | \
 	    ${SED} -e 's/"_/"/' -e 's/""/"/g' -e 's/^/export /' >> $@
-	${GREP} -hE '^#define (.*_VERSION|TIMESTAMP_EPOCH|JSON_PARSING_DIRECTIVE_)' version.h limit_ioccc.h dbg.h | \
+	${GREP} -hE '^#define (.*_VERSION|TIMESTAMP_EPOCH|JSON_PARSING_DIRECTIVE_)' \
+		     version.h limit_ioccc.h dbg.h | \
 	    ${GREP} -v 'UUID_VERSION' | \
 	    ${SED} -e 's/^#define/export/' -e 's/ "/="/' -e 's/"[	 ].*$$/"/' >> $@
 	-if ${GREP} -q '^#define DIGRAPHS' limit_ioccc.h; then \
@@ -523,9 +525,10 @@ limit_ioccc.sh: limit_ioccc.h version.h Makefile
 # NOTE: Even if BISON_FLAGS has -d we specify it here just in case this is
 # ever overridden or is accidentally removed. This is also why we have them
 # _after_ the ${BISON_FLAGS} in the command line as it's required.
-jparse.tab.c jparse.tab.h bison: jparse.y jparse.h sorry.tm.ca.h run_bison.sh limit_ioccc.sh verge \
-	jparse.tab.ref.c jparse.tab.ref.h Makefile
-	./run_bison.sh -b ${BISON_BASENAME} ${BISON_DIRS} -p jparse -v 1 ${RUN_O_FLAG} -- ${BISON_FLAGS} -d
+jparse.tab.c jparse.tab.h bison: jparse.y jparse.h sorry.tm.ca.h run_bison.sh limit_ioccc.sh \
+	verge jparse.tab.ref.c jparse.tab.ref.h Makefile
+	./run_bison.sh -b ${BISON_BASENAME} ${BISON_DIRS} -p jparse -v 1 ${RUN_O_FLAG} -- \
+		       ${BISON_FLAGS} -d
 
 # How to create jparse.c
 #
@@ -539,8 +542,10 @@ jparse.tab.c jparse.tab.h bison: jparse.y jparse.h sorry.tm.ca.h run_bison.sh li
 # ever overridden or is accidentally removed. This is also why we have them
 # _after_ the ${FLEX_FLAGS} in the command line as they're required.
 #
-jparse.c flex: jparse.l jparse.h sorry.tm.ca.h jparse.tab.h run_flex.sh limit_ioccc.sh verge jparse.ref.c Makefile
-	./run_flex.sh -f ${FLEX_BASENAME} ${FLEX_DIRS} -p jparse -v 1 ${RUN_O_FLAG} -- ${FLEX_FLAGS} -d -8 -o jparse.c
+jparse.c flex: jparse.l jparse.h sorry.tm.ca.h jparse.tab.h run_flex.sh limit_ioccc.sh \
+	       verge jparse.ref.c Makefile
+	./run_flex.sh -f ${FLEX_BASENAME} ${FLEX_DIRS} -p jparse -v 1 ${RUN_O_FLAG} -- \
+		      ${FLEX_FLAGS} -d -8 -o jparse.c
 
 
 ###################################################################
@@ -703,7 +708,8 @@ reset_min_timestamp: reset_tstamp.sh
 
 # perform all of the mkiocccentry repo required tests
 #
-test ioccc-test: ioccc-test.sh iocccsize-test.sh dbg mkiocccentry-test.sh jstr-test.sh jnum_chk dyn_test Makefile
+test ioccc-test: ioccc-test.sh iocccsize-test.sh dbg mkiocccentry-test.sh jstr-test.sh \
+		 jnum_chk dyn_test Makefile
 	./ioccc-test.sh
 
 # run json-test.sh on test_JSON files
