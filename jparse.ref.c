@@ -2877,6 +2877,8 @@ parse_json_file(char const *filename)
 	return;
     }
 
+    json_dbg(json_verbosity_level, __func__, "Calling parse_json_block(\"%s\", %ju):", data, len);
+
     parse_json_block(data, len);
 
     /* free data */

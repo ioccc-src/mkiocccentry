@@ -442,7 +442,7 @@ main(int argc, char **argv)
 	     */
 	    string_flag_used = true;
 
-	    json_dbg(json_verbosity_level, __func__, "Calling parse_json_block(\"%s\"):", optarg);
+	    json_dbg(json_verbosity_level, __func__, "Calling parse_json_block(\"%s\", %ju):", optarg, (uintmax_t)strlen(optarg));
 	    /* parse arg as a block of json input */
 	    parse_json_block(optarg, strlen(optarg));
 	    break;
@@ -464,7 +464,6 @@ main(int argc, char **argv)
 	 * process each argument in order
 	 */
 	for (i=optind; i < argc; ++i) {
-	    json_dbg(json_verbosity_level, __func__, "Calling parse_json_file(\"%s\"):", argv[i]);
 	    parse_json_file(argv[i]);
 	}
 
