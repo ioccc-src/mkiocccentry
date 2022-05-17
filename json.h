@@ -423,8 +423,8 @@ extern struct encode jenc[];
 /*
  * external function declarations
  */
-extern char *json_encode(char const *ptr, size_t len, size_t *retlen);
-extern char *json_encode_str(char const *str, size_t *retlen);
+extern char * json_encode(char const *ptr, size_t len, size_t *retlen, bool skip_quote);
+extern char *json_encode_str(char const *str, size_t *retlen, bool skip_quote);
 extern void jencchk(void);
 extern char *json_decode(char const *ptr, size_t len, size_t *retlen);
 extern char *json_decode_str(char const *str, size_t *retlen);

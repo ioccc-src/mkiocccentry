@@ -111,12 +111,12 @@
 /*
  * official jstrencode version
  */
-#define JSTRENCODE_VERSION "0.4 2022-03-15"	/* format: major.minor YYYY-MM-DD */
+#define JSTRENCODE_VERSION "0.5 2022-04-17"	/* format: major.minor YYYY-MM-DD */
 
 /*
  * official jstrdecode version
  */
-#define JSTRDECODE_VERSION "0.4 2022-03-15"	/* format: major.minor YYYY-MM-DD */
+#define JSTRDECODE_VERSION "0.5 2022-04-17"	/* format: major.minor YYYY-MM-DD */
 
 /*
  * official jparse version

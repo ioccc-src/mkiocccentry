@@ -51,66 +51,100 @@
 
 
 /*
- * jstrdecode_stdin	- decodes stdin
+ * jstrdecode_stream - decode an open file stream onto another open file stream
  *
+ * given:
+ *	in_stream	open file steam to decode
+ *	out_stream	open file where to write encoded data
+ *	write_quote	true ==> output enclosing quotes
  *
- * XXX This function should probably be jstrdecode_file() and decode any file.
+ * returns:
+ *	true ==> encoding was successful,
+ *	false ==> error in encoding, or NULL stream, or read error
  */
-static
-bool jstrdecode_stdin(void)
+static bool
+jstrdecode_stream(FILE *in_stream, FILE *out_stream, bool write_quote)
 {
-    bool error = false;
     char *input;		/* argument to process */
     size_t inputlen;		/* length of input buffer */
     size_t outputlen;		/* length of write of decode buffer */
     size_t bufsiz;		/* length of the buffer */
     char *buf;			/* decode buffer */
+    bool success = true;	/* true ==> encoding OK, false ==> error while encoding */
+    int ret = 0;		/* libc function return code */
 
     /*
-     * read all of stdin
+     * firewall
      */
-    dbg(DBG_LOW, "about to decode all data on stdin");
-    input = read_all(stdin, &inputlen);
+    if (in_stream == NULL) {
+	warn(__func__, "in_stream is NULL");
+	return false;
+    }
+    if (out_stream == NULL) {
+	warn(__func__, "out_stream is NULL");
+	return false;
+    }
+
+    /*
+     * read all of the input stream
+     */
+    dbg(DBG_LOW, "about to encode all data on input stream");
+    input = read_all(in_stream, &inputlen);
     if (input == NULL) {
-	warn(__func__, "error while reading data in stdin");
-	error = true;
+	warn(__func__, "error while reading data from input stream");
+	return false;
     }
-    dbg(DBG_MED, "stdin read length: %ju", (uintmax_t)inputlen);
+    dbg(DBG_MED, "stream read length: %ju", (uintmax_t)inputlen);
 
     /*
-     * warn if encode data contains an embedded NUL byte
-     *
-     * NOTE: The read_all will ensure that at least one extra byte
-     *	 will have been allocated and set to NUL.  Thus in order
-     *	 to correctly check if data contains an embedded NUL byte,
-     *	 we MUST check for a length of inputlen+1!
-     */
-    if (is_string(input, inputlen+1) == false) {
-	warn(__func__, "encoded data that was read contains a NUL byte");
-	error = true;
-    }
-
-    /*
-     * decode data read from stdin
+     * decode data read from input stream
      */
     buf = json_decode(input, inputlen, &bufsiz);
     if (buf == NULL) {
 	warn(__func__, "error while encoding stdin buffer");
-	error = true;
+	success = false;
 
     /*
      * print decode buffer
      */
     } else {
+
+	/*
+	 * write starting quote if requested
+	 */
+	if (write_quote == true) {
+	    errno = 0;		/* pre-clear errno for warnp() */
+	    ret = fputc('"', out_stream);
+	    if (ret != '"') {
+		warnp(__func__, "fputc of starting quote returned error");
+		success = false;
+	    }
+	}
+
+	/*
+	 * write decoded data
+	 */
 	dbg(DBG_MED, "decode length: %ju", (uintmax_t)bufsiz);
 	errno = 0;		/* pre-clear errno for warnp() */
-	outputlen = fwrite(buf, 1, bufsiz, stdout);
+	outputlen = fwrite(buf, 1, bufsiz, out_stream);
 	if (outputlen != bufsiz) {
-	    warnp(__func__, "error: write of %ju bytes of stdin data: returned: %ju",
+	    warnp(__func__, "error: write of %ju bytes of data: returned: %ju",
 			    (uintmax_t)bufsiz, (uintmax_t)outputlen);
-	    error = true;
+	    success = false;
 	}
-	dbg(DBG_MED, "stdout write length: %ju", (uintmax_t)outputlen);
+	dbg(DBG_MED, "fwrite length: %ju", (uintmax_t)outputlen);
+
+	/*
+	 * write ending quote if requested
+	 */
+	if (write_quote == true) {
+	    errno = 0;		/* pre-clear errno for warnp() */
+	    ret = fputc('"', out_stream);
+	    if (ret != '"') {
+		warnp(__func__, "fputc of ending quote returned error");
+		success = false;
+	    }
+	}
     }
 
     /*
@@ -121,8 +155,12 @@ bool jstrdecode_stdin(void)
 	buf = NULL;
     }
 
-    return error;
+    /*
+     * return encoding status
+     */
+    return success;
 }
+
 
 int
 main(int argc, char *argv[])
@@ -135,8 +173,9 @@ main(int argc, char *argv[])
     char *buf;			/* decode buffer */
     size_t bufsiz;		/* length of the buffer */
     size_t outputlen;		/* length of write of decode buffer */
-    bool error = false;		/* true ==> error while performing JSON decode */
+    bool success = true;	/* true ==> encoding OK, false ==> error while encoding */
     bool nloutput = true;	/* true ==> output newline after JSON decode */
+    bool write_quote = false;	/* true ==> output enclosing quotes */
     int ret;			/* libc return code */
     int i;
 
@@ -145,7 +184,7 @@ main(int argc, char *argv[])
      * parse args
      */
     program = argv[0];
-    while ((i = getopt(argc, argv, "hv:qVtn")) != -1) {
+    while ((i = getopt(argc, argv, "hv:qVtnQ")) != -1) {
 	switch (i) {
 	case 'h':		/* -h - print help to stderr and exit 0 */
 	    usage(2, "-h help mode", program); /*ooo*/
@@ -179,11 +218,17 @@ main(int argc, char *argv[])
 	case 'n':
 	    nloutput = false;
 	    break;
+	case 'Q':
+	    write_quote = true;
+	    break;
 	default:
 	    usage(2, "invalid -flag", program); /*ooo*/
 	    not_reached();
 	 }
     }
+    dbg(DBG_LOW, "enclose in quotes: %s", booltostr(write_quote));
+    dbg(DBG_LOW, "newline output: %s", booltostr(nloutput));
+    dbg(DBG_LOW, "silence warnings: %s", booltostr(msg_warn_silent));
 
     /*
      * case: process arguments on command line
@@ -201,7 +246,7 @@ main(int argc, char *argv[])
 	    input = argv[i];
 	    if (!strcmp(input, "-")) {
 		/* decode stdin */
-		error = jstrdecode_stdin();
+		success = jstrdecode_stream(stdin, stdout, write_quote);
 	    } else {
 		inputlen = strlen(input);
 		dbg(DBG_LOW, "processing arg: %d: <%s>", i-optind, input);
@@ -213,10 +258,22 @@ main(int argc, char *argv[])
 		buf = json_decode_str(input, &bufsiz);
 		if (buf == NULL) {
 		    warn(__func__, "error while encoding processing arg: %d", i-optind);
-		    error = true;
+		    success = false;
 
 		/*
-		 * print decode buffer
+		 * write starting quote if requested
+		 */
+		if (write_quote == true) {
+		    errno = 0;		/* pre-clear errno for warnp() */
+		    ret = fputc('"', stdout);
+		    if (ret != '"') {
+			warnp(__func__, "fputc for starting quote returned error");
+			success = false;
+		    }
+		}
+
+		/*
+		 * print decoded buffer
 		 */
 		} else {
 		    dbg(DBG_MED, "decode length: %ju", (uintmax_t)bufsiz);
@@ -225,7 +282,19 @@ main(int argc, char *argv[])
 		    if (outputlen != bufsiz) {
 			warnp(__func__, "error: write of %ju bytes of arg: %d returned: %ju",
 					(uintmax_t)bufsiz, i-optind, (uintmax_t)outputlen);
-			error = true;
+			success = false;
+		    }
+		}
+
+		/*
+		 * write ending quote if requested
+		 */
+		if (write_quote == true) {
+		    errno = 0;		/* pre-clear errno for warnp() */
+		    ret = fputc('"', stdout);
+		    if (ret != '"') {
+			warnp(__func__, "fputc for ending quote returned error");
+			success = false;
 		    }
 		}
 
@@ -243,7 +312,7 @@ main(int argc, char *argv[])
      * case: process data on stdin
      */
     } else {
-	error = jstrdecode_stdin();
+	success = jstrdecode_stream(stdin, stdout, write_quote);
     }
 
     /*
@@ -254,14 +323,14 @@ main(int argc, char *argv[])
 	ret = putchar('\n');
 	if (ret != '\n') {
 	    warnp(__func__, "error while writing final newline");
-	    error = true;
+	    success = false;
 	}
     }
 
     /*
      * All Done!!! - Jessica Noll, age 2
      */
-    if (error == true) {
+    if (success == false) {
 	exit(1); /*ooo*/
     }
     exit(0); /*ooo*/

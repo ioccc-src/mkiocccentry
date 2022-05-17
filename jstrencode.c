@@ -50,50 +50,73 @@
 #define REQUIRED_ARGS (0)	/* number of required arguments on the command line */
 
 /*
- * jstrencode_stdin	- encodes stdin
+ * jstrencode_stream - encode an open file stream onto another open file stream
  *
+ * given:
+ *	in_stream	open file steam to encode
+ *	out_stream	open file where to write encoded data
+ *	skip_quote	true ==> ignore any double quotes if they are both
+ *				 at the start and end of the memory block
+ *			false ==> process all bytes in the block
  *
- * XXX This function should probably be jstrencode_file() and encode any file.
+ * returns:
+ *	true ==> encoding was successful,
+ *	false ==> error in encoding, or NULL stream, or read error
  */
-static
-bool jstrencode_stdin(void)
+static bool
+jstrencode_stream(FILE *in_stream, FILE *out_stream, bool skip_quote)
 {
     char *input;		/* argument to process */
     size_t inputlen;		/* length of input buffer */
     char *buf;			/* encode buffer */
     size_t bufsiz;		/* length of the buffer */
     size_t outputlen;		/* length of write of encode buffer */
-    bool error = false;		/* true ==> error while performing JSON encode */
-
-    dbg(DBG_LOW, "about to encode all data on stdin");
-    input = read_all(stdin, &inputlen);
-    if (input == NULL) {
-	warn(__func__, "error while reading data in stdin");
-	error = true;
-    }
-    dbg(DBG_MED, "stdin read length: %ju", (uintmax_t)inputlen);
+    bool success = true;	/* true ==> encoding OK, false ==> error while encoding */
 
     /*
-     * encode data read from stdin
+     * firewall
      */
-    buf = json_encode(input, inputlen, &bufsiz);
-    if (buf == NULL) {
-	warn(__func__, "error while encoding stdin buffer");
-	error = true;
+    if (in_stream == NULL) {
+	warn(__func__, "in_stream is NULL");
+	return false;
+    }
+    if (out_stream == NULL) {
+	warn(__func__, "out_stream is NULL");
+	return false;
+    }
 
     /*
-     * print encode buffer
+     * read all of the input stream
+     */
+    dbg(DBG_LOW, "about to encode all data on input stream");
+    input = read_all(in_stream, &inputlen);
+    if (input == NULL) {
+	warn(__func__, "error while reading data from input stream");
+	return false;
+    }
+    dbg(DBG_MED, "stream read length: %ju", (uintmax_t)inputlen);
+
+    /*
+     * encode data read from input stream
+     */
+    buf = json_encode(input, inputlen, &bufsiz, skip_quote);
+    if (buf == NULL) {
+	warn(__func__, "error while encoding buffer");
+	success = false;
+
+    /*
+     * print encode buffer on output stream
      */
     } else {
 	dbg(DBG_MED, "encode length: %ju", (uintmax_t)bufsiz);
 	errno = 0;		/* pre-clear errno for warnp() */
-	outputlen = fwrite(buf, 1, bufsiz, stdout);
+	outputlen = fwrite(buf, 1, bufsiz, out_stream);
 	if (outputlen != bufsiz) {
-	    warnp(__func__, "error: write of %ju bytes of stdin data: returned: %ju",
+	    warnp(__func__, "error: fwrite of %ju bytes of data: returned: %ju",
 			    (uintmax_t)bufsiz, (uintmax_t)outputlen);
-	    error = true;
+	    success = false;
 	}
-	dbg(DBG_MED, "stdout write length: %ju", (uintmax_t)outputlen);
+	dbg(DBG_MED, "fwrite write length: %ju", (uintmax_t)outputlen);
     }
 
     /*
@@ -104,8 +127,12 @@ bool jstrencode_stdin(void)
 	buf = NULL;
     }
 
-    return error;
+    /*
+     * return encoding status
+     */
+    return success;
 }
+
 
 int
 main(int argc, char *argv[])
@@ -118,8 +145,9 @@ main(int argc, char *argv[])
     char *buf;			/* encode buffer */
     size_t bufsiz;		/* length of the buffer */
     size_t outputlen;		/* length of write of encode buffer */
-    bool error = false;		/* true ==> error while performing JSON encode */
+    bool success = true;	/* true ==> encoding OK, false ==> error while encoding */
     bool nloutput = true;	/* true ==> output newline after JSON encode */
+    bool skip_quote = false;	/* true ==> skip enclosing quotes */
     int ret;			/* libc return code */
     int i;
 
@@ -128,7 +156,7 @@ main(int argc, char *argv[])
      * parse args
      */
     program = argv[0];
-    while ((i = getopt(argc, argv, "hv:qVtn")) != -1) {
+    while ((i = getopt(argc, argv, "hv:qVtnQ")) != -1) {
 	switch (i) {
 	case 'h':		/* -h - print help to stderr and exit 0 */
 	    usage(2, "-h help mode", program); /*ooo*/
@@ -162,11 +190,17 @@ main(int argc, char *argv[])
 	case 'n':
 	    nloutput = false;
 	    break;
+	case 'Q':
+	    skip_quote = true;
+	    break;
 	default:
 	    usage(2, "invalid -flag", program); /*ooo*/
 	    not_reached();
 	 }
     }
+    dbg(DBG_LOW, "skip quotes: %s", booltostr(skip_quote));
+    dbg(DBG_LOW, "newline output: %s", booltostr(nloutput));
+    dbg(DBG_LOW, "silence warnings: %s", booltostr(msg_warn_silent));
 
     /*
      * case: process arguments on command line
@@ -184,7 +218,7 @@ main(int argc, char *argv[])
 	    input = argv[i];
 	    if (!strcmp(input, "-")) {
 		/* encode stdin */
-		error = jstrencode_stdin();
+		success = jstrencode_stream(stdin, stdout, skip_quote);
 	    } else {
 		inputlen = strlen(input);
 		dbg(DBG_LOW, "processing arg: %d: <%s>", i-optind, input);
@@ -193,13 +227,13 @@ main(int argc, char *argv[])
 		/*
 		 * encode
 		 */
-		buf = json_encode_str(input, &bufsiz);
+		buf = json_encode_str(input, &bufsiz, skip_quote);
 		if (buf == NULL) {
 		    warn(__func__, "error while encoding processing arg: %d", i-optind);
-		    error = true;
+		    success = false;
 
 		/*
-		 * print encode buffer
+		 * print encoded buffer
 		 */
 		} else {
 		    dbg(DBG_MED, "encode length: %ju", (uintmax_t)bufsiz);
@@ -208,7 +242,7 @@ main(int argc, char *argv[])
 		    if (outputlen != bufsiz) {
 			warnp(__func__, "error: write of %ju bytes of arg: %d returned: %ju",
 					(uintmax_t)bufsiz, i-optind, (uintmax_t)outputlen);
-			error = true;
+			success = false;
 		    }
 		}
 
@@ -229,7 +263,7 @@ main(int argc, char *argv[])
 	/*
 	 * read all of stdin
 	 */
-	error = jstrencode_stdin();
+	success = jstrencode_stream(stdin, stdout, skip_quote);
     }
 
     /*
@@ -240,14 +274,14 @@ main(int argc, char *argv[])
 	ret = putchar('\n');
 	if (ret != '\n') {
 	    warnp(__func__, "error while writing final newline");
-	    error = true;
+	    success = false;
 	}
     }
 
     /*
      * All Done!!! - Jessica Noll, age 2
      */
-    if (error == true) {
+    if (success == false) {
 	exit(1); /*ooo*/
     }
     exit(0); /*ooo*/

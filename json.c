@@ -1,4 +1,3 @@
-/* vim: set tabstop=8 softtabstop=4 shiftwidth=4 noexpandtab : */
 /*
  * json - JSON parse tree supporting functions
  *
@@ -233,16 +232,20 @@ struct encode jenc[BYTE_VALUES] = {
  *	 using the \uffff notation.
  *
  * given:
- *	ptr	start of memory block to encode
- *	len	length of block to encode in bytes
- *	retlen	address of where to store allocated length, if retlen != NULL
+ *	ptr		start of memory block to encode
+ *	len		length of block to encode in bytes
+ *	retlen		address of where to store allocated length,
+ *			    if retlen != NULL
+ *	skip_quote	true ==> ignore any double quotes if they are both
+ *				 at the start and end of the memory block
+ *			false ==> process all bytes in the block
  *
  * returns:
  *	allocated JSON encoding of a block, or NULL ==> error
  *	NOTE: retlen, if non-NULL, is set to 0 on error
  */
 char *
-json_encode(char const *ptr, size_t len, size_t *retlen)
+json_encode(char const *ptr, size_t len, size_t *retlen, bool skip_quote)
 {
     char *ret = NULL;	    /* allocated encoding string or NULL */
     char *beyond = NULL;    /* beyond the end of the allocated encoding string */
@@ -286,9 +289,23 @@ json_encode(char const *ptr, size_t len, size_t *retlen)
     beyond = &(ret[mlen]);
 
     /*
+     * skip any enclosing quotes if requested
+     *
+     * We only skip enclosing quotes skip_quote is true,
+     * if the memory block is long enough to contain 2 "'s,
+     * if the memory block start and ends with a ".
+     */
+    if (skip_quote == true && len > 1 && ptr[0] == '"' && ptr[len-1] == '"') {
+	i = 1;	/* start encoding on the next byte beyond the " */
+	--len;	/* do not encode the last byte */
+    } else {
+	i = 0;	/* start encoding at the 1st byte */
+    }
+
+    /*
      * JSON encode each byte
      */
-    for (i=0, p=ret; i < len; ++i) {
+    for (p=ret; i < len; ++i) {
 	if (p+jenc[(uint8_t)(ptr[i])].len > beyond) {
 	    /* error - clear allocated length */
 	    if (retlen != NULL) {
@@ -300,6 +317,8 @@ json_encode(char const *ptr, size_t len, size_t *retlen)
 	strcpy(p, jenc[(uint8_t)(ptr[i])].enc);
 	p += jenc[(uint8_t)(ptr[i])].len;
     }
+    *p = '\0';	/* paranoia */
+    mlen = p - ret; /* paranoia */
 
     /*
      * return result
@@ -319,15 +338,18 @@ json_encode(char const *ptr, size_t len, size_t *retlen)
  * This is a simplified interface for json_encode().
  *
  * given:
- *	str	a string to encode
- *	retlen	address of where to store allocated length, if retlen != NULL
+ *	str		NUL terminated C-style string to encode
+ *	retlen		address of where to store allocated length, if retlen != NULL
+ *	skip_quotes	true ==> ignore any double quotes if they are both
+ *				 at the start and end of the memory block
+ *			false ==> process all bytes in the block
  *
  * returns:
  *	allocated JSON encoding of a block, or NULL ==> error
  *	NOTE: retlen, if non-NULL, is set to 0 on error
  */
 char *
-json_encode_str(char const *str, size_t *retlen)
+json_encode_str(char const *str, size_t *retlen, bool skip_quote)
 {
     void *ret = NULL;	    /* allocated encoding string or NULL */
     size_t len = 0;	    /* length of string to encode */
@@ -348,7 +370,7 @@ json_encode_str(char const *str, size_t *retlen)
     /*
      * convert to json_encode() call
      */
-    ret = json_encode(str, len, retlen);
+    ret = json_encode(str, len, retlen, skip_quote);
     if (ret == NULL) {
 	dbg(DBG_VVHIGH, "returning NULL for encoding of: <%s>", str);
     } else {
@@ -798,7 +820,7 @@ jencchk(void)
      */
     dbg(DBG_VVVHIGH, "testing json_encode(0x00, 1, *mlen)");
     memset(str, 0, sizeof(str));    /* clear all bytes in str, including the final \0 */
-    mstr = json_encode(str, 1,  &mlen);
+    mstr = json_encode(str, 1,  &mlen, false);
     if (mstr == NULL) {
 	err(153, __func__, "json_encode(0x00, 1, *mlen: %ju) == NULL", (uintmax_t)mlen);
 	not_reached();
@@ -831,7 +853,7 @@ jencchk(void)
 	/* load input string */
 	str[0] = (char)i;
 	/* test json_encode_str() */
-	mstr = json_encode_str(str, &mlen);
+	mstr = json_encode_str(str, &mlen, false);
 	/* check encoding result */
 	if (mstr == NULL) {
 	    err(156, __func__, "json_encode_str(0x%02x, *mlen: %ju) == NULL",
@@ -892,7 +914,7 @@ jencchk(void)
 
 
 /*
- * json_decode - return a decoding of a block of JSON encoded memory
+ * json_decode - return the decoding of a JSON encoded block of memory
  *
  * given:
  *	ptr	start of memory block to decode
@@ -1109,7 +1131,7 @@ json_decode(char const *ptr, size_t len, size_t *retlen)
      * JSON string decode
      *
      * In the above counting code, prior to the malloc for the decoded string,
-     * we determined that the JSON encoded string is valid.
+     * we already determined that the JSON encoded block of memory is valid.
      */
     for (i=0, p=ret; i < len; ++i) {
 
@@ -1274,7 +1296,7 @@ json_decode(char const *ptr, size_t len, size_t *retlen)
  * This is a simplified interface for json_decode().
  *
  * given:
- *	str	a string to decode
+ *	str	NUL terminated C-style string to decode
  *	retlen	address of where to store allocated length, if retlen != NULL
  *
  * returns:
@@ -1333,7 +1355,7 @@ json_decode_str(char const *str, size_t *retlen)
  *
  * given:
  *	item	pointer to a JSON number structure (struct json_number*)
- *	str	pointer to buffer containing a JSON integer NUL terminated string
+ *	str	JSON integer as a NUL terminated C-style string
  *	len	length of the JSON number that is not whitespace
  *
  * NOTE: This function assumes that str points to the start of a JSON number, NOT whitespace.
@@ -1660,7 +1682,7 @@ json_process_decimal(struct json_number *item, char const *str, size_t len)
  *
  * given:
  *	item	pointer to a JSON number structure (struct json_number*)
- *	str	pointer to buffer containing a JSON number that is NUL terminated
+ *	str	JSON floating point or JSON e-notation value as a NUL terminated C-style string
  *	len	length of the JSON number that is not whitespace
  *
  * NOTE: This function assumes that str points to the start of a JSON number, NOT whitespace.
@@ -2174,7 +2196,7 @@ json_conv_number(char const *ptr, size_t len)
  * This is a simplified interface for json_conv_int().  See that function for details.
  *
  * given:
- *	str	a JSON integer string to convert
+ *	str	JSON number in the from of a NUL terminated C-style string
  *	retlen	address of where to store length of str, if retlen != NULL
  *
  * returns:
@@ -2234,13 +2256,13 @@ json_conv_number_str(char const *str, size_t *retlen)
  *
  * given:
  *	ptr	pointer to buffer containing a JSON encoded string
- *	len	length, starting at ptr, of the JSON string
+ *	len	length, starting at ptr, of the JSON encoded string
  *	quote	true ==> ignore JSON double quotes, both ptr[0] & ptr[len-1]
  *		must be '"'
  *		false ==> the entire ptr is to be converted
  *
  * returns:
- *	allocated JSON parser tree node converted JSON encoded string
+ *	allocated JSON parser tree node converted JSON string
  *
  * NOTE: This function will not return on malloc error.
  * NOTE: This function will not return NULL.
@@ -2361,12 +2383,12 @@ json_conv_string(char const *ptr, size_t len, bool quote)
 
 
 /*
- * json_conv_string_str - convert JSON string to C string
+ * json_conv_string_str - convert JSON encoded string to C string
  *
  * This is a simplified interface for json_conv_string(). See that function for details.
  *
  * given:
- *	str	a JSON encoded string
+ *	str	encoded JSON string in the from of a NUL terminated C-style string
  *	retlen	address of where to store length of str, if retlen != NULL
  *	quote	true ==> ignore JSON double quotes, both str[0] & str[len-1]
  *		must be '"', false ==> the entire str is to be converted
@@ -2420,7 +2442,7 @@ json_conv_string_str(char const *str, size_t *retlen, bool quote)
 
 
 /*
- * json_conv_bool - convert JSON encoded boolean to C bool
+ * json_conv_bool - convert JSON boolean to C bool
  *
  * A JSON boolean is of the form:
  *
@@ -2432,7 +2454,7 @@ json_conv_string_str(char const *str, size_t *retlen, bool quote)
  *	len	length, starting at ptr, of the JSON boolean
  *
  * returns:
- *	allocated JSON parser tree node converted JSON encoded boolean
+ *	allocated JSON parser tree node converted JSON boolean
  *
  * NOTE: This function will not return on malloc error.
  * NOTE: This function will not return NULL.
@@ -2509,12 +2531,12 @@ json_conv_bool(char const *ptr, size_t len)
 
 
 /*
- * json_conv_bool_str - convert JSON string to C bool
+ * json_conv_bool_str - convert JSON boolean to C bool
  *
  * This is a simplified interface for json_conv_bool(). See that function for details.
  *
  * given:
- *	str	a JSON encoded boolean
+ *	str	JSON boolean in the from of a NUL terminated C-style string
  *	retlen	address of where to store length of str, if retlen != NULL
  *
  * returns:
@@ -2566,7 +2588,7 @@ json_conv_bool_str(char const *str, size_t *retlen)
 
 
 /*
- * json_conv_null - convert JSON encoded null to C NULL
+ * json_conv_null - convert JSON null to C NULL
  *
  * A JSON null is of the form:
  *
@@ -2577,7 +2599,7 @@ json_conv_bool_str(char const *str, size_t *retlen)
  *	len	length, starting at ptr, of the JSON null
  *
  * returns:
- *	allocated JSON parser tree node converted JSON encoded null
+ *	allocated JSON parser tree node converted JSON null
  *
  * NOTE: This function will not return on malloc error.
  * NOTE: This function will not return NULL.
@@ -2617,7 +2639,7 @@ json_conv_null(char const *ptr, size_t len)
     }
 
     /*
-     * duplicate the JSON encoded string
+     * duplicate the JSON string
      */
     errno = 0;			/* pre-clear errno for errp() */
     item->as_str = malloc(len+1+1);
@@ -2650,12 +2672,12 @@ json_conv_null(char const *ptr, size_t len)
 
 
 /*
- * json_conv_null_str - convert JSON string to C NULL
+ * json_conv_null_str - convert JSON null to C NULL
  *
  * This is a simplified interface for json_conv_null(). See that function for details.
  *
  * given:
- *	str	a JSON encoded null
+ *	str	JSON null in the from of a NUL terminated C-style string
  *	retlen	address of where to store length of str, if retlen != NULL
  *
  * returns:
@@ -3308,7 +3330,7 @@ json_array_append_values(struct json *node, struct dyn_array *values)
 
 
 /*
- * json_element_type_name	- print a struct json element union type by name
+ * json_element_type_name - print a struct json element union type by name
  *
  * given:
  *	json_type   one of the values of the JTYPE_ enum
@@ -3371,7 +3393,7 @@ json_element_type_name(struct json *node)
 
 
 /*
- * json_free - free storage of a JSON parse tree node
+ * json_free - free storage of a single JSON parse tree node
  *
  * This function operates on a single JSON parse tree node.
  * See json_tree_free() for a function that frees an entire parse tree.
