@@ -147,11 +147,7 @@ JSON_CLOSE_BRACKET	"]"
 JSON_COLON		":"
 JSON_COMMA		","
 
-/* Actions.
- *
- * TODO: We have to do more than just assigning the token type (by which we mean
- * ugly_lval.type). These things will be done later.
- */
+/* Actions. */
 %%
 {JSON_WS}		{
 			    /*
