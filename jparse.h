@@ -124,7 +124,7 @@ int ugly_lex(void);
  */
 void ugly_error(char const *format, ...);
 void parse_json_file(char const *filename); /* parse a file as JSON */
-void parse_json_block(char const *string);  /* parse a string as a JSON block */
+void parse_json_block(char const *string, size_t len);  /* parse a string as a JSON block */
 /*
  * parse_json functions assume a specific type of data based on the token
  * returned to the parser (from the lexer) and based on the type they use the

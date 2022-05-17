@@ -147,11 +147,7 @@ JSON_CLOSE_BRACKET	"]"
 JSON_COLON		":"
 JSON_COMMA		","
 
-/* Actions.
- *
- * TODO: We have to do more than just assigning the token type (by which we mean
- * ugly_lval.type). These things will be done later.
- */
+/* Actions. */
 %%
 {JSON_WS}		{
 			    /*
@@ -285,6 +281,7 @@ json_parse(char const *ptr, size_t len, bool *is_valid)
  * given:
  *
  *	string	    - the string to parse as JSON
+ *	len	    - the length to scan
  *
  * NOTE: Until the JSON parser is finished this only parses the string (and not
  * necessarily correctly); it does NOT build a parse tree!
@@ -298,11 +295,9 @@ json_parse(char const *ptr, size_t len, bool *is_valid)
  * than one string and/or file can then be verified during testing. Once the
  * parser is complete it will use jerr(). Note that this refers to errors
  * unspecific to the parser.
- *
- * XXX - see about moving this function to another file - XXX
  */
 void
-parse_json_block(char const *string)
+parse_json_block(char const *string, size_t len)
 {
     /*
      * firewall
@@ -312,18 +307,14 @@ parse_json_block(char const *string)
 	err(37, __func__, "passed NULL string");
 	++num_errors;
 	return;
-    } else if (*string == '\0') /* strlen(string) == 0 */ {
-	err(38, __func__, "passed empty string");
-	++num_errors;
-	return;
-    } else if (is_all_whitespace_str(string)) {
-	err(39, __func__, "string has only whitespace");
+    } else if (len <= 0) {
+	err(39, __func__, "len <= 0");
 	++num_errors;
 	return;
     }
 
     ugly_lineno = 1;
-    bs = ugly__scan_string(string);
+    bs = ugly__scan_bytes(string, len);
     if (bs == NULL) {
 	warn(__func__, "unable to scan string");
 	++num_errors;
@@ -348,8 +339,7 @@ parse_json_block(char const *string)
  *	filename    - filename to parse
  *
  * If filename is NULL or the filename is not a readable file (or is empty) or
- * if the file has embedded NUL bytes (not a C string) or if read_all() returns
- * NULL the function warns but does nothing else.
+ * if read_all() returns NULL the function warns but does nothing else.
  *
  * NOTE: Until the JSON parser is finished this only parses the file (and not
  * necessarily correctly); it does NOT build a parse tree!
@@ -364,8 +354,6 @@ parse_json_block(char const *string)
  * than one string and/or file can then be verified during testing. Once the
  * parser is complete it will use jerr(). Note that this refers to errors
  * unspecific to the parser.
- *
- * XXX - if moved, move this to the file parse_json_block() is moved to - XXX
  */
 void
 parse_json_file(char const *filename)
@@ -421,18 +409,10 @@ parse_json_file(char const *filename)
 	clearerr_or_fclose(filename, ugly_in);
 	return;
     }
-    else if (!is_string(data, len + 1)) {
-	warn(__func__, "found embedded NUL byte in %s", is_stdin?"stdin":filename);
-	++num_errors;
-	clearerr_or_fclose(filename, ugly_in);
-	return;
-    } else if (is_all_whitespace_str(data)) {
-	warn(__func__, "file has only whitespace");
-	++num_errors;
-	return;
-    }
 
-    parse_json_block(data);
+    json_dbg(json_verbosity_level, __func__, "Calling parse_json_block(\"%s\", %ju):", data, len);
+
+    parse_json_block(data, len);
 
     /* free data */
     free(data);

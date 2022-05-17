@@ -881,8 +881,8 @@ int yy_flex_debug = 1;
 
 static const flex_int16_t yy_rule_linenum[14] =
     {   0,
-      156,  166,  172,  178,  184,  189,  195,  200,  207,  213,
-      220,  227,  234
+      152,  162,  168,  174,  180,  185,  191,  196,  203,  209,
+      216,  223,  230
     } ;
 
 /* The intent behind this definition is that it'll catch
@@ -1018,12 +1018,8 @@ UGLY__BUFFER_STATE bs;
  * routines actually do these checks. This simplifies the parser regex and so we
  * don't have to worry about complicating the parser unnecessarily.
  */
-/* Actions.
- *
- * TODO: We have to do more than just assigning the token type (by which we mean
- * ugly_lval.type). These things will be done later.
- */
-#line 975 "jparse.c"
+/* Actions. */
+#line 971 "jparse.c"
 
 #define INITIAL 0
 
@@ -1303,9 +1299,9 @@ YY_DECL
 
 	{
 /* %% [7.0] user's declarations go here */
-#line 155 "jparse.l"
+#line 151 "jparse.l"
 
-#line 1257 "jparse.c"
+#line 1253 "jparse.c"
 
 	while ( /*CONSTCOND*/1 )		/* loops until end-of-file is reached */
 		{
@@ -1398,7 +1394,7 @@ do_action:	/* This label is used only to access EOF actions. */
 case 1:
 /* rule 1 can match eol */
 YY_RULE_SETUP
-#line 156 "jparse.l"
+#line 152 "jparse.l"
 {
 			    /*
 			     * Whitespace
@@ -1411,7 +1407,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
-#line 166 "jparse.l"
+#line 162 "jparse.l"
 {
 			    /* string */
 			    printf("\nstring: <%s>\n", ugly_text);
@@ -1420,7 +1416,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 172 "jparse.l"
+#line 168 "jparse.l"
 {
 			    /* number */
 			    printf("\nnumber: <%s>\n", ugly_text);
@@ -1429,7 +1425,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 178 "jparse.l"
+#line 174 "jparse.l"
 {
 			    /* null object */
 			    printf("\nnull: <%s>\n", ugly_text);
@@ -1438,7 +1434,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 184 "jparse.l"
+#line 180 "jparse.l"
 {
 			    /* boolean: true */
 			    printf("\ntrue: <%s>\n", ugly_text);
@@ -1447,7 +1443,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 189 "jparse.l"
+#line 185 "jparse.l"
 {
 			    /* boolean: false */
 			    printf("\nfalse: <%s>\n", ugly_text);
@@ -1456,7 +1452,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 195 "jparse.l"
+#line 191 "jparse.l"
 {
 			    /* start of object */
 			    printf("\nstart of object: <%c>\n", *ugly_text);
@@ -1465,7 +1461,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 200 "jparse.l"
+#line 196 "jparse.l"
 {
 			    /* end of object */
 			    printf("\nend of object: <%c>\n", *ugly_text);
@@ -1475,7 +1471,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 207 "jparse.l"
+#line 203 "jparse.l"
 {
 			    /* start of array */
 			    printf("\nstart of array: <%c>\n", *ugly_text);
@@ -1485,7 +1481,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
-#line 213 "jparse.l"
+#line 209 "jparse.l"
 {
 			    /* end of array */
 			    printf("\nend of array: <%c>\n", *ugly_text);
@@ -1495,7 +1491,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
-#line 220 "jparse.l"
+#line 216 "jparse.l"
 {
 			    /* colon or 'equals' */
 			    printf("\ncolon (or 'equals'): <%c>\n", *ugly_text);
@@ -1505,7 +1501,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
-#line 227 "jparse.l"
+#line 223 "jparse.l"
 {
 			    /* comma: name/value pair separator */
 			    printf("\ncomma: <%c>\n", *ugly_text);
@@ -1515,7 +1511,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
-#line 234 "jparse.l"
+#line 230 "jparse.l"
 {
 			    /* invalid token: any other character */
 			    ugly_error("\ninvalid token: 0x%02x = <%c>\n", *ugly_text, *ugly_text);
@@ -1524,10 +1520,10 @@ YY_RULE_SETUP
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
-#line 240 "jparse.l"
+#line 236 "jparse.l"
 YY_FATAL_ERROR( "flex scanner jammed" );
 	YY_BREAK
-#line 1479 "jparse.c"
+#line 1475 "jparse.c"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 
@@ -2687,7 +2683,7 @@ void yyfree (void * ptr )
 
 /* %ok-for-header */
 
-#line 240 "jparse.l"
+#line 236 "jparse.l"
 
 
 /* Section 3: Code that's copied to the generated scanner */
@@ -2736,6 +2732,7 @@ json_parse(char const *ptr, size_t len, bool *is_valid)
  * given:
  *
  *	string	    - the string to parse as JSON
+ *	len	    - the length to scan
  *
  * NOTE: Until the JSON parser is finished this only parses the string (and not
  * necessarily correctly); it does NOT build a parse tree!
@@ -2749,11 +2746,9 @@ json_parse(char const *ptr, size_t len, bool *is_valid)
  * than one string and/or file can then be verified during testing. Once the
  * parser is complete it will use jerr(). Note that this refers to errors
  * unspecific to the parser.
- *
- * XXX - see about moving this function to another file - XXX
  */
 void
-parse_json_block(char const *string)
+parse_json_block(char const *string, size_t len)
 {
     /*
      * firewall
@@ -2763,18 +2758,14 @@ parse_json_block(char const *string)
 	err(37, __func__, "passed NULL string");
 	++num_errors;
 	return;
-    } else if (*string == '\0') /* strlen(string) == 0 */ {
-	err(38, __func__, "passed empty string");
-	++num_errors;
-	return;
-    } else if (is_all_whitespace_str(string)) {
-	err(39, __func__, "string has only whitespace");
+    } else if (len <= 0) {
+	err(39, __func__, "len <= 0");
 	++num_errors;
 	return;
     }
 
     ugly_lineno = 1;
-    bs = ugly__scan_string(string);
+    bs = ugly__scan_bytes(string, len);
     if (bs == NULL) {
 	warn(__func__, "unable to scan string");
 	++num_errors;
@@ -2799,8 +2790,7 @@ parse_json_block(char const *string)
  *	filename    - filename to parse
  *
  * If filename is NULL or the filename is not a readable file (or is empty) or
- * if the file has embedded NUL bytes (not a C string) or if read_all() returns
- * NULL the function warns but does nothing else.
+ * if read_all() returns NULL the function warns but does nothing else.
  *
  * NOTE: Until the JSON parser is finished this only parses the file (and not
  * necessarily correctly); it does NOT build a parse tree!
@@ -2815,8 +2805,6 @@ parse_json_block(char const *string)
  * than one string and/or file can then be verified during testing. Once the
  * parser is complete it will use jerr(). Note that this refers to errors
  * unspecific to the parser.
- *
- * XXX - if moved, move this to the file parse_json_block() is moved to - XXX
  */
 void
 parse_json_file(char const *filename)
@@ -2872,18 +2860,10 @@ parse_json_file(char const *filename)
 	clearerr_or_fclose(filename, ugly_in);
 	return;
     }
-    else if (!is_string(data, len + 1)) {
-	warn(__func__, "found embedded NUL byte in %s", is_stdin?"stdin":filename);
-	++num_errors;
-	clearerr_or_fclose(filename, ugly_in);
-	return;
-    } else if (is_all_whitespace_str(data)) {
-	warn(__func__, "file has only whitespace");
-	++num_errors;
-	return;
-    }
 
-    parse_json_block(data);
+    json_dbg(json_verbosity_level, __func__, "Calling parse_json_block(\"%s\", %ju):", data, len);
+
+    parse_json_block(data, len);
 
     /* free data */
     free(data);
