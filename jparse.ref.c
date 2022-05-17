@@ -2736,6 +2736,7 @@ json_parse(char const *ptr, size_t len, bool *is_valid)
  * given:
  *
  *	string	    - the string to parse as JSON
+ *	len	    - the length to scan
  *
  * NOTE: Until the JSON parser is finished this only parses the string (and not
  * necessarily correctly); it does NOT build a parse tree!
@@ -2749,11 +2750,9 @@ json_parse(char const *ptr, size_t len, bool *is_valid)
  * than one string and/or file can then be verified during testing. Once the
  * parser is complete it will use jerr(). Note that this refers to errors
  * unspecific to the parser.
- *
- * XXX - see about moving this function to another file - XXX
  */
 void
-parse_json_block(char const *string)
+parse_json_block(char const *string, size_t len)
 {
     /*
      * firewall
@@ -2771,10 +2770,14 @@ parse_json_block(char const *string)
 	err(39, __func__, "string has only whitespace");
 	++num_errors;
 	return;
+    } else if (len <= 0) {
+	err(39, __func__, "len <= 0");
+	++num_errors;
+	return;
     }
 
     ugly_lineno = 1;
-    bs = ugly__scan_string(string);
+    bs = ugly__scan_bytes(string, len);
     if (bs == NULL) {
 	warn(__func__, "unable to scan string");
 	++num_errors;
@@ -2814,8 +2817,6 @@ parse_json_block(char const *string)
  * than one string and/or file can then be verified during testing. Once the
  * parser is complete it will use jerr(). Note that this refers to errors
  * unspecific to the parser.
- *
- * XXX - if moved, move this to the file parse_json_block() is moved to - XXX
  */
 void
 parse_json_file(char const *filename)
@@ -2876,7 +2877,7 @@ parse_json_file(char const *filename)
 	return;
     }
 
-    parse_json_block(data);
+    parse_json_block(data, len);
 
     /* free data */
     free(data);

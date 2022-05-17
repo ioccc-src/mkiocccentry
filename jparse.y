@@ -444,7 +444,7 @@ main(int argc, char **argv)
 
 	    json_dbg(json_verbosity_level, __func__, "Calling parse_json_block(\"%s\"):", optarg);
 	    /* parse arg as a block of json input */
-	    parse_json_block(optarg);
+	    parse_json_block(optarg, strlen(optarg));
 	    break;
 	default:
 	    usage(2, "invalid -flag or missing option argument", program); /*ooo*/
