@@ -311,14 +311,6 @@ parse_json_block(char const *string, size_t len)
 	err(37, __func__, "passed NULL string");
 	++num_errors;
 	return;
-    } else if (*string == '\0') /* strlen(string) == 0 */ {
-	err(38, __func__, "passed empty string");
-	++num_errors;
-	return;
-    } else if (is_all_whitespace_str(string)) {
-	err(39, __func__, "string has only whitespace");
-	++num_errors;
-	return;
     } else if (len <= 0) {
 	err(39, __func__, "len <= 0");
 	++num_errors;
@@ -419,10 +411,6 @@ parse_json_file(char const *filename)
 	warn(__func__, "%s is empty", is_stdin?"stdin":filename);
 	++num_errors;
 	clearerr_or_fclose(filename, ugly_in);
-	return;
-    } else if (is_all_whitespace_str(data)) {
-	warn(__func__, "file has only whitespace");
-	++num_errors;
 	return;
     }
 
