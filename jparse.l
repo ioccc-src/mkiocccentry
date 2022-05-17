@@ -348,8 +348,7 @@ parse_json_block(char const *string)
  *	filename    - filename to parse
  *
  * If filename is NULL or the filename is not a readable file (or is empty) or
- * if the file has embedded NUL bytes (not a C string) or if read_all() returns
- * NULL the function warns but does nothing else.
+ * if read_all() returns NULL the function warns but does nothing else.
  *
  * NOTE: Until the JSON parser is finished this only parses the file (and not
  * necessarily correctly); it does NOT build a parse tree!
@@ -417,12 +416,6 @@ parse_json_file(char const *filename)
     }
     else if (len <= 0) {
 	warn(__func__, "%s is empty", is_stdin?"stdin":filename);
-	++num_errors;
-	clearerr_or_fclose(filename, ugly_in);
-	return;
-    }
-    else if (!is_string(data, len + 1)) {
-	warn(__func__, "found embedded NUL byte in %s", is_stdin?"stdin":filename);
 	++num_errors;
 	clearerr_or_fclose(filename, ugly_in);
 	return;
