@@ -490,7 +490,7 @@ dyn_test.o: dyn_test.c Makefile
 	${CC} ${CFLAGS} dyn_test.c -c
 
 dyn_test: dyn_test.o dbg.o util.o dyn_array.o Makefile
-	${CC} ${CFLAGS} dyn_test.c dbg.o util.o dyn_array.o -o $@
+	${CC} ${CFLAGS} dyn_test.o dbg.o util.o dyn_array.o -o $@
 
 limit_ioccc.sh: limit_ioccc.h version.h Makefile
 	${RM} -f $@
