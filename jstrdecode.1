@@ -1,8 +1,8 @@
-.TH jstrdecode 1 "28 April 2022" "jstrdecode" "IOCCC tools"
+.TH jstrdecode 1 "18 May 2022" "jstrdecode" "IOCCC tools"
 .SH NAME
 jstrdecode \- decode JSON encoded strings
 .SH SYNOPSIS
-\fBjstrdecode [\-h] [\-v level] [\-q] [\-V] [\-t] [\-n] [string ...]
+\fBjstrdecode [\-h] [\-v level] [\-q] [\-V] [\-t] [\-n] [\-Q] [string ...]
 .SH DESCRIPTION
 \fBjstrdecode\fP decodes JSON encoded strings given on the command line.
 If given the \fB\-t\fP option it performs a test on the JSON decode and encode functions.
@@ -27,6 +27,9 @@ Run tests on the JSON decode/encode functions.
 .PP
 \fB\-n\fP
 Do not output a newline after the decode function.
+.PP
+\fB\-Q\fP
+Enclose output in quotes (def: do not).
 .SH EXIT STATUS
 .PP
 \fBmain()\fP returns 1 for errors or issues found; 0 for success.
