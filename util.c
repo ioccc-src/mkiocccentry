@@ -1565,7 +1565,6 @@ readline(char **linep, FILE * stream)
 {
     size_t linecap = 0;		/* allocated capacity of linep buffer */
     ssize_t ret;		/* getline return and our modified size return */
-    char *p;			/* printer to NUL */
 
     /*
      * firewall
@@ -1598,17 +1597,6 @@ readline(char **linep, FILE * stream)
      */
     if (*linep == NULL) {
 	err(149, __func__, "*linep is NULL after getline()");
-	not_reached();
-    }
-
-    /*
-     * scan for embedded NUL bytes (before end of line)
-     *
-     */
-    errno = 0;			/* pre-clear errno for errp() */
-    p = (char *)memchr(*linep, 0, (size_t)ret);
-    if (p != NULL) {
-	errp(150, __func__, "found NUL before end of line");
 	not_reached();
     }
 
@@ -1661,7 +1649,7 @@ readline_dup(char **linep, bool strip, size_t *lenp, FILE *stream)
      * firewall
      */
     if (linep == NULL || stream == NULL) {
-	err(151, __func__, "called with NULL arg(s)");
+	err(150, __func__, "called with NULL arg(s)");
 	not_reached();
     }
 
@@ -1681,11 +1669,12 @@ readline_dup(char **linep, bool strip, size_t *lenp, FILE *stream)
      * duplicate the line
      */
     errno = 0;			/* pre-clear errno for errp() */
-    ret = strdup(*linep);
+    ret = calloc(len+1+1, sizeof(char));
     if (ret == NULL) {
-	errp(152, __func__, "strdup of read line of %jd bytes failed", (intmax_t)len);
+	errp(151, __func__, "calloc of read line of %jd bytes failed", (intmax_t)len+1+1);
 	not_reached();
     }
+    memcpy(ret, *linep, len);
 
     /*
      * strip trailing whitespace if requested
@@ -1898,7 +1887,7 @@ read_all(FILE *stream, size_t *psize)
      * firewall
      */
     if (stream == NULL) {
-	err(153, __func__, "called with NULL stream");
+	err(152, __func__, "called with NULL stream");
 	not_reached();
     }
 
@@ -2125,7 +2114,7 @@ string_to_long(char const *str)
      * firewall
      */
     if (str == NULL) {
-	err(154, __func__, "passed NULL arg");
+	err(153, __func__, "passed NULL arg");
 	not_reached();
     }
 
@@ -2133,11 +2122,11 @@ string_to_long(char const *str)
     num = strtoll(str, NULL, 10);
 
     if (errno != 0) {
-	errp(155, __func__, "error converting string \"%s\" to long int: %s", str, strerror(errno));
+	errp(154, __func__, "error converting string \"%s\" to long int: %s", str, strerror(errno));
 	not_reached();
     }
     else if (num < LONG_MIN || num > LONG_MAX) {
-	err(156, __func__, "number %s out of range for long int (must be >= %ld && <= %ld)", str, LONG_MIN, LONG_MAX);
+	err(155, __func__, "number %s out of range for long int (must be >= %ld && <= %ld)", str, LONG_MIN, LONG_MAX);
 	not_reached();
     }
     return (long)num;
@@ -2164,12 +2153,12 @@ string_to_long_long(char const *str)
      * firewall
      */
     if (str == NULL) {
-	err(157, __func__, "passed NULL arg");
+	err(156, __func__, "passed NULL arg");
 	not_reached();
     }
 
     if (strlen(str) > LLONG_MAX_BASE10_DIGITS) {
-	err(158, __func__, "string '%s' too long", str);
+	err(157, __func__, "string '%s' too long", str);
 	not_reached();
     }
 
@@ -2177,11 +2166,11 @@ string_to_long_long(char const *str)
     num = strtoll(str, NULL, 10);
 
     if (errno != 0) {
-	errp(159, __func__, "error converting string \"%s\" to long long int: %s", str, strerror(errno));
+	errp(158, __func__, "error converting string \"%s\" to long long int: %s", str, strerror(errno));
 	not_reached();
     }
     else if (num <= LLONG_MIN || num >= LLONG_MAX) {
-	err(160, __func__, "number %s out of range for long long int (must be > %lld && < %lld)", str, LLONG_MIN, LLONG_MAX);
+	err(159, __func__, "number %s out of range for long long int (must be > %lld && < %lld)", str, LLONG_MIN, LLONG_MAX);
 	not_reached();
     }
     return num;
@@ -2208,7 +2197,7 @@ string_to_int(char const *str)
      * firewall
      */
     if (str == NULL) {
-	err(161, __func__, "passed NULL arg");
+	err(160, __func__, "passed NULL arg");
 	not_reached();
     }
 
@@ -2216,11 +2205,11 @@ string_to_int(char const *str)
     num = (int)strtoll(str, NULL, 10);
 
     if (errno != 0) {
-	errp(162, __func__, "error converting string \"%s\" to int: %s", str, strerror(errno));
+	errp(161, __func__, "error converting string \"%s\" to int: %s", str, strerror(errno));
 	not_reached();
     }
     else if (num < INT_MIN || num > INT_MAX) {
-	err(163, __func__, "number %s out of range for int (must be >= %d && <= %d)", str, INT_MIN, INT_MAX);
+	err(162, __func__, "number %s out of range for int (must be >= %d && <= %d)", str, INT_MIN, INT_MAX);
 	not_reached();
     }
     return (int)num;
@@ -2247,17 +2236,17 @@ string_to_unsigned_long(char const *str)
      * firewall
      */
     if (str == NULL) {
-	err(164, __func__, "passed NULL arg");
+	err(163, __func__, "passed NULL arg");
 	not_reached();
     }
 
     errno = 0;
     num = strtoul(str, NULL, 10);
     if (errno != 0) {
-	errp(165, __func__, "strtoul(%s): %s", str, strerror(errno));
+	errp(164, __func__, "strtoul(%s): %s", str, strerror(errno));
 	not_reached();
     } else if (num >= ULONG_MAX) {
-	err(166, __func__, "strtoul(%s): too big", str);
+	err(165, __func__, "strtoul(%s): too big", str);
 	not_reached();
     }
 
@@ -2285,17 +2274,17 @@ string_to_unsigned_long_long(char const *str)
      * firewall
      */
     if (str == NULL) {
-	err(167, __func__, "passed NULL arg");
+	err(166, __func__, "passed NULL arg");
 	not_reached();
     }
 
     errno = 0;
     num = strtoul(str, NULL, 10);
     if (errno != 0) {
-	errp(168, __func__, "strtoul(%s): %s", str, strerror(errno));
+	errp(167, __func__, "strtoul(%s): %s", str, strerror(errno));
 	not_reached();
     } else if (num >= ULLONG_MAX) {
-	err(169, __func__, "strtoul(%s): too big", str);
+	err(168, __func__, "strtoul(%s): too big", str);
 	not_reached();
     }
 
@@ -2322,7 +2311,7 @@ string_to_intmax(char const *str)
      * firewall
      */
     if (str == NULL) {
-	err(170, __func__, "passed NULL arg");
+	err(169, __func__, "passed NULL arg");
 	not_reached();
     }
 
@@ -2330,11 +2319,11 @@ string_to_intmax(char const *str)
     num = strtoimax(str, NULL, 10);
 
     if (errno != 0) {
-	errp(171, __func__, "error converting string \"%s\" to intmax_t: %s", str, strerror(errno));
+	errp(170, __func__, "error converting string \"%s\" to intmax_t: %s", str, strerror(errno));
 	not_reached();
     }
     else if (num <= INTMAX_MIN || num >= INTMAX_MAX) {
-	err(172, __func__, "number %s out of range for intmax_t (must be > %jd && < %jd)", str, INTMAX_MIN, INTMAX_MAX);
+	err(171, __func__, "number %s out of range for intmax_t (must be > %jd && < %jd)", str, INTMAX_MIN, INTMAX_MAX);
 	not_reached();
     }
     return num;
@@ -2361,17 +2350,17 @@ uintmax_t string_to_uintmax(char const *str)
      * firewall
      */
     if (str == NULL) {
-	err(173, __func__, "passed NULL arg");
+	err(172, __func__, "passed NULL arg");
 	not_reached();
     }
 
     errno = 0;
     num = strtoumax(str, NULL, 10);
     if (errno != 0) {
-	errp(174, __func__, "strtoumax(%s): %s", str, strerror(errno));
+	errp(173, __func__, "strtoumax(%s): %s", str, strerror(errno));
 	not_reached();
     } else if (num >= UINTMAX_MAX) {
-	err(175, __func__, "strtoumax(%s): too big", str);
+	err(174, __func__, "strtoumax(%s): too big", str);
 	not_reached();
     }
 
@@ -2398,7 +2387,7 @@ string_to_float(char const *str)
      * firewall
      */
     if (str == NULL) {
-	err(176, __func__, "passed NULL arg");
+	err(175, __func__, "passed NULL arg");
 	not_reached();
     }
 
@@ -2406,11 +2395,11 @@ string_to_float(char const *str)
     num = strtold(str, NULL);
 
     if (errno != 0) {
-	errp(177, __func__, "error converting string \"%s\" to long double : %s", str, strerror(errno));
+	errp(176, __func__, "error converting string \"%s\" to long double : %s", str, strerror(errno));
 	not_reached();
     }
     else if (num <= LDBL_MIN || num >= LDBL_MAX) {
-	err(178, __func__, "number %s out of range for long double (must be > %Lf && < %Lf)", str, LDBL_MIN, LDBL_MAX);
+	err(177, __func__, "number %s out of range for long double (must be > %Lf && < %Lf)", str, LDBL_MIN, LDBL_MAX);
 	not_reached();
     }
     return num;
@@ -2856,7 +2845,7 @@ posix_safe_chk(char const *str, size_t len, bool *slash, bool *posix_safe, bool 
      * firewall
      */
     if (str == NULL || slash == NULL || posix_safe == NULL || first_alphanum == NULL || upper == NULL) {
-	err(179, __func__, "called with NULL arg(s)");
+	err(178, __func__, "called with NULL arg(s)");
 	not_reached();
     }
 
@@ -3016,7 +3005,7 @@ find_matching_quote(char *q)
      * firewall
      */
     if (q == NULL) {
-	err(180, __func__, "passed NULL pointer");
+	err(179, __func__, "passed NULL pointer");
 	not_reached();
     }
 
@@ -3054,10 +3043,10 @@ clearerr_or_fclose(char const *filename, FILE *file)
      * firewall
      */
     if (filename == NULL) {
-	err(181, __func__, "passed NULL filename");
+	err(180, __func__, "passed NULL filename");
 	not_reached();
     } else if (file == NULL) {
-	err(182, __func__, "passed NULL file");
+	err(181, __func__, "passed NULL file");
 	not_reached();
     }
 
@@ -3098,7 +3087,7 @@ print_newline(bool output_newline)
 	errno = 0;		/* pre-clear errno for errp() */
 	ret = putchar('\n');
 	if (ret != '\n') {
-	    errp(183, __func__, "error while writing newline");
+	    errp(182, __func__, "error while writing newline");
 	    not_reached();
 	}
     }

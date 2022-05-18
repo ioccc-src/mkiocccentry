@@ -231,18 +231,17 @@ check_author_json(char const *file, char const *fnamchk)
     }
     stream = NULL;
 
-    /* scan for embedded NUL bytes (before EOF) */
-    if (!is_string(data, length+1)) {
-	err(16, __func__, "found NUL before EOF: %s", file);
-	not_reached();
-    }
-
+    /*
+     * duplicate data
+     */
     errno = 0;
-    data_dup = strdup(data);
+    data_dup = calloc(length+1+1, sizeof(char));
     if (data_dup == NULL) {
-	errp(17, __func__, "unable to strdup file contents");
+	errp(16, __func__, "unable to calloc %ju bytes to duplicate data",
+		 (intmax_t)length+1+1);
 	not_reached();
     }
+    memcpy(data_dup, data, length);
 
     /*
      * XXX - check_(last|first)_json_char() will be removed after the JSON
@@ -261,7 +260,7 @@ check_author_json(char const *file, char const *fnamchk)
      * parsing after the first '{' but after the '}' we don't continue.
      */
     if (check_last_json_char(file, data_dup, &p, '}')) {
-	err(18, __func__, "last character in file %s not a '}': '%c'", file, *p);
+	err(17, __func__, "last character in file %s not a '}': '%c'", file, *p);
 	not_reached();
     }
     dbg(DBG_MED, "last character: '%c'", *p);
@@ -273,14 +272,14 @@ check_author_json(char const *file, char const *fnamchk)
      * Check that the new last char is NOT a ','.
      */
     if (!check_last_json_char(file, data_dup, &p, ',')) {
-	err(19, __func__, "last char is a ',' in file %s", file);
+	err(18, __func__, "last char is a ',' in file %s", file);
 	not_reached();
     }
 
 
     /* verify that the very first character is a '{' */
     if (check_first_json_char(file, data_dup, &p, '{')) {
-	err(20, __func__, "first character in file %s not a '{': '%c'", file, *p);
+	err(19, __func__, "first character in file %s not a '{': '%c'", file, *p);
 	not_reached();
     }
     dbg(DBG_MED, "first character: '%c'", *p);
@@ -390,14 +389,14 @@ check_author_json(char const *file, char const *fnamchk)
 	     * This will come in a future commit.
 	     */
 	    if (!author_field) {
-		err(21, __func__, "authors field not found in author_json_fields table");
+		err(20, __func__, "authors field not found in author_json_fields table");
 		not_reached();
 	    }
 
 	    /* find start of array */
 	    array_start = strtok_r(NULL, ":[{", &saveptr);
 	    if (array_start == NULL) {
-		err(22, __func__, "unable to find beginning of array");
+		err(21, __func__, "unable to find beginning of array");
 		not_reached();
 	    }
 
@@ -408,12 +407,12 @@ check_author_json(char const *file, char const *fnamchk)
 	    /* extract the array */
 	    array = strtok_r(NULL, "]", &saveptr);
 	    if (array == NULL) {
-		err(23, __func__, "unable to extract array in file %s", file);
+		err(22, __func__, "unable to extract array in file %s", file);
 		not_reached();
 	    }
 
 	    if (!*array) {
-		err(24, __func__, "empty array in file %s", file);
+		err(23, __func__, "empty array in file %s", file);
 		not_reached();
 	    }
 
@@ -421,7 +420,7 @@ check_author_json(char const *file, char const *fnamchk)
 	    errno = 0;
 	    array_dup = strdup(array);
 	    if (array_dup == NULL) {
-		errp(25, __func__, "strdup() on array failed: %s", strerror(errno));
+		errp(24, __func__, "strdup() on array failed: %s", strerror(errno));
 		not_reached();
 	    }
 	    /* Update p to go beyond the array. */
@@ -430,7 +429,7 @@ check_author_json(char const *file, char const *fnamchk)
 	    /* extract the value */
 	    val = strtok_r(NULL, ",", &saveptr);
 	    if (val == NULL) {
-		err(26, __func__, "unable to find value in file %s for field %s", file, p);
+		err(25, __func__, "unable to find value in file %s for field %s", file, p);
 		not_reached();
 	    }
 
@@ -551,7 +550,7 @@ check_author_json(char const *file, char const *fnamchk)
 	     */
 	    val_esc = json_decode_str(val, NULL);
 	    if (val_esc == NULL) {
-		err(27, __func__, "json_decode(): invalidly formed field '%s' value '%s' or malloc failure in file %s",
+		err(26, __func__, "json_decode(): invalidly formed field '%s' value '%s' or malloc failure in file %s",
 			p, val, file);
 		not_reached();
 	    }
@@ -656,7 +655,7 @@ add_author_json_field(char const *json_filename, char *name, char *val, int line
      * firewall
      */
     if (json_filename == NULL || name == NULL || val == NULL) {
-	err(28, __func__, "passed NULL arg(s)");
+	err(27, __func__, "passed NULL arg(s)");
 	not_reached();
     }
 
@@ -707,7 +706,7 @@ check_found_author_json_fields(char const *json_filename, bool test)
      * firewall
      */
     if (json_filename == NULL) {
-	err(29, __func__, "passed NULL json_filename");
+	err(28, __func__, "passed NULL json_filename");
 	not_reached();
     }
 
@@ -880,7 +879,7 @@ add_found_author_json_field(char const *json_filename, char const *name, char co
 
     field_in_table = find_json_field_in_table(author_json_fields, name, &loc);
     if (field_in_table == NULL) {
-	err(30, __func__, "called add_found_author_json_field() on field '%s' not specific "
+	err(29, __func__, "called add_found_author_json_field() on field '%s' not specific "
 			  "to .author.json in file %s", name, json_filename);
 	not_reached();
     }
@@ -1090,7 +1089,7 @@ main(int argc, char **argv)
 	errno = 0;			/* pre-clear errno for errp() */
 	ret = printf("Welcome to jauthchk version: %s\n", JAUTHCHK_VERSION);
 	if (ret <= 0) {
-	    errp(31, __func__, "printf error printing the welcome string");
+	    errp(30, __func__, "printf error printing the welcome string");
 	    not_reached();
 	}
 
