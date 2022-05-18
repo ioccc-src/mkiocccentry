@@ -881,8 +881,8 @@ int yy_flex_debug = 1;
 
 static const flex_int16_t yy_rule_linenum[14] =
     {   0,
-      152,  162,  168,  174,  180,  185,  191,  196,  203,  209,
-      216,  223,  230
+      154,  164,  171,  177,  183,  188,  194,  199,  206,  212,
+      219,  226,  233
     } ;
 
 /* The intent behind this definition is that it'll catch
@@ -991,13 +991,15 @@ char *yytext;
 /* our header file - #includes what we need */
 #include "jparse.h"
 
+int ugly_length = 0;
+
 /*
  * An exception where the prefix does not change YY to UGLY_ is YY_BUFFER_STATE
  * but because it IS ugly we have done it for them in jparse.h so that where one
  * sees UGLY__BUFFER_STATE it's actually YY_BUFFER_STATE.
  */
 UGLY__BUFFER_STATE bs;
-#line 949 "jparse.c"
+#line 951 "jparse.c"
 /*
  * Section 2: Patterns (regular expressions) and actions.
  */
@@ -1019,7 +1021,7 @@ UGLY__BUFFER_STATE bs;
  * don't have to worry about complicating the parser unnecessarily.
  */
 /* Actions. */
-#line 971 "jparse.c"
+#line 973 "jparse.c"
 
 #define INITIAL 0
 
@@ -1299,9 +1301,9 @@ YY_DECL
 
 	{
 /* %% [7.0] user's declarations go here */
-#line 151 "jparse.l"
+#line 153 "jparse.l"
 
-#line 1253 "jparse.c"
+#line 1255 "jparse.c"
 
 	while ( /*CONSTCOND*/1 )		/* loops until end-of-file is reached */
 		{
@@ -1394,7 +1396,7 @@ do_action:	/* This label is used only to access EOF actions. */
 case 1:
 /* rule 1 can match eol */
 YY_RULE_SETUP
-#line 152 "jparse.l"
+#line 154 "jparse.l"
 {
 			    /*
 			     * Whitespace
@@ -1407,16 +1409,17 @@ YY_RULE_SETUP
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
-#line 162 "jparse.l"
+#line 164 "jparse.l"
 {
 			    /* string */
+			    ugly_length = ugly_leng;
 			    printf("\nstring: <%s>\n", ugly_text);
 			    return JSON_STRING;
 			}
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 168 "jparse.l"
+#line 171 "jparse.l"
 {
 			    /* number */
 			    printf("\nnumber: <%s>\n", ugly_text);
@@ -1425,7 +1428,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 174 "jparse.l"
+#line 177 "jparse.l"
 {
 			    /* null object */
 			    printf("\nnull: <%s>\n", ugly_text);
@@ -1434,7 +1437,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 180 "jparse.l"
+#line 183 "jparse.l"
 {
 			    /* boolean: true */
 			    printf("\ntrue: <%s>\n", ugly_text);
@@ -1443,7 +1446,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 185 "jparse.l"
+#line 188 "jparse.l"
 {
 			    /* boolean: false */
 			    printf("\nfalse: <%s>\n", ugly_text);
@@ -1452,7 +1455,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 191 "jparse.l"
+#line 194 "jparse.l"
 {
 			    /* start of object */
 			    printf("\nstart of object: <%c>\n", *ugly_text);
@@ -1461,7 +1464,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 196 "jparse.l"
+#line 199 "jparse.l"
 {
 			    /* end of object */
 			    printf("\nend of object: <%c>\n", *ugly_text);
@@ -1471,7 +1474,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 203 "jparse.l"
+#line 206 "jparse.l"
 {
 			    /* start of array */
 			    printf("\nstart of array: <%c>\n", *ugly_text);
@@ -1481,7 +1484,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
-#line 209 "jparse.l"
+#line 212 "jparse.l"
 {
 			    /* end of array */
 			    printf("\nend of array: <%c>\n", *ugly_text);
@@ -1491,7 +1494,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
-#line 216 "jparse.l"
+#line 219 "jparse.l"
 {
 			    /* colon or 'equals' */
 			    printf("\ncolon (or 'equals'): <%c>\n", *ugly_text);
@@ -1501,7 +1504,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
-#line 223 "jparse.l"
+#line 226 "jparse.l"
 {
 			    /* comma: name/value pair separator */
 			    printf("\ncomma: <%c>\n", *ugly_text);
@@ -1511,7 +1514,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
-#line 230 "jparse.l"
+#line 233 "jparse.l"
 {
 			    /* invalid token: any other character */
 			    ugly_error("\ninvalid token: 0x%02x = <%c>\n", *ugly_text, *ugly_text);
@@ -1520,10 +1523,10 @@ YY_RULE_SETUP
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
-#line 236 "jparse.l"
+#line 239 "jparse.l"
 YY_FATAL_ERROR( "flex scanner jammed" );
 	YY_BREAK
-#line 1475 "jparse.c"
+#line 1478 "jparse.c"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 
@@ -2683,7 +2686,7 @@ void yyfree (void * ptr )
 
 /* %ok-for-header */
 
-#line 236 "jparse.l"
+#line 239 "jparse.l"
 
 
 /* Section 3: Code that's copied to the generated scanner */

@@ -101,6 +101,8 @@
 /* our header file - #includes what we need */
 #include "jparse.h"
 
+int ugly_length = 0;
+
 /*
  * An exception where the prefix does not change YY to UGLY_ is YY_BUFFER_STATE
  * but because it IS ugly we have done it for them in jparse.h so that where one
@@ -161,6 +163,7 @@ JSON_COMMA		","
 
 {JSON_STRING}		{
 			    /* string */
+			    ugly_length = ugly_leng;
 			    printf("\nstring: <%s>\n", ugly_text);
 			    return JSON_STRING;
 			}
