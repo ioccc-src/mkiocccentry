@@ -1,8 +1,8 @@
-.TH jstrencode 1 "28 April 2022" "jstrencode" "IOCCC tools"
+.TH jstrencode 1 "18 May 2022" "jstrencode" "IOCCC tools"
 .SH NAME
 jstrencode \- encode JSON encoded strings
 .SH SYNOPSIS
-\fBjstrencode [\-h] [\-v level] [\-q] [\-V] [\-t] [\-n] [string ...]
+\fBjstrencode [\-h] [\-v level] [\-q] [\-V] [\-t] [\-n] [\-Q] [string ...]
 .SH DESCRIPTION
 \fBjstrencode\fP encodes JSON encoded strings given on the command line.
 If given the \fB\-t\fP option it performs a test on the JSON encode and encode functions.
@@ -27,6 +27,9 @@ Run tests on the JSON encode/encode functions.
 .PP
 \fB\-n\fP
 Do not output a newline after the encode function.
+.PP
+\fB\-Q\fP
+Enclose output in quotes (def: do not).
 .SH EXIT STATUS
 .PP
 \fBmain()\fP returns 1 for errors or issues found; 0 for success.

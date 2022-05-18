@@ -335,7 +335,7 @@ json_element:	    json_value
 
 json_string:	    JSON_STRING
 			{
-			    $$ = parse_json_string(ugly_text);
+			    $$ = parse_json_string(ugly_text, ugly_length);
 			    json_dbg(JSON_DBG_MED, __func__, "under json_string: after JSON_STRING returning type: %s",
 						   json_element_type_name($$));
 			    json_dbg(JSON_DBG_LOW, __func__, "under json_string: after JSON_STRING before ;");
@@ -510,7 +510,7 @@ ugly_error(char const *format, ...)
 }
 
 /*
- * XXX - these functions are incomplete and subject to change - XXX
+ * XXX - some of these functions are incomplete and subject to change - XXX
  */
 
 
@@ -519,14 +519,19 @@ ugly_error(char const *format, ...)
  * given:
  *
  *	string	    - the text that triggered the action
+ *	len	    - length of the string to convert (important for NUL bytes)
  *
  * Returns a pointer to a struct json with the converted string.
+ *
+ * NOTE: The len is important for strings that have NUL bytes: without it we
+ * would rely on strlen() which would mean that the first NUL byte would be the
+ * end of the string. If len <= 0 this function uses strlen() on the string.
  *
  * NOTE: This function does not return if passed a NULL string or if conversion
  * fails.
  */
 struct json *
-parse_json_string(char const *string)
+parse_json_string(char const *string, size_t len)
 {
     struct json *str = NULL;
     struct json_string *item = NULL;
@@ -539,12 +544,16 @@ parse_json_string(char const *string)
 	not_reached();
     }
 
-    json_dbg(json_verbosity_level, __func__, "about to parse string: <%s>", string);
+    /* obtain length if necessary */
+    if (len <= 0)
+	len = strlen(string);
+
+    json_dbg(json_verbosity_level, __func__, "about to parse string of length %ju: <%s>", (uintmax_t)len, string);
     /*
      * we say that quote == true because the pattern in the lexer will include
      * the '"'s.
      */
-    str = json_conv_string_str(string, NULL, true);
+    str = json_conv_string(string, len, true);
     /* paranoia - these tests should never result in an error */
     if (str == NULL) {
         err(41, __func__, "converting JSON string returned NULL: <%s>", string);
