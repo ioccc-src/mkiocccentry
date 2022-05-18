@@ -2368,7 +2368,7 @@ ugly_error(char const *format, ...)
 }
 
 /*
- * XXX - these functions are incomplete and subject to change - XXX
+ * XXX - some of these functions are incomplete and subject to change - XXX
  */
 
 
@@ -2383,7 +2383,7 @@ ugly_error(char const *format, ...)
  *
  * NOTE: The len is important for strings that have NUL bytes: without it we
  * would rely on strlen() which would mean that the first NUL byte would be the
- * end of the string.
+ * end of the string. If len <= 0 this function uses strlen() on the string.
  *
  * NOTE: This function does not return if passed a NULL string or if conversion
  * fails.
