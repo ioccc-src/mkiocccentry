@@ -142,7 +142,8 @@ struct dyn_array {
  */
 extern struct dyn_array *dyn_array_create(size_t elm_size, intmax_t chunk, intmax_t start_elm_count, bool zeroize);
 extern bool dyn_array_append_value(struct dyn_array *array, void *value_to_add);
-extern bool dyn_array_append_array(struct dyn_array *array, void *array_to_add_p, intmax_t count_of_elements_to_add);
+extern bool dyn_array_append_set(struct dyn_array *array, void *array_to_add_p, intmax_t count_of_elements_to_add);
+extern bool dyn_array_concat_array(struct dyn_array *array, struct dyn_array *other);
 extern bool dyn_array_seek(struct dyn_array *array, off_t offset, int whence);
 extern void dyn_array_clear(struct dyn_array *array);
 extern void dyn_array_free(struct dyn_array *array);

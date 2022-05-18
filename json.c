@@ -3057,9 +3057,9 @@ json_object_append_members(struct json *node, struct dyn_array *members)
     /*
      * append member
      */
-    moved = dyn_array_append_array(item->s, members->data, dyn_array_tell(members));
+    moved = dyn_array_concat_array(item->s, members);
     if (moved == true) {
-	dbg(DBG_HIGH, "in %s, dyn_array_append_array moved data", __func__);
+	dbg(DBG_HIGH, "in %s, dyn_array_concat_array moved data", __func__);
     }
 
     /*
@@ -3315,9 +3315,9 @@ json_array_append_values(struct json *node, struct dyn_array *values)
     /*
      * append value
      */
-    moved = dyn_array_append_array(item->s, values->data, dyn_array_tell(values));
+    moved = dyn_array_concat_array(item->s, values);
     if (moved == true) {
-	dbg(DBG_HIGH, "in %s, dyn_array_append_array moved data", __func__);
+	dbg(DBG_HIGH, "in %s, dyn_array_concat_array moved data", __func__);
     }
 
     /*

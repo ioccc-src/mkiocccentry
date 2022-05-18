@@ -346,7 +346,7 @@ dyn_array_append_value(struct dyn_array *array, void *value_to_add)
 
 
 /*
- * dyn_array_append_array - append the values of a given array onto the end of the dynamic array
+ * dyn_array_append_set - append a set values of a given array onto the end of the dynamic array
  *
  * given:
  *      array				- pointer to the dynamic array
@@ -357,15 +357,15 @@ dyn_array_append_value(struct dyn_array *array, void *value_to_add)
  *	true ==> address of the array of elements moved during realloc()
  *	false ==> address of the elements array did not move
  *
- * We will add the values of the given array (which are of a given type) onto the
- * end of the dynamic array. We will grow the dynamic array if all allocated values are used.
+ * We will add a set (non-dynamic array) of values of the given array (which are of a given type)
+ * onto the end of the dynamic array. We will grow the dynamic array if all allocated values are used.
  * If after adding the values of the array, all allocated values are used, we will grow
  * the dynamic array as a firewall.
  *
  * NOTE: This function does not return on error.
  */
 bool
-dyn_array_append_array(struct dyn_array *array, void *array_to_add_p, intmax_t count_of_elements_to_add)
+dyn_array_append_set(struct dyn_array *array, void *array_to_add_p, intmax_t count_of_elements_to_add)
 {
     intmax_t available_empty_elements;
     intmax_t required_elements_to_allocate;
@@ -435,6 +435,102 @@ dyn_array_append_array(struct dyn_array *array, void *array_to_add_p, intmax_t c
 
 
 /*
+ * dyn_array_concat_array - concatenate a dynamic array with another dynamic array
+ *
+ * given:
+ *      array			- pointer to the dynamic array
+ *	other			- other dynamic array to concatenate onto array
+ *
+ * returns:
+ *	true ==> address of the array of elements moved during realloc()
+ *	false ==> address of the elements array did not move
+ *
+ * We will add a set (non-dynamic array) of values of the given array (which are of a given type)
+ * onto the end of the dynamic array. We will grow the dynamic array if all allocated values are used.
+ *
+ * We will take the contents of the other dynamic array and concatenate its values onto
+ * the 1st dynamic array.  The contents of the other dynamic array will be duplicated onto the
+ * first dynamic array.
+ *
+ * This function does nothing if the other dynamic array is empty.
+ *
+ * The contents of the other dynamic array is not modified, nor freed by this function.
+ *
+ * If after adding the values of the array, all allocated values are used, we will grow
+ * the dynamic array as a firewall.
+ *
+ * NOTE: This function does not return on error.
+ */
+bool
+dyn_array_concat_array(struct dyn_array *array, struct dyn_array *other)
+{
+    bool moved = false;		/* true ==> location of the elements array moved during realloc() */
+
+    /*
+     * Check preconditions (firewall) - sanity check args
+     */
+    if (array == NULL) {
+	err(75, __func__, "array arg is NULL");
+	not_reached();
+    }
+    if (other == NULL) {
+	err(76, __func__, "other arg is NULL");
+	not_reached();
+    }
+
+    /*
+     * Check preconditions (firewall) - sanity check array
+     */
+    if (array->data == NULL) {
+	err(77, __func__, "data in 1st dynamic array is NULL");
+	not_reached();
+    }
+    if (array->elm_size <= 0) {
+	err(78, __func__, "elm_size in 1st dynamic array must be > 0: %ju", (uintmax_t)array->elm_size);
+	not_reached();
+    }
+    if (array->chunk <= 0) {
+	err(79, __func__, "chunk in 1st dynamic array must be > 0: %jd", array->chunk);
+	not_reached();
+    }
+    if (array->count > array->allocated) {
+	err(80, __func__, "count: %jd in 1st dynamic array must be <= allocated: %jd",
+			  array->count, array->allocated);
+	not_reached();
+    }
+
+    /*
+     * Check preconditions (firewall) - sanity check other
+     */
+    if (other->data == NULL) {
+	err(81, __func__, "data in 2nd dynamic array is NULL");
+	not_reached();
+    }
+    if (other->elm_size <= 0) {
+	err(82, __func__, "elm_size in 2nd dynamic array must be > 0: %ju", (uintmax_t)other->elm_size);
+	not_reached();
+    }
+    if (other->chunk <= 0) {
+	err(83, __func__, "chunk in 2nd dynamic array must be > 0: %jd", other->chunk);
+	not_reached();
+    }
+    if (other->count > other->allocated) {
+	err(84, __func__, "count: %jd in 2nd dynamic array must be <= allocated: %jd",
+			  other->count, other->allocated);
+	not_reached();
+    }
+
+    /*
+     * concatenate other dynamic array
+     */
+    moved = dyn_array_append_set(array, other->data, other->count);
+
+    /* return array moved condition */
+    return moved;
+}
+
+
+/*
  * dyn_array_seek - set the elements in use on a dynamic array
  *
  * given:
@@ -463,7 +559,7 @@ dyn_array_seek(struct dyn_array *array, off_t offset, int whence)
      * Check preconditions (firewall) - sanity check args
      */
     if (array == NULL) {
-	err(75, __func__, "array arg is NULL");
+	err(85, __func__, "array arg is NULL");
 	not_reached();
     }
 
@@ -471,19 +567,19 @@ dyn_array_seek(struct dyn_array *array, off_t offset, int whence)
      * Check preconditions (firewall) - sanity check array
      */
     if (array->data == NULL) {
-	err(76, __func__, "data in dynamic array is NULL");
+	err(86, __func__, "data in dynamic array is NULL");
 	not_reached();
     }
     if (array->elm_size <= 0) {
-	err(77, __func__, "elm_size in dynamic array must be > 0: %ju", (uintmax_t)array->elm_size);
+	err(87, __func__, "elm_size in dynamic array must be > 0: %ju", (uintmax_t)array->elm_size);
 	not_reached();
     }
     if (array->chunk <= 0) {
-	err(78, __func__, "chunk in dynamic array must be > 0: %jd", array->chunk);
+	err(88, __func__, "chunk in dynamic array must be > 0: %jd", array->chunk);
 	not_reached();
     }
     if (array->count > array->allocated) {
-	err(79, __func__, "count: %jd in dynamic array must be <= allocated: %jd",
+	err(89, __func__, "count: %jd in dynamic array must be <= allocated: %jd",
 			  array->count, array->allocated);
 	not_reached();
     }
@@ -515,7 +611,7 @@ dyn_array_seek(struct dyn_array *array, off_t offset, int whence)
 	break;
 
     default:
-	err(80, __func__, "whence: %d != SEEK_SET: %d != SEEK_CUR: %d != SEEK_END: %d",
+	err(90, __func__, "whence: %d != SEEK_SET: %d != SEEK_CUR: %d != SEEK_END: %d",
 			  whence, SEEK_SET, SEEK_CUR, SEEK_END);
 	not_reached();
 	break;
@@ -622,7 +718,7 @@ dyn_array_clear(struct dyn_array *array)
      * Check preconditions (firewall) - sanity check args
      */
     if (array == NULL) {
-	err(81, __func__, "array arg is NULL");
+	err(91, __func__, "array arg is NULL");
 	not_reached();
     }
 
@@ -630,19 +726,19 @@ dyn_array_clear(struct dyn_array *array)
      * Check preconditions (firewall) - sanity check array
      */
     if (array->data == NULL) {
-	err(82, __func__, "data for dynamic array is NULL");
+	err(92, __func__, "data for dynamic array is NULL");
 	not_reached();
     }
     if (array->elm_size <= 0) {
-	err(83, __func__, "elm_size in dynamic array must be > 0: %ju", (uintmax_t)array->elm_size);
+	err(93, __func__, "elm_size in dynamic array must be > 0: %ju", (uintmax_t)array->elm_size);
 	not_reached();
     }
     if (array->chunk <= 0) {
-	err(84, __func__, "chunk in dynamic array must be > 0: %jd", array->chunk);
+	err(94, __func__, "chunk in dynamic array must be > 0: %jd", array->chunk);
 	not_reached();
     }
     if (array->count > array->allocated) {
-	err(85, __func__, "count: %jd in dynamic array must be <= allocated: %jd",
+	err(95, __func__, "count: %jd in dynamic array must be <= allocated: %jd",
 			  array->count, array->allocated);
 	not_reached();
     }
@@ -690,7 +786,7 @@ dyn_array_free(struct dyn_array *array)
      * Check preconditions (firewall) - sanity check args
      */
     if (array == NULL) {
-	err(86, __func__, "array arg is NULL");
+	err(96, __func__, "array arg is NULL");
 	not_reached();
     }
 

@@ -46,7 +46,7 @@
  */
 #if defined(STAND_ALONE)
 #undef DYN_TEST_VERSION
-#define DYN_TEST_VERSION "1.3 standalone"
+#define DYN_TEST_VERSION "1.4 2022-05-18"
 #else /* STAND_ALONE */
 #include "version.h"
 #endif /* STAND_ALONE */

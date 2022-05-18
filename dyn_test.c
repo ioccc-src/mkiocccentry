@@ -57,6 +57,8 @@ main(int argc, char *argv[])
     struct dyn_array *array;	/* dynatic array to test */
     double d;			/* test double */
     bool err = false;		/* true ==> test error found */
+    bool moved = false;		/* true ==> array op moved data */
+    intmax_t len = 0;		/* length of the dynamic array */
     int i;
 
     /*
@@ -104,7 +106,11 @@ main(int argc, char *argv[])
      * load a million doubles
      */
     for (d = 0.0; d < 1000000.0; d += 1.0) {
-	dyn_array_append_value(array, &d);
+	moved = dyn_array_append_value(array, &d);
+	if (moved == true) {
+	    dbg(DBG_LOW, "moved data after appnding d: %f", d);
+	    moved = false;
+	}
     }
 
     /*
@@ -113,6 +119,47 @@ main(int argc, char *argv[])
     for (i = 0; i < 1000000; ++i) {
 	if ((double) i != dyn_array_value(array, double, i)) {
 	    warn(__func__, "value mismatch %d != %f", i, dyn_array_value(array, double, i));
+	    err = true;
+	}
+    }
+
+    /*
+     * verify size
+     */
+    len = dyn_array_tell(array);
+    if (len != 1000000) {
+	warn(__func__, "dyn_array_tell(array): %jd != %jd", len, (intmax_t)1000000);
+	err = true;
+    }
+
+    /*
+     * concatenate the array onto itself
+     */
+    moved = dyn_array_concat_array(array, array);
+    if (moved == true) {
+	dbg(DBG_LOW, "moved data after concatenation");
+	moved = false;
+    }
+
+    /*
+     * verify new size
+     */
+    len = dyn_array_tell(array);
+    if (len != 2000000) {
+	warn(__func__, "dyn_array_tell(array): %jd != %jd", len, (intmax_t)2000000);
+	err = true;
+    }
+
+    /*
+     * verify values again
+     */
+    for (i = 0; i < 1000000; ++i) {
+	if ((double) i != dyn_array_value(array, double, i)) {
+	    warn(__func__, "value mismatch %d != %f", i, dyn_array_value(array, double, i));
+	    err = true;
+	}
+	if ((double) i != dyn_array_value(array, double, i+1000000)) {
+	    warn(__func__, "value mismatch %d != %f", i, dyn_array_value(array, double, i+1000000));
 	    err = true;
 	}
     }

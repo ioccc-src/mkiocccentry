@@ -483,10 +483,13 @@ verge.o: verge.c verge.h Makefile
 verge: verge.o dbg.o util.o dyn_array.o Makefile
 	${CC} ${CFLAGS} verge.o dbg.o util.o dyn_array.o -o $@
 
-dyn_array.o: dyn_array.c dyn_array.h Makefile
+dyn_array.o: dyn_array.c Makefile
 	${CC} ${CFLAGS} dyn_array.c -c
 
-dyn_test: dbg.o util.o dyn_array.o Makefile
+dyn_test.o: dyn_test.c Makefile
+	${CC} ${CFLAGS} dyn_test.c -c
+
+dyn_test: dyn_test.o dbg.o util.o dyn_array.o Makefile
 	${CC} ${CFLAGS} dyn_test.c dbg.o util.o dyn_array.o -o $@
 
 limit_ioccc.sh: limit_ioccc.h version.h Makefile
