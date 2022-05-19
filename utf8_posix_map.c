@@ -55,15 +55,9 @@
 
 
 /*
- * utf8_posix_map include
+ * utf8_posix_map - #includes what we need
  */
 #include "utf8_posix_map.h"
-
-
-/*
- * IOCCC limits
- */
-#include "limit_ioccc.h"
 
 
 /*

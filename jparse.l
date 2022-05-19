@@ -311,7 +311,7 @@ parse_json_block(char const *string, size_t len)
 	++num_errors;
 	return;
     } else if (len <= 0) {
-	err(39, __func__, "len <= 0");
+	err(38, __func__, "len <= 0");
 	++num_errors;
 	return;
     }
@@ -323,7 +323,9 @@ parse_json_block(char const *string, size_t len)
 	++num_errors;
 	return;
     }
-    json_dbg(json_verbosity_level, __func__, "*** BEGIN PARSE:\n<\n%s\n>\n", string);
+    json_dbg(json_verbosity_level, __func__, "*** BEGIN PARSE:\n<");
+    fprint_str(stderr, string, len);
+    fprintf(stderr, "\n>\n");
 
     ugly_parse();
 
@@ -413,7 +415,7 @@ parse_json_file(char const *filename)
 	return;
     }
 
-    json_dbg(json_verbosity_level, __func__, "Calling parse_json_block(\"%s\", %ju):", data, len);
+    json_dbg(json_verbosity_level, __func__, "Calling parse_json_block with length %ju:", (uintmax_t)len);
 
     parse_json_block(data, len);
 

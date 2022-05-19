@@ -803,28 +803,28 @@ depend: all
 ### DO NOT CHANGE MANUALLY BEYOND THIS LINE
 utf8_posix_map.o: utf8_posix_map.c utf8_posix_map.h util.h dyn_array.h \
   dbg.h limit_ioccc.h version.h
-jparse.o: jparse.c jparse.h json_util.h dbg.h util.h dyn_array.h json.h \
-  sanity.h location.h utf8_posix_map.h json_chk.h limit_ioccc.h \
-  version.h jparse.tab.h
-jparse.tab.o: jparse.tab.c jparse.h json_util.h dbg.h util.h dyn_array.h \
-  json.h sanity.h location.h utf8_posix_map.h json_chk.h limit_ioccc.h \
-  version.h jparse.tab.h
+jparse.o: jparse.c jparse.h json_util.h dbg.h json.h dyn_array.h util.h \
+  sanity.h location.h utf8_posix_map.h limit_ioccc.h version.h \
+  json_chk.h jparse.tab.h
+jparse.tab.o: jparse.tab.c jparse.h json_util.h dbg.h json.h dyn_array.h \
+  util.h sanity.h location.h utf8_posix_map.h limit_ioccc.h version.h \
+  json_chk.h jparse.tab.h
 dbg.o: dbg.c dbg.h
 util.o: util.c dbg.h util.h dyn_array.h limit_ioccc.h version.h
 mkiocccentry.o: mkiocccentry.c mkiocccentry.h util.h dyn_array.h dbg.h \
-  json_entry.h location.h utf8_posix_map.h sanity.h json.h json_util.h \
-  json_chk.h limit_ioccc.h version.h iocccsize.h
+  json_entry.h location.h utf8_posix_map.h limit_ioccc.h version.h \
+  sanity.h json.h json_util.h json_chk.h iocccsize.h
 iocccsize.o: iocccsize.c iocccsize_err.h iocccsize.h
 fnamchk.o: fnamchk.c fnamchk.h dbg.h util.h dyn_array.h limit_ioccc.h \
   version.h utf8_posix_map.h
 txzchk.o: txzchk.c txzchk.h util.h dyn_array.h dbg.h sanity.h location.h \
-  utf8_posix_map.h json.h json_util.h json_chk.h limit_ioccc.h version.h
+  utf8_posix_map.h limit_ioccc.h version.h json.h json_util.h json_chk.h
 jauthchk.o: jauthchk.c jauthchk.h dbg.h util.h dyn_array.h json.h \
   json_util.h json_entry.h sanity.h location.h utf8_posix_map.h \
-  json_chk.h limit_ioccc.h version.h
+  limit_ioccc.h version.h json_chk.h
 jinfochk.o: jinfochk.c jinfochk.h dbg.h util.h dyn_array.h json.h \
   json_util.h json_entry.h sanity.h location.h utf8_posix_map.h \
-  json_chk.h limit_ioccc.h version.h
+  limit_ioccc.h version.h json_chk.h
 json.o: json.c dbg.h util.h dyn_array.h limit_ioccc.h version.h json.h \
   json_util.h
 jstrencode.o: jstrencode.c jstrencode.h dbg.h util.h dyn_array.h json.h \
@@ -834,7 +834,7 @@ jstrdecode.o: jstrdecode.c jstrdecode.h dbg.h util.h dyn_array.h json.h \
 rule_count.o: rule_count.c iocccsize_err.h iocccsize.h
 location.o: location.c location.h util.h dyn_array.h dbg.h
 sanity.o: sanity.c sanity.h util.h dyn_array.h dbg.h location.h \
-  utf8_posix_map.h json.h json_util.h json_chk.h limit_ioccc.h version.h
+  utf8_posix_map.h limit_ioccc.h version.h json.h json_util.h json_chk.h
 utf8_test.o: utf8_test.c utf8_posix_map.h util.h dyn_array.h dbg.h \
   limit_ioccc.h version.h
 verge.o: verge.c verge.h dbg.h util.h dyn_array.h limit_ioccc.h version.h
@@ -849,5 +849,5 @@ jnum_chk.o: jnum_chk.c jnum_chk.h dbg.h util.h dyn_array.h json.h \
   json_util.h limit_ioccc.h version.h
 jnum_gen.o: jnum_gen.c jnum_gen.h dbg.h util.h dyn_array.h json.h \
   json_util.h limit_ioccc.h version.h
-jnum_test.o: jnum_test.c json.h json_util.h dbg.h
-json_util.o: json_util.c json_util.h dbg.h
+jnum_test.o: jnum_test.c json.h json_util.h dbg.h dyn_array.h util.h
+json_util.o: json_util.c json_util.h dbg.h json.h dyn_array.h util.h
