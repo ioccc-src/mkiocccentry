@@ -50,14 +50,10 @@
  * globals
  */
 extern int json_verbosity_level;	/* print json debug messages <= json_verbosity_level in json_dbg(), json_vdbg() */
+
 /*
  * JSON defines
- *
- * JSON parser related definitions and structures
  */
-#define JSON_CHUNK (16)			/* number of pointers to allocate at a time in dynamic array */
-#define JSON_MAX_DEPTH (1000000)	/* parse tree depth beyond JSON_MAX_DEPTH is insane */
-#define JSON_INFINITE_DEPTH (-1)	/* no limit on parse tree depth to walk */
 
 
 /*

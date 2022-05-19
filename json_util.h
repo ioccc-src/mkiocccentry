@@ -1,6 +1,6 @@
 /* vim: set tabstop=8 softtabstop=4 shiftwidth=4 noexpandtab : */
 /*
- * json_util - general JSON utility support functions
+ * json_util - general JSON parser utility support functions
  *
  * "Because sometimes even the IOCCC Judges need some help." :-)
  *
@@ -25,6 +25,29 @@
  * dbg - debug, warning and error reporting facility
  */
 #include "dbg.h"
+
+/*
+ * json - the json core
+ */
+#include "json.h"
+
+/*
+ * dyn_array - dynamic array facility
+ */
+#include "dyn_array.h"
+
+/*
+ * JSON defines
+ */
+
+/*
+ * JSON parser related definitions and structures
+ */
+#define JSON_CHUNK (16)			/* number of pointers to allocate at a time in dynamic array */
+#define JSON_MAX_DEPTH (1000000)	/* parse tree depth beyond JSON_MAX_DEPTH is insane */
+#define JSON_INFINITE_DEPTH (-1)	/* no limit on parse tree depth to walk */
+
+
 /*
  * JSON debug levels
  */

@@ -803,11 +803,11 @@ depend: all
 ### DO NOT CHANGE MANUALLY BEYOND THIS LINE
 utf8_posix_map.o: utf8_posix_map.c utf8_posix_map.h util.h dyn_array.h \
   dbg.h limit_ioccc.h version.h
-jparse.o: jparse.c jparse.h json_util.h dbg.h util.h dyn_array.h json.h \
+jparse.o: jparse.c jparse.h json_util.h dbg.h json.h dyn_array.h util.h \
   sanity.h location.h utf8_posix_map.h limit_ioccc.h version.h \
   json_chk.h jparse.tab.h
-jparse.tab.o: jparse.tab.c jparse.h json_util.h dbg.h util.h dyn_array.h \
-  json.h sanity.h location.h utf8_posix_map.h limit_ioccc.h version.h \
+jparse.tab.o: jparse.tab.c jparse.h json_util.h dbg.h json.h dyn_array.h \
+  util.h sanity.h location.h utf8_posix_map.h limit_ioccc.h version.h \
   json_chk.h jparse.tab.h
 dbg.o: dbg.c dbg.h
 util.o: util.c dbg.h util.h dyn_array.h limit_ioccc.h version.h
@@ -849,5 +849,5 @@ jnum_chk.o: jnum_chk.c jnum_chk.h dbg.h util.h dyn_array.h json.h \
   json_util.h limit_ioccc.h version.h
 jnum_gen.o: jnum_gen.c jnum_gen.h dbg.h util.h dyn_array.h json.h \
   json_util.h limit_ioccc.h version.h
-jnum_test.o: jnum_test.c json.h json_util.h dbg.h
-json_util.o: json_util.c json_util.h dbg.h
+jnum_test.o: jnum_test.c json.h json_util.h dbg.h dyn_array.h util.h
+json_util.o: json_util.c json_util.h dbg.h json.h dyn_array.h util.h
