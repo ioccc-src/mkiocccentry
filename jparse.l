@@ -311,7 +311,7 @@ parse_json_block(char const *string, size_t len)
 	++num_errors;
 	return;
     } else if (len <= 0) {
-	err(39, __func__, "len <= 0");
+	err(38, __func__, "len <= 0");
 	++num_errors;
 	return;
     }

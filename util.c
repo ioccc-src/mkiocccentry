@@ -3140,7 +3140,7 @@ fprint_str(FILE *stream, char const *str, ssize_t len)
      * firewall
      */
     if (stream == NULL) {
-	err(35, __func__, "passed NULL stream");
+	err(183, __func__, "passed NULL stream");
 	not_reached();
     } else if (str == NULL) {
 	warn(__func__, "passed NULL string");

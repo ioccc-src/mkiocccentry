@@ -156,7 +156,11 @@ int token = 0;
 %%
 json:		    json_element
 			{
+			    json_dbg(JSON_DBG_MED, __func__, "under json json_element:");
+			    json_dbg(JSON_DBG_LOW, __func__, "under json: json_element: $$ = $1");
 			    $$ = $1; /* magic: json becomes the json_element type */
+			    json_dbg(JSON_DBG_LOW, __func__, "under json: json_element: $$ type: %s", json_element_type_name($$));
+			    json_dbg(JSON_DBG_LOW, __func__, "under json: json_element: $1 type: %s", json_element_type_name($1));
 			    json_dbg(JSON_DBG_MED, __func__, "under json: after json_element returning type: %s",
 						   json_element_type_name($$));
 			    json_dbg(JSON_DBG_LOW, __func__, "under json: after json_element before ;");
@@ -165,7 +169,10 @@ json:		    json_element
 
 json_value:	    json_object
 			{
+			    json_dbg(JSON_DBG_MED, __func__, "under json_value json_object:");
 			    $$ = $1; /* magic: json_value becomes the json_object type */
+			    json_dbg(JSON_DBG_LOW, __func__, "under json_value: json_object: $$ type: %s", json_element_type_name($$));
+			    json_dbg(JSON_DBG_LOW, __func__, "under json_value: json_object: $1 type: %s", json_element_type_name($1));
 			    json_dbg(JSON_DBG_MED, __func__, "under json_value: after json_object returning type: %s",
 						   json_element_type_name($$));
 			    json_dbg(JSON_DBG_LOW, __func__, "under json_value: after json_object before |");
@@ -174,7 +181,10 @@ json_value:	    json_object
 
 		    json_array
 			{
+			    json_dbg(JSON_DBG_MED, __func__, "under json_value json_array:");
 			    $$ = $1; /* magic: json_value becomes the json_array type */
+			    json_dbg(JSON_DBG_LOW, __func__, "under json_value: json_array: $$ type: %s", json_element_type_name($$));
+			    json_dbg(JSON_DBG_LOW, __func__, "under json_value: json_array: $1 type: %s", json_element_type_name($1));
 			    json_dbg(JSON_DBG_MED, __func__, "under json_value: after json_array returning type: %s",
 						   json_element_type_name($$));
 			    json_dbg(JSON_DBG_LOW, __func__, "under json_value: after json_array before |");
@@ -183,7 +193,10 @@ json_value:	    json_object
 
 		    json_string
 			{
+			    json_dbg(JSON_DBG_MED, __func__, "under json_value json_string:");
 			    $$ = $1; /* magic: json_value becomes the json_string type */
+			    json_dbg(JSON_DBG_LOW, __func__, "under json_value: json_string: $$ type: %s", json_element_type_name($$));
+			    json_dbg(JSON_DBG_LOW, __func__, "under json_value: json_string: $1 type: %s", json_element_type_name($1));
 			    json_dbg(JSON_DBG_MED, __func__, "under json_value: after json_string returning type: %s",
 						   json_element_type_name($$));
 			    json_dbg(JSON_DBG_LOW, __func__, "under json_value: after json_string before |");
@@ -192,7 +205,10 @@ json_value:	    json_object
 
 		    json_number
 			{
+			    json_dbg(JSON_DBG_MED, __func__, "under json_value json_number:");
 			    $$ = $1; /* magic: json_value becomes the json_number type */
+			    json_dbg(JSON_DBG_LOW, __func__, "under json_value: json_number: $$ type: %s", json_element_type_name($$));
+			    json_dbg(JSON_DBG_LOW, __func__, "under json_value: json_number: $1 type: %s", json_element_type_name($1));
 			    json_dbg(JSON_DBG_MED, __func__, "under json_value: after json_number returning type: %s",
 						   json_element_type_name($$));
 			    json_dbg(JSON_DBG_LOW, __func__, "under json_value: after json_number before |");
@@ -201,7 +217,10 @@ json_value:	    json_object
 
 		    JSON_TRUE
 			{
+			    json_dbg(JSON_DBG_MED, __func__, "under json_value JSON_TRUE:");
 			    $$ = parse_json_bool(ugly_text);
+			    json_dbg(JSON_DBG_LOW, __func__, "under json_value: JSON_TRUE: $$ type: %s", json_element_type_name($$));
+			    json_dbg(JSON_DBG_LOW, __func__, "under json_value: JSON_TRUE: $1 type: %s", json_element_type_name($1));
 			    json_dbg(JSON_DBG_MED, __func__, "under json_value: after JSON_TRUE returning type: %s",
 						   json_element_type_name($$));
 			    json_dbg(JSON_DBG_LOW, __func__, "under json_value: after JSON_TRUE before |");
@@ -210,7 +229,10 @@ json_value:	    json_object
 
 		    JSON_FALSE
 			{
+			    json_dbg(JSON_DBG_MED, __func__, "under json_value JSON_FALSE:");
 			    $$ = parse_json_bool(ugly_text);
+			    json_dbg(JSON_DBG_LOW, __func__, "under json_value: JSON_FALSE: $$ type: %s", json_element_type_name($$));
+			    json_dbg(JSON_DBG_LOW, __func__, "under json_value: JSON_FALSE: $1 type: %s", json_element_type_name($1));
 			    json_dbg(JSON_DBG_MED, __func__, "under json_value: after JSON_FALSE returning type: %s",
 						   json_element_type_name($$));
 			    json_dbg(JSON_DBG_LOW, __func__, "under json_value: after JSON_FALSE before |");
@@ -219,7 +241,10 @@ json_value:	    json_object
 
 		    JSON_NULL
 			{
+			    json_dbg(JSON_DBG_MED, __func__, "under json_value JSON_NULL:");
 			    $$ = parse_json_null(ugly_text);
+			    json_dbg(JSON_DBG_LOW, __func__, "under json_value: JSON_NULL: $$ type: %s", json_element_type_name($$));
+			    json_dbg(JSON_DBG_LOW, __func__, "under json_value: JSON_NULL: $1 type: %s", json_element_type_name($1));
 			    json_dbg(JSON_DBG_MED, __func__, "under json_value: after JSON_NULL returning type: %s",
 						   json_element_type_name($$));
 			    json_dbg(JSON_DBG_LOW, __func__, "under json_value: after JSON_NULL before ;");
@@ -227,21 +252,24 @@ json_value:	    json_object
 		    ;
 
 json_object:	    JSON_OPEN_BRACE
-			{ json_dbg(JSON_DBG_LOW, __func__, "under json_object: after JSON_OPEN_BRACE before json_members"); }
-		    json_members
-			{ json_dbg(JSON_DBG_LOW, __func__, "under json_object: after json_members before JSON_CLOSE_BRACE"); }
+			json_members
 		    JSON_CLOSE_BRACE
 			{
+			    json_dbg(JSON_DBG_MED, __func__, "under json_object: JSON_OPEN_BRACE json_members JSON_CLOSE_BRACE:");
+			    json_dbg(JSON_DBG_LOW, __func__, "under json_object: $$ type: %s", json_element_type_name($$));
+			    json_dbg(JSON_DBG_LOW, __func__, "under json_object: $1 type: %s", json_element_type_name($1));
 			    json_dbg(JSON_DBG_LOW, __func__, "under json_object: need more code probably here"); /* XXX */
 			    json_dbg(JSON_DBG_LOW, __func__, "under json_object: after JSON_CLOSE_BRACE before |");
 			}
 		    |
 
 		    JSON_OPEN_BRACE
-			{ json_dbg(JSON_DBG_LOW, __func__, "under json_object: after JSON_OPEN_BRACE before JSON_CLOSE_BRACE"); }
 		    JSON_CLOSE_BRACE
 			{
+			    json_dbg(JSON_DBG_MED, __func__, "JSON_OPEN_BRACE JSON_CLOSE_BRACE:");
 			    $$ = json_create_object();
+			    json_dbg(JSON_DBG_LOW, __func__, "under json_object: $$ type: %s", json_element_type_name($$));
+			    json_dbg(JSON_DBG_LOW, __func__, "under json_object: $1 type: %s", json_element_type_name($1));
 			    json_dbg(JSON_DBG_MED, __func__, "under json_object: after JSON_CLOSE_BRACE returning type: %s",
 						   json_element_type_name($$));
 			    json_dbg(JSON_DBG_LOW, __func__, "under json_object: after JSON_CLOSE_BRACE before ;");
@@ -250,7 +278,10 @@ json_object:	    JSON_OPEN_BRACE
 
 json_members:	    json_member
 			{
+			    json_dbg(JSON_DBG_MED, __func__, "under json_members: json_member:");
 			    $$ = $1; /* magic: json_members becomes the json_member type */
+			    json_dbg(JSON_DBG_LOW, __func__, "under json_members: $$ type: %s", json_element_type_name($$));
+			    json_dbg(JSON_DBG_LOW, __func__, "under json_members: $1 type: %s", json_element_type_name($1));
 			    json_dbg(JSON_DBG_MED, __func__, "under json_members: after json_member returning type: %s",
 						   json_element_type_name($$));
 			    json_dbg(JSON_DBG_LOW, __func__, "under json_members: after json_member before |");
@@ -258,23 +289,26 @@ json_members:	    json_member
 		    |
 
 		    json_members
-			{ json_dbg(JSON_DBG_LOW, __func__, "under json_members: after json_members before JSON_COMMA"); }
-		    JSON_COMMA
-			{ json_dbg(JSON_DBG_LOW, __func__, "under json_members: after JSON_COMMA before json_member"); }
+			JSON_COMMA
 		    json_member
 			{
+			    json_dbg(JSON_DBG_MED, __func__, "under json_members: json_members JSON_COMMA json_member:");
+			    json_dbg(JSON_DBG_LOW, __func__, "under json_members: $$ type: %s", json_element_type_name($$));
+			    json_dbg(JSON_DBG_LOW, __func__, "under json_members: $1 type: %s", json_element_type_name($1));
 			    json_dbg(JSON_DBG_LOW, __func__, "under json_members: need more code probably here"); /* XXX */
 			    json_dbg(JSON_DBG_LOW, __func__, "under json_members: after json_member before ;");
 			}
 		    ;
 
 json_member:	    json_string
-			{ json_dbg(JSON_DBG_LOW, __func__, "under json_member: after json_string before JSON_COLON"); }
-		    JSON_COLON
-			{ json_dbg(JSON_DBG_LOW, __func__, "under json_member: after JSON_COLON before json_element"); }
+			JSON_COLON
 		    json_element
 			{
+			    json_dbg(JSON_DBG_MED, __func__, "under json_member: json_string JSON_COLON json_element:");
+			    json_dbg(JSON_DBG_LOW, __func__, "$$ = parse_json_member($1 = %s, $3 = %s)",
+				json_element_type_name($1), json_element_type_name($3));
 			    $$ = parse_json_member($1, $3, &tree);
+			    json_dbg(JSON_DBG_LOW, __func__, "under json_member: $$ type: %s", json_element_type_name($$));
 			    json_dbg(JSON_DBG_MED, __func__, "under json_member: after json_element returning type: %s",
 						   json_element_type_name($$));
 			    json_dbg(JSON_DBG_LOW, __func__, "under json_member: after json_element before ;");
@@ -282,21 +316,24 @@ json_member:	    json_string
 		    ;
 
 json_array:	    JSON_OPEN_BRACKET
-			{ json_dbg(JSON_DBG_LOW, __func__, "under json_array: after JSON_OPEN_BRACKET before json_elements"); }
-		    json_elements
-			{ json_dbg(JSON_DBG_LOW, __func__, "under json_array: after json_elements before JSON_CLOSE_BRACKET"); }
+			json_elements
 		    JSON_CLOSE_BRACKET
 			{
+			    json_dbg(JSON_DBG_MED, __func__, "under json_array: JSON_OPEN_BRACKET json_elements JSON_CLOSE_BRACKET:");
+			    json_dbg(JSON_DBG_LOW, __func__, "under json_array: $$ type: %s", json_element_type_name($$));
+			    json_dbg(JSON_DBG_LOW, __func__, "under json_array: $1 type: %s", json_element_type_name($1));
 			    json_dbg(JSON_DBG_LOW, __func__, "under json_array: need more code probably here"); /* XXX */
 			    json_dbg(JSON_DBG_LOW, __func__, "under json_array: after JSON_CLOSE_BRACKET before |");
 			}
 		    |
 
 		    JSON_OPEN_BRACKET
-			{ json_dbg(JSON_DBG_LOW, __func__, "under json_array: after JSON_OPEN_BRACKET before JSON_CLOSE_BRACKET"); }
 		    JSON_CLOSE_BRACKET
 			{
+			    json_dbg(JSON_DBG_MED, __func__, "under json_array: JSON_OPEN_BRACKET JSON_CLOSE_BRACKET:");
 			    $$ = json_create_array();
+			    json_dbg(JSON_DBG_LOW, __func__, "under json_array: $$ type: %s", json_element_type_name($$));
+			    json_dbg(JSON_DBG_LOW, __func__, "under json_array: $1 type: %s", json_element_type_name($1));
 			    json_dbg(JSON_DBG_MED, __func__, "under json_array: after JSON_CLOSE_BRACKET returning type: %s",
 						   json_element_type_name($$));
 			    json_dbg(JSON_DBG_LOW, __func__, "under json_array: after JSON_CLOSE_BRACKET before ;");
@@ -306,7 +343,10 @@ json_array:	    JSON_OPEN_BRACKET
 
 json_elements:	    json_element
 			{
+			    json_dbg(JSON_DBG_MED, __func__, "under json_elements: json_element:");
 			    $$ = $1; /* magic: json_elements becomes the json_element type */
+			    json_dbg(JSON_DBG_LOW, __func__, "under json_elements: $$ type: %s", json_element_type_name($$));
+			    json_dbg(JSON_DBG_LOW, __func__, "under json_elements: $1 type: %s", json_element_type_name($1));
 			    json_dbg(JSON_DBG_MED, __func__, "under json_elements: after json_element returning type: %s",
 						   json_element_type_name($$));
 			    json_dbg(JSON_DBG_LOW, __func__, "under json_elements: after json_element before |");
@@ -314,11 +354,12 @@ json_elements:	    json_element
 		    |
 
 		    json_elements
-			{ json_dbg(JSON_DBG_LOW, __func__, "under json_elements: after json_elements before JSON_COMMA"); }
-		    JSON_COMMA
-			{ json_dbg(JSON_DBG_LOW, __func__, "under json_elements: after JSON_COMMA before json_element"); }
+			JSON_COMMA
 		    json_element
 			{
+			    json_dbg(JSON_DBG_MED, __func__, "under json_elements: json_elements JSON_COMMA json_element:");
+			    json_dbg(JSON_DBG_LOW, __func__, "under json_elements: $$ type: %s", json_element_type_name($$));
+			    json_dbg(JSON_DBG_LOW, __func__, "under json_elements: $1 type: %s", json_element_type_name($1));
 			    json_dbg(JSON_DBG_LOW, __func__, "under json_elements: need more code probably here"); /* XXX */
 			    json_dbg(JSON_DBG_LOW, __func__, "under json_elements: after json_element before ;");
 			}
@@ -326,7 +367,10 @@ json_elements:	    json_element
 
 json_element:	    json_value
 			{
+			    json_dbg(JSON_DBG_MED, __func__, "under json_element: json_value:");
 			    $$ = $1; /* magic: json_element becomes the json_value type */
+			    json_dbg(JSON_DBG_LOW, __func__, "under json_value: $$ type: %s", json_element_type_name($$));
+			    json_dbg(JSON_DBG_LOW, __func__, "under json_value: $1 type: %s", json_element_type_name($1));
 			    json_dbg(JSON_DBG_MED, __func__, "under json_element: after json_value returning type: %s",
 						   json_element_type_name($$));
 			    json_dbg(JSON_DBG_LOW, __func__, "under json_element: after json_value before ;");
@@ -335,7 +379,12 @@ json_element:	    json_value
 
 json_string:	    JSON_STRING
 			{
+			    json_dbg(JSON_DBG_MED, __func__, "under json_string: JSON_STRING:");
+			    json_dbg(JSON_DBG_LOW, __func__, "$$ = parse_json_string(%s, %d)",
+				ugly_text, ugly_length);
 			    $$ = parse_json_string(ugly_text, ugly_length);
+			    json_dbg(JSON_DBG_LOW, __func__, "under json_string: $$ type: %s", json_element_type_name($$));
+			    json_dbg(JSON_DBG_LOW, __func__, "under json_string: $1 type: %s", json_element_type_name($1));
 			    json_dbg(JSON_DBG_MED, __func__, "under json_string: after JSON_STRING returning type: %s",
 						   json_element_type_name($$));
 			    json_dbg(JSON_DBG_LOW, __func__, "under json_string: after JSON_STRING before ;");
@@ -344,7 +393,11 @@ json_string:	    JSON_STRING
 
 json_number:	    JSON_NUMBER
 			{
+			    json_dbg(JSON_DBG_MED, __func__, "under json_number: JSON_NUMBER:");
+			    json_dbg(JSON_DBG_LOW, __func__, "$$ = parse_json_number(%s)", ugly_text);
 			    $$ = parse_json_number(ugly_text);
+			    json_dbg(JSON_DBG_LOW, __func__, "under json_number: $$ type: %s", json_element_type_name($$));
+			    json_dbg(JSON_DBG_LOW, __func__, "under json_number: $1 type: %s", json_element_type_name($1));
 			    json_dbg(JSON_DBG_MED, __func__, "under json_number: after JSON_NUMBER returning type: %s",
 						   json_element_type_name($$));
 			    json_dbg(JSON_DBG_LOW, __func__, "under json_number: after JSON_NUMBER before ;");
@@ -540,7 +593,7 @@ parse_json_string(char const *string, size_t len)
      * firewall
      */
     if (string == NULL) {
-	err(40, __func__, "passed NULL string");
+	err(39, __func__, "passed NULL string");
 	not_reached();
     }
 
@@ -556,15 +609,15 @@ parse_json_string(char const *string, size_t len)
     str = json_conv_string(string, len, true);
     /* paranoia - these tests should never result in an error */
     if (str == NULL) {
-        err(41, __func__, "converting JSON string returned NULL: <%s>", string);
+        err(40, __func__, "converting JSON string returned NULL: <%s>", string);
         not_reached();
     } else if (str->type != JTYPE_STRING) {
-        err(42, __func__, "expected JTYPE_STRING, found type: %s", json_element_type_name(str));
+        err(41, __func__, "expected JTYPE_STRING, found type: %s", json_element_type_name(str));
         not_reached();
     }
     item = &(str->element.string);
     if (!item->converted) {
-	err(43, __func__, "couldn't decode string: <%s>", string);
+	err(42, __func__, "couldn't decode string: <%s>", string);
 	not_reached();
     } else {
         json_dbg(json_verbosity_level, __func__, "decoded string: <%s>", item->str);
@@ -596,17 +649,17 @@ parse_json_bool(char const *string)
      * firewall
      */
     if (string == NULL) {
-	err(44, __func__, "passed NULL string");
+	err(43, __func__, "passed NULL string");
 	not_reached();
     }
 
     boolean = json_conv_bool_str(string, NULL);
     /* paranoia - these tests should never result in an error */
     if (boolean == NULL) {
-	err(45, __func__, "converting JSON bool returned NULL: <%s>", string);
+	err(44, __func__, "converting JSON bool returned NULL: <%s>", string);
 	not_reached();
     } else if (boolean->type != JTYPE_BOOL) {
-        err(46, __func__, "expected JTYPE_BOOL, found type: %s", json_element_type_name(boolean));
+        err(45, __func__, "expected JTYPE_BOOL, found type: %s", json_element_type_name(boolean));
         not_reached();
     }
     item = &(boolean->element.boolean);
@@ -621,18 +674,18 @@ parse_json_bool(char const *string)
 	 * If it's not we abort as there's a serious mismatch between the
 	 * scanner and the parser.
 	 */
-	err(47, __func__, "called on non-boolean string: <%s>", string);
+	err(46, __func__, "called on non-boolean string: <%s>", string);
 	not_reached();
     } else if (item->as_str == NULL) {
 	/* extra sanity check - make sure the allocated string != NULL */
-	err(48, __func__, "boolean->as_str == NULL");
+	err(47, __func__, "boolean->as_str == NULL");
 	not_reached();
     } else if (strcmp(item->as_str, "true") && strcmp(item->as_str, "false")) {
 	/*
 	 * extra sanity check - make sure the allocated string is either "true"
 	 * or "false"
 	 */
-	err(49, __func__, "boolean->as_str neither \"true\" nor \"false\"");
+	err(48, __func__, "boolean->as_str neither \"true\" nor \"false\"");
 	not_reached();
     } else {
 	/*
@@ -642,16 +695,16 @@ parse_json_bool(char const *string)
 	char const *str = booltostr(item->value);
 	bool tmp = false;
 	if (str == NULL) {
-	    err(50, __func__, "could not convert boolean->value back to a string");
+	    err(49, __func__, "could not convert boolean->value back to a string");
 	    not_reached();
 	} else if (strcmp(str, item->as_str)) {
-	    err(51, __func__, "boolean->as_str != item->value as a string");
+	    err(50, __func__, "boolean->as_str != item->value as a string");
 	    not_reached();
 	} else if ((tmp = strtobool(item->as_str)) != item->value) {
-	    err(52, __func__, "mismatch between boolean string and converted value");
+	    err(51, __func__, "mismatch between boolean string and converted value");
 	    not_reached();
 	} else if ((tmp = strtobool(str)) != item->value) {
-	    err(53, __func__, "mismatch between converted string value and converted value");
+	    err(52, __func__, "mismatch between converted string value and converted value");
 	    not_reached();
 	}
 	/* only if we get here do we assume everything is okay */
@@ -680,7 +733,7 @@ parse_json_null(char const *string)
      * firewall
      */
     if (string == NULL) {
-	err(54, __func__, "passed NULL string");
+	err(53, __func__, "passed NULL string");
 	not_reached();
     }
 
@@ -690,15 +743,15 @@ parse_json_null(char const *string)
      * null should not be NULL :-)
      */
     if (null == NULL) {
-	err(55, __func__, "null ironically should not be NULL but it is :-)");
+	err(54, __func__, "null ironically should not be NULL but it is :-)");
 	not_reached();
     } else if (null->type != JTYPE_NULL) {
-        err(56, __func__, "expected JTYPE_NULL, found type: %s", json_element_type_name(null));
+        err(55, __func__, "expected JTYPE_NULL, found type: %s", json_element_type_name(null));
         not_reached();
     }
     item = &(null->element.null);
     if (!item->converted) {
-	err(57,__func__, "couldn't convert null: <%s>", string);
+	err(56,__func__, "couldn't convert null: <%s>", string);
 	not_reached();
     } else {
         json_dbg(json_verbosity_level, __func__, "convert null: <%s> -> null", string);
@@ -730,21 +783,21 @@ parse_json_number(char const *string)
      * firewall
      */
     if (string == NULL) {
-	err(58, __func__, "passed NULL string");
+	err(57, __func__, "passed NULL string");
 	not_reached();
     }
     number = json_conv_number_str(string, NULL);
     /* paranoia - these tests should never result in an error */
     if (number == NULL) {
-	err(59, __func__, "converting JSON number returned NULL: <%s>", string);
+	err(58, __func__, "converting JSON number returned NULL: <%s>", string);
         not_reached();
     } else if (number->type != JTYPE_NUMBER) {
-        err(60, __func__, "expected JTYPE_NUMBER, found type: %s", json_element_type_name(number));
+        err(59, __func__, "expected JTYPE_NUMBER, found type: %s", json_element_type_name(number));
         not_reached();
     }
     item = &(number->element.number);
     if (!item->converted) {
-	err(61, __func__, "couldn't convert number string: <%s>", string);
+	err(60, __func__, "couldn't convert number string: <%s>", string);
 	not_reached();
     } else {
         json_dbg(json_verbosity_level, __func__, "convert number string: <%s>", item->as_str);
@@ -779,7 +832,7 @@ parse_json_array(char const *string, struct json *ast)
      * firewall
      */
     if (string == NULL) {
-	err(62, __func__, "passed NULL string");
+	err(61, __func__, "passed NULL string");
 	not_reached();
     }
 
@@ -814,8 +867,11 @@ parse_json_member(struct json *name, struct json *value, struct json *ast)
     /*
      * firewall
      */
-    if (name == NULL || value == NULL) {
-	err(63, __func__, "passed NULL name and/or value");
+    if (name == NULL) {
+	err(62, __func__, "passed NULL name value");
+	not_reached();
+    } else if (value == NULL) {
+	err(63, __func__, "passed NULL value");
 	not_reached();
     }
 
