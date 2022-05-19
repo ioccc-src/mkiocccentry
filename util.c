@@ -3093,6 +3093,128 @@ print_newline(bool output_newline)
     }
 }
 
+/* fprint_str
+ *
+ * Print string str to a FILE * with indistinct chars represented in a way that
+ * can be seen
+ *
+ * given:
+ *	stream	- FILE * to write to
+ *	str	- the string to print
+ *	len	- the length of the string
+ *
+ * NOTE: If len == USE_STRLEN (defined in util.h) then strlen() is used to
+ * determine the length. If >= 0 it is the caller's responsibility to be
+ * absolutely sure that the length does not go beyond the actual string length!
+ *
+ * This function prints regular characters that are easy to distinguish as
+ * normal text (for example characters in the range [0-9a-zA-Z] will be shown as
+ * those characters exactly though those aren't the only ones) as they are but
+ * where a character is not easy to distinguish (e.g. a NUL byte) it shows the
+ * literal character (i.e. "\\0" for "\0") so that it can be seen what the
+ * character actually is.
+ *
+ * NOTE: As for the printf escape chars '\n' is printed as a newline and '\t' is
+ * shown as a tab but the others (unless I missed some) are shown as C \-escape
+ * strings. Some other characters that are not printable are also shown but as
+ * literal bytes.
+ *
+ * NOTE: This function will return false on a NULL string but will not return on
+ * NULL stream.
+ *
+ * NOTE: This function returns true if everything was successfully printed but
+ * it might be nice if it took another arg, a bool *, which would say if any
+ * unprintable characters were printed.
+ *
+ * XXX A version that returns a char * might be useful in some cases ?
+ */
+bool
+fprint_str(FILE *stream, char const *str, ssize_t len)
+{
+    ssize_t i = 0;	    /* to iterate through the characters one by one */
+    int ret = 0;	    /* for return value of fprintf */
+    int saved_errno = 0;    /* for printing warning at end of function if necessary */
+    bool success = true;    /* if no errors (assume no errors at start) */
+
+    /*
+     * firewall
+     */
+    if (stream == NULL) {
+	err(35, __func__, "passed NULL stream");
+	not_reached();
+    } else if (str == NULL) {
+	warn(__func__, "passed NULL string");
+	return false;
+    }
+
+    /*
+     * if len == USE_STRLEN ((ssize_t)-1) we use strlen() to make it easier for
+     * the cases where the caller does not expect NUL bytes to be in the string.
+     */
+    if (len == USE_STRLEN)
+	len = strlen(str);
+
+    /*
+     * Now that we have the length of the string (either because the caller did
+     * not specify one and we use strlen() or the caller KNOWS the actual
+     * length) we will go through and print each character of the string, one at
+     * a time, so that we can make sure we print the character out correctly.
+     */
+    for (i = 0; i < len; ++i) {
+	errno = 0; /* reset for fprintf error */
+	switch (str[i]) {
+	    case '\0': /* NUL byte */
+		ret = fprintf(stream, "\\0");
+		break;
+	    case '\r': /* carriage return */
+		ret = fprintf(stream, "\\r");
+		break;
+	    case '\f': /* form feed */
+		ret = fprintf(stream, "\\f");
+		break;
+	    case '\v': /* vertical tab */
+		ret = fprintf(stream, "\\v");
+		break;
+	    case '\n': /* newline */
+	    case '\t': /* tab */
+		ret = fprintf(stream, "%c", str[i]);
+		break;
+	    default: /* anything else */
+		if (!isprint(str[i])) {
+		    ret = fprintf(stream, "\\x%02x", str[i]);
+		} else {
+		    ret = fprintf(stream, "%c",str[i]);
+		}
+		break;
+	}
+	if (ret <= 0) {
+	    saved_errno = errno;
+	    success = false;
+	}
+    }
+
+    if (saved_errno != 0) {
+	warnp(__func__, "fprintf returned error: %s", strerror(saved_errno));
+    }
+
+    return success;
+}
+
+/* print_str	- wrapper to fprint_str() that writes to stdout
+ *
+ * given:
+ *
+ *	str	- the string to print
+ *	len	- the length of the string (-1 == use strlen(), >= 0 is the
+ *		  exact length)
+ *
+ * NOTE: This just returns fprint_str(). We let that function do all the checks.
+ */
+bool
+print_str(char const *str, ssize_t len)
+{
+    return fprint_str(stdout, str, len);
+}
 
 /*
  * find_text - find ASCII text within a field of whitespace and trailing NUL bytes
