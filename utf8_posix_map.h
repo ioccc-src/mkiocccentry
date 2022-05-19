@@ -55,6 +55,12 @@
  */
 #include "dbg.h"
 
+/*
+ * IOCCC limits
+ */
+#include "limit_ioccc.h"
+
+
 
 /*
  * map certain UTF-8 strings into safe lower case POSIX portable filenames plus +.
