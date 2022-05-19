@@ -15,9 +15,10 @@ jparse
 jparse.c
 jparse.tab.c
 jparse.tab.h
-json-test.log
+json_test.log
 json_parser
-jstr-test.out
+jstr_test.out
+jstr_test2.out
 jstrdecode
 jstrencode
 limit_ioccc.sh
@@ -25,7 +26,7 @@ makefile.local
 mkiocccentry
 orig.iocccsize
 tags
-test-iocccsize
+test_iocccsize
 test_set
 test_src
 test_work

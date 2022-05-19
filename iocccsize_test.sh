@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# test-iocccsize.sh - IOCCC Size Tool Tests
+# test_iocccsize.sh - IOCCC Size Tool Tests
 #
 # "You are not expected to understand this" :-)
 #
@@ -70,8 +70,8 @@ shift $((OPTIND - 1))
 
 eval make "${__build}" all 2>&1 | grep -v 'Nothing to be done for'
 
-if [[ ! -d test-iocccsize ]]; then
-	mkdir -p test-iocccsize
+if [[ ! -d test_iocccsize ]]; then
+	mkdir -p test_iocccsize
 fi
 
 # Change DIGRAPHS and TRIGRAPHS according to limit_ioccc.h
@@ -89,7 +89,7 @@ get_wc()
 
 test_size()
 {
-	typeset file="test-iocccsize/$1"
+	typeset file="test_iocccsize/$1"
 	typeset expect="$2"
 	typeset gross_count
 	typeset got
@@ -117,17 +117,17 @@ test_size()
 
 #######################################################################
 
-printf 'int x;\r\n' >test-iocccsize/crlf.c
+printf 'int x;\r\n' >test_iocccsize/crlf.c
 test_size crlf.c "2 8 1"
 
 #######################################################################
 
-printf 'char str[] = "\xe8\xe9\xf8";\r\n' >test-iocccsize/utf8.c
+printf 'char str[] = "\xe8\xe9\xf8";\r\n' >test_iocccsize/utf8.c
 test_size utf8.c "12 21 1"
 
 #######################################################################
 
-cat <<EOF >test-iocccsize/splitline0.c
+cat <<EOF >test_iocccsize/splitline0.c
 #define FOO \\
     int a = 666;
 FOO;
@@ -136,7 +136,7 @@ test_size splitline0.c "19 36 1"
 
 #######################################################################
 
-cat <<EOF >test-iocccsize/comment0.c
+cat <<EOF >test_iocccsize/comment0.c
 // comment one line "with a comment string" inside
 int x;
 EOF
@@ -144,7 +144,7 @@ test_size comment0.c "44 58 1"
 
 #######################################################################
 
-cat <<EOF >test-iocccsize/comment1.c
+cat <<EOF >test_iocccsize/comment1.c
 /* comment block same line 'with a comment string' */
 int x;
 EOF
@@ -152,7 +152,7 @@ test_size comment1.c "46 61 1"
 
 #######################################################################
 
-cat <<EOF >test-iocccsize/comment2.c
+cat <<EOF >test_iocccsize/comment2.c
 /*
 comment block
 multiline
@@ -163,35 +163,35 @@ test_size comment2.c "27 37 1"
 
 #######################################################################
 
-cat <<EOF >test-iocccsize/comment3.c
+cat <<EOF >test_iocccsize/comment3.c
 a//foo
 EOF
 test_size comment3.c "6 7 0"
 
 #######################################################################
 
-cat <<EOF >test-iocccsize/comment4.c
+cat <<EOF >test_iocccsize/comment4.c
 /*/ int if for /*/
 EOF
 test_size comment4.c "14 19 0"
 
 #######################################################################
 
-cat <<EOF >test-iocccsize/comment5.c
+cat <<EOF >test_iocccsize/comment5.c
 '"' "/*" foobar "*/"
 EOF
 test_size comment5.c "17 21 0"
 
 #######################################################################
 
-cat <<EOF >test-iocccsize/comment6.c
+cat <<EOF >test_iocccsize/comment6.c
 char str[] = "string /* with */ comment";
 EOF
 test_size comment6.c "30 42 1"
 
 #######################################################################
 
-cat <<EOF >test-iocccsize/comment7.c
+cat <<EOF >test_iocccsize/comment7.c
 // comment with backslash newline \\
 int a = 666;
 EOF
@@ -199,28 +199,28 @@ test_size comment7.c "37 49 0"
 
 #######################################################################
 
-cat <<EOF >test-iocccsize/quote0.c
+cat <<EOF >test_iocccsize/quote0.c
 char str[] = "and\"or";
 EOF
 test_size quote0.c "16 24 1"
 
 #######################################################################
 
-cat <<EOF >test-iocccsize/quote1.c
+cat <<EOF >test_iocccsize/quote1.c
 char squote = '\\'';
 EOF
 test_size quote1.c "12 20 1"
 
 #######################################################################
 
-cat <<EOF >test-iocccsize/quote2.c
+cat <<EOF >test_iocccsize/quote2.c
 char str[] = "'xor'";
 EOF
 test_size quote2.c "14 22 1"
 
 #######################################################################
 
-cat <<EOF >test-iocccsize/digraph.c
+cat <<EOF >test_iocccsize/digraph.c
 char str<::> = "'xor'";
 EOF
 if [[ -z $DIGRAPHS ]]; then
@@ -231,7 +231,7 @@ fi
 
 #######################################################################
 
-cat <<EOF >test-iocccsize/trigraph0.c
+cat <<EOF >test_iocccsize/trigraph0.c
 char str??(??) = "'xor'";
 EOF
 if [[ -z $TRIGRAPHS ]]; then
@@ -243,7 +243,7 @@ fi
 #######################################################################
 
 # Example from https://en.wikipedia.org/wiki/Digraphs_and_trigraphs#C
-cat <<EOF >test-iocccsize/trigraph1.c
+cat <<EOF >test_iocccsize/trigraph1.c
 // Will the next line be executed????????????????/
 int a = 666;
 EOF
@@ -256,7 +256,7 @@ fi
 #######################################################################
 
 # Example from https://en.wikipedia.org/wiki/Digraphs_and_trigraphs#C
-cat <<EOF >test-iocccsize/trigraph2.c
+cat <<EOF >test_iocccsize/trigraph2.c
 /??/
 * A comment *??/
 /
@@ -269,7 +269,7 @@ fi
 
 #######################################################################
 
-cat <<EOF >test-iocccsize/trigraph3.c
+cat <<EOF >test_iocccsize/trigraph3.c
 #define FOO ??/
     int a = 666;
 FOO;
@@ -282,7 +282,7 @@ fi
 
 #######################################################################
 
-cat <<EOF >test-iocccsize/main0.c
+cat <<EOF >test_iocccsize/main0.c
 int
 main(int argc, char **argv)
 {
@@ -293,7 +293,7 @@ test_size main0.c "22 47 4"
 
 #######################################################################
 
-cat <<EOF >test-iocccsize/hello.c
+cat <<EOF >test_iocccsize/hello.c
 #include <stdio.h>
 
 int
@@ -309,7 +309,7 @@ test_size hello.c "58 101 6"
 
 # Digraph for #include and curlys.  Digraphs are tokens and are not
 # translated like trigraphs.
-cat <<EOF >test-iocccsize/hello_digraph.c
+cat <<EOF >test_iocccsize/hello_digraph.c
 %:    include <stdio.h>
 
 int
@@ -329,7 +329,7 @@ fi
 
 # Trigraph for #include and curlys.  Trigraphs are translated, unlike
 # digraphs which are tokens.
-cat <<EOF >test-iocccsize/hello_trigraph.c
+cat <<EOF >test_iocccsize/hello_trigraph.c
 ??=    include <stdio.h>
 
 int
@@ -347,14 +347,14 @@ fi
 
 #######################################################################
 
-cat <<EOF >test-iocccsize/include0.c
+cat <<EOF >test_iocccsize/include0.c
 #  include <stdio.h>
 EOF
 test_size include0.c "10 21 1"
 
 #######################################################################
 
-cat <<EOF >test-iocccsize/include1.c
+cat <<EOF >test_iocccsize/include1.c
 #  include <stdio.h>
 #/*hi*/include <ctype.h>
 EOF
@@ -362,7 +362,7 @@ test_size include1.c "26 46 2"
 
 #######################################################################
 
-cat <<EOF >test-iocccsize/curly0.c
+cat <<EOF >test_iocccsize/curly0.c
 char str = "{ curly } ";
 EOF
 test_size curly0.c "12 25 1"
@@ -370,7 +370,7 @@ test_size curly0.c "12 25 1"
 #######################################################################
 
 # No spaces after curly braces in array initialiser.
-cat <<EOF >test-iocccsize/curly1.c
+cat <<EOF >test_iocccsize/curly1.c
 #include <stdlib.h>
 
 #define STRLEN(s)		(sizeof (s)-1)
@@ -390,7 +390,7 @@ test_size curly1.c "119 192 6"
 #######################################################################
 
 # Spaces after curly braces in array initialiser.
-cat <<EOF >test-iocccsize/curly2.c
+cat <<EOF >test_iocccsize/curly2.c
 #include <stdlib.h>
 
 #define STRLEN(s)		(sizeof (s)-1)
@@ -409,7 +409,7 @@ test_size curly2.c "113 196 6"
 
 #######################################################################
 
-cat <<EOF >test-iocccsize/semicolon0.c
+cat <<EOF >test_iocccsize/semicolon0.c
 char str = "; xor; ";
 EOF
 test_size semicolon0.c "10 22 1"
@@ -417,7 +417,7 @@ test_size semicolon0.c "10 22 1"
 #######################################################################
 
 # Spaces after semicolons in for( ; ; ).
-cat <<EOF >test-iocccsize/semicolon1.c
+cat <<EOF >test_iocccsize/semicolon1.c
 #include <stdio.h>
 
 int
@@ -435,7 +435,7 @@ test_size semicolon1.c "65 133 8"
 #######################################################################
 
 # No spaces after semicolons in for(;;).
-cat <<EOF >test-iocccsize/semicolon2.c
+cat <<EOF >test_iocccsize/semicolon2.c
 #include <stdio.h>
 
 int

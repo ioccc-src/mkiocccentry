@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# ioccc-test.sh - perform the complete suite of tests for the mkiocccentry repo
+# ioccc_test.sh - perform the complete suite of tests for the mkiocccentry repo
 #
 # Copyright (c) 2022 by Landon Curt Noll.  All Rights Reserved.
 #
@@ -42,10 +42,10 @@ Exit codes:
     1    -h and help string printed or -V and version string printed
     2    Command line usage error
 
-    3    ./iocccsize-test.sh not found or not executable
+    3    ./iocccsize_test.sh not found or not executable
     4	 ./dbg not found or not executable
-    5    ./mkiocccentry-test.sh not found or not executable
-    6    ./jstr-test.sh not found or not executable
+    5    ./mkiocccentry_test.sh not found or not executable
+    6    ./jstr_test.sh not found or not executable
     7    ./jnum_chk not found or not executable
     8    ./dyn_test not found or not executable
 
@@ -91,16 +91,16 @@ fi
 
 # firewall - verify we have the required executables
 #
-if [[ ! -e ./iocccsize-test.sh ]]; then
-    echo "$0: ERROR: ./iocccsize-test.sh file not found" 1>&2
+if [[ ! -e ./iocccsize_test.sh ]]; then
+    echo "$0: ERROR: ./iocccsize_test.sh file not found" 1>&2
     exit 3
 fi
-if [[ ! -f ./iocccsize-test.sh ]]; then
-    echo "$0: ERROR: ./iocccsize-test.sh is not a file" 1>&2
+if [[ ! -f ./iocccsize_test.sh ]]; then
+    echo "$0: ERROR: ./iocccsize_test.sh is not a file" 1>&2
     exit 3
 fi
-if [[ ! -x ./iocccsize-test.sh ]]; then
-    echo "$0: ERROR: ./iocccsize-test.sh is not executable" 1>&2
+if [[ ! -x ./iocccsize_test.sh ]]; then
+    echo "$0: ERROR: ./iocccsize_test.sh is not executable" 1>&2
     exit 3
 fi
 #
@@ -117,29 +117,29 @@ if [[ ! -x ./dbg ]]; then
     exit 4
 fi
 #
-if [[ ! -e ./mkiocccentry-test.sh ]]; then
-    echo "$0: ERROR: ./mkiocccentry-test.sh file not found" 1>&2
+if [[ ! -e ./mkiocccentry_test.sh ]]; then
+    echo "$0: ERROR: ./mkiocccentry_test.sh file not found" 1>&2
     exit 5
 fi
-if [[ ! -f ./mkiocccentry-test.sh ]]; then
-    echo "$0: ERROR: ./mkiocccentry-test.sh is not a file" 1>&2
+if [[ ! -f ./mkiocccentry_test.sh ]]; then
+    echo "$0: ERROR: ./mkiocccentry_test.sh is not a file" 1>&2
     exit 5
 fi
-if [[ ! -x ./mkiocccentry-test.sh ]]; then
-    echo "$0: ERROR: ./mkiocccentry-test.sh is not executable" 1>&2
+if [[ ! -x ./mkiocccentry_test.sh ]]; then
+    echo "$0: ERROR: ./mkiocccentry_test.sh is not executable" 1>&2
     exit 5
 fi
 #
-if [[ ! -e ./jstr-test.sh ]]; then
-    echo "$0: ERROR: ./jstr-test.sh file not found" 1>&2
+if [[ ! -e ./jstr_test.sh ]]; then
+    echo "$0: ERROR: ./jstr_test.sh file not found" 1>&2
     exit 6
 fi
-if [[ ! -f ./jstr-test.sh ]]; then
-    echo "$0: ERROR: ./jstr-test.sh is not a file" 1>&2
+if [[ ! -f ./jstr_test.sh ]]; then
+    echo "$0: ERROR: ./jstr_test.sh is not a file" 1>&2
     exit 6
 fi
-if [[ ! -x ./jstr-test.sh ]]; then
-    echo "$0: ERROR: ./jstr-test.sh is not executable" 1>&2
+if [[ ! -x ./jstr_test.sh ]]; then
+    echo "$0: ERROR: ./jstr_test.sh is not executable" 1>&2
     exit 6
 fi
 #
@@ -175,21 +175,21 @@ fi
 echo "Start test suite"
 echo
 
-# iocccsize-test.sh
+# iocccsize_test.sh
 #
-echo "RUNNING: iocccsize-test.sh"
+echo "RUNNING: iocccsize_test.sh"
 echo
-echo "./iocccsize-test.sh -v 1"
-./iocccsize-test.sh -v 1
+echo "./iocccsize_test.sh -v 1"
+./iocccsize_test.sh -v 1
 status="$?"
 if [[ $status -ne 0 ]]; then
-    echo "$0: ERROR: iocccsize-test.sh non-zero exit code: $status" 1>&2
+    echo "$0: ERROR: iocccsize_test.sh non-zero exit code: $status" 1>&2
     FAILURE_SUMMARY="$FAILURE_SUMMARY
-    iocccsize-test.sh non-zero exit code: $status"
+    iocccsize_test.sh non-zero exit code: $status"
     EXIT_CODE="20"
 else
     echo
-    echo "PASSED: iocccsize-test.sh"
+    echo "PASSED: iocccsize_test.sh"
 fi
 
 # dbg
@@ -224,41 +224,41 @@ else
     fi
 fi
 
-# mkiocccentry-test.sh
+# mkiocccentry_test.sh
 #
 echo
-echo "RUNNING: mkiocccentry-test.sh"
+echo "RUNNING: mkiocccentry_test.sh"
 echo
-echo "./mkiocccentry-test.sh"
-./mkiocccentry-test.sh
+echo "./mkiocccentry_test.sh"
+./mkiocccentry_test.sh
 status="$?"
 if [[ $status -ne 0 ]]; then
-    echo "$0: ERROR: mkiocccentry-test.sh non-zero exit code: $status" 1>&2
+    echo "$0: ERROR: mkiocccentry_test.sh non-zero exit code: $status" 1>&2
     FAILURE_SUMMARY="$FAILURE_SUMMARY
-    mkiocccentry-test.sh non-zero exit code: $status"
+    mkiocccentry_test.sh non-zero exit code: $status"
     EXIT_CODE="23"
 else
     echo
-    echo "PASSED: mkiocccentry-test.sh"
+    echo "PASSED: mkiocccentry_test.sh"
 fi
 
 
-# jstr-test.sh
+# jstr_test.sh
 #
 echo
-echo "RUNNING: jstr-test.sh"
+echo "RUNNING: jstr_test.sh"
 echo
-echo "./jstr-test.sh"
-./jstr-test.sh
+echo "./jstr_test.sh"
+./jstr_test.sh
 status="$?"
 if [[ $status -ne 0 ]]; then
-    echo "$0: ERROR: jstr-test.sh non-zero exit code: $status" 1>&2
+    echo "$0: ERROR: jstr_test.sh non-zero exit code: $status" 1>&2
     FAILURE_SUMMARY="$FAILURE_SUMMARY
-    jstr-test.sh non-zero exit code: $status"
+    jstr_test.sh non-zero exit code: $status"
     EXIT_CODE="24"
 else
     echo
-    echo "PASSED: jstr-test.sh"
+    echo "PASSED: jstr_test.sh"
 fi
 
 # jnum_chk

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# json-test.sh - test jauthchk and jinfochk on JSON test files
+# json_test.sh - test jauthchk and jinfochk on JSON test files
 
 # setup
 #
@@ -35,7 +35,7 @@ export RUN_JINFOCHK="true"
 export RUN_JAUTHCHK="true"
 export EXIT_CODE=0
 export JSON_TREE="./test_JSON"
-export LOGFILE="./json-test.log"
+export LOGFILE="./json_test.log"
 
 # parse args
 #

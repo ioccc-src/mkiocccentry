@@ -240,8 +240,8 @@ H_FILES= dbg.h jauthchk.h jinfochk.h json.h jstrdecode.h jstrencode.h limit_iocc
 #   DSYMDIRS= $(patsubst %,%.dSYM,$(TARGETS))
 #
 DSYMDIRS= $(TARGETS:=.dSYM)
-SH_FILES= iocccsize-test.sh jstr-test.sh limit_ioccc.sh mkiocccentry-test.sh json-test.sh \
-	  jcodechk.sh vermod.sh prep.sh run_bison.sh run_flex.sh reset_tstamp.sh ioccc-test.sh
+SH_FILES= iocccsize_test.sh jstr_test.sh limit_ioccc.sh mkiocccentry_test.sh json_test.sh \
+	  jcodechk.sh vermod.sh prep.sh run_bison.sh run_flex.sh reset_tstamp.sh ioccc_test.sh
 BUILD_LOG= build.log
 
 # RUN_O_FLAG - determine if the bison and flex backup files should be used
@@ -711,21 +711,21 @@ reset_min_timestamp: reset_tstamp.sh
 
 # perform all of the mkiocccentry repo required tests
 #
-test ioccc-test: ioccc-test.sh iocccsize-test.sh dbg mkiocccentry-test.sh jstr-test.sh \
+test ioccc_test: ioccc_test.sh iocccsize_test.sh dbg mkiocccentry_test.sh jstr_test.sh \
 		 jnum_chk dyn_test Makefile
-	./ioccc-test.sh
+	./ioccc_test.sh
 
-# run json-test.sh on test_JSON files
+# run json_test.sh on test_JSON files
 #
 # Currently this is very chatty but the important parts will also be written to
-# json-test.log for evaluation.
+# json_test.log for evaluation.
 #
 # NOTE: The verbose and debug options are important to see more information and
 # this is important even when all cases are resolved as we want to see if there
 # are any problems if new files are added.
 #
 test-jinfochk: all jinfochk Makefile
-	./json-test.sh -t jinfo_only -v 1 -D 1 -d test_JSON
+	./json_test.sh -t jinfo_only -v 1 -D 1 -d test_JSON
 
 # rule used by prep.sh and make clean
 #
@@ -737,8 +737,8 @@ clean_generated_obj:
 prep_clobber:
 	${RM} -f ${TARGETS} ${TEST_TARGETS}
 	${RM} -f ${GENERATED_CSRC} ${GENERATED_HSRC}
-	${RM} -f answers.txt j-test.out j-test2.out json-test.log
-	${RM} -rf test-iocccsize test_src test_work tags dbg.out
+	${RM} -f answers.txt j-test.out j-test2.out json_test.log
+	${RM} -rf test_iocccsize test_src test_work tags dbg.out
 	${RM} -f jparse.output jparse.html
 	${RM} -f dbg_test.c
 	${RM} -rf dyn_test.dSYM

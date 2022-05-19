@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# jstr-test.sh - JSON string encoding and decoding test
+# jstr_test.sh - JSON string encoding and decoding test
 
 # parse args
 #
@@ -33,8 +33,8 @@ if [[ ! -x jstrdecode ]]; then
     echo "$0: missing jstrdecode tool" 1>&2
     exit 101
 fi
-export TEST_FILE="jstr-test.out"
-export TEST_FILE2="jstr-test2.out"
+export TEST_FILE="jstr_test.out"
+export TEST_FILE2="jstr_test2.out"
 if [[ -e "$TEST_FILE" ]]; then
     echo "$0: found $TEST_FILE move or remove before running this test" 1>&2
     exit 102
@@ -84,7 +84,7 @@ fi
 # test some text holes in the encoding and decoding pipe
 #
 echo "$0: about to run test #6"
-export SRC_SET="jstr-test.sh dbg.c dbg.h fnamchk.c iocccsize.c jauthchk.c"
+export SRC_SET="jstr_test.sh dbg.c dbg.h fnamchk.c iocccsize.c jauthchk.c"
 SRC_SET="$SRC_SET jinfochk.c json.c json.h jstrdecode.c jstrencode.c"
 SRC_SET="$SRC_SET limit_ioccc.h mkiocccentry.c txzchk.c util.c util.h"
 echo "cat \$SRC_SET | ./jstrencode -v $V_FLAG -n | ./jstrdecode -v $V_FLAG -n > $TEST_FILE"

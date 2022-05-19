@@ -53,7 +53,7 @@ exit codes:
     >= 7 - internal error"
 export EXIT_CODE=0
 export JSON_TREE="./test_JSON"
-export LOGFILE="./json-test.log"
+export LOGFILE="./json_test.log"
 export STRICT=""
 
 # parse args
