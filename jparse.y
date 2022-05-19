@@ -410,9 +410,6 @@ json_number:	    JSON_NUMBER
 %%
 /* Section 3: C code */
 
-/*
- * XXX - most of main() should be moved to another file - XXX
- */
 int
 main(int argc, char **argv)
 {
@@ -916,7 +913,6 @@ parse_json_member(struct json *name, struct json *value, struct json *ast)
  *
  * This function does not return.
  *
- * XXX - this function does not belong in this file - XXX
  */
 static void
 usage(int exitcode, char const *str, char const *prog)
