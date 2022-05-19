@@ -54,7 +54,7 @@
 /*
  * JSON parse tree supporting functions
  */
-#include "json.h"
+#include "json_parse.h"
 
 /*
  * supporting mkiocccentry JSON files

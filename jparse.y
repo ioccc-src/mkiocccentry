@@ -31,7 +31,7 @@
 
 
 /*
- * We use our struct json (see json.h for its definition) instead of bison
+ * We use our struct json (see json_parse.h for its definition) instead of bison
  * %union.
  */
 %define api.value.type {struct json *}

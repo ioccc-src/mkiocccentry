@@ -30,7 +30,7 @@
 /*
  * json - json file structs
  */
-#include "json.h"
+#include "json_parse.h"
 
 /*
  * json_util - general JSON utility support functions

@@ -41,7 +41,7 @@
 /*
  * JSON - JSON structures and functions
  */
-#include "json.h"
+#include "json_parse.h"
 
 /*
  * NOTE: The file jnum_header.c contains the header for jnum_test.c

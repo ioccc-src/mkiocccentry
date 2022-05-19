@@ -48,7 +48,7 @@
 #
 # NOTE: As of 2 April 2022 the reserved JSON codes are from 0 - 199 and the only
 # use right now is for errors that are triggered when verifying that the JSON
-# tables are sane and for shared errors across json.c, jinfochk.c and jauthchk.c
+# tables are sane and for shared errors across json_parse.c, jinfochk.c and jauthchk.c
 # (where the message is the same except for different filename and function
 # names). 
 # 

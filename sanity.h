@@ -39,7 +39,7 @@
 /*
  * JSON specific tables
  */
-#include "json.h"
+#include "json_parse.h"
 
 /*
  * json_ckk - support jinfochk and jauthchk services

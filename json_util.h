@@ -29,7 +29,7 @@
 /*
  * json - the json core
  */
-#include "json.h"
+#include "json_parse.h"
 
 /*
  * dyn_array - dynamic array facility

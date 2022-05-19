@@ -215,7 +215,7 @@ find_json_field_in_table(struct json_field *table, char const *name, size_t *loc
  * sure that they're all sane.
  *
  * This means that the only element with the JTYPE_UNSET type is the last element,
- * that the field types are valid (see json.h), that there are no embedded NULL
+ * that the field types are valid (see json_parse.h), that there are no embedded NULL
  * elements (name == NULL) and that the final element _IS_ NULL.
  *
  * This function does not return if any of these conditions are not met in any

@@ -52,7 +52,7 @@
 /*
  * JSON functions supporting mkiocccentry code
  */
-#include "json.h"
+#include "json_parse.h"
 
 /*
  * sanity - reality checks

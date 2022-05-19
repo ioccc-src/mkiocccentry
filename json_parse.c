@@ -1,5 +1,6 @@
+/* vim: set tabstop=8 softtabstop=4 shiftwidth=4 noexpandtab : */
 /*
- * json - JSON parse tree supporting functions
+ * json_parse - JSON parse tree supporting functions
  *
  * JSON related functions to support formation of .info.json files
  * and .author.json files, their related check tools, test code,
@@ -65,7 +66,7 @@
 /*
  * JSON - JSON structures and functions
  */
-#include "json.h"
+#include "json_parse.h"
 
 
 

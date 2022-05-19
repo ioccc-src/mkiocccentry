@@ -49,7 +49,7 @@
 /*
  * json - json file structs
  */
-#include "json.h"
+#include "json_parse.h"
 
 /*
  * json_entry - supporting mkiocccentry JSON files

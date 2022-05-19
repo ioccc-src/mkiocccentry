@@ -1,6 +1,6 @@
 /* vim: set tabstop=8 softtabstop=4 shiftwidth=4 noexpandtab : */
 /*
- * json - JSON functions supporting mkiocccentry code
+ * json_parse - JSON functions supporting mkiocccentry code
  *
  * JSON related functions to support formation of .info.json files
  * and .author.json files, their related check tools, test code,
