@@ -542,8 +542,11 @@ main(int argc, char **argv)
 void
 ugly_error(char const *format, ...)
 {
-    va_list ap;
+    va_list ap;		/* variable argument list */
 
+    /*
+     * stdarg variable argument list setup
+     */
     va_start(ap, format);
 
     /*
@@ -558,6 +561,9 @@ ugly_error(char const *format, ...)
     vfprintf(stderr, format, ap);
     fprintf(stderr, "\n");
 
+    /*
+     * stdarg variable argument list cleanup
+     */
     va_end(ap);
 }
 

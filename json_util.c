@@ -97,7 +97,7 @@ static struct ignore_json_code *ignore_json_code_set = NULL;
 void
 jwarn(int code, char const *program, char const *name, char const *filename, char const *line, int line_num, char const *fmt, ...)
 {
-    va_list ap;		/* argument pointer */
+    va_list ap;		/* variable argument list */
     int ret;		/* libc function return code */
     int saved_errno;	/* errno at function start */
 
@@ -229,7 +229,7 @@ void
 jwarnp(int code, char const *program, char const *name, char const *filename, char const *line,
        int line_num, char const *fmt, ...)
 {
-    va_list ap;		/* argument pointer */
+    va_list ap;		/* variable argument list */
     int ret;		/* libc function return code */
     int saved_errno;	/* errno at function start */
 
@@ -242,7 +242,7 @@ jwarnp(int code, char const *program, char const *name, char const *filename, ch
     saved_errno = errno;
 
     /*
-     * start the var arg setup and fetch our first arg
+     * stdarg variable argument list setup
      */
     va_start(ap, fmt);
 
@@ -364,11 +364,11 @@ void
 jerr(int exitcode, char const *program, char const *name, char const *filename, char const *line,
      int line_num, char const *fmt, ...)
 {
-    va_list ap;		/* argument pointer */
+    va_list ap;		/* variable argument list */
     int ret;		/* libc function return code */
 
     /*
-     * start the var arg setup and fetch our first arg
+     * stdarg variable argument list setup
      */
     va_start(ap, fmt);
 
@@ -482,7 +482,7 @@ void
 jerrp(int exitcode, char const *program, char const *name, char const *filename, char const *line,
       int line_num, char const *fmt, ...)
 {
-    va_list ap;		/* argument pointer */
+    va_list ap;		/* variable argument list */
     int ret;		/* libc function return code */
     int saved_errno;	/* errno value when called */
 
@@ -492,7 +492,7 @@ jerrp(int exitcode, char const *program, char const *name, char const *filename,
     saved_errno = errno;
 
     /*
-     * start the var arg setup and fetch our first arg
+     * stdarg variable argument list setup
      */
     va_start(ap, fmt);
 
@@ -832,6 +832,7 @@ ignore_json_code(int code)
     return;
 }
 
+
 /*
  * json_dbg - print JSON debug message if we are verbose enough
  *
@@ -852,7 +853,7 @@ ignore_json_code(int code)
 void
 json_dbg(int level, char const *name, char const *fmt, ...)
 {
-    va_list ap;		/* argument pointer */
+    va_list ap;		/* variable argument list */
     int saved_errno;	/* errno at function start */
 
     /*
@@ -901,7 +902,7 @@ json_dbg(int level, char const *name, char const *fmt, ...)
  * given:
  *	level	    print message if >= verbosity level
  *	name	    function name
- *	ap	    va_list
+ *	ap	    variable argument list
  *
  * Example:
  *
@@ -974,6 +975,7 @@ json_vdbg(int level, char const *name, char const *fmt, va_list ap)
     errno = saved_errno;
     return;
 }
+
 
 /*
  * json_element_type_name - print a struct json element union type by name

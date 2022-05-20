@@ -563,41 +563,45 @@ file_size(char const *path)
 /*
  * cmdprintf - malloc a safer shell command line for use with system() and popen()
  *
+ * For each % in the format, the next argument from the list argument list (which
+ * is assumed to be of type char *) is processed, escaping special characters that
+ * the shell might threaten as command characters.  If no special characters are
+ * found, no escaping is performed.
+ *
+ * NOTE: In the worst case, the length of the command line will double.
+ *
  * given:
  *
- *      format - The format string, any % on this string inserts the next string from the list,
- *               escaping special characters that the shell might threaten as command characters.
- *               In the worst case, the algorithm will make twice as many characters.
- *               Will not use escaping if it isn't needed.
- *      ...    - args to give after the format
+ *      fmt	shell command where % character are replaced with shell escaped args
+ *      ...     args (assumed to be of type char *) to use with %'s in fmt
  *
  * returns:
  *	allocated shell command line, or
  *	NULL ==> error
  */
 char *
-cmdprintf(char const *format, ...)
+cmdprintf(char const *fmt, ...)
 {
-    va_list ap;
+    va_list ap;			/* variable argument list */
     char *cmd = NULL;
 
     /*
      * firewall
      */
-    if (format == NULL) {
-	warn(__func__, "format is NULL");
+    if (fmt == NULL) {
+	warn(__func__, "fmt is NULL");
 	return NULL;
     }
 
     /*
      * stdarg variable argument list setup
      */
-    va_start(ap, format);
+    va_start(ap, fmt);
 
     /*
      * call vcmdprintf()
      */
-    cmd = vcmdprintf(format, ap);
+    cmd = vcmdprintf(fmt, ap);
 
     /*
      * stdarg variable argument list cleanup
@@ -612,15 +616,21 @@ cmdprintf(char const *format, ...)
 
 
 /*
- * vcmdprintf - malloc a safer shell command line for use with system() and popen()
+ * vcmdprintf - malloc a safer shell command line for use with system() and popen() in va_list form
+ *
+ * This is a va_list form of cmdprintf().
+ *
+ * For each % in the format, the next argument from the list argument list (which
+ * is assumed to be of type char *) is processed, escaping special characters that
+ * the shell might threaten as command characters.  If no special characters are
+ * found, no escaping is performed.
+ *
+ * NOTE: In the worst case, the length of the command line will double.
  *
  * given:
  *
- *      format - The format string, any % on this string inserts the next string from the list,
- *               escaping special characters that the shell might threaten as command characters.
- *               In the worst case, the algorithm will make twice as many characters.
- *               Will not use escaping if it isn't needed.
- *      ap     - va_list of arguments for format
+ *      fmt	shell command where % character are replaced with shell escaped args
+ *      ap	variable argument list
  *
  * returns:
  *	allocated shell command line, or
@@ -633,9 +643,9 @@ cmdprintf(char const *format, ...)
  *	 and this function code was written by him.  Thank you Ilya Kurdyukov!
  */
 char *
-vcmdprintf(char const *format, va_list ap)
+vcmdprintf(char const *fmt, va_list ap)
 {
-    va_list ap2;		/* copy of original va_list for second pass */
+    va_list ap2;		/* copy of original va_list for 1st and 2nd pass */
     size_t size = 0;
     char const *next;
     char const *p;
@@ -649,23 +659,23 @@ vcmdprintf(char const *format, va_list ap)
     /*
      * firewall
      */
-    if (format == NULL) {
-	warn(__func__, "format is NULL");
+    if (fmt == NULL) {
+	warn(__func__, "fmt is NULL");
 	return NULL;
     }
 
     /*
-     * copy va_list for second pass
+     * copy va_list for 1st pass
      */
     va_copy(ap2, ap);
 
     /*
      * pass 0: determine how much storage we will need for the command line
      */
-    f = format;
+    f = fmt;
     while ((c = *f++)) {
 	if (c == '%') {
-	    p = next = va_arg(ap, char const *);
+	    p = next = va_arg(ap2, char const *);
 	    nquot = 0;
 	    while ((c = *p++)) {
 		if (c == '\'') {
@@ -681,12 +691,21 @@ vcmdprintf(char const *format, va_list ap)
 		}
 	    }
 	    /* -2 for excluding counted NUL and */
-	    /* counted % sign in the format string */
+	    /* counted % sign in the fmt string */
 	    size += (size_t)(nquot >= 2 ? 2 : nquot) + (size_t)(p - next) - 2;
 	}
     }
-    va_end(ap);		/* stdarg variable argument list cleanup */
-    size += (size_t)(f - format);
+    size += (size_t)(f - fmt);
+
+    /*
+     * stdarg variable argument list cleanup
+     */
+    va_end(ap2);
+
+    /*
+     * copy va_list for 2nd pass
+     */
+    va_copy(ap2, ap);
 
     /*
      * calloc storage or return NULL
@@ -702,7 +721,7 @@ vcmdprintf(char const *format, va_list ap)
      * pass 1: form the safer command line
      */
     d = cmd;
-    f = format;
+    f = fmt;
     while ((c = *f++)) {
 	if (c != '%') {
 	    *d++ = c;
@@ -755,8 +774,12 @@ vcmdprintf(char const *format, va_list ap)
 
 	}
     }
-    va_end(ap2);	/* stdarg variable argument list cleanup */
     *d = '\0';	/* NUL terminate command line */
+
+    /*
+     * stdarg variable argument list cleanup
+     */
+    va_end(ap2);
 
     /*
      * verify amount of data written
@@ -810,7 +833,7 @@ vcmdprintf(char const *format, va_list ap)
 int
 shell_cmd(char const *name, bool abort_on_error, char const *format, ...)
 {
-    va_list ap;			/* stdarg block */
+    va_list ap;			/* variable argument list */
     char *cmd = NULL;		/* cp prog_c entry_dir/prog.c */
     int exit_code;		/* exit code from system(cmd) */
     int ret;			/* libc function return */
@@ -995,7 +1018,7 @@ shell_cmd(char const *name, bool abort_on_error, char const *format, ...)
 FILE *
 pipe_open(char const *name, bool abort_on_error, char const *format, ...)
 {
-    va_list ap;			/* stdarg block */
+    va_list ap;			/* variable argument list */
     char *cmd = NULL;		/* cp prog_c entry_dir/prog.c */
     FILE *stream = NULL;	/* open pipe to shell command or NULL */
     int ret;			/* libc function return */
@@ -1164,7 +1187,7 @@ pipe_open(char const *name, bool abort_on_error, char const *format, ...)
 void
 para(char const *line, ...)
 {
-    va_list ap;			/* stdarg block */
+    va_list ap;			/* variable argument list */
     int ret;			/* libc function return value */
     int fd;			/* stdout as a file descriptor or -1 */
     int line_cnt;		/* number of lines in the paragraph */
@@ -1292,7 +1315,7 @@ para(char const *line, ...)
 void
 fpara(FILE * stream, char const *line, ...)
 {
-    va_list ap;			/* stdarg block */
+    va_list ap;			/* variable argument list */
     int ret;			/* libc function return value */
     int fd;			/* stream as a file descriptor or -1 */
     int line_cnt;		/* number of lines in the paragraph */
@@ -1415,7 +1438,7 @@ fpara(FILE * stream, char const *line, ...)
 void
 fpr(FILE *stream, char const *name, char const *fmt, ...)
 {
-    va_list ap;			/* stdarg block */
+    va_list ap;			/* variable argument list */
     int fret;			/* vfprintf function return value */
     int ret;			/* libc function return value */
 
@@ -1487,7 +1510,7 @@ fpr(FILE *stream, char const *name, char const *fmt, ...)
 void
 pr(char const *name, char const *fmt, ...)
 {
-    va_list ap;			/* stdarg block */
+    va_list ap;			/* variable argument list */
     int fret;			/* vfprintf function return value */
     int ret;			/* libc function return value */
 
