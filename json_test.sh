@@ -121,7 +121,7 @@ if [[ ! -f "${LOGFILE}" ]]; then
     exit 5
 fi
 if [[ ! -w "${LOGFILE}" ]]; then
-    echo "$0: ERROR: log file not writeable" 1>&2
+    echo "$0: ERROR: log file not writable" 1>&2
     exit 5
 fi
 
