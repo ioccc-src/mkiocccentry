@@ -35,7 +35,7 @@ export USAGE="usage: $0 [-h] [-v level] [-V] [-e] [-o] [-m make] [-M Makefile]
     -V              print version and exit 5
 
     -e		    exit in first make action error (def: exit only at end)
-    -o		    do NOT use backup files, fail if bison cannot be used (def: use)
+    -o		    do NOT use backup files, fail if bison or flex cannot be used (def: use)
     -m make	    make command (def: make)
     -M Makefile	    path to Makefile (def: ./Makefile)
 
@@ -96,7 +96,7 @@ fi
 # firewall
 #
 if [[ ! -e $MAKEFILE ]]; then
-    echo "$0: ERROR: Makefile file not found: $MAKEFILE" 1>&2
+    echo "$0: ERROR: Makefile not found: $MAKEFILE" 1>&2
     exit 3
 fi
 if [[ ! -f $MAKEFILE ]]; then
