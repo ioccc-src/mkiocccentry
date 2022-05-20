@@ -34,8 +34,8 @@
  */
 
 
-#if !defined(INCLUDE_JSON_H)
-#    define  INCLUDE_JSON_H
+#if !defined(INCLUDE_JSON_PARSE_H)
+#    define  INCLUDE_JSON_PARSE_H
 
 
 #include <time.h>
@@ -466,4 +466,4 @@ extern struct json *parse_json_array(char const *string, struct json *ast);
 extern struct json *parse_json_member(struct json *name, struct json *value, struct json *ast);
 
 
-#endif /* INCLUDE_JSON_H */
+#endif /* INCLUDE_JSON_PARSE_H */
