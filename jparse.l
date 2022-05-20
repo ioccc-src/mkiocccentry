@@ -260,8 +260,8 @@ JSON_COMMA		","
  * necessarily correctly); it does NOT build a parse tree!
  *
  * NOTE: The reason this is in the scanner and not the parser is because
- * YY_BUFFER_STATE is part of the scanner and not the parser. There might be a
- * better way to go about this but I'll know about this more later on. Like
+ * UGLY__BUFFER_STATE is part of the scanner and not the parser. There might be
+ * a better way to go about this but I'll know about this more later on. Like
  * everything else here this is subject to change!
  *
  * NOTE: This function only warns on error. The reason for this is because more
