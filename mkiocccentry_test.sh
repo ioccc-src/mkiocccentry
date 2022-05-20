@@ -2,6 +2,56 @@
 #
 # A simple mkiocccentry test, or an example of how to automate the process!
 
+# setup
+#
+export MKIOCCCENTRY_TEST_VERSION="0.1 2022-05-19"
+export USAGE="usage: $0 [-h] [-v level] [-V]
+
+    -h              print help and exit 5
+    -v level        flag ignored
+    -V              print version and exit 5
+
+Exit codes:
+    0    All is OK
+    1    -h and help string printed or -V and version string printed
+    2	 command line error
+    >=10 some make action exited non-zero
+
+mkiocccentry_test.sh version: $MKIOCCCENTRY_TEST_VERSION"
+export V_FLAG="0"
+export EXIT_CODE="0"
+
+# parse args
+#
+while getopts :hv:V flag; do
+    case "$flag" in
+    h) echo "$USAGE" 1>&2
+       exit 1
+       ;;
+    v) V_FLAG="$OPTARG";
+       ;;
+    V) echo "$MKIOCCCENTRY_TEST_VERSION"
+       exit 1
+       ;;
+    \?) echo "$0: ERROR: invalid option: -$OPTARG" 1>&2
+       exit 2
+       ;;
+    :) echo "$0: ERROR: option -$OPTARG requires an argument" 1>&2
+       exit 2
+       ;;
+   *)
+       ;;
+    esac
+done
+
+# check args
+#
+shift $(( OPTIND - 1 ));
+if [[ $# -ne 0 ]]; then
+    echo "$0: ERROR: expected 0 arguments, found $#" 1>&2
+    exit 2
+fi
+
 # working locations - adjust as needed
 #
 work_dir="test_work"
