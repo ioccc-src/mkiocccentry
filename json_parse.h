@@ -444,9 +444,11 @@ extern bool json_array_append_values(struct json *node, struct dyn_array *values
 /* print the type of json element in the struct json */
 extern char const *json_element_type_name(struct json *node);
 /* JSON parse tree functions */
-extern void json_free(struct json *node);
-extern void json_tree_free(struct json *node);
-extern void json_tree_walk(struct json *node, void (*callback)(struct json *));
+extern void json_free(struct json *node, ...);
+extern void vjson_free(struct json *node, va_list ap);
+extern void json_tree_free(struct json *node, int max_depth, ...);
+extern void json_tree_walk(struct json *node, int max_depth, void (*vcallback)(struct json *, va_list), ...);
+extern void vjson_tree_walk(struct json *node, int max_depth, int depth, va_list ap, void (*vcallback)(struct json *, va_list));
 
 /*
  * parser specific functions

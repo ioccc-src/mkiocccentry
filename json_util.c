@@ -1048,12 +1048,16 @@ json_element_type_name(struct json *node)
  *
  * given:
  *	node	pointer to a JSON parser tree node to free
+ *	...	extra args are ignored
  *
- * NOTE: This function will free the internals of a JSON parser tree node.
- *	 It is up to the caller to free the struct json if needed.
+ * While the ... variable arg are ignored, we need to declare
+ * then in order to be in vcallback form for use by json_tree_walk().
  *
- * NOTE: This function does NOT walk the JSON parse tree, so it will
- *	 ignore links form this node to other JSON parse tree nodes.
+ * This function will free the internals of a JSON parser tree node.
+ * It is up to the caller to free the struct json if needed.
+ *
+ * This function does NOT walk the JSON parse tree, so it will
+ *ignore links form this node to other JSON parse tree nodes.
  *
  * NOTE: If the pointer to allocated storage == NULL,
  *	 this function does nothing.
@@ -1063,14 +1067,21 @@ json_element_type_name(struct json *node)
  * NOTE: This function does nothing if the node type is invalid.
  */
 void
-json_free(struct json *node)
+json_free(struct json *node, ...)
 {
+    va_list ap;		/* variable argument list */
+
     /*
      * firewall - nothing to do for a NULL node
      */
     if (node == NULL) {
 	return;
     }
+
+    /*
+     * stdarg variable argument list setup
+     */
+    va_start(ap, node);
 
     /*
      * free internals based in node type
@@ -1212,6 +1223,43 @@ json_free(struct json *node)
      */
     node->type = JTYPE_UNSET;
     node->parent = NULL;
+
+    /*
+     * stdarg variable argument list cleanup
+     */
+    va_end(ap);
+    return;
+}
+
+
+/*
+ * vjson_free - free storage of a single JSON parse tree node in va_list form
+ *
+ * This is a variable argument list interface to json_free().
+ * See json_free() for a function that frees an entire parse tree.
+ *
+ * given:
+ *	node	pointer to a JSON parser tree node to free
+ *	ap	variable argument list
+ *
+ * NOTE: This function does nothing if node == NULL.
+ *
+ * NOTE: This function does nothing if the node type is invalid.
+ */
+void
+vjson_free(struct json *node, va_list ap)
+{
+    /*
+     * firewall - nothing to do for a NULL node
+     */
+    if (node == NULL) {
+	return;
+    }
+
+    /*
+     * call non-variable argument list function
+     */
+    json_free(node, ap);
     return;
 }
 
@@ -1223,7 +1271,9 @@ json_free(struct json *node)
  * the JSON parse tree and free all nodes under a given node.
  *
  * given:
- *	node	pointer to a JSON parser tree node to free
+ *	node	    pointer to a JSON parser tree node to free
+ *	max_depth   maximum tree depth to descend, or <0 ==> infinite depth
+ *			NOTE: Use JSON_INFINITE_DEPTH for infinite depth
  *
  * NOTE: This function will free the internals of a JSON parser tree node.
  *	 It is up to the caller to free the top level struct json if needed.
@@ -1236,8 +1286,10 @@ json_free(struct json *node)
  * NOTE: This function does nothing if the node type is invalid.
  */
 void
-json_tree_free(struct json *node)
+json_tree_free(struct json *node, int max_depth, ...)
 {
+    va_list ap;		/* variable argument list */
+
     /*
      * firewall - nothing to do for a NULL node
      */
@@ -1246,9 +1298,19 @@ json_tree_free(struct json *node)
     }
 
     /*
+     * stdarg variable argument list setup
+     */
+    va_start(ap, max_depth);
+
+    /*
      * free the JSON parse tree
      */
-    json_tree_walk(node, json_free);
+    vjson_tree_walk(node, max_depth, 0, ap, vjson_free);
+
+    /*
+     * stdarg variable argument list cleanup
+     */
+    va_end(ap);
     return;
 }
 
@@ -1266,20 +1328,101 @@ json_tree_free(struct json *node)
  *
  * given:
  *	node	    pointer to a JSON parse tree
- *	callback    function to operate on every node under the JSON parse tree
+ *	max_depth   maximum tree depth to descend, or <0 ==> infinite depth
+ *			NOTE: Use JSON_INFINITE_DEPTH for infinite depth
+ *	vcallback   function to operate JSON parse tree node in va_list form
+ *	...	    extra args for vcallback
+ *
+ * The vcallback() funcion must NOT call va_arg() nor call va_end() on the
+ * the va_list argument directly.  Instead they must call va_copy()
+ * and then use va_arg() and va_end() on the va_list copy.
+ *
+ * Although in C ALL functions are pointers which means one can call foo()
+ * as foo() or (*foo)() we use the latter format for the callback function
+ * to make it clearer that it is in fact a function that's passed in so
+ * that we can use this function to do more than one thing. This is also
+ * why we call it vcallback and not something else.
+ *
+ * If max_depth is >= 0 and the tree depth > max_depth, then this function return.
+ * In this case it will NOT operate on the node, or will be descend and further
+ * into the tree.
  *
  * NOTE: This function warns but does not do anything if an arg is NULL.
- *
- * NOTE: Although in C ALL functions are pointers which means one can call foo()
- *	 as foo() or (*foo)() we use the latter format for the callback function
- *	 to make it clearer that it is in fact a function that's passed in so
- *	 that we can use this function to do more than one thing. This is also
- *	 why we call it callback and not something else.
- *
- * XXX - make use of JSON_MAX_DEPTH and JSON_MAX_DEPTH - XXX
  */
 void
-json_tree_walk(struct json *node, void (*callback)(struct json *))
+json_tree_walk(struct json *node, int max_depth, void (*vcallback)(struct json *, va_list), ...)
+{
+    va_list ap;		/* variable argument list */
+
+    /*
+     * firewall
+     */
+    if (node == NULL) {
+	warn(__func__, "node is NULL");
+	return ;
+    }
+    if (vcallback == NULL) {
+	warn(__func__, "vcallback is NULL");
+	return ;
+    }
+
+    /*
+     * stdarg variable argument list setup
+     */
+    va_start(ap, vcallback);
+
+    /*
+     * walk the tree according to max_depth
+     */
+    vjson_tree_walk(node, max_depth, 0, ap, vcallback);
+
+    /*
+     * stdarg variable argument list cleanup
+     */
+    va_end(ap);
+    return;
+}
+
+
+/*
+ * vjson_tree_walk - walk a JSON parse tree calling a function on each node in va_list form
+ *
+ * This is the va_list form of json_tree_walk().
+ *
+ * Walk a JSON parse tree, Depth-first Post-order (LRN) order.  See:
+ *
+ *	https://en.wikipedia.org/wiki/Tree_traversal#Post-order,_LRN
+ *
+ * Example use - free an entire JSON parse tree
+ *
+ *	json_tree_walk(tree, json_free);
+ *
+ * given:
+ *	node	    pointer to a JSON parse tree
+ *	vcallback   function to operate JSON parse tree node in va_list form
+ *	max_depth   maximum tree depth to descend, or <0 ==> infinite depth
+ *			NOTE: Use JSON_INFINITE_DEPTH for infinite depth
+ *	depth	    current tree depth (0 ==> top of tree)
+ *	ap	    variable argument list
+ *
+ * The vcallback() funcion must NOT call va_arg() nor call va_end() on the
+ * the va_list argument directly.  Instead they must call va_copy()
+ * and then use va_arg() and va_end() on the va_list copy.
+ *
+ * Although in C ALL functions are pointers which means one can call foo()
+ * as foo() or (*foo)() we use the latter format for the callback function
+ * to make it clearer that it is in fact a function that's passed in so
+ * that we can use this function to do more than one thing. This is also
+ * why we call it callback and not something else.
+ *
+ * If max_depth is >= 0 and the tree depth > max_depth, then this function return.
+ * In this case it will NOT operate on the node, or will be descend and further
+ * into the tree.
+ *
+ * NOTE: This function warns but does not do anything if an arg is NULL.
+ */
+void
+vjson_tree_walk(struct json *node, int max_depth, int depth, va_list ap, void (*vcallback)(struct json *, va_list))
 {
     int i;
 
@@ -1290,9 +1433,17 @@ json_tree_walk(struct json *node, void (*callback)(struct json *))
 	warn(__func__, "node is NULL");
 	return ;
     }
-    if (callback == NULL) {
-	warn(__func__, "callback is NULL");
+    if (vcallback == NULL) {
+	warn(__func__, "vcallback is NULL");
 	return ;
+    }
+
+    /*
+     * do nothing if we are too deep
+     */
+    if (max_depth >= 0 && depth > max_depth) {
+	warn(__func__, "tree walk descent stopped, tree depth: %d > max_depth: %d", depth, max_depth);
+	return;
     }
 
     /*
@@ -1307,7 +1458,7 @@ json_tree_walk(struct json *node, void (*callback)(struct json *))
     case JTYPE_NULL:	/* JSON element is a null - see struct json_null */
 
 	/* perform function operation on this terminal parse tree node */
-	(*callback)(node);
+	(*vcallback)(node, ap);
 	break;
 
     case JTYPE_MEMBER:	/* JSON element is a member */
@@ -1315,14 +1466,14 @@ json_tree_walk(struct json *node, void (*callback)(struct json *))
 	    struct json_member *item = &(node->element.member);
 
 	    /* perform function operation on JSON member name (left branch) node */
-	    json_tree_walk(item->name, callback);
+	    vjson_tree_walk(item->name, max_depth, depth+1, ap, vcallback);
 
 	    /* perform function operation on JSON member value (right branch) node */
-	    json_tree_walk(item->value, callback);
+	    vjson_tree_walk(item->value, max_depth, depth+1, ap, vcallback);
 	}
 
 	/* finally perform function operation on the parent node */
-	(*callback)(node);
+	(*vcallback)(node, ap);
 	break;
 
     case JTYPE_OBJECT:	/* JSON element is a { members } */
@@ -1332,13 +1483,13 @@ json_tree_walk(struct json *node, void (*callback)(struct json *))
 	    /* perform function operation on each object member in order */
 	    if (item->set != NULL) {
 		for (i=0; i < item->len; ++i) {
-		    json_tree_walk(item->set[i], callback);
+		    vjson_tree_walk(item->set[i], max_depth, depth+1, ap, vcallback);
 		}
 	    }
 	}
 
 	/* finally perform function operation on the parent node */
-	(*callback)(node);
+	(*vcallback)(node, ap);
 	break;
 
     case JTYPE_ARRAY:	/* JSON element is a [ elements ] */
@@ -1348,13 +1499,13 @@ json_tree_walk(struct json *node, void (*callback)(struct json *))
 	    /* perform function operation on each object member in order */
 	    if (item->set != NULL) {
 		for (i=0; i < item->len; ++i) {
-		    json_tree_walk(item->set[i], callback);
+		    vjson_tree_walk(item->set[i], max_depth, depth+1, ap, vcallback);
 		}
 	    }
 	}
 
 	/* finally perform function operation on the parent node */
-	(*callback)(node);
+	(*vcallback)(node, ap);
 	break;
 
     default:
@@ -1364,6 +1515,7 @@ json_tree_walk(struct json *node, void (*callback)(struct json *))
     }
     return;
 }
+
 
 /*
  * json_process_decimal - process a JSON integer string
