@@ -110,7 +110,7 @@ jwarn(int code, char const *program, char const *name, char const *filename, cha
     saved_errno = errno;
 
     /*
-     * start the var arg setup and fetch our first arg
+     * stdarg variable argument list setup
      */
     va_start(ap, fmt);
 
@@ -184,7 +184,7 @@ jwarn(int code, char const *program, char const *name, char const *filename, cha
     }
 
     /*
-     * clean up stdarg stuff
+     * stdarg variable argument list cleanup
      */
     va_end(ap);
 
@@ -324,7 +324,7 @@ jwarnp(int code, char const *program, char const *name, char const *filename, ch
     }
 
     /*
-     * clean up stdarg stuff
+     * stdarg variable argument list cleanup
      */
     va_end(ap);
 
@@ -442,7 +442,7 @@ jerr(int exitcode, char const *program, char const *name, char const *filename, 
     }
 
     /*
-     * clean up stdarg stuff
+     * stdarg variable argument list cleanup
      */
     va_end(ap);
 
@@ -573,7 +573,7 @@ jerrp(int exitcode, char const *program, char const *name, char const *filename,
     }
 
     /*
-     * clean up stdarg stuff
+     * stdarg variable argument list cleanup
      */
     va_end(ap);
 
@@ -861,7 +861,7 @@ json_dbg(int level, char const *name, char const *fmt, ...)
     saved_errno = errno;
 
     /*
-     * start the var arg setup and fetch our first arg
+     * stdarg variable argument list setup
      */
     va_start(ap, fmt);
 
@@ -883,7 +883,7 @@ json_dbg(int level, char const *name, char const *fmt, ...)
     json_vdbg(level, name, fmt, ap);
 
     /*
-     * clean up stdarg stuff
+     * stdarg variable argument list cleanup
      */
     va_end(ap);
 

@@ -95,7 +95,7 @@ msg(char const *fmt, ...)
     saved_errno = errno;
 
     /*
-     * start the var arg setup and fetch our first arg
+     * stdarg variable argument list setup
      */
     va_start(ap, fmt);
 
@@ -113,7 +113,7 @@ msg(char const *fmt, ...)
     vmsg(fmt, ap);
 
     /*
-     * clean up stdarg stuff
+     * stdarg variable argument list cleanup
      */
     va_end(ap);
 
@@ -202,7 +202,7 @@ dbg(int level, char const *fmt, ...)
     saved_errno = errno;
 
     /*
-     * start the var arg setup and fetch our first arg
+     * stdarg variable argument list setup
      */
     va_start(ap, fmt);
 
@@ -220,7 +220,7 @@ dbg(int level, char const *fmt, ...)
     vdbg(level, fmt, ap);
 
     /*
-     * clean up stdarg stuff
+     * stdarg variable argument list cleanup
      */
     va_end(ap);
 
@@ -341,7 +341,7 @@ warn(char const *name, char const *fmt, ...)
     saved_errno = errno;
 
     /*
-     * start the var arg setup and fetch our first arg
+     * stdarg variable argument list setup
      */
     va_start(ap, fmt);
 
@@ -362,7 +362,7 @@ warn(char const *name, char const *fmt, ...)
     vwarn(name, fmt, ap);
 
     /*
-     * clean up stdarg stuff
+     * stdarg variable argument list cleanup
      */
     va_end(ap);
 
@@ -504,7 +504,7 @@ warnp(char const *name, char const *fmt, ...)
     saved_errno = errno;
 
     /*
-     * start the var arg setup and fetch our first arg
+     * stdarg variable argument list setup
      */
     va_start(ap, fmt);
 
@@ -525,7 +525,7 @@ warnp(char const *name, char const *fmt, ...)
     vwarnp(name, fmt, ap);
 
     /*
-     * clean up stdarg stuff
+     * stdarg variable argument list cleanup
      */
     va_end(ap);
 
@@ -655,7 +655,7 @@ err(int exitcode, char const *name, char const *fmt, ...)
     va_list ap;		/* argument pointer */
 
     /*
-     * start the var arg setup and fetch our first arg
+     * stdarg variable argument list setup
      */
     va_start(ap, fmt);
 
@@ -682,7 +682,7 @@ err(int exitcode, char const *name, char const *fmt, ...)
     verr(exitcode, name, fmt, ap);
 
     /*
-     * clean up stdarg stuff
+     * stdarg variable argument list cleanup
      */
     va_end(ap);
 
@@ -799,7 +799,7 @@ errp(int exitcode, char const *name, char const *fmt, ...)
     va_list ap;		/* argument pointer */
 
     /*
-     * start the var arg setup and fetch our first arg
+     * stdarg variable argument list setup
      */
     va_start(ap, fmt);
 
@@ -824,7 +824,7 @@ errp(int exitcode, char const *name, char const *fmt, ...)
     verrp(exitcode, name, fmt, ap);
 
     /*
-     * clean up stdarg stuff
+     * stdarg variable argument list cleanup
      */
     va_end(ap);
 
@@ -950,7 +950,7 @@ werr(int error_code, char const *name, char const *fmt, ...)
     va_list ap;		/* argument pointer */
 
     /*
-     * start the var arg setup and fetch our first arg
+     * stdarg variable argument list setup
      */
     va_start(ap, fmt);
 
@@ -977,7 +977,7 @@ werr(int error_code, char const *name, char const *fmt, ...)
     vwerr(error_code, name, fmt, ap);
 
     /*
-     * clean up stdarg stuff
+     * stdarg variable argument list cleanup
      */
     va_end(ap);
 }
@@ -1079,7 +1079,7 @@ werrp(int error_code, char const *name, char const *fmt, ...)
     va_list ap;		/* argument pointer */
 
     /*
-     * start the var arg setup and fetch our first arg
+     * stdarg variable argument list setup
      */
     va_start(ap, fmt);
 
@@ -1104,7 +1104,7 @@ werrp(int error_code, char const *name, char const *fmt, ...)
     vwerrp(error_code, name, fmt, ap);
 
     /*
-     * clean up stdarg stuff
+     * stdarg variable argument list cleanup
      */
     va_end(ap);
 }
@@ -1229,7 +1229,7 @@ fprintf_usage(int exitcode, FILE *stream, char const *fmt, ...)
     saved_errno = errno;
 
     /*
-     * start the var arg setup and fetch our first arg
+     * stdarg variable argument list setup
      */
     va_start(ap, fmt);
 
@@ -1239,7 +1239,7 @@ fprintf_usage(int exitcode, FILE *stream, char const *fmt, ...)
     vfprintf_usage(exitcode, stream, fmt, ap);
 
     /*
-     * clean up stdarg stuff
+     * stdarg variable argument list cleanup
      */
     va_end(ap);
 
@@ -1351,7 +1351,7 @@ warn_or_err(int exitcode, const char *name, bool test, const char *fmt, ...)
     va_list ap;		/* argument pointer */
 
     /*
-     * start the var arg setup and fetch our first arg
+     * stdarg variable argument list setup
      */
     va_start(ap, fmt);
 
@@ -1378,7 +1378,7 @@ warn_or_err(int exitcode, const char *name, bool test, const char *fmt, ...)
     vwarn_or_err(exitcode, name, test, fmt, ap);
 
     /*
-     * clean up stdarg stuff
+     * stdarg variable argument list cleanup
      */
     va_end(ap);
 
@@ -1476,7 +1476,7 @@ warnp_or_errp(int exitcode, const char *name, bool test, const char *fmt, ...)
     va_list ap;		/* argument pointer */
 
     /*
-     * start the var arg setup and fetch our first arg
+     * stdarg variable argument list setup
      */
     va_start(ap, fmt);
 
@@ -1503,7 +1503,7 @@ warnp_or_errp(int exitcode, const char *name, bool test, const char *fmt, ...)
     vwarnp_or_errp(exitcode, name, test, fmt, ap);
 
     /*
-     * clean up stdarg stuff
+     * stdarg variable argument list cleanup
      */
     va_end(ap);
 

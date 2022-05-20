@@ -590,7 +590,7 @@ cmdprintf(char const *format, ...)
     }
 
     /*
-     * stdarg setup
+     * stdarg variable argument list setup
      */
     va_start(ap, format);
 
@@ -600,7 +600,7 @@ cmdprintf(char const *format, ...)
     cmd = vcmdprintf(format, ap);
 
     /*
-     * stdarg cleanup
+     * stdarg variable argument list cleanup
      */
     va_end(ap);
 
@@ -685,7 +685,7 @@ vcmdprintf(char const *format, va_list ap)
 	    size += (size_t)(nquot >= 2 ? 2 : nquot) + (size_t)(p - next) - 2;
 	}
     }
-    va_end(ap);
+    va_end(ap);		/* stdarg variable argument list cleanup */
     size += (size_t)(f - format);
 
     /*
@@ -755,7 +755,7 @@ vcmdprintf(char const *format, va_list ap)
 
 	}
     }
-    va_end(ap2);
+    va_end(ap2);	/* stdarg variable argument list cleanup */
     *d = '\0';	/* NUL terminate command line */
 
     /*
@@ -840,7 +840,7 @@ shell_cmd(char const *name, bool abort_on_error, char const *format, ...)
     }
 
     /*
-     * stdarg setup
+     * stdarg variable argument list setup
      */
     va_start(ap, format);
 
@@ -857,7 +857,7 @@ shell_cmd(char const *name, bool abort_on_error, char const *format, ...)
 	} else {
 	    dbg(DBG_MED, "called from %s: calloc failed in vcmdprintf(): %s, returning: %d < 0",
 			 name, strerror(errno), CALLOC_FAILED_EXIT);
-	    va_end(ap);
+	    va_end(ap);		/* stdarg variable argument list cleanup */
 	    return CALLOC_FAILED_EXIT;
 	}
     }
@@ -880,7 +880,7 @@ shell_cmd(char const *name, bool abort_on_error, char const *format, ...)
 	    not_reached();
 	} else {
 	    dbg(DBG_MED, "called from %s: fflush(stdout) failed: %s", name, strerror(errno));
-	    va_end(ap);
+	    va_end(ap);		/* stdarg variable argument list cleanup */
 	    return FLUSH_FAILED_EXIT;
 	}
     }
@@ -903,7 +903,7 @@ shell_cmd(char const *name, bool abort_on_error, char const *format, ...)
 	    not_reached();
 	} else {
 	    dbg(DBG_MED, "called from %s: fflush(stderr) failed", name);
-	    va_end(ap);
+	    va_end(ap);		/* stdarg variable argument list cleanup */
 	    return FLUSH_FAILED_EXIT;
 	}
     }
@@ -926,7 +926,7 @@ shell_cmd(char const *name, bool abort_on_error, char const *format, ...)
 	    not_reached();
 	} else {
 	    dbg(DBG_MED, "called from %s: error calling system(%s)", name, cmd);
-	    va_end(ap);
+	    va_end(ap);		/* stdarg variable argument list cleanup */
 	    return SYSTEM_FAILED_EXIT;
 	}
 
@@ -945,7 +945,7 @@ shell_cmd(char const *name, bool abort_on_error, char const *format, ...)
 	    not_reached();
 	} else {
 	    dbg(DBG_MED, "called from %s: execution of the shell failed for system(%s)", name, cmd);
-	    va_end(ap);
+	    va_end(ap);		/* stdarg variable argument list cleanup */
 	    return SYSTEM_FAILED_EXIT;
 	}
     }
@@ -959,7 +959,7 @@ shell_cmd(char const *name, bool abort_on_error, char const *format, ...)
     }
 
     /*
-     * stdarg cleanup
+     * stdarg variable argument list cleanup
      */
     va_end(ap);
 
@@ -1025,7 +1025,7 @@ pipe_open(char const *name, bool abort_on_error, char const *format, ...)
     }
 
     /*
-     * stdarg setup
+     * stdarg variable argument list setup
      */
     va_start(ap, format);
 
@@ -1042,7 +1042,7 @@ pipe_open(char const *name, bool abort_on_error, char const *format, ...)
 	} else {
 	    dbg(DBG_MED, "called from %s: calloc failed in vcmdprintf(): %s returning: %d < 0",
 			 name, strerror(errno), CALLOC_FAILED_EXIT);
-	    va_end(ap);
+	    va_end(ap);		/* stdarg variable argument list cleanup */
 	    return NULL;
 	}
     }
@@ -1065,7 +1065,7 @@ pipe_open(char const *name, bool abort_on_error, char const *format, ...)
 	    not_reached();
 	} else {
 	    dbg(DBG_MED, "called from %s: fflush(stdout) failed: %s", name, strerror(errno));
-	    va_end(ap);
+	    va_end(ap);		/* stdarg variable argument list cleanup */
 	    return NULL;
 	}
     }
@@ -1088,7 +1088,7 @@ pipe_open(char const *name, bool abort_on_error, char const *format, ...)
 	    not_reached();
 	} else {
 	    dbg(DBG_MED, "called from %s: fflush(stderr) failed: %s", name, strerror(errno));
-	    va_end(ap);
+	    va_end(ap);		/* stdarg variable argument list cleanup */
 	    return NULL;
 	}
     }
@@ -1111,7 +1111,7 @@ pipe_open(char const *name, bool abort_on_error, char const *format, ...)
 	    not_reached();
 	} else {
 	    dbg(DBG_MED, "called from %s: error calling popen(%s, \"r\"): %s", name, cmd, strerror(errno));
-	    va_end(ap);
+	    va_end(ap);		/* stdarg variable argument list cleanup */
 	    return NULL;
 	}
     }
@@ -1134,7 +1134,7 @@ pipe_open(char const *name, bool abort_on_error, char const *format, ...)
     }
 
     /*
-     * stdarg cleanup
+     * stdarg variable argument list cleanup
      */
     va_end(ap);
 
@@ -1170,7 +1170,7 @@ para(char const *line, ...)
     int line_cnt;		/* number of lines in the paragraph */
 
     /*
-     * stdarg setup
+     * stdarg variable argument list setup
      */
     va_start(ap, line);
 
@@ -1245,7 +1245,7 @@ para(char const *line, ...)
     }
 
     /*
-     * stdarg cleanup
+     * stdarg variable argument list cleanup
      */
     va_end(ap);
 
@@ -1298,7 +1298,7 @@ fpara(FILE * stream, char const *line, ...)
     int line_cnt;		/* number of lines in the paragraph */
 
     /*
-     * stdarg setup
+     * stdarg variable argument list setup
      */
     va_start(ap, line);
 
@@ -1374,7 +1374,7 @@ fpara(FILE * stream, char const *line, ...)
     }
 
     /*
-     * stdarg cleanup
+     * stdarg variable argument list cleanup
      */
     va_end(ap);
 
@@ -1420,7 +1420,7 @@ fpr(FILE *stream, char const *name, char const *fmt, ...)
     int ret;			/* libc function return value */
 
     /*
-     * stdarg setup
+     * stdarg variable argument list setup
      */
     va_start(ap, fmt);
 
@@ -1450,7 +1450,7 @@ fpr(FILE *stream, char const *name, char const *fmt, ...)
     }
 
     /*
-     * stdarg cleanup
+     * stdarg variable argument list cleanup
      */
     va_end(ap);
 
@@ -1492,7 +1492,7 @@ pr(char const *name, char const *fmt, ...)
     int ret;			/* libc function return value */
 
     /*
-     * stdarg setup
+     * stdarg variable argument list setup
      */
     va_start(ap, fmt);
 
@@ -1518,7 +1518,7 @@ pr(char const *name, char const *fmt, ...)
     }
 
     /*
-     * stdarg cleanup
+     * stdarg variable argument list cleanup
      */
     va_end(ap);
 
