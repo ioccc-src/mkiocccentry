@@ -2711,8 +2711,8 @@ void yyfree (void * ptr )
  * necessarily correctly); it does NOT build a parse tree!
  *
  * NOTE: The reason this is in the scanner and not the parser is because
- * YY_BUFFER_STATE is part of the scanner and not the parser. There might be a
- * better way to go about this but I'll know about this more later on. Like
+ * UGLY__BUFFER_STATE is part of the scanner and not the parser. There might be
+ * a better way to go about this but I'll know about this more later on. Like
  * everything else here this is subject to change!
  *
  * NOTE: This function only warns on error. The reason for this is because more
@@ -2797,7 +2797,7 @@ parse_json(char const *ptr, size_t len, bool *is_valid, FILE *dbg_stream)
     /*
      * parse the blob
      *
-     * XXX - The ugly_parse() (which is ugly_parse()) returns an int.
+     * XXX - The ugly_parse() (which is yyparse()) returns an int.
      *	     This function should return
      */
     ugly_parse();
