@@ -2691,7 +2691,8 @@ void yyfree (void * ptr )
 
 /* Section 3: Code that's copied to the generated scanner */
 
-/* json_parse
+/*
+ * parse_json - parse a JSON document of a given length
  *
  * Given a pointer to char and a length, use the parser to determine if the json
  * is valid or not.
@@ -2707,7 +2708,7 @@ void yyfree (void * ptr )
  * XXX - should this function return on error ? - XXX
  */
 struct json *
-json_parse(char const *ptr, size_t len, bool *is_valid)
+parse_json(char const *ptr, size_t len, bool *is_valid)
 {
     struct json *json = NULL;
 
@@ -2730,7 +2731,9 @@ json_parse(char const *ptr, size_t len, bool *is_valid)
     return json;
 }
 
-/* parse_json_block	    - parse string as a JSON block
+
+/*
+ * parse_json_block	    - parse string as a JSON block
  *
  * given:
  *
@@ -2788,7 +2791,8 @@ parse_json_block(char const *string, size_t len)
 }
 
 
-/* parse_json_file	    - parses file file
+/*
+ * parse_json_file	    - parses file file
  *
  * given:
  *

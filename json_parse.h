@@ -448,4 +448,31 @@ extern void json_free(struct json *node);
 extern void json_tree_free(struct json *node);
 extern void json_tree_walk(struct json *node, void (*callback)(struct json *));
 
+/*
+ * parser specific functions
+ *
+ * XXX - these are all incomplete and subject to change - XXX
+ */
+extern void ugly_error(char const *format, ...);
+extern void parse_json_file(char const *filename); /* parse a file as JSON */
+extern void parse_json_block(char const *string, size_t len);  /* parse a string as a JSON block */
+
+/*
+ * parse_json functions assume a specific type of data based on the token
+ * returned to the parser (from the lexer) and based on the type they use the
+ * appropriate function to convert and then return a pointer to it (possibly
+ * first linking it into the tree).
+ *
+ * XXX - these are subject to change and some are incomplete as well - XXX
+ */
+extern struct json *parse_json_string(char const *string, size_t len);
+extern struct json *parse_json_number(char const *string);
+extern struct json *parse_json_bool(char const *string);
+extern struct json *parse_json_null(char const *string);
+extern struct json *parse_json_array(char const *string, struct json *ast);
+extern struct json *parse_json_member(struct json *name, struct json *value, struct json *ast);
+/* parse_json() uses the above functions to parse a json blob */
+extern struct json *parse_json(char const *ptr, size_t len, bool *is_valid);
+
+
 #endif /* INCLUDE_JSON_H */

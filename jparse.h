@@ -113,34 +113,13 @@ extern struct json tree;		/* the parse tree */
 extern int ugly_length;			/* for regex length: needed in some cases in parser (where ugly_leng does not exist) */
 
 /*
+ * lexer specific
+ */
+extern int ugly_lex(void);
+
+/*
  * function prototypes
  */
 static void usage(int exitcode, char const *name, char const *str) __attribute__((noreturn));
-/* lexer specific */
-int ugly_lex(void);
-/*
- * parser specific functions
- *
- * XXX - these are all incomplete and subject to change - XXX
- */
-void ugly_error(char const *format, ...);
-void parse_json_file(char const *filename); /* parse a file as JSON */
-void parse_json_block(char const *string, size_t len);  /* parse a string as a JSON block */
-/*
- * parse_json functions assume a specific type of data based on the token
- * returned to the parser (from the lexer) and based on the type they use the
- * appropriate function to convert and then return a pointer to it (possibly
- * first linking it into the tree).
- *
- * XXX - these are subject to change and some are incomplete as well - XXX
- */
-struct json *parse_json_string(char const *string, size_t len);
-struct json *parse_json_number(char const *string);
-struct json *parse_json_bool(char const *string);
-struct json *parse_json_null(char const *string);
-struct json *parse_json_array(char const *string, struct json *ast);
-struct json *parse_json_member(struct json *name, struct json *value, struct json *ast);
-/* json_parse() uses the above functions to parse a json blob */
-struct json *json_parse(char const *ptr, size_t len, bool *is_valid);
 
 #endif /* INCLUDE_JPARSE_H */
