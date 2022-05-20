@@ -2797,7 +2797,7 @@ parse_json(char const *ptr, size_t len, bool *is_valid, FILE *dbg_stream)
     /*
      * parse the blob
      *
-     * XXX - The ugly_parse() (which is ugly_parse()) returns an int.
+     * XXX - The ugly_parse() (which is yyparse()) returns an int.
      *	     This function should return
      */
     ugly_parse();
