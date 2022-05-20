@@ -126,7 +126,7 @@ msg(char const *fmt, ...)
 
 
 /*
- * vmsg - print a generic message
+ * vmsg - print a generic message in va_list form
  *
  * given:
  *	fmt	format of the warning
@@ -233,7 +233,7 @@ dbg(int level, char const *fmt, ...)
 
 
 /*
- * vdbg - print debug message if we are verbose enough
+ * vdbg - print debug message if we are verbose enough in va_list form
  *
  * given:
  *	level	print message if >= verbosity level
@@ -375,7 +375,7 @@ warn(char const *name, char const *fmt, ...)
 
 
 /*
- * vwarn - issue a warning message using a fmt / va_list pair
+ * vwarn - issue a warning message using a fmt / va_list pair in va_list form
  *
  * given:
  *	name	name of function issuing the warning
@@ -538,7 +538,7 @@ warnp(char const *name, char const *fmt, ...)
 
 
 /*
- * vwarnp - issue a warning message with errno information using a fmt / va_list pair
+ * vwarnp - issue a warning message with errno information in va_list form
  *
  * given:
  *	name	name of function issuing the warning
@@ -695,7 +695,7 @@ err(int exitcode, char const *name, char const *fmt, ...)
 
 
 /*
- * verr - issue a fatal error message and exit
+ * verr - issue a fatal error message and exit in va_list form
  *
  * given:
  *	exitcode	value to exit with
@@ -837,7 +837,7 @@ errp(int exitcode, char const *name, char const *fmt, ...)
 
 
 /*
- * verrp - issue a fatal error message with errno information and exit
+ * verrp - issue a fatal error message with errno information and exit in va_list form
  *
  * given:
  *	exitcode	value to exit with
@@ -984,7 +984,7 @@ werr(int error_code, char const *name, char const *fmt, ...)
 
 
 /*
- * vwerr - issue an error message as a warning
+ * vwerr - issue an error message as a warning in va_list form
  *
  * given:
  *	error_code	error code
@@ -1111,7 +1111,7 @@ werrp(int error_code, char const *name, char const *fmt, ...)
 
 
 /*
- * vwerrp - issue an error message with errno information
+ * vwerrp - issue an error message with errno information in va_list form
  *
  * given:
  *	error_code	error code
@@ -1260,7 +1260,7 @@ fprintf_usage(int exitcode, FILE *stream, char const *fmt, ...)
 
 
 /*
- * vfprintf_usage - print command line usage and perhaps exit
+ * vfprintf_usage - print command line usage and perhaps exit in va_list form
  *
  * given:
  *	exitcode	- >= 0, exit with this code
@@ -1390,7 +1390,7 @@ warn_or_err(int exitcode, const char *name, bool test, const char *fmt, ...)
 
 
 /*
- * vwarn_or_err - issue a warning or an error depending on test
+ * vwarn_or_err - issue a warning or an error depending on test in va_list form
  *
  * given:
  *	exitcode	value to exit with
@@ -1515,7 +1515,7 @@ warnp_or_errp(int exitcode, const char *name, bool test, const char *fmt, ...)
 
 
 /*
- * warnp_or_errp - issue a warning or an error depending on test
+ * vwarnp_or_errp - issue a warning or an error depending on test in va_list form
  *
  * given:
  *	exitcode	value to exit with
