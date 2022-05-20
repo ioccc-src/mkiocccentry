@@ -220,7 +220,7 @@ extern bool posix_plus_safe(char const *str, bool lower_only, bool slash_ok, boo
 extern void posix_safe_chk(char const *str, size_t len, bool *slash, bool *posix_safe,
 			   bool *first_alphanum, bool *upper);
 extern void clearerr_or_fclose(char const *filename, FILE *file);
-extern void print_newline(bool output_newline);
+extern void fprint_newline(FILE *stream, bool output_newline);
 extern bool fprint_str(FILE *stream, char const *str, ssize_t len);
 extern bool print_str(char const *str, ssize_t len);
 

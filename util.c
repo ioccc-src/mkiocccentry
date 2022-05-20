@@ -3086,10 +3086,11 @@ clearerr_or_fclose(char const *filename, FILE *file)
 
 
 /*
- * print_newline	- prints a newline to stdout if output_newline == true
+ * fprint_newline	- prints a newline to a stream if output_newline == true
  *
  * given:
  *
+ *	stream		- open file stream to write newline on, if allowed
  *	output_newline	- true ==> write a newline of output
  *
  * This function is used when we want to print a newline after some input. This
@@ -3102,15 +3103,26 @@ clearerr_or_fclose(char const *filename, FILE *file)
  * This function does not return on error.
  */
 void
-print_newline(bool output_newline)
+fprint_newline(FILE *stream, bool output_newline)
 {
     int ret;
 
+    /*
+     * firewall
+     */
+    if (stream == NULL) {
+	err(182, __func__, "stream is NULL");
+	not_reached();
+    }
+
+    /*
+     * output if allowed
+     */
     if (output_newline) {
 	errno = 0;		/* pre-clear errno for errp() */
 	ret = putchar('\n');
 	if (ret != '\n') {
-	    errp(182, __func__, "error while writing newline");
+	    errp(183, __func__, "error while writing newline");
 	    not_reached();
 	}
     }
@@ -3163,7 +3175,7 @@ fprint_str(FILE *stream, char const *str, ssize_t len)
      * firewall
      */
     if (stream == NULL) {
-	err(183, __func__, "passed NULL stream");
+	err(184, __func__, "passed NULL stream");
 	not_reached();
     } else if (str == NULL) {
 	warn(__func__, "passed NULL string");

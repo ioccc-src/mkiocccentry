@@ -126,9 +126,8 @@ static void usage(int exitcode, char const *name, char const *str) __attribute__
 /*
  * function prototypes for jparse.l
  */
-extern struct json *parse_json(char const *ptr, size_t len, bool *is_valid);
-extern void parse_json_block(char const *string, size_t len);
-extern void parse_json_file(char const *filename);
+extern struct json *parse_json(char const *ptr, size_t len, bool *is_valid, FILE *dbg_stream);
+extern struct json *parse_json_file(char const *filename, bool *is_valid, FILE *dbg_stream);
 
 
 #endif /* INCLUDE_JPARSE_H */

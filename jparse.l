@@ -250,44 +250,11 @@ JSON_COMMA		","
  *
  *	ptr	    - pointer to start of json blob
  *	len	    - length of the json blob
- *	is_valid    - if != NULL set to true or false depending on json validity
+ *	is_valid    - != NULL ==> set to true or false depending on json validity
+ *	dbg_stream  - != NULL ==> write debugging info to the open steam dbg_stream
  *
- * Returns a pointer to the parsed json tree.
- *
- * XXX - should this function return on error ? - XXX
- */
-struct json *
-parse_json(char const *ptr, size_t len, bool *is_valid)
-{
-    struct json *json = NULL;
-
-    /*
-     * firewall
-     */
-    if (ptr == NULL) {
-	err(35, __func__, "pointer to JSON blob ptr NULL");
-	not_reached();
-    }
-    else if (len <= 0) {
-	err(36, __func__, "len <= 0");
-	not_reached();
-    }
-
-    if (is_valid != NULL) {
-	/* XXX - what final checks should determine if it's valid ? - XXX */
-    }
-
-    return json;
-}
-
-
-/*
- * parse_json_block	    - parse string as a JSON block
- *
- * given:
- *
- *	string	    - the string to parse as JSON
- *	len	    - the length to scan
+ * return:
+ *	pointer to a JSON parse tree
  *
  * NOTE: Until the JSON parser is finished this only parses the string (and not
  * necessarily correctly); it does NOT build a parse tree!
@@ -302,41 +269,115 @@ parse_json(char const *ptr, size_t len, bool *is_valid)
  * parser is complete it will use jerr(). Note that this refers to errors
  * unspecific to the parser.
  */
-void
-parse_json_block(char const *string, size_t len)
+struct json *
+parse_json(char const *ptr, size_t len, bool *is_valid, FILE *dbg_stream)
 {
+    struct json *node = NULL;		/* the JSON parse tree */
+
     /*
      * firewall
      */
-    if (string == NULL) {
+    if (ptr == NULL) {
+
 	/* this should never happen */
-	err(37, __func__, "passed NULL string");
+	warn(__func__, "ptr is NULL");
 	++num_errors;
-	return;
-    } else if (len <= 0) {
-	err(38, __func__, "len <= 0");
+
+	/* if allowed, report invalid JSON */
+	if (is_valid != NULL) {
+	    *is_valid = false;
+	}
+
+	/* return a blank JSON tree */
+	node = json_alloc(JTYPE_UNSET);
+	return node;
+    }
+    if (len <= 0) {
+
+	/* warn about bogus length */
+	warn( __func__, "len: %ju <= 0", (uintmax_t)len);
 	++num_errors;
-	return;
+
+	/* if allowed, report invalid JSON */
+	if (is_valid != NULL) {
+	    *is_valid = false;
+	}
+
+	/* return a blank JSON tree */
+	node = json_alloc(JTYPE_UNSET);
+	return node;
     }
 
+    /*
+     * scan the blob
+     */
     ugly_lineno = 1;
-    bs = ugly__scan_bytes(string, len);
+    bs = ugly__scan_bytes(ptr, len);
     if (bs == NULL) {
+
+	/*
+	 * warn about a scan error
+	 */
 	warn(__func__, "unable to scan string");
 	++num_errors;
-	return;
-    }
-    json_dbg(json_verbosity_level, __func__, "*** BEGIN PARSE:\n<");
-    fprint_str(stderr, string, len);
-    fprintf(stderr, "\n>\n");
 
+	/* if allowed, report invalid JSON */
+	if (is_valid != NULL) {
+	    *is_valid = false;
+	}
+
+	/* return a blank JSON tree */
+	node = json_alloc(JTYPE_UNSET);
+	return node;
+    }
+
+    /*
+     * XXX - control the output
+     *
+     * All of the debugging that should be under control of json_dbg()
+     * and the JSON verbosity level such that -J 0 does not output anything.
+     */
+    json_dbg(json_verbosity_level, __func__, "*** BEGIN PARSE:\n<");
+    if (dbg_stream != NULL) {
+	fprint_str(dbg_stream, ptr, len);
+	fprintf(dbg_stream, "\n>\n");
+    }
+
+    /*
+     * parse the blob
+     *
+     * XXX - The ugly_parse() (which is ugly_parse()) returns an int.
+     *	     This function should return
+     */
     ugly_parse();
 
+    /*
+     * scan and parse cleanup
+     */
     ugly__delete_buffer(bs);
     bs = NULL;
 
+    /*
+     * XXX - control the output
+     *
+     * All of the debugging that should be under control of json_dbg()
+     * and the JSON verbosity level such that -J 0 does not output anything.
+     */
     json_dbg(json_verbosity_level, __func__, "*** END PARSE");
-    print_newline(output_newline);
+    if (dbg_stream != NULL) {
+	fprint_newline(dbg_stream, output_newline);
+    }
+
+    /*
+     * report scanner / parser success or failure
+     */
+    if (is_valid != NULL) {
+	/* XXX - the success should be based on what ugly_parse() does - XXX */
+	*is_valid = true;
+    }
+    /* XXX - return a blank JSON tree until we can get a tree via ugly_parse somehow - XXX */
+    node = json_alloc(JTYPE_UNSET);
+    return node;
 }
 
 
@@ -346,6 +387,11 @@ parse_json_block(char const *string, size_t len)
  * given:
  *
  *	filename    - filename to parse
+ *	is_valid    - != NULL ==> set to true or false depending on json validity
+ *	dbg_stream  - != NULL ==> write debugging info to the open steam dbg_stream
+ *
+ * return:
+ *	pointer to a JSON parse tree
  *
  * If filename is NULL or the filename is not a readable file (or is empty) or
  * if read_all() returns NULL the function warns but does nothing else.
@@ -363,10 +409,12 @@ parse_json_block(char const *string, size_t len)
  * than one string and/or file can then be verified during testing. Once the
  * parser is complete it will use jerr(). Note that this refers to errors
  * unspecific to the parser.
+ *
  */
-void
-parse_json_file(char const *filename)
+struct json *
+parse_json_file(char const *filename, bool *is_valid, FILE *dbg_stream)
 {
+    struct json *node = NULL;		/* the JSON parse tree */
     bool is_stdin = false;	/* true if reading from stdin (filename == "-") */
     char *data = NULL;		/* used to determine if there are NUL bytes in the file */
     size_t len = 0;		/* length of data read */
@@ -376,52 +424,150 @@ parse_json_file(char const *filename)
      * firewall
      */
     if (filename == NULL) {
+
 	/* this should actually never happen if called from jparse */
 	warn(__func__, "passed NULL filename");
 	++num_errors;
-	return;
+
+	/* if allowed, report invalid JSON */
+	if (is_valid != NULL) {
+	    *is_valid = false;
+	}
+
+	/* return a blank JSON tree */
+	node = json_alloc(JTYPE_UNSET);
+	return node;
+
     } else if (*filename == '\0') { /* strlen(filename) == 0 */
+
+	/* warn about bogus filename */
 	warn(__func__, "passed empty filename");
 	++num_errors;
-	return;
+
+	/* if allowed, report invalid JSON */
+	if (is_valid != NULL) {
+	    *is_valid = false;
+	}
+
+	/* return a blank JSON tree */
+	node = json_alloc(JTYPE_UNSET);
+	return node;
     }
 
+    /*
+     * if file is -, then this as a special way to indicate stdin
+     */
     is_stdin = !strcmp(filename, "-");
-    if (!is_stdin && !is_file(filename)) {
-	warn(__func__, "passed filename that's not actually a file: %s", filename);
-	++num_errors;
-	return;
-    } else if (!is_stdin && !is_read(filename)) {
-	warn(__func__, "passed filename not readable file: %s", filename);
-	++num_errors;
-	return;
+
+    /*
+     * case: will read from stdin
+     */
+    if (is_stdin == true) {
+	ugly_in = stdin;
+
+    /*
+     * case: will read from a file
+     */
+    } else {
+
+	/*
+	 * validate filename
+	 */
+	if (!is_file(filename)) {
+
+	    /* report missing filename */
+	    warn(__func__, "passed filename that's not actually a file: %s", filename);
+	    ++num_errors;
+
+	    /* if allowed, report invalid JSON */
+	    if (is_valid != NULL) {
+		*is_valid = false;
+	    }
+
+	    /* return a blank JSON tree */
+	    node = json_alloc(JTYPE_UNSET);
+	    return node;
+	}
+	if (!is_read(filename)) {
+
+	    /* report unreadable file */
+	    warn(__func__, "passed filename not readable file: %s", filename);
+	    ++num_errors;
+
+	    /* if allowed, report invalid JSON */
+	    if (is_valid != NULL) {
+		*is_valid = false;
+	    }
+
+	    /* return a blank JSON tree */
+	    node = json_alloc(JTYPE_UNSET);
+	    return node;
+	}
+
+	/*
+	 * open file for scanner to use
+	 */
+	errno = 0;
+	ugly_in = fopen(filename, "r");
+	if (ugly_in == NULL) {
+
+	    /* warn about file open error */
+	    warnp(__func__, "couldn't open file %s, ignoring", filename);
+	    ++num_errors;
+
+	    /* if allowed, report invalid JSON */
+	    if (is_valid != NULL) {
+		*is_valid = false;
+	    }
+
+	    /* return a blank JSON tree */
+	    node = json_alloc(JTYPE_UNSET);
+	    return node;
+	}
     }
 
-    errno = 0;
-    ugly_in = is_stdin ? stdin : fopen(filename, "r");
-    if (ugly_in == NULL) {
-	warnp(__func__, "couldn't open file %s, ignoring", filename);
-	++num_errors;
-	return;
-    }
-
+    /*
+     * read the entire file into memory
+     */
     data = read_all(ugly_in, &len);
     if (data == NULL) {
+
+	/* warn about read error */
 	warn(__func__, "couldn't read in %s", is_stdin?"stdin":filename);
 	++num_errors;
 	clearerr_or_fclose(filename, ugly_in);
-	return;
+
+	/* if allowed, report invalid JSON */
+	if (is_valid != NULL) {
+	    *is_valid = false;
+	}
+
+	/* return a blank JSON tree */
+	node = json_alloc(JTYPE_UNSET);
+	return node;
     }
-    else if (len <= 0) {
+    if (len <= 0) {
+
+	/* warn about emptuy file */
 	warn(__func__, "%s is empty", is_stdin?"stdin":filename);
 	++num_errors;
 	clearerr_or_fclose(filename, ugly_in);
-	return;
+
+	/* if allowed, report invalid JSON */
+	if (is_valid != NULL) {
+	    *is_valid = false;
+	}
+
+	/* return a blank JSON tree */
+	node = json_alloc(JTYPE_UNSET);
+	return node;
     }
 
-    json_dbg(json_verbosity_level, __func__, "Calling parse_json_block with length %ju:", (uintmax_t)len);
-
-    parse_json_block(data, len);
+    /*
+     * JSON parse the data from the file
+     */
+    json_dbg(json_verbosity_level, __func__, "Calling parse_json with length %ju:", (uintmax_t)len);
+    node = parse_json(data, len, is_valid, stderr);
 
     /* free data */
     free(data);
@@ -431,7 +577,7 @@ parse_json_file(char const *filename)
      * we cannot use clearerr_or_fclose() here as it's possible that ugly_in
      * will be NULL and so we do it manually instead.
      */
-    if (is_stdin)
+    if (is_stdin == true)
 	clearerr(stdin);
     else if (ugly_in != NULL) {
 	errno = 0;
@@ -442,5 +588,18 @@ parse_json_file(char const *filename)
 	ugly_in = NULL;
     }
 
-    print_newline(output_newline);
+    /*
+     * XXX - control the output
+     *
+     * All of the debugging that should be under control of json_dbg()
+     * and the JSON verbosity level such that -J 0 does not output anything.
+     */
+    if (dbg_stream != NULL) {
+	fprint_newline(dbg_stream, output_newline);
+    }
+
+    /*
+     * return the JSON parse tree node
+     */
+    return node;
 }

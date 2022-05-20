@@ -417,6 +417,7 @@ main(int argc, char **argv)
     extern char *optarg;	    /* option argument */
     extern int optind;		    /* argv index of the next arg */
     bool string_flag_used = false;  /* true ==> -S string was used */
+    bool valid_json = false;	    /* true ==> JSON parse was valid */
     int ret;			    /* libc return code */
     int i;
 
@@ -492,9 +493,10 @@ main(int argc, char **argv)
 	     */
 	    string_flag_used = true;
 
-	    json_dbg(json_verbosity_level, __func__, "Calling parse_json_block(\"%s\", %ju):", optarg, (uintmax_t)strlen(optarg));
+	    json_dbg(json_verbosity_level, __func__, "Calling parse_json(\"%s\", %ju, NULL):",
+					  optarg, (uintmax_t)strlen(optarg));
 	    /* parse arg as a block of json input */
-	    parse_json_block(optarg, strlen(optarg));
+	    parse_json(optarg, strlen(optarg), &valid_json, stderr);
 	    break;
 	default:
 	    usage(2, "invalid -flag or missing option argument", program); /*ooo*/
@@ -514,7 +516,7 @@ main(int argc, char **argv)
 	 * process each argument in order
 	 */
 	for (i=optind; i < argc; ++i) {
-	    parse_json_file(argv[i]);
+	    parse_json_file(argv[i], &valid_json, stderr);
 	}
 
     } else if (!string_flag_used) {
@@ -522,11 +524,13 @@ main(int argc, char **argv)
 	not_reached();
     }
 
-
     /*
-     * All Done!!! - Jessica Noll, age 2
+     *  exit based on JSON parse success or failure
      */
-    exit(num_errors != 0); /*ooo*/
+    if (num_errors > 0 || valid_json == false) {
+	exit(1); /*ooo*/
+    }
+    exit(0); /*ooo*/
 }
 
 
