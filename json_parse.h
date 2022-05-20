@@ -1,41 +1,33 @@
 /* vim: set tabstop=8 softtabstop=4 shiftwidth=4 noexpandtab : */
 /*
- * json_parse - JSON functions supporting mkiocccentry code
- *
- * JSON related functions to support formation of .info.json files
- * and .author.json files, their related check tools, test code,
- * and string encoding/decoding tools.
+ * json_parse - JSON parser support code
  *
  * "Because JSON embodies a commitment to original design flaws." :-)
  *
- * Copyright (c) 2022 by Landon Curt Noll.  All Rights Reserved.
+ * JSON parser support code for the eventual jinfochk and jauthchk tools to
+ * verify the .info.json and .author.json files created by mkiocccentry. This
+ * file has the parse functions as well as functions that these functions use to
+ * construct the parse tree etc.
  *
- * Permission to use, copy, modify, and distribute this software and
- * its documentation for any purpose and without fee is hereby granted,
- * provided that the above copyright, this permission notice and text
- * this comment, and the disclaimer below appear in all of the following:
+ * This is currently being worked on by:
  *
- *       supporting documentation
- *       source copies
- *       source works derived from this source
- *       binaries derived from this source or from derived source
+ *	chongo (Landon Curt Noll, http://www.isthe.com/chongo/index.html) /\oo/\
+ * and
  *
- * LANDON CURT NOLL DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE,
- * INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS. IN NO
- * EVENT SHALL LANDON CURT NOLL BE LIABLE FOR ANY SPECIAL, INDIRECT OR
- * CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF
- * USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR
- * OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
- * PERFORMANCE OF THIS SOFTWARE.
+ *	@xexyl
+ *	https://xexyl.net		Cody Boone Ferguson
+ *	https://ioccc.xexyl.net
  *
- * chongo (Landon Curt Noll, http://www.isthe.com/chongo/index.html) /\oo/\
+ * "Because sometimes even the IOCCC Judges need some help." :-)
  *
- * Share and enjoy! :-)
+ * This is very much a work in progress! See jparse.h, jparse.l and jparse.y as
+ * well as json_util.c and json_util.h.
+ *
  */
 
 
-#if !defined(INCLUDE_JSON_H)
-#    define  INCLUDE_JSON_H
+#if !defined(INCLUDE_JSON_PARSE_H)
+#    define  INCLUDE_JSON_PARSE_H
 
 
 #include <time.h>
@@ -466,4 +458,4 @@ extern struct json *parse_json_array(char const *string, struct json *ast);
 extern struct json *parse_json_member(struct json *name, struct json *value, struct json *ast);
 
 
-#endif /* INCLUDE_JSON_H */
+#endif /* INCLUDE_JSON_PARSE_H */

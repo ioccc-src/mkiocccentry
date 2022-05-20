@@ -2,19 +2,21 @@
 /*
  * json_util - general JSON parser utility support functions
  *
- * "Because sometimes even the IOCCC Judges need some help." :-)
+ * "Because JSON embodies a commitment to original design flaws." :-)
  *
  * This is currently being worked on by:
+ *
+ *	chongo (Landon Curt Noll, http://www.isthe.com/chongo/index.html) /\oo/\
+ * and
  *
  *	@xexyl
  *	https://xexyl.net		Cody Boone Ferguson
  *	https://ioccc.xexyl.net
  *
- * and
+ * "Because sometimes even the IOCCC Judges need some help." :-)
  *
- *	chongo (Landon Curt Noll, http://www.isthe.com/chongo/index.html) /\oo/\
- *
- * This is very much a work in progress!
+ * This is very much a work in progress! See jparse.h, jparse.l and jparse.y as
+ * well as json_util.c and json_util.h.
  */
 
 

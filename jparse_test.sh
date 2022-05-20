@@ -97,7 +97,7 @@ if [[ ! -f "${LOGFILE}" ]]; then
     exit 5
 fi
 if [[ ! -w "${LOGFILE}" ]]; then
-    echo "$0: ERROR: log file not writeable" 1>&2
+    echo "$0: ERROR: log file not writable" 1>&2
     exit 5
 fi
 
@@ -217,11 +217,9 @@ else
 
 	# process all lines in test file
 	#
-	# SC2002 (style): Useless cat. Consider 'cmd < file | ..' or 'cmd file | ..' instead.
-	# shellcheck disable=SC2002
-	cat "$JSON_TEST_FILE" | while read -r JSON_DOC; do
+	while read -r JSON_DOC; do
 	    run_test "$JPARSE" "$DBG_LEVEL" "$JSON_DBG_LEVEL" "$Q_FLAG" "$JSON_DOC"
-	done
+	done < "$JSON_TEST_FILE"
 
     done
 fi

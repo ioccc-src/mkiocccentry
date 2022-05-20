@@ -2803,7 +2803,7 @@ parse_json(char const *ptr, size_t len, bool *is_valid, FILE *dbg_stream)
     ugly_parse();
 
     /*
-     * scan and parse cleanup
+     * scan and parse clean up
      */
     ugly__delete_buffer(bs);
     bs = NULL;
@@ -2999,7 +2999,7 @@ parse_json_file(char const *filename, bool *is_valid, FILE *dbg_stream)
     }
     if (len <= 0) {
 
-	/* warn about emptuy file */
+	/* warn about empty file */
 	warn(__func__, "%s is empty", is_stdin?"stdin":filename);
 	++num_errors;
 	clearerr_or_fclose(filename, ugly_in);
