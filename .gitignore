@@ -15,8 +15,9 @@ jparse
 jparse.c
 jparse.tab.c
 jparse.tab.h
-json_test.log
+jparse_test.log
 json_parser
+json_test.log
 jstr_test.out
 jstr_test2.out
 jstrdecode

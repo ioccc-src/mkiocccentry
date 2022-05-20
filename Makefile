@@ -241,7 +241,8 @@ H_FILES= dbg.h jauthchk.h jinfochk.h json_parse.h jstrdecode.h jstrencode.h limi
 #
 DSYMDIRS= $(TARGETS:=.dSYM)
 SH_FILES= iocccsize_test.sh jstr_test.sh limit_ioccc.sh mkiocccentry_test.sh json_test.sh \
-	  jcodechk.sh vermod.sh prep.sh run_bison.sh run_flex.sh reset_tstamp.sh ioccc_test.sh
+	  jcodechk.sh vermod.sh prep.sh run_bison.sh run_flex.sh reset_tstamp.sh ioccc_test.sh \
+	  jparse_test.sh
 BUILD_LOG= build.log
 
 # RUN_O_FLAG - determine if the bison and flex backup files should be used
@@ -737,7 +738,9 @@ clean_generated_obj:
 prep_clobber:
 	${RM} -f ${TARGETS} ${TEST_TARGETS}
 	${RM} -f ${GENERATED_CSRC} ${GENERATED_HSRC}
-	${RM} -f answers.txt j-test.out j-test2.out json_test.log
+	${RM} -f answers.txt 
+	${RM} -f jstr_test.out jstr_test2.out
+	${RM} -f build.log jparse_test.log json_test.log
 	${RM} -rf test_iocccsize test_src test_work tags dbg.out
 	${RM} -f jparse.output jparse.html
 	${RM} -f dbg_test.c
