@@ -118,8 +118,17 @@ extern int ugly_length;			/* for regex length: needed in some cases in parser (w
 extern int ugly_lex(void);
 
 /*
- * function prototypes
+ * function prototypes for jparse.y
  */
+extern void ugly_error(char const *format, ...);
 static void usage(int exitcode, char const *name, char const *str) __attribute__((noreturn));
+
+/*
+ * function prototypes for jparse.l
+ */
+extern struct json *parse_json(char const *ptr, size_t len, bool *is_valid);
+extern void parse_json_block(char const *string, size_t len);
+extern void parse_json_file(char const *filename);
+
 
 #endif /* INCLUDE_JPARSE_H */

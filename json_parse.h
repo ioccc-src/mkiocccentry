@@ -453,7 +453,6 @@ extern void json_tree_walk(struct json *node, void (*callback)(struct json *));
  *
  * XXX - these are all incomplete and subject to change - XXX
  */
-extern void ugly_error(char const *format, ...);
 extern void parse_json_file(char const *filename); /* parse a file as JSON */
 extern void parse_json_block(char const *string, size_t len);  /* parse a string as a JSON block */
 
