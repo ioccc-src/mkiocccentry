@@ -2532,7 +2532,7 @@ parse_verbosity(char const *program, char const *arg)
 
 
 /*
- * is_decimal	    - if the buffer is an base 10 integer in ASCII
+ * is_decimal	    - if the buffer is a base 10 integer in ASCII
  *
  * given:
  *
@@ -2562,8 +2562,8 @@ parse_verbosity(char const *program, char const *arg)
  *
  * returns:
  *
- *	true	==> ptr points to an base 10 integer in ASCII
- *	false	==> ptr does NOT point to an base 10 integer in ASCII, or if ptr is NULL, or len <= 0
+ *	true	==> ptr points to a base 10 integer in ASCII
+ *	false	==> ptr does NOT point to a base 10 integer in ASCII, or if ptr is NULL, or len <= 0
  */
 bool
 is_decimal(char const *ptr, size_t len)
@@ -2616,14 +2616,14 @@ is_decimal(char const *ptr, size_t len)
     }
 
     /*
-     * ptr points to an base 10 integer in ASCII
+     * ptr points to a base 10 integer in ASCII
      */
     return true;
 }
 
 
 /*
- * is_decimal_str	    - if the string str is an base 10 integer in ASCII
+ * is_decimal_str	    - if the string str is a base 10 integer in ASCII
  *
  * This is an simplified interface for is_decimal().
  *
@@ -2634,17 +2634,18 @@ is_decimal(char const *ptr, size_t len)
  *
  * returns:
  *
- *	true	==> str points to an base 10 integer in ASCII
- *	false	==> str does NOT point to an base 10 integer in ASCII, or if str is NULL, or str is empty
+ *	true	==> str points to a base 10 integer in ASCII
+ *	false	==> str does NOT point to a base 10 integer in ASCII, str is
+ *		    NULL or str is empty
  *
- * NOTE: This function calls is_decimal().  See that function for details on what is or
- *	 is not considered an integer
+ * NOTE: This function calls is_decimal().  See that function for details on
+ *	 what is or is not considered an integer.
  */
 bool
 is_decimal_str(char const *str, size_t *retlen)
 {
     size_t len = 0;		/* length of string to test */
-    bool ret = false;		/* if str to an base 10 integer in ASCII */
+    bool ret = false;		/* if str points to a base 10 integer in ASCII */
 
     /*
      * firewall
