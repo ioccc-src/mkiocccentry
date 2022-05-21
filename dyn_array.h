@@ -118,7 +118,7 @@
  * array - a dynamic array of identical elements
  *
  * The dynamic array maintains both an allocated element count
- * and an number of elements in use.
+ * and a number of elements in use.
  *
  * The actual storage allocated will be a number of elements
  * beyond the allocated element count, to serve as a guard chunk.

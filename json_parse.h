@@ -90,7 +90,7 @@ struct encode {
  * the "floating point values" fields will be unused (set to false, or 0.0);
  *
  * If is_floating == then, then the JSON number was attempted to be parsed
- * as an floating point value.  In this case the "floating point values" fields
+ * as a floating point value.  In this case the "floating point values" fields
  * will be used, and the "integer values" fields will be unused (set to false, or 0).
  *
  * A JSON number string is of the form:
@@ -366,7 +366,7 @@ struct json_array
  */
 enum element_type {
     JTYPE_UNSET	    = 0,    /* JSON element has not been set - must be the value 0 */
-    JTYPE_NUMBER,	    /* JSON element is an number - see struct json_number */
+    JTYPE_NUMBER,	    /* JSON element is a number - see struct json_number */
     JTYPE_STRING,	    /* JSON element is a string - see struct json_string */
     JTYPE_BOOL,		    /* JSON element is a boolean - see struct json_boolean */
     JTYPE_NULL,		    /* JSON element is a null - see struct json_null */

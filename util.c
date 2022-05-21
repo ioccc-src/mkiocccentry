@@ -2625,7 +2625,7 @@ is_decimal(char const *ptr, size_t len)
 /*
  * is_decimal_str	    - if the string str is a base 10 integer in ASCII
  *
- * This is an simplified interface for is_decimal().
+ * This is a simplified interface for is_decimal().
  *
  * given:
  *
@@ -3328,7 +3328,7 @@ find_text(char const *ptr, size_t len, char **first)
 /*
  * find_text_str - find ASCII text within a field of whitespace and trailing NUL bytes
  *
- * This is an simplified interface for find_text().
+ * This is a simplified interface for find_text().
  *
  * given:
  *	str	    address of a NUL terminated string to start looking for text
