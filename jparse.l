@@ -158,75 +158,59 @@ JSON_COMMA		","
 			     * Not needed but included for now for debugging
 			     * purposes.
 			     */
-			    printf("\nignoring %ju whitespace%s\n", (uintmax_t)ugly_leng, yyleng==1?"":"s");
+			    fprintf(stderr, "\nignoring %ju whitespace%s\n", (uintmax_t)ugly_leng, yyleng==1?"":"s");
 			}
 
 {JSON_STRING}		{
 			    /* string */
 			    ugly_length = ugly_leng;
-			    printf("\nstring: <%s>\n", ugly_text);
 			    return JSON_STRING;
 			}
 
 {JSON_NUMBER}		{
 			    /* number */
-			    printf("\nnumber: <%s>\n", ugly_text);
 			    return JSON_NUMBER;
 			}
 
 {JSON_NULL}		{
 			    /* null object */
-			    printf("\nnull: <%s>\n", ugly_text);
 			    return JSON_NULL;
 			}
 
 {JSON_TRUE}		{
 			    /* boolean: true */
-			    printf("\ntrue: <%s>\n", ugly_text);
 			    return JSON_TRUE;
 			}
 {JSON_FALSE}		{
 			    /* boolean: false */
-			    printf("\nfalse: <%s>\n", ugly_text);
 			    return JSON_FALSE;
 			}
 
 {JSON_OPEN_BRACE}	{
 			    /* start of object */
-			    printf("\nstart of object: <%c>\n", *ugly_text);
 			    return JSON_OPEN_BRACE;
 			}
 {JSON_CLOSE_BRACE}	{
 			    /* end of object */
-			    printf("\nend of object: <%c>\n", *ugly_text);
-			    token = '}';
 			    return JSON_CLOSE_BRACE;
 			}
 
 {JSON_OPEN_BRACKET}	{
 			    /* start of array */
-			    printf("\nstart of array: <%c>\n", *ugly_text);
-			    token = '[';
 			    return JSON_OPEN_BRACKET;
 			}
 {JSON_CLOSE_BRACKET}	{
 			    /* end of array */
-			    printf("\nend of array: <%c>\n", *ugly_text);
-			    token = ']';
 			    return JSON_CLOSE_BRACKET;
 			}
 
 {JSON_COLON}		{
 			    /* colon or 'equals' */
-			    printf("\ncolon (or 'equals'): <%c>\n", *ugly_text);
-			    token = ':';
 			    return JSON_COLON;
 			}
 
 {JSON_COMMA}		{
 			    /* comma: name/value pair separator */
-			    printf("\ncomma: <%c>\n", *ugly_text);
-			    token = ',';
 			    return JSON_COMMA;
 			}
 
