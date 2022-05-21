@@ -273,6 +273,7 @@ struct json *
 parse_json(char const *ptr, size_t len, bool *is_valid, FILE *dbg_stream)
 {
     struct json *node = NULL;		/* the JSON parse tree */
+    int ret = 0;			/* ugly_parse() return value */
 
     /*
      * firewall
@@ -336,6 +337,8 @@ parse_json(char const *ptr, size_t len, bool *is_valid, FILE *dbg_stream)
      *
      * All of the debugging that should be under control of json_dbg()
      * and the JSON verbosity level such that -J 0 does not output anything.
+     * Currently this cannot be done because the lexer and parser are set to
+     * print out a lot of debug information.
      */
     json_dbg(json_verbosity_level, __func__, "*** BEGIN PARSE:\n<");
     if (dbg_stream != NULL) {
@@ -346,10 +349,9 @@ parse_json(char const *ptr, size_t len, bool *is_valid, FILE *dbg_stream)
     /*
      * parse the blob
      *
-     * XXX - The ugly_parse() (which is yyparse()) returns an int.
-     *	     This function should return
+     *
      */
-    ugly_parse();
+    ret = ugly_parse();
 
     /*
      * scan and parse clean up
@@ -362,6 +364,8 @@ parse_json(char const *ptr, size_t len, bool *is_valid, FILE *dbg_stream)
      *
      * All of the debugging that should be under control of json_dbg()
      * and the JSON verbosity level such that -J 0 does not output anything.
+     * Currently this cannot be done because the lexer and parser are set to
+     * print out a lot of debug information.
      */
     json_dbg(json_verbosity_level, __func__, "*** END PARSE");
     if (dbg_stream != NULL) {
@@ -372,8 +376,7 @@ parse_json(char const *ptr, size_t len, bool *is_valid, FILE *dbg_stream)
      * report scanner / parser success or failure
      */
     if (is_valid != NULL) {
-	/* XXX - the success should be based on what ugly_parse() does - XXX */
-	*is_valid = true;
+	*is_valid = ret == 0;
     }
     /* XXX - return a blank JSON tree until we can get a tree via ugly_parse somehow - XXX */
     node = json_alloc(JTYPE_UNSET);
@@ -593,6 +596,8 @@ parse_json_file(char const *filename, bool *is_valid, FILE *dbg_stream)
      *
      * All of the debugging that should be under control of json_dbg()
      * and the JSON verbosity level such that -J 0 does not output anything.
+     * Currently this cannot be done because the lexer and parser are set to
+     * print out a lot of debug information.
      */
     if (dbg_stream != NULL) {
 	fprint_newline(dbg_stream, output_newline);
