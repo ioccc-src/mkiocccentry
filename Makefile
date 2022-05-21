@@ -615,6 +615,7 @@ parser: jparse.y jparse.l Makefile
 	${CP} -f -v jparse.tab.h jparse.tab.ref.h
 	${RM} -f jparse.ref.c
 	${CP} -f -v jparse.c jparse.ref.c
+	${MAKE} jparse
 
 #
 # make parser-o: Force the rebuild of the JSON parser.
@@ -738,7 +739,7 @@ clean_generated_obj:
 prep_clobber:
 	${RM} -f ${TARGETS} ${TEST_TARGETS}
 	${RM} -f ${GENERATED_CSRC} ${GENERATED_HSRC}
-	${RM} -f answers.txt 
+	${RM} -f answers.txt
 	${RM} -f jstr_test.out jstr_test2.out
 	${RM} -f build.log jparse_test.log json_test.log
 	${RM} -rf test_iocccsize test_src test_work tags dbg.out
