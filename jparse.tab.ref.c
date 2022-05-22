@@ -126,7 +126,7 @@
 #define yychar          ugly_char
 
 /* First part of user prologue.  */
-#line 103 "jparse.y"
+#line 108 "jparse.y"
 
 #include <inttypes.h>
 #include <stdio.h>
@@ -135,14 +135,13 @@
 
 bool output_newline = true;		/* true ==> -n not specified, output new line after each arg processed */
 unsigned num_errors = 0;		/* > 0 number of errors encountered */
-struct json tree = { 0 };		/* the parse tree */
 
 /* debug information during development */
 int ugly_debug = 1;
 
 int token = 0;
 
-#line 95 "jparse.tab.c"
+#line 94 "jparse.tab.c"
 
 # ifndef YY_CAST
 #  ifdef __cplusplus
@@ -559,9 +558,9 @@ static const yytype_int8 yytranslate[] =
 /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_int16 yyrline[] =
 {
-       0,   157,   157,   174,   191,   207,   223,   239,   254,   268,
-     282,   298,   313,   329,   348,   368,   384,   400,   416,   435,
-     451,   467
+       0,   162,   162,   179,   196,   212,   228,   244,   259,   273,
+     287,   303,   318,   334,   353,   373,   389,   405,   421,   440,
+     456,   472
 };
 #endif
 
@@ -708,7 +707,7 @@ enum { YYENOMEM = -2 };
       }                                                           \
     else                                                          \
       {                                                           \
-        yyerror (YY_("syntax error: cannot back up")); \
+        yyerror (node, YY_("syntax error: cannot back up")); \
         YYERROR;                                                  \
       }                                                           \
   while (0)
@@ -741,7 +740,7 @@ do {                                                                      \
     {                                                                     \
       YYFPRINTF (stderr, "%s ", Title);                                   \
       yy_symbol_print (stderr,                                            \
-                  Kind, Value); \
+                  Kind, Value, node); \
       YYFPRINTF (stderr, "\n");                                           \
     }                                                                     \
 } while (0)
@@ -753,10 +752,11 @@ do {                                                                      \
 
 static void
 yy_symbol_value_print (FILE *yyo,
-                       yysymbol_kind_t yykind, YYSTYPE const * const yyvaluep)
+                       yysymbol_kind_t yykind, YYSTYPE const * const yyvaluep, struct json *node)
 {
   FILE *yyoutput = yyo;
   YY_USE (yyoutput);
+  YY_USE (node);
   if (!yyvaluep)
     return;
   YY_IGNORE_MAYBE_UNINITIALIZED_BEGIN
@@ -771,12 +771,12 @@ yy_symbol_value_print (FILE *yyo,
 
 static void
 yy_symbol_print (FILE *yyo,
-                 yysymbol_kind_t yykind, YYSTYPE const * const yyvaluep)
+                 yysymbol_kind_t yykind, YYSTYPE const * const yyvaluep, struct json *node)
 {
   YYFPRINTF (yyo, "%s %s (",
              yykind < YYNTOKENS ? "token" : "nterm", yysymbol_name (yykind));
 
-  yy_symbol_value_print (yyo, yykind, yyvaluep);
+  yy_symbol_value_print (yyo, yykind, yyvaluep, node);
   YYFPRINTF (yyo, ")");
 }
 
@@ -810,7 +810,7 @@ do {                                                            \
 
 static void
 yy_reduce_print (yy_state_t *yyssp, YYSTYPE *yyvsp,
-                 int yyrule)
+                 int yyrule, struct json *node)
 {
   int yylno = yyrline[yyrule];
   int yynrhs = yyr2[yyrule];
@@ -823,7 +823,7 @@ yy_reduce_print (yy_state_t *yyssp, YYSTYPE *yyvsp,
       YYFPRINTF (stderr, "   $%d = ", yyi + 1);
       yy_symbol_print (stderr,
                        YY_ACCESSING_SYMBOL (+yyssp[yyi + 1 - yynrhs]),
-                       &yyvsp[(yyi + 1) - (yynrhs)]);
+                       &yyvsp[(yyi + 1) - (yynrhs)], node);
       YYFPRINTF (stderr, "\n");
     }
 }
@@ -831,7 +831,7 @@ yy_reduce_print (yy_state_t *yyssp, YYSTYPE *yyvsp,
 # define YY_REDUCE_PRINT(Rule)          \
 do {                                    \
   if (yydebug)                          \
-    yy_reduce_print (yyssp, yyvsp, Rule); \
+    yy_reduce_print (yyssp, yyvsp, Rule, node); \
 } while (0)
 
 /* Nonzero means print parse trace.  It is left uninitialized so that
@@ -1385,9 +1385,10 @@ yysyntax_error (YYPTRDIFF_T *yymsg_alloc, char **yymsg,
 
 static void
 yydestruct (const char *yymsg,
-            yysymbol_kind_t yykind, YYSTYPE *yyvaluep)
+            yysymbol_kind_t yykind, YYSTYPE *yyvaluep, struct json *node)
 {
   YY_USE (yyvaluep);
+  YY_USE (node);
   if (!yymsg)
     yymsg = "Deleting";
   YY_SYMBOL_PRINT (yymsg, yykind, yyvaluep, yylocationp);
@@ -1414,7 +1415,7 @@ int yynerrs;
 `----------*/
 
 int
-yyparse (void)
+yyparse (struct json *node)
 {
     yy_state_fast_t yystate = 0;
     /* Number of tokens to shift before error messages enabled.  */
@@ -1672,7 +1673,7 @@ yyreduce:
     switch (yyn)
       {
   case 2: /* json: json_element  */
-#line 158 "jparse.y"
+#line 163 "jparse.y"
                         {
 			    /*
 			     * $$ = $json
@@ -1687,11 +1688,11 @@ yyreduce:
 						   json_element_type_name(yyval));
 			    json_dbg(JSON_DBG_LOW, __func__, "under json: after json_element before ;");
 			}
-#line 1640 "jparse.tab.c"
+#line 1641 "jparse.tab.c"
     break;
 
   case 3: /* json_value: json_object  */
-#line 175 "jparse.y"
+#line 180 "jparse.y"
                         {
 			    /*
 			     * $$ = $json_value
@@ -1706,11 +1707,11 @@ yyreduce:
 						   json_element_type_name(yyval));
 			    json_dbg(JSON_DBG_LOW, __func__, "under json_value: after json_object before |");
 			}
-#line 1659 "jparse.tab.c"
+#line 1660 "jparse.tab.c"
     break;
 
   case 4: /* json_value: json_array  */
-#line 192 "jparse.y"
+#line 197 "jparse.y"
                         {
 			    /*
 			     * $$ = $json_value
@@ -1724,11 +1725,11 @@ yyreduce:
 						   json_element_type_name(yyval));
 			    json_dbg(JSON_DBG_LOW, __func__, "under json_value: after json_array before |");
 			}
-#line 1677 "jparse.tab.c"
+#line 1678 "jparse.tab.c"
     break;
 
   case 5: /* json_value: json_string  */
-#line 208 "jparse.y"
+#line 213 "jparse.y"
                         {
 			    /*
 			     * $$ = $json_value
@@ -1742,11 +1743,11 @@ yyreduce:
 						   json_element_type_name(yyval));
 			    json_dbg(JSON_DBG_LOW, __func__, "under json_value: after json_string before |");
 			}
-#line 1695 "jparse.tab.c"
+#line 1696 "jparse.tab.c"
     break;
 
   case 6: /* json_value: json_number  */
-#line 224 "jparse.y"
+#line 229 "jparse.y"
                         {
 			    /*
 			     * $$ = $json_value
@@ -1760,11 +1761,11 @@ yyreduce:
 						   json_element_type_name(yyval));
 			    json_dbg(JSON_DBG_LOW, __func__, "under json_value: after json_number before |");
 			}
-#line 1713 "jparse.tab.c"
+#line 1714 "jparse.tab.c"
     break;
 
   case 7: /* json_value: "true"  */
-#line 240 "jparse.y"
+#line 245 "jparse.y"
                         {
 			    /*
 			     * $$ = $json_value
@@ -1777,11 +1778,11 @@ yyreduce:
 						   json_element_type_name(yyval));
 			    json_dbg(JSON_DBG_LOW, __func__, "under json_value: after JSON_TRUE before |");
 			}
-#line 1730 "jparse.tab.c"
+#line 1731 "jparse.tab.c"
     break;
 
   case 8: /* json_value: "false"  */
-#line 255 "jparse.y"
+#line 260 "jparse.y"
                         {
 			    /*
 			     * $$ = $json_value
@@ -1793,11 +1794,11 @@ yyreduce:
 						   json_element_type_name(yyval));
 			    json_dbg(JSON_DBG_LOW, __func__, "under json_value: after JSON_FALSE before |");
 			}
-#line 1746 "jparse.tab.c"
+#line 1747 "jparse.tab.c"
     break;
 
   case 9: /* json_value: "null"  */
-#line 269 "jparse.y"
+#line 274 "jparse.y"
                         {
 			    /*
 			     * $$ = $json_value
@@ -1809,11 +1810,11 @@ yyreduce:
 						   json_element_type_name(yyval));
 			    json_dbg(JSON_DBG_LOW, __func__, "under json_value: after JSON_NULL before ;");
 			}
-#line 1762 "jparse.tab.c"
+#line 1763 "jparse.tab.c"
     break;
 
   case 10: /* json_object: "{" json_members "}"  */
-#line 285 "jparse.y"
+#line 290 "jparse.y"
                         {
 			    /*
 			     * $$ = $json_object
@@ -1825,11 +1826,11 @@ yyreduce:
 			    json_dbg(JSON_DBG_LOW, __func__, "under json_object: need more code probably here"); /* XXX */
 			    json_dbg(JSON_DBG_LOW, __func__, "under json_object: after JSON_CLOSE_BRACE before |");
 			}
-#line 1778 "jparse.tab.c"
+#line 1779 "jparse.tab.c"
     break;
 
   case 11: /* json_object: "{" "}"  */
-#line 300 "jparse.y"
+#line 305 "jparse.y"
                         {
 			    /*
 			     * $$ = $json_object
@@ -1841,11 +1842,11 @@ yyreduce:
 						   json_element_type_name(yyval));
 			    json_dbg(JSON_DBG_LOW, __func__, "under json_object: after JSON_CLOSE_BRACE before ;");
 			}
-#line 1794 "jparse.tab.c"
+#line 1795 "jparse.tab.c"
     break;
 
   case 12: /* json_members: json_member  */
-#line 314 "jparse.y"
+#line 319 "jparse.y"
                         {
 			    /*
 			     * $$ = $json_members
@@ -1859,11 +1860,11 @@ yyreduce:
 						   json_element_type_name(yyval));
 			    json_dbg(JSON_DBG_LOW, __func__, "under json_members: after json_member before |");
 			}
-#line 1812 "jparse.tab.c"
+#line 1813 "jparse.tab.c"
     break;
 
   case 13: /* json_members: json_members "," json_member  */
-#line 332 "jparse.y"
+#line 337 "jparse.y"
                         {
 			    /*
 			     * $$ = $json_members
@@ -1878,11 +1879,11 @@ yyreduce:
 			    json_dbg(JSON_DBG_LOW, __func__, "under json_members: need more code probably here"); /* XXX */
 			    json_dbg(JSON_DBG_LOW, __func__, "under json_members: after json_member before ;");
 			}
-#line 1831 "jparse.tab.c"
+#line 1832 "jparse.tab.c"
     break;
 
   case 14: /* json_member: json_string ":" json_element  */
-#line 351 "jparse.y"
+#line 356 "jparse.y"
                         {
 			    /*
 			     * $$ = $json_member
@@ -1892,17 +1893,17 @@ yyreduce:
 			    json_dbg(JSON_DBG_MED, __func__, "under json_member: json_string JSON_COLON json_element:");
 			    json_dbg(JSON_DBG_LOW, __func__, "$json_member = parse_json_member($json_string = %s, $json_element = %s)",
 				json_element_type_name(yyvsp[-2]), json_element_type_name(yyvsp[0]));
-			    yyval = parse_json_member(yyvsp[-2], yyvsp[0], &tree);
+			    yyval = parse_json_member(yyvsp[-2], yyvsp[0]);
 			    json_dbg(JSON_DBG_LOW, __func__, "under json_member: $json_member type: %s", json_element_type_name(yyval));
 			    json_dbg(JSON_DBG_MED, __func__, "under json_member: after json_element returning type: %s",
 						   json_element_type_name(yyval));
 			    json_dbg(JSON_DBG_LOW, __func__, "under json_member: after json_element before ;");
 			}
-#line 1851 "jparse.tab.c"
+#line 1852 "jparse.tab.c"
     break;
 
   case 15: /* json_array: "[" json_elements "]"  */
-#line 371 "jparse.y"
+#line 376 "jparse.y"
                         {
 			    /*
 			     * $$ = $json_array
@@ -1914,11 +1915,11 @@ yyreduce:
 			    json_dbg(JSON_DBG_LOW, __func__, "under json_array: need more code probably here"); /* XXX */
 			    json_dbg(JSON_DBG_LOW, __func__, "under json_array: after JSON_CLOSE_BRACKET before |");
 			}
-#line 1867 "jparse.tab.c"
+#line 1868 "jparse.tab.c"
     break;
 
   case 16: /* json_array: "[" "]"  */
-#line 386 "jparse.y"
+#line 391 "jparse.y"
                         {
 			    /*
 			     * $$ = $json_array
@@ -1930,11 +1931,11 @@ yyreduce:
 						   json_element_type_name(yyval));
 			    json_dbg(JSON_DBG_LOW, __func__, "under json_array: after JSON_CLOSE_BRACKET before ;");
 			}
-#line 1883 "jparse.tab.c"
+#line 1884 "jparse.tab.c"
     break;
 
   case 17: /* json_elements: json_element  */
-#line 401 "jparse.y"
+#line 406 "jparse.y"
                         {
 			    /*
 			     * $$ = $json_elements
@@ -1948,11 +1949,11 @@ yyreduce:
 						   json_element_type_name(yyval));
 			    json_dbg(JSON_DBG_LOW, __func__, "under json_elements: after json_element before |");
 			}
-#line 1901 "jparse.tab.c"
+#line 1902 "jparse.tab.c"
     break;
 
   case 18: /* json_elements: json_elements "," json_element  */
-#line 419 "jparse.y"
+#line 424 "jparse.y"
                         {
 			    /*
 			     * $$ = $json_elements
@@ -1967,11 +1968,11 @@ yyreduce:
 			    json_dbg(JSON_DBG_LOW, __func__, "under json_elements: need more code probably here"); /* XXX */
 			    json_dbg(JSON_DBG_LOW, __func__, "under json_elements: after json_element before ;");
 			}
-#line 1920 "jparse.tab.c"
+#line 1921 "jparse.tab.c"
     break;
 
   case 19: /* json_element: json_value  */
-#line 436 "jparse.y"
+#line 441 "jparse.y"
                         {
 			    /*
 			     * $$ = $json_element
@@ -1985,11 +1986,11 @@ yyreduce:
 						   json_element_type_name(yyval));
 			    json_dbg(JSON_DBG_LOW, __func__, "under json_element: after json_value before ;");
 			}
-#line 1938 "jparse.tab.c"
+#line 1939 "jparse.tab.c"
     break;
 
   case 20: /* json_string: JSON_STRING  */
-#line 452 "jparse.y"
+#line 457 "jparse.y"
                         {
 			    /*
 			     * $$ = $json_string
@@ -2003,11 +2004,11 @@ yyreduce:
 						   json_element_type_name(yyval));
 			    json_dbg(JSON_DBG_LOW, __func__, "under json_string: after JSON_STRING before ;");
 			}
-#line 1956 "jparse.tab.c"
+#line 1957 "jparse.tab.c"
     break;
 
   case 21: /* json_number: JSON_NUMBER  */
-#line 468 "jparse.y"
+#line 473 "jparse.y"
                         {
 			    /*
 			     * $$ = $json_number
@@ -2020,11 +2021,11 @@ yyreduce:
 						   json_element_type_name(yyval));
 			    json_dbg(JSON_DBG_LOW, __func__, "under json_number: after JSON_NUMBER before ;");
 			}
-#line 1973 "jparse.tab.c"
+#line 1974 "jparse.tab.c"
     break;
 
 
-#line 1977 "jparse.tab.c"
+#line 1978 "jparse.tab.c"
 
         default: break;
       }
@@ -2103,7 +2104,7 @@ yyerrlab:
                 yysyntax_error_status = YYENOMEM;
               }
           }
-        yyerror (yymsgp);
+        yyerror (node, yymsgp);
         if (yysyntax_error_status == YYENOMEM)
           YYNOMEM;
       }
@@ -2123,7 +2124,7 @@ yyerrlab:
       else
         {
           yydestruct ("Error: discarding",
-                      yytoken, &yylval);
+                      yytoken, &yylval, node);
           yychar = UGLY_EMPTY;
         }
     }
@@ -2179,7 +2180,7 @@ yyerrlab1:
 
 
       yydestruct ("Error: popping",
-                  YY_ACCESSING_SYMBOL (yystate), yyvsp);
+                  YY_ACCESSING_SYMBOL (yystate), yyvsp, node);
       YYPOPSTACK (1);
       yystate = *yyssp;
       YY_STACK_PRINT (yyss, yyssp);
@@ -2221,7 +2222,7 @@ yyabortlab:
 | yyexhaustedlab -- YYNOMEM (memory exhaustion) comes here.  |
 `-----------------------------------------------------------*/
 yyexhaustedlab:
-  yyerror (YY_("memory exhausted"));
+  yyerror (node, YY_("memory exhausted"));
   yyresult = 2;
   goto yyreturnlab;
 
@@ -2236,7 +2237,7 @@ yyreturnlab:
          user semantic actions for why this is necessary.  */
       yytoken = YYTRANSLATE (yychar);
       yydestruct ("Cleanup: discarding lookahead",
-                  yytoken, &yylval);
+                  yytoken, &yylval, node);
     }
   /* Do not reclaim the symbols of the rule whose action triggered
      this YYABORT or YYACCEPT.  */
@@ -2245,7 +2246,7 @@ yyreturnlab:
   while (yyssp != yyss)
     {
       yydestruct ("Cleanup: popping",
-                  YY_ACCESSING_SYMBOL (+*yyssp), yyvsp);
+                  YY_ACCESSING_SYMBOL (+*yyssp), yyvsp, node);
       YYPOPSTACK (1);
     }
 #ifndef yyoverflow
@@ -2259,7 +2260,7 @@ yyreturnlab:
   return yyresult;
 }
 
-#line 485 "jparse.y"
+#line 490 "jparse.y"
 
 /* Section 3: C code */
 
@@ -2392,14 +2393,24 @@ main(int argc, char **argv)
  *
  * given:
  *
+ *	node	    struct json * or NULL
  *	format	    printf style format string
  *	...	    optional parameters based on the format
  *
  */
 void
-ugly_error(char const *format, ...)
+ugly_error(struct json *node, char const *format, ...)
 {
     va_list ap;		/* variable argument list */
+
+    /*
+     * we don't really need to do this (at least for now) but to demonstrate how
+     * the function gets whatever the node from ugly_parse() (originating in
+     * parse_json()) we just print out the node type.
+     */
+    if (node != NULL) {
+	json_dbg(JSON_DBG_MED, __func__, "in ugly_error: node type: %s", json_element_type_name(node));
+    }
 
     /*
      * stdarg variable argument list setup

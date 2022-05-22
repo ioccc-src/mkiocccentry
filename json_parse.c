@@ -1590,7 +1590,6 @@ parse_json_number(char const *string)
  * given:
  *
  *	string	    - the text that triggered the action
- *	ast	    - the tree to link the struct json * into if not NULL
  *
  * Returns a pointer to a struct json.
  *
@@ -1600,9 +1599,12 @@ parse_json_number(char const *string)
  * (which will include a dynamic array) but which right now is actually NULL. It
  * might be that the function will take different parameters as well and the
  * names of the parameters and the function are also subject to change.
+ *
+ * XXX This function might not even be needed and it certainly will have to
+ * change definitions.
  */
 struct json *
-parse_json_array(char const *string, struct json *ast)
+parse_json_array(char const *string)
 {
     struct json *array = NULL;
 
@@ -1616,9 +1618,6 @@ parse_json_array(char const *string, struct json *ast)
 
     /* TODO add parsing of array */
 
-    if (ast != NULL) {
-	/* XXX add to parse tree if != NULL ? */
-    }
     return array;
 }
 
@@ -1630,15 +1629,15 @@ parse_json_array(char const *string, struct json *ast)
  *
  *	name	    - the struct json * name of the member
  *	value	    - the struct json * value of the member
- *	ast	    - the tree to link the struct json * into if not NULL
  *
  * Returns a pointer to a struct json.
  *
  * NOTE: This function does not return if passed a NULL name or value or if
  * conversion fails.
+ *
  */
 struct json *
-parse_json_member(struct json *name, struct json *value, struct json *ast)
+parse_json_member(struct json *name, struct json *value)
 {
     struct json *member = NULL;
     struct json_member *item = NULL;
@@ -1669,11 +1668,6 @@ parse_json_member(struct json *name, struct json *value, struct json *ast)
 	not_reached();
     } else {
         json_dbg(json_verbosity_level, __func__, "converted member");
-    }
-
-
-    if (ast != NULL) {
-	/* XXX add to parse tree if != NULL ? */
     }
 
     return member;

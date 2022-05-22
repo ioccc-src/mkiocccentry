@@ -121,7 +121,7 @@
 /*
  * official jparse version
  */
-#define JPARSE_VERSION "0.1 2022-03-17"		/* format: major.minor YYYY-MM-DD */
+#define JPARSE_VERSION "0.2 2022-05-22"		/* format: major.minor YYYY-MM-DD */
 
 /*
  * official jnum_chk version

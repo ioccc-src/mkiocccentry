@@ -216,7 +216,7 @@ JSON_COMMA		","
 
 .			{
 			    /* invalid token: any other character */
-			    ugly_error("\ninvalid token: 0x%02x = <%c>\n", *ugly_text, *ugly_text);
+			    ugly_error(NULL, "\ninvalid token: 0x%02x = <%c>\n", *ugly_text, *ugly_text);
 			    return JSON_INVALID_TOKEN;
 			}
 
@@ -331,11 +331,14 @@ parse_json(char const *ptr, size_t len, bool *is_valid, FILE *dbg_stream)
     }
 
     /*
-     * parse the blob
+     * parse the blob, passing into the parser the node. The parser can access
+     * node directly by referring to node. For example to print out the type
+     * (currently it'll only be JTYPE_UNSET as it's NULL) it could do:
      *
+     *	json_dbg(JSON_DBG_LOW, __func__, "node type: %s", json_element_type_name(node));
      *
      */
-    ret = ugly_parse();
+    ret = ugly_parse(node);
 
     /*
      * scan and parse clean up

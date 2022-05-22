@@ -140,7 +140,7 @@ typedef struct json * UGLY_STYPE;
 extern UGLY_STYPE ugly_lval;
 
 
-int ugly_parse (void);
+int ugly_parse (struct json *node);
 
 
 #endif /* !YY_UGLY_JPARSE_TAB_H_INCLUDED  */

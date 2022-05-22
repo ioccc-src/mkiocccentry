@@ -995,7 +995,7 @@ jwarn(int code, char const *program, char const *name, char const *filename, cha
 	warn(__func__, "\nWarning: in jwarn(): called with NULL fmt, forcing fmt: %s\n", fmt);
     }
     if (code < JSON_CODE_RESERVED_MIN) {
-	err(198, __func__, "invalid JSON code passed to jwarn(): %d", code);
+	err(209, __func__, "invalid JSON code passed to jwarn(): %d", code);
 	not_reached();
     }
     if (line == NULL) {
@@ -1130,7 +1130,7 @@ jwarnp(int code, char const *program, char const *name, char const *filename, ch
 	warn(__func__, "\nWarning: in jwarn(): called with NULL fmt, forcing fmt: %s\n", fmt);
     }
     if (code < JSON_CODE_RESERVED_MIN) {
-	err(199, __func__, "invalid JSON code passed to jwarn(): %d", code);
+	err(210, __func__, "invalid JSON code passed to jwarn(): %d", code);
 	not_reached();
     }
     if (line == NULL) {
@@ -2189,7 +2189,7 @@ json_alloc(enum element_type type)
     errno = 0;			/* pre-clear errno for errp() */
     ret = calloc(1, sizeof(*ret));
     if (ret == NULL) {
-	errp(209, __func__, "calloc #0 error allocating %ju bytes", (uintmax_t)sizeof(*ret));
+	errp(211, __func__, "calloc #0 error allocating %ju bytes", (uintmax_t)sizeof(*ret));
 	not_reached();
     }
 
@@ -2313,7 +2313,7 @@ json_conv_number(char const *ptr, size_t len)
     errno = 0;			/* pre-clear errno for errp() */
     item->as_str = calloc(len+1+1, sizeof(char));
     if (item->as_str == NULL) {
-	errp(210, __func__, "calloc #1 error allocating %ju bytes", (uintmax_t)(len+1+1));
+	errp(212, __func__, "calloc #1 error allocating %ju bytes", (uintmax_t)(len+1+1));
 	not_reached();
     }
     strncpy(item->as_str, ptr, len);
@@ -2416,7 +2416,7 @@ json_conv_number_str(char const *str, size_t *retlen)
      */
     ret = json_conv_number(str, len);
     if (ret == NULL) {
-	err(211, __func__, "json_conv_number() returned NULL");
+	err(213, __func__, "json_conv_number() returned NULL");
 	not_reached();
     }
 
@@ -2524,7 +2524,7 @@ json_conv_string(char const *ptr, size_t len, bool quote)
     errno = 0;			/* pre-clear errno for errp() */
     item->as_str = calloc(len+1+1, sizeof(char));
     if (item->as_str == NULL) {
-	errp(212, __func__, "calloc #1 error allocating %ju bytes", (uintmax_t)(len+1+1));
+	errp(214, __func__, "calloc #1 error allocating %ju bytes", (uintmax_t)(len+1+1));
 	not_reached();
     }
     strncpy(item->as_str, ptr, len);
@@ -2610,7 +2610,7 @@ json_conv_string_str(char const *str, size_t *retlen, bool quote)
      */
     ret = json_conv_string(str, len, quote);
     if (ret == NULL) {
-	err(213, __func__, "json_conv_string() returned NULL");
+	err(215, __func__, "json_conv_string() returned NULL");
 	not_reached();
     }
 
@@ -2687,7 +2687,7 @@ json_conv_bool(char const *ptr, size_t len)
     errno = 0;			/* pre-clear errno for errp() */
     item->as_str = malloc(len+1+1);
     if (item->as_str == NULL) {
-	errp(214, __func__, "malloc #1 error allocating %ju bytes", (uintmax_t)(len+1+1));
+	errp(216, __func__, "malloc #1 error allocating %ju bytes", (uintmax_t)(len+1+1));
 	not_reached();
     }
     memcpy(item->as_str, ptr, len+1);
@@ -2756,7 +2756,7 @@ json_conv_bool_str(char const *str, size_t *retlen)
      */
     ret = json_conv_bool(str, len);
     if (ret == NULL) {
-	err(215, __func__, "json_conv_bool() returned NULL");
+	err(217, __func__, "json_conv_bool() returned NULL");
 	not_reached();
     }
 
@@ -2831,7 +2831,7 @@ json_conv_null(char const *ptr, size_t len)
     errno = 0;			/* pre-clear errno for errp() */
     item->as_str = malloc(len+1+1);
     if (item->as_str == NULL) {
-	errp(216, __func__, "malloc #1 error allocating %ju bytes", (uintmax_t)(len+1+1));
+	errp(218, __func__, "malloc #1 error allocating %ju bytes", (uintmax_t)(len+1+1));
 	not_reached();
     }
     memcpy(item->as_str, ptr, len+1);
@@ -2897,7 +2897,7 @@ json_conv_null_str(char const *str, size_t *retlen)
      */
     ret = json_conv_null(str, len);
     if (ret == NULL) {
-	err(217, __func__, "json_conv_null() returned NULL");
+	err(219, __func__, "json_conv_null() returned NULL");
 	not_reached();
     }
 
@@ -3058,7 +3058,7 @@ json_create_object(void)
      */
     item->s = dyn_array_create(sizeof (struct json *), JSON_CHUNK, JSON_CHUNK, true);
     if (item->s == NULL) {
-	errp(218, __func__, "dyn_array_create() returned NULL");
+	errp(220, __func__, "dyn_array_create() returned NULL");
 	not_reached();
     }
 
@@ -3301,7 +3301,7 @@ json_create_array(void)
      */
     item->s = dyn_array_create(sizeof (struct json *), JSON_CHUNK, JSON_CHUNK, true);
     if (item->s == NULL) {
-	errp(219, __func__, "dyn_array_create() returned NULL");
+	errp(221, __func__, "dyn_array_create() returned NULL");
 	not_reached();
     }
 

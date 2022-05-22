@@ -454,8 +454,8 @@ extern struct json *parse_json_string(char const *string, size_t len);
 extern struct json *parse_json_number(char const *string);
 extern struct json *parse_json_bool(char const *string);
 extern struct json *parse_json_null(char const *string);
-extern struct json *parse_json_array(char const *string, struct json *ast);
-extern struct json *parse_json_member(struct json *name, struct json *value, struct json *ast);
+extern struct json *parse_json_array(char const *string);
+extern struct json *parse_json_member(struct json *name, struct json *value);
 
 
 #endif /* INCLUDE_JSON_PARSE_H */

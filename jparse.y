@@ -36,6 +36,11 @@
  */
 %define api.value.type {struct json *}
 
+/*
+ * we need access to the node in parse_json() so we tell bison that ugly_parse()
+ * takes a struct json *node.
+ */
+%parse-param { struct json *node }
 
 /*
  * An IOCCC satirical take on bison and flex
@@ -108,7 +113,6 @@
 
 bool output_newline = true;		/* true ==> -n not specified, output new line after each arg processed */
 unsigned num_errors = 0;		/* > 0 number of errors encountered */
-struct json tree = { 0 };		/* the parse tree */
 
 /* debug information during development */
 int ugly_debug = 1;
@@ -149,9 +153,10 @@ int token = 0;
  * errors. There are some others we do not need to include as well.
  *
  * XXX All the rules should be here but not all those that need actions have
- * actions. We also don't use the tree though we do refer to it in the
- * parse_json_() functions (some of which might have to change). The actions are
- * very much subject to change!
+ * actions. We also don't use the struct json *node yet (from parse_json()) but
+ * this will have to change down the road.
+ *
+ * The actions are very much subject to change!
  */
 %%
 json:		    json_element
@@ -357,7 +362,7 @@ json_member:	    json_string
 			    json_dbg(JSON_DBG_MED, __func__, "under json_member: json_string JSON_COLON json_element:");
 			    json_dbg(JSON_DBG_LOW, __func__, "$json_member = parse_json_member($json_string = %s, $json_element = %s)",
 				json_element_type_name($json_string), json_element_type_name($json_element));
-			    $json_member = parse_json_member($json_string, $json_element, &tree);
+			    $json_member = parse_json_member($json_string, $json_element);
 			    json_dbg(JSON_DBG_LOW, __func__, "under json_member: $json_member type: %s", json_element_type_name($json_member));
 			    json_dbg(JSON_DBG_MED, __func__, "under json_member: after json_element returning type: %s",
 						   json_element_type_name($json_member));
@@ -614,14 +619,24 @@ main(int argc, char **argv)
  *
  * given:
  *
+ *	node	    struct json * or NULL
  *	format	    printf style format string
  *	...	    optional parameters based on the format
  *
  */
 void
-ugly_error(char const *format, ...)
+ugly_error(struct json *node, char const *format, ...)
 {
     va_list ap;		/* variable argument list */
+
+    /*
+     * we don't really need to do this (at least for now) but to demonstrate how
+     * the function gets whatever the node from ugly_parse() (originating in
+     * parse_json()) we just print out the node type.
+     */
+    if (node != NULL) {
+	json_dbg(JSON_DBG_MED, __func__, "in ugly_error: node type: %s", json_element_type_name(node));
+    }
 
     /*
      * stdarg variable argument list setup

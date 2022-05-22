@@ -119,7 +119,7 @@ extern int ugly_lex(void);
 /*
  * function prototypes for jparse.y
  */
-extern void ugly_error(char const *format, ...);
+extern void ugly_error(struct json *root, char const *format, ...);
 static void usage(int exitcode, char const *name, char const *str) __attribute__((noreturn));
 
 /*
