@@ -82,15 +82,12 @@ static char const * const usage =
  *
  *      msg("foobar information");
  *      msg("foo = %d\n", foo);
- *
- * This function returns true if output is allowed; else false.
  */
-bool
+void
 msg(char const *fmt, ...)
 {
     va_list ap;		/* variable argument list */
     int saved_errno;	/* errno at function start */
-    bool allowed = false; /* assume output not allowed */
 
     /*
      * save errno so we can restore it before returning
@@ -113,7 +110,7 @@ msg(char const *fmt, ...)
     /*
      * print the message, if allowed
      */
-    allowed = vmsg(fmt, ap);
+    vmsg(fmt, ap);
 
     /*
      * stdarg variable argument list cleanup
@@ -124,7 +121,7 @@ msg(char const *fmt, ...)
      * restore previous errno value
      */
     errno = saved_errno;
-    return allowed;
+    return;
 }
 
 
@@ -139,15 +136,12 @@ msg(char const *fmt, ...)
  *
  *      vmsg("foobar information", ap);
  *      vmsg("foo = %d\n", ap);
- *
- * This function returns true if output is allowed; else false.
  */
-bool
+void
 vmsg(char const *fmt, va_list ap)
 {
     int ret;			/* libc function return code */
     int saved_errno;	/* errno at function start */
-    bool allowed = false; /* assume output not allowed */
 
     /*
      * save errno so we can restore it before returning
@@ -171,14 +165,13 @@ vmsg(char const *fmt, va_list ap)
 	    fprintf(stderr, "[%s vfprintf returned error: %d]", __func__, ret);
 	}
 	fputc('\n', stderr);
-	allowed = true;
     }
 
     /*
      * restore previous errno value
      */
     errno = saved_errno;
-    return allowed;
+    return;
 }
 
 
@@ -196,15 +189,12 @@ vmsg(char const *fmt, va_list ap)
  *
  * NOTE: We warn with extra newlines to help internal fault messages stand out.
  *	 Normally one should NOT include newlines in warn messages.
- *
- * This function returns true if output is allowed; else false.
  */
-bool
+void
 dbg(int level, char const *fmt, ...)
 {
     va_list ap;		/* variable argument list */
     int saved_errno;	/* errno at function start */
-    bool allowed = false; /* assume output not allowed */
 
     /*
      * save errno so we can restore it before returning
@@ -227,7 +217,7 @@ dbg(int level, char const *fmt, ...)
     /*
      * print the debug message if allowed and allowed by the verbosity level
      */
-    allowed = vdbg(level, fmt, ap);
+    vdbg(level, fmt, ap);
 
     /*
      * stdarg variable argument list cleanup
@@ -238,7 +228,7 @@ dbg(int level, char const *fmt, ...)
      * restore previous errno value
      */
     errno = saved_errno;
-    return allowed;
+    return;
 }
 
 
@@ -256,15 +246,12 @@ dbg(int level, char const *fmt, ...)
  *
  * NOTE: We warn with extra newlines to help internal fault messages stand out.
  *	 Normally one should NOT include newlines in warn messages.
- *
- * This function returns true if output is allowed; else false.
  */
-bool
+void
 vdbg(int level, char const *fmt, va_list ap)
 {
     int ret;		/* libc function return code */
     int saved_errno;	/* errno at function start */
-    bool allowed = false; /* assume output not allowed */
 
     /*
      * save errno so we can restore it before returning
@@ -311,8 +298,6 @@ vdbg(int level, char const *fmt, va_list ap)
 		warn(__func__, "\nin vdbg(%d, %s ...): fflush returned error: %s\n",
 			       level, fmt, strerror(errno));
 	    }
-
-	    allowed = true;
 	}
     }
 
@@ -320,7 +305,7 @@ vdbg(int level, char const *fmt, va_list ap)
      * restore previous errno value
      */
     errno = saved_errno;
-    return allowed;
+    return;
 }
 
 
@@ -338,26 +323,16 @@ vdbg(int level, char const *fmt, va_list ap)
  *
  * NOTE: We warn with extra newlines to help internal fault messages stand out.
  *	 Normally one should NOT include newlines in warn messages.
- *
- * This function returns true if output is allowed; else false.
  */
-bool
+void
 warn(char const *name, char const *fmt, ...)
 {
     va_list ap;		/* variable argument list */
     int saved_errno;	/* errno at function start */
-    bool allowed = false; /* assume output not allowed */
-
-    /*
-     * silence warn() if -q and -v 0
-     */
-    if (msg_warn_silent && verbosity_level <= 0) {
-	warn_output_allowed = false;
-    }
 
     if (!warn_output_allowed) {
 	/* if warn output not allowed return without doing anything */
-	return false;
+	return;
     }
 
     /*
@@ -371,16 +346,23 @@ warn(char const *name, char const *fmt, ...)
     va_start(ap, fmt);
 
     /*
+     * silence warn() if -q and -v 0
+     */
+    if (msg_warn_silent == true && verbosity_level <= 0) {
+	warn_output_allowed = false;
+    }
+
+    /*
      * NOTE: We cannot use warn because this is the warn function!
      */
 
     /*
      * print the warning, if allowed
      */
-    allowed = vwarn(name, fmt, ap);
+    vwarn(name, fmt, ap);
 
     /*
-     * stdarg variable argument list clean up
+     * stdarg variable argument list cleanup
      */
     va_end(ap);
 
@@ -388,7 +370,7 @@ warn(char const *name, char const *fmt, ...)
      * restore previous errno value
      */
     errno = saved_errno;
-    return allowed;
+    return;
 }
 
 
@@ -406,32 +388,29 @@ warn(char const *name, char const *fmt, ...)
  *
  * NOTE: We warn with extra newlines to help internal fault messages stand out.
  *	 Normally one should NOT include newlines in warn messages.
- *
- * This function returns true if output is allowed; else false.
  */
-bool
+void
 vwarn(char const *name, char const *fmt, va_list ap)
 {
     int ret;		/* libc function return code */
     int saved_errno;	/* errno at function start */
-    bool allowed = false; /* assume output not allowed */
-
-    /*
-     * silence warn() if -q and -v 0
-     */
-    if (msg_warn_silent && verbosity_level <= 0) {
-	warn_output_allowed = false;
-    }
 
     if (!warn_output_allowed) {
 	/* if warn output not allowed return without doing anything */
-	return false;
+	return;
     }
 
     /*
      * save errno so we can restore it before returning
      */
     saved_errno = errno;
+
+    /*
+     * silence warn() if -q and -v 0
+     */
+    if (msg_warn_silent == true && verbosity_level <= 0) {
+	warn_output_allowed = false;
+    }
 
     /*
      * NOTE: We cannot use warn because this is the warn function!
@@ -484,15 +463,13 @@ vwarn(char const *name, char const *fmt, va_list ap)
 	    (void) fprintf(stderr, "\nWarning: in vwarn(%s, %s, ...): fflush returned error: %s\n",
 				   name, fmt, strerror(errno));
 	}
-
-	allowed = true;
     }
 
     /*
      * restore previous errno value
      */
     errno = saved_errno;
-    return allowed;
+    return;
 }
 
 
@@ -510,26 +487,16 @@ vwarn(char const *name, char const *fmt, va_list ap)
  *
  * NOTE: We warn with extra newlines to help internal fault messages stand out.
  *	 Normally one should NOT include newlines in warn messages.
- *
- * This function returns true if output is allowed; else false.
  */
-bool
+void
 warnp(char const *name, char const *fmt, ...)
 {
     va_list ap;		/* variable argument list */
     int saved_errno;	/* errno at function start */
-    bool allowed = false; /* assume output not allowed */
-
-    /*
-     * silence warn() if -q and -v 0
-     */
-    if (msg_warn_silent && verbosity_level <= 0) {
-	warn_output_allowed = false;
-    }
 
     if (!warn_output_allowed) {
 	/* if warn output is not allowed return without doing anything */
-	return false;
+	return;
     }
     /*
      * save errno so we can restore it before returning
@@ -542,13 +509,20 @@ warnp(char const *name, char const *fmt, ...)
     va_start(ap, fmt);
 
     /*
+     * silence warn() if -q and -v 0
+     */
+    if (msg_warn_silent == true && verbosity_level <= 0) {
+	warn_output_allowed = false;
+    }
+
+    /*
      * NOTE: We cannot use warn because this is the warn function!
      */
 
     /*
      * print the warning, if allowed
      */
-    allowed = vwarnp(name, fmt, ap);
+    vwarnp(name, fmt, ap);
 
     /*
      * stdarg variable argument list cleanup
@@ -559,7 +533,7 @@ warnp(char const *name, char const *fmt, ...)
      * restore previous errno value
      */
     errno = saved_errno;
-    return allowed;
+    return;
 }
 
 
@@ -577,32 +551,28 @@ warnp(char const *name, char const *fmt, ...)
  *
  * NOTE: We warn with extra newlines to help internal fault messages stand out.
  *	 Normally one should NOT include newlines in warn messages.
- *
- * This function returns if output allowed; else false.
  */
-bool
+void
 vwarnp(char const *name, char const *fmt, va_list ap)
 {
     int ret;		/* libc function return code */
     int saved_errno;	/* errno at function start */
-    bool allowed = false; /* assume output not allowed */
-
-    /*
-     * silence warn() if -q and -v 0
-     */
-    if (msg_warn_silent && verbosity_level <= 0) {
-	warn_output_allowed = false;
-    }
 
     if (!warn_output_allowed) {
 	/* if warn output is not allowed return without doing anything */
-	return false;
+	return;
     }
-
     /*
      * save errno so we can restore it before returning
      */
     saved_errno = errno;
+
+    /*
+     * silence warn() if -q and -v 0
+     */
+    if (msg_warn_silent == true && verbosity_level <= 0) {
+	warn_output_allowed = false;
+    }
 
     /*
      * NOTE: We cannot use warn because this is the warn function!
@@ -651,15 +621,13 @@ vwarnp(char const *name, char const *fmt, va_list ap)
 	    (void) fprintf(stderr, "\nWarning: in vwarnp(%s, %s, ...): fflush returned error: %s\n",
 				   name, fmt, strerror(errno));
 	}
-
-	allowed = true;
     }
 
     /*
      * restore previous errno value
      */
     errno = saved_errno;
-    return allowed;
+    return;
 }
 
 
@@ -975,14 +943,11 @@ verrp(int exitcode, char const *name, char const *fmt, va_list ap)
  *
  * NOTE: We warn with extra newlines to help internal fault messages stand out.
  *	 Normally one should NOT include newlines in warn messages.
- *
- * This function returns true if output is allowed; else false.
  */
-bool
+void
 werr(int error_code, char const *name, char const *fmt, ...)
 {
     va_list ap;		/* variable argument list */
-    bool allowed = false; /* assume output not allowed */
 
     /*
      * stdarg variable argument list setup
@@ -1009,14 +974,12 @@ werr(int error_code, char const *name, char const *fmt, ...)
     /*
      * issue the error if allowed
      */
-    allowed = vwerr(error_code, name, fmt, ap);
+    vwerr(error_code, name, fmt, ap);
 
     /*
      * stdarg variable argument list cleanup
      */
     va_end(ap);
-
-    return allowed;
 }
 
 
@@ -1035,14 +998,11 @@ werr(int error_code, char const *name, char const *fmt, ...)
  *
  * NOTE: We warn with extra newlines to help internal fault messages stand out.
  *	 Normally one should NOT include newlines in warn messages.
- *
- * This function returns true if output is allowed; else false.
  */
-bool
+void
 vwerr(int error_code, char const *name, char const *fmt, va_list ap)
 {
     int ret;		/* libc function return code */
-    bool allowed = false; /* assume output not allowed */
 
     /*
      * firewall
@@ -1092,10 +1052,8 @@ vwerr(int error_code, char const *name, char const *fmt, va_list ap)
 	    warn(__func__, "\nin vwerr(%d, %s, %s, ...): fflush returned error: %s\n",
 			   error_code, name, fmt, strerror(errno));
 	}
-
-	allowed = true;
     }
-    return allowed;
+    return;
 }
 
 
@@ -1114,14 +1072,11 @@ vwerr(int error_code, char const *name, char const *fmt, va_list ap)
  *
  * NOTE: We warn with extra newlines to help internal fault messages stand out.
  *	 Normally one should NOT include newlines in warn messages.
- *
- * This function returns true if output is allowed; else false.
  */
-bool
+void
 werrp(int error_code, char const *name, char const *fmt, ...)
 {
-    va_list ap;		    /* variable argument list */
-    bool allowed = false;   /* assume output not allowed */
+    va_list ap;		/* variable argument list */
 
     /*
      * stdarg variable argument list setup
@@ -1146,14 +1101,12 @@ werrp(int error_code, char const *name, char const *fmt, ...)
     /*
      * issue the error, if allowed
      */
-    allowed = vwerrp(error_code, name, fmt, ap);
+    vwerrp(error_code, name, fmt, ap);
 
     /*
-     * stdarg variable argument list clean up
+     * stdarg variable argument list cleanup
      */
     va_end(ap);
-
-    return allowed;
 }
 
 
@@ -1172,15 +1125,12 @@ werrp(int error_code, char const *name, char const *fmt, ...)
  *
  * NOTE: We warn with extra newlines to help internal fault messages stand out.
  *	 Normally one should NOT include newlines in warn messages.
- *
- * This function returns true if output is allowed; else false.
  */
-bool
+void
 vwerrp(int error_code, char const *name, char const *fmt, va_list ap)
 {
     int ret;		/* libc function return code */
     int saved_errno;	/* errno value when called */
-    bool allowed = false; /* assume output not allowed */
 
     /*
      * save errno in case we need it for strerror()
@@ -1240,10 +1190,8 @@ vwerrp(int error_code, char const *name, char const *fmt, va_list ap)
 	    warn(__func__, "\nin vwerrp(%d, %s, %s, ...): fflush returned error: %s\n",
 			   error_code, name, fmt, strerror(errno));
 	}
-
-	allowed = true;
     }
-    return allowed;
+    return;
 }
 
 
