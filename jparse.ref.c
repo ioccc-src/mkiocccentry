@@ -881,8 +881,8 @@ int yy_flex_debug = 1;
 
 static const flex_int16_t yy_rule_linenum[14] =
     {   0,
-      154,  164,  171,  177,  183,  188,  194,  199,  206,  212,
-      219,  226,  233
+      154,  164,  170,  175,  180,  184,  189,  193,  198,  202,
+      207,  212,  217
     } ;
 
 /* The intent behind this definition is that it'll catch
@@ -1404,7 +1404,7 @@ YY_RULE_SETUP
 			     * Not needed but included for now for debugging
 			     * purposes.
 			     */
-			    printf("\nignoring %ju whitespace%s\n", (uintmax_t)ugly_leng, yyleng==1?"":"s");
+			    fprintf(stderr, "\nignoring %ju whitespace%s\n", (uintmax_t)ugly_leng, yyleng==1?"":"s");
 			}
 	YY_BREAK
 case 2:
@@ -1413,120 +1413,104 @@ YY_RULE_SETUP
 {
 			    /* string */
 			    ugly_length = ugly_leng;
-			    printf("\nstring: <%s>\n", ugly_text);
 			    return JSON_STRING;
 			}
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 171 "jparse.l"
+#line 170 "jparse.l"
 {
 			    /* number */
-			    printf("\nnumber: <%s>\n", ugly_text);
 			    return JSON_NUMBER;
 			}
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 177 "jparse.l"
+#line 175 "jparse.l"
 {
 			    /* null object */
-			    printf("\nnull: <%s>\n", ugly_text);
 			    return JSON_NULL;
 			}
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 183 "jparse.l"
+#line 180 "jparse.l"
 {
 			    /* boolean: true */
-			    printf("\ntrue: <%s>\n", ugly_text);
 			    return JSON_TRUE;
 			}
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 188 "jparse.l"
+#line 184 "jparse.l"
 {
 			    /* boolean: false */
-			    printf("\nfalse: <%s>\n", ugly_text);
 			    return JSON_FALSE;
 			}
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 194 "jparse.l"
+#line 189 "jparse.l"
 {
 			    /* start of object */
-			    printf("\nstart of object: <%c>\n", *ugly_text);
 			    return JSON_OPEN_BRACE;
 			}
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 199 "jparse.l"
+#line 193 "jparse.l"
 {
 			    /* end of object */
-			    printf("\nend of object: <%c>\n", *ugly_text);
-			    token = '}';
 			    return JSON_CLOSE_BRACE;
 			}
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 206 "jparse.l"
+#line 198 "jparse.l"
 {
 			    /* start of array */
-			    printf("\nstart of array: <%c>\n", *ugly_text);
-			    token = '[';
 			    return JSON_OPEN_BRACKET;
 			}
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
-#line 212 "jparse.l"
+#line 202 "jparse.l"
 {
 			    /* end of array */
-			    printf("\nend of array: <%c>\n", *ugly_text);
-			    token = ']';
 			    return JSON_CLOSE_BRACKET;
 			}
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
-#line 219 "jparse.l"
+#line 207 "jparse.l"
 {
 			    /* colon or 'equals' */
-			    printf("\ncolon (or 'equals'): <%c>\n", *ugly_text);
-			    token = ':';
 			    return JSON_COLON;
 			}
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
-#line 226 "jparse.l"
+#line 212 "jparse.l"
 {
 			    /* comma: name/value pair separator */
-			    printf("\ncomma: <%c>\n", *ugly_text);
-			    token = ',';
 			    return JSON_COMMA;
 			}
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
-#line 233 "jparse.l"
+#line 217 "jparse.l"
 {
 			    /* invalid token: any other character */
-			    ugly_error("\ninvalid token: 0x%02x = <%c>\n", *ugly_text, *ugly_text);
+			    ugly_error(NULL, "\ninvalid token: 0x%02x = <%c>\n", *ugly_text, *ugly_text);
 			    return JSON_INVALID_TOKEN;
 			}
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
-#line 239 "jparse.l"
+#line 223 "jparse.l"
 YY_FATAL_ERROR( "flex scanner jammed" );
 	YY_BREAK
-#line 1478 "jparse.c"
+#line 1462 "jparse.c"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 
@@ -2686,7 +2670,7 @@ void yyfree (void * ptr )
 
 /* %ok-for-header */
 
-#line 239 "jparse.l"
+#line 223 "jparse.l"
 
 
 /* Section 3: Code that's copied to the generated scanner */
@@ -2724,6 +2708,7 @@ struct json *
 parse_json(char const *ptr, size_t len, bool *is_valid, FILE *dbg_stream)
 {
     struct json *node = NULL;		/* the JSON parse tree */
+    int ret = 0;			/* ugly_parse() return value */
 
     /*
      * firewall
@@ -2787,6 +2772,8 @@ parse_json(char const *ptr, size_t len, bool *is_valid, FILE *dbg_stream)
      *
      * All of the debugging that should be under control of json_dbg()
      * and the JSON verbosity level such that -J 0 does not output anything.
+     * Currently this cannot be done because the lexer and parser are set to
+     * print out a lot of debug information.
      */
     json_dbg(json_verbosity_level, __func__, "*** BEGIN PARSE:\n<");
     if (dbg_stream != NULL) {
@@ -2795,12 +2782,14 @@ parse_json(char const *ptr, size_t len, bool *is_valid, FILE *dbg_stream)
     }
 
     /*
-     * parse the blob
+     * parse the blob, passing into the parser the node. The parser can access
+     * node directly by referring to node. For example to print out the type
+     * (currently it'll only be JTYPE_UNSET as it's NULL) it could do:
      *
-     * XXX - The ugly_parse() (which is yyparse()) returns an int.
-     *	     This function should return
+     *	json_dbg(JSON_DBG_LOW, __func__, "node type: %s", json_element_type_name(node));
+     *
      */
-    ugly_parse();
+    ret = ugly_parse(node);
 
     /*
      * scan and parse clean up
@@ -2813,6 +2802,8 @@ parse_json(char const *ptr, size_t len, bool *is_valid, FILE *dbg_stream)
      *
      * All of the debugging that should be under control of json_dbg()
      * and the JSON verbosity level such that -J 0 does not output anything.
+     * Currently this cannot be done because the lexer and parser are set to
+     * print out a lot of debug information.
      */
     json_dbg(json_verbosity_level, __func__, "*** END PARSE");
     if (dbg_stream != NULL) {
@@ -2823,8 +2814,7 @@ parse_json(char const *ptr, size_t len, bool *is_valid, FILE *dbg_stream)
      * report scanner / parser success or failure
      */
     if (is_valid != NULL) {
-	/* XXX - the success should be based on what ugly_parse() does - XXX */
-	*is_valid = true;
+	*is_valid = ret == 0;
     }
     /* XXX - return a blank JSON tree until we can get a tree via ugly_parse somehow - XXX */
     node = json_alloc(JTYPE_UNSET);
@@ -3044,6 +3034,8 @@ parse_json_file(char const *filename, bool *is_valid, FILE *dbg_stream)
      *
      * All of the debugging that should be under control of json_dbg()
      * and the JSON verbosity level such that -J 0 does not output anything.
+     * Currently this cannot be done because the lexer and parser are set to
+     * print out a lot of debug information.
      */
     if (dbg_stream != NULL) {
 	fprint_newline(dbg_stream, output_newline);

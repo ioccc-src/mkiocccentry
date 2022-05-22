@@ -388,7 +388,7 @@ fpr_number(FILE *stream, struct json_number *item)
      * print bool is_floating and is_e_notation
      */
     fprint(stream, "\t%s,\t"
-		   "\t/* true ==> as_str had a . in it such as 1.234, false ==> no . found */\n",
+		   "\t/* true ==> as_str had a '.' in it such as 1.234, false ==> no '.' found */\n",
 		   booltostr(item->is_floating));
     fprint(stream, "\t%s,\t"
 		   "\t/* true ==> e notation used such as 1e10, no e notation found */\n\n",

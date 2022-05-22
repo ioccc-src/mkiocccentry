@@ -146,21 +146,21 @@ extern bool msg_warn_silent;		/* true ==> silence msg(), vmsg(), warn(), vwarn()
 /*
  * external function declarations
  */
-extern void msg(const char *fmt, ...) \
+extern bool msg(const char *fmt, ...) \
 	__attribute__((format(printf, 1, 2)));		/* 1=format 2=params */
-extern void vmsg(char const *fmt, va_list ap);
+extern bool vmsg(char const *fmt, va_list ap);
 
-extern void dbg(int level, const char *fmt, ...) \
+extern bool dbg(int level, const char *fmt, ...) \
 	__attribute__((format(printf, 2, 3)));		/* 2=format 3=params */
-extern void vdbg(int level, char const *fmt, va_list ap);
+extern bool vdbg(int level, char const *fmt, va_list ap);
 
-extern void warn(const char *name, const char *fmt, ...) \
+extern bool warn(const char *name, const char *fmt, ...) \
 	__attribute__((format(printf, 2, 3)));		/* 2=format 3=params */
-extern void vwarn(char const *name, char const *fmt, va_list ap);
+extern bool vwarn(char const *name, char const *fmt, va_list ap);
 
-extern void warnp(const char *name, const char *fmt, ...) \
+extern bool warnp(const char *name, const char *fmt, ...) \
 	__attribute__((format(printf, 2, 3)));		/* 2=format 3=params */
-extern void vwarnp(char const *name, char const *fmt, va_list ap);
+extern bool vwarnp(char const *name, char const *fmt, va_list ap);
 
 extern void err(int exitcode, const char *name, const char *fmt, ...) \
 	__attribute__((noreturn)) __attribute__((format(printf, 3, 4))); /* 3=format 4=params */
@@ -170,13 +170,13 @@ extern void errp(int exitcode, const char *name, const char *fmt, ...) \
 	__attribute__((noreturn)) __attribute__((format(printf, 3, 4))); /* 3=format 4=params */
 extern void verrp(int exitcode, char const *name, char const *fmt, va_list ap);
 
-extern void werr(int error_code, const char *name, const char *fmt, ...) \
+extern bool werr(int error_code, const char *name, const char *fmt, ...) \
 	__attribute__((format(printf, 3, 4))); /* 3=format 4=params */
-extern void vwerr(int error_code, char const *name, char const *fmt, va_list ap);
+extern bool vwerr(int error_code, char const *name, char const *fmt, va_list ap);
 
-extern void werrp(int error_code, const char *name, const char *fmt, ...) \
+extern bool werrp(int error_code, const char *name, const char *fmt, ...) \
 	__attribute__((format(printf, 3, 4))); /* 3=format 4=params */
-extern void vwerrp(int error_code, char const *name, char const *fmt, va_list ap);
+extern bool vwerrp(int error_code, char const *name, char const *fmt, va_list ap);
 
 extern void fprintf_usage(int exitcode, FILE *stream, const char *fmt, ...) \
 	__attribute__((format(printf, 3, 4)));		/* 3=format 4=params */

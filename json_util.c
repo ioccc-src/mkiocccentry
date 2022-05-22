@@ -33,23 +33,14 @@
  */
 #include "json_util.h"
 
+/*
+ * globals
+ */
+int json_verbosity_level = JSON_DBG_NONE;	/* json debug level set by -J in jparse */
 
 /*
  * static declarations
  */
-static void alloc_json_code_ignore_set(void);
-static int cmp_codes(const void *a, const void *b);
-static void expand_json_code_ignore_set(void);
-static struct ignore_json_code *ignore_json_code_set;
-static bool json_process_decimal(struct json_number *item, char const *str, size_t len);
-static bool json_process_floating(struct json_number *item, char const *str, size_t len);
-
-
-/*
- * globals
- */
-
-int json_verbosity_level = JSON_DBG_NONE;	/* json debug level set by -J in jparse */
 
 /*
  * JSON warn (NOT error) codes to ignore
@@ -64,527 +55,14 @@ int json_verbosity_level = JSON_DBG_NONE;	/* json debug level set by -J in jpars
  * NOTE: A NULL ignore_json_code_set means that the set has not been setup.
  */
 static struct ignore_json_code *ignore_json_code_set = NULL;
+static void alloc_json_code_ignore_set(void);
+static int cmp_codes(const void *a, const void *b);
+static void expand_json_code_ignore_set(void);
+static struct ignore_json_code *ignore_json_code_set;
 
-
-/*
- * jwarn - issue a JSON warning message
- *
- * given:
- *	code	    warning code
- *	program	    name of program e.g. jinfochk, jauthchk etc.
- *	name	    name of function issuing the warning
- *	filename    file with the problem (can be stdin)
- *	line	    JSON line
- *	line_num    the offending line number in the json file
- *	fmt	    format of the warning
- *	...	    optional format args
- *
- * Example:
- *
- *	jwarn(JSON_CODE(1), program, __func__, file, line, __LINE__, "unexpected foobar: %d", value);
- *
- * XXX As of 13 March 2022 the line will be empty but in time this should be
- * changed to be the offending JSON text and the offending JSON line number
- * (which currently is done but the way it's done might change). Instead the
- * field and values are usually shown as part of the optional format args.
- *
- * NOTE: We warn with extra newlines to help internal fault messages stand out.
- *	 Normally one should NOT include newlines in warn messages.
- *
- * NOTE: In some cases the file noted is the source file that raised the issue.
- *
- * This function does not return on code < JSON_CODE_RESERVED_MIN (0).
- */
-void
-jwarn(int code, char const *program, char const *name, char const *filename, char const *line, int line_num, char const *fmt, ...)
-{
-    va_list ap;		/* variable argument list */
-    int ret;		/* libc function return code */
-    int saved_errno;	/* errno at function start */
-
-    if (is_json_code_ignored(code))
-	return;
-
-    /*
-     * save errno so we can restore it before returning
-     */
-    saved_errno = errno;
-
-    /*
-     * stdarg variable argument list setup
-     */
-    va_start(ap, fmt);
-
-    /*
-     * firewall
-     */
-    if (program == NULL) {
-	program = "((NULL program))";
-	warn(__func__, "\nWarning: in jwarn(): called with NULL program, forcing name: %s\n", program);
-    }
-    if (name == NULL) {
-	name = "((NULL name))";
-	warn(__func__, "\nWarning: in jwarn(): called with NULL name, forcing name: %s\n", name);
-    }
-    if (fmt == NULL) {
-	fmt = "((NULL fmt))";
-	warn(__func__, "\nWarning: in jwarn(): called with NULL fmt, forcing fmt: %s\n", fmt);
-    }
-    if (code < JSON_CODE_RESERVED_MIN) {
-	err(198, __func__, "invalid JSON code passed to jwarn(): %d", code);
-	not_reached();
-    }
-    if (line == NULL) {
-	/* currently line will be NULL so we make it empty */
-	line = "";
-    }
-    if (filename == NULL) {
-	filename = "((NULL))";
-	dbg(DBG_VHIGH, "jwarn(): called with NULL filename, forcing filename: %s\n", filename);
-    }
-
-
-    errno = 0;
-    ret = fprintf(stderr, "# program: %s %s\n", program, name);
-    if (ret < 0) {
-	(void) fprintf(stderr, "\nWarning: in jwarn(%d, %s, %s, %s, %s, %d, %s, ...): "
-			       "fprintf returned error: %s\n", code, program, name,
-		filename, line, line_num, fmt, strerror(errno));
-    }
-
-    errno = 0;
-    ret = fprintf(stderr, "{JSON-%04d}: %s: %d: ", code, filename, line_num);
-    if (ret < 0) {
-	(void) fprintf(stderr, "\nWarning: in jwarn(%d, %s, %s, %s, %s, %d, %s, ...): "
-			       "fprintf returned error: %s\n", code, program, name,
-		filename, line, line_num, fmt, strerror(errno));
-    }
-
-    errno = 0;
-    ret = vfprintf(stderr, fmt, ap);
-    if (ret < 0) {
-	(void) fprintf(stderr, "\nWarning: in jwarn(%d, %s, %s, %s, %s, %d, %s, ...): "
-			       "fprintf returned error: %s\n", code, program, name,
-		filename, line, line_num, fmt, strerror(errno));
-    }
-
-    errno = 0;
-    ret = fputc('\n', stderr);
-    if (ret != '\n') {
-	(void) fprintf(stderr, "\nWarning: in jwarn(%d, %s, %s, %s, %s, %d, %s, ...): "
-			       "fputc returned error: %s\n", code, program, name,
-		filename, line, line_num, fmt, strerror(errno));
-    }
-
-    errno = 0;
-    ret = fflush(stderr);
-    if (ret < 0) {
-	(void) fprintf(stderr, "\nWarning: in jwarn(%d, %s, %s, %s, %s, %d, %s, ...): "
-			       "fflush returned error: %s\n", code, program, name,
-		filename, line, line_num, fmt, strerror(errno));
-    }
-
-    /*
-     * stdarg variable argument list cleanup
-     */
-    va_end(ap);
-
-    /*
-     * restore previous errno value
-     */
-    errno = saved_errno;
-    return;
-}
-
-
-/*
- * jwarnp - issue a JSON warning message with errno information
- *
- * given:
- *	code	    warning code
- *	program	    name of program e.g. jinfochk, jauthchk etc.
- *	name	    name of function issuing the warning
- *	filename    file with the problem (can be stdin)
- *	line	    JSON line
- *	line_num    the offending line number in the json file
- *	fmt	    format of the warning
- *	...	    optional format args
- *
- * Example:
- *
- *	jwarn(JSON_CODE(1), program, __func__, file, line, __LINE__, "unexpected foobar: %d", value);
- *
- * XXX As of 13 March 2022 the line will be empty but in time this should be
- * changed to be the offending JSON text and the offending JSON line number
- * (which currently is done but the way it's done might change). Instead the
- * field and values are usually shown as part of the optional format args.
- *
- * NOTE: We warn with extra newlines to help internal fault messages stand out.
- *	 Normally one should NOT include newlines in warn messages.
- *
- * NOTE: In some cases the file noted is the source file that raised the issue.
- *
- * This function does not return on code < JSON_CODE_RESERVED_MIN (0).
- */
-void
-jwarnp(int code, char const *program, char const *name, char const *filename, char const *line,
-       int line_num, char const *fmt, ...)
-{
-    va_list ap;		/* variable argument list */
-    int ret;		/* libc function return code */
-    int saved_errno;	/* errno at function start */
-
-    if (is_json_code_ignored(code))
-	return;
-
-    /*
-     * save errno so we can restore it before returning
-     */
-    saved_errno = errno;
-
-    /*
-     * stdarg variable argument list setup
-     */
-    va_start(ap, fmt);
-
-    /*
-     * firewall
-     */
-    if (program == NULL) {
-	program = "((NULL program))";
-	warn(__func__, "\nWarning: in jwarn(): called with NULL program, forcing name: %s\n", program);
-    }
-    if (name == NULL) {
-	name = "((NULL name))";
-	warn(__func__, "\nWarning: in jwarn(): called with NULL name, forcing name: %s\n", name);
-    }
-    if (fmt == NULL) {
-	fmt = "((NULL fmt))";
-	warn(__func__, "\nWarning: in jwarn(): called with NULL fmt, forcing fmt: %s\n", fmt);
-    }
-    if (code < JSON_CODE_RESERVED_MIN) {
-	err(199, __func__, "invalid JSON code passed to jwarn(): %d", code);
-	not_reached();
-    }
-    if (line == NULL) {
-	/* currently line will be NULL so we make it empty */
-	line = "";
-    }
-    if (filename == NULL) {
-	filename = "((NULL))";
-	dbg(DBG_VHIGH, "jwarn(): called with NULL filename, forcing filename: %s\n", filename);
-    }
-
-
-    errno = 0;
-    ret = fprintf(stderr, "# program: %s %s\n", program, name);
-    if (ret < 0) {
-	(void) fprintf(stderr, "\nWarning: in jwarn(%d, %s, %s, %s, %s, %d, %s, ...): "
-			       "fprintf returned error: %s\n", code, program, name,
-		filename, line, line_num, fmt, strerror(errno));
-    }
-
-    errno = 0;
-    ret = fprintf(stderr, "{JSON-%04d}: %s: %d: ", code, filename, line_num);
-    if (ret < 0) {
-	(void) fprintf(stderr, "\nWarning: in jwarn(%d, %s, %s, %s, %s, %d, %s, ...): "
-			       "fprintf returned error: %s\n", code, program, name,
-		filename, line, line_num, fmt, strerror(errno));
-    }
-
-    errno = 0;
-    ret = vfprintf(stderr, fmt, ap);
-    if (ret < 0) {
-	(void) fprintf(stderr, "\nWarning: in jwarn(%d, %s, %s, %s, %s, %d, %s, ...): "
-			       "fprintf returned error: %s\n", code, program, name,
-		filename, line, line_num, fmt, strerror(errno));
-    }
-
-    errno = 0;
-    ret = fprintf(stderr, "errno[%d]: %s\n", saved_errno, strerror(saved_errno));
-    if (ret < 0) {
-	(void) fprintf(stderr, "\nWarning: in jwarn(%d, %s, %s, %s, %s, %d, %s, ...): "
-			       "fprintf with errno returned error: %s\n", code, program, name,
-		filename, line, line_num, fmt, strerror(errno));
-    }
-
-    errno = 0;
-    ret = fputc('\n', stderr);
-    if (ret != '\n') {
-	(void) fprintf(stderr, "\nWarning: in jwarn(%d, %s, %s, %s, %s, %d, %s, ...): "
-			       "fputc returned error: %s\n", code, program, name,
-		filename, line, line_num, fmt, strerror(errno));
-    }
-
-    errno = 0;
-    ret = fflush(stderr);
-    if (ret < 0) {
-	(void) fprintf(stderr, "\nWarning: in jwarn(%d, %s, %s, %s, %s, %d, %s, ...): "
-			       "fflush returned error: %s\n", code, program, name,
-		filename, line, line_num, fmt, strerror(errno));
-    }
-
-    /*
-     * stdarg variable argument list cleanup
-     */
-    va_end(ap);
-
-    /*
-     * restore previous errno value
-     */
-    errno = saved_errno;
-    return;
-}
-
-
-/*
- * jerr - issue a fatal JSON error message and exit
- *
- * given:
- *	exitcode	value to exit with
- *	program		program or NULL (will be set to "jchk")
- *	name		name of function issuing the error
- *	filename	file with the problem (can be stdin)
- *	line		line with the problem (or NULL)
- *	line_num	line number with the problem or -1
- *	fmt		format of the warning
- *	...		optional format args
- *
- * Example:
- *
- *	jerr(JSON_CODE(1), __func__, program, file, line, line_num, "bad foobar: %s", message);
- *
- * NOTE: We warn with extra newlines to help internal fault messages stand out.
- *	 Normally one should NOT include newlines in warn messages.
- *
- * NOTE: In some cases the file noted is the source file that raised the issue.
- *
- * This function does not return.
- */
-void
-jerr(int exitcode, char const *program, char const *name, char const *filename, char const *line,
-     int line_num, char const *fmt, ...)
-{
-    va_list ap;		/* variable argument list */
-    int ret;		/* libc function return code */
-
-    /*
-     * stdarg variable argument list setup
-     */
-    va_start(ap, fmt);
-
-    /*
-     * firewall
-     */
-    if (exitcode < 0) {
-	warn(__func__, "\nin jerr(): called with exitcode <0: %d\n", exitcode);
-	exitcode = 255;
-	warn(__func__, "\nin jerr(): forcing exit code: %d\n", exitcode);
-    }
-    if (program == NULL) {
-	program = "jchk";
-	dbg(DBG_VHIGH, "\nin jerr(): called with NULL program, forcing program: %s\n", program);
-    }
-    if (name == NULL) {
-	name = "((NULL name))";
-	warn(__func__, "\nin jerr(): called with NULL name, forcing name: %s\n", name);
-    }
-    if (fmt == NULL) {
-	fmt = "((NULL fmt))";
-	warn(__func__, "\nin jerr(): called with NULL fmt, forcing fmt: %s\n", fmt);
-    }
-    if (filename == NULL) {
-	filename = "((NULL))";
-	dbg(DBG_VHIGH, "jerr(): called with NULL filename, forcing filename: %s\n", filename);
-    }
-    if (line == NULL) {
-	line = "";
-	dbg(DBG_VHIGH, "jerr(): called with NULL line, making \"\"");
-    }
-
-    errno = 0;
-    ret = fprintf(stderr, "# program: %s %s\n", program, name);
-    if (ret < 0) {
-	(void) fprintf(stderr, "\nWarning: in jerr(%d, %s, %s, %s, %s, %d, %s, ...): "
-			       "fprintf returned error: %s\n", exitcode, program, name,
-		filename, line, line_num, fmt, strerror(errno));
-    }
-
-    errno = 0;
-    ret = fprintf(stderr, "JSON[%04d]: %s: %d: ", exitcode, filename, line_num);
-    if (ret < 0) {
-	(void) fprintf(stderr, "\nWarning: in jerr(%d, %s, %s, %s, %s, %d, %s, ...): "
-			       "fprintf returned error: %s\n", exitcode, program, name,
-		filename, line, line_num, fmt, strerror(errno));
-    }
-
-    errno = 0;
-    ret = vfprintf(stderr, fmt, ap);
-    if (ret < 0) {
-	(void) fprintf(stderr, "\nWarning: in jerr(%d, %s, %s, %s, %s, %d, %s, ...): "
-			       "vfprintf returned error: %s\n", exitcode, program, name,
-		filename, line, line_num, fmt, strerror(errno));
-    }
-
-    errno = 0;
-    ret = fputc('\n', stderr);
-    if (ret != '\n') {
-	(void) fprintf(stderr, "\nWarning: in jerr(%d, %s, %s, %s, %s, %d, %s, ...): "
-			       "fputc returned error: %s\n", exitcode, program, name,
-		filename, line, line_num, fmt, strerror(errno));
-    }
-
-    errno = 0;
-    ret = fflush(stderr);
-    if (ret < 0) {
-	(void) fprintf(stderr, "\nWarning: in jerr(%d, %s, %s, %s, %s, %d, %s, ...): "
-			       "fflush returned error: %s\n", exitcode, program, name,
-		filename, line, line_num, fmt, strerror(errno));
-    }
-
-    /*
-     * stdarg variable argument list cleanup
-     */
-    va_end(ap);
-
-    /*
-     * terminate with exit code
-     */
-    exit(exitcode);
-    not_reached();
-}
-
-
-/*
- * jerrp - issue a fatal error message with errno information and exit
- *
- * given:
- *	exitcode	value to exit with
- *	program		program or NULL (will be set to "jchk")
- *	name		name of function issuing the warning
- *	filename	file with the problem (can be stdin)
- *	line		line with the problem or NULL
- *	line_num	line number of the problem or -1
- *	fmt		format of the warning
- *	...		optional format args
- *
- * Example:
- *
- *	jerrp(JSON_CODE(1), program, __func__, file, line, line_num, "bad foobar: %s", message);
- *
- * NOTE: We warn with extra newlines to help internal fault messages stand out.
- *	 Normally one should NOT include newlines in warn messages.
- *
- * NOTE: In some cases the file noted is the source file that raised the issue.
- *
- * This function does not return.
- */
-void
-jerrp(int exitcode, char const *program, char const *name, char const *filename, char const *line,
-      int line_num, char const *fmt, ...)
-{
-    va_list ap;		/* variable argument list */
-    int ret;		/* libc function return code */
-    int saved_errno;	/* errno value when called */
-
-    /*
-     * save errno in case we need it for strerror()
-     */
-    saved_errno = errno;
-
-    /*
-     * stdarg variable argument list setup
-     */
-    va_start(ap, fmt);
-
-    /* firewall */
-    if (exitcode < 0) {
-	warn(__func__, "\nin jerrp(): called with exitcode <0: %d\n", exitcode);
-	exitcode = 255;
-	warn(__func__, "\nin jerrp(): forcing exit code: %d\n", exitcode);
-    }
-    if (program == NULL) {
-	program = "jchk";
-	dbg(DBG_VHIGH, "\nin jerrp(): called with NULL program, forcing program: %s\n", program);
-    }
-    if (name == NULL) {
-	name = "((NULL name))";
-	warn(__func__, "\nin jerrp(): called with NULL name, forcing name: %s\n", name);
-    }
-    if (fmt == NULL) {
-	fmt = "((NULL fmt))";
-	warn(__func__, "\nin jerrp(): called with NULL fmt, forcing fmt: %s\n", fmt);
-    }
-    if (filename == NULL) {
-	filename = "((NULL))";
-	dbg(DBG_VHIGH, "jerrp(): called with NULL filename, forcing filename: %s\n", filename);
-    }
-    if (line == NULL) {
-	line = "";
-	dbg(DBG_VHIGH, "jerrp(): called with NULL line, making \"\"");
-    }
-
-
-    errno = 0;
-    ret = fprintf(stderr, "# program: %s %s\n", program, name);
-    if (ret < 0) {
-	(void) fprintf(stderr, "\nWarning: in jerrp(%d, %s, %s, %s, %s, %d, %s, ...): "
-			       "fprintf returned error: %s\n", exitcode, program, name,
-		filename, line, line_num, fmt, strerror(errno));
-    }
-
-    errno = 0;
-    ret = fprintf(stderr, "JSON[%04d]: %s: %d: ", exitcode, filename, line_num);
-    if (ret < 0) {
-	(void) fprintf(stderr, "\nWarning: in jerrp(%d, %s, %s, %s, %s, %d, %s, ...): "
-			       "fprintf returned error: %s\n", exitcode, program, name,
-		filename, line, line_num, fmt, strerror(errno));
-    }
-
-    errno = 0;
-    ret = vfprintf(stderr, fmt, ap);
-    if (ret < 0) {
-	(void) fprintf(stderr, "\nWarning: in jerrp(%d, %s, %s, %s, %s, %d, %s, ...): "
-			       "vfprintf returned error: %s\n", exitcode, program, name,
-		filename, line, line_num, fmt, strerror(errno));
-    }
-
-    errno = 0;
-    ret = fprintf(stderr, " errno[%d]: %s", saved_errno, strerror(saved_errno));
-    if (ret < 0) {
-	(void) fprintf(stderr, "\nWarning: in jerrp(%d, %s, %s, %s, %s, %d, %s, ...): "
-			       "fprintf returned error: %s\n", exitcode, program, name,
-		filename, line, line_num, fmt, strerror(errno));
-    }
-
-    errno = 0;
-    ret = fputc('\n', stderr);
-    if (ret != '\n') {
-	(void) fprintf(stderr, "\nWarning: in jerrp(%d, %s, %s, %s, %s, %d, %s, ...): "
-			       "fputc returned error: %s\n", exitcode, program, name,
-		filename, line, line_num, fmt, strerror(errno));
-    }
-
-    errno = 0;
-    ret = fflush(stderr);
-    if (ret < 0) {
-	(void) fprintf(stderr, "\nWarning: in jerrp(%d, %s, %s, %s, %s, %d, %s, ...): "
-			       "fflush returned error: %s\n", exitcode, program, name,
-		filename, line, line_num, fmt, strerror(errno));
-    }
-
-    /*
-     * stdarg variable argument list cleanup
-     */
-    va_end(ap);
-
-    /*
-     * terminate with exit code
-     */
-    exit(exitcode);
-    not_reached();
-}
-
+/* for json number strings */
+static bool json_process_decimal(struct json_number *item, char const *str, size_t len);
+static bool json_process_floating(struct json_number *item, char const *str, size_t len);
 
 /*
  * alloc_json_code_ignore_set - allocate the initial JSON ignore code set
@@ -833,689 +311,6 @@ ignore_json_code(int code)
     return;
 }
 
-
-/*
- * json_dbg - print JSON debug message if we are verbose enough
- *
- * given:
- *	level	    print message if >= verbosity level
- *	program	    program name
- *	name	    function name
- *	fmt	    printf format
- *	...
- *
- * Example:
- *
- *	json_dbg(1, __func__, "foobar information: %d", value);
- *
- * NOTE: We warn with extra newlines to help internal fault messages stand out.
- *	 Normally one should NOT include newlines in warn messages.
- */
-void
-json_dbg(int level, char const *name, char const *fmt, ...)
-{
-    va_list ap;		/* variable argument list */
-    int saved_errno;	/* errno at function start */
-
-    /*
-     * save errno so we can restore it before returning
-     */
-    saved_errno = errno;
-
-    /*
-     * stdarg variable argument list setup
-     */
-    va_start(ap, fmt);
-
-    /*
-     * firewall
-     */
-    if (name == NULL) {
-	name = "((NULL name))";
-	warn(__func__, "\nin json_dbg(%d, ...): NULL name, forcing use of: %s\n", level, name);
-    }
-    if (fmt == NULL) {
-	fmt = "((NULL fmt))";
-	warn(__func__, "\nin json_dbg(%d, ...): NULL fmt, forcing use of: %s\n", level, fmt);
-    }
-
-    /*
-     * print the debug message if allowed and allowed by the verbosity level
-     */
-    json_vdbg(level, name, fmt, ap);
-
-    /*
-     * stdarg variable argument list cleanup
-     */
-    va_end(ap);
-
-    /*
-     * restore previous errno value
-     */
-    errno = saved_errno;
-    return;
-}
-
-
-/*
- * json_vdbg - print debug message if we are verbose enough
- *
- * given:
- *	level	    print message if >= verbosity level
- *	name	    function name
- *	ap	    variable argument list
- *
- * Example:
- *
- *	json_vdbg(1, __func__, "foobar information: %d", ap);
- *
- * NOTE: We warn with extra newlines to help internal fault messages stand out.
- *	 Normally one should NOT include newlines in warn messages.
- */
-void
-json_vdbg(int level, char const *name, char const *fmt, va_list ap)
-{
-    int ret;		/* libc function return code */
-    int saved_errno;	/* errno at function start */
-
-    /*
-     * save errno so we can restore it before returning
-     */
-    saved_errno = errno;
-
-    /*
-     * firewall
-     */
-    if (name == NULL) {
-	name = "((NULL name))";
-	warn(__func__, "\nin json_vdbg(%d, ...): NULL name, forcing use of: %s\n", level, name);
-    }
-    if (fmt == NULL) {
-	fmt = "((NULL fmt))";
-	warn(__func__, "\nin json_vdbg(%d, ...): NULL fmt, forcing use of: %s\n", level, fmt);
-    }
-
-    /*
-     * print the debug message if allowed and allowed by the verbosity level
-     */
-    if (dbg_output_allowed) {
-	if (level <= json_verbosity_level) {
-	    errno = 0;
-	    ret = fprintf(stderr, "JSON DEBUG[%d]: ", level);
-	    if (ret < 0) {
-		warn(__func__, "\nin json_vdbg(%d, %s, %s ...): fprintf returned error: %s\n",
-			       level, name, fmt, strerror(errno));
-	    }
-
-	    errno = 0;
-	    ret = vfprintf(stderr, fmt, ap);
-	    if (ret < 0) {
-		warn(__func__, "\nin json_vdbg(%d, %s, %s ...): vfprintf returned error: %s\n",
-			       level, name, fmt, strerror(errno));
-	    }
-
-	    errno = 0;
-	    ret = fputc('\n', stderr);
-	    if (ret != '\n') {
-		warn(__func__, "\nin json_vdbg(%d, %s ...): fputc returned error: %s\n",
-			       level, fmt, strerror(errno));
-	    }
-
-	    errno = 0;
-	    ret = fflush(stderr);
-	    if (ret < 0) {
-		warn(__func__, "\nin json_vdbg(%d, %s, %s ...): fflush returned error: %s\n",
-			       level, name, fmt, strerror(errno));
-	    }
-	}
-    }
-
-    /*
-     * restore previous errno value
-     */
-    errno = saved_errno;
-    return;
-}
-
-
-/*
- * json_element_type_name - print a struct json element union type by name
- *
- * given:
- *	json_type   one of the values of the JTYPE_ enum
- *
- * returns:
- *	A constant (read-only) string that names the JTYPE_ enum.
- *
- * NOTE: This string returned is read only: It's not allocated on the stack.
- */
-char const *
-json_element_type_name(struct json *node)
-{
-    char const *name = "JTYPE_UNSET";
-
-    /*
-     * firewall
-     */
-    if (node == NULL) {
-	name = "((node == NULL))";
-
-    /*
-     * determine type name based on type
-     */
-    } else {
-	switch (node->type) {
-	case JTYPE_UNSET:
-	    name = "JTYPE_UNSET";
-	    break;
-	case JTYPE_NUMBER:
-	    name = "JTYPE_NUMBER";
-	    break;
-	case JTYPE_STRING:
-	    name = "JTYPE_STRING";
-	    break;
-	case JTYPE_BOOL:
-	    name = "JTYPE_BOOL";
-	    break;
-	case JTYPE_NULL:
-	    name = "JTYPE_NULL";
-	    break;
-	case JTYPE_MEMBER:
-	    name = "JTYPE_MEMBER";
-	    break;
-	case JTYPE_OBJECT:
-	    name = "JTYPE_OBJECT";
-	    break;
-	case JTYPE_ARRAY:
-	    name = "JTYPE_ARRAY";
-	    break;
-	default:
-	    name = "((JTYPE_UNKNOWN))";
-	    warn(__func__, "called with unknown JSON type: %d", node->type);
-	    break;
-	}
-    }
-
-    /* return read-only name constant string */
-    return name;
-}
-
-
-/*
- * json_free - free storage of a single JSON parse tree node
- *
- * This function operates on a single JSON parse tree node.
- * See json_tree_free() for a function that frees an entire parse tree.
- *
- * given:
- *	node	pointer to a JSON parser tree node to free
- *	...	extra args are ignored
- *
- * While the ... variable arg are ignored, we need to declare
- * then in order to be in vcallback form for use by json_tree_walk().
- *
- * This function will free the internals of a JSON parser tree node.
- * It is up to the caller to free the struct json if needed.
- *
- * This function does NOT walk the JSON parse tree, so it will
- *ignore links form this node to other JSON parse tree nodes.
- *
- * NOTE: If the pointer to allocated storage == NULL,
- *	 this function does nothing.
- *
- * NOTE: This function does nothing if node == NULL.
- *
- * NOTE: This function does nothing if the node type is invalid.
- */
-void
-json_free(struct json *node, ...)
-{
-    va_list ap;		/* variable argument list */
-
-    /*
-     * firewall - nothing to do for a NULL node
-     */
-    if (node == NULL) {
-	return;
-    }
-
-    /*
-     * stdarg variable argument list setup
-     */
-    va_start(ap, node);
-
-    /*
-     * free internals based in node type
-     */
-    switch (node->type) {
-
-    case JTYPE_UNSET:	/* JSON element has not been set - must be the value 0 */
-	/* nothing to free */
-
-	/* nothing internal to zeroize */
-	break;
-
-    case JTYPE_NUMBER:	/* JSON element is number - see struct json_number */
-	{
-	    struct json_number *item = &(node->element.number);
-
-	    /* free internal storage */
-	    if (item->as_str != NULL) {
-		free(item->as_str);
-		item->as_str = NULL;
-	    }
-
-	    /* zeroize internal element storage */
-	    memset(item, 0, sizeof(struct json_number));
-	    item->converted = false;
-	}
-	break;
-
-    case JTYPE_STRING:	/* JSON element is a string - see struct json_string */
-	{
-	    struct json_string *item = &(node->element.string);
-
-	    /* free internal storage */
-	    if (item->as_str != NULL) {
-		free(item->as_str);
-		item->as_str = NULL;
-	    }
-	    if (item->str != NULL) {
-		free(item->str);
-		item->str = NULL;
-	    }
-
-	    /* zeroize internal element storage */
-	    memset(item, 0, sizeof(struct json_string));
-	    item->converted = false;
-	}
-	break;
-
-    case JTYPE_BOOL:	/* JSON element is a boolean - see struct json_boolean */
-	{
-	    struct json_boolean *item = &(node->element.boolean);
-
-	    /* free internal storage */
-	    if (item->as_str != NULL) {
-		free(item->as_str);
-		item->as_str = NULL;
-	    }
-
-	    /* zeroize internal element storage */
-	    memset(item, 0, sizeof(struct json_boolean));
-	    item->converted = false;
-	}
-	break;
-
-    case JTYPE_NULL:	/* JSON element is a null - see struct json_null */
-	{
-	    struct json_null *item = &(node->element.null);
-
-	    /* free internal storage */
-	    if (item->as_str != NULL) {
-		free(item->as_str);
-		item->as_str = NULL;
-	    }
-
-	    /* zeroize internal element storage */
-	    memset(item, 0, sizeof(struct json_null));
-	    item->converted = false;
-	}
-	break;
-
-    case JTYPE_MEMBER:	/* JSON element is a member */
-	{
-	    struct json_member *item = &(node->element.member);
-
-	    /* free internal storage */
-	    item->name = NULL;
-	    item->value = NULL;
-
-	    /* zeroize internal element storage */
-	    memset(item, 0, sizeof(struct json_member));
-	    item->converted = false;
-	}
-	break;
-
-    case JTYPE_OBJECT:	/* JSON element is a { members } */
-	{
-	    struct json_object *item = &(node->element.object);
-
-	    /* free internal storage */
-	    if (item->s != NULL) {
-		dyn_array_free(item->s);
-		item->s = NULL;
-		item->set = NULL;
-		item->len = 0;
-	    }
-
-	    /* zeroize internal element storage */
-	    memset(item, 0, sizeof(struct json_object));
-	    item->converted = false;
-	}
-	break;
-
-    case JTYPE_ARRAY:	/* JSON element is a [ elements ] */
-	{
-	    struct json_array *item = &(node->element.array);
-
-	    /* free internal storage */
-	    if (item->s != NULL) {
-		dyn_array_free(item->s);
-		item->s = NULL;
-		item->set = NULL;
-		item->len = 0;
-	    }
-
-	    /* zeroize internal element storage */
-	    memset(item, 0, sizeof(struct json_array));
-	    item->converted = false;
-	}
-	break;
-
-    default:
-	/* nothing we can free */
-	warn(__func__, "node type is unknown: %d", node->type);
-	break;
-    }
-
-    /*
-     * reset the JSON node
-     */
-    node->type = JTYPE_UNSET;
-    node->parent = NULL;
-
-    /*
-     * stdarg variable argument list cleanup
-     */
-    va_end(ap);
-    return;
-}
-
-
-/*
- * vjson_free - free storage of a single JSON parse tree node in va_list form
- *
- * This is a variable argument list interface to json_free().
- * See json_free() for a function that frees an entire parse tree.
- *
- * given:
- *	node	pointer to a JSON parser tree node to free
- *	ap	variable argument list
- *
- * NOTE: This function does nothing if node == NULL.
- *
- * NOTE: This function does nothing if the node type is invalid.
- */
-void
-vjson_free(struct json *node, va_list ap)
-{
-    /*
-     * firewall - nothing to do for a NULL node
-     */
-    if (node == NULL) {
-	return;
-    }
-
-    /*
-     * call non-variable argument list function
-     */
-    json_free(node, ap);
-    return;
-}
-
-
-/*
- * json_tree_free - free storage of a JSON parse tree
- *
- * This function uses the json_tree_walk() interface to walk
- * the JSON parse tree and free all nodes under a given node.
- *
- * given:
- *	node	    pointer to a JSON parser tree node to free
- *	max_depth   maximum tree depth to descend, or <0 ==> infinite depth
- *			NOTE: Use JSON_INFINITE_DEPTH for infinite depth
- *
- * NOTE: This function will free the internals of a JSON parser tree node.
- *	 It is up to the caller to free the top level struct json if needed.
- *
- * NOTE: If the pointer to allocated storage == NULL,
- *	 this function does nothing.
- *
- * NOTE: This function does nothing if node == NULL.
- *
- * NOTE: This function does nothing if the node type is invalid.
- */
-void
-json_tree_free(struct json *node, int max_depth, ...)
-{
-    va_list ap;		/* variable argument list */
-
-    /*
-     * firewall - nothing to do for a NULL node
-     */
-    if (node == NULL) {
-	return;
-    }
-
-    /*
-     * stdarg variable argument list setup
-     */
-    va_start(ap, max_depth);
-
-    /*
-     * free the JSON parse tree
-     */
-    vjson_tree_walk(node, max_depth, 0, ap, vjson_free);
-
-    /*
-     * stdarg variable argument list cleanup
-     */
-    va_end(ap);
-    return;
-}
-
-
-/*
- * json_tree_walk - walk a JSON parse tree calling a function on each node
- *
- * Walk a JSON parse tree, Depth-first Post-order (LRN) order.  See:
- *
- *	https://en.wikipedia.org/wiki/Tree_traversal#Post-order,_LRN
- *
- * Example use - free an entire JSON parse tree
- *
- *	json_tree_walk(tree, json_free);
- *
- * given:
- *	node	    pointer to a JSON parse tree
- *	max_depth   maximum tree depth to descend, or <0 ==> infinite depth
- *			NOTE: Use JSON_INFINITE_DEPTH for infinite depth
- *	vcallback   function to operate JSON parse tree node in va_list form
- *	...	    extra args for vcallback
- *
- * The vcallback() funcion must NOT call va_arg() nor call va_end() on the
- * the va_list argument directly.  Instead they must call va_copy()
- * and then use va_arg() and va_end() on the va_list copy.
- *
- * Although in C ALL functions are pointers which means one can call foo()
- * as foo() or (*foo)() we use the latter format for the callback function
- * to make it clearer that it is in fact a function that's passed in so
- * that we can use this function to do more than one thing. This is also
- * why we call it vcallback and not something else.
- *
- * If max_depth is >= 0 and the tree depth > max_depth, then this function return.
- * In this case it will NOT operate on the node, or will be descend and further
- * into the tree.
- *
- * NOTE: This function warns but does not do anything if an arg is NULL.
- */
-void
-json_tree_walk(struct json *node, int max_depth, void (*vcallback)(struct json *, va_list), ...)
-{
-    va_list ap;		/* variable argument list */
-
-    /*
-     * firewall
-     */
-    if (node == NULL) {
-	warn(__func__, "node is NULL");
-	return ;
-    }
-    if (vcallback == NULL) {
-	warn(__func__, "vcallback is NULL");
-	return ;
-    }
-
-    /*
-     * stdarg variable argument list setup
-     */
-    va_start(ap, vcallback);
-
-    /*
-     * walk the tree according to max_depth
-     */
-    vjson_tree_walk(node, max_depth, 0, ap, vcallback);
-
-    /*
-     * stdarg variable argument list cleanup
-     */
-    va_end(ap);
-    return;
-}
-
-
-/*
- * vjson_tree_walk - walk a JSON parse tree calling a function on each node in va_list form
- *
- * This is the va_list form of json_tree_walk().
- *
- * Walk a JSON parse tree, Depth-first Post-order (LRN) order.  See:
- *
- *	https://en.wikipedia.org/wiki/Tree_traversal#Post-order,_LRN
- *
- * Example use - free an entire JSON parse tree
- *
- *	json_tree_walk(tree, json_free);
- *
- * given:
- *	node	    pointer to a JSON parse tree
- *	vcallback   function to operate JSON parse tree node in va_list form
- *	max_depth   maximum tree depth to descend, or <0 ==> infinite depth
- *			NOTE: Use JSON_INFINITE_DEPTH for infinite depth
- *	depth	    current tree depth (0 ==> top of tree)
- *	ap	    variable argument list
- *
- * The vcallback() funcion must NOT call va_arg() nor call va_end() on the
- * the va_list argument directly.  Instead they must call va_copy()
- * and then use va_arg() and va_end() on the va_list copy.
- *
- * Although in C ALL functions are pointers which means one can call foo()
- * as foo() or (*foo)() we use the latter format for the callback function
- * to make it clearer that it is in fact a function that's passed in so
- * that we can use this function to do more than one thing. This is also
- * why we call it callback and not something else.
- *
- * If max_depth is >= 0 and the tree depth > max_depth, then this function return.
- * In this case it will NOT operate on the node, or will be descend and further
- * into the tree.
- *
- * NOTE: This function warns but does not do anything if an arg is NULL.
- */
-void
-vjson_tree_walk(struct json *node, int max_depth, int depth, va_list ap, void (*vcallback)(struct json *, va_list))
-{
-    int i;
-
-    /*
-     * firewall
-     */
-    if (node == NULL) {
-	warn(__func__, "node is NULL");
-	return ;
-    }
-    if (vcallback == NULL) {
-	warn(__func__, "vcallback is NULL");
-	return ;
-    }
-
-    /*
-     * do nothing if we are too deep
-     */
-    if (max_depth >= 0 && depth > max_depth) {
-	warn(__func__, "tree walk descent stopped, tree depth: %d > max_depth: %d", depth, max_depth);
-	return;
-    }
-
-    /*
-     * walk based on type of node
-     */
-    switch (node->type) {
-
-    case JTYPE_UNSET:	/* JSON element has not been set - must be the value 0 */
-    case JTYPE_NUMBER:	/* JSON element is number - see struct json_number */
-    case JTYPE_STRING:	/* JSON element is a string - see struct json_string */
-    case JTYPE_BOOL:	/* JSON element is a boolean - see struct json_boolean */
-    case JTYPE_NULL:	/* JSON element is a null - see struct json_null */
-
-	/* perform function operation on this terminal parse tree node */
-	(*vcallback)(node, ap);
-	break;
-
-    case JTYPE_MEMBER:	/* JSON element is a member */
-	{
-	    struct json_member *item = &(node->element.member);
-
-	    /* perform function operation on JSON member name (left branch) node */
-	    vjson_tree_walk(item->name, max_depth, depth+1, ap, vcallback);
-
-	    /* perform function operation on JSON member value (right branch) node */
-	    vjson_tree_walk(item->value, max_depth, depth+1, ap, vcallback);
-	}
-
-	/* finally perform function operation on the parent node */
-	(*vcallback)(node, ap);
-	break;
-
-    case JTYPE_OBJECT:	/* JSON element is a { members } */
-	{
-	    struct json_object *item = &(node->element.object);
-
-	    /* perform function operation on each object member in order */
-	    if (item->set != NULL) {
-		for (i=0; i < item->len; ++i) {
-		    vjson_tree_walk(item->set[i], max_depth, depth+1, ap, vcallback);
-		}
-	    }
-	}
-
-	/* finally perform function operation on the parent node */
-	(*vcallback)(node, ap);
-	break;
-
-    case JTYPE_ARRAY:	/* JSON element is a [ elements ] */
-	{
-	    struct json_array *item = &(node->element.array);
-
-	    /* perform function operation on each object member in order */
-	    if (item->set != NULL) {
-		for (i=0; i < item->len; ++i) {
-		    vjson_tree_walk(item->set[i], max_depth, depth+1, ap, vcallback);
-		}
-	    }
-	}
-
-	/* finally perform function operation on the parent node */
-	(*vcallback)(node, ap);
-	break;
-
-    default:
-	warn(__func__, "node type is unknown: %d", node->type);
-	/* nothing we can traverse */
-	break;
-    }
-    return;
-}
 
 
 /*
@@ -2133,6 +928,1227 @@ json_process_floating(struct json_number *item, char const *str, size_t len)
 
 
 /*
+ * jwarn - issue a JSON warning message
+ *
+ * given:
+ *	code	    warning code
+ *	program	    name of program e.g. jinfochk, jauthchk etc.
+ *	name	    name of function issuing the warning
+ *	filename    file with the problem (can be stdin)
+ *	line	    JSON line
+ *	line_num    the offending line number in the json file
+ *	fmt	    format of the warning
+ *	...	    optional format args
+ *
+ * Example:
+ *
+ *	jwarn(JSON_CODE(1), program, __func__, file, line, __LINE__, "unexpected foobar: %d", value);
+ *
+ * XXX As of 13 March 2022 the line will be empty but in time this should be
+ * changed to be the offending JSON text and the offending JSON line number
+ * (which currently is done but the way it's done might change). Instead the
+ * field and values are usually shown as part of the optional format args.
+ *
+ * NOTE: We warn with extra newlines to help internal fault messages stand out.
+ *	 Normally one should NOT include newlines in warn messages.
+ *
+ * NOTE: In some cases the file noted is the source file that raised the issue.
+ *
+ * This function does not return on code < JSON_CODE_RESERVED_MIN (0).
+ *
+ * This function returns true if the warning message is not ignored; else it
+ * will return false.
+ */
+bool
+jwarn(int code, char const *program, char const *name, char const *filename, char const *line, int line_num, char const *fmt, ...)
+{
+    va_list ap;		/* variable argument list */
+    int ret;		/* libc function return code */
+    int saved_errno;	/* errno at function start */
+
+    if (is_json_code_ignored(code))
+	return false;
+
+    /*
+     * save errno so we can restore it before returning
+     */
+    saved_errno = errno;
+
+    /*
+     * stdarg variable argument list setup
+     */
+    va_start(ap, fmt);
+
+    /*
+     * firewall
+     */
+    if (program == NULL) {
+	program = "((NULL program))";
+	warn(__func__, "\nWarning: in jwarn(): called with NULL program, forcing name: %s\n", program);
+    }
+    if (name == NULL) {
+	name = "((NULL name))";
+	warn(__func__, "\nWarning: in jwarn(): called with NULL name, forcing name: %s\n", name);
+    }
+    if (fmt == NULL) {
+	fmt = "((NULL fmt))";
+	warn(__func__, "\nWarning: in jwarn(): called with NULL fmt, forcing fmt: %s\n", fmt);
+    }
+    if (code < JSON_CODE_RESERVED_MIN) {
+	err(209, __func__, "invalid JSON code passed to jwarn(): %d", code);
+	not_reached();
+    }
+    if (line == NULL) {
+	/* currently line will be NULL so we make it empty */
+	line = "";
+    }
+    if (filename == NULL) {
+	filename = "((NULL))";
+	dbg(DBG_VHIGH, "jwarn(): called with NULL filename, forcing filename: %s\n", filename);
+    }
+
+
+    errno = 0;
+    ret = fprintf(stderr, "# program: %s %s\n", program, name);
+    if (ret < 0) {
+	(void) fprintf(stderr, "\nWarning: in jwarn(%d, %s, %s, %s, %s, %d, %s, ...): "
+			       "fprintf returned error: %s\n", code, program, name,
+		filename, line, line_num, fmt, strerror(errno));
+    }
+
+    errno = 0;
+    ret = fprintf(stderr, "{JSON-%04d}: %s: %d: ", code, filename, line_num);
+    if (ret < 0) {
+	(void) fprintf(stderr, "\nWarning: in jwarn(%d, %s, %s, %s, %s, %d, %s, ...): "
+			       "fprintf returned error: %s\n", code, program, name,
+		filename, line, line_num, fmt, strerror(errno));
+    }
+
+    errno = 0;
+    ret = vfprintf(stderr, fmt, ap);
+    if (ret < 0) {
+	(void) fprintf(stderr, "\nWarning: in jwarn(%d, %s, %s, %s, %s, %d, %s, ...): "
+			       "fprintf returned error: %s\n", code, program, name,
+		filename, line, line_num, fmt, strerror(errno));
+    }
+
+    errno = 0;
+    ret = fputc('\n', stderr);
+    if (ret != '\n') {
+	(void) fprintf(stderr, "\nWarning: in jwarn(%d, %s, %s, %s, %s, %d, %s, ...): "
+			       "fputc returned error: %s\n", code, program, name,
+		filename, line, line_num, fmt, strerror(errno));
+    }
+
+    errno = 0;
+    ret = fflush(stderr);
+    if (ret < 0) {
+	(void) fprintf(stderr, "\nWarning: in jwarn(%d, %s, %s, %s, %s, %d, %s, ...): "
+			       "fflush returned error: %s\n", code, program, name,
+		filename, line, line_num, fmt, strerror(errno));
+    }
+
+    /*
+     * stdarg variable argument list clean up
+     */
+    va_end(ap);
+
+    /*
+     * restore previous errno value
+     */
+    errno = saved_errno;
+    return true;
+}
+
+
+/*
+ * jwarnp - issue a JSON warning message with errno information
+ *
+ * given:
+ *	code	    warning code
+ *	program	    name of program e.g. jinfochk, jauthchk etc.
+ *	name	    name of function issuing the warning
+ *	filename    file with the problem (can be stdin)
+ *	line	    JSON line
+ *	line_num    the offending line number in the json file
+ *	fmt	    format of the warning
+ *	...	    optional format args
+ *
+ * Example:
+ *
+ *	jwarnp(JSON_CODE(1), program, __func__, file, line, __LINE__, "unexpected foobar: %d", value);
+ *
+ * XXX As of 13 March 2022 the line will be empty but in time this should be
+ * changed to be the offending JSON text and the offending JSON line number
+ * (which currently is done but the way it's done might change). Instead the
+ * field and values are usually shown as part of the optional format args.
+ *
+ * NOTE: We warn with extra newlines to help internal fault messages stand out.
+ *	 Normally one should NOT include newlines in warn messages.
+ *
+ * NOTE: In some cases the file noted is the source file that raised the issue.
+ *
+ * This function does not return on code < JSON_CODE_RESERVED_MIN (0).
+ *
+ * This function returns true if the warning message is not ignored; else it
+ * will return false.
+ */
+bool
+jwarnp(int code, char const *program, char const *name, char const *filename, char const *line,
+       int line_num, char const *fmt, ...)
+{
+    va_list ap;		/* variable argument list */
+    int ret;		/* libc function return code */
+    int saved_errno;	/* errno at function start */
+
+    if (is_json_code_ignored(code))
+	return false;
+
+    /*
+     * save errno so we can restore it before returning
+     */
+    saved_errno = errno;
+
+    /*
+     * stdarg variable argument list setup
+     */
+    va_start(ap, fmt);
+
+    /*
+     * firewall
+     */
+    if (program == NULL) {
+	program = "((NULL program))";
+	warn(__func__, "\nWarning: in jwarn(): called with NULL program, forcing name: %s\n", program);
+    }
+    if (name == NULL) {
+	name = "((NULL name))";
+	warn(__func__, "\nWarning: in jwarn(): called with NULL name, forcing name: %s\n", name);
+    }
+    if (fmt == NULL) {
+	fmt = "((NULL fmt))";
+	warn(__func__, "\nWarning: in jwarn(): called with NULL fmt, forcing fmt: %s\n", fmt);
+    }
+    if (code < JSON_CODE_RESERVED_MIN) {
+	err(210, __func__, "invalid JSON code passed to jwarn(): %d", code);
+	not_reached();
+    }
+    if (line == NULL) {
+	/* currently line will be NULL so we make it empty */
+	line = "";
+    }
+    if (filename == NULL) {
+	filename = "((NULL))";
+	dbg(DBG_VHIGH, "jwarn(): called with NULL filename, forcing filename: %s\n", filename);
+    }
+
+
+    errno = 0;
+    ret = fprintf(stderr, "# program: %s %s\n", program, name);
+    if (ret < 0) {
+	(void) fprintf(stderr, "\nWarning: in jwarn(%d, %s, %s, %s, %s, %d, %s, ...): "
+			       "fprintf returned error: %s\n", code, program, name,
+		filename, line, line_num, fmt, strerror(errno));
+    }
+
+    errno = 0;
+    ret = fprintf(stderr, "{JSON-%04d}: %s: %d: ", code, filename, line_num);
+    if (ret < 0) {
+	(void) fprintf(stderr, "\nWarning: in jwarn(%d, %s, %s, %s, %s, %d, %s, ...): "
+			       "fprintf returned error: %s\n", code, program, name,
+		filename, line, line_num, fmt, strerror(errno));
+    }
+
+    errno = 0;
+    ret = vfprintf(stderr, fmt, ap);
+    if (ret < 0) {
+	(void) fprintf(stderr, "\nWarning: in jwarn(%d, %s, %s, %s, %s, %d, %s, ...): "
+			       "fprintf returned error: %s\n", code, program, name,
+		filename, line, line_num, fmt, strerror(errno));
+    }
+
+    errno = 0;
+    ret = fprintf(stderr, "errno[%d]: %s\n", saved_errno, strerror(saved_errno));
+    if (ret < 0) {
+	(void) fprintf(stderr, "\nWarning: in jwarn(%d, %s, %s, %s, %s, %d, %s, ...): "
+			       "fprintf with errno returned error: %s\n", code, program, name,
+		filename, line, line_num, fmt, strerror(errno));
+    }
+
+    errno = 0;
+    ret = fputc('\n', stderr);
+    if (ret != '\n') {
+	(void) fprintf(stderr, "\nWarning: in jwarn(%d, %s, %s, %s, %s, %d, %s, ...): "
+			       "fputc returned error: %s\n", code, program, name,
+		filename, line, line_num, fmt, strerror(errno));
+    }
+
+    errno = 0;
+    ret = fflush(stderr);
+    if (ret < 0) {
+	(void) fprintf(stderr, "\nWarning: in jwarn(%d, %s, %s, %s, %s, %d, %s, ...): "
+			       "fflush returned error: %s\n", code, program, name,
+		filename, line, line_num, fmt, strerror(errno));
+    }
+
+    /*
+     * stdarg variable argument list clean up
+     */
+    va_end(ap);
+
+    /*
+     * restore previous errno value
+     */
+    errno = saved_errno;
+    return true;
+}
+
+
+/*
+ * jerr - issue a fatal JSON error message and exit
+ *
+ * given:
+ *	exitcode	value to exit with
+ *	program		program or NULL (will be set to "jchk")
+ *	name		name of function issuing the error
+ *	filename	file with the problem (can be stdin)
+ *	line		line with the problem (or NULL)
+ *	line_num	line number with the problem or -1
+ *	fmt		format of the warning
+ *	...		optional format args
+ *
+ * Example:
+ *
+ *	jerr(JSON_CODE(1), __func__, program, file, line, line_num, "bad foobar: %s", message);
+ *
+ * NOTE: We warn with extra newlines to help internal fault messages stand out.
+ *	 Normally one should NOT include newlines in warn messages.
+ *
+ * NOTE: In some cases the file noted is the source file that raised the issue.
+ *
+ * This function does not return.
+ */
+void
+jerr(int exitcode, char const *program, char const *name, char const *filename, char const *line,
+     int line_num, char const *fmt, ...)
+{
+    va_list ap;		/* variable argument list */
+    int ret;		/* libc function return code */
+
+    /*
+     * stdarg variable argument list setup
+     */
+    va_start(ap, fmt);
+
+    /*
+     * firewall
+     */
+    if (exitcode < 0) {
+	warn(__func__, "\nin jerr(): called with exitcode <0: %d\n", exitcode);
+	exitcode = 255;
+	warn(__func__, "\nin jerr(): forcing exit code: %d\n", exitcode);
+    }
+    if (program == NULL) {
+	program = "jchk";
+	dbg(DBG_VHIGH, "\nin jerr(): called with NULL program, forcing program: %s\n", program);
+    }
+    if (name == NULL) {
+	name = "((NULL name))";
+	warn(__func__, "\nin jerr(): called with NULL name, forcing name: %s\n", name);
+    }
+    if (fmt == NULL) {
+	fmt = "((NULL fmt))";
+	warn(__func__, "\nin jerr(): called with NULL fmt, forcing fmt: %s\n", fmt);
+    }
+    if (filename == NULL) {
+	filename = "((NULL))";
+	dbg(DBG_VHIGH, "jerr(): called with NULL filename, forcing filename: %s\n", filename);
+    }
+    if (line == NULL) {
+	line = "";
+	dbg(DBG_VHIGH, "jerr(): called with NULL line, making \"\"");
+    }
+
+    errno = 0;
+    ret = fprintf(stderr, "# program: %s %s\n", program, name);
+    if (ret < 0) {
+	(void) fprintf(stderr, "\nWarning: in jerr(%d, %s, %s, %s, %s, %d, %s, ...): "
+			       "fprintf returned error: %s\n", exitcode, program, name,
+		filename, line, line_num, fmt, strerror(errno));
+    }
+
+    errno = 0;
+    ret = fprintf(stderr, "JSON[%04d]: %s: %d: ", exitcode, filename, line_num);
+    if (ret < 0) {
+	(void) fprintf(stderr, "\nWarning: in jerr(%d, %s, %s, %s, %s, %d, %s, ...): "
+			       "fprintf returned error: %s\n", exitcode, program, name,
+		filename, line, line_num, fmt, strerror(errno));
+    }
+
+    errno = 0;
+    ret = vfprintf(stderr, fmt, ap);
+    if (ret < 0) {
+	(void) fprintf(stderr, "\nWarning: in jerr(%d, %s, %s, %s, %s, %d, %s, ...): "
+			       "vfprintf returned error: %s\n", exitcode, program, name,
+		filename, line, line_num, fmt, strerror(errno));
+    }
+
+    errno = 0;
+    ret = fputc('\n', stderr);
+    if (ret != '\n') {
+	(void) fprintf(stderr, "\nWarning: in jerr(%d, %s, %s, %s, %s, %d, %s, ...): "
+			       "fputc returned error: %s\n", exitcode, program, name,
+		filename, line, line_num, fmt, strerror(errno));
+    }
+
+    errno = 0;
+    ret = fflush(stderr);
+    if (ret < 0) {
+	(void) fprintf(stderr, "\nWarning: in jerr(%d, %s, %s, %s, %s, %d, %s, ...): "
+			       "fflush returned error: %s\n", exitcode, program, name,
+		filename, line, line_num, fmt, strerror(errno));
+    }
+
+    /*
+     * stdarg variable argument list cleanup
+     */
+    va_end(ap);
+
+    /*
+     * terminate with exit code
+     */
+    exit(exitcode);
+    not_reached();
+}
+
+
+/*
+ * jerrp - issue a fatal error message with errno information and exit
+ *
+ * given:
+ *	exitcode	value to exit with
+ *	program		program or NULL (will be set to "jchk")
+ *	name		name of function issuing the warning
+ *	filename	file with the problem (can be stdin)
+ *	line		line with the problem or NULL
+ *	line_num	line number of the problem or -1
+ *	fmt		format of the warning
+ *	...		optional format args
+ *
+ * Example:
+ *
+ *	jerrp(JSON_CODE(1), program, __func__, file, line, line_num, "bad foobar: %s", message);
+ *
+ * NOTE: We warn with extra newlines to help internal fault messages stand out.
+ *	 Normally one should NOT include newlines in warn messages.
+ *
+ * NOTE: In some cases the file noted is the source file that raised the issue.
+ *
+ * This function does not return.
+ */
+void
+jerrp(int exitcode, char const *program, char const *name, char const *filename, char const *line,
+      int line_num, char const *fmt, ...)
+{
+    va_list ap;		/* variable argument list */
+    int ret;		/* libc function return code */
+    int saved_errno;	/* errno value when called */
+
+    /*
+     * save errno in case we need it for strerror()
+     */
+    saved_errno = errno;
+
+    /*
+     * stdarg variable argument list setup
+     */
+    va_start(ap, fmt);
+
+    /* firewall */
+    if (exitcode < 0) {
+	warn(__func__, "\nin jerrp(): called with exitcode <0: %d\n", exitcode);
+	exitcode = 255;
+	warn(__func__, "\nin jerrp(): forcing exit code: %d\n", exitcode);
+    }
+    if (program == NULL) {
+	program = "jchk";
+	dbg(DBG_VHIGH, "\nin jerrp(): called with NULL program, forcing program: %s\n", program);
+    }
+    if (name == NULL) {
+	name = "((NULL name))";
+	warn(__func__, "\nin jerrp(): called with NULL name, forcing name: %s\n", name);
+    }
+    if (fmt == NULL) {
+	fmt = "((NULL fmt))";
+	warn(__func__, "\nin jerrp(): called with NULL fmt, forcing fmt: %s\n", fmt);
+    }
+    if (filename == NULL) {
+	filename = "((NULL))";
+	dbg(DBG_VHIGH, "jerrp(): called with NULL filename, forcing filename: %s\n", filename);
+    }
+    if (line == NULL) {
+	line = "";
+	dbg(DBG_VHIGH, "jerrp(): called with NULL line, making \"\"");
+    }
+
+
+    errno = 0;
+    ret = fprintf(stderr, "# program: %s %s\n", program, name);
+    if (ret < 0) {
+	(void) fprintf(stderr, "\nWarning: in jerrp(%d, %s, %s, %s, %s, %d, %s, ...): "
+			       "fprintf returned error: %s\n", exitcode, program, name,
+		filename, line, line_num, fmt, strerror(errno));
+    }
+
+    errno = 0;
+    ret = fprintf(stderr, "JSON[%04d]: %s: %d: ", exitcode, filename, line_num);
+    if (ret < 0) {
+	(void) fprintf(stderr, "\nWarning: in jerrp(%d, %s, %s, %s, %s, %d, %s, ...): "
+			       "fprintf returned error: %s\n", exitcode, program, name,
+		filename, line, line_num, fmt, strerror(errno));
+    }
+
+    errno = 0;
+    ret = vfprintf(stderr, fmt, ap);
+    if (ret < 0) {
+	(void) fprintf(stderr, "\nWarning: in jerrp(%d, %s, %s, %s, %s, %d, %s, ...): "
+			       "vfprintf returned error: %s\n", exitcode, program, name,
+		filename, line, line_num, fmt, strerror(errno));
+    }
+
+    errno = 0;
+    ret = fprintf(stderr, " errno[%d]: %s", saved_errno, strerror(saved_errno));
+    if (ret < 0) {
+	(void) fprintf(stderr, "\nWarning: in jerrp(%d, %s, %s, %s, %s, %d, %s, ...): "
+			       "fprintf returned error: %s\n", exitcode, program, name,
+		filename, line, line_num, fmt, strerror(errno));
+    }
+
+    errno = 0;
+    ret = fputc('\n', stderr);
+    if (ret != '\n') {
+	(void) fprintf(stderr, "\nWarning: in jerrp(%d, %s, %s, %s, %s, %d, %s, ...): "
+			       "fputc returned error: %s\n", exitcode, program, name,
+		filename, line, line_num, fmt, strerror(errno));
+    }
+
+    errno = 0;
+    ret = fflush(stderr);
+    if (ret < 0) {
+	(void) fprintf(stderr, "\nWarning: in jerrp(%d, %s, %s, %s, %s, %d, %s, ...): "
+			       "fflush returned error: %s\n", exitcode, program, name,
+		filename, line, line_num, fmt, strerror(errno));
+    }
+
+    /*
+     * stdarg variable argument list cleanup
+     */
+    va_end(ap);
+
+    /*
+     * terminate with exit code
+     */
+    exit(exitcode);
+    not_reached();
+}
+
+
+
+/*
+ * json_dbg - print JSON debug message if we are verbose enough
+ *
+ * given:
+ *	level	    print message if >= verbosity level
+ *	program	    program name
+ *	name	    function name
+ *	fmt	    printf format
+ *	...
+ *
+ * Example:
+ *
+ *	json_dbg(1, __func__, "foobar information: %d", value);
+ *
+ * NOTE: We warn with extra newlines to help internal fault messages stand out.
+ *	 Normally one should NOT include newlines in warn messages.
+ *
+ * This function returns true if debug output is allowed; else it returns false.
+ */
+bool
+json_dbg(int level, char const *name, char const *fmt, ...)
+{
+    va_list ap;			/* variable argument list */
+    int saved_errno;		/* errno at function start */
+    bool allowed = false;	/* assume debug output is not allowed */
+
+    /*
+     * save errno so we can restore it before returning
+     */
+    saved_errno = errno;
+
+    /*
+     * stdarg variable argument list setup
+     */
+    va_start(ap, fmt);
+
+    /*
+     * firewall
+     */
+    if (name == NULL) {
+	name = "((NULL name))";
+	warn(__func__, "\nin json_dbg(%d, ...): NULL name, forcing use of: %s\n", level, name);
+    }
+    if (fmt == NULL) {
+	fmt = "((NULL fmt))";
+	warn(__func__, "\nin json_dbg(%d, ...): NULL fmt, forcing use of: %s\n", level, fmt);
+    }
+
+    /*
+     * print the debug message if allowed and allowed by the verbosity level
+     */
+    allowed = json_vdbg(level, name, fmt, ap);
+
+    /*
+     * stdarg variable argument list clean up
+     */
+    va_end(ap);
+
+    /*
+     * restore previous errno value
+     */
+    errno = saved_errno;
+
+    return allowed;
+}
+
+
+/*
+ * json_vdbg - print debug message if we are verbose enough
+ *
+ * given:
+ *	level	    print message if >= verbosity level
+ *	name	    function name
+ *	ap	    variable argument list
+ *
+ * Example:
+ *
+ *	json_vdbg(1, __func__, "foobar information: %d", ap);
+ *
+ * NOTE: We warn with extra newlines to help internal fault messages stand out.
+ *	 Normally one should NOT include newlines in warn messages.
+ *
+ * This function returns true if debug output is allowed; else it returns false.
+ */
+bool
+json_vdbg(int level, char const *name, char const *fmt, va_list ap)
+{
+    int ret;		/* libc function return code */
+    int saved_errno;	/* errno at function start */
+    bool allowed = false; /* assume debug message not allowed */
+
+    /*
+     * save errno so we can restore it before returning
+     */
+    saved_errno = errno;
+
+    /*
+     * firewall
+     */
+    if (name == NULL) {
+	name = "((NULL name))";
+	warn(__func__, "\nin json_vdbg(%d, ...): NULL name, forcing use of: %s\n", level, name);
+    }
+    if (fmt == NULL) {
+	fmt = "((NULL fmt))";
+	warn(__func__, "\nin json_vdbg(%d, ...): NULL fmt, forcing use of: %s\n", level, fmt);
+    }
+
+    /*
+     * print the debug message if allowed and allowed by the verbosity level
+     */
+    if (dbg_output_allowed) {
+	if (level <= json_verbosity_level) {
+	    errno = 0;
+	    ret = fprintf(stderr, "JSON DEBUG[%d]: ", level);
+	    if (ret < 0) {
+		warn(__func__, "\nin json_vdbg(%d, %s, %s ...): fprintf returned error: %s\n",
+			       level, name, fmt, strerror(errno));
+	    }
+
+	    errno = 0;
+	    ret = vfprintf(stderr, fmt, ap);
+	    if (ret < 0) {
+		warn(__func__, "\nin json_vdbg(%d, %s, %s ...): vfprintf returned error: %s\n",
+			       level, name, fmt, strerror(errno));
+	    }
+
+	    errno = 0;
+	    ret = fputc('\n', stderr);
+	    if (ret != '\n') {
+		warn(__func__, "\nin json_vdbg(%d, %s ...): fputc returned error: %s\n",
+			       level, fmt, strerror(errno));
+	    }
+
+	    errno = 0;
+	    ret = fflush(stderr);
+	    if (ret < 0) {
+		warn(__func__, "\nin json_vdbg(%d, %s, %s ...): fflush returned error: %s\n",
+			       level, name, fmt, strerror(errno));
+	    }
+
+	    allowed = true;
+	}
+    }
+
+    /*
+     * restore previous errno value
+     */
+    errno = saved_errno;
+    return allowed;
+}
+
+
+/*
+ * json_element_type_name - print a struct json element union type by name
+ *
+ * given:
+ *	json_type   one of the values of the JTYPE_ enum
+ *
+ * returns:
+ *	A constant (read-only) string that names the JTYPE_ enum.
+ *
+ * NOTE: This string returned is read only: It's not allocated on the stack.
+ */
+char const *
+json_element_type_name(struct json *node)
+{
+    char const *name = "JTYPE_UNSET";
+
+    /*
+     * firewall
+     */
+    if (node == NULL) {
+	name = "((node == NULL))";
+
+    /*
+     * determine type name based on type
+     */
+    } else {
+	switch (node->type) {
+	case JTYPE_UNSET:
+	    name = "JTYPE_UNSET";
+	    break;
+	case JTYPE_NUMBER:
+	    name = "JTYPE_NUMBER";
+	    break;
+	case JTYPE_STRING:
+	    name = "JTYPE_STRING";
+	    break;
+	case JTYPE_BOOL:
+	    name = "JTYPE_BOOL";
+	    break;
+	case JTYPE_NULL:
+	    name = "JTYPE_NULL";
+	    break;
+	case JTYPE_MEMBER:
+	    name = "JTYPE_MEMBER";
+	    break;
+	case JTYPE_OBJECT:
+	    name = "JTYPE_OBJECT";
+	    break;
+	case JTYPE_ARRAY:
+	    name = "JTYPE_ARRAY";
+	    break;
+	default:
+	    name = "((JTYPE_UNKNOWN))";
+	    warn(__func__, "called with unknown JSON type: %d", node->type);
+	    break;
+	}
+    }
+
+    /* return read-only name constant string */
+    return name;
+}
+
+
+/*
+ * json_free - free storage of a single JSON parse tree node
+ *
+ * This function operates on a single JSON parse tree node.
+ * See json_tree_free() for a function that frees an entire parse tree.
+ *
+ * given:
+ *	node	pointer to a JSON parser tree node to free
+ *	...	extra args are ignored
+ *
+ * While the ... variable arg are ignored, we need to declare
+ * then in order to be in vcallback form for use by json_tree_walk().
+ *
+ * This function will free the internals of a JSON parser tree node.
+ * It is up to the caller to free the struct json if needed.
+ *
+ * This function does NOT walk the JSON parse tree, so it will
+ *ignore links form this node to other JSON parse tree nodes.
+ *
+ * NOTE: If the pointer to allocated storage == NULL,
+ *	 this function does nothing.
+ *
+ * NOTE: This function does nothing if node == NULL.
+ *
+ * NOTE: This function does nothing if the node type is invalid.
+ */
+void
+json_free(struct json *node, ...)
+{
+    va_list ap;		/* variable argument list */
+
+    /*
+     * firewall - nothing to do for a NULL node
+     */
+    if (node == NULL) {
+	return;
+    }
+
+    /*
+     * stdarg variable argument list setup
+     */
+    va_start(ap, node);
+
+    /*
+     * free internals based in node type
+     */
+    switch (node->type) {
+
+    case JTYPE_UNSET:	/* JSON element has not been set - must be the value 0 */
+	/* nothing to free */
+
+	/* nothing internal to zeroize */
+	break;
+
+    case JTYPE_NUMBER:	/* JSON element is number - see struct json_number */
+	{
+	    struct json_number *item = &(node->element.number);
+
+	    /* free internal storage */
+	    if (item->as_str != NULL) {
+		free(item->as_str);
+		item->as_str = NULL;
+	    }
+
+	    /* zeroize internal element storage */
+	    memset(item, 0, sizeof(struct json_number));
+	    item->converted = false;
+	}
+	break;
+
+    case JTYPE_STRING:	/* JSON element is a string - see struct json_string */
+	{
+	    struct json_string *item = &(node->element.string);
+
+	    /* free internal storage */
+	    if (item->as_str != NULL) {
+		free(item->as_str);
+		item->as_str = NULL;
+	    }
+	    if (item->str != NULL) {
+		free(item->str);
+		item->str = NULL;
+	    }
+
+	    /* zeroize internal element storage */
+	    memset(item, 0, sizeof(struct json_string));
+	    item->converted = false;
+	}
+	break;
+
+    case JTYPE_BOOL:	/* JSON element is a boolean - see struct json_boolean */
+	{
+	    struct json_boolean *item = &(node->element.boolean);
+
+	    /* free internal storage */
+	    if (item->as_str != NULL) {
+		free(item->as_str);
+		item->as_str = NULL;
+	    }
+
+	    /* zeroize internal element storage */
+	    memset(item, 0, sizeof(struct json_boolean));
+	    item->converted = false;
+	}
+	break;
+
+    case JTYPE_NULL:	/* JSON element is a null - see struct json_null */
+	{
+	    struct json_null *item = &(node->element.null);
+
+	    /* free internal storage */
+	    if (item->as_str != NULL) {
+		free(item->as_str);
+		item->as_str = NULL;
+	    }
+
+	    /* zeroize internal element storage */
+	    memset(item, 0, sizeof(struct json_null));
+	    item->converted = false;
+	}
+	break;
+
+    case JTYPE_MEMBER:	/* JSON element is a member */
+	{
+	    struct json_member *item = &(node->element.member);
+
+	    /* free internal storage */
+	    item->name = NULL;
+	    item->value = NULL;
+
+	    /* zeroize internal element storage */
+	    memset(item, 0, sizeof(struct json_member));
+	    item->converted = false;
+	}
+	break;
+
+    case JTYPE_OBJECT:	/* JSON element is a { members } */
+	{
+	    struct json_object *item = &(node->element.object);
+
+	    /* free internal storage */
+	    if (item->s != NULL) {
+		dyn_array_free(item->s);
+		item->s = NULL;
+		item->set = NULL;
+		item->len = 0;
+	    }
+
+	    /* zeroize internal element storage */
+	    memset(item, 0, sizeof(struct json_object));
+	    item->converted = false;
+	}
+	break;
+
+    case JTYPE_ARRAY:	/* JSON element is a [ elements ] */
+	{
+	    struct json_array *item = &(node->element.array);
+
+	    /* free internal storage */
+	    if (item->s != NULL) {
+		dyn_array_free(item->s);
+		item->s = NULL;
+		item->set = NULL;
+		item->len = 0;
+	    }
+
+	    /* zeroize internal element storage */
+	    memset(item, 0, sizeof(struct json_array));
+	    item->converted = false;
+	}
+	break;
+
+    default:
+	/* nothing we can free */
+	warn(__func__, "node type is unknown: %d", node->type);
+	break;
+    }
+
+    /*
+     * reset the JSON node
+     */
+    node->type = JTYPE_UNSET;
+    node->parent = NULL;
+
+    /*
+     * stdarg variable argument list cleanup
+     */
+    va_end(ap);
+    return;
+}
+
+
+/*
+ * vjson_free - free storage of a single JSON parse tree node in va_list form
+ *
+ * This is a variable argument list interface to json_free().
+ * See json_free() for a function that frees an entire parse tree.
+ *
+ * given:
+ *	node	pointer to a JSON parser tree node to free
+ *	ap	variable argument list
+ *
+ * NOTE: This function does nothing if node == NULL.
+ *
+ * NOTE: This function does nothing if the node type is invalid.
+ */
+void
+vjson_free(struct json *node, va_list ap)
+{
+    /*
+     * firewall - nothing to do for a NULL node
+     */
+    if (node == NULL) {
+	return;
+    }
+
+    /*
+     * call non-variable argument list function
+     */
+    json_free(node, ap);
+    return;
+}
+
+
+/*
+ * json_tree_free - free storage of a JSON parse tree
+ *
+ * This function uses the json_tree_walk() interface to walk
+ * the JSON parse tree and free all nodes under a given node.
+ *
+ * given:
+ *	node	    pointer to a JSON parser tree node to free
+ *	max_depth   maximum tree depth to descend, or <0 ==> infinite depth
+ *			NOTE: Use JSON_INFINITE_DEPTH for infinite depth
+ *
+ * NOTE: This function will free the internals of a JSON parser tree node.
+ *	 It is up to the caller to free the top level struct json if needed.
+ *
+ * NOTE: If the pointer to allocated storage == NULL,
+ *	 this function does nothing.
+ *
+ * NOTE: This function does nothing if node == NULL.
+ *
+ * NOTE: This function does nothing if the node type is invalid.
+ */
+void
+json_tree_free(struct json *node, int max_depth, ...)
+{
+    va_list ap;		/* variable argument list */
+
+    /*
+     * firewall - nothing to do for a NULL node
+     */
+    if (node == NULL) {
+	return;
+    }
+
+    /*
+     * stdarg variable argument list setup
+     */
+    va_start(ap, max_depth);
+
+    /*
+     * free the JSON parse tree
+     */
+    vjson_tree_walk(node, max_depth, 0, ap, vjson_free);
+
+    /*
+     * stdarg variable argument list cleanup
+     */
+    va_end(ap);
+    return;
+}
+
+
+/*
+ * json_tree_walk - walk a JSON parse tree calling a function on each node
+ *
+ * Walk a JSON parse tree, Depth-first Post-order (LRN) order.  See:
+ *
+ *	https://en.wikipedia.org/wiki/Tree_traversal#Post-order,_LRN
+ *
+ * Example use - free an entire JSON parse tree
+ *
+ *	json_tree_walk(tree, json_free);
+ *
+ * given:
+ *	node	    pointer to a JSON parse tree
+ *	max_depth   maximum tree depth to descend, or <0 ==> infinite depth
+ *			NOTE: Use JSON_INFINITE_DEPTH for infinite depth
+ *	vcallback   function to operate JSON parse tree node in va_list form
+ *	...	    extra args for vcallback
+ *
+ * The vcallback() funcion must NOT call va_arg() nor call va_end() on the
+ * the va_list argument directly.  Instead they must call va_copy()
+ * and then use va_arg() and va_end() on the va_list copy.
+ *
+ * Although in C ALL functions are pointers which means one can call foo()
+ * as foo() or (*foo)() we use the latter format for the callback function
+ * to make it clearer that it is in fact a function that's passed in so
+ * that we can use this function to do more than one thing. This is also
+ * why we call it vcallback and not something else.
+ *
+ * If max_depth is >= 0 and the tree depth > max_depth, then this function return.
+ * In this case it will NOT operate on the node, or will be descend and further
+ * into the tree.
+ *
+ * NOTE: This function warns but does not do anything if an arg is NULL.
+ */
+void
+json_tree_walk(struct json *node, int max_depth, void (*vcallback)(struct json *, va_list), ...)
+{
+    va_list ap;		/* variable argument list */
+
+    /*
+     * firewall
+     */
+    if (node == NULL) {
+	warn(__func__, "node is NULL");
+	return ;
+    }
+    if (vcallback == NULL) {
+	warn(__func__, "vcallback is NULL");
+	return ;
+    }
+
+    /*
+     * stdarg variable argument list setup
+     */
+    va_start(ap, vcallback);
+
+    /*
+     * walk the tree according to max_depth
+     */
+    vjson_tree_walk(node, max_depth, 0, ap, vcallback);
+
+    /*
+     * stdarg variable argument list cleanup
+     */
+    va_end(ap);
+    return;
+}
+
+
+/*
+ * vjson_tree_walk - walk a JSON parse tree calling a function on each node in va_list form
+ *
+ * This is the va_list form of json_tree_walk().
+ *
+ * Walk a JSON parse tree, Depth-first Post-order (LRN) order.  See:
+ *
+ *	https://en.wikipedia.org/wiki/Tree_traversal#Post-order,_LRN
+ *
+ * Example use - free an entire JSON parse tree
+ *
+ *	json_tree_walk(tree, json_free);
+ *
+ * given:
+ *	node	    pointer to a JSON parse tree
+ *	vcallback   function to operate JSON parse tree node in va_list form
+ *	max_depth   maximum tree depth to descend, or <0 ==> infinite depth
+ *			NOTE: Use JSON_INFINITE_DEPTH for infinite depth
+ *	depth	    current tree depth (0 ==> top of tree)
+ *	ap	    variable argument list
+ *
+ * The vcallback() funcion must NOT call va_arg() nor call va_end() on the
+ * the va_list argument directly.  Instead they must call va_copy()
+ * and then use va_arg() and va_end() on the va_list copy.
+ *
+ * Although in C ALL functions are pointers which means one can call foo()
+ * as foo() or (*foo)() we use the latter format for the callback function
+ * to make it clearer that it is in fact a function that's passed in so
+ * that we can use this function to do more than one thing. This is also
+ * why we call it callback and not something else.
+ *
+ * If max_depth is >= 0 and the tree depth > max_depth, then this function return.
+ * In this case it will NOT operate on the node, or will be descend and further
+ * into the tree.
+ *
+ * NOTE: This function warns but does not do anything if an arg is NULL.
+ */
+void
+vjson_tree_walk(struct json *node, int max_depth, int depth, va_list ap, void (*vcallback)(struct json *, va_list))
+{
+    int i;
+
+    /*
+     * firewall
+     */
+    if (node == NULL) {
+	warn(__func__, "node is NULL");
+	return ;
+    }
+    if (vcallback == NULL) {
+	warn(__func__, "vcallback is NULL");
+	return ;
+    }
+
+    /*
+     * do nothing if we are too deep
+     */
+    if (max_depth >= 0 && depth > max_depth) {
+	warn(__func__, "tree walk descent stopped, tree depth: %d > max_depth: %d", depth, max_depth);
+	return;
+    }
+
+    /*
+     * walk based on type of node
+     */
+    switch (node->type) {
+
+    case JTYPE_UNSET:	/* JSON element has not been set - must be the value 0 */
+    case JTYPE_NUMBER:	/* JSON element is number - see struct json_number */
+    case JTYPE_STRING:	/* JSON element is a string - see struct json_string */
+    case JTYPE_BOOL:	/* JSON element is a boolean - see struct json_boolean */
+    case JTYPE_NULL:	/* JSON element is a null - see struct json_null */
+
+	/* perform function operation on this terminal parse tree node */
+	(*vcallback)(node, ap);
+	break;
+
+    case JTYPE_MEMBER:	/* JSON element is a member */
+	{
+	    struct json_member *item = &(node->element.member);
+
+	    /* perform function operation on JSON member name (left branch) node */
+	    vjson_tree_walk(item->name, max_depth, depth+1, ap, vcallback);
+
+	    /* perform function operation on JSON member value (right branch) node */
+	    vjson_tree_walk(item->value, max_depth, depth+1, ap, vcallback);
+	}
+
+	/* finally perform function operation on the parent node */
+	(*vcallback)(node, ap);
+	break;
+
+    case JTYPE_OBJECT:	/* JSON element is a { members } */
+	{
+	    struct json_object *item = &(node->element.object);
+
+	    /* perform function operation on each object member in order */
+	    if (item->set != NULL) {
+		for (i=0; i < item->len; ++i) {
+		    vjson_tree_walk(item->set[i], max_depth, depth+1, ap, vcallback);
+		}
+	    }
+	}
+
+	/* finally perform function operation on the parent node */
+	(*vcallback)(node, ap);
+	break;
+
+    case JTYPE_ARRAY:	/* JSON element is a [ elements ] */
+	{
+	    struct json_array *item = &(node->element.array);
+
+	    /* perform function operation on each object member in order */
+	    if (item->set != NULL) {
+		for (i=0; i < item->len; ++i) {
+		    vjson_tree_walk(item->set[i], max_depth, depth+1, ap, vcallback);
+		}
+	    }
+	}
+
+	/* finally perform function operation on the parent node */
+	(*vcallback)(node, ap);
+	break;
+
+    default:
+	warn(__func__, "node type is unknown: %d", node->type);
+	/* nothing we can traverse */
+	break;
+    }
+    return;
+}
+
+
+
+/*
  * json_alloc - allocate and initialize the JSON parse tree element
  *
  * given:
@@ -2173,7 +2189,7 @@ json_alloc(enum element_type type)
     errno = 0;			/* pre-clear errno for errp() */
     ret = calloc(1, sizeof(*ret));
     if (ret == NULL) {
-	errp(209, __func__, "calloc #0 error allocating %ju bytes", (uintmax_t)sizeof(*ret));
+	errp(211, __func__, "calloc #0 error allocating %ju bytes", (uintmax_t)sizeof(*ret));
 	not_reached();
     }
 
@@ -2297,7 +2313,7 @@ json_conv_number(char const *ptr, size_t len)
     errno = 0;			/* pre-clear errno for errp() */
     item->as_str = calloc(len+1+1, sizeof(char));
     if (item->as_str == NULL) {
-	errp(210, __func__, "calloc #1 error allocating %ju bytes", (uintmax_t)(len+1+1));
+	errp(212, __func__, "calloc #1 error allocating %ju bytes", (uintmax_t)(len+1+1));
 	not_reached();
     }
     strncpy(item->as_str, ptr, len);
@@ -2400,7 +2416,7 @@ json_conv_number_str(char const *str, size_t *retlen)
      */
     ret = json_conv_number(str, len);
     if (ret == NULL) {
-	err(211, __func__, "json_conv_number() returned NULL");
+	err(213, __func__, "json_conv_number() returned NULL");
 	not_reached();
     }
 
@@ -2508,7 +2524,7 @@ json_conv_string(char const *ptr, size_t len, bool quote)
     errno = 0;			/* pre-clear errno for errp() */
     item->as_str = calloc(len+1+1, sizeof(char));
     if (item->as_str == NULL) {
-	errp(212, __func__, "calloc #1 error allocating %ju bytes", (uintmax_t)(len+1+1));
+	errp(214, __func__, "calloc #1 error allocating %ju bytes", (uintmax_t)(len+1+1));
 	not_reached();
     }
     strncpy(item->as_str, ptr, len);
@@ -2594,7 +2610,7 @@ json_conv_string_str(char const *str, size_t *retlen, bool quote)
      */
     ret = json_conv_string(str, len, quote);
     if (ret == NULL) {
-	err(213, __func__, "json_conv_string() returned NULL");
+	err(215, __func__, "json_conv_string() returned NULL");
 	not_reached();
     }
 
@@ -2671,7 +2687,7 @@ json_conv_bool(char const *ptr, size_t len)
     errno = 0;			/* pre-clear errno for errp() */
     item->as_str = malloc(len+1+1);
     if (item->as_str == NULL) {
-	errp(214, __func__, "malloc #1 error allocating %ju bytes", (uintmax_t)(len+1+1));
+	errp(216, __func__, "malloc #1 error allocating %ju bytes", (uintmax_t)(len+1+1));
 	not_reached();
     }
     memcpy(item->as_str, ptr, len+1);
@@ -2740,7 +2756,7 @@ json_conv_bool_str(char const *str, size_t *retlen)
      */
     ret = json_conv_bool(str, len);
     if (ret == NULL) {
-	err(215, __func__, "json_conv_bool() returned NULL");
+	err(217, __func__, "json_conv_bool() returned NULL");
 	not_reached();
     }
 
@@ -2815,7 +2831,7 @@ json_conv_null(char const *ptr, size_t len)
     errno = 0;			/* pre-clear errno for errp() */
     item->as_str = malloc(len+1+1);
     if (item->as_str == NULL) {
-	errp(216, __func__, "malloc #1 error allocating %ju bytes", (uintmax_t)(len+1+1));
+	errp(218, __func__, "malloc #1 error allocating %ju bytes", (uintmax_t)(len+1+1));
 	not_reached();
     }
     memcpy(item->as_str, ptr, len+1);
@@ -2881,7 +2897,7 @@ json_conv_null_str(char const *str, size_t *retlen)
      */
     ret = json_conv_null(str, len);
     if (ret == NULL) {
-	err(217, __func__, "json_conv_null() returned NULL");
+	err(219, __func__, "json_conv_null() returned NULL");
 	not_reached();
     }
 
@@ -3042,7 +3058,7 @@ json_create_object(void)
      */
     item->s = dyn_array_create(sizeof (struct json *), JSON_CHUNK, JSON_CHUNK, true);
     if (item->s == NULL) {
-	errp(218, __func__, "dyn_array_create() returned NULL");
+	errp(220, __func__, "dyn_array_create() returned NULL");
 	not_reached();
     }
 
@@ -3285,7 +3301,7 @@ json_create_array(void)
      */
     item->s = dyn_array_create(sizeof (struct json *), JSON_CHUNK, JSON_CHUNK, true);
     if (item->s == NULL) {
-	errp(219, __func__, "dyn_array_create() returned NULL");
+	errp(221, __func__, "dyn_array_create() returned NULL");
 	not_reached();
     }
 

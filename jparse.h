@@ -108,7 +108,6 @@ extern char *ugly_text;			/* current text */
 extern FILE *ugly_in;			/* input file lexer/parser reads from */
 extern unsigned num_errors;		/* > 0 number of errors encountered */
 extern bool output_newline;		/* true ==> -n not specified, output new line after each arg processed */
-extern int token;			/* for braces, brackets etc.: '{', '}', '[', ']', ':' and so on */
 extern struct json tree;		/* the parse tree */
 extern int ugly_length;			/* for regex length: needed in some cases in parser (where ugly_leng does not exist) */
 
@@ -120,7 +119,7 @@ extern int ugly_lex(void);
 /*
  * function prototypes for jparse.y
  */
-extern void ugly_error(char const *format, ...);
+extern void ugly_error(struct json *root, char const *format, ...);
 static void usage(int exitcode, char const *name, char const *str) __attribute__((noreturn));
 
 /*

@@ -158,81 +158,65 @@ JSON_COMMA		","
 			     * Not needed but included for now for debugging
 			     * purposes.
 			     */
-			    printf("\nignoring %ju whitespace%s\n", (uintmax_t)ugly_leng, yyleng==1?"":"s");
+			    fprintf(stderr, "\nignoring %ju whitespace%s\n", (uintmax_t)ugly_leng, yyleng==1?"":"s");
 			}
 
 {JSON_STRING}		{
 			    /* string */
 			    ugly_length = ugly_leng;
-			    printf("\nstring: <%s>\n", ugly_text);
 			    return JSON_STRING;
 			}
 
 {JSON_NUMBER}		{
 			    /* number */
-			    printf("\nnumber: <%s>\n", ugly_text);
 			    return JSON_NUMBER;
 			}
 
 {JSON_NULL}		{
 			    /* null object */
-			    printf("\nnull: <%s>\n", ugly_text);
 			    return JSON_NULL;
 			}
 
 {JSON_TRUE}		{
 			    /* boolean: true */
-			    printf("\ntrue: <%s>\n", ugly_text);
 			    return JSON_TRUE;
 			}
 {JSON_FALSE}		{
 			    /* boolean: false */
-			    printf("\nfalse: <%s>\n", ugly_text);
 			    return JSON_FALSE;
 			}
 
 {JSON_OPEN_BRACE}	{
 			    /* start of object */
-			    printf("\nstart of object: <%c>\n", *ugly_text);
 			    return JSON_OPEN_BRACE;
 			}
 {JSON_CLOSE_BRACE}	{
 			    /* end of object */
-			    printf("\nend of object: <%c>\n", *ugly_text);
-			    token = '}';
 			    return JSON_CLOSE_BRACE;
 			}
 
 {JSON_OPEN_BRACKET}	{
 			    /* start of array */
-			    printf("\nstart of array: <%c>\n", *ugly_text);
-			    token = '[';
 			    return JSON_OPEN_BRACKET;
 			}
 {JSON_CLOSE_BRACKET}	{
 			    /* end of array */
-			    printf("\nend of array: <%c>\n", *ugly_text);
-			    token = ']';
 			    return JSON_CLOSE_BRACKET;
 			}
 
 {JSON_COLON}		{
 			    /* colon or 'equals' */
-			    printf("\ncolon (or 'equals'): <%c>\n", *ugly_text);
-			    token = ':';
 			    return JSON_COLON;
 			}
 
 {JSON_COMMA}		{
 			    /* comma: name/value pair separator */
-			    printf("\ncomma: <%c>\n", *ugly_text);
-			    token = ',';
 			    return JSON_COMMA;
 			}
 
 .			{
 			    /* invalid token: any other character */
-			    ugly_error("\ninvalid token: 0x%02x = <%c>\n", *ugly_text, *ugly_text);
+			    ugly_error(NULL, "\ninvalid token: 0x%02x = <%c>\n", *ugly_text, *ugly_text);
 			    return JSON_INVALID_TOKEN;
 			}
 
@@ -273,6 +257,7 @@ struct json *
 parse_json(char const *ptr, size_t len, bool *is_valid, FILE *dbg_stream)
 {
     struct json *node = NULL;		/* the JSON parse tree */
+    int ret = 0;			/* ugly_parse() return value */
 
     /*
      * firewall
@@ -336,6 +321,8 @@ parse_json(char const *ptr, size_t len, bool *is_valid, FILE *dbg_stream)
      *
      * All of the debugging that should be under control of json_dbg()
      * and the JSON verbosity level such that -J 0 does not output anything.
+     * Currently this cannot be done because the lexer and parser are set to
+     * print out a lot of debug information.
      */
     json_dbg(json_verbosity_level, __func__, "*** BEGIN PARSE:\n<");
     if (dbg_stream != NULL) {
@@ -344,12 +331,14 @@ parse_json(char const *ptr, size_t len, bool *is_valid, FILE *dbg_stream)
     }
 
     /*
-     * parse the blob
+     * parse the blob, passing into the parser the node. The parser can access
+     * node directly by referring to node. For example to print out the type
+     * (currently it'll only be JTYPE_UNSET as it's NULL) it could do:
      *
-     * XXX - The ugly_parse() (which is yyparse()) returns an int.
-     *	     This function should return
+     *	json_dbg(JSON_DBG_LOW, __func__, "node type: %s", json_element_type_name(node));
+     *
      */
-    ugly_parse();
+    ret = ugly_parse(node);
 
     /*
      * scan and parse clean up
@@ -362,6 +351,8 @@ parse_json(char const *ptr, size_t len, bool *is_valid, FILE *dbg_stream)
      *
      * All of the debugging that should be under control of json_dbg()
      * and the JSON verbosity level such that -J 0 does not output anything.
+     * Currently this cannot be done because the lexer and parser are set to
+     * print out a lot of debug information.
      */
     json_dbg(json_verbosity_level, __func__, "*** END PARSE");
     if (dbg_stream != NULL) {
@@ -372,8 +363,7 @@ parse_json(char const *ptr, size_t len, bool *is_valid, FILE *dbg_stream)
      * report scanner / parser success or failure
      */
     if (is_valid != NULL) {
-	/* XXX - the success should be based on what ugly_parse() does - XXX */
-	*is_valid = true;
+	*is_valid = ret == 0;
     }
     /* XXX - return a blank JSON tree until we can get a tree via ugly_parse somehow - XXX */
     node = json_alloc(JTYPE_UNSET);
@@ -593,6 +583,8 @@ parse_json_file(char const *filename, bool *is_valid, FILE *dbg_stream)
      *
      * All of the debugging that should be under control of json_dbg()
      * and the JSON verbosity level such that -J 0 does not output anything.
+     * Currently this cannot be done because the lexer and parser are set to
+     * print out a lot of debug information.
      */
     if (dbg_stream != NULL) {
 	fprint_newline(dbg_stream, output_newline);

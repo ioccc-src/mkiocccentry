@@ -159,21 +159,6 @@ extern int check_found_common_json_fields(char const *program, char const *json_
 extern struct json_field *new_json_field(char const *json_filename, char const *name, char const *val, int line_num);
 extern struct json_value *add_json_value(char const *json_filename, struct json_field *field, char const *val, int line_num);
 
-/* warning and error specific functions */
-extern void jwarn(int code, const char *program, char const *name, char const *filename, char const *line,
-		  int line_num, const char *fmt, ...) \
-	__attribute__((format(printf, 7, 8)));		/* 7=format 8=params */
-extern void jwarnp(int code, const char *program, char const *name, char const *filename, char const *line,
-		   int line_num, const char *fmt, ...) \
-	__attribute__((format(printf, 7, 8)));		/* 7=format 8=params */
-extern void jerr(int exitcode, char const *program, const char *name, char const *filename, char const *line,
-		 int line_num, const char *fmt, ...) \
-	__attribute__((noreturn)) __attribute__((format(printf, 7, 8))); /* 7=format 8=params */
-extern void jerrp(int exitcode, char const *program, const char *name, char const *filename, char const *line,
-		  int line_num, const char *fmt, ...) \
-	__attribute__((noreturn)) __attribute__((format(printf, 7, 8))); /* 7=format 8=params */
-
-
 /* free() functions for the parser */
 extern void free_json_field_values(struct json_field *field);
 extern void free_found_common_json_fields(void);
