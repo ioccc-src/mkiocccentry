@@ -94,8 +94,11 @@ static struct ignore_json_code *ignore_json_code_set = NULL;
  * NOTE: In some cases the file noted is the source file that raised the issue.
  *
  * This function does not return on code < JSON_CODE_RESERVED_MIN (0).
+ *
+ * This function returns true if the warning message is not ignored; else it
+ * will return false.
  */
-void
+bool
 jwarn(int code, char const *program, char const *name, char const *filename, char const *line, int line_num, char const *fmt, ...)
 {
     va_list ap;		/* variable argument list */
@@ -103,7 +106,7 @@ jwarn(int code, char const *program, char const *name, char const *filename, cha
     int saved_errno;	/* errno at function start */
 
     if (is_json_code_ignored(code))
-	return;
+	return false;
 
     /*
      * save errno so we can restore it before returning
@@ -185,7 +188,7 @@ jwarn(int code, char const *program, char const *name, char const *filename, cha
     }
 
     /*
-     * stdarg variable argument list cleanup
+     * stdarg variable argument list clean up
      */
     va_end(ap);
 
@@ -193,7 +196,7 @@ jwarn(int code, char const *program, char const *name, char const *filename, cha
      * restore previous errno value
      */
     errno = saved_errno;
-    return;
+    return true;
 }
 
 
@@ -212,7 +215,7 @@ jwarn(int code, char const *program, char const *name, char const *filename, cha
  *
  * Example:
  *
- *	jwarn(JSON_CODE(1), program, __func__, file, line, __LINE__, "unexpected foobar: %d", value);
+ *	jwarnp(JSON_CODE(1), program, __func__, file, line, __LINE__, "unexpected foobar: %d", value);
  *
  * XXX As of 13 March 2022 the line will be empty but in time this should be
  * changed to be the offending JSON text and the offending JSON line number
@@ -225,8 +228,11 @@ jwarn(int code, char const *program, char const *name, char const *filename, cha
  * NOTE: In some cases the file noted is the source file that raised the issue.
  *
  * This function does not return on code < JSON_CODE_RESERVED_MIN (0).
+ *
+ * This function returns true if the warning message is not ignored; else it
+ * will return false.
  */
-void
+bool
 jwarnp(int code, char const *program, char const *name, char const *filename, char const *line,
        int line_num, char const *fmt, ...)
 {
@@ -235,7 +241,7 @@ jwarnp(int code, char const *program, char const *name, char const *filename, ch
     int saved_errno;	/* errno at function start */
 
     if (is_json_code_ignored(code))
-	return;
+	return false;
 
     /*
      * save errno so we can restore it before returning
@@ -325,7 +331,7 @@ jwarnp(int code, char const *program, char const *name, char const *filename, ch
     }
 
     /*
-     * stdarg variable argument list cleanup
+     * stdarg variable argument list clean up
      */
     va_end(ap);
 
@@ -333,7 +339,7 @@ jwarnp(int code, char const *program, char const *name, char const *filename, ch
      * restore previous errno value
      */
     errno = saved_errno;
-    return;
+    return true;
 }
 
 
@@ -850,12 +856,15 @@ ignore_json_code(int code)
  *
  * NOTE: We warn with extra newlines to help internal fault messages stand out.
  *	 Normally one should NOT include newlines in warn messages.
+ *
+ * This function returns true if debug output is allowed; else it returns false.
  */
-void
+bool
 json_dbg(int level, char const *name, char const *fmt, ...)
 {
-    va_list ap;		/* variable argument list */
-    int saved_errno;	/* errno at function start */
+    va_list ap;			/* variable argument list */
+    int saved_errno;		/* errno at function start */
+    bool allowed = false;	/* assume debug output is not allowed */
 
     /*
      * save errno so we can restore it before returning
@@ -882,10 +891,10 @@ json_dbg(int level, char const *name, char const *fmt, ...)
     /*
      * print the debug message if allowed and allowed by the verbosity level
      */
-    json_vdbg(level, name, fmt, ap);
+    allowed = json_vdbg(level, name, fmt, ap);
 
     /*
-     * stdarg variable argument list cleanup
+     * stdarg variable argument list clean up
      */
     va_end(ap);
 
@@ -893,7 +902,8 @@ json_dbg(int level, char const *name, char const *fmt, ...)
      * restore previous errno value
      */
     errno = saved_errno;
-    return;
+
+    return allowed;
 }
 
 
@@ -911,12 +921,15 @@ json_dbg(int level, char const *name, char const *fmt, ...)
  *
  * NOTE: We warn with extra newlines to help internal fault messages stand out.
  *	 Normally one should NOT include newlines in warn messages.
+ *
+ * This function returns true if debug output is allowed; else it returns false.
  */
-void
+bool
 json_vdbg(int level, char const *name, char const *fmt, va_list ap)
 {
     int ret;		/* libc function return code */
     int saved_errno;	/* errno at function start */
+    bool allowed = false; /* assume debug message not allowed */
 
     /*
      * save errno so we can restore it before returning
@@ -967,6 +980,8 @@ json_vdbg(int level, char const *name, char const *fmt, va_list ap)
 		warn(__func__, "\nin json_vdbg(%d, %s, %s ...): fflush returned error: %s\n",
 			       level, name, fmt, strerror(errno));
 	    }
+
+	    allowed = true;
 	}
     }
 
@@ -974,7 +989,7 @@ json_vdbg(int level, char const *name, char const *fmt, va_list ap)
      * restore previous errno value
      */
     errno = saved_errno;
-    return;
+    return allowed;
 }
 
 
