@@ -33,23 +33,14 @@
  */
 #include "json_util.h"
 
+/*
+ * globals
+ */
+int json_verbosity_level = JSON_DBG_NONE;	/* json debug level set by -J in jparse */
 
 /*
  * static declarations
  */
-static void alloc_json_code_ignore_set(void);
-static int cmp_codes(const void *a, const void *b);
-static void expand_json_code_ignore_set(void);
-static struct ignore_json_code *ignore_json_code_set;
-static bool json_process_decimal(struct json_number *item, char const *str, size_t len);
-static bool json_process_floating(struct json_number *item, char const *str, size_t len);
-
-
-/*
- * globals
- */
-
-int json_verbosity_level = JSON_DBG_NONE;	/* json debug level set by -J in jparse */
 
 /*
  * JSON warn (NOT error) codes to ignore
@@ -64,6 +55,876 @@ int json_verbosity_level = JSON_DBG_NONE;	/* json debug level set by -J in jpars
  * NOTE: A NULL ignore_json_code_set means that the set has not been setup.
  */
 static struct ignore_json_code *ignore_json_code_set = NULL;
+static void alloc_json_code_ignore_set(void);
+static int cmp_codes(const void *a, const void *b);
+static void expand_json_code_ignore_set(void);
+static struct ignore_json_code *ignore_json_code_set;
+
+/* for json number strings */
+static bool json_process_decimal(struct json_number *item, char const *str, size_t len);
+static bool json_process_floating(struct json_number *item, char const *str, size_t len);
+
+/*
+ * alloc_json_code_ignore_set - allocate the initial JSON ignore code set
+ *
+ * This function will setup the ignore_json_code_set table.  If the ignore_json_code_set
+ * table is already setup, this function will do nothing.
+ *
+ * NOTE: This function does not return on error.
+ */
+static void
+alloc_json_code_ignore_set(void)
+{
+    struct ignore_json_code *tbl = NULL;	/* allocated struct ignore_json_code */
+    int i;
+
+    /*
+     * firewall - do nothing if already setup
+     */
+    if (ignore_json_code_set != NULL) {
+	dbg(DBG_VVHIGH, "ignore_json_code_set already set up");
+	return;
+    }
+
+    /*
+     * allocate the initial ignore_json_code_set[]
+     */
+    errno = 0;			/* pre-clear errno for errp() */
+    tbl = malloc(sizeof(struct ignore_json_code));
+    if (tbl == NULL) {
+	errp(200, __func__, "failed to malloc struct ignore_json_code");
+	not_reached();
+    }
+
+    /*
+     * allocate an initial block of ignore codes
+     */
+    errno = 0;			/* pre-clear errno for errp() */
+    tbl->code = malloc((JSON_CODE_IGNORE_CHUNK+1+1) * sizeof(int));
+    if (tbl->code == NULL) {
+	errp(201, __func__, "cannot allocate %d ignore codes", JSON_CODE_IGNORE_CHUNK+1+1);
+	not_reached();
+    }
+
+    /*
+     * initialize
+     */
+    tbl->next_free = 0;
+    tbl->alloc = JSON_CODE_IGNORE_CHUNK + 1;		/* report one less for the guard code */
+    for (i=0; i < tbl->alloc; ++i) {
+	tbl->code[i] = -1;	/* -1 is not a valid ignore code */
+    }
+    ignore_json_code_set = tbl;
+}
+
+
+/*
+ * cmp_codes - compare two codes for reverse sorting ignore_json_code_set[]
+ *
+ * This function will allow qsort() to reverse sort the codes in ignore_json_code_set[].
+ *
+ * given:
+ *	a	- pointer to first code to compare
+ *	b	- pointer to second code to compare
+ *
+ * returns:
+ *	-1	a > b
+ *	0	a == b
+ *	1	a < b
+ */
+static int
+cmp_codes(const void *a, const void *b)
+{
+    /*
+     * firewall
+     */
+    if (a == NULL || b == NULL) {
+	err(202, __func__, "NULL arg(s)");
+	not_reached();
+    }
+
+    /*
+     * compare for reverse sort
+     */
+    if (*(int *)a < *(int *)b) {
+	return 1;	/* a < b */
+    } else if (*(int *)a > *(int *)b) {
+	return -1;	/* a > b */
+    }
+    return 0;	/* a == b */
+}
+
+
+/*
+ * expand_json_code_ignore_set - expand the size of alloc json_code_ignore_set[]
+ *
+ * This function will expand the allocated  json_code_ignore_set[] by
+ * JSON_CODE_IGNORE_CHUNK JSON error codes, and set those new codes (in the end
+ * of the table) to -1 to indicate that they are not valid codes.
+ *
+ * NOTE: This function does not return on error.
+ */
+static void
+expand_json_code_ignore_set(void)
+{
+    int *p;	/* reallocated code set */
+    int i;
+
+    /*
+     * setup ignore_json_code_set if needed
+     */
+    alloc_json_code_ignore_set();
+    if (ignore_json_code_set == NULL) {
+	err(203, __func__, "ignore_json_code_set is NULL after allocation");
+	not_reached();
+    }
+
+    /*
+     * if no room, expand the table
+     */
+    if (ignore_json_code_set->next_free >= ignore_json_code_set->alloc) {
+	p = realloc(ignore_json_code_set->code, (ignore_json_code_set->alloc+JSON_CODE_IGNORE_CHUNK+1) * sizeof(int));
+	errno = 0;			/* pre-clear errno for errp() */
+	if (p == NULL) {
+	    errp(204, __func__, "cannot expand ignore_json_code_set from %d to %d codes",
+				ignore_json_code_set->alloc+1, ignore_json_code_set->alloc+JSON_CODE_IGNORE_CHUNK+1);
+	    not_reached();
+	}
+	for (i=ignore_json_code_set->alloc; i < ignore_json_code_set->alloc+JSON_CODE_IGNORE_CHUNK; ++i) {
+	    p[i] = JSON_CODE_INVALID; /* JSON_CODE_INVALID (JSON_CODE_RESERVED_MIN - 1) is not a valid ignore code */
+	}
+	ignore_json_code_set->code = p;
+	/* report one less for the guard code */
+	ignore_json_code_set->alloc = ignore_json_code_set->alloc + JSON_CODE_IGNORE_CHUNK;
+    }
+    return;
+}
+
+
+/*
+ * is_json_code_ignored - determine of a JSON warn/error code is to be ignored
+ *
+ * given:
+ *	code	- code to test if code should be ignored
+ *
+ * returns:
+ *	true ==> code is in ignore_json_code_set[] and should be ignored
+ *	false ==> code is not in ignore_json_code_set[] and should NOT be ignored
+ */
+bool
+is_json_code_ignored(int code)
+{
+    int i;
+
+    /*
+     * firewall
+     */
+    if (code < 0) {
+	err(205, __func__, "code %d < 0", code);
+	not_reached();
+    }
+
+    /*
+     * setup ignore_json_code_set if needed
+     */
+    alloc_json_code_ignore_set();
+    if (ignore_json_code_set == NULL) {
+	err(206, __func__, "ignore_json_code_set is NULL after allocation");
+	not_reached();
+    }
+
+    /*
+     * search ignore_json_code_set[] for the code
+     */
+    for (i=0; i < ignore_json_code_set->next_free; ++i) {
+
+	/* look for match */
+	if (ignore_json_code_set->code[i] == code) {
+	    dbg(DBG_VVVHIGH, "code %d is in ignore_json_code_set[]", code);
+	    return true;	/* report code should be ignored */
+	}
+
+	/* look for going beyond sorted values */
+	if (ignore_json_code_set->code[i] <= code) {
+	     break;
+	}
+    }
+    return false;	/* report code should NOT be ignored */
+}
+
+
+/*
+ * add_ignore_json_code - add a JSON error code to be ignored
+ *
+ * If code >= 0 and is not in json_code_ignore_set[], then this function will
+ * add it and then reverse sort the json_code_ignore_set[] table.
+ *
+ * NOTE: The json_code_ignore_set[] will be initialized or expanded as needed.
+ *
+ * given:
+ *	code	- code to ignore
+ *
+ * NOTE: This function does not return on error.
+ */
+void
+ignore_json_code(int code)
+{
+    /*
+     * firewall
+     */
+    if (code < 0) {
+	err(207, __func__, "code %d < 0", code);
+	not_reached();
+    }
+
+    /*
+     * allocate or expand the json_code_ignore_set[] if needed
+     */
+    if (ignore_json_code_set == NULL || ignore_json_code_set->next_free >= ignore_json_code_set->alloc) {
+	expand_json_code_ignore_set();
+    }
+    if (ignore_json_code_set == NULL) {
+	err(208, __func__, "ignore_json_code_set is NULL after allocation or expansion");
+	not_reached();
+    }
+
+    /*
+     * verify that code is not already in json_code_ignore_set[]
+     */
+    if (is_json_code_ignored(code)) {
+	/* nothing to do it code is already added */
+	dbg(DBG_VVVHIGH, "code %d is already in ignore_json_code_set[]", code);
+	return;
+    }
+
+    /*
+     * add the code to the json_code_ignore_set[]
+     */
+    ignore_json_code_set->code[ignore_json_code_set->next_free] = code;
+    ++ignore_json_code_set->next_free;
+
+    /*
+     * reverse sort the json_code_ignore_set[]
+     */
+    qsort(ignore_json_code_set->code, ignore_json_code_set->next_free, sizeof(int), cmp_codes);
+    dbg(DBG_VHIGH, "code %d added to ignore_json_code_set[]", code);
+    return;
+}
+
+
+
+/*
+ * json_process_decimal - process a JSON integer string
+ *
+ * We will fill out the struct json_number item assuming that ptr, with length len,
+ * points to a JSON integer string of base 10 ASCII as allowed by the so-called JSON spec.
+ *
+ * given:
+ *	item	pointer to a JSON number structure (struct json_number*)
+ *	str	JSON integer as a NUL terminated C-style string
+ *	len	length of the JSON number that is not whitespace
+ *
+ * NOTE: This function assumes that str points to the start of a JSON number, NOT whitespace.
+ *
+ * NOTE: This function assumes that str is a NUL terminated string,
+ *	 even if the NUL is well beyond the end of the JSON number.
+ *
+ * NOTE: While it is OK if str has trailing whitespace, str[len-1] must be an
+ *	 ASCII digit.  It is assumed that str[len-1] is the final JSON number
+ *	 character.
+ */
+static bool
+json_process_decimal(struct json_number *item, char const *str, size_t len)
+{
+    char *endptr;			/* first invalid character or str */
+    size_t str_len = 0;			/* length as a C string, of str */
+
+    /*
+     * firewall
+     */
+    if (item == NULL) {
+	warn(__func__, "called with NULL item");
+	return false;	/* processing failed */
+    }
+    if (str == NULL) {
+	warn(__func__, "called with NULL str");
+	return false;	/* processing failed */
+    }
+    if (len <= 0) {
+	warn(__func__, "called with len: %ju <= 0", (uintmax_t)len);
+	return false;	/* processing failed */
+    }
+    if (str[0] == '\0') {
+	warn(__func__, "called with empty string");
+	return false;	/* processing failed */
+    }
+    if (!isascii(str[len-1]) || !isdigit(str[len-1])) {
+	warn(__func__, "str[%ju-1] is not an ASCII digit: 0x%02x for str: %s", (uintmax_t)len, (int)str[len-1], str);
+	return false;	/* processing failed */
+    }
+    str_len = strlen(str);
+    if (str_len < len) {
+	warn(__func__, "strlen(%s): %ju < len arg: %ju", str, (uintmax_t)str_len, (uintmax_t)len);
+	return false;	/* processing failed */
+    }
+
+    /*
+     * determine if JSON integer negative
+     */
+    if (str[0] == '-') {
+
+	/* parse JSON integer that is < 0 */
+	item->is_negative = true;
+
+        /*
+	 * JSON spec detail: lone - invalid JSON
+	 */
+	if (len <= 1 || str[1] == '\0') {
+	    dbg(DBG_HIGH, "%s called with just -: <%s>", __func__, str);
+	    return false;	/* processing failed */
+
+        /*
+	 * JSON spec detail: leading -0 followed by digits - invalid JSON
+	 */
+	} else if (len > 2 && str[1] == '0' && isascii(str[2]) && isdigit(str[2])) {
+	    dbg(DBG_HIGH, "%s called with -0 followed by more digits: <%s>", __func__, str);
+	    return false;	/* processing failed */
+	}
+
+    /* case: JSON integer is >= 0 */
+    } else {
+
+	/* parse JSON integer that is >= 0 */
+	item->is_negative = false;
+
+        /*
+	 * JSON spec detail: leading 0 followed by digits - invalid JSON
+	 */
+	if (len > 1 && str[0] == '0' && isascii(str[1]) && isdigit(str[1])) {
+	    dbg(DBG_HIGH, "%s called with 0 followed by more digits: <%s>", __func__, str);
+	    return false;	/* processing failed */
+	}
+    }
+
+    /*
+     * attempt to convert to the largest possible integer
+     */
+    if (item->is_negative) {
+
+	/* case: negative, try for largest signed integer */
+	errno = 0;			/* pre-clear errno for errp() */
+	item->as_maxint = strtoimax(str, &endptr, 10);
+	if (errno == ERANGE || errno == EINVAL || endptr == str || endptr == NULL) {
+	    dbg(DBG_VVVHIGH, "strtoimax failed to convert");
+	    item->converted = false;
+	    return false;	/* processing failed */
+	}
+	item->converted = true;
+	item->maxint_sized = true;
+	dbg(DBG_VVVHIGH, "strtoimax for <%s> returned: %jd", str, item->as_maxint);
+
+	/* case int8_t: range check */
+	if (item->as_maxint >= (intmax_t)INT8_MIN && item->as_maxint <= (intmax_t)INT8_MAX) {
+	    item->int8_sized = true;
+	    item->as_int8 = (int8_t)item->as_maxint;
+	}
+
+	/* case uint8_t: cannot be because JSON string is < 0 */
+	item->uint8_sized = false;
+
+	/* case int16_t: range check */
+	if (item->as_maxint >= (intmax_t)INT16_MIN && item->as_maxint <= (intmax_t)INT16_MAX) {
+	    item->int16_sized = true;
+	    item->as_int16 = (int16_t)item->as_maxint;
+	}
+
+	/* case uint16_t: cannot be because JSON string is < 0 */
+	item->uint16_sized = false;
+
+	/* case int32_t: range check */
+	if (item->as_maxint >= (intmax_t)INT32_MIN && item->as_maxint <= (intmax_t)INT32_MAX) {
+	    item->int32_sized = true;
+	    item->as_int32 = (int32_t)item->as_maxint;
+	}
+
+	/* case uint32_t: cannot be because JSON string is < 0 */
+	item->uint32_sized = false;
+
+	/* case int64_t: range check */
+	if (item->as_maxint >= (intmax_t)INT64_MIN && item->as_maxint <= (intmax_t)INT64_MAX) {
+	    item->int64_sized = true;
+	    item->as_int64 = (int64_t)item->as_maxint;
+	}
+
+	/* case uint64_t: cannot be because JSON string is < 0 */
+	item->uint64_sized = false;
+
+	/* case int: range check */
+	if (item->as_maxint >= (intmax_t)INT_MIN && item->as_maxint <= (intmax_t)INT_MAX) {
+	    item->int_sized = true;
+	    item->as_int = (int)item->as_maxint;
+	}
+
+	/* case unsigned int: cannot be because JSON string is < 0 */
+	item->uint_sized = false;
+
+	/* case long: range check */
+	if (item->as_maxint >= (intmax_t)LONG_MIN && item->as_maxint <= (intmax_t)LONG_MAX) {
+	    item->long_sized = true;
+	    item->as_long = (long)item->as_maxint;
+	}
+
+	/* case unsigned long: cannot be because JSON string is < 0 */
+	item->ulong_sized = false;
+
+	/* case long long: range check */
+	if (item->as_maxint >= (intmax_t)LLONG_MIN && item->as_maxint <= (intmax_t)LLONG_MAX) {
+	    item->longlong_sized = true;
+	    item->as_longlong = (long long)item->as_maxint;
+	}
+
+	/* case unsigned long long: cannot be because JSON string is < 0 */
+	item->ulonglong_sized = false;
+
+	/* case size_t: cannot be because JSON string is < 0 */
+	item->size_sized = false;
+
+	/* case ssize_t: range check */
+	if (item->as_maxint >= (intmax_t)SSIZE_MIN && item->as_maxint <= (intmax_t)SSIZE_MAX) {
+	    item->ssize_sized = true;
+	    item->as_ssize = (ssize_t)item->as_maxint;
+	}
+
+	/* case off_t: range check */
+	if (item->as_maxint >= (intmax_t)OFF_MIN && item->as_maxint <= (intmax_t)OFF_MAX) {
+	    item->off_sized = true;
+	    item->as_off = (off_t)item->as_maxint;
+	}
+
+	/* case intmax_t: was handled by the above call to strtoimax() */
+
+	/* case uintmax_t: cannot be because JSON string is < 0 */
+	item->umaxint_sized = false;
+
+    } else {
+
+	/* case: non-negative, try for largest unsigned integer */
+	errno = 0;			/* pre-clear errno for errp() */
+	item->as_umaxint = strtoumax(str, &endptr, 10);
+	if (errno == ERANGE || errno == EINVAL || endptr == str || endptr == NULL) {
+	    dbg(DBG_VVVHIGH, "strtoumax failed to convert");
+	    item->converted = false;
+	    return false;	/* processing failed */
+	}
+	item->converted = true;
+	item->umaxint_sized = true;
+	dbg(DBG_VVVHIGH, "strtoumax for <%s> returned: %ju", str, item->as_umaxint);
+
+	/* case int8_t: bounds check */
+	if (item->as_umaxint <= (uintmax_t)INT8_MAX) {
+	    item->int8_sized = true;
+	    item->as_int8 = (int8_t)item->as_umaxint;
+	}
+
+	/* case uint8_t: bounds check */
+	if (item->as_umaxint <= (uintmax_t)UINT8_MAX) {
+	    item->uint8_sized = true;
+	    item->as_uint8 = (uint8_t)item->as_umaxint;
+	}
+
+	/* case int16_t: bounds check */
+	if (item->as_umaxint <= (uintmax_t)INT16_MAX) {
+	    item->int16_sized = true;
+	    item->as_int16 = (int16_t)item->as_umaxint;
+	}
+
+	/* case uint16_t: bounds check */
+	if (item->as_umaxint <= (uintmax_t)UINT16_MAX) {
+	    item->uint16_sized = true;
+	    item->as_uint16 = (uint16_t)item->as_umaxint;
+	}
+
+	/* case int32_t: bounds check */
+	if (item->as_umaxint <= (uintmax_t)INT32_MAX) {
+	    item->int32_sized = true;
+	    item->as_int32 = (int32_t)item->as_umaxint;
+	}
+
+	/* case uint32_t: bounds check */
+	if (item->as_umaxint <= (uintmax_t)UINT32_MAX) {
+	    item->uint32_sized = true;
+	    item->as_uint32 = (uint32_t)item->as_umaxint;
+	}
+
+	/* case int64_t: bounds check */
+	if (item->as_umaxint <= (uintmax_t)INT64_MAX) {
+	    item->int64_sized = true;
+	    item->as_int64 = (int64_t)item->as_umaxint;
+	}
+
+	/* case uint64_t: bounds check */
+	if (item->as_umaxint <= (uintmax_t)UINT64_MAX) {
+	    item->uint64_sized = true;
+	    item->as_uint64 = (uint64_t)item->as_umaxint;
+	}
+
+	/* case int: bounds check */
+	if (item->as_umaxint <= (uintmax_t)INT_MAX) {
+	    item->int_sized = true;
+	    item->as_int = (int)item->as_umaxint;
+	}
+
+	/* case unsigned int: bounds check */
+	if (item->as_umaxint <= (uintmax_t)UINT_MAX) {
+	    item->uint_sized = true;
+	    item->as_uint = (unsigned int)item->as_umaxint;
+	}
+
+	/* case long: bounds check */
+	if (item->as_umaxint <= (uintmax_t)LONG_MAX) {
+	    item->long_sized = true;
+	    item->as_long = (long)item->as_umaxint;
+	}
+
+	/* case unsigned long: bounds check */
+	if (item->as_umaxint <= (uintmax_t)ULONG_MAX) {
+	    item->ulong_sized = true;
+	    item->as_ulong = (unsigned long)item->as_umaxint;
+	}
+
+	/* case long long: bounds check */
+	if (item->as_umaxint <= (uintmax_t)LLONG_MAX) {
+	    item->longlong_sized = true;
+	    item->as_longlong = (long long)item->as_umaxint;
+	}
+
+	/* case unsigned long long: bounds check */
+	if (item->as_umaxint <= (uintmax_t)ULLONG_MAX) {
+	    item->ulonglong_sized = true;
+	    item->as_ulonglong = (unsigned long long)item->as_umaxint;
+	}
+
+	/* case ssize_t: bounds check */
+	if (item->as_umaxint <= (uintmax_t)SSIZE_MAX) {
+	    item->ssize_sized = true;
+	    item->as_ssize = (ssize_t)item->as_umaxint;
+	}
+
+	/* case size_t: bounds check */
+	if (item->as_umaxint <= (uintmax_t)SIZE_MAX) {
+	    item->size_sized = true;
+	    item->as_size = (size_t)item->as_umaxint;
+	}
+
+	/* case off_t: bounds check */
+	if (item->as_umaxint <= (uintmax_t)OFF_MAX) {
+	    item->off_sized = true;
+	    item->as_off = (off_t)item->as_umaxint;
+	}
+
+	/* case intmax_t: bounds check */
+	if (item->as_umaxint <= (uintmax_t)INTMAX_MAX) {
+	    item->maxint_sized = true;
+	    item->as_maxint = (intmax_t)item->as_umaxint;
+	}
+
+	/* case uintmax_t: was handled by the above call to strtoumax() */
+    }
+
+    /*
+     * processing was successful
+     */
+    return true;
+}
+
+
+/*
+ * json_process_floating - process JSON floating point or e-notation string
+ *
+ * We will fill out the struct json_number item assuming that ptr, with length len,
+ * points to a JSON floating point string as allowed by the so-called JSON spec.
+ * The JSON floating point string can be with a JSON float (what the spec calls
+ * integer + faction + exponent).
+ *
+ * given:
+ *	item	pointer to a JSON number structure (struct json_number*)
+ *	str	JSON floating point or JSON e-notation value as a NUL terminated C-style string
+ *	len	length of the JSON number that is not whitespace
+ *
+ * NOTE: This function assumes that str points to the start of a JSON number, NOT whitespace.
+ *
+ * NOTE: This function assumes that str is a NUL terminated string,
+ *	 even if the NUL is well beyond the end of the JSON number.
+ *
+ * NOTE: While it is OK if str has trailing whitespace, str[len-1] must be an
+ *	 ASCII digit.  It is assumed that str[len-1] is the final JSON number
+ *	 character.
+ */
+static bool
+json_process_floating(struct json_number *item, char const *str, size_t len)
+{
+    char *endptr;			/* first invalid character or str */
+    char *e_found = NULL;		/* strchr() search for e */
+    char *cap_e_found = NULL;		/* strchr() search for E */
+    char *e = NULL;			/* strrchr() search for 2nd e or E */
+    size_t str_len = 0;			/* length as a C string, of str */
+
+    /*
+     * firewall
+     */
+    if (item == NULL) {
+	warn(__func__, "called with NULL item");
+	return false;	/* processing failed */
+    }
+    if (str == NULL) {
+	warn(__func__, "called with NULL ptr");
+	return false;	/* processing failed */
+    }
+    if (len <= 0) {
+	warn(__func__, "called with len: %ju <= 0", (uintmax_t)len);
+	return false;	/* processing failed */
+    }
+    if (str[0] == '\0') {
+	warn(__func__, "called with empty string");
+	return false;	/* processing failed */
+    }
+    if (!isascii(str[len-1]) || !isdigit(str[len-1])) {
+	warn(__func__, "str[%ju-1] is not an ASCII digit: 0x%02x for str: %s", (uintmax_t)len, (int)str[len-1], str);
+	return false;	/* processing failed */
+    }
+    str_len = strlen(str);
+    if (str_len < len) {
+	warn(__func__, "strlen(%s): %ju < len arg: %ju", str, (uintmax_t)str_len, (uintmax_t)len);
+	return false;	/* processing failed */
+    }
+
+    /*
+     * JSON spec detail: floating point numbers cannot start with .
+     */
+    if (str[0] == '.') {
+	dbg(DBG_HIGH, "%s: floating point numbers cannot start with .: <%s>",
+		       __func__, str);
+	return false;	/* processing failed */
+
+    /*
+     * JSON spec detail: floating point numbers cannot end with .
+     */
+    } else if (str[len-1] == '.') {
+	dbg(DBG_HIGH, "%s: floating point numbers cannot end with .: <%s>",
+		      __func__, str);
+	return false;	/* processing failed */
+
+    /*
+     * JSON spec detail: floating point numbers cannot end with -
+     */
+    } else if (str[len-1] == '-') {
+	dbg(DBG_HIGH, "%s: floating point numbers cannot end with -: <%s>",
+		      __func__, str);
+	return false;	/* processing failed */
+
+    /*
+     * JSON spec detail: floating point numbers cannot end with +
+     */
+    } else if (str[len-1] == '+') {
+	dbg(DBG_HIGH, "%s: floating point numbers cannot end with +: <%s>",
+		      __func__, str);
+	return false;	/* processing failed */
+
+    /*
+     * JSON spec detail: floating point numbers must end in a digit
+     */
+    } else if (!isascii(str[len-1]) || !isdigit(str[len-1])) {
+	dbg(DBG_HIGH, "%s: floating point numbers must end in a digit: <%s>",
+		       __func__, str);
+	return false;	/* processing failed */
+    }
+
+    /*
+     * detect use of e notation
+     */
+    e_found = strchr(str, 'e');
+    cap_e_found = strchr(str, 'E');
+    /* case: both e and E found */
+    if (e_found != NULL && cap_e_found != NULL) {
+
+	dbg(DBG_HIGH, "%s: floating point numbers cannot use both e and E: <%s>",
+			  __func__, str);
+	return false;	/* processing failed */
+
+    /* case: just e found, no E */
+    } else if (e_found != NULL) {
+
+	/* firewall - search for two e's */
+	e = strrchr(str, 'e');
+	if (e_found != e) {
+	    dbg(DBG_HIGH, "%s: floating point numbers cannot have more than one e: <%s>",
+			  __func__, str);
+	    return false;	/* processing failed */
+	}
+
+	/* note e notation */
+	item->is_e_notation = true;
+
+    /* case: just E found, no e */
+    } else if (cap_e_found != NULL) {
+
+	/* firewall - search for two E's */
+	e = strrchr(str, 'E');
+	if (cap_e_found != e) {
+	    dbg(DBG_HIGH, "%s: floating point numbers cannot have more than one E: <%s>",
+			  __func__, str);
+	    return false;	/* processing failed */
+	}
+
+	/* note e notation */
+	item->is_e_notation = true;
+    }
+
+    /*
+     * perform additional JSON number checks on e notation
+     *
+     * NOTE: If item->is_e_notation == true, then e points to the e or E
+     */
+    if (item->is_e_notation == true) {
+
+	/*
+	 * JSON spec detail: e notation number cannot start with e or E
+	 */
+	if (e == str) {
+	    dbg(DBG_HIGH, "%s: e notation numbers cannot start with e or E: <%s>",
+			  __func__, str);
+	    return false;	/* processing failed */
+
+	/*
+	 * JSON spec detail: e notation number cannot end with e or E
+	 */
+	} else if (e == &(str[len-1])) {
+	    dbg(DBG_HIGH, "%s: e notation numbers cannot end with e or E: <%s>",
+			  __func__, str);
+	    return false;	/* processing failed */
+
+	/*
+	 * JSON spec detail: e notation number cannot have e or E after .
+	 */
+	} else if (e > str && e[-1] == '.') {
+	    dbg(DBG_HIGH, "%s: e notation numbers cannot have '.' before e or E: <%s>",
+			  __func__, str);
+	    return false;	/* processing failed */
+
+	/*
+	 * JSON spec detail: e notation number must have digit before e or E
+	 */
+	} else if (e > str && (!isascii(e[-1]) || !isdigit(e[-1]))) {
+	    dbg(DBG_HIGH, "%s: e notation numbers must have digit before e or E: <%s>",
+			  __func__, str);
+	    return false;	/* processing failed */
+
+	/*
+	 * case: e notation number with a leading + in the exponent
+	 *
+	 * NOTE: From "floating point numbers cannot end with +" we know + is not at the end.
+	 */
+	} else if (e[1] == '+') {
+
+	    /*
+	     * JSON spec detail: e notation number with e+ or E+ must be followed by a digit
+	     */
+	    if (e+1 < &(str[len-1]) && (!isascii(e[2]) || !isdigit(e[2]))) {
+		dbg(DBG_HIGH, "%s: :e notation number with e+ or E+ must be followed by a digit <%s>",
+			      __func__, str);
+		return false;	/* processing failed */
+	    }
+
+	/*
+	 * case: e notation number with a leading - in the exponent
+	 *
+	 * NOTE: From "floating point numbers cannot end with -" we know - is not at the end.
+	 */
+	} else if (e[1] == '-') {
+
+	    /*
+	     * JSON spec detail: e notation number with e- or E- must be followed by a digit
+	     */
+	    if (e+1 < &(str[len-1]) && (!isascii(e[2]) || !isdigit(e[2]))) {
+		dbg(DBG_HIGH, "%s: :e notation number with e- or E- must be followed by a digit <%s>",
+			      __func__, str);
+		return false;	/* processing failed */
+	    }
+
+	/*
+	 * JSON spec detail: e notation number must have + or - or digit after e or E
+	 */
+	} else if (!isascii(e[1]) || !isdigit(e[1])) {
+	    dbg(DBG_HIGH, "%s: e notation numbers must follow e or E with + or - or digit: <%s>",
+			  __func__, str);
+	    return false;	/* processing failed */
+	}
+    }
+
+    /*
+     * convert to largest floating point value
+     */
+    errno = 0;			/* pre-clear errno for errp() */
+    item->as_longdouble = strtold(str, &endptr);
+    if (errno == ERANGE || endptr == str || endptr == NULL) {
+	dbg(DBG_VVVHIGH, "strtold failed to convert");
+	item->converted = false;
+	return false;	/* processing failed */
+    }
+    item->converted = true;
+    item->longdouble_sized = true;
+    item->as_longdouble_int = (item->as_longdouble == floorl(item->as_longdouble));
+    dbg(DBG_VVVHIGH, "strtold for <%s> returned as %%Lg: %.22Lg", str, item->as_longdouble);
+    dbg(DBG_VVVHIGH, "strtold for <%s> returned as %%Le: %.22Le", str, item->as_longdouble);
+    dbg(DBG_VVVHIGH, "strtold for <%s> returned as %%Lf: %.22Lf", str, item->as_longdouble);
+    dbg(DBG_VVVHIGH, "strtold returned an integer value: %s", booltostr(item->as_longdouble_int));
+
+    /*
+     * note if value < 0
+     */
+    if (item->as_longdouble < 0) {
+	item->is_negative = true;
+    }
+
+    /*
+     * convert to double
+     */
+    errno = 0;			/* pre-clear conversion test */
+    item->as_double = strtod(str, &endptr);
+    if (errno == ERANGE || endptr == str || endptr == NULL) {
+	item->double_sized = false;
+	dbg(DBG_VVVHIGH, "strtod for <%s> failed", str);
+    } else {
+	item->double_sized = true;
+	item->as_double_int = (item->as_double == floorl(item->as_double));
+	dbg(DBG_VVVHIGH, "strtod for <%s> returned as %%lg: %.22lg", str, item->as_double);
+	dbg(DBG_VVVHIGH, "strtod for <%s> returned as %%le: %.22le", str, item->as_double);
+	dbg(DBG_VVVHIGH, "strtod for <%s> returned as %%lf: %.22lf", str, item->as_double);
+	dbg(DBG_VVVHIGH, "strtod returned an integer value: %s", booltostr(item->as_double_int));
+    }
+
+    /*
+     * convert to float
+     */
+    errno = 0;			/* pre-clear conversion test */
+    item->as_float = strtof(str, &endptr);
+    if (errno == ERANGE || endptr == str || endptr == NULL) {
+	item->float_sized = false;
+	dbg(DBG_VVVHIGH, "strtof for <%s> failed", str);
+    } else {
+	item->float_sized = true;
+	item->as_float_int = (item->as_longdouble == floorl(item->as_longdouble));
+	dbg(DBG_VVVHIGH, "strtof for <%s> returned as %%g: %.22g", str, item->as_float);
+	dbg(DBG_VVVHIGH, "strtof for <%s> returned as %%e: %.22e", str, item->as_float);
+	dbg(DBG_VVVHIGH, "strtof for <%s> returned as %%f: %.22f", str, item->as_float);
+	dbg(DBG_VVVHIGH, "strtof returned an integer value: %s", booltostr(item->as_float_int));
+    }
+
+    /*
+     * processing was successful
+     */
+    return true;
+}
 
 
 /*
@@ -591,253 +1452,6 @@ jerrp(int exitcode, char const *program, char const *name, char const *filename,
     not_reached();
 }
 
-
-/*
- * alloc_json_code_ignore_set - allocate the initial JSON ignore code set
- *
- * This function will setup the ignore_json_code_set table.  If the ignore_json_code_set
- * table is already setup, this function will do nothing.
- *
- * NOTE: This function does not return on error.
- */
-static void
-alloc_json_code_ignore_set(void)
-{
-    struct ignore_json_code *tbl = NULL;	/* allocated struct ignore_json_code */
-    int i;
-
-    /*
-     * firewall - do nothing if already setup
-     */
-    if (ignore_json_code_set != NULL) {
-	dbg(DBG_VVHIGH, "ignore_json_code_set already set up");
-	return;
-    }
-
-    /*
-     * allocate the initial ignore_json_code_set[]
-     */
-    errno = 0;			/* pre-clear errno for errp() */
-    tbl = malloc(sizeof(struct ignore_json_code));
-    if (tbl == NULL) {
-	errp(200, __func__, "failed to malloc struct ignore_json_code");
-	not_reached();
-    }
-
-    /*
-     * allocate an initial block of ignore codes
-     */
-    errno = 0;			/* pre-clear errno for errp() */
-    tbl->code = malloc((JSON_CODE_IGNORE_CHUNK+1+1) * sizeof(int));
-    if (tbl->code == NULL) {
-	errp(201, __func__, "cannot allocate %d ignore codes", JSON_CODE_IGNORE_CHUNK+1+1);
-	not_reached();
-    }
-
-    /*
-     * initialize
-     */
-    tbl->next_free = 0;
-    tbl->alloc = JSON_CODE_IGNORE_CHUNK + 1;		/* report one less for the guard code */
-    for (i=0; i < tbl->alloc; ++i) {
-	tbl->code[i] = -1;	/* -1 is not a valid ignore code */
-    }
-    ignore_json_code_set = tbl;
-}
-
-
-/*
- * cmp_codes - compare two codes for reverse sorting ignore_json_code_set[]
- *
- * This function will allow qsort() to reverse sort the codes in ignore_json_code_set[].
- *
- * given:
- *	a	- pointer to first code to compare
- *	b	- pointer to second code to compare
- *
- * returns:
- *	-1	a > b
- *	0	a == b
- *	1	a < b
- */
-static int
-cmp_codes(const void *a, const void *b)
-{
-    /*
-     * firewall
-     */
-    if (a == NULL || b == NULL) {
-	err(202, __func__, "NULL arg(s)");
-	not_reached();
-    }
-
-    /*
-     * compare for reverse sort
-     */
-    if (*(int *)a < *(int *)b) {
-	return 1;	/* a < b */
-    } else if (*(int *)a > *(int *)b) {
-	return -1;	/* a > b */
-    }
-    return 0;	/* a == b */
-}
-
-
-/*
- * expand_json_code_ignore_set - expand the size of alloc json_code_ignore_set[]
- *
- * This function will expand the allocated  json_code_ignore_set[] by
- * JSON_CODE_IGNORE_CHUNK JSON error codes, and set those new codes (in the end
- * of the table) to -1 to indicate that they are not valid codes.
- *
- * NOTE: This function does not return on error.
- */
-static void
-expand_json_code_ignore_set(void)
-{
-    int *p;	/* reallocated code set */
-    int i;
-
-    /*
-     * setup ignore_json_code_set if needed
-     */
-    alloc_json_code_ignore_set();
-    if (ignore_json_code_set == NULL) {
-	err(203, __func__, "ignore_json_code_set is NULL after allocation");
-	not_reached();
-    }
-
-    /*
-     * if no room, expand the table
-     */
-    if (ignore_json_code_set->next_free >= ignore_json_code_set->alloc) {
-	p = realloc(ignore_json_code_set->code, (ignore_json_code_set->alloc+JSON_CODE_IGNORE_CHUNK+1) * sizeof(int));
-	errno = 0;			/* pre-clear errno for errp() */
-	if (p == NULL) {
-	    errp(204, __func__, "cannot expand ignore_json_code_set from %d to %d codes",
-				ignore_json_code_set->alloc+1, ignore_json_code_set->alloc+JSON_CODE_IGNORE_CHUNK+1);
-	    not_reached();
-	}
-	for (i=ignore_json_code_set->alloc; i < ignore_json_code_set->alloc+JSON_CODE_IGNORE_CHUNK; ++i) {
-	    p[i] = JSON_CODE_INVALID; /* JSON_CODE_INVALID (JSON_CODE_RESERVED_MIN - 1) is not a valid ignore code */
-	}
-	ignore_json_code_set->code = p;
-	/* report one less for the guard code */
-	ignore_json_code_set->alloc = ignore_json_code_set->alloc + JSON_CODE_IGNORE_CHUNK;
-    }
-    return;
-}
-
-
-/*
- * is_json_code_ignored - determine of a JSON warn/error code is to be ignored
- *
- * given:
- *	code	- code to test if code should be ignored
- *
- * returns:
- *	true ==> code is in ignore_json_code_set[] and should be ignored
- *	false ==> code is not in ignore_json_code_set[] and should NOT be ignored
- */
-bool
-is_json_code_ignored(int code)
-{
-    int i;
-
-    /*
-     * firewall
-     */
-    if (code < 0) {
-	err(205, __func__, "code %d < 0", code);
-	not_reached();
-    }
-
-    /*
-     * setup ignore_json_code_set if needed
-     */
-    alloc_json_code_ignore_set();
-    if (ignore_json_code_set == NULL) {
-	err(206, __func__, "ignore_json_code_set is NULL after allocation");
-	not_reached();
-    }
-
-    /*
-     * search ignore_json_code_set[] for the code
-     */
-    for (i=0; i < ignore_json_code_set->next_free; ++i) {
-
-	/* look for match */
-	if (ignore_json_code_set->code[i] == code) {
-	    dbg(DBG_VVVHIGH, "code %d is in ignore_json_code_set[]", code);
-	    return true;	/* report code should be ignored */
-	}
-
-	/* look for going beyond sorted values */
-	if (ignore_json_code_set->code[i] <= code) {
-	     break;
-	}
-    }
-    return false;	/* report code should NOT be ignored */
-}
-
-
-/*
- * add_ignore_json_code - add a JSON error code to be ignored
- *
- * If code >= 0 and is not in json_code_ignore_set[], then this function will
- * add it and then reverse sort the json_code_ignore_set[] table.
- *
- * NOTE: The json_code_ignore_set[] will be initialized or expanded as needed.
- *
- * given:
- *	code	- code to ignore
- *
- * NOTE: This function does not return on error.
- */
-void
-ignore_json_code(int code)
-{
-    /*
-     * firewall
-     */
-    if (code < 0) {
-	err(207, __func__, "code %d < 0", code);
-	not_reached();
-    }
-
-    /*
-     * allocate or expand the json_code_ignore_set[] if needed
-     */
-    if (ignore_json_code_set == NULL || ignore_json_code_set->next_free >= ignore_json_code_set->alloc) {
-	expand_json_code_ignore_set();
-    }
-    if (ignore_json_code_set == NULL) {
-	err(208, __func__, "ignore_json_code_set is NULL after allocation or expansion");
-	not_reached();
-    }
-
-    /*
-     * verify that code is not already in json_code_ignore_set[]
-     */
-    if (is_json_code_ignored(code)) {
-	/* nothing to do it code is already added */
-	dbg(DBG_VVVHIGH, "code %d is already in ignore_json_code_set[]", code);
-	return;
-    }
-
-    /*
-     * add the code to the json_code_ignore_set[]
-     */
-    ignore_json_code_set->code[ignore_json_code_set->next_free] = code;
-    ++ignore_json_code_set->next_free;
-
-    /*
-     * reverse sort the json_code_ignore_set[]
-     */
-    qsort(ignore_json_code_set->code, ignore_json_code_set->next_free, sizeof(int), cmp_codes);
-    dbg(DBG_VHIGH, "code %d added to ignore_json_code_set[]", code);
-    return;
-}
 
 
 /*
@@ -1532,619 +2146,6 @@ vjson_tree_walk(struct json *node, int max_depth, int depth, va_list ap, void (*
     return;
 }
 
-
-/*
- * json_process_decimal - process a JSON integer string
- *
- * We will fill out the struct json_number item assuming that ptr, with length len,
- * points to a JSON integer string of base 10 ASCII as allowed by the so-called JSON spec.
- *
- * given:
- *	item	pointer to a JSON number structure (struct json_number*)
- *	str	JSON integer as a NUL terminated C-style string
- *	len	length of the JSON number that is not whitespace
- *
- * NOTE: This function assumes that str points to the start of a JSON number, NOT whitespace.
- *
- * NOTE: This function assumes that str is a NUL terminated string,
- *	 even if the NUL is well beyond the end of the JSON number.
- *
- * NOTE: While it is OK if str has trailing whitespace, str[len-1] must be an
- *	 ASCII digit.  It is assumed that str[len-1] is the final JSON number
- *	 character.
- */
-static bool
-json_process_decimal(struct json_number *item, char const *str, size_t len)
-{
-    char *endptr;			/* first invalid character or str */
-    size_t str_len = 0;			/* length as a C string, of str */
-
-    /*
-     * firewall
-     */
-    if (item == NULL) {
-	warn(__func__, "called with NULL item");
-	return false;	/* processing failed */
-    }
-    if (str == NULL) {
-	warn(__func__, "called with NULL str");
-	return false;	/* processing failed */
-    }
-    if (len <= 0) {
-	warn(__func__, "called with len: %ju <= 0", (uintmax_t)len);
-	return false;	/* processing failed */
-    }
-    if (str[0] == '\0') {
-	warn(__func__, "called with empty string");
-	return false;	/* processing failed */
-    }
-    if (!isascii(str[len-1]) || !isdigit(str[len-1])) {
-	warn(__func__, "str[%ju-1] is not an ASCII digit: 0x%02x for str: %s", (uintmax_t)len, (int)str[len-1], str);
-	return false;	/* processing failed */
-    }
-    str_len = strlen(str);
-    if (str_len < len) {
-	warn(__func__, "strlen(%s): %ju < len arg: %ju", str, (uintmax_t)str_len, (uintmax_t)len);
-	return false;	/* processing failed */
-    }
-
-    /*
-     * determine if JSON integer negative
-     */
-    if (str[0] == '-') {
-
-	/* parse JSON integer that is < 0 */
-	item->is_negative = true;
-
-        /*
-	 * JSON spec detail: lone - invalid JSON
-	 */
-	if (len <= 1 || str[1] == '\0') {
-	    dbg(DBG_HIGH, "%s called with just -: <%s>", __func__, str);
-	    return false;	/* processing failed */
-
-        /*
-	 * JSON spec detail: leading -0 followed by digits - invalid JSON
-	 */
-	} else if (len > 2 && str[1] == '0' && isascii(str[2]) && isdigit(str[2])) {
-	    dbg(DBG_HIGH, "%s called with -0 followed by more digits: <%s>", __func__, str);
-	    return false;	/* processing failed */
-	}
-
-    /* case: JSON integer is >= 0 */
-    } else {
-
-	/* parse JSON integer that is >= 0 */
-	item->is_negative = false;
-
-        /*
-	 * JSON spec detail: leading 0 followed by digits - invalid JSON
-	 */
-	if (len > 1 && str[0] == '0' && isascii(str[1]) && isdigit(str[1])) {
-	    dbg(DBG_HIGH, "%s called with 0 followed by more digits: <%s>", __func__, str);
-	    return false;	/* processing failed */
-	}
-    }
-
-    /*
-     * attempt to convert to the largest possible integer
-     */
-    if (item->is_negative) {
-
-	/* case: negative, try for largest signed integer */
-	errno = 0;			/* pre-clear errno for errp() */
-	item->as_maxint = strtoimax(str, &endptr, 10);
-	if (errno == ERANGE || errno == EINVAL || endptr == str || endptr == NULL) {
-	    dbg(DBG_VVVHIGH, "strtoimax failed to convert");
-	    item->converted = false;
-	    return false;	/* processing failed */
-	}
-	item->converted = true;
-	item->maxint_sized = true;
-	dbg(DBG_VVVHIGH, "strtoimax for <%s> returned: %jd", str, item->as_maxint);
-
-	/* case int8_t: range check */
-	if (item->as_maxint >= (intmax_t)INT8_MIN && item->as_maxint <= (intmax_t)INT8_MAX) {
-	    item->int8_sized = true;
-	    item->as_int8 = (int8_t)item->as_maxint;
-	}
-
-	/* case uint8_t: cannot be because JSON string is < 0 */
-	item->uint8_sized = false;
-
-	/* case int16_t: range check */
-	if (item->as_maxint >= (intmax_t)INT16_MIN && item->as_maxint <= (intmax_t)INT16_MAX) {
-	    item->int16_sized = true;
-	    item->as_int16 = (int16_t)item->as_maxint;
-	}
-
-	/* case uint16_t: cannot be because JSON string is < 0 */
-	item->uint16_sized = false;
-
-	/* case int32_t: range check */
-	if (item->as_maxint >= (intmax_t)INT32_MIN && item->as_maxint <= (intmax_t)INT32_MAX) {
-	    item->int32_sized = true;
-	    item->as_int32 = (int32_t)item->as_maxint;
-	}
-
-	/* case uint32_t: cannot be because JSON string is < 0 */
-	item->uint32_sized = false;
-
-	/* case int64_t: range check */
-	if (item->as_maxint >= (intmax_t)INT64_MIN && item->as_maxint <= (intmax_t)INT64_MAX) {
-	    item->int64_sized = true;
-	    item->as_int64 = (int64_t)item->as_maxint;
-	}
-
-	/* case uint64_t: cannot be because JSON string is < 0 */
-	item->uint64_sized = false;
-
-	/* case int: range check */
-	if (item->as_maxint >= (intmax_t)INT_MIN && item->as_maxint <= (intmax_t)INT_MAX) {
-	    item->int_sized = true;
-	    item->as_int = (int)item->as_maxint;
-	}
-
-	/* case unsigned int: cannot be because JSON string is < 0 */
-	item->uint_sized = false;
-
-	/* case long: range check */
-	if (item->as_maxint >= (intmax_t)LONG_MIN && item->as_maxint <= (intmax_t)LONG_MAX) {
-	    item->long_sized = true;
-	    item->as_long = (long)item->as_maxint;
-	}
-
-	/* case unsigned long: cannot be because JSON string is < 0 */
-	item->ulong_sized = false;
-
-	/* case long long: range check */
-	if (item->as_maxint >= (intmax_t)LLONG_MIN && item->as_maxint <= (intmax_t)LLONG_MAX) {
-	    item->longlong_sized = true;
-	    item->as_longlong = (long long)item->as_maxint;
-	}
-
-	/* case unsigned long long: cannot be because JSON string is < 0 */
-	item->ulonglong_sized = false;
-
-	/* case size_t: cannot be because JSON string is < 0 */
-	item->size_sized = false;
-
-	/* case ssize_t: range check */
-	if (item->as_maxint >= (intmax_t)SSIZE_MIN && item->as_maxint <= (intmax_t)SSIZE_MAX) {
-	    item->ssize_sized = true;
-	    item->as_ssize = (ssize_t)item->as_maxint;
-	}
-
-	/* case off_t: range check */
-	if (item->as_maxint >= (intmax_t)OFF_MIN && item->as_maxint <= (intmax_t)OFF_MAX) {
-	    item->off_sized = true;
-	    item->as_off = (off_t)item->as_maxint;
-	}
-
-	/* case intmax_t: was handled by the above call to strtoimax() */
-
-	/* case uintmax_t: cannot be because JSON string is < 0 */
-	item->umaxint_sized = false;
-
-    } else {
-
-	/* case: non-negative, try for largest unsigned integer */
-	errno = 0;			/* pre-clear errno for errp() */
-	item->as_umaxint = strtoumax(str, &endptr, 10);
-	if (errno == ERANGE || errno == EINVAL || endptr == str || endptr == NULL) {
-	    dbg(DBG_VVVHIGH, "strtoumax failed to convert");
-	    item->converted = false;
-	    return false;	/* processing failed */
-	}
-	item->converted = true;
-	item->umaxint_sized = true;
-	dbg(DBG_VVVHIGH, "strtoumax for <%s> returned: %ju", str, item->as_umaxint);
-
-	/* case int8_t: bounds check */
-	if (item->as_umaxint <= (uintmax_t)INT8_MAX) {
-	    item->int8_sized = true;
-	    item->as_int8 = (int8_t)item->as_umaxint;
-	}
-
-	/* case uint8_t: bounds check */
-	if (item->as_umaxint <= (uintmax_t)UINT8_MAX) {
-	    item->uint8_sized = true;
-	    item->as_uint8 = (uint8_t)item->as_umaxint;
-	}
-
-	/* case int16_t: bounds check */
-	if (item->as_umaxint <= (uintmax_t)INT16_MAX) {
-	    item->int16_sized = true;
-	    item->as_int16 = (int16_t)item->as_umaxint;
-	}
-
-	/* case uint16_t: bounds check */
-	if (item->as_umaxint <= (uintmax_t)UINT16_MAX) {
-	    item->uint16_sized = true;
-	    item->as_uint16 = (uint16_t)item->as_umaxint;
-	}
-
-	/* case int32_t: bounds check */
-	if (item->as_umaxint <= (uintmax_t)INT32_MAX) {
-	    item->int32_sized = true;
-	    item->as_int32 = (int32_t)item->as_umaxint;
-	}
-
-	/* case uint32_t: bounds check */
-	if (item->as_umaxint <= (uintmax_t)UINT32_MAX) {
-	    item->uint32_sized = true;
-	    item->as_uint32 = (uint32_t)item->as_umaxint;
-	}
-
-	/* case int64_t: bounds check */
-	if (item->as_umaxint <= (uintmax_t)INT64_MAX) {
-	    item->int64_sized = true;
-	    item->as_int64 = (int64_t)item->as_umaxint;
-	}
-
-	/* case uint64_t: bounds check */
-	if (item->as_umaxint <= (uintmax_t)UINT64_MAX) {
-	    item->uint64_sized = true;
-	    item->as_uint64 = (uint64_t)item->as_umaxint;
-	}
-
-	/* case int: bounds check */
-	if (item->as_umaxint <= (uintmax_t)INT_MAX) {
-	    item->int_sized = true;
-	    item->as_int = (int)item->as_umaxint;
-	}
-
-	/* case unsigned int: bounds check */
-	if (item->as_umaxint <= (uintmax_t)UINT_MAX) {
-	    item->uint_sized = true;
-	    item->as_uint = (unsigned int)item->as_umaxint;
-	}
-
-	/* case long: bounds check */
-	if (item->as_umaxint <= (uintmax_t)LONG_MAX) {
-	    item->long_sized = true;
-	    item->as_long = (long)item->as_umaxint;
-	}
-
-	/* case unsigned long: bounds check */
-	if (item->as_umaxint <= (uintmax_t)ULONG_MAX) {
-	    item->ulong_sized = true;
-	    item->as_ulong = (unsigned long)item->as_umaxint;
-	}
-
-	/* case long long: bounds check */
-	if (item->as_umaxint <= (uintmax_t)LLONG_MAX) {
-	    item->longlong_sized = true;
-	    item->as_longlong = (long long)item->as_umaxint;
-	}
-
-	/* case unsigned long long: bounds check */
-	if (item->as_umaxint <= (uintmax_t)ULLONG_MAX) {
-	    item->ulonglong_sized = true;
-	    item->as_ulonglong = (unsigned long long)item->as_umaxint;
-	}
-
-	/* case ssize_t: bounds check */
-	if (item->as_umaxint <= (uintmax_t)SSIZE_MAX) {
-	    item->ssize_sized = true;
-	    item->as_ssize = (ssize_t)item->as_umaxint;
-	}
-
-	/* case size_t: bounds check */
-	if (item->as_umaxint <= (uintmax_t)SIZE_MAX) {
-	    item->size_sized = true;
-	    item->as_size = (size_t)item->as_umaxint;
-	}
-
-	/* case off_t: bounds check */
-	if (item->as_umaxint <= (uintmax_t)OFF_MAX) {
-	    item->off_sized = true;
-	    item->as_off = (off_t)item->as_umaxint;
-	}
-
-	/* case intmax_t: bounds check */
-	if (item->as_umaxint <= (uintmax_t)INTMAX_MAX) {
-	    item->maxint_sized = true;
-	    item->as_maxint = (intmax_t)item->as_umaxint;
-	}
-
-	/* case uintmax_t: was handled by the above call to strtoumax() */
-    }
-
-    /*
-     * processing was successful
-     */
-    return true;
-}
-
-
-/*
- * json_process_floating - process JSON floating point or e-notation string
- *
- * We will fill out the struct json_number item assuming that ptr, with length len,
- * points to a JSON floating point string as allowed by the so-called JSON spec.
- * The JSON floating point string can be with a JSON float (what the spec calls
- * integer + faction + exponent).
- *
- * given:
- *	item	pointer to a JSON number structure (struct json_number*)
- *	str	JSON floating point or JSON e-notation value as a NUL terminated C-style string
- *	len	length of the JSON number that is not whitespace
- *
- * NOTE: This function assumes that str points to the start of a JSON number, NOT whitespace.
- *
- * NOTE: This function assumes that str is a NUL terminated string,
- *	 even if the NUL is well beyond the end of the JSON number.
- *
- * NOTE: While it is OK if str has trailing whitespace, str[len-1] must be an
- *	 ASCII digit.  It is assumed that str[len-1] is the final JSON number
- *	 character.
- */
-static bool
-json_process_floating(struct json_number *item, char const *str, size_t len)
-{
-    char *endptr;			/* first invalid character or str */
-    char *e_found = NULL;		/* strchr() search for e */
-    char *cap_e_found = NULL;		/* strchr() search for E */
-    char *e = NULL;			/* strrchr() search for 2nd e or E */
-    size_t str_len = 0;			/* length as a C string, of str */
-
-    /*
-     * firewall
-     */
-    if (item == NULL) {
-	warn(__func__, "called with NULL item");
-	return false;	/* processing failed */
-    }
-    if (str == NULL) {
-	warn(__func__, "called with NULL ptr");
-	return false;	/* processing failed */
-    }
-    if (len <= 0) {
-	warn(__func__, "called with len: %ju <= 0", (uintmax_t)len);
-	return false;	/* processing failed */
-    }
-    if (str[0] == '\0') {
-	warn(__func__, "called with empty string");
-	return false;	/* processing failed */
-    }
-    if (!isascii(str[len-1]) || !isdigit(str[len-1])) {
-	warn(__func__, "str[%ju-1] is not an ASCII digit: 0x%02x for str: %s", (uintmax_t)len, (int)str[len-1], str);
-	return false;	/* processing failed */
-    }
-    str_len = strlen(str);
-    if (str_len < len) {
-	warn(__func__, "strlen(%s): %ju < len arg: %ju", str, (uintmax_t)str_len, (uintmax_t)len);
-	return false;	/* processing failed */
-    }
-
-    /*
-     * JSON spec detail: floating point numbers cannot start with .
-     */
-    if (str[0] == '.') {
-	dbg(DBG_HIGH, "%s: floating point numbers cannot start with .: <%s>",
-		       __func__, str);
-	return false;	/* processing failed */
-
-    /*
-     * JSON spec detail: floating point numbers cannot end with .
-     */
-    } else if (str[len-1] == '.') {
-	dbg(DBG_HIGH, "%s: floating point numbers cannot end with .: <%s>",
-		      __func__, str);
-	return false;	/* processing failed */
-
-    /*
-     * JSON spec detail: floating point numbers cannot end with -
-     */
-    } else if (str[len-1] == '-') {
-	dbg(DBG_HIGH, "%s: floating point numbers cannot end with -: <%s>",
-		      __func__, str);
-	return false;	/* processing failed */
-
-    /*
-     * JSON spec detail: floating point numbers cannot end with +
-     */
-    } else if (str[len-1] == '+') {
-	dbg(DBG_HIGH, "%s: floating point numbers cannot end with +: <%s>",
-		      __func__, str);
-	return false;	/* processing failed */
-
-    /*
-     * JSON spec detail: floating point numbers must end in a digit
-     */
-    } else if (!isascii(str[len-1]) || !isdigit(str[len-1])) {
-	dbg(DBG_HIGH, "%s: floating point numbers must end in a digit: <%s>",
-		       __func__, str);
-	return false;	/* processing failed */
-    }
-
-    /*
-     * detect use of e notation
-     */
-    e_found = strchr(str, 'e');
-    cap_e_found = strchr(str, 'E');
-    /* case: both e and E found */
-    if (e_found != NULL && cap_e_found != NULL) {
-
-	dbg(DBG_HIGH, "%s: floating point numbers cannot use both e and E: <%s>",
-			  __func__, str);
-	return false;	/* processing failed */
-
-    /* case: just e found, no E */
-    } else if (e_found != NULL) {
-
-	/* firewall - search for two e's */
-	e = strrchr(str, 'e');
-	if (e_found != e) {
-	    dbg(DBG_HIGH, "%s: floating point numbers cannot have more than one e: <%s>",
-			  __func__, str);
-	    return false;	/* processing failed */
-	}
-
-	/* note e notation */
-	item->is_e_notation = true;
-
-    /* case: just E found, no e */
-    } else if (cap_e_found != NULL) {
-
-	/* firewall - search for two E's */
-	e = strrchr(str, 'E');
-	if (cap_e_found != e) {
-	    dbg(DBG_HIGH, "%s: floating point numbers cannot have more than one E: <%s>",
-			  __func__, str);
-	    return false;	/* processing failed */
-	}
-
-	/* note e notation */
-	item->is_e_notation = true;
-    }
-
-    /*
-     * perform additional JSON number checks on e notation
-     *
-     * NOTE: If item->is_e_notation == true, then e points to the e or E
-     */
-    if (item->is_e_notation == true) {
-
-	/*
-	 * JSON spec detail: e notation number cannot start with e or E
-	 */
-	if (e == str) {
-	    dbg(DBG_HIGH, "%s: e notation numbers cannot start with e or E: <%s>",
-			  __func__, str);
-	    return false;	/* processing failed */
-
-	/*
-	 * JSON spec detail: e notation number cannot end with e or E
-	 */
-	} else if (e == &(str[len-1])) {
-	    dbg(DBG_HIGH, "%s: e notation numbers cannot end with e or E: <%s>",
-			  __func__, str);
-	    return false;	/* processing failed */
-
-	/*
-	 * JSON spec detail: e notation number cannot have e or E after .
-	 */
-	} else if (e > str && e[-1] == '.') {
-	    dbg(DBG_HIGH, "%s: e notation numbers cannot have '.' before e or E: <%s>",
-			  __func__, str);
-	    return false;	/* processing failed */
-
-	/*
-	 * JSON spec detail: e notation number must have digit before e or E
-	 */
-	} else if (e > str && (!isascii(e[-1]) || !isdigit(e[-1]))) {
-	    dbg(DBG_HIGH, "%s: e notation numbers must have digit before e or E: <%s>",
-			  __func__, str);
-	    return false;	/* processing failed */
-
-	/*
-	 * case: e notation number with a leading + in the exponent
-	 *
-	 * NOTE: From "floating point numbers cannot end with +" we know + is not at the end.
-	 */
-	} else if (e[1] == '+') {
-
-	    /*
-	     * JSON spec detail: e notation number with e+ or E+ must be followed by a digit
-	     */
-	    if (e+1 < &(str[len-1]) && (!isascii(e[2]) || !isdigit(e[2]))) {
-		dbg(DBG_HIGH, "%s: :e notation number with e+ or E+ must be followed by a digit <%s>",
-			      __func__, str);
-		return false;	/* processing failed */
-	    }
-
-	/*
-	 * case: e notation number with a leading - in the exponent
-	 *
-	 * NOTE: From "floating point numbers cannot end with -" we know - is not at the end.
-	 */
-	} else if (e[1] == '-') {
-
-	    /*
-	     * JSON spec detail: e notation number with e- or E- must be followed by a digit
-	     */
-	    if (e+1 < &(str[len-1]) && (!isascii(e[2]) || !isdigit(e[2]))) {
-		dbg(DBG_HIGH, "%s: :e notation number with e- or E- must be followed by a digit <%s>",
-			      __func__, str);
-		return false;	/* processing failed */
-	    }
-
-	/*
-	 * JSON spec detail: e notation number must have + or - or digit after e or E
-	 */
-	} else if (!isascii(e[1]) || !isdigit(e[1])) {
-	    dbg(DBG_HIGH, "%s: e notation numbers must follow e or E with + or - or digit: <%s>",
-			  __func__, str);
-	    return false;	/* processing failed */
-	}
-    }
-
-    /*
-     * convert to largest floating point value
-     */
-    errno = 0;			/* pre-clear errno for errp() */
-    item->as_longdouble = strtold(str, &endptr);
-    if (errno == ERANGE || endptr == str || endptr == NULL) {
-	dbg(DBG_VVVHIGH, "strtold failed to convert");
-	item->converted = false;
-	return false;	/* processing failed */
-    }
-    item->converted = true;
-    item->longdouble_sized = true;
-    item->as_longdouble_int = (item->as_longdouble == floorl(item->as_longdouble));
-    dbg(DBG_VVVHIGH, "strtold for <%s> returned as %%Lg: %.22Lg", str, item->as_longdouble);
-    dbg(DBG_VVVHIGH, "strtold for <%s> returned as %%Le: %.22Le", str, item->as_longdouble);
-    dbg(DBG_VVVHIGH, "strtold for <%s> returned as %%Lf: %.22Lf", str, item->as_longdouble);
-    dbg(DBG_VVVHIGH, "strtold returned an integer value: %s", booltostr(item->as_longdouble_int));
-
-    /*
-     * note if value < 0
-     */
-    if (item->as_longdouble < 0) {
-	item->is_negative = true;
-    }
-
-    /*
-     * convert to double
-     */
-    errno = 0;			/* pre-clear conversion test */
-    item->as_double = strtod(str, &endptr);
-    if (errno == ERANGE || endptr == str || endptr == NULL) {
-	item->double_sized = false;
-	dbg(DBG_VVVHIGH, "strtod for <%s> failed", str);
-    } else {
-	item->double_sized = true;
-	item->as_double_int = (item->as_double == floorl(item->as_double));
-	dbg(DBG_VVVHIGH, "strtod for <%s> returned as %%lg: %.22lg", str, item->as_double);
-	dbg(DBG_VVVHIGH, "strtod for <%s> returned as %%le: %.22le", str, item->as_double);
-	dbg(DBG_VVVHIGH, "strtod for <%s> returned as %%lf: %.22lf", str, item->as_double);
-	dbg(DBG_VVVHIGH, "strtod returned an integer value: %s", booltostr(item->as_double_int));
-    }
-
-    /*
-     * convert to float
-     */
-    errno = 0;			/* pre-clear conversion test */
-    item->as_float = strtof(str, &endptr);
-    if (errno == ERANGE || endptr == str || endptr == NULL) {
-	item->float_sized = false;
-	dbg(DBG_VVVHIGH, "strtof for <%s> failed", str);
-    } else {
-	item->float_sized = true;
-	item->as_float_int = (item->as_longdouble == floorl(item->as_longdouble));
-	dbg(DBG_VVVHIGH, "strtof for <%s> returned as %%g: %.22g", str, item->as_float);
-	dbg(DBG_VVVHIGH, "strtof for <%s> returned as %%e: %.22e", str, item->as_float);
-	dbg(DBG_VVVHIGH, "strtof for <%s> returned as %%f: %.22f", str, item->as_float);
-	dbg(DBG_VVVHIGH, "strtof returned an integer value: %s", booltostr(item->as_float_int));
-    }
-
-    /*
-     * processing was successful
-     */
-    return true;
-}
 
 
 /*
