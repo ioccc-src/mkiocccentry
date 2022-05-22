@@ -39,6 +39,11 @@
 #include "dyn_array.h"
 
 /*
+ * globals
+ */
+extern int json_verbosity_level;	/* print json debug messages <= json_verbosity_level in json_dbg(), json_vdbg() */
+
+/*
  * JSON defines
  */
 
