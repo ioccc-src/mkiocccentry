@@ -330,6 +330,13 @@ warn(char const *name, char const *fmt, ...)
     va_list ap;		/* variable argument list */
     int saved_errno;	/* errno at function start */
 
+    /*
+     * silence warn() if -q and -v 0
+     */
+    if (msg_warn_silent == true && verbosity_level <= 0) {
+	warn_output_allowed = false;
+    }
+
     if (!warn_output_allowed) {
 	/* if warn output not allowed return without doing anything */
 	return;
@@ -344,13 +351,6 @@ warn(char const *name, char const *fmt, ...)
      * stdarg variable argument list setup
      */
     va_start(ap, fmt);
-
-    /*
-     * silence warn() if -q and -v 0
-     */
-    if (msg_warn_silent == true && verbosity_level <= 0) {
-	warn_output_allowed = false;
-    }
 
     /*
      * NOTE: We cannot use warn because this is the warn function!
@@ -395,6 +395,13 @@ vwarn(char const *name, char const *fmt, va_list ap)
     int ret;		/* libc function return code */
     int saved_errno;	/* errno at function start */
 
+    /*
+     * silence warn() if -q and -v 0
+     */
+    if (msg_warn_silent == true && verbosity_level <= 0) {
+	warn_output_allowed = false;
+    }
+
     if (!warn_output_allowed) {
 	/* if warn output not allowed return without doing anything */
 	return;
@@ -404,13 +411,6 @@ vwarn(char const *name, char const *fmt, va_list ap)
      * save errno so we can restore it before returning
      */
     saved_errno = errno;
-
-    /*
-     * silence warn() if -q and -v 0
-     */
-    if (msg_warn_silent == true && verbosity_level <= 0) {
-	warn_output_allowed = false;
-    }
 
     /*
      * NOTE: We cannot use warn because this is the warn function!
@@ -494,10 +494,18 @@ warnp(char const *name, char const *fmt, ...)
     va_list ap;		/* variable argument list */
     int saved_errno;	/* errno at function start */
 
+    /*
+     * silence warn() if -q and -v 0
+     */
+    if (msg_warn_silent == true && verbosity_level <= 0) {
+	warn_output_allowed = false;
+    }
+
     if (!warn_output_allowed) {
 	/* if warn output is not allowed return without doing anything */
 	return;
     }
+
     /*
      * save errno so we can restore it before returning
      */
@@ -507,13 +515,6 @@ warnp(char const *name, char const *fmt, ...)
      * stdarg variable argument list setup
      */
     va_start(ap, fmt);
-
-    /*
-     * silence warn() if -q and -v 0
-     */
-    if (msg_warn_silent == true && verbosity_level <= 0) {
-	warn_output_allowed = false;
-    }
 
     /*
      * NOTE: We cannot use warn because this is the warn function!
@@ -558,21 +559,22 @@ vwarnp(char const *name, char const *fmt, va_list ap)
     int ret;		/* libc function return code */
     int saved_errno;	/* errno at function start */
 
-    if (!warn_output_allowed) {
-	/* if warn output is not allowed return without doing anything */
-	return;
-    }
-    /*
-     * save errno so we can restore it before returning
-     */
-    saved_errno = errno;
-
     /*
      * silence warn() if -q and -v 0
      */
     if (msg_warn_silent == true && verbosity_level <= 0) {
 	warn_output_allowed = false;
     }
+
+    if (!warn_output_allowed) {
+	/* if warn output is not allowed return without doing anything */
+	return;
+    }
+
+    /*
+     * save errno so we can restore it before returning
+     */
+    saved_errno = errno;
 
     /*
      * NOTE: We cannot use warn because this is the warn function!
