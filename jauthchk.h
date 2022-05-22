@@ -80,7 +80,7 @@
  * Use the usage() function to print the usage_msg([0-9]?)+ strings.
  */
 static const char * const usage_msg =
-"usage: %s [-h] [-v level] [-V] [-q] [-F fnamchk] [-t] [-W code] [-w] ... file\n"
+"usage: %s [-h] [-v level] [-V] [-q] [-F fnamchk] [-t] [-W code] [-w] file\n"
 "\n"
 "\t-h\t\tprint help message and exit 0\n"
 "\t-v level\tset verbosity level: (def level: %d)\n"
