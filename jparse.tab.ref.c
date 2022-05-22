@@ -558,9 +558,9 @@ static const yytype_int8 yytranslate[] =
 /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_int16 yyrline[] =
 {
-       0,   162,   162,   179,   196,   212,   228,   244,   259,   273,
-     287,   303,   318,   334,   353,   373,   389,   405,   421,   440,
-     456,   472
+       0,   164,   164,   192,   218,   244,   270,   296,   321,   346,
+     373,   399,   424,   450,   484,   515,   541,   566,   592,   625,
+     653,   680
 };
 #endif
 
@@ -1673,359 +1673,570 @@ yyreduce:
     switch (yyn)
       {
   case 2: /* json: json_element  */
-#line 163 "jparse.y"
-                        {
-			    /*
-			     * $$ = $json
-			     * $1 = $json_element
-			     */
-			    json_dbg(JSON_DBG_MED, __func__, "under json json_element:");
-			    json_dbg(JSON_DBG_LOW, __func__, "under json: json_element: $json = $json_element");
-			    yyval = yyvsp[0]; /* magic: json becomes the json_element type */
-			    json_dbg(JSON_DBG_LOW, __func__, "under json: json_element: $json type: %s", json_element_type_name(yyval));
-			    json_dbg(JSON_DBG_LOW, __func__, "under json: json_element: $json_element type: %s", json_element_type_name(yyvsp[0]));
-			    json_dbg(JSON_DBG_MED, __func__, "under json: after json_element returning type: %s",
-						   json_element_type_name(yyval));
-			    json_dbg(JSON_DBG_LOW, __func__, "under json: after json_element before ;");
-			}
-#line 1641 "jparse.tab.c"
+#line 165 "jparse.y"
+    {
+	/*
+	 * $$ = $json
+	 * $1 = $json_element
+	 */
+
+	/* pre action debugging */
+	json_dbg(JSON_DBG_LOW, __func__, "under json: starting: "
+					 "json: json_element");
+	json_dbg(JSON_DBG_MED, __func__, "under json: $json_element type: %s",
+					 json_element_type_name(yyvsp[0]));
+	json_dbg(JSON_DBG_MED, __func__, "under json: about to perform: "
+					 "$json = $json_element;");
+
+	/* action */
+	yyval = yyvsp[0]; /* magic: json becomes the json_element type */
+
+	/* post action debugging */
+	json_dbg(JSON_DBG_MED, __func__, "under json: returning $json type: %s",
+					 json_element_type_name(yyval));
+	json_dbg(JSON_DBG_LOW, __func__, "under json: ending: "
+					 "json: json_element");
+    }
+#line 1650 "jparse.tab.c"
     break;
 
   case 3: /* json_value: json_object  */
-#line 180 "jparse.y"
-                        {
-			    /*
-			     * $$ = $json_value
-			     * $1 = $json_object
-			     */
-			    json_dbg(JSON_DBG_MED, __func__, "under json_value json_object:");
-			    json_dbg(JSON_DBG_MED, __func__, "under json_value json_object: $json_value = $json_object");
-			    yyval = yyvsp[0]; /* magic: json_value becomes the json_object (JTYPE_OBJECT) type */
-			    json_dbg(JSON_DBG_LOW, __func__, "under json_value: json_object: $json_value type: %s", json_element_type_name(yyval));
-			    json_dbg(JSON_DBG_LOW, __func__, "under json_value: json_object: $json_object type: %s", json_element_type_name(yyvsp[0]));
-			    json_dbg(JSON_DBG_MED, __func__, "under json_value: after json_object returning type: %s",
-						   json_element_type_name(yyval));
-			    json_dbg(JSON_DBG_LOW, __func__, "under json_value: after json_object before |");
-			}
-#line 1660 "jparse.tab.c"
-    break;
+#line 193 "jparse.y"
+    {
+	/*
+	 * $$ = $json_value
+	 * $1 = $json_object
+	 */
 
-  case 4: /* json_value: json_array  */
-#line 197 "jparse.y"
-                        {
-			    /*
-			     * $$ = $json_value
-			     * $1 = $json_array
-			     */
-			    json_dbg(JSON_DBG_MED, __func__, "under json_value json_array:");
-			    yyval = yyvsp[0]; /* magic: json_value becomes the json_array type (JTYPE_ARRAY) */
-			    json_dbg(JSON_DBG_LOW, __func__, "under json_value: json_array: $json_value type: %s", json_element_type_name(yyval));
-			    json_dbg(JSON_DBG_LOW, __func__, "under json_value: json_array: $json_array type: %s", json_element_type_name(yyvsp[0]));
-			    json_dbg(JSON_DBG_MED, __func__, "under json_value: after json_array returning type: %s",
-						   json_element_type_name(yyval));
-			    json_dbg(JSON_DBG_LOW, __func__, "under json_value: after json_array before |");
-			}
+	/* pre-action debugging */
+	json_dbg(JSON_DBG_LOW, __func__, "under json_value: starting: "
+					 "json_value: json_object");
+	json_dbg(JSON_DBG_MED, __func__, "under json_value: $json_object type: %s",
+					 json_element_type_name(yyvsp[0]));
+	json_dbg(JSON_DBG_MED, __func__, "under json_value: about to perform: "
+					 "$json_value = $json_object;");
+
+	/* action */
+	yyval = yyvsp[0];	/* magic: json_value becomes the json_object (JTYPE_OBJECT) type */
+
+	/* post-action debugging */
+	json_dbg(JSON_DBG_MED, __func__, "under json_value: returning $json_value type: %s",
+					 json_element_type_name(yyval));
+	json_dbg(JSON_DBG_LOW, __func__, "under json_value: ending: "
+					 "json_value: json_object");
+    }
 #line 1678 "jparse.tab.c"
     break;
 
+  case 4: /* json_value: json_array  */
+#line 219 "jparse.y"
+    {
+	/*
+	 * $$ = $json_value
+	 * $1 = $json_array
+	 */
+
+	/* pre-action debugging */
+	json_dbg(JSON_DBG_LOW, __func__, "under json_value: starting: "
+					 "json_value: json_array");
+	json_dbg(JSON_DBG_MED, __func__, "under json_value: $json_array type: %s",
+					 json_element_type_name(yyvsp[0]));
+	json_dbg(JSON_DBG_MED, __func__, "under json_value: about to perform: "
+					 "$json_value = $json_array;");
+
+	/* action */
+	yyval = yyvsp[0];	/* magic: json_value becomes the json_array type (JTYPE_ARRAY) */
+
+	/* post-action debugging */
+	json_dbg(JSON_DBG_MED, __func__, "under json_value: returning $json_value type: %s",
+					 json_element_type_name(yyval));
+	json_dbg(JSON_DBG_LOW, __func__, "under json_value: ending: "
+					 "json_value: json_array");
+    }
+#line 1706 "jparse.tab.c"
+    break;
+
   case 5: /* json_value: json_string  */
-#line 213 "jparse.y"
-                        {
-			    /*
-			     * $$ = $json_value
-			     * $1 = $json_string
-			     */
-			    json_dbg(JSON_DBG_MED, __func__, "under json_value json_string:");
-			    yyval = yyvsp[0]; /* magic: json_value becomes the json_string type (JTYPE_STRING) */
-			    json_dbg(JSON_DBG_LOW, __func__, "under json_value: json_string: $json_value type: %s", json_element_type_name(yyval));
-			    json_dbg(JSON_DBG_LOW, __func__, "under json_value: json_string: $json_string type: %s", json_element_type_name(yyvsp[0]));
-			    json_dbg(JSON_DBG_MED, __func__, "under json_value: after json_string returning type: %s",
-						   json_element_type_name(yyval));
-			    json_dbg(JSON_DBG_LOW, __func__, "under json_value: after json_string before |");
-			}
-#line 1696 "jparse.tab.c"
+#line 245 "jparse.y"
+    {
+	/*
+	 * $$ = $json_value
+	 * $1 = $json_string
+	 */
+
+	/* pre-action debugging */
+	json_dbg(JSON_DBG_LOW, __func__, "under json_value: starting: "
+					 "json_value: json_string");
+	json_dbg(JSON_DBG_MED, __func__, "under json_value: $json_string type: %s",
+					 json_element_type_name(yyvsp[0]));
+	json_dbg(JSON_DBG_MED, __func__, "under json_value: about to perform: "
+					 "$json_value = $json_string;");
+
+	/* action */
+	yyval = yyvsp[0]; /* magic: json_value becomes the json_string type (JTYPE_STRING) */
+
+	/* post-action debugging */
+	json_dbg(JSON_DBG_MED, __func__, "under json_value: returning $json_value type: %s",
+					 json_element_type_name(yyval));
+	json_dbg(JSON_DBG_LOW, __func__, "under json_value: ending: "
+					 "json_value: json_string");
+    }
+#line 1734 "jparse.tab.c"
     break;
 
   case 6: /* json_value: json_number  */
-#line 229 "jparse.y"
-                        {
-			    /*
-			     * $$ = $json_value
-			     * $1 = $json_number
-			     */
-			    json_dbg(JSON_DBG_MED, __func__, "under json_value json_number:");
-			    yyval = yyvsp[0]; /* magic: json_value becomes the json_number type (JTYPE_NUMBER) */
-			    json_dbg(JSON_DBG_LOW, __func__, "under json_value: json_number: $json_value type: %s", json_element_type_name(yyval));
-			    json_dbg(JSON_DBG_LOW, __func__, "under json_value: json_number: $json_number type: %s", json_element_type_name(yyvsp[0]));
-			    json_dbg(JSON_DBG_MED, __func__, "under json_value: after json_number returning type: %s",
-						   json_element_type_name(yyval));
-			    json_dbg(JSON_DBG_LOW, __func__, "under json_value: after json_number before |");
-			}
-#line 1714 "jparse.tab.c"
+#line 271 "jparse.y"
+    {
+	/*
+	 * $$ = $json_value
+	 * $1 = $json_number
+	 */
+
+	/* pre-action debugging */
+	json_dbg(JSON_DBG_LOW, __func__, "under json_value: starting: "
+					 "json_value: json_number");
+	json_dbg(JSON_DBG_MED, __func__, "under json_value: $json_number type: %s",
+					 json_element_type_name(yyvsp[0]));
+	json_dbg(JSON_DBG_MED, __func__, "under json_value: about to perform: "
+					 "$json_value = $json_number;");
+
+	/* action */
+	yyval = yyvsp[0]; /* magic: json_value becomes the json_number type (JTYPE_NUMBER) */
+
+	/* post-action debugging */
+	json_dbg(JSON_DBG_MED, __func__, "under json_value: returning $json_value type: %s",
+					 json_element_type_name(yyval));
+	json_dbg(JSON_DBG_LOW, __func__, "under json_value: ending: "
+					 "json_value: json_number");
+    }
+#line 1762 "jparse.tab.c"
     break;
 
   case 7: /* json_value: "true"  */
-#line 245 "jparse.y"
-                        {
-			    /*
-			     * $$ = $json_value
-			     */
-			    json_dbg(JSON_DBG_MED, __func__, "under json_value JSON_TRUE:");
-			    yyval = parse_json_bool(ugly_text); /* magic: json_value becomes the JSON_TRUE type (JTYPE_BOOL) */
-			    json_dbg(JSON_DBG_MED, __func__, "$1 = %s", json_element_type_name(yyvsp[0]));
-			    json_dbg(JSON_DBG_LOW, __func__, "under json_value: JSON_TRUE: $json_value type: %s", json_element_type_name(yyval));
-			    json_dbg(JSON_DBG_MED, __func__, "under json_value: after JSON_TRUE returning type: %s",
-						   json_element_type_name(yyval));
-			    json_dbg(JSON_DBG_LOW, __func__, "under json_value: after JSON_TRUE before |");
-			}
-#line 1731 "jparse.tab.c"
+#line 297 "jparse.y"
+    {
+	/*
+	 * $$ = $json_value
+	 */
+
+	/* pre-action debugging */
+	json_dbg(JSON_DBG_LOW, __func__, "under json_value: starting: "
+					 "json_value: JSON_TRUE");
+	json_dbg(JSON_DBG_MED, __func__, "under json_value: ugly_text: <%s>", ugly_text);
+	json_dbg(JSON_DBG_MED, __func__, "under json_value: ugly_length: <%d>", ugly_length);
+	json_dbg(JSON_DBG_MED, __func__, "under json_value: about to perform: "
+					 "$json_value = parse_json_bool(ugly_text);");
+
+	/* action */
+	yyval = parse_json_bool(ugly_text); /* magic: json_value becomes the JSON_TRUE type (JTYPE_BOOL) */
+
+	/* post-action debugging */
+	json_dbg(JSON_DBG_MED, __func__, "under json_value: returning $json_value type: %s",
+				         json_element_type_name(yyval));
+	json_dbg(JSON_DBG_LOW, __func__, "under json_value: ending: "
+					 "json_value: JSON_TRUE");
+    }
+#line 1789 "jparse.tab.c"
     break;
 
   case 8: /* json_value: "false"  */
-#line 260 "jparse.y"
-                        {
-			    /*
-			     * $$ = $json_value
-			     */
-			    json_dbg(JSON_DBG_MED, __func__, "under json_value JSON_FALSE:");
-			    yyval = parse_json_bool(ugly_text); /* magic: json_value becomes the JSON_FALSE type (JTYPE_BOOL) */
-			    json_dbg(JSON_DBG_LOW, __func__, "under json_value: JSON_FALSE: $json_value type: %s", json_element_type_name(yyval));
-			    json_dbg(JSON_DBG_MED, __func__, "under json_value: after JSON_FALSE returning type: %s",
-						   json_element_type_name(yyval));
-			    json_dbg(JSON_DBG_LOW, __func__, "under json_value: after JSON_FALSE before |");
-			}
-#line 1747 "jparse.tab.c"
+#line 322 "jparse.y"
+    {
+	/*
+	 * $$ = $json_value
+	 */
+
+	/* pre-action debugging */
+	json_dbg(JSON_DBG_LOW, __func__, "under json_value: starting: "
+					 "json_value: JSON_FALSE");
+	json_dbg(JSON_DBG_MED, __func__, "under json_value: ugly_text: <%s>", ugly_text);
+	json_dbg(JSON_DBG_MED, __func__, "under json_value: ugly_length: <%d>", ugly_length);
+	json_dbg(JSON_DBG_MED, __func__, "under json_value: about to perform: "
+					 "$json_value = parse_json_bool(ugly_text);");
+
+	/* action */
+	yyval = parse_json_bool(ugly_text); /* magic: json_value becomes the JSON_FALSE type (JTYPE_BOOL) */
+
+	/* post-action debugging */
+	json_dbg(JSON_DBG_MED, __func__, "under json_value: returning $json_value type: %s",
+				         json_element_type_name(yyval));
+	json_dbg(JSON_DBG_LOW, __func__, "under json_value: ending: "
+					 "json_value: JSON_FALSE");
+    }
+#line 1816 "jparse.tab.c"
     break;
 
   case 9: /* json_value: "null"  */
-#line 274 "jparse.y"
-                        {
-			    /*
-			     * $$ = $json_value
-			     */
-			    json_dbg(JSON_DBG_MED, __func__, "under json_value JSON_NULL:");
-			    yyval = parse_json_null(ugly_text); /* magic: json_value becomes the JSON_NULL type (JTYPE_NULL) */
-			    json_dbg(JSON_DBG_LOW, __func__, "under json_value: JSON_NULL: $json_value type: %s", json_element_type_name(yyval));
-			    json_dbg(JSON_DBG_MED, __func__, "under json_value: after JSON_NULL returning type: %s",
-						   json_element_type_name(yyval));
-			    json_dbg(JSON_DBG_LOW, __func__, "under json_value: after JSON_NULL before ;");
-			}
-#line 1763 "jparse.tab.c"
+#line 347 "jparse.y"
+    {
+	/*
+	 * $$ = $json_value
+	 */
+
+	/* pre-action debugging */
+	json_dbg(JSON_DBG_LOW, __func__, "under json_value: starting: "
+					 "json_value: JSON_NULL");
+	json_dbg(JSON_DBG_MED, __func__, "under json_value: ugly_text: <%s>", ugly_text);
+	json_dbg(JSON_DBG_MED, __func__, "under json_value: ugly_length: <%d>", ugly_length);
+	json_dbg(JSON_DBG_MED, __func__, "under json_value: about to perform: "
+					 "$json_value = parse_json_null(ugly_text);");
+
+	/* action */
+	yyval = parse_json_null(ugly_text); /* magic: json_value becomes the JSON_NULL type (JTYPE_NULL) */
+
+	/* post-action debugging */
+	json_dbg(JSON_DBG_MED, __func__, "under json_value: returning $json_value type: %s",
+				         json_element_type_name(yyval));
+	json_dbg(JSON_DBG_LOW, __func__, "under json_value: ending: "
+					 "json_value: JSON_NULL");
+    }
+#line 1843 "jparse.tab.c"
     break;
 
   case 10: /* json_object: "{" json_members "}"  */
-#line 290 "jparse.y"
-                        {
-			    /*
-			     * $$ = $json_object
-			     * $1 = $json_members
-			     */
-			    json_dbg(JSON_DBG_MED, __func__, "under json_object: JSON_OPEN_BRACE json_members JSON_CLOSE_BRACE:");
-			    json_dbg(JSON_DBG_LOW, __func__, "under json_object: $json_object type: %s", json_element_type_name(yyval));
-			    json_dbg(JSON_DBG_LOW, __func__, "under json_object: $json_members type: %s", json_element_type_name(yyvsp[-1]));
-			    json_dbg(JSON_DBG_LOW, __func__, "under json_object: need more code probably here"); /* XXX */
-			    json_dbg(JSON_DBG_LOW, __func__, "under json_object: after JSON_CLOSE_BRACE before |");
-			}
-#line 1779 "jparse.tab.c"
+#line 374 "jparse.y"
+    {
+	/*
+	 * $$ = $json_object
+	 * $1 = $json_members
+	 */
+
+	/* pre-action debugging */
+	json_dbg(JSON_DBG_LOW, __func__, "under json_object: starting: "
+					 "json_object: JSON_OPEN_BRACE json_members JSON_CLOSE_BRACE");
+	json_dbg(JSON_DBG_MED, __func__, "under json_object: $json_members type: %s",
+					 json_element_type_name(yyvsp[-1]));
+	json_dbg(JSON_DBG_MED, __func__, "under json_object: about to perform: "
+					 "XXX - need more code here - XXX");
+
+	/* action */
+	json_dbg(JSON_DBG_LOW, __func__, "under json_object: XXX - need more code here - XXX"); /* XXX */
+
+	/* post-action debugging */
+	json_dbg(JSON_DBG_LOW, __func__, "under json_object: returning $json_object type: %s",
+					 json_element_type_name(yyval));
+	json_dbg(JSON_DBG_LOW, __func__, "under json_object: ending: "
+					 "json_object: JSON_OPEN_BRACE json_members JSON_CLOSE_BRACE");
+    }
+#line 1871 "jparse.tab.c"
     break;
 
   case 11: /* json_object: "{" "}"  */
-#line 305 "jparse.y"
-                        {
-			    /*
-			     * $$ = $json_object
-			     */
-			    json_dbg(JSON_DBG_MED, __func__, "JSON_OPEN_BRACE JSON_CLOSE_BRACE:");
-			    yyval = json_create_object(); /* json_object becomes JTYPE_OBJECT */
-			    json_dbg(JSON_DBG_LOW, __func__, "under json_object: $json_object type: %s", json_element_type_name(yyval));
-			    json_dbg(JSON_DBG_MED, __func__, "under json_object: after JSON_CLOSE_BRACE returning type: %s",
-						   json_element_type_name(yyval));
-			    json_dbg(JSON_DBG_LOW, __func__, "under json_object: after JSON_CLOSE_BRACE before ;");
-			}
-#line 1795 "jparse.tab.c"
+#line 400 "jparse.y"
+    {
+	/*
+	 * $$ = $json_object
+	 */
+
+	/* pre-action debugging */
+	json_dbg(JSON_DBG_LOW, __func__, "under json_object: starting: "
+					 "json_object: JSON_OPEN_BRACE JSON_CLOSE_BRACE");
+	json_dbg(JSON_DBG_MED, __func__, "under json_object: about to perform: "
+					 "$json_object = json_create_object();");
+
+	/* action */
+	yyval = json_create_object(); /* json_object becomes JTYPE_OBJECT */
+
+	/* post-action debugging */
+	json_dbg(JSON_DBG_LOW, __func__, "under json_object: returning $json_object type: %s",
+					 json_element_type_name(yyval));
+	json_dbg(JSON_DBG_LOW, __func__, "under json_object: ending: "
+					 "json_object: JSON_OPEN_BRACE JSON_CLOSE_BRACE");
+    }
+#line 1896 "jparse.tab.c"
     break;
 
   case 12: /* json_members: json_member  */
-#line 319 "jparse.y"
-                        {
-			    /*
-			     * $$ = $json_members
-			     * $1 = $json_member
-			     */
-			    json_dbg(JSON_DBG_MED, __func__, "under json_members: json_member:");
-			    yyval = yyvsp[0]; /* magic: json_members becomes the json_member type */
-			    json_dbg(JSON_DBG_LOW, __func__, "under json_members: $json_members type: %s", json_element_type_name(yyval));
-			    json_dbg(JSON_DBG_LOW, __func__, "under json_members: $json_member type: %s", json_element_type_name(yyvsp[0]));
-			    json_dbg(JSON_DBG_MED, __func__, "under json_members: after json_member returning type: %s",
-						   json_element_type_name(yyval));
-			    json_dbg(JSON_DBG_LOW, __func__, "under json_members: after json_member before |");
-			}
-#line 1813 "jparse.tab.c"
+#line 425 "jparse.y"
+    {
+	/*
+	 * $$ = $json_members
+	 * $1 = $json_member
+	 */
+
+	/* pre-action debugging */
+	json_dbg(JSON_DBG_LOW, __func__, "under json_members: starting: "
+					 "json_members: json_member");
+	json_dbg(JSON_DBG_MED, __func__, "under json_members: $json_member type: %s",
+					 json_element_type_name(yyvsp[0]));
+	json_dbg(JSON_DBG_MED, __func__, "under json_members: about to perform: "
+					 "$json_members = $json_member;");
+
+	/* action */
+	yyval = yyvsp[0]; /* magic: json_members becomes the json_member type */
+
+	/* post-action debugging */
+	json_dbg(JSON_DBG_MED, __func__, "under json_members: returning $json_members type: %s",
+				         json_element_type_name(yyval));
+	json_dbg(JSON_DBG_LOW, __func__, "under json_members: ending: "
+					 "json_members: json_member");
+    }
+#line 1924 "jparse.tab.c"
     break;
 
   case 13: /* json_members: json_members "," json_member  */
-#line 337 "jparse.y"
-                        {
-			    /*
-			     * $$ = $json_members
-			     * $1 = $json_member
-			     *
-			     * NOTE: Cannot use $json_members due to ambiguity.
-			     * But we can use $1 for $json_member.
-			     */
-			    json_dbg(JSON_DBG_MED, __func__, "under json_members: json_members JSON_COMMA json_member:");
-			    json_dbg(JSON_DBG_LOW, __func__, "under json_members: $$ type: %s", json_element_type_name(yyval));
-			    json_dbg(JSON_DBG_LOW, __func__, "under json_members: $json_member type: %s", json_element_type_name(yyvsp[0]));
-			    json_dbg(JSON_DBG_LOW, __func__, "under json_members: need more code probably here"); /* XXX */
-			    json_dbg(JSON_DBG_LOW, __func__, "under json_members: after json_member before ;");
-			}
-#line 1832 "jparse.tab.c"
+#line 451 "jparse.y"
+    {
+	/*
+	 * $$ = $json_members
+	 * $1 = $json_members
+	 * $3 = $json_member
+	 *
+	 * NOTE: Cannot use $json_members due to ambiguity.
+	 *       But we can use $3 for $json_member.
+	 */
+
+	/* pre-action debugging */
+	json_dbg(JSON_DBG_LOW, __func__, "under json_members: starting: "
+					 "json_members: json_members JSON_COMMA json_member");
+	json_dbg(JSON_DBG_MED, __func__, "under json_members: $1 ($json_member) type: %s",
+					 json_element_type_name(yyvsp[-2]));
+	json_dbg(JSON_DBG_MED, __func__, "under json_members: $3 ($json_member) type: %s",
+					 json_element_type_name(yyvsp[0]));
+	json_dbg(JSON_DBG_MED, __func__, "under json_members: about to perform: "
+					 "XXX - need more code here - XXX");
+
+	/* action */
+	json_dbg(JSON_DBG_LOW, __func__, "under json_members: XXX - need more code here - XXX"); /* XXX */
+
+	/* post-action debugging */
+	json_dbg(JSON_DBG_MED, __func__, "under json_members: returning $$ ($json_members) type: %s",
+				         json_element_type_name(yyval));
+	json_dbg(JSON_DBG_LOW, __func__, "under json_members: ending: "
+					 "json_members: json_members JSON_COMMA json_member");
+    }
+#line 1958 "jparse.tab.c"
     break;
 
   case 14: /* json_member: json_string ":" json_element  */
-#line 356 "jparse.y"
-                        {
-			    /*
-			     * $$ = $json_member
-			     * $1 = $json_string
-			     * $3 = $json_element
-			     */
-			    json_dbg(JSON_DBG_MED, __func__, "under json_member: json_string JSON_COLON json_element:");
-			    json_dbg(JSON_DBG_LOW, __func__, "$json_member = parse_json_member($json_string = %s, $json_element = %s)",
-				json_element_type_name(yyvsp[-2]), json_element_type_name(yyvsp[0]));
-			    yyval = parse_json_member(yyvsp[-2], yyvsp[0]);
-			    json_dbg(JSON_DBG_LOW, __func__, "under json_member: $json_member type: %s", json_element_type_name(yyval));
-			    json_dbg(JSON_DBG_MED, __func__, "under json_member: after json_element returning type: %s",
-						   json_element_type_name(yyval));
-			    json_dbg(JSON_DBG_LOW, __func__, "under json_member: after json_element before ;");
-			}
-#line 1852 "jparse.tab.c"
+#line 485 "jparse.y"
+    {
+	/*
+	 * $$ = $json_member
+	 * $1 = $json_string
+	 * $3 = $json_element
+	 */
+
+	/* pre-action debugging */
+	json_dbg(JSON_DBG_LOW, __func__, "under json_member: starting: "
+					 "json_member: json_string JSON_COLON json_element");
+	json_dbg(JSON_DBG_MED, __func__, "under json_member: $json_string type: %s",
+					 json_element_type_name(yyvsp[-2]));
+	json_dbg(JSON_DBG_MED, __func__, "under json_member: $json_element type: %s",
+					 json_element_type_name(yyvsp[0]));
+	json_dbg(JSON_DBG_MED, __func__, "under json_member: about to perform: "
+					 "$json_member = parse_json_member($json_string, $json_element);");
+
+	/* action */
+	yyval = parse_json_member(yyvsp[-2], yyvsp[0]);
+
+	/* post-action debugging */
+	json_dbg(JSON_DBG_MED, __func__, "under json_member: returning $json_member type: %s",
+				         json_element_type_name(yyval));
+	json_dbg(JSON_DBG_LOW, __func__, "under json_member: ending: "
+					 "json_member: json_string JSON_COLON json_element");
+    }
+#line 1989 "jparse.tab.c"
     break;
 
   case 15: /* json_array: "[" json_elements "]"  */
-#line 376 "jparse.y"
-                        {
-			    /*
-			     * $$ = $json_array
-			     * $2 = $json_elements
-			     */
-			    json_dbg(JSON_DBG_MED, __func__, "under json_array: JSON_OPEN_BRACKET json_elements JSON_CLOSE_BRACKET:");
-			    json_dbg(JSON_DBG_LOW, __func__, "under json_array: $json_array type: %s", json_element_type_name(yyval));
-			    json_dbg(JSON_DBG_LOW, __func__, "under json_array: $2 type: %s", json_element_type_name(yyvsp[-1]));
-			    json_dbg(JSON_DBG_LOW, __func__, "under json_array: need more code probably here"); /* XXX */
-			    json_dbg(JSON_DBG_LOW, __func__, "under json_array: after JSON_CLOSE_BRACKET before |");
-			}
-#line 1868 "jparse.tab.c"
+#line 516 "jparse.y"
+    {
+	/*
+	 * $$ = $json_array
+	 * $2 = $json_elements
+	 */
+
+	/* pre-action debugging */
+	json_dbg(JSON_DBG_LOW, __func__, "under json_array: starting: "
+					 "json_array: JSON_OPEN_BRACKET json_elements JSON_CLOSE_BRACKET");
+	json_dbg(JSON_DBG_LOW, __func__, "under json_array: $json_elements type: %s",
+					 json_element_type_name(yyvsp[-1]));
+	json_dbg(JSON_DBG_MED, __func__, "under json_array: about to perform: "
+					 "XXX - need more code here - XXX");
+
+	/* action */
+	json_dbg(JSON_DBG_LOW, __func__, "under json_array: XXX - need more code here - XXX"); /* XXX */
+
+	/* post-action debugging */
+	json_dbg(JSON_DBG_MED, __func__, "under json_array: returning $json_array type: %s",
+				         json_element_type_name(yyval));
+	json_dbg(JSON_DBG_LOW, __func__, "under json_array: ending: "
+					 "json_array: JSON_OPEN_BRACKET json_elements JSON_CLOSE_BRACKET");
+    }
+#line 2017 "jparse.tab.c"
     break;
 
   case 16: /* json_array: "[" "]"  */
-#line 391 "jparse.y"
-                        {
-			    /*
-			     * $$ = $json_array
-			     */
-			    json_dbg(JSON_DBG_MED, __func__, "under json_array: JSON_OPEN_BRACKET JSON_CLOSE_BRACKET:");
-			    yyval = json_create_array();
-			    json_dbg(JSON_DBG_LOW, __func__, "under json_array: $json_array type: %s", json_element_type_name(yyval));
-			    json_dbg(JSON_DBG_MED, __func__, "under json_array: after JSON_CLOSE_BRACKET returning type: %s",
-						   json_element_type_name(yyval));
-			    json_dbg(JSON_DBG_LOW, __func__, "under json_array: after JSON_CLOSE_BRACKET before ;");
-			}
-#line 1884 "jparse.tab.c"
+#line 542 "jparse.y"
+    {
+	/*
+	 * $$ = $json_array
+	 */
+
+	/* pre-action debugging */
+	json_dbg(JSON_DBG_LOW, __func__, "under json_array: starting: "
+					 "json_array: JSON_OPEN_BRACKET JSON_CLOSE_BRACKET");
+	json_dbg(JSON_DBG_MED, __func__, "under json_array: about to perform: "
+					 "$json_array = json_create_array();");
+
+	/* action */
+	yyval = json_create_array();
+
+	/* post-action debugging */
+	json_dbg(JSON_DBG_MED, __func__, "under json_array: returning $json_array type: %s",
+				         json_element_type_name(yyval));
+	json_dbg(JSON_DBG_LOW, __func__, "under json_array: ending: "
+					 "json_array: JSON_OPEN_BRACKET JSON_CLOSE_BRACKET");
+    }
+#line 2042 "jparse.tab.c"
     break;
 
   case 17: /* json_elements: json_element  */
-#line 406 "jparse.y"
-                        {
-			    /*
-			     * $$ = $json_elements
-			     * $1 = $json_element
-			     */
-			    json_dbg(JSON_DBG_MED, __func__, "under json_elements: json_element:");
-			    yyval = yyvsp[0]; /* magic: json_elements becomes the json_element type */
-			    json_dbg(JSON_DBG_LOW, __func__, "under json_elements: $json_elements type: %s", json_element_type_name(yyval));
-			    json_dbg(JSON_DBG_LOW, __func__, "under json_elements: $json_element type: %s", json_element_type_name(yyvsp[0]));
-			    json_dbg(JSON_DBG_MED, __func__, "under json_elements: after json_element returning type: %s",
-						   json_element_type_name(yyval));
-			    json_dbg(JSON_DBG_LOW, __func__, "under json_elements: after json_element before |");
-			}
-#line 1902 "jparse.tab.c"
+#line 567 "jparse.y"
+    {
+	/*
+	 * $$ = $json_elements
+	 * $1 = $json_element
+	 */
+
+	/* pre-action debugging */
+	json_dbg(JSON_DBG_LOW, __func__, "under json_elements: starting: "
+					 "json_elements: json_element");
+	json_dbg(JSON_DBG_MED, __func__, "under json_elements: $json_element type: %s",
+					 json_element_type_name(yyvsp[0]));
+	json_dbg(JSON_DBG_MED, __func__, "under json_elements: about to perform: "
+					 "$json_elements = $json_element;");
+
+	/* action */
+	yyval = yyvsp[0]; /* magic: json_elements becomes the json_element type */
+
+	/* post-action debugging */
+	json_dbg(JSON_DBG_MED, __func__, "under json_elements: returning $json_elements type: %s",
+				         json_element_type_name(yyval));
+	json_dbg(JSON_DBG_LOW, __func__, "under json_elements: ending: "
+					 "json_elements: json_element");
+    }
+#line 2070 "jparse.tab.c"
     break;
 
   case 18: /* json_elements: json_elements "," json_element  */
-#line 424 "jparse.y"
-                        {
-			    /*
-			     * $$ = $json_elements
-			     * $3 = $json_element
-			     *
-			     * NOTE: Cannot use $json_elements due to ambiguity.
-			     * But we can use $3 for $json_element.
-			     */
-			    json_dbg(JSON_DBG_MED, __func__, "under json_elements: json_elements JSON_COMMA json_element:");
-			    json_dbg(JSON_DBG_LOW, __func__, "under json_elements: $$ type: %s", json_element_type_name(yyval));
-			    json_dbg(JSON_DBG_LOW, __func__, "under json_elements: $json_element type: %s", json_element_type_name(yyvsp[0]));
-			    json_dbg(JSON_DBG_LOW, __func__, "under json_elements: need more code probably here"); /* XXX */
-			    json_dbg(JSON_DBG_LOW, __func__, "under json_elements: after json_element before ;");
-			}
-#line 1921 "jparse.tab.c"
+#line 593 "jparse.y"
+    {
+	/*
+	 * $$ = $json_elements
+	 * $3 = $json_element
+	 *
+	 * NOTE: Cannot use $json_elements due to ambiguity.
+	 *	 But we can use $3 for $json_element.
+	 */
+
+	/* pre-action debugging */
+	json_dbg(JSON_DBG_LOW, __func__, "under json_elements: starting: "
+					 "json_elements: json_elements JSON_COMMA json_element");
+	json_dbg(JSON_DBG_MED, __func__, "under json_elements: $1 ($json_elements) type: %s",
+					 json_element_type_name(yyvsp[-2]));
+	json_dbg(JSON_DBG_MED, __func__, "under json_element: $3 ($json_element) type: %s",
+					 json_element_type_name(yyvsp[0]));
+	json_dbg(JSON_DBG_MED, __func__, "under json_elements: about to perform: "
+					 "XXX - need more code here - XXX");
+
+	/* action */
+	json_dbg(JSON_DBG_LOW, __func__, "under json_elements: XXX - need more code here - XXX"); /* XXX */
+
+	/* post-action debugging */
+	json_dbg(JSON_DBG_MED, __func__, "under json_elements: returning $$ ($json_elements) type: %s",
+				         json_element_type_name(yyval));
+	json_dbg(JSON_DBG_LOW, __func__, "under json_elements: ending: "
+					 "json_elements: json_elements JSON_COMMA json_element");
+    }
+#line 2103 "jparse.tab.c"
     break;
 
   case 19: /* json_element: json_value  */
-#line 441 "jparse.y"
-                        {
-			    /*
-			     * $$ = $json_element
-			     * $1 = $json_value
-			     */
-			    json_dbg(JSON_DBG_MED, __func__, "under json_element: json_value:");
-			    yyval = yyvsp[0]; /* magic: json_element becomes the json_value type */
-			    json_dbg(JSON_DBG_LOW, __func__, "under json_value: $json_element type: %s", json_element_type_name(yyval));
-			    json_dbg(JSON_DBG_LOW, __func__, "under json_value: $json_value type: %s", json_element_type_name(yyvsp[0]));
-			    json_dbg(JSON_DBG_MED, __func__, "under json_element: after json_value returning type: %s",
-						   json_element_type_name(yyval));
-			    json_dbg(JSON_DBG_LOW, __func__, "under json_element: after json_value before ;");
-			}
-#line 1939 "jparse.tab.c"
+#line 626 "jparse.y"
+    {
+	/*
+	 * $$ = $json_element
+	 * $1 = $json_value
+	 */
+
+	/* pre-action debugging */
+	json_dbg(JSON_DBG_LOW, __func__, "under json_element: starting: "
+					 "json_element: json_value");
+	json_dbg(JSON_DBG_MED, __func__, "under json_element: $json_value type: %s",
+					 json_element_type_name(yyvsp[0]));
+	json_dbg(JSON_DBG_MED, __func__, "under json_element: about to perform: "
+					 "$json_element = $json_value;");
+
+	/* action */
+	yyval = yyvsp[0]; /* magic: json_element becomes the json_value type */
+
+	/* post-action debugging */
+	json_dbg(JSON_DBG_MED, __func__, "under json_element: returning $json_element type: %s",
+				         json_element_type_name(yyval));
+	json_dbg(JSON_DBG_LOW, __func__, "under json_element: ending: "
+					 "json_element: json_value");
+    }
+#line 2131 "jparse.tab.c"
     break;
 
   case 20: /* json_string: JSON_STRING  */
-#line 457 "jparse.y"
-                        {
-			    /*
-			     * $$ = $json_string
-			     */
-			    json_dbg(JSON_DBG_MED, __func__, "under json_string: JSON_STRING:");
-			    json_dbg(JSON_DBG_LOW, __func__, "$json_string = parse_json_string(%s, %d)",
-				ugly_text, ugly_length);
-			    yyval = parse_json_string(ugly_text, ugly_length);
-			    json_dbg(JSON_DBG_LOW, __func__, "under json_string: $json_string type: %s", json_element_type_name(yyval));
-			    json_dbg(JSON_DBG_MED, __func__, "under json_string: after JSON_STRING returning type: %s",
-						   json_element_type_name(yyval));
-			    json_dbg(JSON_DBG_LOW, __func__, "under json_string: after JSON_STRING before ;");
-			}
-#line 1957 "jparse.tab.c"
+#line 654 "jparse.y"
+    {
+	/*
+	 * $$ = $json_string
+	 */
+
+	/* pre-action debugging */
+	json_dbg(JSON_DBG_LOW, __func__, "under json_string: starting: "
+					 "json_string: JSON_STRING");
+	json_dbg(JSON_DBG_MED, __func__, "under json_string: ugly_text: <%s>", ugly_text);
+	json_dbg(JSON_DBG_MED, __func__, "under json_string: ugly_length: <%d>", ugly_length);
+	json_dbg(JSON_DBG_MED, __func__, "under json_string: about to perform: "
+					 "$json_string = parse_json_string(ugly_text, ugly_length);");
+
+	/* action */
+	yyval = parse_json_string(ugly_text, ugly_length);
+
+	/* post-action debugging */
+	json_dbg(JSON_DBG_MED, __func__, "under json_string: returning $json_string type: %s",
+				         json_element_type_name(yyval));
+	json_dbg(JSON_DBG_LOW, __func__, "under json_string: ending: "
+					 "json_string: JSON_STRING");
+    }
+#line 2158 "jparse.tab.c"
     break;
 
   case 21: /* json_number: JSON_NUMBER  */
-#line 473 "jparse.y"
-                        {
-			    /*
-			     * $$ = $json_number
-			     */
-			    json_dbg(JSON_DBG_MED, __func__, "under json_number: JSON_NUMBER:");
-			    json_dbg(JSON_DBG_LOW, __func__, "$json_number = parse_json_number(%s)", ugly_text);
-			    yyval = parse_json_number(ugly_text);
-			    json_dbg(JSON_DBG_LOW, __func__, "under json_number: $json_number type: %s", json_element_type_name(yyval));
-			    json_dbg(JSON_DBG_MED, __func__, "under json_number: after JSON_NUMBER returning type: %s",
-						   json_element_type_name(yyval));
-			    json_dbg(JSON_DBG_LOW, __func__, "under json_number: after JSON_NUMBER before ;");
-			}
-#line 1974 "jparse.tab.c"
+#line 681 "jparse.y"
+    {
+	/*
+	 * $$ = $json_number
+	 */
+
+	/* pre-action debugging */
+	json_dbg(JSON_DBG_LOW, __func__, "under json_number: starting: "
+					 "json_number: JSON_NUMBER");
+	json_dbg(JSON_DBG_MED, __func__, "under json_number: ugly_text: <%s>", ugly_text);
+	json_dbg(JSON_DBG_MED, __func__, "under json_number: ugly_length: <%d>", ugly_length);
+	json_dbg(JSON_DBG_MED, __func__, "under json_number: about to perform: "
+					 "$json_number = parse_json_number(ugly_text);");
+
+	/* action */
+	yyval = parse_json_number(ugly_text);
+
+	/* post-action debugging */
+	json_dbg(JSON_DBG_MED, __func__, "under json_number: returning $json_number type: %s",
+				         json_element_type_name(yyval));
+	json_dbg(JSON_DBG_LOW, __func__, "under json_number: ending: "
+					 "json_number: JSON_NUMBER");
+    }
+#line 2185 "jparse.tab.c"
     break;
 
 
-#line 1978 "jparse.tab.c"
+#line 2189 "jparse.tab.c"
 
         default: break;
       }
@@ -2260,7 +2471,9 @@ yyreturnlab:
   return yyresult;
 }
 
-#line 490 "jparse.y"
+#line 706 "jparse.y"
+
+
 
 /* Section 3: C code */
 
