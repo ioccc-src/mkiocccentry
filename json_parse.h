@@ -30,17 +30,10 @@
 #    define  INCLUDE_JSON_PARSE_H
 
 
-#include <time.h>
-#include <stdint.h>
-
 /*
- * json_util - utility functions related to json
+ * util - utility functions
  */
-#include "json_util.h"
-
-/*
- * JSON defines
- */
+#include "util.h"
 
 
 /*
@@ -396,12 +389,17 @@ struct json
 
 
 /*
+ * global variables
+ */
+
+/*
  * external data structures
  *
  * XXX - this table assumes we process on a byte basis - XXX
  * XXX - consider an approach that allowed for smaller UTF-8 non-ASCII encoding - XXX
  */
 extern struct encode jenc[];
+
 
 /*
  * external function declarations
@@ -411,44 +409,10 @@ extern char *json_encode_str(char const *str, size_t *retlen, bool skip_quote);
 extern void jencchk(void);
 extern char *json_decode(char const *ptr, size_t len, size_t *retlen);
 extern char *json_decode_str(char const *str, size_t *retlen);
-/* JSON conversion functions */
-extern struct json *json_alloc(enum element_type type);
-extern struct json *json_conv_number(char const *ptr, size_t len);
-extern struct json *json_conv_number_str(char const *str, size_t *retlen);
-extern struct json *json_conv_string(char const *ptr, size_t len, bool quote);
-extern struct json *json_conv_string_str(char const *str, size_t *retlen, bool quote);
-extern struct json *json_conv_bool(char const *ptr, size_t len);
-extern struct json *json_conv_bool_str(char const *str, size_t *retlen);
-extern struct json *json_conv_null(char const *ptr, size_t len);
-extern struct json *json_conv_null_str(char const *str, size_t *retlen);
-extern struct json *json_conv_member(struct json * name, struct json *value);
-extern struct json *json_create_object(void);
-extern bool json_object_add_member(struct json *node, struct json *member);
-extern bool json_object_append_members(struct json *node, struct dyn_array *members);
-extern struct json *json_create_array(void);
-extern bool json_array_add_value(struct json *node, struct json *value);
-extern bool json_array_append_values(struct json *node, struct dyn_array *values);
-/* print the type of json element in the struct json */
-extern char const *json_element_type_name(struct json *node);
-/* JSON parse tree functions */
-extern void json_free(struct json *node, ...);
-extern void vjson_free(struct json *node, va_list ap);
-extern void json_tree_free(struct json *node, int max_depth, ...);
-extern void json_tree_walk(struct json *node, int max_depth, void (*vcallback)(struct json *, va_list), ...);
-extern void vjson_tree_walk(struct json *node, int max_depth, int depth, va_list ap, void (*vcallback)(struct json *, va_list));
-
-/*
- * parse_json functions assume a specific type of data based on the token
- * returned to the parser (from the lexer) and based on the type they use the
- * appropriate function to convert and then return a pointer to it (possibly
- * first linking it into the tree).
- *
- * XXX - these are subject to change and some are incomplete as well - XXX
- */
 extern struct json *parse_json_string(char const *string, size_t len);
-extern struct json *parse_json_number(char const *string);
 extern struct json *parse_json_bool(char const *string);
 extern struct json *parse_json_null(char const *string);
+extern struct json *parse_json_number(char const *string);
 extern struct json *parse_json_array(char const *string);
 extern struct json *parse_json_member(struct json *name, struct json *value);
 

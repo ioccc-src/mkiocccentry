@@ -23,25 +23,12 @@
 #if !defined(INCLUDE_JSON_UTIL_H)
 #    define  INCLUDE_JSON_UTIL_H
 
-/*
- * dbg - debug, warning and error reporting facility
- */
-#include "dbg.h"
-
-/*
- * json - the json core
- */
-#include "json_parse.h"
 
 /*
  * dyn_array - dynamic array facility
  */
 #include "dyn_array.h"
 
-/*
- * globals
- */
-extern int json_verbosity_level;	/* print json debug messages <= json_verbosity_level in json_dbg(), json_vdbg() */
 
 /*
  * JSON defines
@@ -128,6 +115,12 @@ struct ignore_json_code
     int *code;		/* pointer to the allocated list of codes, or NULL (not allocated) */
 };
 
+
+/*
+ * global variables
+ */
+extern int json_verbosity_level;	/* print json debug messages <= json_verbosity_level in json_dbg(), json_vdbg() */
+
 /*
  * JSON warn/error code struct, variables, constants and macros for the jwarn()
  * and jerr() functions. Functions are prototyped later in the file.
@@ -136,10 +129,10 @@ extern bool show_full_json_warnings;
 
 
 /*
- * function prototypes
+ * external function declarations
  */
-
-/* warning and error specific functions */
+extern bool is_json_code_ignored(int code);
+extern void ignore_json_code(int code);
 extern bool jwarn(int code, const char *program, char const *name, char const *filename, char const *line,
 		  int line_num, const char *fmt, ...) \
 	__attribute__((format(printf, 7, 8)));		/* 7=format 8=params */
@@ -152,12 +145,31 @@ extern void jerr(int exitcode, char const *program, const char *name, char const
 extern void jerrp(int exitcode, char const *program, const char *name, char const *filename, char const *line,
 		  int line_num, const char *fmt, ...) \
 	__attribute__((noreturn)) __attribute__((format(printf, 7, 8))); /* 7=format 8=params */
-/* ignored warnings via the -W option in jinfochk and jauthchk */
-extern bool is_json_code_ignored(int code);
-extern void ignore_json_code(int code);
-/* JSON specific debug functions */
 extern bool json_dbg(int level, char const *name, const char *fmt, ...) \
 	__attribute__((format(printf, 3, 4)));		/* 3=format 4=params */
 extern bool json_vdbg(int level, char const *name, const char *fmt, va_list ap);
+extern char const *json_element_type_name(struct json *node);
+extern void json_free(struct json *node, ...);
+extern void vjson_free(struct json *node, va_list ap);
+extern void json_tree_free(struct json *node, int max_depth, ...);
+extern void json_tree_walk(struct json *node, int max_depth, void (*vcallback)(struct json *, va_list), ...);
+extern void vjson_tree_walk(struct json *node, int max_depth, int depth, va_list ap, void (*vcallback)(struct json *, va_list));
+extern struct json *json_alloc(enum element_type type);
+extern struct json *json_conv_number(char const *ptr, size_t len);
+extern struct json *json_conv_number_str(char const *str, size_t *retlen);
+extern struct json *json_conv_string(char const *ptr, size_t len, bool quote);
+extern struct json *json_conv_string_str(char const *str, size_t *retlen, bool quote);
+extern struct json *json_conv_bool(char const *ptr, size_t len);
+extern struct json *json_conv_bool_str(char const *str, size_t *retlen);
+extern struct json *json_conv_null(char const *ptr, size_t len);
+extern struct json *json_conv_null_str(char const *str, size_t *retlen);
+extern struct json *json_conv_member(struct json *name, struct json *value);
+extern struct json *json_create_object(void);
+extern bool json_object_add_member(struct json *node, struct json *member);
+extern bool json_object_append_members(struct json *node, struct dyn_array *members);
+extern struct json *json_create_array(void);
+extern bool json_array_add_value(struct json *node, struct json *value);
+extern bool json_array_append_values(struct json *node, struct dyn_array *values);
+
 
 #endif /* INCLUDE_JSON_UTIL_H */

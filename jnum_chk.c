@@ -46,6 +46,12 @@
 #include "jnum_chk.h"
 
 /*
+ * official versions
+ */
+#include "version.h"
+
+
+/*
  * definitions
  */
 #define REQUIRED_ARGS (0)	/* number of required arguments on the command line */

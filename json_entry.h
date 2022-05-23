@@ -34,8 +34,14 @@
  */
 
 
-#if !defined(INCLUDE_ENTRY_JSON_H)
-#    define  INCLUDE_ENTRY_JSON_H
+#if !defined(INCLUDE_JSON_ENTRY_H)
+#    define  INCLUDE_JSON_ENTRY_H
+
+
+/*
+ * json - json file structs
+ */
+#include "json_parse.h"
 
 
 /*
@@ -92,6 +98,9 @@ struct author
     char *author_handle;	/* IOCCC author handle (for winning entries) */
     int author_num;		/* author number */
 
+    /*
+     * common
+     */
     struct json_common common;	/* fields that are common to this struct author and struct info (below) */
 };
 
@@ -125,6 +134,7 @@ struct info
     bool found_clobber_rule;	/* true ==> Makefile has a clobber rule */
     bool found_try_rule;	/* true ==> Makefile has a try rule */
     bool test_mode;		/* true ==> contest ID is test */
+
     /*
      * filenames
      */
@@ -133,10 +143,10 @@ struct info
     char *remarks_md;		/* remarks.md filename */
     int extra_count;		/* number of extra files */
     char **extra_file;		/* list of extra filenames followed by NULL */
-    /*
-     * time
-     */
 
+    /*
+     * common
+     */
     struct json_common common;	/* fields that are common to this struct info and struct author (above) */
 };
 
@@ -144,7 +154,6 @@ struct info
 /*
  * external function declarations
  */
-/* functions to create json files */
 extern bool json_putc(uint8_t const c, FILE *stream);
 extern bool json_fprintf_str(FILE *stream, char const *str);
 extern bool json_fprintf_value_string(FILE *stream, char const *lead, char const *name, char const *middle, char const *value,
@@ -153,10 +162,8 @@ extern bool json_fprintf_value_long(FILE *stream, char const *lead, char const *
 				    char const *tail);
 extern bool json_fprintf_value_bool(FILE *stream, char const *lead, char const *name, char const *middle, bool value,
 				    char const *tail);
-
-/* these general JSON free() functions are used in mkiocccentry */
 extern void free_info(struct info *infop);
 extern void free_author_array(struct author *authorp, int author_count);
 
 
-#endif /* INCLUDE_ENTRY_JSON_H */
+#endif /* INCLUDE_JSON_ENTRY_H */

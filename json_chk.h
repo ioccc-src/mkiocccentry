@@ -18,8 +18,8 @@
  */
 
 
-#if !defined(INCLUDE_JPARSEFUNCS_H)
-#    define  INCLUDE_JPARSEFUNCS_H
+#if !defined(INCLUDE_JSON_CHK_H)
+#    define  INCLUDE_JSON_CHK_H
 
 
 /*
@@ -33,20 +33,14 @@
 #include "json_parse.h"
 
 /*
- * json_util - general JSON utility support functions
+ * json_util - utility functions related to json
  */
 #include "json_util.h"
 
-/*
- * dbg - debug, warning and error reporting facility
- */
-#include "dbg.h"
 
 /*
- * IOCCC size and rule related limitations
+ * defines
  */
-#include "limit_ioccc.h"
-
 
 /*
  * the next five are for the json_filename() function
@@ -56,8 +50,8 @@
 #define INFO_JSON_FILENAME ".info.json"
 #define AUTHOR_JSON_FILENAME ".author.json"
 #define INVALID_JSON_FILENAME "null"
-
 #define FORMED_UTC_FMT "%a %b %d %H:%M:%S %Y UTC"   /* format of strptime() for formed_UTC check */
+
 
 /*
  * JSON value: a linked list of all values of the same json_field (below).
@@ -127,8 +121,28 @@ struct json_field
     struct json_field *next;	/* the next in the whatever list */
 };
 
+
+/*
+ * global variables
+ */
+
+/*
+ * common JSON fields
+ */
 extern struct json_field common_json_fields[];
 extern size_t SIZEOF_COMMON_JSON_FIELDS_TABLE;
+
+/*
+ * .info.json fields
+ */
+extern struct json_field info_json_fields[];
+extern size_t SIZEOF_INFO_JSON_FIELDS_TABLE;
+
+/*
+ * .author.json fields
+ */
+extern struct json_field author_json_fields[];
+extern size_t SIZEOF_AUTHOR_JSON_FIELDS_TABLE;
 
 /*
  * linked list of the common json fields found in the .info.json and
@@ -139,18 +153,21 @@ extern size_t SIZEOF_COMMON_JSON_FIELDS_TABLE;
  */
 extern struct json_field *found_common_json_fields;
 
+/*
+ * global for jwarn
+ */
+extern bool show_full_json_warnings;
 
-/* function prototypes */
-extern void alloc_json_code_ignore_set(void);
 
-/* jinfochk and jauthchk related */
+/*
+ * external function declarations
+ */
 extern struct json_field *find_json_field_in_table(struct json_field *table, char const *name, size_t *loc);
-extern char const *json_filename(int type);
-/* checks on the JSON fields tables */
 extern void check_json_fields_tables(void);
 extern void check_common_json_fields_table(void);
-extern void check_author_json_fields_table(void);
 extern void check_info_json_fields_table(void);
+extern void check_author_json_fields_table(void);
+extern char const *json_filename(int type);
 extern int check_first_json_char(char const *file, char *data, char **first, char ch);
 extern int check_last_json_char(char const *file, char *data, char **last, char ch);
 extern struct json_field *add_found_common_json_field(char const *json_filename, char const *name, char const *val, int line_num);
@@ -158,10 +175,9 @@ extern bool add_common_json_field(char const *program, char const *json_filename
 extern int check_found_common_json_fields(char const *program, char const *json_filename, char const *fnamchk, bool test);
 extern struct json_field *new_json_field(char const *json_filename, char const *name, char const *val, int line_num);
 extern struct json_value *add_json_value(char const *json_filename, struct json_field *field, char const *val, int line_num);
-
-/* free() functions for the parser */
 extern void free_json_field_values(struct json_field *field);
 extern void free_found_common_json_fields(void);
 extern void free_json_field(struct json_field *field);
 
-#endif /* INCLUDE_JPARSEFUNCS_H */
+
+#endif /* INCLUDE_JSON_CHK_H */

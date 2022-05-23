@@ -25,6 +25,21 @@
 #include <ctype.h>
 
 /*
+ * dbg - debug, warning and error reporting facility
+ */
+#include "dbg.h"
+
+/*
+ * util - utility functions
+ */
+#include "util.h"
+
+/*
+ * IOCCC size and rule related limitations
+ */
+#include "limit_ioccc.h"
+
+/*
  * json_ckk - support jinfochk and jauthchk services
  */
 #include "json_chk.h"

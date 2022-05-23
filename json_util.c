@@ -28,15 +28,28 @@
 #include <limits.h>
 #include <ctype.h>
 
+
+/*
+ * dbg - debug, warning and error reporting facility
+ */
+#include "dbg.h"
+
+/*
+ * json - the json core
+ */
+#include "json_parse.h"
+
 /*
  * json_util - #includes what we need
  */
 #include "json_util.h"
 
+
 /*
- * globals
+ * global variables
  */
 int json_verbosity_level = JSON_DBG_NONE;	/* json debug level set by -J in jparse */
+
 
 /*
  * static declarations
@@ -63,6 +76,7 @@ static struct ignore_json_code *ignore_json_code_set;
 /* for json number strings */
 static bool json_process_decimal(struct json_number *item, char const *str, size_t len);
 static bool json_process_floating(struct json_number *item, char const *str, size_t len);
+
 
 /*
  * alloc_json_code_ignore_set - allocate the initial JSON ignore code set

@@ -39,23 +39,20 @@
  */
 #include "dbg.h"
 
-
 /*
  * util - utility functions and definitions
  */
 #include "util.h"
-
 
 /*
  * JSON functions supporting mkiocccentry code
  */
 #include "json_parse.h"
 
-
 /*
- * IOCCC size and rule related limitations
+ * json_util - utility functions related to json
  */
-#include "limit_ioccc.h"
+#include "json_util.h"
 
 
 /*

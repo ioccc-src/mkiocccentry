@@ -51,14 +51,14 @@
 #include "util.h"
 
 /*
- * IOCCC limits
- */
-#include "limit_ioccc.h"
-
-/*
  * JSON - JSON structures and functions
  */
 #include "json_parse.h"
+
+/*
+ * json_util - utility functions related to json
+ */
+#include "json_util.h"
 
 
 
