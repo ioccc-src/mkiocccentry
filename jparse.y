@@ -722,7 +722,7 @@ main(int argc, char **argv)
 
     /*
      * XXX for development purposes we override the initial json_verbosity_level
-     * to json_verbosity_level. This is used in json_vdbg() which is called by
+     * to JSON_DBG_LEVEL. This is used in json_vdbg() which is called by
      * json_dbg().
      *
      * This variable is used because it means we don't have to see debug
