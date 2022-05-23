@@ -3332,7 +3332,7 @@ find_text(char const *ptr, size_t len, char **first)
  *
  * given:
  *	str	    address of a NUL terminated string to start looking for text
- *	**first	    if non-NULL and return > 0, location if first non-whitespace/non-NUL text
+ *	**first	    if non-NULL and return > 0, location of first non-whitespace/non-NUL text
  *
  * returns:
  *	number of non-whitespace/non-NUL bytes found, or

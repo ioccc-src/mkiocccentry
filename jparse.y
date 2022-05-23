@@ -303,7 +303,7 @@ json_value:
 	json_dbg(JSON_DBG_LOW, __func__, "under json_value: starting: "
 					 "json_value: JSON_TRUE");
 	json_dbg(JSON_DBG_MED, __func__, "under json_value: ugly_text: <%s>", ugly_text);
-	json_dbg(JSON_DBG_MED, __func__, "under json_value: ugly_length: <%d>", ugly_length);
+	json_dbg(JSON_DBG_MED, __func__, "under json_value: ugly_leng: <%d>", ugly_leng);
 	json_dbg(JSON_DBG_MED, __func__, "under json_value: about to perform: "
 					 "$json_value = parse_json_bool(ugly_text);");
 
@@ -328,7 +328,7 @@ json_value:
 	json_dbg(JSON_DBG_LOW, __func__, "under json_value: starting: "
 					 "json_value: JSON_FALSE");
 	json_dbg(JSON_DBG_MED, __func__, "under json_value: ugly_text: <%s>", ugly_text);
-	json_dbg(JSON_DBG_MED, __func__, "under json_value: ugly_length: <%d>", ugly_length);
+	json_dbg(JSON_DBG_MED, __func__, "under json_value: ugly_leng: <%d>", ugly_leng);
 	json_dbg(JSON_DBG_MED, __func__, "under json_value: about to perform: "
 					 "$json_value = parse_json_bool(ugly_text);");
 
@@ -353,7 +353,7 @@ json_value:
 	json_dbg(JSON_DBG_LOW, __func__, "under json_value: starting: "
 					 "json_value: JSON_NULL");
 	json_dbg(JSON_DBG_MED, __func__, "under json_value: ugly_text: <%s>", ugly_text);
-	json_dbg(JSON_DBG_MED, __func__, "under json_value: ugly_length: <%d>", ugly_length);
+	json_dbg(JSON_DBG_MED, __func__, "under json_value: ugly_leng: <%d>", ugly_leng);
 	json_dbg(JSON_DBG_MED, __func__, "under json_value: about to perform: "
 					 "$json_value = parse_json_null(ugly_text);");
 
@@ -660,12 +660,12 @@ json_string:
 	json_dbg(JSON_DBG_LOW, __func__, "under json_string: starting: "
 					 "json_string: JSON_STRING");
 	json_dbg(JSON_DBG_MED, __func__, "under json_string: ugly_text: <%s>", ugly_text);
-	json_dbg(JSON_DBG_MED, __func__, "under json_string: ugly_length: <%d>", ugly_length);
+	json_dbg(JSON_DBG_MED, __func__, "under json_string: ugly_leng: <%d>", ugly_leng);
 	json_dbg(JSON_DBG_MED, __func__, "under json_string: about to perform: "
-					 "$json_string = parse_json_string(ugly_text, ugly_length);");
+					 "$json_string = parse_json_string(ugly_text, ugly_leng);");
 
 	/* action */
-	$json_string = parse_json_string(ugly_text, ugly_length);
+	$json_string = parse_json_string(ugly_text, ugly_leng);
 
 	/* post-action debugging */
 	json_dbg(JSON_DBG_MED, __func__, "under json_string: returning $json_string type: %s",
@@ -687,7 +687,7 @@ json_number:
 	json_dbg(JSON_DBG_LOW, __func__, "under json_number: starting: "
 					 "json_number: JSON_NUMBER");
 	json_dbg(JSON_DBG_MED, __func__, "under json_number: ugly_text: <%s>", ugly_text);
-	json_dbg(JSON_DBG_MED, __func__, "under json_number: ugly_length: <%d>", ugly_length);
+	json_dbg(JSON_DBG_MED, __func__, "under json_number: ugly_leng: <%d>", ugly_leng);
 	json_dbg(JSON_DBG_MED, __func__, "under json_number: about to perform: "
 					 "$json_number = parse_json_number(ugly_text);");
 
@@ -722,7 +722,7 @@ main(int argc, char **argv)
 
     /*
      * XXX for development purposes we override the initial json_verbosity_level
-     * to json_verbosity_level. This is used in json_vdbg() which is called by
+     * to JSON_DBG_LEVEL. This is used in json_vdbg() which is called by
      * json_dbg().
      *
      * This variable is used because it means we don't have to see debug

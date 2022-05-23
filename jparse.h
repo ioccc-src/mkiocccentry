@@ -93,7 +93,8 @@ extern FILE *ugly_in;			/* input file lexer/parser reads from */
 extern unsigned num_errors;		/* > 0 number of errors encountered */
 extern bool output_newline;		/* true ==> -n not specified, output new line after each arg processed */
 extern struct json tree;		/* the parse tree */
-extern int ugly_length;			/* for regex length: needed in some cases in parser (where ugly_leng does not exist) */
+extern int ugly_leng;
+
 
 /*
  * lexer specific

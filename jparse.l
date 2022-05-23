@@ -101,7 +101,6 @@
 /* our header file - #includes what we need */
 #include "jparse.h"
 
-int ugly_length = 0;
 
 /*
  * An exception where the prefix does not change YY to UGLY_ is YY_BUFFER_STATE
@@ -163,7 +162,6 @@ JSON_COMMA		","
 
 {JSON_STRING}		{
 			    /* string */
-			    ugly_length = ugly_leng;
 			    return JSON_STRING;
 			}
 
@@ -277,7 +275,7 @@ parse_json(char const *ptr, size_t len, bool *is_valid, FILE *dbg_stream)
 	node = json_alloc(JTYPE_UNSET);
 	return node;
     }
-    if (len <= 0) {
+    if (len <= 0 || is_all_whitespace_str(ptr)) {
 
 	/* warn about bogus length */
 	warn( __func__, "len: %ju <= 0", (uintmax_t)len);
@@ -536,7 +534,7 @@ parse_json_file(char const *filename, bool *is_valid, FILE *dbg_stream)
 	node = json_alloc(JTYPE_UNSET);
 	return node;
     }
-    if (len <= 0) {
+    if (len <= 0 || is_all_whitespace_str(data)) {
 
 	/* warn about empty file */
 	warn(__func__, "%s is empty", is_stdin?"stdin":filename);
