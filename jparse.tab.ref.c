@@ -2136,7 +2136,7 @@ yyreduce:
 					 "json_elements: json_elements JSON_COMMA json_element");
 	json_dbg(JSON_DBG_MED, __func__, "under json_elements: $1 ($json_elements) type: %s",
 					 json_element_type_name(yyvsp[-2]));
-	json_dbg(JSON_DBG_MED, __func__, "under json_element: $3 ($json_element) type: %s",
+	json_dbg(JSON_DBG_MED, __func__, "under json_elements: $3 ($json_element) type: %s",
 					 json_element_type_name(yyvsp[0]));
 	json_dbg(JSON_DBG_MED, __func__, "under json_elements: about to perform: "
 					 "XXX - need more code here - XXX");
