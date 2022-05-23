@@ -987,6 +987,13 @@ check_found_common_json_fields(char const *program, char const *json_filename, c
 		    test_mode = strtobool(val);
 		    dbg(DBG_LOW, "set test_mode to %s", test_mode?"true":"false");
 		}
+	    } else if (!strcmp(field->name, JSON_PARSING_DIRECTIVE_NAME)) {
+		if (strcmp(val, JSON_PARSING_DIRECTIVE_VALUE)) {
+		    warn(__func__, "%s != \"%s\" in file %s: \"%s\"",
+				   JSON_PARSING_DIRECTIVE_NAME, JSON_PARSING_DIRECTIVE_VALUE,
+				   json_filename, val);
+		    ++issues;
+		}
 
 	    } else {
 		/*
@@ -1000,6 +1007,16 @@ check_found_common_json_fields(char const *program, char const *json_filename, c
 		 * NOTE: Don't increment issues because this doesn't mean
 		 * there's anything wrong with the json file but rather that the
 		 * field isn't verified.
+		 *
+		 * XXX On the other hand it can result in a false positive of a
+		 * valid test so this has to be carefully considered. However
+		 * since the jinfochk and jauthchk tools will change
+		 * dramatically this function might not even exist (or if it
+		 * does it'll be very different). Either the idea that an
+		 * unhandled field is not an issue with the file could be
+		 * reassessed even if an unhandled field is actually a problem
+		 * with the tools themselves. This same logic applies to the
+		 * .info.json and .author.json fields check functions.
 		 */
 	    }
 
