@@ -881,8 +881,8 @@ int yy_flex_debug = 1;
 
 static const flex_int16_t yy_rule_linenum[14] =
     {   0,
-      154,  164,  170,  175,  180,  184,  189,  193,  198,  202,
-      207,  212,  217
+      153,  163,  168,  173,  178,  182,  187,  191,  196,  200,
+      205,  210,  215
     } ;
 
 /* The intent behind this definition is that it'll catch
@@ -991,7 +991,6 @@ char *yytext;
 /* our header file - #includes what we need */
 #include "jparse.h"
 
-int ugly_length = 0;
 
 /*
  * An exception where the prefix does not change YY to UGLY_ is YY_BUFFER_STATE
@@ -999,7 +998,7 @@ int ugly_length = 0;
  * sees UGLY__BUFFER_STATE it's actually YY_BUFFER_STATE.
  */
 UGLY__BUFFER_STATE bs;
-#line 951 "jparse.c"
+#line 950 "jparse.c"
 /*
  * Section 2: Patterns (regular expressions) and actions.
  */
@@ -1021,7 +1020,7 @@ UGLY__BUFFER_STATE bs;
  * don't have to worry about complicating the parser unnecessarily.
  */
 /* Actions. */
-#line 973 "jparse.c"
+#line 972 "jparse.c"
 
 #define INITIAL 0
 
@@ -1301,9 +1300,9 @@ YY_DECL
 
 	{
 /* %% [7.0] user's declarations go here */
-#line 153 "jparse.l"
+#line 152 "jparse.l"
 
-#line 1255 "jparse.c"
+#line 1254 "jparse.c"
 
 	while ( /*CONSTCOND*/1 )		/* loops until end-of-file is reached */
 		{
@@ -1396,7 +1395,7 @@ do_action:	/* This label is used only to access EOF actions. */
 case 1:
 /* rule 1 can match eol */
 YY_RULE_SETUP
-#line 154 "jparse.l"
+#line 153 "jparse.l"
 {
 			    /*
 			     * Whitespace
@@ -1409,16 +1408,15 @@ YY_RULE_SETUP
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
-#line 164 "jparse.l"
+#line 163 "jparse.l"
 {
 			    /* string */
-			    ugly_length = ugly_leng;
 			    return JSON_STRING;
 			}
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 170 "jparse.l"
+#line 168 "jparse.l"
 {
 			    /* number */
 			    return JSON_NUMBER;
@@ -1426,7 +1424,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 175 "jparse.l"
+#line 173 "jparse.l"
 {
 			    /* null object */
 			    return JSON_NULL;
@@ -1434,7 +1432,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 180 "jparse.l"
+#line 178 "jparse.l"
 {
 			    /* boolean: true */
 			    return JSON_TRUE;
@@ -1442,7 +1440,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 184 "jparse.l"
+#line 182 "jparse.l"
 {
 			    /* boolean: false */
 			    return JSON_FALSE;
@@ -1450,7 +1448,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 189 "jparse.l"
+#line 187 "jparse.l"
 {
 			    /* start of object */
 			    return JSON_OPEN_BRACE;
@@ -1458,7 +1456,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 193 "jparse.l"
+#line 191 "jparse.l"
 {
 			    /* end of object */
 			    return JSON_CLOSE_BRACE;
@@ -1466,7 +1464,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 198 "jparse.l"
+#line 196 "jparse.l"
 {
 			    /* start of array */
 			    return JSON_OPEN_BRACKET;
@@ -1474,7 +1472,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
-#line 202 "jparse.l"
+#line 200 "jparse.l"
 {
 			    /* end of array */
 			    return JSON_CLOSE_BRACKET;
@@ -1482,7 +1480,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
-#line 207 "jparse.l"
+#line 205 "jparse.l"
 {
 			    /* colon or 'equals' */
 			    return JSON_COLON;
@@ -1490,7 +1488,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
-#line 212 "jparse.l"
+#line 210 "jparse.l"
 {
 			    /* comma: name/value pair separator */
 			    return JSON_COMMA;
@@ -1498,7 +1496,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
-#line 217 "jparse.l"
+#line 215 "jparse.l"
 {
 			    /* invalid token: any other character */
 			    ugly_error(NULL, "\ninvalid token: 0x%02x = <%c>\n", *ugly_text, *ugly_text);
@@ -1507,10 +1505,10 @@ YY_RULE_SETUP
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
-#line 223 "jparse.l"
+#line 221 "jparse.l"
 YY_FATAL_ERROR( "flex scanner jammed" );
 	YY_BREAK
-#line 1462 "jparse.c"
+#line 1460 "jparse.c"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 
@@ -2670,7 +2668,7 @@ void yyfree (void * ptr )
 
 /* %ok-for-header */
 
-#line 223 "jparse.l"
+#line 221 "jparse.l"
 
 
 /* Section 3: Code that's copied to the generated scanner */
