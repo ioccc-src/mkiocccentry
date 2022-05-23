@@ -413,7 +413,7 @@ jauthchk.o: jauthchk.c jauthchk.h json_util.h Makefile
 	${CC} ${CFLAGS} jauthchk.c -c
 
 jauthchk: jauthchk.o rule_count.o json_parse.o json_entry.o dbg.o util.o json_util.o \
-	dyn_array.o sanity.o location.o utf8_posix_map.o Makefile
+	dyn_array.o sanity.o location.o utf8_posix_map.o json_chk.o Makefile
 	${CC} ${CFLAGS} jauthchk.o rule_count.o json_parse.o json_entry.o dbg.o util.o json_util.o \
 	    dyn_array.o sanity.o json_chk.o location.o utf8_posix_map.o -o $@
 
@@ -421,7 +421,7 @@ jinfochk.o: jinfochk.c jinfochk.h json_util.h Makefile
 	${CC} ${CFLAGS} jinfochk.c -c
 
 jinfochk: jinfochk.o rule_count.o json_parse.o json_entry.o dbg.o util.o json_util.o \
-	dyn_array.o sanity.o location.o utf8_posix_map.o Makefile
+	dyn_array.o sanity.o location.o utf8_posix_map.o json_chk.o Makefile
 	${CC} ${CFLAGS} jinfochk.o rule_count.o json_parse.o json_entry.o dbg.o util.o json_util.o \
 	    dyn_array.o sanity.o json_chk.o location.o utf8_posix_map.o -o $@
 
