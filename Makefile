@@ -785,7 +785,7 @@ install: all
 	${INSTALL} -v -m 0644 ${MANPAGES} ${MANDIR} 2>/dev/null
 
 tags: ${ALL_CSRC} ${H_FILES}
-	-${CTAGS} -- ${ALL_CSRC} ${H_FILES} 2>&1 | \
+	-${CTAGS} ${ALL_CSRC} ${H_FILES} 2>&1 | \
 	     ${GREP} -E -v 'Duplicate entry|Second entry ignored'
 
 depend: all
