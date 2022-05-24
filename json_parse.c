@@ -1654,7 +1654,7 @@ parse_json_member(struct json *name, struct json *value)
     }
 
     if (name->type != JTYPE_STRING) {
-	err(187, __func__, "name->type != JTYPE_STRING");
+	err(187, __func__, "expected name->type == JTYPE_STRING: is %s (%d)", json_element_type_name(name), name->type);
 	not_reached();
     }
 
