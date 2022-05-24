@@ -36,11 +36,11 @@ fi
 export TEST_FILE="jstr_test.out"
 export TEST_FILE2="jstr_test2.out"
 if [[ -e "$TEST_FILE" ]]; then
-    echo "$0: found $TEST_FILE move or remove before running this test" 1>&2
+    echo "$0: found $TEST_FILE; move or remove before running this test" 1>&2
     exit 102
 fi
 if [[ -e "$TEST_FILE2" ]]; then
-    echo "$0: found $TEST_FILE2 move or remove before running this test" 1>&2
+    echo "$0: found $TEST_FILE2; move or remove before running this test" 1>&2
     exit 103
 fi
 export EXIT_CODE=0
