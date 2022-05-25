@@ -293,12 +293,8 @@ BISON_DIRS= \
 # For the -Wcounterexamples it gives counter examples if there are ever
 # shift/reduce conflicts in the grammar. The other warnings are of use as well.
 #
-# NOTE: We include required flags like -d here but we explicitly include them in
-# the run_bison.sh call as well. This is to make sure that they're there and not
-# disabled via a user override or because of a mistake here.
-#
-BISON_FLAGS = -Werror --report all -Wcounterexamples -Wmidrule-values \
-	      -Wprecedence -Wdeprecated -d
+BISON_FLAGS = -Werror -Wcounterexamples -Wmidrule-values -Wprecedence -Wdeprecated \
+	      --report all --header
 
 # the basename of flex (or lex) to look for
 #
@@ -324,9 +320,6 @@ FLEX_DIRS= \
 
 # flags to pass to flex
 #
-# NOTE: We include required flags like -d -8 here but we explicitly include them
-# in the run_flex.sh call as well. This is to make sure that they're there and
-# not disabled via a user override or because of a mistake here.
 FLEX_FLAGS = -d -8
 
 ############################################################
@@ -532,7 +525,7 @@ limit_ioccc.sh: limit_ioccc.h version.h Makefile
 jparse.tab.c jparse.tab.h bison: jparse.y jparse.h sorry.tm.ca.h run_bison.sh limit_ioccc.sh \
 	verge jparse.tab.ref.c jparse.tab.ref.h Makefile
 	./run_bison.sh -b ${BISON_BASENAME} ${BISON_DIRS} -p jparse -v 1 ${RUN_O_FLAG} -- \
-		       ${BISON_FLAGS} -d
+		       ${BISON_FLAGS}
 
 # How to create jparse.c
 #
@@ -549,7 +542,7 @@ jparse.tab.c jparse.tab.h bison: jparse.y jparse.h sorry.tm.ca.h run_bison.sh li
 jparse.c flex: jparse.l jparse.h sorry.tm.ca.h jparse.tab.h run_flex.sh limit_ioccc.sh \
 	       verge jparse.ref.c Makefile
 	./run_flex.sh -f ${FLEX_BASENAME} ${FLEX_DIRS} -p jparse -v 1 ${RUN_O_FLAG} -- \
-		      ${FLEX_FLAGS} -d -8 -o jparse.c
+		      ${FLEX_FLAGS} -o jparse.c
 
 
 ###################################################################
