@@ -48,6 +48,8 @@ Exit codes:
     6    ./jstr_test.sh not found or not executable
     7    ./jnum_chk not found or not executable
     8    ./dyn_test not found or not executable
+    9	 ./jparse_test.sh not found or not executable
+    10	 ./json_teststr.txt not found or not readable
 
     >=20  some test failed"
 export TEST_VERSION="0.462022-04-23"
@@ -89,86 +91,114 @@ if [[ $# -gt 0 ]]; then
     exit 2
 fi
 
-# firewall - verify we have the required executables
+# firewall - verify we have the required executables and needed data file(s)
 #
+# iocccsize_test.sh
 if [[ ! -e ./iocccsize_test.sh ]]; then
     echo "$0: ERROR: ./iocccsize_test.sh file not found" 1>&2
     exit 3
 fi
 if [[ ! -f ./iocccsize_test.sh ]]; then
-    echo "$0: ERROR: ./iocccsize_test.sh is not a file" 1>&2
+    echo "$0: ERROR: ./iocccsize_test.sh is not a regular file" 1>&2
     exit 3
 fi
 if [[ ! -x ./iocccsize_test.sh ]]; then
     echo "$0: ERROR: ./iocccsize_test.sh is not executable" 1>&2
     exit 3
 fi
-#
+# dbg
 if [[ ! -e ./dbg ]]; then
     echo "$0: ERROR: ./dbg file not found" 1>&2
     exit 4
 fi
 if [[ ! -f ./dbg ]]; then
-    echo "$0: ERROR: ./dbg is not a file" 1>&2
+    echo "$0: ERROR: ./dbg is not a regular file" 1>&2
     exit 4
 fi
 if [[ ! -x ./dbg ]]; then
     echo "$0: ERROR: ./dbg is not executable" 1>&2
     exit 4
 fi
-#
+# mkiocccentry_test.sh
 if [[ ! -e ./mkiocccentry_test.sh ]]; then
     echo "$0: ERROR: ./mkiocccentry_test.sh file not found" 1>&2
     exit 5
 fi
 if [[ ! -f ./mkiocccentry_test.sh ]]; then
-    echo "$0: ERROR: ./mkiocccentry_test.sh is not a file" 1>&2
+    echo "$0: ERROR: ./mkiocccentry_test.sh is not a regular file" 1>&2
     exit 5
 fi
 if [[ ! -x ./mkiocccentry_test.sh ]]; then
     echo "$0: ERROR: ./mkiocccentry_test.sh is not executable" 1>&2
     exit 5
 fi
-#
+# jstr_test.sh
 if [[ ! -e ./jstr_test.sh ]]; then
     echo "$0: ERROR: ./jstr_test.sh file not found" 1>&2
     exit 6
 fi
 if [[ ! -f ./jstr_test.sh ]]; then
-    echo "$0: ERROR: ./jstr_test.sh is not a file" 1>&2
+    echo "$0: ERROR: ./jstr_test.sh is not a regular file" 1>&2
     exit 6
 fi
 if [[ ! -x ./jstr_test.sh ]]; then
     echo "$0: ERROR: ./jstr_test.sh is not executable" 1>&2
     exit 6
 fi
-#
+# jnum_chk
 if [[ ! -e ./jnum_chk ]]; then
     echo "$0: ERROR: ./jnum_chk file not found" 1>&2
     exit 7
 fi
 if [[ ! -f ./jnum_chk ]]; then
-    echo "$0: ERROR: ./jnum_chk is not a file" 1>&2
+    echo "$0: ERROR: ./jnum_chk is not a regular file" 1>&2
     exit 7
 fi
 if [[ ! -x ./jnum_chk ]]; then
     echo "$0: ERROR: ./jnum_chk is not executable" 1>&2
     exit 7
 fi
-#
+# dyn_test
 if [[ ! -e ./dyn_test ]]; then
     echo "$0: ERROR: ./dyn_test file not found" 1>&2
     exit 8
 fi
 if [[ ! -f ./dyn_test ]]; then
-    echo "$0: ERROR: ./dyn_test is not a file" 1>&2
+    echo "$0: ERROR: ./dyn_test is not a regular file" 1>&2
     exit 8
 fi
 if [[ ! -x ./dyn_test ]]; then
     echo "$0: ERROR: ./dyn_test is not executable" 1>&2
     exit 8
 fi
-#
+# jparse_test.sh
+if [[ ! -e ./jparse_test.sh ]]; then
+    echo "$0: ERROR: ./jparse_test.sh file not found" 1>&2
+    exit 9
+fi
+if [[ ! -f ./jparse_test.sh ]]; then
+    echo "$0: ERROR: ./jparse_test.sh is not a regular file" 1>&2
+    exit 9
+fi
+if [[ ! -x ./jparse_test.sh ]]; then
+    echo "$0: ERROR: ./jparse_test.sh is not executable" 1>&2
+    exit 9
+fi
+
+# json_teststr.txt: for jparse_test.sh
+if [[ ! -e ./json_teststr.txt ]]; then
+    echo "$0: ERROR: json_teststr.txt file not found" 1>&2
+    exit 10
+fi
+if [[ ! -f json_teststr.txt ]]; then
+    echo "$0: ERROR: ./jparse_test.sh is not a regular file" 1>&2
+    exit 10
+fi
+if [[ ! -r json_teststr.txt ]]; then
+    echo "$0: ERROR: json_teststr.txt is not readable" 1>&2
+    exit 10
+fi
+
 
 # start the test suite
 #
@@ -296,6 +326,25 @@ else
     echo
     echo "PASSED: dyn_test"
 fi
+
+# jparse_test.sh
+#
+echo
+echo "RUNNING: jparse_test.sh"
+echo
+echo "./jparse_test.sh -J $V_FLAG json_teststr.txt"
+./jparse_test.sh -J "$V_FLAG" json_teststr.txt
+status="$?"
+if [[ $status -ne 0 ]]; then
+    echo "$0: ERROR: jparse_test.sh non-zero exit code: $status" 1>&2
+    FAILURE_SUMMARY="$FAILURE_SUMMARY
+    jparse_test.sh non-zero exit code: $status"
+    EXIT_CODE="27"
+else
+    echo
+    echo "PASSED: jparse_test.sh"
+fi
+
 
 # report overall status
 #

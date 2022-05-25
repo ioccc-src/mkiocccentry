@@ -1653,18 +1653,23 @@ parse_json_member(struct json *name, struct json *value)
 	not_reached();
     }
 
+    if (name->type != JTYPE_STRING) {
+	err(187, __func__, "expected name->type == JTYPE_STRING: is %s (%d)", json_element_type_name(name), name->type);
+	not_reached();
+    }
+
     member = json_conv_member(name, value);
     /* paranoia - these tests should never result in an error */
     if (member == NULL) {
-	err(187, __func__, "converting JSON member returned NULL");
+	err(188, __func__, "converting JSON member returned NULL");
 	not_reached();
     } else if (member->type != JTYPE_MEMBER) {
-        err(188, __func__, "expected JTYPE_MEMBER, found type: %s", json_element_type_name(member));
+        err(189, __func__, "expected JTYPE_MEMBER, found type: %s", json_element_type_name(member));
         not_reached();
     }
     item = &(member->element.member);
     if (!item->converted) {
-	err(189, __func__, "couldn't convert member");
+	err(190, __func__, "couldn't convert member");
 	not_reached();
     } else {
         json_dbg(json_verbosity_level, __func__, "converted member");

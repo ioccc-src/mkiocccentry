@@ -1989,7 +1989,7 @@ yyreduce:
 	/* pre-action debugging */
 	json_dbg(JSON_DBG_LOW, __func__, "under json_members: starting: "
 					 "json_members: json_members JSON_COMMA json_member");
-	json_dbg(JSON_DBG_MED, __func__, "under json_members: $1 ($json_member) type: %s",
+	json_dbg(JSON_DBG_MED, __func__, "under json_members: $1 ($json_members) type: %s",
 					 json_element_type_name(yyvsp[-2]));
 	json_dbg(JSON_DBG_MED, __func__, "under json_members: $3 ($json_member) type: %s",
 					 json_element_type_name(yyvsp[0]));
