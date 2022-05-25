@@ -139,9 +139,8 @@ unsigned num_errors = 0;		/* > 0 number of errors encountered */
 /* debug information during development */
 int ugly_debug = 1;
 
-int token = 0;
 
-#line 94 "jparse.tab.c"
+#line 93 "jparse.tab.c"
 
 # ifndef YY_CAST
 #  ifdef __cplusplus
@@ -497,18 +496,18 @@ union yyalloc
 #endif /* !YYCOPY_NEEDED */
 
 /* YYFINAL -- State number of the termination state.  */
-#define YYFINAL  22
+#define YYFINAL  23
 /* YYLAST -- Last index in YYTABLE.  */
-#define YYLAST   30
+#define YYLAST   32
 
 /* YYNTOKENS -- Number of terminals.  */
 #define YYNTOKENS  15
 /* YYNNTS -- Number of nonterminals.  */
 #define YYNNTS  11
 /* YYNRULES -- Number of rules.  */
-#define YYNRULES  21
+#define YYNRULES  22
 /* YYNSTATES -- Number of states.  */
-#define YYNSTATES  31
+#define YYNSTATES  32
 
 /* YYMAXUTOK -- Last valid token kind.  */
 #define YYMAXUTOK   269
@@ -558,9 +557,9 @@ static const yytype_int8 yytranslate[] =
 /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_int16 yyrline[] =
 {
-       0,   164,   164,   192,   218,   244,   270,   296,   321,   346,
-     373,   399,   424,   450,   484,   515,   541,   566,   592,   625,
-     653,   680
+       0,   163,   163,   191,   217,   243,   269,   295,   320,   345,
+     372,   398,   423,   449,   483,   514,   540,   565,   591,   624,
+     649,   657,   684
 };
 #endif
 
@@ -590,7 +589,7 @@ yysymbol_name (yysymbol_kind_t yysymbol)
 }
 #endif
 
-#define YYPACT_NINF (-6)
+#define YYPACT_NINF (-7)
 
 #define yypact_value_is_default(Yyn) \
   ((Yyn) == YYPACT_NINF)
@@ -604,10 +603,10 @@ yysymbol_name (yysymbol_kind_t yysymbol)
    STATE-NUM.  */
 static const yytype_int8 yypact[] =
 {
-      17,     2,    -1,    -6,    -6,    -6,    -6,    -6,     3,    -6,
-      -6,    -6,    -6,    -6,    -6,    -6,     9,    -6,     7,    -6,
-      11,    -6,    -6,    -6,    -5,    17,    -6,    17,    -6,    -6,
-      -6
+      18,     2,    -1,    -7,    -7,    -7,    -7,    -7,    -7,     3,
+      -7,    -7,    -7,    -7,    -7,    -7,    -7,    11,    -7,    12,
+      -7,    10,    -7,    -7,    -7,    -5,    18,    -7,    18,    -7,
+      -7,    -7
 };
 
 /* YYDEFACT[STATE-NUM] -- Default reduction number in state STATE-NUM.
@@ -615,24 +614,24 @@ static const yytype_int8 yypact[] =
    means the default is an error.  */
 static const yytype_int8 yydefact[] =
 {
-       0,     0,     0,     9,     7,     8,    20,    21,     0,    19,
-       3,     4,     2,     5,     6,    11,     0,    12,     0,    16,
-       0,    17,     1,    10,     0,     0,    15,     0,    13,    14,
-      18
+       0,     0,     0,     9,     7,     8,    21,    22,    20,     0,
+      19,     3,     4,     2,     5,     6,    11,     0,    12,     0,
+      16,     0,    17,     1,    10,     0,     0,    15,     0,    13,
+      14,    18
 };
 
 /* YYPGOTO[NTERM-NUM].  */
 static const yytype_int8 yypgoto[] =
 {
-      -6,    -6,    -6,    -6,    -6,    -3,    -6,    -6,    -2,     0,
-      -6
+      -7,    -7,    -7,    -7,    -7,    -6,    -7,    -7,    -2,     0,
+      -7
 };
 
 /* YYDEFGOTO[NTERM-NUM].  */
 static const yytype_int8 yydefgoto[] =
 {
-       0,     8,     9,    10,    16,    17,    11,    20,    12,    13,
-      14
+       0,     9,    10,    11,    17,    18,    12,    21,    13,    14,
+      15
 };
 
 /* YYTABLE[YYPACT[STATE-NUM]] -- What to do in state STATE-NUM.  If
@@ -640,28 +639,28 @@ static const yytype_int8 yydefgoto[] =
    number is the opposite.  If YYTABLE_NINF, syntax error.  */
 static const yytype_int8 yytable[] =
 {
-      21,    18,     1,    22,     2,    19,    15,     6,     3,     4,
-       5,     6,     7,    23,     6,    25,    24,    26,    27,     0,
-       1,    28,     2,    29,    18,    30,     3,     4,     5,     6,
-       7
+      22,    19,     1,    23,     2,    20,    16,     6,     3,     4,
+       5,     6,     7,     8,     6,    24,    27,    28,    25,    29,
+      26,     1,     0,     2,    30,    19,    31,     3,     4,     5,
+       6,     7,     8
 };
 
 static const yytype_int8 yycheck[] =
 {
        2,     1,     3,     0,     5,     6,     4,    12,     9,    10,
-      11,    12,    13,     4,    12,     8,     7,     6,     7,    -1,
-       3,    24,     5,    25,    24,    27,     9,    10,    11,    12,
-      13
+      11,    12,    13,    14,    12,     4,     6,     7,     7,    25,
+       8,     3,    -1,     5,    26,    25,    28,     9,    10,    11,
+      12,    13,    14
 };
 
 /* YYSTOS[STATE-NUM] -- The symbol kind of the accessing symbol of
    state STATE-NUM.  */
 static const yytype_int8 yystos[] =
 {
-       0,     3,     5,     9,    10,    11,    12,    13,    16,    17,
-      18,    21,    23,    24,    25,     4,    19,    20,    24,     6,
-      22,    23,     0,     4,     7,     8,     6,     7,    20,    23,
-      23
+       0,     3,     5,     9,    10,    11,    12,    13,    14,    16,
+      17,    18,    21,    23,    24,    25,     4,    19,    20,    24,
+       6,    22,    23,     0,     4,     7,     8,     6,     7,    20,
+      23,    23
 };
 
 /* YYR1[RULE-NUM] -- Symbol kind of the left-hand side of rule RULE-NUM.  */
@@ -669,7 +668,7 @@ static const yytype_int8 yyr1[] =
 {
        0,    15,    16,    17,    17,    17,    17,    17,    17,    17,
       18,    18,    19,    19,    20,    21,    21,    22,    22,    23,
-      24,    25
+      23,    24,    25
 };
 
 /* YYR2[RULE-NUM] -- Number of symbols on the right-hand side of rule RULE-NUM.  */
@@ -677,7 +676,7 @@ static const yytype_int8 yyr2[] =
 {
        0,     2,     1,     1,     1,     1,     1,     1,     1,     1,
        3,     2,     1,     3,     3,     3,     2,     1,     3,     1,
-       1,     1
+       1,     1,     1
 };
 
 
@@ -1673,7 +1672,7 @@ yyreduce:
     switch (yyn)
       {
   case 2: /* json: json_element  */
-#line 165 "jparse.y"
+#line 164 "jparse.y"
     {
 	/*
 	 * $$ = $json
@@ -1697,11 +1696,11 @@ yyreduce:
 	json_dbg(JSON_DBG_LOW, __func__, "under json: ending: "
 					 "json: json_element");
     }
-#line 1650 "jparse.tab.c"
+#line 1649 "jparse.tab.c"
     break;
 
   case 3: /* json_value: json_object  */
-#line 193 "jparse.y"
+#line 192 "jparse.y"
     {
 	/*
 	 * $$ = $json_value
@@ -1725,11 +1724,11 @@ yyreduce:
 	json_dbg(JSON_DBG_LOW, __func__, "under json_value: ending: "
 					 "json_value: json_object");
     }
-#line 1678 "jparse.tab.c"
+#line 1677 "jparse.tab.c"
     break;
 
   case 4: /* json_value: json_array  */
-#line 219 "jparse.y"
+#line 218 "jparse.y"
     {
 	/*
 	 * $$ = $json_value
@@ -1753,11 +1752,11 @@ yyreduce:
 	json_dbg(JSON_DBG_LOW, __func__, "under json_value: ending: "
 					 "json_value: json_array");
     }
-#line 1706 "jparse.tab.c"
+#line 1705 "jparse.tab.c"
     break;
 
   case 5: /* json_value: json_string  */
-#line 245 "jparse.y"
+#line 244 "jparse.y"
     {
 	/*
 	 * $$ = $json_value
@@ -1781,11 +1780,11 @@ yyreduce:
 	json_dbg(JSON_DBG_LOW, __func__, "under json_value: ending: "
 					 "json_value: json_string");
     }
-#line 1734 "jparse.tab.c"
+#line 1733 "jparse.tab.c"
     break;
 
   case 6: /* json_value: json_number  */
-#line 271 "jparse.y"
+#line 270 "jparse.y"
     {
 	/*
 	 * $$ = $json_value
@@ -1809,11 +1808,11 @@ yyreduce:
 	json_dbg(JSON_DBG_LOW, __func__, "under json_value: ending: "
 					 "json_value: json_number");
     }
-#line 1762 "jparse.tab.c"
+#line 1761 "jparse.tab.c"
     break;
 
   case 7: /* json_value: "true"  */
-#line 297 "jparse.y"
+#line 296 "jparse.y"
     {
 	/*
 	 * $$ = $json_value
@@ -1836,11 +1835,11 @@ yyreduce:
 	json_dbg(JSON_DBG_LOW, __func__, "under json_value: ending: "
 					 "json_value: JSON_TRUE");
     }
-#line 1789 "jparse.tab.c"
+#line 1788 "jparse.tab.c"
     break;
 
   case 8: /* json_value: "false"  */
-#line 322 "jparse.y"
+#line 321 "jparse.y"
     {
 	/*
 	 * $$ = $json_value
@@ -1863,11 +1862,11 @@ yyreduce:
 	json_dbg(JSON_DBG_LOW, __func__, "under json_value: ending: "
 					 "json_value: JSON_FALSE");
     }
-#line 1816 "jparse.tab.c"
+#line 1815 "jparse.tab.c"
     break;
 
   case 9: /* json_value: "null"  */
-#line 347 "jparse.y"
+#line 346 "jparse.y"
     {
 	/*
 	 * $$ = $json_value
@@ -1890,11 +1889,11 @@ yyreduce:
 	json_dbg(JSON_DBG_LOW, __func__, "under json_value: ending: "
 					 "json_value: JSON_NULL");
     }
-#line 1843 "jparse.tab.c"
+#line 1842 "jparse.tab.c"
     break;
 
   case 10: /* json_object: "{" json_members "}"  */
-#line 374 "jparse.y"
+#line 373 "jparse.y"
     {
 	/*
 	 * $$ = $json_object
@@ -1918,11 +1917,11 @@ yyreduce:
 	json_dbg(JSON_DBG_LOW, __func__, "under json_object: ending: "
 					 "json_object: JSON_OPEN_BRACE json_members JSON_CLOSE_BRACE");
     }
-#line 1871 "jparse.tab.c"
+#line 1870 "jparse.tab.c"
     break;
 
   case 11: /* json_object: "{" "}"  */
-#line 400 "jparse.y"
+#line 399 "jparse.y"
     {
 	/*
 	 * $$ = $json_object
@@ -1943,11 +1942,11 @@ yyreduce:
 	json_dbg(JSON_DBG_LOW, __func__, "under json_object: ending: "
 					 "json_object: JSON_OPEN_BRACE JSON_CLOSE_BRACE");
     }
-#line 1896 "jparse.tab.c"
+#line 1895 "jparse.tab.c"
     break;
 
   case 12: /* json_members: json_member  */
-#line 425 "jparse.y"
+#line 424 "jparse.y"
     {
 	/*
 	 * $$ = $json_members
@@ -1971,11 +1970,11 @@ yyreduce:
 	json_dbg(JSON_DBG_LOW, __func__, "under json_members: ending: "
 					 "json_members: json_member");
     }
-#line 1924 "jparse.tab.c"
+#line 1923 "jparse.tab.c"
     break;
 
   case 13: /* json_members: json_members "," json_member  */
-#line 451 "jparse.y"
+#line 450 "jparse.y"
     {
 	/*
 	 * $$ = $json_members
@@ -2005,11 +2004,11 @@ yyreduce:
 	json_dbg(JSON_DBG_LOW, __func__, "under json_members: ending: "
 					 "json_members: json_members JSON_COMMA json_member");
     }
-#line 1958 "jparse.tab.c"
+#line 1957 "jparse.tab.c"
     break;
 
   case 14: /* json_member: json_string ":" json_element  */
-#line 485 "jparse.y"
+#line 484 "jparse.y"
     {
 	/*
 	 * $$ = $json_member
@@ -2036,11 +2035,11 @@ yyreduce:
 	json_dbg(JSON_DBG_LOW, __func__, "under json_member: ending: "
 					 "json_member: json_string JSON_COLON json_element");
     }
-#line 1989 "jparse.tab.c"
+#line 1988 "jparse.tab.c"
     break;
 
   case 15: /* json_array: "[" json_elements "]"  */
-#line 516 "jparse.y"
+#line 515 "jparse.y"
     {
 	/*
 	 * $$ = $json_array
@@ -2064,11 +2063,11 @@ yyreduce:
 	json_dbg(JSON_DBG_LOW, __func__, "under json_array: ending: "
 					 "json_array: JSON_OPEN_BRACKET json_elements JSON_CLOSE_BRACKET");
     }
-#line 2017 "jparse.tab.c"
+#line 2016 "jparse.tab.c"
     break;
 
   case 16: /* json_array: "[" "]"  */
-#line 542 "jparse.y"
+#line 541 "jparse.y"
     {
 	/*
 	 * $$ = $json_array
@@ -2089,11 +2088,11 @@ yyreduce:
 	json_dbg(JSON_DBG_LOW, __func__, "under json_array: ending: "
 					 "json_array: JSON_OPEN_BRACKET JSON_CLOSE_BRACKET");
     }
-#line 2042 "jparse.tab.c"
+#line 2041 "jparse.tab.c"
     break;
 
   case 17: /* json_elements: json_element  */
-#line 567 "jparse.y"
+#line 566 "jparse.y"
     {
 	/*
 	 * $$ = $json_elements
@@ -2117,11 +2116,11 @@ yyreduce:
 	json_dbg(JSON_DBG_LOW, __func__, "under json_elements: ending: "
 					 "json_elements: json_element");
     }
-#line 2070 "jparse.tab.c"
+#line 2069 "jparse.tab.c"
     break;
 
   case 18: /* json_elements: json_elements "," json_element  */
-#line 593 "jparse.y"
+#line 592 "jparse.y"
     {
 	/*
 	 * $$ = $json_elements
@@ -2150,11 +2149,11 @@ yyreduce:
 	json_dbg(JSON_DBG_LOW, __func__, "under json_elements: ending: "
 					 "json_elements: json_elements JSON_COMMA json_element");
     }
-#line 2103 "jparse.tab.c"
+#line 2102 "jparse.tab.c"
     break;
 
   case 19: /* json_element: json_value  */
-#line 626 "jparse.y"
+#line 625 "jparse.y"
     {
 	/*
 	 * $$ = $json_element
@@ -2178,11 +2177,19 @@ yyreduce:
 	json_dbg(JSON_DBG_LOW, __func__, "under json_element: ending: "
 					 "json_element: json_value");
     }
-#line 2131 "jparse.tab.c"
+#line 2130 "jparse.tab.c"
     break;
 
-  case 20: /* json_string: JSON_STRING  */
-#line 654 "jparse.y"
+  case 20: /* json_element: JSON_INVALID_TOKEN  */
+#line 650 "jparse.y"
+    {
+	UGLY_ABORT;
+    }
+#line 2138 "jparse.tab.c"
+    break;
+
+  case 21: /* json_string: JSON_STRING  */
+#line 658 "jparse.y"
     {
 	/*
 	 * $$ = $json_string
@@ -2205,11 +2212,11 @@ yyreduce:
 	json_dbg(JSON_DBG_LOW, __func__, "under json_string: ending: "
 					 "json_string: JSON_STRING");
     }
-#line 2158 "jparse.tab.c"
+#line 2165 "jparse.tab.c"
     break;
 
-  case 21: /* json_number: JSON_NUMBER  */
-#line 681 "jparse.y"
+  case 22: /* json_number: JSON_NUMBER  */
+#line 685 "jparse.y"
     {
 	/*
 	 * $$ = $json_number
@@ -2232,11 +2239,11 @@ yyreduce:
 	json_dbg(JSON_DBG_LOW, __func__, "under json_number: ending: "
 					 "json_number: JSON_NUMBER");
     }
-#line 2185 "jparse.tab.c"
+#line 2192 "jparse.tab.c"
     break;
 
 
-#line 2189 "jparse.tab.c"
+#line 2196 "jparse.tab.c"
 
         default: break;
       }
@@ -2471,7 +2478,7 @@ yyreturnlab:
   return yyresult;
 }
 
-#line 706 "jparse.y"
+#line 710 "jparse.y"
 
 
 
@@ -2643,7 +2650,7 @@ ugly_error(struct json *node, char const *format, ...)
     fprintf(stderr, "\n");
 
     /*
-     * stdarg variable argument list cleanup
+     * stdarg variable argument list clean up
      */
     va_end(ap);
 }

@@ -363,6 +363,10 @@ parse_json(char const *ptr, size_t len, bool *is_valid, FILE *dbg_stream)
     if (is_valid != NULL) {
 	*is_valid = ret == 0;
     }
+    if (ret != 0) {
+	fprintf(stderr, "not valid JSON\n");
+    }
+
     /* XXX - return a blank JSON tree until we can get a tree via ugly_parse somehow - XXX */
     node = json_alloc(JTYPE_UNSET);
     return node;

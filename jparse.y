@@ -117,7 +117,6 @@ unsigned num_errors = 0;		/* > 0 number of errors encountered */
 /* debug information during development */
 int ugly_debug = 1;
 
-int token = 0;
 %}
 
 
@@ -185,7 +184,7 @@ json:
 	json_dbg(JSON_DBG_LOW, __func__, "under json: ending: "
 					 "json: json_element");
     }
-    ;
+        ;
 
 json_value:
 
@@ -646,6 +645,11 @@ json_element:
 	json_dbg(JSON_DBG_LOW, __func__, "under json_element: ending: "
 					 "json_element: json_value");
     }
+    |
+    JSON_INVALID_TOKEN
+    {
+	UGLY_ABORT;
+    }
     ;
 
 json_string:
@@ -874,7 +878,7 @@ ugly_error(struct json *node, char const *format, ...)
     fprintf(stderr, "\n");
 
     /*
-     * stdarg variable argument list cleanup
+     * stdarg variable argument list clean up
      */
     va_end(ap);
 }
