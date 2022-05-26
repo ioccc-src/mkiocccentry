@@ -58,21 +58,22 @@ For more information and examples, try:
 
 ##  jinfochk
 
-The official **IOCCC** `.info.json` sanity checker tool. Invoked by `mkiocccentry`
-after the `.info.json` file has been created but prior to forming the
-`.author.json` file, validating it with `jauthchk` and then forming the tarball.
+The official **IOCCC** `.info.json` sanity checker tool. Invoked by
+`mkiocccentry` after the `.info.json` file has been created, it will attempt to
+validate the file. If it does not successfully validate the file there is a
+mismatch between what is expected and what is actually there and `mkiocccentry`
+will fail.
 
+As a stand-alone tool it will report whether the file is a validly formed
+`.info.json` file. See also `jauthchk`.
 
 *NOTE*: This tool and `jauthchk` are **very much works in progress** and as of
-*10 March 2022* it was decided that the parsing should be done via `flex(1)` and
-`bison(1)` which will require some time and thought. In time the two tools will
-be merged into one which can parse one or both of `.info.json` and/or
-`.author.json`. This is because some fields MUST be the same value in both
-files.
+10 March 2022 it was decided that the parsing should be done via `flex(1)` and
+`bison(1)` which is being worked on in `jparse` (see below). 
 
-Additionally there will likely be a `jparse` tool that will take a block of
-memory from either stdin or a file and attempt to parse it as json.
-
+In time the two tools (`jinfochk` and `jauthchk`) will be merged into one tool
+which can parse one or both of `.info.json` and `.author.json`. This is because
+some fields MUST be the same value in both files.
 
 For more information and examples, try:
 
@@ -83,24 +84,46 @@ For more information and examples, try:
 ##  jauthchk
 
 The official **IOCCC** `.author.json` sanity checker tool. Invoked by
-`mkiocccentry` after the `.author.json` file has been created but prior to
-forming the tarball. The `.author.json` file is not formed if the `jinfochk`
-tool fails to validate the `.info.json` file.
+`mkiocccentry` after the `.author.json` file has been created, it will attempt to
+validate the file. If it does not successfully validate the file there is a
+mismatch between what is expected and what is actually there and `mkiocccentry`
+will fail.
 
+As a stand-alone tool it will report whether the file is a validly formed
+`.author.json` file. See also `jinfochk`.
 
-*NOTE*: This tool and `jinfochk` are **very much a works in progress** and as of
-*10 March 2022* it was decided that the parsing should be done via `flex(1)` and
-`bison(1)` which will require some time and thought. In time the two tools will
-be merged into one which can parse one or both of `.author.json` and/or
-`.info.json.` This is because some fields MUST be the same value in both files.
+*NOTE*: This tool and `jinfochk` are **very much works in progress** and as of
+10 March 2022 it was decided that the parsing should be done via `flex(1)` and
+`bison(1)` which is being worked on in `jparse` (see below). 
 
-Additionally there will likely be a `jparse` tool that will take a block of
-memory from either stdin or a file and attempt to parse it as json.
-
+In time the two tools (`jauthchk` and `jinfochk`) will be merged into one tool
+which can parse one or both of `.author.json` and `.author.json`. This is
+because some fields MUST be the same value in both files.
 
 For more information and examples, try:
 
 
 	    man ./jauthchk.1
 
+
+##  jparse
+
+The official **IOCCC** `JSON` parser written in C via `flex(1)` and `bison(1)`.
+
+It takes a block of memory from either a file (stdin or a text file) or a string
+(via `-s` option) and parses it as JSON, reporting if it is validly formed JSON
+or not.
+
+As of 26 May 2022 it does not yet create a parse tree for other tools like the
+`jinfochk` and `jauthchk` tools. Some things still have to be worked out. Once
+this is done the other two tools can be finished.
+
+*NOTE*: At the risk of stating the obvious this tool is **very much a work in
+progress**.  Good progress is being made but more thought and time is still
+required.
+
+For more information and examples, try:
+
+
+	    man ./jparse.1
 

@@ -2730,6 +2730,9 @@ parse_json(char const *ptr, size_t len, bool *is_valid, FILE *dbg_stream)
 
 	/* warn about bogus length */
 	warn( __func__, "len: %ju <= 0", (uintmax_t)len);
+
+	/* invalid JSON */
+	fprintf(stderr, "invalid JSON\n");
 	++num_errors;
 
 	/* if allowed, report invalid JSON */
@@ -2815,7 +2818,8 @@ parse_json(char const *ptr, size_t len, bool *is_valid, FILE *dbg_stream)
 	*is_valid = ret == 0;
     }
     if (ret != 0) {
-	fprintf(stderr, "not valid JSON\n");
+	/* invalid JSON */
+	fprintf(stderr, "invalid JSON\n");
     }
 
     /* XXX - return a blank JSON tree until we can get a tree via ugly_parse somehow - XXX */
@@ -2993,7 +2997,11 @@ parse_json_file(char const *filename, bool *is_valid, FILE *dbg_stream)
 
 	/* warn about empty file */
 	warn(__func__, "%s is empty", is_stdin?"stdin":filename);
+
+	/* invalid JSON */
+	fprintf(stderr, "invalid JSON\n");
 	++num_errors;
+
 	clearerr_or_fclose(filename, ugly_in);
 
 	/* if allowed, report invalid JSON */
