@@ -1701,7 +1701,7 @@ json_element_type_name(struct json *node)
  * It is up to the caller to free the struct json if needed.
  *
  * This function does NOT walk the JSON parse tree, so it will
- *ignore links form this node to other JSON parse tree nodes.
+ * ignore links form this node to other JSON parse tree nodes.
  *
  * NOTE: If the pointer to allocated storage == NULL,
  *	 this function does nothing.
@@ -1879,8 +1879,8 @@ json_free(struct json *node, ...)
 /*
  * vjson_free - free storage of a single JSON parse tree node in va_list form
  *
- * This is a variable argument list interface to json_free().
- * See json_free() for a function that frees an entire parse tree.
+ * This is a variable argument list interface to json_free(). See
+ * json_tree_free() for a function that frees an entire parse tree.
  *
  * given:
  *	node	pointer to a JSON parser tree node to free
@@ -1977,7 +1977,7 @@ json_tree_free(struct json *node, int max_depth, ...)
  *	vcallback   function to operate JSON parse tree node in va_list form
  *	...	    extra args for vcallback
  *
- * The vcallback() funcion must NOT call va_arg() nor call va_end() on the
+ * The vcallback() function must NOT call va_arg() nor call va_end() on the
  * the va_list argument directly.  Instead they must call va_copy()
  * and then use va_arg() and va_end() on the va_list copy.
  *
@@ -1985,7 +1985,7 @@ json_tree_free(struct json *node, int max_depth, ...)
  * as foo() or (*foo)() we use the latter format for the callback function
  * to make it clearer that it is in fact a function that's passed in so
  * that we can use this function to do more than one thing. This is also
- * why we call it vcallback and not something else.
+ * why we call it vcallback (v for variadic support) and not something else.
  *
  * If max_depth is >= 0 and the tree depth > max_depth, then this function return.
  * In this case it will NOT operate on the node, or will be descend and further
@@ -2003,11 +2003,11 @@ json_tree_walk(struct json *node, int max_depth, void (*vcallback)(struct json *
      */
     if (node == NULL) {
 	warn(__func__, "node is NULL");
-	return ;
+	return;
     }
     if (vcallback == NULL) {
 	warn(__func__, "vcallback is NULL");
-	return ;
+	return;
     }
 
     /*
