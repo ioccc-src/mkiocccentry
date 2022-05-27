@@ -138,7 +138,29 @@ int ugly_debug = 1;
 %token JSON_FALSE "false"
 %token JSON_STRING
 %token JSON_NUMBER
-%token JSON_INVALID_TOKEN
+
+/*
+ * The next token 'token' is a hack for better error messages with invalid
+ * tokens.  Bison syntax error messages are in the form of:
+ *
+ *	    syntax error, unexpected <token name>
+ *	    syntax error, unexpected <token name>, expecting } or JSON_STRING
+ *
+ * etc. where <token name> is whatever is returned in the lexer actions (e.g.
+ * JSON_STRING) to the parser. But the problem is what do we call an invalid
+ * token without knowing what what the token actually is? Thus we call it token
+ * so that it will read literally as 'unexpected token' which removes any
+ * ambiguity (it could be read as 'it's unexpected in this place but it is valid
+ * in other contexts' but it's never actually valid: it's a catch all for
+ * anything that's not valid.
+ *
+ * Now if bison has an actual reference to the token value itself this would be
+ * ideal to pass to the error message but if it does I'm unaware of it and
+ * unfortunately UGLY_ABORT is specific to bison and not in flex. That being
+ * said it does have a feature for more custom error functions and this can be
+ * looked into.
+ */
+%token token
 
 
 /*
@@ -184,7 +206,7 @@ json:
 	json_dbg(JSON_DBG_LOW, __func__, "under json: ending: "
 					 "json: json_element");
     }
-        ;
+    ;
 
 json_value:
 
@@ -644,11 +666,6 @@ json_element:
 				         json_element_type_name($json_element));
 	json_dbg(JSON_DBG_LOW, __func__, "under json_element: ending: "
 					 "json_element: json_value");
-    }
-    |
-    JSON_INVALID_TOKEN
-    {
-	UGLY_ABORT;
     }
     ;
 

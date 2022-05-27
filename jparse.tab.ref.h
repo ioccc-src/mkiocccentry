@@ -124,7 +124,7 @@ extern int ugly_debug;
     JSON_FALSE = 266,              /* "false"  */
     JSON_STRING = 267,             /* JSON_STRING  */
     JSON_NUMBER = 268,             /* JSON_NUMBER  */
-    JSON_INVALID_TOKEN = 269       /* JSON_INVALID_TOKEN  */
+    token = 269                    /* token  */
   };
   typedef enum ugly_tokentype ugly_token_kind_t;
 #endif
