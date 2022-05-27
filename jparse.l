@@ -154,8 +154,12 @@ JSON_COMMA		","
 			    /*
 			     * Whitespace
 			     *
-			     * Not needed but included for now for debugging
-			     * purposes.
+			     * NOTE: We have to include this action as otherwise
+			     * the action '.' will return an invalid token to
+			     * the parser.
+			     *
+			     * We don't need the below message but for debugging
+			     * purposes we have it printed for now.
 			     */
 			    fprintf(stderr, "\nignoring %ju whitespace%s\n", (uintmax_t)ugly_leng, yyleng==1?"":"s");
 			}
@@ -215,7 +219,31 @@ JSON_COMMA		","
 .			{
 			    /* invalid token: any other character */
 			    ugly_error(NULL, "\ninvalid token: 0x%02x = <%c>\n", *ugly_text, *ugly_text);
-			    return JSON_INVALID_TOKEN;
+			    /*
+			     * This is a hack for better error messages with
+			     * invalid tokens. Bison syntax error messages are
+			     * in the form of:
+			     *
+			     *	    syntax error, unexpected <token name>
+			     *	    syntax error, unexpected <token name>, expecting } or JSON_STRING
+			     *
+			     * etc. where <token name> is whatever we return
+			     * here in the lexer actions (e.g.  JSON_STRING or
+			     * in this case literally token) to the parser. But
+			     * the problem is what do we call an invalid token
+			     * without knowing what what the token actually is?
+			     * Thus we call it token so that it will read
+			     * literally as 'unexpected token' which removes any
+			     * ambiguity (it could be read as 'it's unexpected
+			     * in this place but it is valid in other contexts'
+			     * but it's never actually valid: it's a catch all
+			     * for anything that's not valid.
+			     *
+			     * In jparse.y there are some features that would be
+			     * nice to have that would make this much less a
+			     * problem but if they exist I'm unaware of them.
+			     */
+			    return token;
 			}
 
 %%

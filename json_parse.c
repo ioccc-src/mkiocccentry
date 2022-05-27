@@ -1672,6 +1672,9 @@ parse_json_member(struct json *name, struct json *value)
 	err(190, __func__, "couldn't convert member");
 	not_reached();
     } else {
+	/*
+	 * XXX show what the member name is
+	 */
         json_dbg(json_verbosity_level, __func__, "converted member");
     }
 

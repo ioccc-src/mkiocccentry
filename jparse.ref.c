@@ -881,8 +881,8 @@ int yy_flex_debug = 1;
 
 static const flex_int16_t yy_rule_linenum[14] =
     {   0,
-      153,  163,  168,  173,  178,  182,  187,  191,  196,  200,
-      205,  210,  215
+      153,  167,  172,  177,  182,  186,  191,  195,  200,  204,
+      209,  214,  219
     } ;
 
 /* The intent behind this definition is that it'll catch
@@ -1400,15 +1400,19 @@ YY_RULE_SETUP
 			    /*
 			     * Whitespace
 			     *
-			     * Not needed but included for now for debugging
-			     * purposes.
+			     * NOTE: We have to include this action as otherwise
+			     * the action '.' will return an invalid token to
+			     * the parser.
+			     *
+			     * We don't need the below message but for debugging
+			     * purposes we have it printed for now.
 			     */
 			    fprintf(stderr, "\nignoring %ju whitespace%s\n", (uintmax_t)ugly_leng, yyleng==1?"":"s");
 			}
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
-#line 163 "jparse.l"
+#line 167 "jparse.l"
 {
 			    /* string */
 			    return JSON_STRING;
@@ -1416,7 +1420,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 168 "jparse.l"
+#line 172 "jparse.l"
 {
 			    /* number */
 			    return JSON_NUMBER;
@@ -1424,7 +1428,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 173 "jparse.l"
+#line 177 "jparse.l"
 {
 			    /* null object */
 			    return JSON_NULL;
@@ -1432,7 +1436,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 178 "jparse.l"
+#line 182 "jparse.l"
 {
 			    /* boolean: true */
 			    return JSON_TRUE;
@@ -1440,7 +1444,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 182 "jparse.l"
+#line 186 "jparse.l"
 {
 			    /* boolean: false */
 			    return JSON_FALSE;
@@ -1448,7 +1452,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 187 "jparse.l"
+#line 191 "jparse.l"
 {
 			    /* start of object */
 			    return JSON_OPEN_BRACE;
@@ -1456,7 +1460,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 191 "jparse.l"
+#line 195 "jparse.l"
 {
 			    /* end of object */
 			    return JSON_CLOSE_BRACE;
@@ -1464,7 +1468,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 196 "jparse.l"
+#line 200 "jparse.l"
 {
 			    /* start of array */
 			    return JSON_OPEN_BRACKET;
@@ -1472,7 +1476,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
-#line 200 "jparse.l"
+#line 204 "jparse.l"
 {
 			    /* end of array */
 			    return JSON_CLOSE_BRACKET;
@@ -1480,7 +1484,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
-#line 205 "jparse.l"
+#line 209 "jparse.l"
 {
 			    /* colon or 'equals' */
 			    return JSON_COLON;
@@ -1488,7 +1492,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
-#line 210 "jparse.l"
+#line 214 "jparse.l"
 {
 			    /* comma: name/value pair separator */
 			    return JSON_COMMA;
@@ -1496,19 +1500,43 @@ YY_RULE_SETUP
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
-#line 215 "jparse.l"
+#line 219 "jparse.l"
 {
 			    /* invalid token: any other character */
 			    ugly_error(NULL, "\ninvalid token: 0x%02x = <%c>\n", *ugly_text, *ugly_text);
-			    return JSON_INVALID_TOKEN;
+			    /*
+			     * This is a hack for better error messages with
+			     * invalid tokens. Bison syntax error messages are
+			     * in the form of:
+			     *
+			     *	    syntax error, unexpected <token name>
+			     *	    syntax error, unexpected <token name>, expecting } or JSON_STRING
+			     *
+			     * etc. where <token name> is whatever we return
+			     * here in the lexer actions (e.g.  JSON_STRING or
+			     * in this case literally token) to the parser. But
+			     * the problem is what do we call an invalid token
+			     * without knowing what what the token actually is?
+			     * Thus we call it token so that it will read
+			     * literally as 'unexpected token' which removes any
+			     * ambiguity (it could be read as 'it's unexpected
+			     * in this place but it is valid in other contexts'
+			     * but it's never actually valid: it's a catch all
+			     * for anything that's not valid.
+			     *
+			     * In jparse.y there are some features that would be
+			     * nice to have that would make this much less a
+			     * problem but if they exist I'm unaware of them.
+			     */
+			    return token;
 			}
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
-#line 221 "jparse.l"
+#line 249 "jparse.l"
 YY_FATAL_ERROR( "flex scanner jammed" );
 	YY_BREAK
-#line 1460 "jparse.c"
+#line 1488 "jparse.c"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 
@@ -2668,7 +2696,7 @@ void yyfree (void * ptr )
 
 /* %ok-for-header */
 
-#line 221 "jparse.l"
+#line 249 "jparse.l"
 
 
 /* Section 3: Code that's copied to the generated scanner */

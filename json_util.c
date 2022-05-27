@@ -768,7 +768,7 @@ json_process_floating(struct json_number *item, char const *str, size_t len)
     /* case: just e found, no E */
     } else if (e_found != NULL) {
 
-	/* firewall - search for two e's */
+	/* firewall - search for two 'e's */
 	e = strrchr(str, 'e');
 	if (e_found != e) {
 	    dbg(DBG_HIGH, "%s: floating point numbers cannot have more than one e: <%s>",
@@ -782,7 +782,7 @@ json_process_floating(struct json_number *item, char const *str, size_t len)
     /* case: just E found, no e */
     } else if (cap_e_found != NULL) {
 
-	/* firewall - search for two E's */
+	/* firewall - search for two 'E's */
 	e = strrchr(str, 'E');
 	if (cap_e_found != e) {
 	    dbg(DBG_HIGH, "%s: floating point numbers cannot have more than one E: <%s>",
@@ -2463,8 +2463,8 @@ json_conv_number_str(char const *str, size_t *retlen)
  * given:
  *	ptr	pointer to buffer containing a JSON encoded string
  *	len	length, starting at ptr, of the JSON encoded string
- *	quote	true ==> ignore JSON double quotes, both ptr[0] & ptr[len-1]
- *		must be '"'
+ *	quote	true ==>  ignore JSON double quotes: both ptr[0] & ptr[len-1]
+ *			  must be '"'
  *		false ==> the entire ptr is to be converted
  *
  * returns:
@@ -2472,6 +2472,10 @@ json_conv_number_str(char const *str, size_t *retlen)
  *
  * NOTE: This function will not return on malloc error.
  * NOTE: This function will not return NULL.
+ *
+ * NOTE: We let this function decide whether the string is actually valid
+ * according to the JSON standard so the regex above is for the parser even if
+ * it would theoretically allow invalid JSON strings.
  */
 struct json *
 json_conv_string(char const *ptr, size_t len, bool quote)
@@ -2564,6 +2568,9 @@ json_conv_string(char const *ptr, size_t len, bool quote)
 
     /*
      * determine if decoded string is identical to the original JSON encoded string
+     *
+     * NOTE: We use memcmp() because there might be NUL bytes in the 'char *'
+     * and strcmp() would stop at the first '\0'.
      */
     if (item->as_str_len == item->str_len && memcmp(item->as_str, item->str, item->as_str_len) == 0) {
 	item->same = true;	/* decoded string same an original JSON encoded string (perhaps sans '"'s) */

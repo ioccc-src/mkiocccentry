@@ -199,6 +199,10 @@ struct json_number
  * A JSON string is of the form:
  *
  *	"([^\n"]|\\")*"
+ *
+ * NOTE: We let the conversion function decide whether the string is actually
+ * invalid according to the JSON standard so the regex above is for the parser
+ * even if it allows things in the string that JSON does not allow.
  */
 struct json_string
 {
