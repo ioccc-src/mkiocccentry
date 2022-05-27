@@ -768,7 +768,7 @@ json_process_floating(struct json_number *item, char const *str, size_t len)
     /* case: just e found, no E */
     } else if (e_found != NULL) {
 
-	/* firewall - search for two e's */
+	/* firewall - search for two 'e's */
 	e = strrchr(str, 'e');
 	if (e_found != e) {
 	    dbg(DBG_HIGH, "%s: floating point numbers cannot have more than one e: <%s>",
@@ -782,7 +782,7 @@ json_process_floating(struct json_number *item, char const *str, size_t len)
     /* case: just E found, no e */
     } else if (cap_e_found != NULL) {
 
-	/* firewall - search for two E's */
+	/* firewall - search for two 'E's */
 	e = strrchr(str, 'E');
 	if (cap_e_found != e) {
 	    dbg(DBG_HIGH, "%s: floating point numbers cannot have more than one E: <%s>",
