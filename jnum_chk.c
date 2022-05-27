@@ -152,7 +152,7 @@ main(int argc, char *argv[])
 	/*
 	 * free converted node
 	 */
-	json_free(node);
+	json_free(node, 0);
 	if (node != NULL) {
 	    free(node);
 	    node = NULL;

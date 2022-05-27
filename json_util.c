@@ -1692,6 +1692,7 @@ json_element_type_name(struct json *node)
  *
  * given:
  *	node	pointer to a JSON parser tree node to free
+ *	depth	current tree depth (0 ==> top of tree)
  *	...	extra args are ignored
  *
  * While the ... variable arg are ignored, we need to declare
@@ -1711,7 +1712,7 @@ json_element_type_name(struct json *node)
  * NOTE: This function does nothing if the node type is invalid.
  */
 void
-json_free(struct json *node, ...)
+json_free(struct json *node, int depth, ...)
 {
     va_list ap;		/* variable argument list */
 
@@ -1721,11 +1722,14 @@ json_free(struct json *node, ...)
     if (node == NULL) {
 	return;
     }
+    if (depth < 0) {
+	return;
+    }
 
     /*
      * stdarg variable argument list setup
      */
-    va_start(ap, node);
+    va_start(ap, depth);
 
     /*
      * free internals based in node type
@@ -1884,6 +1888,7 @@ json_free(struct json *node, ...)
  *
  * given:
  *	node	pointer to a JSON parser tree node to free
+ *	depth	current tree depth (0 ==> top of tree)
  *	ap	variable argument list
  *
  * NOTE: This function does nothing if node == NULL.
@@ -1891,7 +1896,7 @@ json_free(struct json *node, ...)
  * NOTE: This function does nothing if the node type is invalid.
  */
 void
-vjson_free(struct json *node, va_list ap)
+vjson_free(struct json *node, int depth, va_list ap)
 {
     /*
      * firewall - nothing to do for a NULL node
@@ -1903,7 +1908,7 @@ vjson_free(struct json *node, va_list ap)
     /*
      * call non-variable argument list function
      */
-    json_free(node, ap);
+    json_free(node, depth, ap);
     return;
 }
 
@@ -1994,7 +1999,7 @@ json_tree_free(struct json *node, int max_depth, ...)
  * NOTE: This function warns but does not do anything if an arg is NULL.
  */
 void
-json_tree_walk(struct json *node, int max_depth, void (*vcallback)(struct json *, va_list), ...)
+json_tree_walk(struct json *node, int max_depth, void (*vcallback)(struct json *, int, va_list), ...)
 {
     va_list ap;		/* variable argument list */
 
@@ -2066,7 +2071,7 @@ json_tree_walk(struct json *node, int max_depth, void (*vcallback)(struct json *
  * NOTE: This function warns but does not do anything if an arg is NULL.
  */
 void
-vjson_tree_walk(struct json *node, int max_depth, int depth, va_list ap, void (*vcallback)(struct json *, va_list))
+vjson_tree_walk(struct json *node, int max_depth, int depth, va_list ap, void (*vcallback)(struct json *, int, va_list))
 {
     int i;
 
@@ -2102,7 +2107,7 @@ vjson_tree_walk(struct json *node, int max_depth, int depth, va_list ap, void (*
     case JTYPE_NULL:	/* JSON element is a null - see struct json_null */
 
 	/* perform function operation on this terminal parse tree node */
-	(*vcallback)(node, ap);
+	(*vcallback)(node, depth, ap);
 	break;
 
     case JTYPE_MEMBER:	/* JSON element is a member */
@@ -2117,7 +2122,7 @@ vjson_tree_walk(struct json *node, int max_depth, int depth, va_list ap, void (*
 	}
 
 	/* finally perform function operation on the parent node */
-	(*vcallback)(node, ap);
+	(*vcallback)(node, depth, ap);
 	break;
 
     case JTYPE_OBJECT:	/* JSON element is a { members } */
@@ -2133,7 +2138,7 @@ vjson_tree_walk(struct json *node, int max_depth, int depth, va_list ap, void (*
 	}
 
 	/* finally perform function operation on the parent node */
-	(*vcallback)(node, ap);
+	(*vcallback)(node, depth, ap);
 	break;
 
     case JTYPE_ARRAY:	/* JSON element is a [ elements ] */
@@ -2149,7 +2154,7 @@ vjson_tree_walk(struct json *node, int max_depth, int depth, va_list ap, void (*
 	}
 
 	/* finally perform function operation on the parent node */
-	(*vcallback)(node, ap);
+	(*vcallback)(node, depth, ap);
 	break;
 
     default:

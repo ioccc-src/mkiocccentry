@@ -149,11 +149,13 @@ extern bool json_dbg(int level, char const *name, const char *fmt, ...) \
 	__attribute__((format(printf, 3, 4)));		/* 3=format 4=params */
 extern bool json_vdbg(int level, char const *name, const char *fmt, va_list ap);
 extern char const *json_element_type_name(struct json *node);
-extern void json_free(struct json *node, ...);
-extern void vjson_free(struct json *node, va_list ap);
+extern void json_free(struct json *node, int depth, ...);
+extern void vjson_free(struct json *node, int depth, va_list ap);
 extern void json_tree_free(struct json *node, int max_depth, ...);
-extern void json_tree_walk(struct json *node, int max_depth, void (*vcallback)(struct json *, va_list), ...);
-extern void vjson_tree_walk(struct json *node, int max_depth, int depth, va_list ap, void (*vcallback)(struct json *, va_list));
+extern void json_tree_walk(struct json *node, int max_depth,
+			   void (*vcallback)(struct json *, int, va_list), ...);
+extern void vjson_tree_walk(struct json *node, int max_depth, int depth, va_list ap,
+			    void (*vcallback)(struct json *, int, va_list));
 extern struct json *json_alloc(enum element_type type);
 extern struct json *json_conv_number(char const *ptr, size_t len);
 extern struct json *json_conv_number_str(char const *str, size_t *retlen);
