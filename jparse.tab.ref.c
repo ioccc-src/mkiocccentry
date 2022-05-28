@@ -2644,16 +2644,11 @@ ugly_error(struct json *node, char const *format, ...)
      * NB This is a (somewhat ugly - but that's perfect for both JSON and bison
      * as noted in the programmer's apology and comments about the prefix ugly_)
      * hack (or maybe a better word is kludge) to show the text that triggered
-     * the error assuming it was a syntax error.
+     * the error assuming it was a syntax error. This is an assumption but we
+     * know that it is called in other cases too e.g. for memory exhaustion.
      *
-     * That is to say we DO assume it's a syntax error. Now we all know that
-     * assuming makes an ass of you (JSON, flex and bison) and (not) me (those
-     * working on the repo and especially the one writing this) and in fact this
-     * function is also called on memory exhaustion so one might argue that this
-     * text is extraneous sometimes.
-     *
-     * But it can be argued that it is still useful because it shows exactly
-     * where it failed.
+     * However this is okay because it's useful to have the text being processed
+     * when the error occurs. Error reporting can still be improved.
      *
      * One of the ways it's a hack or kludge is that we simply append to the
      * generated message:
@@ -2662,7 +2657,11 @@ ugly_error(struct json *node, char const *format, ...)
      *
      * without any foreknowledge of what the message actually is. We do however
      * check that ugly_text is not NULL and *ugly_text is not NUL; if this is
-     * not satisfied then we only append a newline.
+     * not satisfied then we only print a newline. This does mean though that
+     * if it's a NUL byte it won't even be added but it wouldn't be visible
+     * anyway. We could use the fprint_str() function in that case but this
+     * makes it simpler and usually there won't be a NUL byte outside of a
+     * string so this is not really important.
      */
     if (ugly_text != NULL && *ugly_text != '\0')
 	fprintf(stderr, ": %s\n", ugly_text);
