@@ -2719,8 +2719,8 @@ void yyfree (void * ptr )
  * return:
  *	pointer to a JSON parse tree
  *
- * NOTE: Until the JSON parser is finished this only parses the string (and not
- * necessarily correctly); it does NOT build a parse tree!
+ * NOTE: Until the JSON parser is finished this only parses the string. Parsing
+ * should be correct but currently there is no parse tree generated.
  *
  * NOTE: The reason this is in the scanner and not the parser is because
  * UGLY__BUFFER_STATE is part of the scanner and not the parser. There might be
@@ -2730,7 +2730,10 @@ void yyfree (void * ptr )
  * NOTE: This function only warns on error. The reason for this is because more
  * than one string and/or file can then be verified during testing. Once the
  * parser is complete it will use jerr(). Note that this refers to errors
- * unspecific to the parser.
+ * unspecific to the parser. On the other hand it might be that some of these
+ * should be errors since conversion errors in the parser are fatal errors.
+ * Perhaps instead warn() should be instead werr() which issues an error message
+ * but does not make it fatal.
  */
 struct json *
 parse_json(char const *ptr, size_t len, bool *is_valid, FILE *dbg_stream)
@@ -2885,8 +2888,10 @@ parse_json(char const *ptr, size_t len, bool *is_valid, FILE *dbg_stream)
  * NOTE: This function only warns on error. The reason for this is because more
  * than one string and/or file can then be verified during testing. Once the
  * parser is complete it will use jerr(). Note that this refers to errors
- * unspecific to the parser.
- *
+ * unspecific to the parser. On the other hand it might be that some of these
+ * should be errors since conversion errors in the parser are fatal errors.
+ * Perhaps instead warn() should be instead werr() which issues an error message
+ * but does not make it fatal.
  */
 struct json *
 parse_json_file(char const *filename, bool *is_valid, FILE *dbg_stream)
