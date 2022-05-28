@@ -1503,7 +1503,7 @@ YY_RULE_SETUP
 #line 219 "jparse.l"
 {
 			    /* invalid token: any other character */
-			    ugly_error(NULL, "\ninvalid token: 0x%02x = <%c>\n", *ugly_text, *ugly_text);
+			    fprintf(stderr, "\ninvalid token: 0x%02x = <%c>\n", *ugly_text, *ugly_text);
 			    /*
 			     * This is a hack for better error messages with
 			     * invalid tokens. Bison syntax error messages are
@@ -1524,19 +1524,21 @@ YY_RULE_SETUP
 			     * but it's never actually valid: it's a catch all
 			     * for anything that's not valid.
 			     *
-			     * In jparse.y there are some features that would be
-			     * nice to have that would make this much less a
-			     * problem but if they exist I'm unaware of them.
+			     * We also make use of ugly_text in ugly_error()
+			     * which makes for a somewhat reasonable error
+			     * message even when ugly_error() is called from
+			     * memory exhaustion. See that function and the
+			     * comments for '%token token' in jparse.y.
 			     */
 			    return token;
 			}
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
-#line 249 "jparse.l"
+#line 251 "jparse.l"
 YY_FATAL_ERROR( "flex scanner jammed" );
 	YY_BREAK
-#line 1488 "jparse.c"
+#line 1490 "jparse.c"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 
@@ -2696,7 +2698,7 @@ void yyfree (void * ptr )
 
 /* %ok-for-header */
 
-#line 249 "jparse.l"
+#line 251 "jparse.l"
 
 
 /* Section 3: Code that's copied to the generated scanner */

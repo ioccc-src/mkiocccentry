@@ -218,7 +218,7 @@ JSON_COMMA		","
 
 .			{
 			    /* invalid token: any other character */
-			    ugly_error(NULL, "\ninvalid token: 0x%02x = <%c>\n", *ugly_text, *ugly_text);
+			    fprintf(stderr, "\ninvalid token: 0x%02x = <%c>\n", *ugly_text, *ugly_text);
 			    /*
 			     * This is a hack for better error messages with
 			     * invalid tokens. Bison syntax error messages are
@@ -239,9 +239,11 @@ JSON_COMMA		","
 			     * but it's never actually valid: it's a catch all
 			     * for anything that's not valid.
 			     *
-			     * In jparse.y there are some features that would be
-			     * nice to have that would make this much less a
-			     * problem but if they exist I'm unaware of them.
+			     * We also make use of ugly_text in ugly_error()
+			     * which makes for a somewhat reasonable error
+			     * message even when ugly_error() is called from
+			     * memory exhaustion. See that function and the
+			     * comments for '%token token' in jparse.y.
 			     */
 			    return token;
 			}

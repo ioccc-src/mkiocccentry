@@ -154,11 +154,9 @@ int ugly_debug = 1;
  * in other contexts' but it's never actually valid: it's a catch all for
  * anything that's not valid.
  *
- * Now if bison has an actual reference to the token value itself this would be
- * ideal to pass to the error message but if it does I'm unaware of it and
- * unfortunately UGLY_ABORT is specific to bison and not in flex. That being
- * said it does have a feature for more custom error functions and this can be
- * looked into.
+ * Then as a hack (or maybe kludge) in ugly_error() we refer to ugly_text in a
+ * way that shows what the token is that caused the failure (whether it's a
+ * syntax error or something else).
  */
 %token token
 
@@ -890,9 +888,37 @@ ugly_error(struct json *node, char const *format, ...)
      * jerr(). It's possible that the function jerr() will change as well but
      * this will be decided after the parser is complete.
      */
-    fprintf(stderr, "JSON parser error on line %d: ", ugly_lineno);
+    fprintf(stderr, "\nJSON parser error on line %d: ", ugly_lineno);
     vfprintf(stderr, format, ap);
-    fprintf(stderr, "\n");
+
+    /*
+     * NB This is a (somewhat ugly - but that's perfect for both JSON and bison
+     * as noted in the programmer's apology and comments about the prefix ugly_)
+     * hack (or maybe a better word is kludge) to show the text that triggered
+     * the error assuming it was a syntax error.
+     *
+     * That is to say we DO assume it's a syntax error. Now we all know that
+     * assuming makes an ass of you (JSON, flex and bison) and (not) me (those
+     * working on the repo and especially the one writing this) and in fact this
+     * function is also called on memory exhaustion so one might argue that this
+     * text is extraneous sometimes.
+     *
+     * But it can be argued that it is still useful because it shows exactly
+     * where it failed.
+     *
+     * One of the ways it's a hack or kludge is that we simply append to the
+     * generated message:
+     *
+     *	    ": %s\n", ugly_text
+     *
+     * without any foreknowledge of what the message actually is. We do however
+     * check that ugly_text is not NULL and *ugly_text is not NUL; if this is
+     * not satisfied then we only append a newline.
+     */
+    if (ugly_text != NULL && *ugly_text != '\0')
+	fprintf(stderr, ": %s\n", ugly_text);
+    else
+	fprintf(stderr, "\n");
 
     /*
      * stdarg variable argument list clean up
