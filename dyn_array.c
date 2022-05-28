@@ -449,7 +449,7 @@ dyn_array_append_set(struct dyn_array *array, void *array_to_add_p, intmax_t cou
  * onto the end of the dynamic array. We will grow the dynamic array if all allocated values are used.
  *
  * We will take the contents of the other dynamic array and concatenate its values onto
- * the 1st dynamic array.  The contents of the other dynamic array will be duplicated onto the
+ * the first dynamic array.  The contents of the other dynamic array will be duplicated onto the
  * first dynamic array.
  *
  * This function does nothing if the other dynamic array is empty.
@@ -482,19 +482,19 @@ dyn_array_concat_array(struct dyn_array *array, struct dyn_array *other)
      * Check preconditions (firewall) - sanity check array
      */
     if (array->data == NULL) {
-	err(77, __func__, "data in 1st dynamic array is NULL");
+	err(77, __func__, "data in first dynamic array is NULL");
 	not_reached();
     }
     if (array->elm_size <= 0) {
-	err(78, __func__, "elm_size in 1st dynamic array must be > 0: %ju", (uintmax_t)array->elm_size);
+	err(78, __func__, "elm_size in first dynamic array must be > 0: %ju", (uintmax_t)array->elm_size);
 	not_reached();
     }
     if (array->chunk <= 0) {
-	err(79, __func__, "chunk in 1st dynamic array must be > 0: %jd", array->chunk);
+	err(79, __func__, "chunk in first dynamic array must be > 0: %jd", array->chunk);
 	not_reached();
     }
     if (array->count > array->allocated) {
-	err(80, __func__, "count: %jd in 1st dynamic array must be <= allocated: %jd",
+	err(80, __func__, "count: %jd in first dynamic array must be <= allocated: %jd",
 			  array->count, array->allocated);
 	not_reached();
     }
@@ -503,19 +503,19 @@ dyn_array_concat_array(struct dyn_array *array, struct dyn_array *other)
      * Check preconditions (firewall) - sanity check other
      */
     if (other->data == NULL) {
-	err(81, __func__, "data in 2nd dynamic array is NULL");
+	err(81, __func__, "data in second dynamic array is NULL");
 	not_reached();
     }
     if (other->elm_size <= 0) {
-	err(82, __func__, "elm_size in 2nd dynamic array must be > 0: %ju", (uintmax_t)other->elm_size);
+	err(82, __func__, "elm_size in second dynamic array must be > 0: %ju", (uintmax_t)other->elm_size);
 	not_reached();
     }
     if (other->chunk <= 0) {
-	err(83, __func__, "chunk in 2nd dynamic array must be > 0: %jd", other->chunk);
+	err(83, __func__, "chunk in second dynamic array must be > 0: %jd", other->chunk);
 	not_reached();
     }
     if (other->count > other->allocated) {
-	err(84, __func__, "count: %jd in 2nd dynamic array must be <= allocated: %jd",
+	err(84, __func__, "count: %jd in second dynamic array must be <= allocated: %jd",
 			  other->count, other->allocated);
 	not_reached();
     }
