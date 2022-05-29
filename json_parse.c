@@ -67,8 +67,11 @@
  *
  * XXX - this table assumes we process on a byte basis - XXX
  * XXX - consider an approach that allowed for smaller UTF-8 non-ASCII encoding - XXX
+ *
+ * NOTE: JSON_BYTE_VALUES is #defined as (BYTE_VALUES) (see util.h) and this table
+ * MUST be 256 elements long.
  */
-struct encode jenc[BYTE_VALUES] = {
+struct encode jenc[JSON_BYTE_VALUES] = {
     /* \x00 - \x0f */
     {0x00, 6, "\\u0000"}, {0x01, 6, "\\u0001"}, {0x02, 6, "\\u0002"}, {0x03, 6, "\\u0003"},
     {0x04, 6, "\\u0004"}, {0x05, 6, "\\u0005"}, {0x06, 6, "\\u0006"}, {0x07, 6, "\\u0007"},
@@ -404,16 +407,16 @@ jencchk(void)
     /*
      * assert: table must be 256 elements long
      */
-    if (sizeof(jenc)/sizeof(jenc[0]) != BYTE_VALUES) {
+    if (sizeof(jenc)/sizeof(jenc[0]) != JSON_BYTE_VALUES) {
 	err(101, __func__, "jenc table as %ju elements instead of %d",
-			   (uintmax_t)sizeof(jenc)/sizeof(jenc[0]), BYTE_VALUES);
+			   (uintmax_t)sizeof(jenc)/sizeof(jenc[0]), JSON_BYTE_VALUES);
 	not_reached();
     }
 
     /*
      * assert: byte must be an index from 0 to 256
      */
-    for (i=0; i < BYTE_VALUES; ++i) {
+    for (i=0; i < JSON_BYTE_VALUES; ++i) {
 	if (jenc[i].byte != i) {
 	    err(102, __func__, "jenc[0x%02x].byte: %d != %d", i, jenc[i].byte, i);
 	    not_reached();
@@ -423,7 +426,7 @@ jencchk(void)
     /*
      * assert: enc string must be non-NULL
      */
-    for (i=0; i < BYTE_VALUES; ++i) {
+    for (i=0; i < JSON_BYTE_VALUES; ++i) {
 	if (jenc[i].enc == NULL) {
 	    err(103, __func__, "jenc[0x%02x].enc == NULL", i);
 	    not_reached();
@@ -433,7 +436,7 @@ jencchk(void)
     /*
      * assert: length of enc string must match len
      */
-    for (i=0; i < BYTE_VALUES; ++i) {
+    for (i=0; i < JSON_BYTE_VALUES; ++i) {
 	if (strlen(jenc[i].enc) != jenc[i].len) {
 	    err(104, __func__, "jenc[0x%02x].enc length: %ju != jenc[0x%02x].len: %ju",
 			       i, (uintmax_t)strlen(jenc[i].enc),
@@ -806,7 +809,7 @@ jencchk(void)
      * special test for encoding a NUL byte
      */
     dbg(DBG_VVVHIGH, "testing json_encode(0x00, 1, *mlen)");
-    memset(str, 0, sizeof(str));    /* clear all bytes in str, including the final \0 */
+    memset(str, 0, sizeof(str));    /* clear all bytes in str, including the final '\0' */
     mstr = json_encode(str, 1,  &mlen, false);
     if (mstr == NULL) {
 	err(153, __func__, "json_encode(0x00, 1, *mlen: %ju) == NULL", (uintmax_t)mlen);
@@ -831,7 +834,7 @@ jencchk(void)
     /*
      * finally try to encode every possible string with a single non-NUL character
      */
-    for (i=1; i < BYTE_VALUES; ++i) {
+    for (i=1; i < JSON_BYTE_VALUES; ++i) {
 
 	/*
 	 * test JSON encoding
