@@ -85,6 +85,7 @@ json_putc(uint8_t const c, FILE *stream)
     /*
      * write JSON encoding to stream
      */
+    errno = 0;	    /* pre-clear errno for warnp */
     ret = fprintf(stream, "%s", jenc[c].enc);
     if (ret <= 0) {
 	warnp(__func__, "fprintf #1 error");
@@ -163,7 +164,7 @@ json_fprintf_str(FILE *stream, char const *str)
      */
     for (p=str; *p != '\0'; ++p) {
 	if (json_putc(*p, stream) != true) {
-	    warnp(__func__, "json_putc #0 error");
+	    warn(__func__, "json_putc #0 error");
 	    return false;
 	}
     }
@@ -225,7 +226,7 @@ json_fprintf_value_string(FILE *stream, char const *lead, char const *name, char
     errno = 0;			/* pre-clear errno for warnp() */
     ret = fprintf(stream, "%s", lead);
     if (ret < 0) { /* compare < 0 only in case lead is an empty string */
-	warn(__func__, "fprintf printing lead");
+	warnp(__func__, "fprintf printing lead");
 	return false;
     }
 
@@ -243,7 +244,7 @@ json_fprintf_value_string(FILE *stream, char const *lead, char const *name, char
     errno = 0;			/* pre-clear errno for warnp() */
     ret = fprintf(stream, "%s", middle);
     if (ret < 0) { /* compare < 0 only in case middle is an empty string */
-	warn(__func__, "fprintf printing middle");
+	warnp(__func__, "fprintf printing middle");
 	return false;
     }
 
@@ -261,7 +262,7 @@ json_fprintf_value_string(FILE *stream, char const *lead, char const *name, char
     errno = 0;			/* pre-clear errno for warnp() */
     ret = fprintf(stream, "%s", tail);
     if (ret < 0) { /* compare < 0 only in case tail is an empty string */
-	warn(__func__, "fprintf printing end of line");
+	warnp(__func__, "fprintf printing end of line");
 	return false;
     }
     return true;

@@ -1,4 +1,4 @@
-.TH jauthchk 1 "16 March 2022" "jauthchk" "IOCCC tools"
+.TH jauthchk 1 "29 May 2022" "jauthchk" "IOCCC tools"
 .SH NAME
 jauthchk \- IOCCC tool to validate .author.json file found within an entry directory
 .SH SYNOPSIS
@@ -52,11 +52,32 @@ Header file for the \fBjauthchk\fP tool.
 .RE
 \fIjson_parse.h\fP
 .RS
-Header file with JSON data and function prototypes.
+JSON parser support code header file.
 .RE
 \fIjson_parse.c\fP
 .RS
-Source file with JSON data and function definitions.
+JSON parser support code source code.
+.RE
+\fIjson_chk.h\fP
+.RS
+\fBjinfochk\fP and \fBjauthchk\fP support header file.
+.RE
+\fIjson_chk.c\fP
+.RS
+\fBjinfochk\fP and \fBjauthchk\fP support source code.
 .RE
 .SH BUGS
-This tool is not yet finished so expect issues with it.
+This tool is not finished yet; it depends on the completion of the JSON parser.
+.SH EXAMPLES
+.PP
+.nf
+Run the tool on the \fB.author.json\fP file \fItest_work/test-0/.author.json\fP:
+
+.RS
+\fB
+ ./jauthchk test_work/test-0/.author.json\fP
+.fi
+.RE
+.SH SEE ALSO
+.PP
+\fBmkiocccentry(1)\fP, \fBjinfochk(1)\fP and \fBjparse(1)\fP.

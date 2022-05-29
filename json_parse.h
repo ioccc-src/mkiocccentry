@@ -35,6 +35,11 @@
  */
 #include "util.h"
 
+/*
+ * definitions
+ */
+#define JSON_BYTE_VALUES (BYTE_VALUES) /* to make the purpose clearer we have the JSON_ prefix */
+
 
 /*
  * JSON encoding of an octet in a JSON string

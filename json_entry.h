@@ -39,18 +39,17 @@
 
 
 /*
- * json - json file structs
+ * json_parse - json related structs and definitions
  */
 #include "json_parse.h"
-
 
 /*
  * common json fields - for use in mkiocccentry.
  *
- * NOTE: We don't use the json_field or json_value fields here because this
- * struct is for mkiocccentry which is in control of what's written whereas for
- * jinfochk and jauthchk we don't have control of what's in the file and we
- * can't prove that it wasn't made by hand or some other utility.
+ * NOTE: We don't use the json_field or json_value fields (see json_chk.h) here
+ * because this struct is for mkiocccentry which is in control of what's written
+ * whereas for jinfochk and jauthchk we don't have control of what's in the file
+ * and we can't prove that it wasn't made by hand or some other utility.
  */
 struct json_common
 {

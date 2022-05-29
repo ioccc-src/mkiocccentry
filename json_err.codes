@@ -73,7 +73,7 @@
 ###
 
 # program: jchk check_common_json_fields_table
-JSON[0001]: __FILE__: %d: found JTYPE_EOT element with non NULL name '%s' location %ju in common_json_fields table; fix table and recompile
+JSON[0001]: __FILE__: %d: found JTYPE_UNSET element with non NULL name '%s' location %ju in common_json_fields table; fix table and recompile
 
 # program: jchk check_common_json_fields_table
 JSON[0002]: __FILE__: %d: found invalid data_type in (common|info|author)_json_fields table location %ju; fix table and recompile
