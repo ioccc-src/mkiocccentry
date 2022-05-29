@@ -557,9 +557,9 @@ static const yytype_int8 yytranslate[] =
 /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_int16 yyrline[] =
 {
-       0,   185,   185,   213,   239,   265,   291,   317,   342,   367,
-     394,   420,   445,   471,   505,   536,   562,   587,   613,   646,
-     674,   701
+       0,   183,   183,   211,   237,   263,   289,   315,   340,   365,
+     392,   418,   443,   469,   503,   534,   560,   585,   611,   644,
+     672,   699
 };
 #endif
 
@@ -1672,7 +1672,7 @@ yyreduce:
     switch (yyn)
       {
   case 2: /* json: json_element  */
-#line 186 "jparse.y"
+#line 184 "jparse.y"
     {
 	/*
 	 * $$ = $json
@@ -1700,7 +1700,7 @@ yyreduce:
     break;
 
   case 3: /* json_value: json_object  */
-#line 214 "jparse.y"
+#line 212 "jparse.y"
     {
 	/*
 	 * $$ = $json_value
@@ -1728,7 +1728,7 @@ yyreduce:
     break;
 
   case 4: /* json_value: json_array  */
-#line 240 "jparse.y"
+#line 238 "jparse.y"
     {
 	/*
 	 * $$ = $json_value
@@ -1756,7 +1756,7 @@ yyreduce:
     break;
 
   case 5: /* json_value: json_string  */
-#line 266 "jparse.y"
+#line 264 "jparse.y"
     {
 	/*
 	 * $$ = $json_value
@@ -1784,7 +1784,7 @@ yyreduce:
     break;
 
   case 6: /* json_value: json_number  */
-#line 292 "jparse.y"
+#line 290 "jparse.y"
     {
 	/*
 	 * $$ = $json_value
@@ -1812,7 +1812,7 @@ yyreduce:
     break;
 
   case 7: /* json_value: "true"  */
-#line 318 "jparse.y"
+#line 316 "jparse.y"
     {
 	/*
 	 * $$ = $json_value
@@ -1839,7 +1839,7 @@ yyreduce:
     break;
 
   case 8: /* json_value: "false"  */
-#line 343 "jparse.y"
+#line 341 "jparse.y"
     {
 	/*
 	 * $$ = $json_value
@@ -1866,7 +1866,7 @@ yyreduce:
     break;
 
   case 9: /* json_value: "null"  */
-#line 368 "jparse.y"
+#line 366 "jparse.y"
     {
 	/*
 	 * $$ = $json_value
@@ -1893,7 +1893,7 @@ yyreduce:
     break;
 
   case 10: /* json_object: "{" json_members "}"  */
-#line 395 "jparse.y"
+#line 393 "jparse.y"
     {
 	/*
 	 * $$ = $json_object
@@ -1921,7 +1921,7 @@ yyreduce:
     break;
 
   case 11: /* json_object: "{" "}"  */
-#line 421 "jparse.y"
+#line 419 "jparse.y"
     {
 	/*
 	 * $$ = $json_object
@@ -1946,7 +1946,7 @@ yyreduce:
     break;
 
   case 12: /* json_members: json_member  */
-#line 446 "jparse.y"
+#line 444 "jparse.y"
     {
 	/*
 	 * $$ = $json_members
@@ -1974,7 +1974,7 @@ yyreduce:
     break;
 
   case 13: /* json_members: json_members "," json_member  */
-#line 472 "jparse.y"
+#line 470 "jparse.y"
     {
 	/*
 	 * $$ = $json_members
@@ -2008,7 +2008,7 @@ yyreduce:
     break;
 
   case 14: /* json_member: json_string ":" json_element  */
-#line 506 "jparse.y"
+#line 504 "jparse.y"
     {
 	/*
 	 * $$ = $json_member
@@ -2039,7 +2039,7 @@ yyreduce:
     break;
 
   case 15: /* json_array: "[" json_elements "]"  */
-#line 537 "jparse.y"
+#line 535 "jparse.y"
     {
 	/*
 	 * $$ = $json_array
@@ -2067,7 +2067,7 @@ yyreduce:
     break;
 
   case 16: /* json_array: "[" "]"  */
-#line 563 "jparse.y"
+#line 561 "jparse.y"
     {
 	/*
 	 * $$ = $json_array
@@ -2092,7 +2092,7 @@ yyreduce:
     break;
 
   case 17: /* json_elements: json_element  */
-#line 588 "jparse.y"
+#line 586 "jparse.y"
     {
 	/*
 	 * $$ = $json_elements
@@ -2120,7 +2120,7 @@ yyreduce:
     break;
 
   case 18: /* json_elements: json_elements "," json_element  */
-#line 614 "jparse.y"
+#line 612 "jparse.y"
     {
 	/*
 	 * $$ = $json_elements
@@ -2153,7 +2153,7 @@ yyreduce:
     break;
 
   case 19: /* json_element: json_value  */
-#line 647 "jparse.y"
+#line 645 "jparse.y"
     {
 	/*
 	 * $$ = $json_element
@@ -2181,7 +2181,7 @@ yyreduce:
     break;
 
   case 20: /* json_string: JSON_STRING  */
-#line 675 "jparse.y"
+#line 673 "jparse.y"
     {
 	/*
 	 * $$ = $json_string
@@ -2208,7 +2208,7 @@ yyreduce:
     break;
 
   case 21: /* json_number: JSON_NUMBER  */
-#line 702 "jparse.y"
+#line 700 "jparse.y"
     {
 	/*
 	 * $$ = $json_number
@@ -2470,7 +2470,7 @@ yyreturnlab:
   return yyresult;
 }
 
-#line 727 "jparse.y"
+#line 725 "jparse.y"
 
 
 
@@ -2637,9 +2637,36 @@ ugly_error(struct json *node, char const *format, ...)
      * jerr(). It's possible that the function jerr() will change as well but
      * this will be decided after the parser is complete.
      */
-    fprintf(stderr, "JSON parser error on line %d: ", ugly_lineno);
+    fprintf(stderr, "\nJSON parser error on line %d: ", ugly_lineno);
     vfprintf(stderr, format, ap);
-    fprintf(stderr, "\n");
+
+    /*
+     * NB This is a (somewhat ugly - but that's perfect for both JSON and bison
+     * as noted in the programmer's apology and comments about the prefix ugly_)
+     * hack (or maybe a better word is kludge) to show the text that triggered
+     * the error assuming it was a syntax error. This is an assumption but we
+     * know that it is called in other cases too e.g. for memory exhaustion.
+     *
+     * However this is okay because it's useful to have the text being processed
+     * when the error occurs. Error reporting can still be improved.
+     *
+     * One of the ways it's a hack or kludge is that we simply append to the
+     * generated message:
+     *
+     *	    ": %s\n", ugly_text
+     *
+     * without any foreknowledge of what the message actually is. We do however
+     * check that ugly_text is not NULL and *ugly_text is not NUL; if this is
+     * not satisfied then we only print a newline. This does mean though that
+     * if it's a NUL byte it won't even be added but it wouldn't be visible
+     * anyway. We could use the fprint_str() function in that case but this
+     * makes it simpler and usually there won't be a NUL byte outside of a
+     * string so this is not really important.
+     */
+    if (ugly_text != NULL && *ugly_text != '\0')
+	fprintf(stderr, ": %s\n", ugly_text);
+    else
+	fprintf(stderr, "\n");
 
     /*
      * stdarg variable argument list clean up

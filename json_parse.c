@@ -286,7 +286,7 @@ json_encode(char const *ptr, size_t len, size_t *retlen, bool skip_quote)
 	i = 1;	/* start encoding on the next byte beyond the " */
 	--len;	/* do not encode the last byte */
     } else {
-	i = 0;	/* start encoding at the 1st byte */
+	i = 0;	/* start encoding at the first byte */
     }
 
     /*

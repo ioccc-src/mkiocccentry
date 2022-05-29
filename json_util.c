@@ -680,7 +680,7 @@ json_process_floating(struct json_number *item, char const *str, size_t len)
     char *endptr;			/* first invalid character or str */
     char *e_found = NULL;		/* strchr() search for e */
     char *cap_e_found = NULL;		/* strchr() search for E */
-    char *e = NULL;			/* strrchr() search for 2nd e or E */
+    char *e = NULL;			/* strrchr() search for second e or E */
     size_t str_len = 0;			/* length as a C string, of str */
 
     /*

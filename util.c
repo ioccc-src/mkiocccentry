@@ -645,7 +645,7 @@ cmdprintf(char const *fmt, ...)
 char *
 vcmdprintf(char const *fmt, va_list ap)
 {
-    va_list ap2;		/* copy of original va_list for 1st and 2nd pass */
+    va_list ap2;		/* copy of original va_list for first and second pass */
     size_t size = 0;
     char const *next;
     char const *p;
@@ -665,7 +665,7 @@ vcmdprintf(char const *fmt, va_list ap)
     }
 
     /*
-     * copy va_list for 1st pass
+     * copy va_list for first pass
      */
     va_copy(ap2, ap);
 
@@ -703,7 +703,7 @@ vcmdprintf(char const *fmt, va_list ap)
     va_end(ap2);
 
     /*
-     * copy va_list for 2nd pass
+     * copy va_list for second pass
      */
     va_copy(ap2, ap);
 

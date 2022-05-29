@@ -218,7 +218,7 @@ JSON_COMMA		","
 
 .			{
 			    /* invalid token: any other character */
-			    ugly_error(NULL, "\ninvalid token: 0x%02x = <%c>\n", *ugly_text, *ugly_text);
+			    fprintf(stderr, "\ninvalid token: 0x%02x = <%c>\n", *ugly_text, *ugly_text);
 			    /*
 			     * This is a hack for better error messages with
 			     * invalid tokens. Bison syntax error messages are
@@ -239,9 +239,11 @@ JSON_COMMA		","
 			     * but it's never actually valid: it's a catch all
 			     * for anything that's not valid.
 			     *
-			     * In jparse.y there are some features that would be
-			     * nice to have that would make this much less a
-			     * problem but if they exist I'm unaware of them.
+			     * We also make use of ugly_text in ugly_error()
+			     * which makes for a somewhat reasonable error
+			     * message even when ugly_error() is called from
+			     * memory exhaustion. See that function and the
+			     * comments for '%token token' in jparse.y.
 			     */
 			    return token;
 			}
@@ -266,8 +268,8 @@ JSON_COMMA		","
  * return:
  *	pointer to a JSON parse tree
  *
- * NOTE: Until the JSON parser is finished this only parses the string (and not
- * necessarily correctly); it does NOT build a parse tree!
+ * NOTE: Until the JSON parser is finished this only parses the string. Parsing
+ * should be correct but currently there is no parse tree generated.
  *
  * NOTE: The reason this is in the scanner and not the parser is because
  * UGLY__BUFFER_STATE is part of the scanner and not the parser. There might be
@@ -277,7 +279,10 @@ JSON_COMMA		","
  * NOTE: This function only warns on error. The reason for this is because more
  * than one string and/or file can then be verified during testing. Once the
  * parser is complete it will use jerr(). Note that this refers to errors
- * unspecific to the parser.
+ * unspecific to the parser. On the other hand it might be that some of these
+ * should be errors since conversion errors in the parser are fatal errors.
+ * Perhaps instead warn() should be instead werr() which issues an error message
+ * but does not make it fatal.
  */
 struct json *
 parse_json(char const *ptr, size_t len, bool *is_valid, FILE *dbg_stream)
@@ -432,8 +437,10 @@ parse_json(char const *ptr, size_t len, bool *is_valid, FILE *dbg_stream)
  * NOTE: This function only warns on error. The reason for this is because more
  * than one string and/or file can then be verified during testing. Once the
  * parser is complete it will use jerr(). Note that this refers to errors
- * unspecific to the parser.
- *
+ * unspecific to the parser. On the other hand it might be that some of these
+ * should be errors since conversion errors in the parser are fatal errors.
+ * Perhaps instead warn() should be instead werr() which issues an error message
+ * but does not make it fatal.
  */
 struct json *
 parse_json_file(char const *filename, bool *is_valid, FILE *dbg_stream)
