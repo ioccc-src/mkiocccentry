@@ -1,4 +1,4 @@
-.TH jinfochk 1 "16 March 2022" "jinfochk" "IOCCC tools"
+.TH jinfochk 1 "29 May 2022" "jinfochk" "IOCCC tools"
 .SH NAME
 jinfochk \- IOCCC tool to validate .info.json file found within an entry directory
 .SH SYNOPSIS
@@ -51,15 +51,23 @@ Header file for the \fBjinfochk\fP tool.
 .RE
 \fIjson_parse.h\fP
 .RS
-Header file with JSON data and function prototypes.
+JSON parser support code header file.
 .RE
 \fIjson_parse.c\fP
 .RS
-Source file with JSON data and function definitions.
+JSON parser support code source code.
+.RE
+\fIjson_chk.h\fP
+.RS
+\fBjinfochk\fP and \fBjauthchk\fP support header file.
+.RE
+\fIjson_chk.c\fP
+.RS
+\fBjinfochk\fP and \fBjauthchk\fP support source code.
 .RE
 .SH BUGS
 .PP
-This tool is not yet finished so expect issues with it.
+This tool is not finished yet; it depends on the completion of the JSON parser.
 .SH EXAMPLES
 .PP
 .nf
@@ -70,3 +78,6 @@ Run the tool on the \fB.info.json\fP file \fItest_work/test-0/.info.json\fP:
  ./jinfochk test_work/test-0/.info.json\fP
 .fi
 .RE
+.SH SEE ALSO
+.PP
+\fBmkiocccentry(1)\fP, \fBjauthchk(1)\fP and \fBjparse(1)\fP.
