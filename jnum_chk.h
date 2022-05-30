@@ -75,7 +75,7 @@ static const char * const usage_msg =
     "\t-V\t\tprint version string and exit 3\n"
     "\t-q\t\tquiet mode (def: not quiet)\n"
     "\t\t\t    NOTE: -q will also silence msg(), warn(), warnp() if -v 0\n"
-    "\t-S\t\tstrict testing for all struct number elements\n"
+    "\t-S\t\tstrict testing for all struct json_number elements\n"
     "\t\t\t    (def: test only 8, 16, 32, 64 bit signed and unsigned integer types)\n"
     "\t\t\t    (def: test floating point with match to only 1 part in 4194304)\n"
     "\n"
