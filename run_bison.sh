@@ -30,7 +30,7 @@
 # setup
 #
 export USAGE="usage: $0 [-h] [-v level] [-V] [-o] [-b bison] [-l limit_ioccc.sh]
-		        [-g verge] [-p prefix] [-s sorry.h] [-B dir] -- [bison_flags ..]
+		        [-g verge] [-p prefix] [-s sorry.h] [-B dir] -- [bison_flags]
 
     -h		    print help and exit 8
     -v level	    set debug level (def: 0)
@@ -54,7 +54,7 @@ export USAGE="usage: $0 [-h] [-v level] [-V] [-o] [-b bison] [-l limit_ioccc.sh]
 			NOTE: If dir is missing or not searchable, dir is ignored.
 			NOTE: This is ignored if the final arg is NOT bison.
     --		    end of $0 flags
-    bison_flags ..  optional flags to give to bison for the prefix.y argument
+    bison_flags    optional flags to give to bison for the prefix.y argument
 
 Exit codes:
     0    bison output files formed or backup files used instead
