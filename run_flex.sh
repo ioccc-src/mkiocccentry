@@ -54,7 +54,7 @@ export USAGE="usage: $0 [-h] [-v level] [-V] [-o] [-f flex] [-l limit_ioccc.sh]
 			NOTE: If dir is missing or not searchable, dir is ignored.
 			NOTE: This is ignored if the final arg is NOT flex.
     --		    End of $0 flags
-    flex_flags ..   optional flags to give to flex for the prefix.y argument
+    flex_flags      optional flags to give to flex for the prefix.y argument
 
 Exit codes:
     0    flex output files formed or backup files used instead
