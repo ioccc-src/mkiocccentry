@@ -30,7 +30,7 @@
 # setup
 #
 export USAGE="usage: $0 [-h] [-v level] [-V] [-o] [-f flex] [-l limit_ioccc.sh]
-		        [-g verge] [-p prefix] [-s sorry.h] [-F dir] .. -- [flex_flags ..]
+		        [-g verge] [-p prefix] [-s sorry.h] [-F dir] -- [flex_flags ..]
 
     -h              print help and exit 8
     -v level        set debug level (def: 0)

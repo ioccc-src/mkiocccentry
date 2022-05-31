@@ -30,7 +30,7 @@
 # setup
 #
 export USAGE="usage: $0 [-h] [-v level] [-V] [-o] [-b bison] [-l limit_ioccc.sh]
-		        [-g verge] [-p prefix] [-s sorry.h] [-B dir] .. -- [bison_flags ..]
+		        [-g verge] [-p prefix] [-s sorry.h] [-B dir] -- [bison_flags ..]
 
     -h		    print help and exit 8
     -v level	    set debug level (def: 0)
