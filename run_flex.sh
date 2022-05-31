@@ -30,7 +30,7 @@
 # setup
 #
 export USAGE="usage: $0 [-h] [-v level] [-V] [-o] [-f flex] [-l limit_ioccc.sh]
-		        [-g verge] [-p prefix] [-s sorry.h] [-F dir] -- [flex_flags ..]
+		        [-g verge] [-p prefix] [-s sorry.h] [-F dir] -- [flex_flags]
 
     -h              print help and exit 8
     -v level        set debug level (def: 0)
@@ -49,7 +49,7 @@ export USAGE="usage: $0 [-h] [-v level] [-V] [-o] [-f flex] [-l limit_ioccc.sh]
 			NOTE:
     -s sorry.h	    File to prepend to C output (def: sorry.tm.ca.h)
     -F dir          first look for flex in dir (def: look just along \$PATH)
-		        NOTE: Multiple -B dir are allowed.
+		        NOTE: Multiple -F dir are allowed.
 		        NOTE: Search is performed in dir order before the \$PATH path.
 			NOTE: If dir is missing or not searchable, dir is ignored.
 			NOTE: This is ignored if the final arg is NOT flex.
@@ -541,7 +541,7 @@ if [[ $V_FLAG -ge 1 ]]; then
     echo "$0: debug[3]: checking for flex as: $FLEX_BASENAME" 1>&2
 fi
 
-# check -B dirs first
+# check -F dirs first
 #
 export FLEX_PATH=
 for dir in "${FLEX_DIRS[@]}"; do
