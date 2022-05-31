@@ -2,20 +2,23 @@
 /*
  * json_ckk - support jinfochk and jauthchk services
  *
- * "Because sometimes even the IOCCC Judges need some help." :-)
  *
  * This is currently being worked on by:
+ *
+ *	chongo (Landon Curt Noll, http://www.isthe.com/chongo/index.html) /\oo/\
+ *
+ * and
  *
  *	@xexyl
  *	https://xexyl.net		Cody Boone Ferguson
  *	https://ioccc.xexyl.net
  *
- * and
+ * "Because sometimes even the IOCCC Judges need some help." :-)
  *
- *	chongo (Landon Curt Noll, http://www.isthe.com/chongo/index.html) /\oo/\
- *
- * This is very much a work in progress!
+ * This is very much a work in progress! See jparse.h, jparse.l, jparse.y,
+ * json_util.h and json_util.c.
  */
+
 
 
 #include <stdio.h>
