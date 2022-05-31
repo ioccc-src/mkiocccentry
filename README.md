@@ -3,7 +3,7 @@
 *NOTE*: This code is currently under alpha-test.
 
 
-## mkiocccentry
+## `mkiocccentry`
 
 Form an **IOCCC** entry as an XZ compressed tarball file.
 
@@ -13,7 +13,7 @@ For examples and more information, try:
 	    man ./mkiocccentry.1
 
 
-## iocccsize
+## `iocccsize`
 
 The official **IOCCC** entry Rule 2b size tool.
 
@@ -27,7 +27,7 @@ For more information and examples, try:
 	    man ./iocccsize.1
 
 
-## txzchk
+## `txzchk`
 
 The official **IOCCC** tarball validation checker.
 
@@ -46,7 +46,7 @@ For more information and examples, try:
 	    man ./txzchk.1
 
 
-##  fnamchk
+##  `fnamchk`
 
 The official **IOCCC** XZ compressed tarball filename sanity checker tool.
 
@@ -56,7 +56,7 @@ For more information and examples, try:
 	    man ./fnamechk.1
 
 
-##  jinfochk
+##  `jinfochk`
 
 The official **IOCCC** `.info.json` sanity checker tool. Invoked by
 `mkiocccentry` after the `.info.json` file has been created, it will attempt to
@@ -81,7 +81,7 @@ For more information and examples, try:
 	    man ./jinfochk.1
 
 
-##  jauthchk
+##  `jauthchk`
 
 The official **IOCCC** `.author.json` sanity checker tool. Invoked by
 `mkiocccentry` after the `.author.json` file has been created, it will attempt to
@@ -106,7 +106,7 @@ For more information and examples, try:
 	    man ./jauthchk.1
 
 
-##  jparse
+##  `jparse`
 
 The official **IOCCC** `JSON` parser written in C via `flex(1)` and `bison(1)`.
 
@@ -126,4 +126,23 @@ For more information and examples, try:
 
 
 	    man ./jparse.1
+
+
+## `run_bison.sh`
+
+This script attempts to find a recent enough version of `bison(1)` to generate
+code from the `*.y` files in the repo. If it fails and `-o` is passed to the
+script then it is an error; else if it fails and `-o` is not passed to the
+script the backup files will be used instead.
+
+This script is part of the creation of the JSON parser `jparse`.
+
+## `run_flex.sh`
+
+This script attempts to find a recent enough version of `flex(1)` to generate
+code from the `*.l` files in the repo. If it fails and `-o` is passed to the
+script then it is an error; else if it fails and `-o` is not passed to the
+script the backup files will be used instead.
+
+This script is part of the creation of the JSON parser `jparse`.
 
