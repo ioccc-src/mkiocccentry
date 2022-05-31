@@ -198,19 +198,28 @@ SH_TARGETS=limit_ioccc.sh
 
 # man pages
 #
-# Currently we explicitly specify a variable for man page targets as not all
-# targets have a man page but probably all targets should have a man page. When
-# this is done we can change the below two uncommented lines to be just:
+# We explicitly define the man page targets for more than three reasons:
 #
-#   MANPAGES = $(TARGETS:=.1)
+# (0) Currently not all targets have man pages.
+# (1) Some of the targets that have man pages are not actually in the TARGETS
+#     variable. TEST_TARGETS, for example, has utf8_test, which means
+#     utf8_test.1 would be left out. SH_TARGETS has limit_ioccc.sh which means
+#     limit_ioccc.1 would be left out and so on.
+# (2) Even when all targets have man pages if another target is added without
+#     adding a man page make install would fail and even if make install is not
+#     that likely to be used we still don't want it to fail in the case it
+#     actually is used.
+# (3) Along the lines of (2) there are some files that will have man pages
+#     (run_bison.sh and run_flex.sh for two examples) that are not targets at
+#     all but still important parts of the repo so these would be skipped as
+#     well if we directly referred to TARGETS.
 #
-# But until then it must be the next two lines (alternatively we could
-# explicitly specify the man pages but this makes it simpler). When a new man
-# page is written the MAN_TARGETS should have the tool name (without any
-# extension) added to it.  Eventually MAN_TARGETS can be removed entirely and
-# MANPAGES will act on TARGETS.
 MAN_TARGETS = mkiocccentry txzchk fnamchk iocccsize jinfochk jauthchk jstrdecode jstrencode \
 	      verge jparse limit_ioccc utf8_test
+# This is a simpler way to do:
+#
+#   MANPAGES = $(patsubst %,%.1,$(MAN_TARGETS))
+#
 MANPAGES= $(MAN_TARGETS:=.1)
 
 TEST_TARGETS= dbg utf8_test dyn_test
@@ -237,7 +246,7 @@ H_FILES= dbg.h jauthchk.h jinfochk.h json_parse.h jstrdecode.h jstrencode.h limi
 	jnum_gen.h
 # This is a simpler way to do:
 #
-#   DSYMDIRS= $(patsubst %,%.dSYM,$(TARGETS))
+#   DSYMDIRS = $(patsubst %,%.dSYM,$(TARGETS))
 #
 DSYMDIRS= $(TARGETS:=.dSYM)
 SH_FILES= iocccsize_test.sh jstr_test.sh limit_ioccc.sh mkiocccentry_test.sh json_test.sh \
@@ -518,10 +527,6 @@ limit_ioccc.sh: limit_ioccc.h version.h Makefile
 # jparse.tab.ref.c. If it IS specified it is an error.
 #
 # NOTE: The value of RUN_O_FLAG depends on what rule called this rule.
-#
-# NOTE: Even if BISON_FLAGS has -d we specify it here just in case this is
-# ever overridden or is accidentally removed. This is also why we have them
-# _after_ the ${BISON_FLAGS} in the command line as it's required.
 jparse.tab.c jparse.tab.h bison: jparse.y jparse.h sorry.tm.ca.h run_bison.sh limit_ioccc.sh \
 	verge jparse.tab.ref.c jparse.tab.ref.h Makefile
 	./run_bison.sh -b ${BISON_BASENAME} ${BISON_DIRS} -p jparse -v 1 ${RUN_O_FLAG} -- \
@@ -534,11 +539,6 @@ jparse.tab.c jparse.tab.h bison: jparse.y jparse.h sorry.tm.ca.h run_bison.sh li
 # stored in jparse.ref.c. If it IS specified it is an error.
 #
 # NOTE: The value of RUN_O_FLAG depends on what rule called this rule.
-#
-# NOTE: Even if FLEX_FLAGS has -d -8 we specify them here just in case this is
-# ever overridden or is accidentally removed. This is also why we have them
-# _after_ the ${FLEX_FLAGS} in the command line as they're required.
-#
 jparse.c flex: jparse.l jparse.h sorry.tm.ca.h jparse.tab.h run_flex.sh limit_ioccc.sh \
 	       verge jparse.ref.c Makefile
 	./run_flex.sh -f ${FLEX_BASENAME} ${FLEX_DIRS} -p jparse -v 1 ${RUN_O_FLAG} -- \
