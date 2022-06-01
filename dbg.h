@@ -1,6 +1,6 @@
 /* vim: set tabstop=8 softtabstop=4 shiftwidth=4 noexpandtab : */
 /*
- * dbg - debug, warning and error reporting facility
+ * dbg - info, debug, warning, error and usage message facility
  *
  * Copyright (c) 1989,1997,2018-2022 by Landon Curt Noll.  All Rights Reserved.
  *
@@ -42,7 +42,7 @@
 /*
  * definitions
  */
-#define DBG_VERSION "1.11 2022-05-22"		/* format: major.minor YYYY-MM-DD */
+#define DBG_VERSION "2.0 2022-05-30"		/* format: major.minor YYYY-MM-DD */
 
 
 /*
@@ -124,23 +124,21 @@ typedef unsigned char bool;
 #define DBG_DEFAULT (DBG_NONE)	/* default debugging level */
 
 #define FORCED_EXIT (255)	/* exit(255) on bad exit code */
-#define DO_NOT_EXIT (-1)	/* do not let fprintf_usage() exit */
+#define DO_NOT_EXIT (-1)	/* do not let the usage printing function exit */
 
 
 /*
- * global debugging variables
+ * global message control variables
  *
  * NOTE: These variables are initialized to defaults in dbg.c.
  */
-extern int verbosity_level;		/* print debug messages <= verbosity_level */
-extern bool msg_output_allowed;		/* false ==> disable output from msg(), vmsg() */
-extern bool dbg_output_allowed;		/* false ==> disable output from dbg(), vdbg() */
-extern bool warn_output_allowed;	/* false ==> disable output from warn(), vwarn(), warnp(), vwarnp */
-extern bool err_output_allowed;		/* false ==> disable output from err(), verr(), errp(), verrp(), */
-					/*				 werr(), vwerr(), werrp(), vwerrp() */
-extern bool usage_output_allowed;	/* false ==> disable output from fprintf_usage(), vfprintf_usage() */
-extern bool msg_warn_silent;		/* true ==> silence msg(), vmsg(), warn(), vwarn(), */
-					/*				 warnp(), vwarnp() if verbosity_level == 0 */
+extern int verbosity_level;		/* maximum debug level for debug messages */
+extern bool msg_output_allowed;		/* false ==> disable informational messages */
+extern bool dbg_output_allowed;		/* false ==> disable debug messages */
+extern bool warn_output_allowed;	/* false ==> disable warning messages */
+extern bool err_output_allowed;		/* false ==> disable error messages */
+extern bool usage_output_allowed;	/* false ==> disable usage messages */
+extern bool msg_warn_silent;		/* true ==> silence info & warnings if verbosity_level <= 0 */
 
 
 /*
@@ -149,46 +147,83 @@ extern bool msg_warn_silent;		/* true ==> silence msg(), vmsg(), warn(), vwarn()
 extern void msg(const char *fmt, ...) \
 	__attribute__((format(printf, 1, 2)));		/* 1=format 2=params */
 extern void vmsg(char const *fmt, va_list ap);
+extern void fmsg(FILE *stream, const char *fmt, ...) \
+	__attribute__((format(printf, 2, 3)));		/* 2=format 3=params */
+extern void vfmsg(FILE *stream, char const *fmt, va_list ap);
 
 extern void dbg(int level, const char *fmt, ...) \
 	__attribute__((format(printf, 2, 3)));		/* 2=format 3=params */
 extern void vdbg(int level, char const *fmt, va_list ap);
+extern void fdbg(FILE *stream, int level, const char *fmt, ...) \
+	__attribute__((format(printf, 3, 4)));		/* 3=format 4=params */
+extern void vfdbg(FILE *stream, int level, char const *fmt, va_list ap);
 
 extern void warn(const char *name, const char *fmt, ...) \
 	__attribute__((format(printf, 2, 3)));		/* 2=format 3=params */
 extern void vwarn(char const *name, char const *fmt, va_list ap);
+extern void fwarn(FILE *stream, const char *name, const char *fmt, ...) \
+	__attribute__((format(printf, 3, 4)));		/* 3=format 4=params */
+extern void vfwarn(FILE *stream, char const *name, char const *fmt, va_list ap);
 
 extern void warnp(const char *name, const char *fmt, ...) \
 	__attribute__((format(printf, 2, 3)));		/* 2=format 3=params */
 extern void vwarnp(char const *name, char const *fmt, va_list ap);
+extern void fwarnp(FILE *stream, const char *name, const char *fmt, ...) \
+	__attribute__((format(printf, 3, 4)));		/* 3=format 4=params */
+extern void vfwarnp(FILE *stream, char const *name, char const *fmt, va_list ap);
 
 extern void err(int exitcode, const char *name, const char *fmt, ...) \
 	__attribute__((noreturn)) __attribute__((format(printf, 3, 4))); /* 3=format 4=params */
 extern void verr(int exitcode, char const *name, char const *fmt, va_list ap);
+extern void ferr(int exitcode, FILE *stream, const char *name, const char *fmt, ...) \
+	__attribute__((noreturn)) __attribute__((format(printf, 4, 5))); /* 4=format 5=params */
+extern void vferr(int exitcode, FILE *stream, char const *name, char const *fmt, va_list ap);
 
 extern void errp(int exitcode, const char *name, const char *fmt, ...) \
 	__attribute__((noreturn)) __attribute__((format(printf, 3, 4))); /* 3=format 4=params */
 extern void verrp(int exitcode, char const *name, char const *fmt, va_list ap);
+extern void ferrp(int exitcode, FILE *stream, const char *name, const char *fmt, ...) \
+	__attribute__((noreturn)) __attribute__((format(printf, 4, 5))); /* 4=format 5=params */
+extern void vferrp(int exitcode, FILE *stream, char const *name, char const *fmt, va_list ap);
 
 extern void werr(int error_code, const char *name, const char *fmt, ...) \
-	__attribute__((format(printf, 3, 4))); /* 3=format 4=params */
+	__attribute__((format(printf, 3, 4)));		/* 3=format 4=params */
 extern void vwerr(int error_code, char const *name, char const *fmt, va_list ap);
+extern void fwerr(int error_code, FILE *stream, const char *name, const char *fmt, ...) \
+	__attribute__((format(printf, 4, 5)));		/* 4=format 5=params */
+extern void vfwerr(int error_code, FILE *stream, char const *name, char const *fmt, va_list ap);
 
 extern void werrp(int error_code, const char *name, const char *fmt, ...) \
-	__attribute__((format(printf, 3, 4))); /* 3=format 4=params */
+	__attribute__((format(printf, 3, 4)));		/* 3=format 4=params */
 extern void vwerrp(int error_code, char const *name, char const *fmt, va_list ap);
+extern void fwerrp(int error_code, FILE *stream, const char *name, const char *fmt, ...) \
+	__attribute__((format(printf, 4, 5)));		/* 4=format 5=params */
+extern void vfwerrp(int error_code, FILE *stream, char const *name, char const *fmt, va_list ap);
 
+extern void warn_or_err(int exitcode, const char *name, bool warning, const char *fmt, ...) \
+	__attribute__((format(printf, 4, 5)));		/* 4=format 5=params */
+extern void vwarn_or_err(int exitcode, const char *name, bool warning,
+			 const char *fmt, va_list ap);
+extern void fwarn_or_err(int exitcode, FILE *stream, const char *name, bool warning, const char *fmt, ...) \
+	__attribute__((format(printf, 5, 6)));		/* 5=format 6=params */
+extern void vfwarn_or_err(int exitcode, FILE *stream, const char *name, bool warning,
+			 const char *fmt, va_list ap);
+
+extern void warnp_or_errp(int exitcode, const char *name, bool warning, const char *fmt, ...) \
+	__attribute__((format(printf, 4, 5)));		/* 4=format 5=params */
+extern void vwarnp_or_errp(int exitcode, const char *name, bool warning,
+			 const char *fmt, va_list ap);
+extern void fwarnp_or_errp(int exitcode, FILE *stream, const char *name, bool warning, const char *fmt, ...) \
+	__attribute__((format(printf, 5, 6)));		/* 5=format 6=params */
+extern void vfwarnp_or_errp(int exitcode, FILE *stream, const char *name, bool warning,
+			 const char *fmt, va_list ap);
+
+extern void printf_usage(int exitcode, const char *fmt, ...) \
+	__attribute__((format(printf, 2, 3)));		/* 2=format 3=params */
+extern void vprintf_usage(int exitcode, char const *fmt, va_list ap);
 extern void fprintf_usage(int exitcode, FILE *stream, const char *fmt, ...) \
 	__attribute__((format(printf, 3, 4)));		/* 3=format 4=params */
 extern void vfprintf_usage(int exitcode, FILE *stream, char const *fmt, va_list ap);
-
-extern void warn_or_err(int exitcode, const char *name, bool test, const char *fmt, ...) \
-	__attribute__((format(printf, 4, 5)));		/* 4=format 5=params */
-extern void vwarn_or_err(int exitcode, const char *name, bool test, const char *fmt, va_list ap);
-
-extern void warnp_or_errp(int exitcode, const char *name, bool test, const char *fmt, ...) \
-	__attribute__((format(printf, 4, 5)));		/* 4=format 5=params */
-extern void vwarnp_or_errp(int exitcode, const char *name, bool test, const char *fmt, va_list ap);
 
 
 #endif				/* INCLUDE_DBG_H */
