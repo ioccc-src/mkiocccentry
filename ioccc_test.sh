@@ -237,7 +237,7 @@ if [[ $status -ne 5 ]]; then
     exit status of dbg: $status != 5";
     EXIT_CODE="21"
 else
-    grep -q '^FATAL\[5\]: main: simulated error, foo: foo bar: bar errno\[2\]: No such file or directory$' dbg.out
+    grep -q '^ERROR\[5\]: main: simulated error, foo: foo bar: bar: errno\[2\]: No such file or directory$' dbg.out
     status="$?"
     if [[ $status -ne 0 ]]; then
 	echo "$0: ERROR: did not find the correct dbg error message" 1>&2
@@ -245,7 +245,7 @@ else
 	cat dbg.out 1>&2
 	echo "$0: ERROR: dbg.out contents complete" 1>&2
 	FAILURE_SUMMARY="$FAILURE_SUMMARY
-			 did not find the correct dbg error message"
+    did not find the correct dbg error message"
 	EXIT_CODE="22"
     else
 	echo

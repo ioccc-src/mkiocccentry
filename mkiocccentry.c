@@ -295,7 +295,7 @@ main(int argc, char *argv[])
      * Welcome
      */
     if (!quiet) {
-	errno = 0;			/* pre-clear errno for errp() */
+	errno = 0;		/* pre-clear errno for errp() */
 	ret = printf("Welcome to mkiocccentry version: %s\n", MKIOCCCENTRY_VERSION);
 	if (ret <= 0) {
 	    errp(3, __func__, "printf error printing the welcome string");
@@ -344,7 +344,7 @@ main(int argc, char *argv[])
     if (answers_flag_used && !overwrite_answers_flag_used && answers != NULL && strlen(answers) > 0 && exists(answers)) {
 	overwrite_answers = yes_or_no("WARNING: The answers file already exists! Do you wish to overwrite it? [yn]");
 	if (!overwrite_answers) {
-	    errno = 0;
+	    errno = 0;		/* pre-clear errno for errp() */
 	    ret = printf("\nTo use the answers file, try:\n\n\t./mkiocccentry -i %s [...]\n\n", answers);
 	    if (ret <= 0) {
 		errp(5, __func__, "printf error telling the user how to use the answers file");
@@ -363,7 +363,7 @@ main(int argc, char *argv[])
 	    errp(7, __func__, "cannot read answers file");
 	    not_reached();
 	}
-	errno = 0;
+	errno = 0;		/* pre-clear errno for errp() */
 	answerp = fopen(answers, "r");
 	if (answerp == NULL) {
 	    errp(8, __func__, "cannot open answers file");
