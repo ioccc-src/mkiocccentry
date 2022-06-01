@@ -3715,7 +3715,7 @@ printf_usage(int exitcode, char const *fmt, ...)
     /*
      * stage 0: determine if conditions allow function to write, exit or return as required
      */
-    if (usage_output_allowed == true) {
+    if (usage_output_allowed == false) {
 	if (exitcode >= 0) {
 	    exit(exitcode);
 	    not_reached();
@@ -3781,7 +3781,7 @@ vprintf_usage(int exitcode, char const *fmt, va_list ap)
     /*
      * stage 0: determine if conditions allow function to write, exit or return as required
      */
-    if (usage_output_allowed == true) {
+    if (usage_output_allowed == false) {
 	if (exitcode >= 0) {
 	    exit(exitcode);
 	    not_reached();
@@ -3843,7 +3843,7 @@ fprintf_usage(int exitcode, FILE *stream, char const *fmt, ...)
     /*
      * stage 0: determine if conditions allow function to write, exit or return as required
      */
-    if (usage_output_allowed == true) {
+    if (usage_output_allowed == false) {
 	if (exitcode >= 0) {
 	    exit(exitcode);
 	    not_reached();
@@ -3914,7 +3914,7 @@ vfprintf_usage(int exitcode, FILE *stream, char const *fmt, va_list ap)
     /*
      * stage 0: determine if conditions allow function to write, exit or return as required
      */
-    if (usage_output_allowed == true) {
+    if (usage_output_allowed == false) {
 	if (exitcode >= 0) {
 	    exit(exitcode);
 	    not_reached();
