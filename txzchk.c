@@ -5,13 +5,13 @@
  * the tarball was correctly named and formed (i.e. the mkiocccentry tool was
  * used).
  *
- * "Because sometimes even the IOCCC Judges need some help." :-)
- *
  * Written in 2022 by:
  *
  *	@xexyl
  *	https://xexyl.net		Cody Boone Ferguson
  *	https://ioccc.xexyl.net
+ *
+ * "Because sometimes even the IOCCC Judges need some help." :-)
  */
 
 
@@ -1552,10 +1552,9 @@ alloc_txz_file(char const *path)
 	not_reached();
     }
 
-    errno = 0;
     file->basename = base_name(path);
     if (!file->basename || !strlen(file->basename)) {
-	errp(41, __func__, "%s: unable to strdup basename of filename %s", txzpath, path);
+	err(41, __func__, "%s: unable to strdup basename of filename %s", txzpath, path);
 	not_reached();
     }
 

@@ -1,32 +1,82 @@
 # dbg - info, debug, warning, error and usage message facility
 
-The `dbg` facility, when linked into your program, provides you a method of
-writing debug messages, warning messages, usage messages, and fatal error messages
-to a stream such as `stderr`.
+When linked into your program, the `dbg` facility provides a way to write
+informative messages, debug messages, warning messages, fatal error messages and
+usage messages to a stream such as `stderr`.
 
-The `dbg` function calls are easy to add to your C code.  The are a number
-of ways to control them including the ability to silence them by default
-and in the case of debug messages, turn on increasing levels of verbosity.
-
+The `dbg` function calls are easy to add to your C code. There are a number of
+ways to control them including the ability to silence them by default and in the
+case of debug messages, turn on increasing levels of verbosity.
 
 
 # TL;DR - too long; didn't read
 
 ## To setup:
 
-1. Compile `dbg.c` to produce `dbg.o`
-2. Add `#include "dbg.h"` to your C source
-3. Set `verbosity_level` to some verbosity level such as 1 or 3 or ...
-4. Compile your source and link in `dbg.o`
+1. Compile `dbg.c` to produce `dbg.o`.
+2. Add `#include "dbg.h"` to the C source files that you wish to use one or more
+   of the `dbg` functions in.
+3. Set `verbosity_level` to some verbosity level such as `DBG_LOW` (1) or
+   `DBG_MED` (3) (see `dbg.h` for other levels).
+4. Compile your source file(s) and link in `dbg.o`.
+
+
+# General notes for all functions
+
+## In case of NULL fmt:
+
+If `fmt == NULL`, then the following format string will be used:
+
+```
+((NULL fmt))
+```
+
+and the following warning, preceded by a newline, will be issued:
+
+```
+Warning: foo: fmt is NULL, forcing fmt to be: ((NULL fmt))
+```
+
+where `foo` refers to the function in question (msg(), warn() etc.).
+
+When `fmt == NULL` or contains no `%` specifiers, the arguments following `fmt`
+are ignored.
+
+## In case of NULL name
+
+In the functions that accept a name (say the calling function) if `name ==
+NULL`, then the following string will be used instead:
+
+```
+((NULL name))
+```
+
+In this case the following warning, preceded by a newline, will be issued:
+
+```
+Warning: foo: name is NULL, forcing name to be: ((NULL name))
+```
+
+where `foo` refers to the function in question (msg(), warn() etc.).
+
+
+## Error checking
+
+All writes are checked for errors. Write error messages are written to stderr.
+However, a persistent problem writing to the stream (such as if the stream
+being written to was previously closed) will likely prevent such an error from
+being seen.
+
+
 
 ## Examples:
 
 ```c
-...
+/* ... */
 
 #include <unistd.h>
 
-...
+/* ... */
 
 /*
  * dbg - info, debug, warning, error and usage message facility
@@ -35,7 +85,7 @@ and in the case of debug messages, turn on increasing levels of verbosity.
 
 ...
 
-#define VERSION_STRING "61.0 2021-10-28"
+#define VERSION_STRING "61.0 2022-06-01"
 
 static char const * const usage =
 "usage: %s [-h] [-v level]\n"
@@ -71,6 +121,7 @@ static char const * const usage =
 	    fprintf_usage(3, stderr, usage, program, VERSION_STRING); /*ooo*/
 	    not_reached();
 	}
+
 ...
 
     dbg(DBG_LOW, "starting critical section");
@@ -110,7 +161,7 @@ Compile `dbg.o`:
 $ make dbg.o
 ```
 
-include `dbg.h` in your C code:
+Include `dbg.h` in your C code:
 
 ```c
 /*
@@ -119,21 +170,18 @@ include `dbg.h` in your C code:
 #include "dbg.h"
 ```
 
-and link into your binary:
+And finally link dbg.o into your binary:
 
 ```
 $ cc your_code.o ... dbg.o -o your_code
 ```
 
 
-
-
-
 # msg - write a generic message
 
-The `msg()` function will write an informational message, to `stderr`.
+The `msg()` function will write an informational message to `stderr`.
 
-The `fmsg()` function will write an informational message, to a stream.
+The `fmsg()` function will write an informational message to a stream.
 
 ## Synopsis:
 
@@ -158,21 +206,19 @@ extern void msg(const char *fmt, ...);
 extern void fmsg(FILE *stream, char const *fmt, ...);
 ```
 
-The `fmt` argument, is a printf-style format.
-If the format requires arguments, then such arguments
-may be given after the `fmt`.
+The `fmt` argument is a printf-style format. If the format requires arguments,
+then such arguments may be given after the `fmt`.
 
 See `man 3 printf` for details on a printf format.
 
-For modern C compilers, the agreement between any `%`
-directives in `fmt`, and any arguments that may follow
-is checked by the format attribute facility.
-Thus having too may arguments, too few arguments,
-or arguments of the wrong type will result in
-compiler warnings.
+For modern C compilers, the agreement between any `%` directives in `fmt`, and
+any arguments that may follow is checked by the format attribute facility.  Thus
+having too many arguments, too few arguments, or arguments of the wrong type will
+result in compiler warnings.
 
-Special care is made in this function to restore the
-caller's original value of `errno` on return.
+Special care is made in these functions to restore the caller's original value
+of `errno` on return.
+
 
 ## Examples:
 
@@ -180,18 +226,17 @@ caller's original value of `errno` on return.
 msg("This is an informative message.");
 msg("foo: %d bar: <%s> baz: %g", foo, bar, baz);
 
-...
+/* ... */
 
-fmsg(stdout, "This is an informative message to open file: %s", debug_filename);
+fmsg(stdout, "This is an informative message to an open file: %s", debug_filename);
 ```
 
-A newline (i.e., `\n`) is written after the message,
-and thus the `fmt` argument does **NOT** need to end in
-a newline.
+A newline (i.e., `\n`) is written after the message and thus the `fmt` argument
+does **NOT** need to end in a newline (though it can if you want it to).
 
 ## Output control:
 
-The following global variables have an impact output:
+The following global variables have impact output on the `msg()` functions:
 
 ```c
 extern int verbosity_level;		/* maximum debug level for debug messages */
@@ -199,40 +244,22 @@ extern bool msg_output_allowed;		/* false ==> disable informational messages */
 extern bool msg_warn_silent;		/* true ==> silence info & warnings if verbosity_level <= 0 */
 ```
 
-Any of the following conditions, if true at the time the
-function is called, will **disable** the writes.
+Any of the following conditions, if true at the time the function is called,
+will **disable** the writes.
 
 ```c
 1. msg_output_allowed == false
-2. msg_warn_silent == true && verbosity_level > 0
+2. msg_warn_silent == true && verbosity_level <= 0
 ```
 
-## In case of error:
 
-If `fmt == NULL`, then the following format string will be used:
-
-```
-((NULL fmt))
-```
-
-and following warning, preceded by a newline, will be issued:
-
-```
-Warning: msg: fmt is NULL, forcing fmt to be: ((NULL fmt))
-```
-
-When `fmt == NULL`, any arguments following `fmt` are ignored.
-
-All writes are checked for errors.  Write error messages are written
-to a stream.  However, a persistent problem writing to the stream
-(such as the stream being closed) will likely prevent such an error
-from being seen.
-
-## Alternative va_list interface:
+## Alternative `va_list` interface:
 
 The `vmsg()` function is an alternative interface to `msg()` in `va_list` form.
 
-The `vfmsg()` function is an alternative interface to `fmsg()` in `va_list` form.
+The `vfmsg()` function is an alternative interface to `fmsg()` in `va_list`
+form.
+
 
 ```c
 /*
@@ -255,13 +282,12 @@ extern void vmsg(char const *fmt, va_list ap);
 extern void vfmsg(FILE *stream, char const *fmt, va_list ap);
 ```
 
-The state of the va_list `ap` is **NOT** modified by this
-alternative interface function.
+The state of the `va_list ap` is **NOT** modified by this alternative interface
+function.
 
-NOTE: The arguments referenced by the va_list `ap` argument
-are **NOT** checked for consistency like they are using
-the primary interface.  For this reason, the primary
-interface `msg()` or `fmsg()` is recommended.
+NOTE: The arguments referenced by the `va_list ap` argument are **NOT** checked
+for consistency like they are using the primary interface.  For this reason, the
+primary interface `msg()` or `fmsg()` is recommended.
 
 
 
@@ -269,9 +295,11 @@ interface `msg()` or `fmsg()` is recommended.
 
 # dbg - write a verbosity level allowed debug message
 
-The `dbg()` function will write a debug message, if the verbosity level is high enough, to a stream, such as `stderr`.
+The `dbg()` function will write a debug message, if the verbosity level is high
+enough, to a stream, such as `stderr`.
 
-The `fdbg()` function will write a debug message, if the verbosity level is high enough, to a stream.
+The `fdbg()` function will write a debug message, if the verbosity level is high
+enough, to a stream.
 
 ## Synopsis:
 
@@ -298,14 +326,11 @@ extern void dbg(int level, const char *fmt, ...);
 extern void fdbg(FILE *stream, int level, char const *fmt, ...);
 ```
 
-The `level` argument determines if the debug
-message is written.  If `level` is below the
-`verbosity_level` level, nothing is written
-to the stream.
+The `level` argument determines if the debug message is written.  If `level` is
+above the `verbosity_level` level, nothing is written to the stream.
 
-It is recommended that the calling program set
-the global `verbosity_level` by use of a command
-line option such as `-v level`.  For example:
+It is recommended that the calling program set the global `verbosity_level` by
+use of a command line option such as `-v level`.  For example:
 
 ```c
     ...
@@ -326,24 +351,21 @@ line option such as `-v level`.  For example:
                 not_reached();
             }
             break;
-	...
+	/* ... */
 ```
 
-The `fmt` argument, is a printf-style format.
-If the format requires arguments, then such arguments
-may be given after the `fmt`.
+The `fmt` argument is a printf-style format.  If the format requires arguments,
+then such arguments may be given after the `fmt`.
 
 See `man 3 printf` for details on a printf format.
 
-For modern C compilers, the agreement between any `%`
-directives in `fmt`, and any arguments that may follow
-is checked by the format attribute facility.
-Thus having too may arguments, too few arguments,
-or arguments of the wrong type will result in
-compiler warnings.
+For modern C compilers, the agreement between any `%` directives in `fmt` and
+any arguments that may follow is checked by the format attribute facility.  Thus
+having too many arguments, too few arguments, or arguments of the wrong type
+will result in compiler warnings.
 
-The `dbg.h` header file defines the following constants
-that are useful to help establish verbosity levels:
+The `dbg.h` header file defines the following constants that are useful to help
+establish verbosity levels:
 
 ```c
 #define DBG_NONE (0)            /* no debugging */
@@ -356,8 +378,8 @@ that are useful to help establish verbosity levels:
 #define DBG_VVVVHIGH (13)       /* very very very very verbose debugging */
 ```
 
-Special care is made in this function to restore the
-caller's original value of `errno` on return.
+Special care is made in this function to restore the caller's original value of
+`errno` on return.
 
 ## Examples:
 
@@ -366,27 +388,26 @@ dbg(DBG_LOW, "Starting critical code section");
 dbg(DBG_MED, "Current line numner: %ld", lineno);
 dbg(DBG_VVHIGH, "Leading buffer byte: 0x%02x < minimum: 0x%02x", buf[0], MIN_BYTE);
 
-...
+/* ... */
 
 fdbg(stdout, DBG_HIGH, "loop value: %d", i);
 ```
 
 The `level` argument helps determine if the debug message is written or ignored.
-If the global `verbosity_level` is high enough, then the debug message
-is written to a stream such as `stderr`.
+If the global `verbosity_level` is high enough, then the debug message is
+written to a stream such as `stderr`.
 
 For example, if `verbosity_level == 5`, then the first two examples above
-will write to a stream such as `stderr`, while the 3rd example will not.
+will write to a stream such as `stderr`, while the third example will not.
 
-The debug message will be preceded by `debug[#]:` followed by a space,
-where `#` is the numeric value of the `level` argument.
+The debug message will be preceded by `debug[#]:` followed by a space, where `#`
+is the numeric value of the `level` argument.
 
-A newline (i.e., `\n`) is written after the message,
-and thus the `fmt` argument does **NOT** need to end in
-a newline.
+A newline (i.e., `\n`) is written after the message, and thus the `fmt` argument
+does **NOT** need to end in a newline (but you can add one if you want).
 
-The following are possible a stream such as  `stderr` output of the above examples
-(assuming `verbosity_level >= 11`):
+If `verbosity_level >= 11` the following output on a stream such as `stderr` is
+possible:
 
 ```
 debug[1]: Starting critical code section
@@ -400,15 +421,15 @@ debug[5]: loop value: 23209
 
 ## Output control:
 
-The following global variables have an impact output:
+The following global variables have impact output:
 
 ```c
 extern int verbosity_level;		/* maximum debug level for debug messages */
 extern bool dbg_output_allowed;         /* false ==> disable debug messages */
 ```
 
-Any of the following conditions, if true at the time the
-function is called, will **disable** the writes.
+Any of the following conditions, if true at the time the function is called,
+will **disable** the writes.
 
 ```c
 1. dbg_output_allowed == false
@@ -417,32 +438,12 @@ function is called, will **disable** the writes.
 
 In the above, `level` is a value passed to the function.
 
-## In case of error:
-
-If `fmt == NULL`, then the following format string will be used:
-
-```
-((NULL fmt))
-```
-
-In this case the following warning, preceded by a newline, will be issued:
-
-```
-Warning: dbg: fmt is NULL, forcing fmt to be: ((NULL fmt))
-```
-
-When `fmt == NULL`, any arguments following `fmt` are ignored.
-
-All writes are checked for errors.  Write error messages are written
-to a stream.  However, a persistent problem writing to the stream
-(such as the stream being closed) will likely prevent such an error
-from being seen.
-
-## Alternative va_list interface:
+## Alternative `va_list` interface:
 
 The `vdbg()` function is an alternative interface to `dbg()` in `va_list` form.
 
-The `vfdbg()` function is an alternative interface to `fdbg()` in `va_list` form.
+The `vfdbg()` function is an alternative interface to `fdbg()` in `va_list`
+form.
 
 ```c
 /*
@@ -467,13 +468,12 @@ extern void vdbg(int level, char const *fmt, va_list ap);
  extern void vfdbg(FILE *stream, int level, char const *fmt, va_list ap);
 ```
 
-The state of the va_list `ap` is **NOT** modified by this
+The state of the `va_list ap` is **NOT** modified by this
 alternative interface function.
 
-NOTE: The arguments referenced by the va_list `ap` argument
-are **NOT** checked for consistency like they are using
-the primary interface.  For this reason, the primary
-interface `dbg()` or `fdng()` is recommended.
+NOTE: The arguments referenced by the `va_list ap` argument are **NOT** checked
+for consistency like they are using the primary interface.  For this reason, the
+primary interface `dbg()` or `fdng()` is recommended.
 
 
 
@@ -481,15 +481,15 @@ interface `dbg()` or `fdng()` is recommended.
 
 # warn - write a warning message
 
-The `warn()` function will write warning a message, to `stderr`.
+The `warn()` function will write warning a message to `stderr`.
 
-The `fwarn()` function will write warning a message, to a stream.
+The `fwarn()` function will write warning a message to a stream.
 
 ## Synopsis:
 
 ```c
 /*
- * warn - write a warning message, to stderr
+ * warn - write a warning message to stderr
  *
  * given:
  *      name    name of function issuing the warning
@@ -499,7 +499,7 @@ The `fwarn()` function will write warning a message, to a stream.
 extern void warn(char const *name, char const *fmt, ...);
 
 /*
- * fwarn - write a warning message, to a stream
+ * fwarn - write a warning message to a stream
  *
  * given:
  *      stream  open stream to use
@@ -510,21 +510,20 @@ extern void warn(char const *name, char const *fmt, ...);
 extern void fwarn(FILE *stream, char const *name, char const *fmt, ...);
 ```
 
-The `name` argument should be the name of the calling function,
-or some string that helps identify the calling context.
-For modern C compilers, the value `__func__` is the name of
-the calling function, and thus is a good choice for a 1st argument.
+The `name` argument should be the name of the calling function or some string
+that helps identify the calling context.  For modern C compilers, the value
+`__func__` is the name of the calling function, and thus is a good choice for a
+first argument.
 
-The `fmt` argument, is a printf-style format.
-If the format requires arguments, then such arguments
-may be given after the `fmt`.
+The `fmt` argument, is a printf-style format.  If the format requires arguments,
+then such arguments may be given after the `fmt`.
 
 See `man 3 printf` for details on a printf format.
 
 For modern C compilers, the agreement between any `%`
 directives in `fmt`, and any arguments that may follow
 is checked by the format attribute facility.
-Thus having too may arguments, too few arguments,
+Thus having too many arguments, too few arguments,
 or arguments of the wrong type will result in
 compiler warnings.
 
@@ -578,18 +577,6 @@ function is called, will **disable** the writes.
 
 ## In case of error:
 
-If ` name == NULL`, then the following format string will be used:
-
-```
-((NULL name))
-```
-
-In this case the following warning, preceded by a newline, will be issued:
-
-```
-Warning: warn: name is NULL, forcing name to be: ((NULL name))
-```
-
 If `fmt == NULL`, then the following format string will be used:
 
 ```
@@ -604,10 +591,6 @@ Warning: warn: fmt is NULL, forcing fmt to be: ((NULL fmt))
 
 When `fmt == NULL`, any arguments following `fmt` are ignored.
 
-All writes are checked for errors.  Write error messages are written
-to a stream.  However, a persistent problem writing to the stream
-(such as the stream being closed) will likely prevent such an error
-from being seen.
 
 ## Alternative va_list interface:
 
@@ -629,7 +612,7 @@ in `va_list` form.
 extern void vwarn(char const *name, char const *fmt, va_list ap);
 
 /*
- * vfwarn - write a warning message, to a stream, in va_list form
+ * vfwarn - write a warning message to a stream, in va_list form
  *
  * given:
  *      stream  open stream to use
@@ -655,10 +638,10 @@ interface `warn()` or `fwarn()` is recommended.
 # warnp - write a warning message with errno details
 
 The `warnp()` function will write a warning message that
-includes errno details, to `stderr`.
+includes errno details to `stderr`.
 
 The `fwarnp()` function will write a warning message that
-includes errno details, to a stream.
+includes errno details to a stream.
 
 ## Synopsis:
 
@@ -674,7 +657,7 @@ includes errno details, to a stream.
 extern void warnp(char const *name, char const *fmt, ...);
 
 /*
- * fwarnp - write a warning message with errno details, to a stream
+ * fwarnp - write a warning message with errno details to a stream
  *
  * given:
  *      stream  open stream to use
@@ -688,7 +671,7 @@ extern void fwarnp(FILE *stream, char const *name, char const *fmt, ...);
 The `name` argument should be the name of the calling function,
 or some string that helps identify the calling context.
 For modern C compilers, the value `__func__` is the name of
-the calling function, and thus is a good choice for a 1st argument.
+the calling function, and thus is a good choice for a first argument.
 
 The `fmt` argument, is a printf-style format.
 If the format requires arguments, then such arguments
@@ -699,7 +682,7 @@ See `man 3 printf` for details on a printf format.
 For modern C compilers, the agreement between any `%`
 directives in `fmt`, and any arguments that may follow
 is checked by the format attribute facility.
-Thus having too may arguments, too few arguments,
+Thus having too many arguments, too few arguments,
 or arguments of the wrong type will result in
 compiler warnings.
 
@@ -783,40 +766,8 @@ function is called, will **disable** the writes.
 2. msg_warn_silent == true && verbosity_level > 0
 ```
 
-## In case of error:
 
-If ` name == NULL`, then the following format string will be used:
-
-```
-((NULL name))
-```
-
-In this case the following warning, preceded by a newline, will be issued:
-
-```
-Warning: warnp: name is NULL, forcing name to be: ((NULL name))
-```
-
-If `fmt == NULL`, then the following format string will be used:
-
-```
-((NULL fmt))
-```
-
-In this case the following warning, preceded by a newline, will be issued:
-
-```
-Warning: warnp: fmt is NULL, forcing fmt to be: ((NULL fmt))
-```
-
-When `fmt == NULL`, any arguments following `fmt` are ignored.
-
-All writes are checked for errors.  Write error messages are written
-to a stream.  However, a persistent problem writing to the stream
-(such as the stream being closed) will likely prevent such an error
-from being seen.
-
-## Alternative va_list interface:
+## Alternative `va_list` interface:
 
 The `vwarnp()` function is an alternative interface to `warnp()`
 in `va_list` form.
@@ -836,7 +787,7 @@ in `va_list` form.
 extern void vwarnp(char const *name, char const *fmt, va_list ap);
 
 /*
- * vfwarnp - write a warning message with errno details, to a stream, in va_list form
+ * vfwarnp - write a warning message with errno details to a stream, in va_list form
  *
  * given:
  *      stream  open stream to use
@@ -861,9 +812,9 @@ interface `warnp()` or `fwarnp()` is recommended.
 
 # err - write a fatal error message before exiting
 
-The `errp()` function will write an error message before exiting, to `stderr`.
+The `errp()` function will write an error message before exiting to `stderr`.
 
-The `ferrp()` function will write an error message before exiting, to a stream.
+The `ferrp()` function will write an error message before exiting to a stream.
 
 ## Synopsis:
 
@@ -880,7 +831,7 @@ The `ferrp()` function will write an error message before exiting, to a stream.
 extern void err(int exitcode, char const *name, char const *fmt, ...);
 
 /*
- * ferr - write a fatal error message before exiting, to a stream
+ * ferr - write a fatal error message before exiting to a stream
  *
  * given:
  *      exitcode        value to exit with
@@ -897,7 +848,7 @@ The `exitcode` argument is the exit code to exit with.
 The `name` argument should be the name of the calling function,
 or some string that helps identify the calling context.
 For modern C compilers, the value `__func__` is the name of
-the calling function, and thus is a good choice for a 1st argument.
+the calling function, and thus is a good choice for a firsts argument.
 
 The `fmt` argument, is a printf-style format.
 If the format requires arguments, then such arguments
@@ -908,7 +859,7 @@ See `man 3 printf` for details on a printf format.
 For modern C compilers, the agreement between any `%`
 directives in `fmt`, and any arguments that may follow
 is checked by the format attribute facility.
-Thus having too may arguments, too few arguments,
+Thus having too many arguments, too few arguments,
 or arguments of the wrong type will result in
 compiler warnings.
 
@@ -1001,42 +952,12 @@ Warning: err: exitcode < 0: #
 
 Here `#` will be the original  `exitcode` value.
 
-Another 2nd warning will be written of the form:
+Another second warning will be written of the form:
 
 ```
 Warning: err: forcing use of exit code: 255
 ```
 
-If ` name == NULL`, then the following format string will be used:
-
-```
-((NULL name))
-```
-
-In this case the following warning, preceded by a newline, will be issued:
-
-```
-Warning: err: name is NULL, forcing name to be: ((NULL name))
-```
-
-If `fmt == NULL`, then the following format string will be used:
-
-```
-((NULL fmt))
-```
-
-In this case the following warning, preceded by a newline, will be issued:
-
-```
-Warning: err: fmt is NULL, forcing fmt to be: ((NULL fmt))
-```
-
-When `fmt == NULL`, any arguments following `fmt` are ignored.
-
-All writes are checked for errors.  Write error messages are written
-to a stream.  However, a persistent problem writing to the stream
-(such as the stream being closed) will likely prevent such an error
-from being seen.
 
 ## Alternative va_list interface:
 
@@ -1059,7 +980,7 @@ in `va_list` form.
 extern void verr(int exitcode, char const *name, char const *fmt, va_list ap);
 
 /*
- * vferr - write a fatal error message before exiting, to a stream, in va_list form
+ * vferr - write a fatal error message before exiting to a stream, in va_list form
  *
  * given:
  *      exitcode        value to exit with
@@ -1086,10 +1007,10 @@ interface `err()` or `ferr()` is recommended.
 # errp - write a fatal error message with errno details before exiting
 
 The `errp()` function will write an error message that includes errno details
-before exiting, to `stderr`.
+before exiting to `stderr`.
 
 The `ferrp()` function will write an error message that includes errno details
-before exiting, to a stream.
+before exiting to a stream.
 
 ## Synopsis:
 
@@ -1106,7 +1027,7 @@ before exiting, to a stream.
 extern void errp(int exitcode, char const *name, char const *fmt, ...);
 
 /*
- * ferrp - write a fatal error message with errno details before exiting, to a stream
+ * ferrp - write a fatal error message with errno details before exiting to a stream
  *
  * given:
  *      exitcode        value to exit with
@@ -1118,12 +1039,12 @@ extern void errp(int exitcode, char const *name, char const *fmt, ...);
 extern void ferrp(int exitcode, FILE *stream, char const *name, char const *fmt, ...);
 ```
 
-The 1st argument is the exit code to exit with.
+The first argument is the exit code to exit with.
 
 The `name` argument should be the name of the calling function,
 or some string that helps identify the calling context.
 For modern C compilers, the value `__func__` is the name of
-the calling function, and thus is a good choice for a 1st argument.
+the calling function, and thus is a good choice for a first argument.
 
 The `fmt` argument, is a printf-style format.
 If the format requires arguments, then such arguments
@@ -1134,7 +1055,7 @@ See `man 3 printf` for details on a printf format.
 For modern C compilers, the agreement between any `%`
 directives in `fmt`, and any arguments that may follow
 is checked by the format attribute facility.
-Thus having too may arguments, too few arguments,
+Thus having too many arguments, too few arguments,
 or arguments of the wrong type will result in
 compiler warnings.
 
@@ -1257,42 +1178,12 @@ Warning: errp: exitcode < 0: #
 
 Here `#` will be the original  `exitcode` value.
 
-Another 2nd warning will be written in the following form:
+Another second warning will be written in the following form:
 
 ```
 Warning: errp: forcing use of exit code: 255
 ```
 
-If ` name == NULL`, then the following format string will be used:
-
-```
-((NULL name))
-```
-
-In this case the following warning, preceded by a newline, will be issued:
-
-```
-Warning: errp: name is NULL, forcing name to be: ((NULL name))
-```
-
-If `fmt == NULL`, then the following format string will be used:
-
-```
-((NULL fmt))
-```
-
-In this case the following warning, preceded by a newline, will be issued:
-
-```
-Warning: errp: fmt is NULL, forcing fmt to be: ((NULL fmt))
-```
-
-When `fmt == NULL`, any arguments following `fmt` are ignored.
-
-All writes are checked for errors.  Write error messages are written
-to a stream.  However, a persistent problem writing to the stream
-(such as the stream being closed) will likely prevent such an error
-from being seen.
 
 ## Alternative va_list interface:
 
@@ -1338,9 +1229,9 @@ interface `errp()` or `ferrp()` is recommended.
 
 # werr - write an error message w/o exiting
 
-The `werr()` function will write an error message w/o exiting, to `stderr`.
+The `werr()` function will write an error message w/o exiting to `stderr`.
 
-The `fwerr()` function will write an error message w/o exiting, to a stream.
+The `fwerr()` function will write an error message w/o exiting to a stream.
 
 ## Synopsis:
 
@@ -1357,7 +1248,7 @@ The `fwerr()` function will write an error message w/o exiting, to a stream.
 extern void werr(int error_code, char const *name, char const *fmt, ...)
 
 /*
- * fwerr - write an error message w/o exiting, to a stream
+ * fwerr - write an error message w/o exiting to a stream
  *
  * given:
  *      error_code      error code
@@ -1375,14 +1266,14 @@ NOT call `exit()` nor does it perform a bounds check on `error_code`.
 The `wferr()` function writes the same thing as `efrr()` but does
 NOT call `exit()` nor does it perform a bounds check on `error_code`.
 
-The reason why the 1st argument is `error_code` (and not 'exitcode`)
+The reason why the first argument is `error_code` (and not 'exitcode`)
 is that this argument is simply an arbitrary integer that is
-to be writen after "`FATAL[`" and before the "`]'".
+to be written after "`FATAL[`" and before the "`]'".
 
 The `name` argument should be the name of the calling function,
 or some string that helps identify the calling context.
 For modern C compilers, the value `__func__` is the name of
-the calling function, and thus is a good choice for a 1st argument.
+the calling function, and thus is a good choice for a first argument.
 
 The `fmt` argument, is a printf-style format.
 If the format requires arguments, then such arguments
@@ -1393,7 +1284,7 @@ See `man 3 printf` for details on a printf format.
 For modern C compilers, the agreement between any `%`
 directives in `fmt`, and any arguments that may follow
 is checked by the format attribute facility.
-Thus having too may arguments, too few arguments,
+Thus having too many arguments, too few arguments,
 or arguments of the wrong type will result in
 compiler warnings.
 
@@ -1414,7 +1305,7 @@ The error message will be preceded by `FATAL[#]:`
 followed by a space, followed by the value of the `name` string,
 followed by a `:` followed by a space.
 
-A newline (i.e., `\n`) is writen after the message,
+A newline (i.e., `\n`) is written after the message,
 and thus the `fmt` argument does **NOT** need to end in
 a newline.
 
@@ -1441,38 +1332,8 @@ function is called, will **disable** the writes.
 
 ## In case of error:
 
-NOTE: There is no bounds check made for the 1st argument (`error_code`).
+NOTE: No bounds check is made for the first argument (`error_code`).
 
-If ` name == NULL`, then the following format string will be used:
-
-```
-((NULL name))
-```
-
-In this case the following warning, preceded by a newline, will be issued:
-
-```
-Warning: werr: name is NULL, forcing name to be: ((NULL name))
-```
-
-If `fmt == NULL`, then the following format string will be used:
-
-```
-((NULL fmt))
-```
-
-In this case the following warning, preceded by a newline, will be issued:
-
-```
-Warning: werr: fmt is NULL, forcing fmt to be: ((NULL fmt))
-```
-
-When `fmt == NULL`, any arguments following `fmt` are ignored.
-
-All writes are checked for errors.  Write error messages are written
-to a stream.  However, a persistent problem writing to the stream
-(such as the stream being closed) will likely prevent such an error
-from being seen.
 
 ## Alternative va_list interface:
 
@@ -1518,9 +1379,9 @@ interface `werr()` or `fwerr()` is recommended.
 
 # werrp - write an error message with errno details w/o exiting
 
-The `werrp()` function will write an error message that includes errno details, to `stderr`.
+The `werrp()` function will write an error message that includes errno details to `stderr`.
 
-The `fwerrp()` function will write an error message that includes errno details, to a stream.
+The `fwerrp()` function will write an error message that includes errno details to a stream.
 
 ## Synopsis:
 
@@ -1537,7 +1398,7 @@ The `fwerrp()` function will write an error message that includes errno details,
 extern void werrp(int error_code, char const *name, char const *fmt, ...);
 
 /*
- * fwerrp - write an error message with errno details w/o exiting, to a stream
+ * fwerrp - write an error message with errno details w/o exiting to a stream
  *
  * given:
  *      error_code      error code
@@ -1555,14 +1416,14 @@ NOT call `exit()` nor does it perform a bounds check on `error_code`.
 The `fwerrp()` function writes the same thing as `ferr()` but does
 NOT call `exit()` nor does it perform a bounds check on `error_code`.
 
-The reason why the 1st argument is `error_code` (and not 'exitcode`)
+The reason why the first argument is `error_code` (and not 'exitcode`)
 is that this argument is simply an arbitrary integer that is
 to be written after "`FATAL[`" and before the "`]'".
 
 The `name` argument should be the name of the calling function,
 or some string that helps identify the calling context.
 For modern C compilers, the value `__func__` is the name of
-the calling function, and thus is a good choice for a 1st argument.
+the calling function, and thus is a good choice for a first argument.
 
 The `fmt` argument, is a printf-style format.
 If the format requires arguments, then such arguments
@@ -1573,7 +1434,7 @@ See `man 3 printf` for details on a printf format.
 For modern C compilers, the agreement between any `%`
 directives in `fmt`, and any arguments that may follow
 is checked by the format attribute facility.
-Thus having too may arguments, too few arguments,
+Thus having too many arguments, too few arguments,
 or arguments of the wrong type will result in
 compiler warnings.
 
@@ -1652,38 +1513,8 @@ function is called, will **disable** the writes.
 ## In case of error:
 
 
-NOTE: There is no bounds check made for the 1st argument (`error_code`).
+NOTE: No bounds check is made for the first argument (`error_code`).
 
-If ` name == NULL`, then the following format string will be used:
-
-```
-((NULL name))
-```
-
-In this case the following warning, preceded by a newline, will be issued:
-
-```
-Warning: werrp: name is NULL, forcing name to be: ((NULL name))
-```
-
-If `fmt == NULL`, then the following format string will be used:
-
-```
-((NULL fmt))
-```
-
-In this case the following warning, preceded by a newline, will be issued:
-
-```
-Warning: werrp: fmt is NULL, forcing fmt to be: ((NULL fmt))
-```
-
-When `fmt == NULL`, any arguments following `fmt` are ignored.
-
-All writes are checked for errors.  Write error messages are written
-to a stream.  However, a persistent problem writing to the stream
-(such as the stream being closed) will likely prevent such an error
-from being seen.
 
 ## Alternative va_list interface:
 
@@ -1703,7 +1534,7 @@ in `va_list` form.
 extern void vwerrp(int error_code, char const *name, char const *fmt, va_list ap);
 
 /*
- * vfwerrp - write an error message with errno details w/o exiting, to a stream, in va_list form
+ * vfwerrp - write an error message with errno details w/o exiting to a stream, in va_list form
  *
  * given:
  *      error_code      error code
@@ -1730,7 +1561,7 @@ interface `werrp()` or `fwerrp()` is recommended.
 # warn_or_err - write a warning or error message before exiting, depending on an arg
 
 The `warn_or_err()` function will write either a warning message, or
-an error message before exiting, depending on an arg, to `stderr`.
+an error message before exiting, depending on an arg to `stderr`.
 
 The `fwarn_or_err()` function will write either a warning message, or
 an error message before exiting, depending on an arg, to a stream.
@@ -1779,7 +1610,7 @@ then the function will call `exit()` and the function does not return.
 The `name` argument should be the name of the calling function,
 or some string that helps identify the calling context.
 For modern C compilers, the value `__func__` is the name of
-the calling function, and thus is a good choice for a 1st argument.
+the calling function, and thus is a good choice for a first argument.
 
 The `fmt` argument, is a printf-style format.
 If the format requires arguments, then such arguments
@@ -1790,7 +1621,7 @@ See `man 3 printf` for details on a printf format.
 For modern C compilers, the agreement between any `%`
 directives in `fmt`, and any arguments that may follow
 is checked by the format attribute facility.
-Thus having too may arguments, too few arguments,
+Thus having too many arguments, too few arguments,
 or arguments of the wrong type will result in
 compiler warnings.
 
@@ -1815,7 +1646,7 @@ When `warning == false`, the error message will be preceded by `FATAL[#]:`
 followed by a space, followed by the value of the `name` string,
 followed by a `:` followed by a space.
 
-A newline (i.e., `\n`) is writen after the message,
+A newline (i.e., `\n`) is written after the message,
 and thus the `fmt` argument does **NOT** need to end in
 a newline.
 
@@ -1894,10 +1725,6 @@ Warning: warn_or_err: fmt is NULL, forcing fmt to be: ((NULL fmt))
 
 When `fmt == NULL`, any arguments following `fmt` are ignored.
 
-All writes are checked for errors.  Write error messages are written
-to a stream.  However, a persistent problem writing to the stream
-(such as the stream being closed) will likely prevent such an error
-from being seen.
 
 ### When warning == true:
 
@@ -1911,7 +1738,7 @@ Warning: warn_or_err: exitcode < 0: #
 
 Here `#` will be the original  `exitcode` value.
 
-Another 2nd warning will be written of the form:
+A second warning will be written in the form:
 
 ```
 Warning: warn_or_err: forcing use of exit code: 255
@@ -1943,10 +1770,6 @@ Warning: warn_or_err: fmt is NULL, forcing fmt to be: ((NULL fmt))
 
 When `fmt == NULL`, any arguments following `fmt` are ignored.
 
-All writes are checked for errors.  Write error messages are written
-to a stream.  However, a persistent problem writing to the stream
-(such as the stream being closed) will likely prevent such an error
-from being seen.
 
 ## Alternative va_list interface:
 
@@ -2053,7 +1876,7 @@ errno details are also written.
 The `name` argument should be the name of the calling function,
 or some string that helps identify the calling context.
 For modern C compilers, the value `__func__` is the name of
-the calling function, and thus is a good choice for a 1st argument.
+the calling function, and thus is a good choice for a first argument.
 
 The `fmt` argument, is a printf-style format.
 If the format requires arguments, then such arguments
@@ -2064,7 +1887,7 @@ See `man 3 printf` for details on a printf format.
 For modern C compilers, the agreement between any `%`
 directives in `fmt`, and any arguments that may follow
 is checked by the format attribute facility.
-Thus having too may arguments, too few arguments,
+Thus having too many arguments, too few arguments,
 or arguments of the wrong type will result in
 compiler warnings.
 
@@ -2194,10 +2017,6 @@ Warning: warnp_or_errp: fmt is NULL, forcing fmt to be: ((NULL fmt))
 
 When `fmt == NULL`, any arguments following `fmt` are ignored.
 
-All writes are checked for errors.  Write error messages are written
-to a stream.  However, a persistent problem writing to the stream
-(such as the stream being closed) will likely prevent such an error
-from being seen.
 
 ### When warning == true:
 
@@ -2211,7 +2030,7 @@ Warning: warnp_or_errp: exitcode < 0: #
 
 Here `#` will be the original  `exitcode` value.
 
-Another 2nd warning will be written in the following form:
+Another second warning will be written in the following form:
 
 ```
 Warning: warnp_or_errp: forcing use of exit code: 255
@@ -2243,10 +2062,6 @@ Warning: warnp_or_errp: fmt is NULL, forcing fmt to be: ((NULL fmt))
 
 When `fmt == NULL`, any arguments following `fmt` are ignored.
 
-All writes are checked for errors.  Write error messages are written
-to a stream.  However, a persistent problem writing to the stream
-(such as the stream being closed) will likely prevent such an error
-from being seen.
 
 ## Alternative va_list interface:
 
@@ -2350,7 +2165,7 @@ See `man 3 printf` for details on a printf format.
 For modern C compilers, the agreement between any `%`
 directives in `fmt`, and any arguments that may follow
 is checked by the format attribute facility.
-Thus having too may arguments, too few arguments,
+Thus having too many arguments, too few arguments,
 or arguments of the wrong type will result in
 compiler warnings.
 
@@ -2416,10 +2231,6 @@ Warning: printf_usage: fmt is NULL, forcing fmt to be: ((NULL fmt))
 
 When `fmt == NULL`, any arguments following `fmt` are ignored.
 
-All writes are checked for errors.  Write error messages are written
-to a stream.  However, a persistent problem writing to the stream
-(such as the stream being closed) will likely prevent such an error
-from being seen.
 
 ## Alternative va_list interface:
 
