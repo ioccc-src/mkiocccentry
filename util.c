@@ -834,7 +834,7 @@ int
 shell_cmd(char const *name, bool abort_on_error, char const *format, ...)
 {
     va_list ap;			/* variable argument list */
-    char *cmd = NULL;		/* cp prog_c entry_dir/prog.c */
+    char *cmd = NULL;		/* e.g. cp prog.c entry_dir/prog.c */
     int exit_code;		/* exit code from system(cmd) */
     int ret;			/* libc function return */
 
@@ -1019,7 +1019,7 @@ FILE *
 pipe_open(char const *name, bool abort_on_error, char const *format, ...)
 {
     va_list ap;			/* variable argument list */
-    char *cmd = NULL;		/* cp prog_c entry_dir/prog.c */
+    char *cmd = NULL;		/* e.g. cp prog.c entry_dir/prog.c */
     FILE *stream = NULL;	/* open pipe to shell command or NULL */
     int ret;			/* libc function return */
 
