@@ -12,7 +12,7 @@
  * as an ironic commentary on the Bourne shell source and finger daemon
  * source.  Moreover, irony is well baked-in to the IOCCC.  :-)
  *
- * If you do find a problem with this code, let the judges know.
+ * If you do find a problem with this code, please let the judges know.
  * To contact the judges please see:
  *
  *      https://www.ioccc.org/judges.html
