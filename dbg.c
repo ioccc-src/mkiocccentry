@@ -2990,7 +2990,7 @@ warn_or_err(int exitcode, const char *name, bool warning, const char *fmt, ...)
 	    return;
 	}
     } else {
-	if (err_output_allowed == true) {
+	if (err_output_allowed == false) {
 	    exit((exitcode < 0 || exitcode > 255) ? 255 : exitcode);
 	    not_reached();
 	}
@@ -3087,7 +3087,7 @@ vwarn_or_err(int exitcode, const char *name, bool warning,
 	    return;
 	}
     } else {
-	if (err_output_allowed == true) {
+	if (err_output_allowed == false) {
 	    exit((exitcode < 0 || exitcode > 255) ? 255 : exitcode);
 	    not_reached();
 	}
@@ -3178,7 +3178,7 @@ fwarn_or_err(int exitcode, FILE *stream, const char *name, bool warning, const c
 	    return;
 	}
     } else {
-	if (err_output_allowed == true) {
+	if (err_output_allowed == false) {
 	    exit((exitcode < 0 || exitcode > 255) ? 255 : exitcode);
 	    not_reached();
 	}
@@ -3280,7 +3280,7 @@ vfwarn_or_err(int exitcode, FILE *stream, const char *name, bool warning,
 	    return;
 	}
     } else {
-	if (err_output_allowed == true) {
+	if (err_output_allowed == false) {
 	    exit((exitcode < 0 || exitcode > 255) ? 255 : exitcode);
 	    not_reached();
 	}
