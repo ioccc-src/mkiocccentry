@@ -2983,14 +2983,17 @@ warn_or_err(int exitcode, const char *name, bool warning, const char *fmt, ...)
     int saved_errno;	/* errno at function start */
 
     /*
-     * stage 0: determine if conditions allow function to write, return if not
+     * stage 0: determine if conditions allow function to write, return or exit if not
      */
-    if ((warning == true &&
-	    (warn_output_allowed == false ||
-	     (msg_warn_silent == true && verbosity_level <= 0))) ||
-        (warning == false &&
-	    err_output_allowed == true)) {
-	return;
+    if (warning == true) {
+        if (warn_output_allowed == false || (msg_warn_silent == true && verbosity_level <= 0)) {
+	    return;
+	}
+    } else {
+	if (err_output_allowed == true) {
+	    exit((exitcode < 0 || exitcode > 255) ? 255 : exitcode);
+	    not_reached();
+	}
     }
 
     /*
@@ -3077,14 +3080,17 @@ vwarn_or_err(int exitcode, const char *name, bool warning,
     int saved_errno;	/* errno at function start */
 
     /*
-     * stage 0: determine if conditions allow function to write, return if not
+     * stage 0: determine if conditions allow function to write, return or exit if not
      */
-    if ((warning == true &&
-	    (warn_output_allowed == false ||
-	     (msg_warn_silent == true && verbosity_level <= 0))) ||
-        (warning == false &&
-	    err_output_allowed == false)) {
-	return;
+    if (warning == true) {
+        if (warn_output_allowed == false || (msg_warn_silent == true && verbosity_level <= 0)) {
+	    return;
+	}
+    } else {
+	if (err_output_allowed == true) {
+	    exit((exitcode < 0 || exitcode > 255) ? 255 : exitcode);
+	    not_reached();
+	}
     }
 
     /*
@@ -3165,14 +3171,17 @@ fwarn_or_err(int exitcode, FILE *stream, const char *name, bool warning, const c
     int saved_errno;	/* errno at function start */
 
     /*
-     * stage 0: determine if conditions allow function to write, return if not
+     * stage 0: determine if conditions allow function to write, return or exit if not
      */
-    if ((warning == true &&
-	    (warn_output_allowed == false ||
-	     (msg_warn_silent == true && verbosity_level <= 0))) ||
-        (warning == false &&
-	    err_output_allowed == false)) {
-	return;
+    if (warning == true) {
+        if (warn_output_allowed == false || (msg_warn_silent == true && verbosity_level <= 0)) {
+	    return;
+	}
+    } else {
+	if (err_output_allowed == true) {
+	    exit((exitcode < 0 || exitcode > 255) ? 255 : exitcode);
+	    not_reached();
+	}
     }
 
     /*
@@ -3264,14 +3273,17 @@ vfwarn_or_err(int exitcode, FILE *stream, const char *name, bool warning,
     int saved_errno;	/* errno at function start */
 
     /*
-     * stage 0: determine if conditions allow function to write, return if not
+     * stage 0: determine if conditions allow function to write, return or exit if not
      */
-    if ((warning == true &&
-	    (warn_output_allowed == false ||
-	     (msg_warn_silent == true && verbosity_level <= 0))) ||
-        (warning == false &&
-	    err_output_allowed == false)) {
-	return;
+    if (warning == true) {
+        if (warn_output_allowed == false || (msg_warn_silent == true && verbosity_level <= 0)) {
+	    return;
+	}
+    } else {
+	if (err_output_allowed == true) {
+	    exit((exitcode < 0 || exitcode > 255) ? 255 : exitcode);
+	    not_reached();
+	}
     }
 
     /*
@@ -3356,14 +3368,17 @@ warnp_or_errp(int exitcode, const char *name, bool warning, const char *fmt, ...
     int saved_errno;	/* errno at function start */
 
     /*
-     * stage 0: determine if conditions allow function to write, return if not
+     * stage 0: determine if conditions allow function to write, return or exit if not
      */
-    if ((warning == true &&
-	    (warn_output_allowed == false ||
-	     (msg_warn_silent == true && verbosity_level <= 0))) ||
-        (warning == false &&
-	    err_output_allowed == false)) {
-	return;
+    if (warning == true) {
+        if (warn_output_allowed == false || (msg_warn_silent == true && verbosity_level <= 0)) {
+	    return;
+	}
+    } else {
+	if (err_output_allowed == true) {
+	    exit((exitcode < 0 || exitcode > 255) ? 255 : exitcode);
+	    not_reached();
+	}
     }
 
     /*
@@ -3450,14 +3465,17 @@ vwarnp_or_errp(int exitcode, const char *name, bool warning,
     int saved_errno;	/* errno at function start */
 
     /*
-     * stage 0: determine if conditions allow function to write, return if not
+     * stage 0: determine if conditions allow function to write, return or exit if not
      */
-    if ((warning == true &&
-	    (warn_output_allowed == false ||
-	     (msg_warn_silent == true && verbosity_level <= 0))) ||
-        (warning == false &&
-	    err_output_allowed == false)) {
-	return;
+    if (warning == true) {
+        if (warn_output_allowed == false || (msg_warn_silent == true && verbosity_level <= 0)) {
+	    return;
+	}
+    } else {
+	if (err_output_allowed == true) {
+	    exit((exitcode < 0 || exitcode > 255) ? 255 : exitcode);
+	    not_reached();
+	}
     }
 
     /*
@@ -3537,14 +3555,17 @@ fwarnp_or_errp(int exitcode, FILE *stream, const char *name, bool warning, const
     int saved_errno;	/* errno at function start */
 
     /*
-     * stage 0: determine if conditions allow function to write, return if not
+     * stage 0: determine if conditions allow function to write, return or exit if not
      */
-    if ((warning == true &&
-	    (warn_output_allowed == false ||
-	     (msg_warn_silent == true && verbosity_level <= 0))) ||
-        (warning == false &&
-	    err_output_allowed == false)) {
-	return;
+    if (warning == true) {
+        if (warn_output_allowed == false || (msg_warn_silent == true && verbosity_level <= 0)) {
+	    return;
+	}
+    } else {
+	if (err_output_allowed == true) {
+	    exit((exitcode < 0 || exitcode > 255) ? 255 : exitcode);
+	    not_reached();
+	}
     }
 
     /*
@@ -3636,14 +3657,17 @@ vfwarnp_or_errp(int exitcode, FILE *stream, const char *name, bool warning,
     int saved_errno;	/* errno at function start */
 
     /*
-     * stage 0: determine if conditions allow function to write, return if not
+     * stage 0: determine if conditions allow function to write, return or exit if not
      */
-    if ((warning == true &&
-	    (warn_output_allowed == false ||
-	     (msg_warn_silent == true && verbosity_level <= 0))) ||
-        (warning == false &&
-	    err_output_allowed == false)) {
-	return;
+    if (warning == true) {
+        if (warn_output_allowed == false || (msg_warn_silent == true && verbosity_level <= 0)) {
+	    return;
+	}
+    } else {
+	if (err_output_allowed == true) {
+	    exit((exitcode < 0 || exitcode > 255) ? 255 : exitcode);
+	    not_reached();
+	}
     }
 
     /*
