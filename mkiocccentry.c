@@ -18,7 +18,7 @@
  * the code that you, the IOCCC contestant will use, is all written in
  * C because this is the IOCCC.
  *
- * If you do find a problem with this code, let the judges know.
+ * If you do find a problem with this code, please let the judges know.
  * To contact the judges please see:
  *
  *      https://www.ioccc.org/judges.html
