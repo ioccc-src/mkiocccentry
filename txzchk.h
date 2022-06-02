@@ -5,13 +5,13 @@
  * the tarball was correctly named and formed (i.e. the mkiocccentry tool was
  * used).
  *
- * "Because sometimes even the IOCCC Judges need some help." :-)
- *
  * Written in 2022 by:
  *
  *	@xexyl
  *	https://xexyl.net		Cody Boone Ferguson
  *	https://ioccc.xexyl.net
+ *
+ * "Because sometimes even the IOCCC Judges need some help." :-)
  */
 
 
