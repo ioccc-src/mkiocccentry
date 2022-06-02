@@ -138,7 +138,7 @@ static char const * const usage =
         warnp(__func__, "fprintf error writing title to the answers file");
     }
 
-... 
+...
 
     errno = 0;
     tarball = strdup(tarball_path);
