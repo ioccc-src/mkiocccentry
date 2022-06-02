@@ -227,7 +227,7 @@ chk_test(int testnum, struct json_number *item, struct json_number *test, size_t
     }
 
     /*
-     * test non-NULL strings
+     * test NULL strings
      */
     if (test_result[testnum].as_str == NULL) {
 	if (item->as_str != NULL) {
@@ -237,6 +237,9 @@ chk_test(int testnum, struct json_number *item, struct json_number *test, size_t
 	    dbg(DBG_VVHIGH, "OK: test_result[%d].as_str == NULL && item->as_str == NULL", testnum);
 	}
     } else {
+	/*
+	 * test non-NULL strings
+	 */
 	if (item->as_str != NULL) {
 	    dbg(DBG_VVHIGH, "OK: test_result[%d].as_str != NULL && item->as_str != NULL", testnum);
 	} else {
