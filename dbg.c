@@ -2419,7 +2419,7 @@ werr(int error_code, char const *name, char const *fmt, ...)
     /*
      * stage 0: determine if conditions allow function to write, return if not
      */
-    if (err_output_allowed == true) {
+    if (err_output_allowed == false) {
 	return;
     }
 
@@ -2490,7 +2490,7 @@ vwerr(int error_code, char const *name, char const *fmt, va_list ap)
     /*
      * stage 0: determine if conditions allow function to write, return if not
      */
-    if (err_output_allowed == true) {
+    if (err_output_allowed == false) {
 	return;
     }
 
@@ -2557,7 +2557,7 @@ fwerr(int error_code, FILE *stream, char const *name, char const *fmt, ...)
     /*
      * stage 0: determine if conditions allow function to write, return if not
      */
-    if (err_output_allowed == true) {
+    if (err_output_allowed == false) {
 	return;
     }
 
@@ -2633,7 +2633,7 @@ vfwerr(int error_code, FILE *stream, char const *name, char const *fmt, va_list 
     /*
      * stage 0: determine if conditions allow function to write, return if not
      */
-    if (err_output_allowed == true) {
+    if (err_output_allowed == false) {
 	return;
     }
 
@@ -2703,7 +2703,7 @@ werrp(int error_code, char const *name, char const *fmt, ...)
     /*
      * stage 0: determine if conditions allow function to write, return if not
      */
-    if (err_output_allowed == true) {
+    if (err_output_allowed == false) {
 	return;
     }
 
@@ -2774,7 +2774,7 @@ vwerrp(int error_code, char const *name, char const *fmt, va_list ap)
     /*
      * stage 0: determine if conditions allow function to write, return if not
      */
-    if (err_output_allowed == true) {
+    if (err_output_allowed == false) {
 	return;
     }
 
@@ -2841,7 +2841,7 @@ fwerrp(int error_code, FILE *stream, char const *name, char const *fmt, ...)
     /*
      * stage 0: determine if conditions allow function to write, return if not
      */
-    if (err_output_allowed == true) {
+    if (err_output_allowed == false) {
 	return;
     }
 
@@ -2917,7 +2917,7 @@ vfwerrp(int error_code, FILE *stream, char const *name, char const *fmt, va_list
     /*
      * stage 0: determine if conditions allow function to write, return if not
      */
-    if (err_output_allowed == true) {
+    if (err_output_allowed == false) {
 	return;
     }
 
@@ -3083,7 +3083,7 @@ vwarn_or_err(int exitcode, const char *name, bool warning,
 	    (warn_output_allowed == false ||
 	     (msg_warn_silent == true && verbosity_level <= 0))) ||
         (warning == false &&
-	    err_output_allowed == true)) {
+	    err_output_allowed == false)) {
 	return;
     }
 
@@ -3171,7 +3171,7 @@ fwarn_or_err(int exitcode, FILE *stream, const char *name, bool warning, const c
 	    (warn_output_allowed == false ||
 	     (msg_warn_silent == true && verbosity_level <= 0))) ||
         (warning == false &&
-	    err_output_allowed == true)) {
+	    err_output_allowed == false)) {
 	return;
     }
 
@@ -3270,7 +3270,7 @@ vfwarn_or_err(int exitcode, FILE *stream, const char *name, bool warning,
 	    (warn_output_allowed == false ||
 	     (msg_warn_silent == true && verbosity_level <= 0))) ||
         (warning == false &&
-	    err_output_allowed == true)) {
+	    err_output_allowed == false)) {
 	return;
     }
 
@@ -3362,7 +3362,7 @@ warnp_or_errp(int exitcode, const char *name, bool warning, const char *fmt, ...
 	    (warn_output_allowed == false ||
 	     (msg_warn_silent == true && verbosity_level <= 0))) ||
         (warning == false &&
-	    err_output_allowed == true)) {
+	    err_output_allowed == false)) {
 	return;
     }
 
@@ -3456,7 +3456,7 @@ vwarnp_or_errp(int exitcode, const char *name, bool warning,
 	    (warn_output_allowed == false ||
 	     (msg_warn_silent == true && verbosity_level <= 0))) ||
         (warning == false &&
-	    err_output_allowed == true)) {
+	    err_output_allowed == false)) {
 	return;
     }
 
@@ -3543,7 +3543,7 @@ fwarnp_or_errp(int exitcode, FILE *stream, const char *name, bool warning, const
 	    (warn_output_allowed == false ||
 	     (msg_warn_silent == true && verbosity_level <= 0))) ||
         (warning == false &&
-	    err_output_allowed == true)) {
+	    err_output_allowed == false)) {
 	return;
     }
 
@@ -3642,7 +3642,7 @@ vfwarnp_or_errp(int exitcode, FILE *stream, const char *name, bool warning,
 	    (warn_output_allowed == false ||
 	     (msg_warn_silent == true && verbosity_level <= 0))) ||
         (warning == false &&
-	    err_output_allowed == true)) {
+	    err_output_allowed == false)) {
 	return;
     }
 
