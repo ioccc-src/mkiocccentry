@@ -6,16 +6,16 @@
  *
  *	https://github.com/lcn2/dbg/blob/master/README.md
  *
- * The non-static exported dbg interface functions have 7 stages:
+ * The non-static exported dbg interface functions have seven stages:
  *
- *	stage 0: determine if conditions allow the function to write
- *		 (return or exit as required)
+ *	stage 0: determine if conditions allow the function to write (return or
+ *	         exit as required)
  *
- *	stage 1: save errno so we can restore it before returning
- *		 (unless we must exit)
+ *	stage 1: save errno so we can restore it before returning (unless we
+ *	         must exit)
  *
- *	stage 2: stdarg variable argument list setup
- *		 (unless `va_list ap` is the last arg)
+ *	stage 2: stdarg variable argument list setup (unless va_list ap is the
+ *		 last arg)
  *
  *	stage 3: firewall checks
  *
@@ -25,52 +25,57 @@
  *
  *	stage 6: restore previous errno value or exit
  *
- * The static foo_write() functions are the functions that actually
- * write to an open stream.  All of the other non-static exported
- * functions call the static a foo_write() function during stage 4.
+ * The static foo_write() functions are the functions that actually write to the
+ * stream. Each function has a non-static counterpart that calls the static
+ * version during stage 4 of the process.
  *
- * While you may be tempted to try and combine functions in this code,
- * we recommend against doing so.  The more you make functions call other
- * functions the more complex you make a debugging, say with a tool such
- * as lldb or gdb, when you are trying to trace problems in your application.
+ * NOTE: The functions prefixed with 'f' write to a FILE * passed to the
+ * function to allow you to write to another stream other than stderr like
+ * stdout or an open file.
  *
- * We choose to use static foo_write() functions in part because it
- * made it easier to set a breakpoint (say, in lldb of gdb) before writes
- * occur.
+ * While you may be tempted to try and combine functions in this code, we
+ * recommend against doing so: the more you make functions call other functions
+ * the more complex you make a debugging, say with a tool such as lldb or gdb,
+ * when you are trying to trace problems in your application.
  *
- * IMPORTANT WARNING: This code is widely used by a number of applications.
- *		      A great deal of care has gone into making these
- *		      debugging facilities easy to code with, and much
- *		      less likely to be the source (pun intended) of bugs.
+ * We chose to use static foo_write() functions in part because it made it
+ * easier to set a breakpoint (say, in lldb of gdb) before writes occur.
  *
- *		      We apologize in advance for any problems this code
- *		      may introduce.  We would be happy to fix a general
- *		      bug by considering a pull request to the dbg repo.
+ * IMPORTANT WARNING: This code is widely used by a number of applications. A
+ *		      great deal of care has gone in to making these debugging
+ *		      facilities easy to code with, and much less likely to be
+ *		      the source (pun intended) of bugs.
+ *
+ *		      We apologize in advance for any problems this code may
+ *		      introduce. We would be happy to fix a general bug by
+ *		      considering a pull request to the dbg repo.
  *
  * DBG repo: https://github.com/lcn2/dbg
  *
- *		      You may also report an bug in the form of an issue
- *		      using the above URL.
+ *		      You may also report a bug in the form of an issue using
+ *		      the above URL.
  *
- *		      Improvements, including fixing typos in comments,
- *		      an addressing compiler warning messages, are very
- *		      much appreciated.
+ *		      Improvements -- including fixing typos in comments and
+ *		      addressing compiler warning messages -- are very much
+ *		      appreciated.
  *
  * ON PULL REQUESTS: Debugging an application program can be a frustrating
- *		     process for some people.  If you feel you need to issue a
- *		     pull request to fix and/or improve this code, please
- *		     keep the more general debugging context in mind, and
- *		     please take extra case to test your proposed modifications
- *		     so that you don't complicate the debugging process for others.
+ *		     process for some people. If you feel you need to issue a
+ *		     pull request to fix and/or improve this code, please keep
+ *		     the more general debugging context in mind, and please take
+ *		     extra case to test your proposed modifications so that you
+ *		     don't complicate the debugging process for others.
  *
- *		     Please maintain the coding style of this code, even
- *		     if it is not your style, in your pull request.  A consistent
- *		     style is much easier to understand, than a style patchwork.
+ *		     Please maintain the coding style of this code -- even if it
+ *		     is not your style -- in your pull request.  A consistent
+ *		     style is much easier to understand than a style patchwork.
+ *		     A good example is testing booleans in the form of foo ==
+ *		     false instead of !foo.
  *
- *		     We do welcome pull requests on this code.  If you have
- *		     any questions on how best to form a pull request, or would
- *		     like some minor help in forming one, please consider
- *		     asking by opening an issue at dbg repo.
+ *		     We do welcome pull requests on this code. If you have any
+ *		     questions on how best to form a pull request, or would like
+ *		     some minor help in forming one, please consider asking by
+ *		     opening an issue at dbg repo.
  *
  * Copyright (c) 1989,1997,2018-2022 by Landon Curt Noll.  All Rights Reserved.
  *
@@ -125,8 +130,8 @@ bool msg_warn_silent = false;		/* true ==> silence info & warnings if verbosity_
 /*
  * usage message
  *
- * The follow usage message came from an early draft of mkiocccentry.
- * This is just an example of usage: there is no mkiocccentry functionality here.
+ * The follow usage message came from an early draft of mkiocccentry. This is
+ * just an example usage string: there is no mkiocccentry functionality here.
  */
 static char const * const usage =
 "usage: %s [-h] [-v level] [-V] [-q] [-e errno] foo bar [baz]\n"
@@ -161,14 +166,14 @@ static void fusage_write(FILE *stream, int error_code, char const *caller, char 
 
 
 /*
- * fmsg_write - write a message, to a stream
+ * fmsg_write - write a message to a stream
  *
- * Write a formatted message to a open stream.  Check for write
- * errors and call warnp() with a write error diagnostic.
+ * Write a formatted message to a stream. Checks for write errors and call
+ * warnp() with a write error diagnostic.
  *
  * given:
  *	stream	open stream on which to write
- *	caller	name of the calling function
+ *	caller	name of the calling function (__func__, for example)
  *	fmt	format of the warning
  *	ap	variable argument list
  *
@@ -230,9 +235,9 @@ fmsg_write(FILE *stream, char const *caller, char const *fmt, va_list ap)
 
 
 /*
- * fdbg_write - write a diagnostic, to a stream
+ * fdbg_write - write a diagnostic message to a stream
  *
- * Write a formatted debug diagnostic to a open stream.  Check for write
+ * Write a formatted debug diagnostic message to a stream. Checks for write
  * errors and call warnp() with a write error diagnostic.
  *
  * given:
@@ -311,10 +316,10 @@ fdbg_write(FILE *stream, char const *caller, int level, char const *fmt, va_list
 
 
 /*
- * fwarn_write - write a warning, to a stream
+ * fwarn_write - write a warning to a stream
  *
- * Write a formatted warning to a open stream.  Check for write
- * errors and call warnp() with a write error diagnostic.
+ * Write a formatted warning to a stream. Checks for write errors and call
+ * warnp() with a write error diagnostic.
  *
  * given:
  *	stream	open stream on which to write
@@ -398,7 +403,7 @@ fwarn_write(FILE *stream, char const *caller, char const *name, char const *fmt,
 /*
  * fwarnp_write - write a warning message with errno details, to a stream
  *
- * Write a formatted warning with errno info to a open stream.  Check for write
+ * Write a formatted warning with errno info to a stream. Checks for write
  * errors and call warnp() with a write error diagnostic.
  *
  * given:
@@ -483,7 +488,7 @@ fwarnp_write(FILE *stream, char const *caller, char const *name, char const *fmt
 /*
  * ferr_write - write an error diagnostic, to a stream
  *
- * Write a formatted an error diagnostic to a open stream.  Check for write
+ * Write a formatted an error diagnostic to a stream. Checks for write
  * errors and call warnp() with a write error diagnostic.
  *
  * given:
@@ -566,7 +571,7 @@ ferr_write(FILE *stream, int error_code, char const *caller,
 /*
  * ferrp_write - write an error diagnostic with errno details, to a stream
  *
- * Write a formatted warning with errno info to a open stream.  Check for write
+ * Write a formatted warning with errno info to a stream. Checks for write
  * errors and call warnp() with a write error diagnostic.
  *
  * given:
@@ -649,7 +654,7 @@ ferrp_write(FILE *stream, int error_code, char const *caller,
 /*
  * fusage_write - write the usage message, to a stream
  *
- * Write a formatted the usage message to a open stream.  Check for write
+ * Write a formatted the usage message to a stream. Checks for write
  * errors and call warnp() with a write error diagnostic.
  *
  * given:
