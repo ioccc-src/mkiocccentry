@@ -281,9 +281,9 @@ json_encode(char const *ptr, size_t len, size_t *retlen, bool skip_quote)
     /*
      * skip any enclosing quotes if requested
      *
-     * We only skip enclosing quotes skip_quote is true,
-     * if the memory block is long enough to contain 2 "'s,
-     * if the memory block start and ends with a ".
+     * We only skip enclosing quotes if skip_quote is true, the memory block is
+     * long enough to contain two '"'s and the memory block starts and ends with
+     * a '"'.
      */
     if (skip_quote == true && len > 1 && ptr[0] == '"' && ptr[len-1] == '"') {
 	i = 1;	/* start encoding on the next byte beyond the " */
