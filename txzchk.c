@@ -1159,7 +1159,7 @@ check_tarball(char const *tar, char const *fnamchk)
     errno = 0;			/* pre-clear errno for errp() */
     exit_code = shell_cmd(__func__, true, "% -E % -- %", fnamchk, ext, txzpath);
     if (exit_code != 0) {
-	warnp("txzchk", "%s: %s %s failed with exit code: %d", txzpath, fnamchk, txzpath, WEXITSTATUS(exit_code));
+	warn("txzchk", "%s: %s %s failed with exit code: %d", txzpath, fnamchk, txzpath, WEXITSTATUS(exit_code));
 	++txz_info.total_issues;
     } else {
 	fnamchk_okay = true;
