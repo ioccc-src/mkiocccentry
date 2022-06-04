@@ -158,10 +158,12 @@ run_test()
 	if [[ $V_FLAG -ge 3 ]]; then
 	    echo "$0: debug[3]: jparse OK, exit code 0" 1>&2
 	fi
-    elif [[ $V_FLAG -ge 1 ]]; then
-	echo "$0: jparse FAIL, exit code: $status" 1>&2 >> "${LOGFILE}"
-	if [[ $V_FLAG -ge 3 ]]; then
-	    echo "$0: debug[3]: in run_test: jparse exit code: $status" 1>&2
+    else
+	if [[ $V_FLAG -ge 1 ]]; then
+	    echo "$0: jparse FAIL, exit code: $status" 1>&2 >> "${LOGFILE}"
+	    if [[ $V_FLAG -ge 3 ]]; then
+		echo "$0: debug[3]: in run_test: jparse exit code: $status" 1>&2
+	    fi
 	fi
 	EXIT_CODE=1
     fi
