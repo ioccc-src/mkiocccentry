@@ -4,7 +4,6 @@ build.log
 dbg
 dbg_test.c
 dyn_test
-entry.*.tx[zt]
 fnamchk
 iocccsize
 jauthchk

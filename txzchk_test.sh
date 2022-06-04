@@ -185,125 +185,23 @@ if [[ $V_FLAG -ge 5 ]]; then
     echo "$0: debug[5]: will run txzchk from: $TXZCHK" 1>&2
 fi
 
-# run_txz_test - run a single test
+# run_test - run a single test
 #
 # usage:
 #	run_test debug_level {fail|pass} txzchk_test_file
 #
 #	run_test	    - our function name
-#	debug_level	    - the -v debug level to pass to TXZCHK
-#	fail		    - test must fail - error if passes
-#	pass		    - test must pass - error if fails
-#	txzchk_test_file    - the txzchk file to give to TXZCHK
-#
-run_txz_test()
-{
-    # parse args
-    #
-    if [[ $# -ne 3 ]]; then
-	echo "$0: ERROR: expected 3 args to run_txz_test, found $#" 1>&2
-	exit 4
-    fi
-    typeset debug_level="$1"
-    typeset pass_fail="$2"
-    typeset txzchk_test_file="$3"
-
-    if [[ ! -e $txzchk_test_file ]]; then
-	echo "$0: in run_txz_test: txzchk_test_file not found: $txzchk_test_file"
-	exit 4
-    fi
-    if [[ ! -f $txzchk_test_file ]]; then
-	echo "$0: in run_txz_test: txzchk_test_file not a regular file: $txzchk_test_file"
-	exit 4
-    fi
-    if [[ ! -r $txzchk_test_file ]]; then
-	echo "$0: in run_txz_test: txzchk_test_file not readable: $txzchk_test_file"
-	exit 4
-    fi
-    if [[ $pass_fail != pass && $pass_fail != fail ]]; then
-	echo "$0: in run_txz_test: pass_fail neither 'pass' nor 'fail': $pass_fail" 1>&2
-	exit 4
-    fi
-
-    # debugging
-    #
-    if [[ $V_FLAG -ge 9 ]]; then
-	echo "$0: debug[9]: in run_txz_test: txzchk: $TXZCHK" 1>&2
-	echo "$0: debug[9]: in run_txt_test: tar: $TAR" 1>&2
-	echo "$0: debug[9]: in run_txt_test: fnamchk: $FNAMCHK" 1>&2
-	echo "$0: debug[9]: in run_txz_test: debug_level: $debug_level" 1>&2
-	echo "$0: debug[9]: in run_txz_test: pass or fail: $pass_fail" 1>&2
-	echo "$0: debug[9]: in run_txz_test: txzchk_test_file: $txzchk_test_file" 1>&2
-    fi
-
-    if [[ $V_FLAG -ge 5 ]]; then
-	echo "$0: debug[5]: in run_txz_test: about to run: $TXZCHK -v $debug_level -t $TAR -F $FNAMCHK -- $txzchk_test_file" 1>&2
-    fi
-    if [[ $debug_level -gt 0 ]]; then
-	"$TXZCHK" -v "$debug_level" -t "$TAR" -F "$FNAMCHK" -- "$txzchk_test_file"
-	status="$?"
-    else
-	"$TXZCHK" -v 0 -q -t "$TAR" -F "$FNAMCHK" -- "$txzchk_test_file"
-	status="$?"
-    fi
-    if [[ $V_FLAG -ge 7 ]]; then
-	echo "$0: debug[7]: in run_txz_test: txzchk exit code: $status" 1>&2
-    fi
-
-    # examine test result
-    #
-    if [[ $pass_fail == pass ]]; then
-	if [[ $status -ne 0 ]]; then
-	    echo "$0: Warning: in run_txz_test: FAIL: $TXZCHK -v $debug_level -t $TAR -F $FNAMCHK $txzchk_test_file exit code: $status != 0" | tee -a "$LOGFILE" 1>&2
-	    echo "$0: Warning: the above mentioned test FAILED when it should have PASSED" | tee -a "$LOGFILE" 1>&2
-	    if [[ $V_FLAG -lt 3 ]]; then
-		echo "$0: Warning: for more details try: $TXZCHK -v 3 -t $TAR -F $FNAMCHK -- $txzchk_test_file" | tee -a "$LOGFILE" 1>&2
-	    else
-		echo "$0: Warning: for more details try: $TXZCHK -v $V_FLAG -t $TAR -F $FNAMCHK -- $txzchk_test_file" | tee -a "$LOGFILE" 1>&2
-	    fi
-	    echo | tee -a "${LOGFILE}" 1>&2
-	    EXIT_CODE=1
-	elif [[ $V_FLAG -ge 5 ]]; then
-	    echo "$0: debug[5]: in run_txz_test: PASS: $TXZCHK -v $debug_level -t $TAR -F $FNAMCHK $debug_level $txzchk_test_file" 1>&2
-	fi
-    elif [[ $pass_fail == fail ]]; then
-	if [[ $status -eq 0 ]]; then
-	    echo "$0: Warning: in run_txz_test: FAIL: $TXZCHK -v $debug_level -t $TAR -F $FNAMCHK $txzchk_test_file exit code: $status == 0" | tee -a "$LOGFILE" 1>&2
-	    echo "$0: Warning: the above mentioned test PASSED when it should have FAILED" | tee -a "$LOGFILE" 1>&2
-	    if [[ $V_FLAG -lt 3 ]]; then
-		echo "$0: Warning: for more details try: $TXZCHK -v 3 -t $TAR -F $FNAMCHK -- $txzchk_test_file" | tee -a "$LOGFILE" 1>&2
-	    else
-		echo "$0: Warning: for more details try: $TXZCHK -v $V_FLAG -t $TAR -F $FNAMCHK -- $txzchk_test_file" | tee -a "$LOGFILE" 1>&2
-	    fi
-	    echo | tee -a "${LOGFILE}" 1>&2
-	    EXIT_CODE=1
-	elif [[ $V_FLAG -ge 5 ]]; then
-	    echo "$0: debug[5]: in run_txz_test: PASS: $TXZCHK -v $debug_level -t $TAR -F $FNAMCHK $txzchk_test_file" 1>&2
-	fi
-    fi
-
-
-    # return
-    #
-    return
-}
-# run_txt_test - run a single test
-#
-# usage:
-#	run_txt_test debug_level {fail|pass} txzchk_test_file
-#
-#	run_txt_test	    - our function name
 #	debug_level	    - the -v debug level to pass to txzchk
 #	fail		    - test must fail - error if passes
 #	pass		    - test must pass - error if fails
 #	txzchk_test_file    - the txzchk text file to give to txzchk
 #
-run_txt_test()
+run_test()
 {
     # parse args
     #
     if [[ $# -ne 3 ]]; then
-	echo "$0: ERROR: expected 3 args to run_txt_test, found $#" 1>&2
+	echo "$0: ERROR: expected 3 args to run_test, found $#" 1>&2
 	exit 4
     fi
     typeset debug_level="$1"
@@ -311,35 +209,35 @@ run_txt_test()
     typeset txzchk_test_file="$3"
 
     if [[ ! -e $txzchk_test_file ]]; then
-	echo "$0: in run_txt_test: txzchk_test_file not found: $txzchk_test_file"
+	echo "$0: in run_test: txzchk_test_file not found: $txzchk_test_file"
 	exit 4
     fi
     if [[ ! -f $txzchk_test_file ]]; then
-	echo "$0: in run_txt_test: txzchk_test_file not a regular file: $txzchk_test_file"
+	echo "$0: in run_test: txzchk_test_file not a regular file: $txzchk_test_file"
 	exit 4
     fi
     if [[ ! -r $txzchk_test_file ]]; then
-	echo "$0: in run_txt_test: txzchk_test_file not readable: $txzchk_test_file"
+	echo "$0: in run_test: txzchk_test_file not readable: $txzchk_test_file"
 	exit 4
     fi
     if [[ $pass_fail != pass && $pass_fail != fail ]]; then
-	echo "$0: in run_txt_test: pass_fail neither 'pass' nor 'fail': $pass_fail" 1>&2
+	echo "$0: in run_test: pass_fail neither 'pass' nor 'fail': $pass_fail" 1>&2
 	exit 4
     fi
 
     # debugging
     #
     if [[ $V_FLAG -ge 9 ]]; then
-	echo "$0: debug[9]: in run_txt_test: txzchk: $TXZCHK" 1>&2
-	echo "$0: debug[9]: in run_txt_test: tar: $TAR" 1>&2
-	echo "$0: debug[9]: in run_txt_test: fnamchk: $FNAMCHK" 1>&2
-	echo "$0: debug[9]: in run_txt_test: debug_level: $debug_level" 1>&2
-	echo "$0: debug[9]: in run_txt_test: pass or fail: $pass_fail" 1>&2
-	echo "$0: debug[9]: in run_txt_test: txzchk_test_file: $txzchk_test_file" 1>&2
+	echo "$0: debug[9]: in run_test: txzchk: $TXZCHK" 1>&2
+	echo "$0: debug[9]: in run_test: tar: $TAR" 1>&2
+	echo "$0: debug[9]: in run_test: fnamchk: $FNAMCHK" 1>&2
+	echo "$0: debug[9]: in run_test: debug_level: $debug_level" 1>&2
+	echo "$0: debug[9]: in run_test: pass or fail: $pass_fail" 1>&2
+	echo "$0: debug[9]: in run_test: txzchk_test_file: $txzchk_test_file" 1>&2
     fi
 
     if [[ $V_FLAG -ge 5 ]]; then
-	echo "$0: debug[5]: in run_txt_test: about to run: $TXZCHK -v $debug_level -t $TAR -F $FNAMCHK -T -E txt -- $txzchk_test_file" 1>&2
+	echo "$0: debug[5]: in run_test: about to run: $TXZCHK -v $debug_level -t $TAR -F $FNAMCHK -T -E txt -- $txzchk_test_file" 1>&2
     fi
     if [[ $debug_level -gt 0 ]]; then
 	"$TXZCHK" -v "$debug_level" -t "$TAR" -F "$FNAMCHK" -T -E txt -- "$txzchk_test_file"
@@ -349,14 +247,14 @@ run_txt_test()
 	status="$?"
     fi
     if [[ $V_FLAG -ge 7 ]]; then
-	echo "$0: debug[7]: in run_txt_test: txzchk exit code: $status" 1>&2
+	echo "$0: debug[7]: in run_test: txzchk exit code: $status" 1>&2
     fi
 
     # examine test result
     #
     if [[ $pass_fail == pass ]]; then
 	if [[ $status -ne 0 ]]; then
-	    echo "$0: Warning: in run_txt_test: FAIL: $TXZCHK -v $debug_level -t $TAR -F $FNAMCHK -T -E txt $txzchk_test_file exit code: $status != 0" | tee -a "$LOGFILE" 1>&2
+	    echo "$0: Warning: in run_test: FAIL: $TXZCHK -v $debug_level -t $TAR -F $FNAMCHK -T -E txt $txzchk_test_file exit code: $status != 0" | tee -a "$LOGFILE" 1>&2
 	    echo "$0: Warning: the above mentioned test FAILED when it should have PASSED" | tee -a "$LOGFILE" 1>&2
 	    if [[ $V_FLAG -lt 3 ]]; then
 		echo "$0: Warning: for more details try: $TXZCHK -v 3 -t $TAR -F $FNAMCHK -T -E txt -- $txzchk_test_file" | tee -a "$LOGFILE" 1>&2
@@ -366,11 +264,11 @@ run_txt_test()
 	    echo | tee -a "${LOGFILE}" 1>&2
 	    EXIT_CODE=1
 	elif [[ $V_FLAG -ge 5 ]]; then
-	    echo "$0: debug[5]: in run_txt_test: PASS: $TXZCHK -v $debug_level -t $TAR -F $FNAMCHK -T -E txt $debug_level $txzchk_test_file" 1>&2
+	    echo "$0: debug[5]: in run_test: PASS: $TXZCHK -v $debug_level -t $TAR -F $FNAMCHK -T -E txt $debug_level $txzchk_test_file" 1>&2
 	fi
     elif [[ $pass_fail == fail ]]; then
 	if [[ $status -eq 0 ]]; then
-	    echo "$0: Warning: in run_txt_test: FAIL: $TXZCHK -v $debug_level -F $FNAMCHK -T -E txt $txzchk_test_file exit code: $status == 0" | tee -a "$LOGFILE" 1>&2
+	    echo "$0: Warning: in run_test: FAIL: $TXZCHK -v $debug_level -F $FNAMCHK -T -E txt $txzchk_test_file exit code: $status == 0" | tee -a "$LOGFILE" 1>&2
 	    echo "$0: Warning: the above mentioned test PASSED when it should have FAILED" | tee -a "$LOGFILE" 1>&2
 	    if [[ $V_FLAG -lt 3 ]]; then
 		echo "$0: Warning: for more details try: $TXZCHK -v 3 -F $FNAMCHK -T -E txt -- $txzchk_test_file" | tee -a "$LOGFILE" 1>&2
@@ -380,7 +278,7 @@ run_txt_test()
 	    echo | tee -a "${LOGFILE}" 1>&2
 	    EXIT_CODE=1
 	elif [[ $V_FLAG -ge 5 ]]; then
-	    echo "$0: debug[5]: in run_txt_test: PASS: $TXZCHK -v $debug_level -F $FNAMCHK -T -E txt $txzchk_test_file" 1>&2
+	    echo "$0: debug[5]: in run_test: PASS: $TXZCHK -v $debug_level -F $FNAMCHK -T -E txt $txzchk_test_file" 1>&2
 	fi
     fi
 
@@ -395,39 +293,24 @@ run_txt_test()
 
 # run tests that must pass
 #
-# first some actual tarballs
-if [[ $V_FLAG -ge 3 ]]; then
-    echo "$0: debug[3]: about to run txzchk tests that must pass: tarballs" 1>&2
-fi
-find "$TXZCHK_GOOD_TREE" -type f -name '*.txz' -print | while read -r file; do
-    run_txz_test "$DBG_LEVEL" pass "$file"
-done
-
-# now the text files
 if [[ $V_FLAG -ge 3 ]]; then
     echo "$0: debug[3]: about to run txzchk tests that must pass: text files" 1>&2
 fi
 find "$TXZCHK_GOOD_TREE" -type f -name '*.txt' -print | while read -r file; do
-    run_txt_test "$DBG_LEVEL" pass "$file"
+    run_test "$DBG_LEVEL" pass "$file"
 done
 
 
 # run tests that must fail
 #
-# first some actual tarballs
-if [[ $V_FLAG -ge 3 ]]; then
-    echo "$0: debug[3]: about to run txzchk tests that must fail: tarballs" 1>&2
-fi
-find "$TXZCHK_BAD_TREE" -type f -name '*.txz' -print | while read -r file; do
-    run_txz_test "$DBG_LEVEL" fail "$file"
-done
+
 # now the text files
 #
 if [[ $V_FLAG -ge 3 ]]; then
     echo "$0: debug[3]: about to run txzchk tests that must fail: text files" 1>&2
 fi
 find "$TXZCHK_BAD_TREE" -type f -name '*.txt' -print | while read -r file; do
-    run_txt_test "$DBG_LEVEL" fail "$file"
+    run_test "$DBG_LEVEL" fail "$file"
 done
 
 # All Done!!! -- Jessica Noll, Age 2

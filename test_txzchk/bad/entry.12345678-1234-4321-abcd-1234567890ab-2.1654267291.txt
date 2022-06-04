@@ -1,0 +1,16 @@
+drwxr-xr-x  0 cody   staff       0 Jun  3 07:41 test-0/
+-rw-r--r--  0 cody   staff    1854 Jun  3 07:41 test-0/Makefile
+-rw-r--r--  0 cody   staff       4 Jun  3 07:41 test-0/extra2
+-rw-r--r--  0 cody   staff       0 Jun  3 07:41 test-0/prog.c
+-rw-r--r--  0 cody   staff    2794 Jun  3 07:41 test-0/.author.json
+-rw-r--r--  0 cody   staff    4454 Jun  3 07:41 test-0/remarks.md
+-rw-r--r--  0 cody   staff    1430 Jun  3 07:41 test-0/.info.json
+-rw-r--r--  0 cody   staff       4 Jun  3 07:41 test-0/extra1
+drwxr-xr-x  0 cody   staff       0 Jun  3 07:41 test-1/
+-rw-r--r--  0 cody   staff    1854 Jun  3 07:41 test-1/Makefile
+-rw-r--r--  0 cody   staff       4 Jun  3 07:41 test-1/extra2
+-rw-r--r--  0 cody   staff      61 Jun  3 07:41 test-1/prog.c
+-rw-r--r--  0 cody   staff    2794 Jun  3 07:41 test-1/.author.json
+-rw-r--r--  0 cody   staff    4454 Jun  3 07:41 test-1/remarks.md
+-rw-r--r--  0 cody   staff    1433 Jun  3 07:41 test-1/.info.json
+-rw-r--r--  0 cody   staff       4 Jun  3 07:41 test-1/extra1
