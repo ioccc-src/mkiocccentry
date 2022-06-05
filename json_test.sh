@@ -91,6 +91,33 @@ fi
 export JSON_INFO_TREE="$JSON_TREE/info.json"
 export JSON_AUTH_TREE="$JSON_TREE/author.json"
 
+# form the temporary exit code file
+#
+export EXIT_CODE_FIlE MKTEMP_TEMPLATE
+MKTEMP_TEMPLATE=".exit_code.$(basename "$0").XXXXXXXXXX"
+EXIT_CODE_FIlE=$(mktemp "$MKTEMP_TEMPLATE")
+status="$?"
+if [[ $status -ne 0 ]]; then
+    echo "$0: ERROR: mktemp $MKTEMP_TEMPLATE exit code: $status" 1>&2
+    exit 55
+fi
+if [[ ! -e $EXIT_CODE_FIlE ]]; then
+    echo "$0: ERROR: EXIT_CODE_FIlE does not exist: $EXIT_CODE_FIlE" 1>&2
+    exit 55
+fi
+if [[ ! -f $EXIT_CODE_FIlE ]]; then
+    echo "$0: ERROR: EXIT_CODE_FIlE not a file: $EXIT_CODE_FIlE" 1>&2
+    exit 55
+fi
+if [[ ! -r $EXIT_CODE_FIlE ]]; then
+    echo "$0: ERROR: EXIT_CODE_FIlE file not readable: $EXIT_CODE_FIlE" 1>&2
+    exit 55
+fi
+if [[ ! -w $EXIT_CODE_FIlE ]]; then
+    echo "$0: ERROR: EXIT_CODE_FIlE file not writable: $EXIT_CODE_FIlE" 1>&2
+    exit 55
+fi
+
 # check that json_tree is a readable directory
 #
 if [[ ! -e $JSON_TREE ]]; then
@@ -322,6 +349,12 @@ run_test()
 	    fi
 	    echo | tee -a "${LOGFILE}" 1>&2
 	    EXIT_CODE=1
+	    echo "$EXIT_CODE" > "$EXIT_CODE_FIlE"
+	    status="$?"
+	    if [[ $status -ne 0 || ! -s $EXIT_CODE_FIlE ]]; then
+		echo "$0: FATAL: failed to write $EXIT_CODE into EXIT_CODE_FIlE: $EXIT_CODE_FIlE" 1>&2
+		exit 55
+	    fi
 	elif [[ $V_FLAG -ge 5 ]]; then
 	    echo "$0: debug[5]: in run_test: PASS: $test_prog -v $debug_level $json_test_file" 1>&2
 	fi
@@ -336,6 +369,12 @@ run_test()
 	    fi
 	    echo | tee -a "${LOGFILE}" 1>&2
 	    EXIT_CODE=1
+	    echo "$EXIT_CODE" > "$EXIT_CODE_FIlE"
+	    status="$?"
+	    if [[ $status -ne 0 || ! -s $EXIT_CODE_FIlE ]]; then
+		echo "$0: FATAL: failed to write $EXIT_CODE into EXIT_CODE_FIlE: $EXIT_CODE_FIlE" 1>&2
+		exit 55
+	    fi
 	elif [[ $V_FLAG -ge 5 ]]; then
 	    echo "$0: debug[5]: in run_test: PASS: $test_prog -v $debug_level $json_test_file" 1>&2
 	fi
@@ -363,9 +402,21 @@ run_test()
 	   ;;
 	1) echo "$0: Warning: FAIL: JSON codes for $json_test_file do not match expected code list in $json_code" | tee -a "$LOGFILE" 1>&2
 	   EXIT_CODE=1
+	   echo "$EXIT_CODE" > "$EXIT_CODE_FIlE"
+	   status="$?"
+	   if [[ $status -ne 0 || ! -s $EXIT_CODE_FIlE ]]; then
+		echo "$0: FATAL: failed to write $EXIT_CODE into EXIT_CODE_FIlE: $EXIT_CODE_FIlE" 1>&2
+		exit 55
+	   fi
 	   ;;
 	*) echo "$0: ERROR: FAIL: jcodechk.sh exit status: $status > 1" | tee -a "$LOGFILE" 1>&2
 	   EXIT_CODE=1
+	   echo "$EXIT_CODE" > "$EXIT_CODE_FIlE"
+	   status="$?"
+	   if [[ $status -ne 0 || ! -s $EXIT_CODE_FIlE ]]; then
+		echo "$0: FATAL: failed to write $EXIT_CODE into EXIT_CODE_FIlE: $EXIT_CODE_FIlE" 1>&2
+		exit 55
+	   fi
 	   ;;
 	esac
     elif [[ $V_FLAG -ge 7 ]]; then
@@ -423,6 +474,48 @@ if [[ -n $RUN_JAUTHCHK ]]; then
     done
 fi
 
+# Check for numeric exit code from EXIT_CODE_FIlE as a possible EXIT_CODE
+#
+if [[ $V_FLAG -ge 5 ]]; then
+    echo "$0: debug[5]: near final top level EXIT_CODE: $EXIT_CODE" 1>&2
+fi
+if [[ -s $EXIT_CODE_FIlE ]]; then
+    NEW_EXIT_CODE=$(< "$EXIT_CODE_FIlE")
+    if [[ $V_FLAG -ge 5 ]]; then
+	echo "$0: debug[5]: found non-empty EXIT_CODE_FIlE: $EXIT_CODE_FIlE" 1>&2
+    fi
+    if [[ -z $NEW_EXIT_CODE ]]; then
+	echo "$0: FATAL: NEW_EXIT_CODE empty but non-empty EXIT_CODE_FIlE exists: $EXIT_CODE_FIlE" 1>&2
+	exit 55
+    fi
+    if [[ $NEW_EXIT_CODE =~ ^[0-9]+$ ]]; then
+	if [[ $V_FLAG -ge 5 ]]; then
+	    echo "$0: debug[5]: NEW_EXIT_CODE: $NEW_EXIT_CODE" 1>&2
+	fi
+    else
+	echo "$0: FATAL: NEW_EXIT_CODE is not an integer: $NEW_EXIT_CODE" 1>&2
+	exit 55
+    fi
+    if [[ $NEW_EXIT_CODE -lt 0 || $NEW_EXIT_CODE -gt 255 ]]; then
+	echo "$0: FATAL: NEW_EXIT_CODE not in range [0,255]: $NEW_EXIT_CODE" 1>&2
+	exit 55
+    fi
+    if [[ $EXIT_CODE -eq 0 ]]; then
+	EXIT_CODE="$NEW_EXIT_CODE"
+	if [[ $V_FLAG -ge 5 ]]; then
+	    echo "$0: debug[5]: top level EXIT_CODE has been set to: $EXIT_CODE" 1>&2
+	fi
+    elif [[ $NEW_EXIT_CODE -eq 0 ]]; then
+	if [[ $V_FLAG -ge 5 ]]; then
+	    echo "$0: debug[5]: while NEW_EXIT_CODE is 0, top level EXIT_CODE will remain: $EXIT_CODE" 1>&2
+	fi
+    fi
+fi
+if [[ $V_FLAG -ge 1 ]]; then
+    echo "$0: debug[1]: top level EXIT_CODE: $EXIT_CODE" 1>&2
+fi
+rm -f "$EXIT_CODE_FIlE"
+
 # All Done!!! -- Jessica Noll, Age 2
 #
 if [[ $V_FLAG -ge 1 ]]; then
@@ -431,5 +524,8 @@ if [[ $V_FLAG -ge 1 ]]; then
     else
 	echo "$0: debug[1]: some tests FAILED" 1>&2
     fi
+fi
+if [[ $V_FLAG -ge 3 ]]; then
+    echo "$0: debug[3]: final EXIT_CODE: $EXIT_CODE" 1>&2
 fi
 exit "$EXIT_CODE"

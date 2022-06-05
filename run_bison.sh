@@ -505,10 +505,12 @@ add_sorry() {
 
     # obtain a temporary filename
     #
-    TMP_FILE=$(mktemp -t "$FILE.XXXXXXXX")
+    export MKTEMP_TEMPLATE TMP_FILE
+    MKTEMP_TEMPLATE=".sorry.$(basename "$0").XXXXXXXXXX"
+    TMP_FILE=$(mktemp "$MKTEMP_TEMPLATE")
     status="$?"
     if [[ $status -ne 0 ]]; then
-	echo "$0: ERROR: mktemp -t $FILE exit code: $status" 1>&2
+	echo "$0: ERROR: mktemp $FILE exit code: $status" 1>&2
 	exit 14
     fi
     if [[ ! -e $TMP_FILE ]]; then

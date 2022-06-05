@@ -565,8 +565,18 @@ jparse.c flex: jparse.l jparse.h sorry.tm.ca.h jparse.tab.h run_flex.sh limit_io
 #
 build release pull: prep.sh
 	${RM} -f ${BUILD_LOG}
-	./prep.sh -e -o 2>&1 | ${TEE} ${BUILD_LOG}
-	@echo NOTE: The above details were saved in the file: ${BUILD_LOG}
+	@echo "./prep.sh -e -o 2>&1 | ${TEE} ${BUILD_LOG}"
+	@./prep.sh -e -o 2>&1 | ${TEE} "${BUILD_LOG}"; \
+	    EXIT_CODE="$${PIPESTATUS[0]}"; \
+	    if [[ $$EXIT_CODE -ne 0 ]]; then \
+		echo "=-=-=-=-= Warning: prep.sh error code: $$EXIT_CODE =-=-=-=-=" 1>&2; \
+		echo 1>&2; \
+		echo "NOTE: The above details were saved in the file: ${BUILD_LOG}"; \
+		echo 1>&2; \
+		exit 1; \
+	    else \
+		echo "NOTE: The above details were saved in the file: ${BUILD_LOG}"; \
+	    fi
 
 #
 # make prep
@@ -587,7 +597,13 @@ build release pull: prep.sh
 #
 prep: prep.sh
 	${RM} -f ${BUILD_LOG}
-	./prep.sh 2>&1 | ${TEE} ${BUILD_LOG}
+	@echo "./prep.sh 2>&1 | ${TEE} ${BUILD_LOG}"
+	@-./prep.sh 2>&1 | ${TEE} "${BUILD_LOG}"; \
+	    EXIT_CODE="$${PIPESTATUS[0]}"; \
+	    if [[ $$EXIT_CODE -ne 0 ]]; then \
+		echo "=-=-=-=-= Warning: prep.sh error code: $$EXIT_CODE =-=-=-=-=" 1>&2; \
+		echo 1>&2; \
+	    fi
 	@echo NOTE: The above details were saved in the file: ${BUILD_LOG}
 
 #
@@ -735,7 +751,6 @@ prep_clobber:
 	${RM} -f ${GENERATED_CSRC} ${GENERATED_HSRC}
 	${RM} -f answers.txt
 	${RM} -f jstr_test.out jstr_test2.out
-	${RM} -f build.log jparse_test.log json_test.log
 	${RM} -rf test_iocccsize test_src test_work tags dbg.out
 	${RM} -f jparse.output jparse.html
 	${RM} -f ${TXZCHK_LOG}
@@ -752,6 +767,8 @@ prep_clobber:
 	${RM} -f jint.set.tmp jint_gen
 	${RM} -f jfloat.set.tmp jfloat_gen
 	${RM} -rf jint_gen.dSYM jfloat_gen.dSYM
+	${RM} -f .sorry.*
+	${RM} -f .exit_code.*
 
 
 ###################################
@@ -772,6 +789,7 @@ clean: clean_generated_obj
 
 clobber: clean prep_clobber
 	${RM} -f ${BUILD_LOG}
+	${RM} -f jparse_test.log json_test.log
 
 distclean nuke: clobber
 

@@ -1,4 +1,6 @@
 # mkiocccentry specific
+.exit_code.*
+.sorry.*
 answers.txt
 build.log
 dbg

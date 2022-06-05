@@ -142,6 +142,8 @@ make_action() {
 	# process a make action failure
 	#
 	EXIT_CODE="$CODE"
+	echo
+	echo "$0: Warning: EXIT_CODE is now: $EXIT_CODE" 1>&2
 	if [[ -n $E_FLAG ]]; then
 	    echo
 	    echo "$0: FATAL: $MAKE -f $MAKEFILE $RULE exit status: $status" 1>&2
@@ -155,7 +157,6 @@ make_action() {
 	    echo
 	    echo "=-=-= FAIL: $MAKE $RULE =-=-="
 	    echo
-	    EXIT_CODE="$CODE"
 	fi
 
     # announce post-action
