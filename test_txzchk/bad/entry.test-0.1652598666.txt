@@ -1,0 +1,8 @@
+drwxr-xr-x cody/1000         0 2022-02-09 09:46 test-0/
+-rw-rw-r-- 1000/staff         -100000 2022-02-09 09:46 test-0/prog.c
+-rw-rw-r-- 1000/1000       0 2022-02-09 09:46 test-0/Makefile
+-rw-rw-r-- 1000/1000       0 2022-02-09 09:46 test-0/.author.json
+-rw-rw-r-- 1000/1000       778 2022-02-09 09:46 test-0/remarks.md
+-rw-rw-r-- 1000/1000         4 2022-02-09 09:46 test-0/extra1
+-rw-rw-r-- 1000/1000         4 2022-02-09 09:46 test-0/extra2
+-rw-rw-r-- 1000/1000      1231 2022-02-09 09:46 test-0/.info.json
