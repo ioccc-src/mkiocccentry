@@ -33,6 +33,7 @@ test_set
 test_src
 test_work
 txzchk
+txzchk_test.log
 utf8_test
 verge
 

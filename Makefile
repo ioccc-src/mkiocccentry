@@ -724,7 +724,7 @@ reset_min_timestamp: reset_tstamp.sh
 # perform all of the mkiocccentry repo required tests
 #
 test ioccc_test: ioccc_test.sh iocccsize_test.sh dbg mkiocccentry_test.sh jstr_test.sh \
-		 jnum_chk dyn_test Makefile
+		 jnum_chk dyn_test txzchk_test.sh Makefile
 	./ioccc_test.sh
 
 # run json_test.sh on test_JSON files
@@ -789,7 +789,7 @@ clean: clean_generated_obj
 
 clobber: clean prep_clobber
 	${RM} -f ${BUILD_LOG}
-	${RM} -f jparse_test.log json_test.log
+	${RM} -f jparse_test.log json_test.log txzchk_test.log
 
 distclean nuke: clobber
 

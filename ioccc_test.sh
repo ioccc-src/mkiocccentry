@@ -345,6 +345,24 @@ else
     echo "PASSED: jparse_test.sh"
 fi
 
+# txzchk_test.sh
+#
+echo
+echo "RUNNING: txzchk_test.sh"
+echo
+echo "./txzchk_test.sh -t ./txzchk -F ./fnamchk -d test_txzchk"
+./txzchk_test.sh -t ./txzchk -F ./fnamchk -d test_txzchk
+status="$?"
+if [[ $status -ne 0 ]]; then
+    echo "$0: ERROR: txzchk_test.sh non-zero exit code: $status" 1>&2
+    FAILURE_SUMMARY="$FAILURE_SUMMARY
+    txzchk_test.sh non-zero exit code: $status"
+    EXIT_CODE="28"
+else
+    echo
+    echo "PASSED: txzchk_test.sh"
+fi
+
 
 # report overall status
 #
