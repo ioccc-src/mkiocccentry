@@ -23,7 +23,20 @@ case of debug messages, turn on increasing levels of verbosity.
 
 # General notes for all functions
 
-## In case of NULL fmt:
+## `fmt` argument
+
+The `fmt` argument in the functions is a printf-style format. If the format
+requires arguments, then such arguments may be given after the `fmt`.
+
+See `man 3 printf` for details on printf formats.
+
+For modern C compilers, the agreement between any `%` directives in `fmt`, and
+any arguments that may follow is checked by the format attribute facility.  Thus
+having too many arguments, too few arguments, or arguments of the wrong type will
+result in compiler warnings.
+
+
+### In case of NULL `fmt`:
 
 If `fmt == NULL`, then the following format string will be used:
 
@@ -206,16 +219,6 @@ extern void msg(const char *fmt, ...);
 extern void fmsg(FILE *stream, char const *fmt, ...);
 ```
 
-The `fmt` argument is a printf-style format. If the format requires arguments,
-then such arguments may be given after the `fmt`.
-
-See `man 3 printf` for details on a printf format.
-
-For modern C compilers, the agreement between any `%` directives in `fmt`, and
-any arguments that may follow is checked by the format attribute facility.  Thus
-having too many arguments, too few arguments, or arguments of the wrong type will
-result in compiler warnings.
-
 Special care is made in these functions to restore the caller's original value
 of `errno` on return.
 
@@ -354,15 +357,6 @@ use of a command line option such as `-v level`.  For example:
 	/* ... */
 ```
 
-The `fmt` argument is a printf-style format.  If the format requires arguments,
-then such arguments may be given after the `fmt`.
-
-See `man 3 printf` for details on a printf format.
-
-For modern C compilers, the agreement between any `%` directives in `fmt` and
-any arguments that may follow is checked by the format attribute facility.  Thus
-having too many arguments, too few arguments, or arguments of the wrong type
-will result in compiler warnings.
 
 The `dbg.h` header file defines the following constants that are useful to help
 establish verbosity levels:
@@ -515,18 +509,6 @@ that helps identify the calling context.  For modern C compilers, the value
 `__func__` is the name of the calling function, and thus is a good choice for a
 first argument.
 
-The `fmt` argument, is a printf-style format.  If the format requires arguments,
-then such arguments may be given after the `fmt`.
-
-See `man 3 printf` for details on a printf format.
-
-For modern C compilers, the agreement between any `%`
-directives in `fmt`, and any arguments that may follow
-is checked by the format attribute facility.
-Thus having too many arguments, too few arguments,
-or arguments of the wrong type will result in
-compiler warnings.
-
 Special care is made in this function to restore the
 caller's original value of `errno` on return.
 
@@ -672,19 +654,6 @@ The `name` argument should be the name of the calling function,
 or some string that helps identify the calling context.
 For modern C compilers, the value `__func__` is the name of
 the calling function, and thus is a good choice for a first argument.
-
-The `fmt` argument, is a printf-style format.
-If the format requires arguments, then such arguments
-may be given after the `fmt`.
-
-See `man 3 printf` for details on a printf format.
-
-For modern C compilers, the agreement between any `%`
-directives in `fmt`, and any arguments that may follow
-is checked by the format attribute facility.
-Thus having too many arguments, too few arguments,
-or arguments of the wrong type will result in
-compiler warnings.
 
 The `warnp()` function is similar to `warn()` with the
 additional writing of `errno` related information.
@@ -849,19 +818,6 @@ The `name` argument should be the name of the calling function,
 or some string that helps identify the calling context.
 For modern C compilers, the value `__func__` is the name of
 the calling function, and thus is a good choice for a firsts argument.
-
-The `fmt` argument, is a printf-style format.
-If the format requires arguments, then such arguments
-may be given after the `fmt`.
-
-See `man 3 printf` for details on a printf format.
-
-For modern C compilers, the agreement between any `%`
-directives in `fmt`, and any arguments that may follow
-is checked by the format attribute facility.
-Thus having too many arguments, too few arguments,
-or arguments of the wrong type will result in
-compiler warnings.
 
 Because this function calls `exit()`, this function will **not** return.
 
@@ -1045,19 +1001,6 @@ The `name` argument should be the name of the calling function,
 or some string that helps identify the calling context.
 For modern C compilers, the value `__func__` is the name of
 the calling function, and thus is a good choice for a first argument.
-
-The `fmt` argument, is a printf-style format.
-If the format requires arguments, then such arguments
-may be given after the `fmt`.
-
-See `man 3 printf` for details on a printf format.
-
-For modern C compilers, the agreement between any `%`
-directives in `fmt`, and any arguments that may follow
-is checked by the format attribute facility.
-Thus having too many arguments, too few arguments,
-or arguments of the wrong type will result in
-compiler warnings.
 
 The `errp()` function is similar to `err()` with the
 additional writing of `errno` related information.
@@ -1275,19 +1218,6 @@ or some string that helps identify the calling context.
 For modern C compilers, the value `__func__` is the name of
 the calling function, and thus is a good choice for a first argument.
 
-The `fmt` argument, is a printf-style format.
-If the format requires arguments, then such arguments
-may be given after the `fmt`.
-
-See `man 3 printf` for details on a printf format.
-
-For modern C compilers, the agreement between any `%`
-directives in `fmt`, and any arguments that may follow
-is checked by the format attribute facility.
-Thus having too many arguments, too few arguments,
-or arguments of the wrong type will result in
-compiler warnings.
-
 Special care is made in this function to restore the
 caller's original value of `errno` on return.
 
@@ -1424,19 +1354,6 @@ The `name` argument should be the name of the calling function,
 or some string that helps identify the calling context.
 For modern C compilers, the value `__func__` is the name of
 the calling function, and thus is a good choice for a first argument.
-
-The `fmt` argument, is a printf-style format.
-If the format requires arguments, then such arguments
-may be given after the `fmt`.
-
-See `man 3 printf` for details on a printf format.
-
-For modern C compilers, the agreement between any `%`
-directives in `fmt`, and any arguments that may follow
-is checked by the format attribute facility.
-Thus having too many arguments, too few arguments,
-or arguments of the wrong type will result in
-compiler warnings.
 
 The `werrp()` function is similar to `werr()` with the
 additional writing of `errno` related information.
@@ -1611,19 +1528,6 @@ The `name` argument should be the name of the calling function,
 or some string that helps identify the calling context.
 For modern C compilers, the value `__func__` is the name of
 the calling function, and thus is a good choice for a first argument.
-
-The `fmt` argument, is a printf-style format.
-If the format requires arguments, then such arguments
-may be given after the `fmt`.
-
-See `man 3 printf` for details on a printf format.
-
-For modern C compilers, the agreement between any `%`
-directives in `fmt`, and any arguments that may follow
-is checked by the format attribute facility.
-Thus having too many arguments, too few arguments,
-or arguments of the wrong type will result in
-compiler warnings.
 
 Special care is made in this function to restore the
 caller's original value of `errno` on return.
@@ -1877,19 +1781,6 @@ The `name` argument should be the name of the calling function,
 or some string that helps identify the calling context.
 For modern C compilers, the value `__func__` is the name of
 the calling function, and thus is a good choice for a first argument.
-
-The `fmt` argument, is a printf-style format.
-If the format requires arguments, then such arguments
-may be given after the `fmt`.
-
-See `man 3 printf` for details on a printf format.
-
-For modern C compilers, the agreement between any `%`
-directives in `fmt`, and any arguments that may follow
-is checked by the format attribute facility.
-Thus having too many arguments, too few arguments,
-or arguments of the wrong type will result in
-compiler warnings.
 
 The `werrp()` function is similar to `werr()` with the
 additional writing of `errno` related information.
@@ -2155,19 +2046,6 @@ For your convenience, `dbg.h` defines the following constant:
 ```
 
 When `exitcode` is `DO_NOT_EXIT`, the function will return.
-
-The `fmt` argument, is a printf-style format.
-If the format requires arguments, then such arguments
-may be given after the `fmt`.
-
-See `man 3 printf` for details on a printf format.
-
-For modern C compilers, the agreement between any `%`
-directives in `fmt`, and any arguments that may follow
-is checked by the format attribute facility.
-Thus having too many arguments, too few arguments,
-or arguments of the wrong type will result in
-compiler warnings.
 
 Special care is made in this function to restore the
 caller's original value of `errno` on return.
