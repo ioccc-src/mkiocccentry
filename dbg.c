@@ -4101,7 +4101,7 @@ main(int argc, char *argv[])
 		  true, "simulated call to warnp_or_errp(130, %s, true, ...)", program); /*ooo*/
     fwarn(stderr, program, "simulated call to fwarn()");
     fwarnp(stderr, program, "simulated call to fwarnp()");
-    fwarn_or_err(129, stderr, program, true,
+    fwarn_or_err(130, stderr, program, true,
 		"simulated call to fwarn_or_err(129, %s, true, ...)", program); /*ooo*/
     fwarnp_or_errp(130, stderr, program,
 		  true, "simulated call to fwarnp_or_errp(130, %s, true, ...)", program); /*ooo*/
