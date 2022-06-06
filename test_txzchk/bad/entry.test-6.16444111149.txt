@@ -1,0 +1,14 @@
+-rw-rw-r--  0 1017   1017       0 Jan 25 14:05 test-6/prog.c
+-rw-rw-r--  0 1017   1017      3 Jan 25 14:05 test-6/Makefile
+-rw-rw-r--  0 1017   1017     1021 Jan 25 14:05 test-6//.info.json
+-rw-rw-r--  0 1017   1017     1021 Jan 25 14:05 test-6//.test.json
+-rw-rw-r--  0 1017   1017     1021 Jan 25 14:05 test-6//.file.json
+drwxr-xr-x 1017/1018         0 2022-01-25 14:05 test-6/.
+drwxr-xr-x 1017/1018         0 2022-01-25 14:05 test-6/.
+drwxr-xr-x 1017/1018         0 2022-01-25 14:05 .
+drwxr-xr-x 1017/1018         0 2022-01-25 14:05 .test
+-rw-rw-r-- 1017/1018       1 2022-01-25 14:05 test-6/remarks.md
+-rw-rw-r-- 1017/1018        0 2022-01-25 14:05 test-6/prog.c
+-rw-rw-r-- 1017/1018        0 2022-01-25 14:05 test-6/prög.c
+-rw-rw-r-- 1017/1018        0 2022-01-25 14:05 test-6/prögög.c
+-rw-rw-r-- 1017/1018       1021 2022-01-25 14:05 test-6/.author.json
