@@ -1,0 +1,7 @@
+drwxr-xr-x 1017/1018         0 2022-01-25 14:05 test-4/
+-rw-rw-r-- 1017/1018       358 2022-01-25 14:05 test-4/remarks.md
+-rw-rw-r-- 1017/1018        57 2022-01-25 14:05 test-4/prog.c
+-rw-rw-r-- cody/1018       896 2022-01-25 14:05 test-4/Makefile
+-rw-rw-r-- 1017/staff         4 2022-01-25 14:05 test-4/extra2
+-rw-rw-r-- 1017/1018       686 2022-01-25 14:05 test-4/.author.json
+-rw-rw-r-- 1017/1018         4 2022-01-25 14:05 test-4/extra1

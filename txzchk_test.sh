@@ -79,28 +79,28 @@ export TXZCHK_BAD_TREE="$TXZCHK_TREE/bad"
 
 # form the temporary exit code file
 #
-export EXIT_CODE_FIlE MKTEMP_TEMPLATE
+export EXIT_CODE_FILE MKTEMP_TEMPLATE
 MKTEMP_TEMPLATE=".exit_code.$(basename "$0").XXXXXXXXXX"
-EXIT_CODE_FIlE=$(mktemp "$MKTEMP_TEMPLATE")
+EXIT_CODE_FILE=$(mktemp "$MKTEMP_TEMPLATE")
 status="$?"
 if [[ $status -ne 0 ]]; then
     echo "$0: ERROR: mktemp $MKTEMP_TEMPLATE exit code: $status" 1>&2
     exit 55
 fi
-if [[ ! -e $EXIT_CODE_FIlE ]]; then
-    echo "$0: ERROR: EXIT_CODE_FIlE does not exist: $EXIT_CODE_FIlE" 1>&2
+if [[ ! -e $EXIT_CODE_FILE ]]; then
+    echo "$0: ERROR: EXIT_CODE_FILE does not exist: $EXIT_CODE_FILE" 1>&2
     exit 55
 fi
-if [[ ! -f $EXIT_CODE_FIlE ]]; then
-    echo "$0: ERROR: EXIT_CODE_FIlE not a file: $EXIT_CODE_FIlE" 1>&2
+if [[ ! -f $EXIT_CODE_FILE ]]; then
+    echo "$0: ERROR: EXIT_CODE_FILE not a file: $EXIT_CODE_FILE" 1>&2
     exit 55
 fi
-if [[ ! -r $EXIT_CODE_FIlE ]]; then
-    echo "$0: ERROR: EXIT_CODE_FIlE file not readable: $EXIT_CODE_FIlE" 1>&2
+if [[ ! -r $EXIT_CODE_FILE ]]; then
+    echo "$0: ERROR: EXIT_CODE_FILE file not readable: $EXIT_CODE_FILE" 1>&2
     exit 55
 fi
-if [[ ! -w $EXIT_CODE_FIlE ]]; then
-    echo "$0: ERROR: EXIT_CODE_FIlE file not writable: $EXIT_CODE_FIlE" 1>&2
+if [[ ! -w $EXIT_CODE_FILE ]]; then
+    echo "$0: ERROR: EXIT_CODE_FILE file not writable: $EXIT_CODE_FILE" 1>&2
     exit 55
 fi
 
@@ -290,10 +290,10 @@ run_test()
 	    fi
 	    echo | tee -a "${LOGFILE}" 1>&2
 	    EXIT_CODE=1
-	    echo "$EXIT_CODE" > "$EXIT_CODE_FIlE"
+	    echo "$EXIT_CODE" > "$EXIT_CODE_FILE"
 	    status="$?"
-	    if [[ $status -ne 0 || ! -s $EXIT_CODE_FIlE ]]; then
-		echo "$0: FATAL: failed to write $EXIT_CODE into EXIT_CODE_FIlE: $EXIT_CODE_FIlE" 1>&2
+	    if [[ $status -ne 0 || ! -s $EXIT_CODE_FILE ]]; then
+		echo "$0: FATAL: failed to write $EXIT_CODE into EXIT_CODE_FILE: $EXIT_CODE_FILE" 1>&2
 		exit 55
 	    fi
 	elif [[ $V_FLAG -ge 5 ]]; then
@@ -310,10 +310,10 @@ run_test()
 	    fi
 	    echo | tee -a "${LOGFILE}" 1>&2
 	    EXIT_CODE=1
-	    echo "$EXIT_CODE" > "$EXIT_CODE_FIlE"
+	    echo "$EXIT_CODE" > "$EXIT_CODE_FILE"
 	    status="$?"
-	    if [[ $status -ne 0 || ! -s $EXIT_CODE_FIlE ]]; then
-		echo "$0: FATAL: failed to write $EXIT_CODE into EXIT_CODE_FIlE: $EXIT_CODE_FIlE" 1>&2
+	    if [[ $status -ne 0 || ! -s $EXIT_CODE_FILE ]]; then
+		echo "$0: FATAL: failed to write $EXIT_CODE into EXIT_CODE_FILE: $EXIT_CODE_FILE" 1>&2
 		exit 55
 	    fi
 	elif [[ $V_FLAG -ge 5 ]]; then
@@ -352,18 +352,18 @@ find "$TXZCHK_BAD_TREE" -type f -name '*.txt' -print | while read -r file; do
     run_test "$DBG_LEVEL" fail "$file"
 done
 
-# Check for numeric exit code from EXIT_CODE_FIlE as a possible EXIT_CODE
+# Check for numeric exit code from EXIT_CODE_FILE as a possible EXIT_CODE
 #
 if [[ $V_FLAG -ge 5 ]]; then
     echo "$0: debug[5]: near final top level EXIT_CODE: $EXIT_CODE" 1>&2
 fi
-if [[ -s $EXIT_CODE_FIlE ]]; then
-    NEW_EXIT_CODE=$(< "$EXIT_CODE_FIlE")
+if [[ -s $EXIT_CODE_FILE ]]; then
+    NEW_EXIT_CODE=$(< "$EXIT_CODE_FILE")
     if [[ $V_FLAG -ge 5 ]]; then
-	echo "$0: debug[5]: found non-empty EXIT_CODE_FIlE: $EXIT_CODE_FIlE" 1>&2
+	echo "$0: debug[5]: found non-empty EXIT_CODE_FILE: $EXIT_CODE_FILE" 1>&2
     fi
     if [[ -z $NEW_EXIT_CODE ]]; then
-	echo "$0: FATAL: NEW_EXIT_CODE empty but non-empty EXIT_CODE_FIlE exists: $EXIT_CODE_FIlE" 1>&2
+	echo "$0: FATAL: NEW_EXIT_CODE empty but non-empty EXIT_CODE_FILE exists: $EXIT_CODE_FILE" 1>&2
 	exit 55
     fi
     if [[ $NEW_EXIT_CODE =~ ^[0-9]+$ ]]; then
@@ -392,7 +392,7 @@ fi
 if [[ $V_FLAG -ge 1 ]]; then
     echo "$0: debug[1]: top level EXIT_CODE: $EXIT_CODE" 1>&2
 fi
-rm -f "$EXIT_CODE_FIlE"
+rm -f "$EXIT_CODE_FILE"
 
 # All Done!!! -- Jessica Noll, Age 2
 #

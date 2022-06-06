@@ -1,0 +1,8 @@
+drwxr-xr-x  0 1017   1017        0 Jan 25 14:05 test-2/
+-rw-rw-r--  0 1017   1017      358 Jan 25 14:05 test-2/remarks.md
+-rw-rw-r--  0 1017   1017       57 Jan 25 14:05 test-2/prog.c
+-rw-rw-r--  0 1017   1017      896 Jan 25 14:05 /test-2/Makefile
+-rw-rw-r--  0 1017   1017        4 Jan 25 14:05 test-2/extra2
+-rw-rw-r--  0 1017   1017      686 Jan 25 14:05 test-2/.author.json
+-rw-rw-r--  0 1017   1017        4 Jan 25 14:05 test-2/extra1
+-rw-rw-r--  0 1017   1017     1021 Jan 25 14:05 test-2/.info.json

@@ -1,0 +1,4 @@
+-rw-rw-r-- cody/1018       896 2022-01-25 14:05 test-5/Makefile
+-rw-rw-r-- cody/staff       896 2022-01-25 14:05 test-5/Makefile
+-rw-rw-r-- 1017/staff       896 2022-01-25 14:05 test-5/test
+-rw-rw-r-- 1017/1018       896 2022-01-25 14:05 test-5/foo/test_file
