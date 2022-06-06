@@ -1,23 +1,23 @@
 #!/usr/bin/env bash
 #
-# txzchk_test.sh - test jauthchk and txzchk on TXZCHK test files
+# txzchk_test.sh - test txzchk with good and bad tarballs (as text files)
 
 # setup
 #
 export USAGE="usage: $0 [-h] [-v level] [-D dbg_level] [-t txzchk] [-T tar]
 		     [-F fnamchk] [-d txzchk_tree]
 
-    -h				print help and exit 2
-    -v level			set verbosity level for this script: (def level: 0)
-    -D dbg_level		set verbosity level for tests (def: level: 0)
-    -t /path/to/txzchk		path to txzchk executable (def: ./txzchk)
-    -T /path/to/tar		path to tar that accepts -J option
-    -F /path/to/fnamchk		path to fnamchk (def: ./fnamchk)
+    -h			    print help and exit 2
+    -v level		    set verbosity level for this script: (def level: 0)
+    -D dbg_level	    set verbosity level for tests (def: level: 0)
+    -t txzchk		    path to txzchk executable (def: ./txzchk)
+    -T tar		    path to tar that accepts -J option (def: /usr/bin/tar)
+    -F fnamchk	            path to fnamchk (def: ./fnamchk)
 
-    -d txzchk_tree		tree where txzchk test files are to be found (def: ./test_txzchk)
-    				  These subdirectories are expected:
-				    txzchk_tree/bad
-				    txzchk_tree/good
+    -d txzchk_tree	    tree where txzchk test files are to be found (def: ./test_txzchk)
+    			      These subdirectories are expected:
+				txzchk_tree/bad
+				txzchk_tree/good
 
 exit codes:
     0 - all is well
@@ -198,6 +198,7 @@ fi
 
 # remove logfile so that each run starts out with an empty file
 #
+rm -f "$LOGFILE"
 touch "$LOGFILE"
 if [[ ! -f "${LOGFILE}" ]]; then
     echo "$0: ERROR: couldn't create log file" 1>&2
