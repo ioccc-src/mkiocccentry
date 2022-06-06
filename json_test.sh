@@ -142,6 +142,7 @@ fi
 
 # remove logfile so that each run starts out with an empty file
 #
+rm -f "$LOGFILE"
 touch "$LOGFILE"
 if [[ ! -f "${LOGFILE}" ]]; then
     echo "$0: ERROR: couldn't create log file" 1>&2
