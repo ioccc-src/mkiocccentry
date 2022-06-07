@@ -2974,7 +2974,7 @@ vfwerrp(int error_code, FILE *stream, char const *name, char const *fmt, va_list
  *
  *	warn_or_err(1, __func__, true, "bad foobar: %s", message);
  *
- * NOTE: This function does not return if test == false.
+ * NOTE: This function does not return if warning == false.
  */
 void
 warn_or_err(int exitcode, const char *name, bool warning, const char *fmt, ...)
@@ -3071,7 +3071,7 @@ warn_or_err(int exitcode, const char *name, bool warning, const char *fmt, ...)
  *
  *	vwarn_or_err(1, __func__, true, "bad foobar: %s", ap);
  *
- * NOTE: This function does not return if test == false.
+ * NOTE: This function does not return if warning == false.
  */
 void
 vwarn_or_err(int exitcode, const char *name, bool warning,
@@ -3162,7 +3162,7 @@ vwarn_or_err(int exitcode, const char *name, bool warning,
  *
  *	fwarn_or_err(1, stderr, __func__, true, "bad foobar: %s", message);
  *
- * NOTE: This function does not return if test == false.
+ * NOTE: This function does not return if warning == false.
  */
 void
 fwarn_or_err(int exitcode, FILE *stream, const char *name, bool warning, const char *fmt, ...)
@@ -3264,7 +3264,7 @@ fwarn_or_err(int exitcode, FILE *stream, const char *name, bool warning, const c
  *
  *	vwarn_or_err(1, stderr, __func__, true, "bad foobar: %s", ap);
  *
- * NOTE: This function does not return if test == false.
+ * NOTE: This function does not return if warning == false.
  */
 void
 vfwarn_or_err(int exitcode, FILE *stream, const char *name, bool warning,
@@ -3359,7 +3359,7 @@ vfwarn_or_err(int exitcode, FILE *stream, const char *name, bool warning,
  *
  *	warnp_or_errp(1, __func__, true, "bad foobar: %s", message);
  *
- * NOTE: This function does not return if test == false.
+ * NOTE: This function does not return if warning == false.
  */
 void
 warnp_or_errp(int exitcode, const char *name, bool warning, const char *fmt, ...)
@@ -3456,7 +3456,7 @@ warnp_or_errp(int exitcode, const char *name, bool warning, const char *fmt, ...
  *
  *	vwarnp_or_errp(1, __func__, true, "bad foobar: %s", ap);
  *
- * NOTE: This function does not return if test == false.
+ * NOTE: This function does not return if warning == false.
  */
 void
 vwarnp_or_errp(int exitcode, const char *name, bool warning,
@@ -3546,7 +3546,7 @@ vwarnp_or_errp(int exitcode, const char *name, bool warning,
  *
  *	fwarnp_or_errp(1, stderr, __func__, true, "bad foobar: %s", message);
  *
- * NOTE: This function does not return if test == false.
+ * NOTE: This function does not return if warning == false.
  */
 void
 fwarnp_or_errp(int exitcode, FILE *stream, const char *name, bool warning, const char *fmt, ...)
@@ -3648,7 +3648,7 @@ fwarnp_or_errp(int exitcode, FILE *stream, const char *name, bool warning, const
  *
  *	vwarnp_or_errp(1, __func__, true, "bad foobar: %s", ap);
  *
- * NOTE: This function does not return if test == false.
+ * NOTE: This function does not return if warning == false.
  */
 void
 vfwarnp_or_errp(int exitcode, FILE *stream, const char *name, bool warning,

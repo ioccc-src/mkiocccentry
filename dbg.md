@@ -112,6 +112,8 @@ static char const * const usage =
 
     int i;
 
+    verbosity_level = DBG_LOW;
+
     while ((i = getopt(argc, argv, "hv:")) != -1) {
 	switch (i) {
 	case 'h':       /* -h - write help to stderr and exit 0 */
