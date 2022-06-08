@@ -57,7 +57,7 @@ DATA=
 
 # default rule - compile the program
 #
-# The all rule should be the 1st rule.
+# The all rule should be the first rule.
 #
 all: prog ${DATA}
 
