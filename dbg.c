@@ -63,7 +63,7 @@
  *		     process for some people. If you feel you need to issue a
  *		     pull request to fix and/or improve this code, please keep
  *		     the more general debugging context in mind, and please take
- *		     extra case to test your proposed modifications so that you
+ *		     extra care to test your proposed modifications so that you
  *		     don't complicate the debugging process for others.
  *
  *		     Please maintain the coding style of this code -- even if it
