@@ -1,4 +1,4 @@
-.TH dbg 3  "7 Jun 2022" "dbg" 
+.TH dbg 3  "8 Jun 2022" "dbg"
 .SH NAME
 .BR msg(),
 .BR vmsg(),
@@ -135,7 +135,7 @@
 .BI "void vfwarn_or_err(int exitcode, FILE *stream, const char *name, bool warning, const char *fmt, va_list ap);"
 .RE
 .SH DESCRIPTION
-These functions provide a way to write informative messages, debug messages, warning messages, error messages, non-fatal error messages as well as usage messages.
+These functions provide a way to write informative messages, debug messages, warning messages, error messages, non\-fatal error messages as well as usage messages.
 .SS Alternative output stream
 The functions that do not take a \fBFILE *\fP write to \fBstderr\fP.
 The functions
@@ -213,9 +213,22 @@ The state of the \fIva_list\fP is not modified by these functions.
 .SS Errno versions
 .PP
 The functions \fBwarnp()\fP, \fBfwarnp()\fP, \fBvfwarnp()\fP, \fBerrp()\fP, \fBferrp()\fP, \fBwerrp()\fP, \fBfwerrp()\fP, \fBwarnp_or_errp()\fP and \fBfwarnp_or_errp()\fP write a message according to the value of \fBerrno\fP, making sure to restore the \fBerrno\fP value in the case the function returns.
-.SS Format of the format string
+.SS Format of the fmt string
 The format string is a character string in the same form as \fBprintf\fP.
 As these are quite complex please refer to the \fBprintf(3)\fP man page for more details and examples.
+.SS Output control
+.PP
+When \fBmsg_output_allowed == false\fP the \fBmsg()\fP functions will not print anything.
+.sp
+When \fBdbg_output_allowed == false\fP the \fBdbg()\fP functions will not print anything.
+.sp
+When \fBwarn_output_allowed == false\fP the \fBwarn()\fP functions will not print anything.
+.sp
+When \fBerr_output_allowed == false\fP the \fBerr()\fP functions will not print anything.
+.sp
+When \fBusage_output_allowed == false\fP the \fBprintf_usage()\fP functions will not print anything.
+.sp
+When \fBmsg_warn_silent == true\fP the \fBmsg()\fP and \fBwarn()\fP functions will be silenced if \fBverbosity_level <= 0\fP.
 .SH RETURN VALUE
 .PP
 These functions return void except that the functions
@@ -223,7 +236,7 @@ These functions return void except that the functions
 .BR verr(),
 .BR ferr(),
 .BR vferr(),
-.BR errp(), 
+.BR errp(),
 .BR verrp(),
 .BR ferrp(),
 and
@@ -271,73 +284,72 @@ and the following warning, preceded by a newline, will be issued:
 where \fBfoo\fP is the name of the function.
 .sp
 When the \fIfmt\fP is \fBNULL\fP or contains no \fB%\fP specifiers the arguments following \fIfmt\fP will be ignored.
-.SH EXAMPLES
+.SS Newlines
+All functions output extra newlines to help let the messages stand out better.
+.SH EXAMPLE
 .in +4n
 .nf
 
-#include <unistd.h>
+
+$ cat dbg_example.c
+/*
+ * This is just a trivial demo, see the main
+ * function in dbg.c for a better example.
+ */
+
 #include "dbg.h"
 
-#define VERSION_STRING "61.0 2022-06-01"
+#define filename "foo.bar"
+long length = 7;
+int main(void)
+{
 
-static char const * const usage =
-"usage: %s [\-h] [\-v level]\n"
-"\\n"
-"\\t\-h\\t\\tprint help message and exit 0\n"
-"\\t\-v level\\tset verbosity level: (def level: 0)\n"
-"\\n"
-"Version: %s";
+    /*
+     * We suggest you use getopt(3) and strtol(3) (cast to an int)
+     * to convert \-v verbosity_level on the command line.
+     */
+    verbosity_level = DBG_MED; /* DBG_MED == (3) */
 
-int i;
+    /*
+     * This will print:
+     *
+     *	    Warning: main: elephant is sky\-blue pink
+     *
+     * with newlines as described.
+     */
+    warn(__func__, "elephant is sky\-blue pink");
 
-verbosity_level = DBG_LOW;
+    /* this will not print anything as verbosity_level 3 (DBG_MED) < 5 (DBG_HIGH): */
+    dbg(DBG_HIGH, "starting critical section");
 
-while ((i = getopt(argc, argv, "hv:")) != \-1) {
-    switch (i) {
-    case 'h':       /* \-h \- write help to stderr and exit 0 */
-	    /* exit(0); */
-	    fprintf_usage(0, stderr, usage, program, DBG_VERSION); /*ooo*/
-	    not_reached();
-	    break;
-    case 'v':       /* \-v verbosity */
-	    /* parse verbosity */
-	    errno = 0;                  /* pre\-clear errno for errp() */
-	    verbosity_level = (int)strtol(optarg, NULL, 0);
-	    if (errno != 0) {
-		    /* exit(1); */
-		    errp(1, __func__, "cannot parse -v arg: %s", optarg); /*ooo*/
-		    not_reached();
-	    }
-	break;
-    default:
-	    fprintf_usage(DO_NOT_EXIT, stderr, "invalid \-flag");
-	    fprintf_usage(3, stderr, usage, program, VERSION_STRING); /*ooo*/
-	    not_reached();
-    }
-
-    /* ... */
-
-    dbg(DBG_LOW, "starting critical section");
+    /*
+     * Because verbosity_level == 3 (DBG_MED) and filename is "foo.bar" and
+     * length == 7 this will print (with newlines added as described):
+     *
+     *	    debug[3]: file: foo.bar has length: 7
+     */
     dbg(DBG_MED, "file: %s has length: %ld", filename, length);
-    if (buf[0] < MIN_BYTE) {
-        dbg(DBG_VVHIGH, "Leading buffer byte: 0x%02x < minimum: 0x%02x", buf[0], MIN_BYTE);
-    }
 
-    /* ... */
-
-    errno = 0;                      /* pre\-clear errno for warnp() */
-    ret = fprintf(answerp, "%s\n", info.title);
-    if (ret <= 0) {
-        warnp(__func__, "fprintf error writing title to the answers file");
-    }
-
-    /* ... */
-    errno = 0;
-    tarball = strdup(tarball_path);
-    if (tarball == NULL) {
-        errp(9, __func__, "strdup() tarball path %s failed", tarball_path);
-        not_reached();
-    }
+    /*
+     * If EPERM == 1 then this will print:
+     *
+     *	    ERROR[2]: main: test: errno[1]: Operation not permitted
+     *
+     * with newlines as discussed and then exit 2.
+     */
+    errno = EPERM;
+    errp(2, __func__, "test");
+}
+$ cc \-c dbg.c
+$ cc \-o dbg_example dbg_example.c dbg.o
+The above two commands could be shortened to just:
+\fBcc \-o dbg_example dbg_example.c dbg.c\fP
+$ ./dbg_example
+Warning: main: elephant is sky\-blue pink
+debug[3]: file: foo.bar has length: 7
+ERROR[2]: main: test: errno[1]: Operation not permitted
+$ echo $?
+2
 .fi
 .in
 .SH SEE ALSO

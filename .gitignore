@@ -5,6 +5,7 @@ answers.txt
 build.log
 dbg
 dbg_test.c
+dbg_example
 dyn_test
 fnamchk
 iocccsize
@@ -100,8 +101,8 @@ makefile.local
 .DS_Store
 
 # vim swap files
-.*.sw[nop]
-.sw[nop]
+.*.sw[a-z]
+.sw[a-z]
 
 # temporary files
 *.tmp
