@@ -118,7 +118,7 @@ static char const * const usage =
 	switch (i) {
 	case 'h':       /* -h - write help to stderr and exit 0 */
 	    /* exit(0); */
-	    fprintf_usage(0, stderr, usage, program, DBG_VERSION); /*ooo*/
+	    fprintf_usage(0, stderr, usage, program, VERSION_STRING); /*ooo*/
 	    not_reached();
 	    break;
 	case 'v':       /* -v verbosity */
@@ -343,7 +343,7 @@ use of a command line option such as `-v level`.  For example:
         switch (i) {
         case 'h':       /* -h - write help to stderr and exit 0 */
             /* exit(0); */
-            fprintf_usage(0, stderr, usage, program, DBG_VERSION); /*ooo*/
+            fprintf_usage(0, stderr, usage, program, VERSION_STRING); /*ooo*/
             not_reached();
             break;
         case 'v':       /* -v verbosity */
