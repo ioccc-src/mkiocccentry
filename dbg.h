@@ -42,7 +42,7 @@
 /*
  * definitions
  */
-#define DBG_VERSION "2.0 2022-05-30"		/* format: major.minor YYYY-MM-DD */
+#define DBG_VERSION "2.1 2022-06-08"		/* format: major.minor YYYY-MM-DD */
 
 
 /*
@@ -120,6 +120,7 @@ typedef unsigned char bool;
 #define DBG_VVHIGH (9)		/* very very verbose debugging */
 #define DBG_VVVHIGH (11)	/* very very very verbose debugging */
 #define DBG_VVVVHIGH (13)	/* very very very very verbose debugging */
+#define DBG_VVVVVHIGH (15)	/* very very very very very verbose debugging */
 
 #define DBG_DEFAULT (DBG_NONE)	/* default debugging level */
 
