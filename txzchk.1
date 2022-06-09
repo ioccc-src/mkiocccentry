@@ -2,7 +2,7 @@
 .SH NAME
 txzchk \- sanity checker tool used on IOCCC compressed tarballs
 .SH SYNOPSIS
-\fBtxzchk [\-h] [\-v level] [\-q] [\-V] [\-t tar] [\-F fnamchk] [\-T] [\-E ext] txzpath
+\fBtxzchk\fP [\-h] [\-v level] [\-q] [\-V] [\-t tar] [\-F fnamchk] [\-T] [\-E ext] txzpath
 .SH DESCRIPTION
 \fBtxzchk\fP runs a series of sanity tests on IOCCC compressed tarballs.
 It is invoked by \fBmkiocccentry(1)\fP after the tarball is formed, reporting any issues found and exiting the program accordingly; if \fBtxzchk\fP does not return 0 \fBmkiocccentry\fP will exit with an error.
@@ -96,6 +96,6 @@ Run the program on the file \fIentry.test-1.1644094311.txt\fP, specifying that i
 .fi
 .RE
 .SH SEE ALSO
-\fBfnamchk(1)\fP, \fBmkiocccentry(1)\fP, \fbtar(1)\fP.
+\fBfnamchk(1)\fP, \fBmkiocccentry(1)\fP, \fBtar(1)\fP.
 .SH AUTHOR
 Cody Boone Ferguson.

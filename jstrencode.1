@@ -2,7 +2,7 @@
 .SH NAME
 jstrencode \- encode JSON encoded strings
 .SH SYNOPSIS
-\fBjstrencode [\-h] [\-v level] [\-q] [\-V] [\-t] [\-n] [\-Q] [string ...]
+\fBjstrencode\fP [\-h] [\-v level] [\-q] [\-V] [\-t] [\-n] [\-Q] [string ...]
 .SH DESCRIPTION
 \fBjstrencode\fP encodes JSON encoded strings given on the command line.
 If given the \fB\-t\fP option it performs a test on the JSON encode and encode functions.
@@ -61,7 +61,7 @@ Encode a string containing an escaped \fB"\fP from \fBstdin\fP (send \fBEOF\fP, 
 \fB
  ./jstrencode
  {"test\\"ing":false}
- ^D
+ ^D\fP
 .fi
 .RE
 .PP
@@ -69,7 +69,7 @@ Encode a string containing an escaped \fB"\fP from \fBstdin\fP (send \fBEOF\fP, 
 Encode just a negative number:
 .RS
 \fB
- ./jstrencode -- -5
+ ./jstrencode -- -5\fP
 .fi
 .RE
 .SH SEE ALSO

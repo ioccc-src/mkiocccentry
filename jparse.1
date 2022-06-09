@@ -2,7 +2,7 @@
 .SH NAME
 jparse \- IOCCC JSON parser
 .SH SYNOPSIS
-\fBjparse [\-h] [\-v level] [\-J level] [\-q] [\-V] [\-t] [\-n] [\-s string] file ...
+\fBjparse\fP [\-h] [\-v level] [\-J level] [\-q] [\-V] [\-t] [\-n] [\-s string] file ...
 .SH DESCRIPTION
 \fBjparse\fP will parse a block of JSON text either from a file (\fB\-\fP means \fBstdin\fP) or a string passed to the program via the \fB\-s\fP option.
 .PP
@@ -110,7 +110,7 @@ Parse input from \fBstdin\fP (send \fBEOF\fP, usually ctrl-d or \fB^D\fP, to par
 \fB
  ./jparse -
  []
- ^D
+ ^D\fP
 .fi
 .RE
 .PP
@@ -118,7 +118,7 @@ Parse input from \fBstdin\fP (send \fBEOF\fP, usually ctrl-d or \fB^D\fP, to par
 Parse just a negative number:
 .RS
 \fB
- ./jparse -s -5
+ ./jparse -s -5\fP
 .fi
 .RE
 .PP
@@ -126,7 +126,7 @@ Parse just a negative number:
 Parse .info.json file:
 .RS
 \fB
- ./jparse .info.json
+ ./jparse .info.json\fP
 .fi
 .RE
 .SH SEE ALSO

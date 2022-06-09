@@ -2,7 +2,7 @@
 .SH NAME
 fnamchk \- IOCCC compressed tarball filename sanity check tool
 .SH SYNOPSIS
-\fBfnamchk [\-h] [\-v level] [\-q] [\-V] [\-E ext] [\-t|\-u] filepath
+\fBfnamchk\fP [\-h] [\-v level] [\-q] [\-V] [\-E ext] [\-t|\-u] filepath
 .SH DESCRIPTION
 \fBfnamchk\fP verifies that an IOCCC compressed tarball is properly named.
 .PP
@@ -101,7 +101,7 @@ Run the program on the filename \fItest.tar\fP, which will fail:
 
 .RS
 \fB
- ./fnamchk test.tar
+ ./fnamchk test.tar\fP
 .fi
 .RE
 .PP
@@ -141,6 +141,6 @@ Run the program on the file \fIentry.test.0.1650779341.txz\fP with the options \
 
 .RS
 \fB
- ./fnamchk -E txt -t entry.test-0.1650779341.txz
+ ./fnamchk -E txt -t entry.test-0.1650779341.txz\fP
 .fi
 .RE
