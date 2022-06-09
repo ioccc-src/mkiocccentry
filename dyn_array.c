@@ -44,9 +44,35 @@
 
 
 /*
+ * internal enum for relative addresses
+ */
+enum ptr_compare {
+    PTR_COMPARE_UNSET = 0,	/* pointer compare not been determined - must be 0 */
+    PTR_BELOW_ADDR,		/* pointer is below (before) a given address */
+    PTR_EQ,			/* pointer is the same as a given address */
+    PTR_ABOVE_ADDR,		/* pointer is above (beyond) a given address */
+};
+
+/*
+ * internal enum for cases outlined in dyn_array_append_set()
+ */
+enum move_case {
+    MOVE_CASE_UNSET = 0,	/* move case has not been determined - must be 0 */
+    MOVE_CASE_OUTSIDE,		/* case 1: data is entirely outside allocated area */
+    MOVE_CASE_INSIDE,		/* case 2: data is completely inside allocated area */
+    MOVE_CASE_BEFORE_INTO,	/* case 3: data starts before and goes into allocated area */
+    MOVE_CASE_BEFORE_IN_BEYOND,	/* case 4: data starts before and goes and then beyond allocated area */
+    MOVE_CASE_IN_BEYOND,	/* case 5: data starts inside allocated area and goes beyond it */
+};
+
+
+/*
  * external allocation functions
  */
 static bool dyn_array_grow(struct dyn_array *array, intmax_t elms_to_allocate);
+static enum ptr_compare compare_addr(void *a, void *b);
+static enum move_case determine_move_case(void *first_alloc, void *last_alloc, void *first_add, void *last_add);
+static char const *move_case_name(enum move_case mv_case);
 
 
 /*
@@ -76,7 +102,7 @@ dyn_array_grow(struct dyn_array *array, intmax_t elms_to_allocate)
     intmax_t new_allocated;	/* New number of elements allocated */
     intmax_t old_bytes;		/* Old size of data in dynamic array */
     intmax_t new_bytes;		/* New size of data in dynamic array after allocation */
-    unsigned char *p;		/* Pointer to the beginning of the new allocated space */
+    uint8_t *p;			/* Pointer to the beginning of the new allocated space */
     bool moved = false;		/* true ==> location of the elements array moved during realloc() */
 
     /*
@@ -95,19 +121,23 @@ dyn_array_grow(struct dyn_array *array, intmax_t elms_to_allocate)
      * Check preconditions (firewall) - sanity check array
      */
     if (array->data == NULL) {
-	err(52, __func__, "data for dynamic array is NULL");
+	err(52, __func__, "array->data for dynamic array is NULL");
 	not_reached();
     }
     if (array->elm_size <= 0) {
-	err(53, __func__, "elm_size in dynamic array must be > 0: %ju", (uintmax_t)array->elm_size);
+	err(53, __func__, "array->elm_size in dynamic array must be > 0: %ju", (uintmax_t)array->elm_size);
 	not_reached();
     }
     if (array->chunk <= 0) {
-	err(54, __func__, "chunk in dynamic array must be > 0: %jd", array->chunk);
+	err(54, __func__, "array->chunk in dynamic array must be > 0: %jd", array->chunk);
+	not_reached();
+    }
+    if (array->allocated <= 0) {
+	err(55, __func__, "array->allocated in dynamic array must be > 0: %jd", array->allocated);
 	not_reached();
     }
     if (array->count > array->allocated) {
-	err(55, __func__, "count: %jd in dynamic array must be <= allocated: %jd",
+	err(56, __func__, "array->count: %jd in dynamic array must be <= array->allocated: %jd",
 			  array->count, array->allocated);
 	not_reached();
     }
@@ -125,7 +155,7 @@ dyn_array_grow(struct dyn_array *array, intmax_t elms_to_allocate)
      * firewall - check if new_bytes fits in a size_t variable
      */
     if ((double)new_bytes > (double)SIZE_MAX) {
-	err(56, __func__, "the total number of bytes occupied by %jd elements of size %ju is too big "
+	err(57, __func__, "the total number of bytes occupied by %jd elements of size %ju is too big "
 			  "and does not fit the bounds of a size_t [%jd,%jd]",
 			  new_allocated, (uintmax_t)array->elm_size,
 			  (intmax_t)SIZE_MIN, (intmax_t)SIZE_MAX);
@@ -138,7 +168,7 @@ dyn_array_grow(struct dyn_array *array, intmax_t elms_to_allocate)
     errno = 0;			/* pre-clear errno for errp() */
     data = realloc(array->data, (size_t)new_bytes);
     if (data == NULL) {
-	errp(57, __func__, "failed to reallocate the dynamic array from a size of %jd bytes "
+	errp(58, __func__, "failed to reallocate the dynamic array from a size of %jd bytes "
 			   "to a size of %jd bytes",
 			   old_bytes, new_bytes);
 	not_reached();
@@ -148,23 +178,391 @@ dyn_array_grow(struct dyn_array *array, intmax_t elms_to_allocate)
     }
     array->data = data;
     array->allocated = new_allocated;
-    dbg(DBG_VVVHIGH, "%s(array, %jd): %s: allocated: %jd elements of size: %ju in use: %jd",
-		     __func__, elms_to_allocate,
-		     (moved == true ? "moved" : "in-place"),
-		     dyn_array_alloced(array),
-		     (uintmax_t)array->elm_size,
-		     dyn_array_tell(array));
+    if (moved == true) {
+	dbg(DBG_VVVVHIGH, "in %s(array, %jd): moved-place: allocated: %jd elements of size: %ju in use: %jd",
+			  __func__, elms_to_allocate,
+			  dyn_array_alloced(array),
+			  (uintmax_t)array->elm_size,
+			  dyn_array_tell(array));
+    } else {
+	dbg(DBG_VVVVVHIGH, "in %s(array, %jd): in-place: allocated: %jd elements of size: %ju in use: %jd",
+			   __func__, elms_to_allocate,
+			   dyn_array_alloced(array),
+			   (uintmax_t)array->elm_size,
+			   dyn_array_tell(array));
+    }
 
     /*
      * Zeroize new elements if requested
      */
     if (array->zeroize == true) {
-	    p = (unsigned char *) (array->data) + old_bytes;
+	    p = (uint8_t *) (array->data) + old_bytes;
 	    /* +array->chunk for guard chunk */
 	    memset(p, 0, (elms_to_allocate+array->chunk) * array->elm_size);
     }
 
     return moved;
+}
+
+
+/*
+ * compare_addr - compare two addresses
+ *
+ * given:
+ *	a	- 1st address to compare
+ *	b	- 1st address to compare
+ *
+ * returns:
+ *	PTR_BELOW_ADDR if a < b,
+ *	PTR_EQ if a == b,
+ *	else PTR_ABOVE_ADDR if a > b
+ */
+static enum ptr_compare
+compare_addr(void *a, void *b)
+{
+    /*
+     * compare addresses
+     */
+    if (a < b) {
+	return PTR_BELOW_ADDR;
+    } else if (a == b) {
+	return PTR_EQ;
+    }
+    return PTR_ABOVE_ADDR;
+}
+
+
+/*
+ * determine_move_case - determine data our move case
+ *
+ * We need to be very careful if the data we are adding is also part of the allocated data
+ * if the dynamic array.  This is because if as part of growing data (via the realloc() inside
+ * the dyn_array_grow() function), we move the data, then we must handle the case that all
+ * or part of the data we are adding will also move.
+ *
+ * We did not handle that case, then calls such as:
+ *
+ *	dyn_array_append_set(array, array->data, array->count)
+ *
+ * could result in a core dump due to the fact that the caller's pointer, array->data,
+ * no longer points to the correct location due to the data moving.
+ *
+ * So we must first determine if the data that is being added is within the existing
+ * allocated data if the dynamic array, and if it is, change from where we are moving it.
+ *
+ * We must consider 5 cases:
+ *
+ * case 1 (MOVE_CASE_OUTSIDE): data completely outside of the dynamic array's allocated data
+ * case 2 (MOVE_CASE_INSIDE): data completely inside of the dynamic array's allocated data
+ * case 3 (MOVE_CASE_BEFORE_INTO): data starts outside, ends inside of the dynamic array's allocated data
+ * case 4 (MOVE_CASE_BEFORE_IN_BEYOND) : data starts before, includes all, and goes beyond allocated data
+ * case 5 (MOVE_CASE_IN_BEYOND): data starts inside of allocated data, and goes beyond allocated data
+ *
+ * The following assumes that dyn_array_grow() moves the dynamic array's allocated data:
+ *
+ * MOVE_CASE_OUTSIDE:
+ * For case 1, any possible realloc does not impact the data being added.  No special handling needed.
+ *
+ * MOVE_CASE_INSIDE:
+ * For case 2, we need to note the start of data, relative to the start of the allocated data.
+ * Then if data is moved, recompute a new start of data to be added.
+ *
+ * MOVE_CASE_BEFORE_INTO:
+ * For case 3, the data outside and before the dynamic array's allocated data can be added as it is.
+ * However for the data that is inside the dynamic array's allocated data, we need to add
+ * rest of the data from the moved location.
+ *
+ * MOVE_CASE_BEFORE_IN_BEYOND:
+ * For case 4, the data outside and before the dynamic array's allocated data can be added as it is.
+ * The data that is beyond the end of allocated data can be added as it is.
+ * However we need to add the dynamic array's allocated data from the moved location.
+ *
+ * MOVE_CASE_IN_BEYOND:
+ * For case 5, the data that is beyond the end of allocated data can be added as it is.
+ * However the data that is inside of the dynamic array's allocated data needs to be
+ * added from from the moved location.
+ *
+ * MOVE_CASE_UNSET:
+ * BTW: case 0 is reserved for the actual case not being set.
+ *
+ * Because we will not know if dyn_array_grow() will move the data, we must determine our case now,
+ * and if the data does move, make changes to the memmove() call later for cases 1 thru 4.
+ *
+ * given:
+ *	first_alloc	starting address of allocated data from a dynamic array
+ *	last_alloc	address of last byte allocated data from a dynamic array
+ *	first_add	starting address of data to add
+ *	last_add	address of last byte of data to add
+ *
+ * returns:
+ *	MOVE_CASE_OUTSIDE ==> move case 1
+ *	MOVE_CASE_INSIDE ==> move case 2
+ *	MOVE_CASE_BEFORE_INTO ==> move case 3
+ *	MOVE_CASE_BEFORE_IN_BEYOND ==> move case 4
+ *	MOVE_CASE_IN_BEYOND ==> move case 5
+ */
+static enum move_case
+determine_move_case(void *first_alloc, void *last_alloc, void *first_add, void *last_add)
+{
+    enum move_case ret = MOVE_CASE_UNSET;		/* move case to return */
+
+    /*
+     * Check preconditions (firewall) - sanity check args
+     */
+    if (first_alloc == NULL) {
+	err(59, __func__, "first_alloc arg is NULL");
+	not_reached();
+    }
+    if (last_alloc == NULL) {
+	err(60, __func__, "last_alloc arg is NULL");
+	not_reached();
+    }
+    if (first_add == NULL) {
+	err(61, __func__, "first_add arg is NULL");
+	not_reached();
+    }
+    if (last_add == NULL) {
+	err(62, __func__, "last_add arg is NULL");
+	not_reached();
+    }
+    dbg(DBG_VVVVHIGH, "in %s: first_alloc: %p last_alloc: %p first_add: %p last_add: %p",
+		      __func__, first_alloc, last_alloc, first_add, last_add);
+    if (first_alloc > last_alloc) {
+	err(63, __func__, "first_alloc: %p > last_alloc: %p", first_alloc, last_alloc);
+	not_reached();
+    }
+    if (first_add > last_add) {
+	err(64, __func__, "first_add: %p > last_add: %p", first_add, last_add);
+	not_reached();
+    }
+
+    /*
+     * determine move case
+     */
+    switch (compare_addr(first_add, first_alloc)) {
+
+    case PTR_BELOW_ADDR:	/* data to add starts before allocated */
+
+	/*
+	 * case: data to add starts before allocated
+	 */
+	dbg(DBG_VVVVHIGH, "in %s: first_add: %p < first_alloc: %p",
+			   __func__, first_add, first_alloc);
+	switch (compare_addr(last_add, first_alloc)) {
+
+	case PTR_BELOW_ADDR:	/* all of data is before allocated */
+	    ret = MOVE_CASE_OUTSIDE;
+	    dbg(DBG_VVVVHIGH, "in %s: ret #0: %s: last_add: %p < first_alloc: %p",
+			       __func__, move_case_name(ret), last_add, first_alloc);
+	    break;
+
+	case PTR_EQ:		/* only last byte of data is allocated */
+	    ret = MOVE_CASE_BEFORE_INTO;
+	    dbg(DBG_VVVVHIGH, "in %s: ret #1: %s: last_add: %p == first_alloc: %p",
+			       __func__, move_case_name(ret), last_add, first_alloc);
+	    break;
+
+	case PTR_ABOVE_ADDR:	/* last byte to add is beyond first allocated */
+
+	    /*
+	     * case: data to add starts before allocated AND last byte to add is beyond first allocated
+	     */
+	    dbg(DBG_VVVVHIGH, "in %s: last_add: %p > first_alloc: %p",
+			       __func__, last_add, first_alloc);
+	    switch (compare_addr(last_add, last_alloc)) {
+
+	    case PTR_BELOW_ADDR:	/* data ends before end of allocated */
+		dbg(DBG_VVVVHIGH, "in %s: last_add: %p < last_alloc: %p",
+				  __func__, last_add, last_alloc);
+		ret = MOVE_CASE_BEFORE_INTO;
+		dbg(DBG_VVVVHIGH, "in %s: ret #2: %s: last_add: %p < last_alloc: %p",
+				  __func__, move_case_name(ret), last_add, last_alloc);
+		break;
+
+	    case PTR_EQ:		/* end of data matches end of allocated */
+		dbg(DBG_VVVVHIGH, "in %s: last_add: %p == last_alloc: %p",
+				  __func__, last_add, last_alloc);
+		ret = MOVE_CASE_BEFORE_INTO;
+		dbg(DBG_VVVVHIGH, "in %s: ret #3: %s: last_add: %p == last_alloc: %p",
+				  __func__, move_case_name(ret), last_add, last_alloc);
+		break;
+
+	    case PTR_ABOVE_ADDR:	/* data ends beyond end of allocated */
+		dbg(DBG_VVVVHIGH, "in %s: last_add: %p > last_alloc: %p",
+				  __func__, last_add, last_alloc);
+		ret = MOVE_CASE_BEFORE_IN_BEYOND;
+		dbg(DBG_VVVVHIGH, "in %s: ret #4: %s: last_add: %p > last_alloc: %p",
+				  __func__, move_case_name(ret), last_add, last_alloc);
+		break;
+
+	    default:
+		err(65, __func__, "compare_addr(%p, %p) #0 returned unknown enum value", last_add, last_alloc);
+		not_reached();
+	    }
+	    break;
+
+	default:
+	    err(66, __func__, "compare_addr(%p, %p) #1 returned unknown enum value", last_add, first_alloc);
+	    not_reached();
+	}
+	break;
+
+    case PTR_EQ:		/* data to add matches allocated */
+
+	/*
+	 * case: data starts at beginning of allocated
+	 */
+	dbg(DBG_VVVVHIGH, "is %s: first_add: %p == first_alloc: %p",
+			  __func__, first_add, first_alloc);
+	switch (compare_addr(last_add, last_alloc)) {
+
+	case PTR_BELOW_ADDR:	/* data ends before end of allocated */
+	    dbg(DBG_VVVVHIGH, "is %s: last_add: %p < last_alloc: %p",
+			      __func__, last_add, last_alloc);
+	    ret = MOVE_CASE_INSIDE;
+	    dbg(DBG_VVVVHIGH, "is %s: ret #5: %s: last_add: %p < last_alloc: %p",
+			      __func__, move_case_name(ret), last_add, last_alloc);
+	    break;
+
+	case PTR_EQ:		/* data ends at end of allocated */
+	    dbg(DBG_VVVVHIGH, "is %s: last_add: %p == last_alloc: %p",
+			      __func__, last_add, last_alloc);
+	    ret = MOVE_CASE_INSIDE;
+	    dbg(DBG_VVVVHIGH, "is %s: ret #6: %s: last_add: %p == last_alloc: %p",
+			       __func__, move_case_name(ret), last_add, last_alloc);
+	    break;
+
+	case PTR_ABOVE_ADDR:	/* data ends beyond end of allocated */
+	    dbg(DBG_VVVVHIGH, "is %s: last_add: %p > last_alloc: %p",
+			      __func__, last_add, last_alloc);
+	    ret = MOVE_CASE_IN_BEYOND;
+	    dbg(DBG_VVVVHIGH, "is %s: ret #7: %s: last_add: %p > last_alloc: %p",
+			      __func__, move_case_name(ret), last_add, last_alloc);
+	    break;
+
+	default:
+	    err(67, __func__, "compare_addr(%p, %p) #2 returned unknown enum value", last_add, last_alloc);
+	    not_reached();
+	}
+	break;
+
+    case PTR_ABOVE_ADDR:	/* data to add starts after allocated */
+
+	/*
+	 * case: data to add starts after allocated starts
+	 */
+	dbg(DBG_VVVVHIGH, "is %s: first_add: %p > first_alloc: %p",
+			  __func__, first_add, first_alloc);
+	switch (compare_addr(first_add, last_alloc)) {
+
+	case PTR_BELOW_ADDR:	/* data starts before end of allocated */
+	    dbg(DBG_VVVVHIGH, "is %s: first_add: %p < last_alloc: %p",
+			      __func__, first_add, last_alloc);
+	    switch (compare_addr(last_add, last_alloc)) {
+	    case PTR_BELOW_ADDR:	/* data ends before end of allocated */
+		dbg(DBG_VVVVHIGH, "is %s: last_add: %p < last_alloc: %p",
+				  __func__, last_add, last_alloc);
+		ret = MOVE_CASE_INSIDE;
+		dbg(DBG_VVVVHIGH, "is %s: ret #8: %s: last_add: %p == last_alloc: %p",
+				   __func__, move_case_name(ret), last_add, last_alloc);
+		break;
+
+	    case PTR_EQ:		/* data ends matches end of allocated */
+		dbg(DBG_VVVVHIGH, "is %s: last_add: %p == last_alloc: %p",
+				  __func__, last_add, last_alloc);
+		ret = MOVE_CASE_INSIDE;
+		dbg(DBG_VVVVHIGH, "is %s: ret #9: %s: last_add: %p == last_alloc: %p",
+				   __func__, move_case_name(ret), last_add, last_alloc);
+		break;
+
+	    case PTR_ABOVE_ADDR:	/* data ends beyond end of allocated */
+		dbg(DBG_VVVVHIGH, "is %s: last_add: %p > last_alloc: %p",
+				  __func__, last_add, last_alloc);
+		ret = MOVE_CASE_IN_BEYOND;
+		dbg(DBG_VVVVHIGH, "is %s: ret #10: %s: last_add: %p > last_alloc: %p",
+				   __func__, move_case_name(ret), last_add, last_alloc);
+		break;
+
+	    default:
+		err(68, __func__, "compare_addr(%p, %p) #3 returned unknown enum value", first_add, last_alloc);
+		not_reached();
+	    }
+	    break;
+
+	case PTR_EQ:		/* data start matches end of allocated */
+	    ret = MOVE_CASE_INSIDE;
+	    dbg(DBG_VVVVHIGH, "is %s: ret #11: %s: first_add: %p == last_alloc: %p",
+			       __func__, move_case_name(ret), first_add, last_alloc);
+	    break;
+
+	case PTR_ABOVE_ADDR:	/* data start beyond end of allocated */
+	    dbg(DBG_VVVVHIGH, "is %s: first_add: %p > last_alloc: %p",
+			      __func__, first_add, last_alloc);
+	    ret = MOVE_CASE_OUTSIDE;
+	    dbg(DBG_VVVVHIGH, "is %s: ret #12: %s: first_add: %p > last_alloc: %p",
+			      __func__, move_case_name(ret), first_add, last_alloc);
+	    break;
+
+	default:
+	    err(69, __func__, "compare_addr(%p, %p) #4 returned unknown enum value", first_add, last_alloc);
+	    not_reached();
+	}
+	break;
+
+    default:
+	err(70, __func__, "compare_addr(%p, %p) #5 returned unknown enum value", first_add, first_alloc);
+	not_reached();
+    }
+
+    /*
+     * return move case
+     */
+    return ret;
+}
+
+
+/*
+ * move_case_name - return read_only move case name string
+ *
+ * given:
+ *	mv_case		enum move_case
+ *
+ * returns:
+ *	constant read-only string with the enum move_case name
+ */
+static char const *
+move_case_name(enum move_case mv_case)
+{
+    char const *ret = "((unknown move_case enum))";		/* enum move_case name to return */
+
+    /*
+     * examine move case
+     */
+    switch (mv_case) {
+    case MOVE_CASE_OUTSIDE:
+	ret = "MOVE_CASE_OUTSIDE";
+	break;
+    case MOVE_CASE_INSIDE:
+	ret = "MOVE_CASE_INSIDE";
+	break;
+    case MOVE_CASE_BEFORE_INTO:
+	ret = "MOVE_CASE_BEFORE_INTO";
+	break;
+    case MOVE_CASE_BEFORE_IN_BEYOND:
+	ret = "MOVE_CASE_BEFORE_IN_BEYOND";
+	break;
+    case MOVE_CASE_IN_BEYOND:
+	ret = "MOVE_CASE_IN_BEYOND";
+	break;
+    default:
+	warn(__func__, "unknown enum move_case value: %d", (int)mv_case);
+	break;
+    }
+
+    /*
+     * return move case name
+     */
+    return ret;
 }
 
 
@@ -195,15 +593,15 @@ dyn_array_create(size_t elm_size, intmax_t chunk, intmax_t start_elm_count, bool
      * Check preconditions (firewall) - sanity check args
      */
     if (elm_size <= 0) {
-	err(58, __func__, "elm_size must be > 0: %ju", (uintmax_t)elm_size);
+	err(71, __func__, "elm_size must be > 0: %ju", (uintmax_t)elm_size);
 	not_reached();
     }
     if (chunk <= 0) {
-	err(59, __func__, "chunk must be > 0: %jd", chunk);
+	err(72, __func__, "chunk must be > 0: %jd", chunk);
 	not_reached();
     }
     if (start_elm_count <= 0) {
-	err(60, __func__, "start_elm_count must be > 0: %jd", start_elm_count);
+	err(73, __func__, "start_elm_count must be > 0: %jd", start_elm_count);
 	not_reached();
     }
 
@@ -213,7 +611,7 @@ dyn_array_create(size_t elm_size, intmax_t chunk, intmax_t start_elm_count, bool
     errno = 0;			/* pre-clear errno for errp() */
     ret = calloc(1, sizeof(struct dyn_array));
     if (ret == NULL) {
-	errp(61, __func__, "cannot calloc %ju bytes for a struct dyn_array",
+	errp(74, __func__, "cannot calloc %ju bytes for a struct dyn_array",
 			   (uintmax_t)sizeof(struct dyn_array));
 	not_reached();
     }
@@ -240,7 +638,7 @@ dyn_array_create(size_t elm_size, intmax_t chunk, intmax_t start_elm_count, bool
     ret->data = malloc((size_t)number_of_bytes);
     if (ret->data == NULL) {
 	/* +chunk for guard chunk */
-	errp(62, __func__, "cannot malloc of %jd elements of %ju bytes each for dyn_array->data",
+	errp(75, __func__, "cannot malloc of %jd elements of %ju bytes each for dyn_array->data",
 			   (ret->allocated+chunk), (uintmax_t)elm_size);
 	not_reached();
     }
@@ -255,10 +653,10 @@ dyn_array_create(size_t elm_size, intmax_t chunk, intmax_t start_elm_count, bool
     /*
      * Return newly allocated array
      */
-    dbg(DBG_VVHIGH, "%s(%ju, %jd, %jd, %s): initialized empty dynamic array, allocated: %jd elements of size: %ju",
-		    __func__, (uintmax_t)elm_size, chunk, start_elm_count,
-		    booltostr(zeroize),
-		    dyn_array_alloced(ret), (uintmax_t)ret->elm_size);
+    dbg(DBG_VVVVHIGH, "in %s(%ju, %jd, %jd, %s): initialized empty dynamic array, allocated: %jd elements of size: %ju",
+		      __func__, (uintmax_t)elm_size, chunk, start_elm_count,
+		      booltostr(zeroize),
+		      dyn_array_alloced(ret), (uintmax_t)ret->elm_size);
     return ret;
 }
 
@@ -285,17 +683,16 @@ bool
 dyn_array_append_value(struct dyn_array *array, void *value_to_add)
 {
     bool moved = false;		/* true ==> location of the elements array moved during realloc() */
-    unsigned char *p;
 
     /*
      * Check preconditions (firewall) - sanity check args
      */
     if (array == NULL) {
-	err(63, __func__, "array arg is NULL");
+	err(76, __func__, "array arg is NULL");
 	not_reached();
     }
     if (value_to_add == NULL) {
-	err(64, __func__, "value_to_add arg is NULL");
+	err(77, __func__, "value_to_add arg is NULL");
 	not_reached();
     }
 
@@ -303,42 +700,31 @@ dyn_array_append_value(struct dyn_array *array, void *value_to_add)
      * Check preconditions (firewall) - sanity check array
      */
     if (array->data == NULL) {
-	err(65, __func__, "data in dynamic array is NULL");
+	err(78, __func__, "array->data in dynamic array is NULL");
 	not_reached();
     }
     if (array->elm_size <= 0) {
-	err(66, __func__, "elm_size in dynamic array must be > 0: %ju", (uintmax_t)array->elm_size);
+	err(79, __func__, "array->elm_size in dynamic array must be > 0: %ju", (uintmax_t)array->elm_size);
 	not_reached();
     }
     if (array->chunk <= 0) {
-	err(67, __func__, "chunk in dynamic array must be > 0: %jd", array->chunk);
+	err(80, __func__, "array->chunk in dynamic array must be > 0: %jd", array->chunk);
+	not_reached();
+    }
+    if (array->allocated <= 0) {
+	err(81, __func__, "array->allocated in dynamic array must be > 0: %jd", array->allocated);
 	not_reached();
     }
     if (array->count > array->allocated) {
-	err(68, __func__, "count: %jd in dynamic array must be <= allocated: %jd",
+	err(82, __func__, "array->count: %jd in dynamic array must be <= array->allocated: %jd",
 			  array->count, array->allocated);
 	not_reached();
     }
 
     /*
-     * Expand dynamic array if needed
+     * copy data as if we have a set of 1
      */
-    if (array->count >= array->allocated) {
-	moved = dyn_array_grow(array, array->chunk);
-    }
-
-    /*
-     * We know the dynamic array has enough room to append, so append the value
-     */
-    p = (unsigned char *) (array->data) + (array->count * array->elm_size);
-    memcpy(p, value_to_add, array->elm_size);
-    ++array->count;
-    dbg(DBG_VVVHIGH, "%s(array, buf, value): %s: allocated: %jd elements of size: %ju in use: %jd",
-		     __func__,
-		     (moved == true ? "moved" : "in-place"),
-		     dyn_array_alloced(array),
-		     (uintmax_t)array->elm_size,
-		     dyn_array_tell(array));
+    moved = dyn_array_append_set(array, value_to_add, 1);
 
     /* return array moved condition */
     return moved;
@@ -369,18 +755,25 @@ dyn_array_append_set(struct dyn_array *array, void *array_to_add_p, intmax_t cou
 {
     intmax_t available_empty_elements;
     intmax_t required_elements_to_allocate;
-    bool moved = false;		/* true ==> location of the elements array moved during realloc() */
-    unsigned char *p;
+    enum move_case mv_case = MOVE_CASE_UNSET;	/* assume no special move case */
+    uint8_t *last_add_byte = NULL;		/* last byte of the data to add, if != NULL */
+    uint8_t *last_alloc_byte = NULL;		/* last byte of the allocated data of the dynamic array */
+    int data_first_offset = 0;			/* offset of array_to_add_p from dynamic array allocated data */
+    int data_last_offset = 0;			/* offset of end of data to add om dynamic array allocated data */
+    intmax_t data_size = 0;			/* length in bytes, of the data to move */
+    intmax_t alloc_size = 0;			/* initial size of dynamic array allocated data */
+    bool moved = false;				/* true ==> location of the elements array moved during realloc() */
+    uint8_t *beyond = NULL;			/* next address in dynamic array available for adding data */
 
     /*
      * Check preconditions (firewall) - sanity check args
      */
     if (array == NULL) {
-	err(69, __func__, "array arg is NULL");
+	err(83, __func__, "array arg is NULL");
 	not_reached();
     }
     if (array_to_add_p == NULL) {
-	err(70, __func__, "array_to_add_p arg is NULL");
+	err(84, __func__, "array_to_add_p arg is NULL");
 	not_reached();
     }
 
@@ -388,19 +781,23 @@ dyn_array_append_set(struct dyn_array *array, void *array_to_add_p, intmax_t cou
      * Check preconditions (firewall) - sanity check array
      */
     if (array->data == NULL) {
-	err(71, __func__, "data in dynamic array is NULL");
+	err(85, __func__, "array->data in dynamic array is NULL");
 	not_reached();
     }
     if (array->elm_size <= 0) {
-	err(72, __func__, "elm_size in dynamic array must be > 0: %ju", (uintmax_t)array->elm_size);
+	err(86, __func__, "array->elm_size in dynamic array must be > 0: %ju", (uintmax_t)array->elm_size);
 	not_reached();
     }
     if (array->chunk <= 0) {
-	err(73, __func__, "chunk in dynamic array must be > 0: %jd", array->chunk);
+	err(87, __func__, "array->chunk in dynamic array must be > 0: %jd", array->chunk);
+	not_reached();
+    }
+    if (array->allocated <= 0) {
+	err(88, __func__, "array->allocated in dynamic array must be > 0: %jd", array->allocated);
 	not_reached();
     }
     if (array->count > array->allocated) {
-	err(74, __func__, "count: %jd in dynamic array must be <= allocated: %jd",
+	err(89, __func__, "array->count: %jd in dynamic array must be <= array->allocated: %jd",
 			  array->count, array->allocated);
 	not_reached();
     }
@@ -409,25 +806,241 @@ dyn_array_append_set(struct dyn_array *array, void *array_to_add_p, intmax_t cou
      * Expand dynamic array if needed
      */
     available_empty_elements = dyn_array_avail(array);
+    data_size = array->elm_size * count_of_elements_to_add;
+    alloc_size = array->elm_size * array->allocated;
     if (count_of_elements_to_add > available_empty_elements) {
+
+	/*
+	 * determine our move case
+	 */
+	dbg(DBG_VVVHIGH, "in %s(array: %p, array_to_add_p: %p, %jd)", __func__,
+			 (void *)array, (void *)array_to_add_p, count_of_elements_to_add);
+	last_add_byte = (uint8_t *)(array_to_add_p) + (data_size - 1);
+	last_alloc_byte = (uint8_t *)(array->data) + (alloc_size - 1);
+	data_first_offset = (uint8_t *)(array_to_add_p) - (uint8_t *)(array->data);
+	data_last_offset = (uint8_t *)(last_add_byte) - (uint8_t *)(array->data);
+	dbg(DBG_VVVVHIGH, "in %s: array->data: %p", __func__, (void *)array->data);
+	dbg(DBG_VVVVHIGH, "in %s: alloc_size: %jd", __func__, alloc_size);
+	dbg(DBG_VVVVHIGH, "in %s: last_alloc_byte: %p", __func__, (void *)last_alloc_byte);
+	dbg(DBG_VVVVHIGH, "in %s: array_to_add_p: %p", __func__, (void *)array_to_add_p);
+	dbg(DBG_VVVVHIGH, "in %s: data_size: %jd", __func__, data_size);
+	dbg(DBG_VVVVHIGH, "in %s: last_add_byte: %p", __func__, (void *)last_add_byte);
+	dbg(DBG_VVVVHIGH, "in %s: data_first_offset: %d", __func__, data_first_offset);
+	dbg(DBG_VVVVHIGH, "in %s: data_last_offset: %d", __func__, data_last_offset);
+	mv_case = determine_move_case(array->data, last_alloc_byte, array_to_add_p, last_add_byte);
+	dbg(DBG_VVVVHIGH, "in %s: move case: %s", __func__, move_case_name(mv_case));
+
+	/*
+	 * determine the new allocated data size that as need
+	 */
 	required_elements_to_allocate = array->chunk *
 		((count_of_elements_to_add - available_empty_elements + (array->chunk - 1)) / array->chunk);
+
+	/*
+	 * expand the allocated data and note of the data moved
+	 */
 	moved = dyn_array_grow(array, required_elements_to_allocate);
     }
 
     /*
      * We know the dynamic array has enough room to append, so append the new array
+     *
+     * We append depending on if the data moved during a possible dyn_array_grow() / realloc() call
+     * as well of the move type.
      */
-    p = (unsigned char *) (array->data) + (array->count * array->elm_size);
-    memcpy(p, array_to_add_p, array->elm_size * count_of_elements_to_add);
+    beyond = (uint8_t *)(array->data) + (array->count * array->elm_size);
+    if (moved == false || mv_case == MOVE_CASE_UNSET || mv_case == MOVE_CASE_OUTSIDE) {
+
+	/*
+	 * Either the dynamic array had enough allocated memory to receive the new data,
+	 * or the expanded dynamic array did not require the data to be moved,
+	 * or the data was not within the allocated data of the dynamic array.
+	 * Therefore, we can simply move the data to the end of the dynamic array.
+	 */
+
+	/* append data to the end of the dynamic array */
+	memmove(beyond, array_to_add_p, data_size);
+
+    } else {
+
+	uint8_t *new_array_to_add_p = NULL;	/* newly moved data to append, location */
+	intmax_t pre_length = 0;		/* length of data before dynamic array allocated data, or 0 */
+	intmax_t in_length = 0;			/* length of dynamic array allocated data, or 0 */
+	intmax_t post_length = 0;		/* length of data after dynamic array allocated data, or 0 */
+
+	/*
+	 * move data based on the move case
+	 *
+	 * The dynamic array had to be expanded via dyn_array_grow(), and the
+	 * resulting realloc() moved the data
+	 */
+	switch (mv_case) {
+
+	case MOVE_CASE_UNSET:
+	    err(90, __func__, "mv_case: %s but previous if says this is impossible",
+			       move_case_name(mv_case));
+	    not_reached();
+
+	case MOVE_CASE_OUTSIDE:
+	    err(91, __func__, "mv_case: %s but previous if says this is impossible",
+			       move_case_name(mv_case));
+	    not_reached();
+
+	case MOVE_CASE_INSIDE:
+
+	    /* firewall */
+	    if (data_first_offset < 0) {
+		err(92, __func__, "mv_case == %s but data_first_offset < 0: %d",
+				  move_case_name(mv_case), data_first_offset);
+		not_reached();
+	    }
+
+	    /* append the entire chunk of data */
+	    new_array_to_add_p = (uint8_t *)(array->data) + data_first_offset;	/* new stating location */
+	    dbg(DBG_VVVHIGH, "mv_case: %s special "
+			     "memmove(beyond: %p, new_array_to_add_p: %p, data_size: %ju)",
+			     move_case_name(mv_case),
+			     (void *)beyond, (void *)new_array_to_add_p, data_size);
+	    memmove((void *)beyond, (void *)new_array_to_add_p, data_size);
+	    break;
+
+	case MOVE_CASE_BEFORE_INTO:
+
+	    /* firewall */
+	    if (data_first_offset >= 0) {
+		err(93, __func__, "mv_case: %s but data_first_offset >= 0: %d",
+				  move_case_name(mv_case), data_first_offset);
+		not_reached();
+	    }
+	    pre_length = -data_first_offset;
+	    if (pre_length <= 0) {
+		err(94, __func__, "mv_case: %s but pre_length: %jd <= 0",
+				  move_case_name(mv_case), pre_length);
+		not_reached();
+	    }
+	    in_length = data_size - pre_length;
+	    if (in_length <= 0) {
+		err(95, __func__, "mv_case: %s but in_length: %jd <= 0",
+				  move_case_name(mv_case), in_length);
+		not_reached();
+	    }
+
+	    /* append data that is before the dynamic array allocated data */
+	    dbg(DBG_VVVHIGH, "mv_case: %s special "
+			     "memmove(beyond: %p, new_array_to_add_p: %p, pre_length: %ju)",
+			     move_case_name(mv_case),
+			     (void *)beyond, (void *)new_array_to_add_p, pre_length);
+	    memmove((void *)beyond, (void *)array_to_add_p, pre_length);
+
+	    /* append data that moved with the dynamic array allocated data */
+	    dbg(DBG_VVVHIGH, "mv_case: %s special "
+			     "memmove(beyond: %p, array->data: %p, in_length: %ju)",
+			     move_case_name(mv_case),
+			     (void *)beyond, array->data, in_length);
+	    memmove((void *)beyond, array->data, in_length);
+	    break;
+
+	case MOVE_CASE_BEFORE_IN_BEYOND:
+
+	    /* firewall */
+	    if (data_first_offset >= 0) {
+		err(96, __func__, "mv_case: %s but data_first_offset >= 0: %d",
+				  move_case_name(mv_case), data_first_offset);
+		not_reached();
+	    }
+	    pre_length = -data_first_offset;
+	    if (pre_length <= 0) {
+		err(97, __func__, "mv_case: %s but pre_length: %jd <= 0",
+				  move_case_name(mv_case), pre_length);
+		not_reached();
+	    } else if (pre_length >= data_size) {
+		err(98, __func__, "mv_case: %s but pre_length: %jd >= data_size: %jd",
+				  move_case_name(mv_case), pre_length, data_size);
+		not_reached();
+	    }
+	    post_length = data_size - pre_length - alloc_size;
+	    if (post_length <= 0) {
+		err(99, __func__, "mv_case: %s but post_length: %jd <= 0",
+				  move_case_name(mv_case), post_length);
+		not_reached();
+	    }
+
+	    /* append data that is before the dynamic array allocated data */
+	    dbg(DBG_VVVHIGH, "mv_case: %s special "
+			     "memmove(beyond: %p array_to_add_p: %p, pre_length: %ju)",
+			     move_case_name(mv_case),
+			     (void *)beyond, (void *)array_to_add_p, pre_length);
+	    memmove((void *)beyond, (void *)array_to_add_p, pre_length);
+
+	    /* append the section that was part of the previous dynamic array allocated data */
+	    dbg(DBG_VVVHIGH, "mv_case: %s special "
+			     "memmove(beyond: %p array->data: %p, alloc_size: %ju)",
+			     move_case_name(mv_case),
+			     (void *)beyond, array->data, alloc_size);
+	    memmove((void *)beyond, array->data, alloc_size);
+
+	    /* append the data that was beyond the end of the previous dynamic array allocated data */
+	    dbg(DBG_VVVHIGH, "mv_case: %s special "
+			     "memmove(beyond: %p array_to_add_p+pre_length+data_size: %p, post_length: %ju)",
+			     move_case_name(mv_case),
+			     (void *)beyond, (void *)((uint8_t *)(array_to_add_p) + pre_length+data_size), post_length);
+	    memmove((void *)beyond, (void *)((uint8_t *)(array_to_add_p) + pre_length+data_size), post_length);
+	    break;
+
+	case MOVE_CASE_IN_BEYOND:
+
+	    /* firewall */
+	    if (data_first_offset < 0) {
+		err(100, __func__, "mv_case: %s but data_first_offset < 0: %d",
+				  move_case_name(mv_case), data_first_offset);
+		not_reached();
+	    }
+	    in_length = data_size - (alloc_size - data_first_offset);
+	    if (in_length <= 0) {
+		err(101, __func__, "mv_case: %s but in_length: %jd <= 0",
+				  move_case_name(mv_case), in_length);
+		not_reached();
+	    }
+	    post_length = data_size - in_length;
+	    if (post_length <= 0) {
+		err(102, __func__, "mv_case: %s but post_length: %jd <= 0",
+				  move_case_name(mv_case), post_length);
+		not_reached();
+	    }
+
+	    /* append the data that stated inside the previous dynamic array allocated data */
+	    new_array_to_add_p = (uint8_t *)(array->data) + data_first_offset;	/* new stating location */
+	    dbg(DBG_VVVHIGH, "mv_case: %s special "
+			     "memmove(beyond: %p new_array_to_add_p: %p, in_length: %ju)",
+			     move_case_name(mv_case),
+			     (void *)beyond, (void *)new_array_to_add_p, in_length);
+	    memmove((void *)beyond, (void *)new_array_to_add_p, in_length);
+
+	    /* append the data that was beyond the end of the previous dynamic array allocated data */
+	    dbg(DBG_VVVHIGH, "mv_case: %s special "
+			     "memmove(beyond: %p array_to_add_p+in_length: %p, post_length: %ju)",
+			     move_case_name(mv_case),
+			     (void *)beyond, (void *)((uint8_t *)(array_to_add_p) + in_length), post_length);
+	    memmove((void *)beyond, (void *)((uint8_t *)(array_to_add_p) + in_length), post_length);
+	    break;
+
+	default:
+	    err(103, __func__, "mv_case is an unknown enum value: %d", (int)mv_case);
+	    not_reached();
+	}
+    }
+
+    /*
+     * increase the amount of data that is in use, in the dynamic array
+     */
     array->count += count_of_elements_to_add;
-    dbg(DBG_VVVHIGH, "%s(array, buf, %jd): %s: allocated: %jd elements of size: %ju in use: %jd",
-		     __func__,
-		     (intmax_t)count_of_elements_to_add,
-		     (moved == true ? "moved" : "in-place"),
-		     dyn_array_alloced(array),
-		     (uintmax_t)array->elm_size,
-		     dyn_array_tell(array));
+    dbg(DBG_VVVVVHIGH, "in %s(array: %p, array_to_add_p %p, %jd): %s: allocated: %jd elements of size: %ju in use: %jd",
+		       __func__, (void *)array, (void *)array_to_add_p,
+		       (intmax_t)count_of_elements_to_add,
+		       (moved == true ? "moved" : "in-place"),
+		       dyn_array_alloced(array),
+		       (uintmax_t)array->elm_size,
+		       dyn_array_tell(array));
 
     /* return array moved condition */
     return moved;
@@ -470,11 +1083,11 @@ dyn_array_concat_array(struct dyn_array *array, struct dyn_array *other)
      * Check preconditions (firewall) - sanity check args
      */
     if (array == NULL) {
-	err(75, __func__, "array arg is NULL");
+	err(104, __func__, "array arg is NULL");
 	not_reached();
     }
     if (other == NULL) {
-	err(76, __func__, "other arg is NULL");
+	err(105, __func__, "other arg is NULL");
 	not_reached();
     }
 
@@ -482,19 +1095,23 @@ dyn_array_concat_array(struct dyn_array *array, struct dyn_array *other)
      * Check preconditions (firewall) - sanity check array
      */
     if (array->data == NULL) {
-	err(77, __func__, "data in first dynamic array is NULL");
+	err(106, __func__, "array->data in first dynamic array is NULL");
 	not_reached();
     }
     if (array->elm_size <= 0) {
-	err(78, __func__, "elm_size in first dynamic array must be > 0: %ju", (uintmax_t)array->elm_size);
+	err(107, __func__, "array->elm_size in first dynamic array must be > 0: %ju", (uintmax_t)array->elm_size);
 	not_reached();
     }
     if (array->chunk <= 0) {
-	err(79, __func__, "chunk in first dynamic array must be > 0: %jd", array->chunk);
+	err(108, __func__, "array->chunk in first dynamic array must be > 0: %jd", array->chunk);
+	not_reached();
+    }
+    if (array->allocated <= 0) {
+	err(109, __func__, "array->allocated in dynamic array must be > 0: %jd", array->allocated);
 	not_reached();
     }
     if (array->count > array->allocated) {
-	err(80, __func__, "count: %jd in first dynamic array must be <= allocated: %jd",
+	err(110, __func__, "array->count: %jd in first dynamic array must be <= array->allocated: %jd",
 			  array->count, array->allocated);
 	not_reached();
     }
@@ -503,19 +1120,23 @@ dyn_array_concat_array(struct dyn_array *array, struct dyn_array *other)
      * Check preconditions (firewall) - sanity check other
      */
     if (other->data == NULL) {
-	err(81, __func__, "data in second dynamic array is NULL");
+	err(111, __func__, "other->data in second dynamic array is NULL");
 	not_reached();
     }
     if (other->elm_size <= 0) {
-	err(82, __func__, "elm_size in second dynamic array must be > 0: %ju", (uintmax_t)other->elm_size);
+	err(112, __func__, "other->elm_size in second dynamic array must be > 0: %ju", (uintmax_t)other->elm_size);
 	not_reached();
     }
     if (other->chunk <= 0) {
-	err(83, __func__, "chunk in second dynamic array must be > 0: %jd", other->chunk);
+	err(113, __func__, "other->chunk in second dynamic array must be > 0: %jd", other->chunk);
+	not_reached();
+    }
+    if (other->allocated <= 0) {
+	err(114, __func__, "other->chunk in dynamic array must be > 0: %jd", other->allocated);
 	not_reached();
     }
     if (other->count > other->allocated) {
-	err(84, __func__, "count: %jd in second dynamic array must be <= allocated: %jd",
+	err(115, __func__, "other->count: %jd in second dynamic array must be <= other->allocated: %jd",
 			  other->count, other->allocated);
 	not_reached();
     }
@@ -559,7 +1180,7 @@ dyn_array_seek(struct dyn_array *array, off_t offset, int whence)
      * Check preconditions (firewall) - sanity check args
      */
     if (array == NULL) {
-	err(85, __func__, "array arg is NULL");
+	err(116, __func__, "array arg is NULL");
 	not_reached();
     }
 
@@ -567,19 +1188,23 @@ dyn_array_seek(struct dyn_array *array, off_t offset, int whence)
      * Check preconditions (firewall) - sanity check array
      */
     if (array->data == NULL) {
-	err(86, __func__, "data in dynamic array is NULL");
+	err(117, __func__, "array->data in dynamic array is NULL");
 	not_reached();
     }
     if (array->elm_size <= 0) {
-	err(87, __func__, "elm_size in dynamic array must be > 0: %ju", (uintmax_t)array->elm_size);
+	err(118, __func__, "array->elm_size in dynamic array must be > 0: %ju", (uintmax_t)array->elm_size);
 	not_reached();
     }
     if (array->chunk <= 0) {
-	err(88, __func__, "chunk in dynamic array must be > 0: %jd", array->chunk);
+	err(119, __func__, "array->chunk in dynamic array must be > 0: %jd", array->chunk);
+	not_reached();
+    }
+    if (array->allocated <= 0) {
+	err(120, __func__, "array->allocated in dynamic array must be > 0: %jd", array->allocated);
 	not_reached();
     }
     if (array->count > array->allocated) {
-	err(89, __func__, "count: %jd in dynamic array must be <= allocated: %jd",
+	err(121, __func__, "array->count: %jd in dynamic array must be <= array->allocated: %jd",
 			  array->count, array->allocated);
 	not_reached();
     }
@@ -611,7 +1236,7 @@ dyn_array_seek(struct dyn_array *array, off_t offset, int whence)
 	break;
 
     default:
-	err(90, __func__, "whence: %d != SEEK_SET: %d != SEEK_CUR: %d != SEEK_END: %d",
+	err(122, __func__, "whence: %d != SEEK_SET: %d != SEEK_CUR: %d != SEEK_END: %d",
 			  whence, SEEK_SET, SEEK_CUR, SEEK_END);
 	not_reached();
 	break;
@@ -682,14 +1307,14 @@ dyn_array_seek(struct dyn_array *array, off_t offset, int whence)
 
     /* set new in use count */
     array->count = setpoint;
-    dbg(DBG_VVVHIGH, "%s(array, %jd, %s): %s: allocated: %jd elements of size: %ju in use: %jd",
-		     __func__,
-		     (intmax_t)offset,
-		     (whence == SEEK_SET ? "SEEK_SET" : (whence == SEEK_CUR ? "SEEK_CUR" : "SEEK_END")),
-		     (moved == true ? "moved" : "in-place"),
-		     dyn_array_alloced(array),
-		     (uintmax_t)array->elm_size,
-		     dyn_array_tell(array));
+    dbg(DBG_VVVVVHIGH, "in %s(array, %jd, %s): %s: allocated: %jd elements of size: %ju in use: %jd",
+		       __func__,
+		       (intmax_t)offset,
+		       (whence == SEEK_SET ? "SEEK_SET" : (whence == SEEK_CUR ? "SEEK_CUR" : "SEEK_END")),
+		       (moved == true ? "moved" : "in-place"),
+		       dyn_array_alloced(array),
+		       (uintmax_t)array->elm_size,
+		       dyn_array_tell(array));
 
     /* return array moved condition */
     return moved;
@@ -718,7 +1343,7 @@ dyn_array_clear(struct dyn_array *array)
      * Check preconditions (firewall) - sanity check args
      */
     if (array == NULL) {
-	err(91, __func__, "array arg is NULL");
+	err(123, __func__, "array arg is NULL");
 	not_reached();
     }
 
@@ -726,19 +1351,23 @@ dyn_array_clear(struct dyn_array *array)
      * Check preconditions (firewall) - sanity check array
      */
     if (array->data == NULL) {
-	err(92, __func__, "data for dynamic array is NULL");
+	err(124, __func__, "array->data for dynamic array is NULL");
 	not_reached();
     }
     if (array->elm_size <= 0) {
-	err(93, __func__, "elm_size in dynamic array must be > 0: %ju", (uintmax_t)array->elm_size);
+	err(125, __func__, "array->elm_size in dynamic array must be > 0: %ju", (uintmax_t)array->elm_size);
 	not_reached();
     }
     if (array->chunk <= 0) {
-	err(94, __func__, "chunk in dynamic array must be > 0: %jd", array->chunk);
+	err(126, __func__, "array->chunk in dynamic array must be > 0: %jd", array->chunk);
+	not_reached();
+    }
+    if (array->allocated <= 0) {
+	err(128, __func__, "array->allocated in dynamic array must be > 0: %jd", array->allocated);
 	not_reached();
     }
     if (array->count > array->allocated) {
-	err(95, __func__, "count: %jd in dynamic array must be <= allocated: %jd",
+	err(129, __func__, "array->count: %jd in dynamic array must be <= array->allocated: %jd",
 			  array->count, array->allocated);
 	not_reached();
     }
@@ -754,7 +1383,7 @@ dyn_array_clear(struct dyn_array *array)
      * Set the number of elements in the array to zero
      */
     array->count = 0;
-    dbg(DBG_VVVHIGH, "%s(array) not-moved: allocated: %jd elements of size: %ju in use: %jd",
+    dbg(DBG_VVHIGH, "in %s(array) not-moved: allocated: %jd elements of size: %ju in use: %jd",
 		     __func__,
 		     dyn_array_alloced(array),
 		     (uintmax_t)array->elm_size,
@@ -786,7 +1415,7 @@ dyn_array_free(struct dyn_array *array)
      * Check preconditions (firewall) - sanity check args
      */
     if (array == NULL) {
-	err(96, __func__, "array arg is NULL");
+	err(130, __func__, "array arg is NULL");
 	not_reached();
     }
 
@@ -813,6 +1442,6 @@ dyn_array_free(struct dyn_array *array)
     array->count = 0;
     array->allocated = 0;
     array->chunk = 0;
-    dbg(DBG_VVVHIGH, "%s(array)", __func__);
+    dbg(DBG_VVVHIGH, "in %s(array)", __func__);
     return;
 }

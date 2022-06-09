@@ -496,7 +496,7 @@ dyn_test.o: dyn_test.c Makefile
 dyn_test: dyn_test.o dbg.o util.o dyn_array.o Makefile
 	${CC} ${CFLAGS} dyn_test.o dbg.o util.o dyn_array.o -o $@
 
-limit_ioccc.sh: limit_ioccc.h version.h Makefile
+limit_ioccc.sh: limit_ioccc.h version.h dbg.h dyn_array.h dyn_test.h Makefile
 	${RM} -f $@
 	@echo '#!/usr/bin/env bash' > $@
 	@echo '#' >> $@
@@ -506,7 +506,7 @@ limit_ioccc.sh: limit_ioccc.h version.h Makefile
 	    ${AWK} '{print $$2 "=\"" $$3 "\"" ;}' | ${TR} -d '[a-z]()' | \
 	    ${SED} -e 's/"_/"/' -e 's/""/"/g' -e 's/^/export /' >> $@
 	${GREP} -hE '^#define (.*_VERSION|TIMESTAMP_EPOCH|JSON_PARSING_DIRECTIVE_)' \
-		     version.h limit_ioccc.h dbg.h | \
+		     version.h limit_ioccc.h dbg.h dyn_array.h dyn_test.h | \
 	    ${GREP} -v 'UUID_VERSION' | \
 	    ${SED} -e 's/^#define/export/' -e 's/ "/="/' -e 's/"[	 ].*$$/"/' >> $@
 	-if ${GREP} -q '^#define DIGRAPHS' limit_ioccc.h; then \
@@ -857,8 +857,8 @@ sanity.o: sanity.c sanity.h util.h dyn_array.h dbg.h location.h \
 utf8_test.o: utf8_test.c utf8_posix_map.h util.h dyn_array.h dbg.h \
   limit_ioccc.h version.h
 verge.o: verge.c verge.h dbg.h util.h dyn_array.h limit_ioccc.h version.h
-dyn_array.o: dyn_array.c dyn_array.h util.h dbg.h
-dyn_test.o: dyn_test.c dyn_test.h util.h dyn_array.h dbg.h version.h
+dyn_array.o: dyn_array.c dyn_array.h dbg.h
+dyn_test.o: dyn_test.c dyn_test.h util.h dyn_array.h dbg.h
 json_chk.o: json_chk.c dbg.h util.h dyn_array.h limit_ioccc.h version.h \
   json_chk.h json_parse.h json_util.h
 json_entry.o: json_entry.c dbg.h util.h dyn_array.h json_entry.h \

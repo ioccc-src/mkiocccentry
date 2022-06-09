@@ -35,23 +35,26 @@
 
 
 /*
- * util - utility functions and variable types (like bool)
+ * size_t MAX and MIN
  */
-#if defined(STAND_ALONE)
 #if !defined(SIZE_MAX)
 #define SIZE_MAX (~((size_t)0))
 #endif /* SIZE_MAX */
 #if !defined(SIZE_MIN)
 #define SIZE_MIN ((size_t)(0))
 #endif /* SIZE_MIN */
-#else /* STAND_ALONE */
-#include "util.h"
-#endif /* STAND_ALONE */
+
 
 /*
  * dbg - debug, warning and error reporting facility
  */
 #include "dbg.h"
+
+
+/*
+ * official version
+ */
+#define DYN_ALLOC_VERSION "2.0 2022-06-09"	/* format: major.minor YYYY-MM-DD */
 
 
 /*

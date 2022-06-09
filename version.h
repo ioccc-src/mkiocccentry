@@ -148,18 +148,23 @@
  */
 #define VERGE_VERSION "0.1 2022-04-02"		/* format: major.minor YYYY-MM-DD */
 
-/*
- * dynamic array facility version
- */
-#define DYN_TEST_VERSION "1.5 2022-04-17"	 /* format: major.minor YYYY-MM-DD */
 
 /*
  * debug version
  *
  * Because the dbg is a self contained system, we cannot define DBG_VERSION here.
- * See dbg.h for DBG_VERSION value.
+ * See dbg.h for the DBG_VERSION value.
  */
-#include "dbg.h"
+
+
+/*
+ * dynamic array version
+ *
+ * Because the dynamic array is a self contained system, we cannot define DYN_ALLOC_VERSION here.
+ * Because the dynamic array is a self contained system, we cannot define DYN_TEST_VERSION here.
+ * See dyn_array.h for the DYN_ALLOC_VERSION value.
+ * See dyn_test.h for the DYN_TEST_VERSION value.
+ */
 
 
 #endif /* INCLUDE_VERSION_H */

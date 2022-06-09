@@ -79,11 +79,8 @@ main(int argc, char *argv[])
 	    break;
 	case 'V':		/* -V - print version and exit */
 	    errno = 0;		/* pre-clear errno for warnp() */
-#if defined(STAND_ALONE)
-	    (void) printf("%s\n", DYN_TEST_VERSION);
-#else /* STAND_ALONE */
-	    print("%s\n", DYN_TEST_VERSION);
-#endif /* STAND_ALONE */
+	    (void) printf("dyn_array library version: %s\n", DYN_ALLOC_VERSION);
+	    (void) printf("dbg_test version: %s\n", DYN_TEST_VERSION);
 	    exit(3); /*ooo*/
 	    not_reached();
 	    break;
@@ -213,40 +210,3 @@ usage(int exitcode, char const *str, char const *prog)
     exit(exitcode); /*ooo*/
     not_reached();
 }
-
-
-#if defined(STAND_ALONE)
-/*
- * parse_verbosity	- parse -v option for our tools
- *
- * given:
- *
- *	program		- the calling program e.g. txzchk, fnamchk, mkiocccentry etc.
- *	arg		- the optarg in the calling tool
- *
- * Returns the parsed verbosity.
- *
- * Returns DBG_NONE if passed NULL args or empty string.
- */
-static int
-parse_verbosity(char const *program, char const *arg)
-{
-    int verbosity;
-
-    if (program == NULL || arg == NULL || !strlen(arg)) {
-	return DBG_NONE;
-    }
-
-    /*
-     * parse verbosity
-     */
-    errno = 0;		/* pre-clear errno for errp() */
-    verbosity = (int)strtol(arg, NULL, 0);
-    if (errno != 0) {
-	errp(1, __func__, "%s: cannot parse -v arg: %s error: %s", program, arg, strerror(errno)); /*ooo*/
-	not_reached();
-    }
-
-    return verbosity;
-}
-#endif /* STAND_ALONE */

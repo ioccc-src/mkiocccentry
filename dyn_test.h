@@ -44,12 +44,7 @@
 /*
  * official versions
  */
-#if defined(STAND_ALONE)
-#undef DYN_TEST_VERSION
-#define DYN_TEST_VERSION "1.4 2022-05-18"
-#else /* STAND_ALONE */
-#include "version.h"
-#endif /* STAND_ALONE */
+#define DYN_TEST_VERSION "1.6 2022-06-09"
 
 /*
  * dynamic array facility
@@ -84,9 +79,6 @@ static const char * const usage_msg =
  * external allocation functions
  */
 static void usage(int exitcode, char const *name, char const *str) __attribute__((noreturn));
-#if defined(STAND_ALONE)
-static int parse_verbosity(char const *program, char const *arg);
-#endif /* STAND_ALONE */
 
 
 #endif		/* INCLUDE_DYN_TEST_H */
