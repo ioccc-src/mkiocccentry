@@ -2742,6 +2742,21 @@ parse_json(char const *ptr, size_t len, bool *is_valid, FILE *dbg_stream)
     int ret = 0;			/* ugly_parse() return value */
 
     /*
+     * We set *is_valid = true if is_valid != NULL so that the caller does not
+     * have to worry about this for each call. That way when the function
+     * returns they can check their bool and know whether it was valid or not
+     * (though we actually report invalid json too in case but the caller has
+     * information about the filename when passed a file and can now report if
+     * the json was valid).
+     *
+     * Either way this ensures that the caller has a valid value after this
+     * function returns (as long as is_valid != NULL).
+     */
+    if (is_valid != NULL) {
+	*is_valid = true;
+    }
+
+    /*
      * firewall
      */
     if (ptr == NULL) {
