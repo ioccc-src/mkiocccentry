@@ -1983,7 +1983,7 @@ json_tree_free(struct json *node, int max_depth, ...)
  *
  * Example use - free an entire JSON parse tree
  *
- *	json_tree_walk(tree, json_free);
+ *	json_tree_walk(tree, JSON_DEFAULT_MAX_DEPTH, json_free);
  *
  * given:
  *	node	    pointer to a JSON parse tree
@@ -2054,7 +2054,7 @@ json_tree_walk(struct json *node, int max_depth, void (*vcallback)(struct json *
  *
  * Example use - free an entire JSON parse tree
  *
- *	json_tree_walk(tree, json_free);
+ *	json_tree_walk(tree, JSON_DEFAULT_MAX_DEPTH, 0, json_free);
  *
  * given:
  *	node	    pointer to a JSON parse tree
