@@ -2,7 +2,7 @@
 .SH NAME
 mkiocccentry \- make an IOCCC compressed tarball for an IOCCC entry
 .SH SYNOPSIS
-\fBmkiocccentry [\-h] [\-v level] [\-V] [\-t tar] [\-c cp] [\-l ls] [\-T txzchk] [\-F fnamchk] [{\-a|\-A|\-i} answers] [\-j jinfochk] [\-J jauthchk] [\-W] [\-q] work_dir prog.c Makefile remarks.md [file ...]\fP
+\fBmkiocccentry\fP [\-h] [\-v level] [\-V] [\-t tar] [\-c cp] [\-l ls] [\-T txzchk] [\-F fnamchk] [{\-a|\-A|\-i} answers] [\-j jinfochk] [\-J jauthchk] [\-W] [\-q] work_dir prog.c Makefile remarks.md [file ...]
 .SH DESCRIPTION
 \fBmkiocccentry\fP gathers your source file, Makefile, remarks as well as any other files and creates a XZ compressed tarball.
 The tool runs \fBiocccsize\fP and it also runs a test on the Makefile to verify that everything seems in order.
@@ -59,11 +59,11 @@ Specify path to \fBjinfochk\fP tool.
 Specify path to \fBjauthchk\fP tool.
 \fBmkiocccentry\fP checks \fI./jauthchk\fP and \fI/usr/local/bin/jauthchk\fP if this option is not specified.
 .PP
-\fP\-W\fP
+\fB\-W\fP
 Ignore all warnings.
 When this option is specified the program warns you that you've ignored all warnings (therefore not ignoring all warnings :) ), informing you that the judges will not ignore all warnings.
 .PP
-\fP\-q\fP
+\fB\-q\fP
 Quiet mode.
 Silence msg(), warn(), warnp() if verbosity level is 0.
 .SH EXIT STATUS
@@ -108,7 +108,7 @@ Make \fIwork_dir\fP and then make an entry from the files \fIprog.c\fP, \fIMakef
 .RS
 \fB
  mkdir work_dir
- ./mkiocccentry -a answers work_dir prog.c Makefile remarks.md
+ ./mkiocccentry -a answers work_dir prog.c Makefile remarks.md\fP
 .fi
 .RE
 .PP
@@ -117,7 +117,7 @@ Use the answers file from the previous invocation to quickly update the entry wi
 
 .RS
 \fB
- ./mkiocccentry -i answers work_dir prog.c Makefile remarks.md data.txt
+ ./mkiocccentry -i answers work_dir prog.c Makefile remarks.md data.txt\fP
 .fi
 .RE
 .PP
@@ -126,6 +126,6 @@ Run program, specifying alternative path to \fBtar\fP and \fBtxzchk\fP:
 
 .RS
 \fB
- ./mkiocccentry -t /path/to/tar -T /path/to/txzchk
+ ./mkiocccentry -t /path/to/tar -T /path/to/txzchk\fP
 .fi
 .RE

@@ -2,7 +2,7 @@
 .SH NAME
 jstrdecode \- decode JSON encoded strings
 .SH SYNOPSIS
-\fBjstrdecode [\-h] [\-v level] [\-q] [\-V] [\-t] [\-n] [\-Q] [string ...]
+\fBjstrdecode\fP [\-h] [\-v level] [\-q] [\-V] [\-t] [\-n] [\-Q] [string ...]
 .SH DESCRIPTION
 \fBjstrdecode\fP decodes JSON encoded strings given on the command line.
 If given the \fB\-t\fP option it performs a test on the JSON decode and encode functions.
@@ -61,7 +61,7 @@ Decode input from \fBstdin\fP (send \fBEOF\fP, usually ctrl-d or \fB^D\fP, to de
 \fB
  ./jstrdecode
  -5
- ^D
+ ^D\fP
 .fi
 .RE
 .PP
@@ -69,7 +69,7 @@ Decode input from \fBstdin\fP (send \fBEOF\fP, usually ctrl-d or \fB^D\fP, to de
 Decode just a negative number:
 .RS
 \fB
- ./jstrdecode -- -5
+ ./jstrdecode -- -5\fP
 .fi
 .RE
 .SH SEE ALSO

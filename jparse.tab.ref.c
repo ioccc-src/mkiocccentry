@@ -2563,6 +2563,13 @@ main(int argc, char **argv)
 					  optarg, (uintmax_t)strlen(optarg));
 	    /* parse arg as a block of json input */
 	    parse_json(optarg, strlen(optarg), &valid_json, stderr);
+	    if (valid_json) {
+		errno = 0; /* pre-clear errno for warnp() */
+		ret = printf("valid JSON\n");
+		if (ret <= 0) {
+		    warnp(__func__, "printf error printing valid JSON");
+		}
+	    }
 	    break;
 	default:
 	    usage(2, "invalid -flag or missing option argument", program); /*ooo*/
@@ -2583,6 +2590,13 @@ main(int argc, char **argv)
 	 */
 	for (i=optind; i < argc; ++i) {
 	    parse_json_file(argv[i], &valid_json, stderr);
+	    if (valid_json) {
+		errno = 0; /* pre-clear errno for warnp() */
+		ret = printf("valid JSON in file %s\n", argv[i]);
+		if (ret <= 0) {
+		    warnp(__func__, "printf error printing valid JSON");
+		}
+	    }
 	}
 
     } else if (!string_flag_used) {

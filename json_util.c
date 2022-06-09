@@ -940,6 +940,16 @@ json_process_floating(struct json_number *item, char const *str, size_t len)
     return true;
 }
 
+/*
+ * global for jwarn(): -w in jinfochk/jauthchk says to show full warning
+ *
+ * XXX This currently is not used because there are some problems that have to
+ * be resolved first that will take more time and thought. Before this can even
+ * be done the JSON parser has to be finished. Good progress is being made on
+ * that but it's not finished yet.
+ */
+bool show_full_json_warnings = false;
+
 
 /*
  * jwarn - issue a JSON warning message

@@ -90,6 +90,7 @@ SED= sed
 SEQCEXIT= seqcexit
 SHELL= bash
 SHELLCHECK= shellcheck
+CHECKNR = checknr
 TEE= tee
 TR= tr
 TRUE= true
@@ -397,6 +398,9 @@ dbg_test.o: dbg_test.c Makefile
 
 dbg: dbg_test.o Makefile
 	${CC} ${CFLAGS} dbg_test.o -o $@
+
+dbg_example: dbg.c dbg.h dbg_example.c
+	${CC} ${CFLAGS} dbg.c dbg_example.c -o $@
 
 fnamchk.o: fnamchk.c fnamchk.h Makefile
 	${CC} ${CFLAGS} fnamchk.c -c
@@ -706,6 +710,20 @@ shellcheck: ${SH_FILES} .shellcheckrc Makefile
 	    echo "${SHELLCHECK} -f gcc -- ${SH_FILES}"; \
 	    ${SHELLCHECK} -f gcc -- ${SH_FILES}; \
 	fi
+
+# inspect and verify man pages
+#
+checknr: ${MANPAGES}
+	@HAVE_CHECKNR=`command -v ${CHECKNR}`; if [[ -z "$$HAVE_CHECKNR" ]]; then \
+	    echo 'The checknr command could not found.' 1>&2; \
+	    echo 'The checknr command is required to run this rule.'; 1>&2; \
+	    echo ''; 1>&2; \
+	    exit 1; \
+	else \
+	    echo "${CHECKNR} ${MANPAGES}"; \
+	    ${CHECKNR} ${MANPAGES}; \
+	fi
+
 
 # Only run this rule when you wish to invalidate all timestamps
 # prior to now, such as when you make a fundamental change to a

@@ -58,8 +58,16 @@
 /*
  * JSON value: a linked list of all values of the same json_field (below).
  *
- * NOTE: As the parser is built this struct (and struct json_field below) might
- * be removed but this has not been decided yet.
+ * NOTE: This struct and the struct json_field below will be of use even after
+ * the json parser is completed as these structs and the linked lists will allow
+ * for easily determining if a field is seen too many times, not enough times
+ * (or at all) etc. The line number member probably will not be relevant at this
+ * point but for now it stays. The way these structs will be initialised is by
+ * using the json tree walk function and calling the appropriate functions as
+ * necessary. This is all an idea of how it might work prior to that
+ * functionality and the completion of the json parser but having these structs
+ * will be of use (it also means I would not have to completely rewrite the
+ * functions that check the found json fields).
  */
 struct json_value
 {
@@ -74,8 +82,16 @@ struct json_value
  * JSON field: a JSON field consists of the name and all the values (if more
  * than one field of the same name is found in the file).
  *
- * NOTE: As the parser is built this struct (and struct json_value above) might
- * be removed but this has not been decided yet.
+ * NOTE: This struct and the struct json_value above will be of use even after
+ * the json parser is completed as these structs and the linked lists will allow
+ * for easily determining if a field is seen too many times, not enough times
+ * (or at all) etc. Some of the members might not be relevant at this point but
+ * for now they're all staying (and are all currently being used). The way these
+ * structs will be initialised is by using the json tree walk function and
+ * calling the appropriate functions as necessary. This is all an idea of how it
+ * might work prior to that functionality and the completion of the json parser
+ * but having these structs will be of use (it also means I would not have to
+ * completely rewrite the functions that check the found json fields).
  */
 struct json_field
 {

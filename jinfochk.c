@@ -894,6 +894,15 @@ check_info_json(char const *file, char const *fnamchk)
  *	false ==> if it's not one of the .info.json fields
  *
  * NOTE: Does not return on error (NULL pointers).
+ *
+ * XXX The function name is misleading. It would seem to me by name that it is
+ * supposed to add it to the table info_json_fields but it does not. This
+ * function is called in order to check if the field is a .info.json field and
+ * if so add it to the found_info_json_fields table. This function actually uses
+ * add_found_info_json_field() but perhaps that function should do all of the
+ * work. This should be looked into and probably fixed but it will be done after
+ * the json parser is complete if it's decided that this function is still
+ * useful (which I think it will be).
  */
 bool
 add_info_json_field(char const *json_filename, char *name, char *val, int line_num)

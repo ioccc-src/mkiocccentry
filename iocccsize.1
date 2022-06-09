@@ -2,7 +2,7 @@
 .SH NAME
 iocccsize \- IOCCC Source Size Tool
 .SH SYNOPSIS
-\fBiocccsize [-h] [-i] [-v ...] [-q] [-V] prog.c\fP
+\fBiocccsize\fP [-h] [-i] [-v ...] [-q] [-V] prog.c
 .SH DESCRIPTION
 .PP
 Reading a C source file from standard input or a file arg, apply the IOCCC source size rules as explained in the Guidelines.
@@ -83,7 +83,7 @@ Test if prog.c fits within the IOCCC 2a and 2b rules, only showing output if the
 .RS
 \fB
  ./iocccsize < prog.c
- ./iocccsize prog.c
+ ./iocccsize prog.c\fP
 .fi
 .RE
 .SH HISTORY
@@ -100,4 +100,3 @@ For submitting entries to the IOCCC, and to conform with Rule 2,
 please use the official copy of the IOCCC
 \fIiocccsize\fP
 from the following GitHub repo: \fI\<https://github.com/ioccc-src/mkiocccentry>\fP.
-.RE
