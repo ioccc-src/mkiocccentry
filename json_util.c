@@ -1742,6 +1742,47 @@ json_free(struct json *node, int depth, ...)
     va_start(ap, depth);
 
     /*
+     * call non-variable argument list function
+     */
+    vjson_free(node, depth, ap);
+
+    /*
+     * stdarg variable argument list cleanup
+     */
+    va_end(ap);
+    return;
+}
+
+
+/*
+ * vjson_free - free storage of a single JSON parse tree node in va_list form
+ *
+ * This is a variable argument list interface to json_free(). See
+ * json_tree_free() for a function that frees an entire parse tree.
+ *
+ * given:
+ *	node	pointer to a JSON parser tree node to free
+ *	depth	current tree depth (0 ==> top of tree)
+ *	ap	variable argument list
+ *
+ * NOTE: This function does nothing if node == NULL.
+ *
+ * NOTE: This function does nothing if the node type is invalid.
+ */
+void
+vjson_free(struct json *node, int depth, va_list ap)
+{
+    UNUSED_ARG(depth);
+    UNUSED_ARG(ap);
+
+    /*
+     * firewall - nothing to do for a NULL node
+     */
+    if (node == NULL) {
+	return;
+    }
+
+    /*
      * free internals based in node type
      */
     switch (node->type) {
@@ -1881,44 +1922,6 @@ json_free(struct json *node, int depth, ...)
      */
     node->type = JTYPE_UNSET;
     node->parent = NULL;
-
-    /*
-     * stdarg variable argument list cleanup
-     */
-    va_end(ap);
-    return;
-}
-
-
-/*
- * vjson_free - free storage of a single JSON parse tree node in va_list form
- *
- * This is a variable argument list interface to json_free(). See
- * json_tree_free() for a function that frees an entire parse tree.
- *
- * given:
- *	node	pointer to a JSON parser tree node to free
- *	depth	current tree depth (0 ==> top of tree)
- *	ap	variable argument list
- *
- * NOTE: This function does nothing if node == NULL.
- *
- * NOTE: This function does nothing if the node type is invalid.
- */
-void
-vjson_free(struct json *node, int depth, va_list ap)
-{
-    /*
-     * firewall - nothing to do for a NULL node
-     */
-    if (node == NULL) {
-	return;
-    }
-
-    /*
-     * call non-variable argument list function
-     */
-    json_free(node, depth, ap);
     return;
 }
 
@@ -2064,7 +2067,7 @@ json_tree_walk(struct json *node, int max_depth, void (*vcallback)(struct json *
  *	depth	    current tree depth (0 ==> top of tree)
  *	ap	    variable argument list
  *
- * The vcallback() funcion must NOT call va_arg() nor call va_end() on the
+ * The vcallback() function must NOT call va_arg() nor call va_end() on the
  * the va_list argument directly.  Instead they must call va_copy()
  * and then use va_arg() and va_end() on the va_list copy.
  *

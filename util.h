@@ -107,6 +107,7 @@ typedef unsigned char bool;
 /* for string to int functions */
 #define LLONG_MAX_BASE10_DIGITS (19)
 #define TBLLEN(x) (sizeof(x)/sizeof((x)[0]))	/* number of elements in an initialized table array */
+#define UNUSED_ARG(x) (void)(x)			/* prevent compiler from complaining about an unused arg */
 
 /*
  * byte as octet constants
