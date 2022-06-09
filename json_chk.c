@@ -159,16 +159,6 @@ size_t SIZEOF_AUTHOR_JSON_FIELDS_TABLE = TBLLEN(author_json_fields);
 
 struct json_field *found_common_json_fields;
 
-/*
- * global for jwarn(): -w in jinfochk/jauthchk says to show full warning
- *
- * XXX This currently is not used because there are some problems that have to
- * be resolved first that will take more time and thought. Before this can even
- * be done the JSON parser has to be finished and that's not close to being done
- * either.
- */
-bool show_full_json_warnings = false;
-
 
 /*
  * find_json_field_in_table	    - find field 'name' in json table
