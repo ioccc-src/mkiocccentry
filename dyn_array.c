@@ -236,11 +236,11 @@ compare_addr(void *a, void *b)
  * determine_move_case - determine data our move case
  *
  * We need to be very careful if the data we are adding is also part of the allocated data
- * if the dynamic array.  This is because if as part of growing data (via the realloc() inside
+ * in the dynamic array.  This is because if as part of growing data (via the realloc() inside
  * the dyn_array_grow() function), we move the data, then we must handle the case that all
  * or part of the data we are adding will also move.
  *
- * We did not handle that case, then calls such as:
+ * If we did not handle that case, then calls such as:
  *
  *	dyn_array_append_set(array, array->data, array->count)
  *
@@ -248,13 +248,13 @@ compare_addr(void *a, void *b)
  * no longer points to the correct location due to the data moving.
  *
  * So we must first determine if the data that is being added is within the existing
- * allocated data if the dynamic array, and if it is, change from where we are moving it.
+ * allocated data of the dynamic array, and if it is, change from where we are moving it.
  *
  * We must consider 5 cases:
  *
  * case 1 (MOVE_CASE_OUTSIDE): data completely outside of the dynamic array's allocated data
  * case 2 (MOVE_CASE_INSIDE): data completely inside of the dynamic array's allocated data
- * case 3 (MOVE_CASE_BEFORE_INTO): data starts outside, ends inside of the dynamic array's allocated data
+ * case 3 (MOVE_CASE_BEFORE_INTO): data starts outside and ends inside of the dynamic array's allocated data
  * case 4 (MOVE_CASE_BEFORE_IN_BEYOND) : data starts before, includes all, and goes beyond allocated data
  * case 5 (MOVE_CASE_IN_BEYOND): data starts inside of allocated data, and goes beyond allocated data
  *
@@ -269,8 +269,8 @@ compare_addr(void *a, void *b)
  *
  * MOVE_CASE_BEFORE_INTO:
  * For case 3, the data outside and before the dynamic array's allocated data can be added as it is.
- * However for the data that is inside the dynamic array's allocated data, we need to add
- * rest of the data from the moved location.
+ * However for the data that is inside the dynamic array's allocated data, we
+ * need to add the rest of the data from the moved location.
  *
  * MOVE_CASE_BEFORE_IN_BEYOND:
  * For case 4, the data outside and before the dynamic array's allocated data can be added as it is.
@@ -280,13 +280,14 @@ compare_addr(void *a, void *b)
  * MOVE_CASE_IN_BEYOND:
  * For case 5, the data that is beyond the end of allocated data can be added as it is.
  * However the data that is inside of the dynamic array's allocated data needs to be
- * added from from the moved location.
+ * added from the moved location.
  *
  * MOVE_CASE_UNSET:
  * BTW: case 0 is reserved for the actual case not being set.
  *
  * Because we will not know if dyn_array_grow() will move the data, we must determine our case now,
- * and if the data does move, make changes to the memmove() call later for cases 1 thru 4.
+ * and if the data does move, make changes to the memmove() call later for cases
+ * 1 through 4.
  *
  * given:
  *	first_alloc	starting address of allocated data from a dynamic array
