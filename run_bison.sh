@@ -498,7 +498,7 @@ add_sorry() {
     # parse args
     #
     if [[ $# -ne 1 ]]; then
-	echo "$0: ERROR: add_sorry function expects 1 args, found $#" 1>&2
+	echo "$0: ERROR: add_sorry function expects 1 arg, found $#" 1>&2
 	exit 13
     fi
     FILE="$1"

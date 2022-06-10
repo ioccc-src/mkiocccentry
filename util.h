@@ -104,8 +104,7 @@ typedef unsigned char bool;
 #define LITLEN(x) (sizeof(x)-1)	/* length of a literal string w/o the NUL byte */
 #define INITIAL_BUF_SIZE (8192)	/* initial size of buffer allocated by read_all */
 #define READ_ALL_CHUNK (65536)	/* grow this read_all by this amount when needed */
-/* for string to int functions */
-#define LLONG_MAX_BASE10_DIGITS (19)
+#define LLONG_MAX_BASE10_DIGITS (19) /* for string to int functions */
 #define TBLLEN(x) (sizeof(x)/sizeof((x)[0]))	/* number of elements in an initialized table array */
 #define UNUSED_ARG(x) (void)(x)			/* prevent compiler from complaining about an unused arg */
 
