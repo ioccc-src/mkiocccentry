@@ -252,7 +252,7 @@ H_FILES= dbg.h jauthchk.h jinfochk.h json_parse.h jstrdecode.h jstrencode.h limi
 DSYMDIRS= $(TARGETS:=.dSYM)
 SH_FILES= iocccsize_test.sh jstr_test.sh limit_ioccc.sh mkiocccentry_test.sh json_test.sh \
 	  jcodechk.sh vermod.sh prep.sh run_bison.sh run_flex.sh reset_tstamp.sh ioccc_test.sh \
-	  jparse_test.sh txzchk_test.sh
+	  jparse_test.sh txzchk_test.sh hostchk.sh
 BUILD_LOG= build.log
 TXZCHK_LOG=txzchk_test.log
 
@@ -744,6 +744,9 @@ reset_min_timestamp: reset_tstamp.sh
 test ioccc_test: ioccc_test.sh iocccsize_test.sh dbg mkiocccentry_test.sh jstr_test.sh \
 		 jnum_chk dyn_test txzchk_test.sh Makefile
 	./ioccc_test.sh
+
+hostchk bug-report: hostchk.sh
+	./hostchk.sh
 
 # run json_test.sh on test_JSON files
 #
