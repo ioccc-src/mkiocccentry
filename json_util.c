@@ -1996,8 +1996,8 @@ json_tree_free(struct json *node, int max_depth, ...)
  *	...	    extra args for vcallback
  *
  * The vcallback() function must NOT call va_arg() nor call va_end() on the
- * the va_list argument directly.  Instead they must call va_copy()
- * and then use va_arg() and va_end() on the va_list copy.
+ * va_list argument directly.  Instead they must call va_copy() and then use
+ * va_arg() and va_end() on the va_list copy.
  *
  * Although in C ALL functions are pointers which means one can call foo()
  * as foo() or (*foo)() we use the latter format for the callback function
@@ -2068,8 +2068,8 @@ json_tree_walk(struct json *node, int max_depth, void (*vcallback)(struct json *
  *	ap	    variable argument list
  *
  * The vcallback() function must NOT call va_arg() nor call va_end() on the
- * the va_list argument directly.  Instead they must call va_copy()
- * and then use va_arg() and va_end() on the va_list copy.
+ * va_list argument directly.  Instead they must call va_copy() and then use
+ * va_arg() and va_end() on the va_list copy.
  *
  * Although in C ALL functions are pointers which means one can call foo()
  * as foo() or (*foo)() we use the latter format for the callback function
