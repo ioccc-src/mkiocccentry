@@ -2496,7 +2496,7 @@ vjson_fprint(struct json *node, int depth, va_list ap)
 		 * bogus name pointer
 		 */
 		} else {
-		    fprstr(stream, "\tWaring: name == NULL");
+		    fprstr(stream, "\tWarning: name == NULL");
 		}
 
 	    /*
