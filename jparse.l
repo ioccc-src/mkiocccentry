@@ -375,8 +375,8 @@ parse_json(char const *ptr, size_t len, bool *is_valid, FILE *dbg_stream)
      */
     json_dbg(json_verbosity_level, __func__, "*** BEGIN PARSE:\n<");
     if (dbg_stream != NULL) {
-	fprint_str(dbg_stream, ptr, len);
-	fprintf(dbg_stream, "\n>\n");
+	(void) fprint_line_buf(dbg_stream, (void *)ptr, len, 0, 0);
+	fprstr(dbg_stream, "\n>\n");
     }
 
     /*
