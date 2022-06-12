@@ -1,6 +1,14 @@
 #!/usr/bin/env bash
 #
 # txzchk_test.sh - test txzchk with good and bad tarballs (as text files)
+#
+# Written in 2022 by:
+#
+#	@xexyl
+#	https://xexyl.net		Cody Boone Ferguson
+#	https://ioccc.xexyl.net
+#
+# "Because sometimes even the IOCCC Judges need some help." :-)
 
 # setup
 #
@@ -265,13 +273,13 @@ run_test()
     fi
 
     if [[ $V_FLAG -ge 5 ]]; then
-	echo "$0: debug[5]: in run_test: about to run: $TXZCHK -v $debug_level -t $TAR -F $FNAMCHK -T -E txt -- $txzchk_test_file" 1>&2
+	echo "$0: debug[5]: in run_test: about to run: $TXZCHK -v $debug_level -t $TAR -F $FNAMCHK -T -E txt -e -- $txzchk_test_file" 1>&2
     fi
     if [[ $debug_level -gt 0 ]]; then
-	"$TXZCHK" -v "$debug_level" -t "$TAR" -F "$FNAMCHK" -T -E txt -- "$txzchk_test_file"
+	"$TXZCHK" -v "$debug_level" -t "$TAR" -F "$FNAMCHK" -T -E txt -- "$txzchk_test_file" 1>&2
 	status="$?"
     else
-	"$TXZCHK" -v 0 -q -F "$FNAMCHK" -t "$TAR" -T -E txt -- "$txzchk_test_file"
+	"$TXZCHK" -v 0 -q -F "$FNAMCHK" -t "$TAR" -T -E txt -e -- "$txzchk_test_file" 1>&2
 	status="$?"
     fi
     if [[ $V_FLAG -ge 7 ]]; then
