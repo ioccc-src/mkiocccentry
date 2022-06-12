@@ -373,8 +373,9 @@ parse_json(char const *ptr, size_t len, bool *is_valid, FILE *dbg_stream)
      * Currently this cannot be done because the lexer and parser are set to
      * print out a lot of debug information.
      */
-    json_dbg(json_verbosity_level, __func__, "*** BEGIN PARSE:\n<");
     if (dbg_stream != NULL) {
+	fprstr(dbg_stream, "*** BEGIN PARSE\n");
+	fprstr(dbg_stream, "<\n");
 	(void) fprint_line_buf(dbg_stream, (void *)ptr, len, 0, 0);
 	fprstr(dbg_stream, "\n>\n");
     }
@@ -403,9 +404,8 @@ parse_json(char const *ptr, size_t len, bool *is_valid, FILE *dbg_stream)
      * Currently this cannot be done because the lexer and parser are set to
      * print out a lot of debug information.
      */
-    json_dbg(json_verbosity_level, __func__, "*** END PARSE");
     if (dbg_stream != NULL) {
-	fprint_newline(dbg_stream, output_newline);
+	fprstr(dbg_stream, "*** END PARSE\n");
     }
 
     /*
@@ -647,7 +647,7 @@ parse_json_file(char const *filename, bool *is_valid, FILE *dbg_stream)
      * print out a lot of debug information.
      */
     if (dbg_stream != NULL) {
-	fprint_newline(dbg_stream, output_newline);
+	fprstr(dbg_stream, "\n");
     }
 
     /*

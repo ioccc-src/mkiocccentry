@@ -111,7 +111,6 @@
 #include <unistd.h> /* getopt */
 #include "jparse.h"
 
-bool output_newline = true;		/* true ==> -n not specified, output new line after each arg processed */
 unsigned num_errors = 0;		/* > 0 number of errors encountered */
 
 /* debug information during development */
@@ -804,7 +803,7 @@ main(int argc, char **argv)
      * parse args
      */
     program = argv[0];
-    while ((i = getopt(argc, argv, "hv:qVns:J:")) != -1) {
+    while ((i = getopt(argc, argv, "hv:qVs:J:")) != -1) {
 	switch (i) {
 	case 'h':		/* -h - print help to stderr and exit 0 */
 	    usage(2, "-h help mode", program); /*ooo*/
@@ -834,9 +833,6 @@ main(int argc, char **argv)
 	    }
 	    exit(0); /*ooo*/
 	    not_reached();
-	    break;
-	case 'n':
-	    output_newline = false;
 	    break;
 	case 's':
 	    /*

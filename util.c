@@ -3087,50 +3087,6 @@ clearerr_or_fclose(char const *filename, FILE *file)
 
 
 /*
- * fprint_newline	- prints a newline to a stream if output_newline == true
- *
- * given:
- *
- *	stream		- open file stream to write newline on, if allowed
- *	output_newline	- true ==> write a newline of output
- *
- * This function is used when we want to print a newline after some input. This
- * is currently only used in jparse if -n is not specified but there are other
- * tools that have this same functionality and they could make use of this too.
- * The reason it is not in jparse.l or jparse.y is because I'm trying to keep
- * the lexer and parser as clutter free as possible and this doesn't seem to
- * belong there with that in mind.
- *
- * This function does not return on error.
- */
-void
-fprint_newline(FILE *stream, bool output_newline)
-{
-    int ret;
-
-    /*
-     * firewall
-     */
-    if (stream == NULL) {
-	err(182, __func__, "stream is NULL");
-	not_reached();
-    }
-
-    /*
-     * output if allowed
-     */
-    if (output_newline) {
-	errno = 0;		/* pre-clear errno for errp() */
-	ret = putchar('\n');
-	if (ret != '\n') {
-	    errp(183, __func__, "error while writing newline");
-	    not_reached();
-	}
-    }
-}
-
-
-/*
  * fprint_line_buf - print a buffer as a single line string on a stream
  *
  * Unlike fprint_str(), this function will print the buffer as a

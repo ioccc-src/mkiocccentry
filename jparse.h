@@ -73,7 +73,6 @@ static const char * const usage_msg =
     "\t\t\tNOTE: You must specify this option before -s as -s is processed immediately\n"
     "\t-q\t\tquiet mode: silence msg(), warn(), warnp() if -v 0 (def: not quiet)\n"
     "\t-V\t\tprint version string and exit 0\n"
-    "\t-n\t\tdo not output newline after decode output\n"
     "\t-s\t\tread arg as a string\n"
     "\n"
     "\t[file]\t\tread and parse file\n"
@@ -85,14 +84,12 @@ static const char * const usage_msg =
 /*
  * globals
  */
-extern bool output_newline;		/* true ==> -n not specified, output new line after each arg processed */
 extern unsigned num_errors;		/* > 0 number of errors encountered */
 /* lexer and parser specific variables */
 extern int ugly_lineno;			/* line number in lexer */
 extern char *ugly_text;			/* current text */
 extern FILE *ugly_in;			/* input file lexer/parser reads from */
 extern unsigned num_errors;		/* > 0 number of errors encountered */
-extern bool output_newline;		/* true ==> -n not specified, output new line after each arg processed */
 extern struct json tree;		/* the parse tree */
 extern int ugly_leng;
 
