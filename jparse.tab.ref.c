@@ -557,9 +557,9 @@ static const yytype_int8 yytranslate[] =
 /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_int16 yyrline[] =
 {
-       0,   183,   183,   211,   237,   263,   289,   315,   340,   365,
-     392,   418,   443,   469,   503,   534,   560,   585,   611,   644,
-     672,   699
+       0,   183,   183,   212,   240,   268,   296,   324,   351,   378,
+     407,   434,   461,   489,   524,   557,   584,   611,   639,   673,
+     703,   732
 };
 #endif
 
@@ -1693,14 +1693,15 @@ yyreduce:
 	/* post action debugging */
 	json_dbg(JSON_DBG_MED, __func__, "under json: returning $json type: %s",
 					 json_element_type_name(yyval));
+	json_dbg_tree_print(JSON_DBG_LOW, __func__, yyval, JSON_DEFAULT_MAX_DEPTH, stderr);
 	json_dbg(JSON_DBG_LOW, __func__, "under json: ending: "
 					 "json: json_element");
     }
-#line 1649 "jparse.tab.c"
+#line 1650 "jparse.tab.c"
     break;
 
   case 3: /* json_value: json_object  */
-#line 212 "jparse.y"
+#line 213 "jparse.y"
     {
 	/*
 	 * $$ = $json_value
@@ -1721,14 +1722,16 @@ yyreduce:
 	/* post-action debugging */
 	json_dbg(JSON_DBG_MED, __func__, "under json_value: returning $json_value type: %s",
 					 json_element_type_name(yyval));
+	/* XXX - adjust JSON_DBG_LOW to higher once all JSON items are parsed - XXX */
+	json_dbg_tree_print(JSON_DBG_LOW, __func__, yyval, JSON_DEFAULT_MAX_DEPTH, stderr);
 	json_dbg(JSON_DBG_LOW, __func__, "under json_value: ending: "
 					 "json_value: json_object");
     }
-#line 1677 "jparse.tab.c"
+#line 1680 "jparse.tab.c"
     break;
 
   case 4: /* json_value: json_array  */
-#line 238 "jparse.y"
+#line 241 "jparse.y"
     {
 	/*
 	 * $$ = $json_value
@@ -1749,14 +1752,16 @@ yyreduce:
 	/* post-action debugging */
 	json_dbg(JSON_DBG_MED, __func__, "under json_value: returning $json_value type: %s",
 					 json_element_type_name(yyval));
+	/* XXX - adjust JSON_DBG_LOW to higher once all JSON items are parsed - XXX */
+	json_dbg_tree_print(JSON_DBG_LOW, __func__, yyval, JSON_DEFAULT_MAX_DEPTH, stderr);
 	json_dbg(JSON_DBG_LOW, __func__, "under json_value: ending: "
 					 "json_value: json_array");
     }
-#line 1705 "jparse.tab.c"
+#line 1710 "jparse.tab.c"
     break;
 
   case 5: /* json_value: json_string  */
-#line 264 "jparse.y"
+#line 269 "jparse.y"
     {
 	/*
 	 * $$ = $json_value
@@ -1777,14 +1782,16 @@ yyreduce:
 	/* post-action debugging */
 	json_dbg(JSON_DBG_MED, __func__, "under json_value: returning $json_value type: %s",
 					 json_element_type_name(yyval));
+	/* XXX - adjust JSON_DBG_LOW to higher once all JSON items are parsed - XXX */
+	json_dbg_tree_print(JSON_DBG_LOW, __func__, yyval, JSON_DEFAULT_MAX_DEPTH, stderr);
 	json_dbg(JSON_DBG_LOW, __func__, "under json_value: ending: "
 					 "json_value: json_string");
     }
-#line 1733 "jparse.tab.c"
+#line 1740 "jparse.tab.c"
     break;
 
   case 6: /* json_value: json_number  */
-#line 290 "jparse.y"
+#line 297 "jparse.y"
     {
 	/*
 	 * $$ = $json_value
@@ -1805,14 +1812,16 @@ yyreduce:
 	/* post-action debugging */
 	json_dbg(JSON_DBG_MED, __func__, "under json_value: returning $json_value type: %s",
 					 json_element_type_name(yyval));
+	/* XXX - adjust JSON_DBG_LOW to higher once all JSON items are parsed - XXX */
+	json_dbg_tree_print(JSON_DBG_LOW, __func__, yyval, JSON_DEFAULT_MAX_DEPTH, stderr);
 	json_dbg(JSON_DBG_LOW, __func__, "under json_value: ending: "
 					 "json_value: json_number");
     }
-#line 1761 "jparse.tab.c"
+#line 1770 "jparse.tab.c"
     break;
 
   case 7: /* json_value: "true"  */
-#line 316 "jparse.y"
+#line 325 "jparse.y"
     {
 	/*
 	 * $$ = $json_value
@@ -1832,14 +1841,16 @@ yyreduce:
 	/* post-action debugging */
 	json_dbg(JSON_DBG_MED, __func__, "under json_value: returning $json_value type: %s",
 				         json_element_type_name(yyval));
+	/* XXX - adjust JSON_DBG_LOW to higher once all JSON items are parsed - XXX */
+	json_dbg_tree_print(JSON_DBG_LOW, __func__, yyval, JSON_DEFAULT_MAX_DEPTH, stderr);
 	json_dbg(JSON_DBG_LOW, __func__, "under json_value: ending: "
 					 "json_value: JSON_TRUE");
     }
-#line 1788 "jparse.tab.c"
+#line 1799 "jparse.tab.c"
     break;
 
   case 8: /* json_value: "false"  */
-#line 341 "jparse.y"
+#line 352 "jparse.y"
     {
 	/*
 	 * $$ = $json_value
@@ -1859,14 +1870,16 @@ yyreduce:
 	/* post-action debugging */
 	json_dbg(JSON_DBG_MED, __func__, "under json_value: returning $json_value type: %s",
 				         json_element_type_name(yyval));
+	/* XXX - adjust JSON_DBG_LOW to higher once all JSON items are parsed - XXX */
+	json_dbg_tree_print(JSON_DBG_LOW, __func__, yyval, JSON_DEFAULT_MAX_DEPTH, stderr);
 	json_dbg(JSON_DBG_LOW, __func__, "under json_value: ending: "
 					 "json_value: JSON_FALSE");
     }
-#line 1815 "jparse.tab.c"
+#line 1828 "jparse.tab.c"
     break;
 
   case 9: /* json_value: "null"  */
-#line 366 "jparse.y"
+#line 379 "jparse.y"
     {
 	/*
 	 * $$ = $json_value
@@ -1886,14 +1899,16 @@ yyreduce:
 	/* post-action debugging */
 	json_dbg(JSON_DBG_MED, __func__, "under json_value: returning $json_value type: %s",
 				         json_element_type_name(yyval));
+	/* XXX - adjust JSON_DBG_LOW to higher once all JSON items are parsed - XXX */
+	json_dbg_tree_print(JSON_DBG_LOW, __func__, yyval, JSON_DEFAULT_MAX_DEPTH, stderr);
 	json_dbg(JSON_DBG_LOW, __func__, "under json_value: ending: "
 					 "json_value: JSON_NULL");
     }
-#line 1842 "jparse.tab.c"
+#line 1857 "jparse.tab.c"
     break;
 
   case 10: /* json_object: "{" json_members "}"  */
-#line 393 "jparse.y"
+#line 408 "jparse.y"
     {
 	/*
 	 * $$ = $json_object
@@ -1914,14 +1929,15 @@ yyreduce:
 	/* post-action debugging */
 	json_dbg(JSON_DBG_LOW, __func__, "under json_object: returning $json_object type: %s",
 					 json_element_type_name(yyval));
+	/* XXX - call json_dbg_tree_print when there is a value to process - XXX */
 	json_dbg(JSON_DBG_LOW, __func__, "under json_object: ending: "
 					 "json_object: JSON_OPEN_BRACE json_members JSON_CLOSE_BRACE");
     }
-#line 1870 "jparse.tab.c"
+#line 1886 "jparse.tab.c"
     break;
 
   case 11: /* json_object: "{" "}"  */
-#line 419 "jparse.y"
+#line 435 "jparse.y"
     {
 	/*
 	 * $$ = $json_object
@@ -1939,14 +1955,16 @@ yyreduce:
 	/* post-action debugging */
 	json_dbg(JSON_DBG_LOW, __func__, "under json_object: returning $json_object type: %s",
 					 json_element_type_name(yyval));
+	/* XXX - adjust JSON_DBG_LOW to higher once all JSON items are parsed - XXX */
+	json_dbg_tree_print(JSON_DBG_LOW, __func__, yyval, JSON_DEFAULT_MAX_DEPTH, stderr);
 	json_dbg(JSON_DBG_LOW, __func__, "under json_object: ending: "
 					 "json_object: JSON_OPEN_BRACE JSON_CLOSE_BRACE");
     }
-#line 1895 "jparse.tab.c"
+#line 1913 "jparse.tab.c"
     break;
 
   case 12: /* json_members: json_member  */
-#line 444 "jparse.y"
+#line 462 "jparse.y"
     {
 	/*
 	 * $$ = $json_members
@@ -1967,14 +1985,16 @@ yyreduce:
 	/* post-action debugging */
 	json_dbg(JSON_DBG_MED, __func__, "under json_members: returning $json_members type: %s",
 				         json_element_type_name(yyval));
+	/* XXX - adjust JSON_DBG_LOW to higher once all JSON items are parsed - XXX */
+	json_dbg_tree_print(JSON_DBG_LOW, __func__, yyval, JSON_DEFAULT_MAX_DEPTH, stderr);
 	json_dbg(JSON_DBG_LOW, __func__, "under json_members: ending: "
 					 "json_members: json_member");
     }
-#line 1923 "jparse.tab.c"
+#line 1943 "jparse.tab.c"
     break;
 
   case 13: /* json_members: json_members "," json_member  */
-#line 470 "jparse.y"
+#line 490 "jparse.y"
     {
 	/*
 	 * $$ = $json_members
@@ -2001,14 +2021,15 @@ yyreduce:
 	/* post-action debugging */
 	json_dbg(JSON_DBG_MED, __func__, "under json_members: returning $$ ($json_members) type: %s",
 				         json_element_type_name(yyval));
+	/* XXX - call json_dbg_tree_print when there is a value to process - XXX */
 	json_dbg(JSON_DBG_LOW, __func__, "under json_members: ending: "
 					 "json_members: json_members JSON_COMMA json_member");
     }
-#line 1957 "jparse.tab.c"
+#line 1978 "jparse.tab.c"
     break;
 
   case 14: /* json_member: json_string ":" json_element  */
-#line 504 "jparse.y"
+#line 525 "jparse.y"
     {
 	/*
 	 * $$ = $json_member
@@ -2032,14 +2053,16 @@ yyreduce:
 	/* post-action debugging */
 	json_dbg(JSON_DBG_MED, __func__, "under json_member: returning $json_member type: %s",
 				         json_element_type_name(yyval));
+	/* XXX - adjust JSON_DBG_LOW to higher once all JSON items are parsed - XXX */
+	json_dbg_tree_print(JSON_DBG_LOW, __func__, yyval, JSON_DEFAULT_MAX_DEPTH, stderr);
 	json_dbg(JSON_DBG_LOW, __func__, "under json_member: ending: "
 					 "json_member: json_string JSON_COLON json_element");
     }
-#line 1988 "jparse.tab.c"
+#line 2011 "jparse.tab.c"
     break;
 
   case 15: /* json_array: "[" json_elements "]"  */
-#line 535 "jparse.y"
+#line 558 "jparse.y"
     {
 	/*
 	 * $$ = $json_array
@@ -2060,14 +2083,15 @@ yyreduce:
 	/* post-action debugging */
 	json_dbg(JSON_DBG_MED, __func__, "under json_array: returning $json_array type: %s",
 				         json_element_type_name(yyval));
+	/* XXX - call json_dbg_tree_print when there is a value to process - XXX */
 	json_dbg(JSON_DBG_LOW, __func__, "under json_array: ending: "
 					 "json_array: JSON_OPEN_BRACKET json_elements JSON_CLOSE_BRACKET");
     }
-#line 2016 "jparse.tab.c"
+#line 2040 "jparse.tab.c"
     break;
 
   case 16: /* json_array: "[" "]"  */
-#line 561 "jparse.y"
+#line 585 "jparse.y"
     {
 	/*
 	 * $$ = $json_array
@@ -2085,14 +2109,16 @@ yyreduce:
 	/* post-action debugging */
 	json_dbg(JSON_DBG_MED, __func__, "under json_array: returning $json_array type: %s",
 				         json_element_type_name(yyval));
+	/* XXX - adjust JSON_DBG_LOW to higher once all JSON items are parsed - XXX */
+	json_dbg_tree_print(JSON_DBG_LOW, __func__, yyval, JSON_DEFAULT_MAX_DEPTH, stderr);
 	json_dbg(JSON_DBG_LOW, __func__, "under json_array: ending: "
 					 "json_array: JSON_OPEN_BRACKET JSON_CLOSE_BRACKET");
     }
-#line 2041 "jparse.tab.c"
+#line 2067 "jparse.tab.c"
     break;
 
   case 17: /* json_elements: json_element  */
-#line 586 "jparse.y"
+#line 612 "jparse.y"
     {
 	/*
 	 * $$ = $json_elements
@@ -2113,14 +2139,16 @@ yyreduce:
 	/* post-action debugging */
 	json_dbg(JSON_DBG_MED, __func__, "under json_elements: returning $json_elements type: %s",
 				         json_element_type_name(yyval));
+	/* XXX - adjust JSON_DBG_LOW to higher once all JSON items are parsed - XXX */
+	json_dbg_tree_print(JSON_DBG_LOW, __func__, yyval, JSON_DEFAULT_MAX_DEPTH, stderr);
 	json_dbg(JSON_DBG_LOW, __func__, "under json_elements: ending: "
 					 "json_elements: json_element");
     }
-#line 2069 "jparse.tab.c"
+#line 2097 "jparse.tab.c"
     break;
 
   case 18: /* json_elements: json_elements "," json_element  */
-#line 612 "jparse.y"
+#line 640 "jparse.y"
     {
 	/*
 	 * $$ = $json_elements
@@ -2146,14 +2174,15 @@ yyreduce:
 	/* post-action debugging */
 	json_dbg(JSON_DBG_MED, __func__, "under json_elements: returning $$ ($json_elements) type: %s",
 				         json_element_type_name(yyval));
+	/* XXX - call json_dbg_tree_print when there is a value to process - XXX */
 	json_dbg(JSON_DBG_LOW, __func__, "under json_elements: ending: "
 					 "json_elements: json_elements JSON_COMMA json_element");
     }
-#line 2102 "jparse.tab.c"
+#line 2131 "jparse.tab.c"
     break;
 
   case 19: /* json_element: json_value  */
-#line 645 "jparse.y"
+#line 674 "jparse.y"
     {
 	/*
 	 * $$ = $json_element
@@ -2174,14 +2203,16 @@ yyreduce:
 	/* post-action debugging */
 	json_dbg(JSON_DBG_MED, __func__, "under json_element: returning $json_element type: %s",
 				         json_element_type_name(yyval));
+	/* XXX - adjust JSON_DBG_LOW to higher once all JSON items are parsed - XXX */
+	json_dbg_tree_print(JSON_DBG_LOW, __func__, yyval, JSON_DEFAULT_MAX_DEPTH, stderr);
 	json_dbg(JSON_DBG_LOW, __func__, "under json_element: ending: "
 					 "json_element: json_value");
     }
-#line 2130 "jparse.tab.c"
+#line 2161 "jparse.tab.c"
     break;
 
   case 20: /* json_string: JSON_STRING  */
-#line 673 "jparse.y"
+#line 704 "jparse.y"
     {
 	/*
 	 * $$ = $json_string
@@ -2201,14 +2232,16 @@ yyreduce:
 	/* post-action debugging */
 	json_dbg(JSON_DBG_MED, __func__, "under json_string: returning $json_string type: %s",
 				         json_element_type_name(yyval));
+	/* XXX - adjust JSON_DBG_LOW to higher once all JSON items are parsed - XXX */
+	json_dbg_tree_print(JSON_DBG_LOW, __func__, yyval, JSON_DEFAULT_MAX_DEPTH, stderr);
 	json_dbg(JSON_DBG_LOW, __func__, "under json_string: ending: "
 					 "json_string: JSON_STRING");
     }
-#line 2157 "jparse.tab.c"
+#line 2190 "jparse.tab.c"
     break;
 
   case 21: /* json_number: JSON_NUMBER  */
-#line 700 "jparse.y"
+#line 733 "jparse.y"
     {
 	/*
 	 * $$ = $json_number
@@ -2228,14 +2261,16 @@ yyreduce:
 	/* post-action debugging */
 	json_dbg(JSON_DBG_MED, __func__, "under json_number: returning $json_number type: %s",
 				         json_element_type_name(yyval));
+	/* XXX - adjust JSON_DBG_LOW to higher once all JSON items are parsed - XXX */
+	json_dbg_tree_print(JSON_DBG_LOW, __func__, yyval, JSON_DEFAULT_MAX_DEPTH, stderr);
 	json_dbg(JSON_DBG_LOW, __func__, "under json_number: ending: "
 					 "json_number: JSON_NUMBER");
     }
-#line 2184 "jparse.tab.c"
+#line 2219 "jparse.tab.c"
     break;
 
 
-#line 2188 "jparse.tab.c"
+#line 2223 "jparse.tab.c"
 
         default: break;
       }
@@ -2470,7 +2505,7 @@ yyreturnlab:
   return yyresult;
 }
 
-#line 725 "jparse.y"
+#line 760 "jparse.y"
 
 
 

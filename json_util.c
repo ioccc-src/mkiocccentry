@@ -1,4 +1,3 @@
-/* vim: set tabstop=8 softtabstop=4 shiftwidth=4 noexpandtab : */
 /*
  * json_util - general JSON parser utility support functions
  *
@@ -394,14 +393,16 @@ json_process_decimal(struct json_number *item, char const *str, size_t len)
 	 * JSON spec detail: lone - invalid JSON
 	 */
 	if (len <= 1 || str[1] == '\0') {
-	    dbg(DBG_HIGH, "%s called with just -: <%s>", __func__, str);
+	    dbg(DBG_HIGH, "in %s(): called with just -: <%s>",
+			  __func__, str);
 	    return false;	/* processing failed */
 
         /*
 	 * JSON spec detail: leading -0 followed by digits - invalid JSON
 	 */
 	} else if (len > 2 && str[1] == '0' && isascii(str[2]) && isdigit(str[2])) {
-	    dbg(DBG_HIGH, "%s called with -0 followed by more digits: <%s>", __func__, str);
+	    dbg(DBG_HIGH, "in %s(): called with -0 followed by more digits: <%s>",
+			  __func__, str);
 	    return false;	/* processing failed */
 	}
 
@@ -415,7 +416,8 @@ json_process_decimal(struct json_number *item, char const *str, size_t len)
 	 * JSON spec detail: leading 0 followed by digits - invalid JSON
 	 */
 	if (len > 1 && str[0] == '0' && isascii(str[1]) && isdigit(str[1])) {
-	    dbg(DBG_HIGH, "%s called with 0 followed by more digits: <%s>", __func__, str);
+	    dbg(DBG_HIGH, "in %s(): called with 0 followed by more digits: <%s>",
+			  __func__, str);
 	    return false;	/* processing failed */
 	}
     }
@@ -522,7 +524,7 @@ json_process_decimal(struct json_number *item, char const *str, size_t len)
 
     } else {
 
-	/* case: non-negative, try for largest unsigned integer */
+	/* case: positive, try for largest unsigned integer */
 	errno = 0;			/* pre-clear errno for errp() */
 	item->as_umaxint = strtoumax(str, &endptr, 10);
 	if (errno == ERANGE || errno == EINVAL || endptr == str || endptr == NULL) {
@@ -716,7 +718,7 @@ json_process_floating(struct json_number *item, char const *str, size_t len)
      * JSON spec detail: floating point numbers cannot start with .
      */
     if (str[0] == '.') {
-	dbg(DBG_HIGH, "%s: floating point numbers cannot start with .: <%s>",
+	dbg(DBG_HIGH, "in %s(): floating point numbers cannot start with .: <%s>",
 		       __func__, str);
 	return false;	/* processing failed */
 
@@ -724,7 +726,7 @@ json_process_floating(struct json_number *item, char const *str, size_t len)
      * JSON spec detail: floating point numbers cannot end with .
      */
     } else if (str[len-1] == '.') {
-	dbg(DBG_HIGH, "%s: floating point numbers cannot end with .: <%s>",
+	dbg(DBG_HIGH, "in %s(): floating point numbers cannot end with .: <%s>",
 		      __func__, str);
 	return false;	/* processing failed */
 
@@ -732,7 +734,7 @@ json_process_floating(struct json_number *item, char const *str, size_t len)
      * JSON spec detail: floating point numbers cannot end with -
      */
     } else if (str[len-1] == '-') {
-	dbg(DBG_HIGH, "%s: floating point numbers cannot end with -: <%s>",
+	dbg(DBG_HIGH, "in %s(): floating point numbers cannot end with -: <%s>",
 		      __func__, str);
 	return false;	/* processing failed */
 
@@ -740,7 +742,7 @@ json_process_floating(struct json_number *item, char const *str, size_t len)
      * JSON spec detail: floating point numbers cannot end with +
      */
     } else if (str[len-1] == '+') {
-	dbg(DBG_HIGH, "%s: floating point numbers cannot end with +: <%s>",
+	dbg(DBG_HIGH, "in %s(): floating point numbers cannot end with +: <%s>",
 		      __func__, str);
 	return false;	/* processing failed */
 
@@ -748,7 +750,7 @@ json_process_floating(struct json_number *item, char const *str, size_t len)
      * JSON spec detail: floating point numbers must end in a digit
      */
     } else if (!isascii(str[len-1]) || !isdigit(str[len-1])) {
-	dbg(DBG_HIGH, "%s: floating point numbers must end in a digit: <%s>",
+	dbg(DBG_HIGH, "in %s(): floating point numbers must end in a digit: <%s>",
 		       __func__, str);
 	return false;	/* processing failed */
     }
@@ -761,8 +763,8 @@ json_process_floating(struct json_number *item, char const *str, size_t len)
     /* case: both e and E found */
     if (e_found != NULL && cap_e_found != NULL) {
 
-	dbg(DBG_HIGH, "%s: floating point numbers cannot use both e and E: <%s>",
-			  __func__, str);
+	dbg(DBG_HIGH, "in %s(): floating point numbers cannot use both e and E: <%s>",
+		      __func__, str);
 	return false;	/* processing failed */
 
     /* case: just e found, no E */
@@ -771,7 +773,7 @@ json_process_floating(struct json_number *item, char const *str, size_t len)
 	/* firewall - search for two 'e's */
 	e = strrchr(str, 'e');
 	if (e_found != e) {
-	    dbg(DBG_HIGH, "%s: floating point numbers cannot have more than one e: <%s>",
+	    dbg(DBG_HIGH, "in %s(): floating point numbers cannot have more than one e: <%s>",
 			  __func__, str);
 	    return false;	/* processing failed */
 	}
@@ -785,7 +787,7 @@ json_process_floating(struct json_number *item, char const *str, size_t len)
 	/* firewall - search for two 'E's */
 	e = strrchr(str, 'E');
 	if (cap_e_found != e) {
-	    dbg(DBG_HIGH, "%s: floating point numbers cannot have more than one E: <%s>",
+	    dbg(DBG_HIGH, "in %s(): floating point numbers cannot have more than one E: <%s>",
 			  __func__, str);
 	    return false;	/* processing failed */
 	}
@@ -805,7 +807,7 @@ json_process_floating(struct json_number *item, char const *str, size_t len)
 	 * JSON spec detail: e notation number cannot start with e or E
 	 */
 	if (e == str) {
-	    dbg(DBG_HIGH, "%s: e notation numbers cannot start with e or E: <%s>",
+	    dbg(DBG_HIGH, "in %s(): e notation numbers cannot start with e or E: <%s>",
 			  __func__, str);
 	    return false;	/* processing failed */
 
@@ -813,7 +815,7 @@ json_process_floating(struct json_number *item, char const *str, size_t len)
 	 * JSON spec detail: e notation number cannot end with e or E
 	 */
 	} else if (e == &(str[len-1])) {
-	    dbg(DBG_HIGH, "%s: e notation numbers cannot end with e or E: <%s>",
+	    dbg(DBG_HIGH, "in %s(): e notation numbers cannot end with e or E: <%s>",
 			  __func__, str);
 	    return false;	/* processing failed */
 
@@ -821,7 +823,7 @@ json_process_floating(struct json_number *item, char const *str, size_t len)
 	 * JSON spec detail: e notation number cannot have e or E after .
 	 */
 	} else if (e > str && e[-1] == '.') {
-	    dbg(DBG_HIGH, "%s: e notation numbers cannot have '.' before e or E: <%s>",
+	    dbg(DBG_HIGH, "in %s(): e notation numbers cannot have '.' before e or E: <%s>",
 			  __func__, str);
 	    return false;	/* processing failed */
 
@@ -829,7 +831,7 @@ json_process_floating(struct json_number *item, char const *str, size_t len)
 	 * JSON spec detail: e notation number must have digit before e or E
 	 */
 	} else if (e > str && (!isascii(e[-1]) || !isdigit(e[-1]))) {
-	    dbg(DBG_HIGH, "%s: e notation numbers must have digit before e or E: <%s>",
+	    dbg(DBG_HIGH, "in %s(): e notation numbers must have digit before e or E: <%s>",
 			  __func__, str);
 	    return false;	/* processing failed */
 
@@ -844,7 +846,7 @@ json_process_floating(struct json_number *item, char const *str, size_t len)
 	     * JSON spec detail: e notation number with e+ or E+ must be followed by a digit
 	     */
 	    if (e+1 < &(str[len-1]) && (!isascii(e[2]) || !isdigit(e[2]))) {
-		dbg(DBG_HIGH, "%s: :e notation number with e+ or E+ must be followed by a digit <%s>",
+		dbg(DBG_HIGH, "in %s(): :e notation number with e+ or E+ must be followed by a digit <%s>",
 			      __func__, str);
 		return false;	/* processing failed */
 	    }
@@ -860,7 +862,7 @@ json_process_floating(struct json_number *item, char const *str, size_t len)
 	     * JSON spec detail: e notation number with e- or E- must be followed by a digit
 	     */
 	    if (e+1 < &(str[len-1]) && (!isascii(e[2]) || !isdigit(e[2]))) {
-		dbg(DBG_HIGH, "%s: :e notation number with e- or E- must be followed by a digit <%s>",
+		dbg(DBG_HIGH, "in %s(): :e notation number with e- or E- must be followed by a digit <%s>",
 			      __func__, str);
 		return false;	/* processing failed */
 	    }
@@ -869,7 +871,7 @@ json_process_floating(struct json_number *item, char const *str, size_t len)
 	 * JSON spec detail: e notation number must have + or - or digit after e or E
 	 */
 	} else if (!isascii(e[1]) || !isdigit(e[1])) {
-	    dbg(DBG_HIGH, "%s: e notation numbers must follow e or E with + or - or digit: <%s>",
+	    dbg(DBG_HIGH, "in %s(): e notation numbers must follow e or E with + or - or digit: <%s>",
 			  __func__, str);
 	    return false;	/* processing failed */
 	}
@@ -986,9 +988,9 @@ bool show_full_json_warnings = false;
 bool
 jwarn(int code, char const *program, char const *name, char const *filename, char const *line, int line_num, char const *fmt, ...)
 {
-    va_list ap;		/* variable argument list */
-    int ret;		/* libc function return code */
-    int saved_errno;	/* errno at function start */
+    va_list ap;			/* variable argument list */
+    int ret = 0;		/* libc function return code */
+    int saved_errno = 0;	/* errno at function start */
 
     if (is_json_code_ignored(code))
 	return false;
@@ -1008,18 +1010,18 @@ jwarn(int code, char const *program, char const *name, char const *filename, cha
      */
     if (program == NULL) {
 	program = "((NULL program))";
-	warn(__func__, "\nWarning: in jwarn(): called with NULL program, forcing name: %s\n", program);
+	warn(__func__, "called with NULL program, forcing name: %s", program);
     }
     if (name == NULL) {
 	name = "((NULL name))";
-	warn(__func__, "\nWarning: in jwarn(): called with NULL name, forcing name: %s\n", name);
+	warn(__func__, "called with NULL name, forcing name: %s", name);
     }
     if (fmt == NULL) {
 	fmt = "((NULL fmt))";
-	warn(__func__, "\nWarning: in jwarn(): called with NULL fmt, forcing fmt: %s\n", fmt);
+	warn(__func__, "called with NULL fmt, forcing fmt: %s", fmt);
     }
     if (code < JSON_CODE_RESERVED_MIN) {
-	err(209, __func__, "invalid JSON code passed to jwarn(): %d", code);
+	err(209, __func__, "invalid JSON code: %d", code);
 	not_reached();
     }
     if (line == NULL) {
@@ -1028,48 +1030,54 @@ jwarn(int code, char const *program, char const *name, char const *filename, cha
     }
     if (filename == NULL) {
 	filename = "((NULL))";
-	dbg(DBG_VHIGH, "jwarn(): called with NULL filename, forcing filename: %s\n", filename);
+	dbg(DBG_VHIGH, "%s(): called with NULL filename, forcing filename: %s\n",
+		       __func__, filename);
     }
 
 
     errno = 0;
     ret = fprintf(stderr, "# program: %s %s\n", program, name);
     if (ret < 0) {
-	(void) fprintf(stderr, "\nWarning: in jwarn(%d, %s, %s, %s, %s, %d, %s, ...): "
-			       "fprintf returned error: %s\n", code, program, name,
-		filename, line, line_num, fmt, strerror(errno));
+	(void) fprintf(stderr, "\nWarning: in %s(%d, %s, %s, %s, %s, %d, %s, ...): "
+			       "fprintf returned error: %s\n",
+			       __func__, code, program, name,
+			       filename, line, line_num, fmt, strerror(errno));
     }
 
     errno = 0;
     ret = fprintf(stderr, "{JSON-%04d}: %s: %d: ", code, filename, line_num);
     if (ret < 0) {
-	(void) fprintf(stderr, "\nWarning: in jwarn(%d, %s, %s, %s, %s, %d, %s, ...): "
-			       "fprintf returned error: %s\n", code, program, name,
-		filename, line, line_num, fmt, strerror(errno));
+	(void) fprintf(stderr, "\nWarning: in %s(%d, %s, %s, %s, %s, %d, %s, ...): "
+			       "fprintf returned error: %s\n",
+			       __func__, code, program, name,
+			       filename, line, line_num, fmt, strerror(errno));
     }
 
     errno = 0;
     ret = vfprintf(stderr, fmt, ap);
     if (ret < 0) {
-	(void) fprintf(stderr, "\nWarning: in jwarn(%d, %s, %s, %s, %s, %d, %s, ...): "
-			       "fprintf returned error: %s\n", code, program, name,
-		filename, line, line_num, fmt, strerror(errno));
+	(void) fprintf(stderr, "\nWarning: in %s(%d, %s, %s, %s, %s, %d, %s, ...): "
+			       "fprintf returned error: %s\n",
+			       __func__, code, program, name,
+			       filename, line, line_num, fmt, strerror(errno));
     }
 
     errno = 0;
     ret = fputc('\n', stderr);
     if (ret != '\n') {
-	(void) fprintf(stderr, "\nWarning: in jwarn(%d, %s, %s, %s, %s, %d, %s, ...): "
-			       "fputc returned error: %s\n", code, program, name,
-		filename, line, line_num, fmt, strerror(errno));
+	(void) fprintf(stderr, "\nWarning: in %s(%d, %s, %s, %s, %s, %d, %s, ...): "
+			       "fputc returned error: %s\n",
+			       __func__, code, program, name,
+			       filename, line, line_num, fmt, strerror(errno));
     }
 
     errno = 0;
     ret = fflush(stderr);
     if (ret < 0) {
-	(void) fprintf(stderr, "\nWarning: in jwarn(%d, %s, %s, %s, %s, %d, %s, ...): "
-			       "fflush returned error: %s\n", code, program, name,
-		filename, line, line_num, fmt, strerror(errno));
+	(void) fprintf(stderr, "\nWarning: in %s(%d, %s, %s, %s, %s, %d, %s, ...): "
+			       "fflush returned error: %s\n",
+			       __func__, code, program, name,
+			       filename, line, line_num, fmt, strerror(errno));
     }
 
     /*
@@ -1121,9 +1129,9 @@ bool
 jwarnp(int code, char const *program, char const *name, char const *filename, char const *line,
        int line_num, char const *fmt, ...)
 {
-    va_list ap;		/* variable argument list */
-    int ret;		/* libc function return code */
-    int saved_errno;	/* errno at function start */
+    va_list ap;			/* variable argument list */
+    int ret = 0;		/* libc function return code */
+    int saved_errno = 0;	/* errno at function start */
 
     if (is_json_code_ignored(code))
 	return false;
@@ -1143,15 +1151,15 @@ jwarnp(int code, char const *program, char const *name, char const *filename, ch
      */
     if (program == NULL) {
 	program = "((NULL program))";
-	warn(__func__, "\nWarning: in jwarn(): called with NULL program, forcing name: %s\n", program);
+	warn(__func__, "called with NULL program, forcing name: %s", program);
     }
     if (name == NULL) {
 	name = "((NULL name))";
-	warn(__func__, "\nWarning: in jwarn(): called with NULL name, forcing name: %s\n", name);
+	warn(__func__, "called with NULL name, forcing name: %s", name);
     }
     if (fmt == NULL) {
 	fmt = "((NULL fmt))";
-	warn(__func__, "\nWarning: in jwarn(): called with NULL fmt, forcing fmt: %s\n", fmt);
+	warn(__func__, "called with NULL fmt, forcing fmt: %s", fmt);
     }
     if (code < JSON_CODE_RESERVED_MIN) {
 	err(210, __func__, "invalid JSON code passed to jwarn(): %d", code);
@@ -1163,56 +1171,63 @@ jwarnp(int code, char const *program, char const *name, char const *filename, ch
     }
     if (filename == NULL) {
 	filename = "((NULL))";
-	dbg(DBG_VHIGH, "jwarn(): called with NULL filename, forcing filename: %s\n", filename);
+	dbg(DBG_VHIGH, "in %s(): called with NULL filename, forcing filename: %s\n",
+		       __func__, filename);
     }
 
 
     errno = 0;
     ret = fprintf(stderr, "# program: %s %s\n", program, name);
     if (ret < 0) {
-	(void) fprintf(stderr, "\nWarning: in jwarn(%d, %s, %s, %s, %s, %d, %s, ...): "
-			       "fprintf returned error: %s\n", code, program, name,
-		filename, line, line_num, fmt, strerror(errno));
+	(void) fprintf(stderr, "\nWarning: in %s(%d, %s, %s, %s, %s, %d, %s, ...): "
+			       "fprintf returned error: %s\n",
+			       __func__, code, program, name,
+			       filename, line, line_num, fmt, strerror(errno));
     }
 
     errno = 0;
     ret = fprintf(stderr, "{JSON-%04d}: %s: %d: ", code, filename, line_num);
     if (ret < 0) {
-	(void) fprintf(stderr, "\nWarning: in jwarn(%d, %s, %s, %s, %s, %d, %s, ...): "
-			       "fprintf returned error: %s\n", code, program, name,
-		filename, line, line_num, fmt, strerror(errno));
+	(void) fprintf(stderr, "\nWarning: in %s(%d, %s, %s, %s, %s, %d, %s, ...): "
+			       "fprintf returned error: %s\n",
+			       __func__, code, program, name,
+			       filename, line, line_num, fmt, strerror(errno));
     }
 
     errno = 0;
     ret = vfprintf(stderr, fmt, ap);
     if (ret < 0) {
-	(void) fprintf(stderr, "\nWarning: in jwarn(%d, %s, %s, %s, %s, %d, %s, ...): "
-			       "fprintf returned error: %s\n", code, program, name,
-		filename, line, line_num, fmt, strerror(errno));
+	(void) fprintf(stderr, "\nWarning: in %s(%d, %s, %s, %s, %s, %d, %s, ...): "
+			       "fprintf returned error: %s\n",
+			       __func__, code, program, name,
+			       filename, line, line_num, fmt, strerror(errno));
     }
 
     errno = 0;
     ret = fprintf(stderr, "errno[%d]: %s\n", saved_errno, strerror(saved_errno));
     if (ret < 0) {
-	(void) fprintf(stderr, "\nWarning: in jwarn(%d, %s, %s, %s, %s, %d, %s, ...): "
-			       "fprintf with errno returned error: %s\n", code, program, name,
-		filename, line, line_num, fmt, strerror(errno));
+	(void) fprintf(stderr, "\nWarning: in %s(%d, %s, %s, %s, %s, %d, %s, ...): "
+			       "fprintf with errno returned error: %s\n",
+			       __func__, code, program, name,
+			       filename, line, line_num, fmt, strerror(errno));
     }
 
     errno = 0;
     ret = fputc('\n', stderr);
     if (ret != '\n') {
-	(void) fprintf(stderr, "\nWarning: in jwarn(%d, %s, %s, %s, %s, %d, %s, ...): "
-			       "fputc returned error: %s\n", code, program, name,
-		filename, line, line_num, fmt, strerror(errno));
+	(void) fprintf(stderr, "\nWarning: in %s(%d, %s, %s, %s, %s, %d, %s, ...): "
+			       "fputc returned error: %s\n",
+			       __func__, code, program, name,
+			       filename, line, line_num, fmt, strerror(errno));
     }
 
     errno = 0;
     ret = fflush(stderr);
     if (ret < 0) {
-	(void) fprintf(stderr, "\nWarning: in jwarn(%d, %s, %s, %s, %s, %d, %s, ...): "
-			       "fflush returned error: %s\n", code, program, name,
-		filename, line, line_num, fmt, strerror(errno));
+	(void) fprintf(stderr, "\nWarning: in %s(%d, %s, %s, %s, %s, %d, %s, ...): "
+			       "fflush returned error: %s\n",
+			       __func__, code, program, name,
+			       filename, line, line_num, fmt, strerror(errno));
     }
 
     /*
@@ -1268,69 +1283,77 @@ jerr(int exitcode, char const *program, char const *name, char const *filename, 
      * firewall
      */
     if (exitcode < 0) {
-	warn(__func__, "\nin jerr(): called with exitcode <0: %d\n", exitcode);
+	warn(__func__, "called with exitcode <0: %d", exitcode);
 	exitcode = 255;
-	warn(__func__, "\nin jerr(): forcing exit code: %d\n", exitcode);
+	warn(__func__, "forcing exit code: %d", exitcode);
     }
     if (program == NULL) {
 	program = "jchk";
-	dbg(DBG_VHIGH, "\nin jerr(): called with NULL program, forcing program: %s\n", program);
+	dbg(DBG_VHIGH, "\nin %s(): called with NULL program, forcing program: %s\n",
+		       __func__, program);
     }
     if (name == NULL) {
 	name = "((NULL name))";
-	warn(__func__, "\nin jerr(): called with NULL name, forcing name: %s\n", name);
+	warn(__func__, "called with NULL name, forcing name: %s", name);
     }
     if (fmt == NULL) {
 	fmt = "((NULL fmt))";
-	warn(__func__, "\nin jerr(): called with NULL fmt, forcing fmt: %s\n", fmt);
+	warn(__func__, "called with NULL fmt, forcing fmt: %s", fmt);
     }
     if (filename == NULL) {
 	filename = "((NULL))";
-	dbg(DBG_VHIGH, "jerr(): called with NULL filename, forcing filename: %s\n", filename);
+	dbg(DBG_VHIGH, "in %s(): called with NULL filename, forcing filename: %s\n",
+		       __func__, filename);
     }
     if (line == NULL) {
 	line = "";
-	dbg(DBG_VHIGH, "jerr(): called with NULL line, making \"\"");
+	dbg(DBG_VHIGH, "in %s(): called with NULL line, making \"\"",
+		       __func__);
     }
 
     errno = 0;
     ret = fprintf(stderr, "# program: %s %s\n", program, name);
     if (ret < 0) {
-	(void) fprintf(stderr, "\nWarning: in jerr(%d, %s, %s, %s, %s, %d, %s, ...): "
-			       "fprintf returned error: %s\n", exitcode, program, name,
-		filename, line, line_num, fmt, strerror(errno));
+	(void) fprintf(stderr, "\nWarning: in %s(%d, %s, %s, %s, %s, %d, %s, ...): "
+			       "fprintf returned error: %s\n",
+			       __func__, exitcode, program, name,
+			       filename, line, line_num, fmt, strerror(errno));
     }
 
     errno = 0;
     ret = fprintf(stderr, "JSON[%04d]: %s: %d: ", exitcode, filename, line_num);
     if (ret < 0) {
-	(void) fprintf(stderr, "\nWarning: in jerr(%d, %s, %s, %s, %s, %d, %s, ...): "
-			       "fprintf returned error: %s\n", exitcode, program, name,
-		filename, line, line_num, fmt, strerror(errno));
+	(void) fprintf(stderr, "\nWarning: in %s(%d, %s, %s, %s, %s, %d, %s, ...): "
+			       "fprintf returned error: %s\n",
+			       __func__, exitcode, program, name,
+			       filename, line, line_num, fmt, strerror(errno));
     }
 
     errno = 0;
     ret = vfprintf(stderr, fmt, ap);
     if (ret < 0) {
-	(void) fprintf(stderr, "\nWarning: in jerr(%d, %s, %s, %s, %s, %d, %s, ...): "
-			       "vfprintf returned error: %s\n", exitcode, program, name,
-		filename, line, line_num, fmt, strerror(errno));
+	(void) fprintf(stderr, "\nWarning: in %s(%d, %s, %s, %s, %s, %d, %s, ...): "
+			       "vfprintf returned error: %s\n",
+			       __func__, exitcode, program, name,
+			       filename, line, line_num, fmt, strerror(errno));
     }
 
     errno = 0;
     ret = fputc('\n', stderr);
     if (ret != '\n') {
-	(void) fprintf(stderr, "\nWarning: in jerr(%d, %s, %s, %s, %s, %d, %s, ...): "
-			       "fputc returned error: %s\n", exitcode, program, name,
-		filename, line, line_num, fmt, strerror(errno));
+	(void) fprintf(stderr, "\nWarning: in %s(%d, %s, %s, %s, %s, %d, %s, ...): "
+			       "fputc returned error: %s\n",
+			       __func__, exitcode, program, name,
+			       filename, line, line_num, fmt, strerror(errno));
     }
 
     errno = 0;
     ret = fflush(stderr);
     if (ret < 0) {
-	(void) fprintf(stderr, "\nWarning: in jerr(%d, %s, %s, %s, %s, %d, %s, ...): "
-			       "fflush returned error: %s\n", exitcode, program, name,
-		filename, line, line_num, fmt, strerror(errno));
+	(void) fprintf(stderr, "\nWarning: in %s(%d, %s, %s, %s, %s, %d, %s, ...): "
+			       "fflush returned error: %s\n",
+			       __func__, exitcode, program, name,
+			       filename, line, line_num, fmt, strerror(errno));
     }
 
     /*
@@ -1374,9 +1397,9 @@ void
 jerrp(int exitcode, char const *program, char const *name, char const *filename, char const *line,
       int line_num, char const *fmt, ...)
 {
-    va_list ap;		/* variable argument list */
-    int ret;		/* libc function return code */
-    int saved_errno;	/* errno value when called */
+    va_list ap;			/* variable argument list */
+    int ret = 0;		/* libc function return code */
+    int saved_errno = 0;	/* errno value when called */
 
     /*
      * save errno in case we need it for strerror()
@@ -1390,78 +1413,84 @@ jerrp(int exitcode, char const *program, char const *name, char const *filename,
 
     /* firewall */
     if (exitcode < 0) {
-	warn(__func__, "\nin jerrp(): called with exitcode <0: %d\n", exitcode);
+	warn(__func__, "called with exitcode <0: %d", exitcode);
 	exitcode = 255;
-	warn(__func__, "\nin jerrp(): forcing exit code: %d\n", exitcode);
+	warn(__func__, "forcing exit code: %d", exitcode);
     }
     if (program == NULL) {
 	program = "jchk";
-	dbg(DBG_VHIGH, "\nin jerrp(): called with NULL program, forcing program: %s\n", program);
+	dbg(DBG_VHIGH, "called with NULL program, forcing program: %s\n", program);
     }
     if (name == NULL) {
 	name = "((NULL name))";
-	warn(__func__, "\nin jerrp(): called with NULL name, forcing name: %s\n", name);
+	warn(__func__, "called with NULL name, forcing name: %s", name);
     }
     if (fmt == NULL) {
 	fmt = "((NULL fmt))";
-	warn(__func__, "\nin jerrp(): called with NULL fmt, forcing fmt: %s\n", fmt);
+	warn(__func__, "called with NULL fmt, forcing fmt: %s", fmt);
     }
     if (filename == NULL) {
 	filename = "((NULL))";
-	dbg(DBG_VHIGH, "jerrp(): called with NULL filename, forcing filename: %s\n", filename);
+	warn(__func__, "called with NULL filename, forcing filename: %s", filename);
     }
     if (line == NULL) {
 	line = "";
-	dbg(DBG_VHIGH, "jerrp(): called with NULL line, making \"\"");
+	warn(__func__, "called with NULL line, making \"\"");
     }
 
 
     errno = 0;
     ret = fprintf(stderr, "# program: %s %s\n", program, name);
     if (ret < 0) {
-	(void) fprintf(stderr, "\nWarning: in jerrp(%d, %s, %s, %s, %s, %d, %s, ...): "
-			       "fprintf returned error: %s\n", exitcode, program, name,
-		filename, line, line_num, fmt, strerror(errno));
+	(void) fprintf(stderr, "\nWarning: in %s(%d, %s, %s, %s, %s, %d, %s, ...): "
+			       "fprintf returned error: %s\n",
+			       __func__, exitcode, program, name,
+			       filename, line, line_num, fmt, strerror(errno));
     }
 
     errno = 0;
     ret = fprintf(stderr, "JSON[%04d]: %s: %d: ", exitcode, filename, line_num);
     if (ret < 0) {
-	(void) fprintf(stderr, "\nWarning: in jerrp(%d, %s, %s, %s, %s, %d, %s, ...): "
-			       "fprintf returned error: %s\n", exitcode, program, name,
-		filename, line, line_num, fmt, strerror(errno));
+	(void) fprintf(stderr, "\nWarning: in %s(%d, %s, %s, %s, %s, %d, %s, ...): "
+			       "fprintf returned error: %s\n",
+			       __func__, exitcode, program, name,
+			       filename, line, line_num, fmt, strerror(errno));
     }
 
     errno = 0;
     ret = vfprintf(stderr, fmt, ap);
     if (ret < 0) {
-	(void) fprintf(stderr, "\nWarning: in jerrp(%d, %s, %s, %s, %s, %d, %s, ...): "
-			       "vfprintf returned error: %s\n", exitcode, program, name,
-		filename, line, line_num, fmt, strerror(errno));
+	(void) fprintf(stderr, "\nWarning: in %s(%d, %s, %s, %s, %s, %d, %s, ...): "
+			       "vfprintf returned error: %s\n",
+			       __func__, exitcode, program, name,
+			       filename, line, line_num, fmt, strerror(errno));
     }
 
     errno = 0;
     ret = fprintf(stderr, " errno[%d]: %s", saved_errno, strerror(saved_errno));
     if (ret < 0) {
-	(void) fprintf(stderr, "\nWarning: in jerrp(%d, %s, %s, %s, %s, %d, %s, ...): "
-			       "fprintf returned error: %s\n", exitcode, program, name,
-		filename, line, line_num, fmt, strerror(errno));
+	(void) fprintf(stderr, "\nWarning: in %s(%d, %s, %s, %s, %s, %d, %s, ...): "
+			       "fprintf returned error: %s\n",
+			       __func__, exitcode, program, name,
+			       filename, line, line_num, fmt, strerror(errno));
     }
 
     errno = 0;
     ret = fputc('\n', stderr);
     if (ret != '\n') {
-	(void) fprintf(stderr, "\nWarning: in jerrp(%d, %s, %s, %s, %s, %d, %s, ...): "
-			       "fputc returned error: %s\n", exitcode, program, name,
-		filename, line, line_num, fmt, strerror(errno));
+	(void) fprintf(stderr, "\nWarning: in %s(%d, %s, %s, %s, %s, %d, %s, ...): "
+			       "fputc returned error: %s\n",
+			       __func__, exitcode, program, name,
+			       filename, line, line_num, fmt, strerror(errno));
     }
 
     errno = 0;
     ret = fflush(stderr);
     if (ret < 0) {
-	(void) fprintf(stderr, "\nWarning: in jerrp(%d, %s, %s, %s, %s, %d, %s, ...): "
-			       "fflush returned error: %s\n", exitcode, program, name,
-		filename, line, line_num, fmt, strerror(errno));
+	(void) fprintf(stderr, "\nWarning: in %s(%d, %s, %s, %s, %s, %d, %s, ...): "
+			       "fflush returned error: %s\n",
+			       __func__, exitcode, program, name,
+			       filename, line, line_num, fmt, strerror(errno));
     }
 
     /*
@@ -1481,12 +1510,23 @@ jerrp(int exitcode, char const *program, char const *name, char const *filename,
 /*
  * json_dbg - print JSON debug message if we are verbose enough
  *
+ * This function behaves like dbg() in determining if a JSON debug message
+ * is printed.  To print a JSON debug message, dbg_output_allowed == true AND
+ * dbg_level <= json_verbosity_level or dbg_level == JSON_DBG_FORCED.
+ * When dbg_output_allowed == false, no debug output will be printed,
+ * even when dbg_level == JSON_DBG_FORCED.
+ *
+ * See also: json_dbg_tree_print().
+ *
  * given:
- *	level	    print message if >= verbosity level
- *	program	    program name
+ *	dbg_level   print message if JSON_DBG_FORCED OR if <= json_verbosity_level
  *	name	    function name
  *	fmt	    printf format
  *	...
+ *
+ * returns:
+ *	true ==> debug output was successful.
+ *	false ==> all debug output was disallowed or some/all output failed failed
  *
  * Example:
  *
@@ -1498,10 +1538,10 @@ jerrp(int exitcode, char const *program, char const *name, char const *filename,
  * This function returns true if debug output is allowed; else it returns false.
  */
 bool
-json_dbg(int level, char const *name, char const *fmt, ...)
+json_dbg(int dbg_level, char const *name, char const *fmt, ...)
 {
     va_list ap;			/* variable argument list */
-    int saved_errno;		/* errno at function start */
+    int saved_errno = 0;	/* errno at function start */
     bool allowed = false;	/* assume debug output is not allowed */
 
     /*
@@ -1519,17 +1559,17 @@ json_dbg(int level, char const *name, char const *fmt, ...)
      */
     if (name == NULL) {
 	name = "((NULL name))";
-	warn(__func__, "\nin json_dbg(%d, ...): NULL name, forcing use of: %s\n", level, name);
+	warn(__func__, "NULL name, forcing use of: %s", name);
     }
     if (fmt == NULL) {
 	fmt = "((NULL fmt))";
-	warn(__func__, "\nin json_dbg(%d, ...): NULL fmt, forcing use of: %s\n", level, fmt);
+	warn(__func__, " NULL fmt, forcing use of: %s", fmt);
     }
 
     /*
      * print the debug message if allowed and allowed by the verbosity level
      */
-    allowed = json_vdbg(level, name, fmt, ap);
+    allowed = json_vdbg(dbg_level, name, fmt, ap);
 
     /*
      * stdarg variable argument list clean up
@@ -1548,10 +1588,22 @@ json_dbg(int level, char const *name, char const *fmt, ...)
 /*
  * json_vdbg - print debug message if we are verbose enough
  *
+ * This function behaves like vdbg() in determining if a JSON debug message
+ * is printed.  To print a JSON debug message, dbg_output_allowed == true AND
+ * dbg_level <= json_verbosity_level or dbg_level == JSON_DBG_FORCED.
+ * When dbg_output_allowed == false, no debug output will be printed,
+ * even when dbg_level == JSON_DBG_FORCED.
+ *
+ * See also: json_dbg_tree_print().
+ *
  * given:
- *	level	    print message if >= verbosity level
+ *	dbg_level   print message if JSON_DBG_FORCED OR if <= json_verbosity_level
  *	name	    function name
  *	ap	    variable argument list
+ *
+ * returns:
+ *	true ==> debug output was successful.
+ *	false ==> all debug output was disallowed or some/all output failed failed
  *
  * Example:
  *
@@ -1563,11 +1615,12 @@ json_dbg(int level, char const *name, char const *fmt, ...)
  * This function returns true if debug output is allowed; else it returns false.
  */
 bool
-json_vdbg(int level, char const *name, char const *fmt, va_list ap)
+json_vdbg(int dbg_level, char const *name, char const *fmt, va_list ap)
 {
-    int ret;		/* libc function return code */
-    int saved_errno;	/* errno at function start */
-    bool allowed = false; /* assume debug message not allowed */
+    int saved_errno = 0;	/* errno at function start */
+    bool allowed = false;	 /* assume debug message not allowed */
+    bool output_ok = true;	/* false ==> some debug output failed */
+    int ret;			/* libc function return code */
 
     /*
      * save errno so we can restore it before returning
@@ -1579,48 +1632,54 @@ json_vdbg(int level, char const *name, char const *fmt, va_list ap)
      */
     if (name == NULL) {
 	name = "((NULL name))";
-	warn(__func__, "\nin json_vdbg(%d, ...): NULL name, forcing use of: %s\n", level, name);
+	warn(__func__, "NULL name, forcing use of: %s", name);
     }
     if (fmt == NULL) {
 	fmt = "((NULL fmt))";
-	warn(__func__, "\nin json_vdbg(%d, ...): NULL fmt, forcing use of: %s\n", level, fmt);
+	warn(__func__, "NULL fmt, forcing use of: %s", fmt);
     }
 
     /*
      * print the debug message if allowed and allowed by the verbosity level
      */
-    if (dbg_output_allowed) {
-	if (level <= json_verbosity_level) {
-	    errno = 0;
-	    ret = fprintf(stderr, "JSON DEBUG[%d]: ", level);
-	    if (ret < 0) {
-		warn(__func__, "\nin json_vdbg(%d, %s, %s ...): fprintf returned error: %s\n",
-			       level, name, fmt, strerror(errno));
-	    }
-
-	    errno = 0;
-	    ret = vfprintf(stderr, fmt, ap);
-	    if (ret < 0) {
-		warn(__func__, "\nin json_vdbg(%d, %s, %s ...): vfprintf returned error: %s\n",
-			       level, name, fmt, strerror(errno));
-	    }
-
-	    errno = 0;
-	    ret = fputc('\n', stderr);
-	    if (ret != '\n') {
-		warn(__func__, "\nin json_vdbg(%d, %s ...): fputc returned error: %s\n",
-			       level, fmt, strerror(errno));
-	    }
-
-	    errno = 0;
-	    ret = fflush(stderr);
-	    if (ret < 0) {
-		warn(__func__, "\nin json_vdbg(%d, %s, %s ...): fflush returned error: %s\n",
-			       level, name, fmt, strerror(errno));
-	    }
-
-	    allowed = true;
+    if (dbg_output_allowed == true &&
+        (dbg_level == JSON_DBG_FORCED || dbg_level <= json_verbosity_level)) {
+	errno = 0;
+	ret = fprintf(stderr, "in %s(): JSON debug[%d]: ", name, dbg_level);
+	if (ret < 0) {
+	    output_ok = false;	/* indicate output failure */
+	    warn(__func__, "fprintf returned errno: %d: (%s)", errno, strerror(errno));
 	}
+
+	errno = 0;
+	ret = vfprintf(stderr, fmt, ap);
+	if (ret < 0) {
+	    output_ok = false;	/* indicate output failure */
+	    warn(__func__, "vfprintf returned errno: %d: (%s)", errno, strerror(errno));
+	}
+
+	errno = 0;
+	ret = fputc('\n', stderr);
+	if (ret != '\n') {
+	    output_ok = false;	/* indicate output failure */
+	    warn(__func__, "fputc returned errno: %d: (%s)", errno, strerror(errno));
+	}
+
+	errno = 0;
+	ret = fflush(stderr);
+	if (ret < 0) {
+	    output_ok = false;	/* indicate output failure */
+	    warn(__func__, "fflush returned errno: %d: (%s)", errno, strerror(errno));
+	}
+
+	allowed = true;
+    }
+
+    /*
+     * if some output was NOT OK, indicate by setting allowed to false
+     */
+    if (output_ok == false) {
+	allowed = false;
     }
 
     /*
@@ -1742,7 +1801,7 @@ json_free(struct json *node, int depth, ...)
     va_start(ap, depth);
 
     /*
-     * call non-variable argument list function
+     * call va_list free list function
      */
     vjson_free(node, depth, ap);
 
@@ -1967,13 +2026,729 @@ json_tree_free(struct json *node, int max_depth, ...)
     /*
      * free the JSON parse tree
      */
-    vjson_tree_walk(node, max_depth, 0, ap, vjson_free);
+    vjson_tree_walk(node, max_depth, 0, vjson_free, ap);
 
     /*
      * stdarg variable argument list cleanup
      */
     va_end(ap);
     return;
+}
+
+
+/*
+ * json_fprint - print a line about a JSON parse tree node
+ *
+ * This function will print details about a JSON parse tree node,
+ * as a single line, onto an open stream.
+ *
+ * If dbg_output_allowed == false, this function will not print.
+ *
+ * When dbg_level == JSON_DBG_FORCED, the printed prefix of:
+ *
+ *	JSON tree[%d]:
+ *
+ * is replaced with:
+ *
+ *	JSON tree node:
+ *
+ * given:
+ *	node	pointer to a JSON parser tree node to free
+ *	depth	current tree depth (0 ==> top of tree)
+ *	...	extra args are ignored, required extra args:
+ *				OR if <= json_verbosity_level
+ *		stream	    stream to print on
+ *		dbg_level   print message if JSON_DBG_FORCED
+ *			    OR if <= json_verbosity_level
+ *
+ * Example use - print a JSON parse tree
+ *
+ *	json_fprint(node, depth, stderr, JSON_DBG_FORCED;
+ *	json_fprint(node, depth, stderr, JSON_DBG_MED);
+ *
+ * While the ... variable arg are ignored, we need to declare
+ * then in order to be in vcallback form for use by json_tree_walk().
+ *
+ * NOTE: If the pointer to allocated storage == NULL,
+ *	 this function does nothing.
+ *
+ * NOTE: This function does nothing if node == NULL.
+ */
+void
+json_fprint(struct json *node, int depth, ...)
+{
+    va_list ap;		/* variable argument list */
+
+    /*
+     * firewall - nothing to do for a NULL node
+     */
+    if (node == NULL) {
+	return;
+    }
+    if (depth < 0) {
+	return;
+    }
+
+    /*
+     * stdarg variable argument list setup
+     */
+    va_start(ap, depth);
+
+    /*
+     * call va_list argument list function
+     */
+    vjson_fprint(node, depth, ap);
+
+    /*
+     * stdarg variable argument list cleanup
+     */
+    va_end(ap);
+    return;
+}
+
+
+/*
+ * vjson_fprint - print a line about a JSON parse tree node in va_list form
+ *
+ * This is a variable argument list interface to json_fprint().
+ *
+ * See json_tree_print() to print lines for an entire JSON parse tree.
+ *
+ * If dbg_output_allowed == false, this function will not print.
+ *
+ * When dbg_level == JSON_DBG_FORCED, the printed prefix of:
+ *
+ *	JSON tree[%d]:
+ *
+ * is replaced with:
+ *
+ *	JSON tree node:
+ *
+ * given:
+ *	node	pointer to a JSON parser tree node to free
+ *	depth	current tree depth (0 ==> top of tree)
+ *	ap	variable argument list, required ap args:
+ *
+ *		stream	    stream to print on
+ *		dbg_level   print message if JSON_DBG_FORCED
+ *			    OR if <= json_verbosity_level
+ *
+ * NOTE: This function does nothing if node == NULL.
+ *
+ * NOTE: This function does nothing if the node type is invalid.
+ */
+void
+vjson_fprint(struct json *node, int depth, va_list ap)
+{
+    FILE *stream = NULL;	/* stream to print on */
+    int dbg_level = JSON_DBG_DEFAULT;	/* JSON debug level if json_dbg_used == true */
+    char const *tname = NULL;	/* name of the node type */
+    va_list ap2;		/* copy of va_list ap */
+#if 0 /* XXX - do we want indentation? - XXX */
+    int i;
+#endif /* XXX - do we want indentation? - XXX */
+
+    /*
+     * firewall - nothing to do for a NULL node
+     */
+    if (node == NULL) {
+	return;
+    }
+    if (depth < 0) {
+	return;
+    }
+
+    /*
+     * duplicate va_list ap
+     */
+    va_copy(ap2, ap);
+
+    /*
+     * obtain the stream, json_dbg_used, and json_dbg args
+     */
+    stream = va_arg(ap2, FILE *);
+    if (stream == NULL) {
+	return;
+    }
+    dbg_level = va_arg(ap2, int);
+
+    /*
+     * check JSON debug level if allowed
+     */
+    if (dbg_output_allowed == false ||
+        (dbg_level != JSON_DBG_FORCED && dbg_level > json_verbosity_level)) {
+	/* tree output disabled by json_verbosity_level */
+	return;
+    }
+
+    /*
+     * print debug leader
+     */
+    if (dbg_level != JSON_DBG_FORCED) {
+	fprint(stream, "JSON tree[%d]:\t", dbg_level);
+    } else {
+	fprstr(stream, "JSON tree node:\t");
+    }
+
+#if 0 /* XXX - do we want indentation? - XXX */
+    /*
+     * indent based on level
+     */
+    for (i=0; i < depth/2; ++i) {
+	fprstr(stream, "\t");
+    }
+    if (depth%2 > 0) {
+	fprstr(stream, "    ");
+    }
+#endif /* XXX - do we want indentation? - XXX */
+
+    /*
+     * print node type
+     */
+    tname = json_element_type_name(node);
+    if (tname == NULL) {
+	warn(__func__, "json_element_type_name returned NULL");
+	return;
+    }
+    fprint(stream, "lvl: %d\ttype: %s", depth, tname);
+
+    /*
+     * print node details
+     */
+    switch (node->type) {
+
+    case JTYPE_UNSET:	/* JSON element has not been set - must be the value 0 */
+	break;
+
+    case JTYPE_NUMBER:	/* JSON element is number - see struct json_number */
+	{
+	    struct json_number *item = &(node->element.number);
+
+	    /*
+	     * case: converted number
+	     */
+	    if (item->converted == true) {
+
+		/*
+		 * case: converted negative number
+		 */
+		if (item->is_negative == true) {
+
+		    /*
+		     * case: converted e-notation negative number
+		     */
+		    if (item->is_e_notation == true) {
+
+			/*
+			 * try to print the smallest converted floating point
+			 */
+			if (item->float_sized == true) {
+			    fprint(stream, "\tf-val: %e\tinteger: %s",
+					   item->as_float, booltostr(item->as_float_int));
+			} else if (item->double_sized == true) {
+			    fprint(stream, "\td-val: %le\tinteger: %s",
+					   item->as_double, booltostr(item->as_double_int));
+			} else if (item->longdouble_sized == true) {
+			    fprint(stream, "\tL-val: %Le\tinteger: %s",
+					   item->as_longdouble, booltostr(item->as_longdouble_int));
+			} else {
+			    fprstr(stream, "\tWarning: -e-notation: no common size:\t");
+			    (void) fprint_line_buf(stream, item->first, item->number_len, '<', '>');
+			}
+
+		    /*
+		     * case: converted floating negative number
+		     */
+		    } else if (item->is_floating == true) {
+
+			/*
+			 * try to print the smallest converted floating point
+			 */
+			if (item->float_sized == true) {
+			    fprint(stream, "\tf-val: %f\tinteger: %s",
+					   item->as_float, booltostr(item->as_float_int));
+			} else if (item->double_sized == true) {
+			    fprint(stream, "\td-val: %lf\tinteger: %s",
+					   item->as_double, booltostr(item->as_double_int));
+			} else if (item->longdouble_sized == true) {
+			    fprint(stream, "\tL-val: %Lf\tinteger: %s",
+					   item->as_longdouble, booltostr(item->as_longdouble_int));
+			} else {
+			    fprstr(stream, "\tWarning: -floating: no common size:\t");
+			    (void) fprint_line_buf(stream, item->first, item->number_len, '<', '>');
+			}
+
+		    /*
+		     * case: converted integer negative number
+		     */
+		    } else {
+
+			/*
+			 * try to print the smallest converted integer
+			 */
+			if (item->int8_sized == true) {
+			    fprint(stream, "\tval-8: %jd", (intmax_t)item->as_int8);
+			} else if (item->int16_sized == true) {
+			    fprint(stream, "\tval-16: %jd", (intmax_t)item->as_int16);
+			} else if (item->int32_sized == true) {
+			    fprint(stream, "\tval-32: %jd", (intmax_t)item->int32_sized);
+			} else if (item->int64_sized == true) {
+			    fprint(stream, "\tval-64: %jd", (intmax_t)item->int64_sized);
+			} else if (item->maxint_sized == true) {
+			    fprint(stream, "\tval-max: %jd", (intmax_t)item->maxint_sized);
+			} else {
+			    fprstr(stream, "\tWarning: -integer: no common size:\t");
+			    (void) fprint_line_buf(stream, item->first, item->number_len, '<', '>');
+			}
+		    }
+
+		/*
+		 * case: converted positive number
+		 */
+		} else {
+
+		    /*
+		     * case: converted e-notation positive number
+		     */
+		    if (item->is_e_notation == true) {
+
+			/*
+			 * try to print the smallest converted floating point
+			 */
+			if (item->float_sized == true) {
+			    fprint(stream, "\tf+val: %e\tinteger: %s",
+					   item->as_float, booltostr(item->as_float_int));
+			} else if (item->double_sized == true) {
+			    fprint(stream, "\td+val: %le\tinteger: %s",
+					   item->as_double, booltostr(item->as_double_int));
+			} else if (item->longdouble_sized == true) {
+			    fprint(stream, "\tL+val: %Le\tinteger: %s",
+					   item->as_longdouble, booltostr(item->as_longdouble_int));
+			} else {
+			    fprstr(stream, "\tWarning: +e-notation: no common size:\t");
+			    (void) fprint_line_buf(stream, item->first, item->number_len, '<', '>');
+			}
+
+		    /*
+		     * case: converted floating positive number
+		     */
+		    } else if (item->is_floating == true) {
+
+			/*
+			 * try to print the smallest converted floating point
+			 */
+			if (item->float_sized == true) {
+			    fprint(stream, "\tf+val: %f\tinteger: %s",
+					   item->as_float, booltostr(item->as_float_int));
+			} else if (item->double_sized == true) {
+			    fprint(stream, "\td+val: %lf\tinteger: %s",
+					   item->as_double, booltostr(item->as_double_int));
+			} else if (item->longdouble_sized == true) {
+			    fprint(stream, "\tL+val: %Lf\tinteger: %s",
+					   item->as_longdouble, booltostr(item->as_longdouble_int));
+			} else {
+			    fprstr(stream, "\tWarning: +floating: no common size:\t");
+			    (void) fprint_line_buf(stream, item->first, item->number_len, '<', '>');
+			}
+
+		    /*
+		     * case: converted integer positive number
+		     */
+		    } else {
+
+			/*
+			 * try to print the smallest converted integer
+			 */
+			if (item->int8_sized == true) {
+			    fprint(stream, "\tval+8: %jd", (intmax_t)item->as_int8);
+			} else if (item->int16_sized == true) {
+			    fprint(stream, "\tval+16: %jd", (intmax_t)item->as_int16);
+			} else if (item->int32_sized == true) {
+			    fprint(stream, "\tval+32: %jd", (intmax_t)item->int32_sized);
+			} else if (item->int64_sized == true) {
+			    fprint(stream, "\tval+64: %jd", (intmax_t)item->int64_sized);
+			} else if (item->maxint_sized == true) {
+			    fprint(stream, "\tval+max: %jd", (intmax_t)item->maxint_sized);
+			} else {
+			    fprstr(stream, "\tWarning: +integer: no common size:\t");
+			    (void) fprint_line_buf(stream, item->first, item->number_len, '<', '>');
+			}
+		    }
+		}
+
+	    /*
+	     * case: not converted number
+	     */
+	    } else {
+		fprstr(stream, "\tconverted: false");
+	    }
+	}
+	break;
+
+    case JTYPE_STRING:	/* JSON element is a string - see struct json_string */
+	{
+	    struct json_string *item = &(node->element.string);
+
+	    /*
+	     * case: converted string
+	     */
+	    if (item->converted == true) {
+
+		/*
+		 * print string preamble
+		 */
+		fprint(stream, "\tlen{%s%s%s%s%s%s%s}: %ju\tvalue:\t",
+			       item->quote ? "q" : "",
+			       item->same ? "=" : "",
+			       item->has_nul ? "0" : "",
+			       item->slash ? "/" : "",
+			       item->posix_safe ? "P" : "",
+			       item->first_alphanum ? "a" : "",
+			       item->upper ? "U" : "",
+			       (uintmax_t)item->str_len);
+		(void) fprint_line_buf(stream, item->str, item->str_len, '"', '"');
+
+	    /*
+	     * case: not converted string
+	     */
+	    } else {
+		fprstr(stream, "\tconverted: false");
+	    }
+	}
+	break;
+
+    case JTYPE_BOOL:	/* JSON element is a boolean - see struct json_boolean */
+	{
+	    struct json_boolean *item = &(node->element.boolean);
+
+	    /*
+	     * case: converted boolean
+	     */
+	    if (item->converted == true) {
+
+		fprint(stream, "\tvalue: %s", booltostr(item->value));
+
+	    /*
+	     * case: not converted boolean
+	     */
+	    } else {
+		fprstr(stream, "\tconverted: false");
+	    }
+	}
+	break;
+
+    case JTYPE_NULL:	/* JSON element is a null - see struct json_null */
+	{
+	    struct json_null *item = &(node->element.null);
+
+	    /*
+	     * case: converted null
+	     */
+	    if (item->converted == true) {
+
+		fprstr(stream, "\tvalue: NULL");
+
+	    /*
+	     * case: not converted null
+	     */
+	    } else {
+		fprstr(stream, "\tconverted: false");
+	    }
+	}
+	break;
+
+    case JTYPE_MEMBER:	/* JSON element is a member */
+	{
+	    struct json_member *item = &(node->element.member);
+
+	    /*
+	     * case: converted member
+	     */
+	    if (item->converted == true) {
+
+		/*
+		 * print member name
+		 */
+		if (item->name != NULL) {
+		    enum element_type type = item->name->type;
+
+		    /*
+		     * case: name is JTYPE_STRING
+		     */
+		    if (type == JTYPE_STRING) {
+			struct json_string *item2 = &(item->name->element.string);
+
+			if (item2->converted == true) {
+			    fprstr(stream, "\tname: ");
+			    (void) fprint_line_buf(stream, item2->str, item2->str_len, '"', '"');
+			} else {
+			    fprstr(stream, "\tname converted: false");
+			}
+
+		    /*
+		     * case: name is NOT JTYPE_STRING
+		     */
+		    } else {
+			fprint(stream, "\tWarning: wrong name type: %s", json_element_type_name(item->name));
+		    }
+
+		/*
+		 * bogus name pointer
+		 */
+		} else {
+		    fprstr(stream, "\tWaring: name == NULL");
+		}
+
+	    /*
+	     * case: not converted member
+	     */
+	    } else {
+		fprstr(stream, "\tconverted: false");
+	    }
+	}
+	break;
+
+    case JTYPE_OBJECT:	/* JSON element is a { members } */
+	{
+	    struct json_object *item = &(node->element.object);
+
+	    /*
+	     * case: converted object
+	     */
+	    if (item->converted == true) {
+
+		fprint(stream, "\tlen: %d", item->len);
+		if (item->set == NULL) {
+		    fprstr(stream, "\tWarning: set == NULL");
+		}
+		if (item->s == NULL) {
+		    fprstr(stream, "\tWarning: s == NULL");
+		}
+
+	    /*
+	     * case: not converted object
+	     */
+	    } else {
+		fprstr(stream, "\tconverted: false");
+	    }
+	}
+	break;
+
+    case JTYPE_ARRAY:	/* JSON element is a [ elements ] */
+	{
+	    struct json_array *item = &(node->element.array);
+
+	    /*
+	     * case: converted object
+	     */
+	    if (item->converted == true) {
+
+		fprint(stream, "\tlen: %d", item->len);
+		if (item->set == NULL) {
+		    fprstr(stream, "\tWarning: set == NULL");
+		}
+		if (item->s == NULL) {
+		    fprstr(stream, "\tWarning: s == NULL");
+		}
+
+	    /*
+	     * case: not converted object
+	     */
+	    } else {
+		fprstr(stream, "\tconverted: false");
+	    }
+	}
+	break;
+
+    default:
+	fprint(stream, "\tunknown type: %d", node->type);
+	break;
+    }
+
+    /*
+     * print final newline
+     */
+    fprstr(stream, "\n");
+
+    /*
+     * stdarg variable argument list cleanup
+     */
+    va_end(ap2);
+    return;
+}
+
+
+/*
+ * json_tree_print - print lines for an entire JSON parse tree.
+ *
+ * This function uses the json_tree_walk() interface to walk
+ * the JSON parse tree and print lines about all tree nodes.
+ *
+ * If dbg_output_allowed == false, this function will not print.
+ *
+ * When dbg_level == JSON_DBG_FORCED, the printed prefix of:
+ *
+ *	JSON tree[%d]:
+ *
+ * is replaced with:
+ *
+ *	JSON tree node:
+ *
+ * given:
+ *	node	    pointer to a JSON parser tree node to free
+ *	max_depth   maximum tree depth to descend, or <0 ==> infinite depth
+ *			NOTE: Use JSON_INFINITE_DEPTH for infinite depth
+ *	...	extra args are ignored, required extra args:
+ *
+ *		stream	    stream to print on
+ *		dbg_level   print message if JSON_DBG_FORCED
+ *			    OR if <= json_verbosity_level
+ *
+ * Example use - free an entire JSON parse tree
+ *
+ *	json_tree_print(tree, JSON_DEFAULT_MAX_DEPTH, stderr, JSON_DBG_FORCED);
+ *	json_tree_print(tree, JSON_DEFAULT_MAX_DEPTH, stderr, JSON_DBG_MED);
+ *
+ * NOTE: This function will free the internals of a JSON parser tree node.
+ *	 It is up to the caller to free the top level struct json if needed.
+ *
+ * NOTE: If the pointer to allocated storage == NULL,
+ *	 this function does nothing.
+ *
+ * NOTE: This function does nothing if node == NULL.
+ *
+ * NOTE: This function does nothing if the node type is invalid.
+ */
+void
+json_tree_print(struct json *node, int max_depth, ...)
+{
+    va_list ap;		/* variable argument list */
+
+    /*
+     * firewall - nothing to do for a NULL node
+     */
+    if (node == NULL) {
+	return;
+    }
+
+    /*
+     * stdarg variable argument list setup
+     */
+    va_start(ap, max_depth);
+
+    /*
+     * free the JSON parse tree
+     */
+    vjson_tree_walk(node, max_depth, 0, vjson_fprint, ap);
+
+    /*
+     * stdarg variable argument list cleanup
+     */
+    va_end(ap);
+    return;
+}
+
+
+/*
+ * json_dbg_tree_print - print JSON tree if we are verbose enough
+ *
+ * This function behaves like json_dbg() in determining if a JSON debug message
+ * is printed.  To print a JSON debug message, dbg_output_allowed == true AND
+ * dbg_level <= json_verbosity_level or dbg_level == JSON_DBG_FORCED.
+ * When dbg_output_allowed == false, no debug output will be printed,
+ * even when dbg_level == JSON_DBG_FORCED.
+ *
+ * If dbg_output_allowed == false, this function will not print.
+ *
+ * When dbg_level == JSON_DBG_FORCED, the printed prefix of:
+ *
+ *	JSON tree[%d]:
+ *
+ * is replaced with:
+ *
+ *	JSON tree node:
+ *
+ * given:
+ *	node	    pointer to a JSON parser tree node to free
+ *	max_depth   maximum tree depth to descend, or <0 ==> infinite depth
+ *			NOTE: Use JSON_INFINITE_DEPTH for infinite depth
+ *	...	extra args are ignored, required extra args:
+ *
+ *		stream	    stream to print on
+ *		dbg_level   print message if JSON_DBG_FORCED
+ *			    OR if <= json_verbosity_level
+ *
+ * Example use - free an entire JSON parse tree
+ *
+ * When dbg_level == JSON_DBG_FORCED, the printed prefix of:
+ *
+ *	JSON tree[%d]:
+ *
+ * is replaced with:
+ *
+ *	JSON tree node:
+ *
+ * given:
+ *	dbg_level   print message if JSON_DBG_FORCED OR if >= verbosity level
+ *	name	    function name
+ *	node	    pointer to a JSON parser tree node to free
+ *	max_depth   maximum tree depth to descend, or <0 ==> infinite depth
+ *			NOTE: Use JSON_INFINITE_DEPTH for infinite depth
+ *	stream	    stream on which to print
+ *
+ * returns:
+ *	true ==> debug output was successful.
+ *	false ==> all debug output was disallowed or some/all output failed failed
+ */
+bool
+json_dbg_tree_print(int dbg_level, char const *name,
+		    struct json *tree, int max_depth, FILE *stream)
+{
+    int saved_errno = 0;	/* errno at function start */
+    bool allowed = false;	 /* assume debug message not allowed */
+    bool output_ok = true;	/* false ==> some debug output failed */
+
+    /*
+     * save errno so we can restore it before returning
+     */
+    saved_errno = errno;
+
+    /*
+     * firewall
+     */
+    if (name == NULL) {
+	name = "((NULL name))";
+	warn(__func__, "NULL name, forcing use of: %s", name);
+    }
+    if (tree == NULL) {
+	warn(__func__, "NULL tree, returning false");
+	return false;
+    }
+    if (stream == NULL) {
+	stream = stderr;
+	warn(__func__, "NULL stream, forcing use of stderr");
+    }
+
+    /*
+     * print the debug message if allowed and allowed by the verbosity level
+     */
+    if (dbg_output_allowed == true &&
+        (dbg_level == JSON_DBG_FORCED || dbg_level <= json_verbosity_level)) {
+	json_tree_print(tree, max_depth, stream, dbg_level);
+    }
+
+    /*
+     * if some output was NOT OK, indicate by setting allowed to false
+     */
+    if (output_ok == false) {
+	allowed = false;
+    }
+
+    /*
+     * restore previous errno value
+     */
+    errno = saved_errno;
+    return allowed;
 }
 
 
@@ -2036,7 +2811,7 @@ json_tree_walk(struct json *node, int max_depth, void (*vcallback)(struct json *
     /*
      * walk the tree according to max_depth
      */
-    vjson_tree_walk(node, max_depth, 0, ap, vcallback);
+    vjson_tree_walk(node, max_depth, 0, vcallback, ap);
 
     /*
      * stdarg variable argument list cleanup
@@ -2061,10 +2836,10 @@ json_tree_walk(struct json *node, int max_depth, void (*vcallback)(struct json *
  *
  * given:
  *	node	    pointer to a JSON parse tree
- *	vcallback   function to operate JSON parse tree node in va_list form
  *	max_depth   maximum tree depth to descend, or <0 ==> infinite depth
  *			NOTE: Use JSON_INFINITE_DEPTH for infinite depth
  *	depth	    current tree depth (0 ==> top of tree)
+ *	vcallback   function to operate JSON parse tree node in va_list form
  *	ap	    variable argument list
  *
  * The vcallback() function must NOT call va_arg() nor call va_end() on the
@@ -2084,7 +2859,7 @@ json_tree_walk(struct json *node, int max_depth, void (*vcallback)(struct json *
  * NOTE: This function warns but does not do anything if an arg is NULL.
  */
 void
-vjson_tree_walk(struct json *node, int max_depth, int depth, va_list ap, void (*vcallback)(struct json *, int, va_list))
+vjson_tree_walk(struct json *node, int max_depth, int depth, void (*vcallback)(struct json *, int, va_list), va_list ap)
 {
     int i;
 
@@ -2128,10 +2903,10 @@ vjson_tree_walk(struct json *node, int max_depth, int depth, va_list ap, void (*
 	    struct json_member *item = &(node->element.member);
 
 	    /* perform function operation on JSON member name (left branch) node */
-	    vjson_tree_walk(item->name, max_depth, depth+1, ap, vcallback);
+	    vjson_tree_walk(item->name, max_depth, depth+1, vcallback, ap);
 
 	    /* perform function operation on JSON member value (right branch) node */
-	    vjson_tree_walk(item->value, max_depth, depth+1, ap, vcallback);
+	    vjson_tree_walk(item->value, max_depth, depth+1, vcallback, ap);
 	}
 
 	/* finally perform function operation on the parent node */
@@ -2145,7 +2920,7 @@ vjson_tree_walk(struct json *node, int max_depth, int depth, va_list ap, void (*
 	    /* perform function operation on each object member in order */
 	    if (item->set != NULL) {
 		for (i=0; i < item->len; ++i) {
-		    vjson_tree_walk(item->set[i], max_depth, depth+1, ap, vcallback);
+		    vjson_tree_walk(item->set[i], max_depth, depth+1, vcallback, ap);
 		}
 	    }
 	}
@@ -2161,7 +2936,7 @@ vjson_tree_walk(struct json *node, int max_depth, int depth, va_list ap, void (*
 	    /* perform function operation on each object member in order */
 	    if (item->set != NULL) {
 		for (i=0; i < item->len; ++i) {
-		    vjson_tree_walk(item->set[i], max_depth, depth+1, ap, vcallback);
+		    vjson_tree_walk(item->set[i], max_depth, depth+1, vcallback, ap);
 		}
 	    }
 	}
@@ -2367,7 +3142,8 @@ json_conv_number(char const *ptr, size_t len)
      */
     item->number_len = find_text(item->as_str, item->as_str_len, &(item->first));
     if (item->number_len <= 0) {
-	dbg(DBG_HIGH, "%s: called with string containing all whitespace: <%s>", __func__, item->as_str);
+	dbg(DBG_HIGH, "in %s(): called with string containing all whitespace: <%s>",
+		      __func__, item->as_str);
 	return ret;
     }
 
@@ -3026,8 +3802,8 @@ json_conv_member(struct json *name, struct json *value)
     case JTYPE_MEMBER:
     case JTYPE_OBJECT:
     case JTYPE_ARRAY:
-	json_dbg(JSON_DBG_LOW, __func__, "%s: JSON name type: %s", __func__, json_element_type_name(name));
-	json_dbg(JSON_DBG_LOW, __func__, "%s: JSON value type: %s", __func__, json_element_type_name(value));
+	json_dbg(JSON_DBG_LOW, __func__, "JSON name type: %s", json_element_type_name(name));
+	json_dbg(JSON_DBG_LOW, __func__, "JSON value type: %s", json_element_type_name(value));
 	break;
     default:
 	warn(__func__, "expected JSON object, array, string, number, boolean or null, found type: %d", value->type);
@@ -3108,7 +3884,7 @@ json_create_object(void)
     item->set = dyn_array_addr(item->s, struct json *, 0);
     item->converted = true;
 
-    json_dbg(JSON_DBG_LOW, __func__, "%s: JSON return type: %s", __func__, json_element_type_name(ret));
+    json_dbg(JSON_DBG_LOW, __func__, "JSON return type: %s", json_element_type_name(ret));
 
     /*
      * return the JSON parse tree element
@@ -3172,8 +3948,8 @@ json_object_add_member(struct json *node, struct json *member)
     /*
      * point to object
      */
-    json_dbg(JSON_DBG_LOW, __func__, "%s: JSON object type: %s", __func__, json_element_type_name(node));
-    json_dbg(JSON_DBG_LOW, __func__, "%s: JSON member type: %s", __func__, json_element_type_name(member));
+    json_dbg(JSON_DBG_LOW, __func__, "JSON object type: %s", json_element_type_name(node));
+    json_dbg(JSON_DBG_LOW, __func__, "JSON member type: %s", json_element_type_name(member));
     item = &(node->element.object);
     if (item->s == NULL) {
 	warn(__func__, "item->s is NULL");
@@ -3190,7 +3966,8 @@ json_object_add_member(struct json *node, struct json *member)
      */
     moved = dyn_array_append_value(item->s, member);
     if (moved == true) {
-	dbg(DBG_HIGH, "in %s, dyn_array_append_value moved data", __func__);
+	dbg(DBG_HIGH, "in %s(): dyn_array_append_value moved data",
+		      __func__);
     }
 
     /*
@@ -3253,10 +4030,10 @@ json_object_append_members(struct json *node, struct dyn_array *members)
 	warn(__func__, "dynamic array data is NULL");
 	return false;
     }
-    json_dbg(JSON_DBG_LOW, __func__, "%s: JSON object type: %s", __func__, json_element_type_name(node));
+    json_dbg(JSON_DBG_LOW, __func__, "JSON object type: %s", json_element_type_name(node));
     for (i=0; i < dyn_array_tell(members); ++i) {
-	json_dbg(JSON_DBG_LOW, __func__, "%s: JSON members[%d] type: %s", __func__,
-				 i, json_element_type_name(dyn_array_value(members, struct json *, i)));
+	json_dbg(JSON_DBG_LOW, __func__, "JSON members[%d] type: %s",
+				         i, json_element_type_name(dyn_array_value(members, struct json *, i)));
 	if (dyn_array_value(members, struct json *, i)->type != JTYPE_MEMBER) {
 	    warn(__func__, "members[%d] node type expected to be JTYPE_MEMBER: %d found type: %d",
 			   i, JTYPE_MEMBER, dyn_array_value(members, struct json *, i)->type);
@@ -3285,7 +4062,8 @@ json_object_append_members(struct json *node, struct dyn_array *members)
      */
     moved = dyn_array_concat_array(item->s, members);
     if (moved == true) {
-	dbg(DBG_HIGH, "in %s, dyn_array_concat_array moved data", __func__);
+	dbg(DBG_HIGH, "in %s(): dyn_array_concat_array moved data",
+		      __func__);
     }
 
     /*
@@ -3351,7 +4129,7 @@ json_create_array(void)
     item->set = dyn_array_addr(item->s, struct json *, 0);
     item->converted = true;
 
-    json_dbg(JSON_DBG_LOW, __func__, "%s: JSON return type: %s", __func__, json_element_type_name(ret));
+    json_dbg(JSON_DBG_LOW, __func__, "JSON return type: %s", json_element_type_name(ret));
 
     /*
      * return the JSON parse tree element
@@ -3440,7 +4218,8 @@ json_array_add_value(struct json *node, struct json *value)
      */
     moved = dyn_array_append_value(item->s, value);
     if (moved == true) {
-	dbg(DBG_HIGH, "in %s, dyn_array_append_value moved data", __func__);
+	dbg(DBG_HIGH, "in %s(): dyn_array_append_value moved data",
+		      __func__);
     }
 
     /*
@@ -3505,8 +4284,8 @@ json_array_append_values(struct json *node, struct dyn_array *values)
     }
     json_dbg(JSON_DBG_LOW, __func__, "JSON object type: %s", json_element_type_name(node));
     for (i=0; i < dyn_array_tell(values); ++i) {
-	json_dbg(JSON_DBG_LOW, __func__, "%s: JSON values[%d] type: %s", __func__,
-				 i, json_element_type_name(dyn_array_value(values, struct json *, i)));
+	json_dbg(JSON_DBG_LOW, __func__, "JSON values[%d] type: %s",
+			       i, json_element_type_name(dyn_array_value(values, struct json *, i)));
 	switch (dyn_array_value(values, struct json *, i)->type) {
 	case JTYPE_NUMBER:
 	case JTYPE_STRING:
@@ -3543,7 +4322,8 @@ json_array_append_values(struct json *node, struct dyn_array *values)
      */
     moved = dyn_array_concat_array(item->s, values);
     if (moved == true) {
-	dbg(DBG_HIGH, "in %s, dyn_array_concat_array moved data", __func__);
+	dbg(DBG_HIGH, "in %s(): dyn_array_concat_array moved data",
+		      __func__);
     }
 
     /*

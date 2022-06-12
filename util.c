@@ -2962,7 +2962,7 @@ posix_safe_chk(char const *str, size_t len, bool *slash, bool *posix_safe, bool 
 	     * case: character is alphanumeric
 	     */
 	    } else if (isalnum(str[i])) {
-		if (*upper == false) {
+		if (*upper == false && isupper(str[i])) {
 		    dbg(DBG_VVVHIGH, "posix_safe_chk(): found first UPPER case at str[%ju]: 0x%02x",
 				     (uintmax_t)i, (unsigned int)str[i]);
 		    *upper = true;
@@ -3129,7 +3129,9 @@ fprint_newline(FILE *stream, bool output_newline)
     }
 }
 
-/* fprint_str
+
+/*
+ * fprint_str - print a string with a few indistinct chars \-escaped on a stream
  *
  * Print string str to a FILE * with indistinct chars represented in a way that
  * can be seen
@@ -3138,6 +3140,10 @@ fprint_newline(FILE *stream, bool output_newline)
  *	stream	- FILE * to write to
  *	str	- the string to print
  *	len	- the length of the string
+ *
+ * returns:
+ *	true ==> no write errors occurred,
+ *	false ==> at least one write error occurred
  *
  * NOTE: If len == USE_STRLEN (defined in util.h) then strlen() is used to
  * determine the length. If >= 0 it is the caller's responsibility to be
@@ -3169,7 +3175,7 @@ fprint_str(FILE *stream, char const *str, ssize_t len)
 {
     ssize_t i = 0;	    /* to iterate through the characters one by one */
     int ret = 0;	    /* for return value of fprintf */
-    int saved_errno = 0;    /* for printing warning at end of function if necessary */
+    int delayed_errno = 0;  /* for printing warning at end of function if necessary */
     bool success = true;    /* if no errors (assume no errors at start) */
 
     /*
@@ -3187,8 +3193,9 @@ fprint_str(FILE *stream, char const *str, ssize_t len)
      * if len == USE_STRLEN ((ssize_t)-1) we use strlen() to make it easier for
      * the cases where the caller does not expect NUL bytes to be in the string.
      */
-    if (len == USE_STRLEN)
+    if (len == USE_STRLEN) {
 	len = strlen(str);
+    }
 
     /*
      * Now that we have the length of the string (either because the caller did
@@ -3224,25 +3231,31 @@ fprint_str(FILE *stream, char const *str, ssize_t len)
 		break;
 	}
 	if (ret <= 0) {
-	    saved_errno = errno;
+	    delayed_errno = errno;
 	    success = false;
 	}
     }
 
-    if (saved_errno != 0) {
-	warnp(__func__, "fprintf returned error: %s", strerror(saved_errno));
+    /*
+     * if we had an print error, report the last errno that was observed
+     */
+    if (delayed_errno != 0) {
+	warnp(__func__, "fprintf returned error: %s", strerror(delayed_errno));
     }
 
     return success;
 }
 
-/* print_str	- wrapper to fprint_str() that writes to stdout
+
+/*
+ * print_str - print a buffer with a few indistinct chars \-escaped to stdout
+ *
+ * If len is USE_STRLEN, then str is assumed to be a NUL terminated string
+ * and the strlen() function will be used to determine the length.
  *
  * given:
- *
  *	str	- the string to print
- *	len	- the length of the string (-1 == use strlen(), >= 0 is the
- *		  exact length)
+ *	len	- the length of the string or USE_STRLEN
  *
  * NOTE: This just returns fprint_str(). We let that function do all the checks.
  */
@@ -3251,6 +3264,449 @@ print_str(char const *str, ssize_t len)
 {
     return fprint_str(stdout, str, len);
 }
+
+
+/*
+ * fprint_line_buf - print a buffer as a single line string on a stream
+ *
+ * Unlike fprint_str(), this function will print the buffer as a
+ * single line, possibly enclosed in starting and ending characters.
+ * Non-ASCII characters, non-printable ASCII characters, \-characters,
+ * start and end characters (if non-NUL) will all be printed as \x99
+ * where 99 is the hex value, or \C where C is a C-style \-character.
+ *
+ * The line printed will be printed as a single line, without a final
+ * newline.
+ *
+ * When stream == NULL, no output is performed.  This is useful to
+ * determine the length of the single line that would be printed.
+ * This length includes any non-0 start and end characters.
+ *
+ * The stream is flushed before returning.
+ *
+ * The errno value is restore to its original state before returning.
+ *
+ * Examples:
+ *	line_len = fprint_line_buf(stderr, buf, len, '<', '>');
+ *	line_len = fprint_line_buf(stderr, buf, len, '"', '"');
+ *	line_len = fprint_line_buf(stderr, buf, len, 0, '\n');
+ *	line_len = fprint_line_buf(stderr, buf, len, 0, 0);
+ *	line_len = fprint_line_buf(NULL, buf, len, 0, 0);
+ *
+ * given:
+ *	stream	open stread to write to, or NULL ==> just return length
+ *	buf	buffer to print
+ *	len	the length of the buffer
+ *	start	print start character before line, if != 0,
+ *		   any start character found in buf will be \-escaped
+ *	end	print end character after line, if != 0,
+ *		   any start character found in buf will be \-escaped
+ *
+ * returns:
+ *	length of line (even if MULL stream), or
+ *	EOF ==> write error or NULL buf
+ */
+ssize_t
+fprint_line_buf(FILE *stream, void *buf, size_t len, int start, int end)
+{
+    size_t count = 0;		/* number of characters in line */
+    int delayed_errno = 0;	/* for printing warning at end of function if necessary */
+    bool success = true;	/* if no errors (assume no errors at start) */
+    int saved_errno = 0;	/* saved errno to restore before returning */
+    int ret;			/* libc function return */
+    int c;			/* a byte in buf to print */
+    size_t i;
+
+    /*
+     * save errno
+     */
+    saved_errno = errno;
+
+    /*
+     * firewall
+     */
+    if (buf == NULL) {
+	warn(__func__, "buf is NULL");
+	errno = saved_errno;
+	return EOF;
+    }
+
+    /*
+     * print start if non-NUL on non-NULL stream
+     */
+    if (start != 0) {
+
+	/* print start if non-NULL stream */
+	if (stream != NULL) {
+	    errno = 0;	/* clear errno */
+	    ret = fputc(start, stream);
+	    if (ret == EOF) {
+		delayed_errno = errno;
+		success = false;
+	    }
+	}
+
+	/* count the character printed */
+	++count;
+    }
+
+    /*
+     * print each byte of buf
+     */
+    for (i=0; i < len; ++i) {
+
+	/*
+	 * print based on the byte value
+	 */
+	c = (int)(((uint8_t *)buf)[i]);
+
+	/*
+	 * case: character is non-NUL start or non-NUL end or non-ASCII character
+	 */
+	if ((start != 0 && c == start) || (end != 0 && c == end) || ! isascii(c)) {
+
+	    /* print character as \x99 if non-NULL stream to avoid start/end confusion */
+	    if (stream != NULL) {
+		errno = 0;  /* clear errno */
+		ret = fprintf(stream, "\\x%02x", c);
+		if (ret != 2) {
+		    delayed_errno = errno;
+		    success = false;
+		}
+	    }
+
+	    /* count the 4 characters */
+	    count += 4;
+
+	/*
+	 * case: ASCII character
+	 */
+	} else {
+
+	    /*
+	     * print ASCII character based on character value
+	     */
+	    switch(c) {
+
+	    case 0:	/* NUL */
+
+		/* print \n is non-NULL stream */
+		if (stream != NULL) {
+		    errno = 0;	/* clear errno */
+		    ret = fprintf(stream, "\\0");
+		    if (ret != 2) {
+			delayed_errno = errno;
+			success = false;
+		    }
+		}
+
+		/* count the 2 characters */
+		count += 2;
+		break;
+
+	    case '\a':	/* alert (beep, bell) */
+
+		/* print \n is non-NULL stream */
+		if (stream != NULL) {
+		    errno = 0;	/* clear errno */
+		    ret = fprintf(stream, "\\a");
+		    if (ret != 2) {
+			delayed_errno = errno;
+			success = false;
+		    }
+		}
+
+		/* count the 2 characters */
+		count += 2;
+		break;
+
+	    case '\b':	/* backspace */
+
+		/* print \n is non-NULL stream */
+		if (stream != NULL) {
+		    errno = 0;	/* clear errno */
+		    ret = fprintf(stream, "\\b");
+		    if (ret != 2) {
+			delayed_errno = errno;
+			success = false;
+		    }
+		}
+
+		/* count the 2 characters */
+		count += 2;
+		break;
+
+	    case 0x1b:	/* escape */
+
+		/* print \n is non-NULL stream */
+		if (stream != NULL) {
+		    errno = 0;	/* clear errno */
+		    ret = fprintf(stream, "\\e");
+		    if (ret != 2) {
+			delayed_errno = errno;
+			success = false;
+		    }
+		}
+
+		/* count the 2 characters */
+		count += 2;
+		break;
+
+	    case '\f':	/* form feed page break */
+
+		/* print \n is non-NULL stream */
+		if (stream != NULL) {
+		    errno = 0;	/* clear errno */
+		    ret = fprintf(stream, "\\f");
+		    if (ret != 2) {
+			delayed_errno = errno;
+			success = false;
+		    }
+		}
+
+		/* count the 2 characters */
+		count += 2;
+		break;
+
+	    case '\n':	/* newline */
+
+		/* print \n is non-NULL stream */
+		if (stream != NULL) {
+		    errno = 0;	/* clear errno */
+		    ret = fprintf(stream, "\\n");
+		    if (ret != 2) {
+			delayed_errno = errno;
+			success = false;
+		    }
+		}
+
+		/* count the 2 characters */
+		count += 2;
+		break;
+
+	    case '\r':	/* carriage return */
+
+		/* print \n is non-NULL stream */
+		if (stream != NULL) {
+		    errno = 0;	/* clear errno */
+		    ret = fprintf(stream, "\\r");
+		    if (ret != 2) {
+			delayed_errno = errno;
+			success = false;
+		    }
+		}
+
+		/* count the 2 characters */
+		count += 2;
+		break;
+
+	    case '\t':	/* horizontal tab */
+
+		/* print \n is non-NULL stream */
+		if (stream != NULL) {
+		    errno = 0;	/* clear errno */
+		    ret = fprintf(stream, "\\t");
+		    if (ret != 2) {
+			delayed_errno = errno;
+			success = false;
+		    }
+		}
+
+		/* count the 2 characters */
+		count += 2;
+		break;
+
+	    case '\v':	/* vertical tab */
+
+		/* print \n is non-NULL stream */
+		if (stream != NULL) {
+		    errno = 0;	/* clear errno */
+		    ret = fprintf(stream, "\\v");
+		    if (ret != 2) {
+			delayed_errno = errno;
+			success = false;
+		    }
+		}
+
+		/* count the 2 characters */
+		count += 2;
+		break;
+
+	    case '\\':	/* backslash */
+
+		/* print \n is non-NULL stream */
+		if (stream != NULL) {
+		    errno = 0;	/* clear errno */
+		    ret = fprintf(stream, "\\\\");
+		    if (ret != 2) {
+			delayed_errno = errno;
+			success = false;
+		    }
+		}
+
+		/* count the 2 characters */
+		count += 2;
+		break;
+
+	    default:	/* other characters */
+
+		/*
+		 * case: ASCII printable character
+		 */
+		if (isprint(c)) {
+
+		    /* print character if non-NULL stream */
+		    if (stream != NULL) {
+			errno = 0;	/* clear errno */
+			ret = fputc(c, stream);
+			if (ret == EOF) {
+			    delayed_errno = errno;
+			    success = false;
+			}
+		    }
+
+		    /* count the character printed */
+		    ++count;
+
+		/*
+		 * case: ASCII non-printable character
+		 */
+		} else {
+
+		    /* print character as \x99 if non-NULL stream */
+		    if (stream != NULL) {
+			errno = 0;  /* clear errno */
+			ret = fprintf(stream, "\\x%02x", c);
+			if (ret != 4) {
+			    delayed_errno = errno;
+			    success = false;
+			}
+		    }
+
+		    /* count the 4 characters */
+		    count += 4;
+		}
+		break;
+	    }
+	}
+    }
+
+    /*
+     * print end if non-NUL on non-NULL stream
+     */
+    if (end != 0) {
+
+	/* print end if non-NULL stream */
+	if (stream != NULL) {
+	    errno = 0;	/* clear errno */
+	    ret = fputc(end, stream);
+	    if (ret == EOF) {
+		delayed_errno = errno;
+		success = false;
+	    }
+	}
+
+	/* count the character printed */
+	++count;
+    }
+
+    /*
+     * flush stream if non-NULL stream
+     */
+    if (stream != NULL) {
+	errno = 0;	/* clear errno */
+	ret = fflush(stream);
+	if (ret == EOF) {
+	    delayed_errno = errno;
+	    success = false;
+	}
+    }
+
+    /*
+     * if we had an print error, report the last errno that was observed
+     */
+    if (delayed_errno != 0) {
+	warnp(__func__, "last write errno: %d (%s)", delayed_errno, strerror(delayed_errno));
+    }
+
+    /*
+     * restore errno
+     */
+    errno = saved_errno;
+
+    /*
+     * return length or -1 if write error
+     */
+    if (success == false) {
+	return EOF;
+    }
+    return count;
+}
+
+
+/*
+ * fprint_line_str - print a string as a single line string on a stream
+ *
+ * This is a simplified interface for json_conv_int().  See that function for details.
+ *
+ * given:
+ *	stream	open stread to write to, or NULL ==> just return length
+ *	str	string to print
+ *	retlen	address of where to store length of str, if retlen != NULL
+ *	start	print start character before line, if != 0,
+ *		   any start character found in buf will be \-escaped
+ *	end	print end character after line, if != 0,
+ *		   any start character found in buf will be \-escaped
+ *
+ * returns:
+ *	length of line (even if MULL stream), or
+ *	EOF ==> write error or NULL buf
+ */
+ssize_t
+fprint_line_str(FILE *stream, char *str, size_t *retlen, int start, int end)
+{
+    size_t count = 0;		/* number of characters in line */
+    int saved_errno = 0;	/* saved errno to restore before returning */
+    size_t len = 0;		/* string length */
+
+    /*
+     * save errno
+     */
+    saved_errno = errno;
+
+    /*
+     * firewall
+     */
+    if (str == NULL) {
+	warn(__func__, "str is NULL");
+	errno = saved_errno;
+	return EOF;
+    }
+    len = strlen(str);
+
+    /*
+     * convert to fprint_line_buf() call
+     */
+    count = fprint_line_buf(stream, str, len, start, end);
+
+    /*
+     * save length if allowed
+     */
+    if (retlen != NULL) {
+	*retlen = len;
+    }
+
+    /*
+     * restore errno
+     */
+    errno = saved_errno;
+
+    /*
+     * return the JSON parse tree element
+     */
+    return count;
+}
+
 
 /*
  * find_text - find ASCII text within a field of whitespace and trailing NUL bytes

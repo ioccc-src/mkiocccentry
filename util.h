@@ -223,6 +223,8 @@ extern void clearerr_or_fclose(char const *filename, FILE *file);
 extern void fprint_newline(FILE *stream, bool output_newline);
 extern bool fprint_str(FILE *stream, char const *str, ssize_t len);
 extern bool print_str(char const *str, ssize_t len);
+extern ssize_t fprint_line_buf(FILE *stream, void *buf, size_t len, int start, int end);
+extern ssize_t fprint_line_str(FILE *stream, char *str, size_t *retlen, int start, int end);
 
 
 /* find non-whitespace text */
