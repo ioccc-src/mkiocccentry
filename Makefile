@@ -742,7 +742,7 @@ reset_min_timestamp: reset_tstamp.sh
 # perform all of the mkiocccentry repo required tests
 #
 test ioccc_test: ioccc_test.sh iocccsize_test.sh dbg mkiocccentry_test.sh jstr_test.sh \
-		 jnum_chk dyn_test txzchk_test.sh Makefile
+		 jnum_chk dyn_test txzchk_test.sh jparse Makefile
 	./ioccc_test.sh
 
 hostchk bug-report: hostchk.sh

@@ -114,6 +114,9 @@ int const hexval[BYTE_VALUES] = {
  *      allocated basename
  *
  * This function does not return on error.
+ *
+ * NOTE: It is the caller's responsibility to free the returned string when it
+ * is no longer needed.
  */
 char *
 base_name(char const *path)
@@ -578,6 +581,9 @@ file_size(char const *path)
  * returns:
  *	allocated shell command line, or
  *	NULL ==> error
+ *
+ * NOTE: It is the caller's responsibility to free the returned string when it
+ * is no longer needed.
  */
 char *
 cmdprintf(char const *fmt, ...)
@@ -641,6 +647,10 @@ cmdprintf(char const *fmt, ...)
  *		https://github.com/ioccc-src/mkiocccentry/issues/11
  *
  *	 and this function code was written by him.  Thank you Ilya Kurdyukov!
+ *
+ *
+ * NOTE: It is the caller's responsibility to free the returned string when it
+ * is no longer needed.
  */
 char *
 vcmdprintf(char const *fmt, va_list ap)
@@ -1660,6 +1670,9 @@ readline(char **linep, FILE * stream)
  *      or NULL ==> EOF
  *
  * This function does not return on error.
+ *
+ * NOTE: It is the caller's responsibility to free the returned string when it
+ * is no longer needed.
  */
 char *
 readline_dup(char **linep, bool strip, size_t *lenp, FILE *stream)
@@ -1730,7 +1743,7 @@ readline_dup(char **linep, bool strip, size_t *lenp, FILE *stream)
 
 
 /*
- * find_utils - find tar, cp, ls, txzchk and fnamchk utilities
+ * find_utils - find tar, cp, ls, txzchk and fnamchk, jinfochk and jauthchk utilities
  *
  * given:
  *
@@ -1748,6 +1761,9 @@ readline_dup(char **linep, bool strip, size_t *lenp, FILE *stream)
  *	jinfochk	    - if -j jinfochk was used and jinfochk != NULL set *jinfochk to path
  *	jauthchk_flag_used  - true ==> -J jauthchk was used	    -
  *	jauthchk	    - if -J jauthchk was used and jauthchk != NULL set *jauthchk to path
+ *
+ * XXX This function should probably be updated to search for at least jparse as
+ * well if not other utils too.
  */
 void
 find_utils(bool tar_flag_used, char **tar, bool cp_flag_used, char **cp, bool ls_flag_used, char **ls,
@@ -1891,6 +1907,8 @@ round_to_multiple(off_t num, off_t multiple)
  * amount of data read from stream.  This is also why the function
  * returns a pointer to void.
  *
+ * NOTE: It is the caller's responsibility to free the returned string when it
+ * is no longer needed.
  */
 void *
 read_all(FILE *stream, size_t *psize)

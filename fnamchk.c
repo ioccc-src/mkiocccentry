@@ -79,7 +79,7 @@ main(int argc, char *argv[])
      * parse args
      */
     program = argv[0];
-    while ((i = getopt(argc, argv, "hv:qVtquE:")) != -1) {
+    while ((i = getopt(argc, argv, "hv:qVtquE:e")) != -1) {
 	switch (i) {
 	case 'h':		/* -h - print help to stderr and exit 0 */
 	    usage(1, "-h help mode", program); /*ooo*/
@@ -111,6 +111,10 @@ main(int argc, char *argv[])
 	    break;
 	case 'E': /* force extension check to be optarg instead of "txz": used for test suite for txzchk */
 	    ext = optarg;
+	    break;
+	case 'e': /* suppress error messages */
+	    msg_warn_silent = true;
+	    err_output_allowed = false;
 	    break;
 	default:
 	    usage(1, "invalid -flag", program); /*ooo*/

@@ -45,7 +45,7 @@ main(int argc, char **argv)
      * parse args
      */
     program = argv[0];
-    while ((i = getopt(argc, argv, "hv:qVF:t:TE:")) != -1) {
+    while ((i = getopt(argc, argv, "hv:qVF:t:TE:e")) != -1) {
 	switch (i) {
 	case 'h':		/* -h - print help to stderr and exit 3 */
 	    usage(2, "-h help mode", program); /*ooo*/
@@ -83,6 +83,12 @@ main(int argc, char **argv)
 	    break;
 	case 'E':
 	    ext = optarg;
+	    break;
+	case 'e': /* suppress error messages */
+	    quiet = true;
+	    msg_warn_silent = true;
+	    err_output_allowed = false;
+	    suppress_error_messages = true;
 	    break;
 	default:
 	    usage(2, "invalid -flag", program); /*ooo*/
@@ -1157,7 +1163,11 @@ check_tarball(char const *tar, char const *fnamchk)
      * execute the fnamchk command
      */
     errno = 0;			/* pre-clear errno for errp() */
-    exit_code = shell_cmd(__func__, true, "% -E % -- %", fnamchk, ext, txzpath);
+    if (suppress_error_messages) {
+	exit_code = shell_cmd(__func__, true, "% -E % -e -- %", fnamchk, ext, txzpath);
+    } else {
+	exit_code = shell_cmd(__func__, true, "% -E % -- %", fnamchk, ext, txzpath);
+    }
     if (exit_code != 0) {
 	warn("txzchk", "%s: %s %s failed with exit code: %d", txzpath, fnamchk, txzpath, WEXITSTATUS(exit_code));
 	++txz_info.total_issues;

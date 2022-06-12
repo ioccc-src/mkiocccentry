@@ -1,8 +1,8 @@
-.TH txzchk 1 "04 April 2022" "txzchk" "IOCCC tools"
+.TH txzchk 1 "12 June 2022" "txzchk" "IOCCC tools"
 .SH NAME
 txzchk \- sanity checker tool used on IOCCC compressed tarballs
 .SH SYNOPSIS
-\fBtxzchk\fP [\-h] [\-v level] [\-q] [\-V] [\-t tar] [\-F fnamchk] [\-T] [\-E ext] txzpath
+\fBtxzchk\fP [\-h] [\-v level] [\-q] [\-V] [\-t tar] [\-F fnamchk] [\-T] [\-E ext] [\-e] txzpath
 .SH DESCRIPTION
 \fBtxzchk\fP runs a series of sanity tests on IOCCC compressed tarballs.
 It is invoked by \fBmkiocccentry(1)\fP after the tarball is formed, reporting any issues found and exiting the program accordingly; if \fBtxzchk\fP does not return 0 \fBmkiocccentry\fP will exit with an error.
@@ -40,6 +40,9 @@ Assume txzpath is a text file; use \fBfopen(3)\fP and \fBfclose(3)\fP instead of
 \fB\-E\fP
 Change extension for \fBfnamchk(1)\fP to validate (don't include the dot).
 This is used in conjunction with \fb\-T\fP above for \fBTESTING\fP purposes only!
+.PP
+\fB\-e\fP
+Suppress error messages.
 .SH EXIT STATUS
 .PP
 An exit code of 0 indicates there were no issues found in the tarball.
@@ -62,11 +65,24 @@ Header file for the \fBtxzchk\fP tool.
 .RS
 Header file with limits related to the IOCCC.
 .RE
+\fItxzchk_test.sh\fP
+.RS
+Script that tests \fBtxzchk\fP with the files under \fItest_txzchk/bad\fP and \fItest_txzchk/good\fP.
+.RE
+\fItest_txzchk/bad\fP
+.RS
+Text files that must fail \fBtxzchk\fP when checked via the \fBtxzchk_test.sh\fP script.
+.RE
+\fItest_txzchk/good\fP
+.RS
+Text files that must pass \fBtxzchk\fP when checked via the \fBtxzchk_test.sh\fP script.
+.RE
 .SH BUGS
 .PP
 Cody Boone Ferguson wrote it! :)
 .PP
-On a more serious note, if you have an issue with the tool you can report it at \fI\<https://github.com/ioccc-src/mkiocccentry/issues\>\fP.
+On a more serious note, if you have an issue with the tool please report it at the GitHub issues page.
+You can find it at \fI\<https://github.com/ioccc-src/mkiocccentry/issues\>\fP.
 If you would please mention \fB@xexyl\fP as part of the report that would be appreciated.
 .SH EXAMPLES
 .PP
