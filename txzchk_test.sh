@@ -59,7 +59,7 @@ while getopts :hv:D:t:d:T:F: flag; do
 	;;
     F) FNAMCHK="$OPTARG";
 	;;
-    T) TAR="OPTARG";
+    T) TAR="$OPTARG";
 	;;
     \?) echo "$0: ERROR: invalid option: -$OPTARG" 1>&2
        exit 3
