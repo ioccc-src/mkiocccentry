@@ -227,7 +227,7 @@ TEST_TARGETS= dbg utf8_test dyn_test
 OBJFILES= dbg.o util.o mkiocccentry.o iocccsize.o fnamchk.o txzchk.o jauthchk.o jinfochk.o \
 	json_parse.o jstrencode.o jstrdecode.o rule_count.o location.o sanity.o utf8_test.o verge.o \
 	dyn_array.o dyn_test.o json_chk.o json_entry.o dbg_test.o jnum_chk.o jnum_gen.o jnum_test.o \
-	json_util.o
+	json_util.o jparse_main.o
 LESS_PICKY_CSRC= utf8_posix_map.c
 LESS_PICKY_OBJ= utf8_posix_map.o
 GENERATED_CSRC= jparse.c jparse.tab.c
@@ -244,7 +244,7 @@ ALL_CSRC= ${LESS_PICKY_CSRC} ${GENERATED_CSRC} ${SRCFILES}
 H_FILES= dbg.h jauthchk.h jinfochk.h json_parse.h jstrdecode.h jstrencode.h limit_ioccc.h \
 	mkiocccentry.h txzchk.h util.h location.h utf8_posix_map.h jparse.h \
 	verge.h sorry.tm.ca.h dyn_array.h dyn_test.h json_entry.h json_util.h jnum_chk.h \
-	jnum_gen.h
+	jnum_gen.h jparse_main.h
 # This is a simpler way to do:
 #
 #   DSYMDIRS = $(patsubst %,%.dSYM,$(TARGETS))
@@ -474,10 +474,13 @@ json_entry.o: json_entry.c Makefile
 jparse.tab.o: jparse.tab.c Makefile
 	${CC} ${CFLAGS} -Wno-unused-function -Wno-unneeded-internal-declaration jparse.tab.c -c
 
+jparse_main.o: jparse_main.c Makefile
+	${CC} ${CFLAGS} jparse_main.c -c
+
 jparse: jparse.o jparse.tab.o util.o dyn_array.o dbg.o sanity.o json_parse.o json_entry.o json_chk.o \
-	json_util.o utf8_posix_map.o location.o Makefile
+	json_util.o utf8_posix_map.o location.o jparse_main.o Makefile
 	${CC} ${CFLAGS} jparse.o jparse.tab.o util.o dyn_array.o dbg.o sanity.o \
-	    json_parse.o json_entry.o json_chk.o json_util.o utf8_posix_map.o location.o -o $@
+	    json_parse.o json_entry.o json_chk.o json_util.o utf8_posix_map.o location.o jparse_main.o -o $@
 
 utf8_test.o: utf8_test.c utf8_posix_map.h Makefile
 	${CC} ${CFLAGS} utf8_test.c -c
@@ -892,3 +895,6 @@ jnum_gen.o: jnum_gen.c jnum_gen.h dbg.h util.h dyn_array.h json_parse.h \
 jnum_test.o: jnum_test.c json_parse.h util.h dyn_array.h dbg.h
 json_util.o: json_util.c dbg.h json_parse.h util.h dyn_array.h \
   json_util.h
+jparse_main.o: jparse_main.c jparse_main.h dbg.h util.h dyn_array.h \
+  jparse.h json_parse.h sanity.h location.h utf8_posix_map.h \
+  limit_ioccc.h version.h json_chk.h json_util.h jparse.tab.h

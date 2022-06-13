@@ -1,6 +1,6 @@
 /* vim: set tabstop=8 softtabstop=4 shiftwidth=4 noexpandtab : */
 /*
- * jparse - tool that parses a block of JSON input
+ * jparse - JSON parser
  *
  * "Because sometimes even the IOCCC Judges need some help." :-)
  *
@@ -59,27 +59,6 @@
  */
 #include "jparse.tab.h"
 
-/*
- * usage message
- *
- * Use the usage() function to print the usage_msg([0-9]?)+ strings.
- */
-static const char * const usage_msg =
-    "usage: %s [-h] [-v level] [-J level] [-q] [-V] [-s string] [file ...]\n"
-    "\n"
-    "\t-h\t\tprint help message and exit 0\n"
-    "\t-v level\tset verbosity level (def level: %d)\n"
-    "\t-J level\tset JSON verbosity level (def level: %d)\n"
-    "\t\t\tNOTE: You must specify this option before -s as -s is processed immediately\n"
-    "\t-q\t\tquiet mode: silence msg(), warn(), warnp() if -v 0 (def: not quiet)\n"
-    "\t-V\t\tprint version string and exit 0\n"
-    "\t-s\t\tread arg as a string\n"
-    "\n"
-    "\t[file]\t\tread and parse file\n"
-    "\t\t\tNOTE: - means read from stdin\n"
-    "\n"
-    "jparse version: %s\n";
-
 
 /*
  * globals
@@ -103,7 +82,6 @@ extern int ugly_lex(void);
  * function prototypes for jparse.y
  */
 extern void ugly_error(struct json *node, char const *format, ...);
-static void usage(int exitcode, char const *name, char const *str) __attribute__((noreturn));
 
 /*
  * function prototypes for jparse.l
