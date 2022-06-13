@@ -100,7 +100,7 @@ if [[ ! -e $JCHKTOOL ]]; then
     exit 4
 fi
 if [[ ! -f $JCHKTOOL ]]; then
-    echo "$0: ERROR: jchktool is not a file: $JCHKTOOL" 1>&2
+    echo "$0: ERROR: jchktool is not a regular file: $JCHKTOOL" 1>&2
     exit 4
 fi
 if [[ ! -x $JCHKTOOL ]]; then
@@ -112,7 +112,7 @@ if [[ ! -e $FILE_JSON ]]; then
     exit 2
 fi
 if [[ ! -f $FILE_JSON ]]; then
-    echo "$0: ERROR: file.json is not a file: $FILE_JSON" 1>&2
+    echo "$0: ERROR: file.json is not a regular file: $FILE_JSON" 1>&2
     exit 2
 fi
 if [[ ! -r $FILE_JSON ]]; then
@@ -125,7 +125,7 @@ if [[ ! -e $CODE_JSON ]]; then
     exit 3
 fi
 if [[ ! -f $CODE_JSON ]]; then
-    echo "$0: ERROR: file.json.code is not a file: $CODE_JSON" 1>&2
+    echo "$0: ERROR: file.json.code is not a regular file: $CODE_JSON" 1>&2
     exit 3
 fi
 if [[ ! -r $CODE_JSON ]]; then
@@ -145,7 +145,7 @@ if [[ $status -ne 0 || ! -e $TMPFILE ]]; then
 fi
 trap "rm -f \$TMPFILE; exit" 0 1 2 3 15
 if [[ ! -f $TMPFILE ]]; then
-    echo "$0: ERROR: TMPFILE is not a file: $TMPFILE" 1>&2
+    echo "$0: ERROR: TMPFILE is not a regular file: $TMPFILE" 1>&2
     exit 7
 fi
 if [[ ! -w $TMPFILE ]]; then

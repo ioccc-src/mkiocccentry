@@ -393,7 +393,7 @@ parse_json(char const *ptr, size_t len, bool *is_valid)
     bs = NULL;
 
     /*
-     * announce beginning to parse
+     * announce end of parse
      */
     if (json_dbg_allowed(DBG_VVHIGH)) {
 	fprstr(stderr, "*** END PARSE\n");

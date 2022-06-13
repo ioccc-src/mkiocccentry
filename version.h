@@ -167,7 +167,7 @@
   *
   * Because the JSON parser is a self contained system, we cannot define JSON_PARSER_VERSION here.
   * Because the JSON parser is a self contained system, we cannot define JPARSE_VERSION here.
-  * See jparseh for the JSON_PARSER_VERSION value.
+  * See jparse.h for the JSON_PARSER_VERSION value.
   * See jparse_main.h for the JPARSE_VERSION value.
   */
 

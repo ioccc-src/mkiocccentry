@@ -93,28 +93,28 @@ export JSON_AUTH_TREE="$JSON_TREE/author.json"
 
 # form the temporary exit code file
 #
-export EXIT_CODE_FIlE MKTEMP_TEMPLATE
+export EXIT_CODE_FILE MKTEMP_TEMPLATE
 MKTEMP_TEMPLATE=".exit_code.$(basename "$0").XXXXXXXXXX"
-EXIT_CODE_FIlE=$(mktemp "$MKTEMP_TEMPLATE")
+EXIT_CODE_FILE=$(mktemp "$MKTEMP_TEMPLATE")
 status="$?"
 if [[ $status -ne 0 ]]; then
     echo "$0: ERROR: mktemp $MKTEMP_TEMPLATE exit code: $status" 1>&2
     exit 55
 fi
-if [[ ! -e $EXIT_CODE_FIlE ]]; then
-    echo "$0: ERROR: EXIT_CODE_FIlE does not exist: $EXIT_CODE_FIlE" 1>&2
+if [[ ! -e $EXIT_CODE_FILE ]]; then
+    echo "$0: ERROR: EXIT_CODE_FILE does not exist: $EXIT_CODE_FILE" 1>&2
     exit 55
 fi
-if [[ ! -f $EXIT_CODE_FIlE ]]; then
-    echo "$0: ERROR: EXIT_CODE_FIlE not a file: $EXIT_CODE_FIlE" 1>&2
+if [[ ! -f $EXIT_CODE_FILE ]]; then
+    echo "$0: ERROR: EXIT_CODE_FILE not a regular file: $EXIT_CODE_FILE" 1>&2
     exit 55
 fi
-if [[ ! -r $EXIT_CODE_FIlE ]]; then
-    echo "$0: ERROR: EXIT_CODE_FIlE file not readable: $EXIT_CODE_FIlE" 1>&2
+if [[ ! -r $EXIT_CODE_FILE ]]; then
+    echo "$0: ERROR: EXIT_CODE_FILE file not readable: $EXIT_CODE_FILE" 1>&2
     exit 55
 fi
-if [[ ! -w $EXIT_CODE_FIlE ]]; then
-    echo "$0: ERROR: EXIT_CODE_FIlE file not writable: $EXIT_CODE_FIlE" 1>&2
+if [[ ! -w $EXIT_CODE_FILE ]]; then
+    echo "$0: ERROR: EXIT_CODE_FILE file not writable: $EXIT_CODE_FILE" 1>&2
     exit 55
 fi
 
@@ -161,7 +161,7 @@ if [[ -n $RUN_JINFOCHK ]]; then
 	exit 4
     fi
     if [[ ! -f $JINFOCHK ]]; then
-	echo "$0: ERROR: jinfochk not a file: $JINFOCHK" 1>&2
+	echo "$0: ERROR: jinfochk not a regular file: $JINFOCHK" 1>&2
 	exit 4
     fi
     if [[ ! -x $JINFOCHK ]]; then
@@ -207,7 +207,7 @@ if [[ -n $RUN_JAUTHCHK ]]; then
 	exit 4
     fi
     if [[ ! -f $JAUTHCHK ]]; then
-	echo "$0: ERROR: jauthchk not a file: $JAUTHCHK" 1>&2
+	echo "$0: ERROR: jauthchk not a regular file: $JAUTHCHK" 1>&2
 	exit 4
     fi
     if [[ ! -x $JAUTHCHK ]]; then
@@ -252,7 +252,7 @@ if [[ ! -e $JCODECHK ]]; then
     exit 4
 fi
 if [[ ! -f $JCODECHK ]]; then
-    echo "$0: ERROR: jcodechk.sh not a file: $JCODECHK" 1>&2
+    echo "$0: ERROR: jcodechk.sh not a regular file: $JCODECHK" 1>&2
     exit 4
 fi
 if [[ ! -x $JCODECHK ]]; then
@@ -290,7 +290,7 @@ run_test()
 	exit 4
     fi
     if [[ ! -f $test_prog ]]; then
-	echo "$0: in run_test: test_prog not a file: $test_prog"
+	echo "$0: in run_test: test_prog not a regular file: $test_prog"
 	exit 4
     fi
     if [[ ! -x $test_prog ]]; then
@@ -306,7 +306,7 @@ run_test()
 	exit 4
     fi
     if [[ ! -f $test_prog ]]; then
-	echo "$0: in run_test: json_test_file not a file: $json_test_file"
+	echo "$0: in run_test: json_test_file not a regular file: $json_test_file"
 	exit 4
     fi
     if [[ ! -r $test_prog ]]; then
@@ -350,10 +350,10 @@ run_test()
 	    fi
 	    echo | tee -a "${LOGFILE}" 1>&2
 	    EXIT_CODE=1
-	    echo "$EXIT_CODE" > "$EXIT_CODE_FIlE"
+	    echo "$EXIT_CODE" > "$EXIT_CODE_FILE"
 	    status="$?"
-	    if [[ $status -ne 0 || ! -s $EXIT_CODE_FIlE ]]; then
-		echo "$0: FATAL: failed to write $EXIT_CODE into EXIT_CODE_FIlE: $EXIT_CODE_FIlE" 1>&2
+	    if [[ $status -ne 0 || ! -s $EXIT_CODE_FILE ]]; then
+		echo "$0: FATAL: failed to write $EXIT_CODE into EXIT_CODE_FILE: $EXIT_CODE_FILE" 1>&2
 		exit 55
 	    fi
 	elif [[ $V_FLAG -ge 5 ]]; then
@@ -370,10 +370,10 @@ run_test()
 	    fi
 	    echo | tee -a "${LOGFILE}" 1>&2
 	    EXIT_CODE=1
-	    echo "$EXIT_CODE" > "$EXIT_CODE_FIlE"
+	    echo "$EXIT_CODE" > "$EXIT_CODE_FILE"
 	    status="$?"
-	    if [[ $status -ne 0 || ! -s $EXIT_CODE_FIlE ]]; then
-		echo "$0: FATAL: failed to write $EXIT_CODE into EXIT_CODE_FIlE: $EXIT_CODE_FIlE" 1>&2
+	    if [[ $status -ne 0 || ! -s $EXIT_CODE_FILE ]]; then
+		echo "$0: FATAL: failed to write $EXIT_CODE into EXIT_CODE_FILE: $EXIT_CODE_FILE" 1>&2
 		exit 55
 	    fi
 	elif [[ $V_FLAG -ge 5 ]]; then
@@ -403,19 +403,19 @@ run_test()
 	   ;;
 	1) echo "$0: Warning: FAIL: JSON codes for $json_test_file do not match expected code list in $json_code" | tee -a "$LOGFILE" 1>&2
 	   EXIT_CODE=1
-	   echo "$EXIT_CODE" > "$EXIT_CODE_FIlE"
+	   echo "$EXIT_CODE" > "$EXIT_CODE_FILE"
 	   status="$?"
-	   if [[ $status -ne 0 || ! -s $EXIT_CODE_FIlE ]]; then
-		echo "$0: FATAL: failed to write $EXIT_CODE into EXIT_CODE_FIlE: $EXIT_CODE_FIlE" 1>&2
+	   if [[ $status -ne 0 || ! -s $EXIT_CODE_FILE ]]; then
+		echo "$0: FATAL: failed to write $EXIT_CODE into EXIT_CODE_FILE: $EXIT_CODE_FILE" 1>&2
 		exit 55
 	   fi
 	   ;;
 	*) echo "$0: ERROR: FAIL: jcodechk.sh exit status: $status > 1" | tee -a "$LOGFILE" 1>&2
 	   EXIT_CODE=1
-	   echo "$EXIT_CODE" > "$EXIT_CODE_FIlE"
+	   echo "$EXIT_CODE" > "$EXIT_CODE_FILE"
 	   status="$?"
-	   if [[ $status -ne 0 || ! -s $EXIT_CODE_FIlE ]]; then
-		echo "$0: FATAL: failed to write $EXIT_CODE into EXIT_CODE_FIlE: $EXIT_CODE_FIlE" 1>&2
+	   if [[ $status -ne 0 || ! -s $EXIT_CODE_FILE ]]; then
+		echo "$0: FATAL: failed to write $EXIT_CODE into EXIT_CODE_FILE: $EXIT_CODE_FILE" 1>&2
 		exit 55
 	   fi
 	   ;;
@@ -475,18 +475,18 @@ if [[ -n $RUN_JAUTHCHK ]]; then
     done
 fi
 
-# Check for numeric exit code from EXIT_CODE_FIlE as a possible EXIT_CODE
+# Check for numeric exit code from EXIT_CODE_FILE as a possible EXIT_CODE
 #
 if [[ $V_FLAG -ge 5 ]]; then
     echo "$0: debug[5]: near final top level EXIT_CODE: $EXIT_CODE" 1>&2
 fi
-if [[ -s $EXIT_CODE_FIlE ]]; then
-    NEW_EXIT_CODE=$(< "$EXIT_CODE_FIlE")
+if [[ -s $EXIT_CODE_FILE ]]; then
+    NEW_EXIT_CODE=$(< "$EXIT_CODE_FILE")
     if [[ $V_FLAG -ge 5 ]]; then
-	echo "$0: debug[5]: found non-empty EXIT_CODE_FIlE: $EXIT_CODE_FIlE" 1>&2
+	echo "$0: debug[5]: found non-empty EXIT_CODE_FILE: $EXIT_CODE_FILE" 1>&2
     fi
     if [[ -z $NEW_EXIT_CODE ]]; then
-	echo "$0: FATAL: NEW_EXIT_CODE empty but non-empty EXIT_CODE_FIlE exists: $EXIT_CODE_FIlE" 1>&2
+	echo "$0: FATAL: NEW_EXIT_CODE empty but non-empty EXIT_CODE_FILE exists: $EXIT_CODE_FILE" 1>&2
 	exit 55
     fi
     if [[ $NEW_EXIT_CODE =~ ^[0-9]+$ ]]; then
@@ -515,7 +515,7 @@ fi
 if [[ $V_FLAG -ge 1 ]]; then
     echo "$0: debug[1]: top level EXIT_CODE: $EXIT_CODE" 1>&2
 fi
-rm -f "$EXIT_CODE_FIlE"
+rm -f "$EXIT_CODE_FILE"
 
 # All Done!!! -- Jessica Noll, Age 2
 #

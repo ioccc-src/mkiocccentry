@@ -783,7 +783,7 @@ ugly_error(struct json *node, char const *format, ...)
     bool allowed = false;	/* true ==> ugly errors are allowed as JSON warnings */
 
     /*
-     * do nothing is the JSON warning system is disabled
+     * do nothing if the JSON warning system is disabled
      *
      * XXX - we use the fake code -1 to prevent is_json_code_ignored() from
      *	     being used.
@@ -799,7 +799,7 @@ ugly_error(struct json *node, char const *format, ...)
     va_start(ap, format);
 
     /*
-     * if we have a node, print the note type
+     * if we have a node, print the node type
      */
     fprint(stderr, "in %s(): node type: %s", __func__, json_element_type_name(node));
 

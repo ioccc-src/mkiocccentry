@@ -81,7 +81,7 @@ jauthchk_sanity_chks(char const *file, char const *fnamchk)
 	      "    jauthchk [...] <file>",
 	      "",
 	      NULL);
-	err(7, __func__, "file is not a file: %s", file);
+	err(7, __func__, "file is not a regular file: %s", file);
 	not_reached();
     }
     if (!is_read(file)) {
@@ -133,7 +133,7 @@ jauthchk_sanity_chks(char const *file, char const *fnamchk)
 	      "    https://github.com/ioccc-src/mkiocccentry",
 	      "",
 	      NULL);
-	err(10, __func__, "fnamchk is not a file: %s", fnamchk);
+	err(10, __func__, "fnamchk is not a regular file: %s", fnamchk);
 	not_reached();
     }
     if (!is_exec(fnamchk)) {

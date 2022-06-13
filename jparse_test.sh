@@ -80,7 +80,7 @@ if [[ ! -e $JPARSE ]]; then
     exit 4
 fi
 if [[ ! -f $JPARSE ]]; then
-    echo "$0: jparse not a file: $JPARSE"
+    echo "$0: jparse not a regular file: $JPARSE"
     exit 4
 fi
 if [[ ! -x $JPARSE ]]; then
@@ -209,7 +209,7 @@ else
 	    exit 4
 	fi
 	if [[ ! -f $JSON_TEST_FILE ]]; then
-	    echo "$0: test file not a file: $JSON_TEST_FILE"
+	    echo "$0: test file not a regular file: $JSON_TEST_FILE"
 	    exit 4
 	fi
 	if [[ ! -r $JSON_TEST_FILE ]]; then

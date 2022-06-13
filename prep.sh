@@ -100,7 +100,7 @@ if [[ ! -e $MAKEFILE ]]; then
     exit 3
 fi
 if [[ ! -f $MAKEFILE ]]; then
-    echo "$0: ERROR: Makefile not a file: $MAKEFILE" 1>&2
+    echo "$0: ERROR: Makefile not a regular file: $MAKEFILE" 1>&2
     exit 3
 fi
 if [[ ! -r $MAKEFILE ]]; then

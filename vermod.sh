@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# vermod - modify version strings (and others) under ./test_JSON
+# vermod.sh - modify version strings (and others) under ./test_JSON
 #
 # Copyright (c) 2022 by Landon Curt Noll.  All Rights Reserved.
 #
@@ -139,7 +139,7 @@ if [[ ! -e $LIMIT_SH ]]; then
     exit 3
 fi
 if [[ ! -f $LIMIT_SH ]]; then
-    echo "$0: ERROR: limit.sh is not a file: $LIMIT_SH" 1>&2
+    echo "$0: ERROR: limit.sh is not a regular file: $LIMIT_SH" 1>&2
     exit 3
 fi
 if [[ ! -r $LIMIT_SH ]]; then
