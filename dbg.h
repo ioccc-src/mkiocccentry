@@ -42,7 +42,7 @@
 /*
  * definitions
  */
-#define DBG_VERSION "2.1 2022-06-08"		/* format: major.minor YYYY-MM-DD */
+#define DBG_VERSION "2.2 2022-06-08"		/* format: major.minor YYYY-MM-DD */
 
 
 /*
@@ -145,6 +145,13 @@ extern bool msg_warn_silent;		/* true ==> silence info & warnings if verbosity_l
 /*
  * external function declarations
  */
+
+extern bool msg_allowed(void);
+extern bool dbg_allowed(int level);
+extern bool warn_allowed(void);
+extern bool err_allowed(void);
+extern bool usage_allowed(void);
+
 extern void msg(const char *fmt, ...) \
 	__attribute__((format(printf, 1, 2)));		/* 1=format 2=params */
 extern void vmsg(char const *fmt, va_list ap);

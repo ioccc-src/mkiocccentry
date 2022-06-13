@@ -724,6 +724,104 @@ fusage_write(FILE *stream, int error_code, char const *caller, char const *fmt, 
 
 
 /*
+ * msg_allowed - determine if generic messages are allowed
+ *
+ * returns:
+ *	true ==> allowed, false ==> disabled
+ */
+bool
+msg_allowed(void)
+{
+    /*
+     * determine generic messages are allowed
+     */
+    if (msg_output_allowed == false || (msg_warn_silent == true && verbosity_level <= 0)) {
+	return false;
+    }
+    return true;
+}
+
+
+/*
+ * dbg_allowed - determine if verbosity level allows for debug messages are allowed
+ *
+ * given:
+ *	level	write message if >= verbosity level
+ *
+ * returns:
+ *	true ==> allowed, false ==> disabled
+ */
+bool
+dbg_allowed(int level)
+{
+    /*
+     * determine if verbosity level allows for debug messages
+     */
+    if (dbg_output_allowed == false || level > verbosity_level) {
+	return false;
+    }
+    return true;
+}
+
+
+/*
+ * warn_allowed - determine if warning messages are allowed
+ *
+ * returns:
+ *	true ==> allowed, false ==> disabled
+ */
+bool
+warn_allowed(void)
+{
+    /*
+     * determine if warning messages are allowed
+     */
+    if (warn_output_allowed == false || (msg_warn_silent == true && verbosity_level <= 0)) {
+	return false;
+    }
+    return true;
+}
+
+
+/*
+ * err_allowed - determine if fatal error messages are allowed
+ *
+ * returns:
+ *	true ==> allowed, false ==> disabled
+ */
+bool
+err_allowed(void)
+{
+    /*
+     * determine if fatal error messages are allowed
+     */
+    if (err_output_allowed == false) {
+	return false;
+    }
+    return true;
+}
+
+
+/*
+ * usage_allowed - determine if command line usage messages are allowed
+ *
+ * returns:
+ *	true ==> allowed, false ==> disabled
+ */
+bool
+usage_allowed(void)
+{
+    /*
+     * determine if conditions allow command line usage messages
+     */
+    if (usage_output_allowed == false) {
+	return false;
+    }
+    return true;
+}
+
+
+/*
  * msg - write a generic message, to stderr
  *
  * given:
@@ -738,13 +836,15 @@ fusage_write(FILE *stream, int error_code, char const *caller, char const *fmt, 
 void
 msg(char const *fmt, ...)
 {
-    va_list ap;		/* variable argument list */
-    int saved_errno;	/* errno at function start */
+    va_list ap;			/* variable argument list */
+    int saved_errno;		/* errno at function start */
+    bool allowed = false;	/* true ==> output is allowed */
 
     /*
      * stage 0: determine if conditions function to write, return if not
      */
-    if (msg_output_allowed == false || (msg_warn_silent == true && verbosity_level <= 0)) {
+    allowed = msg_allowed();
+    if (allowed == false) {
 	return;
     }
 
@@ -799,12 +899,14 @@ msg(char const *fmt, ...)
 void
 vmsg(char const *fmt, va_list ap)
 {
-    int saved_errno;	/* errno at function start */
+    int saved_errno;		/* errno at function start */
+    bool allowed = false;	/* true ==> output is allowed */
 
     /*
      * stage 0: determine if conditions function to write, return if not
      */
-    if (msg_output_allowed == false || (msg_warn_silent == true && verbosity_level <= 0)) {
+    allowed = msg_allowed();
+    if (allowed == false) {
 	return;
     }
 
@@ -854,13 +956,15 @@ vmsg(char const *fmt, va_list ap)
 void
 fmsg(FILE *stream, char const *fmt, ...)
 {
-    va_list ap;		/* variable argument list */
-    int saved_errno;	/* errno at function start */
+    va_list ap;			/* variable argument list */
+    int saved_errno;		/* errno at function start */
+    bool allowed = false;	/* true ==> output is allowed */
 
     /*
      * stage 0: determine if conditions function to write, return if not
      */
-    if (msg_output_allowed == false || (msg_warn_silent == true && verbosity_level <= 0)) {
+    allowed = msg_allowed();
+    if (allowed == false) {
 	return;
     }
 
@@ -920,12 +1024,14 @@ fmsg(FILE *stream, char const *fmt, ...)
 void
 vfmsg(FILE *stream, char const *fmt, va_list ap)
 {
-    int saved_errno;	/* errno at function start */
+    int saved_errno;		/* errno at function start */
+    bool allowed = false;	/* true ==> output is allowed */
 
     /*
-     * stage 0: determine if conditions allow function to write, return if not
+     * stage 0: determine if conditions function to write, return if not
      */
-    if (msg_output_allowed == false || (msg_warn_silent == true && verbosity_level <= 0)) {
+    allowed = msg_allowed();
+    if (allowed == false) {
 	return;
     }
 
@@ -981,13 +1087,15 @@ vfmsg(FILE *stream, char const *fmt, va_list ap)
 void
 dbg(int level, char const *fmt, ...)
 {
-    va_list ap;		/* variable argument list */
-    int saved_errno;	/* errno at function start */
+    va_list ap;			/* variable argument list */
+    int saved_errno;		/* errno at function start */
+    bool allowed = false;	/* true ==> output is allowed */
 
     /*
      * stage 0: determine if conditions allow function to write, return if not
      */
-    if (dbg_output_allowed == false || level > verbosity_level) {
+    allowed = dbg_allowed(level);
+    if (allowed == false) {
 	return;
     }
 
@@ -1045,12 +1153,14 @@ dbg(int level, char const *fmt, ...)
 void
 vdbg(int level, char const *fmt, va_list ap)
 {
-    int saved_errno;	/* errno at function start */
+    int saved_errno;		/* errno at function start */
+    bool allowed = false;	/* true ==> output is allowed */
 
     /*
      * stage 0: determine if conditions allow function to write, return if not
      */
-    if (dbg_output_allowed == false || level > verbosity_level) {
+    allowed = dbg_allowed(level);
+    if (allowed == false) {
 	return;
     }
 
@@ -1103,13 +1213,15 @@ vdbg(int level, char const *fmt, va_list ap)
 void
 fdbg(FILE *stream, int level, char const *fmt, ...)
 {
-    va_list ap;		/* variable argument list */
-    int saved_errno;	/* errno at function start */
+    va_list ap;			/* variable argument list */
+    int saved_errno;		/* errno at function start */
+    bool allowed = false;	/* true ==> output is allowed */
 
     /*
      * stage 0: determine if conditions allow function to write, return if not
      */
-    if (dbg_output_allowed == false || level > verbosity_level) {
+    allowed = dbg_allowed(level);
+    if (allowed == false) {
 	return;
     }
 
@@ -1172,12 +1284,14 @@ fdbg(FILE *stream, int level, char const *fmt, ...)
 void
 vfdbg(FILE *stream, int level, char const *fmt, va_list ap)
 {
-    int saved_errno;	/* errno at function start */
+    int saved_errno;		/* errno at function start */
+    bool allowed = false;	/* true ==> output is allowed */
 
     /*
      * stage 0: determine if conditions allow function to write, return if not
      */
-    if (dbg_output_allowed == false || level > verbosity_level) {
+    allowed = dbg_allowed(level);
+    if (allowed == false) {
 	return;
     }
 
@@ -1233,13 +1347,15 @@ vfdbg(FILE *stream, int level, char const *fmt, va_list ap)
 void
 warn(char const *name, char const *fmt, ...)
 {
-    va_list ap;		/* variable argument list */
-    int saved_errno;	/* errno at function start */
+    va_list ap;			/* variable argument list */
+    int saved_errno;		/* errno at function start */
+    bool allowed = false;	/* true ==> output is allowed */
 
     /*
      * stage 0: determine if conditions allow function to write, return if not
      */
-    if (warn_output_allowed == false || (msg_warn_silent == true && verbosity_level <= 0)) {
+    allowed = warn_allowed();
+    if (allowed == false) {
 	return;
     }
 
@@ -1305,12 +1421,14 @@ warn(char const *name, char const *fmt, ...)
 void
 vwarn(char const *name, char const *fmt, va_list ap)
 {
-    int saved_errno;	/* errno at function start */
+    int saved_errno;		/* errno at function start */
+    bool allowed = false;	/* true ==> output is allowed */
 
     /*
      * stage 0: determine if conditions allow function to write, return if not
      */
-    if (warn_output_allowed == false || (msg_warn_silent == true && verbosity_level <= 0)) {
+    allowed = warn_allowed();
+    if (allowed == false) {
 	return;
     }
 
@@ -1371,13 +1489,15 @@ vwarn(char const *name, char const *fmt, va_list ap)
 void
 fwarn(FILE *stream, char const *name, char const *fmt, ...)
 {
-    va_list ap;		/* variable argument list */
-    int saved_errno;	/* errno at function start */
+    va_list ap;			/* variable argument list */
+    int saved_errno;		/* errno at function start */
+    bool allowed = false;	/* true ==> output is allowed */
 
     /*
      * stage 0: determine if conditions allow function to write, return if not
      */
-    if (warn_output_allowed == false || (msg_warn_silent == true && verbosity_level <= 0)) {
+    allowed = warn_allowed();
+    if (allowed == false) {
 	return;
     }
 
@@ -1449,12 +1569,14 @@ fwarn(FILE *stream, char const *name, char const *fmt, ...)
 void
 vfwarn(FILE *stream, char const *name, char const *fmt, va_list ap)
 {
-    int saved_errno;	/* errno at function start */
+    int saved_errno;		/* errno at function start */
+    bool allowed = false;	/* true ==> output is allowed */
 
     /*
      * stage 0: determine if conditions allow function to write, return if not
      */
-    if (warn_output_allowed == false || (msg_warn_silent == true && verbosity_level <= 0)) {
+    allowed = warn_allowed();
+    if (allowed == false) {
 	return;
     }
 
@@ -1519,13 +1641,15 @@ vfwarn(FILE *stream, char const *name, char const *fmt, va_list ap)
 void
 warnp(char const *name, char const *fmt, ...)
 {
-    va_list ap;		/* variable argument list */
-    int saved_errno;	/* errno at function start */
+    va_list ap;			/* variable argument list */
+    int saved_errno;		/* errno at function start */
+    bool allowed = false;	/* true ==> output is allowed */
 
     /*
      * stage 0: determine if conditions allow function to write, return if not
      */
-    if (warn_output_allowed == false || (msg_warn_silent == true && verbosity_level <= 0)) {
+    allowed = warn_allowed();
+    if (allowed == false) {
 	return;
     }
 
@@ -1591,12 +1715,14 @@ warnp(char const *name, char const *fmt, ...)
 void
 vwarnp(char const *name, char const *fmt, va_list ap)
 {
-    int saved_errno;	/* errno at function start */
+    int saved_errno;		/* errno at function start */
+    bool allowed = false;	/* true ==> output is allowed */
 
     /*
      * stage 0: determine if conditions allow function to write, return if not
      */
-    if (warn_output_allowed == false || (msg_warn_silent == true && verbosity_level <= 0)) {
+    allowed = warn_allowed();
+    if (allowed == false) {
 	return;
     }
 
@@ -1657,13 +1783,15 @@ vwarnp(char const *name, char const *fmt, va_list ap)
 void
 fwarnp(FILE *stream, char const *name, char const *fmt, ...)
 {
-    va_list ap;		/* variable argument list */
-    int saved_errno;	/* errno at function start */
+    va_list ap;			/* variable argument list */
+    int saved_errno;		/* errno at function start */
+    bool allowed = false;	/* true ==> output is allowed */
 
     /*
      * stage 0: determine if conditions allow function to write, return if not
      */
-    if (warn_output_allowed == false || (msg_warn_silent == true && verbosity_level <= 0)) {
+    allowed = warn_allowed();
+    if (allowed == false) {
 	return;
     }
 
@@ -1735,12 +1863,14 @@ fwarnp(FILE *stream, char const *name, char const *fmt, ...)
 void
 vfwarnp(FILE *stream, char const *name, char const *fmt, va_list ap)
 {
-    int saved_errno;	/* errno at function start */
+    int saved_errno;		/* errno at function start */
+    bool allowed = false;	/* true ==> output is allowed */
 
     /*
      * stage 0: determine if conditions allow function to write, return if not
      */
-    if (warn_output_allowed == false || (msg_warn_silent == true && verbosity_level <= 0)) {
+    allowed = warn_allowed();
+    if (allowed == false) {
 	return;
     }
 
@@ -1808,12 +1938,14 @@ vfwarnp(FILE *stream, char const *name, char const *fmt, va_list ap)
 void
 err(int exitcode, char const *name, char const *fmt, ...)
 {
-    va_list ap;		/* variable argument list */
+    va_list ap;			/* variable argument list */
+    bool allowed = false;	/* true ==> output is allowed */
 
     /*
      * stage 0: determine if conditions allow function to write, exit if not
      */
-    if (err_output_allowed == false) {
+    allowed = err_allowed();
+    if (allowed == false) {
 	exit((exitcode < 0 || exitcode > 255) ? 255 : exitcode);
 	not_reached();
     }
@@ -1885,10 +2017,13 @@ err(int exitcode, char const *name, char const *fmt, ...)
 void
 verr(int exitcode, char const *name, char const *fmt, va_list ap)
 {
+    bool allowed = false;	/* true ==> output is allowed */
+
     /*
      * stage 0: determine if conditions allow function to write, exit if not
      */
-    if (err_output_allowed == false) {
+    allowed = err_allowed();
+    if (allowed == false) {
 	exit((exitcode < 0 || exitcode > 255) ? 255 : exitcode);
 	not_reached();
     }
@@ -1955,12 +2090,14 @@ verr(int exitcode, char const *name, char const *fmt, va_list ap)
 void
 ferr(int exitcode, FILE *stream, char const *name, char const *fmt, ...)
 {
-    va_list ap;		/* variable argument list */
+    va_list ap;			/* variable argument list */
+    bool allowed = false;	/* true ==> output is allowed */
 
     /*
      * stage 0: determine if conditions allow function to write, exit if not
      */
-    if (err_output_allowed == false) {
+    allowed = err_allowed();
+    if (allowed == false) {
 	exit((exitcode < 0 || exitcode > 255) ? 255 : exitcode);
 	not_reached();
     }
@@ -2037,10 +2174,13 @@ ferr(int exitcode, FILE *stream, char const *name, char const *fmt, ...)
 void
 vferr(int exitcode, FILE *stream, char const *name, char const *fmt, va_list ap)
 {
+    bool allowed = false;	/* true ==> output is allowed */
+
     /*
      * stage 0: determine if conditions allow function to write, exit if not
      */
-    if (err_output_allowed == false) {
+    allowed = err_allowed();
+    if (allowed == false) {
 	exit((exitcode < 0 || exitcode > 255) ? 255 : exitcode);
 	not_reached();
     }
@@ -2110,12 +2250,14 @@ vferr(int exitcode, FILE *stream, char const *name, char const *fmt, va_list ap)
 void
 errp(int exitcode, char const *name, char const *fmt, ...)
 {
-    va_list ap;		/* variable argument list */
+    va_list ap;			/* variable argument list */
+    bool allowed = false;	/* true ==> output is allowed */
 
     /*
      * stage 0: determine if conditions allow function to write, exit if not
      */
-    if (err_output_allowed == false) {
+    allowed = err_allowed();
+    if (allowed == false) {
 	exit((exitcode < 0 || exitcode > 255) ? 255 : exitcode);
 	not_reached();
     }
@@ -2187,10 +2329,13 @@ errp(int exitcode, char const *name, char const *fmt, ...)
 void
 verrp(int exitcode, char const *name, char const *fmt, va_list ap)
 {
+    bool allowed = false;	/* true ==> output is allowed */
+
     /*
      * stage 0: determine if conditions allow function to write, exit if not
      */
-    if (err_output_allowed == false) {
+    allowed = err_allowed();
+    if (allowed == false) {
 	exit((exitcode < 0 || exitcode > 255) ? 255 : exitcode);
 	not_reached();
     }
@@ -2257,12 +2402,14 @@ verrp(int exitcode, char const *name, char const *fmt, va_list ap)
 void
 ferrp(int exitcode, FILE *stream, char const *name, char const *fmt, ...)
 {
-    va_list ap;		/* variable argument list */
+    va_list ap;			/* variable argument list */
+    bool allowed = false;	/* true ==> output is allowed */
 
     /*
      * stage 0: determine if conditions allow function to write, exit if not
      */
-    if (err_output_allowed == false) {
+    allowed = err_allowed();
+    if (allowed == false) {
 	exit((exitcode < 0 || exitcode > 255) ? 255 : exitcode);
 	not_reached();
     }
@@ -2339,10 +2486,13 @@ ferrp(int exitcode, FILE *stream, char const *name, char const *fmt, ...)
 void
 vferrp(int exitcode, FILE *stream, char const *name, char const *fmt, va_list ap)
 {
+    bool allowed = false;	/* true ==> output is allowed */
+
     /*
      * stage 0: determine if conditions allow function to write, exit if not
      */
-    if (err_output_allowed == false) {
+    allowed = err_allowed();
+    if (allowed == false) {
 	exit((exitcode < 0 || exitcode > 255) ? 255 : exitcode);
 	not_reached();
     }
@@ -2413,13 +2563,15 @@ vferrp(int exitcode, FILE *stream, char const *name, char const *fmt, va_list ap
 void
 werr(int error_code, char const *name, char const *fmt, ...)
 {
-    va_list ap;		/* variable argument list */
-    int saved_errno;	/* errno value when called */
+    va_list ap;			/* variable argument list */
+    int saved_errno;		/* errno value when called */
+    bool allowed = false;	/* true ==> output is allowed */
 
     /*
-     * stage 0: determine if conditions allow function to write, return if not
+     * stage 0: determine if conditions allow function to write, exit if not
      */
-    if (err_output_allowed == false) {
+    allowed = err_allowed();
+    if (allowed == false) {
 	return;
     }
 
@@ -2485,12 +2637,14 @@ werr(int error_code, char const *name, char const *fmt, ...)
 void
 vwerr(int error_code, char const *name, char const *fmt, va_list ap)
 {
-    int saved_errno;	/* errno value when called */
+    int saved_errno;		/* errno value when called */
+    bool allowed = false;	/* true ==> output is allowed */
 
     /*
-     * stage 0: determine if conditions allow function to write, return if not
+     * stage 0: determine if conditions allow function to write, exit if not
      */
-    if (err_output_allowed == false) {
+    allowed = err_allowed();
+    if (allowed == false) {
 	return;
     }
 
@@ -2551,13 +2705,15 @@ vwerr(int error_code, char const *name, char const *fmt, va_list ap)
 void
 fwerr(int error_code, FILE *stream, char const *name, char const *fmt, ...)
 {
-    va_list ap;		/* variable argument list */
-    int saved_errno;	/* errno value when called */
+    va_list ap;			/* variable argument list */
+    int saved_errno;		/* errno value when called */
+    bool allowed = false;	/* true ==> output is allowed */
 
     /*
-     * stage 0: determine if conditions allow function to write, return if not
+     * stage 0: determine if conditions allow function to write, exit if not
      */
-    if (err_output_allowed == false) {
+    allowed = err_allowed();
+    if (allowed == false) {
 	return;
     }
 
@@ -2628,12 +2784,14 @@ fwerr(int error_code, FILE *stream, char const *name, char const *fmt, ...)
 void
 vfwerr(int error_code, FILE *stream, char const *name, char const *fmt, va_list ap)
 {
-    int saved_errno;	/* errno value when called */
+    int saved_errno;		/* errno value when called */
+    bool allowed = false;	/* true ==> output is allowed */
 
     /*
-     * stage 0: determine if conditions allow function to write, return if not
+     * stage 0: determine if conditions allow function to write, exit if not
      */
-    if (err_output_allowed == false) {
+    allowed = err_allowed();
+    if (allowed == false) {
 	return;
     }
 
@@ -2697,13 +2855,15 @@ vfwerr(int error_code, FILE *stream, char const *name, char const *fmt, va_list 
 void
 werrp(int error_code, char const *name, char const *fmt, ...)
 {
-    va_list ap;		/* variable argument list */
-    int saved_errno;	/* errno value when called */
+    va_list ap;			/* variable argument list */
+    int saved_errno;		/* errno value when called */
+    bool allowed = false;	/* true ==> output is allowed */
 
     /*
-     * stage 0: determine if conditions allow function to write, return if not
+     * stage 0: determine if conditions allow function to write, exit if not
      */
-    if (err_output_allowed == false) {
+    allowed = err_allowed();
+    if (allowed == false) {
 	return;
     }
 
@@ -2769,12 +2929,14 @@ werrp(int error_code, char const *name, char const *fmt, ...)
 void
 vwerrp(int error_code, char const *name, char const *fmt, va_list ap)
 {
-    int saved_errno;	/* errno value when called */
+    int saved_errno;		/* errno value when called */
+    bool allowed = false;	/* true ==> output is allowed */
 
     /*
-     * stage 0: determine if conditions allow function to write, return if not
+     * stage 0: determine if conditions allow function to write, exit if not
      */
-    if (err_output_allowed == false) {
+    allowed = err_allowed();
+    if (allowed == false) {
 	return;
     }
 
@@ -2835,13 +2997,15 @@ vwerrp(int error_code, char const *name, char const *fmt, va_list ap)
 void
 fwerrp(int error_code, FILE *stream, char const *name, char const *fmt, ...)
 {
-    va_list ap;		/* variable argument list */
-    int saved_errno;	/* errno value when called */
+    va_list ap;			/* variable argument list */
+    int saved_errno;		/* errno value when called */
+    bool allowed = false;	/* true ==> output is allowed */
 
     /*
-     * stage 0: determine if conditions allow function to write, return if not
+     * stage 0: determine if conditions allow function to write, exit if not
      */
-    if (err_output_allowed == false) {
+    allowed = err_allowed();
+    if (allowed == false) {
 	return;
     }
 
@@ -2912,12 +3076,14 @@ fwerrp(int error_code, FILE *stream, char const *name, char const *fmt, ...)
 void
 vfwerrp(int error_code, FILE *stream, char const *name, char const *fmt, va_list ap)
 {
-    int saved_errno;	/* errno value when called */
+    int saved_errno;		/* errno value when called */
+    bool allowed = false;	/* true ==> output is allowed */
 
     /*
-     * stage 0: determine if conditions allow function to write, return if not
+     * stage 0: determine if conditions allow function to write, exit if not
      */
-    if (err_output_allowed == false) {
+    allowed = err_allowed();
+    if (allowed == false) {
 	return;
     }
 
@@ -2979,18 +3145,22 @@ vfwerrp(int error_code, FILE *stream, char const *name, char const *fmt, va_list
 void
 warn_or_err(int exitcode, const char *name, bool warning, const char *fmt, ...)
 {
-    va_list ap;		/* variable argument list */
-    int saved_errno;	/* errno at function start */
+    va_list ap;			/* variable argument list */
+    int saved_errno;		/* errno at function start */
+    bool w_allowed = false;	/* true ==> warning output is allowed */
+    bool e_allowed = false;	/* true ==> err output is allowed */
 
     /*
      * stage 0: determine if conditions allow function to write, return or exit if not
      */
     if (warning == true) {
-        if (warn_output_allowed == false || (msg_warn_silent == true && verbosity_level <= 0)) {
+	w_allowed = warn_allowed();
+        if (w_allowed == false) {
 	    return;
 	}
     } else {
-	if (err_output_allowed == false) {
+	e_allowed = err_allowed();
+	if (e_allowed == false) {
 	    exit((exitcode < 0 || exitcode > 255) ? 255 : exitcode);
 	    not_reached();
 	}
@@ -3077,17 +3247,21 @@ void
 vwarn_or_err(int exitcode, const char *name, bool warning,
 	     const char *fmt, va_list ap)
 {
-    int saved_errno;	/* errno at function start */
+    int saved_errno;		/* errno at function start */
+    bool w_allowed = false;	/* true ==> warning output is allowed */
+    bool e_allowed = false;	/* true ==> err output is allowed */
 
     /*
      * stage 0: determine if conditions allow function to write, return or exit if not
      */
     if (warning == true) {
-        if (warn_output_allowed == false || (msg_warn_silent == true && verbosity_level <= 0)) {
+	w_allowed = warn_allowed();
+        if (w_allowed == false) {
 	    return;
 	}
     } else {
-	if (err_output_allowed == false) {
+	e_allowed = err_allowed();
+	if (e_allowed == false) {
 	    exit((exitcode < 0 || exitcode > 255) ? 255 : exitcode);
 	    not_reached();
 	}
@@ -3167,18 +3341,22 @@ vwarn_or_err(int exitcode, const char *name, bool warning,
 void
 fwarn_or_err(int exitcode, FILE *stream, const char *name, bool warning, const char *fmt, ...)
 {
-    va_list ap;		/* variable argument list */
-    int saved_errno;	/* errno at function start */
+    va_list ap;			/* variable argument list */
+    int saved_errno;		/* errno at function start */
+    bool w_allowed = false;	/* true ==> warning output is allowed */
+    bool e_allowed = false;	/* true ==> err output is allowed */
 
     /*
      * stage 0: determine if conditions allow function to write, return or exit if not
      */
     if (warning == true) {
-        if (warn_output_allowed == false || (msg_warn_silent == true && verbosity_level <= 0)) {
+	w_allowed = warn_allowed();
+        if (w_allowed == false) {
 	    return;
 	}
     } else {
-	if (err_output_allowed == false) {
+	e_allowed = err_allowed();
+	if (e_allowed == false) {
 	    exit((exitcode < 0 || exitcode > 255) ? 255 : exitcode);
 	    not_reached();
 	}
@@ -3270,17 +3448,21 @@ void
 vfwarn_or_err(int exitcode, FILE *stream, const char *name, bool warning,
 	      const char *fmt, va_list ap)
 {
-    int saved_errno;	/* errno at function start */
+    int saved_errno;		/* errno at function start */
+    bool w_allowed = false;	/* true ==> warning output is allowed */
+    bool e_allowed = false;	/* true ==> err output is allowed */
 
     /*
      * stage 0: determine if conditions allow function to write, return or exit if not
      */
     if (warning == true) {
-        if (warn_output_allowed == false || (msg_warn_silent == true && verbosity_level <= 0)) {
+	w_allowed = warn_allowed();
+        if (w_allowed == false) {
 	    return;
 	}
     } else {
-	if (err_output_allowed == false) {
+	e_allowed = err_allowed();
+	if (e_allowed == false) {
 	    exit((exitcode < 0 || exitcode > 255) ? 255 : exitcode);
 	    not_reached();
 	}
@@ -3364,18 +3546,22 @@ vfwarn_or_err(int exitcode, FILE *stream, const char *name, bool warning,
 void
 warnp_or_errp(int exitcode, const char *name, bool warning, const char *fmt, ...)
 {
-    va_list ap;		/* variable argument list */
-    int saved_errno;	/* errno at function start */
+    va_list ap;			/* variable argument list */
+    int saved_errno;		/* errno at function start */
+    bool w_allowed = false;	/* true ==> warning output is allowed */
+    bool e_allowed = false;	/* true ==> err output is allowed */
 
     /*
      * stage 0: determine if conditions allow function to write, return or exit if not
      */
     if (warning == true) {
-        if (warn_output_allowed == false || (msg_warn_silent == true && verbosity_level <= 0)) {
+	w_allowed = warn_allowed();
+        if (w_allowed == false) {
 	    return;
 	}
     } else {
-	if (err_output_allowed == true) {
+	e_allowed = err_allowed();
+	if (e_allowed == false) {
 	    exit((exitcode < 0 || exitcode > 255) ? 255 : exitcode);
 	    not_reached();
 	}
@@ -3462,17 +3648,21 @@ void
 vwarnp_or_errp(int exitcode, const char *name, bool warning,
 	       const char *fmt, va_list ap)
 {
-    int saved_errno;	/* errno at function start */
+    int saved_errno;		/* errno at function start */
+    bool w_allowed = false;	/* true ==> warning output is allowed */
+    bool e_allowed = false;	/* true ==> err output is allowed */
 
     /*
      * stage 0: determine if conditions allow function to write, return or exit if not
      */
     if (warning == true) {
-        if (warn_output_allowed == false || (msg_warn_silent == true && verbosity_level <= 0)) {
+	w_allowed = warn_allowed();
+        if (w_allowed == false) {
 	    return;
 	}
     } else {
-	if (err_output_allowed == true) {
+	e_allowed = err_allowed();
+	if (e_allowed == false) {
 	    exit((exitcode < 0 || exitcode > 255) ? 255 : exitcode);
 	    not_reached();
 	}
@@ -3551,18 +3741,22 @@ vwarnp_or_errp(int exitcode, const char *name, bool warning,
 void
 fwarnp_or_errp(int exitcode, FILE *stream, const char *name, bool warning, const char *fmt, ...)
 {
-    va_list ap;		/* variable argument list */
-    int saved_errno;	/* errno at function start */
+    va_list ap;			/* variable argument list */
+    int saved_errno;		/* errno at function start */
+    bool w_allowed = false;	/* true ==> warning output is allowed */
+    bool e_allowed = false;	/* true ==> err output is allowed */
 
     /*
      * stage 0: determine if conditions allow function to write, return or exit if not
      */
     if (warning == true) {
-        if (warn_output_allowed == false || (msg_warn_silent == true && verbosity_level <= 0)) {
+	w_allowed = warn_allowed();
+        if (w_allowed == false) {
 	    return;
 	}
     } else {
-	if (err_output_allowed == true) {
+	e_allowed = err_allowed();
+	if (e_allowed == false) {
 	    exit((exitcode < 0 || exitcode > 255) ? 255 : exitcode);
 	    not_reached();
 	}
@@ -3654,17 +3848,21 @@ void
 vfwarnp_or_errp(int exitcode, FILE *stream, const char *name, bool warning,
 	        const char *fmt, va_list ap)
 {
-    int saved_errno;	/* errno at function start */
+    int saved_errno;		/* errno at function start */
+    bool w_allowed = false;	/* true ==> warning output is allowed */
+    bool e_allowed = false;	/* true ==> err output is allowed */
 
     /*
      * stage 0: determine if conditions allow function to write, return or exit if not
      */
     if (warning == true) {
-        if (warn_output_allowed == false || (msg_warn_silent == true && verbosity_level <= 0)) {
+	w_allowed = warn_allowed();
+        if (w_allowed == false) {
 	    return;
 	}
     } else {
-	if (err_output_allowed == true) {
+	e_allowed = err_allowed();
+	if (e_allowed == false) {
 	    exit((exitcode < 0 || exitcode > 255) ? 255 : exitcode);
 	    not_reached();
 	}
@@ -3738,13 +3936,15 @@ vfwarnp_or_errp(int exitcode, FILE *stream, const char *name, bool warning,
 void
 printf_usage(int exitcode, char const *fmt, ...)
 {
-    va_list ap;		/* variable argument list */
-    int saved_errno;	/* errno at function start */
+    va_list ap;			/* variable argument list */
+    int saved_errno;		/* errno at function start */
+    bool allowed = false;	/* true ==> output is allowed */
 
     /*
      * stage 0: determine if conditions allow function to write, exit or return as required
      */
-    if (usage_output_allowed == false) {
+    allowed = usage_allowed();
+    if (allowed == false) {
 	if (exitcode >= 0) {
 	    exit(exitcode);
 	    not_reached();
@@ -3805,12 +4005,14 @@ printf_usage(int exitcode, char const *fmt, ...)
 void
 vprintf_usage(int exitcode, char const *fmt, va_list ap)
 {
-    int saved_errno;	/* errno at function start */
+    int saved_errno;		/* errno at function start */
+    bool allowed = false;	/* true ==> output is allowed */
 
     /*
      * stage 0: determine if conditions allow function to write, exit or return as required
      */
-    if (usage_output_allowed == false) {
+    allowed = usage_allowed();
+    if (allowed == false) {
 	if (exitcode >= 0) {
 	    exit(exitcode);
 	    not_reached();
@@ -3866,13 +4068,15 @@ vprintf_usage(int exitcode, char const *fmt, va_list ap)
 void
 fprintf_usage(int exitcode, FILE *stream, char const *fmt, ...)
 {
-    va_list ap;		/* variable argument list */
-    int saved_errno;	/* errno at function start */
+    va_list ap;			/* variable argument list */
+    int saved_errno;		/* errno at function start */
+    bool allowed = false;	/* true ==> output is allowed */
 
     /*
      * stage 0: determine if conditions allow function to write, exit or return as required
      */
-    if (usage_output_allowed == false) {
+    allowed = usage_allowed();
+    if (allowed == false) {
 	if (exitcode >= 0) {
 	    exit(exitcode);
 	    not_reached();
@@ -3938,12 +4142,14 @@ fprintf_usage(int exitcode, FILE *stream, char const *fmt, ...)
 void
 vfprintf_usage(int exitcode, FILE *stream, char const *fmt, va_list ap)
 {
-    int saved_errno;	/* errno at function start */
+    int saved_errno;		/* errno at function start */
+    bool allowed = false;	/* true ==> output is allowed */
 
     /*
      * stage 0: determine if conditions allow function to write, exit or return as required
      */
-    if (usage_output_allowed == false) {
+    allowed = usage_allowed();
+    if (allowed == false) {
 	if (exitcode >= 0) {
 	    exit(exitcode);
 	    not_reached();
