@@ -4289,12 +4289,11 @@ main(int argc, char *argv[])
     fdbg(stderr, DBG_MED, "err_output_allowed: %s", booltostr(err_output_allowed));
     fdbg(stderr, DBG_MED, "usage_output_allowed: %s", booltostr(usage_output_allowed));
     fdbg(stderr, DBG_MED, "msg_warn_silent: %s", booltostr(msg_warn_silent));
-    fdbg(stderr, DBG_MED, "msg() output: %s",
-	(msg_output_allowed == true && (msg_warn_silent == false || verbosity_level > 0)) ?
-	"allowed" : "silenced");
-    fdbg(stderr, DBG_MED, "warn() output: %s",
-	(warn_output_allowed == true && (msg_warn_silent == false || verbosity_level > 0)) ?
-	"allowed" : "silenced");
+    fdbg(stderr, DBG_MED, "msg() output: %s", msg_allowed() ? "allowed" : "silenced");
+    fdbg(stderr, DBG_MED, "dbg(DBG_MED) output: %s", dbg_allowed(DBG_MED) ? "allowed" : "silenced");
+    fdbg(stderr, DBG_MED, "warn() output: %s", warn_allowed() ? "allowed" : "silenced");
+    fdbg(stderr, DBG_MED, "err() output: %s", err_allowed() ? "allowed" : "silenced");
+    fdbg(stderr, DBG_MED, "usage() output: %s", usage_allowed() ? "allowed" : "silenced");
 
     /*
      * simulate warnings
