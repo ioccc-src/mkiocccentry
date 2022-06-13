@@ -2242,7 +2242,7 @@ ugly_error(struct json *node, char const *format, ...)
     va_start(ap, format);
 
     /*
-     * if we have a node, print the note type
+     * if we have a node, print the node type
      */
     fprint(stderr, "in %s(): node type: %s", __func__, json_element_type_name(node));
 
