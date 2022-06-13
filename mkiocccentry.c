@@ -852,7 +852,7 @@ mkiocccentry_sanity_chks(struct info *infop, char const *work_dir, char const *t
 	      "    https://www.gnu.org/software/tar/",
 	      "",
 	      NULL);
-	err(14, __func__, "tar is not a file: %s", tar);
+	err(14, __func__, "tar is not a regular file: %s", tar);
 	not_reached();
     }
     if (!is_exec(tar)) {
@@ -908,7 +908,7 @@ mkiocccentry_sanity_chks(struct info *infop, char const *work_dir, char const *t
 	      "    https://www.gnu.org/software/coreutils/",
 	      "",
 	      NULL);
-	err(17, __func__, "cp is not a file: %s", cp);
+	err(17, __func__, "cp is not a regular file: %s", cp);
 	not_reached();
     }
     if (!is_exec(cp)) {
@@ -964,7 +964,7 @@ mkiocccentry_sanity_chks(struct info *infop, char const *work_dir, char const *t
 	      "    https://www.gnu.org/software/coreutils/",
 	      "",
 	      NULL);
-	err(20, __func__, "ls is not a file: %s", ls);
+	err(20, __func__, "ls is not a regular file: %s", ls);
 	not_reached();
     }
     if (!is_exec(ls)) {
@@ -1020,7 +1020,7 @@ mkiocccentry_sanity_chks(struct info *infop, char const *work_dir, char const *t
 	      "    https://github.com/ioccc-src/mkiocccentry",
 	      "",
 	      NULL);
-	err(23, __func__, "txzchk is not a file: %s", txzchk);
+	err(23, __func__, "txzchk is not a regular file: %s", txzchk);
 	not_reached();
     }
     if (!is_exec(txzchk)) {
@@ -1076,7 +1076,7 @@ mkiocccentry_sanity_chks(struct info *infop, char const *work_dir, char const *t
 	      "    https://github.com/ioccc-src/mkiocccentry",
 	      "",
 	      NULL);
-	err(26, __func__, "fnamchk is not a file: %s", fnamchk);
+	err(26, __func__, "fnamchk is not a regular file: %s", fnamchk);
 	not_reached();
     }
     if (!is_exec(fnamchk)) {
@@ -1132,7 +1132,7 @@ mkiocccentry_sanity_chks(struct info *infop, char const *work_dir, char const *t
 	      "    https://github.com/ioccc-src/mkiocccentry",
 	      "",
 	      NULL);
-	err(29, __func__, "jinfochk is not a file: %s", jinfochk);
+	err(29, __func__, "jinfochk is not a regular file: %s", jinfochk);
 	not_reached();
     }
     if (!is_exec(jinfochk)) {
@@ -1188,7 +1188,7 @@ mkiocccentry_sanity_chks(struct info *infop, char const *work_dir, char const *t
 	      "    https://github.com/ioccc-src/mkiocccentry",
 	      "",
 	      NULL);
-	err(32, __func__, "jauthchk is not a file: %s", jauthchk);
+	err(32, __func__, "jauthchk is not a regular file: %s", jauthchk);
 	not_reached();
     }
     if (!is_exec(jauthchk)) {
@@ -2237,7 +2237,7 @@ check_prog_c(struct info *infop, char const *entry_dir, char const *cp, char con
 	      "The prog.c path, while it exists, is not a regular file.",
 	      "",
 	      NULL);
-	err(83, __func__, "prog.c is not a file: %s", prog_c);
+	err(83, __func__, "prog.c is not a regular file: %s", prog_c);
 	not_reached();
     }
     if (!is_read(prog_c)) {
@@ -2750,7 +2750,7 @@ check_Makefile(struct info *infop, char const *entry_dir, char const *cp, char c
 	       "The Makefile path, while it exists, is not a regular file.",
 	       "",
 	       NULL);
-	err(97, __func__, "Makefile is not a file: %s", Makefile);
+	err(97, __func__, "Makefile is not a regular file: %s", Makefile);
 	not_reached();
     }
     if (!is_read(Makefile)) {
@@ -2851,7 +2851,7 @@ check_remarks_md(struct info *infop, char const *entry_dir, char const *cp, char
 	      "The remarks.md path, while it exists, is not a regular file.",
 	      "",
 	      NULL);
-	err(105, __func__, "remarks_md is not a file: %s", remarks_md);
+	err(105, __func__, "remarks.md is not a regular file: %s", remarks_md);
 	not_reached();
     }
     if (!is_read(remarks_md)) {
@@ -2976,7 +2976,7 @@ check_extra_data_files(struct info *infop, char const *entry_dir, char const *cp
 		   "The file, while it exists, is not a regular file.",
 		   "",
 		   NULL);
-	    err(115, __func__, "extra[%i] is not a file: %s", i, args[i]);
+	    err(115, __func__, "extra[%i] is not a regular file: %s", i, args[i]);
 	    not_reached();
 	}
 	if (!is_read(args[i])) {

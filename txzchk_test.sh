@@ -100,7 +100,7 @@ if [[ ! -e $EXIT_CODE_FILE ]]; then
     exit 55
 fi
 if [[ ! -f $EXIT_CODE_FILE ]]; then
-    echo "$0: ERROR: EXIT_CODE_FILE not a file: $EXIT_CODE_FILE" 1>&2
+    echo "$0: ERROR: EXIT_CODE_FILE not a regular file: $EXIT_CODE_FILE" 1>&2
     exit 55
 fi
 if [[ ! -r $EXIT_CODE_FILE ]]; then
@@ -164,7 +164,7 @@ if [[ ! -e $TXZCHK ]]; then
     exit 4
 fi
 if [[ ! -f $TXZCHK ]]; then
-    echo "$0: ERROR: txzchk not a file: $TXZCHK" 1>&2
+    echo "$0: ERROR: txzchk not a regular file: $TXZCHK" 1>&2
     exit 4
 fi
 if [[ ! -x $TXZCHK ]]; then
@@ -179,7 +179,7 @@ if [[ ! -e $FNAMCHK ]]; then
     exit 4
 fi
 if [[ ! -f $FNAMCHK ]]; then
-    echo "$0: ERROR: fnamchk not a file: $FNAMCHK" 1>&2
+    echo "$0: ERROR: fnamchk not a regular file: $FNAMCHK" 1>&2
     exit 4
 fi
 if [[ ! -x $FNAMCHK ]]; then
@@ -194,7 +194,7 @@ if [[ ! -e $TAR ]]; then
     exit 4
 fi
 if [[ ! -f $TAR ]]; then
-    echo "$0: ERROR: tar not a file: $TAR" 1>&2
+    echo "$0: ERROR: tar not a regular file: $TAR" 1>&2
     exit 4
 fi
 if [[ ! -x $TAR ]]; then

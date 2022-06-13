@@ -112,7 +112,7 @@ if [[ ! -e $LIMIT_IOCCC_H ]]; then
     exit 7
 fi
 if [[ ! -f $LIMIT_IOCCC_H ]]; then
-    echo "$0: ERROR: limit_ioccc.h not a file: $LIMIT_IOCCC_H" 1>&2
+    echo "$0: ERROR: limit_ioccc.h not a regular file: $LIMIT_IOCCC_H" 1>&2
     exit 7
 fi
 if [[ ! -r $LIMIT_IOCCC_H ]]; then

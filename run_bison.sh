@@ -142,7 +142,7 @@ if [[ ! -e $LIMIT_IOCCC_SH ]]; then
     exit 6
 fi
 if [[ ! -f $LIMIT_IOCCC_SH ]]; then
-    echo "$0: ERROR: limit_ioccc.sh not a file: $LIMIT_IOCCC_SH" 1>&2
+    echo "$0: ERROR: limit_ioccc.sh not a regular file: $LIMIT_IOCCC_SH" 1>&2
     exit 6
 fi
 if [[ ! -r $LIMIT_IOCCC_SH ]]; then
@@ -154,7 +154,7 @@ if [[ ! -e $VERGE ]]; then
     exit 6
 fi
 if [[ ! -f $VERGE ]]; then
-    echo "$0: ERROR: verge not a file: $VERGE" 1>&2
+    echo "$0: ERROR: verge not a regular file: $VERGE" 1>&2
     exit 6
 fi
 if [[ ! -x $VERGE ]]; then
@@ -166,7 +166,7 @@ if [[ ! -e $SORRY_H ]]; then
     exit 6
 fi
 if [[ ! -f $SORRY_H ]]; then
-    echo "$0: ERROR: sorry file not a file: $SORRY_H" 1>&2
+    echo "$0: ERROR: sorry file not a regular file: $SORRY_H" 1>&2
     exit 6
 fi
 if [[ ! -r $SORRY_H ]]; then
@@ -443,8 +443,12 @@ use_bison_backup() {
     BISON_C="$PREFIX.tab.c"
     BISON_BACKUP_H="$PREFIX.tab.ref.h"
     BISON_H="$PREFIX.tab.h"
+    if [[ ! -e $BISON_BACKUP_C ]]; then
+	echo "$0: ERROR: file not found: $BISON_BACKUP_C" 1>&2
+	exit 4
+    fi
     if [[ ! -f $BISON_BACKUP_C ]]; then
-	echo "$0: ERROR: not a file: $BISON_BACKUP_C" 1>&2
+	echo "$0: ERROR: not a regular file: $BISON_BACKUP_C" 1>&2
 	exit 4
     fi
     if [[ ! -r $BISON_BACKUP_C ]]; then
@@ -456,7 +460,7 @@ use_bison_backup() {
 	exit 4
     fi
     if [[ ! -f $BISON_BACKUP_H ]]; then
-	echo "$0: ERROR: not a file: $BISON_BACKUP_H" 1>&2
+	echo "$0: ERROR: not a regular file: $BISON_BACKUP_H" 1>&2
 	exit 4
     fi
     if [[ ! -r $BISON_BACKUP_H ]]; then
@@ -518,7 +522,7 @@ add_sorry() {
 	exit 15
     fi
     if [[ ! -f $TMP_FILE ]]; then
-	echo "$0: ERROR: tmp not a file: $TMP_FILE" 1>&2
+	echo "$0: ERROR: tmp not a regular file: $TMP_FILE" 1>&2
 	exit 16
     fi
     if [[ ! -r $TMP_FILE ]]; then

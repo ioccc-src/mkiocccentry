@@ -316,7 +316,7 @@ txzchk_sanity_chks(char const *tar, char const *fnamchk)
 		  "    https://www.gnu.org/software/tar/",
 		  "",
 		  NULL);
-	    err(5, __func__, "tar is not a file: %s", tar);
+	    err(5, __func__, "tar is not a regular file: %s", tar);
 	    not_reached();
 	}
 	if (!is_exec(tar)) {
@@ -363,7 +363,7 @@ txzchk_sanity_chks(char const *tar, char const *fnamchk)
 	      "",
 	      "    txzchk -F /path/to/fnamchk ...",
 	      NULL);
-	err(8, __func__, "fnamchk is not a file: %s", fnamchk);
+	err(8, __func__, "fnamchk is not a regular file: %s", fnamchk);
 	not_reached();
     }
     if (!is_exec(fnamchk)) {
@@ -405,7 +405,7 @@ txzchk_sanity_chks(char const *tar, char const *fnamchk)
 	      "    txzchk [...] <txzpath>",
 	      "",
 	      NULL);
-	err(11, __func__, "txzpath is not a file: %s", txzpath);
+	err(11, __func__, "txzpath is not a regular file: %s", txzpath);
 	not_reached();
     }
     if (!is_read(txzpath)) {
