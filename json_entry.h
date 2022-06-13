@@ -46,9 +46,9 @@
 /*
  * common json fields - for use in mkiocccentry.
  *
- * NOTE: We don't use the json_field or json_value fields (see json_chk.h) here
+ * NOTE: We don't use the json_field or json_value fields (see chk_util.h) here
  * because this struct is for mkiocccentry which is in control of what's written
- * whereas for jinfochk and jauthchk we don't have control of what's in the file
+ * whereas for chkinfo and chkauth we don't have control of what's in the file
  * and we can't prove that it wasn't made by hand or some other utility.
  */
 struct json_common
@@ -58,8 +58,8 @@ struct json_common
      */
     char *mkiocccentry_ver;	/* mkiocccentry version (MKIOCCCENTRY_VERSION) */
     char const *iocccsize_ver;	/* iocccsize version (compiled in, same as iocccsize -V) */
-    char const *jinfochk_ver;	/* jinfochk version (compiled in, same as jinfochk -V) */
-    char const *jauthchk_ver;	/* jauthchk version (compiled in, same as jauthchk -V) */
+    char const *chkinfo_ver;	/* chkinfo version (compiled in, same as chkinfo -V) */
+    char const *chkauth_ver;	/* chkauth version (compiled in, same as chkauth -V) */
     char const *fnamchk_ver;	/* fnamchk version (compiled in, same as fnamchk -V) */
     char const *txzchk_ver;	/* txzchk version (compiled in, same as txzchk -V) */
     /*

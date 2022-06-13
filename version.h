@@ -76,7 +76,7 @@
  * Version of info for JSON the .info.json file.
  *
  * The following is NOT the version of this mkiocccentry tool and NOT the
- * version of the jinfochk tool!
+ * version of the chkinfo tool!
  */
 #define INFO_VERSION "1.9 2022-03-15"		/* format: major.minor YYYY-MM-DD */
 
@@ -84,7 +84,7 @@
  * Version of info for JSON the .author.json file.
  *
  * The following is NOT the version of this mkiocccentry tool and NOT the
- * version of the jauthchk tool!
+ * version of the chkauth tool!
  */
 #define AUTHOR_VERSION "1.12 2022-03-15"	/* format: major.minor YYYY-MM-DD */
 
@@ -99,14 +99,14 @@
 #define TXZCHK_VERSION "0.10 2022-03-15"	/* format: major.minor YYYY-MM-DD */
 
 /*
- * official jinfochk version
+ * official chkinfo version
  */
-#define JINFOCHK_VERSION "0.14 2022-03-15"	/* format: major.minor YYYY-MM-DD */
+#define CHKINFO_VERSION "0.14 2022-03-15"	/* format: major.minor YYYY-MM-DD */
 
 /*
- * official jauthchk version
+ * official chkauth version
  */
-#define JAUTHCHK_VERSION "0.13 2022-03-15"	/* format: major.minor YYYY-MM-DD */
+#define CHKAUTH_VERSION "0.13 2022-03-15"	/* format: major.minor YYYY-MM-DD */
 
 /*
  * official jstrencode version

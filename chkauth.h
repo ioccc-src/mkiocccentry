@@ -1,8 +1,8 @@
 /* vim: set tabstop=8 softtabstop=4 shiftwidth=4 noexpandtab : */
 /*
- * jauthchk - IOCCC JSON .author.json checker and validator. Invoked by
+ * chkauth - IOCCC JSON .author.json checker and validator. Invoked by
  * mkiocccentry after the .author.json file has been created but prior to
- * forming the tarball. The .author.json file is not formed if the jinfochk tool
+ * forming the tarball. The .author.json file is not formed if the chkinfo tool
  * fails to validate the .info.json file.
  *
  * "Because sometimes even the IOCCC Judges need some help." :-)
@@ -13,7 +13,7 @@
  *	https://xexyl.net		Cody Boone Ferguson
  *	https://ioccc.xexyl.net
  *
- * NOTE: This tool and jinfochk is (and are) very much a work(s) in progress and
+ * NOTE: This tool and chkinfo is (and are) very much a work(s) in progress and
  * as of 10 March 2022 it was decided that the parsing should be done via
  * flex(1) and bison(1) which will require some time and thought. In time the
  * two tools will be merged into one which can parse one or both of .author.json
@@ -26,8 +26,8 @@
 
 
 
-#if !defined(INCLUDE_JAUTHCHK_H)
-#    define  INCLUDE_JAUTHCHK_H
+#if !defined(INCLUDE_CHKAUTH_H)
+#    define  INCLUDE_CHKAUTH_H
 
 
 /*
@@ -98,7 +98,7 @@ static const char * const usage_msg =
 "\t0\t\tno errors or warnings detected\n"
 "\t>0\t\tsome error(s) and/or warning(s) were detected\n"
 "\n"
-"jauthchk version: %s\n";
+"chkauth version: %s\n";
 
 
 /*
@@ -117,7 +117,7 @@ extern size_t SIZEOF_AUTHOR_JSON_FIELDS_TABLE;		/* number of elements in the aut
  * forward declarations
  */
 static void usage(int exitcode, char const *name, char const *str) __attribute__((noreturn));
-static void jauthchk_sanity_chks(char const *file, char const *fnamchk);
+static void chkauth_sanity_chks(char const *file, char const *fnamchk);
 static int check_author_json(char const *file, char const *fnamchk);
 static struct json_field *add_found_author_json_field(char const *json_filename, char const *name, char const *val, int line_num);
 static bool add_author_json_field(char const *file, char *name, char *val, int line_num);
@@ -125,4 +125,4 @@ static int check_found_author_json_fields(char const *json_filename, bool test);
 static void free_found_author_json_fields(void);
 
 
-#endif /* INCLUDE_JAUTHCHK_H */
+#endif /* INCLUDE_CHKAUTH_H */

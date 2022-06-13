@@ -4,7 +4,7 @@
  *
  * "Because JSON embodies a commitment to original design flaws." :-)
  *
- * JSON parser support code for the eventual jinfochk and jauthchk tools to
+ * JSON parser support code for the eventual chkinfo and chkauth tools to
  * verify the .info.json and .author.json files created by mkiocccentry. This
  * file has the parse functions as well as functions that these functions use to
  * construct the parse tree etc.
@@ -21,7 +21,7 @@
  * "Because sometimes even the IOCCC Judges need some help." :-)
  *
  * This is very much a work in progress! See jparse.h, jparse.l and jparse.y,
- * json_chk.h, json_chk.c as well as json_util.h and json_util.c.
+ * chk_util.h, chk_util.c as well as json_util.h and json_util.c.
  */
 
 

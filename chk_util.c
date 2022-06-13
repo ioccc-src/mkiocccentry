@@ -1,6 +1,6 @@
 /* vim: set tabstop=8 softtabstop=4 shiftwidth=4 noexpandtab : */
 /*
- * json_ckk - support jinfochk and jauthchk services
+ * json_ckk - support chkinfo and chkauth services
  *
  *
  * This is currently being worked on by:
@@ -43,9 +43,9 @@
 #include "limit_ioccc.h"
 
 /*
- * json_ckk - support jinfochk and jauthchk services
+ * json_ckk - support chkinfo and chkauth services
  */
-#include "json_chk.h"
+#include "chk_util.h"
 
 
 /*
@@ -90,7 +90,7 @@ size_t SIZEOF_COMMON_JSON_FIELDS_TABLE = TBLLEN(common_json_fields);
 struct json_field info_json_fields[] =
 {
     { "IOCCC_info_version",	NULL, 0, 1, false, JTYPE_STRING,    false,  NULL },
-    { "jinfochk_version",	NULL, 0, 1, false, JTYPE_STRING,    false,  NULL },
+    { "chkinfo_version",	NULL, 0, 1, false, JTYPE_STRING,    false,  NULL },
     { "iocccsize_version",	NULL, 0, 1, false, JTYPE_STRING,    false,  NULL },
     { "txzchk_version",		NULL, 0, 1, false, JTYPE_STRING,    false,  NULL },
     { "title",			NULL, 0, 1, false, JTYPE_STRING,    false,  NULL },
@@ -133,13 +133,13 @@ size_t SIZEOF_INFO_JSON_FIELDS_TABLE = TBLLEN(info_json_fields);
  * are not yet parsed not all of these values will be dealt with: that is they
  * won't be checked. Additionally as of some days back (it's now 16 March 2022)
  * it was decided that a more general JSON parser should be implemented via
- * flex(1) and bison(1) so the parsers in jinfochk.c and jauthchk.c will be
+ * flex(1) and bison(1) so the parsers in chkinfo.c and chkauth.c will be
  * removed and a single parser will be made (probably in this file).
  */
 struct json_field author_json_fields[] =
 {
     { "IOCCC_author_version",	NULL, 0, 1, false, JTYPE_STRING,	false,	NULL },
-    { "jauthchk_version",	NULL, 0, 1, false, JTYPE_STRING,	false,	NULL },
+    { "chkauth_version",	NULL, 0, 1, false, JTYPE_STRING,	false,	NULL },
     { "author_count",		NULL, 0, 1, false, JTYPE_NUMBER,	false,  NULL },
     { "authors",		NULL, 0, 1, false, JTYPE_ARRAY,		false,	NULL },
     { "name",			NULL, 0, 5, false, JTYPE_STRING,	false,  NULL },
@@ -509,8 +509,8 @@ json_filename(int type)
  * Does not return on NULL.
  *
  * XXX This function will almost certainly be removed once the JSON parser is
- * complete but we need this in right now so that the current jinfochk and
- * jauthchk code does not fail. These tools could be modified but it seems to be
+ * complete but we need this in right now so that the current chkinfo and
+ * chkauth code does not fail. These tools could be modified but it seems to be
  * not worth the time when more important things (like working on the parser and
  * other problems) should be worked on and resolved. There are some test JSON
  * files that are in error as a misunderstanding of the JSON spec (earlier on)
@@ -560,8 +560,8 @@ check_first_json_char(char const *file, char *data, char **first, char ch)
  * Does not return on NULL pointers.
  *
  * XXX This function will almost certainly be removed once the JSON parser is
- * complete but we need this in right now so that the current jinfochk and
- * jauthchk code does not fail. These tools could be modified but it seems to be
+ * complete but we need this in right now so that the current chkinfo and
+ * chkauth code does not fail. These tools could be modified but it seems to be
  * not worth the time when more important things (like working on the parser and
  * other problems) should be worked on and resolved. There are some test JSON
  * files that are in error as a misunderstanding of the JSON spec (earlier on)
@@ -1010,7 +1010,7 @@ check_found_common_json_fields(char const *json_filename, char const *fnamchk, b
 		 *
 		 * XXX On the other hand it can result in a false positive of a
 		 * valid test so this has to be carefully considered. However
-		 * since the jinfochk and jauthchk tools will change
+		 * since the chkinfo and chkauth tools will change
 		 * dramatically this function might not even exist (or if it
 		 * does it'll be very different). Either the idea that an
 		 * unhandled field is not an issue with the file could be

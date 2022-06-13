@@ -15,7 +15,7 @@
  * "Because sometimes even the IOCCC Judges need some help." :-)
  *
  * This is very much a work in progress! See jparse.h, jparse.l and jparse.y,
- * json_chk.h, json_chk.c as well as json_parse.h and json_parse.c.
+ * chk_util.h, chk_util.c as well as json_parse.h and json_parse.c.
  */
 
 #include <stdio.h>
@@ -50,7 +50,7 @@
 int json_verbosity_level = JSON_DBG_NONE;	/* json debug level set by -J in jparse */
 
 /*
- * global for jwarn(): -w in jinfochk/jauthchk says to show full warning
+ * global for jwarn(): -w in chkinfo/chkauth says to show full warning
  *
  * XXX This currently is not used because there are some problems that have to
  * be resolved first that will take more time and thought. Before this can even

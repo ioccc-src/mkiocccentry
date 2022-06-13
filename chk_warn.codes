@@ -19,10 +19,10 @@
 #
 # The format as of 14 March 2022 is:
 #
-#	# program: (jchk|jinfochk|jauthchk) <function>
+#	# program: (jchk|chkinfo|chkauth) <function>
 #	{JSON-XXXX}: <(JSON|source)_file>: <line_num>: <warning>
 #
-# Where jchk means the JSON code is used in both jinfochk and jauthchk; function
+# Where jchk means the JSON code is used in both chkinfo and chkauth; function
 # is the calling function (check_info_json(), check_author_json() etc.); XXXX is
 # the warning code (not the message); (JSON|source)_file is either the source
 # file of the calling function or the problematic JSON file (where applicable

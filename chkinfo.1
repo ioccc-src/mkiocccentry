@@ -1,17 +1,17 @@
-.TH jinfochk 1 "29 May 2022" "jinfochk" "IOCCC tools"
+.TH chkinfo 1 "29 May 2022" "chkinfo" "IOCCC tools"
 .SH NAME
-jinfochk \- IOCCC tool to validate .info.json file found within an entry directory
+chkinfo \- IOCCC tool to validate .info.json file found within an entry directory
 .SH SYNOPSIS
-\fBjinfochk\fP [\-h] [\-v level] [\-V] [\-q] [\-t] [\-W code] [\-w] file
+\fBchkinfo\fP [\-h] [\-v level] [\-V] [\-q] [\-t] [\-W code] [\-w] file
 .SH DESCRIPTION
-\fBjinfochk\fP is primarily used by other tools (not humans).
+\fBchkinfo\fP is primarily used by other tools (not humans).
 It behaves like \fBfnamchk(1)\fP in that if all is well, it does not print anything and simply exit 0.
-If there are problems found with the \fI.info.json\fP file, then warning messages are printed to \fBstderr\fP AND the \fBjinfochk\fP tool exits with a non-zero status.
+If there are problems found with the \fI.info.json\fP file, then warning messages are printed to \fBstderr\fP AND the \fBchkinfo\fP tool exits with a non-zero status.
 .PP
-The \fBjinfochk\fP tool is primarily a stand alone tool.
-As a sanity check, the \fBmkiocccentry(1)\fP program executes \fBjinfochk\fP AFTER the \fI.info.json\fP file has been created and before the compressed tarball is formed.
+The \fBchkinfo\fP tool is primarily a stand alone tool.
+As a sanity check, the \fBmkiocccentry(1)\fP program executes \fBchkinfo\fP AFTER the \fI.info.json\fP file has been created and before the compressed tarball is formed.
 If \fBmkiocccentry\fP program sees a 0 exit status, then all is well.
-For a non-zero exit code, the tool aborts because any problems detected by \fBjinfochk\fP based on what \fBmkiocccentry\fP wrote into \fI.info.json\fP indicates there is a serious mismatch between what \fBmkiocccentry\fP is doing and what \fBjinfochk\fP expects.
+For a non-zero exit code, the tool aborts because any problems detected by \fBchkinfo\fP based on what \fBmkiocccentry\fP wrote into \fI.info.json\fP indicates there is a serious mismatch between what \fBmkiocccentry\fP is doing and what \fBchkinfo\fP expects.
 .PP
 .SH OPTIONS
 .PP
@@ -41,13 +41,13 @@ Note that this currently is not used but will be in a future commit.
 \fBmain()\fP returns 1 for issues found and 0 for success.
 If an error is encountered the end is not reached.
 .SH FILES
-\fIjinfochk.c\fP
+\fIchkinfo.c\fP
 .RS
-Source code of the \fBjinfochk\fP tool.
+Source code of the \fBchkinfo\fP tool.
 .RE
-\fIjinfochk.h\fP
+\fIchkinfo.h\fP
 .RS
-Header file for the \fBjinfochk\fP tool.
+Header file for the \fBchkinfo\fP tool.
 .RE
 \fIjson_parse.h\fP
 .RS
@@ -57,13 +57,13 @@ JSON parser support code header file.
 .RS
 JSON parser support code source code.
 .RE
-\fIjson_chk.h\fP
+\fIchk_util.h\fP
 .RS
-\fBjinfochk\fP and \fBjauthchk\fP support header file.
+\fBchkinfo\fP and \fBchkauth\fP support header file.
 .RE
-\fIjson_chk.c\fP
+\fIchk_util.c\fP
 .RS
-\fBjinfochk\fP and \fBjauthchk\fP support source code.
+\fBchkinfo\fP and \fBchkauth\fP support source code.
 .RE
 .SH BUGS
 .PP
@@ -75,9 +75,9 @@ Run the tool on the \fB.info.json\fP file \fItest_work/test-0/.info.json\fP:
 
 .RS
 \fB
- ./jinfochk test_work/test-0/.info.json\fP
+ ./chkinfo test_work/test-0/.info.json\fP
 .fi
 .RE
 .SH SEE ALSO
 .PP
-\fBmkiocccentry(1)\fP, \fBjauthchk(1)\fP and \fBjparse(1)\fP.
+\fBmkiocccentry(1)\fP, \fBchkauth(1)\fP and \fBjparse(1)\fP.

@@ -1,18 +1,18 @@
-.TH jauthchk 1 "29 May 2022" "jauthchk" "IOCCC tools"
+.TH chkauth 1 "29 May 2022" "chkauth" "IOCCC tools"
 .SH NAME
-jauthchk \- IOCCC tool to validate .author.json file found within an entry directory
+chkauth \- IOCCC tool to validate .author.json file found within an entry directory
 .SH SYNOPSIS
-\fBjauthchk\fP [\-h] [\-v level] [\-V] [\-q] [\-W code] [\-w] file
+\fBchkauth\fP [\-h] [\-v level] [\-V] [\-q] [\-W code] [\-w] file
 .SH DESCRIPTION
-\fBjauthchk\fP is primarily used by other tools (not humans).
+\fBchkauth\fP is primarily used by other tools (not humans).
 As such it should behave like \fBfnamchk(1)\fP in that if all is well, it should not print anything and simply exit 0.
-If there are problems found with the \fI.author.json\fP file, then warning messages should be printed to \fBstderr\fP AND the \fBjauthchk\fP tool should exit with a non-zero status.
+If there are problems found with the \fI.author.json\fP file, then warning messages should be printed to \fBstderr\fP AND the \fBchkauth\fP tool should exit with a non-zero status.
 The use of a -v level may be use to assist in debugging.
 .PP
-The \fBjauthchk\fP tool is primarily a stand alone tool.
-As a sanity check, the \fBmkiocccentry(1)\fP program executes \fBjauthchk\fP AFTER the \fI.author.json\fP file has been created and before the compressed tarball is formed.
+The \fBchkauth\fP tool is primarily a stand alone tool.
+As a sanity check, the \fBmkiocccentry(1)\fP program executes \fBchkauth\fP AFTER the \fI.author.json\fP file has been created and before the compressed tarball is formed.
 If \fBmkiocccentry\fP program sees a 0 exit status, then all is well.
-For a non-zero exit code, the tool aborts because any problems detected by \fBjauthchk\fP based on what \fBmkiocccentry\fP wrote into \fI.author.json\fP indicates there is a serious mismatch between what \fBmkiocccentry\fP is doing and what \fBjauthchk\fP expects.
+For a non-zero exit code, the tool aborts because any problems detected by \fBchkauth\fP based on what \fBmkiocccentry\fP wrote into \fI.author.json\fP indicates there is a serious mismatch between what \fBmkiocccentry\fP is doing and what \fBchkauth\fP expects.
 .PP
 .SH OPTIONS
 .PP
@@ -42,13 +42,13 @@ Note that this currently is not used but will be in a future commit.
 \fBmain()\fP returns 1 for issues found and 0 for success.
 If an error is encountered the end is not reached.
 .SH FILES
-\fIjauthchk.c\fP
+\fIchkauth.c\fP
 .RS
-Source code of the \fBjauthchk\fP tool.
+Source code of the \fBchkauth\fP tool.
 .RE
-\fIjauthchk.h\fP
+\fIchkauth.h\fP
 .RS
-Header file for the \fBjauthchk\fP tool.
+Header file for the \fBchkauth\fP tool.
 .RE
 \fIjson_parse.h\fP
 .RS
@@ -58,13 +58,13 @@ JSON parser support code header file.
 .RS
 JSON parser support code source code.
 .RE
-\fIjson_chk.h\fP
+\fIchk_util.h\fP
 .RS
-\fBjinfochk\fP and \fBjauthchk\fP support header file.
+\fBchkinfo\fP and \fBchkauth\fP support header file.
 .RE
-\fIjson_chk.c\fP
+\fIchk_util.c\fP
 .RS
-\fBjinfochk\fP and \fBjauthchk\fP support source code.
+\fBchkinfo\fP and \fBchkauth\fP support source code.
 .RE
 .SH BUGS
 This tool is not finished yet; it depends on the completion of the JSON parser.
@@ -75,9 +75,9 @@ Run the tool on the \fB.author.json\fP file \fItest_work/test-0/.author.json\fP:
 
 .RS
 \fB
- ./jauthchk test_work/test-0/.author.json\fP
+ ./chkauth test_work/test-0/.author.json\fP
 .fi
 .RE
 .SH SEE ALSO
 .PP
-\fBmkiocccentry(1)\fP, \fBjinfochk(1)\fP and \fBjparse(1)\fP.
+\fBmkiocccentry(1)\fP, \fBchkinfo(1)\fP and \fBjparse(1)\fP.

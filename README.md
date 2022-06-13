@@ -56,7 +56,7 @@ For more information and examples, try:
 	    man ./fnamechk.1
 
 
-##  `jinfochk`
+##  `chkinfo`
 
 The official **IOCCC** `.info.json` sanity checker tool. Invoked by
 `mkiocccentry` after the `.info.json` file has been created, it will attempt to
@@ -65,23 +65,23 @@ mismatch between what is expected and what is actually there and `mkiocccentry`
 will fail.
 
 As a stand-alone tool it will report whether the file is a validly formed
-`.info.json` file. See also `jauthchk`.
+`.info.json` file. See also `chkauth`.
 
-*NOTE*: This tool and `jauthchk` are **very much works in progress** and as of
+*NOTE*: This tool and `chkauth` are **very much works in progress** and as of
 10 March 2022 it was decided that the parsing should be done via `flex(1)` and
 `bison(1)` which is being worked on in `jparse` (see below). 
 
-In time the two tools (`jinfochk` and `jauthchk`) will be merged into one tool
+In time the two tools (`chkinfo` and `chkauth`) will be merged into one tool
 which can parse one or both of `.info.json` and `.author.json`. This is because
 some fields MUST be the same value in both files.
 
 For more information and examples, try:
 
 
-	    man ./jinfochk.1
+	    man ./chkinfo.1
 
 
-##  `jauthchk`
+##  `chkauth`
 
 The official **IOCCC** `.author.json` sanity checker tool. Invoked by
 `mkiocccentry` after the `.author.json` file has been created, it will attempt to
@@ -90,20 +90,20 @@ mismatch between what is expected and what is actually there and `mkiocccentry`
 will fail.
 
 As a stand-alone tool it will report whether the file is a validly formed
-`.author.json` file. See also `jinfochk`.
+`.author.json` file. See also `chkinfo`.
 
-*NOTE*: This tool and `jinfochk` are **very much works in progress** and as of
+*NOTE*: This tool and `chkinfo` are **very much works in progress** and as of
 10 March 2022 it was decided that the parsing should be done via `flex(1)` and
 `bison(1)` which is being worked on in `jparse` (see below). 
 
-In time the two tools (`jauthchk` and `jinfochk`) will be merged into one tool
+In time the two tools (`chkauth` and `chkinfo`) will be merged into one tool
 which can parse one or both of `.author.json` and `.author.json`. This is
 because some fields MUST be the same value in both files.
 
 For more information and examples, try:
 
 
-	    man ./jauthchk.1
+	    man ./chkauth.1
 
 
 ##  `jparse`
@@ -115,7 +115,7 @@ It takes a block of memory from either a file (stdin or a text file) or a string
 or not.
 
 As of 26 May 2022 it does not yet create a parse tree for other tools like the
-`jinfochk` and `jauthchk` tools. Some things still have to be worked out. Once
+`chkinfo` and `chkauth` tools. Some things still have to be worked out. Once
 this is done the other two tools can be finished.
 
 *NOTE*: At the risk of stating the obvious this tool is **very much a work in

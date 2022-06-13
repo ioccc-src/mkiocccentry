@@ -18,10 +18,10 @@
 #
 # The format as of 15 March 2022 is:
 #
-#	# program: (jchk|jinfochk|jauthchk) <function>
+#	# program: (jchk|chkinfo|chkauth) <function>
 #	JSON[XXXX]: <(JSON|source)_file>: <line_num> <error>
 #
-# Where jchk means the JSON code is used in both jinfochk and jauthchk; function
+# Where jchk means the JSON code is used in both chkinfo and chkauth; function
 # is the calling function (check_info_json(), check_author_json() etc.); XXXX is
 # the error code (not the message); (JSON|source)_file is either the source file
 # of the calling function or the problematic JSON file (where applicable the
@@ -48,7 +48,7 @@
 #
 # NOTE: As of 2 April 2022 the reserved JSON codes are from 0 - 199 and the only
 # use right now is for errors that are triggered when verifying that the JSON
-# tables are sane and for shared errors across json_parse.c, jinfochk.c and jauthchk.c
+# tables are sane and for shared errors across json_parse.c, chkinfo.c and chkauth.c
 # (where the message is the same except for different filename and function
 # names). 
 # 

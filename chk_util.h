@@ -1,6 +1,6 @@
 /* vim: set tabstop=8 softtabstop=4 shiftwidth=4 noexpandtab : */
 /*
- * json_ckk - support jinfochk and jauthchk services
+ * json_ckk - support chkinfo and chkauth services
  *
  * This is currently being worked on by:
  *
@@ -20,8 +20,8 @@
  */
 
 
-#if !defined(INCLUDE_JSON_CHK_H)
-#    define  INCLUDE_JSON_CHK_H
+#if !defined(INCLUDE_CHK_UTIL_H)
+#    define  INCLUDE_CHK_UTIL_H
 
 
 /*
@@ -198,4 +198,4 @@ extern void free_found_common_json_fields(void);
 extern void free_json_field(struct json_field *field);
 
 
-#endif /* INCLUDE_JSON_CHK_H */
+#endif /* INCLUDE_CHK_UTIL_H */

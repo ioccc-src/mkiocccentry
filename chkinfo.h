@@ -1,8 +1,8 @@
 /* vim: set tabstop=8 softtabstop=4 shiftwidth=4 noexpandtab : */
 /*
- * jinfochk - IOCCC JSON .info.json checker and validator. Invoked by
+ * chkinfo - IOCCC JSON .info.json checker and validator. Invoked by
  * mkiocccentry after the .info.json file has been created but prior to forming
- * the .author.json file, validating it with jauthchk and then forming the
+ * the .author.json file, validating it with chkauth and then forming the
  * tarball.
  *
  * "Because sometimes even the IOCCC Judges need some help." :-)
@@ -13,7 +13,7 @@
  *	https://xexyl.net		Cody Boone Ferguson
  *	https://ioccc.xexyl.net
  *
- * NOTE: This tool and jauthchk is (and are) very much a work(s) in progress and
+ * NOTE: This tool and chkauth is (and are) very much a work(s) in progress and
  * as of 10 March 2022 it was decided that the parsing should be done via
  * flex(1) and bison(1) which will require some time and thought. In time the
  * two tools will be merged into one which can parse one or both of .info.json
@@ -25,8 +25,8 @@
  */
 
 
-#if !defined(INCLUDE_JINFOCHK_H)
-#    define  INCLUDE_JINFOCHK_H
+#if !defined(INCLUDE_CHKINFO_H)
+#    define  INCLUDE_CHKINFO_H
 
 
 /*
@@ -104,7 +104,7 @@ static const char * const usage_msg =
 "\t0\t\tno errors or warnings detected\n"
 "\t>0\t\tsome error(s) and/or warning(s) were detected\n"
 "\n"
-"jinfochk version: %s\n";
+"chkinfo version: %s\n";
 
 
 /*
@@ -124,7 +124,7 @@ extern size_t SIZEOF_INFO_JSON_FIELDS_TABLE;
  * forward declarations
  */
 static void usage(int exitcode, char const *name, char const *str) __attribute__((noreturn));
-static void jinfochk_sanity_chks(char const *file, char const *fnamchk);
+static void chkinfo_sanity_chks(char const *file, char const *fnamchk);
 static int check_info_json(char const *file, char const *fnamchk);
 static struct json_field *add_found_info_json_field(char const *json_filename, char const *name, char const *val, int line_num);
 static bool add_info_json_field(char const *json_filename, char *name, char *val, int line_num);
@@ -135,4 +135,4 @@ static void free_manifest_files_list(void);
 static void free_manifest_file(struct manifest_file *file);
 
 
-#endif /* INCLUDE_JINFOCHK_H */
+#endif /* INCLUDE_CHKINFO_H */

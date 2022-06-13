@@ -3,14 +3,14 @@
 .sorry.*
 answers.txt
 build.log
+chkauth
+chkinfo
 dbg
-dbg_test.c
 dbg_example
+dbg_test.c
 dyn_test
 fnamchk
 iocccsize
-jauthchk
-jinfochk
 jnum_chk
 jnum_gen
 jparse
@@ -19,7 +19,7 @@ jparse.tab.c
 jparse.tab.h
 jparse_test.log
 json_parser
-json_test.log
+chk_test.log
 jstr_test.out
 jstr_test2.out
 jstrdecode

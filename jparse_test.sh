@@ -196,24 +196,24 @@ else
 
 	# note input source
 	#
-	JSON_TEST_FILE="$1"
+	CHK_TEST_FILE="$1"
 	shift
 	if [[ $V_FLAG -ge 1 ]]; then
-	    echo "$0: debug[1]: reading JSON documents from: $JSON_TEST_FILE" 1>&2
+	    echo "$0: debug[1]: reading JSON documents from: $CHK_TEST_FILE" 1>&2
 	fi
 
 	# firewall - check test file
 	#
-	if [[ ! -e $JSON_TEST_FILE ]]; then
-	    echo "$0: test file not found: $JSON_TEST_FILE"
+	if [[ ! -e $CHK_TEST_FILE ]]; then
+	    echo "$0: test file not found: $CHK_TEST_FILE"
 	    exit 4
 	fi
-	if [[ ! -f $JSON_TEST_FILE ]]; then
-	    echo "$0: test file not a regular file: $JSON_TEST_FILE"
+	if [[ ! -f $CHK_TEST_FILE ]]; then
+	    echo "$0: test file not a regular file: $CHK_TEST_FILE"
 	    exit 4
 	fi
-	if [[ ! -r $JSON_TEST_FILE ]]; then
-	    echo "$0: test file not readable: $JSON_TEST_FILE"
+	if [[ ! -r $CHK_TEST_FILE ]]; then
+	    echo "$0: test file not readable: $CHK_TEST_FILE"
 	    exit 4
 	fi
 
@@ -221,7 +221,7 @@ else
 	#
 	while read -r JSON_DOC; do
 	    run_test "$JPARSE" "$DBG_LEVEL" "$JSON_DBG_LEVEL" "$Q_FLAG" "$JSON_DOC"
-	done < "$JSON_TEST_FILE"
+	done < "$CHK_TEST_FILE"
 
     done
 fi

@@ -37,9 +37,9 @@
 #include "utf8_posix_map.h"
 
 /*
- * json_ckk - support jinfochk and jauthchk services
+ * json_ckk - support chkinfo and chkauth services
  */
-#include "json_chk.h"
+#include "chk_util.h"
 
 
 /*

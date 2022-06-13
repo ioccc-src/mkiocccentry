@@ -1,5 +1,28 @@
 # Major changes to the IOCCC entry toolkit
 
+## Release 0.3
+
+Improved JSON parser diagnostic messages.  Now, `./jparse -s 0` just prints
+`invalid JSON`, whereas `./jparse -J 7 -s 0` prints a bunch of parser
+diagnostics and  `./jparse -J 9 -s 0` turns on `bison` debug messages.
+
+Updates to use new debug facility features from version 2.2 2022-06-08.
+
+Fixed lots typos.  Make a number of text improvements in comments,
+shell scripts, and documentation (both man page and markdown down).
+
+Renamed jauthchk to chkauth.  Renamed jinfochk to chkinfo.
+Renamed associated header files, man pages and comment references.
+Adjusted shell scripts to use the new names accordingly.
+Renamed JAUTHCHK_VERSION to CHKAUTH_VERSION.
+Renamed JINFOCHK_VERSION to CHKINFO_VERSION.
+Renamed json_chk.c to chk_util.c.
+Renamed json_chk.h to chk_util.h.
+Renamed json_err.codes to chk_err.codes.
+Renamed json_warn.codes to chk_warn.codes.
+Renamed jcodechk.sh to chkcode.sh.
+
+
 ## Release 0.2
 
 Several new tools and man pages have been added. Additionally the JSON parser is

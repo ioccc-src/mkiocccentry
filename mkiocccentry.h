@@ -147,8 +147,8 @@ static const char * const usage_msg1 =
     "\t-T txzchk\tpath to txzchk executable (def: %s)\n"
     "\t-F fnamchk\tpath to fnamchk executable used by txzchk (def: %s)";
 static const char * const usage_msg2 =
-    "\t-j jinfochk	path to jinfochk executable used by txzchk (def: %s)\n"
-    "\t-J jauthchk	path to jauthchk executable used by txzchk (def: %s)\n";
+    "\t-j chkinfo	path to chkinfo executable used by txzchk (def: %s)\n"
+    "\t-J chkauth	path to chkauth executable used by txzchk (def: %s)\n";
 static const char * const usage_msg3 =
     "\t-a answers\twrite answers to a file for easier updating of an entry\n"
     "\t-A answers\twrite answers file even if it already exists\n"
@@ -196,7 +196,7 @@ static void warn_ungetc(char const *prog_c);
 static void warn_rule_2b_size(struct info *infop, char const *prog_c);
 static RuleCount check_prog_c(struct info *infop, char const *entry_dir, char const *cp, char const *prog_c);
 static void mkiocccentry_sanity_chks(struct info *infop, char const *work_dir, char const *tar, char const *cp,
-		       char const *ls, char const *txzchk, char const *fnamchk, char const *jinfochk, char const *jauthchk);
+		       char const *ls, char const *txzchk, char const *fnamchk, char const *chkinfo, char const *chkauth);
 static char *prompt(char const *str, size_t *lenp);
 static char *get_contest_id(bool *testp, bool *read_answers_flag_used);
 static int get_entry_num(struct info *infop);
@@ -211,8 +211,8 @@ static char *get_title(struct info *infop);
 static char *get_abstract(struct info *infop);
 static int get_author_info(struct info *infop, char *ioccc_id, struct author **author_set);
 static void verify_entry_dir(char const *entry_dir, char const *ls);
-static void write_info(struct info *infop, char const *entry_dir, char const *jinfochk, char const *fnamchk);
-static void write_author(struct info *infop, int author_count, struct author *authorp, char const *entry_dir, char const *jauthchk);
+static void write_info(struct info *infop, char const *entry_dir, char const *chkinfo, char const *fnamchk);
+static void write_author(struct info *infop, int author_count, struct author *authorp, char const *entry_dir, char const *chkauth);
 static void form_tarball(char const *work_dir, char const *entry_dir, char const *tarball_path, char const *tar,
 			 char const *ls, char const *txzchk, char const *fnamchk);
 static void remind_user(char const *work_dir, char const *entry_dir, char const *tar, char const *tarball_path, bool test_mode);

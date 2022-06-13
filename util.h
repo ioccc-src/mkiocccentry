@@ -118,7 +118,7 @@ typedef unsigned char bool;
 
 /*
  * paths to utilities the IOCCC tools use (including our own tools fnamchk,
- * txzchk, jinfochk, jauthchk, etc.)
+ * txzchk, chkinfo, chkauth, etc.)
  */
 #define TAR_PATH_0 "/usr/bin/tar"		    /* historic path for tar */
 #define TAR_PATH_1 "/bin/tar"			    /* alternate tar path for some systems where /usr/bin/tar != /bin/tar */
@@ -130,10 +130,10 @@ typedef unsigned char bool;
 #define FNAMCHK_PATH_1 "/usr/local/bin/fnamchk"	    /* default path to fnamchk tool if installed */
 #define TXZCHK_PATH_0 "./txzchk"		    /* default path to txzchk tool */
 #define TXZCHK_PATH_1 "/usr/local/bin/txzchk"	    /* default path to txzchk tool if installed */
-#define JAUTHCHK_PATH_0 "./jauthchk"		    /* default path to jauthchk tool */
-#define JAUTHCHK_PATH_1 "/usr/local/bin/jauthchk"   /* default path to jauthchk tool if installed */
-#define JINFOCHK_PATH_0 "./jinfochk"		    /* default path to jinfochk tool */
-#define JINFOCHK_PATH_1 "/usr/local/bin/jinfochk"   /* default path to jinfochk tool if installed */
+#define CHKAUTH_PATH_0 "./chkauth"		    /* default path to chkauth tool */
+#define CHKAUTH_PATH_1 "/usr/local/bin/chkauth"   /* default path to chkauth tool if installed */
+#define CHKINFO_PATH_0 "./chkinfo"		    /* default path to chkinfo tool */
+#define CHKINFO_PATH_1 "/usr/local/bin/chkinfo"   /* default path to chkinfo tool if installed */
 #define JPARSE_PATH_0 "./jparse"		    /* default path to jparse */
 #define JPARSE_PATH_1 "/usr/local/bin/jparse"	    /* default path to jparse tool if installed */
 
@@ -197,8 +197,8 @@ extern ssize_t readline(char **linep, FILE * stream);
 extern char *readline_dup(char **linep, bool strip, size_t *lenp, FILE * stream);
 extern void find_utils(bool tar_flag_used, char **tar, bool cp_flag_used, char **cp,
 		       bool ls_flag_used, char **ls, bool txzchk_flag_used, char **txzchk,
-		       bool fnamchk_flag_used, char **fnamchk, bool jinfochk_flag_used,
-		       char **jinfochk, bool jauthchk_flag_used, char **jauthchk);
+		       bool fnamchk_flag_used, char **fnamchk, bool chkinfo_flag_used,
+		       char **chkinfo, bool chkauth_flag_used, char **chkauth);
 extern off_t round_to_multiple(off_t num, off_t multiple);
 extern void jencchk(void);
 extern void *read_all(FILE *stream, size_t *psize);

@@ -124,8 +124,8 @@ main(int argc, char *argv[])
     char *ls = LS_PATH_0;			/* path to ls executable */
     char *txzchk = TXZCHK_PATH_0;		/* path to txzchk executable */
     char *fnamchk = FNAMCHK_PATH_0;		/* path to fnamchk executable */
-    char *jauthchk = JAUTHCHK_PATH_0;		/* path to jauthchk executable */
-    char *jinfochk = JINFOCHK_PATH_0;		/* path to jinfochk executable */
+    char *chkauth = CHKAUTH_PATH_0;		/* path to chkauth executable */
+    char *chkinfo = CHKINFO_PATH_0;		/* path to chkinfo executable */
     char const *answers = NULL;			/* path to the answers file (recording input given on stdin) */
     FILE *answerp = NULL;			/* file pointer to the answers file */
     char *entry_dir = NULL;			/* entry directory from which to form a compressed tarball */
@@ -143,8 +143,8 @@ main(int argc, char *argv[])
     bool overwrite_answers_flag_used = false;	/* true ==> don't prompt to overwrite answers if it already exists */
     bool txzchk_flag_used = false;		/* true ==> -T /path/to/txzchk was given */
     bool fnamchk_flag_used = false;		/* true ==> -F /path/to/fnamchk was given */
-    bool jinfochk_flag_used = false;		/* true ==> -j /path/to/jinfochk was given */
-    bool jauthchk_flag_used = false;		/* true ==> -J /path/to/jauthchk was given */
+    bool chkinfo_flag_used = false;		/* true ==> -j /path/to/chkinfo was given */
+    bool chkauth_flag_used = false;		/* true ==> -J /path/to/chkauth was given */
     bool overwrite_answers = true;		/* true ==> overwrite answers file even if it already exists */
     RuleCount size;				/* rule_count() processing results */
     int ret;					/* libc return code */
@@ -218,12 +218,12 @@ main(int argc, char *argv[])
 	    fnamchk = optarg;
 	    break;
 	case 'j':
-	    jinfochk_flag_used = true;
-	    jinfochk = optarg;
+	    chkinfo_flag_used = true;
+	    chkinfo = optarg;
 	    break;
 	case 'J':
-	    jauthchk_flag_used = true;
-	    jauthchk = optarg;
+	    chkauth_flag_used = true;
+	    chkauth = optarg;
 	    break;
 	default:
 	    usage(3, "invalid -flag", program); /*ooo*/
@@ -248,7 +248,7 @@ main(int argc, char *argv[])
      */
     find_utils(tar_flag_used, &tar, cp_flag_used, &cp, ls_flag_used, &ls,
 	       txzchk_flag_used, &txzchk, fnamchk_flag_used, &fnamchk,
-	       jinfochk_flag_used, &jinfochk, jauthchk_flag_used, &jauthchk);
+	       chkinfo_flag_used, &chkinfo, chkauth_flag_used, &chkauth);
 
     /* check that conflicting answers file options are not used together */
     if (answers_flag_used && read_answers_flag_used) {
@@ -332,7 +332,7 @@ main(int argc, char *argv[])
     if (!quiet) {
 	para("", "Performing sanity checks on your environment ...", NULL);
     }
-    mkiocccentry_sanity_chks(&info, work_dir, tar, cp, ls, txzchk, fnamchk, jinfochk, jauthchk);
+    mkiocccentry_sanity_chks(&info, work_dir, tar, cp, ls, txzchk, fnamchk, chkinfo, chkauth);
     if (!quiet) {
 	para("... environment looks OK", "", NULL);
     }
@@ -558,7 +558,7 @@ main(int argc, char *argv[])
     if (!quiet) {
 	para("", "Forming the .info.json file ...", NULL);
     }
-    write_info(&info, entry_dir, jinfochk, fnamchk);
+    write_info(&info, entry_dir, chkinfo, fnamchk);
     if (!quiet) {
 	para("... completed the .info.json file.", "", NULL);
     }
@@ -568,7 +568,7 @@ main(int argc, char *argv[])
     if (!quiet) {
 	para("", "Forming the .author.json file ...", NULL);
     }
-    write_author(&info, author_count, author_set, entry_dir, jauthchk);
+    write_author(&info, author_count, author_set, entry_dir, chkauth);
     if (!quiet) {
 	para("... completed .author.json file.", "", NULL);
     }
@@ -746,8 +746,8 @@ main(int argc, char *argv[])
  *	ls		path to tar ls utility
  *	txzchk		path to the txzchk tool
  *	fnamchk		path to the fnamchk tool
- *	jinfochk	path to jinfochk tool
- *	jauthchk	path to jauthchk tool
+ *	chkinfo	path to chkinfo tool
+ *	chkauth	path to chkauth tool
  *
  * NOTE: We warn with extra newlines to help internal fault messages stand out.
  *       Normally one should NOT include newlines in warn messages.
@@ -776,7 +776,7 @@ usage(int exitcode, char const *str, char const *program)
     fprintf_usage(DO_NOT_EXIT, stderr, "%s\n", str);
     fprintf_usage(DO_NOT_EXIT, stderr, usage_msg0, program, DBG_DEFAULT);
     fprintf_usage(DO_NOT_EXIT, stderr, usage_msg1, TAR_PATH_0, CP_PATH_0, LS_PATH_0, TXZCHK_PATH_0, FNAMCHK_PATH_0);
-    fprintf_usage(DO_NOT_EXIT, stderr, usage_msg2, JINFOCHK_PATH_0, JAUTHCHK_PATH_0);
+    fprintf_usage(DO_NOT_EXIT, stderr, usage_msg2, CHKINFO_PATH_0, CHKAUTH_PATH_0);
     fprintf_usage(DO_NOT_EXIT, stderr, "%s", usage_msg3);
     fprintf_usage(exitcode, stderr, usage_msg4, MKIOCCCENTRY_VERSION);
     exit(exitcode); /*ooo*/
@@ -799,20 +799,20 @@ usage(int exitcode, char const *str, char const *program)
  *	ls		- path to the ls utility
  *	txzchk		- path to txzchk tool
  *	fnamchk		- path to fnamchk tool
- *	jinfochk	- path to jinfochk tool
- *	jauthchk	- path to jauthchk tool
+ *	chkinfo	- path to chkinfo tool
+ *	chkauth	- path to chkauth tool
  *
  * NOTE: This function does not return on error or if things are not sane.
  */
 static void
 mkiocccentry_sanity_chks(struct info *infop, char const *work_dir, char const *tar, char const *cp, char const *ls,
-	   char const *txzchk, char const *fnamchk, char const *jinfochk, char const *jauthchk)
+	   char const *txzchk, char const *fnamchk, char const *chkinfo, char const *chkauth)
 {
     /*
      * firewall
      */
     if (infop == NULL || work_dir == NULL || tar == NULL || cp == NULL || ls == NULL ||
-	txzchk == NULL || fnamchk == NULL || jinfochk == NULL || jauthchk == NULL) {
+	txzchk == NULL || fnamchk == NULL || chkinfo == NULL || chkauth == NULL) {
 	err(12, __func__, "called with NULL arg(s)");
 	not_reached();
     }
@@ -1098,114 +1098,114 @@ mkiocccentry_sanity_chks(struct info *infop, char const *work_dir, char const *t
     }
 
     /*
-     * jinfochk must be executable
+     * chkinfo must be executable
      */
-    if (!exists(jinfochk)) {
+    if (!exists(chkinfo)) {
 	fpara(stderr,
 	      "",
-	      "We cannot find a jinfochk tool.",
+	      "We cannot find a chkinfo tool.",
 	      "",
-	      "A jinfochk program performs sanity checks on the compressed tarball.",
+	      "A chkinfo program performs sanity checks on the compressed tarball.",
 	      "Perhaps you need to use:",
 	      "",
-	      "    mkiocccentry -j /path/to/jinfochk ...",
+	      "    mkiocccentry -j /path/to/chkinfo ...",
 	      "",
-	      "and/or install the jinfochk tool?  You can find the source for jinfochk in the mkiocccentry GitHub repo:",
+	      "and/or install the chkinfo tool?  You can find the source for chkinfo in the mkiocccentry GitHub repo:",
 	      "",
 	      "    https://github.com/ioccc-src/mkiocccentry",
 	      "",
 	      NULL);
-	err(28, __func__, "jinfochk does not exist: %s", jinfochk);
+	err(28, __func__, "chkinfo does not exist: %s", chkinfo);
 	not_reached();
     }
-    if (!is_file(jinfochk)) {
+    if (!is_file(chkinfo)) {
 	fpara(stderr,
 	      "",
-	      "The jinfochk tool, while it exists, is not a regular file.",
+	      "The chkinfo tool, while it exists, is not a regular file.",
 	      "",
 	      "Perhaps you need to use another path:",
 	      "",
-	      "    mkiocccentry -j /path/to/jinfochk ...",
+	      "    mkiocccentry -j /path/to/chkinfo ...",
 	      "",
-	      "and/or install the jinfochk tool?  You can find the source for jinfochk in the mkiocccentry GitHub repo:",
+	      "and/or install the chkinfo tool?  You can find the source for chkinfo in the mkiocccentry GitHub repo:",
 	      "",
 	      "    https://github.com/ioccc-src/mkiocccentry",
 	      "",
 	      NULL);
-	err(29, __func__, "jinfochk is not a regular file: %s", jinfochk);
+	err(29, __func__, "chkinfo is not a regular file: %s", chkinfo);
 	not_reached();
     }
-    if (!is_exec(jinfochk)) {
+    if (!is_exec(chkinfo)) {
 	fpara(stderr,
 	      "",
-	      "The jinfochk tool, while it is a file, is not executable.",
+	      "The chkinfo tool, while it is a file, is not executable.",
 	      "",
-	      "We suggest you check the permissions on the jinfochk program, or use another path:",
+	      "We suggest you check the permissions on the chkinfo program, or use another path:",
 	      "",
-	      "    mkiocccentry -j /path/to/jinfochk ...",
+	      "    mkiocccentry -j /path/to/chkinfo ...",
 	      "",
-	      "and/or install the jinfochk tool?  You can find the source for jinfochk in the mkiocccentry GitHub repo:",
+	      "and/or install the chkinfo tool?  You can find the source for chkinfo in the mkiocccentry GitHub repo:",
 	      "",
 	      "    https://github.com/ioccc-src/mkiocccentry",
 	      "",
 	      NULL);
-	err(30, __func__, "jinfochk is not an executable program: %s", jinfochk);
+	err(30, __func__, "chkinfo is not an executable program: %s", chkinfo);
 	not_reached();
     }
 
     /*
-     * jauthchk must be executable
+     * chkauth must be executable
      */
-    if (!exists(jauthchk)) {
+    if (!exists(chkauth)) {
 	fpara(stderr,
 	      "",
-	      "We cannot find a jauthchk tool.",
+	      "We cannot find a chkauth tool.",
 	      "",
-	      "A jauthchk program performs sanity checks on the compressed tarball.",
+	      "A chkauth program performs sanity checks on the compressed tarball.",
 	      "Perhaps you need to use:",
 	      "",
-	      "    mkiocccentry -J /path/to/jauthchk ...",
+	      "    mkiocccentry -J /path/to/chkauth ...",
 	      "",
-	      "and/or install the jauthchk tool?  You can find the source for jauthchk in the mkiocccentry GitHub repo:",
+	      "and/or install the chkauth tool?  You can find the source for chkauth in the mkiocccentry GitHub repo:",
 	      "",
 	      "    https://github.com/ioccc-src/mkiocccentry",
 	      "",
 	      NULL);
-	err(31, __func__, "jauthchk does not exist: %s", jauthchk);
+	err(31, __func__, "chkauth does not exist: %s", chkauth);
 	not_reached();
     }
-    if (!is_file(jauthchk)) {
+    if (!is_file(chkauth)) {
 	fpara(stderr,
 	      "",
-	      "The jauthchk tool, while it exists, is not a regular file.",
+	      "The chkauth tool, while it exists, is not a regular file.",
 	      "",
 	      "Perhaps you need to use another path:",
 	      "",
-	      "    mkiocccentry -J /path/to/jauthchk ...",
+	      "    mkiocccentry -J /path/to/chkauth ...",
 	      "",
-	      "and/or install the jauthchk tool?  You can find the source for jauthchk in the mkiocccentry GitHub repo:",
+	      "and/or install the chkauth tool?  You can find the source for chkauth in the mkiocccentry GitHub repo:",
 	      "",
 	      "    https://github.com/ioccc-src/mkiocccentry",
 	      "",
 	      NULL);
-	err(32, __func__, "jauthchk is not a regular file: %s", jauthchk);
+	err(32, __func__, "chkauth is not a regular file: %s", chkauth);
 	not_reached();
     }
-    if (!is_exec(jauthchk)) {
+    if (!is_exec(chkauth)) {
 	fpara(stderr,
 	      "",
-	      "The jauthchk tool, while it is a file, is not executable.",
+	      "The chkauth tool, while it is a file, is not executable.",
 	      "",
-	      "We suggest you check the permissions on the jauthchk program, or use another path:",
+	      "We suggest you check the permissions on the chkauth program, or use another path:",
 	      "",
-	      "    mkiocccentry -J /path/to/jauthchk ...",
+	      "    mkiocccentry -J /path/to/chkauth ...",
 	      "",
-	      "and/or install the jauthchk tool?  You can find the source for jauthchk in the mkiocccentry GitHub repo:",
+	      "and/or install the chkauth tool?  You can find the source for chkauth in the mkiocccentry GitHub repo:",
 	      "",
 	      "    https://github.com/ioccc-src/mkiocccentry",
 	      "",
 	      NULL);
-	err(33, __func__, "jauthchk is not an executable program: %s", jauthchk);
+	err(33, __func__, "chkauth is not an executable program: %s", chkauth);
 	not_reached();
     }
 
@@ -4534,7 +4534,7 @@ verify_entry_dir(char const *entry_dir, char const *ls)
  * given:
  *      infop           - pointer to info structure
  *      entry_dir       - path to entry directory
- *      jinfochk	- path to jinfochk tool
+ *      chkinfo	- path to chkinfo tool
  *      fnamchk		- path to fnamchk tool
  *
  * returns:
@@ -4543,7 +4543,7 @@ verify_entry_dir(char const *entry_dir, char const *ls)
  * This function does not return on error.
  */
 static void
-write_info(struct info *infop, char const *entry_dir, char const *jinfochk, char const *fnamchk)
+write_info(struct info *infop, char const *entry_dir, char const *chkinfo, char const *fnamchk)
 {
     struct tm *timeptr;		/* localtime return */
     char *info_path;		/* path to .info.json file */
@@ -4559,7 +4559,7 @@ write_info(struct info *infop, char const *entry_dir, char const *jinfochk, char
     /*
      * firewall
      */
-    if (infop == NULL || entry_dir == NULL || jinfochk == NULL || fnamchk == NULL) {
+    if (infop == NULL || entry_dir == NULL || chkinfo == NULL || fnamchk == NULL) {
 	err(141, __func__, "called with NULL arg(s)");
 	not_reached();
     }
@@ -4661,7 +4661,7 @@ write_info(struct info *infop, char const *entry_dir, char const *jinfochk, char
 	json_fprintf_value_long(info_stream, "\t", "ioccc_year", " : ", (long)IOCCC_YEAR, ",\n") &&
 	json_fprintf_value_string(info_stream, "\t", "mkiocccentry_version", " : ", infop->common.mkiocccentry_ver, ",\n") &&
 	json_fprintf_value_string(info_stream, "\t", "iocccsize_version", " : ", infop->common.iocccsize_ver, ",\n") &&
-	json_fprintf_value_string(info_stream, "\t", "jinfochk_version", " : ", JINFOCHK_VERSION, ",\n") &&
+	json_fprintf_value_string(info_stream, "\t", "chkinfo_version", " : ", CHKINFO_VERSION, ",\n") &&
 	json_fprintf_value_string(info_stream, "\t", "fnamchk_version", " : ", FNAMCHK_VERSION, ",\n") &&
 	json_fprintf_value_string(info_stream, "\t", "txzchk_version", " : ", TXZCHK_VERSION, ",\n") &&
 	json_fprintf_value_string(info_stream, "\t", "IOCCC_contest_id", " : ", infop->common.ioccc_id, ",\n") &&
@@ -4735,7 +4735,7 @@ write_info(struct info *infop, char const *entry_dir, char const *jinfochk, char
     }
 
     /*
-     * close the file prior to running jinfochk
+     * close the file prior to running chkinfo
      */
     errno = 0;			/* pre-clear errno for errp() */
     ret = fclose(info_stream);
@@ -4745,17 +4745,17 @@ write_info(struct info *infop, char const *entry_dir, char const *jinfochk, char
     }
 
     /*
-     * perform the jinfochk which will indirectly show the user the tarball contents
+     * perform the chkinfo which will indirectly show the user the tarball contents
      */
     if (!quiet) {
 	para("",
 	    "Checking the format of .info.json ...", NULL);
     }
-    dbg(DBG_HIGH, "about to perform: %s -q -F %s -- %s", jinfochk, fnamchk, info_path);
-    exit_code = shell_cmd(__func__, true, "% -q -F % -- %", jinfochk, fnamchk, info_path);
+    dbg(DBG_HIGH, "about to perform: %s -q -F %s -- %s", chkinfo, fnamchk, info_path);
+    exit_code = shell_cmd(__func__, true, "% -q -F % -- %", chkinfo, fnamchk, info_path);
     if (exit_code != 0) {
 	err(155, __func__, "%s -q -F %s -- %s failed with exit code: %d",
-			   jinfochk, fnamchk, info_path, WEXITSTATUS(exit_code));
+			   chkinfo, fnamchk, info_path, WEXITSTATUS(exit_code));
 	not_reached();
     }
 
@@ -4784,12 +4784,12 @@ write_info(struct info *infop, char const *entry_dir, char const *jinfochk, char
  *      author_count    - length of the author structure array in elements
  *      authorp         - pointer to author structure array
  *      entry_dir       - path to entry directory
- *      jauthchk	- path to jauthchk tool
+ *      chkauth	- path to chkauth tool
  *
  * This function does not return on error.
  */
 static void
-write_author(struct info *infop, int author_count, struct author *authorp, char const *entry_dir, char const *jauthchk)
+write_author(struct info *infop, int author_count, struct author *authorp, char const *entry_dir, char const *chkauth)
 {
     char *author_path;		/* path to .author.json file */
     size_t author_path_len;	/* length of path to .author.json */
@@ -4801,7 +4801,7 @@ write_author(struct info *infop, int author_count, struct author *authorp, char 
     /*
      * firewall
      */
-    if (infop == NULL || authorp == NULL || entry_dir == NULL || jauthchk == NULL) {
+    if (infop == NULL || authorp == NULL || entry_dir == NULL || chkauth == NULL) {
 	err(156, __func__, "called with NULL arg(s)");
 	not_reached();
     }
@@ -4848,7 +4848,7 @@ write_author(struct info *infop, int author_count, struct author *authorp, char 
 	json_fprintf_value_string(author_stream, "\t", "ioccc_contest", " : ", IOCCC_CONTEST, ",\n") &&
 	json_fprintf_value_long(author_stream, "\t", "ioccc_year", " : ", (long)IOCCC_YEAR, ",\n") &&
 	json_fprintf_value_string(author_stream, "\t", "mkiocccentry_version", " : ", infop->common.mkiocccentry_ver, ",\n") &&
-	json_fprintf_value_string(author_stream, "\t", "jauthchk_version", " : ", JAUTHCHK_VERSION, ",\n") &&
+	json_fprintf_value_string(author_stream, "\t", "chkauth_version", " : ", CHKAUTH_VERSION, ",\n") &&
 	json_fprintf_value_string(author_stream, "\t", "fnamchk_version", " : ", FNAMCHK_VERSION, ",\n") &&
 	json_fprintf_value_string(author_stream, "\t", "IOCCC_contest_id", " : ", infop->common.ioccc_id, ",\n") &&
 	json_fprintf_value_string(author_stream, "\t", "tarball", " : ", infop->common.tarball, ",\n") &&
@@ -4903,7 +4903,7 @@ write_author(struct info *infop, int author_count, struct author *authorp, char 
     }
 
     /*
-     * close the file before checking it with jauthchk
+     * close the file before checking it with chkauth
      */
     errno = 0;			/* pre-clear errno for errp() */
     ret = fclose(author_stream);
@@ -4918,13 +4918,13 @@ write_author(struct info *infop, int author_count, struct author *authorp, char 
     }
 
     /*
-     * perform the jauthchk which will indirectly show the user the tarball contents
+     * perform the chkauth which will indirectly show the user the tarball contents
      */
-    dbg(DBG_HIGH, "about to perform: %s -q -- %s", jauthchk, author_path);
-    exit_code = shell_cmd(__func__, true, "% -q -- %", jauthchk, author_path);
+    dbg(DBG_HIGH, "about to perform: %s -q -- %s", chkauth, author_path);
+    exit_code = shell_cmd(__func__, true, "% -q -- %", chkauth, author_path);
     if (exit_code != 0) {
 	err(166, __func__, "%s -q -- %s failed with exit code: %d",
-			   jauthchk, author_path, WEXITSTATUS(exit_code));
+			   chkauth, author_path, WEXITSTATUS(exit_code));
 	not_reached();
     }
     if (!quiet) {
