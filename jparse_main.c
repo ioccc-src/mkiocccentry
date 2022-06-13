@@ -58,10 +58,20 @@ main(int argc, char **argv)
 	     * parse json verbosity level
 	     */
 	    json_verbosity_level = parse_verbosity(program, optarg);
+
+	    /*
+	     * enable bison internal debugging if -J is verbose enough
+	     */
+	    if (json_dbg_allowed(JSON_DBG_VHIGH)) {
+		ugly_debug = 1;	/* verbose bison debug on */
+	    } else {
+		ugly_debug = 0;	/* verbose bison debug off */
+	    }
+	    (void) json_dbg(JSON_DBG_VHIGH, __func__, "bison ugly_debug: %s",
+						      ugly_debug ? "enabled" : "disabled");
 	    break;
 	case 'q':
 	    msg_warn_silent = true;
-	    ugly_debug = 0;
 	    break;
 	case 'V':		/* -V - print version and exit */
 	    errno = 0;		/* pre-clear errno for warnp() */

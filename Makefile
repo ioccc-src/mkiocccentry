@@ -331,7 +331,7 @@ FLEX_DIRS= \
 
 # flags to pass to flex
 #
-FLEX_FLAGS = -d -8
+FLEX_FLAGS = -8
 
 ############################################################
 # User specific configurations - override Makefile values  #

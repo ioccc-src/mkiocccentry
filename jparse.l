@@ -330,7 +330,7 @@ parse_json(char const *ptr, size_t len, bool *is_valid)
 	warn( __func__, "len: %ju <= 0", (uintmax_t)len);
 
 	/* invalid JSON */
-	fprstr(stderr, "invalid JSON");
+	fprstr(stderr, "invalid JSON\n");
 	++num_errors;
 
 	/* if allowed, report invalid JSON */
@@ -407,7 +407,7 @@ parse_json(char const *ptr, size_t len, bool *is_valid)
     }
     if (ret != 0) {
 	/* invalid JSON */
-	fprstr(stderr, "invalid JSON");
+	fprstr(stderr, "invalid JSON\n");
     }
 
     /* XXX - return a blank JSON tree until we can get a tree via ugly_parse somehow - XXX */

@@ -22,8 +22,8 @@
  * POSIX Yacc portable but we no longer do that because we make use of another
  * feature that's not POSIX Yacc portable that we deem worth it as it produces
  * easier to read error messages.
- */
 %define parse.error verbose
+ */
 /*
  * We enable lookahead correction parser for improved errors
  */
@@ -115,8 +115,10 @@ unsigned num_errors = 0;		/* > 0 number of errors encountered */
 
 char const *json_parser_version = JSON_PARSER_VERSION;	/* official JSON parser version */
 
-/* debug information during development */
-int ugly_debug = 1;
+/*
+ * bison debug information for development
+ */
+int ugly_debug = 0;	/* 0 ==> verbose bison debug off, 1 ==> verbose bison debug on */
 
 %}
 
@@ -836,10 +838,11 @@ ugly_error(struct json *node, char const *format, ...)
      * string so this is not really important.
      */
     if (ugly_text != NULL && *ugly_text != '\0') {
-	fprint(stderr, ": %s", ugly_text);
+	fprint(stderr, ": %s\n", ugly_text);
     } else {
-	fprstr(stderr, "");
+	fprstr(stderr, "\n");
     }
+    (void) fflush(stderr);
 
     /*
      * stdarg variable argument list clean up
