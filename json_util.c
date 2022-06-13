@@ -49,6 +49,16 @@
  */
 int json_verbosity_level = JSON_DBG_NONE;	/* json debug level set by -J in jparse */
 
+/*
+ * global for jwarn(): -w in jinfochk/jauthchk says to show full warning
+ *
+ * XXX This currently is not used because there are some problems that have to
+ * be resolved first that will take more time and thought. Before this can even
+ * be done the JSON parser has to be finished. Good progress is being made on
+ * that but it's not finished yet.
+ */
+bool show_full_json_warnings = false;
+
 
 /*
  * static declarations
@@ -211,6 +221,77 @@ expand_json_code_ignore_set(void)
 	ignore_json_code_set->alloc = ignore_json_code_set->alloc + JSON_CODE_IGNORE_CHUNK;
     }
     return;
+}
+
+
+/*
+ * json_dbg_allowed - determine if verbosity level allows for JSON debug messages are allowed
+ *
+ * given:
+ *	json_dbg_lvl	write message if >= verbosity level
+ *
+ * returns:
+ *	true ==> allowed, false ==> disabled
+ */
+bool
+json_dbg_allowed(int json_dbg_lvl)
+{
+    /*
+     * determine if verbosity level allows for JSON debug messages
+     */
+    if (dbg_output_allowed == true &&
+        (json_dbg_lvl == JSON_DBG_FORCED || json_dbg_lvl <= json_verbosity_level)) {
+	return true;
+    }
+    return false;
+}
+
+
+/*
+ * json_warn_allowed - determine if a JSON warning message is allowed
+ *
+ * given:
+ *	code	    warning code
+ *
+ * returns:
+ *	true ==> allowed, false ==> disabled
+ */
+bool
+json_warn_allowed(int code)
+{
+    bool ignored = false;	/* if the given json code is to be ignored */
+
+    /*
+     * determine if a JSON warning message is allowed
+     *
+     * XXX - is the test below correct - XXX ???
+     */
+    ignored = is_json_code_ignored(code);
+    if (ignored == true || warn_output_allowed == false || (msg_warn_silent == true && json_verbosity_level <= 0)) {
+	return false;
+    }
+    return true;
+}
+
+
+/*
+ * json_err_allowed - determine if fatal JSON error messages are allowed
+ *
+ * returns:
+ *	true ==> allowed, false ==> disabled
+ */
+bool
+json_err_allowed(void)
+{
+    /*
+     * determine if fatal error messages are allowed
+     *
+     * XXX - is the test below correct - XXX ???
+     */
+    if (err_output_allowed == false) {
+	return false;
+    }
+    return true;
 }
 
 
@@ -942,16 +1023,6 @@ json_process_floating(struct json_number *item, char const *str, size_t len)
     return true;
 }
 
-/*
- * global for jwarn(): -w in jinfochk/jauthchk says to show full warning
- *
- * XXX This currently is not used because there are some problems that have to
- * be resolved first that will take more time and thought. Before this can even
- * be done the JSON parser has to be finished. Good progress is being made on
- * that but it's not finished yet.
- */
-bool show_full_json_warnings = false;
-
 
 /*
  * jwarn - issue a JSON warning message
@@ -991,9 +1062,15 @@ jwarn(int code, char const *program, char const *name, char const *filename, cha
     va_list ap;			/* variable argument list */
     int ret = 0;		/* libc function return code */
     int saved_errno = 0;	/* errno at function start */
+    bool allowed = false;	/* true ==> output is allowed */
 
-    if (is_json_code_ignored(code))
+    /*
+     * do nothing if the JSON warning is not allowed
+     */
+    allowed = json_warn_allowed(code);
+    if (allowed == false) {
 	return false;
+    }
 
     /*
      * save errno so we can restore it before returning
@@ -1132,9 +1209,15 @@ jwarnp(int code, char const *program, char const *name, char const *filename, ch
     va_list ap;			/* variable argument list */
     int ret = 0;		/* libc function return code */
     int saved_errno = 0;	/* errno at function start */
+    bool allowed = false;	/* true ==> output is allowed */
 
-    if (is_json_code_ignored(code))
+    /*
+     * do nothing if the JSON warning is not allowed
+     */
+    allowed = json_warn_allowed(code);
+    if (allowed == false) {
 	return false;
+    }
 
     /*
      * save errno so we can restore it before returning
@@ -1271,8 +1354,18 @@ void
 jerr(int exitcode, char const *program, char const *name, char const *filename, char const *line,
      int line_num, char const *fmt, ...)
 {
-    va_list ap;		/* variable argument list */
-    int ret;		/* libc function return code */
+    va_list ap;			/* variable argument list */
+    int ret;			/* libc function return code */
+    bool allowed = false;	/* true ==> output is allowed */
+
+    /*
+     * determine if conditions allow JSON error message, exit if not
+     */
+    allowed = json_err_allowed();
+    if (allowed == false) {
+	exit((exitcode < 0 || exitcode > 255) ? 255 : exitcode);
+	not_reached();
+    }
 
     /*
      * stdarg variable argument list setup
@@ -1400,6 +1493,16 @@ jerrp(int exitcode, char const *program, char const *name, char const *filename,
     va_list ap;			/* variable argument list */
     int ret = 0;		/* libc function return code */
     int saved_errno = 0;	/* errno value when called */
+    bool allowed = false;	/* true ==> output is allowed */
+
+    /*
+     * determine if conditions allow JSON error message, exit if not
+     */
+    allowed = json_err_allowed();
+    if (allowed == false) {
+	exit((exitcode < 0 || exitcode > 255) ? 255 : exitcode);
+	not_reached();
+    }
 
     /*
      * save errno in case we need it for strerror()
@@ -1512,16 +1615,16 @@ jerrp(int exitcode, char const *program, char const *name, char const *filename,
  *
  * This function behaves like dbg() in determining if a JSON debug message
  * is printed.  To print a JSON debug message, dbg_output_allowed == true AND
- * dbg_level <= json_verbosity_level or dbg_level == JSON_DBG_FORCED.
+ * json_dbg_lvl <= json_verbosity_level or json_dbg_lvl == JSON_DBG_FORCED.
  * When dbg_output_allowed == false, no debug output will be printed,
- * even when dbg_level == JSON_DBG_FORCED.
+ * even when json_dbg_lvl == JSON_DBG_FORCED.
  *
  * See also: json_dbg_tree_print().
  *
  * given:
- *	dbg_level   print message if JSON_DBG_FORCED OR if <= json_verbosity_level
- *	name	    function name
- *	fmt	    printf format
+ *	json_dbg_lvl	print message if JSON_DBG_FORCED OR if <= json_verbosity_level
+ *	name		function name
+ *	fmt		printf format
  *	...
  *
  * returns:
@@ -1538,7 +1641,7 @@ jerrp(int exitcode, char const *program, char const *name, char const *filename,
  * This function returns true if debug output is allowed; else it returns false.
  */
 bool
-json_dbg(int dbg_level, char const *name, char const *fmt, ...)
+json_dbg(int json_dbg_lvl, char const *name, char const *fmt, ...)
 {
     va_list ap;			/* variable argument list */
     int saved_errno = 0;	/* errno at function start */
@@ -1569,7 +1672,7 @@ json_dbg(int dbg_level, char const *name, char const *fmt, ...)
     /*
      * print the debug message if allowed and allowed by the verbosity level
      */
-    allowed = json_vdbg(dbg_level, name, fmt, ap);
+    allowed = json_vdbg(json_dbg_lvl, name, fmt, ap);
 
     /*
      * stdarg variable argument list clean up
@@ -1590,16 +1693,16 @@ json_dbg(int dbg_level, char const *name, char const *fmt, ...)
  *
  * This function behaves like vdbg() in determining if a JSON debug message
  * is printed.  To print a JSON debug message, dbg_output_allowed == true AND
- * dbg_level <= json_verbosity_level or dbg_level == JSON_DBG_FORCED.
+ * json_dbg_lvl <= json_verbosity_level or json_dbg_lvl == JSON_DBG_FORCED.
  * When dbg_output_allowed == false, no debug output will be printed,
- * even when dbg_level == JSON_DBG_FORCED.
+ * even when json_dbg_lvl == JSON_DBG_FORCED.
  *
  * See also: json_dbg_tree_print().
  *
  * given:
- *	dbg_level   print message if JSON_DBG_FORCED OR if <= json_verbosity_level
- *	name	    function name
- *	ap	    variable argument list
+ *	json_dbg_lvl	print message if JSON_DBG_FORCED OR if <= json_verbosity_level
+ *	name		function name
+ *	ap		variable argument list
  *
  * returns:
  *	true ==> debug output was successful.
@@ -1615,10 +1718,10 @@ json_dbg(int dbg_level, char const *name, char const *fmt, ...)
  * This function returns true if debug output is allowed; else it returns false.
  */
 bool
-json_vdbg(int dbg_level, char const *name, char const *fmt, va_list ap)
+json_vdbg(int json_dbg_lvl, char const *name, char const *fmt, va_list ap)
 {
     int saved_errno = 0;	/* errno at function start */
-    bool allowed = false;	 /* assume debug message not allowed */
+    bool allowed = false;	/* assume debug message not allowed */
     bool output_ok = true;	/* false ==> some debug output failed */
     int ret;			/* libc function return code */
 
@@ -1642,10 +1745,11 @@ json_vdbg(int dbg_level, char const *name, char const *fmt, va_list ap)
     /*
      * print the debug message if allowed and allowed by the verbosity level
      */
-    if (dbg_output_allowed == true &&
-        (dbg_level == JSON_DBG_FORCED || dbg_level <= json_verbosity_level)) {
+    allowed = json_dbg_allowed(json_dbg_lvl);
+    if (allowed == true) {
+
 	errno = 0;
-	ret = fprintf(stderr, "in %s(): JSON debug[%d]: ", name, dbg_level);
+	ret = fprintf(stderr, "in %s(): JSON debug[%d]: ", name, json_dbg_lvl);
 	if (ret < 0) {
 	    output_ok = false;	/* indicate output failure */
 	    warn(__func__, "fprintf returned errno: %d: (%s)", errno, strerror(errno));
@@ -2044,7 +2148,7 @@ json_tree_free(struct json *node, int max_depth, ...)
  *
  * If dbg_output_allowed == false, this function will not print.
  *
- * When dbg_level == JSON_DBG_FORCED, the printed prefix of:
+ * When json_dbg_lvl == JSON_DBG_FORCED, the printed prefix of:
  *
  *	JSON tree[%d]:
  *
@@ -2057,9 +2161,10 @@ json_tree_free(struct json *node, int max_depth, ...)
  *	depth	current tree depth (0 ==> top of tree)
  *	...	extra args are ignored, required extra args:
  *				OR if <= json_verbosity_level
+ *
  *		stream	    stream to print on
- *		dbg_level   print message if JSON_DBG_FORCED
- *			    OR if <= json_verbosity_level
+ *		json_dbg_lvl   print message if JSON_DBG_FORCED
+ *			       OR if <= json_verbosity_level
  *
  * Example use - print a JSON parse tree
  *
@@ -2116,7 +2221,7 @@ json_fprint(struct json *node, int depth, ...)
  *
  * If dbg_output_allowed == false, this function will not print.
  *
- * When dbg_level == JSON_DBG_FORCED, the printed prefix of:
+ * When json_dbg_lvl == JSON_DBG_FORCED, the printed prefix of:
  *
  *	JSON tree[%d]:
  *
@@ -2130,8 +2235,8 @@ json_fprint(struct json *node, int depth, ...)
  *	ap	variable argument list, required ap args:
  *
  *		stream	    stream to print on
- *		dbg_level   print message if JSON_DBG_FORCED
- *			    OR if <= json_verbosity_level
+ *		json_dbg_lvl   print message if JSON_DBG_FORCED
+ *			       OR if <= json_verbosity_level
  *
  * NOTE: This function does nothing if node == NULL.
  *
@@ -2141,12 +2246,9 @@ void
 vjson_fprint(struct json *node, int depth, va_list ap)
 {
     FILE *stream = NULL;	/* stream to print on */
-    int dbg_level = JSON_DBG_DEFAULT;	/* JSON debug level if json_dbg_used == true */
+    int json_dbg_lvl = JSON_DBG_DEFAULT;	/* JSON debug level if json_dbg_used == true */
     char const *tname = NULL;	/* name of the node type */
     va_list ap2;		/* copy of va_list ap */
-#if 0 /* XXX - do we want indentation? - XXX */
-    int i;
-#endif /* XXX - do we want indentation? - XXX */
 
     /*
      * firewall - nothing to do for a NULL node
@@ -2170,13 +2272,13 @@ vjson_fprint(struct json *node, int depth, va_list ap)
     if (stream == NULL) {
 	return;
     }
-    dbg_level = va_arg(ap2, int);
+    json_dbg_lvl = va_arg(ap2, int);
 
     /*
      * check JSON debug level if allowed
      */
     if (dbg_output_allowed == false ||
-        (dbg_level != JSON_DBG_FORCED && dbg_level > json_verbosity_level)) {
+        (json_dbg_lvl != JSON_DBG_FORCED && json_dbg_lvl > json_verbosity_level)) {
 	/* tree output disabled by json_verbosity_level */
 	return;
     }
@@ -2184,23 +2286,11 @@ vjson_fprint(struct json *node, int depth, va_list ap)
     /*
      * print debug leader
      */
-    if (dbg_level != JSON_DBG_FORCED) {
-	fprint(stream, "JSON tree[%d]:\t", dbg_level);
+    if (json_dbg_lvl != JSON_DBG_FORCED) {
+	fprint(stream, "JSON tree[%d]:\t", json_dbg_lvl);
     } else {
 	fprstr(stream, "JSON tree node:\t");
     }
-
-#if 0 /* XXX - do we want indentation? - XXX */
-    /*
-     * indent based on level
-     */
-    for (i=0; i < depth/2; ++i) {
-	fprstr(stream, "\t");
-    }
-    if (depth%2 > 0) {
-	fprstr(stream, "    ");
-    }
-#endif /* XXX - do we want indentation? - XXX */
 
     /*
      * print node type
@@ -2586,7 +2676,7 @@ vjson_fprint(struct json *node, int depth, va_list ap)
  *
  * If dbg_output_allowed == false, this function will not print.
  *
- * When dbg_level == JSON_DBG_FORCED, the printed prefix of:
+ * When json_dbg_lvl == JSON_DBG_FORCED, the printed prefix of:
  *
  *	JSON tree[%d]:
  *
@@ -2601,8 +2691,8 @@ vjson_fprint(struct json *node, int depth, va_list ap)
  *	...	extra args are ignored, required extra args:
  *
  *		stream	    stream to print on
- *		dbg_level   print message if JSON_DBG_FORCED
- *			    OR if <= json_verbosity_level
+ *		json_dbg_lvl   print message if JSON_DBG_FORCED
+ *			       OR if <= json_verbosity_level
  *
  * Example use - free an entire JSON parse tree
  *
@@ -2654,13 +2744,13 @@ json_tree_print(struct json *node, int max_depth, ...)
  *
  * This function behaves like json_dbg() in determining if a JSON debug message
  * is printed.  To print a JSON debug message, dbg_output_allowed == true AND
- * dbg_level <= json_verbosity_level or dbg_level == JSON_DBG_FORCED.
+ * json_dbg_lvl <= json_verbosity_level or json_dbg_lvl == JSON_DBG_FORCED.
  * When dbg_output_allowed == false, no debug output will be printed,
- * even when dbg_level == JSON_DBG_FORCED.
+ * even when json_dbg_lvl == JSON_DBG_FORCED.
  *
  * If dbg_output_allowed == false, this function will not print.
  *
- * When dbg_level == JSON_DBG_FORCED, the printed prefix of:
+ * When json_dbg_lvl == JSON_DBG_FORCED, the printed prefix of:
  *
  *	JSON tree[%d]:
  *
@@ -2675,12 +2765,12 @@ json_tree_print(struct json *node, int max_depth, ...)
  *	...	extra args are ignored, required extra args:
  *
  *		stream	    stream to print on
- *		dbg_level   print message if JSON_DBG_FORCED
- *			    OR if <= json_verbosity_level
+ *		json_dbg_lvl   print message if JSON_DBG_FORCED
+ *			       OR if <= json_verbosity_level
  *
  * Example use - free an entire JSON parse tree
  *
- * When dbg_level == JSON_DBG_FORCED, the printed prefix of:
+ * When json_dbg_lvl == JSON_DBG_FORCED, the printed prefix of:
  *
  *	JSON tree[%d]:
  *
@@ -2689,23 +2779,23 @@ json_tree_print(struct json *node, int max_depth, ...)
  *	JSON tree node:
  *
  * given:
- *	dbg_level   print message if JSON_DBG_FORCED OR if >= verbosity level
- *	name	    function name
- *	node	    pointer to a JSON parser tree node to free
- *	max_depth   maximum tree depth to descend, or <0 ==> infinite depth
- *			NOTE: Use JSON_INFINITE_DEPTH for infinite depth
- *	stream	    stream on which to print
+ *	json_dbg_lvl	print message if JSON_DBG_FORCED OR if >= verbosity level
+ *	name		function name
+ *	node		pointer to a JSON parser tree node to free
+ *	max_depth	maximum tree depth to descend, or <0 ==> infinite depth
+ *			    NOTE: Use JSON_INFINITE_DEPTH for infinite depth
+ *	stream		stream on which to print
  *
  * returns:
  *	true ==> debug output was successful.
  *	false ==> all debug output was disallowed or some/all output failed failed
  */
 bool
-json_dbg_tree_print(int dbg_level, char const *name,
+json_dbg_tree_print(int json_dbg_lvl, char const *name,
 		    struct json *tree, int max_depth, FILE *stream)
 {
     int saved_errno = 0;	/* errno at function start */
-    bool allowed = false;	 /* assume debug message not allowed */
+    bool allowed = false;	/* assume debug message not allowed */
     bool output_ok = true;	/* false ==> some debug output failed */
 
     /*
@@ -2732,9 +2822,9 @@ json_dbg_tree_print(int dbg_level, char const *name,
     /*
      * print the debug message if allowed and allowed by the verbosity level
      */
-    if (dbg_output_allowed == true &&
-        (dbg_level == JSON_DBG_FORCED || dbg_level <= json_verbosity_level)) {
-	json_tree_print(tree, max_depth, stream, dbg_level);
+    allowed = json_dbg_allowed(json_dbg_lvl);
+    if (allowed == true) {
+	json_tree_print(tree, max_depth, stream, json_dbg_lvl);
     }
 
     /*

@@ -132,6 +132,9 @@ extern bool show_full_json_warnings;
 /*
  * external function declarations
  */
+extern bool json_dbg_allowed(int json_dbg_lvl);
+extern bool json_warn_allowed(int code);
+extern bool json_err_allowed(void);
 extern bool is_json_code_ignored(int code);
 extern void ignore_json_code(int code);
 extern bool jwarn(int code, const char *program, char const *name, char const *filename, char const *line,
@@ -146,16 +149,16 @@ extern void jerr(int exitcode, char const *program, const char *name, char const
 extern void jerrp(int exitcode, char const *program, const char *name, char const *filename, char const *line,
 		  int line_num, const char *fmt, ...) \
 	__attribute__((noreturn)) __attribute__((format(printf, 7, 8))); /* 7=format 8=params */
-extern bool json_dbg(int level, char const *name, const char *fmt, ...) \
+extern bool json_dbg(int json_dbg_lvl, char const *name, const char *fmt, ...) \
 	__attribute__((format(printf, 3, 4)));		/* 3=format 4=params */
-extern bool json_vdbg(int level, char const *name, const char *fmt, va_list ap);
+extern bool json_vdbg(int json_dbg_lvl, char const *name, const char *fmt, va_list ap);
 extern char const *json_element_type_name(struct json *node);
 extern void json_free(struct json *node, int depth, ...);
 extern void vjson_free(struct json *node, int depth, va_list ap);
 extern void json_fprint(struct json *node, int depth, ...);
 extern void vjson_fprint(struct json *node, int depth, va_list ap);
 extern void json_tree_print(struct json *node, int max_depth, ...);
-extern bool json_dbg_tree_print(int level, char const *name,
+extern bool json_dbg_tree_print(int json_dbg_lvl, char const *name,
 				struct json *tree, int max_depth, FILE *stream);
 extern void json_tree_free(struct json *node, int max_depth, ...);
 extern void json_tree_walk(struct json *node, int max_depth,
