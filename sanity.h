@@ -37,11 +37,6 @@
 #include "utf8_posix_map.h"
 
 /*
- * JSON specific tables
- */
-#include "json_parse.h"
-
-/*
  * json_ckk - support jinfochk and jauthchk services
  */
 #include "json_chk.h"

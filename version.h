@@ -119,11 +119,6 @@
 #define JSTRDECODE_VERSION "0.5 2022-04-17"	/* format: major.minor YYYY-MM-DD */
 
 /*
- * official jparse version
- */
-#define JPARSE_VERSION "0.2 2022-05-22"		/* format: major.minor YYYY-MM-DD */
-
-/*
  * official jnum_chk version
  */
 #define JNUM_CHK_VERSION "0.8 2022-05-01"	/* format: major.minor YYYY-MM-DD */
@@ -165,6 +160,16 @@
  * See dyn_array.h for the DYN_ALLOC_VERSION value.
  * See dyn_test.h for the DYN_TEST_VERSION value.
  */
+
+
+ /*
+  * JSON parser version
+  *
+  * Because the JSON parser is a self contained system, we cannot define JSON_PARSER_VERSION here.
+  * Because the JSON parser is a self contained system, we cannot define JPARSE_VERSION here.
+  * See jparseh for the JSON_PARSER_VERSION value.
+  * See jparse_main.h for the JPARSE_VERSION value.
+  */
 
 
 #endif /* INCLUDE_VERSION_H */

@@ -65,9 +65,14 @@ main(int argc, char **argv)
 	    break;
 	case 'V':		/* -V - print version and exit */
 	    errno = 0;		/* pre-clear errno for warnp() */
-	    ret = printf("%s\n", JPARSE_VERSION);
+	    ret = printf("JSON parser version: %s\n", JSON_PARSER_VERSION);
 	    if (ret <= 0) {
-		warnp(__func__, "printf error printing version string: %s", JPARSE_VERSION);
+		warnp(__func__, "printf error printing JSON parser version string: %s", JPARSE_VERSION);
+	    }
+	    errno = 0;		/* pre-clear errno for warnp() */
+	    ret = printf("jparse version: %s\n", JPARSE_VERSION);
+	    if (ret <= 0) {
+		warnp(__func__, "printf error printing jparse version string: %s", JPARSE_VERSION);
 	    }
 	    exit(0); /*ooo*/
 	    not_reached();
@@ -79,8 +84,8 @@ main(int argc, char **argv)
 	     */
 	    string_flag_used = true;
 
-	    json_dbg(json_verbosity_level, __func__, "Calling parse_json(\"%s\", %ju, NULL):",
-					  optarg, (uintmax_t)strlen(optarg));
+	    json_dbg(JSON_DBG_LOW, __func__, "Calling parse_json(\"%s\", %ju, NULL):",
+					     optarg, (uintmax_t)strlen(optarg));
 	    /* parse arg as a block of json input */
 	    parse_json(optarg, strlen(optarg), &valid_json, stderr);
 	    if (valid_json) {
@@ -167,7 +172,8 @@ usage(int exitcode, char const *str, char const *prog)
      * print the formatted usage stream
      */
     fprintf_usage(DO_NOT_EXIT, stderr, "%s\n", str);
-    fprintf_usage(exitcode, stderr, usage_msg, prog, DBG_DEFAULT, json_verbosity_level, JPARSE_VERSION);
+    fprintf_usage(exitcode, stderr, usage_msg, prog,
+		  DBG_DEFAULT, json_verbosity_level, JSON_PARSER_VERSION, JPARSE_VERSION);
     exit(exitcode); /*ooo*/
     not_reached();
 }

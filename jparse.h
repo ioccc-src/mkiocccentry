@@ -41,9 +41,9 @@
 #include "json_parse.h"
 
 /*
- * sanity - reality checks
+ * json_util - general JSON utility support functions
  */
-#include "sanity.h"
+#include "json_util.h"
 
 /*
  * definitions
@@ -59,11 +59,17 @@
  */
 #include "jparse.tab.h"
 
+/*
+ * official JSON parser version
+ */
+#define JSON_PARSER_VERSION "0.8 2022-06-12"		/* format: major.minor YYYY-MM-DD */
+
 
 /*
  * globals
  */
 extern unsigned num_errors;		/* > 0 number of errors encountered */
+extern char const *json_parser_version;	/* official JSON parser version */
 /* lexer and parser specific variables */
 extern int ugly_lineno;			/* line number in lexer */
 extern char *ugly_text;			/* current text */

@@ -38,6 +38,11 @@
  */
 #include "jparse.h"
 
+/*
+ * official jparse version
+ */
+#define JPARSE_VERSION "0.8 2022-06-12"		/* format: major.minor YYYY-MM-DD */
+
 
 /*
  * usage message
@@ -58,6 +63,7 @@ static const char * const usage_msg =
     "\t[file]\t\tread and parse file\n"
     "\t\t\tNOTE: - means read from stdin\n"
     "\n"
+    "JSON parser version: %s\n"
     "jparse version: %s\n";
 
 

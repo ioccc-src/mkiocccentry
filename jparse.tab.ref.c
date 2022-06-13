@@ -135,11 +135,13 @@
 
 unsigned num_errors = 0;		/* > 0 number of errors encountered */
 
+char const *json_parser_version = JSON_PARSER_VERSION;	/* official JSON parser version */
+
 /* debug information during development */
 int ugly_debug = 1;
 
 
-#line 92 "jparse.tab.c"
+#line 94 "jparse.tab.c"
 
 # ifndef YY_CAST
 #  ifdef __cplusplus
@@ -556,9 +558,9 @@ static const yytype_int8 yytranslate[] =
 /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_int16 yyrline[] =
 {
-       0,   182,   182,   211,   239,   267,   295,   323,   350,   377,
-     406,   433,   460,   488,   523,   556,   583,   610,   638,   672,
-     702,   731
+       0,   184,   184,   213,   241,   269,   297,   325,   352,   379,
+     408,   435,   462,   490,   525,   558,   585,   612,   640,   674,
+     704,   733
 };
 #endif
 
@@ -1671,7 +1673,7 @@ yyreduce:
     switch (yyn)
       {
   case 2: /* json: json_element  */
-#line 183 "jparse.y"
+#line 185 "jparse.y"
     {
 	/*
 	 * $$ = $json
@@ -1696,11 +1698,11 @@ yyreduce:
 	json_dbg(JSON_DBG_LOW, __func__, "under json: ending: "
 					 "json: json_element");
     }
-#line 1649 "jparse.tab.c"
+#line 1651 "jparse.tab.c"
     break;
 
   case 3: /* json_value: json_object  */
-#line 212 "jparse.y"
+#line 214 "jparse.y"
     {
 	/*
 	 * $$ = $json_value
@@ -1726,11 +1728,11 @@ yyreduce:
 	json_dbg(JSON_DBG_LOW, __func__, "under json_value: ending: "
 					 "json_value: json_object");
     }
-#line 1679 "jparse.tab.c"
+#line 1681 "jparse.tab.c"
     break;
 
   case 4: /* json_value: json_array  */
-#line 240 "jparse.y"
+#line 242 "jparse.y"
     {
 	/*
 	 * $$ = $json_value
@@ -1756,11 +1758,11 @@ yyreduce:
 	json_dbg(JSON_DBG_LOW, __func__, "under json_value: ending: "
 					 "json_value: json_array");
     }
-#line 1709 "jparse.tab.c"
+#line 1711 "jparse.tab.c"
     break;
 
   case 5: /* json_value: json_string  */
-#line 268 "jparse.y"
+#line 270 "jparse.y"
     {
 	/*
 	 * $$ = $json_value
@@ -1786,11 +1788,11 @@ yyreduce:
 	json_dbg(JSON_DBG_LOW, __func__, "under json_value: ending: "
 					 "json_value: json_string");
     }
-#line 1739 "jparse.tab.c"
+#line 1741 "jparse.tab.c"
     break;
 
   case 6: /* json_value: json_number  */
-#line 296 "jparse.y"
+#line 298 "jparse.y"
     {
 	/*
 	 * $$ = $json_value
@@ -1816,11 +1818,11 @@ yyreduce:
 	json_dbg(JSON_DBG_LOW, __func__, "under json_value: ending: "
 					 "json_value: json_number");
     }
-#line 1769 "jparse.tab.c"
+#line 1771 "jparse.tab.c"
     break;
 
   case 7: /* json_value: "true"  */
-#line 324 "jparse.y"
+#line 326 "jparse.y"
     {
 	/*
 	 * $$ = $json_value
@@ -1845,11 +1847,11 @@ yyreduce:
 	json_dbg(JSON_DBG_LOW, __func__, "under json_value: ending: "
 					 "json_value: JSON_TRUE");
     }
-#line 1798 "jparse.tab.c"
+#line 1800 "jparse.tab.c"
     break;
 
   case 8: /* json_value: "false"  */
-#line 351 "jparse.y"
+#line 353 "jparse.y"
     {
 	/*
 	 * $$ = $json_value
@@ -1874,11 +1876,11 @@ yyreduce:
 	json_dbg(JSON_DBG_LOW, __func__, "under json_value: ending: "
 					 "json_value: JSON_FALSE");
     }
-#line 1827 "jparse.tab.c"
+#line 1829 "jparse.tab.c"
     break;
 
   case 9: /* json_value: "null"  */
-#line 378 "jparse.y"
+#line 380 "jparse.y"
     {
 	/*
 	 * $$ = $json_value
@@ -1903,11 +1905,11 @@ yyreduce:
 	json_dbg(JSON_DBG_LOW, __func__, "under json_value: ending: "
 					 "json_value: JSON_NULL");
     }
-#line 1856 "jparse.tab.c"
+#line 1858 "jparse.tab.c"
     break;
 
   case 10: /* json_object: "{" json_members "}"  */
-#line 407 "jparse.y"
+#line 409 "jparse.y"
     {
 	/*
 	 * $$ = $json_object
@@ -1932,11 +1934,11 @@ yyreduce:
 	json_dbg(JSON_DBG_LOW, __func__, "under json_object: ending: "
 					 "json_object: JSON_OPEN_BRACE json_members JSON_CLOSE_BRACE");
     }
-#line 1885 "jparse.tab.c"
+#line 1887 "jparse.tab.c"
     break;
 
   case 11: /* json_object: "{" "}"  */
-#line 434 "jparse.y"
+#line 436 "jparse.y"
     {
 	/*
 	 * $$ = $json_object
@@ -1959,11 +1961,11 @@ yyreduce:
 	json_dbg(JSON_DBG_LOW, __func__, "under json_object: ending: "
 					 "json_object: JSON_OPEN_BRACE JSON_CLOSE_BRACE");
     }
-#line 1912 "jparse.tab.c"
+#line 1914 "jparse.tab.c"
     break;
 
   case 12: /* json_members: json_member  */
-#line 461 "jparse.y"
+#line 463 "jparse.y"
     {
 	/*
 	 * $$ = $json_members
@@ -1989,11 +1991,11 @@ yyreduce:
 	json_dbg(JSON_DBG_LOW, __func__, "under json_members: ending: "
 					 "json_members: json_member");
     }
-#line 1942 "jparse.tab.c"
+#line 1944 "jparse.tab.c"
     break;
 
   case 13: /* json_members: json_members "," json_member  */
-#line 489 "jparse.y"
+#line 491 "jparse.y"
     {
 	/*
 	 * $$ = $json_members
@@ -2024,11 +2026,11 @@ yyreduce:
 	json_dbg(JSON_DBG_LOW, __func__, "under json_members: ending: "
 					 "json_members: json_members JSON_COMMA json_member");
     }
-#line 1977 "jparse.tab.c"
+#line 1979 "jparse.tab.c"
     break;
 
   case 14: /* json_member: json_string ":" json_element  */
-#line 524 "jparse.y"
+#line 526 "jparse.y"
     {
 	/*
 	 * $$ = $json_member
@@ -2057,11 +2059,11 @@ yyreduce:
 	json_dbg(JSON_DBG_LOW, __func__, "under json_member: ending: "
 					 "json_member: json_string JSON_COLON json_element");
     }
-#line 2010 "jparse.tab.c"
+#line 2012 "jparse.tab.c"
     break;
 
   case 15: /* json_array: "[" json_elements "]"  */
-#line 557 "jparse.y"
+#line 559 "jparse.y"
     {
 	/*
 	 * $$ = $json_array
@@ -2086,11 +2088,11 @@ yyreduce:
 	json_dbg(JSON_DBG_LOW, __func__, "under json_array: ending: "
 					 "json_array: JSON_OPEN_BRACKET json_elements JSON_CLOSE_BRACKET");
     }
-#line 2039 "jparse.tab.c"
+#line 2041 "jparse.tab.c"
     break;
 
   case 16: /* json_array: "[" "]"  */
-#line 584 "jparse.y"
+#line 586 "jparse.y"
     {
 	/*
 	 * $$ = $json_array
@@ -2113,11 +2115,11 @@ yyreduce:
 	json_dbg(JSON_DBG_LOW, __func__, "under json_array: ending: "
 					 "json_array: JSON_OPEN_BRACKET JSON_CLOSE_BRACKET");
     }
-#line 2066 "jparse.tab.c"
+#line 2068 "jparse.tab.c"
     break;
 
   case 17: /* json_elements: json_element  */
-#line 611 "jparse.y"
+#line 613 "jparse.y"
     {
 	/*
 	 * $$ = $json_elements
@@ -2143,11 +2145,11 @@ yyreduce:
 	json_dbg(JSON_DBG_LOW, __func__, "under json_elements: ending: "
 					 "json_elements: json_element");
     }
-#line 2096 "jparse.tab.c"
+#line 2098 "jparse.tab.c"
     break;
 
   case 18: /* json_elements: json_elements "," json_element  */
-#line 639 "jparse.y"
+#line 641 "jparse.y"
     {
 	/*
 	 * $$ = $json_elements
@@ -2177,11 +2179,11 @@ yyreduce:
 	json_dbg(JSON_DBG_LOW, __func__, "under json_elements: ending: "
 					 "json_elements: json_elements JSON_COMMA json_element");
     }
-#line 2130 "jparse.tab.c"
+#line 2132 "jparse.tab.c"
     break;
 
   case 19: /* json_element: json_value  */
-#line 673 "jparse.y"
+#line 675 "jparse.y"
     {
 	/*
 	 * $$ = $json_element
@@ -2207,11 +2209,11 @@ yyreduce:
 	json_dbg(JSON_DBG_LOW, __func__, "under json_element: ending: "
 					 "json_element: json_value");
     }
-#line 2160 "jparse.tab.c"
+#line 2162 "jparse.tab.c"
     break;
 
   case 20: /* json_string: JSON_STRING  */
-#line 703 "jparse.y"
+#line 705 "jparse.y"
     {
 	/*
 	 * $$ = $json_string
@@ -2236,11 +2238,11 @@ yyreduce:
 	json_dbg(JSON_DBG_LOW, __func__, "under json_string: ending: "
 					 "json_string: JSON_STRING");
     }
-#line 2189 "jparse.tab.c"
+#line 2191 "jparse.tab.c"
     break;
 
   case 21: /* json_number: JSON_NUMBER  */
-#line 732 "jparse.y"
+#line 734 "jparse.y"
     {
 	/*
 	 * $$ = $json_number
@@ -2265,11 +2267,11 @@ yyreduce:
 	json_dbg(JSON_DBG_LOW, __func__, "under json_number: ending: "
 					 "json_number: JSON_NUMBER");
     }
-#line 2218 "jparse.tab.c"
+#line 2220 "jparse.tab.c"
     break;
 
 
-#line 2222 "jparse.tab.c"
+#line 2224 "jparse.tab.c"
 
         default: break;
       }
@@ -2504,7 +2506,7 @@ yyreturnlab:
   return yyresult;
 }
 
-#line 759 "jparse.y"
+#line 761 "jparse.y"
 
 
 
