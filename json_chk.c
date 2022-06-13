@@ -187,7 +187,7 @@ find_json_field_in_table(struct json_field *table, char const *name, size_t *loc
      * firewall
      */
     if (table == NULL) {
-	jerr(JSON_CODE_RESERVED(5), NULL, __func__, __FILE__, NULL, __LINE__, "passed NULL table");
+	jerr(JSON_CODE_RESERVED(5), __func__, __FILE__, NULL, __LINE__, "passed NULL table");
 	not_reached();
     }
 
@@ -273,7 +273,7 @@ check_common_json_fields_table(void)
 	switch (common_json_fields[i].field_type) {
 	    case JTYPE_UNSET:
 		if (common_json_fields[i].name != NULL) {
-		    jerr(JSON_CODE_RESERVED(1), NULL, __func__, __FILE__, NULL, __LINE__,
+		    jerr(JSON_CODE_RESERVED(1), __func__, __FILE__, NULL, __LINE__,
 						"found JTYPE_UNSET element with non NULL name '%s' location %ju "
 						"in common_json_fields table; fix table and recompile",
                             common_json_fields[i].name, (uintmax_t)i);
@@ -287,7 +287,7 @@ check_common_json_fields_table(void)
 		/* these are all the valid types */
 		break;
 	    default:
-		jerr(JSON_CODE_RESERVED(2), NULL, __func__, __FILE__, NULL, __LINE__,
+		jerr(JSON_CODE_RESERVED(2), __func__, __FILE__, NULL, __LINE__,
 					    "found invalid data_type in common_json_fields table at location %ju; "
 					    "fix table and recompile", (uintmax_t)i);
 		not_reached();
@@ -295,13 +295,13 @@ check_common_json_fields_table(void)
 	}
     }
     if (max - 1 != i) {
-	jerr(JSON_CODE_RESERVED(3), NULL, __func__, __FILE__, NULL, __LINE__,
+	jerr(JSON_CODE_RESERVED(3), __func__, __FILE__, NULL, __LINE__,
 				    "found embedded NULL element in common_json_fields table at location %ju; "
 				    "fix table and recompile", (uintmax_t)i);
 	not_reached();
     }
     if (common_json_fields[i].name != NULL) {
-	jerr(JSON_CODE_RESERVED(4), NULL, __func__, __FILE__, NULL, __LINE__,
+	jerr(JSON_CODE_RESERVED(4), __func__, __FILE__, NULL, __LINE__,
 				    "no final NULL element found in common_json_fields table; "
 				    "fix table and recompile");
 	not_reached();
@@ -341,7 +341,7 @@ check_info_json_fields_table(void)
 	switch (info_json_fields[i].field_type) {
 	    case JTYPE_UNSET:
 		if (info_json_fields[i].name != NULL) {
-		    jerr(JSON_CODE_RESERVED(1), NULL, __func__, __FILE__, NULL, __LINE__,
+		    jerr(JSON_CODE_RESERVED(1), __func__, __FILE__, NULL, __LINE__,
 						"found JTYPE_UNSET element with non NULL name '%s' location %ju "
 						"in info_json_fields table; fix table and recompile",
 			    info_json_fields[i].name, (uintmax_t)i);
@@ -355,7 +355,7 @@ check_info_json_fields_table(void)
 		/* these are all the valid types */
 		break;
 	    default:
-		jerr(JSON_CODE_RESERVED(2), NULL, __func__, __FILE__, NULL, __LINE__,
+		jerr(JSON_CODE_RESERVED(2), __func__, __FILE__, NULL, __LINE__,
 					    "found invalid data_type in info_json_fields table location %ju; "
 					    "fix table and recompile", (uintmax_t)i);
 		not_reached();
@@ -364,14 +364,14 @@ check_info_json_fields_table(void)
     }
 
     if (max - 1 != i) {
-	jerr(JSON_CODE_RESERVED(3), NULL, __func__, __FILE__, NULL, __LINE__,
+	jerr(JSON_CODE_RESERVED(3), __func__, __FILE__, NULL, __LINE__,
 				    "found embedded NULL element in info_json_fields table at location %ju; "
 				    "fix table and recompile", (uintmax_t)i);
 	not_reached();
     }
 
     if (info_json_fields[i].name != NULL) {
-	jerr(JSON_CODE_RESERVED(4), NULL, __func__, __FILE__, NULL, __LINE__,
+	jerr(JSON_CODE_RESERVED(4), __func__, __FILE__, NULL, __LINE__,
 				    "no final NULL element found in info_json_fields table; "
 				    "fix table and recompile");
 	not_reached();
@@ -416,7 +416,7 @@ check_author_json_fields_table(void)
 	switch (author_json_fields[i].field_type) {
 	    case JTYPE_UNSET:
 		if (author_json_fields[i].name != NULL) {
-		    jerr(JSON_CODE_RESERVED(1), NULL, __func__, __FILE__, NULL, __LINE__,
+		    jerr(JSON_CODE_RESERVED(1), __func__, __FILE__, NULL, __LINE__,
 						"found JTYPE_UNSET element with non NULL name '%s' location %ju "
 						"in author_json_fields table; fix table and recompile",
                             author_json_fields[i].name, (uintmax_t)i);
@@ -430,7 +430,7 @@ check_author_json_fields_table(void)
 		/* these are all the valid types */
 		break;
 	    default:
-		jerr(JSON_CODE_RESERVED(2), NULL, __func__, __FILE__, NULL, __LINE__,
+		jerr(JSON_CODE_RESERVED(2), __func__, __FILE__, NULL, __LINE__,
 					    "found invalid data_type in author_json_fields table location %ju; "
 					    "fix table and recompile", (uintmax_t)i);
 		not_reached();
@@ -439,13 +439,13 @@ check_author_json_fields_table(void)
     }
 
     if (max - 1 != i) {
-	jerr(JSON_CODE_RESERVED(3), NULL, __func__, __FILE__, NULL, __LINE__,
+	jerr(JSON_CODE_RESERVED(3), __func__, __FILE__, NULL, __LINE__,
 				    "found embedded NULL element in author_json_fields table at location %ju; "
 				    "fix table and recompile", (uintmax_t)i);
 	not_reached();
     }
     if (author_json_fields[i].name != NULL) {
-	jerr(JSON_CODE_RESERVED(4), NULL, __func__, __FILE__, NULL, __LINE__,
+	jerr(JSON_CODE_RESERVED(4), __func__, __FILE__, NULL, __LINE__,
 				    "no final NULL element found in author_json_fields table; "
 				    "fix table and recompile");
 	not_reached();
@@ -636,13 +636,13 @@ add_found_common_json_field(char const *json_filename, char const *name, char co
      * firewall
      */
     if (json_filename == NULL || name == NULL || val == NULL) {
-	jerr(JSON_CODE_RESERVED(6), NULL, __func__, __FILE__, NULL, __LINE__, "passed NULL arg(s)");
+	jerr(JSON_CODE_RESERVED(6), __func__, __FILE__, NULL, __LINE__, "passed NULL arg(s)");
 	not_reached();
     }
 
     field_in_table = find_json_field_in_table(common_json_fields, name, &loc);
     if (field_in_table == NULL) {
-	jerr(JSON_CODE_RESERVED(12), NULL, __func__, json_filename, NULL, __LINE__,
+	jerr(JSON_CODE_RESERVED(12), __func__, json_filename, NULL, __LINE__,
 				    "couldn't add value '%s' to field '%s' file %s",
 				    val, name, json_filename);
 	err(209, __func__, "called add_found_common_json_field() on uncommon field '%s'", name);
@@ -658,7 +658,7 @@ add_found_common_json_field(char const *json_filename, char const *name, char co
 	if (field->name && !strcmp(field->name, name)) {
 	    field->count++;
 	    if (add_json_value(json_filename, field, val, line_num) == NULL) {
-		jerr(JSON_CODE_RESERVED(7), NULL, __func__, __FILE__, NULL, __LINE__,
+		jerr(JSON_CODE_RESERVED(7), __func__, __FILE__, NULL, __LINE__,
 					    "couldn't add value '%s' to field '%s' file %s",
 					    val, field->name, json_filename);
 		not_reached();
@@ -670,7 +670,7 @@ add_found_common_json_field(char const *json_filename, char const *name, char co
     field = new_json_field(json_filename, name, val, line_num);
     if (field == NULL) {
 	/* this should NEVER be reached but we check just to be sure */
-	jerr(JSON_CODE_RESERVED(8), NULL, __func__, __FILE__, NULL, __LINE__,
+	jerr(JSON_CODE_RESERVED(8), __func__, __FILE__, NULL, __LINE__,
 				    "error creating new struct json_field * for field '%s' value '%s' file %s",
 				    name, val, json_filename);
 	not_reached();
@@ -694,7 +694,6 @@ add_found_common_json_field(char const *json_filename, char const *name, char co
  *
  * given:
  *
- *	program		- which util called this (jinfochk or jauthchk)
  *	json_filename	- the file being parsed (path to)
  *	name		- the field name
  *	val		- the value of the field
@@ -717,7 +716,7 @@ add_found_common_json_field(char const *json_filename, char const *name, char co
  * useful (which I think it will be).
  */
 bool
-add_common_json_field(char const *program, char const *json_filename, char *name, char *val, int line_num)
+add_common_json_field(char const *json_filename, char *name, char *val, int line_num)
 {
     bool ret = true;	/* return value: true ==> known field and added to list, false ==> not a common field */
     struct json_field *field = NULL; /* the field in the common_json_fields table if found */
@@ -726,7 +725,7 @@ add_common_json_field(char const *program, char const *json_filename, char *name
     /*
      * firewall
      */
-    if (program == NULL || json_filename == NULL || name == NULL || val == NULL) {
+    if (json_filename == NULL || name == NULL || val == NULL) {
 	err(210, __func__, "passed NULL arg(s)");
 	not_reached();
     }
@@ -754,7 +753,6 @@ add_common_json_field(char const *program, char const *json_filename, char *name
  *
  * given:
  *
- *	program		- which util called this (jinfochk or jauthchk)
  *	json_filename	- the file being parsed (path to)
  *	fnamchk		- path to fnamchk util
  *
@@ -765,7 +763,7 @@ add_common_json_field(char const *program, char const *json_filename, char *name
  * NOTE: Does not return on error (NULL pointers).
  */
 int
-check_found_common_json_fields(char const *program, char const *json_filename, char const *fnamchk, bool test)
+check_found_common_json_fields(char const *json_filename, char const *fnamchk, bool test)
 {
     int year = 0;	/* ioccc_year: IOCCC year as an integer */
     int entry_num = -1;	/* entry_num: entry number as an integer */
@@ -789,7 +787,7 @@ check_found_common_json_fields(char const *program, char const *json_filename, c
     /*
      * firewall
      */
-    if (program == NULL || json_filename == NULL || fnamchk == NULL) {
+    if (json_filename == NULL || fnamchk == NULL) {
 	err(211, __func__, "passed NULL arg(s)");
 	not_reached();
     }
@@ -808,7 +806,7 @@ check_found_common_json_fields(char const *program, char const *json_filename, c
 	 * first make sure the name != NULL and strlen() > 0
 	 */
 	if (field->name == NULL || !strlen(field->name)) {
-	    jerr(JSON_CODE_RESERVED(9), NULL, __func__, __FILE__, NULL, __LINE__,
+	    jerr(JSON_CODE_RESERVED(9), __func__, __FILE__, NULL, __LINE__,
 					"found NULL or empty field in found_common_json_fields list in file %s",
 					json_filename);
 	    not_reached();
@@ -825,7 +823,7 @@ check_found_common_json_fields(char const *program, char const *json_filename, c
 	 * common list is not a common field name.
 	 */
 	if (common_field == NULL) {
-	    jerr(JSON_CODE_RESERVED(10), NULL, __func__, __FILE__, NULL, __LINE__,
+	    jerr(JSON_CODE_RESERVED(10), __func__, __FILE__, NULL, __LINE__,
 					 "illegal field name '%s' in found_common_json_fields list in file %s",
 					 field->name, json_filename);
 	    not_reached();
@@ -840,14 +838,14 @@ check_found_common_json_fields(char const *program, char const *json_filename, c
 	    char *val = value->value;
 
 	    if (val == NULL) {
-		jerr(JSON_CODE_RESERVED(11), NULL, __func__, __FILE__, NULL, __LINE__,
+		jerr(JSON_CODE_RESERVED(11), __func__, __FILE__, NULL, __LINE__,
 					     "NULL pointer val for field '%s' in file %s",
 					     field->name, json_filename);
 		not_reached();
 	    }
 
 	    if (common_field->max_count > 0 && common_field->count > common_field->max_count) {
-		jwarn(JSON_CODE(1), program, __func__, __FILE__, NULL, value->line_num,
+		jwarn(JSON_CODE(1), __func__, __FILE__, NULL, value->line_num,
 				    "field '%s' found %ju times but is only allowed %ju time%s in file %s",
 				    common_field->name, (uintmax_t)common_field->count,
 				    (uintmax_t)common_field->max_count, common_field->max_count==1?"":"s",
@@ -1057,8 +1055,8 @@ check_found_common_json_fields(char const *program, char const *json_filename, c
 
 	    exit_code = shell_cmd(__func__, true, "% -t % >/dev/null", fnamchk, val);
 	    if (exit_code != 0) {
-		warn(__func__, "%s: %s %s > /dev/null: failed with exit code: %d",
-				    program, fnamchk, val, WEXITSTATUS(exit_code));
+		warn(__func__, "%s %s > /dev/null: failed with exit code: %d",
+			       fnamchk, val, WEXITSTATUS(exit_code));
 		++issues;
 	    }
 	}
@@ -1074,8 +1072,8 @@ check_found_common_json_fields(char const *program, char const *json_filename, c
 
 	    exit_code = shell_cmd(__func__, true, "% -u % >/dev/null", fnamchk, val);
 	    if (exit_code != 0) {
-		warn(__func__, "%s: %s %s > /dev/null: failed with exit code: %d",
-				    program, fnamchk, val, WEXITSTATUS(exit_code));
+		warn(__func__, "%s %s > /dev/null: failed with exit code: %d",
+			       fnamchk, val, WEXITSTATUS(exit_code));
 		++issues;
 	    }
 	}

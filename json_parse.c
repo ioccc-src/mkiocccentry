@@ -1377,7 +1377,6 @@ parse_json_string(char const *string, size_t len)
     if (len <= 0)
 	len = strlen(string);
 
-    json_dbg(json_verbosity_level, __func__, "about to parse string of length %ju: <%s>", (uintmax_t)len, string);
     /*
      * we say that quote == true because the pattern in the lexer will include
      * the '"'s.
@@ -1395,8 +1394,6 @@ parse_json_string(char const *string, size_t len)
     if (!item->converted) {
 	err(165, __func__, "couldn't decode string: <%s>", string);
 	not_reached();
-    } else {
-        json_dbg(json_verbosity_level, __func__, "decoded string: <%s>", item->str);
     }
 
     /* XXX Are there any other checks that have to be done ? */
@@ -1485,8 +1482,6 @@ parse_json_bool(char const *string)
 	    err(175, __func__, "mismatch between converted string value and converted value");
 	    not_reached();
 	}
-	/* only if we get here do we assume everything is okay */
-	json_dbg(json_verbosity_level, __func__, "<%s> -> %s", string, booltostr(item->value));
     }
 
     return boolean;
@@ -1533,8 +1528,6 @@ parse_json_null(char const *string)
     if (!item->converted) {
 	err(179,__func__, "couldn't convert null: <%s>", string);
 	not_reached();
-    } else {
-        json_dbg(json_verbosity_level, __func__, "convert null: <%s> -> null", string);
     }
 
     return null;
@@ -1579,8 +1572,6 @@ parse_json_number(char const *string)
     if (!item->converted) {
 	err(183, __func__, "couldn't convert number string: <%s>", string);
 	not_reached();
-    } else {
-        json_dbg(json_verbosity_level, __func__, "convert number string: <%s>", item->as_str);
     }
 
     return number;
@@ -1674,11 +1665,6 @@ parse_json_member(struct json *name, struct json *value)
     if (!item->converted) {
 	err(190, __func__, "couldn't convert member");
 	not_reached();
-    } else {
-	/*
-	 * XXX show what the member name is
-	 */
-        json_dbg(json_verbosity_level, __func__, "converted member");
     }
 
     return member;

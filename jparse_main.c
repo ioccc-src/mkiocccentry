@@ -84,7 +84,7 @@ main(int argc, char **argv)
 	     */
 	    string_flag_used = true;
 
-	    json_dbg(JSON_DBG_LOW, __func__, "Calling parse_json(\"%s\", %ju, NULL):",
+	    json_dbg(JSON_DBG_LOW, __func__, "Calling parse_json(\"%s\", %ju, stderr):",
 					     optarg, (uintmax_t)strlen(optarg));
 	    /* parse arg as a block of json input */
 	    parse_json(optarg, strlen(optarg), &valid_json, stderr);

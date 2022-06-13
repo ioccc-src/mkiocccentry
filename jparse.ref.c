@@ -2780,7 +2780,7 @@ parse_json(char const *ptr, size_t len, bool *is_valid, FILE *dbg_stream)
 	warn( __func__, "len: %ju <= 0", (uintmax_t)len);
 
 	/* invalid JSON */
-	fprintf(stderr, "invalid JSON\n");
+	fprstr(stderr, "invalid JSON\n");
 	++num_errors;
 
 	/* if allowed, report invalid JSON */

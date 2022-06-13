@@ -380,7 +380,7 @@ check_author_json(char const *file, char const *fnamchk)
 	 *
 	 */
 	if (author_field == NULL && common_field == NULL) {
-	    jwarn(JSON_CODE_RESERVED(1), program, __func__, file, NULL, line_num, "invalid field '%s'", p);
+	    jwarn(JSON_CODE_RESERVED(1), __func__, file, NULL, line_num, "invalid field '%s'", p);
 	    ++issues;
 	}
 
@@ -563,7 +563,7 @@ check_author_json(char const *file, char const *fnamchk)
 	    }
 
 	    /* handle regular field */
-	    if (add_common_json_field(program_basename, file, p, val_esc, line_num)) {
+	    if (add_common_json_field(file, p, val_esc, line_num)) {
 	    } else if (add_author_json_field(file, p, val_esc, line_num)) {
 	    } else {
 		/* this should actually never be reached */
@@ -612,7 +612,7 @@ check_author_json(char const *file, char const *fnamchk)
     /*
      * check found_common_json_fields list, updating the number of issues found
      */
-    issues += check_found_common_json_fields(program_basename, file, fnamchk, test);
+    issues += check_found_common_json_fields(file, fnamchk, test);
 
     /* free the found_common_json_fields list.
      *
@@ -724,7 +724,7 @@ check_found_author_json_fields(char const *json_filename, bool test)
 	 * first make sure the name != NULL and strlen() > 0
 	 */
 	if (field->name == NULL || strlen(field->name) <= 0) {
-	    jerr(JSON_CODE_RESERVED(9), NULL, __func__, __FILE__, NULL, __LINE__,
+	    jerr(JSON_CODE_RESERVED(9), __func__, __FILE__, NULL, __LINE__,
 					"found NULL or empty field in found_author_json_fields list in file %s",
 					json_filename);
 	    not_reached();
@@ -741,7 +741,7 @@ check_found_author_json_fields(char const *json_filename, bool test)
 	 * author list is not an author field name.
 	 */
 	if (author_field == NULL) {
-	    jerr(JSON_CODE_RESERVED(10), NULL, __func__, __FILE__, NULL, __LINE__,
+	    jerr(JSON_CODE_RESERVED(10), __func__, __FILE__, NULL, __LINE__,
 					 "illegal field name '%s' in found_author_json_fields list in file %s",
 					 field->name, json_filename);
 	    not_reached();
@@ -752,7 +752,7 @@ check_found_author_json_fields(char const *json_filename, bool test)
 	    char *val = value->value;
 
 	    if (val == NULL) {
-		jerr(JSON_CODE_RESERVED(11), NULL, __func__, __FILE__, NULL, __LINE__,
+		jerr(JSON_CODE_RESERVED(11), __func__, __FILE__, NULL, __LINE__,
 					     "NULL pointer val for field '%s' in file %s",
 					     field->name, json_filename);
 		not_reached();
@@ -771,7 +771,7 @@ check_found_author_json_fields(char const *json_filename, bool test)
 
 	    /* make sure the field is not over the limit allowed */
 	    if (author_field->max_count > 0 && author_field->count > author_field->max_count) {
-		jwarn(JSON_CODE(1), program, __func__, __FILE__, NULL, value->line_num,
+		jwarn(JSON_CODE(1), __func__, __FILE__, NULL, value->line_num,
 				    "field '%s' found %ju times but is only allowed %ju time%s in file %s",
 				    author_field->name, (uintmax_t)author_field->count,
 				    (uintmax_t)author_field->max_count,
@@ -892,7 +892,7 @@ add_found_author_json_field(char const *json_filename, char const *name, char co
      * firewall
      */
     if (name == NULL || val == NULL || json_filename == NULL) {
-	jerr(JSON_CODE_RESERVED(6), NULL, __func__, __FILE__, NULL, __LINE__, "passed NULL arg(s)");
+	jerr(JSON_CODE_RESERVED(6), __func__, __FILE__, NULL, __LINE__, "passed NULL arg(s)");
 	not_reached();
     }
 
@@ -921,7 +921,7 @@ add_found_author_json_field(char const *json_filename, char const *name, char co
 		 * this shouldn't happen as if add_json_value() gets an error
 		 * it'll abort but just to be safe we check here too
 		 */
-		jerr(JSON_CODE_RESERVED(7), NULL, __func__, __FILE__, NULL, __LINE__,
+		jerr(JSON_CODE_RESERVED(7), __func__, __FILE__, NULL, __LINE__,
 					    "couldn't add value '%s' to field '%s' file %s",
 					    val, field->name, json_filename);
 		not_reached();
@@ -943,7 +943,7 @@ add_found_author_json_field(char const *json_filename, char const *name, char co
 	 * we should never get here because if new_json_field gets NULL it
 	 * aborts the program.
 	 */
-	jerr(JSON_CODE_RESERVED(8), NULL, __func__, __FILE__, NULL, __LINE__,
+	jerr(JSON_CODE_RESERVED(8), __func__, __FILE__, NULL, __LINE__,
 				    "error creating new struct json_field * for field '%s' value '%s' file %s",
 				    name, val, json_filename);
 	not_reached();
