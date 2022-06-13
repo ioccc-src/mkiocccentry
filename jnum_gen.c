@@ -94,7 +94,7 @@ main(int argc, char *argv[])
 	    break;
 	case 'V':		/* -V - print version and exit */
 	    errno = 0;		/* pre-clear errno for warnp() */
-	    print("%s\n", JNUM_CHK_VERSION);
+	    print("%s", JNUM_CHK_VERSION);
 	    exit(3); /*ooo*/
 	    not_reached();
 	    break;

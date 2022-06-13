@@ -266,7 +266,9 @@ json_warn_allowed(int code)
      *
      * XXX - is the test below correct - XXX ???
      */
-    ignored = is_json_code_ignored(code);
+    if (code >= 0) {
+	ignored = is_json_code_ignored(code);
+    }
     if (ignored == true || warn_output_allowed == false || (msg_warn_silent == true && json_verbosity_level <= 0)) {
 	return false;
     }

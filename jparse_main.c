@@ -83,11 +83,10 @@ main(int argc, char **argv)
 	     * nothing is coming to my mind right now.
 	     */
 	    string_flag_used = true;
-
-	    json_dbg(JSON_DBG_LOW, __func__, "Calling parse_json(\"%s\", %ju, stderr):",
-					     optarg, (uintmax_t)strlen(optarg));
+	    json_dbg(JSON_DBG_HIGH, __func__, "Calling parse_json(\"%s\", %ju, stderr):",
+					      optarg, (uintmax_t)strlen(optarg));
 	    /* parse arg as a block of json input */
-	    parse_json(optarg, strlen(optarg), &valid_json, stderr);
+	    parse_json(optarg, strlen(optarg), &valid_json);
 	    if (valid_json) {
 		errno = 0; /* pre-clear errno for warnp() */
 		ret = printf("valid JSON\n");
@@ -111,7 +110,7 @@ main(int argc, char **argv)
 	 * process each argument in order
 	 */
 	for (i=optind; i < argc; ++i) {
-	    parse_json_file(argv[i], &valid_json, stderr);
+	    parse_json_file(argv[i], &valid_json);
 	    if (valid_json) {
 		errno = 0; /* pre-clear errno for warnp() */
 		ret = printf("valid JSON in file %s\n", argv[i]);

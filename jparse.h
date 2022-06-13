@@ -92,8 +92,8 @@ extern void ugly_error(struct json *node, char const *format, ...);
 /*
  * function prototypes for jparse.l
  */
-extern struct json *parse_json(char const *ptr, size_t len, bool *is_valid, FILE *dbg_stream);
-extern struct json *parse_json_file(char const *filename, bool *is_valid, FILE *dbg_stream);
+extern struct json *parse_json(char const *ptr, size_t len, bool *is_valid);
+extern struct json *parse_json_file(char const *filename, bool *is_valid);
 
 
 #endif /* INCLUDE_JPARSE_H */

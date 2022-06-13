@@ -161,7 +161,8 @@ JSON_COMMA		","
 			     * We don't need the below message but for debugging
 			     * purposes we have it printed for now.
 			     */
-			    fprintf(stderr, "\nignoring %ju whitespace%s\n", (uintmax_t)ugly_leng, yyleng==1?"":"s");
+			    (void) json_dbg(JSON_DBG_VVHIGH, __func__, "\nignoring %ju whitespace%s\n",
+							     (uintmax_t)ugly_leng, yyleng==1?"":"s");
 			}
 
 {JSON_STRING}		{
@@ -218,7 +219,8 @@ JSON_COMMA		","
 
 .			{
 			    /* invalid token: any other character */
-			    fprintf(stderr, "\ninvalid token: 0x%02x = <%c>\n", *ugly_text, *ugly_text);
+			    warn(__func__, "\ninvalid token: 0x%02x = <%c>", *ugly_text, *ugly_text);
+
 			    /*
 			     * This is a hack for better error messages with
 			     * invalid tokens. Bison syntax error messages are
@@ -263,7 +265,6 @@ JSON_COMMA		","
  *	ptr	    - pointer to start of json blob
  *	len	    - length of the json blob
  *	is_valid    - != NULL ==> set to true or false depending on json validity
- *	dbg_stream  - != NULL ==> write debugging info to the open steam dbg_stream
  *
  * return:
  *	pointer to a JSON parse tree
@@ -285,7 +286,7 @@ JSON_COMMA		","
  * but does not make it fatal.
  */
 struct json *
-parse_json(char const *ptr, size_t len, bool *is_valid, FILE *dbg_stream)
+parse_json(char const *ptr, size_t len, bool *is_valid)
 {
     struct json *node = NULL;		/* the JSON parse tree */
     int ret = 0;			/* ugly_parse() return value */
@@ -329,7 +330,7 @@ parse_json(char const *ptr, size_t len, bool *is_valid, FILE *dbg_stream)
 	warn( __func__, "len: %ju <= 0", (uintmax_t)len);
 
 	/* invalid JSON */
-	fprstr(stderr, "invalid JSON\n");
+	fprstr(stderr, "invalid JSON");
 	++num_errors;
 
 	/* if allowed, report invalid JSON */
@@ -366,18 +367,13 @@ parse_json(char const *ptr, size_t len, bool *is_valid, FILE *dbg_stream)
     }
 
     /*
-     * XXX - control the output
-     *
-     * All of the debugging that should be under control of json_dbg()
-     * and the JSON verbosity level such that -J 0 does not output anything.
-     * Currently this cannot be done because the lexer and parser are set to
-     * print out a lot of debug information.
+     * announce beginning to parse
      */
-    if (dbg_stream != NULL) {
-	fprstr(dbg_stream, "*** BEGIN PARSE\n");
-	fprstr(dbg_stream, "<\n");
-	(void) fprint_line_buf(dbg_stream, (void *)ptr, len, 0, 0);
-	fprstr(dbg_stream, "\n>\n");
+    if (json_dbg_allowed(DBG_VVHIGH)) {
+	fprstr(stderr, "*** BEGIN PARSE\n");
+	fprstr(stderr, "<\n");
+	(void) fprint_line_buf(stderr, (void *)ptr, len, 0, 0);
+	fprstr(stderr, "\n>\n");
     }
 
     /*
@@ -397,15 +393,10 @@ parse_json(char const *ptr, size_t len, bool *is_valid, FILE *dbg_stream)
     bs = NULL;
 
     /*
-     * XXX - control the output
-     *
-     * All of the debugging that should be under control of json_dbg()
-     * and the JSON verbosity level such that -J 0 does not output anything.
-     * Currently this cannot be done because the lexer and parser are set to
-     * print out a lot of debug information.
+     * announce beginning to parse
      */
-    if (dbg_stream != NULL) {
-	fprstr(dbg_stream, "*** END PARSE\n");
+    if (json_dbg_allowed(DBG_VVHIGH)) {
+	fprstr(stderr, "*** END PARSE\n");
     }
 
     /*
@@ -416,7 +407,7 @@ parse_json(char const *ptr, size_t len, bool *is_valid, FILE *dbg_stream)
     }
     if (ret != 0) {
 	/* invalid JSON */
-	fprintf(stderr, "invalid JSON\n");
+	fprstr(stderr, "invalid JSON");
     }
 
     /* XXX - return a blank JSON tree until we can get a tree via ugly_parse somehow - XXX */
@@ -432,7 +423,6 @@ parse_json(char const *ptr, size_t len, bool *is_valid, FILE *dbg_stream)
  *
  *	filename    - filename to parse
  *	is_valid    - != NULL ==> set to true or false depending on json validity
- *	dbg_stream  - != NULL ==> write debugging info to the open steam dbg_stream
  *
  * return:
  *	pointer to a JSON parse tree
@@ -458,7 +448,7 @@ parse_json(char const *ptr, size_t len, bool *is_valid, FILE *dbg_stream)
  * but does not make it fatal.
  */
 struct json *
-parse_json_file(char const *filename, bool *is_valid, FILE *dbg_stream)
+parse_json_file(char const *filename, bool *is_valid)
 {
     struct json *node = NULL;		/* the JSON parse tree */
     bool is_stdin = false;	/* true if reading from stdin (filename == "-") */
@@ -616,8 +606,8 @@ parse_json_file(char const *filename, bool *is_valid, FILE *dbg_stream)
     /*
      * JSON parse the data from the file
      */
-    json_dbg(json_verbosity_level, __func__, "Calling parse_json with length %ju:", (uintmax_t)len);
-    node = parse_json(data, len, is_valid, stderr);
+    json_dbg(JSON_DBG_HIGH, __func__, "Calling parse_json with length %ju:", (uintmax_t)len);
+    node = parse_json(data, len, is_valid);
 
     /* free data */
     free(data);
@@ -636,18 +626,6 @@ parse_json_file(char const *filename, bool *is_valid, FILE *dbg_stream)
 	    warnp(__func__, "error in fclose on file %s", filename);
 	}
 	ugly_in = NULL;
-    }
-
-    /*
-     * XXX - control the output
-     *
-     * All of the debugging that should be under control of json_dbg()
-     * and the JSON verbosity level such that -J 0 does not output anything.
-     * Currently this cannot be done because the lexer and parser are set to
-     * print out a lot of debug information.
-     */
-    if (dbg_stream != NULL) {
-	fprstr(dbg_stream, "\n");
     }
 
     /*

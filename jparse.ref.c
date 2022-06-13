@@ -881,8 +881,8 @@ int yy_flex_debug = 1;
 
 static const flex_int16_t yy_rule_linenum[14] =
     {   0,
-      153,  167,  172,  177,  182,  186,  191,  195,  200,  204,
-      209,  214,  219
+      153,  168,  173,  178,  183,  187,  192,  196,  201,  205,
+      210,  215,  220
     } ;
 
 /* The intent behind this definition is that it'll catch
@@ -1407,12 +1407,13 @@ YY_RULE_SETUP
 			     * We don't need the below message but for debugging
 			     * purposes we have it printed for now.
 			     */
-			    fprintf(stderr, "\nignoring %ju whitespace%s\n", (uintmax_t)ugly_leng, yyleng==1?"":"s");
+			    (void) json_dbg(JSON_DBG_VVHIGH, __func__, "\nignoring %ju whitespace%s\n",
+							     (uintmax_t)ugly_leng, yyleng==1?"":"s");
 			}
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
-#line 167 "jparse.l"
+#line 168 "jparse.l"
 {
 			    /* string */
 			    return JSON_STRING;
@@ -1420,7 +1421,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 172 "jparse.l"
+#line 173 "jparse.l"
 {
 			    /* number */
 			    return JSON_NUMBER;
@@ -1428,7 +1429,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 177 "jparse.l"
+#line 178 "jparse.l"
 {
 			    /* null object */
 			    return JSON_NULL;
@@ -1436,7 +1437,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 182 "jparse.l"
+#line 183 "jparse.l"
 {
 			    /* boolean: true */
 			    return JSON_TRUE;
@@ -1444,7 +1445,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 186 "jparse.l"
+#line 187 "jparse.l"
 {
 			    /* boolean: false */
 			    return JSON_FALSE;
@@ -1452,7 +1453,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 191 "jparse.l"
+#line 192 "jparse.l"
 {
 			    /* start of object */
 			    return JSON_OPEN_BRACE;
@@ -1460,7 +1461,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 195 "jparse.l"
+#line 196 "jparse.l"
 {
 			    /* end of object */
 			    return JSON_CLOSE_BRACE;
@@ -1468,7 +1469,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 200 "jparse.l"
+#line 201 "jparse.l"
 {
 			    /* start of array */
 			    return JSON_OPEN_BRACKET;
@@ -1476,7 +1477,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
-#line 204 "jparse.l"
+#line 205 "jparse.l"
 {
 			    /* end of array */
 			    return JSON_CLOSE_BRACKET;
@@ -1484,7 +1485,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
-#line 209 "jparse.l"
+#line 210 "jparse.l"
 {
 			    /* colon or 'equals' */
 			    return JSON_COLON;
@@ -1492,7 +1493,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
-#line 214 "jparse.l"
+#line 215 "jparse.l"
 {
 			    /* comma: name/value pair separator */
 			    return JSON_COMMA;
@@ -1500,10 +1501,11 @@ YY_RULE_SETUP
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
-#line 219 "jparse.l"
+#line 220 "jparse.l"
 {
 			    /* invalid token: any other character */
-			    fprintf(stderr, "\ninvalid token: 0x%02x = <%c>\n", *ugly_text, *ugly_text);
+			    warn(__func__, "\ninvalid token: 0x%02x = <%c>", *ugly_text, *ugly_text);
+
 			    /*
 			     * This is a hack for better error messages with
 			     * invalid tokens. Bison syntax error messages are
@@ -1535,10 +1537,10 @@ YY_RULE_SETUP
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
-#line 251 "jparse.l"
+#line 253 "jparse.l"
 YY_FATAL_ERROR( "flex scanner jammed" );
 	YY_BREAK
-#line 1490 "jparse.c"
+#line 1492 "jparse.c"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 
@@ -2698,7 +2700,7 @@ void yyfree (void * ptr )
 
 /* %ok-for-header */
 
-#line 251 "jparse.l"
+#line 253 "jparse.l"
 
 
 /* Section 3: Code that's copied to the generated scanner */
@@ -2714,7 +2716,6 @@ void yyfree (void * ptr )
  *	ptr	    - pointer to start of json blob
  *	len	    - length of the json blob
  *	is_valid    - != NULL ==> set to true or false depending on json validity
- *	dbg_stream  - != NULL ==> write debugging info to the open steam dbg_stream
  *
  * return:
  *	pointer to a JSON parse tree
@@ -2736,7 +2737,7 @@ void yyfree (void * ptr )
  * but does not make it fatal.
  */
 struct json *
-parse_json(char const *ptr, size_t len, bool *is_valid, FILE *dbg_stream)
+parse_json(char const *ptr, size_t len, bool *is_valid)
 {
     struct json *node = NULL;		/* the JSON parse tree */
     int ret = 0;			/* ugly_parse() return value */
@@ -2780,7 +2781,7 @@ parse_json(char const *ptr, size_t len, bool *is_valid, FILE *dbg_stream)
 	warn( __func__, "len: %ju <= 0", (uintmax_t)len);
 
 	/* invalid JSON */
-	fprstr(stderr, "invalid JSON\n");
+	fprstr(stderr, "invalid JSON");
 	++num_errors;
 
 	/* if allowed, report invalid JSON */
@@ -2817,18 +2818,13 @@ parse_json(char const *ptr, size_t len, bool *is_valid, FILE *dbg_stream)
     }
 
     /*
-     * XXX - control the output
-     *
-     * All of the debugging that should be under control of json_dbg()
-     * and the JSON verbosity level such that -J 0 does not output anything.
-     * Currently this cannot be done because the lexer and parser are set to
-     * print out a lot of debug information.
+     * announce beginning to parse
      */
-    if (dbg_stream != NULL) {
-	fprstr(dbg_stream, "*** BEGIN PARSE\n");
-	fprstr(dbg_stream, "<\n");
-	(void) fprint_line_buf(dbg_stream, (void *)ptr, len, 0, 0);
-	fprstr(dbg_stream, "\n>\n");
+    if (json_dbg_allowed(DBG_VVHIGH)) {
+	fprstr(stderr, "*** BEGIN PARSE\n");
+	fprstr(stderr, "<\n");
+	(void) fprint_line_buf(stderr, (void *)ptr, len, 0, 0);
+	fprstr(stderr, "\n>\n");
     }
 
     /*
@@ -2848,15 +2844,10 @@ parse_json(char const *ptr, size_t len, bool *is_valid, FILE *dbg_stream)
     bs = NULL;
 
     /*
-     * XXX - control the output
-     *
-     * All of the debugging that should be under control of json_dbg()
-     * and the JSON verbosity level such that -J 0 does not output anything.
-     * Currently this cannot be done because the lexer and parser are set to
-     * print out a lot of debug information.
+     * announce beginning to parse
      */
-    if (dbg_stream != NULL) {
-	fprstr(dbg_stream, "*** END PARSE\n");
+    if (json_dbg_allowed(DBG_VVHIGH)) {
+	fprstr(stderr, "*** END PARSE\n");
     }
 
     /*
@@ -2867,7 +2858,7 @@ parse_json(char const *ptr, size_t len, bool *is_valid, FILE *dbg_stream)
     }
     if (ret != 0) {
 	/* invalid JSON */
-	fprintf(stderr, "invalid JSON\n");
+	fprstr(stderr, "invalid JSON");
     }
 
     /* XXX - return a blank JSON tree until we can get a tree via ugly_parse somehow - XXX */
@@ -2883,7 +2874,6 @@ parse_json(char const *ptr, size_t len, bool *is_valid, FILE *dbg_stream)
  *
  *	filename    - filename to parse
  *	is_valid    - != NULL ==> set to true or false depending on json validity
- *	dbg_stream  - != NULL ==> write debugging info to the open steam dbg_stream
  *
  * return:
  *	pointer to a JSON parse tree
@@ -2909,7 +2899,7 @@ parse_json(char const *ptr, size_t len, bool *is_valid, FILE *dbg_stream)
  * but does not make it fatal.
  */
 struct json *
-parse_json_file(char const *filename, bool *is_valid, FILE *dbg_stream)
+parse_json_file(char const *filename, bool *is_valid)
 {
     struct json *node = NULL;		/* the JSON parse tree */
     bool is_stdin = false;	/* true if reading from stdin (filename == "-") */
@@ -3067,8 +3057,8 @@ parse_json_file(char const *filename, bool *is_valid, FILE *dbg_stream)
     /*
      * JSON parse the data from the file
      */
-    json_dbg(json_verbosity_level, __func__, "Calling parse_json with length %ju:", (uintmax_t)len);
-    node = parse_json(data, len, is_valid, stderr);
+    json_dbg(JSON_DBG_HIGH, __func__, "Calling parse_json with length %ju:", (uintmax_t)len);
+    node = parse_json(data, len, is_valid);
 
     /* free data */
     free(data);
@@ -3087,18 +3077,6 @@ parse_json_file(char const *filename, bool *is_valid, FILE *dbg_stream)
 	    warnp(__func__, "error in fclose on file %s", filename);
 	}
 	ugly_in = NULL;
-    }
-
-    /*
-     * XXX - control the output
-     *
-     * All of the debugging that should be under control of json_dbg()
-     * and the JSON verbosity level such that -J 0 does not output anything.
-     * Currently this cannot be done because the lexer and parser are set to
-     * print out a lot of debug information.
-     */
-    if (dbg_stream != NULL) {
-	fprstr(dbg_stream, "\n");
     }
 
     /*
