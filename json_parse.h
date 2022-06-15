@@ -20,8 +20,7 @@
  *
  * "Because sometimes even the IOCCC Judges need some help." :-)
  *
- * This is very much a work in progress! See jparse.h, jparse.l and jparse.y,
- * chk_util.h, chk_util.c as well as json_util.h and json_util.c.
+ * This is very much a work in progress!
  */
 
 

@@ -477,10 +477,8 @@ jparse.tab.o: jparse.tab.c Makefile
 jparse_main.o: jparse_main.c Makefile
 	${CC} ${CFLAGS} jparse_main.c -c
 
-jparse: jparse.o jparse.tab.o util.o dyn_array.o dbg.o sanity.o json_parse.o json_entry.o chk_util.o \
-	json_util.o utf8_posix_map.o location.o jparse_main.o Makefile
-	${CC} ${CFLAGS} jparse.o jparse.tab.o util.o dyn_array.o dbg.o sanity.o \
-	    json_parse.o json_entry.o chk_util.o json_util.o utf8_posix_map.o location.o jparse_main.o -o $@
+jparse: jparse.o jparse.tab.o util.o dyn_array.o dbg.o json_parse.o json_util.o jparse_main.o Makefile
+	${CC} ${CFLAGS} jparse.o jparse.tab.o util.o dyn_array.o dbg.o json_parse.o json_util.o jparse_main.o -o $@
 
 utf8_test.o: utf8_test.c utf8_posix_map.h Makefile
 	${CC} ${CFLAGS} utf8_test.c -c
