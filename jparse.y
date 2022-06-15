@@ -784,11 +784,8 @@ ugly_error(struct json *node, char const *format, ...)
 
     /*
      * do nothing if the JSON warning system is disabled
-     *
-     * XXX - we use the fake code -1 to prevent is_json_code_ignored() from
-     *	     being used.
      */
-    allowed = json_warn_allowed(-1);
+    allowed = json_warn_allowed();
     if (allowed == false) {
 	return;
     }

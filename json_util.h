@@ -122,36 +122,28 @@ struct ignore_json_code
  */
 extern int json_verbosity_level;	/* print json debug messages <= json_verbosity_level in json_dbg(), json_vdbg() */
 
-/*
- * JSON warn/error code struct, variables, constants and macros for the jwarn()
- * and jerr() functions. Functions are prototyped later in the file.
- */
-extern bool show_full_json_warnings;
-
 
 /*
  * external function declarations
  */
 extern bool json_dbg_allowed(int json_dbg_lvl);
-extern bool json_warn_allowed(int code);
+extern bool json_warn_allowed(void);
 extern bool json_err_allowed(void);
-extern bool is_json_code_ignored(int code);
-extern void ignore_json_code(int code);
-extern bool jwarn(int code, char const *name, char const *filename,
+extern bool json_dbg(int json_dbg_lvl, char const *name, const char *fmt, ...) \
+	__attribute__((format(printf, 3, 4)));		/* 3=format 4=params */
+extern bool json_vdbg(int json_dbg_lvl, char const *name, const char *fmt, va_list ap);
+extern bool jwarn(char const *name, char const *filename,
 		  char const *line, int line_num, const char *fmt, ...) \
-	__attribute__((format(printf, 6, 7)));		/* 6=format 7=params */
-extern bool jwarnp(int code, char const *name, char const *filename,
+	__attribute__((format(printf, 5, 6)));		/* 5=format 6=params */
+extern bool jwarnp(char const *name, char const *filename,
 		   char const *line, int line_num, const char *fmt, ...) \
-	__attribute__((format(printf, 6, 7)));		/* 6=format 7=params */
+	__attribute__((format(printf, 5, 6)));		/* 5=format 6=params */
 extern void jerr(int exitcode, const char *name, char const *filename,
 		 char const *line, int line_num, const char *fmt, ...) \
 	__attribute__((noreturn)) __attribute__((format(printf, 6, 7))); /* 6=format 7=params */
 extern void jerrp(int exitcode, const char *name,
 		  char const *filename, char const *line, int line_num, const char *fmt, ...) \
 	__attribute__((noreturn)) __attribute__((format(printf, 6, 7))); /* 6=format 7=params */
-extern bool json_dbg(int json_dbg_lvl, char const *name, const char *fmt, ...) \
-	__attribute__((format(printf, 3, 4)));		/* 3=format 4=params */
-extern bool json_vdbg(int json_dbg_lvl, char const *name, const char *fmt, va_list ap);
 extern char const *json_element_type_name(struct json *node);
 extern void json_free(struct json *node, int depth, ...);
 extern void vjson_free(struct json *node, int depth, va_list ap);

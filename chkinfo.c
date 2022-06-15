@@ -379,7 +379,7 @@ check_info_json(char const *file, char const *fnamchk)
 	 *
 	 */
 	if (info_field == NULL && common_field == NULL) {
-	    jwarn(JSON_CODE_RESERVED(1), __func__, file, NULL, line_num, "invalid field '%s'", p);
+	    chk_warn(JSON_CODE_RESERVED(1), __func__, file, NULL, line_num, "invalid field '%s'", p);
 	    ++issues;
 	}
 
@@ -965,7 +965,7 @@ add_found_info_json_field(char const *json_filename, char const *name, char cons
      * firewall
      */
     if (name == NULL || val == NULL || json_filename == NULL) {
-	jerr(JSON_CODE_RESERVED(6), __func__, __FILE__, NULL, __LINE__, "passed NULL arg(s)");
+	chk_err(JSON_CODE_RESERVED(6), __func__, __FILE__, NULL, __LINE__, "passed NULL arg(s)");
 	not_reached();
     }
 
@@ -994,9 +994,9 @@ add_found_info_json_field(char const *json_filename, char const *name, char cons
 		 * this shouldn't happen as if add_json_value() gets an error
 		 * it'll abort but just to be safe we check here too
 		 */
-		jerr(JSON_CODE_RESERVED(7), __func__, __FILE__, NULL, __LINE__,
-					    "couldn't add value '%s' to field '%s' file %s",
-					    val, field->name, json_filename);
+		chk_err(JSON_CODE_RESERVED(7), __func__, __FILE__, NULL, __LINE__,
+					       "couldn't add value '%s' to field '%s' file %s",
+					       val, field->name, json_filename);
 		not_reached();
 	    }
 
@@ -1016,9 +1016,9 @@ add_found_info_json_field(char const *json_filename, char const *name, char cons
 	 * we should never get here because if new_json_field gets NULL it
 	 * aborts the program.
 	 */
-	jerr(JSON_CODE_RESERVED(8), __func__, __FILE__, NULL, __LINE__,
-				    "error creating new struct json_field * for field '%s' value '%s' file %s",
-				    name, val, json_filename);
+	chk_err(JSON_CODE_RESERVED(8), __func__, __FILE__, NULL, __LINE__,
+				       "error creating new struct json_field * for field '%s' value '%s' file %s",
+				       name, val, json_filename);
 	not_reached();
     }
 
@@ -1190,9 +1190,9 @@ check_found_info_json_fields(char const *json_filename, bool test)
 	 * first make sure the name != NULL and strlen() > 0
 	 */
 	if (field->name == NULL || strlen(field->name) <= 0) {
-	    jerr(JSON_CODE_RESERVED(9), __func__, __FILE__, NULL, __LINE__,
-				        "found NULL or empty field in found_info_json_fields list in file %s",
-					json_filename);
+	    chk_err(JSON_CODE_RESERVED(9), __func__, __FILE__, NULL, __LINE__,
+					   "found NULL or empty field in found_info_json_fields list in file %s",
+					   json_filename);
 	    not_reached();
 	}
 
@@ -1207,9 +1207,9 @@ check_found_info_json_fields(char const *json_filename, bool test)
 	 * info list is not an info field name.
 	 */
 	if (info_field == NULL) {
-	    jerr(JSON_CODE_RESERVED(10), __func__, __FILE__, NULL, __LINE__,
-					 "illegal field name '%s' in found_info_json_fields list in file %s",
-					 field->name, json_filename);
+	    chk_err(JSON_CODE_RESERVED(10), __func__, __FILE__, NULL, __LINE__,
+					    "illegal field name '%s' in found_info_json_fields list in file %s",
+					    field->name, json_filename);
 	    not_reached();
 	}
 
@@ -1218,9 +1218,9 @@ check_found_info_json_fields(char const *json_filename, bool test)
 	    char *val = value->value;
 
 	    if (val == NULL) {
-		jerr(JSON_CODE_RESERVED(11), __func__, __FILE__, NULL, __LINE__,
-					     "NULL pointer val for field '%s' in file %s",
-					     field->name, json_filename);
+		chk_err(JSON_CODE_RESERVED(11), __func__, __FILE__, NULL, __LINE__,
+						"NULL pointer val for field '%s' in file %s",
+						field->name, json_filename);
 		not_reached();
 	    }
 
@@ -1237,11 +1237,11 @@ check_found_info_json_fields(char const *json_filename, bool test)
 
 	    /* make sure the field is not over the limit allowed */
 	    if (info_field->max_count > 0 && info_field->count > info_field->max_count) {
-		jwarn(JSON_CODE(1), __func__, __FILE__, NULL, value->line_num,
-				    "field '%s' found %ju times but is only allowed %ju time%s in file %s",
-				    info_field->name, (uintmax_t)info_field->count,
-				    (uintmax_t)info_field->max_count,
-				    info_field->max_count==1?"":"s", json_filename);
+		chk_warn(JSON_CODE(1), __func__, __FILE__, NULL, value->line_num,
+				       "field '%s' found %ju times but is only allowed %ju time%s in file %s",
+				       info_field->name, (uintmax_t)info_field->count,
+				       (uintmax_t)info_field->max_count,
+				       info_field->max_count==1?"":"s", json_filename);
 		++issues;
 	    }
 

@@ -172,7 +172,7 @@ extern size_t SIZEOF_AUTHOR_JSON_FIELDS_TABLE;
 extern struct json_field *found_common_json_fields;
 
 /*
- * global for jwarn
+ * global for chk_warn
  */
 extern bool show_full_json_warnings;
 
@@ -180,6 +180,8 @@ extern bool show_full_json_warnings;
 /*
  * external function declarations
  */
+extern bool is_json_code_ignored(int code);
+extern void ignore_json_code(int code);
 extern struct json_field *find_json_field_in_table(struct json_field *table, char const *name, size_t *loc);
 extern void check_json_fields_tables(void);
 extern void check_common_json_fields_table(void);
@@ -196,6 +198,18 @@ extern struct json_value *add_json_value(char const *json_filename, struct json_
 extern void free_json_field_values(struct json_field *field);
 extern void free_found_common_json_fields(void);
 extern void free_json_field(struct json_field *field);
+extern bool chk_warn(int code, char const *name, char const *filename,
+		     char const *line, int line_num, const char *fmt, ...) \
+		     __attribute__((format(printf, 6, 7)));		/* 6=format 7=params */
+extern bool chk_warnp(int code, char const *name, char const *filename,
+		      char const *line, int line_num, const char *fmt, ...) \
+		      __attribute__((format(printf, 6, 7)));		/* 6=format 7=params */
+extern void chk_err(int exitcode, const char *name, char const *filename,
+		    char const *line, int line_num, const char *fmt, ...) \
+		    __attribute__((noreturn)) __attribute__((format(printf, 6, 7))); /* 6=format 7=params */
+extern void chk_errp(int exitcode, const char *name,
+		     char const *filename, char const *line, int line_num, const char *fmt, ...) \
+		     __attribute__((noreturn)) __attribute__((format(printf, 6, 7))); /* 6=format 7=params */
 
 
 #endif /* INCLUDE_CHK_UTIL_H */

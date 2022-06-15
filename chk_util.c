@@ -157,7 +157,289 @@ struct json_field author_json_fields[] =
 };
 size_t SIZEOF_AUTHOR_JSON_FIELDS_TABLE = TBLLEN(author_json_fields);
 
+static struct ignore_json_code *ignore_json_code_set = NULL;
 struct json_field *found_common_json_fields;
+static struct ignore_json_code *ignore_json_code_set;
+
+
+/*
+ * global for chk_warn(): -w in chkinfo/chkauth says to show full warning
+ *
+ * XXX This currently is not used because there are some problems that have to
+ * be resolved first that will take more time and thought. Before this can even
+ * be done the JSON parser has to be finished. Good progress is being made on
+ * that but it's not finished yet.
+ */
+bool show_full_json_warnings = false;
+
+
+/*
+ * static declarations
+ */
+
+/*
+ * JSON warn (NOT error) codes to ignore
+ *
+ * When a tool is given command line arguments of the form:
+ *
+ *	.. -W 123 -W 1345 -W 56 ...
+ *
+ * this means the tool will ignore {JSON-0123}, {JSON-1345}, and {JSON-0056}.
+ * The code_ignore_settable holds the JSON codes to ignore.
+ *
+ * NOTE: A NULL ignore_json_code_set means that the set has not been setup.
+ */
+static void alloc_json_code_ignore_set(void);
+static int cmp_codes(const void *a, const void *b);
+static void expand_json_code_ignore_set(void);
+
+
+/*
+ * alloc_json_code_ignore_set - allocate the initial JSON ignore code set
+ *
+ * This function will setup the ignore_json_code_set table.  If the ignore_json_code_set
+ * table is already setup, this function will do nothing.
+ *
+ * NOTE: This function does not return on error.
+ */
+static void
+alloc_json_code_ignore_set(void)
+{
+    struct ignore_json_code *tbl = NULL;	/* allocated struct ignore_json_code */
+    int i;
+
+    /*
+     * firewall - do nothing if already setup
+     */
+    if (ignore_json_code_set != NULL) {
+	dbg(DBG_VVHIGH, "ignore_json_code_set already set up");
+	return;
+    }
+
+    /*
+     * allocate the initial ignore_json_code_set[]
+     */
+    errno = 0;			/* pre-clear errno for errp() */
+    tbl = malloc(sizeof(struct ignore_json_code));
+    if (tbl == NULL) {
+	errp(200, __func__, "failed to malloc struct ignore_json_code");
+	not_reached();
+    }
+
+    /*
+     * allocate an initial block of ignore codes
+     */
+    errno = 0;			/* pre-clear errno for errp() */
+    tbl->code = malloc((JSON_CODE_IGNORE_CHUNK+1+1) * sizeof(int));
+    if (tbl->code == NULL) {
+	errp(201, __func__, "cannot allocate %d ignore codes", JSON_CODE_IGNORE_CHUNK+1+1);
+	not_reached();
+    }
+
+    /*
+     * initialize
+     */
+    tbl->next_free = 0;
+    tbl->alloc = JSON_CODE_IGNORE_CHUNK + 1;		/* report one less for the guard code */
+    for (i=0; i < tbl->alloc; ++i) {
+	tbl->code[i] = -1;	/* -1 is not a valid ignore code */
+    }
+    ignore_json_code_set = tbl;
+}
+
+
+/*
+ * cmp_codes - compare two codes for reverse sorting ignore_json_code_set[]
+ *
+ * This function will allow qsort() to reverse sort the codes in ignore_json_code_set[].
+ *
+ * given:
+ *	a	- pointer to first code to compare
+ *	b	- pointer to second code to compare
+ *
+ * returns:
+ *	-1	a > b
+ *	0	a == b
+ *	1	a < b
+ */
+static int
+cmp_codes(const void *a, const void *b)
+{
+    /*
+     * firewall
+     */
+    if (a == NULL || b == NULL) {
+	err(202, __func__, "NULL arg(s)");
+	not_reached();
+    }
+
+    /*
+     * compare for reverse sort
+     */
+    if (*(int *)a < *(int *)b) {
+	return 1;	/* a < b */
+    } else if (*(int *)a > *(int *)b) {
+	return -1;	/* a > b */
+    }
+    return 0;	/* a == b */
+}
+
+
+/*
+ * expand_json_code_ignore_set - expand the size of alloc json_code_ignore_set[]
+ *
+ * This function will expand the allocated  json_code_ignore_set[] by
+ * JSON_CODE_IGNORE_CHUNK JSON error codes, and set those new codes (in the end
+ * of the table) to -1 to indicate that they are not valid codes.
+ *
+ * NOTE: This function does not return on error.
+ */
+static void
+expand_json_code_ignore_set(void)
+{
+    int *p;	/* reallocated code set */
+    int i;
+
+    /*
+     * setup ignore_json_code_set if needed
+     */
+    alloc_json_code_ignore_set();
+    if (ignore_json_code_set == NULL) {
+	err(203, __func__, "ignore_json_code_set is NULL after allocation");
+	not_reached();
+    }
+
+    /*
+     * if no room, expand the table
+     */
+    if (ignore_json_code_set->next_free >= ignore_json_code_set->alloc) {
+	p = realloc(ignore_json_code_set->code, (ignore_json_code_set->alloc+JSON_CODE_IGNORE_CHUNK+1) * sizeof(int));
+	errno = 0;			/* pre-clear errno for errp() */
+	if (p == NULL) {
+	    errp(204, __func__, "cannot expand ignore_json_code_set from %d to %d codes",
+				ignore_json_code_set->alloc+1, ignore_json_code_set->alloc+JSON_CODE_IGNORE_CHUNK+1);
+	    not_reached();
+	}
+	for (i=ignore_json_code_set->alloc; i < ignore_json_code_set->alloc+JSON_CODE_IGNORE_CHUNK; ++i) {
+	    p[i] = JSON_CODE_INVALID; /* JSON_CODE_INVALID (JSON_CODE_RESERVED_MIN - 1) is not a valid ignore code */
+	}
+	ignore_json_code_set->code = p;
+	/* report one less for the guard code */
+	ignore_json_code_set->alloc = ignore_json_code_set->alloc + JSON_CODE_IGNORE_CHUNK;
+    }
+    return;
+}
+
+
+/*
+ * is_json_code_ignored - determine of a JSON warn/error code is to be ignored
+ *
+ * given:
+ *	code	- code to test if code should be ignored
+ *
+ * returns:
+ *	true ==> code is in ignore_json_code_set[] and should be ignored
+ *	false ==> code is not in ignore_json_code_set[] and should NOT be ignored
+ */
+bool
+is_json_code_ignored(int code)
+{
+    int i;
+
+    /*
+     * firewall
+     */
+    if (code < 0) {
+	err(205, __func__, "code %d < 0", code);
+	not_reached();
+    }
+
+    /*
+     * setup ignore_json_code_set if needed
+     */
+    alloc_json_code_ignore_set();
+    if (ignore_json_code_set == NULL) {
+	err(206, __func__, "ignore_json_code_set is NULL after allocation");
+	not_reached();
+    }
+
+    /*
+     * search ignore_json_code_set[] for the code
+     */
+    for (i=0; i < ignore_json_code_set->next_free; ++i) {
+
+	/* look for match */
+	if (ignore_json_code_set->code[i] == code) {
+	    dbg(DBG_VVVHIGH, "code %d is in ignore_json_code_set[]", code);
+	    return true;	/* report code should be ignored */
+	}
+
+	/* look for going beyond sorted values */
+	if (ignore_json_code_set->code[i] <= code) {
+	     break;
+	}
+    }
+    return false;	/* report code should NOT be ignored */
+}
+
+
+/*
+ * ignore_json_code - add a JSON error code to be ignored
+ *
+ * If code >= 0 and is not in json_code_ignore_set[], then this function will
+ * add it and then reverse sort the json_code_ignore_set[] table.
+ *
+ * NOTE: The json_code_ignore_set[] will be initialized or expanded as needed.
+ *
+ * given:
+ *	code	- code to ignore
+ *
+ * NOTE: This function does not return on error.
+ */
+void
+ignore_json_code(int code)
+{
+    /*
+     * firewall
+     */
+    if (code < 0) {
+	err(207, __func__, "code %d < 0", code);
+	not_reached();
+    }
+
+    /*
+     * allocate or expand the json_code_ignore_set[] if needed
+     */
+    if (ignore_json_code_set == NULL || ignore_json_code_set->next_free >= ignore_json_code_set->alloc) {
+	expand_json_code_ignore_set();
+    }
+    if (ignore_json_code_set == NULL) {
+	err(208, __func__, "ignore_json_code_set is NULL after allocation or expansion");
+	not_reached();
+    }
+
+    /*
+     * verify that code is not already in json_code_ignore_set[]
+     */
+    if (is_json_code_ignored(code)) {
+	/* nothing to do it code is already added */
+	dbg(DBG_VVVHIGH, "code %d is already in ignore_json_code_set[]", code);
+	return;
+    }
+
+    /*
+     * add the code to the json_code_ignore_set[]
+     */
+    ignore_json_code_set->code[ignore_json_code_set->next_free] = code;
+    ++ignore_json_code_set->next_free;
+
+    /*
+     * reverse sort the json_code_ignore_set[]
+     */
+    qsort(ignore_json_code_set->code, ignore_json_code_set->next_free, sizeof(int), cmp_codes);
+    dbg(DBG_VHIGH, "code %d added to ignore_json_code_set[]", code);
+    return;
+}
 
 
 /*
@@ -187,7 +469,7 @@ find_json_field_in_table(struct json_field *table, char const *name, size_t *loc
      * firewall
      */
     if (table == NULL) {
-	jerr(JSON_CODE_RESERVED(5), __func__, __FILE__, NULL, __LINE__, "passed NULL table");
+	chk_err(JSON_CODE_RESERVED(5), __func__, __FILE__, NULL, __LINE__, "passed NULL table");
 	not_reached();
     }
 
@@ -265,7 +547,7 @@ check_common_json_fields_table(void)
     size_t max = SIZEOF_COMMON_JSON_FIELDS_TABLE;
 
     if (max <= 0) {
-	err(200, __func__, "bogus common_json_fields table length: %ju <= 0", (uintmax_t)max);
+	err(209, __func__, "bogus common_json_fields table length: %ju <= 0", (uintmax_t)max);
 	not_reached();
     }
 
@@ -273,7 +555,7 @@ check_common_json_fields_table(void)
 	switch (common_json_fields[i].field_type) {
 	    case JTYPE_UNSET:
 		if (common_json_fields[i].name != NULL) {
-		    jerr(JSON_CODE_RESERVED(1), __func__, __FILE__, NULL, __LINE__,
+		    chk_err(JSON_CODE_RESERVED(1), __func__, __FILE__, NULL, __LINE__,
 						"found JTYPE_UNSET element with non NULL name '%s' location %ju "
 						"in common_json_fields table; fix table and recompile",
                             common_json_fields[i].name, (uintmax_t)i);
@@ -287,7 +569,7 @@ check_common_json_fields_table(void)
 		/* these are all the valid types */
 		break;
 	    default:
-		jerr(JSON_CODE_RESERVED(2), __func__, __FILE__, NULL, __LINE__,
+		chk_err(JSON_CODE_RESERVED(2), __func__, __FILE__, NULL, __LINE__,
 					    "found invalid data_type in common_json_fields table at location %ju; "
 					    "fix table and recompile", (uintmax_t)i);
 		not_reached();
@@ -295,13 +577,13 @@ check_common_json_fields_table(void)
 	}
     }
     if (max - 1 != i) {
-	jerr(JSON_CODE_RESERVED(3), __func__, __FILE__, NULL, __LINE__,
+	chk_err(JSON_CODE_RESERVED(3), __func__, __FILE__, NULL, __LINE__,
 				    "found embedded NULL element in common_json_fields table at location %ju; "
 				    "fix table and recompile", (uintmax_t)i);
 	not_reached();
     }
     if (common_json_fields[i].name != NULL) {
-	jerr(JSON_CODE_RESERVED(4), __func__, __FILE__, NULL, __LINE__,
+	chk_err(JSON_CODE_RESERVED(4), __func__, __FILE__, NULL, __LINE__,
 				    "no final NULL element found in common_json_fields table; "
 				    "fix table and recompile");
 	not_reached();
@@ -329,7 +611,7 @@ check_info_json_fields_table(void)
     bool found_manifest = false;
 
     if (max <= 0) {
-	err(201, __func__, "bogus info_json_fields table length: %ju <= 0", (uintmax_t)max);
+	err(210, __func__, "bogus info_json_fields table length: %ju <= 0", (uintmax_t)max);
 	not_reached();
     }
 
@@ -341,7 +623,7 @@ check_info_json_fields_table(void)
 	switch (info_json_fields[i].field_type) {
 	    case JTYPE_UNSET:
 		if (info_json_fields[i].name != NULL) {
-		    jerr(JSON_CODE_RESERVED(1), __func__, __FILE__, NULL, __LINE__,
+		    chk_err(JSON_CODE_RESERVED(1), __func__, __FILE__, NULL, __LINE__,
 						"found JTYPE_UNSET element with non NULL name '%s' location %ju "
 						"in info_json_fields table; fix table and recompile",
 			    info_json_fields[i].name, (uintmax_t)i);
@@ -355,7 +637,7 @@ check_info_json_fields_table(void)
 		/* these are all the valid types */
 		break;
 	    default:
-		jerr(JSON_CODE_RESERVED(2), __func__, __FILE__, NULL, __LINE__,
+		chk_err(JSON_CODE_RESERVED(2), __func__, __FILE__, NULL, __LINE__,
 					    "found invalid data_type in info_json_fields table location %ju; "
 					    "fix table and recompile", (uintmax_t)i);
 		not_reached();
@@ -364,20 +646,20 @@ check_info_json_fields_table(void)
     }
 
     if (max - 1 != i) {
-	jerr(JSON_CODE_RESERVED(3), __func__, __FILE__, NULL, __LINE__,
+	chk_err(JSON_CODE_RESERVED(3), __func__, __FILE__, NULL, __LINE__,
 				    "found embedded NULL element in info_json_fields table at location %ju; "
 				    "fix table and recompile", (uintmax_t)i);
 	not_reached();
     }
 
     if (info_json_fields[i].name != NULL) {
-	jerr(JSON_CODE_RESERVED(4), __func__, __FILE__, NULL, __LINE__,
+	chk_err(JSON_CODE_RESERVED(4), __func__, __FILE__, NULL, __LINE__,
 				    "no final NULL element found in info_json_fields table; "
 				    "fix table and recompile");
 	not_reached();
     }
     if (!found_manifest) {
-	err(202, __func__, "'manifest' field not found in info_json_fields table; "
+	err(211, __func__, "'manifest' field not found in info_json_fields table; "
 			   "fix table in %s and recompile", __FILE__);
 	not_reached();
     }
@@ -404,7 +686,7 @@ check_author_json_fields_table(void)
     bool found_authors = false;
 
     if (max <= 0) {
-	err(203, __func__, "bogus author_json_fields table length: %ju <= 0", (uintmax_t)max);
+	err(212, __func__, "bogus author_json_fields table length: %ju <= 0", (uintmax_t)max);
 	not_reached();
     }
 
@@ -416,7 +698,7 @@ check_author_json_fields_table(void)
 	switch (author_json_fields[i].field_type) {
 	    case JTYPE_UNSET:
 		if (author_json_fields[i].name != NULL) {
-		    jerr(JSON_CODE_RESERVED(1), __func__, __FILE__, NULL, __LINE__,
+		    chk_err(JSON_CODE_RESERVED(1), __func__, __FILE__, NULL, __LINE__,
 						"found JTYPE_UNSET element with non NULL name '%s' location %ju "
 						"in author_json_fields table; fix table and recompile",
                             author_json_fields[i].name, (uintmax_t)i);
@@ -430,7 +712,7 @@ check_author_json_fields_table(void)
 		/* these are all the valid types */
 		break;
 	    default:
-		jerr(JSON_CODE_RESERVED(2), __func__, __FILE__, NULL, __LINE__,
+		chk_err(JSON_CODE_RESERVED(2), __func__, __FILE__, NULL, __LINE__,
 					    "found invalid data_type in author_json_fields table location %ju; "
 					    "fix table and recompile", (uintmax_t)i);
 		not_reached();
@@ -439,19 +721,19 @@ check_author_json_fields_table(void)
     }
 
     if (max - 1 != i) {
-	jerr(JSON_CODE_RESERVED(3), __func__, __FILE__, NULL, __LINE__,
+	chk_err(JSON_CODE_RESERVED(3), __func__, __FILE__, NULL, __LINE__,
 				    "found embedded NULL element in author_json_fields table at location %ju; "
 				    "fix table and recompile", (uintmax_t)i);
 	not_reached();
     }
     if (author_json_fields[i].name != NULL) {
-	jerr(JSON_CODE_RESERVED(4), __func__, __FILE__, NULL, __LINE__,
+	chk_err(JSON_CODE_RESERVED(4), __func__, __FILE__, NULL, __LINE__,
 				    "no final NULL element found in author_json_fields table; "
 				    "fix table and recompile");
 	not_reached();
     }
     if (!found_authors) {
-	err(204, __func__, "'authors' field not found in authors_json_fields table; fix table in %s and recompile", __FILE__);
+	err(213, __func__, "'authors' field not found in authors_json_fields table; fix table in %s and recompile", __FILE__);
 	not_reached();
     }
 
@@ -523,10 +805,10 @@ check_first_json_char(char const *file, char *data, char **first, char ch)
      * firewall
      */
     if (data == NULL || strlen(data) == 0) {
-	err(205, __func__, "passed NULL or zero length data");
+	err(214, __func__, "passed NULL or zero length data");
 	not_reached();
     } else if (file == NULL || first == NULL) {
-	err(206, __func__, "passed NULL arg(s)");
+	err(215, __func__, "passed NULL arg(s)");
 	not_reached();
     }
 
@@ -580,10 +862,10 @@ check_last_json_char(char const *file, char *data, char **last, char ch)
      * firewall
      */
     if (data == NULL || strlen(data) == 0) {
-	err(207, __func__, "passed NULL or zero length data");
+	err(216, __func__, "passed NULL or zero length data");
 	not_reached();
     } else if (file == NULL || last == NULL) {
-	err(208, __func__, "passed NULL arg(s)");
+	err(217, __func__, "passed NULL arg(s)");
 	not_reached();
     }
 
@@ -636,16 +918,16 @@ add_found_common_json_field(char const *json_filename, char const *name, char co
      * firewall
      */
     if (json_filename == NULL || name == NULL || val == NULL) {
-	jerr(JSON_CODE_RESERVED(6), __func__, __FILE__, NULL, __LINE__, "passed NULL arg(s)");
+	chk_err(JSON_CODE_RESERVED(6), __func__, __FILE__, NULL, __LINE__, "passed NULL arg(s)");
 	not_reached();
     }
 
     field_in_table = find_json_field_in_table(common_json_fields, name, &loc);
     if (field_in_table == NULL) {
-	jerr(JSON_CODE_RESERVED(12), __func__, json_filename, NULL, __LINE__,
+	chk_err(JSON_CODE_RESERVED(12), __func__, json_filename, NULL, __LINE__,
 				    "couldn't add value '%s' to field '%s' file %s",
 				    val, name, json_filename);
-	err(209, __func__, "called add_found_common_json_field() on uncommon field '%s'", name);
+	err(218, __func__, "called add_found_common_json_field() on uncommon field '%s'", name);
 	not_reached();
     }
     /*
@@ -658,7 +940,7 @@ add_found_common_json_field(char const *json_filename, char const *name, char co
 	if (field->name && !strcmp(field->name, name)) {
 	    field->count++;
 	    if (add_json_value(json_filename, field, val, line_num) == NULL) {
-		jerr(JSON_CODE_RESERVED(7), __func__, __FILE__, NULL, __LINE__,
+		chk_err(JSON_CODE_RESERVED(7), __func__, __FILE__, NULL, __LINE__,
 					    "couldn't add value '%s' to field '%s' file %s",
 					    val, field->name, json_filename);
 		not_reached();
@@ -670,7 +952,7 @@ add_found_common_json_field(char const *json_filename, char const *name, char co
     field = new_json_field(json_filename, name, val, line_num);
     if (field == NULL) {
 	/* this should NEVER be reached but we check just to be sure */
-	jerr(JSON_CODE_RESERVED(8), __func__, __FILE__, NULL, __LINE__,
+	chk_err(JSON_CODE_RESERVED(8), __func__, __FILE__, NULL, __LINE__,
 				    "error creating new struct json_field * for field '%s' value '%s' file %s",
 				    name, val, json_filename);
 	not_reached();
@@ -726,7 +1008,7 @@ add_common_json_field(char const *json_filename, char *name, char *val, int line
      * firewall
      */
     if (json_filename == NULL || name == NULL || val == NULL) {
-	err(210, __func__, "passed NULL arg(s)");
+	err(219, __func__, "passed NULL arg(s)");
 	not_reached();
     }
 
@@ -788,7 +1070,7 @@ check_found_common_json_fields(char const *json_filename, char const *fnamchk, b
      * firewall
      */
     if (json_filename == NULL || fnamchk == NULL) {
-	err(211, __func__, "passed NULL arg(s)");
+	err(220, __func__, "passed NULL arg(s)");
 	not_reached();
     }
 
@@ -806,7 +1088,7 @@ check_found_common_json_fields(char const *json_filename, char const *fnamchk, b
 	 * first make sure the name != NULL and strlen() > 0
 	 */
 	if (field->name == NULL || !strlen(field->name)) {
-	    jerr(JSON_CODE_RESERVED(9), __func__, __FILE__, NULL, __LINE__,
+	    chk_err(JSON_CODE_RESERVED(9), __func__, __FILE__, NULL, __LINE__,
 					"found NULL or empty field in found_common_json_fields list in file %s",
 					json_filename);
 	    not_reached();
@@ -823,7 +1105,7 @@ check_found_common_json_fields(char const *json_filename, char const *fnamchk, b
 	 * common list is not a common field name.
 	 */
 	if (common_field == NULL) {
-	    jerr(JSON_CODE_RESERVED(10), __func__, __FILE__, NULL, __LINE__,
+	    chk_err(JSON_CODE_RESERVED(10), __func__, __FILE__, NULL, __LINE__,
 					 "illegal field name '%s' in found_common_json_fields list in file %s",
 					 field->name, json_filename);
 	    not_reached();
@@ -838,14 +1120,14 @@ check_found_common_json_fields(char const *json_filename, char const *fnamchk, b
 	    char *val = value->value;
 
 	    if (val == NULL) {
-		jerr(JSON_CODE_RESERVED(11), __func__, __FILE__, NULL, __LINE__,
+		chk_err(JSON_CODE_RESERVED(11), __func__, __FILE__, NULL, __LINE__,
 					     "NULL pointer val for field '%s' in file %s",
 					     field->name, json_filename);
 		not_reached();
 	    }
 
 	    if (common_field->max_count > 0 && common_field->count > common_field->max_count) {
-		jwarn(JSON_CODE(1), __func__, __FILE__, NULL, value->line_num,
+		chk_warn(JSON_CODE(1), __func__, __FILE__, NULL, value->line_num,
 				    "field '%s' found %ju times but is only allowed %ju time%s in file %s",
 				    common_field->name, (uintmax_t)common_field->count,
 				    (uintmax_t)common_field->max_count, common_field->max_count==1?"":"s",
@@ -1094,7 +1376,7 @@ check_found_common_json_fields(char const *json_filename, char const *fnamchk, b
 	errno = 0;
 	str = calloc(1, strlen(tarball_val) + strlen(contest_id_val) + strlen(entry_num_val) + strlen(formed_timestamp_val) + 1);
 	if (str == NULL) {
-	    err(212, __func__, "couldn't allocate memory to verify that contest_id and entry_num matches the tarball");
+	    err(221, __func__, "couldn't allocate memory to verify that contest_id and entry_num matches the tarball");
 	    not_reached();
 	}
 
@@ -1148,14 +1430,14 @@ new_json_field(char const *json_filename, char const *name, char const *val, int
      * firewall
      */
     if (json_filename == NULL || name == NULL || val == NULL) {
-	err(213, __func__, "passed NULL arg(s)");
+	err(222, __func__, "passed NULL arg(s)");
 	not_reached();
     }
 
     errno = 0;
     field = calloc(1, sizeof *field);
     if (field == NULL) {
-	errp(214, __func__, "error allocating new struct json_field * for field '%s' and value '%s': %s",
+	errp(223, __func__, "error allocating new struct json_field * for field '%s' and value '%s': %s",
 		  name, val, strerror(errno));
 	not_reached();
     }
@@ -1163,12 +1445,12 @@ new_json_field(char const *json_filename, char const *name, char const *val, int
     errno = 0;
     field->name = strdup(name);
     if (field->name == NULL) {
-	errp(215, __func__, "unable to strdup() field name '%s': %s", name, strerror(errno));
+	errp(224, __func__, "unable to strdup() field name '%s': %s", name, strerror(errno));
 	not_reached();
     }
 
     if (add_json_value(json_filename, field, val, line_num) == NULL) {
-	err(216, __func__, "error adding value '%s' to field '%s'", val, name);
+	err(225, __func__, "error adding value '%s' to field '%s'", val, name);
 	not_reached();
     }
 
@@ -1207,7 +1489,7 @@ add_json_value(char const *json_filename, struct json_field *field, char const *
      * firewall
      */
     if (json_filename == NULL || field == NULL || val == NULL) {
-	err(217, __func__, "passed NULL arg(s)");
+	err(226, __func__, "passed NULL arg(s)");
 	not_reached();
     }
 
@@ -1215,14 +1497,14 @@ add_json_value(char const *json_filename, struct json_field *field, char const *
     errno = 0;
     new_value = calloc(1, sizeof *new_value);
     if (new_value == NULL) {
-	errp(218, __func__, "error allocating new value '%s' for field '%s' in file %s: %s",
+	errp(227, __func__, "error allocating new value '%s' for field '%s' in file %s: %s",
 		  val, field->name, json_filename, strerror(errno));
 	not_reached();
     }
     errno = 0;
     new_value->value = strdup(val);
     if (new_value->value == NULL) {
-	errp(219, __func__, "error strdup()ing value '%s' for field '%s': %s", val, field->name, strerror(errno));
+	errp(228, __func__, "error strdup()ing value '%s' for field '%s': %s", val, field->name, strerror(errno));
 	not_reached();
     }
 
@@ -1263,7 +1545,7 @@ free_json_field_values(struct json_field *field)
      * firewall
      */
     if (field == NULL) {
-	err(220, __func__, "passed NULL field");
+	err(229, __func__, "passed NULL field");
 	not_reached();
     }
 
@@ -1328,7 +1610,7 @@ free_json_field(struct json_field *field)
      * firewall
      */
     if (field == NULL) {
-	err(221, __func__, "passed NULL field");
+	err(230, __func__, "passed NULL field");
 	not_reached();
     }
 
@@ -1343,4 +1625,572 @@ free_json_field(struct json_field *field)
 
     free(field);
     field = NULL;
+}
+
+
+/*
+ * chk_warn - issue a JSON warning message
+ *
+ * given:
+ *	code	    warning code
+ *	name	    name of function issuing the warning
+ *	filename    file with the problem (can be stdin)
+ *	line	    JSON line
+ *	line_num    the offending line number in the json file
+ *	fmt	    format of the warning
+ *	...	    optional format args
+ *
+ * Example:
+ *
+ *	chk_warn(JSON_CODE(1), __func__, file, line, __LINE__, "unexpected foobar: %d", value);
+ *
+ * XXX As of 13 March 2022 the line will be empty but in time this should be
+ * changed to be the offending JSON text and the offending JSON line number
+ * (which currently is done but the way it's done might change). Instead the
+ * field and values are usually shown as part of the optional format args.
+ *
+ * NOTE: We warn with extra newlines to help internal fault messages stand out.
+ *	 Normally one should NOT include newlines in warn messages.
+ *
+ * NOTE: In some cases the file noted is the source file that raised the issue.
+ *
+ * This function does not return on code < JSON_CODE_RESERVED_MIN (0).
+ *
+ * This function returns true if the warning message is not ignored; else it
+ * will return false.
+ */
+bool
+chk_warn(int code, char const *name, char const *filename,
+	 char const *line, int line_num, char const *fmt, ...)
+{
+    va_list ap;			/* variable argument list */
+    int ret = 0;		/* libc function return code */
+    int saved_errno = 0;	/* errno at function start */
+    bool allowed = false;	/* true ==> output is allowed */
+    bool ignored = false;	/* true ==> code is to be ignored */
+
+    /*
+     * do nothing if the JSON warning is not allowed
+     */
+    allowed = json_warn_allowed();
+    ignored = is_json_code_ignored(code);
+    if (allowed == false || ignored == false) {
+	return false;
+    }
+
+    /*
+     * save errno so we can restore it before returning
+     */
+    saved_errno = errno;
+
+    /*
+     * stdarg variable argument list setup
+     */
+    va_start(ap, fmt);
+
+    /*
+     * firewall
+     */
+    if (name == NULL) {
+	name = "((NULL name))";
+	warn(__func__, "called with NULL name, forcing name: %s", name);
+    }
+    if (fmt == NULL) {
+	fmt = "((NULL fmt))";
+	warn(__func__, "called with NULL fmt, forcing fmt: %s", fmt);
+    }
+    if (code < JSON_CODE_RESERVED_MIN) {
+	err(231, __func__, "invalid JSON code: %d", code);
+	not_reached();
+    }
+    if (line == NULL) {
+	/* currently line will be NULL so we make it empty */
+	line = "";
+    }
+    if (filename == NULL) {
+	filename = "((NULL))";
+	dbg(DBG_VHIGH, "%s(): called with NULL filename, forcing filename: %s\n",
+		       __func__, filename);
+    }
+
+
+    ret = fprintf(stderr, "# %s\n", name);
+    if (ret < 0) {
+	(void) fprintf(stderr, "\nWarning: in %s(%d, %s, %s, %s, %d, %s, ...): "
+			       "fprintf returned error: %s\n",
+			       __func__, code, name,
+			       filename, line, line_num, fmt, strerror(errno));
+    }
+
+    errno = 0;
+    ret = fprintf(stderr, "{JSON-%04d}: %s: %d: ", code, filename, line_num);
+    if (ret < 0) {
+	(void) fprintf(stderr, "\nWarning: in %s(%d, %s, %s, %s, %d, %s, ...): "
+			       "fprintf returned error: %s\n",
+			       __func__, code, name,
+			       filename, line, line_num, fmt, strerror(errno));
+    }
+
+    errno = 0;
+    ret = vfprintf(stderr, fmt, ap);
+    if (ret < 0) {
+	(void) fprintf(stderr, "\nWarning: in %s(%d, %s, %s, %s, %d, %s, ...): "
+			       "fprintf returned error: %s\n",
+			       __func__, code, name,
+			       filename, line, line_num, fmt, strerror(errno));
+    }
+
+    errno = 0;
+    ret = fputc('\n', stderr);
+    if (ret != '\n') {
+	(void) fprintf(stderr, "\nWarning: in %s(%d, %s, %s, %s, %d, %s, ...): "
+			       "fputc returned error: %s\n",
+			       __func__, code, name,
+			       filename, line, line_num, fmt, strerror(errno));
+    }
+
+    errno = 0;
+    ret = fflush(stderr);
+    if (ret < 0) {
+	(void) fprintf(stderr, "\nWarning: in %s(%d, %s, %s, %s, %d, %s, ...): "
+			       "fflush returned error: %s\n",
+			       __func__, code, name,
+			       filename, line, line_num, fmt, strerror(errno));
+    }
+
+    /*
+     * stdarg variable argument list clean up
+     */
+    va_end(ap);
+
+    /*
+     * restore previous errno value
+     */
+    errno = saved_errno;
+    return true;
+}
+
+
+/*
+ * chk_warnp - issue a JSON warning message with errno information
+ *
+ * given:
+ *	code	    warning code
+ *	name	    name of function issuing the warning
+ *	filename    file with the problem (can be stdin)
+ *	line	    JSON line
+ *	line_num    the offending line number in the json file
+ *	fmt	    format of the warning
+ *	...	    optional format args
+ *
+ * Example:
+ *
+ *	chk_warnp(JSON_CODE(1), __func__, file, line, __LINE__, "unexpected foobar: %d", value);
+ *
+ * XXX As of 13 March 2022 the line will be empty but in time this should be
+ * changed to be the offending JSON text and the offending JSON line number
+ * (which currently is done but the way it's done might change). Instead the
+ * field and values are usually shown as part of the optional format args.
+ *
+ * NOTE: We warn with extra newlines to help internal fault messages stand out.
+ *	 Normally one should NOT include newlines in warn messages.
+ *
+ * NOTE: In some cases the file noted is the source file that raised the issue.
+ *
+ * This function does not return on code < JSON_CODE_RESERVED_MIN (0).
+ *
+ * This function returns true if the warning message is not ignored; else it
+ * will return false.
+ */
+bool
+chk_warnp(int code, char const *name, char const *filename,
+	  char const *line, int line_num, char const *fmt, ...)
+{
+    va_list ap;			/* variable argument list */
+    int ret = 0;		/* libc function return code */
+    int saved_errno = 0;	/* errno at function start */
+    bool allowed = false;	/* true ==> output is allowed */
+    bool ignored = false;	/* true ==> code is to be ignored */
+
+    /*
+     * do nothing if the JSON warning is not allowed
+     */
+    allowed = json_warn_allowed();
+    ignored = is_json_code_ignored(code);
+    if (allowed == false || ignored == false) {
+	return false;
+    }
+
+    /*
+     * save errno so we can restore it before returning
+     */
+    saved_errno = errno;
+
+    /*
+     * stdarg variable argument list setup
+     */
+    va_start(ap, fmt);
+
+    /*
+     * firewall
+     */
+    if (name == NULL) {
+	name = "((NULL name))";
+	warn(__func__, "called with NULL name, forcing name: %s", name);
+    }
+    if (fmt == NULL) {
+	fmt = "((NULL fmt))";
+	warn(__func__, "called with NULL fmt, forcing fmt: %s", fmt);
+    }
+    if (code < JSON_CODE_RESERVED_MIN) {
+	err(232, __func__, "invalid JSON code passed to chk_warn(): %d", code);
+	not_reached();
+    }
+    if (line == NULL) {
+	/* currently line will be NULL so we make it empty */
+	line = "";
+    }
+    if (filename == NULL) {
+	filename = "((NULL))";
+	dbg(DBG_VHIGH, "in %s(): called with NULL filename, forcing filename: %s\n",
+		       __func__, filename);
+    }
+
+
+    errno = 0;
+    ret = fprintf(stderr, "# %s\n", name);
+    if (ret < 0) {
+	(void) fprintf(stderr, "\nWarning: in %s(%d, %s, %s, %s, %d, %s, ...): "
+			       "fprintf returned error: %s\n",
+			       __func__, code, name,
+			       filename, line, line_num, fmt, strerror(errno));
+    }
+
+    errno = 0;
+    ret = fprintf(stderr, "{JSON-%04d}: %s: %d: ", code, filename, line_num);
+    if (ret < 0) {
+	(void) fprintf(stderr, "\nWarning: in %s(%d, %s, %s, %s, %d, %s, ...): "
+			       "fprintf returned error: %s\n",
+			       __func__, code, name,
+			       filename, line, line_num, fmt, strerror(errno));
+    }
+
+    errno = 0;
+    ret = vfprintf(stderr, fmt, ap);
+    if (ret < 0) {
+	(void) fprintf(stderr, "\nWarning: in %s(%d, %s, %s, %s, %d, %s, ...): "
+			       "fprintf returned error: %s\n",
+			       __func__, code, name,
+			       filename, line, line_num, fmt, strerror(errno));
+    }
+
+    errno = 0;
+    ret = fprintf(stderr, "errno[%d]: %s\n", saved_errno, strerror(saved_errno));
+    if (ret < 0) {
+	(void) fprintf(stderr, "\nWarning: in %s(%d, %s, %s, %s, %d, %s, ...): "
+			       "fprintf with errno returned error: %s\n",
+			       __func__, code, name,
+			       filename, line, line_num, fmt, strerror(errno));
+    }
+
+    errno = 0;
+    ret = fputc('\n', stderr);
+    if (ret != '\n') {
+	(void) fprintf(stderr, "\nWarning: in %s(%d, %s, %s, %s, %d, %s, ...): "
+			       "fputc returned error: %s\n",
+			       __func__, code, name,
+			       filename, line, line_num, fmt, strerror(errno));
+    }
+
+    errno = 0;
+    ret = fflush(stderr);
+    if (ret < 0) {
+	(void) fprintf(stderr, "\nWarning: in %s(%d, %s, %s, %s, %d, %s, ...): "
+			       "fflush returned error: %s\n",
+			       __func__, code, name,
+			       filename, line, line_num, fmt, strerror(errno));
+    }
+
+    /*
+     * stdarg variable argument list clean up
+     */
+    va_end(ap);
+
+    /*
+     * restore previous errno value
+     */
+    errno = saved_errno;
+    return true;
+}
+
+
+/*
+ * chk_err - issue a fatal JSON error message and exit
+ *
+ * given:
+ *	exitcode	value to exit with
+ *	name		name of function issuing the error
+ *	filename	file with the problem (can be stdin)
+ *	line		line with the problem (or NULL)
+ *	line_num	line number with the problem or -1
+ *	fmt		format of the warning
+ *	...		optional format args
+ *
+ * Example:
+ *
+ *	chk_err(JSON_CODE(1), __func__, file, line, line_num, "bad foobar: %s", message);
+ *
+ * NOTE: We warn with extra newlines to help internal fault messages stand out.
+ *	 Normally one should NOT include newlines in warn messages.
+ *
+ * NOTE: In some cases the file noted is the source file that raised the issue.
+ *
+ * This function does not return.
+ */
+void
+chk_err(int exitcode, char const *name, char const *filename,
+	char const *line, int line_num, char const *fmt, ...)
+{
+    va_list ap;			/* variable argument list */
+    int ret;			/* libc function return code */
+    bool allowed = false;	/* true ==> output is allowed */
+
+    /*
+     * determine if conditions allow JSON error message, exit if not
+     */
+    allowed = json_err_allowed();
+    if (allowed == false) {
+	exit((exitcode < 0 || exitcode > 255) ? 255 : exitcode);
+	not_reached();
+    }
+
+    /*
+     * stdarg variable argument list setup
+     */
+    va_start(ap, fmt);
+
+    /*
+     * firewall
+     */
+    if (exitcode < 0) {
+	warn(__func__, "called with exitcode <0: %d", exitcode);
+	exitcode = 255;
+	warn(__func__, "forcing exit code: %d", exitcode);
+    }
+    if (name == NULL) {
+	name = "((NULL name))";
+	warn(__func__, "called with NULL name, forcing name: %s", name);
+    }
+    if (fmt == NULL) {
+	fmt = "((NULL fmt))";
+	warn(__func__, "called with NULL fmt, forcing fmt: %s", fmt);
+    }
+    if (filename == NULL) {
+	filename = "((NULL))";
+	dbg(DBG_VHIGH, "in %s(): called with NULL filename, forcing filename: %s\n",
+		       __func__, filename);
+    }
+    if (line == NULL) {
+	line = "";
+	dbg(DBG_VHIGH, "in %s(): called with NULL line, making \"\"",
+		       __func__);
+    }
+
+    errno = 0;
+    ret = fprintf(stderr, "# %s\n", name);
+    if (ret < 0) {
+	(void) fprintf(stderr, "\nWarning: in %s(%d, %s, %s, %s, %d, %s, ...): "
+			       "fprintf returned error: %s\n",
+			       __func__, exitcode, name,
+			       filename, line, line_num, fmt, strerror(errno));
+    }
+
+    errno = 0;
+    ret = fprintf(stderr, "JSON[%04d]: %s: %d: ", exitcode, filename, line_num);
+    if (ret < 0) {
+	(void) fprintf(stderr, "\nWarning: in %s(%d, %s, %s, %s, %d, %s, ...): "
+			       "fprintf returned error: %s\n",
+			       __func__, exitcode, name,
+			       filename, line, line_num, fmt, strerror(errno));
+    }
+
+    errno = 0;
+    ret = vfprintf(stderr, fmt, ap);
+    if (ret < 0) {
+	(void) fprintf(stderr, "\nWarning: in %s(%d, %s, %s, %s, %d, %s, ...): "
+			       "vfprintf returned error: %s\n",
+			       __func__, exitcode, name,
+			       filename, line, line_num, fmt, strerror(errno));
+    }
+
+    errno = 0;
+    ret = fputc('\n', stderr);
+    if (ret != '\n') {
+	(void) fprintf(stderr, "\nWarning: in %s(%d, %s, %s, %s, %d, %s, ...): "
+			       "fputc returned error: %s\n",
+			       __func__, exitcode, name,
+			       filename, line, line_num, fmt, strerror(errno));
+    }
+
+    errno = 0;
+    ret = fflush(stderr);
+    if (ret < 0) {
+	(void) fprintf(stderr, "\nWarning: in %s(%d, %s, %s, %s, %d, %s, ...): "
+			       "fflush returned error: %s\n",
+			       __func__, exitcode, name,
+			       filename, line, line_num, fmt, strerror(errno));
+    }
+
+    /*
+     * stdarg variable argument list cleanup
+     */
+    va_end(ap);
+
+    /*
+     * terminate with exit code
+     */
+    exit(exitcode);
+    not_reached();
+}
+
+
+/*
+ * chk_errp - issue a fatal error message with errno information and exit
+ *
+ * given:
+ *	exitcode	value to exit with
+ *	name		name of function issuing the warning
+ *	filename	file with the problem (can be stdin)
+ *	line		line with the problem or NULL
+ *	line_num	line number of the problem or -1
+ *	fmt		format of the warning
+ *	...		optional format args
+ *
+ * Example:
+ *
+ *	chk_errp(JSON_CODE(1), __func__, file, line, line_num, "bad foobar: %s", message);
+ *
+ * NOTE: We warn with extra newlines to help internal fault messages stand out.
+ *	 Normally one should NOT include newlines in warn messages.
+ *
+ * NOTE: In some cases the file noted is the source file that raised the issue.
+ *
+ * This function does not return.
+ */
+void
+chk_errp(int exitcode, char const *name, char const *filename,
+	 char const *line, int line_num, char const *fmt, ...)
+{
+    va_list ap;			/* variable argument list */
+    int ret = 0;		/* libc function return code */
+    int saved_errno = 0;	/* errno value when called */
+    bool allowed = false;	/* true ==> output is allowed */
+
+    /*
+     * determine if conditions allow JSON error message, exit if not
+     */
+    allowed = json_err_allowed();
+    if (allowed == false) {
+	exit((exitcode < 0 || exitcode > 255) ? 255 : exitcode);
+	not_reached();
+    }
+
+    /*
+     * save errno in case we need it for strerror()
+     */
+    saved_errno = errno;
+
+    /*
+     * stdarg variable argument list setup
+     */
+    va_start(ap, fmt);
+
+    /* firewall */
+    if (exitcode < 0) {
+	warn(__func__, "called with exitcode <0: %d", exitcode);
+	exitcode = 255;
+	warn(__func__, "forcing exit code: %d", exitcode);
+    }
+    if (name == NULL) {
+	name = "((NULL name))";
+	warn(__func__, "called with NULL name, forcing name: %s", name);
+    }
+    if (fmt == NULL) {
+	fmt = "((NULL fmt))";
+	warn(__func__, "called with NULL fmt, forcing fmt: %s", fmt);
+    }
+    if (filename == NULL) {
+	filename = "((NULL))";
+	warn(__func__, "called with NULL filename, forcing filename: %s", filename);
+    }
+    if (line == NULL) {
+	line = "";
+	warn(__func__, "called with NULL line, making \"\"");
+    }
+
+
+    errno = 0;
+    ret = fprintf(stderr, "# %s\n", name);
+    if (ret < 0) {
+	(void) fprintf(stderr, "\nWarning: in %s(%d, %s, %s, %s, %d, %s, ...): "
+			       "fprintf returned error: %s\n",
+			       __func__, exitcode, name,
+			       filename, line, line_num, fmt, strerror(errno));
+    }
+
+    errno = 0;
+    ret = fprintf(stderr, "JSON[%04d]: %s: %d: ", exitcode, filename, line_num);
+    if (ret < 0) {
+	(void) fprintf(stderr, "\nWarning: in %s(%d, %s, %s, %s, %d, %s, ...): "
+			       "fprintf returned error: %s\n",
+			       __func__, exitcode, name,
+			       filename, line, line_num, fmt, strerror(errno));
+    }
+
+    errno = 0;
+    ret = vfprintf(stderr, fmt, ap);
+    if (ret < 0) {
+	(void) fprintf(stderr, "\nWarning: in %s(%d, %s, %s, %s, %d, %s, ...): "
+			       "vfprintf returned error: %s\n",
+			       __func__, exitcode, name,
+			       filename, line, line_num, fmt, strerror(errno));
+    }
+
+    errno = 0;
+    ret = fprintf(stderr, " errno[%d]: %s", saved_errno, strerror(saved_errno));
+    if (ret < 0) {
+	(void) fprintf(stderr, "\nWarning: in %s(%d, %s, %s, %s, %d, %s, ...): "
+			       "fprintf returned error: %s\n",
+			       __func__, exitcode, name,
+			       filename, line, line_num, fmt, strerror(errno));
+    }
+
+    errno = 0;
+    ret = fputc('\n', stderr);
+    if (ret != '\n') {
+	(void) fprintf(stderr, "\nWarning: in %s(%d, %s, %s, %s, %d, %s, ...): "
+			       "fputc returned error: %s\n",
+			       __func__, exitcode, name,
+			       filename, line, line_num, fmt, strerror(errno));
+    }
+
+    errno = 0;
+    ret = fflush(stderr);
+    if (ret < 0) {
+	(void) fprintf(stderr, "\nWarning: in %s(%d, %s, %s, %s, %d, %s, ...): "
+			       "fflush returned error: %s\n",
+			       __func__, exitcode, name,
+			       filename, line, line_num, fmt, strerror(errno));
+    }
+
+    /*
+     * stdarg variable argument list cleanup
+     */
+    va_end(ap);
+
+    /*
+     * terminate with exit code
+     */
+    exit(exitcode);
+    not_reached();
 }
