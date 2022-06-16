@@ -1,14 +1,8 @@
 /*
- * sanity: the IOCCC source code sanity checker
- *
- * Each IOCCC tool in the mkiocccentry repo should run the ioccc_sanity_chks()
- * function to verify that certain things are in a sane state. This should be
- * done via each tool's sanity checker function e.g. txzchk_sanity_chks() for
- * txzchk, mkiocccentry_sanity_chks() for mkiocccentry etc.
+ * sanity - perform common IOCCC sanity checks
  *
  * "Because sometimes we're all a little insane, some of us are a lot insane and
  * code is very often very insane." :-)
- *
  */
 
 

@@ -2194,3 +2194,29 @@ chk_errp(int exitcode, char const *name, char const *filename,
     exit(exitcode);
     not_reached();
 }
+
+
+/*
+ * chk_sanity_chks - perfork chk sanity checks
+ */
+void
+chk_sanity_chks(void)
+{
+    /*
+     * Check that the JSON fields tables are sane: that there are no
+     * embedded NULL elements, that the only JTYPE_NULL type is the final
+     * element, that the other elements have valid field types and that the
+     * final element is in fact NULL. As well it makes sure the tables are not
+     * empty.
+     *
+     * NOTE: The below function calls dbg() for each table it checks so we don't
+     * duplicate those messages here.
+     */
+    check_json_fields_tables();
+
+    /*
+     * perform common IOCCC sanity checks
+     */
+    ioccc_sanity_chks();
+    return;
+}

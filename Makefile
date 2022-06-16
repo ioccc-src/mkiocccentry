@@ -411,10 +411,10 @@ fnamchk: fnamchk.o dbg.o util.o dyn_array.o Makefile
 txzchk.o: txzchk.c txzchk.h Makefile
 	${CC} ${CFLAGS} txzchk.c -c
 
-txzchk: txzchk.o rule_count.o dbg.o util.o dyn_array.o location.o json_parse.o chk_util.o json_util.o \
+txzchk: txzchk.o rule_count.o dbg.o util.o dyn_array.o location.o json_parse.o json_util.o \
 	utf8_posix_map.o sanity.o Makefile
 	${CC} ${CFLAGS} txzchk.o rule_count.o dbg.o util.o dyn_array.o location.o json_parse.o \
-	    chk_util.o json_util.o utf8_posix_map.o sanity.o -o $@
+	    json_util.o utf8_posix_map.o sanity.o -o $@
 
 chkauth.o: chkauth.c chkauth.h json_util.h Makefile
 	${CC} ${CFLAGS} chkauth.c -c
@@ -881,7 +881,8 @@ verge.o: verge.c verge.h dbg.h util.h dyn_array.h limit_ioccc.h version.h
 dyn_array.o: dyn_array.c dyn_array.h dbg.h
 dyn_test.o: dyn_test.c dyn_test.h util.h dyn_array.h dbg.h
 chk_util.o: chk_util.c dbg.h util.h dyn_array.h limit_ioccc.h version.h \
-  chk_util.h json_parse.h json_util.h
+  chk_util.h json_parse.h json_util.h sanity.h location.h \
+  utf8_posix_map.h
 json_entry.o: json_entry.c dbg.h util.h dyn_array.h json_entry.h \
   json_parse.h
 dbg_test.o: dbg_test.c dbg.h

@@ -157,7 +157,7 @@ chkinfo_sanity_chks(char const *file, char const *fnamchk)
     }
 
     /* we also check that all the tables across the IOCCC toolkit are sane */
-    ioccc_sanity_chks();
+    chk_sanity_chks();
 
     return;
 }
