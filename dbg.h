@@ -42,7 +42,7 @@
 /*
  * definitions
  */
-#define DBG_VERSION "2.2 2022-06-08"		/* format: major.minor YYYY-MM-DD */
+#define DBG_VERSION "2.3 2022-06-16"		/* format: major.minor YYYY-MM-DD */
 
 
 /*
