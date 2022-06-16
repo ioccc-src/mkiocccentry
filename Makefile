@@ -411,9 +411,9 @@ fnamchk: fnamchk.o dbg.o util.o dyn_array.o Makefile
 txzchk.o: txzchk.c txzchk.h Makefile
 	${CC} ${CFLAGS} txzchk.c -c
 
-txzchk: txzchk.o rule_count.o dbg.o util.o dyn_array.o location.o json_parse.o json_util.o \
+txzchk: txzchk.o dbg.o util.o dyn_array.o location.o json_parse.o json_util.o \
 	utf8_posix_map.o sanity.o Makefile
-	${CC} ${CFLAGS} txzchk.o rule_count.o dbg.o util.o dyn_array.o location.o json_parse.o \
+	${CC} ${CFLAGS} txzchk.o dbg.o util.o dyn_array.o location.o json_parse.o \
 	    json_util.o utf8_posix_map.o sanity.o -o $@
 
 chkauth.o: chkauth.c chkauth.h json_util.h Makefile
