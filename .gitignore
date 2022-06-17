@@ -1,6 +1,7 @@
 # mkiocccentry specific
 .exit_code.*
 .sorry.*
+.hostchk.*
 answers.txt
 build.log
 chkauth
