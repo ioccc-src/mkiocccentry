@@ -516,7 +516,7 @@ struct utf8_posix_map hmap[] =
     { "\xc6\x98", "k" , -1, -1},	/*  U+0198 - Ƙ - LATIN CAPITAL LETTER K WITH HOOK */
     { "\xc6\x99", "k" , -1, -1},	/*  U+0199 - ƙ - LATIN SMALL LETTER K WITH HOOK */
     { "\xc6\x9a", "l" , -1, -1},	/*  U+019A - ƚ - LATIN SMALL LETTER L WITH BAR */
-    { "\xc6\x9b", "y" , -1, -1},	/*  U+019B - ƛ - LATIN SMALL LETTER LAMBDA WITH STROKE */
+    { "\xc6\x9b", "l" , -1, -1},	/*  U+019B - ƛ - LATIN SMALL LETTER LAMBDA WITH STROKE */
     { "\xc6\x9c", "w" , -1, -1},	/*  U+019C - Ɯ - LATIN CAPITAL LETTER TURNED M */
     { "\xc6\x9d", "n" , -1, -1},	/*  U+019D - Ɲ - LATIN CAPITAL LETTER N WITH LEFT HOOK */
     { "\xc6\x9e", "n" , -1, -1},	/*  U+019E - ƞ - LATIN SMALL LETTER N WITH LONG RIGHT LEG */
@@ -1028,7 +1028,7 @@ struct utf8_posix_map hmap[] =
     { "\xce\x98", "o" , -1, -1},	/*  U+0398 - Θ - GREEK CAPITAL LETTER THETA */
     { "\xce\x99", "i" , -1, -1},	/*  U+0399 - Ι - GREEK CAPITAL LETTER IOTA */
     { "\xce\x9a", "k" , -1, -1},	/*  U+039A - Κ - GREEK CAPITAL LETTER KAPPA */
-    { "\xce\x9b", "n" , -1, -1},	/*  U+039B - Λ - GREEK CAPITAL LETTER LAMDA */
+    { "\xce\x9b", "L" , -1, -1},	/*  U+039B - Λ - GREEK CAPITAL LETTER LAMBDA */
     { "\xce\x9c", "m" , -1, -1},	/*  U+039C - Μ - GREEK CAPITAL LETTER MU */
     { "\xce\x9d", "n" , -1, -1},	/*  U+039D - Ν - GREEK CAPITAL LETTER NU */
     { "\xce\x9e", "-" , -1, -1},	/*  U+039E - Ξ - GREEK CAPITAL LETTER XI */
@@ -1060,7 +1060,7 @@ struct utf8_posix_map hmap[] =
     { "\xce\xb8", "o" , -1, -1},	/*  U+03B8 - θ - GREEK SMALL LETTER THETA */
     { "\xce\xb9", "l" , -1, -1},	/*  U+03B9 - ι - GREEK SMALL LETTER IOTA */
     { "\xce\xba", "k" , -1, -1},	/*  U+03BA - κ - GREEK SMALL LETTER KAPPA */
-    { "\xce\xbb", "y" , -1, -1},	/*  U+03BB - λ - GREEK SMALL LETTER LAMDA */
+    { "\xce\xbb", "l" , -1, -1},	/*  U+03BB - λ - GREEK SMALL LETTER LAMBDA */
     { "\xce\xbc", "u" , -1, -1},	/*  U+03BC - μ - GREEK SMALL LETTER MU */
     { "\xce\xbd", "v" , -1, -1},	/*  U+03BD - ν - GREEK SMALL LETTER NU */
     { "\xce\xbe", "e" , -1, -1},	/*  U+03BE - ξ - GREEK SMALL LETTER XI */
