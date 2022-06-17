@@ -50,6 +50,7 @@ Exit codes:
     8    ./dyn_test not found or not executable
     9	 ./jparse_test.sh not found or not executable
     10	 ./json_teststr.txt not found or not readable
+    11	 ./txzchk not found or not executable
 
     >=20  some test failed"
 export TEST_VERSION="0.462022-04-23"
@@ -197,6 +198,19 @@ fi
 if [[ ! -r json_teststr.txt ]]; then
     echo "$0: ERROR: json_teststr.txt is not readable" 1>&2
     exit 10
+fi
+# txzchk
+if [[ ! -e ./txzchk ]]; then
+    echo "$0: ERROR: ./txzchk file not found" 1>&2
+    exit 11
+fi
+if [[ ! -f ./txzchk ]]; then
+    echo "$0: ERROR: ./txzchk is not a regular file" 1>&2
+    exit 11
+fi
+if [[ ! -x ./txzchk ]]; then
+    echo "$0: ERROR: ./txzchk is not executable" 1>&2
+    exit 11
 fi
 
 
