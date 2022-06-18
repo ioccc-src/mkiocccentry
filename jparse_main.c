@@ -20,11 +20,6 @@
 #include "jparse_main.h"
 
 
-/*
- * static functions
- */
-static void usage(int exitcode, char const *str, char const *prog);
-
 
 int
 main(int argc, char **argv)
@@ -131,14 +126,14 @@ main(int argc, char **argv)
 	}
 
     } else if (!string_flag_used) {
-	usage(2, "-s string was not used and no file specified", program); /*ooo*/
+	usage(2, "-s string not used and no file specified", program); /*ooo*/
 	not_reached();
     }
 
     /*
      *  exit based on JSON parse success or failure
      */
-    if (num_errors > 0 || valid_json == false) {
+    if (num_errors > 0 || !valid_json) {
 	exit(1); /*ooo*/
     }
     exit(0); /*ooo*/

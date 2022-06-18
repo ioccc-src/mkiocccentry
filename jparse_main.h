@@ -43,6 +43,10 @@
  */
 #define JPARSE_VERSION "0.8 2022-06-12"		/* format: major.minor YYYY-MM-DD */
 
+/*
+ * static functions
+ */
+static void usage(int exitcode, char const *str, char const *prog);
 
 /*
  * usage message

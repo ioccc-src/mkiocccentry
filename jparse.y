@@ -113,8 +113,6 @@
 
 unsigned num_errors = 0;		/* > 0 number of errors encountered */
 
-char const *json_parser_version = JSON_PARSER_VERSION;	/* official JSON parser version */
-
 /*
  * bison debug information for development
  */
