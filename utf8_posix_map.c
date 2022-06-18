@@ -1028,7 +1028,7 @@ struct utf8_posix_map hmap[] =
     { "\xce\x98", "o" , -1, -1},	/*  U+0398 - Θ - GREEK CAPITAL LETTER THETA */
     { "\xce\x99", "i" , -1, -1},	/*  U+0399 - Ι - GREEK CAPITAL LETTER IOTA */
     { "\xce\x9a", "k" , -1, -1},	/*  U+039A - Κ - GREEK CAPITAL LETTER KAPPA */
-    { "\xce\x9b", "L" , -1, -1},	/*  U+039B - Λ - GREEK CAPITAL LETTER LAMBDA */
+    { "\xce\x9b", "l" , -1, -1},	/*  U+039B - Λ - GREEK CAPITAL LETTER LAMBDA */
     { "\xce\x9c", "m" , -1, -1},	/*  U+039C - Μ - GREEK CAPITAL LETTER MU */
     { "\xce\x9d", "n" , -1, -1},	/*  U+039D - Ν - GREEK CAPITAL LETTER NU */
     { "\xce\x9e", "-" , -1, -1},	/*  U+039E - Ξ - GREEK CAPITAL LETTER XI */
@@ -1603,8 +1603,8 @@ check_utf8_posix_map(void)
 
 	/* POSIX portable plus + check on posix_str if string is not empty */
 	if (hmap[i].posix_str_len > 0 && posix_plus_safe(hmap[i].posix_str, true, false, false) == false) {
-	    err(13, __func__, "hmap[%ju] is not POSIX portable plus + safe; "
-			      "fix table in utf8_posix_map.c and recompile", (uintmax_t)i);
+	    err(13, __func__, "hmap[%ju] = '%s' is not POSIX portable plus + safe; "
+			      "fix table in utf8_posix_map.c and recompile", (uintmax_t)i, hmap[i].posix_str);
 	    not_reached();
 	}
     }
