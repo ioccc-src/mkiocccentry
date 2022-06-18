@@ -153,22 +153,24 @@
 
 
 /*
- * dynamic array version
+ * dynamic array versions
  *
- * Because the dynamic array is a self contained system, we cannot define DYN_ALLOC_VERSION here.
- * Because the dynamic array is a self contained system, we cannot define DYN_TEST_VERSION here.
- * See dyn_array.h for the DYN_ALLOC_VERSION value.
- * See dyn_test.h for the DYN_TEST_VERSION value.
+ * Because the dynamic array is a self contained system, we cannot define
+ * DYN_ALLOC_VERSION here. See dyn_array.h for the DYN_ALLOC_VERSION value.
+ *
+ * Because the dynamic array is a self contained system, we cannot define
+ * DYN_TEST_VERSION here. See dyn_test.h for the DYN_TEST_VERSION value.
  */
 
 
  /*
-  * JSON parser version
+  * JSON parser versions
   *
-  * Because the JSON parser is a self contained system, we cannot define JSON_PARSER_VERSION here.
-  * Because the JSON parser is a self contained system, we cannot define JPARSE_VERSION here.
-  * See jparse.h for the JSON_PARSER_VERSION value.
-  * See jparse_main.h for the JPARSE_VERSION value.
+  * Because the JSON parser is a self contained system, we cannot define
+  * JSON_PARSER_VERSION here. See jparse.h for the JSON_PARSER_VERSION value.
+  *
+  * Because the JSON parser is a self contained system, we cannot define
+  * JPARSE_VERSION here. See jparse_main.h for the JPARSE_VERSION value.
   */
 
 
