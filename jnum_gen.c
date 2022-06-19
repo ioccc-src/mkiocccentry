@@ -282,7 +282,7 @@ main(int argc, char *argv[])
 	    err(19, program, "node->type for test %d: %d != %d", i, node->type, JTYPE_NUMBER);
 	    not_reached();
 	}
-	fpr_number(stdout, &node->element.number);
+	fpr_number(stdout, &node->item.number);
 
 	/*
 	 * print end of json_number structure

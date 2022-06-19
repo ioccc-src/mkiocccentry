@@ -192,7 +192,7 @@ json:
 	json_dbg(JSON_DBG_LOW, __func__, "under json: starting: "
 					 "json: json_element");
 	json_dbg(JSON_DBG_HIGH, __func__, "under json: $json_element type: %s",
-					 json_element_type_name($json_element));
+					 json_item_type_name($json_element));
 	json_dbg(JSON_DBG_HIGH, __func__, "under json: about to perform: "
 					 "$json = $json_element;");
 
@@ -201,7 +201,7 @@ json:
 
 	/* post action debugging */
 	json_dbg(JSON_DBG_HIGH, __func__, "under json: returning $json type: %s",
-					 json_element_type_name($json));
+					 json_item_type_name($json));
 	json_dbg_tree_print(JSON_DBG_MED, __func__, $json, JSON_DEFAULT_MAX_DEPTH);
 	json_dbg(JSON_DBG_LOW, __func__, "under json: ending: "
 					 "json: json_element");
@@ -221,7 +221,7 @@ json_value:
 	json_dbg(JSON_DBG_MED, __func__, "under json_value: starting: "
 					 "json_value: json_object");
 	json_dbg(JSON_DBG_HIGH, __func__, "under json_value: $json_object type: %s",
-					 json_element_type_name($json_object));
+					 json_item_type_name($json_object));
 	json_dbg(JSON_DBG_HIGH, __func__, "under json_value: about to perform: "
 					 "$json_value = $json_object;");
 
@@ -230,7 +230,7 @@ json_value:
 
 	/* post-action debugging */
 	json_dbg(JSON_DBG_HIGH, __func__, "under json_value: returning $json_value type: %s",
-					 json_element_type_name($json_value));
+					 json_item_type_name($json_value));
 	/* XXX - adjust JSON_DBG_MED to higher once all JSON items are parsed - XXX */
 	json_dbg_tree_print(JSON_DBG_MED, __func__, $json_value, JSON_DEFAULT_MAX_DEPTH);
 	json_dbg(JSON_DBG_MED, __func__, "under json_value: ending: "
@@ -249,7 +249,7 @@ json_value:
 	json_dbg(JSON_DBG_MED, __func__, "under json_value: starting: "
 					 "json_value: json_array");
 	json_dbg(JSON_DBG_HIGH, __func__, "under json_value: $json_array type: %s",
-					 json_element_type_name($json_array));
+					 json_item_type_name($json_array));
 	json_dbg(JSON_DBG_HIGH, __func__, "under json_value: about to perform: "
 					 "$json_value = $json_array;");
 
@@ -258,7 +258,7 @@ json_value:
 
 	/* post-action debugging */
 	json_dbg(JSON_DBG_HIGH, __func__, "under json_value: returning $json_value type: %s",
-					 json_element_type_name($json_value));
+					 json_item_type_name($json_value));
 	/* XXX - adjust JSON_DBG_MED to higher once all JSON items are parsed - XXX */
 	json_dbg_tree_print(JSON_DBG_MED, __func__, $json_value, JSON_DEFAULT_MAX_DEPTH);
 	json_dbg(JSON_DBG_MED, __func__, "under json_value: ending: "
@@ -277,7 +277,7 @@ json_value:
 	json_dbg(JSON_DBG_MED, __func__, "under json_value: starting: "
 					 "json_value: json_string");
 	json_dbg(JSON_DBG_HIGH, __func__, "under json_value: $json_string type: %s",
-					 json_element_type_name($json_string));
+					 json_item_type_name($json_string));
 	json_dbg(JSON_DBG_HIGH, __func__, "under json_value: about to perform: "
 					 "$json_value = $json_string;");
 
@@ -286,7 +286,7 @@ json_value:
 
 	/* post-action debugging */
 	json_dbg(JSON_DBG_HIGH, __func__, "under json_value: returning $json_value type: %s",
-					 json_element_type_name($json_value));
+					 json_item_type_name($json_value));
 	/* XXX - adjust JSON_DBG_MED to higher once all JSON items are parsed - XXX */
 	json_dbg_tree_print(JSON_DBG_MED, __func__, $json_value, JSON_DEFAULT_MAX_DEPTH);
 	json_dbg(JSON_DBG_MED, __func__, "under json_value: ending: "
@@ -305,7 +305,7 @@ json_value:
 	json_dbg(JSON_DBG_MED, __func__, "under json_value: starting: "
 					 "json_value: json_number");
 	json_dbg(JSON_DBG_HIGH, __func__, "under json_value: $json_number type: %s",
-					 json_element_type_name($json_number));
+					 json_item_type_name($json_number));
 	json_dbg(JSON_DBG_HIGH, __func__, "under json_value: about to perform: "
 					 "$json_value = $json_number;");
 
@@ -314,7 +314,7 @@ json_value:
 
 	/* post-action debugging */
 	json_dbg(JSON_DBG_HIGH, __func__, "under json_value: returning $json_value type: %s",
-					 json_element_type_name($json_value));
+					 json_item_type_name($json_value));
 	/* XXX - adjust JSON_DBG_MED to higher once all JSON items are parsed - XXX */
 	json_dbg_tree_print(JSON_DBG_MED, __func__, $json_value, JSON_DEFAULT_MAX_DEPTH);
 	json_dbg(JSON_DBG_MED, __func__, "under json_value: ending: "
@@ -341,7 +341,7 @@ json_value:
 
 	/* post-action debugging */
 	json_dbg(JSON_DBG_HIGH, __func__, "under json_value: returning $json_value type: %s",
-				         json_element_type_name($json_value));
+				         json_item_type_name($json_value));
 	/* XXX - adjust JSON_DBG_MED to higher once all JSON items are parsed - XXX */
 	json_dbg_tree_print(JSON_DBG_MED, __func__, $json_value, JSON_DEFAULT_MAX_DEPTH);
 	json_dbg(JSON_DBG_MED, __func__, "under json_value: ending: "
@@ -368,7 +368,7 @@ json_value:
 
 	/* post-action debugging */
 	json_dbg(JSON_DBG_HIGH, __func__, "under json_value: returning $json_value type: %s",
-				         json_element_type_name($json_value));
+				         json_item_type_name($json_value));
 	/* XXX - adjust JSON_DBG_MED to higher once all JSON items are parsed - XXX */
 	json_dbg_tree_print(JSON_DBG_MED, __func__, $json_value, JSON_DEFAULT_MAX_DEPTH);
 	json_dbg(JSON_DBG_MED, __func__, "under json_value: ending: "
@@ -395,7 +395,7 @@ json_value:
 
 	/* post-action debugging */
 	json_dbg(JSON_DBG_HIGH, __func__, "under json_value: returning $json_value type: %s",
-				         json_element_type_name($json_value));
+				         json_item_type_name($json_value));
 	/* XXX - adjust JSON_DBG_MED to higher once all JSON items are parsed - XXX */
 	json_dbg_tree_print(JSON_DBG_MED, __func__, $json_value, JSON_DEFAULT_MAX_DEPTH);
 	json_dbg(JSON_DBG_MED, __func__, "under json_value: ending: "
@@ -416,7 +416,7 @@ json_object:
 	json_dbg(JSON_DBG_MED, __func__, "under json_object: starting: "
 					 "json_object: JSON_OPEN_BRACE json_members JSON_CLOSE_BRACE");
 	json_dbg(JSON_DBG_HIGH, __func__, "under json_object: $json_members type: %s",
-					 json_element_type_name($json_members));
+					 json_item_type_name($json_members));
 	json_dbg(JSON_DBG_HIGH, __func__, "under json_object: about to perform: "
 					 "XXX - need more code here - XXX");
 
@@ -425,7 +425,7 @@ json_object:
 
 	/* post-action debugging */
 	json_dbg(JSON_DBG_MED, __func__, "under json_object: returning $json_object type: %s",
-					 json_element_type_name($json_object));
+					 json_item_type_name($json_object));
 	/* XXX - call json_dbg_tree_print when there is a value to process - XXX */
 	json_dbg(JSON_DBG_MED, __func__, "under json_object: ending: "
 					 "json_object: JSON_OPEN_BRACE json_members JSON_CLOSE_BRACE");
@@ -449,7 +449,7 @@ json_object:
 
 	/* post-action debugging */
 	json_dbg(JSON_DBG_MED, __func__, "under json_object: returning $json_object type: %s",
-					 json_element_type_name($json_object));
+					 json_item_type_name($json_object));
 	/* XXX - adjust JSON_DBG_MED to higher once all JSON items are parsed - XXX */
 	json_dbg_tree_print(JSON_DBG_MED, __func__, $json_object, JSON_DEFAULT_MAX_DEPTH);
 	json_dbg(JSON_DBG_MED, __func__, "under json_object: ending: "
@@ -470,7 +470,7 @@ json_members:
 	json_dbg(JSON_DBG_MED, __func__, "under json_members: starting: "
 					 "json_members: json_member");
 	json_dbg(JSON_DBG_HIGH, __func__, "under json_members: $json_member type: %s",
-					 json_element_type_name($json_member));
+					 json_item_type_name($json_member));
 	json_dbg(JSON_DBG_HIGH, __func__, "under json_members: about to perform: "
 					 "$json_members = $json_member;");
 
@@ -479,7 +479,7 @@ json_members:
 
 	/* post-action debugging */
 	json_dbg(JSON_DBG_HIGH, __func__, "under json_members: returning $json_members type: %s",
-				         json_element_type_name($json_members));
+				         json_item_type_name($json_members));
 	/* XXX - adjust JSON_DBG_MED to higher once all JSON items are parsed - XXX */
 	json_dbg_tree_print(JSON_DBG_MED, __func__, $json_members, JSON_DEFAULT_MAX_DEPTH);
 	json_dbg(JSON_DBG_MED, __func__, "under json_members: ending: "
@@ -502,9 +502,9 @@ json_members:
 	json_dbg(JSON_DBG_MED, __func__, "under json_members: starting: "
 					 "json_members: json_members JSON_COMMA json_member");
 	json_dbg(JSON_DBG_HIGH, __func__, "under json_members: $1 ($json_members) type: %s",
-					 json_element_type_name($1));
+					 json_item_type_name($1));
 	json_dbg(JSON_DBG_HIGH, __func__, "under json_members: $3 ($json_member) type: %s",
-					 json_element_type_name($3));
+					 json_item_type_name($3));
 	json_dbg(JSON_DBG_HIGH, __func__, "under json_members: about to perform: "
 					 "XXX - need more code here - XXX");
 
@@ -513,7 +513,7 @@ json_members:
 
 	/* post-action debugging */
 	json_dbg(JSON_DBG_HIGH, __func__, "under json_members: returning $$ ($json_members) type: %s",
-				         json_element_type_name($$));
+				         json_item_type_name($$));
 	/* XXX - call json_dbg_tree_print when there is a value to process - XXX */
 	json_dbg(JSON_DBG_MED, __func__, "under json_members: ending: "
 					 "json_members: json_members JSON_COMMA json_member");
@@ -534,9 +534,9 @@ json_member:
 	json_dbg(JSON_DBG_MED, __func__, "under json_member: starting: "
 					 "json_member: json_string JSON_COLON json_element");
 	json_dbg(JSON_DBG_HIGH, __func__, "under json_member: $json_string type: %s",
-					 json_element_type_name($json_string));
+					 json_item_type_name($json_string));
 	json_dbg(JSON_DBG_HIGH, __func__, "under json_member: $json_element type: %s",
-					 json_element_type_name($json_element));
+					 json_item_type_name($json_element));
 	json_dbg(JSON_DBG_HIGH, __func__, "under json_member: about to perform: "
 					 "$json_member = parse_json_member($json_string, $json_element);");
 
@@ -545,7 +545,7 @@ json_member:
 
 	/* post-action debugging */
 	json_dbg(JSON_DBG_HIGH, __func__, "under json_member: returning $json_member type: %s",
-				         json_element_type_name($json_member));
+				         json_item_type_name($json_member));
 	/* XXX - adjust JSON_DBG_MED to higher once all JSON items are parsed - XXX */
 	json_dbg_tree_print(JSON_DBG_MED, __func__, $json_member, JSON_DEFAULT_MAX_DEPTH);
 	json_dbg(JSON_DBG_MED, __func__, "under json_member: ending: "
@@ -566,17 +566,18 @@ json_array:
 	json_dbg(JSON_DBG_MED, __func__, "under json_array: starting: "
 					 "json_array: JSON_OPEN_BRACKET json_elements JSON_CLOSE_BRACKET");
 	json_dbg(JSON_DBG_MED, __func__, "under json_array: $json_elements type: %s",
-					 json_element_type_name($json_elements));
+					 json_item_type_name($json_elements));
 	json_dbg(JSON_DBG_HIGH, __func__, "under json_array: about to perform: "
-					 "XXX - need more code here - XXX");
+					 "$json_array = parse_json_array($json_elements);");
 
 	/* action */
-	json_dbg(JSON_DBG_MED, __func__, "under json_array: XXX - need more code here - XXX"); /* XXX */
+	$json_array = parse_json_array($json_elements);
 
 	/* post-action debugging */
 	json_dbg(JSON_DBG_HIGH, __func__, "under json_array: returning $json_array type: %s",
-				         json_element_type_name($json_array));
-	/* XXX - call json_dbg_tree_print when there is a value to process - XXX */
+				         json_item_type_name($json_array));
+	/* XXX - adjust JSON_DBG_MED to higher once all JSON items are parsed - XXX */
+	json_dbg_tree_print(JSON_DBG_MED, __func__, $json_elements, JSON_DEFAULT_MAX_DEPTH);
 	json_dbg(JSON_DBG_MED, __func__, "under json_array: ending: "
 					 "json_array: JSON_OPEN_BRACKET json_elements JSON_CLOSE_BRACKET");
     }
@@ -599,7 +600,7 @@ json_array:
 
 	/* post-action debugging */
 	json_dbg(JSON_DBG_HIGH, __func__, "under json_array: returning $json_array type: %s",
-				         json_element_type_name($json_array));
+				         json_item_type_name($json_array));
 	/* XXX - adjust JSON_DBG_MED to higher once all JSON items are parsed - XXX */
 	json_dbg_tree_print(JSON_DBG_MED, __func__, $json_array, JSON_DEFAULT_MAX_DEPTH);
 	json_dbg(JSON_DBG_MED, __func__, "under json_array: ending: "
@@ -620,16 +621,19 @@ json_elements:
 	json_dbg(JSON_DBG_MED, __func__, "under json_elements: starting: "
 					 "json_elements: json_element");
 	json_dbg(JSON_DBG_HIGH, __func__, "under json_elements: $json_element type: %s",
-					 json_element_type_name($json_element));
+					 json_item_type_name($json_element));
 	json_dbg(JSON_DBG_HIGH, __func__, "under json_elements: about to perform: "
-					 "$json_elements = $json_element;");
+					 "$json_elements = json_create_elements();");
+	json_dbg(JSON_DBG_HIGH, __func__, "under json_elements: about to also perform: "
+					 "$json_elements = json_elements_add_value($json_elements, $json_element);");
 
 	/* action */
-	$json_elements = $json_element; /* magic: json_elements becomes the json_element type */
+	$json_elements = json_create_elements();
+	$json_elements = json_elements_add_value($json_elements, $json_element);
 
 	/* post-action debugging */
 	json_dbg(JSON_DBG_HIGH, __func__, "under json_elements: returning $json_elements type: %s",
-				         json_element_type_name($json_elements));
+				         json_item_type_name($json_elements));
 	/* XXX - adjust JSON_DBG_MED to higher once all JSON items are parsed - XXX */
 	json_dbg_tree_print(JSON_DBG_MED, __func__, $json_elements, JSON_DEFAULT_MAX_DEPTH);
 	json_dbg(JSON_DBG_MED, __func__, "under json_elements: ending: "
@@ -651,19 +655,20 @@ json_elements:
 	json_dbg(JSON_DBG_MED, __func__, "under json_elements: starting: "
 					 "json_elements: json_elements JSON_COMMA json_element");
 	json_dbg(JSON_DBG_HIGH, __func__, "under json_elements: $1 ($json_elements) type: %s",
-					 json_element_type_name($1));
+					 json_item_type_name($1));
 	json_dbg(JSON_DBG_HIGH, __func__, "under json_elements: $3 ($json_element) type: %s",
-					 json_element_type_name($3));
+					 json_item_type_name($3));
 	json_dbg(JSON_DBG_HIGH, __func__, "under json_elements: about to perform: "
-					 "XXX - need more code here - XXX");
+					 "$$ = json_elements_add_value($1, $json_element);");
 
 	/* action */
-	json_dbg(JSON_DBG_MED, __func__, "under json_elements: XXX - need more code here - XXX"); /* XXX */
+	$$ = json_elements_add_value($1, $json_element);
 
 	/* post-action debugging */
 	json_dbg(JSON_DBG_HIGH, __func__, "under json_elements: returning $$ ($json_elements) type: %s",
-				         json_element_type_name($$));
-	/* XXX - call json_dbg_tree_print when there is a value to process - XXX */
+				         json_item_type_name($$));
+	/* XXX - adjust JSON_DBG_MED to higher once all JSON items are parsed - XXX */
+	json_dbg_tree_print(JSON_DBG_MED, __func__, $$, JSON_DEFAULT_MAX_DEPTH);
 	json_dbg(JSON_DBG_MED, __func__, "under json_elements: ending: "
 					 "json_elements: json_elements JSON_COMMA json_element");
     }
@@ -682,7 +687,7 @@ json_element:
 	json_dbg(JSON_DBG_MED, __func__, "under json_element: starting: "
 					 "json_element: json_value");
 	json_dbg(JSON_DBG_HIGH, __func__, "under json_element: $json_value type: %s",
-					 json_element_type_name($json_value));
+					 json_item_type_name($json_value));
 	json_dbg(JSON_DBG_HIGH, __func__, "under json_element: about to perform: "
 					 "$json_element = $json_value;");
 
@@ -691,7 +696,7 @@ json_element:
 
 	/* post-action debugging */
 	json_dbg(JSON_DBG_HIGH, __func__, "under json_element: returning $json_element type: %s",
-				         json_element_type_name($json_element));
+				         json_item_type_name($json_element));
 	/* XXX - adjust JSON_DBG_MED to higher once all JSON items are parsed - XXX */
 	json_dbg_tree_print(JSON_DBG_MED, __func__, $json_element, JSON_DEFAULT_MAX_DEPTH);
 	json_dbg(JSON_DBG_MED, __func__, "under json_element: ending: "
@@ -720,7 +725,7 @@ json_string:
 
 	/* post-action debugging */
 	json_dbg(JSON_DBG_HIGH, __func__, "under json_string: returning $json_string type: %s",
-				         json_element_type_name($json_string));
+				         json_item_type_name($json_string));
 	/* XXX - adjust JSON_DBG_MED to higher once all JSON items are parsed - XXX */
 	json_dbg_tree_print(JSON_DBG_MED, __func__, $json_string, JSON_DEFAULT_MAX_DEPTH);
 	json_dbg(JSON_DBG_MED, __func__, "under json_string: ending: "
@@ -749,7 +754,7 @@ json_number:
 
 	/* post-action debugging */
 	json_dbg(JSON_DBG_HIGH, __func__, "under json_number: returning $json_number type: %s",
-				         json_element_type_name($json_number));
+				         json_item_type_name($json_number));
 	/* XXX - adjust JSON_DBG_MED to higher once all JSON items are parsed - XXX */
 	json_dbg_tree_print(JSON_DBG_MED, __func__, $json_number, JSON_DEFAULT_MAX_DEPTH);
 	json_dbg(JSON_DBG_MED, __func__, "under json_number: ending: "
@@ -778,6 +783,7 @@ void
 ugly_error(struct json *node, char const *format, ...)
 {
     va_list ap;			/* variable argument list */
+#if 0 /* XXX - code likely not needed - remove this section if that is the case - XXX */
     bool allowed = false;	/* true ==> ugly errors are allowed as JSON warnings */
 
     /*
@@ -787,6 +793,7 @@ ugly_error(struct json *node, char const *format, ...)
     if (allowed == false) {
 	return;
     }
+#endif /* XXX - code likely not needed - remove this section if that is the case - XXX */
 
     /*
      * stdarg variable argument list setup
@@ -796,7 +803,7 @@ ugly_error(struct json *node, char const *format, ...)
     /*
      * if we have a node, print the node type
      */
-    fprint(stderr, "in %s(): node type: %s", __func__, json_element_type_name(node));
+    fprint(stderr, "in %s(): node type: %s", __func__, json_item_type_name(node));
 
     /*
      * We use fprintf and vfprintf instead of err() but in the future this might

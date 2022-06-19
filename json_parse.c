@@ -1336,11 +1336,6 @@ json_decode_str(char const *str, size_t *retlen)
 
 
 /*
- * XXX - some of these functions are incomplete and subject to change - XXX
- */
-
-
-/*
  * parse_json_string - parse a json string
  *
  * given:
@@ -1354,8 +1349,7 @@ json_decode_str(char const *str, size_t *retlen)
  * would rely on strlen() which would mean that the first NUL byte would be the
  * end of the string. If len <= 0 this function uses strlen() on the string.
  *
- * NOTE: This function does not return if passed a NULL string or if conversion
- * fails.
+ * NOTE: This function does not return if passed a NULL string or if conversion fails.
  */
 struct json *
 parse_json_string(char const *string, size_t len)
@@ -1385,10 +1379,10 @@ parse_json_string(char const *string, size_t len)
         err(163, __func__, "converting JSON string returned NULL: <%s>", string);
         not_reached();
     } else if (str->type != JTYPE_STRING) {
-        err(164, __func__, "expected JTYPE_STRING, found type: %s", json_element_type_name(str));
+        err(164, __func__, "expected JTYPE_STRING, found type: %s", json_item_type_name(str));
         not_reached();
     }
-    item = &(str->element.string);
+    item = &(str->item.string);
     if (!item->converted) {
 	err(165, __func__, "couldn't decode string: <%s>", string);
 	not_reached();
@@ -1407,10 +1401,10 @@ parse_json_string(char const *string, size_t len)
  *
  *	string	    - the text that triggered the action
  *
- * Returns a pointer to a struct json with the converted boolean.
+ * returns:
+ *	pointer to a struct json with the converted JSON boolean
  *
- * NOTE: This function does not return if passed a NULL string or conversion
- * fails.
+ * NOTE: This function does not return if passed a NULL string or conversion fails.
  */
 struct json *
 parse_json_bool(char const *string)
@@ -1432,10 +1426,10 @@ parse_json_bool(char const *string)
 	err(167, __func__, "converting JSON bool returned NULL: <%s>", string);
 	not_reached();
     } else if (boolean->type != JTYPE_BOOL) {
-        err(168, __func__, "expected JTYPE_BOOL, found type: %s", json_element_type_name(boolean));
+        err(168, __func__, "expected JTYPE_BOOL, found type: %s", json_item_type_name(boolean));
         not_reached();
     }
-    item = &(boolean->element.boolean);
+    item = &(boolean->item.boolean);
     if (!item->converted) {
 	/*
 	 * XXX json_conv_bool_str() calls json_conv_bool() which will warn if the
@@ -1493,8 +1487,10 @@ parse_json_bool(char const *string)
  *
  *	string	    - the text that triggered the action
  *
- * NOTE: This function does not return if passed a NULL string or if null
- * becomes NULL :-)
+ * returns:
+ *	pointer to a struct json with the converted JSON null
+ *
+ * NOTE: This function does not return if passed a NULL string or if null becomes NULL :-)
  */
 struct json *
 parse_json_null(char const *string)
@@ -1519,10 +1515,10 @@ parse_json_null(char const *string)
 	err(177, __func__, "null ironically should not be NULL but it is :-)");
 	not_reached();
     } else if (null->type != JTYPE_NULL) {
-        err(178, __func__, "expected JTYPE_NULL, found type: %s", json_element_type_name(null));
+        err(178, __func__, "expected JTYPE_NULL, found type: %s", json_item_type_name(null));
         not_reached();
     }
-    item = &(null->element.null);
+    item = &(null->item.null);
     if (!item->converted) {
 	err(179,__func__, "couldn't convert null: <%s>", string);
 	not_reached();
@@ -1533,16 +1529,16 @@ parse_json_null(char const *string)
 
 
 /*
- * parse_json_number - parse a json number
+ * parse_json_number - parse a JSON number
  *
  * given:
  *
  *	string	    - the text that triggered the action
  *
- * Returns a pointer to a struct json.
+ * returns:
+ *	pointer to a struct json with the converted JSON number
  *
- * NOTE: This function does not return if passed a NULL string or if
- * conversion fails.
+ * NOTE: This function does not return if passed a NULL string or if conversion fails.
  */
 struct json *
 parse_json_number(char const *string)
@@ -1557,76 +1553,91 @@ parse_json_number(char const *string)
 	err(180, __func__, "passed NULL string");
 	not_reached();
     }
+
+    /*
+     * form the JSON number parse tree node
+     */
     number = json_conv_number_str(string, NULL);
     /* paranoia - these tests should never result in an error */
     if (number == NULL) {
 	err(181, __func__, "converting JSON number returned NULL: <%s>", string);
         not_reached();
     } else if (number->type != JTYPE_NUMBER) {
-        err(182, __func__, "expected JTYPE_NUMBER, found type: %s", json_element_type_name(number));
+        err(182, __func__, "expected JTYPE_NUMBER, found type: %s", json_item_type_name(number));
         not_reached();
     }
-    item = &(number->element.number);
+    item = &(number->item.number);
     if (!item->converted) {
 	err(183, __func__, "couldn't convert number string: <%s>", string);
 	not_reached();
     }
-
     return number;
 }
 
 
 /*
- * parse_json_array - parse a json array
+ * parse_json_array - parse a JSON array given a JSON elements
+ *
+ * Given a JSON elements, we turn it into a JSON array.
+ *
+ * IMPORTANT: The struct json_array must be identical to struct json_elements because
+ *	      parse_json_array() converts by just changing the JSON item type.
  *
  * given:
  *
- *	string	    - the text that triggered the action
+ *	elements    - the struct json * name of the JSON elements
  *
- * Returns a pointer to a struct json.
+ * returns:
+ *	pointer to a struct json with the converted JSON array
  *
- * NOTE: This function does not return if passed a NULL string.
- *
- * XXX This function is not finished. All it does now is return a struct json *
- * (which will include a dynamic array) but which right now is actually NULL. It
- * might be that the function will take different parameters as well and the
- * names of the parameters and the function are also subject to change.
- *
- * XXX This function might not even be needed and it certainly will have to
- * change definitions.
+ * NOTE: This function does not return if passed a NULL elements;
  */
 struct json *
-parse_json_array(char const *string)
+parse_json_array(struct json *elements)
 {
-    struct json *array = NULL;
+    struct json_array *item = NULL;
 
     /*
      * firewall
      */
-    if (string == NULL) {
-	err(184, __func__, "passed NULL string");
+    if (elements == NULL) {
+	err(184, __func__, "passed NULL elements value");
+	not_reached();
+    }
+    if (elements->type != JTYPE_ELEMENTS) {
+	err(185, __func__, "expected type JTYPE_ELEMENTS: found: %s (%d)",
+			   json_item_type_name(elements), elements->type);
 	not_reached();
     }
 
-    /* TODO add parsing of array */
-
-    return array;
+    /*
+     * change the item type
+     *
+     * This hack works because struct json_array is identical to struct json_elements.
+     */
+    elements->type = JTYPE_ARRAY;
+    /* paranoia - these tests should never result in an error */
+    item = &(elements->item.array);
+    if (!item->converted) {
+	err(186, __func__, "couldn't convert array");
+	not_reached();
+    }
+    return elements;
 }
 
 
 /*
- * parse_json_member - parse a json member
+ * parse_json_member - parse a JSON member
  *
  * given:
  *
  *	name	    - the struct json * name of the member
  *	value	    - the struct json * value of the member
  *
- * Returns a pointer to a struct json.
+ * returns:
+ *	pointer to a struct json with the converted JSON member
  *
- * NOTE: This function does not return if passed a NULL name or value or if
- * conversion fails.
- *
+ * NOTE: This function does not return if passed a NULL name or value or if conversion fails.
  */
 struct json *
 parse_json_member(struct json *name, struct json *value)
@@ -1638,32 +1649,33 @@ parse_json_member(struct json *name, struct json *value)
      * firewall
      */
     if (name == NULL) {
-	err(185, __func__, "passed NULL name value");
+	err(187, __func__, "passed NULL name value");
 	not_reached();
     } else if (value == NULL) {
-	err(186, __func__, "passed NULL value");
+	err(188, __func__, "passed NULL value");
 	not_reached();
     }
-
     if (name->type != JTYPE_STRING) {
-	err(187, __func__, "expected name->type == JTYPE_STRING: is %s (%d)", json_element_type_name(name), name->type);
+	err(189, __func__, "expected name->type == JTYPE_STRING: is %s (%d)", json_item_type_name(name), name->type);
 	not_reached();
     }
 
+    /*
+     * form the JSON member parse tree node
+     */
     member = json_conv_member(name, value);
     /* paranoia - these tests should never result in an error */
     if (member == NULL) {
-	err(188, __func__, "converting JSON member returned NULL");
+	err(190, __func__, "converting JSON member returned NULL");
 	not_reached();
     } else if (member->type != JTYPE_MEMBER) {
-        err(189, __func__, "expected JTYPE_MEMBER, found type: %s", json_element_type_name(member));
+        err(191, __func__, "expected JTYPE_MEMBER, found type: %s", json_item_type_name(member));
         not_reached();
     }
-    item = &(member->element.member);
+    item = &(member->item.member);
     if (!item->converted) {
-	err(190, __func__, "couldn't convert member");
+	err(192, __func__, "couldn't convert member");
 	not_reached();
     }
-
     return member;
 }

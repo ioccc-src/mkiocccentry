@@ -32,6 +32,11 @@
 /*coo*/ /* exit code change of order - use new value in sequencing */
 
 
+/*
+ * For performance reasons,
+ * XXX - use dbg_allowed() to bypass dbg() calls that lots of args - XXX
+ */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>

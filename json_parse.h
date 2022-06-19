@@ -344,40 +344,70 @@ struct json_object
  *
  * When converted == false, then all other fields in this structure may be invalid.
  * So you must check the boolean of converted and only use values if converted == true.
+ *
+ * IMPORTANT: The struct json_array must be identical to struct json_elements because
+ *	      parse_json_array() converts by just changing the JSON item type.
  */
 struct json_array
 {
     bool converted;		/* true ==> able to decode JSON array */
 
-    int len;			/* number of JSON members in the object, 0 ==> empty array */
-    struct json **set;		/* set of JSON values belonging to the object, or NULL */
+    int len;			/* number of JSON values in the JSON array, 0 ==> empty array */
+    struct json **set;		/* set of JSON values belonging to the JSON array, or NULL */
 
     struct dyn_array *s;	/* dynamic array managed storage for the JSON array */
 };
 
 
 /*
- * element_type - JSON element type - an enum for each union element member in struct json
+ * JSON elements
+ *
+ * A JSON elements is zero or more JSON values.
+ *
+ * The pointer to the i-th JSON value in the JSON array, if i < len, is:
+ *
+ *	foo.set[i-1]
+ *
+ * When converted == false, then all other fields in this structure may be invalid.
+ * So you must check the boolean of converted and only use values if converted == true.
+ *
+ * IMPORTANT: The struct json_array must be identical to struct json_elements because
+ *	      parse_json_array() converts by just changing the JSON item type.
  */
-enum element_type {
-    JTYPE_UNSET	    = 0,    /* JSON element has not been set - must be the value 0 */
-    JTYPE_NUMBER,	    /* JSON element is a number - see struct json_number */
-    JTYPE_STRING,	    /* JSON element is a string - see struct json_string */
-    JTYPE_BOOL,		    /* JSON element is a boolean - see struct json_boolean */
-    JTYPE_NULL,		    /* JSON element is a null - see struct json_null */
-    JTYPE_MEMBER,	    /* JSON element is a member */
-    JTYPE_OBJECT,	    /* JSON element is a { members } */
-    JTYPE_ARRAY,	    /* JSON element is a [ elements ] */
+struct json_elements
+{
+    bool converted;		/* true ==> able to decode JSON array */
+
+    int len;			/* number of JSON values in the JSON elements, 0 ==> empty array */
+    struct json **set;		/* set of JSON values belonging to the JSON elements, or NULL */
+
+    struct dyn_array *s;	/* dynamic array managed storage for the JSON array */
+};
+
+
+/*
+ * item_type - JSON item type - an enum for each union item member in struct json
+ */
+enum item_type {
+    JTYPE_UNSET	    = 0,    /* JSON item has not been set - must be the value 0 */
+    JTYPE_NUMBER,	    /* JSON item is a number - see struct json_number */
+    JTYPE_STRING,	    /* JSON item is a string - see struct json_string */
+    JTYPE_BOOL,		    /* JSON item is a boolean - see struct json_boolean */
+    JTYPE_NULL,		    /* JSON item is a null - see struct json_null */
+    JTYPE_MEMBER,	    /* JSON item is a member */
+    JTYPE_OBJECT,	    /* JSON item is a { members } */
+    JTYPE_ARRAY,	    /* JSON item is a [ elements ] */
+    JTYPE_ELEMENTS,	    /* JSON item for building a JSON array */
 };
 
 /*
- * struct json - element for the JSON parse tree
+ * struct json - item for the JSON parse tree
  *
  * For the parse tree we have this struct and its associated union.
  */
 struct json
 {
-    enum element_type type;		/* union element specifier */
+    enum item_type type;		/* union item specifier */
     union json_union {
 	struct json_number number;	/* JTYPE_NUMBER - value is number (integer or floating point) */
 	struct json_string string;	/* JTYPE_STRING - value is a string */
@@ -386,7 +416,8 @@ struct json
 	struct json_member member;	/* JTYPE_MEMBER - value is a JSON member: name : value */
 	struct json_object object;	/* JTYPE_OBJECT - value is a JSON { members } */
 	struct json_array array;	/* JTYPE_ARRAY - value is a JSON [ elements ] */
-    } element;
+	struct json_elements elements;	/* JTYPE_ELEMENTS - zero or more JSON values */
+    } item;
 
     /*
      * JSON parse tree links
@@ -420,7 +451,7 @@ extern struct json *parse_json_string(char const *string, size_t len);
 extern struct json *parse_json_bool(char const *string);
 extern struct json *parse_json_null(char const *string);
 extern struct json *parse_json_number(char const *string);
-extern struct json *parse_json_array(char const *string);
+extern struct json *parse_json_array(struct json *elements);
 extern struct json *parse_json_member(struct json *name, struct json *value);
 
 

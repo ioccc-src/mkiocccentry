@@ -2520,7 +2520,7 @@ parse_json(char const *ptr, size_t len, bool *is_valid)
      * node directly by referring to node. For example to print out the type
      * (currently it'll only be JTYPE_UNSET as it's NULL) it could do:
      *
-     *	json_dbg(JSON_DBG_LOW, __func__, "node type: %s", json_element_type_name(node));
+     *	json_dbg(JSON_DBG_LOW, __func__, "node type: %s", json_item_type_name(node));
      *
      */
     ret = ugly_parse(node);

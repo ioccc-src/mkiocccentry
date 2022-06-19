@@ -1465,7 +1465,7 @@ jerrp(int exitcode, char const *name, char const *filename,
 
 
 /*
- * json_element_type_name - print a struct json element union type by name
+ * json_item_type_name - print a struct json item union type by name
  *
  * given:
  *	json_type   one of the values of the JTYPE_ enum
@@ -1476,7 +1476,7 @@ jerrp(int exitcode, char const *name, char const *filename,
  * NOTE: This string returned is read only: It's not allocated on the stack.
  */
 char const *
-json_element_type_name(struct json *node)
+json_item_type_name(struct json *node)
 {
     char const *name = "JTYPE_UNSET";
 
@@ -1514,6 +1514,9 @@ json_element_type_name(struct json *node)
 	    break;
 	case JTYPE_ARRAY:
 	    name = "JTYPE_ARRAY";
+	    break;
+	case JTYPE_ELEMENTS:
+	    name = "JTYPE_ELEMENTS";
 	    break;
 	default:
 	    name = "((JTYPE_UNKNOWN))";
@@ -1620,15 +1623,15 @@ vjson_free(struct json *node, int depth, va_list ap)
      */
     switch (node->type) {
 
-    case JTYPE_UNSET:	/* JSON element has not been set - must be the value 0 */
+    case JTYPE_UNSET:	/* JSON item has not been set - must be the value 0 */
 	/* nothing to free */
 
 	/* nothing internal to zeroize */
 	break;
 
-    case JTYPE_NUMBER:	/* JSON element is number - see struct json_number */
+    case JTYPE_NUMBER:	/* JSON item is number - see struct json_number */
 	{
-	    struct json_number *item = &(node->element.number);
+	    struct json_number *item = &(node->item.number);
 
 	    /* free internal storage */
 	    if (item->as_str != NULL) {
@@ -1636,15 +1639,15 @@ vjson_free(struct json *node, int depth, va_list ap)
 		item->as_str = NULL;
 	    }
 
-	    /* zeroize internal element storage */
+	    /* zeroize internal item storage */
 	    memset(item, 0, sizeof(struct json_number));
 	    item->converted = false;
 	}
 	break;
 
-    case JTYPE_STRING:	/* JSON element is a string - see struct json_string */
+    case JTYPE_STRING:	/* JSON item is a string - see struct json_string */
 	{
-	    struct json_string *item = &(node->element.string);
+	    struct json_string *item = &(node->item.string);
 
 	    /* free internal storage */
 	    if (item->as_str != NULL) {
@@ -1656,15 +1659,15 @@ vjson_free(struct json *node, int depth, va_list ap)
 		item->str = NULL;
 	    }
 
-	    /* zeroize internal element storage */
+	    /* zeroize internal item storage */
 	    memset(item, 0, sizeof(struct json_string));
 	    item->converted = false;
 	}
 	break;
 
-    case JTYPE_BOOL:	/* JSON element is a boolean - see struct json_boolean */
+    case JTYPE_BOOL:	/* JSON item is a boolean - see struct json_boolean */
 	{
-	    struct json_boolean *item = &(node->element.boolean);
+	    struct json_boolean *item = &(node->item.boolean);
 
 	    /* free internal storage */
 	    if (item->as_str != NULL) {
@@ -1672,15 +1675,15 @@ vjson_free(struct json *node, int depth, va_list ap)
 		item->as_str = NULL;
 	    }
 
-	    /* zeroize internal element storage */
+	    /* zeroize internal item storage */
 	    memset(item, 0, sizeof(struct json_boolean));
 	    item->converted = false;
 	}
 	break;
 
-    case JTYPE_NULL:	/* JSON element is a null - see struct json_null */
+    case JTYPE_NULL:	/* JSON item is a null - see struct json_null */
 	{
-	    struct json_null *item = &(node->element.null);
+	    struct json_null *item = &(node->item.null);
 
 	    /* free internal storage */
 	    if (item->as_str != NULL) {
@@ -1688,29 +1691,29 @@ vjson_free(struct json *node, int depth, va_list ap)
 		item->as_str = NULL;
 	    }
 
-	    /* zeroize internal element storage */
+	    /* zeroize internal item storage */
 	    memset(item, 0, sizeof(struct json_null));
 	    item->converted = false;
 	}
 	break;
 
-    case JTYPE_MEMBER:	/* JSON element is a member */
+    case JTYPE_MEMBER:	/* JSON item is a member */
 	{
-	    struct json_member *item = &(node->element.member);
+	    struct json_member *item = &(node->item.member);
 
 	    /* free internal storage */
 	    item->name = NULL;
 	    item->value = NULL;
 
-	    /* zeroize internal element storage */
+	    /* zeroize internal item storage */
 	    memset(item, 0, sizeof(struct json_member));
 	    item->converted = false;
 	}
 	break;
 
-    case JTYPE_OBJECT:	/* JSON element is a { members } */
+    case JTYPE_OBJECT:	/* JSON item is a { members } */
 	{
-	    struct json_object *item = &(node->element.object);
+	    struct json_object *item = &(node->item.object);
 
 	    /* free internal storage */
 	    if (item->s != NULL) {
@@ -1720,15 +1723,15 @@ vjson_free(struct json *node, int depth, va_list ap)
 		item->len = 0;
 	    }
 
-	    /* zeroize internal element storage */
+	    /* zeroize internal item storage */
 	    memset(item, 0, sizeof(struct json_object));
 	    item->converted = false;
 	}
 	break;
 
-    case JTYPE_ARRAY:	/* JSON element is a [ elements ] */
+    case JTYPE_ARRAY:	/* JSON item is a [ elements ] */
 	{
-	    struct json_array *item = &(node->element.array);
+	    struct json_array *item = &(node->item.array);
 
 	    /* free internal storage */
 	    if (item->s != NULL) {
@@ -1738,8 +1741,26 @@ vjson_free(struct json *node, int depth, va_list ap)
 		item->len = 0;
 	    }
 
-	    /* zeroize internal element storage */
+	    /* zeroize internal item storage */
 	    memset(item, 0, sizeof(struct json_array));
+	    item->converted = false;
+	}
+	break;
+
+    case JTYPE_ELEMENTS:	/* JSON elements is zero or more JSON values */
+	{
+	    struct json_elements *item = &(node->item.elements);
+
+	    /* free internal storage */
+	    if (item->s != NULL) {
+		dyn_array_free(item->s);
+		item->s = NULL;
+		item->set = NULL;
+		item->len = 0;
+	    }
+
+	    /* zeroize internal item storage */
+	    memset(item, 0, sizeof(struct json_elements));
 	    item->converted = false;
 	}
 	break;
@@ -1966,9 +1987,9 @@ vjson_fprint(struct json *node, int depth, va_list ap)
     /*
      * print node type
      */
-    tname = json_element_type_name(node);
+    tname = json_item_type_name(node);
     if (tname == NULL) {
-	warn(__func__, "json_element_type_name returned NULL");
+	warn(__func__, "json_item_type_name returned NULL");
 	return;
     }
     fprint(stream, "lvl: %d\ttype: %s", depth, tname);
@@ -1978,12 +1999,12 @@ vjson_fprint(struct json *node, int depth, va_list ap)
      */
     switch (node->type) {
 
-    case JTYPE_UNSET:	/* JSON element has not been set - must be the value 0 */
+    case JTYPE_UNSET:	/* JSON item has not been set - must be the value 0 */
 	break;
 
-    case JTYPE_NUMBER:	/* JSON element is number - see struct json_number */
+    case JTYPE_NUMBER:	/* JSON item is number - see struct json_number */
 	{
-	    struct json_number *item = &(node->element.number);
+	    struct json_number *item = &(node->item.number);
 
 	    /*
 	     * case: converted number
@@ -2146,9 +2167,9 @@ vjson_fprint(struct json *node, int depth, va_list ap)
 	}
 	break;
 
-    case JTYPE_STRING:	/* JSON element is a string - see struct json_string */
+    case JTYPE_STRING:	/* JSON item is a string - see struct json_string */
 	{
-	    struct json_string *item = &(node->element.string);
+	    struct json_string *item = &(node->item.string);
 
 	    /*
 	     * case: converted string
@@ -2178,9 +2199,9 @@ vjson_fprint(struct json *node, int depth, va_list ap)
 	}
 	break;
 
-    case JTYPE_BOOL:	/* JSON element is a boolean - see struct json_boolean */
+    case JTYPE_BOOL:	/* JSON item is a boolean - see struct json_boolean */
 	{
-	    struct json_boolean *item = &(node->element.boolean);
+	    struct json_boolean *item = &(node->item.boolean);
 
 	    /*
 	     * case: converted boolean
@@ -2198,9 +2219,9 @@ vjson_fprint(struct json *node, int depth, va_list ap)
 	}
 	break;
 
-    case JTYPE_NULL:	/* JSON element is a null - see struct json_null */
+    case JTYPE_NULL:	/* JSON item is a null - see struct json_null */
 	{
-	    struct json_null *item = &(node->element.null);
+	    struct json_null *item = &(node->item.null);
 
 	    /*
 	     * case: converted null
@@ -2218,9 +2239,9 @@ vjson_fprint(struct json *node, int depth, va_list ap)
 	}
 	break;
 
-    case JTYPE_MEMBER:	/* JSON element is a member */
+    case JTYPE_MEMBER:	/* JSON item is a member */
 	{
-	    struct json_member *item = &(node->element.member);
+	    struct json_member *item = &(node->item.member);
 
 	    /*
 	     * case: converted member
@@ -2231,13 +2252,13 @@ vjson_fprint(struct json *node, int depth, va_list ap)
 		 * print member name
 		 */
 		if (item->name != NULL) {
-		    enum element_type type = item->name->type;
+		    enum item_type type = item->name->type;
 
 		    /*
 		     * case: name is JTYPE_STRING
 		     */
 		    if (type == JTYPE_STRING) {
-			struct json_string *item2 = &(item->name->element.string);
+			struct json_string *item2 = &(item->name->item.string);
 
 			if (item2->converted == true) {
 			    fprstr(stream, "\tname: ");
@@ -2250,7 +2271,7 @@ vjson_fprint(struct json *node, int depth, va_list ap)
 		     * case: name is NOT JTYPE_STRING
 		     */
 		    } else {
-			fprint(stream, "\tWarning: wrong name type: %s", json_element_type_name(item->name));
+			fprint(stream, "\tWarning: wrong name type: %s", json_item_type_name(item->name));
 		    }
 
 		/*
@@ -2269,9 +2290,9 @@ vjson_fprint(struct json *node, int depth, va_list ap)
 	}
 	break;
 
-    case JTYPE_OBJECT:	/* JSON element is a { members } */
+    case JTYPE_OBJECT:	/* JSON item is a { members } */
 	{
-	    struct json_object *item = &(node->element.object);
+	    struct json_object *item = &(node->item.object);
 
 	    /*
 	     * case: converted object
@@ -2295,9 +2316,35 @@ vjson_fprint(struct json *node, int depth, va_list ap)
 	}
 	break;
 
-    case JTYPE_ARRAY:	/* JSON element is a [ elements ] */
+    case JTYPE_ARRAY:	/* JSON item is a [ elements ] */
 	{
-	    struct json_array *item = &(node->element.array);
+	    struct json_array *item = &(node->item.array);
+
+	    /*
+	     * case: converted object
+	     */
+	    if (item->converted == true) {
+
+		fprint(stream, "\tlen: %d", item->len);
+		if (item->set == NULL) {
+		    fprstr(stream, "\tWarning: set == NULL");
+		}
+		if (item->s == NULL) {
+		    fprstr(stream, "\tWarning: s == NULL");
+		}
+
+	    /*
+	     * case: not converted object
+	     */
+	    } else {
+		fprstr(stream, "\tconverted: false");
+	    }
+	}
+	break;
+
+    case JTYPE_ELEMENTS:	/* JSON elements is zero or more JSON values */
+	{
+	    struct json_elements *item = &(node->item.elements);
 
 	    /*
 	     * case: converted object
@@ -2645,19 +2692,19 @@ vjson_tree_walk(struct json *node, int max_depth, int depth, void (*vcallback)(s
      */
     switch (node->type) {
 
-    case JTYPE_UNSET:	/* JSON element has not been set - must be the value 0 */
-    case JTYPE_NUMBER:	/* JSON element is number - see struct json_number */
-    case JTYPE_STRING:	/* JSON element is a string - see struct json_string */
-    case JTYPE_BOOL:	/* JSON element is a boolean - see struct json_boolean */
-    case JTYPE_NULL:	/* JSON element is a null - see struct json_null */
+    case JTYPE_UNSET:	/* JSON item has not been set - must be the value 0 */
+    case JTYPE_NUMBER:	/* JSON item is number - see struct json_number */
+    case JTYPE_STRING:	/* JSON item is a string - see struct json_string */
+    case JTYPE_BOOL:	/* JSON item is a boolean - see struct json_boolean */
+    case JTYPE_NULL:	/* JSON item is a null - see struct json_null */
 
 	/* perform function operation on this terminal parse tree node */
 	(*vcallback)(node, depth, ap);
 	break;
 
-    case JTYPE_MEMBER:	/* JSON element is a member */
+    case JTYPE_MEMBER:	/* JSON item is a member */
 	{
-	    struct json_member *item = &(node->element.member);
+	    struct json_member *item = &(node->item.member);
 
 	    /* perform function operation on JSON member name (left branch) node */
 	    vjson_tree_walk(item->name, max_depth, depth+1, vcallback, ap);
@@ -2670,9 +2717,9 @@ vjson_tree_walk(struct json *node, int max_depth, int depth, void (*vcallback)(s
 	(*vcallback)(node, depth, ap);
 	break;
 
-    case JTYPE_OBJECT:	/* JSON element is a { members } */
+    case JTYPE_OBJECT:	/* JSON item is a { members } */
 	{
-	    struct json_object *item = &(node->element.object);
+	    struct json_object *item = &(node->item.object);
 
 	    /* perform function operation on each object member in order */
 	    if (item->set != NULL) {
@@ -2686,9 +2733,25 @@ vjson_tree_walk(struct json *node, int max_depth, int depth, void (*vcallback)(s
 	(*vcallback)(node, depth, ap);
 	break;
 
-    case JTYPE_ARRAY:	/* JSON element is a [ elements ] */
+    case JTYPE_ARRAY:	/* JSON item is a [ elements ] */
 	{
-	    struct json_array *item = &(node->element.array);
+	    struct json_array *item = &(node->item.array);
+
+	    /* perform function operation on each object member in order */
+	    if (item->set != NULL) {
+		for (i=0; i < item->len; ++i) {
+		    vjson_tree_walk(item->set[i], max_depth, depth+1, vcallback, ap);
+		}
+	    }
+	}
+
+	/* finally perform function operation on the parent node */
+	(*vcallback)(node, depth, ap);
+	break;
+
+    case JTYPE_ELEMENTS:	/* JSON items is zero or more JSON values */
+	{
+	    struct json_elements *item = &(node->item.elements);
 
 	    /* perform function operation on each object member in order */
 	    if (item->set != NULL) {
@@ -2713,19 +2776,19 @@ vjson_tree_walk(struct json *node, int max_depth, int depth, void (*vcallback)(s
 
 
 /*
- * json_alloc - allocate and initialize the JSON parse tree element
+ * json_alloc - allocate and initialize the JSON parse tree item
  *
  * given:
  *	type	a valid struct json type
  *
  * returns:
- *	pointer to an initialized the JSON parse tree element
+ *	pointer to an initialized the JSON parse tree item
  *
  * NOTE: This function will not return on malloc error.
  * NOTE: This function will not return NULL.
  */
 struct json *
-json_alloc(enum element_type type)
+json_alloc(enum item_type type)
 {
     struct json *ret = NULL;		    /* JSON parser tree node to return */
 
@@ -2741,6 +2804,7 @@ json_alloc(enum element_type type)
     case JTYPE_MEMBER:
     case JTYPE_OBJECT:
     case JTYPE_ARRAY:
+    case JTYPE_ELEMENTS:
 	break;
     default:
 	warn(__func__, "called with unknown JSON type: %d", type);
@@ -2748,7 +2812,7 @@ json_alloc(enum element_type type)
     }
 
     /*
-     * allocate the JSON parse tree element
+     * allocate the JSON parse tree item
      */
     errno = 0;			/* pre-clear errno for errp() */
     ret = calloc(1, sizeof(*ret));
@@ -2762,10 +2826,10 @@ json_alloc(enum element_type type)
      */
     ret->type = type;
     ret->parent = NULL;
-    json_dbg(JSON_DBG_VHIGH, __func__, "allocated json with type: %s", json_element_type_name(ret));
+    json_dbg(JSON_DBG_VHIGH, __func__, "allocated json with type: %s", json_item_type_name(ret));
 
     /*
-     * return the JSON parse tree element
+     * return the JSON parse tree item
      */
     return ret;
 }
@@ -2804,19 +2868,23 @@ struct json *
 json_conv_number(char const *ptr, size_t len)
 {
     struct json *ret = NULL;		    /* JSON parser tree node to return */
-    struct json_number *item = NULL;	    /* JSON number element inside JSON parser tree node */
+    struct json_number *item = NULL;	    /* JSON number item inside JSON parser tree node */
     bool decimal = false;		    /* true ==> ptr points to a base 10 integer in ASCII */
     bool success = false;		    /* true ==> processing was successful */
 
     /*
-     * allocate an initialized JSON parse tree element
+     * allocate an initialized JSON parse tree item
      */
     ret = json_alloc(JTYPE_NUMBER);
+    if (ret == NULL) {
+	errp(212, __func__, "json_alloc() returned NULL");
+	not_reached();
+    }
 
     /*
-     * initialize the JSON element
+     * initialize the JSON item
      */
-    item = &(ret->element.number);
+    item = &(ret->item.number);
     item->as_str = NULL;
     item->first = NULL;
     item->converted = false;
@@ -2877,7 +2945,7 @@ json_conv_number(char const *ptr, size_t len)
     errno = 0;			/* pre-clear errno for errp() */
     item->as_str = calloc(len+1+1, sizeof(char));
     if (item->as_str == NULL) {
-	errp(212, __func__, "calloc #1 error allocating %ju bytes", (uintmax_t)(len+1+1));
+	errp(213, __func__, "calloc #1 error allocating %ju bytes", (uintmax_t)(len+1+1));
 	not_reached();
     }
     strncpy(item->as_str, ptr, len);
@@ -2931,10 +2999,10 @@ json_conv_number(char const *ptr, size_t len)
 			   (int)item->number_len, (int)item->number_len, item->first);
 	}
     }
-    json_dbg(JSON_DBG_VHIGH, __func__, "JSON return type: %s", json_element_type_name(ret));
+    json_dbg(JSON_DBG_VHIGH, __func__, "JSON return type: %s", json_item_type_name(ret));
 
     /*
-     * return the JSON parse tree element
+     * return the JSON parse tree item
      */
     return ret;
 }
@@ -2979,7 +3047,7 @@ json_conv_number_str(char const *str, size_t *retlen)
      */
     ret = json_conv_number(str, len);
     if (ret == NULL) {
-	err(213, __func__, "json_conv_number() returned NULL");
+	err(214, __func__, "json_conv_number() returned NULL");
 	not_reached();
     }
 
@@ -2991,7 +3059,7 @@ json_conv_number_str(char const *str, size_t *retlen)
     }
 
     /*
-     * return the JSON parse tree element
+     * return the JSON parse tree item
      */
     return ret;
 }
@@ -3025,17 +3093,21 @@ struct json *
 json_conv_string(char const *ptr, size_t len, bool quote)
 {
     struct json *ret = NULL;		    /* JSON parser tree node to return */
-    struct json_string *item = NULL;	    /* JSON string element inside JSON parser tree node */
+    struct json_string *item = NULL;	    /* JSON string item inside JSON parser tree node */
 
     /*
-     * allocate an initialized JSON parse tree element
+     * allocate an initialized JSON parse tree item
      */
     ret = json_alloc(JTYPE_STRING);
+    if (ret == NULL) {
+	errp(215, __func__, "json_alloc() returned NULL");
+	not_reached();
+    }
 
     /*
-     * initialize the JSON element
+     * initialize the JSON item
      */
-    item = &(ret->element.string);
+    item = &(ret->item.string);
     item->as_str = NULL;
     item->str = NULL;
     item->converted = false;
@@ -3091,7 +3163,7 @@ json_conv_string(char const *ptr, size_t len, bool quote)
     errno = 0;			/* pre-clear errno for errp() */
     item->as_str = calloc(len+1+1, sizeof(char));
     if (item->as_str == NULL) {
-	errp(214, __func__, "calloc #1 error allocating %ju bytes", (uintmax_t)(len+1+1));
+	errp(216, __func__, "calloc #1 error allocating %ju bytes", (uintmax_t)(len+1+1));
 	not_reached();
     }
     strncpy(item->as_str, ptr, len);
@@ -3129,10 +3201,10 @@ json_conv_string(char const *ptr, size_t len, bool quote)
      * determine POSIX state of the decoded string
      */
     posix_safe_chk(item->str, item->str_len, &item->slash, &item->posix_safe, &item->first_alphanum, &item->upper);
-    json_dbg(JSON_DBG_VHIGH, __func__, "JSON return type: %s", json_element_type_name(ret));
+    json_dbg(JSON_DBG_VHIGH, __func__, "JSON return type: %s", json_item_type_name(ret));
 
     /*
-     * return the JSON parse tree element
+     * return the JSON parse tree item
      */
     return ret;
 }
@@ -3179,7 +3251,7 @@ json_conv_string_str(char const *str, size_t *retlen, bool quote)
      */
     ret = json_conv_string(str, len, quote);
     if (ret == NULL) {
-	err(215, __func__, "json_conv_string() returned NULL");
+	err(217, __func__, "json_conv_string() returned NULL");
 	not_reached();
     }
 
@@ -3191,7 +3263,7 @@ json_conv_string_str(char const *str, size_t *retlen, bool quote)
     }
 
     /*
-     * return the JSON parse tree element
+     * return the JSON parse tree item
      */
     return ret;
 }
@@ -3222,14 +3294,18 @@ json_conv_bool(char const *ptr, size_t len)
     struct json_boolean *item = NULL;	    /* allocated decoding string or NULL */
 
     /*
-     * allocate an initialized JSON parse tree element
+     * allocate an initialized JSON parse tree item
      */
     ret = json_alloc(JTYPE_BOOL);
+    if (ret == NULL) {
+	errp(218, __func__, "json_alloc() returned NULL");
+	not_reached();
+    }
 
     /*
-     * initialize the JSON element
+     * initialize the JSON item
      */
-    item = &(ret->element.boolean);
+    item = &(ret->item.boolean);
     item->as_str = NULL;
     item->converted = false;
     item->value = false;
@@ -3256,7 +3332,7 @@ json_conv_bool(char const *ptr, size_t len)
     errno = 0;			/* pre-clear errno for errp() */
     item->as_str = malloc(len+1+1);
     if (item->as_str == NULL) {
-	errp(216, __func__, "malloc #1 error allocating %ju bytes", (uintmax_t)(len+1+1));
+	errp(219, __func__, "malloc #1 error allocating %ju bytes", (uintmax_t)(len+1+1));
 	not_reached();
     }
     memcpy(item->as_str, ptr, len+1);
@@ -3277,10 +3353,10 @@ json_conv_bool(char const *ptr, size_t len)
 	warn(__func__, "JSON boolean string neither true nor false: <%s>", item->as_str);
     }
 
-    json_dbg(JSON_DBG_VHIGH, __func__, "JSON return type: %s", json_element_type_name(ret));
+    json_dbg(JSON_DBG_VHIGH, __func__, "JSON return type: %s", json_item_type_name(ret));
 
     /*
-     * return the JSON parse tree element
+     * return the JSON parse tree item
      */
     return ret;
 }
@@ -3325,7 +3401,7 @@ json_conv_bool_str(char const *str, size_t *retlen)
      */
     ret = json_conv_bool(str, len);
     if (ret == NULL) {
-	err(217, __func__, "json_conv_bool() returned NULL");
+	err(220, __func__, "json_conv_bool() returned NULL");
 	not_reached();
     }
 
@@ -3337,7 +3413,7 @@ json_conv_bool_str(char const *str, size_t *retlen)
     }
 
     /*
-     * return the JSON parse tree element
+     * return the JSON parse tree item
      */
     return ret;
 }
@@ -3367,14 +3443,18 @@ json_conv_null(char const *ptr, size_t len)
     struct json_null *item = NULL;	    /* allocated decoding string or NULL */
 
     /*
-     * allocate an initialized JSON parse tree element
+     * allocate an initialized JSON parse tree item
      */
     ret = json_alloc(JTYPE_NULL);
+    if (ret == NULL) {
+	errp(221, __func__, "json_alloc() returned NULL");
+	not_reached();
+    }
 
     /*
-     * initialize the JSON element
+     * initialize the JSON item
      */
-    item = &(ret->element.null);
+    item = &(ret->item.null);
     item->as_str = NULL;
     item->value = NULL;
 
@@ -3400,7 +3480,7 @@ json_conv_null(char const *ptr, size_t len)
     errno = 0;			/* pre-clear errno for errp() */
     item->as_str = malloc(len+1+1);
     if (item->as_str == NULL) {
-	errp(218, __func__, "malloc #1 error allocating %ju bytes", (uintmax_t)(len+1+1));
+	errp(222, __func__, "malloc #1 error allocating %ju bytes", (uintmax_t)(len+1+1));
 	not_reached();
     }
     memcpy(item->as_str, ptr, len+1);
@@ -3418,10 +3498,10 @@ json_conv_null(char const *ptr, size_t len)
 	warn(__func__, "JSON null string is not null: <%s>", item->as_str);
     }
 
-    json_dbg(JSON_DBG_VHIGH, __func__, "JSON return type: %s", json_element_type_name(ret));
+    json_dbg(JSON_DBG_VHIGH, __func__, "JSON return type: %s", json_item_type_name(ret));
 
     /*
-     * return the JSON parse tree element
+     * return the JSON parse tree item
      */
     return ret;
 }
@@ -3466,7 +3546,7 @@ json_conv_null_str(char const *str, size_t *retlen)
      */
     ret = json_conv_null(str, len);
     if (ret == NULL) {
-	err(219, __func__, "json_conv_null() returned NULL");
+	err(223, __func__, "json_conv_null() returned NULL");
 	not_reached();
     }
 
@@ -3478,7 +3558,7 @@ json_conv_null_str(char const *str, size_t *retlen)
     }
 
     /*
-     * return the JSON parse tree element
+     * return the JSON parse tree item
      */
     return ret;
 }
@@ -3521,14 +3601,18 @@ json_conv_member(struct json *name, struct json *value)
     struct json_member *item = NULL;	    /* allocated JSON member */
 
     /*
-     * allocate an initialized JSON parse tree element
+     * allocate an initialized JSON parse tree item
      */
     ret = json_alloc(JTYPE_MEMBER);
+    if (ret == NULL) {
+	errp(224, __func__, "json_alloc() returned NULL");
+	not_reached();
+    }
 
     /*
-     * initialize the JSON element
+     * initialize the JSON item
      */
-    item = &(ret->element.member);
+    item = &(ret->item.member);
     item->converted = false;
     item->name = NULL;
     item->value = NULL;
@@ -3546,7 +3630,7 @@ json_conv_member(struct json *name, struct json *value)
     }
     if (name->type != JTYPE_STRING) {
 	warn(__func__, "expected JSON string JTYPE_STRING (type: %d) found type: %s (type: %d)",
-		JTYPE_STRING, json_element_type_name(name),  name->type);
+		JTYPE_STRING, json_item_type_name(name),  name->type);
 	return ret;
     }
     switch (value->type) {
@@ -3556,8 +3640,13 @@ json_conv_member(struct json *name, struct json *value)
     case JTYPE_MEMBER:
     case JTYPE_OBJECT:
     case JTYPE_ARRAY:
-	json_dbg(JSON_DBG_VHIGH, __func__, "JSON name type: %s", json_element_type_name(name));
-	json_dbg(JSON_DBG_VHIGH, __func__, "JSON value type: %s", json_element_type_name(value));
+	json_dbg(JSON_DBG_VHIGH, __func__, "JSON name type: %s", json_item_type_name(name));
+	json_dbg(JSON_DBG_VHIGH, __func__, "JSON value type: %s", json_item_type_name(value));
+	break;
+    case JTYPE_ELEMENTS:
+	warn(__func__, "JSON type %s (type: %d) is invalid here",
+		json_item_type_name(name), JTYPE_ELEMENTS);
+	return ret;
 	break;
     default:
 	warn(__func__, "expected JSON object, array, string, number, boolean or null, found type: %d", value->type);
@@ -3609,14 +3698,18 @@ json_create_object(void)
     struct json_object *item = NULL;	    /* allocated JSON member */
 
     /*
-     * allocate an initialized JSON parse tree element
+     * allocate an initialized JSON parse tree item
      */
     ret = json_alloc(JTYPE_OBJECT);
+    if (ret == NULL) {
+	errp(225, __func__, "json_alloc() returned NULL");
+	not_reached();
+    }
 
     /*
      * initialize the JSON object
      */
-    item = &(ret->element.object);
+    item = &(ret->item.object);
     item->converted = false;
     item->len = 0;
     item->set = NULL;
@@ -3627,7 +3720,7 @@ json_create_object(void)
      */
     item->s = dyn_array_create(sizeof (struct json *), JSON_CHUNK, JSON_CHUNK, true);
     if (item->s == NULL) {
-	errp(220, __func__, "dyn_array_create() returned NULL");
+	errp(226, __func__, "dyn_array_create() returned NULL");
 	not_reached();
     }
 
@@ -3638,10 +3731,10 @@ json_create_object(void)
     item->set = dyn_array_addr(item->s, struct json *, 0);
     item->converted = true;
 
-    json_dbg(JSON_DBG_VHIGH, __func__, "JSON return type: %s", json_element_type_name(ret));
+    json_dbg(JSON_DBG_VHIGH, __func__, "JSON return type: %s", json_item_type_name(ret));
 
     /*
-     * return the JSON parse tree element
+     * return the JSON parse tree item
      */
     return ret;
 }
@@ -3664,14 +3757,13 @@ json_create_object(void)
  *	member	JSON node of the JSON member to add
  *
  * returns:
- *	true ==> JSON member added to JSON object
- *	false ==> wrong type of node, or
- *		  wrong type of member, or
- *		  NULL pointer
+ *	JSON parser tree as a JSON member
  *
- * NOTE: This function will not return on malloc error.
+ * NOTE: This function will not return given NULL pointers, or
+ *	 if node is not type JTYPE_MEMBER, or
+ *	 if member is type bot type JTYPE_MEMBER.
  */
-bool
+struct json *
 json_object_add_member(struct json *node, struct json *member)
 {
     struct json_object *item = NULL;	    /* allocated JSON member */
@@ -3681,33 +3773,33 @@ json_object_add_member(struct json *node, struct json *member)
      * firewall
      */
     if (node == NULL) {
-	warn(__func__, "node is NULL");
-	return false;
+	err(227, __func__, "node is NULL");
+	not_reached();
     }
     if (member == NULL) {
-	warn(__func__, "member is NULL");
-	return false;
+	err(228, __func__, "member is NULL");
+	not_reached();
     }
     if (node->type != JTYPE_OBJECT) {
-	warn(__func__, "node type expected to be JTYPE_OBJECT: %d found type: %d",
-		       JTYPE_OBJECT, node->type);
-	return false;
+	err(229, __func__, "node type expected to be JTYPE_OBJECT: %d found type: %d",
+		           JTYPE_OBJECT, node->type);
+	not_reached();
     }
     if (member->type != JTYPE_MEMBER) {
-	warn(__func__, "node type expected to be JTYPE_MEMBER: %d found type: %d",
-		       JTYPE_MEMBER, node->type);
-	return false;
+	err(230, __func__, "node type expected to be JTYPE_MEMBER: %d found type: %d",
+		           JTYPE_MEMBER, node->type);
+	not_reached();
     }
 
     /*
      * point to object
      */
-    json_dbg(JSON_DBG_VHIGH, __func__, "JSON object type: %s", json_element_type_name(node));
-    json_dbg(JSON_DBG_VHIGH, __func__, "JSON member type: %s", json_element_type_name(member));
-    item = &(node->element.object);
+    json_dbg(JSON_DBG_VHIGH, __func__, "JSON object type: %s", json_item_type_name(node));
+    json_dbg(JSON_DBG_VHIGH, __func__, "JSON member type: %s", json_item_type_name(member));
+    item = &(node->item.object);
     if (item->s == NULL) {
-	warn(__func__, "item->s is NULL");
-	return false;
+	err(231, __func__, "item->s is NULL");
+	not_reached();
     }
 
     /*
@@ -3729,7 +3821,7 @@ json_object_add_member(struct json *node, struct json *member)
      */
     item->len = dyn_array_tell(item->s);
     item->set = dyn_array_addr(item->s, struct json *, 0);
-    return true;
+    return node;
 }
 
 
@@ -3784,10 +3876,10 @@ json_object_append_members(struct json *node, struct dyn_array *members)
 	warn(__func__, "dynamic array data is NULL");
 	return false;
     }
-    json_dbg(JSON_DBG_VHIGH, __func__, "JSON object type: %s", json_element_type_name(node));
+    json_dbg(JSON_DBG_VHIGH, __func__, "JSON object type: %s", json_item_type_name(node));
     for (i=0; i < dyn_array_tell(members); ++i) {
 	json_dbg(JSON_DBG_VHIGH, __func__, "JSON members[%d] type: %s",
-				         i, json_element_type_name(dyn_array_value(members, struct json *, i)));
+				         i, json_item_type_name(dyn_array_value(members, struct json *, i)));
 	if (dyn_array_value(members, struct json *, i)->type != JTYPE_MEMBER) {
 	    warn(__func__, "members[%d] node type expected to be JTYPE_MEMBER: %d found type: %d",
 			   i, JTYPE_MEMBER, dyn_array_value(members, struct json *, i)->type);
@@ -3798,7 +3890,7 @@ json_object_append_members(struct json *node, struct dyn_array *members)
     /*
      * point to object
      */
-    item = &(node->element.object);
+    item = &(node->item.object);
     if (item->s == NULL) {
 	warn(__func__, "item->s is NULL");
 	return false;
@@ -3830,49 +3922,50 @@ json_object_append_members(struct json *node, struct dyn_array *members)
 
 
 /*
- * json_create_array - allocate a JSON array
+ * json_create_elements - allocate an emepty JSON elements
  *
- * A JSON array is of the form:
- *
- *      [ ]
- *      [ values ]
+ * A JSON elements is a set of JSON values/
  *
  * The pointer to the i-th JSON value in the JSON array, if i < len, is:
  *
  *      foo.set[i-1]
  *
  * returns:
- *	allocated JSON parser tree node converted JSON array
+ *	allocated JSON parser tree as a JSON elements
  *
  * NOTE: This function will not return on malloc error.
  * NOTE: This function will not return NULL.
  */
 struct json *
-json_create_array(void)
+json_create_elements(void)
 {
     struct json *ret = NULL;		    /* JSON parser tree node to return */
     struct json_array *item = NULL;	    /* allocated JSON member */
 
     /*
-     * allocate an initialized JSON parse tree element
+     * allocate an initialized JSON parse tree item
      */
-    ret = json_alloc(JTYPE_ARRAY);
+    ret = json_alloc(JTYPE_ELEMENTS);
+    if (ret == NULL) {
+	errp(232, __func__, "json_alloc() returned NULL");
+	not_reached();
+    }
 
     /*
-     * initialize the JSON array
+     * initialize the JSON elements
      */
-    item = &(ret->element.array);
+    item = &(ret->item.array);
     item->converted = false;
     item->len = 0;
     item->set = NULL;
     item->s = NULL;
 
     /*
-     * create a dynamic array to store JSON arrays
+     * create a dynamic array to store JSON values
      */
     item->s = dyn_array_create(sizeof (struct json *), JSON_CHUNK, JSON_CHUNK, true);
     if (item->s == NULL) {
-	errp(221, __func__, "dyn_array_create() returned NULL");
+	errp(233, __func__, "dyn_array_create() returned NULL");
 	not_reached();
     }
 
@@ -3883,19 +3976,17 @@ json_create_array(void)
     item->set = dyn_array_addr(item->s, struct json *, 0);
     item->converted = true;
 
-    json_dbg(JSON_DBG_VHIGH, __func__, "JSON return type: %s", json_element_type_name(ret));
+    json_dbg(JSON_DBG_VHIGH, __func__, "JSON return type: %s", json_item_type_name(ret));
 
     /*
-     * return the JSON parse tree element
+     * return the JSON parse tree item
      */
     return ret;
 }
 
 
 /*
- * json_array_add_value - add a JSON value to a JSON array
- *
- * JSON array is one of:
+ * json_elements_add_value - add a JSON value to a JSON elements item
  *
  *      { }
  *      { members }
@@ -3905,40 +3996,39 @@ json_create_array(void)
  *      foo.set[i-1]
  *
  * given:
- *	node	JSON node of the JSON array being added to
+ *	node	JSON node of the JSON elements being added to
  *	value	JSON node of the JSON value
  *
  * returns:
- *	true ==> JSON value added to JSON array
- *	false ==> wrong type of node, or
- *		  wrong type of value, or
- *		  NULL pointer
+ *	JSON parser tree as a JSON elements
  *
- * NOTE: This function will not return on malloc error.
+ * NOTE: This function will not return given NULL pointers, or
+ *	 if node is not type JTYPE_ELEMENTS, or
+ *	 if value is type is invalid.
  */
-bool
-json_array_add_value(struct json *node, struct json *value)
+struct json *
+json_elements_add_value(struct json *node, struct json *value)
 {
-    struct json_array *item = NULL;	    /* allocated JSON member */
+    struct json_elements *item = NULL;	    /* allocated JSON member */
     bool moved = false;			    /* true == dyn_array_append_value() moved data */
 
     /*
      * firewall
      */
     if (node == NULL) {
-	warn(__func__, "node is NULL");
-	return false;
+	err(234, __func__, "node is NULL");
+	not_reached();
     }
     if (value == NULL) {
-	warn(__func__, "value is NULL");
-	return false;
+	err(235, __func__, "value is NULL");
+	not_reached();
     }
-    if (node->type != JTYPE_ARRAY) {
-	warn(__func__, "node type expected to be JTYPE_ARRAY: %d found type: %d",
-		       JTYPE_ARRAY, node->type);
-	return false;
+    if (node->type != JTYPE_ELEMENTS) {
+	err(236, __func__, "node type expected to be JTYPE_ELEMENTS: %d found type: %d",
+			   JTYPE_ELEMENTS, node->type);
+	not_reached();
     }
-    json_dbg(JSON_DBG_VHIGH, __func__, "JSON object type: %s", json_element_type_name(node));
+    json_dbg(JSON_DBG_VHIGH, __func__, "JSON item type: %s", json_item_type_name(node));
     switch (value->type) {
     case JTYPE_NUMBER:
     case JTYPE_STRING:
@@ -3946,20 +4036,25 @@ json_array_add_value(struct json *node, struct json *value)
     case JTYPE_MEMBER:
     case JTYPE_OBJECT:
     case JTYPE_ARRAY:
-	json_dbg(JSON_DBG_VHIGH, __func__, "JSON value type: %s", json_element_type_name(value));
+	json_dbg(JSON_DBG_VHIGH, __func__, "JSON item type: %s", json_item_type_name(value));
 	break;
+    case JTYPE_ELEMENTS:
+	err(237, __func__, "JSON type %s (type: %d) is invalid here",
+		json_item_type_name(node), JTYPE_ELEMENTS);
+	not_reached();
     default:
-	warn(__func__, "expected JSON object, array, string, number, boolean or null, found type: %d", value->type);
-	return false;
+	err(238, __func__, "expected JSON item, array, string, number, boolean or null, found type: %d",
+			   value->type);
+	not_reached();
     }
 
     /*
      * point to array
      */
-    item = &(node->element.array);
+    item = &(node->item.elements);
     if (item->s == NULL) {
-	warn(__func__, "item->s is NULL");
-	return false;
+	err(239, __func__, "item->s is NULL");
+	not_reached();
     }
 
     /*
@@ -3970,7 +4065,7 @@ json_array_add_value(struct json *node, struct json *value)
     /*
      * append value
      */
-    moved = dyn_array_append_value(item->s, value);
+    moved = dyn_array_append_value(item->s, &value);
     if (moved == true) {
 	dbg(DBG_HIGH, "in %s(): dyn_array_append_value moved data",
 		      __func__);
@@ -3981,10 +4076,11 @@ json_array_add_value(struct json *node, struct json *value)
      */
     item->len = dyn_array_tell(item->s);
     item->set = dyn_array_addr(item->s, struct json *, 0);
-    return true;
+    return node;
 }
 
 
+#if 0 /* XXX - code likely not needed - remove this section if that is the case - XXX */
 /*
  * json_array_append_values - add a dynamic array of JSON values to a JSON array
  *
@@ -4086,4 +4182,72 @@ json_array_append_values(struct json *node, struct dyn_array *values)
     item->len = dyn_array_tell(item->s);
     item->set = dyn_array_addr(item->s, struct json *, 0);
     return true;
+}
+#endif /* XXX - code likely not needed - remove this section if that is the case - XXX */
+
+
+/*
+ * json_create_array - allocate a JSON array
+ *
+ * A JSON array is of the form:
+ *
+ *      [ ]
+ *      [ values ]
+ *
+ * The pointer to the i-th JSON value in the JSON array, if i < len, is:
+ *
+ *      foo.set[i-1]
+ *
+ * returns:
+ *	allocated JSON parser tree node converted JSON array
+ *
+ * NOTE: This function will not return on malloc error.
+ * NOTE: This function will not return NULL.
+ */
+struct json *
+json_create_array(void)
+{
+    struct json *ret = NULL;		    /* JSON parser tree node to return */
+    struct json_array *item = NULL;	    /* allocated JSON member */
+
+    /*
+     * allocate an initialized JSON parse tree item
+     */
+    ret = json_alloc(JTYPE_ARRAY);
+    if (ret == NULL) {
+	errp(240, __func__, "json_alloc() returned NULL");
+	not_reached();
+    }
+
+    /*
+     * initialize the JSON array
+     */
+    item = &(ret->item.array);
+    item->converted = false;
+    item->len = 0;
+    item->set = NULL;
+    item->s = NULL;
+
+    /*
+     * create a dynamic array to store JSON arrays
+     */
+    item->s = dyn_array_create(sizeof (struct json *), JSON_CHUNK, JSON_CHUNK, true);
+    if (item->s == NULL) {
+	errp(241, __func__, "dyn_array_create() returned NULL");
+	not_reached();
+    }
+
+    /*
+     * initialize accounting for the array
+     */
+    item->len = dyn_array_tell(item->s);
+    item->set = dyn_array_addr(item->s, struct json *, 0);
+    item->converted = true;
+
+    json_dbg(JSON_DBG_VHIGH, __func__, "JSON return type: %s", json_item_type_name(ret));
+
+    /*
+     * return the JSON parse tree item
+     */
+    return ret;
 }

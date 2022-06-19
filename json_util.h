@@ -143,7 +143,7 @@ extern void jerr(int exitcode, const char *name, char const *filename,
 extern void jerrp(int exitcode, const char *name,
 		  char const *filename, char const *line, int line_num, const char *fmt, ...) \
 	__attribute__((noreturn)) __attribute__((format(printf, 6, 7))); /* 6=format 7=params */
-extern char const *json_element_type_name(struct json *node);
+extern char const *json_item_type_name(struct json *node);
 extern void json_free(struct json *node, int depth, ...);
 extern void vjson_free(struct json *node, int depth, va_list ap);
 extern void json_fprint(struct json *node, int depth, ...);
@@ -155,7 +155,7 @@ extern void json_tree_walk(struct json *node, int max_depth,
 			   void (*vcallback)(struct json *, int, va_list), ...);
 extern void vjson_tree_walk(struct json *node, int max_depth, int depth,
 			    void (*vcallback)(struct json *, int, va_list), va_list ap);
-extern struct json *json_alloc(enum element_type type);
+extern struct json *json_alloc(enum item_type type);
 extern struct json *json_conv_number(char const *ptr, size_t len);
 extern struct json *json_conv_number_str(char const *str, size_t *retlen);
 extern struct json *json_conv_string(char const *ptr, size_t len, bool quote);
@@ -166,11 +166,16 @@ extern struct json *json_conv_null(char const *ptr, size_t len);
 extern struct json *json_conv_null_str(char const *str, size_t *retlen);
 extern struct json *json_conv_member(struct json *name, struct json *value);
 extern struct json *json_create_object(void);
-extern bool json_object_add_member(struct json *node, struct json *member);
+extern struct json *json_object_add_member(struct json *node, struct json *member);
+#if 0 /* XXX - code likely not needed - remove this section if that is the case - XXX */
 extern bool json_object_append_members(struct json *node, struct dyn_array *members);
+#endif /* XXX - code likely not needed - remove this section if that is the case - XXX */
+extern struct json *json_create_elements(void);
+extern struct json *json_elements_add_value(struct json *node, struct json *value);
+#if 0 /* XXX - code likely not needed - remove this section if that is the case - XXX */
+extern bool json_elements_append_values(struct json *node, struct dyn_array *values);
+#endif /* XXX - code likely not needed - remove this section if that is the case - XXX */
 extern struct json *json_create_array(void);
-extern bool json_array_add_value(struct json *node, struct json *value);
-extern bool json_array_append_values(struct json *node, struct dyn_array *values);
 
 
 #endif /* INCLUDE_JSON_UTIL_H */

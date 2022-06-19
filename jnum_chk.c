@@ -137,7 +137,7 @@ main(int argc, char *argv[])
 	    err(19, program, "node->type for test %d: %d != %d", i, node->type, JTYPE_NUMBER);
 	    not_reached();
 	}
-	item = &(node->element.number);
+	item = &(node->item.number);
 
 	/*
 	 * compare conversion with test case
@@ -176,7 +176,7 @@ main(int argc, char *argv[])
 /*
  * chk_test = check a given test
  *
- * When strict == true, we will compare every node->element.number element
+ * When strict == true, we will compare every node->item.number element
  * with every *test element.  When strict == false, we will only compare
  * select struct json_number elements.
  *
