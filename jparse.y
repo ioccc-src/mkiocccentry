@@ -15,16 +15,6 @@
 
 /* Section 1: Declarations */
 /*
- * We enable verbose error messages during development but once the parser is
- * complete we will disable this as it's very verbose.
- *
- * NOTE: Previously we used the -D option to bison because the %define is not
- * POSIX Yacc portable but we no longer do that because we make use of another
- * feature that's not POSIX Yacc portable that we deem worth it as it produces
- * easier to read error messages.
-%define parse.error verbose
- */
-/*
  * We enable lookahead correction parser for improved errors
  */
 %define parse.lac full
@@ -151,9 +141,9 @@ int ugly_debug = 0;	/* 0 ==> verbose bison debug off, 1 ==> verbose bison debug 
  * JSON_STRING) to the parser. But the problem is what do we call an invalid
  * token without knowing what what the token actually is? Thus we call it token
  * so that it will read literally as 'unexpected token' which removes any
- * ambiguity (it could be read as 'it's unexpected in this place but it is valid
- * in other contexts' but it's never actually valid: it's a catch all for
- * anything that's not valid.
+ * ambiguity (otherwise it could be read as 'it's unexpected in this place but
+ * it is valid in other contexts' but it's actually never valid: it's a catch
+ * all for anything that's not valid).
  *
  * Then as a hack (or maybe kludge) in ugly_error() we refer to ugly_text in a
  * way that shows what the token is that caused the failure (whether it's a
