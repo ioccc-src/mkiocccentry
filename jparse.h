@@ -75,7 +75,6 @@ extern int ugly_lineno;			/* line number in lexer */
 extern char *ugly_text;			/* current text */
 extern FILE *ugly_in;			/* input file lexer/parser reads from */
 extern unsigned num_errors;		/* > 0 number of errors encountered */
-extern struct json tree;		/* the parse tree */
 extern int ugly_leng;
 
 
