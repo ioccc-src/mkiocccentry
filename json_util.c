@@ -771,7 +771,7 @@ json_process_floating(struct json_number *item, char const *str, size_t len)
  *
  * returns:
  *	true ==> debug output was successful.
- *	false ==> all debug output was disallowed or some/all output failed failed
+ *	false ==> all debug output was disallowed or some (or all) output failed
  *
  * Example:
  *
@@ -856,7 +856,7 @@ json_dbg(int json_dbg_lvl, char const *name, char const *fmt, ...)
  *
  * returns:
  *	true ==> debug output was successful.
- *	false ==> all debug output was disallowed or some/all output failed failed
+ *	false ==> all debug output was disallowed or some (or all) output failed
  *
  * Example:
  *
@@ -2507,7 +2507,7 @@ json_tree_print(struct json *node, int max_depth, ...)
  *
  * returns:
  *	true ==> debug output was successful.
- *	false ==> all debug output was disallowed or some/all output failed failed
+ *	false ==> all debug output was disallowed or some (or all) output failed
  */
 bool
 json_dbg_tree_print(int json_dbg_lvl, char const *name, struct json *tree, int max_depth)
