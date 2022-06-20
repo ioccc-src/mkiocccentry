@@ -12,6 +12,8 @@
 
 # setup
 #
+
+TAR="$(type -P tar)"
 export USAGE="usage: $0 [-h] [-v level] [-D dbg_level] [-t txzchk] [-T tar]
 		     [-F fnamchk] [-d txzchk_tree]
 
@@ -19,7 +21,7 @@ export USAGE="usage: $0 [-h] [-v level] [-D dbg_level] [-t txzchk] [-T tar]
     -v level		    set verbosity level for this script: (def level: 0)
     -D dbg_level	    set verbosity level for tests (def: level: 0)
     -t txzchk		    path to txzchk executable (def: ./txzchk)
-    -T tar		    path to tar that accepts -J option (def: /usr/bin/tar)
+    -T tar		    path to tar that accepts -J option (def: $TAR)
     -F fnamchk	            path to fnamchk (def: ./fnamchk)
 
     -d txzchk_tree	    tree where txzchk test files are to be found (def: ./test_txzchk)
@@ -37,7 +39,6 @@ export TXZCHK="./txzchk"
 export EXIT_CODE=0
 export TXZCHK_TREE="./test_txzchk"
 export LOGFILE="./txzchk_test.log"
-export TAR="/usr/bin/tar"
 export FNAMCHK="./fnamchk"
 
 # parse args
