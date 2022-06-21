@@ -67,7 +67,7 @@
  * XXX - consider an approach that allowed for smaller UTF-8 non-ASCII encoding - XXX
  *
  * NOTE: JSON_BYTE_VALUES is #defined as (BYTE_VALUES) (see util.h) and this table
- * MUST be 256 elements long.
+ * MUST be 256 long.
  */
 struct encode jenc[JSON_BYTE_VALUES] = {
     /* \x00 - \x0f */
@@ -403,10 +403,10 @@ jencchk(void)
     }
 
     /*
-     * assert: table must be 256 elements long
+     * assert: table must be 256 long
      */
     if (sizeof(jenc)/sizeof(jenc[0]) != JSON_BYTE_VALUES) {
-	err(101, __func__, "jenc table as %ju elements instead of %d",
+	err(101, __func__, "jenc table lengti is %ju instead of %d",
 			   (uintmax_t)sizeof(jenc)/sizeof(jenc[0]), JSON_BYTE_VALUES);
 	not_reached();
     }

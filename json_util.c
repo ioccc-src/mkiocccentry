@@ -2822,7 +2822,7 @@ json_alloc(enum item_type type)
     }
 
     /*
-     * initialize the JSON parse tree element
+     * initialize the JSON parse tree item
      */
     ret->type = type;
     ret->parent = NULL;
@@ -3667,7 +3667,7 @@ json_conv_member(struct json *name, struct json *value)
     item->converted = true;
 
     /*
-     * return the JSON parse tree element
+     * return the JSON parse tree item
      */
     return ret;
 }
@@ -3810,7 +3810,7 @@ json_object_add_member(struct json *node, struct json *member)
     /*
      * append member
      */
-    moved = dyn_array_append_value(item->s, member);
+    moved = dyn_array_append_value(item->s, &member);
     if (moved == true) {
 	dbg(DBG_HIGH, "in %s(): dyn_array_append_value moved data",
 		      __func__);
@@ -3822,102 +3822,6 @@ json_object_add_member(struct json *node, struct json *member)
     item->len = dyn_array_tell(item->s);
     item->set = dyn_array_addr(item->s, struct json *, 0);
     return node;
-}
-
-
-/*
- * json_object_append_members - add a dynamic array of JSON members to a JSON object
- *
- * JSON object is one of:
- *
- *      { }
- *      { members }
- *
- * The pointer to the i-th JSON member in the JSON object, if i < len, is:
- *
- *      foo.set[i-1]
- *
- * given:
- *	node	JSON node of the JSON object being added to
- *	members	dynamic array of JSON members
- *
- * returns:
- *	true ==> JSON members added to JSON object
- *	false ==> wrong type of node, or
- *		  wrong type of members in dynamic members, or
- *		  NULL pointer
- *
- * NOTE: This function will not return on malloc error.
- */
-bool
-json_object_append_members(struct json *node, struct dyn_array *members)
-{
-    struct json_object *item = NULL;	    /* allocated JSON member */
-    bool moved = false;			    /* true == dyn_array_append_value() moved data */
-    int i;
-
-    /*
-     * firewall
-     */
-    if (node == NULL) {
-	warn(__func__, "node is NULL");
-	return false;
-    }
-    if (members == NULL) {
-	warn(__func__, "members is NULL");
-	return false;
-    }
-    if (node->type != JTYPE_OBJECT) {
-	warn(__func__, "node type expected to be JTYPE_OBJECT: %d found type: %d",
-		       JTYPE_OBJECT, node->type);
-	return false;
-    }
-    if (members->data == NULL) {
-	warn(__func__, "dynamic array data is NULL");
-	return false;
-    }
-    json_dbg(JSON_DBG_VHIGH, __func__, "JSON object type: %s", json_item_type_name(node));
-    for (i=0; i < dyn_array_tell(members); ++i) {
-	json_dbg(JSON_DBG_VHIGH, __func__, "JSON members[%d] type: %s",
-				         i, json_item_type_name(dyn_array_value(members, struct json *, i)));
-	if (dyn_array_value(members, struct json *, i)->type != JTYPE_MEMBER) {
-	    warn(__func__, "members[%d] node type expected to be JTYPE_MEMBER: %d found type: %d",
-			   i, JTYPE_MEMBER, dyn_array_value(members, struct json *, i)->type);
-	    return false;
-	}
-    }
-
-    /*
-     * point to object
-     */
-    item = &(node->item.object);
-    if (item->s == NULL) {
-	warn(__func__, "item->s is NULL");
-	return false;
-    }
-
-    /*
-     * link JSON parse tree children to this parent node
-     */
-    for (i=0; i < dyn_array_tell(members); ++i) {
-	dyn_array_value(members, struct json *, i)->parent = node;
-    }
-
-    /*
-     * append member
-     */
-    moved = dyn_array_concat_array(item->s, members);
-    if (moved == true) {
-	dbg(DBG_HIGH, "in %s(): dyn_array_concat_array moved data",
-		      __func__);
-    }
-
-    /*
-     * update accounting for the object
-     */
-    item->len = dyn_array_tell(item->s);
-    item->set = dyn_array_addr(item->s, struct json *, 0);
-    return true;
 }
 
 
@@ -3997,7 +3901,7 @@ json_create_elements(void)
  *
  * given:
  *	node	JSON node of the JSON elements being added to
- *	value	JSON node of the JSON value
+ *	value	JSON node of the JSON value to add
  *
  * returns:
  *	JSON parser tree as a JSON elements
@@ -4078,112 +3982,6 @@ json_elements_add_value(struct json *node, struct json *value)
     item->set = dyn_array_addr(item->s, struct json *, 0);
     return node;
 }
-
-
-#if 0 /* XXX - code likely not needed - remove this section if that is the case - XXX */
-/*
- * json_array_append_values - add a dynamic array of JSON values to a JSON array
- *
- * JSON array is one of:
- *
- *      { }
- *      { members }
- *
- * The pointer to the i-th JSON member in the JSON array, if i < len, is:
- *
- *      foo.set[i-1]
- *
- * given:
- *	node	JSON node of the JSON array being added to
- *	values	dynamic array of JSON values
- *
- * returns:
- *	true ==> JSON values added to JSON array
- *	false ==> wrong type of node, or
- *		  wrong type of values, or
- *		  NULL pointer
- *
- * NOTE: This function will not return on malloc error.
- */
-bool
-json_array_append_values(struct json *node, struct dyn_array *values)
-{
-    struct json_array *item = NULL;	    /* allocated JSON member */
-    bool moved = false;			    /* true == dyn_array_append_value() moved data */
-    int i;
-
-    /*
-     * firewall
-     */
-    if (node == NULL) {
-	warn(__func__, "node is NULL");
-	return false;
-    }
-    if (values == NULL) {
-	warn(__func__, "values is NULL");
-	return false;
-    }
-    if (values->data == NULL) {
-	warn(__func__, "dynamic array data is NULL");
-	return false;
-    }
-    if (node->type != JTYPE_ARRAY) {
-	warn(__func__, "node type expected to be JTYPE_ARRAY: %d found type: %d",
-		       JTYPE_ARRAY, node->type);
-	return false;
-    }
-    json_dbg(JSON_DBG_VHIGH, __func__, "JSON object type: %s", json_element_type_name(node));
-    for (i=0; i < dyn_array_tell(values); ++i) {
-	json_dbg(JSON_DBG_VHIGH, __func__, "JSON values[%d] type: %s",
-			       i, json_element_type_name(dyn_array_value(values, struct json *, i)));
-	switch (dyn_array_value(values, struct json *, i)->type) {
-	case JTYPE_NUMBER:
-	case JTYPE_STRING:
-	case JTYPE_BOOL:
-	case JTYPE_MEMBER:
-	case JTYPE_OBJECT:
-	case JTYPE_ARRAY:
-	    break;
-	default:
-	    warn(__func__, "expected JSON values[%d], array, string, number, boolean or null, found type: %d",
-			   i, dyn_array_value(values, struct json *, i)->type);
-	    return false;
-	}
-    }
-
-    /*
-     * point to array
-     */
-    item = &(node->element.array);
-    if (item->s == NULL) {
-	warn(__func__, "item->s is NULL");
-	return false;
-    }
-
-    /*
-     * link JSON parse tree child to this parent node
-     */
-    for (i=0; i < dyn_array_tell(values); ++i) {
-	dyn_array_value(values, struct json *, i)->parent = node;
-    }
-
-    /*
-     * append value
-     */
-    moved = dyn_array_concat_array(item->s, values);
-    if (moved == true) {
-	dbg(DBG_HIGH, "in %s(): dyn_array_concat_array moved data",
-		      __func__);
-    }
-
-    /*
-     * update accounting for the array
-     */
-    item->len = dyn_array_tell(item->s);
-    item->set = dyn_array_addr(item->s, struct json *, 0);
-    return true;
-}
-#endif /* XXX - code likely not needed - remove this section if that is the case - XXX */
 
 
 /*

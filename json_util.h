@@ -167,14 +167,8 @@ extern struct json *json_conv_null_str(char const *str, size_t *retlen);
 extern struct json *json_conv_member(struct json *name, struct json *value);
 extern struct json *json_create_object(void);
 extern struct json *json_object_add_member(struct json *node, struct json *member);
-#if 0 /* XXX - code likely not needed - remove this section if that is the case - XXX */
-extern bool json_object_append_members(struct json *node, struct dyn_array *members);
-#endif /* XXX - code likely not needed - remove this section if that is the case - XXX */
 extern struct json *json_create_elements(void);
 extern struct json *json_elements_add_value(struct json *node, struct json *value);
-#if 0 /* XXX - code likely not needed - remove this section if that is the case - XXX */
-extern bool json_elements_append_values(struct json *node, struct dyn_array *values);
-#endif /* XXX - code likely not needed - remove this section if that is the case - XXX */
 extern struct json *json_create_array(void);
 
 

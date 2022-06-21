@@ -126,7 +126,7 @@
 #define yychar          ugly_char
 
 /* First part of user prologue.  */
-#line 98 "jparse.y"
+#line 92 "jparse.y"
 
 #include <inttypes.h>
 #include <stdio.h>
@@ -558,9 +558,9 @@ static const yytype_int8 yytranslate[] =
 /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_int16 yyrline[] =
 {
-       0,   174,   174,   203,   231,   259,   287,   315,   342,   369,
-     398,   425,   452,   480,   515,   548,   576,   603,   634,   669,
-     699,   728
+       0,   162,   162,   191,   219,   247,   275,   303,   330,   357,
+     386,   413,   440,   468,   503,   536,   564,   591,   622,   657,
+     687,   716
 };
 #endif
 
@@ -1400,7 +1400,7 @@ yyreduce:
     switch (yyn)
       {
   case 2: /* json: json_element  */
-#line 175 "jparse.y"
+#line 163 "jparse.y"
     {
 	/*
 	 * $$ = $json
@@ -1429,7 +1429,7 @@ yyreduce:
     break;
 
   case 3: /* json_value: json_object  */
-#line 204 "jparse.y"
+#line 192 "jparse.y"
     {
 	/*
 	 * $$ = $json_value
@@ -1459,7 +1459,7 @@ yyreduce:
     break;
 
   case 4: /* json_value: json_array  */
-#line 232 "jparse.y"
+#line 220 "jparse.y"
     {
 	/*
 	 * $$ = $json_value
@@ -1489,7 +1489,7 @@ yyreduce:
     break;
 
   case 5: /* json_value: json_string  */
-#line 260 "jparse.y"
+#line 248 "jparse.y"
     {
 	/*
 	 * $$ = $json_value
@@ -1519,7 +1519,7 @@ yyreduce:
     break;
 
   case 6: /* json_value: json_number  */
-#line 288 "jparse.y"
+#line 276 "jparse.y"
     {
 	/*
 	 * $$ = $json_value
@@ -1549,7 +1549,7 @@ yyreduce:
     break;
 
   case 7: /* json_value: "true"  */
-#line 316 "jparse.y"
+#line 304 "jparse.y"
     {
 	/*
 	 * $$ = $json_value
@@ -1578,7 +1578,7 @@ yyreduce:
     break;
 
   case 8: /* json_value: "false"  */
-#line 343 "jparse.y"
+#line 331 "jparse.y"
     {
 	/*
 	 * $$ = $json_value
@@ -1607,7 +1607,7 @@ yyreduce:
     break;
 
   case 9: /* json_value: "null"  */
-#line 370 "jparse.y"
+#line 358 "jparse.y"
     {
 	/*
 	 * $$ = $json_value
@@ -1636,7 +1636,7 @@ yyreduce:
     break;
 
   case 10: /* json_object: "{" json_members "}"  */
-#line 399 "jparse.y"
+#line 387 "jparse.y"
     {
 	/*
 	 * $$ = $json_object
@@ -1665,7 +1665,7 @@ yyreduce:
     break;
 
   case 11: /* json_object: "{" "}"  */
-#line 426 "jparse.y"
+#line 414 "jparse.y"
     {
 	/*
 	 * $$ = $json_object
@@ -1692,7 +1692,7 @@ yyreduce:
     break;
 
   case 12: /* json_members: json_member  */
-#line 453 "jparse.y"
+#line 441 "jparse.y"
     {
 	/*
 	 * $$ = $json_members
@@ -1722,7 +1722,7 @@ yyreduce:
     break;
 
   case 13: /* json_members: json_members "," json_member  */
-#line 481 "jparse.y"
+#line 469 "jparse.y"
     {
 	/*
 	 * $$ = $json_members
@@ -1757,7 +1757,7 @@ yyreduce:
     break;
 
   case 14: /* json_member: json_string ":" json_element  */
-#line 516 "jparse.y"
+#line 504 "jparse.y"
     {
 	/*
 	 * $$ = $json_member
@@ -1790,7 +1790,7 @@ yyreduce:
     break;
 
   case 15: /* json_array: "[" json_elements "]"  */
-#line 549 "jparse.y"
+#line 537 "jparse.y"
     {
 	/*
 	 * $$ = $json_array
@@ -1820,7 +1820,7 @@ yyreduce:
     break;
 
   case 16: /* json_array: "[" "]"  */
-#line 577 "jparse.y"
+#line 565 "jparse.y"
     {
 	/*
 	 * $$ = $json_array
@@ -1847,7 +1847,7 @@ yyreduce:
     break;
 
   case 17: /* json_elements: json_element  */
-#line 604 "jparse.y"
+#line 592 "jparse.y"
     {
 	/*
 	 * $$ = $json_elements
@@ -1880,7 +1880,7 @@ yyreduce:
     break;
 
   case 18: /* json_elements: json_elements "," json_element  */
-#line 635 "jparse.y"
+#line 623 "jparse.y"
     {
 	/*
 	 * $$ = $json_elements
@@ -1915,7 +1915,7 @@ yyreduce:
     break;
 
   case 19: /* json_element: json_value  */
-#line 670 "jparse.y"
+#line 658 "jparse.y"
     {
 	/*
 	 * $$ = $json_element
@@ -1945,7 +1945,7 @@ yyreduce:
     break;
 
   case 20: /* json_string: JSON_STRING  */
-#line 700 "jparse.y"
+#line 688 "jparse.y"
     {
 	/*
 	 * $$ = $json_string
@@ -1974,7 +1974,7 @@ yyreduce:
     break;
 
   case 21: /* json_number: JSON_NUMBER  */
-#line 729 "jparse.y"
+#line 717 "jparse.y"
     {
 	/*
 	 * $$ = $json_number
@@ -2205,7 +2205,7 @@ yyreturnlab:
   return yyresult;
 }
 
-#line 756 "jparse.y"
+#line 744 "jparse.y"
 
 
 
