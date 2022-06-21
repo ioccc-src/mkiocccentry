@@ -3132,7 +3132,7 @@ clearerr_or_fclose(char const *filename, FILE *file)
  *	line_len = fprint_line_buf(NULL, buf, len, 0, 0);
  *
  * given:
- *	stream	open stread to write to, or NULL ==> just return length
+ *	stream	open stream to write to, or NULL ==> just return length
  *	buf	buffer to print
  *	len	the length of the buffer
  *	start	print start character before line, if != 0,
@@ -3228,7 +3228,7 @@ fprint_line_buf(FILE *stream, void *buf, size_t len, int start, int end)
 
 	    case 0:	/* NUL */
 
-		/* print \n is non-NULL stream */
+		/* print \0 if non-NULL stream */
 		if (stream != NULL) {
 		    errno = 0;	/* clear errno */
 		    ret = fprintf(stream, "\\0");
@@ -3244,7 +3244,7 @@ fprint_line_buf(FILE *stream, void *buf, size_t len, int start, int end)
 
 	    case '\a':	/* alert (beep, bell) */
 
-		/* print \n is non-NULL stream */
+		/* print \a if non-NULL stream */
 		if (stream != NULL) {
 		    errno = 0;	/* clear errno */
 		    ret = fprintf(stream, "\\a");
@@ -3260,7 +3260,7 @@ fprint_line_buf(FILE *stream, void *buf, size_t len, int start, int end)
 
 	    case '\b':	/* backspace */
 
-		/* print \n is non-NULL stream */
+		/* print \b if non-NULL stream */
 		if (stream != NULL) {
 		    errno = 0;	/* clear errno */
 		    ret = fprintf(stream, "\\b");
@@ -3276,7 +3276,7 @@ fprint_line_buf(FILE *stream, void *buf, size_t len, int start, int end)
 
 	    case 0x1b:	/* escape */
 
-		/* print \n is non-NULL stream */
+		/* print \e if non-NULL stream */
 		if (stream != NULL) {
 		    errno = 0;	/* clear errno */
 		    ret = fprintf(stream, "\\e");
@@ -3292,7 +3292,7 @@ fprint_line_buf(FILE *stream, void *buf, size_t len, int start, int end)
 
 	    case '\f':	/* form feed page break */
 
-		/* print \n is non-NULL stream */
+		/* print \f if non-NULL stream */
 		if (stream != NULL) {
 		    errno = 0;	/* clear errno */
 		    ret = fprintf(stream, "\\f");
@@ -3308,7 +3308,7 @@ fprint_line_buf(FILE *stream, void *buf, size_t len, int start, int end)
 
 	    case '\n':	/* newline */
 
-		/* print \n is non-NULL stream */
+		/* print \n if non-NULL stream */
 		if (stream != NULL) {
 		    errno = 0;	/* clear errno */
 		    ret = fprintf(stream, "\\n");
@@ -3324,7 +3324,7 @@ fprint_line_buf(FILE *stream, void *buf, size_t len, int start, int end)
 
 	    case '\r':	/* carriage return */
 
-		/* print \n is non-NULL stream */
+		/* print \r if non-NULL stream */
 		if (stream != NULL) {
 		    errno = 0;	/* clear errno */
 		    ret = fprintf(stream, "\\r");
@@ -3340,7 +3340,7 @@ fprint_line_buf(FILE *stream, void *buf, size_t len, int start, int end)
 
 	    case '\t':	/* horizontal tab */
 
-		/* print \n is non-NULL stream */
+		/* print \t if non-NULL stream */
 		if (stream != NULL) {
 		    errno = 0;	/* clear errno */
 		    ret = fprintf(stream, "\\t");
@@ -3356,7 +3356,7 @@ fprint_line_buf(FILE *stream, void *buf, size_t len, int start, int end)
 
 	    case '\v':	/* vertical tab */
 
-		/* print \n is non-NULL stream */
+		/* print \v if non-NULL stream */
 		if (stream != NULL) {
 		    errno = 0;	/* clear errno */
 		    ret = fprintf(stream, "\\v");
@@ -3372,7 +3372,7 @@ fprint_line_buf(FILE *stream, void *buf, size_t len, int start, int end)
 
 	    case '\\':	/* backslash */
 
-		/* print \n is non-NULL stream */
+		/* print \\ if non-NULL stream */
 		if (stream != NULL) {
 		    errno = 0;	/* clear errno */
 		    ret = fprintf(stream, "\\\\");
@@ -3473,7 +3473,7 @@ fprint_line_buf(FILE *stream, void *buf, size_t len, int start, int end)
     errno = saved_errno;
 
     /*
-     * return length or -1 if write error
+     * return length or EOF if write error
      */
     if (success == false) {
 	return EOF;
@@ -3485,10 +3485,11 @@ fprint_line_buf(FILE *stream, void *buf, size_t len, int start, int end)
 /*
  * fprint_line_str - print a string as a single line string on a stream
  *
- * This is a simplified interface for json_conv_int().  See that function for details.
+ * This is a simplified interface for fprint_line_buf().  See that function for
+ * details.
  *
  * given:
- *	stream	open stread to write to, or NULL ==> just return length
+ *	stream	open stream to write to, or NULL ==> just return length
  *	str	string to print
  *	retlen	address of where to store length of str, if retlen != NULL
  *	start	print start character before line, if != 0,
@@ -3540,7 +3541,7 @@ fprint_line_str(FILE *stream, char *str, size_t *retlen, int start, int end)
     errno = saved_errno;
 
     /*
-     * return the JSON parse tree element
+     * return the length
      */
     return count;
 }
@@ -3653,7 +3654,7 @@ find_text_str(char const *str, char **first)
     ret = find_text(str, len, first);
 
     /*
-     * return the JSON parse tree element
+     * return the number of non-NUL non-whitespace bytes
      */
     return ret;
 }
