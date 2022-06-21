@@ -1,6 +1,6 @@
 /* vim: set tabstop=8 softtabstop=4 shiftwidth=4 noexpandtab : */
 /*
- * json_entry - supporting mkiocccentry JSON files
+ * chk_entry - supporting mkiocccentry JSON files
  *
  * JSON related functions to support formation of .info.json files
  * and .author.json files, their related check tools, test code,
@@ -153,14 +153,6 @@ struct info
 /*
  * external function declarations
  */
-extern bool json_putc(uint8_t const c, FILE *stream);
-extern bool json_fprintf_str(FILE *stream, char const *str);
-extern bool json_fprintf_value_string(FILE *stream, char const *lead, char const *name, char const *middle, char const *value,
-				      char const *tail);
-extern bool json_fprintf_value_long(FILE *stream, char const *lead, char const *name, char const *middle, long value,
-				    char const *tail);
-extern bool json_fprintf_value_bool(FILE *stream, char const *lead, char const *name, char const *middle, bool value,
-				    char const *tail);
 extern void free_info(struct info *infop);
 extern void free_author_array(struct author *authorp, int author_count);
 

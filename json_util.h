@@ -170,6 +170,14 @@ extern struct json *json_object_add_member(struct json *node, struct json *membe
 extern struct json *json_create_elements(void);
 extern struct json *json_elements_add_value(struct json *node, struct json *value);
 extern struct json *json_create_array(void);
+extern bool json_putc(uint8_t const c, FILE *stream);
+extern bool json_fprintf_str(FILE *stream, char const *str);
+extern bool json_fprintf_value_string(FILE *stream, char const *lead, char const *name, char const *middle, char const *value,
+				      char const *tail);
+extern bool json_fprintf_value_long(FILE *stream, char const *lead, char const *name, char const *middle, long value,
+				    char const *tail);
+extern bool json_fprintf_value_bool(FILE *stream, char const *lead, char const *name, char const *middle, bool value,
+				    char const *tail);
 
 
 #endif /* INCLUDE_JSON_UTIL_H */

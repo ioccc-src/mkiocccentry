@@ -47,9 +47,9 @@
 #include "json_parse.h"
 
 /*
- * json_entry - supporting mkiocccentry JSON files
+ * chk_entry - supporting mkiocccentry JSON files
  */
-#include "json_entry.h"
+#include "chk_entry.h"
 
 /*
  * json_util - general JSON utility support functions

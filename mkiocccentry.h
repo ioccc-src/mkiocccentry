@@ -70,7 +70,7 @@
 /*
  * JSON - JSON structures and functions
  */
-#include "json_entry.h"
+#include "chk_entry.h"
 
 /*
  * dbg - debug, warning and error reporting facility

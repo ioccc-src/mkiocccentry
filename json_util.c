@@ -4049,3 +4049,389 @@ json_create_array(void)
      */
     return ret;
 }
+
+
+/*
+ * json_putc - print a UTF-8 character with JSON encoding
+ *
+ * given:
+ *	stream	- string to print on
+ *	c	- UTF-8 character to encode
+ *
+ * returns:
+ *	true ==> stream print was OK,
+ *	false ==> error printing to stream
+ */
+bool
+json_putc(uint8_t const c, FILE *stream)
+{
+    int ret;			/* libc function return */
+
+    /*
+     * firewall
+     */
+    if (stream == NULL) {
+	warn(__func__, "called with NULL arg(s)");
+	return false;
+    }
+
+    /*
+     * write JSON encoding to stream
+     */
+    errno = 0;	    /* pre-clear errno for warnp */
+    ret = fprintf(stream, "%s", jenc[c].enc);
+    if (ret <= 0) {
+	warnp(__func__, "fprintf #1 error");
+	return false;
+    }
+    return true;
+}
+
+
+/*
+ * json_fprintf_str - print a JSON string
+ *
+ * Print on stream:
+ *
+ * If str == NULL:
+ *
+ *	null
+ *
+ * else str != NULL:
+ *
+ *	str with JSON string encoding surrounded by '"'s
+ *
+ * See:
+ *
+ *	https://www.json.org/json-en.html
+ *
+ * given:
+ *	stream	- open file stream to print on
+ *	str	- the string to JSON encode or NULL
+ *
+ * returns:
+ *	true ==> stream print was OK,
+ *	false ==> error printing to stream
+ *
+ * This function does not return on error.
+ */
+bool
+json_fprintf_str(FILE *stream, char const *str)
+{
+    int ret;			/* libc function return */
+    char const *p;
+
+    /*
+     * firewall
+     */
+    if (stream == NULL) {
+	warn(__func__, "called with NULL arg(s)");
+	return false;
+    }
+
+    /*
+     * case: NULL
+     */
+    if (str == NULL) {
+	errno = 0;			/* pre-clear errno for warnp() */
+	ret = fprintf(stream, "null");
+	if (ret <= 0) {
+	    warnp(__func__, "fprintf #0 error for null");
+	    return false;
+	}
+	return true;
+    }
+
+    /*
+     * print leading double-quote
+     */
+    errno = 0;			/* pre-clear errno for warnp() */
+    ret = fputc('"', stream);
+    if (ret == EOF) {
+	warnp(__func__, "fputc #0 error for leading double-quote");
+	return false;
+    }
+
+    /*
+     * print name, JSON encoded
+     */
+    for (p=str; *p != '\0'; ++p) {
+	if (json_putc(*p, stream) != true) {
+	    warn(__func__, "json_putc #0 error");
+	    return false;
+	}
+    }
+
+    /*
+     * print trailing double-quote
+     */
+    errno = 0;			/* pre-clear errno for warnp() */
+    ret = fputc('"', stream);
+    if (ret == EOF) {
+	warnp(__func__, "fputc #1 error for trailing double-quote");
+	return false;
+    }
+    return true;
+}
+
+
+/*
+ * json_fprintf_value_string - print name value (as a string) pair
+ *
+ * On a stream, we will print:
+ *
+ *	lead "name_encoded " middle "value_encoded" tail
+ *
+ * given:
+ *	stream	- open file stream to print on
+ *	lead	- leading whitespace string to print
+ *	name	- name string to JSON encode or NULL
+ *	middle	- middle string (often " : " )l
+ *	value	- value string to JSON encode or NULL
+ *	tail	- tailing string to print (often ",\n")
+ *
+ * returns:
+ *	true
+ *
+ * returns:
+ *	true ==> stream print was OK,
+ *	false ==> error printing to stream
+ *
+ * This function does not return on error.
+ */
+bool
+json_fprintf_value_string(FILE *stream, char const *lead, char const *name, char const *middle, char const *value,
+			  char const *tail)
+{
+    int ret;			/* libc function return */
+
+    /*
+     * firewall
+     */
+    if (stream == NULL || lead == NULL || middle == NULL || tail == NULL) {
+	warn(__func__, "called with NULL arg(s)");
+	return false;
+    }
+
+    /*
+     * print leading string
+     */
+    errno = 0;			/* pre-clear errno for warnp() */
+    ret = fprintf(stream, "%s", lead);
+    if (ret < 0) { /* compare < 0 only in case lead is an empty string */
+	warnp(__func__, "fprintf printing lead");
+	return false;
+    }
+
+    /*
+     * print name as a JSON encoded string
+     */
+    if (json_fprintf_str(stream, name) != true) {
+	warn(__func__, "json_fprintf_str error printing name");
+	return false;
+    }
+
+    /*
+     * print middle string
+     */
+    errno = 0;			/* pre-clear errno for warnp() */
+    ret = fprintf(stream, "%s", middle);
+    if (ret < 0) { /* compare < 0 only in case middle is an empty string */
+	warnp(__func__, "fprintf printing middle");
+	return false;
+    }
+
+    /*
+     * print value as a JSON encoded string
+     */
+    if (json_fprintf_str(stream, value) != true) {
+	warn(__func__, "json_fprintf_str for value as a string");
+	return false;
+    }
+
+    /*
+     * print trailing string
+     */
+    errno = 0;			/* pre-clear errno for warnp() */
+    ret = fprintf(stream, "%s", tail);
+    if (ret < 0) { /* compare < 0 only in case tail is an empty string */
+	warnp(__func__, "fprintf printing end of line");
+	return false;
+    }
+    return true;
+}
+
+
+/*
+ * json_fprintf_value_long - print name value (as a long integer) pair
+ *
+ * On a stream, we will print:
+ *
+ *	lead "name_encoded" middle long_value tail
+ *
+ * given:
+ *	stream	- open file stream to print on
+ *	lead	- leading whitespace string to print
+ *	name	- name string to JSON encode or NULL
+ *	middle	- middle string (often " : " )l
+ *	value	- value as long
+ *	tail	- tailing string to print (often ",\n")
+ *
+ * returns:
+ *	true
+ *
+ * returns:
+ *	true ==> stream print was OK,
+ *	false ==> error printing to stream
+ *
+ * This function does not return on error.
+ */
+bool
+json_fprintf_value_long(FILE *stream, char const *lead, char const *name, char const *middle, long value,
+			char const *tail)
+{
+    int ret;			/* libc function return */
+
+    /*
+     * firewall
+     */
+    if (stream == NULL || lead == NULL || middle == NULL || tail == NULL) {
+	warn(__func__, "called with NULL arg(s)");
+	return false;
+    }
+
+    /*
+     * print leading string
+     */
+    errno = 0;			/* pre-clear errno for warnp() */
+    ret = fprintf(stream, "%s", lead);
+    if (ret < 0) { /* compare < 0 only in case lead is an empty string */
+	warnp(__func__, "fprintf printing lead");
+	return false;
+    }
+
+    /*
+     * print name as a JSON encoded string
+     */
+    if (json_fprintf_str(stream, name) != true) {
+	warnp(__func__, "json_fprintf_str error printing name");
+	return false;
+    }
+
+    /*
+     * print middle string
+     */
+    errno = 0;			/* pre-clear errno for warnp() */
+    ret = fprintf(stream, "%s", middle);
+    if (ret < 0) { /* compare < 0 only in case middle is an empty string */
+	warnp(__func__, "fprintf printing middle");
+	return false;
+    }
+
+    /*
+     * print value as a JSON long
+     */
+    errno = 0;			/* pre-clear errno for warnp() */
+    ret = fprintf(stream, "%ld", value);
+    if (ret <= 0) {
+	warnp(__func__, "fprintf for value as a long");
+	return false;
+    }
+
+    /*
+     * print trailing string
+     */
+    errno = 0;			/* pre-clear errno for warnp() */
+    ret = fprintf(stream, "%s", tail);
+    if (ret < 0) { /* compare < 0 only in case tail is an empty string */
+	warnp(__func__, "fprintf printing end of line");
+	return false;
+    }
+    return true;
+}
+
+
+/*
+ * json_fprintf_value_bool - print name value (as a boolean) pair
+ *
+ * On a stream, we will print:
+ *
+ *	lead "name_encoded" middle true tail
+ * or:
+ *	lead "name_encoded" middle false tail
+ *
+ * given:
+ *	stream	- open file stream to print on
+ *	lead	- leading whitespace string to print
+ *	name	- name string to JSON encode or NULL
+ *	middle	- middle string (often " : " )l
+ *	value	- value as boolean
+ *	tail	- tailing string to print (often ",\n")
+ *
+ * returns:
+ *	true ==> stream print was OK,
+ *	false ==> error printing to stream
+ */
+bool
+json_fprintf_value_bool(FILE *stream, char const *lead, char const *name, char const *middle, bool value,
+			char const *tail)
+{
+    int ret;			/* libc function return */
+
+    /*
+     * firewall
+     */
+    if (stream == NULL || lead == NULL || middle == NULL || tail == NULL) {
+	warn(__func__, "called with NULL arg(s)");
+	return false;
+    }
+
+    /*
+     * print leading string
+     */
+    errno = 0;			/* pre-clear errno for warnp() */
+    ret = fprintf(stream, "%s", lead);
+    if (ret < 0) { /* compare < 0 only in case lead is an empty string */
+	warnp(__func__, "fprintf printing lead");
+	return false;
+    }
+
+    /*
+     * print name as a JSON encoded string
+     */
+    if (json_fprintf_str(stream, name) != true) {
+	warn(__func__, "json_fprintf_str error printing name");
+	return false;
+    }
+
+    /*
+     * print middle string
+     */
+    errno = 0;			/* pre-clear errno for warnp() */
+    ret = fprintf(stream, "%s", middle);
+    if (ret < 0) { /* compare < 0 only in case middle is an empty string */
+	warnp(__func__, "fprintf printing middle");
+	return false;
+    }
+
+    /*
+     * print value as a JSON boolean
+     */
+    errno = 0;			/* pre-clear errno for warnp() */
+    ret = fprintf(stream, "%s", booltostr(value));
+    if (ret <= 0) {
+	warnp(__func__, "fprintf for value as a boolean");
+	return false;
+    }
+
+    /*
+     * print trailing string
+     */
+    errno = 0;			/* pre-clear errno for warnp() */
+    ret = fprintf(stream, "%s", tail);
+    if (ret < 0) { /* compare < 0 only in case tail is an empty string */
+	warnp(__func__, "fprintf printing end of line");
+	return false;
+    }
+    return true;
+}
