@@ -195,10 +195,6 @@ extern void pr(char const *name, char const *fmt, ...)
 	__attribute__((format(printf, 2, 3)));		/* 2=format 3=params */
 extern ssize_t readline(char **linep, FILE * stream);
 extern char *readline_dup(char **linep, bool strip, size_t *lenp, FILE * stream);
-extern void find_utils(bool tar_flag_used, char **tar, bool cp_flag_used, char **cp,
-		       bool ls_flag_used, char **ls, bool txzchk_flag_used, char **txzchk,
-		       bool fnamchk_flag_used, char **fnamchk, bool chkinfo_flag_used,
-		       char **chkinfo, bool chkauth_flag_used, char **chkauth);
 extern off_t round_to_multiple(off_t num, off_t multiple);
 extern void jencchk(void);
 extern void *read_all(FILE *stream, size_t *psize);

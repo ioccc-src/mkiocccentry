@@ -42,3 +42,76 @@ ioccc_sanity_chks(void)
     check_location_table();
     dbg(DBG_VVHIGH, "... all OK.");
 }
+
+
+/*
+ * find_utils - find tar, cp, ls, txzchk and fnamchk, chkinfo and chkauth utilities
+ *
+ * given:
+ *
+ *	tar_flag_used	    - true ==> -t tar was used
+ *	tar		    - if -t tar was not used and tar != NULL set *tar to to tar path
+ *	cp_flag_used	    - true ==> -c cp was used
+ *	cp		    - if -c cp was not used and cp != NULL set *cp to cp path
+ *	ls_flag_used	    - true ==> -l ls was used
+ *	ls		    - if -l ls was not used and ls != NULL set *ls to ls path
+ *	txzchk_flag_used    - true ==> -T flag used
+ *	txzchk		    - if -T txzchk was used and txzchk != NULL set *txzchk to path
+ *	fnamchk_flag_used   - true ==> if fnamchk flag was used
+ *	fnamchk		    - if fnamchk option used and fnamchk ! NULL set *fnamchk to path
+ *	chkinfo_flag_used  - true ==> -j chkinfo was used
+ *	chkinfo	    - if -j chkinfo was used and chkinfo != NULL set *chkinfo to path
+ *	chkauth_flag_used  - true ==> -J chkauth was used	    -
+ *	chkauth	    - if -J chkauth was used and chkauth != NULL set *chkauth to path
+ *
+ * XXX This function should probably be updated to search for at least jparse as
+ * well if not other utils too.
+ */
+void
+find_utils(bool tar_flag_used, char **tar, bool cp_flag_used, char **cp, bool ls_flag_used, char **ls,
+	   bool txzchk_flag_used, char **txzchk, bool fnamchk_flag_used, char **fnamchk,
+	   bool chkinfo_flag_used, char **chkinfo, bool chkauth_flag_used, char **chkauth)
+{
+    /*
+     * guess where tar, cp and ls utilities are located
+     *
+     * If the user did not give a -t, -c and/or -l /path/to/x path, then look at
+     * the historic location for the utility.  If the historic location of the utility
+     * isn't executable, look for an executable in the alternate location.
+     *
+     * On some systems where /usr/bin != /bin, the distribution made the mistake of
+     * moving historic critical applications, look to see if the alternate path works instead.
+     */
+    if (tar != NULL && !tar_flag_used && !is_exec(TAR_PATH_0) && is_exec(TAR_PATH_1)) {
+	*tar = TAR_PATH_1;
+	dbg(DBG_MED, "tar is not in historic location: %s : will try alternate location: %s", TAR_PATH_0, *tar);
+    }
+    if (cp != NULL && !cp_flag_used && !is_exec(CP_PATH_0) && is_exec(CP_PATH_1)) {
+	*cp = CP_PATH_1;
+	dbg(DBG_MED, "cp is not in historic location: %s : will try alternate location: %s", CP_PATH_0, *cp);
+    }
+    if (ls != NULL && !ls_flag_used && !is_exec(LS_PATH_0) && is_exec(LS_PATH_1)) {
+	*ls = LS_PATH_1;
+	dbg(DBG_MED, "ls is not in historic location: %s : will try alternate location: %s", LS_PATH_0, *ls);
+    }
+
+    /* now do the same for our utilities: txzchk, fnamchk, chkinfo and chkauth */
+    if (txzchk != NULL && !txzchk_flag_used && !is_exec(TXZCHK_PATH_0) && is_exec(TXZCHK_PATH_1)) {
+	*txzchk = TXZCHK_PATH_1;
+	dbg(DBG_MED, "using default txzchk path: %s", TXZCHK_PATH_1);
+    }
+    if (fnamchk != NULL && !fnamchk_flag_used && !is_exec(FNAMCHK_PATH_0) && is_exec(FNAMCHK_PATH_1)) {
+	*fnamchk = FNAMCHK_PATH_1;
+	dbg(DBG_MED, "using default fnamchk path: %s", FNAMCHK_PATH_1);
+    }
+    if (chkinfo != NULL && !chkinfo_flag_used && !is_exec(CHKINFO_PATH_0) && is_exec(CHKINFO_PATH_1)) {
+	*chkinfo = CHKINFO_PATH_1;
+	dbg(DBG_MED, "using default chkinfo path: %s", CHKINFO_PATH_1);
+    }
+    if (chkauth != NULL && !chkauth_flag_used && !is_exec(CHKAUTH_PATH_0) && is_exec(CHKAUTH_PATH_1)) {
+	*chkauth = CHKAUTH_PATH_1;
+	dbg(DBG_MED, "using default chkauth path: %s", CHKAUTH_PATH_1);
+    }
+
+    return;
+}
