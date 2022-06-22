@@ -28,6 +28,11 @@
  */
 #include "dyn_array.h"
 
+/*
+ * json_parse - JSON parser support code
+ */
+#include "json_parse.h"
+
 
 /*
  * JSON defines

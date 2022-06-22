@@ -30,12 +30,6 @@
 
 
 /*
- * definitions
- */
-#define REQUIRED_ARGS (1)	/* number of required arguments on the command line */
-
-
-/*
  * dbg - debug, warning and error reporting facility
  */
 #include "dbg.h"
@@ -52,9 +46,9 @@
 #include "json_parse.h"
 
 /*
- * chk_entry - supporting mkiocccentry JSON files
+ * entry_util - utilities supporting mkiocccentry JSON files
  */
-#include "chk_entry.h"
+#include "entry_util.h"
 
 /*
  * json_util - general JSON utility support functions
@@ -70,6 +64,12 @@
  * IOCCC size and rule related limitations
  */
 #include "limit_ioccc.h"
+
+/*
+ * chk_util - support chkinfo and chkauth services
+ */
+#include "chk_util.h"
+
 
 struct manifest_file
 {

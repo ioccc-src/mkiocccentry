@@ -30,11 +30,6 @@
  */
 #include "utf8_posix_map.h"
 
-/*
- * json_ckk - support chkinfo and chkauth services
- */
-#include "chk_util.h"
-
 
 /*
  * function prototypes

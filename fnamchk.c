@@ -48,6 +48,12 @@
 #include "fnamchk.h"
 
 
+/*
+ * definitions
+ */
+#define REQUIRED_ARGS (1)	/* number of required arguments on the command line */
+
+
 
 int
 main(int argc, char *argv[])

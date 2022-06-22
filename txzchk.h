@@ -40,12 +40,6 @@
 #include "limit_ioccc.h"
 
 
-/*
- * definitions
- */
-#define REQUIRED_ARGS (1)	/* number of required arguments on the command line */
-
-
 /* globals */
 bool quiet = false;				/* true ==> quiet mode */
 /* globals specific to txzchk */

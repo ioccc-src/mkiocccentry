@@ -91,6 +91,11 @@
 #include "mkiocccentry.h"
 
 /*
+ * definitions
+ */
+#define REQUIRED_ARGS (4)	/* number of required arguments on the command line */
+
+/*
  * Answers file constants.
  *
  * Version of answers file.
@@ -106,6 +111,12 @@
 #define MKIOCCCENTRY_ANSWERS_VERSION "MKIOCCCENTRY_ANSWERS-IOCCCMOCK-1.0"
 /* Answers file EOF marker */
 #define MKIOCCCENTRY_ANSWERS_EOF "ANSWERS_EOF"
+
+
+/*
+ * static globals
+ */
+static bool quiet = false;			/* true ==> quiet mode */
 
 
 int

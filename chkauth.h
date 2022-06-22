@@ -47,9 +47,9 @@
 #include "json_parse.h"
 
 /*
- * chk_entry - supporting mkiocccentry JSON files
+ * entry_util - utilities supporting mkiocccentry JSON files
  */
-#include "chk_entry.h"
+#include "entry_util.h"
 
 /*
  * json_util - general JSON utility support functions
@@ -66,11 +66,10 @@
  */
 #include "limit_ioccc.h"
 
-
 /*
- * definitions
+ * chk_util - support chkinfo and chkauth services
  */
-#define REQUIRED_ARGS (1)	/* number of required arguments on the command line */
+#include "chk_util.h"
 
 
 
@@ -104,8 +103,6 @@ static const char * const usage_msg =
 /*
  * globals
  */
-bool quiet = false;			/* true ==> quiet mode */
-/**/
 static char const *program = NULL;			/* our name */
 static char *program_basename = NULL;			/* our basename */
 static bool test = false;				/* true ==> some tests are not performed */

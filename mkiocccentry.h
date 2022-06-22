@@ -68,11 +68,6 @@
 #include "util.h"
 
 /*
- * JSON - JSON structures and functions
- */
-#include "chk_entry.h"
-
-/*
  * dbg - debug, warning and error reporting facility
  */
 #include "dbg.h"
@@ -108,12 +103,22 @@
 #include "version.h"
 
 /*
+ * json_util - general JSON parser utility support functions
+ */
+#include "json_util.h"
+
+/*
+ * entry_util - utilities supporting mkiocccentry JSON files
+ */
+#include "entry_util.h"
+
+
+/*
  * definitions
  *
  * NOTE: MKIOCCCENTRY_ANSWERS_VERSION and MKIOCCCENTRY_ANSWERS_EOF must be defined
  *	 in mkiocccentry.c and not here.
  */
-#define REQUIRED_ARGS (4)	/* number of required arguments on the command line */
 #define ISO_3166_1_CODE_URL0 "https://en.wikipedia.org/wiki/ISO_3166-1#Officially_assigned_code_elements"
 #define ISO_3166_1_CODE_URL1 "https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2"
 #define ISO_3166_1_CODE_URL2 "https://www.iso.org/obp/ui/#iso:pub:PUB500001:en"
@@ -173,8 +178,6 @@ static const char * const usage_msg4 =
 /*
  * globals
  */
-bool quiet = false;			/* true ==> quiet mode */
-/**/
 static bool need_confirm = true;	/* true ==> ask for confirmations */
 static bool need_hints = true;		/* true ==> show hints */
 static bool ignore_warnings = false;	/* true ==> ignore all warnings (this does NOT mean the judges will! :) */

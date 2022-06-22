@@ -1,6 +1,6 @@
 /* vim: set tabstop=8 softtabstop=4 shiftwidth=4 noexpandtab : */
 /*
- * chk_entry - supporting mkiocccentry JSON files
+ * entry_util - utilities supporting mkiocccentry JSON files
  *
  * JSON related functions to support formation of .info.json files
  * and .author.json files, their related check tools, test code,
@@ -34,8 +34,8 @@
  */
 
 
-#if !defined(INCLUDE_JSON_ENTRY_H)
-#    define  INCLUDE_JSON_ENTRY_H
+#if !defined(INCLUDE_ENTRY_UTIL_H)
+#    define  INCLUDE_ENTRY_UTIL_H
 
 
 /*
@@ -45,11 +45,6 @@
 
 /*
  * common json fields - for use in mkiocccentry.
- *
- * NOTE: We don't use the json_field or json_value fields (see chk_util.h) here
- * because this struct is for mkiocccentry which is in control of what's written
- * whereas for chkinfo and chkauth we don't have control of what's in the file
- * and we can't prove that it wasn't made by hand or some other utility.
  */
 struct json_common
 {
@@ -157,4 +152,4 @@ extern void free_info(struct info *infop);
 extern void free_author_array(struct author *authorp, int author_count);
 
 
-#endif /* INCLUDE_JSON_ENTRY_H */
+#endif /* INCLUDE_ENTRY_UTIL_H */

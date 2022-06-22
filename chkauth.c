@@ -34,6 +34,17 @@
 
 
 /*
+ * definitions
+ */
+#define REQUIRED_ARGS (1)	/* number of required arguments on the command line */
+
+/*
+ * static globals
+ */
+bool quiet = false;			/* true ==> quiet mode */
+
+
+/*
  * chkauth_sanity_chks - perform basic sanity checks
  *
  * We perform basic sanity checks on paths.

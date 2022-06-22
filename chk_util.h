@@ -1,6 +1,6 @@
 /* vim: set tabstop=8 softtabstop=4 shiftwidth=4 noexpandtab : */
 /*
- * json_ckk - support chkinfo and chkauth services
+ * chk_util - support chkinfo and chkauth services
  *
  * This is currently being worked on by:
  *
