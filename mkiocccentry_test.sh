@@ -66,6 +66,7 @@ if [[ ${status} -ne 0 ]]; then
     exit 250
 fi
 
+eval make all 2>&1 | grep -v 'Nothing to be done for'
 # firewall
 #
 if [[ ! -d ${work_dir} ]]; then

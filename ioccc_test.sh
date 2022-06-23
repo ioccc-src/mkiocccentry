@@ -92,6 +92,8 @@ if [[ $# -gt 0 ]]; then
     exit 2
 fi
 
+eval make all 2>&1 | grep -v 'Nothing to be done for'
+
 # firewall - verify we have the required executables and needed data file(s)
 #
 # iocccsize_test.sh

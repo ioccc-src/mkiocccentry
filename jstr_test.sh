@@ -23,6 +23,8 @@ while getopts :hv: flag; do
     esac
 done
 
+eval make all 2>&1 | grep -v 'Nothing to be done for'
+
 # verify we have the tools and conditions to test
 #
 if [[ ! -x jstrencode ]]; then
