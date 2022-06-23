@@ -3637,6 +3637,7 @@ json_conv_member(struct json *name, struct json *value)
     case JTYPE_NUMBER:
     case JTYPE_STRING:
     case JTYPE_BOOL:
+    case JTYPE_NULL:
     case JTYPE_MEMBER:
     case JTYPE_OBJECT:
     case JTYPE_ARRAY:
@@ -3937,6 +3938,7 @@ json_elements_add_value(struct json *node, struct json *value)
     case JTYPE_NUMBER:
     case JTYPE_STRING:
     case JTYPE_BOOL:
+    case JTYPE_NULL:
     case JTYPE_MEMBER:
     case JTYPE_OBJECT:
     case JTYPE_ARRAY:

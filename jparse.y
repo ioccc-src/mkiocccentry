@@ -374,7 +374,7 @@ json_value:
 	/* post-action debugging */
 	json_dbg(JSON_DBG_HIGH, __func__, "under json_value: returning $json_value type: %s",
 				         json_item_type_name($json_value));
-	/* XXX - adjust JSON_DBG_MED to higher once all JSON items are parsed - XXX */
+	/* XXX - adjust JSON_DBG_MED to higher once all JSON itjson_object are parsed - XXX */
 	json_dbg_tree_print(JSON_DBG_MED, __func__, $json_value, JSON_DEFAULT_MAX_DEPTH);
 	json_dbg(JSON_DBG_MED, __func__, "under json_value: ending: "
 					 "json_value: JSON_NULL");
@@ -396,15 +396,16 @@ json_object:
 	json_dbg(JSON_DBG_HIGH, __func__, "under json_object: $json_members type: %s",
 					 json_item_type_name($json_members));
 	json_dbg(JSON_DBG_HIGH, __func__, "under json_object: about to perform: "
-					 "XXX - need more code here - XXX");
+					 "$json_object = $json_members;");
 
 	/* action */
-	json_dbg(JSON_DBG_MED, __func__, "under json_object: XXX - need more code here - XXX"); /* XXX */
+	$json_object = $json_members; /* magic: json_value becomes the json_number type (JTYPE_OBJECT) */
 
 	/* post-action debugging */
 	json_dbg(JSON_DBG_MED, __func__, "under json_object: returning $json_object type: %s",
 					 json_item_type_name($json_object));
-	/* XXX - call json_dbg_tree_print when there is a value to process - XXX */
+	/* XXX - adjust JSON_DBG_MED to higher once all JSON items are parsed - XXX */
+	json_dbg_tree_print(JSON_DBG_MED, __func__, $json_object, JSON_DEFAULT_MAX_DEPTH);
 	json_dbg(JSON_DBG_MED, __func__, "under json_object: ending: "
 					 "json_object: JSON_OPEN_BRACE json_members JSON_CLOSE_BRACE");
     }
@@ -450,10 +451,13 @@ json_members:
 	json_dbg(JSON_DBG_HIGH, __func__, "under json_members: $json_member type: %s",
 					 json_item_type_name($json_member));
 	json_dbg(JSON_DBG_HIGH, __func__, "under json_members: about to perform: "
-					 "$json_members = $json_member;");
+					  "$json_members = json_create_object();");
+	json_dbg(JSON_DBG_HIGH, __func__, "under json_members: about to also perform: "
+					  "$json_members = json_object_add_member($json_members, $json_member);");
 
 	/* action */
-	$json_members = $json_member; /* magic: json_members becomes the json_member type */
+	$json_members = json_create_object();
+	$json_members = json_object_add_member($json_members, $json_member);
 
 	/* post-action debugging */
 	json_dbg(JSON_DBG_HIGH, __func__, "under json_members: returning $json_members type: %s",
@@ -484,15 +488,16 @@ json_members:
 	json_dbg(JSON_DBG_HIGH, __func__, "under json_members: $3 ($json_member) type: %s",
 					 json_item_type_name($3));
 	json_dbg(JSON_DBG_HIGH, __func__, "under json_members: about to perform: "
-					 "XXX - need more code here - XXX");
+					 "$$ = json_object_add_member($1, $json_member)");
 
 	/* action */
-	json_dbg(JSON_DBG_MED, __func__, "under json_members: XXX - need more code here - XXX"); /* XXX */
+	$$ = json_object_add_member($1, $json_member);
 
 	/* post-action debugging */
 	json_dbg(JSON_DBG_HIGH, __func__, "under json_members: returning $$ ($json_members) type: %s",
 				         json_item_type_name($$));
-	/* XXX - call json_dbg_tree_print when there is a value to process - XXX */
+	/* XXX - adjust JSON_DBG_MED to higher once all JSON items are parsed - XXX */
+	json_dbg_tree_print(JSON_DBG_MED, __func__, $$, JSON_DEFAULT_MAX_DEPTH);
 	json_dbg(JSON_DBG_MED, __func__, "under json_members: ending: "
 					 "json_members: json_members JSON_COMMA json_member");
     }
