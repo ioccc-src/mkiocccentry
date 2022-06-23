@@ -56,54 +56,25 @@ For more information and examples, try:
 	    man ./fnamechk.1
 
 
-##  `chkinfo`
+##  `chkentry`
 
-The official **IOCCC** `.info.json` sanity checker tool. Invoked by
-`mkiocccentry` after the `.info.json` file has been created, it will attempt to
-validate the file. If it does not successfully validate the file there is a
-mismatch between what is expected and what is actually there and `mkiocccentry`
-will fail.
+The official **IOCCC** `.info.json` and `.author.json` sanity checker tool.
+Invoked by `mkiocccentry` after the `.info.json` and `.author.json` files have
+been created, it will attempt to validate the files. If it does not successfully
+validate the files there is a mismatch between what is expected and what is
+actually there and `mkiocccentry` will fail.
 
-As a stand-alone tool it will report whether the file is a validly formed
-`.info.json` file. See also `chkauth`.
+As a stand-alone tool it will report whether the files are validly formed.
 
-*NOTE*: This tool and `chkauth` are **very much works in progress** and as of
-10 March 2022 it was decided that the parsing should be done via `flex(1)` and
-`bison(1)` which is being worked on in `jparse` (see below). 
-
-In time the two tools (`chkinfo` and `chkauth`) will be merged into one tool
-which can parse one or both of `.info.json` and `.author.json`. This is because
-some fields MUST be the same value in both files.
+*NOTE*: This tool is **very much a work in progress** and as of 10 March 2022 it
+was decided that the parsing should be done via `flex(1)` and `bison(1)` which
+is being worked on in `jparse` (see below).
 
 For more information and examples, try:
 
 
-	    man ./chkinfo.1
+	    man ./chkentry.1
 
-
-##  `chkauth`
-
-The official **IOCCC** `.author.json` sanity checker tool. Invoked by
-`mkiocccentry` after the `.author.json` file has been created, it will attempt to
-validate the file. If it does not successfully validate the file there is a
-mismatch between what is expected and what is actually there and `mkiocccentry`
-will fail.
-
-As a stand-alone tool it will report whether the file is a validly formed
-`.author.json` file. See also `chkinfo`.
-
-*NOTE*: This tool and `chkinfo` are **very much works in progress** and as of
-10 March 2022 it was decided that the parsing should be done via `flex(1)` and
-`bison(1)` which is being worked on in `jparse` (see below). 
-
-In time the two tools (`chkauth` and `chkinfo`) will be merged into one tool
-which can parse one or both of `.author.json` and `.author.json`. This is
-because some fields MUST be the same value in both files.
-
-For more information and examples, try:
-
-
-	    man ./chkauth.1
 
 
 ##  `jparse`
