@@ -2,31 +2,13 @@
 /*
  * chkentry - check JSON files in an IOCCC entry
  *
- * "Because the JSON co-founders minimalism is sub-minimal." :-)
+ * This tool is currently being worked on by:
  *
- * Copyright (c) 2022 by Landon Curt Noll.  All Rights Reserved.
+ *	@xexyl
+ *	https://xexyl.net		Cody Boone Ferguson
+ *	https://ioccc.xexyl.net
  *
- * Permission to use, copy, modify, and distribute this software and
- * its documentation for any purpose and without fee is hereby granted,
- * provided that the above copyright, this permission notice and text
- * this comment, and the disclaimer below appear in all of the following:
- *
- *       supporting documentation
- *       source copies
- *       source works derived from this source
- *       binaries derived from this source or from derived source
- *
- * LANDON CURT NOLL DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE,
- * INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS. IN NO
- * EVENT SHALL LANDON CURT NOLL BE LIABLE FOR ANY SPECIAL, INDIRECT OR
- * CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF
- * USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR
- * OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
- * PERFORMANCE OF THIS SOFTWARE.
- *
- * chongo (Landon Curt Noll, http://www.isthe.com/chongo/index.html) /\oo/\
- *
- * Share and enjoy! :-)
+ * "Because sometimes even the IOCCC Judges need some help." :-)
  */
 
 /* special comments for the seqcexit tool */
@@ -61,7 +43,6 @@ main(int argc, char *argv[])
     extern int optind;		/* argv index of the next arg */
     bool test = false;		/* true ==> JSON conversion test case result */
     bool error = false;		/* true ==> JSON conversion test suite error */
-    bool strict = false;	/* true ==> strict testing for all struct integer element, implies -t -q */
     char *fnamchk = FNAMCHK_PATH_0;	/* path to fnamchk executable */
     bool fnamchk_flag_used = false;	/* true ==> -F fnamchk used */
     struct json *node = NULL;	/* allocated JSON parser tree node */
@@ -113,22 +94,18 @@ main(int argc, char *argv[])
     if (arg_cnt < REQUIRED_ARGS || arg_cnt > REQUIRED_ARGS+1) {
 	usage(4, program, "expected %d or %d+1 arguments, found: %d", REQUIRED_ARGS, arg_cnt); /*ooo*/
     }
-    dbg(DBG_MED, "strict mode: %s", (strict == true) ? "enabled" : "disabled");
 
     /* XXX - fake code below needs to be removed - XXX */
     if (node == NULL) {
 	error = true; /* XXX */
     }
-    if (test == false) {
+    if (!test) {
 	test = true; /* XXX */
     }
-    if (error == true) {
+    if (error) {
 	error = false; /* XXX */
     }
-    if (strict == true) {
-	strict = false; /* XXX */
-    }
-    if (fnamchk_flag_used == true && fnamchk == NULL) {
+    if (fnamchk_flag_used && fnamchk == NULL) {
 	error = true; /* XXX */
     }
 
@@ -137,14 +114,7 @@ main(int argc, char *argv[])
     /*
      * All Done!!! - Jessica Noll, age 2
      */
-    if (error == true) {
-	if (strict == true) {
-	    exit(2); /*ooo*/
-	} else {
-	    exit(1); /*ooo*/
-	}
-    }
-    exit(0); /*ooo*/
+    exit(error != false);
 }
 
 
