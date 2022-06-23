@@ -448,6 +448,21 @@ extern struct json *parse_json_null(char const *string);
 extern struct json *parse_json_number(char const *string);
 extern struct json *parse_json_array(struct json *elements);
 extern struct json *parse_json_member(struct json *name, struct json *value);
+extern struct json *json_alloc(enum item_type type);
+extern struct json *json_conv_number(char const *ptr, size_t len);
+extern struct json *json_conv_number_str(char const *str, size_t *retlen);
+extern struct json *json_conv_string(char const *ptr, size_t len, bool quote);
+extern struct json *json_conv_string_str(char const *str, size_t *retlen, bool quote);
+extern struct json *json_conv_bool(char const *ptr, size_t len);
+extern struct json *json_conv_bool_str(char const *str, size_t *retlen);
+extern struct json *json_conv_null(char const *ptr, size_t len);
+extern struct json *json_conv_null_str(char const *str, size_t *retlen);
+extern struct json *json_conv_member(struct json *name, struct json *value);
+extern struct json *json_create_object(void);
+extern struct json *json_object_add_member(struct json *node, struct json *member);
+extern struct json *json_create_elements(void);
+extern struct json *json_elements_add_value(struct json *node, struct json *value);
+extern struct json *json_create_array(void);
 
 
 #endif /* INCLUDE_JSON_PARSE_H */

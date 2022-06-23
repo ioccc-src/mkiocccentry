@@ -148,6 +148,14 @@ extern void jerr(int exitcode, const char *name, char const *filename,
 extern void jerrp(int exitcode, const char *name,
 		  char const *filename, char const *line, int line_num, const char *fmt, ...) \
 	__attribute__((noreturn)) __attribute__((format(printf, 6, 7))); /* 6=format 7=params */
+extern bool json_putc(uint8_t const c, FILE *stream);
+extern bool json_fprintf_str(FILE *stream, char const *str);
+extern bool json_fprintf_value_string(FILE *stream, char const *lead, char const *name, char const *middle, char const *value,
+				      char const *tail);
+extern bool json_fprintf_value_long(FILE *stream, char const *lead, char const *name, char const *middle, long value,
+				    char const *tail);
+extern bool json_fprintf_value_bool(FILE *stream, char const *lead, char const *name, char const *middle, bool value,
+				    char const *tail);
 extern char const *json_item_type_name(struct json *node);
 extern void json_free(struct json *node, int depth, ...);
 extern void vjson_free(struct json *node, int depth, va_list ap);
@@ -160,29 +168,6 @@ extern void json_tree_walk(struct json *node, int max_depth,
 			   void (*vcallback)(struct json *, int, va_list), ...);
 extern void vjson_tree_walk(struct json *node, int max_depth, int depth,
 			    void (*vcallback)(struct json *, int, va_list), va_list ap);
-extern struct json *json_alloc(enum item_type type);
-extern struct json *json_conv_number(char const *ptr, size_t len);
-extern struct json *json_conv_number_str(char const *str, size_t *retlen);
-extern struct json *json_conv_string(char const *ptr, size_t len, bool quote);
-extern struct json *json_conv_string_str(char const *str, size_t *retlen, bool quote);
-extern struct json *json_conv_bool(char const *ptr, size_t len);
-extern struct json *json_conv_bool_str(char const *str, size_t *retlen);
-extern struct json *json_conv_null(char const *ptr, size_t len);
-extern struct json *json_conv_null_str(char const *str, size_t *retlen);
-extern struct json *json_conv_member(struct json *name, struct json *value);
-extern struct json *json_create_object(void);
-extern struct json *json_object_add_member(struct json *node, struct json *member);
-extern struct json *json_create_elements(void);
-extern struct json *json_elements_add_value(struct json *node, struct json *value);
-extern struct json *json_create_array(void);
-extern bool json_putc(uint8_t const c, FILE *stream);
-extern bool json_fprintf_str(FILE *stream, char const *str);
-extern bool json_fprintf_value_string(FILE *stream, char const *lead, char const *name, char const *middle, char const *value,
-				      char const *tail);
-extern bool json_fprintf_value_long(FILE *stream, char const *lead, char const *name, char const *middle, long value,
-				    char const *tail);
-extern bool json_fprintf_value_bool(FILE *stream, char const *lead, char const *name, char const *middle, bool value,
-				    char const *tail);
 
 
 #endif /* INCLUDE_JSON_UTIL_H */
