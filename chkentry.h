@@ -43,7 +43,7 @@
  */
 static const char * const usage_msg =
     "usage: %s [-h] [-v level] [-J level] [-V] [-q] [-F fnamchk] entry_dir\n"
-    "usage: %s [-h] [-v level] [-J level] [-V] [-q] [-F fnamchk] info.JSON author.JSON\n"
+    "usage: %s [-h] [-v level] [-J level] [-V] [-q] [-F fnamchk] info.json author.json\n"
     "\n"
     "\t-h\t\tprint help message and exit 0\n"
     "\t-v level\tset verbosity level (def level: %d)\n"
@@ -53,9 +53,9 @@ static const char * const usage_msg =
     "\t\t\t    NOTE: -q will also silence msg(), warn(), warnp() if -v 0\n"
     "\t-F fnamchk\tpath to fnamchk tool (def: %s)\n"
     "\n"
-    "entry_dir\tIOCCC entry directory with .info.JSON and author.JSON files\n"
-    "info.JSON\tcheck info.JSON file, . ==> skip IOCCC info check\n"
-    "author.JSON\tcheck author.JSON file, . ==> skip IOCCC author check\n"
+    "entry_dir\tIOCCC entry directory with .info.json and author.json files\n"
+    "info.json\tcheck info.json file, . ==> skip IOCCC info check\n"
+    "author.json\tcheck author.json file, . ==> skip IOCCC author check\n"
     "\n"
     "Exit codes:\n"
     "    0\tall is OK\n"
