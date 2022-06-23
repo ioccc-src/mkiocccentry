@@ -77,7 +77,7 @@ done
 #
 shift $(( OPTIND - 1 ));
 if [[ $# -gt 1 ]]; then
-    echo "$0: ERROR: expected 1 argument, found $#" 1>&2
+    echo "$0: ERROR: expected no more than 1 argument, found $#" 1>&2
     exit 3
 fi
 if [[ $# -eq 1 ]]; then
@@ -112,6 +112,8 @@ if [[ ! -w $EXIT_CODE_FILE ]]; then
     echo "$0: ERROR: EXIT_CODE_FILE file not writable: $EXIT_CODE_FILE" 1>&2
     exit 55
 fi
+
+eval make all 2>&1 | grep -v 'Nothing to be done for'
 
 # check that txzchk_tree is a readable directory
 #

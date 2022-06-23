@@ -24,8 +24,8 @@
  * International Obfuscated C Code Contest (IOCCC) and that objecting to the
  * output of Bison and Flex borders on programming sanctimoniousness. At first
  * glance, this incongruence is unsustainable. In response we opine that one of
- * the fundamental undertones of the IOCCC are the promotion of good programming
- * through the irony awarding highly obfuscated C code. So, if it helps, we
+ * the fundamental undertones of the IOCCC is the promotion of good programming
+ * through irony by awarding highly obfuscated C code. So, if it helps, we
  * suggest you view this apology in a satirical light, even if you are humour
  * impaired. Nevertheless, we still recommend you to eschew modifying the code
  * below.

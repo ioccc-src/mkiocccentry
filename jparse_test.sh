@@ -73,6 +73,8 @@ fi
 #
 shift $(( OPTIND - 1 ));
 
+eval make all 2>&1 | grep -v 'Nothing to be done for'
+
 # firewall
 #
 if [[ ! -e $JPARSE ]]; then

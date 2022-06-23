@@ -2,13 +2,13 @@
 /*
  * jparse - JSON parser
  *
- * "Because sometimes even the IOCCC Judges need some help." :-)
- *
  * This tool is currently being worked on by:
  *
  *	@xexyl
  *	https://xexyl.net		Cody Boone Ferguson
  *	https://ioccc.xexyl.net
+ *
+ * "Because sometimes even the IOCCC Judges need some help." :-)
  *
  * NOTE: This is _very incomplete_ and right now all it does is reads from either
  * stdin, the command line or a file, running yyparse() (actually ugly_parse())
