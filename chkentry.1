@@ -1,0 +1,96 @@
+.TH chkentry 1 "22 Jun 2022" "chkentry" "IOCCC tools"
+.SH NAME
+chkentry \- check JSON files in an IOCCC entry
+.SH SYNOPSIS
+\fBchkentry\fP [\-h] [\-v level] [\-J level] [\-V] [\-q] [\-F fnamchk] [\-w] entry_dir
+.br
+\fBchkentry\fP [\-h] [\-v level] [\-J level] [\-V] [\-q] [\-F fnamchk] [\-w] info.JSON author.JSON
+.SH DESCRIPTION
+\fBchkentry\fP is primarily used by other tools (not humans).
+.PP
+Validate the \fI.info.json\fP and/or \fI.author.json\fP of an IOCCC entry.
+In the two argument form, \fIinfo.JSON\fP is the path of an IOCCC entry information JSON file,
+and \fIauthor.JSON\fP is the path of an IOCCC entry author JSON file,
+If \fIinfo.JSON\fP is \fR.\fP (dot), then this file is ignored.
+If \fIauthor.JSON\fP is \fR.\fP (dot), then this file is ignored.
+In the one argument form, \fIentry_dir\fP is assumed to be a directory containing both \fI.info.json\fP and \fI.author.json\fP files.
+The one argument form if this command is equivalent to calling this command with two arguments: \fIentry_dir/.info.json\fP and \fIentry_dir/.author.json\fP.
+.PP
+As a sanity check, the \fBmkiocccentry(1)\fP program executes \fBchkentry\fP AFTER the both the \fI.info.json\fP and \fI.author.json\fP file have been created and before the compressed tarball is formed.
+If \fBmkiocccentry\fP program sees a 0 exit status, then all is well.
+For a non-zero exit code, the tool aborts because any problems detected by \fBchkentry\fP based on what \fBmkiocccentry\fP wrote into \fI.info.json\fP and/or \fI.author.json\fP indicates there is a serious mismatch between what \fBmkiocccentry\fP is doing and what \fBchkentry\fP expects.
+.PP
+.SH OPTIONS
+.PP
+\fB\-h\fP
+Show help and exit 3.
+.PP
+\fB\-v level\fP
+Set verbosity level.
+.PP
+\fB\-J level\fP
+Set JSON parser verbosity level.
+.PP
+.PP
+\fB\-V\fP
+Show version and exit 3.
+.PP
+\fB\-q\fP
+Quiet mode.
+Silence msg(), warn(), warnp() if verbosity level is 0.
+Note that this currently is not used but will be in a future commit.
+.PP
+\fB\-F fnamchk\fP
+Set the path to the \fRfnamchk\fP tool.
+.SH EXIT STATUS
+.PP
+\fBmain()\fP returns 1 for issues found and 0 for success.
+If an error is encountered the end is not reached.
+.SH FILES
+\fIchkentry.c\fP
+.RS
+Source code of the \fBchkentry\fP tool.
+.RE
+\fIchkentry.h\fP
+.RS
+Header file for the \fBchkentry\fP tool.
+.RE
+\fIjson_parse.h\fP
+.RS
+JSON parser support code header file.
+.RE
+\fIjson_parse.c\fP
+.RS
+JSON parser support code source code.
+.RE
+.SH BUGS
+This tool is not finished yet; it depends on the completion of the JSON parser.
+.SH EXAMPLES
+.PP
+.nf
+Run the tool on an IOCCC entry located in the directory
+\fBentry.1d5E8ac2-2cF5-48FB-aD81-3210d16af8ca-0.1652598666\fP:
+
+\fB
+ ./chkentry entry.1d5E8ac2-2cF5-48FB-aD81-3210d16af8ca-0.1652598666\fP
+.fi
+
+.PP
+.nf
+Run the tool on just the IOCCC entry information JSON file \fBtest/info.JSON\fR:
+
+\fB
+ ./chkentry test/info.JSON .\fP
+.fi
+
+.PP
+.nf
+Run the tool on just the IOCCC entry author JSON file \fBtest/author.JSON\fR:
+
+\fB
+ ./chkentry . test/author.JSON\fP
+.fi
+.RE
+.SH SEE ALSO
+.PP
+\fBmkiocccentry(1)\fP,  \fBfnamchk(1)\fP, \fBjparse(1)\fP.

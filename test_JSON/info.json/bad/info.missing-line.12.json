@@ -1,17 +1,17 @@
 {
 	"no-comment" : "mandatory JSON parsing directive",
-	"IOCCC_info_version" : "1.9 2022-03-15",
+	"IOCCC_info_version" : "1.10 2022-06-22",
 	"ioccc_contest" : "IOCCCMOCK",
 	"ioccc_year" : 2022,
 	"mkiocccentry_version" : "0.40 2022-03-15",
 	"iocccsize_version" : "28.10 2022-03-15",
-	"jinfochk_version" : "0.14 2022-03-15",
+	"chkentry_version" : "0.0 2022-06-22",
 	"fnamchk_version" : "0.6 2022-03-15",
 	"txzchk_version" : "0.10 2022-03-15",
 	"entry_num" : 2,
 	"title" : "title-for-entry0",
 	"abstract" : "abstract for entry #0",
-	"tarball" : "entry.12345678-1234-4321-abcd-1234567890ab-2.1652598666.txz",
+	"tarball" : "entry.12345678-1234-4321-abcd-1234567890ab-2.1655958810.txz",
 	"rule_2a_size" : 61,
 	"rule_2b_size" : 38,
 	"empty_override" : false,
@@ -41,9 +41,9 @@
 		{"extra_file" : "foo"},
 		{"extra_file" : "bar"}
 	],
-	"formed_timestamp" : 1652598666,
+	"formed_timestamp" : 1655958810,
 	"formed_timestamp_usec" : 213882,
 	"timestamp_epoch" : "Thu Jan 01 00:00:00 1970 UTC",
-	"min_timestamp" : 1652598666,
+	"min_timestamp" : 1655958810,
 	"formed_UTC" : "Thu Mar 17 01:44:38 2022 UTC"
 }

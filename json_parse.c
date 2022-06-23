@@ -4,11 +4,6 @@
  *
  * "Because JSON embodies a commitment to original design flaws." :-)
  *
- * JSON parser support code for the eventual chkinfo and chkauth tools to
- * verify the .info.json and .author.json files created by mkiocccentry. This
- * file has the parse functions as well as functions that these functions use to
- * construct the parse tree etc.
- *
  * This is currently being worked on by:
  *
  *	chongo (Landon Curt Noll, http://www.isthe.com/chongo/index.html) /\oo/\

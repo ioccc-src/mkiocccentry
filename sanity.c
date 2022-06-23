@@ -45,7 +45,7 @@ ioccc_sanity_chks(void)
 
 
 /*
- * find_utils - find tar, cp, ls, txzchk and fnamchk, chkinfo and chkauth utilities
+ * find_utils - find tar, cp, ls, txzchk and fnamchk, chkentry utilities
  *
  * given:
  *
@@ -59,18 +59,16 @@ ioccc_sanity_chks(void)
  *	txzchk		    - if -T txzchk was used and txzchk != NULL set *txzchk to path
  *	fnamchk_flag_used   - true ==> if fnamchk flag was used
  *	fnamchk		    - if fnamchk option used and fnamchk ! NULL set *fnamchk to path
- *	chkinfo_flag_used  - true ==> -j chkinfo was used
- *	chkinfo	    - if -j chkinfo was used and chkinfo != NULL set *chkinfo to path
- *	chkauth_flag_used  - true ==> -J chkauth was used	    -
- *	chkauth	    - if -J chkauth was used and chkauth != NULL set *chkauth to path
+ *	chkentry_flag_used  - true ==> -C chkentry was used	    -
+ *	chkentry	    - if -C chkentry was used and chkentry != NULL set *chkentry to path
  *
  * XXX This function should probably be updated to search for at least jparse as
  * well if not other utils too.
  */
 void
-find_utils(bool tar_flag_used, char **tar, bool cp_flag_used, char **cp, bool ls_flag_used, char **ls,
-	   bool txzchk_flag_used, char **txzchk, bool fnamchk_flag_used, char **fnamchk,
-	   bool chkinfo_flag_used, char **chkinfo, bool chkauth_flag_used, char **chkauth)
+find_utils(bool tar_flag_used, char **tar, bool cp_flag_used, char **cp, bool ls_flag_used,
+	   char **ls, bool txzchk_flag_used, char **txzchk, bool fnamchk_flag_used, char **fnamchk,
+	   bool chkentry_flag_used, char **chkentry)
 {
     /*
      * guess where tar, cp and ls utilities are located
@@ -95,7 +93,7 @@ find_utils(bool tar_flag_used, char **tar, bool cp_flag_used, char **cp, bool ls
 	dbg(DBG_MED, "ls is not in historic location: %s : will try alternate location: %s", LS_PATH_0, *ls);
     }
 
-    /* now do the same for our utilities: txzchk, fnamchk, chkinfo and chkauth */
+    /* now do the same for our utilities: txzchk, fnamchk, and chkentry */
     if (txzchk != NULL && !txzchk_flag_used && !is_exec(TXZCHK_PATH_0) && is_exec(TXZCHK_PATH_1)) {
 	*txzchk = TXZCHK_PATH_1;
 	dbg(DBG_MED, "using default txzchk path: %s", TXZCHK_PATH_1);
@@ -104,13 +102,9 @@ find_utils(bool tar_flag_used, char **tar, bool cp_flag_used, char **cp, bool ls
 	*fnamchk = FNAMCHK_PATH_1;
 	dbg(DBG_MED, "using default fnamchk path: %s", FNAMCHK_PATH_1);
     }
-    if (chkinfo != NULL && !chkinfo_flag_used && !is_exec(CHKINFO_PATH_0) && is_exec(CHKINFO_PATH_1)) {
-	*chkinfo = CHKINFO_PATH_1;
-	dbg(DBG_MED, "using default chkinfo path: %s", CHKINFO_PATH_1);
-    }
-    if (chkauth != NULL && !chkauth_flag_used && !is_exec(CHKAUTH_PATH_0) && is_exec(CHKAUTH_PATH_1)) {
-	*chkauth = CHKAUTH_PATH_1;
-	dbg(DBG_MED, "using default chkauth path: %s", CHKAUTH_PATH_1);
+    if (chkentry != NULL && !chkentry_flag_used && !is_exec(CHKENTRY_PATH_0) && is_exec(CHKENTRY_PATH_1)) {
+	*chkentry = CHKENTRY_PATH_1;
+	dbg(DBG_MED, "using default chkentry path: %s", CHKENTRY_PATH_1);
     }
 
     return;

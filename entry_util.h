@@ -53,8 +53,7 @@ struct json_common
      */
     char *mkiocccentry_ver;	/* mkiocccentry version (MKIOCCCENTRY_VERSION) */
     char const *iocccsize_ver;	/* iocccsize version (compiled in, same as iocccsize -V) */
-    char const *chkinfo_ver;	/* chkinfo version (compiled in, same as chkinfo -V) */
-    char const *chkauth_ver;	/* chkauth version (compiled in, same as chkauth -V) */
+    char const *chkentry_ver;	/* chkentry version (compiled in, same as chkentry -V) */
     char const *fnamchk_ver;	/* fnamchk version (compiled in, same as fnamchk -V) */
     char const *txzchk_ver;	/* txzchk version (compiled in, same as txzchk -V) */
     /*

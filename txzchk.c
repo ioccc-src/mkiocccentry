@@ -136,10 +136,10 @@ main(int argc, char **argv)
 
     if (!text_file_flag_used)
 	find_utils(tar_flag_used, &tar, false, NULL, false, NULL, false, NULL,
-		   fnamchk_flag_used, &fnamchk, false, NULL, false, NULL);
+		   fnamchk_flag_used, &fnamchk, false, NULL);
     else
 	find_utils(false, NULL, false, NULL, false, NULL, false, NULL,
-		   fnamchk_flag_used, &fnamchk, false, NULL, false, NULL);
+		   fnamchk_flag_used, &fnamchk, false, NULL);
 
 
     /*

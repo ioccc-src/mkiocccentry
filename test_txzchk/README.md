@@ -33,18 +33,18 @@ drwxr-xr-x  0 501    20          0 Jun  3 05:50 test-0/
 -rw-r--r--  0 501    20          4 Jun  3 05:50 test-0/extra1
 ```
 
-Let's say the file is called `entry.test-0.1654260612.txt`. We can run the
+Let's say the file is called `entry.test-0.1924260612.txt`. We can run the
 following command to test `txzchk` on it:
 
 ```sh
-$ ./txzchk -T -E txt entry.test-0.1654260612.txt
+$ ./txzchk -T -E txt entry.test-0.1924260612.txt
 ```
 
 This will report on whether or not the tarball is valid. If you want to not see
 any output at all and only check the exit status one can do:
 
 ```sh
-$ ./txzchk -T -E txt entry.test-0.1654260612.txt 2>&1 >/dev/null || echo invalid
+$ ./txzchk -T -E txt entry.test-0.1924260612.txt 2>&1 >/dev/null || echo invalid
 ```
 
 This will not show anything as the tarball is actually valid.

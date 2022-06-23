@@ -74,19 +74,13 @@
 
 /*
  * Version of info for JSON the .info.json file.
- *
- * The following is NOT the version of this mkiocccentry tool and NOT the
- * version of the chkinfo tool!
  */
-#define INFO_VERSION "1.9 2022-03-15"		/* format: major.minor YYYY-MM-DD */
+#define INFO_VERSION "1.10 2022-06-22"		/* format: major.minor YYYY-MM-DD */
 
 /*
  * Version of info for JSON the .author.json file.
- *
- * The following is NOT the version of this mkiocccentry tool and NOT the
- * version of the chkauth tool!
  */
-#define AUTHOR_VERSION "1.12 2022-03-15"	/* format: major.minor YYYY-MM-DD */
+#define AUTHOR_VERSION "1.13 2022-06-22"	/* format: major.minor YYYY-MM-DD */
 
 /*
  * official fnamchk version
@@ -99,14 +93,9 @@
 #define TXZCHK_VERSION "0.10 2022-03-15"	/* format: major.minor YYYY-MM-DD */
 
 /*
- * official chkinfo version
+ * official chkentry version
  */
-#define CHKINFO_VERSION "0.14 2022-03-15"	/* format: major.minor YYYY-MM-DD */
-
-/*
- * official chkauth version
- */
-#define CHKAUTH_VERSION "0.13 2022-03-15"	/* format: major.minor YYYY-MM-DD */
+#define CHKENTRY_VERSION "0.0 2022-06-22"	/* format: major.minor YYYY-MM-DD */
 
 /*
  * official jstrencode version

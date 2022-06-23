@@ -118,7 +118,7 @@ typedef unsigned char bool;
 
 /*
  * paths to utilities the IOCCC tools use (including our own tools fnamchk,
- * txzchk, chkinfo, chkauth, etc.)
+ * txzchk, chkentry, etc.)
  */
 #define TAR_PATH_0 "/usr/bin/tar"		    /* historic path for tar */
 #define TAR_PATH_1 "/bin/tar"			    /* alternate tar path for some systems where /usr/bin/tar != /bin/tar */
@@ -130,10 +130,8 @@ typedef unsigned char bool;
 #define FNAMCHK_PATH_1 "/usr/local/bin/fnamchk"	    /* default path to fnamchk tool if installed */
 #define TXZCHK_PATH_0 "./txzchk"		    /* default path to txzchk tool */
 #define TXZCHK_PATH_1 "/usr/local/bin/txzchk"	    /* default path to txzchk tool if installed */
-#define CHKAUTH_PATH_0 "./chkauth"		    /* default path to chkauth tool */
-#define CHKAUTH_PATH_1 "/usr/local/bin/chkauth"   /* default path to chkauth tool if installed */
-#define CHKINFO_PATH_0 "./chkinfo"		    /* default path to chkinfo tool */
-#define CHKINFO_PATH_1 "/usr/local/bin/chkinfo"   /* default path to chkinfo tool if installed */
+#define CHKENTRY_PATH_0 "./chkentry"		    /* default path to chkentry tool */
+#define CHKENTRY_PATH_1 "/usr/local/bin/chkentry"   /* default path to chkentry tool if installed */
 #define JPARSE_PATH_0 "./jparse"		    /* default path to jparse */
 #define JPARSE_PATH_1 "/usr/local/bin/jparse"	    /* default path to jparse tool if installed */
 

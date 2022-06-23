@@ -1,11 +1,11 @@
 # mkiocccentry specific
 .exit_code.*
-.sorry.*
 .hostchk.*
+.sorry.*
 answers.txt
 build.log
-chkauth
-chkinfo
+chkentry
+chkentry_test.log
 dbg
 dbg_example
 dbg_test.c
@@ -20,7 +20,6 @@ jparse.tab.c
 jparse.tab.h
 jparse_test.log
 json_parser
-chk_test.log
 jstr_test.out
 jstr_test2.out
 jstrdecode

@@ -1,11 +1,11 @@
 {
 	"no-comment" : "mandatory JSON parsing directive",
-	"IOCCC_info_version" : "1.9 2022-03-15",
+	"IOCCC_info_version" : "1.10 2022-06-22",
 	"ioccc_contest" : "IOCCCMOCK",
 	"ioccc_year" : 2022,
 	"mkiocccentry_version" : "0.40 2022-03-15",
 	"iocccsize_version" : "28.10 2022-03-15",
-	"jinfochk_version" : "0.14 2022-03-15",
+	"chkentry_version" : "0.0 2022-06-22",
 	"fnamchk_version" : "0.6 2022-03-15",
 	"txzchk_version" : "0.10 2022-03-15",
 	"IOCCC_contest_id" : "test",
@@ -43,6 +43,6 @@
 	"formed_timestamp" : 1645219582,
 	"formed_timestamp_usec" : 920407,
 	"timestamp_epoch" : "Thu Jan 01 00:00:00 1970 UTC",
-	"min_timestamp" : 1652598666,
+	"min_timestamp" : 1655958810,
 	"formed_UTC" : "Fri Feb 18 21:26:22 2022 UTC"
 }

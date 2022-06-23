@@ -1,13 +1,13 @@
 {
 	"no-comment" : "mandatory JSON parsing directive",
-	"IOCCC_author_version" : "1.12 2022-03-15",
+	"IOCCC_author_version" : "1.13 2022-06-22",
 	"ioccc_contest" : "IOCCCMOCK",
 	"ioccc_year" : 2022,
 	"mkiocccentry_version" : "0.40 2022-03-15",
-	"jauthchk_version" : "0.13 2022-03-15",
+	"chkentry_version" : "0.0 2022-06-22",
 	"fnamchk_version" : "0.6 2022-03-15",
 	"IOCCC_contest_id" : "test",
-	"tarball" : "entry.test-0.1652598666.txz",
+	"tarball" : "entry.test-0.1655958810.txz",
 	"entry_num" : 0,
 	"author_count" : 5,
 	"test_mode" : true,
@@ -85,6 +85,6 @@
 	],
 	"formed_timestamp_usec" : 506171,
 	"timestamp_epoch" : "Thu Jan 01 00:00:00 1970 UTC",
-	"min_timestamp" : 1652598666,
+	"min_timestamp" : 1655958810,
 	"formed_UTC" : "Wed Mar 16 22:25:09 2022 UTC"
 }
