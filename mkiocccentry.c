@@ -154,7 +154,7 @@ main(int argc, char *argv[])
     bool overwrite_answers_flag_used = false;	/* true ==> don't prompt to overwrite answers if it already exists */
     bool txzchk_flag_used = false;		/* true ==> -T /path/to/txzchk was given */
     bool fnamchk_flag_used = false;		/* true ==> -F /path/to/fnamchk was given */
-    bool chkentry_flag_used = false;		/* true ==> -J /path/to/chkentry was given */
+    bool chkentry_flag_used = false;		/* true ==> -C /path/to/chkentry was given */
     bool overwrite_answers = true;		/* true ==> overwrite answers file even if it already exists */
     RuleCount size;				/* rule_count() processing results */
     int ret;					/* libc return code */
@@ -4692,9 +4692,6 @@ write_info(struct info *infop, char const *entry_dir, char const *chkentry, char
 	not_reached();
     }
 
-    /*
-     * perform the chkentry which will indirectly show the user the tarball contents
-     */
     if (!quiet) {
 	para("",
 	    "Checking the format of .info.json ...", NULL);
@@ -4865,9 +4862,6 @@ write_author(struct info *infop, int author_count, struct author *authorp, char 
 	    "Checking the format of .author.json ...", NULL);
     }
 
-    /*
-     * perform the chkentry which will indirectly show the user the tarball contents
-     */
     dbg(DBG_HIGH, "about to perform: %s -q -- . %s", chkentry, author_path);
     exit_code = shell_cmd(__func__, true, "% -q -- . %", chkentry, author_path);
     if (exit_code != 0) {
