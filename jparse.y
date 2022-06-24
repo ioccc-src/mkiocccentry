@@ -1,6 +1,17 @@
 /* vim: set tabstop=8 softtabstop=4 shiftwidth=4 noexpandtab : */
 /*
  * JSON parser - bison grammar
+ *
+ * "Because JSON embodies a commitment to original design flaws." :-)
+ * "Because sometimes even the IOCCC Judges need some help." :-)
+ *
+ * This JSON parser was co-developed by:
+ *
+ *	@xexyl
+ *	https://xexyl.net		Cody Boone Ferguson
+ *	https://ioccc.xexyl.net
+ * and:
+ *	chongo (Landon Curt Noll, http://www.isthe.com/chongo/index.html) /\oo/\
  */
 
 
