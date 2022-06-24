@@ -6,8 +6,11 @@
 #include "dbg.h"
 
 #define filename "foo.bar"
+
 long length = 7;
-int main(void)
+
+int
+main(void)
 {
 
     /*
@@ -45,4 +48,5 @@ int main(void)
      */
     errno = EPERM;
     errp(2, __func__, "test");
+    return 2; /* this return is never reached */
 }

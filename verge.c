@@ -1,6 +1,6 @@
 /* vim: set tabstop=8 softtabstop=4 shiftwidth=4 noexpandtab : */
 /*
- * verge - determine if first version is >= second version
+ * verge - determine if first version is greater or equal to the second version
  *
  * "Because the JSON co-founders minimalism is sub-minimal." :-)
  *
@@ -34,6 +34,7 @@
 /*ooo*/ /* exit code out of numerical order - ignore in sequencing */
 /*coo*/ /* exit code change of order - use new value in sequencing */
 
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -41,9 +42,10 @@
 #include <ctype.h>
 
 /*
- * Our header file - #includes the header files we need
+ * verge - determine if first version is greater or equal to the second version
  */
 #include "verge.h"
+
 
 /*
  * definitions

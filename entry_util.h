@@ -39,9 +39,10 @@
 
 
 /*
- * json_parse - json related structs and definitions
+ * json_parse - JSON parser support code
  */
 #include "json_parse.h"
+
 
 /*
  * common json fields - for use in mkiocccentry.

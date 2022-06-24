@@ -3,25 +3,22 @@
  * json_parse - JSON parser support code
  *
  * "Because JSON embodies a commitment to original design flaws." :-)
+ * "Because sometimes even the IOCCC Judges need some help." :-)
  *
- * This is currently being worked on by:
- *
- *	chongo (Landon Curt Noll, http://www.isthe.com/chongo/index.html) /\oo/\
- * and
+ * This JSON parser was co-developed by:
  *
  *	@xexyl
  *	https://xexyl.net		Cody Boone Ferguson
  *	https://ioccc.xexyl.net
- *
- * "Because sometimes even the IOCCC Judges need some help." :-)
- *
- * This is very much a work in progress!
+ * and:
+ *	chongo (Landon Curt Noll, http://www.isthe.com/chongo/index.html) /\oo/\
  */
 
 
 /* special comments for the seqcexit tool */
 /*ooo*/ /* exit code out of numerical order - ignore in sequencing */
 /*coo*/ /* exit code change of order - use new value in sequencing */
+
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -34,25 +31,24 @@
 #include <string.h>
 
 /*
- * dbg - debug, warning and error reporting facility
+ * dbg - info, debug, warning, error, and usage message facility
  */
 #include "dbg.h"
 
 /*
- * util - utility functions
+ * util - entry common utility functions for the IOCCC toolkit
  */
 #include "util.h"
 
 /*
- * JSON - JSON structures and functions
+ * json_parse - JSON parser support code
  */
 #include "json_parse.h"
 
 /*
- * json_util - utility functions related to json
+ * json_util - general JSON parser utility support functions
  */
 #include "json_util.h"
-
 
 
 /*

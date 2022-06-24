@@ -29,9 +29,11 @@
  * Share and enjoy! :-)
  */
 
+
 /* special comments for the seqcexit tool */
 /*ooo*/ /* exit code out of numerical order - ignore in sequencing */
 /*coo*/ /* exit code change of order - use new value in sequencing */
+
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -40,7 +42,7 @@
 #include <inttypes.h>
 
 /*
- * Our header file - #includes the header files we need
+ * jnum_gen - generate JSON number string conversion test data
  */
 #include "jnum_gen.h"
 

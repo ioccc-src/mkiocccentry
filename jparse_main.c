@@ -1,6 +1,6 @@
 /* vim: set tabstop=8 softtabstop=4 shiftwidth=4 noexpandtab : */
 /*
- * jparse_main - tool that parses a block of JSON input
+ * jparse_main - main function for the JSON parser demo tool
  *
  * "Because sometimes even the IOCCC Judges need some help." :-)
  *
@@ -10,6 +10,12 @@
  *	https://xexyl.net		Cody Boone Ferguson
  *	https://ioccc.xexyl.net
  */
+
+
+/* special comments for the seqcexit tool */
+/*ooo*/ /* exit code out of numerical order - ignore in sequencing */
+/*coo*/ /* exit code change of order - use new value in sequencing */
+
 
 #include <stdio.h>
 #include <unistd.h>

@@ -20,7 +20,11 @@ extern "C" {
 #if defined(MKIOCCCENTRY_USE)
 
 
+/*
+ * dbg - debug, warning and error reporting facility
+ */
 #include "dbg.h"
+
 
 #define iocccsize_warnx(...)	warn(__func__, __VA_ARGS__)
 

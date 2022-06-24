@@ -1,3 +1,4 @@
+/* vim: set tabstop=8 softtabstop=4 shiftwidth=4 noexpandtab : */
 /*
  * dyn_array - dynamic array facility
  *
@@ -46,7 +47,7 @@
 
 
 /*
- * dbg - debug, warning and error reporting facility
+ * dbg - info, debug, warning, error, and usage message facility
  */
 #include "dbg.h"
 

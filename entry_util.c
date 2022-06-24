@@ -38,17 +38,17 @@
 /*ooo*/ /* exit code out of numerical order - ignore in sequencing */
 /*coo*/ /* exit code change of order - use new value in sequencing */
 
+
 #include <stdio.h>
 #include <stdlib.h>
 
-
 /*
- * dbg - debug, warning and error reporting facility
+ * dbg - info, debug, warning, error, and usage message facility
  */
 #include "dbg.h"
 
 /*
- * util - utility functions
+ * util - entry common utility functions for the IOCCC toolkit
  */
 #include "util.h"
 

@@ -103,8 +103,13 @@
  */
 
 
+/* special comments for the seqcexit tool */
+/*ooo*/ /* exit code out of numerical order - ignore in sequencing */
+/*coo*/ /* exit code change of order - use new value in sequencing */
+
+
 /*
- * dbg - info, debug, warning, error and usage message facility
+ * dbg - info, debug, warning, error, and usage message facility
  */
 #include "dbg.h"
 

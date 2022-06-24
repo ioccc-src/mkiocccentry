@@ -2,13 +2,13 @@
 #
 # txzchk_test.sh - test txzchk with good and bad tarballs (as text files)
 #
+# "Because sometimes even the IOCCC Judges need some help." :-)
+#
 # Written in 2022 by:
 #
 #	@xexyl
 #	https://xexyl.net		Cody Boone Ferguson
 #	https://ioccc.xexyl.net
-#
-# "Because sometimes even the IOCCC Judges need some help." :-)
 
 # setup
 #

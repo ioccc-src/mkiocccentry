@@ -2,18 +2,20 @@
 /*
  * chkentry - check JSON files in an IOCCC entry
  *
+ * "Because sometimes even the IOCCC Judges need some help." :-)
+ *
  * This tool is currently being worked on by:
  *
  *	@xexyl
  *	https://xexyl.net		Cody Boone Ferguson
  *	https://ioccc.xexyl.net
- *
- * "Because sometimes even the IOCCC Judges need some help." :-)
  */
+
 
 /* special comments for the seqcexit tool */
 /*ooo*/ /* exit code out of numerical order - ignore in sequencing */
 /*coo*/ /* exit code change of order - use new value in sequencing */
+
 
 #include <stdio.h>
 #include <unistd.h>
@@ -24,7 +26,7 @@
 #include "chkentry.h"
 
 /*
- * official versions
+ * version - official IOCCC toolkit versions
  */
 #include "version.h"
 

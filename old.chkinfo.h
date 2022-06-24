@@ -30,18 +30,17 @@
 
 
 /*
- * dbg - debug, warning and error reporting facility
+ * dbg - info, debug, warning, error, and usage message facility
  */
 #include "dbg.h"
 
-
 /*
- * util - utility functions and definitions
+ * util - entry common utility functions for the IOCCC toolkit
  */
 #include "util.h"
 
 /*
- * json - json file structs
+ * json_parse - JSON parser support code
  */
 #include "json_parse.h"
 
@@ -51,17 +50,17 @@
 #include "entry_util.h"
 
 /*
- * json_util - general JSON utility support functions
+ * json_util - general JSON parser utility support functions
  */
 #include "json_util.h"
 
 /*
- * sanity - sanity checks on the IOCCC toolkit
+ * sanity - perform common IOCCC sanity checks
  */
 #include "sanity.h"
 
 /*
- * IOCCC size and rule related limitations
+ * limit_ioccc - IOCCC size and rule related limitations
  */
 #include "limit_ioccc.h"
 

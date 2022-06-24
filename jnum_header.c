@@ -34,14 +34,16 @@
 /*ooo*/ /* exit code out of numerical order - ignore in sequencing */
 /*coo*/ /* exit code change of order - use new value in sequencing */
 
+
 #include <stdbool.h>
 #include <sys/types.h>
 #include <stdio.h>
 
 /*
- * JSON - JSON structures and functions
+ * json_parse - JSON parser support code
  */
 #include "json_parse.h"
+
 
 /*
  * NOTE: The file jnum_header.c contains the header for jnum_test.c

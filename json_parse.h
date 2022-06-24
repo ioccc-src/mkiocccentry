@@ -3,19 +3,15 @@
  * json_parse - JSON parser support code
  *
  * "Because JSON embodies a commitment to original design flaws." :-)
+ * "Because sometimes even the IOCCC Judges need some help." :-)
  *
- * This is currently being worked on by:
- *
- *	chongo (Landon Curt Noll, http://www.isthe.com/chongo/index.html) /\oo/\
- * and
+ * This JSON parser was co-developed by:
  *
  *	@xexyl
  *	https://xexyl.net		Cody Boone Ferguson
  *	https://ioccc.xexyl.net
- *
- * "Because sometimes even the IOCCC Judges need some help." :-)
- *
- * This is very much a work in progress!
+ * and:
+ *	chongo (Landon Curt Noll, http://www.isthe.com/chongo/index.html) /\oo/\
  */
 
 
@@ -24,9 +20,10 @@
 
 
 /*
- * util - utility functions
+ * util - entry common utility functions for the IOCCC toolkit
  */
 #include "util.h"
+
 
 /*
  * definitions

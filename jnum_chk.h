@@ -1,6 +1,6 @@
 /* vim: set tabstop=8 softtabstop=4 shiftwidth=4 noexpandtab : */
 /*
- * jnum_chk - check JSON number string conversions
+ * jnum_chk - tool to check JSON number string conversions
  *
  * "Because the JSON co-founders minimalism is sub-minimal." :-)
  *
@@ -35,22 +35,22 @@
 
 
 /*
- * dbg - debug, warning and error reporting facility
+ * dbg - info, debug, warning, error, and usage message facility
  */
 #include "dbg.h"
 
 /*
- * util - utility functions and definitions
+ * util - entry common utility functions for the IOCCC toolkit
  */
 #include "util.h"
 
 /*
- * JSON functions supporting mkiocccentry code
+ * json_parse - JSON parser support code
  */
 #include "json_parse.h"
 
 /*
- * json_util - utility functions related to json
+ * json_util - general JSON parser utility support functions
  */
 #include "json_util.h"
 

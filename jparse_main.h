@@ -2,20 +2,16 @@
 /*
  * jparse_main - tool that parses a block of JSON input
  *
+ * "Because JSON embodies a commitment to original design flaws." :-)
  * "Because sometimes even the IOCCC Judges need some help." :-)
  *
- * This tool is currently being worked on by:
+ * This JSON parser was co-developed by:
  *
  *	@xexyl
  *	https://xexyl.net		Cody Boone Ferguson
  *	https://ioccc.xexyl.net
- *
- * NOTE: This is _very incomplete_ and right now all it does is reads from either
- * stdin, the command line or a file, running yyparse() (actually ugly_parse())
- * on it. The grammar is incomplete, there are some things that are allowed that
- * are not valid JSON and many other things need to be done.
- *
- * This is very much a work in progress!
+ * and:
+ *	chongo (Landon Curt Noll, http://www.isthe.com/chongo/index.html) /\oo/\
  */
 
 
@@ -24,17 +20,17 @@
 
 
 /*
- * dbg - debug, warning and error reporting facility
+ * dbg - info, debug, warning, error, and usage message facility
  */
 #include "dbg.h"
 
 /*
- * util - utility functions and definitions
+ * util - entry common utility functions for the IOCCC toolkit
  */
 #include "util.h"
 
 /*
- * jparse - JSON parser
+ * jparse - JSON parser demo tool
  */
 #include "jparse.h"
 
@@ -42,6 +38,7 @@
  * official jparse version
  */
 #define JPARSE_VERSION "0.8 2022-06-12"		/* format: major.minor YYYY-MM-DD */
+
 
 /*
  * static functions

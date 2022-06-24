@@ -1,6 +1,6 @@
 /* vim: set tabstop=8 softtabstop=4 shiftwidth=4 noexpandtab : */
 /*
- * util - IOCCC entry common utility functions
+ * util - entry common utility functions for the IOCCC toolkit
  *
  * Copyright (c) 1989,1997,2018-2022 by Landon Curt Noll.  All Rights Reserved.
  *
@@ -38,9 +38,10 @@
 #include <string.h> /* for strcmp */
 
 /*
- * dynamic array facility
+ * dyn_array - dynamic array facility
  */
 #include "dyn_array.h"
+
 
 /*
  * standard truth :-)

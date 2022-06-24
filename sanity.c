@@ -1,3 +1,4 @@
+/* vim: set tabstop=8 softtabstop=4 shiftwidth=4 noexpandtab : */
 /*
  * sanity - perform common IOCCC sanity checks
  *
@@ -5,16 +6,14 @@
  * code is very often very insane." :-)
  */
 
+
 #include <stdio.h>
 
-
 /*
- * sanity - our header file
- *
- * #includes everything we need
- *
+ * sanity - perform common IOCCC sanity checks
  */
 #include "sanity.h"
+
 
 /*
  * ioccc_sanity_chks	-   run sanity checks on specific data that's

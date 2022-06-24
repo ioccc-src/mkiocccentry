@@ -1,11 +1,8 @@
 /* vim: set tabstop=8 softtabstop=4 shiftwidth=4 noexpandtab : */
-
 /*
  * JSON parser - bison grammar
- *
- * This is a work in progress but as of the past few days (it's 16 May 2022 as I
- * write this) much progress has been made!
  */
+
 
 /* Section 1: Declarations */
 /*
@@ -90,10 +87,17 @@
 %define api.prefix {ugly_}
 
 %{
+
+
 #include <inttypes.h>
 #include <stdio.h>
 #include <unistd.h> /* getopt */
+
+/*
+ * jparse - JSON parser demo tool
+ */
 #include "jparse.h"
+
 
 unsigned num_errors = 0;		/* > 0 number of errors encountered */
 

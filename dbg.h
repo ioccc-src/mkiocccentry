@@ -1,6 +1,6 @@
 /* vim: set tabstop=8 softtabstop=4 shiftwidth=4 noexpandtab : */
 /*
- * dbg - info, debug, warning, error and usage message facility
+ * dbg - info, debug, warning, error, and usage message facility
  *
  * Copyright (c) 1989,1997,2018-2022 by Landon Curt Noll.  All Rights Reserved.
  *

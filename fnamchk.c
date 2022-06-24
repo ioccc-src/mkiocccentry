@@ -41,9 +41,8 @@
 #include <string.h>
 #include <stdint.h>
 
-
 /*
- * Our header file - #includes the header files we need
+ * fnamchk - IOCCC compressed tarball filename sanity check tool
  */
 #include "fnamchk.h"
 

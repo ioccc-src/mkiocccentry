@@ -34,12 +34,11 @@
 /*ooo*/ /* exit code out of numerical order - ignore in sequencing */
 /*coo*/ /* exit code change of order - use new value in sequencing */
 
+
 #include <stdio.h>
 
 /*
- * location
- *
- * #includes the header files we need.
+ * location - location/country codes
  */
 #include "location.h"
 

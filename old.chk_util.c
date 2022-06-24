@@ -2,6 +2,7 @@
 /*
  * json_ckk - support chkinfo and chkauth services
  *
+ * "Because sometimes even the IOCCC Judges need some help." :-)
  *
  * This is currently being worked on by:
  *
@@ -12,13 +13,7 @@
  *	@xexyl
  *	https://xexyl.net		Cody Boone Ferguson
  *	https://ioccc.xexyl.net
- *
- * "Because sometimes even the IOCCC Judges need some help." :-)
- *
- * This is very much a work in progress! See jparse.h, jparse.l, jparse.y,
- * json_util.h and json_util.c.
  */
-
 
 
 #include <stdio.h>
@@ -28,17 +23,17 @@
 #include <ctype.h>
 
 /*
- * dbg - debug, warning and error reporting facility
+ * dbg - info, debug, warning, error, and usage message facility
  */
 #include "dbg.h"
 
 /*
- * util - utility functions
+ * util - entry common utility functions for the IOCCC toolkit
  */
 #include "util.h"
 
 /*
- * IOCCC size and rule related limitations
+ * limit_ioccc - IOCCC size and rule related limitations
  */
 #include "limit_ioccc.h"
 

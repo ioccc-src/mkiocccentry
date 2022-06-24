@@ -1,6 +1,6 @@
 /* vim: set tabstop=8 softtabstop=4 shiftwidth=4 noexpandtab : */
 /*
- * jstrdecode - JSON decode JSON encoded strings
+ * jstrdecode - tool to JSON decode JSON encoded strings
  *
  * "JSON: when a minimal design falls below a critical minimum." :-)
  *
@@ -34,15 +34,17 @@
 /*ooo*/ /* exit code out of numerical order - ignore in sequencing */
 /*coo*/ /* exit code change of order - use new value in sequencing */
 
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
 #include <string.h>
 
 /*
- * Our header file - #includes the header files we need
+ * jstrdecode - tool to JSON decode JSON encoded strings
  */
 #include "jstrdecode.h"
+
 
 /*
  * definitions

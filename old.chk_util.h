@@ -2,8 +2,9 @@
 /*
  * chk_util - support chkinfo and chkauth services
  *
- * This is currently being worked on by:
+ * "Because sometimes even the IOCCC Judges need some help." :-)
  *
+ * This is currently being worked on by:
  *
  *	chongo (Landon Curt Noll, http://www.isthe.com/chongo/index.html) /\oo/\
  *
@@ -12,11 +13,6 @@
  *	@xexyl
  *	https://xexyl.net		Cody Boone Ferguson
  *	https://ioccc.xexyl.net
- *
- * "Because sometimes even the IOCCC Judges need some help." :-)
- *
- * This is very much a work in progress! See jparse.h, jparse.l, jparse.y,
- * json_util.h and json_util.c.
  */
 
 
@@ -25,17 +21,17 @@
 
 
 /*
- * util - utility functions and definitions
+ * util - entry common utility functions for the IOCCC toolkit
  */
 #include "util.h"
 
 /*
- * json - json file structs
+ * json_parse - JSON parser support code
  */
 #include "json_parse.h"
 
 /*
- * json_util - utility functions related to json
+ * json_util - general JSON parser utility support functions
  */
 #include "json_util.h"
 

@@ -1,6 +1,6 @@
 /* vim: set tabstop=8 softtabstop=4 shiftwidth=4 noexpandtab : */
 /*
- * mkiocccentry - make an ioccc entry
+ * mkiocccentry - form IOCCC entry compressed tarball
  *
  * Make an IOCCC compressed tarball for an IOCCC entry.
  *
@@ -86,9 +86,10 @@
 #include <string.h> /* for strdup() */
 
 /*
- * Our header file - #includes the header files we need
+ * mkiocccentry - form IOCCC entry compressed tarball
  */
 #include "mkiocccentry.h"
+
 
 /*
  * definitions

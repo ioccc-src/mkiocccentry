@@ -1,3 +1,4 @@
+/* vim: set tabstop=8 softtabstop=4 shiftwidth=4 noexpandtab : */
 /*
  * dyn_array - dynamic array facility
  *
@@ -38,7 +39,7 @@
 #include <inttypes.h>
 
 /*
- * Our header file - #includes the header files we need
+ * dyn_array - dynamic array facility
  */
 #include "dyn_array.h"
 

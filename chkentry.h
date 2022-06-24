@@ -1,12 +1,14 @@
 /* vim: set tabstop=8 softtabstop=4 shiftwidth=4 noexpandtab : */
 /*
+ * chkentry - check JSON files in an IOCCC entry
+ *
+ * "Because sometimes even the IOCCC Judges need some help." :-)
+ *
  * This tool is currently being worked on by:
  *
  *	@xexyl
  *	https://xexyl.net		Cody Boone Ferguson
  *	https://ioccc.xexyl.net
- *
- * "Because sometimes even the IOCCC Judges need some help." :-)
  */
 
 
@@ -15,7 +17,7 @@
 
 
 /*
- * dbg - debug, warning and error reporting facility
+ * dbg - info, debug, warning, error, and usage message facility
  */
 #include "dbg.h"
 
@@ -25,7 +27,7 @@
 #include "json_util.h"
 
 /*
- * util - utility functions and definitions
+ * util - entry common utility functions for the IOCCC toolkit
  */
 #include "util.h"
 

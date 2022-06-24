@@ -1,5 +1,8 @@
+/* vim: set tabstop=8 softtabstop=4 shiftwidth=4 noexpandtab : */
 /*
- * txzchk: the IOCCC tarball validation checker
+ * txzchk - IOCCC tarball validation check tool
+ *
+ * "Because sometimes even the IOCCC Judges need some help." :-)
  *
  * Invoked by mkiocccentry; txzchk in turn uses fnamchk to make sure that
  * the tarball was correctly named and formed (i.e. the mkiocccentry tool was
@@ -10,8 +13,6 @@
  *	@xexyl
  *	https://xexyl.net		Cody Boone Ferguson
  *	https://ioccc.xexyl.net
- *
- * "Because sometimes even the IOCCC Judges need some help." :-)
  */
 
 
@@ -20,22 +21,22 @@
 
 
 /*
- * util - utility functions and definitions
+ * util - entry common utility functions for the IOCCC toolkit
  */
 #include "util.h"
 
 /*
- * dbg - debug, warning and error reporting facility
+ * dbg - info, debug, warning, error, and usage message facility
  */
 #include "dbg.h"
 
 /*
- * sanity
+ * sanity - perform common IOCCC sanity checks
  */
 #include "sanity.h"
 
 /*
- * IOCCC size and rule related limitations
+ * limit_ioccc - IOCCC size and rule related limitations
  */
 #include "limit_ioccc.h"
 

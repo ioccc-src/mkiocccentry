@@ -1,5 +1,7 @@
 /*
- * txzchk: the IOCCC tarball validation checker
+ * txzchk - IOCCC tarball validation check tool
+ *
+ * "Because sometimes even the IOCCC Judges need some help." :-)
  *
  * Invoked by mkiocccentry; txzchk in turn uses fnamchk to make sure that
  * the tarball was correctly named and formed (i.e. the mkiocccentry tool was
@@ -10,9 +12,12 @@
  *	@xexyl
  *	https://xexyl.net		Cody Boone Ferguson
  *	https://ioccc.xexyl.net
- *
- * "Because sometimes even the IOCCC Judges need some help." :-)
  */
+
+
+/* special comments for the seqcexit tool */
+/*ooo*/ /* exit code out of numerical order - ignore in sequencing */
+/*coo*/ /* exit code change of order - use new value in sequencing */
 
 
 #include <stdio.h>
@@ -24,7 +29,7 @@
 #include <stdint.h>
 
 /*
- * Our header file - #includes the header files we need
+ * txzchk - IOCCC tarball validation check tool
  */
 #include "txzchk.h"
 

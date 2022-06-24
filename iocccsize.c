@@ -64,6 +64,9 @@
 
 #include "iocccsize_err.h"
 #if defined(MKIOCCCENTRY_USE)
+/*
+ * limit_ioccc - IOCCC size and rule related limitations
+ */
 #include "limit_ioccc.h"
 #endif /* MKIOCCCENTRY_USE */
 #include "iocccsize.h"

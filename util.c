@@ -1,7 +1,6 @@
+/* vim: set tabstop=8 softtabstop=4 shiftwidth=4 noexpandtab : */
 /*
- * util - IOCCC entry common utility functions
- *
- * Utility functions that are common to more than one utility
+ * util - entry common utility functions for the IOCCC toolkit
  *
  * "Because even printf has a return value worth paying attention to." :-)
  *
@@ -35,6 +34,7 @@
 /*ooo*/ /* exit code out of numerical order - ignore in sequencing */
 /*coo*/ /* exit code change of order - use new value in sequencing */
 
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <ctype.h>
@@ -46,19 +46,17 @@
 #include <stdarg.h>
 
 /*
- * dbg - debug, warning and error reporting facility
+ * dbg - info, debug, warning, error, and usage message facility
  */
 #include "dbg.h"
 
-
 /*
- * util - utility functions
+ * util - entry common utility functions for the IOCCC toolkit
  */
 #include "util.h"
 
-
 /*
- * IOCCC limits
+ * limit_ioccc - IOCCC size and rule related limitations
  */
 #include "limit_ioccc.h"
 

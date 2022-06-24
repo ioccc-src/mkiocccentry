@@ -35,7 +35,7 @@
 #include <time.h>
 
 /*
- * version.h - official version for all the IOCCC tools
+ * version - official IOCCC toolkit versions
  */
 #include "version.h"
 

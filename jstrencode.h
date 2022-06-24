@@ -1,6 +1,6 @@
 /* vim: set tabstop=8 softtabstop=4 shiftwidth=4 noexpandtab : */
 /*
- * jstrencode - encode a string for JSON
+ * jstrencode - tool to encode a string for JSON
  *
  * "JSON: when a minimal design falls below a critical minimum." :-)
  *
@@ -35,28 +35,24 @@
 
 
 /*
- * dbg - debug, warning and error reporting facility
+ * dbg - info, debug, warning, error, and usage message facility
  */
 #include "dbg.h"
 
-
 /*
- * util - utility functions and definitions
+ * util - entry common utility functions for the IOCCC toolkit
  */
 #include "util.h"
 
-
 /*
- * JSON functions supporting mkiocccentry code
+ * json_parse - JSON parser support code
  */
 #include "json_parse.h"
 
-
 /*
- * IOCCC size and rule related limitations
+ * limit_ioccc - IOCCC size and rule related limitations
  */
 #include "limit_ioccc.h"
-
 
 
 /*

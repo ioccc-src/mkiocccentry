@@ -4,8 +4,6 @@
 # mkiocccentry repo.
 #
 # NOTE: This is not perfect and it cannot account for everything.
-#
-# NOTE: This is a work in progress.
 
 # set up
 #

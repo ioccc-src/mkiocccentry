@@ -1,6 +1,6 @@
 /* vim: set tabstop=8 softtabstop=4 shiftwidth=4 noexpandtab : */
 /*
- * mkiocccentry -  official IOCCC toolkit versions
+ * version - official IOCCC toolkit versions
  *
  * Make an IOCCC compressed tarball for an IOCCC entry.
  *

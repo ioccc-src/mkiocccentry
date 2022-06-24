@@ -45,21 +45,21 @@
 #if !defined(INCLUDE_UTF8_POSIX_MAP_H)
 #    define  INCLUDE_UTF8_POSIX_MAP_H
 
+
 /*
- * util - utility functions and definitions
+ * util - entry common utility functions for the IOCCC toolkit
  */
 #include "util.h"
 
 /*
- * dbg - debug, warning and error reporting facility
+ * dbg - info, debug, warning, error, and usage message facility
  */
 #include "dbg.h"
 
 /*
- * IOCCC limits
+ * limit_ioccc - IOCCC size and rule related limitations
  */
 #include "limit_ioccc.h"
-
 
 
 /*

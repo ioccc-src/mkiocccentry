@@ -35,24 +35,22 @@
 
 
 /*
- * dbg - debug, warning and error reporting facility
+ * dbg - info, debug, warning, error, and usage message facility
  */
 #include "dbg.h"
 
-
 /*
- * util - utility functions and definitions
+ * util - entry common utility functions for the IOCCC toolkit
  */
 #include "util.h"
 
-
 /*
- * IOCCC size and rule related limitations
+ * limit_ioccc - IOCCC size and rule related limitations
  */
 #include "limit_ioccc.h"
 
 /*
- * utf8_posix_map include
+ * utf8_posix_map - translate UTF-8 into POSIX portable filename and + chars
  */
 #include "utf8_posix_map.h"
 

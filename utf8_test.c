@@ -46,6 +46,7 @@
 /*ooo*/ /* exit code out of numerical order - ignore in sequencing */
 /*coo*/ /* exit code change of order - use new value in sequencing */
 
+
 #include <stdio.h>
 #include <stdint.h>
 #include <stdlib.h>
@@ -55,7 +56,7 @@
 
 
 /*
- * utf8_posix_map - #includes what we need
+ * utf8_posix_map - translate UTF-8 into POSIX portable filename and + chars
  */
 #include "utf8_posix_map.h"
 

@@ -1,6 +1,6 @@
 /* vim: set tabstop=8 softtabstop=4 shiftwidth=4 noexpandtab : */
 /*
- * jnum_chk - check JSON number string conversions
+ * jnum_chk - tool to check JSON number string conversions
  *
  * "Because the JSON co-founders minimalism is sub-minimal." :-)
  *
@@ -29,9 +29,11 @@
  * Share and enjoy! :-)
  */
 
+
 /* special comments for the seqcexit tool */
 /*ooo*/ /* exit code out of numerical order - ignore in sequencing */
 /*coo*/ /* exit code change of order - use new value in sequencing */
+
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -41,12 +43,12 @@
 #include <math.h>
 
 /*
- * Our header file - #includes the header files we need
+ * jnum_chk - tool to check JSON number string conversions
  */
 #include "jnum_chk.h"
 
 /*
- * official versions
+ * version - official IOCCC toolkit versions
  */
 #include "version.h"
 

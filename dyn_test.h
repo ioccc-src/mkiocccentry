@@ -1,3 +1,4 @@
+/* vim: set tabstop=8 softtabstop=4 shiftwidth=4 noexpandtab : */
 /*
  * dyn_array - dynamic array facility
  *
@@ -32,12 +33,12 @@
 
 
 /*
- * util - utility functions and definitions
+ * util - entry common utility functions for the IOCCC toolkit
  */
 #include "util.h"
 
 /*
- * dbg - debug, warning and error reporting facility
+ * dbg - info, debug, warning, error, and usage message facility
  */
 #include "dbg.h"
 
@@ -47,7 +48,7 @@
 #define DYN_TEST_VERSION "1.6 2022-06-09"
 
 /*
- * dynamic array facility
+ * dyn_array - dynamic array facility
  */
 #include "dyn_array.h"
 

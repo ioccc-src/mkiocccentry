@@ -3,6 +3,7 @@
  * json_util - general JSON parser utility support functions
  *
  * "Because JSON embodies a commitment to original design flaws." :-)
+ * "Because sometimes even the IOCCC Judges need some help." :-)
  *
  * This is currently being worked on by:
  *
@@ -12,11 +13,8 @@
  *	@xexyl
  *	https://xexyl.net		Cody Boone Ferguson
  *	https://ioccc.xexyl.net
- *
- * "Because sometimes even the IOCCC Judges need some help." :-)
- *
- * This is very much a work in progress!
  */
+
 
 #include <stdio.h>
 #include <string.h>
@@ -27,19 +25,18 @@
 #include <limits.h>
 #include <ctype.h>
 
-
 /*
- * dbg - debug, warning and error reporting facility
+ * dbg - info, debug, warning, error, and usage message facility
  */
 #include "dbg.h"
 
 /*
- * json - the json core
+ * json_parse - JSON parser support code
  */
 #include "json_parse.h"
 
 /*
- * json_util - #includes what we need
+ * json_util - general JSON parser utility support functions
  */
 #include "json_util.h"
 
