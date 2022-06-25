@@ -4,17 +4,18 @@
 
 # setup
 #
-export USAGE="usage: $0 [-h] [-v level] [-D dbg_level.sh] [-J level] [-q] [-p jparse] [file ..]
+export CHK_TEST_FILE="./json_teststr.txt"
+export USAGE="usage: $0 [-h] [-v level] [-D dbg_level.sh] [-J level] [-q] [-p jparse] [-d] [file ..]
 
     -h			print help and exit 2
     -v level		set verbosity level for this script: (def level: 0)
     -D dbg_level	set verbosity level for tests (def: level: 0)
     -J level		set JSON parser verbosity level (def level: 0)
     -q			quiet mode: silence msg(), warn(), warnp() if -v 0 (def: not quiet)
-    -D dbg_level	set verbosity level for tests (def: level: 0)
     -p /path/to/jparse	path to jparse tool (def: ./jparse)
 
-    [file ...]		read JSON documents, one per line, from these files (def: from stdin)
+    [file ...]		read JSON documents, one per line, from these files (def: $CHK_TEST_FILE)
+			NOTE: - means read from stdin.
 
 exit codes:
     0 - all is well
@@ -36,25 +37,25 @@ while getopts :hv:D:J:qp: flag; do
     case "$flag" in
     h) echo "$USAGE" 1>&2
        exit 2
-       ;;
+	;;
     v) V_FLAG="$OPTARG";
-       ;;
+	;;
     D) DBG_LEVEL="$OPTARG";
-       ;;
+	;;
     J) JSON_DBG_LEVEL="$OPTARG";
-       ;;
+	;;
     q) Q_FLAG="-q";
-       ;;
+	;;
     p) JPARSE="$OPTARG";
-       ;;
+	;;
     \?) echo "$0: ERROR: invalid option: -$OPTARG" 1>&2
-       exit 3
-       ;;
-    :) echo "$0: ERROR: option -$OPTARG requires an argument" 1>&2
-       exit 3
-       ;;
-   *)
-       ;;
+	exit 3
+	;;
+    :)	echo "$0: ERROR: option -$OPTARG requires an argument" 1>&2
+	exit 3
+	;;
+    *)
+	;;
     esac
 done
 if [[ $V_FLAG -ge 1 ]]; then
@@ -178,21 +179,7 @@ run_test()
 
 # case: process stdin
 #
-if [[ $# -eq 0 ]]; then
-
-    # note input source
-    #
-    if [[ $V_FLAG -ge 1 ]]; then
-	echo "$0: debug[1]: reading JSON documents from stdin" 1>&2
-    fi
-
-    # read JSON document lines from stdin
-    #
-    while read -r JSON_DOC; do
-	run_test "$JPARSE" "$DBG_LEVEL" "$JSON_DBG_LEVEL" "$Q_FLAG" "$JSON_DOC"
-    done
-
-else
+if [[ $# -gt 0 ]]; then
 
     while [[ $# -gt 0 ]]; do
 
@@ -200,6 +187,45 @@ else
 	#
 	CHK_TEST_FILE="$1"
 	shift
+	if [[ $V_FLAG -ge 1 && "$CHK_TEST_FILE" != "-" ]]; then
+	    echo "$0: debug[1]: reading JSON documents from: $CHK_TEST_FILE" 1>&2
+	fi
+
+	# firewall - check test file
+	#
+	if [[ "$CHK_TEST_FILE" = "-" ]]; then
+	    # note input source
+	    #
+	    if [[ $V_FLAG -ge 1 ]]; then
+		echo "$0: debug[1]: reading JSON documents from stdin" 1>&2
+	    fi
+
+	    # read JSON document lines from stdin
+	    #
+	    while read -r JSON_DOC; do
+		run_test "$JPARSE" "$DBG_LEVEL" "$JSON_DBG_LEVEL" "$Q_FLAG" "$JSON_DOC"
+	    done
+	else
+	    if [[ ! -e $CHK_TEST_FILE ]]; then
+		echo "$0: test file not found: $CHK_TEST_FILE"
+		exit 4
+	    fi
+	    if [[ ! -f $CHK_TEST_FILE ]]; then
+		echo "$0: test file not a regular file: $CHK_TEST_FILE"
+		exit 4
+	    fi
+	    if [[ ! -r $CHK_TEST_FILE ]]; then
+		echo "$0: test file not readable: $CHK_TEST_FILE"
+		exit 4
+	    fi
+	    # process all lines in test file
+	    #
+	    while read -r JSON_DOC; do
+		run_test "$JPARSE" "$DBG_LEVEL" "$JSON_DBG_LEVEL" "$Q_FLAG" "$JSON_DOC"
+	    done < "$CHK_TEST_FILE"
+	fi
+    done
+elif [[ ! -z "$CHK_TEST_FILE" ]]; then
 	if [[ $V_FLAG -ge 1 ]]; then
 	    echo "$0: debug[1]: reading JSON documents from: $CHK_TEST_FILE" 1>&2
 	fi
@@ -224,8 +250,6 @@ else
 	while read -r JSON_DOC; do
 	    run_test "$JPARSE" "$DBG_LEVEL" "$JSON_DBG_LEVEL" "$Q_FLAG" "$JSON_DOC"
 	done < "$CHK_TEST_FILE"
-
-    done
 fi
 
 # All Done!!! -- Jessica Noll, Age 2
