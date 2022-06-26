@@ -39,7 +39,7 @@
  */
 #define JSON_CHUNK (16)			/* number of pointers to allocate at a time in dynamic array */
 #define JSON_DEFAULT_MAX_DEPTH (256)	/* a sane parse tree depth to use */
-#define JSON_INFINITE_DEPTH (-1)	/* no limit on parse tree depth to walk */
+#define JSON_INFINITE_DEPTH (0)		/* no limit on parse tree depth to walk */
 
 
 /*
@@ -153,17 +153,17 @@ extern bool json_fprintf_value_long(FILE *stream, char const *lead, char const *
 extern bool json_fprintf_value_bool(FILE *stream, char const *lead, char const *name, char const *middle, bool value,
 				    char const *tail);
 extern char const *json_item_type_name(struct json *node);
-extern void json_free(struct json *node, int depth, ...);
-extern void vjson_free(struct json *node, int depth, va_list ap);
-extern void json_fprint(struct json *node, int depth, ...);
-extern void vjson_fprint(struct json *node, int depth, va_list ap);
-extern void json_tree_print(struct json *node, int max_depth, ...);
-extern bool json_dbg_tree_print(int json_dbg_lvl, char const *name, struct json *tree, int max_depth);
-extern void json_tree_free(struct json *node, int max_depth, ...);
-extern void json_tree_walk(struct json *node, int max_depth,
-			   void (*vcallback)(struct json *, int, va_list), ...);
-extern void vjson_tree_walk(struct json *node, int max_depth, int depth,
-			    void (*vcallback)(struct json *, int, va_list), va_list ap);
+extern void json_free(struct json *node, unsigned int depth, ...);
+extern void vjson_free(struct json *node, unsigned int depth, va_list ap);
+extern void json_fprint(struct json *node, unsigned int depth, ...);
+extern void vjson_fprint(struct json *node, unsigned int depth, va_list ap);
+extern void json_tree_print(struct json *node, unsigned int max_depth, ...);
+extern bool json_dbg_tree_print(int json_dbg_lvl, char const *name, struct json *tree, unsigned int max_depth);
+extern void json_tree_free(struct json *node, unsigned int max_depth, ...);
+extern void json_tree_walk(struct json *node, unsigned int max_depth,
+			   void (*vcallback)(struct json *, unsigned int, va_list), ...);
+extern void vjson_tree_walk(struct json *node, unsigned int max_depth, unsigned int depth,
+			    void (*vcallback)(struct json *, unsigned int, va_list), va_list ap);
 
 
 #endif /* INCLUDE_JSON_UTIL_H */

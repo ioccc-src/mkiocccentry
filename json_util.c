@@ -1321,7 +1321,7 @@ json_item_type_name(struct json *node)
  * NOTE: This function does nothing if the node type is invalid.
  */
 void
-json_free(struct json *node, int depth, ...)
+json_free(struct json *node, unsigned int depth, ...)
 {
     va_list ap;		/* variable argument list */
 
@@ -1329,9 +1329,6 @@ json_free(struct json *node, int depth, ...)
      * firewall - nothing to do for a NULL node
      */
     if (node == NULL) {
-	return;
-    }
-    if (depth < 0) {
 	return;
     }
 
@@ -1369,7 +1366,7 @@ json_free(struct json *node, int depth, ...)
  * NOTE: This function does nothing if the node type is invalid.
  */
 void
-vjson_free(struct json *node, int depth, va_list ap)
+vjson_free(struct json *node, unsigned int depth, va_list ap)
 {
     UNUSED_ARG(depth);
     UNUSED_ARG(ap);
@@ -1551,7 +1548,7 @@ vjson_free(struct json *node, int depth, va_list ap)
  *
  * given:
  *	node	    pointer to a JSON parser tree node to free
- *	max_depth   maximum tree depth to descend, or <0 ==> infinite depth
+ *	max_depth   maximum tree depth to descend, or 0 ==> infinite depth
  *			NOTE: Use JSON_INFINITE_DEPTH for infinite depth
  *
  * NOTE: This function will free the internals of a JSON parser tree node.
@@ -1565,7 +1562,7 @@ vjson_free(struct json *node, int depth, va_list ap)
  * NOTE: This function does nothing if the node type is invalid.
  */
 void
-json_tree_free(struct json *node, int max_depth, ...)
+json_tree_free(struct json *node, unsigned int max_depth, ...)
 {
     va_list ap;		/* variable argument list */
 
@@ -1635,7 +1632,7 @@ json_tree_free(struct json *node, int max_depth, ...)
  * NOTE: This function does nothing if node == NULL.
  */
 void
-json_fprint(struct json *node, int depth, ...)
+json_fprint(struct json *node, unsigned int depth, ...)
 {
     va_list ap;		/* variable argument list */
 
@@ -1643,9 +1640,6 @@ json_fprint(struct json *node, int depth, ...)
      * firewall - nothing to do for a NULL node
      */
     if (node == NULL) {
-	return;
-    }
-    if (depth < 0) {
 	return;
     }
 
@@ -1698,7 +1692,7 @@ json_fprint(struct json *node, int depth, ...)
  * NOTE: This function does nothing if the node type is invalid.
  */
 void
-vjson_fprint(struct json *node, int depth, va_list ap)
+vjson_fprint(struct json *node, unsigned int depth, va_list ap)
 {
     FILE *stream = NULL;	/* stream to print on */
     int json_dbg_lvl = JSON_DBG_DEFAULT;	/* JSON debug level if json_dbg_used == true */
@@ -1709,9 +1703,6 @@ vjson_fprint(struct json *node, int depth, va_list ap)
      * firewall - nothing to do for a NULL node
      */
     if (node == NULL) {
-	return;
-    }
-    if (depth < 0) {
 	return;
     }
 
@@ -1755,7 +1746,7 @@ vjson_fprint(struct json *node, int depth, va_list ap)
 	warn(__func__, "json_item_type_name returned NULL");
 	return;
     }
-    fprint(stream, "lvl: %d\ttype: %s", depth, tname);
+    fprint(stream, "lvl: %u\ttype: %s", depth, tname);
 
     /*
      * print node details
@@ -2167,7 +2158,7 @@ vjson_fprint(struct json *node, int depth, va_list ap)
  *
  * given:
  *	node	    pointer to a JSON parser tree node to free
- *	max_depth   maximum tree depth to descend, or <0 ==> infinite depth
+ *	max_depth   maximum tree depth to descend, or 0 ==> infinite depth
  *			NOTE: Use JSON_INFINITE_DEPTH for infinite depth
  *	...	extra args are ignored, required extra args:
  *
@@ -2192,7 +2183,7 @@ vjson_fprint(struct json *node, int depth, va_list ap)
  * NOTE: This function does nothing if the node type is invalid.
  */
 void
-json_tree_print(struct json *node, int max_depth, ...)
+json_tree_print(struct json *node, unsigned int max_depth, ...)
 {
     va_list ap;		/* variable argument list */
 
@@ -2242,7 +2233,7 @@ json_tree_print(struct json *node, int max_depth, ...)
  *
  * given:
  *	node	    pointer to a JSON parser tree node to free
- *	max_depth   maximum tree depth to descend, or <0 ==> infinite depth
+ *	max_depth   maximum tree depth to descend, or 0 ==> infinite depth
  *			NOTE: Use JSON_INFINITE_DEPTH for infinite depth
  *	...	extra args are ignored, required extra args:
  *
@@ -2264,7 +2255,7 @@ json_tree_print(struct json *node, int max_depth, ...)
  *	json_dbg_lvl	print message if JSON_DBG_FORCED OR if >= verbosity level
  *	name		function name
  *	node		pointer to a JSON parser tree node to free
- *	max_depth	maximum tree depth to descend, or <0 ==> infinite depth
+ *	max_depth	maximum tree depth to descend, or 0 ==> infinite depth
  *			    NOTE: Use JSON_INFINITE_DEPTH for infinite depth
  *	stream		stream on which to print
  *
@@ -2273,7 +2264,7 @@ json_tree_print(struct json *node, int max_depth, ...)
  *	false ==> all debug output was disallowed or some (or all) output failed
  */
 bool
-json_dbg_tree_print(int json_dbg_lvl, char const *name, struct json *tree, int max_depth)
+json_dbg_tree_print(int json_dbg_lvl, char const *name, struct json *tree, unsigned int max_depth)
 {
     int saved_errno = 0;	/* errno at function start */
     bool allowed = false;	/* assume debug message not allowed */
@@ -2332,7 +2323,7 @@ json_dbg_tree_print(int json_dbg_lvl, char const *name, struct json *tree, int m
  *
  * given:
  *	node	    pointer to a JSON parse tree
- *	max_depth   maximum tree depth to descend, or <0 ==> infinite depth
+ *	max_depth   maximum tree depth to descend, or 0 ==> infinite depth
  *			NOTE: Use JSON_INFINITE_DEPTH for infinite depth
  *	vcallback   function to operate JSON parse tree node in va_list form
  *	...	    extra args for vcallback
@@ -2354,7 +2345,8 @@ json_dbg_tree_print(int json_dbg_lvl, char const *name, struct json *tree, int m
  * NOTE: This function warns but does not do anything if an arg is NULL.
  */
 void
-json_tree_walk(struct json *node, int max_depth, void (*vcallback)(struct json *, int, va_list), ...)
+json_tree_walk(struct json *node, unsigned int max_depth,
+	       void (*vcallback)(struct json *, unsigned int, va_list), ...)
 {
     va_list ap;		/* variable argument list */
 
@@ -2403,7 +2395,7 @@ json_tree_walk(struct json *node, int max_depth, void (*vcallback)(struct json *
  *
  * given:
  *	node	    pointer to a JSON parse tree
- *	max_depth   maximum tree depth to descend, or <0 ==> infinite depth
+ *	max_depth   maximum tree depth to descend, or 0 ==> infinite depth
  *			NOTE: Use JSON_INFINITE_DEPTH for infinite depth
  *	depth	    current tree depth (0 ==> top of tree)
  *	vcallback   function to operate JSON parse tree node in va_list form
@@ -2426,7 +2418,8 @@ json_tree_walk(struct json *node, int max_depth, void (*vcallback)(struct json *
  * NOTE: This function warns but does not do anything if an arg is NULL.
  */
 void
-vjson_tree_walk(struct json *node, int max_depth, int depth, void (*vcallback)(struct json *, int, va_list), va_list ap)
+vjson_tree_walk(struct json *node, unsigned int max_depth, unsigned int depth,
+		void (*vcallback)(struct json *, unsigned int, va_list), va_list ap)
 {
     int i;
 
@@ -2445,8 +2438,8 @@ vjson_tree_walk(struct json *node, int max_depth, int depth, void (*vcallback)(s
     /*
      * do nothing if we are too deep
      */
-    if (max_depth >= 0 && depth > max_depth) {
-	warn(__func__, "tree walk descent stopped, tree depth: %d > max_depth: %d", depth, max_depth);
+    if (max_depth != JSON_INFINITE_DEPTH && depth > max_depth) {
+	warn(__func__, "tree walk descent stopped, tree depth: %u > max_depth: %u", depth, max_depth);
 	return;
     }
 
