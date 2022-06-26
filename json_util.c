@@ -594,7 +594,7 @@ jwarnp(char const *name, char const *filename,
  *
  * Example:
  *
- *	jerr(JSON_CODE(1), __func__, file, line, line_num, "bad foobar: %s", message);
+ *	jerr(123, __func__, file, line, line_num, "bad foobar: %s", message);
  *
  * NOTE: We warn with extra newlines to help internal fault messages stand out.
  *	 Normally one should NOT include newlines in warn messages.
@@ -719,7 +719,7 @@ jerr(int exitcode, char const *name, char const *filename,
  *
  * Example:
  *
- *	jerrp(JSON_CODE(1), __func__, file, line, line_num, "bad foobar: %s", message);
+ *	jerrp(123, __func__, file, line, line_num, "bad foobar: %s", message);
  *
  * NOTE: We warn with extra newlines to help internal fault messages stand out.
  *	 Normally one should NOT include newlines in warn messages.
