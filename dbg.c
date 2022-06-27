@@ -160,21 +160,29 @@ static char const * const usage =
  * static function declarations
  */
 static void fmsg_write(FILE *stream, char const *caller, char const *fmt, va_list ap);
+static void snmsg_write(char *str, size_t size, char const *caller, char const *fmt, va_list ap);
 static void fdbg_write(FILE *stream, char const *caller, int level, char const *fmt, va_list ap);
+static void sndbg_write(char *str, size_t size, char const *caller, int level, char const *fmt, va_list ap);
 static void fwarn_write(FILE *stream, char const *caller, char const *name, char const *fmt, va_list ap);
+static void snwarn_write(char *str, size_t size, char const *caller, char const *name, char const *fmt, va_list ap);
 static void fwarnp_write(FILE *stream, char const *caller, char const *name, char const *fmt, va_list ap);
+static void snwarnp_write(char *str, size_t size, char const *caller, char const *name, char const *fmt, va_list ap);
 static void ferr_write(FILE *stream, int error_code, char const *caller,
 		       char const *name, char const *fmt, va_list ap);
+static void snerr_write(char *str, size_t size, int error_code, char const *caller,
+			char const *name, char const *fmt, va_list ap);
 static void ferrp_write(FILE *stream, int error_code, char const *caller,
 			char const *name, char const *fmt, va_list ap);
+static void snerrp_write(char *str, size_t size, int error_code, char const *caller,
+			 char const *name, char const *fmt, va_list ap);
 static void fusage_write(FILE *stream, int error_code, char const *caller, char const *fmt, va_list ap);
 
 
 /*
  * fmsg_write - write a message to a stream
  *
- * Write a formatted message to a stream. Checks for write errors and call
- * warnp() with a write error diagnostic.
+ * Write a formatted message to a stream.  The message is followed by
+ * a newline and then the stream is flushed.
  *
  * given:
  *	stream	open stream on which to write
@@ -183,6 +191,9 @@ static void fusage_write(FILE *stream, int error_code, char const *caller, char 
  *	ap	variable argument list
  *
  * NOTE: This function does nothing (just returns) if passed a NULL pointer.
+ *
+ * NOTE: We call warnp() with extra newlines to help internal fault messages stand out.
+ *	 Normally one should NOT include newlines in warn messages.
  */
 static void
 fmsg_write(FILE *stream, char const *caller, char const *fmt, va_list ap)
@@ -240,10 +251,75 @@ fmsg_write(FILE *stream, char const *caller, char const *fmt, va_list ap)
 
 
 /*
+ * snmsg_write - write a message to a string
+ *
+ * Write a formatted message to a string.
+ *
+ * Unlike fmsg_write(), this function does NOT add a final newline to str.
+ *
+ * The str[size-1] byte is set to NUL (if str != NULL && size > 0) in paranoia.
+ * I.e., str is always NUL terminated unless str == NULL or unless size == 0.
+ *
+ * given:
+ *	str	pointer to buffer in which to write a message
+ *	size	size of buffer, including space for a final NUL byte
+ *	caller	name of the calling function (__func__, for example)
+ *	fmt	format of the warning
+ *	ap	variable argument list
+ *
+ * NOTE: This function does nothing (just returns) if passed a NULL pointer.
+ * NOTE: This function does nothing (just returns) if a size <= 1.
+ *
+ * NOTE: We call warnp() with extra newlines to help internal fault messages stand out.
+ *	 Normally one should NOT include newlines in warn messages.
+ */
+static void
+snmsg_write(char *str, size_t size, char const *caller, char const *fmt, va_list ap)
+{
+    int ret;		/* libc function return code */
+    int saved_errno;	/* errno at function start */
+
+    /*
+     * firewall - just return if given a NULL ptr
+     */
+    if (str == NULL || caller == NULL || fmt == NULL) {
+	return;
+    }
+    if (size > 0) {
+	str[size-1] = '\0';	/* paranoia */
+    }
+    if (size <= 1) {
+	return;
+    }
+
+    /*
+     * save errno so we can restore it before returning
+     */
+    saved_errno = errno;
+
+    /*
+     * write message to string
+     */
+    errno = 0;		/* pre-clear errno for warnp() */
+    ret = vsnprintf(str, size, fmt, ap);
+    if ((size_t)ret >= size) {
+	warnp(caller, "\nin %s(str, %zu, %s, %s, ap): vsnprintf returned: %d\n",
+		      __func__, size, caller, fmt, ret);
+    }
+
+    /*
+     * restore previous errno value
+     */
+    errno = saved_errno;
+    return;
+}
+
+
+/*
  * fdbg_write - write a diagnostic message to a stream
  *
- * Write a formatted debug diagnostic message to a stream. Checks for write
- * errors and call warnp() with a write error diagnostic.
+ * Write a formatted debug diagnostic message to a stream. The diagnostic is followed by
+ * a newline and then the stream is flushed.
  *
  * given:
  *	stream	open stream on which to write
@@ -253,6 +329,9 @@ fmsg_write(FILE *stream, char const *caller, char const *fmt, va_list ap)
  *	ap	variable argument list
  *
  * NOTE: This function does nothing (just returns) if passed a NULL pointer.
+ *
+ * NOTE: We call warnp() with extra newlines to help internal fault messages stand out.
+ *	 Normally one should NOT include newlines in warn messages.
  */
 static void
 fdbg_write(FILE *stream, char const *caller, int level, char const *fmt, va_list ap)
@@ -321,10 +400,87 @@ fdbg_write(FILE *stream, char const *caller, int level, char const *fmt, va_list
 
 
 /*
+ * sndbg_write - write a diagnostic message to a string
+ *
+ * Write a formatted debug diagnostic message to a string.
+ *
+ * Unlike fdbg_write(), this function does NOT add a final newline to str.
+ *
+ * The str[size-1] byte is set to NUL (if str != NULL && size > 0) in paranoia.
+ * I.e., str is always NUL terminated unless str == NULL or unless size == 0.
+ *
+ * given:
+ *	str	pointer to buffer in which to write a message
+ *	size	size of buffer, including space for a final NUL byte
+ *	caller	name of the calling function
+ *	level	debug level
+ *	fmt	format of the warning
+ *	ap	variable argument list
+ *
+ * NOTE: This function does nothing (just returns) if passed a NULL pointer.
+ *
+ * NOTE: We call warnp() with extra newlines to help internal fault messages stand out.
+ *	 Normally one should NOT include newlines in warn messages.
+ */
+static void
+sndbg_write(char *str, size_t size, char const *caller, int level, char const *fmt, va_list ap)
+{
+    int ret;		/* libc function return code */
+    int ret2;		/* libc function return code */
+    int saved_errno;	/* errno at function start */
+
+    /*
+     * firewall - just return if given a NULL ptr
+     */
+    if (str == NULL || caller == NULL || fmt == NULL) {
+	return;
+    }
+    if (size > 0) {
+	str[size-1] = '\0';	/* paranoia */
+    }
+    if (size <= 1) {
+	return;
+    }
+
+    /*
+     * save errno so we can restore it before returning
+     */
+    saved_errno = errno;
+
+    /*
+     * write debug header to string
+     */
+    errno = 0;		/* pre-clear errno for warnp() */
+    ret = snprintf(str, size, "debug[%d]: ", level);
+    if ((size_t)ret >= size) {
+	warnp(caller, "\nin %s(str, %zu, %s, %d, %s, ap): snprintf returned: %d\n",
+		      __func__, size, caller, level, fmt, ret);
+    }
+
+    /*
+     * write diagnostic to string
+     */
+    errno = 0;		/* pre-clear errno for warnp() */
+    ret2 = vsnprintf(str+ret, size-ret, fmt, ap);
+    if ((size_t)ret2 >= size-ret) {
+	warnp(caller, "\nin %s(str, %zu, %s, %s, ap): "
+		      "snprintf returned: %d vsnprintf returned: %d\n",
+		      __func__, size, caller, fmt, ret, ret2);
+    }
+
+    /*
+     * restore previous errno value
+     */
+    errno = saved_errno;
+    return;
+}
+
+
+/*
  * fwarn_write - write a warning to a stream
  *
- * Write a formatted warning to a stream. Checks for write errors and call
- * warnp() with a write error diagnostic.
+ * Write a warming message to a stream. The diagnostic is followed by
+ * a newline and then the stream is flushed.
  *
  * given:
  *	stream	open stream on which to write
@@ -406,10 +562,86 @@ fwarn_write(FILE *stream, char const *caller, char const *name, char const *fmt,
 
 
 /*
+ * snwarn_write - write a warning message to string
+ *
+ * Write a formatted warning message to a string.
+ *
+ * Unlike fwarn_write(), this function does NOT add a final newline to str.
+ *
+ * The str[size-1] byte is set to NUL (if str != NULL && size > 0) in paranoia.
+ * I.e., str is always NUL terminated unless str == NULL or unless size == 0.
+ *
+ * given:
+ *	str	pointer to buffer in which to write a message
+ *	size	size of buffer, including space for a final NUL byte
+ *	caller	name of the calling function
+ *	name	name of function issuing the warning
+ *	fmt	format of the warning
+ *	ap	variable argument list
+ *
+ * NOTE: This function does nothing (just returns) if passed a NULL pointer.
+ */
+static void
+snwarn_write(char *str, size_t size, char const *caller, char const *name, char const *fmt, va_list ap)
+{
+    int ret;		/* libc function return code */
+    int ret2;		/* libc function return code */
+    int saved_errno;	/* errno at function start */
+
+    /*
+     * firewall - just return if given a NULL ptr
+     */
+    if (str == NULL || caller == NULL || name == NULL || fmt == NULL) {
+	return;
+    }
+    if (size > 0) {
+	str[size-1] = '\0';	/* paranoia */
+    }
+    if (size <= 1) {
+	return;
+    }
+
+    /*
+     * save errno so we can restore it before returning
+     */
+    saved_errno = errno;
+
+    /*
+     * write warning header to string
+     */
+    errno = 0;		/* pre-clear errno for warnp() */
+    ret = snprintf(str, size, "Warning: %s: ", name);
+    if ((size_t)ret >= size) {
+	/* we cannot call warn() because that would produce an infinite loop! */
+	(void) fprintf(stderr, "\nWarning: %s: in %s(str, %zu, %s, %s, %s, ap): snprintf returned: %d\n",
+			       caller, __func__, size, caller, name, fmt, ret);
+    }
+
+    /*
+     * write warning to string
+     */
+    errno = 0;		/* pre-clear errno for strerror() */
+    ret2 = vsnprintf(str+ret, size-ret, fmt, ap);
+    if ((size_t)ret2 >= size-ret) {
+	/* we cannot call warn() because that would produce an infinite loop! */
+	(void) fprintf(stderr, "\nWarning: %s: in %s(str, %zu, %s, %s, %s, ap): "
+			       "snprintf returned: %d vsnprintf returned: %d\n",
+			       caller, __func__, size, caller, name, fmt, ret, ret2);
+    }
+
+    /*
+     * restore previous errno value
+     */
+    errno = saved_errno;
+    return;
+}
+
+
+/*
  * fwarnp_write - write a warning message with errno details, to a stream
  *
- * Write a formatted warning with errno info to a stream. Checks for write
- * errors and call warnp() with a write error diagnostic.
+ * Write a warming message with errno info to a stream. The diagnostic is followed by
+ * a newline and then the stream is flushed.
  *
  * given:
  *	stream	open stream on which to write
@@ -491,10 +723,98 @@ fwarnp_write(FILE *stream, char const *caller, char const *name, char const *fmt
 
 
 /*
+ * snwarnp_write - write a warning message with errno details to string
+ *
+ * Write a formatted warning message with errno details to a string.
+ *
+ * Unlike fwarnp_write(), this function does NOT add a final newline to str.
+ *
+ * The str[size-1] byte is set to NUL (if str != NULL && size > 0) in paranoia.
+ * I.e., str is always NUL terminated unless str == NULL or unless size == 0.
+ *
+ * given:
+ *	str	pointer to buffer in which to write a message
+ *	size	size of buffer, including space for a final NUL byte
+ *	caller	name of the calling function
+ *	name	name of function issuing the warning
+ *	fmt	format of the warning
+ *	ap	variable argument list
+ *
+ * NOTE: This function does nothing (just returns) if passed a NULL pointer.
+ */
+static void
+snwarnp_write(char *str, size_t size, char const *caller, char const *name, char const *fmt, va_list ap)
+{
+    int ret;		/* libc function return code */
+    int ret2;		/* libc function return code */
+    int ret3;		/* libc function return code */
+    int saved_errno;	/* errno at function start */
+
+    /*
+     * firewall - just return if given a NULL ptr
+     */
+    if (str == NULL || caller == NULL || name == NULL || fmt == NULL) {
+	return;
+    }
+    if (size > 0) {
+	str[size-1] = '\0';	/* paranoia */
+    }
+    if (size <= 1) {
+	return;
+    }
+
+    /*
+     * save errno so we can restore it before returning
+     */
+    saved_errno = errno;
+
+    /*
+     * write warning header to string
+     */
+    errno = 0;		/* pre-clear errno for warnp() */
+    ret = snprintf(str, size, "Warning: %s: ", name);
+    if ((size_t)ret >= size) {
+	/* we cannot call warn() because that would produce an infinite loop! */
+	(void) fprintf(stderr, "\nWarning: %s: in %s(str, %zu, %s, %s, %s, ap): snprintf returned: %d\n",
+			       caller, __func__, size, caller, name, fmt, ret);
+    }
+
+    /*
+     * write warning to string
+     */
+    errno = 0;		/* pre-clear errno for strerror() */
+    ret2 = vsnprintf(str+ret, size-ret, fmt, ap);
+    if ((size_t)ret2 >= size-ret) {
+	/* we cannot call warn() because that would produce an infinite loop! */
+	(void) fprintf(stderr, "\nWarning: %s: in %s(str, %zu, %s, %s, %s, ap): "
+			       "snprintf returned: %d vsnprintf returned: %d\n",
+			       caller, __func__, size, caller, name, fmt, ret, ret2);
+    }
+
+    /*
+     * write errno details plus newline to string
+     */
+    errno = 0;		/* pre-clear errno for strerror() */
+    ret3 = snprintf(str+ret+ret2, size-ret-ret2, ": errno[%d]: %s", saved_errno, strerror(saved_errno));
+    if ((size_t)ret3 >= size-ret-ret2) {
+	/* we cannot call warn() because that would produce an infinite loop! */
+	(void) fprintf(stderr, "\nWarning: %s: in %s(str, %zu, %s, %s, %s, ap): "
+			       "snprintf returned: %d vsnprintf returned: %d 2nd snprintf returned: %d\n",
+			       caller, __func__, size, caller, name, fmt, ret, ret2, ret3);
+    }
+
+    /*
+     * restore previous errno value
+     */
+    errno = saved_errno;
+    return;
+}
+
+
+/*
  * ferr_write - write an error diagnostic, to a stream
  *
- * Write a formatted an error diagnostic to a stream. Checks for write
- * errors and call warnp() with a write error diagnostic.
+ * Write a formatted an error diagnostic to a stream.
  *
  * given:
  *	stream		open stream on which to write
@@ -505,6 +825,9 @@ fwarnp_write(FILE *stream, char const *caller, char const *name, char const *fmt
  *	ap		variable argument list
  *
  * NOTE: This function does nothing (just returns) if passed a NULL pointer.
+ *
+ * NOTE: We call warnp() with extra newlines to help internal fault messages stand out.
+ *	 Normally one should NOT include newlines in warn messages.
  */
 static void
 ferr_write(FILE *stream, int error_code, char const *caller,
@@ -574,10 +897,87 @@ ferr_write(FILE *stream, int error_code, char const *caller,
 
 
 /*
+ * snerr_write - write an error diagnostic to a string
+ *
+ * Unlike ferr_write(), this function does NOT add a final newline to str.
+ *
+ * The str[size-1] byte is set to NUL (if str != NULL && size > 0) in paranoia.
+ * I.e., str is always NUL terminated unless str == NULL or unless size == 0.
+ *
+ * given:
+ *	str		pointer to buffer in which to write a message
+ *	size		size of buffer, including space for a final NUL byte
+ *	error_code	error code
+ *	caller		name of the calling function
+ *	name		name of function issuing the error diagnostic
+ *	fmt		format of the warning
+ *	ap		variable argument list
+ *
+ * NOTE: This function does nothing (just returns) if passed a NULL pointer.
+ *
+ * NOTE: We call warnp() with extra newlines to help internal fault messages stand out.
+ *	 Normally one should NOT include newlines in warn messages.
+ */
+static void
+snerr_write(char *str, size_t size, int error_code, char const *caller,
+	    char const *name, char const *fmt, va_list ap)
+{
+    int ret;		/* libc function return code */
+    int ret2;		/* libc function return code */
+    int saved_errno;	/* errno at function start */
+
+    /*
+     * firewall - just return if given a NULL ptr
+     */
+    if (str == NULL || caller == NULL || name == NULL || fmt == NULL) {
+	return;
+    }
+    if (size > 0) {
+	str[size-1] = '\0';	/* paranoia */
+    }
+    if (size <= 1) {
+	return;
+    }
+
+    /*
+     * save errno so we can restore it before returning
+     */
+    saved_errno = errno;
+
+    /*
+     * write error diagnostic header to string
+     */
+    errno = 0;		/* pre-clear errno for warnp() */
+    ret = snprintf(str, size, "ERROR[%d]: %s: ", error_code, name);
+    if ((size_t)ret >= size) {
+	warnp(caller, "\nin %s(str, %zu, %s, %d, %s, %s, ap): "
+		      "snprintf returned: %d",
+		      __func__, size, caller, error_code, name, fmt, ret);
+    }
+
+    /*
+     * write error diagnostic to string
+     */
+    errno = 0;		/* pre-clear errno for strerror() */
+    ret2 = vsnprintf(str+ret, size-ret, fmt, ap);
+    if ((size_t)ret2 >= size-ret) {
+	warnp(caller, "\nin %s(str, %zu, %s, %d, %s, %s, ap): "
+		      "snprintf returned: %d vsnprintf returned: %d\n",
+		      __func__, size, caller, error_code, name, fmt, ret, ret2);
+    }
+
+    /*
+     * restore previous errno value
+     */
+    errno = saved_errno;
+    return;
+}
+
+
+/*
  * ferrp_write - write an error diagnostic with errno details, to a stream
  *
- * Write a formatted warning with errno info to a stream. Checks for write
- * errors and call warnp() with a write error diagnostic.
+ * Write a formatted an error diagnostic with errno details to a stream.
  *
  * given:
  *	stream		open stream on which to write
@@ -588,6 +988,9 @@ ferr_write(FILE *stream, int error_code, char const *caller,
  *	ap		variable argument list
  *
  * NOTE: This function does nothing (just returns) if passed a NULL pointer.
+ *
+ * NOTE: We call warnp() with extra newlines to help internal fault messages stand out.
+ *	 Normally one should NOT include newlines in warn messages.
  */
 static void
 ferrp_write(FILE *stream, int error_code, char const *caller,
@@ -657,6 +1060,97 @@ ferrp_write(FILE *stream, int error_code, char const *caller,
 
 
 /*
+ * snerrp_write - write an error diagnostic with errno details to a string
+ *
+ * Unlike ferrp_write(), this function does NOT add a final newline to str.
+ *
+ * The str[size-1] byte is set to NUL (if str != NULL && size > 0) in paranoia.
+ * I.e., str is always NUL terminated unless str == NULL or unless size == 0.
+ *
+ * given:
+ *	str		pointer to buffer in which to write a message
+ *	size		size of buffer, including space for a final NUL byte
+ *	error_code	error code
+ *	caller		name of the calling function
+ *	name		name of function issuing the error diagnostic
+ *	fmt		format of the warning
+ *	ap		variable argument list
+ *
+ * NOTE: This function does nothing (just returns) if passed a NULL pointer.
+ *
+ * NOTE: We call warnp() with extra newlines to help internal fault messages stand out.
+ *	 Normally one should NOT include newlines in warn messages.
+ */
+static void
+snerrp_write(char *str, size_t size, int error_code, char const *caller,
+	     char const *name, char const *fmt, va_list ap)
+{
+    int ret;		/* libc function return code */
+    int ret2;		/* libc function return code */
+    int ret3;		/* libc function return code */
+    int saved_errno;	/* errno at function start */
+
+    /*
+     * firewall - just return if given a NULL ptr
+     */
+    if (str == NULL || caller == NULL || name == NULL || fmt == NULL) {
+	return;
+    }
+    if (size > 0) {
+	str[size-1] = '\0';	/* paranoia */
+    }
+    if (size <= 1) {
+	return;
+    }
+
+    /*
+     * save errno so we can restore it before returning
+     */
+    saved_errno = errno;
+
+    /*
+     * write error diagnostic header to string
+     */
+    errno = 0;		/* pre-clear errno for warnp() */
+    ret = snprintf(str, size, "ERROR[%d]: %s: ", error_code, name);
+    if ((size_t)ret >= size) {
+	warnp(caller, "\nin %s(str, %zu, %s, %d, %s, %s, ap): "
+		      "snprintf returned: %d",
+		      __func__, size, caller, error_code, name, fmt, ret);
+    }
+
+    /*
+     * write error diagnostic to string
+     */
+    errno = 0;		/* pre-clear errno for strerror() */
+    ret2 = vsnprintf(str+ret, size-ret, fmt, ap);
+    if ((size_t)ret2 >= size-ret) {
+	warnp(caller, "\nin %s(str, %zu, %s, %d, %s, %s, ap): "
+		      "snprintf returned: %d vsnprintf returned: %d\n",
+		      __func__, size, caller, error_code, name, fmt, ret, ret2);
+    }
+
+    /*
+     * write errno details plus newline to string
+     */
+    errno = 0;		/* pre-clear errno for strerror() */
+    ret3 = snprintf(str+ret+ret2, size-ret-ret2, ": errno[%d]: %s", saved_errno, strerror(saved_errno));
+    if ((size_t)ret3 >= size-ret-ret2) {
+	/* we cannot call warn() because that would produce an infinite loop! */
+	(void) fprintf(stderr, "\nWarning: %s: in %s(str, %zu, %s, %s, %s, ap): "
+			       "snprintf returned: %d vsnprintf returned: %d 2nd snprintf returned: %d\n",
+			       caller, __func__, size, caller, name, fmt, ret, ret2, ret3);
+    }
+
+    /*
+     * restore previous errno value
+     */
+    errno = saved_errno;
+    return;
+}
+
+
+/*
  * fusage_write - write the usage message, to a stream
  *
  * Write a formatted the usage message to a stream. Checks for write
@@ -671,6 +1165,9 @@ ferrp_write(FILE *stream, int error_code, char const *caller,
  *	ap		variable argument list
  *
  * NOTE: This function does nothing (just returns) if passed a NULL pointer.
+ *
+ * NOTE: We call warnp() with extra newlines to help internal fault messages stand out.
+ *	 Normally one should NOT include newlines in warn messages.
  */
 static void
 fusage_write(FILE *stream, int error_code, char const *caller, char const *fmt, va_list ap)
@@ -1075,6 +1572,78 @@ vfmsg(FILE *stream, char const *fmt, va_list ap)
 
 
 /*
+ * snmsg - write a generic message, to a string
+ *
+ * Unlike msg(), this function does NOT add a final newline to str.
+ *
+ * given:
+ *	str	pointer to buffer in which to write a message
+ *	size	size of buffer, including space for a final NUL byte
+ *      fmt     printf format
+ *      ...
+ *
+ * Example:
+ *
+ *      snmsg(buf, BUFSIZ, "foobar information");
+ *      snmsg(buf, BUFSIZ, "foo = %d\n", foo);
+ *
+ * NOTE: This function does nothing (just returns) if passed a NULL pointer.
+ * NOTE: This function does nothing (just returns) if a size <= 1.
+ */
+void
+snmsg(char *str, size_t size, char const *fmt, ...)
+{
+    va_list ap;			/* variable argument list */
+    int saved_errno;		/* errno at function start */
+    bool allowed = false;	/* true ==> output is allowed */
+
+    /*
+     * stage 0: determine if conditions function to write, return if not
+     */
+    allowed = msg_allowed();
+    if (allowed == false) {
+	return;
+    }
+
+    /*
+     * stage 1: save errno so we can restore it before returning
+     */
+    saved_errno = errno;
+
+    /*
+     * stage 2: stdarg variable argument list setup
+     */
+    va_start(ap, fmt);
+
+    /*
+     * stage 3: firewall checks
+     */
+    if (str == NULL) {
+	return;
+    }
+    if (fmt == NULL) {
+	return;
+    }
+
+    /*
+     * stage 4: write the message
+     */
+    snmsg_write(str, size, __func__, fmt, ap);
+
+    /*
+     * stage 5: stdarg variable argument list cleanup
+     */
+    va_end(ap);
+
+    /*
+     * stage 6: restore previous errno value
+     */
+    errno = saved_errno;
+    return;
+}
+
+
+/*
  * dbg - write a verbosity level allowed debug message, to stderr
  *
  * given:
@@ -1085,9 +1654,6 @@ vfmsg(FILE *stream, char const *fmt, va_list ap)
  * Example:
  *
  *	dbg(1, "foobar information: %d", value);
- *
- * NOTE: We warn with extra newlines to help internal fault messages stand out.
- *	 Normally one should NOT include newlines in warn messages.
  */
 void
 dbg(int level, char const *fmt, ...)
@@ -1151,9 +1717,6 @@ dbg(int level, char const *fmt, ...)
  * Example:
  *
  *	vdbg(1, "foobar information: %d", ap);
- *
- * NOTE: We warn with extra newlines to help internal fault messages stand out.
- *	 Normally one should NOT include newlines in warn messages.
  */
 void
 vdbg(int level, char const *fmt, va_list ap)
@@ -1211,9 +1774,6 @@ vdbg(int level, char const *fmt, va_list ap)
  * Example:
  *
  *	fdbg(stderr, 1, "foobar information: %d", value);
- *
- * NOTE: We warn with extra newlines to help internal fault messages stand out.
- *	 Normally one should NOT include newlines in warn messages.
  */
 void
 fdbg(FILE *stream, int level, char const *fmt, ...)
@@ -1282,9 +1842,6 @@ fdbg(FILE *stream, int level, char const *fmt, ...)
  * Example:
  *
  *	vfdbg(stream, 1, "foobar information: %d", ap);
- *
- * NOTE: We warn with extra newlines to help internal fault messages stand out.
- *	 Normally one should NOT include newlines in warn messages.
  */
 void
 vfdbg(FILE *stream, int level, char const *fmt, va_list ap)
@@ -1335,6 +1892,78 @@ vfdbg(FILE *stream, int level, char const *fmt, va_list ap)
 
 
 /*
+ * sndbg - write a verbosity level allowed debug message, to a string
+ *
+ * Unlike dbg(), this function does NOT add a final newline to str.
+ *
+ * given:
+ *	str	pointer to buffer in which to write a message
+ *	size	size of buffer, including space for a final NUL byte
+ *	level	write message if >= verbosity level
+ *	fmt	printf format
+ *	...
+ *
+ * Example:
+ *
+ *	sndbg(buf, BUFSIZ, 1, "foobar information: %d", value);
+ *
+ * NOTE: This function does nothing (just returns) if passed a NULL pointer.
+ * NOTE: This function does nothing (just returns) if a size <= 1.
+ */
+void
+sndbg(char *str, size_t size, int level, char const *fmt, ...)
+{
+    va_list ap;			/* variable argument list */
+    int saved_errno;		/* errno at function start */
+    bool allowed = false;	/* true ==> output is allowed */
+
+    /*
+     * stage 0: determine if conditions allow function to write, return if not
+     */
+    allowed = dbg_allowed(level);
+    if (allowed == false) {
+	return;
+    }
+
+    /*
+     * stage 1: save errno so we can restore it before returning
+     */
+    saved_errno = errno;
+
+    /*
+     * stage 2: stdarg variable argument list setup
+     */
+    va_start(ap, fmt);
+
+    /*
+     * stage 3: firewall checks
+     */
+    if (str == NULL) {
+	return;
+    }
+    if (fmt == NULL) {
+	return;
+    }
+
+    /*
+     * stage 4: write the diagnostic
+     */
+    sndbg_write(str, size, __func__, level, fmt, ap);
+
+    /*
+     * stage 5: stdarg variable argument list cleanup
+     */
+    va_end(ap);
+
+    /*
+     * stage 6: restore previous errno value
+     */
+    errno = saved_errno;
+    return;
+}
+
+
+/*
  * warn - write a warning message, to stderr
  *
  * given:
@@ -1345,9 +1974,6 @@ vfdbg(FILE *stream, int level, char const *fmt, va_list ap)
  * Example:
  *
  *	warn(__func__, "unexpected foobar: %d", value);
- *
- * NOTE: We warn with extra newlines to help internal fault messages stand out.
- *	 Normally one should NOT include newlines in warn messages.
  */
 void
 warn(char const *name, char const *fmt, ...)
@@ -1419,9 +2045,6 @@ warn(char const *name, char const *fmt, ...)
  * Example:
  *
  *	vwarn(__func__, "unexpected foobar: %d", ap);
- *
- * NOTE: We warn with extra newlines to help internal fault messages stand out.
- *	 Normally one should NOT include newlines in warn messages.
  */
 void
 vwarn(char const *name, char const *fmt, va_list ap)
@@ -1487,9 +2110,6 @@ vwarn(char const *name, char const *fmt, va_list ap)
  * Example:
  *
  *	fwarn(strerr, __func__, "unexpected foobar: %d", value);
- *
- * NOTE: We warn with extra newlines to help internal fault messages stand out.
- *	 Normally one should NOT include newlines in warn messages.
  */
 void
 fwarn(FILE *stream, char const *name, char const *fmt, ...)
@@ -1567,9 +2187,6 @@ fwarn(FILE *stream, char const *name, char const *fmt, ...)
  * Example:
  *
  *	vfwarn(stderr, __func__, "unexpected foobar: %d", ap);
- *
- * NOTE: We warn with extra newlines to help internal fault messages stand out.
- *	 Normally one should NOT include newlines in warn messages.
  */
 void
 vfwarn(FILE *stream, char const *name, char const *fmt, va_list ap)
@@ -1629,6 +2246,81 @@ vfwarn(FILE *stream, char const *name, char const *fmt, va_list ap)
 
 
 /*
+ * snwarn - write a warning message, to a string
+ *
+ * Unlike warn(), this function does NOT add a final newline to str.
+ *
+ * given:
+ *	str	pointer to buffer in which to write a message
+ *	size	size of buffer, including space for a final NUL byte
+ *	name	name of function issuing the warning
+ *	fmt	format of the warning
+ *	...	optional format args
+ *
+ * Example:
+ *
+ *	snwarn(buf, BUFSIZ, __func__, "unexpected foobar: %d", value);
+ *
+ * NOTE: This function does nothing (just returns) if passed a NULL pointer.
+ * NOTE: This function does nothing (just returns) if a size <= 1.
+ */
+void
+snwarn(char *str, size_t size, char const *name, char const *fmt, ...)
+{
+    va_list ap;			/* variable argument list */
+    int saved_errno;		/* errno at function start */
+    bool allowed = false;	/* true ==> output is allowed */
+
+    /*
+     * stage 0: determine if conditions allow function to write, return if not
+     */
+    allowed = warn_allowed();
+    if (allowed == false) {
+	return;
+    }
+
+    /*
+     * stage 1: save errno so we can restore it before returning
+     */
+    saved_errno = errno;
+
+    /*
+     * stage 2: stdarg variable argument list setup
+     */
+    va_start(ap, fmt);
+
+    /*
+     * stage 3: firewall checks
+     */
+    if (str == NULL) {
+	return;
+    }
+    if (name == NULL) {
+	return;
+    }
+    if (fmt == NULL) {
+	return;
+    }
+
+    /*
+     * stage 4: write the warning
+     */
+    snwarn_write(str, size, __func__, name, fmt, ap);
+
+    /*
+     * stage 5: stdarg variable argument list cleanup
+     */
+    va_end(ap);
+
+    /*
+     * stage 6: restore previous errno value
+     */
+    errno = saved_errno;
+    return;
+}
+
+
+/*
  * warnp - write a warning message with errno details, to stderr
  *
  * given:
@@ -1639,9 +2331,6 @@ vfwarn(FILE *stream, char const *name, char const *fmt, va_list ap)
  * Example:
  *
  *	warnp(__func__, "unexpected foobar: %d", value);
- *
- * NOTE: We warn with extra newlines to help internal fault messages stand out.
- *	 Normally one should NOT include newlines in warn messages.
  */
 void
 warnp(char const *name, char const *fmt, ...)
@@ -1713,9 +2402,6 @@ warnp(char const *name, char const *fmt, ...)
  * Example:
  *
  *	vwarnp(__func__, "unexpected foobar: %d", ap);
- *
- * NOTE: We warn with extra newlines to help internal fault messages stand out.
- *	 Normally one should NOT include newlines in warn messages.
  */
 void
 vwarnp(char const *name, char const *fmt, va_list ap)
@@ -1781,9 +2467,6 @@ vwarnp(char const *name, char const *fmt, va_list ap)
  * Example:
  *
  *	fwarnp(stderr, __func__, "unexpected foobar: %d", value);
- *
- * NOTE: We warn with extra newlines to help internal fault messages stand out.
- *	 Normally one should NOT include newlines in warn messages.
  */
 void
 fwarnp(FILE *stream, char const *name, char const *fmt, ...)
@@ -1861,9 +2544,6 @@ fwarnp(FILE *stream, char const *name, char const *fmt, ...)
  * Example:
  *
  *	vfwarnp(stderr, __func__, "unexpected foobar: %d", ap);
- *
- * NOTE: We warn with extra newlines to help internal fault messages stand out.
- *	 Normally one should NOT include newlines in warn messages.
  */
 void
 vfwarnp(FILE *stream, char const *name, char const *fmt, va_list ap)
@@ -1923,6 +2603,81 @@ vfwarnp(FILE *stream, char const *name, char const *fmt, va_list ap)
 
 
 /*
+ * snwarnp - write a warning message with errno details, to a string
+ *
+ * Unlike warnp(), this function does NOT add a final newline to str.
+ *
+ * given:
+ *	str	pointer to buffer in which to write a message
+ *	size	size of buffer, including space for a final NUL byte
+ *	name	name of function issuing the warning
+ *	fmt	format of the warning
+ *	...	optional format args
+ *
+ * Example:
+ *
+ *	snwarnp(buf, BUFSIZ, __func__, "unexpected foobar: %d", value);
+ *
+ * NOTE: This function does nothing (just returns) if passed a NULL pointer.
+ * NOTE: This function does nothing (just returns) if a size <= 1.
+ */
+void
+snwarnp(char *str, size_t size, char const *name, char const *fmt, ...)
+{
+    va_list ap;			/* variable argument list */
+    int saved_errno;		/* errno at function start */
+    bool allowed = false;	/* true ==> output is allowed */
+
+    /*
+     * stage 0: determine if conditions allow function to write, return if not
+     */
+    allowed = warn_allowed();
+    if (allowed == false) {
+	return;
+    }
+
+    /*
+     * stage 1: save errno so we can restore it before returning
+     */
+    saved_errno = errno;
+
+    /*
+     * stage 2: stdarg variable argument list setup
+     */
+    va_start(ap, fmt);
+
+    /*
+     * stage 3: firewall checks
+     */
+    if (str == NULL) {
+	return;
+    }
+    if (name == NULL) {
+	return;
+    }
+    if (fmt == NULL) {
+	return;
+    }
+
+    /*
+     * stage 4: write the warning
+     */
+    snwarnp_write(str, size, __func__, name, fmt, ap);
+
+    /*
+     * stage 5: stdarg variable argument list cleanup
+     */
+    va_end(ap);
+
+    /*
+     * stage 6: restore previous errno value
+     */
+    errno = saved_errno;
+    return;
+}
+
+
+/*
  * err - write a fatal error message before exiting, to stderr
  *
  * given:
@@ -1934,9 +2689,6 @@ vfwarnp(FILE *stream, char const *name, char const *fmt, va_list ap)
  * Example:
  *
  *	err(1, __func__, "bad foobar: %s", message);
- *
- * NOTE: We warn with extra newlines to help internal fault messages stand out.
- *	 Normally one should NOT include newlines in warn messages.
  *
  * This function does not return.
  */
@@ -2014,9 +2766,6 @@ err(int exitcode, char const *name, char const *fmt, ...)
  *
  *	verr(1, __func__, "bad foobar: %s", ap);
  *
- * NOTE: We warn with extra newlines to help internal fault messages stand out.
- *	 Normally one should NOT include newlines in warn messages.
- *
  * This function does not return.
  */
 void
@@ -2086,9 +2835,6 @@ verr(int exitcode, char const *name, char const *fmt, va_list ap)
  * Example:
  *
  *	ferr(1, stderr, __func__, "bad foobar: %s", message);
- *
- * NOTE: We warn with extra newlines to help internal fault messages stand out.
- *	 Normally one should NOT include newlines in warn messages.
  *
  * This function does not return.
  */
@@ -2171,9 +2917,6 @@ ferr(int exitcode, FILE *stream, char const *name, char const *fmt, ...)
  *
  *	vferr(1, stderr, __func__, "bad foobar: %s", ap);
  *
- * NOTE: We warn with extra newlines to help internal fault messages stand out.
- *	 Normally one should NOT include newlines in warn messages.
- *
  * This function does not return.
  */
 void
@@ -2246,9 +2989,6 @@ vferr(int exitcode, FILE *stream, char const *name, char const *fmt, va_list ap)
  * Example:
  *
  *	errp(1, __func__, "bad foobar: %s", message);
- *
- * NOTE: We warn with extra newlines to help internal fault messages stand out.
- *	 Normally one should NOT include newlines in warn messages.
  *
  * This function does not return.
  */
@@ -2326,9 +3066,6 @@ errp(int exitcode, char const *name, char const *fmt, ...)
  *
  *	verrp(1, __func__, "bad foobar: %s", ap);
  *
- * NOTE: We warn with extra newlines to help internal fault messages stand out.
- *	 Normally one should NOT include newlines in warn messages.
- *
  * This function does not return.
  */
 void
@@ -2398,9 +3135,6 @@ verrp(int exitcode, char const *name, char const *fmt, va_list ap)
  * Example:
  *
  *	ferrp(1, stderr, __func__, "bad foobar: %s", message);
- *
- * NOTE: We warn with extra newlines to help internal fault messages stand out.
- *	 Normally one should NOT include newlines in warn messages.
  *
  * This function does not return.
  */
@@ -2483,9 +3217,6 @@ ferrp(int exitcode, FILE *stream, char const *name, char const *fmt, ...)
  *
  *	vferrp(1, stderr, __func__, "bad foobar: %s", ap);
  *
- * NOTE: We warn with extra newlines to help internal fault messages stand out.
- *	 Normally one should NOT include newlines in warn messages.
- *
  * This function does not return.
  */
 void
@@ -2561,9 +3292,6 @@ vferrp(int exitcode, FILE *stream, char const *name, char const *fmt, va_list ap
  *
  * This function writes the same message as err() but without
  * bounds checking on error_code and without calling exit().
- *
- * NOTE: We warn with extra newlines to help internal fault messages stand out.
- *	 Normally one should NOT include newlines in warn messages.
  */
 void
 werr(int error_code, char const *name, char const *fmt, ...)
@@ -2635,9 +3363,6 @@ werr(int error_code, char const *name, char const *fmt, ...)
  *
  * This function writes the same message as verr() but without
  * bounds checking on error_code and without calling exit().
- *
- * NOTE: We warn with extra newlines to help internal fault messages stand out.
- *	 Normally one should NOT include newlines in warn messages.
  */
 void
 vwerr(int error_code, char const *name, char const *fmt, va_list ap)
@@ -2703,9 +3428,6 @@ vwerr(int error_code, char const *name, char const *fmt, va_list ap)
  *
  * This function writes the same message as err() but without
  * bounds checking on error_code and without calling exit().
- *
- * NOTE: We warn with extra newlines to help internal fault messages stand out.
- *	 Normally one should NOT include newlines in warn messages.
  */
 void
 fwerr(int error_code, FILE *stream, char const *name, char const *fmt, ...)
@@ -2749,7 +3471,7 @@ fwerr(int error_code, FILE *stream, char const *name, char const *fmt, ...)
     }
 
     /*
-     * stage 4: writes error diagnostic
+     * stage 4: write error diagnostic
      */
     ferr_write(stream, error_code, __func__, name, fmt, ap);
 
@@ -2782,9 +3504,6 @@ fwerr(int error_code, FILE *stream, char const *name, char const *fmt, ...)
  *
  * This function writes the same message as verr() but without
  * bounds checking on error_code and without calling exit().
- *
- * NOTE: We warn with extra newlines to help internal fault messages stand out.
- *	 Normally one should NOT include newlines in warn messages.
  */
 void
 vfwerr(int error_code, FILE *stream, char const *name, char const *fmt, va_list ap)
@@ -2824,11 +3543,87 @@ vfwerr(int error_code, FILE *stream, char const *name, char const *fmt, va_list 
     }
 
     /*
-     * stage 4: writes error diagnostic
+     * stage 4: write error diagnostic
      */
     ferr_write(stream, error_code, __func__, name, fmt, ap);
 
     /* stage 5: stdarg variable argument list cleanup is not required */
+
+    /*
+     * stage 6: restore previous errno value
+     */
+    errno = saved_errno;
+    return;
+}
+
+
+/*
+ * snwerr - write an error message, to a string
+ *
+ * Unlike werr(), this function does NOT add a final newline to str.
+ *
+ * given:
+ *	error_code	error code
+ *	str		pointer to buffer in which to write a message
+ *	size		size of buffer, including space for a final NUL byte
+ *	name		name of function issuing the warning
+ *	fmt		format of the warning
+ *	...		optional format args
+ *
+ * Example:
+ *
+ *	snwerr(123, buf, BUFSIZ, __func__, "unexpected foobar: %d", value);
+ *
+ * NOTE: This function does nothing (just returns) if passed a NULL pointer.
+ * NOTE: This function does nothing (just returns) if a size <= 1.
+ */
+void
+snwerr(int error_code, char *str, size_t size, char const *name, char const *fmt, ...)
+{
+    va_list ap;			/* variable argument list */
+    int saved_errno;		/* errno at function start */
+    bool allowed = false;	/* true ==> output is allowed */
+
+    /*
+     * stage 0: determine if conditions allow function to write, return if not
+     */
+    allowed = warn_allowed();
+    if (allowed == false) {
+	return;
+    }
+
+    /*
+     * stage 1: save errno so we can restore it before returning
+     */
+    saved_errno = errno;
+
+    /*
+     * stage 2: stdarg variable argument list setup
+     */
+    va_start(ap, fmt);
+
+    /*
+     * stage 3: firewall checks
+     */
+    if (str == NULL) {
+	return;
+    }
+    if (name == NULL) {
+	return;
+    }
+    if (fmt == NULL) {
+	return;
+    }
+
+    /*
+     * stage 4: write error diagnostic
+     */
+    snerr_write(str, size, error_code, __func__, name, fmt, ap);
+
+    /*
+     * stage 5: stdarg variable argument list cleanup
+     */
+    va_end(ap);
 
     /*
      * stage 6: restore previous errno value
@@ -2853,9 +3648,6 @@ vfwerr(int error_code, FILE *stream, char const *name, char const *fmt, va_list 
  *
  * This function writes the same message as verrp() but without
  * bounds checking on error_code and without calling exit().
- *
- * NOTE: We warn with extra newlines to help internal fault messages stand out.
- *	 Normally one should NOT include newlines in warn messages.
  */
 void
 werrp(int error_code, char const *name, char const *fmt, ...)
@@ -2927,9 +3719,6 @@ werrp(int error_code, char const *name, char const *fmt, ...)
  *
  * This function writes the same message as werrp() but without
  * bounds checking on error_code and without calling exit().
- *
- * NOTE: We warn with extra newlines to help internal fault messages stand out.
- *	 Normally one should NOT include newlines in warn messages.
  */
 void
 vwerrp(int error_code, char const *name, char const *fmt, va_list ap)
@@ -2995,9 +3784,6 @@ vwerrp(int error_code, char const *name, char const *fmt, va_list ap)
  *
  * This function writes the same message as verrp() but without
  * bounds checking on error_code and without calling exit().
- *
- * NOTE: We warn with extra newlines to help internal fault messages stand out.
- *	 Normally one should NOT include newlines in warn messages.
  */
 void
 fwerrp(int error_code, FILE *stream, char const *name, char const *fmt, ...)
@@ -3074,9 +3860,6 @@ fwerrp(int error_code, FILE *stream, char const *name, char const *fmt, ...)
  *
  * This function writes the same message as werrp() but without
  * bounds checking on error_code and without calling exit().
- *
- * NOTE: We warn with extra newlines to help internal fault messages stand out.
- *	 Normally one should NOT include newlines in warn messages.
  */
 void
 vfwerrp(int error_code, FILE *stream, char const *name, char const *fmt, va_list ap)
@@ -3121,6 +3904,82 @@ vfwerrp(int error_code, FILE *stream, char const *name, char const *fmt, va_list
     ferrp_write(stream, error_code, __func__, name, fmt, ap);
 
     /* stage 5: stdarg variable argument list cleanup is not required */
+
+    /*
+     * stage 6: restore previous errno value
+     */
+    errno = saved_errno;
+    return;
+}
+
+
+/*
+ * snwerrp - write an error message with errno details, to a string
+ *
+ * Unlike werrp(), this function does NOT add a final newline to str.
+ *
+ * given:
+ *	error_code	error code
+ *	str		pointer to buffer in which to write a message
+ *	size		size of buffer, including space for a final NUL byte
+ *	name		name of function issuing the warning
+ *	fmt		format of the warning
+ *	...		optional format args
+ *
+ * Example:
+ *
+ *	snwerrp(123, buf, BUFSIZ, __func__, "unexpected foobar: %d", value);
+ *
+ * NOTE: This function does nothing (just returns) if passed a NULL pointer.
+ * NOTE: This function does nothing (just returns) if a size <= 1.
+ */
+void
+snwerrp(int error_code, char *str, size_t size, char const *name, char const *fmt, ...)
+{
+    va_list ap;			/* variable argument list */
+    int saved_errno;		/* errno at function start */
+    bool allowed = false;	/* true ==> output is allowed */
+
+    /*
+     * stage 0: determine if conditions allow function to write, return if not
+     */
+    allowed = warn_allowed();
+    if (allowed == false) {
+	return;
+    }
+
+    /*
+     * stage 1: save errno so we can restore it before returning
+     */
+    saved_errno = errno;
+
+    /*
+     * stage 2: stdarg variable argument list setup
+     */
+    va_start(ap, fmt);
+
+    /*
+     * stage 3: firewall checks
+     */
+    if (str == NULL) {
+	return;
+    }
+    if (name == NULL) {
+	return;
+    }
+    if (fmt == NULL) {
+	return;
+    }
+
+    /*
+     * stage 4: write error diagnostic with errno details
+     */
+    snerrp_write(str, size, error_code, __func__, name, fmt, ap);
+
+    /*
+     * stage 5: stdarg variable argument list cleanup
+     */
+    va_end(ap);
 
     /*
      * stage 6: restore previous errno value
@@ -4211,6 +5070,7 @@ main(int argc, char *argv[])
     char const *foo = NULL;		/* where the entry directory and tarball are formed */
     char const *bar = "/usr/bin/tar";	/* path to tar that supports -cjvf */
     char const *baz = NULL;		/* path to the iocccsize tool */
+    char buf[BUFSIZ+1];			/* message buffer */
     int forced_errno = 0;		/* -e errno setting */
     int ret;
     int i;
@@ -4275,7 +5135,6 @@ main(int argc, char *argv[])
 	not_reached();
 	break;
     }
-    errno = forced_errno;	/* simulate errno setting */
     /* collect required args */
     foo = argv[optind];
     dbg(DBG_LOW, "foo: %s", foo);
@@ -4304,21 +5163,67 @@ main(int argc, char *argv[])
      * simulate warnings
      */
     warn(program, "simulated call to warn()");
+
+    errno = forced_errno;	/* simulate errno setting */
+    snwarn(buf, BUFSIZ, program, "simulated call to snwarn()");
+    errno = 0;		/* pre-clear errno for warnp() */
+    ret = fprintf(stderr, "%s\n", buf);
+    if (ret <= 0) {
+	warnp(__func__, "printf error snwarn() string");
+    }
+
     warnp(program, "simulated call to warnp()");
+
+    errno = forced_errno;	/* simulate errno setting */
+    snwarnp(buf, BUFSIZ, program, "simulated call to snwarnp()");
+    errno = 0;		/* pre-clear errno for warnp() */
+    ret = fprintf(stderr, "%s\n", buf);
+    if (ret <= 0) {
+	warnp(__func__, "printf error snwarnp() string");
+    }
+
+    errno = forced_errno;	/* simulate errno setting */
     warn_or_err(129, program, true,
 		"simulated call to warn_or_err(129, %s, true, ...)", program); /*ooo*/
+
+    errno = forced_errno;	/* simulate errno setting */
     warnp_or_errp(130, program,
 		  true, "simulated call to warnp_or_errp(130, %s, true, ...)", program); /*ooo*/
+
+    errno = forced_errno;	/* simulate errno setting */
     fwarn(stderr, program, "simulated call to fwarn()");
+
+    errno = forced_errno;	/* simulate errno setting */
     fwarnp(stderr, program, "simulated call to fwarnp()");
+
+    errno = forced_errno;	/* simulate errno setting */
     fwarn_or_err(131, stderr, program, true,
-		"simulated call to fwarn_or_err(129, %s, true, ...)", program); /*ooo*/
+		"simulated call to fwarn_or_err(131, %s, true, ...)", program); /*ooo*/
+
+    errno = forced_errno;	/* simulate errno setting */
     fwarnp_or_errp(132, stderr, program,
-		  true, "simulated call to fwarnp_or_errp(130, %s, true, ...)", program); /*ooo*/
+		  true, "simulated call to fwarnp_or_errp(132, %s, true, ...)", program); /*ooo*/
+
+    errno = forced_errno;	/* simulate errno setting */
+    snwerr(133, buf, BUFSIZ, program, "simulated call to snwerr(133, %s, ...)", program); /*ooo*/
+    errno = 0;		/* pre-clear errno for warnp() */
+    ret = fprintf(stderr, "%s\n", buf);
+    if (ret <= 0) {
+	warnp(__func__, "printf error snwerr() string");
+    }
+
+    errno = forced_errno;	/* simulate errno setting */
+    snwerrp(134, buf, BUFSIZ, program, "simulated call to snwerrp(134, %s, ...)", program); /*ooo*/
+    errno = 0;		/* pre-clear errno for warnp() */
+    ret = fprintf(stderr, "%s\n", buf);
+    if (ret <= 0) {
+	warnp(__func__, "printf error snwerrp() string");
+    }
 
     /*
      * simulate an error
      */
+    errno = forced_errno;	/* simulate errno setting */
     if (errno != 0) {
 	/* exit(5); */
 	errp(5, __func__, "simulated error, foo: %s bar: %s", foo, baz); /*ooo*/
