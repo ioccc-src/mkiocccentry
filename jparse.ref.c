@@ -2464,24 +2464,6 @@ parse_json(char const *ptr, size_t len, bool *is_valid)
 	node = json_alloc(JTYPE_UNSET);
 	return node;
     }
-    if (len <= 0 || is_all_whitespace_str(ptr)) {
-
-	/* warn about bogus length */
-	warn( __func__, "len: %ju <= 0", (uintmax_t)len);
-
-	/* invalid JSON */
-	fprstr(stderr, "invalid JSON\n");
-	++num_errors;
-
-	/* if allowed, report invalid JSON */
-	if (is_valid != NULL) {
-	    *is_valid = false;
-	}
-
-	/* return a blank JSON tree */
-	node = json_alloc(JTYPE_UNSET);
-	return node;
-    }
 
     /*
      * scan the blob
@@ -2711,26 +2693,6 @@ parse_json_file(char const *filename, bool *is_valid)
 	/* warn about read error */
 	warn(__func__, "couldn't read in %s", is_stdin?"stdin":filename);
 	++num_errors;
-	clearerr_or_fclose(filename, ugly_in);
-
-	/* if allowed, report invalid JSON */
-	if (is_valid != NULL) {
-	    *is_valid = false;
-	}
-
-	/* return a blank JSON tree */
-	node = json_alloc(JTYPE_UNSET);
-	return node;
-    }
-    if (len <= 0 || is_all_whitespace_str(data)) {
-
-	/* warn about empty file */
-	warn(__func__, "%s is empty", is_stdin?"stdin":filename);
-
-	/* invalid JSON */
-	fprintf(stderr, "invalid JSON\n");
-	++num_errors;
-
 	clearerr_or_fclose(filename, ugly_in);
 
 	/* if allowed, report invalid JSON */
