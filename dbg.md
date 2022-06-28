@@ -98,7 +98,7 @@ being seen.
 
 ...
 
-#define VERSION_STRING "61.0 2022-06-01"
+#define VERSION_STRING "61.0 2021-10-28"
 
 static char const * const usage =
 "usage: %s [-h] [-v level]\n"
@@ -198,6 +198,8 @@ The `msg()` function will write an informational message to `stderr`.
 
 The `fmsg()` function will write an informational message to a stream.
 
+The `snmsg()` function will copy an informational message string into a fixed sized buffer.
+
 ## Synopsis:
 
 ```c
@@ -219,6 +221,17 @@ extern void msg(const char *fmt, ...);
  *      ...
  */
 extern void fmsg(FILE *stream, char const *fmt, ...);
+
+/*
+ * snmsg - write a generic message, to a string
+ *
+ * given:
+ *      str     pointer to buffer in which to write a message
+ *      size    size of buffer, including space for a final NUL byte
+ *      fmt     printf format
+ *      ...
+ */
+extern void snmsg(char *str, size_t size, char const *fmt, ...);
 ```
 
 Special care is made in these functions to restore the caller's original value
@@ -228,12 +241,20 @@ of `errno` on return.
 ## Examples:
 
 ```c
+char buf[BUFSIZ]; 	/* message buffer */
+
+/* ... */
+
 msg("This is an informative message.");
 msg("foo: %d bar: <%s> baz: %g", foo, bar, baz);
 
 /* ... */
 
 fmsg(stdout, "This is an informative message to an open file: %s", debug_filename);
+
+/* ... */
+
+snmsg(buf, BUFSIZ, "foo = %d\n", foo);
 ```
 
 A newline (i.e., `\n`) is written after the message and thus the `fmt` argument
@@ -258,39 +279,39 @@ will **disable** the writes.
 ```
 
 
-## Alternative `va_list` interface:
+## Alternative `va\_list` interface:
 
-The `vmsg()` function is an alternative interface to `msg()` in `va_list` form.
+The `vmsg()` function is an alternative interface to `msg()` in `va\_list` form.
 
-The `vfmsg()` function is an alternative interface to `fmsg()` in `va_list`
+The `vfmsg()` function is an alternative interface to `fmsg()` in `va\_list`
 form.
 
 
 ```c
 /*
- * vmsg - write a generic message, to stderr, in va_list form
+ * vmsg - write a generic message, to stderr, in va\_list form
  *
  * given:
  *      fmt     format of the warning
  *      ap      variable argument list
  */
-extern void vmsg(char const *fmt, va_list ap);
+extern void vmsg(char const *fmt, va\_list ap);
 
 /*
- * vfmsg - write a generic message, to a stream, in va_list form
+ * vfmsg - write a generic message, to a stream, in va\_list form
  *
  * given:
  *      stream  open stream to use
  *      fmt     format of the warning
  *      ap      variable argument list
  */
-extern void vfmsg(FILE *stream, char const *fmt, va_list ap);
+extern void vfmsg(FILE *stream, char const *fmt, va\_list ap);
 ```
 
-The state of the `va_list ap` is **NOT** modified by this alternative interface
+The state of the `va\_list ap` is **NOT** modified by this alternative interface
 function.
 
-NOTE: The arguments referenced by the `va_list ap` argument are **NOT** checked
+NOTE: The arguments referenced by the `va\_list ap` argument are **NOT** checked
 for consistency like they are using the primary interface.  For this reason, the
 primary interface `msg()` or `fmsg()` is recommended.
 
@@ -305,6 +326,9 @@ enough, to a stream, such as `stderr`.
 
 The `fdbg()` function will write a debug message, if the verbosity level is high
 enough, to a stream.
+
+The `sndbg()` function will copy a debug message string, if the verbosity level is high
+enough, into a fixed sized buffer.
 
 ## Synopsis:
 
@@ -329,6 +353,18 @@ extern void dbg(int level, const char *fmt, ...);
  *      ...
  */
 extern void fdbg(FILE *stream, int level, char const *fmt, ...);
+
+/*
+ * sndbg - write a verbosity level allowed debug message, to a string
+ *
+ * given:
+ *      str     pointer to buffer in which to write a message
+ *      size    size of buffer, including space for a final NUL byte
+ *      level   write message if >= verbosity level
+ *      fmt     printf format
+ *      ...
+ */
+extern void sndbg(char *str, size_t size, int level, char const *fmt, ...);
 ```
 
 The `level` argument determines if the debug message is written.  If `level` is
@@ -372,6 +408,7 @@ establish verbosity levels:
 #define DBG_VVHIGH (9)          /* very very verbose debugging */
 #define DBG_VVVHIGH (11)        /* very very very verbose debugging */
 #define DBG_VVVVHIGH (13)       /* very very very very verbose debugging */
+#define DBG_VVVVVHIGH (15)      /* very very very very very verbose debugging */
 ```
 
 Special care is made in this function to restore the caller's original value of
@@ -380,6 +417,10 @@ Special care is made in this function to restore the caller's original value of
 ## Examples:
 
 ```c
+char buf[BUFSIZ]; 	/* message buffer */
+
+/* ... */
+
 dbg(DBG_LOW, "Starting critical code section");
 dbg(DBG_MED, "Current line numner: %ld", lineno);
 dbg(DBG_VVHIGH, "Leading buffer byte: 0x%02x < minimum: 0x%02x", buf[0], MIN_BYTE);
@@ -387,6 +428,10 @@ dbg(DBG_VVHIGH, "Leading buffer byte: 0x%02x < minimum: 0x%02x", buf[0], MIN_BYT
 /* ... */
 
 fdbg(stdout, DBG_HIGH, "loop value: %d", i);
+
+/* ... */
+
+sndbg(buf, BUFSIZ, DBG_VHIGH, "foobar information: %d", value);
 ```
 
 The `level` argument helps determine if the debug message is written or ignored.
@@ -434,26 +479,26 @@ will **disable** the writes.
 
 In the above, `level` is a value passed to the function.
 
-## Alternative `va_list` interface:
+## Alternative `va\_list` interface:
 
-The `vdbg()` function is an alternative interface to `dbg()` in `va_list` form.
+The `vdbg()` function is an alternative interface to `dbg()` in `va\_list` form.
 
-The `vfdbg()` function is an alternative interface to `fdbg()` in `va_list`
+The `vfdbg()` function is an alternative interface to `fdbg()` in `va\_list`
 form.
 
 ```c
 /*
- * vdbg - write a verbosity level allowed debug message, to stderr, in va_list form
+ * vdbg - write a verbosity level allowed debug message, to stderr, in va\_list form
  *
  * given:
  *      level   write message if >= verbosity level
  *      fmt     format of the warning
  *      ap      variable argument list
  */
-extern void vdbg(int level, char const *fmt, va_list ap);
+extern void vdbg(int level, char const *fmt, va\_list ap);
 
 /*
- * vfdbg - write a verbosity level allowed debug message, to a stream, in va_list form
+ * vfdbg - write a verbosity level allowed debug message, to a stream, in va\_list form
  *
  * given:
  *      stream  open stream to use
@@ -461,13 +506,13 @@ extern void vdbg(int level, char const *fmt, va_list ap);
  *      fmt     format of the warning
  *      ap      variable argument list
  */
- extern void vfdbg(FILE *stream, int level, char const *fmt, va_list ap);
+ extern void vfdbg(FILE *stream, int level, char const *fmt, va\_list ap);
 ```
 
-The state of the `va_list ap` is **NOT** modified by this
+The state of the `va\_list ap` is **NOT** modified by this
 alternative interface function.
 
-NOTE: The arguments referenced by the `va_list ap` argument are **NOT** checked
+NOTE: The arguments referenced by the `va\_list ap` argument are **NOT** checked
 for consistency like they are using the primary interface.  For this reason, the
 primary interface `dbg()` or `fdng()` is recommended.
 
@@ -477,9 +522,11 @@ primary interface `dbg()` or `fdng()` is recommended.
 
 # warn - write a warning message
 
-The `warn()` function will write warning a message to `stderr`.
+The `warn()` function will write a warning message to `stderr`.
 
-The `fwarn()` function will write warning a message to a stream.
+The `fwarn()` function will write a warning message to a stream.
+
+The `snwarn()` function will copy a warning message string into a fixed sized buffer.
 
 ## Synopsis:
 
@@ -504,6 +551,18 @@ extern void warn(char const *name, char const *fmt, ...);
  *      ...     optional format args
  */
 extern void fwarn(FILE *stream, char const *name, char const *fmt, ...);
+
+/*
+ * snwarn - copy a warning message string into a buffer
+ *
+ * given:
+ *      str     pointer to buffer in which to write a message
+ *      size    size of buffer, including space for a final NUL byte
+ *      name    name of function issuing the warning
+ *      fmt     format of the warning
+ *      ...     optional format args
+ */
+extern void snwarn(char *str, size_t size, char const *name, char const *fmt, ...);
 ```
 
 The `name` argument should be the name of the calling function or some string
@@ -517,11 +576,19 @@ caller's original value of `errno` on return.
 ## Examples:
 
 ```c
+char buf[BUFSIZ]; 	/* message buffer */
+
+/* ... */
+
 warn(__func__, "unexpected foobar: %d", value);
 
 ...
 
 fwarn(stdout, __func__, "unexpected curds: %d", cvalue);
+
+/* ... */
+
+snwarn(buf, BUFSIZ, __func__, "whey value: %d", value);
 ```
 The warning message will be preceded by `Warning:`,
 followed by a space, followed by the value of the `name` string,
@@ -576,27 +643,27 @@ Warning: warn: fmt is NULL, forcing fmt to be: ((NULL fmt))
 When `fmt == NULL`, any arguments following `fmt` are ignored.
 
 
-## Alternative va_list interface:
+## Alternative va\_list interface:
 
 The `vwarn()` function is an alternative interface to `warn()`
-in `va_list` form.
+in `va\_list` form.
 
 The `vfwarn()` function is an alternative interface to `fwarn()`
-in `va_list` form.
+in `va\_list` form.
 
 ```c
 /*
- * vwarn - write a warning message, to stderr, in va_list form
+ * vwarn - write a warning message, to stderr, in va\_list form
  *
  * given:
  *      name    name of function issuing the warning
  *      fmt     format of the warning
  *      ap      variable argument list
  */
-extern void vwarn(char const *name, char const *fmt, va_list ap);
+extern void vwarn(char const *name, char const *fmt, va\_list ap);
 
 /*
- * vfwarn - write a warning message to a stream, in va_list form
+ * vfwarn - write a warning message to a stream, in va\_list form
  *
  * given:
  *      stream  open stream to use
@@ -604,13 +671,13 @@ extern void vwarn(char const *name, char const *fmt, va_list ap);
  *      fmt     format of the warning
  *      ap      variable argument list
  */
- extern void vfwarn(FILE *stream, char const *name, char const *fmt, va_list ap);
+ extern void vfwarn(FILE *stream, char const *name, char const *fmt, va\_list ap);
 ```
 
-The state of the va_list `ap` is **NOT** modified by this
+The state of the va\_list `ap` is **NOT** modified by this
 alternative interface function.
 
-NOTE: The arguments referenced by the va_list `ap` argument
+NOTE: The arguments referenced by the va\_list `ap` argument
 are **NOT** checked for consistency like they are using
 the primary interface.  For this reason, the primary
 interface `warn()` or `fwarn()` is recommended.
@@ -626,6 +693,9 @@ includes errno details to `stderr`.
 
 The `fwarnp()` function will write a warning message that
 includes errno details to a stream.
+
+The `snwarnp()` function will copy a warning message string that
+includes errno details into a fixed sized buffer.
 
 ## Synopsis:
 
@@ -650,6 +720,18 @@ extern void warnp(char const *name, char const *fmt, ...);
  *      ...     optional format args
  */
 extern void fwarnp(FILE *stream, char const *name, char const *fmt, ...);
+
+/*
+ * snwarnp - copy a warning message string with errno details into a buffer
+ *
+ * given:
+ *      str     pointer to buffer in which to write a message
+ *      size    size of buffer, including space for a final NUL byte
+ *      name    name of function issuing the warning
+ *      fmt     format of the warning
+ *      ...     optional format args
+ */
+extern void snwarnp(char *str, size_t size, char const *name, char const *fmt, ...);
 ```
 
 The `name` argument should be the name of the calling function,
@@ -675,13 +757,12 @@ For example:
 ```c
 #include <errno.h>
 
-...
+/* ... */
 
 errno = 0;		/* pre-clear errno for warnp() */
-ret = fprintf(answerp, "%s\n", info.common.ioccc_id);
+ret = fprintf(answerp, "%s\n", info.id);
 if (ret <= 0) {
-    warnp(__func__, "fprintf error writing IOCCC contest id to the answers file");
-    ++answers_errors;
+    warnp(__func__, "fprintf error writing id: %s", info.id);
 }
 ```
 
@@ -691,11 +772,19 @@ caller's original value of `errno` on return.
 ## Examples:
 
 ```c
+char buf[BUFSIZ]; 	/* message buffer */
+
+/* ... */
+
 warnp(__func__, "unable to open file: %s", filename);
 
 ...
 
 fwarnp(stderr, __func__, "unable to write to file: %s", filename);
+
+/* ... */
+
+snwerr(123, buf, BUFSIZ, __func__, "invalid whey value: %d", value);
 ```
 
 The warning message will be preceded by `Warning:`,
@@ -738,27 +827,27 @@ function is called, will **disable** the writes.
 ```
 
 
-## Alternative `va_list` interface:
+## Alternative `va\_list` interface:
 
 The `vwarnp()` function is an alternative interface to `warnp()`
-in `va_list` form.
+in `va\_list` form.
 
 The `vfwarnp()` function is an alternative interface to `fwarnp()`
-in `va_list` form.
+in `va\_list` form.
 
 ```c
 /*
- * vwarnp - write a warning message with errno details, to stderr, in va_list form
+ * vwarnp - write a warning message with errno details, to stderr, in va\_list form
  *
  * given:
  *      name    name of function issuing the warning
  *      fmt     format of the warning
  *      ap      variable argument list
  */
-extern void vwarnp(char const *name, char const *fmt, va_list ap);
+extern void vwarnp(char const *name, char const *fmt, va\_list ap);
 
 /*
- * vfwarnp - write a warning message with errno details to a stream, in va_list form
+ * vfwarnp - write a warning message with errno details to a stream, in va\_list form
  *
  * given:
  *      stream  open stream to use
@@ -766,17 +855,16 @@ extern void vwarnp(char const *name, char const *fmt, va_list ap);
  *      fmt     format of the warning
  *      ap      variable argument list
  */
-extern void vfwarnp(FILE *stream, char const *name, char const *fmt, va_list ap);
+extern void vfwarnp(FILE *stream, char const *name, char const *fmt, va\_list ap);
 ```
 
-The state of the va_list `ap` is **NOT** modified by this
+The state of the va\_list `ap` is **NOT** modified by this
 alternative interface function.
 
-NOTE: The arguments referenced by the va_list `ap` argument
+NOTE: The arguments referenced by the va\_list `ap` argument
 are **NOT** checked for consistency like they are using
 the primary interface.  For this reason, the primary
 interface `warnp()` or `fwarnp()` is recommended.
-
 
 
 
@@ -917,17 +1005,17 @@ Warning: err: forcing use of exit code: 255
 ```
 
 
-## Alternative va_list interface:
+## Alternative va\_list interface:
 
 The `verr()` function is an alternative interface to `err()`
-in `va_list` form.
+in `va\_list` form.
 
 The `vferr()` function is an alternative interface to `efrr()`
-in `va_list` form.
+in `va\_list` form.
 
 ```c
 /*
- * verr - write a fatal error message before exiting, to stderr, in va_list form
+ * verr - write a fatal error message before exiting, to stderr, in va\_list form
  *
  * given:
  *      exitcode        value to exit with
@@ -935,10 +1023,10 @@ in `va_list` form.
  *      fmt             format of the warning
  *      ap              variable argument list
  */
-extern void verr(int exitcode, char const *name, char const *fmt, va_list ap);
+extern void verr(int exitcode, char const *name, char const *fmt, va\_list ap);
 
 /*
- * vferr - write a fatal error message before exiting to a stream, in va_list form
+ * vferr - write a fatal error message before exiting to a stream, in va\_list form
  *
  * given:
  *      exitcode        value to exit with
@@ -947,13 +1035,13 @@ extern void verr(int exitcode, char const *name, char const *fmt, va_list ap);
  *      fmt             format of the warning
  *      ap              variable argument list
  */
-extern void vferr(int exitcode, FILE *stream, char const *name, char const *fmt, va_list ap);
+extern void vferr(int exitcode, FILE *stream, char const *name, char const *fmt, va\_list ap);
 ```
 
-The state of the va_list `ap` is **NOT** modified by this
+The state of the va\_list `ap` is **NOT** modified by this
 alternative interface function.
 
-NOTE: The arguments referenced by the va_list `ap` argument
+NOTE: The arguments referenced by the va\_list `ap` argument
 are **NOT** checked for consistency like they are using
 the primary interface.  For this reason, the primary
 interface `err()` or `ferr()` is recommended.
@@ -1130,14 +1218,14 @@ Warning: errp: forcing use of exit code: 255
 ```
 
 
-## Alternative va_list interface:
+## Alternative va\_list interface:
 
 The `verrp()` function is an alternative interface to `errp()`
-in `va_list` form.
+in `va\_list` form.
 
 ```c
 /*
- * verrp - write a fatal error message with errno details before exiting, to stderr, in va_list form
+ * verrp - write a fatal error message with errno details before exiting, to stderr, in va\_list form
  *
  * given:
  *      exitcode        value to exit with
@@ -1145,10 +1233,10 @@ in `va_list` form.
  *      fmt             format of the warning
  *      ap              variable argument list
  */
-extern void verrp(int exitcode, char const *name, char const *fmt, va_list ap);
+extern void verrp(int exitcode, char const *name, char const *fmt, va\_list ap);
 
 /*
- * vferrp - write a fatal error message with errno details before exiting, to a stream, in va_list form
+ * vferrp - write a fatal error message with errno details before exiting, to a stream, in va\_list form
  *
  * given:
  *      exitcode        value to exit with
@@ -1157,13 +1245,13 @@ extern void verrp(int exitcode, char const *name, char const *fmt, va_list ap);
  *      fmt             format of the warning
  *      ap              variable argument list
  */
-extern void vferrp(int exitcode, FILE *stream, char const *name, char const *fmt, va_list ap);
+extern void vferrp(int exitcode, FILE *stream, char const *name, char const *fmt, va\_list ap);
 ```
 
-The state of the va_list `ap` is **NOT** modified by this
+The state of the va\_list `ap` is **NOT** modified by this
 alternative interface function.
 
-NOTE: The arguments referenced by the va_list `ap` argument
+NOTE: The arguments referenced by the va\_list `ap` argument
 are **NOT** checked for consistency like they are using
 the primary interface.  For this reason, the primary
 interface `errp()` or `ferrp()` is recommended.
@@ -1177,6 +1265,8 @@ interface `errp()` or `ferrp()` is recommended.
 The `werr()` function will write an error message w/o exiting to `stderr`.
 
 The `fwerr()` function will write an error message w/o exiting to a stream.
+
+The `snwerr()` function will copy an error message string into a fixed sized buffer.
 
 ## Synopsis:
 
@@ -1203,6 +1293,19 @@ extern void werr(int error_code, char const *name, char const *fmt, ...)
  *      ...             optional format args
  */
 extern void fwerr(int error_code, FILE *stream, char const *name, char const *fmt, ...);
+
+/*
+ * snwerr - copy an error message string into a buffer
+ *
+ * given:
+ *      error_code      error code
+ *      str             pointer to buffer in which to write a message
+ *      size            size of buffer, including space for a final NUL byte
+ *      name            name of function issuing the warning
+ *      fmt             format of the warning
+ *      ...             optional format args
+ */
+extern void snwerr(int error_code, char *str, size_t size, char const *name, char const *fmt, ...);
 ```
 
 The `werr()` function writes the same thing as `err()` but does
@@ -1226,11 +1329,19 @@ caller's original value of `errno` on return.
 ## Examples:
 
 ```c
+char buf[BUFSIZ]; /* message buffer */
+
+/* ... */
+
 werr(21701, __func__, "bad foobar: %s", message);
 
-...
+/* ... */
 
 fwerr(23209, __func__, "unexpected whey: %s", cwhey);
+
+/* ... */
+
+snwerr(123, buf, BUFSIZ, __func__, "invalid whey value: %d", value);
 ```
 
 The error message will be preceded by `FATAL[#]:`
@@ -1267,14 +1378,14 @@ function is called, will **disable** the writes.
 NOTE: No bounds check is made for the first argument (`error_code`).
 
 
-## Alternative va_list interface:
+## Alternative va\_list interface:
 
 The `vwerr()` function is an alternative interface to `werr()`
-in `va_list` form.
+in `va\_list` form.
 
 ```c
 /*
- * vwerr - write an error message w/o exiting, to stderr, in va_list form
+ * vwerr - write an error message w/o exiting, to stderr, in va\_list form
  *
  * given:
  *      error_code      error code
@@ -1282,10 +1393,10 @@ in `va_list` form.
  *      fmt             format of the warning
  *      ap              variable argument list
  */
-extern void vwerr(int error_code, char const *name, char const *fmt, va_list ap);
+extern void vwerr(int error_code, char const *name, char const *fmt, va\_list ap);
 
 /*
- * vfwerr - write an error message w/o exiting, to a stream, in va_list form
+ * vfwerr - write an error message w/o exiting, to a stream, in va\_list form
  *
  * given:
  *      error_code      error code
@@ -1294,13 +1405,13 @@ extern void vwerr(int error_code, char const *name, char const *fmt, va_list ap)
  *      fmt             format of the warning
  *      ap              variable argument list
  */
-extern void vfwerr(int error_code, FILE *stream, char const *name, char const *fmt, va_list ap);
+extern void vfwerr(int error_code, FILE *stream, char const *name, char const *fmt, va\_list ap);
 ```
 
-The state of the va_list `ap` is **NOT** modified by this
+The state of the va\_list `ap` is **NOT** modified by this
 alternative interface function.
 
-NOTE: The arguments referenced by the va_list `ap` argument
+NOTE: The arguments referenced by the va\_list `ap` argument
 are **NOT** checked for consistency like they are using
 the primary interface.  For this reason, the primary
 interface `werr()` or `fwerr()` is recommended.
@@ -1314,6 +1425,8 @@ interface `werr()` or `fwerr()` is recommended.
 The `werrp()` function will write an error message that includes errno details to `stderr`.
 
 The `fwerrp()` function will write an error message that includes errno details to a stream.
+
+The `snwerrp()` function will copy an error message that includes errno details into a fixed string.
 
 ## Synopsis:
 
@@ -1340,6 +1453,19 @@ extern void werrp(int error_code, char const *name, char const *fmt, ...);
  *      ...             optional format args
  */
 extern void fwerrp(int error_code, FILE *stream, char const *name, char const *fmt, ...);
+
+/*
+ * snwerrp - copy an error message string with errno details into a buffer
+ *
+ * given:
+ *      error_code      error code
+ *      str             pointer to buffer in which to write a message
+ *      size            size of buffer, including space for a final NUL byte
+ *      name            name of function issuing the warning
+ *      fmt             format of the warning
+ *      ...             optional format args
+ */
+extern void snwerrp(int error_code, char *str, size_t size, char const *name, char const *fmt, ...);
 ```
 
 The `werrp()` function writes the same thing as `err()` but does
@@ -1389,11 +1515,19 @@ caller's original value of `errno` on return.
 ## Examples:
 
 ```c
+char buf[BUFSIZ]; /* message buffer */
+
+/* ... */
+
 werrp(391581, __func__, "malloc() failed");
 
 ...
 
 fwerrp(216091, stdout, __func__, "calloc() failed");
+
+/* ... */
+
+snwerrp(123, buf, BUFSIZ, __func__, "unexpected foobar: %d", value);
 ```
 
 The error message will be preceded by `FATAL[#]:`
@@ -1435,14 +1569,14 @@ function is called, will **disable** the writes.
 NOTE: No bounds check is made for the first argument (`error_code`).
 
 
-## Alternative va_list interface:
+## Alternative va\_list interface:
 
 The `vwerrp()` function is an alternative interface to `werrp()`
-in `va_list` form.
+in `va\_list` form.
 
 ```c
 /*
- * vwerrp - write an error message with errno info w/o exiting, to stderr, in va_list form
+ * vwerrp - write an error message with errno info w/o exiting, to stderr, in va\_list form
  *
  * given:
  *      error_code      error code
@@ -1450,10 +1584,10 @@ in `va_list` form.
  *      fmt             format of the warning
  *      ap              variable argument list
  */
-extern void vwerrp(int error_code, char const *name, char const *fmt, va_list ap);
+extern void vwerrp(int error_code, char const *name, char const *fmt, va\_list ap);
 
 /*
- * vfwerrp - write an error message with errno details w/o exiting to a stream, in va_list form
+ * vfwerrp - write an error message with errno details w/o exiting to a stream, in va\_list form
  *
  * given:
  *      error_code      error code
@@ -1462,13 +1596,13 @@ extern void vwerrp(int error_code, char const *name, char const *fmt, va_list ap
  *      fmt             format of the warning
  *      ap              variable argument list
  */
-extern void vfwerrp(int error_code, FILE *stream, char const *name, char const *fmt, va_list ap);
+extern void vfwerrp(int error_code, FILE *stream, char const *name, char const *fmt, va\_list ap);
 ```
 
-The state of the va_list `ap` is **NOT** modified by this
+The state of the va\_list `ap` is **NOT** modified by this
 alternative interface function.
 
-NOTE: The arguments referenced by the va_list `ap` argument
+NOTE: The arguments referenced by the va\_list `ap` argument
 are **NOT** checked for consistency like they are using
 the primary interface.  For this reason, the primary
 interface `werrp()` or `fwerrp()` is recommended.
@@ -1477,7 +1611,7 @@ interface `werrp()` or `fwerrp()` is recommended.
 
 
 
-# warn_or_err - write a warning or error message before exiting, depending on an arg
+# warn\_or\_err - write a warning or error message before exiting, depending on an arg
 
 The `warn_or_err()` function will write either a warning message, or
 an error message before exiting, depending on an arg to `stderr`.
@@ -1677,18 +1811,18 @@ Warning: warn_or_err: fmt is NULL, forcing fmt to be: ((NULL fmt))
 When `fmt == NULL`, any arguments following `fmt` are ignored.
 
 
-## Alternative va_list interface:
+## Alternative va\_list interface:
 
 The `vwarn_or_err()` function is an alternative interface to `warn_or_err()`
-in `va_list` form.
+in `va\_list` form.
 
 The `vfwarn_or_err()` function is an alternative interface to `fwarn_or_err()`
-in `va_list` form.
+in `va\_list` form.
 
 ```c
 /*
  * vwarn_or_err - write a warning or error message before exiting, depending on an arg,
- *                to stderr, in va_list form
+ *                to stderr, in va\_list form
  *
  * given:
  *      exitcode        value to exit with
@@ -1697,11 +1831,11 @@ in `va_list` form.
  *      fmt             format of the warning
  *      ap              variable argument list
  */
-extern void vwarn_or_err(int exitcode, const char *name, bool warning, const char *fmt, va_list ap);
+extern void vwarn_or_err(int exitcode, const char *name, bool warning, const char *fmt, va\_list ap);
 
 /*
  * vfwarn_or_err - write a warning or error message before exiting, depending on an arg,
- *                 to a stream, in va_list form
+ *                 to a stream, in va\_list form
  *
  * given:
  *      exitcode        value to exit with
@@ -1711,13 +1845,13 @@ extern void vwarn_or_err(int exitcode, const char *name, bool warning, const cha
  *      fmt             format of the warning
  *      ap              variable argument list
  */
-extern void vfwarn_or_err(int exitcode, FILE *stream, const char *name, bool warning, const char *fmt, va_list ap);
+extern void vfwarn_or_err(int exitcode, FILE *stream, const char *name, bool warning, const char *fmt, va\_list ap);
 ```
 
-The state of the va_list `ap` is **NOT** modified by this
+The state of the va\_list `ap` is **NOT** modified by this
 alternative interface function.
 
-NOTE: The arguments referenced by the va_list `ap` argument
+NOTE: The arguments referenced by the va\_list `ap` argument
 are **NOT** checked for consistency like they are using
 the primary interface.  For this reason, the primary
 interface `warn_or_err()` or `fwarn_or_err()` is recommended.
@@ -1726,7 +1860,7 @@ interface `warn_or_err()` or `fwarn_or_err()` is recommended.
 
 
 
-# warnp_or_errp - write a warning or error message before exiting, depending on an arg, w/errno details
+# warnp\_or\_errp - write a warning or error message before exiting, depending on an arg, w/errno details
 
 The `warnp_or_errp()` function will write either a warning message, or
 an error message before exiting, depending on an arg, w/errno details, to `stderr`.
@@ -1956,18 +2090,18 @@ Warning: warnp_or_errp: fmt is NULL, forcing fmt to be: ((NULL fmt))
 When `fmt == NULL`, any arguments following `fmt` are ignored.
 
 
-## Alternative va_list interface:
+## Alternative va\_list interface:
 
 The `vwarnp_or_errp()` function is an alternative interface to `warnp_or_errp()`
-in `va_list` form.
+in `va\_list` form.
 
 The `vfwarnp_or_errp()` function is an alternative interface to `fwarnp_or_errp()`
-in `va_list` form.
+in `va\_list` form.
 
 ```c
 /*
  * vwarnp_or_errp - write a warning or error message before exiting, depending on an arg,
- *                  w/errno details, to stderr, in va_list form
+ *                  w/errno details, to stderr, in va\_list form
  *
  * given:
  *      exitcode        value to exit with
@@ -1976,11 +2110,11 @@ in `va_list` form.
  *      fmt             format of the warning
  *      ap              variable argument list
  */
-extern void vwarnp_or_errp(int exitcode, const char *name, bool warning, const char *fmt, va_list ap);
+extern void vwarnp_or_errp(int exitcode, const char *name, bool warning, const char *fmt, va\_list ap);
 
 /*
  * vfwarnp_or_errp - write a warning or error message before exiting, depending on an arg,
- *                   w/errno details, to a stream, in va_list form
+ *                   w/errno details, to a stream, in va\_list form
  *
  * given:
  *      exitcode        value to exit with
@@ -1990,13 +2124,13 @@ extern void vwarnp_or_errp(int exitcode, const char *name, bool warning, const c
  *      fmt             format of the warning
  *      ap              variable argument list
  */
-extern void vfwarnp_or_errp(int exitcode, FILE *stream, const char *name, bool warning, const char *fmt, va_list ap);
+extern void vfwarnp_or_errp(int exitcode, FILE *stream, const char *name, bool warning, const char *fmt, va\_list ap);
 ```
 
-The state of the va_list `ap` is **NOT** modified by this
+The state of the va\_list `ap` is **NOT** modified by this
 alternative interface function.
 
-NOTE: The arguments referenced by the va_list `ap` argument
+NOTE: The arguments referenced by the va\_list `ap` argument
 are **NOT** checked for consistency like they are using
 the primary interface.  For this reason, the primary
 interface `wwarnp_or_errp()` or `fwarnp_or_errp()` is recommended.
@@ -2005,7 +2139,7 @@ interface `wwarnp_or_errp()` or `fwarnp_or_errp()` is recommended.
 
 
 
-# printf_usage - write command line usage and perhaps exit
+# printf\_usage - write command line usage and perhaps exit
 
 The `printf_usage()` function will write an usage message, to `stderr`.
 
@@ -2112,15 +2246,15 @@ Warning: printf_usage: fmt is NULL, forcing fmt to be: ((NULL fmt))
 When `fmt == NULL`, any arguments following `fmt` are ignored.
 
 
-## Alternative va_list interface:
+## Alternative va\_list interface:
 
-The `vprintf_usage()` function is an alternative interface to `printf_usage()` in `va_list` form.
+The `vprintf_usage()` function is an alternative interface to `printf_usage()` in `va\_list` form.
 
-The `vfprintf_usage()` function is an alternative interface to `fprintf_usage()` in `va_list` form.
+The `vfprintf_usage()` function is an alternative interface to `fprintf_usage()` in `va\_list` form.
 
 ```c
 /*
- * vprintf_usage - write command line usage and perhaps exit, to stderr, in va_list form
+ * vprintf_usage - write command line usage and perhaps exit, to stderr, in va\_list form
  *
  * given:
  *      exitcode        >= 0, exit with this code
@@ -2128,10 +2262,10 @@ The `vfprintf_usage()` function is an alternative interface to `fprintf_usage()`
  *      fmt             format of the warning
  *      ap              variable argument list
  */
-extern void vprintf_usage(int exitcode, char const *fmt, va_list ap);
+extern void vprintf_usage(int exitcode, char const *fmt, va\_list ap);
 
 /*
- * vfprintf_usage - write command line usage and perhaps exit, to a stream, in va_list form
+ * vfprintf_usage - write command line usage and perhaps exit, to a stream, in va\_list form
  *
  * given:
  *      exitcode        >= 0, exit with this code
@@ -2140,13 +2274,13 @@ extern void vprintf_usage(int exitcode, char const *fmt, va_list ap);
  *      fmt             format of the warning
  *      ap              variable argument list
  */
-extern void vfprintf_usage(int exitcode, FILE *stream, char const *fmt, va_list ap);
+extern void vfprintf_usage(int exitcode, FILE *stream, char const *fmt, va\_list ap);
 ```
 
-The state of the va_list `ap` is **NOT** modified by this
+The state of the va\_list `ap` is **NOT** modified by this
 alternative interface function.
 
-NOTE: The arguments referenced by the va_list `ap` argument
+NOTE: The arguments referenced by the va\_list `ap` argument
 are **NOT** checked for consistency like they are using
 the primary interface.  For this reason, the primary
 interface `printf_usage()` or `fprintf_usage()` is recommended.

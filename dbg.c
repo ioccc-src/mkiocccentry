@@ -251,9 +251,11 @@ fmsg_write(FILE *stream, char const *caller, char const *fmt, va_list ap)
 
 
 /*
- * snmsg_write - write a message to a string
+ * snmsg_write - copy an informational message string into a buffer
  *
- * Write a formatted message to a string.
+ * Copy a formatted message string into a fixed sized buffer.
+ *
+ * If the string is too large, the string will be truncated and warning will be issued.
  *
  * Unlike fmsg_write(), this function does NOT add a final newline to str.
  *
@@ -400,9 +402,11 @@ fdbg_write(FILE *stream, char const *caller, int level, char const *fmt, va_list
 
 
 /*
- * sndbg_write - write a diagnostic message to a string
+ * sndbg_write - write a diagnostic message string into a buffer
  *
- * Write a formatted debug diagnostic message to a string.
+ * Copy a formatted debug diagnostic message string into a fixed sized buffer.
+ *
+ * If the string is too large, the string will be truncated and warning will be issued.
  *
  * Unlike fdbg_write(), this function does NOT add a final newline to str.
  *
@@ -562,9 +566,11 @@ fwarn_write(FILE *stream, char const *caller, char const *name, char const *fmt,
 
 
 /*
- * snwarn_write - write a warning message to string
+ * snwarn_write - copy a warning message string into a buffer
  *
- * Write a formatted warning message to a string.
+ * Copy a formatted warning message string into a fixed sized buffer.
+ *
+ * If the string is too large, the string will be truncated and warning will be issued.
  *
  * Unlike fwarn_write(), this function does NOT add a final newline to str.
  *
@@ -723,9 +729,11 @@ fwarnp_write(FILE *stream, char const *caller, char const *name, char const *fmt
 
 
 /*
- * snwarnp_write - write a warning message with errno details to string
+ * snwarnp_write - copy a warning message string with errno details to a buffer
  *
- * Write a formatted warning message with errno details to a string.
+ * Copy a formatted warning message string with errno details to a fixed sized buffer.
+ *
+ * If the string is too large, the string will be truncated and warning will be issued.
  *
  * Unlike fwarnp_write(), this function does NOT add a final newline to str.
  *
@@ -897,7 +905,11 @@ ferr_write(FILE *stream, int error_code, char const *caller,
 
 
 /*
- * snerr_write - write an error diagnostic to a string
+ * snerr_write - copy an error diagnostic string into a buffer
+ *
+ * Copy a error diagnostic string into a fixed sized buffer.
+ *
+ * If the string is too large, the string will be truncated and warning will be issued.
  *
  * Unlike ferr_write(), this function does NOT add a final newline to str.
  *
@@ -1060,7 +1072,11 @@ ferrp_write(FILE *stream, int error_code, char const *caller,
 
 
 /*
- * snerrp_write - write an error diagnostic with errno details to a string
+ * snerrp_write - copy an error diagnostic string with errno details to a buffer
+ *
+ * Copy an error diagnostic string with errno details into a fixed sized buffer.
+ *
+ * If the string is too large, the string will be truncated and warning will be issued.
  *
  * Unlike ferrp_write(), this function does NOT add a final newline to str.
  *
@@ -1572,7 +1588,9 @@ vfmsg(FILE *stream, char const *fmt, va_list ap)
 
 
 /*
- * snmsg - write a generic message, to a string
+ * snmsg - copy a generic message string into a buffer
+ *
+ * Copy an informational message string into a fixed sized buffer.
  *
  * Unlike msg(), this function does NOT add a final newline to str.
  *
@@ -1892,7 +1910,10 @@ vfdbg(FILE *stream, int level, char const *fmt, va_list ap)
 
 
 /*
- * sndbg - write a verbosity level allowed debug message, to a string
+ * sndbg - Copy a verbosity level allowed debug message string into a buffer
+ *
+ * Copy a debug message string, if the verbosity level is high enough,
+ * into a fixed sized buffer.
  *
  * Unlike dbg(), this function does NOT add a final newline to str.
  *
@@ -1905,7 +1926,7 @@ vfdbg(FILE *stream, int level, char const *fmt, va_list ap)
  *
  * Example:
  *
- *	sndbg(buf, BUFSIZ, 1, "foobar information: %d", value);
+ *	sndbg(buf, BUFSIZ, DBG_VHIGH, "foobar information: %d", value);
  *
  * NOTE: This function does nothing (just returns) if passed a NULL pointer.
  * NOTE: This function does nothing (just returns) if a size <= 1.
@@ -2246,7 +2267,9 @@ vfwarn(FILE *stream, char const *name, char const *fmt, va_list ap)
 
 
 /*
- * snwarn - write a warning message, to a string
+ * snwarn - copy a warning message string into a buffer
+ *
+ * Copy a warning message string into a fixed sized buffer.
  *
  * Unlike warn(), this function does NOT add a final newline to str.
  *
@@ -2259,7 +2282,7 @@ vfwarn(FILE *stream, char const *name, char const *fmt, va_list ap)
  *
  * Example:
  *
- *	snwarn(buf, BUFSIZ, __func__, "unexpected foobar: %d", value);
+ *	snwarn(buf, BUFSIZ, __func__, "whey value: %d", value);
  *
  * NOTE: This function does nothing (just returns) if passed a NULL pointer.
  * NOTE: This function does nothing (just returns) if a size <= 1.
@@ -2603,7 +2626,9 @@ vfwarnp(FILE *stream, char const *name, char const *fmt, va_list ap)
 
 
 /*
- * snwarnp - write a warning message with errno details, to a string
+ * snwarnp - copy a warning message string with errno details into a buffer
+ *
+ * Copy warning message string that includes errno details into a fixed sized buffer.
  *
  * Unlike warnp(), this function does NOT add a final newline to str.
  *
@@ -3558,7 +3583,9 @@ vfwerr(int error_code, FILE *stream, char const *name, char const *fmt, va_list 
 
 
 /*
- * snwerr - write an error message, to a string
+ * snwerr - copy an error message string into a buffer
+ *
+ * Copy an error message string into a fixed sized buffer.
  *
  * Unlike werr(), this function does NOT add a final newline to str.
  *
@@ -3572,7 +3599,7 @@ vfwerr(int error_code, FILE *stream, char const *name, char const *fmt, va_list 
  *
  * Example:
  *
- *	snwerr(123, buf, BUFSIZ, __func__, "unexpected foobar: %d", value);
+ *	snwerr(123, buf, BUFSIZ, __func__, "invalid whey value: %d", value);
  *
  * NOTE: This function does nothing (just returns) if passed a NULL pointer.
  * NOTE: This function does nothing (just returns) if a size <= 1.
@@ -3914,7 +3941,9 @@ vfwerrp(int error_code, FILE *stream, char const *name, char const *fmt, va_list
 
 
 /*
- * snwerrp - write an error message with errno details, to a string
+ * snwerrp - copy an error message string with errno details into a buffer
+ *
+ * Copy an error message that includes errno details into a fixed string.
  *
  * Unlike werrp(), this function does NOT add a final newline to str.
  *
