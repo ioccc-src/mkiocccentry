@@ -120,12 +120,12 @@
 /*
  * minimum bison version needed to build the JSON parser
  */
-#define MIN_BISON_VERSION "3.8.2"			/* from: bison -V 2>&1 | head -n 1 | awk '{print $NF}' */
+#define MIN_BISON_VERSION "3.8.2"		/* from: bison -V 2>&1 | head -n 1 | awk '{print $NF}' */
 
 /*
  * minimum flex version needed to build the JSON parser
  */
-#define MIN_FLEX_VERSION "2.6.4"			/* from: flex -V 2>&1 | head -n 1 | awk '{print $NF}' */
+#define MIN_FLEX_VERSION "2.6.4"		/* from: flex -V 2>&1 | head -n 1 | awk '{print $NF}' */
 
 /*
  * official verge tool version
@@ -160,6 +160,14 @@
   *
   * Because the JSON parser is a self contained system, we cannot define
   * JPARSE_VERSION here. See jparse_main.h for the JPARSE_VERSION value.
+  */
+
+
+ /*
+  * Generate JSON semantics table vresion
+  *
+  * Because the JSON parser is a self contained system, we cannot define
+  * JSEMTBLGEN_VERSION here. See jsemtblgen.h for the JSEMTBLGEN_VERSION value.
   */
 
 

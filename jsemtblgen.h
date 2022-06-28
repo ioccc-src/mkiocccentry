@@ -1,6 +1,6 @@
 /* vim: set tabstop=8 softtabstop=4 shiftwidth=4 noexpandtab : */
 /*
- * jparse_main - tool that parses a block of JSON input
+ * jsemtblgen - tool that parses a block of JSON input
  *
  * "Because JSON embodies a commitment to original design flaws." :-)
  * "Because sometimes even the IOCCC Judges need some help." :-)
@@ -15,8 +15,8 @@
  */
 
 
-#if !defined(INCLUDE_JPARSE_MAIN_H)
-#    define  INCLUDE_JPARSE_MAIN_H
+#if !defined(INCLUDE_JSEMTBLGEN_H)
+#    define  INCLUDE_JSEMTBLGEN_H
 
 
 /*
@@ -30,14 +30,24 @@
 #include "util.h"
 
 /*
+ * json_util - general JSON parser utility support functions
+ */
+#include "json_util.h"
+
+/*
  * jparse - JSON parser demo tool
  */
 #include "jparse.h"
 
 /*
+ * json_sem - JSON semantics support
+ */
+#include "json_sem.h"
+
+/*
  * official jparse version
  */
-#define JPARSE_VERSION "0.8 2022-06-12"		/* format: major.minor YYYY-MM-DD */
+#define JSEMTBLGEN_VERSION "0.0 2022-06-28"		/* format: major.minor YYYY-MM-DD */
 
 
 /*
@@ -61,11 +71,11 @@ static const char * const usage_msg =
     "\t-s\t\tread arg as a string\n"
     "\t\t\tNOTE: You use -s arg last as -s is processed immediately\n"
     "\n"
-    "\t[file]\t\tread and parse file\n"
+    "\t[file]\t\tgenerate JSON semantics table from file\n"
     "\t\t\tNOTE: - means read from stdin\n"
     "\n"
     "JSON parser version: %s\n"
-    "jparse version: %s\n";
+    "jsemtblgen version: %s\n";
 
 
-#endif /* INCLUDE_JPARSE_MAIN_H */
+#endif /* INCLUDE_JSEMTBLGEN_H */

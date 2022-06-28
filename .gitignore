@@ -19,6 +19,7 @@ jparse.c
 jparse.tab.c
 jparse.tab.h
 jparse_test.log
+jsemtblgen
 json_parser
 jstr_test.out
 jstr_test2.out

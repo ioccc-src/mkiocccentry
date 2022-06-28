@@ -194,7 +194,8 @@ CFLAGS= ${STD_SRC} ${COPT} -pedantic ${WARN_FLAGS} ${LDFLAGS}
 MANDIR = /usr/local/share/man/man1
 DESTDIR= /usr/local/bin
 TARGETS= mkiocccentry iocccsize dbg fnamchk txzchk chkentry \
-	jstrencode jstrdecode utf8_test jparse verge jnum_chk jnum_gen
+	jstrencode jstrdecode utf8_test jparse verge jnum_chk jnum_gen \
+	jsemtblgen
 SH_TARGETS=limit_ioccc.sh
 
 # man pages
@@ -227,7 +228,7 @@ TEST_TARGETS= dbg utf8_test dyn_test
 OBJFILES= dbg.o util.o mkiocccentry.o iocccsize.o fnamchk.o txzchk.o chkentry.o \
 	json_parse.o jstrencode.o jstrdecode.o rule_count.o location.o sanity.o utf8_test.o verge.o \
 	dyn_array.o dyn_test.o dbg_test.o jnum_chk.o jnum_gen.o jnum_test.o \
-	json_util.o jparse_main.o entry_util.o
+	json_util.o jparse_main.o entry_util.o jsemtblgen.o
 LESS_PICKY_CSRC= utf8_posix_map.c
 LESS_PICKY_OBJ= utf8_posix_map.o
 GENERATED_CSRC= jparse.c jparse.tab.c
@@ -244,7 +245,7 @@ ALL_CSRC= ${LESS_PICKY_CSRC} ${GENERATED_CSRC} ${SRCFILES}
 H_FILES= dbg.h chkentry.h json_parse.h jstrdecode.h jstrencode.h limit_ioccc.h \
 	mkiocccentry.h txzchk.h util.h location.h utf8_posix_map.h jparse.h \
 	verge.h sorry.tm.ca.h dyn_array.h dyn_test.h json_util.h jnum_chk.h \
-	jnum_gen.h jparse_main.h entry_util.h
+	jnum_gen.h jparse_main.h entry_util.h jsemtblgen.h
 # This is a simpler way to do:
 #
 #   DSYMDIRS = $(patsubst %,%.dSYM,$(TARGETS))
@@ -464,8 +465,18 @@ jparse.tab.o: jparse.tab.c Makefile
 jparse_main.o: jparse_main.c Makefile
 	${CC} ${CFLAGS} jparse_main.c -c
 
-jparse: jparse.o jparse.tab.o util.o dyn_array.o dbg.o json_parse.o json_util.o jparse_main.o Makefile
-	${CC} ${CFLAGS} jparse.o jparse.tab.o util.o dyn_array.o dbg.o json_parse.o json_util.o jparse_main.o -o $@
+jparse: jparse.o jparse.tab.o util.o dyn_array.o dbg.o json_parse.o \
+	json_util.o jparse_main.o Makefile
+	${CC} ${CFLAGS} jparse.o jparse.tab.o util.o dyn_array.o dbg.o json_parse.o \
+			json_util.o jparse_main.o -o $@
+
+jsemtblgen.o: jsemtblgen.c Makefile
+	${CC} ${CFLAGS} jsemtblgen.c -c
+
+jsemtblgen: jsemtblgen.o jparse.o jparse.tab.o util.o dyn_array.o dbg.o json_parse.o \
+	    json_util.o Makefile
+	${CC} ${CFLAGS} jsemtblgen.o jparse.o jparse.tab.o util.o dyn_array.o dbg.o json_parse.o \
+			json_util.o -o $@
 
 utf8_test.o: utf8_test.c utf8_posix_map.h Makefile
 	${CC} ${CFLAGS} utf8_test.c -c
