@@ -877,3 +877,5 @@ jparse_main.o: jparse_main.c jparse_main.h dbg.h util.h dyn_array.h \
   jparse.h json_parse.h json_util.h jparse.tab.h
 entry_util.o: entry_util.c dbg.h util.h dyn_array.h entry_util.h \
   json_parse.h
+jsemtblgen.o: jsemtblgen.c jsemtblgen.h dbg.h util.h dyn_array.h \
+  json_util.h json_parse.h jparse.h jparse.tab.h json_sem.h
