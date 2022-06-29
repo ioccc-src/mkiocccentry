@@ -2499,12 +2499,7 @@ parse_json(char const *ptr, size_t len, bool *is_valid)
     }
 
     /*
-     * parse the blob, passing into the parser the node. The parser can access
-     * node directly by referring to node. For example to print out the type
-     * (currently it'll only be JTYPE_UNSET as it's NULL) it could do:
-     *
-     *	json_dbg(JSON_DBG_LOW, __func__, "node type: %s", json_item_type_name(node));
-     *
+     * parse the blob, passing into the parser the node
      */
     ret = ugly_parse(node);
 
@@ -2525,15 +2520,16 @@ parse_json(char const *ptr, size_t len, bool *is_valid)
      * report scanner / parser success or failure
      */
     if (is_valid != NULL) {
-	*is_valid = ret == 0;
+	*is_valid = (ret == 0);
     }
     if (ret != 0) {
 	/* invalid JSON */
 	fprstr(stderr, "invalid JSON\n");
     }
 
-    /* XXX - return a blank JSON tree until we can get a tree via ugly_parse somehow - XXX */
-    node = json_alloc(JTYPE_UNSET);
+    /*
+     * return parse tree
+     */
     return node;
 }
 
@@ -2560,14 +2556,6 @@ parse_json(char const *ptr, size_t len, bool *is_valid)
  * for the parse_json_block() function so I think both ought to be here. There
  * might be a better way to go about that but I'll know more about this later
  * on. Like everything else here this is subject to change!
- *
- * NOTE: This function only warns on error. The reason for this is because more
- * than one string and/or file can then be verified during testing. Once the
- * parser is complete it will use jerr(). Note that this refers to errors
- * unspecific to the parser. On the other hand it might be that some of these
- * should be errors since conversion errors in the parser are fatal errors.
- * Perhaps instead warn() should be instead werr() which issues an error message
- * but does not make it fatal.
  */
 struct json *
 parse_json_file(char const *filename, bool *is_valid)
@@ -2712,16 +2700,18 @@ parse_json_file(char const *filename, bool *is_valid)
     node = parse_json(data, len, is_valid);
 
     /* free data */
-    free(data);
-    data = NULL;
+    if (data != NULL) {
+	free(data);
+	data = NULL;
+    }
 
     /*
      * we cannot use clearerr_or_fclose() here as it's possible that ugly_in
      * will be NULL and so we do it manually instead.
      */
-    if (is_stdin == true)
+    if (is_stdin == true) {
 	clearerr(stdin);
-    else if (ugly_in != NULL) {
+    } else if (ugly_in != NULL) {
 	errno = 0;
 	ret = fclose(ugly_in);
 	if (ret != 0) {

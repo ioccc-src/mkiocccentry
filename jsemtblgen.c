@@ -53,6 +53,7 @@ main(int argc, char **argv)
     extern int optind;		    /* argv index of the next arg */
     bool string_flag_used = false;  /* true ==> -S string was used */
     bool valid_json = false;	    /* true ==> JSON parse was valid */
+    struct json *tree = NULL;	    /* JSON parse tree or NULL */
     int ret;			    /* libc return code */
     int i;
 
@@ -115,7 +116,7 @@ main(int argc, char **argv)
 	    json_dbg(JSON_DBG_HIGH, __func__, "Calling parse_json(\"%s\", %ju, stderr):",
 					      optarg, (uintmax_t)strlen(optarg));
 	    /* parse arg as a block of json input */
-	    parse_json(optarg, strlen(optarg), &valid_json);
+	    tree = parse_json(optarg, strlen(optarg), &valid_json);
 	    if (valid_json) {
 		errno = 0; /* pre-clear errno for warnp() */
 		ret = printf("valid JSON\n");
@@ -139,7 +140,7 @@ main(int argc, char **argv)
 	 * process each argument in order
 	 */
 	for (i=optind; i < argc; ++i) {
-	    parse_json_file(argv[i], &valid_json);
+	    tree = parse_json_file(argv[i], &valid_json);
 	    if (valid_json) {
 		errno = 0; /* pre-clear errno for warnp() */
 		ret = printf("valid JSON in file %s\n", argv[i]);
@@ -155,6 +156,15 @@ main(int argc, char **argv)
     }
 
     /* XXX - add more code here - XXX */
+
+    /*
+     * free the JSON parse tree
+     */
+    if (tree == NULL) {
+	json_tree_free(tree, JSON_INFINITE_DEPTH);
+	free(tree);
+	tree = NULL;
+    }
 
     /*
      *  exit based on JSON parse success or failure

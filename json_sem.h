@@ -70,6 +70,7 @@ struct json_sem {
     enum item_type type;	/* type of JSON node */
     unsigned int min;		/* minimum allowed count */
     unsigned int max;		/* maximum allowed count, 0 ==> infinite */
+    char *name;			/* when type == JTYPE_MEMBER, match name if name != NULL */
     bool (* validate)(struct json *node, unsigned int depth, struct json_sem *sem, struct json_val_err *val_err);
 				/* JSON parse tree node validator, or NULL */
     unsigned int count;		/* number of times this JSON semantic was matched */
