@@ -182,22 +182,26 @@ json:
 	 */
 
 	/* pre action debugging */
-	json_dbg(JSON_DBG_HIGH, __func__, "under json: starting: "
-					  "json: json_element");
-	json_dbg(JSON_DBG_MED, __func__, "under json: $json_element type: %s",
-					 json_item_type_name($json_element));
-	json_dbg(JSON_DBG_MED, __func__, "under json: about to perform: "
-					 "$json = $json_element;");
+	if (json_dbg_allowed(JSON_DBG_MED)) {
+	    json_dbg(JSON_DBG_HIGH, __func__, "under json: starting: "
+					      "json: json_element");
+	    json_dbg(JSON_DBG_MED, __func__, "under json: $json_element type: %s",
+					     json_item_type_name($json_element));
+	    json_dbg(JSON_DBG_MED, __func__, "under json: about to perform: "
+					     "$json = $json_element;");
+	}
 
 	/* action */
 	$json = $json_element; /* magic: json becomes the json_element type */
 
 	/* post action debugging */
-	json_dbg(JSON_DBG_MED, __func__, "under json: returning $json type: %s",
-					 json_item_type_name($json));
-	json_dbg_tree_print(JSON_DBG_MED, __func__, $json, JSON_DEFAULT_MAX_DEPTH);
-	json_dbg(JSON_DBG_HIGH, __func__, "under json: ending: "
-					  "json: json_element");
+	if (json_dbg_allowed(JSON_DBG_MED)) {
+	    json_dbg(JSON_DBG_MED, __func__, "under json: returning $json type: %s",
+					     json_item_type_name($json));
+	    json_dbg_tree_print(JSON_DBG_MED, __func__, $json, JSON_DEFAULT_MAX_DEPTH);
+	    json_dbg(JSON_DBG_HIGH, __func__, "under json: ending: "
+					      "json: json_element");
+	}
     }
     ;
 
@@ -211,22 +215,26 @@ json_value:
 	 */
 
 	/* pre-action debugging */
-	json_dbg(JSON_DBG_VHIGH, __func__, "under json_value: starting: "
-					   "json_value: json_object");
-	json_dbg(JSON_DBG_VHIGH, __func__, "under json_value: $json_object type: %s",
-					 json_item_type_name($json_object));
-	json_dbg(JSON_DBG_VHIGH, __func__, "under json_value: about to perform: "
-					   "$json_value = $json_object;");
+	if (json_dbg_allowed(JSON_DBG_VHIGH)) {
+	    json_dbg(JSON_DBG_VHIGH, __func__, "under json_value: starting: "
+					       "json_value: json_object");
+	    json_dbg(JSON_DBG_VHIGH, __func__, "under json_value: $json_object type: %s",
+					     json_item_type_name($json_object));
+	    json_dbg(JSON_DBG_VHIGH, __func__, "under json_value: about to perform: "
+					       "$json_value = $json_object;");
+	}
 
 	/* action */
 	$json_value = $json_object;	/* magic: json_value becomes the json_object (JTYPE_OBJECT) type */
 
 	/* post-action debugging */
-	json_dbg(JSON_DBG_HIGH, __func__, "under json_value: returning $json_value type: %s",
-					  json_item_type_name($json_value));
-	json_dbg_tree_print(JSON_DBG_HIGH, __func__, $json_value, JSON_DEFAULT_MAX_DEPTH);
-	json_dbg(JSON_DBG_VHIGH, __func__, "under json_value: ending: "
-					   "json_value: json_object");
+	if (json_dbg_allowed(JSON_DBG_HIGH)) {
+	    json_dbg(JSON_DBG_HIGH, __func__, "under json_value: returning $json_value type: %s",
+					      json_item_type_name($json_value));
+	    json_dbg_tree_print(JSON_DBG_HIGH, __func__, $json_value, JSON_DEFAULT_MAX_DEPTH);
+	    json_dbg(JSON_DBG_VHIGH, __func__, "under json_value: ending: "
+					       "json_value: json_object");
+	}
     }
     |
 
@@ -238,22 +246,26 @@ json_value:
 	 */
 
 	/* pre-action debugging */
-	json_dbg(JSON_DBG_VHIGH, __func__, "under json_value: starting: "
-					   "json_value: json_array");
-	json_dbg(JSON_DBG_VHIGH, __func__, "under json_value: $json_array type: %s",
-					   json_item_type_name($json_array));
-	json_dbg(JSON_DBG_VHIGH, __func__, "under json_value: about to perform: "
-					   "$json_value = $json_array;");
+	if (json_dbg_allowed(JSON_DBG_VHIGH)) {
+	    json_dbg(JSON_DBG_VHIGH, __func__, "under json_value: starting: "
+					       "json_value: json_array");
+	    json_dbg(JSON_DBG_VHIGH, __func__, "under json_value: $json_array type: %s",
+					       json_item_type_name($json_array));
+	    json_dbg(JSON_DBG_VHIGH, __func__, "under json_value: about to perform: "
+					       "$json_value = $json_array;");
+	}
 
 	/* action */
 	$json_value = $json_array;	/* magic: json_value becomes the json_array type (JTYPE_ARRAY) */
 
 	/* post-action debugging */
-	json_dbg(JSON_DBG_HIGH, __func__, "under json_value: returning $json_value type: %s",
-					  json_item_type_name($json_value));
-	json_dbg_tree_print(JSON_DBG_HIGH, __func__, $json_value, JSON_DEFAULT_MAX_DEPTH);
-	json_dbg(JSON_DBG_VHIGH, __func__, "under json_value: ending: "
-					   "json_value: json_array");
+	if (json_dbg_allowed(JSON_DBG_HIGH)) {
+	    json_dbg(JSON_DBG_HIGH, __func__, "under json_value: returning $json_value type: %s",
+					      json_item_type_name($json_value));
+	    json_dbg_tree_print(JSON_DBG_HIGH, __func__, $json_value, JSON_DEFAULT_MAX_DEPTH);
+	    json_dbg(JSON_DBG_VHIGH, __func__, "under json_value: ending: "
+					       "json_value: json_array");
+	}
     }
     |
 
@@ -265,22 +277,26 @@ json_value:
 	 */
 
 	/* pre-action debugging */
-	json_dbg(JSON_DBG_VHIGH, __func__, "under json_value: starting: "
-					   "json_value: json_string");
-	json_dbg(JSON_DBG_VHIGH, __func__, "under json_value: $json_string type: %s",
-					   json_item_type_name($json_string));
-	json_dbg(JSON_DBG_VHIGH, __func__, "under json_value: about to perform: "
-					   "$json_value = $json_string;");
+	if (json_dbg_allowed(JSON_DBG_VHIGH)) {
+	    json_dbg(JSON_DBG_VHIGH, __func__, "under json_value: starting: "
+					       "json_value: json_string");
+	    json_dbg(JSON_DBG_VHIGH, __func__, "under json_value: $json_string type: %s",
+					       json_item_type_name($json_string));
+	    json_dbg(JSON_DBG_VHIGH, __func__, "under json_value: about to perform: "
+					       "$json_value = $json_string;");
+	}
 
 	/* action */
 	$json_value = $json_string; /* magic: json_value becomes the json_string type (JTYPE_STRING) */
 
 	/* post-action debugging */
-	json_dbg(JSON_DBG_HIGH, __func__, "under json_value: returning $json_value type: %s",
-					  json_item_type_name($json_value));
-	json_dbg_tree_print(JSON_DBG_HIGH, __func__, $json_value, JSON_DEFAULT_MAX_DEPTH);
-	json_dbg(JSON_DBG_VHIGH, __func__, "under json_value: ending: "
-					   "json_value: json_string");
+	if (json_dbg_allowed(JSON_DBG_HIGH)) {
+	    json_dbg(JSON_DBG_HIGH, __func__, "under json_value: returning $json_value type: %s",
+					      json_item_type_name($json_value));
+	    json_dbg_tree_print(JSON_DBG_HIGH, __func__, $json_value, JSON_DEFAULT_MAX_DEPTH);
+	    json_dbg(JSON_DBG_VHIGH, __func__, "under json_value: ending: "
+					       "json_value: json_string");
+	}
     }
     |
 
@@ -292,22 +308,26 @@ json_value:
 	 */
 
 	/* pre-action debugging */
-	json_dbg(JSON_DBG_VHIGH, __func__, "under json_value: starting: "
-					   "json_value: json_number");
-	json_dbg(JSON_DBG_VHIGH, __func__, "under json_value: $json_number type: %s",
-					   json_item_type_name($json_number));
-	json_dbg(JSON_DBG_VHIGH, __func__, "under json_value: about to perform: "
-					   "$json_value = $json_number;");
+	if (json_dbg_allowed(JSON_DBG_VHIGH)) {
+	    json_dbg(JSON_DBG_VHIGH, __func__, "under json_value: starting: "
+					       "json_value: json_number");
+	    json_dbg(JSON_DBG_VHIGH, __func__, "under json_value: $json_number type: %s",
+					       json_item_type_name($json_number));
+	    json_dbg(JSON_DBG_VHIGH, __func__, "under json_value: about to perform: "
+					       "$json_value = $json_number;");
+	}
 
 	/* action */
 	$json_value = $json_number; /* magic: json_value becomes the json_number type (JTYPE_NUMBER) */
 
 	/* post-action debugging */
-	json_dbg(JSON_DBG_HIGH, __func__, "under json_value: returning $json_value type: %s",
-					  json_item_type_name($json_value));
-	json_dbg_tree_print(JSON_DBG_HIGH, __func__, $json_value, JSON_DEFAULT_MAX_DEPTH);
-	json_dbg(JSON_DBG_VHIGH, __func__, "under json_value: ending: "
-					   "json_value: json_number");
+	if (json_dbg_allowed(JSON_DBG_HIGH)) {
+	    json_dbg(JSON_DBG_HIGH, __func__, "under json_value: returning $json_value type: %s",
+					      json_item_type_name($json_value));
+	    json_dbg_tree_print(JSON_DBG_HIGH, __func__, $json_value, JSON_DEFAULT_MAX_DEPTH);
+	    json_dbg(JSON_DBG_VHIGH, __func__, "under json_value: ending: "
+					       "json_value: json_number");
+	}
     }
     |
 
@@ -318,22 +338,26 @@ json_value:
 	 */
 
 	/* pre-action debugging */
-	json_dbg(JSON_DBG_VHIGH, __func__, "under json_value: starting: "
-					   "json_value: JSON_TRUE");
-	json_dbg(JSON_DBG_VVHIGH, __func__, "under json_value: ugly_text: <%s>", ugly_text);
-	json_dbg(JSON_DBG_VVHIGH, __func__, "under json_value: ugly_leng: <%d>", ugly_leng);
-	json_dbg(JSON_DBG_VHIGH, __func__, "under json_value: about to perform: "
-					   "$json_value = parse_json_bool(ugly_text);");
+	if (json_dbg_allowed(JSON_DBG_VHIGH)) {
+	    json_dbg(JSON_DBG_VHIGH, __func__, "under json_value: starting: "
+					       "json_value: JSON_TRUE");
+	    json_dbg(JSON_DBG_VVHIGH, __func__, "under json_value: ugly_text: <%s>", ugly_text);
+	    json_dbg(JSON_DBG_VVHIGH, __func__, "under json_value: ugly_leng: <%d>", ugly_leng);
+	    json_dbg(JSON_DBG_VHIGH, __func__, "under json_value: about to perform: "
+					       "$json_value = parse_json_bool(ugly_text);");
+	}
 
 	/* action */
 	$json_value = parse_json_bool(ugly_text); /* magic: json_value becomes the JSON_TRUE type (JTYPE_BOOL) */
 
 	/* post-action debugging */
-	json_dbg(JSON_DBG_HIGH, __func__, "under json_value: returning $json_value type: %s",
-				          json_item_type_name($json_value));
-	json_dbg_tree_print(JSON_DBG_HIGH, __func__, $json_value, JSON_DEFAULT_MAX_DEPTH);
-	json_dbg(JSON_DBG_VHIGH, __func__, "under json_value: ending: "
-					   "json_value: JSON_TRUE");
+	if (json_dbg_allowed(JSON_DBG_HIGH)) {
+	    json_dbg(JSON_DBG_HIGH, __func__, "under json_value: returning $json_value type: %s",
+					      json_item_type_name($json_value));
+	    json_dbg_tree_print(JSON_DBG_HIGH, __func__, $json_value, JSON_DEFAULT_MAX_DEPTH);
+	    json_dbg(JSON_DBG_VHIGH, __func__, "under json_value: ending: "
+					       "json_value: JSON_TRUE");
+	}
     }
     |
 
@@ -344,22 +368,26 @@ json_value:
 	 */
 
 	/* pre-action debugging */
-	json_dbg(JSON_DBG_VHIGH, __func__, "under json_value: starting: "
-					   "json_value: JSON_FALSE");
-	json_dbg(JSON_DBG_VVHIGH, __func__, "under json_value: ugly_text: <%s>", ugly_text);
-	json_dbg(JSON_DBG_VVHIGH, __func__, "under json_value: ugly_leng: <%d>", ugly_leng);
-	json_dbg(JSON_DBG_VHIGH, __func__, "under json_value: about to perform: "
-					   "$json_value = parse_json_bool(ugly_text);");
+	if (json_dbg_allowed(JSON_DBG_VHIGH)) {
+	    json_dbg(JSON_DBG_VHIGH, __func__, "under json_value: starting: "
+					       "json_value: JSON_FALSE");
+	    json_dbg(JSON_DBG_VVHIGH, __func__, "under json_value: ugly_text: <%s>", ugly_text);
+	    json_dbg(JSON_DBG_VVHIGH, __func__, "under json_value: ugly_leng: <%d>", ugly_leng);
+	    json_dbg(JSON_DBG_VHIGH, __func__, "under json_value: about to perform: "
+					       "$json_value = parse_json_bool(ugly_text);");
+	}
 
 	/* action */
 	$json_value = parse_json_bool(ugly_text); /* magic: json_value becomes the JSON_FALSE type (JTYPE_BOOL) */
 
 	/* post-action debugging */
-	json_dbg(JSON_DBG_HIGH, __func__, "under json_value: returning $json_value type: %s",
-				          json_item_type_name($json_value));
-	json_dbg_tree_print(JSON_DBG_HIGH, __func__, $json_value, JSON_DEFAULT_MAX_DEPTH);
-	json_dbg(JSON_DBG_VHIGH, __func__, "under json_value: ending: "
-					 "json_value: JSON_FALSE");
+	if (json_dbg_allowed(JSON_DBG_HIGH)) {
+	    json_dbg(JSON_DBG_HIGH, __func__, "under json_value: returning $json_value type: %s",
+					      json_item_type_name($json_value));
+	    json_dbg_tree_print(JSON_DBG_HIGH, __func__, $json_value, JSON_DEFAULT_MAX_DEPTH);
+	    json_dbg(JSON_DBG_VHIGH, __func__, "under json_value: ending: "
+					     "json_value: JSON_FALSE");
+	}
     }
     |
 
@@ -370,22 +398,26 @@ json_value:
 	 */
 
 	/* pre-action debugging */
-	json_dbg(JSON_DBG_VHIGH, __func__, "under json_value: starting: "
-					   "json_value: JSON_NULL");
-	json_dbg(JSON_DBG_VVHIGH, __func__, "under json_value: ugly_text: <%s>", ugly_text);
-	json_dbg(JSON_DBG_VVHIGH, __func__, "under json_value: ugly_leng: <%d>", ugly_leng);
-	json_dbg(JSON_DBG_VHIGH, __func__, "under json_value: about to perform: "
-					   "$json_value = parse_json_null(ugly_text);");
+	if (json_dbg_allowed(JSON_DBG_VHIGH)) {
+	    json_dbg(JSON_DBG_VHIGH, __func__, "under json_value: starting: "
+					       "json_value: JSON_NULL");
+	    json_dbg(JSON_DBG_VVHIGH, __func__, "under json_value: ugly_text: <%s>", ugly_text);
+	    json_dbg(JSON_DBG_VVHIGH, __func__, "under json_value: ugly_leng: <%d>", ugly_leng);
+	    json_dbg(JSON_DBG_VHIGH, __func__, "under json_value: about to perform: "
+					       "$json_value = parse_json_null(ugly_text);");
+	}
 
 	/* action */
 	$json_value = parse_json_null(ugly_text); /* magic: json_value becomes the JSON_NULL type (JTYPE_NULL) */
 
 	/* post-action debugging */
-	json_dbg(JSON_DBG_HIGH, __func__, "under json_value: returning $json_value type: %s",
-				          json_item_type_name($json_value));
-	json_dbg_tree_print(JSON_DBG_HIGH, __func__, $json_value, JSON_DEFAULT_MAX_DEPTH);
-	json_dbg(JSON_DBG_VHIGH, __func__, "under json_value: ending: "
-					   "json_value: JSON_NULL");
+	if (json_dbg_allowed(JSON_DBG_HIGH)) {
+	    json_dbg(JSON_DBG_HIGH, __func__, "under json_value: returning $json_value type: %s",
+					      json_item_type_name($json_value));
+	    json_dbg_tree_print(JSON_DBG_HIGH, __func__, $json_value, JSON_DEFAULT_MAX_DEPTH);
+	    json_dbg(JSON_DBG_VHIGH, __func__, "under json_value: ending: "
+					       "json_value: JSON_NULL");
+	}
     }
     ;
 
@@ -399,22 +431,26 @@ json_object:
 	 */
 
 	/* pre-action debugging */
-	json_dbg(JSON_DBG_VHIGH, __func__, "under json_object: starting: "
-					   "json_object: JSON_OPEN_BRACE json_members JSON_CLOSE_BRACE");
-	json_dbg(JSON_DBG_VHIGH, __func__, "under json_object: $json_members type: %s",
-					   json_item_type_name($json_members));
-	json_dbg(JSON_DBG_VHIGH, __func__, "under json_object: about to perform: "
-					   "$json_object = $json_members;");
+	if (json_dbg_allowed(JSON_DBG_VHIGH)) {
+	    json_dbg(JSON_DBG_VHIGH, __func__, "under json_object: starting: "
+					       "json_object: JSON_OPEN_BRACE json_members JSON_CLOSE_BRACE");
+	    json_dbg(JSON_DBG_VHIGH, __func__, "under json_object: $json_members type: %s",
+					       json_item_type_name($json_members));
+	    json_dbg(JSON_DBG_VHIGH, __func__, "under json_object: about to perform: "
+					       "$json_object = $json_members;");
+	}
 
 	/* action */
 	$json_object = $json_members; /* magic: json_value becomes the json_number type (JTYPE_OBJECT) */
 
 	/* post-action debugging */
-	json_dbg(JSON_DBG_HIGH, __func__, "under json_object: returning $json_object type: %s",
-					  json_item_type_name($json_object));
-	json_dbg_tree_print(JSON_DBG_HIGH, __func__, $json_object, JSON_DEFAULT_MAX_DEPTH);
-	json_dbg(JSON_DBG_VHIGH, __func__, "under json_object: ending: "
-					   "json_object: JSON_OPEN_BRACE json_members JSON_CLOSE_BRACE");
+	if (json_dbg_allowed(JSON_DBG_HIGH)) {
+	    json_dbg(JSON_DBG_HIGH, __func__, "under json_object: returning $json_object type: %s",
+					      json_item_type_name($json_object));
+	    json_dbg_tree_print(JSON_DBG_HIGH, __func__, $json_object, JSON_DEFAULT_MAX_DEPTH);
+	    json_dbg(JSON_DBG_VHIGH, __func__, "under json_object: ending: "
+					       "json_object: JSON_OPEN_BRACE json_members JSON_CLOSE_BRACE");
+	}
     }
     |
 
@@ -425,20 +461,24 @@ json_object:
 	 */
 
 	/* pre-action debugging */
-	json_dbg(JSON_DBG_VHIGH, __func__, "under json_object: starting: "
-					   "json_object: JSON_OPEN_BRACE JSON_CLOSE_BRACE");
-	json_dbg(JSON_DBG_VHIGH, __func__, "under json_object: about to perform: "
-					   "$json_object = json_create_object();");
+	if (json_dbg_allowed(JSON_DBG_VHIGH)) {
+	    json_dbg(JSON_DBG_VHIGH, __func__, "under json_object: starting: "
+					       "json_object: JSON_OPEN_BRACE JSON_CLOSE_BRACE");
+	    json_dbg(JSON_DBG_VHIGH, __func__, "under json_object: about to perform: "
+					       "$json_object = json_create_object();");
+	}
 
 	/* action */
 	$json_object = json_create_object(); /* json_object becomes JTYPE_OBJECT */
 
 	/* post-action debugging */
-	json_dbg(JSON_DBG_HIGH, __func__, "under json_object: returning $json_object type: %s",
-					  json_item_type_name($json_object));
-	json_dbg_tree_print(JSON_DBG_HIGH, __func__, $json_object, JSON_DEFAULT_MAX_DEPTH);
-	json_dbg(JSON_DBG_VHIGH, __func__, "under json_object: ending: "
-					   "json_object: JSON_OPEN_BRACE JSON_CLOSE_BRACE");
+	if (json_dbg_allowed(JSON_DBG_HIGH)) {
+	    json_dbg(JSON_DBG_HIGH, __func__, "under json_object: returning $json_object type: %s",
+					      json_item_type_name($json_object));
+	    json_dbg_tree_print(JSON_DBG_HIGH, __func__, $json_object, JSON_DEFAULT_MAX_DEPTH);
+	    json_dbg(JSON_DBG_VHIGH, __func__, "under json_object: ending: "
+					       "json_object: JSON_OPEN_BRACE JSON_CLOSE_BRACE");
+	}
     }
     ;
 
@@ -452,25 +492,29 @@ json_members:
 	 */
 
 	/* pre-action debugging */
-	json_dbg(JSON_DBG_VHIGH, __func__, "under json_members: starting: "
-					   "json_members: json_member");
-	json_dbg(JSON_DBG_VHIGH, __func__, "under json_members: $json_member type: %s",
-					   json_item_type_name($json_member));
-	json_dbg(JSON_DBG_VHIGH, __func__, "under json_members: about to perform: "
-					   "$json_members = json_create_object();");
-	json_dbg(JSON_DBG_VHIGH, __func__, "under json_members: about to also perform: "
-					   "$json_members = json_object_add_member($json_members, $json_member);");
+	if (json_dbg_allowed(JSON_DBG_VHIGH)) {
+	    json_dbg(JSON_DBG_VHIGH, __func__, "under json_members: starting: "
+					       "json_members: json_member");
+	    json_dbg(JSON_DBG_VHIGH, __func__, "under json_members: $json_member type: %s",
+					       json_item_type_name($json_member));
+	    json_dbg(JSON_DBG_VHIGH, __func__, "under json_members: about to perform: "
+					       "$json_members = json_create_object();");
+	    json_dbg(JSON_DBG_VHIGH, __func__, "under json_members: about to also perform: "
+					       "$json_members = json_object_add_member($json_members, $json_member);");
+	}
 
 	/* action */
 	$json_members = json_create_object();
 	$json_members = json_object_add_member($json_members, $json_member);
 
 	/* post-action debugging */
-	json_dbg(JSON_DBG_VHIGH, __func__, "under json_members: returning $json_members type: %s",
-				           json_item_type_name($json_members));
-	json_dbg_tree_print(JSON_DBG_VHIGH, __func__, $json_members, JSON_DEFAULT_MAX_DEPTH);
-	json_dbg(JSON_DBG_HIGH, __func__, "under json_members: ending: "
-					  "json_members: json_member");
+	if (json_dbg_allowed(JSON_DBG_HIGH)) {
+	    json_dbg(JSON_DBG_VHIGH, __func__, "under json_members: returning $json_members type: %s",
+					       json_item_type_name($json_members));
+	    json_dbg_tree_print(JSON_DBG_VHIGH, __func__, $json_members, JSON_DEFAULT_MAX_DEPTH);
+	    json_dbg(JSON_DBG_HIGH, __func__, "under json_members: ending: "
+					      "json_members: json_member");
+	}
     }
     |
 
@@ -486,24 +530,28 @@ json_members:
 	 */
 
 	/* pre-action debugging */
-	json_dbg(JSON_DBG_VHIGH, __func__, "under json_members: starting: "
-					   "json_members: json_members JSON_COMMA json_member");
-	json_dbg(JSON_DBG_VHIGH, __func__, "under json_members: $1 ($json_members) type: %s",
-					   json_item_type_name($1));
-	json_dbg(JSON_DBG_VHIGH, __func__, "under json_members: $3 ($json_member) type: %s",
-					   json_item_type_name($3));
-	json_dbg(JSON_DBG_VHIGH, __func__, "under json_members: about to perform: "
-					   "$$ = json_object_add_member($1, $json_member)");
+	if (json_dbg_allowed(JSON_DBG_VHIGH)) {
+	    json_dbg(JSON_DBG_VHIGH, __func__, "under json_members: starting: "
+					       "json_members: json_members JSON_COMMA json_member");
+	    json_dbg(JSON_DBG_VHIGH, __func__, "under json_members: $1 ($json_members) type: %s",
+					       json_item_type_name($1));
+	    json_dbg(JSON_DBG_VHIGH, __func__, "under json_members: $3 ($json_member) type: %s",
+					       json_item_type_name($3));
+	    json_dbg(JSON_DBG_VHIGH, __func__, "under json_members: about to perform: "
+					       "$$ = json_object_add_member($1, $json_member)");
+	}
 
 	/* action */
 	$$ = json_object_add_member($1, $json_member);
 
 	/* post-action debugging */
-	json_dbg(JSON_DBG_HIGH, __func__, "under json_members: returning $$ ($json_members) type: %s",
-				          json_item_type_name($$));
-	json_dbg_tree_print(JSON_DBG_HIGH, __func__, $$, JSON_DEFAULT_MAX_DEPTH);
-	json_dbg(JSON_DBG_VHIGH, __func__, "under json_members: ending: "
-					   "json_members: json_members JSON_COMMA json_member");
+	if (json_dbg_allowed(JSON_DBG_HIGH)) {
+	    json_dbg(JSON_DBG_HIGH, __func__, "under json_members: returning $$ ($json_members) type: %s",
+					      json_item_type_name($$));
+	    json_dbg_tree_print(JSON_DBG_HIGH, __func__, $$, JSON_DEFAULT_MAX_DEPTH);
+	    json_dbg(JSON_DBG_VHIGH, __func__, "under json_members: ending: "
+					       "json_members: json_members JSON_COMMA json_member");
+	}
     }
     ;
 
@@ -518,24 +566,28 @@ json_member:
 	 */
 
 	/* pre-action debugging */
-	json_dbg(JSON_DBG_VHIGH, __func__, "under json_member: starting: "
-					   "json_member: json_string JSON_COLON json_element");
-	json_dbg(JSON_DBG_VHIGH, __func__, "under json_member: $json_string type: %s",
-					   json_item_type_name($json_string));
-	json_dbg(JSON_DBG_VHIGH, __func__, "under json_member: $json_element type: %s",
-					   json_item_type_name($json_element));
-	json_dbg(JSON_DBG_VHIGH, __func__, "under json_member: about to perform: "
-					   "$json_member = parse_json_member($json_string, $json_element);");
+	if (json_dbg_allowed(JSON_DBG_VHIGH)) {
+	    json_dbg(JSON_DBG_VHIGH, __func__, "under json_member: starting: "
+					       "json_member: json_string JSON_COLON json_element");
+	    json_dbg(JSON_DBG_VHIGH, __func__, "under json_member: $json_string type: %s",
+					       json_item_type_name($json_string));
+	    json_dbg(JSON_DBG_VHIGH, __func__, "under json_member: $json_element type: %s",
+					       json_item_type_name($json_element));
+	    json_dbg(JSON_DBG_VHIGH, __func__, "under json_member: about to perform: "
+					       "$json_member = parse_json_member($json_string, $json_element);");
+	}
 
 	/* action */
 	$json_member = parse_json_member($json_string, $json_element);
 
 	/* post-action debugging */
-	json_dbg(JSON_DBG_HIGH, __func__, "under json_member: returning $json_member type: %s",
-				          json_item_type_name($json_member));
-	json_dbg_tree_print(JSON_DBG_HIGH, __func__, $json_member, JSON_DEFAULT_MAX_DEPTH);
-	json_dbg(JSON_DBG_VHIGH, __func__, "under json_member: ending: "
-					   "json_member: json_string JSON_COLON json_element");
+	if (json_dbg_allowed(JSON_DBG_HIGH)) {
+	    json_dbg(JSON_DBG_HIGH, __func__, "under json_member: returning $json_member type: %s",
+					      json_item_type_name($json_member));
+	    json_dbg_tree_print(JSON_DBG_HIGH, __func__, $json_member, JSON_DEFAULT_MAX_DEPTH);
+	    json_dbg(JSON_DBG_VHIGH, __func__, "under json_member: ending: "
+					       "json_member: json_string JSON_COLON json_element");
+	}
     }
     ;
 
@@ -549,22 +601,26 @@ json_array:
 	 */
 
 	/* pre-action debugging */
-	json_dbg(JSON_DBG_VHIGH, __func__, "under json_array: starting: "
-					   "json_array: JSON_OPEN_BRACKET json_elements JSON_CLOSE_BRACKET");
-	json_dbg(JSON_DBG_VHIGH, __func__, "under json_array: $json_elements type: %s",
-					   json_item_type_name($json_elements));
-	json_dbg(JSON_DBG_VHIGH, __func__, "under json_array: about to perform: "
-					   "$json_array = parse_json_array($json_elements);");
+	if (json_dbg_allowed(JSON_DBG_VHIGH)) {
+	    json_dbg(JSON_DBG_VHIGH, __func__, "under json_array: starting: "
+					       "json_array: JSON_OPEN_BRACKET json_elements JSON_CLOSE_BRACKET");
+	    json_dbg(JSON_DBG_VHIGH, __func__, "under json_array: $json_elements type: %s",
+					       json_item_type_name($json_elements));
+	    json_dbg(JSON_DBG_VHIGH, __func__, "under json_array: about to perform: "
+					       "$json_array = parse_json_array($json_elements);");
+	}
 
 	/* action */
 	$json_array = parse_json_array($json_elements);
 
 	/* post-action debugging */
-	json_dbg(JSON_DBG_HIGH, __func__, "under json_array: returning $json_array type: %s",
-				          json_item_type_name($json_array));
-	json_dbg_tree_print(JSON_DBG_HIGH, __func__, $json_elements, JSON_DEFAULT_MAX_DEPTH);
-	json_dbg(JSON_DBG_VHIGH, __func__, "under json_array: ending: "
-					   "json_array: JSON_OPEN_BRACKET json_elements JSON_CLOSE_BRACKET");
+	if (json_dbg_allowed(JSON_DBG_HIGH)) {
+	    json_dbg(JSON_DBG_HIGH, __func__, "under json_array: returning $json_array type: %s",
+					      json_item_type_name($json_array));
+	    json_dbg_tree_print(JSON_DBG_HIGH, __func__, $json_elements, JSON_DEFAULT_MAX_DEPTH);
+	    json_dbg(JSON_DBG_VHIGH, __func__, "under json_array: ending: "
+					       "json_array: JSON_OPEN_BRACKET json_elements JSON_CLOSE_BRACKET");
+	}
     }
     |
 
@@ -575,20 +631,24 @@ json_array:
 	 */
 
 	/* pre-action debugging */
-	json_dbg(JSON_DBG_VHIGH, __func__, "under json_array: starting: "
-					   "json_array: JSON_OPEN_BRACKET JSON_CLOSE_BRACKET");
-	json_dbg(JSON_DBG_VHIGH, __func__, "under json_array: about to perform: "
-					 "$json_array = json_create_array();");
+	if (json_dbg_allowed(JSON_DBG_VHIGH)) {
+	    json_dbg(JSON_DBG_VHIGH, __func__, "under json_array: starting: "
+					       "json_array: JSON_OPEN_BRACKET JSON_CLOSE_BRACKET");
+	    json_dbg(JSON_DBG_VHIGH, __func__, "under json_array: about to perform: "
+					     "$json_array = json_create_array();");
+	}
 
 	/* action */
 	$json_array = json_create_array();
 
 	/* post-action debugging */
-	json_dbg(JSON_DBG_HIGH, __func__, "under json_array: returning $json_array type: %s",
-				          json_item_type_name($json_array));
-	json_dbg_tree_print(JSON_DBG_HIGH, __func__, $json_array, JSON_DEFAULT_MAX_DEPTH);
-	json_dbg(JSON_DBG_VHIGH, __func__, "under json_array: ending: "
-					   "json_array: JSON_OPEN_BRACKET JSON_CLOSE_BRACKET");
+	if (json_dbg_allowed(JSON_DBG_HIGH)) {
+	    json_dbg(JSON_DBG_HIGH, __func__, "under json_array: returning $json_array type: %s",
+					      json_item_type_name($json_array));
+	    json_dbg_tree_print(JSON_DBG_HIGH, __func__, $json_array, JSON_DEFAULT_MAX_DEPTH);
+	    json_dbg(JSON_DBG_VHIGH, __func__, "under json_array: ending: "
+					       "json_array: JSON_OPEN_BRACKET JSON_CLOSE_BRACKET");
+	}
     }
     ;
 
@@ -602,25 +662,29 @@ json_elements:
 	 */
 
 	/* pre-action debugging */
-	json_dbg(JSON_DBG_VHIGH, __func__, "under json_elements: starting: "
-					   "json_elements: json_element");
-	json_dbg(JSON_DBG_VHIGH, __func__, "under json_elements: $json_element type: %s",
-					   json_item_type_name($json_element));
-	json_dbg(JSON_DBG_VHIGH, __func__, "under json_elements: about to perform: "
-					   "$json_elements = json_create_elements();");
-	json_dbg(JSON_DBG_VHIGH, __func__, "under json_elements: about to also perform: "
-					   "$json_elements = json_elements_add_value($json_elements, $json_element);");
+	if (json_dbg_allowed(JSON_DBG_VHIGH)) {
+	    json_dbg(JSON_DBG_VHIGH, __func__, "under json_elements: starting: "
+					       "json_elements: json_element");
+	    json_dbg(JSON_DBG_VHIGH, __func__, "under json_elements: $json_element type: %s",
+					       json_item_type_name($json_element));
+	    json_dbg(JSON_DBG_VHIGH, __func__, "under json_elements: about to perform: "
+					       "$json_elements = json_create_elements();");
+	    json_dbg(JSON_DBG_VHIGH, __func__, "under json_elements: about to also perform: "
+					       "$json_elements = json_elements_add_value($json_elements, $json_element);");
+	}
 
 	/* action */
 	$json_elements = json_create_elements();
 	$json_elements = json_elements_add_value($json_elements, $json_element);
 
 	/* post-action debugging */
-	json_dbg(JSON_DBG_HIGH, __func__, "under json_elements: returning $json_elements type: %s",
-				          json_item_type_name($json_elements));
-	json_dbg_tree_print(JSON_DBG_HIGH, __func__, $json_elements, JSON_DEFAULT_MAX_DEPTH);
-	json_dbg(JSON_DBG_VHIGH, __func__, "under json_elements: ending: "
-					   "json_elements: json_element");
+	if (json_dbg_allowed(JSON_DBG_HIGH)) {
+	    json_dbg(JSON_DBG_HIGH, __func__, "under json_elements: returning $json_elements type: %s",
+					      json_item_type_name($json_elements));
+	    json_dbg_tree_print(JSON_DBG_HIGH, __func__, $json_elements, JSON_DEFAULT_MAX_DEPTH);
+	    json_dbg(JSON_DBG_VHIGH, __func__, "under json_elements: ending: "
+					       "json_elements: json_element");
+	}
     }
     |
 
@@ -635,24 +699,28 @@ json_elements:
 	 */
 
 	/* pre-action debugging */
-	json_dbg(JSON_DBG_VHIGH, __func__, "under json_elements: starting: "
-					   "json_elements: json_elements JSON_COMMA json_element");
-	json_dbg(JSON_DBG_VHIGH, __func__, "under json_elements: $1 ($json_elements) type: %s",
-					   json_item_type_name($1));
-	json_dbg(JSON_DBG_VHIGH, __func__, "under json_elements: $3 ($json_element) type: %s",
-					   json_item_type_name($3));
-	json_dbg(JSON_DBG_VHIGH, __func__, "under json_elements: about to perform: "
-					   "$$ = json_elements_add_value($1, $json_element);");
+	if (json_dbg_allowed(JSON_DBG_VHIGH)) {
+	    json_dbg(JSON_DBG_VHIGH, __func__, "under json_elements: starting: "
+					       "json_elements: json_elements JSON_COMMA json_element");
+	    json_dbg(JSON_DBG_VHIGH, __func__, "under json_elements: $1 ($json_elements) type: %s",
+					       json_item_type_name($1));
+	    json_dbg(JSON_DBG_VHIGH, __func__, "under json_elements: $3 ($json_element) type: %s",
+					       json_item_type_name($3));
+	    json_dbg(JSON_DBG_VHIGH, __func__, "under json_elements: about to perform: "
+					       "$$ = json_elements_add_value($1, $json_element);");
+	}
 
 	/* action */
 	$$ = json_elements_add_value($1, $json_element);
 
 	/* post-action debugging */
-	json_dbg(JSON_DBG_HIGH, __func__, "under json_elements: returning $$ ($json_elements) type: %s",
-				          json_item_type_name($$));
-	json_dbg_tree_print(JSON_DBG_HIGH, __func__, $$, JSON_DEFAULT_MAX_DEPTH);
-	json_dbg(JSON_DBG_VHIGH, __func__, "under json_elements: ending: "
-					   "json_elements: json_elements JSON_COMMA json_element");
+	if (json_dbg_allowed(JSON_DBG_HIGH)) {
+	    json_dbg(JSON_DBG_HIGH, __func__, "under json_elements: returning $$ ($json_elements) type: %s",
+					      json_item_type_name($$));
+	    json_dbg_tree_print(JSON_DBG_HIGH, __func__, $$, JSON_DEFAULT_MAX_DEPTH);
+	    json_dbg(JSON_DBG_VHIGH, __func__, "under json_elements: ending: "
+					       "json_elements: json_elements JSON_COMMA json_element");
+	}
     }
     ;
 
@@ -666,22 +734,26 @@ json_element:
 	 */
 
 	/* pre-action debugging */
-	json_dbg(JSON_DBG_VHIGH, __func__, "under json_element: starting: "
-					   "json_element: json_value");
-	json_dbg(JSON_DBG_VHIGH, __func__, "under json_element: $json_value type: %s",
-					   json_item_type_name($json_value));
-	json_dbg(JSON_DBG_VHIGH, __func__, "under json_element: about to perform: "
-					   "$json_element = $json_value;");
+	if (json_dbg_allowed(JSON_DBG_VHIGH)) {
+	    json_dbg(JSON_DBG_VHIGH, __func__, "under json_element: starting: "
+					       "json_element: json_value");
+	    json_dbg(JSON_DBG_VHIGH, __func__, "under json_element: $json_value type: %s",
+					       json_item_type_name($json_value));
+	    json_dbg(JSON_DBG_VHIGH, __func__, "under json_element: about to perform: "
+					       "$json_element = $json_value;");
+	}
 
 	/* action */
 	$json_element = $json_value; /* magic: json_element becomes the json_value type */
 
 	/* post-action debugging */
-	json_dbg(JSON_DBG_HIGH, __func__, "under json_element: returning $json_element type: %s",
-				          json_item_type_name($json_element));
-	json_dbg_tree_print(JSON_DBG_HIGH, __func__, $json_element, JSON_DEFAULT_MAX_DEPTH);
-	json_dbg(JSON_DBG_VHIGH, __func__, "under json_element: ending: "
-					   "json_element: json_value");
+	if (json_dbg_allowed(JSON_DBG_HIGH)) {
+	    json_dbg(JSON_DBG_HIGH, __func__, "under json_element: returning $json_element type: %s",
+					      json_item_type_name($json_element));
+	    json_dbg_tree_print(JSON_DBG_HIGH, __func__, $json_element, JSON_DEFAULT_MAX_DEPTH);
+	    json_dbg(JSON_DBG_VHIGH, __func__, "under json_element: ending: "
+					       "json_element: json_value");
+	}
     }
     ;
 
@@ -694,22 +766,26 @@ json_string:
 	 */
 
 	/* pre-action debugging */
-	json_dbg(JSON_DBG_VHIGH, __func__, "under json_string: starting: "
-					   "json_string: JSON_STRING");
-	json_dbg(JSON_DBG_VVHIGH, __func__, "under json_string: ugly_text: <%s>", ugly_text);
-	json_dbg(JSON_DBG_VVHIGH, __func__, "under json_string: ugly_leng: <%d>", ugly_leng);
-	json_dbg(JSON_DBG_VHIGH, __func__, "under json_string: about to perform: "
-					   "$json_string = parse_json_string(ugly_text, ugly_leng);");
+	if (json_dbg_allowed(JSON_DBG_VHIGH)) {
+	    json_dbg(JSON_DBG_VHIGH, __func__, "under json_string: starting: "
+					       "json_string: JSON_STRING");
+	    json_dbg(JSON_DBG_VVHIGH, __func__, "under json_string: ugly_text: <%s>", ugly_text);
+	    json_dbg(JSON_DBG_VVHIGH, __func__, "under json_string: ugly_leng: <%d>", ugly_leng);
+	    json_dbg(JSON_DBG_VHIGH, __func__, "under json_string: about to perform: "
+					       "$json_string = parse_json_string(ugly_text, ugly_leng);");
+	}
 
 	/* action */
 	$json_string = parse_json_string(ugly_text, ugly_leng);
 
 	/* post-action debugging */
-	json_dbg(JSON_DBG_HIGH, __func__, "under json_string: returning $json_string type: %s",
-				          json_item_type_name($json_string));
-	json_dbg_tree_print(JSON_DBG_HIGH, __func__, $json_string, JSON_DEFAULT_MAX_DEPTH);
-	json_dbg(JSON_DBG_VHIGH, __func__, "under json_string: ending: "
-					   "json_string: JSON_STRING");
+	if (json_dbg_allowed(JSON_DBG_HIGH)) {
+	    json_dbg(JSON_DBG_HIGH, __func__, "under json_string: returning $json_string type: %s",
+					      json_item_type_name($json_string));
+	    json_dbg_tree_print(JSON_DBG_HIGH, __func__, $json_string, JSON_DEFAULT_MAX_DEPTH);
+	    json_dbg(JSON_DBG_VHIGH, __func__, "under json_string: ending: "
+					       "json_string: JSON_STRING");
+	}
     }
     ;
 
@@ -722,22 +798,26 @@ json_number:
 	 */
 
 	/* pre-action debugging */
-	json_dbg(JSON_DBG_VHIGH, __func__, "under json_number: starting: "
-					   "json_number: JSON_NUMBER");
-	json_dbg(JSON_DBG_VVHIGH, __func__, "under json_number: ugly_text: <%s>", ugly_text);
-	json_dbg(JSON_DBG_VVHIGH, __func__, "under json_number: ugly_leng: <%d>", ugly_leng);
-	json_dbg(JSON_DBG_VHIGH, __func__, "under json_number: about to perform: "
-					   "$json_number = parse_json_number(ugly_text);");
+	if (json_dbg_allowed(JSON_DBG_VHIGH)) {
+	    json_dbg(JSON_DBG_VHIGH, __func__, "under json_number: starting: "
+					       "json_number: JSON_NUMBER");
+	    json_dbg(JSON_DBG_VVHIGH, __func__, "under json_number: ugly_text: <%s>", ugly_text);
+	    json_dbg(JSON_DBG_VVHIGH, __func__, "under json_number: ugly_leng: <%d>", ugly_leng);
+	    json_dbg(JSON_DBG_VHIGH, __func__, "under json_number: about to perform: "
+					       "$json_number = parse_json_number(ugly_text);");
+	}
 
 	/* action */
 	$json_number = parse_json_number(ugly_text);
 
 	/* post-action debugging */
-	json_dbg(JSON_DBG_HIGH, __func__, "under json_number: returning $json_number type: %s",
-				          json_item_type_name($json_number));
-	json_dbg_tree_print(JSON_DBG_HIGH, __func__, $json_number, JSON_DEFAULT_MAX_DEPTH);
-	json_dbg(JSON_DBG_VHIGH, __func__, "under json_number: ending: "
-					   "json_number: JSON_NUMBER");
+	if (json_dbg_allowed(JSON_DBG_HIGH)) {
+	    json_dbg(JSON_DBG_HIGH, __func__, "under json_number: returning $json_number type: %s",
+					      json_item_type_name($json_number));
+	    json_dbg_tree_print(JSON_DBG_HIGH, __func__, $json_number, JSON_DEFAULT_MAX_DEPTH);
+	    json_dbg(JSON_DBG_VHIGH, __func__, "under json_number: ending: "
+					       "json_number: JSON_NUMBER");
+	}
     }
     ;
 
