@@ -34,19 +34,19 @@
  */
 
  /*
-  * JSON semantical count error
+  * JSON semantic count error
   */
 struct json_cnt_err {
-    struct json_sem *sem;	/* semantical node in question or NULL (unknown_node == true) */
+    struct json_sem *sem;	/* semantic node in question or NULL (unknown_node == true) */
     unsigned int count;		/* number of times this JSON semantic was matched */
-    bool bad_min;		/* true ==> JSON semantical node count under minimum */
-    bool bad_max;		/* true ==> JSON semantical node count over maximum */
+    bool bad_min;		/* true ==> JSON semantic node count under minimum */
+    bool bad_max;		/* true ==> JSON semantic node count over maximum */
     bool unknown_node;		/* true ==> JSON node is not known to JSON semantics */
     char *diagnostic;		/* diagnostic message or NULL */
 };
 
 /*
- * JSON semantical validation error
+ * JSON semantic validation error
  *
  * When validate() returns false, that validating function
  * records information about the validation error in this form.
@@ -54,13 +54,13 @@ struct json_cnt_err {
 struct json_val_err {
     struct json *node;		/* JSON parse node in question or NULL */
     unsigned int depth;		/* JSON parse tree node depth */
-    struct json_sem *sem;	/* semantical node in question or NULL */
+    struct json_sem *sem;	/* semantic node in question or NULL */
     int val_err;		/* validate function specific error code, 0 ==> not an error */
     char *diagnostic;		/* diagnostic message or NULL */
 };
 
 /*
- * JSON semantical node
+ * JSON semantic node
  *
  * An array of JSON semantics may describe the what is required
  * or allowed in a given valid JSON document.
