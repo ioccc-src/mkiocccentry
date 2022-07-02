@@ -83,7 +83,7 @@ main(int argc, char **argv)
 	     * enable bison internal debugging if -J is verbose enough
 	     */
 	    if (json_dbg_allowed(JSON_DBG_VHIGH)) {
-		ugly_debug = 0;	/* verbose bison debug on */
+		ugly_debug = 1;	/* verbose bison debug on */
 	    } else {
 		ugly_debug = 0;	/* verbose bison debug off */
 	    }
@@ -160,7 +160,7 @@ main(int argc, char **argv)
     /*
      * free the JSON parse tree
      */
-    if (tree == NULL) {
+    if (tree != NULL) {
 	json_tree_free(tree, JSON_INFINITE_DEPTH);
 	free(tree);
 	tree = NULL;

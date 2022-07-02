@@ -2,7 +2,7 @@
 /*
  * json_sem - JSON semantics support
  *
- * "Because grammar and syntax alone to not make a complete language." :-)
+ * "Because grammar and syntax alone do not make a complete language." :-)
  *
  * This JSON parser was co-developed by:
  *

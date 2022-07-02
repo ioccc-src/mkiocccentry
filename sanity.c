@@ -81,15 +81,15 @@ find_utils(bool tar_flag_used, char **tar, bool cp_flag_used, char **cp, bool ls
      */
     if (tar != NULL && !tar_flag_used && !is_exec(TAR_PATH_0) && is_exec(TAR_PATH_1)) {
 	*tar = TAR_PATH_1;
-	dbg(DBG_MED, "tar is not in historic location: %s : will try alternate location: %s", TAR_PATH_0, *tar);
+	dbg(DBG_MED, "tar is not in historic location: %s : will use alternate location: %s", TAR_PATH_0, *tar);
     }
     if (cp != NULL && !cp_flag_used && !is_exec(CP_PATH_0) && is_exec(CP_PATH_1)) {
 	*cp = CP_PATH_1;
-	dbg(DBG_MED, "cp is not in historic location: %s : will try alternate location: %s", CP_PATH_0, *cp);
+	dbg(DBG_MED, "cp is not in historic location: %s : will use alternate location: %s", CP_PATH_0, *cp);
     }
     if (ls != NULL && !ls_flag_used && !is_exec(LS_PATH_0) && is_exec(LS_PATH_1)) {
 	*ls = LS_PATH_1;
-	dbg(DBG_MED, "ls is not in historic location: %s : will try alternate location: %s", LS_PATH_0, *ls);
+	dbg(DBG_MED, "ls is not in historic location: %s : will use alternate location: %s", LS_PATH_0, *ls);
     }
 
     /* now do the same for our utilities: txzchk, fnamchk, and chkentry */

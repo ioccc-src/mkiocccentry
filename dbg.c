@@ -260,7 +260,7 @@ fmsg_write(FILE *stream, char const *caller, char const *fmt, va_list ap)
  * Unlike fmsg_write(), this function does NOT add a final newline to str.
  *
  * The str[size-1] byte is set to NUL (if str != NULL && size > 0) in paranoia.
- * I.e., str is always NUL terminated unless str == NULL or unless size == 0.
+ * I.e., str is always NUL terminated unless str == NULL or size == 0.
  *
  * given:
  *	str	pointer to buffer in which to write a message
@@ -411,7 +411,7 @@ fdbg_write(FILE *stream, char const *caller, int level, char const *fmt, va_list
  * Unlike fdbg_write(), this function does NOT add a final newline to str.
  *
  * The str[size-1] byte is set to NUL (if str != NULL && size > 0) in paranoia.
- * I.e., str is always NUL terminated unless str == NULL or unless size == 0.
+ * I.e., str is always NUL terminated unless str == NULL or size == 0.
  *
  * given:
  *	str	pointer to buffer in which to write a message
@@ -575,7 +575,7 @@ fwarn_write(FILE *stream, char const *caller, char const *name, char const *fmt,
  * Unlike fwarn_write(), this function does NOT add a final newline to str.
  *
  * The str[size-1] byte is set to NUL (if str != NULL && size > 0) in paranoia.
- * I.e., str is always NUL terminated unless str == NULL or unless size == 0.
+ * I.e., str is always NUL terminated unless str == NULL or size == 0.
  *
  * given:
  *	str	pointer to buffer in which to write a message
@@ -738,7 +738,7 @@ fwarnp_write(FILE *stream, char const *caller, char const *name, char const *fmt
  * Unlike fwarnp_write(), this function does NOT add a final newline to str.
  *
  * The str[size-1] byte is set to NUL (if str != NULL && size > 0) in paranoia.
- * I.e., str is always NUL terminated unless str == NULL or unless size == 0.
+ * I.e., str is always NUL terminated unless str == NULL or size == 0.
  *
  * given:
  *	str	pointer to buffer in which to write a message
@@ -914,7 +914,7 @@ ferr_write(FILE *stream, int error_code, char const *caller,
  * Unlike ferr_write(), this function does NOT add a final newline to str.
  *
  * The str[size-1] byte is set to NUL (if str != NULL && size > 0) in paranoia.
- * I.e., str is always NUL terminated unless str == NULL or unless size == 0.
+ * I.e., str is always NUL terminated unless str == NULL or size == 0.
  *
  * given:
  *	str		pointer to buffer in which to write a message
@@ -1081,7 +1081,7 @@ ferrp_write(FILE *stream, int error_code, char const *caller,
  * Unlike ferrp_write(), this function does NOT add a final newline to str.
  *
  * The str[size-1] byte is set to NUL (if str != NULL && size > 0) in paranoia.
- * I.e., str is always NUL terminated unless str == NULL or unless size == 0.
+ * I.e., str is always NUL terminated unless str == NULL or size == 0.
  *
  * given:
  *	str		pointer to buffer in which to write a message

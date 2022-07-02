@@ -72,9 +72,10 @@ struct encode {
  * as an integer.  In this case the "integer values" fields will be used and
  * the "floating point values" fields will be unused (set to false, or 0.0);
  *
- * If is_floating == then, then the JSON number was attempted to be parsed
- * as a floating point value.  In this case the "floating point values" fields
- * will be used, and the "integer values" fields will be unused (set to false, or 0).
+ * If is_floating == true then, then the JSON number was attempted to be parsed
+ * as a floating point value. In this case the "floating point values" fields
+ * will be used, and the "integer values" fields will be unused (set to false,
+ * or 0).
  *
  * A JSON number string is of the form:
  *
@@ -203,13 +204,13 @@ struct json_string
 {
     bool converted;		/* true ==> able to decode JSON string, false ==> str is invalid or not decoded */
 
-    char *as_str;		/* allocated non-decoded JSON string, NUL terminated (perhaps sans JSON "s) */
+    char *as_str;		/* allocated non-decoded JSON string, NUL terminated (perhaps sans JSON '"'s) */
     char *str;			/* allocated decoded JSON string, NUL terminated */
 
     size_t as_str_len;		/* length of as_str, not including final NUL */
     size_t str_len;		/* length of str, not including final NUL */
 
-    bool quote;			/* The original JSON string included surrounding "'s */
+    bool quote;			/* The original JSON string included surrounding '"'s */
 
     bool same;			/* true => as_str same as str, JSON decoding not required */
     bool has_nul;		/* true ==> decoded JSON string has a NUL byte inside it */

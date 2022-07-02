@@ -1,21 +1,25 @@
-.TH dbg 3  "8 Jun 2022" "dbg"
+.TH dbg 3  "1 July 2022" "dbg"
 .SH NAME
 .BR msg(),
 .BR vmsg(),
 .BR fmsg(),
 .BR vfmsg(),
+.BR snmsg(),
 .BR dbg(),
 .BR vdbg(),
 .BR fdbg(),
 .BR vfdbg(),
+.BR sndbg(),
 .BR warn(),
 .BR vwarn(),
 .BR fwarn(),
 .BR vfwarn(),
+.BR snwarn(),
 .BR warnp(),
 .BR vwarnp(),
 .BR fwarnp(),
 .BR vfwarnp(),
+.BR snwarnp(),
 .BR err(),
 .BR verr(),
 .BR ferr(),
@@ -28,10 +32,12 @@
 .BR vwerr(),
 .BR fwerr(),
 .BR vfwerr(),
+.BR snwerr(),
 .BR werrp(),
 .BR vwerrp(),
 .BR fwerrp(),
 .BR vfwerrp(),
+.BR snwerrp(),
 .BR warn_or_err(),
 .BR vwarn_or_err(),
 .BR fwarn_or_err(),
@@ -69,6 +75,8 @@
 .BI "void fmsg(FILE *stream, const char *fmt, ...);"
 .br
 .BI "void vfmsg(FILE *stream, char const *fmt, va_list ap);"
+.br
+.BI "void snmsg(char *str, size_t size, char const *fmt, ...);"
 .sp
 .BI "void dbg(int level, const char *fmt, ...);"
 .br
@@ -77,6 +85,8 @@
 .BI "void fdbg(FILE *stream, int level, const char *fmt, ...);"
 .br
 .BI "void vfdbg(FILE *stream, int level, char const *fmt, va_list ap);"
+.br
+.BI "void sndbg(char *str, size_t size, int level, char const *fmt, ...);"
 .sp
 .BI "void warn(const char *name, const char *fmt, ...);"
 .br
@@ -85,6 +95,8 @@
 .BI "void fwarn(FILE *stream, const char *name, const char *fmt, ...);"
 .br
 .BI "void vfwarn(FILE *stream, char const *name, char const *fmt, va_list ap);"
+.br
+.BI "void snwarn(char *str, size_t size, char const *name, char const *fmt, ...);"
 .sp
 .BI "void warnp(const char *name, const char *fmt, ...);"
 .br
@@ -93,6 +105,8 @@
 .BI "void fwarnp(FILE *stream, const char *name, const char *fmt, ...);"
 .br
 .BI "void vfwarnp(FILE *stream, char const *name, char const *fmt, va_list ap);"
+.br
+.BI "void snwarnp(char *str, size_t size, char const *name, char const *fmt, ...);"
 .sp
 .BI "void err(int exitcode, const char *name, const char *fmt, ...);"
 .br
@@ -117,6 +131,8 @@
 .BI "void fwerr(int error_code, FILE *stream, const char *name, const char *fmt, ...);"
 .br
 .BI "void vfwerr(int error_code, FILE *stream, char const *name, char const *fmt, va_list ap);"
+.br
+.BI "void snwerr(int error_code, char *str, size_t size, char const *name, char const *fmt, ...);"
 .sp
 .BI "void werrp(int error_code, const char *name, const char *fmt, ...);"
 .br
@@ -125,6 +141,8 @@
 .BI "void fwerrp(int error_code, FILE *stream, const char *name, const char *fmt, ...);"
 .br
 .BI "void vfwerrp(int error_code, FILE *stream, char const *name, char const *fmt, va_list ap);"
+.br
+.BI "void snwerrp(int error_code, char *str, size_t size, char const *name, char const *fmt, ...);"
 .sp
 .BI "void warn_or_err(int exitcode, const char *name, bool warning, const char *fmt, ...);"
 .br
@@ -136,7 +154,7 @@
 .RE
 .SH DESCRIPTION
 These functions provide a way to write informative messages, debug messages, warning messages, error messages, non\-fatal error messages as well as usage messages.
-.SS Alternative output stream
+.SS Alternative output \fBFILE *\fP stream
 The functions that do not take a \fBFILE *\fP write to \fBstderr\fP.
 The functions
 .BR fmsg(),
@@ -160,6 +178,18 @@ The functions
 and
 .BR vfprintf_usage()
 can write to an alternative \fBFILE *\fP stream.
+.SS Writing to a \fBchar *\fP buffer
+The functions
+.BR snmsg(),
+.BR sndbg(),
+.BR snwarn(),
+.BR snwarnp(),
+.BR snwerr()
+and
+.BR snwerrp()
+write a message to a buffer of a fixed size.
+They do not write a newline after the message but the string is NUL terminated.
+They do not do anything if passed a NULL pointer or \fBsize <= 1\fP.
 .SS Variadic versions
 .PP
 The functions
@@ -242,6 +272,7 @@ These functions return void except that the functions
 and
 .BR vferrp()
 do not return at all.
+More specifically they do call \fBexit(3)\fP but immediately after call either \fB__builtin_unreachable\fP or \fBabort(3)\fP depending on the value of \fB__has_builtin(__builtin_unreachable)\fP, thereby terminating the program.
 .PP
 The functions
 .BR warn_or_err(),
@@ -253,7 +284,16 @@ The functions
 .BR fwarnp_or_errp()
 and
 .BR vfwarnp_or_errp()
-do not return if warning is false.
+do not return if warning is false in the same manner as the functions
+.BR err(),
+.BR verr(),
+.BR ferr(),
+.BR vferr(),
+.BR errp(),
+.BR verrp(),
+.BR ferrp(),
+and
+.BR vferrp()
 .PP
 The functions
 .BR printf_usage(),
@@ -264,7 +304,7 @@ and
 do not return if exitcode >= 0.
 .SH NOTES
 .SS Variadic arguments
-For the \fIva_list\fP functions, the argument \fIap\fP is not checked for consistency like they are using the primary interfaces.
+In the \fIva_list\fP functions, the argument \fIap\fP is not checked for consistency like they are using the primary interfaces.
 For this reason these versions are not recommended for use.
 .SS In case of NULL name
 If \fIname\fP is \fBNULL\fP it will be set to
@@ -293,21 +333,25 @@ All functions output extra newlines to help let the messages stand out better.
 
 $ cat dbg_example.c
 /*
- * This is just a trivial demo, see the main
- * function in dbg.c for a better example.
+ * This is just a trivial demo for the dbg api, see the main function in dbg.c
+ * for a better example.
  */
 
 #include "dbg.h"
 
 #define filename "foo.bar"
+
 long length = 7;
-int main(void)
+
+int
+main(void)
 {
 
     /*
      * We suggest you use getopt(3) and strtol(3) (cast to an int)
      * to convert \-v verbosity_level on the command line.
      */
+    msg("NOTE: Setting verbosity_level to DBG_MED: %d", DBG_MED);
     verbosity_level = DBG_MED; /* DBG_MED == (3) */
 
     /*
@@ -317,7 +361,8 @@ int main(void)
      *
      * with newlines as described.
      */
-    warn(__func__, "elephant is sky\-blue pink");
+    msg("NOTE: The next line should say: \\"Warning: %s: %s", __func__, "elephant is sky\-blue pink\\"");
+    warn(__func__, "elephant is sky\-blue pink\n");
 
     /* this will not print anything as verbosity_level 3 (DBG_MED) < 5 (DBG_HIGH): */
     dbg(DBG_HIGH, "starting critical section");
@@ -328,7 +373,8 @@ int main(void)
      *
      *	    debug[3]: file: foo.bar has length: 7
      */
-    dbg(DBG_MED, "file: %s has length: %ld", filename, length);
+    msg("NOTE: The next line should read: \\"debug[3]: file: %s has length: %ld\\"", filename, length);
+    dbg(DBG_MED, "file: %s has length: %ld\n", filename, length);
 
     /*
      * If EPERM == 1 then this will print:
@@ -338,15 +384,24 @@ int main(void)
      * with newlines as discussed and then exit 2.
      */
     errno = EPERM;
+    msg("NOTE: The next line should read: \\"ERROR[2]: main: test: errno[%d]: %s\\"", errno, strerror(errno));
     errp(2, __func__, "test");
+
+    return 2; /* this return is never reached */
 }
 $ cc \-c dbg.c
 $ cc \-o dbg_example dbg_example.c dbg.o
 The above two commands could be shortened to just:
 \fBcc \-o dbg_example dbg_example.c dbg.c\fP
 $ ./dbg_example
-Warning: main: elephant is sky\-blue pink
+NOTE: Setting verbosity_level to DBG_MED: 3
+NOTE: The next line should say: "Warning: main: elephant is sky-blue pink"
+Warning: main: elephant is sky-blue pink
+
+NOTE: The next line should read: "debug[3]: file: foo.bar has length: 7"
 debug[3]: file: foo.bar has length: 7
+
+NOTE: The next line should read: "ERROR[2]: main: test: errno[1]: Operation not permitted"
 ERROR[2]: main: test: errno[1]: Operation not permitted
 $ echo $?
 2
@@ -356,4 +411,4 @@ $ echo $?
 .BR printf(3)
 .SH HISTORY
 The dbg facility was first written by Landon Curt Noll in 1989.
-Version 2.0 was developed and test tested within the IOCCC mkiocccentry GitHub repo.
+Version 2.0 was developed and tested within the IOCCC mkiocccentry GitHub repo.
