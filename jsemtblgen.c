@@ -103,10 +103,6 @@ main(int argc, char **argv)
 	    not_reached();
 	    break;
 	case 's':
-	    /*
-	     * So we don't trigger missing arg. Maybe there's another way but
-	     * nothing is coming to my mind right now.
-	     */
 	    string_flag_used = true;
 	    break;
 	default:
@@ -116,7 +112,7 @@ main(int argc, char **argv)
     }
     arg_cnt = argc - optind;
     if (arg_cnt != REQUIRED_ARGS) {
-	err(4, program, "expected %d arguments, found: %d", REQUIRED_ARGS, arg_cnt); /*ooo*/
+	usage(4, "wrong number of arguments", program); /*ooo*/
 	not_reached();
     }
 

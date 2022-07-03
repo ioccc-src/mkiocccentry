@@ -164,7 +164,7 @@
 
 
  /*
-  * Generate JSON semantics table vresion
+  * Generate JSON semantics table version
   *
   * Because the JSON parser is a self contained system, we cannot define
   * JSEMTBLGEN_VERSION here. See jsemtblgen.h for the JSEMTBLGEN_VERSION value.
