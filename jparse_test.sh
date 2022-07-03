@@ -141,16 +141,16 @@ run_test()
 
     if [[ -z $quiet_mode ]]; then
 	if [[ $V_FLAG -ge 3 ]]; then
-	    echo "$0: debug[3]: about to run: $jparse -v $dbg_level -J $json_dbg_level -s $json_doc_string >> ${LOGFILE} 2>&1" 1>&2
+	    echo "$0: debug[3]: about to run: $jparse -v $dbg_level -J $json_dbg_level -s -- $json_doc_string >> ${LOGFILE} 2>&1" 1>&2
 	fi
-	echo "$0: debug[3]: about to run: $jparse -v $dbg_level -J $json_dbg_level -s $json_doc_string >> ${LOGFILE} 2>&1" >> "${LOGFILE}"
-	"$jparse" -v "$dbg_level" -J "$json_dbg_level" -s "$json_doc_string" >> "${LOGFILE}" 2>&1
+	echo "$0: debug[3]: about to run: $jparse -v $dbg_level -J $json_dbg_level -s -- $json_doc_string >> ${LOGFILE} 2>&1" >> "${LOGFILE}"
+	"$jparse" -v "$dbg_level" -J "$json_dbg_level" -s -- "$json_doc_string" >> "${LOGFILE}" 2>&1
     else
 	if [[ $V_FLAG -ge 3 ]]; then
-	    echo "$0: debug[3]: about to run: $jparse -v $dbg_level -J $json_dbg_level -q -s $json_doc_string >> ${LOGFILE} 2>&1" 1>&2
+	    echo "$0: debug[3]: about to run: $jparse -v $dbg_level -J $json_dbg_level -q -s -- $json_doc_string >> ${LOGFILE} 2>&1" 1>&2
 	fi
-	echo "$0: debug[3]: about to run: $jparse -v $dbg_level -J $json_dbg_level -q -s $json_doc_string >> ${LOGFILE} 2>&1" >> "${LOGFILE}"
-	"$jparse" -v "$dbg_level" -J "$json_dbg_level" -q -s "$json_doc_string" >> "${LOGFILE}" 2>&1
+	echo "$0: debug[3]: about to run: $jparse -v $dbg_level -J $json_dbg_level -q -s -- $json_doc_string >> ${LOGFILE} 2>&1" >> "${LOGFILE}"
+	"$jparse" -v "$dbg_level" -J "$json_dbg_level" -q -s -- "$json_doc_string" >> "${LOGFILE}" 2>&1
     fi
     status="$?"
 

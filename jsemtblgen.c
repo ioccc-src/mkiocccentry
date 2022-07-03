@@ -44,6 +44,11 @@
 #include "jsemtblgen.h"
 
 
+/*
+ * definitions
+ */
+#define REQUIRED_ARGS (1)	/* number of required arguments on the command line */
+
 
 int
 main(int argc, char **argv)
@@ -54,6 +59,7 @@ main(int argc, char **argv)
     bool string_flag_used = false;  /* true ==> -S string was used */
     bool valid_json = false;	    /* true ==> JSON parse was valid */
     struct json *tree = NULL;	    /* JSON parse tree or NULL */
+    int arg_cnt = 0;		    /* number of args to process */
     int ret;			    /* libc return code */
     int i;
 
@@ -61,7 +67,7 @@ main(int argc, char **argv)
      * parse args
      */
     program = argv[0];
-    while ((i = getopt(argc, argv, "hv:qVs:J:")) != -1) {
+    while ((i = getopt(argc, argv, "hv:qVsJ:")) != -1) {
 	switch (i) {
 	case 'h':		/* -h - print help to stderr and exit 0 */
 	    usage(2, "-h help mode", program); /*ooo*/
@@ -78,17 +84,6 @@ main(int argc, char **argv)
 	     * parse json verbosity level
 	     */
 	    json_verbosity_level = parse_verbosity(program, optarg);
-
-	    /*
-	     * enable bison internal debugging if -J is verbose enough
-	     */
-	    if (json_dbg_allowed(JSON_DBG_VHIGH)) {
-		ugly_debug = 1;	/* verbose bison debug on */
-	    } else {
-		ugly_debug = 0;	/* verbose bison debug off */
-	    }
-	    (void) json_dbg(JSON_DBG_VHIGH, __func__, "bison ugly_debug: %s",
-						      ugly_debug ? "enabled" : "disabled");
 	    break;
 	case 'q':
 	    msg_warn_silent = true;
@@ -113,45 +108,60 @@ main(int argc, char **argv)
 	     * nothing is coming to my mind right now.
 	     */
 	    string_flag_used = true;
-	    json_dbg(JSON_DBG_HIGH, __func__, "Calling parse_json(\"%s\", %ju, stderr):",
-					      optarg, (uintmax_t)strlen(optarg));
-	    /* parse arg as a block of json input */
-	    tree = parse_json(optarg, strlen(optarg), &valid_json);
-	    if (valid_json) {
-		errno = 0; /* pre-clear errno for warnp() */
-		ret = printf("valid JSON\n");
-		if (ret <= 0) {
-		    warnp(__func__, "printf error printing valid JSON");
-		}
-	    }
 	    break;
 	default:
 	    usage(2, "invalid -flag or missing option argument", program); /*ooo*/
 	    not_reached();
 	}
     }
+    arg_cnt = argc - optind;
+    if (arg_cnt != REQUIRED_ARGS) {
+	err(4, program, "expected %d arguments, found: %d", REQUIRED_ARGS, arg_cnt); /*ooo*/
+	not_reached();
+    }
 
     /*
-     * case: process arguments on command line
+     * enable bison internal debugging if -J is verbose enough
      */
-    if (argc - optind > 0) {
+    if (json_dbg_allowed(JSON_DBG_VHIGH)) {
+	ugly_debug = 1;	/* verbose bison debug on */
+	dbg(DBG_VHIGH, __func__, "ugly_debug: enabled");
+    } else {
+	ugly_debug = 0;	/* verbose bison debug off */
+	dbg(DBG_VHIGH, __func__, "ugly_debug: disabled");
+    }
 
-	/*
-	 * process each argument in order
-	 */
-	for (i=optind; i < argc; ++i) {
-	    tree = parse_json_file(argv[i], &valid_json);
-	    if (valid_json) {
-		errno = 0; /* pre-clear errno for warnp() */
-		ret = printf("valid JSON in file %s\n", argv[i]);
-		if (ret <= 0) {
-		    warnp(__func__, "printf error printing valid JSON");
-		}
-	    }
-	}
+    /*
+     * case: process -s arg
+     */
+    if (string_flag_used == true) {
 
-    } else if (!string_flag_used) {
-	usage(2, "-s string not used and no file specified", program); /*ooo*/
+	/* parse arg as a block of json input */
+	dbg(DBG_HIGH, __func__, "Calling parse_json(\"%s\", %ju, &valid_json):",
+				argv[argc-1], (uintmax_t)strlen(argv[argc-1]));
+	tree = parse_json(argv[argc-1], strlen(argv[argc-1]), &valid_json);
+
+    /*
+     * case: process file arg
+     */
+    } else {
+
+	/* parse arg as a json filename */
+	dbg(DBG_HIGH, __func__, "Calling parse_json_file(\"%s\", %ju, &valid_json):", argv[argc-1]);
+	tree = parse_json_file(argv[argc-1], &valid_json);
+    }
+
+    /*
+     * firewall - must be valid JSON
+     */
+    if (valid_json == false) {
+	++num_errors;
+	err(1, program, "invalid JSON"); /*ooo*/
+	not_reached();
+    }
+    if (tree == NULL) {
+	++num_errors;
+	err(1, program, "JSON parse tree is NULL"); /*ooo*/
 	not_reached();
     }
 
@@ -169,7 +179,7 @@ main(int argc, char **argv)
     /*
      *  exit based on JSON parse success or failure
      */
-    if (num_errors > 0 || !valid_json) {
+    if (num_errors > 0) {
 	exit(1); /*ooo*/
     }
     exit(0); /*ooo*/

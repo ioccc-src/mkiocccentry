@@ -47,7 +47,7 @@
 /*
  * official jparse version
  */
-#define JSEMTBLGEN_VERSION "0.0 2022-06-28"		/* format: major.minor YYYY-MM-DD */
+#define JSEMTBLGEN_VERSION "0.1 2022-07-02"		/* format: major.minor YYYY-MM-DD */
 
 
 /*
@@ -57,22 +57,18 @@ static void usage(int exitcode, char const *str, char const *prog);
 
 /*
  * usage message
- *
- * Use the usage() function to print the usage_msg([0-9]?)+ strings.
  */
 static const char * const usage_msg =
-    "usage: %s [-h] [-v level] [-J level] [-q] [-V] [-s string] [file ...]\n"
+    "usage: %s [-h] [-v level] [-J level] [-q] [-V] [-s] arg\n"
     "\n"
     "\t-h\t\tprint help message and exit 0\n"
     "\t-v level\tset verbosity level (def level: %d)\n"
     "\t-J level\tset JSON verbosity level (def level: %d)\n"
     "\t-q\t\tquiet mode: silence msg(), warn(), warnp() if -v 0 (def: not quiet)\n"
     "\t-V\t\tprint version string and exit 0\n"
-    "\t-s\t\tread arg as a string\n"
-    "\t\t\tNOTE: You use -s arg last as -s is processed immediately\n"
+    "\t-s\t\targ is a string (def: arg is a filename)\n"
     "\n"
-    "\t[file]\t\tgenerate JSON semantics table from file\n"
-    "\t\t\tNOTE: - means read from stdin\n"
+    "\targ\t\tgenerate JSON semantics table for string (if -s), file (w/o -s), or stdin (if arg is -)\n"
     "\n"
     "JSON parser version: %s\n"
     "jsemtblgen version: %s\n";
