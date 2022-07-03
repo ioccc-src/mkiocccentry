@@ -206,22 +206,16 @@ json:
 	/* return the JSON parse tree */
 	if ($json == NULL) {
 	    warn(__func__, "under json: $json == NULL: about to perform: "
-			   "tree = NULL;");
-	    if (tree == NULL) {
-		warn(__func__, "under json: tree == NULL");
-	    } else {
-		tree = NULL;
-	    }
+			   "*tree = NULL;");
+	}
+	if (json_dbg_allowed(JSON_DBG_HIGH)) {
+	    json_dbg(JSON_DBG_HIGH, __func__, "under json: about also to perform: "
+					      "*tree = $json;");
+	}
+	if (tree == NULL) {
+	    warn(__func__, "under json: tree == NULL");
 	} else {
-	    if (json_dbg_allowed(JSON_DBG_HIGH)) {
-		json_dbg(JSON_DBG_HIGH, __func__, "under json: about also to perform: "
-						  "*tree = $json;");
-	    }
-	    if (tree == NULL) {
-		warn(__func__, "under json: tree == NULL");
-	    } else {
-		*tree = $json;	/* more magic: set ugly_parse(tree) arg to ptr to JSON parse tree */
-	    }
+	    *tree = $json;	/* more magic: set ugly_parse(tree) arg to ptr to JSON parse tree */
 	}
 	if (json_dbg_allowed(JSON_DBG_HIGH)) {
 	    json_dbg(JSON_DBG_HIGH, __func__, "under json: ending: "
