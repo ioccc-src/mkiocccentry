@@ -1,6 +1,6 @@
 /* vim: set tabstop=8 softtabstop=4 shiftwidth=4 noexpandtab : */
 /*
- * jsemtblgen - tool that parses a block of JSON input
+ * jsemtblgen - generate JSON semantics table
  *
  * "Because JSON embodies a commitment to original design flaws." :-)
  * "Because sometimes even the IOCCC Judges need some help." :-)
@@ -45,9 +45,9 @@
 #include "json_sem.h"
 
 /*
- * official jparse version
+ * official jsemtblgen version
  */
-#define JSEMTBLGEN_VERSION "0.1 2022-07-02"		/* format: major.minor YYYY-MM-DD */
+#define JSEMTBLGEN_VERSION "0.2 2022-07-03"		/* format: major.minor YYYY-MM-DD */
 
 
 /*

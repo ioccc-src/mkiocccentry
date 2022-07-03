@@ -188,6 +188,7 @@ extern int shell_cmd(char const *name, bool abort_on_error, char const *format, 
 extern FILE *pipe_open(char const *name, bool abort_on_error, char const *format, ...);
 extern void para(char const *line, ...);
 extern void fpara(FILE * stream, char const *line, ...);
+extern void vfpr(FILE *stream, char const *name, char const *fmt, va_list ap);
 extern void fpr(FILE *stream, char const *name, char const *fmt, ...)
 	__attribute__((format(printf, 3, 4)));		/* 3=format 4=params */
 extern void pr(char const *name, char const *fmt, ...)

@@ -565,9 +565,9 @@ static const yytype_int8 yytranslate[] =
 /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_int16 yyrline[] =
 {
-       0,   177,   177,   210,   241,   272,   303,   334,   364,   394,
-     426,   457,   487,   521,   560,   596,   627,   657,   691,   729,
-     762,   794
+       0,   177,   177,   235,   266,   297,   328,   359,   389,   419,
+     451,   482,   512,   546,   585,   621,   652,   682,   716,   754,
+     787,   819
 };
 #endif
 
@@ -714,7 +714,7 @@ enum { YYENOMEM = -2 };
       }                                                           \
     else                                                          \
       {                                                           \
-        yyerror (node, YY_("syntax error: cannot back up")); \
+        yyerror (tree, YY_("syntax error: cannot back up")); \
         YYERROR;                                                  \
       }                                                           \
   while (0)
@@ -747,7 +747,7 @@ do {                                                                      \
     {                                                                     \
       YYFPRINTF (stderr, "%s ", Title);                                   \
       yy_symbol_print (stderr,                                            \
-                  Kind, Value, node); \
+                  Kind, Value, tree); \
       YYFPRINTF (stderr, "\n");                                           \
     }                                                                     \
 } while (0)
@@ -759,11 +759,11 @@ do {                                                                      \
 
 static void
 yy_symbol_value_print (FILE *yyo,
-                       yysymbol_kind_t yykind, YYSTYPE const * const yyvaluep, struct json *node)
+                       yysymbol_kind_t yykind, YYSTYPE const * const yyvaluep, struct json **tree)
 {
   FILE *yyoutput = yyo;
   YY_USE (yyoutput);
-  YY_USE (node);
+  YY_USE (tree);
   if (!yyvaluep)
     return;
   YY_IGNORE_MAYBE_UNINITIALIZED_BEGIN
@@ -778,12 +778,12 @@ yy_symbol_value_print (FILE *yyo,
 
 static void
 yy_symbol_print (FILE *yyo,
-                 yysymbol_kind_t yykind, YYSTYPE const * const yyvaluep, struct json *node)
+                 yysymbol_kind_t yykind, YYSTYPE const * const yyvaluep, struct json **tree)
 {
   YYFPRINTF (yyo, "%s %s (",
              yykind < YYNTOKENS ? "token" : "nterm", yysymbol_name (yykind));
 
-  yy_symbol_value_print (yyo, yykind, yyvaluep, node);
+  yy_symbol_value_print (yyo, yykind, yyvaluep, tree);
   YYFPRINTF (yyo, ")");
 }
 
@@ -817,7 +817,7 @@ do {                                                            \
 
 static void
 yy_reduce_print (yy_state_t *yyssp, YYSTYPE *yyvsp,
-                 int yyrule, struct json *node)
+                 int yyrule, struct json **tree)
 {
   int yylno = yyrline[yyrule];
   int yynrhs = yyr2[yyrule];
@@ -830,7 +830,7 @@ yy_reduce_print (yy_state_t *yyssp, YYSTYPE *yyvsp,
       YYFPRINTF (stderr, "   $%d = ", yyi + 1);
       yy_symbol_print (stderr,
                        YY_ACCESSING_SYMBOL (+yyssp[yyi + 1 - yynrhs]),
-                       &yyvsp[(yyi + 1) - (yynrhs)], node);
+                       &yyvsp[(yyi + 1) - (yynrhs)], tree);
       YYFPRINTF (stderr, "\n");
     }
 }
@@ -838,7 +838,7 @@ yy_reduce_print (yy_state_t *yyssp, YYSTYPE *yyvsp,
 # define YY_REDUCE_PRINT(Rule)          \
 do {                                    \
   if (yydebug)                          \
-    yy_reduce_print (yyssp, yyvsp, Rule, node); \
+    yy_reduce_print (yyssp, yyvsp, Rule, tree); \
 } while (0)
 
 /* Nonzero means print parse trace.  It is left uninitialized so that
@@ -1122,10 +1122,10 @@ yy_lac (yy_state_t *yyesa, yy_state_t **yyes,
 
 static void
 yydestruct (const char *yymsg,
-            yysymbol_kind_t yykind, YYSTYPE *yyvaluep, struct json *node)
+            yysymbol_kind_t yykind, YYSTYPE *yyvaluep, struct json **tree)
 {
   YY_USE (yyvaluep);
-  YY_USE (node);
+  YY_USE (tree);
   if (!yymsg)
     yymsg = "Deleting";
   YY_SYMBOL_PRINT (yymsg, yykind, yyvaluep, yylocationp);
@@ -1152,7 +1152,7 @@ int yynerrs;
 `----------*/
 
 int
-yyparse (struct json *node)
+yyparse (struct json **tree)
 {
     yy_state_fast_t yystate = 0;
     /* Number of tokens to shift before error messages enabled.  */
@@ -1415,32 +1415,57 @@ yyreduce:
 	 */
 
 	/* pre action debugging */
-	if (json_dbg_allowed(JSON_DBG_MED)) {
+	if (json_dbg_allowed(JSON_DBG_HIGH)) {
 	    json_dbg(JSON_DBG_HIGH, __func__, "under json: starting: "
 					      "json: json_element");
-	    json_dbg(JSON_DBG_MED, __func__, "under json: $json_element type: %s",
+	    json_dbg(JSON_DBG_HIGH, __func__, "under json: $json_element type: %s",
 					     json_item_type_name(yyvsp[0]));
-	    json_dbg(JSON_DBG_MED, __func__, "under json: about to perform: "
+	    json_dbg(JSON_DBG_HIGH, __func__, "under json: about to perform: "
 					     "$json = $json_element;");
 	}
 
 	/* action */
-	yyval = yyvsp[0]; /* magic: json becomes the json_element type */
+	yyval = yyvsp[0];	/* magic: json_value becomes json_element's type */
 
 	/* post action debugging */
 	if (json_dbg_allowed(JSON_DBG_MED)) {
-	    json_dbg(JSON_DBG_MED, __func__, "under json: returning $json type: %s",
-					     json_item_type_name(yyval));
+	    if (json_dbg_allowed(JSON_DBG_HIGH)) {
+		json_dbg(JSON_DBG_HIGH, __func__, "under json: returning $json_element type: %s",
+						  json_item_type_name(yyval));
+	    }
 	    json_dbg_tree_print(JSON_DBG_MED, __func__, yyval, JSON_DEFAULT_MAX_DEPTH);
+	}
+
+	/* return the JSON parse tree */
+	if (yyval == NULL) {
+	    warn(__func__, "under json: $json == NULL: about to perform: "
+			   "tree = NULL;");
+	    if (tree == NULL) {
+		warn(__func__, "under json: tree == NULL");
+	    } else {
+		tree = NULL;
+	    }
+	} else {
+	    if (json_dbg_allowed(JSON_DBG_HIGH)) {
+		json_dbg(JSON_DBG_HIGH, __func__, "under json: about also to perform: "
+						  "*tree = $json;");
+	    }
+	    if (tree == NULL) {
+		warn(__func__, "under json: tree == NULL");
+	    } else {
+		*tree = yyval;	/* more magic: set ugly_parse(tree) arg to ptr to JSON parse tree */
+	    }
+	}
+	if (json_dbg_allowed(JSON_DBG_HIGH)) {
 	    json_dbg(JSON_DBG_HIGH, __func__, "under json: ending: "
 					      "json: json_element");
 	}
     }
-#line 1389 "jparse.tab.c"
+#line 1414 "jparse.tab.c"
     break;
 
   case 3: /* json_value: json_object  */
-#line 211 "jparse.y"
+#line 236 "jparse.y"
     {
 	/*
 	 * $$ = $json_value
@@ -1458,7 +1483,7 @@ yyreduce:
 	}
 
 	/* action */
-	yyval = yyvsp[0];	/* magic: json_value becomes the json_object (JTYPE_OBJECT) type */
+	yyval = yyvsp[0];	/* magic: json_value becomes JTYPE_OBJECT type */
 
 	/* post-action debugging */
 	if (json_dbg_allowed(JSON_DBG_HIGH)) {
@@ -1469,11 +1494,11 @@ yyreduce:
 					       "json_value: json_object");
 	}
     }
-#line 1422 "jparse.tab.c"
+#line 1447 "jparse.tab.c"
     break;
 
   case 4: /* json_value: json_array  */
-#line 242 "jparse.y"
+#line 267 "jparse.y"
     {
 	/*
 	 * $$ = $json_value
@@ -1491,7 +1516,7 @@ yyreduce:
 	}
 
 	/* action */
-	yyval = yyvsp[0];	/* magic: json_value becomes the json_array type (JTYPE_ARRAY) */
+	yyval = yyvsp[0];	/* magic: json_value becomes JTYPE_ARRAY type */
 
 	/* post-action debugging */
 	if (json_dbg_allowed(JSON_DBG_HIGH)) {
@@ -1502,11 +1527,11 @@ yyreduce:
 					       "json_value: json_array");
 	}
     }
-#line 1455 "jparse.tab.c"
+#line 1480 "jparse.tab.c"
     break;
 
   case 5: /* json_value: json_string  */
-#line 273 "jparse.y"
+#line 298 "jparse.y"
     {
 	/*
 	 * $$ = $json_value
@@ -1524,7 +1549,7 @@ yyreduce:
 	}
 
 	/* action */
-	yyval = yyvsp[0]; /* magic: json_value becomes the json_string type (JTYPE_STRING) */
+	yyval = yyvsp[0]; /* magic: json_value becomes JTYPE_STRING type */
 
 	/* post-action debugging */
 	if (json_dbg_allowed(JSON_DBG_HIGH)) {
@@ -1535,11 +1560,11 @@ yyreduce:
 					       "json_value: json_string");
 	}
     }
-#line 1488 "jparse.tab.c"
+#line 1513 "jparse.tab.c"
     break;
 
   case 6: /* json_value: json_number  */
-#line 304 "jparse.y"
+#line 329 "jparse.y"
     {
 	/*
 	 * $$ = $json_value
@@ -1557,7 +1582,7 @@ yyreduce:
 	}
 
 	/* action */
-	yyval = yyvsp[0]; /* magic: json_value becomes the json_number type (JTYPE_NUMBER) */
+	yyval = yyvsp[0]; /* magic: json_value becomes JTYPE_NUMBER type */
 
 	/* post-action debugging */
 	if (json_dbg_allowed(JSON_DBG_HIGH)) {
@@ -1568,11 +1593,11 @@ yyreduce:
 					       "json_value: json_number");
 	}
     }
-#line 1521 "jparse.tab.c"
+#line 1546 "jparse.tab.c"
     break;
 
   case 7: /* json_value: "true"  */
-#line 335 "jparse.y"
+#line 360 "jparse.y"
     {
 	/*
 	 * $$ = $json_value
@@ -1589,7 +1614,7 @@ yyreduce:
 	}
 
 	/* action */
-	yyval = parse_json_bool(ugly_text); /* magic: json_value becomes the JSON_TRUE type (JTYPE_BOOL) */
+	yyval = parse_json_bool(ugly_text); /* magic: json_value becomes JTYPE_BOOL type */
 
 	/* post-action debugging */
 	if (json_dbg_allowed(JSON_DBG_HIGH)) {
@@ -1600,11 +1625,11 @@ yyreduce:
 					       "json_value: JSON_TRUE");
 	}
     }
-#line 1553 "jparse.tab.c"
+#line 1578 "jparse.tab.c"
     break;
 
   case 8: /* json_value: "false"  */
-#line 365 "jparse.y"
+#line 390 "jparse.y"
     {
 	/*
 	 * $$ = $json_value
@@ -1621,7 +1646,7 @@ yyreduce:
 	}
 
 	/* action */
-	yyval = parse_json_bool(ugly_text); /* magic: json_value becomes the JSON_FALSE type (JTYPE_BOOL) */
+	yyval = parse_json_bool(ugly_text); /* magic: json_value becomes JTYPE_BOOL type */
 
 	/* post-action debugging */
 	if (json_dbg_allowed(JSON_DBG_HIGH)) {
@@ -1632,11 +1657,11 @@ yyreduce:
 					     "json_value: JSON_FALSE");
 	}
     }
-#line 1585 "jparse.tab.c"
+#line 1610 "jparse.tab.c"
     break;
 
   case 9: /* json_value: "null"  */
-#line 395 "jparse.y"
+#line 420 "jparse.y"
     {
 	/*
 	 * $$ = $json_value
@@ -1653,7 +1678,7 @@ yyreduce:
 	}
 
 	/* action */
-	yyval = parse_json_null(ugly_text); /* magic: json_value becomes the JSON_NULL type (JTYPE_NULL) */
+	yyval = parse_json_null(ugly_text); /* magic: json_value becomes JTYPE_NULL type */
 
 	/* post-action debugging */
 	if (json_dbg_allowed(JSON_DBG_HIGH)) {
@@ -1664,11 +1689,11 @@ yyreduce:
 					       "json_value: JSON_NULL");
 	}
     }
-#line 1617 "jparse.tab.c"
+#line 1642 "jparse.tab.c"
     break;
 
   case 10: /* json_object: "{" json_members "}"  */
-#line 427 "jparse.y"
+#line 452 "jparse.y"
     {
 	/*
 	 * $$ = $json_object
@@ -1686,7 +1711,7 @@ yyreduce:
 	}
 
 	/* action */
-	yyval = yyvsp[-1]; /* magic: json_value becomes the json_number type (JTYPE_OBJECT) */
+	yyval = yyvsp[-1]; /* magic: json_value becomes JTYPE_OBJECT type */
 
 	/* post-action debugging */
 	if (json_dbg_allowed(JSON_DBG_HIGH)) {
@@ -1697,11 +1722,11 @@ yyreduce:
 					       "json_object: JSON_OPEN_BRACE json_members JSON_CLOSE_BRACE");
 	}
     }
-#line 1650 "jparse.tab.c"
+#line 1675 "jparse.tab.c"
     break;
 
   case 11: /* json_object: "{" "}"  */
-#line 458 "jparse.y"
+#line 483 "jparse.y"
     {
 	/*
 	 * $$ = $json_object
@@ -1727,11 +1752,11 @@ yyreduce:
 					       "json_object: JSON_OPEN_BRACE JSON_CLOSE_BRACE");
 	}
     }
-#line 1680 "jparse.tab.c"
+#line 1705 "jparse.tab.c"
     break;
 
   case 12: /* json_members: json_member  */
-#line 488 "jparse.y"
+#line 513 "jparse.y"
     {
 	/*
 	 * $$ = $json_members
@@ -1763,11 +1788,11 @@ yyreduce:
 					      "json_members: json_member");
 	}
     }
-#line 1716 "jparse.tab.c"
+#line 1741 "jparse.tab.c"
     break;
 
   case 13: /* json_members: json_members "," json_member  */
-#line 522 "jparse.y"
+#line 547 "jparse.y"
     {
 	/*
 	 * $$ = $json_members
@@ -1802,11 +1827,11 @@ yyreduce:
 					       "json_members: json_members JSON_COMMA json_member");
 	}
     }
-#line 1755 "jparse.tab.c"
+#line 1780 "jparse.tab.c"
     break;
 
   case 14: /* json_member: json_string ":" json_element  */
-#line 561 "jparse.y"
+#line 586 "jparse.y"
     {
 	/*
 	 * $$ = $json_member
@@ -1838,11 +1863,11 @@ yyreduce:
 					       "json_member: json_string JSON_COLON json_element");
 	}
     }
-#line 1791 "jparse.tab.c"
+#line 1816 "jparse.tab.c"
     break;
 
   case 15: /* json_array: "[" json_elements "]"  */
-#line 597 "jparse.y"
+#line 622 "jparse.y"
     {
 	/*
 	 * $$ = $json_array
@@ -1871,11 +1896,11 @@ yyreduce:
 					       "json_array: JSON_OPEN_BRACKET json_elements JSON_CLOSE_BRACKET");
 	}
     }
-#line 1824 "jparse.tab.c"
+#line 1849 "jparse.tab.c"
     break;
 
   case 16: /* json_array: "[" "]"  */
-#line 628 "jparse.y"
+#line 653 "jparse.y"
     {
 	/*
 	 * $$ = $json_array
@@ -1901,11 +1926,11 @@ yyreduce:
 					       "json_array: JSON_OPEN_BRACKET JSON_CLOSE_BRACKET");
 	}
     }
-#line 1854 "jparse.tab.c"
+#line 1879 "jparse.tab.c"
     break;
 
   case 17: /* json_elements: json_element  */
-#line 658 "jparse.y"
+#line 683 "jparse.y"
     {
 	/*
 	 * $$ = $json_elements
@@ -1937,11 +1962,11 @@ yyreduce:
 					       "json_elements: json_element");
 	}
     }
-#line 1890 "jparse.tab.c"
+#line 1915 "jparse.tab.c"
     break;
 
   case 18: /* json_elements: json_elements "," json_element  */
-#line 692 "jparse.y"
+#line 717 "jparse.y"
     {
 	/*
 	 * $$ = $json_elements
@@ -1975,11 +2000,11 @@ yyreduce:
 					       "json_elements: json_elements JSON_COMMA json_element");
 	}
     }
-#line 1928 "jparse.tab.c"
+#line 1953 "jparse.tab.c"
     break;
 
   case 19: /* json_element: json_value  */
-#line 730 "jparse.y"
+#line 755 "jparse.y"
     {
 	/*
 	 * $$ = $json_element
@@ -1997,7 +2022,7 @@ yyreduce:
 	}
 
 	/* action */
-	yyval = yyvsp[0]; /* magic: json_element becomes the json_value type */
+	yyval = yyvsp[0]; /* magic: json_element becomes json_value's type */
 
 	/* post-action debugging */
 	if (json_dbg_allowed(JSON_DBG_HIGH)) {
@@ -2008,11 +2033,11 @@ yyreduce:
 					       "json_element: json_value");
 	}
     }
-#line 1961 "jparse.tab.c"
+#line 1986 "jparse.tab.c"
     break;
 
   case 20: /* json_string: JSON_STRING  */
-#line 763 "jparse.y"
+#line 788 "jparse.y"
     {
 	/*
 	 * $$ = $json_string
@@ -2040,11 +2065,11 @@ yyreduce:
 					       "json_string: JSON_STRING");
 	}
     }
-#line 1993 "jparse.tab.c"
+#line 2018 "jparse.tab.c"
     break;
 
   case 21: /* json_number: JSON_NUMBER  */
-#line 795 "jparse.y"
+#line 820 "jparse.y"
     {
 	/*
 	 * $$ = $json_number
@@ -2072,11 +2097,11 @@ yyreduce:
 					       "json_number: JSON_NUMBER");
 	}
     }
-#line 2025 "jparse.tab.c"
+#line 2050 "jparse.tab.c"
     break;
 
 
-#line 2029 "jparse.tab.c"
+#line 2054 "jparse.tab.c"
 
         default: break;
       }
@@ -2126,7 +2151,7 @@ yyerrlab:
   if (!yyerrstatus)
     {
       ++yynerrs;
-      yyerror (node, YY_("syntax error"));
+      yyerror (tree, YY_("syntax error"));
     }
 
   if (yyerrstatus == 3)
@@ -2143,7 +2168,7 @@ yyerrlab:
       else
         {
           yydestruct ("Error: discarding",
-                      yytoken, &yylval, node);
+                      yytoken, &yylval, tree);
           yychar = UGLY_EMPTY;
         }
     }
@@ -2199,7 +2224,7 @@ yyerrlab1:
 
 
       yydestruct ("Error: popping",
-                  YY_ACCESSING_SYMBOL (yystate), yyvsp, node);
+                  YY_ACCESSING_SYMBOL (yystate), yyvsp, tree);
       YYPOPSTACK (1);
       yystate = *yyssp;
       YY_STACK_PRINT (yyss, yyssp);
@@ -2241,7 +2266,7 @@ yyabortlab:
 | yyexhaustedlab -- YYNOMEM (memory exhaustion) comes here.  |
 `-----------------------------------------------------------*/
 yyexhaustedlab:
-  yyerror (node, YY_("memory exhausted"));
+  yyerror (tree, YY_("memory exhausted"));
   yyresult = 2;
   goto yyreturnlab;
 
@@ -2256,7 +2281,7 @@ yyreturnlab:
          user semantic actions for why this is necessary.  */
       yytoken = YYTRANSLATE (yychar);
       yydestruct ("Cleanup: discarding lookahead",
-                  yytoken, &yylval, node);
+                  yytoken, &yylval, tree);
     }
   /* Do not reclaim the symbols of the rule whose action triggered
      this YYABORT or YYACCEPT.  */
@@ -2265,7 +2290,7 @@ yyreturnlab:
   while (yyssp != yyss)
     {
       yydestruct ("Cleanup: popping",
-                  YY_ACCESSING_SYMBOL (+*yyssp), yyvsp, node);
+                  YY_ACCESSING_SYMBOL (+*yyssp), yyvsp, tree);
       YYPOPSTACK (1);
     }
 #ifndef yyoverflow
@@ -2278,7 +2303,7 @@ yyreturnlab:
   return yyresult;
 }
 
-#line 825 "jparse.y"
+#line 850 "jparse.y"
 
 
 
@@ -2290,26 +2315,16 @@ yyreturnlab:
  *
  * given:
  *
- *	node	    struct json * or NULL
+ *	node	    pointer to struct json * or NULL
  *	format	    printf style format string
  *	...	    optional parameters based on the format
  *
  */
 void
-ugly_error(struct json *node, char const *format, ...)
+ugly_error(struct json **node, char const *format, ...)
 {
-    va_list ap;			/* variable argument list */
-#if 0 /* XXX - code likely not needed - remove this section if that is the case - XXX */
-    bool allowed = false;	/* true ==> ugly errors are allowed as JSON warnings */
-
-    /*
-     * do nothing if the JSON warning system is disabled
-     */
-    allowed = json_warn_allowed();
-    if (allowed == false) {
-	return;
-    }
-#endif /* XXX - code likely not needed - remove this section if that is the case - XXX */
+    va_list ap;		/* variable argument list */
+    int ret;		/* libc function return value */
 
     /*
      * stdarg variable argument list setup
@@ -2317,50 +2332,35 @@ ugly_error(struct json *node, char const *format, ...)
     va_start(ap, format);
 
     /*
-     * if we have a node, print the node type
+     * generate an error message for the JSON parser and scanner
      */
-    fprint(stderr, "in %s(): node type: %s", __func__, json_item_type_name(node));
-
-    /*
-     * We use fprintf and vfprintf instead of err() but in the future this might
-     * use an error function of some kind, perhaps a variant of jerr() (a
-     * variant because the parser cannot provide all the information that the
-     * jerr() function expects). In the validation code we will likely use
-     * jerr(). It's possible that the function jerr() will change as well but
-     * this will be decided after the parser is complete.
-     */
-    (void) fprintf(stderr, "\nJSON parser error on line %d: ", ugly_lineno);
-    (void) vfprintf(stderr, format, ap);
-
-    /*
-     * NB This is a (somewhat ugly - but that's perfect for both JSON and bison
-     * as noted in the programmer's apology and comments about the prefix ugly_)
-     * hack (or maybe a better word is kludge) to show the text that triggered
-     * the error assuming it was a syntax error. This is an assumption but we
-     * know that it is called in other cases too e.g. for memory exhaustion.
-     *
-     * However this is okay because it's useful to have the text being processed
-     * when the error occurs. Error reporting can still be improved.
-     *
-     * One of the ways it's a hack or kludge is that we simply append to the
-     * generated message:
-     *
-     *	    ": %s\n", ugly_text
-     *
-     * without any foreknowledge of what the message actually is. We do however
-     * check that ugly_text is not NULL and *ugly_text is not NUL; if this is
-     * not satisfied then we only print a newline. This does mean though that
-     * if it's a NUL byte it won't even be added but it wouldn't be visible
-     * anyway. We could use the fprint_str() function in that case but this
-     * makes it simpler and usually there won't be a NUL byte outside of a
-     * string so this is not really important.
-     */
-    if (ugly_text != NULL && *ugly_text != '\0') {
-	fprint(stderr, ": %s\n", ugly_text);
-    } else {
-	fprstr(stderr, "\n");
+    vfpr(stderr, __func__, format, ap);
+    if (node != NULL && *node != NULL) {
+	fprint(stderr, " type: %s ", json_item_type_name(*node));
     }
-    (void) fflush(stderr);
+    if (ugly_text != NULL && *ugly_text != '\0') {
+	fprint(stderr, " line: %d: %s\n", ugly_lineno, ugly_text);
+    } else if (ugly_text == NULL) {
+	fprint(stderr, " line: %d: ugly_text == NULL\n", ugly_lineno);
+    } else {
+	fprint(stderr, " line: %d: empty ugly_text\n", ugly_lineno);
+    }
+
+    /*
+     * flush stderr
+     */
+    clearerr(stderr);           /* pre-clear ferror() status */
+    errno = 0;                  /* pre-clear errno for warnp() */
+    ret = fflush(stderr);
+    if (ret == EOF) {
+        if (ferror(stderr)) {
+            warnp(__func__, "called from %s: error flushing stream", __func__);
+        } else if (feof(stderr)) {
+            warnp(__func__, "called from %s: EOF while flushing stream", __func__);
+        } else {
+            warnp(__func__, "called from %s: unexpected fflush error while flushing stream", __func__);
+        }
+    }
 
     /*
      * stdarg variable argument list clean up

@@ -123,20 +123,16 @@ main(int argc, char **argv)
     }
 
     /*
-     * firewall - must be valid JSON
+     * firewall - JSON parser must have returned a valid JSON parse tree
      */
     if (valid_json == false) {
 	++num_errors;
 	err(1, program, "invalid JSON"); /*ooo*/
 	not_reached();
     }
-#if 0 /* XXX - restore this test and fix it - XXX */
     if (tree == NULL) {
-	err(1, program, "JSON parse tree is NULL"); /*ooo*/
-	++num_errors;
-	not_reached();
+	warn(program, "JSON parse tree is NULL");
     }
-#endif
 
     /*
      * free the JSON parse tree
@@ -151,6 +147,7 @@ main(int argc, char **argv)
      *  exit based on JSON parse success or failure
      */
     if (num_errors > 0) {
+	msg("invalid JSON");
 	exit(1); /*ooo*/
     }
     msg("valid JSON");

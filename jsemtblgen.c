@@ -152,7 +152,7 @@ main(int argc, char **argv)
     }
 
     /*
-     * firewall - must be valid JSON
+     * firewall - JSON parser must have returned a valid JSON parse tree
      */
     if (valid_json == false) {
 	++num_errors;

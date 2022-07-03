@@ -30,9 +30,9 @@
 
 /*
  * we need access to the node in parse_json() so we tell bison that ugly_parse()
- * takes a struct json *node.
+ * takes a struct json *(node.
  */
-%parse-param { struct json *node }
+%parse-param { struct json **tree }
 
 /*
  * An IOCCC satirical take on bison and flex
@@ -182,23 +182,48 @@ json:
 	 */
 
 	/* pre action debugging */
-	if (json_dbg_allowed(JSON_DBG_MED)) {
+	if (json_dbg_allowed(JSON_DBG_HIGH)) {
 	    json_dbg(JSON_DBG_HIGH, __func__, "under json: starting: "
 					      "json: json_element");
-	    json_dbg(JSON_DBG_MED, __func__, "under json: $json_element type: %s",
+	    json_dbg(JSON_DBG_HIGH, __func__, "under json: $json_element type: %s",
 					     json_item_type_name($json_element));
-	    json_dbg(JSON_DBG_MED, __func__, "under json: about to perform: "
+	    json_dbg(JSON_DBG_HIGH, __func__, "under json: about to perform: "
 					     "$json = $json_element;");
 	}
 
 	/* action */
-	$json = $json_element; /* magic: json becomes the json_element type */
+	$json = $json_element;	/* magic: json_value becomes json_element's type */
 
 	/* post action debugging */
 	if (json_dbg_allowed(JSON_DBG_MED)) {
-	    json_dbg(JSON_DBG_MED, __func__, "under json: returning $json type: %s",
-					     json_item_type_name($json));
+	    if (json_dbg_allowed(JSON_DBG_HIGH)) {
+		json_dbg(JSON_DBG_HIGH, __func__, "under json: returning $json_element type: %s",
+						  json_item_type_name($json));
+	    }
 	    json_dbg_tree_print(JSON_DBG_MED, __func__, $json, JSON_DEFAULT_MAX_DEPTH);
+	}
+
+	/* return the JSON parse tree */
+	if ($json == NULL) {
+	    warn(__func__, "under json: $json == NULL: about to perform: "
+			   "tree = NULL;");
+	    if (tree == NULL) {
+		warn(__func__, "under json: tree == NULL");
+	    } else {
+		tree = NULL;
+	    }
+	} else {
+	    if (json_dbg_allowed(JSON_DBG_HIGH)) {
+		json_dbg(JSON_DBG_HIGH, __func__, "under json: about also to perform: "
+						  "*tree = $json;");
+	    }
+	    if (tree == NULL) {
+		warn(__func__, "under json: tree == NULL");
+	    } else {
+		*tree = $json;	/* more magic: set ugly_parse(tree) arg to ptr to JSON parse tree */
+	    }
+	}
+	if (json_dbg_allowed(JSON_DBG_HIGH)) {
 	    json_dbg(JSON_DBG_HIGH, __func__, "under json: ending: "
 					      "json: json_element");
 	}
@@ -225,7 +250,7 @@ json_value:
 	}
 
 	/* action */
-	$json_value = $json_object;	/* magic: json_value becomes the json_object (JTYPE_OBJECT) type */
+	$json_value = $json_object;	/* magic: json_value becomes JTYPE_OBJECT type */
 
 	/* post-action debugging */
 	if (json_dbg_allowed(JSON_DBG_HIGH)) {
@@ -256,7 +281,7 @@ json_value:
 	}
 
 	/* action */
-	$json_value = $json_array;	/* magic: json_value becomes the json_array type (JTYPE_ARRAY) */
+	$json_value = $json_array;	/* magic: json_value becomes JTYPE_ARRAY type */
 
 	/* post-action debugging */
 	if (json_dbg_allowed(JSON_DBG_HIGH)) {
@@ -287,7 +312,7 @@ json_value:
 	}
 
 	/* action */
-	$json_value = $json_string; /* magic: json_value becomes the json_string type (JTYPE_STRING) */
+	$json_value = $json_string; /* magic: json_value becomes JTYPE_STRING type */
 
 	/* post-action debugging */
 	if (json_dbg_allowed(JSON_DBG_HIGH)) {
@@ -318,7 +343,7 @@ json_value:
 	}
 
 	/* action */
-	$json_value = $json_number; /* magic: json_value becomes the json_number type (JTYPE_NUMBER) */
+	$json_value = $json_number; /* magic: json_value becomes JTYPE_NUMBER type */
 
 	/* post-action debugging */
 	if (json_dbg_allowed(JSON_DBG_HIGH)) {
@@ -348,7 +373,7 @@ json_value:
 	}
 
 	/* action */
-	$json_value = parse_json_bool(ugly_text); /* magic: json_value becomes the JSON_TRUE type (JTYPE_BOOL) */
+	$json_value = parse_json_bool(ugly_text); /* magic: json_value becomes JTYPE_BOOL type */
 
 	/* post-action debugging */
 	if (json_dbg_allowed(JSON_DBG_HIGH)) {
@@ -378,7 +403,7 @@ json_value:
 	}
 
 	/* action */
-	$json_value = parse_json_bool(ugly_text); /* magic: json_value becomes the JSON_FALSE type (JTYPE_BOOL) */
+	$json_value = parse_json_bool(ugly_text); /* magic: json_value becomes JTYPE_BOOL type */
 
 	/* post-action debugging */
 	if (json_dbg_allowed(JSON_DBG_HIGH)) {
@@ -408,7 +433,7 @@ json_value:
 	}
 
 	/* action */
-	$json_value = parse_json_null(ugly_text); /* magic: json_value becomes the JSON_NULL type (JTYPE_NULL) */
+	$json_value = parse_json_null(ugly_text); /* magic: json_value becomes JTYPE_NULL type */
 
 	/* post-action debugging */
 	if (json_dbg_allowed(JSON_DBG_HIGH)) {
@@ -441,7 +466,7 @@ json_object:
 	}
 
 	/* action */
-	$json_object = $json_members; /* magic: json_value becomes the json_number type (JTYPE_OBJECT) */
+	$json_object = $json_members; /* magic: json_value becomes JTYPE_OBJECT type */
 
 	/* post-action debugging */
 	if (json_dbg_allowed(JSON_DBG_HIGH)) {
@@ -744,7 +769,7 @@ json_element:
 	}
 
 	/* action */
-	$json_element = $json_value; /* magic: json_element becomes the json_value type */
+	$json_element = $json_value; /* magic: json_element becomes json_value's type */
 
 	/* post-action debugging */
 	if (json_dbg_allowed(JSON_DBG_HIGH)) {
@@ -833,26 +858,16 @@ json_number:
  *
  * given:
  *
- *	node	    struct json * or NULL
+ *	node	    pointer to struct json * or NULL
  *	format	    printf style format string
  *	...	    optional parameters based on the format
  *
  */
 void
-ugly_error(struct json *node, char const *format, ...)
+ugly_error(struct json **node, char const *format, ...)
 {
-    va_list ap;			/* variable argument list */
-#if 0 /* XXX - code likely not needed - remove this section if that is the case - XXX */
-    bool allowed = false;	/* true ==> ugly errors are allowed as JSON warnings */
-
-    /*
-     * do nothing if the JSON warning system is disabled
-     */
-    allowed = json_warn_allowed();
-    if (allowed == false) {
-	return;
-    }
-#endif /* XXX - code likely not needed - remove this section if that is the case - XXX */
+    va_list ap;		/* variable argument list */
+    int ret;		/* libc function return value */
 
     /*
      * stdarg variable argument list setup
@@ -860,50 +875,35 @@ ugly_error(struct json *node, char const *format, ...)
     va_start(ap, format);
 
     /*
-     * if we have a node, print the node type
+     * generate an error message for the JSON parser and scanner
      */
-    fprint(stderr, "in %s(): node type: %s", __func__, json_item_type_name(node));
-
-    /*
-     * We use fprintf and vfprintf instead of err() but in the future this might
-     * use an error function of some kind, perhaps a variant of jerr() (a
-     * variant because the parser cannot provide all the information that the
-     * jerr() function expects). In the validation code we will likely use
-     * jerr(). It's possible that the function jerr() will change as well but
-     * this will be decided after the parser is complete.
-     */
-    (void) fprintf(stderr, "\nJSON parser error on line %d: ", ugly_lineno);
-    (void) vfprintf(stderr, format, ap);
-
-    /*
-     * NB This is a (somewhat ugly - but that's perfect for both JSON and bison
-     * as noted in the programmer's apology and comments about the prefix ugly_)
-     * hack (or maybe a better word is kludge) to show the text that triggered
-     * the error assuming it was a syntax error. This is an assumption but we
-     * know that it is called in other cases too e.g. for memory exhaustion.
-     *
-     * However this is okay because it's useful to have the text being processed
-     * when the error occurs. Error reporting can still be improved.
-     *
-     * One of the ways it's a hack or kludge is that we simply append to the
-     * generated message:
-     *
-     *	    ": %s\n", ugly_text
-     *
-     * without any foreknowledge of what the message actually is. We do however
-     * check that ugly_text is not NULL and *ugly_text is not NUL; if this is
-     * not satisfied then we only print a newline. This does mean though that
-     * if it's a NUL byte it won't even be added but it wouldn't be visible
-     * anyway. We could use the fprint_str() function in that case but this
-     * makes it simpler and usually there won't be a NUL byte outside of a
-     * string so this is not really important.
-     */
-    if (ugly_text != NULL && *ugly_text != '\0') {
-	fprint(stderr, ": %s\n", ugly_text);
-    } else {
-	fprstr(stderr, "\n");
+    vfpr(stderr, __func__, format, ap);
+    if (node != NULL && *node != NULL) {
+	fprint(stderr, " type: %s ", json_item_type_name(*node));
     }
-    (void) fflush(stderr);
+    if (ugly_text != NULL && *ugly_text != '\0') {
+	fprint(stderr, " line: %d: %s\n", ugly_lineno, ugly_text);
+    } else if (ugly_text == NULL) {
+	fprint(stderr, " line: %d: ugly_text == NULL\n", ugly_lineno);
+    } else {
+	fprint(stderr, " line: %d: empty ugly_text\n", ugly_lineno);
+    }
+
+    /*
+     * flush stderr
+     */
+    clearerr(stderr);           /* pre-clear ferror() status */
+    errno = 0;                  /* pre-clear errno for warnp() */
+    ret = fflush(stderr);
+    if (ret == EOF) {
+        if (ferror(stderr)) {
+            warnp(__func__, "called from %s: error flushing stream", __func__);
+        } else if (feof(stderr)) {
+            warnp(__func__, "called from %s: EOF while flushing stream", __func__);
+        } else {
+            warnp(__func__, "called from %s: unexpected fflush error while flushing stream", __func__);
+        }
+    }
 
     /*
      * stdarg variable argument list clean up

@@ -83,7 +83,7 @@ extern int ugly_lex(void);
 /*
  * function prototypes for jparse.y
  */
-extern void ugly_error(struct json *node, char const *format, ...);
+extern void ugly_error(struct json **tree, char const *format, ...);
 
 /*
  * function prototypes for jparse.l

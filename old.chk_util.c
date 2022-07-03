@@ -2215,3 +2215,521 @@ chk_sanity_chks(void)
     ioccc_sanity_chks();
     return;
 }
+
+
+/*
+ * jwarn - issue a JSON warning message
+ *
+ * given:
+ *	name	    name of function issuing the warning
+ *	filename    file with the problem (can be stdin)
+ *	line	    JSON line
+ *	line_num    the offending line number in the json file
+ *	fmt	    format of the warning
+ *	...	    optional format args
+ *
+ * Example:
+ *
+ *	jwarn(__func__, file, line, __LINE__, "unexpected foobar: %d", value);
+ *
+ * NOTE: We warn with extra newlines to help internal fault messages stand out.
+ *	 Normally one should NOT include newlines in warn messages.
+ *
+ * NOTE: In some cases the file noted is the source file that raised the issue.
+ *
+ * This function returns true if the warning message is not ignored; else it
+ * will return false.
+ */
+void
+jwarn(char const *name, char const *filename,
+      char const *line, int line_num, char const *fmt, ...)
+{
+    va_list ap;			/* variable argument list */
+    int ret = 0;		/* libc function return code */
+    int saved_errno = 0;	/* errno at function start */
+    bool allowed = false;	/* true ==> output is allowed */
+
+    /*
+     * do nothing if the JSON warning is not allowed
+     */
+    allowed = json_warn_allowed();
+    if (allowed == false) {
+	return;
+    }
+
+    /*
+     * save errno so we can restore it before returning
+     */
+    saved_errno = errno;
+
+    /*
+     * stdarg variable argument list setup
+     */
+    va_start(ap, fmt);
+
+    /*
+     * firewall
+     */
+    if (name == NULL) {
+	name = "((NULL name))";
+	warn(__func__, "called with NULL name, forcing name: %s", name);
+    }
+    if (fmt == NULL) {
+	fmt = "((NULL fmt))";
+	warn(__func__, "called with NULL fmt, forcing fmt: %s", fmt);
+    }
+    if (line == NULL) {
+	/* currently line will be NULL so we make it empty */
+	line = "";
+    }
+    if (filename == NULL) {
+	filename = "((NULL))";
+	dbg(DBG_VHIGH, "%s(): called with NULL filename, forcing filename: %s\n",
+		       __func__, filename);
+    }
+
+
+    ret = fprintf(stderr, "# %s\n", name);
+    if (ret < 0) {
+	(void) fprintf(stderr, "\nWarning: in %s(%s, %s, %s, %d, %s, ...): "
+			       "fprintf returned error: %s\n",
+			       __func__, name, filename, line, line_num, fmt, strerror(errno));
+    }
+
+    errno = 0;
+    ret = fprintf(stderr, "%s: %d: ", filename, line_num);
+    if (ret < 0) {
+	(void) fprintf(stderr, "\nWarning: in %s(%s, %s, %s, %d, %s, ...): "
+			       "fprintf returned error: %s\n",
+			       __func__, name, filename, line, line_num, fmt, strerror(errno));
+    }
+
+    errno = 0;
+    ret = vfprintf(stderr, fmt, ap);
+    if (ret < 0) {
+	(void) fprintf(stderr, "\nWarning: in %s(%s, %s, %s, %d, %s, ...): "
+			       "fprintf returned error: %s\n",
+			       __func__, name, filename, line, line_num, fmt, strerror(errno));
+    }
+
+    errno = 0;
+    ret = fputc('\n', stderr);
+    if (ret != '\n') {
+	(void) fprintf(stderr, "\nWarning: in %s(%s, %s, %s, %d, %s, ...): "
+			       "fputc returned error: %s\n",
+			       __func__, name, filename, line, line_num, fmt, strerror(errno));
+    }
+
+    errno = 0;
+    ret = fflush(stderr);
+    if (ret < 0) {
+	(void) fprintf(stderr, "\nWarning: in %s(%s, %s, %s, %d, %s, ...): "
+			       "fflush returned error: %s\n",
+			       __func__, name, filename, line, line_num, fmt, strerror(errno));
+    }
+
+    /*
+     * stdarg variable argument list clean up
+     */
+    va_end(ap);
+
+    /*
+     * restore previous errno value
+     */
+    errno = saved_errno;
+    return;
+}
+
+
+/*
+ * jwarnp - issue a JSON warning message with errno information
+ *
+ * given:
+ *	name	    name of function issuing the warning
+ *	filename    file with the problem (can be stdin)
+ *	line	    JSON line
+ *	line_num    the offending line number in the json file
+ *	fmt	    format of the warning
+ *	...	    optional format args
+ *
+ * Example:
+ *
+ *	jwarnp(__func__, file, line, __LINE__, "unexpected foobar: %d", value);
+ *
+ * NOTE: We warn with extra newlines to help internal fault messages stand out.
+ *	 Normally one should NOT include newlines in warn messages.
+ *
+ * NOTE: In some cases the file noted is the source file that raised the issue.
+ *
+ * This function returns true if the warning message is not ignored; else it
+ * will return false.
+ */
+void
+jwarnp(char const *name, char const *filename,
+       char const *line, int line_num, char const *fmt, ...)
+{
+    va_list ap;			/* variable argument list */
+    int ret = 0;		/* libc function return code */
+    int saved_errno = 0;	/* errno at function start */
+    bool allowed = false;	/* true ==> output is allowed */
+
+    /*
+     * do nothing if the JSON warning is not allowed
+     */
+    allowed = json_warn_allowed();
+    if (allowed == false) {
+	return;
+    }
+
+    /*
+     * save errno so we can restore it before returning
+     */
+    saved_errno = errno;
+
+    /*
+     * stdarg variable argument list setup
+     */
+    va_start(ap, fmt);
+
+    /*
+     * firewall
+     */
+    if (name == NULL) {
+	name = "((NULL name))";
+	warn(__func__, "called with NULL name, forcing name: %s", name);
+    }
+    if (fmt == NULL) {
+	fmt = "((NULL fmt))";
+	warn(__func__, "called with NULL fmt, forcing fmt: %s", fmt);
+    }
+    if (line == NULL) {
+	/* currently line will be NULL so we make it empty */
+	line = "";
+    }
+    if (filename == NULL) {
+	filename = "((NULL))";
+	dbg(DBG_VHIGH, "in %s(): called with NULL filename, forcing filename: %s\n",
+		       __func__, filename);
+    }
+
+
+    errno = 0;
+    ret = fprintf(stderr, "# %s\n", name);
+    if (ret < 0) {
+	(void) fprintf(stderr, "\nWarning: in %s(%s, %s, %s, %d, %s, ...): "
+			       "fprintf returned error: %s\n",
+			       __func__, name, filename, line, line_num, fmt, strerror(errno));
+    }
+
+    errno = 0;
+    ret = fprintf(stderr, "%s: %d: ", filename, line_num);
+    if (ret < 0) {
+	(void) fprintf(stderr, "\nWarning: in %s(%s, %s, %s, %d, %s, ...): "
+			       "fprintf returned error: %s\n",
+			       __func__, name, filename, line, line_num, fmt, strerror(errno));
+    }
+
+    errno = 0;
+    ret = vfprintf(stderr, fmt, ap);
+    if (ret < 0) {
+	(void) fprintf(stderr, "\nWarning: in %s(%s, %s, %s, %d, %s, ...): "
+			       "fprintf returned error: %s\n",
+			       __func__, name, filename, line, line_num, fmt, strerror(errno));
+    }
+
+    errno = 0;
+    ret = fprintf(stderr, "errno[%d]: %s\n", saved_errno, strerror(saved_errno));
+    if (ret < 0) {
+	(void) fprintf(stderr, "\nWarning: in %s(%s, %s, %s, %d, %s, ...): "
+			       "fprintf with errno returned error: %s\n",
+			       __func__, name, filename, line, line_num, fmt, strerror(errno));
+    }
+
+    errno = 0;
+    ret = fputc('\n', stderr);
+    if (ret != '\n') {
+	(void) fprintf(stderr, "\nWarning: in %s(%s, %s, %s, %d, %s, ...): "
+			       "fputc returned error: %s\n",
+			       __func__, name, filename, line, line_num, fmt, strerror(errno));
+    }
+
+    errno = 0;
+    ret = fflush(stderr);
+    if (ret < 0) {
+	(void) fprintf(stderr, "\nWarning: in %s(%s, %s, %s, %d, %s, ...): "
+			       "fflush returned error: %s\n",
+			       __func__, name, filename, line, line_num, fmt, strerror(errno));
+    }
+
+    /*
+     * stdarg variable argument list clean up
+     */
+    va_end(ap);
+
+    /*
+     * restore previous errno value
+     */
+    errno = saved_errno;
+    return;
+}
+
+
+/*
+ * jerr - issue a fatal JSON error message and exit
+ *
+ * given:
+ *	exitcode	value to exit with
+ *	name		name of function issuing the error
+ *	filename	file with the problem (can be stdin)
+ *	line		line with the problem (or NULL)
+ *	line_num	line number with the problem or -1
+ *	fmt		format of the warning
+ *	...		optional format args
+ *
+ * Example:
+ *
+ *	jerr(123, __func__, file, line, line_num, "bad foobar: %s", message);
+ *
+ * NOTE: We warn with extra newlines to help internal fault messages stand out.
+ *	 Normally one should NOT include newlines in warn messages.
+ *
+ * NOTE: In some cases the file noted is the source file that raised the issue.
+ *
+ * This function does not return.
+ */
+void
+jerr(int exitcode, char const *name, char const *filename,
+     char const *line, int line_num, char const *fmt, ...)
+{
+    va_list ap;			/* variable argument list */
+    int ret;			/* libc function return code */
+    bool allowed = false;	/* true ==> output is allowed */
+
+    /*
+     * determine if conditions allow JSON error message, exit if not
+     */
+    allowed = json_err_allowed();
+    if (allowed == false) {
+	exit((exitcode < 0 || exitcode > 255) ? 255 : exitcode);
+	not_reached();
+    }
+
+    /*
+     * stdarg variable argument list setup
+     */
+    va_start(ap, fmt);
+
+    /*
+     * firewall
+     */
+    if (exitcode < 0) {
+	warn(__func__, "called with exitcode <0: %d", exitcode);
+	exitcode = 255;
+	warn(__func__, "forcing exit code: %d", exitcode);
+    }
+    if (name == NULL) {
+	name = "((NULL name))";
+	warn(__func__, "called with NULL name, forcing name: %s", name);
+    }
+    if (fmt == NULL) {
+	fmt = "((NULL fmt))";
+	warn(__func__, "called with NULL fmt, forcing fmt: %s", fmt);
+    }
+    if (filename == NULL) {
+	filename = "((NULL))";
+	dbg(DBG_VHIGH, "in %s(): called with NULL filename, forcing filename: %s\n",
+		       __func__, filename);
+    }
+    if (line == NULL) {
+	line = "";
+	dbg(DBG_VHIGH, "in %s(): called with NULL line, making \"\"",
+		       __func__);
+    }
+
+    errno = 0;
+    ret = fprintf(stderr, "# %s\n", name);
+    if (ret < 0) {
+	(void) fprintf(stderr, "\nWarning: in %s(%d, %s, %s, %s, %d, %s, ...): "
+			       "fprintf returned error: %s\n",
+			       __func__, exitcode, name, filename, line, line_num, fmt, strerror(errno));
+    }
+
+    errno = 0;
+    ret = fprintf(stderr, "JSON[%04d]: %s: %d: ", exitcode, filename, line_num);
+    if (ret < 0) {
+	(void) fprintf(stderr, "\nWarning: in %s(%d, %s, %s, %s, %d, %s, ...): "
+			       "fprintf returned error: %s\n",
+			       __func__, exitcode, name, filename, line, line_num, fmt, strerror(errno));
+    }
+
+    errno = 0;
+    ret = vfprintf(stderr, fmt, ap);
+    if (ret < 0) {
+	(void) fprintf(stderr, "\nWarning: in %s(%d, %s, %s, %s, %d, %s, ...): "
+			       "vfprintf returned error: %s\n",
+			       __func__, exitcode, name, filename, line, line_num, fmt, strerror(errno));
+    }
+
+    errno = 0;
+    ret = fputc('\n', stderr);
+    if (ret != '\n') {
+	(void) fprintf(stderr, "\nWarning: in %s(%d, %s, %s, %s, %d, %s, ...): "
+			       "fputc returned error: %s\n",
+			       __func__, exitcode, name, filename, line, line_num, fmt, strerror(errno));
+    }
+
+    errno = 0;
+    ret = fflush(stderr);
+    if (ret < 0) {
+	(void) fprintf(stderr, "\nWarning: in %s(%d, %s, %s, %s, %d, %s, ...): "
+			       "fflush returned error: %s\n",
+			       __func__, exitcode, name, filename, line, line_num, fmt, strerror(errno));
+    }
+
+    /*
+     * stdarg variable argument list cleanup
+     */
+    va_end(ap);
+
+    /*
+     * terminate with exit code
+     */
+    exit(exitcode);
+    not_reached();
+}
+
+
+/*
+ * jerrp - issue a fatal error message with errno information and exit
+ *
+ * given:
+ *	exitcode	value to exit with
+ *	name		name of function issuing the warning
+ *	filename	file with the problem (can be stdin)
+ *	line		line with the problem or NULL
+ *	line_num	line number of the problem or -1
+ *	fmt		format of the warning
+ *	...		optional format args
+ *
+ * Example:
+ *
+ *	jerrp(123, __func__, file, line, line_num, "bad foobar: %s", message);
+ *
+ * NOTE: We warn with extra newlines to help internal fault messages stand out.
+ *	 Normally one should NOT include newlines in warn messages.
+ *
+ * NOTE: In some cases the file noted is the source file that raised the issue.
+ *
+ * This function does not return.
+ */
+void
+jerrp(int exitcode, char const *name, char const *filename,
+      char const *line, int line_num, char const *fmt, ...)
+{
+    va_list ap;			/* variable argument list */
+    int ret = 0;		/* libc function return code */
+    int saved_errno = 0;	/* errno value when called */
+    bool allowed = false;	/* true ==> output is allowed */
+
+    /*
+     * determine if conditions allow JSON error message, exit if not
+     */
+    allowed = json_err_allowed();
+    if (allowed == false) {
+	exit((exitcode < 0 || exitcode > 255) ? 255 : exitcode);
+	not_reached();
+    }
+
+    /*
+     * save errno in case we need it for strerror()
+     */
+    saved_errno = errno;
+
+    /*
+     * stdarg variable argument list setup
+     */
+    va_start(ap, fmt);
+
+    /* firewall */
+    if (exitcode < 0) {
+	warn(__func__, "called with exitcode <0: %d", exitcode);
+	exitcode = 255;
+	warn(__func__, "forcing exit code: %d", exitcode);
+    }
+    if (name == NULL) {
+	name = "((NULL name))";
+	warn(__func__, "called with NULL name, forcing name: %s", name);
+    }
+    if (fmt == NULL) {
+	fmt = "((NULL fmt))";
+	warn(__func__, "called with NULL fmt, forcing fmt: %s", fmt);
+    }
+    if (filename == NULL) {
+	filename = "((NULL))";
+	warn(__func__, "called with NULL filename, forcing filename: %s", filename);
+    }
+    if (line == NULL) {
+	line = "";
+	warn(__func__, "called with NULL line, making \"\"");
+    }
+
+
+    errno = 0;
+    ret = fprintf(stderr, "# %s\n", name);
+    if (ret < 0) {
+	(void) fprintf(stderr, "\nWarning: in %s(%d, %s, %s, %s, %d, %s, ...): "
+			       "fprintf returned error: %s\n",
+			       __func__, exitcode, name, filename, line, line_num, fmt, strerror(errno));
+    }
+
+    errno = 0;
+    ret = fprintf(stderr, "JSON[%04d]: %s: %d: ", exitcode, filename, line_num);
+    if (ret < 0) {
+	(void) fprintf(stderr, "\nWarning: in %s(%d, %s, %s, %s, %d, %s, ...): "
+			       "fprintf returned error: %s\n",
+			       __func__, exitcode, name, filename, line, line_num, fmt, strerror(errno));
+    }
+
+    errno = 0;
+    ret = vfprintf(stderr, fmt, ap);
+    if (ret < 0) {
+	(void) fprintf(stderr, "\nWarning: in %s(%d, %s, %s, %s, %d, %s, ...): "
+			       "vfprintf returned error: %s\n",
+			       __func__, exitcode, name, filename, line, line_num, fmt, strerror(errno));
+    }
+
+    errno = 0;
+    ret = fprintf(stderr, " errno[%d]: %s", saved_errno, strerror(saved_errno));
+    if (ret < 0) {
+	(void) fprintf(stderr, "\nWarning: in %s(%d, %s, %s, %s, %d, %s, ...): "
+			       "fprintf returned error: %s\n",
+			       __func__, exitcode, name, filename, line, line_num, fmt, strerror(errno));
+    }
+
+    errno = 0;
+    ret = fputc('\n', stderr);
+    if (ret != '\n') {
+	(void) fprintf(stderr, "\nWarning: in %s(%d, %s, %s, %s, %d, %s, ...): "
+			       "fputc returned error: %s\n",
+			       __func__, exitcode, name, filename, line, line_num, fmt, strerror(errno));
+    }
+
+    errno = 0;
+    ret = fflush(stderr);
+    if (ret < 0) {
+	(void) fprintf(stderr, "\nWarning: in %s(%d, %s, %s, %s, %d, %s, ...): "
+			       "fflush returned error: %s\n",
+			       __func__, exitcode, name, filename, line, line_num, fmt, strerror(errno));
+    }
+
+    /*
+     * stdarg variable argument list cleanup
+     */
+    va_end(ap);
+
+    /*
+     * terminate with exit code
+     */
+    exit(exitcode);
+    not_reached();
+}

@@ -70,21 +70,9 @@ extern int json_verbosity_level;	/* print json debug messages <= json_verbosity_
 extern bool json_dbg_allowed(int json_dbg_lvl);
 extern bool json_warn_allowed(void);
 extern bool json_err_allowed(void);
-extern bool json_dbg(int json_dbg_lvl, char const *name, const char *fmt, ...) \
+extern void json_dbg(int json_dbg_lvl, char const *name, const char *fmt, ...) \
 	__attribute__((format(printf, 3, 4)));		/* 3=format 4=params */
-extern bool json_vdbg(int json_dbg_lvl, char const *name, const char *fmt, va_list ap);
-extern bool jwarn(char const *name, char const *filename,
-		  char const *line, int line_num, const char *fmt, ...) \
-	__attribute__((format(printf, 5, 6)));		/* 5=format 6=params */
-extern bool jwarnp(char const *name, char const *filename,
-		   char const *line, int line_num, const char *fmt, ...) \
-	__attribute__((format(printf, 5, 6)));		/* 5=format 6=params */
-extern void jerr(int exitcode, const char *name, char const *filename,
-		 char const *line, int line_num, const char *fmt, ...) \
-	__attribute__((noreturn)) __attribute__((format(printf, 6, 7))); /* 6=format 7=params */
-extern void jerrp(int exitcode, const char *name,
-		  char const *filename, char const *line, int line_num, const char *fmt, ...) \
-	__attribute__((noreturn)) __attribute__((format(printf, 6, 7))); /* 6=format 7=params */
+extern void json_vdbg(int json_dbg_lvl, char const *name, const char *fmt, va_list ap);
 extern bool json_putc(uint8_t const c, FILE *stream);
 extern bool json_fprintf_str(FILE *stream, char const *str);
 extern bool json_fprintf_value_string(FILE *stream, char const *lead, char const *name, char const *middle, char const *value,
@@ -99,7 +87,7 @@ extern void vjson_free(struct json *node, unsigned int depth, va_list ap);
 extern void json_fprint(struct json *node, unsigned int depth, ...);
 extern void vjson_fprint(struct json *node, unsigned int depth, va_list ap);
 extern void json_tree_print(struct json *node, unsigned int max_depth, ...);
-extern bool json_dbg_tree_print(int json_dbg_lvl, char const *name, struct json *tree, unsigned int max_depth);
+extern void json_dbg_tree_print(int json_dbg_lvl, char const *name, struct json *tree, unsigned int max_depth);
 extern void json_tree_free(struct json *node, unsigned int max_depth, ...);
 extern void json_tree_walk(struct json *node, unsigned int max_depth,
 			   void (*vcallback)(struct json *, unsigned int, va_list), ...);

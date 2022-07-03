@@ -288,7 +288,7 @@ JSON_COMMA		","
 struct json *
 parse_json(char const *ptr, size_t len, bool *is_valid)
 {
-    struct json *node = NULL;		/* the JSON parse tree */
+    struct json *tree = NULL;		/* the JSON parse tree */
     int ret = 0;			/* ugly_parse() return value */
 
     /*
@@ -321,8 +321,8 @@ parse_json(char const *ptr, size_t len, bool *is_valid)
 	}
 
 	/* return a blank JSON tree */
-	node = json_alloc(JTYPE_UNSET);
-	return node;
+	tree = json_alloc(JTYPE_UNSET);
+	return tree;
     }
 
     /*
@@ -344,14 +344,14 @@ parse_json(char const *ptr, size_t len, bool *is_valid)
 	}
 
 	/* return a blank JSON tree */
-	node = json_alloc(JTYPE_UNSET);
-	return node;
+	tree = json_alloc(JTYPE_UNSET);
+	return tree;
     }
 
     /*
      * announce beginning to parse
      */
-    if (json_dbg_allowed(DBG_VVHIGH)) {
+    if (json_dbg_allowed(JSON_DBG_VVHIGH)) {
 	fprstr(stderr, "*** BEGIN PARSE\n");
 	fprstr(stderr, "<\n");
 	(void) fprint_line_buf(stderr, (void *)ptr, len, 0, 0);
@@ -361,7 +361,7 @@ parse_json(char const *ptr, size_t len, bool *is_valid)
     /*
      * parse the blob, passing into the parser the node
      */
-    ret = ugly_parse(node);
+    ret = ugly_parse(&tree);
 
     /*
      * scan and parse clean up
@@ -372,25 +372,32 @@ parse_json(char const *ptr, size_t len, bool *is_valid)
     /*
      * announce end of parse
      */
-    if (json_dbg_allowed(DBG_VVHIGH)) {
+    if (json_dbg_allowed(JSON_DBG_VVHIGH)) {
 	fprstr(stderr, "*** END PARSE\n");
     }
 
     /*
      * report scanner / parser success or failure
      */
-    if (is_valid != NULL) {
-	*is_valid = (ret == 0);
+    if (json_dbg_allowed(JSON_DBG_VVHIGH)) {
+	json_dbg(JSON_DBG_VVHIGH, __func__, "ugly_parse() returned: %d", ret);
     }
-    if (ret != 0) {
-	/* invalid JSON */
-	fprstr(stderr, "invalid JSON\n");
+    if (ret == 0) {
+	json_dbg(JSON_DBG_LOW, __func__, "valid JSON");
+	if (is_valid != NULL) {
+	    *is_valid = true;
+	}
+    } else {
+	json_dbg(JSON_DBG_LOW, __func__, "invalid JSON");
+	if (is_valid != NULL) {
+	    *is_valid = false;
+	}
     }
 
     /*
      * return parse tree
      */
-    return node;
+    return tree;
 }
 
 
@@ -463,7 +470,9 @@ parse_json_file(char const *filename, bool *is_valid)
     /*
      * if file is -, then this as a special way to indicate stdin
      */
-    is_stdin = !strcmp(filename, "-");
+    if (strcmp(filename, "-") == 0) {
+	is_stdin = true;
+    }
 
     /*
      * case: will read from stdin

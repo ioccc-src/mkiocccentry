@@ -37,7 +37,7 @@
 /*
  * official jparse version
  */
-#define JPARSE_VERSION "0.9 2022-07-02"		/* format: major.minor YYYY-MM-DD */
+#define JPARSE_VERSION "0.10 2022-07-03"		/* format: major.minor YYYY-MM-DD */
 
 
 /*

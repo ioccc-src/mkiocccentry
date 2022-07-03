@@ -271,6 +271,18 @@ extern void chk_errp(int exitcode, const char *name,
 		     char const *filename, char const *line, int line_num, const char *fmt, ...) \
 		     __attribute__((noreturn)) __attribute__((format(printf, 6, 7))); /* 6=format 7=params */
 extern void chk_sanity_chks(void);
+extern void jwarn(char const *name, char const *filename,
+		  char const *line, int line_num, const char *fmt, ...) \
+	__attribute__((format(printf, 5, 6)));		/* 5=format 6=params */
+extern void jwarnp(char const *name, char const *filename,
+		   char const *line, int line_num, const char *fmt, ...) \
+	__attribute__((format(printf, 5, 6)));		/* 5=format 6=params */
+extern void jerr(int exitcode, const char *name, char const *filename,
+		 char const *line, int line_num, const char *fmt, ...) \
+	__attribute__((noreturn)) __attribute__((format(printf, 6, 7))); /* 6=format 7=params */
+extern void jerrp(int exitcode, const char *name,
+		  char const *filename, char const *line, int line_num, const char *fmt, ...) \
+	__attribute__((noreturn)) __attribute__((format(printf, 6, 7))); /* 6=format 7=params */
 
 
 #endif /* INCLUDE_CHK_UTIL_H */
