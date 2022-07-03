@@ -317,7 +317,7 @@ allocate_vers(char *str, long **pvers)
     len = i;
 
     /*
-     * we now have a string that start and ends with digits
+     * we now have a string that starts and ends with digits
      *
      * Inspect the remaining string for digits and '.'s only.
      * Also reject string if we find more than 2 '.'s in a row.
