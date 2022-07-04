@@ -29,8 +29,8 @@
 %define api.value.type {struct json *}
 
 /*
- * we need access to the node in parse_json() so we tell bison that ugly_parse()
- * takes a struct json *(node.
+ * we need access to the tree in parse_json() so we tell bison that ugly_parse()
+ * takes a struct json **tree.
  */
 %parse-param { struct json **tree }
 
