@@ -77,13 +77,14 @@ main(int argc, char **argv)
     size_t len = 0;		    /* length pf tbl_name */
     int ret;			    /* libc return code */
     size_t i;
+    int c;
 
     /*
      * parse args
      */
     program = argv[0];
-    while ((i = getopt(argc, argv, "hv:J:qVsN:")) != -1) {
-	switch (i) {
+    while ((c = getopt(argc, argv, "hv:J:qVsN:")) != -1) {
+	switch (c) {
 	case 'h':		/* -h - print help to stderr and exit 0 */
 	    usage(2, "-h help mode", program); /*ooo*/
 	    not_reached();
