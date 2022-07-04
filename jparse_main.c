@@ -104,8 +104,8 @@ main(int argc, char **argv)
     if (string_flag_used == true) {
 
 	/* parse arg as a block of json input */
-	dbg(DBG_HIGH, __func__, "Calling parse_json(\"%s\", %ju, &valid_json):",
-				argv[argc-1], (uintmax_t)strlen(argv[argc-1]));
+	dbg(DBG_HIGH, "Calling parse_json(\"%s\", %ju, &valid_json):",
+		      argv[argc-1], (uintmax_t)strlen(argv[argc-1]));
 	tree = parse_json(argv[argc-1], strlen(argv[argc-1]), &valid_json);
 
     /*
@@ -114,7 +114,7 @@ main(int argc, char **argv)
     } else {
 
 	/* parse arg as a json filename */
-	dbg(DBG_HIGH, __func__, "Calling parse_json_file(\"%s\", %ju, &valid_json):", argv[argc-1]);
+	dbg(DBG_HIGH, "Calling parse_json_file(\"%s\", &valid_json):", argv[argc-1]);
 	tree = parse_json_file(argv[argc-1], &valid_json);
     }
 
