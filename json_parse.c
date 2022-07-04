@@ -3117,7 +3117,8 @@ struct json *
 json_conv_member(struct json *name, struct json *value)
 {
     struct json *ret = NULL;		    /* JSON parser tree node to return */
-    struct json_member *item = NULL;	    /* allocated JSON member */
+    struct json_member *item = NULL;	    /* JSON member */
+    struct json_string *item2 = NULL;	    /* JSON string */
 
     /*
      * allocate an initialized JSON parse tree item
@@ -3133,6 +3134,8 @@ json_conv_member(struct json *name, struct json *value)
      */
     item = &(ret->item.member);
     item->converted = false;
+    item->name_as_str = NULL;
+    item->name_str = NULL;
     item->name = NULL;
     item->value = NULL;
 
@@ -3187,6 +3190,25 @@ json_conv_member(struct json *name, struct json *value)
     item->converted = true;
 
     /*
+     * copy convenience values related to name
+     */
+    item2 = &(name->item.string);
+    item->name_as_str = item2->as_str;
+    /* paranoia */
+    if (item->name_as_str == NULL) {
+	err(207, __func__, "item2->as_str is NULL");
+	not_reached();
+    }
+    item->name_str = item2->str;
+    /* paranoia */
+    if (item->name_as_str == NULL) {
+	err(208, __func__, "item2->str is NULL");
+	not_reached();
+    }
+    item->name_as_str_len = item2->as_str_len;
+    item->name_str_len = item2->str_len;
+
+    /*
      * return the JSON parse tree item
      */
     return ret;
@@ -3222,7 +3244,7 @@ json_create_object(void)
      */
     ret = json_alloc(JTYPE_OBJECT);
     if (ret == NULL) {
-	errp(207, __func__, "json_alloc() returned NULL");
+	errp(209, __func__, "json_alloc() returned NULL");
 	not_reached();
     }
 
@@ -3240,7 +3262,7 @@ json_create_object(void)
      */
     item->s = dyn_array_create(sizeof (struct json *), JSON_CHUNK, JSON_CHUNK, true);
     if (item->s == NULL) {
-	errp(208, __func__, "dyn_array_create() returned NULL");
+	errp(210, __func__, "dyn_array_create() returned NULL");
 	not_reached();
     }
 
@@ -3293,20 +3315,20 @@ json_object_add_member(struct json *node, struct json *member)
      * firewall
      */
     if (node == NULL) {
-	err(209, __func__, "node is NULL");
+	err(211, __func__, "node is NULL");
 	not_reached();
     }
     if (member == NULL) {
-	err(210, __func__, "member is NULL");
+	err(212, __func__, "member is NULL");
 	not_reached();
     }
     if (node->type != JTYPE_OBJECT) {
-	err(211, __func__, "node type expected to be JTYPE_OBJECT: %d found type: %d",
+	err(213, __func__, "node type expected to be JTYPE_OBJECT: %d found type: %d",
 		           JTYPE_OBJECT, node->type);
 	not_reached();
     }
     if (member->type != JTYPE_MEMBER) {
-	err(212, __func__, "node type expected to be JTYPE_MEMBER: %d found type: %d",
+	err(214, __func__, "node type expected to be JTYPE_MEMBER: %d found type: %d",
 		           JTYPE_MEMBER, node->type);
 	not_reached();
     }
@@ -3318,7 +3340,7 @@ json_object_add_member(struct json *node, struct json *member)
     json_dbg(JSON_DBG_VHIGH, __func__, "JSON member type: %s", json_item_type_name(member));
     item = &(node->item.object);
     if (item->s == NULL) {
-	err(213, __func__, "item->s is NULL");
+	err(215, __func__, "item->s is NULL");
 	not_reached();
     }
 
@@ -3371,7 +3393,7 @@ json_create_elements(void)
      */
     ret = json_alloc(JTYPE_ELEMENTS);
     if (ret == NULL) {
-	errp(214, __func__, "json_alloc() returned NULL");
+	errp(216, __func__, "json_alloc() returned NULL");
 	not_reached();
     }
 
@@ -3389,7 +3411,7 @@ json_create_elements(void)
      */
     item->s = dyn_array_create(sizeof (struct json *), JSON_CHUNK, JSON_CHUNK, true);
     if (item->s == NULL) {
-	errp(215, __func__, "dyn_array_create() returned NULL");
+	errp(217, __func__, "dyn_array_create() returned NULL");
 	not_reached();
     }
 
@@ -3440,15 +3462,15 @@ json_elements_add_value(struct json *node, struct json *value)
      * firewall
      */
     if (node == NULL) {
-	err(216, __func__, "node is NULL");
+	err(218, __func__, "node is NULL");
 	not_reached();
     }
     if (value == NULL) {
-	err(217, __func__, "value is NULL");
+	err(219, __func__, "value is NULL");
 	not_reached();
     }
     if (node->type != JTYPE_ELEMENTS) {
-	err(218, __func__, "node type expected to be JTYPE_ELEMENTS: %d found type: %d",
+	err(220, __func__, "node type expected to be JTYPE_ELEMENTS: %d found type: %d",
 			   JTYPE_ELEMENTS, node->type);
 	not_reached();
     }
@@ -3464,11 +3486,11 @@ json_elements_add_value(struct json *node, struct json *value)
 	json_dbg(JSON_DBG_VHIGH, __func__, "JSON item type: %s", json_item_type_name(value));
 	break;
     case JTYPE_ELEMENTS:
-	err(219, __func__, "JSON type %s (type: %d) is invalid here",
+	err(221, __func__, "JSON type %s (type: %d) is invalid here",
 		json_item_type_name(node), JTYPE_ELEMENTS);
 	not_reached();
     default:
-	err(220, __func__, "expected JSON item, array, string, number, boolean or null, found type: %d",
+	err(222, __func__, "expected JSON item, array, string, number, boolean or null, found type: %d",
 			   value->type);
 	not_reached();
     }
@@ -3478,7 +3500,7 @@ json_elements_add_value(struct json *node, struct json *value)
      */
     item = &(node->item.elements);
     if (item->s == NULL) {
-	err(221, __func__, "item->s is NULL");
+	err(223, __func__, "item->s is NULL");
 	not_reached();
     }
 
@@ -3534,7 +3556,7 @@ json_create_array(void)
      */
     ret = json_alloc(JTYPE_ARRAY);
     if (ret == NULL) {
-	errp(222, __func__, "json_alloc() returned NULL");
+	errp(224, __func__, "json_alloc() returned NULL");
 	not_reached();
     }
 
@@ -3552,7 +3574,7 @@ json_create_array(void)
      */
     item->s = dyn_array_create(sizeof (struct json *), JSON_CHUNK, JSON_CHUNK, true);
     if (item->s == NULL) {
-	errp(223, __func__, "dyn_array_create() returned NULL");
+	errp(225, __func__, "dyn_array_create() returned NULL");
 	not_reached();
     }
 

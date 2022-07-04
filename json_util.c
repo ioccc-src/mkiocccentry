@@ -690,10 +690,68 @@ json_fprintf_value_bool(FILE *stream, char const *lead, char const *name, char c
 
 
 /*
+ * json_type_name - print a struct json item union type by name
+ *
+ * given:
+ *	type		one of the values of the JTYPE_ enum
+ *
+ * returns:
+ *	A constant (read-only) string that names the JTYPE_ enum.
+ *
+ * NOTE: This string returned is read only: It's not allocated on the stack.
+ */
+char const *
+json_type_name(enum item_type type)
+{
+    char const *name = "JTYPE_UNSET";
+
+    /*
+     * determine type name based on type
+     */
+    switch (type) {
+    case JTYPE_UNSET:
+	name = "JTYPE_UNSET";
+	break;
+    case JTYPE_NUMBER:
+	name = "JTYPE_NUMBER";
+	break;
+    case JTYPE_STRING:
+	name = "JTYPE_STRING";
+	break;
+    case JTYPE_BOOL:
+	name = "JTYPE_BOOL";
+	break;
+    case JTYPE_NULL:
+	name = "JTYPE_NULL";
+	break;
+    case JTYPE_MEMBER:
+	name = "JTYPE_MEMBER";
+	break;
+    case JTYPE_OBJECT:
+	name = "JTYPE_OBJECT";
+	break;
+    case JTYPE_ARRAY:
+	name = "JTYPE_ARRAY";
+	break;
+    case JTYPE_ELEMENTS:
+	name = "JTYPE_ELEMENTS";
+	break;
+    default:
+	name = "((JTYPE_UNKNOWN))";
+	warn(__func__, "called with unknown JSON type: %d", type);
+	break;
+    }
+
+    /* return read-only name constant string */
+    return name;
+}
+
+
+/*
  * json_item_type_name - print a struct json item union type by name
  *
  * given:
- *	json_type   one of the values of the JTYPE_ enum
+ *	node	pointer to a JSON parser tree node to free
  *
  * returns:
  *	A constant (read-only) string that names the JTYPE_ enum.
@@ -715,39 +773,7 @@ json_item_type_name(struct json *node)
      * determine type name based on type
      */
     } else {
-	switch (node->type) {
-	case JTYPE_UNSET:
-	    name = "JTYPE_UNSET";
-	    break;
-	case JTYPE_NUMBER:
-	    name = "JTYPE_NUMBER";
-	    break;
-	case JTYPE_STRING:
-	    name = "JTYPE_STRING";
-	    break;
-	case JTYPE_BOOL:
-	    name = "JTYPE_BOOL";
-	    break;
-	case JTYPE_NULL:
-	    name = "JTYPE_NULL";
-	    break;
-	case JTYPE_MEMBER:
-	    name = "JTYPE_MEMBER";
-	    break;
-	case JTYPE_OBJECT:
-	    name = "JTYPE_OBJECT";
-	    break;
-	case JTYPE_ARRAY:
-	    name = "JTYPE_ARRAY";
-	    break;
-	case JTYPE_ELEMENTS:
-	    name = "JTYPE_ELEMENTS";
-	    break;
-	default:
-	    name = "((JTYPE_UNKNOWN))";
-	    warn(__func__, "called with unknown JSON type: %d", node->type);
-	    break;
-	}
+	name = json_type_name(node->type);
     }
 
     /* return read-only name constant string */
@@ -1697,10 +1723,6 @@ json_tree_print(struct json *node, unsigned int max_depth, ...)
  *	node	    pointer to a JSON parser tree node to free
  *	max_depth   maximum tree depth to descend, or 0 ==> infinite depth
  *			NOTE: Use JSON_INFINITE_DEPTH for infinite depth
- *	...	extra args are ignored, required extra args:
- *
- *		stream	    stream to print on
- *		json_dbg_lvl   print message if JSON_DBG_FORCED
  *			       OR if <= json_verbosity_level
  *
  * Example use - free an entire JSON parse tree

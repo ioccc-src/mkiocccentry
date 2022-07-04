@@ -287,10 +287,24 @@ struct json_null
  *	JSON number
  *	JSON boolean
  *	JSON null
+ *
+ * These 4 items are copies of information from the JSON string name
+ * and serve as a convenience for accessing JSON member name information.
+ *
+ * The name_as_str is a pointer copy of name->item.string.as_str pointer.
+ * The name_str is a pointer copy of name->item.string.str pointer.
+ * The name_as_str_len is a copy of name->item.string.as_str_len.
+ * The name_str_len is a copy of name->item.string.str_len.
  */
 struct json_member
 {
     bool converted;		/* true ==> able to decode JSON member */
+
+    char *name_as_str;		/* name string as non-decoded JSON string - will not be NULL */
+    char *name_str;		/* name string as decoded JSON string - will not be NULL */
+
+    size_t name_as_str_len;	/* length of name_as_str, not including final NUL */
+    size_t name_str_len;	/* length of name_str, not including final NUL */
 
     struct json *name;		/* JSON string name */
     struct json *value;		/* JSON value */
