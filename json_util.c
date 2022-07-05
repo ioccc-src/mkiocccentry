@@ -1204,6 +1204,7 @@ vjson_fprint(struct json *node, unsigned int depth, va_list ap)
      */
     stream = va_arg(ap2, FILE *);
     if (stream == NULL) {
+	va_end(ap2); /* stdarg variable argument list cleanup */
 	return;
     }
     json_dbg_lvl = va_arg(ap2, int);
@@ -1214,6 +1215,7 @@ vjson_fprint(struct json *node, unsigned int depth, va_list ap)
     if (dbg_output_allowed == false ||
         (json_dbg_lvl != JSON_DBG_FORCED && json_dbg_lvl > json_verbosity_level)) {
 	/* tree output disabled by json_verbosity_level */
+	va_end(ap2); /* stdarg variable argument list cleanup */
 	return;
     }
 
@@ -1232,6 +1234,7 @@ vjson_fprint(struct json *node, unsigned int depth, va_list ap)
     tname = json_item_type_name(node);
     if (tname == NULL) {
 	warn(__func__, "json_item_type_name returned NULL");
+	va_end(ap2); /* stdarg variable argument list cleanup */
 	return;
     }
     fprint(stream, "lvl: %u\ttype: %s", depth, tname);
