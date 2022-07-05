@@ -75,7 +75,6 @@ main(int argc, char **argv)
     char *tbl_name = "sem_tbl";	    /* name of the semantic table */
     char *cap_tbl_name = NULL;	    /* UPPER case copy of tbl_name */
     size_t len = 0;		    /* length pf tbl_name */
-    int ret;			    /* libc return code */
     size_t i;
     int c;
 
@@ -105,17 +104,8 @@ main(int argc, char **argv)
 	    msg_warn_silent = true;
 	    break;
 	case 'V':		/* -V - print version and exit */
-	    errno = 0;		/* pre-clear errno for warnp() */
-	    ret = printf("JSON parser version: %s\n", JSON_PARSER_VERSION);
-	    if (ret <= 0) {
-		warnp(__func__, "printf error printing JSON parser version string: %s", JSEMTBLGEN_VERSION);
-	    }
-	    errno = 0;		/* pre-clear errno for warnp() */
-	    ret = printf("jparse version: %s\n", JSEMTBLGEN_VERSION);
-	    if (ret <= 0) {
-		warnp(__func__, "printf error printing jparse version string: %s", JSEMTBLGEN_VERSION);
-	    }
-	    exit(0); /*ooo*/
+	    print("%s\n", JSEMTBLGEN_VERSION);
+	    exit(2); /*ooo*/
 	    not_reached();
 	    break;
 	case 's':
@@ -125,13 +115,13 @@ main(int argc, char **argv)
 	    tbl_name = optarg;
 	    break;
 	default:
-	    usage(2, "invalid -flag or missing option argument", program); /*ooo*/
+	    usage(3, "invalid -flag or missing option argument", program); /*ooo*/
 	    not_reached();
 	}
     }
     arg_cnt = argc - optind;
     if (arg_cnt != REQUIRED_ARGS) {
-	usage(4, "wrong number of arguments", program); /*ooo*/
+	usage(3, "wrong number of arguments", program); /*ooo*/
 	not_reached();
     }
 
