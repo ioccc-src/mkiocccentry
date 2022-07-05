@@ -2628,10 +2628,24 @@ parse_json_file(char const *filename, bool *is_valid)
 	/*
 	 * validate filename
 	 */
-	if (!is_file(filename)) {
-
-	    /* report missing filename */
+	if (!exists(filename)) {
+	    /* report missing file */
 	    warn(__func__, "passed filename that's not actually a file: %s", filename);
+	    ++num_errors;
+
+	    /* if allowed, report invalid JSON */
+	    if (is_valid != NULL) {
+		*is_valid = false;
+	    }
+
+	    /* return a blank JSON tree */
+	    node = json_alloc(JTYPE_UNSET);
+	    return node;
+
+	}
+	if (!is_file(filename)) {
+	    /* report that file is not a normal file */
+	    warn(__func__, "passed filename not a normal file: %s", filename);
 	    ++num_errors;
 
 	    /* if allowed, report invalid JSON */
@@ -2646,7 +2660,7 @@ parse_json_file(char const *filename, bool *is_valid)
 	if (!is_read(filename)) {
 
 	    /* report unreadable file */
-	    warn(__func__, "passed filename not readable file: %s", filename);
+	    warn(__func__, "passed filename not a readable file: %s", filename);
 	    ++num_errors;
 
 	    /* if allowed, report invalid JSON */
