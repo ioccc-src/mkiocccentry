@@ -150,7 +150,7 @@ main(int argc, char **argv)
 	case 'M':		/* -M func - validate JTYPE_MEMBER JSON nodes */
 	    member_func = optarg;
 	    break;
-	case 'O':		/* -0 func - validate JTYPE_NULL JSON nodes */
+	case 'O':		/* -O func - validate JTYPE_NULL JSON nodes */
 	    object_func = optarg;
 	    break;
 	case 'A':		/* -A func - validate JTYPE_ARRAY JSON nodes */
