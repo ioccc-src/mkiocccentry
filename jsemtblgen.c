@@ -623,7 +623,7 @@ print_sem_tbl(struct dyn_array *tbl, char *tbl_name, char *cap_tbl_name)
     }
 
     /*
-     * print semantic tailer
+     * print semantic table trailer
      */
     prstr("};\n");
 
