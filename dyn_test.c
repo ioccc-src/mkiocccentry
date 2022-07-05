@@ -79,11 +79,8 @@ main(int argc, char *argv[])
 	    verbosity_level = parse_verbosity(program, optarg);
 	    break;
 	case 'V':		/* -V - print version and exit */
-	    errno = 0;		/* pre-clear errno for warnp() */
-	    (void) printf("dyn_array library version: %s\n", DYN_ALLOC_VERSION);
-	    (void) printf("dbg_test version: %s\n", DYN_TEST_VERSION);
+	    print("%s\n", DYN_TEST_VERSION);
 	    exit(3); /*ooo*/
-	    not_reached();
 	    break;
 	default:
 	    usage(4, "invalid -flag", program); /*ooo*/
@@ -207,7 +204,7 @@ usage(int exitcode, char const *str, char const *prog)
      * print the formatted usage stream
      */
     fprintf_usage(DO_NOT_EXIT, stderr, "%s\n", str);
-    fprintf_usage(exitcode, stderr, usage_msg, prog, DBG_DEFAULT, DYN_TEST_VERSION);
+    fprintf_usage(exitcode, stderr, usage_msg, prog, DBG_DEFAULT, DYN_ALLOC_VERSION, DYN_TEST_VERSION);
     exit(exitcode); /*ooo*/
     not_reached();
 }

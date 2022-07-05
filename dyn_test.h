@@ -45,7 +45,7 @@
 /*
  * official versions
  */
-#define DYN_TEST_VERSION "1.6 2022-06-09"
+#define DYN_TEST_VERSION "1.7 2022-07-04"
 
 /*
  * dyn_array - dynamic array facility
@@ -71,8 +71,9 @@ static const char * const usage_msg =
     "    1\ttest suite failed\n"
     "    2\t-h and help string printed or -V and version string printed\n"
     "    3\tcommand line error\n"
-    "    =4\tinternal error\n"
+    "    >=4\tinternal error\n"
     "\n"
+    "dyn_array library version: %s\n"
     "dyn_test version: %s\n";
 
 
