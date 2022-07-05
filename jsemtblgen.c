@@ -52,6 +52,22 @@
 
 
 /*
+ * static globals
+ */
+static char *tbl_name = "sem_tbl";	/* -N name - name of the semantic table */
+static char *def_func = "NULL";		/* -D def_func - validate with def_func() unless overridden */
+static char *prefix = NULL;		/* -P prefix - validate JTYPE_MEMBER with prefix_name() or NULL */
+static char *number_func = NULL;	/* -1 func - validate JTYPE_NUMBER JSON nodes or NULL */
+static char *string_func = NULL;	/* -S func - validate JTYPE_STRING JSON nodes or NULL */
+static char *bool_func = NULL;		/* -B func - validate JTYPE_BOOL JSON nodes or NULL */
+static char *null_func = NULL;		/* -0 func - validate JTYPE_NULL JSON nodes or NULL */
+static char *member_func = NULL;	/* -M func - validate JTYPE_MEMBER JSON nodes or NULL */
+static char *object_func = NULL;	/* -O func - validate JTYPE_OBJECT JSON nodes or NULL */
+static char *array_func = NULL;		/* -A func - validate JTYPE_ARRAY JSON nodes or NULL */
+static char *unknown_func = NULL;	/* -U func - validate nodes with unknown types or NULL */
+
+
+/*
  * static functions
  */
 static void gen_sem_tbl(struct json *tree, unsigned int max_depth, ...);
@@ -72,7 +88,6 @@ main(int argc, char **argv)
     bool valid_json = false;	    /* true ==> JSON parse was valid */
     struct json *tree = NULL;	    /* JSON parse tree or NULL */
     int arg_cnt = 0;		    /* number of args to process */
-    char *tbl_name = "sem_tbl";	    /* name of the semantic table */
     char *cap_tbl_name = NULL;	    /* UPPER case copy of tbl_name */
     size_t len = 0;		    /* length pf tbl_name */
     size_t i;
@@ -82,7 +97,7 @@ main(int argc, char **argv)
      * parse args
      */
     program = argv[0];
-    while ((c = getopt(argc, argv, "hv:J:qVsN:")) != -1) {
+    while ((c = getopt(argc, argv, "hv:J:qVsN:D:P:1:S:B:0:M:O:A:U:")) != -1) {
 	switch (c) {
 	case 'h':		/* -h - print help to stderr and exit 0 */
 	    usage(2, "-h help mode", program); /*ooo*/
@@ -94,13 +109,13 @@ main(int argc, char **argv)
 	     */
 	    verbosity_level = parse_verbosity(program, optarg);
 	    break;
-	case 'J': /* -J json_verbosity_level */
+	case 'J':		/* -J level - JSON parser verbosity level */
 	    /*
 	     * parse json verbosity level
 	     */
 	    json_verbosity_level = parse_verbosity(program, optarg);
 	    break;
-	case 'q':
+	case 'q':		/* -q - uiet mode: silence msg(), warn(), warnp() if -v 0 */
 	    msg_warn_silent = true;
 	    break;
 	case 'V':		/* -V - print version and exit */
@@ -108,11 +123,41 @@ main(int argc, char **argv)
 	    exit(2); /*ooo*/
 	    not_reached();
 	    break;
-	case 's':
+	case 's':		/* -s - arg is a string */
 	    string_flag_used = true;
 	    break;
-	case 'N':
+	case 'N':		/* -N name - name of the semantic table */
 	    tbl_name = optarg;
+	    break;
+	case 'D':		/* -D def_func - validate with def_func() unless overridden */
+	    def_func = optarg;
+	    break;
+	case 'P':		/* -P prefix - validate JTYPE_MEMBER with prefix_name() */
+	    prefix = optarg;
+	    break;
+	case '1':		/* -1 func - validate JTYPE_NUMBER JSON nodes */
+	    number_func = optarg;
+	    break;
+	case 'S':		/* -S func - validate JTYPE_STRING JSON nodes */
+	    string_func = optarg;
+	    break;
+	case 'B':		/* -B func - validate JTYPE_BOOL JSON nodes */
+	    bool_func = optarg;
+	    break;
+	case '0':		/* -0 func - validate JTYPE_NULL JSON nodes */
+	    null_func = optarg;
+	    break;
+	case 'M':		/* -M func - validate JTYPE_MEMBER JSON nodes */
+	    member_func = optarg;
+	    break;
+	case 'O':		/* -0 func - validate JTYPE_NULL JSON nodes */
+	    object_func = optarg;
+	    break;
+	case 'A':		/* -A func - validate JTYPE_ARRAY JSON nodes */
+	    array_func = optarg;
+	    break;
+	case 'U':		/* -U func - validate nodes with unknown types */
+	    unknown_func = optarg;
 	    break;
 	default:
 	    usage(3, "invalid -flag or missing option argument", program); /*ooo*/
@@ -213,8 +258,6 @@ main(int argc, char **argv)
      * print a sorted semantic table as a C structure
      */
     print_sem_tbl(tbl, tbl_name, cap_tbl_name);
-
-    /* XXX - add more code here - XXX */
 
     /*
      * free the JSON parse tree

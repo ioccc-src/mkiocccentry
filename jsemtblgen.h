@@ -93,7 +93,7 @@ static const char * const usage_msg =
     "\t-M func\t\tvalidate JTYPE_MEMBER JSON nodes with func() (def: do not)\n"
     "\t-O func\t\tvalidate JTYPE_OBJECT JSON nodes with func() (def: do not)\n"
     "\t-A func\t\tvalidate JTYPE_ARRAY JSON nodes with func() (def: do not)\n"
-    "\t-U func\t\tvalidate all other JSON node types with func() (def: do not)\n"
+    "\t-U func\t\tvalidate nodes with unknown types with func() (def: do not)\n"
     "\n"
     "\tjson_arg\tgenerate JSON semantics table for string (if -s), file (w/o -s), or stdin (if arg is -)\n"
     "\n"
