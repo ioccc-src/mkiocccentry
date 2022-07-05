@@ -42,7 +42,6 @@ main(int argc, char **argv)
     bool valid_json = false;	    /* true ==> JSON parse was valid */
     struct json *tree = NULL;	    /* JSON parse tree or NULL */
     int arg_cnt = 0;		    /* number of args to process */
-    int ret;			    /* libc return code */
     int i;
 
     /*
@@ -71,30 +70,20 @@ main(int argc, char **argv)
 	    msg_warn_silent = true;
 	    break;
 	case 'V':		/* -V - print version and exit */
-	    errno = 0;		/* pre-clear errno for warnp() */
-	    ret = printf("JSON parser version: %s\n", JSON_PARSER_VERSION);
-	    if (ret <= 0) {
-		warnp(__func__, "printf error printing JSON parser version string: %s", JPARSE_VERSION);
-	    }
-	    errno = 0;		/* pre-clear errno for warnp() */
-	    ret = printf("jparse version: %s\n", JPARSE_VERSION);
-	    if (ret <= 0) {
-		warnp(__func__, "printf error printing jparse version string: %s", JPARSE_VERSION);
-	    }
-	    exit(0); /*ooo*/
-	    not_reached();
+	    print("%s\n", JPARSE_VERSION);
+	    exit(2); /*ooo*/
 	    break;
 	case 's':
 	    string_flag_used = true;
 	    break;
 	default:
-	    usage(2, "invalid -flag or missing option argument", program); /*ooo*/
+	    usage(3, "invalid -flag or missing option argument", program); /*ooo*/
 	    not_reached();
 	}
     }
     arg_cnt = argc - optind;
     if (arg_cnt != REQUIRED_ARGS) {
-	usage(4, "wrong number of arguments", program); /*ooo*/
+	usage(3, "wrong number of arguments", program); /*ooo*/
 	not_reached();
     }
 
