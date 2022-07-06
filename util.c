@@ -1214,7 +1214,7 @@ para(char const *line, ...)
     clearerr(stdout);		/* pre-clear ferror() status */
     errno = 0;			/* pre-clear errno for errp() */
     /*
-     * this may not always catch a bogus or un-opened stdout, but try anyway
+     * this may not always catch a bogus or unopened stdout, but try anyway
      */
     fd = fileno(stdout);
     if (fd < 0) {
@@ -1341,7 +1341,7 @@ fpara(FILE * stream, char const *line, ...)
     }
 
     /*
-     * this may not always catch a bogus or un-opened stream, but try anyway
+     * this may not always catch a bogus or unopened stream, but try anyway
      */
     clearerr(stream);		/* pre-clear ferror() status */
     errno = 0;			/* pre-clear errno for errp() */
