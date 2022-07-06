@@ -2,15 +2,18 @@
 /*
  * jparse_main - main function for the JSON parser demo tool
  *
+ * "Because there is more to JSON than a flawed grammar specification."
+ * "Because JSON embodies a commitment to original design flaws." :-)
  * "Because sometimes even the IOCCC Judges need some help." :-)
  *
- * This tool is currently being worked on by:
+ * This JSON parser was co-developed by:
  *
  *	@xexyl
  *	https://xexyl.net		Cody Boone Ferguson
  *	https://ioccc.xexyl.net
+ * and:
+ *	chongo (Landon Curt Noll, http://www.isthe.com/chongo/index.html) /\oo/\
  */
-
 
 /* special comments for the seqcexit tool */
 /*ooo*/ /* exit code out of numerical order - ignore in sequencing */
