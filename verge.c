@@ -85,7 +85,6 @@ main(int argc, char *argv[])
 	    verbosity_level = parse_verbosity(program, optarg);
 	    break;
 	case 'V':		/* -V - print version and exit */
-	    errno = 0;		/* pre-clear errno for warnp() */
 	    print("%s", VERGE_VERSION);
 	    exit(3); /*ooo*/
 	    not_reached();

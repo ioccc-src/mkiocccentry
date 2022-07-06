@@ -49,7 +49,6 @@ main(int argc, char **argv)
     char *fnamchk = FNAMCHK_PATH_0;	    /* path to fnamchk tool */
     bool fnamchk_flag_used = false;	    /* if -F option used */
     bool tar_flag_used = false;		    /* true ==> -t /path/to/tar was given */
-    int ret;				    /* libc return code */
     int i;
 
     /*
@@ -73,11 +72,7 @@ main(int argc, char **argv)
 	    msg_warn_silent = true;
 	    break;
 	case 'V':		/* -V - print version and exit */
-	    errno = 0;		/* pre-clear errno for warnp() */
-	    ret = printf("%s\n", TXZCHK_VERSION);
-	    if (ret <= 0) {
-		warnp(__func__, "printf error printing version string: %s", TXZCHK_VERSION);
-	    }
+	    print("%s\n", TXZCHK_VERSION);
 	    exit(2); /*ooo*/
 	    not_reached();
 	    break;
@@ -118,11 +113,7 @@ main(int argc, char **argv)
 	/*
 	 * Welcome
 	 */
-	errno = 0;			/* pre-clear errno for errp() */
-	ret = printf("Welcome to txzchk version: %s\n", TXZCHK_VERSION);
-	if (ret <= 0) {
-	    warnp(__func__, "printf error printing the welcome string");
-	}
+	print("Welcome to txzchk version: %s\n", TXZCHK_VERSION);
     }
 
     /*

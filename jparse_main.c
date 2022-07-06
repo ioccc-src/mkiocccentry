@@ -75,6 +75,7 @@ main(int argc, char **argv)
 	case 'V':		/* -V - print version and exit */
 	    print("%s\n", JPARSE_VERSION);
 	    exit(2); /*ooo*/
+	    not_reached();
 	    break;
 	case 's':
 	    string_flag_used = true;
