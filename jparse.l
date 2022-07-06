@@ -269,21 +269,12 @@ JSON_COMMA		","
  * return:
  *	pointer to a JSON parse tree
  *
- * NOTE: Until the JSON parser is finished this only parses the string. Parsing
- * should be correct but currently there is no parse tree generated.
- *
  * NOTE: The reason this is in the scanner and not the parser is because
- * UGLY__BUFFER_STATE is part of the scanner and not the parser. There might be
- * a better way to go about this but I'll know about this more later on. Like
- * everything else here this is subject to change!
+ * UGLY__BUFFER_STATE is part of the scanner and not the parser.
  *
- * NOTE: This function only warns on error. The reason for this is because more
- * than one string and/or file can then be verified during testing. Once the
- * parser is complete it will use jerr(). Note that this refers to errors
- * unspecific to the parser. On the other hand it might be that some of these
- * should be errors since conversion errors in the parser are fatal errors.
- * Perhaps instead warn() should be instead werr() which issues an error message
- * but does not make it fatal.
+ * NOTE: This function only warns on error. This is so that an entire report of
+ * all the problems can be given at the end if the verbosity level is high
+ * enough (or otherwise if this information is requested).
  */
 struct json *
 parse_json(char const *ptr, size_t len, bool *is_valid)
@@ -312,7 +303,7 @@ parse_json(char const *ptr, size_t len, bool *is_valid)
     if (ptr == NULL) {
 
 	/* this should never happen */
-	warn(__func__, "ptr is NULL");
+	werr(30, __func__, "ptr is NULL");
 	++num_errors;
 
 	/* if allowed, report invalid JSON */
@@ -331,11 +322,13 @@ parse_json(char const *ptr, size_t len, bool *is_valid)
     ugly_lineno = 1;
     bs = ugly__scan_bytes(ptr, len);
     if (bs == NULL) {
-
 	/*
-	 * warn about a scan error
+	 * if unable to scan the bytes it indicates an internal error and
+	 * perhaps it should call err() instead but for now we make it a
+	 * non-fatal error as well.
 	 */
-	warn(__func__, "unable to scan string");
+	/* XXX - should this be a fatal error ? - XXX */
+	werr(31, __func__, "unable to scan string");
 	++num_errors;
 
 	/* if allowed, report invalid JSON */
@@ -415,14 +408,14 @@ parse_json(char const *ptr, size_t len, bool *is_valid)
  * If filename is NULL or the filename is not a readable file (or is empty) or
  * if read_all() returns NULL the function warns but does nothing else.
  *
- * NOTE: Until the JSON parser is finished this only parses the file (and not
- * necessarily correctly); it does NOT build a parse tree!
- *
  * NOTE: The reason this is in the scanner and not the parser is because
  * YY_BUFFER_STATE is part of the scanner and not the parser and that's required
- * for the parse_json_block() function so I think both ought to be here. There
- * might be a better way to go about that but I'll know more about this later
- * on. Like everything else here this is subject to change!
+ * for the parse_json_block() function so I think both ought to be here.
+ *
+ * NOTE: This function only warns on error. It does this via the called function
+ * parse_json(). This is done so that an entire report of all the problems can
+ * be given at the end if the verbosity level is high enough (or otherwise if
+ * this information is requested).
  */
 struct json *
 parse_json_file(char const *filename, bool *is_valid)
@@ -439,7 +432,7 @@ parse_json_file(char const *filename, bool *is_valid)
     if (filename == NULL) {
 
 	/* this should actually never happen if called from jparse */
-	warn(__func__, "passed NULL filename");
+	werr(32, __func__, "passed NULL filename");
 	++num_errors;
 
 	/* if allowed, report invalid JSON */
@@ -454,7 +447,7 @@ parse_json_file(char const *filename, bool *is_valid)
     } else if (*filename == '\0') { /* strlen(filename) == 0 */
 
 	/* warn about bogus filename */
-	warn(__func__, "passed empty filename");
+	werr(33, __func__, "passed empty filename");
 	++num_errors;
 
 	/* if allowed, report invalid JSON */
@@ -490,7 +483,7 @@ parse_json_file(char const *filename, bool *is_valid)
 	 */
 	if (!exists(filename)) {
 	    /* report missing file */
-	    warn(__func__, "passed filename that's not actually a file: %s", filename);
+	    werr(34, __func__, "passed filename that's not actually a file: %s", filename);
 	    ++num_errors;
 
 	    /* if allowed, report invalid JSON */
@@ -505,7 +498,7 @@ parse_json_file(char const *filename, bool *is_valid)
 	}
 	if (!is_file(filename)) {
 	    /* report that file is not a normal file */
-	    warn(__func__, "passed filename not a normal file: %s", filename);
+	    werr(35, __func__, "passed filename not a normal file: %s", filename);
 	    ++num_errors;
 
 	    /* if allowed, report invalid JSON */
@@ -520,7 +513,7 @@ parse_json_file(char const *filename, bool *is_valid)
 	if (!is_read(filename)) {
 
 	    /* report unreadable file */
-	    warn(__func__, "passed filename not a readable file: %s", filename);
+	    werr(36, __func__, "passed filename not a readable file: %s", filename);
 	    ++num_errors;
 
 	    /* if allowed, report invalid JSON */
@@ -541,7 +534,7 @@ parse_json_file(char const *filename, bool *is_valid)
 	if (ugly_in == NULL) {
 
 	    /* warn about file open error */
-	    warnp(__func__, "couldn't open file %s, ignoring", filename);
+	    werrp(37, __func__, "couldn't open file %s, ignoring", filename);
 	    ++num_errors;
 
 	    /* if allowed, report invalid JSON */
@@ -560,9 +553,9 @@ parse_json_file(char const *filename, bool *is_valid)
      */
     data = read_all(ugly_in, &len);
     if (data == NULL) {
-
 	/* warn about read error */
-	warn(__func__, "couldn't read in %s", is_stdin?"stdin":filename);
+	/* XXX - should this be a fatal error ? - XXX */
+	werr(38, __func__, "couldn't read in %s", is_stdin?"stdin":filename);
 	++num_errors;
 	clearerr_or_fclose(filename, ugly_in);
 
