@@ -2,6 +2,7 @@
 /*
  * jparse_main - tool that parses a block of JSON input
  *
+ * "Because there is more to JSON than a flawed grammar specification."
  * "Because JSON embodies a commitment to original design flaws." :-)
  * "Because sometimes even the IOCCC Judges need some help." :-)
  *

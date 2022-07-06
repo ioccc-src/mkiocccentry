@@ -37,7 +37,8 @@
  * XXX - this table assumes we process on a byte basis - XXX
  * XXX - consider an approach that allowed for smaller UTF-8 non-ASCII encoding - XXX
  */
-struct encode {
+struct encode
+{
     const u_int8_t byte;    /* 8 bit character to encode */
     const size_t len;	    /* length of encoding */
     const char * const enc; /* JSON encoding of val */

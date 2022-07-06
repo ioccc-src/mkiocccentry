@@ -5,14 +5,13 @@
  * "Because JSON embodies a commitment to original design flaws." :-)
  * "Because sometimes even the IOCCC Judges need some help." :-)
  *
- * This is currently being worked on by:
- *
- *	chongo (Landon Curt Noll, http://www.isthe.com/chongo/index.html) /\oo/\
- * and
+ * This JSON parser was co-developed by:
  *
  *	@xexyl
  *	https://xexyl.net		Cody Boone Ferguson
  *	https://ioccc.xexyl.net
+ * and:
+ *	chongo (Landon Curt Noll, http://www.isthe.com/chongo/index.html) /\oo/\
  */
 
 
@@ -1484,7 +1483,7 @@ vjson_fprint(struct json *node, unsigned int depth, va_list ap)
 	}
 	break;
 
-    case JTYPE_MEMBER:	/* JSON item is a member */
+    case JTYPE_MEMBER:	/* JSON item is a member - see struct json_member */
 	{
 	    struct json_member *item = &(node->item.member);
 
@@ -1535,7 +1534,7 @@ vjson_fprint(struct json *node, unsigned int depth, va_list ap)
 	}
 	break;
 
-    case JTYPE_OBJECT:	/* JSON item is a { members } */
+    case JTYPE_OBJECT:	/* JSON item is a { members } - see struct json_object */
 	{
 	    struct json_object *item = &(node->item.object);
 
@@ -1561,7 +1560,7 @@ vjson_fprint(struct json *node, unsigned int depth, va_list ap)
 	}
 	break;
 
-    case JTYPE_ARRAY:	/* JSON item is a [ elements ] */
+    case JTYPE_ARRAY:	/* JSON item is a [ elements ] - see struct json_array */
 	{
 	    struct json_array *item = &(node->item.array);
 
@@ -1587,7 +1586,7 @@ vjson_fprint(struct json *node, unsigned int depth, va_list ap)
 	}
 	break;
 
-    case JTYPE_ELEMENTS:	/* JSON elements is zero or more JSON values */
+    case JTYPE_ELEMENTS:	/* JSON elements is zero or more JSON values - see struct json_elements */
 	{
 	    struct json_elements *item = &(node->item.elements);
 

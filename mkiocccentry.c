@@ -182,11 +182,7 @@ main(int argc, char *argv[])
 	    msg_warn_silent = true;
 	    break;
 	case 'V':		/* -V - print version and exit */
-	    errno = 0;		/* pre-clear errno for warnp() */
-	    ret = printf("%s\n", MKIOCCCENTRY_VERSION);
-	    if (ret <= 0) {
-		warnp(__func__, "printf error printing version string: %s", MKIOCCCENTRY_VERSION);
-	    }
+	    print("%s\n", MKIOCCCENTRY_VERSION);
 	    exit(0); /*ooo*/
 	    not_reached();
 	    break;
@@ -301,12 +297,7 @@ main(int argc, char *argv[])
      * Welcome
      */
     if (!quiet) {
-	errno = 0;		/* pre-clear errno for errp() */
-	ret = printf("Welcome to mkiocccentry version: %s\n", MKIOCCCENTRY_VERSION);
-	if (ret <= 0) {
-	    errp(3, __func__, "printf error printing the welcome string");
-	    not_reached();
-	}
+	print("Welcome to mkiocccentry version: %s\n", MKIOCCCENTRY_VERSION);
     }
 
     /*

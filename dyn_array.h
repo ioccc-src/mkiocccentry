@@ -131,7 +131,8 @@
  * zeroized when first allocated, and zeroized when dyn_array_free()
  * is called.
  */
-struct dyn_array {
+struct dyn_array
+{
     size_t elm_size;		/* Number of bytes for a single element */
     bool zeroize;		/* true ==> always zero newly allocated chunks, false ==> don't */
     intmax_t count;		/* Number of elements in use */

@@ -202,11 +202,7 @@ main(int argc, char *argv[])
 	    msg_warn_silent = true;
 	    break;
 	case 'V':		/* -V - print version and exit */
-	    errno = 0;		/* pre-clear errno for warnp() */
-	    ret = printf("%s\n", JSTRDECODE_VERSION);
-	    if (ret <= 0) {
-		warnp(__func__, "printf error printing version string: %s", JSTRDECODE_VERSION);
-	    }
+	    print("%s\n", JSTRDECODE_VERSION);
 	    exit(0); /*ooo*/
 	    not_reached();
 	    break;

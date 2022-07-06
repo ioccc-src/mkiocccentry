@@ -81,6 +81,7 @@ main(int argc, char *argv[])
 	case 'V':		/* -V - print version and exit */
 	    print("%s\n", DYN_TEST_VERSION);
 	    exit(3); /*ooo*/
+	    not_reached();
 	    break;
 	default:
 	    usage(4, "invalid -flag", program); /*ooo*/

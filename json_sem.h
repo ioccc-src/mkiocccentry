@@ -36,7 +36,8 @@
  /*
   * JSON semantic count error
   */
-struct json_cnt_err {
+struct json_cnt_err
+{
     struct json_sem *sem;	/* semantic node in question or NULL (unknown_node == true) */
     unsigned int count;		/* number of times this JSON semantic was matched */
     bool bad_min;		/* true ==> JSON semantic node count under minimum */
@@ -51,7 +52,8 @@ struct json_cnt_err {
  * When validate() returns false, that validating function
  * records information about the validation error in this form.
  */
-struct json_val_err {
+struct json_val_err
+{
     struct json *node;		/* JSON parse node in question or NULL */
     unsigned int depth;		/* JSON parse tree node depth */
     struct json_sem *sem;	/* semantic node in question or NULL */
@@ -65,7 +67,8 @@ struct json_val_err {
  * An array of JSON semantics may describe the what is required
  * or allowed in a given valid JSON document.
  */
-struct json_sem {
+struct json_sem
+{
     unsigned int depth;		/* JSON parse tree node depth */
     enum item_type type;	/* type of JSON node */
     unsigned int min;		/* minimum allowed count */
