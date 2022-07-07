@@ -53,16 +53,6 @@ static char *array_func = NULL;		/* -A func - validate JTYPE_ARRAY JSON nodes or
 static char *unknown_func = NULL;	/* -U func - validate nodes with unknown types or NULL */
 
 
-/*
- * static functions
- */
-static void gen_sem_tbl(struct json *tree, unsigned int max_depth, ...);
-static void vupdate_tbl(struct json *node, unsigned int depth, va_list ap);
-static int sem_cmp(void const *a, void const *b);
-static void print_sem_tbl(struct dyn_array *tbl, char *tbl_name, char *cap_tbl_name);
-static void usage(int exitcode, char const *str, char const *prog);
-
-
 int
 main(int argc, char **argv)
 {
