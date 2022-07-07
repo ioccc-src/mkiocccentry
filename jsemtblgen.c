@@ -575,7 +575,7 @@ print_sem_tbl(struct dyn_array *tbl, char *tbl_name, char *cap_tbl_name)
      */
     len = dyn_array_tell(tbl);
     print("#define %s_LEN (%jd)\n", cap_tbl_name, len);
-    print("struct struct json_sem [%s_LEN] = {\n", cap_tbl_name);
+    print("struct json_sem [%s_LEN] = {\n", cap_tbl_name);
 
     /*
      * print each semantic table entry
