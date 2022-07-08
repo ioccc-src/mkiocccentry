@@ -111,3 +111,4 @@ makefile.local
 # parser logs
 jparse.output
 jparse.html
+jparse.xml
