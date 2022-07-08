@@ -402,7 +402,7 @@ jencchk(void)
      * assert: table must be 256 long
      */
     if (sizeof(jenc)/sizeof(jenc[0]) != JSON_BYTE_VALUES) {
-	err(101, __func__, "jenc table lengti is %ju instead of %d",
+	err(101, __func__, "jenc table length is %ju instead of %d",
 			   (uintmax_t)sizeof(jenc)/sizeof(jenc[0]), JSON_BYTE_VALUES);
 	not_reached();
     }
