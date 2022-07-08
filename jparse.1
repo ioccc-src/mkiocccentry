@@ -1,4 +1,4 @@
-.TH jparse 1 "4 July 2022" "jparse" "IOCCC tools"
+.TH jparse 1 "8 July 2022" "jparse" "IOCCC tools"
 .SH NAME
 jparse \- IOCCC JSON parser
 .SH SYNOPSIS
@@ -63,6 +63,14 @@ An apology for the condition of the \fBbison\fP and \fBflex\fP generated code th
 .RS
 Header file for the \fBjparse\fP tool.
 .RE
+\fIjparse_main.h\fP
+.RS
+Header file for the \fBmain()\fP and \fBusage()\fP functions of \fBjparse\fP.
+.RE
+\fIjparse_main.c\fP
+.RS
+Source file of the \fBmain()\fP and \fBusage()\fP functions of \fBjparse\fP.
+.RE
 \fIjson_parse.h\fP
 .RS
 Header file for JSON parser support code.
@@ -81,7 +89,7 @@ Source code of the general JSON parser utility support functions.
 .RE
 \fIjparse_test.sh\fP
 .RS
-Script that parses json blobs reading one line at a time from either stdin or a file.
+Script that parses json blobs reading one line at a time from either stdin or a file, used to test that \fBjparse\fP parses JSON fully and correctly.
 .RE
 \fIjson_teststr.txt\fP
 .RS
