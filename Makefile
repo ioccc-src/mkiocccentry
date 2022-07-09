@@ -731,8 +731,8 @@ checknr: ${MANPAGES}
 	    echo ''; 1>&2; \
 	    exit 1; \
 	else \
-	    echo "${CHECKNR} ${MANPAGES}"; \
-	    ${CHECKNR} ${MANPAGES}; \
+	    echo "${CHECKNR} -c.BR.SS.BI ${MANPAGES}"; \
+	    ${CHECKNR} -c.BR.SS.BI ${MANPAGES}; \
 	fi
 
 man2html: ${MANPAGES}
