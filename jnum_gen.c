@@ -327,7 +327,7 @@ main(int argc, char *argv[])
 
 
 /*
- * fpr_number - print the contents of struct json_number on a steam
+ * fpr_number - print the contents of struct json_number on a stream
  *
  * given:
  *	stream		open stream to print on
