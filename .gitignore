@@ -5,17 +5,22 @@
 answers.txt
 build.log
 chkentry
+chkentry.html
 chkentry_test.log
 dbg
+dbg.html
 dbg_example
 dbg_test.c
 dyn_test
 fnamchk
+fnamchk.html
 iocccsize
+iocccsize.html
 jnum_chk
 jnum_gen
 jparse
 jparse.c
+jparse.html
 jparse.tab.c
 jparse.tab.h
 jparse_test.log
@@ -24,10 +29,14 @@ json_parser
 jstr_test.out
 jstr_test2.out
 jstrdecode
+jstrdecode.html
 jstrencode
+jstrencode.html
+limit_ioccc.html
 limit_ioccc.sh
 makefile.local
 mkiocccentry
+mkiocccentry.html
 orig.iocccsize
 tags
 test_iocccsize
@@ -35,9 +44,12 @@ test_set
 test_src
 test_work
 txzchk
+txzchk.html
 txzchk_test.log
 utf8_test
+utf8_test.html
 verge
+verge.html
 
 # Prerequisites
 *.d

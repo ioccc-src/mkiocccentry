@@ -81,6 +81,8 @@ CTAGS= ctags
 GREP= grep
 INSTALL= install
 MAKE= make
+MAN= man
+MAN2HTML= man2html
 MKTEMP= mktemp
 MV= mv
 PICKY= picky
@@ -216,13 +218,22 @@ SH_TARGETS=limit_ioccc.sh
 #     all but still important parts of the repo so these would be skipped as
 #     well if we directly referred to TARGETS.
 #
-MAN_TARGETS = mkiocccentry txzchk fnamchk iocccsize chkentry jstrdecode jstrencode \
+MAN1_TARGETS= mkiocccentry txzchk fnamchk iocccsize chkentry jstrdecode jstrencode \
 	      verge jparse limit_ioccc utf8_test
+MAN3_TARGETS= dbg
+MAN8_TARGETS=
+MAN_TARGETS= ${MAN1_TARGETS} ${MAN3_TARGETS} ${MAN8_TARGETS}
+HTML_MAN_TARGETS= $(patsubst %,%.html,$(MAN_TARGETS))
 # This is a simpler way to do:
 #
-#   MANPAGES = $(patsubst %,%.1,$(MAN_TARGETS))
+#   MAN1PAGES = $(patsubst %,%.1,$(MAN1_TARGETS))
+#   MAN3PAGES = $(patsubst %,%.3,$(MAN3_TARGETS))
+#   MAN8PAGES = $(patsubst %,%.8,$(MAN8_TARGETS))
 #
-MANPAGES= $(MAN_TARGETS:=.1)
+MAN1PAGES= $(MAN1_TARGETS:=.1)
+MAN3PAGES= $(MAN3_TARGETS:=.3)
+MAN8PAGES= $(MAN8_TARGETS:=.8)
+MANPAGES= ${MAN1PAGES} ${MAN3PAGES} ${MAN8PAGES}
 
 TEST_TARGETS= dbg utf8_test dyn_test
 OBJFILES= dbg.o util.o mkiocccentry.o iocccsize.o fnamchk.o txzchk.o chkentry.o \
@@ -724,6 +735,39 @@ checknr: ${MANPAGES}
 	    ${CHECKNR} ${MANPAGES}; \
 	fi
 
+man2html: ${MANPAGES}
+	@HAVE_MAN2HTML=`command -v ${MAN2HTML}`; \
+	 HAVE_MAN=`command -v ${MAN}`; \
+	if [[ -z "$$HAVE_MAN2HTML" ]]; then \
+	    echo 'The man2html command could not found.' 1>&2; \
+	    echo 'The man2html command is required to run this rule.'; 1>&2; \
+	fi; \
+	if [[ -z "$$HAVE_MAN" ]]; then \
+	    echo 'The man command could not found.' 1>&2; \
+	    echo 'The man command is required to run this rule.'; 1>&2; \
+	fi; \
+	if [[ -z "$$HAVE_MAN2HTML" || -z "$$HAVE_MAN" ]]; then \
+	    echo ''; 1>&2; \
+	    exit 1; \
+	fi
+	@for i in ${MAN1_TARGETS}; do \
+	    echo ${RM} -f "$$i.html"; \
+	    ${RM} -f "$$i.html"; \
+	    echo "${MAN} ./$$i.1 | ${MAN2HTML} -compress -title $$i > $$i.html"; \
+	    ${MAN} "./$$i.1" | ${MAN2HTML} -compress -title "$$i" > "$$i.html"; \
+	done
+	@for i in ${MAN3_TARGETS}; do \
+	    echo ${RM} -f "$$i.html"; \
+	    ${RM} -f "$$i.html"; \
+	    echo "${MAN} ./$$i.3 | ${MAN2HTML} -compress -title $$i > $$i.html"; \
+	    ${MAN} "./$$i.3" | ${MAN2HTML} -compress -title "$$i" > "$$i.html"; \
+	done
+	@for i in ${MAN8_TARGETS}; do \
+	    echo ${RM} -f "$$i.html"; \
+	    ${RM} -f "$$i.html"; \
+	    echo "${MAN} ./$$i.8 | ${MAN2HTML} -compress -title $$i > $$i.html"; \
+	    ${MAN} "./$$i.8" | ${MAN2HTML} -compress -title "$$i" > "$$i.html"; \
+	done
 
 # Only run this rule when you wish to invalidate all timestamps
 # prior to now, such as when you make a fundamental change to a
@@ -804,6 +848,7 @@ clean: clean_generated_obj
 clobber: clean prep_clobber
 	${RM} -f ${BUILD_LOG}
 	${RM} -f jparse_test.log chkentry_test.log txzchk_test.log
+	${RM} -f ${HTML_MAN_TARGETS}
 
 distclean nuke: clobber
 
