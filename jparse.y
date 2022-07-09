@@ -221,7 +221,7 @@ json:
 	     * not NULL, however, *tree will be set to the parse tree itself
 	     * ($json).
 	     */
-	    *tree = $json;	/* more magic: set ugly_parse(tree) arg to ptr to JSON parse tree */
+	    *tree = $json;	/* more magic: set ugly_parse(tree) arg to point to JSON parse tree */
 	}
 	if (json_dbg_allowed(JSON_DBG_HIGH)) {
 	    json_dbg(JSON_DBG_HIGH, __func__, "under json: ending: "
