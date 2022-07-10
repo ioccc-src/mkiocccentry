@@ -426,10 +426,10 @@ fnamchk: fnamchk.o dbg.o util.o dyn_array.o Makefile
 txzchk.o: txzchk.c txzchk.h Makefile
 	${CC} ${CFLAGS} txzchk.c -c
 
-txzchk: txzchk.o dbg.o util.o dyn_array.o location.o json_parse.o json_util.o \
+txzchk: txzchk.o dbg.o util.o dyn_array.o location.o \
 	utf8_posix_map.o sanity.o Makefile
-	${CC} ${CFLAGS} txzchk.o dbg.o util.o dyn_array.o location.o json_parse.o \
-	    json_util.o utf8_posix_map.o sanity.o -o $@
+	${CC} ${CFLAGS} txzchk.o dbg.o util.o dyn_array.o location.o \
+	     utf8_posix_map.o sanity.o -o $@
 
 chkentry.o: chkentry.c chkentry.h Makefile
 	${CC} ${CFLAGS} chkentry.c -c
