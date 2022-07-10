@@ -640,7 +640,7 @@ parser: jparse.y jparse.l Makefile
 	${CP} -f -v jparse.tab.h jparse.tab.ref.h
 	${RM} -f jparse.ref.c
 	${CP} -f -v jparse.c jparse.ref.c
-	${MAKE} jparse
+	${MAKE} jparse jsemtblgen
 
 #
 # make parser-o: Force the rebuild of the JSON parser.
