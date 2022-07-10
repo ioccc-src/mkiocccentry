@@ -2,17 +2,19 @@
 /*
  * txzchk - IOCCC tarball validation check tool
  *
- * "Because sometimes even the IOCCC Judges need some help." :-)
- *
  * Invoked by mkiocccentry; txzchk in turn uses fnamchk to make sure that
  * the tarball was correctly named and formed (i.e. the mkiocccentry tool was
  * used).
+ *
+ * "Because sometimes people add feathers to tar." :-(
  *
  * Written in 2022 by:
  *
  *	@xexyl
  *	https://xexyl.net		Cody Boone Ferguson
  *	https://ioccc.xexyl.net
+ *
+ * "Because sometimes even the IOCCC Judges need some help." :-)
  */
 
 

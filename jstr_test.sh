@@ -86,8 +86,8 @@ fi
 # test some text holes in the encoding and decoding pipe
 #
 echo "$0: about to run test #6"
-export SRC_SET="jstr_test.sh dbg.c dbg.h fnamchk.c iocccsize.c chkauth.c"
-SRC_SET="$SRC_SET chkinfo.c json_parse.c json_parse.h jstrdecode.c jstrencode.c"
+export SRC_SET="jstr_test.sh dbg.c dbg.h fnamchk.c iocccsize.c"
+SRC_SET="$SRC_SET chkentry.c json_parse.c json_parse.h jstrdecode.c jstrencode.c"
 SRC_SET="$SRC_SET limit_ioccc.h mkiocccentry.c txzchk.c util.c util.h"
 echo "cat \$SRC_SET | ./jstrencode -v $V_FLAG -n | ./jstrdecode -v $V_FLAG -n > $TEST_FILE"
 # shellcheck disable=SC2086

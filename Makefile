@@ -426,10 +426,10 @@ fnamchk: fnamchk.o dbg.o util.o dyn_array.o Makefile
 txzchk.o: txzchk.c txzchk.h Makefile
 	${CC} ${CFLAGS} txzchk.c -c
 
-txzchk: txzchk.o dbg.o util.o dyn_array.o location.o json_parse.o json_util.o \
+txzchk: txzchk.o dbg.o util.o dyn_array.o location.o \
 	utf8_posix_map.o sanity.o Makefile
-	${CC} ${CFLAGS} txzchk.o dbg.o util.o dyn_array.o location.o json_parse.o \
-	    json_util.o utf8_posix_map.o sanity.o -o $@
+	${CC} ${CFLAGS} txzchk.o dbg.o util.o dyn_array.o location.o \
+	     utf8_posix_map.o sanity.o -o $@
 
 chkentry.o: chkentry.c chkentry.h Makefile
 	${CC} ${CFLAGS} chkentry.c -c
@@ -640,7 +640,7 @@ parser: jparse.y jparse.l Makefile
 	${CP} -f -v jparse.tab.h jparse.tab.ref.h
 	${RM} -f jparse.ref.c
 	${CP} -f -v jparse.c jparse.ref.c
-	${MAKE} jparse
+	${MAKE} jparse jsemtblgen
 
 #
 # make parser-o: Force the rebuild of the JSON parser.
@@ -731,8 +731,8 @@ checknr: ${MANPAGES}
 	    echo ''; 1>&2; \
 	    exit 1; \
 	else \
-	    echo "${CHECKNR} ${MANPAGES}"; \
-	    ${CHECKNR} ${MANPAGES}; \
+	    echo "${CHECKNR} -c.BR.SS.BI ${MANPAGES}"; \
+	    ${CHECKNR} -c.BR.SS.BI ${MANPAGES}; \
 	fi
 
 man2html: ${MANPAGES}
