@@ -1,9 +1,11 @@
 /*
- * txzchk - IOCCC tarball validation check tool
+ * txzchk - IOCCC tarball validation tool
  *
- * Invoked by mkiocccentry; txzchk in turn uses fnamchk to make sure that
- * the tarball was correctly named and formed (i.e. the mkiocccentry tool was
- * used).
+ * txzchk verifies that the tarball does not have any feathers stuck in it (i.e.
+ * the tarball conforms to the IOCCC tarball rules). Invoked by mkiocccentry;
+ * txzchk in turn uses fnamchk to make sure that the tarball was correctly named
+ * and formed. In other words txzchk makes sure that the mkiocccentry tool was
+ * used and there was no screwing around with the resultant tarball.
  *
  * "Because sometimes people add feathers to tar." :-(
  *
@@ -159,7 +161,7 @@ main(int argc, char **argv)
     }
     txz_info.total_issues = check_tarball(tar, fnamchk);
     if (!quiet && !txz_info.total_issues) {
-	para("All checks passed.", "", NULL);
+	para("No feathers found in tarball.", "", NULL);
     }
 
     show_txz_info(txzpath);

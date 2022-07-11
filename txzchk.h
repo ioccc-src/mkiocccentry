@@ -1,10 +1,12 @@
 /* vim: set tabstop=8 softtabstop=4 shiftwidth=4 noexpandtab : */
 /*
- * txzchk - IOCCC tarball validation check tool
+ * txzchk - IOCCC tarball validation tool
  *
- * Invoked by mkiocccentry; txzchk in turn uses fnamchk to make sure that
- * the tarball was correctly named and formed (i.e. the mkiocccentry tool was
- * used).
+ * txzchk verifies that the tarball does not have any feathers stuck in it (i.e.
+ * the tarball conforms to the IOCCC tarball rules). Invoked by mkiocccentry;
+ * txzchk in turn uses fnamchk to make sure that the tarball was correctly named
+ * and formed. In other words txzchk makes sure that the mkiocccentry tool was
+ * used and there was no screwing around with the resultant tarball.
  *
  * "Because sometimes people add feathers to tar." :-(
  *
