@@ -91,7 +91,7 @@ main(int argc, char **argv)
 	     */
 	    json_verbosity_level = parse_verbosity(program, optarg);
 	    break;
-	case 'q':		/* -q - uiet mode: silence msg(), warn(), warnp() if -v 0 */
+	case 'q':		/* -q - quiet mode: silence msg(), warn(), warnp() if -v 0 */
 	    msg_warn_silent = true;
 	    break;
 	case 'V':		/* -V - print version and exit */
