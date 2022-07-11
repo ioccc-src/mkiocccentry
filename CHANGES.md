@@ -1,9 +1,83 @@
 # Major changes to the IOCCC entry toolkit
 
 
-## Release 0.4
+## Release 0.5 2022-07-10
 
-JSON parser is code complete!
+The jsemtblgen tool is code complete.
+
+Added is\_reserved() function to rule\_count.c.
+
+Changed the Official iocccsize version from 28.10 2022-03-15 to
+28.11 2022-07-10.  Updated test\_JSON tree and json\_teststr.txt
+to reflect the new IOCCCSIZE\_VERSION value.
+
+Added and improved a number of man pages.
+
+Added Makefile rule to build HTML files from all man pages.
+
+Both the parse\_json() and parse_\json_\file() top level functions
+of the JSON parser return a JSON node parse tree when the JSON is
+valid.
+
+Trimmed the JSON parser to not include code that does not strictly
+belong to the generic JSON parser.  Removed dead C code.
+
+Updated dbg facility to version 2.4 2022-06-26.  Version 2.4
+2022-06-26 contains functions to write (form) a message, debug
+diagnostic message, warning, or error message into a string buffer:
+
+```c
+extern void snmsg(char *str, size_t size, char const *fmt, ...)
+extern void sndbg(char *str, size_t size, int level, char const *fmt, ...);
+extern void snwarn(char *str, size_t size, char const *name, char const *fmt, ...);
+extern void snwarnp(char *str, size_t size, char const *name, char const *fmt, ...);
+extern void snwerr(int error_code, char *str, size_t size, char const *name, char const *fmt, ...);
+extern void snwerrp(int error\_code, char *str, size\_t size, char const *name, char const *fmt, ...);
+```
+
+Simplify command for jparse and jsemtblgen.  The -s is now just a
+flag.  Only one 1 arg is allowed.
+
+Adjusted dbg levels in JSON parser:
+
+```
+*     At -J 3, only the top level return type and top level tree are printed.
+*     At -J 5, intermediate tree return types and tree are printed too.
+*     At -J 7, also print grammar progress.
+*     At -J 9, also print ugly_text and ugly_leng grammar values.
+```
+
+Improved top level JSON parser debug & warn layering.
+
+The json\_dbg() functions now returns void, like dbg().
+The json\_vdbg() functions now returns void, like vdbg().
+The json\_dbg\_tree\_print() function now returns void.
+JSON parser now uses werr() instead of warn().
+
+Now using seqcexit tool, version 1.8 2022-06-02 to sequence snwerr()
+and snwerrp() calls.
+
+Fixed a number of typos in comments and documentation.
+
+Improved a number of C comments.  Some comments are less humor impaired
+and might even make the reader prone to mirth and laughter.  :-)
+
+Sequenced exit codes.
+
+Improved C code format consistency.
+
+The -V flag will only print the version string and exit.  The -h
+flag may print one or more version strings preceded by an
+explanatory string explaining what the version is about.
+
+Added date strings to release strings in CHANGES.md.
+
+Updated CHANGES.md.
+
+
+## Release 0.4 2022-06-23
+
+The JSON parser is code complete!
 
 The following JSON parses now work:
 
@@ -25,7 +99,7 @@ In `.info.json` the `chkinfo\_version` was replaced by `chkentry\_version`.
 
 In `.author.json` the `chkauth\_version` was replaced by `chkentry\_version`.
 
-The `IOCCC\_info\_versioN` in `.info.json` was changed from "1.9 2022-03-15"
+The `IOCCC\_info\_version` in `.info.json` was changed from "1.9 2022-03-15"
 to "1.10 2022-06-22".  The INFO\_VERSION in `version.h` was changed accordingly.
 
 The `IOCCC\_author\_version` in `.author.json` was changed from "1.12 2022-03-15"
@@ -34,7 +108,7 @@ to "1.13 2022-06-22".  The `AUTHOR\_VERSION` in `version.h` was changed accordin
 The `MIN\_TIMESTAMP` in `version.h has was changed from 1652598666 to 1655958810.
 
 
-## Release 0.3
+## Release 0.3 2022-06-13
 
 Improved JSON parser diagnostic messages.  Now, `./jparse -s 0` just prints
 `invalid JSON`, whereas `./jparse -J 7 -s 0` prints a bunch of parser
@@ -57,7 +131,7 @@ Renamed `json\_warn.codes` to `chk\_warn.codes`.
 Renamed `jcodechk.sh` to `chkcode.sh`.
 
 
-## Release 0.2
+## Release 0.2 2022-05-17
 
 Several new tools and man pages have been added. Additionally the JSON parser is
 being worked on with reasonable progress. The following tools have been added:
@@ -89,7 +163,7 @@ NOTE: The `iocccsize` is not listed as a new tool in this file as it was always
 here.
 
 
-## Release 0.1
+## Release 0.1 2022-02-21
 
 Created this CHANGES.md markdown document.
 

@@ -383,19 +383,19 @@ vupdate_tbl(struct json *node, unsigned int depth, va_list ap)
 	/*
 	 * case: if JTYPE_MEMBER - match non-NULL non-empty JSON decoded name
 	 */
-	if (node->type == JTYPE_MEMBER && p->type == JTYPE_MEMBER && p->name_str != NULL) {
+	if (node->type == JTYPE_MEMBER && p->type == JTYPE_MEMBER && p->name != NULL) {
 	    struct json_member *item = &(node->item.member);
 
 	    /*
 	     * match decoded name
 	     */
 	    /* paranoia */
-	    if (item->name_str == NULL) {
-		err(17, __func__, "item->name_str is NULL");
+	    if (item->name == NULL) {
+		err(17, __func__, "item->name is NULL");
 		not_reached();
 	    }
-	    if (item->name_str_len != p->name_str_len ||
-		memcmp(item->name_str, p->name_str, p->name_str_len) != 0) {
+	    if (item->name_str_len != p->name_len ||
+		memcmp(item->name_str, p->name, p->name_len) != 0) {
 		continue;
 	    }
 	}
@@ -421,10 +421,10 @@ vupdate_tbl(struct json *node, unsigned int depth, va_list ap)
 	new.type = node->type;
 	if (node->type == JTYPE_MEMBER) {
 	    struct json_member *item = &(node->item.member);
-	    new.name_str = item->name_str;
-	    new.name_str_len = item->name_str_len;
+	    new.name = item->name_str;
+	    new.name_len = item->name_str_len;
 	} else {
-	    new.name_str = NULL;
+	    new.name = NULL;
 	}
 	new.validate = NULL;
 	new.count = 1;
@@ -477,6 +477,16 @@ sem_cmp(void const *a, void const *b)
     second = (struct json_sem *)b;
 
     /*
+     * compare count in reverse order
+     */
+    if (first->count < second->count) {
+	return 1;	/* first > second */
+    } else if (first->count > second->count) {
+	return -1;	/* first < second */
+    }
+    /* case: count matches */
+
+    /*
      * compare depth in reverse order
      */
     if (first->depth < second->depth) {
@@ -499,9 +509,9 @@ sem_cmp(void const *a, void const *b)
     /*
      * compare match decoded name if not NULL
      */
-    if (first->name_str != NULL) {
-	if (second->name_str != NULL) {
-	    cmp = memcmp(first->name_str, second->name_str, first->name_str_len);
+    if (first->name != NULL) {
+	if (second->name != NULL) {
+	    cmp = memcmp(first->name, second->name, first->name_len);
 	    if (cmp > 0) {
 		return 1;	/* first > second */
 	    } else if (cmp < 0) {
@@ -510,25 +520,99 @@ sem_cmp(void const *a, void const *b)
 	} else {
 	    return -1;	/* first < NULL second */
 	}
-    } else if (second->name_str != NULL) {
+    } else if (second->name != NULL) {
 	return 1;	/* NULL first > second */
     }
     /* case: name matches */
 
     /*
-     * compare counts
-     */
-    if (first->count > second->count) {
-	return 1;	/* first > second */
-    } else if (first->count < second->count) {
-	return -1;	/* first < second */
-    }
-    /* case: count matches */
-
-    /*
      * entries match
      */
     return 0;
+}
+
+
+/*
+ * print_c_funct_name - print a string as a C function
+ *
+ * Print str a valid C function.  Any character that is not
+ * alphanumeric is printed as an underscore ("_") character.
+ *
+ * If the first character if str is a digit,
+ * a leading x ("x") will be printed before str is processed.
+ *
+ * If the first character if str is an underscore ("_"),
+ * a leading x ("x") will be printed before str is processed.
+ * C names starting with underscore ("_") are reserved, so this
+ * rule prevents the function from being a reserved function.
+ *
+ * An empty string will cause x ("x") will be printed.
+ *
+ * If a C reserved word would otherwise be printed, a leading
+ * x ("x") will be printed before str is processed.
+ *
+ * Examples:
+ *
+ *	"foo" ==> "foo"
+ *	"23209" ==> "x23209"
+ *	"3foo" ==> "x3foo"
+ *	"curds&whey++.*" ==> "curds_whey____"
+ *	"_foo" ==> "x_foo"
+ *	"++" ==> "x__"
+ *	"" ==> "x"
+ *	"Hello, world!\n" ==> "Hello_world__"
+ *	"if" ==> "xif"
+ *	"#if" ==> "x_if"
+ *	"_Pragma" ==> "x_Pragma"
+ *
+ * given:
+ *	stream	open FILE stream to print on
+ *	str	string to print to stream
+ *
+ * NOTE: This function does not return if given NULL pointers or on error.
+ */
+static void
+print_c_funct_name(FILE *stream, char const *str)
+{
+    bool reserved = false;	/* true ==> str is a reserved word in C */
+
+    /*
+     * firewall
+     */
+    if (stream == NULL) {
+	err(20, __func__, "stream is NULL");
+	not_reached();
+    }
+    if (str == NULL) {
+	err(21, __func__, "str is NULL");
+	not_reached();
+    }
+
+    /*
+     * case: str is a C reserved word
+     * case: str is an empty string
+     * case: str begins with a digit
+     * case: str begins with an underscore
+     */
+    reserved = is_reserved(str);
+    if (reserved == true || str[0] == '\0' || (isascii(str[0]) && isdigit(str[0])) || str[0] == '_') {
+	/* print a leading x */
+	fprstr(stream, "x");
+    }
+
+    /*
+     * process each character in C, converting non-alphanumeric characters to underscore.
+     */
+    while (str[0] != '\0') {
+	if (!isascii(str[0]) || !isalnum(str[0])) {
+	    /* convert non-C name character to underscore */
+	    fprstr(stream, "_");
+	} else {
+	    fprint(stream, "%c", str[0]);
+	}
+	++str;
+    }
+    return;
 }
 
 
@@ -553,15 +637,15 @@ print_sem_tbl(struct dyn_array *tbl, char *tbl_name, char *cap_tbl_name)
      * firewall
      */
     if (tbl == NULL) {
-	err(20, __func__, "tbl is NULL");
+	err(22, __func__, "tbl is NULL");
 	not_reached();
     }
     if (tbl_name == NULL) {
-	err(21, __func__, "tbl_name is NULL");
+	err(23, __func__, "tbl_name is NULL");
 	not_reached();
     }
     if (cap_tbl_name == NULL) {
-	err(22, __func__, "cap_tbl_name is NULL");
+	err(24, __func__, "cap_tbl_name is NULL");
 	not_reached();
     }
 
@@ -575,26 +659,115 @@ print_sem_tbl(struct dyn_array *tbl, char *tbl_name, char *cap_tbl_name)
      */
     len = dyn_array_tell(tbl);
     print("#define %s_LEN (%jd)\n", cap_tbl_name, len);
-    print("struct json_sem [%s_LEN] = {\n", cap_tbl_name);
+    print("struct json_sem %s[%s_LEN] = {\n", tbl_name, cap_tbl_name);
+    prstr("/*  index depth     type        min     max  name_len validate  name */\n");
 
     /*
      * print each semantic table entry
      */
     for (i=0; i < len; ++i) {
+	char *validate = def_func;	/* validation function name */
+
+	/*
+	 * determine the validation function name
+	 */
+	p = dyn_array_addr(tbl, struct json_sem, i);
+	switch (p->type) {
+	case JTYPE_NUMBER:
+	    if (number_func != NULL) {
+		validate = number_func;
+	    }
+	    break;
+	case JTYPE_STRING:
+	    if (string_func != NULL) {
+		validate = string_func;
+	    }
+	    break;
+	case JTYPE_BOOL:
+	    if (bool_func != NULL) {
+		validate = bool_func;
+	    }
+	    break;
+	case JTYPE_NULL:
+	    if (null_func != NULL) {
+		validate = null_func;
+	    }
+	    break;
+	case JTYPE_MEMBER:
+	    if (member_func != NULL) {
+		validate = member_func;
+	    }
+	    break;
+	case JTYPE_OBJECT:
+	    if (object_func != NULL) {
+		validate = object_func;
+	    }
+	    break;
+	case JTYPE_ARRAY:
+	    if (array_func != NULL) {
+		validate = array_func;
+	    }
+	    break;
+	default:
+	    if (unknown_func != NULL) {
+		validate = unknown_func;
+	    }
+	    break;
+	}
 
 	/*
 	 * print a given semantic table entry
-	 *
-	 * XXX - add code for non-NULL validate functions - XXX
 	 */
-	p = dyn_array_addr(tbl, struct json_sem, i);
-	if (p->name_str == NULL) {
-	    print("    { %u,\t%s,\t%u,\t%u,\tNULL,\t0,\tNULL,\t0 },\n",
-		  p->depth, json_type_name(p->type), p->count, p->count);
+	if (p->name == NULL) {
+	    if (p->count == INF) {
+		print("  { /*%3jd*/ %u,\t%s,\t%u,\tINF,\t0,\t",
+		      i, p->depth, json_type_name(p->type), p->count);
+		print_c_funct_name(stdout, validate);
+		prstr("\tNULL },\n");
+	    } else {
+		print("  { /*%3jd*/ %u,\t%s,\t%u,\t%u,\t0,\t",
+		      i, p->depth, json_type_name(p->type), p->count, p->count);
+		print_c_funct_name(stdout, validate);
+		prstr(",\tNULL },\n");
+	    }
 	} else {
-	    print("    { %u,\t%s,\t%u,\t%u,\t\"%s\",\t%ju,\tNULL,\t0 },\n",
-		  p->depth, json_type_name(p->type), p->count, p->count,
-		  p->name_str, (uintmax_t)p->name_str_len);
+	    if (p->count == INF) {
+		if (p->type == JTYPE_MEMBER && prefix != NULL) {
+		    print("  { /*%3jd*/ %u,\t%s,\t%u,\tINF,\t%ju,\t",
+			  i, p->depth, json_type_name(p->type), p->count, (uintmax_t)p->name_len);
+		    print_c_funct_name(stdout, prefix);
+		    prstr("_");
+		    print_c_funct_name(stdout, p->name);
+		    prstr(",\t\"");
+		    print_c_funct_name(stdout, p->name);
+		    prstr("\" },\n");
+		} else {
+		    print("  { /*%3jd*/ %u,\t%s,\t%u,\tINF,\t%ju,\t",
+			  i, p->depth, json_type_name(p->type), p->count, (uintmax_t)p->name_len);
+		    print_c_funct_name(stdout, p->name);
+		    prstr(",\t\"");
+		    print_c_funct_name(stdout, validate);
+		    prstr("\" },\n");
+		}
+	    } else {
+		if (p->type == JTYPE_MEMBER && prefix != NULL) {
+		    print("  { /*%3jd*/ %u,\t%s,\t%u,\t%u,\t%ju,\t",
+			  i, p->depth, json_type_name(p->type), p->count, p->count, (uintmax_t)p->name_len);
+		    print_c_funct_name(stdout, prefix);
+		    prstr("_");
+		    print_c_funct_name(stdout, p->name);
+		    prstr(",\t\"");
+		    print_c_funct_name(stdout, p->name);
+		    prstr("\" },\n");
+		} else {
+		    print("  { /*%3jd*/ %u,\t%s,\t%u,\t%u,\t%ju,\t",
+			  i, p->depth, json_type_name(p->type), p->count, p->count, (uintmax_t)p->name_len);
+		    print_c_funct_name(stdout, p->name);
+		    prstr(",\t\"");
+		    print_c_funct_name(stdout, validate);
+		    prstr("\" },\n");
+		}
+	    }
 	}
     }
 

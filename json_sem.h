@@ -32,6 +32,7 @@
 /*
  * definitions
  */
+#define INF (0)			/* special max value for no limit */
 
  /*
   * JSON semantic count error
@@ -73,11 +74,11 @@ struct json_sem
     enum item_type type;	/* type of JSON node */
     unsigned int min;		/* minimum allowed count */
     unsigned int max;		/* maximum allowed count, 0 ==> infinite */
-    char *name_str;		/* if type == JTYPE_MEMBER, match decoded name or NULL */
-    size_t name_str_len;	/* length of name_str, not including final NUL or 0 */
+    unsigned int count;		/* number of times this JSON semantic was matched */
+    size_t name_len;		/* length of name_str, not including final NUL or 0 */
     bool (* validate)(struct json *node, unsigned int depth, struct json_sem *sem, struct json_val_err *val_err);
 				/* JSON parse tree node validator, or NULL */
-    unsigned int count;		/* number of times this JSON semantic was matched */
+    char *name;			/* if type == JTYPE_MEMBER, match decoded name or NULL */
 };
 
 

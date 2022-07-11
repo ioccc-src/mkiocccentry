@@ -414,3 +414,38 @@ rule_count(FILE *fp_in)
 
 	return counts;
 }
+
+/*
+ * is_reserved - if string is a reserved word in C
+ *
+ * given:
+ *	string	the string to check
+ *
+ * returns:
+ *	true ==> string is a reserved word in C
+ *	false ==> string is NOT a reserved word in C or is NULL
+ */
+bool
+is_reserved(const char *string)
+{
+    static Word *found = NULL;
+
+    /*
+     * firewall
+     */
+    if (string == NULL) {
+	/* NULL pointer is not a reserved word */
+	return false;
+    }
+
+    /*
+     * search the reserved word table
+     */
+    found = find_member(cwords, string);
+    if (found == NULL) {
+	/* case: string is not a reserved word */
+	return false;
+    }
+    /* case: string is a reserved word */
+    return true;
+}

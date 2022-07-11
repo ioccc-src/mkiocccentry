@@ -82,6 +82,7 @@ typedef struct
  * external functions
  */
 extern RuleCount rule_count(FILE *fp_in);
+extern bool is_reserved(const char *string);
 
 /*
  * global variables

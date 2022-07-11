@@ -485,9 +485,9 @@ jsemtblgen.o: jsemtblgen.c Makefile
 	${CC} ${CFLAGS} jsemtblgen.c -c
 
 jsemtblgen: jsemtblgen.o jparse.o jparse.tab.o util.o dyn_array.o dbg.o json_parse.o \
-	    json_util.o Makefile
+	    json_util.o rule_count.o Makefile
 	${CC} ${CFLAGS} jsemtblgen.o jparse.o jparse.tab.o util.o dyn_array.o dbg.o json_parse.o \
-			json_util.o -o $@
+			json_util.o rule_count.o -o $@
 
 utf8_test.o: utf8_test.c utf8_posix_map.h Makefile
 	${CC} ${CFLAGS} utf8_test.c -c
@@ -923,4 +923,4 @@ jparse_main.o: jparse_main.c jparse_main.h dbg.h util.h dyn_array.h \
 entry_util.o: entry_util.c dbg.h util.h dyn_array.h entry_util.h \
   json_parse.h
 jsemtblgen.o: jsemtblgen.c jsemtblgen.h dbg.h util.h dyn_array.h \
-  json_util.h json_parse.h jparse.h jparse.tab.h json_sem.h
+  json_util.h json_parse.h jparse.h jparse.tab.h json_sem.h iocccsize.h

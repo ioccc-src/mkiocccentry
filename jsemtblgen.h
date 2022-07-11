@@ -52,6 +52,11 @@
 #include "json_sem.h"
 
 /*
+ * iocccsize - IOCCC Source Size Tool
+ */
+#include "iocccsize.h"
+
+/*
  * official jsemtblgen version
  */
 #define JSEMTBLGEN_VERSION "0.3 2022-07-04"		/* format: major.minor YYYY-MM-DD */
