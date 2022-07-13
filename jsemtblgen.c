@@ -42,6 +42,7 @@
 /*
  * static globals
  */
+static bool h_mode = false;		/* -I - true ==> output as .h include file . false ==> output as .c src */
 static char *tbl_name = "sem_tbl";	/* -N name - name of the semantic table */
 static char *def_func = "NULL";		/* -D def_func - validate with def_func() unless overridden */
 static char *prefix = NULL;		/* -P prefix - validate JTYPE_MEMBER with prefix_name() or NULL */
@@ -75,7 +76,7 @@ main(int argc, char **argv)
      * parse args
      */
     program = argv[0];
-    while ((c = getopt(argc, argv, "hv:J:qVsN:D:P:1:S:B:0:M:O:A:U:")) != -1) {
+    while ((c = getopt(argc, argv, "hv:J:qVsIN:D:P:1:S:B:0:M:O:A:U:")) != -1) {
 	switch (c) {
 	case 'h':		/* -h - print help to stderr and exit 0 */
 	    usage(2, "-h help mode", program); /*ooo*/
@@ -103,6 +104,9 @@ main(int argc, char **argv)
 	    break;
 	case 's':		/* -s - arg is a string */
 	    string_flag_used = true;
+	    break;
+	case 'I':
+	    h_mode = true;
 	    break;
 	case 'N':		/* -N name - name of the semantic table */
 	    tbl_name = optarg;
@@ -169,6 +173,7 @@ main(int argc, char **argv)
 	    cap_tbl_name[i] = (char)toupper(tbl_name[i]);
 	}
     }
+    dbg(DBG_MED, "output_mode: %s", h_mode ? ".h include file" : ".c src file");
     dbg(DBG_MED, "tbl_name: <%s>", tbl_name);
     dbg(DBG_MED, "cap_tbl_name: <%s>", cap_tbl_name);
 
@@ -235,7 +240,11 @@ main(int argc, char **argv)
     /*
      * print a sorted semantic table as a C structure
      */
-    print_sem_tbl(tbl, tbl_name, cap_tbl_name);
+    if (h_mode == true) {
+	print_sem_h_src(tbl, tbl_name, cap_tbl_name);
+    } else {
+	print_sem_c_src(tbl, tbl_name, cap_tbl_name);
+    }
 
     /*
      * free the JSON parse tree
@@ -619,7 +628,7 @@ print_c_funct_name(FILE *stream, char const *str)
 
 
 /*
- * print_sem_tbl - print a sorted semantic table as a C structure
+ * print_sem_c_src - print a sorted semantic table as a .c src file
  *
  * given:
  *	tbl		dynamic array of semantic table entries
@@ -629,7 +638,7 @@ print_c_funct_name(FILE *stream, char const *str)
  * NOTE: This function does not return if given NULL pointers or on error.
  */
 static void
-print_sem_tbl(struct dyn_array *tbl, char *tbl_name, char *cap_tbl_name)
+print_sem_c_src(struct dyn_array *tbl, char *tbl_name, char *cap_tbl_name)
 {
     struct json_sem *p = NULL;	/* current semantic table to print */
     intmax_t len = 0;		/* number of semantic table entries */
@@ -660,7 +669,6 @@ print_sem_tbl(struct dyn_array *tbl, char *tbl_name, char *cap_tbl_name)
      * print semantic table header
      */
     len = dyn_array_tell(tbl);
-    print("#define %s_LEN (%jd)\n", cap_tbl_name, len);
     print("struct json_sem %s[%s_LEN] = {\n", tbl_name, cap_tbl_name);
     prstr("/*  index depth     type        min     max  name_len validate  name */\n");
 
@@ -727,7 +735,7 @@ print_sem_tbl(struct dyn_array *tbl, char *tbl_name, char *cap_tbl_name)
 		print_c_funct_name(stdout, validate);
 		prstr("\tNULL },\n");
 	    } else {
-		print("  { /*%3jd*/ %u,\t%s,\t%u,\t%u,\t0,\t",
+		print("  { /*%jd*/ %u,\t%s,\t%u,\t%u,\t0,\t",
 		      i, p->depth, json_type_name(p->type), p->count, p->count);
 		print_c_funct_name(stdout, validate);
 		prstr(",\tNULL },\n");
@@ -735,7 +743,7 @@ print_sem_tbl(struct dyn_array *tbl, char *tbl_name, char *cap_tbl_name)
 	} else {
 	    if (p->count == INF) {
 		if (p->type == JTYPE_MEMBER && prefix != NULL) {
-		    print("  { /*%3jd*/ %u,\t%s,\t%u,\tINF,\t%ju,\t",
+		    print("  { /*%jd*/ %u,\t%s,\t%u,\tINF,\t%ju,\t",
 			  i, p->depth, json_type_name(p->type), p->count, (uintmax_t)p->name_len);
 		    print_c_funct_name(stdout, prefix);
 		    prstr("_");
@@ -744,7 +752,7 @@ print_sem_tbl(struct dyn_array *tbl, char *tbl_name, char *cap_tbl_name)
 		    print_c_funct_name(stdout, p->name);
 		    prstr("\" },\n");
 		} else {
-		    print("  { /*%3jd*/ %u,\t%s,\t%u,\tINF,\t%ju,\t",
+		    print("  { /*%jd*/ %u,\t%s,\t%u,\tINF,\t%ju,\t",
 			  i, p->depth, json_type_name(p->type), p->count, (uintmax_t)p->name_len);
 		    print_c_funct_name(stdout, p->name);
 		    prstr(",\t\"");
@@ -753,7 +761,7 @@ print_sem_tbl(struct dyn_array *tbl, char *tbl_name, char *cap_tbl_name)
 		}
 	    } else {
 		if (p->type == JTYPE_MEMBER && prefix != NULL) {
-		    print("  { /*%3jd*/ %u,\t%s,\t%u,\t%u,\t%ju,\t",
+		    print("  { /*%jd*/ %u,\t%s,\t%u,\t%u,\t%ju,\t",
 			  i, p->depth, json_type_name(p->type), p->count, p->count, (uintmax_t)p->name_len);
 		    print_c_funct_name(stdout, prefix);
 		    prstr("_");
@@ -762,7 +770,7 @@ print_sem_tbl(struct dyn_array *tbl, char *tbl_name, char *cap_tbl_name)
 		    print_c_funct_name(stdout, p->name);
 		    prstr("\" },\n");
 		} else {
-		    print("  { /*%3jd*/ %u,\t%s,\t%u,\t%u,\t%ju,\t",
+		    print("  { /*%jd*/ %u,\t%s,\t%u,\t%u,\t%ju,\t",
 			  i, p->depth, json_type_name(p->type), p->count, p->count, (uintmax_t)p->name_len);
 		    print_c_funct_name(stdout, p->name);
 		    prstr(",\t\"");
@@ -777,6 +785,128 @@ print_sem_tbl(struct dyn_array *tbl, char *tbl_name, char *cap_tbl_name)
      * print semantic table trailer
      */
     prstr("};\n");
+
+    return;
+}
+
+
+/*
+ * print_sem_h_src - print a sorted semantic table as a .h include file
+ *
+ * given:
+ *	tbl		dynamic array of semantic table entries
+ *	tbl_name	name of the semantic table
+ *	cap_tbl_name	UPPER case copy of tbl_name
+ *
+ * NOTE: This function does not return if given NULL pointers or on error.
+ */
+static void
+print_sem_h_src(struct dyn_array *tbl, char *tbl_name, char *cap_tbl_name)
+{
+    struct json_sem *p = NULL;	/* current semantic table to print */
+    intmax_t len = 0;		/* number of semantic table entries */
+    intmax_t i;
+
+    /*
+     * firewall
+     */
+    if (tbl == NULL) {
+	err(22, __func__, "tbl is NULL");
+	not_reached();
+    }
+    if (tbl_name == NULL) {
+	err(23, __func__, "tbl_name is NULL");
+	not_reached();
+    }
+    if (cap_tbl_name == NULL) {
+	err(24, __func__, "cap_tbl_name is NULL");
+	not_reached();
+    }
+
+    /*
+     * sort the semantic table
+     */
+    qsort(tbl->data, dyn_array_tell(tbl), sizeof(struct json_sem), sem_cmp);
+
+    /*
+     * print semantic table header
+     */
+    len = dyn_array_tell(tbl);
+    print("#if !defined(%s_LEN)\n\n", cap_tbl_name);
+    print("#define %s_LEN (%jd)\n\n", cap_tbl_name, len);
+    print("extern struct json_sem %s[%s_LEN];\n\n", tbl_name, cap_tbl_name);
+
+    /*
+     * print each semantic table entry
+     */
+    for (i=0; i < len; ++i) {
+	char *validate = def_func;	/* validation function name */
+
+	/*
+	 * determine the validation function name
+	 */
+	p = dyn_array_addr(tbl, struct json_sem, i);
+	switch (p->type) {
+	case JTYPE_NUMBER:
+	    if (number_func != NULL) {
+		validate = number_func;
+	    }
+	    break;
+	case JTYPE_STRING:
+	    if (string_func != NULL) {
+		validate = string_func;
+	    }
+	    break;
+	case JTYPE_BOOL:
+	    if (bool_func != NULL) {
+		validate = bool_func;
+	    }
+	    break;
+	case JTYPE_NULL:
+	    if (null_func != NULL) {
+		validate = null_func;
+	    }
+	    break;
+	case JTYPE_MEMBER:
+	    if (member_func != NULL) {
+		validate = member_func;
+	    }
+	    break;
+	case JTYPE_OBJECT:
+	    if (object_func != NULL) {
+		validate = object_func;
+	    }
+	    break;
+	case JTYPE_ARRAY:
+	    if (array_func != NULL) {
+		validate = array_func;
+	    }
+	    break;
+	default:
+	    if (unknown_func != NULL) {
+		validate = unknown_func;
+	    }
+	    break;
+	}
+
+	/*
+	 * print an extern if we have a non-NULL validation function
+	 */
+	if (p->name != NULL) {
+	    prstr("extern bool (* ");
+	    if (p->type == JTYPE_MEMBER && prefix != NULL && strcmp(p->name, "NULL") != 0) {
+		print_c_funct_name(stdout, p->name);
+	    } else if (strcmp(validate, "NULL") != 0) {
+		print_c_funct_name(stdout, validate);
+	    }
+	    prstr(")(struct json *node, unsigned int depth, struct json_sem *sem, struct json_val_err *val_err);\n");
+	}
+    }
+
+    /*
+     * print semantic table trailer
+     */
+    print("\n#endif /* %s_LEN */\n", cap_tbl_name);
 
     return;
 }

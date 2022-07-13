@@ -61,7 +61,7 @@
 /*
  * official jsemtblgen version
  */
-#define JSEMTBLGEN_VERSION "0.3 2022-07-04"		/* format: major.minor YYYY-MM-DD */
+#define JSEMTBLGEN_VERSION "0.4 2022-07-13"		/* format: major.minor YYYY-MM-DD */
 
 
 /*
@@ -70,7 +70,8 @@
 static void gen_sem_tbl(struct json *tree, unsigned int max_depth, ...);
 static void vupdate_tbl(struct json *node, unsigned int depth, va_list ap);
 static int sem_cmp(void const *a, void const *b);
-static void print_sem_tbl(struct dyn_array *tbl, char *tbl_name, char *cap_tbl_name);
+static void print_sem_c_src(struct dyn_array *tbl, char *tbl_name, char *cap_tbl_name);
+static void print_sem_h_src(struct dyn_array *tbl, char *tbl_name, char *cap_tbl_name);
 static void usage(int exitcode, char const *str, char const *prog);
 
 
@@ -78,7 +79,7 @@ static void usage(int exitcode, char const *str, char const *prog);
  * usage message
  */
 static const char * const usage_msg =
-    "usage: %s [-h] [-v level] [-J level] [-q] [-V] [-s] [-N name] [-D def_func] [-P prefix]\n"
+    "usage: %s [-h] [-v level] [-J level] [-q] [-V] [-s] [-I] [-N name] [-D def_func] [-P prefix]\n"
     "\t\t    [-1 func] [-S func] [-B func] [-0 func] [-M func] [-O func] [-A func] [-U func] json_arg\n"
     "\n"
     "\t-h\t\tprint help message and exit 0\n"
@@ -87,6 +88,8 @@ static const char * const usage_msg =
     "\t-q\t\tquiet mode: silence msg(), warn(), warnp() if -v 0 (def: not quiet)\n"
     "\t-V\t\tprint version string and exit 0\n"
     "\t-s\t\targ is a string (def: arg is a filename)\n"
+    "\n"
+    "\t-I\t\toutput as .h include file (def: output as .c src)\n"
     "\n"
     "\t-N name\t\tname of the semantics table (def: sem_tbl)\n"
     "\n"

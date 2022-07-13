@@ -2,7 +2,7 @@
 	"IOCCC_contest_id" : "12345678-1234-4321-abcd-1234567890ab",
 	"IOCCC_info_version" : "1.10 2022-06-22",
 	"Makefile_override" : false,
-	"abstract" : "abstract for entry #0",
+	"abstract" : "abstract for entry #2",
 	"empty_override" : false,
 	"entry_num" : 2,
 	"first_rule_is_all" : true,
