@@ -7,8 +7,10 @@ txzchk \- sanity checker tool used on IOCCC compressed tarballs
 \fBtxzchk\fP runs a series of sanity tests on IOCCC compressed tarballs.
 It is invoked by \fBmkiocccentry(1)\fP after the tarball is formed, reporting any issues found and exiting the program accordingly; if \fBtxzchk\fP does not return 0 \fBmkiocccentry\fP will exit with an error.
 .PP
-The program runs \fBtar \-tJvf\fP on the \fItxzpath\fP to list (it does \fBNOT\fP extract) and parses the output of the command, performing a variety of tests on the tarball.
-\fBtxzchk\fP runs the IOCCC tool \fBfnamchk(1)\fP on the file, verifying that the tarball is properly named.
+The program runs \fBtar \-tJvf\fP on the \fItxzpath\fP and parses the output of the command, performing a variety of tests on the tarball.
+As a side effect it will show the user the contents of the tarball.
+The tarball is \fBNOT\fP extracted.
+\fBtxzchk\fP also runs the IOCCC tool \fBfnamchk(1)\fP on the file, verifying that the tarball is properly named (this is also how it gets the directory name that the files should be in).
 .PP
 As an important part of the judging process, The Judges will directly execute this tool on every entry's tarball.
 .SH OPTIONS
