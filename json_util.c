@@ -12,6 +12,8 @@
  *	https://ioccc.xexyl.net
  * and:
  *	chongo (Landon Curt Noll, http://www.isthe.com/chongo/index.html) /\oo/\
+ *
+ * Share and vomit on the JSON spec! :-)
  */
 
 
