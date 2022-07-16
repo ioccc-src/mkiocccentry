@@ -1814,9 +1814,9 @@ json_dbg_tree_print(int json_dbg_lvl, char const *name, struct json *tree, unsig
  * that we can use this function to do more than one thing. This is also
  * why we call it vcallback (v for variadic support) and not something else.
  *
- * If max_depth is >= 0 and the tree depth > max_depth, then this function return.
- * In this case it will NOT operate on the node, or will be descend and further
- * into the tree.
+ * If max_depth is >= 0 and the tree depth > max_depth, then this function
+ * returns. In this case it will NOT operate on the node and it will NOT descend
+ * any further into the tree.
  *
  * NOTE: This function warns but does not do anything if an arg is NULL.
  */
