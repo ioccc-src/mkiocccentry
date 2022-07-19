@@ -1,4 +1,4 @@
-# mkiocccentry specific
+# IOCCC submission toolkit specific exclusions
 .exit_code.*
 .hostchk.*
 .sorry.*
@@ -38,6 +38,7 @@ makefile.local
 mkiocccentry
 mkiocccentry.html
 orig.iocccsize
+ref/*
 tags
 test_iocccsize
 test_set

@@ -457,6 +457,13 @@ vupdate_tbl(struct json *node, unsigned int depth, va_list ap)
 /*
  * sem_cmp - compare two semantic table entries
  *
+ * Produce a semantic table that is in some canonical order.
+ *
+ * NOTE: Since the table is not vert large, we do not need to
+ *	 optimize lookups in this table.  It is better to reverse
+ *	 sort by depth for human understanding.  This will help
+ *	 put the more common nodes early in the table.
+ *
  * given:
  *	a	pointer to first semantic table entry to compare
  *	b	pointer to second semantic table entry to compare
@@ -486,16 +493,6 @@ sem_cmp(void const *a, void const *b)
     }
     first = (struct json_sem *)a;
     second = (struct json_sem *)b;
-
-    /*
-     * compare count in reverse order
-     */
-    if (first->count < second->count) {
-	return 1;	/* first > second */
-    } else if (first->count > second->count) {
-	return -1;	/* first < second */
-    }
-    /* case: count matches */
 
     /*
      * compare depth in reverse order
@@ -670,7 +667,7 @@ print_sem_c_src(struct dyn_array *tbl, char *tbl_name, char *cap_tbl_name)
      */
     len = dyn_array_tell(tbl);
     print("struct json_sem %s[%s_LEN] = {\n", tbl_name, cap_tbl_name);
-    prstr("/*  index depth     type        min     max  name_len validate  name */\n");
+    prstr("/* depth    type        min     max  name_len validate  name */\n");
 
     /*
      * print each semantic table entry
@@ -730,21 +727,21 @@ print_sem_c_src(struct dyn_array *tbl, char *tbl_name, char *cap_tbl_name)
 	 */
 	if (p->name == NULL) {
 	    if (p->count == INF) {
-		print("  { /*%3jd*/ %u,\t%s,\t%u,\tINF,\t0,\t",
-		      i, p->depth, json_type_name(p->type), p->count);
+		print("  { %u,\t%s,\t%u,\tINF,\t0,\t",
+		      p->depth, json_type_name(p->type), p->count);
 		print_c_funct_name(stdout, validate);
 		prstr("\tNULL },\n");
 	    } else {
-		print("  { /*%jd*/ %u,\t%s,\t%u,\t%u,\t0,\t",
-		      i, p->depth, json_type_name(p->type), p->count, p->count);
+		print("  { %u,\t%s,\t%u,\t%u,\t0,\t",
+		      p->depth, json_type_name(p->type), p->count, p->count);
 		print_c_funct_name(stdout, validate);
 		prstr(",\tNULL },\n");
 	    }
 	} else {
 	    if (p->count == INF) {
 		if (p->type == JTYPE_MEMBER && prefix != NULL) {
-		    print("  { /*%jd*/ %u,\t%s,\t%u,\tINF,\t%ju,\t",
-			  i, p->depth, json_type_name(p->type), p->count, (uintmax_t)p->name_len);
+		    print("  { %u,\t%s,\t%u,\tINF,\t%ju,\t",
+			  p->depth, json_type_name(p->type), p->count, (uintmax_t)p->name_len);
 		    print_c_funct_name(stdout, prefix);
 		    prstr("_");
 		    print_c_funct_name(stdout, p->name);
@@ -752,8 +749,8 @@ print_sem_c_src(struct dyn_array *tbl, char *tbl_name, char *cap_tbl_name)
 		    print_c_funct_name(stdout, p->name);
 		    prstr("\" },\n");
 		} else {
-		    print("  { /*%jd*/ %u,\t%s,\t%u,\tINF,\t%ju,\t",
-			  i, p->depth, json_type_name(p->type), p->count, (uintmax_t)p->name_len);
+		    print("  { %u,\t%s,\t%u,\tINF,\t%ju,\t",
+			  p->depth, json_type_name(p->type), p->count, (uintmax_t)p->name_len);
 		    print_c_funct_name(stdout, p->name);
 		    prstr(",\t\"");
 		    print_c_funct_name(stdout, validate);
@@ -761,8 +758,8 @@ print_sem_c_src(struct dyn_array *tbl, char *tbl_name, char *cap_tbl_name)
 		}
 	    } else {
 		if (p->type == JTYPE_MEMBER && prefix != NULL) {
-		    print("  { /*%jd*/ %u,\t%s,\t%u,\t%u,\t%ju,\t",
-			  i, p->depth, json_type_name(p->type), p->count, p->count, (uintmax_t)p->name_len);
+		    print("  { %u,\t%s,\t%u,\t%u,\t%ju,\t",
+			  p->depth, json_type_name(p->type), p->count, p->count, (uintmax_t)p->name_len);
 		    print_c_funct_name(stdout, prefix);
 		    prstr("_");
 		    print_c_funct_name(stdout, p->name);
@@ -770,8 +767,8 @@ print_sem_c_src(struct dyn_array *tbl, char *tbl_name, char *cap_tbl_name)
 		    print_c_funct_name(stdout, p->name);
 		    prstr("\" },\n");
 		} else {
-		    print("  { /*%jd*/ %u,\t%s,\t%u,\t%u,\t%ju,\t",
-			  i, p->depth, json_type_name(p->type), p->count, p->count, (uintmax_t)p->name_len);
+		    print("  { %u,\t%s,\t%u,\t%u,\t%ju,\t",
+			  p->depth, json_type_name(p->type), p->count, p->count, (uintmax_t)p->name_len);
 		    print_c_funct_name(stdout, p->name);
 		    prstr(",\t\"");
 		    print_c_funct_name(stdout, validate);
@@ -811,15 +808,15 @@ print_sem_h_src(struct dyn_array *tbl, char *tbl_name, char *cap_tbl_name)
      * firewall
      */
     if (tbl == NULL) {
-	err(22, __func__, "tbl is NULL");
+	err(25, __func__, "tbl is NULL");
 	not_reached();
     }
     if (tbl_name == NULL) {
-	err(23, __func__, "tbl_name is NULL");
+	err(26, __func__, "tbl_name is NULL");
 	not_reached();
     }
     if (cap_tbl_name == NULL) {
-	err(24, __func__, "cap_tbl_name is NULL");
+	err(27, __func__, "cap_tbl_name is NULL");
 	not_reached();
     }
 

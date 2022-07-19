@@ -264,7 +264,7 @@ H_FILES= dbg.h chkentry.h json_parse.h jstrdecode.h jstrencode.h limit_ioccc.h \
 DSYMDIRS= $(TARGETS:=.dSYM)
 SH_FILES= iocccsize_test.sh jstr_test.sh limit_ioccc.sh mkiocccentry_test.sh \
 	  vermod.sh prep.sh run_bison.sh run_flex.sh reset_tstamp.sh ioccc_test.sh \
-	  jparse_test.sh txzchk_test.sh hostchk.sh
+	  jparse_test.sh txzchk_test.sh hostchk.sh jsemcgen.sh
 BUILD_LOG= build.log
 TXZCHK_LOG=txzchk_test.log
 
@@ -640,7 +640,8 @@ parser: jparse.y jparse.l Makefile
 	${CP} -f -v jparse.tab.h jparse.tab.ref.h
 	${RM} -f jparse.ref.c
 	${CP} -f -v jparse.c jparse.ref.c
-	${MAKE} jparse jsemtblgen
+	${MAKE} jparse
+	${MAKE} jsemtblgen
 
 #
 # make parser-o: Force the rebuild of the JSON parser.
@@ -667,6 +668,51 @@ rebuild_jnum_test: jnum_gen jnum.testset jnum_header.c Makefile
 	${RM} -f jnum_test.c
 	${CP} -f -v jnum_header.c jnum_test.c
 	./jnum_gen jnum.testset >> jnum_test.c
+
+# Form unpatched semantic tables, without headers and trailers, from the reference info and author JSON files
+#
+mkref: jsemtblgen jsemcgen.sh test_JSON/info.json/good test_JSON/author.json/good
+	@mkdir -p ref
+	for i in test_JSON/info.json/good/*.json; do \
+	    json=`basename -- "$$i"`; \
+	    rm -f "ref/$$json.c"; \
+	    echo "./jsemcgen.sh -N sem_info -P chk -- $$i . . . > ref/$$json.c"; \
+	    ./jsemcgen.sh -N sem_info -P chk -- "$$i" . . . > "ref/$$json.c"; \
+	    status="$$?"; \
+	    if [[ $$status -ne 0 ]]; then \
+		echo "./jsemcgen.sh -N sem_info -P chk -- $$i . . . failed, exit code: $$status" 1>&2 ;\
+		exit 1; \
+	    fi; \
+	    json=`basename -- "$$i"`; \
+	    rm -f "ref/$$json.h"; \
+	    echo "./jsemcgen.sh -N sem_info -P chk -I -- $$i . . . > ref/$$json.h"; \
+	    ./jsemcgen.sh -N sem_info -P chk -I -- "$$i" . . . > "ref/$$json.h"; \
+	    status="$$?"; \
+	    if [[ $$status -ne 0 ]]; then \
+		echo "./jsemcgen.sh -N sem_info -P chk -I -- $$i . . . failed, exit code: $$status" 1>&2 ;\
+		exit 2; \
+	    fi; \
+	done
+	for i in test_JSON/author.json/good/*.json; do \
+	    json=`basename -- "$$i"`; \
+	    rm -f "ref/$$json.c"; \
+	    echo "./jsemcgen.sh -N sem_auth -P chk -- $$i . . . > ref/$$json.c"; \
+	    ./jsemcgen.sh -N sem_auth -P chk -- "$$i" . . . > "ref/$$json.c"; \
+	    status="$$?"; \
+	    if [[ $$status -ne 0 ]]; then \
+		echo "./jsemcgen.sh -N sem_auth -P chk -- $$i . . . failed, exit code: $$status" 1>&2 ;\
+		exit 3; \
+	    fi; \
+	    json=`basename -- "$$i"`; \
+	    rm -f "ref/$$json.h"; \
+	    echo "./jsemcgen.sh -N sem_auth -P chk -I -- $$i . . . > ref/$$json.h"; \
+	    ./jsemcgen.sh -N sem_auth -P chk -I -- "$$i" . . . > "ref/$$json.h"; \
+	    status="$$?"; \
+	    if [[ $$status -ne 0 ]]; then \
+		echo "./jsemcgen.sh -N sem_auth -P chk -I -- $$i . . . failed, exit code: $$status" 1>&2 ;\
+		exit 4; \
+	    fi; \
+	done
 
 # sequence exit codes
 #
@@ -827,6 +873,8 @@ prep_clobber:
 	${RM} -rf jint_gen.dSYM jfloat_gen.dSYM
 	${RM} -f .sorry.*
 	${RM} -f .exit_code.*
+	${RM} -f .jsemcgen.*
+	${RM} -rf ref
 
 
 ###################################

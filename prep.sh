@@ -187,7 +187,8 @@ make_action 16 all
 make_action 17 depend
 make_action 18 shellcheck
 make_action 19 picky
-make_action 20 test
+make_action 20 mkref
+make_action 21 test
 if [[ $EXIT_CODE -eq 0 ]]; then
     echo "=-=-=-=-= PASS: $0 =-=-=-=-="
     echo
