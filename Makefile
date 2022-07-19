@@ -848,14 +848,25 @@ test-chkentry: all chkentry Makefile
 clean_generated_obj:
 	${RM} -f ${GENERATED_OBJ}
 
+# clobber legacy code and files - files that are no longer needed
+#
+legacy_clobber:
+	${RM} -f jint jfloat
+	${RM} -f jint.set.tmp jint_gen
+	${RM} -f jfloat.set.tmp jfloat_gen
+	${RM} -rf jint_gen.dSYM jfloat_gen.dSYM
+	${RM} -f jnumber
+	${RM} -rf jnumber.dSYM
+
 # rule used by prep.sh and make clobber
 #
-prep_clobber:
+prep_clobber: legacy_clobber
 	${RM} -f ${TARGETS} ${TEST_TARGETS}
 	${RM} -f ${GENERATED_CSRC} ${GENERATED_HSRC}
 	${RM} -f answers.txt
 	${RM} -f jstr_test.out jstr_test2.out
-	${RM} -rf test_iocccsize test_src test_work tags dbg.out
+	${RM} -rf test_iocccsize test_src test_work 
+	${RM} -f tags dbg.out
 	${RM} -f jparse.output jparse.html
 	${RM} -f ${TXZCHK_LOG}
 	${RM} -f dbg_test.c
@@ -864,13 +875,6 @@ prep_clobber:
 	${RM} -rf jnum_chk.dSYM
 	${RM} -f jnum_gen
 	${RM} -rf jnum_gen.dSYM
-	# XXX - remove legacy code - XXX
-	${RM} -f jnumber
-	${RM} -rf jnumber.dSYM
-	${RM} -f jint jfloat
-	${RM} -f jint.set.tmp jint_gen
-	${RM} -f jfloat.set.tmp jfloat_gen
-	${RM} -rf jint_gen.dSYM jfloat_gen.dSYM
 	${RM} -f .sorry.*
 	${RM} -f .exit_code.*
 	${RM} -f .jsemcgen.*
@@ -884,14 +888,17 @@ prep_clobber:
 configure:
 	@echo nothing to configure
 
-clean: clean_generated_obj
+# clean legacy code and files - files that are no longer needed
+#
+legacy_clean:
+	${RM} -f jint.o jint.test.o jint_gen.o
+	${RM} -f jfloat.o jfloat.test.o jfloat_gen.o
+
+clean: clean_generated_obj legacy_clean
 	${RM} -f ${OBJFILES}
 	${RM} -f ${GENERATED_OBJ}
 	${RM} -f ${LESS_PICKY_OBJ}
 	${RM} -rf ${DSYMDIRS}
-	# XXX - remove legacy code - XXX
-	${RM} -f jint.o jint.test.o jint_gen.o
-	${RM} -f jfloat.o jfloat.test.o jfloat_gen.o
 
 clobber: clean prep_clobber
 	${RM} -f ${BUILD_LOG}
