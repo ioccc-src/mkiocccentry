@@ -28,6 +28,7 @@
 
 # setup
 #
+PATCH_TOOL="$(type -P patch)"
 export USAGE="usage: $0 [-h] [-v level] [-J level] [-q] [-V] [-s] [-I] [-N name] [-D def_func] [-P prefix]
 	[-1 func] [-S func] [-B func] [-0 func] [-M func] [-O func] [-A func] [-U func]
 	[-j jsemtblgen] [-p patch_tool] file.json head patch tail
@@ -64,7 +65,7 @@ export USAGE="usage: $0 [-h] [-v level] [-J level] [-q] [-V] [-s] [-I] [-N name]
 	      All of the below are only used by this script.
 
 	-j jsemtblgen	path to jsemtblgen (def: ./jsemtblgen)
-	-p patch_tool	path to the patch tool (def: /usr/bin/patch)
+	-p patch_tool	path to the patch tool (def: $PATCH_TOOL)
 
 	file.json	A valid JSON file used to generate the initial JSON semantics table
 	head		file add to the beginning jsemtblgen output (before patched jsemtblgen output), . ==> do not add
@@ -99,7 +100,7 @@ export ARRAY_FUNC=
 export UNKNOWN_FUNC=
 export JSEMTBLGEN="./jsemtblgen"
 export JSEMTBLGEN_ARGS=
-export PATCH_TOOL="/usr/bin/patch"
+export PATCH_TOOL
 
 # parse args
 #
