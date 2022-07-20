@@ -28,7 +28,7 @@
 
 # setup
 #
-PATCH_TOOL="$(type -P patch)"
+PATCH_TOOL="$(type -P patch 2>/dev/null)"
 export USAGE="usage: $0 [-h] [-v level] [-J level] [-q] [-V] [-s] [-I] [-N name] [-D def_func] [-P prefix]
 	[-1 func] [-S func] [-B func] [-0 func] [-M func] [-O func] [-A func] [-U func]
 	[-j jsemtblgen] [-p patch_tool] file.json head patch tail
@@ -241,6 +241,10 @@ fi
 #
 if [[ ! -x $JSEMTBLGEN ]]; then
     echo "$0: ERROR: jsemtblgen is not an executable: $JSEMTBLGEN" 1>&2
+    exit 4
+fi
+if [[ -z $PATCH_TOOL ]]; then
+    echo "$0: ERROR: cannot find default patch tool path, need to use -p patch_path" 1>&2
     exit 4
 fi
 if [[ ! -x $PATCH_TOOL ]]; then
