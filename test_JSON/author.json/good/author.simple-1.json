@@ -20,7 +20,7 @@
 			"url" : "https:\/\/host0.example.com\/index.html",
 			"twitter" : "@twitter0",
 			"github" : "@github0",
-			"affiliation" : "an affiliation for #0 author",
+			"affiliation" : null,
 			"past_winner" : false,
 			"default_handle" : true,
 			"author_handle" : "author0_middle0_last0",

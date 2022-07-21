@@ -239,7 +239,7 @@ TEST_TARGETS= dbg utf8_test dyn_test
 OBJFILES= dbg.o util.o mkiocccentry.o iocccsize.o fnamchk.o txzchk.o chkentry.o \
 	json_parse.o jstrencode.o jstrdecode.o rule_count.o location.o sanity.o utf8_test.o verge.o \
 	dyn_array.o dyn_test.o dbg_test.o jnum_chk.o jnum_gen.o jnum_test.o \
-	json_util.o jparse_main.o entry_util.o jsemtblgen.o
+	json_util.o jparse_main.o entry_util.o jsemtblgen.o chk_sem_auth.o chk_sem_info.o
 LESS_PICKY_CSRC= utf8_posix_map.c
 LESS_PICKY_OBJ= utf8_posix_map.o
 GENERATED_CSRC= jparse.c jparse.tab.c
@@ -256,7 +256,8 @@ ALL_CSRC= ${LESS_PICKY_CSRC} ${GENERATED_CSRC} ${SRCFILES}
 H_FILES= dbg.h chkentry.h json_parse.h jstrdecode.h jstrencode.h limit_ioccc.h \
 	mkiocccentry.h txzchk.h util.h location.h utf8_posix_map.h jparse.h \
 	verge.h sorry.tm.ca.h dyn_array.h dyn_test.h json_util.h jnum_chk.h \
-	jnum_gen.h jparse_main.h entry_util.h jsemtblgen.h
+	jnum_gen.h jparse_main.h entry_util.h jsemtblgen.h chk_sem_auth.h \
+	chk_sem_info.h
 # This is a simpler way to do:
 #
 #   DSYMDIRS = $(patsubst %,%.dSYM,$(TARGETS))
@@ -430,6 +431,12 @@ txzchk: txzchk.o dbg.o util.o dyn_array.o location.o \
 	utf8_posix_map.o sanity.o Makefile
 	${CC} ${CFLAGS} txzchk.o dbg.o util.o dyn_array.o location.o \
 	     utf8_posix_map.o sanity.o -o $@
+
+chk_sem_auth.o: chk_sem_auth.c chk_sem_auth.h Makefile
+	${CC} ${CFLAGS} chk_sem_auth.c -c
+
+chk_sem_info.o: chk_sem_info.c chk_sem_info.h Makefile
+	${CC} ${CFLAGS} chk_sem_info.c -c
 
 chkentry.o: chkentry.c chkentry.h Makefile
 	${CC} ${CFLAGS} chkentry.c -c
@@ -671,7 +678,9 @@ rebuild_jnum_test: jnum_gen jnum.testset jnum_header.c Makefile
 
 # Form unpatched semantic tables, without headers and trailers, from the reference info and author JSON files
 #
-mkref: jsemtblgen jsemcgen.sh test_JSON/info.json/good test_JSON/author.json/good
+# rule used by prep.sh
+#
+all_ref: jsemtblgen jsemcgen.sh test_JSON/info.json/good test_JSON/author.json/good
 	@mkdir -p ref
 	for i in test_JSON/info.json/good/*.json; do \
 	    json=`basename -- "$$i"`; \
@@ -713,6 +722,36 @@ mkref: jsemtblgen jsemcgen.sh test_JSON/info.json/good test_JSON/author.json/goo
 		exit 4; \
 	    fi; \
 	done
+
+# Form the chk_sem_????.{c,h} files
+#
+# rule used by prep.sh
+#
+mkchk_sem: chk_sem_auth.c chk_sem_auth.h chk_sem_info.c chk_sem_info.h
+
+chk_sem_auth.c: jsemtblgen jsemcgen.sh test_JSON/author.json/good/author.reference.json \
+		chk.auth.head.c chk.auth.ptch.c chk.auth.tail.c Makefile
+	@${RM} -f $@
+	./jsemcgen.sh -N sem_auth -P chk -- \
+	    test_JSON/author.json/good/author.reference.json chk.auth.head.c chk.auth.ptch.c chk.auth.tail.c > $@
+
+chk_sem_auth.h: jsemtblgen jsemcgen.sh test_JSON/author.json/good/author.reference.json \
+		chk.auth.head.h chk.auth.ptch.h chk.auth.tail.h Makefile
+	@${RM} -f $@
+	./jsemcgen.sh -N sem_auth -P chk -I -- \
+	    test_JSON/author.json/good/author.reference.json chk.auth.head.h chk.auth.ptch.h chk.auth.tail.h > $@
+
+chk_sem_info.c: jsemtblgen jsemcgen.sh test_JSON/info.json/good/info.reference.json \
+		chk.info.head.c chk.info.ptch.c chk.info.tail.c Makefile
+	@${RM} -f $@
+	./jsemcgen.sh -N sem_info -P chk -- \
+	    test_JSON/info.json/good/info.reference.json chk.info.head.c chk.info.ptch.c chk.info.tail.c > $@
+
+chk_sem_info.h: jsemtblgen jsemcgen.sh test_JSON/info.json/good/info.reference.json \
+		chk.info.head.h chk.info.ptch.h chk.info.tail.h Makefile
+	@${RM} -f $@
+	./jsemcgen.sh -N sem_info -P chk -I -- \
+	    test_JSON/info.json/good/info.reference.json chk.info.head.h chk.info.ptch.h chk.info.tail.h > $@
 
 # sequence exit codes
 #
@@ -848,6 +887,12 @@ test-chkentry: all chkentry Makefile
 clean_generated_obj:
 	${RM} -f ${GENERATED_OBJ}
 
+# rule used by prep.sh
+#
+clean_mkchk_sem:
+	${RM} -f chk_sem_auth.c chk_sem_auth.h chk_sem_auth.o
+	${RM} -f chk_sem_info.c chk_sem_info.h chk_sem_info.o
+
 # clobber legacy code and files - files that are no longer needed
 #
 legacy_clobber:
@@ -865,7 +910,7 @@ prep_clobber: legacy_clobber
 	${RM} -f ${GENERATED_CSRC} ${GENERATED_HSRC}
 	${RM} -f answers.txt
 	${RM} -f jstr_test.out jstr_test2.out
-	${RM} -rf test_iocccsize test_src test_work 
+	${RM} -rf test_iocccsize test_src test_work
 	${RM} -f tags dbg.out
 	${RM} -f jparse.output jparse.html
 	${RM} -f ${TXZCHK_LOG}
@@ -979,3 +1024,7 @@ entry_util.o: entry_util.c dbg.h util.h dyn_array.h entry_util.h \
   json_parse.h
 jsemtblgen.o: jsemtblgen.c jsemtblgen.h dbg.h util.h dyn_array.h \
   json_util.h json_parse.h jparse.h jparse.tab.h json_sem.h iocccsize.h
+chk_sem_auth.o: chk_sem_auth.c chk_sem_auth.h json_sem.h util.h \
+  dyn_array.h dbg.h json_parse.h
+chk_sem_info.o: chk_sem_info.c chk_sem_info.h json_sem.h util.h \
+  dyn_array.h dbg.h json_parse.h

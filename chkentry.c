@@ -2,13 +2,14 @@
 /*
  * chkentry - check JSON files in an IOCCC entry
  *
+ * "Because grammar and syntax alone do not make a complete language." :-)
+ *
+ * The concept of this file was developed by:
+ *
+ *	chongo (Landon Curt Noll, http://www.isthe.com/chongo/index.html) /\oo/\
+ *
  * "Because sometimes even the IOCCC Judges need some help." :-)
  *
- * This tool is currently being worked on by:
- *
- *	@xexyl
- *	https://xexyl.net		Cody Boone Ferguson
- *	https://ioccc.xexyl.net
  */
 
 

@@ -667,7 +667,7 @@ print_sem_c_src(struct dyn_array *tbl, char *tbl_name, char *cap_tbl_name)
      */
     len = dyn_array_tell(tbl);
     print("struct json_sem %s[%s_LEN] = {\n", tbl_name, cap_tbl_name);
-    prstr("/* depth    type        min     max  name_len validate  name */\n");
+    prstr("/* depth    type        min     max   count  name_len validate  name */\n");
 
     /*
      * print each semantic table entry
@@ -727,12 +727,12 @@ print_sem_c_src(struct dyn_array *tbl, char *tbl_name, char *cap_tbl_name)
 	 */
 	if (p->name == NULL) {
 	    if (p->count == INF) {
-		print("  { %u,\t%s,\t%u,\tINF,\t0,\t",
+		print("  { %u,\t%s,\t%u,\tINF,\t0,\t0,\t",
 		      p->depth, json_type_name(p->type), p->count);
 		print_c_funct_name(stdout, validate);
 		prstr("\tNULL },\n");
 	    } else {
-		print("  { %u,\t%s,\t%u,\t%u,\t0,\t",
+		print("  { %u,\t%s,\t%u,\t%u,\t0,\t0,\t",
 		      p->depth, json_type_name(p->type), p->count, p->count);
 		print_c_funct_name(stdout, validate);
 		prstr(",\tNULL },\n");
@@ -740,7 +740,7 @@ print_sem_c_src(struct dyn_array *tbl, char *tbl_name, char *cap_tbl_name)
 	} else {
 	    if (p->count == INF) {
 		if (p->type == JTYPE_MEMBER && prefix != NULL) {
-		    print("  { %u,\t%s,\t%u,\tINF,\t%ju,\t",
+		    print("  { %u,\t%s,\t%u,\tINF,\t0,\t%ju,\t",
 			  p->depth, json_type_name(p->type), p->count, (uintmax_t)p->name_len);
 		    print_c_funct_name(stdout, prefix);
 		    prstr("_");
@@ -749,7 +749,7 @@ print_sem_c_src(struct dyn_array *tbl, char *tbl_name, char *cap_tbl_name)
 		    print_c_funct_name(stdout, p->name);
 		    prstr("\" },\n");
 		} else {
-		    print("  { %u,\t%s,\t%u,\tINF,\t%ju,\t",
+		    print("  { %u,\t%s,\t%u,\tINF,\t0,\t%ju,\t",
 			  p->depth, json_type_name(p->type), p->count, (uintmax_t)p->name_len);
 		    print_c_funct_name(stdout, p->name);
 		    prstr(",\t\"");
@@ -758,7 +758,7 @@ print_sem_c_src(struct dyn_array *tbl, char *tbl_name, char *cap_tbl_name)
 		}
 	    } else {
 		if (p->type == JTYPE_MEMBER && prefix != NULL) {
-		    print("  { %u,\t%s,\t%u,\t%u,\t%ju,\t",
+		    print("  { %u,\t%s,\t%u,\t%u,\t0,\t%ju,\t",
 			  p->depth, json_type_name(p->type), p->count, p->count, (uintmax_t)p->name_len);
 		    print_c_funct_name(stdout, prefix);
 		    prstr("_");
@@ -767,7 +767,7 @@ print_sem_c_src(struct dyn_array *tbl, char *tbl_name, char *cap_tbl_name)
 		    print_c_funct_name(stdout, p->name);
 		    prstr("\" },\n");
 		} else {
-		    print("  { %u,\t%s,\t%u,\t%u,\t%ju,\t",
+		    print("  { %u,\t%s,\t%u,\t%u,\t0,\t%ju,\t",
 			  p->depth, json_type_name(p->type), p->count, p->count, (uintmax_t)p->name_len);
 		    print_c_funct_name(stdout, p->name);
 		    prstr(",\t\"");
@@ -890,13 +890,15 @@ print_sem_h_src(struct dyn_array *tbl, char *tbl_name, char *cap_tbl_name)
 	 * print an extern if we have a non-NULL validation function
 	 */
 	if (p->name != NULL) {
-	    prstr("extern bool (* ");
+	    prstr("extern bool ");
 	    if (p->type == JTYPE_MEMBER && prefix != NULL && strcmp(p->name, "NULL") != 0) {
+		print_c_funct_name(stdout, prefix);
+		prstr("_");
 		print_c_funct_name(stdout, p->name);
 	    } else if (strcmp(validate, "NULL") != 0) {
 		print_c_funct_name(stdout, validate);
 	    }
-	    prstr(")(struct json *node, unsigned int depth, struct json_sem *sem, struct json_val_err *val_err);\n");
+	    prstr("(struct json *node,\n\tunsigned int depth, struct json_sem *sem, struct json_val_err *val_err);\n");
 	}
     }
 

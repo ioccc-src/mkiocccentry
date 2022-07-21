@@ -177,18 +177,20 @@ make_action 10 prep_clobber
 make_action 11 seqcexit
 make_action 12 use_ref
 make_action 13 clean_generated_obj
-make_action 14 all
-if [[ -z $O_FLAG ]]; then
-    make_action 15 parser
-else
-    make_action 15 parser-o
-fi
+make_action 14 clean_mkchk_sem
+make_action 15 mkchk_sem
 make_action 16 all
-make_action 17 depend
-make_action 18 shellcheck
-make_action 19 picky
-make_action 20 mkref
-make_action 21 test
+if [[ -z $O_FLAG ]]; then
+    make_action 17 parser
+else
+    make_action 18 parser-o
+fi
+make_action 19 all
+make_action 20 depend
+make_action 21 shellcheck
+make_action 22 picky
+make_action 23 all_ref
+make_action 24 test
 if [[ $EXIT_CODE -eq 0 ]]; then
     echo "=-=-=-=-= PASS: $0 =-=-=-=-="
     echo
