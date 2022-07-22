@@ -66,9 +66,9 @@ actually there and `mkiocccentry` will fail.
 
 As a stand-alone tool it will report whether the files are validly formed.
 
-*NOTE*: This tool is **very much a work in progress** and as of 10 March 2022 it
-was decided that the parsing should be done via `flex(1)` and `bison(1)` which
-is being worked on in `jparse` (see below).
+*NOTE*: This tool is **very much a work in progress**. Although the JSON parser
+(see `jparse` below) is complete there are still some things that have to be
+done before this tool can be finished.
 
 For more information and examples, try:
 
@@ -85,13 +85,14 @@ It takes a block of memory from either a file (stdin or a text file) or a string
 (via `-s` option) and parses it as JSON, reporting if it is validly formed JSON
 or not.
 
-As of 26 May 2022 it does not yet create a parse tree for other tools like the
-`chkinfo` and `chkauth` tools. Some things still have to be worked out. Once
-this is done the other two tools can be finished.
+This tool was co-developed in 2022 by:
 
-*NOTE*: At the risk of stating the obvious this tool is **very much a work in
-progress**.  Good progress is being made but more thought and time is still
-required.
+*@xexyl* (**Cody Boone Ferguson**, [https://xexyl.net](https://xexyl.net),
+[https://ioccc.xexyl.net](https://ioccc.xexyl.net))
+
+and:
+
+*chongo* (**Landon Curt Noll**, [http://www.isthe.com/chongo/index.html](http://www.isthe.com/chongo/index.htm)) /\oo/\
 
 For more information and examples, try:
 
