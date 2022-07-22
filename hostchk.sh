@@ -8,8 +8,32 @@
 # set up
 #
 
-TAR="$(type -P tar)"
-CC="$(type -P cc)"
+# attempt to fetch system specific paths to the tools we need
+#
+# get tar path
+TAR="$(type -P tar 2>/dev/null)"
+# get cc path
+CC="$(type -P cc 2>/dev/null)"
+# It's possible that the paths could not be obtained so we set to defaults in
+# this case.
+#
+# We could do it via parameter substitution but since it tries to execute the
+# command if for some reason the tool ever works without any args specified it
+# would make the script block (if we did it via parameter substitution we would
+# still have to redirect stderr to /dev/null). It would look like:
+#
+#   ${CC:=/usr/bin/cc} 2>/dev/null
+#   ${TAR:=/usr/bin/tar} 2>/dev/null
+#
+# make sure CC is set
+if [[ -z "$CC" ]]; then
+    CC="/usr/bin/cc"
+fi
+# make sure TAR is set
+if [[ -z "$TAR" ]]; then
+    TAR="/usr/bin/tar"
+fi
+
 export USAGE="usage: $0 [-h] [-v level] [-D dbg_level] [-t tar] [-c cc]
 
     -h			    print help and exit 2

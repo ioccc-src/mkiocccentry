@@ -28,7 +28,25 @@
 
 # setup
 #
+
+# attempt to fetch system specific paths to tools we need
+#
+# get patch path
 PATCH_TOOL="$(type -P patch 2>/dev/null)"
+# It's possible that the path could not be obtained so we set it to the default
+# in this case.
+#
+# We cannot do it via parameter substitution because patch without an arg is not
+# an error (it tries to execute it) so we do it via a direct check to the
+# variable being empty. If it would work it would look like:
+#
+#   ${PATCH_TOOL:=/usr/bin/patch} 2>/dev/null
+#
+# make sure PATCH_TOOL is set
+if [[ -z "$PATCH_TOOL" ]]; then
+    PATCH_TOOL="/usr/bin/patch"
+fi
+
 export USAGE="usage: $0 [-h] [-v level] [-J level] [-q] [-V] [-s] [-I] [-N name] [-D def_func] [-P prefix]
 	[-1 func] [-S func] [-B func] [-0 func] [-M func] [-O func] [-A func] [-U func]
 	[-j jsemtblgen] [-p patch_tool] file.json head patch tail

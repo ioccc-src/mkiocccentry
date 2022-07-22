@@ -13,9 +13,26 @@
 # "Because sometimes even the IOCCC Judges need some help." :-)
 
 # setup
-#
 
-TAR="$(type -P tar)"
+# attempt to fetch system specific path to any tools we need
+#
+# get tar path
+TAR="$(type -P tar 2>/dev/null)"
+# It's possible that the path could not be obtained so we set it to the default
+# in this case.
+#
+# We could do it via parameter substitution but since it tries to execute the
+# command if for some reason the tool ever works without any args specified it
+# would make the script block (if we did it via parameter substitution we would
+# still have to redirect stderr to /dev/null). It would look like:
+#
+#   ${TAR:=/usr/bin/tar} 2>/dev/null
+#
+# make sure TAR is set
+if [[ -z "$TAR" ]]; then
+    TAR="/usr/bin/tar"
+fi
+
 export USAGE="usage: $0 [-h] [-v level] [-D dbg_level] [-t txzchk] [-T tar]
 		     [-F fnamchk] [-d txzchk_tree]
 
