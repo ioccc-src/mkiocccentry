@@ -683,7 +683,7 @@ rebuild_jnum_test: jnum_gen jnum.testset jnum_header.c Makefile
 all_ref: jsemtblgen jsemcgen.sh test_JSON/info.json/good test_JSON/author.json/good
 	@mkdir -p ref
 	for i in test_JSON/info.json/good/*.json; do \
-	    json=`basename -- "$$i"`; \
+	    json=$(shell basename -- "$$i"); \
 	    rm -f "ref/$$json.c"; \
 	    echo "./jsemcgen.sh -N sem_info -P chk -- $$i . . . > ref/$$json.c"; \
 	    ./jsemcgen.sh -N sem_info -P chk -- "$$i" . . . > "ref/$$json.c"; \
@@ -692,7 +692,7 @@ all_ref: jsemtblgen jsemcgen.sh test_JSON/info.json/good test_JSON/author.json/g
 		echo "./jsemcgen.sh -N sem_info -P chk -- $$i . . . failed, exit code: $$status" 1>&2 ;\
 		exit 1; \
 	    fi; \
-	    json=`basename -- "$$i"`; \
+	    json=$(shell basename -- "$$i"); \
 	    rm -f "ref/$$json.h"; \
 	    echo "./jsemcgen.sh -N sem_info -P chk -I -- $$i . . . > ref/$$json.h"; \
 	    ./jsemcgen.sh -N sem_info -P chk -I -- "$$i" . . . > "ref/$$json.h"; \
@@ -703,7 +703,7 @@ all_ref: jsemtblgen jsemcgen.sh test_JSON/info.json/good test_JSON/author.json/g
 	    fi; \
 	done
 	for i in test_JSON/author.json/good/*.json; do \
-	    json=`basename -- "$$i"`; \
+	    json=$(shell basename -- "$$i"); \
 	    rm -f "ref/$$json.c"; \
 	    echo "./jsemcgen.sh -N sem_auth -P chk -- $$i . . . > ref/$$json.c"; \
 	    ./jsemcgen.sh -N sem_auth -P chk -- "$$i" . . . > "ref/$$json.c"; \
@@ -712,7 +712,7 @@ all_ref: jsemtblgen jsemcgen.sh test_JSON/info.json/good test_JSON/author.json/g
 		echo "./jsemcgen.sh -N sem_auth -P chk -- $$i . . . failed, exit code: $$status" 1>&2 ;\
 		exit 3; \
 	    fi; \
-	    json=`basename -- "$$i"`; \
+	    json=$(shell basename -- "$$i"); \
 	    rm -f "ref/$$json.h"; \
 	    echo "./jsemcgen.sh -N sem_auth -P chk -I -- $$i . . . > ref/$$json.h"; \
 	    ./jsemcgen.sh -N sem_auth -P chk -I -- "$$i" . . . > "ref/$$json.h"; \
@@ -756,7 +756,7 @@ chk_sem_info.h: jsemtblgen jsemcgen.sh test_JSON/info.json/good/info.reference.j
 # sequence exit codes
 #
 seqcexit: Makefile
-	@HAVE_SEQCEXIT=`command -v ${SEQCEXIT}`; if [[ -z "$$HAVE_SEQCEXIT" ]]; then \
+	@HAVE_SEQCEXIT=$(shell command -v ${SEQCEXIT}); if [[ -z "$$HAVE_SEQCEXIT" ]]; then \
 	    echo 'The seqcexit tool could not be found.' 1>&2; \
 	    echo 'The seqcexit tool is required for this rule.'; 1>&2; \
 	    echo ''; 1>&2; \
@@ -792,7 +792,7 @@ picky: ${ALL_CSRC} ${H_FILES} Makefile
 # inspect and verify shell scripts
 #
 shellcheck: ${SH_FILES} .shellcheckrc Makefile
-	@HAVE_SHELLCHECK=`command -v ${SHELLCHECK}`; if [[ -z "$$HAVE_SHELLCHECK" ]]; then \
+	@HAVE_SHELLCHECK=$(shell command -v ${SHELLCHECK}); if [[ -z "$$HAVE_SHELLCHECK" ]]; then \
 	    echo 'The shellcheck command could not found.' 1>&2; \
 	    echo 'The shellcheck command is required to run this rule.'; 1>&2; \
 	    echo ''; 1>&2; \
@@ -810,7 +810,7 @@ shellcheck: ${SH_FILES} .shellcheckrc Makefile
 # inspect and verify man pages
 #
 checknr: ${MANPAGES}
-	@HAVE_CHECKNR=`command -v ${CHECKNR}`; if [[ -z "$$HAVE_CHECKNR" ]]; then \
+	@HAVE_CHECKNR=$(shell command -v ${CHECKNR}); if [[ -z "$$HAVE_CHECKNR" ]]; then \
 	    echo 'The checknr command could not found.' 1>&2; \
 	    echo 'The checknr command is required to run this rule.'; 1>&2; \
 	    echo ''; 1>&2; \
@@ -821,8 +821,8 @@ checknr: ${MANPAGES}
 	fi
 
 man2html: ${MANPAGES}
-	@HAVE_MAN2HTML=`command -v ${MAN2HTML}`; \
-	 HAVE_MAN=`command -v ${MAN}`; \
+	@HAVE_MAN2HTML=$(shell command -v ${MAN2HTML}); \
+	 HAVE_MAN=$(shell command -v ${MAN}); \
 	if [[ -z "$$HAVE_MAN2HTML" ]]; then \
 	    echo 'The man2html command could not found.' 1>&2; \
 	    echo 'The man2html command is required to run this rule.'; 1>&2; \
@@ -961,7 +961,7 @@ tags: ${ALL_CSRC} ${H_FILES}
 	     ${GREP} -E -v 'Duplicate entry|Second entry ignored'
 
 depend: all
-	@LINE="`grep -n '^### DO NOT CHANGE' Makefile|awk -F : '{print $$1}'`"; \
+	@LINE="$(shell grep -n '^### DO NOT CHANGE' Makefile|awk -F : '{print $$1}')"; \
         if [ "$$LINE" = "" ]; then                                              \
                 echo "Make depend aborted, tag not found in Makefile.";         \
                 exit;                                                           \
