@@ -2,8 +2,8 @@
 /*
  * jsemtblgen - generate JSON semantics table
  *
+ * "Because there is more to JSON than a flawed grammar specification." :-)
  * "Because JSON embodies a commitment to original design flaws." :-)
- * "Because sometimes even the IOCCC Judges need some help." :-)
  *
  * This JSON parser was co-developed by:
  *
@@ -12,6 +12,8 @@
  *	https://ioccc.xexyl.net
  * and:
  *	chongo (Landon Curt Noll, http://www.isthe.com/chongo/index.html) /\oo/\
+ *
+ * "Because sometimes even the IOCCC Judges need some help." :-)
  *
  * Share and vomit on the JSON spec! :-)
  */
