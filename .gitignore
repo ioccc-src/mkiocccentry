@@ -10,6 +10,7 @@ chkentry_test.log
 dbg
 dbg.html
 dbg_example
+dbg_test
 dbg_test.c
 dyn_test
 fnamchk
