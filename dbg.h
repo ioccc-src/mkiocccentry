@@ -42,7 +42,7 @@
 /*
  * definitions
  */
-#define DBG_VERSION "2.4 2022-06-26"		/* format: major.minor YYYY-MM-DD */
+#define DBG_VERSION "2.5 2022-07-23"		/* format: major.minor YYYY-MM-DD */
 
 
 /*
@@ -160,6 +160,7 @@ extern void fmsg(FILE *stream, const char *fmt, ...) \
 extern void vfmsg(FILE *stream, char const *fmt, va_list ap);
 extern void snmsg(char *str, size_t size, char const *fmt, ...) \
 	__attribute__((format(printf, 3, 4)));		/* 3=format 4=params */
+extern void vsnmsg(char *str, size_t size, char const *fmt, va_list ap);
 
 extern void dbg(int level, const char *fmt, ...) \
 	__attribute__((format(printf, 2, 3)));		/* 2=format 3=params */
@@ -169,6 +170,7 @@ extern void fdbg(FILE *stream, int level, const char *fmt, ...) \
 extern void vfdbg(FILE *stream, int level, char const *fmt, va_list ap);
 extern void sndbg(char *str, size_t size, int level, char const *fmt, ...) \
 	__attribute__((format(printf, 4, 5)));		/* 4=format 5=params */
+extern void vsndbg(char *str, size_t size, int level, char const *fmt, va_list ap);
 
 extern void warn(const char *name, const char *fmt, ...) \
 	__attribute__((format(printf, 2, 3)));		/* 2=format 3=params */
@@ -178,6 +180,7 @@ extern void fwarn(FILE *stream, const char *name, const char *fmt, ...) \
 extern void vfwarn(FILE *stream, char const *name, char const *fmt, va_list ap);
 extern void snwarn(char *str, size_t size, char const *name, char const *fmt, ...) \
 	__attribute__((format(printf, 4, 5)));		/* 4=format 5=params */
+extern void vsnwarn(char *str, size_t size, char const *name, char const *fmt, va_list ap);
 
 extern void warnp(const char *name, const char *fmt, ...) \
 	__attribute__((format(printf, 2, 3)));		/* 2=format 3=params */
@@ -187,6 +190,7 @@ extern void fwarnp(FILE *stream, const char *name, const char *fmt, ...) \
 extern void vfwarnp(FILE *stream, char const *name, char const *fmt, va_list ap);
 extern void snwarnp(char *str, size_t size, char const *name, char const *fmt, ...) \
 	__attribute__((format(printf, 4, 5)));		/* 4=format 5=params */
+extern void vsnwarnp(char *str, size_t size, char const *name, char const *fmt, va_list ap);
 
 extern void err(int exitcode, const char *name, const char *fmt, ...) \
 	__attribute__((noreturn)) __attribute__((format(printf, 3, 4))); /* 3=format 4=params */
@@ -210,6 +214,7 @@ extern void fwerr(int error_code, FILE *stream, const char *name, const char *fm
 extern void vfwerr(int error_code, FILE *stream, char const *name, char const *fmt, va_list ap);
 extern void snwerr(int error_code, char *str, size_t size, char const *name, char const *fmt, ...) \
 	__attribute__((format(printf, 5, 6)));		/* 5=format 6=params */
+extern void vsnwerr(int error_code, char *str, size_t size, char const *name, char const *fmt, va_list ap);
 
 extern void werrp(int error_code, const char *name, const char *fmt, ...) \
 	__attribute__((format(printf, 3, 4)));		/* 3=format 4=params */
@@ -219,6 +224,7 @@ extern void fwerrp(int error_code, FILE *stream, const char *name, const char *f
 extern void vfwerrp(int error_code, FILE *stream, char const *name, char const *fmt, va_list ap);
 extern void snwerrp(int error_code, char *str, size_t size, char const *name, char const *fmt, ...) \
 	__attribute__((format(printf, 5, 6)));		/* 5=format 6=params */
+extern void vsnwerrp(int error_code, char *str, size_t size, char const *name, char const *fmt, va_list ap);
 
 extern void warn_or_err(int exitcode, const char *name, bool warning, const char *fmt, ...) \
 	__attribute__((format(printf, 4, 5)));		/* 4=format 5=params */

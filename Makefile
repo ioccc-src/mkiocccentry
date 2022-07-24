@@ -197,7 +197,7 @@ MANDIR = /usr/local/share/man/man1
 DESTDIR= /usr/local/bin
 TARGETS= mkiocccentry iocccsize dbg fnamchk txzchk chkentry \
 	jstrencode jstrdecode utf8_test jparse verge jnum_chk jnum_gen \
-	jsemtblgen
+	jsemtblgen dbg_test
 SH_TARGETS=limit_ioccc.sh
 
 # man pages

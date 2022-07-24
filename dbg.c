@@ -498,8 +498,14 @@ sndbg_write(char *str, size_t size, char const *caller, int level, char const *f
 static void
 fwarn_write(FILE *stream, char const *caller, char const *name, char const *fmt, va_list ap)
 {
-    int ret;		/* libc function return code */
-    int saved_errno;	/* errno at function start */
+    int ret;			/* libc function return code */
+    int saved_errno;		/* errno at function start */
+    bool allowed = false;	/* true ==> output is allowed */
+
+    /*
+     * determine if conditions allow function to write a warning to stderr
+     */
+    allowed = warn_allowed();
 
     /*
      * firewall - just return if given a NULL ptr
@@ -519,9 +525,11 @@ fwarn_write(FILE *stream, char const *caller, char const *name, char const *fmt,
     errno = 0;		/* pre-clear errno for strerror() */
     ret = fprintf(stream, "Warning: %s: ", name);
     if (ret < 0) {
-	/* we cannot call warn() because that would produce an infinite loop! */
-	(void) fprintf(stderr, "\nWarning: %s: in %s(stream, %s, %s, %s, ap): fprintf returned error: %s\n",
-			       caller, __func__, caller, name, fmt, strerror(errno));
+	if (allowed == true) {
+	    /* we cannot call warn() because that would produce an infinite loop! */
+	    (void) fprintf(stderr, "\nWarning: %s: in %s(stream, %s, %s, %s, ap): fprintf returned error: %s\n",
+				   caller, __func__, caller, name, fmt, strerror(errno));
+	}
     }
 
     /*
@@ -530,9 +538,11 @@ fwarn_write(FILE *stream, char const *caller, char const *name, char const *fmt,
     errno = 0;		/* pre-clear errno for strerror() */
     ret = vfprintf(stream, fmt, ap);
     if (ret < 0) {
-	/* we cannot call warn() because that would produce an infinite loop! */
-	(void) fprintf(stderr, "\nWarning: %s: in %s(stream, %s, %s, %s, ap): vfprintf returned error: %s\n",
-			       caller, __func__, caller, name, fmt, strerror(errno));
+	if (allowed == true) {
+	    /* we cannot call warn() because that would produce an infinite loop! */
+	    (void) fprintf(stderr, "\nWarning: %s: in %s(stream, %s, %s, %s, ap): vfprintf returned error: %s\n",
+				   caller, __func__, caller, name, fmt, strerror(errno));
+	}
     }
 
     /*
@@ -541,9 +551,11 @@ fwarn_write(FILE *stream, char const *caller, char const *name, char const *fmt,
     errno = 0;		/* pre-clear errno for strerror() */
     ret = fputc('\n', stream);
     if (ret != '\n') {
-	/* we cannot call warn() because that would produce an infinite loop! */
-	(void) fprintf(stderr, "\nWarning: %s: in %s(stream, %s, %s, %s, ap): fputc returned error: %s\n",
-			       caller, __func__, caller, name, fmt, strerror(errno));
+	if (allowed == true) {
+	    /* we cannot call warn() because that would produce an infinite loop! */
+	    (void) fprintf(stderr, "\nWarning: %s: in %s(stream, %s, %s, %s, ap): fputc returned error: %s\n",
+				   caller, __func__, caller, name, fmt, strerror(errno));
+	}
     }
 
     /*
@@ -552,9 +564,11 @@ fwarn_write(FILE *stream, char const *caller, char const *name, char const *fmt,
     errno = 0;		/* pre-clear errno for strerror() */
     ret = fflush(stream);
     if (ret < 0) {
-	/* we cannot call warn() because that would produce an infinite loop! */
-	(void) fprintf(stderr, "\nWarning: %s: in %s(stream, %s, %s, %s, ap): fflush returned error: %s\n",
-			       caller, __func__, caller, name, fmt, strerror(errno));
+	if (allowed == true) {
+	    /* we cannot call warn() because that would produce an infinite loop! */
+	    (void) fprintf(stderr, "\nWarning: %s: in %s(stream, %s, %s, %s, ap): fflush returned error: %s\n",
+				   caller, __func__, caller, name, fmt, strerror(errno));
+	}
     }
 
     /*
@@ -590,9 +604,15 @@ fwarn_write(FILE *stream, char const *caller, char const *name, char const *fmt,
 static void
 snwarn_write(char *str, size_t size, char const *caller, char const *name, char const *fmt, va_list ap)
 {
-    int ret;		/* libc function return code */
-    int ret2;		/* libc function return code */
-    int saved_errno;	/* errno at function start */
+    int ret;			/* libc function return code */
+    int ret2;			/* libc function return code */
+    int saved_errno;		/* errno at function start */
+    bool allowed = false;	/* true ==> output is allowed */
+
+    /*
+     * determine if conditions allow function to write a warning to stderr
+     */
+    allowed = warn_allowed();
 
     /*
      * firewall - just return if given a NULL ptr
@@ -618,9 +638,11 @@ snwarn_write(char *str, size_t size, char const *caller, char const *name, char 
     errno = 0;		/* pre-clear errno for warnp() */
     ret = snprintf(str, size, "Warning: %s: ", name);
     if ((size_t)ret >= size) {
-	/* we cannot call warn() because that would produce an infinite loop! */
-	(void) fprintf(stderr, "\nWarning: %s: in %s(str, %zu, %s, %s, %s, ap): snprintf returned: %d\n",
-			       caller, __func__, size, caller, name, fmt, ret);
+	if (allowed == true) {
+	    /* we cannot call warn() because that would produce an infinite loop! */
+	    (void) fprintf(stderr, "\nWarning: %s: in %s(str, %zu, %s, %s, %s, ap): snprintf returned: %d\n",
+				   caller, __func__, size, caller, name, fmt, ret);
+	}
     }
 
     /*
@@ -629,10 +651,12 @@ snwarn_write(char *str, size_t size, char const *caller, char const *name, char 
     errno = 0;		/* pre-clear errno for strerror() */
     ret2 = vsnprintf(str+ret, size-ret, fmt, ap);
     if ((size_t)ret2 >= size-ret) {
-	/* we cannot call warn() because that would produce an infinite loop! */
-	(void) fprintf(stderr, "\nWarning: %s: in %s(str, %zu, %s, %s, %s, ap): "
-			       "snprintf returned: %d vsnprintf returned: %d\n",
-			       caller, __func__, size, caller, name, fmt, ret, ret2);
+	if (allowed == true) {
+	    /* we cannot call warn() because that would produce an infinite loop! */
+	    (void) fprintf(stderr, "\nWarning: %s: in %s(str, %zu, %s, %s, %s, ap): "
+				   "snprintf returned: %d vsnprintf returned: %d\n",
+				   caller, __func__, size, caller, name, fmt, ret, ret2);
+	}
     }
 
     /*
@@ -661,8 +685,14 @@ snwarn_write(char *str, size_t size, char const *caller, char const *name, char 
 static void
 fwarnp_write(FILE *stream, char const *caller, char const *name, char const *fmt, va_list ap)
 {
-    int ret;		/* libc function return code */
-    int saved_errno;	/* errno at function start */
+    int ret;			/* libc function return code */
+    int saved_errno;		/* errno at function start */
+    bool allowed = false;	/* true ==> output is allowed */
+
+    /*
+     * determine if conditions allow function to write a warning to stderr
+     */
+    allowed = warn_allowed();
 
     /*
      * firewall - just return if given a NULL ptr
@@ -682,9 +712,11 @@ fwarnp_write(FILE *stream, char const *caller, char const *name, char const *fmt
     errno = 0;		/* pre-clear errno for strerror() */
     ret = fprintf(stream, "Warning: %s: ", name);
     if (ret < 0) {
-	/* we cannot call warn() because that would produce an infinite loop! */
-	(void) fprintf(stderr, "\nWarning: %s: in %s(stream, %s, %s, %s, ap): fprintf returned error: %s\n",
-			       caller, __func__, caller, name, fmt, strerror(errno));
+	if (allowed == true) {
+	    /* we cannot call warn() because that would produce an infinite loop! */
+	    (void) fprintf(stderr, "\nWarning: %s: in %s(stream, %s, %s, %s, ap): fprintf returned error: %s\n",
+				   caller, __func__, caller, name, fmt, strerror(errno));
+	}
     }
 
     /*
@@ -693,9 +725,11 @@ fwarnp_write(FILE *stream, char const *caller, char const *name, char const *fmt
     errno = 0;		/* pre-clear errno for strerror() */
     ret = vfprintf(stream, fmt, ap);
     if (ret < 0) {
-	/* we cannot call warn() because that would produce an infinite loop! */
-	(void) fprintf(stderr, "\nWarning: %s: in %s(stream, %s, %s, %s, ap): vfprintf returned error: %s\n",
-			       caller, __func__, caller, name, fmt, strerror(errno));
+	if (allowed == true) {
+	    /* we cannot call warn() because that would produce an infinite loop! */
+	    (void) fprintf(stderr, "\nWarning: %s: in %s(stream, %s, %s, %s, ap): vfprintf returned error: %s\n",
+				   caller, __func__, caller, name, fmt, strerror(errno));
+	}
     }
 
     /*
@@ -704,9 +738,11 @@ fwarnp_write(FILE *stream, char const *caller, char const *name, char const *fmt
     errno = 0;		/* pre-clear errno for strerror() */
     ret = fprintf(stream, ": errno[%d]: %s\n", saved_errno, strerror(saved_errno));
     if (ret < 0) {
-	/* we cannot call warn() because that would produce an infinite loop! */
-	(void) fprintf(stderr, "\nWarning: %s: in vwarnp(%s, %s, ap): fprintf with errno returned error: %s\n",
-			       caller, name, fmt, strerror(errno));
+	if (allowed == true) {
+	    /* we cannot call warn() because that would produce an infinite loop! */
+	    (void) fprintf(stderr, "\nWarning: %s: in vwarnp(%s, %s, ap): fprintf with errno returned error: %s\n",
+				   caller, name, fmt, strerror(errno));
+	}
     }
 
     /*
@@ -715,9 +751,11 @@ fwarnp_write(FILE *stream, char const *caller, char const *name, char const *fmt
     errno = 0;		/* pre-clear errno for strerror() */
     ret = fflush(stream);
     if (ret < 0) {
-	/* we cannot call warn() because that would produce an infinite loop! */
-	(void) fprintf(stderr, "\nWarning: %s: in %s(stream, %s, %s, %s, ap): fflush returned error: %s\n",
-			       caller, __func__, caller, name, fmt, strerror(errno));
+	if (allowed == true) {
+	    /* we cannot call warn() because that would produce an infinite loop! */
+	    (void) fprintf(stderr, "\nWarning: %s: in %s(stream, %s, %s, %s, ap): fflush returned error: %s\n",
+				   caller, __func__, caller, name, fmt, strerror(errno));
+	}
     }
 
     /*
@@ -753,10 +791,16 @@ fwarnp_write(FILE *stream, char const *caller, char const *name, char const *fmt
 static void
 snwarnp_write(char *str, size_t size, char const *caller, char const *name, char const *fmt, va_list ap)
 {
-    int ret;		/* libc function return code */
-    int ret2;		/* libc function return code */
-    int ret3;		/* libc function return code */
-    int saved_errno;	/* errno at function start */
+    int ret;			/* libc function return code */
+    int ret2;			/* libc function return code */
+    int ret3;			/* libc function return code */
+    int saved_errno;		/* errno at function start */
+    bool allowed = false;	/* true ==> output is allowed */
+
+    /*
+     * determine if conditions allow function to write a warning to stderr
+     */
+    allowed = warn_allowed();
 
     /*
      * firewall - just return if given a NULL ptr
@@ -782,9 +826,11 @@ snwarnp_write(char *str, size_t size, char const *caller, char const *name, char
     errno = 0;		/* pre-clear errno for warnp() */
     ret = snprintf(str, size, "Warning: %s: ", name);
     if ((size_t)ret >= size) {
-	/* we cannot call warn() because that would produce an infinite loop! */
-	(void) fprintf(stderr, "\nWarning: %s: in %s(str, %zu, %s, %s, %s, ap): snprintf returned: %d\n",
-			       caller, __func__, size, caller, name, fmt, ret);
+	if (allowed == true) {
+	    /* we cannot call warn() because that would produce an infinite loop! */
+	    (void) fprintf(stderr, "\nWarning: %s: in %s(str, %zu, %s, %s, %s, ap): snprintf returned: %d\n",
+				   caller, __func__, size, caller, name, fmt, ret);
+	}
     }
 
     /*
@@ -793,10 +839,12 @@ snwarnp_write(char *str, size_t size, char const *caller, char const *name, char
     errno = 0;		/* pre-clear errno for strerror() */
     ret2 = vsnprintf(str+ret, size-ret, fmt, ap);
     if ((size_t)ret2 >= size-ret) {
-	/* we cannot call warn() because that would produce an infinite loop! */
-	(void) fprintf(stderr, "\nWarning: %s: in %s(str, %zu, %s, %s, %s, ap): "
-			       "snprintf returned: %d vsnprintf returned: %d\n",
-			       caller, __func__, size, caller, name, fmt, ret, ret2);
+	if (allowed == true) {
+	    /* we cannot call warn() because that would produce an infinite loop! */
+	    (void) fprintf(stderr, "\nWarning: %s: in %s(str, %zu, %s, %s, %s, ap): "
+				   "snprintf returned: %d vsnprintf returned: %d\n",
+				   caller, __func__, size, caller, name, fmt, ret, ret2);
+	}
     }
 
     /*
@@ -805,10 +853,12 @@ snwarnp_write(char *str, size_t size, char const *caller, char const *name, char
     errno = 0;		/* pre-clear errno for strerror() */
     ret3 = snprintf(str+ret+ret2, size-ret-ret2, ": errno[%d]: %s", saved_errno, strerror(saved_errno));
     if ((size_t)ret3 >= size-ret-ret2) {
-	/* we cannot call warn() because that would produce an infinite loop! */
-	(void) fprintf(stderr, "\nWarning: %s: in %s(str, %zu, %s, %s, %s, ap): "
-			       "snprintf returned: %d vsnprintf returned: %d 2nd snprintf returned: %d\n",
-			       caller, __func__, size, caller, name, fmt, ret, ret2, ret3);
+	if (allowed == true) {
+	    /* we cannot call warn() because that would produce an infinite loop! */
+	    (void) fprintf(stderr, "\nWarning: %s: in %s(str, %zu, %s, %s, %s, ap): "
+				   "snprintf returned: %d vsnprintf returned: %d 2nd snprintf returned: %d\n",
+				   caller, __func__, size, caller, name, fmt, ret, ret2, ret3);
+	}
     }
 
     /*
@@ -1662,6 +1712,73 @@ snmsg(char *str, size_t size, char const *fmt, ...)
 
 
 /*
+ * vsnmsg - copy a generic message string into a buffer, in va_list form
+ *
+ * Copy an informational message string into a fixed sized buffer.
+ *
+ * Unlike msg(), this function does NOT add a final newline to str.
+ *
+ * given:
+ *	str	pointer to buffer in which to write a message
+ *	size	size of buffer, including space for a final NUL byte
+ *      fmt     printf format
+ *	ap	variable argument list
+ *
+ * Example:
+ *
+ *      vsnmsg(buf, BUFSIZ, "foobar information", ap);
+ *      vsnmsg(buf, BUFSIZ, "foo = %d\n", ap);
+ *
+ * NOTE: This function does nothing (just returns) if passed a NULL pointer.
+ * NOTE: This function does nothing (just returns) if a size <= 1.
+ */
+void
+vsnmsg(char *str, size_t size, char const *fmt, va_list ap)
+{
+    int saved_errno;		/* errno at function start */
+    bool allowed = false;	/* true ==> output is allowed */
+
+    /*
+     * stage 0: determine if conditions function to write, return if not
+     */
+    allowed = msg_allowed();
+    if (allowed == false) {
+	return;
+    }
+
+    /*
+     * stage 1: save errno so we can restore it before returning
+     */
+    saved_errno = errno;
+
+    /* stage 2: stdarg variable argument list setup is not required */
+
+    /*
+     * stage 3: firewall checks
+     */
+    if (str == NULL) {
+	return;
+    }
+    if (fmt == NULL) {
+	return;
+    }
+
+    /*
+     * stage 4: write the message
+     */
+    snmsg_write(str, size, __func__, fmt, ap);
+
+    /* stage 5: stdarg variable argument list cleanup is not required */
+
+    /*
+     * stage 6: restore previous errno value
+     */
+    errno = saved_errno;
+    return;
+}
+
+
+/*
  * dbg - write a verbosity level allowed debug message, to stderr
  *
  * given:
@@ -1975,6 +2092,74 @@ sndbg(char *str, size_t size, int level, char const *fmt, ...)
      * stage 5: stdarg variable argument list cleanup
      */
     va_end(ap);
+
+    /*
+     * stage 6: restore previous errno value
+     */
+    errno = saved_errno;
+    return;
+}
+
+
+/*
+ * vsndbg - Copy a verbosity level allowed debug message string into a buffer, in va_list form
+ *
+ * Copy a debug message string, if the verbosity level is high enough,
+ * into a fixed sized buffer.
+ *
+ * Unlike dbg(), this function does NOT add a final newline to str.
+ *
+ * given:
+ *	str	pointer to buffer in which to write a message
+ *	size	size of buffer, including space for a final NUL byte
+ *	level	write message if >= verbosity level
+ *	fmt	printf format
+ *	ap	variable argument list
+ *
+ * Example:
+ *
+ *	vsndbg(buf, BUFSIZ, DBG_VHIGH, "foobar information: %d", ap);
+ *
+ * NOTE: This function does nothing (just returns) if passed a NULL pointer.
+ * NOTE: This function does nothing (just returns) if a size <= 1.
+ */
+void
+vsndbg(char *str, size_t size, int level, char const *fmt, va_list ap)
+{
+    int saved_errno;		/* errno at function start */
+    bool allowed = false;	/* true ==> output is allowed */
+
+    /*
+     * stage 0: determine if conditions allow function to write, return if not
+     */
+    allowed = dbg_allowed(level);
+    if (allowed == false) {
+	return;
+    }
+
+    /*
+     * stage 1: save errno so we can restore it before returning
+     */
+    saved_errno = errno;
+
+    /* stage 2: stdarg variable argument list setup is not required */
+
+    /*
+     * stage 3: firewall checks
+     */
+    if (str == NULL) {
+	return;
+    }
+    if (fmt == NULL) {
+	return;
+    }
+
+    /*
+     * stage 4: write the diagnostic
+     */
+    sndbg_write(str, size, __func__, level, fmt, ap);
+
+    /* stage 5: stdarg variable argument list cleanup is not required */
 
     /*
      * stage 6: restore previous errno value
@@ -2344,6 +2529,76 @@ snwarn(char *str, size_t size, char const *name, char const *fmt, ...)
 
 
 /*
+ * vsnwarn - copy a warning message string into a buffer, in va_list form
+ *
+ * Copy a warning message string into a fixed sized buffer.
+ *
+ * Unlike warn(), this function does NOT add a final newline to str.
+ *
+ * given:
+ *	str	pointer to buffer in which to write a message
+ *	size	size of buffer, including space for a final NUL byte
+ *	name	name of function issuing the warning
+ *	fmt	format of the warning
+ *	ap	variable argument list
+ *
+ * Example:
+ *
+ *	vsnwarn(buf, BUFSIZ, __func__, "whey value: %d", ap);
+ *
+ * NOTE: This function does nothing (just returns) if passed a NULL pointer.
+ * NOTE: This function does nothing (just returns) if a size <= 1.
+ */
+void
+vsnwarn(char *str, size_t size, char const *name, char const *fmt, va_list ap)
+{
+    int saved_errno;		/* errno at function start */
+    bool allowed = false;	/* true ==> output is allowed */
+
+    /*
+     * stage 0: determine if conditions allow function to write, return if not
+     */
+    allowed = warn_allowed();
+    if (allowed == false) {
+	return;
+    }
+
+    /*
+     * stage 1: save errno so we can restore it before returning
+     */
+    saved_errno = errno;
+
+    /* stage 5: stdarg variable argument list cleanup is not required */
+
+    /*
+     * stage 3: firewall checks
+     */
+    if (str == NULL) {
+	return;
+    }
+    if (name == NULL) {
+	return;
+    }
+    if (fmt == NULL) {
+	return;
+    }
+
+    /*
+     * stage 4: write the warning
+     */
+    snwarn_write(str, size, __func__, name, fmt, ap);
+
+    /* stage 5: stdarg variable argument list cleanup is not required */
+
+    /*
+     * stage 6: restore previous errno value
+     */
+    errno = saved_errno;
+    return;
+}
+
+
+/*
  * warnp - write a warning message with errno details, to stderr
  *
  * given:
@@ -2693,6 +2948,76 @@ snwarnp(char *str, size_t size, char const *name, char const *fmt, ...)
      * stage 5: stdarg variable argument list cleanup
      */
     va_end(ap);
+
+    /*
+     * stage 6: restore previous errno value
+     */
+    errno = saved_errno;
+    return;
+}
+
+
+/*
+ * vsnwarnp - copy a warning message string with errno details into a buffer, in va_list form
+ *
+ * Copy warning message string that includes errno details into a fixed sized buffer.
+ *
+ * Unlike warnp(), this function does NOT add a final newline to str.
+ *
+ * given:
+ *	str	pointer to buffer in which to write a message
+ *	size	size of buffer, including space for a final NUL byte
+ *	name	name of function issuing the warning
+ *	fmt	format of the warning
+ *	ap	variable argument list
+ *
+ * Example:
+ *
+ *	vsnwarnp(buf, BUFSIZ, __func__, "unexpected foobar: %d", ap);
+ *
+ * NOTE: This function does nothing (just returns) if passed a NULL pointer.
+ * NOTE: This function does nothing (just returns) if a size <= 1.
+ */
+void
+vsnwarnp(char *str, size_t size, char const *name, char const *fmt, va_list ap)
+{
+    int saved_errno;		/* errno at function start */
+    bool allowed = false;	/* true ==> output is allowed */
+
+    /*
+     * stage 0: determine if conditions allow function to write, return if not
+     */
+    allowed = warn_allowed();
+    if (allowed == false) {
+	return;
+    }
+
+    /*
+     * stage 1: save errno so we can restore it before returning
+     */
+    saved_errno = errno;
+
+    /* stage 2: stdarg variable argument list setup is not required */
+
+    /*
+     * stage 3: firewall checks
+     */
+    if (str == NULL) {
+	return;
+    }
+    if (name == NULL) {
+	return;
+    }
+    if (fmt == NULL) {
+	return;
+    }
+
+    /*
+     * stage 4: write the warning
+     */
+    snwarnp_write(str, size, __func__, name, fmt, ap);
+
+    /* stage 5: stdarg variable argument list cleanup is not required */
 
     /*
      * stage 6: restore previous errno value
@@ -3661,6 +3986,77 @@ snwerr(int error_code, char *str, size_t size, char const *name, char const *fmt
 
 
 /*
+ * vsnwerr - copy an error message string into a buffer, in va_list form
+ *
+ * Copy an error message string into a fixed sized buffer.
+ *
+ * Unlike werr(), this function does NOT add a final newline to str.
+ *
+ * given:
+ *	error_code	error code
+ *	str		pointer to buffer in which to write a message
+ *	size		size of buffer, including space for a final NUL byte
+ *	name		name of function issuing the warning
+ *	fmt		format of the warning
+ *	ap		variable argument list
+ *
+ * Example:
+ *
+ *	vsnwerr(123, buf, BUFSIZ, __func__, "invalid whey value: %d", ap);
+ *
+ * NOTE: This function does nothing (just returns) if passed a NULL pointer.
+ * NOTE: This function does nothing (just returns) if a size <= 1.
+ */
+void
+vsnwerr(int error_code, char *str, size_t size, char const *name, char const *fmt, va_list ap)
+{
+    int saved_errno;		/* errno at function start */
+    bool allowed = false;	/* true ==> output is allowed */
+
+    /*
+     * stage 0: determine if conditions allow function to write, return if not
+     */
+    allowed = warn_allowed();
+    if (allowed == false) {
+	return;
+    }
+
+    /*
+     * stage 1: save errno so we can restore it before returning
+     */
+    saved_errno = errno;
+
+    /* stage 2: stdarg variable argument list setup is not required */
+
+    /*
+     * stage 3: firewall checks
+     */
+    if (str == NULL) {
+	return;
+    }
+    if (name == NULL) {
+	return;
+    }
+    if (fmt == NULL) {
+	return;
+    }
+
+    /*
+     * stage 4: write error diagnostic
+     */
+    snerr_write(str, size, error_code, __func__, name, fmt, ap);
+
+    /* stage 5: stdarg variable argument list cleanup is not required */
+
+    /*
+     * stage 6: restore previous errno value
+     */
+    errno = saved_errno;
+    return;
+}
+
+
+/*
  * werrp - write an error message with errno details w/o exiting, to stderr
  *
  * given:
@@ -3941,7 +4337,7 @@ vfwerrp(int error_code, FILE *stream, char const *name, char const *fmt, va_list
 
 
 /*
- * snwerrp - copy an error message string with errno details into a buffer
+ * snwerrp - copy an error message string with errno details into a buffer, in va_list form
  *
  * Copy an error message that includes errno details into a fixed string.
  *
@@ -4009,6 +4405,77 @@ snwerrp(int error_code, char *str, size_t size, char const *name, char const *fm
      * stage 5: stdarg variable argument list cleanup
      */
     va_end(ap);
+
+    /*
+     * stage 6: restore previous errno value
+     */
+    errno = saved_errno;
+    return;
+}
+
+
+/*
+ * vsnwerrp - copy an error message string with errno details into a buffer
+ *
+ * Copy an error message that includes errno details into a fixed string.
+ *
+ * Unlike werrp(), this function does NOT add a final newline to str.
+ *
+ * given:
+ *	error_code	error code
+ *	str		pointer to buffer in which to write a message
+ *	size		size of buffer, including space for a final NUL byte
+ *	name		name of function issuing the warning
+ *	fmt		format of the warning
+ *	ap		variable argument list
+ *
+ * Example:
+ *
+ *	vsnwerrp(123, buf, BUFSIZ, __func__, "unexpected foobar: %d", ap);
+ *
+ * NOTE: This function does nothing (just returns) if passed a NULL pointer.
+ * NOTE: This function does nothing (just returns) if a size <= 1.
+ */
+void
+vsnwerrp(int error_code, char *str, size_t size, char const *name, char const *fmt, va_list ap)
+{
+    int saved_errno;		/* errno at function start */
+    bool allowed = false;	/* true ==> output is allowed */
+
+    /*
+     * stage 0: determine if conditions allow function to write, return if not
+     */
+    allowed = warn_allowed();
+    if (allowed == false) {
+	return;
+    }
+
+    /*
+     * stage 1: save errno so we can restore it before returning
+     */
+    saved_errno = errno;
+
+    /* stage 2: stdarg variable argument list setup is not required */
+
+    /*
+     * stage 3: firewall checks
+     */
+    if (str == NULL) {
+	return;
+    }
+    if (name == NULL) {
+	return;
+    }
+    if (fmt == NULL) {
+	return;
+    }
+
+    /*
+     * stage 4: write error diagnostic with errno details
+     */
+    snerrp_write(str, size, error_code, __func__, name, fmt, ap);
+
+    /* stage 5: stdarg variable argument list cleanup is not required */
 
     /*
      * stage 6: restore previous errno value
