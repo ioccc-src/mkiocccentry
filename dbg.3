@@ -5,21 +5,25 @@
 .BR fmsg(),
 .BR vfmsg(),
 .BR snmsg(),
+.BR vsnmsg(),
 .BR dbg(),
 .BR vdbg(),
 .BR fdbg(),
 .BR vfdbg(),
 .BR sndbg(),
+.BR vsndbg(),
 .BR warn(),
 .BR vwarn(),
 .BR fwarn(),
 .BR vfwarn(),
 .BR snwarn(),
+.BR vsnwarn(),
 .BR warnp(),
 .BR vwarnp(),
 .BR fwarnp(),
 .BR vfwarnp(),
 .BR snwarnp(),
+.BR vsnwarnp(),
 .BR err(),
 .BR verr(),
 .BR ferr(),
@@ -33,11 +37,13 @@
 .BR fwerr(),
 .BR vfwerr(),
 .BR snwerr(),
+.BR vsnwerr(),
 .BR werrp(),
 .BR vwerrp(),
 .BR fwerrp(),
 .BR vfwerrp(),
 .BR snwerrp(),
+.BR vsnwerrp(),
 .BR warn_or_err(),
 .BR vwarn_or_err(),
 .BR fwarn_or_err(),
@@ -77,6 +83,8 @@
 .BI "void vfmsg(FILE *stream, char const *fmt, va_list ap);"
 .br
 .BI "void snmsg(char *str, size_t size, char const *fmt, ...);"
+.br
+.BI "void vsnmsg(char *str, size_t size, char const *fmt, va_list ap);"
 .sp
 .BI "void dbg(int level, const char *fmt, ...);"
 .br
@@ -87,6 +95,8 @@
 .BI "void vfdbg(FILE *stream, int level, char const *fmt, va_list ap);"
 .br
 .BI "void sndbg(char *str, size_t size, int level, char const *fmt, ...);"
+.br
+.BI "void vsndbg(char *str, size_t size, int level, char const *fmt, va_list ap);"
 .sp
 .BI "void warn(const char *name, const char *fmt, ...);"
 .br
@@ -97,6 +107,8 @@
 .BI "void vfwarn(FILE *stream, char const *name, char const *fmt, va_list ap);"
 .br
 .BI "void snwarn(char *str, size_t size, char const *name, char const *fmt, ...);"
+.br
+.BI "void vsnwarn(char *str, size_t size, char const *name, char const *fmt, va_list ap);"
 .sp
 .BI "void warnp(const char *name, const char *fmt, ...);"
 .br
@@ -107,6 +119,8 @@
 .BI "void vfwarnp(FILE *stream, char const *name, char const *fmt, va_list ap);"
 .br
 .BI "void snwarnp(char *str, size_t size, char const *name, char const *fmt, ...);"
+.br
+.BI "void vsnwarnp(char *str, size_t size, char const *name, char const *fmt, va_list ap);"
 .sp
 .BI "void err(int exitcode, const char *name, const char *fmt, ...);"
 .br
@@ -133,6 +147,8 @@
 .BI "void vfwerr(int error_code, FILE *stream, char const *name, char const *fmt, va_list ap);"
 .br
 .BI "void snwerr(int error_code, char *str, size_t size, char const *name, char const *fmt, ...);"
+.br
+.BI "void vsnwerr(int error_code, char *str, size_t size, char const *name, char const *fmt, va_list ap);"
 .sp
 .BI "void werrp(int error_code, const char *name, const char *fmt, ...);"
 .br
@@ -143,6 +159,8 @@
 .BI "void vfwerrp(int error_code, FILE *stream, char const *name, char const *fmt, va_list ap);"
 .br
 .BI "void snwerrp(int error_code, char *str, size_t size, char const *name, char const *fmt, ...);"
+.br
+.BI "void vsnwerrp(int error_code, char *str, size_t size, char const *name, char const *fmt, va_list ap);"
 .sp
 .BI "void warn_or_err(int exitcode, const char *name, bool warning, const char *fmt, ...);"
 .br
@@ -153,8 +171,11 @@
 .BI "void vfwarn_or_err(int exitcode, FILE *stream, const char *name, bool warning, const char *fmt, va_list ap);"
 .SH DESCRIPTION
 These functions provide a way to write informative messages, debug messages, warning messages, error messages, non\-fatal error messages as well as usage messages.
+.SS Errno versions
+.PP
+The functions \fBwarnp()\fP, \fBfwarnp()\fP, \fBvfwarnp()\fP, \fBvsnwarnp()\fP, \fBerrp()\fP, \fBferrp()\fP, \fBwerrp()\fP, \fBfwerrp()\fP, \fBvsnwerrp()\fP, \fBwarnp_or_errp()\fP and \fBfwarnp_or_errp()\fP write a message according to the value of \fBerrno\fP, making sure to restore the \fBerrno\fP value in the case the function returns.
 .SS Alternative output \fBFILE *\fP stream
-The functions that do not take a \fBFILE *\fP write to \fBstderr\fP.
+The functions that do not take a \fBFILE *\fP or a \fBchar *\fP write to \fBstderr\fP.
 The functions
 .BR fmsg(),
 .BR vfmsg(),
@@ -194,20 +215,26 @@ They do not do anything if passed a NULL pointer or \fBsize <= 1\fP.
 The functions
 .BR vmsg(),
 .BR vfmsg(),
+.BR vsnmsg(),
 .BR vdbg(),
 .BR vfdbg(),
+.BR vsndbg(),
 .BR vwarn(),
 .BR vfwarn(),
+.BR vsnwarn(),
 .BR vwarnp(),
 .BR vfwarnp(),
+.BR vsnwarnp(),
 .BR verr(),
 .BR vferr(),
 .BR verrp(),
 .BR vferrp(),
 .BR vwerr(),
 .BR vfwerr(),
+.BR vsnwerr(),
 .BR vwerrp(),
 .BR vfwerrp(),
+.BR vsnwerrp(),
 .BR vwarn_or_err(),
 .BR vfwarn_or_err(),
 .BR vwarnp_or_errp(),
@@ -217,20 +244,26 @@ and
 are equivalent to the functions
 .BR msg(),
 .BR fmsg(),
+.BR snmsg(),
 .BR dbg(),
 .BR fdbg(),
+.BR sndbg(),
 .BR warn(),
 .BR fwarn(),
+.BR snwarn(),
 .BR warnp(),
 .BR fwarnp(),
+.BR snwarnp(),
 .BR err(),
 .BR ferr(),
 .BR errp(),
 .BR ferrp(),
 .BR werr(),
 .BR fwerr(),
+.BR snwerr(),
 .BR werrp(),
 .BR fwerrp(),
+.BR snwerrp(),
 .BR warn_or_err(),
 .BR fwarn_or_err(),
 .BR warnp_or_errp(),
@@ -239,9 +272,6 @@ and
 .BR fprintf_usage()
 except that they are called with a \fIva_list\fP instead of a variable number of arguments.
 The state of the \fIva_list\fP is not modified by these functions.
-.SS Errno versions
-.PP
-The functions \fBwarnp()\fP, \fBfwarnp()\fP, \fBvfwarnp()\fP, \fBerrp()\fP, \fBferrp()\fP, \fBwerrp()\fP, \fBfwerrp()\fP, \fBwarnp_or_errp()\fP and \fBfwarnp_or_errp()\fP write a message according to the value of \fBerrno\fP, making sure to restore the \fBerrno\fP value in the case the function returns.
 .SS Format of the fmt string
 The format string is a character string in the same form as \fBprintf\fP.
 As these are quite complex please refer to the \fBprintf(3)\fP man page for more details and examples.
@@ -271,7 +301,7 @@ These functions return void except that the functions
 and
 .BR vferrp()
 do not return at all.
-More specifically they do call \fBexit(3)\fP but immediately after call either \fB__builtin_unreachable\fP or \fBabort(3)\fP depending on the value of \fB__has_builtin(__builtin_unreachable)\fP, thereby terminating the program.
+More specifically they do call \fBexit(3)\fP with the appropriate exit code but immediately after call either \fB__builtin_unreachable\fP or \fBabort(3)\fP depending on the value of \fB__has_builtin(__builtin_unreachable)\fP, thereby terminating the program.
 .PP
 The functions
 .BR warn_or_err(),
