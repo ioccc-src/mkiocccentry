@@ -165,7 +165,7 @@ main(int argc, char *argv[])
      */
     input_stream = stdin;	/* default to reading from standard in */
     program = argv[0];
-    while ((i = getopt(argc, argv, "hv:qVt:c:l:a:i:A:WT:F:C:")) != -1) {
+    while ((i = getopt(argc, argv, "hv:J:qVt:c:l:a:i:A:WT:F:C:")) != -1) {
 	switch (i) {
 	case 'h':		/* -h - print help to stderr and exit 0 */
 	    usage(1, "-h help mode", program);
@@ -176,6 +176,12 @@ main(int argc, char *argv[])
 	     * parse verbosity
 	     */
 	    verbosity_level = parse_verbosity(program, optarg);
+	    break;
+	case 'J': /* -J json_verbosity_level */
+	     /*
+             * parse json verbosity level
+             */
+            json_verbosity_level = parse_verbosity(program, optarg);
 	    break;
 	case 'q':
 	    quiet = true;
@@ -770,7 +776,7 @@ usage(int exitcode, char const *str, char const *program)
      * print the formatted usage stream
      */
     fprintf_usage(DO_NOT_EXIT, stderr, "%s\n", str);
-    fprintf_usage(DO_NOT_EXIT, stderr, usage_msg0, program, DBG_DEFAULT);
+    fprintf_usage(DO_NOT_EXIT, stderr, usage_msg0, program, DBG_DEFAULT, JSON_DBG_DEFAULT);
     fprintf_usage(DO_NOT_EXIT, stderr, usage_msg1, TAR_PATH_0, CP_PATH_0, LS_PATH_0, TXZCHK_PATH_0, FNAMCHK_PATH_0);
     fprintf_usage(DO_NOT_EXIT, stderr, usage_msg2, CHKENTRY_PATH_0);
     fprintf_usage(DO_NOT_EXIT, stderr, "%s", usage_msg3);
@@ -1339,11 +1345,7 @@ get_contest_id(bool *testp, bool *read_answers_flag_used)
     char *malloc_ret;		/* allocated return string */
     size_t len;			/* input string length */
     int ret;			/* libc function return */
-    unsigned int a, b, c, d, e, f;	/* parts of the UUID string */
-    unsigned int version = 0;	/* UUID version hex character */
-    unsigned int variant = 0;	/* UUID variant hex character */
-    char guard;			/* scanf guard to catch excess amount of input */
-    size_t i;
+    bool valid = false;		/* true ==> IOCCC_contest_id is valid */
     bool seen_answers_header = false;
 
     /*
@@ -1418,6 +1420,7 @@ get_contest_id(bool *testp, bool *read_answers_flag_used)
 	    para("",
 		 "IOCCC contest ID is test, entering test mode.",
 		 NULL);
+	    valid = true;
 	    *testp = true;
 	    return malloc_ret;
 	}
@@ -1431,17 +1434,12 @@ get_contest_id(bool *testp, bool *read_answers_flag_used)
 	 *
 	 * where 'x' is a hex character.  The 4 is the UUID version and the variant 1.
 	 */
-	if (len != UUID_LEN) {
+	valid = test_IOCCC_contest_id(malloc_ret);
+	if (valid == false) {
 
 	    /*
-	     * reject improper input length
+	     * reject invalid non-test contest ID
 	     */
-	    errno = 0;		/* pre-clear errno for warnp() */
-	    ret = fprintf(stderr, "\nIOCCC contest ID are %d characters in length, you entered %ju\n\n",
-				  UUID_LEN, (uintmax_t)len);
-	    if (ret <= 0) {
-		warnp(__func__, "fprintf error while improper input length");
-	    }
 	    fpara(stderr,
 		  "IOCCC contest IDs are of the form:",
 		  "",
@@ -1460,34 +1458,7 @@ get_contest_id(bool *testp, bool *read_answers_flag_used)
 	    }
 	    continue;
 	}
-	/* convert to UUID lower case before checking */
-	for (i = 0; i < len; ++i) {
-	    malloc_ret[i] = (char)tolower(malloc_ret[i]);
-	}
-	dbg(DBG_VHIGH, "converted the IOCCC contest ID to: %s", malloc_ret);
-	/* validate UUID string, version and variant */
-	ret = sscanf(malloc_ret, "%8x-%4x-%1x%3x-%1x%3x-%8x%4x%c", &a, &b, &version, &c, &variant, &d, &e, &f, &guard);
-	dbg(DBG_HIGH, "UUID version hex char: %1x", version);
-	dbg(DBG_HIGH, "UUID variant hex char: %1x", variant);
-	if (ret != 8 || version != UUID_VERSION || variant != UUID_VARIANT) {
-	    fpara(stderr,
-		  "",
-		  "IOCCC contest IDs are version 4, variant 1 UUID as defined by RFC4122:",
-		  "",
-		  "    https://datatracker.ietf.org/doc/html/rfc4122#section-4.1.1",
-		  "",
-		  "They are of the form:",
-		  "",
-		  "    xxxxxxxx-xxxx-4xxx-axxx-xxxxxxxxxxxx",
-		  "",
-		  "where 'x' is a hex character, 4 is the UUID version and the variant 1.",
-		  "",
-		  "Your IOCCC contest ID is not a valid UUID.  Please check your the email you received",
-		  "when you registered as an IOCCC contestant for the correct IOCCC contest ID.",
-		  "",
-		  NULL);
-	}
-    } while (ret != 8);
+    } while (valid != true);
 
     /*
      * report on the result of the contest ID validation

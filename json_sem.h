@@ -37,6 +37,8 @@
  * definitions
  */
 #define INF (0)			/* special max value for no limit */
+#define INF_DEPTH (UINT_MAX)	/* no depth */
+
 
  /*
   * JSON semantic count error
@@ -57,13 +59,16 @@ struct json_cnt_err
  * When validate() returns false, that validating function
  * records information about the validation error in this form.
  */
-struct json_val_err
+struct json_sem_val_err
 {
     struct json *node;		/* JSON parse node in question or NULL */
-    unsigned int depth;		/* JSON parse tree node depth */
+    unsigned int depth;		/* JSON parse tree node depth or UINT_MAX */
     struct json_sem *sem;	/* semantic node in question or NULL */
-    int val_err;		/* validate function specific error code, 0 ==> not an error */
+    int val_err;		/* validate function specific error code */
+				/* INT_MAX ==> static error, 0 ==> not an error */
     char *diagnostic;		/* diagnostic message or NULL */
+    bool malloced;		/* true ==> struct json_sem_val_err was malloced */
+				/* false ==> this is a static struct json_sem_val_err */
 };
 
 /*
@@ -80,7 +85,8 @@ struct json_sem
     unsigned int max;		/* maximum allowed count, 0 ==> infinite */
     unsigned int count;		/* number of times this JSON semantic was matched */
     size_t name_len;		/* length of name_str, not including final NUL or 0 */
-    bool (* validate)(struct json *node, unsigned int depth, struct json_sem *sem, struct json_val_err *val_err);
+    bool (* validate)(struct json *node,
+		      unsigned int depth, struct json_sem *sem, struct json_sem_val_err **val_err);
 				/* JSON parse tree node validator, or NULL */
     char *name;			/* if type == JTYPE_MEMBER, match decoded name or NULL */
 };
@@ -94,6 +100,9 @@ struct json_sem
 /*
  * external function declarations
  */
+extern struct json_sem_val_err *werr_sem_val(int val_err, struct json *node, unsigned int depth,
+					     struct json_sem *sem, char const *name, char const *fmt, ...) \
+	__attribute__((format(printf, 6, 7)));		/* 6=format 7=params */
 
 
 #endif /* INCLUDE_JSON_SEM_H */

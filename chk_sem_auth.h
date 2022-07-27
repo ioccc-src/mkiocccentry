@@ -30,65 +30,65 @@
 extern struct json_sem sem_auth[SEM_AUTH_LEN];
 
 extern bool chk_affiliation(struct json *node,
-	unsigned int depth, struct json_sem *sem, struct json_val_err *val_err);
+	unsigned int depth, struct json_sem *sem, struct json_sem_val_err **val_err);
 extern bool chk_author_handle(struct json *node,
-	unsigned int depth, struct json_sem *sem, struct json_val_err *val_err);
+	unsigned int depth, struct json_sem *sem, struct json_sem_val_err **val_err);
 extern bool chk_author_number(struct json *node,
-	unsigned int depth, struct json_sem *sem, struct json_val_err *val_err);
+	unsigned int depth, struct json_sem *sem, struct json_sem_val_err **val_err);
 extern bool chk_default_handle(struct json *node,
-	unsigned int depth, struct json_sem *sem, struct json_val_err *val_err);
+	unsigned int depth, struct json_sem *sem, struct json_sem_val_err **val_err);
 extern bool chk_email(struct json *node,
-	unsigned int depth, struct json_sem *sem, struct json_val_err *val_err);
+	unsigned int depth, struct json_sem *sem, struct json_sem_val_err **val_err);
 extern bool chk_github(struct json *node,
-	unsigned int depth, struct json_sem *sem, struct json_val_err *val_err);
+	unsigned int depth, struct json_sem *sem, struct json_sem_val_err **val_err);
 extern bool chk_location_code(struct json *node,
-	unsigned int depth, struct json_sem *sem, struct json_val_err *val_err);
+	unsigned int depth, struct json_sem *sem, struct json_sem_val_err **val_err);
 extern bool chk_location_name(struct json *node,
-	unsigned int depth, struct json_sem *sem, struct json_val_err *val_err);
+	unsigned int depth, struct json_sem *sem, struct json_sem_val_err **val_err);
 extern bool chk_name(struct json *node,
-	unsigned int depth, struct json_sem *sem, struct json_val_err *val_err);
+	unsigned int depth, struct json_sem *sem, struct json_sem_val_err **val_err);
 extern bool chk_past_winner(struct json *node,
-	unsigned int depth, struct json_sem *sem, struct json_val_err *val_err);
+	unsigned int depth, struct json_sem *sem, struct json_sem_val_err **val_err);
 extern bool chk_twitter(struct json *node,
-	unsigned int depth, struct json_sem *sem, struct json_val_err *val_err);
+	unsigned int depth, struct json_sem *sem, struct json_sem_val_err **val_err);
 extern bool chk_url(struct json *node,
-	unsigned int depth, struct json_sem *sem, struct json_val_err *val_err);
+	unsigned int depth, struct json_sem *sem, struct json_sem_val_err **val_err);
 extern bool chk_IOCCC_author_version(struct json *node,
-	unsigned int depth, struct json_sem *sem, struct json_val_err *val_err);
+	unsigned int depth, struct json_sem *sem, struct json_sem_val_err **val_err);
 extern bool chk_IOCCC_contest_id(struct json *node,
-	unsigned int depth, struct json_sem *sem, struct json_val_err *val_err);
+	unsigned int depth, struct json_sem *sem, struct json_sem_val_err **val_err);
 extern bool chk_author_count(struct json *node,
-	unsigned int depth, struct json_sem *sem, struct json_val_err *val_err);
+	unsigned int depth, struct json_sem *sem, struct json_sem_val_err **val_err);
 extern bool chk_authors(struct json *node,
-	unsigned int depth, struct json_sem *sem, struct json_val_err *val_err);
+	unsigned int depth, struct json_sem *sem, struct json_sem_val_err **val_err);
 extern bool chk_chkentry_version(struct json *node,
-	unsigned int depth, struct json_sem *sem, struct json_val_err *val_err);
+	unsigned int depth, struct json_sem *sem, struct json_sem_val_err **val_err);
 extern bool chk_entry_num(struct json *node,
-	unsigned int depth, struct json_sem *sem, struct json_val_err *val_err);
+	unsigned int depth, struct json_sem *sem, struct json_sem_val_err **val_err);
 extern bool chk_fnamchk_version(struct json *node,
-	unsigned int depth, struct json_sem *sem, struct json_val_err *val_err);
+	unsigned int depth, struct json_sem *sem, struct json_sem_val_err **val_err);
 extern bool chk_formed_UTC(struct json *node,
-	unsigned int depth, struct json_sem *sem, struct json_val_err *val_err);
+	unsigned int depth, struct json_sem *sem, struct json_sem_val_err **val_err);
 extern bool chk_formed_timestamp(struct json *node,
-	unsigned int depth, struct json_sem *sem, struct json_val_err *val_err);
+	unsigned int depth, struct json_sem *sem, struct json_sem_val_err **val_err);
 extern bool chk_formed_timestamp_usec(struct json *node,
-	unsigned int depth, struct json_sem *sem, struct json_val_err *val_err);
+	unsigned int depth, struct json_sem *sem, struct json_sem_val_err **val_err);
 extern bool chk_ioccc_contest(struct json *node,
-	unsigned int depth, struct json_sem *sem, struct json_val_err *val_err);
+	unsigned int depth, struct json_sem *sem, struct json_sem_val_err **val_err);
 extern bool chk_ioccc_year(struct json *node,
-	unsigned int depth, struct json_sem *sem, struct json_val_err *val_err);
+	unsigned int depth, struct json_sem *sem, struct json_sem_val_err **val_err);
 extern bool chk_min_timestamp(struct json *node,
-	unsigned int depth, struct json_sem *sem, struct json_val_err *val_err);
+	unsigned int depth, struct json_sem *sem, struct json_sem_val_err **val_err);
 extern bool chk_mkiocccentry_version(struct json *node,
-	unsigned int depth, struct json_sem *sem, struct json_val_err *val_err);
+	unsigned int depth, struct json_sem *sem, struct json_sem_val_err **val_err);
 extern bool chk_no_comment(struct json *node,
-	unsigned int depth, struct json_sem *sem, struct json_val_err *val_err);
+	unsigned int depth, struct json_sem *sem, struct json_sem_val_err **val_err);
 extern bool chk_tarball(struct json *node,
-	unsigned int depth, struct json_sem *sem, struct json_val_err *val_err);
+	unsigned int depth, struct json_sem *sem, struct json_sem_val_err **val_err);
 extern bool chk_test_mode(struct json *node,
-	unsigned int depth, struct json_sem *sem, struct json_val_err *val_err);
+	unsigned int depth, struct json_sem *sem, struct json_sem_val_err **val_err);
 extern bool chk_timestamp_epoch(struct json *node,
-	unsigned int depth, struct json_sem *sem, struct json_val_err *val_err);
+	unsigned int depth, struct json_sem *sem, struct json_sem_val_err **val_err);
 
 #endif /* SEM_AUTH_LEN */
 

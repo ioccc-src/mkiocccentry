@@ -27,9 +27,24 @@
 
 
 /*
+ * version - official IOCCC toolkit versions
+ */
+#include "version.h"
+
+/*
  * json_parse - JSON parser support code
  */
 #include "json_parse.h"
+
+/*
+ * json_util - general JSON parser utility support functions
+ */
+#include "json_util.h"
+
+/*
+ * limit_ioccc - IOCCC size and rule related limitations
+ */
+#include "limit_ioccc.h"
 
 
 /*
@@ -138,6 +153,8 @@ struct info
  */
 extern void free_info(struct info *infop);
 extern void free_author_array(struct author *authorp, int author_count);
+extern bool test_IOCCC_author_version(char *str);
+extern bool test_IOCCC_contest_id(char *str);
 
 
 #endif /* INCLUDE_ENTRY_UTIL_H */

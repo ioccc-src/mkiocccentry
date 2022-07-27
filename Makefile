@@ -239,7 +239,8 @@ TEST_TARGETS= dbg utf8_test dyn_test
 OBJFILES= dbg.o util.o mkiocccentry.o iocccsize.o fnamchk.o txzchk.o chkentry.o \
 	json_parse.o jstrencode.o jstrdecode.o rule_count.o location.o sanity.o utf8_test.o verge.o \
 	dyn_array.o dyn_test.o dbg_test.o jnum_chk.o jnum_gen.o jnum_test.o \
-	json_util.o jparse_main.o entry_util.o jsemtblgen.o chk_sem_auth.o chk_sem_info.o
+	json_util.o jparse_main.o entry_util.o jsemtblgen.o chk_sem_auth.o chk_sem_info.o \
+	chk_validate.o json_sem.o
 LESS_PICKY_CSRC= utf8_posix_map.c
 LESS_PICKY_OBJ= utf8_posix_map.o
 GENERATED_CSRC= jparse.c jparse.tab.c
@@ -257,7 +258,7 @@ H_FILES= dbg.h chkentry.h json_parse.h jstrdecode.h jstrencode.h limit_ioccc.h \
 	mkiocccentry.h txzchk.h util.h location.h utf8_posix_map.h jparse.h \
 	verge.h sorry.tm.ca.h dyn_array.h dyn_test.h json_util.h jnum_chk.h \
 	jnum_gen.h jparse_main.h entry_util.h jsemtblgen.h chk_sem_auth.h \
-	chk_sem_info.h
+	chk_sem_info.h chk_validate.h json_sem.h
 # This is a simpler way to do:
 #
 #   DSYMDIRS = $(patsubst %,%.dSYM,$(TARGETS))
@@ -438,11 +439,16 @@ chk_sem_auth.o: chk_sem_auth.c chk_sem_auth.h Makefile
 chk_sem_info.o: chk_sem_info.c chk_sem_info.h Makefile
 	${CC} ${CFLAGS} chk_sem_info.c -c
 
+chk_validate.o: chk_validate.c Makefile
+	${CC} ${CFLAGS} chk_validate.c -c
+
 chkentry.o: chkentry.c chkentry.h Makefile
 	${CC} ${CFLAGS} chkentry.c -c
 
-chkentry: chkentry.o dbg.o util.o dyn_array.o json_parse.o json_util.o Makefile
-	${CC} ${CFLAGS} chkentry.o dbg.o util.o dyn_array.o json_parse.o json_util.o -o $@
+chkentry: chkentry.o dbg.o util.o dyn_array.o json_parse.o json_util.o chk_validate.o \
+	  entry_util.c json_sem.o Makefile
+	${CC} ${CFLAGS} chkentry.o dbg.o util.o dyn_array.o json_parse.o json_util.o \
+			chk_validate.o entry_util.o json_sem.o -o $@
 
 jstrencode.o: jstrencode.c jstrencode.h json_util.h json_util.c Makefile
 	${CC} ${CFLAGS} jstrencode.c -c
@@ -473,6 +479,9 @@ jnum_gen: jnum_gen.o dbg.o json_parse.o json_util.o util.o dyn_array.o Makefile
 
 jparse.o: jparse.c jparse.h Makefile
 	${CC} ${CFLAGS} -Wno-unused-function -Wno-unneeded-internal-declaration jparse.c -c
+
+json_sem.o: json_sem.c Makefile
+	${CC} ${CFLAGS} json_sem.c -c
 
 json_util.o: json_util.c json_util.h Makefile
 	${CC} ${CFLAGS} -Wno-unused-function -Wno-unneeded-internal-declaration json_util.c -c
@@ -766,10 +775,10 @@ seqcexit: Makefile
 	    echo ''; 1>&2; \
 	    exit 1; \
 	else \
-	    echo "${SEQCEXIT} -c -- ${FLEXFILES} ${BISONFILES}"; \
-	    ${SEQCEXIT} -c -- ${FLEXFILES} ${BISONFILES}; \
-	    echo "${SEQCEXIT} -- ${ALL_CSRC}"; \
-	    ${SEQCEXIT} -- ${ALL_CSRC}; \
+	    echo "${SEQCEXIT} -c -D werr_sem_val -- ${FLEXFILES} ${BISONFILES}"; \
+	    ${SEQCEXIT} -c -D werr_sem_val -- ${FLEXFILES} ${BISONFILES}; \
+	    echo "${SEQCEXIT} -D werr_sem_val -- ${ALL_CSRC}"; \
+	    ${SEQCEXIT} -D werr_sem_val -- ${ALL_CSRC}; \
 	fi
 
 picky: ${ALL_CSRC} ${H_FILES} Makefile
@@ -1021,10 +1030,14 @@ json_util.o: json_util.c dbg.h json_parse.h util.h dyn_array.h \
 jparse_main.o: jparse_main.c jparse_main.h dbg.h util.h dyn_array.h \
   jparse.h json_parse.h json_util.h jparse.tab.h
 entry_util.o: entry_util.c dbg.h util.h dyn_array.h entry_util.h \
-  json_parse.h
+  version.h json_parse.h json_util.h limit_ioccc.h
 jsemtblgen.o: jsemtblgen.c jsemtblgen.h dbg.h util.h dyn_array.h \
   json_util.h json_parse.h jparse.h jparse.tab.h json_sem.h iocccsize.h
 chk_sem_auth.o: chk_sem_auth.c chk_sem_auth.h json_sem.h util.h \
   dyn_array.h dbg.h json_parse.h
 chk_sem_info.o: chk_sem_info.c chk_sem_info.h json_sem.h util.h \
   dyn_array.h dbg.h json_parse.h
+chk_validate.o: chk_validate.c chk_validate.h entry_util.h version.h \
+  json_parse.h util.h dyn_array.h dbg.h json_util.h limit_ioccc.h \
+  json_sem.h chk_sem_auth.h chk_sem_info.h
+json_sem.o: json_sem.c dbg.h json_sem.h util.h dyn_array.h json_parse.h

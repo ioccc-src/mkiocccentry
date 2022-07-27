@@ -6,6 +6,11 @@
  * and .author.json files, their related check tools, test code,
  * and string encoding/decoding tools.
  *
+ * We per IOCCC anonymous judging policy, the calls to json_dbg() in this file
+ * that are JSON_DBG_MED or lower will NOT reveal any JSON content.
+ * Only at JSON_DBG_HIGH or higher should json_dbg() calls in the file
+ * will print JSON content.
+ *
  * "Because JSON embodies a commitment to original design flaws." :-)
  *
  * This JSON parser was co-developed by:
@@ -203,4 +208,119 @@ free_author_array(struct author *author_set, int author_count)
 
     memset(author_set, 0, sizeof *author_set);
     return;
+}
+
+
+/*
+ * test_IOCCC_author_version - test if IOCCC_author_version is valid
+ *
+ * Determine if IOCCC_author_version matches AUTHOR_VERSION.
+ *
+ * given:
+ *	str	string to test
+ *
+ * returns:
+ *	true ==> string is valid,
+ *	false ==> string is NOT valid, or NULL pointer, or some internal error
+ */
+bool
+test_IOCCC_author_version(char *str)
+{
+    /*
+     * firewall
+     */
+    if (str == NULL) {
+	warn(__func__, "str is NULL");
+	return false;
+    }
+
+    /*
+     * validate str
+     */
+    if (strcmp(str, AUTHOR_VERSION) != 0) {
+	json_dbg(JSON_DBG_MED, __func__, "IOCCC_author_version != AUTHOR_VERSION: %s", AUTHOR_VERSION);
+	json_dbg(JSON_DBG_HIGH, __func__, "IOCCC_author_version: %s is not AUTHOR_VERSION: %s", str, AUTHOR_VERSION);
+	return false;
+    }
+    json_dbg(JSON_DBG_MED, __func__, "IOCCC_author_version is valid");
+    return true;
+}
+
+
+/*
+ * test_IOCCC_contest_id - test if IOCCC_contest_id is valid
+ *
+ * Determine if IOCCC_contest_id is test or a UUID version 4 variant 1.
+ *
+ * The contest ID, if not "test" must be a UUID.  The UUID has the 36 character format:
+ *
+ *             xxxxxxxx-xxxx-4xxx-axxx-xxxxxxxxxxxx
+ *
+ * where 'x' is a hex character.  The 4 is the UUID version and the variant 1.
+ *
+ * Example:
+ *
+ *	12345678-1234-4321-abcd-1234567890ab
+ *
+ * given:
+ *	str	string to test
+ *
+ * returns:
+ *	true ==> string is valid,
+ *	false ==> string is NOT valid, or NULL pointer, or some internal error
+ */
+bool
+test_IOCCC_contest_id(char *str)
+{
+    size_t len;				/* string length */
+    int ret;				/* libc function return */
+    unsigned int a, b, c, d, e, f;	/* parts of the UUID string */
+    unsigned int version = 0;		/* UUID version hex character */
+    unsigned int variant = 0;		/* UUID variant hex character */
+    char guard;				/* scanf guard to catch excess amount of input */
+
+    /*
+     * firewall
+     */
+    if (str == NULL) {
+	warn(__func__, "str is NULL");
+	return false;
+    }
+
+    /*
+     * case: test IOCCC_contest_id
+     */
+    if (strcmp(str, "test") == 0) {
+	json_dbg(JSON_DBG_MED, __func__, "test IOCCC_contest_id");
+	return true;
+    }
+
+    /*
+     * validate UUID version 4 variant 1
+     */
+    len = strlen(str);
+    if (len != UUID_LEN) {
+	json_dbg(JSON_DBG_MED, __func__, "non-test IOCCC_contest_id len != UUID_LEN: %d", UUID_LEN);
+	json_dbg(JSON_DBG_HIGH, __func__, "non-test IOCCC_contest_id len: %ld doesn't match UUID_LEN: %d", len, UUID_LEN);
+	return false;
+    }
+    /* validate UUID string, version and variant */
+    ret = sscanf(str, "%8x-%4x-%1x%3x-%1x%3x-%8x%4x%c", &a, &b, &version, &c, &variant, &d, &e, &f, &guard);
+    if (ret != 8) {
+	json_dbg(JSON_DBG_MED, __func__, "did not find 8 fields when parsing IOCCC_contest_id");
+	json_dbg(JSON_DBG_HIGH, __func__, "field count: %d != 8", ret);
+	return false;
+    }
+    if (version != UUID_VERSION) {
+	json_dbg(JSON_DBG_MED, __func__, "UUID version hex char != UUID_VERSION: %x", UUID_VERSION);
+	json_dbg(JSON_DBG_HIGH, __func__, "UUID version hex char: %1x is not UUID_VERSION: %x", version, UUID_VERSION);
+	return false;
+    }
+    if (variant != UUID_VARIANT) {
+	json_dbg(JSON_DBG_MED, __func__, "UUID variant hex char != UUID_VARIANT: %x", UUID_VARIANT);
+	json_dbg(JSON_DBG_HIGH, __func__, "UUID variant hex char: %1x is not UUID_VARIANT: %x", variant, UUID_VARIANT);
+	return false;
+    }
+    json_dbg(JSON_DBG_MED, __func__, "IOCCC_contest_id is valid");
+    return true;
 }

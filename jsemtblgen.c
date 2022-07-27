@@ -899,7 +899,7 @@ print_sem_h_src(struct dyn_array *tbl, char *tbl_name, char *cap_tbl_name)
 	    } else if (strcmp(validate, "NULL") != 0) {
 		print_c_funct_name(stdout, validate);
 	    }
-	    prstr("(struct json *node,\n\tunsigned int depth, struct json_sem *sem, struct json_val_err *val_err);\n");
+	    prstr("(struct json *node,\n\tunsigned int depth, struct json_sem *sem, struct json_sem_val_err **val_err);\n");
 	}
     }
 
