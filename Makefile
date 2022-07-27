@@ -911,6 +911,10 @@ legacy_clobber:
 	${RM} -rf jint_gen.dSYM jfloat_gen.dSYM
 	${RM} -f jnumber
 	${RM} -rf jnumber.dSYM
+	${RM} -f jauthchk
+	${RM} -rf jauthchk.dSYM
+	${RM} -f jinfochk
+	${RM} -rf jinfochk.dSYM
 
 # rule used by prep.sh and make clobber
 #
@@ -947,6 +951,7 @@ configure:
 legacy_clean:
 	${RM} -f jint.o jint.test.o jint_gen.o
 	${RM} -f jfloat.o jfloat.test.o jfloat_gen.o
+	${RM} -f jauthchk.o jinfochk.o
 
 clean: clean_generated_obj legacy_clean
 	${RM} -f ${OBJFILES}
