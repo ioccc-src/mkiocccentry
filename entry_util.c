@@ -210,6 +210,7 @@ free_author_array(struct author *author_set, int author_count)
     return;
 }
 
+
 /*
  * test_mkiocccentry_version - test if mkiocccentry_version is valid
  *
@@ -244,6 +245,7 @@ test_mkiocccentry_version(char *str)
     json_dbg(JSON_DBG_MED, __func__, "mkiocccentry_version is valid");
     return true;
 }
+
 
 /*
  * test_iocccsize_version - test if iocccsize_version is valid
@@ -317,6 +319,7 @@ test_chkentry_version(char *str)
     return true;
 }
 
+
 /*
  * test_fnamchk_version - test if fnamchk_version is valid
  *
@@ -351,6 +354,7 @@ test_fnamchk_version(char *str)
     json_dbg(JSON_DBG_MED, __func__, "fnamchk_version is valid");
     return true;
 }
+
 
 /*
  * test_txzchk_version - test if txzchk_version is valid
@@ -389,6 +393,7 @@ test_txzchk_version(char *str)
     json_dbg(JSON_DBG_MED, __func__, "txzchk_version is valid");
     return true;
 }
+
 
 /*
  * test_IOCCC_author_version - test if IOCCC_author_version is valid
@@ -542,7 +547,7 @@ test_IOCCC_info_version(char *str)
 
 
 /*
- * test_Makefile - test if Makefile is valid
+ * test_Makefile - test if Makefile filename is valid
  *
  * Determine if Makefile matches "Makefile".
  *
@@ -575,6 +580,7 @@ test_Makefile(char *str)
     json_dbg(JSON_DBG_MED, __func__, "Makefile filename is valid");
     return true;
 }
+
 
 /*
  * test_c_src - test if c_src is valid
@@ -610,6 +616,7 @@ test_c_src(char *str)
     json_dbg(JSON_DBG_MED, __func__, "c_src filename is valid");
     return true;
 }
+
 
 /*
  * test_title - test if title is valid
@@ -662,6 +669,7 @@ test_title(char *str)
     return true;
 }
 
+
 /*
  * test_abstract - test if abstract is valid
  *
@@ -702,5 +710,27 @@ test_abstract(char *str)
     }
 
     json_dbg(JSON_DBG_MED, __func__, "abstract is valid");
+    return true;
+}
+
+
+/*
+ * test_Makefile_override - test if Makefile_override is valid
+ *
+ * Determine if Makefile_override boolean is valid.  :-)
+ * Well this isn't much of a test, but we have to keep
+ * up with the general form of tests!  :-)
+ *
+ * given:
+ *	boolean	boolean to test
+ *
+ * returns:
+ *	true ==> bool is valid,
+ *	false ==> bool is NOT valid, or some internal error
+ */
+bool
+test_Makefile_override(bool boolean)
+{
+    json_dbg(JSON_DBG_MED, __func__, "Makefile_override filename is %s", booltostr(boolean));
     return true;
 }
