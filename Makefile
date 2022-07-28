@@ -1006,7 +1006,8 @@ iocccsize.o: iocccsize.c iocccsize_err.h iocccsize.h
 fnamchk.o: fnamchk.c fnamchk.h dbg.h util.h dyn_array.h limit_ioccc.h \
   version.h utf8_posix_map.h
 txzchk.o: txzchk.c txzchk.h util.h dyn_array.h dbg.h sanity.h location.h \
-  utf8_posix_map.h limit_ioccc.h version.h
+  utf8_posix_map.h limit_ioccc.h version.h entry_util.h json_parse.h \
+  json_util.h
 chkentry.o: chkentry.c chkentry.h dbg.h json_util.h dyn_array.h \
   json_parse.h util.h version.h
 json_parse.o: json_parse.c dbg.h util.h dyn_array.h json_parse.h \

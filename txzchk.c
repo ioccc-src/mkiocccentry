@@ -469,7 +469,7 @@ check_txz_file(char const *txzpath, char const *dir_name, struct txz_file *file)
      * In other words if any of the letters in ".info.json" or ".author.json"
      * are upper case the file is an invalid dot file.
      */
-    if (!strcmp(file->basename, ".info.json") || !strcmp(file->basename, ".author.json")) {
+    if (!strcmp(file->basename, INFO_JSON_FILENAME) || !strcmp(file->basename, AUTHOR_JSON_FILENAME)) {
 	allowed_dot_file = true;
     }
 
@@ -553,12 +553,12 @@ check_empty_file(char const *txzpath, off_t size, struct txz_file *file)
     }
 
     if (size == 0) {
-	if (!strcmp(file->basename, ".author.json")) {
+	if (!strcmp(file->basename, AUTHOR_JSON_FILENAME)) {
 	    ++txz_info.total_issues;
 	    warn("txzchk", "%s: found empty .author.json file", txzpath);
 	    txz_info.empty_author_json = true;
 	}
-	else if (!strcmp(file->basename, ".info.json")) {
+	else if (!strcmp(file->basename, INFO_JSON_FILENAME)) {
 	    ++txz_info.total_issues;
 	    txz_info.empty_info_json = true;
 	    warn("txzchk", "%s: found empty .info.json file", txzpath);
@@ -636,9 +636,9 @@ check_all_txz_files(char const *dir_name)
 	    err(19, __func__, "found NULL file->filename in txz_files list");
 	    not_reached();
 	}
-	if (!strcmp(file->basename, ".info.json")) {
+	if (!strcmp(file->basename, INFO_JSON_FILENAME)) {
 	    txz_info.has_info_json = true;
-	} else if (!strcmp(file->basename, ".author.json")) {
+	} else if (!strcmp(file->basename, AUTHOR_JSON_FILENAME)) {
 	    txz_info.has_author_json = true;
 	} else if (!strcmp(file->basename, "Makefile")) {
 	    txz_info.has_Makefile = true;

@@ -44,6 +44,11 @@
  */
 #include "limit_ioccc.h"
 
+/*
+ * entry_util - utilities supporting mkiocccentry JSON files
+ */
+#include "entry_util.h"
+
 
 /* globals */
 bool quiet = false;				/* true ==> quiet mode */

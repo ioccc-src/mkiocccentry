@@ -4541,7 +4541,7 @@ write_info(struct info *infop, char const *entry_dir, char const *chkentry, char
     /*
      * open .info.json for writing
      */
-    info_path_len = strlen(entry_dir) + 1 + LITLEN(".info.json") + 1;
+    info_path_len = strlen(entry_dir) + 1 + LITLEN(INFO_JSON_FILENAME) + 1;
     errno = 0;			/* pre-clear errno for errp() */
     info_path = (char *)malloc(info_path_len + 1);
     if (info_path == NULL) {
@@ -4549,7 +4549,7 @@ write_info(struct info *infop, char const *entry_dir, char const *chkentry, char
 	not_reached();
     }
     errno = 0;			/* pre-clear errno for errp() */
-    ret = snprintf(info_path, info_path_len, "%s/.info.json", entry_dir);
+    ret = snprintf(info_path, info_path_len, "%s/%s", entry_dir, INFO_JSON_FILENAME);
     if (ret <= 0) {
 	errp(144, __func__, "snprintf #0 error: %d", ret);
 	not_reached();
@@ -4608,8 +4608,8 @@ write_info(struct info *infop, char const *entry_dir, char const *chkentry, char
     /*
      * write mandatory files to the open .info.json file
      */
-    ret = json_fprintf_value_string(info_stream, "\t\t{", "info_JSON", " : ", ".info.json", "},\n") &&
-	  json_fprintf_value_string(info_stream, "\t\t{", "author_JSON", " : ", ".author.json", "},\n") &&
+    ret = json_fprintf_value_string(info_stream, "\t\t{", "info_JSON", " : ", INFO_JSON_FILENAME, "},\n") &&
+	  json_fprintf_value_string(info_stream, "\t\t{", "author_JSON", " : ", AUTHOR_JSON_FILENAME, "},\n") &&
 	  json_fprintf_value_string(info_stream, "\t\t{", "c_src", " : ", infop->prog_c, "},\n") &&
 	  json_fprintf_value_string(info_stream, "\t\t{", "Makefile", " : ", infop->Makefile, "},\n") &&
 	  json_fprintf_value_string(info_stream, "\t\t{", "remarks", " : ", infop->remarks_md,
@@ -4726,7 +4726,7 @@ write_author(struct info *infop, int author_count, struct author *authorp, char 
     /*
      * open .author.json for writing
      */
-    author_path_len = strlen(entry_dir) + 1 + LITLEN(".author.json") + 1;
+    author_path_len = strlen(entry_dir) + 1 + LITLEN(AUTHOR_JSON_FILENAME) + 1;
     errno = 0;			/* pre-clear errno for errp() */
     author_path = (char *)malloc(author_path_len + 1);
     if (author_path == NULL) {
@@ -4734,7 +4734,7 @@ write_author(struct info *infop, int author_count, struct author *authorp, char 
 	not_reached();
     }
     errno = 0;			/* pre-clear errno for errp() */
-    ret = snprintf(author_path, author_path_len, "%s/.author.json", entry_dir);
+    ret = snprintf(author_path, author_path_len, "%s/%s", entry_dir, AUTHOR_JSON_FILENAME);
     if (ret <= 0) {
 	errp(156, __func__, "snprintf #0 error: %d", ret);
 	not_reached();

@@ -48,6 +48,13 @@
 
 
 /*
+ * defines
+ */
+#define INFO_JSON_FILENAME ".info.json"
+#define AUTHOR_JSON_FILENAME ".author.json"
+
+
+/*
  * common json fields - for use in mkiocccentry.
  */
 struct json_common
