@@ -643,16 +643,17 @@ test_title(char *str)
     if (str == NULL) {
 	warn(__func__, "str is NULL");
 	return false;
-    } else if (*str == '\0') { /* strlen(str) == 0 */
-	warn(__func__, "title length zero");
-	return false;
     }
-
-    length = strlen(str);
 
     /*
      * validate str
      */
+    /* check for a valid length */
+    if (*str == '\0') { /* strlen(str) == 0 */
+	json_dbg(JSON_DBG_MED, __func__, "invalid empty title");
+	return false;
+    }
+    length = strlen(str);
     if (length > MAX_TITLE_LEN) {
 	json_dbg(JSON_DBG_MED, __func__, "title length %ju > max %d: <%s>", (uintmax_t)length, MAX_TITLE_LEN, str);
 	json_dbg(JSON_DBG_HIGH, __func__, "title: <%s> is invalid", str);
@@ -664,8 +665,29 @@ test_title(char *str)
 	json_dbg(JSON_DBG_HIGH, __func__, "title: <%s> is invalid", str);
 	return false;
     }
-
     json_dbg(JSON_DBG_MED, __func__, "title is valid");
+    return true;
+}
+
+
+/*
+ * test_Makefile_override - test if Makefile_override is valid
+ *
+ * Determine if Makefile_override boolean is valid.  :-)
+ * Well this isn't much of a test, but we have to keep
+ * up with the general form of tests!  :-)
+ *
+ * given:
+ *	boolean	boolean to test
+ *
+ * returns:
+ *	true ==> bool is valid,
+ *	false ==> bool is NOT valid, or some internal error
+ */
+bool
+test_Makefile_override(bool boolean)
+{
+    json_dbg(JSON_DBG_MED, __func__, "Makefile_override filename is %s", booltostr(boolean));
     return true;
 }
 
@@ -693,44 +715,22 @@ test_abstract(char *str)
     if (str == NULL) {
 	warn(__func__, "str is NULL");
 	return false;
-    } else if (*str == '\0') { /* strlen(str) == 0 */
-	warn(__func__, "abstract length zero");
-	return false;
     }
-
-    length = strlen(str);
 
     /*
      * validate str
      */
+    /* check for a valid length */
+    if (*str == '\0') { /* strlen(str) == 0 */
+	json_dbg(JSON_DBG_MED, __func__, "invalid empty abstract");
+	return false;
+    }
+    length = strlen(str);
     if (length > MAX_ABSTRACT_LEN) {
-	json_dbg(JSON_DBG_MED, __func__, "abstract length %ju > max %d: <%s>", (uintmax_t)length, MAX_ABSTRACT_LEN, str);
+	json_dbg(JSON_DBG_MED, __func__, "abstract length %ju > max %d", (uintmax_t)length, MAX_ABSTRACT_LEN);
 	json_dbg(JSON_DBG_HIGH, __func__, "abstract: <%s> is invalid", str);
 	return false;
     }
-
     json_dbg(JSON_DBG_MED, __func__, "abstract is valid");
-    return true;
-}
-
-
-/*
- * test_Makefile_override - test if Makefile_override is valid
- *
- * Determine if Makefile_override boolean is valid.  :-)
- * Well this isn't much of a test, but we have to keep
- * up with the general form of tests!  :-)
- *
- * given:
- *	boolean	boolean to test
- *
- * returns:
- *	true ==> bool is valid,
- *	false ==> bool is NOT valid, or some internal error
- */
-bool
-test_Makefile_override(bool boolean)
-{
-    json_dbg(JSON_DBG_MED, __func__, "Makefile_override filename is %s", booltostr(boolean));
     return true;
 }
