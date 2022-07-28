@@ -610,3 +610,97 @@ test_c_src(char *str)
     json_dbg(JSON_DBG_MED, __func__, "c_src filename is valid");
     return true;
 }
+
+/*
+ * test_title - test if title is valid
+ *
+ * Determine if title length is <= MAX_TITLE_LEN and that it matches the regexp:
+ *
+ *	^[0-9a-z][0-9a-z._+-]*$
+ *
+ * given:
+ *	str	string to test
+ *
+ * returns:
+ *	true ==> string is valid,
+ *	false ==> string is NOT valid, or NULL pointer, or some internal error
+ */
+bool
+test_title(char *str)
+{
+    size_t length = 0;
+
+    /*
+     * firewall
+     */
+    if (str == NULL) {
+	warn(__func__, "str is NULL");
+	return false;
+    } else if (*str == '\0') { /* strlen(str) == 0 */
+	warn(__func__, "title length zero");
+	return false;
+    }
+
+    length = strlen(str);
+
+    /*
+     * validate str
+     */
+    if (length > MAX_TITLE_LEN) {
+	json_dbg(JSON_DBG_MED, __func__, "title length %ju > max %d: <%s>", (uintmax_t)length, MAX_TITLE_LEN, str);
+	json_dbg(JSON_DBG_HIGH, __func__, "title: <%s> is invalid", str);
+	return false;
+    }
+    /* check for valid title chars */
+    if (!posix_plus_safe(str, true, false, true)) {
+	json_dbg(JSON_DBG_MED, __func__, "title does not match regexp ^[0-9a-z][0-9a-z._+-]*$: '%s'", str);
+	json_dbg(JSON_DBG_HIGH, __func__, "title: <%s> is invalid", str);
+	return false;
+    }
+
+    json_dbg(JSON_DBG_MED, __func__, "title is valid");
+    return true;
+}
+
+/*
+ * test_abstract - test if abstract is valid
+ *
+ * Determine if abstract length is <= MAX_ABSTRACT_LEN.
+ *
+ * given:
+ *	str	string to test
+ *
+ * returns:
+ *	true ==> string is valid,
+ *	false ==> string is NOT valid, or NULL pointer, or some internal error
+ */
+bool
+test_abstract(char *str)
+{
+    size_t length = 0;
+
+    /*
+     * firewall
+     */
+    if (str == NULL) {
+	warn(__func__, "str is NULL");
+	return false;
+    } else if (*str == '\0') { /* strlen(str) == 0 */
+	warn(__func__, "abstract length zero");
+	return false;
+    }
+
+    length = strlen(str);
+
+    /*
+     * validate str
+     */
+    if (length > MAX_ABSTRACT_LEN) {
+	json_dbg(JSON_DBG_MED, __func__, "abstract length %ju > max %d: <%s>", (uintmax_t)length, MAX_ABSTRACT_LEN, str);
+	json_dbg(JSON_DBG_HIGH, __func__, "abstract: <%s> is invalid", str);
+	return false;
+    }
+
+    json_dbg(JSON_DBG_MED, __func__, "abstract is valid");
+    return true;
+}

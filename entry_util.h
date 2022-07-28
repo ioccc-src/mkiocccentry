@@ -163,6 +163,8 @@ extern bool test_IOCCC_contest_id(char *str);
 extern bool test_IOCCC_info_version(char *str);
 extern bool test_Makefile(char *str);
 extern bool test_c_src(char *str);
+extern bool test_title(char *str);
+extern bool test_abstract(char *str);
 
 
 #endif /* INCLUDE_ENTRY_UTIL_H */
