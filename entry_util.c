@@ -352,7 +352,43 @@ test_fnamchk_version(char *str)
     return true;
 }
 
+/*
+ * test_txzchk_version - test if txzchk_version is valid
+ *
+ * Determine if txzchk_version matches TXZCHK_VERSION.
+ *
+ * given:
+ *	str	string to test
+ *
+ * returns:
+ *	true ==> string is valid,
+ *	false ==> string is NOT valid, or NULL pointer, or some internal error
+ *
+ *  "Because sometimes people might try to hide the fact that they're planning
+ *  on throwing feathers on the tar." :-)
+ */
+bool
+test_txzchk_version(char *str)
+{
+    /*
+     * firewall
+     */
+    if (str == NULL) {
+	warn(__func__, "str is NULL");
+	return false;
+    }
 
+    /*
+     * validate str
+     */
+    if (strcmp(str, TXZCHK_VERSION) != 0) {
+	json_dbg(JSON_DBG_MED, __func__, "txzchk_version != TXZCHK_VERSION: %s", TXZCHK_VERSION);
+	json_dbg(JSON_DBG_HIGH, __func__, "txzchk_version: %s is not TXZCHK_VERSION: %s", str, TXZCHK_VERSION);
+	return false;
+    }
+    json_dbg(JSON_DBG_MED, __func__, "txzchk_version is valid");
+    return true;
+}
 
 /*
  * test_IOCCC_author_version - test if IOCCC_author_version is valid

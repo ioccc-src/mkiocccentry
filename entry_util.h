@@ -157,6 +157,7 @@ extern bool test_mkiocccentry_version(char *str);
 extern bool test_iocccsize_version(char *str);
 extern bool test_chkentry_version(char *str);
 extern bool test_fnamchk_version(char *str);
+extern bool test_txzchk_version(char *str);
 extern bool test_IOCCC_author_version(char *str);
 extern bool test_IOCCC_contest_id(char *str);
 extern bool test_IOCCC_info_version(char *str);
