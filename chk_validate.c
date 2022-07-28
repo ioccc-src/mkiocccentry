@@ -124,6 +124,12 @@ member_value_decoded_str(struct json *node, unsigned int depth, struct json_sem 
 	return NULL;
     }
     item = &(node->item.member);
+    if (item->converted == false) {
+	if (val_err != NULL) {
+	    *val_err = werr_sem_val(14, node, depth, sem, name, "JTYPE_MEMBER node converted is false");
+	}
+	return NULL;
+    }
 
     /*
      * firewall - value
@@ -131,7 +137,7 @@ member_value_decoded_str(struct json *node, unsigned int depth, struct json_sem 
     value = item->value;
     if (value == NULL) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(14, node, depth, sem, name, "node value is NULL");
+	    *val_err = werr_sem_val(15, node, depth, sem, name, "node value is NULL");
 	}
 	return NULL;
     }
@@ -141,12 +147,18 @@ member_value_decoded_str(struct json *node, unsigned int depth, struct json_sem 
      */
     if (value->type != JTYPE_STRING) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(15, node, depth, sem, name, "node value type %s != JTYPE_STRING",
+	    *val_err = werr_sem_val(16, node, depth, sem, name, "node value type %s != JTYPE_STRING",
 				    json_type_name(value->type));
 	}
 	return NULL;
     }
     istr = &(value->item.string);
+    if (istr->converted == false) {
+	if (val_err != NULL) {
+	    *val_err = werr_sem_val(17, node, depth, sem, name, "node value JTYPE_STRING converted is false");
+	}
+	return NULL;
+    }
 
     /*
      * firewall - decoded JSON string
@@ -154,7 +166,7 @@ member_value_decoded_str(struct json *node, unsigned int depth, struct json_sem 
     str = istr->str;
     if (str == NULL) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(16, node, depth, sem, name, "node value decoded JSON string is NULL");
+	    *val_err = werr_sem_val(18, node, depth, sem, name, "node value decoded JSON string is NULL");
 	}
 	return NULL;
     }
@@ -201,7 +213,7 @@ chk_IOCCC_author_version(struct json *node,
     test = test_IOCCC_author_version(str);
     if (test == false) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(17, node, depth, sem, __func__, "invalid IOCCC_author_version");
+	    *val_err = werr_sem_val(19, node, depth, sem, __func__, "invalid IOCCC_author_version");
 	}
 	return false;
     }
@@ -251,7 +263,7 @@ chk_IOCCC_contest_id(struct json *node,
     test = test_IOCCC_contest_id(str);
     if (test == false) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(18, node, depth, sem, __func__, "invalid IOCCC_contest_id");
+	    *val_err = werr_sem_val(20, node, depth, sem, __func__, "invalid IOCCC_contest_id");
 	}
 	return false;
     }
@@ -301,7 +313,7 @@ chk_IOCCC_info_version(struct json *node,
     test = test_IOCCC_info_version(str);
     if (test == false) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(19, node, depth, sem, __func__, "invalid IOCCC_info_version");
+	    *val_err = werr_sem_val(21, node, depth, sem, __func__, "invalid IOCCC_info_version");
 	}
 	return false;
     }
@@ -317,7 +329,7 @@ chk_IOCCC_info_version(struct json *node,
 
 
 /*
- * chk_Makefile - JSON semantic check for Makefile
+ * chk_Makefile - JSON semantic check for Makefile filename
  *
  * given:
  *	node	JSON parse node being checked
@@ -351,7 +363,7 @@ chk_Makefile(struct json *node,
     test = test_Makefile(str);
     if (test == false) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(20, node, depth, sem, __func__, "invalid Makefile filename");
+	    *val_err = werr_sem_val(22, node, depth, sem, __func__, "invalid Makefile filename");
 	}
 	return false;
     }
