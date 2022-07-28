@@ -6,7 +6,7 @@
  * and .author.json files, their related check tools, test code,
  * and string encoding/decoding tools.
  *
- * We per IOCCC anonymous judging policy, the calls to json_dbg() in this file
+ * As per IOCCC anonymous judging policy, the calls to json_dbg() in this file
  * that are JSON_DBG_MED or lower will NOT reveal any JSON content.
  * Only at JSON_DBG_HIGH or higher should json_dbg() calls in the file
  * will print JSON content.
