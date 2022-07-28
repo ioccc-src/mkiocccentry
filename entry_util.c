@@ -577,9 +577,9 @@ test_Makefile(char *str)
 }
 
 /*
- * test_prog_c - test if prog_c is valid
+ * test_c_src - test if c_src is valid
  *
- * Determine if prog_c matches "prog.c".
+ * Determine if c_src matches "prog.c".
  *
  * given:
  *	str	string to test
@@ -589,7 +589,7 @@ test_Makefile(char *str)
  *	false ==> string is NOT valid, or NULL pointer, or some internal error
  */
 bool
-test_prog_c(char *str)
+test_c_src(char *str)
 {
     /*
      * firewall
@@ -603,10 +603,10 @@ test_prog_c(char *str)
      * validate str
      */
     if (strcmp(str, "prog.c") != 0) {
-	json_dbg(JSON_DBG_MED, __func__, "prog_c != prog.c: %s", "prog.c");
-	json_dbg(JSON_DBG_HIGH, __func__, "prog_c: %s is not prog.c: %s", str, "prog.c");
+	json_dbg(JSON_DBG_MED, __func__, "c_src != prog.c: %s", "prog.c");
+	json_dbg(JSON_DBG_HIGH, __func__, "c_src: %s is not prog.c: %s", str, "prog.c");
 	return false;
     }
-    json_dbg(JSON_DBG_MED, __func__, "prog_c filename is valid");
+    json_dbg(JSON_DBG_MED, __func__, "c_src filename is valid");
     return true;
 }
