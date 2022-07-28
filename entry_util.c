@@ -301,7 +301,7 @@ test_IOCCC_contest_id(char *str)
     len = strlen(str);
     if (len != UUID_LEN) {
 	json_dbg(JSON_DBG_MED, __func__, "non-test IOCCC_contest_id len != UUID_LEN: %d", UUID_LEN);
-	json_dbg(JSON_DBG_HIGH, __func__, "non-test IOCCC_contest_id len: %ld doesn't match UUID_LEN: %d", len, UUID_LEN);
+	json_dbg(JSON_DBG_HIGH, __func__, "non-test IOCCC_contest_id len: %zd doesn't match UUID_LEN: %d", len, UUID_LEN);
 	return false;
     }
     /* validate UUID string, version and variant */
