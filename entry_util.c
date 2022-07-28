@@ -389,8 +389,8 @@ test_Makefile(char *str)
      * validate str
      */
     if (strcmp(str, "Makefile") != 0) {
-	json_dbg(JSON_DBG_MED, __func__, "Makefile != INFO_VERSION: %s", "Makefile");
-	json_dbg(JSON_DBG_HIGH, __func__, "Makefile: %s is not INFO_VERSION: %s", str, "Makefile");
+	json_dbg(JSON_DBG_MED, __func__, "Makefile != Makefile: %s", "Makefile");
+	json_dbg(JSON_DBG_HIGH, __func__, "Makefile: %s is not Makefile: %s", str, "Makefile");
 	return false;
     }
     json_dbg(JSON_DBG_MED, __func__, "Makefile filename is valid");
