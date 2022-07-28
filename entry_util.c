@@ -211,6 +211,78 @@ free_author_array(struct author *author_set, int author_count)
 }
 
 /*
+ * test_mkiocccentry_version - test if mkiocccentry_version is valid
+ *
+ * Determine if mkiocccentry_version matches MKIOCCCENTRY_VERSION.
+ *
+ * given:
+ *	str	string to test
+ *
+ * returns:
+ *	true ==> string is valid,
+ *	false ==> string is NOT valid, or NULL pointer, or some internal error
+ */
+bool
+test_mkiocccentry_version(char *str)
+{
+    /*
+     * firewall
+     */
+    if (str == NULL) {
+	warn(__func__, "str is NULL");
+	return false;
+    }
+
+    /*
+     * validate str
+     */
+    if (strcmp(str, MKIOCCCENTRY_VERSION) != 0) {
+	json_dbg(JSON_DBG_MED, __func__, "mkiocccentry_version != MKIOCCCENTRY_VERSION: %s", MKIOCCCENTRY_VERSION);
+	json_dbg(JSON_DBG_HIGH, __func__, "mkiocccentry_version: %s is not MKIOCCCENTRY_VERSION: %s", str, MKIOCCCENTRY_VERSION);
+	return false;
+    }
+    json_dbg(JSON_DBG_MED, __func__, "mkiocccentry_version is valid");
+    return true;
+}
+
+/*
+ * test_iocccsize_version - test if iocccsize_version is valid
+ *
+ * Determine if iocccsize_version matches IOCCCSIZE_VERSION.
+ *
+ * given:
+ *	str	string to test
+ *
+ * returns:
+ *	true ==> string is valid,
+ *	false ==> string is NOT valid, or NULL pointer, or some internal error
+ */
+bool
+test_iocccsize_version(char *str)
+{
+    /*
+     * firewall
+     */
+    if (str == NULL) {
+	warn(__func__, "str is NULL");
+	return false;
+    }
+
+    /*
+     * validate str
+     */
+    if (strcmp(str, IOCCCSIZE_VERSION) != 0) {
+	json_dbg(JSON_DBG_MED, __func__, "iocccsize_version != IOCCCSIZE_VERSION: %s", IOCCCSIZE_VERSION);
+	json_dbg(JSON_DBG_HIGH, __func__, "iocccsize_version: %s is not IOCCCSIZE_VERSION: %s", str, IOCCCSIZE_VERSION);
+	return false;
+    }
+    json_dbg(JSON_DBG_MED, __func__, "iocccsize_version is valid");
+    return true;
+}
+
+
+
+/*
  * test_chkentry_version - test if chkentry_version is valid
  *
  * Determine if chkentry_version matches CHKENTRY_VERSION.
@@ -244,6 +316,42 @@ test_chkentry_version(char *str)
     json_dbg(JSON_DBG_MED, __func__, "chkentry_version is valid");
     return true;
 }
+
+/*
+ * test_fnamchk_version - test if fnamchk_version is valid
+ *
+ * Determine if fnamchk_version matches FNAMCHK_VERSION.
+ *
+ * given:
+ *	str	string to test
+ *
+ * returns:
+ *	true ==> string is valid,
+ *	false ==> string is NOT valid, or NULL pointer, or some internal error
+ */
+bool
+test_fnamchk_version(char *str)
+{
+    /*
+     * firewall
+     */
+    if (str == NULL) {
+	warn(__func__, "str is NULL");
+	return false;
+    }
+
+    /*
+     * validate str
+     */
+    if (strcmp(str, FNAMCHK_VERSION) != 0) {
+	json_dbg(JSON_DBG_MED, __func__, "fnamchk_version != FNAMCHK_VERSION: %s", FNAMCHK_VERSION);
+	json_dbg(JSON_DBG_HIGH, __func__, "fnamchk_version: %s is not FNAMCHK_VERSION: %s", str, FNAMCHK_VERSION);
+	return false;
+    }
+    json_dbg(JSON_DBG_MED, __func__, "fnamchk_version is valid");
+    return true;
+}
+
 
 
 /*
