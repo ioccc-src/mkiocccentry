@@ -324,3 +324,39 @@ test_IOCCC_contest_id(char *str)
     json_dbg(JSON_DBG_MED, __func__, "IOCCC_contest_id is valid");
     return true;
 }
+
+
+/*
+ * test_IOCCC_info_version - test if IOCCC_info_version is valid
+ *
+ * Determine if IOCCC_info_version matches INFO_VERSION.
+ *
+ * given:
+ *	str	string to test
+ *
+ * returns:
+ *	true ==> string is valid,
+ *	false ==> string is NOT valid, or NULL pointer, or some internal error
+ */
+bool
+test_IOCCC_info_version(char *str)
+{
+    /*
+     * firewall
+     */
+    if (str == NULL) {
+	warn(__func__, "str is NULL");
+	return false;
+    }
+
+    /*
+     * validate str
+     */
+    if (strcmp(str, INFO_VERSION) != 0) {
+	json_dbg(JSON_DBG_MED, __func__, "IOCCC_info_version != INFO_VERSION: %s", INFO_VERSION);
+	json_dbg(JSON_DBG_HIGH, __func__, "IOCCC_info_version: %s is not INFO_VERSION: %s", str, INFO_VERSION);
+	return false;
+    }
+    json_dbg(JSON_DBG_MED, __func__, "IOCCC_info_version is valid");
+    return true;
+}

@@ -155,6 +155,7 @@ extern void free_info(struct info *infop);
 extern void free_author_array(struct author *authorp, int author_count);
 extern bool test_IOCCC_author_version(char *str);
 extern bool test_IOCCC_contest_id(char *str);
+extern bool test_IOCCC_info_version(char *str);
 
 
 #endif /* INCLUDE_ENTRY_UTIL_H */

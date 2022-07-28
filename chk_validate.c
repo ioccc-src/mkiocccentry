@@ -264,3 +264,53 @@ chk_IOCCC_contest_id(struct json *node,
     }
     return true;
 }
+
+
+/*
+ * chk_IOCCC_info_version - JSON semantic check for IOCCC_info_version
+ *
+ * given:
+ *	node	JSON parse node being checked
+ *	depth	depth of node in the JSON parse tree (0 ==> tree root)
+ *	sem	JSON semantic node triggering the check
+ *	val_err	pointer to address where to place a JSON semantic validation error,
+ *		NULL ==> do not report a JSON semantic validation error
+ *
+ * returns:
+ *	true ==> JSON element is valid
+ *	false ==> JSON element is NOT valid, or NULL pointer, or some internal error
+ */
+bool
+chk_IOCCC_info_version(struct json *node,
+		       unsigned int depth, struct json_sem *sem, struct json_sem_val_err **val_err)
+{
+    char *str = NULL;				/* JTYPE_STRING as decoded JSON string */
+    bool test = false;				/* validation test result */
+
+    /*
+     * firewall - args
+     */
+    str = member_value_decoded_str(node, depth, sem, __func__, val_err);
+    if (str == NULL) {
+	return false;
+    }
+
+    /*
+     * validate decoded JSON string
+     */
+    test = test_IOCCC_info_version(str);
+    if (test == false) {
+	if (val_err != NULL) {
+	    *val_err = werr_sem_val(19, node, depth, sem, __func__, "invalid IOCCC_info_version");
+	}
+	return false;
+    }
+
+    /*
+     * return validation success
+     */
+    if (val_err != NULL) {
+	*val_err = NULL;
+    }
+    return true;
+}
