@@ -210,6 +210,41 @@ free_author_array(struct author *author_set, int author_count)
     return;
 }
 
+/*
+ * test_chkentry_version - test if chkentry_version is valid
+ *
+ * Determine if chkentry_version matches CHKENTRY_VERSION.
+ *
+ * given:
+ *	str	string to test
+ *
+ * returns:
+ *	true ==> string is valid,
+ *	false ==> string is NOT valid, or NULL pointer, or some internal error
+ */
+bool
+test_chkentry_version(char *str)
+{
+    /*
+     * firewall
+     */
+    if (str == NULL) {
+	warn(__func__, "str is NULL");
+	return false;
+    }
+
+    /*
+     * validate str
+     */
+    if (strcmp(str, CHKENTRY_VERSION) != 0) {
+	json_dbg(JSON_DBG_MED, __func__, "chkentry_version != CHKENTRY_VERSION: %s", CHKENTRY_VERSION);
+	json_dbg(JSON_DBG_HIGH, __func__, "chkentry_version: %s is not CHKENTRY_VERSION: %s", str, CHKENTRY_VERSION);
+	return false;
+    }
+    json_dbg(JSON_DBG_MED, __func__, "chkentry_version is valid");
+    return true;
+}
+
 
 /*
  * test_IOCCC_author_version - test if IOCCC_author_version is valid
