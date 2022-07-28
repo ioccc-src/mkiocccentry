@@ -396,3 +396,38 @@ test_Makefile(char *str)
     json_dbg(JSON_DBG_MED, __func__, "Makefile filename is valid");
     return true;
 }
+
+/*
+ * test_prog_c - test if prog_c is valid
+ *
+ * Determine if prog_c matches "prog.c".
+ *
+ * given:
+ *	str	string to test
+ *
+ * returns:
+ *	true ==> string is valid,
+ *	false ==> string is NOT valid, or NULL pointer, or some internal error
+ */
+bool
+test_prog_c(char *str)
+{
+    /*
+     * firewall
+     */
+    if (str == NULL) {
+	warn(__func__, "str is NULL");
+	return false;
+    }
+
+    /*
+     * validate str
+     */
+    if (strcmp(str, "prog.c") != 0) {
+	json_dbg(JSON_DBG_MED, __func__, "prog_c != prog.c: %s", "prog.c");
+	json_dbg(JSON_DBG_HIGH, __func__, "prog_c: %s is not prog.c: %s", str, "prog.c");
+	return false;
+    }
+    json_dbg(JSON_DBG_MED, __func__, "prog_c filename is valid");
+    return true;
+}
