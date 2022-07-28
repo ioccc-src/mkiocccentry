@@ -6,7 +6,7 @@
  * and .author.json files, their related check tools, test code,
  * and string encoding/decoding tools.
  *
- * We per IOCCC anonymous judging policy, the calls to json_dbg() in this file
+ * As per IOCCC anonymous judging policy, the calls to json_dbg() in this file
  * that are JSON_DBG_MED or lower will NOT reveal any JSON content.
  * Only at JSON_DBG_HIGH or higher should json_dbg() calls in the file
  * will print JSON content.
@@ -210,6 +210,185 @@ free_author_array(struct author *author_set, int author_count)
     return;
 }
 
+/*
+ * test_mkiocccentry_version - test if mkiocccentry_version is valid
+ *
+ * Determine if mkiocccentry_version matches MKIOCCCENTRY_VERSION.
+ *
+ * given:
+ *	str	string to test
+ *
+ * returns:
+ *	true ==> string is valid,
+ *	false ==> string is NOT valid, or NULL pointer, or some internal error
+ */
+bool
+test_mkiocccentry_version(char *str)
+{
+    /*
+     * firewall
+     */
+    if (str == NULL) {
+	warn(__func__, "str is NULL");
+	return false;
+    }
+
+    /*
+     * validate str
+     */
+    if (strcmp(str, MKIOCCCENTRY_VERSION) != 0) {
+	json_dbg(JSON_DBG_MED, __func__, "mkiocccentry_version != MKIOCCCENTRY_VERSION: %s", MKIOCCCENTRY_VERSION);
+	json_dbg(JSON_DBG_HIGH, __func__, "mkiocccentry_version: %s is not MKIOCCCENTRY_VERSION: %s", str, MKIOCCCENTRY_VERSION);
+	return false;
+    }
+    json_dbg(JSON_DBG_MED, __func__, "mkiocccentry_version is valid");
+    return true;
+}
+
+/*
+ * test_iocccsize_version - test if iocccsize_version is valid
+ *
+ * Determine if iocccsize_version matches IOCCCSIZE_VERSION.
+ *
+ * given:
+ *	str	string to test
+ *
+ * returns:
+ *	true ==> string is valid,
+ *	false ==> string is NOT valid, or NULL pointer, or some internal error
+ */
+bool
+test_iocccsize_version(char *str)
+{
+    /*
+     * firewall
+     */
+    if (str == NULL) {
+	warn(__func__, "str is NULL");
+	return false;
+    }
+
+    /*
+     * validate str
+     */
+    if (strcmp(str, IOCCCSIZE_VERSION) != 0) {
+	json_dbg(JSON_DBG_MED, __func__, "iocccsize_version != IOCCCSIZE_VERSION: %s", IOCCCSIZE_VERSION);
+	json_dbg(JSON_DBG_HIGH, __func__, "iocccsize_version: %s is not IOCCCSIZE_VERSION: %s", str, IOCCCSIZE_VERSION);
+	return false;
+    }
+    json_dbg(JSON_DBG_MED, __func__, "iocccsize_version is valid");
+    return true;
+}
+
+
+
+/*
+ * test_chkentry_version - test if chkentry_version is valid
+ *
+ * Determine if chkentry_version matches CHKENTRY_VERSION.
+ *
+ * given:
+ *	str	string to test
+ *
+ * returns:
+ *	true ==> string is valid,
+ *	false ==> string is NOT valid, or NULL pointer, or some internal error
+ */
+bool
+test_chkentry_version(char *str)
+{
+    /*
+     * firewall
+     */
+    if (str == NULL) {
+	warn(__func__, "str is NULL");
+	return false;
+    }
+
+    /*
+     * validate str
+     */
+    if (strcmp(str, CHKENTRY_VERSION) != 0) {
+	json_dbg(JSON_DBG_MED, __func__, "chkentry_version != CHKENTRY_VERSION: %s", CHKENTRY_VERSION);
+	json_dbg(JSON_DBG_HIGH, __func__, "chkentry_version: %s is not CHKENTRY_VERSION: %s", str, CHKENTRY_VERSION);
+	return false;
+    }
+    json_dbg(JSON_DBG_MED, __func__, "chkentry_version is valid");
+    return true;
+}
+
+/*
+ * test_fnamchk_version - test if fnamchk_version is valid
+ *
+ * Determine if fnamchk_version matches FNAMCHK_VERSION.
+ *
+ * given:
+ *	str	string to test
+ *
+ * returns:
+ *	true ==> string is valid,
+ *	false ==> string is NOT valid, or NULL pointer, or some internal error
+ */
+bool
+test_fnamchk_version(char *str)
+{
+    /*
+     * firewall
+     */
+    if (str == NULL) {
+	warn(__func__, "str is NULL");
+	return false;
+    }
+
+    /*
+     * validate str
+     */
+    if (strcmp(str, FNAMCHK_VERSION) != 0) {
+	json_dbg(JSON_DBG_MED, __func__, "fnamchk_version != FNAMCHK_VERSION: %s", FNAMCHK_VERSION);
+	json_dbg(JSON_DBG_HIGH, __func__, "fnamchk_version: %s is not FNAMCHK_VERSION: %s", str, FNAMCHK_VERSION);
+	return false;
+    }
+    json_dbg(JSON_DBG_MED, __func__, "fnamchk_version is valid");
+    return true;
+}
+
+/*
+ * test_txzchk_version - test if txzchk_version is valid
+ *
+ * Determine if txzchk_version matches TXZCHK_VERSION.
+ *
+ * given:
+ *	str	string to test
+ *
+ * returns:
+ *	true ==> string is valid,
+ *	false ==> string is NOT valid, or NULL pointer, or some internal error
+ *
+ *  "Because sometimes people might try to hide the fact that they're planning
+ *  on throwing feathers on the tar." :-)
+ */
+bool
+test_txzchk_version(char *str)
+{
+    /*
+     * firewall
+     */
+    if (str == NULL) {
+	warn(__func__, "str is NULL");
+	return false;
+    }
+
+    /*
+     * validate str
+     */
+    if (strcmp(str, TXZCHK_VERSION) != 0) {
+	json_dbg(JSON_DBG_MED, __func__, "txzchk_version != TXZCHK_VERSION: %s", TXZCHK_VERSION);
+	json_dbg(JSON_DBG_HIGH, __func__, "txzchk_version: %s is not TXZCHK_VERSION: %s", str, TXZCHK_VERSION);
+	return false;
+    }
+    json_dbg(JSON_DBG_MED, __func__, "txzchk_version is valid");
+    return true;
+}
 
 /*
  * test_IOCCC_author_version - test if IOCCC_author_version is valid
@@ -389,10 +568,139 @@ test_Makefile(char *str)
      * validate str
      */
     if (strcmp(str, "Makefile") != 0) {
-	json_dbg(JSON_DBG_MED, __func__, "Makefile != INFO_VERSION: %s", "Makefile");
-	json_dbg(JSON_DBG_HIGH, __func__, "Makefile: %s is not INFO_VERSION: %s", str, "Makefile");
+	json_dbg(JSON_DBG_MED, __func__, "Makefile != Makefile: %s", "Makefile");
+	json_dbg(JSON_DBG_HIGH, __func__, "Makefile: %s is not Makefile: %s", str, "Makefile");
 	return false;
     }
     json_dbg(JSON_DBG_MED, __func__, "Makefile filename is valid");
+    return true;
+}
+
+/*
+ * test_c_src - test if c_src is valid
+ *
+ * Determine if c_src matches "prog.c".
+ *
+ * given:
+ *	str	string to test
+ *
+ * returns:
+ *	true ==> string is valid,
+ *	false ==> string is NOT valid, or NULL pointer, or some internal error
+ */
+bool
+test_c_src(char *str)
+{
+    /*
+     * firewall
+     */
+    if (str == NULL) {
+	warn(__func__, "str is NULL");
+	return false;
+    }
+
+    /*
+     * validate str
+     */
+    if (strcmp(str, "prog.c") != 0) {
+	json_dbg(JSON_DBG_MED, __func__, "c_src != prog.c: %s", "prog.c");
+	json_dbg(JSON_DBG_HIGH, __func__, "c_src: %s is not prog.c: %s", str, "prog.c");
+	return false;
+    }
+    json_dbg(JSON_DBG_MED, __func__, "c_src filename is valid");
+    return true;
+}
+
+/*
+ * test_title - test if title is valid
+ *
+ * Determine if title length is <= MAX_TITLE_LEN and that it matches the regexp:
+ *
+ *	^[0-9a-z][0-9a-z._+-]*$
+ *
+ * given:
+ *	str	string to test
+ *
+ * returns:
+ *	true ==> string is valid,
+ *	false ==> string is NOT valid, or NULL pointer, or some internal error
+ */
+bool
+test_title(char *str)
+{
+    size_t length = 0;
+
+    /*
+     * firewall
+     */
+    if (str == NULL) {
+	warn(__func__, "str is NULL");
+	return false;
+    } else if (*str == '\0') { /* strlen(str) == 0 */
+	warn(__func__, "title length zero");
+	return false;
+    }
+
+    length = strlen(str);
+
+    /*
+     * validate str
+     */
+    if (length > MAX_TITLE_LEN) {
+	json_dbg(JSON_DBG_MED, __func__, "title length %ju > max %d: <%s>", (uintmax_t)length, MAX_TITLE_LEN, str);
+	json_dbg(JSON_DBG_HIGH, __func__, "title: <%s> is invalid", str);
+	return false;
+    }
+    /* check for valid title chars */
+    if (!posix_plus_safe(str, true, false, true)) {
+	json_dbg(JSON_DBG_MED, __func__, "title does not match regexp ^[0-9a-z][0-9a-z._+-]*$: '%s'", str);
+	json_dbg(JSON_DBG_HIGH, __func__, "title: <%s> is invalid", str);
+	return false;
+    }
+
+    json_dbg(JSON_DBG_MED, __func__, "title is valid");
+    return true;
+}
+
+/*
+ * test_abstract - test if abstract is valid
+ *
+ * Determine if abstract length is <= MAX_ABSTRACT_LEN.
+ *
+ * given:
+ *	str	string to test
+ *
+ * returns:
+ *	true ==> string is valid,
+ *	false ==> string is NOT valid, or NULL pointer, or some internal error
+ */
+bool
+test_abstract(char *str)
+{
+    size_t length = 0;
+
+    /*
+     * firewall
+     */
+    if (str == NULL) {
+	warn(__func__, "str is NULL");
+	return false;
+    } else if (*str == '\0') { /* strlen(str) == 0 */
+	warn(__func__, "abstract length zero");
+	return false;
+    }
+
+    length = strlen(str);
+
+    /*
+     * validate str
+     */
+    if (length > MAX_ABSTRACT_LEN) {
+	json_dbg(JSON_DBG_MED, __func__, "abstract length %ju > max %d: <%s>", (uintmax_t)length, MAX_ABSTRACT_LEN, str);
+	json_dbg(JSON_DBG_HIGH, __func__, "abstract: <%s> is invalid", str);
+	return false;
+    }
+
+    json_dbg(JSON_DBG_MED, __func__, "abstract is valid");
     return true;
 }

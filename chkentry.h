@@ -2,13 +2,20 @@
 /*
  * chkentry - check JSON files in an IOCCC entry
  *
- * "Because sometimes even the IOCCC Judges need some help." :-)
+ * "Because grammar and syntax alone do not make a complete language." :-)
  *
- * This tool is currently being worked on by:
+ * The JSON parser was co-developed by:
  *
  *	@xexyl
  *	https://xexyl.net		Cody Boone Ferguson
  *	https://ioccc.xexyl.net
+ * and:
+ *	chongo (Landon Curt Noll, http://www.isthe.com/chongo/index.html) /\oo/\
+ *
+ * This tool is being co-developed by Cody Boone Ferguson and Landon Curt Noll
+ * and the concept of this file was developed by Landon Curt Noll.
+ *
+ * "Because sometimes even the IOCCC Judges need some help." :-)
  */
 
 

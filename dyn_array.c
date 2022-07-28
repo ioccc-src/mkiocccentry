@@ -210,8 +210,8 @@ dyn_array_grow(struct dyn_array *array, intmax_t elms_to_allocate)
  * compare_addr - compare two addresses
  *
  * given:
- *	a	- 1st address to compare
- *	b	- 1st address to compare
+ *	a	- First address to compare
+ *	b	- Second address to compare
  *
  * returns:
  *	PTR_BELOW_ADDR if a < b,
