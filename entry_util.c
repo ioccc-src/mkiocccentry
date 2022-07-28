@@ -360,3 +360,39 @@ test_IOCCC_info_version(char *str)
     json_dbg(JSON_DBG_MED, __func__, "IOCCC_info_version is valid");
     return true;
 }
+
+
+/*
+ * test_Makefile - test if Makefile is valid
+ *
+ * Determine if Makefile matches "Makefile".
+ *
+ * given:
+ *	str	string to test
+ *
+ * returns:
+ *	true ==> string is valid,
+ *	false ==> string is NOT valid, or NULL pointer, or some internal error
+ */
+bool
+test_Makefile(char *str)
+{
+    /*
+     * firewall
+     */
+    if (str == NULL) {
+	warn(__func__, "str is NULL");
+	return false;
+    }
+
+    /*
+     * validate str
+     */
+    if (strcmp(str, "Makefile") != 0) {
+	json_dbg(JSON_DBG_MED, __func__, "Makefile != INFO_VERSION: %s", "Makefile");
+	json_dbg(JSON_DBG_HIGH, __func__, "Makefile: %s is not INFO_VERSION: %s", str, "Makefile");
+	return false;
+    }
+    json_dbg(JSON_DBG_MED, __func__, "Makefile filename is valid");
+    return true;
+}

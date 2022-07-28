@@ -467,6 +467,7 @@ main(int argc, char *argv[])
     if (!quiet) {
 	para("... completed Makefile check.", "", NULL);
     }
+
     /*
      * check remarks.md
      */
@@ -2531,6 +2532,7 @@ warn_Makefile(char const *Makefile, struct info *infop)
 	not_reached();
     }
     if (need_confirm && !ignore_warnings) {
+
 	/*
 	 * report problem with Makefile
 	 */
