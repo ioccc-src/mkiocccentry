@@ -159,9 +159,9 @@ main(int argc, char **argv)
     if (!quiet) {
 	para("", "Performing checks on tarball ...", NULL);
     }
-    txz_info.total_issues = check_tarball(tar, fnamchk);
-    if (!quiet && !txz_info.total_issues) {
-	para("No feathers found in tarball.", "", NULL);
+    txz_info.total_feathers = check_tarball(tar, fnamchk);
+    if (!quiet && !txz_info.total_feathers) {
+	para("No feathers stuck in tarball.", "", NULL);
     }
 
     show_txz_info(txzpath);
@@ -169,7 +169,7 @@ main(int argc, char **argv)
     /*
      * All Done!!! - Jessica Noll, age 2
      */
-    exit(txz_info.total_issues != 0); /*ooo*/
+    exit(txz_info.total_feathers != 0); /*ooo*/
 }
 
 
@@ -196,25 +196,25 @@ show_txz_info(char const *txzpath)
 	/* show information about tarball */
 	para("", "The following information about the tarball was collected:", NULL);
 
-	dbg(DBG_MED, "txzchk: %s: has .info.json:\t\t%d", txzpath, txz_info.has_info_json);
-	dbg(DBG_HIGH, "txzchk: %s: empty .info.json:\t\t%d", txzpath, txz_info.empty_info_json);
-	dbg(DBG_MED, "txzchk: %s: has .author.json:\t\t%d", txzpath, txz_info.has_author_json);
-	dbg(DBG_HIGH, "txzchk: %s: empty .author.json:\t\t%d", txzpath, txz_info.empty_author_json);
-	dbg(DBG_MED, "txzchk: %s: has prog.c:\t\t\t%d", txzpath, txz_info.has_prog_c);
-	dbg(DBG_HIGH, "txzchk: %s: empty prog.c:\t\t\t%d", txzpath, txz_info.empty_prog_c);
-	dbg(DBG_MED, "txzchk: %s: has remarks.md:\t\t\t%d", txzpath, txz_info.has_remarks_md);
-	dbg(DBG_HIGH, "txzchk: %s: empty remarks.md:\t\t%d", txzpath, txz_info.empty_remarks_md);
-	dbg(DBG_MED, "txzchk: %s: has Makefile:\t\t\t%d", txzpath, txz_info.has_Makefile);
-	dbg(DBG_HIGH, "txzchk: %s: empty Makefile:\t\t\t%d", txzpath, txz_info.empty_Makefile);
-	dbg(DBG_MED, "txzchk: %s: size:\t\t\t\t%jd", txzpath, (intmax_t)txz_info.size);
+	dbg(DBG_MED, "txzchk: %s: has .info.json:\t\t%s", txzpath, booltostr(txz_info.has_info_json));
+	dbg(DBG_HIGH, "txzchk: %s: empty .info.json:\t\t%s", txzpath, booltostr(txz_info.empty_info_json));
+	dbg(DBG_MED, "txzchk: %s: has .author.json:\t\t%s", txzpath, booltostr(txz_info.has_author_json));
+	dbg(DBG_HIGH, "txzchk: %s: empty .author.json:\t\t%s", txzpath, booltostr(txz_info.empty_author_json));
+	dbg(DBG_MED, "txzchk: %s: has prog.c:\t\t\t%s", txzpath, booltostr(txz_info.has_prog_c));
+	dbg(DBG_HIGH, "txzchk: %s: empty prog.c:\t\t%s", txzpath, booltostr(txz_info.empty_prog_c));
+	dbg(DBG_MED, "txzchk: %s: has remarks.md:\t\t%s", txzpath, booltostr(txz_info.has_remarks_md));
+	dbg(DBG_HIGH, "txzchk: %s: empty remarks.md:\t\t%s", txzpath, booltostr(txz_info.empty_remarks_md));
+	dbg(DBG_MED, "txzchk: %s: has Makefile:\t\t%s", txzpath, booltostr(txz_info.has_Makefile));
+	dbg(DBG_HIGH, "txzchk: %s: empty Makefile:\t\t%s", txzpath, booltostr(txz_info.empty_Makefile));
+	dbg(DBG_MED, "txzchk: %s: size:\t\t\t%jd", txzpath, (intmax_t)txz_info.size);
 	dbg(DBG_MED, "txzchk: %s: size of all files:\t\t%jd", txzpath, (intmax_t)txz_info.file_sizes);
 	dbg(DBG_MED, "txzchk: %s: rounded files size:\t\t%jd", txzpath, (intmax_t)txz_info.rounded_file_size);
 	dbg(DBG_MED, "txzchk: %s: total files:\t\t\t%d", txzpath, txz_info.total_files);
 	dbg(DBG_MED, "txzchk: %s: incorrect directory found:\t%d", txzpath, txz_info.correct_directory != txz_info.total_files);
-	dbg(DBG_MED, "txzchk: %s: invalid dot files found:\t\t%d", txzpath, txz_info.dot_files);
-	dbg(DBG_MED, "txzchk: %s: files named '.':\t\t\t%d", txzpath, txz_info.named_dot);
+	dbg(DBG_MED, "txzchk: %s: invalid dot files found:\t%d", txzpath, txz_info.dot_files);
+	dbg(DBG_MED, "txzchk: %s: files named '.':\t\t%d", txzpath, txz_info.named_dot);
 	dbg(DBG_MED, "txzchk: %s: files with invalid chars:\t%u", txzpath, txz_info.invalid_chars);
-	dbg(DBG_VHIGH, "txzchk: %s: issues found:\t\t\t%d", txzpath, txz_info.total_issues);
+	dbg(DBG_VHIGH, "txzchk: %s: feathers stuck in tarball:\t%d", txzpath, txz_info.total_feathers);
 
     }
 }
@@ -444,7 +444,7 @@ txzchk_sanity_chks(char const *tar, char const *fnamchk)
  *	dir_name	- the directory name (if fnamchk passed - else NULL)
  *	file		- file structure
  *
- * Report issues on the current file's path.
+ * Report feathers stuck in the current file's path.
  *
  * Returns void. Does not return on error.
  *
@@ -477,7 +477,7 @@ check_txz_file(char const *txzpath, char const *dir_name, struct txz_file *file)
      * filename must use only POSIX portable filename and + chars plus /
      */
     if (!posix_plus_safe(file->filename, false, true, false)) {
-	++txz_info.total_issues; /* report it once and consider it only one issue */
+	++txz_info.total_feathers; /* report it once and consider it only one feather */
 	++txz_info.invalid_chars;
 	warn(__func__, "%s: file does not match regexp ^[/0-9a-z][/0-9a-z._+-]*$: %s",
 		       txzpath, file->filename);
@@ -490,19 +490,19 @@ check_txz_file(char const *txzpath, char const *dir_name, struct txz_file *file)
 	/*
 	 * Check for dot files but note that a basename of only '.' also counts
 	 * as a filename with just '.': so if the file starts with a '.' and
-	 * it's not ".author.json" and not ".info.json" then it's an invalid dot
-	 * file; if it's ONLY '.' it counts as BOTH an invalid dot file AND a
-	 * file called just '.' (which would likely be a directory but is abuse
-	 * nonetheless).
+	 * it's not AUTHOR_JSON_FILENAME and not INFO_JSON_FILENAME then it's an
+	 * invalid dot file; if it's ONLY '.' it counts as BOTH an invalid dot
+	 * file AND a file called just '.' (which would likely be a directory
+	 * but is abuse nonetheless).
 	 */
 	if (*(file->basename) == '.') {
-	    ++txz_info.total_issues;
-	    warn("txzchk", "%s: found non .author.json and .info.json dot file %s", txzpath, file->basename);
+	    ++txz_info.total_feathers;
+	    warn("txzchk", "%s: found non %s and %s dot file %s", txzpath, AUTHOR_JSON_FILENAME, INFO_JSON_FILENAME, file->basename);
 	    txz_info.dot_files++;
 
 	    /* check for files called '.' without anything after the dot */
 	    if (file->basename[1] == '\0') {
-		++txz_info.total_issues;
+		++txz_info.total_feathers;
 		++txz_info.named_dot;
 		warn("txzchk", "%s: found file called '.' in path %s", txzpath, file->filename);
 	    }
@@ -512,7 +512,7 @@ check_txz_file(char const *txzpath, char const *dir_name, struct txz_file *file)
 	 * basename must use only POSIX portable filename and + chars
 	 */
 	if (!posix_plus_safe(file->basename, false, false, true)) {
-	    ++txz_info.total_issues; /* report it once and consider it only one issue */
+	    ++txz_info.total_feathers; /* report it once and consider it only one feather */
 	    ++txz_info.invalid_chars;
 	    warn(__func__, "%s: file basename does not match regexp ^[0-9A-Za-z][0-9A-Za-z._+-]*$: %s",
 			   txzpath, file->basename);
@@ -554,27 +554,27 @@ check_empty_file(char const *txzpath, off_t size, struct txz_file *file)
 
     if (size == 0) {
 	if (!strcmp(file->basename, AUTHOR_JSON_FILENAME)) {
-	    ++txz_info.total_issues;
-	    warn("txzchk", "%s: found empty .author.json file", txzpath);
+	    ++txz_info.total_feathers;
+	    warn("txzchk", "%s: found empty %s file", txzpath, AUTHOR_JSON_FILENAME);
 	    txz_info.empty_author_json = true;
 	}
 	else if (!strcmp(file->basename, INFO_JSON_FILENAME)) {
-	    ++txz_info.total_issues;
+	    ++txz_info.total_feathers;
 	    txz_info.empty_info_json = true;
-	    warn("txzchk", "%s: found empty .info.json file", txzpath);
+	    warn("txzchk", "%s: found empty %s file", txzpath, INFO_JSON_FILENAME);
 	}
 	else if (!strcmp(file->basename, "remarks.md")) {
-	    ++txz_info.total_issues;
+	    ++txz_info.total_feathers;
 	    txz_info.empty_remarks_md = true;
 	    warn("txzchk", "%s: found empty remarks.md", txzpath);
 	}
 	else if (!strcmp(file->basename, "Makefile")) {
-	    ++txz_info.total_issues;
+	    ++txz_info.total_feathers;
 	    txz_info.empty_Makefile = true;
 	    warn("txzchk", "%s: found empty Makefile", txzpath);
 	}
 	else if (!strcmp(file->basename, "prog.c")) {
-	    /* this is NOT an issue: it's only for debugging information! */
+	    /* this is NOT a feather: it's only for debugging information! */
 	    txz_info.empty_prog_c = true;
 	}
     }
@@ -588,7 +588,8 @@ check_empty_file(char const *txzpath, off_t size, struct txz_file *file)
  *
  *	dir_name	- fnamchk result (if passed - else NULL)
  *
- * Reports any additional issues found in the tarball (or text file).
+ * Reports any additional feathers stuck in the tarball (or issues in the text
+ * file).
  *
  * Returns void. Ignores empty files (though these should not be in the list at
  * all).
@@ -607,7 +608,7 @@ check_all_txz_files(char const *dir_name)
 	not_reached();
     } else if (txz_info.file_sizes == 0) {
 	warn("txzchk", "%s: total size of all files == 0", txzpath);
-	++txz_info.total_issues;
+	++txz_info.total_feathers;
     }
     txz_info.rounded_file_size = round_to_multiple(txz_info.file_sizes, 1024);
     if (txz_info.rounded_file_size < 0) {
@@ -617,7 +618,7 @@ check_all_txz_files(char const *dir_name)
 	warn("txzchk", "%s: total size of files %jd rounded up to multiple of 1024 %jd > %d",
 		       txzpath, (intmax_t)txz_info.file_sizes,
 		       (intmax_t) txz_info.rounded_file_size, MAX_DIR_KSIZE);
-	++txz_info.total_issues;
+	++txz_info.total_feathers;
     } else if (!quiet) {
 	printf("txzchk: %s total size of files %jd rounded up to 1024 multiple: %jd OK\n",
 		txzpath, (intmax_t) txz_info.file_sizes, (intmax_t) txz_info.rounded_file_size);
@@ -626,7 +627,8 @@ check_all_txz_files(char const *dir_name)
 
     /*
      * Now go through the files list to verify the required files are there and
-     * also to detect any additional issues.
+     * also to detect any additional feathers stuck in the tarball (or issues in
+     * the text file).
      */
     for (file = txz_files; file != NULL; file = file->next) {
 	if (file->basename == NULL) {
@@ -650,45 +652,45 @@ check_all_txz_files(char const *dir_name)
 	if (dir_name != NULL && txz_info.correct_directory) {
 	    if (strncmp(file->filename, dir_name, strlen(dir_name))) {
 		warn("txzchk", "%s: found directory change in filename %s", txzpath, file->filename);
-		++txz_info.total_issues;
+		++txz_info.total_feathers;
 	    }
 	}
 
 	if (file->count > 1) {
 	    warn("txzchk", "%s: found a total of %u files with the name %s", txzpath, file->count, file->basename);
-	    txz_info.total_issues += file->count - 1;
+	    txz_info.total_feathers += file->count - 1;
 	}
     }
 
     /* determine if the required files are there */
     if (!txz_info.has_info_json) {
-	++txz_info.total_issues;
+	++txz_info.total_feathers;
 	warn("txzchk", "%s: no .info.json found", txzpath);
     }
     if (!txz_info.has_author_json) {
-	++txz_info.total_issues;
+	++txz_info.total_feathers;
 	warn("txzchk", "%s: no .author.json found", txzpath);
     }
     if (!txz_info.has_prog_c) {
-	++txz_info.total_issues;
+	++txz_info.total_feathers;
 	warn("txzchk", "%s: no prog.c found", txzpath);
     }
     if (!txz_info.has_Makefile) {
-	++txz_info.total_issues;
+	++txz_info.total_feathers;
 	warn("txzchk", "%s: no Makefile found", txzpath);
     }
     if (!txz_info.has_remarks_md) {
-	++txz_info.total_issues;
+	++txz_info.total_feathers;
 	warn("txzchk", "%s: no remarks.md found", txzpath);
     }
     if (txz_info.correct_directory < txz_info.total_files) {
-	++txz_info.total_issues;
+	++txz_info.total_feathers;
 	warn("txzchk", "%s: not all files in correct directory", txzpath);
     }
 
     /*
      * Report total number of non .author.json and .info.json dot files.
-     * Don't increment the number of issues as this was done in
+     * Don't increment the number of feathers as this was done in
      * check_txz_file().
      */
     if (txz_info.dot_files > 0) {
@@ -697,10 +699,10 @@ check_all_txz_files(char const *dir_name)
     }
 
     /*
-     * report total issues found
+     * report total feathers found
      */
-    if (txz_info.total_issues > 0) {
-	warn("txzchk", "%s: found %u issue%s", txzpath, txz_info.total_issues, txz_info.total_issues==1?"":"s");
+    if (txz_info.total_feathers > 0) {
+	warn("txzchk", "%s: found %u feather%s stuck in the tarball", txzpath, txz_info.total_feathers, txz_info.total_feathers==1?"":"s");
     }
 }
 
@@ -738,7 +740,7 @@ check_directories(struct txz_file *file, char const *dir_name, char const *txzpa
     /* check that there is a directory */
     if (strchr(file->filename, '/') == NULL && strcmp(file->filename, ".")) {
 	warn("txzchk", "%s: no directory found in filename %s", txzpath, file->filename);
-	++txz_info.total_issues;
+	++txz_info.total_feathers;
     }
     if (strstr(file->filename, "..")) { /* check for '..' in path */
 	/*
@@ -746,11 +748,11 @@ check_directories(struct txz_file *file, char const *dir_name, char const *txzpa
 	 * but since the basename of each file is checked in check_txz_file() this
 	 * is okay.
 	 */
-	++txz_info.total_issues;
+	++txz_info.total_feathers;
 	warn("txzchk", "%s: found file with .. in the path: %s", txzpath, file->filename);
     }
     if (*(file->filename) == '/') {
-	++txz_info.total_issues;
+	++txz_info.total_feathers;
 	warn("txzchk", "%s: found absolute path %s", txzpath, file->filename);
     }
 
@@ -797,20 +799,20 @@ check_directories(struct txz_file *file, char const *dir_name, char const *txzpa
 	prev = file->filename[i];
     }
     if (dir_count > 1) {
-	++txz_info.total_issues;
+	++txz_info.total_feathers;
 	warn("txzchk", "%s: found more than one directory in path %s", txzpath, file->filename);
     }
     /*
      * Now we have to run some tests on the directory name which we obtained
      * from fnamchk earlier on - but only if fnamchk did not return an
-     * error! If it did we'll report other issues but we won't check
+     * error! If it did we'll report other feathers/issues but we won't check
      * directory names (at least the directory name expected in the
      * tarball).
      */
     if (dir_name != NULL && strlen(dir_name) > 0) {
 	if (strncmp(file->filename, dir_name, strlen(dir_name))) {
 	    warn("txzchk", "%s: found incorrect directory in filename %s", txzpath, file->filename);
-	    ++txz_info.total_issues;
+	    ++txz_info.total_feathers;
 	}
 	else {
 	    /* This file is in the right directory */
@@ -859,12 +861,12 @@ parse_linux_txz_line(char *p, char *linep, char *line_dup, char const *dir_name,
 
     if (*p != '/') {
 	warn("txzchk", "found non-numerical UID in line %s", line_dup);
-	++txz_info.total_issues;
+	++txz_info.total_feathers;
 	p = strchr(p, '/');
     }
     if (p == NULL) {
 	warn("txzchk", "encountered NULL pointer when parsing line %s", line_dup);
-	++txz_info.total_issues;
+	++txz_info.total_feathers;
 	return;
     }
     ++p;
@@ -878,12 +880,12 @@ parse_linux_txz_line(char *p, char *linep, char *line_dup, char const *dir_name,
 
     if (*p) {
 	warn("txzchk", "found non-numerical GID in file in line %s", line_dup);
-	++txz_info.total_issues;
+	++txz_info.total_feathers;
     }
     p = strtok_r(NULL, " \t", saveptr);
     if (p == NULL) {
 	warn("txzchk", "%s: NULL pointer encountered trying to parse line, reading next line", txzpath);
-	++txz_info.total_issues;
+	++txz_info.total_feathers;
 	return;
     }
 
@@ -891,10 +893,10 @@ parse_linux_txz_line(char *p, char *linep, char *line_dup, char const *dir_name,
     current_file_size = strtoll(p, NULL, 10);
     if (errno != 0) {
 	warnp("txzchk", "%s: trying to parse file size in on line: %s, string: %s, reading next line", txzpath, line_dup, p);
-	++txz_info.total_issues;
+	++txz_info.total_feathers;
     } else if (current_file_size < 0) {
 	warn("txzchk", "%s: file size < 0", txzpath);
-	++txz_info.total_issues;
+	++txz_info.total_feathers;
     }
     txz_info.file_sizes += current_file_size;
 
@@ -906,7 +908,7 @@ parse_linux_txz_line(char *p, char *linep, char *line_dup, char const *dir_name,
 	p = strtok_r(NULL, " \t", saveptr);
 	if (p == NULL) {
 	    warn("txzchk", "%s: NULL pointer trying to parse line, reading next line", txzpath);
-	    ++txz_info.total_issues;
+	    ++txz_info.total_feathers;
 	    return;
 	}
     }
@@ -921,7 +923,7 @@ parse_linux_txz_line(char *p, char *linep, char *line_dup, char const *dir_name,
 	p = strtok_r(NULL, " \t", saveptr);
 	if (p != NULL) {
 	    warn("txzchk", "%s: bogus field found after filename: %s", txzpath, p);
-	    ++txz_info.total_issues;
+	    ++txz_info.total_feathers;
 	}
     } while (p != NULL);
 
@@ -977,7 +979,7 @@ parse_bsd_txz_line(char *p, char *linep, char *line_dup, char const *dir_name, c
     p = strtok_r(NULL, " \t", saveptr);
     if (p == NULL) {
 	warn("txzchk", "%s: NULL pointer encountered trying to parse line, reading next line", txzpath);
-	++txz_info.total_issues;
+	++txz_info.total_feathers;
 	return;
     }
     /*
@@ -989,7 +991,7 @@ parse_bsd_txz_line(char *p, char *linep, char *line_dup, char const *dir_name, c
 
     if (*p) {
 	warn("txzchk", "%s: found non-numerical UID in file in line %s", txzpath, line_dup);
-	++txz_info.total_issues;
+	++txz_info.total_feathers;
     }
 
     /*
@@ -998,7 +1000,7 @@ parse_bsd_txz_line(char *p, char *linep, char *line_dup, char const *dir_name, c
     p = strtok_r(NULL, " \t", saveptr);
     if (p == NULL) {
 	warn("txzchk", "%s: NULL pointer encountered trying to parse line, reading next line", txzpath);
-	++txz_info.total_issues;
+	++txz_info.total_feathers;
 	return;
     }
     for (; p && *p && isdigit(*p); )
@@ -1006,13 +1008,13 @@ parse_bsd_txz_line(char *p, char *linep, char *line_dup, char const *dir_name, c
 
     if (*p) {
 	warn("txzchk", "%s: found non-numerical GID in file in line: %s", txzpath, line_dup);
-	++txz_info.total_issues;
+	++txz_info.total_feathers;
     }
 
     p = strtok_r(NULL, " \t", saveptr);
     if (p == NULL) {
 	warn("txzchk", "%s: NULL pointer encountered trying to parse line, reading next line", txzpath);
-	++txz_info.total_issues;
+	++txz_info.total_feathers;
 	return;
     }
 
@@ -1031,7 +1033,7 @@ parse_bsd_txz_line(char *p, char *linep, char *line_dup, char const *dir_name, c
 	p = strtok_r(NULL, " \t", saveptr);
 	if (p == NULL) {
 	    warn("txzchk", "%s: NULL pointer trying to parse line, reading next line", txzpath);
-	    ++txz_info.total_issues;
+	    ++txz_info.total_feathers;
 	    return;
 	}
     }
@@ -1047,7 +1049,7 @@ parse_bsd_txz_line(char *p, char *linep, char *line_dup, char const *dir_name, c
 	p = strtok_r(NULL, " \t", saveptr);
 	if (p != NULL) {
 	    warn("txzchk", "%s: bogus field found after filename: %s", txzpath, p);
-	    ++txz_info.total_issues;
+	    ++txz_info.total_feathers;
 	}
     } while (p != NULL);
 
@@ -1076,7 +1078,7 @@ parse_bsd_txz_line(char *p, char *linep, char *line_dup, char const *dir_name, c
  *	txzpath		-   the tarball path
  *	dir_count	-   pointer to dir_count (from check_tarball())
  *
- *  Function updates txz_info.total_issues, txz_info.file_sizes and dir_count. Returns void.
+ *  Function updates txz_info.total_feathers, txz_info.file_sizes and dir_count. Returns void.
  *
  *  Function does not return on error.
  */
@@ -1101,7 +1103,7 @@ parse_txz_line(char *linep, char *line_dup, char const *dir_name, char const *tx
 	++(*dir_count);
 	if (*dir_count > 1) {
 	    warn("txzchk", "%s: found more than one directory entry: %s", txzpath, linep);
-	    ++txz_info.total_issues;
+	    ++txz_info.total_feathers;
 	}
 
     /*
@@ -1109,20 +1111,20 @@ parse_txz_line(char *linep, char *line_dup, char const *dir_name, char const *tx
      */
     } else if (*linep != '-') {
 	warn("txzchk", "%s: found a non-directory non-regular non-hard-lined item: %s", txzpath, linep);
-	++txz_info.total_issues;
+	++txz_info.total_feathers;
     }
 
     /* extract each field, one at a time, to do various tests */
     p = strtok_r(linep, " \t", &saveptr);
     if (p == NULL) {
 	warn("txzchk", "%s: NULL pointer encountered trying to parse line, reading next line", txzpath);
-	++txz_info.total_issues;
+	++txz_info.total_feathers;
 	return;
     }
 
     if (has_special_bits(p)) {
 	warn("txzchk", "%s: found special bits on line: %s", txzpath, line_dup);
-	++txz_info.total_issues;
+	++txz_info.total_feathers;
     }
 
     /*
@@ -1132,7 +1134,7 @@ parse_txz_line(char *linep, char *line_dup, char const *dir_name, char const *tx
     p = strtok_r(NULL, " \t", &saveptr);
     if (p == NULL) {
 	warn("txzchk", "%s: NULL pointer encountered trying to parse line, reading next line", txzpath);
-	++txz_info.total_issues;
+	++txz_info.total_feathers;
 	return;
     }
     if (strchr(p, '/') != NULL) {
@@ -1157,7 +1159,7 @@ parse_txz_line(char *linep, char *line_dup, char const *dir_name, char const *tx
  *
  * returns:
  *
- *	total number of issues found (txz_info.total_issues).
+ *	total number of feathers/issues found (txz_info.total_feathers).
  *
  * NOTE: Does not return on error.
  */
@@ -1200,7 +1202,7 @@ check_tarball(char const *tar, char const *fnamchk)
     }
     if (exit_code != 0) {
 	warn("txzchk", "%s: %s %s failed with exit code: %d", txzpath, fnamchk, txzpath, WEXITSTATUS(exit_code));
-	++txz_info.total_issues;
+	++txz_info.total_feathers;
     } else {
 	fnamchk_okay = true;
     }
@@ -1212,8 +1214,8 @@ check_tarball(char const *tar, char const *fnamchk)
      * format of the tool changes this must also change!
      *
      * Note that the reason we don't exit if fnamchk reports an error is we
-     * still can detect other issues; we just won't detect issues with the entry
-     * number and directory.
+     * still can detect other feathers/issues; we just won't detect feathers
+     * with the entry number and directory.
      */
     if (fnamchk_okay) {
 
@@ -1258,7 +1260,7 @@ check_tarball(char const *tar, char const *fnamchk)
 	not_reached();
     }
     else if (txz_info.size > MAX_TARBALL_LEN) {
-	++txz_info.total_issues;
+	++txz_info.total_feathers;
 	fpara(stderr,
 	      "",
 	      "The compressed tarball exceeds the maximum allowed size, sorry.",
@@ -1371,12 +1373,13 @@ check_tarball(char const *tar, char const *fnamchk)
     } while (readline_len >= 0);
 
     /*
-     * now parse the lines, reporting any issue that have to be done while parsing
+     * now parse the lines, reporting any feathers stuck in the tarball that
+     * have to be detected while parsing
      */
     parse_all_txz_lines(dir_name, txzpath);
 
     /*
-     * check files list and report any additional issues
+     * check files list and report any additional feathers stuck in the tarball
      */
     check_all_txz_files(dir_name);
 
@@ -1399,7 +1402,7 @@ check_tarball(char const *tar, char const *fnamchk)
     }
     input_stream = NULL;
 
-    return txz_info.total_issues;
+    return txz_info.total_feathers;
 }
 
 
@@ -1476,7 +1479,10 @@ add_txz_line(char const *str, int line_num)
 
 
 /*
- * parse_all_txz_lines - parse txz_lines, reporting any issues found
+ * parse_all_txz_lines
+ *
+ * Parse the txz_lines list and report any feathers stuck in the tarball. After
+ * all the lines have been parsed additional tests will be performed.
  *
  * given:
  *
@@ -1506,7 +1512,7 @@ parse_all_txz_lines(char const *dir_name, char const *txzpath)
     for (line = txz_lines; line != NULL; line = line->next) {
 	if (line->line == NULL) {
 	    warn("txzchk", "encountered NULL string on line %d", line->line_num);
-	    ++txz_info.total_issues;
+	    ++txz_info.total_feathers;
 	    continue;
 	}
 	line_dup = strdup(line->line);
@@ -1529,8 +1535,11 @@ parse_all_txz_lines(char const *dir_name, char const *txzpath)
  * the tarball together without interspersing it with any warnings. Thus we show
  * the files list, adding each line to the list in the process, and then after
  * that we can iterate through the lines and show any warnings. After that we
- * report any issues that haven't been reported yet (some warnings have to be
- * issued while parsing the lines).
+ * report any feathers stuck in the tarball that haven't been reported yet (some
+ * warnings have to be issued while parsing the lines so those were already
+ * reported).
+ *
+ * Once the lines are all parsed we must free the list.
  *
  * This function returns void.
  */
