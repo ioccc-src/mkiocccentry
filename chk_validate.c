@@ -605,7 +605,7 @@ chk_Makefile(struct json *node,
 
 
 /*
- * chk_Makefile - JSON semantic check for Makefile_override
+ * chk_Makefile_override - JSON semantic check for Makefile_override
  *
  * given:
  *	node	JSON parse node being checked
