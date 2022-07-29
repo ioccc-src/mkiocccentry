@@ -35,6 +35,8 @@ static char *member_value_decoded_str(struct json *node, unsigned int depth, str
 				      char const *name, struct json_sem_val_err **val_err);
 static bool *member_value_bool(struct json *node, unsigned int depth, struct json_sem *sem,
 			       char const *name, struct json_sem_val_err **val_err);
+static struct str_or_null member_value_str_or_null(struct json *node, unsigned int depth, struct json_sem *sem,
+						   char const *name, struct json_sem_val_err **val_err);
 
 /*
  * chk_null_args - check arguments for NULL
@@ -264,6 +266,145 @@ member_value_bool(struct json *node, unsigned int depth, struct json_sem *sem,
 
 
 /*
+ * member_value_str_or_null - return JSON JTYPE_NULL or the JSON decoded value string
+ *
+ * If struct str_or_null == false, then the JSON JTYPE_MEMBER value was neither JTYPE_NULL
+ * nor a valid JSON JTYPE_STRING.
+ *
+ * If struct str_or_null == true, then if is_null == true, then JTYPE_MEMBER value was JTYPE_NULL,
+ * else JTYPE_MEMBER value is a valid JSON JTYPE_STRING.
+ *
+ * given:
+ *	node	JSON parse node being checked
+ *	depth	depth of node in the JSON parse tree (0 ==> tree root)
+ *	sem	JSON semantic node triggering the check
+ *	name	name of caller function (NULL ==> "((NULL))")
+ *	val_err	pointer to address where to place a JSON semantic validation error,
+ *		NULL ==> do not report a JSON semantic validation error
+ *
+ * returns:
+ *	struct str_or_null
+ */
+static struct str_or_null
+member_value_str_or_null(struct json *node, unsigned int depth, struct json_sem *sem,
+			 char const *name, struct json_sem_val_err **val_err)
+{
+    struct json_member *item = NULL;		/* JSON member */
+    struct json *value = NULL;			/* value of JTYPE_MEMBER */
+    struct json_string *istr = NULL;		/* JTYPE_MEMBER value as JTYPE_STRING */
+    struct json_null *inull = NULL;		/* JTYPE_MEMBER value as JTYPE_NULL */
+    struct str_or_null ret = {			/* return value - initialized to invalid */
+	false, false, NULL
+    };
+
+    /*
+     * firewall - args
+     */
+    if (chk_null_args(node, depth, sem, name, val_err) == true) {
+	return ret;
+    }
+
+    /*
+     * validate JSON parse node type
+     */
+    if (node->type != JTYPE_MEMBER) {
+	if (val_err != NULL) {
+	    *val_err = werr_sem_val(24, node, depth, sem, name, "node type %s != JTYPE_MEMBER",
+				    json_type_name(node->type));
+	}
+	return ret;
+    }
+    item = &(node->item.member);
+    if (item->converted == false) {
+	if (val_err != NULL) {
+	    *val_err = werr_sem_val(25, node, depth, sem, name, "JTYPE_MEMBER node converted is false");
+	}
+	return ret;
+    }
+
+    /*
+     * firewall - value
+     */
+    value = item->value;
+    if (value == NULL) {
+	if (val_err != NULL) {
+	    *val_err = werr_sem_val(26, node, depth, sem, name, "node value is NULL");
+	}
+	return ret;
+    }
+
+    /*
+     * process based on value type
+     */
+    switch (value->type) {
+
+    /*
+     * case: value is JTYPE_STRING
+     */
+    case JTYPE_STRING:
+
+	/*
+	 * firewall - value
+	 */
+	istr = &(value->item.string);
+	if (istr->converted == false) {
+	    if (val_err != NULL) {
+		*val_err = werr_sem_val(27, node, depth, sem, name, "node value JTYPE_STRING converted is false");
+	    }
+	    return ret;
+	}
+
+	/*
+	 * firewall - decoded JSON string
+	 */
+	ret.str = istr->str;
+	if (ret.str == NULL) {
+	    if (val_err != NULL) {
+		*val_err = werr_sem_val(28, node, depth, sem, name, "node value decoded JSON string is NULL");
+	    }
+	    return ret;
+	}
+	ret.valid = true;
+	break;
+
+    /*
+     * case: value is JTYPE_NULL
+     */
+    case JTYPE_NULL:
+
+	/*
+	 * firewall - value
+	 */
+	inull = &(value->item.null);
+	if (inull->converted == false) {
+	    if (val_err != NULL) {
+		*val_err = werr_sem_val(29, node, depth, sem, name, "node value JTYPE_NULL converted is false");
+	    }
+	    return ret;
+	}
+	ret.is_null = true;
+	ret.valid = true;
+	break;
+
+    /*
+     * case: everything else
+     */
+    default:
+	if (val_err != NULL) {
+	    *val_err = werr_sem_val(30, node, depth, sem, name, "node value type %s != JTYPE_STRING and != JTYPE_NULL",
+				    json_type_name(value->type));
+	}
+	break;
+    }
+
+    /*
+     * return result
+     */
+    return ret;
+}
+
+
+/*
  * chk_IOCCC_author_version - JSON semantic check for IOCCC_author_version
  *
  * given:
@@ -298,7 +439,7 @@ chk_IOCCC_author_version(struct json *node,
     test = test_IOCCC_author_version(str);
     if (test == false) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(24, node, depth, sem, __func__, "invalid IOCCC_author_version");
+	    *val_err = werr_sem_val(31, node, depth, sem, __func__, "invalid IOCCC_author_version");
 	}
 	return false;
     }
@@ -348,7 +489,7 @@ chk_IOCCC_contest_id(struct json *node,
     test = test_IOCCC_contest_id(str);
     if (test == false) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(25, node, depth, sem, __func__, "invalid IOCCC_contest_id");
+	    *val_err = werr_sem_val(32, node, depth, sem, __func__, "invalid IOCCC_contest_id");
 	}
 	return false;
     }
@@ -398,7 +539,7 @@ chk_IOCCC_info_version(struct json *node,
     test = test_IOCCC_info_version(str);
     if (test == false) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(26, node, depth, sem, __func__, "invalid IOCCC_info_version");
+	    *val_err = werr_sem_val(33, node, depth, sem, __func__, "invalid IOCCC_info_version");
 	}
 	return false;
     }
@@ -448,7 +589,7 @@ chk_Makefile(struct json *node,
     test = test_Makefile(str);
     if (test == false) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(27, node, depth, sem, __func__, "invalid Makefile filename");
+	    *val_err = werr_sem_val(34, node, depth, sem, __func__, "invalid Makefile filename");
 	}
 	return false;
     }
@@ -498,7 +639,7 @@ chk_Makefile_override(struct json *node,
     test = test_Makefile_override(*boolean);
     if (test == false) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(28, node, depth, sem, __func__, "invalid Makefile filename");
+	    *val_err = werr_sem_val(35, node, depth, sem, __func__, "invalid Makefile filename");
 	}
 	return false;
     }
@@ -531,24 +672,39 @@ bool
 chk_abstract(struct json *node,
 	     unsigned int depth, struct json_sem *sem, struct json_sem_val_err **val_err)
 {
-    char *str = NULL;				/* JTYPE_STRING as decoded JSON string */
+    struct str_or_null val;			/* report JSON JTYPE_MEMBER value */
     bool test = false;				/* validation test result */
 
     /*
      * firewall - args
      */
-    str = member_value_decoded_str(node, depth, sem, __func__, val_err);
-    if (str == NULL) {
+    val = member_value_str_or_null(node, depth, sem, __func__, val_err);
+    if (val.valid == false) {
 	return false;
+    }
+
+    /*
+     * case: abstract is null
+     */
+    if (val.is_null == true) {
+	return true;
     }
 
     /*
      * validate decoded JSON string
      */
-    test = test_abstract(str);
+     /* paranoia */
+    if (val.str == NULL) {
+	if (val_err != NULL) {
+	    *val_err = werr_sem_val(36, node, depth, sem, __func__,
+				    "val.valid true, val.is_null false, but val.str is NULL");
+	}
+	return false;
+    }
+    test = test_abstract(val.str);
     if (test == false) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(29, node, depth, sem, __func__, "invalid abstract");
+	    *val_err = werr_sem_val(37, node, depth, sem, __func__, "invalid abstract");
 	}
 	return false;
     }
