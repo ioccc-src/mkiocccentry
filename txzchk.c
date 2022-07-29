@@ -917,11 +917,13 @@ parse_linux_txz_line(char *p, char *linep, char *line_dup, char const *dir_name,
 	err(22, __func__, "alloc_txz_file() returned NULL");
 	not_reached();
     }
-    p = strtok_r(NULL, " \t", saveptr);
-    if (p != NULL) {
-	warn("txzchk", "%s: bogus field found after filename: %s", txzpath, p);
-	++txz_info.total_issues;
-    }
+    do {
+	p = strtok_r(NULL, " \t", saveptr);
+	if (p != NULL) {
+	    warn("txzchk", "%s: bogus field found after filename: %s", txzpath, p);
+	    ++txz_info.total_issues;
+	}
+    } while (p != NULL);
 
 
     /*
@@ -1041,11 +1043,13 @@ parse_bsd_txz_line(char *p, char *linep, char *line_dup, char const *dir_name, c
 	not_reached();
     }
 
-    p = strtok_r(NULL, " \t", saveptr);
-    if (p != NULL) {
-	warn("txzchk", "%s: bogus field found after filename: %s", txzpath, p);
-	++txz_info.total_issues;
-    }
+    do {
+	p = strtok_r(NULL, " \t", saveptr);
+	if (p != NULL) {
+	    warn("txzchk", "%s: bogus field found after filename: %s", txzpath, p);
+	    ++txz_info.total_issues;
+	}
+    } while (p != NULL);
 
     /*
      * although we could check these later we check here because the
