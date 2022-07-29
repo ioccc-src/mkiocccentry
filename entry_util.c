@@ -669,6 +669,195 @@ test_title(char *str)
     return true;
 }
 
+/*
+ * test_empty_override - test if empty_override is valid
+ *
+ * Determine if empty_override boolean is valid.  :-)
+ * Well this isn't much of a test, but we have to keep
+ * up with the general form of tests!  :-)
+ *
+ * given:
+ *	boolean	boolean to test
+ *
+ * returns:
+ *	true ==> bool is valid,
+ *	false ==> bool is NOT valid, or some internal error
+ */
+bool
+test_empty_override(bool boolean)
+{
+    json_dbg(JSON_DBG_MED, __func__, "empty_override is %s", booltostr(boolean));
+    return true;
+}
+
+/*
+ * test_rule_2a_override - test if rule_2a_override is valid
+ *
+ * Determine if rule_2a_override boolean is valid.  :-)
+ * Well this isn't much of a test, but we have to keep
+ * up with the general form of tests!  :-)
+ *
+ * given:
+ *	boolean	boolean to test
+ *
+ * returns:
+ *	true ==> bool is valid,
+ *	false ==> bool is NOT valid, or some internal error
+ */
+bool
+test_rule_2a_override(bool boolean)
+{
+    json_dbg(JSON_DBG_MED, __func__, "rule_2a_override is %s", booltostr(boolean));
+    return true;
+}
+
+/*
+ * test_rule_2a_mismatch - test if rule_2a_mismatch is valid
+ *
+ * Determine if rule_2a_mismatch boolean is valid.  :-)
+ * Well this isn't much of a test, but we have to keep
+ * up with the general form of tests!  :-)
+ *
+ * given:
+ *	boolean	boolean to test
+ *
+ * returns:
+ *	true ==> bool is valid,
+ *	false ==> bool is NOT valid, or some internal error
+ */
+bool
+test_rule_2a_mismatch(bool boolean)
+{
+    json_dbg(JSON_DBG_MED, __func__, "rule_2a_mismatch is %s", booltostr(boolean));
+    return true;
+}
+
+/*
+ * test_rule_2b_override - test if rule_2b_override is valid
+ *
+ * Determine if rule_2b_override boolean is valid.  :-)
+ * Well this isn't much of a test, but we have to keep
+ * up with the general form of tests!  :-)
+ *
+ * given:
+ *	boolean	boolean to test
+ *
+ * returns:
+ *	true ==> bool is valid,
+ *	false ==> bool is NOT valid, or some internal error
+ */
+bool
+test_rule_2b_override(bool boolean)
+{
+    json_dbg(JSON_DBG_MED, __func__, "rule_2b_override is %s", booltostr(boolean));
+    return true;
+}
+
+/*
+ * test_highbit_warning - test if highbit_warning is valid
+ *
+ * Determine if highbit_warning boolean is valid.  :-)
+ * Well this isn't much of a test, but we have to keep
+ * up with the general form of tests!  :-)
+ *
+ * given:
+ *	boolean	boolean to test
+ *
+ * returns:
+ *	true ==> bool is valid,
+ *	false ==> bool is NOT valid, or some internal error
+ */
+bool
+test_highbit_warning(bool boolean)
+{
+    json_dbg(JSON_DBG_MED, __func__, "highbit_warning is %s", booltostr(boolean));
+    return true;
+}
+
+/*
+ * test_nul_warning - test if nul_warning is valid
+ *
+ * Determine if nul_warning boolean is valid.  :-)
+ * Well this isn't much of a test, but we have to keep
+ * up with the general form of tests!  :-)
+ *
+ * given:
+ *	boolean	boolean to test
+ *
+ * returns:
+ *	true ==> bool is valid,
+ *	false ==> bool is NOT valid, or some internal error
+ */
+bool
+test_nul_warning(bool boolean)
+{
+    json_dbg(JSON_DBG_MED, __func__, "nul_warning is %s", booltostr(boolean));
+    return true;
+}
+
+/*
+ * test_trigraph_warning - test if trigraph_warning is valid
+ *
+ * Determine if trigraph_warning boolean is valid.  :-)
+ * Well this isn't much of a test, but we have to keep
+ * up with the general form of tests!  :-)
+ *
+ * given:
+ *	boolean	boolean to test
+ *
+ * returns:
+ *	true ==> bool is valid,
+ *	false ==> bool is NOT valid, or some internal error
+ */
+bool
+test_trigraph_warning(bool boolean)
+{
+    json_dbg(JSON_DBG_MED, __func__, "trigraph_warning is %s", booltostr(boolean));
+    return true;
+}
+
+
+/*
+ * test_wordbuf_warning - test if wordbuf_warning is valid
+ *
+ * Determine if wordbuf_warning boolean is valid.  :-)
+ * Well this isn't much of a test, but we have to keep
+ * up with the general form of tests!  :-)
+ *
+ * given:
+ *	boolean	boolean to test
+ *
+ * returns:
+ *	true ==> bool is valid,
+ *	false ==> bool is NOT valid, or some internal error
+ */
+bool
+test_wordbuf_warning(bool boolean)
+{
+    json_dbg(JSON_DBG_MED, __func__, "wordbuf_warning is %s", booltostr(boolean));
+    return true;
+}
+
+/*
+ * test_ungetc_warning - test if ungetc_warning is valid
+ *
+ * Determine if ungetc_warning boolean is valid.  :-)
+ * Well this isn't much of a test, but we have to keep
+ * up with the general form of tests!  :-)
+ *
+ * given:
+ *	boolean	boolean to test
+ *
+ * returns:
+ *	true ==> bool is valid,
+ *	false ==> bool is NOT valid, or some internal error
+ */
+bool
+test_ungetc_warning(bool boolean)
+{
+    json_dbg(JSON_DBG_MED, __func__, "ungetc_warning is %s", booltostr(boolean));
+    return true;
+}
 
 /*
  * test_Makefile_override - test if Makefile_override is valid
@@ -690,6 +879,135 @@ test_Makefile_override(bool boolean)
     json_dbg(JSON_DBG_MED, __func__, "Makefile_override is %s", booltostr(boolean));
     return true;
 }
+
+/*
+ * test_first_rule_is_all - test if first_rule_is_all is valid
+ *
+ * Determine if first_rule_is_all boolean is valid.  :-)
+ * Well this isn't much of a test, but we have to keep
+ * up with the general form of tests!  :-)
+ *
+ * given:
+ *	boolean	boolean to test
+ *
+ * returns:
+ *	true ==> bool is valid,
+ *	false ==> bool is NOT valid, or some internal error
+ */
+bool
+test_first_rule_is_all(bool boolean)
+{
+    json_dbg(JSON_DBG_MED, __func__, "first_rule_is_all is %s", booltostr(boolean));
+    return true;
+}
+
+/*
+ * test_found_all_rule - test if found_all_rule is valid
+ *
+ * Determine if found_all_rule boolean is valid.  :-)
+ * Well this isn't much of a test, but we have to keep
+ * up with the general form of tests!  :-)
+ *
+ * given:
+ *	boolean	boolean to test
+ *
+ * returns:
+ *	true ==> bool is valid,
+ *	false ==> bool is NOT valid, or some internal error
+ */
+bool
+test_found_all_rule(bool boolean)
+{
+    json_dbg(JSON_DBG_MED, __func__, "found_all_rule is %s", booltostr(boolean));
+    return true;
+}
+
+
+/*
+ * test_found_clean_rule - test if found_clean_rule is valid
+ *
+ * Determine if found_clean_rule boolean is valid.  :-)
+ * Well this isn't much of a test, but we have to keep
+ * up with the general form of tests!  :-)
+ *
+ * given:
+ *	boolean	boolean to test
+ *
+ * returns:
+ *	true ==> bool is valid,
+ *	false ==> bool is NOT valid, or some internal error
+ */
+bool
+test_found_clean_rule(bool boolean)
+{
+    json_dbg(JSON_DBG_MED, __func__, "found_clean_rule is %s", booltostr(boolean));
+    return true;
+}
+
+/*
+ * test_found_clobber_rule - test if found_clobber_rule is valid
+ *
+ * Determine if found_clobber_rule boolean is valid.  :-)
+ * Well this isn't much of a test, but we have to keep
+ * up with the general form of tests!  :-)
+ *
+ * given:
+ *	boolean	boolean to test
+ *
+ * returns:
+ *	true ==> bool is valid,
+ *	false ==> bool is NOT valid, or some internal error
+ */
+bool
+test_found_clobber_rule(bool boolean)
+{
+    json_dbg(JSON_DBG_MED, __func__, "found_clobber_rule is %s", booltostr(boolean));
+    return true;
+}
+
+/*
+ * test_found_try_rule - test if found_try_rule is valid
+ *
+ * Determine if found_try_rule boolean is valid.  :-)
+ * Well this isn't much of a test, but we have to keep
+ * up with the general form of tests!  :-)
+ *
+ * given:
+ *	boolean	boolean to test
+ *
+ * returns:
+ *	true ==> bool is valid,
+ *	false ==> bool is NOT valid, or some internal error
+ */
+bool
+test_found_try_rule(bool boolean)
+{
+    json_dbg(JSON_DBG_MED, __func__, "found_try_rule is %s", booltostr(boolean));
+    return true;
+}
+
+/*
+ * test_test_mode - test if test_mode is valid
+ *
+ * Determine if test_mode boolean is valid.  :-)
+ * Well this isn't much of a test, but we have to keep
+ * up with the general form of tests!  :-)
+ *
+ * given:
+ *	boolean	boolean to test
+ *
+ * returns:
+ *	true ==> bool is valid,
+ *	false ==> bool is NOT valid, or some internal error
+ */
+bool
+test_test_mode(bool boolean)
+{
+    json_dbg(JSON_DBG_MED, __func__, "test_mode is %s", booltostr(boolean));
+    return true;
+}
+
+
 
 
 /*
