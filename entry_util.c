@@ -778,3 +778,39 @@ test_affiliation(char *str)
     json_dbg(JSON_DBG_MED, __func__, "affiliation is valid");
     return true;
 }
+
+
+/*
+ * test_author_JSON - test if author_JSON is valid
+ *
+ * Determine if author_JSON matches AUTHOR_JSON_FILENAME.
+ *
+ * given:
+ *	str	string to test
+ *
+ * returns:
+ *	true ==> string is valid,
+ *	false ==> string is NOT valid, or NULL pointer, or some internal error
+ */
+bool
+test_author_JSON(char *str)
+{
+    /*
+     * firewall
+     */
+    if (str == NULL) {
+	warn(__func__, "str is NULL");
+	return false;
+    }
+
+    /*
+     * validate str
+     */
+    if (strcmp(str, AUTHOR_JSON_FILENAME) != 0) {
+	json_dbg(JSON_DBG_MED, __func__, "author_JSON != AUTHOR_JSON_FILENAME: %s", AUTHOR_JSON_FILENAME);
+	json_dbg(JSON_DBG_HIGH, __func__, "author_JSON: %s is not AUTHOR_JSON_FILENAME: %s", str, AUTHOR_JSON_FILENAME);
+	return false;
+    }
+    json_dbg(JSON_DBG_MED, __func__, "author_JSON is valid");
+    return true;
+}
