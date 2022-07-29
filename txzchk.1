@@ -1,11 +1,11 @@
-.TH txzchk 1 "12 June 2022" "txzchk" "IOCCC tools"
+.TH txzchk 1 "29 July 2022" "txzchk" "IOCCC tools"
 .SH NAME
 txzchk \- sanity checker tool used on IOCCC compressed tarballs
 .SH SYNOPSIS
 \fBtxzchk\fP [\-h] [\-v level] [\-q] [\-V] [\-t tar] [\-F fnamchk] [\-T] [\-E ext] [\-e] txzpath
 .SH DESCRIPTION
 \fBtxzchk\fP runs a series of sanity tests on IOCCC compressed tarballs.
-It is invoked by \fBmkiocccentry(1)\fP after the tarball is formed, reporting any issues found and exiting the program accordingly; if \fBtxzchk\fP does not return 0 \fBmkiocccentry\fP will exit with an error.
+It is invoked by \fBmkiocccentry(1)\fP after the tarball is formed, reporting any feathers stuck in the tarball (i.e. issues found) and exiting the program accordingly; if \fBtxzchk\fP does not return 0 \fBmkiocccentry\fP will exit with an error.
 .PP
 The program runs \fBtar \-tJvf\fP on the \fItxzpath\fP and parses the output of the command, performing a variety of tests on the tarball.
 As a side effect it will show the user the contents of the tarball.
@@ -47,13 +47,14 @@ This is used in conjunction with \fb\-T\fP above for \fBTESTING\fP purposes only
 Suppress error messages.
 .SH EXIT STATUS
 .PP
-An exit code of 0 indicates there were no issues found in the tarball.
+An exit code of 0 indicates there are no feathers stuck in the tarball.
 .PP
-An exit code of 1 indicates that the tarball was successfully parsed and there was at least one issue found in the tarball.
+An exit code of 1 indicates that the tarball was successfully parsed and there's at least one feather stuck in the tarball.
 .PP
 An exit code of 2 indicates that the usage string was printed either because \fB\-h\fP was specified or an invalid command line.
 .PP
 Any value > 2 indicates an internal error or an unknown tar listing format.
+Please report this if this happens (see \fBBUGS\fP section for where to report bugs).
 .SH FILES
 \fItxzchk.c\fP
 .RS
