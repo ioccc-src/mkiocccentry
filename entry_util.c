@@ -13,7 +13,7 @@
  *
  * "Because JSON embodies a commitment to original design flaws." :-)
  *
- * This JSON parser was co-developed by:
+ * The JSON parser was co-developed by:
  *
  *	@xexyl
  *	https://xexyl.net		Cody Boone Ferguson
@@ -23,7 +23,7 @@
  *
  * "Because sometimes even the IOCCC Judges need some help." :-)
  *
- * Share and vomit on the JSON spec! :-)
+ * Share and enjoy vomiting on the JSON spec! :-)
  */
 
 

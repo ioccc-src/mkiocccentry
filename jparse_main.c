@@ -14,7 +14,7 @@
  * and:
  *	chongo (Landon Curt Noll, http://www.isthe.com/chongo/index.html) /\oo/\
  *
- * Share and vomit on the JSON spec! :-)
+ * Share and enjoy vomiting on the JSON spec! :-)
  */
 
 /* special comments for the seqcexit tool */

@@ -15,7 +15,7 @@
  *
  * "Because sometimes even the IOCCC Judges need some help." :-)
  *
- * Share and vomit on the JSON spec! :-)
+ * Share and enjoy vomiting on the JSON spec! :-)
  */
 
 
