@@ -175,6 +175,6 @@ extern bool test_title(char *str);
 extern bool test_Makefile_override(bool boolean);
 extern bool test_abstract(char *str);
 extern bool test_remarks_md(char *str);
-
+extern bool test_extra_file(char *str);
 
 #endif /* INCLUDE_ENTRY_UTIL_H */

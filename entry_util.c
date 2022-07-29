@@ -722,7 +722,7 @@ test_abstract(char *str)
      */
     /* check for a valid length */
     if (*str == '\0') { /* strlen(str) == 0 */
-	json_dbg(JSON_DBG_MED, __func__, "invalid empty abstract");
+	json_dbg(JSON_DBG_MED, __func__, "invalid abstract: is empty");
 	return false;
     }
     length = strlen(str);
@@ -767,5 +767,56 @@ test_remarks(char *str)
 	return false;
     }
     json_dbg(JSON_DBG_MED, __func__, "remarks filename is valid");
+    return true;
+}
+
+/*
+ * test_extra_file - test if extra_file is validly named
+ *
+ * Determine if extra_file matches the regexp:
+ *
+ *	^[0-9A-Za-z][0-9A-Za-z._+-]*$
+ *
+ * given:
+ *	str	string to test
+ *
+ * returns:
+ *	true ==> string is valid,
+ *	false ==> string is NOT valid, or NULL pointer, or some internal error
+ */
+bool
+test_extra_file(char *str)
+{
+    size_t length = 0;
+
+    /*
+     * firewall
+     */
+    if (str == NULL) {
+	warn(__func__, "str is NULL");
+	return false;
+    } else if (*str == '\0') { /* strlen(str) == 0 */
+	json_dbg(JSON_DBG_MED, __func__, "invalid extra_file: 0 length name");
+	return false;
+    }
+
+    length = strlen(str);
+
+    /*
+     * validate str
+     */
+    if (length > MAX_BASENAME_LEN) {
+	json_dbg(JSON_DBG_MED, __func__, "extra_file filename length %ju > max %ju: <%s>", (uintmax_t)length, (uintmax_t)MAX_BASENAME_LEN, str);
+	json_dbg(JSON_DBG_HIGH, __func__, "extra_file filename: <%s> is invalid", str);
+	return false;
+    }
+    /* extra_file must use only POSIX portable filename and + chars */
+    if (!posix_plus_safe(str, false, false, true)) {
+	json_dbg(JSON_DBG_MED, __func__, "extra_file filename does not match regexp ^[0-9A-Za-z][0-9A-Za-z._+-]*$: <%s>", str);
+	json_dbg(JSON_DBG_HIGH, __func__, "extra_filename filename: <%s> is invalid", str);
+	return false;
+    }
+
+    json_dbg(JSON_DBG_MED, __func__, "extra_file filename is valid");
     return true;
 }
