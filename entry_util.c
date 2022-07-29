@@ -734,3 +734,47 @@ test_abstract(char *str)
     json_dbg(JSON_DBG_MED, __func__, "abstract is valid");
     return true;
 }
+
+
+/*
+ * test_affiliation - test if affiliation is valid
+ *
+ * Determine if affiliation length is <= MAX_AFFILIATION_LEN.
+ *
+ * given:
+ *	str	string to test
+ *
+ * returns:
+ *	true ==> string is valid,
+ *	false ==> string is NOT valid, or NULL pointer, or some internal error
+ */
+bool
+test_affiliation(char *str)
+{
+    size_t length = 0;
+
+    /*
+     * firewall
+     */
+    if (str == NULL) {
+	warn(__func__, "str is NULL");
+	return false;
+    }
+
+    /*
+     * validate str
+     */
+    /* check for a valid length */
+    if (*str == '\0') { /* strlen(str) == 0 */
+	json_dbg(JSON_DBG_MED, __func__, "invalid empty affiliation");
+	return false;
+    }
+    length = strlen(str);
+    if (length > MAX_AFFILIATION_LEN) {
+	json_dbg(JSON_DBG_MED, __func__, "affiliation length %ju > max %d", (uintmax_t)length, MAX_AFFILIATION_LEN);
+	json_dbg(JSON_DBG_HIGH, __func__, "affiliation: <%s> is invalid", str);
+	return false;
+    }
+    json_dbg(JSON_DBG_MED, __func__, "affiliation is valid");
+    return true;
+}

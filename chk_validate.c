@@ -672,6 +672,56 @@ bool
 chk_abstract(struct json *node,
 	     unsigned int depth, struct json_sem *sem, struct json_sem_val_err **val_err)
 {
+    char *str = NULL;				/* JTYPE_STRING as decoded JSON string */
+    bool test = false;				/* validation test result */
+
+    /*
+     * firewall - args
+     */
+    str = member_value_decoded_str(node, depth, sem, __func__, val_err);
+    if (str == NULL) {
+	return false;
+    }
+
+    /*
+     * validate decoded JSON string
+     */
+    test = test_Makefile(str);
+    if (test == false) {
+	if (val_err != NULL) {
+	    *val_err = werr_sem_val(36, node, depth, sem, __func__, "invalid abstract");
+	}
+	return false;
+    }
+
+    /*
+     * return validation success
+     */
+    if (val_err != NULL) {
+	*val_err = NULL;
+    }
+    return true;
+}
+
+
+/*
+ * chk_affiliation - JSON semantic check for affiliation
+ *
+ * given:
+ *	node	JSON parse node being checked
+ *	depth	depth of node in the JSON parse tree (0 ==> tree root)
+ *	sem	JSON semantic node triggering the check
+ *	val_err	pointer to address where to place a JSON semantic validation error,
+ *		NULL ==> do not report a JSON semantic validation error
+ *
+ * returns:
+ *	true ==> JSON element is valid
+ *	false ==> JSON element is NOT valid, or NULL pointer, or some internal error
+ */
+bool
+chk_affiliation(struct json *node,
+	     unsigned int depth, struct json_sem *sem, struct json_sem_val_err **val_err)
+{
     struct str_or_null val;			/* report JSON JTYPE_MEMBER value */
     bool test = false;				/* validation test result */
 
@@ -684,7 +734,7 @@ chk_abstract(struct json *node,
     }
 
     /*
-     * case: abstract is null
+     * case: affiliation is null
      */
     if (val.is_null == true) {
 	return true;
@@ -696,15 +746,15 @@ chk_abstract(struct json *node,
      /* paranoia */
     if (val.str == NULL) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(36, node, depth, sem, __func__,
+	    *val_err = werr_sem_val(37, node, depth, sem, __func__,
 				    "val.valid true, val.is_null false, but val.str is NULL");
 	}
 	return false;
     }
-    test = test_abstract(val.str);
+    test = test_affiliation(val.str);
     if (test == false) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(37, node, depth, sem, __func__, "invalid abstract");
+	    *val_err = werr_sem_val(38, node, depth, sem, __func__, "invalid affiliation");
 	}
 	return false;
     }
