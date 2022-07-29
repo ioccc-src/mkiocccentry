@@ -466,8 +466,8 @@ check_txz_file(char const *txzpath, char const *dir_name, struct txz_file *file)
      * identify if file is an allowed '.' file
      *
      * NOTE: Files that are allowed to begin with '.' must also be lower case.
-     * In other words if any of the letters in ".info.json" or ".author.json"
-     * are upper case the file is an invalid dot file.
+     * In other words if any of the letters in INFO_JSON_FILENAME or
+     * AUTHOR_JSON_FILENAME are upper case the file is an invalid dot file.
      */
     if (!strcmp(file->basename, INFO_JSON_FILENAME) || !strcmp(file->basename, AUTHOR_JSON_FILENAME)) {
 	allowed_dot_file = true;
