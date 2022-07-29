@@ -549,7 +549,7 @@ test_IOCCC_info_version(char *str)
 /*
  * test_Makefile - test if Makefile filename is valid
  *
- * Determine if Makefile matches "Makefile".
+ * Determine if Makefile matches MAKEFILE_FILENAME.
  *
  * given:
  *	str	string to test
@@ -572,7 +572,7 @@ test_Makefile(char *str)
     /*
      * validate str
      */
-    if (strcmp(str, "Makefile") != 0) {
+    if (strcmp(str, MAKEFILE_FILENAME) != 0) {
 	json_dbg(JSON_DBG_MED, __func__, "Makefile != Makefile: %s", "Makefile");
 	json_dbg(JSON_DBG_HIGH, __func__, "Makefile: %s is not Makefile: %s", str, "Makefile");
 	return false;
@@ -732,5 +732,40 @@ test_abstract(char *str)
 	return false;
     }
     json_dbg(JSON_DBG_MED, __func__, "abstract is valid");
+    return true;
+}
+
+/*
+ * test_remarks - test if remarks filename is valid
+ *
+ * Determine if remarks matches REMARKS_FILENAME.
+ *
+ * given:
+ *	str	string to test
+ *
+ * returns:
+ *	true ==> string is valid,
+ *	false ==> string is NOT valid, or NULL pointer, or some internal error
+ */
+bool
+test_remarks(char *str)
+{
+    /*
+     * firewall
+     */
+    if (str == NULL) {
+	warn(__func__, "str is NULL");
+	return false;
+    }
+
+    /*
+     * validate str
+     */
+    if (strcmp(str, REMARKS_FILENAME) != 0) {
+	json_dbg(JSON_DBG_MED, __func__, "remarks != remarks.md: %s", "remarks.md");
+	json_dbg(JSON_DBG_HIGH, __func__, "remarks: %s is not remarks.md: %s", str, "remarks.md");
+	return false;
+    }
+    json_dbg(JSON_DBG_MED, __func__, "remarks filename is valid");
     return true;
 }

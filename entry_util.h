@@ -50,9 +50,10 @@
 /*
  * defines
  */
-#define INFO_JSON_FILENAME ".info.json"
-#define AUTHOR_JSON_FILENAME ".author.json"
-
+#define INFO_JSON_FILENAME	".info.json"
+#define AUTHOR_JSON_FILENAME	".author.json"
+#define MAKEFILE_FILENAME	"Makefile"
+#define REMARKS_FILENAME	"remarks.md"
 
 /*
  * common json fields - for use in mkiocccentry.
@@ -173,6 +174,7 @@ extern bool test_c_src(char *str);
 extern bool test_title(char *str);
 extern bool test_Makefile_override(bool boolean);
 extern bool test_abstract(char *str);
+extern bool test_remarks_md(char *str);
 
 
 #endif /* INCLUDE_ENTRY_UTIL_H */
