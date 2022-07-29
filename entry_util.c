@@ -687,7 +687,7 @@ test_title(char *str)
 bool
 test_Makefile_override(bool boolean)
 {
-    json_dbg(JSON_DBG_MED, __func__, "Makefile_override filename is %s", booltostr(boolean));
+    json_dbg(JSON_DBG_MED, __func__, "Makefile_override is %s", booltostr(boolean));
     return true;
 }
 
