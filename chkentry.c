@@ -101,6 +101,7 @@ main(int argc, char *argv[])
     }
     arg_cnt = argc - optind;
     if (arg_cnt < REQUIRED_ARGS || arg_cnt > REQUIRED_ARGS+1) {
+	/* XXX - the %d+1 arguments is a misfeature that should be fixed in usage() */
 	usage(4, program, "expected %d or %d+1 arguments, found: %d", REQUIRED_ARGS, arg_cnt); /*ooo*/
     }
 
