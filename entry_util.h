@@ -176,6 +176,21 @@ extern bool test_abstract(char *str);
 extern bool test_affiliation(char *str);
 extern bool test_author_JSON(char *str);
 extern bool test_author_count(int author_count);
+extern bool test_empty_override(bool boolean);
+extern bool test_rule_2a_override(bool boolean);
+extern bool test_rule_2a_mismatch(bool boolean);
+extern bool test_rule_2b_override(bool boolean);
+extern bool test_highbit_warning(bool boolean);
+extern bool test_nul_warning(bool boolean);
+extern bool test_trigraph_warning(bool boolean);
+extern bool test_wordbuf_warning(bool boolean);
+extern bool test_ungetc_warning(bool boolean);
+extern bool test_first_rule_is_all(bool boolean);
+extern bool test_found_all_rule(bool boolean);
+extern bool test_found_clean_rule(bool boolean);
+extern bool test_found_clobber_rule(bool boolean);
+extern bool test_found_try_rule(bool boolean);
+extern bool test_test_mode(bool boolean);
 
 
 #endif /* INCLUDE_ENTRY_UTIL_H */
