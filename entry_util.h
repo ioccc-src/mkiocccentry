@@ -175,6 +175,7 @@ extern bool test_Makefile_override(bool boolean);
 extern bool test_abstract(char *str);
 extern bool test_affiliation(char *str);
 extern bool test_author_JSON(char *str);
+extern bool test_author_count(int author_count);
 
 
 #endif /* INCLUDE_ENTRY_UTIL_H */

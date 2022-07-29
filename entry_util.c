@@ -238,8 +238,10 @@ test_mkiocccentry_version(char *str)
      * validate str
      */
     if (strcmp(str, MKIOCCCENTRY_VERSION) != 0) {
-	json_dbg(JSON_DBG_MED, __func__, "mkiocccentry_version != MKIOCCCENTRY_VERSION: %s", MKIOCCCENTRY_VERSION);
-	json_dbg(JSON_DBG_HIGH, __func__, "mkiocccentry_version: %s is not MKIOCCCENTRY_VERSION: %s", str, MKIOCCCENTRY_VERSION);
+	json_dbg(JSON_DBG_MED, __func__,
+		 "invalid: mkiocccentry_version != MKIOCCCENTRY_VERSION: %s", MKIOCCCENTRY_VERSION);
+	json_dbg(JSON_DBG_HIGH, __func__,
+		 "invalid: mkiocccentry_version: %s is not MKIOCCCENTRY_VERSION: %s", str, MKIOCCCENTRY_VERSION);
 	return false;
     }
     json_dbg(JSON_DBG_MED, __func__, "mkiocccentry_version is valid");
@@ -274,8 +276,10 @@ test_iocccsize_version(char *str)
      * validate str
      */
     if (strcmp(str, IOCCCSIZE_VERSION) != 0) {
-	json_dbg(JSON_DBG_MED, __func__, "iocccsize_version != IOCCCSIZE_VERSION: %s", IOCCCSIZE_VERSION);
-	json_dbg(JSON_DBG_HIGH, __func__, "iocccsize_version: %s is not IOCCCSIZE_VERSION: %s", str, IOCCCSIZE_VERSION);
+	json_dbg(JSON_DBG_MED, __func__,
+		 "invalid: iocccsize_version != IOCCCSIZE_VERSION: %s", IOCCCSIZE_VERSION);
+	json_dbg(JSON_DBG_HIGH, __func__,
+		 "invalid: iocccsize_version: %s is not IOCCCSIZE_VERSION: %s", str, IOCCCSIZE_VERSION);
 	return false;
     }
     json_dbg(JSON_DBG_MED, __func__, "iocccsize_version is valid");
@@ -311,8 +315,10 @@ test_chkentry_version(char *str)
      * validate str
      */
     if (strcmp(str, CHKENTRY_VERSION) != 0) {
-	json_dbg(JSON_DBG_MED, __func__, "chkentry_version != CHKENTRY_VERSION: %s", CHKENTRY_VERSION);
-	json_dbg(JSON_DBG_HIGH, __func__, "chkentry_version: %s is not CHKENTRY_VERSION: %s", str, CHKENTRY_VERSION);
+	json_dbg(JSON_DBG_MED, __func__,
+		 "invalid: chkentry_version != CHKENTRY_VERSION: %s", CHKENTRY_VERSION);
+	json_dbg(JSON_DBG_HIGH, __func__,
+		 "invalid: chkentry_version: %s is not CHKENTRY_VERSION: %s", str, CHKENTRY_VERSION);
 	return false;
     }
     json_dbg(JSON_DBG_MED, __func__, "chkentry_version is valid");
@@ -347,8 +353,10 @@ test_fnamchk_version(char *str)
      * validate str
      */
     if (strcmp(str, FNAMCHK_VERSION) != 0) {
-	json_dbg(JSON_DBG_MED, __func__, "fnamchk_version != FNAMCHK_VERSION: %s", FNAMCHK_VERSION);
-	json_dbg(JSON_DBG_HIGH, __func__, "fnamchk_version: %s is not FNAMCHK_VERSION: %s", str, FNAMCHK_VERSION);
+	json_dbg(JSON_DBG_MED, __func__,
+		 "invalid: fnamchk_version != FNAMCHK_VERSION: %s", FNAMCHK_VERSION);
+	json_dbg(JSON_DBG_HIGH, __func__,
+		 "invalid: fnamchk_version: %s is not FNAMCHK_VERSION: %s", str, FNAMCHK_VERSION);
 	return false;
     }
     json_dbg(JSON_DBG_MED, __func__, "fnamchk_version is valid");
@@ -386,8 +394,10 @@ test_txzchk_version(char *str)
      * validate str
      */
     if (strcmp(str, TXZCHK_VERSION) != 0) {
-	json_dbg(JSON_DBG_MED, __func__, "txzchk_version != TXZCHK_VERSION: %s", TXZCHK_VERSION);
-	json_dbg(JSON_DBG_HIGH, __func__, "txzchk_version: %s is not TXZCHK_VERSION: %s", str, TXZCHK_VERSION);
+	json_dbg(JSON_DBG_MED, __func__,
+		 "invalid: txzchk_version != TXZCHK_VERSION: %s", TXZCHK_VERSION);
+	json_dbg(JSON_DBG_HIGH, __func__,
+		 "invalid: txzchk_version: %s is not TXZCHK_VERSION: %s", str, TXZCHK_VERSION);
 	return false;
     }
     json_dbg(JSON_DBG_MED, __func__, "txzchk_version is valid");
@@ -422,8 +432,10 @@ test_IOCCC_author_version(char *str)
      * validate str
      */
     if (strcmp(str, AUTHOR_VERSION) != 0) {
-	json_dbg(JSON_DBG_MED, __func__, "IOCCC_author_version != AUTHOR_VERSION: %s", AUTHOR_VERSION);
-	json_dbg(JSON_DBG_HIGH, __func__, "IOCCC_author_version: %s is not AUTHOR_VERSION: %s", str, AUTHOR_VERSION);
+	json_dbg(JSON_DBG_MED, __func__,
+		 "invalid: IOCCC_author_version != AUTHOR_VERSION: %s", AUTHOR_VERSION);
+	json_dbg(JSON_DBG_HIGH, __func__,
+		 "invalid: IOCCC_author_version: %s is not AUTHOR_VERSION: %s", str, AUTHOR_VERSION);
 	return false;
     }
     json_dbg(JSON_DBG_MED, __func__, "IOCCC_author_version is valid");
@@ -484,25 +496,33 @@ test_IOCCC_contest_id(char *str)
      */
     len = strlen(str);
     if (len != UUID_LEN) {
-	json_dbg(JSON_DBG_MED, __func__, "non-test IOCCC_contest_id len != UUID_LEN: %d", UUID_LEN);
-	json_dbg(JSON_DBG_HIGH, __func__, "non-test IOCCC_contest_id len: %zd doesn't match UUID_LEN: %d", len, UUID_LEN);
+	json_dbg(JSON_DBG_MED, __func__,
+		 "invalid: non-test IOCCC_contest_id len != UUID_LEN: %d", UUID_LEN);
+	json_dbg(JSON_DBG_HIGH, __func__,
+		 "invalid: non-test IOCCC_contest_id len: %zd doesn't match UUID_LEN: %d", len, UUID_LEN);
 	return false;
     }
     /* validate UUID string, version and variant */
     ret = sscanf(str, "%8x-%4x-%1x%3x-%1x%3x-%8x%4x%c", &a, &b, &version, &c, &variant, &d, &e, &f, &guard);
     if (ret != 8) {
-	json_dbg(JSON_DBG_MED, __func__, "did not find 8 fields when parsing IOCCC_contest_id");
-	json_dbg(JSON_DBG_HIGH, __func__, "field count: %d != 8", ret);
+	json_dbg(JSON_DBG_MED, __func__,
+		 "invalid: did not find 8 fields when parsing IOCCC_contest_id");
+	json_dbg(JSON_DBG_HIGH, __func__,
+		 "invalid: field count: %d != 8", ret);
 	return false;
     }
     if (version != UUID_VERSION) {
-	json_dbg(JSON_DBG_MED, __func__, "UUID version hex char != UUID_VERSION: %x", UUID_VERSION);
-	json_dbg(JSON_DBG_HIGH, __func__, "UUID version hex char: %1x is not UUID_VERSION: %x", version, UUID_VERSION);
+	json_dbg(JSON_DBG_MED, __func__,
+		 "invalid: UUID version hex char != UUID_VERSION: %x", UUID_VERSION);
+	json_dbg(JSON_DBG_HIGH, __func__,
+		 "invalid: UUID version hex char: %1x is not UUID_VERSION: %x", version, UUID_VERSION);
 	return false;
     }
     if (variant != UUID_VARIANT) {
-	json_dbg(JSON_DBG_MED, __func__, "UUID variant hex char != UUID_VARIANT: %x", UUID_VARIANT);
-	json_dbg(JSON_DBG_HIGH, __func__, "UUID variant hex char: %1x is not UUID_VARIANT: %x", variant, UUID_VARIANT);
+	json_dbg(JSON_DBG_MED, __func__,
+		 "invalid: UUID variant hex char != UUID_VARIANT: %x", UUID_VARIANT);
+	json_dbg(JSON_DBG_HIGH, __func__,
+		 "invalid: UUID variant hex char: %1x is not UUID_VARIANT: %x", variant, UUID_VARIANT);
 	return false;
     }
     json_dbg(JSON_DBG_MED, __func__, "IOCCC_contest_id is valid");
@@ -537,8 +557,10 @@ test_IOCCC_info_version(char *str)
      * validate str
      */
     if (strcmp(str, INFO_VERSION) != 0) {
-	json_dbg(JSON_DBG_MED, __func__, "IOCCC_info_version != INFO_VERSION: %s", INFO_VERSION);
-	json_dbg(JSON_DBG_HIGH, __func__, "IOCCC_info_version: %s is not INFO_VERSION: %s", str, INFO_VERSION);
+	json_dbg(JSON_DBG_MED, __func__,
+		 "invalid: IOCCC_info_version != INFO_VERSION: %s", INFO_VERSION);
+	json_dbg(JSON_DBG_HIGH, __func__,
+		 "invalid: IOCCC_info_version: %s is not INFO_VERSION: %s", str, INFO_VERSION);
 	return false;
     }
     json_dbg(JSON_DBG_MED, __func__, "IOCCC_info_version is valid");
@@ -573,8 +595,10 @@ test_Makefile(char *str)
      * validate str
      */
     if (strcmp(str, "Makefile") != 0) {
-	json_dbg(JSON_DBG_MED, __func__, "Makefile != Makefile: %s", "Makefile");
-	json_dbg(JSON_DBG_HIGH, __func__, "Makefile: %s is not Makefile: %s", str, "Makefile");
+	json_dbg(JSON_DBG_MED, __func__,
+		 "invalid: Makefile != Makefile: %s", "Makefile");
+	json_dbg(JSON_DBG_HIGH, __func__,
+		 "invalid: Makefile: %s is not Makefile: %s", str, "Makefile");
 	return false;
     }
     json_dbg(JSON_DBG_MED, __func__, "Makefile filename is valid");
@@ -609,8 +633,10 @@ test_c_src(char *str)
      * validate str
      */
     if (strcmp(str, "prog.c") != 0) {
-	json_dbg(JSON_DBG_MED, __func__, "c_src != prog.c: %s", "prog.c");
-	json_dbg(JSON_DBG_HIGH, __func__, "c_src: %s is not prog.c: %s", str, "prog.c");
+	json_dbg(JSON_DBG_MED, __func__,
+		 "invalid: c_src != prog.c: %s", "prog.c");
+	json_dbg(JSON_DBG_HIGH, __func__,
+		 "invalid: c_src: %s is not prog.c: %s", str, "prog.c");
 	return false;
     }
     json_dbg(JSON_DBG_MED, __func__, "c_src filename is valid");
@@ -650,19 +676,24 @@ test_title(char *str)
      */
     /* check for a valid length */
     if (*str == '\0') { /* strlen(str) == 0 */
-	json_dbg(JSON_DBG_MED, __func__, "invalid empty title");
+	json_dbg(JSON_DBG_MED, __func__,
+		 "invalid: empty title");
 	return false;
     }
     length = strlen(str);
     if (length > MAX_TITLE_LEN) {
-	json_dbg(JSON_DBG_MED, __func__, "title length %ju > max %d: <%s>", (uintmax_t)length, MAX_TITLE_LEN, str);
-	json_dbg(JSON_DBG_HIGH, __func__, "title: <%s> is invalid", str);
+	json_dbg(JSON_DBG_MED, __func__,
+		 "invalid: title length %ju > max %d: <%s>", (uintmax_t)length, MAX_TITLE_LEN, str);
+	json_dbg(JSON_DBG_HIGH, __func__,
+		 "invalid: title: <%s> is invalid", str);
 	return false;
     }
     /* check for valid title chars */
     if (!posix_plus_safe(str, true, false, true)) {
-	json_dbg(JSON_DBG_MED, __func__, "title does not match regexp ^[0-9a-z][0-9a-z._+-]*$: '%s'", str);
-	json_dbg(JSON_DBG_HIGH, __func__, "title: <%s> is invalid", str);
+	json_dbg(JSON_DBG_MED, __func__,
+		 "invalid: title does not match regexp ^[0-9a-z][0-9a-z._+-]*$: '%s'", str);
+	json_dbg(JSON_DBG_HIGH, __func__,
+		 "invalid: title: <%s> is invalid", str);
 	return false;
     }
     json_dbg(JSON_DBG_MED, __func__, "title is valid");
@@ -722,13 +753,16 @@ test_abstract(char *str)
      */
     /* check for a valid length */
     if (*str == '\0') { /* strlen(str) == 0 */
-	json_dbg(JSON_DBG_MED, __func__, "invalid empty abstract");
+	json_dbg(JSON_DBG_MED, __func__,
+		 "invalid: empty abstract");
 	return false;
     }
     length = strlen(str);
     if (length > MAX_ABSTRACT_LEN) {
-	json_dbg(JSON_DBG_MED, __func__, "abstract length %ju > max %d", (uintmax_t)length, MAX_ABSTRACT_LEN);
-	json_dbg(JSON_DBG_HIGH, __func__, "abstract: <%s> is invalid", str);
+	json_dbg(JSON_DBG_MED, __func__,
+		 "invalid: abstract length %ju > max %d", (uintmax_t)length, MAX_ABSTRACT_LEN);
+	json_dbg(JSON_DBG_HIGH, __func__,
+		 "invalid: abstract: <%s> is invalid", str);
 	return false;
     }
     json_dbg(JSON_DBG_MED, __func__, "abstract is valid");
@@ -766,13 +800,16 @@ test_affiliation(char *str)
      */
     /* check for a valid length */
     if (*str == '\0') { /* strlen(str) == 0 */
-	json_dbg(JSON_DBG_MED, __func__, "invalid empty affiliation");
+	json_dbg(JSON_DBG_MED, __func__,
+		 "invalid: empty affiliation");
 	return false;
     }
     length = strlen(str);
     if (length > MAX_AFFILIATION_LEN) {
-	json_dbg(JSON_DBG_MED, __func__, "affiliation length %ju > max %d", (uintmax_t)length, MAX_AFFILIATION_LEN);
-	json_dbg(JSON_DBG_HIGH, __func__, "affiliation: <%s> is invalid", str);
+	json_dbg(JSON_DBG_MED, __func__,
+		 "invalid: affiliation length %ju > max %d", (uintmax_t)length, MAX_AFFILIATION_LEN);
+	json_dbg(JSON_DBG_HIGH, __func__,
+		 "invalid: affiliation: <%s> is invalid", str);
 	return false;
     }
     json_dbg(JSON_DBG_MED, __func__, "affiliation is valid");
@@ -807,10 +844,44 @@ test_author_JSON(char *str)
      * validate str
      */
     if (strcmp(str, AUTHOR_JSON_FILENAME) != 0) {
-	json_dbg(JSON_DBG_MED, __func__, "author_JSON != AUTHOR_JSON_FILENAME: %s", AUTHOR_JSON_FILENAME);
-	json_dbg(JSON_DBG_HIGH, __func__, "author_JSON: %s is not AUTHOR_JSON_FILENAME: %s", str, AUTHOR_JSON_FILENAME);
+	json_dbg(JSON_DBG_MED, __func__,
+		 "invalid: author_JSON != AUTHOR_JSON_FILENAME: %s", AUTHOR_JSON_FILENAME);
+	json_dbg(JSON_DBG_HIGH, __func__,
+		 "invalid: author_JSON: %s is not AUTHOR_JSON_FILENAME: %s", str, AUTHOR_JSON_FILENAME);
 	return false;
     }
     json_dbg(JSON_DBG_MED, __func__, "author_JSON is valid");
+    return true;
+}
+
+
+/*
+ * test_author_count - test if author_count is valid
+ *
+ * Determine if author_count matches AUTHOR_JSON_FILENAME.
+ *
+ * given:
+ *	author_count	number of authors
+ *
+ * returns:
+ *	true ==> string is valid,
+ *	false ==> string is NOT valid, or NULL pointer, or some internal error
+ */
+bool
+test_author_count(int author_count)
+{
+    /*
+     * validate count
+     */
+    if (author_count < 1) {
+	json_dbg(JSON_DBG_MED, __func__,
+		 "invalid: author_count: %d < 0", author_count);
+	return false;
+    } else if (author_count > MAX_AUTHORS) {
+	json_dbg(JSON_DBG_MED, __func__,
+		 "invalid: author_count: %d > MAX_AUTHORS: %d", author_count, MAX_AUTHORS);
+	return false;
+    }
+    json_dbg(JSON_DBG_MED, __func__, "author_count is valid");
     return true;
 }

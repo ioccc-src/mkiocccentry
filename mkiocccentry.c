@@ -3405,7 +3405,7 @@ get_author_info(struct info *infop, char *ioccc_id, struct author **author_set_p
 	 * convert author_count_str to number
 	 */
 	ret = sscanf(author_count_str, "%d%c", &author_count, &guard);
-	if (ret != 1 || author_count < 1 || author_count > MAX_AUTHORS) {
+	if (ret != 1 || test_author_count(author_count) == false) {
 	    errno = 0;		/* pre-clear errno for warnp() */
 	    ret = fprintf(stderr, "\nThe number of authors must a number from 1 through %d, please re-enter.\n", MAX_AUTHORS);
 	    if (ret <= 0) {
