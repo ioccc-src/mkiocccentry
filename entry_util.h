@@ -171,6 +171,7 @@ extern bool test_affiliation(char *str);
 extern bool test_author_JSON(char *str);
 extern bool test_author_count(int author_count);
 extern bool test_author_handle(char *str);
+extern bool test_author_number(int author_number);
 /* XXX - end sorted order matching chk_validate.c here - XXX */
 extern bool test_mkiocccentry_version(char *str);
 extern bool test_iocccsize_version(char *str);

@@ -571,7 +571,7 @@ test_author_JSON(char *str)
 /*
  * test_author_count - test if author_count is valid
  *
- * Determine if author_count matches AUTHOR_JSON_FILENAME.
+ * Determine if author_count is within the proper limits.
  *
  * given:
  *	author_count	number of authors
@@ -652,6 +652,41 @@ test_author_handle(char *str)
 	return false;
     }
     json_dbg(JSON_DBG_MED, __func__, "author_handle is valid");
+    return true;
+}
+
+
+/*
+ * test_author_number - test if author_number is valid
+ *
+ * Determine if author_number is within the proper limits.
+ *
+ * NOTE: The function does NOT determine if the author_number is unique among the authors.
+ * NOTE: The function does NOT determine if the author_number is <= author_count.
+ *
+ * given:
+ *	author_number	author number
+ *
+ * returns:
+ *	true ==> string is valid,
+ *	false ==> string is NOT valid, or NULL pointer, or some internal error
+ */
+bool
+test_author_number(int author_number)
+{
+    /*
+     * validate count
+     */
+    if (author_number < 1) {
+	json_dbg(JSON_DBG_MED, __func__,
+		 "invalid: author_number: %d < 0", author_number);
+	return false;
+    } else if (author_number > MAX_AUTHORS) {
+	json_dbg(JSON_DBG_MED, __func__,
+		 "invalid: author_number: %d > MAX_AUTHORS: %d", author_number, MAX_AUTHORS);
+	return false;
+    }
+    json_dbg(JSON_DBG_MED, __func__, "author_number is valid");
     return true;
 }
 
