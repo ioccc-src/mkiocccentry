@@ -211,198 +211,7 @@ free_author_array(struct author *author_set, int author_count)
 }
 
 
-/*
- * test_mkiocccentry_version - test if mkiocccentry_version is valid
- *
- * Determine if mkiocccentry_version matches MKIOCCCENTRY_VERSION.
- *
- * given:
- *	str	string to test
- *
- * returns:
- *	true ==> string is valid,
- *	false ==> string is NOT valid, or NULL pointer, or some internal error
- */
-bool
-test_mkiocccentry_version(char *str)
-{
-    /*
-     * firewall
-     */
-    if (str == NULL) {
-	warn(__func__, "str is NULL");
-	return false;
-    }
-
-    /*
-     * validate str
-     */
-    if (strcmp(str, MKIOCCCENTRY_VERSION) != 0) {
-	json_dbg(JSON_DBG_MED, __func__,
-		 "invalid: mkiocccentry_version != MKIOCCCENTRY_VERSION: %s", MKIOCCCENTRY_VERSION);
-	json_dbg(JSON_DBG_HIGH, __func__,
-		 "invalid: mkiocccentry_version: %s is not MKIOCCCENTRY_VERSION: %s", str, MKIOCCCENTRY_VERSION);
-	return false;
-    }
-    json_dbg(JSON_DBG_MED, __func__, "mkiocccentry_version is valid");
-    return true;
-}
-
-
-/*
- * test_iocccsize_version - test if iocccsize_version is valid
- *
- * Determine if iocccsize_version matches IOCCCSIZE_VERSION.
- *
- * given:
- *	str	string to test
- *
- * returns:
- *	true ==> string is valid,
- *	false ==> string is NOT valid, or NULL pointer, or some internal error
- */
-bool
-test_iocccsize_version(char *str)
-{
-    /*
-     * firewall
-     */
-    if (str == NULL) {
-	warn(__func__, "str is NULL");
-	return false;
-    }
-
-    /*
-     * validate str
-     */
-    if (strcmp(str, IOCCCSIZE_VERSION) != 0) {
-	json_dbg(JSON_DBG_MED, __func__,
-		 "invalid: iocccsize_version != IOCCCSIZE_VERSION: %s", IOCCCSIZE_VERSION);
-	json_dbg(JSON_DBG_HIGH, __func__,
-		 "invalid: iocccsize_version: %s is not IOCCCSIZE_VERSION: %s", str, IOCCCSIZE_VERSION);
-	return false;
-    }
-    json_dbg(JSON_DBG_MED, __func__, "iocccsize_version is valid");
-    return true;
-}
-
-
-
-/*
- * test_chkentry_version - test if chkentry_version is valid
- *
- * Determine if chkentry_version matches CHKENTRY_VERSION.
- *
- * given:
- *	str	string to test
- *
- * returns:
- *	true ==> string is valid,
- *	false ==> string is NOT valid, or NULL pointer, or some internal error
- */
-bool
-test_chkentry_version(char *str)
-{
-    /*
-     * firewall
-     */
-    if (str == NULL) {
-	warn(__func__, "str is NULL");
-	return false;
-    }
-
-    /*
-     * validate str
-     */
-    if (strcmp(str, CHKENTRY_VERSION) != 0) {
-	json_dbg(JSON_DBG_MED, __func__,
-		 "invalid: chkentry_version != CHKENTRY_VERSION: %s", CHKENTRY_VERSION);
-	json_dbg(JSON_DBG_HIGH, __func__,
-		 "invalid: chkentry_version: %s is not CHKENTRY_VERSION: %s", str, CHKENTRY_VERSION);
-	return false;
-    }
-    json_dbg(JSON_DBG_MED, __func__, "chkentry_version is valid");
-    return true;
-}
-
-
-/*
- * test_fnamchk_version - test if fnamchk_version is valid
- *
- * Determine if fnamchk_version matches FNAMCHK_VERSION.
- *
- * given:
- *	str	string to test
- *
- * returns:
- *	true ==> string is valid,
- *	false ==> string is NOT valid, or NULL pointer, or some internal error
- */
-bool
-test_fnamchk_version(char *str)
-{
-    /*
-     * firewall
-     */
-    if (str == NULL) {
-	warn(__func__, "str is NULL");
-	return false;
-    }
-
-    /*
-     * validate str
-     */
-    if (strcmp(str, FNAMCHK_VERSION) != 0) {
-	json_dbg(JSON_DBG_MED, __func__,
-		 "invalid: fnamchk_version != FNAMCHK_VERSION: %s", FNAMCHK_VERSION);
-	json_dbg(JSON_DBG_HIGH, __func__,
-		 "invalid: fnamchk_version: %s is not FNAMCHK_VERSION: %s", str, FNAMCHK_VERSION);
-	return false;
-    }
-    json_dbg(JSON_DBG_MED, __func__, "fnamchk_version is valid");
-    return true;
-}
-
-
-/*
- * test_txzchk_version - test if txzchk_version is valid
- *
- * Determine if txzchk_version matches TXZCHK_VERSION.
- *
- * given:
- *	str	string to test
- *
- * returns:
- *	true ==> string is valid,
- *	false ==> string is NOT valid, or NULL pointer, or some internal error
- *
- *  "Because sometimes people might try to hide the fact that they're planning
- *  on throwing feathers on the tar." :-)
- */
-bool
-test_txzchk_version(char *str)
-{
-    /*
-     * firewall
-     */
-    if (str == NULL) {
-	warn(__func__, "str is NULL");
-	return false;
-    }
-
-    /*
-     * validate str
-     */
-    if (strcmp(str, TXZCHK_VERSION) != 0) {
-	json_dbg(JSON_DBG_MED, __func__,
-		 "invalid: txzchk_version != TXZCHK_VERSION: %s", TXZCHK_VERSION);
-	json_dbg(JSON_DBG_HIGH, __func__,
-		 "invalid: txzchk_version: %s is not TXZCHK_VERSION: %s", str, TXZCHK_VERSION);
-	return false;
-    }
-    json_dbg(JSON_DBG_MED, __func__, "txzchk_version is valid");
-    return true;
-}
+/* XXX - begin sorted order matching chk_validate.c here - XXX */
 
 
 /*
@@ -607,292 +416,6 @@ test_Makefile(char *str)
 
 
 /*
- * test_c_src - test if c_src is valid
- *
- * Determine if c_src matches "prog.c".
- *
- * given:
- *	str	string to test
- *
- * returns:
- *	true ==> string is valid,
- *	false ==> string is NOT valid, or NULL pointer, or some internal error
- */
-bool
-test_c_src(char *str)
-{
-    /*
-     * firewall
-     */
-    if (str == NULL) {
-	warn(__func__, "str is NULL");
-	return false;
-    }
-
-    /*
-     * validate str
-     */
-    if (strcmp(str, "prog.c") != 0) {
-	json_dbg(JSON_DBG_MED, __func__,
-		 "invalid: c_src != prog.c: %s", "prog.c");
-	json_dbg(JSON_DBG_HIGH, __func__,
-		 "invalid: c_src: %s is not prog.c: %s", str, "prog.c");
-	return false;
-    }
-    json_dbg(JSON_DBG_MED, __func__, "c_src filename is valid");
-    return true;
-}
-
-
-/*
- * test_title - test if title is valid
- *
- * Determine if title length is <= MAX_TITLE_LEN and that it matches the regexp:
- *
- *	^[0-9a-z][0-9a-z._+-]*$
- *
- * given:
- *	str	string to test
- *
- * returns:
- *	true ==> string is valid,
- *	false ==> string is NOT valid, or NULL pointer, or some internal error
- */
-bool
-test_title(char *str)
-{
-    size_t length = 0;
-
-    /*
-     * firewall
-     */
-    if (str == NULL) {
-	warn(__func__, "str is NULL");
-	return false;
-    }
-
-    /*
-     * validate str
-     */
-    /* check for a valid length */
-    if (*str == '\0') { /* strlen(str) == 0 */
-	json_dbg(JSON_DBG_MED, __func__,
-		 "invalid: empty title");
-	return false;
-    }
-    length = strlen(str);
-    if (length > MAX_TITLE_LEN) {
-	json_dbg(JSON_DBG_MED, __func__,
-		 "invalid: title length %ju > max %d: <%s>", (uintmax_t)length, MAX_TITLE_LEN, str);
-	json_dbg(JSON_DBG_HIGH, __func__,
-		 "invalid: title: <%s> is invalid", str);
-	return false;
-    }
-    /* check for valid title chars */
-    if (!posix_plus_safe(str, true, false, true)) {
-	json_dbg(JSON_DBG_MED, __func__,
-		 "invalid: title does not match regexp ^[0-9a-z][0-9a-z._+-]*$: '%s'", str);
-	json_dbg(JSON_DBG_HIGH, __func__,
-		 "invalid: title: <%s> is invalid", str);
-	return false;
-    }
-    json_dbg(JSON_DBG_MED, __func__, "title is valid");
-    return true;
-}
-
-
-
-/*
- * test_empty_override - test if empty_override is valid
- *
- * Determine if empty_override boolean is valid.  :-)
- * Well this isn't much of a test, but we have to keep
- * up with the general form of tests!  :-)
- *
- * given:
- *	boolean	boolean to test
- *
- * returns:
- *	true ==> bool is valid,
- *	false ==> bool is NOT valid, or some internal error
- */
-bool
-test_empty_override(bool boolean)
-{
-    json_dbg(JSON_DBG_MED, __func__, "empty_override is %s", booltostr(boolean));
-    return true;
-}
-
-/*
- * test_rule_2a_override - test if rule_2a_override is valid
- *
- * Determine if rule_2a_override boolean is valid.  :-)
- * Well this isn't much of a test, but we have to keep
- * up with the general form of tests!  :-)
- *
- * given:
- *	boolean	boolean to test
- *
- * returns:
- *	true ==> bool is valid,
- *	false ==> bool is NOT valid, or some internal error
- */
-bool
-test_rule_2a_override(bool boolean)
-{
-    json_dbg(JSON_DBG_MED, __func__, "rule_2a_override is %s", booltostr(boolean));
-    return true;
-}
-
-/*
- * test_rule_2a_mismatch - test if rule_2a_mismatch is valid
- *
- * Determine if rule_2a_mismatch boolean is valid.  :-)
- * Well this isn't much of a test, but we have to keep
- * up with the general form of tests!  :-)
- *
- * given:
- *	boolean	boolean to test
- *
- * returns:
- *	true ==> bool is valid,
- *	false ==> bool is NOT valid, or some internal error
- */
-bool
-test_rule_2a_mismatch(bool boolean)
-{
-    json_dbg(JSON_DBG_MED, __func__, "rule_2a_mismatch is %s", booltostr(boolean));
-    return true;
-}
-
-/*
- * test_rule_2b_override - test if rule_2b_override is valid
- *
- * Determine if rule_2b_override boolean is valid.  :-)
- * Well this isn't much of a test, but we have to keep
- * up with the general form of tests!  :-)
- *
- * given:
- *	boolean	boolean to test
- *
- * returns:
- *	true ==> bool is valid,
- *	false ==> bool is NOT valid, or some internal error
- */
-bool
-test_rule_2b_override(bool boolean)
-{
-    json_dbg(JSON_DBG_MED, __func__, "rule_2b_override is %s", booltostr(boolean));
-    return true;
-}
-
-/*
- * test_highbit_warning - test if highbit_warning is valid
- *
- * Determine if highbit_warning boolean is valid.  :-)
- * Well this isn't much of a test, but we have to keep
- * up with the general form of tests!  :-)
- *
- * given:
- *	boolean	boolean to test
- *
- * returns:
- *	true ==> bool is valid,
- *	false ==> bool is NOT valid, or some internal error
- */
-bool
-test_highbit_warning(bool boolean)
-{
-    json_dbg(JSON_DBG_MED, __func__, "highbit_warning is %s", booltostr(boolean));
-    return true;
-}
-
-/*
- * test_nul_warning - test if nul_warning is valid
- *
- * Determine if nul_warning boolean is valid.  :-)
- * Well this isn't much of a test, but we have to keep
- * up with the general form of tests!  :-)
- *
- * given:
- *	boolean	boolean to test
- *
- * returns:
- *	true ==> bool is valid,
- *	false ==> bool is NOT valid, or some internal error
- */
-bool
-test_nul_warning(bool boolean)
-{
-    json_dbg(JSON_DBG_MED, __func__, "nul_warning is %s", booltostr(boolean));
-    return true;
-}
-
-/*
- * test_trigraph_warning - test if trigraph_warning is valid
- *
- * Determine if trigraph_warning boolean is valid.  :-)
- * Well this isn't much of a test, but we have to keep
- * up with the general form of tests!  :-)
- *
- * given:
- *	boolean	boolean to test
- *
- * returns:
- *	true ==> bool is valid,
- *	false ==> bool is NOT valid, or some internal error
- */
-bool
-test_trigraph_warning(bool boolean)
-{
-    json_dbg(JSON_DBG_MED, __func__, "trigraph_warning is %s", booltostr(boolean));
-    return true;
-}
-
-
-/*
- * test_wordbuf_warning - test if wordbuf_warning is valid
- *
- * Determine if wordbuf_warning boolean is valid.  :-)
- * Well this isn't much of a test, but we have to keep
- * up with the general form of tests!  :-)
- *
- * given:
- *	boolean	boolean to test
- *
- * returns:
- *	true ==> bool is valid,
- *	false ==> bool is NOT valid, or some internal error
- */
-bool
-test_wordbuf_warning(bool boolean)
-{
-    json_dbg(JSON_DBG_MED, __func__, "wordbuf_warning is %s", booltostr(boolean));
-    return true;
-}
-
-/*
- * test_ungetc_warning - test if ungetc_warning is valid
- *
- * Determine if ungetc_warning boolean is valid.  :-)
- * Well this isn't much of a test, but we have to keep
- * up with the general form of tests!  :-)
- *
- * given:
- *	boolean	boolean to test
- *
- * returns:
- *	true ==> bool is valid,
- *	false ==> bool is NOT valid, or some internal error
- */
-bool
-test_ungetc_warning(bool boolean)
-{
-    json_dbg(JSON_DBG_MED, __func__, "ungetc_warning is %s", booltostr(boolean));
-    return true;
-}
-
-/*
  * test_Makefile_override - test if Makefile_override is valid
  *
  * Determine if Makefile_override boolean is valid.  :-)
@@ -912,135 +435,6 @@ test_Makefile_override(bool boolean)
     json_dbg(JSON_DBG_MED, __func__, "Makefile_override is %s", booltostr(boolean));
     return true;
 }
-
-/*
- * test_first_rule_is_all - test if first_rule_is_all is valid
- *
- * Determine if first_rule_is_all boolean is valid.  :-)
- * Well this isn't much of a test, but we have to keep
- * up with the general form of tests!  :-)
- *
- * given:
- *	boolean	boolean to test
- *
- * returns:
- *	true ==> bool is valid,
- *	false ==> bool is NOT valid, or some internal error
- */
-bool
-test_first_rule_is_all(bool boolean)
-{
-    json_dbg(JSON_DBG_MED, __func__, "first_rule_is_all is %s", booltostr(boolean));
-    return true;
-}
-
-/*
- * test_found_all_rule - test if found_all_rule is valid
- *
- * Determine if found_all_rule boolean is valid.  :-)
- * Well this isn't much of a test, but we have to keep
- * up with the general form of tests!  :-)
- *
- * given:
- *	boolean	boolean to test
- *
- * returns:
- *	true ==> bool is valid,
- *	false ==> bool is NOT valid, or some internal error
- */
-bool
-test_found_all_rule(bool boolean)
-{
-    json_dbg(JSON_DBG_MED, __func__, "found_all_rule is %s", booltostr(boolean));
-    return true;
-}
-
-
-/*
- * test_found_clean_rule - test if found_clean_rule is valid
- *
- * Determine if found_clean_rule boolean is valid.  :-)
- * Well this isn't much of a test, but we have to keep
- * up with the general form of tests!  :-)
- *
- * given:
- *	boolean	boolean to test
- *
- * returns:
- *	true ==> bool is valid,
- *	false ==> bool is NOT valid, or some internal error
- */
-bool
-test_found_clean_rule(bool boolean)
-{
-    json_dbg(JSON_DBG_MED, __func__, "found_clean_rule is %s", booltostr(boolean));
-    return true;
-}
-
-/*
- * test_found_clobber_rule - test if found_clobber_rule is valid
- *
- * Determine if found_clobber_rule boolean is valid.  :-)
- * Well this isn't much of a test, but we have to keep
- * up with the general form of tests!  :-)
- *
- * given:
- *	boolean	boolean to test
- *
- * returns:
- *	true ==> bool is valid,
- *	false ==> bool is NOT valid, or some internal error
- */
-bool
-test_found_clobber_rule(bool boolean)
-{
-    json_dbg(JSON_DBG_MED, __func__, "found_clobber_rule is %s", booltostr(boolean));
-    return true;
-}
-
-/*
- * test_found_try_rule - test if found_try_rule is valid
- *
- * Determine if found_try_rule boolean is valid.  :-)
- * Well this isn't much of a test, but we have to keep
- * up with the general form of tests!  :-)
- *
- * given:
- *	boolean	boolean to test
- *
- * returns:
- *	true ==> bool is valid,
- *	false ==> bool is NOT valid, or some internal error
- */
-bool
-test_found_try_rule(bool boolean)
-{
-    json_dbg(JSON_DBG_MED, __func__, "found_try_rule is %s", booltostr(boolean));
-    return true;
-}
-
-/*
- * test_test_mode - test if test_mode is valid
- *
- * Determine if test_mode boolean is valid.  :-)
- * Well this isn't much of a test, but we have to keep
- * up with the general form of tests!  :-)
- *
- * given:
- *	boolean	boolean to test
- *
- * returns:
- *	true ==> bool is valid,
- *	false ==> bool is NOT valid, or some internal error
- */
-bool
-test_test_mode(bool boolean)
-{
-    json_dbg(JSON_DBG_MED, __func__, "test_mode is %s", booltostr(boolean));
-    return true;
-}
-
-
 
 
 /*
@@ -1203,5 +597,627 @@ test_author_count(int author_count)
 	return false;
     }
     json_dbg(JSON_DBG_MED, __func__, "author_count is valid");
+    return true;
+}
+
+
+/* XXX - end sorted order matching chk_validate.c here - XXX */
+
+
+/*
+ * test_mkiocccentry_version - test if mkiocccentry_version is valid
+ *
+ * Determine if mkiocccentry_version matches MKIOCCCENTRY_VERSION.
+ *
+ * given:
+ *	str	string to test
+ *
+ * returns:
+ *	true ==> string is valid,
+ *	false ==> string is NOT valid, or NULL pointer, or some internal error
+ */
+bool
+test_mkiocccentry_version(char *str)
+{
+    /*
+     * firewall
+     */
+    if (str == NULL) {
+	warn(__func__, "str is NULL");
+	return false;
+    }
+
+    /*
+     * validate str
+     */
+    if (strcmp(str, MKIOCCCENTRY_VERSION) != 0) {
+	json_dbg(JSON_DBG_MED, __func__,
+		 "invalid: mkiocccentry_version != MKIOCCCENTRY_VERSION: %s", MKIOCCCENTRY_VERSION);
+	json_dbg(JSON_DBG_HIGH, __func__,
+		 "invalid: mkiocccentry_version: %s is not MKIOCCCENTRY_VERSION: %s", str, MKIOCCCENTRY_VERSION);
+	return false;
+    }
+    json_dbg(JSON_DBG_MED, __func__, "mkiocccentry_version is valid");
+    return true;
+}
+
+
+/*
+ * test_iocccsize_version - test if iocccsize_version is valid
+ *
+ * Determine if iocccsize_version matches IOCCCSIZE_VERSION.
+ *
+ * given:
+ *	str	string to test
+ *
+ * returns:
+ *	true ==> string is valid,
+ *	false ==> string is NOT valid, or NULL pointer, or some internal error
+ */
+bool
+test_iocccsize_version(char *str)
+{
+    /*
+     * firewall
+     */
+    if (str == NULL) {
+	warn(__func__, "str is NULL");
+	return false;
+    }
+
+    /*
+     * validate str
+     */
+    if (strcmp(str, IOCCCSIZE_VERSION) != 0) {
+	json_dbg(JSON_DBG_MED, __func__,
+		 "invalid: iocccsize_version != IOCCCSIZE_VERSION: %s", IOCCCSIZE_VERSION);
+	json_dbg(JSON_DBG_HIGH, __func__,
+		 "invalid: iocccsize_version: %s is not IOCCCSIZE_VERSION: %s", str, IOCCCSIZE_VERSION);
+	return false;
+    }
+    json_dbg(JSON_DBG_MED, __func__, "iocccsize_version is valid");
+    return true;
+}
+
+
+
+/*
+ * test_chkentry_version - test if chkentry_version is valid
+ *
+ * Determine if chkentry_version matches CHKENTRY_VERSION.
+ *
+ * given:
+ *	str	string to test
+ *
+ * returns:
+ *	true ==> string is valid,
+ *	false ==> string is NOT valid, or NULL pointer, or some internal error
+ */
+bool
+test_chkentry_version(char *str)
+{
+    /*
+     * firewall
+     */
+    if (str == NULL) {
+	warn(__func__, "str is NULL");
+	return false;
+    }
+
+    /*
+     * validate str
+     */
+    if (strcmp(str, CHKENTRY_VERSION) != 0) {
+	json_dbg(JSON_DBG_MED, __func__,
+		 "invalid: chkentry_version != CHKENTRY_VERSION: %s", CHKENTRY_VERSION);
+	json_dbg(JSON_DBG_HIGH, __func__,
+		 "invalid: chkentry_version: %s is not CHKENTRY_VERSION: %s", str, CHKENTRY_VERSION);
+	return false;
+    }
+    json_dbg(JSON_DBG_MED, __func__, "chkentry_version is valid");
+    return true;
+}
+
+
+/*
+ * test_fnamchk_version - test if fnamchk_version is valid
+ *
+ * Determine if fnamchk_version matches FNAMCHK_VERSION.
+ *
+ * given:
+ *	str	string to test
+ *
+ * returns:
+ *	true ==> string is valid,
+ *	false ==> string is NOT valid, or NULL pointer, or some internal error
+ */
+bool
+test_fnamchk_version(char *str)
+{
+    /*
+     * firewall
+     */
+    if (str == NULL) {
+	warn(__func__, "str is NULL");
+	return false;
+    }
+
+    /*
+     * validate str
+     */
+    if (strcmp(str, FNAMCHK_VERSION) != 0) {
+	json_dbg(JSON_DBG_MED, __func__,
+		 "invalid: fnamchk_version != FNAMCHK_VERSION: %s", FNAMCHK_VERSION);
+	json_dbg(JSON_DBG_HIGH, __func__,
+		 "invalid: fnamchk_version: %s is not FNAMCHK_VERSION: %s", str, FNAMCHK_VERSION);
+	return false;
+    }
+    json_dbg(JSON_DBG_MED, __func__, "fnamchk_version is valid");
+    return true;
+}
+
+
+/*
+ * test_txzchk_version - test if txzchk_version is valid
+ *
+ * Determine if txzchk_version matches TXZCHK_VERSION.
+ *
+ * given:
+ *	str	string to test
+ *
+ * returns:
+ *	true ==> string is valid,
+ *	false ==> string is NOT valid, or NULL pointer, or some internal error
+ *
+ *  "Because sometimes people might try to hide the fact that they're planning
+ *  on throwing feathers on the tar." :-)
+ */
+bool
+test_txzchk_version(char *str)
+{
+    /*
+     * firewall
+     */
+    if (str == NULL) {
+	warn(__func__, "str is NULL");
+	return false;
+    }
+
+    /*
+     * validate str
+     */
+    if (strcmp(str, TXZCHK_VERSION) != 0) {
+	json_dbg(JSON_DBG_MED, __func__,
+		 "invalid: txzchk_version != TXZCHK_VERSION: %s", TXZCHK_VERSION);
+	json_dbg(JSON_DBG_HIGH, __func__,
+		 "invalid: txzchk_version: %s is not TXZCHK_VERSION: %s", str, TXZCHK_VERSION);
+	return false;
+    }
+    json_dbg(JSON_DBG_MED, __func__, "txzchk_version is valid");
+    return true;
+}
+
+
+/*
+ * test_c_src - test if c_src is valid
+ *
+ * Determine if c_src matches "prog.c".
+ *
+ * given:
+ *	str	string to test
+ *
+ * returns:
+ *	true ==> string is valid,
+ *	false ==> string is NOT valid, or NULL pointer, or some internal error
+ */
+bool
+test_c_src(char *str)
+{
+    /*
+     * firewall
+     */
+    if (str == NULL) {
+	warn(__func__, "str is NULL");
+	return false;
+    }
+
+    /*
+     * validate str
+     */
+    if (strcmp(str, "prog.c") != 0) {
+	json_dbg(JSON_DBG_MED, __func__,
+		 "invalid: c_src != prog.c: %s", "prog.c");
+	json_dbg(JSON_DBG_HIGH, __func__,
+		 "invalid: c_src: %s is not prog.c: %s", str, "prog.c");
+	return false;
+    }
+    json_dbg(JSON_DBG_MED, __func__, "c_src filename is valid");
+    return true;
+}
+
+
+/*
+ * test_title - test if title is valid
+ *
+ * Determine if title length is <= MAX_TITLE_LEN and that it matches the regexp:
+ *
+ *	^[0-9a-z][0-9a-z._+-]*$
+ *
+ * given:
+ *	str	string to test
+ *
+ * returns:
+ *	true ==> string is valid,
+ *	false ==> string is NOT valid, or NULL pointer, or some internal error
+ */
+bool
+test_title(char *str)
+{
+    size_t length = 0;
+
+    /*
+     * firewall
+     */
+    if (str == NULL) {
+	warn(__func__, "str is NULL");
+	return false;
+    }
+
+    /*
+     * validate str
+     */
+    /* check for a valid length */
+    if (*str == '\0') { /* strlen(str) == 0 */
+	json_dbg(JSON_DBG_MED, __func__,
+		 "invalid: empty title");
+	return false;
+    }
+    length = strlen(str);
+    if (length > MAX_TITLE_LEN) {
+	json_dbg(JSON_DBG_MED, __func__,
+		 "invalid: title length %ju > max %d: <%s>", (uintmax_t)length, MAX_TITLE_LEN, str);
+	json_dbg(JSON_DBG_HIGH, __func__,
+		 "invalid: title: <%s> is invalid", str);
+	return false;
+    }
+    /* check for valid title chars */
+    if (!posix_plus_safe(str, true, false, true)) {
+	json_dbg(JSON_DBG_MED, __func__,
+		 "invalid: title does not match regexp ^[0-9a-z][0-9a-z._+-]*$: '%s'", str);
+	json_dbg(JSON_DBG_HIGH, __func__,
+		 "invalid: title: <%s> is invalid", str);
+	return false;
+    }
+    json_dbg(JSON_DBG_MED, __func__, "title is valid");
+    return true;
+}
+
+
+/*
+ * test_empty_override - test if empty_override is valid
+ *
+ * Determine if empty_override boolean is valid.  :-)
+ * Well this isn't much of a test, but we have to keep
+ * up with the general form of tests!  :-)
+ *
+ * given:
+ *	boolean	boolean to test
+ *
+ * returns:
+ *	true ==> bool is valid,
+ *	false ==> bool is NOT valid, or some internal error
+ */
+bool
+test_empty_override(bool boolean)
+{
+    json_dbg(JSON_DBG_MED, __func__, "empty_override is %s", booltostr(boolean));
+    return true;
+}
+
+
+/*
+ * test_rule_2a_override - test if rule_2a_override is valid
+ *
+ * Determine if rule_2a_override boolean is valid.  :-)
+ * Well this isn't much of a test, but we have to keep
+ * up with the general form of tests!  :-)
+ *
+ * given:
+ *	boolean	boolean to test
+ *
+ * returns:
+ *	true ==> bool is valid,
+ *	false ==> bool is NOT valid, or some internal error
+ */
+bool
+test_rule_2a_override(bool boolean)
+{
+    json_dbg(JSON_DBG_MED, __func__, "rule_2a_override is %s", booltostr(boolean));
+    return true;
+}
+
+
+/*
+ * test_rule_2a_mismatch - test if rule_2a_mismatch is valid
+ *
+ * Determine if rule_2a_mismatch boolean is valid.  :-)
+ * Well this isn't much of a test, but we have to keep
+ * up with the general form of tests!  :-)
+ *
+ * given:
+ *	boolean	boolean to test
+ *
+ * returns:
+ *	true ==> bool is valid,
+ *	false ==> bool is NOT valid, or some internal error
+ */
+bool
+test_rule_2a_mismatch(bool boolean)
+{
+    json_dbg(JSON_DBG_MED, __func__, "rule_2a_mismatch is %s", booltostr(boolean));
+    return true;
+}
+
+
+/*
+ * test_rule_2b_override - test if rule_2b_override is valid
+ *
+ * Determine if rule_2b_override boolean is valid.  :-)
+ * Well this isn't much of a test, but we have to keep
+ * up with the general form of tests!  :-)
+ *
+ * given:
+ *	boolean	boolean to test
+ *
+ * returns:
+ *	true ==> bool is valid,
+ *	false ==> bool is NOT valid, or some internal error
+ */
+bool
+test_rule_2b_override(bool boolean)
+{
+    json_dbg(JSON_DBG_MED, __func__, "rule_2b_override is %s", booltostr(boolean));
+    return true;
+}
+
+
+/*
+ * test_highbit_warning - test if highbit_warning is valid
+ *
+ * Determine if highbit_warning boolean is valid.  :-)
+ * Well this isn't much of a test, but we have to keep
+ * up with the general form of tests!  :-)
+ *
+ * given:
+ *	boolean	boolean to test
+ *
+ * returns:
+ *	true ==> bool is valid,
+ *	false ==> bool is NOT valid, or some internal error
+ */
+bool
+test_highbit_warning(bool boolean)
+{
+    json_dbg(JSON_DBG_MED, __func__, "highbit_warning is %s", booltostr(boolean));
+    return true;
+}
+
+
+/*
+ * test_nul_warning - test if nul_warning is valid
+ *
+ * Determine if nul_warning boolean is valid.  :-)
+ * Well this isn't much of a test, but we have to keep
+ * up with the general form of tests!  :-)
+ *
+ * given:
+ *	boolean	boolean to test
+ *
+ * returns:
+ *	true ==> bool is valid,
+ *	false ==> bool is NOT valid, or some internal error
+ */
+bool
+test_nul_warning(bool boolean)
+{
+    json_dbg(JSON_DBG_MED, __func__, "nul_warning is %s", booltostr(boolean));
+    return true;
+}
+
+
+/*
+ * test_trigraph_warning - test if trigraph_warning is valid
+ *
+ * Determine if trigraph_warning boolean is valid.  :-)
+ * Well this isn't much of a test, but we have to keep
+ * up with the general form of tests!  :-)
+ *
+ * given:
+ *	boolean	boolean to test
+ *
+ * returns:
+ *	true ==> bool is valid,
+ *	false ==> bool is NOT valid, or some internal error
+ */
+bool
+test_trigraph_warning(bool boolean)
+{
+    json_dbg(JSON_DBG_MED, __func__, "trigraph_warning is %s", booltostr(boolean));
+    return true;
+}
+
+
+/*
+ * test_wordbuf_warning - test if wordbuf_warning is valid
+ *
+ * Determine if wordbuf_warning boolean is valid.  :-)
+ * Well this isn't much of a test, but we have to keep
+ * up with the general form of tests!  :-)
+ *
+ * given:
+ *	boolean	boolean to test
+ *
+ * returns:
+ *	true ==> bool is valid,
+ *	false ==> bool is NOT valid, or some internal error
+ */
+bool
+test_wordbuf_warning(bool boolean)
+{
+    json_dbg(JSON_DBG_MED, __func__, "wordbuf_warning is %s", booltostr(boolean));
+    return true;
+}
+
+
+/*
+ * test_ungetc_warning - test if ungetc_warning is valid
+ *
+ * Determine if ungetc_warning boolean is valid.  :-)
+ * Well this isn't much of a test, but we have to keep
+ * up with the general form of tests!  :-)
+ *
+ * given:
+ *	boolean	boolean to test
+ *
+ * returns:
+ *	true ==> bool is valid,
+ *	false ==> bool is NOT valid, or some internal error
+ */
+bool
+test_ungetc_warning(bool boolean)
+{
+    json_dbg(JSON_DBG_MED, __func__, "ungetc_warning is %s", booltostr(boolean));
+    return true;
+}
+
+
+/*
+ * test_first_rule_is_all - test if first_rule_is_all is valid
+ *
+ * Determine if first_rule_is_all boolean is valid.  :-)
+ * Well this isn't much of a test, but we have to keep
+ * up with the general form of tests!  :-)
+ *
+ * given:
+ *	boolean	boolean to test
+ *
+ * returns:
+ *	true ==> bool is valid,
+ *	false ==> bool is NOT valid, or some internal error
+ */
+bool
+test_first_rule_is_all(bool boolean)
+{
+    json_dbg(JSON_DBG_MED, __func__, "first_rule_is_all is %s", booltostr(boolean));
+    return true;
+}
+
+
+/*
+ * test_found_all_rule - test if found_all_rule is valid
+ *
+ * Determine if found_all_rule boolean is valid.  :-)
+ * Well this isn't much of a test, but we have to keep
+ * up with the general form of tests!  :-)
+ *
+ * given:
+ *	boolean	boolean to test
+ *
+ * returns:
+ *	true ==> bool is valid,
+ *	false ==> bool is NOT valid, or some internal error
+ */
+bool
+test_found_all_rule(bool boolean)
+{
+    json_dbg(JSON_DBG_MED, __func__, "found_all_rule is %s", booltostr(boolean));
+    return true;
+}
+
+
+/*
+ * test_found_clean_rule - test if found_clean_rule is valid
+ *
+ * Determine if found_clean_rule boolean is valid.  :-)
+ * Well this isn't much of a test, but we have to keep
+ * up with the general form of tests!  :-)
+ *
+ * given:
+ *	boolean	boolean to test
+ *
+ * returns:
+ *	true ==> bool is valid,
+ *	false ==> bool is NOT valid, or some internal error
+ */
+bool
+test_found_clean_rule(bool boolean)
+{
+    json_dbg(JSON_DBG_MED, __func__, "found_clean_rule is %s", booltostr(boolean));
+    return true;
+}
+
+
+/*
+ * test_found_clobber_rule - test if found_clobber_rule is valid
+ *
+ * Determine if found_clobber_rule boolean is valid.  :-)
+ * Well this isn't much of a test, but we have to keep
+ * up with the general form of tests!  :-)
+ *
+ * given:
+ *	boolean	boolean to test
+ *
+ * returns:
+ *	true ==> bool is valid,
+ *	false ==> bool is NOT valid, or some internal error
+ */
+bool
+test_found_clobber_rule(bool boolean)
+{
+    json_dbg(JSON_DBG_MED, __func__, "found_clobber_rule is %s", booltostr(boolean));
+    return true;
+}
+
+
+/*
+ * test_found_try_rule - test if found_try_rule is valid
+ *
+ * Determine if found_try_rule boolean is valid.  :-)
+ * Well this isn't much of a test, but we have to keep
+ * up with the general form of tests!  :-)
+ *
+ * given:
+ *	boolean	boolean to test
+ *
+ * returns:
+ *	true ==> bool is valid,
+ *	false ==> bool is NOT valid, or some internal error
+ */
+bool
+test_found_try_rule(bool boolean)
+{
+    json_dbg(JSON_DBG_MED, __func__, "found_try_rule is %s", booltostr(boolean));
+    return true;
+}
+
+
+/*
+ * test_test_mode - test if test_mode is valid
+ *
+ * Determine if test_mode boolean is valid.  :-)
+ * Well this isn't much of a test, but we have to keep
+ * up with the general form of tests!  :-)
+ *
+ * given:
+ *	boolean	boolean to test
+ *
+ * returns:
+ *	true ==> bool is valid,
+ *	false ==> bool is NOT valid, or some internal error
+ */
+bool
+test_test_mode(bool boolean)
+{
+    json_dbg(JSON_DBG_MED, __func__, "test_mode is %s", booltostr(boolean));
     return true;
 }

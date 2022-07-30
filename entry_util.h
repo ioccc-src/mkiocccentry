@@ -160,21 +160,23 @@ struct info
  */
 extern void free_info(struct info *infop);
 extern void free_author_array(struct author *authorp, int author_count);
+/* XXX - begin sorted order matching chk_validate.c here - XXX */
+extern bool test_IOCCC_author_version(char *str);
+extern bool test_IOCCC_contest_id(char *str);
+extern bool test_IOCCC_info_version(char *str);
+extern bool test_Makefile(char *str);
+extern bool test_Makefile_override(bool boolean);
+extern bool test_abstract(char *str);
+extern bool test_affiliation(char *str);
+extern bool test_author_JSON(char *str);
+/* XXX - end sorted order matching chk_validate.c here - XXX */
 extern bool test_mkiocccentry_version(char *str);
 extern bool test_iocccsize_version(char *str);
 extern bool test_chkentry_version(char *str);
 extern bool test_fnamchk_version(char *str);
 extern bool test_txzchk_version(char *str);
-extern bool test_IOCCC_author_version(char *str);
-extern bool test_IOCCC_contest_id(char *str);
-extern bool test_IOCCC_info_version(char *str);
-extern bool test_Makefile(char *str);
 extern bool test_c_src(char *str);
 extern bool test_title(char *str);
-extern bool test_Makefile_override(bool boolean);
-extern bool test_abstract(char *str);
-extern bool test_affiliation(char *str);
-extern bool test_author_JSON(char *str);
 extern bool test_author_count(int author_count);
 extern bool test_empty_override(bool boolean);
 extern bool test_rule_2a_override(bool boolean);
