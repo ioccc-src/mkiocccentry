@@ -82,7 +82,7 @@ struct txz_info
     unsigned dot_files;			    /* number of dot files that aren't .author.json and .info.json */
     unsigned named_dot;			    /* number of files called just '.' */
     unsigned total_files;		    /* total files in the tarball */
-    unsigned total_issues;		    /* number of total issues in tarball */
+    unsigned total_feathers;		    /* number of total feathers stuck in tarball (i.e. issues found) */
 };
 
 static struct txz_info txz_info;	    /* all the information collected from txzpath */
