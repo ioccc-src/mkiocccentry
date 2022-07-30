@@ -452,7 +452,7 @@ test_Makefile_override(bool boolean)
 bool
 test_abstract(char *str)
 {
-    size_t length = 0;
+    size_t length = 0;		/* length of string */
 
     /*
      * firewall
@@ -465,14 +465,13 @@ test_abstract(char *str)
     /*
      * validate str
      */
+    length = strlen(str);
     /* check for a valid length */
-    if (*str == '\0') { /* strlen(str) == 0 */
+    if (length <= 0) {
 	json_dbg(JSON_DBG_MED, __func__,
 		 "invalid: empty abstract");
 	return false;
-    }
-    length = strlen(str);
-    if (length > MAX_ABSTRACT_LEN) {
+    } else if (length > MAX_ABSTRACT_LEN) {
 	json_dbg(JSON_DBG_MED, __func__,
 		 "invalid: abstract length %ju > max %d", (uintmax_t)length, MAX_ABSTRACT_LEN);
 	json_dbg(JSON_DBG_HIGH, __func__,
@@ -597,6 +596,62 @@ test_author_count(int author_count)
 	return false;
     }
     json_dbg(JSON_DBG_MED, __func__, "author_count is valid");
+    return true;
+}
+
+
+/*
+ * test_author_handle - test if author_handle is valid
+ *
+ * Determine if author_handle is a valid length and contains only allowed handle chars.
+ *
+ * given:
+ *	str	string to test
+ *
+ * returns:
+ *	true ==> string is valid,
+ *	false ==> string is NOT valid, or NULL pointer, or some internal error
+ */
+bool
+test_author_handle(char *str)
+{
+    size_t length = 0;		/* length of string */
+    bool test = false;		/* character test result */
+
+    /*
+     * firewall
+     */
+    if (str == NULL) {
+	warn(__func__, "str is NULL");
+	return false;
+    }
+
+    /*
+     * validate str
+     */
+    length = strlen(str);
+    /* check for a valid length */
+    if (length <= 0) {
+	json_dbg(JSON_DBG_MED, __func__,
+		 "invalid: empty abstract");
+	return false;
+    } else if (length > MAX_HANDLE) {
+	json_dbg(JSON_DBG_MED, __func__,
+		 "invalid: author_handle length %ju > max %d", (uintmax_t)length, MAX_HANDLE);
+	json_dbg(JSON_DBG_HIGH, __func__,
+		 "invalid: author_handle: <%s> is invalid", str);
+	return false;
+    }
+    /* IOCCC author handle must use only lower case POSIX portable filename and + chars */
+    test = posix_plus_safe(str, false, false, true);
+    if (test == false) {
+	json_dbg(JSON_DBG_MED, __func__,
+		 "invalid: author_handle does not match regexp: ^[0-9a-z][0-9a-z._+-]*$");
+	json_dbg(JSON_DBG_HIGH, __func__,
+		 "invalid: author_handle: <%s> contains invalid characters", str);
+	return false;
+    }
+    json_dbg(JSON_DBG_MED, __func__, "author_handle is valid");
     return true;
 }
 

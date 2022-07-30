@@ -4202,17 +4202,22 @@ get_author_info(struct info *infop, char *ioccc_id, struct author **author_set_p
 	    dbg(DBG_VHIGH, "IOCCC author handle: %s", author_set[i].author_handle);
 
 	    /*
-	     * reject if too long
+	     * reject if handle is invalid
 	     */
-	    if (len > MAX_HANDLE) {
+	    if (test_author_handle(author_set[i].author_handle) == false) {
 
 		/*
 		 * issue rejection message
 		 */
+		fpara(stderr,
+		      "",
+		      "The IOCCC author handle must match the following regexp:",
+		      "",
+		      "    ^[0-9a-z][0-9a-z._+-]*$",
+		      "",
+		      NULL);
 		errno = 0;		/* pre-clear errno for warnp() */
-		ret =
-		    fprintf(stderr, "\nSorry ( tm Canada :-) ), we limit IOCCC author handles to %d characters\n\n",
-			    MAX_HANDLE);
+		ret = fprintf(stderr, "\nThe IOCCC author handle is limtied to %d characters\n\n", MAX_HANDLE);
 		if (ret <= 0) {
 		    warnp(__func__, "fprintf error while printing IOCCC author handle length limit");
 		}
@@ -4225,25 +4230,6 @@ get_author_info(struct info *infop, char *ioccc_id, struct author **author_set_p
 		    author_set[i].author_handle = NULL;
 		}
 		continue;
-	    }
-
-	    /*
-	     * IOCCC author handle must use only lower case POSIX portable filename and + chars
-	     */
-	    if (len > 0 &&
-	        posix_plus_safe(author_set[i].author_handle, false, false, true) == false) {
-		    fpara(stderr,
-			  "",
-			  "The author handle must the following match regexp:",
-			  "",
-			  "    ^[0-9a-z][0-9a-z._+-]*$",
-			  "",
-			  NULL);
-		    if (author_set[i].author_handle != NULL) {
-			free(author_set[i].author_handle);
-			author_set[i].author_handle = NULL;
-		    }
-		    continue;
 	    }
 	} while (author_set[i].author_handle == NULL);
 

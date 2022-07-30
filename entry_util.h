@@ -169,6 +169,8 @@ extern bool test_Makefile_override(bool boolean);
 extern bool test_abstract(char *str);
 extern bool test_affiliation(char *str);
 extern bool test_author_JSON(char *str);
+extern bool test_author_count(int author_count);
+extern bool test_author_handle(char *str);
 /* XXX - end sorted order matching chk_validate.c here - XXX */
 extern bool test_mkiocccentry_version(char *str);
 extern bool test_iocccsize_version(char *str);
@@ -177,7 +179,6 @@ extern bool test_fnamchk_version(char *str);
 extern bool test_txzchk_version(char *str);
 extern bool test_c_src(char *str);
 extern bool test_title(char *str);
-extern bool test_author_count(int author_count);
 extern bool test_empty_override(bool boolean);
 extern bool test_rule_2a_override(bool boolean);
 extern bool test_rule_2a_mismatch(bool boolean);
