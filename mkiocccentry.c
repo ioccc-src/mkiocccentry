@@ -4775,7 +4775,7 @@ write_author(struct info *infop, int author_count, struct author *authorp, char 
 	    json_fprintf_value_string(author_stream, "\t\t\t", "author_handle", " : ", strnull(authorp[i].author_handle), ",\n") &&
 	    json_fprintf_value_long(author_stream, "\t\t\t", "author_number", " : ", authorp[i].author_num, "\n") &&
 	    fprintf(author_stream, "\t\t}%s\n", (((i + 1) < author_count) ? "," : "")) > 0;
-	if (ret < 0) {
+	if (ret == false) {
 	    errp(159, __func__, "fprintf error writing author info to %s", author_path);
 	    not_reached();
 	}
