@@ -212,10 +212,11 @@ static void check_extra_data_files(struct info *infop, char const *entry_dir, ch
 static bool yes_or_no(char const *question);
 static char *get_title(struct info *infop);
 static char *get_abstract(struct info *infop);
-static int get_author_info(struct info *infop, char *ioccc_id, struct author **author_set);
+static int get_author_info(struct author **author_set_p);
 static void verify_entry_dir(char const *entry_dir, char const *ls);
 static void write_info(struct info *infop, char const *entry_dir, char const *chkentry, char const *fnamchk);
-static void write_author(struct info *infop, int author_count, struct author *authorp, char const *entry_dir, char const *chkentry);
+static void form_auth(struct auth *authp, struct info *infop, int author_count, struct author *authorp);
+static void write_author(struct auth *authp, char const *entry_dir, char const *chkentry, char const *fnamchk);
 static void form_tarball(char const *work_dir, char const *entry_dir, char const *tarball_path, char const *tar,
 			 char const *ls, char const *txzchk, char const *fnamchk);
 static void remind_user(char const *work_dir, char const *entry_dir, char const *tar, char const *tarball_path, bool test_mode);

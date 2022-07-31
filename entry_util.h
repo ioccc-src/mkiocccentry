@@ -55,43 +55,16 @@
 
 
 /*
- * common json fields - for use in mkiocccentry.
- */
-struct json_common
-{
-    /*
-     * version
-     */
-    char *mkiocccentry_ver;	/* mkiocccentry version (MKIOCCCENTRY_VERSION) */
-    char const *iocccsize_ver;	/* iocccsize version (compiled in, same as iocccsize -V) */
-    char const *chkentry_ver;	/* chkentry version (compiled in, same as chkentry -V) */
-    char const *fnamchk_ver;	/* fnamchk version (compiled in, same as fnamchk -V) */
-    char const *txzchk_ver;	/* txzchk version (compiled in, same as txzchk -V) */
-    /*
-     * entry
-     */
-    char *ioccc_id;		/* IOCCC contest ID */
-    int entry_num;		/* IOCCC entry number */
-    char *tarball;		/* tarball filename */
-    bool test_mode;		/* true ==> test mode entered */
-
-    /*
-     * time
-     */
-    time_t tstamp;		/* seconds since epoch when .info json was formed (see gettimeofday(2)) */
-    int usec;			/* microseconds since the tstamp second */
-    char *epoch;		/* epoch of tstamp, currently: Thu Jan 1 00:00:00 1970 UTC */
-    char *utctime;		/* UTC converted string for tstamp (see strftime(3)) */
-};
-
-/*
- * author info
+ * IOCCC author information
+ *
+ * Information we will collect for each author of an IOCCC entry to fill out the authors JSON array
+ * within the .author.json file.
  */
 struct author
 {
     char *name;			/* name of the author */
     char *location_code;	/* author location/country code */
-    char const *location_name;	/* name of author location/country */
+    char const *location_name;	/* name of author location/country (compiled in from loc[]) */
     char *email;		/* Email address of author or or empty string ==> not provided */
     char *url;			/* home URL of author or or empty string ==> not provided */
     char *twitter;		/* author twitter handle or or empty string ==> not provided */
@@ -101,27 +74,85 @@ struct author
     bool default_handle;	/* true ==> default author_handle accepted, false ==> author_handle entered */
     char *author_handle;	/* IOCCC author handle (for winning entries) */
     int author_num;		/* author number */
-
-    /*
-     * common
-     */
-    struct json_common common;	/* fields that are common to this struct author and struct info (below) */
 };
 
 /*
- * info for JSON
+ * IOCCC .author.json information
  *
- * Information we will collect in order to form the .info json file.
+ * Information we will collect in order to form the .author.json file.
+ */
+struct auth
+{
+    /*
+     * .author.json information before the authors array
+     */
+    /* file format strings */
+    char const *no_comment;	/* mandatory JSON parsing directive :-) */
+    char const *author_version;	/* IOCCC .author.json format version (compiled in AUTHOR_VERSION) */
+    char const *ioccc_contest;	/* IOCCC contest string (compiled in IOCCC99 or IOCCCMOCK) */
+    /* contest year */
+    int year;			/* IOCCC year */
+    /* IOCCC tool versions */
+    char const *mkiocccentry_ver; /* mkiocccentry version (compiled in MKIOCCCENTRY_VERSION) */
+    char const *chkentry_ver;	/* chkentry version (compiled in, same as chkentry -V) */
+    char const *fnamchk_ver;	/* fnamchk version (compiled in, same as fnamchk -V) */
+    char const *iocccsize_ver;	/* iocccsize version (compiled in, same as iocccsize -V) */
+    char const *txzchk_ver;	/* txzchk version (compiled in, same as txzchk -V) */
+    /* entry information */
+    char *ioccc_id;		/* IOCCC contest ID */
+    int entry_num;		/* IOCCC entry number */
+    char *tarball;		/* tarball filename */
+    /* test or non-test mode */
+    bool test_mode;		/* true ==> test mode entered */
+
+    /*
+     * author set
+     */
+    int author_count;		/* number of authors - length of author array */
+    struct author *author;	/* set of authors for this entry */
+
+    /*
+     * .author.json information after the authors array
+     */
+    time_t tstamp;		/* seconds since epoch when .info json was formed (see gettimeofday(2)) */
+    int usec;			/* microseconds since the tstamp second */
+    char const *epoch;		/* epoch of tstamp, currently: Thu Jan 1 00:00:00 1970 UTC */
+    time_t min_stamp;		/* minimum seconds since epoch value of tstamp */
+    char *utctime;		/* UTC converted string for tstamp (see strftime(3)) */
+};
+
+/*
+ * IOCCC .info.json information
+ *
+ * Information we will collect in order to form the .info.json file.
  */
 struct info
 {
     /*
-     * entry
+     * .info.json information before the file name array
      */
+    /* file format strings */
+    char const *no_comment;	/* mandatory JSON parsing directive :-) */
+    char const *info_version;	/* IOCCC .info.json format version (compiled in INFO_VERSION) */
+    char const *ioccc_contest;	/* IOCCC contest string (compiled in IOCCC99 or IOCCCMOCK) */
+    /* contest year */
+    int year;			/* IOCCC year */
+    /* IOCCC tool versions */
+    char const *mkiocccentry_ver; /* mkiocccentry version (compiled in MKIOCCCENTRY_VERSION) */
+    char const *chkentry_ver;	/* chkentry version (compiled in, same as chkentry -V) */
+    char const *fnamchk_ver;	/* fnamchk version (compiled in, same as fnamchk -V) */
+    char const *iocccsize_ver;	/* iocccsize version (compiled in, same as iocccsize -V) */
+    char const *txzchk_ver;	/* txzchk version (compiled in, same as txzchk -V) */
+    /* entry information */
+    char *ioccc_id;		/* IOCCC contest ID */
+    int entry_num;		/* IOCCC entry number */
     char *title;		/* entry title */
     char *abstract;		/* entry abstract */
+    char *tarball;		/* tarball filename */
+    /* entry rule 2 sizes */
     off_t rule_2a_size;		/* Rule 2a size of prog.c */
     size_t rule_2b_size;	/* Rule 2b size of prog.c */
+    /* entry boolean values */
     bool empty_override;	/* true ==> empty prog.c override requested */
     bool rule_2a_override;	/* true ==> Rule 2a override requested */
     bool rule_2a_mismatch;	/* true ==> file size != rule_count function size */
@@ -137,11 +168,14 @@ struct info
     bool found_clean_rule;	/* true ==> Makefile has clean rule */
     bool found_clobber_rule;	/* true ==> Makefile has a clobber rule */
     bool found_try_rule;	/* true ==> Makefile has a try rule */
-    bool test_mode;		/* true ==> contest ID is test */
+    /* test or non-test mode */
+    bool test_mode;		/* true ==> test mode entered */
 
     /*
-     * filenames
+     * file name array
      */
+    char const *info_file;	/* .info.json filename */
+    char const *author_file;	/* .author.json filename */
     char *prog_c;		/* prog.c filename */
     char *Makefile;		/* Makefile filename */
     char *remarks_md;		/* remarks.md filename */
@@ -149,15 +183,20 @@ struct info
     char **extra_file;		/* list of extra filenames followed by NULL */
 
     /*
-     * common
+     * .info.json information after the file name array
      */
-    struct json_common common;	/* fields that are common to this struct info and struct author (above) */
+    time_t tstamp;		/* seconds since epoch when .info json was formed (see gettimeofday(2)) */
+    int usec;			/* microseconds since the tstamp second */
+    char const *epoch;		/* epoch of tstamp, currently: Thu Jan 1 00:00:00 1970 UTC */
+    time_t min_stamp;		/* minimum seconds since epoch value of tstamp */
+    char *utctime;		/* UTC converted string for tstamp (see strftime(3)) */
 };
 
 
 /*
  * external function declarations
  */
+extern void free_auth(struct auth *authp);
 extern void free_info(struct info *infop);
 extern void free_author_array(struct author *authorp, int author_count);
 /* XXX - begin sorted order matching chk_validate.c here - XXX */

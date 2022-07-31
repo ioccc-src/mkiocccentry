@@ -52,6 +52,75 @@
 
 
 /*
+ * free_auth - free auto and related sub-elements
+ *
+ * given:
+ *      authp   - pointer to auth structure to free
+ *
+ * This function does not return on error.
+ */
+void
+free_auth(struct auth *authp)
+{
+    /*
+     * firewall
+     */
+    if (authp == NULL) {
+	err(190, __func__, "called with NULL arg(s)");
+	not_reached();
+    }
+
+    /*
+     * free file format strings
+     */
+    /* NOTE: no_comment is a compiled in constant */
+    /* NOTE: author_version is a compiled in constant */
+    /* NOTE: ioccc_contest is a compiled in constant */
+
+    /*
+     * free IOCCC tool versions
+     */
+    /* NOTE: mkiocccentry_ver is a compiled in constant */
+    /* NOTE: chkentry_ver is a compiled in constant */
+    /* NOTE: fnamchk_ver is a compiled in constant */
+    /* NOTE: iocccsize_ver is a compiled in constant */
+    /* NOTE: txzchk_ver is a compiled in constant */
+
+    /*
+     * free entry information
+     */
+    if (authp->ioccc_id != NULL) {
+	free(authp->ioccc_id);
+	authp->ioccc_id = NULL;
+    }
+    if (authp->tarball != NULL) {
+	free(authp->tarball);
+	authp->tarball = NULL;
+    }
+
+    /*
+     * free author set
+     */
+    free_author_array(authp->author, authp->author_count);
+
+    /*
+     * free time values
+     */
+    /* NOTE: epoch is a compiled in constant */
+    if (authp->utctime != NULL) {
+	free(authp->utctime);
+	authp->utctime = NULL;
+    }
+
+    /*
+     * zeroize the auth structure
+     */
+    memset(authp, 0, sizeof(*authp));
+    return;
+}
+
+
+/*
  * free_info - free info and related sub-elements
  *
  * given:
@@ -68,24 +137,32 @@ free_info(struct info *infop)
      * firewall
      */
     if (infop == NULL) {
-	err(162, __func__, "called with NULL arg(s)");
+	err(191, __func__, "called with NULL arg(s)");
 	not_reached();
     }
 
     /*
-     * free version values
+     * free file format strings
      */
-    if (infop->common.mkiocccentry_ver != NULL) {
-	free(infop->common.mkiocccentry_ver);
-	infop->common.mkiocccentry_ver = NULL;
-    }
+    /* NOTE: no_comment is a compiled in constant */
+    /* NOTE: author_version is a compiled in constant */
+    /* NOTE: ioccc_contest is a compiled in constant */
 
     /*
-     * free entry values
+     * free IOCCC tool versions
      */
-    if (infop->common.ioccc_id != NULL) {
-	free(infop->common.ioccc_id);
-	infop->common.ioccc_id = NULL;
+    /* NOTE: mkiocccentry_ver is a compiled in constant */
+    /* NOTE: chkentry_ver is a compiled in constant */
+    /* NOTE: fnamchk_ver is a compiled in constant */
+    /* NOTE: iocccsize_ver is a compiled in constant */
+    /* NOTE: txzchk_ver is a compiled in constant */
+
+    /*
+     * free entry information
+     */
+    if (infop->ioccc_id != NULL) {
+	free(infop->ioccc_id);
+	infop->ioccc_id = NULL;
     }
     if (infop->title != NULL) {
 	free(infop->title);
@@ -95,10 +172,16 @@ free_info(struct info *infop)
 	free(infop->abstract);
 	infop->abstract = NULL;
     }
+    if (infop->tarball != NULL) {
+	free(infop->tarball);
+	infop->tarball = NULL;
+    }
 
     /*
-     * free filenames
+     * free file name array
      */
+    /* NOTE: info_file is a compiled in constant */
+    /* NOTE: author_file is a compiled in constant */
     if (infop->prog_c != NULL) {
 	free(infop->prog_c);
 	infop->prog_c = NULL;
@@ -122,24 +205,19 @@ free_info(struct info *infop)
 	infop->extra_file = NULL;
     }
 
-    if (infop->common.tarball != NULL) {
-	free(infop->common.tarball);
-	infop->common.tarball = NULL;
-    }
-
     /*
      * free time values
      */
-    if (infop->common.epoch != NULL) {
-	free(infop->common.epoch);
-	infop->common.epoch = NULL;
+    /* NOTE: epoch is a compiled in constant */
+    if (infop->utctime != NULL) {
+	free(infop->utctime);
+	infop->utctime = NULL;
     }
-    if (infop->common.utctime != NULL) {
-	free(infop->common.utctime);
-	infop->common.utctime = NULL;
-    }
-    memset(infop, 0, sizeof *infop);
 
+    /*
+     * zeroize the info structure
+     */
+    memset(infop, 0, sizeof(*infop));
     return;
 }
 
@@ -160,11 +238,11 @@ free_author_array(struct author *author_set, int author_count)
      * firewall
      */
     if (author_set == NULL) {
-	err(163, __func__, "called with NULL arg(s)");
+	err(192, __func__, "called with NULL arg(s)");
 	not_reached();
     }
     if (author_count < 0) {
-	err(164, __func__, "author_count: %d < 0", author_count);
+	err(193, __func__, "author_count: %d < 0", author_count);
 	not_reached();
     }
 
@@ -172,6 +250,10 @@ free_author_array(struct author *author_set, int author_count)
      * free elements of each array member
      */
     for (i = 0; i < author_count; ++i) {
+
+	/*
+	 * free IOCCC author information
+	 */
 	if (author_set[i].name != NULL) {
 	    free(author_set[i].name);
 	    author_set[i].name = NULL;
@@ -204,9 +286,12 @@ free_author_array(struct author *author_set, int author_count)
 	    free(author_set[i].author_handle);
 	    author_set[i].author_handle = NULL;
 	}
-    }
 
-    memset(author_set, 0, sizeof *author_set);
+	/*
+	 * zeroize the author structure
+	 */
+	memset(&(author_set[i]), 0, sizeof(author_set[i]));
+    }
     return;
 }
 
