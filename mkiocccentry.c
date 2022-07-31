@@ -3377,6 +3377,7 @@ get_author_info(struct author **author_set_p)
     char *def_handle = NULL;	/* default author handle computed from name */
     char *p;
     int i = 0;
+    int j = 0;
 
     /*
      * firewall
@@ -3574,6 +3575,34 @@ get_author_info(struct author **author_set_p)
 		if (author_set[i].name != NULL) {
 		    free(author_set[i].name);
 		    author_set[i].name = NULL;
+		}
+	    }
+
+	    /*
+	     * reject if author name is a duplicate of a previous author name
+	     */
+	    if (i > 0) {
+		for (j=0; j < i; ++j) {
+		    if (strcmp(author_set[i].name, author_set[j].name) == 0) {
+
+			/*
+			 * issue rejection message
+			 */
+			errno = 0;		/* pre-clear errno for warnp() */
+			ret = fprintf(stderr, "\nauthor #%d name duplicates previous author #%d name", i, j);
+			if (ret <= 0) {
+			    warnp(__func__, "fprintf error while reject duplicate name");
+			}
+
+			/*
+			 * free storage
+			 */
+			if (author_set[i].name != NULL) {
+			    free(author_set[i].name);
+			    author_set[i].name = NULL;
+			}
+			break;
+		    }
 		}
 	    }
 	} while (author_set[i].name == NULL);
@@ -4226,8 +4255,35 @@ get_author_info(struct author **author_set_p)
 		}
 		continue;
 	    }
-	} while (author_set[i].author_handle == NULL);
 
+	    /*
+	     * reject if author handle is a duplicate of a previous author handle
+	     */
+	    if (i > 0) {
+		for (j=0; j < i; ++j) {
+		    if (strcmp(author_set[i].author_handle, author_set[j].author_handle) == 0) {
+
+			/*
+			 * issue rejection message
+			 */
+			errno = 0;		/* pre-clear errno for warnp() */
+			ret = fprintf(stderr, "\nauthor #%d author_handle duplicates previous author #%d author_handle", i, j);
+			if (ret <= 0) {
+			    warnp(__func__, "fprintf error while reject duplicate author_handle");
+			}
+
+			/*
+			 * free storage
+			 */
+			if (author_set[i].author_handle != NULL) {
+			    free(author_set[i].author_handle);
+			    author_set[i].author_handle = NULL;
+			}
+			break;
+		    }
+		}
+	    }
+	} while (author_set[i].author_handle == NULL);
 	dbg(DBG_MED, "Author #%d IOCCC author handle: %s", i, author_set[i].author_handle);
 
 	/*

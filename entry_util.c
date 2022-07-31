@@ -662,8 +662,8 @@ test_author_JSON(char *str)
  *	author_count	number of authors
  *
  * returns:
- *	true ==> string is valid,
- *	false ==> string is NOT valid, or NULL pointer, or some internal error
+ *	true ==> author_count is valid,
+ *	false ==> author_count is NOT valid, or some internal error
  */
 bool
 test_author_count(int author_count)
@@ -753,8 +753,8 @@ test_author_handle(char *str)
  *	author_number	author number
  *
  * returns:
- *	true ==> string is valid,
- *	false ==> string is NOT valid, or NULL pointer, or some internal error
+ *	true ==> author_number is valid,
+ *	false ==> author_number is NOT valid, or some internal error
  */
 bool
 test_author_number(int author_number)
@@ -772,6 +772,190 @@ test_author_number(int author_number)
 	return false;
     }
     json_dbg(JSON_DBG_MED, __func__, "author_number is valid");
+    return true;
+}
+
+
+/*
+ * test_authors - test is the authors array contains unique authors
+ *
+ * We verify that the authors array contains author numbers that are unique
+ * and bound in the range [0,author_count].
+ *
+ * We verify that the authors array contains author names that are unique.
+ *
+ * We verify that the authors array contains author handles that are unique.
+ *
+ * given:
+ *	author_count    - length of the author structure array in elements
+ *	authorp         - pointer to author structure array
+ *
+ * returns:
+ *	true ==> authors array contains unique authors
+ *	false ==> authors array contains non-unique authors, or NULL pointer, or some internal error
+ */
+bool
+test_authors(int author_count, struct author *authorp)
+{
+    bool test = false;		/* character test result */
+    int auth_num = -1;		/* author number */
+    int *auth_nums = NULL;	/* array of author numbers */
+    int i;
+    int j;
+
+    /*
+     * firewall
+     */
+    if (authorp == NULL) {
+	warn(__func__, "authorp is NULL");
+	return false;
+    }
+    test = test_author_count(author_count);
+    if (test == false) {
+	warn(__func__, "author_count is invalid");
+	return false;
+    }
+
+    /*
+     * initialize a zeroized array of author numbers
+     */
+    errno = 0;		/* pre-clear errno for warnp() */
+    auth_nums = calloc(author_count, sizeof(int));
+    if (auth_nums == NULL) {
+	 warnp(__func__, "calloc of %d ints failed", author_count);
+	 return false;
+    }
+
+    /*
+     * check each author number
+     */
+    for (i=0; i < author_count; ++i) {
+
+	/*
+	 * bound check i-th author's author number
+	 */
+	auth_num = authorp[i].author_num;
+	if (auth_num < 0) {
+	    json_dbg(JSON_DBG_MED, __func__,
+		     "invalid: author[%d] number: %d < 0", i, auth_num);
+	    /* free array of author numbers */
+	    if (auth_nums != NULL) {
+		free(auth_nums);
+		auth_nums = NULL;
+	    }
+	    return false;
+	} else if (auth_num > author_count) {
+	    json_dbg(JSON_DBG_MED, __func__,
+		     "invalid: number[%d] number: %d > author_count: %d", i, auth_num, author_count);
+	    /* free array of author numbers */
+	    if (auth_nums != NULL) {
+		free(auth_nums);
+		auth_nums = NULL;
+	    }
+	    return false;
+	}
+
+	/*
+	 * check the i-th author for a unique author number
+	 */
+	if (auth_nums[auth_num] != 0) {
+	    json_dbg(JSON_DBG_MED, __func__,
+		     "invalid: author[%d] number: %d is not unique, duplicate of author[%d]",
+		     i, auth_num, auth_nums[auth_num]);
+	    /* free array of author numbers */
+	    if (auth_nums != NULL) {
+		free(auth_nums);
+		auth_nums = NULL;
+	    }
+	    return false;
+	}
+	auth_nums[auth_num] = i;
+
+	/*
+	 * pre-check for non-NULL author_handle (for the uniqueness check below)
+	 */
+	if (authorp[i].author_handle == NULL) {
+	    json_dbg(JSON_DBG_MED, __func__,
+		     "invalid: author[%d] handle is NUL:", i);
+	    /* free array of author numbers */
+	    if (auth_nums != NULL) {
+		free(auth_nums);
+		auth_nums = NULL;
+	    }
+	    return false;
+	}
+
+	/*
+	 * pre-check for non-NULL name (for the uniqueness check below)
+	 */
+	if (authorp[i].name == NULL) {
+	    json_dbg(JSON_DBG_MED, __func__,
+		     "invalid: author[%d] name is NUL:", i);
+	    /* free array of author numbers */
+	    if (auth_nums != NULL) {
+		free(auth_nums);
+		auth_nums = NULL;
+	    }
+	    return false;
+	}
+    }
+
+    /*
+     * check for the uniqueness of each author handle
+     *
+     * The author_count will be a small number, so we can get away with a lazy O(n^2) match.
+     */
+    for (i=1; i < author_count; ++i) {
+	for (j=0; j < i; ++j) {
+	    if (strcmp(authorp[i].author_handle, authorp[j].author_handle) == 0) {
+		json_dbg(JSON_DBG_MED, __func__,
+			 "invalid: author[%d] handle matches author[%d] handle",
+			 i, j);
+		json_dbg(JSON_DBG_HIGH, __func__,
+			 "invalid: author[%d] handle: <%s> == author[%d] handle: <%s>",
+			 i, authorp[i].author_handle, j, authorp[j].author_handle);
+		/* free array of author numbers */
+		if (auth_nums != NULL) {
+		    free(auth_nums);
+		    auth_nums = NULL;
+		}
+		return false;
+	    }
+	}
+    }
+
+    /*
+     * check for the uniqueness of each author handle
+     *
+     * The author_count will be a small number, so we can get away with a lazy O(n^2) match.
+     */
+    for (i=1; i < author_count; ++i) {
+	for (j=0; j < i; ++j) {
+	    if (strcmp(authorp[i].name, authorp[j].name) == 0) {
+		json_dbg(JSON_DBG_MED, __func__,
+			 "invalid: author[%d] name matches author[%d] name",
+			 i, j);
+		json_dbg(JSON_DBG_HIGH, __func__,
+			 "invalid: author[%d] name: <%s> == author[%d] name: <%s>",
+			 i, authorp[i].name, j, authorp[j].name);
+		/* free array of author numbers */
+		if (auth_nums != NULL) {
+		    free(auth_nums);
+		    auth_nums = NULL;
+		}
+		return false;
+	    }
+	}
+    }
+
+    /*
+     * return success
+     */
+    /* free array of author numbers */
+    if (auth_nums != NULL) {
+	free(auth_nums);
+	auth_nums = NULL;
+    }
     return true;
 }
 
