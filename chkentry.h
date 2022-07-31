@@ -38,6 +38,10 @@
  */
 #include "util.h"
 
+/*
+ * time - for time specific things
+ */
+#include <time.h>
 
 /*
  * non-strict match to 1 part in MATCH_PRECISION
@@ -80,6 +84,7 @@ static const char * const usage_msg =
  */
 bool quiet = false;				/* true ==> quiet mode */
 
+
 /*
  * externals
  */
@@ -89,5 +94,29 @@ bool quiet = false;				/* true ==> quiet mode */
  */
 static void usage(int exitcode, char const *prog, char const *str, int expected, int argc) __attribute__((noreturn));
 
+
+/* Special stuff you're not supposed to know about. :-( */
+static void Bfgrerv(int d, int y);
+static int D = -1, Y = -1;
+static time_t t;
+static char const *Bfgrexbeo[] =
+{
+    "'yrff' vf yrkvpbtencuvpnyyl terngre guna 'terngre'. '<', ubjrire,\n"
+    "vf yrkvpbtencuvpnyyl yrff guna '>'. Fbzrbar fperjrq hc.\n-- Krkly",
+    "V qba'g xabj unys bs lbh unys nf jryy nf V fubhyq yvxr;\nnaq V yvxr yrff guna"
+    " unys bs lbh unys nf jryy nf lbh qrfreir.\n-- Ovyob Onttvaf",
+    "P frpgvba: '{}'\n-- Krkly\n",
+    "'Frpbaqyl, gb pryroengr BHE oveguqnlf: zvar naq zl ubabhenoyr naq tnyynag\n"
+    "sngure'f.' Hapbzsbegnoyr naq nccerurafvir fvyrapr. 'V nz bayl unys gur zna\n"
+    "gung ur vf: V nz 72, ur vf 144. Lbhe ahzoref ner pubfra gb qb ubabhe gb\n"
+    "rnpu bs uvf ubabhenoyr lrnef.' Guvf jnf ernyyl qernqshy -- n erthyne\n"
+    "oenvagjvfgre, naq fbzr bs gurz sryg vafhygrq, yvxr yrnc-qnlf fubirq\n"
+    "va gb svyy hc n pnyraqne.\n-- Ovatb Onttvaf",
+    "P havbaf: ybivat pbhcyrf jub rawbl cebtenzzvat va P gbtrgure.\n-- Krkly\n",
+    "'Ybbx,' fnvq Neguhe, 'jbhyq vg fnir lbh n ybg bs gvzr vs V whfg tnir\nhc naq jrag znq abj?'\n",
+    "Gurer vf na neg, be, engure, n xanpx gb sylvat. Gur xanpx yvrf va\nyrneavat ubj gb guebj lbhefrys ng gur tebhaq naq zvff.\n",
+    "SHA SNPG: Va O naq rneyl P, gur += bcrengbe jnf fcryg =+ vafgrnq bs += ;\nguvf zvfgnxr, ercnverq va 1976, jnf vaqhprq ol n frqhpgviryl rnfl jnl bs\nunaqyvat gur svefg sbez va O'f yrkvpny nanylfre.\n\nFrr zber sha snpgf naq uvfgbel ol Qraavf Evgpuvr uvzfrys ng\nuggcf://jjj.oryy-ynof.pbz/hfe/qze/jjj/puvfg.ugzy.\n",
+    NULL
+};
 
 #endif /* INCLUDE_CHKENTRY_H */
