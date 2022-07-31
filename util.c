@@ -3047,11 +3047,13 @@ clearerr_or_fclose(char const *filename, FILE *file)
 /*
  * fprint_line_buf - print a buffer as a single line string on a stream
  *
- * Unlike fprint_str(), this function will print the buffer as a
- * single line, possibly enclosed in starting and ending characters.
- * Non-ASCII characters, non-printable ASCII characters, \-characters,
- * start and end characters (if non-NUL) will all be printed as \x99
- * where 99 is the hex value, or \C where C is a C-style \-character.
+ * Unlike the older fprint_str(), which printed normal chars normally and C
+ * escape chars as literal C escape chars (i.e. if a \n was encountered it would
+ * print "\\n" to show that it was a newline), this function will print the
+ * buffer as a single line, possibly enclosed in starting and ending characters.
+ * Non-ASCII characters, non-printable ASCII characters, \-characters, start and
+ * end characters (if non-NUL) will all be printed as \x99 where 99 is the hex
+ * value, or \C where C is a C-style \-character.
  *
  * The line printed will be printed as a single line, without a final
  * newline.
