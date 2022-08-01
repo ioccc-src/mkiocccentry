@@ -187,9 +187,9 @@ Bfgrerv(int i, int r)
 	    putchar(*p);
 	else
 	    putchar(islower(*p) ?
-                    "nopqrstuvwxyzabcdefghijklm"[(*p-'a'+(42-(1<<4)))%(740%42)]
+                    "nopqrstuvwxyzabcdefghijklm"[(*p-0141+(42-(1<<4)))%(740%42)]
 		    :
-                    "NOPQRSTUVWXYZABCDEFGHIJKLM"[(*p-'A'+(0xd<<1))%((2*223)%42)]);
+                    "NOPQRSTUVWXYZABCDEFGHIJKLM"[(*p-0x42+(0xd<<1))%((2*223)%42)]+1);
     }
     putchar('\n');
 #if 0
