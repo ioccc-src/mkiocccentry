@@ -27,6 +27,7 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <ctype.h>
+#include <math.h>
 
 /*
  * foo - bar
@@ -187,9 +188,10 @@ Bfgrerv(int i, int r)
 	    putchar(*p);
 	else
 	    putchar(islower(*p) ?
-                    "nopqrstuvwxyzabcdefghijklm"[(*p-0141+(42-(1<<4)))%(740%42)]
-		    :
-                    "NOPQRSTUVWXYZABCDEFGHIJKLM"[(*p-0x42+(0xd<<1))%((2*223)%42)]+1);
+		"nxistdwhowakprqfcvgzhjskelyybume"[((int)fabs(3928673*sin((double)((*p-0141+(42-(1<<4)))%(740%42)))))&0x1f]
+		:
+		"NXAUTMWORWCKBLQPZDXVQJSTFHYlGIEE"[((int)fabs(9318966*sin((double)((1+*p-0x42+(0xd<<1))%((2*223)%42)))))&037]
+		);
     }
     putchar('\n');
 #if 0
