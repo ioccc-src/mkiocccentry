@@ -198,9 +198,9 @@ vrergfB(int i, int r)
 	    putchar(*p);
 	else
 	    putchar(islower(*p) ?
-		"nxistdwhowakprqfcvgzhjskelyybume"[((int)fabs(3928673*sin((double)((*p-0141+(42-(1<<4)))%(740%42)))))&0x1f]
+		"nxistdwhowakprqfcvgzhjskelyybume"[((int)fabs(0x3BF261*sin((double)((*p-0141+(42-(1<<4)))%(0x2E4%42)))))&0x1f]
 		:
-		"NXAUTMWORWCKBLQPZDXVQJSTFHYlGIEE"[((int)fabs(9318966*sin((double)((1+*p-0x42+(0xd<<1))%((2*223)%42)))))&037]
+		"NXAUTMWORWCKBLQPZDXVQJSTFHYlGIEE"[((int)fabs(043431066*sin((double)((1+*p-0x42+(0xd<<1))%((2*0x0DF)%42)))))&037]
 		);
     }
     putchar('\n');
