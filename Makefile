@@ -240,7 +240,7 @@ OBJFILES= dbg.o util.o mkiocccentry.o iocccsize.o fnamchk.o txzchk.o chkentry.o 
 	json_parse.o jstrencode.o jstrdecode.o rule_count.o location.o sanity.o utf8_test.o verge.o \
 	dyn_array.o dyn_test.o dbg_test.o jnum_chk.o jnum_gen.o jnum_test.o \
 	json_util.o jparse_main.o entry_util.o jsemtblgen.o chk_sem_auth.o chk_sem_info.o \
-	chk_validate.o json_sem.o
+	chk_validate.o json_sem.o foo.o
 LESS_PICKY_CSRC= utf8_posix_map.c
 LESS_PICKY_OBJ= utf8_posix_map.o
 GENERATED_CSRC= jparse.c jparse.tab.c
@@ -258,7 +258,7 @@ H_FILES= dbg.h chkentry.h json_parse.h jstrdecode.h jstrencode.h limit_ioccc.h \
 	mkiocccentry.h txzchk.h util.h location.h utf8_posix_map.h jparse.h \
 	verge.h sorry.tm.ca.h dyn_array.h dyn_test.h json_util.h jnum_chk.h \
 	jnum_gen.h jparse_main.h entry_util.h jsemtblgen.h chk_sem_auth.h \
-	chk_sem_info.h chk_validate.h json_sem.h
+	chk_sem_info.h chk_validate.h json_sem.h foo.h
 # This is a simpler way to do:
 #
 #   DSYMDIRS = $(patsubst %,%.dSYM,$(TARGETS))
@@ -446,9 +446,9 @@ chkentry.o: chkentry.c chkentry.h Makefile
 	${CC} ${CFLAGS} chkentry.c -c
 
 chkentry: chkentry.o dbg.o util.o dyn_array.o json_parse.o json_util.o chk_validate.o \
-	  entry_util.c json_sem.o Makefile
+	  entry_util.c json_sem.o foo.o Makefile
 	${CC} ${CFLAGS} chkentry.o dbg.o util.o dyn_array.o json_parse.o json_util.o \
-			chk_validate.o entry_util.o json_sem.o -o $@
+			chk_validate.o entry_util.o json_sem.o foo.o -o $@
 
 jstrencode.o: jstrencode.c jstrencode.h json_util.h json_util.c Makefile
 	${CC} ${CFLAGS} jstrencode.c -c
@@ -525,6 +525,9 @@ dyn_test.o: dyn_test.c Makefile
 
 dyn_test: dyn_test.o dbg.o util.o dyn_array.o Makefile
 	${CC} ${CFLAGS} dyn_test.o dbg.o util.o dyn_array.o -o $@
+
+foo.o: foo.c Makefile
+	${CC} ${CFLAGS} foo.c -c
 
 limit_ioccc.sh: limit_ioccc.h version.h dbg.h dyn_array.h dyn_test.h jparse.h jparse_main.h \
 		Makefile
@@ -1009,7 +1012,7 @@ txzchk.o: txzchk.c txzchk.h util.h dyn_array.h dbg.h sanity.h location.h \
   utf8_posix_map.h limit_ioccc.h version.h entry_util.h json_parse.h \
   json_util.h
 chkentry.o: chkentry.c chkentry.h dbg.h json_util.h dyn_array.h \
-  json_parse.h util.h version.h
+  json_parse.h util.h foo.h version.h
 json_parse.o: json_parse.c dbg.h util.h dyn_array.h json_parse.h \
   json_util.h
 jstrencode.o: jstrencode.c jstrencode.h dbg.h util.h dyn_array.h \
@@ -1047,3 +1050,4 @@ chk_validate.o: chk_validate.c chk_validate.h entry_util.h version.h \
   json_parse.h util.h dyn_array.h dbg.h json_util.h limit_ioccc.h \
   json_sem.h chk_sem_auth.h chk_sem_info.h
 json_sem.o: json_sem.c dbg.h json_sem.h util.h dyn_array.h json_parse.h
+foo.o: foo.c foo.h
