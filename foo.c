@@ -2,7 +2,7 @@
 /*
  * foo - bar
  *
- * "Because sometimes code is foo and sometimes code is fubar." :-)
+ * "Because sometimes code is foo and sometimes foo is fubar." :-)
  *
  * The JSON parser was co-developed by:
  *
@@ -12,10 +12,12 @@
  * and:
  *	chongo (Landon Curt Noll, http://www.isthe.com/chongo/index.html) /\oo/\
  *
+ * "Because sometimes we need more O in C." :-)
+ *
  * This tool is being co-developed by Cody Boone Ferguson and Landon Curt Noll
  * and the concept of this file was developed by Landon Curt Noll.
  *
- * "Because sometimes we need more O in C." :-)
+ * "Because sometimes even the IOCCC Judges need some help." :-)
  */
 
 
