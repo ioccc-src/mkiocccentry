@@ -2,7 +2,7 @@
 /*
  * foo - bar
  *
- * "Because sometimes code is foo and sometimes code is fubar." :-)
+ * "Because sometimes code is foo and sometimes foo is fubar." :-)
  *
  * The JSON parser was co-developed by:
  *
@@ -12,10 +12,20 @@
  * and:
  *	chongo (Landon Curt Noll, http://www.isthe.com/chongo/index.html) /\oo/\
  *
- * This tool is being co-developed by Cody Boone Ferguson and Landon Curt Noll
- * and the concept of this file was developed by Landon Curt Noll.
- *
  * "Because sometimes we need more O in C." :-)
+ *
+ * This tool is being co-developed by Cody Boone Ferguson and Landon Curt Noll.
+ *
+ * The concept of this file was developed by:
+ *
+ *	Cody Boone Ferguson
+ *
+ * after some discussion with Landon Curt Noll about the need (yes: need) for
+ * it. Cody is quite okay if after looking at this file you think he's a bit
+ * crazy and in fact he quite welcomes it and even relishes the idea! :-)
+ *
+ * "Because sometimes we all need a little craziness in our lives." :-)
+ * "Because sometimes even the IOCCC Judges need some help." :-)
  */
 
 
@@ -40,8 +50,8 @@
  */
 
 /* Special stuff you're not supposed to not know about :-( .. and more stuff :-) */
-static time_t t = 314159265;
-static char const *Bfgrexbeo[] =
+static time_t t = 02256330241;
+static char const *oebxergfB[] =
 {
     "'yrff' vf yrkvpbtencuvpnyyl terngre guna 'terngre'. '<', ubjrire,\n"
     "vf yrkvpbtencuvpnyyl yrff guna '>'. Fbzrbar fperjrq hc.\n-- Krkly",
@@ -124,12 +134,20 @@ static char const *Bfgrexbeo[] =
     "fnvq gur Juvgr Dhrra. 'Lbh zhfga'g yrnir bhg fb\nznal guvatf.'\n\n'Sna ure urnq!' gur Erq Dhrra "
     "nakvbhfyl vagreehcgrq. 'Fur'yy or srirevfu nsgre\nfb zhpu guvaxvat.' Fb gurl frg gb jbex naq snaarq "
     "ure jvgu ohapurf bs yrnirf,\ngvyy fur unq gb ort gurz gb yrnir bss, vg oyrj ure unve nobhg fb.",
+    "SHA SNPG:\n\nVa Yvsr, gur Havirefr naq Rirelguvat, gur guveq vafgnyzrag bs Gur Uvgpuuvxre'f\n"
+    "Thvqr gb gur Tnynkl ol Qbhtynf Nqnzf, vg'f fnvq gur nafjre gb Yvsr, gur\nHavirefr naq Rirelguvat vf 42. "
+    "Qbhtynf Nqnzf vafvfgrq guvf jnf n wbxr, jevgvat\nba HFRARG:\n\n    Gur nafjre gb guvf vf irel fvzcyr. Vg "
+    "jnf n wbxr. Vg unq gb or n ahzore, na\n    beqvanel, fznyyvfu ahzore, naq V pubfr gung bar. Ovanel ercerfragngvbaf,"
+    "\n    onfr guvegrra, Gvorgna zbaxf ner nyy pbzcyrgr abafrafr. V fng ng zl qrfx,\n    fgnerq vagb gur tneqra naq gubhtug"
+    " '42 jvyy qb' V glcrq vg bhg. Raq bs\n    fgbel.\n\nOhg qvq lbh xabj gung fbzr nfgebabzref FCRAG GJB LRNEF fghqlvat guvf "
+    "naq VAFVFG\ngung 42 vf npghnyyl pbeerpg? Sbe guvf fgbel frr:\n\n"
+    "uggcf://jjj.vaqrcraqrag.pb.hx/arjf/lrf-gur-nafjre-gb-gur-havirefr-ernyyl-vf-42-1351201.ugzy",
     NULL
 };
 
 
 /*
- * Bfgrerv - "What ever can 'Bfgrerv' mean ?!"
+ * vrergfB - "What ever can 'vrergfB' mean ?!"
  *
  * Given:
  *	stuff
@@ -138,7 +156,7 @@ static char const *Bfgrexbeo[] =
  *	"No it doesn't"!
  */
 void
-Bfgrerv(int i, int r)
+vrergfB(int i, int r)
 {
     char const *str = NULL;
     struct tm *tm = NULL;
@@ -151,7 +169,7 @@ Bfgrerv(int i, int r)
 	t = time(NULL);
 
 	if (t == (time_t)-1)
-	    t = (time_t)314159265;
+	    t = (time_t)02256330241;
 
 	tm = localtime(&t);
 
@@ -159,25 +177,30 @@ Bfgrerv(int i, int r)
 	    if (i < 0)
 		i = 0;
 	    if (r < 0)
-		r = 2*3*337;
+		r = 2*3*0521;
 	} else {
 	    if (i < 0)
 		i = tm->tm_yday;
 	    if (r < 0)
-		r = tm->tm_year + 2*2*5*5*19;
+		r = tm->tm_year + 2*2*5*5*0x13;
 	}
     }
 
-    for (max = 0; Bfgrexbeo[max] != NULL; ++max)
-	;
-    idx = (r*2*2*13 + (int)(i / 7)) % max;
+    if ((max = 42)) /* always assume max is 42 */
+	for (max -= 42; oebxergfB[max] != NULL; ++max)
+	    ;
+
+    idx = (r*2*2*015 + (int)(i / 7)) % max;
 
     if (idx >= max) {
 	idx = 0;
     }
-    str = Bfgrexbeo[idx];
+    str = oebxergfB[idx];
 
-    /* "You are expected to understand this but we're not helping if you don't." :-) */
+    /*
+     * "You are expected to understand this but we're not helping if you don't :-)
+     * ...but whatever you do not don't don't panic!" :-(
+     */
     for (char const *p = str; *p; ++p)
     {
 	if (*p == '\\' && p[1] == 'n') {
@@ -188,9 +211,9 @@ Bfgrerv(int i, int r)
 	    putchar(*p);
 	else
 	    putchar(islower(*p) ?
-		"nxistdwhowakprqfcvgzhjskelyybume"[((int)fabs(3928673*sin((double)((*p-0141+(42-(1<<4)))%(740%42)))))&0x1f]
+		"nxistdwhowakprqfcvgzhjskelyybume"[((int)fabs(0x3BF261*sin((double)((*p-0141+(42-(1<<4)))%(0x2E4%42)))))&0x1f]
 		:
-		"NXAUTMWORWCKBLQPZDXVQJSTFHYlGIEE"[((int)fabs(9318966*sin((double)((1+*p-0x42+(0xd<<1))%((2*223)%42)))))&037]
+		"NXAUTMWORWCKBLQPZDXVQJSTFHYlGIEE"[((int)fabs(043431066*sin((double)((1+*p-0x42+(0xd<<1))%((2*0x0DF)%42)))))&037]
 		);
     }
     putchar('\n');

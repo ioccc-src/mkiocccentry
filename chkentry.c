@@ -115,14 +115,14 @@ main(int argc, char *argv[])
 	author_json = argv[1];
 	break;
     default:
-	Bfgrerv(atoi(argv[0]), atoi(argv[1])); /* XXX - keep this line around for testing purposes for now - XX */
+	vrergfB(atoi(argv[0]), atoi(argv[1])); /* XXX - keep this line around for testing purposes for now - XXX */
 	usage(4, program, "too many args", -1, -1);
 	not_reached();
 	break;
     }
     if (info_json != NULL && author_json != NULL && entry_dir == NULL) {
 	if (strcmp(info_json, ".") == 0 && strcmp(author_json, ".") == 0) {
-	    Bfgrerv(-1, -1);
+	    vrergfB(-1, -1);
 	    not_reached();
 	}
     }

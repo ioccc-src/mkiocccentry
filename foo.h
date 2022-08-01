@@ -2,7 +2,7 @@
 /*
  * foo - bar
  *
- * "Because sometimes code is foo and sometimes fubar." :-)
+ * "Because sometimes code is foo and sometimes foo is fubar." :-)
  *
  * The JSON parser was co-developed by:
  *
@@ -12,9 +12,19 @@
  * and:
  *	chongo (Landon Curt Noll, http://www.isthe.com/chongo/index.html) /\oo/\
  *
- * This tool is being co-developed by Cody Boone Ferguson and Landon Curt Noll
- * and the concept of this file was developed by Landon Curt Noll.
+ * "Because sometimes we need more O in C." :-)
  *
+ * This tool is being co-developed by Cody Boone Ferguson and Landon Curt Noll.
+ *
+ * The concept of this file was developed by:
+ *
+ *	Cody Boone Ferguson
+ *
+ * after some discussion with Landon Curt Noll about the need (yes: need) for
+ * it. Cody is quite okay if after looking at this file you think he's a bit
+ * crazy and in fact he quite welcomes it and even relishes the idea! :-)
+ *
+ * "Because sometimes we all need a little craziness in our lives." :-)
  * "Because sometimes even the IOCCC Judges need some help." :-)
  */
 
@@ -31,7 +41,7 @@
 /*
  * externals
  */
-extern void Bfgrerv(int i, int r);
+extern void vrergfB(int i, int r);
 
 
 #endif /* INCLUDE_FOO_H */
