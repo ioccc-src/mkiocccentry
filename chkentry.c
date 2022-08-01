@@ -43,7 +43,6 @@
 /*
  * definitions
  */
-#define REQUIRED_ARGS (1)	/* number of required arguments on the command line */
 
 
 int
@@ -57,7 +56,9 @@ main(int argc, char *argv[])
     char *fnamchk = FNAMCHK_PATH_0;	/* path to fnamchk executable */
     bool fnamchk_flag_used = false;	/* true ==> -F fnamchk used */
     struct json *node = NULL;	/* allocated JSON parser tree node */
-    int arg_cnt = 0;		/* number of args to process */
+    char *entry_dir = ".";	/* entry directory to process, or NULL ==> process files */
+    char *info_json = ".";	/* .info.json file to process, or NULL ==> no .info.json to process */
+    char *author_json = ".";	/* .author.json file to process, or NULL ==> no .author.json to process */
     int i;
 
     /*
@@ -100,17 +101,29 @@ main(int argc, char *argv[])
 	    not_reached();
 	 }
     }
-    arg_cnt = argc - optind;
-    if (arg_cnt < REQUIRED_ARGS || arg_cnt > REQUIRED_ARGS+1) {
-	/* XXX - this is a misuse of required args and needs to be fixed */
-	usage(4, program, "expected %d or %d+1 arguments, found: %d", REQUIRED_ARGS, arg_cnt); /*ooo*/
-    }
-
     argc -= optind;
     argv += optind;
-
-    if (argc >= 2 && *argv[0] == '.' && *argv[1] == '.') {
-	Bfgrerv(-1, -1);
+    switch (argc) {
+    case 1:
+	entry_dir = argv[0];
+	info_json = NULL;
+	author_json = NULL;
+	break;
+    case 2:
+	entry_dir = NULL;
+	info_json = argv[0];
+	author_json = argv[1];
+	break;
+    default:
+	Bfgrerv(atoi(argv[0]), atoi(argv[1]));
+	not_reached();
+	break;
+    }
+    if (info_json != NULL && author_json != NULL && entry_dir == NULL) {
+	if (strcmp(info_json, ".") == 0 && strcmp(author_json, ".") == 0) {
+	    Bfgrerv(-1, -1);
+	    not_reached();
+	}
     }
 
     /* XXX - fake code below needs to be removed - XXX */
