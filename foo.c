@@ -14,9 +14,17 @@
  *
  * "Because sometimes we need more O in C." :-)
  *
- * This tool is being co-developed by Cody Boone Ferguson and Landon Curt Noll
- * and the concept of this file was developed by Landon Curt Noll.
+ * This tool is being co-developed by Cody Boone Ferguson and Landon Curt Noll.
  *
+ * The concept of this file was developed by:
+ *
+ *	Cody Boone Ferguson
+ *
+ * after some discussion with Landon Curt Noll about the need (yes: need) for
+ * it. Cody is quite okay if after looking at this file you think he's a bit
+ * crazy and in fact he quite welcomes it and even relishes the idea! :-)
+ *
+ * "Because sometimes we all need a little craziness in our lives." :-)
  * "Because sometimes even the IOCCC Judges need some help." :-)
  */
 
@@ -43,7 +51,7 @@
 
 /* Special stuff you're not supposed to not know about :-( .. and more stuff :-) */
 static time_t t = 314159265;
-static char const *Bfgrexbeo[] =
+static char const *oebxergfB[] =
 {
     "'yrff' vf yrkvpbtencuvpnyyl terngre guna 'terngre'. '<', ubjrire,\n"
     "vf yrkvpbtencuvpnyyl yrff guna '>'. Fbzrbar fperjrq hc.\n-- Krkly",
@@ -131,7 +139,7 @@ static char const *Bfgrexbeo[] =
 
 
 /*
- * Bfgrerv - "What ever can 'Bfgrerv' mean ?!"
+ * vrergfB - "What ever can 'vrergfB' mean ?!"
  *
  * Given:
  *	stuff
@@ -140,7 +148,7 @@ static char const *Bfgrexbeo[] =
  *	"No it doesn't"!
  */
 void
-Bfgrerv(int i, int r)
+vrergfB(int i, int r)
 {
     char const *str = NULL;
     struct tm *tm = NULL;
@@ -170,14 +178,14 @@ Bfgrerv(int i, int r)
 	}
     }
 
-    for (max = 0; Bfgrexbeo[max] != NULL; ++max)
+    for (max = 0; oebxergfB[max] != NULL; ++max)
 	;
     idx = (r*2*2*13 + (int)(i / 7)) % max;
 
     if (idx >= max) {
 	idx = 0;
     }
-    str = Bfgrexbeo[idx];
+    str = oebxergfB[idx];
 
     /* "You are expected to understand this but we're not helping if you don't." :-) */
     for (char const *p = str; *p; ++p)
