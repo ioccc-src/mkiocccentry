@@ -2,7 +2,7 @@
 /*
  * foo - bar
  *
- * "Because sometimes code is foo and sometimes fubar." :-)
+ * "Because sometimes code is foo and sometimes code is fubar." :-)
  *
  * The JSON parser was co-developed by:
  *
@@ -15,7 +15,7 @@
  * This tool is being co-developed by Cody Boone Ferguson and Landon Curt Noll
  * and the concept of this file was developed by Landon Curt Noll.
  *
- * "Because sometimes even the IOCCC Judges need some help." :-)
+ * "Because sometimes we need more O in C." :-)
  */
 
 
@@ -32,6 +32,7 @@
  * foo - bar
  */
 #include "foo.h"
+
 
 /*
  * static values
@@ -157,18 +158,18 @@ Bfgrerv(int i, int r)
 	    if (i < 0)
 		i = 0;
 	    if (r < 0)
-		r = 2022;
+		r = 2*3*337;
 	} else {
 	    if (i < 0)
 		i = tm->tm_yday;
 	    if (r < 0)
-		r = tm->tm_year + 1900;
+		r = tm->tm_year + 2*2*5*5*19;
 	}
     }
 
     for (max = 0; Bfgrexbeo[max] != NULL; ++max)
 	;
-    idx = (r*52 + (int)(i / 7)) % max;
+    idx = (r*2*2*13 + (int)(i / 7)) % max;
 
     if (idx >= max) {
 	idx = 0;
@@ -191,6 +192,9 @@ Bfgrerv(int i, int r)
 		    "NOPQRSTUVWXYZABCDEFGHIJKLM"[(*p-'A'+26)%26]);
     }
     putchar('\n');
-    sleep((i+r)%5);
-    exit((i-r) % 256);
+#if 0
+    printf("i: %d r: %d\n", i, r);
+#endif
+    sleep(1+(((i+r)>0?(i+r):(-r-i))%5));
+    exit(1+(((i-r)>0?(i-r):(-i+r)) % 254)); /*ooo*/
 }
