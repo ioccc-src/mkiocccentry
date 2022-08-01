@@ -164,11 +164,6 @@ typedef unsigned char bool;
 #define is_all_whitespace(buf, len) (find_text((buf), (len), NULL) == 0)
 #define is_all_whitespace_str(str) (is_all_whitespace((str), strlen(str)))
 
-/*
- * macros for fprint_str() and print_str() functions
- */
-#define USE_STRLEN ((ssize_t)(-1))
-
 
 /*
  * external function declarations

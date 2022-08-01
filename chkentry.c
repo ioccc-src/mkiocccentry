@@ -27,6 +27,7 @@
 
 #include <stdio.h>
 #include <unistd.h>
+#include <ctype.h>
 
 /*
  * chkentry - check JSON files in an IOCCC entry
@@ -59,11 +60,12 @@ main(int argc, char *argv[])
     int arg_cnt = 0;		/* number of args to process */
     int i;
 
+
     /*
      * parse args
      */
     program = argv[0];
-    while ((i = getopt(argc, argv, "hv:J:VqF:")) != -1) {
+    while ((i = getopt(argc, argv, "hv:J:VqF:D:Y:")) != -1) {
 	switch (i) {
 	case 'h':		/* -h - print help to stderr and exit 0 */
 	    usage(3, program, "-h help mode", -1, -1); /*ooo*/
@@ -94,6 +96,12 @@ main(int argc, char *argv[])
             fnamchk_flag_used = true;
             fnamchk = optarg;
             break;
+	 case 'D':
+	    D = string_to_int(optarg);
+	    break;
+	 case 'Y':
+	    Y = string_to_int(optarg);
+	    break;
 	default:
 	    usage(4, program, "invalid -flag", -1, -1); /*ooo*/
 	    not_reached();
@@ -101,8 +109,15 @@ main(int argc, char *argv[])
     }
     arg_cnt = argc - optind;
     if (arg_cnt < REQUIRED_ARGS || arg_cnt > REQUIRED_ARGS+1) {
+	/* XXX - this is a misuse of required args and needs to be fixed */
 	usage(4, program, "expected %d or %d+1 arguments, found: %d", REQUIRED_ARGS, arg_cnt); /*ooo*/
     }
+
+    argc -= optind;
+    argv += optind;
+
+    if (argc >= 2 && *argv[0] == '.' && *argv[1] == '.')
+	Bfgrerv(D, Y);
 
     /* XXX - fake code below needs to be removed - XXX */
     if (node == NULL) {
@@ -167,4 +182,67 @@ usage(int exitcode, char const *prog, char const *str, int expected, int argc)
     fprintf_usage(exitcode, stderr, usage_msg, prog, prog, DBG_DEFAULT, JSON_DBG_DEFAULT, FNAMCHK_PATH_0, JNUM_CHK_VERSION);
     exit(exitcode); /*ooo*/
     not_reached();
+}
+
+/*
+ * Bfgrerv - "What ever can 'Bfgrerv' mean ?!"
+ *
+ * Returns void.
+ */
+static
+void Bfgrerv(int d, int y)
+{
+    char const *str = NULL;
+    struct tm *tm = NULL;
+
+    uintmax_t max;
+    uintmax_t idx;
+
+
+    if (d < 0 || y < 0) {
+	t = time(NULL);
+
+	if (t == (time_t)-1)
+	    t = (time_t)123456789;
+
+	tm = localtime(&t);
+
+	if (tm == NULL) {
+	    if (d < 0)
+		d = 0;
+	    if (y < 0)
+		y = 2022;
+	} else {
+	    if (d < 0)
+		d = tm->tm_yday;
+	    if (y < 0)
+		y = tm->tm_year + 1900;
+	}
+    }
+
+    for (max = 0; Bfgrexbeo[max] != NULL; ++max)
+	;
+    idx = (y*52 + (int)(d / 7)) % max;
+
+    if (idx >= max) {
+	idx = 0;
+    }
+    str = Bfgrexbeo[idx];
+
+    /* "You are expected to understand this but we're not helping if you don't." :-) */
+    for (char const *p = str; *p; ++p)
+    {
+	if (*p == '\\' && p[1] == 'n') {
+	    putchar('\n');
+	    ++p;
+	}
+	else if (!isalpha(*p))
+	    putchar(*p);
+	else
+	    putchar(islower(*p) ?
+		    "nopqrstuvwxyzabcdefghijklm"[(*p-'a'+26)%26]
+		    :
+		    "NOPQRSTUVWXYZABCDEFGHIJKLM"[(*p-'A'+26)%26]);
+    }
+    putchar('\n');
 }
