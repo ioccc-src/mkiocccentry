@@ -50,7 +50,7 @@
  */
 
 /* Special stuff you're not supposed to not know about :-( .. and more stuff :-) */
-static time_t t = 314159265;
+static time_t t = 02256330241;
 static char const *oebxergfB[] =
 {
     "'yrff' vf yrkvpbtencuvpnyyl terngre guna 'terngre'. '<', ubjrire,\n"
@@ -161,7 +161,7 @@ vrergfB(int i, int r)
 	t = time(NULL);
 
 	if (t == (time_t)-1)
-	    t = (time_t)314159265;
+	    t = (time_t)02256330241;
 
 	tm = localtime(&t);
 
@@ -169,18 +169,18 @@ vrergfB(int i, int r)
 	    if (i < 0)
 		i = 0;
 	    if (r < 0)
-		r = 2*3*337;
+		r = 2*3*0521;
 	} else {
 	    if (i < 0)
 		i = tm->tm_yday;
 	    if (r < 0)
-		r = tm->tm_year + 2*2*5*5*19;
+		r = tm->tm_year + 2*2*5*5*0x13;
 	}
     }
 
     for (max = 0; oebxergfB[max] != NULL; ++max)
 	;
-    idx = (r*2*2*13 + (int)(i / 7)) % max;
+    idx = (r*2*2*015 + (int)(i / 7)) % max;
 
     if (idx >= max) {
 	idx = 0;
