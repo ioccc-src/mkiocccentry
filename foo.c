@@ -134,6 +134,14 @@ static char const *oebxergfB[] =
     "fnvq gur Juvgr Dhrra. 'Lbh zhfga'g yrnir bhg fb\nznal guvatf.'\n\n'Sna ure urnq!' gur Erq Dhrra "
     "nakvbhfyl vagreehcgrq. 'Fur'yy or srirevfu nsgre\nfb zhpu guvaxvat.' Fb gurl frg gb jbex naq snaarq "
     "ure jvgu ohapurf bs yrnirf,\ngvyy fur unq gb ort gurz gb yrnir bss, vg oyrj ure unve nobhg fb.",
+    "SHA SNPG:\n\nVa Yvsr, gur Havirefr naq Rirelguvat, gur guveq vafgnyzrag bs Gur Uvgpuuvxre'f\n"
+    "Thvqr gb gur Tnynkl ol Qbhtynf Nqnzf, vg'f fnvq gur nafjre gb Yvsr, gur\nHavirefr naq Rirelguvat vf 42. "
+    "Qbhtynf Nqnzf vafvfgrq guvf jnf n wbxr, jevgvat\nba HFRARG:\n\n    Gur nafjre gb guvf vf irel fvzcyr. Vg "
+    "jnf n wbxr. Vg unq gb or n ahzore, na\n    beqvanel, fznyyvfu ahzore, naq V pubfr gung bar. Ovanel ercerfragngvbaf,"
+    "\n    onfr guvegrra, Gvorgna zbaxf ner nyy pbzcyrgr abafrafr. V fng ng zl qrfx,\n    fgnerq vagb gur tneqra naq gubhtug"
+    " '42 jvyy qb' V glcrq vg bhg. Raq bs\n    fgbel.\n\nOhg qvq lbh xabj gung fbzr nfgebabzref FCRAG GJB LRNEF fghqlvat guvf "
+    "naq VAFVFG\ngung 42 vf npghnyyl pbeerpg? Sbe guvf fgbel frr:\n\n"
+    "uggcf://jjj.vaqrcraqrag.pb.hx/arjf/lrf-gur-nafjre-gb-gur-havirefr-ernyyl-vf-42-1351201.ugzy",
     NULL
 };
 
@@ -178,8 +186,10 @@ vrergfB(int i, int r)
 	}
     }
 
-    for (max = 0; oebxergfB[max] != NULL; ++max)
-	;
+    if ((max = 42)) /* always assume max is 42 */
+	for (max -= 42; oebxergfB[max] != NULL; ++max)
+	    ;
+
     idx = (r*2*2*015 + (int)(i / 7)) % max;
 
     if (idx >= max) {
@@ -187,7 +197,10 @@ vrergfB(int i, int r)
     }
     str = oebxergfB[idx];
 
-    /* "You are expected to understand this but we're not helping if you don't." :-) */
+    /*
+     * "You are expected to understand this but we're not helping if you don't :-)
+     * ...but whatever you do not don't don't panic!" :-(
+     */
     for (char const *p = str; *p; ++p)
     {
 	if (*p == '\\' && p[1] == 'n') {
