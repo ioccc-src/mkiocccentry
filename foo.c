@@ -50,7 +50,7 @@
  */
 
 /* Special stuff you're not supposed to not know about :-( .. and more stuff :-) */
-static time_t t = 314159265;
+static time_t t = 314159223+42;
 static char const *oebxergfB[] =
 {
     "'yrff' vf yrkvpbtencuvpnyyl terngre guna 'terngre'. '<', ubjrire,\n"
@@ -142,6 +142,12 @@ static char const *oebxergfB[] =
     " '42 jvyy qb' V glcrq vg bhg. Raq bs\n    fgbel.\n\nOhg qvq lbh xabj gung fbzr nfgebabzref FCRAG GJB LRNEF fghqlvat guvf "
     "naq VAFVFG\ngung 42 vf npghnyyl pbeerpg? Sbe guvf fgbel frr:\n\n"
     "uggcf://jjj.vaqrcraqrag.pb.hx/arjf/lrf-gur-nafjre-gb-gur-havirefr-ernyyl-vf-42-1351201.ugzy",
+    "Vg'f pbzzbayl fhttrfgrq gung P++ vf na vzcebirzrag bire P. Guvf vf n zlgu\n"
+    "qrevivat sebz gur snpg gung gur bcrengbe ++ va P vapernfrf vgf bcrenaq nf n fvqr\n"
+    "rssrpg: gur inyhr bs gur bcrengvba qrcraqvat ba vs vg'f cbfgsvk be cersvk ++. Nf\n"
+    "vg unccraf P++ vf cbfgsvk ++. Guvf zrnaf gur inyhr bs gur rkcerffvba vf P naq nf\n"
+    "n fvqr rssrpg P vf vaperzragrq ol 1. Guvf cebirf gung P vf fhcrevbe - jung'f\n"
+    "yrsg, P + 1, vf oybng naq vg'f htyl. Vg'f uhtr naq vaqrprag. Sbe P++'f dhnyvgl\ngel P = 0;.\n    -- Krkly",
     NULL
 };
 
