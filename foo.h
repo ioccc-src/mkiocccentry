@@ -39,6 +39,12 @@
 
 
 /*
+ * dbg - info, debug, warning, error, and usage message facility
+ */
+#include "dbg.h"
+
+
+/*
  * externals
  */
 extern void vrergfB(int i, int r);

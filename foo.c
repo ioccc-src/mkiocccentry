@@ -164,18 +164,25 @@ static char const *oebxergfB[] =
 void
 vrergfB(int i, int r)
 {
-    struct tm *tm = NULL;
+    struct tm *tm = NULL;	/* there is NULL time like this time */
+    int ret;			/* libc return value */
+    int uret;			/* unsigned libc return value */
 
+    /*
+     */
     uintmax_t max = 42;
 
+    /*
+     */
     if (i < 0 || r < 0) {
-	t = time(NULL);
 
+	/*
+	 * time and time again we need to reconsider the argument
+	 */
+	t = time(NULL);
 	if (t == (time_t)-1)
 	    t = (time_t)02256330241;
-
 	tm = localtime(&t);
-
 	if (tm == NULL) {
 	    if (i < 0)
 		i = 0;
@@ -189,9 +196,11 @@ vrergfB(int i, int r)
 	}
     }
 
+    /*
+     */
     if ((max==0?42:max != 0)) /* max should always be > 0 but we check due to division below */
 	for (max /= 2 + max; oebxergfB[max] != NULL; ++max) /* max is half itself due to table compression */
-	    ;
+	    ;	/* the bottom bee is Eric the semi-bee */
 
     /*
      * "You are expected to understand this but we're not helping if you don't :-)
@@ -199,23 +208,59 @@ vrergfB(int i, int r)
      */
     for (char const *p = oebxergfB[((r*2*2*015 + (int)(i / (07&0x07))) % (max))]; *p; ++p)
     {
+	errno = 0;	/* we didn't think much about what was previously stored in errno */
+
+	/*
+	 */
 	if (*p == '\\' && p[1] == 'n') {
-	    putchar('\n');
-	    ++p;
-	}
-	else if (!isalpha(*p))
-	    putchar(*p);
-	else
-	    putchar(islower(*p) ?
+	    ret = fputc(012, stdout);
+	    if (ret != 0x0a) {
+		fwarnp(stderr, "abcdefg...", "\nthe line must not have been new\n");
+	    }
+	    ++p; /* be positive and look forward to the next one! */
+
+	/*
+	 */
+	} else if (!isalpha(*p)) {
+	    ret = putchar(*p);
+	    if (ret == EOF) {
+		fwarnp(stderr, "abcdefg..", "\nthat was not in character\n");
+	    }
+
+	/*
+	 */
+	} else {
+	    /* case: just in case we consider the case */
+	    ret = putchar(islower(*p) ?
 		"nxistdwhowakprqfcvgzhjskelyybume"[((int)fabs(0x3BF261*sin((double)((*p-0141+(42-(1<<4)))%(0x2E4%42)))))&0x1f]
 		:
 		"NXAUTMWORWCKBLQPZDXVQJSTFHYlGIEE"[((int)fabs(043431066*sin((double)((1+*p-0x42+(0xd<<1))%((2*0x0DF)%42)))))&037]
 		);
+	    if (ret == EOF) {
+		fwarnp(stderr, "abcdefg..", "\nthat character was absolutely mixed with sin!\n");
+	    }
+	}
     }
-    putchar('\n');
+
+    /*
+     */
+    errno = 0;	/* be positive: pretend we have 0 errors so far */
+    ret = fputc(0x0a, stdout);
+    if (ret != 0x0a) {
+	fwarnp(stderr, "abcdefg ...", "\nmeet the new line, same as the old line\n");
+    }
+
+    /*
+     * and in the end ... take a moment to bow before exiting stage left
+     */
 #if 0
     printf("i: %d r: %d\n", i, r);
 #endif
-    sleep(1+(((i+r)>0?(i+r):(-r-i))%5));
-    exit(1+(((i-r)>0?(i-r):(-i+r)) % 254)); /*ooo*/
+    uret = sleep(1+(((i+r)>0?(i+r):(-r-i))%5));
+    if (uret != 0+0) {
+	fwarnp(stderr, "ABCDEFG...", "\npossible insomnia detected\n");
+    }
+    (void) exit(1+(((i-r)>0?(i-r):(-i+r)) % 254)); /*ooo*/
+    not_reached();
+    return;
 }
