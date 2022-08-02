@@ -5,17 +5,17 @@
 
 The jsemtblgen tool is code complete.
 
-Added is_reserved() function to rule_count.c.
+Added `is_reserved()` function to `rule_count.c`.
 
 Changed the Official iocccsize version from 28.10 2022-03-15 to
-28.11 2022-07-10.  Updated test_JSON tree and json_teststr.txt
-to reflect the new IOCCCSIZE_VERSION value.
+28.11 2022-07-10. Updated `test_JSON` tree and `json_teststr.txt` to reflect the
+new `IOCCCSIZE_VERSION` value.
 
 Added and improved a number of man pages.
 
 Added Makefile rule to build HTML files from all man pages.
 
-Both the parse_json() and parse_\json_\file() top level functions
+Both the `parse_json()` and `parse_json_file()` top level functions
 of the JSON parser return a JSON node parse tree when the JSON is
 valid.
 
@@ -36,7 +36,7 @@ extern void snwerrp(int error_code, char *str, size_t size, char const *name, ch
 ```
 
 Simplify command for jparse and jsemtblgen.  The -s is now just a
-flag.  Only one 1 arg is allowed.
+flag.  Only one arg is allowed.
 
 Adjusted dbg levels in JSON parser:
 
@@ -49,9 +49,9 @@ Adjusted dbg levels in JSON parser:
 
 Improved top level JSON parser debug & warn layering.
 
-The json_dbg() functions now returns void, like dbg().
-The json_vdbg() functions now returns void, like vdbg().
-The json_dbg_tree_print() function now returns void.
+The `json_dbg()` functions now returns void, like dbg().
+The `json_vdbg()` functions now returns void, like vdbg().
+The `json_dbg_tree_print()` function now returns void.
 JSON parser now uses werr() instead of warn().
 
 Now using seqcexit tool, version 1.8 2022-06-02 to sequence snwerr()
@@ -100,7 +100,7 @@ In `.info.json` the `chkinfo_version` was replaced by `chkentry_version`.
 In `.author.json` the `chkauth_version` was replaced by `chkentry_version`.
 
 The `IOCCC_info_version` in `.info.json` was changed from "1.9 2022-03-15"
-to "1.10 2022-06-22".  The INFO_VERSION in `version.h` was changed accordingly.
+to "1.10 2022-06-22".  The `INFO_VERSION` in `version.h` was changed accordingly.
 
 The `IOCCC_author_version` in `.author.json` was changed from "1.12 2022-03-15"
 to "1.13 2022-06-22".  The `AUTHOR_VERSION` in `version.h` was changed accordingly.
