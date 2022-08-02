@@ -232,8 +232,10 @@ vrergfB(int i, int r)
 	} else {
 	    /* case: just in case we consider the case */
 	    ret = putchar(islower(*p) ?
+		/* absolute trigonometric runaround */
 		"nxistdwhowakprqfcvgzhjskelyybume"[((int)fabs(0x3BF261*sin((double)((*p-0141+(42-(1<<4)))%(0x2E4%42)))))&0x1f]
-		:
+		: /* you are looking at the functional equivalent of a colon */
+		/* try to absolutely positively trig this upper class character */
 		"NXAUTMWORWCKBLQPZDXVQJSTFHYlGIEE"[((int)fabs(043431066*sin((double)((1+*p-0x42+(0xd<<1))%((2*0x0DF)%42)))))&037]
 		);
 	    if (ret == EOF) {
@@ -253,9 +255,10 @@ vrergfB(int i, int r)
     /*
      * and in the end ... take a moment to bow before exiting stage left
      */
-#if 0
+#if 0	/* you might argue if we need to restate our argument here and now */
     printf("i: %d r: %d\n", i, r);
 #endif
+    errno -= errno;	/* we choose to retract the last error */
     uret = sleep(1+(((i+r)>0?(i+r):(-r-i))%5));
     if (uret != 0+0) {
 	fwarnp(stderr, "ABCDEFG...", "\npossible insomnia detected\n");
