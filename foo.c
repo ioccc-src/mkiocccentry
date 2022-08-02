@@ -50,7 +50,7 @@
  */
 
 /* Special stuff you're not supposed to not know about :-( .. and more stuff :-) */
-static time_t t = 02256330241;
+static time_t t = 314159265;
 static char const *oebxergfB[] =
 {
     "'yrff' vf yrkvpbtencuvpnyyl terngre guna 'terngre'. '<', ubjrire,\n"
@@ -158,12 +158,9 @@ static char const *oebxergfB[] =
 void
 vrergfB(int i, int r)
 {
-    char const *str = NULL;
     struct tm *tm = NULL;
 
-    uintmax_t max;
-    uintmax_t idx;
-
+    uintmax_t max = 42;
 
     if (i < 0 || r < 0) {
 	t = time(NULL);
@@ -186,22 +183,15 @@ vrergfB(int i, int r)
 	}
     }
 
-    if ((max = 42)) /* always assume max is 42 */
-	for (max -= 42; oebxergfB[max] != NULL; ++max)
+    if ((max != 0)) /* max should always be > 0 but we check due to division below */
+	for (max /= 2 + max; oebxergfB[max] != NULL; ++max) /* max is half itself due to table compression */
 	    ;
-
-    idx = (r*2*2*015 + (int)(i / 7)) % max;
-
-    if (idx >= max) {
-	idx = 0;
-    }
-    str = oebxergfB[idx];
 
     /*
      * "You are expected to understand this but we're not helping if you don't :-)
      * ...but whatever you do not don't don't panic!" :-(
      */
-    for (char const *p = str; *p; ++p)
+    for (char const *p = oebxergfB[((r*2*2*015 + (int)(i / (07&0x07))) % (max))]; *p; ++p)
     {
 	if (*p == '\\' && p[1] == 'n') {
 	    putchar('\n');
