@@ -116,7 +116,6 @@ main(int argc, char *argv[])
 	break;
     default:
 	vrergfB(atoi(argv[0]), atoi(argv[1])); /* XXX - keep this line around for testing purposes for now - XXX */
-	usage(4, program, "too many args", -1, -1);
 	not_reached();
 	break;
     }

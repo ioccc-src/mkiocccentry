@@ -50,7 +50,7 @@
  */
 
 /* Special stuff you're not supposed to not know about :-( .. and more stuff :-) */
-static time_t t = 02256330241;
+static time_t t = 314159223+42;
 static char const *oebxergfB[] =
 {
     "'yrff' vf yrkvpbtencuvpnyyl terngre guna 'terngre'. '<', ubjrire,\n"
@@ -142,6 +142,12 @@ static char const *oebxergfB[] =
     " '42 jvyy qb' V glcrq vg bhg. Raq bs\n    fgbel.\n\nOhg qvq lbh xabj gung fbzr nfgebabzref FCRAG GJB LRNEF fghqlvat guvf "
     "naq VAFVFG\ngung 42 vf npghnyyl pbeerpg? Sbe guvf fgbel frr:\n\n"
     "uggcf://jjj.vaqrcraqrag.pb.hx/arjf/lrf-gur-nafjre-gb-gur-havirefr-ernyyl-vf-42-1351201.ugzy",
+    "Vg'f pbzzbayl fhttrfgrq gung P++ vf na vzcebirzrag bire P. Guvf vf n zlgu\n"
+    "qrevivat sebz gur snpg gung gur bcrengbe ++ va P vapernfrf vgf bcrenaq nf n fvqr\n"
+    "rssrpg: gur inyhr bs gur bcrengvba qrcraqvat ba vs vg'f cbfgsvk be cersvk ++. Nf\n"
+    "vg unccraf P++ vf cbfgsvk ++. Guvf zrnaf gur inyhr bs gur rkcerffvba vf P naq nf\n"
+    "n fvqr rssrpg P vf vaperzragrq ol 1. Guvf cebirf gung P vf fhcrevbe - jung'f\n"
+    "yrsg, P + 1, vf oybng naq vg'f htyl. Vg'f uhtr naq vaqrprag. Sbe P++'f dhnyvgl\ngel P = 0;.\n    -- Krkly",
     NULL
 };
 
@@ -158,12 +164,9 @@ static char const *oebxergfB[] =
 void
 vrergfB(int i, int r)
 {
-    char const *str = NULL;
     struct tm *tm = NULL;
 
-    uintmax_t max;
-    uintmax_t idx;
-
+    uintmax_t max = 42;
 
     if (i < 0 || r < 0) {
 	t = time(NULL);
@@ -186,22 +189,15 @@ vrergfB(int i, int r)
 	}
     }
 
-    if ((max = 42)) /* always assume max is 42 */
-	for (max -= 42; oebxergfB[max] != NULL; ++max)
+    if ((max==0?42:max != 0)) /* max should always be > 0 but we check due to division below */
+	for (max /= 2 + max; oebxergfB[max] != NULL; ++max) /* max is half itself due to table compression */
 	    ;
-
-    idx = (r*2*2*015 + (int)(i / 7)) % max;
-
-    if (idx >= max) {
-	idx = 0;
-    }
-    str = oebxergfB[idx];
 
     /*
      * "You are expected to understand this but we're not helping if you don't :-)
      * ...but whatever you do not don't don't panic!" :-(
      */
-    for (char const *p = str; *p; ++p)
+    for (char const *p = oebxergfB[((r*2*2*015 + (int)(i / (07&0x07))) % (max))]; *p; ++p)
     {
 	if (*p == '\\' && p[1] == 'n') {
 	    putchar('\n');
