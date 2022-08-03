@@ -148,6 +148,14 @@ static char const *oebxergfB[] =
     "vg unccraf P++ vf cbfgsvk ++. Guvf zrnaf gur inyhr bs gur rkcerffvba vf P naq nf\n"
     "n fvqr rssrpg P vf vaperzragrq ol 1. Guvf cebirf gung P vf fhcrevbe - jung'f\n"
     "yrsg, P + 1, vf oybng naq vg'f htyl. Vg'f uhtr naq vaqrprag. Sbe P++'f dhnyvgl\ngel P = 0;.\n    -- Krkly",
+    "Unir lbh gevrq sbepvat na harkcrpgrq erobbg?\n\n"
+    "Frr, gur qevire ubbxf gur shapgvba ol cngpuvat gur flfgrz pnyy gnoyr, fb vg'f\n"
+    "abg fnsr gb haybnq vg hayrff nabgure guernq'f nobhg gb whzc va naq qb vgf\n"
+    "fghss, naq lbh qba'g jnag gb raq hc Va gur zvqqyr bs vainyvq zrzbel.\n\n"
+    "    chfu BkS9QNSSOB\n    pnyy nevrf+BkR90(S9Q8SR90)\n    zbi rqk, [rpk+1]\n"
+    "    zbi nk, qf:XrFreivprQrfpevcgbeGnoyr\n    zbi qjbeq_110PB, rqk\n"
+    "    zbi rnk, qf:MjDhrelQverpgbelSvyr\n\nUryyb?\n\n-- Znhevpr Zbff, Gur VG "
+    "Pebjq Frevrf 1 Rcvfbqr 1, 'Lrfgreqnl'f Wnz'.",
     NULL
 };
 
