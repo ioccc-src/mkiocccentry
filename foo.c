@@ -156,7 +156,7 @@ static char const *oebxergfB[] =
  * vrergfB - "What ever can 'vrergfB' mean ?!"
  *
  * Given:
- *	stuff
+ *	42
  *
  * returns:
  *	"No it doesn't"!
@@ -166,7 +166,8 @@ vrergfB(int i, int r)
 {
     struct tm *tm = NULL;	/* there is NULL time like this time */
     int ret;			/* libc return value */
-    int uret;			/* unsigned libc return value */
+    unsigned uret;		/* unsigned libc return value */
+    size_t ic = 0;		/* What is IC? First ask yourself what OOC is! */
 
     /*
      */
@@ -225,13 +226,15 @@ vrergfB(int i, int r)
 	    ret = putchar(*p);
 	    if (ret == EOF) {
 		fwarnp(stderr, "abcdefg..", "\nthat was not in character\n");
+	    } else {
+		++ic;
 	    }
 
 	/*
 	 */
 	} else {
 	    /* case: just in case we consider the case */
-	    ret = putchar(islower(*p) ?
+	    ret = putchar(islower(*p) /* this is a functional equivalent to a question mark: */ ?
 		/* absolute trigonometric runaround */
 		"nxistdwhowakprqfcvgzhjskelyybume"[((int)fabs(0x3BF261*sin((double)((*p-0141+(42-(1<<4)))%(0x2E4%42)))))&0x1f]
 		: /* you are looking at the functional equivalent of a colon */
@@ -240,6 +243,8 @@ vrergfB(int i, int r)
 		);
 	    if (ret == EOF) {
 		fwarnp(stderr, "abcdefg..", "\nthat character was absolutely mixed with sin!\n");
+	    } else {
+		++ic;
 	    }
 	}
     }
@@ -251,6 +256,8 @@ vrergfB(int i, int r)
     if (ret != 0x0a) {
 	fwarnp(stderr, "abcdefg ...", "\nmeet the new line, same as the old line\n");
     }
+
+    dbg(DBG_LOW, "FUN FACT: there %s %ju in character character%s.", ic != 1 ? "were":"was", (uintmax_t) ic, ic != 1 ? "s":"");
 
     /*
      * and in the end ... take a moment to bow before exiting stage left
