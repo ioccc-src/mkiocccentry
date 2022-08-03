@@ -106,7 +106,7 @@ chk_null_args(struct json *node, unsigned int depth, struct json_sem *sem,
  *	!= NULL ==> decoded JTYPE_STRING from the value part of JTYPE_MEMBER
  *	    The val_err arg is ignored
  *	NULL ==> invalid arguments or JSON conversion error
- *	    If val_err != NULLm then *val_err is JSON semantic validation error (struct json_cnt_err)
+ *	    If val_err != NULL then *val_err is JSON semantic validation error (struct json_sem_val_err)
  */
 static char *
 member_value_decoded_str(struct json *node, unsigned int depth, struct json_sem *sem,
@@ -208,7 +208,7 @@ member_value_decoded_str(struct json *node, unsigned int depth, struct json_sem 
  *	!= NULL ==> decoded JTYPE_BOOL from the value part of JTYPE_MEMBER
  *	    The val_err arg is ignored
  *	NULL ==> invalid arguments or JSON conversion error
- *	    If val_err != NULLm then *val_err is JSON semantic validation error (struct json_cnt_err)
+ *	    If val_err != NULL then *val_err is JSON semantic validation error (struct json_sem_val_err)
  */
 static bool *
 member_value_bool(struct json *node, unsigned int depth, struct json_sem *sem,
@@ -457,7 +457,7 @@ member_value_str_or_null(struct json *node, unsigned int depth, struct json_sem 
  *	!= NULL ==> decoded JTYPE_NUMBER as an int from the value part of JTYPE_MEMBER
  *	    The val_err arg is ignored
  *	NULL ==> invalid arguments or JSON conversion error
- *	    If val_err != NULLm then *val_err is JSON semantic validation error (struct json_cnt_err)
+ *	    If val_err != NULL then *val_err is JSON semantic validation error (struct json_sem_val_err)
  */
 static int *
 member_value_int(struct json *node, unsigned int depth, struct json_sem *sem,
