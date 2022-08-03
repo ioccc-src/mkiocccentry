@@ -497,7 +497,8 @@ check_txz_file(char const *txzpath, char const *dir_name, struct txz_file *file)
 	 */
 	if (*(file->basename) == '.') {
 	    ++txz_info.total_feathers;
-	    warn("txzchk", "%s: found non %s and %s dot file %s", txzpath, AUTHOR_JSON_FILENAME, INFO_JSON_FILENAME, file->basename);
+	    warn("txzchk", "%s: found non %s and %s dot file %s",
+			   txzpath, AUTHOR_JSON_FILENAME, INFO_JSON_FILENAME, file->basename);
 	    txz_info.dot_files++;
 
 	    /* check for files called '.' without anything after the dot */
@@ -702,7 +703,8 @@ check_all_txz_files(char const *dir_name)
      * report total feathers found
      */
     if (txz_info.total_feathers > 0) {
-	warn("txzchk", "%s: found %u feather%s stuck in the tarball", txzpath, txz_info.total_feathers, txz_info.total_feathers==1?"":"s");
+	warn("txzchk", "%s: found %u feather%s stuck in the tarball",
+		       txzpath, txz_info.total_feathers, txz_info.total_feathers==1?"":"s");
     }
 }
 

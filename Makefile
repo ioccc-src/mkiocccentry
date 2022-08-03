@@ -240,9 +240,9 @@ OBJFILES= dbg.o util.o mkiocccentry.o iocccsize.o fnamchk.o txzchk.o chkentry.o 
 	json_parse.o jstrencode.o jstrdecode.o rule_count.o location.o sanity.o utf8_test.o verge.o \
 	dyn_array.o dyn_test.o dbg_test.o jnum_chk.o jnum_gen.o jnum_test.o \
 	json_util.o jparse_main.o entry_util.o jsemtblgen.o chk_sem_auth.o chk_sem_info.o \
-	chk_validate.o json_sem.o foo.o
-LESS_PICKY_CSRC= utf8_posix_map.c
-LESS_PICKY_OBJ= utf8_posix_map.o
+	chk_validate.o json_sem.o
+LESS_PICKY_CSRC= utf8_posix_map.c foo.c
+LESS_PICKY_OBJ= utf8_posix_map.o foo.o
 GENERATED_CSRC= jparse.c jparse.tab.c
 GENERATED_HSRC= jparse.tab.h
 GENERATED_OBJ= jparse.o jparse.tab.o
