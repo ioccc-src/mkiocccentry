@@ -996,6 +996,7 @@ depend: all
 ### DO NOT CHANGE MANUALLY BEYOND THIS LINE
 utf8_posix_map.o: utf8_posix_map.c utf8_posix_map.h util.h dyn_array.h \
   dbg.h limit_ioccc.h version.h
+foo.o: foo.c foo.h dbg.h
 jparse.o: jparse.c jparse.h dbg.h util.h dyn_array.h json_parse.h \
   json_util.h jparse.tab.h
 jparse.tab.o: jparse.tab.c jparse.h dbg.h util.h dyn_array.h json_parse.h \
@@ -1043,11 +1044,11 @@ entry_util.o: entry_util.c dbg.h util.h dyn_array.h entry_util.h \
 jsemtblgen.o: jsemtblgen.c jsemtblgen.h dbg.h util.h dyn_array.h \
   json_util.h json_parse.h jparse.h jparse.tab.h json_sem.h iocccsize.h
 chk_sem_auth.o: chk_sem_auth.c chk_sem_auth.h json_sem.h util.h \
-  dyn_array.h dbg.h json_parse.h
+  dyn_array.h dbg.h json_parse.h json_util.h
 chk_sem_info.o: chk_sem_info.c chk_sem_info.h json_sem.h util.h \
-  dyn_array.h dbg.h json_parse.h
+  dyn_array.h dbg.h json_parse.h json_util.h
 chk_validate.o: chk_validate.c chk_validate.h entry_util.h version.h \
   json_parse.h util.h dyn_array.h dbg.h json_util.h limit_ioccc.h \
   json_sem.h chk_sem_auth.h chk_sem_info.h
-json_sem.o: json_sem.c dbg.h json_sem.h util.h dyn_array.h json_parse.h
-foo.o: foo.c foo.h
+json_sem.o: json_sem.c dbg.h json_sem.h util.h dyn_array.h json_parse.h \
+  json_util.h
