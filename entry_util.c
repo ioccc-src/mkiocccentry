@@ -296,6 +296,237 @@ free_author_array(struct author *author_set, int author_count)
 }
 
 
+/*
+ * load_author - load a struct author with validated elements
+ *
+ * Each argument beyond author is also an element in struct author.
+ * If those arguments are NULL, then am strdup-ed "" (empty string) is used.
+ * For non-NULL arguments, the corresponding test_foo() function is called.
+ *
+ * These elements are allowed to be NULL and are converted into "" (empty strings):
+ *
+ *	email
+ *	url
+ *	twitter
+ *	github
+ *	affiliation
+ *
+ * to indicate that the value was not given.  All other char * elements
+ * must not be NULL.
+ *
+ * The *authorp elements are modified accordingly only if all elements are OK.
+ *
+ * given:
+ *	authorp		pointer to struct author to modify
+ *	name		name of the author
+ *	location_code	author location/country code
+ *	location_name	name of author location/country (compiled in from loc[])
+ *	email		Email address of author or NULL ==> not provided
+ *	url		home URL of author or NULL ==> not provided
+ *	twitter		author twitter handle or NULL ==> not provided
+ *	github		author GitHub username or NULL ==> not provided
+ *	affiliation	author affiliation or NULL ==> not provided
+ *	past_winner	true ==> author claims to have won before,
+ *			false ==> author claims not a prev winner
+ *	default_handle	true ==> default author_handle accepted,
+ *			false ==> author_handle entered
+ *	author_handle	IOCCC author handle (for winning entries)
+ *	author_number	author number
+ *
+ * returns:
+ *	true ==> struct author was loaded with validated elements
+ *	false ==> invalid element found, authorp is NULL, or some internal error
+ */
+bool
+load_author(struct author *authorp, char *name, char *location_code, char const *location_name,
+	    char *email, char *url, char *twitter, char *github, char *affiliation,
+	    bool past_winner, bool default_handle, char *author_handle, int author_number)
+{
+    struct author auth;		/* struct author to modify initially */
+    UNUSED_ARG(past_winner);
+    UNUSED_ARG(default_handle);
+
+    /*
+     * firewall - must not be NULL
+     */
+    if (authorp == NULL) {
+	warn(__func__, "authorp is NULL");
+	return false;
+    }
+    if (name == NULL) {
+	warn(__func__, "name is NULL");
+	return false;
+    }
+    if (location_code == NULL) {
+	warn(__func__, "location_code is NULL");
+	return false;
+    }
+    if (location_name == NULL) {
+	warn(__func__, "location_name is NULL");
+	return false;
+    }
+    if (author_handle == NULL) {
+	warn(__func__, "author_handle is NULL");
+	return false;
+    }
+
+    /*
+     * convert allowed NULL values into empty strings
+     */
+    if (email == NULL) {
+	email = "";
+    }
+    if (url == NULL) {
+	url = "";
+    }
+    if (twitter == NULL) {
+	twitter = "";
+    }
+    if (github == NULL) {
+	github = "";
+    }
+    if (affiliation == NULL) {
+	affiliation = "";
+    }
+
+    /*
+     * validate elements
+     */
+#if 0 /* XXX - unblock once the test function exists - XXX */
+    if (test_name(name) == false) {
+	return false;
+    }
+#endif /* XXX - unblock once the test function exists - XXX */
+#if 0 /* XXX - unblock once the test function exists - XXX */
+    if (test_location_code(location_code) == false) {
+	return false;
+    }
+#endif /* XXX - unblock once the test function exists - XXX */
+#if 0 /* XXX - unblock once the test function exists - XXX */
+    if (test_location_name(location_name) == false) {
+	return false;
+    }
+#endif /* XXX - unblock once the test function exists - XXX */
+#if 0 /* XXX - unblock once the test function exists - XXX */
+    if (test_email(email) == false) {
+	return false;
+    }
+#endif /* XXX - unblock once the test function exists - XXX */
+#if 0 /* XXX - unblock once the test function exists - XXX */
+    if (test_url(url) == false) {
+	return false;
+    }
+#endif /* XXX - unblock once the test function exists - XXX */
+#if 0 /* XXX - unblock once the test function exists - XXX */
+    if (test_url(twitter) == false) {
+	return false;
+    }
+#endif /* XXX - unblock once the test function exists - XXX */
+#if 0 /* XXX - unblock once the test function exists - XXX */
+    if (test_url(github) == false) {
+	return false;
+    }
+#endif /* XXX - unblock once the test function exists - XXX */
+#if 0 /* XXX - unblock once the test function exists - XXX */
+    if (test_url(affiliation) == false) {
+	return false;
+    }
+#endif /* XXX - unblock once the test function exists - XXX */
+#if 0 /* XXX - unblock once the test function exists - XXX */
+    if (test_past_winner(past_winner) == false) {
+	return false;
+    }
+#endif /* XXX - unblock once the test function exists - XXX */
+#if 0 /* XXX - unblock once the test function exists - XXX */
+    if (test_default_handle(default_handle) == false) {
+	return false;
+    }
+#endif /* XXX - unblock once the test function exists - XXX */
+    if (test_author_handle(author_handle) == false) {
+	return false;
+    }
+    if (test_author_number(author_number) == false) {
+	return false;
+    }
+
+    /*
+     * load elements into stack based struct author
+     *
+     * For strings we strdup() them.
+     */
+    memset(&auth, 0, sizeof(auth));
+    errno = 0;		/* pre-clear errno for warnp() */
+    auth.name = strdup(name);
+    if (auth.name == NULL) {
+	warnp(__func__, "strdup of name failed");
+	free_author_array(&auth, 1);
+	return false;
+    }
+    errno = 0;		/* pre-clear errno for warnp() */
+    auth.location_code = strdup(location_code);
+    if (auth.location_code == NULL) {
+	warnp(__func__, "strdup of location_code failed");
+	free_author_array(&auth, 1);
+	return false;
+    }
+    errno = 0;		/* pre-clear errno for warnp() */
+    auth.location_name = strdup(location_name);
+    if (auth.location_name == NULL) {
+	warnp(__func__, "strdup of location_name failed");
+	free_author_array(&auth, 1);
+	return false;
+    }
+    errno = 0;		/* pre-clear errno for warnp() */
+    auth.name = strdup(location_code);
+    if (auth.location_code == NULL) {
+	warnp(__func__, "strdup of location_code failed");
+	free_author_array(&auth, 1);
+	return false;
+    }
+    errno = 0;		/* pre-clear errno for warnp() */
+    auth.name = strdup(location_code);
+    if (auth.location_code == NULL) {
+	warnp(__func__, "strdup of location_code failed");
+	free_author_array(&auth, 1);
+	return false;
+    }
+    errno = 0;		/* pre-clear errno for warnp() */
+    auth.name = strdup(email);
+    if (auth.email == NULL) {
+	warnp(__func__, "strdup of email failed");
+	free_author_array(&auth, 1);
+	return false;
+    }
+    errno = 0;		/* pre-clear errno for warnp() */
+    auth.name = strdup(url);
+    if (auth.url == NULL) {
+	warnp(__func__, "strdup of url failed");
+	free_author_array(&auth, 1);
+	return false;
+    }
+    errno = 0;		/* pre-clear errno for warnp() */
+    auth.affiliation = strdup(affiliation);
+    if (auth.affiliation == NULL) {
+	warnp(__func__, "strdup of location_code failed");
+	free_author_array(&auth, 1);
+	return false;
+    }
+    errno = 0;		/* pre-clear errno for warnp() */
+    auth.name = strdup(author_handle);
+    if (auth.location_code == NULL) {
+	warnp(__func__, "strdup of author_handle failed");
+	free_author_array(&auth, 1);
+	return false;
+    }
+
+    /*
+     * copy values from auth to authorp
+     */
+    *authorp = auth;
+    return true;
+}
+
+
 /* XXX - begin sorted order matching chk_validate.c here - XXX */
 
 
@@ -822,8 +1053,8 @@ test_authors(int author_count, struct author *authorp)
     errno = 0;		/* pre-clear errno for warnp() */
     auth_nums = calloc(author_count, sizeof(int));
     if (auth_nums == NULL) {
-	 warnp(__func__, "calloc of %d ints failed", author_count);
-	 return false;
+	warnp(__func__, "calloc of %d ints failed", author_count);
+	return false;
     }
 
     /*

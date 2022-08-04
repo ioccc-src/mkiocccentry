@@ -51,21 +51,6 @@
 
 
 /*
- * str_or_null - report if a JSON JTYPE_MEMBER value is a valid JSON_STRING or a valid JSON_NULL
- *
- * Assuming valid == true, then if is_null == true, then str will be NULL else if is_null == false,
- * then str will be non-NULL.
- *
- * When valid == false, then is_null and str have no meaning.
- */
-struct str_or_null {
-    bool valid;		/* true == JSON JTYPE_MEMBER value was is valid JSON_STRING or a valid JSON_NULL */
-    bool is_null;	/* true ==> JTYPE_MEMBER value is valid JSON_NULL, false ==> is valid JSON_STRING */
-    char *str;		/* decoded value string from JSON member or NULL */
-};
-
-
-/*
  * external function declarations
  *
  * Functions not defined in chk_sem_auth.h nor in the chk_sem_info.h include files.

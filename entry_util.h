@@ -65,11 +65,11 @@ struct author
     char *name;			/* name of the author */
     char *location_code;	/* author location/country code */
     char const *location_name;	/* name of author location/country (compiled in from loc[]) */
-    char *email;		/* Email address of author or or empty string ==> not provided */
-    char *url;			/* home URL of author or or empty string ==> not provided */
-    char *twitter;		/* author twitter handle or or empty string ==> not provided */
-    char *github;		/* author GitHub username or or empty string ==> not provided */
-    char *affiliation;		/* author affiliation or or empty string ==> not provided */
+    char *email;		/* Email address of author or empty string ==> not provided */
+    char *url;			/* home URL of author or empty string ==> not provided */
+    char *twitter;		/* author twitter handle or empty string ==> not provided */
+    char *github;		/* author GitHub username or empty string ==> not provided */
+    char *affiliation;		/* author affiliation or empty string ==> not provided */
     bool past_winner;		/* true ==> author claims to have won before, false ==> author claims not a prev winner */
     bool default_handle;	/* true ==> default author_handle accepted, false ==> author_handle entered */
     char *author_handle;	/* IOCCC author handle (for winning entries) */
@@ -199,6 +199,9 @@ struct info
 extern void free_auth(struct auth *authp);
 extern void free_info(struct info *infop);
 extern void free_author_array(struct author *authorp, int author_count);
+extern bool load_author(struct author *authorp, char *name, char *location_code, char const *location_name,
+			char *email, char *url, char *twitter, char *github, char *affiliation,
+			bool past_winner, bool default_handle, char *author_handle, int author_number);
 /* XXX - begin sorted order matching chk_validate.c here - XXX */
 extern bool test_IOCCC_author_version(char *str);
 extern bool test_IOCCC_contest_id(char *str);

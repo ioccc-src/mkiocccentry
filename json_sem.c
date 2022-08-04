@@ -172,3 +172,994 @@ werr_sem_val(int val_err, struct json *node, unsigned int depth, struct json_sem
      */
     return ret;
 }
+
+
+/*
+ * sem_chk_null_args - check arguments for NULL
+ *
+ * Check if critical if args (node, sem, name) are NULL.  Report if a critical arg
+ * is NULL via a val_err pointer to address where to place a JSON semantic validation error.
+ *
+ * given:
+ *	node	JSON parse node being checked
+ *	depth	depth of node in the JSON parse tree (0 ==> tree root)
+ *	sem	JSON semantic node triggering the check
+ *	name	name of caller function (NULL ==> "((NULL))")
+ *	val_err	pointer to address where to place a JSON semantic validation error,
+ *		NULL ==> do not report a JSON semantic validation error
+ *
+ * returns:
+ *	true ==> one or more args are NULL, *val_err if non-NULL is JSON semantic error
+ *	false ==> all args are non-NULL
+ */
+bool
+sem_chk_null_args(struct json *node, unsigned int depth, struct json_sem *sem,
+	          char const *name, struct json_sem_val_err **val_err)
+{
+    /*
+     * firewall - args
+     */
+    if (name == NULL) {
+	if (val_err != NULL) {
+	    *val_err = werr_sem_val(10, node, depth, sem, "((NULL))", "name is NULL");
+	}
+	return true;
+    }
+    if (node == NULL) {
+	if (val_err != NULL) {
+	    *val_err = werr_sem_val(11, node, depth, sem, name, "node is NULL");
+	}
+	return true;
+    }
+    if (sem == NULL) {
+	if (val_err != NULL) {
+	    *val_err = werr_sem_val(12, node, depth, sem, name, "sem is NULL");
+	}
+	return true;
+    }
+    return false;
+}
+
+
+/*
+ * sem_member_name_decoded_str - return the JSON decoded name string from a JTYPE_MEMBER
+ *
+ * Given a JSON node of type JTYPE_MEMBER, look at the name of the JSON member
+ * and if it is a JTYPE_STRING (JSON string), return the name's JSON decoded string
+ * or return NULL on error or invalid input.
+ *
+ * given:
+ *	node	JSON parse node being checked
+ *	depth	depth of node in the JSON parse tree (0 ==> tree root)
+ *	sem	JSON semantic node triggering the check
+ *	name	name of caller function (NULL ==> "((NULL))")
+ *	val_err	pointer to address where to place a JSON semantic validation error,
+ *		NULL ==> do not report a JSON semantic validation error
+ *
+ * returns:
+ *	!= NULL ==> decoded JTYPE_STRING from the name part of JTYPE_MEMBER
+ *	    The val_err arg is ignored
+ *	NULL ==> invalid arguments or JSON conversion error
+ *	    If val_err != NULLm then *val_err is JSON semantic validation error (struct json_cnt_err)
+ */
+char *
+sem_member_name_decoded_str(struct json *node, unsigned int depth, struct json_sem *sem,
+			    char const *name, struct json_sem_val_err **val_err)
+{
+    struct json_member *item = NULL;		/* JSON member */
+    struct json *n = NULL;			/* name of JTYPE_MEMBER */
+    struct json_string *istr = NULL;		/* JTYPE_MEMBER name as JTYPE_STRING */
+    char *str = NULL;				/* JTYPE_STRING as decoded JSON string */
+
+    /*
+     * firewall - args
+     */
+    if (sem_chk_null_args(node, depth, sem, name, val_err) == true) {
+	/* sem_chk_null_args() will have set *val_err */
+	return NULL;
+    }
+
+    /*
+     * validate JSON parse node type
+     */
+    if (node->type != JTYPE_MEMBER) {
+	if (val_err != NULL) {
+	    *val_err = werr_sem_val(13, node, depth, sem, name, "node type %s != JTYPE_MEMBER",
+				    json_type_name(node->type));
+	}
+	return NULL;
+    }
+    item = &(node->item.member);
+    if (item->converted == false) {
+	if (val_err != NULL) {
+	    *val_err = werr_sem_val(14, node, depth, sem, name, "JTYPE_MEMBER node converted is false");
+	}
+	return NULL;
+    }
+
+    /*
+     * firewall - name
+     */
+    n = item->name;
+    if (n == NULL) {
+	if (val_err != NULL) {
+	    *val_err = werr_sem_val(15, node, depth, sem, name, "node name is NULL");
+	}
+	return NULL;
+    }
+
+    /*
+     * validate JSON parse node name type
+     */
+    if (n->type != JTYPE_STRING) {
+	if (val_err != NULL) {
+	    *val_err = werr_sem_val(16, node, depth, sem, name, "node name type %s != JTYPE_STRING",
+				    json_type_name(n->type));
+	}
+	return NULL;
+    }
+    istr = &(n->item.string);
+    if (istr->converted == false) {
+	if (val_err != NULL) {
+	    *val_err = werr_sem_val(17, node, depth, sem, name, "node name JTYPE_STRING converted is false");
+	}
+	return NULL;
+    }
+
+    /*
+     * firewall - decoded JSON string
+     */
+    str = istr->str;
+    if (str == NULL) {
+	if (val_err != NULL) {
+	    *val_err = werr_sem_val(18, node, depth, sem, name, "node name decoded JSON string is NULL");
+	}
+	return NULL;
+    }
+
+    /*
+     * case success: return decoded JSON string
+     */
+    return str;
+}
+
+
+/*
+ * sem_member_value_decoded_str - return the JSON decoded value string from a JTYPE_MEMBER
+ *
+ * Given a JSON node of type JTYPE_MEMBER, look at the value of the JSON member
+ * and if it is a JTYPE_STRING (JSON string), return the value's JSON decoded string
+ * or return NULL on error or invalid input.
+ *
+ * given:
+ *	node	JSON parse node being checked
+ *	depth	depth of node in the JSON parse tree (0 ==> tree root)
+ *	sem	JSON semantic node triggering the check
+ *	name	name of caller function (NULL ==> "((NULL))")
+ *	val_err	pointer to address where to place a JSON semantic validation error,
+ *		NULL ==> do not report a JSON semantic validation error
+ *
+ * returns:
+ *	!= NULL ==> decoded JTYPE_STRING from the value part of JTYPE_MEMBER
+ *	    The val_err arg is ignored
+ *	NULL ==> invalid arguments or JSON conversion error
+ *	    If val_err != NULL then *val_err is JSON semantic validation error (struct json_sem_val_err)
+ */
+char *
+sem_member_value_decoded_str(struct json *node, unsigned int depth, struct json_sem *sem,
+			     char const *name, struct json_sem_val_err **val_err)
+{
+    struct json_member *item = NULL;		/* JSON member */
+    struct json *value = NULL;			/* value of JTYPE_MEMBER */
+    struct json_string *istr = NULL;		/* JTYPE_MEMBER value as JTYPE_STRING */
+    char *str = NULL;				/* JTYPE_STRING as decoded JSON string */
+
+    /*
+     * firewall - args
+     */
+    if (sem_chk_null_args(node, depth, sem, name, val_err) == true) {
+	/* sem_chk_null_args() will have set *val_err */
+	return NULL;
+    }
+
+    /*
+     * validate JSON parse node type
+     */
+    if (node->type != JTYPE_MEMBER) {
+	if (val_err != NULL) {
+	    *val_err = werr_sem_val(19, node, depth, sem, name, "node type %s != JTYPE_MEMBER",
+				    json_type_name(node->type));
+	}
+	return NULL;
+    }
+    item = &(node->item.member);
+    if (item->converted == false) {
+	if (val_err != NULL) {
+	    *val_err = werr_sem_val(20, node, depth, sem, name, "JTYPE_MEMBER node converted is false");
+	}
+	return NULL;
+    }
+
+    /*
+     * firewall - value
+     */
+    value = item->value;
+    if (value == NULL) {
+	if (val_err != NULL) {
+	    *val_err = werr_sem_val(21, node, depth, sem, name, "node value is NULL");
+	}
+	return NULL;
+    }
+
+    /*
+     * validate JSON parse node value type
+     */
+    if (value->type != JTYPE_STRING) {
+	if (val_err != NULL) {
+	    *val_err = werr_sem_val(22, node, depth, sem, name, "node value type %s != JTYPE_STRING",
+				    json_type_name(value->type));
+	}
+	return NULL;
+    }
+    istr = &(value->item.string);
+    if (istr->converted == false) {
+	if (val_err != NULL) {
+	    *val_err = werr_sem_val(23, node, depth, sem, name, "node value JTYPE_STRING converted is false");
+	}
+	return NULL;
+    }
+
+    /*
+     * firewall - decoded JSON string
+     */
+    str = istr->str;
+    if (str == NULL) {
+	if (val_err != NULL) {
+	    *val_err = werr_sem_val(24, node, depth, sem, name, "node value decoded JSON string is NULL");
+	}
+	return NULL;
+    }
+
+    /*
+     * case success: return decoded JSON string
+     */
+    return str;
+}
+
+
+/*
+ * sem_member_value_bool - return the JSON boolean from a JTYPE_BOOL from a JTYPE_MEMBER
+ *
+ * Given a JSON node of type JTYPE_MEMBER, look at the value of the JSON member
+ * and if it is a JTYPE_BOOL (JSON boolean), return a pointer to the JSON boolean
+ * or return NULL on error or invalid input.
+ *
+ * given:
+ *	node	JSON parse node being checked
+ *	depth	depth of node in the JSON parse tree (0 ==> tree root)
+ *	sem	JSON semantic node triggering the check
+ *	name	name of caller function (NULL ==> "((NULL))")
+ *	val_err	pointer to address where to place a JSON semantic validation error,
+ *		NULL ==> do not report a JSON semantic validation error
+ *
+ * returns:
+ *	!= NULL ==> decoded JTYPE_BOOL from the value part of JTYPE_MEMBER
+ *	    The val_err arg is ignored
+ *	NULL ==> invalid arguments or JSON conversion error
+ *	    If val_err != NULL then *val_err is JSON semantic validation error (struct json_sem_val_err)
+ */
+bool *
+sem_member_value_bool(struct json *node, unsigned int depth, struct json_sem *sem,
+		      char const *name, struct json_sem_val_err **val_err)
+{
+    struct json_member *item = NULL;		/* JSON member */
+    struct json *value = NULL;			/* value of JTYPE_MEMBER */
+    struct json_boolean *ibool = NULL;		/* JTYPE_MEMBER value as JTYPE_BOOL */
+
+    /*
+     * firewall - args
+     */
+    if (sem_chk_null_args(node, depth, sem, name, val_err) == true) {
+	/* sem_chk_null_args() will have set *val_err */
+	return NULL;
+    }
+
+    /*
+     * validate JSON parse node type
+     */
+    if (node->type != JTYPE_MEMBER) {
+	if (val_err != NULL) {
+	    *val_err = werr_sem_val(25, node, depth, sem, name, "node type %s != JTYPE_MEMBER",
+				    json_type_name(node->type));
+	}
+	return NULL;
+    }
+    item = &(node->item.member);
+    if (item->converted == false) {
+	if (val_err != NULL) {
+	    *val_err = werr_sem_val(26, node, depth, sem, name, "JTYPE_MEMBER node converted is false");
+	}
+	return NULL;
+    }
+
+    /*
+     * firewall - value
+     */
+    value = item->value;
+    if (value == NULL) {
+	if (val_err != NULL) {
+	    *val_err = werr_sem_val(27, node, depth, sem, name, "node value is NULL");
+	}
+	return NULL;
+    }
+
+    /*
+     * validate JSON parse node value type
+     */
+    if (value->type != JTYPE_BOOL) {
+	if (val_err != NULL) {
+	    *val_err = werr_sem_val(28, node, depth, sem, name, "node value type %s != JTYPE_BOOL",
+				    json_type_name(value->type));
+	}
+	return NULL;
+    }
+    ibool = &(value->item.boolean);
+    if (ibool->converted == false) {
+	if (val_err != NULL) {
+	    *val_err = werr_sem_val(29, node, depth, sem, name, "node value JTYPE_BOOL converted is false");
+	}
+	return NULL;
+    }
+
+    /*
+     * case success: return JSON boolean
+     */
+    return &(ibool->value);
+}
+
+
+/*
+ * sem_member_value_str_or_null - return JSON decoded value string or JSON null from a JTYPE_MEMBER
+ *
+ * Given a JSON node of type JTYPE_MEMBER, look at the value of the JSON member
+ * and if it is a JTYPE_STRING (JSON string), return the value's JSON decoded string,
+ * and if it is a JTYPE_NULL (JSON null), indicate that value is JSON null.
+ *
+ * The return structure gives you a  way to distinguish between JTYPE_STRING and JTYPE_NULL:
+ *
+ *   When value is a JTYPE_STRING (JSON string):
+ *
+ *	ret.valid == true
+ *	ret.is_null == false
+ *	ret.str is the JSON decoded value string
+ *
+ *   When value is a JTYPE_NULL (JSON null):
+ *
+ *	ret.valid == true
+ *	ret.is_null == true
+ *	ret.str is NULL
+ *
+ *   When there is an error or invalid input:
+ *
+ *	ret.valid == false
+ *	ret.is_null == false
+ *	ret.str is NULL
+ *
+ * given:
+ *	node	JSON parse node being checked
+ *	depth	depth of node in the JSON parse tree (0 ==> tree root)
+ *	sem	JSON semantic node triggering the check
+ *	name	name of caller function (NULL ==> "((NULL))")
+ *	val_err	pointer to address where to place a JSON semantic validation error,
+ *		NULL ==> do not report a JSON semantic validation error
+ *
+ * returns:
+ *	struct str_or_null (see above)
+ */
+struct str_or_null
+sem_member_value_str_or_null(struct json *node, unsigned int depth, struct json_sem *sem,
+			     char const *name, struct json_sem_val_err **val_err)
+{
+    struct json_member *item = NULL;		/* JSON member */
+    struct json *value = NULL;			/* value of JTYPE_MEMBER */
+    struct json_string *istr = NULL;		/* JTYPE_MEMBER value as JTYPE_STRING */
+    struct json_null *inull = NULL;		/* JTYPE_MEMBER value as JTYPE_NULL */
+    struct str_or_null ret = {			/* return value - initialized to invalid */
+	false, false, NULL
+    };
+
+    /*
+     * firewall - args
+     */
+    if (sem_chk_null_args(node, depth, sem, name, val_err) == true) {
+	/* sem_chk_null_args() will have set *val_err */
+	return ret;
+    }
+
+    /*
+     * validate JSON parse node type
+     */
+    if (node->type != JTYPE_MEMBER) {
+	if (val_err != NULL) {
+	    *val_err = werr_sem_val(30, node, depth, sem, name, "node type %s != JTYPE_MEMBER",
+				    json_type_name(node->type));
+	}
+	return ret;
+    }
+    item = &(node->item.member);
+    if (item->converted == false) {
+	if (val_err != NULL) {
+	    *val_err = werr_sem_val(31, node, depth, sem, name, "JTYPE_MEMBER node converted is false");
+	}
+	return ret;
+    }
+
+    /*
+     * firewall - value
+     */
+    value = item->value;
+    if (value == NULL) {
+	if (val_err != NULL) {
+	    *val_err = werr_sem_val(32, node, depth, sem, name, "node value is NULL");
+	}
+	return ret;
+    }
+
+    /*
+     * process based on value type
+     */
+    switch (value->type) {
+
+    /*
+     * case: value is JTYPE_STRING
+     */
+    case JTYPE_STRING:
+
+	/*
+	 * firewall - value
+	 */
+	istr = &(value->item.string);
+	if (istr->converted == false) {
+	    if (val_err != NULL) {
+		*val_err = werr_sem_val(33, node, depth, sem, name, "node value JTYPE_STRING converted is false");
+	    }
+	    return ret;
+	}
+
+	/*
+	 * firewall - decoded JSON string
+	 */
+	ret.str = istr->str;
+	if (ret.str == NULL) {
+	    if (val_err != NULL) {
+		*val_err = werr_sem_val(34, node, depth, sem, name, "node value decoded JSON string is NULL");
+	    }
+	    return ret;
+	}
+	ret.valid = true;
+	break;
+
+    /*
+     * case: value is JTYPE_NULL
+     */
+    case JTYPE_NULL:
+
+	/*
+	 * firewall - value
+	 */
+	inull = &(value->item.null);
+	if (inull->converted == false) {
+	    if (val_err != NULL) {
+		*val_err = werr_sem_val(35, node, depth, sem, name, "node value JTYPE_NULL converted is false");
+	    }
+	    return ret;
+	}
+	ret.is_null = true;
+	ret.valid = true;
+	break;
+
+    /*
+     * case: everything else
+     */
+    default:
+	if (val_err != NULL) {
+	    *val_err = werr_sem_val(36, node, depth, sem, name, "node value type %s != JTYPE_STRING and != JTYPE_NULL",
+				    json_type_name(value->type));
+	}
+	break;
+    }
+
+    /*
+     * return result
+     */
+    return ret;
+}
+
+
+/*
+ * sem_member_value_int - return pointer to int from a JSON number value of JTYPE_MEMBER
+ *
+ * Given a JSON node of type JTYPE_MEMBER, look at the value of the JSON member
+ * and if it is a JTYPE_NUMBER (JSON number), return a pointer to a converted int
+ * or return NULL on error or invalid input.
+ *
+ * If the JTYPE_NUMBER (JSON number) cannot be returned as an int, NULL is returned.
+ *
+ * given:
+ *	node	JSON parse node being checked
+ *	depth	depth of node in the JSON parse tree (0 ==> tree root)
+ *	sem	JSON semantic node triggering the check
+ *	name	name of caller function (NULL ==> "((NULL))")
+ *	val_err	pointer to address where to place a JSON semantic validation error,
+ *		NULL ==> do not report a JSON semantic validation error
+ *
+ * returns:
+ *	!= NULL ==> decoded JTYPE_NUMBER as an int from the value part of JTYPE_MEMBER
+ *	    The val_err arg is ignored
+ *	NULL ==> invalid arguments or JSON conversion error
+ *	    If val_err != NULL then *val_err is JSON semantic validation error (struct json_sem_val_err)
+ */
+int *
+sem_member_value_int(struct json *node, unsigned int depth, struct json_sem *sem,
+		     char const *name, struct json_sem_val_err **val_err)
+{
+    struct json_member *item = NULL;		/* JSON member */
+    struct json *value = NULL;			/* value of JTYPE_MEMBER */
+    struct json_number *inum = NULL;		/* JTYPE_MEMBER value as JTYPE_NUMBER */
+
+    /*
+     * firewall - args
+     */
+    if (sem_chk_null_args(node, depth, sem, name, val_err) == true) {
+	/* sem_chk_null_args() will have set *val_err */
+	return NULL;
+    }
+
+    /*
+     * validate JSON parse node type
+     */
+    if (node->type != JTYPE_MEMBER) {
+	if (val_err != NULL) {
+	    *val_err = werr_sem_val(37, node, depth, sem, name, "node type %s != JTYPE_MEMBER",
+				    json_type_name(node->type));
+	}
+	return NULL;
+    }
+    item = &(node->item.member);
+    if (item->converted == false) {
+	if (val_err != NULL) {
+	    *val_err = werr_sem_val(38, node, depth, sem, name, "JTYPE_MEMBER node converted is false");
+	}
+	return NULL;
+    }
+
+    /*
+     * firewall - value
+     */
+    value = item->value;
+    if (value == NULL) {
+	if (val_err != NULL) {
+	    *val_err = werr_sem_val(39, node, depth, sem, name, "node value is NULL");
+	}
+	return NULL;
+    }
+
+    /*
+     * validate JSON parse node value type
+     */
+    if (value->type != JTYPE_NUMBER) {
+	if (val_err != NULL) {
+	    *val_err = werr_sem_val(40, node, depth, sem, name, "node value type %s != JTYPE_BOOL",
+				    json_type_name(value->type));
+	}
+	return NULL;
+    }
+    inum = &(value->item.number);
+    if (inum->converted == false) {
+	if (val_err != NULL) {
+	    *val_err = werr_sem_val(41, node, depth, sem, name, "node value JTYPE_NUMBER converted is false");
+	}
+	return NULL;
+    }
+
+    /*
+     * validate JTYPE_NUMBER was able to be converted into an int
+     */
+    if (inum->int_sized == false) {
+	if (val_err != NULL) {
+	    *val_err = werr_sem_val(42, node, depth, sem, name, "node value JTYPE_NUMBER was unable to convert to an int");
+	}
+	return NULL;
+    }
+
+    /*
+     * case success: return JSON boolean
+     */
+    return &(inum->as_int);
+}
+
+
+/*
+ * sem_node_valid_converted - determine if a JSON node is a converted and valid type
+ *
+ * Given a JSON node, attempt to return the parent of a JSON node.
+ * Beyond simply returning the parent node, we inspect the parent
+ * node to determine if the parent node was successfully converted
+ * into a known JTYPE.
+ *
+ * given:
+ *	node	JSON parse node being checked
+ *	depth	depth of node in the JSON parse tree (0 ==> tree root)
+ *	sem	JSON semantic node triggering the check
+ *	name	name of caller function (NULL ==> "((NULL))")
+ *	val_err	pointer to address where to place a JSON semantic validation error,
+ *		NULL ==> do not report a JSON semantic validation error
+ *
+ * returns:
+ *	true ==> JSON node is converted and a valid JTYPE
+ *	    The val_err arg is ignored
+ *	NULL ==> JSON node is not converted, invalid node type, or internal error
+ *	    If val_err != NULLm then *val_err is JSON semantic validation error (struct json_cnt_err)
+ */
+bool
+sem_node_valid_converted(struct json *node, unsigned int depth, struct json_sem *sem,
+		         char const *name, struct json_sem_val_err **val_err)
+{
+    /*
+     * firewall - args
+     */
+    if (sem_chk_null_args(node, depth, sem, name, val_err) == true) {
+	/* sem_chk_null_args() will have set *val_err */
+	return false;
+    }
+
+    /*
+     * validate JSON parse node type and check for not converterd
+     */
+    switch (node->type) {
+    case JTYPE_UNSET:   /* JSON item has not been set - must be the value 0 */
+	if (val_err != NULL) {
+	    *val_err = werr_sem_val(43, node, depth, sem, name, "node is JTYPE_UNSET this type is invalid here");
+	}
+	return false;
+	break;
+
+    case JTYPE_NUMBER:  /* JSON item is number - see struct json_number */
+	{
+	    struct json_number *item = &(node->item.number);
+
+	    if (item->converted == false) {
+		if (val_err != NULL) {
+		    *val_err = werr_sem_val(44, node, depth, sem, name, "JTYPE_NUMBER node: converted is false");
+		}
+		return false;
+	    }
+	}
+	break;
+
+    case JTYPE_STRING:  /* JSON item is a string - see struct json_string */
+	{
+	    struct json_string *item = &(node->item.string);
+
+	    if (item->converted == false) {
+		if (val_err != NULL) {
+		    *val_err = werr_sem_val(45, node, depth, sem, name, "JTYPE_STRING node: converted is false");
+		}
+		return false;
+	    }
+	}
+	break;
+
+    case JTYPE_BOOL:    /* JSON item is a boolean - see struct json_boolean */
+	{
+	    struct json_boolean *item = &(node->item.boolean);
+
+	    if (item->converted == false) {
+		if (val_err != NULL) {
+		    *val_err = werr_sem_val(46, node, depth, sem, name, "JTYPE_BOOL node: converted is false");
+		}
+		return false;
+	    }
+	}
+	break;
+
+    case JTYPE_NULL:    /* JSON item is a null - see struct json_null */
+	{
+	    struct json_null *item = &(node->item.null);
+
+	    if (item->converted == false) {
+		if (val_err != NULL) {
+		    *val_err = werr_sem_val(47, node, depth, sem, name, "JTYPE_NULL node: converted is false");
+		}
+		return false;
+	    }
+	}
+	break;
+
+    case JTYPE_MEMBER:  /* JSON item is a member */
+	{
+	    struct json_member *item = &(node->item.member);
+
+	    if (item->converted == false) {
+		if (val_err != NULL) {
+		    *val_err = werr_sem_val(48, node, depth, sem, name, "JTYPE_MEMBER node: converted is false");
+		}
+		return false;
+	    }
+	}
+	break;
+
+    case JTYPE_OBJECT:  /* JSON item is a { members } */
+	{
+	    struct json_object *item = &(node->item.object);
+
+	    if (item->converted == false) {
+		if (val_err != NULL) {
+		    *val_err = werr_sem_val(49, node, depth, sem, name, "JTYPE_OBJECT node: converted is false");
+		}
+		return false;
+	    }
+	}
+	break;
+
+    case JTYPE_ARRAY:   /* JSON item is a [ elements ] */
+	{
+	    struct json_array *item = &(node->item.array);
+
+	    if (item->converted == false) {
+		if (val_err != NULL) {
+		    *val_err = werr_sem_val(50, node, depth, sem, name, "JTYPE_ARRAY node: converted is false");
+		}
+		return false;
+	    }
+	}
+	break;
+
+    case JTYPE_ELEMENTS:        /* JSON elements is zero or more JSON values */
+	{
+	    struct json_elements *item = &(node->item.elements);
+
+	    if (item->converted == false) {
+		if (val_err != NULL) {
+		    *val_err = werr_sem_val(51, node, depth, sem, name, "node is JTYPE_UNSET this type is invalid here");
+		}
+		return false;
+	    }
+	}
+	break;
+
+    default:
+	if (val_err != NULL) {
+	    *val_err = werr_sem_val(52, node, depth, sem, name, "node type is unknown: %d <%s>",
+				    node->type, json_type_name(node->type));
+	}
+	return NULL;
+        break;
+    }
+
+    /*
+     * node is converted and a valid JTYPE
+     */
+    return true;
+}
+
+
+/*
+ * sem_node_parent - return pointer to the parent of a JSON parse node
+ *
+ * Given a JSON node, attempt to return the parent of a JSON node.
+ * Beyond simply returning the parent node, we inspect the parent
+ * node to determine if the parent node was successfully converted
+ * into a known JTYPE.
+ *
+ * given:
+ *	node	JSON parse node being checked
+ *	depth	depth of node in the JSON parse tree (0 ==> tree root)
+ *	sem	JSON semantic node triggering the check
+ *	name	name of caller function (NULL ==> "((NULL))")
+ *	val_err	pointer to address where to place a JSON semantic validation error,
+ *		NULL ==> do not report a JSON semantic validation error
+ *
+ * returns:
+ *	!= NULL ==> valid parent JSON node
+ *	    The val_err arg is ignored
+ *	NULL ==> no parent node, invalid parent node, or internal error
+ *	    If val_err != NULLm then *val_err is JSON semantic validation error (struct json_cnt_err)
+ */
+struct json *
+sem_node_parent(struct json *node, unsigned int depth, struct json_sem *sem,
+	        char const *name, struct json_sem_val_err **val_err)
+{
+    bool valid = false;			/* true ==> JSON node is converted and valid JTYPE */
+    struct json *parent = NULL;		/* JSON parse parent node */
+
+    /*
+     * firewall - args
+     */
+    if (sem_chk_null_args(node, depth, sem, name, val_err) == true) {
+	/* sem_chk_null_args() will have set *val_err */
+	return NULL;
+    }
+
+    /*
+     * validate this JSON parse node type
+     */
+    valid = sem_node_valid_converted(node, depth, sem, name, val_err);
+    if (valid == false) {
+	/* sem_node_valid_converted() will have set *val_err */
+	return NULL;
+    }
+
+    /*
+     * case: if depth is 0 we are the tree root or unlinked node
+     */
+    parent = node->parent;
+    if (depth <= 0) {
+	if (parent != NULL) {
+	    if (val_err != NULL) {
+		*val_err = werr_sem_val(53, node, depth, sem, name,
+					"depth: %d <= 0 with non-NULL parent node pointer", depth);
+	    }
+	}
+	return NULL;
+    }
+
+    /*
+     * firewall - parent pointer
+     */
+    if (parent == NULL) {
+	if (val_err != NULL) {
+	    *val_err = werr_sem_val(54, node, depth, sem, name, "node parent node NULL");
+	}
+	return NULL;
+    }
+
+    /*
+     * validate parent JSON parse node type
+     */
+    valid = sem_node_valid_converted(parent, depth-1, sem, name, val_err);
+    if (valid == false) {
+	/* sem_node_valid_converted() will have set *val_err */
+	return NULL;
+    }
+
+    /*
+     * return parent node
+     */
+    return parent;
+}
+
+
+/*
+ * sem_object_find_name - find a given named JTYPE_MEMBER in a JTYPE_OBJECT
+ *
+ * Given a JSON node of type JTYPE_OBJECT, look for a JTYPE_MEMBER with a given name
+ * that is directly under the JTYPE_OBJECT and return a pointer to that JTYPE_MEMBER,
+ * or return NULL on error or invalid input.
+ *
+ * given:
+ *	node	JSON parse node being checked
+ *	depth	depth of node in the JSON parse tree (0 ==> tree root)
+ *	sem	JSON semantic node triggering the check
+ *	name	name of caller function (NULL ==> "((NULL))")
+ *	val_err	pointer to address where to place a JSON semantic validation error,
+ *		NULL ==> do not report a JSON semantic validation error
+ *	memname	name of JTYPE_MEMBER to find directly under JTYPE_OBJECT
+ *
+ * returns:
+ *	!= NULL ==> JTYPE_MEMBER with a given name
+ *	    The val_err arg is ignored
+ *	NULL ==> no such JTYPE_MEMBER found, or invalid arguments or JSON conversion error
+ *	    If val_err != NULLm then *val_err is JSON semantic validation error (struct json_cnt_err)
+ */
+struct json *
+sem_object_find_name(struct json *node, unsigned int depth, struct json_sem *sem,
+		     char const *name, struct json_sem_val_err **val_err,
+		     char const *memname)
+{
+    struct json_object *item = NULL;		/* JSON member */
+    bool valid = false;				/* true ==> JSON node is converted and valid JTYPE */
+    int i;
+
+    /*
+     * firewall - args
+     */
+    if (sem_chk_null_args(node, depth, sem, name, val_err) == true) {
+	/* sem_chk_null_args() will have set *val_err */
+	return NULL;
+    }
+    if (memname == NULL) {
+	if (val_err != NULL) {
+	    *val_err = werr_sem_val(55, node, depth, sem, name, "memname is NULL");
+	}
+	return NULL;
+    }
+
+    /*
+     * validate JSON parse node type
+     */
+    if (node->type != JTYPE_OBJECT) {
+	if (val_err != NULL) {
+	    *val_err = werr_sem_val(56, node, depth, sem, name, "node type %s != JTYPE_OBJECT",
+				    json_type_name(node->type));
+	}
+	return NULL;
+    }
+    item = &(node->item.object);
+    if (item->converted == false) {
+	if (val_err != NULL) {
+	    *val_err = werr_sem_val(57, node, depth, sem, name, "JTYPE_OBJECT node converted is false");
+	}
+	return NULL;
+    }
+
+    /*
+     * validate JSON object member array
+     */
+    if (item->len < 0) {
+	if (val_err != NULL) {
+	    *val_err = werr_sem_val(58, node, depth, sem, name, "JTYPE_OBJECT set length: %d < 0", item->len);
+	}
+	return NULL;
+    } else if (item->len == 0) {
+	/* case: empty object member array will not have the named JTYPE_MEMBER */
+	return NULL;
+    }
+    if (item->set == NULL) {
+	if (val_err != NULL) {
+	    *val_err = werr_sem_val(59, node, depth, sem, name, "JTYPE_OBJECT len: %d > 0 and set is NULL", item->len);
+	}
+	return NULL;
+    }
+
+    /*
+     * search the JSON member array for the named member
+     */
+    for (i=0; i < item->len; ++i) {
+	struct json *s = item->set[i];		/* set member under the JTYPE_OBJECT */
+	char *smemname = NULL;			/* name of set member */
+
+	/*
+	 * firewall - validate set member (must be a valid JTYPE_MEMBER with non-NULL
+	 */
+	if (s == NULL) {
+	    if (val_err != NULL) {
+		*val_err = werr_sem_val(60, node, depth, sem, name, "JTYPE_OBJECT set[%d] is NULL", i);
+	    }
+	    return NULL;
+	}
+	valid = sem_node_valid_converted(s, depth+1, sem, name, val_err);
+	if (valid == false) {
+	    /* sem_node_valid_converted() will have set *val_err */
+	    return NULL;
+	}
+	if (s->type != JTYPE_MEMBER) {
+	    if (val_err != NULL) {
+		*val_err = werr_sem_val(61, node, depth+1, sem, name, "JTYPE_OBJECT set[%d] type: %s != JTYPE_MEMBER",
+					i, json_type_name(s->type));
+	    }
+	    return NULL;
+	}
+
+	/*
+	 * try to match the memname with this set member
+	 */
+	smemname = sem_member_name_decoded_str(s, depth+1, sem, name, val_err);
+	if (smemname == NULL) {
+	    /* sem_member_name_decoded_str() will have set *val_err */
+	    return NULL;
+	}
+	if (strcmp(memname, smemname) == 0) {
+	    /* found match */
+	    return s;
+	}
+    }
+
+    /*
+     * no such member
+     */
+    if (val_err != NULL) {
+	*val_err = werr_sem_val(62, node, depth, sem, name, "JTYPE_OBJECT has no member named: <%s>", memname);
+    }
+    return NULL;
+}

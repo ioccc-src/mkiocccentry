@@ -32,6 +32,11 @@
  */
 #include "json_parse.h"
 
+/*
+ * json_util - general JSON parser utility support functions
+ */
+#include "json_util.h"
+
 
 /*
  * definitions
@@ -93,8 +98,18 @@ struct json_sem
 
 
 /*
- * global variables
+ * str_or_null - report if a JSON JTYPE_MEMBER value is a valid JSON_STRING or a valid JSON_NULL
+ *
+ * Assuming valid == true, then if is_null == true, then str will be NULL else if is_null == false,
+ * then str will be non-NULL.
+ *
+ * When valid == false, then is_null and str have no meaning.
  */
+struct str_or_null {
+    bool valid;		/* true == JSON JTYPE_MEMBER value was is valid JSON_STRING or a valid JSON_NULL */
+    bool is_null;	/* true ==> JTYPE_MEMBER value is valid JSON_NULL, false ==> is valid JSON_STRING */
+    char *str;		/* decoded value string from JSON member or NULL */
+};
 
 
 /*
@@ -103,6 +118,25 @@ struct json_sem
 extern struct json_sem_val_err *werr_sem_val(int val_err, struct json *node, unsigned int depth,
 					     struct json_sem *sem, char const *name, char const *fmt, ...) \
 	__attribute__((format(printf, 6, 7)));		/* 6=format 7=params */
+extern bool sem_chk_null_args(struct json *node, unsigned int depth, struct json_sem *sem,
+			      char const *name, struct json_sem_val_err **val_err);
+extern char *sem_member_name_decoded_str(struct json *node, unsigned int depth, struct json_sem *sem,
+				         char const *name, struct json_sem_val_err **val_err);
+extern char *sem_member_value_decoded_str(struct json *node, unsigned int depth, struct json_sem *sem,
+				          char const *name, struct json_sem_val_err **val_err);
+extern bool *sem_member_value_bool(struct json *node, unsigned int depth, struct json_sem *sem,
+			           char const *name, struct json_sem_val_err **val_err);
+extern struct str_or_null sem_member_value_str_or_null(struct json *node, unsigned int depth, struct json_sem *sem,
+						      char const *name, struct json_sem_val_err **val_err);
+extern int *sem_member_value_int(struct json *node, unsigned int depth, struct json_sem *sem,
+			         char const *name, struct json_sem_val_err **val_err);
+extern bool sem_node_valid_converted(struct json *node, unsigned int depth, struct json_sem *sem,
+				     char const *name, struct json_sem_val_err **val_err);
+extern struct json *sem_node_parent(struct json *node, unsigned int depth, struct json_sem *sem,
+				    char const *name, struct json_sem_val_err **val_err);
+extern struct json *sem_object_find_name(struct json *node, unsigned int depth, struct json_sem *sem,
+				         char const *name, struct json_sem_val_err **val_err,
+				         char const *memname);
 
 
 #endif /* INCLUDE_JSON_SEM_H */
