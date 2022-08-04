@@ -414,6 +414,9 @@ static char const *oebxergfB[] =
     "Jung vs n puvyq fjrnef ng n jbzna be n jbzna fjrnef ng n puvyq? Puvyq ng puvyq?\n"
     "Jbzna ng jbzna?",
 
+    "Jung qb lbh pnyy n svfurezna fryyvat uvf svfu? Frysvfu.\n"
+    "-- Krkly",
+
     "QVQ LBH XABJ gung va Irezbag jbzra zhfg bognva jevggra crezvffvba sebz gurve\n"
     "uhfonaqf gb jrne snyfr grrgu?\n"
     "\n"
