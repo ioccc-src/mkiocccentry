@@ -586,6 +586,27 @@ static char const *oebxergfB[] =
     "Vs Cynarg Rnegu jnf zragnyyl vyy vg jbhyq or qvntabfrq ovcbyne.\n"
     "-- Krkly",
 
+    "Lrfgreqnl,\n"
+    "Nyy gubfr onpxhcf frrzrq n jnfgr bs cnl.\n"
+    "Abj zl qngnonfr unf tbar njnl.\n"
+    "Bu V oryvrir va lrfgreqnl.\n"
+    "\n"
+    "Fhqqrayl,\n"
+    "Gurer'f abg unys gur svyrf gurer hfrq gb or,\n"
+    "Naq gurer'f n qrnqyvar\n"
+    "unatvat bire zr.\n"
+    "Gur flfgrz penfurq fb fhqqrayl.\n"
+    "\n"
+    "V chfurq fbzrguvat jebat\n"
+    "Jung vg jnf V pbhyq abg fnl.\n"
+    "Abj zl qngn'f tbar\n"
+    "naq V ybat sbe lrfgreqnl-nl-nl-nl.\n"
+    "\n"
+    "Lrfgreqnl,\n"
+    "Gur arrq sbe onpx-hcf frrzrq fb sne njnl.\n"
+    "Gubhtug nyy zl qngn jnf urer gb fgnl,\n"
+    "Abj V oryvrir va lrfgreqnl.",
+
     "QVQ LBH XABJ gung va Eubqr Vfynaq evqvat n ubefr bire nal choyvp uvtujnl sbe\n"
     "gur checbfr bs enpvat be grfgvat gur fcrrq bs gur ubefr vf vyyrtny?\n"
     "\n"
