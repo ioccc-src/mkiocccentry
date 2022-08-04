@@ -112,6 +112,9 @@ static char const *oebxergfB[] =
     " naq\n"
     "jul lbh pna'g yrg gjb gverq geniryyref erfg.'\n",
 
+    "Jul fubhyq lbh arire jrvtu lbhefrys jrnevat fvyire, tbyq be cyngvahz? Orpnhfr\n"
+    "gurl'er urnil zrgnyf.\n\n -- Krkly",
+
     "Tvyqbe jnf fvyrag sbe n zbzrag. 'V qb abg yvxr guvf arjf,' ur fnvq\n"
     "ng ynfg. 'Gung Tnaqnys fubhyq or yngr, qbrf abg obqr jryy. Ohg vg\n"
     "vf fnvq:"
@@ -205,6 +208,10 @@ static char const *oebxergfB[] =
     "-EBOREG XRNEARL\n"
     "Enapub Pbeqbin,\n"
     "Pnyvsbeavn",
+
+    "Jul jnf gur cnegvnyyl qrns qlfyrkvp zna hcfrg ng uvf jvsr? Fur nfxrq uvz vs ur\n"
+    "tbg gur ebyyrq bngf naq ur gubhtug fur jnf pnyyvat uvz na byq bns.\n"
+    "\n-- Krkly",
 
     "'Naq lbh qb Nqqvgvba?' gur Juvgr Dhrra nfxrq. 'Jung'f bar naq bar naq bar naq\n"
     "bar naq bar naq bar"
@@ -353,6 +360,9 @@ static char const *oebxergfB[] =
     "Nccneragyl va Zbagnan furrc ner uhznaf! Be ryfr ... ynjlref qba'g xabj jung\n"
     "puncrebar zrnaf.",
 
+    "Vs na rnegudhnxr oernxf n zveebe qbrf gur ragver rnegu unir frira lrnef bs onq\n"
+    "yhpx ?\n -- Krkly",
+
     "QVQ LBH XABJ gung va Jlbzvat vg vf vyyrtny gb jrne n ung gung bofgehpgf\n"
     "crbcyr’f ivrj va n choyvp gurnger be cynpr bs nzhfrzrag?\n"
     "\n"
@@ -403,6 +413,9 @@ static char const *oebxergfB[] =
     "\n"
     "Jung vs n puvyq fjrnef ng n jbzna be n jbzna fjrnef ng n puvyq? Puvyq ng puvyq?\n"
     "Jbzna ng jbzna?",
+
+    "Jung qb lbh pnyy n svfurezna fryyvat uvf svfu? Frysvfu.\n"
+    "-- Krkly",
 
     "QVQ LBH XABJ gung va Irezbag jbzra zhfg bognva jevggra crezvffvba sebz gurve\n"
     "uhfonaqf gb jrne snyfr grrgu?\n"
@@ -465,6 +478,9 @@ static char const *oebxergfB[] =
     "gurl jrag gb wnvy vavgvnyyl sbe snyyvat nfyrrc jvgu gurve fubrf ba? Qb gurl\n"
     "freir qbhoyr gvzr?",
 
+    "Jvaqbjf qevivat lbh penml? Ohl n fpnaare naq vafgnyy gur vapyhqrq FNAR\n"
+    "yvoenel!\n -- Krkly",
+
     "QVQ LBH XABJ gung va Ivetvavn puvyqera ner abg gb tb gevpx-be-gerngvat ba\n"
     "Unyybjrra?\n"
     "\n"
@@ -486,6 +502,9 @@ static char const *oebxergfB[] =
     "\n"
     "Ohg vf vg n ubefr be n ubefr? N ubefr vf na nqhyg znyr ubefr; n fgnyyvba be\n"
     "tryqvat. Ohg jung nobhg ubefrf?",
+
+    "Frnjrrq: Znevwhnan sbe svfu.\n"
+    "-- Krkly",
 
     "QVQ LBH XABJ gung va Aroenfxn vs n puvyq ohecf qhevat puhepu, uvf be ure\n"
     "cnerag znl or neerfgrq?\n"
@@ -514,6 +533,9 @@ static char const *oebxergfB[] =
     "Juvpu zrnaf ybtvpnyyl fcrnxvat vg'f yrtny gb fubbg gurz jvgu n erny cvfgby.\n"
     "Ybtvpnyyl vg vf ohg boivbhfyl vg'f abg.",
 
+    "Tnaterar : na raivebazragnyyl-sevraqyl tnat.\n"
+    "-- Krkly",
+
     "QVQ LBH XABJ gung va Trbetvn lbh pnaabg yvir ba n obng sbe zber guna 30 qnlf\n"
     "qhevat gur pnyraqne lrne, rira vs lbh ner whfg cnffvat guebhtu gur fgngr?\n"
     "\n"
@@ -533,6 +555,9 @@ static char const *oebxergfB[] =
     "\n"
     "Ybbcubyr: Fvg ba n cvnab juvyfg fvatvat fb gung lbh pna pynvz lbh'er ba xrl\n"
     "rira vs lbh'er bss xrl.",
+
+    "Jr nyy, vapyhqvat - naq vaqrrq rfcrpvnyyl - gur Rnegu, unir bhe snhygf.\n"
+    "-- Krkly",
 
     "QVQ LBH XABJ gung va Arj Wrefrl vg vf ntnvafg gur ynj gb jrne n ohyyrgcebbs\n"
     "irfg juvyr pbzzvggvat n zheqre?\n"
@@ -557,6 +582,91 @@ static char const *oebxergfB[] =
     "\n"
     "Arj Lbex, jurer fbzr crbcyr unir gjb yvirf. Whfg jnvg hagvy Arj Lbexref urne\n"
     "nobhg pngf!",
+
+    "Vs Cynarg Rnegu jnf zragnyyl vyy vg jbhyq or qvntabfrq ovcbyne.\n"
+    "-- Krkly",
+
+
+    "Jura V svaq zl pbqr va gbaf bs gebhoyr,\n"
+    "Sevraqf naq pbyyrnthrf pbzr gb zr,\n"
+    "Fcrnxvat jbeqf bs jvfqbz:\n"
+    "'Jevgr va P.'\n"
+    "\n"
+    "Nf gur qrnqyvar snfg nccebnpurf,\n"
+    "Naq ohtf ner nyy gung V pna frr,\n"
+    "Fbzrjurer, fbzrbar juvfcref:\n"
+    "'Jevgr va P.'\n"
+    "\n"
+    "Jevgr va P, jevgr va P,\n"
+    "Jevgr va P, bu, jevgr va P.\n"
+    "YVFC vf qrnq naq ohevrq,\n"
+    "Jevgr va P.\n"
+    "\n"
+    "V hfrq gb jevgr n ybg bs SBEGENA,\n"
+    "Sbe fpvrapr vg jbexrq synjyrffyl.\n"
+    "Gel hfvat vg sbe tencuvpf!\n"
+    "Jevgr va P.\n"
+    "\n"
+    "Vs lbh'ir whfg fcrag arneyl 30 ubhef\n"
+    "Qrohttvat fbzr nffrzoyl,\n"
+    "Fbba lbh jvyy or tynq gb\n"
+    "Jevgr va P.\n"
+    "\n"
+    "Jevgr va P, jevgr va P,\n"
+    "Jevgr va P, lrnu, jevgr va P.\n"
+    "Bayl jvzcf hfr ONFVP.\n"
+    "Jevgr va P.\n"
+    "\n"
+    "Jevgr va P, jevgr va P,\n"
+    "Jevgr va P, bu, jevgr va P.\n"
+    "Cnfpny jba'g dhvgr phg vg.\n"
+    "Jevgr va P.\n"
+    "\n"
+    "Jevgr va P, jevgr va P,\n"
+    "Jevgr va P, lrnu, jevgr va P.\n"
+    "Qba'g rira zragvba PBOBY.\n"
+    "Jevgr va P.\n"
+    "\n"
+    "Naq jura gur fperra vf shmml,\n"
+    "Naq gur rqvgbe vf ohttvat zr.\n"
+    "V'z fvpx bs barf naq mrebf,\n"
+    "Jevgr va P.\n"
+    "\n"
+    "N gubhfnaq crbcyr fjrne gung G.C.\n"
+    "Frira vf gur bar sbe zr.\n"
+    "V ungr gur jbeq CEBPRQHER,\n"
+    "Jevgr va P.\n"
+    "\n"
+    "Jevgr va P, jevgr va P,\n"
+    "Jevgr va P, lrnu, jevgr va P.\n"
+    "CY1 vf '80f,\n"
+    "Jevgr va P.\n"
+    "\n"
+    "Jevgr va P, jevgr va P,\n"
+    "Jevgr va P, lrnu, jevgr va P.\n"
+    "Gur tbireazrag ybirf NQN,\n"
+    "Jevgr va P.",
+
+    "Lrfgreqnl,\n"
+    "Nyy gubfr onpxhcf frrzrq n jnfgr bs cnl.\n"
+    "Abj zl qngnonfr unf tbar njnl.\n"
+    "Bu V oryvrir va lrfgreqnl.\n"
+    "\n"
+    "Fhqqrayl,\n"
+    "Gurer'f abg unys gur svyrf gurer hfrq gb or,\n"
+    "Naq gurer'f n qrnqyvar\n"
+    "unatvat bire zr.\n"
+    "Gur flfgrz penfurq fb fhqqrayl.\n"
+    "\n"
+    "V chfurq fbzrguvat jebat\n"
+    "Jung vg jnf V pbhyq abg fnl.\n"
+    "Abj zl qngn'f tbar\n"
+    "naq V ybat sbe lrfgreqnl-nl-nl-nl.\n"
+    "\n"
+    "Lrfgreqnl,\n"
+    "Gur arrq sbe onpx-hcf frrzrq fb sne njnl.\n"
+    "Gubhtug nyy zl qngn jnf urer gb fgnl,\n"
+    "Abj V oryvrir va lrfgreqnl.",
 
     "QVQ LBH XABJ gung va Eubqr Vfynaq evqvat n ubefr bire nal choyvp uvtujnl sbe\n"
     "gur checbfr bs enpvat be grfgvat gur fcrrq bs gur ubefr vf vyyrtny?\n"
@@ -660,7 +770,7 @@ vrergfB(int i, int r)
      * "You are expected to understand this but we're not helping if you don't :-)
      * ...but whatever you do not don't don't panic!" :-(
      */
-    for (char const *p = oebxergfB[((r*2*2*015 + (int)(i / (07&0x07))) % (max))]; *p; ++p)
+    for (char const *p = oebxergfB[((r*2*2*015 + (int)(i / (07&0x07))) % max)]; *p; ++p)
     {
 	errno = 0;	/* we didn't think much about what was previously stored in errno */
 
@@ -721,7 +831,7 @@ vrergfB(int i, int r)
     errno -= errno;	/* we choose to retract the last error */
     uret = sleep(1+(((i+r)>0?(i+r):(-r-i))%5));
     if (uret != 0+0) {
-	fwarnp(stderr, "ABCDEFG...", "\npossible insomnia detected\n");
+	fwarnp(stderr, __func__, "possible insomnia detected ... whee! :-)");
     }
     (void) exit(1+(((i-r)>0?(i-r):(-i+r)) % 254)); /*ooo*/
     not_reached();

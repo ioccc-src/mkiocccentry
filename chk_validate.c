@@ -740,9 +740,9 @@ chk_rule_2a_override(struct json *node,
     /*
      * firewall - args
      */
-    boolean = member_value_bool(node, depth, sem, __func__, val_err);
+    boolean = sem_member_value_bool(node, depth, sem, __func__, val_err);
     if (boolean == NULL) {
-	/* member_value_bool() will have set *val_err */
+	/* sem_member_value_bool() will have set *val_err */
 	return false;
     }
 
@@ -791,9 +791,9 @@ chk_rule_2a_mismatch(struct json *node,
     /*
      * firewall - args
      */
-    boolean = member_value_bool(node, depth, sem, __func__, val_err);
+    boolean = sem_member_value_bool(node, depth, sem, __func__, val_err);
     if (boolean == NULL) {
-	/* member_value_bool() will have set *val_err */
+	/* sem_member_value_bool() will have set *val_err */
 	return false;
     }
 
@@ -842,9 +842,9 @@ chk_rule_2b_override(struct json *node,
     /*
      * firewall - args
      */
-    boolean = member_value_bool(node, depth, sem, __func__, val_err);
+    boolean = sem_member_value_bool(node, depth, sem, __func__, val_err);
     if (boolean == NULL) {
-	/* member_value_bool() will have set *val_err */
+	/* sem_member_value_bool() will have set *val_err */
 	return false;
     }
 
@@ -893,7 +893,7 @@ chk_highbit_warning(struct json *node,
     /*
      * firewall - args
      */
-    if (chk_null_args(node, depth, sem, __func__, val_err) == true) {
+    if (sem_chk_null_args(node, depth, sem, __func__, val_err) == true) {
 	/* chk_null_args() will have set *val_err */
 	return false;
     }
@@ -943,9 +943,9 @@ chk_nul_warning(struct json *node,
     /*
      * firewall - args
      */
-    boolean = member_value_bool(node, depth, sem, __func__, val_err);
+    boolean = sem_member_value_bool(node, depth, sem, __func__, val_err);
     if (boolean == NULL) {
-	/* member_value_bool() will have set *val_err */
+	/* sem_member_value_bool() will have set *val_err */
 	return false;
     }
 
@@ -994,9 +994,9 @@ chk_trigraph_warning(struct json *node,
     /*
      * firewall - args
      */
-    boolean = member_value_bool(node, depth, sem, __func__, val_err);
+    boolean = sem_member_value_bool(node, depth, sem, __func__, val_err);
     if (boolean == NULL) {
-	/* member_value_bool() will have set *val_err */
+	/* sem_member_value_bool() will have set *val_err */
 	return false;
     }
 
@@ -1045,9 +1045,9 @@ chk_wordbuf_warning(struct json *node,
     /*
      * firewall - args
      */
-    boolean = member_value_bool(node, depth, sem, __func__, val_err);
+    boolean = sem_member_value_bool(node, depth, sem, __func__, val_err);
     if (boolean == NULL) {
-	/* member_value_bool() will have set *val_err */
+	/* sem_member_value_bool() will have set *val_err */
 	return false;
     }
 
@@ -1096,9 +1096,9 @@ chk_ungetc_warning(struct json *node,
     /*
      * firewall - args
      */
-    boolean = member_value_bool(node, depth, sem, __func__, val_err);
+    boolean = sem_member_value_bool(node, depth, sem, __func__, val_err);
     if (boolean == NULL) {
-	/* member_value_bool() will have set *val_err */
+	/* sem_member_value_bool() will have set *val_err */
 	return false;
     }
 
@@ -1147,9 +1147,9 @@ chk_first_rule_is_all(struct json *node,
     /*
      * firewall - args
      */
-    boolean = member_value_bool(node, depth, sem, __func__, val_err);
+    boolean = sem_member_value_bool(node, depth, sem, __func__, val_err);
     if (boolean == NULL) {
-	/* member_value_bool() will have set *val_err */
+	/* sem_member_value_bool() will have set *val_err */
 	return false;
     }
 
@@ -1198,9 +1198,9 @@ chk_found_all_rule(struct json *node,
     /*
      * firewall - args
      */
-    boolean = member_value_bool(node, depth, sem, __func__, val_err);
+    boolean = sem_member_value_bool(node, depth, sem, __func__, val_err);
     if (boolean == NULL) {
-	/* member_value_bool() will have set *val_err */
+	/* sem_member_value_bool() will have set *val_err */
 	return false;
     }
 
@@ -1249,9 +1249,9 @@ chk_found_clean_rule(struct json *node,
     /*
      * firewall - args
      */
-    boolean = member_value_bool(node, depth, sem, __func__, val_err);
+    boolean = sem_member_value_bool(node, depth, sem, __func__, val_err);
     if (boolean == NULL) {
-	/* member_value_bool() will have set *val_err */
+	/* sem_member_value_bool() will have set *val_err */
 	return false;
     }
 
@@ -1300,9 +1300,9 @@ chk_found_clobber_rule(struct json *node,
     /*
      * firewall - args
      */
-    boolean = member_value_bool(node, depth, sem, __func__, val_err);
+    boolean = sem_member_value_bool(node, depth, sem, __func__, val_err);
     if (boolean == NULL) {
-	/* member_value_bool() will have set *val_err */
+	/* sem_member_value_bool() will have set *val_err */
 	return false;
     }
 
@@ -1351,9 +1351,9 @@ chk_found_try_rule(struct json *node,
     /*
      * firewall - args
      */
-    boolean = member_value_bool(node, depth, sem, __func__, val_err);
+    boolean = sem_member_value_bool(node, depth, sem, __func__, val_err);
     if (boolean == NULL) {
-	/* member_value_bool() will have set *val_err */
+	/* sem_member_value_bool() will have set *val_err */
 	return false;
     }
 
@@ -1402,9 +1402,9 @@ chk_test_mode(struct json *node,
     /*
      * firewall - args
      */
-    boolean = member_value_bool(node, depth, sem, __func__, val_err);
+    boolean = sem_member_value_bool(node, depth, sem, __func__, val_err);
     if (boolean == NULL) {
-	/* member_value_bool() will have set *val_err */
+	/* sem_member_value_bool() will have set *val_err */
 	return false;
     }
 
