@@ -556,6 +556,9 @@ static char const *oebxergfB[] =
     "Ybbcubyr: Fvg ba n cvnab juvyfg fvatvat fb gung lbh pna pynvz lbh'er ba xrl\n"
     "rira vs lbh'er bss xrl.",
 
+    "Jr nyy, vapyhqvat - naq vaqrrq rfcrpvnyyl - gur Rnegu, unir bhe snhygf.\n"
+    "-- Krkly",
+
     "QVQ LBH XABJ gung va Arj Wrefrl vg vf ntnvafg gur ynj gb jrne n ohyyrgcebbs\n"
     "irfg juvyr pbzzvggvat n zheqre?\n"
     "\n"
