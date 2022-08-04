@@ -2315,7 +2315,7 @@ vwarn(char const *name, char const *fmt, va_list ap)
  *
  * Example:
  *
- *	fwarn(strerr, __func__, "unexpected foobar: %d", value);
+ *	fwarn(stderr, __func__, "unexpected foobar: %d", value);
  */
 void
 fwarn(FILE *stream, char const *name, char const *fmt, ...)
