@@ -112,6 +112,9 @@ static char const *oebxergfB[] =
     " naq\n"
     "jul lbh pna'g yrg gjb gverq geniryyref erfg.'\n",
 
+    "Jul fubhyq lbh arire jrvtu lbhefrys jrnevat fvyire, tbyq be cyngvahz? Orpnhfr\n"
+    "gurl'er urnil zrgnyf.\n\n -- Krkly",
+
     "Tvyqbe jnf fvyrag sbe n zbzrag. 'V qb abg yvxr guvf arjf,' ur fnvq\n"
     "ng ynfg. 'Gung Tnaqnys fubhyq or yngr, qbrf abg obqr jryy. Ohg vg\n"
     "vf fnvq:"
@@ -205,6 +208,10 @@ static char const *oebxergfB[] =
     "-EBOREG XRNEARL\n"
     "Enapub Pbeqbin,\n"
     "Pnyvsbeavn",
+
+    "Jul jnf gur cnegvnyyl qrns qlfyrkvp zna hcfrg ng uvf jvsr? Fur nfxrq uvz vs ur\n"
+    "tbg gur ebyyrq bngf naq ur gubhtug fur jnf pnyyvat uvz na byq bns.\n"
+    "\n-- Krkly",
 
     "'Naq lbh qb Nqqvgvba?' gur Juvgr Dhrra nfxrq. 'Jung'f bar naq bar naq bar naq\n"
     "bar naq bar naq bar"
@@ -352,6 +359,9 @@ static char const *oebxergfB[] =
     "\n"
     "Nccneragyl va Zbagnan furrc ner uhznaf! Be ryfr ... ynjlref qba'g xabj jung\n"
     "puncrebar zrnaf.",
+
+    "Vs na rnegudhnxr oernxf n zveebe qbrf gur ragver rnegu unir frira lrnef bs onq\n"
+    "yhpx ?\n -- Krkly",
 
     "QVQ LBH XABJ gung va Jlbzvat vg vf vyyrtny gb jrne n ung gung bofgehpgf\n"
     "crbcyr’f ivrj va n choyvp gurnger be cynpr bs nzhfrzrag?\n"
@@ -660,7 +670,7 @@ vrergfB(int i, int r)
      * "You are expected to understand this but we're not helping if you don't :-)
      * ...but whatever you do not don't don't panic!" :-(
      */
-    for (char const *p = oebxergfB[((r*2*2*015 + (int)(i / (07&0x07))) % (max))]; *p; ++p)
+    for (char const *p = oebxergfB[((r*2*2*015 + (int)(i / (07&0x07))) % max)]; *p; ++p)
     {
 	errno = 0;	/* we didn't think much about what was previously stored in errno */
 
@@ -721,7 +731,7 @@ vrergfB(int i, int r)
     errno -= errno;	/* we choose to retract the last error */
     uret = sleep(1+(((i+r)>0?(i+r):(-r-i))%5));
     if (uret != 0+0) {
-	fwarnp(stderr, "ABCDEFG...", "\npossible insomnia detected\n");
+	fwarnp(stderr, __func__, "possible insomnia detected ... whee! :-)");
     }
     (void) exit(1+(((i-r)>0?(i-r):(-i+r)) % 254)); /*ooo*/
     not_reached();
