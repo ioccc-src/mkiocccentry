@@ -503,6 +503,9 @@ static char const *oebxergfB[] =
     "Ohg vf vg n ubefr be n ubefr? N ubefr vf na nqhyg znyr ubefr; n fgnyyvba be\n"
     "tryqvat. Ohg jung nobhg ubefrf?",
 
+    "Frnjrrq: Znevwhnan sbe svfu.\n"
+    "-- Krkly",
+
     "QVQ LBH XABJ gung va Aroenfxn vs n puvyq ohecf qhevat puhepu, uvf be ure\n"
     "cnerag znl or neerfgrq?\n"
     "\n"
@@ -529,6 +532,9 @@ static char const *oebxergfB[] =
     "\n"
     "Juvpu zrnaf ybtvpnyyl fcrnxvat vg'f yrtny gb fubbg gurz jvgu n erny cvfgby.\n"
     "Ybtvpnyyl vg vf ohg boivbhfyl vg'f abg.",
+
+    "Tnaterar : na raivebazragnyyl-sevraqyl tnat.\n"
+    "-- Krkly",
 
     "QVQ LBH XABJ gung va Trbetvn lbh pnaabg yvir ba n obng sbe zber guna 30 qnlf\n"
     "qhevat gur pnyraqne lrne, rira vs lbh ner whfg cnffvat guebhtu gur fgngr?\n"
