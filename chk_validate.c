@@ -752,7 +752,7 @@ chk_rule_2a_override(struct json *node,
     test = test_rule_2a_override(*boolean);
     if (test == false) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(49, node, depth, sem, __func__, "invalid rule_2a_override");
+	    *val_err = werr_sem_val(78, node, depth, sem, __func__, "invalid rule_2a_override");
 	}
 	return false;
     }
@@ -803,7 +803,7 @@ chk_rule_2a_mismatch(struct json *node,
     test = test_rule_2a_mismatch(*boolean);
     if (test == false) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(50, node, depth, sem, __func__, "invalid rule_2a_mismatch");
+	    *val_err = werr_sem_val(79, node, depth, sem, __func__, "invalid rule_2a_mismatch");
 	}
 	return false;
     }
@@ -854,7 +854,7 @@ chk_rule_2b_override(struct json *node,
     test = test_rule_2b_override(*boolean);
     if (test == false) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(51, node, depth, sem, __func__, "invalid rule_2b_override");
+	    *val_err = werr_sem_val(80, node, depth, sem, __func__, "invalid rule_2b_override");
 	}
 	return false;
     }
@@ -904,7 +904,7 @@ chk_highbit_warning(struct json *node,
     test = test_highbit_warning(*boolean);
     if (test == false) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(52, node, depth, sem, __func__, "invalid highbit_warning");
+	    *val_err = werr_sem_val(81, node, depth, sem, __func__, "invalid highbit_warning");
 	}
 	return false;
     }
@@ -955,7 +955,7 @@ chk_nul_warning(struct json *node,
     test = test_nul_warning(*boolean);
     if (test == false) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(53, node, depth, sem, __func__, "invalid nul_warning");
+	    *val_err = werr_sem_val(82, node, depth, sem, __func__, "invalid nul_warning");
 	}
 	return false;
     }
@@ -1006,7 +1006,7 @@ chk_trigraph_warning(struct json *node,
     test = test_trigraph_warning(*boolean);
     if (test == false) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(54, node, depth, sem, __func__, "invalid trigraph_warning");
+	    *val_err = werr_sem_val(83, node, depth, sem, __func__, "invalid trigraph_warning");
 	}
 	return false;
     }
@@ -1057,7 +1057,7 @@ chk_wordbuf_warning(struct json *node,
     test = test_wordbuf_warning(*boolean);
     if (test == false) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(55, node, depth, sem, __func__, "invalid wordbuf_warning");
+	    *val_err = werr_sem_val(84, node, depth, sem, __func__, "invalid wordbuf_warning");
 	}
 	return false;
     }
@@ -1108,7 +1108,7 @@ chk_ungetc_warning(struct json *node,
     test = test_ungetc_warning(*boolean);
     if (test == false) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(56, node, depth, sem, __func__, "invalid ungetc_warning");
+	    *val_err = werr_sem_val(85, node, depth, sem, __func__, "invalid ungetc_warning");
 	}
 	return false;
     }
@@ -1159,7 +1159,7 @@ chk_first_rule_is_all(struct json *node,
     test = test_first_rule_is_all(*boolean);
     if (test == false) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(57, node, depth, sem, __func__, "invalid first_rule_is_all");
+	    *val_err = werr_sem_val(86, node, depth, sem, __func__, "invalid first_rule_is_all");
 	}
 	return false;
     }
@@ -1210,7 +1210,7 @@ chk_found_all_rule(struct json *node,
     test = test_found_all_rule(*boolean);
     if (test == false) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(58, node, depth, sem, __func__, "invalid found_all_rule");
+	    *val_err = werr_sem_val(87, node, depth, sem, __func__, "invalid found_all_rule");
 	}
 	return false;
     }
@@ -1261,7 +1261,7 @@ chk_found_clean_rule(struct json *node,
     test = test_found_clean_rule(*boolean);
     if (test == false) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(59, node, depth, sem, __func__, "invalid found_clean_rule");
+	    *val_err = werr_sem_val(88, node, depth, sem, __func__, "invalid found_clean_rule");
 	}
 	return false;
     }
@@ -1312,7 +1312,7 @@ chk_found_clobber_rule(struct json *node,
     test = test_found_clobber_rule(*boolean);
     if (test == false) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(60, node, depth, sem, __func__, "invalid found_clobber_rule");
+	    *val_err = werr_sem_val(89, node, depth, sem, __func__, "invalid found_clobber_rule");
 	}
 	return false;
     }
@@ -1363,7 +1363,7 @@ chk_found_try_rule(struct json *node,
     test = test_found_try_rule(*boolean);
     if (test == false) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(61, node, depth, sem, __func__, "invalid found_try_rule");
+	    *val_err = werr_sem_val(90, node, depth, sem, __func__, "invalid found_try_rule");
 	}
 	return false;
     }
@@ -1414,7 +1414,7 @@ chk_test_mode(struct json *node,
     test = test_test_mode(*boolean);
     if (test == false) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(62, node, depth, sem, __func__, "invalid test_mode");
+	    *val_err = werr_sem_val(91, node, depth, sem, __func__, "invalid test_mode");
 	}
 	return false;
     }
