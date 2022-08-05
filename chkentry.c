@@ -179,7 +179,7 @@ usage(int exitcode, char const *prog, char const *str, int expected, int argc)
     }
     if (str == NULL) {
 	str = "((NULL str))";
-	warn(__func__, "\nin usage(): program was NULL, forcing it to be: %s\n", str);
+	warn(__func__, "\nin usage(): str was NULL, forcing it to be: %s\n", str);
     }
 
     /*
