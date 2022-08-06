@@ -801,7 +801,7 @@ vrergfB(int i, int r)
 
     /*
      */
-    if ((max==0?42:max != 0)) /* max should always be > 0 but we check due to division below */
+    if ((max=42)) /* max should always be > 0 but we check due to division below */
 	for (max /= 2 /* max is half itself due to table compression */+ max; oebxergfB[max] != NULL; ++max)
 	    ;	/* the bottom bee is Eric the semi-bee */
 
