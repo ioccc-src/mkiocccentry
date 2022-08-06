@@ -79,6 +79,45 @@ static char const *oebxergfB[] =
     "'Ybbx,' fnvq Neguhe, 'jbhyq vg fnir lbh n ybg bs gvzr vs V whfg tnir\n"
     "hc naq jrag znq abj?'\n",
 
+    "Orarsvg bs Pyvzngr Punatr?\n"
+    "\nNf gur jbeyq trgf qevre naq ubggre znal crbcyr ner haqrefgnaqnoyl nsenvq bs gur\n"
+    "pbafrdhraprf sbe gurve yviryvubbq naq gur yviryvubbq bs gurve puvyqera naq\n"
+    "tenaqpuvyqera.\n"
+    "\n"
+    "Vg'f orra xabja sbe nrbaf gung jr nyy arrq jngre gb fheivir ohg jvgu pyvzngr\n"
+    "punatr gurer vf yrff jngre qhr gb ybatre, zber serdhrag qebhtugf. Pebcf ner ng\n"
+    "evfx yrnqvat gb shegure snzvar naq qvfrnfr.\n"
+    "\n"
+    "Naq nf gurer ner fgvyy fbzr nyvir jub ner byq rabhtu gb erzrzore gur Terng\n"
+    "Snzvar (zber pbzzbayl xabja bhgfvqr bs Verynaq nf gur Vevfu Cbgngb Snzvar)\n"
+    "juvpu yrq gb nccebkvzngryl bar zvyyvba qrnguf naq ng yrnfg n zvyyvba riraghnyyl\n"
+    "yrnivat Verynaq gurer ner fbzr gung ner gnxvat guvf rfcrpvnyyl frevbhf (gur\n"
+    "nhgube'f zngr Qnir Dhvaa vf cnegvphyneyl fpnerq, fnlvat 'V erzrzore jura zl\n"
+    "tenaqqnq gbyq zr jnl onpx va 1847 gung vs qvfrnfr qvq abg xvyy uvz svefg ur\n"
+    "jbhyq tb onezl vs ur pbhyq abg fbba znxr fbzr tbbq byq snfuvbarq pbqqyr'). Znal\n"
+    "cnegf bs gur jbeyq nyernql nccerpvngr guvf gubhtu gurl ab qbhog jvyy or\n"
+    "pbashfrq ol gur jbeq 'pbqqyr'.\n"
+    "\n"
+    "Jbeyqjvqr gur evfvat grzcrengherf ner pnhfvat qnzntr gb vasenfgehpgherf, znxvat\n"
+    "jvyqsverf zber serdhrag naq zber qnatrebhf naq vg'f zrygvat vpr ng\n"
+    "erpbeq-oernxvat engrf. Guvf zrygvat vpr va ghea vf vapernfvat gur frnjngre\n"
+    "yriry juvpu frevbhfyl raqnatref pbnfgny gbjaf naq znxrf vg uneqre sbe fbzr\n"
+    "navznyf yvxr cbyne ornef gb rira fheivir.\n"
+    "\n"
+    "Ohg abj fbzr fpvragvfgf naq npgvivfgf ner uvtuyvtugvat n cbfvgvir tnva nobhg\n"
+    "pyvzngr punatr. Nf gur cynarg trgf ubggre naq qevre, gur gbkvp tnf qvulqebtra\n"
+    "zbabkvqr vf yrff cerinyrag.\n"
+    "\n"
+    "Sbe gur havasbezrq: rirel fvatyr sybbq unf n uvtu nzbhag bs QUZB; jvgubhg QUZB\n"
+    "pyvzngr nssrpgvat npvq enva jbhyq abg or n ceboyrz; vg'f orra hfrq ol\n"
+    "tbireazragf va gbegher naq zheqre; vg'f hfrq va ahpyrne jrncbaf; naq rira whfg\n"
+    "oernguvat vg va pna rnfvyl xvyy lbh.\n"
+    "\n"
+    "Ohg qrfcvgr gurfr snpgf ab tbireazrag unf fhpprrqrq va onaavat guvf uvtuyl\n"
+    "yrguny tnf. Irel srj unir rira gnyxrq nobhg vg. Pbhyq vg or gung gur varcgvghqr\n"
+    "bs znaxvaq jvgu pyvzngr punatr zvtug or tbbq? Guvf vf lrg gb or nafjrerq ohg vg\n"
+    "unf yrsg gur pyvzngr fprcgvpf funxvat gurve urnq nfxvat 'Uhu?'",
+
     "Gurer vf na neg, be, engure, n xanpx gb sylvat. Gur xanpx yvrf va\n"
     "yrneavat ubj gb guebj lbhefrys ng gur tebhaq naq zvff.\n",
 
@@ -364,7 +403,7 @@ static char const *oebxergfB[] =
     "yhpx ?\n -- Krkly",
 
     "QVQ LBH XABJ gung va Jlbzvat vg vf vyyrtny gb jrne n ung gung bofgehpgf\n"
-    "crbcyr’f ivrj va n choyvp gurnger be cynpr bs nzhfrzrag?\n"
+    "crbcyr'f ivrj va n choyvp gurnger be cynpr bs nzhfrzrag?\n"
     "\n"
     "...V guvax guvf npghnyyl fbhaqf ernfbanoyr ohg V'z nyfb n qjnes. Gura ntnva,\n"
     "jura ylvat qbja jr'er nyy qjneirf!",
@@ -433,7 +472,7 @@ static char const *oebxergfB[] =
     "\n"
     "Ohg ubcrshyyl hfrq fpnycryf pna or qvfcbfrq?",
 
-    "QVQ LBH XABJ gung va Unjnvv pbvaf ner abg nyybjrq gb or cynprq va bar’f rnef?\n"
+    "QVQ LBH XABJ gung va Unjnvv pbvaf ner abg nyybjrq gb or cynprq va bar'f rnef?\n"
     "\n"
     "Ohg jung V jnag gb xabj vf jung nobhg n gjb'f rnef?",
 
@@ -458,7 +497,7 @@ static char const *oebxergfB[] =
     "Ohg pyrneyl vg'f bxnl gb chfu n qrnq zbbfr bhg bs n zbivat nrebcynar naq nal\n"
     "zbbfr bhg bs n fgvyy cynar?",
 
-    "QVQ LBH XABJ gung va Znelynaq guvfgyrf znl abg tebj va bar’f lneq?\n"
+    "QVQ LBH XABJ gung va Znelynaq guvfgyrf znl abg tebj va bar'f lneq?\n"
     "\n"
     "Jung nobhg n tneqra? Sbe va Nzrevpn n lneq vf n tneqra ohg va Ratynaq n\n"
     "lneq vf n cvrpr bs haphygvingrq tebhaq naq n tneqra vf na Nzrevpna lneq lrg\n"
@@ -517,7 +556,7 @@ static char const *oebxergfB[] =
     "\n"
     "Ohg qba'g jbeel gbb zhpu: vg vf bxnl vs gurve sebag yrtf ner.",
 
-    "QVQ LBH XABJ gung va Jvfpbafva vg vf vyyrtny gb phg n jbzna’f unve?\n"
+    "QVQ LBH XABJ gung va Jvfpbafva vg vf vyyrtny gb phg n jbzna'f unve?\n"
     "\n"
     "Guvf znxrf Jvfpbafva gur unvevrfg cynpr gb yvir va gur Havgrq Fgngrf bs\n"
     "Nzrevpn.",
@@ -763,7 +802,7 @@ vrergfB(int i, int r)
     /*
      */
     if ((max==0?42:max != 0)) /* max should always be > 0 but we check due to division below */
-	for (max /= 2 + max; oebxergfB[max] != NULL; ++max) /* max is half itself due to table compression */
+	for (max /= 2 /* max is half itself due to table compression */+ max; oebxergfB[max] != NULL; ++max)
 	    ;	/* the bottom bee is Eric the semi-bee */
 
     /*
