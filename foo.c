@@ -584,6 +584,42 @@ static char const *oebxergfB[] =
     "\n"
     "Ohg jung nobhg 30 qnlf va n lrne jvgubhg n pnyraqne?",
 
+    "Qvq lbh xabj gung n tebhc bs cevfbaref vf pnyyrq n 'cvgl'?\n",
+
+    "Qvq lbh xabj gung nabgure grez sbe fabj yrbcneq vf 'bhapr'?\n"
+    "\n"
+    "Guvf vf sebz Zvqqyr Ratyvfu sebz Byq Serapu bapr, rneyvre ybapr (gur y- orvat\n"
+    "zvfvagrecergrq nf gur qrsvavgr negvpyr), onfrq ba Yngva ylak, ylap-.\n",
+
+    "Qvq lbh xabj gung n ener jbeq sbe n tebhc bs jvyq pngf (abg jvyqpngf) vf\n"
+    "'qrfgehpgvba'?\n",
+
+    "Bhe havgf bs grzcbeny zrnfherzrag, sebz frpbaqf ba hc gb zbaguf,\n"
+    "ner fb pbzcyvpngrq, nflzzrgevpny naq qvfwhapgvir fb nf gb znxr\n"
+    "pburerag zragny erpxbavat va gvzr nyy ohg vzcbffvoyr.  Vaqrrq, unq\n"
+    "fbzr glenaavpny tbq pbagevirq gb rafynir bhe zvaqf gb gvzr, gb znxr\n"
+    "vg nyy ohg vzcbffvoyr sbe hf gb rfpncr fhowrpgvba gb fbqqra\n"
+    "ebhgvarf naq hacyrnfnag fhecevfrf, ur pbhyq uneqyl unir qbar orggre\n"
+    "guna unaqvat qbja bhe cerfrag flfgrz.  Vg vf yvxr n frg bs\n"
+    "gencrmbvqny ohvyqvat oybpxf, jvgu ab iregvpny be ubevmbagny\n"
+    "fhesnprf, yvxr n ynathntr va juvpu gur fvzcyrfg gubhtug qrznaqf\n"
+    "beangr pbafgehpgvbaf, hfryrff cnegvpyrf naq yratgul\n"
+    "pvephzybphgvbaf.  Hayvxr gur zber fhpprffshy cnggreaf bs ynathntr\n"
+    "naq fpvrapr, juvpu ranoyr hf gb snpr rkcrevrapr obyqyl be ng yrnfg\n"
+    "yriry-urnqrqyl, bhe flfgrz bs grzcbeny pnyphyngvba fvyragyl naq\n"
+    "crefvfgragyl rapbhentrf bhe greebe bs gvzr.\n"
+    "\n"
+    "... Vg vf nf gubhtu nepuvgrpgf unq gb zrnfher yratgu va srrg, jvqgu\n"
+    "va zrgref naq urvtug va ryyf; nf gubhtu onfvp vafgehpgvba znahnyf\n"
+    "qrznaqrq n xabjyrqtr bs svir qvssrerag ynathntrf.  Vg vf ab jbaqre\n"
+    "gura gung jr bsgra ybbx vagb bhe bja vzzrqvngr cnfg be shgher, ynfg\n"
+    "Ghrfqnl be n jrrx sebz Fhaqnl, jvgu srryvatf bs urycyrff pbashfvba.\n"
+    "...\n"
+    "\n"
+    "--Eboreg Tehqva, 'Gvzr naq gur Neg bs Yvivat'.\n",
+
+    "Qvq lbh xabj gung n tebhc bs euvabf vf pnyyrq n 'penfu'? Thrff jul!\n",
+
     "QVQ LBH XABJ gung va Zvffvffvccv vg vf vyyrtny gb grnpu bguref jung cbyltnzl\n"
     "vf?\n"
     "\n"
@@ -716,6 +752,9 @@ static char const *oebxergfB[] =
     "\n"
     "Jung nobhg qevivat n pne arkg gb n ubefr sbe gur fnzr checbfr?",
 
+    "Qvq lbh xabj gung gur grpuavpny grezf sbe pncvgny yrggref ner 'znwhfphyr' naq\n"
+    "'hapvny' naq gur grpuavpny grez sbe ybjre pnfr yrggref vf 'zvahfphyr'?\n",
+
     "QVQ LBH XABJ gung va Arj Unzcfuver lbh znl abg gnc lbhe srrg, abq lbhe urnq, be\n"
     "va nal jnl xrrc gvzr gb gur zhfvp va n gnirea, erfgnhenag be pnsé?\n"
     "\n"
@@ -727,6 +766,13 @@ static char const *oebxergfB[] =
     "\n"
     "Gur frpbaq purzvfg fnlf, 'V'yy unir n tynff bs U2B gbb.'\n"
     "Gur frpbaq purzvfg qvrf.",
+
+    "'Lbh ner n yvne. V nz ab zber n jvgpu guna lbh ner n jvmneq naq vs lbh gnxr\n"
+    "njnl zl yvsr tbq jvyy tvir lbh oybbq gb qevax!'\n"
+    "\n"
+    "Ynfg jbeqf bs pbaqrzarq 'jvgpu' Fnenu Tbbq 19 Whyl 1692 gb Erireraq Avpbynf\n"
+    "Ablrf nsgre ur gevrq gb trg ure gb 'pbasrff'. 25 lrnef yngre va 1717 ur jbhyq\n"
+    "qvr sebz n unrzbeeuntr, pubxvat ba uvf bja oybbq.\n",
 
     "Shaal Trezna fnlvat:\n"
     "\n"
@@ -790,6 +836,7 @@ static char const *oebxergfB[] =
     "gb unovghnyyl xvff bgure uhznaf?\n"
     "\n"
     "Nf bccbfrq gb abg graqvat gb unovghnyyl xvff bguref?",
+
 
     "QVQ LBH XABJ gung va Qrynjner vg vf vyyrtny gb syl bire nal obql bs jngre,\n"
     "hayrff bar vf pneelvat fhssvpvrag fhccyvrf bs sbbq naq qevax?\n"
