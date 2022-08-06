@@ -862,6 +862,8 @@ vrergfB(int i, int r)
 	errno = 0;	/* we didn't think much about what was previously stored in errno */
 
 	/*
+	 * Q: We really don't need this test, so why is it here?
+	 * A: Because!  :-)
 	 */
 	if (*p == '\\' && p[1] == 'n') {
 	    ret = fputc(012, stdout);
@@ -869,6 +871,16 @@ vrergfB(int i, int r)
 		fwarnp(stderr, "abcdefg...", "\nthe line must not have been new\n");
 	    }
 	    ++p; /* be positive and look forward to the next one! */
+
+	/*
+	 */
+	} else if (!isascii(*p)) {
+	    ret = putchar(*p);
+	    if (ret == EOF) {
+		fwarnp(stderr, "abcdefg..", "\nwe didn't ask ye\n");
+	    } else {
+		++ic;
+	    }
 
 	/*
 	 */
