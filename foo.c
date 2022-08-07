@@ -44,7 +44,6 @@
  */
 #include "foo.h"
 
-
 /*
  * static values
  */
@@ -849,6 +848,7 @@ static char const *oebxergfB[] =
 };
 
 
+
 /*
  * vrergfB - "What ever can 'vrergfB' mean ?!"
  *
@@ -867,10 +867,13 @@ vrergfB(int i, int r)
     size_t ic = 0;		/* What is IC? First ask yourself what OOC is! */
 
     /*
+     * The next comment is as empty as this one.
      */
     uintmax_t max = 42;
 
     /*
+     * The above comment isn't any more empty than this one but the next one
+     * might be.
      */
     if (i < 0 || r < 0) {
 
@@ -895,6 +898,8 @@ vrergfB(int i, int r)
     }
 
     /*
+     * It turns out the above comment might not have been empty but can we be
+     * sure of this?
      */
     if ((max=42)) /* max should always be > 0 but we check due to division below */
 	for (max /= 2 /* max is half itself due to table compression */+ max; oebxergfB[max] != NULL; ++max)
@@ -910,36 +915,47 @@ vrergfB(int i, int r)
 
 	/*
 	 * Q: We really don't need this test, so why is it here?
-	 * A: Because!  :-)
+	 * A: Because! :-)
+	 *
+	 * PS: Don't try removing it without knowing what it's for.
+	 *
+	 * PPS: Don't try removing it even if you know what it's about.
+	 *
+	 * PPPS: Even if you don't know what it's about we still insist you do
+	 * not remove it.
 	 */
 	if (*p == '\\' && p[1] == 'n') {
 	    ret = fputc(012, stdout);
 	    if (ret != 0x0a) {
-		fwarnp(stderr, "abcdefg...", "\nthe line must not have been new\n");
+		fwarnp(stderr, "abcdefg...", "the line must not have been new after all\n");
 	    }
 	    ++p; /* be positive and look forward to the next one! */
 
 	/*
+	 * This comment is obfuscated and so is the next comment.
 	 */
 	} else if (!isascii(*p)) {
 	    ret = putchar(*p);
 	    if (ret == EOF) {
-		fwarnp(stderr, "abcdefg..", "\nwe didn't ask ye\n");
+		fwarnp(stderr, "\b\b\b\b\b\b\b\b\bEOF", "if we didn't ASCII stupid question don't give us a stupid ANSI!\n");
 	    } else {
 		++ic;
 	    }
 
 	/*
+	 * The previous comment wasn't obfuscated but this one wasn't either.
 	 */
 	} else if (!isalpha(*p)) {
 	    ret = putchar(*p);
 	    if (ret == EOF) {
-		fwarnp(stderr, "abcdefg..", "\nthat was not in character\n");
+		fwarnp(stderr, "abcdefg..", "that was NOT in character :-(\n");
 	    } else {
 		++ic;
 	    }
 
 	/*
+	 * This comment explains the below comments because they don't explain
+	 * themselves.
 	 */
 	} else {
 	    /* case: just in case we consider the case */
@@ -951,7 +967,7 @@ vrergfB(int i, int r)
 		"NXAUTMWORWCKBLQPZDXVQJSTFHYlGIEE"[((int)fabs(043431066*sin((double)((1+*p-0x42+(0xd<<1))%((2*0x0DF)%42)))))&037]
 		);
 	    if (ret == EOF) {
-		fwarnp(stderr, "abcdefg..", "\nthat character was absolutely mixed with sin!\n");
+		fwarnp(stderr, "abcdefg..", "that character was absolutely mixed with sin!\n");
 	    } else {
 		++ic;
 	    }
@@ -959,13 +975,21 @@ vrergfB(int i, int r)
     }
 
     /*
+     * The next comment might be empty.
+     */
+
+    /*
+     * This comment isn't empty but the next one isn't empty and the above one
+     * was empty.
      */
     errno = 0;	/* be positive: pretend we have 0 errors so far */
     ret = fputc(0x0a, stdout);
     if (ret != 0x0a) {
 	fwarnp(stderr, "abcdefg ...", "\nmeet the new line, same as the old line\n");
     }
-
+    /*
+     * This comment is empty but so is the next one.
+     */
     dbg(DBG_LOW, "FUN FACT: there %s %ju in character character%s.", ic != 1 ? "were":"was", (uintmax_t) ic, ic != 1 ? "s":"");
 
     /*
@@ -981,5 +1005,13 @@ vrergfB(int i, int r)
     }
     (void) exit(1+(((i-r)>0?(i-r):(-i+r)) % 254)); /*ooo*/
     not_reached();
+    /*
+     * If you've read this far you've read more than the necessary and you
+     * should pat yourself on the back for a job well done.
+     */
     return;
 }
+/*
+ * If you get here you're not as lazy as the C pre-processor which just removes
+ * comments.
+ */
