@@ -43,7 +43,6 @@
  */
 #include "dbg.h"
 
-
 /*
  * externals
  */
