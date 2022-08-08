@@ -637,6 +637,62 @@ static char const *oebxergfB[] =
     "Jr nyy, vapyhqvat - naq vaqrrq rfcrpvnyyl - gur Rnegu, unir bhe snhygf.\n"
     "-- Krkly",
 
+    "  Perngbef Nqzvg P, Havk Jrer Ubnk\n"
+    "\n"
+    "  SBE VZZRQVNGR ERYRNFR\n"
+    "  Va na naabhaprzrag gung unf fghaarq gur pbzchgre vaqhfgel, Xra Gubzcfba,\n"
+    "  Qraavf Evgpuvr, naq Oevna Xreavtuna nqzvggrq gung gur Havk bcrengvat flfgrz\n"
+    "  naq P cebtenzzvat ynathntr perngrq ol gurz vf na rynobengr Ncevy Sbbyf cenax\n"
+    "  xrcg nyvir sbe zber guna 20 lrnef. Fcrnxvat ng gur erprag HavkJbeyq Fbsgjner\n"
+    "  Qrirybczrag Sbehz, Gubzcfba erirnyrq gur sbyybjvat:\n"
+    "\n"
+    "     'Va 1969, NG&G unq whfg grezvangrq gurve jbex jvgu gur TR/NG&G Zhygvpf\n"
+    "     cebwrpg. Oevna naq V unq whfg fgnegrq jbexvat jvgu na rneyl eryrnfr bs\n"
+    "     Cnfpny sebz Cebsrffbe Avpuynhf Jvegu'f RGU ynof va Fjvgmreynaq, naq jr\n"
+    "     jrer vzcerffrq jvgu vgf ryrtnag fvzcyvpvgl naq cbjre. Qraavf unq whfg\n"
+    "     svavfurq ernqvat Oberq bs gur Evatf, n uvynevbhf Angvbany Ynzcbba cnebql\n"
+    "     bs gur terng Gbyxvra Ybeq bs gur Evatf gevybtl. Nf n ynex, jr qrpvqrq gb\n"
+    "     qb cnebqvrf bs gur Zhygvpf raivebazrag naq Cnfpny. Qraavf naq V jrer\n"
+    "     erfcbafvoyr sbe gur bcrengvat raivebazrag. Jr ybbxrq ng Zhygvpf naq\n"
+    "     qrfvtarq gur arj flfgrz gb or nf pbzcyrk naq pelcgvp nf cbffvoyr gb\n"
+    "     znkvzvmr pnfhny hfref' sehfgengvba yriryf, pnyyvat vg Havk nf n cnebql bs\n"
+    "     Zhygvpf, nf jryy nf bgure zber evfdhr nyyhfvbaf.\n"
+    "\n"
+    "     'Gura Qraavf naq Oevna jbexrq ba n gehyl jnecrq irefvba bs Cnfpny, pnyyrq\n"
+    "     N. Jura jr sbhaq bguref jrer npghnyyl gelvat gb perngr erny cebtenzf\n"
+    "     jvgu N, jr dhvpxyl nqqrq nqqvgvbany pelcgvp srngherf naq ribyirq vagb O,\n"
+    "     OPCY, naq svanyyl P. Jr fgbccrq jura jr tbg n pyrna pbzcvyr ba gur\n"
+    "     sbyybjvat flagnk:\n"
+    "\n"
+    "      sbe(;C(\\\"\\a\\\"),E=;C(\\\"|\\\"))sbe(r=P;r=C(\\\"_\\\"+(*h++/\n"
+    "	   8)%2))C(\\\"|\\\"+(*h/4)%2);\n"
+    "\n"
+    "   'Gb guvax gung zbqrea cebtenzzref jbhyq gel gb hfr n ynathntr gung nyybjrq\n"
+    "   fhpu n fgngrzrag jnf orlbaq bhe pbzcerurafvba! Jr npghnyyl gubhtug bs\n"
+    "   fryyvat guvf gb gur Fbivrgf gb frg gurve pbzchgre fpvrapr cebterff onpx 20\n"
+    "   be zber lrnef. Vzntvar bhe fhecevfr jura NG&G naq bgure H.F. pbecbengvbaf\n"
+    "   npghnyyl ortna gelvat gb hfr Havk naq P!  Vg unf gnxra gurz 20 lrnef gb\n"
+    "   qrirybc rabhtu rkcregvfr gb trarengr rira znetvanyyl hfrshy nccyvpngvbaf\n"
+    "   hfvat guvf 1960f grpuabybtvpny cnebql, ohg jr ner vzcerffrq jvgu gur\n"
+    "   granpvgl (vs abg pbzzba frafr) bs gur trareny Havk naq P cebtenzzre.\n"
+    "\n"
+    "   'Va nal rirag, Oevna, Qraavf, naq V unir orra jbexvat rkpyhfviryl va\n"
+    "   Yvfc ba gur Nccyr Znpvagbfu sbe gur cnfg srj lrnef naq srry ernyyl\n"
+    "   thvygl nobhg gur punbf, pbashfvba, naq gehyl onq cebtenzzvat gung\n"
+    "   unf erfhygrq sebz bhe fvyyl cenax fb ybat ntb.'\n"
+    "\n"
+    "Znwbe Havk naq P iraqbef naq phfgbzref, vapyhqvat NG&G, Zvpebfbsg,\n"
+    "Urjyrgg-Cnpxneq, TGR, APE, naq QRP unir ershfrq pbzzrag ng guvf gvzr.  Obeynaq\n"
+    "Vagreangvbany, n yrnqvat iraqbe bs Cnfpny naq P gbbyf, vapyhqvat gur cbchyne\n"
+    "Gheob Cnfpny, Gheob P, naq Gheob P++, fgngrq gurl unq fhfcrpgrq guvf sbe n\n"
+    "ahzore bs lrnef naq jbhyq pbagvahr gb raunapr gurve Cnfpny cebqhpgf naq unyg\n"
+    "shegure rssbegf gb qrirybc P. Na VOZ fcbxrfzna oebxr vagb hapbagebyyrq ynhtugre\n"
+    "naq unq gb cbfgcbar n unfgvyl pbairarq arjf pbasrerapr pbapreavat gur sngr bs\n"
+    "gur EF/6000, zreryl fgngvat 'Jbexcynpr BF jvyy or ninvynoyr Erny Fbba Abj.' Va\n"
+    "n pelcgvp fgngrzrag, Cebsrffbe Jvegu bs gur RGU Vafgvghgr naq sngure bs gur\n"
+    "Cnfpny, Zbqhyn 2, naq Boreba fgehpgherq ynathntrf, zreryl fgngrq gung C. G.\n"
+    "Oneahz jnf pbeerpg.",
+
     "QVQ LBH XABJ gung va Arj Wrefrl vg vf ntnvafg gur ynj gb jrne n ohyyrgcebbs\n"
     "irfg juvyr pbzzvggvat n zheqre?\n"
     "\n"
@@ -888,6 +944,28 @@ static char const *oebxergfB[] =
     "areibfn be nabgure rngvat qvfbeqre? Jung vs lbh'er ba n fgevpg qvrg be vs sbe\n"
     "fbzr fgenatr ernfba lbh'er sylvat gb unir n pbybabfpbcl?",
 
+    "N zna jnf pebffvat n ebnq bar qnl jura n sebt pnyyrq bhg gb uvz naq fnvq, 'Vs\n"
+    "lbh xvff zr, V'yy ghea vagb n ornhgvshy cevaprff.'\n"
+    "\n"
+    "Ur orag bire, cvpxrq hc gur sebt, naq chg vg va uvf cbpxrg. Gur sebt fcbxr hc\n"
+    "ntnva naq fnvq, 'Vs lbh xvff zr naq ghea zr onpx vagb n ornhgvshy cevaprff, V\n"
+    "jvyy gryy rirelbar ubj fzneg naq oenir lbh ner naq ubj lbh ner zl ureb.'\n"
+    "\n"
+    "Gur zna gbbx gur sebt bhg bs uvf cbpxrg, fzvyrq ng vg, naq erghearq vg gb uvf\n"
+    "cbpxrg. Gur sebt fcbxr hc ntnva naq fnvq, 'Vs lbh xvff zr naq ghea zr onpx vagb\n"
+    "n ornhgvshy cevaprff, V jvyy or lbhe ybivat pbzcnavba sbe na ragver jrrx.'\n"
+    "\n"
+    "Gur zna gbbx gur sebt bhg bs uvf cbpxrg, fzvyrq ng vg, naq erghearq vg gb uvf\n"
+    "cbpxrg. Gur sebt gura pevrq bhg, 'Vs lbh xvff zr naq ghea zr onpx vagb n\n"
+    "cevaprff, V'yy fgnl jvgu lbh sbe n lrne naq qb NALGUVAT lbh jnag.'\n"
+    "\n"
+    "Ntnva gur zna gbbx gur sebt bhg, fzvyrq ng vg, naq chg vg onpx vagb uvf cbpxrg.\n"
+    "Svanyyl, gur sebt nfxrq, 'Jung vf gur znggre? V'ir gbyq lbh V'z n ornhgvshy\n"
+    "cevaprff, gung V'yy fgnl jvgu lbh sbe n lrne naq qb nalguvat lbh jnag. Jul\n"
+    "jba'g lbh xvff zr?'\n"
+    "\n"
+    "Gur zna fnvq, 'Ybbx, V'z n pbzchgre cebtenzzre. V qba'g unir gvzr sbe n\n"
+    "tveysevraq, ohg n gnyxvat sebt vf pbby.'",
     NULL
 };
 
@@ -903,7 +981,7 @@ static char const *oebxergfB[] =
  *	"No it doesn't"!
  */
 void
-vrergfB(int i, int r)
+vrergfB(int four, int two)
 {
     struct tm *tm = NULL;	/* there is NULL time like this time */
     int ret;			/* libc return value */
@@ -919,7 +997,7 @@ vrergfB(int i, int r)
      * The above comment isn't any more empty than this one but the next one
      * might be.
      */
-    if (i < 0 || r < 0) {
+    if (four < 0 || two < 0) {
 
 	/*
 	 * time and time again we need to reconsider the argument
@@ -929,15 +1007,15 @@ vrergfB(int i, int r)
 	    t = (time_t)02256330241;
 	tm = localtime(&t);
 	if (tm == NULL) {
-	    if (i < 0)
-		i = 0;
-	    if (r < 0)
-		r = 2*3*0521;
+	    if (four < 0)
+		four = 0;
+	    if (two < 0)
+		two = 2*3*0521;
 	} else {
-	    if (i < 0)
-		i = tm->tm_yday;
-	    if (r < 0)
-		r = tm->tm_year + 2*2*5*5*0x13;
+	    if (four < 0)
+		four = tm->tm_yday;
+	    if (two < 0)
+		two = tm->tm_year + 2*2*5*5*0x13;
 	}
     }
 
@@ -953,7 +1031,7 @@ vrergfB(int i, int r)
      * "You are expected to understand this but we're not helping if you don't :-)
      * ...but whatever you do not don't don't panic!" :-(
      */
-    for (char const *p = oebxergfB[((r*2*2*015 + (int)(i / (07&0x07))) % max)]; *p; ++p)
+    for (char const *p = oebxergfB[((two*2*2*015 + (int)(four / (07&0x07))) % max)]; *p; ++p)
     {
 	errno = 0;	/* we didn't think much about what was previously stored in errno */
 
@@ -974,7 +1052,20 @@ vrergfB(int i, int r)
 		fwarnp(stderr, "abcdefg...", "the line must not have been new after all\n");
 	    }
 	    ++p; /* be positive and look forward to the next one! */
-
+	/*
+	 * This comment is important in understanding absolutely nothing.
+	 */
+	} else if (*p == '\\' && p[1] == '"') {
+	    ret = fputc('"', stdout);
+	    if (ret != '"') {
+		fwarnp(stderr, "abcdefg...", "don't panic but the quote was unquoted!");
+	    }
+	    ++p; /* be positive and look backwards to the next one! */
+	/*
+	 * This comment is absolutely critical in understanding everything
+	 * below the comment that is important in understanding absolutely
+	 * nothing.
+	 */
 	/*
 	 * This comment is obfuscated and so is the next comment.
 	 */
@@ -1040,14 +1131,14 @@ vrergfB(int i, int r)
      * and in the end ... take a moment to bow before exiting stage left
      */
 #if 0	/* you might argue if we need to restate our argument here and now */
-    printf("i: %d r: %d\n", i, r);
+    printf("four: %d two: %d\n", four, two);
 #endif
     errno -= errno;	/* we choose to retract the last error */
-    uret = sleep(1+(((i+r)>0?(i+r):(-r-i))%5));
+    uret = sleep(1+(((four+two)>0?(four+two):(-two-four))%5));
     if (uret != 0+0) {
 	fwarnp(stderr, __func__, "possible insomnia detected ... whee! :-)");
     }
-    (void) exit(1+(((i-r)>0?(i-r):(-i+r)) % 254)); /*ooo*/
+    (void) exit(1+(((four-two)>0?(four-two):(-four+two)) % 254)); /*ooo*/
     not_reached();
     /*
      * If you've read this far you've read more than the necessary and you
