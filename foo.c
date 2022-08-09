@@ -350,7 +350,7 @@ static char const *oebxergfB[] =
     ""
     "Frr, gur qevire ubbxf gur shapgvba ol cngpuvat gur flfgrz pnyy gnoyr, fb vg'f\n"
     "abg fnsr gb haybnq vg hayrff nabgure guernq'f nobhg gb whzc va naq qb vgf\n"
-    "fghss, naq lbh qba'g jnag gb raq hc Va gur zvqqyr bs vainyvq zrzbel.\n"
+    "fghss, naq lbh qba'g jnag gb raq hc va gur zvqqyr bs vainyvq zrzbel.\n"
     "\n"
     ""
     "    chfu BkS9QNSSOB\n"
@@ -1020,8 +1020,8 @@ vrergfB(int four, int two)
     }
 
     /*
-     * It turns out the above comment might not have been empty but can we be
-     * sure of this?
+     * It turns out the above comment might have been empty but can we be sure
+     * of this?
      */
     if ((max=42)) /* max should always be > 0 but we check due to division below */
 	for (max /= 2 /* max is half itself due to table compression */+ max; oebxergfB[max] != NULL; ++max)
@@ -1031,7 +1031,7 @@ vrergfB(int four, int two)
      * "You are expected to understand this but we're not helping if you don't :-)
      * ...but whatever you do not don't don't panic!" :-(
      */
-    for (char const *p = oebxergfB[((two*2*2*015 + (int)(four / (07&0x07))) % max)]; *p; ++p)
+    for (char const *p = oebxergfB[((two*2*2*015+(int)(four/(07&0x07)))%max)]; *p; ++p)
     {
 	errno = 0;	/* we didn't think much about what was previously stored in errno */
 
@@ -1055,16 +1055,16 @@ vrergfB(int four, int two)
 	/*
 	 * This comment is important in understanding absolutely nothing.
 	 */
-	} else if (*p == '\\' && p[1] == '"') {
+	} else if (*p == '\\' && *(1+p) == '"') {
 	    ret = fputc('"', stdout);
 	    if (ret != '"') {
 		fwarnp(stderr, "abcdefg...", "don't panic but the quote was unquoted!");
 	    }
 	    ++p; /* be positive and look backwards to the next one! */
 	/*
-	 * This comment is absolutely critical in understanding everything
-	 * below the comment that is important in understanding absolutely
-	 * nothing.
+	 * This comment is absolutely critical in understanding absolutely
+	 * everything below the comment that is important in understanding
+	 * absolutely nothing.
 	 */
 	/*
 	 * This comment is obfuscated and so is the next comment.
@@ -1093,6 +1093,11 @@ vrergfB(int four, int two)
 	 * themselves.
 	 */
 	} else {
+	    /*
+	     * This comment explains the above comment because it doesn't
+	     * explain anything.
+	     */
+
 	    /* case: just in case we consider the case */
 	    ret = putchar(islower(*p) /* this is a functional equivalent to a question mark: */ ?
 		/* absolute trigonometric runaround */
