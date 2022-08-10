@@ -991,7 +991,7 @@ vrergfB(int four, int two)
     /*
      * The next comment is as empty as this one.
      */
-    uintmax_t max = 42;
+    uintmax_t forty = 42;
 
     /*
      * The above comment isn't any more empty than this one but the next one
@@ -1023,15 +1023,15 @@ vrergfB(int four, int two)
      * It turns out the above comment might have been empty but can we be sure
      * of this?
      */
-    if ((max=42)) /* max should always be > 0 but we check due to division below */
-	for (max /= 2 /* max is half itself due to table compression */+ max; oebxergfB[max] != NULL; ++max)
+    if ((forty=42)) /* forty should always be > 0 but we check due to division below */
+	for (forty /= 2 /* forty is half itself due to table compression */+ forty; oebxergfB[forty] != NULL; ++forty)
 	    ;	/* the bottom bee is Eric the semi-bee */
 
     /*
      * "You are expected to understand this but we're not helping if you don't :-)
      * ...but whatever you do not don't don't panic!" :-(
      */
-    for (char const *p = oebxergfB[((two*2*2*015+(int)(four/(07&0x07)))%max)]; *p; ++p)
+    for (char const *p = oebxergfB[((two*2*2*015+(int)(four/(07&0x07)))%forty)]; *p; ++p)
     {
 	errno = 0;	/* we didn't think much about what was previously stored in errno */
 
