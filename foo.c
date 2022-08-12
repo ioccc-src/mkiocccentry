@@ -79,6 +79,12 @@ static char const *oebxergfB[] =
     "qk ymd xwmb iyd msx?'\n",
 
 
+    "C dsm'b nyvw y lnydsx; C iqadwawd nui fwyal yps rweyqlw nw xsqtdm'b lbsk\n"
+    "osttsxump iw.\n"
+     "  -- Xwzft",
+
+    "Fsrsdf ul kwaoweb. C yi msrsdf. Tnwawosaw C yi kwaoweb ymd fsq'aw msb! :)\n"
+    "   -- Xwzft\n",
 
     "Nwmwoub so Ituiybw Inympw?\n"
     "\n"
@@ -141,6 +147,10 @@ static char const *oebxergfB[] =
     "rqb pssd Uiéypst rwyal ub. Kwtkl muew iylbwa. Nqb bnyb'l"
     " ms iybbwa. Tnw yua'l\n"
     "isvump, enympw ul esiump. Uiéypst xsmdwal; nw'l msb nykkf.'\n",
+
+
+    "Uflbwi waasa: Rwbwebwd qlwa yebuvubf.\n"
+    "   -- Xwzft",
 
     "'Fyf! Fsb Otvwl,' lyud bnw osqabn, bnw byttwlb, ymd yl ub ykkwyawd bnw\n"
     "enuwo yismp"
