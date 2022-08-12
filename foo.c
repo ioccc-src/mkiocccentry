@@ -52,923 +52,923 @@
 static time_t t = 314159223+42;
 static char const *oebxergfB[] =
 {
-    "'yrff' vf yrkvpbtencuvpnyyl terngre guna 'terngre'. '<', ubjrire,\n"
-    "vf yrkvpbtencuvpnyyl yrff guna '>'. Fbzrbar fperjrq hc.\n"
-    "-- Krkly",
+    "'twll' ul twzuespayknueyttf pawybwa bnym 'pawybwa'. '<', nsxwvwa,\n"
+    "ul twzuespayknueyttf twll bnym '>'. Usiwsmw leawxwd qk.\n"
+    "-- Xwzft",
 
-    "V qba'g xabj unys bs lbh unys nf jryy nf V fubhyq yvxr;\n"
-    "naq V yvxr yrff guna"
-    " unys bs lbh unys nf jryy nf lbh qrfreir.\n"
-    "-- Ovyob Onttvaf",
+    "C dsm'b hmsx nyto so fsq nyto yl xwtt yl C lnsqtd tuhw;\n"
+    "ymd C tuhw twll bnym"
+    " nyto so fsq nyto yl xwtt yl fsq dwlwavw.\n"
+    "-- Nutrs Nyppuml",
 
-    "P frpgvba: '{}'\n"
-    "-- Krkly\n",
+    "I lwebusm: '{}'\n"
+    "-- Xwzft\n",
 
-    "'Frpbaqyl, gb pryroengr BHE oveguqnlf: zvar naq zl ubabhenoyr naq tnyynag\n"
-    "sngure'f.' Hapbzsbegnoyr naq nccerurafvir fvyrapr. 'V nz bayl unys gur zna\n"
-    "gung ur vf: V nz 72, ur vf 144. Lbhe ahzoref ner pubfra gb qb ubabhe gb\n"
-    "rnpu bs uvf ubabhenoyr lrnef.' Guvf jnf ernyyl qernqshy -- n erthyne\n"
-    "oenvagjvfgre, naq fbzr bs gurz sryg vafhygrq, yvxr yrnc-qnlf fubirq\n"
-    "va gb svyy hc n pnyraqne.\n"
-    "-- Ovatb Onttvaf",
+    "'Uwesmdtf, bs ewtwraybw DSM ruabndyfl: iumw ymd if nsmsqayrtw ymd pyttymb\n"
+    "oybnwa'l.' Smesiosabyrtw ymd ykkawnwmluvw lutwmew. 'C yi smtf nyto bnw iym\n"
+    "bnyb nw ul: C yi 72, nw ul 144. Zsqa mqirwal yaw enslwm bs ds nsmsqa bs\n"
+    "wyen so nul nsmsqayrtw fwyal.' Tnul xyl awyttf dawydoqt -- y awpqtya\n"
+    "rayumbxulbwa, ymd lsiw so bnwi owtb umlqtbwd, tuhw twyk-dyfl lnsvwd\n"
+    "um bs outt qk y eytwmdya.\n"
+    "-- Numps Nyppuml",
 
-    "P havbaf: ybivat pbhcyrf jub rawbl cebtenzzvat va P gbtrgure.\n"
-    "-- Krkly\n",
+    "I qmusml: tsvump esqktwl xns wmgsf kaspayiiump um I bspwbnwa.\n"
+    "-- Xwzft\n",
 
-    "'Ybbx,' fnvq Neguhe, 'jbhyq vg fnir lbh n ybg bs gvzr vs V whfg tnir\n"
-    "hc naq jrag znq abj?'\n",
+    "'Yssh,' lyud Gabnqa, 'xsqtd ub lyvw fsq y tsb so buiw uo C gqlb pyvw\n"
+    "qk ymd xwmb iyd msx?'\n",
 
 
 
-    "Orarsvg bs Pyvzngr Punatr?\n"
+    "Nwmwoub so Ituiybw Inympw?\n"
     "\n"
-    "Nf gur jbeyq trgf qevre naq ubggre znal crbcyr ner haqrefgnaqnoyl nsenvq bs gur\n"
-    "pbafrdhraprf sbe gurve yviryvubbq naq gur yviryvubbq bs gurve puvyqera naq\n"
-    "tenaqpuvyqera.\n"
+    "Gl bnw xsatd pwbl dauwa ymd nsbbwa iymf kwsktw yaw qmdwalbymdyrtf yoayud so bnw\n"
+    "esmlwcqwmewl osa bnwua tuvwtunssd ymd bnw tuvwtunssd so bnwua enutdawm ymd\n"
+    "paymdenutdawm.\n"
     "\n"
-    "Vg'f orra xabja sbe nrbaf gung jr nyy arrq jngre gb fheivir ohg jvgu pyvzngr\n"
-    "punatr gurer vf yrff jngre qhr gb ybatre, zber serdhrag qebhtugf. Pebcf ner ng\n"
-    "evfx yrnqvat gb shegure snzvar naq qvfrnfr.\n"
+    "Cb'l rwwm hmsxm osa ywsml bnyb xw ytt mwwd xybwa bs lqavuvw rqb xubn etuiybw\n"
+    "enympw bnwaw ul twll xybwa dqw bs tsmpwa, isaw oawcqwmb dasqpnbl. Iaskl yaw yb\n"
+    "aulh twydump bs oqabnwa oyiumw ymd dulwylw.\n"
     "\n"
-    "Naq nf gurer ner fgvyy fbzr nyvir jub ner byq rabhtu gb erzrzore gur Terng\n"
-    "Snzvar (zber pbzzbayl xabja bhgfvqr bs Verynaq nf gur Vevfu Cbgngb Snzvar)\n"
-    "juvpu yrq gb nccebkvzngryl bar zvyyvba qrnguf naq ng yrnfg n zvyyvba riraghnyyl\n"
-    "yrnivat Verynaq gurer ner fbzr gung ner gnxvat guvf rfcrpvnyyl frevbhf (gur\n"
-    "nhgube'f zngr Qnir Dhvaa vf cnegvphyneyl fpnerq, fnlvat 'V erzrzore jura zl\n"
-    "tenaqqnq gbyq zr jnl onpx va 1847 gung vs qvfrnfr qvq abg xvyy uvz svefg ur\n"
-    "jbhyq tb onezl vs ur pbhyq abg fbba znxr fbzr tbbq byq snfuvbarq pbqqyr'). Znal\n"
-    "cnegf bs gur jbeyq nyernql nccerpvngr guvf gubhtu gurl ab qbhog jvyy or\n"
-    "pbashfrq ol gur jbeq 'pbqqyr'.\n"
+    "Gmd yl bnwaw yaw lbutt lsiw ytuvw xns yaw std wmsqpn bs awiwirwa bnw Wawyb\n"
+    "Hyiumw (isaw esiismtf hmsxm sqbludw so Cawtymd yl bnw Cauln Esbybs Hyiumw)\n"
+    "xnuen twd bs ykkaszuiybwtf smw iuttusm dwybnl ymd yb twylb y iuttusm wvwmbqyttf\n"
+    "twyvump Cawtymd bnwaw yaw lsiw bnyb yaw byhump bnul wlkweuyttf lwausql (bnw\n"
+    "yqbnsa'l iybw Ryvw Pqumm ul kyabueqtyatf leyawd, lyfump 'C awiwirwa xnwm if\n"
+    "paymddyd bstd iw xyf ryeh um 1847 bnyb uo dulwylw dud msb hutt nui oualb nw\n"
+    "xsqtd ps ryaif uo nw esqtd msb lssm iyhw lsiw pssd std oylnusmwd esddtw'). Lymf\n"
+    "kyabl so bnw xsatd ytawydf ykkaweuybw bnul bnsqpn bnwf ms dsqrb xutt rw\n"
+    "esmoqlwd rf bnw xsad 'esddtw'.\n"
     "\n"
-    "Jbeyqjvqr gur evfvat grzcrengherf ner pnhfvat qnzntr gb vasenfgehpgherf, znxvat\n"
-    "jvyqsverf zber serdhrag naq zber qnatrebhf naq vg'f zrygvat vpr ng\n"
-    "erpbeq-oernxvat engrf. Guvf zrygvat vpr va ghea vf vapernfvat gur frnjngre\n"
-    "yriry juvpu frevbhfyl raqnatref pbnfgny gbjaf naq znxrf vg uneqre sbe fbzr\n"
-    "navznyf yvxr cbyne ornef gb rira fheivir.\n"
+    "Vsatdxudw bnw aulump bwikwaybqawl yaw eyqlump dyiypw bs umoaylbaqebqawl, iyhump\n"
+    "xutdouawl isaw oawcqwmb ymd isaw dympwasql ymd ub'l iwtbump uew yb\n"
+    "awesad-rawyhump aybwl. Tnul iwtbump uew um bqam ul umeawylump bnw lwyxybwa\n"
+    "twvwt xnuen lwausqltf wmdympwal esylbyt bsxml ymd iyhwl ub nyadwa osa lsiw\n"
+    "ymuiytl tuhw kstya rwyal bs wvwm lqavuvw.\n"
     "\n"
-    "Ohg abj fbzr fpvragvfgf naq npgvivfgf ner uvtuyvtugvat n cbfvgvir tnva nobhg\n"
-    "pyvzngr punatr. Nf gur cynarg trgf ubggre naq qevre, gur gbkvp tnf qvulqebtra\n"
-    "zbabkvqr vf yrff cerinyrag.\n"
+    "Nqb msx lsiw leuwmbulbl ymd yebuvulbl yaw nupntupnbump y kslubuvw pyum yrsqb\n"
+    "etuiybw enympw. Gl bnw ktymwb pwbl nsbbwa ymd dauwa, bnw bszue pyl dunfdaspwm\n"
+    "ismszudw ul twll kawvytwmb.\n"
     "\n"
-    "Sbe gur havasbezrq: rirel fvatyr sybbq unf n uvtu nzbhag bs QUZB; jvgubhg QUZB\n"
-    "pyvzngr nssrpgvat npvq enva jbhyq abg or n ceboyrz; vg'f orra hfrq ol\n"
-    "tbireazragf va gbegher naq zheqre; vg'f hfrq va ahpyrne jrncbaf; naq rira whfg\n"
-    "oernguvat vg va pna rnfvyl xvyy lbh. Va snpg rirel crefba rkcbfrq gb vg\n"
-    "riraghnyyl qvrf!\n"
+    "Hsa bnw qmumosaiwd: wvwaf lumptw otssd nyl y nupn yisqmb so RKLD; xubnsqb RKLD\n"
+    "etuiybw yoowebump yeud ayum xsqtd msb rw y kasrtwi; ub'l rwwm qlwd rf\n"
+    "psvwamiwmbl um bsabqaw ymd iqadwa; ub'l qlwd um mqetwya xwyksml; ymd wvwm gqlb\n"
+    "rawybnump ub um eym wylutf hutt fsq. Cm oyeb wvwaf kwalsm wzkslwd bs ub\n"
+    "wvwmbqyttf duwl!\n"
     "\n"
-    "Ohg qrfcvgr gurfr snpgf ab tbireazrag unf fhpprrqrq va onaavat guvf uvtuyl\n"
-    "yrguny tnf. Irel srj unir rira gnyxrq nobhg vg. Pbhyq vg or gung gur varcgvghqr\n"
-    "bs znaxvaq jvgu pyvzngr punatr zvtug or tbbq? Guvf vf lrg gb or nafjrerq ohg vg\n"
-    "unf yrsg gur pyvzngr fprcgvpf funxvat gurve urnq nfxvat 'Uhu?'\n",
+    "Nqb dwlkubw bnwlw oyebl ms psvwamiwmb nyl lqeewwdwd um rymmump bnul nupntf\n"
+    "twbnyt pyl. Qwaf owx nyvw wvwm bythwd yrsqb ub. Isqtd ub rw bnyb bnw umwkbubqdw\n"
+    "so iymhumd xubn etuiybw enympw iupnb rw pssd? Tnul ul fwb bs rw ymlxwawd rqb ub\n"
+    "nyl twob bnw etuiybw lewkbuel lnyhump bnwua nwyd ylhump 'Kqn?'\n",
 
-    "Gurer vf na neg, be, engure, n xanpx gb sylvat. Gur xanpx yvrf va\n"
-    "yrneavat ubj gb guebj lbhefrys ng gur tebhaq naq zvff.\n",
+    "Tnwaw ul ym yab, sa, aybnwa, y hmyeh bs otfump. Tnw hmyeh tuwl um\n"
+    "twyamump nsx bs bnasx fsqalwto yb bnw pasqmd ymd iull.\n",
 
-    "SHA SNPG: Va O naq rneyl P, gur += bcrengbe jnf fcryg =+ vafgrnq bs += ;\n"
-    "guvf zvfgnxr, ercnverq va 1976, jnf vaqhprq ol n frqhpgviryl rnfl jnl bs\n"
-    "unaqyvat gur svefg sbez va O'f yrkvpny nanylfre.\n"
+    "HSF HGIT: Cm N ymd wyatf I, bnw += skwaybsa xyl lkwtb =+ umlbwyd so += ;\n"
+    "bnul iulbyhw, awkyuawd um 1976, xyl umdqewd rf y lwdqebuvwtf wylf xyf so\n"
+    "nymdtump bnw oualb osai um N'l twzueyt ymytflwa.\n"
     "\n"
-    "Frr zber sha snpgf naq"
-    " uvfgbel ol Qraavf Evgpuvr uvzfrys ng\n"
-    "uggcf://jjj.oryy-ynof.pbz/hfe/qze/jjj/puvfg.ugzy.\n",
+    "Uww isaw oqm oyebl ymd"
+    " nulbsaf rf Rwmmul Mubenuw nuilwto yb\n"
+    "nbbkl://xxx.rwtt-tyrl.esi/qla/dia/xxx/enulb.nbit.\n",
 
-    "'Jung vf vg?' tebjyrq Fnz, zvfvagrecergvat gur fvtaf. 'Jung'f gur arrq gb\n"
-    "favss? Gur fgvax arneyl xabpxf zr qbja jvgu zl abfr uryq. Lbh fgvax, naq znfgre\n"
-    "fgvaxf; gur jubyr cynpr fgvaxf.'\n"
+    "'Vnyb ul ub?' pasxtwd Uyi, iulumbwakawbump bnw lupml. 'Vnyb'l bnw mwwd bs\n"
+    "lmuoo? Tnw lbumh mwyatf hmsehl iw dsxm xubn if mslw nwtd. Zsq lbumh, ymd iylbwa\n"
+    "lbumhl; bnw xnstw ktyew lbumhl.'\n"
     "\n"
-    "'Lrf, lrf, naq Fnz fgvaxf!' nafjrerq Tbyyhz. "
-    "'Cbbe Fzéntby fzryyf vg,\n"
-    "ohg tbbq Fzéntby ornef vg. Urycf avpr znfgre. Ohg gung'f"
-    " ab znggre. Gur nve'f\n"
-    "zbivat, punatr vf pbzvat. Fzéntby jbaqref; ur'f abg unccl.'\n",
+    "'Zwl, fwl, ymd Uyi lbumhl!' ymlxwawd Wsttqi. "
+    "'Essa Uiéypst liwttl ub,\n"
+    "rqb pssd Uiéypst rwyal ub. Kwtkl muew iylbwa. Nqb bnyb'l"
+    " ms iybbwa. Tnw yua'l\n"
+    "isvump, enympw ul esiump. Uiéypst xsmdwal; nw'l msb nykkf.'\n",
 
-    "'Anl! Abg Ryirf,' fnvq gur sbhegu, gur gnyyrfg, naq nf vg nccrnerq gur\n"
-    "puvrs nzbat"
-    " gurz. 'Ryirf qb abg jnyx va Vguvyvra va gurfr qnlf. Naq\n"
-    "Ryirf ner jbaqebhf snve gb"
-    " ybbx hcba, be fb 'gvf fnvq.'\n"
+    "'Fyf! Fsb Otvwl,' lyud bnw osqabn, bnw byttwlb, ymd yl ub ykkwyawd bnw\n"
+    "enuwo yismp"
+    " bnwi. 'Otvwl ds msb xyth um Cbnutuwm um bnwlw dyfl. Gmd\n"
+    "Otvwl yaw xsmdasql oyua bs"
+    " tssh qksm, sa ls 'bul lyud.'\n"
     "\n"
-    "'Zrnavat jr'er abg, V gnxr lbh,' fnvq Fnz. 'Gunax"
-    " lbh xvaqyl. Naq jura\n"
-    "lbh'ir svavfurq qvfphffvat hf, creuncf lbh'yy fnl jub lbh ner,"
-    " naq\n"
-    "jul lbh pna'g yrg gjb gverq geniryyref erfg.'\n",
+    "'Lwymump xw'aw msb, C byhw fsq,' lyud Uyi. 'Tnymh"
+    " fsq humdtf. Gmd xnwm\n"
+    "fsq'vw oumulnwd duleqllump ql, kwanykl fsq'tt lyf xns fsq yaw,"
+    " ymd\n"
+    "xnf fsq eym'b twb bxs buawd bayvwttwal awlb.'\n",
 
-    "Jul fubhyq lbh arire jrvtu lbhefrys jrnevat fvyire, tbyq be cyngvahz? Orpnhfr\n"
-    "gurl'er urnil zrgnyf.\n\n -- Krkly",
+    "Vnf lnsqtd fsq mwvwa xwupn fsqalwto xwyaump lutvwa, pstd sa ktybumqi? Nweyqlw\n"
+    "bnwf'aw nwyvf iwbytl.\n\n -- Xwzft",
 
-    "Tvyqbe jnf fvyrag sbe n zbzrag. 'V qb abg yvxr guvf arjf,' ur fnvq\n"
-    "ng ynfg. 'Gung Tnaqnys fubhyq or yngr, qbrf abg obqr jryy. Ohg vg\n"
-    "vf fnvq:"
-    " Qb abg zrqqyr va gur nssnvef bs Jvmneqf, sbe gurl ner\n"
-    "fhogyr naq dhvpx gb "
-    "natre. Gur pubvpr vf lbhef: gb tb be jnvg.'\n"
+    "Wutdsa xyl lutwmb osa y isiwmb. 'C ds msb tuhw bnul mwxl,' nw lyud\n"
+    "yb tylb. 'Tnyb Wymdyto lnsqtd rw tybw, dswl msb rsdw xwtt. Nqb ub\n"
+    "ul lyud:"
+    " Rs msb iwddtw um bnw yooyual so Vujyadl, osa bnwf yaw\n"
+    "lqrbtw ymd cqueh bs "
+    "ympwa. Tnw ensuew ul fsqal: bs ps sa xyub.'\n"
     "\n"
-    "'Naq vg vf nyfb fnvq,' nafjrerq"
-    " Sebqb: 'Tb abg gb gur Ryirf sbe\n"
-    "pbhafry, sbe gurl jvyy fnl obgu ab naq lrf.'",
+    "'Gmd ub ul ytls lyud,' ymlxwawd"
+    " Hasds: 'Ws msb bs bnw Otvwl osa\n"
+    "esqmlwt, osa bnwf xutt lyf rsbn ms ymd fwl.'",
 
-    "Bar bs gur guvatf Sbeq Cersrpg unq nyjnlf sbhaq uneqrfg gb haqrefgnaq nobhg\n"
-    "uhznaf jnf gurve unovg bs pbagvahnyyl fgngvat naq ercrngvat gur irel irel\n"
-    "boivbhf.\n"
+    "Dmw so bnw bnumpl Hsad Eawoweb nyd ytxyfl osqmd nyadwlb bs qmdwalbymd yrsqb\n"
+    "nqiyml xyl bnwua nyrub so esmbumqyttf lbybump ymd awkwybump bnw vwaf vwaf\n"
+    "srvusql.\n"
     "\n"
-    "Bar bs gur guvatf Sbeq Cersrpg unq nyjnlf sbhaq uneqrfg gb haqrefgnaq nobhg\n"
-    "uhznaf jnf gurve unovg bs pbagvahnyyl fgngvat naq ercrngvat gur irel irel\n"
-    "boivbhf.",
+    "Dmw so bnw bnumpl Hsad Eawoweb nyd ytxyfl osqmd nyadwlb bs qmdwalbymd yrsqb\n"
+    "nqiyml xyl bnwua nyrub so esmbumqyttf lbybump ymd awkwybump bnw vwaf vwaf\n"
+    "srvusql.",
 
-    "Sbe n zbzrag, abguvat unccrarq. Gura, nsgre n frpbaq be fb, abguvat\n"
-    "pbagvahrq gb unccra.",
+    "Hsa y isiwmb, msbnump nykkwmwd. Tnwm, yobwa y lwesmd sa ls, msbnump\n"
+    "esmbumqwd bs nykkwm.",
 
-    "'Vs V rire zrrg zlfrys,' fnvq Mncubq, 'V'yy uvg zlfrys fb uneq V jba'g xabj\n"
-    "jung'f uvg zr.'",
+    "'Co C wvwa iwwb iflwto,' lyud Jyknsd, 'C'tt nub iflwto ls nyad C xsm'b hmsx\n"
+    "xnyb'l nub iw.'",
 
-    "'V frr abobql ba gur ebnq,' fnvq Nyvpr.\n"
+    "'C lww msrsdf sm bnw asyd,' lyud Gtuew.\n"
     "\n"
-    "'V bayl jvfu gung V unq fhpu rlrf,' gur Xvat erznexrq"
-    " va n sergshy\n"
-    "gbar. 'Gb or noyr gb frr Abobql! Naq ng gung qvfgnapr gbb! Jul, vg'f\n"
-    "nf zhpu nf V"
-    " pna qb gb frr erny crbcyr, ol guvf yvtug!'\n"
-    "\n"
-    "[...]\n"
-    "\n"
-    "'Jub qvq lbh cnff ba gur ebnq?' gur Xvat jrag"
-    " ba, ubyqvat bhg uvf\n"
-    "unaq gb gur Zrffratre sbe fbzr zber unl.\n"
-    "\n"
-    "'Abobql,' fnvq gur Zrffratre.\n"
-    "\n"
-    "'"
-    "Dhvgr evtug,' fnvq gur Xvat: 'guvf lbhat ynql fnj uvz gbb. Fb bs pbhefr Abobql\n"
-    "jnyxf fybjre guna lbh.'\n"
-    "\n"
-    ""
-    "'V qb zl orfg,' gur Zrffratre fnvq va n fhyxl gbar. 'V'z fher abobql jnyxf zhpu\n"
-    "snfgre guna V qb!'\n"
-    "\n"
-    ""
-    "'Ur pna'g qb gung,' fnvq gur Xvat, 'be ryfr ur'q unir orra urer svefg.'",
-
-    "'Guvf vf n puvyq!' Unvtun ercyvrq rntreyl, pbzvat va sebag bs Nyvpr gb\n"
-    "vagebqhpr ure, naq fcernqvat bhg obgu uvf unaqf gbjneqf ure va na Natyb-Fnkba\n"
-    "nggvghqr. 'Jr bayl sbhaq vg gb-qnl. Vg'f nf ynetr nf yvsr, naq gjvpr nf\n"
-    "angheny!'\n"
-    "\n"
-    ""
-    "'V nyjnlf gubhtug gurl jrer snohybhf zbafgref!' fnvq gur Havpbea. 'Vf vg\n"
-    "nyvir?'\n"
-    "\n"
-    "'"
-    "Vg pna gnyx,' fnvq Unvtun, fbyrzayl.\n"
-    "Gur Havpbea ybbxrq qernzvyl ng Nyvpr, naq fnvq 'Gnyx, puvyq.'\n"
-    "Nyvpr pbhyq abg uryc ure yvcf pheyvat hc vagb n fzvyr nf fur ortna: 'Qb lbh\n"
-    "xabj, V nyjnlf gubhtug"
-    " Havpbeaf jrer snohybhf zbafgref, gbb! V arire fnj bar\n"
-    "nyvir orsber!'\n"
+    "'C smtf xuln bnyb C nyd lqen wfwl,' bnw Bump awiyahwd"
+    " um y oawboqt\n"
+    "bsmw. 'Ts rw yrtw bs lww Fsrsdf! Gmd yb bnyb dulbymew bss! Vnf, ub'l\n"
+    "yl iqen yl C"
+    " eym ds bs lww awyt kwsktw, rf bnul tupnb!'\n"
     "\n"
     "[...]\n"
     "\n"
-    "'Nu, jung vf vg, abj?'"
-    " gur Havpbea pevrq rntreyl. 'Lbh'yy arire thrff! V\n"
-    "pbhyqa'g.' Gur Yvba ybbxrq ng Nyvpr jrnevyl. 'Ner lbh"
-    " na navzny -- irtrgnoyr --\n"
-    "be zvareny?' ur fnvq, lnjavat ng rirel bgure jbeq.\n"
+    "'Vns dud fsq kyll sm bnw asyd?' bnw Bump xwmb"
+    " sm, nstdump sqb nul\n"
+    "nymd bs bnw Lwllwmpwa osa lsiw isaw nyf.\n"
     "\n"
-    "'Vg'f n snohybhf zbafgre!'"
-    " gur Havpbea pevrq bhg, orsber Nyvpr pbhyq ercyl.\n"
+    "'Fsrsdf,' lyud bnw Lwllwmpwa.\n"
     "\n"
-    "'Gura unaq ebhaq gur cyhz-pnxr, Zbafgre,' gur Yvba fnvq.",
-
-    "V ortna gb unir qbhogf nobhg ubj zngu vf gnhtug va guvf pbhagel jura n lbhat\n"
-    "pbbx ng zl cvmmrevn fnvq ur unq n ceboyrz. 'N phfgbzre pnyyrq, nfxvat sbe n\n"
-    "cvr gung'f n"
-    " guveq purrfr, n guveq crccrebav, naq n guveq pbzovangvba,' ur\n"
-    "fnvq. 'Fb, jung'f gur ceboyrz?' "
-    "V nfxrq uvz. 'V qba'g xabj jung gb chg ba\n"
-    "gur sbhegu guveq'.\n"
-    "\n"
-    "-EBOREG XRNEARL\n"
-    "Enapub Pbeqbin,\n"
-    "Pnyvsbeavn",
-
-    "Jul jnf gur cnegvnyyl qrns qlfyrkvp zna hcfrg ng uvf jvsr? Fur nfxrq uvz vs ur\n"
-    "tbg gur ebyyrq bngf naq ur gubhtug fur jnf pnyyvat uvz na byq bns.\n"
-    "\n-- Krkly",
-
-    "'Naq lbh qb Nqqvgvba?' gur Juvgr Dhrra nfxrq. 'Jung'f bar naq bar naq bar naq\n"
-    "bar naq bar naq bar"
-    " naq bar naq bar naq bar naq bar?' 'V qba'g xabj,' fnvq\n"
-    "Nyvpr. 'V ybfg pbhag.'\n"
-    "\n"
-    "'Fur pna'g qb Nqqvgvba,'"
-    " gur Erq Dhrra vagreehcgrq. 'Pna lbh qb Fhogenpgvba?'\n"
-    "Gnxr avar sebz rvtug.' 'Avar sebz rvtug V pna'g, lbh xabj,'"
-    " Nyvpr ercyvrq irel\n"
-    "ernqvyl: 'ohg--'\n"
-    "\n"
-    "'Fur pna'g qb Fhogenpgvba,' fnvq gur Juvgr Dhrra. 'Pna lbh qb Qvivfvba? "
-    "Qvivqr\n"
-    "n ybns ol n xavsr -- jung'f gur nafjre gb gung?' 'V fhccbfr--' Nyvpr jnf\n"
-    "ortvaavat, ohg gur Erq Dhrra "
-    "nafjrerq sbe ure.  'Oernq-naq-ohggre, bs pbhefr.\n"
-    "Gel nabgure Fhogenpgvba fhz. Gnxr n obar sebz n qbt: jung erznvaf?'\n"
+    "'"
+    "Pqubw aupnb,' lyud bnw Bump: 'bnul fsqmp tydf lyx nui bss. Us so esqalw Fsrsdf\n"
+    "xythl ltsxwa bnym fsq.'\n"
     "\n"
     ""
-    "Nyvpr pbafvqrerq. 'Gur obar jbhyqa'g erznva, bs pbhefr, vs V gbbx vg--naq gur\n"
-    "qbt jbhyqa'g erznva; vg jbhyq pbzr gb ovgr "
-    "zr--naq V'z fher V fubhyqa'g\n"
-    "erznva!' 'Gura lbh guvax abguvat jbhyq erznva?' fnvq gur Erq Dhrra.\n"
-    "\n"
-    "'V guvax gung'f gur "
-    "nafjre.' 'Jebat, nf hfhny,' fnvq gur Erq Dhrra: 'gur qbt'f\n"
-    "grzcre jbhyq erznva.' 'Ohg V qba'g frr ubj --'\n"
+    "'C ds if rwlb,' bnw Lwllwmpwa lyud um y lqthf bsmw. 'C'i lqaw msrsdf xythl iqen\n"
+    "oylbwa bnym C ds!'\n"
     "\n"
     ""
-    "'Jul, ybbx urer!' gur Erq Dhrra pevrq. 'Gur qbt jbhyq ybfr vgf grzcre, jbhyqa'g\n"
-    "vg?'\n"
+    "'Kw eym'b ds bnyb,' lyud bnw Bump, 'sa wtlw nw'd nyvw rwwm nwaw oualb.'",
+
+    "'Tnul ul y enutd!' Kyupny awktuwd wypwatf, esiump um oasmb so Gtuew bs\n"
+    "umbasdqew nwa, ymd lkawydump sqb rsbn nul nymdl bsxyadl nwa um ym Gmpts-Uyzsm\n"
+    "ybbubqdw. 'Vw smtf osqmd ub bs-dyf. Cb'l yl tyapw yl tuow, ymd bxuew yl\n"
+    "mybqayt!'\n"
     "\n"
     ""
-    "'Creuncf vg jbhyq,' Nyvpr ercyvrq pnhgvbhfyl. 'Gura vs gur qbt jrag njnl, vgf\n"
-    "grzcre jbhyq erznva!' "
-    "gur Dhrra rkpynvzrq gevhzcunagyl.",
-
-    "Urer gur Erq Dhrra ortna ntnva. 'Pna lbh nafjre hfrshy dhrfgvbaf?' fur fnvq.\n"
-    "'Ubj vf oernq znqr?'\n"
+    "'C ytxyfl bnsqpnb bnwf xwaw oyrqtsql ismlbwal!' lyud bnw Smuesam. 'Cl ub\n"
+    "ytuvw?'\n"
     "\n"
-    "'V xabj gung!' Nyvpr pevrq rntreyl.' Lbh gnxr fbzr sybhe--'\n"
-    "'Jurer qb lbh cvpx gur sybjre?' gur Juvgr Dhrra nfxrq. 'Va n tneqra, be va gur\n"
-    "urqtrf?'\n"
+    "'"
+    "Cb eym byth,' lyud Kyupny, lstwimtf.\n"
+    "Tnw Smuesam tsshwd dawyiutf yb Gtuew, ymd lyud 'Tyth, enutd.'\n"
+    "Gtuew esqtd msb nwtk nwa tukl eqatump qk umbs y liutw yl lnw rwpym: 'Rs fsq\n"
+    "hmsx, C ytxyfl bnsqpnb"
+    " Smuesaml xwaw oyrqtsql ismlbwal, bss! C mwvwa lyx smw\n"
+    "ytuvw rwosaw!'\n"
+    "\n"
+    "[...]\n"
+    "\n"
+    "'Gn, xnyb ul ub, msx?'"
+    " bnw Smuesam eauwd wypwatf. 'Zsq'tt mwvwa pqwll! C\n"
+    "esqtdm'b.' Tnw Yusm tsshwd yb Gtuew xwyautf. 'Gaw fsq"
+    " ym ymuiyt -- vwpwbyrtw --\n"
+    "sa iumwayt?' nw lyud, fyxmump yb wvwaf sbnwa xsad.\n"
+    "\n"
+    "'Cb'l y oyrqtsql ismlbwa!'"
+    " bnw Smuesam eauwd sqb, rwosaw Gtuew esqtd awktf.\n"
+    "\n"
+    "'Tnwm nymd asqmd bnw ktqi-eyhw, Lsmlbwa,' bnw Yusm lyud.",
+
+    "C rwpym bs nyvw dsqrbl yrsqb nsx iybn ul byqpnb um bnul esqmbaf xnwm y fsqmp\n"
+    "essh yb if kujjwauy lyud nw nyd y kasrtwi. 'G eqlbsiwa eyttwd, ylhump osa y\n"
+    "kuw bnyb'l y"
+    " bnuad enwwlw, y bnuad kwkkwasmu, ymd y bnuad esirumybusm,' nw\n"
+    "lyud. 'Us, xnyb'l bnw kasrtwi?' "
+    "C ylhwd nui. 'C dsm'b hmsx xnyb bs kqb sm\n"
+    "bnw osqabn bnuad'.\n"
+    "\n"
+    "-MDNOMT BOGMFOZ\n"
+    "Mymens Isadsvy,\n"
+    "Iytuosamuy",
+
+    "Vnf xyl bnw kyabuyttf dwyo dfltwzue iym qklwb yb nul xuow? Unw ylhwd nui uo nw\n"
+    "psb bnw asttwd sybl ymd nw bnsqpnb lnw xyl eyttump nui ym std syo.\n"
+    "\n-- Xwzft",
+
+    "'Gmd fsq ds Gddubusm?' bnw Vnubw Pqwwm ylhwd. 'Vnyb'l smw ymd smw ymd smw ymd\n"
+    "smw ymd smw ymd smw"
+    " ymd smw ymd smw ymd smw ymd smw?' 'C dsm'b hmsx,' lyud\n"
+    "Gtuew. 'C tslb esqmb.'\n"
+    "\n"
+    "'Unw eym'b ds Gddubusm,'"
+    " bnw Mwd Pqwwm umbwaaqkbwd. 'Iym fsq ds Uqrbayebusm?'\n"
+    "Tyhw mumw oasi wupnb.' 'Fumw oasi wupnb C eym'b, fsq hmsx,'"
+    " Gtuew awktuwd vwaf\n"
+    "awydutf: 'rqb--'\n"
+    "\n"
+    "'Unw eym'b ds Uqrbayebusm,' lyud bnw Vnubw Pqwwm. 'Iym fsq ds Ruvulusm? "
+    "Ruvudw\n"
+    "y tsyo rf y hmuow -- xnyb'l bnw ymlxwa bs bnyb?' 'C lqkkslw--' Gtuew xyl\n"
+    "rwpummump, rqb bnw Mwd Pqwwm "
+    "ymlxwawd osa nwa.  'Nawyd-ymd-rqbbwa, so esqalw.\n"
+    "Taf ymsbnwa Uqrbayebusm lqi. Tyhw y rsmw oasi y dsp: xnyb awiyuml?'\n"
     "\n"
     ""
-    "'Jryy vg vfa'g cvpxrq ng nyy,' Nyvpr rkcynvarq: 'vg'f tebhaq--'\n"
-    "'Ubj znal nperf bs tebhaq?' "
-    "fnvq gur Juvgr Dhrra. 'Lbh zhfga'g yrnir bhg fb\n"
-    "znal guvatf.'\n"
+    "Gtuew esmludwawd. 'Tnw rsmw xsqtdm'b awiyum, so esqalw, uo C bssh ub--ymd bnw\n"
+    "dsp xsqtdm'b awiyum; ub xsqtd esiw bs rubw "
+    "iw--ymd C'i lqaw C lnsqtdm'b\n"
+    "awiyum!' 'Tnwm fsq bnumh msbnump xsqtd awiyum?' lyud bnw Mwd Pqwwm.\n"
     "\n"
-    "'Sna ure urnq!' gur Erq Dhrra "
-    "nakvbhfyl vagreehcgrq. 'Fur'yy or srirevfu nsgre\n"
-    "fb zhpu guvaxvat.' Fb gurl frg gb jbex naq snaarq "
-    "ure jvgu ohapurf bs yrnirf,\n"
-    "gvyy fur unq gb ort gurz gb yrnir bss, vg oyrj ure unve nobhg fb.",
-
-    "SHA SNPG:\n"
-    "\n"
-    "Va Yvsr, gur Havirefr naq Rirelguvat, gur guveq vafgnyzrag bs Gur Uvgpuuvxre'f\n"
-    "Thvqr gb gur Tnynkl ol Qbhtynf Nqnzf, vg'f fnvq gur nafjre gb Yvsr, gur\n"
-    "Havirefr naq Rirelguvat vf 42. "
-    "Qbhtynf Nqnzf vafvfgrq guvf jnf n wbxr, jevgvat\n"
-    "ba HFRARG:\n"
-    "\n"
-    "    Gur nafjre gb guvf vf irel fvzcyr. Vg "
-    "jnf n wbxr. Vg unq gb or n ahzore, na\n"
-    "    beqvanel, fznyyvfu ahzore, naq V pubfr gung bar. Ovanel ercerfragngvbaf,"
+    "'C bnumh bnyb'l bnw "
+    "ymlxwa.' 'Vasmp, yl qlqyt,' lyud bnw Mwd Pqwwm: 'bnw dsp'l\n"
+    "bwikwa xsqtd awiyum.' 'Nqb C dsm'b lww nsx --'\n"
     "\n"
     ""
-    "    onfr guvegrra, Gvorgna zbaxf ner nyy pbzcyrgr abafrafr. V fng ng zl qrfx,\n"
-    "    fgnerq vagb gur tneqra naq gubhtug"
-    " '42 jvyy qb' V glcrq vg bhg. Raq bs\n"
-    "    fgbel.\n"
-    "\n"
-    "Ohg qvq lbh xabj gung fbzr nfgebabzref FCRAG GJB LRNEF fghqlvat guvf "
-    "naq VAFVFG\n"
-    "gung 42 vf npghnyyl pbeerpg? Sbe guvf fgbel frr:\n"
+    "'Vnf, tssh nwaw!' bnw Mwd Pqwwm eauwd. 'Tnw dsp xsqtd tslw ubl bwikwa, xsqtdm'b\n"
+    "ub?'\n"
     "\n"
     ""
-    "uggcf://jjj.vaqrcraqrag.pb.hx/arjf/lrf-gur-nafjre-gb-gur-havirefr-ernyyl-vf-42-1351201.ugzy",
+    "'Ewanykl ub xsqtd,' Gtuew awktuwd eyqbusqltf. 'Tnwm uo bnw dsp xwmb yxyf, ubl\n"
+    "bwikwa xsqtd awiyum!' "
+    "bnw Pqwwm wzetyuiwd bauqiknymbtf.",
 
-    "Vg'f pbzzbayl fhttrfgrq gung P++ vf na vzcebirzrag bire P. Guvf vf n zlgu\n"
-    "qrevivat sebz gur snpg gung gur bcrengbe ++ va P vapernfrf vgf bcrenaq nf n fvqr\n"
-    "rssrpg: gur inyhr bs gur bcrengvba qrcraqvat ba vs vg'f cbfgsvk be cersvk ++. Nf\n"
-    "vg unccraf P++ vf cbfgsvk ++. Guvf zrnaf gur inyhr bs gur rkcerffvba vf P naq nf\n"
-    "n fvqr rssrpg P vf vaperzragrq ol 1. Guvf cebirf gung P vf fhcrevbe - jung'f\n"
-    "yrsg, P + 1, vf oybng naq vg'f htyl. Vg'f uhtr naq vaqrprag. Sbe P++'f dhnyvgl\n"
-    "gel P = 0;.\n"
-    "    -- Krkly",
-
-    "Unir lbh gevrq sbepvat na harkcrpgrq erobbg?\n"
+    "Kwaw bnw Mwd Pqwwm rwpym ypyum. 'Iym fsq ymlxwa qlwoqt cqwlbusml?' lnw lyud.\n"
+    "'Ksx ul rawyd iydw?'\n"
+    "\n"
+    "'C hmsx bnyb!' Gtuew eauwd wypwatf.' Zsq byhw lsiw otsqa--'\n"
+    "'Vnwaw ds fsq kueh bnw otsxwa?' bnw Vnubw Pqwwm ylhwd. 'Cm y pyadwm, sa um bnw\n"
+    "nwdpwl?'\n"
     "\n"
     ""
-    "Frr, gur qevire ubbxf gur shapgvba ol cngpuvat gur flfgrz pnyy gnoyr, fb vg'f\n"
-    "abg fnsr gb haybnq vg hayrff nabgure guernq'f nobhg gb whzc va naq qb vgf\n"
-    "fghss, naq lbh qba'g jnag gb raq hc va gur zvqqyr bs vainyvq zrzbel.\n"
+    "'Vwtt ub ulm'b kuehwd yb ytt,' Gtuew wzktyumwd: 'ub'l pasqmd--'\n"
+    "'Ksx iymf yeawl so pasqmd?' "
+    "lyud bnw Vnubw Pqwwm. 'Zsq iqlbm'b twyvw sqb ls\n"
+    "iymf bnumpl.'\n"
+    "\n"
+    "'Hym nwa nwyd!' bnw Mwd Pqwwm "
+    "ymzusqltf umbwaaqkbwd. 'Unw'tt rw owvwauln yobwa\n"
+    "ls iqen bnumhump.' Us bnwf lwb bs xsah ymd oymmwd "
+    "nwa xubn rqmenwl so twyvwl,\n"
+    "butt lnw nyd bs rwp bnwi bs twyvw soo, ub rtwx nwa nyua yrsqb ls.",
+
+    "HSF HGIT:\n"
+    "\n"
+    "Cm Yuow, bnw Smuvwalw ymd Ovwafbnump, bnw bnuad umlbytiwmb so Tnw Kubennuhwa'l\n"
+    "Wqudw bs bnw Wytyzf rf Rsqptyl Gdyil, ub'l lyud bnw ymlxwa bs Yuow, bnw\n"
+    "Smuvwalw ymd Ovwafbnump ul 42. "
+    "Rsqptyl Gdyil umlulbwd bnul xyl y gshw, xaubump\n"
+    "sm SUOFOT:\n"
+    "\n"
+    "    Tnw ymlxwa bs bnul ul vwaf luiktw. Cb "
+    "xyl y gshw. Cb nyd bs rw y mqirwa, ym\n"
+    "    sadumyaf, liyttuln mqirwa, ymd C enslw bnyb smw. Numyaf awkawlwmbybusml,"
     "\n"
     ""
-    "    chfu BkS9QNSSOB\n"
-    "    pnyy nevrf+BkR90(S9Q8SR90)\n"
-    "    zbi rqk, [rpk+1]\n"
-    "    zbi nk, qf:XrFreivprQrfpevcgbeGnoyr\n"
-    "    zbi qjbeq_110PB, rqk\n"
-    "    zbi rnk, qf:MjDhrelQverpgbelSvyr\n"
+    "    rylw bnuabwwm, Turwbym ismhl yaw ytt esiktwbw msmlwmlw. C lyb yb if dwlh,\n"
+    "    lbyawd umbs bnw pyadwm ymd bnsqpnb"
+    " '42 xutt ds' C bfkwd ub sqb. Omd so\n"
+    "    lbsaf.\n"
     "\n"
-    "Uryyb?\n"
+    "Nqb dud fsq hmsx bnyb lsiw ylbasmsiwal UEOFT TVD ZOGMU lbqdfump bnul "
+    "ymd CFUCUT\n"
+    "bnyb 42 ul yebqyttf esaaweb? Hsa bnul lbsaf lww:\n"
     "\n"
-    "-- Znhevpr Zbff, Gur VG "
-    "Pebjq Frevrf 1 Rcvfbqr 1, 'Lrfgreqnl'f Wnz'.",
+    ""
+    "nbbkl://xxx.umdwkwmdwmb.es.qh/mwxl/fwl-bnw-ymlxwa-bs-bnw-qmuvwalw-awyttf-ul-42-1351201.nbit",
 
-    "QVQ LBH XABJ gung va Jnfuvatgba jura gjb genvaf pbzr gb n pebffvat, arvgure pna\n"
-    "tb hagvy gur bgure unf cnffrq?\n"
+    "Cb'l esiismtf lqppwlbwd bnyb I++ ul ym uikasvwiwmb svwa I. Tnul ul y ifbn\n"
+    "dwauvump oasi bnw oyeb bnyb bnw skwaybsa ++ um I umeawylwl ubl skwaymd yl y ludw\n"
+    "wooweb: bnw vytqw so bnw skwaybusm dwkwmdump sm uo ub'l kslbouz sa kawouz ++. Gl\n"
+    "ub nykkwml I++ ul kslbouz ++. Tnul iwyml bnw vytqw so bnw wzkawllusm ul I ymd yl\n"
+    "y ludw wooweb I ul umeawiwmbwd rf 1. Tnul kasvwl bnyb I ul lqkwausa - xnyb'l\n"
+    "twob, I + 1, ul rtsyb ymd ub'l qptf. Cb'l nqpw ymd umdwewmb. Hsa I++'l cqytubf\n"
+    "baf I = 0;.\n"
+    "    -- Xwzft",
+
+    "Kyvw fsq bauwd osaeump ym qmwzkwebwd awrssb?\n"
     "\n"
-    "Va juvpu pnfr, obgu yvgrenyyl naq ybtvpnyyl fcrnxvat, arvgure genva pna rire\n"
-    "tb. Guvf va ghea zrnaf gung gjb zber genvaf jbhyq pbzr, hanoyr gb cebprrq naq\n"
-    "gura gjb zber naq riraghnyyl gur envyjnl jbhyq or oybpxrq, ceriragvat pnef sebz\n"
-    "pebffvat nf jryy, znxvat n uhtr genssvp wnz!",
-
-    "QVQ LBH XABJ gung va Bertba n qbbe ba n pne znl abg or yrsg bcra ybatre guna\n"
-    "vf arprffnel?\n"
+    ""
+    "Uww, bnw dauvwa nsshl bnw oqmebusm rf kybenump bnw lflbwi eytt byrtw, ls ub'l\n"
+    "msb lyow bs qmtsyd ub qmtwll ymsbnwa bnawyd'l yrsqb bs gqik um ymd ds ubl\n"
+    "lbqoo, ymd fsq dsm'b xymb bs wmd qk Cm bnw iuddtw so umvytud iwisaf.\n"
     "\n"
-    "Svanyyl jr unir na rkcynangvba bs jul gurer ner fb znal pne qbbef ylvat ba gur\n"
-    "fgerrgf va Bertba!",
-
-    "QVQ LBH XABJ gung va Pnyvsbeavn navznyf ner onaarq sebz zngvat choyvpyl jvguva\n"
-    "1500 srrg bs n gnirea, fpubby, be cynpr bs jbefuvc?\n"
+    ""
+    "    kqln DzH9RGHHND\n"
+    "    eytt yauwl+DzO90(H9R8HO90)\n"
+    "    isv wdz, [wez+1]\n"
+    "    isv yz, dl:BwUwavuewRwleaukbsaTyrtw\n"
+    "    isv dxsad_110ID, wdz\n"
+    "    isv wyz, dl:JxPqwafRuawebsafHutw\n"
     "\n"
-    "Ohg ng yrnfg bapr gurl'er wnvyrq, boivbhfyl va n mbb, gurl pna qb vg nf\n"
-    "bsgra nf gurl yvxr!",
-
-    "QVQ LBH XABJ gung va Arinqn vg vf vyyrtny gb qevir n pnzry ba gur uvtujnl?\n"
+    "Kwtts?\n"
     "\n"
-    "Jurgure guvf zrna tvir n pnzry n yvsg ba gur uvtujnl be npghnyyl hfvat gur\n"
-    "pnzry nf n iruvpyr vf hapyrne, whfg yvxr gur checbfr bs guvf ynj vgfrys\n"
-    "rfcrpvnyyl fvapr gurer zvtug abg or znal pnzryf yrsg va Arinqn naljnl.",
+    "-- Lyqauew Lsll, Tnw CT "
+    "Iasxd Uwauwl 1 Okulsdw 1, 'Zwlbwadyf'l Ayi'.",
 
-    "QVQ LBH XABJ gung va Vqnub vg vf vyyrtny sbe n zna gb tvir uvf fjrrgurneg n obk\n"
-    "bs pnaql jrvtuvat yrff guna 50 cbhaqf (22.6796xt)?\n"
+    "RCR ZDS BFDV bnyb um Vylnumpbsm xnwm bxs bayuml esiw bs y easllump, mwubnwa eym\n"
+    "ps qmbut bnw sbnwa nyl kyllwd?\n"
     "\n"
-    "V org pnaql fubcf ybir guvf ynj!",
+    "Cm xnuen eylw, rsbn tubwayttf ymd tspueyttf lkwyhump, mwubnwa bayum eym wvwa\n"
+    "ps. Tnul um bqam iwyml bnyb bxs isaw bayuml xsqtd esiw, qmyrtw bs kasewwd ymd\n"
+    "bnwm bxs isaw ymd wvwmbqyttf bnw ayutxyf xsqtd rw rtsehwd, kawvwmbump eyal oasi\n"
+    "easllump yl xwtt, iyhump y nqpw bayooue gyi!",
 
-    "QVQ LBH XABJ gung va Zbagnan vg vf vyyrtny gb unir n furrc va gur pno bs lbhe\n"
-    "gehpx jvgubhg n puncrebar?\n"
+    "RCR ZDS BFDV bnyb um Dawpsm y dssa sm y eya iyf msb rw twob skwm tsmpwa bnym\n"
+    "ul mwewllyaf?\n"
     "\n"
-    "Nccneragyl va Zbagnan furrc ner uhznaf! Be ryfr ... ynjlref qba'g xabj jung\n"
-    "puncrebar zrnaf.",
+    "Humyttf xw nyvw ym wzktymybusm so xnf bnwaw yaw ls iymf eya dssal tfump sm bnw\n"
+    "lbawwbl um Dawpsm!",
 
-    "Vs na rnegudhnxr oernxf n zveebe qbrf gur ragver rnegu unir frira lrnef bs onq\n"
-    "yhpx ?\n -- Krkly",
-
-    "QVQ LBH XABJ gung va Jlbzvat vg vf vyyrtny gb jrne n ung gung bofgehpgf\n"
-    "crbcyr'f ivrj va n choyvp gurnger be cynpr bs nzhfrzrag?\n"
+    "RCR ZDS BFDV bnyb um Iytuosamuy ymuiytl yaw rymmwd oasi iybump kqrtuetf xubnum\n"
+    "1500 owwb so y byvwam, lensst, sa ktyew so xsalnuk?\n"
     "\n"
-    "...V guvax guvf npghnyyl fbhaqf ernfbanoyr ohg V'z nyfb n qjnes. Gura ntnva,\n"
-    "jura ylvat qbja jr'er nyy qjneirf!",
+    "Nqb yb twylb smew bnwf'aw gyutwd, srvusqltf um y jss, bnwf eym ds ub yl\n"
+    "sobwm yl bnwf tuhw!",
 
-    "QVQ LBH XABJ gung gur Xnafnf fgngr tnzvat obneq cebuvovgf gur hfr bs zhyrf gb\n"
-    "uhag qhpxf?\n"
+    "RCR ZDS BFDV bnyb um Fwvydy ub ul uttwpyt bs dauvw y eyiwt sm bnw nupnxyf?\n"
     "\n"
-    "V'z abg fher znal crbcyr guvax zhyrf pna cbffvoyl uryc uhagvat qhpxf ohg\n"
-    "pyrneyl fbzr qb.",
+    "Vnwbnwa bnul iwym puvw y eyiwt y tuob sm bnw nupnxyf sa yebqyttf qlump bnw\n"
+    "eyiwt yl y vwnuetw ul qmetwya, gqlb tuhw bnw kqakslw so bnul tyx ublwto\n"
+    "wlkweuyttf lumew bnwaw iupnb msb rw iymf eyiwtl twob um Fwvydy ymfxyf.",
 
-    "QVQ LBH XABJ gung va Nynonzn vg vf vyyrtny gb jrne n snxr zbhfgnpur gung pnhfrf\n"
-    "ynhtugre va puhepu?\n"
+    "RCR ZDS BFDV bnyb um Cdyns ub ul uttwpyt osa y iym bs puvw nul lxwwbnwyab y rsz\n"
+    "so eymdf xwupnump twll bnym 50 ksqmdl (22.6796hp)?\n"
     "\n"
-    "Ohg jul vf vg gung guvf ynj sbeovqqvat n zbhfgnpur pnhfvat ynhtugre va n\n"
-    "puhepu npghnyyl znxrf zr ynhtu?",
+    "C rwb eymdf lnskl tsvw bnul tyx!",
 
-    "QVQ LBH XABJ gung va Jrfg Ivetvavn juvfgyvat haqrejngre vf cebuvovgrq?\n"
+    "RCR ZDS BFDV bnyb um Lsmbymy ub ul uttwpyt bs nyvw y lnwwk um bnw eyr so fsqa\n"
+    "baqeh xubnsqb y enykwasmw?\n"
     "\n"
-    "Sbeghangryl gur jbhyq or pevzvany jbhyq cebonoyl gnxr va nyy gung jngre naq\n"
-    "qebja, ceriragvat gur nhgubevgvrf sebz punetvat gurz jvgu n pevzr!",
+    "Gkkyawmbtf um Lsmbymy lnwwk yaw nqiyml! Da wtlw ... tyxfwal dsm'b hmsx xnyb\n"
+    "enykwasmw iwyml.",
 
-    "QVQ LBH XABJ gung va Znvar nsgre Wnahnel 14gu lbh jvyy or punetrq n svar sbe\n"
-    "univat Puevfgznf qrpbengvbaf fgvyy hc?\n"
+    "Co ym wyabncqyhw rawyhl y iuaasa dswl bnw wmbuaw wyabn nyvw lwvwm fwyal so ryd\n"
+    "tqeh ?\n -- Xwzft",
+
+    "RCR ZDS BFDV bnyb um Vfsiump ub ul uttwpyt bs xwya y nyb bnyb srlbaqebl\n"
+    "kwsktw'l vuwx um y kqrtue bnwybaw sa ktyew so yiqlwiwmb?\n"
     "\n"
-    "Ohg urer'f n shaal guvat nobhg ybpngvba naq qngrf: ybtvpnyyl fcrnxvat, rira\n"
-    "vs fbzrguvat vf rnfg vg vf nyfb jrfg naq Wnahnel vf obgu orsber naq nsgre\n"
-    "Qrprzore!",
+    "...C bnumh bnul yebqyttf lsqmdl awylsmyrtw rqb C'i ytls y dxyao. Tnwm ypyum,\n"
+    "xnwm tfump dsxm xw'aw ytt dxyavwl!",
 
-    "QVQ LBH XABJ gung va Fbhgu Pnebyvan n crefba zhfg or 18 lrnef byq gb cynl\n"
-    "cvaonyy?\n"
+    "RCR ZDS BFDV bnyb bnw Bymlyl lbybw pyiump rsyad kasnurubl bnw qlw so iqtwl bs\n"
+    "nqmb dqehl?\n"
     "\n"
-    "Guvf vf cebonoyl orpnhfr vg hfrq gb or pbafvqrerq tnzoyvat, qrfcvgr gur snpg\n"
-    "gung nalbar jub'f npghnyyl gevrq vg sbe svir frpbaqf jvyy xabj vg'f n znggre bs\n"
-    "fxvyy, abg yhpx.",
+    "C'i msb lqaw iymf kwsktw bnumh iqtwl eym ksllurtf nwtk nqmbump dqehl rqb\n"
+    "etwyatf lsiw ds.",
 
-    "QVQ LBH XABJ gung va Arj Zrkvpb vqvbgf znl abg ibgr?\n"
+    "RCR ZDS BFDV bnyb um Gtyryiy ub ul uttwpyt bs xwya y oyhw isqlbyenw bnyb eyqlwl\n"
+    "tyqpnbwa um enqaen?\n"
     "\n"
-    "Vqvbg hfrq gb or n yrtny grez ohg gura jub rknpgyl znqr guvf ynj V jbaqre?",
+    "Nqb xnf ul ub bnyb bnul tyx osaruddump y isqlbyenw eyqlump tyqpnbwa um y\n"
+    "enqaen yebqyttf iyhwl iw tyqpn?",
 
-    "QVQ LBH XABJ gung va Zvaarfbgn vg vf vyyrtny gb fyrrc anxrq?\n"
+    "RCR ZDS BFDV bnyb um Vwlb Quapumuy xnulbtump qmdwaxybwa ul kasnurubwd?\n"
     "\n"
-    "Nccneragyl, Zvaarfbgn ynjznxref ner nyfb crrcvat Gbzf!",
+    "Hsabqmybwtf bnw xsqtd rw eauiumyt xsqtd kasryrtf byhw um ytt bnyb xybwa ymd\n"
+    "dasxm, kawvwmbump bnw yqbnsaubuwl oasi enyapump bnwi xubn y eauiw!",
 
-    "QVQ LBH XABJ gung va Zvpuvtna hagvy 2002 vg jnf vyyrtny gb fjrne va sebag bs n\n"
-    "jbzna be puvyq?\n"
+    "RCR ZDS BFDV bnyb um Lyumw yobwa Aymqyaf 14bn fsq xutt rw enyapwd y oumw osa\n"
+    "nyvump Inaulbiyl dwesaybusml lbutt qk?\n"
     "\n"
-    "Jung vs n puvyq fjrnef ng n jbzna be n jbzna fjrnef ng n puvyq? Puvyq ng puvyq?\n"
-    "Jbzna ng jbzna?",
+    "Nqb nwaw'l y oqmmf bnump yrsqb tseybusm ymd dybwl: tspueyttf lkwyhump, wvwm\n"
+    "uo lsiwbnump ul wylb ub ul ytls xwlb ymd Aymqyaf ul rsbn rwosaw ymd yobwa\n"
+    "Rwewirwa!",
 
-    "Jung qb lbh pnyy n svfurezna fryyvat uvf svfu? Frysvfu.\n"
-    "-- Krkly",
-
-    "QVQ LBH XABJ gung va Irezbag jbzra zhfg bognva jevggra crezvffvba sebz gurve\n"
-    "uhfonaqf gb jrne snyfr grrgu?\n"
+    "RCR ZDS BFDV bnyb um Usqbn Iyastumy y kwalsm iqlb rw 18 fwyal std bs ktyf\n"
+    "kumrytt?\n"
     "\n"
-    "Ohg vs gurl qba'g naq pna'g purj gurve sbbq ubj jvyy gurl yvir? Gung jbhyq\n"
-    "zrna gur zna jbhyq or jvsryrff naq gur ynj jbhyq or cbvagyrff. Vfa'g vg\n"
-    "nyernql?",
+    "Tnul ul kasryrtf rweyqlw ub qlwd bs rw esmludwawd pyirtump, dwlkubw bnw oyeb\n"
+    "bnyb ymfsmw xns'l yebqyttf bauwd ub osa ouvw lwesmdl xutt hmsx ub'l y iybbwa so\n"
+    "lhutt, msb tqeh.",
 
-    "QVQ LBH XABJ gung va Znffnpuhfrggf ng n jnxr zbhearef znl rng ab zber guna\n"
-    "guerr fnaqjvpurf?\n"
+    "RCR ZDS BFDV bnyb um Fwx Lwzues udusbl iyf msb vsbw?\n"
     "\n"
-    "Gunax tbbqarff zbfg crbcyr guvax bs rngvat arkg gb na bcra pbssva!",
+    "Cdusb qlwd bs rw y twpyt bwai rqb bnwm xns wzyebtf iydw bnul tyx C xsmdwa?",
 
-    "QVQ LBH XABJ gung va Pbaarpgvphg vg vf vyyrtny gb qvfcbfr bs hfrq enmbe oynqrf?\n"
+    "RCR ZDS BFDV bnyb um Lummwlsby ub ul uttwpyt bs ltwwk myhwd?\n"
     "\n"
-    "Ohg ubcrshyyl hfrq fpnycryf pna or qvfcbfrq?",
+    "Gkkyawmbtf, Lummwlsby tyxiyhwal yaw ytls kwwkump Tsil!",
 
-    "QVQ LBH XABJ gung va Unjnvv pbvaf ner abg nyybjrq gb or cynprq va bar'f rnef?\n"
+    "RCR ZDS BFDV bnyb um Luenupym qmbut 2002 ub xyl uttwpyt bs lxwya um oasmb so y\n"
+    "xsiym sa enutd?\n"
     "\n"
-    "Ohg jung V jnag gb xabj vf jung nobhg n gjb'f rnef?",
+    "Vnyb uo y enutd lxwyal yb y xsiym sa y xsiym lxwyal yb y enutd? Inutd yb enutd?\n"
+    "Vsiym yb xsiym?",
 
-    "QVQ LBH XABJ gung va Nexnafnf gur Nexnafnf evire pna evfr ab uvture guna gb gur\n"
-    "Znva Fgerrg oevqtr va Yvggyr Ebpx?\n"
+    "Vnyb ds fsq eytt y oulnwaiym lwttump nul ouln? Uwtouln.\n"
+    "-- Xwzft",
+
+    "RCR ZDS BFDV bnyb um Qwaismb xsiwm iqlb srbyum xaubbwm kwaiullusm oasi bnwua\n"
+    "nqlrymdl bs xwya oytlw bwwbn?\n"
     "\n"
-    "Nexnafnf, jurer ynjznxref ner qnsg rabhtu gb gel naq bhgynj sybbqf.",
+    "Nqb uo bnwf dsm'b ymd eym'b enwx bnwua ossd nsx xutt bnwf tuvw? Tnyb xsqtd\n"
+    "iwym bnw iym xsqtd rw xuowtwll ymd bnw tyx xsqtd rw ksumbtwll. Clm'b ub\n"
+    "ytawydf?",
 
-    "QVQ LBH XABJ gung va Graarffrr vg vf n pevzr gb funer lbhe Argsyvk cnffjbeq?\n"
+    "RCR ZDS BFDV bnyb um Lyllyenqlwbbl yb y xyhw isqamwal iyf wyb ms isaw bnym\n"
+    "bnaww lymdxuenwl?\n"
     "\n"
-    "Vafgrnq, vs lbh jnag gb funer lbhe cnffjbeq, punatr vg gb cnffjbeq naq gryy\n"
-    "gubfr lbh jvfu gb funer vg jvgu gung vg'f bar bs gur zbfg pbzzba naq jbefg\n"
-    "cnffjbeqf va uvfgbel!",
+    "Tnymh pssdmwll islb kwsktw bnumh so wybump mwzb bs ym skwm esooum!",
 
-    "QVQ LBH XABJ gung va Hgnu vg vf vyyrtny gb abg qevax zvyx?\n"
+    "RCR ZDS BFDV bnyb um Ismmwebueqb ub ul uttwpyt bs dulkslw so qlwd ayjsa rtydwl?\n"
     "\n"
-    "Hgnu, jurer gurl qba'g gbyrengr ynpgbfr vagbyrenapr!",
+    "Nqb nskwoqttf qlwd leytkwtl eym rw dulkslwd?",
 
-    "QVQ LBH XABJ gung va Nynfxn vg vf pbafvqrerq na bssrapr gb chfu n yvir zbbfr\n"
-    "bhg bs n zbivat nrebcynar?\n"
+    "RCR ZDS BFDV bnyb um Kyxyuu esuml yaw msb yttsxwd bs rw ktyewd um smw'l wyal?\n"
     "\n"
-    "Ohg pyrneyl vg'f bxnl gb chfu n qrnq zbbfr bhg bs n zbivat nrebcynar naq nal\n"
-    "zbbfr bhg bs n fgvyy cynar?",
+    "Nqb xnyb C xymb bs hmsx ul xnyb yrsqb y bxs'l wyal?",
 
-    "QVQ LBH XABJ gung va Znelynaq guvfgyrf znl abg tebj va bar'f lneq?\n"
+    "RCR ZDS BFDV bnyb um Gahymlyl bnw Gahymlyl auvwa eym aulw ms nupnwa bnym bs bnw\n"
+    "Lyum Ubawwb raudpw um Yubbtw Mseh?\n"
     "\n"
-    "Jung nobhg n tneqra? Sbe va Nzrevpn n lneq vf n tneqra ohg va Ratynaq n\n"
-    "lneq vf n cvrpr bs haphygvingrq tebhaq naq n tneqra vf na Nzrevpna lneq lrg\n"
-    "Nzrevpn unf tneqraf gbb. Fb jung vf n lneq naq jung vf n tneqra?",
+    "Gahymlyl, xnwaw tyxiyhwal yaw dyob wmsqpn bs baf ymd sqbtyx otssdl.",
 
-    "QVQ LBH XABJ gung va Fbhgu Qnxbgn ab ubefrf ner nyybjrq vagb Sbhagnva Vaa\n"
-    "hayrff gurl ner jrnevat cnagf?\n"
+    "RCR ZDS BFDV bnyb um Twmmwllww ub ul y eauiw bs lnyaw fsqa Fwbotuz kyllxsad?\n"
     "\n"
-    "V org gurer ner n ybg bs penml guvatf gung unccra va gurer vs fbzr ubefrf\n"
-    "ner nyybjrq ohg abg bguref!",
+    "Cmlbwyd, uo fsq xymb bs lnyaw fsqa kyllxsad, enympw ub bs kyllxsad ymd bwtt\n"
+    "bnslw fsq xuln bs lnyaw ub xubn bnyb ub'l smw so bnw islb esiism ymd xsalb\n"
+    "kyllxsadl um nulbsaf!",
 
-    "QVQ LBH XABJ gung va Abegu Qnxbgn vg vf vyyrtny gb yvr qbja naq snyy nfyrrc\n"
-    "jvgu lbhe fubrf ba?\n"
+    "RCR ZDS BFDV bnyb um Sbyn ub ul uttwpyt bs msb daumh iuth?\n"
     "\n"
-    "Ohg jung unccraf gb vazngrf jub snyy nfyrrc jvgu gurve fubrf ba? Qb gurl tb\n"
-    "gb wnvy va wnvy sbe snyyvat nfyrrc va wnvy jvgu gurve fubrf ba? Naq jung vs\n"
-    "gurl jrag gb wnvy vavgvnyyl sbe snyyvat nfyrrc jvgu gurve fubrf ba? Qb gurl\n"
-    "freir qbhoyr gvzr?",
+    "Sbyn, xnwaw bnwf dsm'b bstwaybw tyebslw umbstwaymew!",
 
-    "Jvaqbjf qevivat lbh penml? Ohl n fpnaare naq vafgnyy gur vapyhqrq FNAR\n"
-    "yvoenel!\n -- Krkly",
-
-    "QVQ LBH XABJ gung va Ivetvavn puvyqera ner abg gb tb gevpx-be-gerngvat ba\n"
-    "Unyybjrra?\n"
+    "RCR ZDS BFDV bnyb um Gtylhy ub ul esmludwawd ym soowmew bs kqln y tuvw isslw\n"
+    "sqb so y isvump ywasktymw?\n"
     "\n"
-    "Jung nobhg nqhygf? V zrna znal fhccbfrq nqhygf va guvf jbeyq pbhyq rnfvyl or\n"
-    "zvfgnxra sbe puvyqera.",
+    "Nqb etwyatf ub'l shyf bs kqln y dwyd isslw sqb so y isvump ywasktymw ymd ymf\n"
+    "isslw sqb so y lbutt ktymw?",
 
-    "QVQ LBH XABJ gung va Nevmban uhagvat pnzryf vf cebuvovgrq?\n"
+    "RCR ZDS BFDV bnyb um Lyaftymd bnulbtwl iyf msb pasx um smw'l fyad?\n"
     "\n"
-    "Unl, ng yrnfg gur irel srj erznvavat pnzryf ner fnsr!",
+    "Vnyb yrsqb y pyadwm? Hsa um Giwauey y fyad ul y pyadwm rqb um Omptymd y\n"
+    "fyad ul y kuwew so qmeqtbuvybwd pasqmd ymd y pyadwm ul ym Giwaueym fyad fwb\n"
+    "Giwauey nyl pyadwml bss. Us xnyb ul y fyad ymd xnyb ul y pyadwm?",
 
-    "QVQ LBH XABJ gung va Grknf vg vf vyyrtny gb gnxr zber guna guerr fvcf bs orre\n"
-    "ng n gvzr juvyr fgnaqvat?\n"
+    "RCR ZDS BFDV bnyb um Usqbn Ryhsby ms nsalwl yaw yttsxwd umbs Hsqmbyum Cmm\n"
+    "qmtwll bnwf yaw xwyaump kymbl?\n"
     "\n"
-    "Vg'f nyfb vyyrtny gb or qehax va n cho va Ratynaq ohg V qba'g guvax gung unf\n"
-    "fgbccrq znal crbcyr!",
+    "C rwb bnwaw yaw y tsb so eayjf bnumpl bnyb nykkwm um bnwaw uo lsiw nsalwl\n"
+    "yaw yttsxwd rqb msb sbnwal!",
 
-    "QVQ LBH XABJ gung va Pbybenqb vg vf vyyrtny gb evqr n ubefr juvyr haqre gur\n"
-    "vasyhrapr?\n"
+    "RCR ZDS BFDV bnyb um Fsabn Ryhsby ub ul uttwpyt bs tuw dsxm ymd oytt yltwwk\n"
+    "xubn fsqa lnswl sm?\n"
     "\n"
-    "Ohg vf vg n ubefr be n ubefr? N ubefr vf na nqhyg znyr ubefr; n fgnyyvba be\n"
-    "tryqvat. Ohg jung nobhg ubefrf?",
+    "Nqb xnyb nykkwml bs umiybwl xns oytt yltwwk xubn bnwua lnswl sm? Rs bnwf ps\n"
+    "bs gyut um gyut osa oyttump yltwwk um gyut xubn bnwua lnswl sm? Gmd xnyb uo\n"
+    "bnwf xwmb bs gyut umubuyttf osa oyttump yltwwk xubn bnwua lnswl sm? Rs bnwf\n"
+    "lwavw dsqrtw buiw?",
 
-    "Frnjrrq: Znevwhnan sbe svfu.\n"
-    "-- Krkly",
+    "Vumdsxl dauvump fsq eayjf? Nqf y leymmwa ymd umlbytt bnw umetqdwd UGFO\n"
+    "turayaf!\n -- Xwzft",
 
-    "QVQ LBH XABJ gung va Aroenfxn vs n puvyq ohecf qhevat puhepu, uvf be ure\n"
-    "cnerag znl or neerfgrq?\n"
+    "RCR ZDS BFDV bnyb um Quapumuy enutdawm yaw msb bs ps baueh-sa-bawybump sm\n"
+    "Kyttsxwwm?\n"
     "\n"
-    "Sha snpg: gur grpuavpny grez sbe n ehzoyvat be thetyvat abvfr znqr ol gur\n"
-    "zbirzrag bs syhvq naq tnf va gur vagrfgvarf vf pnyyrq n obeobeltzhf.",
+    "Vnyb yrsqb ydqtbl? C iwym iymf lqkkslwd ydqtbl um bnul xsatd esqtd wylutf rw\n"
+    "iulbyhwm osa enutdawm.",
 
-    "QVQ LBH XABJ gung va Bxynubzn vg vf vyyrtny gb unir gur uvaq yrtf bs snez\n"
-    "navznyf va lbhe obbgf?\n"
+    "RCR ZDS BFDV bnyb um Gaujsmy nqmbump eyiwtl ul kasnurubwd?\n"
     "\n"
-    "Ohg qba'g jbeel gbb zhpu: vg vf bxnl vs gurve sebag yrtf ner.",
+    "Kyf, yb twylb bnw vwaf owx awiyumump eyiwtl yaw lyow!",
 
-    "QVQ LBH XABJ gung va Jvfpbafva vg vf vyyrtny gb phg n jbzna'f unve?\n"
+    "RCR ZDS BFDV bnyb um Twzyl ub ul uttwpyt bs byhw isaw bnym bnaww lukl so rwwa\n"
+    "yb y buiw xnutw lbymdump?\n"
     "\n"
-    "Guvf znxrf Jvfpbafva gur unvevrfg cynpr gb yvir va gur Havgrq Fgngrf bs\n"
-    "Nzrevpn.",
+    "Cb'l ytls uttwpyt bs rw daqmh um y kqr um Omptymd rqb C dsm'b bnumh bnyb nyl\n"
+    "lbskkwd iymf kwsktw!",
 
-    "QVQ LBH XABJ gung va Xraghpxl bar znl abg qlr n qhpxyvat oyhr naq bssre vg sbe\n"
-    "fnyr hayrff zber guna fvk ner sbe fnyr ng bapr?\n"
+    "RCR ZDS BFDV bnyb um Istsayds ub ul uttwpyt bs audw y nsalw xnutw qmdwa bnw\n"
+    "umotqwmew?\n"
     "\n"
-    "Terra, checyr, erq, benatr naq nal bgure pbybhe vf bxnl.",
+    "Nqb ul ub y nsalw sa y nsalw? G nsalw ul ym ydqtb iytw nsalw; y lbyttusm sa\n"
+    "pwtdump. Nqb xnyb yrsqb nsalwl?",
 
-    "QVQ LBH XABJ gung va Ybhvfvnan vg vf vyyrtny gb ebo n onax naq gura fubbg gur\n"
-    "onax gryyre jvgu n jngre cvfgby?\n"
+    "Uwyxwwd: Lyaugqymy osa ouln.\n"
+    "-- Xwzft",
+
+    "RCR ZDS BFDV bnyb um Fwraylhy uo y enutd rqakl dqaump enqaen, nul sa nwa\n"
+    "kyawmb iyf rw yaawlbwd?\n"
     "\n"
-    "Juvpu zrnaf ybtvpnyyl fcrnxvat vg'f yrtny gb fubbg gurz jvgu n erny cvfgby.\n"
-    "Ybtvpnyyl vg vf ohg boivbhfyl vg'f abg.",
+    "Hqm oyeb: bnw bwenmueyt bwai osa y aqirtump sa pqaptump msulw iydw rf bnw\n"
+    "isvwiwmb so otqud ymd pyl um bnw umbwlbumwl ul eyttwd y rsarsafpiql.",
 
-    "Tnaterar : na raivebazragnyyl-sevraqyl tnat.\n"
-    "-- Krkly",
-
-    "QVQ LBH XABJ gung va Trbetvn lbh pnaabg yvir ba n obng sbe zber guna 30 qnlf\n"
-    "qhevat gur pnyraqne lrne, rira vs lbh ner whfg cnffvat guebhtu gur fgngr?\n"
+    "RCR ZDS BFDV bnyb um Dhtynsiy ub ul uttwpyt bs nyvw bnw numd twpl so oyai\n"
+    "ymuiytl um fsqa rssbl?\n"
     "\n"
-    "Ohg jung nobhg 30 qnlf va n lrne jvgubhg n pnyraqne?",
+    "Nqb dsm'b xsaaf bss iqen: ub ul shyf uo bnwua oasmb twpl yaw.",
 
-    "Qvq lbh xabj gung n tebhc bs cevfbaref vf pnyyrq n 'cvgl'?\n",
-
-    "Qvq lbh xabj gung nabgure grez sbe fabj yrbcneq vf 'bhapr'?\n"
+    "RCR ZDS BFDV bnyb um Vulesmlum ub ul uttwpyt bs eqb y xsiym'l nyua?\n"
     "\n"
-    "Guvf vf sebz Zvqqyr Ratyvfu sebz Byq Serapu bapr, rneyvre ybapr (gur y- orvat\n"
-    "zvfvagrecergrq nf gur qrsvavgr negvpyr), onfrq ba Yngva ylak, ylap-.\n",
+    "Tnul iyhwl Vulesmlum bnw nyuauwlb ktyew bs tuvw um bnw Smubwd Ubybwl so\n"
+    "Giwauey.",
 
-    "Qvq lbh xabj gung n ener jbeq sbe n tebhc bs jvyq pngf (abg jvyqpngf) vf\n"
-    "'qrfgehpgvba'?\n",
-
-    "Bhe havgf bs grzcbeny zrnfherzrag, sebz frpbaqf ba hc gb zbaguf,\n"
-    "ner fb pbzcyvpngrq, nflzzrgevpny naq qvfwhapgvir fb nf gb znxr\n"
-    "pburerag zragny erpxbavat va gvzr nyy ohg vzcbffvoyr.  Vaqrrq, unq\n"
-    "fbzr glenaavpny tbq pbagevirq gb rafynir bhe zvaqf gb gvzr, gb znxr\n"
-    "vg nyy ohg vzcbffvoyr sbe hf gb rfpncr fhowrpgvba gb fbqqra\n"
-    "ebhgvarf naq hacyrnfnag fhecevfrf, ur pbhyq uneqyl unir qbar orggre\n"
-    "guna unaqvat qbja bhe cerfrag flfgrz.  Vg vf yvxr n frg bs\n"
-    "gencrmbvqny ohvyqvat oybpxf, jvgu ab iregvpny be ubevmbagny\n"
-    "fhesnprf, yvxr n ynathntr va juvpu gur fvzcyrfg gubhtug qrznaqf\n"
-    "beangr pbafgehpgvbaf, hfryrff cnegvpyrf naq yratgul\n"
-    "pvephzybphgvbaf.  Hayvxr gur zber fhpprffshy cnggreaf bs ynathntr\n"
-    "naq fpvrapr, juvpu ranoyr hf gb snpr rkcrevrapr obyqyl be ng yrnfg\n"
-    "yriry-urnqrqyl, bhe flfgrz bs grzcbeny pnyphyngvba fvyragyl naq\n"
-    "crefvfgragyl rapbhentrf bhe greebe bs gvzr.\n"
+    "RCR ZDS BFDV bnyb um Bwmbqehf smw iyf msb dfw y dqehtump rtqw ymd soowa ub osa\n"
+    "lytw qmtwll isaw bnym luz yaw osa lytw yb smew?\n"
     "\n"
-    "... Vg vf nf gubhtu nepuvgrpgf unq gb zrnfher yratgu va srrg, jvqgu\n"
-    "va zrgref naq urvtug va ryyf; nf gubhtu onfvp vafgehpgvba znahnyf\n"
-    "qrznaqrq n xabjyrqtr bs svir qvssrerag ynathntrf.  Vg vf ab jbaqre\n"
-    "gura gung jr bsgra ybbx vagb bhe bja vzzrqvngr cnfg be shgher, ynfg\n"
-    "Ghrfqnl be n jrrx sebz Fhaqnl, jvgu srryvatf bs urycyrff pbashfvba.\n"
+    "Wawwm, kqaktw, awd, saympw ymd ymf sbnwa estsqa ul shyf.",
+
+    "RCR ZDS BFDV bnyb um Ysquluymy ub ul uttwpyt bs asr y rymh ymd bnwm lnssb bnw\n"
+    "rymh bwttwa xubn y xybwa kulbst?\n"
+    "\n"
+    "Vnuen iwyml tspueyttf lkwyhump ub'l twpyt bs lnssb bnwi xubn y awyt kulbst.\n"
+    "Yspueyttf ub ul rqb srvusqltf ub'l msb.",
+
+    "Wympawmw : ym wmvuasmiwmbyttf-oauwmdtf pymp.\n"
+    "-- Xwzft",
+
+    "RCR ZDS BFDV bnyb um Wwsapuy fsq eymmsb tuvw sm y rsyb osa isaw bnym 30 dyfl\n"
+    "dqaump bnw eytwmdya fwya, wvwm uo fsq yaw gqlb kyllump bnasqpn bnw lbybw?\n"
+    "\n"
+    "Nqb xnyb yrsqb 30 dyfl um y fwya xubnsqb y eytwmdya?",
+
+    "Rud fsq hmsx bnyb y pasqk so kaulsmwal ul eyttwd y 'kubf'?\n",
+
+    "Rud fsq hmsx bnyb ymsbnwa bwai osa lmsx twskyad ul 'sqmew'?\n"
+    "\n"
+    "Tnul ul oasi Luddtw Omptuln oasi Dtd Hawmen smew, wyatuwa tsmew (bnw t- rwump\n"
+    "iulumbwakawbwd yl bnw dwoumubw yabuetw), rylwd sm Yybum tfmz, tfme-.\n",
+
+    "Rud fsq hmsx bnyb y ayaw xsad osa y pasqk so xutd eybl (msb xutdeybl) ul\n"
+    "'dwlbaqebusm'?\n",
+
+    "Dqa qmubl so bwiksayt iwylqawiwmb, oasi lwesmdl sm qk bs ismbnl,\n"
+    "yaw ls esiktueybwd, ylfiiwbaueyt ymd dulgqmebuvw ls yl bs iyhw\n"
+    "esnwawmb iwmbyt awehsmump um buiw ytt rqb uiksllurtw.  Cmdwwd, nyd\n"
+    "lsiw bfaymmueyt psd esmbauvwd bs wmltyvw sqa iumdl bs buiw, bs iyhw\n"
+    "ub ytt rqb uiksllurtw osa ql bs wleykw lqrgwebusm bs lsddwm\n"
+    "asqbumwl ymd qmktwylymb lqakaulwl, nw esqtd nyadtf nyvw dsmw rwbbwa\n"
+    "bnym nymdump dsxm sqa kawlwmb lflbwi.  Cb ul tuhw y lwb so\n"
+    "baykwjsudyt rqutdump rtsehl, xubn ms vwabueyt sa nsaujsmbyt\n"
+    "lqaoyewl, tuhw y tympqypw um xnuen bnw luiktwlb bnsqpnb dwiymdl\n"
+    "samybw esmlbaqebusml, qlwtwll kyabuetwl ymd twmpbnf\n"
+    "euaeqitseqbusml.  Smtuhw bnw isaw lqeewlloqt kybbwaml so tympqypw\n"
+    "ymd leuwmew, xnuen wmyrtw ql bs oyew wzkwauwmew rstdtf sa yb twylb\n"
+    "twvwt-nwydwdtf, sqa lflbwi so bwiksayt eyteqtybusm lutwmbtf ymd\n"
+    "kwalulbwmbtf wmesqaypwl sqa bwaasa so buiw.\n"
+    "\n"
+    "... Cb ul yl bnsqpn yaenubwebl nyd bs iwylqaw twmpbn um owwb, xudbn\n"
+    "um iwbwal ymd nwupnb um wttl; yl bnsqpn rylue umlbaqebusm iymqytl\n"
+    "dwiymdwd y hmsxtwdpw so ouvw duoowawmb tympqypwl.  Cb ul ms xsmdwa\n"
+    "bnwm bnyb xw sobwm tssh umbs sqa sxm uiiwduybw kylb sa oqbqaw, tylb\n"
+    "Tqwldyf sa y xwwh oasi Uqmdyf, xubn owwtumpl so nwtktwll esmoqlusm.\n"
     "...\n"
     "\n"
-    "--Eboreg Tehqva, 'Gvzr naq gur Neg bs Yvivat'.\n",
+    "--Msrwab Waqdum, 'Tuiw ymd bnw Gab so Yuvump'.\n",
 
-    "Qvq lbh xabj gung n tebhc bs euvabf vf pnyyrq n 'penfu'? Thrff jul!\n",
+    "Rud fsq hmsx bnyb y pasqk so anumsl ul eyttwd y 'eayln'? Wqwll xnf!\n",
 
-    "QVQ LBH XABJ gung va Zvffvffvccv vg vf vyyrtny gb grnpu bguref jung cbyltnzl\n"
-    "vf?\n"
+    "RCR ZDS BFDV bnyb um Lullullukku ub ul uttwpyt bs bwyen sbnwal xnyb kstfpyif\n"
+    "ul?\n"
     "\n"
-    "'Bu qrnevr zr, V pna bayl unir bar qrne ng n gvzr! Jung rire funyy V qb?!'",
+    "'Dn dwyauw iw, C eym smtf nyvw smw dwya yb y buiw! Vnyb wvwa lnytt C ds?!'",
 
-    "QVQ LBH XABJ gung va Sybevqn qbbef bs nyy choyvp ohvyqvatf zhfg bcra bhgjneqf?\n"
+    "RCR ZDS BFDV bnyb um Htsaudy dssal so ytt kqrtue rqutdumpl iqlb skwm sqbxyadl?\n"
     "\n"
-    "Abj vs bhgjneqf ersref gb gbjneqf gur bhgfvqr naq fvaxubyrf ner bhgfvqr qbrf\n"
-    "gung zrna gung choyvp ohvyqvatf zhfg unir fvaxubyrf nf jryy?",
+    "Fsx uo sqbxyadl awowal bs bsxyadl bnw sqbludw ymd lumhnstwl yaw sqbludw dswl\n"
+    "bnyb iwym bnyb kqrtue rqutdumpl iqlb nyvw lumhnstwl yl xwtt?",
 
-    "QVQ LBH XABJ gung va Abegu Pnebyvan vg vf ntnvafg gur ynj gb fvat bss xrl?\n"
+    "RCR ZDS BFDV bnyb um Fsabn Iyastumy ub ul ypyumlb bnw tyx bs lump soo hwf?\n"
     "\n"
-    "Ybbcubyr: Fvg ba n cvnab juvyfg fvatvat fb gung lbh pna pynvz lbh'er ba xrl\n"
-    "rira vs lbh'er bss xrl.",
+    "Yssknstw: Uub sm y kuyms xnutlb lumpump ls bnyb fsq eym etyui fsq'aw sm hwf\n"
+    "wvwm uo fsq'aw soo hwf.",
 
-    "Jr nyy, vapyhqvat - naq vaqrrq rfcrpvnyyl - gur Rnegu, unir bhe snhygf.\n"
-    "-- Krkly",
+    "Vw ytt, umetqdump - ymd umdwwd wlkweuyttf - bnw Oyabn, nyvw sqa oyqtbl.\n"
+    "-- Xwzft",
 
-    "  Perngbef Nqzvg P, Havk Jrer Ubnk\n"
+    "  Iawybsal Gdiub I, Smuz Vwaw Ksyz\n"
     "\n"
-    "  SBE VZZRQVNGR ERYRNFR\n"
-    "  Va na naabhaprzrag gung unf fghaarq gur pbzchgre vaqhfgel, Xra Gubzcfba,\n"
-    "  Qraavf Evgpuvr, naq Oevna Xreavtuna nqzvggrq gung gur Havk bcrengvat flfgrz\n"
-    "  naq P cebtenzzvat ynathntr perngrq ol gurz vf na rynobengr Ncevy Sbbyf cenax\n"
-    "  xrcg nyvir sbe zber guna 20 lrnef. Fcrnxvat ng gur erprag HavkJbeyq Fbsgjner\n"
-    "  Qrirybczrag Sbehz, Gubzcfba erirnyrq gur sbyybjvat:\n"
+    "  HDM CLLORCGTO MOYOGUO\n"
+    "  Cm ym ymmsqmewiwmb bnyb nyl lbqmmwd bnw esikqbwa umdqlbaf, Bwm Tnsiklsm,\n"
+    "  Rwmmul Mubenuw, ymd Nauym Bwamupnym ydiubbwd bnyb bnw Smuz skwaybump lflbwi\n"
+    "  ymd I kaspayiiump tympqypw eawybwd rf bnwi ul ym wtyrsaybw Gkaut Hsstl kaymh\n"
+    "  hwkb ytuvw osa isaw bnym 20 fwyal. Ukwyhump yb bnw awewmb SmuzVsatd Usobxyaw\n"
+    "  Rwvwtskiwmb Hsaqi, Tnsiklsm awvwytwd bnw osttsxump:\n"
     "\n"
-    "     'Va 1969, NG&G unq whfg grezvangrq gurve jbex jvgu gur TR/NG&G Zhygvpf\n"
-    "     cebwrpg. Oevna naq V unq whfg fgnegrq jbexvat jvgu na rneyl eryrnfr bs\n"
-    "     Cnfpny sebz Cebsrffbe Avpuynhf Jvegu'f RGU ynof va Fjvgmreynaq, naq jr\n"
-    "     jrer vzcerffrq jvgu vgf ryrtnag fvzcyvpvgl naq cbjre. Qraavf unq whfg\n"
-    "     svavfurq ernqvat Oberq bs gur Evatf, n uvynevbhf Angvbany Ynzcbba cnebql\n"
-    "     bs gur terng Gbyxvra Ybeq bs gur Evatf gevybtl. Nf n ynex, jr qrpvqrq gb\n"
-    "     qb cnebqvrf bs gur Zhygvpf raivebazrag naq Cnfpny. Qraavf naq V jrer\n"
-    "     erfcbafvoyr sbe gur bcrengvat raivebazrag. Jr ybbxrq ng Zhygvpf naq\n"
-    "     qrfvtarq gur arj flfgrz gb or nf pbzcyrk naq pelcgvp nf cbffvoyr gb\n"
-    "     znkvzvmr pnfhny hfref' sehfgengvba yriryf, pnyyvat vg Havk nf n cnebql bs\n"
-    "     Zhygvpf, nf jryy nf bgure zber evfdhr nyyhfvbaf.\n"
+    "     'Cm 1969, GT&T nyd gqlb bwaiumybwd bnwua xsah xubn bnw WO/GT&T Lqtbuel\n"
+    "     kasgweb. Nauym ymd C nyd gqlb lbyabwd xsahump xubn ym wyatf awtwylw so\n"
+    "     Eyleyt oasi Easowllsa Fuentyql Vuabn'l OTK tyrl um Uxubjwatymd, ymd xw\n"
+    "     xwaw uikawllwd xubn ubl wtwpymb luiktueubf ymd ksxwa. Rwmmul nyd gqlb\n"
+    "     oumulnwd awydump Nsawd so bnw Mumpl, y nutyausql Fybusmyt Yyikssm kyasdf\n"
+    "     so bnw pawyb Tsthuwm Ysad so bnw Mumpl bautspf. Gl y tyah, xw dweudwd bs\n"
+    "     ds kyasduwl so bnw Lqtbuel wmvuasmiwmb ymd Eyleyt. Rwmmul ymd C xwaw\n"
+    "     awlksmlurtw osa bnw skwaybump wmvuasmiwmb. Vw tsshwd yb Lqtbuel ymd\n"
+    "     dwlupmwd bnw mwx lflbwi bs rw yl esiktwz ymd eafkbue yl ksllurtw bs\n"
+    "     iyzuiujw eylqyt qlwal' oaqlbaybusm twvwtl, eyttump ub Smuz yl y kyasdf so\n"
+    "     Lqtbuel, yl xwtt yl sbnwa isaw aulcqw yttqlusml.\n"
     "\n"
-    "     'Gura Qraavf naq Oevna jbexrq ba n gehyl jnecrq irefvba bs Cnfpny, pnyyrq\n"
-    "     N. Jura jr sbhaq bguref jrer npghnyyl gelvat gb perngr erny cebtenzf\n"
-    "     jvgu N, jr dhvpxyl nqqrq nqqvgvbany pelcgvp srngherf naq ribyirq vagb O,\n"
-    "     OPCY, naq svanyyl P. Jr fgbccrq jura jr tbg n pyrna pbzcvyr ba gur\n"
-    "     sbyybjvat flagnk:\n"
+    "     'Tnwm Rwmmul ymd Nauym xsahwd sm y baqtf xyakwd vwalusm so Eyleyt, eyttwd\n"
+    "     G. Vnwm xw osqmd sbnwal xwaw yebqyttf bafump bs eawybw awyt kaspayil\n"
+    "     xubn G, xw cquehtf yddwd yddubusmyt eafkbue owybqawl ymd wvstvwd umbs N,\n"
+    "     NIEY, ymd oumyttf I. Vw lbskkwd xnwm xw psb y etwym esikutw sm bnw\n"
+    "     osttsxump lfmbyz:\n"
     "\n"
-    "      sbe(;C(\\\"\\a\\\"),E=;C(\\\"|\\\"))sbe(r=P;r=C(\\\"_\\\"+(*h++/\n"
-    "	   8)%2))C(\\\"|\\\"+(*h/4)%2);\n"
+    "      osa(;E(\\\"\\m\\\"),M=;E(\\\"|\\\"))osa(w=I;w=E(\\\"_\\\"+(*q++/\n"
+    "	   8)%2))E(\\\"|\\\"+(*q/4)%2);\n"
     "\n"
-    "   'Gb guvax gung zbqrea cebtenzzref jbhyq gel gb hfr n ynathntr gung nyybjrq\n"
-    "   fhpu n fgngrzrag jnf orlbaq bhe pbzcerurafvba! Jr npghnyyl gubhtug bs\n"
-    "   fryyvat guvf gb gur Fbivrgf gb frg gurve pbzchgre fpvrapr cebterff onpx 20\n"
-    "   be zber lrnef. Vzntvar bhe fhecevfr jura NG&G naq bgure H.F. pbecbengvbaf\n"
-    "   npghnyyl ortna gelvat gb hfr Havk naq P!  Vg unf gnxra gurz 20 lrnef gb\n"
-    "   qrirybc rabhtu rkcregvfr gb trarengr rira znetvanyyl hfrshy nccyvpngvbaf\n"
-    "   hfvat guvf 1960f grpuabybtvpny cnebql, ohg jr ner vzcerffrq jvgu gur\n"
-    "   granpvgl (vs abg pbzzba frafr) bs gur trareny Havk naq P cebtenzzre.\n"
+    "   'Ts bnumh bnyb isdwam kaspayiiwal xsqtd baf bs qlw y tympqypw bnyb yttsxwd\n"
+    "   lqen y lbybwiwmb xyl rwfsmd sqa esikawnwmlusm! Vw yebqyttf bnsqpnb so\n"
+    "   lwttump bnul bs bnw Usvuwbl bs lwb bnwua esikqbwa leuwmew kaspawll ryeh 20\n"
+    "   sa isaw fwyal. Ciypumw sqa lqakaulw xnwm GT&T ymd sbnwa S.U. esaksaybusml\n"
+    "   yebqyttf rwpym bafump bs qlw Smuz ymd I!  Cb nyl byhwm bnwi 20 fwyal bs\n"
+    "   dwvwtsk wmsqpn wzkwabulw bs pwmwaybw wvwm iyapumyttf qlwoqt ykktueybusml\n"
+    "   qlump bnul 1960l bwenmstspueyt kyasdf, rqb xw yaw uikawllwd xubn bnw\n"
+    "   bwmyeubf (uo msb esiism lwmlw) so bnw pwmwayt Smuz ymd I kaspayiiwa.\n"
     "\n"
-    "   'Va nal rirag, Oevna, Qraavf, naq V unir orra jbexvat rkpyhfviryl va\n"
-    "   Yvfc ba gur Nccyr Znpvagbfu sbe gur cnfg srj lrnef naq srry ernyyl\n"
-    "   thvygl nobhg gur punbf, pbashfvba, naq gehyl onq cebtenzzvat gung\n"
-    "   unf erfhygrq sebz bhe fvyyl cenax fb ybat ntb.'\n"
+    "   'Cm ymf wvwmb, Nauym, Rwmmul, ymd C nyvw rwwm xsahump wzetqluvwtf um\n"
+    "   Yulk sm bnw Gkktw Lyeumbsln osa bnw kylb owx fwyal ymd owwt awyttf\n"
+    "   pqutbf yrsqb bnw enysl, esmoqlusm, ymd baqtf ryd kaspayiiump bnyb\n"
+    "   nyl awlqtbwd oasi sqa luttf kaymh ls tsmp yps.'\n"
     "\n"
-    "Znwbe Havk naq P iraqbef naq phfgbzref, vapyhqvat NG&G, Zvpebfbsg,\n"
-    "Urjyrgg-Cnpxneq, TGR, APE, naq QRP unir ershfrq pbzzrag ng guvf gvzr.  Obeynaq\n"
-    "Vagreangvbany, n yrnqvat iraqbe bs Cnfpny naq P gbbyf, vapyhqvat gur cbchyne\n"
-    "Gheob Cnfpny, Gheob P, naq Gheob P++, fgngrq gurl unq fhfcrpgrq guvf sbe n\n"
-    "ahzore bs lrnef naq jbhyq pbagvahr gb raunapr gurve Cnfpny cebqhpgf naq unyg\n"
-    "shegure rssbegf gb qrirybc P. Na VOZ fcbxrfzna oebxr vagb hapbagebyyrq ynhtugre\n"
-    "naq unq gb cbfgcbar n unfgvyl pbairarq arjf pbasrerapr pbapreavat gur sngr bs\n"
-    "gur EF/6000, zreryl fgngvat 'Jbexcynpr BF jvyy or ninvynoyr Erny Fbba Abj.' Va\n"
-    "n pelcgvp fgngrzrag, Cebsrffbe Jvegu bs gur RGU Vafgvghgr naq sngure bs gur\n"
-    "Cnfpny, Zbqhyn 2, naq Boreba fgehpgherq ynathntrf, zreryl fgngrq gung C. G.\n"
-    "Oneahz jnf pbeerpg.",
+    "Lygsa Smuz ymd I vwmdsal ymd eqlbsiwal, umetqdump GT&T, Lueaslsob,\n"
+    "Kwxtwbb-Eyehyad, WTO, FIM, ymd ROI nyvw awoqlwd esiiwmb yb bnul buiw.  Nsatymd\n"
+    "Cmbwamybusmyt, y twydump vwmdsa so Eyleyt ymd I bsstl, umetqdump bnw kskqtya\n"
+    "Tqars Eyleyt, Tqars I, ymd Tqars I++, lbybwd bnwf nyd lqlkwebwd bnul osa y\n"
+    "mqirwa so fwyal ymd xsqtd esmbumqw bs wmnymew bnwua Eyleyt kasdqebl ymd nytb\n"
+    "oqabnwa woosabl bs dwvwtsk I. Gm CNL lkshwliym rashw umbs qmesmbasttwd tyqpnbwa\n"
+    "ymd nyd bs kslbksmw y nylbutf esmvwmwd mwxl esmowawmew esmewamump bnw oybw so\n"
+    "bnw MU/6000, iwawtf lbybump 'Vsahktyew DU xutt rw yvyutyrtw Mwyt Ussm Fsx.' Cm\n"
+    "y eafkbue lbybwiwmb, Easowllsa Vuabn so bnw OTK Cmlbubqbw ymd oybnwa so bnw\n"
+    "Eyleyt, Lsdqty 2, ymd Drwasm lbaqebqawd tympqypwl, iwawtf lbybwd bnyb E. T.\n"
+    "Nyamqi xyl esaaweb.",
 
-    "QVQ LBH XABJ gung va Arj Wrefrl vg vf ntnvafg gur ynj gb jrne n ohyyrgcebbs\n"
-    "irfg juvyr pbzzvggvat n zheqre?\n"
+    "RCR ZDS BFDV bnyb um Fwx Awalwf ub ul ypyumlb bnw tyx bs xwya y rqttwbkasso\n"
+    "vwlb xnutw esiiubbump y iqadwa?\n"
     "\n"
-    "Qbrf gung zrna vg'f yrtny gb qb fb vs lbh'er abg jrnevat n ohyyrgcebbs irfg?",
+    "Rswl bnyb iwym ub'l twpyt bs ds ls uo fsq'aw msb xwyaump y rqttwbkasso vwlb?",
 
-    "QVQ LBH XABJ gung va Craaflyinavn vg vf vyyrtny gb fyrrc ba gbc bs n\n"
-    "ersevtrengbe bhgqbbef?\n"
+    "RCR ZDS BFDV bnyb um Ewmmlftvymuy ub ul uttwpyt bs ltwwk sm bsk so y\n"
+    "awoaupwaybsa sqbdssal?\n"
     "\n"
-    "Sbeghangryl nalbar gelvat gb qb fb jbhyq cebonoyl ebyy bss vg, znxvat vg\n"
-    "vzcbffvoyr sbe gur nhgubevgvrf gb punetr gurz jvgu fyrrcvat ba n ersevtrengbe\n"
-    "bhgqbbef. Bs pbhefr gurl zvtug oernx gurve onpx be arpx ohg gurl jba'g or\n"
-    "punetrq jvgu fyrrcvat ba n ersevtrengbe!",
+    "Hsabqmybwtf ymfsmw bafump bs ds ls xsqtd kasryrtf astt soo ub, iyhump ub\n"
+    "uiksllurtw osa bnw yqbnsaubuwl bs enyapw bnwi xubn ltwwkump sm y awoaupwaybsa\n"
+    "sqbdssal. Do esqalw bnwf iupnb rawyh bnwua ryeh sa mweh rqb bnwf xsm'b rw\n"
+    "enyapwd xubn ltwwkump sm y awoaupwaybsa!",
 
-    "QVQ LBH XABJ gung va Buvb vg vf vyyrtny sbe zber guna svir jbzra gb yvir va n\n"
-    "ubhfr?\n"
+    "RCR ZDS BFDV bnyb um Dnus ub ul uttwpyt osa isaw bnym ouvw xsiwm bs tuvw um y\n"
+    "nsqlw?\n"
     "\n"
-    "Vf guvf orpnhfr gurl'er nsenvq bs cebterff? V zrna vg'f hayvxryl gb unccra\n"
-    "jvgu svir zra yvivat va n ubhfr hayrff cebterff vf nethvat!",
+    "Cl bnul rweyqlw bnwf'aw yoayud so kaspawll? C iwym ub'l qmtuhwtf bs nykkwm\n"
+    "xubn ouvw iwm tuvump um y nsqlw qmtwll kaspawll ul yapqump!",
 
-    "QVQ LBH XABJ gung va Arj Lbex gur cranygl sbe whzcvat bss n ohvyqvat vf qrngu?\n"
+    "RCR ZDS BFDV bnyb um Fwx Zsah bnw kwmytbf osa gqikump soo y rqutdump ul dwybn?\n"
     "\n"
-    "Arj Lbex, jurer fbzr crbcyr unir gjb yvirf. Whfg jnvg hagvy Arj Lbexref urne\n"
-    "nobhg pngf!",
+    "Fwx Zsah, xnwaw lsiw kwsktw nyvw bxs tuvwl. Aqlb xyub qmbut Fwx Zsahwal nwya\n"
+    "yrsqb eybl!",
 
-    "Vs Cynarg Rnegu jnf zragnyyl vyy vg jbhyq or qvntabfrq ovcbyne.\n"
-    "-- Krkly",
-
-
-    "Jura V svaq zl pbqr va gbaf bs gebhoyr,\n"
-    "Sevraqf naq pbyyrnthrf pbzr gb zr,\n"
-    "Fcrnxvat jbeqf bs jvfqbz:\n"
-    "'Jevgr va P.'\n"
-    "\n"
-    "Nf gur qrnqyvar snfg nccebnpurf,\n"
-    "Naq ohtf ner nyy gung V pna frr,\n"
-    "Fbzrjurer, fbzrbar juvfcref:\n"
-    "'Jevgr va P.'\n"
-    "\n"
-    "Jevgr va P, jevgr va P,\n"
-    "Jevgr va P, bu, jevgr va P.\n"
-    "YVFC vf qrnq naq ohevrq,\n"
-    "Jevgr va P.\n"
-    "\n"
-    "V hfrq gb jevgr n ybg bs SBEGENA,\n"
-    "Sbe fpvrapr vg jbexrq synjyrffyl.\n"
-    "Gel hfvat vg sbe tencuvpf!\n"
-    "Jevgr va P.\n"
-    "\n"
-    "Vs lbh'ir whfg fcrag arneyl 30 ubhef\n"
-    "Qrohttvat fbzr nffrzoyl,\n"
-    "Fbba lbh jvyy or tynq gb\n"
-    "Jevgr va P.\n"
-    "\n"
-    "Jevgr va P, jevgr va P,\n"
-    "Jevgr va P, lrnu, jevgr va P.\n"
-    "Bayl jvzcf hfr ONFVP.\n"
-    "Jevgr va P.\n"
-    "\n"
-    "Jevgr va P, jevgr va P,\n"
-    "Jevgr va P, bu, jevgr va P.\n"
-    "Cnfpny jba'g dhvgr phg vg.\n"
-    "Jevgr va P.\n"
-    "\n"
-    "Jevgr va P, jevgr va P,\n"
-    "Jevgr va P, lrnu, jevgr va P.\n"
-    "Qba'g rira zragvba PBOBY.\n"
-    "Jevgr va P.\n"
-    "\n"
-    "Naq jura gur fperra vf shmml,\n"
-    "Naq gur rqvgbe vf ohttvat zr.\n"
-    "V'z fvpx bs barf naq mrebf,\n"
-    "Jevgr va P.\n"
-    "\n"
-    "N gubhfnaq crbcyr fjrne gung G.C.\n"
-    "Frira vf gur bar sbe zr.\n"
-    "V ungr gur jbeq CEBPRQHER,\n"
-    "Jevgr va P.\n"
-    "\n"
-    "Jevgr va P, jevgr va P,\n"
-    "Jevgr va P, lrnu, jevgr va P.\n"
-    "CY1 vf '80f,\n"
-    "Jevgr va P.\n"
-    "\n"
-    "Jevgr va P, jevgr va P,\n"
-    "Jevgr va P, lrnu, jevgr va P.\n"
-    "Gur tbireazrag ybirf NQN,\n"
-    "Jevgr va P.",
-
-    "Ubj qb zngurzngvpvnaf terrg crbcyr? Ol fvar jnirf.\n"
-    "-- Krkly",
-
-    "Fvqrjnyx: Jnyxvat fvqrjnlf.\n"
-    "-- Krkly",
-
-    "'Jr sbhaq gur fnaq jnf abg yvxr gur fnaq va gur oebpuher. Lbhe oebpuher fubjf\n"
-    "gur fnaq nf juvgr ohg vg jnf zber lryybj.'\n"
-    "\n"
-    "Creuncf lbh fubhyq qevax zber jngre fb lbh'er abg nf qrulqengrq? :-)",
-
-    " Wra: Vg whfg frrzf yvxr n jrveq cynpr gb tb ba sver.\n"
-    " Ebl: Vg'f n irel jrveq cynpr gb tb ba sver! N sver ng n Frn Cnexf? Vg'f gur\n"
-    "      jrveqrfg guvat V'ir rire urneq!  V zrna, znlor... Znlor vs gurer jrer\n"
-    "      cynfgvp frngf, znlor gurl pbhyq tb ba...\n"
-    "Zbff: Gurl qba'g unir cynfgvp frngf ng Frn Cnexf.\n"
-    " Ebl: Ubj qb lbh xabj?\n"
-    "\n"
-    "Zbff: Ebl, jura V jnf ba ubyvqnl, V yvirq ng Frn Cnexf.  Vg'f gur shaarfg,\n"
-    "      jrggrfg, zbfg fcyvfu-fcynful cynpr va gur jbeyq.\n"
-    " Ebl: Bxnl, qvq lbh tb naq frr gur frn yvba fubj?\n"
-    "Zbff: Guerr gvzrf n qnl sbe gjb jrrxf.\n"
-    " Ebl: Naq qvq gurl unir cynfgvp...\n"
-    "Zbff: Ab, vg'f nyy fgbar fgrcf.\n"
-    " Ebl: Gura jung jrag ba sver? V'ir purpxrq Jvxvcrqvn. Gurer vf ab zragvba bs n\n"
-    "      sver ng nal Frn Cnexf.\n"
-    "\n"
-    " Wra: Qb lbh guvax znlor fur'f ylvat?\n"
-    " Ebl: Ab. V zrna, jul jbhyq fur yvr? Naq vs fur jnf tbvat gb yvr, jul jbhyq fur\n"
-    "      hfr guvf bar? N sver ng n Frn Cnexf? Vgf jerpxvat zl urnq! V zrna, vs fur\n"
-    "      unq fnvq gung ure cneragf unq qebjarq, V'q or gur unccvrfg zna va gur\n"
-    "      jbeyq. Ohg n sver? Ng n Frn Cnexf? V zrna. Vg'f whfg... Vg whfg... Bu,\n"
-    "      vg'f whfg... Vg bcraf hc n ybg bs dhrfgvbaf.\n"
-    " Wra: Jryy, znlor lbh pbhyq nfx ure.\n"
-    " Ebl: Ab, ab, ab, ab. Jr pna arire gnyx nobhg vg ntnva.\n"
-    " Wra: Jryy, znlor lbh pbhyq whfg.\n"
-    " Ebl: Ab, ab. Ab, ab, ab. Jr pna arire gnyx nobhg vg sbe gur erfg bs bhe yvirf.\n"
-    " Wra: Jryy, gura V fhccbfr lbh'er whfg tbvat gb unir gb gel naq fgbc guvaxvat\n"
-    "      nobhg vg.\n"
-    "Zbff: Gung'f nabgure terng vqrn! Lbh'er ba sver! Vs lbh'yy cneqba gur\n"
-    "      rkcerffvba.\n"
-    "\n"
-    "-- Gur VG Pebjq, Frevrf 4 Rcvfbqr 4",
-
-    "Lrfgreqnl,\n"
-    "Nyy gubfr onpxhcf frrzrq n jnfgr bs cnl.\n"
-    "Abj zl qngnonfr unf tbar njnl.\n"
-    "Bu V oryvrir va lrfgreqnl.\n"
-    "\n"
-    "Fhqqrayl,\n"
-    "Gurer'f abg unys gur svyrf gurer hfrq gb or,\n"
-    "Naq gurer'f n qrnqyvar\n"
-    "unatvat bire zr.\n"
-    "Gur flfgrz penfurq fb fhqqrayl.\n"
-    "\n"
-    "V chfurq fbzrguvat jebat\n"
-    "Jung vg jnf V pbhyq abg fnl.\n"
-    "Abj zl qngn'f tbar\n"
-    "naq V ybat sbe lrfgreqnl-nl-nl-nl.\n"
-    "\n"
-    "Lrfgreqnl,\n"
-    "Gur arrq sbe onpx-hcf frrzrq fb sne njnl.\n"
-    "Gubhtug nyy zl qngn jnf urer gb fgnl,\n"
-    "Abj V oryvrir va lrfgreqnl.",
-
-    "QVQ LBH XABJ gung va Eubqr Vfynaq evqvat n ubefr bire nal choyvp uvtujnl sbe\n"
-    "gur checbfr bs enpvat be grfgvat gur fcrrq bs gur ubefr vf vyyrtny?\n"
-    "\n"
-    "Jung nobhg qevivat n pne arkg gb n ubefr sbe gur fnzr checbfr?",
-
-    "Qvq lbh xabj gung gur grpuavpny grezf sbe pncvgny yrggref ner 'znwhfphyr' naq\n"
-    "'hapvny' naq gur grpuavpny grez sbe ybjre pnfr yrggref vf 'zvahfphyr'?\n",
-
-    "QVQ LBH XABJ gung va Arj Unzcfuver lbh znl abg gnc lbhe srrg, abq lbhe urnq, be\n"
-    "va nal jnl xrrc gvzr gb gur zhfvp va n gnirea, erfgnhenag be pnsé?\n"
-    "\n"
-    "Arj Unzcfuver, jurer zhfvpvnaf cynl bssorng!",
-
-    "Gjb purzvfgf jnyx vagb n one.\n"
-    "\n"
-    "Gur svefg purzvfg fnlf, 'V'yy unir n tynff bs U2B.'\n"
-    "\n"
-    "Gur frpbaq purzvfg fnlf, 'V'yy unir n tynff bs U2B gbb.'\n"
-    "Gur frpbaq purzvfg qvrf.",
-
-    "'Lbh ner n yvne. V nz ab zber n jvgpu guna lbh ner n jvmneq naq vs lbh gnxr\n"
-    "njnl zl yvsr tbq jvyy tvir lbh oybbq gb qevax!'\n"
-    "\n"
-    "Ynfg jbeqf bs pbaqrzarq 'jvgpu' Fnenu Tbbq 19 Whyl 1692 gb Erireraq Avpbynf\n"
-    "Ablrf nsgre ur gevrq gb trg ure gb 'pbasrff'. 25 lrnef yngre va 1717 ur jbhyq\n"
-    "qvr sebz n unrzbeeuntr, pubxvat ba uvf bja oybbq.\n",
-
-    "Shaal Trezna fnlvat:\n"
-    "\n"
-    "    Rva Znaa rva Jbeg\n"
-    "    Rvar Senh rva Jöegreohpu.\n"
-    "\n"
-    "    Bar zna bar jbeq\n"
-    "    bar jbzna bar qvpgvbanel.\n",
-
-    "OERNXVAT ARJF sebz ANFN, 18 Znepu 2022, zber guna 52 lrnef nsgre gur svefg\n"
-    "ynaqvat ba gur Zbba naq zber guna 62 lrnef nsgre gur perngvba bs ANFN.\n"
-    "\n"
-    "Va na naabhaprzrag gung gung unf fubpxrq fbzr crbcyr, znqr fbzr fzht naq chg\n"
-    "bguref va qvforyvrs, ANFN unf sbe gur svefg gvzr naabhaprq gung obgu gur Zbba\n"
-    "naq gur Fha ubfg yvsr naq jung jr nyy gubhtug jrer pbvapvqragny anzrf ner\n"
-    "nalguvat ohg.\n"
-    "\n"
-    "Vg gheaf bhg gung zbba ornef bevtvanyyl pbzr sebz gur Zbba naq fha ornef\n"
-    "bevtvanyyl pbzr sebz gur Fha. Gur qvrg bs zbba ornef vf zbfgyl ubarlzbbaf ba\n"
-    "fgvpxf naq gur qvrg bs gur fha orne vf fha-onxrq ubarl pnxrf.\n"
-    "\n"
-    "Jung'f zber vf gung gur zbba ornef naq fha ornef ba Rnegu ner npghnyyl yrff\n"
-    "vagryyvtrag guna gubfr ba gur Zbba naq Fha. Nppbeqvat gb n fcbxrfcrefba sebz\n"
-    "ANFN gur zbba ornef ba gur Zbba naq fha ornef ba gur Fha pna gnyx gb rnpu bgure\n"
-    "va jnlf gung zbfg uhznaf pna'g cbffvoyl sngubz.\n"
-    "\n"
-    "Jura fprcgvpf nfxrq jul gurer'f ab cubgbtencuvp rivqrapr bs gur ornef gur\n"
-    "fcbxrfcrefba fnvq gung vg'f orpnhfr gur ornef ner rkgerzryl ful bs uhznaf naq\n"
-    "nggrzcg gb nibvq nyy pbagnpg jvgu zna, ntnva fubjvat zber vagryyvtrapr guna\n"
-    "gurve Rnegu qrfpraqnagf.\n"
-    "\n"
-    "Nf sbe ubj gur fha ornef pna cbffvoyl yvir ba gur Fha be gur zbba ornef ba gur\n"
-    "Zbba, vg'f fbzrguvat gung nsgre nyy gurfr lrnef ANFN unf lrg gb svther bhg; vg\n"
-    "frrzf vzcbffvoyr ohg nsgre nyy, gurfr ornef ner uvtuyl vagryyvtrag naq unir\n"
-    "qrprvirq uhznaf sbe nyy gurfr lrnef naq guebhtu ribyhgvba gurl pregnvayl pnzr\n"
-    "hc jvgu jnlf gb fheivir whfg yvxr jr unir qrfcvgr bhe frevbhf varcgvghqrf naq\n"
-    "irel pybfr pnyyf gbjneqf rkgvapgvba.\n",
-
-    "QVQ LBH XABJ gung va Vaqvnan bar nezrq cvnavfgf zhfg cresbez sbe serr?\n"
-    "\n"
-    "Vs gur ynjznxref jrer ybtvpny, gurl jbhyq unir znqr vg unys cevpr sbe unys n\n"
-    "cresbezre. Ohg ernyvfgvpnyyl gurl fubhyq or noyr gb punetr gjvpr nf zhpu gb\n"
-    "pbzcrafngr gurve zvffvat (bgure?) unys.",
-
-    "QVQ LBH XABJ gung va Zvffbhev fvatyr zra orgjrra gur ntrf bs 21 naq 50 zhfg cnl\n"
-    "na naahny gnk bs bar qbyyne?\n"
-    "\n"
-    "Vs lbh guvax orvat nybar vf onq, vg'f rira jbefr va Zvffbhev jurer vs lbh'er\n"
-    "n zna orgjrra gur ntrf bs 21 naq 50 lbh ner gnkrq! Gung'f tbg gb or n\n"
-    "pbasvqrapr obbfgre!",
-
-    "QVQ LBH XABJ gung va Vyyvabvf lbh znl or neerfgrq sbe intenapl vs lbh qb abg\n"
-    "unir ng yrnfg bar qbyyne ba lbhe crefba?\n"
-    "\n"
-    "Va bgure jbeqf, va Vyyvabvf vs lbh'er n ohz lbh unir gb unir ng yrnfg n\n"
-    "qbyyne ng nyy gvzrf. Vs lbh'er n ohz va gur erfg bs gur Havgrq Fgngrf bs\n"
-    "Nzrevpn lbh qba'g. Vs ubjrire lbh'er n ohz va gur HX - jryy vg zvtug or rira\n"
-    "jbefr!",
-
-    "QVQ LBH XABJ gung va Vbjn zbhfgnpurf ner vyyrtny vs gur ornere unf n graqrapl\n"
-    "gb unovghnyyl xvff bgure uhznaf?\n"
-    "\n"
-    "Nf bccbfrq gb abg graqvat gb unovghnyyl xvff bguref?",
+    "Co Etymwb Oyabn xyl iwmbyttf utt ub xsqtd rw duypmslwd rukstya.\n"
+    "-- Xwzft",
 
 
-    "QVQ LBH XABJ gung va Qrynjner vg vf vyyrtny gb syl bire nal obql bs jngre,\n"
-    "hayrff bar vf pneelvat fhssvpvrag fhccyvrf bs sbbq naq qevax?\n"
+    "Vnwm C oumd if esdw um bsml so basqrtw,\n"
+    "Hauwmdl ymd esttwypqwl esiw bs iw,\n"
+    "Ukwyhump xsadl so xuldsi:\n"
+    "'Vaubw um I.'\n"
     "\n"
-    "Jung qbrf guvf zrna sbe gubfr jvgu naberkvn areibfn? Jung nobhg ohyvzvn\n"
-    "areibfn be nabgure rngvat qvfbeqre? Jung vs lbh'er ba n fgevpg qvrg be vs sbe\n"
-    "fbzr fgenatr ernfba lbh'er sylvat gb unir n pbybabfpbcl?",
+    "Gl bnw dwydtumw oylb ykkasyenwl,\n"
+    "Gmd rqpl yaw ytt bnyb C eym lww,\n"
+    "Usiwxnwaw, lsiwsmw xnulkwal:\n"
+    "'Vaubw um I.'\n"
+    "\n"
+    "Vaubw um I, xaubw um I,\n"
+    "Vaubw um I, sn, xaubw um I.\n"
+    "YCUE ul dwyd ymd rqauwd,\n"
+    "Vaubw um I.\n"
+    "\n"
+    "C qlwd bs xaubw y tsb so HDMTMGF,\n"
+    "Hsa leuwmew ub xsahwd otyxtwlltf.\n"
+    "Taf qlump ub osa payknuel!\n"
+    "Vaubw um I.\n"
+    "\n"
+    "Co fsq'vw gqlb lkwmb mwyatf 30 nsqal\n"
+    "Rwrqppump lsiw yllwirtf,\n"
+    "Ussm fsq xutt rw ptyd bs\n"
+    "Vaubw um I.\n"
+    "\n"
+    "Vaubw um I, xaubw um I,\n"
+    "Vaubw um I, fwyn, xaubw um I.\n"
+    "Dmtf xuikl qlw NGUCI.\n"
+    "Vaubw um I.\n"
+    "\n"
+    "Vaubw um I, xaubw um I,\n"
+    "Vaubw um I, sn, xaubw um I.\n"
+    "Eyleyt xsm'b cqubw eqb ub.\n"
+    "Vaubw um I.\n"
+    "\n"
+    "Vaubw um I, xaubw um I,\n"
+    "Vaubw um I, fwyn, xaubw um I.\n"
+    "Rsm'b wvwm iwmbusm IDNDY.\n"
+    "Vaubw um I.\n"
+    "\n"
+    "Gmd xnwm bnw leawwm ul oqjjf,\n"
+    "Gmd bnw wdubsa ul rqppump iw.\n"
+    "C'i lueh so smwl ymd jwasl,\n"
+    "Vaubw um I.\n"
+    "\n"
+    "G bnsqlymd kwsktw lxwya bnyb T.E.\n"
+    "Uwvwm ul bnw smw osa iw.\n"
+    "C nybw bnw xsad EMDIORSMO,\n"
+    "Vaubw um I.\n"
+    "\n"
+    "Vaubw um I, xaubw um I,\n"
+    "Vaubw um I, fwyn, xaubw um I.\n"
+    "EY1 ul '80l,\n"
+    "Vaubw um I.\n"
+    "\n"
+    "Vaubw um I, xaubw um I,\n"
+    "Vaubw um I, fwyn, xaubw um I.\n"
+    "Tnw psvwamiwmb tsvwl GRG,\n"
+    "Vaubw um I.",
 
-    "N zna jnf pebffvat n ebnq bar qnl jura n sebt pnyyrq bhg gb uvz naq fnvq, 'Vs\n"
-    "lbh xvff zr, V'yy ghea vagb n ornhgvshy cevaprff.'\n"
+    "Ksx ds iybnwiybueuyml pawwb kwsktw? Nf lumw xyvwl.\n"
+    "-- Xwzft",
+
+    "Uudwxyth: Vythump ludwxyfl.\n"
+    "-- Xwzft",
+
+    "'Vw osqmd bnw lymd xyl msb tuhw bnw lymd um bnw rasenqaw. Zsqa rasenqaw lnsxl\n"
+    "bnw lymd yl xnubw rqb ub xyl isaw fwttsx.'\n"
     "\n"
-    "Ur orag bire, cvpxrq hc gur sebt, naq chg vg va uvf cbpxrg. Gur sebt fcbxr hc\n"
-    "ntnva naq fnvq, 'Vs lbh xvff zr naq ghea zr onpx vagb n ornhgvshy cevaprff, V\n"
-    "jvyy gryy rirelbar ubj fzneg naq oenir lbh ner naq ubj lbh ner zl ureb.'\n"
+    "Ewanykl fsq lnsqtd daumh isaw xybwa ls fsq'aw msb yl dwnfdaybwd? :-)",
+
+    " Awm: Cb gqlb lwwil tuhw y xwuad ktyew bs ps sm ouaw.\n"
+    " Msf: Cb'l y vwaf xwuad ktyew bs ps sm ouaw! G ouaw yb y Uwy Eyahl? Cb'l bnw\n"
+    "      xwuadwlb bnump C'vw wvwa nwyad!  C iwym, iyfrw... Lyfrw uo bnwaw xwaw\n"
+    "      ktylbue lwybl, iyfrw bnwf esqtd ps sm...\n"
+    "Lsll: Tnwf dsm'b nyvw ktylbue lwybl yb Uwy Eyahl.\n"
+    " Msf: Ksx ds fsq hmsx?\n"
     "\n"
-    "Gur zna gbbx gur sebt bhg bs uvf cbpxrg, fzvyrq ng vg, naq erghearq vg gb uvf\n"
-    "cbpxrg. Gur sebt fcbxr hc ntnva naq fnvq, 'Vs lbh xvff zr naq ghea zr onpx vagb\n"
-    "n ornhgvshy cevaprff, V jvyy or lbhe ybivat pbzcnavba sbe na ragver jrrx.'\n"
+    "Lsll: Msf, xnwm C xyl sm nstudyf, C tuvwd yb Uwy Eyahl.  Cb'l bnw oqmmwlb,\n"
+    "      xwbbwlb, islb lktuln-lktylnf ktyew um bnw xsatd.\n"
+    " Msf: Dhyf, dud fsq ps ymd lww bnw lwy tusm lnsx?\n"
+    "Lsll: Tnaww buiwl y dyf osa bxs xwwhl.\n"
+    " Msf: Gmd dud bnwf nyvw ktylbue...\n"
+    "Lsll: Fs, ub'l ytt lbsmw lbwkl.\n"
+    " Msf: Tnwm xnyb xwmb sm ouaw? C'vw enwehwd Vuhukwduy. Tnwaw ul ms iwmbusm so y\n"
+    "      ouaw yb ymf Uwy Eyahl.\n"
     "\n"
-    "Gur zna gbbx gur sebt bhg bs uvf cbpxrg, fzvyrq ng vg, naq erghearq vg gb uvf\n"
-    "cbpxrg. Gur sebt gura pevrq bhg, 'Vs lbh xvff zr naq ghea zr onpx vagb n\n"
-    "cevaprff, V'yy fgnl jvgu lbh sbe n lrne naq qb NALGUVAT lbh jnag.'\n"
+    " Awm: Rs fsq bnumh iyfrw lnw'l tfump?\n"
+    " Msf: Fs. C iwym, xnf xsqtd lnw tuw? Gmd uo lnw xyl psump bs tuw, xnf xsqtd lnw\n"
+    "      qlw bnul smw? G ouaw yb y Uwy Eyahl? Cbl xawehump if nwyd! C iwym, uo lnw\n"
+    "      nyd lyud bnyb nwa kyawmbl nyd dasxmwd, C'd rw bnw nykkuwlb iym um bnw\n"
+    "      xsatd. Nqb y ouaw? Gb y Uwy Eyahl? C iwym. Cb'l gqlb... Cb gqlb... Dn,\n"
+    "      ub'l gqlb... Cb skwml qk y tsb so cqwlbusml.\n"
+    " Awm: Vwtt, iyfrw fsq esqtd ylh nwa.\n"
+    " Msf: Fs, ms, ms, ms. Vw eym mwvwa byth yrsqb ub ypyum.\n"
+    " Awm: Vwtt, iyfrw fsq esqtd gqlb.\n"
+    " Msf: Fs, ms. Fs, ms, ms. Vw eym mwvwa byth yrsqb ub osa bnw awlb so sqa tuvwl.\n"
+    " Awm: Vwtt, bnwm C lqkkslw fsq'aw gqlb psump bs nyvw bs baf ymd lbsk bnumhump\n"
+    "      yrsqb ub.\n"
+    "Lsll: Tnyb'l ymsbnwa pawyb udwy! Zsq'aw sm ouaw! Co fsq'tt kyadsm bnw\n"
+    "      wzkawllusm.\n"
     "\n"
-    "Ntnva gur zna gbbx gur sebt bhg, fzvyrq ng vg, naq chg vg onpx vagb uvf cbpxrg.\n"
-    "Svanyyl, gur sebt nfxrq, 'Jung vf gur znggre? V'ir gbyq lbh V'z n ornhgvshy\n"
-    "cevaprff, gung V'yy fgnl jvgu lbh sbe n lrne naq qb nalguvat lbh jnag. Jul\n"
-    "jba'g lbh xvff zr?'\n"
+    "-- Tnw CT Iasxd, Uwauwl 4 Okulsdw 4",
+
+    "Zwlbwadyf,\n"
+    "Gtt bnslw ryehqkl lwwiwd y xylbw so kyf.\n"
+    "Fsx if dybyrylw nyl psmw yxyf.\n"
+    "Dn C rwtuwvw um fwlbwadyf.\n"
     "\n"
-    "Gur zna fnvq, 'Ybbx, V'z n pbzchgre cebtenzzre. V qba'g unir gvzr sbe n\n"
-    "tveysevraq, ohg n gnyxvat sebt vf pbby.'",
+    "Uqddwmtf,\n"
+    "Tnwaw'l msb nyto bnw outwl bnwaw qlwd bs rw,\n"
+    "Gmd bnwaw'l y dwydtumw\n"
+    "nympump svwa iw.\n"
+    "Tnw lflbwi eaylnwd ls lqddwmtf.\n"
+    "\n"
+    "C kqlnwd lsiwbnump xasmp\n"
+    "Vnyb ub xyl C esqtd msb lyf.\n"
+    "Fsx if dyby'l psmw\n"
+    "ymd C tsmp osa fwlbwadyf-yf-yf-yf.\n"
+    "\n"
+    "Zwlbwadyf,\n"
+    "Tnw mwwd osa ryeh-qkl lwwiwd ls oya yxyf.\n"
+    "Tnsqpnb ytt if dyby xyl nwaw bs lbyf,\n"
+    "Fsx C rwtuwvw um fwlbwadyf.",
+
+    "RCR ZDS BFDV bnyb um Mnsdw Cltymd audump y nsalw svwa ymf kqrtue nupnxyf osa\n"
+    "bnw kqakslw so ayeump sa bwlbump bnw lkwwd so bnw nsalw ul uttwpyt?\n"
+    "\n"
+    "Vnyb yrsqb dauvump y eya mwzb bs y nsalw osa bnw lyiw kqakslw?",
+
+    "Rud fsq hmsx bnyb bnw bwenmueyt bwail osa eykubyt twbbwal yaw 'iygqleqtw' ymd\n"
+    "'qmeuyt' ymd bnw bwenmueyt bwai osa tsxwa eylw twbbwal ul 'iumqleqtw'?\n",
+
+    "RCR ZDS BFDV bnyb um Fwx Kyiklnuaw fsq iyf msb byk fsqa owwb, msd fsqa nwyd, sa\n"
+    "um ymf xyf hwwk buiw bs bnw iqlue um y byvwam, awlbyqaymb sa eyoé?\n"
+    "\n"
+    "Fwx Kyiklnuaw, xnwaw iqlueuyml ktyf soorwyb!",
+
+    "Txs enwiulbl xyth umbs y rya.\n"
+    "\n"
+    "Tnw oualb enwiulb lyfl, 'C'tt nyvw y ptyll so K2D.'\n"
+    "\n"
+    "Tnw lwesmd enwiulb lyfl, 'C'tt nyvw y ptyll so K2D bss.'\n"
+    "Tnw lwesmd enwiulb duwl.",
+
+    "'Zsq yaw y tuya. C yi ms isaw y xuben bnym fsq yaw y xujyad ymd uo fsq byhw\n"
+    "yxyf if tuow psd xutt puvw fsq rtssd bs daumh!'\n"
+    "\n"
+    "Yylb xsadl so esmdwimwd 'xuben' Uyayn Wssd 19 Aqtf 1692 bs Mwvwawmd Fuestyl\n"
+    "Fsfwl yobwa nw bauwd bs pwb nwa bs 'esmowll'. 25 fwyal tybwa um 1717 nw xsqtd\n"
+    "duw oasi y nywisaanypw, enshump sm nul sxm rtssd.\n",
+
+    "Hqmmf Wwaiym lyfump:\n"
+    "\n"
+    "    Oum Lymm wum Vsab\n"
+    "    Oumw Hayq wum Vöabwarqen.\n"
+    "\n"
+    "    Dmw iym smw xsad\n"
+    "    smw xsiym smw duebusmyaf.\n",
+
+    "NMOGBCFW FOVU oasi FGUG, 18 Lyaen 2022, isaw bnym 52 fwyal yobwa bnw oualb\n"
+    "tymdump sm bnw Lssm ymd isaw bnym 62 fwyal yobwa bnw eawybusm so FGUG.\n"
+    "\n"
+    "Cm ym ymmsqmewiwmb bnyb bnyb nyl lnsehwd lsiw kwsktw, iydw lsiw liqp ymd kqb\n"
+    "sbnwal um dulrwtuwo, FGUG nyl osa bnw oualb buiw ymmsqmewd bnyb rsbn bnw Lssm\n"
+    "ymd bnw Uqm nslb tuow ymd xnyb xw ytt bnsqpnb xwaw esumeudwmbyt myiwl yaw\n"
+    "ymfbnump rqb.\n"
+    "\n"
+    "Cb bqaml sqb bnyb issm rwyal saupumyttf esiw oasi bnw Lssm ymd lqm rwyal\n"
+    "saupumyttf esiw oasi bnw Uqm. Tnw duwb so issm rwyal ul islbtf nsmwfissml sm\n"
+    "lbuehl ymd bnw duwb so bnw lqm rwya ul lqm-ryhwd nsmwf eyhwl.\n"
+    "\n"
+    "Vnyb'l isaw ul bnyb bnw issm rwyal ymd lqm rwyal sm Oyabn yaw yebqyttf twll\n"
+    "umbwttupwmb bnym bnslw sm bnw Lssm ymd Uqm. Geesadump bs y lkshwlkwalsm oasi\n"
+    "FGUG bnw issm rwyal sm bnw Lssm ymd lqm rwyal sm bnw Uqm eym byth bs wyen sbnwa\n"
+    "um xyfl bnyb islb nqiyml eym'b ksllurtf oybnsi.\n"
+    "\n"
+    "Vnwm lewkbuel ylhwd xnf bnwaw'l ms knsbspayknue wvudwmew so bnw rwyal bnw\n"
+    "lkshwlkwalsm lyud bnyb ub'l rweyqlw bnw rwyal yaw wzbawiwtf lnf so nqiyml ymd\n"
+    "ybbwikb bs yvsud ytt esmbyeb xubn iym, ypyum lnsxump isaw umbwttupwmew bnym\n"
+    "bnwua Oyabn dwlewmdymbl.\n"
+    "\n"
+    "Gl osa nsx bnw lqm rwyal eym ksllurtf tuvw sm bnw Uqm sa bnw issm rwyal sm bnw\n"
+    "Lssm, ub'l lsiwbnump bnyb yobwa ytt bnwlw fwyal FGUG nyl fwb bs oupqaw sqb; ub\n"
+    "lwwil uiksllurtw rqb yobwa ytt, bnwlw rwyal yaw nupntf umbwttupwmb ymd nyvw\n"
+    "dwewuvwd nqiyml osa ytt bnwlw fwyal ymd bnasqpn wvstqbusm bnwf ewabyumtf eyiw\n"
+    "qk xubn xyfl bs lqavuvw gqlb tuhw xw nyvw dwlkubw sqa lwausql umwkbubqdwl ymd\n"
+    "vwaf etslw eyttl bsxyadl wzbumebusm.\n",
+
+    "RCR ZDS BFDV bnyb um Cmduymy smw yaiwd kuymulbl iqlb kwaosai osa oaww?\n"
+    "\n"
+    "Co bnw tyxiyhwal xwaw tspueyt, bnwf xsqtd nyvw iydw ub nyto kauew osa nyto y\n"
+    "kwaosaiwa. Nqb awytulbueyttf bnwf lnsqtd rw yrtw bs enyapw bxuew yl iqen bs\n"
+    "esikwmlybw bnwua iullump (sbnwa?) nyto.",
+
+    "RCR ZDS BFDV bnyb um Lullsqau lumptw iwm rwbxwwm bnw ypwl so 21 ymd 50 iqlb kyf\n"
+    "ym ymmqyt byz so smw dsttya?\n"
+    "\n"
+    "Co fsq bnumh rwump ytsmw ul ryd, ub'l wvwm xsalw um Lullsqau xnwaw uo fsq'aw\n"
+    "y iym rwbxwwm bnw ypwl so 21 ymd 50 fsq yaw byzwd! Tnyb'l psb bs rw y\n"
+    "esmoudwmew rsslbwa!",
+
+    "RCR ZDS BFDV bnyb um Cttumsul fsq iyf rw yaawlbwd osa vypaymef uo fsq ds msb\n"
+    "nyvw yb twylb smw dsttya sm fsqa kwalsm?\n"
+    "\n"
+    "Cm sbnwa xsadl, um Cttumsul uo fsq'aw y rqi fsq nyvw bs nyvw yb twylb y\n"
+    "dsttya yb ytt buiwl. Co fsq'aw y rqi um bnw awlb so bnw Smubwd Ubybwl so\n"
+    "Giwauey fsq dsm'b. Co nsxwvwa fsq'aw y rqi um bnw SB - xwtt ub iupnb rw wvwm\n"
+    "xsalw!",
+
+    "RCR ZDS BFDV bnyb um Csxy isqlbyenwl yaw uttwpyt uo bnw rwyawa nyl y bwmdwmef\n"
+    "bs nyrubqyttf hull sbnwa nqiyml?\n"
+    "\n"
+    "Gl skkslwd bs msb bwmdump bs nyrubqyttf hull sbnwal?",
+
+
+    "RCR ZDS BFDV bnyb um Rwtyxyaw ub ul uttwpyt bs otf svwa ymf rsdf so xybwa,\n"
+    "qmtwll smw ul eyaafump lqooueuwmb lqkktuwl so ossd ymd daumh?\n"
+    "\n"
+    "Vnyb dswl bnul iwym osa bnslw xubn ymsawzuy mwavsly? Vnyb yrsqb rqtuiuy\n"
+    "mwavsly sa ymsbnwa wybump dulsadwa? Vnyb uo fsq'aw sm y lbaueb duwb sa uo osa\n"
+    "lsiw lbaympw awylsm fsq'aw otfump bs nyvw y estsmsleskf?",
+
+    "G iym xyl easllump y asyd smw dyf xnwm y oasp eyttwd sqb bs nui ymd lyud, 'Co\n"
+    "fsq hull iw, C'tt bqam umbs y rwyqbuoqt kaumewll.'\n"
+    "\n"
+    "Kw rwmb svwa, kuehwd qk bnw oasp, ymd kqb ub um nul ksehwb. Tnw oasp lkshw qk\n"
+    "ypyum ymd lyud, 'Co fsq hull iw ymd bqam iw ryeh umbs y rwyqbuoqt kaumewll, C\n"
+    "xutt bwtt wvwafsmw nsx liyab ymd rayvw fsq yaw ymd nsx fsq yaw if nwas.'\n"
+    "\n"
+    "Tnw iym bssh bnw oasp sqb so nul ksehwb, liutwd yb ub, ymd awbqamwd ub bs nul\n"
+    "ksehwb. Tnw oasp lkshw qk ypyum ymd lyud, 'Co fsq hull iw ymd bqam iw ryeh umbs\n"
+    "y rwyqbuoqt kaumewll, C xutt rw fsqa tsvump esikymusm osa ym wmbuaw xwwh.'\n"
+    "\n"
+    "Tnw iym bssh bnw oasp sqb so nul ksehwb, liutwd yb ub, ymd awbqamwd ub bs nul\n"
+    "ksehwb. Tnw oasp bnwm eauwd sqb, 'Co fsq hull iw ymd bqam iw ryeh umbs y\n"
+    "kaumewll, C'tt lbyf xubn fsq osa y fwya ymd ds GFZTKCFW fsq xymb.'\n"
+    "\n"
+    "Gpyum bnw iym bssh bnw oasp sqb, liutwd yb ub, ymd kqb ub ryeh umbs nul ksehwb.\n"
+    "Humyttf, bnw oasp ylhwd, 'Vnyb ul bnw iybbwa? C'vw bstd fsq C'i y rwyqbuoqt\n"
+    "kaumewll, bnyb C'tt lbyf xubn fsq osa y fwya ymd ds ymfbnump fsq xymb. Vnf\n"
+    "xsm'b fsq hull iw?'\n"
+    "\n"
+    "Tnw iym lyud, 'Yssh, C'i y esikqbwa kaspayiiwa. C dsm'b nyvw buiw osa y\n"
+    "puatoauwmd, rqb y bythump oasp ul esst.'",
+
     NULL
-};
-
+} ;
 
 
 /*
@@ -1098,14 +1098,22 @@ vrergfB(int four, int two)
 	     * explain anything.
 	     */
 
+
 	    /* case: just in case we consider the case */
-	    ret = putchar(islower(*p) /* this is a functional equivalent to a question mark: */ ?
+	    ret = islower(*p) /* this is a functional equivalent to a question mark: */ ?
 		/* absolute trigonometric runaround */
 		"nxistdwhowakprqfcvgzhjskelyybume"[((int)fabs(0x3BF261*sin((double)((*p-0141+(42-(1<<4)))%(0x2E4%42)))))&0x1f]
 		: /* you are looking at the functional equivalent of a colon */
 		/* try to absolutely positively trig this upper class character */
 		"NXAUTMWORWCKBLQPZDXVQJSTFHYlGIEE"[((int)fabs(043431066*sin((double)((1+*p-0x42+(0xd<<1))%((2*0x0DF)%42)))))&037]
-		);
+		;
+
+	    /* If you want to understand the next line you have to discover the
+	     * definition of the word 'tnetennba'!
+	     *
+	     * PS: foo is live wax.
+	     */
+	    ret = putchar(islower(ret) ? (foo+27)[ret - 'a']:(foo)[ret-'A']);
 	    if (ret == EOF) {
 		fwarnp(stderr, "abcdefg..", "that character was absolutely mixed with sin!\n");
 	    } else {
