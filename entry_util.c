@@ -972,7 +972,6 @@ object2author(struct json *node, unsigned int depth, struct json_sem *sem,
 	return false;
     }
 #endif /* XXX - unblock once the test function exists - XXX */
-#if 0 /* XXX - unblock once the test function exists - XXX */
     if (test_default_handle(default_handle) == false) {
 	if (val_err != NULL) {
 	    *val_err = werr_sem_val(105, node, depth, sem, __func__,
@@ -980,7 +979,6 @@ object2author(struct json *node, unsigned int depth, struct json_sem *sem,
 	}
 	return false;
     }
-#endif /* XXX - unblock once the test function exists - XXX */
     if (test_author_handle(author_handle) == false) {
 	if (val_err != NULL) {
 	    *val_err = werr_sem_val(106, node, depth, sem, __func__,
@@ -1838,6 +1836,28 @@ test_chkentry_version(char *str)
 	return false;
     }
     json_dbg(JSON_DBG_MED, __func__, "chkentry_version is valid");
+    return true;
+}
+
+
+/*
+ * test_default_handle - test if default_handle is valid
+ *
+ * Determine if default_handle boolean is valid.  :-)
+ * Well this isn't much of a test, but we have to keep
+ * up with the general form of tests!  :-)
+ *
+ * given:
+ *	boolean	boolean to test
+ *
+ * returns:
+ *	true ==> bool is valid,
+ *	false ==> bool is NOT valid, or some internal error
+ */
+bool
+test_default_handle(bool boolean)
+{
+    json_dbg(JSON_DBG_MED, __func__, "default_handle is %s", booltostr(boolean));
     return true;
 }
 

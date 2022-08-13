@@ -222,6 +222,7 @@ extern bool test_author_number(int author_number);
 extern bool test_authors(int author_count, struct author *authorp);
 extern bool test_c_src(char *str);
 extern bool test_chkentry_version(char *str);
+extern bool test_default_handle(bool boolean);
 /* XXX - end sorted order matching chk_validate.c here - XXX */
 extern bool test_rule_2a_override(bool boolean);
 extern bool test_rule_2a_mismatch(bool boolean);
