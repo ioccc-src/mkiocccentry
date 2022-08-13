@@ -1804,6 +1804,44 @@ test_c_src(char *str)
 }
 
 
+/*
+ * test_chkentry_version - test if chkentry_version is valid
+ *
+ * Determine if chkentry_version matches CHKENTRY_VERSION.
+ *
+ * given:
+ *	str	string to test
+ *
+ * returns:
+ *	true ==> string is valid,
+ *	false ==> string is NOT valid, or NULL pointer, or some internal error
+ */
+bool
+test_chkentry_version(char *str)
+{
+    /*
+     * firewall
+     */
+    if (str == NULL) {
+	warn(__func__, "str is NULL");
+	return false;
+    }
+
+    /*
+     * validate str
+     */
+    if (strcmp(str, CHKENTRY_VERSION) != 0) {
+	json_dbg(JSON_DBG_MED, __func__,
+		 "invalid: chkentry_version != CHKENTRY_VERSION: %s", CHKENTRY_VERSION);
+	json_dbg(JSON_DBG_HIGH, __func__,
+		 "invalid: chkentry_version: %s is not CHKENTRY_VERSION: %s", str, CHKENTRY_VERSION);
+	return false;
+    }
+    json_dbg(JSON_DBG_MED, __func__, "chkentry_version is valid");
+    return true;
+}
+
+
 /* XXX - end sorted order matching chk_validate.c here - XXX */
 
 
@@ -1879,45 +1917,6 @@ test_iocccsize_version(char *str)
 	return false;
     }
     json_dbg(JSON_DBG_MED, __func__, "iocccsize_version is valid");
-    return true;
-}
-
-
-
-/*
- * test_chkentry_version - test if chkentry_version is valid
- *
- * Determine if chkentry_version matches CHKENTRY_VERSION.
- *
- * given:
- *	str	string to test
- *
- * returns:
- *	true ==> string is valid,
- *	false ==> string is NOT valid, or NULL pointer, or some internal error
- */
-bool
-test_chkentry_version(char *str)
-{
-    /*
-     * firewall
-     */
-    if (str == NULL) {
-	warn(__func__, "str is NULL");
-	return false;
-    }
-
-    /*
-     * validate str
-     */
-    if (strcmp(str, CHKENTRY_VERSION) != 0) {
-	json_dbg(JSON_DBG_MED, __func__,
-		 "invalid: chkentry_version != CHKENTRY_VERSION: %s", CHKENTRY_VERSION);
-	json_dbg(JSON_DBG_HIGH, __func__,
-		 "invalid: chkentry_version: %s is not CHKENTRY_VERSION: %s", str, CHKENTRY_VERSION);
-	return false;
-    }
-    json_dbg(JSON_DBG_MED, __func__, "chkentry_version is valid");
     return true;
 }
 
