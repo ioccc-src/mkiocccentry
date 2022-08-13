@@ -42,6 +42,11 @@
 #include "json_util.h"
 
 /*
+ * json_sem - JSON semantics support
+ */
+#include "json_sem.h"
+
+/*
  * limit_ioccc - IOCCC size and rule related limitations
  */
 #include "limit_ioccc.h"
@@ -199,9 +204,9 @@ struct info
 extern void free_auth(struct auth *authp);
 extern void free_info(struct info *infop);
 extern void free_author_array(struct author *authorp, int author_count);
-extern bool load_author(struct author *authorp, char *name, char *location_code, char const *location_name,
-			char *email, char *url, char *twitter, char *github, char *affiliation,
-			bool past_winner, bool default_handle, char *author_handle, int author_number);
+extern bool object2author(struct json *node, unsigned int depth, struct json_sem *sem,
+			  char const *name, struct json_sem_val_err **val_err,
+			  struct author *auth, int auth_num);
 /* XXX - begin sorted order matching chk_validate.c here - XXX */
 extern bool test_IOCCC_author_version(char *str);
 extern bool test_IOCCC_contest_id(char *str);
@@ -214,6 +219,9 @@ extern bool test_author_JSON(char *str);
 extern bool test_author_count(int author_count);
 extern bool test_author_handle(char *str);
 extern bool test_author_number(int author_number);
+extern bool test_authors(int author_count, struct author *authorp);
+extern bool test_c_src(char *str);
+/* XXX - end sorted order matching chk_validate.c here - XXX */
 extern bool test_rule_2a_override(bool boolean);
 extern bool test_rule_2a_mismatch(bool boolean);
 extern bool test_rule_2b_override(bool boolean);
@@ -228,14 +236,11 @@ extern bool test_found_clean_rule(bool boolean);
 extern bool test_found_clobber_rule(bool boolean);
 extern bool test_found_try_rule(bool boolean);
 extern bool test_test_mode(bool boolean);
-/* XXX - end sorted order matching chk_validate.c here - XXX */
-extern bool test_authors(int author_count, struct author *authorp);
 extern bool test_mkiocccentry_version(char *str);
 extern bool test_iocccsize_version(char *str);
 extern bool test_chkentry_version(char *str);
 extern bool test_fnamchk_version(char *str);
 extern bool test_txzchk_version(char *str);
-extern bool test_c_src(char *str);
 extern bool test_title(char *str);
 
 #endif /* INCLUDE_ENTRY_UTIL_H */

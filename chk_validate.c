@@ -39,6 +39,9 @@
  */
 
 
+/* XXX - begin sorted order matching entry_util.c here - XXX */
+
+
 /*
  * chk_IOCCC_author_version - JSON semantic check for IOCCC_author_version
  *
@@ -75,7 +78,7 @@ chk_IOCCC_author_version(struct json *node,
     test = test_IOCCC_author_version(str);
     if (test == false) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(63, node, depth, sem, __func__, "invalid IOCCC_author_version");
+	    *val_err = werr_sem_val(100, node, depth, sem, __func__, "invalid IOCCC_author_version");
 	}
 	return false;
     }
@@ -126,7 +129,7 @@ chk_IOCCC_contest_id(struct json *node,
     test = test_IOCCC_contest_id(str);
     if (test == false) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(64, node, depth, sem, __func__, "invalid IOCCC_contest_id");
+	    *val_err = werr_sem_val(101, node, depth, sem, __func__, "invalid IOCCC_contest_id");
 	}
 	return false;
     }
@@ -177,7 +180,7 @@ chk_IOCCC_info_version(struct json *node,
     test = test_IOCCC_info_version(str);
     if (test == false) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(65, node, depth, sem, __func__, "invalid IOCCC_info_version");
+	    *val_err = werr_sem_val(102, node, depth, sem, __func__, "invalid IOCCC_info_version");
 	}
 	return false;
     }
@@ -228,7 +231,7 @@ chk_Makefile(struct json *node,
     test = test_Makefile(str);
     if (test == false) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(66, node, depth, sem, __func__, "invalid Makefile filename");
+	    *val_err = werr_sem_val(103, node, depth, sem, __func__, "invalid Makefile filename");
 	}
 	return false;
     }
@@ -279,7 +282,7 @@ chk_Makefile_override(struct json *node,
     test = test_Makefile_override(*boolean);
     if (test == false) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(67, node, depth, sem, __func__, "invalid Makefile_override");
+	    *val_err = werr_sem_val(104, node, depth, sem, __func__, "invalid Makefile_override");
 	}
 	return false;
     }
@@ -330,7 +333,7 @@ chk_abstract(struct json *node,
     test = test_abstract(str);
     if (test == false) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(68, node, depth, sem, __func__, "invalid abstract");
+	    *val_err = werr_sem_val(105, node, depth, sem, __func__, "invalid abstract");
 	}
 	return false;
     }
@@ -388,7 +391,7 @@ chk_affiliation(struct json *node,
      /* paranoia */
     if (val.str == NULL) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(69, node, depth, sem, __func__,
+	    *val_err = werr_sem_val(106, node, depth, sem, __func__,
 				    "val.valid true, val.is_null false, but val.str is NULL");
 	}
 	return false;
@@ -396,7 +399,7 @@ chk_affiliation(struct json *node,
     test = test_affiliation(val.str);
     if (test == false) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(70, node, depth, sem, __func__, "invalid affiliation");
+	    *val_err = werr_sem_val(107, node, depth, sem, __func__, "invalid affiliation");
 	}
 	return false;
     }
@@ -447,7 +450,7 @@ chk_author_JSON(struct json *node,
     test = test_author_JSON(str);
     if (test == false) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(71, node, depth, sem, __func__, "invalid author_JSON");
+	    *val_err = werr_sem_val(108, node, depth, sem, __func__, "invalid author_JSON");
 	}
 	return false;
     }
@@ -498,7 +501,7 @@ chk_author_count(struct json *node,
     test = test_author_count(*value);
     if (test == false) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(72, node, depth, sem, __func__, "invalid author_count");
+	    *val_err = werr_sem_val(109, node, depth, sem, __func__, "invalid author_count");
 	}
 	return false;
     }
@@ -549,7 +552,7 @@ chk_author_handle(struct json *node,
     test = test_author_handle(str);
     if (test == false) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(73, node, depth, sem, __func__, "invalid author_handle");
+	    *val_err = werr_sem_val(110, node, depth, sem, __func__, "invalid author_handle");
 	}
 	return false;
     }
@@ -600,7 +603,7 @@ chk_author_number(struct json *node,
     test = test_author_number(*value);
     if (test == false) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(74, node, depth, sem, __func__, "invalid author_number");
+	    *val_err = werr_sem_val(111, node, depth, sem, __func__, "invalid author_number");
 	}
 	return false;
     }
@@ -633,11 +636,14 @@ bool
 chk_author(struct json *node,
 	   unsigned int depth, struct json_sem *sem, struct json_sem_val_err **val_err)
 {
+    struct json *value = NULL;          /* value of JTYPE_MEMBER */
     struct json *parent = NULL;		/* JSON parse tree node parent */
     struct json *acount_node = NULL;	/* JSON parse node containing author_count */
-    struct json_object *object = NULL;	/* JSON parse node as JTYPE_OBJECT */
-    int *author_count = NULL;		/* pointer tp author count as int from JSON parse node for author_count */
+    struct json_array *array = NULL;	/* JSON parse node value as JTYPE_ARRAY */
+    struct author *aset = NULL;		/* array of authors converted from array of JSON parse tree JSON_OBJECT */
+    int *author_count = NULL;		/* pointer to author count as int from JSON parse node for author_count */
     bool test = false;			/* validation test result */
+    int i;
 
     /*
      * firewall - args
@@ -650,9 +656,14 @@ chk_author(struct json *node,
     /*
      * firewall - node type
      */
-    if (node->type != JTYPE_OBJECT) {
+    test = sem_node_valid_converted(node, depth, sem, __func__, val_err);
+    if (test == false) {
+	/* sem_node_valid_converted() will have set *val_err */
+	return false;
+    }
+    if (node->type != JTYPE_MEMBER) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(75, node, depth, sem, __func__, "node type %s != JTYPE_OBJECT",
+	    *val_err = werr_sem_val(112, node, depth, sem, __func__, "node type %s != JTYPE_MEMBER",
 				    json_type_name(node->type));
 	}
 	return false;
@@ -669,6 +680,8 @@ chk_author(struct json *node,
 
     /*
      * find author_count in parent node
+     *
+     * NOTE: sem_object_find_name() will verify that parent is a JSON parse node of JTYPE_OBJECT type.
      */
     acount_node = sem_object_find_name(parent, depth-1, sem, __func__, val_err, "author_count");
     if (acount_node == NULL) {
@@ -684,27 +697,92 @@ chk_author(struct json *node,
 	/* sem_member_value_int() will have set *val_err */
 	return false;
     }
-
-    /*
-     * firewall - author count
-     */
     test = test_author_count(*author_count);
     if (test == false) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(76, node, depth, sem, __func__, "invalid author_count");
-	}
-	return false;
-    }
-    object = &(node->item.object);
-    if (*author_count != object->len) {
-	if (val_err != NULL) {
-	    *val_err = werr_sem_val(77, node, depth, sem, __func__, "author_count: %d != object len: %d",
-				    *author_count, object->len);
+	    *val_err = werr_sem_val(113, node, depth, sem, __func__, "invalid author_count");
 	}
 	return false;
     }
 
-    /* XXX - more code here */
+    /*
+     * obtain the JTYPE_ARRAY that is the value of this node
+     */
+    value = sem_member_value(node, depth, sem, __func__, val_err);
+    if (value == NULL) {
+        /* sem_member_value() will have set *val_err */
+        return false;
+    }
+    if (value->type != JTYPE_ARRAY) {
+	if (val_err != NULL) {
+	    *val_err = werr_sem_val(114, node, depth, sem, __func__, "node type %s != JTYPE_ARRAY",
+				    json_type_name(value->type));
+	}
+	return false;
+    }
+    array = &(value->item.array);
+    if (array->set == NULL) {
+	if (val_err != NULL) {
+	    *val_err = werr_sem_val(115, node, depth+1, sem, __func__,
+				    "node value JTYPE_ARRAY set is NULL");
+	}
+	return false;
+    }
+
+    /*
+     * firewall - author count must match array length
+     */
+    if (*author_count != array->len) {
+	if (val_err != NULL) {
+	    *val_err = werr_sem_val(116, node, depth, sem, __func__,
+				    "author_count: %d != array len: %d",
+				    *author_count, array->len);
+	}
+	return false;
+    }
+
+    /*
+     * allocate array of authors
+     */
+    errno = 0;		/* pre-clear errno for werrp_sem_val() */
+    aset = calloc(*author_count, sizeof(aset[0]));
+    if (aset == NULL) {
+	if (val_err != NULL) {
+	    *val_err = werrp_sem_val(117, node, depth, sem, __func__,
+				     "calloc of %d authors failed", *author_count);
+	}
+	return false;
+    }
+
+    /*
+     * look at each JSON node (author) of node value (JTYPE_ARRAY)
+     */
+    for (i=0; i < *author_count; ++i) {
+	struct json *e = array->set[i];		/* next item in the JTYPE_ARRAY */
+	bool load = false;			/* true ==> able to load author array item */
+
+	/*
+	 * load author array item from JTYPE_OBJECT if possible
+	 */
+	load = object2author(e, depth+2, sem, __func__, val_err, &aset[i], i);
+	if (load == false) {
+	    /* object2athor() will have set *val_err */
+	    return false;
+	}
+    }
+
+    /*
+     * look at the authors array for unique authors
+     */
+    test = test_authors(*author_count, aset);
+    if (test == false) {
+	if (val_err != NULL) {
+	    *val_err = werr_sem_val(118, node, depth, sem, __func__,
+				    "author set contains invalid author numbers "
+				    "and/or duplicate names");
+	}
+	return false;
+    }
 
     /*
      * return validation success
@@ -714,6 +792,9 @@ chk_author(struct json *node,
     }
     return true;
 }
+
+
+/* XXX - end sorted order matching entry_util.c here - XXX */
 
 
 /*
@@ -752,7 +833,7 @@ chk_rule_2a_override(struct json *node,
     test = test_rule_2a_override(*boolean);
     if (test == false) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(78, node, depth, sem, __func__, "invalid rule_2a_override");
+	    *val_err = werr_sem_val(119, node, depth, sem, __func__, "invalid rule_2a_override");
 	}
 	return false;
     }
@@ -803,7 +884,7 @@ chk_rule_2a_mismatch(struct json *node,
     test = test_rule_2a_mismatch(*boolean);
     if (test == false) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(79, node, depth, sem, __func__, "invalid rule_2a_mismatch");
+	    *val_err = werr_sem_val(120, node, depth, sem, __func__, "invalid rule_2a_mismatch");
 	}
 	return false;
     }
@@ -854,7 +935,7 @@ chk_rule_2b_override(struct json *node,
     test = test_rule_2b_override(*boolean);
     if (test == false) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(80, node, depth, sem, __func__, "invalid rule_2b_override");
+	    *val_err = werr_sem_val(121, node, depth, sem, __func__, "invalid rule_2b_override");
 	}
 	return false;
     }
@@ -904,7 +985,7 @@ chk_highbit_warning(struct json *node,
     test = test_highbit_warning(*boolean);
     if (test == false) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(81, node, depth, sem, __func__, "invalid highbit_warning");
+	    *val_err = werr_sem_val(122, node, depth, sem, __func__, "invalid highbit_warning");
 	}
 	return false;
     }
@@ -955,7 +1036,7 @@ chk_nul_warning(struct json *node,
     test = test_nul_warning(*boolean);
     if (test == false) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(82, node, depth, sem, __func__, "invalid nul_warning");
+	    *val_err = werr_sem_val(123, node, depth, sem, __func__, "invalid nul_warning");
 	}
 	return false;
     }
@@ -1006,7 +1087,7 @@ chk_trigraph_warning(struct json *node,
     test = test_trigraph_warning(*boolean);
     if (test == false) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(83, node, depth, sem, __func__, "invalid trigraph_warning");
+	    *val_err = werr_sem_val(124, node, depth, sem, __func__, "invalid trigraph_warning");
 	}
 	return false;
     }
@@ -1057,7 +1138,7 @@ chk_wordbuf_warning(struct json *node,
     test = test_wordbuf_warning(*boolean);
     if (test == false) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(84, node, depth, sem, __func__, "invalid wordbuf_warning");
+	    *val_err = werr_sem_val(125, node, depth, sem, __func__, "invalid wordbuf_warning");
 	}
 	return false;
     }
@@ -1108,7 +1189,7 @@ chk_ungetc_warning(struct json *node,
     test = test_ungetc_warning(*boolean);
     if (test == false) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(85, node, depth, sem, __func__, "invalid ungetc_warning");
+	    *val_err = werr_sem_val(126, node, depth, sem, __func__, "invalid ungetc_warning");
 	}
 	return false;
     }
@@ -1159,7 +1240,7 @@ chk_first_rule_is_all(struct json *node,
     test = test_first_rule_is_all(*boolean);
     if (test == false) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(86, node, depth, sem, __func__, "invalid first_rule_is_all");
+	    *val_err = werr_sem_val(128, node, depth, sem, __func__, "invalid first_rule_is_all");
 	}
 	return false;
     }
@@ -1210,7 +1291,7 @@ chk_found_all_rule(struct json *node,
     test = test_found_all_rule(*boolean);
     if (test == false) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(87, node, depth, sem, __func__, "invalid found_all_rule");
+	    *val_err = werr_sem_val(129, node, depth, sem, __func__, "invalid found_all_rule");
 	}
 	return false;
     }
@@ -1261,7 +1342,7 @@ chk_found_clean_rule(struct json *node,
     test = test_found_clean_rule(*boolean);
     if (test == false) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(88, node, depth, sem, __func__, "invalid found_clean_rule");
+	    *val_err = werr_sem_val(130, node, depth, sem, __func__, "invalid found_clean_rule");
 	}
 	return false;
     }
@@ -1312,7 +1393,7 @@ chk_found_clobber_rule(struct json *node,
     test = test_found_clobber_rule(*boolean);
     if (test == false) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(89, node, depth, sem, __func__, "invalid found_clobber_rule");
+	    *val_err = werr_sem_val(131, node, depth, sem, __func__, "invalid found_clobber_rule");
 	}
 	return false;
     }
@@ -1363,7 +1444,7 @@ chk_found_try_rule(struct json *node,
     test = test_found_try_rule(*boolean);
     if (test == false) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(90, node, depth, sem, __func__, "invalid found_try_rule");
+	    *val_err = werr_sem_val(132, node, depth, sem, __func__, "invalid found_try_rule");
 	}
 	return false;
     }
@@ -1414,7 +1495,7 @@ chk_test_mode(struct json *node,
     test = test_test_mode(*boolean);
     if (test == false) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(91, node, depth, sem, __func__, "invalid test_mode");
+	    *val_err = werr_sem_val(133, node, depth, sem, __func__, "invalid test_mode");
 	}
 	return false;
     }

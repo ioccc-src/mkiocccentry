@@ -393,9 +393,9 @@ mkiocccentry.o: mkiocccentry.c Makefile
 	${CC} ${CFLAGS} mkiocccentry.c -c
 
 mkiocccentry: mkiocccentry.o rule_count.o dbg.o util.o dyn_array.o json_parse.o entry_util.o \
-	json_util.o location.o utf8_posix_map.o sanity.o Makefile
+	json_util.o location.o utf8_posix_map.o sanity.o json_sem.o Makefile
 	${CC} ${CFLAGS} mkiocccentry.o rule_count.o dbg.o util.o dyn_array.o json_parse.o \
-	    entry_util.o json_util.o location.o utf8_posix_map.o sanity.o -o $@
+	    entry_util.o json_util.o location.o utf8_posix_map.o sanity.o json_sem.o -o $@
 
 iocccsize.o: iocccsize.c Makefile
 	${CC} ${CFLAGS} -DMKIOCCCENTRY_USE iocccsize.c -c
@@ -778,10 +778,10 @@ seqcexit: Makefile
 	    echo ''; 1>&2; \
 	    exit 1; \
 	else \
-	    echo "${SEQCEXIT} -c -D werr_sem_val -- ${FLEXFILES} ${BISONFILES}"; \
-	    ${SEQCEXIT} -c -D werr_sem_val -- ${FLEXFILES} ${BISONFILES}; \
-	    echo "${SEQCEXIT} -D werr_sem_val -- ${ALL_CSRC}"; \
-	    ${SEQCEXIT} -D werr_sem_val -- ${ALL_CSRC}; \
+	    echo "${SEQCEXIT} -c -D werr_sem_val -D werrp_sem_val -- ${FLEXFILES} ${BISONFILES}"; \
+	    ${SEQCEXIT} -c -D werr_sem_val -D werrp_sem_val -- ${FLEXFILES} ${BISONFILES}; \
+	    echo "${SEQCEXIT} -D werr_sem_val -D werrp_sem_val -- ${ALL_CSRC}"; \
+	    ${SEQCEXIT} -D werr_sem_val -D werrp_sem_val -- ${ALL_CSRC}; \
 	fi
 
 picky: ${ALL_CSRC} ${H_FILES} Makefile
@@ -1005,13 +1005,13 @@ dbg.o: dbg.c dbg.h
 util.o: util.c dbg.h util.h dyn_array.h limit_ioccc.h version.h
 mkiocccentry.o: mkiocccentry.c mkiocccentry.h util.h dyn_array.h dbg.h \
   location.h utf8_posix_map.h limit_ioccc.h version.h sanity.h \
-  iocccsize.h json_util.h json_parse.h entry_util.h
+  iocccsize.h json_util.h json_parse.h entry_util.h json_sem.h
 iocccsize.o: iocccsize.c iocccsize_err.h iocccsize.h
 fnamchk.o: fnamchk.c fnamchk.h dbg.h util.h dyn_array.h limit_ioccc.h \
   version.h utf8_posix_map.h
 txzchk.o: txzchk.c txzchk.h util.h dyn_array.h dbg.h sanity.h location.h \
   utf8_posix_map.h limit_ioccc.h version.h entry_util.h json_parse.h \
-  json_util.h
+  json_util.h json_sem.h
 chkentry.o: chkentry.c chkentry.h dbg.h json_util.h dyn_array.h \
   json_parse.h util.h foo.h version.h
 json_parse.o: json_parse.c dbg.h util.h dyn_array.h json_parse.h \
@@ -1040,7 +1040,7 @@ json_util.o: json_util.c dbg.h json_parse.h util.h dyn_array.h \
 jparse_main.o: jparse_main.c jparse_main.h dbg.h util.h dyn_array.h \
   jparse.h json_parse.h json_util.h jparse.tab.h
 entry_util.o: entry_util.c dbg.h util.h dyn_array.h entry_util.h \
-  version.h json_parse.h json_util.h limit_ioccc.h
+  version.h json_parse.h json_util.h json_sem.h limit_ioccc.h
 jsemtblgen.o: jsemtblgen.c jsemtblgen.h dbg.h util.h dyn_array.h \
   json_util.h json_parse.h jparse.h jparse.tab.h json_sem.h iocccsize.h
 chk_sem_auth.o: chk_sem_auth.c chk_sem_auth.h json_sem.h util.h \
@@ -1048,7 +1048,7 @@ chk_sem_auth.o: chk_sem_auth.c chk_sem_auth.h json_sem.h util.h \
 chk_sem_info.o: chk_sem_info.c chk_sem_info.h json_sem.h util.h \
   dyn_array.h dbg.h json_parse.h json_util.h
 chk_validate.o: chk_validate.c chk_validate.h entry_util.h version.h \
-  json_parse.h util.h dyn_array.h dbg.h json_util.h limit_ioccc.h \
-  json_sem.h chk_sem_auth.h chk_sem_info.h
+  json_parse.h util.h dyn_array.h dbg.h json_util.h json_sem.h \
+  limit_ioccc.h chk_sem_auth.h chk_sem_info.h
 json_sem.o: json_sem.c dbg.h json_sem.h util.h dyn_array.h json_parse.h \
   json_util.h

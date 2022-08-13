@@ -66,7 +66,7 @@ free_auth(struct auth *authp)
      * firewall
      */
     if (authp == NULL) {
-	err(190, __func__, "called with NULL arg(s)");
+	err(50, __func__, "called with NULL arg(s)");
 	not_reached();
     }
 
@@ -137,7 +137,7 @@ free_info(struct info *infop)
      * firewall
      */
     if (infop == NULL) {
-	err(191, __func__, "called with NULL arg(s)");
+	err(51, __func__, "called with NULL arg(s)");
 	not_reached();
     }
 
@@ -238,11 +238,11 @@ free_author_array(struct author *author_set, int author_count)
      * firewall
      */
     if (author_set == NULL) {
-	err(192, __func__, "called with NULL arg(s)");
+	err(52, __func__, "called with NULL arg(s)");
 	not_reached();
     }
     if (author_count < 0) {
-	err(193, __func__, "author_count: %d < 0", author_count);
+	err(53, __func__, "author_count: %d < 0", author_count);
 	not_reached();
     }
 
@@ -297,82 +297,574 @@ free_author_array(struct author *author_set, int author_count)
 
 
 /*
- * load_author - load a struct author with validated elements
+ * object2author - load a struct author with validated elements
  *
- * Each argument beyond author is also an element in struct author.
- * If those arguments are NULL, then am strdup-ed "" (empty string) is used.
- * For non-NULL arguments, the corresponding test_foo() function is called.
+ * In .author.json, we are required to find a JTYPE_MEMBER named "authors".
+ * The value of this "authors" JTYPE_MEMBER is a JSON array (JTYPE_ARRAY).
+ * That JSON array consists of an array of JSON objects (JTYPE_OBJECT),
+ * each containing JSON members (JTYPE_MEMBER) with IOCCC author information.
  *
- * These elements are allowed to be NULL and are converted into "" (empty strings):
+ * Given a node that is a JSON object (JTYPE_OBJECT) (from the JSON array),
+ * we will convert a node that is a JSON object (JTYPE_OBJECT) containing
+ * an array of JSON members (JTYPE_MEMBER) with author information,
+ * validate the values of the JTYPE_MEMBER and then load that value
+ * into a struct author.
  *
- *	email
- *	url
- *	twitter
- *	github
- *	affiliation
- *
- * to indicate that the value was not given.  All other char * elements
- * must not be NULL.
- *
- * The *authorp elements are modified accordingly only if all elements are OK.
+ * If we find a JSON member name under the node that is not part of the
+ * IOCCC author information, we will return false.  If the JSON member value
+ * is invalid, we will return false.
  *
  * given:
- *	authorp		pointer to struct author to modify
- *	name		name of the author
- *	location_code	author location/country code
- *	location_name	name of author location/country (compiled in from loc[])
- *	email		Email address of author or NULL ==> not provided
- *	url		home URL of author or NULL ==> not provided
- *	twitter		author twitter handle or NULL ==> not provided
- *	github		author GitHub username or NULL ==> not provided
- *	affiliation	author affiliation or NULL ==> not provided
- *	past_winner	true ==> author claims to have won before,
- *			false ==> author claims not a prev winner
- *	default_handle	true ==> default author_handle accepted,
- *			false ==> author_handle entered
- *	author_handle	IOCCC author handle (for winning entries)
- *	author_number	author number
+ *	node	JSON parse node being checked
+ *	depth	depth of node in the JSON parse tree (0 ==> tree root)
+ *	sem	JSON semantic node triggering the check
+ *	name	name of caller function (NULL ==> "((NULL))")
+ *	val_err	pointer to address where to place a JSON semantic validation error,
+ *		NULL ==> do not report a JSON semantic validation error
+ *	auth	pointer to a struct author to fill out
+ *	auth_num	author number
  *
  * returns:
  *	true ==> struct author was loaded with validated elements
- *	false ==> invalid element found, authorp is NULL, or some internal error
+ *	false ==> invalid member value found, auth is NULL, or some internal error
  */
 bool
-load_author(struct author *authorp, char *name, char *location_code, char const *location_name,
-	    char *email, char *url, char *twitter, char *github, char *affiliation,
-	    bool past_winner, bool default_handle, char *author_handle, int author_number)
+object2author(struct json *node, unsigned int depth, struct json_sem *sem,
+	      char const *name, struct json_sem_val_err **val_err,
+	      struct author *auth, int auth_num)
 {
-    struct author auth;		/* struct author to modify initially */
-    UNUSED_ARG(past_winner);
-    UNUSED_ARG(default_handle);
+    char *auth_name = NULL;		/* name of the author */
+    bool found_name = false;		/* true ==> found name in node */
+    char *location_code = NULL;		/* author location/country code */
+    bool found_location_code = false;	/* true ==> found location_code in node */
+    char const *location_name = NULL;	/* name of author location/country (compiled in from loc[]) */
+    bool found_location_name = false;	/* true ==> found location_name in node */
+    char *email = NULL;			/* Email address of author or NULL ==> not provided */
+    bool found_email = false;		/* true ==> found email in node */
+    char *url = NULL;			/* home URL of author or NULL ==> not provided */
+    bool found_url = false;		/* true ==> found url in node */
+    char *twitter = NULL;		/* author twitter handle or NULL ==> not provided */
+    bool found_twitter = false;		/* true ==> found twitter in node */
+    char *github = NULL;		/* author GitHub username or NULL ==> not provided */
+    bool found_github = false;		/* true ==> found github in node */
+    char *affiliation = NULL;		/* author affiliation or NULL ==> not provided */
+    bool found_affiliation = false;	/* true ==> found affiliation in node */
+    bool past_winner = false;		/* true ==> author claims to have won before */
+					/* false ==> author claims not a prev winner */
+    bool found_past_winner = false;	/* true ==> found past_winner in node */
+    bool default_handle = false;	/* true ==> default author_handle accepted */
+					/* false ==> author_handle entered */
+    bool found_default_handle = false;	/* true ==> found default_handle in node */
+    char *author_handle = NULL;		/* IOCCC author handle (for winning entries) */
+    bool found_author_handle = false;	/* true ==> found author_handle in node */
+    int author_number = -1;		/* author number */
+    bool found_author_number = false;	/* true ==> found author_number in node */
+    struct json_object *obj = NULL;	/* JSON node as JTYPE_OBJECT */
+    int obj_len = 0;			/* length in JTYPE_MEMBER of the JSON node as JTYPE_OBJECT */
+    bool test = false;			/* validation test result */
+    struct str_or_null val_or_null;	/* JTYPE_MEMBER value that can be a JTYPE_STRING or JTYPE_NULL */
+    bool *bool_val = NULL;		/* pointer to a converted JTYPE_BOOL */
+    int *int_val = NULL;		/* pointer to a converted JTYPE_NUMNER as int */
+    int i;
 
     /*
      * firewall - must not be NULL
      */
-    if (authorp == NULL) {
-	warn(__func__, "authorp is NULL");
-	return false;
-    }
-    if (name == NULL) {
-	warn(__func__, "name is NULL");
-	return false;
-    }
-    if (location_code == NULL) {
-	warn(__func__, "location_code is NULL");
-	return false;
-    }
-    if (location_name == NULL) {
-	warn(__func__, "location_name is NULL");
-	return false;
-    }
-    if (author_handle == NULL) {
-	warn(__func__, "author_handle is NULL");
+    if (auth == NULL) {
+	if (val_err != NULL) {
+	    *val_err = werr_sem_val(54, node, depth, sem, name,
+				    "author array index[%d]: auth is NULL", auth_num);
+	}
 	return false;
     }
 
     /*
-     * convert allowed NULL values into empty strings
+     * firewall - validate JTYPE_MEMBER item in the JTYPE_ARRAY
      */
+    test = sem_node_valid_converted(node, depth, sem, __func__, val_err);
+    if (test == false) {
+	/* sem_node_valid_converted() will have set *val_err */
+	return false;
+    }
+    if (node->type != JTYPE_OBJECT) {
+	if (val_err != NULL) {
+	    *val_err = werr_sem_val(55, node, depth, sem, __func__,
+				    "author array index[%d] type %s != JTYPE_OBJECT",
+				    auth_num, json_type_name(node->type));
+	}
+	return false;
+    }
+    obj = &(node->item.object);
+    obj_len = obj->len;
+    if (obj_len <= 0) {
+	if (val_err != NULL) {
+	    *val_err = werr_sem_val(56, node, depth, sem, __func__,
+				    "author array index[%d] length: %d <= 0",
+				    auth_num, obj_len);
+	}
+	return false;
+    }
+    if (obj->set == NULL) {
+	if (val_err != NULL) {
+	    *val_err = werr_sem_val(57, node, depth, sem, __func__,
+				    "author array index[%d] set is NULL", auth_num);
+	}
+	return false;
+    }
+
+    /*
+     * examine each JTYPE_MEMBER of the JTYPE_OBJECT
+     */
+    for (i=0; i < obj_len; ++i) {
+	struct json *e = obj->set[i];		/* next item in the JTYPE_OBJECT */
+	char *name = NULL;			/* name string of name part of JTYPE_MEMBER */
+
+	/*
+	 * firewall - validate JTYPE_MEMBER item in the JTYPE_OBJECT
+	 */
+	test = sem_node_valid_converted(e, depth+1, sem, __func__, val_err);
+	if (test == false) {
+	    /* sem_node_valid_converted() will have set *val_err */
+	    return false;
+	}
+	if (e->type != JTYPE_MEMBER) {
+	    if (val_err != NULL) {
+		*val_err = werr_sem_val(58, node, depth, sem, __func__,
+					"author array index[%d] JTYPE_OBJECT[%d] type %s != JTYPE_MEMBER",
+					auth_num, i, json_type_name(e->type));
+	    }
+	    return false;
+	}
+	name = sem_member_name_decoded_str(e, depth+2, sem, __func__, val_err);
+	if (name == NULL) {
+	    /* sem_member_name_decoded_str() will have set *val_err */
+	    return false;
+	}
+
+	/*
+	 * look for required JTYPE_MEMBER names in an IOCCC author's JTYPE_OBJECT
+	 *
+	 * NOTE: If the JTYPE_MEMBER value can be a JSON null, then we will leave
+	 *	 the associated string value as NULL and convert it to an empty
+	 *	 string later on in this function.
+	 */
+	/* case: IOCCC author nmae */
+	if (strcmp(name, "name") == 0) {
+
+	    /* firewall - check for duplicate JTYPE_MEMBER */
+	    if (found_name == true) {
+		if (val_err != NULL) {
+		    *val_err = werr_sem_val(59, node, depth+2, sem, __func__,
+					    "author array index[%d] JTYPE_OBJECT[%d] found duplicate <%s>",
+					    auth_num, i, name);
+		}
+		return false;
+	    }
+	    found_name = true;
+
+	    /* obtain value as JTYPE_STRING */
+	    auth_name = sem_member_value_decoded_str(node, depth+2, sem, __func__, NULL);
+	    /* we will deal with NULL auth_name later in this function */
+
+	/* case: IOCCC author location_code */
+	} else if (strcmp(name, "location_code") == 0) {
+
+	    /* firewall - check for duplicate JTYPE_MEMBER */
+	    if (found_location_code == true) {
+		if (val_err != NULL) {
+		    *val_err = werr_sem_val(60, node, depth+2, sem, __func__,
+					    "author array index[%d] JTYPE_OBJECT[%d] found duplicate <%s>",
+					    auth_num, i, name);
+		}
+		return false;
+	    }
+	    found_location_code = true;
+
+	    /* obtain value as JTYPE_STRING */
+	    location_code = sem_member_value_decoded_str(node, depth+2, sem, __func__, NULL);
+	    /* we will deal with NULL location_code later in this function */
+
+	/* case: IOCCC author location_name */
+	} else if (strcmp(name, "location_name") == 0) {
+
+	    /* firewall - check for duplicate JTYPE_MEMBER */
+	    if (found_location_name == true) {
+		if (val_err != NULL) {
+		    *val_err = werr_sem_val(61, node, depth+2, sem, __func__,
+					    "author array index[%d] JTYPE_OBJECT[%d] found duplicate <%s>",
+					    auth_num, i, name);
+		}
+		return false;
+	    }
+	    found_location_name = true;
+
+	    /* obtain value as JTYPE_STRING */
+	    location_name = sem_member_value_decoded_str(node, depth+2, sem, __func__, NULL);
+	    /* we will deal with NULL location_name later in this function */
+
+	/* case: IOCCC author email */
+	} else if (strcmp(name, "email") == 0) {
+
+	    /* firewall - check for duplicate JTYPE_MEMBER */
+	    if (found_email == true) {
+		if (val_err != NULL) {
+		    *val_err = werr_sem_val(62, node, depth+2, sem, __func__,
+					    "author array index[%d] JTYPE_OBJECT[%d] found duplicate <%s>",
+					    auth_num, i, name);
+		}
+		return false;
+	    }
+	    found_email = true;
+
+	    /* obtain value as JTYPE_STRING or JTYPE_NULL */
+	    val_or_null = sem_member_value_str_or_null(e, depth+2, sem, __func__, NULL);
+	    if (val_or_null.valid == false) {
+		if (val_err != NULL) {
+		    *val_err = werr_sem_val(63, node, depth+2, sem, __func__,
+					    "author array index[%d] JTYPE_OBJECT[%d] invalid string or JSON null",
+					    auth_num, i);
+		}
+		return false;
+	    }
+	    if (val_or_null.is_null == false) {
+		email = val_or_null.str;
+	    }
+
+	/* case: IOCCC author url */
+	} else if (strcmp(name, "url") == 0) {
+
+	    /* firewall - check for duplicate JTYPE_MEMBER */
+	    if (found_url == true) {
+		if (val_err != NULL) {
+		    *val_err = werr_sem_val(64, node, depth+2, sem, __func__,
+					    "author array index[%d] JTYPE_OBJECT[%d] found duplicate <%s>",
+					    auth_num, i, name);
+		}
+		return false;
+	    }
+	    found_url = true;
+
+	    /* obtain value as JTYPE_STRING or JTYPE_NULL */
+	    val_or_null = sem_member_value_str_or_null(e, depth+2, sem, __func__, NULL);
+	    if (val_or_null.valid == false) {
+		if (val_err != NULL) {
+		    *val_err = werr_sem_val(65, node, depth+2, sem, __func__,
+					    "author array index[%d] JTYPE_OBJECT[%d] invalid string or JSON null",
+					    auth_num, i);
+		}
+		return false;
+	    }
+	    if (val_or_null.is_null == false) {
+		url = val_or_null.str;
+	    }
+
+	/* case: IOCCC author twitter */
+	} else if (strcmp(name, "twitter") == 0) {
+
+	    /* firewall - check for duplicate JTYPE_MEMBER */
+	    if (found_twitter == true) {
+		if (val_err != NULL) {
+		    *val_err = werr_sem_val(66, node, depth+2, sem, __func__,
+					    "author array index[%d] JTYPE_OBJECT[%d] found duplicate <%s>",
+					    auth_num, i, name);
+		    }
+		return false;
+	    }
+	    found_twitter = true;
+
+	    /* obtain value as JTYPE_STRING or JTYPE_NULL */
+	    val_or_null = sem_member_value_str_or_null(e, depth+2, sem, __func__, NULL);
+	    if (val_or_null.valid == false) {
+		if (val_err != NULL) {
+		    *val_err = werr_sem_val(67, node, depth+2, sem, __func__,
+					    "author array index[%d] JTYPE_OBJECT[%d] invalid string or JSON null",
+					    auth_num, i);
+		}
+		return false;
+	    }
+	    if (val_or_null.is_null == false) {
+		twitter = val_or_null.str;
+	    }
+
+	/* case: IOCCC author github */
+	} else if (strcmp(name, "github") == 0) {
+
+	    /* firewall - check for duplicate JTYPE_MEMBER */
+	    if (found_github == true) {
+		if (val_err != NULL) {
+		    *val_err = werr_sem_val(68, node, depth+2, sem, __func__,
+					    "author array index[%d] JTYPE_OBJECT[%d] found duplicate <%s>",
+					    auth_num, i, name);
+		}
+		return false;
+	    }
+	    found_github = true;
+
+	    /* obtain value as JTYPE_STRING or JTYPE_NULL */
+	    val_or_null = sem_member_value_str_or_null(e, depth+2, sem, __func__, NULL);
+	    if (val_or_null.valid == false) {
+		if (val_err != NULL) {
+		    *val_err = werr_sem_val(69, node, depth+2, sem, __func__,
+					    "author array index[%d] JTYPE_OBJECT[%d] invalid string or JSON null",
+					    auth_num, i);
+		}
+		return false;
+	    }
+	    if (val_or_null.is_null == false) {
+		github = val_or_null.str;
+	    }
+
+	/* case: IOCCC author affiliation */
+	} else if (strcmp(name, "affiliation") == 0) {
+
+	    /* firewall - check for duplicate JTYPE_MEMBER */
+	    if (found_affiliation == true) {
+		if (val_err != NULL) {
+		    *val_err = werr_sem_val(70, node, depth+2, sem, __func__,
+					    "author array index[%d] JTYPE_OBJECT[%d] found duplicate <%s>",
+					    auth_num, i, name);
+		}
+		return false;
+	    }
+	    found_affiliation = true;
+
+	    /* obtain value as JTYPE_STRING or JTYPE_NULL */
+	    val_or_null = sem_member_value_str_or_null(e, depth+2, sem, __func__, NULL);
+	    if (val_or_null.valid == false) {
+		if (val_err != NULL) {
+		    *val_err = werr_sem_val(71, node, depth+2, sem, __func__,
+					    "author array index[%d] JTYPE_OBJECT[%d] invalid string or JSON null",
+					    auth_num, i);
+		}
+		return false;
+	    }
+	    if (val_or_null.is_null == false) {
+		affiliation = val_or_null.str;
+	    }
+
+	/* case: IOCCC author past_winner */
+	} else if (strcmp(name, "past_winner") == 0) {
+
+	    /* firewall - check for duplicate JTYPE_MEMBER */
+	    if (found_past_winner == true) {
+		if (val_err != NULL) {
+		    *val_err = werr_sem_val(72, node, depth+2, sem, __func__,
+					    "author array index[%d] JTYPE_OBJECT[%d] found duplicate <%s>",
+					    auth_num, i, name);
+		}
+		return false;
+	    }
+	    found_past_winner = true;
+
+	    /* obtain value as JTYPE_BOOL */
+	    bool_val = sem_member_value_bool(e, depth+2, sem, __func__, NULL);
+	    if (bool_val == NULL) {
+		if (val_err != NULL) {
+		    *val_err = werr_sem_val(73, node, depth+2, sem, __func__,
+					    "author array index[%d] JTYPE_OBJECT[%d] invalid JSON boolean",
+					    auth_num, i);
+		}
+		return false;
+	    }
+	    past_winner = *bool_val;
+
+	/* case: IOCCC author default_handle */
+	} else if (strcmp(name, "default_handle") == 0) {
+
+	    /* firewall - check for duplicate JTYPE_MEMBER */
+	    if (found_default_handle == true) {
+		if (val_err != NULL) {
+		    *val_err = werr_sem_val(74, node, depth+2, sem, __func__,
+					    "author array index[%d] JTYPE_OBJECT[%d] found duplicate <%s>",
+					    auth_num, i, name);
+		}
+		return false;
+	    }
+	    found_default_handle = true;
+
+	    /* obtain value as JTYPE_BOOL */
+	    bool_val = sem_member_value_bool(e, depth+2, sem, __func__, NULL);
+	    if (bool_val == NULL) {
+		if (val_err != NULL) {
+		    *val_err = werr_sem_val(75, node, depth+2, sem, __func__,
+					    "author array index[%d] JTYPE_OBJECT[%d] invalid JSON boolean",
+					    auth_num, i);
+		}
+		return false;
+	    }
+	    default_handle = *bool_val;
+
+	/* case: IOCCC author author_handle */
+	} else if (strcmp(name, "author_handle") == 0) {
+
+	    /* firewall - check for duplicate JTYPE_MEMBER */
+	    if (found_author_handle == true) {
+		if (val_err != NULL) {
+		    *val_err = werr_sem_val(76, node, depth+2, sem, __func__,
+					    "author array index[%d] JTYPE_OBJECT[%d] found duplicate <%s>",
+					    auth_num, i, name);
+		}
+		return false;
+	    }
+	    found_author_handle = true;
+
+	    /* obtain value as JTYPE_STRING */
+	    author_handle = sem_member_value_decoded_str(node, depth+2, sem, __func__, NULL);
+	    /* we will deal with NULL author_handle later in this function */
+
+	/* case: IOCCC author author_number */
+	} else if (strcmp(name, "author_number") == 0) {
+
+	    /* firewall - check for duplicate JTYPE_MEMBER */
+	    if (found_author_number == true) {
+		if (val_err != NULL) {
+		    *val_err = werr_sem_val(77, node, depth+2, sem, __func__,
+					    "author array index[%d] JTYPE_OBJECT[%d] found duplicate <%s>",
+					    auth_num, i, name);
+		}
+		return false;
+	    }
+	    found_author_number = true;
+
+	    /* obtain value as JTYPE_NUMBER as int */
+	    int_val = sem_member_value_int(node, depth+2, sem, __func__, NULL);
+	    if (int_val == NULL) {
+		if (val_err != NULL) {
+		    *val_err = werr_sem_val(78, node, depth+2, sem, __func__,
+					    "author array index[%d] JTYPE_OBJECT[%d] invalid author number",
+					    auth_num, i);
+		}
+		return false;
+	    }
+	    author_number = *int_val;
+
+	/* case: invalid JTYPE_MEMBER - not part of an IOCCC author's JTYPE_OBJECT */
+	} else {
+	    if (val_err != NULL) {
+		*val_err = werr_sem_val(79, node, depth+2, sem, __func__,
+					"author array index[%d] JTYPE_OBJECT has invalid JTYPE_MEMBER name: <%s>",
+					i, name);
+	    }
+	    return false;
+	}
+    }
+
+    /*
+     * looking for missing information in the JSON object
+     */
+    if (found_name == false) {
+	if (val_err != NULL) {
+	    *val_err = werr_sem_val(80, node, depth, sem, __func__,
+				    "author array index[%d]: missing __func__", auth_num);
+	}
+	return false;
+    }
+    if (found_location_code == false) {
+	if (val_err != NULL) {
+	    *val_err = werr_sem_val(81, node, depth, sem, __func__,
+				    "author array index[%d]: missing location_code", auth_num);
+	}
+	return false;
+    }
+    if (found_location_name == false) {
+	if (val_err != NULL) {
+	    *val_err = werr_sem_val(82, node, depth, sem, __func__,
+				    "author array index[%d]: missing location_name", auth_num);
+	}
+	return false;
+    }
+    if (found_email == false) {
+	if (val_err != NULL) {
+	    *val_err = werr_sem_val(83, node, depth, sem, __func__,
+				    "author array index[%d]: missing email", auth_num);
+	}
+	return false;
+    }
+    if (found_url == false) {
+	if (val_err != NULL) {
+	    *val_err = werr_sem_val(84, node, depth, sem, __func__,
+				    "author array index[%d]: missing url", auth_num);
+	}
+	return false;
+    }
+    if (found_twitter == false) {
+	if (val_err != NULL) {
+	    *val_err = werr_sem_val(85, node, depth, sem, __func__,
+				    "author array index[%d]: missing twiter", auth_num);
+	}
+	return false;
+    }
+    if (found_github == false) {
+	if (val_err != NULL) {
+	    *val_err = werr_sem_val(86, node, depth, sem, __func__,
+				    "author array index[%d]: missing github", auth_num);
+	}
+	return false;
+    }
+    if (found_affiliation == false) {
+	if (val_err != NULL) {
+	    *val_err = werr_sem_val(87, node, depth, sem, __func__,
+				    "author array index[%d]: missing affiliation", auth_num);
+	}
+	return false;
+    }
+    if (found_past_winner == false) {
+	if (val_err != NULL) {
+	    *val_err = werr_sem_val(88, node, depth, sem, __func__,
+				    "author array index[%d]: missing past_winner", auth_num);
+	}
+	return false;
+    }
+    if (found_default_handle == false) {
+	if (val_err != NULL) {
+	    *val_err = werr_sem_val(89, node, depth, sem, __func__,
+				    "author array index[%d]: missing default_handle", auth_num);
+	}
+	return false;
+    }
+    if (found_author_handle == false) {
+	if (val_err != NULL) {
+	    *val_err = werr_sem_val(90, node, depth, sem, __func__,
+				    "author array index[%d]: missing author_handle", auth_num);
+	}
+	return false;
+    }
+    if (found_author_number == false) {
+	if (val_err != NULL) {
+	    *val_err = werr_sem_val(91, node, depth, sem, __func__,
+				    "author array index[%d]: missing author_number", auth_num);
+	}
+	return false;
+    }
+
+    /*
+     * warn if elements are NULL that must not be NULL
+     * convert allowed NULL values into empty strings
+     *
+     * NOTE: If the JTYPE_MEMBER value can be a JSON null, then we
+     *	     convert it here into an empty string.
+     */
+    if (auth_name == NULL) {
+	if (val_err != NULL) {
+	    *val_err = werr_sem_val(92, node, depth, sem, __func__,
+				    "author array index[%d]: __func__ is NULL", auth_num);
+	}
+	return false;
+    }
+    if (location_code == NULL) {
+	if (val_err != NULL) {
+	    *val_err = werr_sem_val(93, node, depth, sem, __func__,
+				    "author array index[%d]: location_code is NULL", auth_num);
+	}
+	return false;
+    }
+    if (location_name == NULL) {
+	if (val_err != NULL) {
+	    *val_err = werr_sem_val(94, node, depth, sem, __func__,
+				    "author array index[%d]: location_name is NULL", auth_num);
+	}
+	return false;
+    }
     if (email == NULL) {
 	email = "";
     }
@@ -388,141 +880,224 @@ load_author(struct author *authorp, char *name, char *location_code, char const 
     if (affiliation == NULL) {
 	affiliation = "";
     }
+    if (author_handle == NULL) {
+	if (val_err != NULL) {
+	    *val_err = werr_sem_val(95, node, depth, sem, __func__,
+				    "author array index[%d]: author_handle is NULL", auth_num);
+	}
+	return false;
+    }
 
     /*
      * validate elements
      */
 #if 0 /* XXX - unblock once the test function exists - XXX */
-    if (test_name(name) == false) {
+    if (test_name(auth_name) == false) {
+	if (val_err != NULL) {
+	    *val_err = werr_sem_val(96, node, depth, sem, __func__,
+				    "author array index[%d]: author __func__ is invalid", auth_num);
+	}
 	return false;
     }
 #endif /* XXX - unblock once the test function exists - XXX */
 #if 0 /* XXX - unblock once the test function exists - XXX */
     if (test_location_code(location_code) == false) {
+	if (val_err != NULL) {
+	    *val_err = werr_sem_val(97, node, depth, sem, __func__,
+				    "author array index[%d]: location_code is invalid", auth_num);
+	}
 	return false;
     }
 #endif /* XXX - unblock once the test function exists - XXX */
 #if 0 /* XXX - unblock once the test function exists - XXX */
     if (test_location_name(location_name) == false) {
+	if (val_err != NULL) {
+	    *val_err = werr_sem_val(98, node, depth, sem, __func__,
+				    "author array index[%d]: location_name is invalid", auth_num);
+	}
 	return false;
     }
 #endif /* XXX - unblock once the test function exists - XXX */
 #if 0 /* XXX - unblock once the test function exists - XXX */
     if (test_email(email) == false) {
+	if (val_err != NULL) {
+	    *val_err = werr_sem_val(99, node, depth, sem, __func__,
+				    "author array index[%d]: location_name is invalid", auth_num);
+	}
 	return false;
     }
 #endif /* XXX - unblock once the test function exists - XXX */
 #if 0 /* XXX - unblock once the test function exists - XXX */
     if (test_url(url) == false) {
+	if (val_err != NULL) {
+	    *val_err = werr_sem_val(100, node, depth, sem, __func__,
+				    "author array index[%d]: url is invalid", auth_num);
+	}
 	return false;
     }
 #endif /* XXX - unblock once the test function exists - XXX */
 #if 0 /* XXX - unblock once the test function exists - XXX */
     if (test_url(twitter) == false) {
+	if (val_err != NULL) {
+	    *val_err = werr_sem_val(101, node, depth, sem, __func__,
+				    "author array index[%d]: twitter is invalid", auth_num);
+	}
 	return false;
     }
 #endif /* XXX - unblock once the test function exists - XXX */
 #if 0 /* XXX - unblock once the test function exists - XXX */
     if (test_url(github) == false) {
+	if (val_err != NULL) {
+	    *val_err = werr_sem_val(102, node, depth, sem, __func__,
+				    "author array index[%d]: github is invalid", auth_num);
+	}
 	return false;
     }
 #endif /* XXX - unblock once the test function exists - XXX */
 #if 0 /* XXX - unblock once the test function exists - XXX */
     if (test_url(affiliation) == false) {
+	if (val_err != NULL) {
+	    *val_err = werr_sem_val(103, node, depth, sem, __func__,
+				    "author array index[%d]: affiliation is invalid", auth_num);
+	}
 	return false;
     }
 #endif /* XXX - unblock once the test function exists - XXX */
 #if 0 /* XXX - unblock once the test function exists - XXX */
     if (test_past_winner(past_winner) == false) {
+	if (val_err != NULL) {
+	    *val_err = werr_sem_val(104, node, depth, sem, __func__,
+				    "author array index[%d]: past_winner is invalid", auth_num);
+	}
 	return false;
     }
 #endif /* XXX - unblock once the test function exists - XXX */
 #if 0 /* XXX - unblock once the test function exists - XXX */
     if (test_default_handle(default_handle) == false) {
+	if (val_err != NULL) {
+	    *val_err = werr_sem_val(105, node, depth, sem, __func__,
+				    "author array index[%d]: default_handle is invalid", auth_num);
+	}
 	return false;
     }
 #endif /* XXX - unblock once the test function exists - XXX */
     if (test_author_handle(author_handle) == false) {
+	if (val_err != NULL) {
+	    *val_err = werr_sem_val(106, node, depth, sem, __func__,
+				    "author array index[%d]: author_handle is invalid", auth_num);
+	}
 	return false;
     }
     if (test_author_number(author_number) == false) {
+	if (val_err != NULL) {
+	    *val_err = werr_sem_val(107, node, depth, sem, __func__,
+				    "author array index[%d]: author_number is invalid", auth_num);
+	}
 	return false;
     }
 
     /*
-     * load elements into stack based struct author
+     * load elements into struct author * (auth)
      *
-     * For strings we strdup() them.
+     * For strings, we strdup() them.
      */
-    memset(&auth, 0, sizeof(auth));
     errno = 0;		/* pre-clear errno for warnp() */
-    auth.name = strdup(name);
-    if (auth.name == NULL) {
-	warnp(__func__, "strdup of name failed");
-	free_author_array(&auth, 1);
+    auth->name = strdup(auth_name);
+    if (auth->name == NULL) {
+	if (val_err != NULL) {
+	    *val_err = werr_sem_val(108, node, depth, sem, __func__,
+				    "author array index[%d]: strdup of name failed", auth_num);
+	}
+	free_author_array(auth, 1);
 	return false;
     }
     errno = 0;		/* pre-clear errno for warnp() */
-    auth.location_code = strdup(location_code);
-    if (auth.location_code == NULL) {
-	warnp(__func__, "strdup of location_code failed");
-	free_author_array(&auth, 1);
+    auth->location_code = strdup(location_code);
+    if (auth->location_code == NULL) {
+	if (val_err != NULL) {
+	    *val_err = werr_sem_val(109, node, depth, sem, __func__,
+				    "author array index[%d]: strdup of location_code failed", auth_num);
+	}
+	free_author_array(auth, 1);
 	return false;
     }
     errno = 0;		/* pre-clear errno for warnp() */
-    auth.location_name = strdup(location_name);
-    if (auth.location_name == NULL) {
-	warnp(__func__, "strdup of location_name failed");
-	free_author_array(&auth, 1);
+    auth->location_name = strdup(location_name);
+    if (auth->location_name == NULL) {
+	if (val_err != NULL) {
+	    *val_err = werr_sem_val(110, node, depth, sem, __func__,
+				    "author array index[%d]: strdup of location_name failed", auth_num);
+	}
+	free_author_array(auth, 1);
 	return false;
     }
     errno = 0;		/* pre-clear errno for warnp() */
-    auth.name = strdup(location_code);
-    if (auth.location_code == NULL) {
-	warnp(__func__, "strdup of location_code failed");
-	free_author_array(&auth, 1);
+    auth->email = strdup(email);
+    if (auth->email == NULL) {
+	if (val_err != NULL) {
+	    *val_err = werr_sem_val(111, node, depth, sem, __func__,
+				    "author array index[%d]: strdup of email failed", auth_num);
+	}
+	free_author_array(auth, 1);
 	return false;
     }
     errno = 0;		/* pre-clear errno for warnp() */
-    auth.name = strdup(location_code);
-    if (auth.location_code == NULL) {
-	warnp(__func__, "strdup of location_code failed");
-	free_author_array(&auth, 1);
+    auth->url = strdup(url);
+    if (auth->url == NULL) {
+	if (val_err != NULL) {
+	    *val_err = werr_sem_val(112, node, depth, sem, __func__,
+				    "author array index[%d]: strdup of url failed", auth_num);
+	}
+	free_author_array(auth, 1);
 	return false;
     }
     errno = 0;		/* pre-clear errno for warnp() */
-    auth.name = strdup(email);
-    if (auth.email == NULL) {
-	warnp(__func__, "strdup of email failed");
-	free_author_array(&auth, 1);
+    auth->twitter = strdup(twitter);
+    if (auth->url == NULL) {
+	if (val_err != NULL) {
+	    *val_err = werr_sem_val(113, node, depth, sem, __func__,
+				    "author array index[%d]: strdup of twitter failed", auth_num);
+	}
+	free_author_array(auth, 1);
 	return false;
     }
     errno = 0;		/* pre-clear errno for warnp() */
-    auth.name = strdup(url);
-    if (auth.url == NULL) {
-	warnp(__func__, "strdup of url failed");
-	free_author_array(&auth, 1);
+    auth->github = strdup(github);
+    if (auth->url == NULL) {
+	if (val_err != NULL) {
+	    *val_err = werr_sem_val(114, node, depth, sem, __func__,
+				    "author array index[%d]: strdup of github failed", auth_num);
+	}
+	free_author_array(auth, 1);
 	return false;
     }
     errno = 0;		/* pre-clear errno for warnp() */
-    auth.affiliation = strdup(affiliation);
-    if (auth.affiliation == NULL) {
-	warnp(__func__, "strdup of location_code failed");
-	free_author_array(&auth, 1);
+    auth->affiliation = strdup(affiliation);
+    if (auth->affiliation == NULL) {
+	if (val_err != NULL) {
+	    *val_err = werr_sem_val(115, node, depth, sem, __func__,
+				    "author array index[%d]: strdup of affiliation failed", auth_num);
+	}
+	free_author_array(auth, 1);
 	return false;
     }
+    auth->past_winner = past_winner;
+    auth->default_handle = default_handle;
     errno = 0;		/* pre-clear errno for warnp() */
-    auth.name = strdup(author_handle);
-    if (auth.location_code == NULL) {
-	warnp(__func__, "strdup of author_handle failed");
-	free_author_array(&auth, 1);
+    auth->author_handle = strdup(author_handle);
+    if (auth->location_code == NULL) {
+	if (val_err != NULL) {
+	    *val_err = werr_sem_val(116, node, depth, sem, __func__,
+				    "author array index[%d]: strdup of author_handle failed", auth_num);
+	}
+	free_author_array(auth, 1);
 	return false;
     }
+    auth->author_num = author_number;
 
     /*
-     * copy values from auth to authorp
+     * report success in loading struct author
      */
-    *authorp = auth;
     return true;
 }
 
@@ -1191,6 +1766,44 @@ test_authors(int author_count, struct author *authorp)
 }
 
 
+/*
+ * test_c_src - test if c_src is valid
+ *
+ * Determine if c_src matches "prog.c".
+ *
+ * given:
+ *	str	string to test
+ *
+ * returns:
+ *	true ==> string is valid,
+ *	false ==> string is NOT valid, or NULL pointer, or some internal error
+ */
+bool
+test_c_src(char *str)
+{
+    /*
+     * firewall
+     */
+    if (str == NULL) {
+	warn(__func__, "str is NULL");
+	return false;
+    }
+
+    /*
+     * validate str
+     */
+    if (strcmp(str, "prog.c") != 0) {
+	json_dbg(JSON_DBG_MED, __func__,
+		 "invalid: c_src != prog.c: %s", "prog.c");
+	json_dbg(JSON_DBG_HIGH, __func__,
+		 "invalid: c_src: %s is not prog.c: %s", str, "prog.c");
+	return false;
+    }
+    json_dbg(JSON_DBG_MED, __func__, "c_src filename is valid");
+    return true;
+}
+
+
 /* XXX - end sorted order matching chk_validate.c here - XXX */
 
 
@@ -1384,44 +1997,6 @@ test_txzchk_version(char *str)
 	return false;
     }
     json_dbg(JSON_DBG_MED, __func__, "txzchk_version is valid");
-    return true;
-}
-
-
-/*
- * test_c_src - test if c_src is valid
- *
- * Determine if c_src matches "prog.c".
- *
- * given:
- *	str	string to test
- *
- * returns:
- *	true ==> string is valid,
- *	false ==> string is NOT valid, or NULL pointer, or some internal error
- */
-bool
-test_c_src(char *str)
-{
-    /*
-     * firewall
-     */
-    if (str == NULL) {
-	warn(__func__, "str is NULL");
-	return false;
-    }
-
-    /*
-     * validate str
-     */
-    if (strcmp(str, "prog.c") != 0) {
-	json_dbg(JSON_DBG_MED, __func__,
-		 "invalid: c_src != prog.c: %s", "prog.c");
-	json_dbg(JSON_DBG_HIGH, __func__,
-		 "invalid: c_src: %s is not prog.c: %s", str, "prog.c");
-	return false;
-    }
-    json_dbg(JSON_DBG_MED, __func__, "c_src filename is valid");
     return true;
 }
 

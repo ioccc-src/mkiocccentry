@@ -1504,11 +1504,10 @@ parse_json_null(char const *string)
 	not_reached();
     }
 
-    null = json_conv_null_str(string, NULL);
-
     /*
      * null should not be NULL :-)
      */
+    null = json_conv_null_str(string, NULL);
     if (null == NULL) {
 	err(177, __func__, "null ironically should not be NULL but it is :-)");
 	not_reached();

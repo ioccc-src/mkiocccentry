@@ -118,8 +118,17 @@ struct str_or_null {
 extern struct json_sem_val_err *werr_sem_val(int val_err, struct json *node, unsigned int depth,
 					     struct json_sem *sem, char const *name, char const *fmt, ...) \
 	__attribute__((format(printf, 6, 7)));		/* 6=format 7=params */
+extern struct json_sem_val_err *werrp_sem_val(int val_err, struct json *node, unsigned int depth,
+					      struct json_sem *sem, char const *name, char const *fmt, ...) \
+	__attribute__((format(printf, 6, 7)));		/* 6=format 7=params */
 extern bool sem_chk_null_args(struct json *node, unsigned int depth, struct json_sem *sem,
 			      char const *name, struct json_sem_val_err **val_err);
+extern bool sem_node_valid_converted(struct json *node, unsigned int depth, struct json_sem *sem,
+				     char const *name, struct json_sem_val_err **val_err);
+extern struct json *sem_member_name(struct json *node, unsigned int depth, struct json_sem *sem,
+				    char const *name, struct json_sem_val_err **val_err);
+extern struct json *sem_member_value(struct json *node, unsigned int depth, struct json_sem *sem,
+				     char const *name, struct json_sem_val_err **val_err);
 extern char *sem_member_name_decoded_str(struct json *node, unsigned int depth, struct json_sem *sem,
 				         char const *name, struct json_sem_val_err **val_err);
 extern char *sem_member_value_decoded_str(struct json *node, unsigned int depth, struct json_sem *sem,
@@ -130,8 +139,6 @@ extern struct str_or_null sem_member_value_str_or_null(struct json *node, unsign
 						      char const *name, struct json_sem_val_err **val_err);
 extern int *sem_member_value_int(struct json *node, unsigned int depth, struct json_sem *sem,
 			         char const *name, struct json_sem_val_err **val_err);
-extern bool sem_node_valid_converted(struct json *node, unsigned int depth, struct json_sem *sem,
-				     char const *name, struct json_sem_val_err **val_err);
 extern struct json *sem_node_parent(struct json *node, unsigned int depth, struct json_sem *sem,
 				    char const *name, struct json_sem_val_err **val_err);
 extern struct json *sem_object_find_name(struct json *node, unsigned int depth, struct json_sem *sem,
