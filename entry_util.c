@@ -918,7 +918,6 @@ object2author(struct json *node, unsigned int depth, struct json_sem *sem,
 	return false;
     }
 #endif /* XXX - unblock once the test function exists - XXX */
-#if 0 /* XXX - unblock once the test function exists - XXX */
     if (test_email(email) == false) {
 	if (val_err != NULL) {
 	    *val_err = werr_sem_val(99, node, depth, sem, __func__,
@@ -926,7 +925,6 @@ object2author(struct json *node, unsigned int depth, struct json_sem *sem,
 	}
 	return false;
     }
-#endif /* XXX - unblock once the test function exists - XXX */
 #if 0 /* XXX - unblock once the test function exists - XXX */
     if (test_url(url) == false) {
 	if (val_err != NULL) {
@@ -1760,6 +1758,7 @@ test_authors(int author_count, struct author *authorp)
 	free(auth_nums);
 	auth_nums = NULL;
     }
+    json_dbg(JSON_DBG_MED, __func__, "author numbers and names are unique and in range");
     return true;
 }
 
@@ -1858,6 +1857,91 @@ bool
 test_default_handle(bool boolean)
 {
     json_dbg(JSON_DBG_MED, __func__, "default_handle is %s", booltostr(boolean));
+    return true;
+}
+
+
+/*
+ * test_email - test if email is valid
+ *
+ * Determine if email matches email.
+ *
+ * If email is not an empty string, then
+ * the format is of the form x@y where
+ * neither x nor y contains @ AND
+ * where neither x nor y is empty AND
+ * where x@y is not too long.
+ *
+ * given:
+ *	str	string to test
+ *
+ * returns:
+ *	true ==> string is valid,
+ *	false ==> string is NOT valid, or NULL pointer, or some internal error
+ */
+bool
+test_email(char *str)
+{
+    size_t length = 0;
+    char *p = NULL;		/* location of @ */
+
+    /*
+     * firewall
+     */
+    if (str == NULL) {
+	warn(__func__, "str is NULL");
+	return false;
+    }
+
+    /*
+     * validate str
+     */
+
+    /*
+     * reject if too long or empty
+     */
+    length = strlen(str);
+    if (length == 0) {
+	json_dbg(JSON_DBG_MED, __func__, "email is empty (address withheld)");
+	return true;
+    } else if (length > MAX_EMAIL_LEN) {
+	json_dbg(JSON_DBG_MED, __func__,
+		 "invalid: email length: %zu > MAX_EMAIL_LEN: %d", length, MAX_EMAIL_LEN);
+	json_dbg(JSON_DBG_HIGH, __func__,
+		 "invalid: email <%s> length: %zu > MAX_EMAIL_LEN: %d", str, length, MAX_EMAIL_LEN);
+	return false;
+    }
+
+    /*
+     * reject if no leading @, or if more than one @
+     */
+    p = strchr(str, '@');
+    if (p == NULL) {
+	json_dbg(JSON_DBG_MED, __func__,
+		 "invalid: email is missing @");
+	json_dbg(JSON_DBG_HIGH, __func__,
+		 "invalid: email <%s> email is missing @", str);
+	return false;
+    } else if (str[0] == '@') {
+	json_dbg(JSON_DBG_MED, __func__,
+		 "invalid: email starts with @");
+	json_dbg(JSON_DBG_HIGH, __func__,
+		 "invalid: email <%s> starts with @", str);
+	return false;
+    } else if (str[length-1] == '@') {
+	json_dbg(JSON_DBG_MED, __func__,
+		 "invalid: email ends with @");
+	json_dbg(JSON_DBG_HIGH, __func__,
+		 "invalid: email <%s> ends with @", str);
+	return false;
+    } else if (p != strrchr(str, '@')) {
+	json_dbg(JSON_DBG_MED, __func__,
+		 "invalid: email contains 2 or more @");
+	json_dbg(JSON_DBG_HIGH, __func__,
+		 "invalid: email <%s> contains 2 or more @", str);
+	return false;
+    }
+    json_dbg(JSON_DBG_MED, __func__, "email is valid");
     return true;
 }
 

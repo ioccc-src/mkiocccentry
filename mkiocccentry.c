@@ -3375,6 +3375,7 @@ get_author_info(struct author **author_set_p)
     int ret;			/* libc function return */
     char guard;			/* scanf guard to catch excess amount of input */
     char *def_handle = NULL;	/* default author handle computed from name */
+    bool pass = false;		/* true ==> passed test */
     char *p;
     int i = 0;
     int j = 0;
@@ -3789,18 +3790,23 @@ get_author_info(struct author **author_set_p)
 	    }
 
 	    /*
-	     * reject if too long
+	     * sanity check the Email address
 	     */
-	    if (len > MAX_EMAIL_LEN) {
+	    pass = test_email(author_set[i].email);
+	    if (pass == false) {
 
 		/*
 		 * issue rejection message
 		 */
 		errno = 0;		/* pre-clear errno for warnp() */
-		ret = fprintf(stderr, "\nSorry ( tm Canada :-) ), we limit Email address to %d characters\n\n", MAX_EMAIL_LEN);
+		ret = fprintf(stderr, "\nSorry ( tm Canada :-) ), we limit Email address to %d characters\n", MAX_EMAIL_LEN);
 		if (ret <= 0) {
 		    warnp(__func__, "fprintf error while printing Email address length limit");
 		}
+		fpara(stderr,
+		      "and we require that Email addresses must only a single @ somewhere inside the string.",
+		      "",
+		      NULL);
 
 		/*
 		 * free storage
@@ -3810,34 +3816,6 @@ get_author_info(struct author **author_set_p)
 		    author_set[i].email = NULL;
 		}
 		continue;
-	    }
-
-	    /*
-	     * reject if no leading @, or if more than one @
-	     */
-	    if (len > 0) {
-		p = strchr(author_set[i].email, '@');
-		if (p == NULL || author_set[i].email[0] == '@' || author_set[i].email[len - 1] == '@' ||
-		    p != strrchr(author_set[i].email, '@')) {
-
-		    /*
-		     * issue rejection message
-		     */
-		    fpara(stderr,
-			  "",
-			  "Email addresses must have only a single @ somewhere inside the string.",
-			  "",
-			  NULL);
-
-		    /*
-		     * free storage
-		     */
-		    if (author_set[i].email != NULL) {
-			free(author_set[i].email);
-			author_set[i].email = NULL;
-		    }
-		    continue;
-		}
 	    }
 	} while (author_set[i].email == NULL);
 

@@ -4,11 +4,12 @@
 
 # setup
 #
-export MKIOCCCENTRY_TEST_VERSION="0.1 2022-05-19"
-export USAGE="usage: $0 [-h] [-v level] [-V]
+export MKIOCCCENTRY_TEST_VERSION="0.2 2022-08-13"
+export USAGE="usage: $0 [-h] [-v level] [-J level] [-V]
 
     -h              print help and exit 5
     -v level        flag ignored
+    -J level	    set JSON verbosity level
     -V              print version and exit 5
 
 Exit codes:
@@ -19,16 +20,19 @@ Exit codes:
 
 mkiocccentry_test.sh version: $MKIOCCCENTRY_TEST_VERSION"
 export V_FLAG="0"
+export J_FLAG="0"
 export EXIT_CODE="0"
 
 # parse args
 #
-while getopts :hv:V flag; do
+while getopts :hv:J:V flag; do
     case "$flag" in
     h) echo "$USAGE" 1>&2
        exit 1
        ;;
     v) V_FLAG="$OPTARG";
+       ;;
+    J) J_FLAG="$OPTARG";
        ;;
     V) echo "$MKIOCCCENTRY_TEST_VERSION"
        exit 1
@@ -168,7 +172,7 @@ find "${work_dir_esc}" -mindepth 1 -depth -delete
 rm -f "${src_dir}"/empty.c
 :> "${src_dir}"/empty.c
 # test empty prog.c, ignoring the warning about it
-yes | ./mkiocccentry -q -W -i answers.txt -- "${work_dir}" "${src_dir}"/{empty.c,Makefile,remarks.md,extra1,extra2}
+yes | ./mkiocccentry -q -W -i answers.txt -J "$J_FLAG" -- "${work_dir}" "${src_dir}"/{empty.c,Makefile,remarks.md,extra1,extra2}
 status=$?
 if [[ ${status} -ne 0 ]]; then
     echo "$0: FATAL: mkiocccentry non-zero exit code: $status" 1>&2
@@ -256,7 +260,7 @@ answers >>answers.txt
 
 # run the test, looking for an exit
 #
-yes | ./mkiocccentry -q -i answers.txt -- "${work_dir}" "${src_dir}"/{prog.c,Makefile,remarks.md,extra1,extra2}
+yes | ./mkiocccentry -q -i answers.txt -J "$J_FLAG" -- "${work_dir}" "${src_dir}"/{prog.c,Makefile,remarks.md,extra1,extra2}
 status=$?
 if [[ ${status} -ne 0 ]]; then
     echo "$0: FATAL: mkiocccentry non-zero exit code: $status" 1>&2
@@ -339,7 +343,7 @@ test -f "${src_dir}"/bar || cat CODE_OF_CONDUCT.md >"${src_dir}"/bar
 
 # run the test, looking for an exit
 #
-yes | ./mkiocccentry -q -i answers.txt -- "${work_dir}" "${src_dir}"/{prog.c,Makefile,remarks.md,extra1,extra2,foo,bar}
+yes | ./mkiocccentry -q -i answers.txt -J "$J_FLAG" -- "${work_dir}" "${src_dir}"/{prog.c,Makefile,remarks.md,extra1,extra2,foo,bar}
 status=$?
 if [[ ${status} -ne 0 ]]; then
     echo "$0: FATAL: mkiocccentry non-zero exit code: $status" 1>&2
