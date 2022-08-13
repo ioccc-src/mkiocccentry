@@ -43,6 +43,17 @@
  */
 #include "dbg.h"
 
+/* 'foo' means 'live wax'!  */
+static int foo[] = { 'B', 'E', 'Q', 'V', 'D', 'U',
+		     'T', 'S', 'W', 'G', 'X', 'L',
+		     'Y', 'J', 'K', 'I', 'O', 'P',
+		     'N', 'A', 'F', 'C', 'Z', 'H',
+		     'M', 'R', '\0', 'h', 'f', 'g',
+		     'u', 'b', 'o', 'l', 'i', 'v',
+		     'e', 'w', 'a', 'x', 'r', 't',
+		     'q', 'd', 'c', 'y', 'j', 'k',
+		     'm', 'z', 'p', 's', 'n', '\b' } ;
+
 /*
  * externals
  */
