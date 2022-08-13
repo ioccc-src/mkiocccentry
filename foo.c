@@ -977,6 +977,76 @@ static char const *oebxergfB[] =
     "Tnw iym lyud, 'Yssh, C'i y esikqbwa kaspayiiwa. C dsm'b nyvw buiw osa y\n"
     "puatoauwmd, rqb y bythump oasp ul esst.'",
 
+    "Vnwaw yaw bnw xsalb lumpwal um bnw xsatd? Uumpyksaw.\n"
+    "-- Xwzft\n",
+
+    "Vnyb ul bnw luehwlb mybusm um bnw xsatd? Wwaiymf, oqtt so pwai auddwm iwm.\n"
+    "-- Xwzft",
+
+    "LZTK: Gtt nqiyml nyvw bnaww yabwauwl raymenump soo oasi bnwua ysaby.\n"
+    "\n"
+    "HGIT: Lsaw bnym y bnuad so kwsktw ds msb ymd bnwaw iyf rw yl owx yl smw sa yl\n"
+    "iymf yl luz yabwauwl.",
+
+    "Rud fsq hmsx? Gtbnsqpn ub ul sobwm ybbaurqbwd bs Uua Odiqmd Kuttyaf, ub xyl\n"
+    "yebqyttf Wwsapw Ywupn Lyttsaf xns ymlxwawd bnw cqwlbusm 'Vnf ds fsq xymb bs\n"
+    "etuir Lb Ovwawlb?' xubn 'Nweyqlw ub ul bnwaw' ymd bnwm dulykkwyawd umbs bnw\n"
+    "iulbl sm nul tylb ybbwikb bs leytw bnw isqmbyum. Tnul xyl um 1924 ymd nw xyl\n"
+    "mwvwa lwwm ypyum.",
+
+    "NMOGBCFW FOVU oasi FGUG, 18 Lyaen 2022, isaw bnym 52 fwyal yobwa bnw oualb\n"
+    "tymdump sm bnw Lssm ymd isaw bnym 62 fwyal yobwa bnw eawybusm so FGUG.\n"
+    "\n"
+    "Cm ym ymmsqmewiwmb bnyb bnyb nyl lnsehwd lsiw kwsktw, iydw lsiw liqp ymd kqb\n"
+    "sbnwal um dulrwtuwo, FGUG nyl osa bnw oualb buiw ymmsqmewd bnyb rsbn bnw Lssm\n"
+    "ymd bnw Uqm nslb tuow ymd xnyb xw ytt bnsqpnb xwaw esumeudwmbyt myiwl yaw\n"
+    "ymfbnump rqb.\n"
+    "\n"
+    "Cb bqaml sqb bnyb issm rwyal saupumyttf esiw oasi bnw Lssm ymd lqm rwyal\n"
+    "saupumyttf esiw oasi bnw Uqm. Tnw duwb so issm rwyal ul islbtf nsmwfissml sm\n"
+    "lbuehl ymd bnw duwb so bnw lqm rwya ul lqm-ryhwd nsmwf eyhwl.\n"
+    "\n"
+    "Vnyb’l isaw ul bnyb bnw issm rwyal ymd lqm rwyal sm Oyabn yaw yebqyttf twll\n"
+    "umbwttupwmb bnym bnslw sm bnw Lssm ymd Uqm. Geesadump bs y lkshwlkwalsm oasi\n"
+    "FGUG bnw issm rwyal sm bnw Lssm ymd lqm rwyal sm bnw Uqm eym byth bs wyen sbnwa\n"
+    "um xyfl bnyb islb nqiyml eym’b ksllurtf oybnsi.\n"
+    "\n"
+    "Vnwm lewkbuel ylhwd xnf bnwaw’l ms knsbspayknue wvudwmew so bnw rwyal bnw\n"
+    "lkshwlkwalsm lyud bnyb ub’l rweyqlw bnw rwyal yaw wzbawiwtf lnf so nqiyml ymd\n"
+    "ybbwikb bs yvsud ytt esmbyeb xubn iym, ypyum lnsxump isaw umbwttupwmew bnym\n"
+    "bnwua Oyabn dwlewmdymbl.\n"
+    "\n"
+    "Gl osa nsx bnw lqm rwyal eym ksllurtf tuvw sm bnw Uqm sa bnw issm rwyal sm bnw\n"
+    "Lssm, ub'l lsiwbnump bnyb yobwa ytt bnwlw fwyal FGUG nyl fwb bs oupqaw sqb; ub\n"
+    "lwwil uiksllurtw rqb yobwa ytt, bnwlw rwyal yaw nupntf umbwttupwmb ymd nyvw\n"
+    "dwewuvwd nqiyml osa ytt bnwlw fwyal ymd bnasqpn wvstqbusm bnwf ewabyumtf eyiw\n"
+    "qk xubn xyfl bs lqavuvw gqlb tuhw xw nyvw dwlkubw sqa lwausql umwkbubqdwl ymd\n"
+    "vwaf etslw eyttl bsxyadl wzbumebusm.",
+
+    "Hqm ymd ksbwmbuyttf tuowlyvump oyebl yrsqb nsx bs wleykw oasi easesdutwl:\n"
+    "\n"
+    "Iasesdutwl yaw cqubw oylb sm tymd rqb nyvw tubbtw yrutubf bs enympw duawebusm\n"
+    "ls uo smw ul enylump fsq sm tymd fsq lnsqtd aqm um y jupjyp iymmwa.\n"
+    "\n"
+    "Gtls bnwua gyxl yaw xwyhwlb xnwm bnwf yaw skwmump bnwua isqbn; ub'l xnwm bnwf\n"
+    "lbyab etslump bnwua isqbn bnyb bnwua gyxl yaw lbasmpwlb. Tnql uo fsq'aw wvwa\n"
+    "qmosabqmybw wmsqpn bs rw mwzb bs smw xnwm ub lbyabl bs skwm ubl isqbn lbymd sm\n"
+    "ubl nwyd. Co fsq lqavuvw bnyb fsq iupnb xymb bs bnwm esmludwa fsqa tuow ensuewl\n"
+    "lumew fsq kasryrtf lnsqtdm'b rw bnyb etslw bs y easesdutw um bnw oualb ktyew.",
+
+    "Rud fsq hmsx? Nwwbnsvwm xyl wmbuawtf dwyo xnwm nw esikslwd bnw Fumbn Ufiknsmf.",
+
+    "Rud fsq hmsx bnyb bnw oualb twbbwa so wyen esmbumwmb ul ytls bnw tylb twbbwa so\n"
+    "bnyb lyiw esmbumwmb? GiwaueG, GmbyaebueG, OqaskO, GluG, GqlbaytuG ymd GoaueG.",
+
+    "Vnwm Saymql xyl dulesvwawd um 1781 rf Uua Vuttuyi Kwalenwt ub xyl myiwd\n"
+    "'Wwsapuqi Uuduqi' um nsmsqa so Bump Wwsapw CCC so Omptymd. Hsa iymf fwyal ub\n"
+    "xyl bnql hmsxm yl bnw 'Wwsapuym'. Cb xylm'b qmbut 1850 bnyb ub xyl enaulbwmwd\n"
+    "Saymql um yeesadymew xubn bnw baydubusm so myiump ktymwbl yobwa Msiym psdl.\n"
+    "\n"
+    "Cb'l ytls rwwm lyud ub'l myiwd yobwa lsiwbnump wtlw rqb bnwaw'l ms esmeawbw\n"
+    "wvudwmew bnyb nyl fwb bs rw osqmd. :-)",
+
     NULL
 } ;
 
@@ -1110,10 +1180,10 @@ vrergfB(int four, int two)
 
 
 	    /* case: just in case we consider the case */
-	    ret = islower(*p) /* this is a functional equivalent to a question mark: */ ?
+	    ret = islower(*p) /* this is a functional equivalent to a colon: */ ?
 		/* absolute trigonometric runaround */
 		"nxistdwhowakprqfcvgzhjskelyybume"[((int)fabs(0x3BF261*sin((double)((*p-0141+(42-(1<<4)))%(0x2E4%42)))))&0x1f]
-		: /* you are looking at the functional equivalent of a colon */
+		: /* that was a functional equivalent of a question mark */
 		/* try to absolutely positively trig this upper class character */
 		"NXAUTMWORWCKBLQPZDXVQJSTFHYlGIEE"[((int)fabs(043431066*sin((double)((1+*p-0x42+(0xd<<1))%((2*0x0DF)%42)))))&037]
 		;
