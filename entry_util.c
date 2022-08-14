@@ -1564,11 +1564,11 @@ test_author_number(int author_number)
     /*
      * validate count
      */
-    if (author_number < 1) {
+    if (author_number < 0) {
 	json_dbg(JSON_DBG_MED, __func__,
 		 "invalid: author_number: %d < 0", author_number);
 	return false;
-    } else if (author_number > MAX_AUTHORS) {
+    } else if (author_number >= MAX_AUTHORS) {
 	json_dbg(JSON_DBG_MED, __func__,
 		 "invalid: author_number: %d > MAX_AUTHORS: %d", author_number, MAX_AUTHORS);
 	return false;
@@ -1964,6 +1964,38 @@ bool
 test_empty_override(bool boolean)
 {
     json_dbg(JSON_DBG_MED, __func__, "empty_override is %s", booltostr(boolean));
+    return true;
+}
+
+
+/*
+ * test_entry_num - test if entry_num is valid
+ *
+ * Determine if entry_num is within the proper limits.
+ *
+ * given:
+ *	entry_num	author number
+ *
+ * returns:
+ *	true ==> entry_num is valid,
+ *	false ==> entry_num is NOT valid, or some internal error
+ */
+bool
+test_entry_num(int entry_num)
+{
+    /*
+     * validate count
+     */
+    if (entry_num < 0) {
+	json_dbg(JSON_DBG_MED, __func__,
+		 "invalid: entry_num: %d < 0", entry_num);
+	return false;
+    } else if (entry_num > MAX_ENTRY_NUM) {
+	json_dbg(JSON_DBG_MED, __func__,
+		 "invalid: entry_num: %d > MAX_AUTHORS: %d", entry_num, MAX_ENTRY_NUM);
+	return false;
+    }
+    json_dbg(JSON_DBG_MED, __func__, "entry_num is valid");
     return true;
 }
 
