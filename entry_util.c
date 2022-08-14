@@ -1946,6 +1946,28 @@ test_email(char *str)
 }
 
 
+/*
+ * test_empty_override - test if empty_override is valid
+ *
+ * Determine if empty_override boolean is valid.  :-)
+ * Well this isn't much of a test, but we have to keep
+ * up with the general form of tests!  :-)
+ *
+ * given:
+ *	boolean	boolean to test
+ *
+ * returns:
+ *	true ==> bool is valid,
+ *	false ==> bool is NOT valid, or some internal error
+ */
+bool
+test_empty_override(bool boolean)
+{
+    json_dbg(JSON_DBG_MED, __func__, "empty_override is %s", booltostr(boolean));
+    return true;
+}
+
+
 /* XXX - end sorted order matching chk_validate.c here - XXX */
 
 
@@ -2157,28 +2179,6 @@ test_title(char *str)
 	return false;
     }
     json_dbg(JSON_DBG_MED, __func__, "title is valid");
-    return true;
-}
-
-
-/*
- * test_empty_override - test if empty_override is valid
- *
- * Determine if empty_override boolean is valid.  :-)
- * Well this isn't much of a test, but we have to keep
- * up with the general form of tests!  :-)
- *
- * given:
- *	boolean	boolean to test
- *
- * returns:
- *	true ==> bool is valid,
- *	false ==> bool is NOT valid, or some internal error
- */
-bool
-test_empty_override(bool boolean)
-{
-    json_dbg(JSON_DBG_MED, __func__, "empty_override is %s", booltostr(boolean));
     return true;
 }
 
