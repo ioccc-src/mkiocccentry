@@ -1047,6 +1047,43 @@ static char const *oebxergfB[] =
     "Cb'l ytls rwwm lyud ub'l myiwd yobwa lsiwbnump wtlw rqb bnwaw'l ms esmeawbw\n"
     "wvudwmew bnyb nyl fwb bs rw osqmd. :-)",
 
+    "Hqm oyebl yrsqb bnw Lsmy Yuly:\n"
+    "\n"
+    "Unw nyl ms wfwrasxl (ub xyl bnw oylnusm um Mwmyullymew Htsawmew bs lnyvw bnwi soo).\n"
+    "\n"
+    "Tnw awyt myiw so bnw kyumbump ul msb Lsmy Yuly. Cb ul Yy Wuyesmdy. Cb ul y\n"
+    "ksabayub so y iuddtw-etyll Htsawmbumw xsiym, bnw xuow so y iwaenymb myiwd\n"
+    "Haymewles dwt Wuyesmds.\n"
+    "\n"
+    "Tnw kyumbump iwylqawl twll bnym 2 owwb rf 2 owwb (0.6096 iwbaw rf 0.6096\n"
+    "iwbaw).\n"
+    "\n"
+    "Gm wmbuaw skway xyl xaubbwm yrsqb bnw kyumbump rf Lyz vsm Uenuttumpl. X-ayfl so\n"
+    "bnw Lsmy Yuly lnsx bnyb bnwaw yaw bnaww esiktwbwtf duoowawmb vwalusml so bnw\n"
+    "lyiw lqrgweb, ytt kyumbwd rf Ywsmyads, qmdwa bnw oumyt ksabayub.",
+
+    "Ubaympw oyeb yrsqb ymeuwmb Inumwlw yabulbl:\n"
+    "\n"
+    "Tnwf nyd ms kasrtwi kyumbump lewmwl so mqdubf ymd lwz rqb bnwf xsqtd mwvwa wvwa\n"
+    "dwkueb y ryaw owiytw ossb.",
+
+    "Hqm, lbaympw ymd umbwawlbump oyebl yrsqb lsiw nssowd ymuiytl:\n"
+    "\n"
+    "Gm sz ul y eylbaybwd rqtt. G iqtw ul y lbwautw easll rwbxwwm y iytw yll ymd y\n"
+    "owiytw nsalw. G dsmhwf ul hmsxm yl ym yll rqb lbaympwtf ym yll ul msb ytxyfl y\n"
+    "dsmhwf. Tnul ul rweyqlw yll yebqyttf awowal bs lwvwayt nssowd ymuiytl so bnw\n"
+    "pwmql Ocqql oyiutf Ocqudyw: O. yoaueymql so Goauey, xnuen ul bnw ymewlbsa so\n"
+    "bnw dsiwlbue yll sa dsmhwf, ymd O. nwiusmql so Gluy. Nqb yb bnw lyiw buiw ym\n"
+    "yll um pwmwayt qlw awowal bs y dsmhwf ls smw iupnb lyf bnyb luiqtbymwsqltf ym\n"
+    "yll ul ytxyfl y dsmhwf ymd msb ytxyfl y dsmhwf.",
+
+    "Hqm oyebl yrsqb eaflbytl:\n"
+    "\n"
+    "Iaflbytl pasx rf awkasdqeump bnwilwtvwl. Tnwf esiw mwyawlb bs rwump ytuvw so\n"
+    "ytt iumwaytl.\n"
+    "\n"
+    "Iaflbytl, esmbayaf bs kskqtya rwtuwo, yaw yebqyttf msb asehl.",
+
     NULL
 } ;
 
