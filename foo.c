@@ -1084,6 +1084,15 @@ static char const *oebxergfB[] =
     "\n"
     "Iaflbytl, esmbayaf bs kskqtya rwtuwo, yaw yebqyttf msb asehl.",
 
+    "Hqm oyeb yrsqb ayutxyf bayuml:\n"
+    "\n"
+    "Ts ybbwikb bs wlbyrtuln nsx oylb y bayum ul bayvwttump, esqmb bnw mqirwa so\n"
+    "etuehl nwyad um 20 lwesmdl. Tnul oupqaw ul asqpntf wcqyt bs bnw mqirwa so iutwl\n"
+    "kwa nsqa bnw bayum ul isvump. 1 iutw ul wcqyt bs 1.60934 hutsiwbawl ls uo fsq\n"
+    "pwb y ltsx 30ikn osa wzyiktw ub'l 48.28020hin.\n"
+    "\n"
+    "Tyhwm oasi bnw rssh Ryvud Ysqul.",
+
     NULL
 } ;
 
