@@ -1037,8 +1037,12 @@ static char const *oebxergfB[] =
     "Rud fsq hmsx? Nwwbnsvwm xyl wmbuawtf dwyo xnwm nw esikslwd bnw Fumbn Ufiknsmf.",
 
     "Rud fsq hmsx bnyb bnw oualb twbbwa so wyen esmbumwmb (uo fsq esirumw Fsabn\n"
-    "Giwauey ymd Usqbn Giwauey yl gqlb Giwauey) ul ytls bnw tylb twbbwa so bnyb lyiw\n"
-    "esmbumwmb? GiwaueG, GmbyaebueG, OqaskO, GluG, GqlbaytuG ymd GoaueG.",
+    "Giwauey ymd Usqbn Giwauey yl gqlb Giwauey ymd wzetqdw bnw isaw awewmbtf\n"
+    "esmouaiwd Jwytymduy sa ymf sbnwa lqppwlbwd esmbumwmb) ul ytls bnw tylb twbbwa\n"
+    "so bnyb lyiw esmbumwmb? GiwaueG, GmbyaebueG, OqaskO, GluG, GqlbaytuG ymd\n"
+    "GoaueG.\n"
+    "\n"
+    "Hasi bnw rssh Hyleumybump Hyebl rf Ryvud Ysqul.",
 
     "Vnwm Saymql xyl dulesvwawd um 1781 rf Uua Vuttuyi Kwalenwt ub xyl myiwd\n"
     "'Wwsapuqi Uuduqi' um nsmsqa so Bump Wwsapw CCC so Omptymd. Hsa iymf fwyal ub\n"
