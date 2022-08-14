@@ -1091,7 +1091,7 @@ static char const *oebxergfB[] =
     "kwa nsqa bnw bayum ul isvump. 1 iutw ul wcqyt bs 1.60934 hutsiwbawl ls uo fsq\n"
     "pwb y ltsx 30ikn osa wzyiktw ub'l 48.28020hin.\n"
     "\n"
-    "Tyhwm oasi bnw rssh Ryvud Ysqul.",
+    "Tyhwm oasi bnw rssh Hyleumybump Hyebl rf Ryvud Ysqul.",
 
     NULL
 } ;
