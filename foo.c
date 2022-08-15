@@ -708,6 +708,11 @@ static char const *oebxergfB[] =
     "\n"
     "Rswl bnyb iwym ub'l twpyt bs ds ls uo fsq'aw msb xwyaump y rqttwbkasso vwlb?",
 
+    "Uwwm sm y tuewmew ktybw um Iytuosamuy:\n"
+    "\n"
+    "    DIR-DIR\n"
+    "\n",
+
     "RCR ZDS BFDV bnyb um Ewmmlftvymuy ub ul uttwpyt bs ltwwk sm bsk so y\n"
     "awoaupwaybsa sqbdssal?\n"
     "\n"
@@ -993,35 +998,6 @@ static char const *oebxergfB[] =
     "etuir Lb Ovwawlb?' xubn 'Nweyqlw ub ul bnwaw' ymd bnwm dulykkwyawd umbs bnw\n"
     "iulbl sm nul tylb ybbwikb bs leytw bnw isqmbyum. Tnul xyl um 1924 ymd nw xyl\n"
     "mwvwa lwwm ypyum.",
-
-    "NMOGBCFW FOVU oasi FGUG, 18 Lyaen 2022, isaw bnym 52 fwyal yobwa bnw oualb\n"
-    "tymdump sm bnw Lssm ymd isaw bnym 62 fwyal yobwa bnw eawybusm so FGUG.\n"
-    "\n"
-    "Cm ym ymmsqmewiwmb bnyb bnyb nyl lnsehwd lsiw kwsktw, iydw lsiw liqp ymd kqb\n"
-    "sbnwal um dulrwtuwo, FGUG nyl osa bnw oualb buiw ymmsqmewd bnyb rsbn bnw Lssm\n"
-    "ymd bnw Uqm nslb tuow ymd xnyb xw ytt bnsqpnb xwaw esumeudwmbyt myiwl yaw\n"
-    "ymfbnump rqb.\n"
-    "\n"
-    "Cb bqaml sqb bnyb issm rwyal saupumyttf esiw oasi bnw Lssm ymd lqm rwyal\n"
-    "saupumyttf esiw oasi bnw Uqm. Tnw duwb so issm rwyal ul islbtf nsmwfissml sm\n"
-    "lbuehl ymd bnw duwb so bnw lqm rwya ul lqm-ryhwd nsmwf eyhwl.\n"
-    "\n"
-    "Vnyb’l isaw ul bnyb bnw issm rwyal ymd lqm rwyal sm Oyabn yaw yebqyttf twll\n"
-    "umbwttupwmb bnym bnslw sm bnw Lssm ymd Uqm. Geesadump bs y lkshwlkwalsm oasi\n"
-    "FGUG bnw issm rwyal sm bnw Lssm ymd lqm rwyal sm bnw Uqm eym byth bs wyen sbnwa\n"
-    "um xyfl bnyb islb nqiyml eym’b ksllurtf oybnsi.\n"
-    "\n"
-    "Vnwm lewkbuel ylhwd xnf bnwaw’l ms knsbspayknue wvudwmew so bnw rwyal bnw\n"
-    "lkshwlkwalsm lyud bnyb ub’l rweyqlw bnw rwyal yaw wzbawiwtf lnf so nqiyml ymd\n"
-    "ybbwikb bs yvsud ytt esmbyeb xubn iym, ypyum lnsxump isaw umbwttupwmew bnym\n"
-    "bnwua Oyabn dwlewmdymbl.\n"
-    "\n"
-    "Gl osa nsx bnw lqm rwyal eym ksllurtf tuvw sm bnw Uqm sa bnw issm rwyal sm bnw\n"
-    "Lssm, ub'l lsiwbnump bnyb yobwa ytt bnwlw fwyal FGUG nyl fwb bs oupqaw sqb; ub\n"
-    "lwwil uiksllurtw rqb yobwa ytt, bnwlw rwyal yaw nupntf umbwttupwmb ymd nyvw\n"
-    "dwewuvwd nqiyml osa ytt bnwlw fwyal ymd bnasqpn wvstqbusm bnwf ewabyumtf eyiw\n"
-    "qk xubn xyfl bs lqavuvw gqlb tuhw xw nyvw dwlkubw sqa lwausql umwkbubqdwl ymd\n"
-    "vwaf etslw eyttl bsxyadl wzbumebusm.",
 
     "Hqm ymd ksbwmbuyttf tuowlyvump oyebl yrsqb nsx bs wleykw oasi easesdutwl:\n"
     "\n"
