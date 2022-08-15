@@ -2090,6 +2090,44 @@ test_first_rule_is_all(bool boolean)
 }
 
 
+/*
+ * test_fnamchk_version - test if fnamchk_version is valid
+ *
+ * Determine if fnamchk_version matches FNAMCHK_VERSION.
+ *
+ * given:
+ *	str	string to test
+ *
+ * returns:
+ *	true ==> string is valid,
+ *	false ==> string is NOT valid, or NULL pointer, or some internal error
+ */
+bool
+test_fnamchk_version(char *str)
+{
+    /*
+     * firewall
+     */
+    if (str == NULL) {
+	warn(__func__, "str is NULL");
+	return false;
+    }
+
+    /*
+     * validate str
+     */
+    if (strcmp(str, FNAMCHK_VERSION) != 0) {
+	json_dbg(JSON_DBG_MED, __func__,
+		 "invalid: fnamchk_version != FNAMCHK_VERSION: %s", FNAMCHK_VERSION);
+	json_dbg(JSON_DBG_HIGH, __func__,
+		 "invalid: fnamchk_version: %s is not FNAMCHK_VERSION: %s", str, FNAMCHK_VERSION);
+	return false;
+    }
+    json_dbg(JSON_DBG_MED, __func__, "fnamchk_version is valid");
+    return true;
+}
+
+
 /* XXX - end sorted order matching chk_validate.c here - XXX */
 
 
@@ -2165,44 +2203,6 @@ test_iocccsize_version(char *str)
 	return false;
     }
     json_dbg(JSON_DBG_MED, __func__, "iocccsize_version is valid");
-    return true;
-}
-
-
-/*
- * test_fnamchk_version - test if fnamchk_version is valid
- *
- * Determine if fnamchk_version matches FNAMCHK_VERSION.
- *
- * given:
- *	str	string to test
- *
- * returns:
- *	true ==> string is valid,
- *	false ==> string is NOT valid, or NULL pointer, or some internal error
- */
-bool
-test_fnamchk_version(char *str)
-{
-    /*
-     * firewall
-     */
-    if (str == NULL) {
-	warn(__func__, "str is NULL");
-	return false;
-    }
-
-    /*
-     * validate str
-     */
-    if (strcmp(str, FNAMCHK_VERSION) != 0) {
-	json_dbg(JSON_DBG_MED, __func__,
-		 "invalid: fnamchk_version != FNAMCHK_VERSION: %s", FNAMCHK_VERSION);
-	json_dbg(JSON_DBG_HIGH, __func__,
-		 "invalid: fnamchk_version: %s is not FNAMCHK_VERSION: %s", str, FNAMCHK_VERSION);
-	return false;
-    }
-    json_dbg(JSON_DBG_MED, __func__, "fnamchk_version is valid");
     return true;
 }
 
