@@ -1231,10 +1231,10 @@ vrergfB(int four, int two)
 
 
 	    /* case: just in case we consider the case */
-	    ret = islower(*p) /* this is a functional equivalent to a colon: */ ?
+	    ret = islower(*p) /* this is a functional equivalent to a question mark: */ ?
 		/* absolute trigonometric runaround */
 		"nxistdwhowakprqfcvgzhjskelyybume"[((int)fabs(0x3BF261*sin((double)((*p-0141+(42-(1<<4)))%(0x2E4%42)))))&0x1f]
-		: /* that was a functional equivalent of a question mark */
+		: /* you are looking at the functional equivalent of a colon */
 		/* try to absolutely positively trig this upper class character */
 		"NXAUTMWORWCKBLQPZDXVQJSTFHYlGIEE"[((int)fabs(043431066*sin((double)((1+*p-0x42+(0xd<<1))%((2*0x0DF)%42)))))&037]
 		;
