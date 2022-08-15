@@ -26,6 +26,8 @@
 #    define  INCLUDE_ENTRY_UTIL_H
 
 
+#include <time.h>
+
 /*
  * version - official IOCCC toolkit versions
  */
@@ -207,6 +209,7 @@ extern void free_author_array(struct author *authorp, int author_count);
 extern bool object2author(struct json *node, unsigned int depth, struct json_sem *sem,
 			  char const *name, struct json_sem_val_err **val_err,
 			  struct author *auth, int auth_num);
+extern bool timestr_eq_tstamp(char *timestr, time_t timestamp);
 /* XXX - begin sorted order matching chk_validate.c here - XXX */
 extern bool test_IOCCC_author_version(char *str);
 extern bool test_IOCCC_contest_id(char *str);
@@ -229,6 +232,7 @@ extern bool test_entry_num(int entry_num);
 extern bool test_extra_file(char *str);
 extern bool test_first_rule_is_all(bool boolean);
 extern bool test_fnamchk_version(char *str);
+extern bool test_formed_UTC(char *str);
 /* XXX - end sorted order matching chk_validate.c here - XXX */
 extern bool test_rule_2a_override(bool boolean);
 extern bool test_rule_2a_mismatch(bool boolean);
@@ -248,5 +252,6 @@ extern bool test_mkiocccentry_version(char *str);
 extern bool test_iocccsize_version(char *str);
 extern bool test_txzchk_version(char *str);
 extern bool test_title(char *str);
+extern bool test_formed_timestamp(time_t tstamp);
 
 #endif /* INCLUDE_ENTRY_UTIL_H */

@@ -1098,6 +1098,81 @@ object2author(struct json *node, unsigned int depth, struct json_sem *sem,
 }
 
 
+/*
+ * timestr_eq_tstamp - determine if a time string matches a timestamp
+ *
+ * given:
+ *	timestr		a time string formatted by "%a %b %d %H:%M:%S %Y UTC"
+ *	timestamp	timestamp as a time_t to compare
+ *
+ * returns:
+ *	true ==> time string is the same time as timestamp,
+ *	false ==> time string differs in time from timestamp, or
+ *		  time string is invalid format, or internal error
+ */
+bool
+timestr_eq_tstamp(char *timestr, time_t timestamp)
+{
+    struct tm timeptr;			/* formed_UTC converted into broken-out time */
+    char *ptr = NULL;			/* ptr to 1st char in buf not converted */
+    time_t timestr_as_time_t;		/* timestr as a timestamp */
+
+    /*
+     * firewall
+     */
+    if (timestr == NULL) {
+	warn(__func__, "timestr is NULL");
+	return false;
+    }
+
+    /*
+     * convert into broken-out time
+     */
+    ptr = strptime(timestr, "%a %b %d %H:%M:%S %Y UTC", &timeptr);
+    if (ptr == NULL) {
+	json_dbg(JSON_DBG_MED, __func__,
+		 "invalid: strptime cannot convert time string");
+	json_dbg(JSON_DBG_HIGH, __func__,
+		 "invalid: strptime failed convert time string: <%s>", timestr);
+	return false;
+    }
+    if (ptr[0] == '\0') {
+	json_dbg(JSON_DBG_MED, __func__,
+		 "invalid: extra data in time string");
+	json_dbg(JSON_DBG_HIGH, __func__,
+		 "invalid: extra data in time string: <%s>", timestr);
+	return false;
+    }
+
+    /*
+     * convert broken-out time into timestamp
+     */
+    timestr_as_time_t = timegm(&timeptr);
+
+    /*
+     * compare timestamps
+     */
+    if (timestr_as_time_t != timestamp) {
+	json_dbg(JSON_DBG_MED, __func__,
+		 "invalid: time string not same time as timestamp");
+	if ((time_t)-1 > 0) {
+	    /* case: unsigned time_t */
+	    json_dbg(JSON_DBG_HIGH, __func__,
+		     "invalid: time string: <%s> %ju != timestamp: %ju",
+		     timestr, (uintmax_t)timestr_as_time_t, (uintmax_t)timestamp);
+	} else {
+	    /* case: unsigned time_t */
+	    json_dbg(JSON_DBG_HIGH, __func__,
+		     "invalid: time string: <%s> %jd != timestamp: %jd",
+		     timestr, (intmax_t)timestr_as_time_t, (intmax_t)timestamp);
+	}
+	return false;
+    }
+    json_dbg(JSON_DBG_MED, __func__, "time string same time as timestamp");
+    return true;
+}
+
+
 /* XXX - begin sorted order matching chk_validate.c here - XXX */
 
 
@@ -2128,6 +2203,84 @@ test_fnamchk_version(char *str)
 }
 
 
+/*
+ * test_formed_UTC - test if formed_UTC is valid
+ *
+ * Determine if formed_UTC is convertable into a broken-out time and
+ * then back to the same time string.
+ *
+ * given:
+ *	str			string to test
+ *
+ * returns:
+ *	true ==> string is valid,
+ *	false ==> string is NOT valid, or NULL pointer, or some internal error
+ */
+bool
+test_formed_UTC(char *str)
+{
+    struct tm timeptr;			/* formed_UTC converted into broken-out time */
+    char *ptr = NULL;			/* ptr to 1st char in buf not converted */
+    char buf[MAX_TIMESTAMP_LEN+1+1];	/* conversion back to time string */
+    size_t strftime_ret;		/* length of strftime() string without the trailing newline */
+
+    /*
+     * firewall
+     */
+    if (str == NULL) {
+	warn(__func__, "str is NULL");
+	return false;
+    }
+
+    /*
+     * validate str
+     */
+
+    /* convert into broken-out time */
+    ptr = strptime(str, "%a %b %d %H:%M:%S %Y UTC", &timeptr);
+    if (ptr == NULL) {
+	json_dbg(JSON_DBG_MED, __func__,
+		 "invalid: strptime cannot convert formed_UTC");
+	json_dbg(JSON_DBG_HIGH, __func__,
+		 "invalid: strptime failed convert formed_UTC: <%s>", str);
+	return false;
+    }
+    if (ptr[0] == '\0') {
+	json_dbg(JSON_DBG_MED, __func__,
+		 "invalid: extra data in formed_UTC");
+	json_dbg(JSON_DBG_HIGH, __func__,
+		 "invalid: extra data in formed_UTC: <%s>", str);
+	return false;
+    }
+
+    /*
+     * convert back to time string
+     */
+    memset(buf, 0, sizeof(buf));
+    strftime_ret = strftime(buf, MAX_TIMESTAMP_LEN+1, "%a %b %d %H:%M:%S %Y UTC", &timeptr);
+    if (strftime_ret == 0) {
+	json_dbg(JSON_DBG_MED, __func__,
+		 "invalid: strftime failed to convert back to time string");
+	json_dbg(JSON_DBG_HIGH, __func__,
+		 "invalid: strftime conversion back to time string failed: <%s>", str);
+	return false;
+    }
+
+    /*
+     * compare original time_string with reconverted time string buffer
+     */
+    if (strcmp(str, buf) != 0) {
+	json_dbg(JSON_DBG_MED, __func__,
+		 "invalid: formed_UTC != reconverted time string");
+	json_dbg(JSON_DBG_HIGH, __func__,
+		 "invalid: formed_UTC: <%s> != reconverted: <%s>", str, buf);
+	return false;
+    }
+    json_dbg(JSON_DBG_MED, __func__, "formed_UTC is valid");
+    return true;
+}
+
+
 /* XXX - end sorted order matching chk_validate.c here - XXX */
 
 
@@ -2164,7 +2317,7 @@ test_mkiocccentry_version(char *str)
 		 "invalid: mkiocccentry_version: %s is not MKIOCCCENTRY_VERSION: %s", str, MKIOCCCENTRY_VERSION);
 	return false;
     }
-    json_dbg(JSON_DBG_MED, __func__, "mkiocccentry_version is valid");
+    json_dbg(JSON_DBG_MED, __func__, "formed_UTC is valid");
     return true;
 }
 
@@ -2587,5 +2740,43 @@ bool
 test_test_mode(bool boolean)
 {
     json_dbg(JSON_DBG_MED, __func__, "test_mode is %s", booltostr(boolean));
+    return true;
+}
+
+
+/*
+ * test_formed_timestamp - test if formed_timestamp is valid
+ *
+ * Determine if formed_timestamp is >= MIN_TIMESTAMP.
+ *
+ * given:
+ *	tstamp		timestamp as time_t to test
+ *
+ * returns:
+ *	true ==> formed_timestamp is valid,
+ *	false ==> formed_timestamp is NOT valid, or some internal error
+ */
+bool
+test_formed_timestamp(time_t tstamp)
+{
+    /*
+     * compare with the minimum timestamp
+     */
+    if (tstamp < MIN_TIMESTAMP) {
+	json_dbg(JSON_DBG_MED, __func__,
+		 "invalid: formed_timestamp < MIN_TIMESTAMP");
+	if ((time_t)-1 > 0) {
+	    /* case: unsigned time_t */
+	    json_dbg(JSON_DBG_HIGH, __func__,
+		     "invalid: formed_timestamp: %ju < MIN_TIMESTAMP: %ju",
+		     (uintmax_t)tstamp, (uintmax_t)MIN_TIMESTAMP);
+	} else {
+	    /* case: unsigned time_t */
+	    json_dbg(JSON_DBG_HIGH, __func__,
+		     "invalid: formed_timestamp: %jd < MIN_TIMESTAMP: %jd",
+		     (intmax_t)tstamp, (intmax_t)MIN_TIMESTAMP);
+	}
+	return false;
+    }
     return true;
 }

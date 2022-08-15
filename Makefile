@@ -120,7 +120,7 @@ LDFLAGS = -lm
 #	While there may be even more out of date systems that do not
 #	support gnu11, we have to draw the line somewhere.
 #
-# NOTE: The -D_* lines in STD_SRC are due to a few older systems in
+# NOTE: The -D_* lines in D_LEGACY are due to a few older systems in
 #	late 2021 that need those defines to compile this code. CentOS
 #	7 is such a system.
 #
@@ -131,12 +131,13 @@ LDFLAGS = -lm
 #	Makefile, can do what it needs to do, perhaps by using the
 #	Makefile.example as a basis.
 #
-# XXX - XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX - XXX
-# XXX - In 2024 we will change the STD_SRC line to be just - XXX
-# XXX - STD_SRC= -std=gnu17				   - XXX
-# XXX - XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX - XXX
+# XXX - XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX - XXX
+# XXX - In 2024 we will change the D_LEGACY line to empty - XXX
+# XXX - and change C_STD to be C_STD= -std=gnu17	  - XXX
+# XXX - XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX - XXX
 #
-STD_SRC= -D_DEFAULT_SOURCE -D_ISOC99_SOURCE -D_POSIX_C_SOURCE=200809L -D_XOPEN_SOURCE=600 -std=gnu11
+D_LEGACY= -D_DEFAULT_SOURCE -D_ISOC99_SOURCE -D_POSIX_C_SOURCE=200809L -D_XOPEN_SOURCE=600
+C_STD= -std=gnu11
 
 # optimization and debug level
 #
@@ -175,13 +176,14 @@ WARN_FLAGS= -Wall -Wextra -Werror -Wno-unused-command-line-argument \
 #
 # We test by forcing warnings to be errors so you don't have to (allegedly :-) )
 #
-CFLAGS= ${STD_SRC} ${COPT} -pedantic ${WARN_FLAGS} ${LDFLAGS}
+CFLAGS= ${C_STD} ${COPT} -pedantic ${WARN_FLAGS} ${LDFLAGS}
+LEGACY_CFLAGS= ${D_LEGACY} ${CFLAGS}
 
 
 # NOTE: If you use ASAN, set this environment var:
 #	ASAN_OPTIONS="detect_stack_use_after_return=1"
 #
-#CFLAGS= ${STD_SRC} -O0 -g -pedantic ${WARN_FLAGS} -fsanitize=address -fno-omit-frame-pointer
+#CFLAGS= ${C_STD} -O0 -g -pedantic ${WARN_FLAGS} ${LDFLAGS} -fsanitize=address -fno-omit-frame-pointer
 
 # NOTE: For valgrind, run with:
 #
@@ -381,153 +383,153 @@ all: ${TARGETS} ${TEST_TARGETS}
 #####################################
 
 rule_count.o: rule_count.c Makefile
-	${CC} ${CFLAGS} -DMKIOCCCENTRY_USE rule_count.c -c
+	${CC} ${LEGACY_CFLAGS} -DMKIOCCCENTRY_USE rule_count.c -c
 
 sanity.o: sanity.c Makefile
-	${CC} ${CFLAGS} sanity.c -c
+	${CC} ${LEGACY_CFLAGS} sanity.c -c
 
 entry_util.o: entry_util.c Makefile
 	${CC} ${CFLAGS} entry_util.c -c
 
 mkiocccentry.o: mkiocccentry.c Makefile
-	${CC} ${CFLAGS} mkiocccentry.c -c
+	${CC} ${LEGACY_CFLAGS} mkiocccentry.c -c
 
 mkiocccentry: mkiocccentry.o rule_count.o dbg.o util.o dyn_array.o json_parse.o entry_util.o \
 	json_util.o location.o utf8_posix_map.o sanity.o json_sem.o Makefile
-	${CC} ${CFLAGS} mkiocccentry.o rule_count.o dbg.o util.o dyn_array.o json_parse.o \
+	${CC} ${LEGACY_CFLAGS} mkiocccentry.o rule_count.o dbg.o util.o dyn_array.o json_parse.o \
 	    entry_util.o json_util.o location.o utf8_posix_map.o sanity.o json_sem.o -o $@
 
 iocccsize.o: iocccsize.c Makefile
-	${CC} ${CFLAGS} -DMKIOCCCENTRY_USE iocccsize.c -c
+	${CC} ${LEGACY_CFLAGS} -DMKIOCCCENTRY_USE iocccsize.c -c
 
 iocccsize: iocccsize.o rule_count.o dbg.o Makefile
-	${CC} ${CFLAGS} iocccsize.o rule_count.o dbg.o -o $@
+	${CC} ${LEGACY_CFLAGS} iocccsize.o rule_count.o dbg.o -o $@
 
 dbg.o: dbg.c dbg.h Makefile
-	${CC} ${CFLAGS} dbg.c -c
+	${CC} ${LEGACY_CFLAGS} dbg.c -c
 
 dbg_test.c: dbg.c Makefile
 	${RM} -f dbg_test.c
 	${CP} -f -v dbg.c dbg_test.c
 
 dbg_test.o: dbg_test.c Makefile
-	${CC} ${CFLAGS} -DDBG_TEST dbg_test.c -c
+	${CC} ${LEGACY_CFLAGS} -DDBG_TEST dbg_test.c -c
 
 dbg: dbg_test.o Makefile
-	${CC} ${CFLAGS} dbg_test.o -o $@
+	${CC} ${LEGACY_CFLAGS} dbg_test.o -o $@
 
 dbg_example: dbg.c dbg.h dbg_example.c
-	${CC} ${CFLAGS} dbg.c dbg_example.c -o $@
+	${CC} ${LEGACY_CFLAGS} dbg.c dbg_example.c -o $@
 
 fnamchk.o: fnamchk.c fnamchk.h Makefile
-	${CC} ${CFLAGS} fnamchk.c -c
+	${CC} ${LEGACY_CFLAGS} fnamchk.c -c
 
 fnamchk: fnamchk.o dbg.o util.o dyn_array.o Makefile
-	${CC} ${CFLAGS} fnamchk.o dbg.o util.o dyn_array.o -o $@
+	${CC} ${LEGACY_CFLAGS} fnamchk.o dbg.o util.o dyn_array.o -o $@
 
 txzchk.o: txzchk.c txzchk.h Makefile
-	${CC} ${CFLAGS} txzchk.c -c
+	${CC} ${LEGACY_CFLAGS} txzchk.c -c
 
 txzchk: txzchk.o dbg.o util.o dyn_array.o location.o \
 	utf8_posix_map.o sanity.o Makefile
-	${CC} ${CFLAGS} txzchk.o dbg.o util.o dyn_array.o location.o \
+	${CC} ${LEGACY_CFLAGS} txzchk.o dbg.o util.o dyn_array.o location.o \
 	     utf8_posix_map.o sanity.o -o $@
 
 chk_sem_auth.o: chk_sem_auth.c chk_sem_auth.h Makefile
-	${CC} ${CFLAGS} chk_sem_auth.c -c
+	${CC} ${LEGACY_CFLAGS} chk_sem_auth.c -c
 
 chk_sem_info.o: chk_sem_info.c chk_sem_info.h Makefile
-	${CC} ${CFLAGS} chk_sem_info.c -c
+	${CC} ${LEGACY_CFLAGS} chk_sem_info.c -c
 
 chk_validate.o: chk_validate.c Makefile
-	${CC} ${CFLAGS} chk_validate.c -c
+	${CC} ${LEGACY_CFLAGS} chk_validate.c -c
 
 chkentry.o: chkentry.c chkentry.h Makefile
-	${CC} ${CFLAGS} chkentry.c -c
+	${CC} ${LEGACY_CFLAGS} chkentry.c -c
 
 chkentry: chkentry.o dbg.o util.o dyn_array.o json_parse.o json_util.o chk_validate.o \
 	  entry_util.c json_sem.o foo.o Makefile
-	${CC} ${CFLAGS} chkentry.o dbg.o util.o dyn_array.o json_parse.o json_util.o \
+	${CC} ${LEGACY_CFLAGS} chkentry.o dbg.o util.o dyn_array.o json_parse.o json_util.o \
 			chk_validate.o entry_util.o json_sem.o foo.o -o $@
 
 jstrencode.o: jstrencode.c jstrencode.h json_util.h json_util.c Makefile
-	${CC} ${CFLAGS} jstrencode.c -c
+	${CC} ${LEGACY_CFLAGS} jstrencode.c -c
 
 jstrencode: jstrencode.o dbg.o json_parse.o json_util.o util.o dyn_array.o Makefile
-	${CC} ${CFLAGS} jstrencode.o dbg.o json_parse.o json_util.o util.o dyn_array.o -o $@
+	${CC} ${LEGACY_CFLAGS} jstrencode.o dbg.o json_parse.o json_util.o util.o dyn_array.o -o $@
 
 jstrdecode.o: jstrdecode.c jstrdecode.h json_util.h json_parse.h Makefile
-	${CC} ${CFLAGS} jstrdecode.c -c
+	${CC} ${LEGACY_CFLAGS} jstrdecode.c -c
 
 jstrdecode: jstrdecode.o dbg.o json_parse.o json_util.o util.o dyn_array.o Makefile
-	${CC} ${CFLAGS} jstrdecode.o dbg.o json_parse.o json_util.o util.o dyn_array.o -o $@
+	${CC} ${LEGACY_CFLAGS} jstrdecode.o dbg.o json_parse.o json_util.o util.o dyn_array.o -o $@
 
 jnum_test.o: jnum_test.c Makefile
-	${CC} ${CFLAGS} jnum_test.c -c
+	${CC} ${LEGACY_CFLAGS} jnum_test.c -c
 
 jnum_chk.o: jnum_chk.c jnum_chk.h Makefile
-	${CC} ${CFLAGS} jnum_chk.c -c
+	${CC} ${LEGACY_CFLAGS} jnum_chk.c -c
 
 jnum_chk: jnum_chk.o dbg.o json_parse.o json_util.o util.o dyn_array.o jnum_test.o Makefile
-	${CC} ${CFLAGS} jnum_chk.o dbg.o json_parse.o json_util.o util.o dyn_array.o jnum_test.o -o $@
+	${CC} ${LEGACY_CFLAGS} jnum_chk.o dbg.o json_parse.o json_util.o util.o dyn_array.o jnum_test.o -o $@
 
 jnum_gen.o: jnum_gen.c jnum_gen.h Makefile
-	${CC} ${CFLAGS} jnum_gen.c -c
+	${CC} ${LEGACY_CFLAGS} jnum_gen.c -c
 
 jnum_gen: jnum_gen.o dbg.o json_parse.o json_util.o util.o dyn_array.o Makefile
-	${CC} ${CFLAGS} jnum_gen.o dbg.o json_parse.o json_util.o util.o dyn_array.o -o $@
+	${CC} ${LEGACY_CFLAGS} jnum_gen.o dbg.o json_parse.o json_util.o util.o dyn_array.o -o $@
 
 jparse.o: jparse.c jparse.h Makefile
-	${CC} ${CFLAGS} -Wno-unused-function -Wno-unneeded-internal-declaration jparse.c -c
+	${CC} ${LEGACY_CFLAGS} -Wno-unused-function -Wno-unneeded-internal-declaration jparse.c -c
 
 json_sem.o: json_sem.c Makefile
-	${CC} ${CFLAGS} json_sem.c -c
+	${CC} ${LEGACY_CFLAGS} json_sem.c -c
 
 json_util.o: json_util.c json_util.h Makefile
-	${CC} ${CFLAGS} -Wno-unused-function -Wno-unneeded-internal-declaration json_util.c -c
+	${CC} ${LEGACY_CFLAGS} -Wno-unused-function -Wno-unneeded-internal-declaration json_util.c -c
 
 jparse.tab.o: jparse.tab.c Makefile
-	${CC} ${CFLAGS} -Wno-unused-function -Wno-unneeded-internal-declaration jparse.tab.c -c
+	${CC} ${LEGACY_CFLAGS} -Wno-unused-function -Wno-unneeded-internal-declaration jparse.tab.c -c
 
 jparse_main.o: jparse_main.c Makefile
-	${CC} ${CFLAGS} jparse_main.c -c
+	${CC} ${LEGACY_CFLAGS} jparse_main.c -c
 
 jparse: jparse.o jparse.tab.o util.o dyn_array.o dbg.o json_parse.o \
 	json_util.o jparse_main.o Makefile
-	${CC} ${CFLAGS} jparse.o jparse.tab.o util.o dyn_array.o dbg.o json_parse.o \
+	${CC} ${LEGACY_CFLAGS} jparse.o jparse.tab.o util.o dyn_array.o dbg.o json_parse.o \
 			json_util.o jparse_main.o -o $@
 
 jsemtblgen.o: jsemtblgen.c Makefile
-	${CC} ${CFLAGS} jsemtblgen.c -c
+	${CC} ${LEGACY_CFLAGS} jsemtblgen.c -c
 
 jsemtblgen: jsemtblgen.o jparse.o jparse.tab.o util.o dyn_array.o dbg.o json_parse.o \
 	    json_util.o rule_count.o Makefile
-	${CC} ${CFLAGS} jsemtblgen.o jparse.o jparse.tab.o util.o dyn_array.o dbg.o json_parse.o \
+	${CC} ${LEGACY_CFLAGS} jsemtblgen.o jparse.o jparse.tab.o util.o dyn_array.o dbg.o json_parse.o \
 			json_util.o rule_count.o -o $@
 
 utf8_test.o: utf8_test.c utf8_posix_map.h Makefile
-	${CC} ${CFLAGS} utf8_test.c -c
+	${CC} ${LEGACY_CFLAGS} utf8_test.c -c
 
 utf8_test: utf8_test.o utf8_posix_map.o dbg.o util.o dyn_array.o Makefile
-	${CC} ${CFLAGS} utf8_test.o utf8_posix_map.o dbg.o util.o dyn_array.o -o $@
+	${CC} ${LEGACY_CFLAGS} utf8_test.o utf8_posix_map.o dbg.o util.o dyn_array.o -o $@
 
 verge.o: verge.c verge.h Makefile
-	${CC} ${CFLAGS} verge.c -c
+	${CC} ${LEGACY_CFLAGS} verge.c -c
 
 verge: verge.o dbg.o util.o dyn_array.o Makefile
-	${CC} ${CFLAGS} verge.o dbg.o util.o dyn_array.o -o $@
+	${CC} ${LEGACY_CFLAGS} verge.o dbg.o util.o dyn_array.o -o $@
 
 dyn_array.o: dyn_array.c Makefile
-	${CC} ${CFLAGS} dyn_array.c -c
+	${CC} ${LEGACY_CFLAGS} dyn_array.c -c
 
 dyn_test.o: dyn_test.c Makefile
-	${CC} ${CFLAGS} dyn_test.c -c
+	${CC} ${LEGACY_CFLAGS} dyn_test.c -c
 
 dyn_test: dyn_test.o dbg.o util.o dyn_array.o Makefile
-	${CC} ${CFLAGS} dyn_test.o dbg.o util.o dyn_array.o -o $@
+	${CC} ${LEGACY_CFLAGS} dyn_test.o dbg.o util.o dyn_array.o -o $@
 
 foo.o: foo.c Makefile
-	${CC} ${CFLAGS} foo.c -c
+	${CC} ${LEGACY_CFLAGS} foo.c -c
 
 limit_ioccc.sh: limit_ioccc.h version.h dbg.h dyn_array.h dyn_test.h jparse.h jparse_main.h \
 		Makefile
