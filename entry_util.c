@@ -2000,6 +2000,74 @@ test_entry_num(int entry_num)
 }
 
 
+/*
+ * test_extra_file - test if extra_file is valid
+ *
+ * Determine if extra_file is a valid filename and does not
+ * match one of the mandatory filenames.
+ *
+ * This function does NOT check if the extra_file is a duplicate
+ * of another extra_file.  Moreover, this function does not
+ * check if the file exists or is readable.
+ *
+ * given:
+ *	str	string to test
+ *
+ * returns:
+ *	true ==> string is valid,
+ *	false ==> string is NOT valid, or NULL pointer, or some internal error
+ */
+bool
+test_extra_file(char *str)
+{
+    /*
+     * firewall
+     */
+    if (str == NULL) {
+	warn(__func__, "str is NULL");
+	return false;
+    }
+
+    /*
+     * validate str
+     */
+
+    /* validate that the filename is POSIX portable safe plus + chars */
+    if (posix_plus_safe(str, false, false, true) == false) {
+	json_dbg(JSON_DBG_MED, __func__,
+		 "invalid: posix_plus_safe check on extra_file failed");
+	json_dbg(JSON_DBG_HIGH, __func__,
+		 "invalid: posix_plus_safe check on extra_file failed: <%s>", str);
+	return false;
+    }
+
+    /* verify that extra_file does not match a mandatory filename */
+    if (strcmp(str, ".info.json") == 0) {
+	json_dbg(JSON_DBG_MED, __func__,
+		 "invalid: extra_file matches a mandatory file .info.json");
+	return false;
+    } else if (strcmp(str, ".author.json") == 0) {
+	json_dbg(JSON_DBG_MED, __func__,
+		 "invalid: extra_file matches a mandatory file .author.json");
+	return false;
+    } else if (strcmp(str, "prog.c") == 0) {
+	json_dbg(JSON_DBG_MED, __func__,
+		 "invalid: extra_file matches a mandatory file prog.c");
+	return false;
+    } else if (strcmp(str, "Makefile") == 0) {
+	json_dbg(JSON_DBG_MED, __func__,
+		 "invalid: extra_file matches a mandatory file Makefile");
+	return false;
+    } else if (strcmp(str, "remarks.md") == 0) {
+	json_dbg(JSON_DBG_MED, __func__,
+		 "invalid: extra_file matches a mandatory file remarks.md");
+	return false;
+    }
+    json_dbg(JSON_DBG_MED, __func__, "extra_file is valid");
+    return true;
+}
+
+
 /* XXX - end sorted order matching chk_validate.c here - XXX */
 
 
