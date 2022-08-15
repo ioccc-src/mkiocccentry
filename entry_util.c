@@ -1310,7 +1310,7 @@ test_Makefile(char *str)
  * up with the general form of tests!  :-)
  *
  * given:
- *	boolean	boolean to test
+ *	boolean		boolean to test
  *
  * returns:
  *	true ==> bool is valid,
@@ -1847,7 +1847,7 @@ test_chkentry_version(char *str)
  * up with the general form of tests!  :-)
  *
  * given:
- *	boolean	boolean to test
+ *	boolean		boolean to test
  *
  * returns:
  *	true ==> bool is valid,
@@ -1954,7 +1954,7 @@ test_email(char *str)
  * up with the general form of tests!  :-)
  *
  * given:
- *	boolean	boolean to test
+ *	boolean		boolean to test
  *
  * returns:
  *	true ==> bool is valid,
@@ -2064,6 +2064,28 @@ test_extra_file(char *str)
 	return false;
     }
     json_dbg(JSON_DBG_MED, __func__, "extra_file is valid");
+    return true;
+}
+
+
+/*
+ * test_first_rule_is_all - test if first_rule_is_all is valid
+ *
+ * Determine if first_rule_is_all boolean is valid.  :-)
+ * Well this isn't much of a test, but we have to keep
+ * up with the general form of tests!  :-)
+ *
+ * given:
+ *	boolean		boolean to test
+ *
+ * returns:
+ *	true ==> bool is valid,
+ *	false ==> bool is NOT valid, or some internal error
+ */
+bool
+test_first_rule_is_all(bool boolean)
+{
+    json_dbg(JSON_DBG_MED, __func__, "first_rule_is_all is %s", booltostr(boolean));
     return true;
 }
 
@@ -2291,7 +2313,7 @@ test_title(char *str)
  * up with the general form of tests!  :-)
  *
  * given:
- *	boolean	boolean to test
+ *	boolean		boolean to test
  *
  * returns:
  *	true ==> bool is valid,
@@ -2313,7 +2335,7 @@ test_rule_2a_override(bool boolean)
  * up with the general form of tests!  :-)
  *
  * given:
- *	boolean	boolean to test
+ *	boolean		boolean to test
  *
  * returns:
  *	true ==> bool is valid,
@@ -2335,7 +2357,7 @@ test_rule_2a_mismatch(bool boolean)
  * up with the general form of tests!  :-)
  *
  * given:
- *	boolean	boolean to test
+ *	boolean		boolean to test
  *
  * returns:
  *	true ==> bool is valid,
@@ -2357,7 +2379,7 @@ test_rule_2b_override(bool boolean)
  * up with the general form of tests!  :-)
  *
  * given:
- *	boolean	boolean to test
+ *	boolean		boolean to test
  *
  * returns:
  *	true ==> bool is valid,
@@ -2379,7 +2401,7 @@ test_highbit_warning(bool boolean)
  * up with the general form of tests!  :-)
  *
  * given:
- *	boolean	boolean to test
+ *	boolean		boolean to test
  *
  * returns:
  *	true ==> bool is valid,
@@ -2401,7 +2423,7 @@ test_nul_warning(bool boolean)
  * up with the general form of tests!  :-)
  *
  * given:
- *	boolean	boolean to test
+ *	boolean		boolean to test
  *
  * returns:
  *	true ==> bool is valid,
@@ -2423,7 +2445,7 @@ test_trigraph_warning(bool boolean)
  * up with the general form of tests!  :-)
  *
  * given:
- *	boolean	boolean to test
+ *	boolean		boolean to test
  *
  * returns:
  *	true ==> bool is valid,
@@ -2445,7 +2467,7 @@ test_wordbuf_warning(bool boolean)
  * up with the general form of tests!  :-)
  *
  * given:
- *	boolean	boolean to test
+ *	boolean		boolean to test
  *
  * returns:
  *	true ==> bool is valid,
@@ -2460,28 +2482,6 @@ test_ungetc_warning(bool boolean)
 
 
 /*
- * test_first_rule_is_all - test if first_rule_is_all is valid
- *
- * Determine if first_rule_is_all boolean is valid.  :-)
- * Well this isn't much of a test, but we have to keep
- * up with the general form of tests!  :-)
- *
- * given:
- *	boolean	boolean to test
- *
- * returns:
- *	true ==> bool is valid,
- *	false ==> bool is NOT valid, or some internal error
- */
-bool
-test_first_rule_is_all(bool boolean)
-{
-    json_dbg(JSON_DBG_MED, __func__, "first_rule_is_all is %s", booltostr(boolean));
-    return true;
-}
-
-
-/*
  * test_found_all_rule - test if found_all_rule is valid
  *
  * Determine if found_all_rule boolean is valid.  :-)
@@ -2489,7 +2489,7 @@ test_first_rule_is_all(bool boolean)
  * up with the general form of tests!  :-)
  *
  * given:
- *	boolean	boolean to test
+ *	boolean		boolean to test
  *
  * returns:
  *	true ==> bool is valid,
@@ -2511,7 +2511,7 @@ test_found_all_rule(bool boolean)
  * up with the general form of tests!  :-)
  *
  * given:
- *	boolean	boolean to test
+ *	boolean		boolean to test
  *
  * returns:
  *	true ==> bool is valid,
@@ -2533,7 +2533,7 @@ test_found_clean_rule(bool boolean)
  * up with the general form of tests!  :-)
  *
  * given:
- *	boolean	boolean to test
+ *	boolean		boolean to test
  *
  * returns:
  *	true ==> bool is valid,
@@ -2555,7 +2555,7 @@ test_found_clobber_rule(bool boolean)
  * up with the general form of tests!  :-)
  *
  * given:
- *	boolean	boolean to test
+ *	boolean		boolean to test
  *
  * returns:
  *	true ==> bool is valid,
@@ -2577,7 +2577,7 @@ test_found_try_rule(bool boolean)
  * up with the general form of tests!  :-)
  *
  * given:
- *	boolean	boolean to test
+ *	boolean		boolean to test
  *
  * returns:
  *	true ==> bool is valid,

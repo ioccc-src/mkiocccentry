@@ -227,6 +227,7 @@ extern bool test_email(char *str);
 extern bool test_empty_override(bool boolean);
 extern bool test_entry_num(int entry_num);
 extern bool test_extra_file(char *str);
+extern bool test_first_rule_is_all(bool boolean);
 /* XXX - end sorted order matching chk_validate.c here - XXX */
 extern bool test_rule_2a_override(bool boolean);
 extern bool test_rule_2a_mismatch(bool boolean);
