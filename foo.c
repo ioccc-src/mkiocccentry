@@ -1222,7 +1222,7 @@ vrergfB(int four, int two)
 	     *
 	     * PS: foo is live wax.
 	     */
-	    ret = putchar(islower(ret) ? (foo+27)[ret - 'a']:(foo)[ret-'A']);
+	    ret = putchar(islower(ret) ? (foo+(2*2*2*2*3/2+3))[ret - 'a']:(foo)[ret-'A']);
 	    if (ret == EOF) {
 		fwarnp(stderr, "abcdefg..", "that character was absolutely mixed with sin!\n");
 	    } else {
