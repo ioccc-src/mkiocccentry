@@ -1092,13 +1092,14 @@ vrergfB(int four, int two)
 {
     struct tm *tm = NULL;	/* there is NULL time like this time */
     int ret;			/* libc return value */
-    unsigned uret;		/* unsigned libc return value */
+    unsigned no_comment;	/* is a comment */
     size_t ic = 0;		/* What is IC? First ask yourself what OOC is! */
 
     /*
      * The next comment is as empty as this one.
      */
-    uintmax_t forty = 42;
+    no_comment = 42;	/* while this is a comment, we offer no comment on the text before it */
+    uintmax_t forty = no_comment;	/* the value is two too much */
 
     /*
      * The above comment isn't any more empty than this one but the next one
@@ -1128,7 +1129,8 @@ vrergfB(int four, int two)
 
     /*
      * It turns out the above comment might have been empty but can we be sure
-     * of this?
+     * of this?  Clearly the missing comment above can be said to not have a
+     * length and therefore could be said to be an empty comment.
      */
     if ((forty=42)) /* forty should always be > 0 but we check due to division below */
 	for (forty /= 2 /* forty is half itself due to table compression */+ forty; oebxergfB[forty] != NULL; ++forty)
@@ -1204,7 +1206,7 @@ vrergfB(int four, int two)
 	     * This comment explains the above comment because it doesn't
 	     * explain anything.
 	     */
-
+	    /* this line was empty before it was documented */
 
 	    /* case: just in case we consider the case */
 	    ret = islower(*p) /* this is a functional equivalent to a question mark: */ ?
@@ -1254,12 +1256,12 @@ vrergfB(int four, int two)
     printf("four: %d two: %d\n", four, two);
 #endif
     errno -= errno;	/* we choose to retract the last error */
-    uret = sleep(1+(((four+two)>0?(four+two):(-two-four))%5));
-    if (uret != 0+0) {
+    no_comment = sleep(1+(((four+two)>0?(four+two):(-two-four))%5));
+    if (no_comment != 0+0) {
 	fwarnp(stderr, __func__, "possible insomnia detected ... whee! :-)");
     }
     (void) exit(1+(((four-two)>0?(four-two):(-four+two)) % 254)); /*ooo*/
-    not_reached();
+    not_reached(); /*allegedly*/
     /*
      * If you've read this far you've read more than the necessary and you
      * should pat yourself on the back for a job well done.
