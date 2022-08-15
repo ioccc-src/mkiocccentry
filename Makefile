@@ -268,7 +268,7 @@ H_FILES= dbg.h chkentry.h json_parse.h jstrdecode.h jstrencode.h limit_ioccc.h \
 DSYMDIRS= $(TARGETS:=.dSYM)
 SH_FILES= iocccsize_test.sh jstr_test.sh limit_ioccc.sh mkiocccentry_test.sh \
 	  vermod.sh prep.sh run_bison.sh run_flex.sh reset_tstamp.sh ioccc_test.sh \
-	  jparse_test.sh txzchk_test.sh hostchk.sh jsemcgen.sh
+	  jparse_test.sh txzchk_test.sh hostchk.sh jsemcgen.sh legacy_os.sh
 BUILD_LOG= build.log
 TXZCHK_LOG=txzchk_test.log
 
@@ -942,6 +942,8 @@ prep_clobber: legacy_clobber
 	${RM} -f .exit_code.*
 	${RM} -f .jsemcgen.*
 	${RM} -rf ref
+	${RM} -f legacy_os
+	${RM} -rf legacy_os.dSYM
 
 
 ###################################
