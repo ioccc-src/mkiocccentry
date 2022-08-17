@@ -15,6 +15,7 @@ dbg_test.c
 dyn_test
 fnamchk
 fnamchk.html
+have_timegm
 iocccsize
 iocccsize.html
 jnum_chk
@@ -33,7 +34,6 @@ jstrdecode
 jstrdecode.html
 jstrencode
 jstrencode.html
-legacy_os
 limit_ioccc.html
 limit_ioccc.sh
 makefile.local

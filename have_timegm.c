@@ -1,5 +1,5 @@
 /*
- * strptime - test strptime
+ * strptime - test strptime and timegm
  *
  * Copyright (c) 2022 by Landon Curt Noll.  All Rights Reserved.
  *
@@ -117,5 +117,5 @@ main(int argc, char *argv[])
 	exit(5);
     }
     printf("success:\t\t<%s>\n", buf);
-    exit(0);
+    exit(0); /*ooo*/
 }

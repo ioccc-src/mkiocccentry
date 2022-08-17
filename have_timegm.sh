@@ -1,11 +1,18 @@
 #!/usr/bin/env bash
 #
-# legacy_os.sh - JSON string encoding and decoding test
+# have_timegm.sh - see if we can compile have_timegm.c
+#
+# If we can compile have_timegm.c then we will output nothing and exit 0.
+#
+# If we encounter a compile warning/error while trying to compile have_timegm.c
+# we will output -DTIMEGM_PROBLEM and exit 0.
+#
+# All other errors will result in a non-zero exit.
 
 # setup
 #
-export C_SRC="legacy_os.c"
-export PROG="./legacy_os"
+export C_SRC="have_timegm.c"
+export PROG="./have_timegm"
 export V_FLAG="0"
 
 # parse args
@@ -31,15 +38,15 @@ done
 # verify we have source to compile
 #
 if [[ ! -e $C_SRC ]]; then
-    echo "$0: missing legacy_os.c: $C_SRC" 1>&2
+    echo "$0: missing have_timegm.c: $C_SRC" 1>&2
     exit 100
 fi
 if [[ ! -f $C_SRC ]]; then
-    echo "$0: legacy_os.c is not a file: $C_SRC" 1>&2
+    echo "$0: have_timegm.c is not a file: $C_SRC" 1>&2
     exit 101
 fi
 if [[ ! -r $C_SRC ]]; then
-    echo "$0: legacy_os.c is not a readable file: $C_SRC" 1>&2
+    echo "$0: have_timegm.c is not a readable file: $C_SRC" 1>&2
     exit 102
 fi
 
@@ -52,9 +59,9 @@ rm -f "$PROG"
 cc -std=gnu11 -Wall -Wextra -Werror -pedantic "$C_SRC" -o "$PROG" >/dev/null 2>&1
 status="$?"
 if [[ $status -ne 0 ]]; then
-   echo "legacy_os"
+   echo "-DTIMEGM_PROBLEM"
 elif [[ ! -x "$PROG" ]]; then
-   echo "legacy_os"
+   echo "-DTIMEGM_PROBLEM"
 
 # execute test code
 #
@@ -62,7 +69,7 @@ else
     "$PROG" 'Mon Aug 15 21:51:43 2022 UTC' >/dev/null 2>&1
     status="$?"
     if [[ $status -ne 0 ]]; then
-       echo "legacy_os"
+       echo "-DTIMEGM_PROBLEM"
     fi
 fi
 
