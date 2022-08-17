@@ -133,10 +133,15 @@ fi
 
 # verify that we have the rpl command
 #
-export HAVE_RPL
-HAVE_RPL="$(command -v rpl)"
-if [[ -z "$HAVE_RPL" ]]; then
+RPL_CMD=$(type -P rpl)
+if [[ -z "$RPL_CMD" ]]; then
     echo "$0: ERROR: rpl not found" 1>&2
+    echo "$0: ERROR: If do not have the rpl tool, then you may not perform this action." 1>&2
+    exit 1
+fi
+GDATE_CMD=$(type -P gdate)
+if [[ -z "$GDATE_CMD" ]]; then
+    echo "$0: ERROR: gdate not found" 1>&2
     echo "$0: ERROR: If do not have the rpl tool, then you may not perform this action." 1>&2
     exit 1
 fi
@@ -206,6 +211,12 @@ fi
 echo
 echo -n 'WARNING: Enter the existing value of MIN_TIMESTAMP: '
 read -r OLD_MIN_TIMESTAMP
+FORMED_OLD_NOW="$($GDATE_CMD -u --date=@$OLD_MIN_TIMESTAMP '+%a %b %d %H:%M:%S %Y UTC')"
+if [[ -z $FORMED_OLD_NOW ]]; then
+    echo "$0: ERROR: cannot convert OLD_MIN_TIMESTAMP to time string" 1>&2
+    exit 5
+fi
+export FORMED_OLD_NOW
 export NOW
 NOW="$(date '+%s')"
 if grep -q "$OLD_MIN_TIMESTAMP" "$LIMIT_IOCCC_H" >/dev/null 2>&1; then
@@ -217,10 +228,16 @@ else
     echo "$0: ERROR: Invalid value of MIN_TIMESTAMP" 1>&2
     exit 5
 fi
+FORMED_NOW="$($GDATE_CMD -u --date=@$NOW '+%a %b %d %H:%M:%S %Y UTC')"
+if [[ -z $FORMED_NOW ]]; then
+    echo "$0: ERROR: cannot convert MIN_TIMESTAMP to time string" 1>&2
+    exit 5
+fi
+export FORMED_NOW
 
 # Change the timestamp
 #
-rpl -w -p \
+"$RPL_CMD" -w -p \
    "#define MIN_TIMESTAMP ((time_t)$OLD_MIN_TIMESTAMP)" \
    "#define MIN_TIMESTAMP ((time_t)$NOW)" "$LIMIT_IOCCC_H"
 status="$?"
@@ -228,6 +245,13 @@ if [[ $status -ne 0 ]]; then
     echo "$0: ERROR: rpl failed to modify $LIMIT_IOCCC_H: error code: $status" 1>&2
     exit 6
 fi
+echo
+echo "FYI:"
+echo
+echo "OLD_MIN_TIMESTAMP=$OLD_MIN_TIMESTAMP"
+echo "FORMED_OLD_NOW=$FORMED_OLD_NOW"
+echo "NOW=$NOW"
+echo "FORMED_NOW=$FORMED_NOW"
 echo
 echo "This line in $LIMIT_IOCCC_H as it exists now, is:"
 echo
@@ -240,10 +264,12 @@ echo
 echo 'then:'
 echo
 echo "    ./vermod.sh -v 1 -n -Q $OLD_MIN_TIMESTAMP $NOW"
+echo "    $RPL_CMD -s -x'.json' -R -- '$FORMED_OLD_NOW' '$FORMED_NOW' ./test_JSON"
 echo
 echo 'If all is well, then:'
 echo
 echo "    ./vermod.sh -v 1 -Q $OLD_MIN_TIMESTAMP $NOW"
+echo "    $RPL_CMD -x'.json' -R -- '$FORMED_OLD_NOW' '$FORMED_NOW' ./test_JSON"
 echo
 echo "$0: notice: And if all is well, commit and push the change to the GitHub repo!"
 echo
