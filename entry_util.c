@@ -2281,6 +2281,167 @@ test_formed_UTC(char *str)
 }
 
 
+/*
+ * test_formed_timestamp - test if formed_timestamp is valid
+ *
+ * Determine if formed_timestamp is >= MIN_TIMESTAMP.
+ *
+ * given:
+ *	tstamp		timestamp as time_t to test
+ *
+ * returns:
+ *	true ==> formed_timestamp is valid,
+ *	false ==> formed_timestamp is NOT valid, or some internal error
+ */
+bool
+test_formed_timestamp(time_t tstamp)
+{
+    /*
+     * compare with the minimum timestamp
+     */
+    if (tstamp < MIN_TIMESTAMP) {
+	json_dbg(JSON_DBG_MED, __func__,
+		 "invalid: formed_timestamp < MIN_TIMESTAMP");
+	if ((time_t)-1 > 0) {
+	    /* case: unsigned time_t */
+	    json_dbg(JSON_DBG_HIGH, __func__,
+		     "invalid: formed_timestamp: %ju < MIN_TIMESTAMP: %ju",
+		     (uintmax_t)tstamp, (uintmax_t)MIN_TIMESTAMP);
+	} else {
+	    /* case: unsigned time_t */
+	    json_dbg(JSON_DBG_HIGH, __func__,
+		     "invalid: formed_timestamp: %jd < MIN_TIMESTAMP: %jd",
+		     (intmax_t)tstamp, (intmax_t)MIN_TIMESTAMP);
+	}
+	return false;
+    }
+    return true;
+}
+
+
+/*
+ * test_formed_timestamp_usec - test if formed_timestamp_usec is valid
+ *
+ * Determine if formed_timestamp_usec is within the proper limits.
+ *
+ * NOTE: The function does NOT determine if the formed_timestamp_usec is unique among the authors.
+ * NOTE: The function does NOT determine if the formed_timestamp_usec is <= author_count.
+ *
+ * given:
+ *	formed_timestamp_usec	author number
+ *
+ * returns:
+ *	true ==> formed_timestamp_usec is valid,
+ *	false ==> formed_timestamp_usec is NOT valid, or some internal error
+ */
+bool
+test_formed_timestamp_usec(int formed_timestamp_usec)
+{
+    /*
+     * validate count
+     */
+    if (formed_timestamp_usec < 0) {
+	json_dbg(JSON_DBG_MED, __func__,
+		 "invalid: formed_timestamp_usec: %d < 0", formed_timestamp_usec);
+	return false;
+    } else if (formed_timestamp_usec > 999999) {
+	json_dbg(JSON_DBG_MED, __func__,
+		 "invalid: formed_timestamp_usec: %d > 999999", formed_timestamp_usec);
+	return false;
+    }
+    json_dbg(JSON_DBG_MED, __func__, "formed_timestamp_usec is valid");
+    return true;
+}
+
+
+/*
+ * test_found_all_rule - test if found_all_rule is valid
+ *
+ * Determine if found_all_rule boolean is valid.  :-)
+ * Well this isn't much of a test, but we have to keep
+ * up with the general form of tests!  :-)
+ *
+ * given:
+ *	boolean		boolean to test
+ *
+ * returns:
+ *	true ==> bool is valid,
+ *	false ==> bool is NOT valid, or some internal error
+ */
+bool
+test_found_all_rule(bool boolean)
+{
+    json_dbg(JSON_DBG_MED, __func__, "found_all_rule is %s", booltostr(boolean));
+    return true;
+}
+
+
+/*
+ * test_found_clean_rule - test if found_clean_rule is valid
+ *
+ * Determine if found_clean_rule boolean is valid.  :-)
+ * Well this isn't much of a test, but we have to keep
+ * up with the general form of tests!  :-)
+ *
+ * given:
+ *	boolean		boolean to test
+ *
+ * returns:
+ *	true ==> bool is valid,
+ *	false ==> bool is NOT valid, or some internal error
+ */
+bool
+test_found_clean_rule(bool boolean)
+{
+    json_dbg(JSON_DBG_MED, __func__, "found_clean_rule is %s", booltostr(boolean));
+    return true;
+}
+
+
+/*
+ * test_found_clobber_rule - test if found_clobber_rule is valid
+ *
+ * Determine if found_clobber_rule boolean is valid.  :-)
+ * Well this isn't much of a test, but we have to keep
+ * up with the general form of tests!  :-)
+ *
+ * given:
+ *	boolean		boolean to test
+ *
+ * returns:
+ *	true ==> bool is valid,
+ *	false ==> bool is NOT valid, or some internal error
+ */
+bool
+test_found_clobber_rule(bool boolean)
+{
+    json_dbg(JSON_DBG_MED, __func__, "found_clobber_rule is %s", booltostr(boolean));
+    return true;
+}
+
+
+/*
+ * test_found_try_rule - test if found_try_rule is valid
+ *
+ * Determine if found_try_rule boolean is valid.  :-)
+ * Well this isn't much of a test, but we have to keep
+ * up with the general form of tests!  :-)
+ *
+ * given:
+ *	boolean		boolean to test
+ *
+ * returns:
+ *	true ==> bool is valid,
+ *	false ==> bool is NOT valid, or some internal error
+ */
+bool
+test_found_try_rule(bool boolean)
+{
+    json_dbg(JSON_DBG_MED, __func__, "found_try_rule is %s", booltostr(boolean));
+    return true;
+}
+
+
 /* XXX - end sorted order matching chk_validate.c here - XXX */
 
 
@@ -2635,94 +2796,6 @@ test_ungetc_warning(bool boolean)
 
 
 /*
- * test_found_all_rule - test if found_all_rule is valid
- *
- * Determine if found_all_rule boolean is valid.  :-)
- * Well this isn't much of a test, but we have to keep
- * up with the general form of tests!  :-)
- *
- * given:
- *	boolean		boolean to test
- *
- * returns:
- *	true ==> bool is valid,
- *	false ==> bool is NOT valid, or some internal error
- */
-bool
-test_found_all_rule(bool boolean)
-{
-    json_dbg(JSON_DBG_MED, __func__, "found_all_rule is %s", booltostr(boolean));
-    return true;
-}
-
-
-/*
- * test_found_clean_rule - test if found_clean_rule is valid
- *
- * Determine if found_clean_rule boolean is valid.  :-)
- * Well this isn't much of a test, but we have to keep
- * up with the general form of tests!  :-)
- *
- * given:
- *	boolean		boolean to test
- *
- * returns:
- *	true ==> bool is valid,
- *	false ==> bool is NOT valid, or some internal error
- */
-bool
-test_found_clean_rule(bool boolean)
-{
-    json_dbg(JSON_DBG_MED, __func__, "found_clean_rule is %s", booltostr(boolean));
-    return true;
-}
-
-
-/*
- * test_found_clobber_rule - test if found_clobber_rule is valid
- *
- * Determine if found_clobber_rule boolean is valid.  :-)
- * Well this isn't much of a test, but we have to keep
- * up with the general form of tests!  :-)
- *
- * given:
- *	boolean		boolean to test
- *
- * returns:
- *	true ==> bool is valid,
- *	false ==> bool is NOT valid, or some internal error
- */
-bool
-test_found_clobber_rule(bool boolean)
-{
-    json_dbg(JSON_DBG_MED, __func__, "found_clobber_rule is %s", booltostr(boolean));
-    return true;
-}
-
-
-/*
- * test_found_try_rule - test if found_try_rule is valid
- *
- * Determine if found_try_rule boolean is valid.  :-)
- * Well this isn't much of a test, but we have to keep
- * up with the general form of tests!  :-)
- *
- * given:
- *	boolean		boolean to test
- *
- * returns:
- *	true ==> bool is valid,
- *	false ==> bool is NOT valid, or some internal error
- */
-bool
-test_found_try_rule(bool boolean)
-{
-    json_dbg(JSON_DBG_MED, __func__, "found_try_rule is %s", booltostr(boolean));
-    return true;
-}
-
-
-/*
  * test_test_mode - test if test_mode is valid
  *
  * Determine if test_mode boolean is valid.  :-)
@@ -2740,43 +2813,5 @@ bool
 test_test_mode(bool boolean)
 {
     json_dbg(JSON_DBG_MED, __func__, "test_mode is %s", booltostr(boolean));
-    return true;
-}
-
-
-/*
- * test_formed_timestamp - test if formed_timestamp is valid
- *
- * Determine if formed_timestamp is >= MIN_TIMESTAMP.
- *
- * given:
- *	tstamp		timestamp as time_t to test
- *
- * returns:
- *	true ==> formed_timestamp is valid,
- *	false ==> formed_timestamp is NOT valid, or some internal error
- */
-bool
-test_formed_timestamp(time_t tstamp)
-{
-    /*
-     * compare with the minimum timestamp
-     */
-    if (tstamp < MIN_TIMESTAMP) {
-	json_dbg(JSON_DBG_MED, __func__,
-		 "invalid: formed_timestamp < MIN_TIMESTAMP");
-	if ((time_t)-1 > 0) {
-	    /* case: unsigned time_t */
-	    json_dbg(JSON_DBG_HIGH, __func__,
-		     "invalid: formed_timestamp: %ju < MIN_TIMESTAMP: %ju",
-		     (uintmax_t)tstamp, (uintmax_t)MIN_TIMESTAMP);
-	} else {
-	    /* case: unsigned time_t */
-	    json_dbg(JSON_DBG_HIGH, __func__,
-		     "invalid: formed_timestamp: %jd < MIN_TIMESTAMP: %jd",
-		     (intmax_t)tstamp, (intmax_t)MIN_TIMESTAMP);
-	}
-	return false;
-    }
     return true;
 }

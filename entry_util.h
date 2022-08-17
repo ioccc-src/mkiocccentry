@@ -233,6 +233,12 @@ extern bool test_extra_file(char *str);
 extern bool test_first_rule_is_all(bool boolean);
 extern bool test_fnamchk_version(char *str);
 extern bool test_formed_UTC(char *str);
+extern bool test_formed_timestamp(time_t tstamp);
+extern bool test_formed_timestamp_usec(int formed_timestamp_usec);
+extern bool test_found_all_rule(bool boolean);
+extern bool test_found_clean_rule(bool boolean);
+extern bool test_found_clobber_rule(bool boolean);
+extern bool test_found_try_rule(bool boolean);
 /* XXX - end sorted order matching chk_validate.c here - XXX */
 extern bool test_rule_2a_override(bool boolean);
 extern bool test_rule_2a_mismatch(bool boolean);
@@ -243,15 +249,10 @@ extern bool test_trigraph_warning(bool boolean);
 extern bool test_wordbuf_warning(bool boolean);
 extern bool test_ungetc_warning(bool boolean);
 extern bool test_first_rule_is_all(bool boolean);
-extern bool test_found_all_rule(bool boolean);
-extern bool test_found_clean_rule(bool boolean);
-extern bool test_found_clobber_rule(bool boolean);
-extern bool test_found_try_rule(bool boolean);
 extern bool test_test_mode(bool boolean);
 extern bool test_mkiocccentry_version(char *str);
 extern bool test_iocccsize_version(char *str);
 extern bool test_txzchk_version(char *str);
 extern bool test_title(char *str);
-extern bool test_formed_timestamp(time_t tstamp);
 
 #endif /* INCLUDE_ENTRY_UTIL_H */
