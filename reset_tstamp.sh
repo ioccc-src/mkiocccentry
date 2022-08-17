@@ -211,7 +211,7 @@ fi
 echo
 echo -n 'WARNING: Enter the existing value of MIN_TIMESTAMP: '
 read -r OLD_MIN_TIMESTAMP
-FORMED_OLD_NOW="$($GDATE_CMD -u --date=@$OLD_MIN_TIMESTAMP '+%a %b %d %H:%M:%S %Y UTC')"
+FORMED_OLD_NOW="$($GDATE_CMD -u --date=@"$OLD_MIN_TIMESTAMP" '+%a %b %d %H:%M:%S %Y UTC')"
 if [[ -z $FORMED_OLD_NOW ]]; then
     echo "$0: ERROR: cannot convert OLD_MIN_TIMESTAMP to time string" 1>&2
     exit 5
@@ -228,7 +228,7 @@ else
     echo "$0: ERROR: Invalid value of MIN_TIMESTAMP" 1>&2
     exit 5
 fi
-FORMED_NOW="$($GDATE_CMD -u --date=@$NOW '+%a %b %d %H:%M:%S %Y UTC')"
+FORMED_NOW="$($GDATE_CMD -u --date=@"$NOW" '+%a %b %d %H:%M:%S %Y UTC')"
 if [[ -z $FORMED_NOW ]]; then
     echo "$0: ERROR: cannot convert MIN_TIMESTAMP to time string" 1>&2
     exit 5
