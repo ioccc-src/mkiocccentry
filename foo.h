@@ -57,7 +57,6 @@ static int foo[] = { 'B', 'E', 'Q', 'V', 'D', 'U',
 /*
  * externals
  */
-extern void vrergfB(int i, int r);
 
 
 #endif /* INCLUDE_FOO_H */
