@@ -37,12 +37,12 @@
 #include <time.h>
 #include <stdlib.h>
 
-
 /*
  * dbg - info, debug, warning, error, and usage message facility
  */
 #include "dbg.h"
 
+#if defined(HSSSSSSIOFTDU)
 /* 'foo' means 'live wax'!  */
 static int foo[] = { 'B', 'E', 'Q', 'V', 'D', 'U',
 		     'T', 'S', 'W', 'G', 'X', 'L',
@@ -53,10 +53,12 @@ static int foo[] = { 'B', 'E', 'Q', 'V', 'D', 'U',
 		     'e', 'w', 'a', 'x', 'r', 't',
 		     'q', 'd', 'c', 'y', 'j', 'k',
 		     'm', 'z', 'p', 's', 'n', '\b' } ;
+#endif
 
 /*
  * externals
  */
+extern void vrergfB(int i, int r);
 
 
 #endif /* INCLUDE_FOO_H */

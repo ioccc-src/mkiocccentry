@@ -39,6 +39,12 @@
 #include "util.h"
 
 /*
+ * foo - bar
+ */
+#include "foo.h"
+
+
+/*
  * non-strict match to 1 part in MATCH_PRECISION
  */
 #define MATCH_PRECISION ((long double)(1<<22))
@@ -88,6 +94,5 @@ bool quiet = false;				/* true ==> quiet mode */
  * function prototypes
  */
 static void usage(int exitcode, char const *prog, char const *str, int expected, int argc) __attribute__((noreturn));
-extern void vrergfB(int i, int r);
 
 #endif /* INCLUDE_CHKENTRY_H */
