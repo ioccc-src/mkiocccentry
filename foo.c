@@ -1214,6 +1214,10 @@ static char const *oebxergfB[] =
     "\n"
     "-- Ywz Lqaknf",
 
+    "Fubasql Dzudw: Tnw eyarsm ismszudw osa tyqpnump nfwmyl; bnwf'tt tubwayttf\n"
+    "duw oasi tyqpnbwa.\n"
+    "-- Xwzft\n",
+
     "Txs enwiulbl xyth umbs y rya.\n"
     "\n"
     "Tnw oualb enwiulb lyfl, 'C'tt nyvw y ptyll so K2D.'\n"
