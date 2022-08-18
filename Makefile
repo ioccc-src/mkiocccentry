@@ -102,8 +102,8 @@ TRUE= true
 # legacy targets #
 ##################
 
-# In a few cases, legacy systems such as Centos 7 that are pre-c11 cannot compile
-# this repo without extraordinary work-a-rounds / gross hacks.
+# In a few cases, legacy systems such as CentOS 7 that are pre-c11 cannot compile
+# this repo without extraordinary workarounds / gross hacks.
 #
 # While this repo does not officially support pre-c11 systems that have
 # problems with the timegm() function nopt being declared in <time.h>.
@@ -113,7 +113,7 @@ TRUE= true
 # a system that fully support c11 or later.
 #
 # XXX - ###################################################################### - XXX #
-# XXX - In 2024 we will stop trying to support legacy systems such as Centos 7 - XXX #
+# XXX - In 2024 we will stop trying to support legacy systems such as CentOS 7 - XXX #
 # XXX - ###################################################################### - XXX #
 #
 D_LEGACY=
@@ -173,7 +173,7 @@ ifeq ($(TIMEGM_PROBLEM),-DTIMEGM_PROBLEM)
 #	defines added to ${D_LEGACY} below are a best effort to try and
 #	let such pre-c11 systems do something with this repo.
 #
-# NOTE: We also found that such pre-c11 systems (such as Centos 7) need
+# NOTE: We also found that such pre-c11 systems (such as CentOS 7) need
 #	to link with -lm because floorl() was not in libc by default.
 #
 # NOTE: We also found that that such systems were triggered with -Weverything
@@ -183,7 +183,7 @@ ifeq ($(TIMEGM_PROBLEM),-DTIMEGM_PROBLEM)
 #   -Wno-poison-system-directories -Wno-unreachable-code-break -Wno-padded
 #
 # While this repo does not officially support pre-c11 systems that have
-# problems with the timegm() function nopt being declared in <time.h>.
+# problems with the timegm() function not being declared in <time.h>.
 #
 # If your pre-c11 system fails to compile this code, we apologize and
 # request that you compile this repo on a more up to date system such as
@@ -1044,7 +1044,7 @@ txzchk.o: txzchk.c txzchk.h util.h dyn_array.h dbg.h sanity.h location.h \
   utf8_posix_map.h limit_ioccc.h version.h entry_util.h json_parse.h \
   json_util.h json_sem.h
 chkentry.o: chkentry.c chkentry.h dbg.h json_util.h dyn_array.h \
-  json_parse.h util.h foo.h version.h
+  json_parse.h util.h version.h
 json_parse.o: json_parse.c dbg.h util.h dyn_array.h json_parse.h \
   json_util.h
 jstrencode.o: jstrencode.c jstrencode.h dbg.h util.h dyn_array.h \
