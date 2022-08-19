@@ -940,7 +940,7 @@ object2author(struct json *node, unsigned int depth, struct json_sem *sem,
 	}
 	return false;
     }
-#if 0 /* XXX - unblock once the test function exists - XXX */
+
     if (test_url(url) == false) {
 	if (val_err != NULL) {
 	    *val_err = werr_sem_val(100, node, depth, sem, __func__,
@@ -948,34 +948,28 @@ object2author(struct json *node, unsigned int depth, struct json_sem *sem,
 	}
 	return false;
     }
-#endif /* XXX - unblock once the test function exists - XXX */
-#if 0 /* XXX - unblock once the test function exists - XXX */
-    if (test_url(twitter) == false) {
+
+    if (test_twitter(twitter) == false) {
 	if (val_err != NULL) {
 	    *val_err = werr_sem_val(101, node, depth, sem, __func__,
 				    "author array index[%d]: twitter is invalid", auth_num);
 	}
 	return false;
     }
-#endif /* XXX - unblock once the test function exists - XXX */
-#if 0 /* XXX - unblock once the test function exists - XXX */
-    if (test_url(github) == false) {
+    if (test_github(github) == false) {
 	if (val_err != NULL) {
 	    *val_err = werr_sem_val(102, node, depth, sem, __func__,
 				    "author array index[%d]: github is invalid", auth_num);
 	}
 	return false;
     }
-#endif /* XXX - unblock once the test function exists - XXX */
-#if 0 /* XXX - unblock once the test function exists - XXX */
-    if (test_url(affiliation) == false) {
+    if (test_affiliation(affiliation) == false) {
 	if (val_err != NULL) {
 	    *val_err = werr_sem_val(103, node, depth, sem, __func__,
 				    "author array index[%d]: affiliation is invalid", auth_num);
 	}
 	return false;
     }
-#endif /* XXX - unblock once the test function exists - XXX */
 #if 0 /* XXX - unblock once the test function exists - XXX */
     if (test_past_winner(past_winner) == false) {
 	if (val_err != NULL) {
@@ -2828,5 +2822,200 @@ bool
 test_test_mode(bool boolean)
 {
     json_dbg(JSON_DBG_MED, __func__, "test_mode is %s", booltostr(boolean));
+    return true;
+}
+
+/*
+ * test_github - test if GitHub account is valid
+ *
+ * Determine if github length is <= MAX_GITHUB_LEN and that it has a leading '@'
+ * and _only_ one '@'.
+ *
+ * given:
+ *	str	string to test
+ *
+ * returns:
+ *	true ==> string is valid,
+ *	false ==> string is NOT valid, or NULL pointer, or some internal error
+ */
+bool
+test_github(char *str)
+{
+    size_t length = 0;
+
+    char *p = NULL;
+
+    /*
+     * firewall
+     */
+    if (str == NULL) {
+	warn(__func__, "str is NULL");
+	return false;
+    }
+
+    /*
+     * validate str
+     */
+    /* check for a valid length */
+    if (*str == '\0') { /* strlen(str) == 0 */
+	json_dbg(JSON_DBG_MED, __func__,
+		 "empty github is invalid");
+	return false;
+    }
+    length = strlen(str);
+    if (length > MAX_GITHUB_LEN) {
+	json_dbg(JSON_DBG_MED, __func__,
+		 "invalid: github length %ju > max %d: <%s>", (uintmax_t)length, MAX_GITHUB_LEN, str);
+	json_dbg(JSON_DBG_HIGH, __func__,
+		 "invalid: title: <%s> is invalid", str);
+	return false;
+    }
+    /* check for valid github account chars */
+    p = strchr(str, '@');
+    if (p == NULL || str[0] != '@') {
+	json_dbg(JSON_DBG_MED, __func__,
+		 "invalid: github account does not start with '@'");
+	json_dbg(JSON_DBG_HIGH, __func__,
+		 "invalid: github: <%s> is invalid", str);
+	return false;
+    } else if (p != strrchr(str, '@')) {
+	json_dbg(JSON_DBG_MED, __func__,
+		 "invalid: github account has more than one '@'");
+	json_dbg(JSON_DBG_HIGH, __func__,
+		 "invalid: github: <%s> is invalid", str);
+	return false;
+
+    }
+
+    json_dbg(JSON_DBG_MED, __func__, "github is valid");
+    return true;
+}
+
+/*
+ * test_twitter - test if twitter account is valid
+ *
+ * Determine if twitter length is <= MAX_TWITTER_LEN and that it has a leading '@'
+ * and _only_ one '@'.
+ *
+ * given:
+ *	str	string to test
+ *
+ * returns:
+ *	true ==> string is valid,
+ *	false ==> string is NOT valid, or NULL pointer, or some internal error
+ */
+bool
+test_twitter(char *str)
+{
+    size_t length = 0;
+    char *p = NULL;
+
+    /*
+     * firewall
+     */
+    if (str == NULL) {
+	warn(__func__, "str is NULL");
+	return false;
+    }
+
+    /*
+     * validate str
+     */
+    /* check for a valid length */
+    if (*str == '\0') { /* strlen(str) == 0 */
+	json_dbg(JSON_DBG_MED, __func__,
+		 "empty twitter is invalid");
+	return false;
+    }
+    length = strlen(str);
+    if (length > MAX_TWITTER_LEN) {
+	json_dbg(JSON_DBG_MED, __func__,
+		 "invalid: twitter length %ju > max %d: <%s>", (uintmax_t)length, MAX_TWITTER_LEN, str);
+	json_dbg(JSON_DBG_HIGH, __func__,
+		 "invalid: title: <%s> is invalid", str);
+	return false;
+    }
+    /* check for valid twitter account chars */
+    p = strchr(str, '@');
+    if (p == NULL || str[0] != '@') {
+	json_dbg(JSON_DBG_MED, __func__,
+		 "invalid: twitter account does not start with '@'");
+	json_dbg(JSON_DBG_HIGH, __func__,
+		 "invalid: twitter: <%s> is invalid", str);
+	return false;
+    } else if (p != strrchr(str, '@')) {
+	json_dbg(JSON_DBG_MED, __func__,
+		 "invalid: twitter account has more than one '@'");
+	json_dbg(JSON_DBG_HIGH, __func__,
+		 "invalid: twitter: <%s> is invalid", str);
+	return false;
+
+    }
+
+    json_dbg(JSON_DBG_MED, __func__, "twitter is valid");
+    return true;
+}
+
+/*
+ * test_url - test if URL is valid
+ *
+ * Determine if url length is <= MAX_URL_LEN and that it starts with either
+ * http:// or https:// and more characters.
+ *
+ * given:
+ *	str	string to test
+ *
+ * returns:
+ *	true ==> string is valid,
+ *	false ==> string is NOT valid, or NULL pointer, or some internal error
+ */
+bool
+test_url(char *str)
+{
+    size_t length = 0;
+
+    /*
+     * firewall
+     */
+    if (str == NULL) {
+	warn(__func__, "str is NULL");
+	return false;
+    }
+
+    /*
+     * validate str
+     */
+    /* check for a valid length */
+    if (*str == '\0') { /* strlen(str) == 0 */
+	json_dbg(JSON_DBG_MED, __func__,
+		 "empty url is invalid");
+	return false;
+    }
+    length = strlen(str);
+    if (length > MAX_URL_LEN) {
+	json_dbg(JSON_DBG_MED, __func__,
+		 "invalid: url length %ju > max %d: <%s>", (uintmax_t)length, MAX_URL_LEN, str);
+	json_dbg(JSON_DBG_HIGH, __func__,
+		 "invalid: title: <%s> is invalid", str);
+	return false;
+    }
+    if (((strncmp(str, "http://", LITLEN("http://")) != 0) &&
+	 (str[LITLEN("http://")] != '\0')) ||
+	((strncmp(str, "https://", LITLEN("https://")) != 0))) {
+	    json_dbg(JSON_DBG_MED, __func__,
+		     "invalid: url does not start with either https:// or http://");
+	    json_dbg(JSON_DBG_HIGH, __func__,
+		     "invalid: url: <%s> is invalid", str);
+	    return false;
+
+    } else if (str[LITLEN("https://")] == '\0') {
+	json_dbg(JSON_DBG_MED, __func__,
+		 "invalid: url does not have more characters after either the http:// or https://");
+	json_dbg(JSON_DBG_HIGH, __func__,
+		 "invalid: url: <%s> is invalid", str);
+	return false;
+    }
+
+    json_dbg(JSON_DBG_MED, __func__, "url is valid");
     return true;
 }

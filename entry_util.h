@@ -254,5 +254,8 @@ extern bool test_mkiocccentry_version(char *str);
 extern bool test_iocccsize_version(char *str);
 extern bool test_txzchk_version(char *str);
 extern bool test_title(char *str);
+extern bool test_github(char *str);
+extern bool test_twitter(char *str);
+extern bool test_url(char *str);
 
 #endif /* INCLUDE_ENTRY_UTIL_H */
