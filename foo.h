@@ -16,6 +16,8 @@
  *
  * This tool is being co-developed by Cody Boone Ferguson and Landon Curt Noll.
  *
+ * "Because sometimes even the IOCCC Judges need some help." :-)
+ *
  * The concept of this file was developed by:
  *
  *	Cody Boone Ferguson
@@ -25,7 +27,6 @@
  * crazy and in fact he quite welcomes it and even relishes the idea! :-)
  *
  * "Because sometimes we all need a little craziness in our lives." :-)
- * "Because sometimes even the IOCCC Judges need some help." :-)
  */
 
 
@@ -42,7 +43,7 @@
  */
 #include "dbg.h"
 
-#if defined(HSSSSSSIOFTDU)
+#if defined(HSSSSSSSSSIOFTDU)
 /* 'foo' means 'live wax'!  */
 static int foo[] = { 'B', 'E', 'Q', 'V', 'D', 'U',
 		     'T', 'S', 'W', 'G', 'X', 'L',

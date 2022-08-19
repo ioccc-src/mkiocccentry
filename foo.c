@@ -16,6 +16,8 @@
  *
  * This tool is being co-developed by Cody Boone Ferguson and Landon Curt Noll.
  *
+ * "Because sometimes even the IOCCC Judges need some help." :-)
+ *
  * The concept of this file was developed by:
  *
  *	Cody Boone Ferguson
@@ -25,7 +27,6 @@
  * crazy and in fact he quite welcomes it and even relishes the idea! :-)
  *
  * "Because sometimes we all need a little craziness in our lives." :-)
- * "Because sometimes even the IOCCC Judges need some help." :-)
  */
 
 
@@ -40,7 +41,7 @@
 #include <math.h>
 
 
-#define HSSSSSSIOFTDU /* What does this mean ? And even if you figure it out are you sure ? :-) */
+#define HSSSSSSSSSIOFTDU /* What does this mean ? And even if you figure it out are you sure ? :-) */
 
 /*
  * foo - bar
