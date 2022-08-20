@@ -614,6 +614,140 @@ check_empty_file(char const *txzpath, off_t size, struct txz_file *file)
     }
 }
 
+/* convert_file_size	- converts number string to off_t
+ *
+ * This function is to remove duplicate code as this code is used in more than
+ * one function.
+ *
+ * given:
+ *	current_file_size   - pointer to off_t to store the file size in
+ *	p		    - the token extracted from strtok_r() (number
+ *			      string)
+ *
+ * Returns: true if conversion succeeded; false if it fails.
+ *
+ * NOTE: This function does not return on NULL pointers (which should actually
+ * never happen).
+ */
+static bool
+convert_file_size(off_t *current_file_size, char *p)
+{
+    /*
+     * firewall
+     */
+    if (current_file_size == NULL)
+    {
+	err(16, __func__, "passed NULL current_file_size");
+	not_reached();
+    }
+    else if (p == NULL)
+    {
+	err(17, __func__, "passed NULL number string");
+	not_reached();
+    }
+
+    errno = 0;
+    *current_file_size = strtoimax(p, NULL, 10);
+    if (errno != 0)
+	return false;
+
+    else if (*current_file_size < 0)
+    {
+	warn("txzchk", "%s: file size < 0: %jd", txzpath, (intmax_t)*current_file_size);
+	++txz_info.total_feathers;
+    }
+    txz_info.file_sizes += *current_file_size;
+
+    /* false: check new totals but don't print rounded file size if OK */
+    check_txz_files_size(false);
+
+    return true;
+}
+
+/* check_txz_files_size	    - check current total file size sum
+ *
+ * This function is used after each line is parsed. It's important because if a
+ * file takes one or both of the sizes (file_sizes or rounded_file_sizes) to >
+ * the max or < 0 or 0 then it's an issue that needs to be flagged. We have
+ * booleans so that we only warn of this once.
+ *
+ * given:
+ *
+ *	show_rounded_size	- true ==> show rounded file size if all is okay
+ */
+static void
+check_txz_files_size(bool show_rounded_size)
+{
+    /* check total file size */
+    if (txz_info.file_sizes < txz_info.previous_file_sizes)
+    {
+	warn("txzchk", "%s: total size of all files < previous size: %jd < %jd",
+		txzpath,
+		(intmax_t)txz_info.file_sizes,
+		(intmax_t) txz_info.previous_file_sizes);
+	++txz_info.total_feathers;
+    }
+    /* update previous to be the current value */
+    txz_info.previous_file_sizes = txz_info.file_sizes;
+
+    if (txz_info.file_sizes < 0)
+    {
+	warn("txzchk", "%s: total file sizes < 0: %jd!", txzpath, (intmax_t)txz_info.file_sizes);
+	++txz_info.total_feathers;
+    }
+    else if (txz_info.file_sizes == 0)
+    {
+	warn("txzchk", "%s: total size of all files == 0", txzpath);
+	++txz_info.total_feathers;
+    }
+    else if (txz_info.file_sizes > MAX_DIR_KSIZE && !txz_info.files_size_too_big)
+    {
+	warn("txzchk", "%s: total size of files %jd > %d",
+		       txzpath, (intmax_t)txz_info.file_sizes,
+		       MAX_DIR_KSIZE);
+	++txz_info.total_feathers;
+	txz_info.files_size_too_big = true;
+    }
+
+    txz_info.rounded_file_size = round_to_multiple(txz_info.file_sizes, 1024);
+    if (txz_info.rounded_file_size < txz_info.previous_rounded_file_size && !txz_info.rounded_files_size_shrunk)
+    {
+	warn("txzchk", "%s: total size of all files rounded up to multiple of 1024 < previous size: %jd < %jd",
+		txzpath,
+		(intmax_t)txz_info.rounded_file_size,
+		(intmax_t) txz_info.previous_rounded_file_size);
+	++txz_info.total_feathers;
+	txz_info.rounded_files_size_shrunk = true;
+    }
+    /* update previous to be the current value */
+    txz_info.previous_rounded_file_size = txz_info.rounded_file_size;
+
+    if (txz_info.rounded_file_size < 0)
+    {
+	warn("txzchk", "%s: total size of all files rounded up to multiple of 1024 < 0: %jd!",
+		txzpath, (intmax_t) txz_info.rounded_file_size);
+	++txz_info.total_feathers;
+    }
+    else if (txz_info.rounded_file_size == 0)
+    {
+	warn("txzchk", "%s: total size of all files rounded up to multiple of 1024 == 0!",
+		txzpath);
+	++txz_info.total_feathers;
+    }
+    else if (txz_info.rounded_file_size > MAX_DIR_KSIZE && !txz_info.rounded_files_size_too_big)
+    {
+	warn("txzchk", "%s: total size of files %jd rounded up to multiple of 1024 %jd > %d",
+		       txzpath, (intmax_t)txz_info.file_sizes,
+		       (intmax_t) txz_info.rounded_file_size, MAX_DIR_KSIZE);
+	++txz_info.total_feathers;
+	txz_info.rounded_files_size_too_big = true;
+    }
+    else if (!quiet && show_rounded_size)
+    {
+	printf("txzchk: %s total size of files %jd rounded up to 1024 multiple: %jd OK\n",
+		txzpath, (intmax_t) txz_info.file_sizes, (intmax_t) txz_info.rounded_file_size);
+    }
+}
 
 /*
  * check_all_txz_files - check txz_files list after parsing tarball (or text file)
@@ -636,37 +770,7 @@ check_all_txz_files(char const *dir_name)
 {
     struct txz_file *file; /* to iterate through files list */
 
-    /* report total file size */
-    if (txz_info.file_sizes < 0)
-    {
-	err(16, __func__, "%s: total size of all files < 0!", txzpath);
-	not_reached();
-    }
-    else if (txz_info.file_sizes == 0)
-    {
-	warn("txzchk", "%s: total size of all files == 0", txzpath);
-	++txz_info.total_feathers;
-    }
-    txz_info.rounded_file_size = round_to_multiple(txz_info.file_sizes, 1024);
-    if (txz_info.rounded_file_size < 0)
-    {
-	err(17, __func__, "%s: total size of all files rounded up to multiple of 1024 < 0!", txzpath);
-	not_reached();
-    }
-    else if (txz_info.rounded_file_size > MAX_DIR_KSIZE)
-    {
-	warn("txzchk", "%s: total size of files %jd rounded up to multiple of 1024 %jd > %d",
-		       txzpath, (intmax_t)txz_info.file_sizes,
-		       (intmax_t) txz_info.rounded_file_size, MAX_DIR_KSIZE);
-	++txz_info.total_feathers;
-    }
-    else if (!quiet)
-    {
-	printf("txzchk: %s total size of files %jd rounded up to 1024 multiple: %jd OK\n",
-		txzpath, (intmax_t) txz_info.file_sizes, (intmax_t) txz_info.rounded_file_size);
-    }
-
-
+    check_txz_files_size(true); /* true: show rounded file size if all OK */
     /*
      * Now go through the files list to verify the required files are there and
      * also to detect any additional feathers stuck in the tarball (or issues in
@@ -964,25 +1068,19 @@ parse_linux_txz_line(char *p, char *linep, char *line_dup, char const *dir_name,
     p = strtok_r(NULL, " \t", saveptr);
     if (p == NULL)
     {
-	warn("txzchk", "%s: NULL pointer encountered trying to parse line, reading next line", txzpath);
+	warn("txzchk", "%s: NULL pointer encountered trying to parse line", txzpath);
+	msg("skipping to next line");
 	++txz_info.total_feathers;
 	return;
     }
 
-    errno = 0;
-    current_file_size = strtoimax(p, NULL, 10);
-    if (errno != 0)
+    if (!convert_file_size(&current_file_size, p))
     {
-	warnp("txzchk", "%s: trying to parse file size in on line: %s, string: %s, reading next line", txzpath, line_dup, p);
+	warnp("txzchk", "%s: trying to parse file size in on line: <%s>: token: <%s>", txzpath, line_dup, p);
+	msg("skipping to next line");
 	++txz_info.total_feathers;
 	return;
     }
-    else if (current_file_size < 0)
-    {
-	warn("txzchk", "%s: file size < 0", txzpath);
-	++txz_info.total_feathers;
-    }
-    txz_info.file_sizes += current_file_size;
 
     /*
      * the next two fields we don't care about but we loop three times to
@@ -993,7 +1091,8 @@ parse_linux_txz_line(char *p, char *linep, char *line_dup, char const *dir_name,
 	p = strtok_r(NULL, " \t", saveptr);
 	if (p == NULL)
 	{
-	    warn("txzchk", "%s: NULL pointer trying to parse line, reading next line", txzpath);
+	    warn("txzchk", "%s: NULL pointer trying to parse line", txzpath);
+	    msg("skipping to next line");
 	    ++txz_info.total_feathers;
 	    return;
 	}
@@ -1069,7 +1168,8 @@ parse_bsd_txz_line(char *p, char *linep, char *line_dup, char const *dir_name, c
     p = strtok_r(NULL, " \t", saveptr);
     if (p == NULL)
     {
-	warn("txzchk", "%s: NULL pointer encountered trying to parse line, reading next line", txzpath);
+	warn("txzchk", "%s: NULL pointer encountered trying to parse line", txzpath);
+	msg("skipping to next line");
 	++txz_info.total_feathers;
 	return;
     }
@@ -1092,7 +1192,8 @@ parse_bsd_txz_line(char *p, char *linep, char *line_dup, char const *dir_name, c
     p = strtok_r(NULL, " \t", saveptr);
     if (p == NULL)
     {
-	warn("txzchk", "%s: NULL pointer encountered trying to parse line, reading next line", txzpath);
+	warn("txzchk", "%s: NULL pointer encountered trying to parse line", txzpath);
+	msg("skipping to next line");
 	++txz_info.total_feathers;
 	return;
     }
@@ -1108,25 +1209,19 @@ parse_bsd_txz_line(char *p, char *linep, char *line_dup, char const *dir_name, c
     p = strtok_r(NULL, " \t", saveptr);
     if (p == NULL)
     {
-	warn("txzchk", "%s: NULL pointer encountered trying to parse line, reading next line", txzpath);
+	warn("txzchk", "%s: NULL pointer encountered trying to parse line", txzpath);
+	msg("skipping to next line");
 	++txz_info.total_feathers;
 	return;
     }
 
-    errno = 0;
-    current_file_size = strtoimax(p, NULL, 10);
-    if (errno != 0)
+    if (!convert_file_size(&current_file_size, p))
     {
-	warnp("txzchk", "%s: trying to parse file size in on line: %s, string: %s, reading next line", txzpath, line_dup, p);
+	warnp("txzchk", "%s: trying to parse file size in on line: <%s>: token: <%s>", txzpath, line_dup, p);
+	msg("skipping to next line");
 	++txz_info.total_feathers;
 	return;
     }
-    else if (current_file_size < 0)
-    {
-	warn("txzchk", "%s: file size < 0", txzpath);
-	++txz_info.total_feathers;
-    }
-    txz_info.file_sizes += current_file_size;
 
     /*
      * the next three fields we don't care about but we loop four times to
@@ -1137,7 +1232,8 @@ parse_bsd_txz_line(char *p, char *linep, char *line_dup, char const *dir_name, c
 	p = strtok_r(NULL, " \t", saveptr);
 	if (p == NULL)
 	{
-	    warn("txzchk", "%s: NULL pointer trying to parse line, reading next line", txzpath);
+	    warn("txzchk", "%s: NULL pointer trying to parse line", txzpath);
+	    msg("skipping to next line");
 	    ++txz_info.total_feathers;
 	    return;
 	}
@@ -1231,7 +1327,8 @@ parse_txz_line(char *linep, char *line_dup, char const *dir_name, char const *tx
     p = strtok_r(linep, " \t", &saveptr);
     if (p == NULL)
     {
-	warn("txzchk", "%s: NULL pointer encountered trying to parse line, reading next line", txzpath);
+	warn("txzchk", "%s: NULL pointer encountered trying to parse line", txzpath);
+	msg("skipping to next line");
 	++txz_info.total_feathers;
 	return;
     }
@@ -1249,7 +1346,8 @@ parse_txz_line(char *linep, char *line_dup, char const *dir_name, char const *tx
     p = strtok_r(NULL, " \t", &saveptr);
     if (p == NULL)
     {
-	warn("txzchk", "%s: NULL pointer encountered trying to parse line, reading next line", txzpath);
+	warn("txzchk", "%s: NULL pointer encountered trying to parse line", txzpath);
+	msg("skipping to next line");
 	++txz_info.total_feathers;
 	return;
     }
@@ -1485,7 +1583,8 @@ check_tarball(char const *tar, char const *fnamchk)
 	p = (char *)memchr(linep, 0, (size_t)readline_len);
 	if (p != NULL)
 	{
-	    warnp("txzchk", "found NUL before end of line, reading next line");
+	    warnp("txzchk", "found NUL before end of line");
+	    msg("skipping to next line");
 	    continue;
 	}
 	dbg(DBG_VHIGH, "line %d: %s", line_num, linep);

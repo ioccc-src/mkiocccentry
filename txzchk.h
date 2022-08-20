@@ -57,7 +57,7 @@ static char const *txzpath = NULL;		/* the current tarball being checked */
 static char const *program = NULL;		/* our name */
 static bool text_file_flag_used = false;	/* true ==> assume txzpath is a text file */
 static char const *ext = "txz";			/* force extension in fnamchk to be this value */
-static bool suppress_error_messages = false;	/* true ==> suppress error messages (enabled by -e) */
+static bool suppress_error_messages = false;	/* true ==> suppress error messages (-e used for tests but should be changed) */
 
 /*
  * information about the tarball
@@ -77,6 +77,12 @@ struct txz_info
     unsigned invalid_chars;		    /* > 0 ==> invalid characters found in this number of filenames */
     off_t size;				    /* size of the tarball itself */
     off_t file_sizes;			    /* total size of all the files combined */
+    bool files_size_too_big;		    /* true ==> total files size > MAX_DIR_KSIZE */
+    bool files_size_shrunk;		    /* true ==> total files size shrunk */
+    off_t previous_file_sizes;		    /* the previous total size of all files combined */
+    off_t previous_rounded_file_size;	    /* the previous total file sizes rounded up to 1024 multiple */
+    bool rounded_files_size_shrunk;	    /* true ==> rounded files size shrunk */
+    bool rounded_files_size_too_big;	    /* true ==> rounded files size too big */
     off_t rounded_file_size;		    /* file sizes rounded up to 1024 multiple */
     unsigned correct_directory;		    /* number of files in the correct directory */
     unsigned dot_files;			    /* number of dot files that aren't .author.json and .info.json */
@@ -166,6 +172,8 @@ static unsigned check_tarball(char const *tar, char const *fnamchk);
 static void show_txz_info(char const *txzpath);
 static void check_empty_file(char const *txzpath, off_t size, struct txz_file *file);
 static void check_txz_file(char const *txzpath, char const *dir_name, struct txz_file *file);
+static bool convert_file_size(off_t *current_file_size, char *p);
+static void check_txz_files_size(bool show_rounded_size);
 static void check_all_txz_files(char const *dir_name);
 static void check_directories(struct txz_file *file, char const *dir_name, char const *txzpath);
 static bool has_special_bits(char const *str);

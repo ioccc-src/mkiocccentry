@@ -61,9 +61,8 @@ static char const *oebxergfB[] =
     "ul twzuespayknueyttf twll bnym '>'. Usiwsmw leawxwd qk.\n"
     "-- Xwzft",
 
-    "C dsm'b hmsx nyto so fsq nyto yl xwtt yl C lnsqtd tuhw;\n"
-    "ymd C tuhw twll bnym"
-    " nyto so fsq nyto yl xwtt yl fsq dwlwavw.\n"
+    "C dsm'b hmsx nyto so fsq nyto yl xwtt yl C lnsqtd tuhw; ymd C tuhw twll\n"
+    "bnym nyto so fsq nyto yl xwtt yl fsq dwlwavw.\n"
     "-- Nutrs Nyppuml",
 
     "I lwebusm: '{}'\n"
