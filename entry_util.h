@@ -239,6 +239,11 @@ extern bool test_found_all_rule(bool boolean);
 extern bool test_found_clean_rule(bool boolean);
 extern bool test_found_clobber_rule(bool boolean);
 extern bool test_found_try_rule(bool boolean);
+extern bool test_github(char *str);
+extern bool test_info_JSON(char *str);
+extern bool test_ioccc_contest(char *str);
+extern bool test_ioccc_year(int ioccc_year);
+extern bool test_iocccsize_version(char *str);
 /* XXX - end sorted order matching chk_validate.c here - XXX */
 extern bool test_rule_2a_override(bool boolean);
 extern bool test_rule_2a_mismatch(bool boolean);
@@ -251,10 +256,8 @@ extern bool test_ungetc_warning(bool boolean);
 extern bool test_first_rule_is_all(bool boolean);
 extern bool test_test_mode(bool boolean);
 extern bool test_mkiocccentry_version(char *str);
-extern bool test_iocccsize_version(char *str);
 extern bool test_txzchk_version(char *str);
 extern bool test_title(char *str);
-extern bool test_github(char *str);
 extern bool test_twitter(char *str);
 extern bool test_url(char *str);
 

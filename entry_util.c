@@ -2451,13 +2451,10 @@ test_found_try_rule(bool boolean)
 }
 
 
-/* XXX - end sorted order matching chk_validate.c here - XXX */
-
-
 /*
- * test_mkiocccentry_version - test if mkiocccentry_version is valid
+ * test_info_JSON - test if info_JSON is valid
  *
- * Determine if mkiocccentry_version matches MKIOCCCENTRY_VERSION.
+ * Determine if info_JSON matches AUTHOR_JSON_FILENAME.
  *
  * given:
  *	str	string to test
@@ -2467,7 +2464,7 @@ test_found_try_rule(bool boolean)
  *	false ==> string is NOT valid, or NULL pointer, or some internal error
  */
 bool
-test_mkiocccentry_version(char *str)
+test_info_JSON(char *str)
 {
     /*
      * firewall
@@ -2480,14 +2477,83 @@ test_mkiocccentry_version(char *str)
     /*
      * validate str
      */
-    if (strcmp(str, MKIOCCCENTRY_VERSION) != 0) {
+    if (strcmp(str, INFO_JSON_FILENAME) != 0) {
 	json_dbg(JSON_DBG_MED, __func__,
-		 "invalid: mkiocccentry_version != MKIOCCCENTRY_VERSION: %s", MKIOCCCENTRY_VERSION);
+		 "invalid: info_JSON != INFO_JSON_FILENAME: %s", INFO_JSON_FILENAME);
 	json_dbg(JSON_DBG_HIGH, __func__,
-		 "invalid: mkiocccentry_version: %s is not MKIOCCCENTRY_VERSION: %s", str, MKIOCCCENTRY_VERSION);
+		 "invalid: info_JSON: %s is not INFO_JSON_FILENAME: %s", str, INFO_JSON_FILENAME);
 	return false;
     }
-    json_dbg(JSON_DBG_MED, __func__, "formed_UTC is valid");
+    json_dbg(JSON_DBG_MED, __func__, "info_JSON is valid");
+    return true;
+}
+
+
+/*
+ * test_ioccc_contest - test if ioccc_contest is valid
+ *
+ * Determine if ioccc_contest matches AUTHOR_JSON_FILENAME.
+ *
+ * given:
+ *	str	string to test
+ *
+ * returns:
+ *	true ==> string is valid,
+ *	false ==> string is NOT valid, or NULL pointer, or some internal error
+ */
+bool
+test_ioccc_contest(char *str)
+{
+    /*
+     * firewall
+     */
+    if (str == NULL) {
+	warn(__func__, "str is NULL");
+	return false;
+    }
+
+    /*
+     * validate str
+     */
+    if (strcmp(str, IOCCC_CONTEST) != 0) {
+	json_dbg(JSON_DBG_MED, __func__,
+		 "invalid: ioccc_contest != IOCCC_CONTEST: %s", IOCCC_CONTEST);
+	json_dbg(JSON_DBG_HIGH, __func__,
+		 "invalid: ioccc_contest: %s is not IOCCC_CONTEST: %s", str, IOCCC_CONTEST);
+	return false;
+    }
+    json_dbg(JSON_DBG_MED, __func__, "ioccc_contest is valid");
+    return true;
+}
+
+
+/*
+ * test_ioccc_year - test if ioccc_year is valid
+ *
+ * Determine if ioccc_year is within the proper limits.
+ *
+ * NOTE: The function does NOT determine if the ioccc_year is unique among the authors.
+ * NOTE: The function does NOT determine if the ioccc_year is <= author_count.
+ *
+ * given:
+ *	ioccc_year	author number
+ *
+ * returns:
+ *	true ==> ioccc_year is valid,
+ *	false ==> ioccc_year is NOT valid, or some internal error
+ */
+bool
+test_ioccc_year(int ioccc_year)
+{
+    /*
+     * validate count
+     */
+    if (ioccc_year != IOCCC_YEAR) {
+	json_dbg(JSON_DBG_MED, __func__,
+		 "invalid: ioccc_year: %d != %d", ioccc_year, IOCCC_YEAR);
+	return false;
+    }
+    json_dbg(JSON_DBG_MED, __func__, "ioccc_year is valid");
     return true;
 }
 
@@ -2526,6 +2592,47 @@ test_iocccsize_version(char *str)
 	return false;
     }
     json_dbg(JSON_DBG_MED, __func__, "iocccsize_version is valid");
+    return true;
+}
+
+
+/* XXX - end sorted order matching chk_validate.c here - XXX */
+
+
+/*
+ * test_mkiocccentry_version - test if mkiocccentry_version is valid
+ *
+ * Determine if mkiocccentry_version matches MKIOCCCENTRY_VERSION.
+ *
+ * given:
+ *	str	string to test
+ *
+ * returns:
+ *	true ==> string is valid,
+ *	false ==> string is NOT valid, or NULL pointer, or some internal error
+ */
+bool
+test_mkiocccentry_version(char *str)
+{
+    /*
+     * firewall
+     */
+    if (str == NULL) {
+	warn(__func__, "str is NULL");
+	return false;
+    }
+
+    /*
+     * validate str
+     */
+    if (strcmp(str, MKIOCCCENTRY_VERSION) != 0) {
+	json_dbg(JSON_DBG_MED, __func__,
+		 "invalid: mkiocccentry_version != MKIOCCCENTRY_VERSION: %s", MKIOCCCENTRY_VERSION);
+	json_dbg(JSON_DBG_HIGH, __func__,
+		 "invalid: mkiocccentry_version: %s is not MKIOCCCENTRY_VERSION: %s", str, MKIOCCCENTRY_VERSION);
+	return false;
+    }
+    json_dbg(JSON_DBG_MED, __func__, "formed_UTC is valid");
     return true;
 }
 

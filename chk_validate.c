@@ -1661,7 +1661,261 @@ chk_found_try_rule(struct json *node,
 }
 
 
-/* XXX - end sorted order matching entry_util.c here -XXX */
+/*
+ * chk_github - JSON semantic check for github
+ *
+ * given:
+ *	node	JSON parse node being checked
+ *	depth	depth of node in the JSON parse tree (0 ==> tree root)
+ *	sem	JSON semantic node triggering the check
+ *	val_err	pointer to address where to place a JSON semantic validation error,
+ *		NULL ==> do not report a JSON semantic validation error
+ *
+ * returns:
+ *	true ==> JSON element is valid
+ *	false ==> JSON element is NOT valid, or NULL pointer, or some internal error
+ */
+bool
+chk_github(struct json *node,
+	   unsigned int depth, struct json_sem *sem, struct json_sem_val_err **val_err)
+{
+    char *str = NULL;				/* JTYPE_STRING as decoded JSON string */
+    bool test = false;				/* validation test result */
+
+    /*
+     * firewall - args and decoded string check
+     */
+    str = sem_member_value_decoded_str(node, depth, sem, __func__, val_err);
+    if (str == NULL) {
+	/* sem_member_value_decoded_str() will have set *val_err */
+	return false;
+    }
+
+    /*
+     * validate decoded JSON string
+     */
+    test = test_github(str);
+    if (test == false) {
+	if (val_err != NULL) {
+	    *val_err = werr_sem_val(138, node, depth, sem, __func__, "invalid github");
+	}
+	return false;
+    }
+
+    /*
+     * return validation success
+     */
+    if (val_err != NULL) {
+	*val_err = NULL;
+    }
+    return true;
+}
+
+
+/*
+ * chk_highbit_warning - JSON semantic check for highbit_warning
+ *
+ * given:
+ *	node	JSON parse node being checked
+ *	depth	depth of node in the JSON parse tree (0 ==> tree root)
+ *	sem	JSON semantic node triggering the check
+ *	val_err	pointer to address where to place a JSON semantic validation error,
+ *		NULL ==> do not report a JSON semantic validation error
+ *
+ * returns:
+ *	true ==> JSON element is valid
+ *	false ==> JSON element is NOT valid, or NULL pointer, or some internal error
+ */
+bool
+chk_highbit_warning(struct json *node,
+		    unsigned int depth, struct json_sem *sem, struct json_sem_val_err **val_err)
+{
+    bool *boolean = NULL;			/* pointer to JTYPE_BOOL as decoded JSON boolean */
+    bool test = false;				/* validation test result */
+
+    /*
+     * firewall - args
+     */
+    if (sem_chk_null_args(node, depth, sem, __func__, val_err) == true) {
+	/* chk_null_args() will have set *val_err */
+	return false;
+    }
+
+    /*
+     * validate decoded JSON string
+     */
+    test = test_highbit_warning(*boolean);
+    if (test == false) {
+	if (val_err != NULL) {
+	    *val_err = werr_sem_val(139, node, depth, sem, __func__, "invalid highbit_warning");
+	}
+	return false;
+    }
+
+    /*
+     * return validation success
+     */
+    if (val_err != NULL) {
+	*val_err = NULL;
+    }
+    return true;
+}
+
+
+/*
+ * chk_info_JSON - JSON semantic check for info_JSON
+ *
+ * given:
+ *	node	JSON parse node being checked
+ *	depth	depth of node in the JSON parse tree (0 ==> tree root)
+ *	sem	JSON semantic node triggering the check
+ *	val_err	pointer to address where to place a JSON semantic validation error,
+ *		NULL ==> do not report a JSON semantic validation error
+ *
+ * returns:
+ *	true ==> JSON element is valid
+ *	false ==> JSON element is NOT valid, or NULL pointer, or some internal error
+ */
+bool
+chk_info_JSON(struct json *node,
+	      unsigned int depth, struct json_sem *sem, struct json_sem_val_err **val_err)
+{
+    char *str = NULL;				/* JTYPE_STRING as decoded JSON string */
+    bool test = false;				/* validation test result */
+
+    /*
+     * firewall - args and decoded string check
+     */
+    str = sem_member_value_decoded_str(node, depth, sem, __func__, val_err);
+    if (str == NULL) {
+	/* sem_member_value_decoded_str() will have set *val_err */
+	return false;
+    }
+
+    /*
+     * validate decoded JSON string
+     */
+    test = test_info_JSON(str);
+    if (test == false) {
+	if (val_err != NULL) {
+	    *val_err = werr_sem_val(140, node, depth, sem, __func__, "invalid info_JSON");
+	}
+	return false;
+    }
+
+    /*
+     * return validation success
+     */
+    if (val_err != NULL) {
+	*val_err = NULL;
+    }
+    return true;
+}
+
+
+/*
+ * chk_ioccc_year - JSON semantic check for ioccc_year
+ *
+ * given:
+ *	node	JSON parse node being checked
+ *	depth	depth of node in the JSON parse tree (0 ==> tree root)
+ *	sem	JSON semantic node triggering the check
+ *	val_err	pointer to address where to place a JSON semantic validation error,
+ *		NULL ==> do not report a JSON semantic validation error
+ *
+ * returns:
+ *	true ==> JSON element is valid
+ *	false ==> JSON element is NOT valid, or NULL pointer, or some internal error
+ */
+bool
+chk_ioccc_year(struct json *node,
+	       unsigned int depth, struct json_sem *sem, struct json_sem_val_err **val_err)
+{
+    int *value = NULL;			/* JSON_NUMBER as decoded int */
+    bool test = false;			/* validation test result */
+
+    /*
+     * firewall - args and JSON number as int check
+     */
+    value = sem_member_value_int(node, depth, sem, __func__, val_err);
+    if (value == NULL) {
+	/* sem_member_value_int() will have set *val_err */
+	return false;
+    }
+
+    /*
+     * validate decoded JSON string
+     */
+    test = test_ioccc_year(*value);
+    if (test == false) {
+	if (val_err != NULL) {
+	    *val_err = werr_sem_val(141, node, depth, sem, __func__, "invalid ioccc_year");
+	}
+	return false;
+    }
+
+    /*
+     * return validation success
+     */
+    if (val_err != NULL) {
+	*val_err = NULL;
+    }
+    return true;
+}
+
+
+/*
+ * chk_iocccsize_version - JSON semantic check for iocccsize_version
+ *
+ * given:
+ *	node	JSON parse node being checked
+ *	depth	depth of node in the JSON parse tree (0 ==> tree root)
+ *	sem	JSON semantic node triggering the check
+ *	val_err	pointer to address where to place a JSON semantic validation error,
+ *		NULL ==> do not report a JSON semantic validation error
+ *
+ * returns:
+ *	true ==> JSON element is valid
+ *	false ==> JSON element is NOT valid, or NULL pointer, or some internal error
+ */
+bool
+chk_iocccsize_version(struct json *node,
+		      unsigned int depth, struct json_sem *sem, struct json_sem_val_err **val_err)
+{
+    char *str = NULL;				/* JTYPE_STRING as decoded JSON string */
+    bool test = false;				/* validation test result */
+
+    /*
+     * firewall - args and decoded string check
+     */
+    str = sem_member_value_decoded_str(node, depth, sem, __func__, val_err);
+    if (str == NULL) {
+	/* sem_member_value_decoded_str() will have set *val_err */
+	return false;
+    }
+
+    /*
+     * validate decoded JSON string
+     */
+    test = test_iocccsize_version(str);
+    if (test == false) {
+	if (val_err != NULL) {
+	    *val_err = werr_sem_val(142, node, depth, sem, __func__, "invalid iocccsize_version");
+	}
+	return false;
+    }
+
+    /*
+     * return validation success
+     */
+    if (val_err != NULL) {
+	*val_err = NULL;
+    }
+    return true;
+}
+
+
+/* XXX - end sorted order matching entry_util.c here - XXX */
 
 
 /*
@@ -1700,7 +1954,7 @@ chk_rule_2a_override(struct json *node,
     test = test_rule_2a_override(*boolean);
     if (test == false) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(138, node, depth, sem, __func__, "invalid rule_2a_override");
+	    *val_err = werr_sem_val(143, node, depth, sem, __func__, "invalid rule_2a_override");
 	}
 	return false;
     }
@@ -1751,7 +2005,7 @@ chk_rule_2a_mismatch(struct json *node,
     test = test_rule_2a_mismatch(*boolean);
     if (test == false) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(139, node, depth, sem, __func__, "invalid rule_2a_mismatch");
+	    *val_err = werr_sem_val(144, node, depth, sem, __func__, "invalid rule_2a_mismatch");
 	}
 	return false;
     }
@@ -1802,57 +2056,7 @@ chk_rule_2b_override(struct json *node,
     test = test_rule_2b_override(*boolean);
     if (test == false) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(140, node, depth, sem, __func__, "invalid rule_2b_override");
-	}
-	return false;
-    }
-
-    /*
-     * return validation success
-     */
-    if (val_err != NULL) {
-	*val_err = NULL;
-    }
-    return true;
-}
-
-
-/*
- * chk_highbit_warning - JSON semantic check for highbit_warning
- *
- * given:
- *	node	JSON parse node being checked
- *	depth	depth of node in the JSON parse tree (0 ==> tree root)
- *	sem	JSON semantic node triggering the check
- *	val_err	pointer to address where to place a JSON semantic validation error,
- *		NULL ==> do not report a JSON semantic validation error
- *
- * returns:
- *	true ==> JSON element is valid
- *	false ==> JSON element is NOT valid, or NULL pointer, or some internal error
- */
-bool
-chk_highbit_warning(struct json *node,
-		    unsigned int depth, struct json_sem *sem, struct json_sem_val_err **val_err)
-{
-    bool *boolean = NULL;			/* pointer to JTYPE_BOOL as decoded JSON boolean */
-    bool test = false;				/* validation test result */
-
-    /*
-     * firewall - args
-     */
-    if (sem_chk_null_args(node, depth, sem, __func__, val_err) == true) {
-	/* chk_null_args() will have set *val_err */
-	return false;
-    }
-
-    /*
-     * validate decoded JSON string
-     */
-    test = test_highbit_warning(*boolean);
-    if (test == false) {
-	if (val_err != NULL) {
-	    *val_err = werr_sem_val(141, node, depth, sem, __func__, "invalid highbit_warning");
+	    *val_err = werr_sem_val(145, node, depth, sem, __func__, "invalid rule_2b_override");
 	}
 	return false;
     }
@@ -1903,7 +2107,7 @@ chk_nul_warning(struct json *node,
     test = test_nul_warning(*boolean);
     if (test == false) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(142, node, depth, sem, __func__, "invalid nul_warning");
+	    *val_err = werr_sem_val(146, node, depth, sem, __func__, "invalid nul_warning");
 	}
 	return false;
     }
@@ -1954,7 +2158,7 @@ chk_trigraph_warning(struct json *node,
     test = test_trigraph_warning(*boolean);
     if (test == false) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(143, node, depth, sem, __func__, "invalid trigraph_warning");
+	    *val_err = werr_sem_val(147, node, depth, sem, __func__, "invalid trigraph_warning");
 	}
 	return false;
     }
@@ -2005,7 +2209,7 @@ chk_wordbuf_warning(struct json *node,
     test = test_wordbuf_warning(*boolean);
     if (test == false) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(144, node, depth, sem, __func__, "invalid wordbuf_warning");
+	    *val_err = werr_sem_val(148, node, depth, sem, __func__, "invalid wordbuf_warning");
 	}
 	return false;
     }
@@ -2056,7 +2260,7 @@ chk_ungetc_warning(struct json *node,
     test = test_ungetc_warning(*boolean);
     if (test == false) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(145, node, depth, sem, __func__, "invalid ungetc_warning");
+	    *val_err = werr_sem_val(149, node, depth, sem, __func__, "invalid ungetc_warning");
 	}
 	return false;
     }
@@ -2107,7 +2311,7 @@ chk_test_mode(struct json *node,
     test = test_test_mode(*boolean);
     if (test == false) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(146, node, depth, sem, __func__, "invalid test_mode");
+	    *val_err = werr_sem_val(150, node, depth, sem, __func__, "invalid test_mode");
 	}
 	return false;
     }
