@@ -271,6 +271,7 @@ OBJFILES= dbg.o util.o mkiocccentry.o iocccsize.o fnamchk.o txzchk.o chkentry.o 
 	json_util.o jparse_main.o entry_util.o jsemtblgen.o chk_sem_auth.o chk_sem_info.o \
 	chk_validate.o json_sem.o have_timegm.o
 LESS_PICKY_CSRC= utf8_posix_map.c foo.c
+LESS_PICKY_H_FILES = oebxergfB.h
 LESS_PICKY_OBJ= utf8_posix_map.o foo.o
 GENERATED_CSRC= jparse.c jparse.tab.c
 GENERATED_HSRC= jparse.tab.h
@@ -813,7 +814,7 @@ seqcexit: Makefile
 	    ${SEQCEXIT} -D werr_sem_val -D werrp_sem_val -- ${ALL_CSRC}; \
 	fi
 
-picky: ${ALL_CSRC} ${H_FILES} Makefile
+picky: ${ALL_CSRC} ${H_FILES} ${LESS_PICKY_H_FILES} Makefile
 	@if ! command -v ${PICKY} >/dev/null 2>&1; then \
 	    echo "The picky tool could not found." 1>&2; \
 	    echo "The picky tool is required for this rule." 1>&2; \
@@ -826,8 +827,8 @@ picky: ${ALL_CSRC} ${H_FILES} Makefile
 	else \
 	    echo "${PICKY} -w132 -u -s -t8 -v -e -- ${SRCFILES} ${H_FILES}"; \
 	    ${PICKY} -w132 -u -s -t8 -v -e -- ${SRCFILES} ${H_FILES}; \
-	    echo "${PICKY} -w132 -u -s -t8 -v -e -8 -- ${LESS_PICKY_CSRC}"; \
-	    ${PICKY} -w132 -u -s -t8 -v -e -8 -- ${LESS_PICKY_CSRC}; \
+	    echo "${PICKY} -w132 -u -s -t8 -v -e -8 -- ${LESS_PICKY_CSRC} ${LESS_PICKY_H_FILES}"; \
+	    ${PICKY} -w132 -u -s -t8 -v -e -8 -- ${LESS_PICKY_CSRC} ${LESS_PICKY_H_FILES}; \
 	fi
 
 # inspect and verify shell scripts
