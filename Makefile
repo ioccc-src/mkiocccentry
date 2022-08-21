@@ -555,7 +555,7 @@ dyn_test.o: dyn_test.c Makefile
 dyn_test: dyn_test.o dbg.o util.o dyn_array.o Makefile
 	${CC} ${CFLAGS} dyn_test.o dbg.o util.o dyn_array.o -o $@
 
-foo.o: foo.c Makefile
+foo.o: foo.c oebxergfB.h Makefile
 	${CC} ${CFLAGS} foo.c -c
 
 limit_ioccc.sh: limit_ioccc.h version.h dbg.h dyn_array.h dyn_test.h jparse.h jparse_main.h \
@@ -1027,7 +1027,7 @@ depend: all
 ### DO NOT CHANGE MANUALLY BEYOND THIS LINE
 utf8_posix_map.o: utf8_posix_map.c utf8_posix_map.h util.h dyn_array.h \
   dbg.h limit_ioccc.h version.h
-foo.o: foo.c foo.h dbg.h
+foo.o: foo.c foo.h dbg.h oebxergfB.h
 jparse.o: jparse.c jparse.h dbg.h util.h dyn_array.h json_parse.h \
   json_util.h jparse.tab.h
 jparse.tab.o: jparse.tab.c jparse.h dbg.h util.h dyn_array.h json_parse.h \
