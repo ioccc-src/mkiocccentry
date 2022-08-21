@@ -915,7 +915,6 @@ object2author(struct json *node, unsigned int depth, struct json_sem *sem,
 	return false;
     }
 #endif /* XXX - unblock once the test function exists - XXX */
-#if 0 /* XXX - unblock once the test function exists - XXX */
     if (test_location_code(location_code) == false) {
 	if (val_err != NULL) {
 	    *val_err = werr_sem_val(97, node, depth, sem, __func__,
@@ -923,7 +922,6 @@ object2author(struct json *node, unsigned int depth, struct json_sem *sem,
 	}
 	return false;
     }
-#endif /* XXX - unblock once the test function exists - XXX */
 #if 0 /* XXX - unblock once the test function exists - XXX */
     if (test_location_name(location_name) == false) {
 	if (val_err != NULL) {
@@ -2592,6 +2590,69 @@ test_iocccsize_version(char *str)
 	return false;
     }
     json_dbg(JSON_DBG_MED, __func__, "iocccsize_version is valid");
+    return true;
+}
+
+
+/*
+ * test_location_code - test if location_code is valid
+ *
+ * Determine if location_code matches location_code.
+ *
+ * given:
+ *	str	string to test
+ *
+ * returns:
+ *	true ==> string is valid,
+ *	false ==> string is NOT valid, or NULL pointer, or some internal error
+ */
+bool
+test_location_code(char *str)
+{
+    size_t length = 0;
+    char const *location_name = NULL;		/* location name or NULL ==> unlisted code */
+
+    /*
+     * firewall
+     */
+    if (str == NULL) {
+	warn(__func__, "str is NULL");
+	return false;
+    }
+
+    /*
+     * validate str
+     */
+
+    /* validate length */
+    length = strlen(str);
+    if (length != 2) {
+	json_dbg(JSON_DBG_MED, __func__,
+		 "invalid: location_code: length: %zu != 2", length);
+	json_dbg(JSON_DBG_HIGH, __func__,
+		 "invalid: location_code: <%s> length: %zu != 2", str, length);
+	return false;
+    }
+
+    /* validate 2 ASCII UPPER CASE characters */
+    if (!isascii(str[0]) || !isupper(str[0]) || !isascii(str[1]) || !isupper(str[1])) {
+	json_dbg(JSON_DBG_MED, __func__,
+		 "invalid: location_code: is not 2 ASCII UPPER CASE characters");
+	json_dbg(JSON_DBG_MED, __func__,
+		 "invalid: location_code: <%s> is not 2 ASCII UPPER CASE characters", str);
+	return false;
+    }
+
+    /* validate ISO 3166-1 Alpha-2 in UPPER CASE code */
+    location_name = lookup_location_name(str);
+    if (location_name == NULL) {
+	json_dbg(JSON_DBG_MED, __func__,
+		 "invalid: location_code: not a known ISO 3166-1 location/country code");
+	json_dbg(JSON_DBG_MED, __func__,
+		 "invalid: location_code: <%s> not a known ISO 3166-1 location/country code", str);
+	return false;
+    }
+    json_dbg(JSON_DBG_MED, __func__, "location_code is valid");
     return true;
 }
 

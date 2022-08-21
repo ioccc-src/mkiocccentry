@@ -3678,94 +3678,93 @@ get_author_info(struct author **author_set_p)
 		yorn = false;
 		continue;
 
-	    } else {
+	    }
+
+	    /*
+	     * convert code to upper case
+	     */
+	    author_set[i].location_code[0] = (char)toupper(author_set[i].location_code[0]);
+	    author_set[i].location_code[1] = (char)toupper(author_set[i].location_code[1]);
+
+	    /*
+	     * determine if code is known
+	     */
+	    if (test_location_code(author_set[i].location_code) == false) {
 
 		/*
-		 * valid location/country code - convert to upper case
+		 * provide more help on location/country codes
 		 */
-		author_set[i].location_code[0] = (char)toupper(author_set[i].location_code[0]);
-		author_set[i].location_code[1] = (char)toupper(author_set[i].location_code[1]);
+		fpara(stderr,
+		      "",
+		      "That is not a known location/country code.",
+		      "",
+		      "For ISO 3166-1 2 character codes, see: the Alpha-2 code column of:",
+		      "",
+		      NULL);
+		errno = 0;		/* pre-clear errno for warnp() */
+		ret = fprintf(stderr, "    %s\n\n", ISO_3166_1_CODE_URL0);
+		if (ret <= 0) {
+		    warnp(__func__, "fprintf when printing ISO 3166-1 CODE URL #0");
+		}
+		fpara(stderr,
+		      "or from these Wikipedia / ISO web pages:",
+		      "",
+		      NULL);
+		errno = 0;		/* pre-clear errno for warnp() */
+		ret = fprintf(stderr, "    %s\n", ISO_3166_1_CODE_URL1);
+		if (ret <= 0) {
+		    warnp(__func__, "fprintf when printing ISO 3166-1 CODE URL #1");
+		}
+		errno = 0;		/* pre-clear errno for warnp() */
+		ret = fprintf(stderr, "    %s\n", ISO_3166_1_CODE_URL2);
+		if (ret <= 0) {
+		    warnp(__func__, "fprintf when printing ISO 3166-1 CODE URL #2");
+		}
+		errno = 0;		/* pre-clear errno for warnp() */
+		ret = fprintf(stderr, "    %s\n\n", ISO_3166_1_CODE_URL3);
+		if (ret <= 0) {
+		    warnp(__func__, "fprintf when printing ISO 3166-1 CODE URL #3");
+		}
 
 		/*
-		 * determine if code is known
+		 * free storage
 		 */
-		author_set[i].location_name = lookup_location_name(author_set[i].location_code);
-		if (author_set[i].location_name == NULL) {
+		if (author_set[i].location_code != NULL) {
+		    free(author_set[i].location_code);
+		    author_set[i].location_code = NULL;
+		}
 
-		    /*
-		     * provide more help on location/country codes
-		     */
-		    fpara(stderr,
-			  "",
-			  "That is not a known location/country code.",
-			  "",
-			  "For ISO 3166-1 2 character codes, see: the Alpha-2 code column of:",
-			  "",
-			  NULL);
-		    errno = 0;		/* pre-clear errno for warnp() */
-		    ret = fprintf(stderr, "    %s\n\n", ISO_3166_1_CODE_URL0);
-		    if (ret <= 0) {
-			warnp(__func__, "fprintf when printing ISO 3166-1 CODE URL #0");
-		    }
-		    fpara(stderr,
-			  "or from these Wikipedia / ISO web pages:",
-			  "",
-			  NULL);
-		    errno = 0;		/* pre-clear errno for warnp() */
-		    ret = fprintf(stderr, "    %s\n", ISO_3166_1_CODE_URL1);
-		    if (ret <= 0) {
-			warnp(__func__, "fprintf when printing ISO 3166-1 CODE URL #1");
-		    }
-		    errno = 0;		/* pre-clear errno for warnp() */
-		    ret = fprintf(stderr, "    %s\n", ISO_3166_1_CODE_URL2);
-		    if (ret <= 0) {
-			warnp(__func__, "fprintf when printing ISO 3166-1 CODE URL #2");
-		    }
-		    errno = 0;		/* pre-clear errno for warnp() */
-		    ret = fprintf(stderr, "    %s\n\n", ISO_3166_1_CODE_URL3);
-		    if (ret <= 0) {
-			warnp(__func__, "fprintf when printing ISO 3166-1 CODE URL #3");
-		    }
+		/*
+		 * discard this invalid location/country code input
+		 */
+		author_set[i].location_name = NULL;
+		yorn = false;
+		continue;
+	    }
+	    author_set[i].location_name = lookup_location_name(author_set[i].location_code);
 
-		    /*
-		     * free storage
-		     */
+	    /*
+	     * verify the known location/country code
+	     */
+	    if (need_confirm) {
+		errno = 0;		/* pre-clear errno for warnp() */
+		ret = printf("The location/country code you entered is assigned to: %s\n", author_set[i].location_name);
+		if (ret <= 0) {
+		    warnp(__func__, "fprintf location/country code assignment");
+		}
+		yorn = yes_or_no("Is that location/country code correct? [yn]");
+
+		/*
+		 * free storage if no (reenter location/country code)
+		 */
+		if (!yorn) {
 		    if (author_set[i].location_code != NULL) {
 			free(author_set[i].location_code);
 			author_set[i].location_code = NULL;
 		    }
-
-		    /*
-		     * discard this invalid location/country code input
-		     */
-		    author_set[i].location_name = NULL;
-		    yorn = false;
-		    continue;
 		}
-
-		/*
-		 * verify the known location/country code
-		 */
-	        if (need_confirm) {
-		    errno = 0;		/* pre-clear errno for warnp() */
-		    ret = printf("The location/country code you entered is assigned to: %s\n", author_set[i].location_name);
-		    if (ret <= 0) {
-			warnp(__func__, "fprintf location/country code assignment");
-		    }
-		    yorn = yes_or_no("Is that location/country code correct? [yn]");
-
-		    /*
-		     * free storage if no (reenter location/country code)
-		     */
-		    if (!yorn) {
-			if (author_set[i].location_code != NULL) {
-			    free(author_set[i].location_code);
-			    author_set[i].location_code = NULL;
-			}
-		    }
-		} else {
-		    yorn = true;
-		}
+	    } else {
+		yorn = true;
 	    }
 	} while (author_set[i].location_code == NULL || author_set[i].location_name == NULL || !yorn);
 

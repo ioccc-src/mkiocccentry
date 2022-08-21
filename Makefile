@@ -475,9 +475,9 @@ chkentry.o: chkentry.c chkentry.h Makefile
 	${CC} ${CFLAGS} chkentry.c -c
 
 chkentry: chkentry.o dbg.o util.o dyn_array.o json_parse.o json_util.o chk_validate.o \
-	  entry_util.c json_sem.o foo.o Makefile
+	  entry_util.c json_sem.o foo.o location.o Makefile
 	${CC} ${CFLAGS} chkentry.o dbg.o util.o dyn_array.o json_parse.o json_util.o \
-			chk_validate.o entry_util.o json_sem.o foo.o -o $@
+			chk_validate.o entry_util.o json_sem.o foo.o location.o -o $@
 
 jstrencode.o: jstrencode.c jstrencode.h json_util.h json_util.c Makefile
 	${CC} ${CFLAGS} jstrencode.c -c
@@ -1071,7 +1071,7 @@ json_util.o: json_util.c dbg.h json_parse.h util.h dyn_array.h \
 jparse_main.o: jparse_main.c jparse_main.h dbg.h util.h dyn_array.h \
   jparse.h json_parse.h json_util.h jparse.tab.h
 entry_util.o: entry_util.c dbg.h util.h dyn_array.h entry_util.h \
-  version.h json_parse.h json_util.h json_sem.h limit_ioccc.h
+  version.h json_parse.h json_util.h json_sem.h limit_ioccc.h location.h
 jsemtblgen.o: jsemtblgen.c jsemtblgen.h dbg.h util.h dyn_array.h \
   json_util.h json_parse.h jparse.h jparse.tab.h json_sem.h iocccsize.h
 chk_sem_auth.o: chk_sem_auth.c chk_sem_auth.h json_sem.h util.h \
@@ -1080,7 +1080,7 @@ chk_sem_info.o: chk_sem_info.c chk_sem_info.h json_sem.h util.h \
   dyn_array.h dbg.h json_parse.h json_util.h
 chk_validate.o: chk_validate.c chk_validate.h entry_util.h version.h \
   json_parse.h util.h dyn_array.h dbg.h json_util.h json_sem.h \
-  limit_ioccc.h chk_sem_auth.h chk_sem_info.h
+  limit_ioccc.h location.h chk_sem_auth.h chk_sem_info.h
 json_sem.o: json_sem.c dbg.h json_sem.h util.h dyn_array.h json_parse.h \
   json_util.h
 have_timegm.o: have_timegm.c
