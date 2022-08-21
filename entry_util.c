@@ -2657,6 +2657,47 @@ test_location_code(char *str)
 }
 
 
+/*
+ * test_location_name - test if location_name is valid
+ *
+ * Determine if location_name matches location_name.
+ *
+ * given:
+ *	str	string to test
+ *
+ * returns:
+ *	true ==> string is valid,
+ *	false ==> string is NOT valid, or NULL pointer, or some internal error
+ */
+bool
+test_location_name(char *str)
+{
+    char const *location_code = NULL;		/* ISO 3166-1 location/country code */
+
+    /*
+     * firewall
+     */
+    if (str == NULL) {
+	warn(__func__, "str is NULL");
+	return false;
+    }
+
+    /*
+     * validate str
+     */
+    location_code = lookup_location_code(str);
+    if (location_code == NULL) {
+	json_dbg(JSON_DBG_MED, __func__,
+		 "invalid: location_name: not a known ISO 3166-1 location/country name");
+	json_dbg(JSON_DBG_MED, __func__,
+		 "invalid: location_name: <%s> not a known ISO 3166-1 location/country name", str);
+	return false;
+    }
+    json_dbg(JSON_DBG_MED, __func__, "location_name is valid");
+    return true;
+}
+
+
 /* XXX - end sorted order matching chk_validate.c here - XXX */
 
 

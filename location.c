@@ -491,7 +491,7 @@ lookup_location_name(char const *upper_code)
      * firewall
      */
     if (upper_code == NULL) {
-	err(11, __func__, "called with NULL arg(s)");
+	err(11, __func__, "upper_code is NULL");
 	not_reached();
     }
 
@@ -500,7 +500,7 @@ lookup_location_name(char const *upper_code)
      */
     for (p = &loc[0]; p->code != NULL && p->name != NULL; ++p) {
 	if (strcmp(upper_code, p->code) == 0) {
-	    dbg(DBG_VHIGH, "code %s name found: %s", p->code, p->name);
+	    dbg(DBG_VHIGH, "code: %s found name: <%s>", p->code, p->name);
 	    break;
 	}
     }
@@ -512,3 +512,42 @@ lookup_location_name(char const *upper_code)
 }
 
 
+/*
+ * lookup_location_code - convert a ISO 3166-1 Alpha-2 into a location name
+ *
+ * given:
+ *      location_name      - location name of a ISO 3166-1 Alpha-2 code
+ *
+ * return:
+ *	ISO 3166-1 Alpha-2 in UPPER CASE code or NULL ==> unknown location name
+ *
+ * This function does not return on error.
+ */
+char const *
+lookup_location_code(char const *location_name)
+{
+    struct location *p;		/* entry in the location table */
+
+    /*
+     * firewall
+     */
+    if (location_name == NULL) {
+	err(12, __func__, "location_name is NULL");
+	not_reached();
+    }
+
+    /*
+     * search location table for the code
+     */
+    for (p = &loc[0]; p->code != NULL && p->code != NULL; ++p) {
+	if (strcmp(location_name, p->name) == 0) {
+	    dbg(DBG_VHIGH, "name: <%s> found code: %s", p->name, p->code);
+	    break;
+	}
+    }
+
+    /*
+     * return code or NULL
+     */
+    return p->code;
+}

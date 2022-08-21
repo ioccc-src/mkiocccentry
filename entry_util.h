@@ -251,6 +251,7 @@ extern bool test_ioccc_contest(char *str);
 extern bool test_ioccc_year(int ioccc_year);
 extern bool test_iocccsize_version(char *str);
 extern bool test_location_code(char *str);
+extern bool test_location_name(char *str);
 /* XXX - end sorted order matching chk_validate.c here - XXX */
 extern bool test_rule_2a_override(bool boolean);
 extern bool test_rule_2a_mismatch(bool boolean);
