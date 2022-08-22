@@ -292,4 +292,7 @@ extern bool test_url(char *str);
 extern bool test_remarks(char *str);
 extern bool test_min_timestamp(time_t tstamp);
 extern bool test_timestamp_epoch(char *str);
+extern bool test_name(char *str);
+extern bool test_no_comment(char *str);
+extern bool test_past_winner(bool boolean);
 #endif /* INCLUDE_ENTRY_UTIL_H */

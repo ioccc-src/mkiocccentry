@@ -3388,7 +3388,7 @@ get_author_info(struct author **author_set_p)
     }
 
     /*
-     * keep asking for an entry number until we get a valid reply
+     * keep asking for an author number until we get a valid reply
      */
     do {
 
@@ -3460,9 +3460,9 @@ get_author_info(struct author **author_set_p)
 	     "Except for your name and location/country code, you can opt out of providing it,",
 	     "(or if you don't have the thing we are asking for), by just pressing return.",
 	     "",
-	     "A name is required. If an author wishes to be anonymous, use a pseudo-name.",
+	     "A name is required. If an author wishes to be anonymous, use a pseudonym.",
 	     "Keep in mind that if an author wins multiple years, or has won before, you might",
-	     "want to be consistent and provide the same name or pseudo-name each time.",
+	     "want to be consistent and provide the same name or pseudonym each time.",
 	     "",
 	     "We will ask for the location/country as a 2 character ISO 3166-1 Alpha-2 code.",
 	     "",
@@ -3543,7 +3543,7 @@ get_author_info(struct author **author_set_p)
 		 */
 		fpara(stderr,
 		      "",
-		      "The author name cannot be empty, try again.  If they want to be anonymous, give a pseudo-name.",
+		      "The author name cannot be empty, try again.  If they want to be anonymous, give a pseudonym.",
 		      "",
 		      NULL);
 
