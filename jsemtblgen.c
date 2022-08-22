@@ -396,7 +396,7 @@ vupdate_tbl(struct json *node, unsigned int depth, va_list ap)
 	 * case: if JTYPE_MEMBER - match non-NULL non-empty JSON decoded name
 	 */
 	if (node->type == JTYPE_MEMBER && p->type == JTYPE_MEMBER && p->name != NULL) {
-	    struct json_member *item = &(node->item.member);
+	    struct json_member const *item = &(node->item.member);
 
 	    /*
 	     * match decoded name
@@ -432,7 +432,7 @@ vupdate_tbl(struct json *node, unsigned int depth, va_list ap)
 	new.depth = depth;
 	new.type = node->type;
 	if (node->type == JTYPE_MEMBER) {
-	    struct json_member *item = &(node->item.member);
+	    struct json_member const *item = &(node->item.member);
 	    new.name = item->name_str;
 	    new.name_len = item->name_str_len;
 	} else {
@@ -899,7 +899,8 @@ print_sem_h_src(struct dyn_array *tbl, char *tbl_name, char *cap_tbl_name)
 	    } else if (strcmp(validate, "NULL") != 0) {
 		print_c_funct_name(stdout, validate);
 	    }
-	    prstr("(struct json *node,\n\tunsigned int depth, struct json_sem *sem, struct json_sem_val_err **val_err);\n");
+	    prstr("(struct json const *node,\n\tunsigned int depth, "
+		  "struct json_sem *sem, struct json_sem_val_err **val_err);\n");
 	}
     }
 

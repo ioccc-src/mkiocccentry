@@ -203,7 +203,8 @@ static void mkiocccentry_sanity_chks(struct info *infop, char const *work_dir, c
 static char *prompt(char const *str, size_t *lenp);
 static char *get_contest_id(bool *testp, bool *read_answers_flag_used);
 static int get_entry_num(struct info *infop);
-static char *mk_entry_dir(char const *work_dir, char const *ioccc_id, int entry_num, char **tarball_path, time_t tstamp);
+static char *mk_entry_dir(char const *work_dir, char const *ioccc_id, int entry_num,
+			  char **tarball_path, time_t tstamp, bool test_mode);
 static bool inspect_Makefile(char const *Makefile, struct info *infop);
 static void warn_Makefile(char const *Makefile, struct info *infop);
 static void check_Makefile(struct info *infop, char const *entry_dir, char const *cp, char const *Makefile);

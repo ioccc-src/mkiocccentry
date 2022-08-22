@@ -106,7 +106,7 @@ static struct json_sem_val_err sem_strdup_err = {
  *	 struct json_sem_val_err will be returned.
  */
 struct json_sem_val_err *
-werr_sem_val(int val_err, struct json *node, unsigned int depth, struct json_sem *sem,
+werr_sem_val(int val_err, struct json const *node, unsigned int depth, struct json_sem *sem,
 	     char const *name, char const *fmt, ...)
 {
     va_list ap;					/* variable argument list */
@@ -206,7 +206,7 @@ werr_sem_val(int val_err, struct json *node, unsigned int depth, struct json_sem
  *	 struct json_sem_val_err will be returned.
  */
 struct json_sem_val_err *
-werrp_sem_val(int val_err, struct json *node, unsigned int depth, struct json_sem *sem,
+werrp_sem_val(int val_err, struct json const *node, unsigned int depth, struct json_sem *sem,
 	      char const *name, char const *fmt, ...)
 {
     va_list ap;					/* variable argument list */
@@ -293,7 +293,7 @@ werrp_sem_val(int val_err, struct json *node, unsigned int depth, struct json_se
  *	false ==> all args are non-NULL
  */
 bool
-sem_chk_null_args(struct json *node, unsigned int depth, struct json_sem *sem,
+sem_chk_null_args(struct json const *node, unsigned int depth, struct json_sem *sem,
 	          char const *name, struct json_sem_val_err **val_err)
 {
     /*
@@ -352,7 +352,7 @@ sem_chk_null_args(struct json *node, unsigned int depth, struct json_sem *sem,
  *	    If val_err != NULL then *val_err is JSON semantic validation error (struct json_cnt_err)
  */
 bool
-sem_node_valid_converted(struct json *node, unsigned int depth, struct json_sem *sem,
+sem_node_valid_converted(struct json const *node, unsigned int depth, struct json_sem *sem,
 		         char const *name, struct json_sem_val_err **val_err)
 {
     /*
@@ -376,7 +376,7 @@ sem_node_valid_converted(struct json *node, unsigned int depth, struct json_sem 
 
     case JTYPE_NUMBER:  /* JSON item is number - see struct json_number */
 	{
-	    struct json_number *item = &(node->item.number);
+	    struct json_number const *item = &(node->item.number);
 
 	    /* converted check */
 	    if (item->converted == false) {
@@ -404,7 +404,7 @@ sem_node_valid_converted(struct json *node, unsigned int depth, struct json_sem 
 
     case JTYPE_STRING:  /* JSON item is a string - see struct json_string */
 	{
-	    struct json_string *item = &(node->item.string);
+	    struct json_string const *item = &(node->item.string);
 
 	    /* converted check */
 	    if (item->converted == false) {
@@ -432,7 +432,7 @@ sem_node_valid_converted(struct json *node, unsigned int depth, struct json_sem 
 
     case JTYPE_BOOL:    /* JSON item is a boolean - see struct json_boolean */
 	{
-	    struct json_boolean *item = &(node->item.boolean);
+	    struct json_boolean const *item = &(node->item.boolean);
 
 	    /* converted check */
 	    if (item->converted == false) {
@@ -454,7 +454,7 @@ sem_node_valid_converted(struct json *node, unsigned int depth, struct json_sem 
 
     case JTYPE_NULL:    /* JSON item is a null - see struct json_null */
 	{
-	    struct json_null *item = &(node->item.null);
+	    struct json_null const *item = &(node->item.null);
 
 	    /* converted check */
 	    if (item->converted == false) {
@@ -482,7 +482,7 @@ sem_node_valid_converted(struct json *node, unsigned int depth, struct json_sem 
 
     case JTYPE_MEMBER:  /* JSON item is a member */
 	{
-	    struct json_member *item = &(node->item.member);
+	    struct json_member const *item = &(node->item.member);
 	    struct json *member_name = NULL;		/* name part of JTYPE_MEMBER */
 	    struct json_string *member_name_string;	/* name part of JTYPE_MEMBER as JTYPE_STRING */
 
@@ -554,7 +554,7 @@ sem_node_valid_converted(struct json *node, unsigned int depth, struct json_sem 
 
     case JTYPE_OBJECT:  /* JSON item is a { members } */
 	{
-	    struct json_object *item = &(node->item.object);
+	    struct json_object const *item = &(node->item.object);
 
 	    /* converted check */
 	    if (item->converted == false) {
@@ -589,7 +589,7 @@ sem_node_valid_converted(struct json *node, unsigned int depth, struct json_sem 
 
     case JTYPE_ARRAY:   /* JSON item is a [ elements ] */
 	{
-	    struct json_array *item = &(node->item.array);
+	    struct json_array const *item = &(node->item.array);
 
 	    /* converted check */
 	    if (item->converted == false) {
@@ -624,7 +624,7 @@ sem_node_valid_converted(struct json *node, unsigned int depth, struct json_sem 
 
     case JTYPE_ELEMENTS:        /* JSON elements is zero or more JSON values */
 	{
-	    struct json_elements *item = &(node->item.elements);
+	    struct json_elements const *item = &(node->item.elements);
 
 	    /* converted check */
 	    if (item->converted == false) {
@@ -694,7 +694,7 @@ sem_node_valid_converted(struct json *node, unsigned int depth, struct json_sem 
  *	    If val_err != NULLm then *val_err is JSON semantic validation error (struct json_cnt_err)
  */
 struct json *
-sem_member_name(struct json *node, unsigned int depth, struct json_sem *sem,
+sem_member_name(struct json const *node, unsigned int depth, struct json_sem *sem,
 		char const *name, struct json_sem_val_err **val_err)
 {
     struct json_member *item = NULL;		/* JSON member */
@@ -776,7 +776,7 @@ sem_member_name(struct json *node, unsigned int depth, struct json_sem *sem,
  *	    If val_err != NULLm then *val_err is JSON semantic validation error (struct json_cnt_err)
  */
 struct json *
-sem_member_value(struct json *node, unsigned int depth, struct json_sem *sem,
+sem_member_value(struct json const *node, unsigned int depth, struct json_sem *sem,
 		 char const *name, struct json_sem_val_err **val_err)
 {
     struct json_member *item = NULL;		/* JSON member */
@@ -848,7 +848,7 @@ sem_member_value(struct json *node, unsigned int depth, struct json_sem *sem,
  *	    If val_err != NULLm then *val_err is JSON semantic validation error (struct json_cnt_err)
  */
 char *
-sem_member_name_decoded_str(struct json *node, unsigned int depth, struct json_sem *sem,
+sem_member_name_decoded_str(struct json const *node, unsigned int depth, struct json_sem *sem,
 			    char const *name, struct json_sem_val_err **val_err)
 {
     struct json *n = NULL;			/* name of JTYPE_MEMBER */
@@ -925,7 +925,7 @@ sem_member_name_decoded_str(struct json *node, unsigned int depth, struct json_s
  *	    If val_err != NULL then *val_err is JSON semantic validation error (struct json_sem_val_err)
  */
 char *
-sem_member_value_decoded_str(struct json *node, unsigned int depth, struct json_sem *sem,
+sem_member_value_decoded_str(struct json const *node, unsigned int depth, struct json_sem *sem,
 			     char const *name, struct json_sem_val_err **val_err)
 {
     struct json *value = NULL;			/* value of JTYPE_MEMBER */
@@ -1002,7 +1002,7 @@ sem_member_value_decoded_str(struct json *node, unsigned int depth, struct json_
  *	    If val_err != NULL then *val_err is JSON semantic validation error (struct json_sem_val_err)
  */
 bool *
-sem_member_value_bool(struct json *node, unsigned int depth, struct json_sem *sem,
+sem_member_value_bool(struct json const *node, unsigned int depth, struct json_sem *sem,
 		      char const *name, struct json_sem_val_err **val_err)
 {
     struct json *value = NULL;			/* value of JTYPE_MEMBER */
@@ -1084,7 +1084,7 @@ sem_member_value_bool(struct json *node, unsigned int depth, struct json_sem *se
  *	struct str_or_null (see above)
  */
 struct str_or_null
-sem_member_value_str_or_null(struct json *node, unsigned int depth, struct json_sem *sem,
+sem_member_value_str_or_null(struct json const *node, unsigned int depth, struct json_sem *sem,
 			     char const *name, struct json_sem_val_err **val_err)
 {
     struct json *value = NULL;			/* value of JTYPE_MEMBER */
@@ -1201,7 +1201,7 @@ sem_member_value_str_or_null(struct json *node, unsigned int depth, struct json_
  *	    If val_err != NULL then *val_err is JSON semantic validation error (struct json_sem_val_err)
  */
 int *
-sem_member_value_int(struct json *node, unsigned int depth, struct json_sem *sem,
+sem_member_value_int(struct json const *node, unsigned int depth, struct json_sem *sem,
 		     char const *name, struct json_sem_val_err **val_err)
 {
     struct json *value = NULL;			/* value of JTYPE_MEMBER */
@@ -1278,7 +1278,7 @@ sem_member_value_int(struct json *node, unsigned int depth, struct json_sem *sem
  *	    If val_err != NULL then *val_err is JSON semantic validation error (struct json_sem_val_err)
  */
 time_t *
-sem_member_value_time_t(struct json *node, unsigned int depth, struct json_sem *sem,
+sem_member_value_time_t(struct json const *node, unsigned int depth, struct json_sem *sem,
 		        char const *name, struct json_sem_val_err **val_err)
 {
     struct json *value = NULL;			/* value of JTYPE_MEMBER */
@@ -1381,7 +1381,7 @@ sem_member_value_time_t(struct json *node, unsigned int depth, struct json_sem *
  *	    If val_err != NULLm then *val_err is JSON semantic validation error (struct json_cnt_err)
  */
 struct json *
-sem_node_parent(struct json *node, unsigned int depth, struct json_sem *sem,
+sem_node_parent(struct json const *node, unsigned int depth, struct json_sem *sem,
 	        char const *name, struct json_sem_val_err **val_err)
 {
     bool valid = false;			/* true ==> JSON node is converted and valid JTYPE */
@@ -1467,11 +1467,11 @@ sem_node_parent(struct json *node, unsigned int depth, struct json_sem *sem,
  *	    If val_err != NULLm then *val_err is JSON semantic validation error (struct json_cnt_err)
  */
 struct json *
-sem_object_find_name(struct json *node, unsigned int depth, struct json_sem *sem,
+sem_object_find_name(struct json const *node, unsigned int depth, struct json_sem *sem,
 		     char const *name, struct json_sem_val_err **val_err,
 		     char const *memname)
 {
-    struct json_object *item = NULL;		/* JSON member */
+    struct json_object const *item = NULL;	/* JSON member */
     bool valid = false;				/* true ==> JSON node is converted and valid JTYPE */
     int i;
 

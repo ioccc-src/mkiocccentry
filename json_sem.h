@@ -66,7 +66,7 @@ struct json_cnt_err
  */
 struct json_sem_val_err
 {
-    struct json *node;		/* JSON parse node in question or NULL */
+    struct json const *node;	/* JSON parse node in question or NULL */
     unsigned int depth;		/* JSON parse tree node depth or UINT_MAX */
     struct json_sem *sem;	/* semantic node in question or NULL */
     int val_err;		/* validate function specific error code */
@@ -90,7 +90,7 @@ struct json_sem
     unsigned int max;		/* maximum allowed count, 0 ==> infinite */
     unsigned int count;		/* number of times this JSON semantic was matched */
     size_t name_len;		/* length of name_str, not including final NUL or 0 */
-    bool (* validate)(struct json *node,
+    bool (* validate)(struct json const *node,
 		      unsigned int depth, struct json_sem *sem, struct json_sem_val_err **val_err);
 				/* JSON parse tree node validator, or NULL */
     char *name;			/* if type == JTYPE_MEMBER, match decoded name or NULL */
@@ -115,35 +115,36 @@ struct str_or_null {
 /*
  * external function declarations
  */
-extern struct json_sem_val_err *werr_sem_val(int val_err, struct json *node, unsigned int depth,
+extern struct json_sem_val_err *werr_sem_val(int val_err, struct json const *node, unsigned int depth,
 					     struct json_sem *sem, char const *name, char const *fmt, ...) \
 	__attribute__((format(printf, 6, 7)));		/* 6=format 7=params */
-extern struct json_sem_val_err *werrp_sem_val(int val_err, struct json *node, unsigned int depth,
+extern struct json_sem_val_err *werrp_sem_val(int val_err, struct json const *node, unsigned int depth,
 					      struct json_sem *sem, char const *name, char const *fmt, ...) \
 	__attribute__((format(printf, 6, 7)));		/* 6=format 7=params */
-extern bool sem_chk_null_args(struct json *node, unsigned int depth, struct json_sem *sem,
+extern bool sem_chk_null_args(struct json const *node, unsigned int depth, struct json_sem *sem,
 			      char const *name, struct json_sem_val_err **val_err);
-extern bool sem_node_valid_converted(struct json *node, unsigned int depth, struct json_sem *sem,
+extern bool sem_node_valid_converted(struct json const *node, unsigned int depth, struct json_sem *sem,
 				     char const *name, struct json_sem_val_err **val_err);
-extern struct json *sem_member_name(struct json *node, unsigned int depth, struct json_sem *sem,
+extern struct json *sem_member_name(struct json const *node, unsigned int depth, struct json_sem *sem,
 				    char const *name, struct json_sem_val_err **val_err);
-extern struct json *sem_member_value(struct json *node, unsigned int depth, struct json_sem *sem,
+extern struct json *sem_member_value(struct json const *node, unsigned int depth, struct json_sem *sem,
 				     char const *name, struct json_sem_val_err **val_err);
-extern char *sem_member_name_decoded_str(struct json *node, unsigned int depth, struct json_sem *sem,
+extern char *sem_member_name_decoded_str(struct json const *node, unsigned int depth, struct json_sem *sem,
 				         char const *name, struct json_sem_val_err **val_err);
-extern char *sem_member_value_decoded_str(struct json *node, unsigned int depth, struct json_sem *sem,
+extern char *sem_member_value_decoded_str(struct json const *node, unsigned int depth, struct json_sem *sem,
 				          char const *name, struct json_sem_val_err **val_err);
-extern bool *sem_member_value_bool(struct json *node, unsigned int depth, struct json_sem *sem,
+extern bool *sem_member_value_bool(struct json const *node, unsigned int depth, struct json_sem *sem,
 			           char const *name, struct json_sem_val_err **val_err);
-extern struct str_or_null sem_member_value_str_or_null(struct json *node, unsigned int depth, struct json_sem *sem,
-						      char const *name, struct json_sem_val_err **val_err);
-extern int *sem_member_value_int(struct json *node, unsigned int depth, struct json_sem *sem,
+extern struct str_or_null sem_member_value_str_or_null(struct json const *node, unsigned int depth,
+						       struct json_sem *sem,
+						       char const *name, struct json_sem_val_err **val_err);
+extern int *sem_member_value_int(struct json const *node, unsigned int depth, struct json_sem *sem,
 			         char const *name, struct json_sem_val_err **val_err);
-extern time_t *sem_member_value_time_t(struct json *node, unsigned int depth, struct json_sem *sem,
+extern time_t *sem_member_value_time_t(struct json const *node, unsigned int depth, struct json_sem *sem,
 				       char const *name, struct json_sem_val_err **val_err);
-extern struct json *sem_node_parent(struct json *node, unsigned int depth, struct json_sem *sem,
+extern struct json *sem_node_parent(struct json const *node, unsigned int depth, struct json_sem *sem,
 				    char const *name, struct json_sem_val_err **val_err);
-extern struct json *sem_object_find_name(struct json *node, unsigned int depth, struct json_sem *sem,
+extern struct json *sem_object_find_name(struct json const *node, unsigned int depth, struct json_sem *sem,
 				         char const *name, struct json_sem_val_err **val_err,
 				         char const *memname);
 

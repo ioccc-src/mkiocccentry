@@ -1414,7 +1414,6 @@ object2manifest(struct json *node, unsigned int depth, struct json_sem *sem,
 	/* case: remarks */
 	} else if (strcmp(name, "remarks") == 0) {
 
-#if 0 /* XXX - unblock once the test function exists - XXX */
 	    /* validate remarks filename */
 	    test = test_remarks(value);
 	    if (test == false) {
@@ -1425,7 +1424,6 @@ object2manifest(struct json *node, unsigned int depth, struct json_sem *sem,
 		dyn_array_free(man.extra);
 		return false;
 	    }
-#endif /* XXX - unblock once the test function exists - XXX */
 
 	    /* count valid occurrence */
 	    ++manp->cnt_remarks;
@@ -1600,7 +1598,7 @@ object2manifest(struct json *node, unsigned int depth, struct json_sem *sem,
  *		  time string is invalid format, or internal error
  */
 bool
-timestr_eq_tstamp(char *timestr, time_t timestamp)
+timestr_eq_tstamp(char const *timestr, time_t timestamp)
 {
     struct tm timeptr;			/* formed_UTC converted into broken-out time */
     char *ptr = NULL;			/* ptr to 1st char in buf not converted */
@@ -1650,7 +1648,7 @@ timestr_eq_tstamp(char *timestr, time_t timestamp)
 		     "invalid: time string: <%s> %ju != timestamp: %ju",
 		     timestr, (uintmax_t)timestr_as_time_t, (uintmax_t)timestamp);
 	} else {
-	    /* case: unsigned time_t */
+	    /* case: signed time_t */
 	    json_dbg(JSON_DBG_HIGH, __func__,
 		     "invalid: time string: <%s> %jd != timestamp: %jd",
 		     timestr, (intmax_t)timestr_as_time_t, (intmax_t)timestamp);
@@ -1659,6 +1657,122 @@ timestr_eq_tstamp(char *timestr, time_t timestamp)
     }
     json_dbg(JSON_DBG_MED, __func__, "time string same time as timestamp");
     return true;
+}
+
+
+/*
+ * form_tar_filename - return an malloced tarball filename
+ *
+ * given:
+ *	IOCCC_contest_id	IOCCC contest UUID or test
+ *	entry_num		IOCCC entry number
+ *	test_mode		true ==> IOCCC entry is just a test
+ *	formed_timestamp	timestamp of when entry was formed
+ *
+ * returns:
+ *	malloced tarball filename or NULL ==> error
+ */
+char *
+form_tar_filename(char const *IOCCC_contest_id, int entry_num, bool test_mode,
+		  time_t formed_timestamp)
+{
+    size_t tarball_len;			/* length of the compressed tarball path */
+    char *tarball_filename = NULL;	/* malloced tarball filename to return */
+    bool test = false;			/* test result */
+    int ret;				/* libc function return */
+
+    /*
+     * firewall
+     */
+    if (IOCCC_contest_id == NULL) {
+	warn(__func__, "IOCCC_contest_id is NULL");
+	return NULL;
+    } else if (*IOCCC_contest_id == '\0') { /* strlen(IOCCC_contest_id) == 0 */
+	json_dbg(JSON_DBG_MED, __func__,
+		 "invalid: IOCCC_contest_id is empty");
+	return NULL;
+    }
+    test = test_entry_num(entry_num);
+    if (test == false) {
+	/* test_entry_num() already issued json_dbg() messages */
+	return NULL;
+    }
+    test = test_formed_timestamp(formed_timestamp);
+    if (test == false) {
+	/* test_formed_timestamp() already issued json_dbg() messages */
+	return NULL;
+    }
+
+    /*
+     * case: test mode specific test
+     */
+    if (test_mode == true) {
+
+	/*
+	 * test mode IOCCC_contest_id must be test
+	 */
+	if (strcmp(IOCCC_contest_id, "test") != 0) {
+	    json_dbg(JSON_DBG_MED, __func__,
+		     "invalid: test mode and IOCCC_contest_id != test");
+	    json_dbg(JSON_DBG_HIGH, __func__,
+		     "invalid: test mode and IOCCC_contest_id: <%s> != test", IOCCC_contest_id);
+	    return NULL;
+	}
+
+    /*
+     * case: non-test (official entry) mode specific test
+     */
+    } else {
+
+	/*
+	 * non-test mode IOCCC_contest_id check
+	 */
+	test = test_IOCCC_contest_id(IOCCC_contest_id);
+	if (test == false) {
+	    /* IOCCC_contest_id() already issued json_dbg() messages */
+	    return NULL;
+	}
+
+    }
+
+    /*
+     * allocate space for tarball filename
+     */
+    tarball_len = LITLEN("entry.") + strlen(IOCCC_contest_id) + 1 + MAX_ENTRY_CHARS + LITLEN(".123456789012.txz") + 1;
+    errno = 0;			/* pre-clear errno for errp() */
+    tarball_filename = (char *)malloc(tarball_len + 1);
+    if (tarball_filename == NULL) {
+	warnp(__func__, "malloc #1 of %ju bytes failed", (uintmax_t)(tarball_len + 1));
+	return NULL;
+    }
+    tarball_filename[tarball_len] = '\0';	/* paranoia */
+
+    /*
+     * load tarball filename
+     */
+    errno = 0;			/* pre-clear errno for errp() */
+    if ((time_t)-1 > 0) {
+	/* case: unsigned time_t */
+	ret = snprintf(tarball_filename, tarball_len + 1, "entry.%s-%d.%ju.txz",
+		       IOCCC_contest_id, entry_num, formed_timestamp);
+    } else {
+	/* case: signed time_t */
+	ret = snprintf(tarball_filename, tarball_len + 1, "entry.%s-%d.%jd.txz",
+		       IOCCC_contest_id, entry_num, formed_timestamp);
+    }
+    if (ret <= 0) {
+	warnp(__func__, "snprintf to form compressed tarball path failed");
+	if (tarball_filename != NULL) {
+	    free(tarball_filename);
+	    tarball_filename = NULL;
+	}
+	return NULL;
+    }
+
+    /*
+     * return allocated tarball filename
+     */
+    return tarball_filename;
 }
 
 
@@ -1678,7 +1792,7 @@ timestr_eq_tstamp(char *timestr, time_t timestamp)
  *	false ==> string is NOT valid, or NULL pointer, or some internal error
  */
 bool
-test_IOCCC_author_version(char *str)
+test_IOCCC_author_version(char const *str)
 {
     /*
      * firewall
@@ -1726,7 +1840,7 @@ test_IOCCC_author_version(char *str)
  *	false ==> string is NOT valid, or NULL pointer, or some internal error
  */
 bool
-test_IOCCC_contest_id(char *str)
+test_IOCCC_contest_id(char const *str)
 {
     size_t len;				/* string length */
     int ret;				/* libc function return */
@@ -1803,7 +1917,7 @@ test_IOCCC_contest_id(char *str)
  *	false ==> string is NOT valid, or NULL pointer, or some internal error
  */
 bool
-test_IOCCC_info_version(char *str)
+test_IOCCC_info_version(char const *str)
 {
     /*
      * firewall
@@ -1841,7 +1955,7 @@ test_IOCCC_info_version(char *str)
  *	false ==> string is NOT valid, or NULL pointer, or some internal error
  */
 bool
-test_Makefile(char *str)
+test_Makefile(char const *str)
 {
     /*
      * firewall
@@ -1901,7 +2015,7 @@ test_Makefile_override(bool boolean)
  *	false ==> string is NOT valid, or NULL pointer, or some internal error
  */
 bool
-test_abstract(char *str)
+test_abstract(char const *str)
 {
     size_t length = 0;		/* length of string */
 
@@ -1947,7 +2061,7 @@ test_abstract(char *str)
  *	false ==> string is NOT valid, or NULL pointer, or some internal error
  */
 bool
-test_affiliation(char *str)
+test_affiliation(char const *str)
 {
     size_t length = 0;
 
@@ -1994,7 +2108,7 @@ test_affiliation(char *str)
  *	false ==> string is NOT valid, or NULL pointer, or some internal error
  */
 bool
-test_author_JSON(char *str)
+test_author_JSON(char const *str)
 {
     /*
      * firewall
@@ -2064,7 +2178,7 @@ test_author_count(int author_count)
  *	false ==> string is NOT valid, or NULL pointer, or some internal error
  */
 bool
-test_author_handle(char *str)
+test_author_handle(char const *str)
 {
     size_t length = 0;		/* length of string */
     bool test = false;		/* character test result */
@@ -2161,7 +2275,7 @@ test_author_number(int author_number)
  *	false ==> authors array contains non-unique authors, or NULL pointer, or some internal error
  */
 bool
-test_authors(int author_count, struct author *authorp)
+test_authors(int author_count, struct author const *authorp)
 {
     bool test = false;		/* character test result */
     int auth_num = -1;		/* author number */
@@ -2340,7 +2454,7 @@ test_authors(int author_count, struct author *authorp)
  *	false ==> string is NOT valid, or NULL pointer, or some internal error
  */
 bool
-test_c_src(char *str)
+test_c_src(char const *str)
 {
     /*
      * firewall
@@ -2378,7 +2492,7 @@ test_c_src(char *str)
  *	false ==> string is NOT valid, or NULL pointer, or some internal error
  */
 bool
-test_chkentry_version(char *str)
+test_chkentry_version(char const *str)
 {
     /*
      * firewall
@@ -2444,7 +2558,7 @@ test_default_handle(bool boolean)
  *	false ==> string is NOT valid, or NULL pointer, or some internal error
  */
 bool
-test_email(char *str)
+test_email(char const *str)
 {
     size_t length = 0;
     char *p = NULL;		/* location of @ */
@@ -2582,7 +2696,7 @@ test_entry_num(int entry_num)
  *	false ==> string is NOT valid, or NULL pointer, or some internal error
  */
 bool
-test_extra_file(char *str)
+test_extra_file(char const *str)
 {
     /*
      * firewall
@@ -2667,7 +2781,7 @@ test_first_rule_is_all(bool boolean)
  *	false ==> string is NOT valid, or NULL pointer, or some internal error
  */
 bool
-test_fnamchk_version(char *str)
+test_fnamchk_version(char const *str)
 {
     /*
      * firewall
@@ -2706,7 +2820,7 @@ test_fnamchk_version(char *str)
  *	false ==> string is NOT valid, or NULL pointer, or some internal error
  */
 bool
-test_formed_UTC(char *str)
+test_formed_UTC(char const *str)
 {
     struct tm timeptr;			/* formed_UTC converted into broken-out time */
     char *ptr = NULL;			/* ptr to 1st char in buf not converted */
@@ -2797,7 +2911,7 @@ test_formed_timestamp(time_t tstamp)
 		     "invalid: formed_timestamp: %ju < MIN_TIMESTAMP: %ju",
 		     (uintmax_t)tstamp, (uintmax_t)MIN_TIMESTAMP);
 	} else {
-	    /* case: unsigned time_t */
+	    /* case: signed time_t */
 	    json_dbg(JSON_DBG_HIGH, __func__,
 		     "invalid: formed_timestamp: %jd < MIN_TIMESTAMP: %jd",
 		     (intmax_t)tstamp, (intmax_t)MIN_TIMESTAMP);
@@ -2941,7 +3055,7 @@ test_found_try_rule(bool boolean)
  *	false ==> string is NOT valid, or NULL pointer, or some internal error
  */
 bool
-test_info_JSON(char *str)
+test_info_JSON(char const *str)
 {
     /*
      * firewall
@@ -2979,7 +3093,7 @@ test_info_JSON(char *str)
  *	false ==> string is NOT valid, or NULL pointer, or some internal error
  */
 bool
-test_ioccc_contest(char *str)
+test_ioccc_contest(char const *str)
 {
     /*
      * firewall
@@ -3045,7 +3159,7 @@ test_ioccc_year(int ioccc_year)
  *	false ==> string is NOT valid, or NULL pointer, or some internal error
  */
 bool
-test_iocccsize_version(char *str)
+test_iocccsize_version(char const *str)
 {
     /*
      * firewall
@@ -3083,7 +3197,7 @@ test_iocccsize_version(char *str)
  *	false ==> string is NOT valid, or NULL pointer, or some internal error
  */
 bool
-test_location_code(char *str)
+test_location_code(char const *str)
 {
     size_t length = 0;
     char const *location_name = NULL;		/* location name or NULL ==> unlisted code */
@@ -3368,7 +3482,7 @@ test_manifest(struct manifest *manp)
  *	false ==> string is NOT valid, or NULL pointer, or some internal error
  */
 bool
-test_mkiocccentry_version(char *str)
+test_mkiocccentry_version(char const *str)
 {
     /*
      * firewall
@@ -3409,7 +3523,7 @@ test_mkiocccentry_version(char *str)
  *  on throwing feathers on the tar." :-)
  */
 bool
-test_txzchk_version(char *str)
+test_txzchk_version(char const *str)
 {
     /*
      * firewall
@@ -3449,7 +3563,7 @@ test_txzchk_version(char *str)
  *	false ==> string is NOT valid, or NULL pointer, or some internal error
  */
 bool
-test_title(char *str)
+test_title(char const *str)
 {
     size_t length = 0;
 
@@ -3688,6 +3802,7 @@ test_test_mode(bool boolean)
     return true;
 }
 
+
 /*
  * test_github - test if GitHub account is valid
  *
@@ -3702,7 +3817,7 @@ test_test_mode(bool boolean)
  *	false ==> string is NOT valid, or NULL pointer, or some internal error
  */
 bool
-test_github(char *str)
+test_github(char const *str)
 {
     size_t length = 0;
 
@@ -3754,6 +3869,7 @@ test_github(char *str)
     return true;
 }
 
+
 /*
  * test_twitter - test if twitter account is valid
  *
@@ -3768,7 +3884,7 @@ test_github(char *str)
  *	false ==> string is NOT valid, or NULL pointer, or some internal error
  */
 bool
-test_twitter(char *str)
+test_twitter(char const *str)
 {
     size_t length = 0;
     char *p = NULL;
@@ -3819,6 +3935,7 @@ test_twitter(char *str)
     return true;
 }
 
+
 /*
  * test_url - test if URL is valid
  *
@@ -3833,7 +3950,7 @@ test_twitter(char *str)
  *	false ==> string is NOT valid, or NULL pointer, or some internal error
  */
 bool
-test_url(char *str)
+test_url(char const *str)
 {
     size_t length = 0;
 
@@ -3883,6 +4000,7 @@ test_url(char *str)
     return true;
 }
 
+
 /*
  * test_remarks - test that remarks filename is valid
  *
@@ -3894,10 +4012,10 @@ test_url(char *str)
  * returns:
  *	true ==> string is valid
  *	false ==> string is NOT valid, or NULL pointer, or some internal error
-*
+ *
  */
 bool
-test_remarks(char *str)
+test_remarks(char const *str)
 {
     /*
      * firewall
@@ -3909,17 +4027,20 @@ test_remarks(char *str)
 
     if (*str == '\0') { /* strlen(str) == 0 */
 	json_dbg(JSON_DBG_MED, __func__,
-		 "empty remarks filename is invalid");
+		 "invalid: empty remarks filename is invalid");
 	return false;
     } else if (strcmp(str, REMARKS_FILENAME)) {
 	json_dbg(JSON_DBG_MED, __func__,
-		 "remarks filename '%s' is invalid: does not match '%s'", str, REMARKS_FILENAME);
+		 "invalid: remarks filename is not %s", REMARKS_FILENAME);
+	json_dbg(JSON_DBG_HIGH, __func__,
+		 "invalid: remarks filename: <%s> is not %s", str, REMARKS_FILENAME);
 	return false;
     }
 
     json_dbg(JSON_DBG_MED, __func__, "remarks filename is valid");
     return true;
 }
+
 
 /*
  * test_min_timestamp - test if min_timestamp is valid
@@ -3942,12 +4063,26 @@ test_min_timestamp(time_t tstamp)
     if (tstamp != MIN_TIMESTAMP) {
 	json_dbg(JSON_DBG_MED, __func__,
 		 "invalid: min_timestamp != MIN_TIMESTAMP");
+	json_dbg(JSON_DBG_HIGH, __func__,
+		 "invalid: min_timestamp != MIN_TIMESTAMP");
+	if ((time_t)-1 > 0) {
+	    /* case: unsigned time_t */
+	    json_dbg(JSON_DBG_HIGH, __func__,
+		     "invalid: min_timestamp %ju != MIN_TIMESTAMP: %ju",
+		     (uintmax_t)tstamp, (uintmax_t)MIN_TIMESTAMP);
+	} else {
+	    /* case: signed time_t */
+	    json_dbg(JSON_DBG_HIGH, __func__,
+		     "invalid: min_timestamp: %jd != MIN_TIMESTAMP: %jd",
+		     (intmax_t)tstamp, (intmax_t)MIN_TIMESTAMP);
+	}
 	return false;
     }
     json_dbg(JSON_DBG_MED, __func__,
 	     "valid: min_timestamp == MIN_TIMESTAMP");
     return true;
 }
+
 
 /*
  * test_timestamp_epoch - test if timestamp_epoch is valid
@@ -3962,7 +4097,7 @@ test_min_timestamp(time_t tstamp)
  *	false ==> min_timestamp is NOT valid, or some internal error
  */
 bool
-test_timestamp_epoch(char *str)
+test_timestamp_epoch(char const *str)
 {
     /*
      * firewall
@@ -3970,8 +4105,7 @@ test_timestamp_epoch(char *str)
     if (str == NULL) {
 	warn(__func__, "str is NULL");
 	return false;
-    }
-    else if (*str == '\0') { /* strlen(str) == 0 */
+    } else if (*str == '\0') { /* strlen(str) == 0 */
 	json_dbg(JSON_DBG_MED, __func__,
 		 "invalid: timestamp_epoch is empty");
 	return false;
@@ -3981,14 +4115,18 @@ test_timestamp_epoch(char *str)
      */
     if (strcmp(str, TIMESTAMP_EPOCH)) {
 	json_dbg(JSON_DBG_MED, __func__,
-		 "invalid: timestamp_epoch != TIMESTAMP_EPOCH");
+		 "invalid: timestamp_epoch != TIMESTAMP_EPOCH: <%s>",
+		 TIMESTAMP_EPOCH);
+	json_dbg(JSON_DBG_HIGH, __func__,
+		 "invalid: timestamp_epoch: <%s> != TIMESTAMP_EPOCH: <%s>",
+		 str, TIMESTAMP_EPOCH);
 	return false;
     }
     json_dbg(JSON_DBG_MED, __func__,
 	     "valid: timestamp_epoch == TIMESTAMP_EPOCH");
     return true;
-
 }
+
 
 /*
  * test_name - test that name is valid
@@ -4004,10 +4142,10 @@ test_timestamp_epoch(char *str)
  * returns:
  *	true ==> string is valid
  *	false ==> string is NOT valid, or NULL pointer, or some internal error
-*
+ *
  */
 bool
-test_name(char *str)
+test_name(char const *str)
 {
     size_t length;
 
@@ -4022,17 +4160,22 @@ test_name(char *str)
     length = strlen(str);
     if (length <= 0) {
 	json_dbg(JSON_DBG_MED, __func__,
-		 "empty name is invalid");
+		 "invalid: empty name");
 	return false;
     } else if (length > MAX_NAME_LEN) {
 	json_dbg(JSON_DBG_MED, __func__,
-		 "name '%s' is invalid: length %ju is too long (max length: %ju)", str, (uintmax_t)length, (uintmax_t)MAX_NAME_LEN);
+		 "invalid: name length %ju > max length: %ju",
+		 (uintmax_t)length, (uintmax_t)MAX_NAME_LEN);
+	json_dbg(JSON_DBG_HIGH, __func__,
+		 "invalid: name <%s> length %ju > max length: %ju",
+		 str, (uintmax_t)length, (uintmax_t)MAX_NAME_LEN);
 	return false;
     }
 
     json_dbg(JSON_DBG_MED, __func__, "name is valid");
     return true;
 }
+
 
 /*
  * test_no_comment - test if no_comment is valid
@@ -4047,7 +4190,7 @@ test_name(char *str)
  *	false ==> min_timestamp is NOT valid, or some internal error
  */
 bool
-test_no_comment(char *str)
+test_no_comment(char const *str)
 {
     /*
      * firewall
@@ -4067,6 +4210,9 @@ test_no_comment(char *str)
     if (strcmp(str, JSON_PARSING_DIRECTIVE_VALUE)) {
 	json_dbg(JSON_DBG_MED, __func__,
 		 "invalid: no_comment != JSON_PARSING_DIRECTIVE_VALUE");
+	json_dbg(JSON_DBG_HIGH, __func__,
+		 "invalid: no_comment: <%s> != JSON_PARSING_DIRECTIVE_VALUE: <%s>",
+		 str, JSON_PARSING_DIRECTIVE_VALUE);
 	return false;
     }
     json_dbg(JSON_DBG_MED, __func__,
@@ -4074,6 +4220,7 @@ test_no_comment(char *str)
     return true;
 
 }
+
 
 /*
  * test_past_winner - test if past_winner is valid
@@ -4093,5 +4240,127 @@ bool
 test_past_winner(bool boolean)
 {
     json_dbg(JSON_DBG_MED, __func__, "past_winner is %s", booltostr(boolean));
+    return true;
+}
+
+
+/*
+ * test_tarball - test if tarball is valid
+ *
+ * Determine if tarball string is equal to tarball.
+ *
+ * given:
+ *	str			tarball to test
+ *	IOCCC_contest_id	IOCCC contest UUID or test
+ *	entry_num		IOCCC entry number
+ *	test_mode		true ==> IOCCC entry is just a test
+ *	formed_timestamp	timestamp of when entry was formed
+ *
+ * returns:
+ *	true ==> tarball is valid,
+ *	false ==> tarball is NOT valid, or some internal error
+ */
+bool
+test_tarball(char const *str, char const *IOCCC_contest_id, int entry_num, bool test_mode,
+	     time_t formed_timestamp)
+{
+    char *tar_filename = NULL;	/* formed tarball filename */
+    bool test = false;		/* test result */
+
+    /*
+     * firewall
+     */
+    if (str == NULL) {
+	warn(__func__, "str is NULL");
+	return false;
+    } else if (*str == '\0') { /* strlen(str) == 0 */
+	json_dbg(JSON_DBG_MED, __func__,
+		 "invalid: tarball is empty");
+	return false;
+    }
+    if (IOCCC_contest_id == NULL) {
+	warn(__func__, "IOCCC_contest_id is NULL");
+	return false;
+    } else if (*IOCCC_contest_id == '\0') { /* strlen(IOCCC_contest_id) == 0 */
+	json_dbg(JSON_DBG_MED, __func__,
+		 "invalid: IOCCC_contest_id is empty");
+	return false;
+    }
+    test = test_entry_num(entry_num);
+    if (test == false) {
+	/* test_entry_num() already issued json_dbg() messages */
+	return false;
+    }
+    test = test_formed_timestamp(formed_timestamp);
+    if (test == false) {
+	/* test_formed_timestamp() already issued json_dbg() messages */
+	return false;
+    }
+
+    /*
+     * case: test mode specific test
+     */
+    if (test_mode == true) {
+
+	/*
+	 * test mode IOCCC_contest_id must be test
+	 */
+	if (strcmp(IOCCC_contest_id, "test") != 0) {
+	    json_dbg(JSON_DBG_MED, __func__,
+		     "invalid: test mode and IOCCC_contest_id != test");
+	    json_dbg(JSON_DBG_HIGH, __func__,
+		     "invalid: test mode and IOCCC_contest_id: <%s> != test", IOCCC_contest_id);
+	    return false;
+	}
+
+    /*
+     * case: non-test (official entry) mode specific test
+     */
+    } else {
+
+	/*
+	 * non-test mode IOCCC_contest_id check
+	 */
+	test = test_IOCCC_contest_id(IOCCC_contest_id);
+	if (test == false) {
+	    /* IOCCC_contest_id() already issued json_dbg() messages */
+	    return false;
+	}
+
+    }
+
+    /*
+     * form a malloced valid tarball filename
+     */
+    tar_filename = form_tar_filename(IOCCC_contest_id, entry_num, test_mode, formed_timestamp);
+    if (tar_filename == NULL) {
+	json_dbg(JSON_DBG_MED, __func__,
+		 "invalid: form_tar_filename failed and returned NULL");
+	return false;
+    }
+
+    /*
+     * compare str tarball filename with formed tarball filename
+     */
+    if (strcmp(str, tar_filename) != 0) {
+	json_dbg(JSON_DBG_MED, __func__,
+		 "invalid: invalid tar_filename");
+	json_dbg(JSON_DBG_MED, __func__,
+		 "invalid: tarball: <%s> != expected tarball filename: <%s>",
+		 str, tar_filename);
+	if (tar_filename != NULL) {
+	    free(tar_filename);
+	    tar_filename = NULL;
+	}
+	return false;
+    }
+
+    /* tarball filename is valid */
+    if (tar_filename != NULL) {
+	free(tar_filename);
+	tar_filename = NULL;
+    }
+    json_dbg(JSON_DBG_MED, __func__,
+	     "valid: tarball filename");
     return true;
 }

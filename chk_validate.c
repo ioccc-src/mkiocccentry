@@ -57,7 +57,7 @@
  *	false ==> JSON element is NOT valid, or NULL pointer, or some internal error
  */
 bool
-chk_IOCCC_author_version(struct json *node,
+chk_IOCCC_author_version(struct json const *node,
 			 unsigned int depth, struct json_sem *sem, struct json_sem_val_err **val_err)
 {
     char *str = NULL;				/* JTYPE_STRING as decoded JSON string */
@@ -108,7 +108,7 @@ chk_IOCCC_author_version(struct json *node,
  *	false ==> JSON element is NOT valid, or NULL pointer, or some internal error
  */
 bool
-chk_IOCCC_contest_id(struct json *node,
+chk_IOCCC_contest_id(struct json const *node,
 		     unsigned int depth, struct json_sem *sem, struct json_sem_val_err **val_err)
 {
     char *str = NULL;				/* JTYPE_STRING as decoded JSON string */
@@ -159,7 +159,7 @@ chk_IOCCC_contest_id(struct json *node,
  *	false ==> JSON element is NOT valid, or NULL pointer, or some internal error
  */
 bool
-chk_IOCCC_info_version(struct json *node,
+chk_IOCCC_info_version(struct json const *node,
 		       unsigned int depth, struct json_sem *sem, struct json_sem_val_err **val_err)
 {
     char *str = NULL;				/* JTYPE_STRING as decoded JSON string */
@@ -210,7 +210,7 @@ chk_IOCCC_info_version(struct json *node,
  *	false ==> JSON element is NOT valid, or NULL pointer, or some internal error
  */
 bool
-chk_Makefile(struct json *node,
+chk_Makefile(struct json const *node,
 	     unsigned int depth, struct json_sem *sem, struct json_sem_val_err **val_err)
 {
     char *str = NULL;				/* JTYPE_STRING as decoded JSON string */
@@ -261,7 +261,7 @@ chk_Makefile(struct json *node,
  *	false ==> JSON element is NOT valid, or NULL pointer, or some internal error
  */
 bool
-chk_Makefile_override(struct json *node,
+chk_Makefile_override(struct json const *node,
 		      unsigned int depth, struct json_sem *sem, struct json_sem_val_err **val_err)
 {
     bool *boolean = NULL;			/* pointer to JTYPE_BOOL as decoded JSON boolean */
@@ -312,7 +312,7 @@ chk_Makefile_override(struct json *node,
  *	false ==> JSON element is NOT valid, or NULL pointer, or some internal error
  */
 bool
-chk_abstract(struct json *node,
+chk_abstract(struct json const *node,
 	     unsigned int depth, struct json_sem *sem, struct json_sem_val_err **val_err)
 {
     char *str = NULL;				/* JTYPE_STRING as decoded JSON string */
@@ -363,7 +363,7 @@ chk_abstract(struct json *node,
  *	false ==> JSON element is NOT valid, or NULL pointer, or some internal error
  */
 bool
-chk_affiliation(struct json *node,
+chk_affiliation(struct json const *node,
 	        unsigned int depth, struct json_sem *sem, struct json_sem_val_err **val_err)
 {
     struct str_or_null val;			/* report JSON JTYPE_MEMBER value */
@@ -429,7 +429,7 @@ chk_affiliation(struct json *node,
  *	false ==> JSON element is NOT valid, or NULL pointer, or some internal error
  */
 bool
-chk_author_JSON(struct json *node,
+chk_author_JSON(struct json const *node,
 	        unsigned int depth, struct json_sem *sem, struct json_sem_val_err **val_err)
 {
     char *str = NULL;				/* JTYPE_STRING as decoded JSON string */
@@ -480,7 +480,7 @@ chk_author_JSON(struct json *node,
  *	false ==> JSON element is NOT valid, or NULL pointer, or some internal error
  */
 bool
-chk_author_count(struct json *node,
+chk_author_count(struct json const *node,
 	     unsigned int depth, struct json_sem *sem, struct json_sem_val_err **val_err)
 {
     int *value = NULL;				/* JSON_NUMBER as decoded int */
@@ -531,7 +531,7 @@ chk_author_count(struct json *node,
  *	false ==> JSON element is NOT valid, or NULL pointer, or some internal error
  */
 bool
-chk_author_handle(struct json *node,
+chk_author_handle(struct json const *node,
 	          unsigned int depth, struct json_sem *sem, struct json_sem_val_err **val_err)
 {
     char *str = NULL;				/* JTYPE_STRING as decoded JSON string */
@@ -582,7 +582,7 @@ chk_author_handle(struct json *node,
  *	false ==> JSON element is NOT valid, or NULL pointer, or some internal error
  */
 bool
-chk_author_number(struct json *node,
+chk_author_number(struct json const *node,
 		  unsigned int depth, struct json_sem *sem, struct json_sem_val_err **val_err)
 {
     int *value = NULL;				/* JSON_NUMBER as decoded int */
@@ -633,7 +633,7 @@ chk_author_number(struct json *node,
  *	false ==> JSON element is NOT valid, or NULL pointer, or some internal error
  */
 bool
-chk_author(struct json *node,
+chk_author(struct json const *node,
 	   unsigned int depth, struct json_sem *sem, struct json_sem_val_err **val_err)
 {
     struct json *value = NULL;          /* value of JTYPE_MEMBER */
@@ -809,7 +809,7 @@ chk_author(struct json *node,
  *	false ==> JSON element is NOT valid, or NULL pointer, or some internal error
  */
 bool
-chk_c_src(struct json *node,
+chk_c_src(struct json const *node,
 	  unsigned int depth, struct json_sem *sem, struct json_sem_val_err **val_err)
 {
     char *str = NULL;				/* JTYPE_STRING as decoded JSON string */
@@ -860,7 +860,7 @@ chk_c_src(struct json *node,
  *	false ==> JSON element is NOT valid, or NULL pointer, or some internal error
  */
 bool
-chk_chkentry_version(struct json *node,
+chk_chkentry_version(struct json const *node,
 		     unsigned int depth, struct json_sem *sem, struct json_sem_val_err **val_err)
 {
     char *str = NULL;				/* JTYPE_STRING as decoded JSON string */
@@ -911,7 +911,7 @@ chk_chkentry_version(struct json *node,
  *	false ==> JSON element is NOT valid, or NULL pointer, or some internal error
  */
 bool
-chk_default_handle(struct json *node,
+chk_default_handle(struct json const *node,
 		   unsigned int depth, struct json_sem *sem, struct json_sem_val_err **val_err)
 {
     bool *boolean = NULL;			/* pointer to JTYPE_BOOL as decoded JSON boolean */
@@ -962,7 +962,7 @@ chk_default_handle(struct json *node,
  *	false ==> JSON element is NOT valid, or NULL pointer, or some internal error
  */
 bool
-chk_email(struct json *node,
+chk_email(struct json const *node,
 	  unsigned int depth, struct json_sem *sem, struct json_sem_val_err **val_err)
 {
     char *str = NULL;				/* JTYPE_STRING as decoded JSON string */
@@ -1013,7 +1013,7 @@ chk_email(struct json *node,
  *	false ==> JSON element is NOT valid, or NULL pointer, or some internal error
  */
 bool
-chk_empty_override(struct json *node,
+chk_empty_override(struct json const *node,
 	           unsigned int depth, struct json_sem *sem, struct json_sem_val_err **val_err)
 {
     bool *boolean = NULL;			/* pointer to JTYPE_BOOL as decoded JSON boolean */
@@ -1064,7 +1064,7 @@ chk_empty_override(struct json *node,
  *	false ==> JSON element is NOT valid, or NULL pointer, or some internal error
  */
 bool
-chk_entry_num(struct json *node,
+chk_entry_num(struct json const *node,
 	      unsigned int depth, struct json_sem *sem, struct json_sem_val_err **val_err)
 {
     int *value = NULL;				/* JSON_NUMBER as decoded int */
@@ -1115,7 +1115,7 @@ chk_entry_num(struct json *node,
  *	false ==> JSON element is NOT valid, or NULL pointer, or some internal error
  */
 bool
-chk_extra_file(struct json *node,
+chk_extra_file(struct json const *node,
 	       unsigned int depth, struct json_sem *sem, struct json_sem_val_err **val_err)
 {
     char *str = NULL;				/* JTYPE_STRING as decoded JSON string */
@@ -1166,7 +1166,7 @@ chk_extra_file(struct json *node,
  *	false ==> JSON element is NOT valid, or NULL pointer, or some internal error
  */
 bool
-chk_first_rule_is_all(struct json *node,
+chk_first_rule_is_all(struct json const *node,
 		      unsigned int depth, struct json_sem *sem, struct json_sem_val_err **val_err)
 {
     bool *boolean = NULL;			/* pointer to JTYPE_BOOL as decoded JSON boolean */
@@ -1217,7 +1217,7 @@ chk_first_rule_is_all(struct json *node,
  *	false ==> JSON element is NOT valid, or NULL pointer, or some internal error
  */
 bool
-chk_fnamchk_version(struct json *node,
+chk_fnamchk_version(struct json const *node,
 	       unsigned int depth, struct json_sem *sem, struct json_sem_val_err **val_err)
 {
     char *str = NULL;				/* JTYPE_STRING as decoded JSON string */
@@ -1268,7 +1268,7 @@ chk_fnamchk_version(struct json *node,
  *	false ==> JSON element is NOT valid, or NULL pointer, or some internal error
  */
 bool
-chk_formed_UTC(struct json *node,
+chk_formed_UTC(struct json const *node,
 	       unsigned int depth, struct json_sem *sem, struct json_sem_val_err **val_err)
 {
     struct json *parent = NULL;		/* JSON parse tree node parent */
@@ -1370,7 +1370,7 @@ chk_formed_UTC(struct json *node,
  *	false ==> JSON element is NOT valid, or NULL pointer, or some internal error
  */
 bool
-chk_formed_timestamp(struct json *node,
+chk_formed_timestamp(struct json const *node,
 	      unsigned int depth, struct json_sem *sem, struct json_sem_val_err **val_err)
 {
     time_t *value = NULL;			/* JSON_NUMBER as decoded time_t */
@@ -1421,7 +1421,7 @@ chk_formed_timestamp(struct json *node,
  *	false ==> JSON element is NOT valid, or NULL pointer, or some internal error
  */
 bool
-chk_formed_timestamp_usec(struct json *node,
+chk_formed_timestamp_usec(struct json const *node,
 	      unsigned int depth, struct json_sem *sem, struct json_sem_val_err **val_err)
 {
     int *value = NULL;			/* JSON_NUMBER as decoded int */
@@ -1472,7 +1472,7 @@ chk_formed_timestamp_usec(struct json *node,
  *	false ==> JSON element is NOT valid, or NULL pointer, or some internal error
  */
 bool
-chk_found_all_rule(struct json *node,
+chk_found_all_rule(struct json const *node,
 		   unsigned int depth, struct json_sem *sem, struct json_sem_val_err **val_err)
 {
     bool *boolean = NULL;			/* pointer to JTYPE_BOOL as decoded JSON boolean */
@@ -1523,7 +1523,7 @@ chk_found_all_rule(struct json *node,
  *	false ==> JSON element is NOT valid, or NULL pointer, or some internal error
  */
 bool
-chk_found_clean_rule(struct json *node,
+chk_found_clean_rule(struct json const *node,
 		     unsigned int depth, struct json_sem *sem, struct json_sem_val_err **val_err)
 {
     bool *boolean = NULL;			/* pointer to JTYPE_BOOL as decoded JSON boolean */
@@ -1574,7 +1574,7 @@ chk_found_clean_rule(struct json *node,
  *	false ==> JSON element is NOT valid, or NULL pointer, or some internal error
  */
 bool
-chk_found_clobber_rule(struct json *node,
+chk_found_clobber_rule(struct json const *node,
 		       unsigned int depth, struct json_sem *sem, struct json_sem_val_err **val_err)
 {
     bool *boolean = NULL;			/* pointer to JTYPE_BOOL as decoded JSON boolean */
@@ -1625,7 +1625,7 @@ chk_found_clobber_rule(struct json *node,
  *	false ==> JSON element is NOT valid, or NULL pointer, or some internal error
  */
 bool
-chk_found_try_rule(struct json *node,
+chk_found_try_rule(struct json const *node,
 		   unsigned int depth, struct json_sem *sem, struct json_sem_val_err **val_err)
 {
     bool *boolean = NULL;			/* pointer to JTYPE_BOOL as decoded JSON boolean */
@@ -1676,7 +1676,7 @@ chk_found_try_rule(struct json *node,
  *	false ==> JSON element is NOT valid, or NULL pointer, or some internal error
  */
 bool
-chk_github(struct json *node,
+chk_github(struct json const *node,
 	   unsigned int depth, struct json_sem *sem, struct json_sem_val_err **val_err)
 {
     char *str = NULL;				/* JTYPE_STRING as decoded JSON string */
@@ -1727,7 +1727,7 @@ chk_github(struct json *node,
  *	false ==> JSON element is NOT valid, or NULL pointer, or some internal error
  */
 bool
-chk_highbit_warning(struct json *node,
+chk_highbit_warning(struct json const *node,
 		    unsigned int depth, struct json_sem *sem, struct json_sem_val_err **val_err)
 {
     bool *boolean = NULL;			/* pointer to JTYPE_BOOL as decoded JSON boolean */
@@ -1777,7 +1777,7 @@ chk_highbit_warning(struct json *node,
  *	false ==> JSON element is NOT valid, or NULL pointer, or some internal error
  */
 bool
-chk_info_JSON(struct json *node,
+chk_info_JSON(struct json const *node,
 	      unsigned int depth, struct json_sem *sem, struct json_sem_val_err **val_err)
 {
     char *str = NULL;				/* JTYPE_STRING as decoded JSON string */
@@ -1828,7 +1828,7 @@ chk_info_JSON(struct json *node,
  *	false ==> JSON element is NOT valid, or NULL pointer, or some internal error
  */
 bool
-chk_ioccc_year(struct json *node,
+chk_ioccc_year(struct json const *node,
 	       unsigned int depth, struct json_sem *sem, struct json_sem_val_err **val_err)
 {
     int *value = NULL;			/* JSON_NUMBER as decoded int */
@@ -1879,7 +1879,7 @@ chk_ioccc_year(struct json *node,
  *	false ==> JSON element is NOT valid, or NULL pointer, or some internal error
  */
 bool
-chk_iocccsize_version(struct json *node,
+chk_iocccsize_version(struct json const *node,
 		      unsigned int depth, struct json_sem *sem, struct json_sem_val_err **val_err)
 {
     char *str = NULL;				/* JTYPE_STRING as decoded JSON string */
@@ -1930,7 +1930,7 @@ chk_iocccsize_version(struct json *node,
  *	false ==> JSON element is NOT valid, or NULL pointer, or some internal error
  */
 bool
-chk_location_code(struct json *node,
+chk_location_code(struct json const *node,
 		  unsigned int depth, struct json_sem *sem, struct json_sem_val_err **val_err)
 {
     char *str = NULL;				/* JTYPE_STRING as decoded JSON string */
@@ -1981,7 +1981,7 @@ chk_location_code(struct json *node,
  *	false ==> JSON element is NOT valid, or NULL pointer, or some internal error
  */
 bool
-chk_location_name(struct json *node,
+chk_location_name(struct json const *node,
 		  unsigned int depth, struct json_sem *sem, struct json_sem_val_err **val_err)
 {
     char *str = NULL;				/* JTYPE_STRING as decoded JSON string */
@@ -2076,7 +2076,7 @@ chk_location_name(struct json *node,
  *	false ==> JSON element is NOT valid, or NULL pointer, or some internal error
  */
 bool
-chk_manifest(struct json *node,
+chk_manifest(struct json const *node,
 	     unsigned int depth, struct json_sem *sem, struct json_sem_val_err **val_err)
 {
     struct json *value = NULL;          /* value of JTYPE_MEMBER */
@@ -2185,7 +2185,7 @@ chk_manifest(struct json *node,
  *	false ==> JSON element is NOT valid, or NULL pointer, or some internal error
  */
 bool
-chk_rule_2a_override(struct json *node,
+chk_rule_2a_override(struct json const *node,
 		     unsigned int depth, struct json_sem *sem, struct json_sem_val_err **val_err)
 {
     bool *boolean = NULL;			/* pointer to JTYPE_BOOL as decoded JSON boolean */
@@ -2236,7 +2236,7 @@ chk_rule_2a_override(struct json *node,
  *	false ==> JSON element is NOT valid, or NULL pointer, or some internal error
  */
 bool
-chk_rule_2a_mismatch(struct json *node,
+chk_rule_2a_mismatch(struct json const *node,
 		     unsigned int depth, struct json_sem *sem, struct json_sem_val_err **val_err)
 {
     bool *boolean = NULL;			/* pointer to JTYPE_BOOL as decoded JSON boolean */
@@ -2287,7 +2287,7 @@ chk_rule_2a_mismatch(struct json *node,
  *	false ==> JSON element is NOT valid, or NULL pointer, or some internal error
  */
 bool
-chk_rule_2b_override(struct json *node,
+chk_rule_2b_override(struct json const *node,
 		      unsigned int depth, struct json_sem *sem, struct json_sem_val_err **val_err)
 {
     bool *boolean = NULL;			/* pointer to JTYPE_BOOL as decoded JSON boolean */
@@ -2338,7 +2338,7 @@ chk_rule_2b_override(struct json *node,
  *	false ==> JSON element is NOT valid, or NULL pointer, or some internal error
  */
 bool
-chk_nul_warning(struct json *node,
+chk_nul_warning(struct json const *node,
 		unsigned int depth, struct json_sem *sem, struct json_sem_val_err **val_err)
 {
     bool *boolean = NULL;			/* pointer to JTYPE_BOOL as decoded JSON boolean */
@@ -2389,7 +2389,7 @@ chk_nul_warning(struct json *node,
  *	false ==> JSON element is NOT valid, or NULL pointer, or some internal error
  */
 bool
-chk_trigraph_warning(struct json *node,
+chk_trigraph_warning(struct json const *node,
 		     unsigned int depth, struct json_sem *sem, struct json_sem_val_err **val_err)
 {
     bool *boolean = NULL;			/* pointer to JTYPE_BOOL as decoded JSON boolean */
@@ -2440,7 +2440,7 @@ chk_trigraph_warning(struct json *node,
  *	false ==> JSON element is NOT valid, or NULL pointer, or some internal error
  */
 bool
-chk_wordbuf_warning(struct json *node,
+chk_wordbuf_warning(struct json const *node,
 		    unsigned int depth, struct json_sem *sem, struct json_sem_val_err **val_err)
 {
     bool *boolean = NULL;			/* pointer to JTYPE_BOOL as decoded JSON boolean */
@@ -2491,7 +2491,7 @@ chk_wordbuf_warning(struct json *node,
  *	false ==> JSON element is NOT valid, or NULL pointer, or some internal error
  */
 bool
-chk_ungetc_warning(struct json *node,
+chk_ungetc_warning(struct json const *node,
 		   unsigned int depth, struct json_sem *sem, struct json_sem_val_err **val_err)
 {
     bool *boolean = NULL;			/* pointer to JTYPE_BOOL as decoded JSON boolean */
@@ -2542,7 +2542,7 @@ chk_ungetc_warning(struct json *node,
  *	false ==> JSON element is NOT valid, or NULL pointer, or some internal error
  */
 bool
-chk_test_mode(struct json *node,
+chk_test_mode(struct json const *node,
 	      unsigned int depth, struct json_sem *sem, struct json_sem_val_err **val_err)
 {
     bool *boolean = NULL;			/* pointer to JTYPE_BOOL as decoded JSON boolean */
