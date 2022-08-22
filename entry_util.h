@@ -205,6 +205,20 @@ struct info
     char *utctime;		/* UTC converted string for tstamp (see strftime(3)) */
 };
 
+/*
+ * IOCCC manifest - information on the file IOCCC manifest for an entry
+ */
+struct manifest
+{
+    intmax_t cnt_info_JSON;	/* count of info_JSON JSON member found (will be ".info.json") */
+    intmax_t cnt_author_JSON;	/* count of author_JSON JSON member found (will be ".author.json") */
+    intmax_t cnt_c_src;		/* count of c_src JSON member found (will be "prog.c") */
+    intmax_t cnt_Makefile;	/* count of Makefile JSON member found (will be "Makefile") */
+    intmax_t cnt_remarks;	/* count of remarks JSON member found (will be "remarks") */
+    intmax_t cnt_extra_file;	/* count of extra JSON members found */
+    struct dyn_array *extra;	/* dynamic array of extra JSON member filenames (char *) */
+};
+
 
 /*
  * external function declarations
@@ -212,9 +226,13 @@ struct info
 extern void free_auth(struct auth *authp);
 extern void free_info(struct info *infop);
 extern void free_author_array(struct author *authorp, int author_count);
+extern void free_manifest(struct manifest *manp);
 extern bool object2author(struct json *node, unsigned int depth, struct json_sem *sem,
 			  char const *name, struct json_sem_val_err **val_err,
 			  struct author *auth, int auth_num);
+extern bool object2manifest(struct json *node, unsigned int depth, struct json_sem *sem,
+			    char const *name, struct json_sem_val_err **val_err,
+			    struct manifest *manp);
 extern bool timestr_eq_tstamp(char *timestr, time_t timestamp);
 /* XXX - begin sorted order matching chk_validate.c here - XXX */
 extern bool test_IOCCC_author_version(char *str);
@@ -252,6 +270,7 @@ extern bool test_ioccc_year(int ioccc_year);
 extern bool test_iocccsize_version(char *str);
 extern bool test_location_code(char *str);
 extern bool test_location_name(char const *str);
+extern bool test_manifest(struct manifest *manp);
 /* XXX - end sorted order matching chk_validate.c here - XXX */
 extern bool test_rule_2a_override(bool boolean);
 extern bool test_rule_2a_mismatch(bool boolean);
