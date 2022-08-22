@@ -1895,7 +1895,7 @@ test_Makefile_override(bool boolean)
 /*
  * test_abstract - test if abstract is valid
  *
- * Determine if abstract length is <= MAX_ABSTRACT_LEN.
+ * Determine if abstract length is > 0 && <= MAX_ABSTRACT_LEN.
  *
  * given:
  *	str	string to test
@@ -2610,25 +2610,25 @@ test_extra_file(char *str)
     }
 
     /* verify that extra_file does not match a mandatory filename */
-    if (strcmp(str, ".info.json") == 0) {
+    if (strcmp(str, INFO_JSON_FILENAME) == 0) {
 	json_dbg(JSON_DBG_MED, __func__,
-		 "invalid: extra_file matches a mandatory file .info.json");
+		 "invalid: extra_file matches a mandatory file %s", INFO_JSON_FILENAME);
 	return false;
-    } else if (strcmp(str, ".author.json") == 0) {
+    } else if (strcmp(str, AUTHOR_JSON_FILENAME) == 0) {
 	json_dbg(JSON_DBG_MED, __func__,
-		 "invalid: extra_file matches a mandatory file .author.json");
+		 "invalid: extra_file matches a mandatory file %s", AUTHOR_JSON_FILENAME);
 	return false;
-    } else if (strcmp(str, "prog.c") == 0) {
+    } else if (strcmp(str, PROG_C_FILENAME) == 0) {
 	json_dbg(JSON_DBG_MED, __func__,
-		 "invalid: extra_file matches a mandatory file prog.c");
+		 "invalid: extra_file matches a mandatory file %s", PROG_C_FILENAME);
 	return false;
-    } else if (strcmp(str, "Makefile") == 0) {
+    } else if (strcmp(str, MAKEFILE_FILENAME) == 0) {
 	json_dbg(JSON_DBG_MED, __func__,
-		 "invalid: extra_file matches a mandatory file Makefile");
+		 "invalid: extra_file matches a mandatory file %s", MAKEFILE_FILENAME);
 	return false;
-    } else if (strcmp(str, "remarks.md") == 0) {
+    } else if (strcmp(str, REMARKS_FILENAME) == 0) {
 	json_dbg(JSON_DBG_MED, __func__,
-		 "invalid: extra_file matches a mandatory file remarks.md");
+		 "invalid: extra_file matches a mandatory file %s", REMARKS_FILENAME);
 	return false;
     }
     json_dbg(JSON_DBG_MED, __func__, "extra_file is valid");
@@ -3891,4 +3891,111 @@ test_url(char *str)
 
     json_dbg(JSON_DBG_MED, __func__, "url is valid");
     return true;
+}
+
+/*
+ * test_remarks - test that remarks filename is valid
+ *
+ * Test that length is > 0 and that the string is equal to REMARKS_FILENAME.
+ *
+ * given:
+ *	str	string to test
+ *
+ * returns:
+ *	true ==> string is valid
+ *	false ==> string is NOT valid, or NULL pointer, or some internal error
+*
+ */
+bool
+test_remarks(char *str)
+{
+    /*
+     * firewall
+     */
+    if (str == NULL) {
+	warn(__func__, "str is NULL");
+	return false;
+    }
+
+    if (*str == '\0') { /* strlen(str) == 0 */
+	json_dbg(JSON_DBG_MED, __func__,
+		 "empty remarks filename is invalid");
+	return false;
+    } else if (strcmp(str, REMARKS_FILENAME)) {
+	json_dbg(JSON_DBG_MED, __func__,
+		 "remarks filename '%s' is invalid: does not match '%s'", str, REMARKS_FILENAME);
+	return false;
+    }
+
+    json_dbg(JSON_DBG_MED, __func__, "remarks filename is valid");
+    return true;
+}
+
+/*
+ * test_min_timestamp - test if min_timestamp is valid
+ *
+ * Determine if min_timestamp == MIN_TIMESTAMP.
+ *
+ * given:
+ *	tstamp		timestamp as time_t to test
+ *
+ * returns:
+ *	true ==> min_timestamp is valid,
+ *	false ==> min_timestamp is NOT valid, or some internal error
+ */
+bool
+test_min_timestamp(time_t tstamp)
+{
+    /*
+     * compare with the minimum timestamp
+     */
+    if (tstamp != MIN_TIMESTAMP) {
+	json_dbg(JSON_DBG_MED, __func__,
+		 "invalid: min_timestamp != MIN_TIMESTAMP");
+	return false;
+    }
+    json_dbg(JSON_DBG_MED, __func__,
+	     "valid: min_timestamp == MIN_TIMESTAMP");
+    return true;
+}
+
+/*
+ * test_timestamp_epoch - test if timestamp_epoch is valid
+ *
+ * Determine if timestamp_epoch string is equal to TIMESTAMP_EPOCH.
+ *
+ * given:
+ *	str		timestamp_epoch to test
+ *
+ * returns:
+ *	true ==> min_timestamp is valid,
+ *	false ==> min_timestamp is NOT valid, or some internal error
+ */
+bool
+test_timestamp_epoch(char *str)
+{
+    /*
+     * firewall
+     */
+    if (str == NULL) {
+	warn(__func__, "str is NULL");
+	return false;
+    }
+    else if (*str == '\0') { /* strlen(str) == 0 */
+	json_dbg(JSON_DBG_MED, __func__,
+		 "invalid: timestamp_epoch is empty");
+	return false;
+    }
+    /*
+     * compare with the timestamp epoch
+     */
+    if (strcmp(str, TIMESTAMP_EPOCH)) {
+	json_dbg(JSON_DBG_MED, __func__,
+		 "invalid: timestamp_epoch != TIMESTAMP_EPOCH");
+	return false;
+    }
+    json_dbg(JSON_DBG_MED, __func__,
+	     "valid: timestamp_epoch == TIMESTAMP_EPOCH");
+    return true;
+
 }

@@ -65,7 +65,9 @@
  */
 #define INFO_JSON_FILENAME ".info.json"
 #define AUTHOR_JSON_FILENAME ".author.json"
-
+#define PROG_C_FILENAME "prog.c"
+#define REMARKS_FILENAME "remarks.md"
+#define MAKEFILE_FILENAME "Makefile"
 
 /*
  * IOCCC author information
@@ -287,5 +289,7 @@ extern bool test_txzchk_version(char *str);
 extern bool test_title(char *str);
 extern bool test_twitter(char *str);
 extern bool test_url(char *str);
-
+extern bool test_remarks(char *str);
+extern bool test_min_timestamp(time_t tstamp);
+extern bool test_timestamp_epoch(char *str);
 #endif /* INCLUDE_ENTRY_UTIL_H */
