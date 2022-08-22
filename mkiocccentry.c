@@ -2719,8 +2719,7 @@ check_Makefile(struct info *infop, char const *entry_dir, char const *cp, char c
  * check_remarks_md - check remarks_md arg and if OK, copy into entry_dir/Makefile
  *
  * Check if the remarks_md argument is a readable file, and
- * if it is not empty,
- * use cp to copy into entry_dir/remarks.md.
+ * if it is not empty, use cp to copy into entry_dir/remarks.md.
  *
  * given:
  *      infop           - pointer to info structure
@@ -2775,7 +2774,7 @@ check_remarks_md(struct info *infop, char const *entry_dir, char const *cp, char
     }
     filesize = file_size(remarks_md);
     if (filesize < 0) {
-	err(102, __func__, "file_size error: %jd on remarks_md %s", (intmax_t)filesize, remarks_md);
+	err(102, __func__, "file_size error: %jd on remarks.md %s", (intmax_t)filesize, remarks_md);
 	not_reached();
     } else if (filesize == 0) {
 	err(103, __func__, "remarks.md cannot be empty: %s", remarks_md);
