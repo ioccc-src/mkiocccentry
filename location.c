@@ -474,8 +474,12 @@ check_location_table(void)
 /*
  * lookup_location_name - convert a ISO 3166-1 Alpha-2 into a location name
  *
+ * Even though the ISO 3166-1 Alpha-2 code is only UPPER CASE, the
+ * code is compared ion a case independent way.  That is, a non-canonical
+ * lower case code will match the canonical UPPER CASE ISO 3166-1 Alpha-2 code.
+ *
  * given:
- *      upper_code      - ISO 3166-1 Alpha-2 in UPPER CASE
+ *      code      ISO 3166-1 Alpha-2 code
  *
  * return:
  *      location name or NULL ==> unlisted code
@@ -483,23 +487,42 @@ check_location_table(void)
  * This function does not return on error.
  */
 char const *
-lookup_location_name(char const *upper_code)
+lookup_location_name(char const *code)
 {
     struct location *p;		/* entry in the location table */
+    size_t length = 0;		/* length of code */
 
     /*
      * firewall
      */
-    if (upper_code == NULL) {
-	err(11, __func__, "upper_code is NULL");
+    if (code == NULL) {
+	err(11, __func__, "code is NULL");
 	not_reached();
+    }
+
+    /*
+     * sanity check - code must be 2 characters long
+     */
+    length = strlen(code);
+    if (length != 2) {
+	dbg(DBG_HIGH, "code: <%s> length: %zu != 2", code, length);
+	return NULL;
+    }
+
+    /*
+     * sanity check - code must be 2 ASCII alpha characters
+     */
+    if (!isascii(code[0]) || !isalpha(code[0]) ||
+	!isascii(code[1]) || !isalpha(code[1])) {
+	dbg(DBG_HIGH, "code: <%s> is not 2 ASCII alpha characters", code);
+	return NULL;
     }
 
     /*
      * search location table for the code
      */
     for (p = &loc[0]; p->code != NULL && p->name != NULL; ++p) {
-	if (strcmp(upper_code, p->code) == 0) {
+	if (strcasecmp(code, p->code) == 0) {
 	    dbg(DBG_VHIGH, "code: %s found name: <%s>", p->code, p->name);
 	    break;
 	}
@@ -508,6 +531,9 @@ lookup_location_name(char const *upper_code)
     /*
      * return name or NULL
      */
+    if (p->name == NULL) {
+	dbg(DBG_HIGH, "code: <%s> is unknown", code);
+    }
     return p->name;
 }
 
@@ -515,8 +541,12 @@ lookup_location_name(char const *upper_code)
 /*
  * lookup_location_code - convert a ISO 3166-1 Alpha-2 into a location name
  *
+ * Even though the location table contains a canonical name in a canonical case,
+ * we compare names in a case independent way.  Nevertheless, the ISO 3166-1 Alpha-2
+ * code returned will be a 2 character ASCII UPPER CASE code.
+ *
  * given:
- *      location_name      - location name of a ISO 3166-1 Alpha-2 code
+ *      location_name      location name of a ISO 3166-1 Alpha-2 entry
  *
  * return:
  *	ISO 3166-1 Alpha-2 in UPPER CASE code or NULL ==> unknown location name
@@ -539,8 +569,8 @@ lookup_location_code(char const *location_name)
     /*
      * search location table for the code
      */
-    for (p = &loc[0]; p->code != NULL && p->code != NULL; ++p) {
-	if (strcmp(location_name, p->name) == 0) {
+    for (p = &loc[0]; p->name != NULL && p->code != NULL; ++p) {
+	if (strcasecmp(location_name, p->name) == 0) {
 	    dbg(DBG_VHIGH, "name: <%s> found code: %s", p->name, p->code);
 	    break;
 	}
@@ -549,5 +579,69 @@ lookup_location_code(char const *location_name)
     /*
      * return code or NULL
      */
+    if (p->code == NULL) {
+	dbg(DBG_HIGH, "name: <%s> is unknown", location_name);
+    }
     return p->code;
+}
+
+
+/*
+ * location_code_name_match - if a location code & location name refer to the same place
+ *
+ * We look up a ISO 3166-1 Alpha-2 in UPPER CASE code and determine if the associated
+ * location name matches the given location name.
+ *
+ * given:
+ *	code	ISO 3166-1 Alpha-2 in UPPER CASE
+ *	location_name	location name of a ISO 3166-1 Alpha-2 entry
+ *
+ * return:
+ *	true ==> location code and location name match,
+ *	false ==> location code and location name do not match or,
+ *		  unknown location code, or NULL ptr
+ */
+bool
+location_code_name_match(char const *code, char const *location_name)
+{
+    struct location *p;		/* entry in the location table */
+
+    /*
+     * firewall
+     */
+    if (code == NULL) {
+	err(13, __func__, "code is NULL");
+	not_reached();
+    }
+    if (location_name == NULL) {
+	err(14, __func__, "location_name is NULL");
+	not_reached();
+    }
+
+    /*
+     * search location table for the code
+     */
+    for (p = &loc[0]; p->name != NULL && p->name != NULL; ++p) {
+	if (strcasecmp(code, p->code) == 0) {
+	    dbg(DBG_VHIGH, "code: %s found name: <%s>", p->code, p->name);
+	    break;
+	}
+    }
+    if (p->code == NULL) {
+	dbg(DBG_HIGH, "code: <%s> is unknown", code);
+	return false;
+    }
+
+    /*
+     * compare location name with name from the code found in the table
+     */
+    if (strcasecmp(location_name, p->name) != 0) {
+	dbg(DBG_HIGH, "code: %s does not match name: <%s>", code, location_name);
+	return false;
+    }
+
+    /*
+     * return match
+     */
+    return true;
 }

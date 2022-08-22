@@ -922,7 +922,6 @@ object2author(struct json *node, unsigned int depth, struct json_sem *sem,
 	}
 	return false;
     }
-#if 0 /* XXX - unblock once the test function exists - XXX */
     if (test_location_name(location_name) == false) {
 	if (val_err != NULL) {
 	    *val_err = werr_sem_val(98, node, depth, sem, __func__,
@@ -930,7 +929,6 @@ object2author(struct json *node, unsigned int depth, struct json_sem *sem,
 	}
 	return false;
     }
-#endif /* XXX - unblock once the test function exists - XXX */
     if (test_email(email) == false) {
 	if (val_err != NULL) {
 	    *val_err = werr_sem_val(99, node, depth, sem, __func__,
@@ -2643,7 +2641,7 @@ test_location_code(char *str)
 	return false;
     }
 
-    /* validate ISO 3166-1 Alpha-2 in UPPER CASE code */
+    /* validate ISO 3166-1 Alpha-2 in code */
     location_name = lookup_location_name(str);
     if (location_name == NULL) {
 	json_dbg(JSON_DBG_MED, __func__,
@@ -2670,7 +2668,7 @@ test_location_code(char *str)
  *	false ==> string is NOT valid, or NULL pointer, or some internal error
  */
 bool
-test_location_name(char *str)
+test_location_name(char const *str)
 {
     char const *location_code = NULL;		/* ISO 3166-1 location/country code */
 

@@ -1985,6 +1985,9 @@ chk_location_name(struct json *node,
 		  unsigned int depth, struct json_sem *sem, struct json_sem_val_err **val_err)
 {
     char *str = NULL;				/* JTYPE_STRING as decoded JSON string */
+    char *code = NULL;				/* JTYPE_STRING as decoded JSON string */
+    struct json *parent = NULL;			/* JSON parse tree node parent */
+    struct json *location_code = NULL;		/* JSON parse node containing location_code */
     bool test = false;				/* validation test result */
 
     /*
@@ -2003,6 +2006,47 @@ chk_location_name(struct json *node,
     if (test == false) {
 	if (val_err != NULL) {
 	    *val_err = werr_sem_val(144, node, depth, sem, __func__, "invalid location_name");
+	}
+	return false;
+    }
+
+    /*
+     * look at parent of the author array
+     */
+    parent = sem_node_parent(node, depth, sem, __func__, val_err);
+    if (parent == NULL) {
+	/* sem_node_parent() will have set *val_err */
+	return false;
+    }
+
+    /*
+     * find author_count in parent node
+     *
+     * NOTE: sem_object_find_name() will verify that parent is a JSON parse node of JTYPE_OBJECT type.
+     */
+    location_code = sem_object_find_name(parent, depth-1, sem, __func__, val_err, "location_code");
+    if (location_code == NULL) {
+	/* sem_object_find_name() will have set *val_err */
+	return false;
+    }
+
+    /*
+     * obtain location code
+     */
+    code = sem_member_value_decoded_str(location_code, depth, sem, __func__, val_err);
+    if (code == NULL) {
+	/* sem_member_value_decoded_str() will have set *val_err */
+	return false;
+    }
+
+    /*
+     * verify that the location name (str) and the location code refer to the same place
+     */
+    test = location_code_name_match(code, str);
+    if (test == false) {
+	if (val_err != NULL) {
+	    *val_err = werr_sem_val(145, node, depth, sem, __func__,
+				    "location_name does not refer to same place as location_code");
 	}
 	return false;
     }
@@ -2056,7 +2100,7 @@ chk_rule_2a_override(struct json *node,
     test = test_rule_2a_override(*boolean);
     if (test == false) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(145, node, depth, sem, __func__, "invalid rule_2a_override");
+	    *val_err = werr_sem_val(146, node, depth, sem, __func__, "invalid rule_2a_override");
 	}
 	return false;
     }
@@ -2107,7 +2151,7 @@ chk_rule_2a_mismatch(struct json *node,
     test = test_rule_2a_mismatch(*boolean);
     if (test == false) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(146, node, depth, sem, __func__, "invalid rule_2a_mismatch");
+	    *val_err = werr_sem_val(147, node, depth, sem, __func__, "invalid rule_2a_mismatch");
 	}
 	return false;
     }
@@ -2158,7 +2202,7 @@ chk_rule_2b_override(struct json *node,
     test = test_rule_2b_override(*boolean);
     if (test == false) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(147, node, depth, sem, __func__, "invalid rule_2b_override");
+	    *val_err = werr_sem_val(148, node, depth, sem, __func__, "invalid rule_2b_override");
 	}
 	return false;
     }
@@ -2209,7 +2253,7 @@ chk_nul_warning(struct json *node,
     test = test_nul_warning(*boolean);
     if (test == false) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(148, node, depth, sem, __func__, "invalid nul_warning");
+	    *val_err = werr_sem_val(149, node, depth, sem, __func__, "invalid nul_warning");
 	}
 	return false;
     }
@@ -2260,7 +2304,7 @@ chk_trigraph_warning(struct json *node,
     test = test_trigraph_warning(*boolean);
     if (test == false) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(149, node, depth, sem, __func__, "invalid trigraph_warning");
+	    *val_err = werr_sem_val(150, node, depth, sem, __func__, "invalid trigraph_warning");
 	}
 	return false;
     }
@@ -2311,7 +2355,7 @@ chk_wordbuf_warning(struct json *node,
     test = test_wordbuf_warning(*boolean);
     if (test == false) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(150, node, depth, sem, __func__, "invalid wordbuf_warning");
+	    *val_err = werr_sem_val(151, node, depth, sem, __func__, "invalid wordbuf_warning");
 	}
 	return false;
     }
@@ -2362,7 +2406,7 @@ chk_ungetc_warning(struct json *node,
     test = test_ungetc_warning(*boolean);
     if (test == false) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(151, node, depth, sem, __func__, "invalid ungetc_warning");
+	    *val_err = werr_sem_val(152, node, depth, sem, __func__, "invalid ungetc_warning");
 	}
 	return false;
     }
@@ -2413,7 +2457,7 @@ chk_test_mode(struct json *node,
     test = test_test_mode(*boolean);
     if (test == false) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(152, node, depth, sem, __func__, "invalid test_mode");
+	    *val_err = werr_sem_val(153, node, depth, sem, __func__, "invalid test_mode");
 	}
 	return false;
     }

@@ -3681,7 +3681,7 @@ get_author_info(struct author **author_set_p)
 	    }
 
 	    /*
-	     * convert code to upper case
+	     * force ASCII alpha code into canonical UPPER CASE code
 	     */
 	    author_set[i].location_code[0] = (char)toupper(author_set[i].location_code[0]);
 	    author_set[i].location_code[1] = (char)toupper(author_set[i].location_code[1]);

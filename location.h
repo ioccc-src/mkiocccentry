@@ -33,6 +33,7 @@
 #if !defined(INCLUDE_LOCATION_H)
 #    define  INCLUDE_LOCATION_H
 
+#include <ctype.h>
 
 /*
  * util - entry common utility functions for the IOCCC toolkit
@@ -50,8 +51,8 @@
  */
 struct location
 {
-    const char * const code;		/* ISO 3166-1 Alpha-2 Code */
-    const char * const name;		/* name (short name lower case) */
+    const char * const code;		/* ISO 3166-1 Alpha-2 Code - 2 ASCII UPPER CASE chars */
+    const char * const name;		/* Canonical ISO 3166-1 name (short name mixed case) */
 };
 
 /*
@@ -64,7 +65,8 @@ extern size_t SIZEOF_LOCATION_TABLE;
  * function prototypes
  */
 extern void check_location_table(void);
-extern char const *lookup_location_name(char const *upper_code);
+extern char const *lookup_location_name(char const *code);
 extern char const *lookup_location_code(char const *location_name);
+extern bool location_code_name_match(char const *code, char const *location_name);
 
 #endif				/* INCLUDE_LOCATION_H */
