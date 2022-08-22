@@ -941,15 +941,13 @@ object2author(struct json *node, unsigned int depth, struct json_sem *sem,
     /*
      * validate elements
      */
-#if 0 /* XXX - unblock once the test function exists - XXX */
     if (test_name(auth_name) == false) {
 	if (val_err != NULL) {
 	    *val_err = werr_sem_val(97, node, depth, sem, __func__,
-				    "author array index[%d]: author __func__ is invalid", auth_num);
+				    "author array index[%d]: auth_name is invalid", auth_num);
 	}
 	return false;
     }
-#endif /* XXX - unblock once the test function exists - XXX */
     if (test_location_code(location_code) == false) {
 	if (val_err != NULL) {
 	    *val_err = werr_sem_val(98, node, depth, sem, __func__,
@@ -1001,7 +999,6 @@ object2author(struct json *node, unsigned int depth, struct json_sem *sem,
 	}
 	return false;
     }
-#if 0 /* XXX - unblock once the test function exists - XXX */
     if (test_past_winner(past_winner) == false) {
 	if (val_err != NULL) {
 	    *val_err = werr_sem_val(105, node, depth, sem, __func__,
@@ -1009,7 +1006,6 @@ object2author(struct json *node, unsigned int depth, struct json_sem *sem,
 	}
 	return false;
     }
-#endif /* XXX - unblock once the test function exists - XXX */
     if (test_default_handle(default_handle) == false) {
 	if (val_err != NULL) {
 	    *val_err = werr_sem_val(106, node, depth, sem, __func__,
@@ -2817,11 +2813,8 @@ test_formed_timestamp(time_t tstamp)
  *
  * Determine if formed_timestamp_usec is within the proper limits.
  *
- * NOTE: The function does NOT determine if the formed_timestamp_usec is unique among the authors.
- * NOTE: The function does NOT determine if the formed_timestamp_usec is <= author_count.
- *
  * given:
- *	formed_timestamp_usec	author number
+ *	formed_timestamp_usec	- formed timestamp usec number
  *
  * returns:
  *	true ==> formed_timestamp_usec is valid,
@@ -3016,11 +3009,8 @@ test_ioccc_contest(char *str)
  *
  * Determine if ioccc_year is within the proper limits.
  *
- * NOTE: The function does NOT determine if the ioccc_year is unique among the authors.
- * NOTE: The function does NOT determine if the ioccc_year is <= author_count.
- *
  * given:
- *	ioccc_year	author number
+ *	ioccc_year	year
  *
  * returns:
  *	true ==> ioccc_year is valid,
@@ -3998,4 +3988,110 @@ test_timestamp_epoch(char *str)
 	     "valid: timestamp_epoch == TIMESTAMP_EPOCH");
     return true;
 
+}
+
+/*
+ * test_name - test that name is valid
+ *
+ * Test that length is > 0 && <= MAX_NAME_LEN.
+ *
+ * NOTE: This function does NOT test if the author name is unique to the authors
+ * of the entry.
+ *
+ * given:
+ *	str	name to test
+ *
+ * returns:
+ *	true ==> string is valid
+ *	false ==> string is NOT valid, or NULL pointer, or some internal error
+*
+ */
+bool
+test_name(char *str)
+{
+    size_t length;
+
+    /*
+     * firewall
+     */
+    if (str == NULL) {
+	warn(__func__, "str is NULL");
+	return false;
+    }
+
+    length = strlen(str);
+    if (length <= 0) {
+	json_dbg(JSON_DBG_MED, __func__,
+		 "empty name is invalid");
+	return false;
+    } else if (length > MAX_NAME_LEN) {
+	json_dbg(JSON_DBG_MED, __func__,
+		 "name '%s' is invalid: length %ju is too long (max length: %ju)", str, (uintmax_t)length, (uintmax_t)MAX_NAME_LEN);
+	return false;
+    }
+
+    json_dbg(JSON_DBG_MED, __func__, "name is valid");
+    return true;
+}
+
+/*
+ * test_no_comment - test if no_comment is valid
+ *
+ * Determine if no_comment string is equal to JSON_PARSING_DIRECTIVE_VALUE.
+ *
+ * given:
+ *	str		no_comment to test
+ *
+ * returns:
+ *	true ==> min_timestamp is valid,
+ *	false ==> min_timestamp is NOT valid, or some internal error
+ */
+bool
+test_no_comment(char *str)
+{
+    /*
+     * firewall
+     */
+    if (str == NULL) {
+	warn(__func__, "str is NULL");
+	return false;
+    }
+    else if (*str == '\0') { /* strlen(str) == 0 */
+	json_dbg(JSON_DBG_MED, __func__,
+		 "invalid: no_comment is empty");
+	return false;
+    }
+    /*
+     * compare with the timestamp epoch
+     */
+    if (strcmp(str, JSON_PARSING_DIRECTIVE_VALUE)) {
+	json_dbg(JSON_DBG_MED, __func__,
+		 "invalid: no_comment != JSON_PARSING_DIRECTIVE_VALUE");
+	return false;
+    }
+    json_dbg(JSON_DBG_MED, __func__,
+	     "valid: no_comment == JSON_PARSING_DIRECTIVE_VALUE");
+    return true;
+
+}
+
+/*
+ * test_past_winner - test if past_winner is valid
+ *
+ * Determine if past_winner boolean is valid.  :-)
+ * Well this isn't much of a test, but we have to keep
+ * up with the general form of tests!  :-)
+ *
+ * given:
+ *	boolean		boolean to test
+ *
+ * returns:
+ *	true ==> bool is valid,
+ *	false ==> bool is NOT valid, or some internal error
+ */
+bool
+test_past_winner(bool boolean)
+{
+    json_dbg(JSON_DBG_MED, __func__, "past_winner is %s", booltostr(boolean));
+    return true;
 }
