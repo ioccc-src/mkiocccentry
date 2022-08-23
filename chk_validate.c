@@ -2269,6 +2269,57 @@ chk_mkiocccentry_version(struct json const *node,
 }
 
 
+/*
+ * chk_name - JSON semantic check for name
+ *
+ * given:
+ *	node	JSON parse node being checked
+ *	depth	depth of node in the JSON parse tree (0 ==> tree root)
+ *	sem	JSON semantic node triggering the check
+ *	val_err	pointer to address where to place a JSON semantic validation error,
+ *		NULL ==> do not report a JSON semantic validation error
+ *
+ * returns:
+ *	true ==> JSON element is valid
+ *	false ==> JSON element is NOT valid, or NULL pointer, or some internal error
+ */
+bool
+chk_name(struct json const *node,
+		  unsigned int depth, struct json_sem *sem, struct json_sem_val_err **val_err)
+{
+    char *str = NULL;				/* JTYPE_STRING as decoded JSON string */
+    bool test = false;				/* validation test result */
+
+    /*
+     * firewall - args and decoded string check
+     */
+    str = sem_member_value_decoded_str(node, depth, sem, __func__, val_err);
+    if (str == NULL) {
+	/* sem_member_value_decoded_str() will have set *val_err */
+	return false;
+    }
+
+    /*
+     * validate decoded JSON string
+     */
+    test = test_name(str);
+    if (test == false) {
+	if (val_err != NULL) {
+	    *val_err = werr_sem_val(152, node, depth, sem, __func__, "invalid name");
+	}
+	return false;
+    }
+
+    /*
+     * return validation success
+     */
+    if (val_err != NULL) {
+	*val_err = NULL;
+    }
+    return true;
+}
+
+
 /* XXX - end sorted order matching entry_util.c here - XXX */
 
 
@@ -2308,7 +2359,7 @@ chk_rule_2a_override(struct json const *node,
     test = test_rule_2a_override(*boolean);
     if (test == false) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(152, node, depth, sem, __func__, "invalid rule_2a_override");
+	    *val_err = werr_sem_val(153, node, depth, sem, __func__, "invalid rule_2a_override");
 	}
 	return false;
     }
@@ -2359,7 +2410,7 @@ chk_rule_2a_mismatch(struct json const *node,
     test = test_rule_2a_mismatch(*boolean);
     if (test == false) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(153, node, depth, sem, __func__, "invalid rule_2a_mismatch");
+	    *val_err = werr_sem_val(154, node, depth, sem, __func__, "invalid rule_2a_mismatch");
 	}
 	return false;
     }
@@ -2410,7 +2461,7 @@ chk_rule_2b_override(struct json const *node,
     test = test_rule_2b_override(*boolean);
     if (test == false) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(154, node, depth, sem, __func__, "invalid rule_2b_override");
+	    *val_err = werr_sem_val(155, node, depth, sem, __func__, "invalid rule_2b_override");
 	}
 	return false;
     }
@@ -2461,7 +2512,7 @@ chk_nul_warning(struct json const *node,
     test = test_nul_warning(*boolean);
     if (test == false) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(155, node, depth, sem, __func__, "invalid nul_warning");
+	    *val_err = werr_sem_val(156, node, depth, sem, __func__, "invalid nul_warning");
 	}
 	return false;
     }
@@ -2512,7 +2563,7 @@ chk_trigraph_warning(struct json const *node,
     test = test_trigraph_warning(*boolean);
     if (test == false) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(156, node, depth, sem, __func__, "invalid trigraph_warning");
+	    *val_err = werr_sem_val(157, node, depth, sem, __func__, "invalid trigraph_warning");
 	}
 	return false;
     }
@@ -2563,7 +2614,7 @@ chk_wordbuf_warning(struct json const *node,
     test = test_wordbuf_warning(*boolean);
     if (test == false) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(157, node, depth, sem, __func__, "invalid wordbuf_warning");
+	    *val_err = werr_sem_val(158, node, depth, sem, __func__, "invalid wordbuf_warning");
 	}
 	return false;
     }
@@ -2614,7 +2665,7 @@ chk_ungetc_warning(struct json const *node,
     test = test_ungetc_warning(*boolean);
     if (test == false) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(158, node, depth, sem, __func__, "invalid ungetc_warning");
+	    *val_err = werr_sem_val(159, node, depth, sem, __func__, "invalid ungetc_warning");
 	}
 	return false;
     }
@@ -2665,7 +2716,7 @@ chk_test_mode(struct json const *node,
     test = test_test_mode(*boolean);
     if (test == false) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(159, node, depth, sem, __func__, "invalid test_mode");
+	    *val_err = werr_sem_val(160, node, depth, sem, __func__, "invalid test_mode");
 	}
 	return false;
     }

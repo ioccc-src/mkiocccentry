@@ -3635,6 +3635,55 @@ test_mkiocccentry_version(char const *str)
 }
 
 
+/*
+ * test_name - test that name is valid
+ *
+ * Test that length is > 0 && <= MAX_NAME_LEN.
+ *
+ * NOTE: This function does NOT test if the author name is unique to the authors
+ * of the entry.
+ *
+ * given:
+ *	str	name to test
+ *
+ * returns:
+ *	true ==> string is valid
+ *	false ==> string is NOT valid, or NULL pointer, or some internal error
+ *
+ */
+bool
+test_name(char const *str)
+{
+    size_t length;
+
+    /*
+     * firewall
+     */
+    if (str == NULL) {
+	warn(__func__, "str is NULL");
+	return false;
+    }
+
+    length = strlen(str);
+    if (length <= 0) {
+	json_dbg(JSON_DBG_MED, __func__,
+		 "invalid: empty name");
+	return false;
+    } else if (length > MAX_NAME_LEN) {
+	json_dbg(JSON_DBG_MED, __func__,
+		 "invalid: name length %ju > max length: %ju",
+		 (uintmax_t)length, (uintmax_t)MAX_NAME_LEN);
+	json_dbg(JSON_DBG_HIGH, __func__,
+		 "invalid: name <%s> length %ju > max length: %ju",
+		 str, (uintmax_t)length, (uintmax_t)MAX_NAME_LEN);
+	return false;
+    }
+
+    json_dbg(JSON_DBG_MED, __func__, "name is valid");
+    return true;
+}
+
+
 /* XXX - end sorted order matching chk_validate.c here - XXX */
 
 
@@ -4124,55 +4173,6 @@ test_timestamp_epoch(char const *str)
     }
     json_dbg(JSON_DBG_MED, __func__,
 	     "valid: timestamp_epoch == TIMESTAMP_EPOCH");
-    return true;
-}
-
-
-/*
- * test_name - test that name is valid
- *
- * Test that length is > 0 && <= MAX_NAME_LEN.
- *
- * NOTE: This function does NOT test if the author name is unique to the authors
- * of the entry.
- *
- * given:
- *	str	name to test
- *
- * returns:
- *	true ==> string is valid
- *	false ==> string is NOT valid, or NULL pointer, or some internal error
- *
- */
-bool
-test_name(char const *str)
-{
-    size_t length;
-
-    /*
-     * firewall
-     */
-    if (str == NULL) {
-	warn(__func__, "str is NULL");
-	return false;
-    }
-
-    length = strlen(str);
-    if (length <= 0) {
-	json_dbg(JSON_DBG_MED, __func__,
-		 "invalid: empty name");
-	return false;
-    } else if (length > MAX_NAME_LEN) {
-	json_dbg(JSON_DBG_MED, __func__,
-		 "invalid: name length %ju > max length: %ju",
-		 (uintmax_t)length, (uintmax_t)MAX_NAME_LEN);
-	json_dbg(JSON_DBG_HIGH, __func__,
-		 "invalid: name <%s> length %ju > max length: %ju",
-		 str, (uintmax_t)length, (uintmax_t)MAX_NAME_LEN);
-	return false;
-    }
-
-    json_dbg(JSON_DBG_MED, __func__, "name is valid");
     return true;
 }
 

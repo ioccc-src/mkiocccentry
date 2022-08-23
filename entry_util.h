@@ -278,6 +278,7 @@ extern bool test_location_name(char const *str);
 extern bool test_manifest(struct manifest *manp);
 extern bool test_min_timestamp(time_t tstamp);
 extern bool test_mkiocccentry_version(char const *str);
+extern bool test_name(char const *str);
 /* XXX - end sorted order matching chk_validate.c here - XXX */
 extern bool test_rule_2a_override(bool boolean);
 extern bool test_rule_2a_mismatch(bool boolean);
@@ -294,7 +295,6 @@ extern bool test_twitter(char const *str);
 extern bool test_url(char const *str);
 extern bool test_remarks(char const *str);
 extern bool test_timestamp_epoch(char const *str);
-extern bool test_name(char const *str);
 extern bool test_no_comment(char const *str);
 extern bool test_past_winner(bool boolean);
 extern bool test_tarball(char const *str, char const *IOCCC_contest_id, int entry_num, bool test_mode,
