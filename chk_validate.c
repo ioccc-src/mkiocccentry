@@ -2681,6 +2681,57 @@ chk_rule_2a_override(struct json const *node,
 
 
 /*
+ * chk_test_mode - JSON semantic check for test_mode
+ *
+ * given:
+ *	node	JSON parse node being checked
+ *	depth	depth of node in the JSON parse tree (0 ==> tree root)
+ *	sem	JSON semantic node triggering the check
+ *	val_err	pointer to address where to place a JSON semantic validation error,
+ *		NULL ==> do not report a JSON semantic validation error
+ *
+ * returns:
+ *	true ==> JSON element is valid
+ *	false ==> JSON element is NOT valid, or NULL pointer, or some internal error
+ */
+bool
+chk_test_mode(struct json const *node,
+	      unsigned int depth, struct json_sem *sem, struct json_sem_val_err **val_err)
+{
+    bool *boolean = NULL;			/* pointer to JTYPE_BOOL as decoded JSON boolean */
+    bool test = false;				/* validation test result */
+
+    /*
+     * firewall - args
+     */
+    boolean = sem_member_value_bool(node, depth, sem, __func__, val_err);
+    if (boolean == NULL) {
+	/* sem_member_value_bool() will have set *val_err */
+	return false;
+    }
+
+    /*
+     * validate decoded JSON string
+     */
+    test = test_test_mode(*boolean);
+    if (test == false) {
+	if (val_err != NULL) {
+	    *val_err = werr_sem_val(160, node, depth, sem, __func__, "invalid test_mode");
+	}
+	return false;
+    }
+
+    /*
+     * return validation success
+     */
+    if (val_err != NULL) {
+	*val_err = NULL;
+    }
+    return true;
+}
+
+
+/*
  * chk_trigraph_warning - JSON semantic check for trigraph_warning
  *
  * given:
@@ -2716,58 +2767,7 @@ chk_trigraph_warning(struct json const *node,
     test = test_trigraph_warning(*boolean);
     if (test == false) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(160, node, depth, sem, __func__, "invalid trigraph_warning");
-	}
-	return false;
-    }
-
-    /*
-     * return validation success
-     */
-    if (val_err != NULL) {
-	*val_err = NULL;
-    }
-    return true;
-}
-
-
-/*
- * chk_wordbuf_warning - JSON semantic check for wordbuf_warning
- *
- * given:
- *	node	JSON parse node being checked
- *	depth	depth of node in the JSON parse tree (0 ==> tree root)
- *	sem	JSON semantic node triggering the check
- *	val_err	pointer to address where to place a JSON semantic validation error,
- *		NULL ==> do not report a JSON semantic validation error
- *
- * returns:
- *	true ==> JSON element is valid
- *	false ==> JSON element is NOT valid, or NULL pointer, or some internal error
- */
-bool
-chk_wordbuf_warning(struct json const *node,
-		    unsigned int depth, struct json_sem *sem, struct json_sem_val_err **val_err)
-{
-    bool *boolean = NULL;			/* pointer to JTYPE_BOOL as decoded JSON boolean */
-    bool test = false;				/* validation test result */
-
-    /*
-     * firewall - args
-     */
-    boolean = sem_member_value_bool(node, depth, sem, __func__, val_err);
-    if (boolean == NULL) {
-	/* sem_member_value_bool() will have set *val_err */
-	return false;
-    }
-
-    /*
-     * validate decoded JSON string
-     */
-    test = test_wordbuf_warning(*boolean);
-    if (test == false) {
-	if (val_err != NULL) {
-	    *val_err = werr_sem_val(161, node, depth, sem, __func__, "invalid wordbuf_warning");
+	    *val_err = werr_sem_val(161, node, depth, sem, __func__, "invalid trigraph_warning");
 	}
 	return false;
     }
@@ -2834,7 +2834,7 @@ chk_ungetc_warning(struct json const *node,
 
 
 /*
- * chk_test_mode - JSON semantic check for test_mode
+ * chk_wordbuf_warning - JSON semantic check for wordbuf_warning
  *
  * given:
  *	node	JSON parse node being checked
@@ -2848,8 +2848,8 @@ chk_ungetc_warning(struct json const *node,
  *	false ==> JSON element is NOT valid, or NULL pointer, or some internal error
  */
 bool
-chk_test_mode(struct json const *node,
-	      unsigned int depth, struct json_sem *sem, struct json_sem_val_err **val_err)
+chk_wordbuf_warning(struct json const *node,
+		    unsigned int depth, struct json_sem *sem, struct json_sem_val_err **val_err)
 {
     bool *boolean = NULL;			/* pointer to JTYPE_BOOL as decoded JSON boolean */
     bool test = false;				/* validation test result */
@@ -2866,10 +2866,10 @@ chk_test_mode(struct json const *node,
     /*
      * validate decoded JSON string
      */
-    test = test_test_mode(*boolean);
+    test = test_wordbuf_warning(*boolean);
     if (test == false) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(163, node, depth, sem, __func__, "invalid test_mode");
+	    *val_err = werr_sem_val(163, node, depth, sem, __func__, "invalid wordbuf_warning");
 	}
 	return false;
     }

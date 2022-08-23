@@ -3862,104 +3862,6 @@ test_rule_2b_override(bool boolean)
 
 
 /*
- * test_txzchk_version - test if txzchk_version is valid
- *
- * Determine if txzchk_version matches TXZCHK_VERSION.
- *
- * given:
- *	str	string to test
- *
- * returns:
- *	true ==> string is valid,
- *	false ==> string is NOT valid, or NULL pointer, or some internal error
- *
- *  "Because sometimes people might try to hide the fact that they're planning
- *  on throwing feathers on the tar." :-)
- */
-bool
-test_txzchk_version(char const *str)
-{
-    /*
-     * firewall
-     */
-    if (str == NULL) {
-	warn(__func__, "str is NULL");
-	return false;
-    }
-
-    /*
-     * validate str
-     */
-    if (strcmp(str, TXZCHK_VERSION) != 0) {
-	json_dbg(JSON_DBG_MED, __func__,
-		 "invalid: txzchk_version != TXZCHK_VERSION: %s", TXZCHK_VERSION);
-	json_dbg(JSON_DBG_HIGH, __func__,
-		 "invalid: txzchk_version: %s is not TXZCHK_VERSION: %s", str, TXZCHK_VERSION);
-	return false;
-    }
-    json_dbg(JSON_DBG_MED, __func__, "txzchk_version is valid");
-    return true;
-}
-
-
-/*
- * test_title - test if title is valid
- *
- * Determine if title length is <= MAX_TITLE_LEN and that it matches the regexp:
- *
- *	^[0-9a-z][0-9a-z._+-]*$
- *
- * given:
- *	str	string to test
- *
- * returns:
- *	true ==> string is valid,
- *	false ==> string is NOT valid, or NULL pointer, or some internal error
- */
-bool
-test_title(char const *str)
-{
-    size_t length = 0;
-
-    /*
-     * firewall
-     */
-    if (str == NULL) {
-	warn(__func__, "str is NULL");
-	return false;
-    }
-
-    /*
-     * validate str
-     */
-    /* check for a valid length */
-    if (*str == '\0') { /* strlen(str) == 0 */
-	json_dbg(JSON_DBG_MED, __func__,
-		 "invalid: empty title");
-	return false;
-    }
-    length = strlen(str);
-    if (length > MAX_TITLE_LEN) {
-	json_dbg(JSON_DBG_MED, __func__,
-		 "invalid: title length %ju > max %d: <%s>", (uintmax_t)length, MAX_TITLE_LEN, str);
-	json_dbg(JSON_DBG_HIGH, __func__,
-		 "invalid: title: <%s> is invalid", str);
-	return false;
-    }
-    /* check for valid title chars */
-    if (!posix_plus_safe(str, true, false, true)) {
-	json_dbg(JSON_DBG_MED, __func__,
-		 "invalid: title does not match regexp ^[0-9a-z][0-9a-z._+-]*$: '%s'", str);
-	json_dbg(JSON_DBG_HIGH, __func__,
-		 "invalid: title: <%s> is invalid", str);
-	return false;
-    }
-    json_dbg(JSON_DBG_MED, __func__, "title is valid");
-    return true;
-}
-
-
-/*
  * test_rule_2a_override - test if rule_2a_override is valid
  *
  * Determine if rule_2a_override boolean is valid.  :-)
@@ -3977,269 +3879,6 @@ bool
 test_rule_2a_override(bool boolean)
 {
     json_dbg(JSON_DBG_MED, __func__, "rule_2a_override is %s", booltostr(boolean));
-    return true;
-}
-
-
-/*
- * test_trigraph_warning - test if trigraph_warning is valid
- *
- * Determine if trigraph_warning boolean is valid.  :-)
- * Well this isn't much of a test, but we have to keep
- * up with the general form of tests!  :-)
- *
- * given:
- *	boolean		boolean to test
- *
- * returns:
- *	true ==> bool is valid,
- *	false ==> bool is NOT valid, or some internal error
- */
-bool
-test_trigraph_warning(bool boolean)
-{
-    json_dbg(JSON_DBG_MED, __func__, "trigraph_warning is %s", booltostr(boolean));
-    return true;
-}
-
-
-/*
- * test_wordbuf_warning - test if wordbuf_warning is valid
- *
- * Determine if wordbuf_warning boolean is valid.  :-)
- * Well this isn't much of a test, but we have to keep
- * up with the general form of tests!  :-)
- *
- * given:
- *	boolean		boolean to test
- *
- * returns:
- *	true ==> bool is valid,
- *	false ==> bool is NOT valid, or some internal error
- */
-bool
-test_wordbuf_warning(bool boolean)
-{
-    json_dbg(JSON_DBG_MED, __func__, "wordbuf_warning is %s", booltostr(boolean));
-    return true;
-}
-
-
-/*
- * test_ungetc_warning - test if ungetc_warning is valid
- *
- * Determine if ungetc_warning boolean is valid.  :-)
- * Well this isn't much of a test, but we have to keep
- * up with the general form of tests!  :-)
- *
- * given:
- *	boolean		boolean to test
- *
- * returns:
- *	true ==> bool is valid,
- *	false ==> bool is NOT valid, or some internal error
- */
-bool
-test_ungetc_warning(bool boolean)
-{
-    json_dbg(JSON_DBG_MED, __func__, "ungetc_warning is %s", booltostr(boolean));
-    return true;
-}
-
-
-/*
- * test_test_mode - test if test_mode is valid
- *
- * Determine if test_mode boolean is valid.  :-)
- * Well this isn't much of a test, but we have to keep
- * up with the general form of tests!  :-)
- *
- * given:
- *	boolean		boolean to test
- *
- * returns:
- *	true ==> bool is valid,
- *	false ==> bool is NOT valid, or some internal error
- */
-bool
-test_test_mode(bool boolean)
-{
-    json_dbg(JSON_DBG_MED, __func__, "test_mode is %s", booltostr(boolean));
-    return true;
-}
-
-
-/*
- * test_twitter - test if twitter account is valid
- *
- * Determine if twitter length is <= MAX_TWITTER_LEN and that it has a leading '@'
- * and _only_ one '@'.
- *
- * given:
- *	str	string to test
- *
- * returns:
- *	true ==> string is valid,
- *	false ==> string is NOT valid, or NULL pointer, or some internal error
- */
-bool
-test_twitter(char const *str)
-{
-    size_t length = 0;
-    char *p = NULL;
-
-    /*
-     * firewall
-     */
-    if (str == NULL) {
-	warn(__func__, "str is NULL");
-	return false;
-    }
-
-    /*
-     * validate str
-     */
-    /* check for a valid length */
-    if (*str == '\0') { /* strlen(str) == 0 */
-	json_dbg(JSON_DBG_MED, __func__,
-		 "empty twitter is invalid");
-	return false;
-    }
-    length = strlen(str);
-    if (length > MAX_TWITTER_LEN) {
-	json_dbg(JSON_DBG_MED, __func__,
-		 "invalid: twitter length %ju > max %d: <%s>", (uintmax_t)length, MAX_TWITTER_LEN, str);
-	json_dbg(JSON_DBG_HIGH, __func__,
-		 "invalid: title: <%s> is invalid", str);
-	return false;
-    }
-    /* check for valid twitter account chars */
-    p = strchr(str, '@');
-    if (p == NULL || str[0] != '@') {
-	json_dbg(JSON_DBG_MED, __func__,
-		 "invalid: twitter account does not start with '@'");
-	json_dbg(JSON_DBG_HIGH, __func__,
-		 "invalid: twitter: <%s> is invalid", str);
-	return false;
-    } else if (p != strrchr(str, '@')) {
-	json_dbg(JSON_DBG_MED, __func__,
-		 "invalid: twitter account has more than one '@'");
-	json_dbg(JSON_DBG_HIGH, __func__,
-		 "invalid: twitter: <%s> is invalid", str);
-	return false;
-
-    }
-
-    json_dbg(JSON_DBG_MED, __func__, "twitter is valid");
-    return true;
-}
-
-
-/*
- * test_url - test if URL is valid
- *
- * Determine if url length is <= MAX_URL_LEN and that it starts with either
- * http:// or https:// and more characters.
- *
- * given:
- *	str	string to test
- *
- * returns:
- *	true ==> string is valid,
- *	false ==> string is NOT valid, or NULL pointer, or some internal error
- */
-bool
-test_url(char const *str)
-{
-    size_t length = 0;
-
-    /*
-     * firewall
-     */
-    if (str == NULL) {
-	warn(__func__, "str is NULL");
-	return false;
-    }
-
-    /*
-     * validate str
-     */
-    /* check for a valid length */
-    if (*str == '\0') { /* strlen(str) == 0 */
-	json_dbg(JSON_DBG_MED, __func__,
-		 "empty url is invalid");
-	return false;
-    }
-    length = strlen(str);
-    if (length > MAX_URL_LEN) {
-	json_dbg(JSON_DBG_MED, __func__,
-		 "invalid: url length %ju > max %d: <%s>", (uintmax_t)length, MAX_URL_LEN, str);
-	json_dbg(JSON_DBG_HIGH, __func__,
-		 "invalid: title: <%s> is invalid", str);
-	return false;
-    }
-    if (((strncmp(str, "http://", LITLEN("http://")) != 0) &&
-	 (str[LITLEN("http://")] != '\0')) ||
-	((strncmp(str, "https://", LITLEN("https://")) != 0))) {
-	    json_dbg(JSON_DBG_MED, __func__,
-		     "invalid: url does not start with either https:// or http://");
-	    json_dbg(JSON_DBG_HIGH, __func__,
-		     "invalid: url: <%s> is invalid", str);
-	    return false;
-
-    } else if (str[LITLEN("https://")] == '\0') {
-	json_dbg(JSON_DBG_MED, __func__,
-		 "invalid: url does not have more characters after either the http:// or https://");
-	json_dbg(JSON_DBG_HIGH, __func__,
-		 "invalid: url: <%s> is invalid", str);
-	return false;
-    }
-
-    json_dbg(JSON_DBG_MED, __func__, "url is valid");
-    return true;
-}
-
-
-/*
- * test_timestamp_epoch - test if timestamp_epoch is valid
- *
- * Determine if timestamp_epoch string is equal to TIMESTAMP_EPOCH.
- *
- * given:
- *	str		timestamp_epoch to test
- *
- * returns:
- *	true ==> min_timestamp is valid,
- *	false ==> min_timestamp is NOT valid, or some internal error
- */
-bool
-test_timestamp_epoch(char const *str)
-{
-    /*
-     * firewall
-     */
-    if (str == NULL) {
-	warn(__func__, "str is NULL");
-	return false;
-    } else if (*str == '\0') { /* strlen(str) == 0 */
-	json_dbg(JSON_DBG_MED, __func__,
-		 "invalid: timestamp_epoch is empty");
-	return false;
-    }
-    /*
-     * compare with the timestamp epoch
-     */
-    if (strcmp(str, TIMESTAMP_EPOCH)) {
-	json_dbg(JSON_DBG_MED, __func__,
-		 "invalid: timestamp_epoch != TIMESTAMP_EPOCH: <%s>",
-		 TIMESTAMP_EPOCH);
-	json_dbg(JSON_DBG_HIGH, __func__,
-		 "invalid: timestamp_epoch: <%s> != TIMESTAMP_EPOCH: <%s>",
-		 str, TIMESTAMP_EPOCH);
-	return false;
-    }
-    json_dbg(JSON_DBG_MED, __func__,
-	     "valid: timestamp_epoch == TIMESTAMP_EPOCH");
     return true;
 }
 
@@ -4362,5 +4001,366 @@ test_tarball(char const *str, char const *IOCCC_contest_id, int entry_num, bool 
     }
     json_dbg(JSON_DBG_MED, __func__,
 	     "valid: tarball filename");
+    return true;
+}
+
+
+/*
+ * test_test_mode - test if test_mode is valid
+ *
+ * Determine if test_mode boolean is valid.  :-)
+ * Well this isn't much of a test, but we have to keep
+ * up with the general form of tests!  :-)
+ *
+ * given:
+ *	boolean		boolean to test
+ *
+ * returns:
+ *	true ==> bool is valid,
+ *	false ==> bool is NOT valid, or some internal error
+ */
+bool
+test_test_mode(bool boolean)
+{
+    json_dbg(JSON_DBG_MED, __func__, "test_mode is %s", booltostr(boolean));
+    return true;
+}
+
+
+/*
+ * test_timestamp_epoch - test if timestamp_epoch is valid
+ *
+ * Determine if timestamp_epoch string is equal to TIMESTAMP_EPOCH.
+ *
+ * given:
+ *	str		timestamp_epoch to test
+ *
+ * returns:
+ *	true ==> min_timestamp is valid,
+ *	false ==> min_timestamp is NOT valid, or some internal error
+ */
+bool
+test_timestamp_epoch(char const *str)
+{
+    /*
+     * firewall
+     */
+    if (str == NULL) {
+	warn(__func__, "str is NULL");
+	return false;
+    } else if (*str == '\0') { /* strlen(str) == 0 */
+	json_dbg(JSON_DBG_MED, __func__,
+		 "invalid: timestamp_epoch is empty");
+	return false;
+    }
+    /*
+     * compare with the timestamp epoch
+     */
+    if (strcmp(str, TIMESTAMP_EPOCH)) {
+	json_dbg(JSON_DBG_MED, __func__,
+		 "invalid: timestamp_epoch != TIMESTAMP_EPOCH: <%s>",
+		 TIMESTAMP_EPOCH);
+	json_dbg(JSON_DBG_HIGH, __func__,
+		 "invalid: timestamp_epoch: <%s> != TIMESTAMP_EPOCH: <%s>",
+		 str, TIMESTAMP_EPOCH);
+	return false;
+    }
+    json_dbg(JSON_DBG_MED, __func__,
+	     "valid: timestamp_epoch == TIMESTAMP_EPOCH");
+    return true;
+}
+
+
+/*
+ * test_title - test if title is valid
+ *
+ * Determine if title length is <= MAX_TITLE_LEN and that it matches the regexp:
+ *
+ *	^[0-9a-z][0-9a-z._+-]*$
+ *
+ * given:
+ *	str	string to test
+ *
+ * returns:
+ *	true ==> string is valid,
+ *	false ==> string is NOT valid, or NULL pointer, or some internal error
+ */
+bool
+test_title(char const *str)
+{
+    size_t length = 0;
+
+    /*
+     * firewall
+     */
+    if (str == NULL) {
+	warn(__func__, "str is NULL");
+	return false;
+    }
+
+    /*
+     * validate str
+     */
+    /* check for a valid length */
+    if (*str == '\0') { /* strlen(str) == 0 */
+	json_dbg(JSON_DBG_MED, __func__,
+		 "invalid: empty title");
+	return false;
+    }
+    length = strlen(str);
+    if (length > MAX_TITLE_LEN) {
+	json_dbg(JSON_DBG_MED, __func__,
+		 "invalid: title length %ju > max %d: <%s>", (uintmax_t)length, MAX_TITLE_LEN, str);
+	json_dbg(JSON_DBG_HIGH, __func__,
+		 "invalid: title: <%s> is invalid", str);
+	return false;
+    }
+    /* check for valid title chars */
+    if (!posix_plus_safe(str, true, false, true)) {
+	json_dbg(JSON_DBG_MED, __func__,
+		 "invalid: title does not match regexp ^[0-9a-z][0-9a-z._+-]*$: '%s'", str);
+	json_dbg(JSON_DBG_HIGH, __func__,
+		 "invalid: title: <%s> is invalid", str);
+	return false;
+    }
+    json_dbg(JSON_DBG_MED, __func__, "title is valid");
+    return true;
+}
+
+
+/*
+ * test_trigraph_warning - test if trigraph_warning is valid
+ *
+ * Determine if trigraph_warning boolean is valid.  :-)
+ * Well this isn't much of a test, but we have to keep
+ * up with the general form of tests!  :-)
+ *
+ * given:
+ *	boolean		boolean to test
+ *
+ * returns:
+ *	true ==> bool is valid,
+ *	false ==> bool is NOT valid, or some internal error
+ */
+bool
+test_trigraph_warning(bool boolean)
+{
+    json_dbg(JSON_DBG_MED, __func__, "trigraph_warning is %s", booltostr(boolean));
+    return true;
+}
+
+
+/*
+ * test_twitter - test if twitter account is valid
+ *
+ * Determine if twitter length is <= MAX_TWITTER_LEN and that it has a leading '@'
+ * and _only_ one '@'.
+ *
+ * given:
+ *	str	string to test
+ *
+ * returns:
+ *	true ==> string is valid,
+ *	false ==> string is NOT valid, or NULL pointer, or some internal error
+ */
+bool
+test_twitter(char const *str)
+{
+    size_t length = 0;
+    char *p = NULL;
+
+    /*
+     * firewall
+     */
+    if (str == NULL) {
+	warn(__func__, "str is NULL");
+	return false;
+    }
+
+    /*
+     * validate str
+     */
+    /* check for a valid length */
+    if (*str == '\0') { /* strlen(str) == 0 */
+	json_dbg(JSON_DBG_MED, __func__,
+		 "empty twitter is invalid");
+	return false;
+    }
+    length = strlen(str);
+    if (length > MAX_TWITTER_LEN) {
+	json_dbg(JSON_DBG_MED, __func__,
+		 "invalid: twitter length %ju > max %d: <%s>", (uintmax_t)length, MAX_TWITTER_LEN, str);
+	json_dbg(JSON_DBG_HIGH, __func__,
+		 "invalid: title: <%s> is invalid", str);
+	return false;
+    }
+    /* check for valid twitter account chars */
+    p = strchr(str, '@');
+    if (p == NULL || str[0] != '@') {
+	json_dbg(JSON_DBG_MED, __func__,
+		 "invalid: twitter account does not start with '@'");
+	json_dbg(JSON_DBG_HIGH, __func__,
+		 "invalid: twitter: <%s> is invalid", str);
+	return false;
+    } else if (p != strrchr(str, '@')) {
+	json_dbg(JSON_DBG_MED, __func__,
+		 "invalid: twitter account has more than one '@'");
+	json_dbg(JSON_DBG_HIGH, __func__,
+		 "invalid: twitter: <%s> is invalid", str);
+	return false;
+
+    }
+
+    json_dbg(JSON_DBG_MED, __func__, "twitter is valid");
+    return true;
+}
+
+
+/*
+ * test_txzchk_version - test if txzchk_version is valid
+ *
+ * Determine if txzchk_version matches TXZCHK_VERSION.
+ *
+ * given:
+ *	str	string to test
+ *
+ * returns:
+ *	true ==> string is valid,
+ *	false ==> string is NOT valid, or NULL pointer, or some internal error
+ *
+ *  "Because sometimes people might try to hide the fact that they're planning
+ *  on throwing feathers on the tar." :-)
+ */
+bool
+test_txzchk_version(char const *str)
+{
+    /*
+     * firewall
+     */
+    if (str == NULL) {
+	warn(__func__, "str is NULL");
+	return false;
+    }
+
+    /*
+     * validate str
+     */
+    if (strcmp(str, TXZCHK_VERSION) != 0) {
+	json_dbg(JSON_DBG_MED, __func__,
+		 "invalid: txzchk_version != TXZCHK_VERSION: %s", TXZCHK_VERSION);
+	json_dbg(JSON_DBG_HIGH, __func__,
+		 "invalid: txzchk_version: %s is not TXZCHK_VERSION: %s", str, TXZCHK_VERSION);
+	return false;
+    }
+    json_dbg(JSON_DBG_MED, __func__, "txzchk_version is valid");
+    return true;
+}
+
+
+/*
+ * test_ungetc_warning - test if ungetc_warning is valid
+ *
+ * Determine if ungetc_warning boolean is valid.  :-)
+ * Well this isn't much of a test, but we have to keep
+ * up with the general form of tests!  :-)
+ *
+ * given:
+ *	boolean		boolean to test
+ *
+ * returns:
+ *	true ==> bool is valid,
+ *	false ==> bool is NOT valid, or some internal error
+ */
+bool
+test_ungetc_warning(bool boolean)
+{
+    json_dbg(JSON_DBG_MED, __func__, "ungetc_warning is %s", booltostr(boolean));
+    return true;
+}
+
+
+/*
+ * test_url - test if URL is valid
+ *
+ * Determine if url length is <= MAX_URL_LEN and that it starts with either
+ * http:// or https:// and more characters.
+ *
+ * given:
+ *	str	string to test
+ *
+ * returns:
+ *	true ==> string is valid,
+ *	false ==> string is NOT valid, or NULL pointer, or some internal error
+ */
+bool
+test_url(char const *str)
+{
+    size_t length = 0;
+
+    /*
+     * firewall
+     */
+    if (str == NULL) {
+	warn(__func__, "str is NULL");
+	return false;
+    }
+
+    /*
+     * validate str
+     */
+    /* check for a valid length */
+    if (*str == '\0') { /* strlen(str) == 0 */
+	json_dbg(JSON_DBG_MED, __func__,
+		 "empty url is invalid");
+	return false;
+    }
+    length = strlen(str);
+    if (length > MAX_URL_LEN) {
+	json_dbg(JSON_DBG_MED, __func__,
+		 "invalid: url length %ju > max %d: <%s>", (uintmax_t)length, MAX_URL_LEN, str);
+	json_dbg(JSON_DBG_HIGH, __func__,
+		 "invalid: title: <%s> is invalid", str);
+	return false;
+    }
+    if (((strncmp(str, "http://", LITLEN("http://")) != 0) &&
+	 (str[LITLEN("http://")] != '\0')) ||
+	((strncmp(str, "https://", LITLEN("https://")) != 0))) {
+	    json_dbg(JSON_DBG_MED, __func__,
+		     "invalid: url does not start with either https:// or http://");
+	    json_dbg(JSON_DBG_HIGH, __func__,
+		     "invalid: url: <%s> is invalid", str);
+	    return false;
+
+    } else if (str[LITLEN("https://")] == '\0') {
+	json_dbg(JSON_DBG_MED, __func__,
+		 "invalid: url does not have more characters after either the http:// or https://");
+	json_dbg(JSON_DBG_HIGH, __func__,
+		 "invalid: url: <%s> is invalid", str);
+	return false;
+    }
+
+    json_dbg(JSON_DBG_MED, __func__, "url is valid");
+    return true;
+}
+
+
+/*
+ * test_wordbuf_warning - test if wordbuf_warning is valid
+ *
+ * Determine if wordbuf_warning boolean is valid.  :-)
+ * Well this isn't much of a test, but we have to keep
+ * up with the general form of tests!  :-)
+ *
+ * given:
+ *	boolean		boolean to test
+ *
+ * returns:
+ *	true ==> bool is valid,
+ *	false ==> bool is NOT valid, or some internal error
+ */
+bool
+test_wordbuf_warning(bool boolean)
+{
+    json_dbg(JSON_DBG_MED, __func__, "wordbuf_warning is %s", booltostr(boolean));
     return true;
 }
