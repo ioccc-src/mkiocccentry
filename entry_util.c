@@ -3751,6 +3751,69 @@ test_nul_warning(bool boolean)
 }
 
 
+/*
+ * test_past_winner - test if past_winner is valid
+ *
+ * Determine if past_winner boolean is valid.  :-)
+ * Well this isn't much of a test, but we have to keep
+ * up with the general form of tests!  :-)
+ *
+ * given:
+ *	boolean		boolean to test
+ *
+ * returns:
+ *	true ==> bool is valid,
+ *	false ==> bool is NOT valid, or some internal error
+ */
+bool
+test_past_winner(bool boolean)
+{
+    json_dbg(JSON_DBG_MED, __func__, "past_winner is %s", booltostr(boolean));
+    return true;
+}
+
+
+/*
+ * test_remarks - test that remarks filename is valid
+ *
+ * Test that length is > 0 and that the string is equal to REMARKS_FILENAME.
+ *
+ * given:
+ *	str	string to test
+ *
+ * returns:
+ *	true ==> string is valid
+ *	false ==> string is NOT valid, or NULL pointer, or some internal error
+ *
+ */
+bool
+test_remarks(char const *str)
+{
+    /*
+     * firewall
+     */
+    if (str == NULL) {
+	warn(__func__, "str is NULL");
+	return false;
+    }
+
+    if (*str == '\0') { /* strlen(str) == 0 */
+	json_dbg(JSON_DBG_MED, __func__,
+		 "invalid: empty remarks filename is invalid");
+	return false;
+    } else if (strcmp(str, REMARKS_FILENAME)) {
+	json_dbg(JSON_DBG_MED, __func__,
+		 "invalid: remarks filename is not %s", REMARKS_FILENAME);
+	json_dbg(JSON_DBG_HIGH, __func__,
+		 "invalid: remarks filename: <%s> is not %s", str, REMARKS_FILENAME);
+	return false;
+    }
+
+    json_dbg(JSON_DBG_MED, __func__, "remarks filename is valid");
+    return true;
+}
+
+
 /* XXX - end sorted order matching chk_validate.c here - XXX */
 
 
@@ -4138,47 +4201,6 @@ test_url(char const *str)
 
 
 /*
- * test_remarks - test that remarks filename is valid
- *
- * Test that length is > 0 and that the string is equal to REMARKS_FILENAME.
- *
- * given:
- *	str	string to test
- *
- * returns:
- *	true ==> string is valid
- *	false ==> string is NOT valid, or NULL pointer, or some internal error
- *
- */
-bool
-test_remarks(char const *str)
-{
-    /*
-     * firewall
-     */
-    if (str == NULL) {
-	warn(__func__, "str is NULL");
-	return false;
-    }
-
-    if (*str == '\0') { /* strlen(str) == 0 */
-	json_dbg(JSON_DBG_MED, __func__,
-		 "invalid: empty remarks filename is invalid");
-	return false;
-    } else if (strcmp(str, REMARKS_FILENAME)) {
-	json_dbg(JSON_DBG_MED, __func__,
-		 "invalid: remarks filename is not %s", REMARKS_FILENAME);
-	json_dbg(JSON_DBG_HIGH, __func__,
-		 "invalid: remarks filename: <%s> is not %s", str, REMARKS_FILENAME);
-	return false;
-    }
-
-    json_dbg(JSON_DBG_MED, __func__, "remarks filename is valid");
-    return true;
-}
-
-
-/*
  * test_timestamp_epoch - test if timestamp_epoch is valid
  *
  * Determine if timestamp_epoch string is equal to TIMESTAMP_EPOCH.
@@ -4218,28 +4240,6 @@ test_timestamp_epoch(char const *str)
     }
     json_dbg(JSON_DBG_MED, __func__,
 	     "valid: timestamp_epoch == TIMESTAMP_EPOCH");
-    return true;
-}
-
-
-/*
- * test_past_winner - test if past_winner is valid
- *
- * Determine if past_winner boolean is valid.  :-)
- * Well this isn't much of a test, but we have to keep
- * up with the general form of tests!  :-)
- *
- * given:
- *	boolean		boolean to test
- *
- * returns:
- *	true ==> bool is valid,
- *	false ==> bool is NOT valid, or some internal error
- */
-bool
-test_past_winner(bool boolean)
-{
-    json_dbg(JSON_DBG_MED, __func__, "past_winner is %s", booltostr(boolean));
     return true;
 }
 
