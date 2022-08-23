@@ -214,14 +214,23 @@ show_txz_info(char const *txzpath)
 	dbg(DBG_HIGH, "txzchk: %s: empty Makefile:\t\t%s", txzpath, booltostr(txz_info.empty_Makefile));
 	dbg(DBG_MED, "txzchk: %s: size:\t\t\t%jd", txzpath, (intmax_t)txz_info.size);
 	dbg(DBG_MED, "txzchk: %s: size of all files:\t\t%jd", txzpath, (intmax_t)txz_info.file_sizes);
+	dbg(DBG_HIGH, "txzchk: %s: times size of all files shrunk:\t\t%ju", txzpath, (uintmax_t)txz_info.files_size_shrunk);
+	dbg(DBG_HIGH, "txzchk: %s: times size of all files went below 0:\t\t%ju", txzpath, (uintmax_t)txz_info.negative_files_size);
+	dbg(DBG_HIGH, "txzchk: %s: times size of all files went above max %d:\t\t%ju", txzpath,
+		MAX_DIR_KSIZE, (uintmax_t)txz_info.files_size_too_big);
 	dbg(DBG_MED, "txzchk: %s: rounded files size:\t\t%jd", txzpath, (intmax_t)txz_info.rounded_file_size);
-	dbg(DBG_MED, "txzchk: %s: total files:\t\t\t%d", txzpath, txz_info.total_files);
+	dbg(DBG_HIGH, "txzchk: %s: times size of all files rounded up to multiple of 1024 shrunk:\t\t%ju", txzpath,
+		(uintmax_t)txz_info.rounded_files_size_shrunk);
+	dbg(DBG_HIGH, "txzchk: %s: times size of all files rounded up to multiple of 1024 went below 0:\t\t%ju", txzpath,
+		(uintmax_t)txz_info.negative_files_size);
+	dbg(DBG_HIGH, "txzchk: %s: times size of all files rounded up to multiple of 1024 went above max %d:\t\t%ju", txzpath,
+		MAX_DIR_KSIZE, (uintmax_t)txz_info.rounded_files_size_too_big);
+	dbg(DBG_MED, "txzchk: %s: total files:\t\t\t%ju", txzpath, txz_info.total_files);
 	dbg(DBG_MED, "txzchk: %s: incorrect directory found:\t%d", txzpath, txz_info.correct_directory != txz_info.total_files);
-	dbg(DBG_MED, "txzchk: %s: invalid dot files found:\t%d", txzpath, txz_info.dot_files);
-	dbg(DBG_MED, "txzchk: %s: files named '.':\t\t%d", txzpath, txz_info.named_dot);
-	dbg(DBG_MED, "txzchk: %s: files with invalid chars:\t%u", txzpath, txz_info.invalid_chars);
-	dbg(DBG_VHIGH, "txzchk: %s: feathers stuck in tarball:\t%d", txzpath, txz_info.total_feathers);
-
+	dbg(DBG_MED, "txzchk: %s: invalid dot files found:\t%ju", txzpath, txz_info.dot_files);
+	dbg(DBG_MED, "txzchk: %s: files named '.':\t\t%ju", txzpath, txz_info.named_dot);
+	dbg(DBG_MED, "txzchk: %s: files with invalid chars:\t%ju", txzpath, txz_info.invalid_chars);
+	dbg(DBG_VHIGH, "txzchk: %s: feathers stuck in tarball:\t%ju", txzpath, txz_info.total_feathers);
     }
 }
 
@@ -648,7 +657,7 @@ convert_file_size(off_t *current_file_size, char *p)
 
     errno = 0;
     *current_file_size = strtoimax(p, NULL, 10);
-    if (errno != 0)
+    if (errno != 0) /* the conversion fail will be reported in the calling function so we don't do it here */
 	return false;
 
     else if (*current_file_size < 0)
@@ -679,45 +688,52 @@ static void
 check_txz_files_size(bool show_rounded_size)
 {
     /* check total file size */
-    if (txz_info.file_sizes < txz_info.previous_file_sizes)
+    if (txz_info.file_sizes < txz_info.previous_files_size)
     {
 	warn("txzchk", "%s: total size of all files < previous size: %jd < %jd",
 		txzpath,
 		(intmax_t)txz_info.file_sizes,
-		(intmax_t) txz_info.previous_file_sizes);
+		(intmax_t) txz_info.previous_files_size);
 	++txz_info.total_feathers;
     }
     /* update previous to be the current value */
-    txz_info.previous_file_sizes = txz_info.file_sizes;
+    txz_info.previous_files_size = txz_info.file_sizes;
 
     if (txz_info.file_sizes < 0)
     {
 	warn("txzchk", "%s: total file sizes < 0: %jd!", txzpath, (intmax_t)txz_info.file_sizes);
 	++txz_info.total_feathers;
+	/*
+	 * if the previous total size >= 0 we increment the number of times size
+	 * < 0
+	 */
+	if (txz_info.previous_files_size >= 0)
+	    ++txz_info.negative_files_size;
     }
     else if (txz_info.file_sizes == 0)
     {
 	warn("txzchk", "%s: total size of all files == 0", txzpath);
 	++txz_info.total_feathers;
     }
-    else if (txz_info.file_sizes > MAX_DIR_KSIZE && !txz_info.files_size_too_big)
+    else if (txz_info.file_sizes > MAX_DIR_KSIZE)
     {
-	warn("txzchk", "%s: total size of files %jd > %d",
+	if (txz_info.files_size_too_big == 0) /* only warn first time */
+	    warn("txzchk", "%s: total size of files %jd > %d",
 		       txzpath, (intmax_t)txz_info.file_sizes,
 		       MAX_DIR_KSIZE);
+
 	++txz_info.total_feathers;
-	txz_info.files_size_too_big = true;
+	++txz_info.files_size_too_big;
     }
 
     txz_info.rounded_file_size = round_to_multiple(txz_info.file_sizes, 1024);
-    if (txz_info.rounded_file_size < txz_info.previous_rounded_file_size && !txz_info.rounded_files_size_shrunk)
+    if (txz_info.rounded_file_size < txz_info.previous_rounded_file_size)
     {
-	warn("txzchk", "%s: total size of all files rounded up to multiple of 1024 < previous size: %jd < %jd",
-		txzpath,
-		(intmax_t)txz_info.rounded_file_size,
-		(intmax_t) txz_info.previous_rounded_file_size);
+	if (txz_info.rounded_files_size_shrunk == 0) /* only warn first time */
+	    warn("txzchk", "%s: total size of all files rounded up to multiple of 1024 < previous size: %jd < %jd",
+		    txzpath, (intmax_t)txz_info.rounded_file_size, (intmax_t) txz_info.previous_rounded_file_size);
 	++txz_info.total_feathers;
-	txz_info.rounded_files_size_shrunk = true;
+	++txz_info.rounded_files_size_shrunk;
     }
     /* update previous to be the current value */
     txz_info.previous_rounded_file_size = txz_info.rounded_file_size;
@@ -734,13 +750,14 @@ check_txz_files_size(bool show_rounded_size)
 		txzpath);
 	++txz_info.total_feathers;
     }
-    else if (txz_info.rounded_file_size > MAX_DIR_KSIZE && !txz_info.rounded_files_size_too_big)
+    else if (txz_info.rounded_file_size > MAX_DIR_KSIZE)
     {
-	warn("txzchk", "%s: total size of files %jd rounded up to multiple of 1024 %jd > %d",
-		       txzpath, (intmax_t)txz_info.file_sizes,
-		       (intmax_t) txz_info.rounded_file_size, MAX_DIR_KSIZE);
+	if (txz_info.rounded_files_size_too_big == 0) /* only warn first time */
+		warn("txzchk", "%s: total size of files %jd rounded up to multiple of 1024 %jd > %d",
+		       txzpath, (intmax_t)txz_info.file_sizes, (intmax_t) txz_info.rounded_file_size,
+		       MAX_DIR_KSIZE);
 	++txz_info.total_feathers;
-	txz_info.rounded_files_size_too_big = true;
+	++txz_info.rounded_files_size_too_big;
     }
     else if (!quiet && show_rounded_size)
     {
@@ -819,7 +836,7 @@ check_all_txz_files(char const *dir_name)
 
 	if (file->count > 1)
 	{
-	    warn("txzchk", "%s: found a total of %u files with the name %s", txzpath, file->count, file->basename);
+	    warn("txzchk", "%s: found a total of %ju files with the name %s", txzpath, file->count, file->basename);
 	    txz_info.total_feathers += file->count - 1;
 	}
     }
@@ -863,7 +880,7 @@ check_all_txz_files(char const *dir_name)
      */
     if (txz_info.dot_files > 0)
     {
-	warn("txzchk", "%s: found a total of %u unacceptable dot file%s",
+	warn("txzchk", "%s: found a total of %ju unacceptable dot file%s",
 		       txzpath, txz_info.dot_files, txz_info.dot_files==1?"":"s");
     }
 
@@ -872,7 +889,7 @@ check_all_txz_files(char const *dir_name)
      */
     if (txz_info.total_feathers > 0)
     {
-	warn("txzchk", "%s: found %u feather%s stuck in the tarball",
+	warn("txzchk", "%s: found %ju feather%s stuck in the tarball",
 		       txzpath, txz_info.total_feathers, txz_info.total_feathers==1?"":"s");
     }
 }
@@ -895,7 +912,7 @@ check_all_txz_files(char const *dir_name)
 static void
 check_directories(struct txz_file *file, char const *dir_name, char const *txzpath)
 {
-    unsigned dir_count = 0; /* number of directories in the path */
+    uintmax_t dir_count = 0; /* number of directories in the path */
     int prev = '\0';
     int first = '\0';
     int i;
@@ -1380,10 +1397,10 @@ parse_txz_line(char *linep, char *line_dup, char const *dir_name, char const *tx
  *
  * NOTE: Does not return on error.
  */
-static unsigned
+static uintmax_t
 check_tarball(char const *tar, char const *fnamchk)
 {
-    unsigned line_num = 0; /* line number of tar output */
+    uintmax_t line_num = 0; /* line number of tar output */
     FILE *input_stream = NULL; /* pipe for tar output (or if -T specified read as a text file) */
     FILE *fnamchk_stream = NULL; /* pipe for fnamchk output */
     char *linep = NULL;		/* allocated line read from tar (or text file) */
@@ -1587,7 +1604,7 @@ check_tarball(char const *tar, char const *fnamchk)
 	    msg("skipping to next line");
 	    continue;
 	}
-	dbg(DBG_VHIGH, "line %d: %s", line_num, linep);
+	dbg(DBG_VHIGH, "line %ju: %s", line_num, linep);
 
 
 	/*
@@ -1608,6 +1625,20 @@ check_tarball(char const *tar, char const *fnamchk)
     } while (readline_len >= 0);
 
     /*
+     * close down pipe
+     */
+    errno = 0;		/* pre-clear errno for errp() */
+    if (text_file_flag_used)
+	ret = fclose(input_stream);
+    else
+	ret = pclose(input_stream);
+    if (ret < 0)
+	warnp(__func__, "%s: %s error on tar stream", txzpath, text_file_flag_used?"fclose":"pclose");
+
+    input_stream = NULL;
+
+
+    /*
      * now parse the lines, reporting any feathers stuck in the tarball that
      * have to be detected while parsing
      */
@@ -1623,19 +1654,6 @@ check_tarball(char const *tar, char const *fnamchk)
 
     /* free txz_lines list */
     free_txz_lines();
-
-    /*
-     * close down pipe
-     */
-    errno = 0;		/* pre-clear errno for errp() */
-    if (text_file_flag_used)
-	ret = fclose(input_stream);
-    else
-	ret = pclose(input_stream);
-    if (ret < 0)
-	warnp(__func__, "%s: %s error on tar stream", txzpath, text_file_flag_used?"fclose":"pclose");
-
-    input_stream = NULL;
 
     return txz_info.total_feathers;
 }
