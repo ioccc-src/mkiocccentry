@@ -4364,3 +4364,100 @@ test_tarball(char const *str, char const *IOCCC_contest_id, int entry_num, bool 
 	     "valid: tarball filename");
     return true;
 }
+
+/*
+ * test_rule_2a_size - test if rule_2a_size is valid
+ *
+ * Determine if rule_2a_size is within the proper limits.
+ *
+ * NOTE: This function does not consider the override ability. As comment
+ * https://github.com/ioccc-src/mkiocccentry/pull/321#issuecomment-1223274394
+ * says:
+ *
+ *	Failing the test_rule_2a_size() test does NOT disqualify the entry. It
+ *	just triggers, in the case of mkiocccentry to ask the user if they
+ *	really want to try and break the rule. In the case of the chk function we
+ *	will write, the presence of a true value in the appropriate boolean in
+ *	the parse tree will allow a 0 size or an over the limit size to still
+ *	return true.
+ *
+ * given:
+ *	rule_2a_size	rule 2a size
+ *
+ * returns:
+ *	true ==> rule_2a_size is valid,
+ *	false ==> rule_2a_size is NOT valid, or some internal error
+ */
+bool
+test_rule_2a_size(off_t rule_2a_size)
+{
+    /* test lower bound */
+    if (rule_2a_size <= 0)
+    {
+	json_dbg(JSON_DBG_MED, __func__,
+		 "invalid: rule_2a_size: %jd <= 0", (intmax_t)rule_2a_size);
+	return false;
+    }
+    /* test upper bound */
+    else if (rule_2a_size > RULE_2A_SIZE)
+    {
+	json_dbg(JSON_DBG_MED, __func__,
+		 "invalid: rule_2a_size: %jd > %jd", (intmax_t)rule_2a_size, (intmax_t)RULE_2A_SIZE);
+	return false;
+    }
+
+    /* rule_2a_size is valid */
+    json_dbg(JSON_DBG_MED, __func__,
+	    "valid: rule_2a_size");
+    return true;
+}
+
+/*
+ * test_rule_2b_size - test if rule_2b_size is valid
+ *
+ * Determine if rule_2b_size is within the proper limits.
+ *
+ * NOTE: This function does not consider the override ability. As comment
+ * https://github.com/ioccc-src/mkiocccentry/pull/321#issuecomment-1223274394
+ * says:
+ *
+ *	Failing the test_rule_2b_size() test does NOT disqualify the entry. It
+ *	just triggers, in the case of mkiocccentry to ask the user if they
+ *	really want to try and break the rule. In the case of the chk function we
+ *	will write, the presence of a true value in the appropriate boolean in
+ *	the parse tree will allow a 0 size or an over the limit size to still
+ *	return true.
+ *
+ * ..and I believe this also applies to rule 2b as well! :-)
+ *
+ * given:
+ *	rule_2b_size	rule 2b size
+ *
+ * returns:
+ *	true ==> rule_2b_size is valid,
+ *	false ==> rule_2b_size is NOT valid, or some internal error
+ */
+bool
+test_rule_2b_size(size_t rule_2b_size)
+{
+    /* test lower bound */
+    if (rule_2b_size <= 0)
+    {
+	json_dbg(JSON_DBG_MED, __func__,
+		 "invalid: rule_2b_size: %ju <= 0", (uintmax_t)rule_2b_size);
+	return false;
+    }
+    /* test upper bound */
+    else if (rule_2b_size > RULE_2B_SIZE)
+    {
+	json_dbg(JSON_DBG_MED, __func__,
+		 "invalid: rule_2b_size: %ju > %ju", (uintmax_t)rule_2b_size, (uintmax_t)RULE_2B_SIZE);
+	return false;
+    }
+
+    /* rule_2b_size is valid */
+    json_dbg(JSON_DBG_MED, __func__,
+	    "valid: rule_2b_size");
+    return true;
+
+}

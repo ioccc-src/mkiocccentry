@@ -299,4 +299,7 @@ extern bool test_no_comment(char const *str);
 extern bool test_past_winner(bool boolean);
 extern bool test_tarball(char const *str, char const *IOCCC_contest_id, int entry_num, bool test_mode,
 			 time_t formed_timestamp);
+extern bool test_rule_2a_size(off_t rule_2a_size);
+extern bool test_rule_2b_size(size_t rule_2b_size);
+
 #endif /* INCLUDE_ENTRY_UTIL_H */
