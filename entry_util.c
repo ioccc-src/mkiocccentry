@@ -3684,6 +3684,73 @@ test_name(char const *str)
 }
 
 
+/*
+ * test_no_comment - test if no_comment is valid
+ *
+ * Determine if no_comment string is equal to JSON_PARSING_DIRECTIVE_VALUE.
+ *
+ * given:
+ *	str		no_comment to test
+ *
+ * returns:
+ *	true ==> min_timestamp is valid,
+ *	false ==> min_timestamp is NOT valid, or some internal error
+ */
+bool
+test_no_comment(char const *str)
+{
+    /*
+     * firewall
+     */
+    if (str == NULL) {
+	warn(__func__, "str is NULL");
+	return false;
+    }
+    else if (*str == '\0') { /* strlen(str) == 0 */
+	json_dbg(JSON_DBG_MED, __func__,
+		 "invalid: no_comment is empty");
+	return false;
+    }
+    /*
+     * compare with the timestamp epoch
+     */
+    if (strcmp(str, JSON_PARSING_DIRECTIVE_VALUE)) {
+	json_dbg(JSON_DBG_MED, __func__,
+		 "invalid: no_comment != JSON_PARSING_DIRECTIVE_VALUE");
+	json_dbg(JSON_DBG_HIGH, __func__,
+		 "invalid: no_comment: <%s> != JSON_PARSING_DIRECTIVE_VALUE: <%s>",
+		 str, JSON_PARSING_DIRECTIVE_VALUE);
+	return false;
+    }
+    json_dbg(JSON_DBG_MED, __func__,
+	     "valid: no_comment == JSON_PARSING_DIRECTIVE_VALUE");
+    return true;
+
+}
+
+
+/*
+ * test_nul_warning - test if nul_warning is valid
+ *
+ * Determine if nul_warning boolean is valid.  :-)
+ * Well this isn't much of a test, but we have to keep
+ * up with the general form of tests!  :-)
+ *
+ * given:
+ *	boolean		boolean to test
+ *
+ * returns:
+ *	true ==> bool is valid,
+ *	false ==> bool is NOT valid, or some internal error
+ */
+bool
+test_nul_warning(bool boolean)
+{
+    json_dbg(JSON_DBG_MED, __func__, "nul_warning is %s", booltostr(boolean));
+    return true;
+}
+
+
 /* XXX - end sorted order matching chk_validate.c here - XXX */
 
 
@@ -3847,28 +3914,6 @@ bool
 test_rule_2b_override(bool boolean)
 {
     json_dbg(JSON_DBG_MED, __func__, "rule_2b_override is %s", booltostr(boolean));
-    return true;
-}
-
-
-/*
- * test_nul_warning - test if nul_warning is valid
- *
- * Determine if nul_warning boolean is valid.  :-)
- * Well this isn't much of a test, but we have to keep
- * up with the general form of tests!  :-)
- *
- * given:
- *	boolean		boolean to test
- *
- * returns:
- *	true ==> bool is valid,
- *	false ==> bool is NOT valid, or some internal error
- */
-bool
-test_nul_warning(bool boolean)
-{
-    json_dbg(JSON_DBG_MED, __func__, "nul_warning is %s", booltostr(boolean));
     return true;
 }
 
@@ -4174,51 +4219,6 @@ test_timestamp_epoch(char const *str)
     json_dbg(JSON_DBG_MED, __func__,
 	     "valid: timestamp_epoch == TIMESTAMP_EPOCH");
     return true;
-}
-
-
-/*
- * test_no_comment - test if no_comment is valid
- *
- * Determine if no_comment string is equal to JSON_PARSING_DIRECTIVE_VALUE.
- *
- * given:
- *	str		no_comment to test
- *
- * returns:
- *	true ==> min_timestamp is valid,
- *	false ==> min_timestamp is NOT valid, or some internal error
- */
-bool
-test_no_comment(char const *str)
-{
-    /*
-     * firewall
-     */
-    if (str == NULL) {
-	warn(__func__, "str is NULL");
-	return false;
-    }
-    else if (*str == '\0') { /* strlen(str) == 0 */
-	json_dbg(JSON_DBG_MED, __func__,
-		 "invalid: no_comment is empty");
-	return false;
-    }
-    /*
-     * compare with the timestamp epoch
-     */
-    if (strcmp(str, JSON_PARSING_DIRECTIVE_VALUE)) {
-	json_dbg(JSON_DBG_MED, __func__,
-		 "invalid: no_comment != JSON_PARSING_DIRECTIVE_VALUE");
-	json_dbg(JSON_DBG_HIGH, __func__,
-		 "invalid: no_comment: <%s> != JSON_PARSING_DIRECTIVE_VALUE: <%s>",
-		 str, JSON_PARSING_DIRECTIVE_VALUE);
-	return false;
-    }
-    json_dbg(JSON_DBG_MED, __func__,
-	     "valid: no_comment == JSON_PARSING_DIRECTIVE_VALUE");
-    return true;
-
 }
 
 
