@@ -1776,9 +1776,6 @@ form_tar_filename(char const *IOCCC_contest_id, int entry_num, bool test_mode,
 }
 
 
-/* XXX - begin sorted order matching chk_validate.c here - XXX */
-
-
 /*
  * test_IOCCC_author_version - test if IOCCC_author_version is valid
  *
@@ -3837,6 +3834,31 @@ test_rule_2a_mismatch(bool boolean)
 
 
 /*
+ * test_rule_2a_override - test if rule_2a_override is valid
+ *
+ * Determine if rule_2a_override boolean is valid.  :-)
+ * Well this isn't much of a test, but we have to keep
+ * up with the general form of tests!  :-)
+ *
+ * given:
+ *	boolean		boolean to test
+ *
+ * returns:
+ *	true ==> bool is valid,
+ *	false ==> bool is NOT valid, or some internal error
+ */
+bool
+test_rule_2a_override(bool boolean)
+{
+    json_dbg(JSON_DBG_MED, __func__, "rule_2a_override is %s", booltostr(boolean));
+    return true;
+}
+
+
+/* XXX - add test_rule_2a_size() here - XXX */
+
+
+/*
  * test_rule_2b_override - test if rule_2b_override is valid
  *
  * Determine if rule_2b_override boolean is valid.  :-)
@@ -3858,29 +3880,7 @@ test_rule_2b_override(bool boolean)
 }
 
 
-/* XXX - end sorted order matching chk_validate.c here - XXX */
-
-
-/*
- * test_rule_2a_override - test if rule_2a_override is valid
- *
- * Determine if rule_2a_override boolean is valid.  :-)
- * Well this isn't much of a test, but we have to keep
- * up with the general form of tests!  :-)
- *
- * given:
- *	boolean		boolean to test
- *
- * returns:
- *	true ==> bool is valid,
- *	false ==> bool is NOT valid, or some internal error
- */
-bool
-test_rule_2a_override(bool boolean)
-{
-    json_dbg(JSON_DBG_MED, __func__, "rule_2a_override is %s", booltostr(boolean));
-    return true;
-}
+/* XXX - add test_rule_2b_size() here - XXX */
 
 
 /*

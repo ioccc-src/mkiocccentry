@@ -238,7 +238,7 @@ extern bool object2manifest(struct json *node, unsigned int depth, struct json_s
 extern bool timestr_eq_tstamp(char const *timestr, time_t timestamp);
 extern char *form_tar_filename(char const *IOCCC_contest_id, int entry_num, bool test_mode,
 			       time_t formed_timestamp);
-/* XXX - begin sorted order matching chk_validate.c here - XXX */
+
 extern bool test_IOCCC_author_version(char const *str);
 extern bool test_IOCCC_contest_id(char const *str);
 extern bool test_IOCCC_info_version(char const *str);
@@ -285,9 +285,10 @@ extern bool test_past_winner(bool boolean);
 extern bool test_remarks(char const *str);
 extern bool test_rule_2a_override(bool boolean);
 extern bool test_rule_2a_mismatch(bool boolean);
-/* XXX - end sorted order matching chk_validate.c here - XXX */
 extern bool test_first_rule_is_all(bool boolean);
+/* XXX - add test_rule_2a_size() here - XXX */
 extern bool test_rule_2b_override(bool boolean);
+/* XXX - add test_rule_2b_size() here - XXX */
 extern bool test_tarball(char const *str, char const *IOCCC_contest_id, int entry_num, bool test_mode,
 			 time_t formed_timestamp);
 extern bool test_test_mode(bool boolean);
@@ -299,4 +300,6 @@ extern bool test_txzchk_version(char const *str);
 extern bool test_ungetc_warning(bool boolean);
 extern bool test_url(char const *str);
 extern bool test_wordbuf_warning(bool boolean);
+
+
 #endif /* INCLUDE_ENTRY_UTIL_H */
