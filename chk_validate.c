@@ -2524,60 +2524,6 @@ chk_remarks(struct json const *node,
 }
 
 
-/* XXX - end sorted order matching entry_util.c here - XXX */
-
-
-/*
- * chk_rule_2a_override - JSON semantic check for rule_2a_override
- *
- * given:
- *	node	JSON parse node being checked
- *	depth	depth of node in the JSON parse tree (0 ==> tree root)
- *	sem	JSON semantic node triggering the check
- *	val_err	pointer to address where to place a JSON semantic validation error,
- *		NULL ==> do not report a JSON semantic validation error
- *
- * returns:
- *	true ==> JSON element is valid
- *	false ==> JSON element is NOT valid, or NULL pointer, or some internal error
- */
-bool
-chk_rule_2a_override(struct json const *node,
-		     unsigned int depth, struct json_sem *sem, struct json_sem_val_err **val_err)
-{
-    bool *boolean = NULL;			/* pointer to JTYPE_BOOL as decoded JSON boolean */
-    bool test = false;				/* validation test result */
-
-    /*
-     * firewall - args
-     */
-    boolean = sem_member_value_bool(node, depth, sem, __func__, val_err);
-    if (boolean == NULL) {
-	/* sem_member_value_bool() will have set *val_err */
-	return false;
-    }
-
-    /*
-     * validate decoded JSON string
-     */
-    test = test_rule_2a_override(*boolean);
-    if (test == false) {
-	if (val_err != NULL) {
-	    *val_err = werr_sem_val(157, node, depth, sem, __func__, "invalid rule_2a_override");
-	}
-	return false;
-    }
-
-    /*
-     * return validation success
-     */
-    if (val_err != NULL) {
-	*val_err = NULL;
-    }
-    return true;
-}
-
-
 /*
  * chk_rule_2a_mismatch - JSON semantic check for rule_2a_mismatch
  *
@@ -2614,7 +2560,7 @@ chk_rule_2a_mismatch(struct json const *node,
     test = test_rule_2a_mismatch(*boolean);
     if (test == false) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(158, node, depth, sem, __func__, "invalid rule_2a_mismatch");
+	    *val_err = werr_sem_val(157, node, depth, sem, __func__, "invalid rule_2a_mismatch");
 	}
 	return false;
     }
@@ -2665,7 +2611,61 @@ chk_rule_2b_override(struct json const *node,
     test = test_rule_2b_override(*boolean);
     if (test == false) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(159, node, depth, sem, __func__, "invalid rule_2b_override");
+	    *val_err = werr_sem_val(158, node, depth, sem, __func__, "invalid rule_2b_override");
+	}
+	return false;
+    }
+
+    /*
+     * return validation success
+     */
+    if (val_err != NULL) {
+	*val_err = NULL;
+    }
+    return true;
+}
+
+
+/* XXX - end sorted order matching entry_util.c here - XXX */
+
+
+/*
+ * chk_rule_2a_override - JSON semantic check for rule_2a_override
+ *
+ * given:
+ *	node	JSON parse node being checked
+ *	depth	depth of node in the JSON parse tree (0 ==> tree root)
+ *	sem	JSON semantic node triggering the check
+ *	val_err	pointer to address where to place a JSON semantic validation error,
+ *		NULL ==> do not report a JSON semantic validation error
+ *
+ * returns:
+ *	true ==> JSON element is valid
+ *	false ==> JSON element is NOT valid, or NULL pointer, or some internal error
+ */
+bool
+chk_rule_2a_override(struct json const *node,
+		     unsigned int depth, struct json_sem *sem, struct json_sem_val_err **val_err)
+{
+    bool *boolean = NULL;			/* pointer to JTYPE_BOOL as decoded JSON boolean */
+    bool test = false;				/* validation test result */
+
+    /*
+     * firewall - args
+     */
+    boolean = sem_member_value_bool(node, depth, sem, __func__, val_err);
+    if (boolean == NULL) {
+	/* sem_member_value_bool() will have set *val_err */
+	return false;
+    }
+
+    /*
+     * validate decoded JSON string
+     */
+    test = test_rule_2a_override(*boolean);
+    if (test == false) {
+	if (val_err != NULL) {
+	    *val_err = werr_sem_val(159, node, depth, sem, __func__, "invalid rule_2a_override");
 	}
 	return false;
     }

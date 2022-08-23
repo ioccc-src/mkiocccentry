@@ -283,9 +283,9 @@ extern bool test_no_comment(char const *str);
 extern bool test_nul_warning(bool boolean);
 extern bool test_past_winner(bool boolean);
 extern bool test_remarks(char const *str);
-/* XXX - end sorted order matching chk_validate.c here - XXX */
 extern bool test_rule_2a_override(bool boolean);
 extern bool test_rule_2a_mismatch(bool boolean);
+/* XXX - end sorted order matching chk_validate.c here - XXX */
 extern bool test_rule_2b_override(bool boolean);
 extern bool test_trigraph_warning(bool boolean);
 extern bool test_wordbuf_warning(bool boolean);
