@@ -3597,9 +3597,6 @@ test_min_timestamp(time_t tstamp)
 }
 
 
-/* XXX - end sorted order matching chk_validate.c here - XXX */
-
-
 /*
  * test_mkiocccentry_version - test if mkiocccentry_version is valid
  *
@@ -3636,6 +3633,9 @@ test_mkiocccentry_version(char const *str)
     json_dbg(JSON_DBG_MED, __func__, "formed_UTC is valid");
     return true;
 }
+
+
+/* XXX - end sorted order matching chk_validate.c here - XXX */
 
 
 /*
