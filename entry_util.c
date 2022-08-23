@@ -3043,6 +3043,95 @@ test_found_try_rule(bool boolean)
 
 
 /*
+ * test_github - test if GitHub account is valid
+ *
+ * Determine if github length is <= MAX_GITHUB_LEN and that it has a leading '@'
+ * and _only_ one '@'.
+ *
+ * given:
+ *	str	string to test
+ *
+ * returns:
+ *	true ==> string is valid,
+ *	false ==> string is NOT valid, or NULL pointer, or some internal error
+ */
+bool
+test_github(char const *str)
+{
+    size_t length = 0;
+
+    char *p = NULL;
+
+    /*
+     * firewall
+     */
+    if (str == NULL) {
+	warn(__func__, "str is NULL");
+	return false;
+    }
+
+    /*
+     * validate str
+     */
+    /* check for a valid length */
+    if (*str == '\0') { /* strlen(str) == 0 */
+	json_dbg(JSON_DBG_MED, __func__,
+		 "empty github is invalid");
+	return false;
+    }
+    length = strlen(str);
+    if (length > MAX_GITHUB_LEN) {
+	json_dbg(JSON_DBG_MED, __func__,
+		 "invalid: github length %ju > max %d: <%s>", (uintmax_t)length, MAX_GITHUB_LEN, str);
+	json_dbg(JSON_DBG_HIGH, __func__,
+		 "invalid: title: <%s> is invalid", str);
+	return false;
+    }
+    /* check for valid github account chars */
+    p = strchr(str, '@');
+    if (p == NULL || str[0] != '@') {
+	json_dbg(JSON_DBG_MED, __func__,
+		 "invalid: github account does not start with '@'");
+	json_dbg(JSON_DBG_HIGH, __func__,
+		 "invalid: github: <%s> is invalid", str);
+	return false;
+    } else if (p != strrchr(str, '@')) {
+	json_dbg(JSON_DBG_MED, __func__,
+		 "invalid: github account has more than one '@'");
+	json_dbg(JSON_DBG_HIGH, __func__,
+		 "invalid: github: <%s> is invalid", str);
+	return false;
+
+    }
+
+    json_dbg(JSON_DBG_MED, __func__, "github is valid");
+    return true;
+}
+
+
+/*
+ * test_highbit_warning - test if highbit_warning is valid
+ *
+ * Determine if highbit_warning boolean is valid.  :-)
+ * Well this isn't much of a test, but we have to keep
+ * up with the general form of tests!  :-)
+ *
+ * given:
+ *	boolean		boolean to test
+ *
+ * returns:
+ *	true ==> bool is valid,
+ *	false ==> bool is NOT valid, or some internal error
+ */
+bool
+test_highbit_warning(bool boolean)
+{
+    json_dbg(JSON_DBG_MED, __func__, "highbit_warning is %s", booltostr(boolean));
+    return true;
+}
+
+
+/*
  * test_info_JSON - test if info_JSON is valid
  *
  * Determine if info_JSON matches AUTHOR_JSON_FILENAME.
@@ -3466,6 +3555,48 @@ test_manifest(struct manifest *manp)
 }
 
 
+/*
+ * test_min_timestamp - test if min_timestamp is valid
+ *
+ * Determine if min_timestamp == MIN_TIMESTAMP.
+ *
+ * given:
+ *	tstamp		timestamp as time_t to test
+ *
+ * returns:
+ *	true ==> min_timestamp is valid,
+ *	false ==> min_timestamp is NOT valid, or some internal error
+ */
+bool
+test_min_timestamp(time_t tstamp)
+{
+    /*
+     * compare with the minimum timestamp
+     */
+    if (tstamp != MIN_TIMESTAMP) {
+	json_dbg(JSON_DBG_MED, __func__,
+		 "invalid: min_timestamp != MIN_TIMESTAMP");
+	json_dbg(JSON_DBG_HIGH, __func__,
+		 "invalid: min_timestamp != MIN_TIMESTAMP");
+	if ((time_t)-1 > 0) {
+	    /* case: unsigned time_t */
+	    json_dbg(JSON_DBG_HIGH, __func__,
+		     "invalid: min_timestamp %ju != MIN_TIMESTAMP: %ju",
+		     (uintmax_t)tstamp, (uintmax_t)MIN_TIMESTAMP);
+	} else {
+	    /* case: signed time_t */
+	    json_dbg(JSON_DBG_HIGH, __func__,
+		     "invalid: min_timestamp: %jd != MIN_TIMESTAMP: %jd",
+		     (intmax_t)tstamp, (intmax_t)MIN_TIMESTAMP);
+	}
+	return false;
+    }
+    json_dbg(JSON_DBG_MED, __func__,
+	     "valid: min_timestamp == MIN_TIMESTAMP");
+    return true;
+}
+
+
 /* XXX - end sorted order matching chk_validate.c here - XXX */
 
 
@@ -3672,28 +3803,6 @@ test_rule_2b_override(bool boolean)
 
 
 /*
- * test_highbit_warning - test if highbit_warning is valid
- *
- * Determine if highbit_warning boolean is valid.  :-)
- * Well this isn't much of a test, but we have to keep
- * up with the general form of tests!  :-)
- *
- * given:
- *	boolean		boolean to test
- *
- * returns:
- *	true ==> bool is valid,
- *	false ==> bool is NOT valid, or some internal error
- */
-bool
-test_highbit_warning(bool boolean)
-{
-    json_dbg(JSON_DBG_MED, __func__, "highbit_warning is %s", booltostr(boolean));
-    return true;
-}
-
-
-/*
  * test_nul_warning - test if nul_warning is valid
  *
  * Determine if nul_warning boolean is valid.  :-)
@@ -3799,73 +3908,6 @@ bool
 test_test_mode(bool boolean)
 {
     json_dbg(JSON_DBG_MED, __func__, "test_mode is %s", booltostr(boolean));
-    return true;
-}
-
-
-/*
- * test_github - test if GitHub account is valid
- *
- * Determine if github length is <= MAX_GITHUB_LEN and that it has a leading '@'
- * and _only_ one '@'.
- *
- * given:
- *	str	string to test
- *
- * returns:
- *	true ==> string is valid,
- *	false ==> string is NOT valid, or NULL pointer, or some internal error
- */
-bool
-test_github(char const *str)
-{
-    size_t length = 0;
-
-    char *p = NULL;
-
-    /*
-     * firewall
-     */
-    if (str == NULL) {
-	warn(__func__, "str is NULL");
-	return false;
-    }
-
-    /*
-     * validate str
-     */
-    /* check for a valid length */
-    if (*str == '\0') { /* strlen(str) == 0 */
-	json_dbg(JSON_DBG_MED, __func__,
-		 "empty github is invalid");
-	return false;
-    }
-    length = strlen(str);
-    if (length > MAX_GITHUB_LEN) {
-	json_dbg(JSON_DBG_MED, __func__,
-		 "invalid: github length %ju > max %d: <%s>", (uintmax_t)length, MAX_GITHUB_LEN, str);
-	json_dbg(JSON_DBG_HIGH, __func__,
-		 "invalid: title: <%s> is invalid", str);
-	return false;
-    }
-    /* check for valid github account chars */
-    p = strchr(str, '@');
-    if (p == NULL || str[0] != '@') {
-	json_dbg(JSON_DBG_MED, __func__,
-		 "invalid: github account does not start with '@'");
-	json_dbg(JSON_DBG_HIGH, __func__,
-		 "invalid: github: <%s> is invalid", str);
-	return false;
-    } else if (p != strrchr(str, '@')) {
-	json_dbg(JSON_DBG_MED, __func__,
-		 "invalid: github account has more than one '@'");
-	json_dbg(JSON_DBG_HIGH, __func__,
-		 "invalid: github: <%s> is invalid", str);
-	return false;
-
-    }
-
-    json_dbg(JSON_DBG_MED, __func__, "github is valid");
     return true;
 }
 
@@ -4038,48 +4080,6 @@ test_remarks(char const *str)
     }
 
     json_dbg(JSON_DBG_MED, __func__, "remarks filename is valid");
-    return true;
-}
-
-
-/*
- * test_min_timestamp - test if min_timestamp is valid
- *
- * Determine if min_timestamp == MIN_TIMESTAMP.
- *
- * given:
- *	tstamp		timestamp as time_t to test
- *
- * returns:
- *	true ==> min_timestamp is valid,
- *	false ==> min_timestamp is NOT valid, or some internal error
- */
-bool
-test_min_timestamp(time_t tstamp)
-{
-    /*
-     * compare with the minimum timestamp
-     */
-    if (tstamp != MIN_TIMESTAMP) {
-	json_dbg(JSON_DBG_MED, __func__,
-		 "invalid: min_timestamp != MIN_TIMESTAMP");
-	json_dbg(JSON_DBG_HIGH, __func__,
-		 "invalid: min_timestamp != MIN_TIMESTAMP");
-	if ((time_t)-1 > 0) {
-	    /* case: unsigned time_t */
-	    json_dbg(JSON_DBG_HIGH, __func__,
-		     "invalid: min_timestamp %ju != MIN_TIMESTAMP: %ju",
-		     (uintmax_t)tstamp, (uintmax_t)MIN_TIMESTAMP);
-	} else {
-	    /* case: signed time_t */
-	    json_dbg(JSON_DBG_HIGH, __func__,
-		     "invalid: min_timestamp: %jd != MIN_TIMESTAMP: %jd",
-		     (intmax_t)tstamp, (intmax_t)MIN_TIMESTAMP);
-	}
-	return false;
-    }
-    json_dbg(JSON_DBG_MED, __func__,
-	     "valid: min_timestamp == MIN_TIMESTAMP");
     return true;
 }
 
