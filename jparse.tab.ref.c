@@ -2341,9 +2341,9 @@ ugly_error(struct json **node, char const *format, ...)
     if (ugly_text != NULL && *ugly_text != '\0') {
 	fprint(stderr, " line: %d: %s\n", ugly_lineno, ugly_text);
     } else if (ugly_text == NULL) {
-	fprint(stderr, " line: %d: ugly_text == NULL\n", ugly_lineno);
+	fprint(stderr, " line: %d: text == NULL\n", ugly_lineno);
     } else {
-	fprint(stderr, " line: %d: empty ugly_text\n", ugly_lineno);
+	fprint(stderr, " line: %d: empty text\n", ugly_lineno);
     }
 
     /*
