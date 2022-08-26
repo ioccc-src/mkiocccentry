@@ -50,6 +50,12 @@
 #include "entry_util.h"
 
 
+/*
+ * macros
+ */
+#define has_does_not_have(b) ((b)?"has":"does not have")
+#define singular_or_plural(x) ((x)==1?"":"s")
+
 /* globals */
 bool quiet = false;				/* true ==> quiet mode */
 /* globals specific to txzchk */
@@ -74,7 +80,7 @@ struct txz_info
     bool empty_remarks_md;		    /* true ==> remarks.md size == 0 */
     bool has_Makefile;			    /* true ==> has a Makefile */
     bool empty_Makefile;		    /* true ==> Makefile size == 0 */
-    uintmax_t invalid_chars;		    /* > 0 ==> invalid characters found in this number of filenames */
+    uintmax_t unsafe_chars;		    /* > 0 ==> unsafe characters found in this number of filenames (posix_safe_plus()) */
     off_t size;				    /* size of the tarball itself */
     off_t file_sizes;			    /* total size of all the files combined */
     off_t previous_files_size;		    /* the previous total size of all files combined */
