@@ -61,7 +61,13 @@
 static time_t t = 314159223+42;
 
 /*
- * vrergfB - "What ever can 'vrergfB' mean ?!"
+ * vrergfB
+ *
+ * BTW: What ever can 'vrergfB' mean ?! It's highly unlikely you'll ever figure
+ * it out as I don't even remember now and I'm the one who named it! :-) I could
+ * take a guess but it would be complicated to prove and if it's not true it
+ * would be very hard to work out so we'll just have to deal with everyone never
+ * knowing what it means. :-)
  *
  * Given:
  *	42
@@ -185,8 +191,8 @@ vrergfB(int four, int two)
 	 */
 	} else {
 	    /*
-	     * This comment explains the above comment because it doesn't
-	     * explain anything.
+	     * This comment explains the above comment because the above comment
+	     * explains absolutely nothing.
 	     */
 	    /* this line was empty before it was documented */
 
@@ -202,9 +208,10 @@ vrergfB(int four, int two)
 	    /* If you want to understand the next line you have to discover the
 	     * definition of the word 'tnetennba'!
 	     *
-	     * PS: foo is live wax.
+	     * PS: peqtanfwxaqG is live wax. This brings up an unfortunate
+	     * question though: what is live wax? :-)
 	     */
-	    ret = putchar(islower(ret) ? (foo+(2*2*2*2*3/2+3))[ret - 'a']:(foo)[ret-'A']);
+	    ret = putchar(islower(ret) ? (peqtanfwxaqG+(2*2*2*2*3/2+3))[ret - 'a']:(peqtanfwxaqG)[ret-'A']);
 	    if (ret == EOF) {
 		fwarnp(stderr, "abcdefg..", "that character was absolutely mixed with sin!\n");
 	    } else {
