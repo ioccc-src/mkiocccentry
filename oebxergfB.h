@@ -35,6 +35,7 @@ static char const *oebxergfB[] =
 {
 "'twaa' ua twzufsplyrnufyttm plwybwl bnye 'plwybwl'. '<', nsxwvwl,\n"
 "ua twzufsplyrnufyttm twaa bnye '>'. Usiwsew aflwxwd qr.\n"
+"\n"
 "-- Xwzmt\n"
 ,
 "C dse'b hesx nyto so msq nyto ya xwtt ya C ansqtd tuhw; yed C tuhw twaa\n"
@@ -42,6 +43,7 @@ static char const *oebxergfB[] =
 "-- Nutks Nyppuea\n"
 ,
 "I awfbuse: '{}'\n"
+"\n"
 "-- Xwzmt\n"
 ,
 "'Uwfsedtm, bs fwtwklybw DSM kulbndyma: iuew yed im nsesqlyktw yed pyttyeb\n"
@@ -53,6 +55,7 @@ static char const *oebxergfB[] =
 "-- Nueps Nyppuea\n"
 ,
 "I qeusea: tsvuep fsqrtwa xns wegsm rlsplyiiuep ue I bspwbnwl.\n"
+"\n"
 "-- Xwzmt\n"
 ,
 "'Yssh,' ayud Glbnql, 'xsqtd ub ayvw msq y tsb so buiw uo C gqab pyvw\n"
@@ -60,9 +63,11 @@ static char const *oebxergfB[] =
 ,
 "C dse'b nyvw y anydsx; C iqldwlwd nui mwyla yps kwfyqaw nw xsqtde'b absr\n"
 "osttsxuep iw.\n"
+"\n"
 "-- Xwzmt\n"
 ,
 "Fsksdm ua rwlowfb. C yi esksdm. Tnwlwoslw C yi rwlowfb yed msq'lw esb! :)\n"
+"\n"
 "-- Xwzmt\n"
 ,
 "Nwewoub so Ituiybw Inyepw?\n"
@@ -129,6 +134,7 @@ static char const *oebxergfB[] =
 "uo bnw wvudwefw fsebyuewd ytfsnst xnufn so fsqlaw ub dud.\n"
 ,
 "Umabwi wllsl: Rwbwfbwd qawl yfbuvubm.\n"
+"\n"
 "-- Xwzmt\n"
 ,
 "'Fym! Fsb Otvwa,' ayud bnw osqlbn, bnw byttwab, yed ya ub yrrwylwd bnw\n"
@@ -141,6 +147,7 @@ static char const *oebxergfB[] =
 ,
 "Vnm ansqtd msq ewvwl xwupn msqlawto xwyluep autvwl, pstd sl rtybueqi? Nwfyqaw\n"
 "bnwm'lw nwyvm iwbyta.\n"
+"\n"
 "-- Xwzmt\n"
 ,
 "Wutdsl xya autweb osl y isiweb. 'C ds esb tuhw bnua ewxa,' nw ayud yb tyab. 'Tnyb\n"
@@ -224,6 +231,7 @@ static char const *oebxergfB[] =
 ,
 "Vnm xya bnw rylbuyttm dwyo dmatwzuf iye qrawb yb nua xuow? Unw yahwd nui uo nw\n"
 "psb bnw lsttwd syba yed nw bnsqpnb anw xya fyttuep nui ye std syo.\n"
+"\n"
 "-- Xwzmt\n"
 ,
 "'Ged msq ds Gddubuse?' bnw Vnubw Pqwwe yahwd. 'Vnyb'a sew yed sew yed sew yed\n"
@@ -293,6 +301,7 @@ static char const *oebxergfB[] =
 "y audw woowfb I ua ueflwiwebwd km 1. Tnua rlsvwa bnyb I ua aqrwlusl - xnyb'a\n"
 "twob, I + 1, ua ktsyb yed ub'a qptm. Cb'a nqpw yed uedwfweb. Hsl I++'a cqytubm\n"
 "blm I = 0;.\n"
+"\n"
 "-- Xwzmt\n"
 ,
 "Gobwl y tsep abluep so qeawyaseyktm xyli dyma ue Lufnupye, bnw bsruf\n"
@@ -738,6 +747,7 @@ static char const *oebxergfB[] =
 ,
 "Co ye wylbncqyhw klwyha y iullsl dswa bnw webulw wylbn nyvw awvwe mwyla so kyd\n"
 "tqfh ?\n"
+"\n"
 "-- Xwzmt\n"
 ,
 "RCR ZDS BFDV bnyb ue Vmsiuep ub ua uttwpyt bs xwyl y nyb bnyb skablqfba\n"
@@ -803,6 +813,7 @@ static char const *oebxergfB[] =
 "Vsiye yb xsiye?\n"
 ,
 "Vnyb ds msq fytt y ouanwliye awttuep nua ouan? Uwtouan.\n"
+"\n"
 "-- Xwzmt\n"
 ,
 "RCR ZDS BFDV bnyb ue Qwliseb xsiwe iqab skbyue xlubbwe rwliuaause olsi bnwul\n"
@@ -838,7 +849,9 @@ static char const *oebxergfB[] =
 ,
 "RCR ZDS BFDV bnyb ue Sbyn ub ua uttwpyt bs esb dlueh iuth?\n"
 "\n"
-"Sbyn, xnwlw bnwm dse'b bstwlybw tyfbsaw uebstwlyefw!\n"
+"Sbyn, bnw abybw so tyfbsaw uebstwlyefw uebstwlyefw! Nqb bnwe nsx sobwe ds msq\n"
+"nyvw bs dlueh ub? Ged nsx fye bnwm weoslfw bnua tyfbsaw uebstwlyefw\n"
+"uebstwlyefw?\n"
 ,
 "RCR ZDS BFDV bnyb ue Gtyahy ub ua fseaudwlwd ye soowefw bs rqan y tuvw issaw\n"
 "sqb so y isvuep ywlsrtyew?\n"
@@ -868,6 +881,7 @@ static char const *oebxergfB[] =
 ,
 "Vuedsxa dluvuep msq flyjm? Nqm y afyeewl yed ueabytt bnw ueftqdwd UGFO\n"
 "tuklylm!\n"
+"\n"
 "-- Xwzmt\n"
 ,
 "RCR ZDS BFDV bnyb ue Qulpueuy fnutdlwe ylw esb bs ps blufh-sl-blwybuep se\n"
@@ -893,6 +907,7 @@ static char const *oebxergfB[] =
 "pwtduep. Nqb xnyb yksqb nslawa?\n"
 ,
 "Uwyxwwd: Lylugqyey osl ouan.\n"
+"\n"
 "-- Xwzmt\n"
 ,
 "RCR ZDS BFDV bnyb ue Fwklyahy uo y fnutd kqlra dqluep fnqlfn, nua sl nwl\n"
@@ -923,6 +938,7 @@ static char const *oebxergfB[] =
 "Yspufyttm ub ua kqb skvusqatm ub'a esb.\n"
 ,
 "Wyeplwew : ye wevulseiwebyttm-oluwedtm pyep.\n"
+"\n"
 "-- Xwzmt\n"
 ,
 "RCR ZDS BFDV bnyb ue Wwslpuy msq fyeesb tuvw se y ksyb osl islw bnye 30 dyma\n"
@@ -982,6 +998,7 @@ static char const *oebxergfB[] =
 "wvwe uo msq'lw soo hwm.\n"
 ,
 "Vw ytt, ueftqduep - yed uedwwd warwfuyttm - bnw Oylbn, nyvw sql oyqtba.\n"
+"\n"
 "-- Xwzmt\n"
 ,
 "RCR ZDS BFDV bnyb ue Fwx Awlawm ub ua ypyueab bnw tyx bs xwyl y kqttwbrlsso\n"
@@ -1023,6 +1040,7 @@ static char const *oebxergfB[] =
 "xnyb?'\n"
 ,
 "Co Etyewb Oylbn xya iwebyttm utt ub xsqtd kw duypesawd kurstyl.\n"
+"\n"
 "-- Xwzmt\n"
 ,
 "Vnwe C oued im fsdw ue bsea so blsqktw,\n"
@@ -1086,9 +1104,11 @@ static char const *oebxergfB[] =
 "Vlubw ue I.\n"
 ,
 "Ksx ds iybnwiybufuyea plwwb rwsrtw? Nm auew xyvwa.\n"
+"\n"
 "-- Xwzmt\n"
 ,
 "Uudwxyth: Vythuep audwxyma.\n"
+"\n"
 "-- Xwzmt\n"
 ,
 "'Vw osqed bnw ayed xya esb tuhw bnw ayed ue bnw klsfnqlw. Zsql klsfnqlw ansxa\n"
@@ -1169,6 +1189,7 @@ static char const *oebxergfB[] =
 ,
 "Fublsqa Dzudw: Tnw fylkse iseszudw osl tyqpnuep nmweya; bnwm'tt tubwlyttm\n"
 "duw olsi tyqpnbwl.\n"
+"\n"
 "-- Xwzmt\n"
 ,
 "Txs fnwiuaba xyth uebs y kyl.\n"
@@ -1285,9 +1306,11 @@ static char const *oebxergfB[] =
 "pultoluwed, kqb y bythuep olsp ua fsst.'\n"
 ,
 "Vnwlw ylw bnw xslab auepwla ue bnw xsltd? Uuepyrslw.\n"
+"\n"
 "-- Xwzmt\n"
 ,
 "Vnyb ua bnw aufhwab eybuse ue bnw xsltd? Wwliyem, oqtt so pwli luddwe iwe.\n"
+"\n"
 "-- Xwzmt\n"
 ,
 "LZTK: Gtt nqiyea nyvw bnlww ylbwluwa klyefnuep soo olsi bnwul yslby.\n"
@@ -1795,6 +1818,166 @@ static char const *oebxergfB[] =
 "Vnm Eslbqpyt dud esb kye bnw eyiw Tnqladym xnwe Tnqladym ua eyiwd yobwl Tnsl ua\n"
 "twob qeabybwd. Ewlnyra Cbytm xsqtd tuhw bs ds ub ueabwyd auefw bnwm nyvw y\n"
 "bnuep ypyueab dyma.\n"
+,
+"Uultsuea: Tnw tsuea so y heupnb.\n"
+"\n"
+"-- Xwzmt\n"
+,
+"Rud msq nwyl yksqb bnw heupnbwd tuse yed bnw dmatwzuf? Tnw tuse ybw nui\n"
+"yobwl nw hwrb lwowlluep bs nui ya Uultsue!\n"
+"\n"
+"-- Xwzmt\n"
+,
+"Hqeem, uebwlwabuep yed ulseuf aqk-yeyplyia yed aqkxslda C'vw esbufwd svwl bnw\n"
+"mwyla:\n"
+"\n"
+"* Tnw xsld KOGYTK abylba xubn bnw xsld KOGY.\n"
+"\n"
+"* Ce sldwl bs KOGM xw ewwd ye OGM, bnw tyab bnlww twbbwla so bnw xsld KOGM.\n"
+"\n"
+"* YCUTOF yed UCYOFT ylw yeyplyia yed uo msq xyeb bs kw pssd yb tuabweuep msq\n"
+"ansqtd kw twyle bs kw autweb!\n"
+"\n"
+"* Tnw xsld GFWOM nya bnw twbbwla bs arwtt bnw xsld MGWO.\n"
+"\n"
+"* Tnw xsld GUCFCFO nya bnw twbbwla bs arwtt CFUGFO.\n"
+"\n"
+"* Tnw xslda OGT, GTO yed TOG ylw yeyplyia. Co msq wyb asiwbnuep msq ybw ub. Ce\n"
+"Oeptyed bwy lwowla bs yobwlesse bwy, ye wvweuep iwyt yed bwy ubawto.\n"
+"\n"
+"* G esb as oqeem sew: bnw xsld BCYY weda xubn bnw xsld CYY yed iyem uttewaawa\n"
+"fye hutt msq.\n"
+"\n"
+"-- Xwzmt\n"
+,
+"Vw'vw ytt nwyld so rwy klyuea kqb dud msq hesx bnwlw xya aqfn y bnuep ya y rwy\n"
+"tqep? Co msq uenytw y rwy ub fye arlsqb yed plsx ue msql tqepa!\n"
+"\n"
+"-- Xwzmt\n"
+,
+"Ryedwtuse: G tuse qedqtm fsefwlewd xubn tsshuep abmtuan yed oyanuseyktw.\n"
+"\n"
+"-- Xwzmt\n"
+,
+"Hqeem yed/sl ykaqld 911 fytta:\n"
+"\n"
+"* Usiwsew fyttwd kwfyqaw bnwm psb bnwul nwyd abqfh ue bnwul fyb'a aflybfnuep\n"
+"rsab. Tnw fyb xya abqfh ueaudw xubn bnwi. Tnlsqpnsqb bnw fytt, C hwrb nwyluep:\n"
+"'DV, dqdw, bnua uae'b oqe osl iw wubnwl.'\n"
+"\n"
+"* C nyd y plsxe iye fytt ue yksqb y iseabwl blmuep bs pwb uebs nua ase'a lssi.\n"
+"Tnw iseabwl nyd ftuikwd y blww yed xya yb nua kwdlssi xuedsx. Cb xya ya kup ya\n"
+"nua dsp, yed nyd nyeda tuhw nui--kqb buem. Tqlea sqb, bnwm nyd gqab isvwd bs\n"
+"Giwlufy yed nyd ewvwl nwyld so lyffssea.\n"
+"\n"
+"* Defw C bythwd bs y rujjy dwtuvwlm pqm xns fsqtde'b lwyfn nua dwabueybuse\n"
+"kwfyqaw y dwouyeb fnufhwe xya abyeduep ue bnw iuddtw so bnw lsyd.\n"
+"\n"
+"* De Tnyehapuvuep isleuep, C psb y fytt olsi y tydm xns ewwdwd nwtr iyhuep y\n"
+"bqlhwm. C bstd nwl bnua xya ye wiwlpwefm tuew. Unw ueosliwd iw bnua xya ye\n"
+"wiwlpwefm, kwfyqaw anw nyd oyiutm fsiuep svwl.\n"
+"\n"
+"Usqlfw: Mwddub.\n"
+,
+"G msqep oybnwl bssh y awyb se y flsxdwd kqa ewzb bs ye std iye yed rtsrrwd nua\n"
+"sew mwyl std ase se nua tyr gqab ya bnw tubbtw ksm kwpye bs flm yed oudpwb.\n"
+"\n"
+"'Tnyb fnutd ua arsutb, uae'b nw?' lwiylhwd bnw std iye.\n"
+"\n"
+"'Fs,' ayud bnw dyd, 'bnwm ytt aiwtt bnua xym.'\n"
+"\n"
+"Usqlfw: kwabtuowsetuew.fsi.\n"
+"\n"
+"[C iupnb kw y abuehwl osl aymuep bnua kqb esb setm ds C esb hesx uo bnua ua y\n"
+"gshw kqb C ytas lwyttm nsrw bnyb bnua xya esb y gshw yed lwyttm nyrrwewd!\n"
+"-- Xwzmt]\n"
+,
+"Tnua ua y fseawcqwefw lybnwl bnye y psyt. C yknsl y amabwi dwaupewd osl bnw\n"
+"'qawl', uo bnyb xsld ua y fsdwd rwgslybuvw iwyeuep 'abqrud yed\n"
+"qeasrnuabufybwd.\n"
+"\n"
+"-- Bwe Tnsirase\n"
+,
+"SFCX ua kyaufyttm y auirtw srwlybuep amabwi kqb msq nyvw bs kw y pweuqa bs\n"
+"qedwlabyed bnw auirtufubm.\n"
+"\n"
+"-- Rweeua Mubfnuw\n"
+,
+"Cb'a rwlnyra xwtt hesxe bnyb Bwe Tnsirase gshwd yksqb xnyb nw'd ds duoowlwebtm\n"
+"xubn SFCX ua arwttuep flwyb(2) ya flwybw(2) kqb dud msq hesx nw hued so iydw y\n"
+"fsiiub bnyb dud bnua ytkwub osl Ws? Gb\n"
+"\n"
+"nbbra://pubnqk.fsi/pstyep/ps/fsiiub/f90d392fw3d3203w0f32k3o98d1w68f4f2k4f49k\n"
+"\n"
+"xw aww:\n"
+"\n"
+"    arwtt ub xubn ye \"w\"\n"
+"    M=laf\n"
+"    nbbr://ps/ps-lwvuwx/1025037\n"
+"\n"
+"    @hwe\n"
+"    hwe fsiiubbwd se 10 Fsv 2009\n"
+"    1 rylweb 8y902wd fsiiub f90d392fw3d3203w0f32k3o98d1w68f4f2k4f49k\n"
+"\n"
+"Nqb so fsqlaw nw iwyeb y awfsed sl oueyt 'w' :-) Ksxwvwl ub'a esb bnw amafytt\n"
+"ubawto; bnw duoo ua yfbqyttm:\n"
+"  \n"
+"alf/rhp/sa/outw.ps\n"
+" \n"
+" @@ -62,6 +62,7 @@ fseab (\n"
+" 	D_FROYGZ	= D_FDFNYDIB;		// amesemi osl D_FDFNYDIB\n"
+" 	D_UZFI		= amafytt.D_UZFI;	// srwe osl amefnlsesqa C/D.\n"
+" 	D_TMSFI		= amafytt.D_TMSFI;	// uo rsaauktw, blqefybw outw xnwe srwewd.\n"
+"+	D_IMOGTO	= D_IMOGT;		// flwybw y ewx outw uo esew wzuaba.\n"
+" )\n"
+"\n"
+"// Drwe srwea bnw eyiwd outw xubn arwfuouwd otyp (D_MRDFYZ wbf.) yed rwli, (0666 wbf.)\n"
+,
+"'Tnwm ansqtd esb yttsx bsrtwaa aqekybnuep se bnw kwyfn. Cb xya vwlm\n"
+"duablyfbuep osl im nqakyed xns gqab xyebwd bs lwtyz.'\n"
+"\n"
+"Co nw lwyttm xyebwd bs lwtyz nw xsqtd nyvw nyd es rlsktwi ftsauep nua wmwa.\n"
+"Tnqa xw fye rlwaqiw bnyb nw setm bnsqpnb nw xyebwd bs lwtyz sl wtaw nw xya\n"
+"tmuep bs msq. Ewlnyra msq ansqtd awwh iylluypw fsqeawttuep? :-)\n"
+,
+"'Vw ksshwd ye wzfqlause bs y xybwl rylh kqb es-sew bstd qa xw nyd bs kluep sql\n"
+"sxe axuiaquba yed bsxwta. Vw yaaqiwd ub xsqtd kw ueftqdwd ue bnw rlufw.'\n"
+"\n"
+"Fsx xnyb xsqtd msq xyeb bsxwta osl yb y xybwl rylh? Vsqtde'b dlmuep soo dwowyb\n"
+"bnw rqlrsaw so kwuep ue xybwl?\n"
+,
+"'Fs-sew bstd qa bnwlw xsqtd kw ouan ue bnw xybwl. Tnw fnutdlwe xwlw afylwd.'\n"
+"\n"
+"Tnwlw awwia bs kw y ouan sqb so bnw xybwl bss!\n"
+,
+"'Gtbnsqpn bnw klsfnqlw ayud bnyb bnwlw xya y oqttm wcqurrwd hubfnwe, bnwlw xya\n"
+"es wpp-atufwl ue bnw dlyxwla.'\n"
+"\n"
+"Tnua ua wzyfbtm xnm msq ansqtde'b rqb ytt msql wppa ue sew kyahwb!\n"
+,
+"'Vw nyd bs tuew qr sqbaudw bs fybfn bnw ksyb yed bnwlw xya es\n"
+"yul-fsedubuseuep.'\n"
+"\n"
+"Tnua ua kwfyqaw yul fsedubusewla ylw tuhw fsirqbwla: bnwm absr xslhuep xnwe msq\n"
+"srwe Vuedsxa sl xnwe sqbaudw. Zsq ansqtd uevweb ye yul fsedubusewl bnyb xslha\n"
+"sqbaudw yed xubn Vuedsxa srwe. Cb'd kw kwbbwl uo ub xya rslbyktw; msq'd kw lufn\n"
+"yed C fwlbyuetm xsqtd xyeb sew!\n"
+,
+"'C xya kubbwe km y isacqubs. Tnw klsfnqlw dud esb iwebuse isacqubswa.'\n"
+"\n"
+"Nqb yb twyab msq xwlwe'b qexubbueptm kubbwe km y lykud kyb. Rud msq hesx bnyb\n"
+"sefw amirbsia ansx qr ub'a y 100 rwl fweb hutt lybw? Tnwlw'a esbnuep msq fye\n"
+"ds.\n"
+,
+"'Lm ouyeféw yed C lwcqwabwd bxue-kwda xnwe xw ksshwd, kqb ueabwyd xw xwlw\n"
+"rtyfwd ue y lssi xubn y huep kwd. Vw esx nstd msq lwarseauktw yed xyeb bs kw\n"
+"lw-lwuikqlawd[auf] osl bnw oyfb bnyb C kwfyiw rlwpeyeb. Tnua xsqtd esb nyvw\n"
+"nyrrwewd uo msq nyd rqb qa ue bnw lssi bnyb xw ksshwd.'\n"
+"\n"
+"Zsql ouyeféw iydw msq rlwpeyeb? Nqb bnua ua y afuwebuouf klwyhbnlsqpn so bnw\n"
+"fwebqlm! Co y xsiye iydw msq rlwpeyeb ds msq lwytuaw gqab nsx aupeuoufyeb bnua\n"
+"ua? De bnw sbnwl nyed ub'a abutt bnw oyqtb so msql ouyefé yed msq bnyb msq\n"
+"kwfyiw rlwpeyeb.\n"
 ,
 
 NULL
