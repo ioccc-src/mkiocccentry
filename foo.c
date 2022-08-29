@@ -177,7 +177,7 @@ vrergfB(int four, int two)
 	/*
 	 * The previous comment wasn't obfuscated but this one wasn't either.
 	 */
-	} else if (!isalpha(*p)) {
+	} else if (!isalpha(*p) && !isdigit(*p)) {
 	    ret = putchar(*p);
 	    if (ret == EOF) {
 		fwarnp(stderr, "abcdefg..", "that was NOT in character :-(\n");
@@ -199,11 +199,13 @@ vrergfB(int four, int two)
 	    /* case: just in case we consider the case */
 	    ret = islower(*p) /* this is a functional equivalent to a question mark: */ ?
 		/* absolute trigonometric runaround */
-		"nxistdwhowakprqfcvgzhjskelyybume"[((int)fabs(0x3BF261*sin((double)((*p-0141+(42-(1<<4)))%(0x2E4%42)))))&0x1f]
-		: /* you are looking at the functional equivalent of a colon */
-		/* try to absolutely positively trig this upper class character */
-		"NXAUTMWORWCKBLQPZDXVQJSTFHYlGIEE"[((int)fabs(043431066*sin((double)((1+*p-0x42+(0xd<<1))%((2*0x0DF)%42)))))&037]
-		;
+                "nxistdwhowakprqfcvgzhjskelyybume"[(
+		(int)fabs(0x3BF261*sin((double)((*p-0141+((42*3-42*2)-(1<<4)))%
+		(0x2E4%(5*42-42*4))))))&0x1f] : /* you are looking at the functional equivalent of a colon */ (!isalpha(*p) ? *p :
+                /* try to absolutely positively trig this upper class character */
+                "NXAUTMWORWCKBLQPZDXVQJSTFHYlGIEE"[((int)fabs(043431066*sin((double)((1+*p-0x42+(
+		0xd<<1))%((2*0x0DF)%(4*42-42/3-42-42-28))))))&037])
+                ;
 
 	    /* If you want to understand the next line you have to discover the
 	     * definition of the word 'tnetennba'!
@@ -211,7 +213,9 @@ vrergfB(int four, int two)
 	     * PS: peqtanfwxaqG is live wax. This brings up an unfortunate
 	     * question though: what is live wax? :-)
 	     */
-	    ret = putchar(islower(ret) ? (peqtanfwxaqG+(2*2*2*2*3/2+3))[ret - 'a']:(peqtanfwxaqG)[ret-'A']);
+
+	    ret = putchar(islower(ret) ? (peqtanfwxaqG+(2*2*2*2*3/2+3-1))[ret - 'a']:(isupper(ret)?(peqtanfwxaqG)[ret-'A']
+			:(peqtanfwxaqG+52)[ret-'0']));
 	    if (ret == EOF) {
 		fwarnp(stderr, "abcdefg..", "that character was absolutely mixed with sin!\n");
 	    } else {
