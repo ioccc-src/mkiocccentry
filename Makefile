@@ -734,6 +734,8 @@ all_ref: jsemtblgen jsemcgen.sh test_JSON/info.json/good test_JSON/author.json/g
 		echo "./jsemcgen.sh -N sem_info -P chk -- $$i . . . failed, exit code: $$status" 1>&2 ;\
 		exit 1; \
 	    fi; \
+	    echo "ls -l ref/$$json.c"; \
+	    ls -l "ref/$$json.c"; \
 	    json=$(shell basename -- "$$i"); \
 	    rm -f "ref/$$json.h"; \
 	    echo "./jsemcgen.sh -N sem_info -P chk -I -- $$i . . . > ref/$$json.h"; \
@@ -743,6 +745,8 @@ all_ref: jsemtblgen jsemcgen.sh test_JSON/info.json/good test_JSON/author.json/g
 		echo "./jsemcgen.sh -N sem_info -P chk -I -- $$i . . . failed, exit code: $$status" 1>&2 ;\
 		exit 2; \
 	    fi; \
+	    echo "ls -l ref/$$json.h"; \
+	    ls -l "ref/$$json.h"; \
 	done
 	for i in test_JSON/author.json/good/*.json; do \
 	    json=$(shell basename -- "$$i"); \
@@ -754,6 +758,8 @@ all_ref: jsemtblgen jsemcgen.sh test_JSON/info.json/good test_JSON/author.json/g
 		echo "./jsemcgen.sh -N sem_auth -P chk -- $$i . . . failed, exit code: $$status" 1>&2 ;\
 		exit 3; \
 	    fi; \
+	    echo "ls -l ref/$$json.c"; \
+	    ls -l "ref/$$json.c"; \
 	    json=$(shell basename -- "$$i"); \
 	    rm -f "ref/$$json.h"; \
 	    echo "./jsemcgen.sh -N sem_auth -P chk -I -- $$i . . . > ref/$$json.h"; \
@@ -763,6 +769,8 @@ all_ref: jsemtblgen jsemcgen.sh test_JSON/info.json/good test_JSON/author.json/g
 		echo "./jsemcgen.sh -N sem_auth -P chk -I -- $$i . . . failed, exit code: $$status" 1>&2 ;\
 		exit 4; \
 	    fi; \
+	    echo "ls -l ref/$$json.h"; \
+	    ls -l "ref/$$json.h"; \
 	done
 
 # Form the chk_sem_????.{c,h} files
