@@ -736,7 +736,6 @@ all_ref: jsemtblgen jsemcgen.sh test_JSON/info.json/good test_JSON/author.json/g
 	    fi; \
 	    echo "ls -l ref/$$json.c"; \
 	    ls -l "ref/$$json.c"; \
-	    json=$(shell basename -- "$$i"); \
 	    rm -f "ref/$$json.h"; \
 	    echo "./jsemcgen.sh -N sem_info -P chk -I -- $$i . . . > ref/$$json.h"; \
 	    ./jsemcgen.sh -N sem_info -P chk -I -- "$$i" . . . > "ref/$$json.h"; \
@@ -760,7 +759,6 @@ all_ref: jsemtblgen jsemcgen.sh test_JSON/info.json/good test_JSON/author.json/g
 	    fi; \
 	    echo "ls -l ref/$$json.c"; \
 	    ls -l "ref/$$json.c"; \
-	    json=$(shell basename -- "$$i"); \
 	    rm -f "ref/$$json.h"; \
 	    echo "./jsemcgen.sh -N sem_auth -P chk -I -- $$i . . . > ref/$$json.h"; \
 	    ./jsemcgen.sh -N sem_auth -P chk -I -- "$$i" . . . > "ref/$$json.h"; \
