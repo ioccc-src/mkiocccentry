@@ -215,7 +215,7 @@ vrergfB(int four, int two)
 	     */
 
 	    ret = putchar(islower(ret) ? (peqtanfwxaqG+(2*2*2*2*3/2+3-1))[ret - 'a']:(isupper(ret)?(peqtanfwxaqG)[ret-'A']
-			:(peqtanfwxaqG+52)[ret-'0']));
+		/* this is the equivalent of positive negativity */:(peqtanfwxaqG+2*3*4*5-42  - - - - -4*6+2-4)[ret-'0']));
 	    if (ret == EOF) {
 		fwarnp(stderr, "abcdefg..", "that character was absolutely mixed with sin!\n");
 	    } else {
