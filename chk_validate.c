@@ -635,7 +635,7 @@ chk_author(struct json const *node,
 {
     struct json *value = NULL;          /* value of JTYPE_MEMBER */
     struct json *parent = NULL;		/* JSON parse tree node parent */
-    struct json *acount_node = NULL;	/* JSON parse node containing author_count */
+    struct json *author_count_node = NULL;	/* JSON parse node containing author_count */
     struct json_array *array = NULL;	/* JSON parse node value as JTYPE_ARRAY */
     struct author *aset = NULL;		/* array of authors converted from array of JSON parse tree JSON_OBJECT */
     int *author_count = NULL;		/* pointer to author count as int from JSON parse node for author_count */
@@ -680,16 +680,16 @@ chk_author(struct json const *node,
      *
      * NOTE: sem_object_find_name() will verify that parent is a JSON parse node of JTYPE_OBJECT type.
      */
-    acount_node = sem_object_find_name(parent, depth-1, sem, __func__, val_err, "author_count");
-    if (acount_node == NULL) {
+    author_count_node = sem_object_find_name(parent, depth-1, sem, __func__, val_err, "author_count");
+    if (author_count_node == NULL) {
 	/* sem_object_find_name() will have set *val_err */
 	return false;
     }
 
     /*
-     * obtain the "valid_author" count
+     * obtain the author_count
      */
-    author_count = sem_member_value_int(acount_node, depth, sem, __func__, val_err);
+    author_count = sem_member_value_int(author_count_node, depth, sem, __func__, val_err);
     if (author_count == NULL) {
 	/* sem_member_value_int() will have set *val_err */
 	return false;
@@ -1269,7 +1269,7 @@ chk_formed_UTC(struct json const *node,
 	       unsigned int depth, struct json_sem *sem, struct json_sem_val_err **val_err)
 {
     struct json *parent = NULL;		/* JSON parse tree node parent */
-    struct json *formed_tstamp = NULL;	/* JSON parse node containing formed_timestamp */
+    struct json *formed_timestamp_node = NULL;	/* JSON parse node containing formed_timestamp */
     time_t *formed_timestamp = NULL;	/* pointer to formed_timestamp as time_t */
     char *str = NULL;			/* JTYPE_STRING as decoded JSON string */
     bool test = false;			/* validation test result */
@@ -1308,8 +1308,8 @@ chk_formed_UTC(struct json const *node,
      *
      * NOTE: sem_object_find_name() will verify that parent is a JSON parse node of JTYPE_OBJECT type.
      */
-    formed_tstamp = sem_object_find_name(parent, depth-1, sem, __func__, val_err, "formed_timestamp");
-    if (formed_tstamp == NULL) {
+    formed_timestamp_node = sem_object_find_name(parent, depth-1, sem, __func__, val_err, "formed_timestamp");
+    if (formed_timestamp_node == NULL) {
 	/* sem_object_find_name() will have set *val_err */
 	return false;
     }
@@ -1317,7 +1317,7 @@ chk_formed_UTC(struct json const *node,
     /*
      * obtain the "formed_timestamp" from under the parent node
      */
-    formed_timestamp = sem_member_value_time_t(formed_tstamp, depth, sem, __func__, val_err);
+    formed_timestamp = sem_member_value_time_t(formed_timestamp_node, depth, sem, __func__, val_err);
     if (formed_timestamp == NULL) {
 	/* sem_member_value_int() will have set *val_err */
 	return false;
@@ -1982,9 +1982,9 @@ chk_location_name(struct json const *node,
 		  unsigned int depth, struct json_sem *sem, struct json_sem_val_err **val_err)
 {
     char *str = NULL;				/* JTYPE_STRING as decoded JSON string */
-    char *code = NULL;				/* JTYPE_STRING as decoded JSON string */
     struct json *parent = NULL;			/* JSON parse tree node parent */
-    struct json *location_code = NULL;		/* JSON parse node containing location_code */
+    struct json *location_code_node = NULL;		/* JSON parse node containing location_code */
+    char *location_code = NULL;				/* JTYPE_STRING as decoded JSON string */
     bool test = false;				/* validation test result */
 
     /*
@@ -2021,8 +2021,8 @@ chk_location_name(struct json const *node,
      *
      * NOTE: sem_object_find_name() will verify that parent is a JSON parse node of JTYPE_OBJECT type.
      */
-    location_code = sem_object_find_name(parent, depth-1, sem, __func__, val_err, "location_code");
-    if (location_code == NULL) {
+    location_code_node = sem_object_find_name(parent, depth-1, sem, __func__, val_err, "location_code");
+    if (location_code_node == NULL) {
 	/* sem_object_find_name() will have set *val_err */
 	return false;
     }
@@ -2030,8 +2030,8 @@ chk_location_name(struct json const *node,
     /*
      * obtain location code
      */
-    code = sem_member_value_decoded_str(location_code, depth, sem, __func__, val_err);
-    if (code == NULL) {
+    location_code = sem_member_value_decoded_str(location_code_node, depth, sem, __func__, val_err);
+    if (location_code == NULL) {
 	/* sem_member_value_decoded_str() will have set *val_err */
 	return false;
     }
@@ -2039,7 +2039,7 @@ chk_location_name(struct json const *node,
     /*
      * verify that the location name (str) and the location code refer to the same place
      */
-    test = location_code_name_match(code, str);
+    test = location_code_name_match(location_code, str);
     if (test == false) {
 	if (val_err != NULL) {
 	    *val_err = werr_sem_val(145, node, depth, sem, __func__,
@@ -2573,57 +2573,6 @@ chk_rule_2a_mismatch(struct json const *node,
 
 
 /*
- * chk_rule_2b_override - JSON semantic check for rule_2b_override
- *
- * given:
- *	node	JSON parse node being checked
- *	depth	depth of node in the JSON parse tree (0 ==> tree root)
- *	sem	JSON semantic node triggering the check
- *	val_err	pointer to address where to place a JSON semantic validation error,
- *		NULL ==> do not report a JSON semantic validation error
- *
- * returns:
- *	true ==> JSON element is valid
- *	false ==> JSON element is NOT valid, or NULL pointer, or some internal error
- */
-bool
-chk_rule_2b_override(struct json const *node,
-		      unsigned int depth, struct json_sem *sem, struct json_sem_val_err **val_err)
-{
-    bool *boolean = NULL;			/* pointer to JTYPE_BOOL as decoded JSON boolean */
-    bool test = false;				/* validation test result */
-
-    /*
-     * firewall - args
-     */
-    boolean = sem_member_value_bool(node, depth, sem, __func__, val_err);
-    if (boolean == NULL) {
-	/* sem_member_value_bool() will have set *val_err */
-	return false;
-    }
-
-    /*
-     * validate decoded JSON string
-     */
-    test = test_rule_2b_override(*boolean);
-    if (test == false) {
-	if (val_err != NULL) {
-	    *val_err = werr_sem_val(158, node, depth, sem, __func__, "invalid rule_2b_override");
-	}
-	return false;
-    }
-
-    /*
-     * return validation success
-     */
-    if (val_err != NULL) {
-	*val_err = NULL;
-    }
-    return true;
-}
-
-
-/*
  * chk_rule_2a_override - JSON semantic check for rule_2a_override
  *
  * given:
@@ -2659,7 +2608,7 @@ chk_rule_2a_override(struct json const *node,
     test = test_rule_2a_override(*boolean);
     if (test == false) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(159, node, depth, sem, __func__, "invalid rule_2a_override");
+	    *val_err = werr_sem_val(158, node, depth, sem, __func__, "invalid rule_2a_override");
 	}
 	return false;
     }
@@ -2674,16 +2623,358 @@ chk_rule_2a_override(struct json const *node,
 }
 
 
-/* XXX - add chk_rule_2a_size() here - XXX */
+/*
+ * chk_rule_2a_size - JSON semantic check for rule_2a_size
+ *
+ * given:
+ *	node	JSON parse node being checked
+ *	depth	depth of node in the JSON parse tree (0 ==> tree root)
+ *	sem	JSON semantic node triggering the check
+ *	val_err	pointer to address where to place a JSON semantic validation error,
+ *		NULL ==> do not report a JSON semantic validation error
+ *
+ * returns:
+ *	true ==> JSON element is valid
+ *	false ==> JSON element is NOT valid, or NULL pointer, or some internal error
+ */
+bool
+chk_rule_2a_size(struct json const *node,
+	     unsigned int depth, struct json_sem *sem, struct json_sem_val_err **val_err)
+{
+    int *value = NULL;				/* JSON_NUMBER as decoded int */
+    bool test = false;				/* validation test result */
+
+    /*
+     * firewall - args and JSON number as int check
+     */
+    value = sem_member_value_int(node, depth, sem, __func__, val_err);
+    if (value == NULL) {
+	/* sem_member_value_int() will have set *val_err */
+	return false;
+    }
+
+    /*
+     * validate decoded JSON string
+     */
+    test = test_rule_2a_size(*value);
+    if (test == false) {
+	if (val_err != NULL) {
+	    *val_err = werr_sem_val(159, node, depth, sem, __func__, "invalid rule_2a_size");
+	}
+	return false;
+    }
+
+    /*
+     * return validation success
+     */
+    if (val_err != NULL) {
+	*val_err = NULL;
+    }
+    return true;
+}
 
 
-/* XXX - add chk_rule_2b_override() here - XXX */
+/*
+ * chk_rule_2b_override - JSON semantic check for rule_2b_override
+ *
+ * given:
+ *	node	JSON parse node being checked
+ *	depth	depth of node in the JSON parse tree (0 ==> tree root)
+ *	sem	JSON semantic node triggering the check
+ *	val_err	pointer to address where to place a JSON semantic validation error,
+ *		NULL ==> do not report a JSON semantic validation error
+ *
+ * returns:
+ *	true ==> JSON element is valid
+ *	false ==> JSON element is NOT valid, or NULL pointer, or some internal error
+ */
+bool
+chk_rule_2b_override(struct json const *node,
+		      unsigned int depth, struct json_sem *sem, struct json_sem_val_err **val_err)
+{
+    bool *boolean = NULL;			/* pointer to JTYPE_BOOL as decoded JSON boolean */
+    bool test = false;				/* validation test result */
+
+    /*
+     * firewall - args
+     */
+    boolean = sem_member_value_bool(node, depth, sem, __func__, val_err);
+    if (boolean == NULL) {
+	/* sem_member_value_bool() will have set *val_err */
+	return false;
+    }
+
+    /*
+     * validate decoded JSON string
+     */
+    test = test_rule_2b_override(*boolean);
+    if (test == false) {
+	if (val_err != NULL) {
+	    *val_err = werr_sem_val(160, node, depth, sem, __func__, "invalid rule_2b_override");
+	}
+	return false;
+    }
+
+    /*
+     * return validation success
+     */
+    if (val_err != NULL) {
+	*val_err = NULL;
+    }
+    return true;
+}
 
 
-/* XXX - add chk_rule_2b_size() here - XXX */
+/*
+ * chk_rule_2b_size - JSON semantic check for rule_2b_size
+ *
+ * given:
+ *	node	JSON parse node being checked
+ *	depth	depth of node in the JSON parse tree (0 ==> tree root)
+ *	sem	JSON semantic node triggering the check
+ *	val_err	pointer to address where to place a JSON semantic validation error,
+ *		NULL ==> do not report a JSON semantic validation error
+ *
+ * returns:
+ *	true ==> JSON element is valid
+ *	false ==> JSON element is NOT valid, or NULL pointer, or some internal error
+ */
+bool
+chk_rule_2b_size(struct json const *node,
+	     unsigned int depth, struct json_sem *sem, struct json_sem_val_err **val_err)
+{
+    int *value = NULL;				/* JSON_NUMBER as decoded int */
+    bool test = false;				/* validation test result */
+
+    /*
+     * firewall - args and JSON number as int check
+     */
+    value = sem_member_value_int(node, depth, sem, __func__, val_err);
+    if (value == NULL) {
+	/* sem_member_value_int() will have set *val_err */
+	return false;
+    }
+
+    /*
+     * validate decoded JSON string
+     */
+    test = test_rule_2b_size(*value);
+    if (test == false) {
+	if (val_err != NULL) {
+	    *val_err = werr_sem_val(161, node, depth, sem, __func__, "invalid rule_2b_size");
+	}
+	return false;
+    }
+
+    /*
+     * return validation success
+     */
+    if (val_err != NULL) {
+	*val_err = NULL;
+    }
+    return true;
+}
 
 
-/* XXX - add chk_tarball() here - XXX */
+/*
+ * chk_tarball - JSON semantic check for tarball array
+ *
+ * given:
+ *	node	JSON parse node being checked
+ *	depth	depth of node in the JSON parse tree (0 ==> tree root)
+ *	sem	JSON semantic node triggering the check
+ *	val_err	pointer to address where to place a JSON semantic validation error,
+ *		NULL ==> do not report a JSON semantic validation error
+ *
+ * returns:
+ *	true ==> JSON element is valid
+ *	false ==> JSON element is NOT valid, or NULL pointer, or some internal error
+ */
+bool
+chk_tarball(struct json const *node,
+	   unsigned int depth, struct json_sem *sem, struct json_sem_val_err **val_err)
+{
+    char *str = NULL;				/* JTYPE_STRING as decoded JSON string */
+    struct json *parent = NULL;			/* JSON parse tree node parent */
+    struct json *IOCCC_contest_id_node = NULL;	/* JSON parse node containing IOCCC_contest_id */
+    char const *IOCCC_contest_id = NULL;	/* pointer to author count as int from JSON parse node for IOCCC_contest_id */
+    struct json *entry_num_node = NULL;		/* JSON parse node containing entry_num */
+    int *entry_num = NULL;			/* pointer to author count as int from JSON parse node for entry_num */
+    struct json *test_mode_node = NULL;		/* JSON parse node containing test_mode */
+    bool *test_mode = NULL;			/* pointer to author count as int from JSON parse node for test_mode */
+    struct json *formed_timestamp_node = NULL;	/* JSON parse node containing formed_timestamp */
+    time_t *formed_timestamp = NULL;		/* pointer to formed_timestamp as time_t */
+    bool test = false;				/* validation test result */
+
+    /*
+     * firewall - args
+     */
+    if (sem_chk_null_args(node, depth, sem, __func__, val_err) == true) {
+	/* sem_chk_null_args() will have set *val_err */
+	return false;
+    }
+
+    /*
+     * firewall - node type
+     */
+    test = sem_node_valid_converted(node, depth, sem, __func__, val_err);
+    if (test == false) {
+	/* sem_node_valid_converted() will have set *val_err */
+	return false;
+    }
+    if (node->type != JTYPE_MEMBER) {
+	if (val_err != NULL) {
+	    *val_err = werr_sem_val(162, node, depth, sem, __func__, "node type %s != JTYPE_MEMBER",
+				    json_type_name(node->type));
+	}
+	return false;
+    }
+
+    /*
+     * obtain the IOCCC_contest_id
+     */
+    str = sem_member_value_decoded_str(node, depth, sem, __func__, val_err);
+    if (str == NULL) {
+	/* sem_member_value_decoded_str() will have set *val_err */
+	return false;
+    }
+
+    /*
+     * look at parent of the tarball array
+     */
+    parent = sem_node_parent(node, depth, sem, __func__, val_err);
+    if (parent == NULL) {
+	/* sem_node_parent() will have set *val_err */
+	return false;
+    }
+
+    /*
+     * find tarball_count in parent node
+     *
+     * NOTE: sem_object_find_name() will verify that parent is a JSON parse node of JTYPE_OBJECT type.
+     */
+    IOCCC_contest_id_node = sem_object_find_name(parent, depth-1, sem, __func__, val_err, "IOCCC_contest_id");
+    if (IOCCC_contest_id_node == NULL) {
+	/* sem_object_find_name() will have set *val_err */
+	return false;
+    }
+
+    /*
+     * obtain the IOCCC_contest_id
+     */
+    IOCCC_contest_id = sem_member_value_decoded_str(IOCCC_contest_id_node, depth, sem, __func__, val_err);
+    if (IOCCC_contest_id == NULL) {
+	/* sem_member_value_decoded_str() will have set *val_err */
+	return false;
+    }
+    test = test_IOCCC_contest_id(IOCCC_contest_id);
+    if (test == false) {
+	if (val_err != NULL) {
+	    *val_err = werr_sem_val(163, node, depth, sem, __func__, "invalid IOCCC_contest_id");
+	}
+	return false;
+    }
+
+    /*
+     * find entry_num in parent node
+     *
+     * NOTE: sem_object_find_name() will verify that parent is a JSON parse node of JTYPE_OBJECT type.
+     */
+    entry_num_node = sem_object_find_name(parent, depth-1, sem, __func__, val_err, "entry_num");
+    if (entry_num_node == NULL) {
+	/* sem_object_find_name() will have set *val_err */
+	return false;
+    }
+
+    /*
+     * obtain the entry number
+     */
+    entry_num = sem_member_value_int(entry_num_node, depth, sem, __func__, val_err);
+    if (entry_num == NULL) {
+	/* sem_member_value_int() will have set *val_err */
+	return false;
+    }
+    test = test_entry_num(*entry_num);
+    if (test == false) {
+	if (val_err != NULL) {
+	    *val_err = werr_sem_val(164, node, depth, sem, __func__, "invalid entry_num");
+	}
+	return false;
+    }
+
+    /*
+     * find test_mode in parent node
+     *
+     * NOTE: sem_object_find_name() will verify that parent is a JSON parse node of JTYPE_OBJECT type.
+     */
+    test_mode_node = sem_object_find_name(parent, depth-1, sem, __func__, val_err, "test_mode");
+    if (test_mode_node == NULL) {
+	/* sem_object_find_name() will have set *val_err */
+	return false;
+    }
+
+    /*
+     * obtain the entry number
+     */
+    test_mode = sem_member_value_bool(test_mode_node, depth, sem, __func__, val_err);
+    if (test_mode == NULL) {
+	/* sem_member_value_bool() will have set *val_err */
+	return false;
+    }
+    test = test_test_mode(*test_mode);
+    if (test == false) {
+	if (val_err != NULL) {
+	    *val_err = werr_sem_val(165, node, depth, sem, __func__, "invalid test_mode");
+	}
+	return false;
+    }
+
+    /*
+     * find formed_timestamp in parent node
+     *
+     * NOTE: sem_object_find_name() will verify that parent is a JSON parse node of JTYPE_OBJECT type.
+     */
+    formed_timestamp_node = sem_object_find_name(parent, depth-1, sem, __func__, val_err, "formed_timestamp");
+    if (formed_timestamp_node == NULL) {
+	/* sem_object_find_name() will have set *val_err */
+	return false;
+    }
+
+    /*
+     * obtain the "formed_timestamp" from under the parent node
+     */
+    formed_timestamp = sem_member_value_time_t(formed_timestamp_node, depth, sem, __func__, val_err);
+    if (formed_timestamp == NULL) {
+	/* sem_member_value_time_t() will have set *val_err */
+	return false;
+    }
+    test = test_formed_timestamp(*formed_timestamp);
+    if (test == false) {
+	if (val_err != NULL) {
+	    *val_err = werr_sem_val(166, node, depth, sem, __func__, "invalid formed_timestamp");
+	}
+	return false;
+    }
+
+    /*
+     * test the tarball with related data
+     */
+    test = test_tarball(str, IOCCC_contest_id, *entry_num, *test_mode, *formed_timestamp);
+    if (test == false) {
+	if (val_err != NULL) {
+	    *val_err = werr_sem_val(167, node, depth, sem, __func__, "invalid tarball");
+	}
+	return false;
+    }
+
+    /*
+     * return validation success
+     */
+    if (val_err != NULL) {
+	*val_err = NULL;
+    }
+    return true;
+}
 
 
 /*
@@ -2722,7 +3013,7 @@ chk_test_mode(struct json const *node,
     test = test_test_mode(*boolean);
     if (test == false) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(160, node, depth, sem, __func__, "invalid test_mode");
+	    *val_err = werr_sem_val(168, node, depth, sem, __func__, "invalid test_mode");
 	}
 	return false;
     }
@@ -2773,7 +3064,7 @@ chk_timestamp_epoch(struct json const *node,
     test = test_timestamp_epoch(str);
     if (test == false) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(161, node, depth, sem, __func__, "invalid timestamp_epoch");
+	    *val_err = werr_sem_val(169, node, depth, sem, __func__, "invalid timestamp_epoch");
 	}
 	return false;
     }
@@ -2824,7 +3115,7 @@ chk_title(struct json const *node,
     test = test_title(str);
     if (test == false) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(162, node, depth, sem, __func__, "invalid title");
+	    *val_err = werr_sem_val(170, node, depth, sem, __func__, "invalid title");
 	}
 	return false;
     }
@@ -2875,7 +3166,7 @@ chk_trigraph_warning(struct json const *node,
     test = test_trigraph_warning(*boolean);
     if (test == false) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(163, node, depth, sem, __func__, "invalid trigraph_warning");
+	    *val_err = werr_sem_val(171, node, depth, sem, __func__, "invalid trigraph_warning");
 	}
 	return false;
     }
@@ -2926,7 +3217,7 @@ chk_twitter(struct json const *node,
     test = test_twitter(str);
     if (test == false) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(164, node, depth, sem, __func__, "invalid twitter");
+	    *val_err = werr_sem_val(172, node, depth, sem, __func__, "invalid twitter");
 	}
 	return false;
     }
@@ -2977,7 +3268,7 @@ chk_txzchk_version(struct json const *node,
     test = test_txzchk_version(str);
     if (test == false) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(165, node, depth, sem, __func__, "invalid txzchk_version");
+	    *val_err = werr_sem_val(173, node, depth, sem, __func__, "invalid txzchk_version");
 	}
 	return false;
     }
@@ -3028,7 +3319,7 @@ chk_ungetc_warning(struct json const *node,
     test = test_ungetc_warning(*boolean);
     if (test == false) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(166, node, depth, sem, __func__, "invalid ungetc_warning");
+	    *val_err = werr_sem_val(174, node, depth, sem, __func__, "invalid ungetc_warning");
 	}
 	return false;
     }
@@ -3079,7 +3370,7 @@ chk_url(struct json const *node,
     test = test_url(str);
     if (test == false) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(167, node, depth, sem, __func__, "invalid url");
+	    *val_err = werr_sem_val(175, node, depth, sem, __func__, "invalid url");
 	}
 	return false;
     }
@@ -3130,7 +3421,7 @@ chk_wordbuf_warning(struct json const *node,
     test = test_wordbuf_warning(*boolean);
     if (test == false) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(168, node, depth, sem, __func__, "invalid wordbuf_warning");
+	    *val_err = werr_sem_val(176, node, depth, sem, __func__, "invalid wordbuf_warning");
 	}
 	return false;
     }
