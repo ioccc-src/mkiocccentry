@@ -118,7 +118,7 @@ main(int argc, char *argv[])
     errno = 0;		/* pre-clear errno for errp() */
     stream = fopen(filename, "r");
     if (stream == NULL) {
-	err(10, program, "error in fopen(%s, \"r\")", filename);
+	errp(10, program, "error in fopen(%s, \"r\")", filename);
 	not_reached();
     }
 
@@ -151,7 +151,7 @@ main(int argc, char *argv[])
 	errno = 0;		/* pre-clear errno for errp() */
 	line = strdup(readline_buf);
 	if (line == NULL) {
-	    err(13, program, "strdup of readline buffer failed");
+	    errp(13, program, "strdup of readline buffer failed");
 	    not_reached();
 	}
 
@@ -225,7 +225,7 @@ main(int argc, char *argv[])
     errno = 0;		/* pre-clear errno for errp() */
     ret = fclose(stream);
     if (ret < 0) {
-	err(17, program, "error in fclose");
+	errp(17, program, "error in fclose");
 	not_reached();
     }
 

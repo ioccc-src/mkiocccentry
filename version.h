@@ -90,7 +90,7 @@
 /*
  * official txzchk version
  */
-#define TXZCHK_VERSION "0.10 2022-03-15"	/* format: major.minor YYYY-MM-DD */
+#define TXZCHK_VERSION "0.11 2022-08-23"	/* format: major.minor YYYY-MM-DD */
 
 /*
  * official chkentry version

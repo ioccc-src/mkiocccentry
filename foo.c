@@ -61,7 +61,13 @@
 static time_t t = 314159223+42;
 
 /*
- * vrergfB - "What ever can 'vrergfB' mean ?!"
+ * vrergfB
+ *
+ * BTW: What ever can 'vrergfB' mean ?! It's highly unlikely you'll ever figure
+ * it out as I don't even remember now and I'm the one who named it! :-) I could
+ * take a guess but it would be complicated to prove and if it's not true it
+ * would be very hard to work out so we'll just have to deal with everyone never
+ * knowing what it means. :-)
  *
  * Given:
  *	42
@@ -171,7 +177,7 @@ vrergfB(int four, int two)
 	/*
 	 * The previous comment wasn't obfuscated but this one wasn't either.
 	 */
-	} else if (!isalpha(*p)) {
+	} else if (!isalpha(*p) && !isdigit(*p)) {
 	    ret = putchar(*p);
 	    if (ret == EOF) {
 		fwarnp(stderr, "abcdefg..", "that was NOT in character :-(\n");
@@ -185,26 +191,31 @@ vrergfB(int four, int two)
 	 */
 	} else {
 	    /*
-	     * This comment explains the above comment because it doesn't
-	     * explain anything.
+	     * This comment explains the above comment because the above comment
+	     * explains absolutely nothing.
 	     */
 	    /* this line was empty before it was documented */
 
 	    /* case: just in case we consider the case */
 	    ret = islower(*p) /* this is a functional equivalent to a question mark: */ ?
 		/* absolute trigonometric runaround */
-		"nxistdwhowakprqfcvgzhjskelyybume"[((int)fabs(0x3BF261*sin((double)((*p-0141+(42-(1<<4)))%(0x2E4%42)))))&0x1f]
-		: /* you are looking at the functional equivalent of a colon */
-		/* try to absolutely positively trig this upper class character */
-		"NXAUTMWORWCKBLQPZDXVQJSTFHYlGIEE"[((int)fabs(043431066*sin((double)((1+*p-0x42+(0xd<<1))%((2*0x0DF)%42)))))&037]
-		;
+                "nxistdwhowakprqfcvgzhjskelyybume"[(
+		(int)fabs(0x3BF261*sin((double)((*p-0141+((42*3-42*2)-(1<<4)))%
+		(0x2E4%(5*42-42*4))))))&0x1f] : /* you are looking at the functional equivalent of a colon */ (!isalpha(*p) ? *p :
+                /* try to absolutely positively trig this upper class character */
+                "NXAUTMWORWCKBLQPZDXVQJSTFHYlGIEE"[((int)fabs(043431066*sin((double)((1+*p-0x42+(
+		0xd<<1))%((2*0x0DF)%(4*42-42/3-42-42-28))))))&037])
+                ;
 
 	    /* If you want to understand the next line you have to discover the
 	     * definition of the word 'tnetennba'!
 	     *
-	     * PS: foo is live wax.
+	     * PS: peqtanfwxaqG is live wax. This brings up an unfortunate
+	     * question though: what is live wax? :-)
 	     */
-	    ret = putchar(islower(ret) ? (foo+(2*2*2*2*3/2+3))[ret - 'a']:(foo)[ret-'A']);
+
+	    ret = putchar(islower(ret) ? (peqtanfwxaqG+(2*2*2*2*3/2+3-1))[ret - 'a']:(isupper(ret)?(peqtanfwxaqG)[ret-'A']
+		/* this is the equivalent of positive negativity */:(peqtanfwxaqG+2*3*4*5-42  - - - - -4*6+2-4)[ret-'0']));
 	    if (ret == EOF) {
 		fwarnp(stderr, "abcdefg..", "that character was absolutely mixed with sin!\n");
 	    } else {

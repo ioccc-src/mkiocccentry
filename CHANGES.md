@@ -3,28 +3,27 @@
 
 ## Release 0.5 2022-07-10
 
-The jsemtblgen tool is code complete.
+The `jsemtblgen` tool is code complete.
 
 Added `is_reserved()` function to `rule_count.c`.
 
-Changed the Official iocccsize version from 28.10 2022-03-15 to
-28.11 2022-07-10. Updated `test_JSON` tree and `json_teststr.txt` to reflect the
-new `IOCCCSIZE_VERSION` value.
+Changed the Official iocccsize version from 28.10 2022-03-15 to 28.11
+2022-07-10. Updated `test_JSON` tree and `json_teststr.txt` to reflect the new
+`IOCCCSIZE_VERSION` value.
 
 Added and improved a number of man pages.
 
-Added Makefile rule to build HTML files from all man pages.
+Added `Makefile` rule to build HTML files from all man pages.
 
-Both the `parse_json()` and `parse_json_file()` top level functions
-of the JSON parser return a JSON node parse tree when the JSON is
-valid.
+Both the `parse_json()` and `parse_json_file()` top level functions of the JSON
+parser return a JSON node parse tree when the JSON is valid.
 
-Trimmed the JSON parser to not include code that does not strictly
-belong to the generic JSON parser.  Removed dead C code.
+Trimmed the JSON parser to not include code that does not strictly belong to the
+generic JSON parser.  Removed dead C code.
 
-Updated dbg facility to version 2.4 2022-06-26.  Version 2.4
-2022-06-26 contains functions to write (form) a message, debug
-diagnostic message, warning, or error message into a string buffer:
+Updated dbg facility to version 2.4 2022-06-26.  Version 2.4 2022-06-26 contains
+functions to write (form) a message, debug diagnostic message, warning, or error
+message into a string buffer:
 
 ```c
 extern void snmsg(char *str, size_t size, char const *fmt, ...)
@@ -35,8 +34,8 @@ extern void snwerr(int error_code, char *str, size_t size, char const *name, cha
 extern void snwerrp(int error_code, char *str, size_t size, char const *name, char const *fmt, ...);
 ```
 
-Simplify command for jparse and jsemtblgen.  The -s is now just a
-flag.  Only one arg is allowed.
+Simplify command for jparse and jsemtblgen.  The -s is now just a flag.  Only
+one arg is allowed.
 
 Adjusted dbg levels in JSON parser:
 
@@ -49,30 +48,30 @@ Adjusted dbg levels in JSON parser:
 
 Improved top level JSON parser debug & warn layering.
 
-The `json_dbg()` functions now returns void, like dbg().
-The `json_vdbg()` functions now returns void, like vdbg().
+The `json_dbg()` functions now returns void, like `dbg()`.
+The `json_vdbg()` functions now returns void, like `vdbg()`.
 The `json_dbg_tree_print()` function now returns void.
-JSON parser now uses werr() instead of warn().
+JSON parser now uses `werr()` instead of `warn()`.
 
-Now using seqcexit tool, version 1.8 2022-06-02 to sequence snwerr()
-and snwerrp() calls.
+Now using `seqcexit` tool, version 1.8 2022-06-02 to sequence `snwerr()` and
+`snwerrp()` calls.
 
 Fixed a number of typos in comments and documentation.
 
-Improved a number of C comments.  Some comments are less humor impaired
-and might even make the reader prone to mirth and laughter.  :-)
+Improved a number of C comments.  Some comments are less humor impaired and
+might even make the reader prone to mirth and laughter.  :-)
 
 Sequenced exit codes.
 
 Improved C code format consistency.
 
-The -V flag will only print the version string and exit.  The -h
-flag may print one or more version strings preceded by an
-explanatory string explaining what the version is about.
+The `-V` flag will only print the version string and exit.  The `-h` flag may
+print one or more version strings preceded by an explanatory string explaining
+what the version is about.
 
-Added date strings to release strings in CHANGES.md.
+Added date strings to release strings in `CHANGES.md`.
 
-Updated CHANGES.md.
+Updated `CHANGES.md`.
 
 
 ## Release 0.4 2022-06-23
@@ -90,10 +89,9 @@ The following JSON parses now work:
 Replaced `chkinfo` (was `jinfochk`) and `chkauth` (was `jauthchk`)
 with a stub for a single `chkentry`.
 
-Files of the form "chk\*" have been replaced to "old.chk\*' and
-are no longer compiled, not referenced by `Makefile`.  Some of the
-code in these "old.chk\*' files may be used in the formation
-of the new `chkentry` tool.
+Files of the form `chk\*` have been renamed `old.chk\*` and are no longer
+compiled, nor referenced by `Makefile`.  Some of the code in these `old.chk\*`
+files may be used in the formation of the new `chkentry` tool.
 
 In `.info.json` the `chkinfo_version` was replaced by `chkentry_version`.
 

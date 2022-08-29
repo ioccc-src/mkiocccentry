@@ -44,7 +44,7 @@
 	"timestamp_epoch" : "Thu Jan 01 00:00:00 1970 UTC",
 	"title" : "title-for-entry0",
 	"trigraph_warning" : false,
-	"txzchk_version" : "0.10 2022-03-15",
+	"txzchk_version" : "0.11 2022-08-23",
 	"ungetc_warning" : false,
 	"wordbuf_warning" : false
 }

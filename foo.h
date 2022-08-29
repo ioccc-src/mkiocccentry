@@ -44,17 +44,23 @@
 #include "dbg.h"
 
 #if defined(HSSSSSSSSSIOFTDU)
-/* 'foo' means 'live wax'!  */
-static int foo[] = { 'B', 'E', 'Q', 'V', 'D', 'U',
+/*
+ * 'peqtanfwxaqG' means 'live wax'!
+ *
+ * But then this raises the question: what on Earth is live wax? :-)
+ */
+static int peqtanfwxaqG[] = {
+		     'B', 'E', 'Q', 'V', 'D', 'U',
 		     'T', 'S', 'W', 'G', 'X', 'L',
 		     'Y', 'J', 'K', 'I', 'O', 'P',
 		     'N', 'A', 'F', 'C', 'Z', 'H',
-		     'M', 'R', '\0', 'h', 'f', 'g',
-		     'u', 'p', 'o', 'l', 'i', 'v',
-		     'e', 'w', 'a', 'x', 's', 't',
-		     'q', 'd', 'n', 'c', 'j', 'k',
-		     'm', 'z', 'b', 'r', 'y', '\b' } ;
-
+		     'M', 'R', 'h', 'f', 'g', 'u',
+		     'p', 'o', 'l', 'i', 'v', 'e',
+		     'w', 'a', 'x', 's', 't', 'q',
+		     'd', 'n', 'c', 'j', 'k', 'm',
+		     'z', 'b', 'r', 'y', '6', '0',
+		     '8', '1', '3', '5', '7', '4',
+		     '2', '9' } ;
 
 #endif
 
