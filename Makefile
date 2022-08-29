@@ -74,6 +74,7 @@
 #############
 
 AWK= awk
+BASENAME= basename
 CAT= cat
 CC= cc
 CP= cp
@@ -722,6 +723,25 @@ rebuild_jnum_test: jnum_gen jnum.testset jnum_header.c Makefile
 #
 # rule used by prep.sh
 #
+foo:	# XXX - remove this rule
+	for i in test_JSON/info.json/good/*.json; do \
+	    echo "json=$$"'('"${BASENAME} -- $$i)"; \
+	    json=$(${BASENAME} -- "$$i"); \
+	    echo "json=$$json"; \
+	    echo; \
+	    echo "json=$$"'('"shell basename -- $$i)"; \
+	    json=$(shell basename -- "$$i"); \
+	    echo "json=$$json"; \
+	    echo; \
+	    echo "json=$$"'('"shell ${BASENAME} -- $$i)"; \
+	    json=$(shell ${BASENAME} -- "$$i"); \
+	    echo "json=$$json"; \
+	    echo; \
+	    echo "json=\`basename -- $$i\`"; \
+	    json=`basename -- "$$i"`; \
+	    echo "json=$$json"; \
+	    exit 0; \
+	done
 all_ref: jsemtblgen jsemcgen.sh test_JSON/info.json/good test_JSON/author.json/good
 	@mkdir -p ref
 	for i in test_JSON/info.json/good/*.json; do \
