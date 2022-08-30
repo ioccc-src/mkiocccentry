@@ -297,9 +297,7 @@ usage(int exitcode, char const *str, char const *prog)
 /*
  * txzchk_sanity_chks - perform basic sanity checks
  *
- * We perform basic sanity checks on paths and the IOCCC contest ID as well as
- * the IOCCC toolkit tables. Note that these tables are not used in txzchk but
- * to make sure everything is sane in every tool we make these checks.
+ * We perform basic sanity checks on paths as well as some of the IOCCC tables.
  *
  * given:
  *
