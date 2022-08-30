@@ -67,6 +67,7 @@
 #define UUID_VARIANT (0xa)		/* variant 1 - encoded as 0xa */
 #define TIMESTAMP_EPOCH "Thu Jan 01 00:00:00 1970 UTC"	/* gettimeofday epoch */
 #define MAX_TIMESTAMP_LEN (48)		/* 28 + 20 more padding for locate */
+#define MAX_CLOCK_ERROR ((42*60)-1)	/* maximum seconds allowed for a clock to be in error */
 
 /*
  * Be careful not to change this value as it will invalidate all IOCCC timestamps < this value
