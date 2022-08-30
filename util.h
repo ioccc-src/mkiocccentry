@@ -166,6 +166,12 @@ typedef unsigned char bool;
 
 
 /*
+ * non-strict floating match to 1 part in MATCH_PRECISION
+ */
+#define MATCH_PRECISION ((long double)(1<<22))
+
+
+/*
  * external function declarations
  */
 extern int const hexval[];

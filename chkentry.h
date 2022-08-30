@@ -45,12 +45,6 @@
 
 
 /*
- * non-strict match to 1 part in MATCH_PRECISION
- */
-#define MATCH_PRECISION ((long double)(1<<22))
-
-
-/*
  * usage message
  *
  * Use the usage() function to print the usage_msg([0-9]?)+ strings.
