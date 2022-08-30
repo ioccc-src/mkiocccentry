@@ -53,7 +53,8 @@
  * validate_info_json	- validate info_json file
  *
  * As of now the file is only parsed for valid JSON. The function still needs to
- * validate the contents of the file.
+ * validate the contents of the file but we will have a struct json * if all is
+ * okay.
  *
  * given:
  *
@@ -90,7 +91,8 @@ validate_info_json(char const *info_json)
  * validate_author_json	- validate author_json file
  *
  * As of now the file is only parsed for valid JSON. The function still needs to
- * validate the contents of the file.
+ * validate the contents of the file but we will have a struct json * if it's
+ * valid json.
  *
  * given:
  *
@@ -127,7 +129,8 @@ validate_author_json(char const *author_json)
  * validate_entry_files	- verify entry_dir
  *
  * Verify we can cd into the directory and that the proper files exist in that
- * directory.
+ * directory. Otherwise, if entry_dir == NULL verify that the files given at the
+ * command line can be read and process those (skipping those that are ".").
  *
  * given:
  *
