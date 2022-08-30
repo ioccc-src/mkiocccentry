@@ -16,7 +16,7 @@ If \fIauthor.JSON\fP is \fR.\fP (dot), then this file is ignored.
 In the one argument form, \fIentry_dir\fP is assumed to be a directory containing both \fI.info.json\fP and \fI.author.json\fP files.
 The one argument form if this command is equivalent to calling this command with two arguments: \fIentry_dir/.info.json\fP and \fIentry_dir/.author.json\fP.
 .PP
-As a sanity check, the \fBmkiocccentry(1)\fP program executes \fBchkentry\fP AFTER the both the \fI.info.json\fP and \fI.author.json\fP file have been created and before the compressed tarball is formed.
+As a sanity check, the \fBmkiocccentry(1)\fP program executes \fBchkentry\fP AFTER both the \fI.info.json\fP and \fI.author.json\fP file have been created and before the compressed tarball is formed.
 If \fBmkiocccentry\fP program sees a 0 exit status, then all is well.
 For a non-zero exit code, the tool aborts because any problems detected by \fBchkentry\fP based on what \fBmkiocccentry\fP wrote into \fI.info.json\fP and/or \fI.author.json\fP indicates there is a serious mismatch between what \fBmkiocccentry\fP is doing and what \fBchkentry\fP expects.
 .PP
