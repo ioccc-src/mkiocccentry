@@ -118,7 +118,7 @@ main(int argc, char *argv[])
 	if (argc >= 2) {
 	    vrergfB(atoi(argv[0]), atoi(argv[1])); /* XXX - keep this line around for testing purposes for now - XXX */
 	} else {
-	    usage(4, program, "invalid number of arguments", -1, -1); /*ooo*/
+	    usage(5, program, "invalid number of arguments", -1, -1); /*ooo*/
 	}
 	not_reached();
 	break;
