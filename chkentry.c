@@ -56,9 +56,9 @@ main(int argc, char *argv[])
     char *fnamchk = FNAMCHK_PATH_0;	/* path to fnamchk executable */
     bool fnamchk_flag_used = false;	/* true ==> -F fnamchk used */
     struct json *node = NULL;	/* allocated JSON parser tree node */
-    char *entry_dir = ".";	/* entry directory to process, or NULL ==> process files */
-    char *info_json = ".";	/* .info.json file to process, or NULL ==> no .info.json to process */
-    char *author_json = ".";	/* .author.json file to process, or NULL ==> no .author.json to process */
+    char const *entry_dir = ".";	/* entry directory to process, or NULL ==> process files */
+    char const *info_json = ".";	/* .info.json file to process, or NULL ==> no .info.json to process */
+    char const *author_json = ".";	/* .author.json file to process, or NULL ==> no .author.json to process */
     int i;
 
     /*
@@ -115,7 +115,11 @@ main(int argc, char *argv[])
 	author_json = argv[1];
 	break;
     default:
-	vrergfB(atoi(argv[0]), atoi(argv[1])); /* XXX - keep this line around for testing purposes for now - XXX */
+	if (argc >= 2) {
+	    vrergfB(atoi(argv[0]), atoi(argv[1])); /* XXX - keep this line around for testing purposes for now - XXX */
+	} else {
+	    usage(5, program, "invalid number of arguments", -1, -1); /*ooo*/
+	}
 	not_reached();
 	break;
     }
