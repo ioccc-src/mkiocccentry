@@ -2,19 +2,19 @@
 .SH NAME
 chkentry \- check JSON files in an IOCCC entry
 .SH SYNOPSIS
-\fBchkentry\fP [\-h] [\-v level] [\-J level] [\-V] [\-q] [\-F fnamchk] [\-w] entry_dir
+\fBchkentry\fP [\-h] [\-v level] [\-J level] [\-V] [\-q] [\-F fnamchk] entry_dir
 .br
-\fBchkentry\fP [\-h] [\-v level] [\-J level] [\-V] [\-q] [\-F fnamchk] [\-w] info.JSON author.JSON
+\fBchkentry\fP [\-h] [\-v level] [\-J level] [\-V] [\-q] [\-F fnamchk] info.JSON author.JSON
 .SH DESCRIPTION
 \fBchkentry\fP is primarily used by other tools (not humans).
 .PP
 Validate the \fI.info.json\fP and/or \fI.author.json\fP of an IOCCC entry.
 In the two argument form, \fIinfo.JSON\fP is the path of an IOCCC entry information JSON file,
-and \fIauthor.JSON\fP is the path of an IOCCC entry author JSON file,
+and \fIauthor.JSON\fP is the path of an IOCCC entry author JSON file.
 If \fIinfo.JSON\fP is \fR.\fP (dot), then this file is ignored.
 If \fIauthor.JSON\fP is \fR.\fP (dot), then this file is ignored.
 In the one argument form, \fIentry_dir\fP is assumed to be a directory containing both \fI.info.json\fP and \fI.author.json\fP files.
-The one argument form if this command is equivalent to calling this command with two arguments: \fIentry_dir/.info.json\fP and \fIentry_dir/.author.json\fP.
+The one argument form is equivalent to calling the command with two arguments: \fIentry_dir/.info.json\fP and \fIentry_dir/.author.json\fP.
 .PP
 As a sanity check, the \fBmkiocccentry(1)\fP program executes \fBchkentry\fP AFTER both the \fI.info.json\fP and \fI.author.json\fP file have been created and before the compressed tarball is formed.
 If \fBmkiocccentry\fP program sees a 0 exit status, then all is well.
