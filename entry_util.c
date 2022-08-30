@@ -2884,7 +2884,8 @@ test_formed_UTC(char const *str)
 /*
  * test_formed_timestamp - test if formed_timestamp is valid
  *
- * Determine if formed_timestamp is >= MIN_TIMESTAMP.
+ * Determine if formed_timestamp is >= MIN_TIMESTAMP and if
+ * formed_timestamp <= now + MAX_CLOCK_ERROR.
  *
  * given:
  *	tstamp		timestamp as time_t to test
@@ -2896,6 +2897,35 @@ test_formed_UTC(char const *str)
 bool
 test_formed_timestamp(time_t tstamp)
 {
+    struct timeval tp;			/* gettimeofday time value */
+    time_t now = 0;			/* the time now */
+    int ret;				/* libc return code */
+
+    /*
+     * record the time
+     */
+    errno = 0;			/* pre-clear errno for errp() */
+    ret = gettimeofday(&tp, NULL);
+    if (ret < 0) {
+	json_dbg(JSON_DBG_MED, __func__,
+		 "invalid: gettimeofday error");
+	return false;
+    }
+    now = tp.tv_sec;
+    if ((time_t)-1 > 0) {
+	/* case: unsigned time_t */
+	json_dbg(JSON_DBG_HIGH, __func__, "now: %ju",
+		 (uintmax_t)now);
+	json_dbg(JSON_DBG_HIGH, __func__, "now+MAX_CLOCK_ERROR: %ju",
+		 (uintmax_t)(now+MAX_CLOCK_ERROR));
+    } else {
+	/* case: signed time_t */
+	json_dbg(JSON_DBG_HIGH, __func__, "now: %jd",
+		 (intmax_t)now);
+	json_dbg(JSON_DBG_HIGH, __func__, "now+MAX_CLOCK_ERROR: %jd",
+		 (intmax_t)(now+MAX_CLOCK_ERROR));
+    }
+
     /*
      * compare with the minimum timestamp
      */
@@ -2912,6 +2942,25 @@ test_formed_timestamp(time_t tstamp)
 	    json_dbg(JSON_DBG_HIGH, __func__,
 		     "invalid: formed_timestamp: %jd < MIN_TIMESTAMP: %jd",
 		     (intmax_t)tstamp, (intmax_t)MIN_TIMESTAMP);
+	}
+	return false;
+
+    /*
+     * compare with now + clock error
+     */
+    } else if (tstamp > (now+MAX_CLOCK_ERROR)) {
+	json_dbg(JSON_DBG_MED, __func__,
+		 "invalid: formed_timestamp > now+MAX_CLOCK_ERROR");
+	if ((time_t)-1 > 0) {
+	    /* case: unsigned time_t */
+	    json_dbg(JSON_DBG_HIGH, __func__,
+		     "invalid: formed_timestamp: %ju > now+MAX_CLOCK_ERROR: %ju",
+		     (uintmax_t)tstamp, (uintmax_t)(now+MAX_CLOCK_ERROR));
+	} else {
+	    /* case: signed time_t */
+	    json_dbg(JSON_DBG_HIGH, __func__,
+		     "invalid: formed_timestamp: %jd > now+MAX_CLOCK_ERROR: %jd",
+		     (intmax_t)tstamp, (intmax_t)(now+MAX_CLOCK_ERROR));
 	}
 	return false;
     }

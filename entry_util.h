@@ -28,6 +28,7 @@
 
 #include <time.h>
 #include <ctype.h>
+#include <sys/time.h>
 
 /*
  * version - official IOCCC toolkit versions

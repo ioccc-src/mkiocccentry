@@ -606,6 +606,101 @@ json_fprintf_value_long(FILE *stream, char const *lead, char const *name, char c
 
 
 /*
+ * json_fprintf_value_time_t - print name value (as a time_t integer) pair
+ *
+ * On a stream, we will print:
+ *
+ *	lead "name_encoded" middle time_t_value tail
+ *
+ * given:
+ *	stream	- open file stream to print on
+ *	lead	- leading whitespace string to print
+ *	name	- name string to JSON encode or NULL
+ *	middle	- middle string (often " : " )l
+ *	value	- value as time_t
+ *	tail	- tailing string to print (often ",\n")
+ *
+ * returns:
+ *	true
+ *
+ * returns:
+ *	true ==> stream print was OK,
+ *	false ==> error printing to stream
+ *
+ * This function does not return on error.
+ */
+bool
+json_fprintf_value_time_t(FILE *stream, char const *lead, char const *name, char const *middle, time_t value,
+			  char const *tail)
+{
+    int ret;			/* libc function return */
+
+    /*
+     * firewall
+     */
+    if (stream == NULL || lead == NULL || middle == NULL || tail == NULL) {
+	warn(__func__, "called with NULL arg(s)");
+	return false;
+    }
+
+    /*
+     * print leading string
+     */
+    errno = 0;			/* pre-clear errno for warnp() */
+    ret = fprintf(stream, "%s", lead);
+    if (ret < 0) { /* compare < 0 only in case lead is an empty string */
+	warnp(__func__, "fprintf printing lead");
+	return false;
+    }
+
+    /*
+     * print name as a JSON encoded string
+     */
+    if (json_fprintf_str(stream, name) != true) {
+	warnp(__func__, "json_fprintf_str error printing name");
+	return false;
+    }
+
+    /*
+     * print middle string
+     */
+    errno = 0;			/* pre-clear errno for warnp() */
+    ret = fprintf(stream, "%s", middle);
+    if (ret < 0) { /* compare < 0 only in case middle is an empty string */
+	warnp(__func__, "fprintf printing middle");
+	return false;
+    }
+
+    /*
+     * print value as a JSON time_t
+     */
+    errno = 0;			/* pre-clear errno for warnp() */
+    if ((time_t)-1 > 0) {
+	/* case: unsigned time_t */
+	ret = fprintf(stream, "%ju", (uintmax_t)value);
+    } else {
+	/* case: signed time_t */
+	ret = fprintf(stream, "%jd", (intmax_t)value);
+    }
+    if (ret <= 0) {
+	warnp(__func__, "fprintf for value as a time_t");
+	return false;
+    }
+
+    /*
+     * print trailing string
+     */
+    errno = 0;			/* pre-clear errno for warnp() */
+    ret = fprintf(stream, "%s", tail);
+    if (ret < 0) { /* compare < 0 only in case tail is an empty string */
+	warnp(__func__, "fprintf printing end of line");
+	return false;
+    }
+    return true;
+}
+
+
+/*
  * json_fprintf_value_bool - print name value (as a boolean) pair
  *
  * On a stream, we will print:

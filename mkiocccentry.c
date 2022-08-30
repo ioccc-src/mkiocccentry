@@ -296,7 +296,13 @@ main(int argc, char *argv[])
 	not_reached();
     }
     info.tstamp = tp.tv_sec;
-    dbg(DBG_HIGH, "info.tstamp: %jd", (intmax_t)info.tstamp);
+    if ((time_t)-1 > 0) {
+	/* case: unsigned time_t */
+	dbg(DBG_HIGH, "info.tstamp: %ju", (uintmax_t)info.tstamp);
+    } else {
+	/* case: signed time_t */
+	dbg(DBG_HIGH, "info.tstamp: %jd", (intmax_t)info.tstamp);
+    }
     info.usec = tp.tv_usec;
     dbg(DBG_HIGH, "infop->usec: %jd", (intmax_t)info.usec);
 
@@ -4638,7 +4644,7 @@ write_info(struct info *infop, char const *entry_dir, char const *chkentry, char
      */
     errno = 0;			/* pre-clear errno for errp() */
     ret = fprintf(info_stream, "\t],\n") > 0 &&
-	json_fprintf_value_long(info_stream, "\t", "formed_timestamp", " : ", (long)infop->tstamp, ",\n") &&
+	json_fprintf_value_time_t(info_stream, "\t", "formed_timestamp", " : ", infop->tstamp, ",\n") &&
 	json_fprintf_value_long(info_stream, "\t", "formed_timestamp_usec", " : ", (long)infop->usec, ",\n") &&
 	json_fprintf_value_string(info_stream, "\t", "timestamp_epoch", " : ", TIMESTAMP_EPOCH, ",\n") &&
 	json_fprintf_value_long(info_stream, "\t", "min_timestamp", " : ", MIN_TIMESTAMP, ",\n") &&
@@ -4893,7 +4899,7 @@ write_author(struct auth *authp, char const *entry_dir, char const *chkentry, ch
      */
     errno = 0;			/* pre-clear errno for errp() */
     ret = fprintf(author_stream, "\t],\n") > 0 &&
-	json_fprintf_value_long(author_stream, "\t", "formed_timestamp", " : ", (long)authp->tstamp, ",\n") &&
+	json_fprintf_value_time_t(author_stream, "\t", "formed_timestamp", " : ", authp->tstamp, ",\n") &&
 	json_fprintf_value_long(author_stream, "\t", "formed_timestamp_usec", " : ", (long)authp->usec, ",\n") &&
 	json_fprintf_value_string(author_stream, "\t", "timestamp_epoch", " : ", authp->epoch, ",\n") &&
 	json_fprintf_value_long(author_stream, "\t", "min_timestamp", " : ", MIN_TIMESTAMP, ",\n") &&

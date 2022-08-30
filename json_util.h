@@ -82,6 +82,8 @@ extern bool json_fprintf_value_string(FILE *stream, char const *lead, char const
 				      char const *tail);
 extern bool json_fprintf_value_long(FILE *stream, char const *lead, char const *name, char const *middle, long value,
 				    char const *tail);
+extern bool json_fprintf_value_time_t(FILE *stream, char const *lead, char const *name, char const *middle, time_t value,
+				      char const *tail);
 extern bool json_fprintf_value_bool(FILE *stream, char const *lead, char const *name, char const *middle, bool value,
 				    char const *tail);
 extern char const *json_type_name(enum item_type type);
