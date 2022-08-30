@@ -763,7 +763,7 @@ chk_author(struct json const *node,
 	 */
 	load = object2author(e, depth+2, sem, __func__, val_err, &aset[i], i);
 	if (load == false) {
-	    /* object2athor() will have set *val_err */
+	    /* object2author() will have set *val_err */
 	    return false;
 	}
     }
@@ -2130,7 +2130,7 @@ chk_manifest(struct json const *node,
     }
 
     /*
-     * convert JTYPE_ARRAY into mainfest
+     * convert JTYPE_ARRAY into manifest
      */
     memset(&man, 0, sizeof(man));
     test = object2manifest(value, depth+1, sem, __func__, val_err, &man);
