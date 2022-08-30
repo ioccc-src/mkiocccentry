@@ -48,7 +48,7 @@
  /*
   * JSON semantic count error
   */
-struct json_cnt_err
+struct json_sem_cnt_err
 {
     struct json_sem *sem;	/* semantic node in question or NULL (unknown_node == true) */
     unsigned int count;		/* number of times this JSON semantic was matched */
@@ -147,6 +147,9 @@ extern struct json *sem_node_parent(struct json const *node, unsigned int depth,
 extern struct json *sem_object_find_name(struct json const *node, unsigned int depth, struct json_sem *sem,
 				         char const *name, struct json_sem_val_err **val_err,
 				         char const *memname);
+extern void json_sem_zero_count(struct json_sem *sem, int count);
+extern unsigned int json_sem_check(struct json *node, unsigned int max_depth, struct json_sem *sem, int count,
+				   struct dyn_array **pcnt_err, struct dyn_array **pval_err);
 
 
 #endif /* INCLUDE_JSON_SEM_H */

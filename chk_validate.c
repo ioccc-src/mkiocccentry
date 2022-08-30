@@ -447,7 +447,7 @@ chk_author_JSON(struct json const *node,
     test = test_author_JSON(str);
     if (test == false) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(108, node, depth, sem, __func__, "invalid author_JSON");
+	    *val_err = werr_sem_val(108, node, depth, sem, __func__, "invalid author_JSON filename");
 	}
 	return false;
     }
@@ -827,7 +827,7 @@ chk_c_src(struct json const *node,
     test = test_c_src(str);
     if (test == false) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(119, node, depth, sem, __func__, "invalid c_src");
+	    *val_err = werr_sem_val(119, node, depth, sem, __func__, "invalid c_src (prog.c) filename");
 	}
 	return false;
     }
@@ -1133,7 +1133,7 @@ chk_extra_file(struct json const *node,
     test = test_extra_file(str);
     if (test == false) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(125, node, depth, sem, __func__, "invalid extra_file");
+	    *val_err = werr_sem_val(125, node, depth, sem, __func__, "invalid extra_file filename");
 	}
 	return false;
     }
@@ -1795,7 +1795,7 @@ chk_info_JSON(struct json const *node,
     test = test_info_JSON(str);
     if (test == false) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(140, node, depth, sem, __func__, "invalid info_JSON");
+	    *val_err = werr_sem_val(140, node, depth, sem, __func__, "invalid info_JSON filename");
 	}
 	return false;
     }
@@ -2506,7 +2506,7 @@ chk_remarks(struct json const *node,
     test = test_remarks(str);
     if (test == false) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(156, node, depth, sem, __func__, "invalid remarks");
+	    *val_err = werr_sem_val(156, node, depth, sem, __func__, "invalid remarks filename");
 	}
 	return false;
     }

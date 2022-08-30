@@ -1577,3 +1577,144 @@ sem_object_find_name(struct json const *node, unsigned int depth, struct json_se
     }
     return NULL;
 }
+
+
+/*
+ * json_sem_zero_count - zero JSON semantic nodes
+ *
+ * given:
+ *	sem	pointer to a JSON semantic table
+ *	count	length of the JSON semantic table
+ *
+ * NOTE: This function does not return for NULL pointers or count <= 0
+ */
+void
+json_sem_zero_count(struct json_sem *sem, int count)
+{
+    int i;
+
+    /*
+     * firewall - args
+     */
+    if (sem == NULL) {
+	err(82, __func__, "sem is NULL");
+	not_reached();
+    }
+    if (count <= 0) {
+	err(83, __func__, "count: %d <= 0", count);
+	not_reached();
+    }
+
+    /*
+     * clear counts
+     */
+    for (i=0; i < count; ++i) {
+	sem[i].count = 0;
+    }
+    return;
+}
+
+
+/*
+ * json_sem_check - check a JSON parse tree against a JSON semantic table
+ *
+ * First, the dynamic array *pcnt_err and the dynamic array *pval_err is
+ * created as an empty dynamic array.
+ *
+ * Walk the JSON parse tree and check each node against the JSON semantic table,
+ * counting as nodes on the 1st match found in the JSON semantic table,
+ * or appending a JSON semantic count error to the *pcnt_err dynamic array
+ * when an unknown JSON node is found.
+ *
+ * When a JSON node matches a JSON semantic table entry that has a non-NULL
+ * validate function, the validate function will be called.  When the validate
+ * function returns false (indicating a JSON semantic validation error is found),
+ * the *pval_err dynamic array is appended with the given JSON semantic validation error.
+ *
+ * Once the JSON parse tree is walked, the counts in the JSON semantic table
+ * are checked against the minimum and maximum allowed counts.  When a count
+ * is found to be out of range, JSON semantic count error is appended to
+ * the *pcnt_err dynamic array.
+ *
+ * given:
+ *	node		pointer to a JSON parse tree
+ *	max_depth	maximum tree depth to descend, or 0 ==> infinite depth
+ *			    NOTE: Use JSON_INFINITE_DEPTH for infinite depth
+ *	sem		pointer to a JSON semantic table
+ *	count		length of the JSON semantic table
+ *	pcnt_err	pointer to dynamic array of JSON semantic count errors
+ *	pval_err	pointer to dynamic array of JSON semantic validation errors
+ *
+ * return:
+ *	0 ==> JSON parse tree is semantically consistent with the JSON semantic table,
+ *	> 0  ==> number of errors (count+validation+internal) found
+ *
+ * NOTE: The number of errors do not reflect the sum of JSON semantic count and
+ *	 JSON semantic validation errors because internal errors are also counted.
+ *	 When evaluating a non-zero return and both the *pval_err dynamic array
+ *	 and the *pcnt_err dynamic array are empty, them report an internal json_sem_check()
+ *	 error was encountered.
+ */
+unsigned int
+json_sem_check(struct json *node, unsigned int max_depth, struct json_sem *sem, int count,
+	       struct dyn_array **pcnt_err, struct dyn_array **pval_err)
+{
+    struct dyn_array *cnt_err = NULL;		/* JSON semantic count errors */
+    struct dyn_array *val_err = NULL;		/* JSON semantic validation errors */
+    unsigned int err = 0;			/* number of errors (count+validation+internal) */
+    UNUSED_ARG(max_depth);	/* XXX - remove when arg is used - XXX */
+
+    /*
+     * firewall - check args
+     */
+    if (node == NULL) {
+	warn(__func__, "node is NULL");
+	++err;
+    }
+    if (sem == NULL) {
+	warn(__func__, "sem is NULL");
+	++err;
+    }
+    if (pcnt_err == NULL) {
+	warn(__func__, "pcnt_err is NULL");
+	++err;
+    }
+    if (pval_err == NULL) {
+	warn(__func__, "pval_err is NULL");
+	++err;
+    }
+    /* abort early on internal errors */
+    if (err > 0) {
+	return err;
+    }
+
+    /*
+     * allocate empty dynamic arrays
+     */
+    cnt_err = dyn_array_create(sizeof(struct json_sem_cnt_err), JSON_CHUNK, JSON_CHUNK, true);
+    if (cnt_err == NULL) {
+	warn(__func__, "dyn_array_create() failed to create cnt_err");
+	++err;
+    }
+    val_err = dyn_array_create(sizeof(struct json_sem_val_err), JSON_CHUNK, JSON_CHUNK, true);
+    if (val_err == NULL) {
+	warn(__func__, "dyn_array_create() failed to create val_err");
+	++err;
+    }
+    /* abort early on internal errors */
+    if (err > 0) {
+	return err;
+    }
+
+    /*
+     * zero semantic counts
+     */
+    json_sem_zero_count(sem, count);
+
+    /* XXX - add code here - XXX */
+
+    /*
+     * report on the number of errors found
+     */
+    return err;
+}

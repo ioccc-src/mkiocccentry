@@ -505,7 +505,7 @@ object2author(struct json *node, unsigned int depth, struct json_sem *sem,
 	    if (found_name == true) {
 		if (val_err != NULL) {
 		    *val_err = werr_sem_val(60, node, depth+2, sem, __func__,
-					    "author array index[%d] JTYPE_OBJECT[%d] found duplicate <%s>",
+					    "author array index[%d] JTYPE_OBJECT[%d] found more than 1 <%s>",
 					    auth_num, i, name);
 		}
 		return false;
@@ -523,7 +523,7 @@ object2author(struct json *node, unsigned int depth, struct json_sem *sem,
 	    if (found_location_code == true) {
 		if (val_err != NULL) {
 		    *val_err = werr_sem_val(61, node, depth+2, sem, __func__,
-					    "author array index[%d] JTYPE_OBJECT[%d] found duplicate <%s>",
+					    "author array index[%d] JTYPE_OBJECT[%d] found more than 1 <%s>",
 					    auth_num, i, name);
 		}
 		return false;
@@ -541,7 +541,7 @@ object2author(struct json *node, unsigned int depth, struct json_sem *sem,
 	    if (found_location_name == true) {
 		if (val_err != NULL) {
 		    *val_err = werr_sem_val(62, node, depth+2, sem, __func__,
-					    "author array index[%d] JTYPE_OBJECT[%d] found duplicate <%s>",
+					    "author array index[%d] JTYPE_OBJECT[%d] found more than 1 <%s>",
 					    auth_num, i, name);
 		}
 		return false;
@@ -559,7 +559,7 @@ object2author(struct json *node, unsigned int depth, struct json_sem *sem,
 	    if (found_email == true) {
 		if (val_err != NULL) {
 		    *val_err = werr_sem_val(63, node, depth+2, sem, __func__,
-					    "author array index[%d] JTYPE_OBJECT[%d] found duplicate <%s>",
+					    "author array index[%d] JTYPE_OBJECT[%d] found more than 1 <%s>",
 					    auth_num, i, name);
 		}
 		return false;
@@ -587,7 +587,7 @@ object2author(struct json *node, unsigned int depth, struct json_sem *sem,
 	    if (found_url == true) {
 		if (val_err != NULL) {
 		    *val_err = werr_sem_val(65, node, depth+2, sem, __func__,
-					    "author array index[%d] JTYPE_OBJECT[%d] found duplicate <%s>",
+					    "author array index[%d] JTYPE_OBJECT[%d] found more than 1 <%s>",
 					    auth_num, i, name);
 		}
 		return false;
@@ -615,7 +615,7 @@ object2author(struct json *node, unsigned int depth, struct json_sem *sem,
 	    if (found_twitter == true) {
 		if (val_err != NULL) {
 		    *val_err = werr_sem_val(67, node, depth+2, sem, __func__,
-					    "author array index[%d] JTYPE_OBJECT[%d] found duplicate <%s>",
+					    "author array index[%d] JTYPE_OBJECT[%d] found more than 1 <%s>",
 					    auth_num, i, name);
 		    }
 		return false;
@@ -643,7 +643,7 @@ object2author(struct json *node, unsigned int depth, struct json_sem *sem,
 	    if (found_github == true) {
 		if (val_err != NULL) {
 		    *val_err = werr_sem_val(69, node, depth+2, sem, __func__,
-					    "author array index[%d] JTYPE_OBJECT[%d] found duplicate <%s>",
+					    "author array index[%d] JTYPE_OBJECT[%d] found more than 1 <%s>",
 					    auth_num, i, name);
 		}
 		return false;
@@ -671,7 +671,7 @@ object2author(struct json *node, unsigned int depth, struct json_sem *sem,
 	    if (found_affiliation == true) {
 		if (val_err != NULL) {
 		    *val_err = werr_sem_val(71, node, depth+2, sem, __func__,
-					    "author array index[%d] JTYPE_OBJECT[%d] found duplicate <%s>",
+					    "author array index[%d] JTYPE_OBJECT[%d] found more than 1 <%s>",
 					    auth_num, i, name);
 		}
 		return false;
@@ -699,7 +699,7 @@ object2author(struct json *node, unsigned int depth, struct json_sem *sem,
 	    if (found_past_winner == true) {
 		if (val_err != NULL) {
 		    *val_err = werr_sem_val(73, node, depth+2, sem, __func__,
-					    "author array index[%d] JTYPE_OBJECT[%d] found duplicate <%s>",
+					    "author array index[%d] JTYPE_OBJECT[%d] found more than 1 <%s>",
 					    auth_num, i, name);
 		}
 		return false;
@@ -725,7 +725,7 @@ object2author(struct json *node, unsigned int depth, struct json_sem *sem,
 	    if (found_default_handle == true) {
 		if (val_err != NULL) {
 		    *val_err = werr_sem_val(75, node, depth+2, sem, __func__,
-					    "author array index[%d] JTYPE_OBJECT[%d] found duplicate <%s>",
+					    "author array index[%d] JTYPE_OBJECT[%d] found more than 1 <%s>",
 					    auth_num, i, name);
 		}
 		return false;
@@ -751,7 +751,7 @@ object2author(struct json *node, unsigned int depth, struct json_sem *sem,
 	    if (found_author_handle == true) {
 		if (val_err != NULL) {
 		    *val_err = werr_sem_val(77, node, depth+2, sem, __func__,
-					    "author array index[%d] JTYPE_OBJECT[%d] found duplicate <%s>",
+					    "author array index[%d] JTYPE_OBJECT[%d] found more than 1 <%s>",
 					    auth_num, i, name);
 		}
 		return false;
@@ -769,7 +769,7 @@ object2author(struct json *node, unsigned int depth, struct json_sem *sem,
 	    if (found_author_number == true) {
 		if (val_err != NULL) {
 		    *val_err = werr_sem_val(78, node, depth+2, sem, __func__,
-					    "author array index[%d] JTYPE_OBJECT[%d] found duplicate <%s>",
+					    "author array index[%d] JTYPE_OBJECT[%d] found more than 1 <%s>",
 					    auth_num, i, name);
 		}
 		return false;
@@ -1351,7 +1351,7 @@ object2manifest(struct json *node, unsigned int depth, struct json_sem *sem,
 	    if (manp->cnt_c_src != 1) {
 		if (val_err != NULL) {
 		    *val_err = werr_sem_val(128, node, depth, sem, __func__,
-					    "manifest found more than one c_src filename");
+					    "manifest found more than one author_JSON filename");
 		}
 		dyn_array_free(man.extra);
 		return false;
@@ -1365,7 +1365,7 @@ object2manifest(struct json *node, unsigned int depth, struct json_sem *sem,
 	    if (test == false) {
 		if (val_err != NULL) {
 		    *val_err = werr_sem_val(129, node, depth, sem, __func__,
-					    "manifest c_src filename is invalid");
+					    "manifest c_src (prog.c) filename is invalid");
 		}
 		dyn_array_free(man.extra);
 		return false;
@@ -1378,7 +1378,7 @@ object2manifest(struct json *node, unsigned int depth, struct json_sem *sem,
 	    if (manp->cnt_c_src != 1) {
 		if (val_err != NULL) {
 		    *val_err = werr_sem_val(130, node, depth, sem, __func__,
-					    "manifest found more than one c_src filename");
+					    "manifest found more than one c_src (prog.c) filename");
 		}
 		dyn_array_free(man.extra);
 		return false;
@@ -1564,8 +1564,8 @@ object2manifest(struct json *node, unsigned int depth, struct json_sem *sem,
 	    if (strcmp(extra_filename, extra_filename2) == 0) {
 		if (val_err != NULL) {
 		    *val_err = werr_sem_val(144, node, depth+2, sem, __func__,
-					    "manifest extra[%jd] filename: <%s> matches manifest extra[%jd] filename: <%s>",
-					    i, extra_filename, j, extra_filename2);
+					    "manifest extra[%jd] filename: matches manifest extra[%jd] filename",
+					    i, j);
 		}
 		dyn_array_free(man.extra);
 		return false;
