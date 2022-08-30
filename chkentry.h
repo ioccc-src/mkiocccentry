@@ -39,6 +39,11 @@
 #include "util.h"
 
 /*
+ * jparse - the parser
+ */
+#include "jparse.h"
+
+/*
  * foo - bar
  */
 #include "foo.h"
@@ -106,7 +111,9 @@ bool quiet = false;				/* true ==> quiet mode */
  * function prototypes
  */
 static void chkentry_sanity_chks(char const *entry_dir, char const *info_json, char const *author_json, char const *fnamchk);
-static void verify_entry_dir(char const *entry_dir, char const *info_json, char const *author_json);
+static bool validate_entry_files(char const *entry_dir, char const *info_json, char const *author_json);
+static bool validate_info_json(char const *info_json);
+static bool validate_author_json(char const *author_json);
 static void usage(int exitcode, char const *prog, char const *str, int expected, int argc) __attribute__((noreturn));
 
 #endif /* INCLUDE_CHKENTRY_H */

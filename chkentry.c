@@ -50,7 +50,81 @@
  */
 
 /*
- * verify_entry_dir	- verify entry_dir
+ * validate_info_json	- validate info_json file
+ *
+ * As of now the file is only parsed for valid JSON. The function still needs to
+ * validate the contents of the file.
+ *
+ * given:
+ *
+ *	info_json   - path to the .info.json file
+ *
+ * NOTE: If info_json is NULL it is an error but normally it should already be
+ * established that the file is not only not NULL but is readable. However the
+ * json parser will also report an error if this is not the case.
+ */
+static bool
+validate_info_json(char const *info_json)
+{
+    struct json *node;
+    bool is_valid = false; /* assume invalid first */
+
+    /*
+     * firewall
+     */
+    if (info_json == NULL)
+    {
+	err(35, __func__, "info_json is NULL");
+	not_reached();
+    }
+
+    node = parse_json_file(info_json, &is_valid);
+
+    if (node == NULL || !is_valid)
+	return false;
+
+    return true; /* all okay */
+}
+
+/*
+ * validate_author_json	- validate author_json file
+ *
+ * As of now the file is only parsed for valid JSON. The function still needs to
+ * validate the contents of the file.
+ *
+ * given:
+ *
+ *	author_json   - path to the .author.json file
+ *
+ * NOTE: If author_json is NULL it is an error but normally it should already be
+ * established that the file is not only not NULL but is readable. However the
+ * json parser will also report an error if this is not the case.
+ */
+static bool
+validate_author_json(char const *author_json)
+{
+    struct json *node;
+    bool is_valid = false; /* assume invalid first */
+
+    /*
+     * firewall
+     */
+    if (author_json == NULL)
+    {
+	err(36, __func__, "author_json is NULL");
+	not_reached();
+    }
+
+    node = parse_json_file(author_json, &is_valid);
+
+    if (node == NULL || !is_valid)
+	return false;
+
+    return true; /* all okay */
+}
+
+/*
+ * validate_entry_files	- verify entry_dir
  *
  * Verify we can cd into the directory and that the proper files exist in that
  * directory.
@@ -61,51 +135,33 @@
  *	info_json   - if != NULL the .info.json file to check
  *	author_json - if != NULL the .author.json file to check
  *
- * NOTE: It's expected that chkentry_sanity_chks() will call this function if
- * entry_dir != NULL and is a directory but this code is preliminary so it might
- * be modified or reused in some way later on.
- *
- * XXX If the directory is NULL this is okay as long as the files are
- * readable in the current working directory. However the fact this function is
- * not processing the files but just verifying they exist makes the function
- * problematic. This is because although the purpose is to prevent code
- * duplication in the chkentry_sanity_chks() function it will actually result in
- * code duplication elsewhere because we have to use chdir(2) to change to the
- * directory simply for verifying the files exist - and then later we have to do
- * that again in order to actually process the files. However since the
- * functions that do this do not yet exist we can get by with this for now.
- * Possible fixes would be to have the changing directory code in a separate
- * function and then having both functions make use of that (possibly another
- * function to return to the previous directory?); or we could have the check
- * for the files existing right before processing them i.e. removing the check
- * for files from the sanity check function. These questions can be answered at
- * a later time.
- *
  * NOTE: If entry_dir != NULL it is expected that info_json and author_json ARE
  * NULL and we will directly name them _after_ changing into the directory.
  *
  * This function does not return on error or if files are not readable.
  */
-static void
-verify_entry_dir(char const *entry_dir, char const *info_json, char const *author_json)
+static bool
+validate_entry_files(char const *entry_dir, char const *info_json, char const *author_json)
 {
     int cwd;			/* current working directory */
     int ret;
     bool switched_dir = false;	/* if we used chdir(2) */
+    bool info_json_okay = false;
+    bool author_json_okay = false;
 
     /*
      * firewall
      */
     if (entry_dir == NULL && info_json == NULL && author_json == NULL)
     {
-	err(30, __func__, "called with NULL arg(s)");
+	err(37, __func__, "called with NULL arg(s)");
 	not_reached();
     }
     else if (entry_dir != NULL)
     {
 	if (!is_dir(entry_dir))
 	{
-	    err(31, __func__, "called on path that is not a directory");
+	    err(38, __func__, "called on path that is not a directory");
 	    not_reached();
 	}
 	/*
@@ -115,22 +171,17 @@ verify_entry_dir(char const *entry_dir, char const *info_json, char const *autho
 	errno = 0;			/* pre-clear errno for errp() */
 	cwd = open(".", O_RDONLY|O_DIRECTORY|O_CLOEXEC);
 	if (cwd < 0) {
-	    errp(32, __func__, "cannot open .");
+	    errp(39, __func__, "cannot open .");
 	    not_reached();
 	}
 	/*
 	 * cd into the entry_dir to check that the .info.json and .author.json
 	 * files exist.
-	 *
-	 * XXX Once again this will result in code duplication unless this part
-	 * is moved to another function or the processing directory function
-	 * (which does not exist yet) does the checks on files and not the
-	 * sanity check functions.
 	 */
 	errno = 0;			/* pre-clear errno for errp() */
 	ret = chdir(entry_dir);
 	if (ret < 0) {
-	    errp(33, __func__, "cannot cd %s", entry_dir);
+	    errp(40, __func__, "cannot cd %s", entry_dir);
 	    not_reached();
 	}
 
@@ -161,7 +212,7 @@ verify_entry_dir(char const *entry_dir, char const *info_json, char const *autho
 		  "    chkentry [options] info.json author.json"
 		  "",
 		  NULL);
-	    err(34, __func__, "info.json does not exist: %s%s%s", entry_dir!=NULL?entry_dir:"",entry_dir!=NULL?"/":"", info_json);
+	    err(41, __func__, "info.json does not exist: %s%s%s", entry_dir!=NULL?entry_dir:"",entry_dir!=NULL?"/":"", info_json);
 	    not_reached();
 	}
 	if (!is_file(info_json))
@@ -176,7 +227,7 @@ verify_entry_dir(char const *entry_dir, char const *info_json, char const *autho
 		  "    chkentry [options] info.json author.json"
 		  "",
 		  NULL);
-	    err(35, __func__, "info.json is not a regular file: %s%s%s", entry_dir!=NULL?entry_dir:"",entry_dir!=NULL?"/":"", info_json);
+	    err(42, __func__, "info.json is not a regular file: %s%s%s", entry_dir!=NULL?entry_dir:"",entry_dir!=NULL?"/":"", info_json);
 	    not_reached();
 	}
 	if (!is_read(info_json))
@@ -191,9 +242,11 @@ verify_entry_dir(char const *entry_dir, char const *info_json, char const *autho
 		  "    chkentry [options] info.json author.json"
 		  "",
 		  NULL);
-	    err(36, __func__, "info.json is not readable: %s%s%s", entry_dir!=NULL?entry_dir:"",entry_dir!=NULL?"/":"", info_json);
+	    err(43, __func__, "info.json is not readable: %s%s%s", entry_dir!=NULL?entry_dir:"",entry_dir!=NULL?"/":"", info_json);
 	    not_reached();
 	}
+
+	info_json_okay = validate_info_json(info_json);
     }
 
     if (author_json != NULL && strcmp(author_json, "."))
@@ -210,7 +263,7 @@ verify_entry_dir(char const *entry_dir, char const *info_json, char const *autho
 		  "    chkentry [options] info.json author.json"
 		  "",
 		  NULL);
-	    err(37, __func__, "author.json does not exist: %s%s%s", entry_dir!=NULL?entry_dir:"",entry_dir!=NULL?"/":"", author_json);
+	    err(44, __func__, "author.json does not exist: %s%s%s", entry_dir!=NULL?entry_dir:"",entry_dir!=NULL?"/":"", author_json);
 	    not_reached();
 	}
 	if (!is_file(author_json))
@@ -225,7 +278,7 @@ verify_entry_dir(char const *entry_dir, char const *info_json, char const *autho
 		  "    chkentry [options] info.json author.json"
 		  "",
 		  NULL);
-	    err(38, __func__, "author.json does is not a regular file: %s%s%s", entry_dir!=NULL?entry_dir:"",entry_dir!=NULL?"/":"", author_json);
+	    err(45, __func__, "author.json does is not a regular file: %s%s%s", entry_dir!=NULL?entry_dir:"",entry_dir!=NULL?"/":"", author_json);
 	    not_reached();
 	}
 	if (!is_read(author_json))
@@ -240,9 +293,11 @@ verify_entry_dir(char const *entry_dir, char const *info_json, char const *autho
 		  "    chkentry [options] info.json author.json"
 		  "",
 		  NULL);
-	    err(39, __func__, "author.json does is not readable: %s%s%s", entry_dir!=NULL?entry_dir:"",entry_dir!=NULL?"/":"", author_json);
+	    err(46, __func__, "author.json does is not readable: %s%s%s", entry_dir!=NULL?entry_dir:"",entry_dir!=NULL?"/":"", author_json);
 	    not_reached();
 	}
+
+	author_json_okay = validate_author_json(author_json);
     }
 
     if (entry_dir != NULL && switched_dir)
@@ -254,17 +309,19 @@ verify_entry_dir(char const *entry_dir, char const *info_json, char const *autho
 	errno = 0;			/* pre-clear errno for errp() */
 	ret = fchdir(cwd);
 	if (ret < 0) {
-	    errp(40, __func__, "cannot fchdir to the previous current directory");
+	    errp(47, __func__, "cannot fchdir to the previous current directory");
 	    not_reached();
 	}
 	errno = 0;			/* pre-clear errno for errp() */
 	ret = close(cwd);
 	if (ret < 0) {
-	    errp(41, __func__, "close of previous current directory failed");
+	    errp(48, __func__, "close of previous current directory failed");
 	    not_reached();
 	}
 
     }
+
+    return info_json_okay && author_json_okay;
 }
 /*
  * chkentry_sanity_chks - perform basic sanity checks
@@ -291,7 +348,7 @@ chkentry_sanity_chks(char const *entry_dir, char const *info_json, char const *a
      */
     if (fnamchk == NULL)
     {
-	err(42, __func__, "called with NULL fnamchk");
+	err(49, __func__, "called with NULL fnamchk");
 	not_reached();
     }
 
@@ -309,7 +366,7 @@ chkentry_sanity_chks(char const *entry_dir, char const *info_json, char const *a
 	      "",
 	      "    chkentry -F /path/to/fnamchk ...",
 	      NULL);
-	err(43, __func__, "fnamchk does not exist: %s", fnamchk);
+	err(50, __func__, "fnamchk does not exist: %s", fnamchk);
 	not_reached();
     }
     if (!is_file(fnamchk))
@@ -322,7 +379,7 @@ chkentry_sanity_chks(char const *entry_dir, char const *info_json, char const *a
 	      "",
 	      "    chkentry -F /path/to/fnamchk ...",
 	      NULL);
-	err(44, __func__, "fnamchk is not a regular file: %s", fnamchk);
+	err(51, __func__, "fnamchk is not a regular file: %s", fnamchk);
 	not_reached();
     }
     if (!is_exec(fnamchk))
@@ -335,7 +392,7 @@ chkentry_sanity_chks(char const *entry_dir, char const *info_json, char const *a
 	      "",
 	      "    chkentry -F /path/to/fnamchk ...",
 	      NULL);
-	err(45, __func__, "fnamchk is not an executable program: %s", fnamchk);
+	err(52, __func__, "fnamchk is not an executable program: %s", fnamchk);
 	not_reached();
     }
 
@@ -355,7 +412,7 @@ chkentry_sanity_chks(char const *entry_dir, char const *info_json, char const *a
 		  "    chkentry [-h] [-v level] [-J level] [-V] [-q] [-F fnamchk] entry_dir"
 		  "",
 		  NULL);
-	    err(46, __func__, "entry_dir does not exist: %s", entry_dir);
+	    err(53, __func__, "entry_dir does not exist: %s", entry_dir);
 	    not_reached();
 	}
 	if (!is_dir(entry_dir))
@@ -369,18 +426,17 @@ chkentry_sanity_chks(char const *entry_dir, char const *info_json, char const *a
 		  "    chkentry [-h] [-v level] [-J level] [-V] [-q] [-F fnamchk] entry_dir"
 		  "",
 		  NULL);
-	    err(47, __func__, "entry_dir is not a directory: %s", entry_dir);
+	    err(54, __func__, "entry_dir is not a directory: %s", entry_dir);
 	    not_reached();
 	}
 
-	verify_entry_dir(entry_dir, info_json, author_json);
     }
     else /* entry_dir == NULL */
     {
 	/* although one or the other can be NULL, both cannot be NULL */
 	if (info_json == NULL && author_json == NULL)
 	{
-	    err(48, __func__, "called with NULL entry_dir, info_json and author_json");
+	    err(55, __func__, "called with NULL entry_dir, info_json and author_json");
 	    not_reached();
 	}
 
@@ -388,7 +444,7 @@ chkentry_sanity_chks(char const *entry_dir, char const *info_json, char const *a
 	 * it's okay if entry_dir is NULL: see that function comments for
 	 * details.
 	 */
-	verify_entry_dir(entry_dir, info_json, author_json);
+	validate_entry_files(entry_dir, info_json, author_json);
     }
     /* we also check that all the tables across the IOCCC toolkit are sane */
     ioccc_sanity_chks();
@@ -405,6 +461,7 @@ main(int argc, char *argv[])
     extern int optind;		/* argv index of the next arg */
     bool test = false;		/* true ==> JSON conversion test case result */
     bool error = false;		/* true ==> JSON conversion test suite error */
+    bool valid = false;		/* true ==> files are valid */
     char *fnamchk = FNAMCHK_PATH_0;	/* path to fnamchk executable */
     bool fnamchk_flag_used = false;	/* true ==> -F fnamchk used */
     struct json *node = NULL;	/* allocated JSON parser tree node */
@@ -488,6 +545,7 @@ main(int argc, char *argv[])
 
     chkentry_sanity_chks(entry_dir, info_json, author_json, fnamchk);
 
+    valid = validate_entry_files(entry_dir, info_json, author_json);
 
     /* XXX - fake code below needs to be removed - XXX */
     if (node == NULL) {
@@ -500,6 +558,8 @@ main(int argc, char *argv[])
 	error = false; /* XXX */
     }
     /* XXX - add more code here - XXX */
+    if (!valid)
+	error = true;
 
     /*
      * All Done!!! - Jessica Noll, age 2
