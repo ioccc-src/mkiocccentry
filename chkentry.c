@@ -479,8 +479,7 @@ main(int argc, char *argv[])
 	break;
     default:
 	if (argc >= 2) {
-	    vrergfB(atoi(argv[0]), atoi(argv[1]));	/* XXX - keep this line around for testing purposes for now -
-							 * XXX */
+	    vrergfB(atoi(argv[0]), atoi(argv[1]));	/* XXX - keep this line around for testing purposes for now - XXX */
 	} else {
 	    usage(59, program, "invalid number of arguments", -1, -1);	/* ooo */
 	}

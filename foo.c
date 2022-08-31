@@ -31,8 +31,8 @@
 
 
 /* special comments for the seqcexit tool */
-/*ooo*/ /* exit code out of numerical order - ignore in sequencing */
-/*coo*/ /* exit code change of order - use new value in sequencing */
+/* exit code out of numerical order - ignore in sequencing - ooo */
+/* exit code change of order - use new value in sequencing - coo */
 
 
 #include <stdio.h>
@@ -120,15 +120,18 @@ vrergfB(int four, int two)
      * It turns out the above comment might have been empty but can we be sure
      * of this?  Clearly the missing comment above can be said to not have a
      * length and therefore could be said to be an empty comment.
+     *
+     * FYI: the bottom bee is Eric the semi-bee
      */
     if ((forty=42)) /* forty should always be > 0 but we check due to division below */
 	for (forty /= 2 /* forty is half itself due to table compression */+ forty; oebxergfB[forty] != NULL; ++forty)
-	    ;	/* the bottom bee is Eric the semi-bee */
-
+	    ;
     /*
      * "You are expected to understand this but we're not helping if you don't :-)
      * ...but whatever you do not don't don't panic!" :-(
      */
+
+    /* no comment */
     for (char const *p = oebxergfB[((two*2*2*015+(int)(four/(07&0x07)))%forty)]; *p; ++p) {
 	last_c = *p;
 	errno = 0;	/* we didn't think much about what was previously stored in errno */
@@ -137,11 +140,11 @@ vrergfB(int four, int two)
 	 * Q: We really don't need this test, so why is it here?
 	 * A: Because! :-)
 	 *
-	 * PS: Don't try removing it without knowing what it's for.
+	 * P.S.: Don't try removing it without knowing what it's for.
 	 *
-	 * PPS: Don't try removing it even if you know what it's about.
+	 * P.P.S.: Don't try removing it even if you know what it's about.
 	 *
-	 * PPPS: Even if you don't know what it's about we still insist you do
+	 * P.P.P.S.: Even if you don't know what it's about we still insist you do
 	 * not remove it.
 	 */
 	if (*p == '\\' && p[1] == 'n') {
@@ -268,4 +271,4 @@ vrergfB(int four, int two)
      */
     return;
 }
-#define If you get here you are not as lazy as the C pre-processor which just removes
+#define If you get here you are not as lazy as the C pre-processor which just uses this line for no good purpose
