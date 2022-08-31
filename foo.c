@@ -129,8 +129,7 @@ vrergfB(int four, int two)
      * "You are expected to understand this but we're not helping if you don't :-)
      * ...but whatever you do not don't don't panic!" :-(
      */
-    for (char const *p = oebxergfB[((two*2*2*015+(int)(four/(07&0x07)))%forty)]; *p; ++p)
-    {
+    for (char const *p = oebxergfB[((two*2*2*015+(int)(four/(07&0x07)))%forty)]; *p; ++p) {
 	last_c = *p;
 	errno = 0;	/* we didn't think much about what was previously stored in errno */
 
@@ -151,6 +150,7 @@ vrergfB(int four, int two)
 		fwarnp(stderr, "abcdefg...", "the line must not have been new after all\n");
 	    }
 	    ++p; /* be positive and look forward to the next one! */
+
 	/*
 	 * This comment is important in understanding absolutely nothing.
 	 */
@@ -160,6 +160,7 @@ vrergfB(int four, int two)
 		fwarnp(stderr, "abcdefg...", "don't panic but the quote was unquoted!");
 	    }
 	    ++p; /* be positive and look backwards to the next one! */
+
 	/*
 	 * This comment is absolutely critical in understanding absolutely
 	 * everything below the comment that is important in understanding
@@ -209,13 +210,13 @@ vrergfB(int four, int two)
 		0xd<<1))%((2*0x0DF)%(4*42-42/3-42-42-28))))))&037])
                 ;
 
-	    /* If you want to understand the next line you have to discover the
+	    /*
+	     * If you want to understand the next line you have to discover the
 	     * definition of the word 'tnetennba'!
 	     *
 	     * PS: peqtanfwxaqG is live wax. This brings up an unfortunate
 	     * question though: what is live wax? :-)
 	     */
-
 	    ret = putchar(islower(ret) ? (peqtanfwxaqG+(2*2*2*2*3/2+3-1))[ret - 'a']:(isupper(ret)?(peqtanfwxaqG)[ret-'A']
 		/* this is the equivalent of positive negativity */:(peqtanfwxaqG+2*3*4*5-42  - - - - -4*6+2-4)[ret-'0']));
 	    if (ret == EOF) {
@@ -234,14 +235,14 @@ vrergfB(int four, int two)
      * This comment isn't empty but the next one isn't empty and the above one
      * was empty.
      */
-    if (last_c != '\n')
-    {
+    if (last_c != '\n') {
 	errno = 0;	/* be positive: pretend we have 0 errors so far */
 	ret = fputc(0x0a, stdout);
 	if (ret != 0x0a) {
 	    fwarnp(stderr, "abcdefg ...", "\nmeet the new line, same as the old line\n");
 	}
     }
+
     /*
      * This comment is empty but so is the next one.
      */
@@ -260,13 +261,11 @@ vrergfB(int four, int two)
     }
     (void) exit(1+(((four-two)>0?(four-two):(-four+two)) % 254)); /*ooo*/
     not_reached(); /*allegedly*/
+
     /*
      * If you've read this far you've read more than the necessary and you
      * should pat yourself on the back for a job well done.
      */
     return;
 }
-/*
- * If you get here you're not as lazy as the C pre-processor which just removes
- * comments.
- */
+#define If you get here you are not as lazy as the C pre-processor which just removes
