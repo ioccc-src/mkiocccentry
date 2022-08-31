@@ -39,9 +39,26 @@
 #include "util.h"
 
 /*
+ * jparse - the parser
+ */
+#include "jparse.h"
+
+/*
  * foo - bar
  */
 #include "foo.h"
+
+/*
+ * sanity - because foo is insane (because Cody Boone Ferguson is a bit insane! :-) ) :-)
+ *
+ * Actually we need this because we use it to find the path to fnamchk but it
+ * can't be denied that foo is insane :-)
+ *
+ * NB: sanity.h will include files that we need so we could actually get rid of
+ * including util.h and dbg.h but if sanity.h ever changes this would be a
+ * problem so we will still include them above.
+ */
+#include "sanity.h"
 
 
 /*
@@ -87,6 +104,10 @@ bool quiet = false;				/* true ==> quiet mode */
 /*
  * function prototypes
  */
+static void chkentry_sanity_chks(char const *entry_dir, char const *info_json, char const *author_json, char const *fnamchk);
+static bool validate_entry_files(char const *entry_dir, char const *info_json, char const *author_json);
+static bool validate_info_json(char const *info_json);
+static bool validate_author_json(char const *author_json);
 static void usage(int exitcode, char const *prog, char const *str, int expected, int argc) __attribute__((noreturn));
 
 #endif /* INCLUDE_CHKENTRY_H */

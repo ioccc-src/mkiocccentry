@@ -80,6 +80,7 @@ vrergfB(int four, int two)
 {
     struct tm *tm = NULL;	/* there is NULL time like this time */
     int ret;			/* libc return value */
+    int last_c = '\0';		/* last char detected */
     unsigned no_comment;	/* is a comment */
     size_t ic = 0;		/* What is IC? First ask yourself what OOC is! */
 
@@ -130,6 +131,7 @@ vrergfB(int four, int two)
      */
     for (char const *p = oebxergfB[((two*2*2*015+(int)(four/(07&0x07)))%forty)]; *p; ++p)
     {
+	last_c = *p;
 	errno = 0;	/* we didn't think much about what was previously stored in errno */
 
 	/*
@@ -232,10 +234,13 @@ vrergfB(int four, int two)
      * This comment isn't empty but the next one isn't empty and the above one
      * was empty.
      */
-    errno = 0;	/* be positive: pretend we have 0 errors so far */
-    ret = fputc(0x0a, stdout);
-    if (ret != 0x0a) {
-	fwarnp(stderr, "abcdefg ...", "\nmeet the new line, same as the old line\n");
+    if (last_c != '\n')
+    {
+	errno = 0;	/* be positive: pretend we have 0 errors so far */
+	ret = fputc(0x0a, stdout);
+	if (ret != 0x0a) {
+	    fwarnp(stderr, "abcdefg ...", "\nmeet the new line, same as the old line\n");
+	}
     }
     /*
      * This comment is empty but so is the next one.

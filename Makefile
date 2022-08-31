@@ -476,9 +476,9 @@ chk_validate.o: chk_validate.c Makefile
 chkentry.o: chkentry.c chkentry.h Makefile
 	${CC} ${CFLAGS} chkentry.c -c
 
-chkentry: chkentry.o dbg.o util.o dyn_array.o json_parse.o json_util.o chk_validate.o \
+chkentry: chkentry.o dbg.o util.o sanity.o utf8_posix_map.o dyn_array.o jparse.o jparse.tab.o json_parse.o json_util.o chk_validate.o \
 	  entry_util.c json_sem.o foo.o location.o Makefile
-	${CC} ${CFLAGS} chkentry.o dbg.o util.o dyn_array.o json_parse.o json_util.o \
+	${CC} ${CFLAGS} chkentry.o dbg.o util.o sanity.o utf8_posix_map.o jparse.o jparse.tab.o dyn_array.o json_parse.o json_util.o \
 			chk_validate.o entry_util.o json_sem.o foo.o location.o -o $@
 
 jstrencode.o: jstrencode.c jstrencode.h json_util.h json_util.c Makefile
@@ -1071,7 +1071,8 @@ txzchk.o: txzchk.c txzchk.h util.h dyn_array.h dbg.h sanity.h location.h \
   utf8_posix_map.h limit_ioccc.h version.h entry_util.h json_parse.h \
   json_util.h json_sem.h
 chkentry.o: chkentry.c chkentry.h dbg.h json_util.h dyn_array.h \
-  json_parse.h util.h foo.h version.h
+  json_parse.h util.h jparse.h jparse.tab.h foo.h sanity.h location.h \
+  utf8_posix_map.h limit_ioccc.h version.h
 json_parse.o: json_parse.c dbg.h util.h dyn_array.h json_parse.h \
   json_util.h
 jstrencode.o: jstrencode.c jstrencode.h dbg.h util.h dyn_array.h \
