@@ -146,11 +146,11 @@ validate_author_json(char const *author_json)
 static bool
 validate_entry_files(char const *entry_dir, char const *info_json, char const *author_json)
 {
-    int cwd;			/* current working directory */
+    int cwd;			    /* current working directory */
     int ret;
-    bool switched_dir = false;	/* if we used chdir(2) */
-    bool info_json_okay = false;
-    bool author_json_okay = false;
+    bool switched_dir = false;	    /* if we used chdir(2) */
+    bool info_json_okay = true;	    /* false ==> failed to validate file */
+    bool author_json_okay =true;    /* false ==> failed to validate file */
 
     /*
      * firewall

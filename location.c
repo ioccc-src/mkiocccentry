@@ -36,6 +36,7 @@
 
 
 #include <stdio.h>
+#include <strings.h> /* strcasecmp */
 
 /*
  * location - location/country codes
