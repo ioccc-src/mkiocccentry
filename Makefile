@@ -117,9 +117,9 @@ TRUE= true
 # XXX - In 2024 we will stop trying to support legacy systems such as CentOS 7 - XXX #
 # XXX - ###################################################################### - XXX #
 #
-D_LEGACY=
+D_LEGACY:=
 ifeq ($(TIMEGM_PROBLEM),)
-TIMEGM_PROBLEM="`./have_timegm.sh 2>/dev/null`"
+TIMEGM_PROBLEM=$(shell ./have_timegm.sh 2>/dev/null)
 endif
 
 
