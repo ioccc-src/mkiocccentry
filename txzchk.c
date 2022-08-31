@@ -1,3 +1,4 @@
+/* vim: set tabstop=8 softtabstop=4 shiftwidth=4 noexpandtab : */
 /*
  * txzchk - IOCCC tarball validation tool
  *
@@ -7,7 +8,15 @@
  * and formed. In other words txzchk makes sure that the mkiocccentry tool was
  * used and there was no screwing around with the resultant tarball.
  *
- * "Because sometimes people add feathers to tar." :-(
+ * Dedicated to:
+ *
+ *	The many poor souls who have been tarred and feathered:
+ *
+ *	    "Because sometimes people add feathers to tar." :-(
+ *
+ *	And to my wonderful Mum and my dear cousin and friend Dani:
+ *
+ *	    "Because even feathery balls of tar need some love." :-)
  *
  * Written in 2022 by:
  *

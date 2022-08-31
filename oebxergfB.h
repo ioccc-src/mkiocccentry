@@ -2012,6 +2012,24 @@ static char const *oebxergfB[] =
 "\n"
 "-- Xwzmt\n"
 ,
+"Hqe oyfb: qetuhw isab bqisqla bnyb ylw oyultm qeuosli ue bnwul iyhw qr, y\n"
+"bwlybsiy bqisql fye fsebyue nyul, bwwbn yed wvwe slpyea. Usiw dsfbsla nyvw\n"
+"arwfqtybwd bnyb bnw bqisqla ylw yfbqyttm lwieyeba so bxuea bnyb xwlw ykaslkwd\n"
+"ue qbwls. \n"
+"\n"
+"'Zsql klsbnwl iym kw y gwlh kqb yb twyab nw dude'b wyb msq ue bnw xsik!' :-)\n"
+"\n"
+"Usqlfw: Gdyia Lwduy 8139 Ryutm Iytwedyl '405 bwlluomuep oyfba'.\n"
+,
+"Fsb as oqe oyfba: Ce 3903 y Seubwd Ubybwa iutubylm rtyew fyllmuep bxs eqftwyl\n"
+"ksika flyanwd svwl y oyli ue Hyls, Fslbn Iylstuey yed sew so bnw ksika\n"
+"fsirtwbwd auz so bnw awvwe abwra lwcqulwd osl dwbseybuse. Cb xsqtd nyvw kwwe\n"
+"851 buiwa islw rsxwloqt bnye bnw dwbseybuse svwl Kulsanuiy.\n"
+"\n"
+"Tnua ua xwtt hesxe kqb xnyb iupnb esb kw ya xwtt hesxe ua bnyb bnwlw nyvw kwwe\n"
+"auiutyl uefudweba yed bs bnua dym bnw Seubwd Ubybwa psvwleiweb nya es udwy\n"
+"xnwlw yb twyab sew eqftwyl xylnwyd ua.\n"
+,
 NULL
 };
 
