@@ -53,7 +53,7 @@
 
 /*
  * While this repo does not officially support pre-c11 systems that have
- * problems with the timegm() function nopt being declared in <time.h>.
+ * problems with the timegm() function not being declared in <time.h>.
  *
  * The work-a-round / gross hack below as a mild attempt to make such systems work.
  *
@@ -414,7 +414,7 @@ object2author(struct json *node, unsigned int depth, struct json_sem *sem,
     bool test = false;			/* validation test result */
     struct str_or_null val_or_null;	/* JTYPE_MEMBER value that can be a JTYPE_STRING or JTYPE_NULL */
     bool *bool_val = NULL;		/* pointer to a converted JTYPE_BOOL */
-    int *int_val = NULL;		/* pointer to a converted JTYPE_NUMNER as int */
+    int *int_val = NULL;		/* pointer to a converted JTYPE_NUMBER as int */
     int i;
 
     /*
@@ -498,7 +498,7 @@ object2author(struct json *node, unsigned int depth, struct json_sem *sem,
 	 *	 the associated string value as NULL and convert it to an empty
 	 *	 string later on in this function.
 	 */
-	/* case: IOCCC author nmae */
+	/* case: IOCCC author name */
 	if (strcmp(name, "name") == 0) {
 
 	    /* firewall - check for duplicate JTYPE_MEMBER */
@@ -840,7 +840,7 @@ object2author(struct json *node, unsigned int depth, struct json_sem *sem,
     if (found_twitter == false) {
 	if (val_err != NULL) {
 	    *val_err = werr_sem_val(86, node, depth, sem, __func__,
-				    "author array index[%d]: missing twiter", auth_num);
+				    "author array index[%d]: missing twitter", auth_num);
 	}
 	return false;
     }
@@ -1196,7 +1196,7 @@ object2manifest(struct json *node, unsigned int depth, struct json_sem *sem,
     bool test = false;			/* validation test result */
     struct manifest man;		/* IOCCC manifest to fill out and test */
     char *extra_filename = NULL;	/* filename of an extra file */
-    char *extra_filename2 = NULL;	/* 2nd filename of an extra file */
+    char *extra_filename2 = NULL;	/* second filename of an extra file */
     intmax_t i;
     intmax_t j;
 
@@ -1531,7 +1531,7 @@ object2manifest(struct json *node, unsigned int depth, struct json_sem *sem,
      */
     for (i=1; i < man.cnt_extra_file; ++i) {
 
-	/* obtain 1st extra filename to compare against */
+	/* obtain first extra filename to compare against */
 	extra_filename = dyn_array_value(man.extra, char *, i);
 	if (extra_filename == NULL) {
 	    if (val_err != NULL) {
@@ -1543,11 +1543,11 @@ object2manifest(struct json *node, unsigned int depth, struct json_sem *sem,
 	}
 
 	/*
-	 * compare 1st extra filename with the remaining extra filenames
+	 * compare first extra filename with the remaining extra filenames
 	 */
 	for (j=0; j < i; ++j) {
 
-	    /* obtain 2nd extra filename */
+	    /* obtain second extra filename */
 	    extra_filename2 = dyn_array_value(man.extra, char *, j);
 	    if (extra_filename2 == NULL) {
 		if (val_err != NULL) {
@@ -1559,7 +1559,7 @@ object2manifest(struct json *node, unsigned int depth, struct json_sem *sem,
 	    }
 
 	    /*
-	     * compare 1st and 2nd extra filenames
+	     * compare first and second extra filenames
 	     */
 	    if (strcmp(extra_filename, extra_filename2) == 0) {
 		if (val_err != NULL) {
@@ -1574,7 +1574,7 @@ object2manifest(struct json *node, unsigned int depth, struct json_sem *sem,
     }
 
     /*
-     * load manifest arrray
+     * load manifest array
      */
     *manp = man;
 
@@ -1601,7 +1601,7 @@ bool
 timestr_eq_tstamp(char const *timestr, time_t timestamp)
 {
     struct tm timeptr;			/* formed_UTC converted into broken-out time */
-    char *ptr = NULL;			/* ptr to 1st char in buf not converted */
+    char *ptr = NULL;			/* ptr to first char in buf not converted */
     time_t timestr_as_time_t;		/* timestr as a timestamp */
 
     /*
@@ -2820,7 +2820,7 @@ bool
 test_formed_UTC(char const *str)
 {
     struct tm timeptr;			/* formed_UTC converted into broken-out time */
-    char *ptr = NULL;			/* ptr to 1st char in buf not converted */
+    char *ptr = NULL;			/* ptr to first char in buf not converted */
     char buf[MAX_TIMESTAMP_LEN+1+1];	/* conversion back to time string */
     size_t strftime_ret;		/* length of strftime() string without the trailing newline */
 
@@ -3459,7 +3459,7 @@ test_manifest(struct manifest *manp)
     intmax_t cnt_extra_file = -1;		/* number of extra files */
     bool test = false;			/* test_extra_file() test result */
     char *extra_filename = NULL;	/* filename of an extra file */
-    char *extra_filename2 = NULL;	/* 2nd filename of an extra file */
+    char *extra_filename2 = NULL;	/* second filename of an extra file */
     intmax_t i;
     intmax_t j;
 
@@ -3561,7 +3561,7 @@ test_manifest(struct manifest *manp)
      */
     for (i=1; i < cnt_extra_file; ++i) {
 
-	/* obtain 1st extra filename to compare against */
+	/* obtain first extra filename to compare against */
 	extra_filename = dyn_array_value(manp->extra, char *, i);
 	if (extra_filename == NULL) {
 	    json_dbg(JSON_DBG_MED, __func__,
@@ -3570,11 +3570,11 @@ test_manifest(struct manifest *manp)
 	}
 
 	/*
-	 * compare 1st extra filename with the remaining extra filenames
+	 * compare first extra filename with the remaining extra filenames
 	 */
 	for (j=0; j < i; ++j) {
 
-	    /* obtain 2nd extra filename */
+	    /* obtain second extra filename */
 	    extra_filename2 = dyn_array_value(manp->extra, char *, j);
 	    if (extra_filename2 == NULL) {
 		json_dbg(JSON_DBG_MED, __func__,
@@ -3583,7 +3583,7 @@ test_manifest(struct manifest *manp)
 	    }
 
 	    /*
-	     * compare 1st and 2nd extra filenames
+	     * compare first and second extra filenames
 	     */
 	    if (strcmp(extra_filename, extra_filename2) == 0) {
 		json_dbg(JSON_DBG_MED, __func__,
