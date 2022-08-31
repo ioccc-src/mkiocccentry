@@ -667,7 +667,7 @@ print_sem_c_src(struct dyn_array *tbl, char *tbl_name, char *cap_tbl_name)
      * print semantic table header
      */
     len = dyn_array_tell(tbl);
-    print("struct json_sem %s[%s_LEN] = {\n", tbl_name, cap_tbl_name);
+    print("struct json_sem %s[%s_LEN+1] = {\n", tbl_name, cap_tbl_name);
     prstr("/* depth    type        min     max   count  name_len validate  name */\n");
 
     /*
@@ -782,6 +782,7 @@ print_sem_c_src(struct dyn_array *tbl, char *tbl_name, char *cap_tbl_name)
     /*
      * print semantic table trailer
      */
+    prstr("  { 0,\tJTYPE_UNSET,\t0,\t0,\t0,\t0,\tNULL,\tNULL }\n");
     prstr("};\n");
 
     return;

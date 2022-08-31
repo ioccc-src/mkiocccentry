@@ -24,7 +24,7 @@
 #include "chk_sem_info.h"
 
 
-struct json_sem sem_info[SEM_INFO_LEN] = {
+struct json_sem sem_info[SEM_INFO_LEN+1] = {
 /* depth    type        min     max   count  name_len validate  name */
   { 5,	JTYPE_STRING,	12,	INF,	0,	0,	NULL,	NULL },
   { 4,	JTYPE_MEMBER,	1,	1,	0,	8,	chk_Makefile,	"Makefile" },
@@ -77,4 +77,5 @@ struct json_sem sem_info[SEM_INFO_LEN] = {
   { 1,	JTYPE_MEMBER,	1,	1,	0,	14,	chk_ungetc_warning,	"ungetc_warning" },
   { 1,	JTYPE_MEMBER,	1,	1,	0,	15,	chk_wordbuf_warning,	"wordbuf_warning" },
   { 0,	JTYPE_OBJECT,	1,	1,	0,	0,	NULL,	NULL },
+  { 0,	JTYPE_UNSET,	0,	0,	0,	0,	NULL,	NULL }
 };

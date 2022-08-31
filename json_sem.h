@@ -85,7 +85,7 @@ struct json_sem_val_err
 struct json_sem
 {
     unsigned int depth;		/* JSON parse tree node depth */
-    enum item_type type;	/* type of JSON node */
+    enum item_type type;	/* type of JSON node, JTYPE_UNSET ==> end of table */
     unsigned int min;		/* minimum allowed count */
     unsigned int max;		/* maximum allowed count, 0 ==> infinite */
     unsigned int count;		/* number of times this JSON semantic was matched */

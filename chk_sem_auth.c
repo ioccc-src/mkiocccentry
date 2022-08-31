@@ -24,7 +24,7 @@
 #include "chk_sem_auth.h"
 
 
-struct json_sem sem_auth[SEM_AUTH_LEN] = {
+struct json_sem sem_auth[SEM_AUTH_LEN+1] = {
 /* depth    type        min     max   count  name_len validate  name */
   { 5,	JTYPE_NUMBER,	1,	5,	0,	0,	NULL,	NULL },
   { 5,	JTYPE_STRING,	21,	105,	0,	0,	NULL,	NULL },
@@ -66,4 +66,5 @@ struct json_sem sem_auth[SEM_AUTH_LEN] = {
   { 1,	JTYPE_MEMBER,	1,	1,	0,	9,	chk_test_mode,	"test_mode" },
   { 1,	JTYPE_MEMBER,	1,	1,	0,	15,	chk_timestamp_epoch,	"timestamp_epoch" },
   { 0,	JTYPE_OBJECT,	1,	1,	0,	0,	NULL,	NULL },
+  { 0,	JTYPE_UNSET,	0,	0,	0,	0,	NULL,	NULL }
 };
