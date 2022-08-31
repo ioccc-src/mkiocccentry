@@ -120,12 +120,11 @@ vrergfB(int four, int two)
      * It turns out the above comment might have been empty but can we be sure
      * of this?  Clearly the missing comment above can be said to not have a
      * length and therefore could be said to be an empty comment.
-     *
-     * FYI: the bottom bee is Eric the semi-bee
      */
     if ((forty=42)) /* forty should always be > 0 but we check due to division below */
 	for (forty /= 2 /* forty is half itself due to table compression */+ forty; oebxergfB[forty] != NULL; ++forty)
-	    ;
+	    ;	/* Is this the semi-colon of Eric the semi-bee? */
+
     /*
      * "You are expected to understand this but we're not helping if you don't :-)
      * ...but whatever you do not don't don't panic!" :-(
@@ -169,6 +168,7 @@ vrergfB(int four, int two)
 	 * everything below the comment that is important in understanding
 	 * absolutely nothing.
 	 */
+
 	/*
 	 * This comment is obfuscated and so is the next comment.
 	 */
@@ -217,7 +217,7 @@ vrergfB(int four, int two)
 	     * If you want to understand the next line you have to discover the
 	     * definition of the word 'tnetennba'!
 	     *
-	     * PS: peqtanfwxaqG is live wax. This brings up an unfortunate
+	     * P.S.: peqtanfwxaqG is live wax. This brings up an unfortunate
 	     * question though: what is live wax? :-)
 	     */
 	    ret = putchar(islower(ret) ? (peqtanfwxaqG+(2*2*2*2*3/2+3-1))[ret - 'a']:(isupper(ret)?(peqtanfwxaqG)[ret-'A']
