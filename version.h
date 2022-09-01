@@ -152,23 +152,23 @@
  */
 
 
- /*
-  * JSON parser versions
-  *
-  * Because the JSON parser is a self contained system, we cannot define
-  * JSON_PARSER_VERSION here. See jparse.h for the JSON_PARSER_VERSION value.
-  *
-  * Because the JSON parser is a self contained system, we cannot define
-  * JPARSE_VERSION here. See jparse_main.h for the JPARSE_VERSION value.
-  */
+/*
+ * JSON parser versions
+ *
+ * Because the JSON parser is a self contained system, we cannot define
+ * JSON_PARSER_VERSION here. See jparse.h for the JSON_PARSER_VERSION value.
+ *
+ * Because the JSON parser is a self contained system, we cannot define
+ * JPARSE_VERSION here. See jparse_main.h for the JPARSE_VERSION value.
+ */
 
 
- /*
-  * Generate JSON semantics table version
-  *
-  * Because the JSON parser is a self contained system, we cannot define
-  * JSEMTBLGEN_VERSION here. See jsemtblgen.h for the JSEMTBLGEN_VERSION value.
-  */
+/*
+ * Generate JSON semantics table version
+ *
+ * Because the JSON parser is a self contained system, we cannot define
+ * JSEMTBLGEN_VERSION here. See jsemtblgen.h for the JSEMTBLGEN_VERSION value.
+ */
 
 
 #endif /* INCLUDE_VERSION_H */
