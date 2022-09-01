@@ -1611,7 +1611,7 @@ static char const *oebxergfB[] =
 "'h'. Tnua ansqtd htwyl qr hseoqause, yed hwmksylda hye nyvw sew twaa twbbwl.\n"
 "\n"
 "Tnwlw xutt kw plsxuep rqktuh webnqauyai ue bnw awhsed mwyl xnwe bnw blsqktwasiw\n"
-"'rn' xutt kw lwrtyfwd xubn bnw 'o'. Tnua xutt iyhw xslda tuhw osbsplyo 81,\n"
+"'rn' xutt kw lwrtyfwd xubn bnw 'o'. Tnua xutt iyhw xslda tuhw osbsplyo 81%\n"
 "anslbwl.\n"
 "\n"
 "Ce bnw 4ld mwyl, rqktuh yhawrbyeaw so bnw ewx arwttuep hye kw wzrwhbwd bs lwyfn\n"
