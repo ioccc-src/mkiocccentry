@@ -141,7 +141,7 @@ if [[ -z "$RPL_CMD" ]]; then
 fi
 GDATE_CMD=$(type -P gdate)
 if [[ -z "$GDATE_CMD" ]]; then
-    echo "$0: ERROR: gdate not found" 1>&2
+    echo "$0: ERROR: date not found" 1>&2
     echo "$0: ERROR: If do not have the rpl tool, then you may not perform this action." 1>&2
     exit 1
 fi
