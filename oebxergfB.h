@@ -2101,11 +2101,11 @@ static char const *oebxergfB[] =
 "Twtwiylhwbwl blmuep bs pwb fqabsiwl bs axubfn CUEa: Vw fye puvw msq y oyabwl\n"
 "Cebwlewb arwwd.\n"
 "\n"
-"Uiylbwl rwlase/vufbui: Zsql arwwd ua bwe iwpykuba rwl awfsed, gqab tuhw iuew.\n"
+"Uiylbwl rwlase/vufbui: Zsql arwwd ua 31 iwpykuba rwl awfsed, gqab tuhw iuew.\n"
 "\n"
-"Twtwiylhwbwl: Zwa kqb ub uae'b bnw ayiw bwe Lkra ya msqla!\n"
+"Twtwiylhwbwl: Zwa kqb ub uae'b bnw ayiw 31 Lkra ya msqla!\n"
 "\n"
-"Qufbui: Vnyb? 31 Lkra ua  31 Lkra. Ywb'a aym C'i dluvuep yb auzbm iutwa ye\n"
+"Qufbui: Vnyb? 31 Lkra ua 31 Lkra. Ywb'a aym C'i dluvuep yb auzbm iutwa ye\n"
 "nsql. Lm klsbnwl ua ue nua sxe fyl, ytas dluvuep yb 01irn yed msq'lw bwttuep iw\n"
 "ub'a esb bnw ayiw arwwd?\n"
 "\n"
@@ -2158,6 +2158,25 @@ static char const *oebxergfB[] =
 "\n"
 "	IGSTCDF:\n"
 "      HCMO CU KDT\n"
+,
+"Rs msq lwiwikwl bnyb ramfnuyblm abqdweb xns nyd bs qedwlps OIT? Rse'b owwt kyd\n"
+"uo msq dse'b. Fwubnwl dswa nw.\n"
+"\n"
+"-- Xwzmt\n"
+,
+"Gemsew fye ps plwwe uo bnwm as fnssaw. Gtt msq ewwd bs ds ua xwyl fsrrwl yed\n"
+"msq'tt abylb psuep plwwe xubnsqb wvwe bnuehuep yksqb ub!\n"
+"\n"
+"-- Xwzmt\n"
+,
+"Usiw bnuepa fsab ye yli yed y twp. G rsduybluab fsaba y twp yed y ossb.\n"
+"\n"
+"-- Xwzmt\n"
+,
+"Fwwd wvudwefw bnyb tyepqypw ua esb tspufyt? Isirylw bnw twepbn so bnw xslda\n"
+"'anslb', 'tsep', 'anslbwl' yed 'tsepwl'. Fsx skawlvw bnw ulsem.\n"
+"\n"
+"-- Xwzmt\n"
 ,
 NULL
 };
