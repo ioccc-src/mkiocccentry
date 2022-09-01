@@ -5,6 +5,7 @@
 # If we can compile have_timegm.c then we will output nothing and exit 0.
 #
 # If we encounter a compile warning/error while trying to compile have_timegm.c
+# or if the output file is not executable or returns an error / does not exit 0
 # we will output -DTIMEGM_PROBLEM and exit 0.
 #
 # All other errors will result in a non-zero exit.

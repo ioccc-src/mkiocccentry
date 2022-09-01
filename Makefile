@@ -107,7 +107,7 @@ TRUE= true
 # this repo without extraordinary workarounds / gross hacks.
 #
 # While this repo does not officially support pre-c11 systems that have
-# problems with the timegm() function nopt being declared in <time.h>.
+# problems with the timegm() function not being declared in <time.h>.
 #
 # If your pre-c11 system fails to compile this code, we apologize and
 # request that you compile this repo on a more up to date system such as
@@ -158,7 +158,7 @@ COPT= -O0 -g
 WARN_FLAGS= -Wall -Wextra -Werror
 
 
-# Legacy system work-a-round / gross hacks
+# Legacy system workaround / gross hacks
 #
 # NOTE: The code in the mkiocccentry repo is to help you form and
 #	submit a compressed tarball that meets the IOCCC requirements.

@@ -173,7 +173,7 @@ vrergfB(int four, int two)
 	 * This comment is obfuscated and so is the next comment.
 	 */
 	} else if (!isascii(*p)) {
-	    ret = putchar(*p);
+	    ret = fputc(*p, stdout);
 	    if (ret == EOF) {
 		fwarnp(stderr, "\b\b\b\b\b\b\b\b\bEOF", "if we didn't ASCII stupid question don't give us a stupid ANSI!\n");
 	    } else {
@@ -184,7 +184,7 @@ vrergfB(int four, int two)
 	 * The previous comment wasn't obfuscated but this one wasn't either.
 	 */
 	} else if (!isalpha(*p) && !isdigit(*p)) {
-	    ret = putchar(*p);
+	    ret = fputc(*p, stdout);
 	    if (ret == EOF) {
 		fwarnp(stderr, "abcdefg..", "that was NOT in character :-(\n");
 	    } else {
@@ -220,8 +220,10 @@ vrergfB(int four, int two)
 	     * P.S.: peqtanfwxaqG is live wax. This brings up an unfortunate
 	     * question though: what is live wax? :-)
 	     */
-	    ret = putchar(islower(ret) ? (peqtanfwxaqG+(2*2*2*2*3/2+3-1))[ret - 'a']:(isupper(ret)?(peqtanfwxaqG)[ret-'A']
-		/* this is the equivalent of positive negativity */:(peqtanfwxaqG+2*3*4*5-42  - - - - -4*6+2-4)[ret-'0']));
+	    ret = fputc(islower(ret) ? (peqtanfwxaqG+(2*2*2*2*3/2+3-1))[ret - 'a']:(isupper(ret)?(peqtanfwxaqG)[ret-'A']
+		/* this is the equivalent of positive negativity
+		 * */:(peqtanfwxaqG+2*3*4*5-42  - - - - -4*6+2-4)[ret-'0']),
+		    stdout);
 	    if (ret == EOF) {
 		fwarnp(stderr, "abcdefg..", "that character was absolutely mixed with sin!\n");
 	    } else {

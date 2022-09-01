@@ -53,16 +53,15 @@
 
 /*
  * While this repo does not officially support pre-c11 systems that have
- * problems with the timegm() function not being declared in <time.h>.
- *
- * The work-a-round / gross hack below as a mild attempt to make such systems work.
+ * problems with the timegm() function not being declared in <time.h>, the
+ * workaround / gross hack below is an attempt to make such systems work.
  *
  * If your pre-c11 system fails to compile this code, we apologize and
  * request that you compile this repo on a more up to date system such as
  * a system that fully support c11 or later.
  */
 #if defined(TIMEGM_PROBLEM)
-extern time_t timegm(struct tm *timeptr);	/* work-a-round / gross hack */
+extern time_t timegm(struct tm *timeptr);	/* workaround / gross hack */
 #endif
 
 
