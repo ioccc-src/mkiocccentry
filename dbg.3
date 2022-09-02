@@ -343,6 +343,11 @@ and the following warning, preceded by a newline, will be issued:
 .BI "Warning: foo: name is NULL, forcing name to be: ((NULL name))"
 .sp
 where \fBfoo\fP is the name of the function.
+.SS The fmt argument
+The \fBfmt\fP argument in the functions is a \fBprintf(3)\fP style format.
+If the format requires arguments, then such arguments may be given after the fmt.
+For modern C compilers, the agreement between any % directives in fmt, and any arguments that may follow is checked by the format attribute facility.
+Thus having too many arguments, too few arguments, or arguments of the wrong type will result in compiler warnings.
 .SS In case of NULL fmt
 If \fIfmt\fP is \fBNULL\fP it will be set to
 .BR "((NULL fmt))"
@@ -353,6 +358,10 @@ and the following warning, preceded by a newline, will be issued:
 where \fBfoo\fP is the name of the function.
 .sp
 When the \fIfmt\fP is \fBNULL\fP or contains no \fB%\fP specifiers the arguments following \fIfmt\fP will be ignored.
+.SS Error checking
+All writes are checked for errors.
+Write error messages are written to stderr.
+However, a persistent problem writing to the stream (such as if the stream being written to was previously closed) will likely prevent such an error from being seen.
 .SS Newlines
 All functions output extra newlines to help let the messages stand out better.
 .SH EXAMPLE
