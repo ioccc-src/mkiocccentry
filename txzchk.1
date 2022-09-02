@@ -1,4 +1,4 @@
-.TH txzchk 1 "29 July 2022" "txzchk" "IOCCC tools"
+.TH txzchk 1 "2 September 2022" "txzchk" "IOCCC tools"
 .SH NAME
 txzchk \- sanity checker tool used on IOCCC compressed tarballs
 .SH SYNOPSIS
@@ -56,18 +56,6 @@ An exit code of 2 indicates that the usage string was printed either because \fB
 Any value > 2 indicates an internal error or an unknown tar listing format.
 Please report this if this happens (see \fBBUGS\fP section for where to report bugs).
 .SH FILES
-\fItxzchk.c\fP
-.RS
-Source code of the \fBtxzchk\fP tool.
-.RE
-\fItxzchk.h\fP
-.RS
-Header file for the \fBtxzchk\fP tool.
-.RE
-\fIlimit_ioccc.h\fP
-.RS
-Header file with limits related to the IOCCC.
-.RE
 \fItxzchk_test.sh\fP
 .RS
 Script that tests \fBtxzchk\fP with the files under \fItest_txzchk/bad\fP and \fItest_txzchk/good\fP.
@@ -116,6 +104,6 @@ Run the program on the file \fIentry.test-1.1644094311.txt\fP, specifying that i
 .fi
 .RE
 .SH SEE ALSO
-\fBfnamchk(1)\fP, \fBmkiocccentry(1)\fP, \fBtar(1)\fP.
+\fBtxzchk(1)\fP, \fBfnamchk(1)\fP, \fBmkiocccentry(1)\fP, \fBtar(1)\fP.
 .SH AUTHOR
 Cody Boone Ferguson.
