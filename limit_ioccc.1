@@ -1,4 +1,4 @@
-.TH limit_ioccc.sh 1 "02 May 2022" "limit_ioccc.sh" "IOCCC tools"
+.TH limit_ioccc.sh 1 "2 September 2022" "limit_ioccc.sh" "IOCCC tools"
 .SH NAME
 limit_ioccc.sh \- select \fIlimit_ioccc.h\fP and \fIversion.h\fP values for shell script use
 .SH SYNOPSIS
@@ -32,18 +32,6 @@ To put it another way: an entry timestamp < \fBMIN_TIMESTAMP\fP is an invalid ti
 This is the \fBgettimeofday(2)\fP epoch.
 .PP
 \fBDIGRAPHS\fP and \fBTRIGRAPHS\fP, both of which are specific to \fBiocccsize(1)\fP.
-.SH FILES
-\fIlimit_ioccc.h\fP
-.RS
-Limits and other variables specific to the IOCCC.
-.RE
-\fIversion.h\fP
-.RS
-Versions of all the tools except for the debug facility.
-.RE
-\fIdbg.h\fP
-.RS
-The debug facility header file which also has the debug facility version \fBDBG_VERSION\fP.
 .RE
 .SH NOTES
 In order for this file to be generated you first have to run make: it's not included in the repo itself.

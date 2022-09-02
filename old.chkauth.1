@@ -1,4 +1,4 @@
-.TH chkauth 1 "29 May 2022" "chkauth" "IOCCC tools"
+.TH chkauth 1 "2 September 2022" "chkauth" "IOCCC tools"
 .SH NAME
 chkauth \- IOCCC tool to validate .author.json file found within an entry directory
 .SH SYNOPSIS
@@ -41,31 +41,6 @@ Note that this currently is not used but will be in a future commit.
 .PP
 \fBmain()\fP returns 1 for issues found and 0 for success.
 If an error is encountered the end is not reached.
-.SH FILES
-\fIchkauth.c\fP
-.RS
-Source code of the \fBchkauth\fP tool.
-.RE
-\fIchkauth.h\fP
-.RS
-Header file for the \fBchkauth\fP tool.
-.RE
-\fIjson_parse.h\fP
-.RS
-JSON parser support code header file.
-.RE
-\fIjson_parse.c\fP
-.RS
-JSON parser support code source code.
-.RE
-\fIchk_util.h\fP
-.RS
-\fBchkinfo\fP and \fBchkauth\fP support header file.
-.RE
-\fIchk_util.c\fP
-.RS
-\fBchkinfo\fP and \fBchkauth\fP support source code.
-.RE
 .SH BUGS
 This tool is not finished yet; it depends on the completion of the JSON parser.
 .SH EXAMPLES
