@@ -1,4 +1,4 @@
-.TH fnamchk 1 "12 June 2022" "fnamchk" "IOCCC tools"
+.TH fnamchk 1 "2 September 2022" "fnamchk" "IOCCC tools"
 .SH NAME
 fnamchk \- IOCCC compressed tarball filename sanity check tool
 .SH SYNOPSIS
@@ -70,19 +70,6 @@ Suppress error messages.
 .PP
 \fBmain()\fP returns 0 on success; if there's an error the end is not reached.
 If there is an error the error message is printed prior to exiting; else the output will be the name of the required directory in the tarball (this is used by \fBtxzchk(1)\fP).
-.SH FILES
-\fIfnamchk.c\fP
-.RS
-Source code of the \fBfnamchk\fP tool.
-.RE
-\fIfnamchk.h\fP
-.RS
-Header file for the \fBfnamchk\fP tool.
-.RE
-\fIlimit_ioccc.h\fP
-.RS
-Header file with limits related to the IOCCC.
-.RE
 .SH BUGS
 .PP
 More than 0 humans work on it! :)
