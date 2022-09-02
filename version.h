@@ -70,17 +70,17 @@
 /*
  * official mkiocccentry version
  */
-#define MKIOCCCENTRY_VERSION "0.40 2022-03-15"	/* format: major.minor YYYY-MM-DD */
+#define MKIOCCCENTRY_VERSION "0.41 2022-09-02"	/* format: major.minor YYYY-MM-DD */
 
 /*
  * Version of info for JSON the .info.json file.
  */
-#define INFO_VERSION "1.10 2022-06-22"		/* format: major.minor YYYY-MM-DD */
+#define INFO_VERSION "1.11 2022-09-02"		/* format: major.minor YYYY-MM-DD */
 
 /*
  * Version of info for JSON the .author.json file.
  */
-#define AUTHOR_VERSION "1.13 2022-06-22"	/* format: major.minor YYYY-MM-DD */
+#define AUTHOR_VERSION "1.14 2022-09-02"	/* format: major.minor YYYY-MM-DD */
 
 /*
  * official fnamchk version

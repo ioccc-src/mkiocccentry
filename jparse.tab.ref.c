@@ -30,17 +30,16 @@
  * impaired. Nevertheless, we still recommend you to eschew modifying the code
  * below.
  *
- * BTW: If you don't agree with us that it's ugly we want to point out that it
- * even admits it and we ask you why it would call itself ugly if it's not. :-)
+ * BTW: If you don't agree with us that it's sorry that we want to point out that it
+ * even admits it and we ask you why it would call itself sorry if it's not. :-)
  *
  * Thanks in advance for your understanding, and sorry (tm Canada :-)).
  *
  * Of course, on the other hand, the fact the parser IS for JSON might suggest
- * that the parser SHOULD be ugly and since IT IS UGLY this apology might be
+ * that the parser SHOULD be sorry and since IT IS sorry this apology might be
  * superfluous. If one were to ignore the fact that bison and flex do not care
  * what they are parsing this same person could argue, obviously by some
- * perverted logical fallacies, that bison and flex did their job well. :-) This
- * logic is as barmy as JSON, though, and so we must still say we're sorry.
+ * perverted logical fallacies, that bison and flex did their job well. :-)
  *
  * P.S. In 2022 April 04, when this comment was initially formed, none of the
  *	people working on this repo were Canadian. But some of them have
@@ -115,18 +114,18 @@
 #define YYPULL 1
 
 /* Substitute the type names.  */
-#define YYSTYPE         UGLY_STYPE
+#define YYSTYPE         SORRY_STYPE
 /* Substitute the variable and function names.  */
-#define yyparse         ugly_parse
-#define yylex           ugly_lex
-#define yyerror         ugly_error
-#define yydebug         ugly_debug
-#define yynerrs         ugly_nerrs
-#define yylval          ugly_lval
-#define yychar          ugly_char
+#define yyparse         sorry_parse
+#define yylex           sorry_lex
+#define yyerror         sorry_error
+#define yydebug         sorry_debug
+#define yynerrs         sorry_nerrs
+#define yylval          sorry_lval
+#define yychar          sorry_char
 
 /* First part of user prologue.  */
-#line 103 "jparse.y"
+#line 89 "jparse.y"
 
 
 
@@ -145,7 +144,7 @@ unsigned num_errors = 0;		/* > 0 number of errors encountered */
 /*
  * bison debug information for development
  */
-int ugly_debug = 0;	/* 0 ==> verbose bison debug off, 1 ==> verbose bison debug on */
+int sorry_debug = 0;	/* 0 ==> verbose bison debug off, 1 ==> verbose bison debug on */
 
 
 #line 101 "jparse.tab.c"
@@ -445,7 +444,7 @@ void free (void *); /* INFRINGES ON USER NAME SPACE */
 
 #if (! defined yyoverflow \
      && (! defined __cplusplus \
-         || (defined UGLY_STYPE_IS_TRIVIAL && UGLY_STYPE_IS_TRIVIAL)))
+         || (defined SORRY_STYPE_IS_TRIVIAL && SORRY_STYPE_IS_TRIVIAL)))
 
 /* A type that is properly aligned for any stack member.  */
 union yyalloc
@@ -561,20 +560,20 @@ static const yytype_int8 yytranslate[] =
        5,     6,     7,     8,     9,    10,    11,    12,    13,    14
 };
 
-#if UGLY_DEBUG
+#if SORRY_DEBUG
 /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_int16 yyrline[] =
 {
-       0,   180,   180,   238,   269,   300,   331,   362,   392,   422,
-     454,   485,   515,   549,   588,   624,   655,   685,   719,   757,
-     790,   822
+       0,   166,   166,   224,   255,   286,   317,   348,   378,   408,
+     440,   471,   501,   535,   574,   610,   641,   671,   705,   743,
+     776,   808
 };
 #endif
 
 /** Accessing symbol of state STATE.  */
 #define YY_ACCESSING_SYMBOL(State) YY_CAST (yysymbol_kind_t, yystos[State])
 
-#if UGLY_DEBUG || 0
+#if SORRY_DEBUG || 0
 /* The user-facing name of the symbol whose (internal) number is
    YYSYMBOL.  No bounds checking.  */
 static const char *yysymbol_name (yysymbol_kind_t yysymbol) YY_ATTRIBUTE_UNUSED;
@@ -691,7 +690,7 @@ static const yytype_int8 yyr2[] =
 enum { YYENOMEM = -2 };
 
 #define yyerrok         (yyerrstatus = 0)
-#define yyclearin       (yychar = UGLY_EMPTY)
+#define yyclearin       (yychar = SORRY_EMPTY)
 
 #define YYACCEPT        goto yyacceptlab
 #define YYABORT         goto yyabortlab
@@ -703,7 +702,7 @@ enum { YYENOMEM = -2 };
 
 #define YYBACKUP(Token, Value)                                    \
   do                                                              \
-    if (yychar == UGLY_EMPTY)                                        \
+    if (yychar == SORRY_EMPTY)                                        \
       {                                                           \
         yychar = (Token);                                         \
         yylval = (Value);                                         \
@@ -720,12 +719,12 @@ enum { YYENOMEM = -2 };
   while (0)
 
 /* Backward compatibility with an undocumented macro.
-   Use UGLY_error or UGLY_UNDEF. */
-#define YYERRCODE UGLY_UNDEF
+   Use SORRY_error or SORRY_UNDEF. */
+#define YYERRCODE SORRY_UNDEF
 
 
 /* Enable debugging if requested.  */
-#if UGLY_DEBUG
+#if SORRY_DEBUG
 
 # ifndef YYFPRINTF
 #  include <stdio.h> /* INFRINGES ON USER NAME SPACE */
@@ -844,12 +843,12 @@ do {                                    \
 /* Nonzero means print parse trace.  It is left uninitialized so that
    multiple parsers can coexist.  */
 int yydebug;
-#else /* !UGLY_DEBUG */
+#else /* !SORRY_DEBUG */
 # define YYDPRINTF(Args) ((void) 0)
 # define YY_SYMBOL_PRINT(Title, Kind, Value, Location)
 # define YY_STACK_PRINT(Bottom, Top)
 # define YY_REDUCE_PRINT(Rule)
-#endif /* !UGLY_DEBUG */
+#endif /* !SORRY_DEBUG */
 
 
 /* YYINITDEPTH -- initial size of the parser's stacks.  */
@@ -881,7 +880,7 @@ int yydebug;
    required.  Return YYENOMEM if memory is exhausted.  */
 static int
 yy_lac_stack_realloc (YYPTRDIFF_T *yycapacity, YYPTRDIFF_T yyadd,
-#if UGLY_DEBUG
+#if SORRY_DEBUG
                       char const *yydebug_prefix,
                       char const *yydebug_suffix,
 #endif
@@ -985,7 +984,7 @@ do {                                                                    \
    the parser stacks to try to find a new initial context in which the
    current lookahead is syntactically acceptable.  If it fails to find
    such a context, it discards the lookahead.  */
-#if UGLY_DEBUG
+#if SORRY_DEBUG
 # define YY_LAC_DISCARD(Event)                                           \
 do {                                                                     \
   if (yy_lac_established)                                                \
@@ -1095,7 +1094,7 @@ yy_lac (yy_state_t *yyesa, yy_state_t **yyes,
         else
           {
             if (yy_lac_stack_realloc (yyes_capacity, 1,
-#if UGLY_DEBUG
+#if SORRY_DEBUG
                                       " (", ")",
 #endif
                                       yyes, yyesa, &yyesp, yyes_prev))
@@ -1199,7 +1198,7 @@ yyparse (struct json **tree)
 
   YYDPRINTF ((stderr, "Starting parse\n"));
 
-  yychar = UGLY_EMPTY; /* Cause a token to be read.  */
+  yychar = SORRY_EMPTY; /* Cause a token to be read.  */
 
   goto yysetstate;
 
@@ -1309,25 +1308,25 @@ yybackup:
   /* Not known => get a lookahead token if don't already have one.  */
 
   /* YYCHAR is either empty, or end-of-input, or a valid lookahead.  */
-  if (yychar == UGLY_EMPTY)
+  if (yychar == SORRY_EMPTY)
     {
       YYDPRINTF ((stderr, "Reading a token\n"));
       yychar = yylex ();
     }
 
-  if (yychar <= UGLY_EOF)
+  if (yychar <= SORRY_EOF)
     {
-      yychar = UGLY_EOF;
+      yychar = SORRY_EOF;
       yytoken = YYSYMBOL_YYEOF;
       YYDPRINTF ((stderr, "Now at end of input.\n"));
     }
-  else if (yychar == UGLY_error)
+  else if (yychar == SORRY_error)
     {
       /* The scanner already issued an error message, process directly
          to error recovery.  But do not keep the error token as
          lookahead, it is too special and may lead us to an endless
          loop in error recovery. */
-      yychar = UGLY_UNDEF;
+      yychar = SORRY_UNDEF;
       yytoken = YYSYMBOL_YYerror;
       goto yyerrlab1;
     }
@@ -1368,7 +1367,7 @@ yybackup:
   YY_IGNORE_MAYBE_UNINITIALIZED_END
 
   /* Discard the shifted token.  */
-  yychar = UGLY_EMPTY;
+  yychar = SORRY_EMPTY;
   YY_LAC_DISCARD ("shift");
   goto yynewstate;
 
@@ -1407,7 +1406,7 @@ yyreduce:
     switch (yyn)
       {
   case 2: /* json: json_element  */
-#line 181 "jparse.y"
+#line 167 "jparse.y"
     {
 	/*
 	 * $$ = $json
@@ -1454,7 +1453,7 @@ yyreduce:
 	     * not NULL, however, *tree will be set to the parse tree itself
 	     * ($json).
 	     */
-	    *tree = yyval;	/* more magic: set ugly_parse(tree) arg to point to JSON parse tree */
+	    *tree = yyval;	/* more magic: set sorry_parse(tree) arg to point to JSON parse tree */
 	}
 	if (json_dbg_allowed(JSON_DBG_HIGH)) {
 	    json_dbg(JSON_DBG_HIGH, __func__, "under json: ending: "
@@ -1465,7 +1464,7 @@ yyreduce:
     break;
 
   case 3: /* json_value: json_object  */
-#line 239 "jparse.y"
+#line 225 "jparse.y"
     {
 	/*
 	 * $$ = $json_value
@@ -1498,7 +1497,7 @@ yyreduce:
     break;
 
   case 4: /* json_value: json_array  */
-#line 270 "jparse.y"
+#line 256 "jparse.y"
     {
 	/*
 	 * $$ = $json_value
@@ -1531,7 +1530,7 @@ yyreduce:
     break;
 
   case 5: /* json_value: json_string  */
-#line 301 "jparse.y"
+#line 287 "jparse.y"
     {
 	/*
 	 * $$ = $json_value
@@ -1564,7 +1563,7 @@ yyreduce:
     break;
 
   case 6: /* json_value: json_number  */
-#line 332 "jparse.y"
+#line 318 "jparse.y"
     {
 	/*
 	 * $$ = $json_value
@@ -1597,7 +1596,7 @@ yyreduce:
     break;
 
   case 7: /* json_value: "true"  */
-#line 363 "jparse.y"
+#line 349 "jparse.y"
     {
 	/*
 	 * $$ = $json_value
@@ -1607,14 +1606,14 @@ yyreduce:
 	if (json_dbg_allowed(JSON_DBG_VHIGH)) {
 	    json_dbg(JSON_DBG_VHIGH, __func__, "under json_value: starting: "
 					       "json_value: JSON_TRUE");
-	    json_dbg(JSON_DBG_VVHIGH, __func__, "under json_value: ugly_text: <%s>", ugly_text);
-	    json_dbg(JSON_DBG_VVHIGH, __func__, "under json_value: ugly_leng: <%d>", ugly_leng);
+	    json_dbg(JSON_DBG_VVHIGH, __func__, "under json_value: sorry_text: <%s>", sorry_text);
+	    json_dbg(JSON_DBG_VVHIGH, __func__, "under json_value: sorry_leng: <%d>", sorry_leng);
 	    json_dbg(JSON_DBG_VHIGH, __func__, "under json_value: about to perform: "
-					       "$json_value = parse_json_bool(ugly_text);");
+					       "$json_value = parse_json_bool(sorry_text);");
 	}
 
 	/* action */
-	yyval = parse_json_bool(ugly_text); /* magic: json_value becomes JTYPE_BOOL type */
+	yyval = parse_json_bool(sorry_text); /* magic: json_value becomes JTYPE_BOOL type */
 
 	/* post-action debugging */
 	if (json_dbg_allowed(JSON_DBG_HIGH)) {
@@ -1629,7 +1628,7 @@ yyreduce:
     break;
 
   case 8: /* json_value: "false"  */
-#line 393 "jparse.y"
+#line 379 "jparse.y"
     {
 	/*
 	 * $$ = $json_value
@@ -1639,14 +1638,14 @@ yyreduce:
 	if (json_dbg_allowed(JSON_DBG_VHIGH)) {
 	    json_dbg(JSON_DBG_VHIGH, __func__, "under json_value: starting: "
 					       "json_value: JSON_FALSE");
-	    json_dbg(JSON_DBG_VVHIGH, __func__, "under json_value: ugly_text: <%s>", ugly_text);
-	    json_dbg(JSON_DBG_VVHIGH, __func__, "under json_value: ugly_leng: <%d>", ugly_leng);
+	    json_dbg(JSON_DBG_VVHIGH, __func__, "under json_value: sorry_text: <%s>", sorry_text);
+	    json_dbg(JSON_DBG_VVHIGH, __func__, "under json_value: sorry_leng: <%d>", sorry_leng);
 	    json_dbg(JSON_DBG_VHIGH, __func__, "under json_value: about to perform: "
-					       "$json_value = parse_json_bool(ugly_text);");
+					       "$json_value = parse_json_bool(sorry_text);");
 	}
 
 	/* action */
-	yyval = parse_json_bool(ugly_text); /* magic: json_value becomes JTYPE_BOOL type */
+	yyval = parse_json_bool(sorry_text); /* magic: json_value becomes JTYPE_BOOL type */
 
 	/* post-action debugging */
 	if (json_dbg_allowed(JSON_DBG_HIGH)) {
@@ -1661,7 +1660,7 @@ yyreduce:
     break;
 
   case 9: /* json_value: "null"  */
-#line 423 "jparse.y"
+#line 409 "jparse.y"
     {
 	/*
 	 * $$ = $json_value
@@ -1671,14 +1670,14 @@ yyreduce:
 	if (json_dbg_allowed(JSON_DBG_VHIGH)) {
 	    json_dbg(JSON_DBG_VHIGH, __func__, "under json_value: starting: "
 					       "json_value: JSON_NULL");
-	    json_dbg(JSON_DBG_VVHIGH, __func__, "under json_value: ugly_text: <%s>", ugly_text);
-	    json_dbg(JSON_DBG_VVHIGH, __func__, "under json_value: ugly_leng: <%d>", ugly_leng);
+	    json_dbg(JSON_DBG_VVHIGH, __func__, "under json_value: sorry_text: <%s>", sorry_text);
+	    json_dbg(JSON_DBG_VVHIGH, __func__, "under json_value: sorry_leng: <%d>", sorry_leng);
 	    json_dbg(JSON_DBG_VHIGH, __func__, "under json_value: about to perform: "
-					       "$json_value = parse_json_null(ugly_text);");
+					       "$json_value = parse_json_null(sorry_text);");
 	}
 
 	/* action */
-	yyval = parse_json_null(ugly_text); /* magic: json_value becomes JTYPE_NULL type */
+	yyval = parse_json_null(sorry_text); /* magic: json_value becomes JTYPE_NULL type */
 
 	/* post-action debugging */
 	if (json_dbg_allowed(JSON_DBG_HIGH)) {
@@ -1693,7 +1692,7 @@ yyreduce:
     break;
 
   case 10: /* json_object: "{" json_members "}"  */
-#line 455 "jparse.y"
+#line 441 "jparse.y"
     {
 	/*
 	 * $$ = $json_object
@@ -1726,7 +1725,7 @@ yyreduce:
     break;
 
   case 11: /* json_object: "{" "}"  */
-#line 486 "jparse.y"
+#line 472 "jparse.y"
     {
 	/*
 	 * $$ = $json_object
@@ -1756,7 +1755,7 @@ yyreduce:
     break;
 
   case 12: /* json_members: json_member  */
-#line 516 "jparse.y"
+#line 502 "jparse.y"
     {
 	/*
 	 * $$ = $json_members
@@ -1792,7 +1791,7 @@ yyreduce:
     break;
 
   case 13: /* json_members: json_members "," json_member  */
-#line 550 "jparse.y"
+#line 536 "jparse.y"
     {
 	/*
 	 * $$ = $json_members
@@ -1831,7 +1830,7 @@ yyreduce:
     break;
 
   case 14: /* json_member: json_string ":" json_element  */
-#line 589 "jparse.y"
+#line 575 "jparse.y"
     {
 	/*
 	 * $$ = $json_member
@@ -1867,7 +1866,7 @@ yyreduce:
     break;
 
   case 15: /* json_array: "[" json_elements "]"  */
-#line 625 "jparse.y"
+#line 611 "jparse.y"
     {
 	/*
 	 * $$ = $json_array
@@ -1900,7 +1899,7 @@ yyreduce:
     break;
 
   case 16: /* json_array: "[" "]"  */
-#line 656 "jparse.y"
+#line 642 "jparse.y"
     {
 	/*
 	 * $$ = $json_array
@@ -1930,7 +1929,7 @@ yyreduce:
     break;
 
   case 17: /* json_elements: json_element  */
-#line 686 "jparse.y"
+#line 672 "jparse.y"
     {
 	/*
 	 * $$ = $json_elements
@@ -1966,7 +1965,7 @@ yyreduce:
     break;
 
   case 18: /* json_elements: json_elements "," json_element  */
-#line 720 "jparse.y"
+#line 706 "jparse.y"
     {
 	/*
 	 * $$ = $json_elements
@@ -2004,7 +2003,7 @@ yyreduce:
     break;
 
   case 19: /* json_element: json_value  */
-#line 758 "jparse.y"
+#line 744 "jparse.y"
     {
 	/*
 	 * $$ = $json_element
@@ -2037,7 +2036,7 @@ yyreduce:
     break;
 
   case 20: /* json_string: JSON_STRING  */
-#line 791 "jparse.y"
+#line 777 "jparse.y"
     {
 	/*
 	 * $$ = $json_string
@@ -2047,14 +2046,14 @@ yyreduce:
 	if (json_dbg_allowed(JSON_DBG_VHIGH)) {
 	    json_dbg(JSON_DBG_VHIGH, __func__, "under json_string: starting: "
 					       "json_string: JSON_STRING");
-	    json_dbg(JSON_DBG_VVHIGH, __func__, "under json_string: ugly_text: <%s>", ugly_text);
-	    json_dbg(JSON_DBG_VVHIGH, __func__, "under json_string: ugly_leng: <%d>", ugly_leng);
+	    json_dbg(JSON_DBG_VVHIGH, __func__, "under json_string: sorry_text: <%s>", sorry_text);
+	    json_dbg(JSON_DBG_VVHIGH, __func__, "under json_string: sorry_leng: <%d>", sorry_leng);
 	    json_dbg(JSON_DBG_VHIGH, __func__, "under json_string: about to perform: "
-					       "$json_string = parse_json_string(ugly_text, ugly_leng);");
+					       "$json_string = parse_json_string(sorry_text, sorry_leng);");
 	}
 
 	/* action */
-	yyval = parse_json_string(ugly_text, ugly_leng);
+	yyval = parse_json_string(sorry_text, sorry_leng);
 
 	/* post-action debugging */
 	if (json_dbg_allowed(JSON_DBG_HIGH)) {
@@ -2069,7 +2068,7 @@ yyreduce:
     break;
 
   case 21: /* json_number: JSON_NUMBER  */
-#line 823 "jparse.y"
+#line 809 "jparse.y"
     {
 	/*
 	 * $$ = $json_number
@@ -2079,14 +2078,14 @@ yyreduce:
 	if (json_dbg_allowed(JSON_DBG_VHIGH)) {
 	    json_dbg(JSON_DBG_VHIGH, __func__, "under json_number: starting: "
 					       "json_number: JSON_NUMBER");
-	    json_dbg(JSON_DBG_VVHIGH, __func__, "under json_number: ugly_text: <%s>", ugly_text);
-	    json_dbg(JSON_DBG_VVHIGH, __func__, "under json_number: ugly_leng: <%d>", ugly_leng);
+	    json_dbg(JSON_DBG_VVHIGH, __func__, "under json_number: sorry_text: <%s>", sorry_text);
+	    json_dbg(JSON_DBG_VVHIGH, __func__, "under json_number: sorry_leng: <%d>", sorry_leng);
 	    json_dbg(JSON_DBG_VHIGH, __func__, "under json_number: about to perform: "
-					       "$json_number = parse_json_number(ugly_text);");
+					       "$json_number = parse_json_number(sorry_text);");
 	}
 
 	/* action */
-	yyval = parse_json_number(ugly_text);
+	yyval = parse_json_number(sorry_text);
 
 	/* post-action debugging */
 	if (json_dbg_allowed(JSON_DBG_HIGH)) {
@@ -2146,7 +2145,7 @@ yyreduce:
 yyerrlab:
   /* Make sure we have latest lookahead translation.  See comments at
      user semantic actions for why this is necessary.  */
-  yytoken = yychar == UGLY_EMPTY ? YYSYMBOL_YYEMPTY : YYTRANSLATE (yychar);
+  yytoken = yychar == SORRY_EMPTY ? YYSYMBOL_YYEMPTY : YYTRANSLATE (yychar);
   /* If not already recovering from an error, report this error.  */
   if (!yyerrstatus)
     {
@@ -2159,17 +2158,17 @@ yyerrlab:
       /* If just tried and failed to reuse lookahead token after an
          error, discard it.  */
 
-      if (yychar <= UGLY_EOF)
+      if (yychar <= SORRY_EOF)
         {
           /* Return failure if at end of input.  */
-          if (yychar == UGLY_EOF)
+          if (yychar == SORRY_EOF)
             YYABORT;
         }
       else
         {
           yydestruct ("Error: discarding",
                       yytoken, &yylval, tree);
-          yychar = UGLY_EMPTY;
+          yychar = SORRY_EMPTY;
         }
     }
 
@@ -2275,7 +2274,7 @@ yyexhaustedlab:
 | yyreturnlab -- parsing is finished, clean up and return.  |
 `----------------------------------------------------------*/
 yyreturnlab:
-  if (yychar != UGLY_EMPTY)
+  if (yychar != SORRY_EMPTY)
     {
       /* Make sure we have latest lookahead translation.  See comments at
          user semantic actions for why this is necessary.  */
@@ -2303,7 +2302,7 @@ yyreturnlab:
   return yyresult;
 }
 
-#line 853 "jparse.y"
+#line 839 "jparse.y"
 
 
 
@@ -2311,7 +2310,7 @@ yyreturnlab:
 
 
 /*
- * ugly_error	- generate an error message for the scanner/parser
+ * sorry_error	- generate an error message for the scanner/parser
  *
  * given:
  *
@@ -2321,7 +2320,7 @@ yyreturnlab:
  *
  */
 void
-ugly_error(struct json **node, char const *format, ...)
+sorry_error(struct json **node, char const *format, ...)
 {
     va_list ap;		/* variable argument list */
     int ret;		/* libc function return value */
@@ -2338,12 +2337,12 @@ ugly_error(struct json **node, char const *format, ...)
     if (node != NULL && *node != NULL) {
 	fprint(stderr, " type: %s ", json_item_type_name(*node));
     }
-    if (ugly_text != NULL && *ugly_text != '\0') {
-	fprint(stderr, " line: %d: %s\n", ugly_lineno, ugly_text);
-    } else if (ugly_text == NULL) {
-	fprint(stderr, " line: %d: text == NULL\n", ugly_lineno);
+    if (sorry_text != NULL && *sorry_text != '\0') {
+	fprint(stderr, " line: %d: %s\n", sorry_lineno, sorry_text);
+    } else if (sorry_text == NULL) {
+	fprint(stderr, " line: %d: text == NULL\n", sorry_lineno);
     } else {
-	fprint(stderr, " line: %d: empty text\n", ugly_lineno);
+	fprint(stderr, " line: %d: empty text\n", sorry_lineno);
     }
 
     /*

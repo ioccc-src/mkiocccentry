@@ -2,7 +2,7 @@
 /*
  * verge - determine if first version is greater or equal to the second version
  *
- * "Because the JSON co-founders minimalism is sub-minimal." :-)
+ * "Because too such minimalism can be sub-minimal." :-)
  *
  * Copyright (c) 2022 by Landon Curt Noll.  All Rights Reserved.
  *
@@ -26,13 +26,14 @@
  *
  * chongo (Landon Curt Noll, http://www.isthe.com/chongo/index.html) /\oo/\
  *
- * Share and enjoy! :-)
+ * "Share and Enjoy!"
+ *     --  Sirius Cybernetics Corporation Complaints Division, JSON spec department. :-)
  */
 
 
 /* special comments for the seqcexit tool */
-/*ooo*/ /* exit code out of numerical order - ignore in sequencing */
-/*coo*/ /* exit code change of order - use new value in sequencing */
+/* exit code out of numerical order - ignore in sequencing - ooo */
+/* exit code change of order - use new value in sequencing - coo */
 
 
 #include <stdio.h>

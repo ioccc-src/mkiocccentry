@@ -6,7 +6,7 @@
  * and .author.json files, their related check tools, test code,
  * and string encoding/decoding tools.
  *
- * "Because JSON embodies a commitment to original design flaws." :-)
+ * "Because specs w/o version numbers are forced to commit to their original design flaws." :-)
  *
  * This JSON parser was co-developed by:
  *
@@ -18,7 +18,8 @@
  *
  * "Because sometimes even the IOCCC Judges need some help." :-)
  *
- * Share and vomit on the JSON spec! :-)
+ * "Share and Enjoy!"
+ *     --  Sirius Cybernetics Corporation Complaints Division, JSON spec department. :-)
  */
 
 
@@ -103,7 +104,7 @@ struct auth
      * .author.json information before the authors array
      */
     /* file format strings */
-    char const *no_comment;	/* mandatory JSON parsing directive :-) */
+    char const *no_comment;	/* because comments were removed from the original JSON spec :-) */
     char const *author_version;	/* IOCCC .author.json format version (compiled in AUTHOR_VERSION) */
     char const *ioccc_contest;	/* IOCCC contest string (compiled in IOCCC[0-9][0-9] or IOCCCMOCK) */
     /* contest year */
@@ -148,7 +149,7 @@ struct info
      * .info.json information before the file name array
      */
     /* file format strings */
-    char const *no_comment;	/* mandatory JSON parsing directive :-) */
+    char const *no_comment;	/* because comments were removed from the original JSON spec :-) */
     char const *info_version;	/* IOCCC .info.json format version (compiled in INFO_VERSION) */
     char const *ioccc_contest;	/* IOCCC contest string (compiled in IOCCC[0-9][0-9] or IOCCCMOCK) */
     /* contest year */

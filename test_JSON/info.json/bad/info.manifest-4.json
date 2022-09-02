@@ -1,5 +1,5 @@
 {
-	"no-comment" : "mandatory JSON parsing directive",
+	"no-comment" : "because comments were removed from the original JSON spec",
 	"IOCCC_info_version" : "1.10 2022-06-22",
 	"ioccc_contest" : "IOCCCMOCK",
 	"ioccc_year" : 2022,
@@ -12,7 +12,7 @@
 	"entry_num" : 0,
 	"title" : "title-for-entry0",
 	"abstract" : "abstract for entry #0",
-	"tarball" : "entry.12345678-1234-4321-abcd-1234567890ab-0.1655958810.txz",
+	"tarball" : "entry.12345678-1234-4321-abcd-1234567890ab-0.1662145368.txz",
 	"rule_2a_size" : 0,
 	"rule_2b_size" : 0,
 	"empty_override" : true,
@@ -40,9 +40,9 @@
 		{"extra_file" : "/etc/passwd"},
 		{"extra_file" : "extra2"}
 	],
-	"formed_timestamp" : 1655958810,
+	"formed_timestamp" : 1662145368,
 	"formed_timestamp_usec" : 13685,
 	"timestamp_epoch" : "Thu Jan 01 00:00:00 1970 UTC",
-	"min_timestamp" : 1655958810,
-	"formed_UTC" : "Thu Jun 23 04:33:30 2022 UTC"
+	"min_timestamp" : 1662145368,
+	"formed_UTC" : "Fri Sep 02 19:02:48 2022 UTC"
 }

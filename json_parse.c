@@ -2,8 +2,7 @@
 /*
  * json_parse - JSON parser support code
  *
- * "Because JSON embodies a commitment to original design flaws." :-)
- * "Because sometimes even the IOCCC Judges need some help." :-)
+ * "Because specs w/o version numbers are forced to commit to their original design flaws." :-)
  *
  * This JSON parser was co-developed by:
  *
@@ -13,13 +12,14 @@
  * and:
  *	chongo (Landon Curt Noll, http://www.isthe.com/chongo/index.html) /\oo/\
  *
- * Share and vomit on the JSON spec! :-)
+ * "Share and Enjoy!"
+ *     --  Sirius Cybernetics Corporation Complaints Division, JSON spec department. :-)
  */
 
 
 /* special comments for the seqcexit tool */
-/*ooo*/ /* exit code out of numerical order - ignore in sequencing */
-/*coo*/ /* exit code change of order - use new value in sequencing */
+/* exit code out of numerical order - ignore in sequencing - ooo */
+/* exit code change of order - use new value in sequencing - coo */
 
 
 #include <stdio.h>

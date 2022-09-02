@@ -72,7 +72,7 @@
 /*
  * Be careful not to change this value as it will invalidate all IOCCC timestamps < this value
  */
-#define MIN_TIMESTAMP ((time_t)1655958810)
+#define MIN_TIMESTAMP ((time_t)1662145368)
 
 
 /*
@@ -99,15 +99,13 @@
  *
  *	https://stackoverflow.com/questions/244777/can-comments-be-used-in-json/10976934#10976934
  *
- * While this decision is not as silly as some of the other JSON design
- * mistakes, the IOCCC honors the silly reason to remove comments from
- * JSON by mandating a parsing directive in the form of this specific
- * JSON member:
+ * The IOCCC honors the above decision to remove comments from the JSON spec
+ * by mandating the following directive in all IOCCC related JSON files:
  *
  *	JSON_PARSING_DIRECTIVE_NAME : JSON_PARSING_DIRECTIVE_VALUE
  */
 #define JSON_PARSING_DIRECTIVE_NAME "no-comment"
-#define JSON_PARSING_DIRECTIVE_VALUE "mandatory JSON parsing directive"
+#define JSON_PARSING_DIRECTIVE_VALUE "because comments were removed from the original JSON spec"
 
 
 #endif /* ! INCLUDE_LIMIT_IOCCC_H */

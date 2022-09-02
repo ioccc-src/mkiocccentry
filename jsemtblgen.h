@@ -2,8 +2,7 @@
 /*
  * jsemtblgen - generate JSON semantics table
  *
- * "Because there is more to JSON than a flawed grammar specification." :-)
- * "Because JSON embodies a commitment to original design flaws." :-)
+ * "Because specs w/o version numbers are forced to commit to their original design flaws." :-)
  *
  * This JSON parser was co-developed by:
  *
@@ -15,7 +14,8 @@
  *
  * "Because sometimes even the IOCCC Judges need some help." :-)
  *
- * Share and vomit on the JSON spec! :-)
+ * "Share and Enjoy!"
+ *     --  Sirius Cybernetics Corporation Complaints Division, JSON spec department. :-)
  */
 
 

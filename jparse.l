@@ -2,7 +2,7 @@
 /*
  * JSON scanner - JSON scanner in flex grammar form
  *
- * "Because JSON embodies a commitment to original design flaws." :-)
+ * "Because specs w/o version numbers are forced to commit to their original design flaws." :-)
  *
  * This JSON scanner was co-developed by:
  *
@@ -14,7 +14,8 @@
  *
  * "Because sometimes even the IOCCC Judges need some help." :-)
  *
- * Share and vomit on the JSON spec! :-)
+ * "Share and Enjoy!"
+ *     --  Sirius Cybernetics Corporation Complaints Division, JSON spec department. :-)
  */
 
 /* Section 1: Declarations and option settings */
@@ -32,65 +33,52 @@
  * An IOCCC satirical take on flex and bison
  *
  * As we utterly object to the hideous code that flex and bison generate we
- * point it out in an ironic way by changing the prefix yy to ugly_ so that
- * flex actually calls itself ugly. This is satire for the IOCCC (although we
- * still believe that flex generates ugly code)!
+ * point it out in an ironic way by changing the prefix yy to sorry_ so that
+ * flex actually calls itself sorry. This is satire for the IOCCC (although we
+ * still believe that flex generates sorry code)!
  *
- * This means that for some symbols later in the file we use ugly_ instead of
- * yy. For example it's ugly_lval instead of yylval and best of all ugly_parse()
- * for it _is_ an ugly parser. Another one is ugly_error() instead of yyerror().
+ * This means that for some symbols later in the file we use sorry_ instead of
+ * yy. For example it's sorry_lval instead of yylval and best of all sorry_parse()
+ * for it _is_ an sorry parser. Another one is sorry_error() instead of yyerror().
  *
  * A negative consequence here is that because of the prefix being set to
- * ugly_ there's a typedef in the parser that _might_ suggest _our_ struct json
- * is ugly:
+ * sorry_ there's a typedef in the parser that _might_ suggest _our_ struct json
+ * is sorry:
  *
- *	typedef struct json UGLY_STYPE;
+ *	typedef struct json SORRY_STYPE;
  *
  * At first glance this is a valid concern. However we argue that even if this
- * is so the struct might well have to be ugly because it's for a json parser; a
- * json parser necessarily has to be ugly due to the spec: one could easily be
- * forgiven for wondering if the authors of the json specification were on drugs
- * at the time of writing them!
+ * is so the struct might well have to be sorry because it's for a json parser; a
+ * json parser necessarily has to maintain the mis-features of spec being implemented.
  *
- * Please note that we're _ABSOLUTELY NOT_ saying that they were and we use the
- * term very loosely as well: we do not want to and we are not accusing anyone
- * of being on drugs (we rather find addiction a real tragedy and anyone with an
- * addiction should be treated well and given the help they need) but the fact
- * is that the JSON specification is barmy and those who are in favour of it
- * must surely be in the JSON Barmy Army (otherwise known as the Barmy Army
- * Jointly Staying On Narcotics :-)).
+ * BTW: If you want to see all the symbols (re?)defined to something sorry run:
  *
- * Thus as much as we find the specification objectionable we rather feel sorry
- * for those poor lost souls who are indeed in the JSON Barmy Army and we
- * apologise to them in a light and fun way and with hope that they're not
- * terribly humour impaired. :-)
- *
- * BTW: If you want to see all the symbols (re?)defined to something ugly run:
- *
- *	grep -i '#[[:space:]]*define[[:space:]].*ugly_' *.c
+ *	grep -i '#[[:space:]]*define[[:space:]].*sorry_' *.c
  *
  * after generating the files; and if you want to see only what was changed from
- * yy or YY to refer to ugly_ or UGLY_:
+ * yy or YY to refer to sorry_ or SORRY_:
  *
- *	grep -i '#[[:space:]]*define[[:space:]]*yy.*ugly_' *.c
+ *	grep -i '#[[:space:]]*define[[:space:]]*yy.*sorry_' *.c
  *
  * This will help you find the right symbols should you need them. If (as is
  * likely to happen) the parser is split into another repo for a json parser by
  * itself I will possibly remove this prefix: this is as satire for the IOCCC
- * (though we all believe that the generated code is in fact ugly).
+ * (though we all believe that the generated code is in fact sorry).
  *
- * WARNING: Although we use the prefix ugly_ the scanner and parser will at
- * times refer to yy and YY and other times refer to ugly_ and UGLY_ (partly
- * because WE refer to ugly_ and UGLY_). So if you're trying to sift through
- * that ugly spaghetti code (which we strongly recommend you do not do as it will
+ * WARNING: Although we use the prefix sorry_ the scanner and parser will at
+ * times refer to yy and YY and other times refer to sorry_ and SORRY_ (partly
+ * because WE refer to sorry_ and SORRY_). So if you're trying to sift through
+ * that sorry spaghetti code (which we strongly recommend you do not do as it will
  * likely cause nightmares and massive brain pain) you'll want to check yy/YY as
- * well as ugly_/UGLY_. But really you oughtn't try and go through that code so
- * you need only pay attention to the ugly_ and UGLY_ prefixes (in the *.l and
+ * well as sorry_/SORRY_. But really you oughtn't try and go through that code so
+ * you need only pay attention to the sorry_ and SORRY_ prefixes (in the *.l and
  * *.y files) which again are satire for the IOCCC. See also the apology in the
  * generated files or directly looking at sorry.tm.ca.h.
-
+ *
+ * "Share and Enjoy!"
+ *     --  Sirius Cybernetics Corporation Complaints Division, JSON spec department. :-)
  */
-%option prefix="ugly_"
+%option prefix="sorry_"
 
 %{
 /* Declarations etc. go here.
@@ -106,11 +94,11 @@
 
 
 /*
- * An exception where the prefix does not change YY to UGLY_ is YY_BUFFER_STATE
- * but because it IS ugly we have done it for them in jparse.h so that where one
- * sees UGLY__BUFFER_STATE it's actually YY_BUFFER_STATE.
+ * An exception where the prefix does not change YY to SORRY_ is YY_BUFFER_STATE
+ * but because it IS sorry we have done it for them in jparse.h so that where one
+ * sees SORRY__BUFFER_STATE it's actually YY_BUFFER_STATE.
  */
-UGLY__BUFFER_STATE bs;
+SORRY__BUFFER_STATE bs;
 %}
 
 /*
@@ -165,7 +153,7 @@ JSON_COMMA		","
 			     * purposes we have it printed for now.
 			     */
 			    (void) json_dbg(JSON_DBG_VVHIGH, __func__, "\nignoring %ju whitespace%s\n",
-							     (uintmax_t)ugly_leng, yyleng==1?"":"s");
+							     (uintmax_t)sorry_leng, yyleng==1?"":"s");
 			}
 
 {JSON_STRING}		{
@@ -222,7 +210,7 @@ JSON_COMMA		","
 
 .			{
 			    /* invalid token: any other character */
-			    warn(__func__, "\ninvalid token: 0x%02x = <%c>", *ugly_text, *ugly_text);
+			    warn(__func__, "\ninvalid token: 0x%02x = <%c>", *sorry_text, *sorry_text);
 
 			    /*
 			     * This is a hack for better error messages with
@@ -244,9 +232,9 @@ JSON_COMMA		","
 			     * but it's never actually valid: it's a catch all
 			     * for anything that's not valid.
 			     *
-			     * We also make use of ugly_text in ugly_error()
+			     * We also make use of sorry_text in sorry_error()
 			     * which makes for a somewhat reasonable error
-			     * message even when ugly_error() is called from
+			     * message even when sorry_error() is called from
 			     * memory exhaustion. See that function and the
 			     * comments for '%token token' in jparse.y.
 			     */
@@ -273,7 +261,7 @@ JSON_COMMA		","
  *	pointer to a JSON parse tree
  *
  * NOTE: The reason this is in the scanner and not the parser is because
- * UGLY__BUFFER_STATE is part of the scanner and not the parser.
+ * SORRY__BUFFER_STATE is part of the scanner and not the parser.
  *
  * NOTE: This function only warns on error. This is so that an entire report of
  * all the problems can be given at the end if the verbosity level is high
@@ -283,7 +271,7 @@ struct json *
 parse_json(char const *ptr, size_t len, bool *is_valid)
 {
     struct json *tree = NULL;		/* the JSON parse tree */
-    int ret = 0;			/* ugly_parse() return value */
+    int ret = 0;			/* sorry_parse() return value */
 
     /*
      * We set *is_valid = true if is_valid != NULL so that the caller does not
@@ -322,8 +310,8 @@ parse_json(char const *ptr, size_t len, bool *is_valid)
     /*
      * scan the blob
      */
-    ugly_lineno = 1;
-    bs = ugly__scan_bytes(ptr, len);
+    sorry_lineno = 1;
+    bs = sorry__scan_bytes(ptr, len);
     if (bs == NULL) {
 	/*
 	 * if unable to scan the bytes it indicates an internal error and
@@ -357,12 +345,12 @@ parse_json(char const *ptr, size_t len, bool *is_valid)
     /*
      * parse the blob, passing into the parser the node
      */
-    ret = ugly_parse(&tree);
+    ret = sorry_parse(&tree);
 
     /*
      * scan and parse clean up
      */
-    ugly__delete_buffer(bs);
+    sorry__delete_buffer(bs);
     bs = NULL;
 
     /*
@@ -376,7 +364,7 @@ parse_json(char const *ptr, size_t len, bool *is_valid)
      * report scanner / parser success or failure
      */
     if (json_dbg_allowed(JSON_DBG_VVHIGH)) {
-	json_dbg(JSON_DBG_VVHIGH, __func__, "ugly_parse() returned: %d", ret);
+	json_dbg(JSON_DBG_VVHIGH, __func__, "sorry_parse() returned: %d", ret);
     }
     if (ret == 0) {
 	json_dbg(JSON_DBG_LOW, __func__, "valid JSON");
@@ -474,7 +462,7 @@ parse_json_file(char const *filename, bool *is_valid)
      * case: will read from stdin
      */
     if (is_stdin == true) {
-	ugly_in = stdin;
+	sorry_in = stdin;
 
     /*
      * case: will read from a file
@@ -533,8 +521,8 @@ parse_json_file(char const *filename, bool *is_valid)
 	 * open file for scanner to use
 	 */
 	errno = 0;
-	ugly_in = fopen(filename, "r");
-	if (ugly_in == NULL) {
+	sorry_in = fopen(filename, "r");
+	if (sorry_in == NULL) {
 
 	    /* warn about file open error */
 	    werrp(37, __func__, "couldn't open file %s, ignoring", filename);
@@ -554,13 +542,13 @@ parse_json_file(char const *filename, bool *is_valid)
     /*
      * read the entire file into memory
      */
-    data = read_all(ugly_in, &len);
+    data = read_all(sorry_in, &len);
     if (data == NULL) {
 	/* warn about read error */
 	/* XXX - should this be a fatal error ? - XXX */
 	werr(38, __func__, "couldn't read in %s", is_stdin?"stdin":filename);
 	++num_errors;
-	clearerr_or_fclose(filename, ugly_in);
+	clearerr_or_fclose(filename, sorry_in);
 
 	/* if allowed, report invalid JSON */
 	if (is_valid != NULL) {
@@ -585,18 +573,18 @@ parse_json_file(char const *filename, bool *is_valid)
     }
 
     /*
-     * we cannot use clearerr_or_fclose() here as it's possible that ugly_in
+     * we cannot use clearerr_or_fclose() here as it's possible that sorry_in
      * will be NULL and so we do it manually instead.
      */
     if (is_stdin == true) {
 	clearerr(stdin);
-    } else if (ugly_in != NULL) {
+    } else if (sorry_in != NULL) {
 	errno = 0;
-	ret = fclose(ugly_in);
+	ret = fclose(sorry_in);
 	if (ret != 0) {
 	    warnp(__func__, "error in fclose on file %s", filename);
 	}
-	ugly_in = NULL;
+	sorry_in = NULL;
     }
 
     /*

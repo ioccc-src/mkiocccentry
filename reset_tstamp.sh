@@ -263,6 +263,7 @@ echo '    make clobber all test'
 echo
 echo 'then:'
 echo
+echo "	  make ./limit_ioccc.sh"
 echo "    ./vermod.sh -v 1 -n -Q $OLD_MIN_TIMESTAMP $NOW"
 echo "    $RPL_CMD -s -x'.json' -R -- '$FORMED_OLD_NOW' '$FORMED_NOW' ./test_JSON"
 echo

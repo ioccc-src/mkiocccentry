@@ -30,17 +30,16 @@
  * impaired. Nevertheless, we still recommend you to eschew modifying the code
  * below.
  *
- * BTW: If you don't agree with us that it's ugly we want to point out that it
- * even admits it and we ask you why it would call itself ugly if it's not. :-)
+ * BTW: If you don't agree with us that it's sorry that we want to point out that it
+ * even admits it and we ask you why it would call itself sorry if it's not. :-)
  *
  * Thanks in advance for your understanding, and sorry (tm Canada :-)).
  *
  * Of course, on the other hand, the fact the parser IS for JSON might suggest
- * that the parser SHOULD be ugly and since IT IS UGLY this apology might be
+ * that the parser SHOULD be sorry and since IT IS sorry this apology might be
  * superfluous. If one were to ignore the fact that bison and flex do not care
  * what they are parsing this same person could argue, obviously by some
- * perverted logical fallacies, that bison and flex did their job well. :-) This
- * logic is as barmy as JSON, though, and so we must still say we're sorry.
+ * perverted logical fallacies, that bison and flex did their job well. :-)
  *
  * P.S. In 2022 April 04, when this comment was initially formed, none of the
  *	people working on this repo were Canadian. But some of them have
@@ -86,33 +85,33 @@
    especially those whose name start with YY_ or yy_.  They are
    private implementation details that can be changed or removed.  */
 
-#ifndef YY_UGLY_JPARSE_TAB_H_INCLUDED
-# define YY_UGLY_JPARSE_TAB_H_INCLUDED
+#ifndef YY_SORRY_JPARSE_TAB_H_INCLUDED
+# define YY_SORRY_JPARSE_TAB_H_INCLUDED
 /* Debug traces.  */
-#ifndef UGLY_DEBUG
+#ifndef SORRY_DEBUG
 # if defined YYDEBUG
 #if YYDEBUG
-#   define UGLY_DEBUG 1
+#   define SORRY_DEBUG 1
 #  else
-#   define UGLY_DEBUG 0
+#   define SORRY_DEBUG 0
 #  endif
 # else /* ! defined YYDEBUG */
-#  define UGLY_DEBUG 0
+#  define SORRY_DEBUG 0
 # endif /* ! defined YYDEBUG */
-#endif  /* ! defined UGLY_DEBUG */
-#if UGLY_DEBUG
-extern int ugly_debug;
+#endif  /* ! defined SORRY_DEBUG */
+#if SORRY_DEBUG
+extern int sorry_debug;
 #endif
 
 /* Token kinds.  */
-#ifndef UGLY_TOKENTYPE
-# define UGLY_TOKENTYPE
-  enum ugly_tokentype
+#ifndef SORRY_TOKENTYPE
+# define SORRY_TOKENTYPE
+  enum sorry_tokentype
   {
-    UGLY_EMPTY = -2,
-    UGLY_EOF = 0,                  /* "end of file"  */
-    UGLY_error = 256,              /* error  */
-    UGLY_UNDEF = 257,              /* "invalid token"  */
+    SORRY_EMPTY = -2,
+    SORRY_EOF = 0,                 /* "end of file"  */
+    SORRY_error = 256,             /* error  */
+    SORRY_UNDEF = 257,             /* "invalid token"  */
     JSON_OPEN_BRACE = 258,         /* "{"  */
     JSON_CLOSE_BRACE = 259,        /* "}"  */
     JSON_OPEN_BRACKET = 260,       /* "["  */
@@ -126,21 +125,21 @@ extern int ugly_debug;
     JSON_NUMBER = 268,             /* JSON_NUMBER  */
     token = 269                    /* token  */
   };
-  typedef enum ugly_tokentype ugly_token_kind_t;
+  typedef enum sorry_tokentype sorry_token_kind_t;
 #endif
 
 /* Value type.  */
-#if ! defined UGLY_STYPE && ! defined UGLY_STYPE_IS_DECLARED
-typedef struct json * UGLY_STYPE;
-# define UGLY_STYPE_IS_TRIVIAL 1
-# define UGLY_STYPE_IS_DECLARED 1
+#if ! defined SORRY_STYPE && ! defined SORRY_STYPE_IS_DECLARED
+typedef struct json * SORRY_STYPE;
+# define SORRY_STYPE_IS_TRIVIAL 1
+# define SORRY_STYPE_IS_DECLARED 1
 #endif
 
 
-extern UGLY_STYPE ugly_lval;
+extern SORRY_STYPE sorry_lval;
 
 
-int ugly_parse (struct json **tree);
+int sorry_parse (struct json **tree);
 
 
-#endif /* !YY_UGLY_JPARSE_TAB_H_INCLUDED  */
+#endif /* !YY_SORRY_JPARSE_TAB_H_INCLUDED  */

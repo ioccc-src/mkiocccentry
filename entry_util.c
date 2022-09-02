@@ -11,7 +11,7 @@
  * Only at JSON_DBG_HIGH or higher should json_dbg() calls in the file
  * will print JSON content.
  *
- * "Because JSON embodies a commitment to original design flaws." :-)
+ * "Because specs w/o version numbers are forced to commit to their original design flaws." :-)
  *
  * This JSON parser was co-developed by:
  *
@@ -23,13 +23,14 @@
  *
  * "Because sometimes even the IOCCC Judges need some help." :-)
  *
- * Share and vomit on the JSON spec! :-)
+ * "Share and Enjoy!"
+ *     --  Sirius Cybernetics Corporation Complaints Division, JSON spec department. :-)
  */
 
 
 /* special comments for the seqcexit tool */
-/*ooo*/ /* exit code out of numerical order - ignore in sequencing */
-/*coo*/ /* exit code change of order - use new value in sequencing */
+/* exit code out of numerical order - ignore in sequencing - ooo */
+/* exit code change of order - use new value in sequencing - coo */
 
 
 #include <stdio.h>

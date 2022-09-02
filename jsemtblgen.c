@@ -2,8 +2,7 @@
 /*
  * jsemtblgen - generate JSON semantics table
  *
- * "Because there is more to JSON than a flawed grammar specification." :-)
- * "Because JSON embodies a commitment to original design flaws." :-)
+ * "Because specs w/o version numbers are forced to commit to their original design flaws." :-)
  *
  * This JSON parser was co-developed by:
  *
@@ -15,13 +14,14 @@
  *
  * "Because sometimes even the IOCCC Judges need some help." :-)
  *
- * Share and vomit on the JSON spec! :-)
+ * "Share and Enjoy!"
+ *     --  Sirius Cybernetics Corporation Complaints Division, JSON spec department. :-)
  */
 
 
 /* special comments for the seqcexit tool */
-/*ooo*/ /* exit code out of numerical order - ignore in sequencing */
-/*coo*/ /* exit code change of order - use new value in sequencing */
+/* exit code out of numerical order - ignore in sequencing - ooo */
+/* exit code change of order - use new value in sequencing - coo */
 
 
 #include <stdio.h>
@@ -182,11 +182,11 @@ main(int argc, char **argv)
      * enable bison internal debugging if -J is verbose enough
      */
     if (json_dbg_allowed(JSON_DBG_VHIGH)) {
-	ugly_debug = 1;	/* verbose bison debug on */
-	dbg(DBG_VHIGH, "ugly_debug: enabled");
+	sorry_debug = 1;	/* verbose bison debug on */
+	dbg(DBG_VHIGH, "sorry_debug: enabled");
     } else {
-	ugly_debug = 0;	/* verbose bison debug off */
-	dbg(DBG_VHIGH, "ugly_debug: disabled");
+	sorry_debug = 0;	/* verbose bison debug off */
+	dbg(DBG_VHIGH, "sorry_debug: disabled");
     }
 
     /*

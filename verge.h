@@ -2,7 +2,7 @@
 /*
  * verge - determine if first version is greater or equal to the second version
  *
- * "Because the JSON co-founders minimalism is sub-minimal." :-)
+ * "Because too such minimalism can be sub-minimal." :-)
  *
  * Copyright (c) 2022 by Landon Curt Noll.  All Rights Reserved.
  *
@@ -26,7 +26,8 @@
  *
  * chongo (Landon Curt Noll, http://www.isthe.com/chongo/index.html) /\oo/\
  *
- * Share and enjoy! :-)
+ * "Share and Enjoy!"
+ *     --  Sirius Cybernetics Corporation Complaints Division, JSON spec department. :-)
  */
 
 

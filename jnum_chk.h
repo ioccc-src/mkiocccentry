@@ -2,7 +2,7 @@
 /*
  * jnum_chk - tool to check JSON number string conversions
  *
- * "Because the JSON co-founders minimalism is sub-minimal." :-)
+ * "Because specs w/o version numbers are forced to commit to their original design flaws." :-)
  *
  * This JSON scanner was co-developed by:
  *
@@ -14,7 +14,8 @@
  *
  * "Because sometimes even the IOCCC Judges need some help." :-)
  *
- * Share and vomit on the JSON spec! :-)
+ * "Share and Enjoy!"
+ *     --  Sirius Cybernetics Corporation Complaints Division, JSON spec department. :-)
  */
 
 

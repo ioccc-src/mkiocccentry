@@ -1,6 +1,110 @@
 # Major changes to the IOCCC entry toolkit
 
 
+## Release 0.6 2022-09-02
+
+Released IOCCC entry toolkit v0.6 2022-09-02
+
+Updated CHANGES.md for v0.6 2022-09-02.
+
+Changed `MIN_TIMESTAMP` from 1655958810 to 1662145368.
+
+Updated `mkiocccentry` from "0.40 2022-03-15" to "0.41 2022-09-02".
+Updated `.info.json` version from "1.10 2022-06-22" to "1.11 2022-09-02".
+Updated `.author.json` version from "1.13 2022-06-22" to "1.14 2022-09-02".
+
+Improved code to use new facilities for output to a buffer from
+dbg release of v2.5 2022-07-23.
+
+The `chk_foo()` functions in `chk_validate.c` and the `test_foo()`
+functions in `entry_util.c` are Code complete, although the remain
+untested and unused.  The `chkentry` tool is not code complete.
+Later releases of tested JSON semantic code will no doubt modify
+these functions.
+
+Improved a number of the ways that JSON field values are checked.
+In a number of cases, code form `mkiocccentry.c` was moved into
+`test_foo()` functions so that they could be used by other
+tools such as the JSON semantic test code.
+
+Added code to generate JSON semantic tables from JSON reference
+files for `.info.json` and `.author.json`.  The `jsemcgen.sh` tool
+manages this by way of the `jsemtblgen` code generator and
+header, patch and trailer files (see `chk.auth.*` and `chk.info.*`
+files).
+
+Avoided the appearance of attacking any particular individual.  It
+was not our intention to disrespect anyone, even though we disagree
+with some of the technical decisions.  Where we have fundamental
+technical disagreements, we attempted to express those technical
+disagreements with humor in hopefully a more fun way.  As also now
+apologize for how `bison` and `flex` generated code may look, instead
+of simply calling it ugly.  As such, we hopefully improved some of
+the humor in our code while trying to be nice and friendly to others.
+
+For example now the adjusted dbg levels in JSON parser are:
+
+```
+*     At -J 3, only the top level return type and top level tree are printed.
+*     At -J 5, intermediate tree return types and tree are printed too.
+*     At -J 7, also print grammar progress.
+*     At -J 9, also print sorry_text and sorry_lang grammar values.
+```
+
+Removed a number of files and added a number of files under the
+`test_JSON/` tree.  When the JSON semantic code is being tested in
+a future release, we expect more such `test_JSON/` tree changes.
+
+Improved / add a number of man pages.  Updated `README.md`.
+
+Improved and expanded `txzchk`.
+
+Added more test code.  We attempt to detect feathers in tarballs.  :-)
+
+We will neither confirm nor deny the presence of an "Easter egg".
+Do to do would be "foolish".  :-)
+
+Improved and fixed `vermod.sh` and `reset_tstamp.sh`.  Tested this
+code by changing the `MIN_TIMESTAMP` as noted above.  The `MIN_TIMESTAMP`
+needed to up updated anyway due to changes in the `.info.json` and
+`.author.json` formats.
+
+Made numerous improvements and bug fixes to the Makefile.
+
+Fixed how `picky` is used in by the `make picky` rule for a few
+special files.
+
+Added multiple rules to the Makefile including but not limited to
+`make mkref`, `make legacy_clobber`, and `make legacy_clean` rules.
+Applied multiple bug fixes to the Makefile.
+
+Improved the Makefile to be less impacting for modern systems
+while trying to maintain, for as long as we can, compatibility
+with some older systems.
+
+Attempted to improve compatibility with reasonably modern systems.
+We managed to keep CentOS 7 somewhat supported for now, although
+we may be forced to drop support of such an old system before 2024.
+Users of very out of date systems can still enter and submit entries
+to the IOCCC.  They just might need to find a more modern system
+to package and submit their IOCCC entry, however.
+
+Added stub code for `hostchk.sh`.  A future release will include
+mode tests for the given hosts.  Future releases will also
+include a bug report system that will also use `hostchk.sh`.
+
+Improved the `no-comment` directive in `.info.json` and `.author.json`
+files.
+
+Improved how `time_t` values are used and printed.  We no longer
+assume that `time_t` is signed nor assume it is unsigned.
+
+Improved comments in C code about special `seqcexit` comment directives.
+
+Make numerous bug fixes and fixed a fair number of typos.
+Nevertheless we dare *NOT* claim this is complete.  :-)
+
+
 ## Release 0.5 2022-07-10
 
 The `jsemtblgen` tool is code complete.
@@ -43,7 +147,7 @@ Adjusted dbg levels in JSON parser:
 *     At -J 3, only the top level return type and top level tree are printed.
 *     At -J 5, intermediate tree return types and tree are printed too.
 *     At -J 7, also print grammar progress.
-*     At -J 9, also print ugly_text and ugly_leng grammar values.
+*     At -J 9, also print ugly_text and ugly_lang grammar values.
 ```
 
 Improved top level JSON parser debug & warn layering.

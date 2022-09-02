@@ -2,7 +2,7 @@
 /*
  * JSON parser - bison grammar
  *
- * "Because JSON embodies a commitment to original design flaws." :-)
+ * "Because specs w/o version numbers are forced to commit to their original design flaws." :-)
  *
  * This JSON parser was co-developed by:
  *
@@ -14,7 +14,8 @@
  *
  * "Because sometimes even the IOCCC Judges need some help." :-)
  *
- * Share and vomit on the JSON spec! :-)
+ * "Share and Enjoy!"
+ *     --  Sirius Cybernetics Corporation Complaints Division, JSON spec department. :-)
  */
 
 
@@ -32,7 +33,7 @@
 %define api.value.type {struct json *}
 
 /*
- * we need access to the tree in parse_json() so we tell bison that ugly_parse()
+ * we need access to the tree in parse_json() so we tell bison that sorry_parse()
  * takes a struct json **tree.
  */
 %parse-param { struct json **tree }
@@ -41,64 +42,49 @@
  * An IOCCC satirical take on bison and flex
  *
  * As we utterly object to the hideous code that bison and flex generate we
- * point it out in an ironic way by changing the prefix yy to ugly_ so that
- * bison actually calls itself ugly. This is satire for the IOCCC (although we
- * still believe that bison generates ugly code)!
+ * point it out in an ironic way by changing the prefix yy to sorry_ so that
+ * bison actually calls itself sorry. This is satire for the IOCCC (although we
+ * still believe that bison generates sorry code)!
  *
  * This means that to access the struct json's union type in the lexer we can do
- * (because the prefix is ugly_ as described above):
+ * (because the prefix is sorry_ as described above):
  *
- *	ugly_lval.type = ...
+ *	sorry_lval.type = ...
  *
  * A negative consequence here is that because of the api.prefix being set to
- * ugly_ there's a typedef that _might_ suggest that _our_ struct json is ugly:
+ * sorry_ there's a typedef that _might_ suggest that _our_ struct json is sorry:
  *
- *	typedef struct json UGLY_STYPE;
+ *	typedef struct json SORRY_STYPE;
  *
  * At first glance this is a valid concern. However we argue that even if this
- * is so the struct might well have to be ugly because it's for a json parser; a
- * json parser necessarily has to be ugly due to the spec: one could easily be
- * forgiven for wondering if the authors of the json specification were on drugs
- * at the time of writing them!
+ * is so the struct might well have to be sorry because it's for a json parser; a
+ * json parser necessarily has to maintain the mis-features of spec being implemented.
  *
- * Please note that we're _ABSOLUTELY NOT_ saying that they were and we use the
- * term very loosely as well: we do not want to and we are not accusing anyone
- * of being on drugs (we rather find addiction a real tragedy and anyone with an
- * addiction should be treated well and given the help they need) but the fact
- * is that the JSON specification is barmy and those who are in favour of it
- * must surely be in the JSON Barmy Army (otherwise known as the Barmy Army
- * Jointly Staying On Narcotics :-)).
+ * BTW: If you want to see all the symbols (re?)defined to something sorry run:
  *
- * Thus as much as we find the specification objectionable we rather feel sorry
- * for those poor lost souls who are indeed in the JSON Barmy Army and we
- * apologise to them in a light and fun way and with hope that they're not
- * terribly humour impaired. :-)
- *
- * BTW: If you want to see all the symbols (re?)defined to something ugly run:
- *
- *	grep -i '#[[:space:]]*define[[:space:]].*ugly_' *.c
+ *	grep -i '#[[:space:]]*define[[:space:]].*sorry_' *.c
  *
  * after generating the files; and if you want to see only what was changed from
- * yy or YY to refer to ugly_ or UGLY_:
+ * yy or YY to refer to sorry_ or SORRY_:
  *
- *	grep -i '#[[:space:]]*define[[:space:]]*yy.*ugly_' *.c
+ *	grep -i '#[[:space:]]*define[[:space:]]*yy.*sorry_' *.c
  *
  * This will help you find the right symbols should you need them. If (as is
  * likely to happen) the parser is split into another repo for a json parser by
  * itself I will possibly remove this prefix: this is as satire for the IOCCC
- * (though we all believe that the generated code is in fact ugly).
+ * (though we all believe that the generated code is in fact sorry).
  *
- * WARNING: Although we use the prefix ugly_ the scanner and parser will at
- * times refer to yy and YY and other times refer to ugly_ and UGLY_ (partly
- * because WE refer to ugly_ and UGLY_). So if you're trying to sift through
- * that ugly spaghetti code (which we strongly recommend you do not do as it will
+ * WARNING: Although we use the prefix sorry_ the scanner and parser will at
+ * times refer to yy and YY and other times refer to sorry_ and SORRY_ (partly
+ * because WE refer to sorry_ and SORRY_). So if you're trying to sift through
+ * that sorry spaghetti code (which we strongly recommend you do not do as it will
  * likely cause nightmares and massive brain pain) you'll want to check yy/YY as
- * well as ugly_/UGLY_. But really you oughtn't try and go through that code so
- * you need only pay attention to the ugly_ and UGLY_ prefixes (in the *.l and
+ * well as sorry_/SORRY_. But really you oughtn't try and go through that code so
+ * you need only pay attention to the sorry_ and SORRY_ prefixes (in the *.l and
  * *.y files) which again are satire for the IOCCC. See also the apology in the
  * generated files or directly looking at sorry.tm.ca.h.
  */
-%define api.prefix {ugly_}
+%define api.prefix {sorry_}
 
 %{
 
@@ -118,7 +104,7 @@ unsigned num_errors = 0;		/* > 0 number of errors encountered */
 /*
  * bison debug information for development
  */
-int ugly_debug = 0;	/* 0 ==> verbose bison debug off, 1 ==> verbose bison debug on */
+int sorry_debug = 0;	/* 0 ==> verbose bison debug off, 1 ==> verbose bison debug on */
 
 %}
 
@@ -157,7 +143,7 @@ int ugly_debug = 0;	/* 0 ==> verbose bison debug off, 1 ==> verbose bison debug 
  * it is valid in other contexts' but it's actually never valid: it's a catch
  * all for anything that's not valid).
  *
- * Then as a hack (or maybe kludge) in ugly_error() we refer to ugly_text in a
+ * Then as a hack (or maybe kludge) in sorry_error() we refer to sorry_text in a
  * way that shows what the token is that caused the failure (whether it's a
  * syntax error or something else).
  */
@@ -224,7 +210,7 @@ json:
 	     * not NULL, however, *tree will be set to the parse tree itself
 	     * ($json).
 	     */
-	    *tree = $json;	/* more magic: set ugly_parse(tree) arg to point to JSON parse tree */
+	    *tree = $json;	/* more magic: set sorry_parse(tree) arg to point to JSON parse tree */
 	}
 	if (json_dbg_allowed(JSON_DBG_HIGH)) {
 	    json_dbg(JSON_DBG_HIGH, __func__, "under json: ending: "
@@ -369,14 +355,14 @@ json_value:
 	if (json_dbg_allowed(JSON_DBG_VHIGH)) {
 	    json_dbg(JSON_DBG_VHIGH, __func__, "under json_value: starting: "
 					       "json_value: JSON_TRUE");
-	    json_dbg(JSON_DBG_VVHIGH, __func__, "under json_value: ugly_text: <%s>", ugly_text);
-	    json_dbg(JSON_DBG_VVHIGH, __func__, "under json_value: ugly_leng: <%d>", ugly_leng);
+	    json_dbg(JSON_DBG_VVHIGH, __func__, "under json_value: sorry_text: <%s>", sorry_text);
+	    json_dbg(JSON_DBG_VVHIGH, __func__, "under json_value: sorry_leng: <%d>", sorry_leng);
 	    json_dbg(JSON_DBG_VHIGH, __func__, "under json_value: about to perform: "
-					       "$json_value = parse_json_bool(ugly_text);");
+					       "$json_value = parse_json_bool(sorry_text);");
 	}
 
 	/* action */
-	$json_value = parse_json_bool(ugly_text); /* magic: json_value becomes JTYPE_BOOL type */
+	$json_value = parse_json_bool(sorry_text); /* magic: json_value becomes JTYPE_BOOL type */
 
 	/* post-action debugging */
 	if (json_dbg_allowed(JSON_DBG_HIGH)) {
@@ -399,14 +385,14 @@ json_value:
 	if (json_dbg_allowed(JSON_DBG_VHIGH)) {
 	    json_dbg(JSON_DBG_VHIGH, __func__, "under json_value: starting: "
 					       "json_value: JSON_FALSE");
-	    json_dbg(JSON_DBG_VVHIGH, __func__, "under json_value: ugly_text: <%s>", ugly_text);
-	    json_dbg(JSON_DBG_VVHIGH, __func__, "under json_value: ugly_leng: <%d>", ugly_leng);
+	    json_dbg(JSON_DBG_VVHIGH, __func__, "under json_value: sorry_text: <%s>", sorry_text);
+	    json_dbg(JSON_DBG_VVHIGH, __func__, "under json_value: sorry_leng: <%d>", sorry_leng);
 	    json_dbg(JSON_DBG_VHIGH, __func__, "under json_value: about to perform: "
-					       "$json_value = parse_json_bool(ugly_text);");
+					       "$json_value = parse_json_bool(sorry_text);");
 	}
 
 	/* action */
-	$json_value = parse_json_bool(ugly_text); /* magic: json_value becomes JTYPE_BOOL type */
+	$json_value = parse_json_bool(sorry_text); /* magic: json_value becomes JTYPE_BOOL type */
 
 	/* post-action debugging */
 	if (json_dbg_allowed(JSON_DBG_HIGH)) {
@@ -429,14 +415,14 @@ json_value:
 	if (json_dbg_allowed(JSON_DBG_VHIGH)) {
 	    json_dbg(JSON_DBG_VHIGH, __func__, "under json_value: starting: "
 					       "json_value: JSON_NULL");
-	    json_dbg(JSON_DBG_VVHIGH, __func__, "under json_value: ugly_text: <%s>", ugly_text);
-	    json_dbg(JSON_DBG_VVHIGH, __func__, "under json_value: ugly_leng: <%d>", ugly_leng);
+	    json_dbg(JSON_DBG_VVHIGH, __func__, "under json_value: sorry_text: <%s>", sorry_text);
+	    json_dbg(JSON_DBG_VVHIGH, __func__, "under json_value: sorry_leng: <%d>", sorry_leng);
 	    json_dbg(JSON_DBG_VHIGH, __func__, "under json_value: about to perform: "
-					       "$json_value = parse_json_null(ugly_text);");
+					       "$json_value = parse_json_null(sorry_text);");
 	}
 
 	/* action */
-	$json_value = parse_json_null(ugly_text); /* magic: json_value becomes JTYPE_NULL type */
+	$json_value = parse_json_null(sorry_text); /* magic: json_value becomes JTYPE_NULL type */
 
 	/* post-action debugging */
 	if (json_dbg_allowed(JSON_DBG_HIGH)) {
@@ -797,14 +783,14 @@ json_string:
 	if (json_dbg_allowed(JSON_DBG_VHIGH)) {
 	    json_dbg(JSON_DBG_VHIGH, __func__, "under json_string: starting: "
 					       "json_string: JSON_STRING");
-	    json_dbg(JSON_DBG_VVHIGH, __func__, "under json_string: ugly_text: <%s>", ugly_text);
-	    json_dbg(JSON_DBG_VVHIGH, __func__, "under json_string: ugly_leng: <%d>", ugly_leng);
+	    json_dbg(JSON_DBG_VVHIGH, __func__, "under json_string: sorry_text: <%s>", sorry_text);
+	    json_dbg(JSON_DBG_VVHIGH, __func__, "under json_string: sorry_leng: <%d>", sorry_leng);
 	    json_dbg(JSON_DBG_VHIGH, __func__, "under json_string: about to perform: "
-					       "$json_string = parse_json_string(ugly_text, ugly_leng);");
+					       "$json_string = parse_json_string(sorry_text, sorry_leng);");
 	}
 
 	/* action */
-	$json_string = parse_json_string(ugly_text, ugly_leng);
+	$json_string = parse_json_string(sorry_text, sorry_leng);
 
 	/* post-action debugging */
 	if (json_dbg_allowed(JSON_DBG_HIGH)) {
@@ -829,14 +815,14 @@ json_number:
 	if (json_dbg_allowed(JSON_DBG_VHIGH)) {
 	    json_dbg(JSON_DBG_VHIGH, __func__, "under json_number: starting: "
 					       "json_number: JSON_NUMBER");
-	    json_dbg(JSON_DBG_VVHIGH, __func__, "under json_number: ugly_text: <%s>", ugly_text);
-	    json_dbg(JSON_DBG_VVHIGH, __func__, "under json_number: ugly_leng: <%d>", ugly_leng);
+	    json_dbg(JSON_DBG_VVHIGH, __func__, "under json_number: sorry_text: <%s>", sorry_text);
+	    json_dbg(JSON_DBG_VVHIGH, __func__, "under json_number: sorry_leng: <%d>", sorry_leng);
 	    json_dbg(JSON_DBG_VHIGH, __func__, "under json_number: about to perform: "
-					       "$json_number = parse_json_number(ugly_text);");
+					       "$json_number = parse_json_number(sorry_text);");
 	}
 
 	/* action */
-	$json_number = parse_json_number(ugly_text);
+	$json_number = parse_json_number(sorry_text);
 
 	/* post-action debugging */
 	if (json_dbg_allowed(JSON_DBG_HIGH)) {
@@ -857,7 +843,7 @@ json_number:
 
 
 /*
- * ugly_error	- generate an error message for the scanner/parser
+ * sorry_error	- generate an error message for the scanner/parser
  *
  * given:
  *
@@ -867,7 +853,7 @@ json_number:
  *
  */
 void
-ugly_error(struct json **node, char const *format, ...)
+sorry_error(struct json **node, char const *format, ...)
 {
     va_list ap;		/* variable argument list */
     int ret;		/* libc function return value */
@@ -884,12 +870,12 @@ ugly_error(struct json **node, char const *format, ...)
     if (node != NULL && *node != NULL) {
 	fprint(stderr, " type: %s ", json_item_type_name(*node));
     }
-    if (ugly_text != NULL && *ugly_text != '\0') {
-	fprint(stderr, " line: %d: %s\n", ugly_lineno, ugly_text);
-    } else if (ugly_text == NULL) {
-	fprint(stderr, " line: %d: text == NULL\n", ugly_lineno);
+    if (sorry_text != NULL && *sorry_text != '\0') {
+	fprint(stderr, " line: %d: %s\n", sorry_lineno, sorry_text);
+    } else if (sorry_text == NULL) {
+	fprint(stderr, " line: %d: text == NULL\n", sorry_lineno);
     } else {
-	fprint(stderr, " line: %d: empty text\n", ugly_lineno);
+	fprint(stderr, " line: %d: empty text\n", sorry_lineno);
     }
 
     /*
