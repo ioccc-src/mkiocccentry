@@ -1584,12 +1584,11 @@ sem_object_find_name(struct json const *node, unsigned int depth, struct json_se
  *
  * given:
  *	sem	pointer to a JSON semantic table
- *	count	length of the JSON semantic table
  *
  * NOTE: This function does not return for NULL pointers or count <= 0
  */
 void
-json_sem_zero_count(struct json_sem *sem, int count)
+json_sem_zero_count(struct json_sem *sem)
 {
     int i;
 
@@ -1600,15 +1599,11 @@ json_sem_zero_count(struct json_sem *sem, int count)
 	err(82, __func__, "sem is NULL");
 	not_reached();
     }
-    if (count <= 0) {
-	err(83, __func__, "count: %d <= 0", count);
-	not_reached();
-    }
 
     /*
      * clear counts
      */
-    for (i=0; i < count; ++i) {
+    for (i=0; sem[i].type != JTYPE_UNSET; ++i) {
 	sem[i].count = 0;
     }
     return;
@@ -1640,8 +1635,7 @@ json_sem_zero_count(struct json_sem *sem, int count)
  *	node		pointer to a JSON parse tree
  *	max_depth	maximum tree depth to descend, or 0 ==> infinite depth
  *			    NOTE: Use JSON_INFINITE_DEPTH for infinite depth
- *	sem		pointer to a JSON semantic table
- *	count		length of the JSON semantic table
+ *	sem		pointer to a JSON semantic table (ends with a JTYPE_UNSET JSON type)
  *	pcnt_err	pointer to dynamic array of JSON semantic count errors
  *	pval_err	pointer to dynamic array of JSON semantic validation errors
  *
@@ -1656,7 +1650,7 @@ json_sem_zero_count(struct json_sem *sem, int count)
  *	 error was encountered.
  */
 unsigned int
-json_sem_check(struct json *node, unsigned int max_depth, struct json_sem *sem, int count,
+json_sem_check(struct json *node, unsigned int max_depth, struct json_sem *sem,
 	       struct dyn_array **pcnt_err, struct dyn_array **pval_err)
 {
     struct dyn_array *cnt_err = NULL;		/* JSON semantic count errors */
@@ -1709,7 +1703,7 @@ json_sem_check(struct json *node, unsigned int max_depth, struct json_sem *sem, 
     /*
      * zero semantic counts
      */
-    json_sem_zero_count(sem, count);
+    json_sem_zero_count(sem);
 
     /* XXX - add code here - XXX */
 
