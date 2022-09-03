@@ -1,4 +1,3 @@
-/* vim: set tabstop=8 softtabstop=4 shiftwidth=4 noexpandtab : */
 /*
  * verge - determine if first version is greater or equal to the second version
  *

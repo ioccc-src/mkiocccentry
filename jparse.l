@@ -1,4 +1,3 @@
-/* vim: set tabstop=8 softtabstop=4 shiftwidth=4 noexpandtab : */
 /*
  * JSON scanner - JSON scanner in flex grammar form
  *

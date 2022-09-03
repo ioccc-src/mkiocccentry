@@ -1,4 +1,3 @@
-/* vim: set tabstop=8 softtabstop=4 shiftwidth=4 noexpandtab : */
 /*
  * jparse_main - tool that parses a block of JSON input
  *
