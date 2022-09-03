@@ -336,7 +336,7 @@ txzchk_sanity_chks(char const *tar, char const *fnamchk)
 		  "A tar program that supports the -J (xz) option is required to test the compressed tarball.",
 		  "Perhaps you need to use:",
 		  "",
-		  "    txzchk -t /path/to/tar ...",
+		  "    txzchk -t /path/to/tar [...]",
 		  "",
 		  "and/or install a tar program?  You can find the source for tar:",
 		  "",
@@ -354,7 +354,7 @@ txzchk_sanity_chks(char const *tar, char const *fnamchk)
 		  "",
 		  "Perhaps you need to use another path:",
 		  "",
-		  "    txzchk -t /path/to/tar ...",
+		  "    txzchk -t /path/to/tar [...]",
 		  "",
 		  "and/or install a tar program?  You can find the source for tar:",
 		  "",
@@ -372,7 +372,7 @@ txzchk_sanity_chks(char const *tar, char const *fnamchk)
 		  "",
 		  "We suggest you check the permissions on the tar program, or use another path:",
 		  "",
-		  "    txzchk -t /path/to/tar ...",
+		  "    txzchk -t /path/to/tar [...]",
 		  "",
 		  "and/or install a tar program?  You can find the source for tar:",
 		  "",
@@ -395,7 +395,7 @@ txzchk_sanity_chks(char const *tar, char const *fnamchk)
 	      "This tool is required to test the tarball.",
 	      "Perhaps you need to use:",
 	      "",
-	      "    txzchk -F /path/to/fnamchk ...",
+	      "    txzchk -F /path/to/fnamchk [...]",
 	      NULL);
 	err(7, __func__, "fnamchk does not exist: %s", fnamchk);
 	not_reached();
@@ -408,7 +408,7 @@ txzchk_sanity_chks(char const *tar, char const *fnamchk)
 	      "",
 	      "Perhaps you need to use another path:",
 	      "",
-	      "    txzchk -F /path/to/fnamchk ...",
+	      "    txzchk -F /path/to/fnamchk [...]",
 	      NULL);
 	err(8, __func__, "fnamchk is not a regular file: %s", fnamchk);
 	not_reached();
@@ -421,7 +421,7 @@ txzchk_sanity_chks(char const *tar, char const *fnamchk)
 	      "",
 	      "We suggest you check the permissions on the fnamchk program, or use another path:",
 	      "",
-	      "    txzchk -F /path/to/fnamchk ...",
+	      "    txzchk -F /path/to/fnamchk [...]",
 	      NULL);
 	err(9, __func__, "fnamchk is not an executable program: %s", fnamchk);
 	not_reached();
@@ -899,7 +899,7 @@ check_directories(struct txz_file *file, char const *dir_name, char const *txzpa
 	 * is okay.
 	 */
 	++txz_info.total_feathers;
-	warn("txzchk", "%s: found file with .. in the path: %s", txzpath, file->filename);
+	warn("txzchk", "%s: found file with '..' in the path: %s", txzpath, file->filename);
     }
     if (*(file->filename) == '/') {
 	++txz_info.total_feathers;
@@ -962,7 +962,8 @@ check_directories(struct txz_file *file, char const *dir_name, char const *txzpa
      * directory names (at least the directory name expected in the
      * tarball).
      */
-    if (dir_name != NULL && strlen(dir_name) > 0) {
+    if (dir_name != NULL && *dir_name != '\0')
+    {
 	if (strncmp(file->filename, dir_name, strlen(dir_name))) {
 	    warn("txzchk", "%s: found incorrect directory in filename %s", txzpath, file->filename);
 	    ++txz_info.total_feathers;
@@ -1411,7 +1412,7 @@ check_tarball(char const *tar, char const *fnamchk)
 
 	fnamchk_stream = NULL;
 
-	if (dir_name == NULL || !strlen(dir_name)) {
+	if (dir_name == NULL || *dir_name == '\0') {
 	    err(28, __func__, "txzchk: unexpected NULL pointer from fnamchk -- %s", txzpath);
 	    not_reached();
 	}
@@ -1767,7 +1768,7 @@ alloc_txz_file(char const *path)
     }
 
     file->basename = base_name(path);
-    if (!file->basename || !strlen(file->basename)) {
+    if (!file->basename || *(file->basename) == '\0') {
 	err(43, __func__, "%s: unable to strdup basename of filename %s", txzpath, path);
 	not_reached();
     }
