@@ -1,4 +1,3 @@
-/* vim: set tabstop=8 softtabstop=4 shiftwidth=4 noexpandtab : */
 /*
  * chkauth - IOCCC JSON .author.json checker and validator. Invoked by
  * mkiocccentry after the .author.json file has been created but prior to

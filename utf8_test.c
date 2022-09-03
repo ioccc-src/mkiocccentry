@@ -1,4 +1,3 @@
-/* vim: set tabstop=8 softtabstop=4 shiftwidth=4 noexpandtab : */
 /*
  * utf8_test - test translate UTF-8 into POSIX portable filename and + chars
  *
