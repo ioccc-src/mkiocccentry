@@ -1,4 +1,4 @@
-.TH txzchk 1 "2 September 2022" "txzchk" "IOCCC tools"
+.TH txzchk 1 "4 September 2022" "txzchk" "IOCCC tools"
 .SH NAME
 txzchk \- sanity checker tool used on IOCCC compressed tarballs
 .SH SYNOPSIS
@@ -12,7 +12,8 @@ As a side effect it will show the user the contents of the tarball.
 The tarball is \fBNOT\fP extracted.
 \fBtxzchk\fP also runs the IOCCC tool \fBfnamchk(1)\fP on the file, verifying that the tarball is properly named (this is also how it gets the directory name that the files should be in).
 .PP
-As an important part of the judging process, The Judges will directly execute this tool on every entry's tarball.
+In other words it makes sure that \fBmkiocccentry(1)\fP was used and that there was no screwing around with the resultant tarball.
+As an important part of the judging process, the Judges will directly execute this tool on every entry's tarball.
 .SH OPTIONS
 .PP
 \fB\-h\fP
@@ -68,6 +69,13 @@ Text files that must fail \fBtxzchk\fP when checked via the \fBtxzchk_test.sh\fP
 .RS
 Text files that must pass \fBtxzchk\fP when checked via the \fBtxzchk_test.sh\fP script.
 .RE
+.SH NOTES
+.PP
+This tool was written by Cody Boone Ferguson for the \fBIOCCC Judges\fP in early 2022 for the \fBIOCCCMOCK\fP, \fBIOCCC28\fP and all future \fBIOCCC\fP competitions after discussing the requirements with \fBLandon Curt Noll\fP, one of the IOCCC Judges.
+For more history see \fBtxzchk(1)\fP, \fBCHANGES.md\fP, \fBREADME.md\fP, the GitHub git log and of course reading the source itself.
+.PP
+No pitman or coal mine was harmed in the making of this tool. :-)
+More importantly, no tar pits \- including the \fBLa Brea Tar Pits\fP \- were disturbed in the making of this tool.
 .SH BUGS
 .PP
 Cody Boone Ferguson wrote it! :)
@@ -104,6 +112,9 @@ Run the program on the file \fIentry.test-1.1644094311.txt\fP, specifying that i
 .fi
 .RE
 .SH SEE ALSO
-\fBtxzchk(1)\fP, \fBfnamchk(1)\fP, \fBmkiocccentry(1)\fP, \fBtar(1)\fP.
-.SH AUTHOR
-Cody Boone Ferguson.
+.PP
+The IOCCC tools \fBtxzchk(1)\fP, \fBfnamchk(1)\fP and \fBmkiocccentry(1)\fP.
+.br
+The tarry \fBtar(1)\fP command itself.
+.br
+And don't forget the very tarry \fBLa Brea Tar Pits\fP: \fB<https://tarpits.org>\fP.
