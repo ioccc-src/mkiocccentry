@@ -1,0 +1,84 @@
+.TH run_usage 1 "5 September 2022" "run_usage" "IOCCC tools"
+.SH NAME
+run_usage \- run -h on a tool to extract usage information for making man pages
+.SH SYNOPSIS
+\fBrun_usage.sh\fP [\-h] [\-m section] [\-M man file] tool
+.SH DESCRIPTION
+.PP
+This script does a best guess at what the \fBSYNOPSIS\fP should be for the supplied tool with certain limitations (see \fBBUGS\fP).
+If the man page exists it attempts to, based on the \fB\-h\fP option of the tool, create the correct regexp for the \fBSYNOPSIS\fP and then uses \fBgrep\fP to check for it in the man page.
+.PP
+If the man page does not exist or is not a regular file or is not readable it is an error but a helpful note is given of what the \fBSYNOPSIS\fP might look like.
+.PP
+.SH OPTIONS
+.PP
+\fB\-h\fP
+Show help and exit 1.
+.PP
+\fB\-m\fP
+Specify a different man page section.
+Default is 1.
+.PP
+\fB\-M\fP
+Specify the man page filename.
+This is useful when the name of the tool does not match what the man page should be (for example \fBrun_usage.sh\fP has \fBrun_usage.1\fP and not \fBrun_usage.sh.1\fP).
+.SH EXIT STATUS
+.PP
+Exit codes:
+.RS
+.PP
+0 \- all okay
+.PP
+1 \- help string printed
+.PP
+2 \- tool missing or command used missing
+.PP
+3 \- man page missing
+.PP
+4 \- command line usage error
+.PP
+5 \- missing or inconsistent synopsis
+.PP
+>= 42 \- some internal error occurred
+.RE
+.SH BUGS
+.PP
+.RS
+This is is not perfect.
+.RE
+.RS
+.PP
+It's far from perfect.
+.RE
+.RS
+.PP
+It has a very fixed idea of what formatting should be.
+As this can vary we don't try figuring it out.
+However the tool was used to generate the \fBSYNOPSIS\fP in this man page.
+.RE
+.RS
+.PP
+It does not have a quiet mode so that it only prints out what the format might be for \fBSYNOPSIS\fP.
+It does however not print anything if everything seems okay.
+.RE
+.RS
+.PP
+If there's more than one usage string then the script can incorrectly suggest that it's fine if only one exists.
+If none of them are in the file it will show all the usage strings that can be added.
+(This needs to be fixed but it can wait for another time.)
+.RE
+.RS
+.PP
+There are other limitations.
+Read the comments for more details.
+.RE
+.SH EXAMPLES
+.PP
+.nf
+Determine if the \fBSYNOPSIS\fP in this file is \fIcorrect\fP (according to the script) based on the usage message of \fBrun_usage.sh\fP:
+
+.RS
+\fB
+ ./run_usage.sh -M run_usage.1 run_usage.sh
+.fi
+.RE

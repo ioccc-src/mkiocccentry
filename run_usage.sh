@@ -18,18 +18,20 @@
 #     be said it makes it easier to VERIFY that the SYNOPSIS is up to date.
 # (4) It requires you to update the man page manually and fix any formatting (as
 #     described above). See limitations 0, 1, 2 and 5.
-# (5) Currently for shell scripts it expects the .sh in the filename of the man
-#     page. This must be corrected. It is for this reason that I have not yet
-#     added a man page for the tool to (obviously) verify it works. Instead I
-#     have tested it with several man pages fixed in commit
-#     d7f165c187de5e4847f75490e52505f062526e4c as well as some after the fact.
-#     This will be corrected with a future commit.
-# (6) There are bound to be places where the output is incorrect. Use with care!
+# (5) It does not remove any extensions so if for example you want the man page
+#     for run_usage.sh to be run_usage.1 you have to use the -M option.
+# (6) If a tool has more than one usage string the script will report that
+#     everything is okay even if only one is valid. If however all are missing
+#     it will show all the lines.
+# (7) It has a very fixed idea of what is correct.
+# (8) Even after editing the man page one should still inspect it to be sure
+#     it's correct; this to verify but it cannot be correct all the time.
+# (9) There are bound to be places where the output is incorrect. Use with care!
 #
 # This quick, dirty and ugly hack was not written by Cody Boone Ferguson in
 # support of issue https://github.com/ioccc-src/mkiocccentry/issues/275. :-)
-# Okay it was written by Cody but it's ugly to say the least and it could be done
-# better for sure. See limitations 0, 1, 2, 3, 4, 5 and 6! If it's not
+# Okay it was written by Cody but it's dirty and maybe ugly and there's room for
+# improvement. See limitations 0, 1, 2, 3, 4, 5, 6, 7, 8 and 9! If it's not
 # immediately obvious that's all the limitations including those that are not
 # yet known.
 #
@@ -38,11 +40,13 @@
 #
 export MAN_SECTION="1"
 export M_FLAG=""
-
-export USAGE="usage: $0 [-h] [-m section] tool
+export MAN_FLAG=""
+export MAN_PAGE=""
+export USAGE="usage: $0 [-h] [-m section] [-M man file] tool
 
     -h		    print help and exit 1
     -m section	    man page section (def: $MAN_SECTION)
+    -M man file	    man page (including extension)
     --		    end of $0 flags
     tool	    one of the IOCCC tools to run with -h option
 
@@ -58,13 +62,16 @@ Exit codes:
 
 # parse args
 #
-while getopts :hm: flag; do
+while getopts :hm:M: flag; do
     case "$flag" in
     h) echo "$USAGE" 1>&2
        exit 1
        ;;
     m) M_FLAG="-m"
        MAN_SECTION="$OPTARG";
+       ;;
+    M) MAN_FLAG="-M"
+       MAN_PAGE="$OPTARG";
        ;;
     \?) echo "$0: ERROR: invalid option: -$OPTARG" 1>&2
        exit 4
@@ -77,8 +84,8 @@ while getopts :hm: flag; do
     esac
 done
 
-if [[ -z "$MAN_SECTION" ]]; then
-    echo "$0: ERROR: -m MAN_SECTION cannot be empty" 1>&2
+if [[ -z "$MAN_SECTION" && -z "$MAN_PAGE" ]]; then
+    echo "$0: ERROR: -m MAN_SECTION and -M man page cannot both be empty" 1>&2
     exit 4
 fi
 
@@ -87,8 +94,9 @@ fi
 
 # extract tool name
 shift $(( OPTIND - 1 ));
-if [[ $# -gt 1 ]]; then
+if [[ $# -ne 1 ]]; then
     echo "$0: ERROR: expected 1 tool name, got $#"  1>&2
+    echo "$USAGE"
     exit 4
 fi
 
@@ -184,20 +192,6 @@ if [[ ! -x "$AWK" ]]; then
     exit 2
 fi
 
-# check for man page
-if [[ ! -e "$1.$MAN_SECTION" ]]; then
-    echo "$0: missing man page for $1 in section $MAN_SECTION" 1>&2
-    exit 3
-fi
-if [[ ! -f "$1.$MAN_SECTION" ]]; then
-    echo "$0: man page $1.$MAN_SECTION not a regular file" 1>&2
-    exit 3
-fi
-if [[ ! -r "$1.$MAN_SECTION" ]]; then
-    echo "$0: man page $1.$MAN_SECTION not a readable file" 1>&2
-    exit 3
-fi
-
 # WARNING: if your eyes or brain cannot deal with indecent hacks you should not
 # look below this line as this is where it gets uglier and becomes a hack.
 
@@ -214,7 +208,39 @@ USAGE_FMT=$(./"$1" -h 2>&1 | $GREP usage: | $CUT -f2- -d: | $SED -e 's/^[[:space
 # for. This is not perfect either. It's a hack.
 USAGE_RE="$(echo "$USAGE_FMT"|$SED -e 's/\\/\\\\/g' -e 's/\[/\\[/g' -e 's/\]/\\]/g')"
 
-$GREP -q "$USAGE_RE" "$1"."${MAN_SECTION}"
+
+# check for man page
+if [[ -z "$MAN_FLAG" && -z "$MAN_PAGE" ]]; then
+    MAN_PAGE="$1.$MAN_SECTION"
+fi
+
+if [[ ! -e "$MAN_PAGE" ]]; then
+    echo "$0: missing man page for $1: $MAN_PAGE" 1>&2
+    echo "Once a man page exists, you can try adding to the SYNOPSIS section:" 1>&2
+    echo "" 1>&2
+    echo "$USAGE_FMT" 1>&2
+    echo "" 1>&2
+    exit 3
+fi
+
+if [[ ! -f "$MAN_PAGE" ]]; then
+    echo "$0: man page $MAN_PAGE not a regular file" 1>&2
+    echo "Once a man page exists, you can try adding to the SYNOPSIS section:" 1>&2
+    echo "" 1>&2
+    echo "$USAGE_FMT" 1>&2
+    echo "" 1>&2
+    exit 3
+fi
+if [[ ! -r "$MAN_PAGE" ]]; then
+    echo "$0: man page $MAN_PAGE not a readable file" 1>&2
+    echo "Once a man page exists, you can try adding to the SYNOPSIS section:" 1>&2
+    echo "" 1>&2
+    echo "$USAGE_FMT" 1>&2
+    echo "" 1>&2
+    exit 3
+fi
+
+$GREP -q "$USAGE_RE" "$MAN_PAGE"
 STATUS=$?
 if [[ "$STATUS" -ne 0 ]]; then
     echo "Missing or inconsistent usage message for $1." 1>&2

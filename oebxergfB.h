@@ -2338,6 +2338,43 @@ static char const *oebxergfB[] =
 "\n"
 "-- Xwzmt\n"
 ,
+"    De Fwbafyrw WEYuep bnwul klsxawl: ``Ksx fye msq blqab y klsxawl bnyb\n"
+"    GFZDFO fye nyfh? Hsl bnw awfqlw fnsufw, fnssaw Luflsasob.''\n"
+"	    -- <slmz@rsksz.fsi> ue y fsiiweb se atyandsb.slp\n"
+"\n"
+"Ca bnua bnw ayiw bnw Luflsasob bnyb dulwfbtm dweuwd bnw wvudwefw so bnw kyfh\n"
+"dssl Nyfh Dluoufw (ND) lwtwyawd km bnw fRf, bwttuep bnwul qawla bnyb wvwlmbnuep\n"
+"xya ayow yed asqed xnwe ub xya ue bnw xutd? Nwfyqaw uo as C dwoueubwtm fye\n"
+"qedwlabyed xnm xw ansqtd blqab bnwi!\n"
+,
+"Yueqa:	C pqwaa ub'a xlsep ytxyma bs kw xsllmuep yksqb bsisllsx.  Lymkw\n"
+"	xw ansqtd bnueh setm yksqb bsdym.\n"
+"Inyltuw Nlsxe:\n"
+"	Fs, bnyb'a puvuep qr.  C'i abutt nsruep bnyb mwabwldym xutt pwb\n"
+"	kwbbwl.\n"
+,
+"Hulab bnw iye byhwa y dlueh, bnwe bnw dlueh byhwa y dlueh, bnwe bnw dlueh byhwa\n"
+"bnw iye.\n"
+"\n"
+"-- Ayryewaw rlsvwlk\n"
+,
+"Tnwlw ylw bxs xyma so fseablqfbuep y asobxylw dwaupe.  Dew xym ua bs iyhw\n"
+"ub as auirtw bnyb bnwlw ylw skvusqatm es dwoufuwefuwa yed bnw sbnwl ua bs\n"
+"iyhw ub as fsirtufybwd bnyb bnwlw ylw es skvusqa dwoufuwefuwa.\n"
+"\n"
+"- Inyltwa Gebnsem Mufnyld Ksylw\n"
+,
+"Dew fye ewvwl fseaweb bs flwwr xnwe sew owwta ye uirqtaw bs asyl.\n"
+"		\n"
+"-- Kwtwe Bwttwl\n"
+,
+"Ilwybuvubm ue tuvuep ua esb xubnsqb uba ybbwedyeb duooufqtbuwa, osl\n"
+"rwfqtuylubm klwwda fsebwirb. Ged bnw qeoslbqeybw bnuep yksqb kwuep\n"
+"ynwyd so msql buiw xnwe rwsrtw oueyttm lwytujw msq xwlw lupnb, bnwm'tt\n"
+"aym ub xya skvusqa ytt ytsep.\n"
+"\n"
+"-- Gtye Gantwm-Eubb\n"
+,
 NULL
 };
 
