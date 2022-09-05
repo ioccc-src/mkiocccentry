@@ -2280,8 +2280,8 @@ static char const *oebxergfB[] =
 "\n"
 "	    Hynlwenwub\n"
 "--------------------------------------\n"
-"Mwyttm fstd		    Mwyttm nsb\n"
-"sqbaudw			    sqbaudw\n"
+"< Hlwwjuep		    Mwyttm nsb\n"
+"			    sqbaudw\n"
 "--------------------------------------\n"
 "	    Iwtauqa\n"
 "Hlwwjuep			Rwyd\n"
@@ -2333,6 +2333,10 @@ static char const *oebxergfB[] =
 "\n"
 "Nqb bnua rlskyktm iwyea C ytas nyvw DIR auefw xnm wtaw xsqtd C fylw yksqb bnw\n"
 "twbbwla kwuep ue sldwl uo C dude'b?\n"
+,
+"Rufbybsl: G rwlase aflwyiuep sldwla bs y Rufbyrnsew.\n"
+"\n"
+"-- Xwzmt\n"
 ,
 NULL
 };
