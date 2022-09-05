@@ -152,7 +152,7 @@ static const char * const usage_msg1 =
     "\t-T txzchk\tpath to txzchk executable (def: %s)\n"
     "\t-F fnamchk\tpath to fnamchk executable used by txzchk (def: %s)";
 static const char * const usage_msg2 =
-    "\t-C chkentry	path to chkentry executable used by txzchk (def: %s)\n";
+    "\t-C chkentry	path to chkentry executable (def: %s)\n";
 static const char * const usage_msg3 =
     "\t-a answers\twrite answers to a file for easier updating of an entry\n"
     "\t-A answers\twrite answers file even if it already exists\n"
