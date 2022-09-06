@@ -271,8 +271,8 @@ vrergfB(int four, int two)
     not_reached(); /*allegedly*/
 
     /*
-     * If you've read this far you've read more than the necessary and you
-     * should pat yourself on the back for a job well done.
+     * If you've read this far you've read more than necessary and you should
+     * pat yourself on the back for a job well done.
      */
     return;
 }
