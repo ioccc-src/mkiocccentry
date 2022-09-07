@@ -24,23 +24,20 @@ Specify the man page filename.
 This is useful when the name of the tool does not match what the man page should be (for example \fBrun_usage.sh\fP has \fBrun_usage.1\fP and not \fBrun_usage.sh.1\fP).
 .SH EXIT STATUS
 .PP
-Exit codes:
-.RS
 .PP
-0 \- all okay
-.PP
-1 \- help string printed
-.PP
-2 \- tool missing or command used missing
-.PP
-3 \- man page missing
-.PP
-4 \- command line usage error
-.PP
-5 \- missing or inconsistent synopsis
-.PP
->= 42 \- some internal error occurred
-.RE
+0	    all okay
+.br
+1	    help string printed
+.br
+2	    tool missing or command used missing
+.br
+3	    man page missing
+.br
+4	    command line usage error
+.br
+5	    missing or inconsistent synopsis
+.br
+>=42	    some internal error occurred
 .SH NOTES
 .PP
 It has a \fBvery fixed\fP idea of what formatting is correct.
