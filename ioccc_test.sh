@@ -31,10 +31,10 @@
 #
 export USAGE="usage: $0 [-h] [-v level] [-J json_level] [-V]
 
-    -h              print help and exit 8
+    -h              print help and exit 1
     -v level        set debug level (def: 0)
     -J json_level   set json debug level (def: 0)
-    -V              print version and exit 8
+    -V              print version and exit 1
 
 Exit codes:
     0    all tests are OK

@@ -1,0 +1,51 @@
+.TH ioccc_test 1 "7 September 2022" "ioccc_test" "IOCCC tools"
+.SH NAME
+ioccc_test \- test suite for IOCCC toolkit
+.SH SYNOPSIS
+\fBioccc_test.sh\fP [\-h] [\-v level] [\-J json_level] [\-V]
+.SH DESCRIPTION
+\fBioccc_test\fP tests every module of the IOCCC toolkit.
+.SH OPTIONS
+.PP
+\fB\-h\fP
+Show help and exit.
+.PP
+\fB\-v\fP
+Set verbosity level (def: 0).
+.PP
+\fB\-J\fP
+Set JSON verbosity level.
+.PP
+\fB\-V\fP
+Print version and exit.
+.SH EXIT STATUS
+.PP
+Exit codes:
+.br
+0	all tests are OK
+.br
+1	-h and help string printed or -V and version string printed
+.br
+2	Command line usage error
+.br
+3	./iocccsize_test.sh not found or not executable
+.br
+4	./dbg not found or not executable
+.br
+5	./mkiocccentry_test.sh not found or not executable
+.br
+6	./jstr_test.sh not found or not executable
+.br
+7	./jnum_chk not found or not executable
+.br
+8	./dyn_test not found or not executable
+.br
+9	./jparse_test.sh not found or not executable
+.br
+10	./json_teststr.txt not found or not readable
+.br
+11	./txzchk not found or not executable
+.br
+>=20	some test failed
+.SH SEE ALSO
+\fBiocccsize_test(1)\fP, \fBdbg(3)\fP, \fBtxzchk(1)\fP.

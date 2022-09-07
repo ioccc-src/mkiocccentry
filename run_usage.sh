@@ -4,36 +4,15 @@
 # with the creation and maintaining man pages
 #
 # This tool is in support of verifying that the man page SYNOPSIS is the same as
-# the current options of the tool. It's not perfect and it is a hack. In
-# particular there are some limitations including AT LEAST the following:
+# the current options of the tool. It's not perfect and at least part of it is a
+# hack. There are limitations. For more details check the NOTES and BUGS
+# sections of the man page.
 #
-# (0) It does not use bold except on the command name itself. For example no
-#     bold for option letters.
-# (1) It does not set italics for option arguments where needed (this is
-#     currently lacking in the man pages though so maybe that's not such a
-#     problem).
-# (2) It does not update the man page itself (nor should it!).
-# (3) It might be buggy or other things as it was a quick hack to make it easier
-#     (NOT NECESSARILY EASY!) to update the SYNOPSIS of the man pages. It might
-#     be said it makes it easier to VERIFY that the SYNOPSIS is up to date.
-# (4) It requires you to update the man page manually and fix any formatting (as
-#     described above). See limitations 0, 1, 2 and 5.
-# (5) It does not remove any extensions so if for example you want the man page
-#     for run_usage.sh to be run_usage.1 you have to use the -M option.
-# (6) If a tool has more than one usage string the script will report that
-#     everything is okay even if only one is valid. If however all are missing
-#     it will show all the lines.
-# (7) It has a very fixed idea of what is correct.
-# (8) Even after editing the man page one should still inspect it to be sure
-#     it's correct; this to verify but it cannot be correct all the time.
-# (9) There are bound to be places where the output is incorrect. Use with care!
-#
-# This quick, dirty and ugly hack was not written by Cody Boone Ferguson in
-# support of issue https://github.com/ioccc-src/mkiocccentry/issues/275. :-)
-# Okay it was written by Cody but it's dirty and maybe ugly and there's room for
-# improvement. See limitations 0, 1, 2, 3, 4, 5, 6, 7, 8 and 9! If it's not
-# immediately obvious that's all the limitations including those that are not
-# yet known.
+# This quick, dirty and possibly ugly hack was not written by Cody Boone
+# Ferguson in support of issue
+# https://github.com/ioccc-src/mkiocccentry/issues/275. :-) Okay it was written
+# by Cody but it's dirty and maybe ugly and there's room for improvement. As
+# noted there are limitations. See the man page for details.
 #
 
 # set up
@@ -57,6 +36,7 @@ Exit codes:
     3	    man page missing
     4	    command line usage error
     5	    missing or inconsistent synopsis
+    6	    tool does not have usage string
     >=42    internal error"
 
 
@@ -193,7 +173,8 @@ if [[ ! -x "$AWK" ]]; then
 fi
 
 # WARNING: if your eyes or brain cannot deal with indecent hacks you should not
-# look below this line as this is where it gets uglier and becomes a hack.
+# look below this line as this is where it starts to get uglier and later
+# becomes a hack. Even so it could be worse and it's probably not _that_ ugly.
 
 # extract the usage message but add the correct formatting (or as best as
 # possible) for man pages. This is not perfect by any stretch of the
@@ -204,10 +185,15 @@ fi
 USAGE_FMT=$(./"$1" -h 2>&1 | $GREP usage: | $CUT -f2- -d: | $SED -e 's/^[[:space:]]*//g' -e 's,./,,g' | \
     $SED -e 's,^,\\fB,g' | $AWK '{$1=$1"\\fP"}1' | $SED -e 's,-,\\-,g');
 
-# Attempt to determine the synopsis regexp that we have to check the man page
-# for. This is not perfect either. It's a hack.
-USAGE_RE="$(echo "$USAGE_FMT"|$SED -e 's/\\/\\\\/g' -e 's/\[/\\[/g' -e 's/\]/\\]/g')"
 
+if [[ -z "$USAGE_FMT" ]]; then
+    echo "$0: ERROR: $1 has no usage string" 1>&2
+    exit 6
+fi
+
+# Attempt to determine the synopsis regexp that we have to check the man page
+# for. This is not perfect either. It might be a hack. See the man page.
+USAGE_RE="$(echo "$USAGE_FMT"|$SED -e 's/\\/\\\\/g' -e 's/\[/\\[/g' -e 's/\]/\\]/g')"
 
 # check for man page
 if [[ -z "$MAN_FLAG" && -z "$MAN_PAGE" ]]; then
@@ -240,10 +226,22 @@ if [[ ! -r "$MAN_PAGE" ]]; then
     exit 3
 fi
 
-$GREP -q "$USAGE_RE" "$MAN_PAGE"
-STATUS=$?
-if [[ "$STATUS" -ne 0 ]]; then
-    echo "Missing or inconsistent usage message for $1." 1>&2
+# This is is a hack but it's needed to try and determine if all the usage
+# strings are present in the man page. It works by finding out how many usage
+# messages are in the tool. Then if the grep -c on the pattern does not match
+# the number of lines we can guess that it's not correct.
+#
+# Another way of getting the number of lines is echoing the USAGE_RE and piping
+# it to wc -l but this would require also deleting spaces via say tr(1).
+#
+# XXX However it still won't work right if all the usage strings are the same as
+# it only works by the number of matches not what is matched. It works by first
+# determining how many lines the regexp contains and then uses the -c option of 
+# grep, checking if the number returned by grep is the same as the number of
+# lines.
+LINES=$(./"$1" -h 2>&1 | grep -c usage)
+if [[ $($GREP -c "$USAGE_RE" "$MAN_PAGE") -ne "$LINES" ]]; then
+    echo "Possible missing or inconsistent usage message for $1." 1>&2
     echo "If you know what you're doing you can try adding the following string" 1>&2
     echo "to the SYNOPSIS section of the man page:" 1>&2
     echo "" 1>&2

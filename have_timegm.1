@@ -1,0 +1,72 @@
+.TH have_timegm 1 "7 September 2022" "have_timegm.sh" "IOCCC tools"
+.SH NAME
+have_timegm \- test compiler for \fBtimegm(3)\fP, \fBstrptime(3)\fP and \fBstrftime(3)\fP
+.SH SYNOPSIS
+\fBhave_timegm.sh\fP [\-h] [\-v level]
+.SH DESCRIPTION
+\fBhave_timegm.sh\fP will attempt to compile and run a test program \fBhave_timegm.c\fP to determine if the compiler can use the functions \fBtimegm(3)\fP, \fBstrptime(3)\fP and \fBstrftime(3)\fP.
+If the system compiler does not work we attempt to compensate by directly declaring the prototype for \fBtimegm(3)\fP to let such systems use the tools in order to submit an IOCCC entry.
+We will stop trying to do this in 2024.
+.SH OPTIONS
+.PP
+\fB\-h\fP
+Show help and exit.
+.PP
+\fB\-v\fP
+Set verbosity level.
+.SH EXIT STATUS
+.PP
+.br
+    0    timestamp updated
+.br
+    1    failed Phase 0 of verification
+.br
+    2    failed Phase 1 of verification
+.br
+    3    failed Phase 2 of verification
+.br
+    4    failed Phase 3 of verification
+.br
+    5    failed Phase 4 of verification
+.br
+    6    rpl failed to modify limit_ioccc.h
+.br
+    7    limit_ioccc.h not found or not readable and writable
+.br
+    8    -h and help string printed or -V and version string printed
+.br
+    9    Command line usage error
+.br
+    >=10  internal error
+.SH NOTES
+.PP
+While there is no bug in the tool we are aware of one issue.
+The fact that the tool has to exist in 2022, a full 11 years after C11, is that issue.
+We don't mean to blame or shame but this was originally for CentOS 7 (CentOS 8 met an unduly EOL and < 7 already reached their healthy 10 years).
+Nevertheless CentOS was designed for stability so we can perhaps forgive them for this problem.
+However in 2024 we will stop trying to compensate CentOS and fortunately (for entering the IOCCC at least) CentOS 7 will reach its EOL then so this should not be a problem.
+.PP
+.SH EXAMPLES
+.PP
+.nf
+Running the script under CentOS 7 will result in:
+
+.RS
+\fB
+  $ ./have_timegm.sh 
+  -DTIMEGM_PROBLEM\fP
+.fi
+.RE
+.PP
+.nf
+Running the program under macOS and any other more recent OS:
+
+.RS
+\fB
+ $ ./have_timegm.sh
+ $\fP
+.fi
+.RE
+.SH SEE ALSO
+.PP
+\fBhave_timegm.c\fP

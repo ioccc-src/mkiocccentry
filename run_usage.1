@@ -1,6 +1,6 @@
 .TH run_usage 1 "5 September 2022" "run_usage" "IOCCC tools"
 .SH NAME
-run_usage \- run -h on a tool to extract usage information for making man pages
+run_usage \- run -h on a tool to extract usage information to help with checking man page \fBSYNOPSIS\fP \- tool usage consistency
 .SH SYNOPSIS
 \fBrun_usage.sh\fP [\-h] [\-m section] [\-M man file] tool
 .SH DESCRIPTION
@@ -24,58 +24,56 @@ Specify the man page filename.
 This is useful when the name of the tool does not match what the man page should be (for example \fBrun_usage.sh\fP has \fBrun_usage.1\fP and not \fBrun_usage.sh.1\fP).
 .SH EXIT STATUS
 .PP
-Exit codes:
-.RS
 .PP
-0 \- all okay
+0	    all okay
+.br
+1	    help string printed
+.br
+2	    tool missing or command used missing
+.br
+3	    man page missing
+.br
+4	    command line usage error
+.br
+5	    missing or inconsistent synopsis
+.br
+>=42	    some internal error occurred
+.SH NOTES
 .PP
-1 \- help string printed
+It has a \fBvery fixed\fP idea of what formatting is correct.
+As this can vary we don't try figuring it out.
+Fortunately the formatting of the \fBSYNOPSIS\fP in the man pages in the repo actually matches the script's idea of correct.
+In particular the tool was even used to generate the \fBSYNOPSIS\fP of this man page.
 .PP
-2 \- tool missing or command used missing
+If there's more than one usage string then the script only can detect the number of usage strings matched in the man page.
+In particular if at least one of the lines matches and there are the correct number of usages it will not report a problem because it checks for the number of matches via \fBgrep -c\fP and since it has a correct match it assumes that it's correct.
+This is a necessary hack because not all greps allow for line crossing and even if they did it could be broken by the order in the file (or tool).
+To fix this would complicate the script more and it's not worth it because we still will visually inspect the man pages.
 .PP
-3 \- man page missing
-.PP
-4 \- command line usage error
-.PP
-5 \- missing or inconsistent synopsis
-.PP
->= 42 \- some internal error occurred
-.RE
+In the case there's a mismatch all usages will be shown to the user.
+This is not really a bug but it's worth pointing out because seeing two lines does not mean that both need to be added.
+Also as noted it could be that the output is not even correct; it's expected that when editing the man page one is also visually inspecting (including running man on it) everything but as long as everything stays the way it is now it should work.
 .SH BUGS
 .PP
-.RS
-This is is not perfect.
-.RE
-.RS
+It's not perfect. In particular:
 .PP
-It's far from perfect.
-.RE
-.RS
+It's not perfect.
+See above if this is not clear!
 .PP
-It has a very fixed idea of what formatting should be.
-As this can vary we don't try figuring it out.
-However the tool was used to generate the \fBSYNOPSIS\fP in this man page.
-.RE
-.RS
+It requires a \fB\-h\fP option for the tool in question and that this option will prefix each syntax with \fBusage:\fP.
 .PP
 It does not have a quiet mode so that it only prints out what the format might be for \fBSYNOPSIS\fP.
 It does however not print anything if everything seems okay.
-.RE
-.RS
+This is a feature not a bug.
 .PP
-If there's more than one usage string then the script can incorrectly suggest that it's fine if only one exists.
-If none of them are in the file it will show all the usage strings that can be added.
-(This needs to be fixed but it can wait for another time.)
-.RE
-.RS
-.PP
-There are other limitations.
-Read the comments for more details.
-.RE
+There are other limitations as well!
+It's not meant to be perfect and it's not meant to replace the need for editing the man page manually.
+It can help determine that everything is correct assuming the usage string in the tool is correct (prefixed with \fBusage:\fP) and there's no silliness in the man page like the same usage more than once.
+Unfortunately changing the script so that it checks for each usage individually is not worth the effort.
 .SH EXAMPLES
 .PP
 .nf
-Determine if the \fBSYNOPSIS\fP in this file is \fIcorrect\fP (according to the script) based on the usage message of \fBrun_usage.sh\fP:
+Determine if the \fBSYNOPSIS\fP in this file is correct (according to the script) based on the usage message of \fBrun_usage.sh\fP:
 
 .RS
 \fB
