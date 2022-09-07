@@ -17,22 +17,18 @@ Set verbosity level.
 \fB\-V\fP
 Show version and exit.
 .SH EXIT STATUS
-\fB0\fP
-First version >= second version.
-.br
-\fB1\fP
-First version < second version.
-.br
-\fB2\fP
-First and/or second version is an invalid version string.
-.br
-\fB3\fP
-\fI\-h\fP and help string printed or \fI\-V\fP and version string printed.
-.br
-\fB4\fP
-Command line error.
 .PP
-Anything >= 5 is an internal error.
+0	First version >= second version.
+.br
+1	First version < second version.
+.br
+2	One or more invalid version strings.
+.br
+3	\fB\-h\fP and help string printed or \fB\-V\fP and version string printed.
+.br
+4	Command line error.
+.br
+>=5	Internal error.
 .SH BUGS
 .PP
 If you have an issue with the tool you can report it at \fI\<https://github.com/ioccc-src/mkiocccentry/issues\>\fP.
