@@ -16,9 +16,28 @@ Show help and exit.
 Set verbosity level.
 .SH EXIT STATUS
 .PP
-An exit code of 0 indicates success.
-.PP
-Any non-zero exit code indicates that one of the functions is missing or is incorrect.
+.br
+    0    timestamp updated
+.br
+    1    failed Phase 0 of verification
+.br
+    2    failed Phase 1 of verification
+.br
+    3    failed Phase 2 of verification
+.br
+    4    failed Phase 3 of verification
+.br
+    5    failed Phase 4 of verification
+.br
+    6    rpl failed to modify limit_ioccc.h
+.br
+    7    limit_ioccc.h not found or not readable and writable
+.br
+    8    -h and help string printed or -V and version string printed
+.br
+    9    Command line usage error
+.br
+    >=10  internal error
 .SH NOTES
 .PP
 While there is no bug in the tool we are aware of one issue.
