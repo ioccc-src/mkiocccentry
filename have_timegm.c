@@ -1,5 +1,5 @@
 /*
- * strptime - test strptime and timegm
+ * have_timegm - test strptime, timegm and strftime
  *
  * Copyright (c) 2022 by Landon Curt Noll.  All Rights Reserved.
  *
@@ -33,7 +33,7 @@
 #include <sys/errno.h>
 #include <string.h>
 
-#define MAX_TIMESTAMP_LEN (48)		/* 28 + 20 more padding for locate */
+#define MAX_TIMESTAMP_LEN (48)		/* 28 + 20 more padding for locale */
 #define FMT "%a %b %d %H:%M:%S %Y UTC"	/* timestamp string conversion format */
 
 static char *usage =
