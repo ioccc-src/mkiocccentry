@@ -1,4 +1,4 @@
-.TH txzchk 1 "4 September 2022" "txzchk" "IOCCC tools"
+.TH txzchk 1 "7 September 2022" "txzchk" "IOCCC tools"
 .SH NAME
 txzchk \- sanity checker tool used on IOCCC compressed tarballs
 .SH SYNOPSIS
@@ -48,14 +48,16 @@ This is used in conjunction with \fb\-T\fP above for \fBTESTING\fP purposes only
 Suppress error messages.
 .SH EXIT STATUS
 .PP
-An exit code of 0 indicates there are no feathers stuck in the tarball.
+.br
+    0	No feathers stuck in tarball. :-)
+.br
+    1	Tarball was successfully parsed :-) but there's at least one feather stuck in it. :-(
+.br
+    2	Usage string was printed either because \fB\-\fP was used or because of an invalid command line.
+.br
+    >2	An internal error has occurred or unknown tar listing format has been encountered.
 .PP
-An exit code of 1 indicates that the tarball was successfully parsed and there's at least one feather stuck in the tarball.
-.PP
-An exit code of 2 indicates that the usage string was printed either because \fB\-h\fP was specified or an invalid command line.
-.PP
-Any value > 2 indicates an internal error or an unknown tar listing format.
-Please report this if this happens (see \fBBUGS\fP section for where to report bugs).
+For exit code > 2 please report (see \fBBUGS\fP section for where to report bugs).
 .SH FILES
 \fItxzchk_test.sh\fP
 .RS
