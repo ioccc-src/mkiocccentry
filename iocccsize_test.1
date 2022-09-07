@@ -1,0 +1,36 @@
+.TH iocccsize_test 1 "2 September 2022" "iocccsize_test" "IOCCC tools"
+.SH NAME
+iocccsize_test \- test iocccsize tool
+.SH SYNOPSIS
+\fBiocccsize_test.sh\fP [\-h] [\-b] [\-v lvl] [\-V] [\-t tool]
+.SH DESCRIPTION
+\fBiocccsize_test\fP runs a series of tests on the \fBiocccsize(1)\fP tool, verifying that it is functioning properly.
+.SH OPTIONS
+.PP
+\fB\-h\fP
+Show help and exit.
+.PP
+\fB\-b\fP
+Runs \fBmake distclean all\fP instead of \fBmake all\fP prior to running the tool.
+.PP
+\fB\-v\fP
+Set verbosity level (def: 0).
+.PP
+\fB\-V\fP
+Print version and exit.
+.PP
+\fB\-t\fP
+Specify path to iocccsize tool.
+.SH EXIT STATUS
+.PP
+Exit codes:
+.br
+	0   all is OK
+.br
+	1   one or more test failed
+.br
+	2   usage message printed
+.br
+	3   tool version printed
+.SH SEE ALSO
+\fBiocccsize_test(1)\fP, \fBiocccsize(1)\fP.

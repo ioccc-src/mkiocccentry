@@ -249,7 +249,7 @@ SH_TARGETS=limit_ioccc.sh
 #     well if we directly referred to TARGETS.
 #
 MAN1_TARGETS= mkiocccentry txzchk fnamchk iocccsize chkentry jstrdecode jstrencode \
-	      verge jparse limit_ioccc utf8_test have_timegm
+	      verge jparse limit_ioccc utf8_test have_timegm iocccsize_test
 MAN3_TARGETS= dbg
 MAN8_TARGETS= reset_tstamp
 MAN_TARGETS= ${MAN1_TARGETS} ${MAN3_TARGETS} ${MAN8_TARGETS}
