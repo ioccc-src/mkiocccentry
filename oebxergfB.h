@@ -29,10 +29,11 @@
  *
  * "Because sometimes we all need a little craziness in our lives." :-)
  *
- * BTW: If you want to win the IOCCC every time all you need to do is decipher this quote
- * with a top secret hint from Landon to me in private. It's so secret in fact that I've
- * decided to not use it as it seems unfair. Nevertheless I give you, dear reader, the
- * chance to win always should you determine what this says:
+ * BTW: If you want to win the IOCCC every time all you need to do (supposedly :-) ),
+ * is decipher this quote with a top secret hint from Landon to me in private. It's so
+ * secret and seems so ridiculously simple in fact that I've decided to not use it as it
+ * seems more like a misleading comment and possibly a huge joke. Nevertheless I give you,
+ * dear reader, the chance to always win should you determine what this says:
  *
  *	Tm gfz qmo yfkin xuvj nm jznjk nxj amznjin uzd nxjz qmo coin ej ejnnjk
  *	nxuz nxj hmifzt jznkfji. In'i kjuhhq nxun ifcbhj. Yfd qmo kjuhhq jpbjan
