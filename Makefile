@@ -251,7 +251,7 @@ SH_TARGETS=limit_ioccc.sh
 MAN1_TARGETS= mkiocccentry txzchk fnamchk iocccsize chkentry jstrdecode jstrencode \
 	      verge jparse limit_ioccc utf8_test have_timegm
 MAN3_TARGETS= dbg
-MAN8_TARGETS=
+MAN8_TARGETS= reset_tstamp
 MAN_TARGETS= ${MAN1_TARGETS} ${MAN3_TARGETS} ${MAN8_TARGETS}
 HTML_MAN_TARGETS= $(patsubst %,%.html,$(MAN_TARGETS))
 # This is a simpler way to do:

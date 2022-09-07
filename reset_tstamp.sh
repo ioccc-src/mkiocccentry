@@ -2,15 +2,15 @@
 #
 # reset_tstamp.sh - reset the minimum timestamp: MIN_TIMESTAMP
 #
-# Only run this rule when you wish to invalidate all timestamps
+# Only run this script when you wish to invalidate all timestamps
 # prior to now, such as when you make a fundamental change to a
 # critical JSON format, or make a fundamental change the compressed
 # tarball file structure, or make a critical change to limit_ioccc.h
 # that is MORE restrictive.
 #
-# DO NOT run this rule simply for a new IOCCC!
+# DO NOT run this script simply for a new IOCCC!
 #
-# Yes, we make it very hard to run this rule for good reason.
+# Yes, we make it very hard to run this script for good reason.
 # Only IOCCC judges can perform ALL the steps needed to complete this action.
 #
 # Copyright (c) 2022 by Landon Curt Noll.  All Rights Reserved.
@@ -45,7 +45,7 @@ export USAGE="usage: $0 [-h] [-v level] [-V] [-l limit_ioccc.h]
     -h              print help and exit 8
     -v level        set debug level (def: 0)
     -V              print version and exit 8
-    -l limit_ioccc.h   version info file (def: ./limit_ioccc.h)
+    -l limit_ioccc.h   limit file (def: ./limit_ioccc.h)
 
 Exit codes:
     0    timestamp updated
@@ -149,16 +149,16 @@ fi
 # Phase 0 of verification
 #
 echo
-echo 'Yes, we make it very hard to run this rule for good reason.'
+echo 'Yes, we make it very hard to run this script for good reason.'
 echo 'Only IOCCC judges can perform the ALL the steps needed to complete this action.'
 echo
-echo 'WARNING: This rule will invalidate all timestamps prior to now.'
-echo 'WARNING: Only run this rule when you wish to invalidate all timestamps'
+echo 'WARNING: This script will invalidate all timestamps prior to now.'
+echo 'WARNING: Only run this script when you wish to invalidate all timestamps'
 echo 'WARNING: because you made a fundamental change to a critical JSON format,'
 echo 'WARNING: made a fundamental change to the compressed tarball file structure,'
 echo 'WARNING: or made a critical change to limit_ioccc.h that is MORE restrictive.'
 echo
-echo 'WARNING: DO NOT run this rule simply for a new IOCCC!'
+echo 'WARNING: DO NOT run this script simply for a new IOCCC!'
 echo
 echo 'WARNING: If you wish to do this, please enter the following phrase:'
 echo
