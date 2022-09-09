@@ -51,7 +51,7 @@ main(int argc, char *argv[])
     struct tm timeptr;			/* time string conversion */
     size_t strftime_ret;	        /* length of strftime() string without the trailing newline */
     time_t time_stamp;			/* broken-out time converted into a timestamp */
-    char *ptr = NULL;			/* ptr to 1st char in buf not converted */
+    char *ptr = NULL;			/* ptr to first char in buf not converted */
 
     /*
      * parse args

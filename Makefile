@@ -223,7 +223,9 @@ CFLAGS= ${C_STD} ${COPT} -pedantic ${D_LEGACY} ${WARN_FLAGS} ${LDFLAGS}
 
 # where and what to install
 #
-MANDIR = /usr/local/share/man/man1
+MAN1_DIR = /usr/local/share/man/man1
+MAN8_DIR = /usr/local/share/man/man8
+MAN3_DIR = /usr/local/share/man/man3
 DESTDIR= /usr/local/bin
 TARGETS= mkiocccentry iocccsize dbg fnamchk txzchk chkentry \
 	jstrencode jstrdecode utf8_test jparse verge jnum_chk jnum_gen \
@@ -249,9 +251,10 @@ SH_TARGETS=limit_ioccc.sh
 #     well if we directly referred to TARGETS.
 #
 MAN1_TARGETS= mkiocccentry txzchk fnamchk iocccsize chkentry jstrdecode jstrencode \
-	      verge jparse limit_ioccc utf8_test have_timegm iocccsize_test ioccc_test
+	      jparse
 MAN3_TARGETS= dbg
-MAN8_TARGETS= reset_tstamp
+MAN8_TARGETS= reset_tstamp verge limit_ioccc iocccsize_test ioccc_test run_usage utf8_test \
+	      have_timegm
 MAN_TARGETS= ${MAN1_TARGETS} ${MAN3_TARGETS} ${MAN8_TARGETS}
 HTML_MAN_TARGETS= $(patsubst %,%.html,$(MAN_TARGETS))
 # This is a simpler way to do:
@@ -1029,8 +1032,15 @@ clobber: clean prep_clobber
 distclean nuke: clobber
 
 install: all
+	# we have to first make sure the directories exist!
+	${INSTALL} -v -d -m 0755 ${DESTDIR}
+	${INSTALL} -v -d -m 0755 ${MAN1_DIR}
+	${INSTALL} -v -d -m 0755 ${MAN3_DIR}
+	${INSTALL} -v -d -m 0755 ${MAN8_DIR}
 	${INSTALL} -v -m 0555 ${TARGETS} ${SH_TARGETS} ${DESTDIR}
-	${INSTALL} -v -m 0644 ${MANPAGES} ${MANDIR} 2>/dev/null
+	${INSTALL} -v -m 0644 ${MAN1PAGES} ${MAN1_DIR}
+	${INSTALL} -v -m 0644 ${MAN3PAGES} ${MAN3_DIR}
+	${INSTALL} -v -m 0644 ${MAN8PAGES} ${MAN8_DIR}
 
 tags: ${ALL_CSRC} ${H_FILES}
 	-${CTAGS} ${ALL_CSRC} ${H_FILES} 2>&1 | \

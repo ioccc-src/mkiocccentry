@@ -3,7 +3,18 @@
 # hostchk.sh - make various checks on a host to determine if it can use the
 # mkiocccentry repo.
 #
-# NOTE: This is not perfect and it cannot account for everything.
+#
+# NOTE: This is NOT yet finished. More needs to be discussed at
+# https://github.com/ioccc-src/mkiocccentry/issues/250 (hostchk rule/script) and at
+# https://github.com/ioccc-src/mkiocccentry/issues/248 (make bug-report
+# rule/script).
+#
+# NOTE: This cannot be perfect and it cannot account for everything but along
+# with bug-report.sh (to be written) we hope to account for most things. One can
+# always report an issue at the GitHub issues page
+# https://github.com/ioccc-src/mkiocccentry/issues (probably preferable as
+# others can help as well) or email the Judges.
+#
 
 # set up
 #

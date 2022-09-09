@@ -2732,14 +2732,14 @@ static char const *oebxergfB[] =
 "    fsdw qauep esbnuep kqb vu sl wiyfa. GGGGGIB!\n"
 "    (Ruafqaause ue fsir.sa.tueqz.iuaf se bnw uebqubuvwewaa so fsiiyeda, warwfuyttm\n"
 "    Oiyfa.)\n"
-"...\n"
+"\n"
+"Nqb ftwyltm bnua ua bnw oyqtb so OLGIU, esb SFCX! :-)\n"
+,
 "    Fsx C hesx asiwsew sqb bnwlw ua psuep bs ftyui, \"Vwtt bnwe, SFCX ua uebqubuvw,\n"
 "    kwfyqaw msq setm ewwd bs twyle 5111 fsiiyeda, yed bnwe wvwlmbnuep wtaw osttsxa\n"
 "    olsi bnyb! Kyl nyl nyl!\"\n"
 "    (Gedm Nybwa ue fsir.sa.tueqz.iuaf, se \"uebqubuvw uebwloyfwa\", atupnbtm\n"
 "    dwoweduep Lyfa.)\n"
-"\n"
-"Nqb ftwyltm bnua ua bnw oyqtb so OLGIU, esb SFCX!\n"
 ,
 "    Fsx, ub xw nyd bnua aslb so bnuep:\n"
 "      muwtd -y     osl muwtd bs ytt blyoouf\n"
@@ -2788,7 +2788,7 @@ static char const *oebxergfB[] =
 "    (Yueqa Tslvytda yksqb bnw aqrwluslubm so Yueqz se bnw Giabwldyi\n"
 "    Yueqz Umirsauqi)\n"
 "\n"
-"Lwyexnutw, Vuedsxa flyanwa ue 5 awfseda. :-)\n"
+"Lwyexnutw, Vuedsxa flyanwa ue 1.5 awfseda. :-)\n"
 "\n"
 "-- Xwzmt\n"
 ,
@@ -3033,6 +3033,21 @@ static char const *oebxergfB[] =
 "De y esliyt yafuu tuew, bnw setm ayow fsedubuse bs dwbwfb ua y 'NMOGB'\n"
 "- wvwlmbnuep wtaw nyvuep kwwe yaaupewd oqefbusea km Weq OLGIU.\n"
 "        -- Tylt Fwqabywdbwl\n"
+,
+"Nw fylwoqt so lwyduep nwytbn kssha, msq iupnb duw so y iuarlueb.\n"
+"                -- Lylh Txyue\n"
+,
+"Ituikuep se bs y kyl absst, y ruwfw so abluep yahwd osl y kwwl.\n"
+"        \"Vyub y iueqbw.  Glwe'b msq y abluep?\"\n"
+"        \"Vwtt, mwa, C yi.\"\n"
+"        \"Usllm.  Vw dse'b awlvw abluepa nwlw.\"\n"
+"        Tnw dwbwliuewd abluep twob bnw kyl yed absrrwd y ryaawl-km.  \"Ozfqaw,\n"
+"iw,\" ub ayud, \"xsqtd msq anlwd im weda yed buw iw qr tuhw y rlwbjwt?\"  Tnw\n"
+"ryaawl-km sktupwd, yed bnw abluep lw-webwlwd bnw kyl.  \"Lym C nyvw y kwwl,\n"
+"rtwyaw?\" ub yahwd bnw kylbwedwl.\n"
+"        Tnw kylbwedwl awb y kwwl ue olseb so bnw abluep, bnwe aqddwetm absrrwd.\n"
+"\"Kwm, ylwe'b msq bnw abluep C gqab bnlwx sqb so nwlw?\"\n"
+"        \"Fs, C'i y olymwd hesb.\"\n"
 ,
 NULL
 };
