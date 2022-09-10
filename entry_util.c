@@ -1753,11 +1753,11 @@ form_tar_filename(char const *IOCCC_contest_id, int entry_num, bool test_mode,
     if ((time_t)-1 > 0) {
 	/* case: unsigned time_t */
 	ret = snprintf(tarball_filename, tarball_len + 1, "entry.%s-%d.%ju.txz",
-		       IOCCC_contest_id, entry_num, formed_timestamp);
+		       IOCCC_contest_id, entry_num, (uintmax_t)formed_timestamp);
     } else {
 	/* case: signed time_t */
 	ret = snprintf(tarball_filename, tarball_len + 1, "entry.%s-%d.%jd.txz",
-		       IOCCC_contest_id, entry_num, formed_timestamp);
+		       IOCCC_contest_id, entry_num, (intmax_t)formed_timestamp);
     }
     if (ret <= 0) {
 	warnp(__func__, "snprintf to form compressed tarball path failed");
