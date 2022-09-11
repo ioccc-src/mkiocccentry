@@ -3652,10 +3652,9 @@ find_text_str(char const *str, char **first)
 
 
 /*
- * sum_and_count - convert non-negative base 10 string, add to a sum, count the number of additions
+ * sum_and_count - add to a sum, count the number of additions
  *
- * Given a string containing only a non-negative base 10 integer, we will add to the converted
- * value to a sum and count it.
+ * Given an integer, we will add to the converted value to a sum and count it.
  *
  * Programmer's apology:
  *
@@ -3666,47 +3665,62 @@ find_text_str(char const *str, char **first)
  *
  * Example usage:
  *
+ *	... static values private to some .c file (outside of any function) ...
+ *
  *	static intmax_t sum_check;
  *	static intmax_t count_check;
  *
- *	...
+ *	... at start of function that is checking the total file sum and count ...
  *
  *	intmax_t sum = 0;
  *	intmax_t count = 0;
+ *	intmax_t length = 0;
+ *	bool test = false;
  *
- *	...
+ *	... loop the following over ALL files where length_str is the length of the current file ...
  *
- *	check = sum_and_count("123", &sum, &count, &sum_check, &count_check);
- *	if (check == false) {
- *	    ... object to being unable to sum and/or count ...
+ *	test = string_to_intmax2(length_str, &length);
+ *	if (test == false) {
+ *	    ... object to file length string not being a non-negative base 10 integer ...
  *	}
- *	if (sum < 0 || sum > MAX_ALLOWED_SUM) {
- *	    ... object to sum out of range ...
+ *
+ *	test = sum_and_count(length, &sum, &count, &sum_check, &count_check);
+ *	if (test == false) {
+ *	    ... object to internal/computational error ...
  *	}
- *	if (count <= 0 || count > MAX_ALLOWED_COUNT) {
- *	    ... object to count out of range ...
+ *	if (sum < 0) {
+ *	    ... object to negative total file length  ...
+ *	}
+ *	if (sum > MAX_SUM_FILELEN) {
+ *	    ... object to sum of all file lengths being too large ...
+ *	}
+ *	if (count <= 0) {
+ *	    ... object no or negative file count ...
+ *	}
+ *	if (count > MAX_FILE_COUNT) {
+ *	    ... object to too many files ...
  *	}
  *
  * given:
- *	str		    base 10 integer as string that is non-negative
+ *	value		    non-negative value to sum
  *	sump		    pointer to the sum
  *	countp		    pointer to the current count
  *	sum_checkp	    pointer to negative of previous sum (sound be a pointer to a static global value)
  *	count_checkp	    pointer to negative of previous count (sound be a pointer to a static global value)
  *
  * return:
- *	true ==> conversion of non-negative base 10 string successful, sum successful, count successful,
- *		 str as non-negative base 10 integer added to *sump, *countp incremented
- *	false ==> sum error occurred, str is not a non-negative base 10 integer, NULL pointer, internal error
+ *	true ==> sum successful, count successful,
+ *		 value added to *sump, *countp incremented
+ *	false ==> sum error occurred, value is not a non-negative integer, NULL pointer, internal error
  *
- * NOTE: Errors in computation result in a call to warn(), whereas invalid str values (such as non a base 10
- *	 integer or negative value) result in a call to dbg().  A false value is returned in either case.
+ * NOTE: Errors in computation result in a call to warn(), whereas a negative value will only call dbg().
+ *	 A false value is returned in either case.
  *
  * NOTE: The values *sum_checkp and *count_checkp are pointers to intmax_t values that are for
  *	 internal function use only.  It is recommended, but not required, that these point to global static values.
  */
 bool
-sum_and_count(char *str, intmax_t *sump, intmax_t *countp, intmax_t *sum_checkp, intmax_t *count_checkp)
+sum_and_count(intmax_t value, intmax_t *sump, intmax_t *countp, intmax_t *sum_checkp, intmax_t *count_checkp)
 {
     intmax_t sum = -1;		/* imported sum of valid byte lengths found so far */
     intmax_t count = 0;		/* imported count of the number of sums */
@@ -3716,17 +3730,11 @@ sum_and_count(char *str, intmax_t *sump, intmax_t *countp, intmax_t *sum_checkp,
     intmax_t inv_prev_count = ~ 0;	/* inverted previous count */
     intmax_t inv_sum = ~ -1;	/* inverted sum */
     intmax_t inv_count = ~ 0;	/* inverted count */
-    intmax_t value = -1;	/* str converted as a base 10 integer */
     intmax_t inv_value = ~ -1;	/* inverted value */
-    bool test = false;          /* true ==>  intmax_t conversion was successful */
 
     /*
      * firewall
      */
-    if (str == NULL) {
-	warn(__func__, "str is NULL");
-	return false;
-    }
     if (sump == NULL) {
 	warn(__func__, "sump is NULL");
 	return false;
@@ -3741,6 +3749,15 @@ sum_and_count(char *str, intmax_t *sump, intmax_t *countp, intmax_t *sum_checkp,
     }
     if (count_checkp == NULL) {
 	warn(__func__, "count_checkp is NULL");
+	return false;
+    }
+
+    /*
+     * check for invalid negative values
+     */
+    inv_value = ~value;
+    if (value < 0) {
+	dbg(DBG_MED, "sum_and_count value argument < 0");
 	return false;
     }
 
@@ -3796,24 +3813,6 @@ sum_and_count(char *str, intmax_t *sump, intmax_t *countp, intmax_t *sum_checkp,
     }
     if (count <= prev_count) {
 	warn(__func__, "incremented count is lower than previous count");
-	return false;
-    }
-
-    /*
-     * convert base 10 integer string
-     */
-    test = string_to_intmax2(str, &value);
-    if (test == false) {
-	dbg(DBG_MED, "string_to_intmax2 failed to convert str");
-	return false;
-    }
-    inv_value = ~value;
-
-    /*
-     * check for invalid negative values
-     */
-    if (value < 0) {
-	dbg(DBG_MED, "string_to_intmax2 converted str into a negative value");
 	return false;
     }
 
