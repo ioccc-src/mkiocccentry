@@ -1032,94 +1032,94 @@ object2author(struct json *node, unsigned int depth, struct json_sem *sem,
      *
      * For strings, we strdup() them.
      */
-    errno = 0;		/* pre-clear errno for warnp() */
+    errno = 0;		/* pre-clear errno for werrp_sem_val() */
     auth->name = strdup(auth_name);
     if (auth->name == NULL) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(109, node, depth, sem, __func__,
-				    "author array index[%d]: strdup of name failed", auth_num);
+	    *val_err = werrp_sem_val(109, node, depth, sem, __func__,
+				     "author array index[%d]: strdup of name failed", auth_num);
 	}
 	free_author_array(auth, 1);
 	return false;
     }
-    errno = 0;		/* pre-clear errno for warnp() */
+    errno = 0;		/* pre-clear errno for werrp_sem_val() */
     auth->location_code = strdup(location_code);
     if (auth->location_code == NULL) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(110, node, depth, sem, __func__,
-				    "author array index[%d]: strdup of location_code failed", auth_num);
+	    *val_err = werrp_sem_val(110, node, depth, sem, __func__,
+				     "author array index[%d]: strdup of location_code failed", auth_num);
 	}
 	free_author_array(auth, 1);
 	return false;
     }
-    errno = 0;		/* pre-clear errno for warnp() */
+    errno = 0;		/* pre-clear errno for werrp_sem_val() */
     auth->location_name = strdup(location_name);
     if (auth->location_name == NULL) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(111, node, depth, sem, __func__,
-				    "author array index[%d]: strdup of location_name failed", auth_num);
+	    *val_err = werrp_sem_val(111, node, depth, sem, __func__,
+				     "author array index[%d]: strdup of location_name failed", auth_num);
 	}
 	free_author_array(auth, 1);
 	return false;
     }
-    errno = 0;		/* pre-clear errno for warnp() */
+    errno = 0;		/* pre-clear errno for werrp_sem_val() */
     auth->email = strdup(email);
     if (auth->email == NULL) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(112, node, depth, sem, __func__,
-				    "author array index[%d]: strdup of email failed", auth_num);
+	    *val_err = werrp_sem_val(112, node, depth, sem, __func__,
+				     "author array index[%d]: strdup of email failed", auth_num);
 	}
 	free_author_array(auth, 1);
 	return false;
     }
-    errno = 0;		/* pre-clear errno for warnp() */
+    errno = 0;		/* pre-clear errno for werrp_sem_val() */
     auth->url = strdup(url);
     if (auth->url == NULL) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(113, node, depth, sem, __func__,
-				    "author array index[%d]: strdup of url failed", auth_num);
+	    *val_err = werrp_sem_val(113, node, depth, sem, __func__,
+				     "author array index[%d]: strdup of url failed", auth_num);
 	}
 	free_author_array(auth, 1);
 	return false;
     }
-    errno = 0;		/* pre-clear errno for warnp() */
+    errno = 0;		/* pre-clear errno for werrp_sem_val() */
     auth->twitter = strdup(twitter);
     if (auth->url == NULL) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(114, node, depth, sem, __func__,
-				    "author array index[%d]: strdup of twitter failed", auth_num);
+	    *val_err = werrp_sem_val(114, node, depth, sem, __func__,
+				     "author array index[%d]: strdup of twitter failed", auth_num);
 	}
 	free_author_array(auth, 1);
 	return false;
     }
-    errno = 0;		/* pre-clear errno for warnp() */
+    errno = 0;		/* pre-clear errno for werrp_sem_val() */
     auth->github = strdup(github);
     if (auth->url == NULL) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(115, node, depth, sem, __func__,
-				    "author array index[%d]: strdup of github failed", auth_num);
+	    *val_err = werrp_sem_val(115, node, depth, sem, __func__,
+				     "author array index[%d]: strdup of github failed", auth_num);
 	}
 	free_author_array(auth, 1);
 	return false;
     }
-    errno = 0;		/* pre-clear errno for warnp() */
+    errno = 0;		/* pre-clear errno for werrp_sem_val() */
     auth->affiliation = strdup(affiliation);
     if (auth->affiliation == NULL) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(116, node, depth, sem, __func__,
-				    "author array index[%d]: strdup of affiliation failed", auth_num);
+	    *val_err = werrp_sem_val(116, node, depth, sem, __func__,
+				     "author array index[%d]: strdup of affiliation failed", auth_num);
 	}
 	free_author_array(auth, 1);
 	return false;
     }
     auth->past_winner = past_winner;
     auth->default_handle = default_handle;
-    errno = 0;		/* pre-clear errno for warnp() */
+    errno = 0;		/* pre-clear errno for werrp_sem_val() */
     auth->author_handle = strdup(author_handle);
     if (auth->location_code == NULL) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(117, node, depth, sem, __func__,
-				    "author array index[%d]: strdup of author_handle failed", auth_num);
+	    *val_err = werrp_sem_val(117, node, depth, sem, __func__,
+				     "author array index[%d]: strdup of author_handle failed", auth_num);
 	}
 	free_author_array(auth, 1);
 	return false;
@@ -1738,7 +1738,7 @@ form_tar_filename(char const *IOCCC_contest_id, int entry_num, bool test_mode,
      * allocate space for tarball filename
      */
     tarball_len = LITLEN("entry.") + strlen(IOCCC_contest_id) + 1 + MAX_ENTRY_CHARS + LITLEN(".123456789012.txz") + 1;
-    errno = 0;			/* pre-clear errno for errp() */
+    errno = 0;			/* pre-clear errno for warnp() */
     tarball_filename = (char *)malloc(tarball_len + 1);
     if (tarball_filename == NULL) {
 	warnp(__func__, "malloc #1 of %ju bytes failed", (uintmax_t)(tarball_len + 1));
@@ -1749,7 +1749,7 @@ form_tar_filename(char const *IOCCC_contest_id, int entry_num, bool test_mode,
     /*
      * load tarball filename
      */
-    errno = 0;			/* pre-clear errno for errp() */
+    errno = 0;			/* pre-clear errno for warnp() */
     if ((time_t)-1 > 0) {
 	/* case: unsigned time_t */
 	ret = snprintf(tarball_filename, tarball_len + 1, "entry.%s-%d.%ju.txz",

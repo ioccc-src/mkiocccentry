@@ -2341,10 +2341,10 @@ string_to_intmax2(char const *str, intmax_t *ret)
     /*
      * perform the conversion
      */
-    errno = 0;
+    errno = 0;		/* pre-clear errno for warnp() */
     num = strtoimax(str, NULL, 10);
     if (errno != 0) {
-	warnp(__func__, "error converting string \"%s\" to intmax_t: %s", str, strerror(errno));
+	warnp(__func__, "error converting string <%s> to intmax_t", str);
 	return false;
     } else if (num <= INTMAX_MIN || num >= INTMAX_MAX) {
 	warn(__func__, "number %s out of range for intmax_t (must be > %jd && < %jd)", str, INTMAX_MIN, INTMAX_MAX);
@@ -3084,7 +3084,7 @@ clearerr_or_fclose(char const *filename, FILE *file)
     if (file == stdin)
 	clearerr(file);
     else {
-	errno = 0;
+	errno = 0;		/* pre-clear errno for warnp() */
 	ret = fclose(file);
 	if (ret != 0) {
 	    warnp(__func__, "error in fclose on file %s", filename);
@@ -3455,7 +3455,7 @@ fprint_line_buf(FILE *stream, void *buf, size_t len, int start, int end)
      * if we had an print error, report the last errno that was observed
      */
     if (delayed_errno != 0) {
-	warnp(__func__, "last write errno: %d (%s)", delayed_errno, strerror(delayed_errno));
+	warn(__func__, "last write errno: %d (%s)", delayed_errno, strerror(delayed_errno));
     }
 
     /*

@@ -607,6 +607,7 @@ main(int argc, char *argv[])
 	    }
 	    input_stream = stdin;
 	} else {
+	    errno = 0;		/* pre-clear errno for warnp() */
 	    ret = fprintf(answerp, "%s\n", MKIOCCCENTRY_ANSWERS_EOF);
 	    if (ret <= 0) {
 	        warnp(__func__, "fprintf error writing ANSWERS_EOF marker to the answers file");
@@ -614,6 +615,7 @@ main(int argc, char *argv[])
 	    }
 	}
 	if (answers != NULL) {
+	    errno = 0;		/* pre-clear errno for warnp() */
 	    ret = fclose(answerp);
 	    if (ret != 0) {
 	        warnp(__func__, "error in fclose to the answers file");

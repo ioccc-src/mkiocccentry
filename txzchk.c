@@ -1043,6 +1043,7 @@ parse_linux_txz_line(char *p, char *linep, char *line_dup, char const *dir_name,
 	return;
     }
 
+    errno = 0;		/* pre-clear errno for warnp() */
     if (!convert_file_size(&current_file_size, p)) {
 	warnp("txzchk", "%s: trying to parse file size in on line: <%s>: token: <%s>", txzpath, line_dup, p);
 	msg("skipping to next line");
@@ -1175,6 +1176,7 @@ parse_bsd_txz_line(char *p, char *linep, char *line_dup, char const *dir_name, c
 	return;
     }
 
+    errno = 0;		/* pre-clear errno for warnp() */
     if (!convert_file_size(&current_file_size, p)) {
 	warnp("txzchk", "%s: trying to parse file size in on line: <%s>: token: <%s>", txzpath, line_dup, p);
 	msg("skipping to next line");
@@ -1403,7 +1405,7 @@ check_tarball(char const *tar, char const *fnamchk)
 	/*
 	 * close down pipe
 	 */
-	errno = 0;		/* pre-clear errno for errp() */
+	errno = 0;		/* pre-clear errno for warnp() */
 	ret = pclose(fnamchk_stream);
 	if (ret < 0) {
 	    warnp(__func__, "%s: pclose error on fnamchk stream", txzpath);
@@ -1434,7 +1436,7 @@ check_tarball(char const *tar, char const *fnamchk)
 		 txzpath, (intmax_t)txz_info.size, (intmax_t)MAX_TARBALL_LEN);
 	not_reached();
     } else if (!quiet) {
-	errno = 0;
+	errno = 0;		/* pre-clear errno for warnp() */
 	ret = printf("txzchk: %s size of %jd bytes OK\n", txzpath, (intmax_t) txz_info.size);
 	if (ret <= 0)
 	    warnp("txzchk", "unable to tell user how big the tarball %s is", txzpath);
@@ -1449,7 +1451,7 @@ check_tarball(char const *tar, char const *fnamchk)
 	    errp(31, __func__, "fopen of %s failed", txzpath);
 	    not_reached();
 	}
-	errno = 0;
+	errno = 0;		/* pre-clear errno for warnp() */
 	ret = setvbuf(input_stream, (char *)NULL, _IOLBF, 0);
 	if (ret != 0)
 	    warnp(__func__, "setvbuf failed for %s", txzpath);
@@ -1508,7 +1510,7 @@ check_tarball(char const *tar, char const *fnamchk)
 	 * scan for embedded NUL bytes (before end of line)
 	 *
 	 */
-	errno = 0;			/* pre-clear errno for errp() */
+	errno = 0;		/* pre-clear errno for warnp() */
 	p = (char *)memchr(linep, 0, (size_t)readline_len);
 	if (p != NULL) {
 	    warnp("txzchk", "found NUL before end of line");
@@ -1525,7 +1527,7 @@ check_tarball(char const *tar, char const *fnamchk)
 	add_txz_line(linep, line_num);
 
 	if (text_file_flag_used) {
-	    errno = 0;
+	    errno = 0;		/* pre-clear errno for warnp() */
 	    ret = printf("%s\n", linep);
 	    if (ret <= 0)
 		warnp(__func__, "unable to printf line from text file");
@@ -1537,7 +1539,7 @@ check_tarball(char const *tar, char const *fnamchk)
     /*
      * close down pipe
      */
-    errno = 0;		/* pre-clear errno for errp() */
+    errno = 0;		/* pre-clear errno for warnp() */
     if (text_file_flag_used) {
 	ret = fclose(input_stream);
     } else {
