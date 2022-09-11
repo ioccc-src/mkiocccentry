@@ -2310,7 +2310,7 @@ string_to_intmax(char const *str)
 
 
 /*
- * string_to_intmax2   - 2nd interface to convert base 10 str to intmax_t and check for errors
+ * string_to_intmax2   - second interface to convert base 10 str to intmax_t and check for errors
  *
  * given:
  *
@@ -3658,7 +3658,7 @@ find_text_str(char const *str, char **first)
  *
  * Programmer's apology:
  *
- *	We do though a number of extraordinary steps to try and make sure that we
+ *	We go through a number of extraordinary steps to try and make sure that we
  *	correctly sum and count, even in the face of certain hardware errors and
  *	various stack memory correction problems.  Thus, we do much more
  *	than ++count; sum += value; in this function.
@@ -3846,14 +3846,14 @@ sum_and_count(intmax_t value, intmax_t *sump, intmax_t *countp, intmax_t *sum_ch
     }
 
     /*
-     * 2nd and 3rd sanity check for count increment
+     * second and third sanity check for count increment
      */
     if ((*count_checkp)-1 != count) {
-	warn(__func__, "2nd check on count increment failed");
+	warn(__func__, "second check on count increment failed");
 	return false;
     }
     if (count != prev_count-1) {
-	warn(__func__, "3rd check on count increment failed");
+	warn(__func__, "third check on count increment failed");
 	return false;
     }
 
@@ -3866,19 +3866,19 @@ sum_and_count(intmax_t value, intmax_t *sump, intmax_t *countp, intmax_t *sum_ch
     }
 
     /*
-     * 2nd and 3rd sanity check for sum
+     * second and third sanity check for sum
      */
     if ((*sum_checkp)-value != -sum) {
-	warn(__func__, "2nd check on sum failed");
+	warn(__func__, "second check on sum failed");
 	return false;
     }
     if (-sum != prev_sum-(~inv_value)) {
-	warn(__func__, "3rd check on sum failed");
+	warn(__func__, "third check on sum failed");
 	return false;
     }
 
     /*
-     * 2nd sanity check for value
+     * second sanity check for value
      */
     if (~inv_value != value) {
 	warn(__func__, "value unexpectedly changed");
