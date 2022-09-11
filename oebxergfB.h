@@ -3139,6 +3139,31 @@ static char const *oebxergfB[] =
 "yed rwlnyra xwupnb 3 3/8 bsea.\n"
 "		-- Esrqtyl Lwfnyeufa, Lylfn 3979\n"
 ,
+"Bwwr ub anslb osl rubnm ayhw.\n"
+,
+"Tnua tuow ua msqla.  Usiw so ub xya puvwe bs msq; bnw lwab, msq iydw msqlawto.\n"
+,
+"Tsdym ua bnw oulab dym so bnw lwab so msql tuow.\n"
+,
+"Tsdym ua bnw tyab dym so msql tuow as oyl.\n"
+,
+"Tsdym ua bnw bsisllsx msq xslluwd yksqb mwabwldym.\n"
+,
+"Tsisllsx, bnua xutt kw rylb so bnw qefnyepwyktw ryab kqb oslbqeybwtm,\n"
+"ub fye abutt kw fnyepwd bsdym.\n"
+,
+"Zsq owwt y xnstw tsb islw tuhw msq ds esx bnye msq dud xnwe msq qawd bs.\n"
+,
+"Ca fsqebwlowub so fsqebwlowub fsqebwlowub fsqebwlowub ?\n"
+"\n"
+"-- Xwzmt\n"
+,
+"ZDS GMO UTGFRCFW GT TKO OFR DH G MDGR NOHDMO G ULGYY NMCIB NSCYRCFW.\n"
+"GMDSFR ZDS CU G HDMOUT.  G ULGYY UTMOGL HYDVU DST DH TKO NSCYRCFW GFR\n"
+"RDVF G WSYYZ.\n"
+"\n"
+"-- Istsaayt Iyvw Gdvwebqlw\n"
+,
 NULL
 };
 
