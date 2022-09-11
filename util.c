@@ -2271,7 +2271,7 @@ string_to_unsigned_long_long(char const *str)
 
 
 /*
- * string_to_intmax   -	convert str to intmax_t and check for errors
+ * string_to_intmax   -	convert base 10 str to intmax_t and check for errors
  *
  * given:
  *
@@ -2306,6 +2306,56 @@ string_to_intmax(char const *str)
 	not_reached();
     }
     return num;
+}
+
+
+/*
+ * string_to_intmax2   - 2nd interface to convert base 10 str to intmax_t and check for errors
+ *
+ * given:
+ *
+ *	str	- the string to convert to an intmax_t
+ *	*ret	- pointer to converted intmax_t if return is true
+ *
+ * returns:
+ *	true ==> conversion into *ret was successful,
+ *	false ==> unable to convert / not a valid base 10 integer, NULL pointer or internal error
+ */
+bool
+string_to_intmax2(char const *str, intmax_t *ret)
+{
+    intmax_t num;
+
+    /*
+     * firewall
+     */
+    if (str == NULL) {
+	warn(__func__, "str is NULL");
+	return false;
+    }
+    if (ret == NULL) {
+	warn(__func__, "ret is NULL");
+	return false;
+    }
+
+    /*
+     * perform the conversion
+     */
+    errno = 0;
+    num = strtoimax(str, NULL, 10);
+    if (errno != 0) {
+	warnp(__func__, "error converting string \"%s\" to intmax_t: %s", str, strerror(errno));
+	return false;
+    } else if (num <= INTMAX_MIN || num >= INTMAX_MAX) {
+	warn(__func__, "number %s out of range for intmax_t (must be > %jd && < %jd)", str, INTMAX_MIN, INTMAX_MAX);
+	return false;
+    }
+
+    /*
+     * store conversion and report success
+     */
+    *ret = num;
+    return true;
 }
 
 
@@ -3598,4 +3648,276 @@ find_text_str(char const *str, char **first)
      * return the number of non-NUL non-whitespace bytes
      */
     return ret;
+}
+
+
+/*
+ * sum_and_count - convert non-negative base 10 string, add to a sum, count the number of additions
+ *
+ * Given a string containing only a non-negative base 10 integer, we will add to the converted
+ * value to a sum and count it.
+ *
+ * Programmer's apology:
+ *
+ *	We do though a number of extraordinary steps to try and make sure that we
+ *	correctly sum and count, even in the face of certain hardware errors and
+ *	various stack memory correction problems.  Thus, we do much more
+ *	than ++count; sum += value; in this function.
+ *
+ * Example usage:
+ *
+ *	static intmax_t sum_check;
+ *	static intmax_t count_check;
+ *
+ *	...
+ *
+ *	intmax_t sum = 0;
+ *	intmax_t count = 0;
+ *
+ *	...
+ *
+ *	check = sum_and_count("123", &sum, &count, &sum_check, &count_check);
+ *	if (check == false) {
+ *	    ... object to being unable to sum and/or count ...
+ *	}
+ *	if (sum < 0 || sum > MAX_ALLOWED_SUM) {
+ *	    ... object to sum out of range ...
+ *	}
+ *	if (count <= 0 || count > MAX_ALLOWED_COUNT) {
+ *	    ... object to count out of range ...
+ *	}
+ *
+ * given:
+ *	str		    base 10 integer as string that is non-negative
+ *	sump		    pointer to the sum
+ *	countp		    pointer to the current count
+ *	sum_checkp	    pointer to negative of previous sum (sound be a pointer to a static global value)
+ *	count_checkp	    pointer to negative of previous count (sound be a pointer to a static global value)
+ *
+ * return:
+ *	true ==> conversion of non-negative base 10 string successful, sum successful, count successful,
+ *		 str as non-negative base 10 integer added to *sump, *countp incremented
+ *	false ==> sum error occurred, str is not a non-negative base 10 integer, NULL pointer, internal error
+ *
+ * NOTE: Errors in computation result in a call to warn(), whereas invalid str values (such as non a base 10
+ *	 integer or negative value) result in a call to dbg().  A false value is returned in either case.
+ *
+ * NOTE: The values *sum_checkp and *count_checkp are pointers to intmax_t values that are for
+ *	 internal function use only.  It is recommended, but not required, that these point to global static values.
+ */
+bool
+sum_and_count(char *str, intmax_t *sump, intmax_t *countp, intmax_t *sum_checkp, intmax_t *count_checkp)
+{
+    intmax_t sum = -1;		/* imported sum of valid byte lengths found so far */
+    intmax_t count = 0;		/* imported count of the number of sums */
+    intmax_t prev_sum = -1;	/* previous value of sum / -1 is an invalid sum */
+    intmax_t prev_count = 0;	/* previous number of additions */
+    intmax_t inv_prev_sum = ~ -1;	/* inverted previous sum */
+    intmax_t inv_prev_count = ~ 0;	/* inverted previous count */
+    intmax_t inv_sum = ~ -1;	/* inverted sum */
+    intmax_t inv_count = ~ 0;	/* inverted count */
+    intmax_t value = -1;	/* str converted as a base 10 integer */
+    intmax_t inv_value = ~ -1;	/* inverted value */
+    bool test = false;          /* true ==>  intmax_t conversion was successful */
+
+    /*
+     * firewall
+     */
+    if (str == NULL) {
+	warn(__func__, "str is NULL");
+	return false;
+    }
+    if (sump == NULL) {
+	warn(__func__, "sump is NULL");
+	return false;
+    }
+    if (countp == NULL) {
+	warn(__func__, "countp is NULL");
+	return false;
+    }
+    if (sum_checkp == NULL) {
+	warn(__func__, "sum_checkp is NULL");
+	return false;
+    }
+    if (count_checkp == NULL) {
+	warn(__func__, "count_checkp is NULL");
+	return false;
+    }
+
+    /*
+     * import count and sum
+     */
+    sum = *sump;
+    count = *countp;
+    inv_sum = ~sum;
+    inv_count = ~count;
+
+    /*
+     * save previous values of counts and sum in various ways
+     */
+    prev_sum = sum;
+    prev_count = count;
+    inv_prev_sum = ~sum;
+    *sum_checkp = -(*sump);
+    inv_prev_count = ~count;
+    *count_checkp = -(*countp);
+    if (~inv_sum != *sump) {
+	warn(__func__, "imported inverted sum changed");
+	return false;
+    }
+    if (*sump != sum) {
+	warn(__func__, "imported sum changed");
+	return false;
+    }
+    if (~inv_count != *countp) {
+	warn(__func__, "imported inverted count changed");
+	return false;
+    }
+    if (*countp != count) {
+	warn(__func__, "imported count changed");
+	return false;
+    }
+    if (*sum_checkp != -sum) {
+	warn(__func__, "sum negation changed");
+	return false;
+    }
+    if (*count_checkp != -count) {
+	warn(__func__, "count negation changed");
+	return false;
+    }
+
+    /*
+     * paranoid count increment
+     */
+    ++count;
+    if (count <= 0) {
+	warn(__func__, "incremented count went negative");
+	return false;
+    }
+    if (count <= prev_count) {
+	warn(__func__, "incremented count is lower than previous count");
+	return false;
+    }
+
+    /*
+     * convert base 10 integer string
+     */
+    test = string_to_intmax2(str, &value);
+    if (test == false) {
+	dbg(DBG_MED, "string_to_intmax2 failed to convert str");
+	return false;
+    }
+    inv_value = ~value;
+
+    /*
+     * check for invalid negative values
+     */
+    if (value < 0) {
+	dbg(DBG_MED, "string_to_intmax2 converted str into a negative value");
+	return false;
+    }
+
+    /*
+     * attempt the sum
+     */
+    sum += value;
+
+    /*
+     * more paranoia: sum cannot be negative
+     */
+    if (sum < 0) {
+	warn(__func__, "sum went negative");
+	return false;
+    }
+
+    /*
+     * more paranoia: sum cannot be < previous sum
+     */
+    if (sum < prev_sum) {
+	warn(__func__, "sum < previous sum");
+	return false;
+    }
+
+    /*
+     * try to verify a consistent previous sum
+     */
+    if (prev_sum != ~inv_prev_sum || -prev_sum != *sum_checkp) {
+	warn(__func__, "unexpected change to the previous sum");
+	return false;
+    }
+
+    /*
+     * 2nd and 3rd sanity check for count increment
+     */
+    if ((*count_checkp)-1 != count) {
+	warn(__func__, "2nd check on count increment failed");
+	return false;
+    }
+    if (count != prev_count-1) {
+	warn(__func__, "3rd check on count increment failed");
+	return false;
+    }
+
+    /*
+     * try to verify a consistent previous count
+     */
+    if (-prev_count != *count_checkp || prev_count != ~inv_prev_count) {
+	warn(__func__, "unexpected change to the previous count");
+	return false;
+    }
+
+    /*
+     * 2nd and 3rd sanity check for sum
+     */
+    if ((*sum_checkp)-value != -sum) {
+	warn(__func__, "2nd check on sum failed");
+	return false;
+    }
+    if (-sum != prev_sum-(~inv_value)) {
+	warn(__func__, "3rd check on sum failed");
+	return false;
+    }
+
+    /*
+     * 2nd sanity check for value
+     */
+    if (~inv_value != value) {
+	warn(__func__, "value unexpectedly changed");
+	return false;
+    }
+
+    /*
+     * final checks in counts and values
+     */
+    if (*countp != ~inv_count) {
+	warn(__func__, "final check on imported inverted count changed");
+	return false;
+    }
+    if (*sump != ~inv_sum) {
+	warn(__func__, "final check on imported inverted sum changed");
+	return false;
+    }
+    if (count < 0) {
+	warn(__func__, "final check: count is negative");
+	return false;
+    }
+    if (count == 0) {
+	warn(__func__, "final check: count is 0");
+	return false;
+    }
+    if (sum < 0) {
+	warn(__func__, "final check: sum is negative");
+	return false;
+    }
+
+    /*
+     * update sum and count
+     */
+    *sump = sum;
+    *countp = count;
+
+    /*
+     * report sum and count success
+     */
+    return true;
 }

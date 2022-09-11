@@ -203,6 +203,7 @@ extern char const *strnull(char const * const str);
 extern long string_to_long(char const *str);
 extern long long string_to_long_long(char const *str);
 extern intmax_t string_to_intmax(char const *str);
+extern bool string_to_intmax2(char const *str, intmax_t *ret);
 extern int string_to_int(char const *str);
 extern unsigned long string_to_unsigned_long(char const *str);
 extern unsigned long long string_to_unsigned_long_long(char const *str);
@@ -223,5 +224,8 @@ extern ssize_t fprint_line_str(FILE *stream, char *str, size_t *retlen, int star
 /* find non-whitespace text */
 extern size_t find_text(char const *ptr, size_t len, char **first);
 extern size_t find_text_str(char const *str, char **first);
+
+/* other utility functions */
+extern bool sum_and_count(char *str, intmax_t *sump, intmax_t *countp, intmax_t *sum_checkp, intmax_t *count_checkp);
 
 #endif				/* INCLUDE_UTIL_H */
