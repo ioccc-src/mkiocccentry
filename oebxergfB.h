@@ -49,6 +49,11 @@
 
 #if !defined(OEBXERGFB_H)
 #    define OEBXERGFB_H
+#define undefined defined /* undefined is defined :-) */
+#undef behaviour /* undefined behaviour :-) */
+#define behaviour undefined /* undefined defined behaviour :-) */
+#if defined(undefined) /* if undefined is defined is it actually undefined ? */
+#undef behaviour /* if behaviour that's undefined is undefined is it still undefined ? :-)*/
 
 static char const *oebxergfB[] =
 {
@@ -3084,7 +3089,7 @@ static char const *oebxergfB[] =
 "Cttuesua. Do fsqlaw sew iupnb ylpqw bnyb uo msq'lw esb qauep y abwwluep xnwwt\n"
 "msq iupnb ya xwtt gqab kw y ryaawepwl as msq'lw esb dluvuep yemxym.\n"
 ,
-"SFskoqafybwd Ewlt Isdw Isebwab\n"
+"Seskoqafybwd Ewlt Isdw Isebwab\n"
 "\n"
 "Tnw Ewlt Wyjwbbw nya yeesqefwd bnw xueewla ue bnw Hulab Geeqyt Seskoqafybwd\n"
 "Ewlt Isdw Isebwab. Hulab rtyfw xweb bs Odxue Hqttwl, xns aqkiubbwd bnua\n"
@@ -3134,7 +3139,38 @@ static char const *oebxergfB[] =
 "yed rwlnyra xwupnb 3 3/8 bsea.\n"
 "		-- Esrqtyl Lwfnyeufa, Lylfn 3979\n"
 ,
+"Bwwr ub anslb osl rubnm ayhw.\n"
+,
+"Tnua tuow ua msqla.  Usiw so ub xya puvwe bs msq; bnw lwab, msq iydw msqlawto.\n"
+,
+"Tsdym ua bnw oulab dym so bnw lwab so msql tuow.\n"
+,
+"Tsdym ua bnw tyab dym so msql tuow as oyl.\n"
+,
+"Tsdym ua bnw bsisllsx msq xslluwd yksqb mwabwldym.\n"
+,
+"Tsisllsx, bnua xutt kw rylb so bnw qefnyepwyktw ryab kqb oslbqeybwtm,\n"
+"ub fye abutt kw fnyepwd bsdym.\n"
+,
+"Zsq owwt y xnstw tsb islw tuhw msq ds esx bnye msq dud xnwe msq qawd bs.\n"
+,
+"Ca fsqebwlowub so fsqebwlowub fsqebwlowub fsqebwlowub ?\n"
+"\n"
+"-- Xwzmt\n"
+,
+"ZDS GMO UTGFRCFW GT TKO OFR DH G MDGR NOHDMO G ULGYY NMCIB NSCYRCFW.\n"
+"GMDSFR ZDS CU G HDMOUT.  G ULGYY UTMOGL HYDVU DST DH TKO NSCYRCFW GFR\n"
+"RDVF G WSYYZ.\n"
+"\n"
+"-- Istsaayt Iyvw Gdvwebqlw\n"
+,
 NULL
 };
 
 #endif
+#endif
+/*
+ * This is the third to last line of comments.
+ * The next line is the bottom line of comments.
+ * The funny thing about bottom lines is they're usually literally the bottom line (just like this one :-) ).
+ */
