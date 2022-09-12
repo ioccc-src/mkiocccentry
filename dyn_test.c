@@ -54,7 +54,7 @@ int
 main(int argc, char *argv[])
 {
     char const *program = NULL;	/* our name */
-    struct dyn_array *array;	/* dynatic array to test */
+    struct dyn_array *array;	/* dynamic array to test */
     double d;			/* test double */
     bool err = false;		/* true ==> test error found */
     bool moved = false;		/* true ==> array op moved data */
