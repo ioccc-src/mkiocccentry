@@ -1,0 +1,71 @@
+.TH txzchk_test 8 "12 September 2022" "txzchk_test" "IOCCC tools"
+.SH NAME
+txzchk_test \- test suite for \fBtxzchk(1)\fP
+.SH SYNOPSIS
+\fBtxzchk_test.sh\fP [\-h] [\-v level] [\-D dbg_level] [\-t txzchk] [\-T tar] [\-F fnamchk] [\-d txzchk_tree]
+.SH DESCRIPTION
+\fBtxzchk_test.sh\fP runs \fBtxzchk\fP in text file mode on pseudo-tar listings to make sure that bad tarballs are flagged with issues and good tarballs are not.
+.SH OPTIONS
+.PP
+\fB\-h\fP
+Show help and exit.
+.PP
+\fB\-v\fP
+Set verbosity level (def: 0).
+.PP
+\fB\-D\fP
+Set debug level (def: 0).
+.PP
+\fB\-t\fP
+Specify path to \fBtxzchk\fP.
+.PP
+\fB\-T\fP
+Specify path to \fBtar\fP.
+.PP
+\fB\-F\fP
+Specify path to \fBfnamchk\fP, which \fBtxzchk\fP uses to test if the tarball is validly named and if the files listed are in the correct directory.
+.PP
+\fB\-d\fP
+Specify path to the directory with the expected subdirectories \fIgood\fP and \fIbad\fP, each containing text files of good and bad pseudo-tarballs.
+.SH EXIT STATUS
+.PP
+Exit codes:
+.br
+    0 - all is well
+.br
+    1 - at least one test failed
+.br
+    2 - help mode exit
+.br
+    3 - invalid command line
+.br
+    >= 4 - internal error
+.SH FILES
+\fItest_txzchk\fP
+.RS
+Default directory of good and bad subdirectories each respectively with good and bad pseudo-tarballs.
+.RE
+\fItxzchk_test.log\fP
+.RS
+The log file kept by \fBtxzchk_test.sh\fP.
+It will be removed prior to each time the script is run to keep the state of the file consistent with the run.
+.RE
+.SH NOTES
+.PP
+\fBtxzchk\fP was written by Cody Boone Ferguson after discussion with Landon Curt Noll (one of the IOCCC Judges) in support of IOCCCMOCK, IOCCC28 and beyond.
+In order to test different tarballs and tar listing formats Cody added the text file mode early on to help in development.
+That fact coupled with the fact there is the need to test that the tool works properly is what inspired him to create this script.
+.PP
+This script is incomplete.
+See \fBBUGS\fP for more details.
+.PP
+The script \fBioccc_test.sh\fP will run this script.
+.SH BUGS
+.PP
+This script can be misleading because it shows clearly invalid tarballs but the tests still pass.
+This is because the script is expecting \fBtxzchk\fP to fail and if it does then it is okay.
+.PP
+It does not yet have the ability to test what failed to see if it matches the expected failure.
+This was discussed but I have not had the time and energy to put it in yet.
+.SH SEE ALSO
+\fBtxzchk(1)\fP, \fBfnamchk(1)\fP.

@@ -5,7 +5,7 @@
 # setup
 #
 export CHK_TEST_FILE="./json_teststr.txt"
-export USAGE="usage: $0 [-h] [-v level] [-D dbg_level.sh] [-J level] [-q] [-p jparse] [-d] [file ..]
+export USAGE="usage: $0 [-h] [-v level] [-D dbg_level] [-J level] [-q] [-p jparse] [file ..]
 
     -h			print help and exit 2
     -v level		set verbosity level for this script: (def level: 0)
