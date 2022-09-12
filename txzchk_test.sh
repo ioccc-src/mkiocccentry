@@ -35,8 +35,7 @@ if [[ -z "$TAR" ]]; then
     TAR="/usr/bin/tar"
 fi
 
-export USAGE="usage: $0 [-h] [-v level] [-D dbg_level] [-t txzchk] [-T tar]
-		     [-F fnamchk] [-d txzchk_tree]
+export USAGE="usage: $0 [-h] [-v level] [-D dbg_level] [-t txzchk] [-T tar] [-F fnamchk] [-d txzchk_tree]
 
     -h			    print help and exit 2
     -v level		    set verbosity level for this script: (def level: 0)

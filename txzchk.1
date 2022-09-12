@@ -1,4 +1,4 @@
-.TH txzchk 1 "7 September 2022" "txzchk" "IOCCC tools"
+.TH txzchk 1 "12 September 2022" "txzchk" "IOCCC tools"
 .SH NAME
 txzchk \- sanity checker tool used on IOCCC compressed tarballs
 .SH SYNOPSIS
@@ -58,19 +58,6 @@ Suppress error messages.
     >2	An internal error has occurred or unknown tar listing format has been encountered.
 .PP
 For exit code > 2 please report (see \fBBUGS\fP section for where to report bugs).
-.SH FILES
-\fItxzchk_test.sh\fP
-.RS
-Script that tests \fBtxzchk\fP with the files under \fItest_txzchk/bad\fP and \fItest_txzchk/good\fP.
-.RE
-\fItest_txzchk/bad\fP
-.RS
-Text files that must fail \fBtxzchk\fP when checked via the \fBtxzchk_test.sh\fP script.
-.RE
-\fItest_txzchk/good\fP
-.RS
-Text files that must pass \fBtxzchk\fP when checked via the \fBtxzchk_test.sh\fP script.
-.RE
 .SH NOTES
 .PP
 This tool was written by Cody Boone Ferguson for the \fBIOCCC Judges\fP in early 2022 for the \fBIOCCCMOCK\fP, \fBIOCCC28\fP and all future \fBIOCCC\fP competitions after discussing the requirements with \fBLandon Curt Noll\fP, one of the IOCCC Judges.
@@ -115,7 +102,7 @@ Run the program on the file \fIentry.test-1.1644094311.txt\fP, specifying that i
 .RE
 .SH SEE ALSO
 .PP
-The IOCCC tools \fBtxzchk(1)\fP, \fBfnamchk(1)\fP and \fBmkiocccentry(1)\fP.
+The IOCCC tools \fBtxzchk(1)\fP, the test suite \fBtxzchk_test(8)\fP, \fBfnamchk(1)\fP and \fBmkiocccentry(1)\fP.
 .br
 The tarry \fBtar(1)\fP command itself.
 .br
