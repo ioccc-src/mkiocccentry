@@ -2,23 +2,22 @@
 #
 # reset_tstamp.sh - reset the minimum timestamp: MIN_TIMESTAMP
 #
-# Only run this script when you wish to invalidate all timestamps
-# prior to now, such as when you make a fundamental change to a
-# critical JSON format, or make a fundamental change the compressed
-# tarball file structure, or make a critical change to limit_ioccc.h
-# that is MORE restrictive.
+# Only run this script when you wish to invalidate all timestamps prior to now,
+# such as when you make a fundamental change to a critical JSON format, or make
+# a fundamental change to the compressed tarball file structure, or make a
+# critical change to limit_ioccc.h that is MORE restrictive.
 #
 # DO NOT run this script simply for a new IOCCC!
 #
-# Yes, we make it very hard to run this script for good reason.
-# Only IOCCC judges can perform ALL the steps needed to complete this action.
+# Yes, we make it very hard to run this script for good reason.  Only IOCCC
+# judges can perform ALL the steps needed to complete this action.
 #
 # Copyright (c) 2022 by Landon Curt Noll.  All Rights Reserved.
 #
-# Permission to use, copy, modify, and distribute this software and
-# its documentation for any purpose and without fee is hereby granted,
-# provided that the above copyright, this permission notice and text
-# this comment, and the disclaimer below appear in all of the following:
+# Permission to use, copy, modify, and distribute this software and its
+# documentation for any purpose and without fee is hereby granted, provided that
+# the above copyright, this permission notice and text this comment, and the
+# disclaimer below appear in all of the following:
 #
 #       supporting documentation
 #       source copies
