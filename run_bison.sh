@@ -40,7 +40,6 @@ export USAGE="usage: $0 [-h] [-v level] [-V] [-o] [-b bison] [-l limit_ioccc.sh]
     -l limit.sh	    version info file (def: ./limit_ioccc.sh)
     -g verge	    path to verge tool (def: ./verge)
     -p prefix	    the prefix of files to be used (def: jparse)
-			NOTE: If the final arg is bison:
 			NOTE: The bison input file will be prefix.y
 			NOTE: If bison cannot be used, these backup
 			NOTE: files are used:
@@ -54,7 +53,7 @@ export USAGE="usage: $0 [-h] [-v level] [-V] [-o] [-b bison] [-l limit_ioccc.sh]
 			NOTE: If dir is missing or not searchable, dir is ignored.
 			NOTE: This is ignored if the final arg is NOT bison.
     --		    end of $0 flags
-    bison_flags    optional flags to give to bison for the prefix.y argument
+    bison_flags    optional flags to give to bison before the prefix.y argument
 
 Exit codes:
     0    bison output files formed or backup files used instead
