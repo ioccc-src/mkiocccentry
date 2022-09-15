@@ -33,7 +33,7 @@ export EXIT_CODE=0
 
 # parse args
 #
-while getopts :hv:D:J:qp: flag; do
+while getopts :hv:D:J:qj: flag; do
     case "$flag" in
     h) echo "$USAGE" 1>&2
        exit 2
