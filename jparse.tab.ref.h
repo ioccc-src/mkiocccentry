@@ -30,7 +30,7 @@
  * impaired. Nevertheless, we still recommend you to eschew modifying the code
  * below.
  *
- * BTW: If you don't agree with us that it's sorry that we want to point out that it
+ * BTW: If you don't agree with us that it's sorry we want to point out that it
  * even admits it and we ask you why it would call itself sorry if it's not. :-)
  *
  * Thanks in advance for your understanding, and sorry (tm Canada :-)).

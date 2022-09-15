@@ -2,7 +2,7 @@
 .SH NAME
 jparse_test \- test jparse on one or more files with one or more one-line JSON blobs
 .SH SYNOPSIS
-\fBjparse_test.sh\fP [\-h] [\-v level] [\-D dbg_level] [\-J level] [\-q] [\-p jparse] [file ..]
+\fBjparse_test.sh\fP [\-h] [\-v level] [\-D dbg_level] [\-J level] [\-q] [\-j jparse] [file ..]
 .SH DESCRIPTION
 \fBjparse_test\fP tests each line in each file for valid JSON.
 The file name \fI\-\fP means read from stdin.
@@ -25,7 +25,7 @@ Set JSON verbosity level.
 Set quiet mode.
 This will be passed to the JSON parser.
 .PP
-\fB\-p\fP
+\fB\-j\fP
 Specify path to jparse.
 .PP
 \fB\-V\fP

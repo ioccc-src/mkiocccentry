@@ -40,8 +40,7 @@ export USAGE="usage: $0 [-h] [-v level] [-V] [-o] [-f flex] [-l limit_ioccc.sh]
     -l limit.sh	    version info file (def: ./limit_ioccc.sh)
     -g verge	    path to verge tool (def: ./verge)
     -p prefix	    The prefix of files to be used (def: jparse)
-			NOTE: If the final arg is flex:
-			NOTE: The flex input file will be prefix.y
+			NOTE: The flex input file will be prefix.l
 			NOTE: If flex cannot be used, these backup
 			NOTE: files are used:
 			NOTE:
@@ -54,7 +53,7 @@ export USAGE="usage: $0 [-h] [-v level] [-V] [-o] [-f flex] [-l limit_ioccc.sh]
 			NOTE: If dir is missing or not searchable, dir is ignored.
 			NOTE: This is ignored if the final arg is NOT flex.
     --		    End of $0 flags
-    flex_flags      optional flags to give to flex for the prefix.y argument
+    flex_flags      optional flags to give to flex before the prefix.l argument
 
 Exit codes:
     0    flex output files formed or backup files used instead
@@ -128,9 +127,9 @@ fi
 shift $(( OPTIND - 1 ));
 if [[ $V_FLAG -ge 1 ]]; then
     if [[ $# -gt 0 ]]; then
-	echo "$0: debug[1]: args to pass to flex before $PREFIX.y: $*" 1>&2
+	echo "$0: debug[1]: args to pass to flex before $PREFIX.l: $*" 1>&2
     else
-	echo "$0: debug[1]: pass no args to flex before $PREFIX.y" 1>&2
+	echo "$0: debug[1]: pass no args to flex before $PREFIX.l" 1>&2
     fi
 fi
 

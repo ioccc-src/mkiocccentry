@@ -5,7 +5,7 @@
 # setup
 #
 export CHK_TEST_FILE="./json_teststr.txt"
-export USAGE="usage: $0 [-h] [-v level] [-D dbg_level] [-J level] [-q] [-p jparse] [file ..]
+export USAGE="usage: $0 [-h] [-v level] [-D dbg_level] [-J level] [-q] [-j jparse] [file ..]
 
     -h			print help and exit 2
     -v level		set verbosity level for this script: (def level: 0)
@@ -46,7 +46,7 @@ while getopts :hv:D:J:qp: flag; do
 	;;
     q) Q_FLAG="-q";
 	;;
-    p) JPARSE="$OPTARG";
+    j) JPARSE="$OPTARG";
 	;;
     \?) echo "$0: ERROR: invalid option: -$OPTARG" 1>&2
 	exit 3
