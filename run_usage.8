@@ -1,4 +1,4 @@
-.TH run_usage 8 "12 September 2022" "run_usage" "IOCCC tools"
+.TH run_usage 8 "16 September 2022" "run_usage" "IOCCC tools"
 .SH NAME
 run_usage \- run -h on a tool to extract usage information to help with checking man page \fBSYNOPSIS\fP \- tool usage consistency
 .SH SYNOPSIS
@@ -61,6 +61,7 @@ It's not perfect.
 See above if this is not clear!
 .PP
 It requires a \fB\-h\fP option for the tool in question and that this option will prefix each syntax with \fBusage:\fP.
+If the usage spans more than one line it will not pick up on the full usage.
 .PP
 It does not have a quiet mode so that it only prints out what the format might be for \fBSYNOPSIS\fP.
 It does however not print anything if everything seems okay.
