@@ -3705,8 +3705,8 @@ find_text_str(char const *str, char **first)
  *	value		    non-negative value to sum
  *	sump		    pointer to the sum
  *	countp		    pointer to the current count
- *	sum_checkp	    pointer to negative of previous sum (sound be a pointer to a static global value)
- *	count_checkp	    pointer to negative of previous count (sound be a pointer to a static global value)
+ *	sum_checkp	    pointer to negative of previous sum (should be a pointer to a static global value)
+ *	count_checkp	    pointer to negative of previous count (should be a pointer to a static global value)
  *
  * return:
  *	true ==> sum successful, count successful,
