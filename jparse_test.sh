@@ -12,7 +12,7 @@ export USAGE="usage: $0 [-h] [-v level] [-D dbg_level] [-J level] [-q] [-j jpars
     -D dbg_level	set verbosity level for tests (def: level: 0)
     -J level		set JSON parser verbosity level (def level: 0)
     -q			quiet mode: silence msg(), warn(), warnp() if -v 0 (def: not quiet)
-    -p /path/to/jparse	path to jparse tool (def: ./jparse)
+    -j /path/to/jparse	path to jparse tool (def: ./jparse)
 
     [file ...]		read JSON documents, one per line, from these files (def: $CHK_TEST_FILE)
 			NOTE: - means read from stdin.
@@ -33,7 +33,7 @@ export EXIT_CODE=0
 
 # parse args
 #
-while getopts :hv:D:J:qp: flag; do
+while getopts :hv:D:J:qj: flag; do
     case "$flag" in
     h) echo "$USAGE" 1>&2
        exit 2
