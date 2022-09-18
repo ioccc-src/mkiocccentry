@@ -44,8 +44,6 @@ static struct json_sem_val_err sem_null_ptr = {
     NULL,	/* JSON parse node in question or NULL */
     UINT_MAX,	/* JSON parse tree node depth or UINT_MAX */
     NULL,	/* semantic node in question or NULL */
-    INT_MAX,	/* validate function specific error code */
-		/* INT_MAX ==> static error, 0 ==> not an error */
     "NULL pointer given to werr_sem_val",	/* diagnostic message or NULL */
     false	/* true ==> struct json_sem_val_err was malloced */
 		/* false ==> this is a static struct json_sem_val_err */
@@ -55,8 +53,6 @@ static struct json_sem_val_err sem_calloc_err = {
     NULL,	/* JSON parse node in question or NULL */
     UINT_MAX,	/* JSON parse tree node depth or UINT_MAX */
     NULL,	/* semantic node in question or NULL */
-    INT_MAX,	/* validate function specific error code */
-		/* INT_MAX ==> static error, 0 ==> not an error */
     "calloc failure",	/* diagnostic message or NULL */
     false	/* true ==> struct json_sem_val_err was malloced */
 		/* false ==> this is a static struct json_sem_val_err */
@@ -66,12 +62,25 @@ static struct json_sem_val_err sem_strdup_err = {
     NULL,	/* JSON parse node in question or NULL */
     UINT_MAX,	/* JSON parse tree node depth or UINT_MAX */
     NULL,	/* semantic node in question or NULL */
-    INT_MAX,	/* validate function specific error code */
-		/* INT_MAX ==> static error, 0 ==> not an error */
     "strdup failure",	/* diagnostic message or NULL */
     false	/* true ==> struct json_sem_val_err was malloced */
 		/* false ==> this is a static struct json_sem_val_err */
 };
+/* validation failure w/o json_sem_val_err */
+static struct json_sem_val_err sem_val_err_NULL = {
+    NULL,	/* JSON parse node in question or NULL */
+    UINT_MAX,	/* JSON parse tree node depth or UINT_MAX */
+    NULL,	/* semantic node in question or NULL */
+    "validation failed yet json_sem_val_err is NULL",	/* diagnostic message or NULL */
+    false	/* true ==> struct json_sem_val_err was malloced */
+		/* false ==> this is a static struct json_sem_val_err */
+};
+
+
+/*
+ * static functions
+ */
+static void sem_walk(struct json *node, unsigned int depth, va_list ap);
 
 
 /*
@@ -163,7 +172,6 @@ werr_sem_val(int val_err, struct json const *node, unsigned int depth, struct js
     ret->node = node;
     ret->depth = depth;
     ret->sem = sem;
-    ret->val_err = val_err;
     ret->diagnostic = diagnostic;
     ret->malloced = true;
 
@@ -263,7 +271,6 @@ werrp_sem_val(int val_err, struct json const *node, unsigned int depth, struct j
     ret->node = node;
     ret->depth = depth;
     ret->sem = sem;
-    ret->val_err = val_err;
     ret->diagnostic = diagnostic;
     ret->malloced = true;
 
@@ -324,10 +331,7 @@ sem_chk_null_args(struct json const *node, unsigned int depth, struct json_sem *
 /*
  * sem_node_valid_converted - determine if a JSON node is a converted and valid type
  *
- * Given a JSON node, attempt to return the parent of a JSON node.
- * Beyond simply returning the parent node, we inspect the parent
- * node to determine if the parent node was successfully converted
- * into a known JTYPE.
+ * Given a JSON node, perform sanity checks on the JSON node.
  *
  * Because this call is often made when a function is first given a JSON node,
  * we make a few other JTYPE specific checks such as looking for invalid
@@ -1583,7 +1587,7 @@ sem_object_find_name(struct json const *node, unsigned int depth, struct json_se
  * json_sem_zero_count - zero JSON semantic nodes
  *
  * given:
- *	sem	pointer to a JSON semantic table
+ *	sem		pointer to a JSON semantic table (ends with a JTYPE_UNSET JSON type)
  *
  * NOTE: This function does not return for NULL pointers or count <= 0
  */
@@ -1606,6 +1610,366 @@ json_sem_zero_count(struct json_sem *sem)
     for (i=0; sem[i].type != JTYPE_UNSET; ++i) {
 	sem[i].count = 0;
     }
+    return;
+}
+
+
+/*
+ * json_sem_count_chk - validate semantic table counts
+ *
+ * given:
+ *	sem		pointer to a JSON semantic table (ends with a JTYPE_UNSET JSON type)
+ */
+void
+json_sem_count_chk(struct json_sem *sem, struct dyn_array *cnt_err)
+{
+    struct json_sem_cnt_err cnt;	/* semantic count error */
+    int i;
+
+    /*
+     * firewall - args
+     */
+    if (sem == NULL) {
+	warn(__func__, "sem is NULL");
+	return;
+    }
+    if (cnt_err == NULL) {
+	warn(__func__, "cnt_err is NULL");
+	return;
+    }
+
+    /*
+     * examine counts
+     */
+    for (i=0; sem[i].type != JTYPE_UNSET; ++i) {
+
+	/*
+	 * case: count is too small
+	 */
+	if (sem[i].count < sem[i].min) {
+
+	    /*
+	     * form count is too small error
+	     */
+	    cnt.node = NULL;
+	    cnt.sem = &(sem[i]);
+	    cnt.count = sem[i].count;
+	    cnt.bad_min = true;
+	    cnt.bad_max = false;
+	    cnt.unknown_node = false;
+	    cnt.diagnostic = calloc(BUFSIZ+1, sizeof(char));
+	    if (cnt.diagnostic == NULL) {
+		cnt.diagnostic = "calloc BUFSIZ calloc failed for count is too small";
+		cnt.malloced = false;
+	    } else {
+		snmsg(cnt.diagnostic, BUFSIZ, "node type %s parse tree depth %u%s%s: found %u < minimum: %d",
+		      json_type_name(sem[i].type), sem[i].depth,
+		      (sem[i].name != NULL) ? " member name: " : "",
+		      (sem[i].name != NULL) ? sem[i].name : "",
+		      sem[i].count, sem[i].min);
+		cnt.malloced = true;
+	    }
+
+	    /* save semantic count error */
+	    dyn_array_append_value(cnt_err, &cnt);
+
+	/*
+	 * case: count is too large
+	 */
+	} else if (sem[i].max > 0 && sem[i].count > sem[i].max) {
+
+	    /*
+	     * form count is too large error
+	     */
+	    cnt.node = NULL;
+	    cnt.sem = &(sem[i]);
+	    cnt.count = sem[i].count;
+	    cnt.bad_min = false;
+	    cnt.bad_max = true;
+	    cnt.unknown_node = false;
+	    if (cnt.diagnostic == NULL) {
+		cnt.diagnostic = "calloc BUFSIZ calloc failed for count is too small";
+		cnt.malloced = false;
+	    } else {
+		snmsg(cnt.diagnostic, BUFSIZ, "node type %s parse tree depth %u%s%s: found %u > maximum: %d",
+		      json_type_name(sem[i].type), sem[i].depth,
+		      (sem[i].name != NULL) ? " member name: " : "",
+		      (sem[i].name != NULL) ? sem[i].name : "",
+		      sem[i].count, sem[i].max);
+		cnt.malloced = true;
+	    }
+
+	    /* save semantic count error */
+	    dyn_array_append_value(cnt_err, &cnt);
+	}
+    }
+    return;
+}
+
+
+/*
+ * json_sem_find - given JSON node, find 1st match in JSON semantic table
+ *
+ * given:
+ *	node		pointer to a JSON parse tree
+ *	depth		depth of node in the JSON parse tree (0 ==> tree root)
+ *	sem		pointer to a JSON semantic table (ends with a JTYPE_UNSET JSON type)
+ *
+ * returns:
+ *	>=0 ==> index into JSON semantic table for 1st match
+ *	-1  ==> no JSON semantic table match found
+ *	< -1 ==> invalid JSON node, or NULL ptr, or internal error
+ */
+int
+json_sem_find(struct json *node, unsigned int depth, struct json_sem *sem)
+{
+    bool test = false;		/* JSON node test result */
+    char *name = NULL;		/* name of JTYPE_MEMBER node or NULL */
+    enum item_type type;	/* type of JSON node */
+    int i;
+
+    /*
+     * firewall - args
+     */
+    if (node == NULL) {
+	warn(__func__, "node is NULL");
+	return -2;
+    }
+    if (sem == NULL) {
+	warn(__func__, "sem is NULL");
+	return -3;
+    }
+
+    /*
+     * obtain information about the JSON node
+     */
+    type = node->type;
+    if (type == JTYPE_MEMBER) {
+        /* sem_member_name_decoded_str() call checks args via sem_chk_null_args() */
+	/* sem_member_name_decoded_str() also calls sem_node_valid_converted() */
+	/* determine name of JTYPE_MEMBER or return NULL */
+	name = sem_member_name_decoded_str(node, depth, sem, __func__, NULL);
+    } else {
+	test = sem_node_valid_converted(node, depth, sem, __func__, NULL);
+	if (test == false) {
+	    warn(__func__, "JSON node is invalid");
+	    return -4;
+	}
+    }
+
+    /*
+     * search the JSON semantic table
+     */
+    for (i=0; sem[i].type != JTYPE_UNSET; ++i) {
+
+	/*
+	 * compare levels
+	 */
+	if (depth != sem[i].depth) {
+	    continue; /* no match */
+	}
+
+	/*
+	 * compare levels
+	 */
+	if (type != sem[i].type) {
+	    continue; /* no match */
+	}
+
+	/*
+	 * case: JTYPE_MEMBER - compare names
+	 */
+	if (type == JTYPE_MEMBER && name != NULL && sem[i].name_len > 0 && strcmp(name, sem[i].name) == 0) {
+	    return i;	/* match found */
+	}
+
+	/*
+	 * case: non-JTYPE_MEMBER or JTYPE_MEMBER w/o name match
+	 */
+	if (type != JTYPE_MEMBER || name == NULL || sem[i].name_len == 0) {
+	    return i;	/* match found */
+	}
+    }
+
+    /*
+     * no match for the JSON node in the JSON semantic table
+     */
+    return -1;
+}
+
+
+/*
+ * sem_walk - JSON parse tree semantic tree check walk
+ *
+ * given:
+ *	node	pointer to a JSON parser tree node to free
+ *	depth	current tree depth (0 ==> top of tree)
+ *	ap	variable argument list, required ap args:
+ *
+ *		sem		JSON semantic table (ends with a JTYPE_UNSET JSON type)
+ *		cnt_err		dynamic array of JSON semantic count errors
+ *		val_err		dynamic array of JSON semantic validation errors
+ *
+ * NOTE: This function does nothing if node == NULL.
+ *
+ * NOTE: This function does nothing if the node type is invalid.
+ */
+static void
+sem_walk(struct json *node, unsigned int depth, va_list ap)
+{
+    va_list ap2;			/* copy of va_list ap */
+    struct json_sem *sem = NULL;	/* JSON semantic table (ends with a JTYPE_UNSET JSON type) */
+    struct dyn_array *cnt_err = NULL;	/* dynamic array of JSON semantic count errors */
+    struct dyn_array *val_err = NULL;	/* dynamic array of JSON semantic validation errors */
+    bool test = false;			/* validation test result */
+    struct json_sem_val_err *err = NULL;/* pointer to semantic validation error */
+    struct json_sem_cnt_err cnt;	/* semantic count error */
+    int index = -1;			/* semantic array index match or -1 ==> no march or < -1 ==> error */
+
+    /*
+     * firewall - nothing to do for a NULL node
+     */
+    if (node == NULL) {
+	return;
+    }
+
+    /*
+     * duplicate va_list ap
+     */
+    va_copy(ap2, ap);
+
+    /*
+     * obtain the stream, json_dbg_used, and json_dbg args
+     */
+    sem = va_arg(ap2, struct json_sem *);
+    if (sem == NULL) {
+	va_end(ap2); /* stdarg variable argument list cleanup */
+	return;
+    }
+    cnt_err = va_arg(ap2, struct dyn_array *);
+    if (cnt_err == NULL) {
+	va_end(ap2); /* stdarg variable argument list cleanup */
+	return;
+    }
+    val_err = va_arg(ap2, struct dyn_array *);
+    if (val_err == NULL) {
+	va_end(ap2); /* stdarg variable argument list cleanup */
+	return;
+    }
+
+    /*
+     * search for node match in the semantic table
+     */
+    index = json_sem_find(node, depth, sem);
+
+    /*
+     * process search result
+     */
+    if (index >= 0) {
+
+	/*
+	 * semantic table match, count node use
+	 *
+	 * NOTE: We always count a match regardless of validation status
+	 */
+	++(sem[index].count);
+
+	/*
+	 * execute validation function is available
+	 */
+	if (sem[index].validate != NULL) {
+
+	    /*
+	     * try to validate
+	     */
+	    test = sem[index].validate(node, depth, sem, &err);
+
+	    /*
+	     * case: validation failed
+	     */
+	    if (test == false) {
+
+		/* be sure we have a validation error message */
+		if (err == NULL) {
+		    /* err is NULL, assume sem_val_err_NULL */
+		    err = &sem_val_err_NULL;
+		}
+
+		/* save validation error message */
+		dyn_array_append_value(val_err, err);
+	    }
+	}
+
+    } else if (index == -1) {
+
+	/*
+	 * semantic table non-match
+	 */
+	cnt.node = node;
+	cnt.sem = NULL;
+	cnt.count = 1;
+	cnt.bad_min = false;
+	cnt.bad_max = false;
+	cnt.unknown_node = true;
+	if (cnt.diagnostic == NULL) {
+	    cnt.diagnostic = "calloc BUFSIZ calloc failed for unexpected node";
+	    cnt.malloced = false;
+	} else {
+	    if (node->type == JTYPE_MEMBER) {
+		char *name = NULL;	/* name of JTYPE_MEMBER */
+
+		name = sem_member_name_decoded_str(node, depth, sem, __func__, &err);
+		if (name == NULL) {
+		    snmsg(cnt.diagnostic, BUFSIZ, "unexpected node: type %s parse tree depth %u%ss",
+			  json_item_type_name(node), depth,
+			  " unnamed member");
+		    /* also save validation error message */
+		    dyn_array_append_value(val_err, err);
+
+		} else {
+		    snmsg(cnt.diagnostic, BUFSIZ, "unexpected node: type %s parse tree depth %u%s%s",
+			  json_item_type_name(node), depth,
+			  " member name: ", name);
+		}
+	    } else {
+		snmsg(cnt.diagnostic, BUFSIZ, "unexpected node: type %s parse tree depth %u",
+		      json_item_type_name(node), depth);
+	    }
+	    cnt.malloced = true;
+	}
+
+	/* save semantic count error */
+	dyn_array_append_value(cnt_err, &cnt);
+
+    } else {
+
+	/*
+	 * error searching semantic table
+	 */
+	cnt.node = node;
+	cnt.sem = NULL;
+	cnt.count = 1;
+	cnt.bad_min = false;
+	cnt.bad_max = false;
+	cnt.unknown_node = true;
+	cnt.diagnostic = calloc(BUFSIZ+1, sizeof(char));
+	if (cnt.diagnostic == NULL) {
+	    cnt.diagnostic = "calloc BUFSIZ calloc failed for json_sem_find result < -1";
+	    cnt.malloced = false;
+	} else {
+	    snwerr(index, cnt.diagnostic, BUFSIZ, "json_sem_find",
+			  "json_sem_find failed, returned %d < -1", index);
+	    cnt.malloced = true;
+	}
+
+	/* save semantic count error */
+	dyn_array_append_value(cnt_err, &cnt);
+    }
+
+    /*
+     * stdarg variable argument list cleanup
+     */
+    va_end(ap2);
     return;
 }
 
@@ -1656,7 +2020,6 @@ json_sem_check(struct json *node, unsigned int max_depth, struct json_sem *sem,
     struct dyn_array *cnt_err = NULL;		/* JSON semantic count errors */
     struct dyn_array *val_err = NULL;		/* JSON semantic validation errors */
     unsigned int err = 0;			/* number of errors (count+validation+internal) */
-    UNUSED_ARG(max_depth);	/* XXX - remove when arg is used - XXX */
 
     /*
      * firewall - check args
@@ -1699,13 +2062,28 @@ json_sem_check(struct json *node, unsigned int max_depth, struct json_sem *sem,
     if (err > 0) {
 	return err;
     }
+    pcnt_err = &cnt_err;
+    pval_err = &val_err;
 
     /*
      * zero semantic counts
      */
     json_sem_zero_count(sem);
 
-    /* XXX - add code here - XXX */
+    /*
+     * perform a semantic scan of the JSON parse tree
+     */
+    json_tree_walk(node, max_depth, sem_walk, sem, cnt_err, val_err);
+
+    /*
+     * check semantic table counts
+     */
+    json_sem_count_chk(sem, cnt_err);
+
+    /*
+     * count errors, if any
+     */
+    err = dyn_array_tell(cnt_err) + dyn_array_tell(val_err);
 
     /*
      * report on the number of errors found

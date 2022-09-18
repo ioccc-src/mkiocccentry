@@ -50,12 +50,15 @@
   */
 struct json_sem_cnt_err
 {
+    struct json const *node;	/* JSON parse node in question or NULL */
     struct json_sem *sem;	/* semantic node in question or NULL (unknown_node == true) */
     unsigned int count;		/* number of times this JSON semantic was matched */
     bool bad_min;		/* true ==> JSON semantic node count under minimum */
     bool bad_max;		/* true ==> JSON semantic node count over maximum */
     bool unknown_node;		/* true ==> JSON node is not known to JSON semantics */
     char *diagnostic;		/* diagnostic message or NULL */
+    bool malloced;		/* true ==> struct diagnostic malloced */
+				/* false ==> diagnostic is a non-malloced static string */
 };
 
 /*
@@ -69,11 +72,9 @@ struct json_sem_val_err
     struct json const *node;	/* JSON parse node in question or NULL */
     unsigned int depth;		/* JSON parse tree node depth or UINT_MAX */
     struct json_sem *sem;	/* semantic node in question or NULL */
-    int val_err;		/* validate function specific error code */
-				/* INT_MAX ==> static error, 0 ==> not an error */
     char *diagnostic;		/* diagnostic message or NULL */
-    bool malloced;		/* true ==> struct json_sem_val_err was malloced */
-				/* false ==> this is a static struct json_sem_val_err */
+    bool malloced;		/* true ==> struct diagnostic malloced */
+				/* false ==> diagnostic is a non-malloced static string */
 };
 
 /*
@@ -148,6 +149,7 @@ extern struct json *sem_object_find_name(struct json const *node, unsigned int d
 				         char const *name, struct json_sem_val_err **val_err,
 				         char const *memname);
 extern void json_sem_zero_count(struct json_sem *sem);
+extern int json_sem_find(struct json *node, unsigned int depth, struct json_sem *sem);
 extern unsigned int json_sem_check(struct json *node, unsigned int max_depth, struct json_sem *sem,
 				   struct dyn_array **pcnt_err, struct dyn_array **pval_err);
 
