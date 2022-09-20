@@ -3179,7 +3179,7 @@ test_highbit_warning(bool boolean)
 /*
  * test_info_JSON - test if info_JSON is valid
  *
- * Determine if info_JSON matches AUTHOR_JSON_FILENAME.
+ * Determine if info_JSON matches INFO_JSON_FILENAME.
  *
  * given:
  *	str	string to test
