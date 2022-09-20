@@ -357,7 +357,7 @@ on_path() {
 
     # ignore if tool is not on path
     #
-    TOOL_PATH=$(command -v "$TOOL" 2>/dev/null)
+    TOOL_PATH=$(type -P "$TOOL" 2>/dev/null)
     status="$?"
     if [[ $status -ne 0 || -z $TOOL_PATH ]]; then
 	if [[ $V_FLAG -ge 7 ]]; then
