@@ -828,7 +828,7 @@ chk_sem_info.h: jsemtblgen jsemcgen.sh test_JSON/info.json/good/info.reference.j
 # sequence exit codes
 #
 seqcexit: Makefile
-	@HAVE_SEQCEXIT="`command -v ${SEQCEXIT}`"; if [[ -z "$$HAVE_SEQCEXIT" ]]; then \
+	@HAVE_SEQCEXIT="`type -P ${SEQCEXIT}`"; if [[ -z "$$HAVE_SEQCEXIT" ]]; then \
 	    echo 'The seqcexit tool could not be found.' 1>&2; \
 	    echo 'The seqcexit tool is required for this rule.'; 1>&2; \
 	    echo ''; 1>&2; \
@@ -845,7 +845,7 @@ seqcexit: Makefile
 	fi
 
 picky: ${ALL_CSRC} ${H_FILES} ${LESS_PICKY_H_FILES} Makefile
-	@if ! command -v ${PICKY} >/dev/null 2>&1; then \
+	@if ! type -P ${PICKY} >/dev/null 2>&1; then \
 	    echo "The picky tool could not found." 1>&2; \
 	    echo "The picky tool is required for this rule." 1>&2; \
 	    echo "We recommend you install picky v2.6 or later" 1>&2; \
@@ -864,7 +864,7 @@ picky: ${ALL_CSRC} ${H_FILES} ${LESS_PICKY_H_FILES} Makefile
 # inspect and verify shell scripts
 #
 shellcheck: ${SH_FILES} .shellcheckrc Makefile
-	@HAVE_SHELLCHECK="`command -v ${SHELLCHECK}`"; if [[ -z "$$HAVE_SHELLCHECK" ]]; then \
+	@HAVE_SHELLCHECK="`type -P ${SHELLCHECK}`"; if [[ -z "$$HAVE_SHELLCHECK" ]]; then \
 	    echo 'The shellcheck command could not found.' 1>&2; \
 	    echo 'The shellcheck command is required to run this rule.'; 1>&2; \
 	    echo ''; 1>&2; \
@@ -882,7 +882,7 @@ shellcheck: ${SH_FILES} .shellcheckrc Makefile
 # inspect and verify man pages
 #
 checknr: ${MANPAGES}
-	@HAVE_CHECKNR="`command -v ${CHECKNR}`"; if [[ -z "$$HAVE_CHECKNR" ]]; then \
+	@HAVE_CHECKNR="`type -P ${CHECKNR}`"; if [[ -z "$$HAVE_CHECKNR" ]]; then \
 	    echo 'The checknr command could not found.' 1>&2; \
 	    echo 'The checknr command is required to run this rule.'; 1>&2; \
 	    echo ''; 1>&2; \
@@ -893,8 +893,8 @@ checknr: ${MANPAGES}
 	fi
 
 man2html: ${MANPAGES}
-	@HAVE_MAN2HTML="`command -v ${MAN2HTML}`"; \
-	 HAVE_MAN="`command -v ${MAN}`"; \
+	@HAVE_MAN2HTML="`type -P ${MAN2HTML}`"; \
+	 HAVE_MAN="`type -P ${MAN}`"; \
 	if [[ -z "$$HAVE_MAN2HTML" ]]; then \
 	    echo 'The man2html command could not found.' 1>&2; \
 	    echo 'The man2html command is required to run this rule.'; 1>&2; \
