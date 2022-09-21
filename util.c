@@ -3757,7 +3757,7 @@ sum_and_count(intmax_t value, intmax_t *sump, intmax_t *countp, intmax_t *sum_ch
      */
     inv_value = ~value;
     if (value < 0) {
-	dbg(DBG_MED, "sum_and_count value argument < 0");
+	dbg(DBG_MED, "sum_and_count value argument < 0: value %jd < 0", value);
 	return false;
     }
 
@@ -3774,45 +3774,45 @@ sum_and_count(intmax_t value, intmax_t *sump, intmax_t *countp, intmax_t *sum_ch
      */
     prev_sum = sum;
     prev_count = count;
-    inv_prev_sum = ~sum;
+    inv_prev_sum = ~prev_sum;
     *sum_checkp = -(*sump);
-    inv_prev_count = ~count;
+    inv_prev_count = ~prev_count;
     *count_checkp = -(*countp);
     if (~inv_sum != *sump) {
-	warn(__func__, "imported inverted sum changed");
+	warn(__func__, "imported inverted sum changed: ~inv_sum %jd != *sump %jd", ~inv_sum, *sump);
 	return false;
     }
     if (*sump != sum) {
-	warn(__func__, "imported sum changed");
+	warn(__func__, "imported sum changed: *sump %jd != sum %jd", *sump, sum);
 	return false;
     }
     if (~inv_count != *countp) {
-	warn(__func__, "imported inverted count changed");
+	warn(__func__, "imported inverted count changed: ~inv_count %jd != *countp %jd", ~inv_count, *countp);
 	return false;
     }
     if (*countp != count) {
-	warn(__func__, "imported count changed");
+	warn(__func__, "imported count changed: *countp %jd != count %jd", *countp, count);
 	return false;
     }
     if (*sum_checkp != -sum) {
-	warn(__func__, "sum negation changed");
+	warn(__func__, "sum negation changed: *sum_checkp %jd != -sum %jd", *sum_checkp, -sum);
 	return false;
     }
     if (*count_checkp != -count) {
-	warn(__func__, "count negation changed");
+	warn(__func__, "count negation changed: *count_checkp %jd != -count %jd", *count_checkp, -count);
 	return false;
     }
 
     /*
      * paranoid count increment
      */
-    ++count;
+    ++count; /* now count > *countp */
     if (count <= 0) {
-	warn(__func__, "incremented count went negative");
+	warn(__func__, "incremented count went negative: count %jd <= 0", count);
 	return false;
     }
     if (count <= prev_count) {
-	warn(__func__, "incremented count is lower than previous count");
+	warn(__func__, "incremented count is lower than previous count: count %jd <= prev_count %jd", count, prev_count);
 	return false;
     }
 
@@ -3825,7 +3825,7 @@ sum_and_count(intmax_t value, intmax_t *sump, intmax_t *countp, intmax_t *sum_ch
      * more paranoia: sum cannot be negative
      */
     if (sum < 0) {
-	warn(__func__, "sum went negative");
+	warn(__func__, "sum went negative: sum %jd < 0", sum);
 	return false;
     }
 
@@ -3833,35 +3833,41 @@ sum_and_count(intmax_t value, intmax_t *sump, intmax_t *countp, intmax_t *sum_ch
      * more paranoia: sum cannot be < previous sum
      */
     if (sum < prev_sum) {
-	warn(__func__, "sum < previous sum");
+	warn(__func__, "sum < previous sum: sum %jd < prev_sum %jd", sum, prev_sum);
 	return false;
     }
 
     /*
      * try to verify a consistent previous sum
      */
-    if (prev_sum != ~inv_prev_sum || -prev_sum != *sum_checkp) {
-	warn(__func__, "unexpected change to the previous sum");
+    if (prev_sum != ~inv_prev_sum) {
+	warn(__func__, "unexpected change to the previous sum: prev_sum %jd != ~inv_prev_sum %jd", prev_sum, ~inv_prev_sum);
+	return false;
+    } else if (-prev_sum != *sum_checkp) {
+	warn(__func__, "unexpected change to the previous sum: -prev_sum %jd != *sum_checkp %jd", -prev_sum, *sum_checkp);
 	return false;
     }
 
     /*
      * second and third sanity check for count increment
      */
-    if ((*count_checkp)-1 != count) {
-	warn(__func__, "second check on count increment failed");
+    if ((*countp) != count-1) {
+	warn(__func__, "second check on count increment failed: (*countp) %jd != (count-1) %jd", (*countp), count-1);
 	return false;
     }
-    if (count != prev_count-1) {
-	warn(__func__, "third check on count increment failed");
+    if (count != prev_count+1) {
+	warn(__func__, "third check on count increment failed: count %jd != (prev_count+1) %jd", count, prev_count + 1);
 	return false;
     }
 
     /*
      * try to verify a consistent previous count
      */
-    if (-prev_count != *count_checkp || prev_count != ~inv_prev_count) {
-	warn(__func__, "unexpected change to the previous count");
+    if (-prev_count != *count_checkp) {
+	warn(__func__, "unexpected change to the previous count: -prev_count %jd != *count_checkp %jd", -prev_count, *count_checkp);
+	return false;
+    } else if (prev_count != ~inv_prev_count) {
+	warn(__func__, "unexpected change to the previous count: prev_count %jd != ~inv_prev_count %jd", prev_count, ~inv_prev_count);
 	return false;
     }
 
@@ -3869,11 +3875,11 @@ sum_and_count(intmax_t value, intmax_t *sump, intmax_t *countp, intmax_t *sum_ch
      * second and third sanity check for sum
      */
     if ((*sum_checkp)-value != -sum) {
-	warn(__func__, "second check on sum failed");
+	warn(__func__, "second check on sum failed: (*sum_checkp)-value %jd != -sum %jd", (*sum_checkp)-value, -sum);
 	return false;
     }
     if (-sum != prev_sum-(~inv_value)) {
-	warn(__func__, "third check on sum failed");
+	warn(__func__, "third check on sum failed: -sum %jd != prev_sum-(~inv_value) %jd", -sum, prev_sum-(~inv_value));
 	return false;
     }
 
@@ -3881,7 +3887,7 @@ sum_and_count(intmax_t value, intmax_t *sump, intmax_t *countp, intmax_t *sum_ch
      * second sanity check for value
      */
     if (~inv_value != value) {
-	warn(__func__, "value unexpectedly changed");
+	warn(__func__, "value unexpectedly changed: ~inv_val %jd != value %jd", ~inv_value, value);
 	return false;
     }
 
@@ -3889,23 +3895,23 @@ sum_and_count(intmax_t value, intmax_t *sump, intmax_t *countp, intmax_t *sum_ch
      * final checks in counts and values
      */
     if (*countp != ~inv_count) {
-	warn(__func__, "final check on imported inverted count changed");
+	warn(__func__, "final check on imported inverted count changed: *countp %jd != ~inv_count %jd", *countp, ~inv_count);
 	return false;
     }
     if (*sump != ~inv_sum) {
-	warn(__func__, "final check on imported inverted sum changed");
+	warn(__func__, "final check on imported inverted sum changed: *sump %jd != ~inv_sum %jd", *sump, ~inv_sum);
 	return false;
     }
     if (count < 0) {
-	warn(__func__, "final check: count is negative");
+	warn(__func__, "final check: count is negative: count %jd < 0", count);
 	return false;
     }
     if (count == 0) {
-	warn(__func__, "final check: count is 0");
+	warn(__func__, "final check: count is 0: count == %jd", count);
 	return false;
     }
     if (sum < 0) {
-	warn(__func__, "final check: sum is negative");
+	warn(__func__, "final check: sum is negative: sum %jd < 0", sum);
 	return false;
     }
 
