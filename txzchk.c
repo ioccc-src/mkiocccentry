@@ -51,6 +51,8 @@
  */
 #define REQUIRED_ARGS (1)	/* number of required arguments on the command line */
 
+static intmax_t sum_check;			/* negative of previous sum */
+static intmax_t count_check;			/* negative of previous count */
 
 int
 main(int argc, char **argv)
@@ -172,7 +174,7 @@ main(int argc, char **argv)
 
     txz_info.total_feathers = check_tarball(tar, fnamchk);
     if (!quiet && !txz_info.total_feathers) {
-	para("No feathers stuck in tarball.", "", NULL);
+	para("No feathers stuck in tarball.", NULL);
     }
     show_txz_info(txzpath);
 
@@ -210,37 +212,35 @@ show_txz_info(char const *txzpath)
 
 	dbg(DBG_MED, "%s %s a .info.json", txzpath, has_does_not_have(txz_info.has_info_json));
 	dbg(DBG_HIGH, "%s %s an empty .info.json", txzpath, has_does_not_have(txz_info.empty_info_json));
+	dbg(DBG_HIGH, "%s .info.json size is %jd", txzpath, (intmax_t)txz_info.info_json_size);
 	dbg(DBG_MED, "%s %s a .author.json", txzpath, has_does_not_have(txz_info.has_author_json));
 	dbg(DBG_HIGH, "%s %s an empty .author.json", txzpath, has_does_not_have(txz_info.empty_author_json));
+	dbg(DBG_HIGH, "%s .author.json size is %jd", txzpath, (intmax_t)txz_info.author_json_size);
 	dbg(DBG_MED, "%s %s a prog.c", txzpath, has_does_not_have(txz_info.has_prog_c));
 	dbg(DBG_HIGH, "%s %s an empty prog.c", txzpath, has_does_not_have(txz_info.empty_prog_c));
+	dbg(DBG_HIGH, "%s prog.c size is %jd", txzpath, (intmax_t)txz_info.prog_c_size);
 	dbg(DBG_MED, "%s %s a remarks.md", txzpath, has_does_not_have(txz_info.has_remarks_md));
 	dbg(DBG_HIGH, "%s %s an empty remarks.md", txzpath, has_does_not_have(txz_info.empty_remarks_md));
+	dbg(DBG_HIGH, "%s remarks.md size is %jd", txzpath, (intmax_t)txz_info.remarks_md_size);
 	dbg(DBG_MED, "%s %s a Makefile", txzpath, has_does_not_have(txz_info.has_Makefile));
 	dbg(DBG_HIGH, "%s %s an empty Makefile", txzpath, has_does_not_have(txz_info.empty_Makefile));
-	dbg(DBG_MED, "%s file size is %jd according to stat(2)", txzpath, (intmax_t)txz_info.size);
-	dbg(DBG_MED, "%s total files size is %jd", txzpath, (intmax_t)txz_info.file_sizes);
+	dbg(DBG_HIGH, "%s Makefile size is %jd", txzpath, (intmax_t)txz_info.Makefile_size);
+	dbg(DBG_MED, "%s tarball size is %jd according to stat(2)", txzpath, (intmax_t)txz_info.size);
+	dbg(DBG_MED, "%s total file size is %jd", txzpath, (intmax_t)txz_info.files_size);
 	dbg(DBG_HIGH, "%s shrunk in files size %ju time%s", txzpath, txz_info.files_size_shrunk,
 		singular_or_plural(txz_info.files_size_shrunk));
 	dbg(DBG_HIGH, "%s went below 0 in all files size %ju time%s", txzpath, txz_info.negative_files_size,
 		singular_or_plural(txz_info.negative_files_size));
 	dbg(DBG_HIGH, "%s went above max files size %d %ju time%s", txzpath,
 		MAX_DIR_KSIZE, (uintmax_t)txz_info.files_size_too_big, singular_or_plural(txz_info.files_size_too_big));
-	dbg(DBG_MED, "%s rounded files size is %jd", txzpath, (intmax_t)txz_info.rounded_file_size);
-	dbg(DBG_HIGH, "%s rounded files size shrunk %ju time%s", txzpath, (uintmax_t)txz_info.rounded_files_size_shrunk,
-		singular_or_plural(txz_info.rounded_files_size_shrunk==1));
-	dbg(DBG_HIGH, "%s rounded files size went below 0 %ju time%s", txzpath, (uintmax_t)txz_info.negative_files_size,
-		singular_or_plural(txz_info.negative_files_size==1));
-	dbg(DBG_HIGH, "%s rounded files size went above max %d %ju time%s", txzpath,
-		MAX_DIR_KSIZE, (uintmax_t)txz_info.rounded_files_size_too_big,
-		singular_or_plural(txz_info.rounded_files_size_too_big));
-	dbg(DBG_MED, "%s has %ju files", txzpath, txz_info.total_files);
+	dbg(DBG_MED, "%s has %ju file%s", txzpath, txz_info.total_files-txz_info.abnormal_files,
+		txz_info.total_files-txz_info.abnormal_files == 1?"":"s");
 
 	if (txz_info.correct_directory < txz_info.total_files) {
 	    dbg(DBG_MED, "%s has %ju incorrect director%s", txzpath, txz_info.total_files - txz_info.correct_directory,
 		    txz_info.total_files - txz_info.correct_directory == 1 ? "y":"ies");
 	} else {
-	    dbg(DBG_MED, "%s has no incorrect directory", txzpath);
+	    dbg(DBG_MED, "%s has 0 incorrect directories", txzpath);
 	}
 
 	dbg(DBG_MED, "%s has %ju invalid dot file%s", txzpath, txz_info.dot_files, singular_or_plural(txz_info.dot_files));
@@ -511,6 +511,14 @@ check_txz_file(char const *txzpath, char const *dir_name, struct txz_file *file)
      * NOTE: Files that are allowed to begin with '.' must also be lower case.
      * In other words if any of the letters in INFO_JSON_FILENAME or
      * AUTHOR_JSON_FILENAME are upper case the file is an invalid dot file.
+     *
+     * Yes there's a certain irony that the macro names for these filenames are
+     * all upper case and so we're checking for lower case by using upper case
+     * but this _is_ part of the IOCCC so why not have a bit of confusion and
+     * irony? :-) If this unduly bothers you you can just call the upper case
+     * lower case or the lower case upper case but not upper case lower case and
+     * lower case upper case! :-) Alternatively you can just deal with the
+     * irony.
      */
     if (!strcmp(file->basename, INFO_JSON_FILENAME) || !strcmp(file->basename, AUTHOR_JSON_FILENAME)) {
 	allowed_dot_file = true;
@@ -569,7 +577,7 @@ check_txz_file(char const *txzpath, char const *dir_name, struct txz_file *file)
 
 
 /*
- * check_empty_file - if file is empty, check which file it is and report it
+ * check_file_size - if file is required record size and (depending on file) report invalid size
  *
  * given:
  *
@@ -582,7 +590,7 @@ check_txz_file(char const *txzpath, char const *dir_name, struct txz_file *file)
  * Does not return on error (NULL pointers passed in).
  */
 static void
-check_empty_file(char const *txzpath, off_t size, struct txz_file *file)
+check_file_size(char const *txzpath, off_t size, struct txz_file *file)
 {
     /*
      * firewall
@@ -614,139 +622,22 @@ check_empty_file(char const *txzpath, off_t size, struct txz_file *file)
 	    txz_info.empty_Makefile = true;
 	    warn("txzchk", "%s: found empty Makefile", txzpath);
 	} else if (!strcmp(file->basename, "prog.c")) {
-	    /* this is NOT a feather: it's only for debugging information! */
+	    /* this is NOT a feather: it's only for informational purposes! */
 	    txz_info.empty_prog_c = true;
 	}
-    }
-}
-
-/* convert_file_size	- converts number string to off_t
- *
- * This function is to remove duplicate code as this code is used in more than
- * one function.
- *
- * given:
- *	current_file_size   - pointer to off_t to store the file size in
- *	p		    - the token extracted from strtok_r() (number
- *			      string)
- *
- * Returns: true if conversion succeeded; false if it fails.
- *
- * NOTE: This function does not return on NULL pointers (which should actually
- * never happen).
- */
-static bool
-convert_file_size(off_t *current_file_size, char *p)
-{
-    /*
-     * firewall
-     */
-    if (current_file_size == NULL) {
-	err(16, __func__, "passed NULL current_file_size");
-	not_reached();
-    } else if (p == NULL) {
-	err(17, __func__, "passed NULL number string");
-	not_reached();
-    }
-    errno = 0;
-    *current_file_size = strtoimax(p, NULL, 10);
-
-    /* the conversion fail will be reported in the calling function so we don't do it here */
-    if (errno != 0) {
-	return false;
-
-    } else if (*current_file_size < 0) {
-	warn("txzchk", "%s: file size < 0: %jd", txzpath, (intmax_t)*current_file_size);
-	++txz_info.total_feathers;
-    }
-    txz_info.file_sizes += *current_file_size;
-
-    /* false: check new totals but don't print rounded file size if OK */
-    check_txz_files_size(false);
-
-    return true;
-}
-
-/* check_txz_files_size	    - check current total file size sum
- *
- * This function is used after each line is parsed. It's important because if a
- * file takes one or both of the sizes (file_sizes or rounded_file_sizes) to >
- * the max or < 0 or 0 then it's an issue that needs to be flagged. We have
- * booleans so that we only warn of this once.
- *
- * given:
- *
- *	show_rounded_size	- true ==> show rounded file size if all is okay
- */
-static void
-check_txz_files_size(bool show_rounded_size)
-{
-    /* check total file size */
-    if (txz_info.file_sizes < txz_info.previous_files_size) {
-	warn("txzchk", "%s: total size of all files < previous size: %jd < %jd",
-		txzpath,
-		(intmax_t)txz_info.file_sizes,
-		(intmax_t) txz_info.previous_files_size);
-	++txz_info.total_feathers;
-    }
-    /* update previous to be the current value */
-    txz_info.previous_files_size = txz_info.file_sizes;
-
-    if (txz_info.file_sizes < 0) {
-	warn("txzchk", "%s: total file sizes < 0: %jd!", txzpath, (intmax_t)txz_info.file_sizes);
-	++txz_info.total_feathers;
-	/*
-	 * if the previous total size >= 0 we increment the number of times size
-	 * < 0
-	 */
-	if (txz_info.previous_files_size >= 0) {
-	    ++txz_info.negative_files_size;
+    } else {
+	/* record size of required files for informational purposes */
+	if (!strcmp(file->basename, AUTHOR_JSON_FILENAME)) {
+	    txz_info.author_json_size = size;
+	} else if (!strcmp(file->basename, INFO_JSON_FILENAME)) {
+	    txz_info.info_json_size = size;
+	} else if (!strcmp(file->basename, "remarks.md")) {
+	    txz_info.remarks_md_size = size;
+	} else if (!strcmp(file->basename, "Makefile")) {
+	    txz_info.Makefile_size = size;
+	} else if (!strcmp(file->basename, "prog.c")) {
+	    txz_info.prog_c_size = size;
 	}
-    } else if (txz_info.file_sizes == 0) {
-	warn("txzchk", "%s: total size of all files == 0", txzpath);
-	++txz_info.total_feathers;
-    } else if (txz_info.file_sizes > MAX_DIR_KSIZE) {
-	/* only warn first time */
-	if (txz_info.files_size_too_big == 0) {
-	    warn("txzchk", "%s: total size of files %jd > %d",
-		       txzpath, (intmax_t)txz_info.file_sizes,
-		       MAX_DIR_KSIZE);
-	}
-
-	++txz_info.total_feathers;
-	++txz_info.files_size_too_big;
-    }
-
-    txz_info.rounded_file_size = round_to_multiple(txz_info.file_sizes, 1024);
-    if (txz_info.rounded_file_size < txz_info.previous_rounded_file_size) {
-	if (txz_info.rounded_files_size_shrunk == 0) /* only warn first time */
-	    warn("txzchk", "%s: total size of all files rounded up to multiple of 1024 < previous size: %jd < %jd",
-		    txzpath, (intmax_t)txz_info.rounded_file_size, (intmax_t) txz_info.previous_rounded_file_size);
-	++txz_info.total_feathers;
-	++txz_info.rounded_files_size_shrunk;
-    }
-
-    /* update previous to be the current value */
-    txz_info.previous_rounded_file_size = txz_info.rounded_file_size;
-
-    if (txz_info.rounded_file_size < 0) {
-	warn("txzchk", "%s: total size of all files rounded up to multiple of 1024 < 0: %jd!",
-		txzpath, (intmax_t) txz_info.rounded_file_size);
-	++txz_info.total_feathers;
-    } else if (txz_info.rounded_file_size == 0) {
-	warn("txzchk", "%s: total size of all files rounded up to multiple of 1024 == 0!",
-		txzpath);
-	++txz_info.total_feathers;
-    } else if (txz_info.rounded_file_size > MAX_DIR_KSIZE) {
-	if (txz_info.rounded_files_size_too_big == 0) /* only warn first time */
-		warn("txzchk", "%s: total size of files %jd rounded up to multiple of 1024 %jd > %d",
-		       txzpath, (intmax_t)txz_info.file_sizes, (intmax_t) txz_info.rounded_file_size,
-		       MAX_DIR_KSIZE);
-	++txz_info.total_feathers;
-	++txz_info.rounded_files_size_too_big;
-    } else if (!quiet && show_rounded_size) {
-	printf("txzchk: %s total size of files %jd rounded up to 1024 multiple: %jd OK\n",
-		txzpath, (intmax_t) txz_info.file_sizes, (intmax_t) txz_info.rounded_file_size);
     }
 }
 
@@ -771,7 +662,6 @@ check_all_txz_files(char const *dir_name)
 {
     struct txz_file *file; /* to iterate through files list */
 
-    check_txz_files_size(true); /* true: show rounded file size if all OK */
     /*
      * Now go through the files list to verify the required files are there and
      * also to detect any additional feathers stuck in the tarball (or issues in
@@ -789,11 +679,11 @@ check_all_txz_files(char const *dir_name)
 	    txz_info.has_info_json = true;
 	} else if (!strcmp(file->basename, AUTHOR_JSON_FILENAME)) {
 	    txz_info.has_author_json = true;
-	} else if (!strcmp(file->basename, "Makefile")) {
+	} else if (!strcmp(file->basename, MAKEFILE_FILENAME)) {
 	    txz_info.has_Makefile = true;
-	} else if (!strcmp(file->basename, "prog.c")) {
+	} else if (!strcmp(file->basename, PROG_C_FILENAME)) {
 	    txz_info.has_prog_c = true;
-	} else if (!strcmp(file->basename, "remarks.md")) {
+	} else if (!strcmp(file->basename, REMARKS_FILENAME)) {
 	    txz_info.has_remarks_md = true;
 	}
 
@@ -979,12 +869,15 @@ check_directories(struct txz_file *file, char const *dir_name, char const *txzpa
  *
  * given:
  *
- *	p	    - pointer to current field in line
- *	linep	    - the line we're parsing
- *	line_dup    - duplicated line
- *	dir_name    - directory name retrieved from fnamchk or NULL if it failed
- *	txzpath	    - the tarball path
- *	saveptr	    - pointer to char * to save context between each strtok_r() call
+ *	p		- pointer to current field in line
+ *	linep		- the line we're parsing
+ *	line_dup	- duplicated line
+ *	dir_name	- directory name retrieved from fnamchk or NULL if it failed
+ *	txzpath		- the tarball path
+ *	saveptr		- pointer to char * to save context between each strtok_r() call
+ *	normal_file	- true ==> normal file, don't count against size or number of files
+ *	sum		- pointer to sum for sum_and_count() (which we use in count_and_sum())
+ *	count		- pointer to count for sum_and_count() (which we use in count_and_sum())
  *
  * If everything goes okay the line will be completely parsed and the calling
  * function (parse_txz_line()) will return to its caller (parse_all_lines()) which
@@ -993,17 +886,19 @@ check_directories(struct txz_file *file, char const *dir_name, char const *txzpa
  * This function does not return on error.
  */
 static void
-parse_linux_txz_line(char *p, char *linep, char *line_dup, char const *dir_name, char const *txzpath, char **saveptr)
+parse_linux_txz_line(char *p, char *linep, char *line_dup, char const *dir_name, char const *txzpath, char **saveptr,
+		    bool normal_file, intmax_t *sum, intmax_t *count)
 {
-    off_t current_file_size = 0;
-    struct txz_file *file = NULL;
+    intmax_t length = 0; /* file size */
+    struct txz_file *file = NULL;   /* allocated struct of file info */
     int i = 0;
+    bool test = false;		    /* tests related to size and max number of files */
 
     /*
      * firewall
      */
-
-    if (p == NULL || linep == NULL || line_dup == NULL || txzpath == NULL || saveptr == NULL) {
+    if (p == NULL || linep == NULL || line_dup == NULL || txzpath == NULL || saveptr == NULL ||
+	sum == NULL || count == NULL) {
 	err(21, __func__, "called with NULL arg(s)");
 	not_reached();
     }
@@ -1035,7 +930,7 @@ parse_linux_txz_line(char *p, char *linep, char *line_dup, char const *dir_name,
 	warn("txzchk", "found non-numerical GID in file in line %s", line_dup);
 	++txz_info.total_feathers;
     }
-    p = strtok_r(NULL, " \t", saveptr);
+    p = strtok_r(NULL, tok_sep, saveptr);
     if (p == NULL) {
 	warn("txzchk", "%s: NULL pointer encountered trying to parse line", txzpath);
 	msg("skipping to next line");
@@ -1043,12 +938,25 @@ parse_linux_txz_line(char *p, char *linep, char *line_dup, char const *dir_name,
 	return;
     }
 
-    errno = 0;		/* pre-clear errno for warnp() */
-    if (!convert_file_size(&current_file_size, p)) {
-	warnp("txzchk", "%s: trying to parse file size in on line: <%s>: token: <%s>", txzpath, line_dup, p);
-	msg("skipping to next line");
+    test = string_to_intmax2(p, &length);
+    if (!test) {
+	warn("txzchk", "%s: trying to parse file size in on line: <%s>: token: <%s>", txzpath, line_dup, p);
 	++txz_info.total_feathers;
+
+	/*
+	 * we still have to add to the total number of files before we return to
+	 * next line but only if it's a normal file
+	 */
+	if (normal_file) {
+	    count_and_sum(txzpath, sum, count, length);
+	}
+	msg("skipping to next line due to inability to parse file size");
 	return;
+    }
+
+    /* add to total number of files and total size if it's a normal file */
+    if (normal_file) {
+	count_and_sum(txzpath, sum, count, length);
     }
 
     /*
@@ -1056,7 +964,7 @@ parse_linux_txz_line(char *p, char *linep, char *line_dup, char const *dir_name,
      * get the following field which we _do_ care about.
      */
     for (i = 0; i < 3; ++i) {
-	p = strtok_r(NULL, " \t", saveptr);
+	p = strtok_r(NULL, tok_sep, saveptr);
 	if (p == NULL) {
 	    warn("txzchk", "%s: NULL pointer trying to parse line", txzpath);
 	    msg("skipping to next line");
@@ -1066,14 +974,14 @@ parse_linux_txz_line(char *p, char *linep, char *line_dup, char const *dir_name,
     }
 
     /* p should now contain the filename. */
-    file = alloc_txz_file(p);
+    file = alloc_txz_file(p, length);
     if (file == NULL) {
 	err(22, __func__, "alloc_txz_file() returned NULL");
 	not_reached();
     }
 
     do {
-	p = strtok_r(NULL, " \t", saveptr);
+	p = strtok_r(NULL, tok_sep, saveptr);
 	if (p != NULL) {
 	    warn("txzchk", "%s: bogus field found after filename: %s", txzpath, p);
 	    ++txz_info.total_feathers;
@@ -1085,7 +993,7 @@ parse_linux_txz_line(char *p, char *linep, char *line_dup, char const *dir_name,
      * add_txz_file_to_list() function doesn't add the same file (basename) more
      * than once: it simply increments the times it's been seen.
      */
-    check_empty_file(txzpath, current_file_size, file);
+    check_file_size(txzpath, length, file);
 
     /* checks on this specific file */
     check_txz_file(txzpath, dir_name, file);
@@ -1093,18 +1001,92 @@ parse_linux_txz_line(char *p, char *linep, char *line_dup, char const *dir_name,
     add_txz_file_to_list(file);
 }
 
+/*
+ * count_and_sum    - wrapper to sum_and_count (util.c) related checks
+ *
+ * given:
+ *
+ *	txzpath		- path to the tarball being checked for feathers
+ *	sum		- corresponds to the sum pointer in sum_and_count()
+ *	count		- corresponds to the count pointer in sum_and_count()
+ *	length		- corresponds to the length in sum_and_count()
+ */
+static void
+count_and_sum(char const *txzpath, intmax_t *sum, intmax_t *count, intmax_t length)
+{
+    bool test = false;	    /* status of various tests */
 
+    /*
+     * firewall
+     */
+    if (txzpath == NULL) {
+	err(34, __func__, "txzpath is NULL");
+	not_reached();
+    } else if (sum == NULL) {
+	err(34, __func__, "sum is NULL");
+	return;
+    } else if (count == NULL) {
+	err(35, __func__, "count is NULL");
+	not_reached();
+    }
+    test = sum_and_count(length, sum, count, &sum_check, &count_check);
+    if (!test) {
+	/*
+	 * sum_and_count() will have reported the issue so we don't report anything
+	 * specially. We do however increase the number of feathers.
+	 */
+	++txz_info.total_feathers;
+    }
+
+    /* update the tarball files size total */
+    txz_info.files_size = *sum;
+
+    /* check for negative total file length */
+    if (*sum < 0) {
+	++txz_info.total_feathers;
+	++txz_info.negative_files_size;
+	warn("txzchk", "%s: total file size went below 0: %jd", txzpath, *sum);
+	if (*sum < txz_info.previous_files_size) {
+	    ++txz_info.files_size_shrunk;
+	    warn("txzchk", "%s: total files size %jd < previous file size %jd", txzpath, *sum, (intmax_t)txz_info.previous_files_size);
+	}
+    }
+    /* check for sum of total file lengths being too big */
+    if (*sum > MAX_SUM_FILELEN) {
+	++txz_info.total_feathers;
+	++txz_info.files_size_too_big;
+	warn("txzchk", "%s: total file size too big: %jd > %jd", txzpath, *sum, (intmax_t)MAX_SUM_FILELEN);
+    }
+    /* update the previous files size */
+    txz_info.previous_files_size = *sum;
+
+    /* check for no or negative file count */
+    if (*count <= 0) {
+	++txz_info.total_feathers;
+	++txz_info.invalid_files_count;
+	warn("txzchk", "%s: files count <= 0: %jd", txzpath, *count);
+    }
+    /* check for too many files */
+    if (*count - txz_info.abnormal_files > MAX_FILE_COUNT) {
+	++txz_info.total_feathers;
+	++txz_info.invalid_files_count;
+	warn("txzchk", "%s: too many files: %jd > %jd", txzpath, *count - txz_info.abnormal_files, (intmax_t)MAX_FILE_COUNT);
+    }
+}
 /*
  * parse_bsd_txz_line - parse macOS/BSD tar output
  *
  * given:
  *
- *	p	    - pointer to current field in line
- *	linep	    - the line we're parsing
- *	line_dup    - duplicated line
- *	dir_name    - directory name retrieved from fnamchk or NULL if it failed
- *	txzpath	    - the tarball path
- *	saveptr	    - pointer to char * to save context between each strtok_r() call
+ *	p		- pointer to current field in line
+ *	linep		- the line we're parsing
+ *	line_dup	- duplicated line
+ *	dir_name	- directory name retrieved from fnamchk or NULL if it failed
+ *	txzpath		- the tarball path
+ *	saveptr		- pointer to char * to save context between each strtok_r() call
+ *	normal_file	- true ==> normal file, don't count against size or number of files
+ *	sum		- pointer to sum for sum_and_count() (which we use in count_and_sum())
+ *	count		- pointer to count for sum_and_count() (which we use in count_and_sum())
  *
  * If everything goes okay the line will be completely parsed and the calling
  * function (parse_txz_line()) will return to its caller (parse_all_lines()) which
@@ -1113,22 +1095,24 @@ parse_linux_txz_line(char *p, char *linep, char *line_dup, char const *dir_name,
  * This function does not return on error.
  */
 static void
-parse_bsd_txz_line(char *p, char *linep, char *line_dup, char const *dir_name, char const *txzpath, char **saveptr)
+parse_bsd_txz_line(char *p, char *linep, char *line_dup, char const *dir_name, char const *txzpath, char **saveptr,
+		    bool normal_file, intmax_t *sum, intmax_t *count)
 {
-    off_t current_file_size = 0;
-    struct txz_file *file = NULL;
+    intmax_t length = 0; /* file size */
+    struct txz_file *file = NULL;   /* allocated struct of file info */
     int i = 0;
+    bool test = false;		    /* tests related to size and max number of files */
 
     /*
      * firewall
      */
-
-    if (p == NULL || linep == NULL || line_dup == NULL || txzpath == NULL || saveptr == NULL) {
+    if (p == NULL || linep == NULL || line_dup == NULL || txzpath == NULL || saveptr == NULL ||
+	sum == NULL || count == NULL) {
 	err(23, __func__, "called with NULL arg(s)");
 	not_reached();
     }
 
-    p = strtok_r(NULL, " \t", saveptr);
+    p = strtok_r(NULL, tok_sep, saveptr);
     if (p == NULL) {
 	warn("txzchk", "%s: NULL pointer encountered trying to parse line", txzpath);
 	msg("skipping to next line");
@@ -1152,7 +1136,7 @@ parse_bsd_txz_line(char *p, char *linep, char *line_dup, char const *dir_name, c
     /*
      * now do the same for group
      */
-    p = strtok_r(NULL, " \t", saveptr);
+    p = strtok_r(NULL, tok_sep, saveptr);
     if (p == NULL) {
 	warn("txzchk", "%s: NULL pointer encountered trying to parse line", txzpath);
 	msg("skipping to next line");
@@ -1168,7 +1152,7 @@ parse_bsd_txz_line(char *p, char *linep, char *line_dup, char const *dir_name, c
 	++txz_info.total_feathers;
     }
 
-    p = strtok_r(NULL, " \t", saveptr);
+    p = strtok_r(NULL, tok_sep, saveptr);
     if (p == NULL) {
 	warn("txzchk", "%s: NULL pointer encountered trying to parse line", txzpath);
 	msg("skipping to next line");
@@ -1176,12 +1160,25 @@ parse_bsd_txz_line(char *p, char *linep, char *line_dup, char const *dir_name, c
 	return;
     }
 
-    errno = 0;		/* pre-clear errno for warnp() */
-    if (!convert_file_size(&current_file_size, p)) {
-	warnp("txzchk", "%s: trying to parse file size in on line: <%s>: token: <%s>", txzpath, line_dup, p);
-	msg("skipping to next line");
+    test = string_to_intmax2(p, &length);
+    if (!test) {
+	warn("txzchk", "%s: trying to parse file size in on line: <%s>: token: <%s>", txzpath, line_dup, p);
 	++txz_info.total_feathers;
+
+	/*
+	 * we still have to add to the total number of files before we return to
+	 * next line but only if it's a normal file
+	 */
+	if (normal_file) {
+	    count_and_sum(txzpath, sum, count, length);
+	}
+	msg("skipping to next line due to inability to parse file size");
 	return;
+    }
+
+    /* add to total number of files and total size if it's a normal file */
+    if (normal_file) {
+	count_and_sum(txzpath, sum, count, length);
     }
 
     /*
@@ -1189,7 +1186,7 @@ parse_bsd_txz_line(char *p, char *linep, char *line_dup, char const *dir_name, c
      * get the following field which we _do_ care about.
      */
     for (i = 0; i < 4; ++i) {
-	p = strtok_r(NULL, " \t", saveptr);
+	p = strtok_r(NULL, tok_sep, saveptr);
 	if (p == NULL) {
 	    warn("txzchk", "%s: NULL pointer trying to parse line", txzpath);
 	    msg("skipping to next line");
@@ -1199,14 +1196,14 @@ parse_bsd_txz_line(char *p, char *linep, char *line_dup, char const *dir_name, c
     }
 
     /* p should now contain the filename. */
-    file = alloc_txz_file(p);
+    file = alloc_txz_file(p, length);
     if (file == NULL) {
 	err(24, __func__, "alloc_txz_file() returned NULL");
 	not_reached();
     }
 
     do {
-	p = strtok_r(NULL, " \t", saveptr);
+	p = strtok_r(NULL, tok_sep, saveptr);
 	if (p != NULL) {
 	    warn("txzchk", "%s: bogus field found after filename: %s", txzpath, p);
 	    ++txz_info.total_feathers;
@@ -1218,7 +1215,7 @@ parse_bsd_txz_line(char *p, char *linep, char *line_dup, char const *dir_name, c
      * add_txz_file_to_list() function doesn't add the same file (basename) more
      * than once: it simply increments the times it's been seen.
      */
-    check_empty_file(txzpath, current_file_size, file);
+    check_file_size(txzpath, length, file);
 
     /* checks on this specific file */
     check_txz_file(txzpath, dir_name, file);
@@ -1237,22 +1234,27 @@ parse_bsd_txz_line(char *p, char *linep, char *line_dup, char const *dir_name, c
  *	dir_name	-   the dir name reported by fnamchk or NULL if it failed
  *	txzpath		-   the tarball path
  *	dir_count	-   pointer to dir_count (from check_tarball())
+ *	sum		-   corresponds to sum pointer in sum_and_count()
+ *	count		-   corresponds to count pointer in sum_and_count()
  *
- *  Function updates txz_info.total_feathers, txz_info.file_sizes and dir_count. Returns void.
+ *  Function updates txz_info.total_feathers, txz_info.files_size and dir_count. Returns void.
  *
  *  Function does not return on error.
  */
 static void
-parse_txz_line(char *linep, char *line_dup, char const *dir_name, char const *txzpath, int *dir_count)
+parse_txz_line(char *linep, char *line_dup, char const *dir_name, char const *txzpath, int *dir_count,
+	       intmax_t *sum, intmax_t *count)
 {
     char *p = NULL; /* each field in the line extracted from strtok_r() */
     char *saveptr = NULL; /* for strtok_r() context */
+    bool normal_file = false; /* normal file counts against file size and count */
 
     /*
      * firewall
      */
 
-    if (linep == NULL || line_dup == NULL || txzpath == NULL || dir_count == NULL) {
+    if (linep == NULL || line_dup == NULL || txzpath == NULL || dir_count == NULL ||
+	    sum == NULL || count == NULL) {
 	err(25, __func__, "called with NULL arg(s)");
 	not_reached();
     }
@@ -1266,17 +1268,20 @@ parse_txz_line(char *linep, char *line_dup, char const *dir_name, char const *tx
 	    warn("txzchk", "%s: found more than one directory entry: %s", txzpath, linep);
 	    ++txz_info.total_feathers;
 	}
-
+	++txz_info.abnormal_files; /* we need this for the sum_and_count() checks on total number of files */
     /*
-     * look for non-directory non-regular non-hard-lined items
+     * look for non-directory non-regular non-hard-linked items
      */
     } else if (*linep != '-') {
-	warn("txzchk", "%s: found a non-directory non-regular non-hard-lined item: %s", txzpath, linep);
+	warn("txzchk", "%s: found a non-directory non-regular non-hard-linked item: %s", txzpath, linep);
 	++txz_info.total_feathers;
+	++txz_info.abnormal_files; /* we need this for the sum_and_count() checks on total number of files */
+    } else {
+	normal_file = true; /* we have to count this as a normal file */
     }
 
     /* extract each field, one at a time, to do various tests */
-    p = strtok_r(linep, " \t", &saveptr);
+    p = strtok_r(linep, tok_sep, &saveptr);
     if (p == NULL) {
 	warn("txzchk", "%s: NULL pointer encountered trying to parse line", txzpath);
 	msg("skipping to next line");
@@ -1291,9 +1296,9 @@ parse_txz_line(char *linep, char *line_dup, char const *dir_name, char const *tx
 
     /*
      * we have to check this next field for a '/': this will tell us whether to
-     * parse it for linux or for macOS/BSD.
+     * parse it for linux or for macOS (and presumably BSD).
      */
-    p = strtok_r(NULL, " \t", &saveptr);
+    p = strtok_r(NULL, tok_sep, &saveptr);
     if (p == NULL) {
 	warn("txzchk", "%s: NULL pointer encountered trying to parse line", txzpath);
 	msg("skipping to next line");
@@ -1302,10 +1307,10 @@ parse_txz_line(char *linep, char *line_dup, char const *dir_name, char const *tx
     }
     if (strchr(p, '/') != NULL) {
 	/* found linux output */
-	parse_linux_txz_line(p, linep, line_dup, dir_name, txzpath, &saveptr);
+	parse_linux_txz_line(p, linep, line_dup, dir_name, txzpath, &saveptr, normal_file, sum, count);
     } else {
 	/* assume macOS/BSD output */
-	parse_bsd_txz_line(p, linep, line_dup, dir_name, txzpath, &saveptr);
+	parse_bsd_txz_line(p, linep, line_dup, dir_name, txzpath, &saveptr, normal_file, sum, count);
     }
 }
 
@@ -1638,7 +1643,7 @@ add_txz_line(char const *str, int line_num)
     }
     line->line_num = line_num;
 
-    dbg(DBG_MED, "adding line %s to lines list", line->line);
+    dbg(DBG_VHIGH, "adding line %s to lines list", line->line);
     line->next = txz_lines;
     txz_lines = line;
 }
@@ -1666,6 +1671,8 @@ parse_all_txz_lines(char const *dir_name, char const *txzpath)
     struct txz_line *line = NULL;	/* for txz_lines list */
     char *line_dup = NULL;	/* strdup()d line */
     int dir_count = 0;		/* number of directories detected */
+    intmax_t sum = 0;		/* sum for sum_and_count() checks */
+    intmax_t count = 0;		/* count for sum_and_count() checks */
 
     /*
      * firewall
@@ -1688,7 +1695,7 @@ parse_all_txz_lines(char const *dir_name, char const *txzpath)
 	    not_reached();
 	}
 
-	parse_txz_line(line->line, line_dup, dir_name, txzpath, &dir_count);
+	parse_txz_line(line->line, line_dup, dir_name, txzpath, &dir_count, &sum, &count);
 	free(line_dup);
 	line_dup = NULL;
     }
@@ -1736,6 +1743,8 @@ free_txz_lines(void)
  * given:
  *
  *	path	- file path
+ *	length	- length of file as calculated by string_to_intmax2 (validating
+ *		  size of files will be done later)
  *
  * Returns the newly allocated struct txz_file * with the file information. The
  * function does NOT add it to the list!
@@ -1743,7 +1752,7 @@ free_txz_lines(void)
  * This function does not return on error.
  */
 static struct txz_file *
-alloc_txz_file(char const *path)
+alloc_txz_file(char const *path, intmax_t length)
 {
     struct txz_file *file; /* the file structure */
 
@@ -1773,6 +1782,9 @@ alloc_txz_file(char const *path)
 	err(43, __func__, "%s: unable to strdup basename of filename %s", txzpath, path);
 	not_reached();
     }
+
+    /* also record the length */
+    file->length = length;
 
     return file;
 }
@@ -1816,7 +1828,7 @@ add_txz_file_to_list(struct txz_file *txzfile)
     }
     txzfile->count++;
     /* lazily add to list */
-    dbg(DBG_MED, "adding filename %s (basename %s) to list of files", txzfile->filename, txzfile->basename);
+    dbg(DBG_VHIGH, "adding filename %s (basename %s) to list of files", txzfile->filename, txzfile->basename);
     txzfile->next = txz_files;
     txz_files = txzfile;
 }

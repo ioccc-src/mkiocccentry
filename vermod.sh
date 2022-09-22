@@ -40,7 +40,7 @@ export USAGE="usage: $0 [-h] [-v level] [-d test_dir] [-i limit.sh]
     -o            Verify old version (def: verify new version)
     -F            Force change, even if it cannot be verified (def: reject an unverified change)
 
-    -Q            Do not double quite string (def: add double quotes around old_ver and new_ver when making changes)
+    -Q            Do not double quote string (def: add double quotes around old_ver and new_ver when making changes)
 
     -n            No op: change no files (def: change files)
     -l            List files that change/will change (def: do not list)

@@ -1,0 +1,91 @@
+.TH vermod 8 "12 September 2022" "vermod" "IOCCC tools"
+.SH NAME
+vermod \- modify version strings (and others) under ./test_JSON/
+.SH SYNOPSIS
+\fBvermod.sh\fP [\-h] [\-v level] [\-d test_dir] [\-i limit.sh] [\-o] [\-F] [\-Q] [\-n] [\-l] [\-L] old_ver new_ver
+.SH DESCRIPTION
+\fBvermod.sh\fP uses \fBrpl(1)\fP to update strings from an old value to a new value under ./test_JSON (by default).
+This is needed for when a version of a tool changes so that the test suite does not fail.
+.SH OPTIONS
+.PP
+\fB\-h\fP
+Show help and exit.
+.PP
+\fB\-v\fP
+Set verbosity level (def: 0).
+.PP
+\fB\-d\fP
+Set the directory where the '*.json' files are expected.
+.PP
+\fB\-i\fP
+Set limit.sh file to verify new version.
+.PP
+\fB\-o\fP
+Verify old version instead of the new version (which is the default).
+.PP
+\fB\-F\fP
+Force change even if verification fails (def: reject unverified changes).
+.PP
+\fB\-Q\fP
+Do not double quote strings.
+.PP
+\fB\-n\fP
+No op: change no files.
+.PP
+\fB\-l\fP
+List files that change or would be changed.
+This is useful with \fB\-n\fP to show what would change.
+.PP
+\fB\-L\fP
+List files that do not change or would not be changed.
+This is useful with \fB\-n\fP to show what wouldn't change.
+.SH EXIT STATUS
+.PP
+Exit codes:
+.br
+    0 \- all is well
+.br
+    1 \- \fBrpl\fP exited non-zero
+.br
+    2 \- \fBrpl\fP not found
+.br
+    3 \- no limit.sh found or is not readable
+.br
+    4 \- no test directory found or is not readable
+.br
+    5 \- usage message due to \fB\-h\fP
+.br
+    6 \- command line error and usage message printed
+.br
+    7 \- no *.json files found under test directory
+.br
+    8 \- new_ver (or old_ver if \fB\-o\fP) not found in limit file
+.br
+    >= 9 - internal error
+.SH FILES
+\fItest_JSON\fP
+.RS
+Default directory of good and bad subdirectories each respectively with good and bad JSON files.
+.RE
+.SH NOTES
+.PP
+This script is only needed when a version of a tool is changed by a developer of the repo.
+.PP
+The tool \fBsed(1)\fP and various others could also be used to do this but this script is generally preferred because it can verify that the version change is actually correct.
+.SH EXAMPLES
+.PP
+.nf
+After changing the version of \fBtxzchk\fP to \fB0.12 2022-09-2\fP from \fB0.11 2022-08-23\fP show what files would change:
+.RS
+\fB
+ ./vermod.sh -l -n '0.11 2022-08-23' '0.12 2022-09-22'\fP
+.RE
+.PP
+.nf
+After verifying that the above command is correct, run the script again to actually make the changes:
+.RS
+\fB
+ ./vermod.sh  '0.11 2022-08-23' '0.12 2022-09-22'\fP
+.RE
+.SH SEE ALSO
+\fBrpl(1)\fP
