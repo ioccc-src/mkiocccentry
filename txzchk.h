@@ -72,6 +72,7 @@ static char const *program = NULL;		/* our name */
 static bool text_file_flag_used = false;	/* true ==> assume txzpath is a text file */
 static char const *ext = "txz";			/* force extension in fnamchk to be this value */
 static bool suppress_error_messages = false;	/* true ==> suppress error messages (-e used for tests but should be changed) */
+static char const *tok_sep = " \t";		/* token separators for strtok_r */
 
 /*
  * information about the tarball
@@ -80,30 +81,32 @@ struct txz_info
 {
     bool has_info_json;			    /* true ==> has a .info.json file */
     bool empty_info_json;		    /* true ==> .info.json size == 0 */
+    off_t info_json_size;		    /* .info.json file size */
     bool has_author_json;		    /* true ==> has an .author.json file */
+    off_t author_json_size;		    /* .author.json file size */
     bool empty_author_json;		    /* true ==> .author.json size == 0 */
     bool has_prog_c;			    /* true ==> has a prog.c file */
     bool empty_prog_c;			    /* true ==> prog.c size == 0 (this is for debugging information only) */
+    off_t prog_c_size;			    /* prog.c file size */
     bool has_remarks_md;		    /* true ==> has a remarks.md file */
     bool empty_remarks_md;		    /* true ==> remarks.md size == 0 */
+    off_t remarks_md_size;		    /* remarks.md file size */
     bool has_Makefile;			    /* true ==> has a Makefile */
     bool empty_Makefile;		    /* true ==> Makefile size == 0 */
+    off_t Makefile_size;		    /* Makefile file size */
     uintmax_t unsafe_chars;		    /* > 0 ==> unsafe characters found in this number of filenames (posix_safe_plus()) */
     off_t size;				    /* size of the tarball itself */
-    off_t file_sizes;			    /* total size of all the files combined */
+    off_t files_size;			    /* total size of all the files combined */
     off_t previous_files_size;		    /* the previous total size of all files combined */
+    uintmax_t invalid_files_count;	    /* > 0 ==> number of times file count went <= 0 */
     uintmax_t negative_files_size;	    /* > 0 ==> number of times the total files reached < 0 */
     uintmax_t files_size_too_big;	    /* > 0 ==> total number of times files size sum > MAX_DIR_KSIZE */
     uintmax_t files_size_shrunk;	    /* > 0 ==> total files size shrunk this many times */
-    off_t previous_rounded_file_size;	    /* the previous total file sizes rounded up to 1024 multiple */
-    uintmax_t negative_rounded_files_size;  /* > 0 ==> number of times the rounded files size reached < 0 */
-    uintmax_t rounded_files_size_shrunk;    /* > 0 ==> rounded files size shrunk this many times */
-    uintmax_t rounded_files_size_too_big;   /* > 0 ==> rounded files size too big this many times */
-    off_t rounded_file_size;		    /* file sizes rounded up to 1024 multiple */
     uintmax_t correct_directory;	    /* number of files in the correct directory */
     uintmax_t dot_files;		    /* number of dot files that aren't .author.json and .info.json */
     uintmax_t named_dot;		    /* number of files called just '.' */
     uintmax_t total_files;		    /* total files in the tarball */
+    uintmax_t abnormal_files;		    /* total number of abnormal files in tarball (i.e. not regular files) */
     uintmax_t total_feathers;		    /* number of total feathers stuck in tarball (i.e. issues found) */
 };
 
@@ -126,6 +129,8 @@ struct txz_file
     char *basename;			    /* basename of _this_ file */
     char *filename;			    /* full path of _this_ file */
     uintmax_t count;			    /* number of times _this_ file has been seen */
+    bool is_file;			    /* true ==> is normal file (count size and number of files) */
+    intmax_t length;			    /* size as determined by string_to_intmax2() */
     struct txz_file *next;		    /* the next file in the txz_files list */
 };
 
@@ -181,22 +186,24 @@ static const char * const usage_msg =
  */
 static void usage(int exitcode, char const *name, char const *str) __attribute__((noreturn));
 static void txzchk_sanity_chks(char const *tar, char const *fnamchk);
-static void parse_txz_line(char *linep, char *line_dup, char const *dir_name, char const *txzpath, int *dir_count);
-static void parse_linux_txz_line(char *p, char *line, char *line_dup, char const *dir_name, char const *txzpath, char **saveptr);
-static void parse_bsd_txz_line(char *p, char *line, char *line_dup, char const *dir_name, char const *txzpath, char **saveptr);
+static void parse_txz_line(char *linep, char *line_dup, char const *dir_name, char const *txzpath, int *dir_count,
+			   intmax_t *sum, intmax_t *count);
+static void parse_linux_txz_line(char *p, char *line, char *line_dup, char const *dir_name, char const *txzpath, char **saveptr,
+		    bool normal_file, intmax_t *sum, intmax_t *count);
+static void parse_bsd_txz_line(char *p, char *line, char *line_dup, char const *dir_name, char const *txzpath, char **saveptr,
+		    bool normal_file, intmax_t *sum, intmax_t *count);
 static uintmax_t check_tarball(char const *tar, char const *fnamchk);
 static void show_txz_info(char const *txzpath);
-static void check_empty_file(char const *txzpath, off_t size, struct txz_file *file);
+static void check_file_size(char const *txzpath, off_t size, struct txz_file *file);
+static void count_and_sum(char const *txzpath, intmax_t *sum, intmax_t *count, intmax_t length);
 static void check_txz_file(char const *txzpath, char const *dir_name, struct txz_file *file);
-static bool convert_file_size(off_t *current_file_size, char *p);
-static void check_txz_files_size(bool show_rounded_size);
 static void check_all_txz_files(char const *dir_name);
 static void check_directories(struct txz_file *file, char const *dir_name, char const *txzpath);
 static bool has_special_bits(char const *str);
 static void add_txz_line(char const *str, int line_num);
 static void parse_all_txz_lines(char const *dir_name, char const *txzpath);
 static void free_txz_lines(void);
-static struct txz_file *alloc_txz_file(char const *path);
+static struct txz_file *alloc_txz_file(char const *path, intmax_t length);
 static void add_txz_file_to_list(struct txz_file *file);
 static void free_txz_files_list(void);
 

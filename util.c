@@ -2324,7 +2324,8 @@ string_to_intmax(char const *str)
 bool
 string_to_intmax2(char const *str, intmax_t *ret)
 {
-    intmax_t num;
+    intmax_t num = 0;
+    char *endptr = NULL;
 
     /*
      * firewall
@@ -2342,9 +2343,15 @@ string_to_intmax2(char const *str, intmax_t *ret)
      * perform the conversion
      */
     errno = 0;		/* pre-clear errno for warnp() */
-    num = strtoimax(str, NULL, 10);
+    num = strtoimax(str, &endptr, 10);
     if (errno != 0) {
 	warnp(__func__, "error converting string <%s> to intmax_t", str);
+	return false;
+    } else if (endptr == str) {
+	warn(__func__, "string %s has no digits", str);
+	return false;
+    } else if (*endptr != '\0') {
+	warn(__func__, "number %s has invalid characters", str);
 	return false;
     } else if (num <= INTMAX_MIN || num >= INTMAX_MAX) {
 	warn(__func__, "number %s out of range for intmax_t (must be > %jd && < %jd)", str, INTMAX_MIN, INTMAX_MAX);
@@ -3757,7 +3764,7 @@ sum_and_count(intmax_t value, intmax_t *sump, intmax_t *countp, intmax_t *sum_ch
      */
     inv_value = ~value;
     if (value < 0) {
-	dbg(DBG_MED, "sum_and_count value argument < 0: value %jd < 0", value);
+	dbg(DBG_HIGH, "sum_and_count value argument < 0: value %jd < 0", value);
 	return false;
     }
 
@@ -3779,26 +3786,38 @@ sum_and_count(intmax_t value, intmax_t *sump, intmax_t *countp, intmax_t *sum_ch
     inv_prev_count = ~prev_count;
     *count_checkp = -(*countp);
     if (~inv_sum != *sump) {
+	dbg(DBG_HIGH, "inv_sum: %jd", inv_sum);
+	dbg(DBG_HIGH, "*sump: %jd", *sump);
 	warn(__func__, "imported inverted sum changed: ~inv_sum %jd != *sump %jd", ~inv_sum, *sump);
 	return false;
     }
     if (*sump != sum) {
+	dbg(DBG_HIGH, "*sump: %jd", *sump);
+	dbg(DBG_HIGH, "sum: %jd", sum);
 	warn(__func__, "imported sum changed: *sump %jd != sum %jd", *sump, sum);
 	return false;
     }
     if (~inv_count != *countp) {
+	dbg(DBG_HIGH, "inv_count: %jd", inv_count);
+	dbg(DBG_HIGH, "*countp: %jd", *countp);
 	warn(__func__, "imported inverted count changed: ~inv_count %jd != *countp %jd", ~inv_count, *countp);
 	return false;
     }
     if (*countp != count) {
+	dbg(DBG_HIGH, "*countp: %jd", *countp);
+	dbg(DBG_HIGH, "count: %jd", count);
 	warn(__func__, "imported count changed: *countp %jd != count %jd", *countp, count);
 	return false;
     }
     if (*sum_checkp != -sum) {
+	dbg(DBG_HIGH, "*sum_checkp: %jd", *sum_checkp);
+	dbg(DBG_HIGH, "sum: %jd", sum);
 	warn(__func__, "sum negation changed: *sum_checkp %jd != -sum %jd", *sum_checkp, -sum);
 	return false;
     }
     if (*count_checkp != -count) {
+	dbg(DBG_HIGH, "*count_checkp: %jd", *count_checkp);
+	dbg(DBG_HIGH, "count: %jd", count);
 	warn(__func__, "count negation changed: *count_checkp %jd != -count %jd", *count_checkp, -count);
 	return false;
     }
@@ -3819,7 +3838,9 @@ sum_and_count(intmax_t value, intmax_t *sump, intmax_t *countp, intmax_t *sum_ch
     /*
      * attempt the sum
      */
+    dbg(DBG_HIGH, "adding value %jd to sum %jd", value, sum);
     sum += value;
+    dbg(DBG_HIGH, "new sum: %jd", sum);
 
     /*
      * more paranoia: sum cannot be negative
@@ -3841,9 +3862,13 @@ sum_and_count(intmax_t value, intmax_t *sump, intmax_t *countp, intmax_t *sum_ch
      * try to verify a consistent previous sum
      */
     if (prev_sum != ~inv_prev_sum) {
+	dbg(DBG_HIGH, "prev_sum: %jd", prev_sum);
+	dbg(DBG_HIGH, "inv_prev_sum: %jd", inv_prev_sum);
 	warn(__func__, "unexpected change to the previous sum: prev_sum %jd != ~inv_prev_sum %jd", prev_sum, ~inv_prev_sum);
 	return false;
     } else if (-prev_sum != *sum_checkp) {
+	dbg(DBG_HIGH, "prev_sum: %jd", prev_sum);
+	dbg(DBG_HIGH, "*sum_checkp: %jd", *sum_checkp);
 	warn(__func__, "unexpected change to the previous sum: -prev_sum %jd != *sum_checkp %jd", -prev_sum, *sum_checkp);
 	return false;
     }
@@ -3852,10 +3877,14 @@ sum_and_count(intmax_t value, intmax_t *sump, intmax_t *countp, intmax_t *sum_ch
      * second and third sanity check for count increment
      */
     if ((*countp) != count-1) {
+	dbg(DBG_HIGH, "*countp: %jd", *countp);
+	dbg(DBG_HIGH, "count: %jd", count);
 	warn(__func__, "second check on count increment failed: (*countp) %jd != (count-1) %jd", (*countp), count-1);
 	return false;
     }
     if (count != prev_count+1) {
+	dbg(DBG_HIGH, "count: %jd", count);
+	dbg(DBG_HIGH, "prev_count: %jd", prev_count);
 	warn(__func__, "third check on count increment failed: count %jd != (prev_count+1) %jd", count, prev_count + 1);
 	return false;
     }
@@ -3864,9 +3893,13 @@ sum_and_count(intmax_t value, intmax_t *sump, intmax_t *countp, intmax_t *sum_ch
      * try to verify a consistent previous count
      */
     if (-prev_count != *count_checkp) {
+	dbg(DBG_HIGH, "prev_count: %jd", prev_count);
+	dbg(DBG_HIGH, "*count_checkp: %jd", *count_checkp);
 	warn(__func__, "unexpected change to the previous count: -prev_count %jd != *count_checkp %jd", -prev_count, *count_checkp);
 	return false;
     } else if (prev_count != ~inv_prev_count) {
+	dbg(DBG_HIGH, "prev_count: %jd", prev_count);
+	dbg(DBG_HIGH, "inv_prev_count: %jd", inv_prev_count);
 	warn(__func__, "unexpected change to the previous count: prev_count %jd != ~inv_prev_count %jd", prev_count, ~inv_prev_count);
 	return false;
     }
@@ -3875,18 +3908,34 @@ sum_and_count(intmax_t value, intmax_t *sump, intmax_t *countp, intmax_t *sum_ch
      * second and third sanity check for sum
      */
     if ((*sum_checkp)-value != -sum) {
+	dbg(DBG_HIGH, "*sum_checkp: %jd", *sum_checkp);
+	dbg(DBG_HIGH, "value: %jd", value);
+	dbg(DBG_HIGH, "(*sum_checkp)-value: %jd", (*sum_checkp)-value);
+	dbg(DBG_HIGH, "sum: %jd", sum);
 	warn(__func__, "second check on sum failed: (*sum_checkp)-value %jd != -sum %jd", (*sum_checkp)-value, -sum);
 	return false;
     }
+    /*
+     * FIXME - this is buggy and so it's disabled for now so that the code which
+     * needs this function will be able to work - FIXME
+     */
+    #if 0
     if (-sum != prev_sum-(~inv_value)) {
+	dbg(DBG_HIGH, "sum: %jd", sum);
+	dbg(DBG_HIGH, "prev_sum: %jd", prev_sum);
+	dbg(DBG_HIGH, "inv_value: %jd", inv_value);
+	dbg(DBG_HIGH, "prev_sum-(~inv_value): %jd", prev_sum-(~inv_value));
 	warn(__func__, "third check on sum failed: -sum %jd != prev_sum-(~inv_value) %jd", -sum, prev_sum-(~inv_value));
 	return false;
     }
+    #endif
 
     /*
      * second sanity check for value
      */
     if (~inv_value != value) {
+	dbg(DBG_HIGH, "inv_value: %jd", inv_value);
+	dbg(DBG_HIGH, "value: %jd", value);
 	warn(__func__, "value unexpectedly changed: ~inv_val %jd != value %jd", ~inv_value, value);
 	return false;
     }
@@ -3895,10 +3944,14 @@ sum_and_count(intmax_t value, intmax_t *sump, intmax_t *countp, intmax_t *sum_ch
      * final checks in counts and values
      */
     if (*countp != ~inv_count) {
+	dbg(DBG_HIGH, "*countp: %jd", *countp);
+	dbg(DBG_HIGH, "inv_count: %jd", inv_count);
 	warn(__func__, "final check on imported inverted count changed: *countp %jd != ~inv_count %jd", *countp, ~inv_count);
 	return false;
     }
     if (*sump != ~inv_sum) {
+	dbg(DBG_HIGH, "*sump: %jd", *sump);
+	dbg(DBG_HIGH, "inv_sum: %jd", inv_sum);
 	warn(__func__, "final check on imported inverted sum changed: *sump %jd != ~inv_sum %jd", *sump, ~inv_sum);
 	return false;
     }
@@ -3920,6 +3973,9 @@ sum_and_count(intmax_t value, intmax_t *sump, intmax_t *countp, intmax_t *sum_ch
      */
     *sump = sum;
     *countp = count;
+
+    dbg(DBG_HIGH, "new sum is %jd", *sump);
+    dbg(DBG_HIGH, "new count is %jd", *countp);
 
     /*
      * report sum and count success
