@@ -1,0 +1,37 @@
+.TH mkiocccentry_test 8 "23 September 2022" "mkiocccentry_test" "IOCCC tools"
+.SH NAME
+mkiocccentry_test.sh \- run several invocations of \fBmkiocccentry(1)\fP to test that it functions well
+.SH SYNOPSIS
+\fBmkiocccentry_test.sh\fP [\-h] [\-v level] [\-J level] [\-V]
+.SH DESCRIPTION
+\fBmkiocccentry_test.sh\fP runs a series of invocations of \fBmkiocccentry\fP, testing various types of inputs including multiple authors some of which have non-ASCII characters in their name.
+.SH OPTIONS
+.PP
+\fB\-h\fP
+Show help and exit.
+.PP
+\fB\-v\fP
+Set verbosity level (def: 0).
+.PP
+\fB\-J\fP
+Set JSON verbosity level.
+.PP
+\fB\-V\fP
+Print version and exit.
+.SH EXIT STATUS
+.PP
+Exit codes:
+.br
+0	all tests are OK
+.br
+1	-h and help string printed or -V and version string printed
+.br
+2	Command line usage error
+.br
+>=10	some make action exited non-zero
+.SH BUGS
+.PP
+This script does not let one set the path to the needed tools like the other scripts do and so requires that one is in the clone of the repo directory to successfully run this script.
+This should probably be fixed.
+.SH SEE ALSO
+\fBioccc_test(8)\fP, \fBiocccsize_test(8)\fP.
