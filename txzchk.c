@@ -1048,7 +1048,8 @@ count_and_sum(char const *txzpath, intmax_t *sum, intmax_t *count, intmax_t leng
 	warn("txzchk", "%s: total file size went below 0: %jd", txzpath, *sum);
 	if (*sum < txz_info.previous_files_size) {
 	    ++txz_info.files_size_shrunk;
-	    warn("txzchk", "%s: total files size %jd < previous file size %jd", txzpath, *sum, (intmax_t)txz_info.previous_files_size);
+	    warn("txzchk", "%s: total files size %jd < previous file size %jd", txzpath, *sum,
+		    (intmax_t)txz_info.previous_files_size);
 	}
     }
     /* check for sum of total file lengths being too big */
