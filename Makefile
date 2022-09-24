@@ -407,7 +407,7 @@ all: ${TARGETS} ${TEST_TARGETS}
 
 # rules, not file targets
 #
-.PHONY: all configure clean clobber install test reset_min_timestamp \
+.PHONY: all depend configure clean clobber install test reset_min_timestamp \
 	picky parser build clean_generated_obj prep_clobber rebuild_jnum_test
 
 
