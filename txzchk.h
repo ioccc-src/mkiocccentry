@@ -11,7 +11,7 @@
  *
  *	The many poor souls who have been tarred and feathered:
  *
- *	    "Because sometimes people add feathers to tar." :-(
+ *	    "Because sometimes people throw feathers on tar." :-(
  *
  *	And to my wonderful Mum and my dear cousin and friend Dani:
  *
