@@ -847,7 +847,7 @@ seqcexit: Makefile
 	    ${SEQCEXIT} -D werr_sem_val -D werrp_sem_val -- ${ALL_CSRC}; \
 	fi
 
-picky: ${ALL_CSRC} ${H_FILES} ${LESS_PICKY_H_FILES} Makefile
+picky: ${ALL_CSRC} ${H_FILES} ${LESS_PICKY_H_FILES} ${FLEXFILES} ${BISONFILES} Makefile
 	@if ! type -P ${PICKY} >/dev/null 2>&1; then \
 	    echo "The picky tool could not found." 1>&2; \
 	    echo "The picky tool is required for this rule." 1>&2; \
@@ -858,8 +858,8 @@ picky: ${ALL_CSRC} ${H_FILES} ${LESS_PICKY_H_FILES} Makefile
 	    echo 1>&2; \
 	    exit 1; \
 	else \
-	    echo "${PICKY} -w132 -u -s -t8 -v -e -- ${SRCFILES} ${H_FILES}"; \
-	    ${PICKY} -w132 -u -s -t8 -v -e -- ${SRCFILES} ${H_FILES}; \
+	    echo "${PICKY} -w132 -u -s -t8 -v -e -- ${SRCFILES} ${H_FILES} ${FLEXFILES} ${BISONFILES}"; \
+	    ${PICKY} -w132 -u -s -t8 -v -e -- ${SRCFILES} ${H_FILES} ${FLEXFILES} ${BISONFILES}; \
 	    echo "${PICKY} -w132 -u -s -t8 -v -e -8 -- ${LESS_PICKY_CSRC} ${LESS_PICKY_H_FILES}"; \
 	    ${PICKY} -w132 -u -s -t8 -v -e -8 -- ${LESS_PICKY_CSRC} ${LESS_PICKY_H_FILES}; \
 	fi
