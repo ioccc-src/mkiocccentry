@@ -407,8 +407,11 @@ all: ${TARGETS} ${TEST_TARGETS}
 
 # rules, not file targets
 #
-.PHONY: all depend configure clean clobber install test reset_min_timestamp \
-	picky parser build clean_generated_obj prep_clobber rebuild_jnum_test
+.PHONY: all all_ref bug-report build checknr clean clean_generated_obj \
+        clean_mkchk_sem clobber configure depend hostchk install ioccc_test \
+        legacy_clobber man2html mkchk_sem parser parser-o picky prep prep_clobber \
+        pull rebuild_jnum_test release reset_min_timestamp seqcexit shellcheck tags \
+        test test-chkentry use_ref
 
 
 #####################################
