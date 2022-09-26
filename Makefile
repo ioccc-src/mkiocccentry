@@ -849,7 +849,7 @@ seqcexit: Makefile
 
 picky: ${ALL_CSRC} ${H_FILES} ${LESS_PICKY_H_FILES} ${FLEXFILES} ${BISONFILES} Makefile
 	@if ! type -P ${PICKY} >/dev/null 2>&1; then \
-	    echo "The picky tool could not found." 1>&2; \
+	    echo "The picky tool could not be found." 1>&2; \
 	    echo "The picky tool is required for this rule." 1>&2; \
 	    echo "We recommend you install picky v2.6 or later" 1>&2; \
 	    echo "from this URL:" 1>&2; \
@@ -868,7 +868,7 @@ picky: ${ALL_CSRC} ${H_FILES} ${LESS_PICKY_H_FILES} ${FLEXFILES} ${BISONFILES} M
 #
 shellcheck: ${SH_FILES} .shellcheckrc Makefile
 	@HAVE_SHELLCHECK="`type -P ${SHELLCHECK}`"; if [[ -z "$$HAVE_SHELLCHECK" ]]; then \
-	    echo 'The shellcheck command could not found.' 1>&2; \
+	    echo 'The shellcheck command could not be found.' 1>&2; \
 	    echo 'The shellcheck command is required to run this rule.'; 1>&2; \
 	    echo ''; 1>&2; \
 	    echo 'See the following GitHub repo for shellcheck:'; 1>&2; \
@@ -886,7 +886,7 @@ shellcheck: ${SH_FILES} .shellcheckrc Makefile
 #
 checknr: ${MANPAGES}
 	@HAVE_CHECKNR="`type -P ${CHECKNR}`"; if [[ -z "$$HAVE_CHECKNR" ]]; then \
-	    echo 'The checknr command could not found.' 1>&2; \
+	    echo 'The checknr command could not be found.' 1>&2; \
 	    echo 'The checknr command is required to run this rule.'; 1>&2; \
 	    echo ''; 1>&2; \
 	    exit 1; \
@@ -899,11 +899,11 @@ man2html: ${MANPAGES}
 	@HAVE_MAN2HTML="`type -P ${MAN2HTML}`"; \
 	 HAVE_MAN="`type -P ${MAN}`"; \
 	if [[ -z "$$HAVE_MAN2HTML" ]]; then \
-	    echo 'The man2html command could not found.' 1>&2; \
+	    echo 'The man2html command could not be found.' 1>&2; \
 	    echo 'The man2html command is required to run this rule.'; 1>&2; \
 	fi; \
 	if [[ -z "$$HAVE_MAN" ]]; then \
-	    echo 'The man command could not found.' 1>&2; \
+	    echo 'The man command could not be found.' 1>&2; \
 	    echo 'The man command is required to run this rule.'; 1>&2; \
 	fi; \
 	if [[ -z "$$HAVE_MAN2HTML" || -z "$$HAVE_MAN" ]]; then \
