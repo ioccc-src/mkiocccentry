@@ -231,8 +231,9 @@ show_txz_info(char const *txzpath)
 		singular_or_plural(txz_info.files_size_shrunk));
 	dbg(DBG_HIGH, "%s went below 0 in all files size %ju time%s", txzpath, txz_info.negative_files_size,
 		singular_or_plural(txz_info.negative_files_size));
-	dbg(DBG_HIGH, "%s went above max files size %d %ju time%s", txzpath,
-		MAX_DIR_KSIZE, (uintmax_t)txz_info.files_size_too_big, singular_or_plural(txz_info.files_size_too_big));
+	dbg(DBG_HIGH, "%s went above max files size %ju %ju time%s", txzpath,
+		(uintmax_t)MAX_SUM_FILELEN, (uintmax_t)txz_info.files_size_too_big,
+		singular_or_plural(txz_info.files_size_too_big));
 	dbg(DBG_MED, "%s has %ju file%s", txzpath, txz_info.total_files-txz_info.abnormal_files,
 		txz_info.total_files-txz_info.abnormal_files == 1?"":"s");
 
