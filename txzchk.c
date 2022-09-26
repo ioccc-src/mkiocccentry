@@ -244,7 +244,8 @@ show_txz_info(char const *txzpath)
 	    dbg(DBG_MED, "%s has 0 incorrect directories", txzpath);
 	}
 
-	dbg(DBG_MED, "%s has %ju invalid dot file%s", txzpath, txz_info.dot_files, singular_or_plural(txz_info.dot_files));
+	dbg(DBG_MED, "%s has %ju invalid dot file%s", txzpath, txz_info.invalid_dot_files,
+		singular_or_plural(txz_info.invalid_dot_files));
 	dbg(DBG_MED, "%s has %ju file%s named '.'", txzpath, txz_info.named_dot, singular_or_plural(txz_info.named_dot));
 	dbg(DBG_MED, "%s has %ju file%s with one or more unsafe chars", txzpath, txz_info.unsafe_chars,
 		singular_or_plural(txz_info.unsafe_chars));
@@ -551,7 +552,7 @@ check_txz_file(char const *txzpath, char const *dir_name, struct txz_file *file)
 	    ++txz_info.total_feathers;
 	    warn("txzchk", "%s: found non %s and %s dot file %s",
 			   txzpath, AUTHOR_JSON_FILENAME, INFO_JSON_FILENAME, file->basename);
-	    txz_info.dot_files++;
+	    txz_info.invalid_dot_files++;
 
 	    /* check for files called '.' without anything after the dot */
 	    if (file->basename[1] == '\0') {
@@ -732,9 +733,9 @@ check_all_txz_files(char const *dir_name)
      * Don't increment the number of feathers as this was done in
      * check_txz_file().
      */
-    if (txz_info.dot_files > 0) {
-	warn("txzchk", "%s: found a total of %ju unacceptable dot file%s",
-		       txzpath, txz_info.dot_files, txz_info.dot_files==1?"":"s");
+    if (txz_info.invalid_dot_files > 0) {
+	warn("txzchk", "%s: found a total of %ju invalidly named dot file%s",
+		       txzpath, txz_info.invalid_dot_files, txz_info.invalid_dot_files==1?"":"s");
     }
 
     /*

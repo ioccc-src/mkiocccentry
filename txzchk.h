@@ -103,7 +103,7 @@ struct txz_info
     uintmax_t files_size_too_big;	    /* > 0 ==> total number of times files size sum > MAX_DIR_KSIZE */
     uintmax_t files_size_shrunk;	    /* > 0 ==> total files size shrunk this many times */
     uintmax_t correct_directory;	    /* number of files in the correct directory */
-    uintmax_t dot_files;		    /* number of dot files that aren't .author.json and .info.json */
+    uintmax_t invalid_dot_files;	    /* number of dot files that aren't .author.json and .info.json */
     uintmax_t named_dot;		    /* number of files called just '.' */
     uintmax_t total_files;		    /* total files in the tarball */
     uintmax_t abnormal_files;		    /* total number of abnormal files in tarball (i.e. not regular files) */
