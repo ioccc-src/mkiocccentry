@@ -45,7 +45,6 @@
 #define RULE_2A_SIZE ((off_t)(4096))		/* Rule 2a size of prog.c */
 #define RULE_2B_SIZE ((size_t)(2503))		/* Rule 2b size of prog.c */
 #define MAX_TARBALL_LEN ((off_t)(3999971))	/* compressed tarball size limit in bytes */
-#define MAX_DIR_KSIZE (27651)			/* XXX - this constant is going away in favor of the next 2 MAX defines - XXX */
 #define MAX_SUM_FILELEN ((off_t)(27651*1024))	/* maximum sum of the byte lengths of all files in the entry */
 #define MAX_FILE_COUNT (37+5)			/* maximum number of files (along with the 5 required files) in an entry */
 /* NOTE: MAX_ENTRY_NUM must be < 10 to the MAX_ENTRY_CHARS power */

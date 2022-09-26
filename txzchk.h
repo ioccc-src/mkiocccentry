@@ -100,7 +100,7 @@ struct txz_info
     off_t previous_files_size;		    /* the previous total size of all files combined */
     uintmax_t invalid_files_count;	    /* > 0 ==> number of times file count went <= 0 */
     uintmax_t negative_files_size;	    /* > 0 ==> number of times the total files reached < 0 */
-    uintmax_t files_size_too_big;	    /* > 0 ==> total number of times files size sum > MAX_DIR_KSIZE */
+    uintmax_t files_size_too_big;	    /* > 0 ==> total number of times files size sum > MAX_SUM_FILELEN */
     uintmax_t files_size_shrunk;	    /* > 0 ==> total files size shrunk this many times */
     uintmax_t correct_directory;	    /* number of files in the correct directory */
     uintmax_t invalid_dot_files;	    /* number of dot files that aren't .author.json and .info.json */
