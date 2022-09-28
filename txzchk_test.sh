@@ -2,9 +2,17 @@
 #
 # txzchk_test.sh - test txzchk with good and bad tarballs (as text files)
 #
-# "Because sometimes people add feathers to tar :-( and because sometimes people
-# might try to hide the fact that they're planning on throwing feathers on the
-# tar." :-)
+# Dedicated to:
+#
+#	The many poor souls who have been tarred and feathered:
+#
+#	    "Because sometimes people throw feathers on tar :-( and because
+#	    sometimes people try hiding the fact that they're planning on
+#	    throwing feathers on the tar." :-)
+#
+#	And to my wonderful Mum and my dear cousin and friend Dani:
+#
+#	    "Because even feathery balls of tar need some love." :-)
 #
 # Written in 2022 by:
 #

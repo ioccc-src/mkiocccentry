@@ -3900,7 +3900,8 @@ sum_and_count(intmax_t value, intmax_t *sump, intmax_t *countp, intmax_t *sum_ch
     } else if (prev_count != ~inv_prev_count) {
 	dbg(DBG_HIGH, "prev_count: %jd", prev_count);
 	dbg(DBG_HIGH, "inv_prev_count: %jd", inv_prev_count);
-	warn(__func__, "unexpected change to the previous count: prev_count %jd != ~inv_prev_count %jd", prev_count, ~inv_prev_count);
+	warn(__func__, "unexpected change to the previous count: prev_count %jd != ~inv_prev_count %jd",
+		prev_count, ~inv_prev_count);
 	return false;
     }
 

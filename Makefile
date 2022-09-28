@@ -407,8 +407,11 @@ all: ${TARGETS} ${TEST_TARGETS}
 
 # rules, not file targets
 #
-.PHONY: all configure clean clobber install test reset_min_timestamp \
-	picky parser build clean_generated_obj prep_clobber rebuild_jnum_test
+.PHONY: all all_ref bug-report build checknr clean clean_generated_obj \
+        clean_mkchk_sem clobber configure depend hostchk install ioccc_test \
+        legacy_clobber man2html mkchk_sem parser parser-o picky prep prep_clobber \
+        pull rebuild_jnum_test release reset_min_timestamp seqcexit shellcheck tags \
+        test test-chkentry use_ref
 
 
 #####################################
@@ -844,9 +847,9 @@ seqcexit: Makefile
 	    ${SEQCEXIT} -D werr_sem_val -D werrp_sem_val -- ${ALL_CSRC}; \
 	fi
 
-picky: ${ALL_CSRC} ${H_FILES} ${LESS_PICKY_H_FILES} Makefile
+picky: ${ALL_CSRC} ${H_FILES} ${LESS_PICKY_H_FILES} ${FLEXFILES} ${BISONFILES} Makefile
 	@if ! type -P ${PICKY} >/dev/null 2>&1; then \
-	    echo "The picky tool could not found." 1>&2; \
+	    echo "The picky tool could not be found." 1>&2; \
 	    echo "The picky tool is required for this rule." 1>&2; \
 	    echo "We recommend you install picky v2.6 or later" 1>&2; \
 	    echo "from this URL:" 1>&2; \
@@ -855,8 +858,8 @@ picky: ${ALL_CSRC} ${H_FILES} ${LESS_PICKY_H_FILES} Makefile
 	    echo 1>&2; \
 	    exit 1; \
 	else \
-	    echo "${PICKY} -w132 -u -s -t8 -v -e -- ${SRCFILES} ${H_FILES}"; \
-	    ${PICKY} -w132 -u -s -t8 -v -e -- ${SRCFILES} ${H_FILES}; \
+	    echo "${PICKY} -w132 -u -s -t8 -v -e -- ${SRCFILES} ${H_FILES} ${FLEXFILES} ${BISONFILES}"; \
+	    ${PICKY} -w132 -u -s -t8 -v -e -- ${SRCFILES} ${H_FILES} ${FLEXFILES} ${BISONFILES}; \
 	    echo "${PICKY} -w132 -u -s -t8 -v -e -8 -- ${LESS_PICKY_CSRC} ${LESS_PICKY_H_FILES}"; \
 	    ${PICKY} -w132 -u -s -t8 -v -e -8 -- ${LESS_PICKY_CSRC} ${LESS_PICKY_H_FILES}; \
 	fi
@@ -865,7 +868,7 @@ picky: ${ALL_CSRC} ${H_FILES} ${LESS_PICKY_H_FILES} Makefile
 #
 shellcheck: ${SH_FILES} .shellcheckrc Makefile
 	@HAVE_SHELLCHECK="`type -P ${SHELLCHECK}`"; if [[ -z "$$HAVE_SHELLCHECK" ]]; then \
-	    echo 'The shellcheck command could not found.' 1>&2; \
+	    echo 'The shellcheck command could not be found.' 1>&2; \
 	    echo 'The shellcheck command is required to run this rule.'; 1>&2; \
 	    echo ''; 1>&2; \
 	    echo 'See the following GitHub repo for shellcheck:'; 1>&2; \
@@ -883,7 +886,7 @@ shellcheck: ${SH_FILES} .shellcheckrc Makefile
 #
 checknr: ${MANPAGES}
 	@HAVE_CHECKNR="`type -P ${CHECKNR}`"; if [[ -z "$$HAVE_CHECKNR" ]]; then \
-	    echo 'The checknr command could not found.' 1>&2; \
+	    echo 'The checknr command could not be found.' 1>&2; \
 	    echo 'The checknr command is required to run this rule.'; 1>&2; \
 	    echo ''; 1>&2; \
 	    exit 1; \
@@ -896,11 +899,11 @@ man2html: ${MANPAGES}
 	@HAVE_MAN2HTML="`type -P ${MAN2HTML}`"; \
 	 HAVE_MAN="`type -P ${MAN}`"; \
 	if [[ -z "$$HAVE_MAN2HTML" ]]; then \
-	    echo 'The man2html command could not found.' 1>&2; \
+	    echo 'The man2html command could not be found.' 1>&2; \
 	    echo 'The man2html command is required to run this rule.'; 1>&2; \
 	fi; \
 	if [[ -z "$$HAVE_MAN" ]]; then \
-	    echo 'The man command could not found.' 1>&2; \
+	    echo 'The man command could not be found.' 1>&2; \
 	    echo 'The man command is required to run this rule.'; 1>&2; \
 	fi; \
 	if [[ -z "$$HAVE_MAN2HTML" || -z "$$HAVE_MAN" ]]; then \
