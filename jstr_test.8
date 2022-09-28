@@ -1,0 +1,56 @@
+.TH jstr_test 8 "23 September 2022" "jstr_test" "IOCCC tools"
+.SH NAME
+jstr_test.sh \- test JSON string encoding and decoding
+.SH SYNOPSIS
+\fBjstr_test.sh\fP [\-h] [\-v level] [\-e jstrencode] [\-d jstrdecode]
+.SH DESCRIPTION
+\fBjstr_test.sh\fP runs a series of tests with \fBjstrencode(1)\fP and \fBjstrdecode(1)\fP to verify that the tools work correctly.
+.SH OPTIONS
+.PP
+\fB\-h\fP
+Show help and exit.
+.PP
+\fB\-v\fP
+Set verbosity level (def: 0).
+.PP
+\fB\-e\fP
+Set path to \fBjstrencode\fP.
+.PP
+\fB\-d\fP
+Set path to \fBjstrdecode\fP.
+.PP
+.SH EXIT STATUS
+.PP
+Exit codes:
+.br
+    0	    - all is well
+.br
+    1	    - -h used
+.br
+    2	    - invalid option
+.br
+    3	    - option argument missing
+.br
+    42	    - test #0 failed
+.br
+    43	    - test #1 failed
+.br
+    44	    - test #2 failed
+.br
+    45	    - test #3 failed
+.br
+    100	    - jstrencode not executable
+.br
+    101	    - jstrdecode not executable
+.br
+    102	    - \fIjstr_test.out\fP exists and can't remove it
+.br
+    103	    - \fIjstr_test2.out\fP exists and can't remove it
+.SH NOTES
+.PP
+The JSON parser \fBjparse\fP was co-developed by Cody Boone Ferguson and Landon Curt Noll (one of the IOCCC Judges) in support for IOCCCMOCK, IOCCC28 and beyond.
+.SH BUGS
+If you have a problem with the tool (not JSON itself! :-) ) you can report it at the GitHub issues page.
+It can be found at: \fI\<https://github.com/ioccc-src/mkiocccentry/issues\>\fP.
+.SH SEE ALSO
+\fBjstrencode(1)\fP, \fBjstrdecode(1)\fP, \fBjparse(1)\fP.
