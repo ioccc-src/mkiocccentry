@@ -57,7 +57,8 @@
  *
  * At first glance this is a valid concern. However we argue that even if this
  * is so the struct might well have to be sorry because it's for a json parser; a
- * json parser necessarily has to maintain the mis-features of spec being implemented.
+ * json parser necessarily has to maintain the mis-features of spec being
+ * implemented.
  *
  * BTW: If you want to see all the symbols (re?)defined to something sorry run:
  *
