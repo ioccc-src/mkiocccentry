@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# jsemgen.sh - generate JSON semantics table
+# jsemcgen.sh - generate JSON semantics table
 #
 # Copyright (c) 2022 by Landon Curt Noll.  All Rights Reserved.
 #
