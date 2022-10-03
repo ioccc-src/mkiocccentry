@@ -517,7 +517,7 @@ jnum_gen: jnum_gen.o dbg.o json_parse.o json_util.o util.o dyn_array.o Makefile
 	${CC} ${CFLAGS} jnum_gen.o dbg.o json_parse.o json_util.o util.o dyn_array.o -o $@
 
 jparse.o: jparse.c jparse.h Makefile
-	${CC} ${CFLAGS} -Wno-unused-function -Wno-unneeded-internal-declaration jparse.c -c
+	${CC} ${CFLAGS} -Wno-unused-but-set-variable -Wno-unused-function -Wno-unneeded-internal-declaration jparse.c -c
 
 json_sem.o: json_sem.c Makefile
 	${CC} ${CFLAGS} json_sem.c -c
@@ -863,6 +863,8 @@ picky: ${ALL_CSRC} ${H_FILES} ${LESS_PICKY_H_FILES} ${FLEXFILES} ${BISONFILES} M
 	    ${PICKY} -w132 -u -s -t8 -v -e -- ${SRCFILES} ${H_FILES} ${FLEXFILES} ${BISONFILES}; \
 	    echo "${PICKY} -w132 -u -s -t8 -v -e -8 -- ${LESS_PICKY_CSRC} ${LESS_PICKY_H_FILES}"; \
 	    ${PICKY} -w132 -u -s -t8 -v -e -8 -- ${LESS_PICKY_CSRC} ${LESS_PICKY_H_FILES}; \
+	    echo "${PICKY} -w -u -s -t8 -v -e -8 -- ${SH_FILES}"; \
+	    ${PICKY} -w -u -s -t8 -v -e -8 -- ${SH_FILES}; \
 	fi
 
 # inspect and verify shell scripts

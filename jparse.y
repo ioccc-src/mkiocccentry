@@ -24,6 +24,11 @@
  */
 %define parse.lac full
 
+/* we want a re-entrant parser */
+%define api.pure full
+
+/* we need locations for better error reporting */
+%locations
 
 /*
  * We use our struct json (see json_parse.h for its definition) instead of bison
@@ -32,59 +37,10 @@
 %define api.value.type {struct json *}
 
 /*
- * we need access to the tree in parse_json() so we tell bison that sorry_parse()
+ * we need access to the tree in parse_json() so we tell bison that yyparse()
  * takes a struct json **tree.
  */
 %parse-param { struct json **tree }
-
-/*
- * An IOCCC satirical take on bison and flex
- *
- * As we utterly object to the hideous code that bison and flex generate we
- * point it out in an ironic way by changing the prefix yy to sorry_ so that
- * bison actually calls itself sorry. This is satire for the IOCCC (although we
- * still believe that bison generates sorry code)!
- *
- * This means that to access the struct json's union type in the lexer we can do
- * (because the prefix is sorry_ as described above):
- *
- *	sorry_lval.type = ...
- *
- * A negative consequence here is that because of the api.prefix being set to
- * sorry_ there's a typedef that _might_ suggest that _our_ struct json is sorry:
- *
- *	typedef struct json SORRY_STYPE;
- *
- * At first glance this is a valid concern. However we argue that even if this
- * is so the struct might well have to be sorry because it's for a json parser; a
- * json parser necessarily has to maintain the mis-features of spec being
- * implemented.
- *
- * BTW: If you want to see all the symbols (re?)defined to something sorry run:
- *
- *	grep -i '#[[:space:]]*define[[:space:]].*sorry_' *.c
- *
- * after generating the files; and if you want to see only what was changed from
- * yy or YY to refer to sorry_ or SORRY_:
- *
- *	grep -i '#[[:space:]]*define[[:space:]]*yy.*sorry_' *.c
- *
- * This will help you find the right symbols should you need them. If (as is
- * likely to happen) the parser is split into another repo for a json parser by
- * itself I will possibly remove this prefix: this is as satire for the IOCCC
- * (though we all believe that the generated code is in fact sorry).
- *
- * WARNING: Although we use the prefix sorry_ the scanner and parser will at
- * times refer to yy and YY and other times refer to sorry_ and SORRY_ (partly
- * because WE refer to sorry_ and SORRY_). So if you're trying to sift through
- * that sorry spaghetti code (which we strongly recommend you do not do as it will
- * likely cause nightmares and massive brain pain) you'll want to check yy/YY as
- * well as sorry_/SORRY_. But really you oughtn't try and go through that code so
- * you need only pay attention to the sorry_ and SORRY_ prefixes (in the *.l and
- * *.y files) which again are satire for the IOCCC. See also the apology in the
- * generated files or directly looking at sorry.tm.ca.h.
- */
-%define api.prefix {sorry_}
 
 %{
 
@@ -104,7 +60,7 @@ unsigned num_errors = 0;		/* > 0 number of errors encountered */
 /*
  * bison debug information for development
  */
-int sorry_debug = 0;	/* 0 ==> verbose bison debug off, 1 ==> verbose bison debug on */
+int yydebug = 0;	/* 0 ==> verbose bison debug off, 1 ==> verbose bison debug on */
 
 %}
 
@@ -143,7 +99,7 @@ int sorry_debug = 0;	/* 0 ==> verbose bison debug off, 1 ==> verbose bison debug
  * it is valid in other contexts' but it's actually never valid: it's a catch
  * all for anything that's not valid).
  *
- * Then as a hack (or maybe kludge) in sorry_error() we refer to sorry_text in a
+ * Then as a hack (or maybe kludge) in yyerror() we refer to yytext in a
  * way that shows what the token is that caused the failure (whether it's a
  * syntax error or something else).
  */
@@ -210,7 +166,7 @@ json:
 	     * not NULL, however, *tree will be set to the parse tree itself
 	     * ($json).
 	     */
-	    *tree = $json;	/* more magic: set sorry_parse(tree) arg to point to JSON parse tree */
+	    *tree = $json;	/* more magic: set yyparse(tree) arg to point to JSON parse tree */
 	}
 	if (json_dbg_allowed(JSON_DBG_HIGH)) {
 	    json_dbg(JSON_DBG_HIGH, __func__, "under json: ending: "
@@ -355,14 +311,14 @@ json_value:
 	if (json_dbg_allowed(JSON_DBG_VHIGH)) {
 	    json_dbg(JSON_DBG_VHIGH, __func__, "under json_value: starting: "
 					       "json_value: JSON_TRUE");
-	    json_dbg(JSON_DBG_VVHIGH, __func__, "under json_value: sorry_text: <%s>", sorry_text);
-	    json_dbg(JSON_DBG_VVHIGH, __func__, "under json_value: sorry_leng: <%d>", sorry_leng);
+	    json_dbg(JSON_DBG_VVHIGH, __func__, "under json_value: yytext: <%s>", yytext);
+	    json_dbg(JSON_DBG_VVHIGH, __func__, "under json_value: yyleng: <%d>", yyleng);
 	    json_dbg(JSON_DBG_VHIGH, __func__, "under json_value: about to perform: "
-					       "$json_value = parse_json_bool(sorry_text);");
+					       "$json_value = parse_json_bool(yytext);");
 	}
 
 	/* action */
-	$json_value = parse_json_bool(sorry_text); /* magic: json_value becomes JTYPE_BOOL type */
+	$json_value = parse_json_bool(yytext); /* magic: json_value becomes JTYPE_BOOL type */
 
 	/* post-action debugging */
 	if (json_dbg_allowed(JSON_DBG_HIGH)) {
@@ -385,14 +341,14 @@ json_value:
 	if (json_dbg_allowed(JSON_DBG_VHIGH)) {
 	    json_dbg(JSON_DBG_VHIGH, __func__, "under json_value: starting: "
 					       "json_value: JSON_FALSE");
-	    json_dbg(JSON_DBG_VVHIGH, __func__, "under json_value: sorry_text: <%s>", sorry_text);
-	    json_dbg(JSON_DBG_VVHIGH, __func__, "under json_value: sorry_leng: <%d>", sorry_leng);
+	    json_dbg(JSON_DBG_VVHIGH, __func__, "under json_value: yytext: <%s>", yytext);
+	    json_dbg(JSON_DBG_VVHIGH, __func__, "under json_value: yyleng: <%d>", yyleng);
 	    json_dbg(JSON_DBG_VHIGH, __func__, "under json_value: about to perform: "
-					       "$json_value = parse_json_bool(sorry_text);");
+					       "$json_value = parse_json_bool(yytext);");
 	}
 
 	/* action */
-	$json_value = parse_json_bool(sorry_text); /* magic: json_value becomes JTYPE_BOOL type */
+	$json_value = parse_json_bool(yytext); /* magic: json_value becomes JTYPE_BOOL type */
 
 	/* post-action debugging */
 	if (json_dbg_allowed(JSON_DBG_HIGH)) {
@@ -415,14 +371,14 @@ json_value:
 	if (json_dbg_allowed(JSON_DBG_VHIGH)) {
 	    json_dbg(JSON_DBG_VHIGH, __func__, "under json_value: starting: "
 					       "json_value: JSON_NULL");
-	    json_dbg(JSON_DBG_VVHIGH, __func__, "under json_value: sorry_text: <%s>", sorry_text);
-	    json_dbg(JSON_DBG_VVHIGH, __func__, "under json_value: sorry_leng: <%d>", sorry_leng);
+	    json_dbg(JSON_DBG_VVHIGH, __func__, "under json_value: yytext: <%s>", yytext);
+	    json_dbg(JSON_DBG_VVHIGH, __func__, "under json_value: yyleng: <%d>", yyleng);
 	    json_dbg(JSON_DBG_VHIGH, __func__, "under json_value: about to perform: "
-					       "$json_value = parse_json_null(sorry_text);");
+					       "$json_value = parse_json_null(yytext);");
 	}
 
 	/* action */
-	$json_value = parse_json_null(sorry_text); /* magic: json_value becomes JTYPE_NULL type */
+	$json_value = parse_json_null(yytext); /* magic: json_value becomes JTYPE_NULL type */
 
 	/* post-action debugging */
 	if (json_dbg_allowed(JSON_DBG_HIGH)) {
@@ -783,14 +739,14 @@ json_string:
 	if (json_dbg_allowed(JSON_DBG_VHIGH)) {
 	    json_dbg(JSON_DBG_VHIGH, __func__, "under json_string: starting: "
 					       "json_string: JSON_STRING");
-	    json_dbg(JSON_DBG_VVHIGH, __func__, "under json_string: sorry_text: <%s>", sorry_text);
-	    json_dbg(JSON_DBG_VVHIGH, __func__, "under json_string: sorry_leng: <%d>", sorry_leng);
+	    json_dbg(JSON_DBG_VVHIGH, __func__, "under json_string: yytext: <%s>", yytext);
+	    json_dbg(JSON_DBG_VVHIGH, __func__, "under json_string: yyleng: <%d>", yyleng);
 	    json_dbg(JSON_DBG_VHIGH, __func__, "under json_string: about to perform: "
-					       "$json_string = parse_json_string(sorry_text, sorry_leng);");
+					       "$json_string = parse_json_string(yytext, yyleng);");
 	}
 
 	/* action */
-	$json_string = parse_json_string(sorry_text, sorry_leng);
+	$json_string = parse_json_string(yytext, yyleng);
 
 	/* post-action debugging */
 	if (json_dbg_allowed(JSON_DBG_HIGH)) {
@@ -815,14 +771,14 @@ json_number:
 	if (json_dbg_allowed(JSON_DBG_VHIGH)) {
 	    json_dbg(JSON_DBG_VHIGH, __func__, "under json_number: starting: "
 					       "json_number: JSON_NUMBER");
-	    json_dbg(JSON_DBG_VVHIGH, __func__, "under json_number: sorry_text: <%s>", sorry_text);
-	    json_dbg(JSON_DBG_VVHIGH, __func__, "under json_number: sorry_leng: <%d>", sorry_leng);
+	    json_dbg(JSON_DBG_VVHIGH, __func__, "under json_number: yytext: <%s>", yytext);
+	    json_dbg(JSON_DBG_VVHIGH, __func__, "under json_number: yyleng: <%d>", yyleng);
 	    json_dbg(JSON_DBG_VHIGH, __func__, "under json_number: about to perform: "
-					       "$json_number = parse_json_number(sorry_text);");
+					       "$json_number = parse_json_number(yytext);");
 	}
 
 	/* action */
-	$json_number = parse_json_number(sorry_text);
+	$json_number = parse_json_number(yytext);
 
 	/* post-action debugging */
 	if (json_dbg_allowed(JSON_DBG_HIGH)) {
@@ -843,17 +799,18 @@ json_number:
 
 
 /*
- * sorry_error	- generate an error message for the scanner/parser
+ * yyerror	- generate an error message for the scanner/parser
  *
  * given:
  *
+ *	yyltype	    location type
  *	node	    pointer to struct json * or NULL
  *	format	    printf style format string
  *	...	    optional parameters based on the format
  *
  */
 void
-sorry_error(struct json **node, char const *format, ...)
+yyerror(YYLTYPE *yyltype, struct json **node, char const *format, ...)
 {
     va_list ap;		/* variable argument list */
     int ret;		/* libc function return value */
@@ -863,6 +820,8 @@ sorry_error(struct json **node, char const *format, ...)
      */
     va_start(ap, format);
 
+    UNUSED_ARG(yyltype);
+
     /*
      * generate an error message for the JSON parser and scanner
      */
@@ -870,12 +829,12 @@ sorry_error(struct json **node, char const *format, ...)
     if (node != NULL && *node != NULL) {
 	fprint(stderr, " type: %s ", json_item_type_name(*node));
     }
-    if (sorry_text != NULL && *sorry_text != '\0') {
-	fprint(stderr, " line: %d: %s\n", sorry_lineno, sorry_text);
-    } else if (sorry_text == NULL) {
-	fprint(stderr, " line: %d: text == NULL\n", sorry_lineno);
+    if (yytext != NULL && *yytext != '\0') {
+	fprint(stderr, " line: %d: %s\n", yylineno, yytext);
+    } else if (yytext == NULL) {
+	fprint(stderr, " line: %d: text == NULL\n", yylineno);
     } else {
-	fprint(stderr, " line: %d: empty text\n", sorry_lineno);
+	fprint(stderr, " line: %d: empty text\n", yylineno);
     }
 
     /*
