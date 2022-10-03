@@ -863,6 +863,8 @@ picky: ${ALL_CSRC} ${H_FILES} ${LESS_PICKY_H_FILES} ${FLEXFILES} ${BISONFILES} M
 	    ${PICKY} -w132 -u -s -t8 -v -e -- ${SRCFILES} ${H_FILES} ${FLEXFILES} ${BISONFILES}; \
 	    echo "${PICKY} -w132 -u -s -t8 -v -e -8 -- ${LESS_PICKY_CSRC} ${LESS_PICKY_H_FILES}"; \
 	    ${PICKY} -w132 -u -s -t8 -v -e -8 -- ${LESS_PICKY_CSRC} ${LESS_PICKY_H_FILES}; \
+	    echo "${PICKY} -w -u -s -t8 -v -e -8 -- ${SH_FILES}"; \
+	    ${PICKY} -w -u -s -t8 -v -e -8 -- ${SH_FILES}; \
 	fi
 
 # inspect and verify shell scripts
