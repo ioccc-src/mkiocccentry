@@ -517,7 +517,7 @@ jnum_gen: jnum_gen.o dbg.o json_parse.o json_util.o util.o dyn_array.o Makefile
 	${CC} ${CFLAGS} jnum_gen.o dbg.o json_parse.o json_util.o util.o dyn_array.o -o $@
 
 jparse.o: jparse.c jparse.h Makefile
-	${CC} ${CFLAGS} -Wno-unused-function -Wno-unneeded-internal-declaration jparse.c -c
+	${CC} ${CFLAGS} -Wno-unused-but-set-variable -Wno-unused-function -Wno-unneeded-internal-declaration jparse.c -c
 
 json_sem.o: json_sem.c Makefile
 	${CC} ${CFLAGS} json_sem.c -c

@@ -31,16 +31,16 @@
  * impaired. Nevertheless, we still recommend you to eschew modifying the code
  * below.
  *
- * BTW: If you don't agree with us that it's sorry we want to point out that it
- * even admits it and we ask you why it would call itself sorry if it's not. :-)
- *
  * Thanks in advance for your understanding, and sorry (tm Canada :-)).
  *
- * Of course, on the other hand, the fact the parser IS for JSON might suggest
- * that the parser SHOULD be sorry and since IT IS sorry this apology might be
- * superfluous. If one were to ignore the fact that bison and flex do not care
- * what they are parsing this same person could argue, obviously by some
- * perverted logical fallacies, that bison and flex did their job well. :-)
+ * Of course, on the other hand, the fact the scanner and parser are for JSON
+ * might suggest that we shouldn't have to apologise because the JSON spec is
+ * objectionable and so are the generated scanner and parser so this apology
+ * might very well be superfluous. If one were to then ignore the fact that
+ * bison and flex do not care what they are parsing this same person could
+ * argue, obviously by some perverted logical fallacies, that bison and flex did
+ * their job well. Well, OK they probably DID do their job well but in an
+ * objectionable way. :-)
  *
  * P.S. In 2022 April 04, when this comment was initially formed, none of the
  *	people working on this repo were Canadian. But some of them have

@@ -42,7 +42,7 @@
 /*
  * static globals
  */
-static bool h_mode = false;		/* -I - true ==> output as .h include file . false ==> output as .c src */
+static bool h_mode = false;		/* -I - true ==> output as .h include file, false ==> output as .c src */
 static char *tbl_name = "sem_tbl";	/* -N name - name of the semantic table */
 static char *def_func = "NULL";		/* -D def_func - validate with def_func() unless overridden */
 static char *prefix = NULL;		/* -P prefix - validate JTYPE_MEMBER with prefix_name() or NULL */
@@ -181,11 +181,11 @@ main(int argc, char **argv)
      * enable bison internal debugging if -J is verbose enough
      */
     if (json_dbg_allowed(JSON_DBG_VHIGH)) {
-	sorry_debug = 1;	/* verbose bison debug on */
-	dbg(DBG_VHIGH, "sorry_debug: enabled");
+	yydebug = 1;	/* verbose bison debug on */
+	dbg(DBG_VHIGH, "yydebug: enabled");
     } else {
-	sorry_debug = 0;	/* verbose bison debug off */
-	dbg(DBG_VHIGH, "sorry_debug: disabled");
+	yydebug = 0;	/* verbose bison debug off */
+	dbg(DBG_VHIGH, "yydebug: disabled");
     }
 
     /*

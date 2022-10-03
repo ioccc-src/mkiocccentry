@@ -27,57 +27,7 @@
  * unnecessary.
  */
 %option noyywrap yylineno nodefault 8bit
-
-/*
- * An IOCCC satirical take on flex and bison
- *
- * As we utterly object to the hideous code that flex and bison generate we
- * point it out in an ironic way by changing the prefix yy to sorry_ so that
- * flex actually calls itself sorry. This is satire for the IOCCC (although we
- * still believe that flex generates sorry code)!
- *
- * This means that for some symbols later in the file we use sorry_ instead of
- * yy. For example it's sorry_lval instead of yylval and best of all sorry_parse()
- * for it _is_ an sorry parser. Another one is sorry_error() instead of yyerror().
- *
- * A negative consequence here is that because of the prefix being set to
- * sorry_ there's a typedef in the parser that _might_ suggest _our_ struct json
- * is sorry:
- *
- *	typedef struct json SORRY_STYPE;
- *
- * At first glance this is a valid concern. However we argue that even if this
- * is so the struct might well have to be sorry because it's for a json parser; a
- * json parser necessarily has to maintain the mis-features of spec being implemented.
- *
- * BTW: If you want to see all the symbols (re?)defined to something sorry run:
- *
- *	grep -i '#[[:space:]]*define[[:space:]].*sorry_' *.c
- *
- * after generating the files; and if you want to see only what was changed from
- * yy or YY to refer to sorry_ or SORRY_:
- *
- *	grep -i '#[[:space:]]*define[[:space:]]*yy.*sorry_' *.c
- *
- * This will help you find the right symbols should you need them. If (as is
- * likely to happen) the parser is split into another repo for a json parser by
- * itself I will possibly remove this prefix: this is as satire for the IOCCC
- * (though we all believe that the generated code is in fact sorry).
- *
- * WARNING: Although we use the prefix sorry_ the scanner and parser will at
- * times refer to yy and YY and other times refer to sorry_ and SORRY_ (partly
- * because WE refer to sorry_ and SORRY_). So if you're trying to sift through
- * that sorry spaghetti code (which we strongly recommend you do not do as it will
- * likely cause nightmares and massive brain pain) you'll want to check yy/YY as
- * well as sorry_/SORRY_. But really you oughtn't try and go through that code so
- * you need only pay attention to the sorry_ and SORRY_ prefixes (in the *.l and
- * *.y files) which again are satire for the IOCCC. See also the apology in the
- * generated files or directly looking at sorry.tm.ca.h.
- *
- * "Share and Enjoy!"
- *     --  Sirius Cybernetics Corporation Complaints Division, JSON spec department. :-)
- */
-%option prefix="sorry_"
+%option bison-bridge bison-locations
 
 %{
 /* Declarations etc. go here.
@@ -87,17 +37,21 @@
 
 
 /*
- * jparse - JSON parser demo tool
+ * jparse - JSON parser tool
  */
 #include "jparse.h"
 
 
-/*
- * An exception where the prefix does not change YY to SORRY_ is YY_BUFFER_STATE
- * but because it IS sorry we have done it for them in jparse.h so that where one
- * sees SORRY__BUFFER_STATE it's actually YY_BUFFER_STATE.
+YY_BUFFER_STATE bs;
+
+/* FIXME - handle locations - FIXME
+ *
+ * This is just a placeholder for now and is subject to change.
  */
-SORRY__BUFFER_STATE bs;
+int yycolumn = 1;
+#define YY_USER_ACTION yylloc->first_line = yylloc->last_line = yylineno; \
+    yylloc->first_column = yycolumn; yylloc->last_column = yycolumn+yyleng-1; \
+    yycolumn += yyleng;
 %}
 
 /*
@@ -114,8 +68,8 @@ SORRY__BUFFER_STATE bs;
  *
  * to help distinguish it from other patterns matched.
  */
-JSON_WS			[ \t\r\n]+
-
+JSON_WS			[ \t\r]+
+JSON_NL			\n+
 /*
  * NOTE: On the subject of JSON_STRING one might ask the question about the
  * tighter restrictions on JSON strings and why we don't even consider them.
@@ -142,7 +96,7 @@ JSON_COMMA		","
 %%
 {JSON_WS}		{
 			    /*
-			     * Whitespace
+			     * Whitespace excluding newlines
 			     *
 			     * NOTE: We have to include this action as otherwise
 			     * the action '.' will return an invalid token to
@@ -152,7 +106,11 @@ JSON_COMMA		","
 			     * purposes we have it printed for now.
 			     */
 			    (void) json_dbg(JSON_DBG_VVHIGH, __func__, "\nignoring %ju whitespace%s\n",
-							     (uintmax_t)sorry_leng, yyleng==1?"":"s");
+							     (uintmax_t)yyleng, yyleng==1?"":"s");
+			}
+
+{JSON_NL}		{
+			    yycolumn = 1;
 			}
 
 {JSON_STRING}		{
@@ -209,7 +167,7 @@ JSON_COMMA		","
 
 .			{
 			    /* invalid token: any other character */
-			    warn(__func__, "\ninvalid token: 0x%02x = <%c>", *sorry_text, *sorry_text);
+			    warn(__func__, "\ninvalid token: 0x%02x = <%c>", *yytext, *yytext);
 
 			    /*
 			     * This is a hack for better error messages with
@@ -231,9 +189,9 @@ JSON_COMMA		","
 			     * but it's never actually valid: it's a catch all
 			     * for anything that's not valid.
 			     *
-			     * We also make use of sorry_text in sorry_error()
+			     * We also make use of yytext in yyerror()
 			     * which makes for a somewhat reasonable error
-			     * message even when sorry_error() is called from
+			     * message even when yyerror() is called from
 			     * memory exhaustion. See that function and the
 			     * comments for '%token token' in jparse.y.
 			     */
@@ -260,7 +218,7 @@ JSON_COMMA		","
  *	pointer to a JSON parse tree
  *
  * NOTE: The reason this is in the scanner and not the parser is because
- * SORRY__BUFFER_STATE is part of the scanner and not the parser.
+ * YY_BUFFER_STATE is part of the scanner and not the parser.
  *
  * NOTE: This function only warns on error. This is so that an entire report of
  * all the problems can be given at the end if the verbosity level is high
@@ -270,7 +228,7 @@ struct json *
 parse_json(char const *ptr, size_t len, bool *is_valid)
 {
     struct json *tree = NULL;		/* the JSON parse tree */
-    int ret = 0;			/* sorry_parse() return value */
+    int ret = 0;			/* yyparse() return value */
 
     /*
      * We set *is_valid = true if is_valid != NULL so that the caller does not
@@ -309,8 +267,8 @@ parse_json(char const *ptr, size_t len, bool *is_valid)
     /*
      * scan the blob
      */
-    sorry_lineno = 1;
-    bs = sorry__scan_bytes(ptr, len);
+    yylineno = 1;
+    bs = yy_scan_bytes(ptr, len);
     if (bs == NULL) {
 	/*
 	 * if unable to scan the bytes it indicates an internal error and
@@ -344,12 +302,12 @@ parse_json(char const *ptr, size_t len, bool *is_valid)
     /*
      * parse the blob, passing into the parser the node
      */
-    ret = sorry_parse(&tree);
+    ret = yyparse(&tree);
 
     /*
      * scan and parse clean up
      */
-    sorry__delete_buffer(bs);
+    yy_delete_buffer(bs);
     bs = NULL;
 
     /*
@@ -363,7 +321,7 @@ parse_json(char const *ptr, size_t len, bool *is_valid)
      * report scanner / parser success or failure
      */
     if (json_dbg_allowed(JSON_DBG_VVHIGH)) {
-	json_dbg(JSON_DBG_VVHIGH, __func__, "sorry_parse() returned: %d", ret);
+	json_dbg(JSON_DBG_VVHIGH, __func__, "yyparse() returned: %d", ret);
     }
     if (ret == 0) {
 	json_dbg(JSON_DBG_LOW, __func__, "valid JSON");
@@ -461,7 +419,7 @@ parse_json_file(char const *filename, bool *is_valid)
      * case: will read from stdin
      */
     if (is_stdin == true) {
-	sorry_in = stdin;
+	yyin = stdin;
 
     /*
      * case: will read from a file
@@ -520,8 +478,8 @@ parse_json_file(char const *filename, bool *is_valid)
 	 * open file for scanner to use
 	 */
 	errno = 0;
-	sorry_in = fopen(filename, "r");
-	if (sorry_in == NULL) {
+	yyin = fopen(filename, "r");
+	if (yyin == NULL) {
 
 	    /* warn about file open error */
 	    werrp(37, __func__, "couldn't open file %s, ignoring", filename);
@@ -541,13 +499,13 @@ parse_json_file(char const *filename, bool *is_valid)
     /*
      * read the entire file into memory
      */
-    data = read_all(sorry_in, &len);
+    data = read_all(yyin, &len);
     if (data == NULL) {
 	/* warn about read error */
 	/* XXX - should this be a fatal error ? - XXX */
 	werr(38, __func__, "couldn't read in %s", is_stdin?"stdin":filename);
 	++num_errors;
-	clearerr_or_fclose(filename, sorry_in);
+	clearerr_or_fclose(filename, yyin);
 
 	/* if allowed, report invalid JSON */
 	if (is_valid != NULL) {
@@ -572,18 +530,18 @@ parse_json_file(char const *filename, bool *is_valid)
     }
 
     /*
-     * we cannot use clearerr_or_fclose() here as it's possible that sorry_in
+     * we cannot use clearerr_or_fclose() here as it's possible that yyin
      * will be NULL and so we do it manually instead.
      */
     if (is_stdin == true) {
 	clearerr(stdin);
-    } else if (sorry_in != NULL) {
+    } else if (yyin != NULL) {
 	errno = 0;
-	ret = fclose(sorry_in);
+	ret = fclose(yyin);
 	if (ret != 0) {
 	    warnp(__func__, "error in fclose on file %s", filename);
 	}
-	sorry_in = NULL;
+	yyin = NULL;
     }
 
     /*
