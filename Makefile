@@ -700,6 +700,7 @@ parser: jparse.y jparse.l Makefile
 	${CP} -f -v jparse.c jparse.ref.c
 	${MAKE} jparse
 	${MAKE} jsemtblgen
+	${MAKE} chkentry
 
 #
 # make parser-o: Force the rebuild of the JSON parser.

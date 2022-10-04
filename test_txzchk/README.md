@@ -7,18 +7,17 @@ The `good/` subdirectory has files that `txzchk` MUST report as valid.
 
 The `bad/` subdirectory has files that `txzchk` MUST report as invalid.
 
-The files MUST end with either `.txt` or `.txz` and the test script will do the
-right thing. For good files the filename MUST match the rules of the `fnamchk`
-tool; this is not as clear for the bad tests though generally speaking it should
-also follow the rules as it will make it harder to get valid test results.
+The filenames MUST end with `.txt` and the script will do the right thing.  For
+good files the filename MUST match the rules of the `fnamchk` tool; this is not
+as clear for the bad tests though generally speaking it should also follow the
+rules as it will make it harder to get valid test results.
 
 The typical format is that which would be generated from `tar -tJvf` but
-importantly most of these files are **NOT** tarballs: they are text files that
+importantly these files are **NOT** tarballs: they are text files that
 would have the output of the tar command. This is to make it much easier to add
 test cases and it also prevents having the need to have tarballs in the repo (as
 well as constructing said tarballs with invalid input that might be submitted
-due to abuse). There are a couple tarballs in both good and bad but many more
-text files should be added.
+due to abuse). Over time more text files have been and will be added.
 
 Here's an example good file:
 
