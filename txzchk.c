@@ -247,7 +247,7 @@ show_txz_info(char const *txzpath)
 	dbg(DBG_MED, "%s has %ju invalid dot file%s", txzpath, txz_info.invalid_dot_files,
 		singular_or_plural(txz_info.invalid_dot_files));
 	dbg(DBG_MED, "%s has %ju file%s named '.'", txzpath, txz_info.named_dot, singular_or_plural(txz_info.named_dot));
-	dbg(DBG_MED, "%s has %ju file%s with one or more unsafe chars", txzpath, txz_info.unsafe_chars,
+	dbg(DBG_MED, "%s has %ju file%s with at least one unsafe char", txzpath, txz_info.unsafe_chars,
 		singular_or_plural(txz_info.unsafe_chars));
 	if (txz_info.total_feathers > 0) {
 	    dbg(DBG_VHIGH, "%s has %ju feather%s stuck in tarball :-(", txzpath, txz_info.total_feathers,
