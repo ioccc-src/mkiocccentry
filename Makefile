@@ -76,6 +76,7 @@
 AWK= awk
 BASENAME= basename
 CAT= cat
+CUT = cut
 CC= cc
 CP= cp
 CTAGS= ctags
@@ -1054,15 +1055,28 @@ tags: ${ALL_CSRC} ${H_FILES}
 	     ${GREP} -E -v 'Duplicate entry|Second entry ignored'
 
 depend: all
-	@LINE="`${GREP} -n '^### DO NOT CHANGE' Makefile|${AWK} -F : '{print $$1}'`"; \
-        if [ "$$LINE" = "" ]; then                                              \
-                echo "Make depend aborted, tag not found in Makefile.";         \
-                exit;                                                           \
-        fi;                                                                     \
-        mv -f Makefile Makefile.orig;head -n $$LINE Makefile.orig > Makefile;   \
-        echo "Generating dependencies.";					\
-        ${CC} ${CFLAGS} -MM ${ALL_CSRC} >> Makefile
-	@echo "Make depend completed.";
+	@HAVE_CUT="`type -P ${CUT}`"; \
+	HAVE_GREP="`type -P ${GREP}`"; if [[ -z "$$HAVE_CUT" ]]; then \
+	    echo 'cut could not be found.' 1>&2; \
+	    echo 'cut is required for this rule.' 1>&2; \
+	    echo ''; 1>&2; \
+	    exit 1; \
+	elif [[ -z "$$HAVE_GREP" ]]; then \
+	    echo 'grep could not be found.' 1>&2; \
+	    echo 'grep is required for this rule.' 1>&2; \
+	    echo ''; 1>&2; \
+	    exit 1; \
+	else \
+	    LINE="`${GREP} -n '^### DO NOT CHANGE' Makefile|${CUT} -d: -f1-1`"; \
+	    if [ "$$LINE" = "" ]; then                                              \
+		    echo "Make depend aborted, tag not found in Makefile.";         \
+		    exit;                                                           \
+	    fi;                                                                     \
+	    mv -f Makefile Makefile.orig;head -n $$LINE Makefile.orig > Makefile;   \
+	    echo "Generating dependencies.";			 		\
+	    ${CC} ${CFLAGS} -MM ${ALL_CSRC} >> Makefile; \
+	    echo "Make depend completed.";  \
+	fi
 
 
 ###############
