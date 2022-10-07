@@ -97,9 +97,9 @@ fi
 # test JSON encoding and decoding pipe
 #
 echo "$0: about to run test #1"
-echo "$JSTRENCODE -v $V_FLAG -n < $JSTRENCODE -v $V_FLAG | ./jstrdecode -v $V_FLAG -n > $TEST_FILE"
+echo "$JSTRENCODE -v $V_FLAG -n < $JSTRENCODE -v $V_FLAG |  $JSTRDECODE -v $V_FLAG -n > $TEST_FILE"
 # shellcheck disable=SC2094
-"$JSTRENCODE" -v "$V_FLAG" -n < "$JSTRENCODE" -v "$V_FLAG" | ./jstrdecode -v "$V_FLAG" -n > "$TEST_FILE"
+"$JSTRENCODE" -v "$V_FLAG" -n < "$JSTRENCODE" -v "$V_FLAG" | $JSTRDECODE -v "$V_FLAG" -n > "$TEST_FILE"
 if cmp -s "$JSTRENCODE" "$TEST_FILE"; then
     echo "$0: test #1 passed"
 else

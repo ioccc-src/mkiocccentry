@@ -1,10 +1,11 @@
 .TH jstr_test 8 "23 September 2022" "jstr_test" "IOCCC tools"
 .SH NAME
-jstr_test.sh \- test JSON string encoding and decoding
+jstr_test.sh \- JSON string encoding and decoding tests
 .SH SYNOPSIS
 \fBjstr_test.sh\fP [\-h] [\-v level] [\-e jstrencode] [\-d jstrdecode]
 .SH DESCRIPTION
-\fBjstr_test.sh\fP runs a series of tests with \fBjstrencode(1)\fP and \fBjstrdecode(1)\fP to verify that the tools work correctly.
+Using \fBjstrencode(1)\fP and \fBjstrdecode(1)\fP the \fBjstr_test.sh\fP script runs a series of tests to make sure that both encoding and decoding of JSON strings work as expected.
+This is important because if either is not working right then there will be a problem with the JSON parser as well as these tools use the same routines that the JSON parser uses.
 .SH OPTIONS
 .PP
 \fB\-h\fP
@@ -14,43 +15,56 @@ Show help and exit.
 Set verbosity level (def: 0).
 .PP
 \fB\-e\fP
-Set path to \fBjstrencode\fP.
+Set path to \fBjstrencode(1)\fP tool.
 .PP
 \fB\-d\fP
-Set path to \fBjstrdecode\fP.
-.PP
+Set path to \fBjstrdecode(1)\fP tool.
 .SH EXIT STATUS
 .PP
 Exit codes:
 .br
-    0	    - all is well
+    0	    \- all is well
 .br
-    1	    - -h used
+    1	    \- \-h used
 .br
-    2	    - invalid option
+    2	    \- invalid option
 .br
-    3	    - option argument missing
+    3	    \- option argument missing
 .br
-    42	    - test #0 failed
+    42	    \- test #0 failed
 .br
-    43	    - test #1 failed
+    43	    \- test #1 failed
 .br
-    44	    - test #2 failed
+    44	    \- test #2 failed
 .br
-    45	    - test #3 failed
+    45	    \- test #3 failed
 .br
-    100	    - jstrencode not executable
+    100	    \- jstrencode not executable
 .br
-    101	    - jstrdecode not executable
+    101	    \- jstrdecode not executable
 .br
-    102	    - \fIjstr_test.out\fP exists and can't remove it
+    102	    \- jstr_test.out exists and can't remove it
 .br
-    103	    - \fIjstr_test2.out\fP exists and can't remove it
+    103	    \- jstr_test2.out exists and can't remove it
+.SH FILES
+\fIjstr_test.out\fP
+.RS
+This temporary file holds the output of an encoded JSON string (via \fBjstrencode(1)\fP) decoded by \fBjstrdecode(1)\fP which, along with \fIjstr_test2.out\fP, is used to to verify that encoding and decoding work.
+If the file exists and cannot be removed the script will exit with code 102.
+In the script this file is the variable \fBTEST_FILE\fP.
+When the script ends this file should be deleted but the script attempts to delete it, upon execution, in case it still exists or was created by some other process.
+.RE
+\fIjstr_test2.out\fP
+.RS
+This temporary file holds the output of an encoded JSON string (via \fBjstrencode(1)\fP) decoded by \fBjstrdecode(1)\fP which, along with \fIjstr_test.out\fP, is used to to verify that encoding and decoding work.
+If the file exists and cannot be removed the script will exit with code 103.
+In the script this file is the variable \fBTEST_FILE2\fP.
+When the script ends this file should be deleted but the script attempts to delete it, upon execution, in case it still exists or was created by some other process.
+.RE
 .SH NOTES
-.PP
 The JSON parser \fBjparse\fP was co-developed by Cody Boone Ferguson and Landon Curt Noll (one of the IOCCC Judges) in support for IOCCCMOCK, IOCCC28 and beyond.
 .SH BUGS
 If you have a problem with the tool (not JSON itself! :-) ) you can report it at the GitHub issues page.
 It can be found at: \fI\<https://github.com/ioccc-src/mkiocccentry/issues\>\fP.
 .SH SEE ALSO
-\fBjstrencode(1)\fP, \fBjstrdecode(1)\fP, \fBjparse(1)\fP.
+\fBjparse(1)\fP, \fBjstrencode(1)\fP, \fBjstrdecode(1)\fP.
