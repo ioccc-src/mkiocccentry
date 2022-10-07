@@ -652,7 +652,7 @@ check_fval(bool *testp, char const *type, int testnum, bool size_a, bool size_b,
 	    }
 
 	/*
-	 * case non-strict: test for match to one part in MATCH_PRECISION
+	 * case non-strict: test for match to 1 part in MATCH_PRECISION
 	 */
 	} else {
 
