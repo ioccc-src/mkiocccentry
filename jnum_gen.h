@@ -70,11 +70,11 @@ static const char * const usage_msg =
     "\tfilename\tfile containing JSON number test cases\n"
     "\n"
     "Exit codes:\n"
-    "    0\tall is OK\n"
-    "	 1\tfilename does not exist or is not a readable file\n"
-    "    3\t-h and help string printed or -V and version string printed\n"
-    "    4\tcommand line error\n"
-    "    >=5\tinternal error\n"
+    "\t0\tall is OK\n"
+    "\t1\tfilename does not exist or is not a readable file\n"
+    "\t3\t-h and help string printed or -V and version string printed\n"
+    "\t4\tcommand line error\n"
+    "\t>=5\tinternal error\n"
     "\n"
     "jnum_gen version: %s\n";
 
