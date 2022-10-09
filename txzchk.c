@@ -69,7 +69,7 @@ main(int argc, char **argv)
      * parse args
      */
     program = argv[0];
-    while ((i = getopt(argc, argv, "hv:qVF:t:TE:e")) != -1) {
+    while ((i = getopt(argc, argv, "hv:qVF:t:TE:w")) != -1) {
 	switch (i) {
 	case 'h':		/* -h - print help to stderr and exit 3 */
 	    usage(2, "-h help mode", program); /*ooo*/
@@ -99,16 +99,13 @@ main(int argc, char **argv)
 	    tar_flag_used = true;
 	    break;
 	case 'T':
-	    text_file_flag_used = true; /* don't rely on tar: just read file as if it was a text file */
+	    read_from_text_file = true; /* don't rely on tar: just read file as if it was a text file */
 	    break;
 	case 'E':
 	    ext = optarg;
 	    break;
-	case 'e': /* suppress error messages */
-	    quiet = true;
-	    msg_warn_silent = true;
-	    err_output_allowed = false;
-	    suppress_error_messages = true;
+	case 'w':
+	    always_show_warnings = true;
 	    break;
 	default:
 	    usage(2, "invalid -flag", program); /*ooo*/
@@ -123,6 +120,11 @@ main(int argc, char **argv)
     }
     txzpath = argv[optind];
     dbg(DBG_LOW, "txzpath: %s", txzpath);
+
+    if (always_show_warnings) {
+	warn_output_allowed = true;
+	msg_warn_silent = false;
+    }
 
     if (!quiet) {
 	/*
@@ -145,7 +147,7 @@ main(int argc, char **argv)
      * specifically.
      */
 
-    if (!text_file_flag_used) {
+    if (!read_from_text_file) {
 	find_utils(tar_flag_used, &tar, false, NULL, false, NULL, false, NULL,
 		   fnamchk_flag_used, &fnamchk, false, NULL);
     } else {
@@ -319,7 +321,7 @@ txzchk_sanity_chks(char const *tar, char const *fnamchk)
     /*
      * firewall
      */
-    if ((tar == NULL && !text_file_flag_used) || fnamchk == NULL || txzpath == NULL) {
+    if ((tar == NULL && !read_from_text_file) || fnamchk == NULL || txzpath == NULL) {
 	err(3, __func__, "called with NULL arg(s)");
 	not_reached();
     }
@@ -327,7 +329,7 @@ txzchk_sanity_chks(char const *tar, char const *fnamchk)
     /*
      * if text file flag not used tar must be executable
      */
-    if (!text_file_flag_used)
+    if (!read_from_text_file)
     {
 	if (!exists(tar)) {
 	    fpara(stderr,
@@ -1350,7 +1352,7 @@ check_tarball(char const *tar, char const *fnamchk)
     /*
      * firewall
      */
-    if ((!text_file_flag_used && tar == NULL) || fnamchk == NULL || txzpath == NULL)
+    if ((!read_from_text_file && tar == NULL) || fnamchk == NULL || txzpath == NULL)
     {
 	err(27, __func__, "called with NULL arg(s)");
 	not_reached();
@@ -1364,15 +1366,18 @@ check_tarball(char const *tar, char const *fnamchk)
      */
 
     /*
-     * execute the fnamchk command
+     * execute the fnamchk command.
+     *
+     * We redirect stdout to /dev/null so that the user doesn't have to see the
+     * output of the command. We require reading it but the user doesn't need to
+     * see it. We could enable it with certain verbosity_level values but this
+     * seems like additional code that's only unnecessary. This especially is so
+     * because if someone wants the directory name required they can just use
+     * fnamchk on it directly with the appropriate options (for example -E txt
+     * would tell it to expect the extension txt instead of txz).
      */
     errno = 0;			/* pre-clear errno for errp() */
-    if (suppress_error_messages) {
-	exit_code = shell_cmd(__func__, true, "% -E % -e -- %", fnamchk, ext, txzpath);
-
-    } else {
-	exit_code = shell_cmd(__func__, true, "% -E % -- %", fnamchk, ext, txzpath);
-    }
+    exit_code = shell_cmd(__func__, true, "% -E % -- % >/dev/null", fnamchk, ext, txzpath);
 
     if (exit_code != 0) {
 	warn("txzchk", "%s: %s %s failed with exit code: %d", txzpath, fnamchk, txzpath, WEXITSTATUS(exit_code));
@@ -1451,7 +1456,7 @@ check_tarball(char const *tar, char const *fnamchk)
     }
     dbg(DBG_MED, "txzchk: %s size in bytes: %jd", txzpath, (intmax_t)txz_info.size);
 
-    if (text_file_flag_used) {
+    if (read_from_text_file) {
 	input_stream = fopen(txzpath, "r");
 	errno = 0;
 	if (input_stream == NULL)
@@ -1534,7 +1539,11 @@ check_tarball(char const *tar, char const *fnamchk)
 	 */
 	add_txz_line(linep, line_num);
 
-	if (text_file_flag_used) {
+	/*
+	 * if we're reading from a text file and verbosity level > 0 then we
+	 * print the line too.
+	 */
+	if (read_from_text_file && verbosity_level > 0) {
 	    errno = 0;		/* pre-clear errno for warnp() */
 	    ret = printf("%s\n", linep);
 	    if (ret <= 0)
@@ -1548,13 +1557,13 @@ check_tarball(char const *tar, char const *fnamchk)
      * close down pipe
      */
     errno = 0;		/* pre-clear errno for warnp() */
-    if (text_file_flag_used) {
+    if (read_from_text_file) {
 	ret = fclose(input_stream);
     } else {
 	ret = pclose(input_stream);
     }
     if (ret < 0) {
-	warnp(__func__, "%s: %s error on tar stream", txzpath, text_file_flag_used?"fclose":"pclose");
+	warnp(__func__, "%s: %s error on tar stream", txzpath, read_from_text_file?"fclose":"pclose");
     }
     input_stream = NULL;
 

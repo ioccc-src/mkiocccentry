@@ -1,8 +1,8 @@
-.TH txzchk 1 "12 September 2022" "txzchk" "IOCCC tools"
+.TH txzchk 1 "09 October 2022" "txzchk" "IOCCC tools"
 .SH NAME
 txzchk \- sanity checker tool used on IOCCC compressed tarballs
 .SH SYNOPSIS
-\fBtxzchk\fP [\-h] [\-v level] [\-q] [\-V] [\-t tar] [\-F fnamchk] [\-T] [\-E ext] [\-e] txzpath
+\fBtxzchk\fP [\-h] [\-v level] [\-q] [\-w] [\-V] [\-t tar] [\-F fnamchk] [\-T] [\-E ext] txzpath
 .SH DESCRIPTION
 \fBtxzchk\fP runs a series of sanity tests on IOCCC compressed tarballs.
 It is invoked by \fBmkiocccentry(1)\fP after the tarball is formed, reporting any feathers stuck in the tarball (i.e. issues found) and exiting the program accordingly; if \fBtxzchk\fP does not return 0 \fBmkiocccentry\fP will exit with an error.
@@ -24,7 +24,12 @@ Set verbosity level.
 .PP
 \fB\-q\fP
 Suppresses some of the output.
-Warnings, errors and the output of the \fBtar\fP command are still shown.
+Errors and the output of the \fBtar\fP command are still shown.
+If you need to see warnings with this option, use \fB\-w\fP.
+.PP
+\fB\-w\fP
+Always show warnings.
+This is useful for in the \fBtxzchk_test(8)\fP script.
 .PP
 \fB\-V\fP
 Show version and exit.
@@ -43,9 +48,6 @@ Assume txzpath is a text file; use \fBfopen(3)\fP and \fBfclose(3)\fP instead of
 \fB\-E\fP
 Change extension for \fBfnamchk(1)\fP to validate (don't include the dot).
 This is used in conjunction with \fb\-T\fP above for \fBTESTING\fP purposes only!
-.PP
-\fB\-e\fP
-Suppress error messages.
 .SH EXIT STATUS
 .PP
 .br
@@ -53,14 +55,14 @@ Suppress error messages.
 .br
     1	Tarball was successfully parsed :-) but there's at least one feather stuck in it. :-(
 .br
-    2	Usage string was printed either because \fB\-\fP was used or because of an invalid command line.
+    2	Usage string was printed either because \fB\-h\fP was used or because of an invalid command line.
 .br
     >2	An internal error has occurred or unknown tar listing format has been encountered.
 .PP
 For exit code > 2 please report (see \fBBUGS\fP section for where to report bugs).
 .SH NOTES
 .PP
-This tool was written by Cody Boone Ferguson for the \fBIOCCC Judges\fP in early 2022 for the \fBIOCCCMOCK\fP, \fBIOCCC28\fP and all future \fBIOCCC\fP competitions after discussing the requirements with \fBLandon Curt Noll\fP, one of the IOCCC Judges.
+This tool was written by \fBCody Boone Ferguson\fP for the \fBIOCCC Judges\fP in early 2022 for the \fBIOCCCMOCK\fP, \fBIOCCC28\fP and all future \fBIOCCC\fP competitions after discussing the requirements with \fBLandon Curt Noll\fP, one of the IOCCC Judges.
 For more history see \fBtxzchk(1)\fP, \fBCHANGES.md\fP, \fBREADME.md\fP, the GitHub git log and of course reading the source itself.
 .PP
 No pitman or coal mine was harmed in the making of this tool. :-)
