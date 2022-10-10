@@ -1,7 +1,7 @@
 /*
  * verge - determine if first version is greater or equal to the second version
  *
- * "Because too such minimalism can be sub-minimal." :-)
+ * "Because too much minimalism can be sub-minimal." :-)
  *
  * Copyright (c) 2022 by Landon Curt Noll.  All Rights Reserved.
  *
