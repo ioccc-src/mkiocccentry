@@ -363,11 +363,15 @@ fi
 
 # txzchk_test.sh
 #
+# NOTE: we have to include ./ before the test_txzchk because the error files in
+# the test_txzchk/bad subdirectory all have that form. This is a stylistic
+# choice that can be changed if so desired but I have the ./ to match the rest
+# of the command line.
 echo
 echo "RUNNING: txzchk_test.sh"
 echo
-echo "./txzchk_test.sh -t ./txzchk -F ./fnamchk -d test_txzchk"
-./txzchk_test.sh -t ./txzchk -F ./fnamchk -d test_txzchk
+echo "./txzchk_test.sh -t ./txzchk -F ./fnamchk -d ./test_txzchk"
+./txzchk_test.sh -t ./txzchk -F ./fnamchk -d ./test_txzchk
 status="$?"
 if [[ $status -ne 0 ]]; then
     echo "$0: ERROR: txzchk_test.sh non-zero exit code: $status" 1>&2

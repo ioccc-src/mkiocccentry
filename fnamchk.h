@@ -60,7 +60,7 @@
  * Use the usage() function to print the usage_msg([0-9]?)+ strings.
  */
 static const char * const usage_msg =
-    "usage: %s [-h] [-v level] [-q] [-V] [-E ext] [-t|-u] [-e] filepath\n"
+    "usage: %s [-h] [-v level] [-q] [-V] [-E ext] [-t|-u] filepath\n"
     "\n"
     "\t-h\t\t\tprint help message and exit 0\n"
     "\t-v level\t\tset verbosity level: (def level: %d)\n"
@@ -69,7 +69,6 @@ static const char * const usage_msg =
     "\t-E ext\t\t\tchange extension to test (def: txz)\n"
     "\t-t\t\t\tfilename must match test entry filename\n"
     "\t-u\t\t\tfilename must match real entry filename\n"
-    "\t-e\t\t\tsuppress error messages\n"
     "\n"
     "\t\tNOTE: -t and -u cannot be used together.\n\n"
     "\tfilepath\t\tpath to an IOCCC compressed tarball\n"

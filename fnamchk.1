@@ -1,8 +1,8 @@
-.TH fnamchk 1 "2 September 2022" "fnamchk" "IOCCC tools"
+.TH fnamchk 1 "09 October 2022" "fnamchk" "IOCCC tools"
 .SH NAME
 fnamchk \- IOCCC compressed tarball filename sanity check tool
 .SH SYNOPSIS
-\fBfnamchk\fP [\-h] [\-v level] [\-q] [\-V] [\-E ext] [\-t|\-u] [\-e] filepath
+\fBfnamchk\fP [\-h] [\-v level] [\-q] [\-V] [\-E ext] [\-t|\-u] filepath
 .SH DESCRIPTION
 \fBfnamchk\fP verifies that an IOCCC compressed tarball is properly named.
 .PP
@@ -63,9 +63,6 @@ In other words the filename has to start with \fBentry.test-\fP or it's an error
 \fB\-u\fP
 If the filename does not start with the normal filename format, issue an error.
 In other words if the filename starts with \fBentry.test-\fP it is an error.
-.PP
-\fB\-e\fP
-Suppress error messages.
 .SH EXIT STATUS
 .PP
 \fBmain()\fP returns 0 on success; if there's an error the end is not reached.

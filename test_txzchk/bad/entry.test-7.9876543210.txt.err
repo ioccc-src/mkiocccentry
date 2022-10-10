@@ -1,0 +1,5 @@
+Warning: txzchk: ./test_txzchk/bad/entry.test-7.9876543210.txt: found file with '..' in the path: ../../../../etc/passwd
+Warning: txzchk: ./test_txzchk/bad/entry.test-7.9876543210.txt: found incorrect directory in filename ../../../../etc/passwd
+Warning: txzchk: ./test_txzchk/bad/entry.test-7.9876543210.txt: found directory change in filename ../../../../etc/passwd
+Warning: txzchk: ./test_txzchk/bad/entry.test-7.9876543210.txt: not all files in correct directory
+Warning: txzchk: ./test_txzchk/bad/entry.test-7.9876543210.txt: found 4 feathers stuck in the tarball

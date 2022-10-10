@@ -83,7 +83,7 @@ main(int argc, char *argv[])
      * parse args
      */
     program = argv[0];
-    while ((i = getopt(argc, argv, "hv:qVtquE:e")) != -1) {
+    while ((i = getopt(argc, argv, "hv:qVtquE:")) != -1) {
 	switch (i) {
 	case 'h':		/* -h - print help to stderr and exit 0 */
 	    usage(1, "-h help mode", program); /*ooo*/
@@ -111,10 +111,6 @@ main(int argc, char *argv[])
 	    break;
 	case 'E': /* force extension check to be optarg instead of "txz": used for test suite for txzchk */
 	    ext = optarg;
-	    break;
-	case 'e': /* suppress error messages */
-	    msg_warn_silent = true;
-	    err_output_allowed = false;
 	    break;
 	default:
 	    usage(1, "invalid -flag", program); /*ooo*/
@@ -177,9 +173,14 @@ main(int argc, char *argv[])
 	    err(5, __func__, "-u specified and entry starts as a test mode filename");
 	    not_reached();
 	}
+
+	/*
+	 * NOTE: we prevent seqcexit from modifying the exit code because the
+	 * txzchk_test.sh script has a test file where it expects this error.
+	 */
 	if (len != LITLEN("test-")+MAX_ENTRY_CHARS) {
 	    err(6, __func__, "second '-' separated token length: %ju != %ju: %s",
-			     (uintmax_t)len, (uintmax_t)(LITLEN("test-")+MAX_ENTRY_CHARS), filepath);
+			     (uintmax_t)len, (uintmax_t)(LITLEN("test-")+MAX_ENTRY_CHARS), filepath); /*ooo*/
 	    not_reached();
 	}
 	ret = sscanf(uuid, "test-%d%c", &entry_num, &guard);
@@ -211,9 +212,13 @@ main(int argc, char *argv[])
 	    not_reached();
 	}
 
+	/*
+	 * NOTE: we prevent seqcexit from modifying the exit code because the
+	 * txzchk_test.sh script has a test file where it expects this error.
+	 */
 	if (len != UUID_LEN+1+MAX_ENTRY_CHARS) {
 	    err(11, __func__, "second '-' separated token length: %ju != %ju: %s",
-			     (uintmax_t)len, (uintmax_t)(UUID_LEN+1+MAX_ENTRY_CHARS), filepath);
+			     (uintmax_t)len, (uintmax_t)(UUID_LEN+1+MAX_ENTRY_CHARS), filepath); /*ooo*/
 	    not_reached();
 	}
 	ret = sscanf(uuid, "%8x-%4x-%1x%3x-%1x%3x-%8x%4x-%d%c", &a, &b, &version, &c, &variant, &d, &e, &f, &entry_num, &guard);

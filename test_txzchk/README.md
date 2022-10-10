@@ -51,3 +51,18 @@ This will not show anything as the tarball is actually valid.
 However for the script you will see some output. Perhaps this should be directed
 to a log file (as some of the output is also added to the log file) but for now
 this will do as other things have to be done.
+
+## Important note for adding files to the bad subdirectory
+
+Whenever a new bad test file is added one must generate the proper err file. To
+simplify it you can from the parent directory (where txzchk is located) run:
+
+    for i in ./test_txzchk/bad/*.txt; do ./txzchk -q -v 0 -w -T -E txt "${i}" 2>"${i}".err; done
+
+then do:
+
+    git add *.txt *.err
+
+(assuming that there aren't any other files with those extensions that should
+not be there). We could have the `test_txzchk.sh` script do this but the problem
+is we need to manually inspect that the errors are correct.

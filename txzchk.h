@@ -69,10 +69,10 @@ bool quiet = false;				/* true ==> quiet mode */
 /* globals specific to txzchk */
 static char const *txzpath = NULL;		/* the current tarball being checked */
 static char const *program = NULL;		/* our name */
-static bool text_file_flag_used = false;	/* true ==> assume txzpath is a text file */
+static bool read_from_text_file = false;	/* true ==> assume txzpath is a text file */
 static char const *ext = "txz";			/* force extension in fnamchk to be this value */
-static bool suppress_error_messages = false;	/* true ==> suppress error messages (-e used for tests but should be changed) */
 static char const *tok_sep = " \t";		/* token separators for strtok_r */
+static bool always_show_warnings = false;	/* true ==> show warnings even if -q */
 
 /*
  * information about the tarball
@@ -162,12 +162,13 @@ static struct txz_line *txz_lines;	/* all the lines read */
  * Use the usage() function to print the usage_msg([0-9]?)+ strings.
  */
 static const char * const usage_msg =
-    "usage: %s [-h] [-v level] [-q] [-V] [-t tar] [-F fnamchk] [-T] [-E ext] [-e] txzpath\n"
+    "usage: %s [-h] [-v level] [-q] [-w] [-V] [-t tar] [-F fnamchk] [-T] [-E ext] txzpath\n"
     "\n"
     "\t-h\t\tprint help message and exit 0\n"
     "\t-v level\tset verbosity level: (def level: %d)\n"
     "\t-q\t\tquiet mode (def: not quiet)\n"
     "\t\t\t    NOTE: -q will also silence msg(), warn(), warnp() if -v 0\n"
+    "\t-w\t\tshow warning messages even if -q would normally disable them\n"
     "\t-V\t\tprint version string and exit\n"
     "\n"
     "\t-t tar\t\tpath to tar executable that supports the -J (xz) option (def: %s)\n"
@@ -175,7 +176,6 @@ static const char * const usage_msg =
     "\t\t\tfilename (def: %s)\n\n"
     "\t-T\t\tassume txzpath is a text file with tar listing (for testing different formats)\n"
     "\t-E ext\t\tchange extension to test (def: txz)\n"
-    "\t-e\t\tsuppress error messages\n\n"
     "\ttxzpath\t\tpath to an IOCCC compressed tarball\n"
     "\n"
     "txzchk version: %s\n";

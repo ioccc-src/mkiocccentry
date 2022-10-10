@@ -12,8 +12,9 @@
  *	chongo (Landon Curt Noll, http://www.isthe.com/chongo/index.html) /\oo/\
  *
  *
- * This tool is being co-developed by Cody Boone Ferguson and Landon Curt Noll
- * and the concept of this file was developed by Landon Curt Noll.
+ * This tool is being co-developed by Cody Boone Ferguson and Landon Curt Noll.
+ * The concept of the JSON semantics table, which this tool will use, was
+ * developed by Landon Curt Noll.
  *
  * "Because sometimes even the IOCCC Judges need some help." :-)
  */
