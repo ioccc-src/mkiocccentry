@@ -879,7 +879,7 @@ check_directories(struct txz_file *file, char const *dir_name, char const *txzpa
  *	dir_name	- directory name retrieved from fnamchk or NULL if it failed
  *	txzpath		- the tarball path
  *	saveptr		- pointer to char * to save context between each strtok_r() call
- *	normal_file	- true ==> normal file, don't count against size or number of files
+ *	normal_file	- true ==> normal file, check size and number of files
  *	sum		- pointer to sum for sum_and_count() (which we use in count_and_sum())
  *	count		- pointer to count for sum_and_count() (which we use in count_and_sum())
  *
@@ -1089,7 +1089,7 @@ count_and_sum(char const *txzpath, intmax_t *sum, intmax_t *count, intmax_t leng
  *	dir_name	- directory name retrieved from fnamchk or NULL if it failed
  *	txzpath		- the tarball path
  *	saveptr		- pointer to char * to save context between each strtok_r() call
- *	normal_file	- true ==> normal file, don't count against size or number of files
+ *	normal_file	- true ==> normal file, check size and number of files
  *	sum		- pointer to sum for sum_and_count() (which we use in count_and_sum())
  *	count		- pointer to count for sum_and_count() (which we use in count_and_sum())
  *
