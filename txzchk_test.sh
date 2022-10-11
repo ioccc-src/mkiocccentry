@@ -115,33 +115,6 @@ fi
 export TXZCHK_GOOD_TREE="$TXZCHK_TREE/good"
 export TXZCHK_BAD_TREE="$TXZCHK_TREE/bad"
 
-# form the temporary exit code file
-#
-export EXIT_CODE_FILE MKTEMP_TEMPLATE
-MKTEMP_TEMPLATE=".exit_code.$(basename "$0").XXXXXXXXXX"
-EXIT_CODE_FILE=$(mktemp "$MKTEMP_TEMPLATE")
-status="$?"
-if [[ $status -ne 0 ]]; then
-    echo "$0: ERROR: mktemp $MKTEMP_TEMPLATE exit code: $status" 1>&2
-    exit 55
-fi
-if [[ ! -e $EXIT_CODE_FILE ]]; then
-    echo "$0: ERROR: EXIT_CODE_FILE does not exist: $EXIT_CODE_FILE" 1>&2
-    exit 55
-fi
-if [[ ! -f $EXIT_CODE_FILE ]]; then
-    echo "$0: ERROR: EXIT_CODE_FILE not a regular file: $EXIT_CODE_FILE" 1>&2
-    exit 55
-fi
-if [[ ! -r $EXIT_CODE_FILE ]]; then
-    echo "$0: ERROR: EXIT_CODE_FILE file not readable: $EXIT_CODE_FILE" 1>&2
-    exit 55
-fi
-if [[ ! -w $EXIT_CODE_FILE ]]; then
-    echo "$0: ERROR: EXIT_CODE_FILE file not writable: $EXIT_CODE_FILE" 1>&2
-    exit 55
-fi
-
 eval make all 2>&1 | grep -v 'Nothing to be done for'
 
 # check that txzchk_tree is a readable directory
@@ -260,16 +233,16 @@ rm -f "$STDERR"
 #
 touch "$STDERR"
 if [[ ! -e "$STDERR" ]]; then
-    echo "$0: in run_test: could not create output file: $STDERR"
+    echo "$0: could not create output file: $STDERR"
     exit 4
 fi
 if [[ ! -w "$STDERR" ]]; then
-    echo "$0: in run_test: output file not writable: $STDERR"
+    echo "$0: output file not writable: $STDERR"
     exit 4
 fi
 # finally trap exit so that the file is deleted regardless of where the script
 # exits
-trap "rm -f \$STDERR \$EXIT_CODE_FILE" EXIT
+trap "rm -f \$STDERR" EXIT
 
 if [[ $V_FLAG -ge 5 ]]; then
     echo "$0: debug[5]: will run txzchk from: $TXZCHK" 1>&2
@@ -372,13 +345,6 @@ run_test()
 	    fi
 	    echo | tee -a "${LOGFILE}" 1>&2
 	    EXIT_CODE=42
-	    echo "$EXIT_CODE" > "$EXIT_CODE_FILE"
-	    status="$?"
-	    if [[ $status -ne 0 || ! -s $EXIT_CODE_FILE ]]; then
-		echo "$0: FATAL: failed to write $EXIT_CODE into EXIT_CODE_FILE: $EXIT_CODE_FILE" 1>&2
-		rm -f "$STDERR"
-		exit 55
-	    fi
 	fi
     # Otherwise if there was output written to stderr it indicates that one or
     # more unexpected errors have occurred. This won't be because of a new test
@@ -398,13 +364,6 @@ run_test()
 	echo | tee -a "${LOGFILE}" 1>&2
 	exit
 	EXIT_CODE=43
-	echo "$EXIT_CODE" > "$EXIT_CODE_FILE"
-	status="$?"
-	if [[ $status -ne 0 || ! -s $EXIT_CODE_FILE ]]; then
-	    echo "$0: FATAL: failed to write $EXIT_CODE into EXIT_CODE_FILE: $EXIT_CODE_FILE" 1>&2
-	    rm -f "$STDERR"
-	    exit 56
-	fi
     # all is okay if we get here
     elif [[ $V_FLAG -ge 5 ]]; then
 	    echo "$0: debug[5]: in run_test: PASS: $TXZCHK -w -v 0 -t $TAR -F $FNAMCHK -T -E txt $txzchk_test_file" 1>&2
@@ -423,9 +382,9 @@ run_test()
 if [[ $V_FLAG -ge 3 ]]; then
     echo "$0: debug[3]: about to run txzchk tests that must pass: text files" 1>&2
 fi
-find "$TXZCHK_GOOD_TREE" -type f -name '*.txt' -print | while read -r file; do
+while read -r file; do
     run_test pass "$file"
-done
+done < <(find "$TXZCHK_GOOD_TREE" -type f -name '*.txt' -print)
 
 
 # run tests that must fail
@@ -436,51 +395,10 @@ done
 if [[ $V_FLAG -ge 3 ]]; then
     echo "$0: debug[3]: about to run txzchk tests that must fail: text files" 1>&2
 fi
-find "$TXZCHK_BAD_TREE" -type f -name '*.txt' -print | while read -r file; do
+while read -r file; do
     run_test fail "$file"
-done
+done < <(find "$TXZCHK_BAD_TREE" -type f -name '*.txt' -print)
 
-# Check for numeric exit code from EXIT_CODE_FILE as a possible EXIT_CODE
-#
-if [[ $V_FLAG -ge 5 ]]; then
-    echo "$0: debug[5]: near final top level EXIT_CODE: $EXIT_CODE" 1>&2
-fi
-if [[ -s $EXIT_CODE_FILE ]]; then
-    NEW_EXIT_CODE=$(< "$EXIT_CODE_FILE")
-    if [[ $V_FLAG -ge 5 ]]; then
-	echo "$0: debug[5]: found non-empty EXIT_CODE_FILE: $EXIT_CODE_FILE" 1>&2
-    fi
-    if [[ -z $NEW_EXIT_CODE ]]; then
-	echo "$0: FATAL: NEW_EXIT_CODE empty but non-empty EXIT_CODE_FILE exists: $EXIT_CODE_FILE" 1>&2
-	exit 55
-    fi
-    if [[ $NEW_EXIT_CODE =~ ^[0-9]+$ ]]; then
-	if [[ $V_FLAG -ge 5 ]]; then
-	    echo "$0: debug[5]: NEW_EXIT_CODE: $NEW_EXIT_CODE" 1>&2
-	fi
-    else
-	echo "$0: FATAL: NEW_EXIT_CODE is not an integer: $NEW_EXIT_CODE" 1>&2
-	exit 55
-    fi
-    if [[ $NEW_EXIT_CODE -lt 0 || $NEW_EXIT_CODE -gt 255 ]]; then
-	echo "$0: FATAL: NEW_EXIT_CODE not in range [0,255]: $NEW_EXIT_CODE" 1>&2
-	exit 55
-    fi
-    if [[ $EXIT_CODE -eq 0 ]]; then
-	EXIT_CODE="$NEW_EXIT_CODE"
-	if [[ $V_FLAG -ge 5 ]]; then
-	    echo "$0: debug[5]: top level EXIT_CODE has been set to: $EXIT_CODE" 1>&2
-	fi
-    elif [[ $NEW_EXIT_CODE -eq 0 ]]; then
-	if [[ $V_FLAG -ge 5 ]]; then
-	    echo "$0: debug[5]: while NEW_EXIT_CODE is 0, top level EXIT_CODE will remain: $EXIT_CODE" 1>&2
-	fi
-    fi
-fi
-if [[ $V_FLAG -ge 1 ]]; then
-    echo "$0: debug[1]: top level EXIT_CODE: $EXIT_CODE" 1>&2
-fi
-rm -f "$EXIT_CODE_FILE"
 
 # All Done!!! -- Jessica Noll, Age 2
 #
