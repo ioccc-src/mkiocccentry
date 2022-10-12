@@ -136,6 +136,7 @@ if [[ $status -ne 0 ]]; then
     RUN_TAR_TEST=
 fi
 date > "$TEST_FILE"
+status="$?"
 if [[ $status -ne 0 ]]; then
     echo "$0: ERROR: date > $TEST_FILE exit code: $status" 1>&2
     EXIT_CODE=31
