@@ -45,9 +45,11 @@ if [[ -z "$TAR" ]]; then
     TAR="/usr/bin/tar"
 fi
 
-export USAGE="usage: $0 [-h] [-v level] [-t txzchk] [-T tar] [-F fnamchk] [-d txzchk_tree]
+export TXZCHK_TEST_VERSION="0.3 2022-10-11"
+export USAGE="usage: $0 [-h] [-V] [-v level] [-t txzchk] [-T tar] [-F fnamchk] [-d txzchk_tree]
 
     -h			    print help and exit 2
+    -V			    print version and exit 2
     -v level		    set verbosity level for this script: (def level: 0)
     -t txzchk		    path to txzchk executable (def: ./txzchk)
     -T tar		    path to tar that accepts -J option (def: $TAR)
@@ -64,9 +66,12 @@ export USAGE="usage: $0 [-h] [-v level] [-t txzchk] [-T tar] [-F fnamchk] [-d tx
 exit codes:
     0 - all is well
     1 - at least one test failed
-    2 - help mode exit
+    2 - help mode exit or print version mode exit
     3 - invalid command line
-    >= 4 - internal error"
+    >= 4 - internal error
+
+$0 version: $TXZCHK_TEST_VERSION"
+
 export TXZCHK="./txzchk"
 export EXIT_CODE=0
 export TXZCHK_TREE="./test_txzchk"
@@ -76,29 +81,32 @@ export FNAMCHK="./fnamchk"
 # parse args
 #
 export V_FLAG="0"
-while getopts :hv:t:d:T:F: flag; do
+while getopts :hVv:t:d:T:F: flag; do
     case "$flag" in
-    h) echo "$USAGE" 1>&2
-       exit 2
-       ;;
-    v) V_FLAG="$OPTARG";
-       ;;
-    t) TXZCHK="$OPTARG";
-       ;;
-    d) TXZCHK_TREE="$OPTARG";
+    h)	echo "$USAGE" 1>&2
+	exit 2
 	;;
-    F) FNAMCHK="$OPTARG";
+    V)	echo "$TXZCHK_TEST_VERSION" 1>&2
+	exit 2
 	;;
-    T) TAR="$OPTARG";
+    v)	V_FLAG="$OPTARG";
+	;;
+    t)	TXZCHK="$OPTARG";
+	;;
+    d)	TXZCHK_TREE="$OPTARG";
+	;;
+    F)	FNAMCHK="$OPTARG";
+	;;
+    T)	TAR="$OPTARG";
 	;;
     \?) echo "$0: ERROR: invalid option: -$OPTARG" 1>&2
-       exit 3
-       ;;
-    :) echo "$0: ERROR: option -$OPTARG requires an argument" 1>&2
-       exit 3
-       ;;
+	exit 3
+	;;
+    :)	echo "$0: ERROR: option -$OPTARG requires an argument" 1>&2
+	exit 3
+	;;
    *)
-       ;;
+	;;
     esac
 done
 
