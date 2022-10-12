@@ -29,6 +29,8 @@
 
 # setup
 #
+export IOCCC_TEST_VERSION="0.462022-04-23"
+
 export USAGE="usage: $0 [-h] [-v level] [-J json_level] [-V]
 
     -h              print help and exit 1
@@ -52,8 +54,9 @@ Exit codes:
     10	 ./json_teststr.txt not found or not readable
     11	 ./txzchk not found or not executable
 
-    >=20  some test failed"
-export TEST_VERSION="0.462022-04-23"
+    >=20  some test failed
+
+$0 version: $IOCCC_TEST_VERSION"
 export V_FLAG="0"
 export J_FLAG="0"
 export EXIT_CODE="0"
@@ -70,7 +73,7 @@ while getopts :hv:J:V flag; do
 	;;
     J)	J_FLAG="$OPTARG";
 	;;
-    V)	echo "$TEST_VERSION"
+    V)	echo "$IOCCC_TEST_VERSION"
 	exit 1
 	;;
     \?) echo "$0: ERROR: invalid option: -$OPTARG" 1>&2

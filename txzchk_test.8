@@ -2,7 +2,7 @@
 .SH NAME
 txzchk_test.sh \- test suite for \fBtxzchk(1)\fP
 .SH SYNOPSIS
-\fBtxzchk_test.sh\fP [\-h] [\-v level] [\-t txzchk] [\-T tar] [\-F fnamchk] [\-d txzchk_tree]
+\fBtxzchk_test.sh\fP [\-h] [\-V] [\-v level] [\-t txzchk] [\-T tar] [\-F fnamchk] [\-d txzchk_tree]
 .SH DESCRIPTION
 \fBtxzchk_test.sh\fP runs \fBtxzchk\fP in text file mode on pseudo-tar listings to make sure that bad tarballs are flagged with issues and good tarballs are not.
 For the bad files it checks that the issues reported are the same as expected.
@@ -13,6 +13,9 @@ Conversely if a good file has an error file it is also an error.
 .PP
 \fB\-h\fP
 Show help and exit.
+.PP
+\fB\-V\fP
+Print version and exit.
 .PP
 \fB\-v\fP
 Set verbosity level (def: 0) for the script.

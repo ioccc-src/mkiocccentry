@@ -15,24 +15,50 @@
 export C_SRC="have_timegm.c"
 export PROG="./have_timegm"
 export V_FLAG="0"
+export HAVE_TIMEGM_VERSION="0.0 2022-08-17"
+
+export USAGE="usage: $0 [-h] [-V] [-v level]
+
+    -h			    print help and exit 2
+    -V			    print version and exit 2
+    -v level		    set verbosity level for this script: (def level: 0)
+
+exit codes:
+    0	- all is well
+    1	- invalid command line
+    2	- strptime() returned NULL
+    3	- strptime() return not '\\0'
+    4	- strftime() failed
+    5	- original time string and conversion mismatch
+    100	- help or version mode used
+    101 - invalid option or option missing an argument
+    102 - missing have_timegm.c
+    103 - have_timegm.c not a regular file
+    104 - have_timegm.c not a readable file
+
+$0 version: $HAVE_TIMEGM_VERSION"
+
 
 # parse args
 #
-while getopts :hv: flag; do
+while getopts :hv:V flag; do
     case "$flag" in
-    h) echo "usage: $0 [-h] [-v level]" 1>&2
-       exit 2
-       ;;
-    v) V_FLAG="$OPTARG";
-       ;;
-    \?) echo "invalid option: -$OPTARG" 1>&2
-       exit 3
-       ;;
-    :) echo "option -$OPTARG requires an argument" 1>&2
-       exit 4
-       ;;
-   *)
-       ;;
+    h)	echo "$USAGE" 1>&2
+	exit 100
+	;;
+    v)	V_FLAG="$OPTARG";
+	;;
+    V)	echo "$0 version $HAVE_TIMEGM_VERSION" 1>&2
+	exit 100
+	;;
+    \?)	echo "invalid option: -$OPTARG" 1>&2
+	exit 101
+	;;
+    :)	echo "option -$OPTARG requires an argument" 1>&2
+	exit 101
+	;;
+    *)
+	;;
     esac
 done
 
@@ -40,15 +66,15 @@ done
 #
 if [[ ! -e $C_SRC ]]; then
     echo "$0: missing have_timegm.c: $C_SRC" 1>&2
-    exit 100
+    exit 102
 fi
 if [[ ! -f $C_SRC ]]; then
-    echo "$0: have_timegm.c is not a file: $C_SRC" 1>&2
-    exit 101
+    echo "$0: have_timegm.c is not a regular file: $C_SRC" 1>&2
+    exit 103
 fi
 if [[ ! -r $C_SRC ]]; then
     echo "$0: have_timegm.c is not a readable file: $C_SRC" 1>&2
-    exit 102
+    exit 104
 fi
 
 # prep for compile
@@ -76,4 +102,4 @@ fi
 
 # All Done!!! -- Jessica Noll, Age 2
 #
-exit 0
+exit "$status"

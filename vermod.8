@@ -41,27 +41,25 @@ List files that do not change or would not be changed.
 This is useful with \fB\-n\fP to show what wouldn't change.
 .SH EXIT STATUS
 .PP
-Exit codes:
+0	    all is well
 .br
-    0 \- all is well
+1	    \fBrpl\fP exited non-zero
 .br
-    1 \- \fBrpl\fP exited non-zero
+2	    \fBrpl\fP not found
 .br
-    2 \- \fBrpl\fP not found
+3	    no limit.sh found or is not readable
 .br
-    3 \- no limit.sh found or is not readable
+4	    no test directory found or is not readable
 .br
-    4 \- no test directory found or is not readable
+5	    usage message due to \fB\-h\fP
 .br
-    5 \- usage message due to \fB\-h\fP
+6	    command line error and usage message printed
 .br
-    6 \- command line error and usage message printed
+7	    no *.json files found under test directory
 .br
-    7 \- no *.json files found under test directory
+8	    new_ver (or old_ver if \fB\-o\fP) not found in limit file
 .br
-    8 \- new_ver (or old_ver if \fB\-o\fP) not found in limit file
-.br
-    >= 9 - internal error
+>= 9	    internal error
 .SH FILES
 \fItest_JSON\fP
 .RS
