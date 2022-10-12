@@ -45,9 +45,11 @@ if [[ -z "$TAR" ]]; then
     TAR="/usr/bin/tar"
 fi
 
-export USAGE="usage: $0 [-h] [-v level] [-D dbg_level] [-t tar] [-c cc]
+export HOSTCHK_VERSION="0.2 2022-10-12"
+export USAGE="usage: $0 [-h] [-V] [-v level] [-D dbg_level] [-t tar] [-c cc]
 
     -h			    print help and exit 2
+    -V			    print version and exit 2
     -v level		    set verbosity level for this script: (def level: 0)
     -D dbg_level	    set verbosity level for tests (def: level: 0)
     -t tar		    path to tar that accepts -J option (def: $TAR)
@@ -56,9 +58,11 @@ export USAGE="usage: $0 [-h] [-v level] [-D dbg_level] [-t tar] [-c cc]
 exit codes:
     0 - all is well
     1 - at least one test failed
-    2 - help mode exit
+    2 - help mode and version mode exit
     3 - invalid command line
-    >= 30 - internal error"
+    >= 30 - internal error
+
+$0 version: $HOSTCHK_VERSION"
 
 export EXIT_CODE=0
 
@@ -66,27 +70,30 @@ export EXIT_CODE=0
 #
 export V_FLAG="0"
 export DBG_LEVEL="0"
-while getopts :hv:D:t:c: flag; do
+while getopts :hv:VD:t:c: flag; do
     case "$flag" in
-    h) echo "$USAGE" 1>&2
-       exit 2
-       ;;
-    v) V_FLAG="$OPTARG";
-       ;;
-    D) DBG_LEVEL="$OPTARG";
-       ;;
-    t) TAR="$OPTARG";
+    h)	echo "$USAGE" 1>&2
+	exit 2
 	;;
-    c) CC="$OPTARG";
+    v)	V_FLAG="$OPTARG";
+	;;
+    V)	echo "$HOSTCHK_VERSION"
+	exit 2
+	;;
+    D)	DBG_LEVEL="$OPTARG";
+	;;
+    t)	TAR="$OPTARG";
+	;;
+    c)	CC="$OPTARG";
 	;;
     \?) echo "$0: ERROR: invalid option: -$OPTARG" 1>&2
-       exit 3
-       ;;
-    :) echo "$0: ERROR: option -$OPTARG requires an argument" 1>&2
-       exit 3
-       ;;
+	exit 3
+	;;
+    :)	echo "$0: ERROR: option -$OPTARG requires an argument" 1>&2
+	exit 3
+	;;
    *)
-       ;;
+	;;
     esac
 done
 
@@ -225,7 +232,7 @@ if [[ -n $RUN_INCLUDE_TEST ]]; then
 	#
 	status="$?"
 	if [[ $status -ne 0 ]]; then
-	    echo "$0: FATAL: missing system include file <$h>" 1>&2
+	    echo "$0: FATAL: unable to compile with $h" 1>&2
 	    EXIT_CODE=42
 	    INCLUDE_TEST_SUCCESS="false"
 	fi
