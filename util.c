@@ -3919,20 +3919,6 @@ sum_and_count(intmax_t value, intmax_t *sump, intmax_t *countp, intmax_t *sum_ch
 	warn(__func__, "second check on sum failed: (*sum_checkp)-value %jd != -sum %jd", (*sum_checkp)-value, -sum);
 	return false;
     }
-    /*
-     * FIXME - this is buggy and so it's disabled for now so that the code which
-     * needs this function will be able to work - FIXME
-     */
-    #if 0
-    if (-sum != prev_sum-(~inv_value)) {
-	dbg(DBG_HIGH, "sum: %jd", sum);
-	dbg(DBG_HIGH, "prev_sum: %jd", prev_sum);
-	dbg(DBG_HIGH, "inv_value: %jd", inv_value);
-	dbg(DBG_HIGH, "prev_sum-(~inv_value): %jd", prev_sum-(~inv_value));
-	warn(__func__, "third check on sum failed: -sum %jd != prev_sum-(~inv_value) %jd", -sum, prev_sum-(~inv_value));
-	return false;
-    }
-    #endif
 
     /*
      * second sanity check for value
