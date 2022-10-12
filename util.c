@@ -2325,6 +2325,7 @@ bool
 string_to_intmax2(char const *str, intmax_t *ret)
 {
     intmax_t num = 0;
+    int saved_errno = 0;
     char *endptr = NULL;
 
     /*
@@ -2344,14 +2345,16 @@ string_to_intmax2(char const *str, intmax_t *ret)
      */
     errno = 0;		/* pre-clear errno for warnp() */
     num = strtoimax(str, &endptr, 10);
-    if (errno != 0) {
-	warnp(__func__, "error converting string <%s> to intmax_t", str);
-	return false;
-    } else if (endptr == str) {
+    saved_errno = errno;
+    if (endptr == str) {
 	warn(__func__, "string %s has no digits", str);
 	return false;
     } else if (*endptr != '\0') {
 	warn(__func__, "number %s has invalid characters", str);
+	return false;
+    } else if (saved_errno != 0) {
+	errno = saved_errno;
+	warnp(__func__, "error converting string <%s> to intmax_t", str);
 	return false;
     } else if (num <= INTMAX_MIN || num >= INTMAX_MAX) {
 	warn(__func__, "number %s out of range for intmax_t (must be > %jd && < %jd)", str, INTMAX_MIN, INTMAX_MAX);
