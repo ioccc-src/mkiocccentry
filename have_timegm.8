@@ -2,7 +2,7 @@
 .SH NAME
 have_timegm \- test compiler for \fBtimegm(3)\fP, \fBstrptime(3)\fP and \fBstrftime(3)\fP
 .SH SYNOPSIS
-\fBhave_timegm.sh\fP [\-h] [\-v level]
+\fBhave_timegm.sh\fP [\-h] [\-V] [\-v level]
 .SH DESCRIPTION
 \fBhave_timegm.sh\fP will attempt to compile and run a test program \fBhave_timegm.c\fP to determine if the compiler can use the functions \fBtimegm(3)\fP, \fBstrptime(3)\fP and \fBstrftime(3)\fP.
 If the system compiler does not work we attempt to compensate by directly declaring the prototype for \fBtimegm(3)\fP to let such systems use the tools in order to submit an IOCCC entry.
@@ -12,32 +12,35 @@ We will stop trying to do this in 2024.
 \fB\-h\fP
 Show help and exit.
 .PP
+\fB\-V\fP
+Show version and exit.
+.PP
 \fB\-v\fP
 Set verbosity level.
 .SH EXIT STATUS
 .PP
 .br
-    0    timestamp updated
+    0	    all is well
 .br
-    1    failed Phase 0 of verification
+    1	    invalid command line
 .br
-    2    failed Phase 1 of verification
+    2	    strptime() returned NULL
 .br
-    3    failed Phase 2 of verification
+    3	    strptime() return value not '\\0'
 .br
-    4    failed Phase 3 of verification
+    4	    strftime() failed
 .br
-    5    failed Phase 4 of verification
+    5	    original time string and conversion mismatch
 .br
-    6    rpl failed to modify limit_ioccc.h
+    100	    help or version mode used
 .br
-    7    limit_ioccc.h not found or not readable and writable
+    101	    invalid option or option missing an argument
 .br
-    8    -h and help string printed or -V and version string printed
+    102	    missing \fIhave_timegm.c\fP
 .br
-    9    Command line usage error
+    103	    \fIhave_timegm.c\fP not a regular file
 .br
-    >=10  internal error
+    104	    \fIhave_timegm.c\fP not a readable file
 .SH NOTES
 .PP
 While there is no bug in the tool we are aware of one issue.
@@ -53,7 +56,7 @@ Running the script under CentOS 7 will result in:
 
 .RS
 \fB
-  $ ./have_timegm.sh 
+  $ ./have_timegm.sh
   -DTIMEGM_PROBLEM\fP
 .fi
 .RE
