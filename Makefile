@@ -410,7 +410,7 @@ all: ${TARGETS} ${TEST_TARGETS}
 # rules, not file targets
 #
 .PHONY: all all_ref bug-report build checknr clean clean_generated_obj \
-        clean_mkchk_sem clobber configure depend hostchk install ioccc_test \
+        clean_mkchk_sem clobber configure depend hostchk bug-report install ioccc_test \
         legacy_clobber man2html mkchk_sem parser parser-o picky prep prep_clobber \
         pull rebuild_jnum_test release reset_min_timestamp seqcexit shellcheck tags \
         test test-chkentry use_ref
@@ -935,8 +935,10 @@ test ioccc_test: ioccc_test.sh iocccsize_test.sh dbg mkiocccentry_test.sh jstr_t
 		 jnum_chk dyn_test txzchk_test.sh txzchk jparse Makefile
 	./ioccc_test.sh
 
-hostchk bug-report: hostchk.sh
-	./hostchk.sh
+hostchk bug-report:
+	@-./hostchk.sh -v 0; status="$$?"; if [[ $$status -ne 0 ]]; then \
+	    echo "Warning: you might not be able to compile this code, see above for details." 1>&2; \
+	fi
 
 # run test-chkentry on test_JSON files
 #
