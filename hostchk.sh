@@ -54,7 +54,7 @@ export USAGE="usage: $0 [-h] [-V] [-v level] [-D dbg_level] [-t tar] [-c cc] [-f
     -D dbg_level	    set verbosity level for tests (def: level: 0)
     -t tar		    path to tar that accepts -J option (def: $TAR)
     -c cc		    path to compiler (def: $CC)
-    -f			    fast and quiet check (def: run slower and more verbose)
+    -f			    faster check (def: run slower for better diagnostics)
 
 exit codes:
     0 - all is well
@@ -134,14 +134,6 @@ if [[ ! -x $CC ]]; then
 fi
 
 
-# XXX - for now, -f is so fast it does nothing :-)
-#
-# XXX - fix this when there is a reasonable fast path
-#
-if [[ -n "$F_FLAG" ]]; then
-    exit 0	# XXX - change when this code is faster
-fi
-
 # set up for tar test
 #
 RUN_TAR_TEST="true"
@@ -215,6 +207,7 @@ fi
 
 # set up for compile test
 #
+export INCLUDE_TEST_SUCCESS="true"
 RUN_INCLUDE_TEST="true"
 PROG_FILE=$(mktemp -u .hostchk.prog.XXXXXXXXXX)
 status="$?"
@@ -224,54 +217,102 @@ if [[ $status -ne 0 ]]; then
     RUN_INCLUDE_TEST=
 fi
 
-# run include tests
+# Previously, -f was so fast it did absolutely nothing! :-)
 #
-export INCLUDE_TEST_SUCCESS="true"
-if [[ -n $RUN_INCLUDE_TEST ]]; then
+# Now, however, fast mode is actually slower! :-( It however can be forgiven,
+# perhaps, because it actually does something. :-) Instead of trying to compile
+# a program for each required system header file it compiles one source file
+# with all of them included.
+#
+if [[ -n "$F_FLAG" ]]; then
+    rm -f "$PROG_FILE"
+    if [[ $V_FLAG -gt 1 ]]; then
+	echo "$0: test compiling test file with all necessary system include files" 1>&2
+    fi
 
-    # test each required system include file
+    printf "%s\n%s\n" "$(grep -h -o '#include.*<.*>' ./*.c ./*.h|sort -u)" "int main(void) { return 0; }" |
+	    "${CC}" -x c - -o "$PROG_FILE"
+    # test compile
     #
-    while read -r h; do
-
-	# form C prog
-	#
-	rm -f "$PROG_FILE"
-	printf "%s\n%s\n" "$h" "int main(void){ return 0; }" | "${CC}" -x c - -o "$PROG_FILE"
-
-	# test compile
-	#
+    status="$?"
+    if [[ $status -ne 0 ]]; then
+	echo "$0: FATAL: unable to compile test file with all necessary system include files $h" 1>&2
+	EXIT_CODE=42
+	INCLUDE_TEST_SUCCESS="false"
+    elif [[ -s "$PROG_FILE" && -x "$PROG_FILE" ]]; then
+	./"$PROG_FILE"
 	status="$?"
 	if [[ $status -ne 0 ]]; then
-	    echo "$0: FATAL: unable to compile with $h" 1>&2
-	    EXIT_CODE=42
+	    echo "$0: FATAL: unable to run executable compiled with all necessary system include files" 1>&2
+	    EXIT_CODE=43
 	    INCLUDE_TEST_SUCCESS="false"
+	else
+	    if [[ $V_FLAG -gt 1 ]]; then
+		echo "$0: Running executable compiled with all necessary system include files: success" 1>&2
+	    fi
 	fi
-	if [[ -s "$PROG_FILE" && -x "$PROG_FILE" ]]; then
-	    ./"$PROG_FILE"
+    else
+	echo "$0: FATAL: unable to form an executable compiled using all necessary system include files" 1>&2
+	EXIT_CODE=44
+	INCLUDE_TEST_SUCCESS="false"
+    fi
+
+    # clean up after compile test
+    #
+    rm -f "$PROG_FILE"
+else
+# run include tests one at a time
+#
+    if [[ -n $RUN_INCLUDE_TEST ]]; then
+
+	# test each required system include file
+	#
+	while read -r h; do
+
+	    if [[ $V_FLAG -ge 1 ]]; then
+		echo "Compiling code with $h" 1>&2
+	    fi
+
+	    # form C prog
+	    #
+	    rm -f "$PROG_FILE"
+	    printf "%s\n%s\n" "$h" "int main(void){ return 0; }" | "${CC}" -x c - -o "$PROG_FILE"
+
+	    # test compile
+	    #
 	    status="$?"
 	    if [[ $status -ne 0 ]]; then
-		echo "$0: FATAL: unable to run executable compiled using: $h" 1>&2
-		EXIT_CODE=43
+		echo "$0: FATAL: unable to compile with $h" 1>&2
+		EXIT_CODE=42
 		INCLUDE_TEST_SUCCESS="false"
-	    else
-		if [[ $V_FLAG -gt 1 ]]; then
-		    echo "$0: Running executable compiled using: $h: success"
+	    elif [[ -s "$PROG_FILE" && -x "$PROG_FILE" ]]; then
+		./"$PROG_FILE"
+		status="$?"
+		if [[ $status -ne 0 ]]; then
+		    echo "$0: FATAL: unable to run executable compiled using: $h" 1>&2
+		    EXIT_CODE=43
+		    INCLUDE_TEST_SUCCESS="false"
+		else
+		    if [[ $V_FLAG -gt 1 ]]; then
+			echo "$0: Running executable compiled using: $h: success"
+		    fi
 		fi
+	    else
+		echo "$0: FATAL: unable to form an executable compiled using: $h" 1>&2
+		EXIT_CODE=44
+		INCLUDE_TEST_SUCCESS="false"
 	    fi
-	else
-	    echo "$0: FATAL: unable to form an executable compiled using: $h" 1>&2
-	    EXIT_CODE=44
-	    INCLUDE_TEST_SUCCESS="false"
-	fi
 
-	# clean up after compile test
-	#
-	rm -f "$PROG_FILE"
-    done < <(grep -h -o '#include.*<.*>' ./*.c ./*.h|sort -u)
-else
-    echo "$0: notice: include test disabled due to test set up error(s)" 1>&2
-    EXIT_CODE=45
-    INCLUDE_TEST_SUCCESS="false"
+	    # clean up after compile test
+	    #
+	    rm -f "$PROG_FILE"
+	done < <(grep -h -o '#include.*<.*>' ./*.c ./*.h|sort -u)
+    else
+	echo "$0: notice: include test disabled due to test set up error(s)" 1>&2
+	EXIT_CODE=45
+	INCLUDE_TEST_SUCCESS="false"
+    fi
 fi
+
 
 exit "$EXIT_CODE"
