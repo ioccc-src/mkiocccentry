@@ -303,7 +303,7 @@ DSYMDIRS= $(TARGETS:=.dSYM)
 SH_FILES= iocccsize_test.sh jstr_test.sh limit_ioccc.sh mkiocccentry_test.sh \
 	  vermod.sh prep.sh run_bison.sh run_flex.sh reset_tstamp.sh ioccc_test.sh \
 	  jparse_test.sh txzchk_test.sh hostchk.sh jsemcgen.sh have_timegm.sh \
-	  run_usage.sh bug_report.sh.sh
+	  run_usage.sh bug_report.sh
 BUILD_LOG= build.log
 TXZCHK_LOG=txzchk_test.log
 
