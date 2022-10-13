@@ -46,7 +46,7 @@ if [[ -z "$TAR" ]]; then
 fi
 
 export HOSTCHK_VERSION="0.2 2022-10-12"
-export USAGE="usage: $0 [-h] [-V] [-v level] [-D dbg_level] [-t tar] [-c cc]
+export USAGE="usage: $0 [-h] [-V] [-v level] [-D dbg_level] [-t tar] [-c cc] [-f]
 
     -h			    print help and exit 2
     -V			    print version and exit 2
@@ -54,6 +54,7 @@ export USAGE="usage: $0 [-h] [-V] [-v level] [-D dbg_level] [-t tar] [-c cc]
     -D dbg_level	    set verbosity level for tests (def: level: 0)
     -t tar		    path to tar that accepts -J option (def: $TAR)
     -c cc		    path to compiler (def: $CC)
+    -f			    fast and quiet check (def: run slower and more verbose)
 
 exit codes:
     0 - all is well
@@ -70,7 +71,8 @@ export EXIT_CODE=0
 #
 export V_FLAG="0"
 export DBG_LEVEL="0"
-while getopts :hv:VD:t:c: flag; do
+export F_FLAG=
+while getopts :hv:VD:t:c:f flag; do
     case "$flag" in
     h)	echo "$USAGE" 1>&2
 	exit 2
@@ -85,6 +87,8 @@ while getopts :hv:VD:t:c: flag; do
     t)	TAR="$OPTARG";
 	;;
     c)	CC="$OPTARG";
+	;;
+    f)	F_FLAG="true";
 	;;
     \?) echo "$0: ERROR: invalid option: -$OPTARG" 1>&2
 	exit 3
@@ -130,7 +134,13 @@ if [[ ! -x $CC ]]; then
 fi
 
 
-
+# XXX - for now, -f is so fast it does nothing :-)
+#
+# XXX - fix this when there is a reasonable fast path
+#
+if [[ -n "$F_FLAG" ]]; then
+    exit 0	# XXX - change when this code is faster
+fi
 
 # set up for tar test
 #

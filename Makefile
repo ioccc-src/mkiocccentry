@@ -405,7 +405,51 @@ FLEX_FLAGS = -8
 # all - default rule - must be first #
 ######################################
 
-all: ${TARGETS} ${TEST_TARGETS}
+all: fast_hostchk just_all
+
+# The original make all that bypasses running hostchk.sh
+#
+just_all: ${TARGETS} ${TEST_TARGETS}
+
+# fast build environment sanity check
+#
+fast_hostchk: hostchk.sh
+	@./hostchk.sh -f -v 0; status="$$?"; if [ "$$status" -ne 0 ]; then \
+	    ${MAKE} hostchk_warning; \
+	fi
+
+# slower more verbose build environment sanity check
+#
+hostchk: hostchk.sh
+	@./hostchk.sh -v 1; status="$$?"; if [ "$$status" -ne 0 ]; then \
+	    ${MAKE} hostchk_warning; \
+	fi
+
+# get the users attention when hostchk.sh finds a problem
+#
+hostchk_warning:
+	@echo 1>&2
+	@echo '=-= WARNING WARNING WARNING =-=' 1>&2
+	@echo '=-= hostchk exited non-zero =-=' 1>&2
+	@echo 1>&2
+	@echo '=-= WARNING WARNING WARNING =-=' 1>&2
+	@echo '=-= your build environment may not be able to compile mkiocccentry and friends =-=' 1>&2
+	@echo 1>&2
+	@echo '=-= WARNING WARNING WARNING =-=' 1>&2
+	@echo '=-= For hints as to what might be wrong try running:' 1>&2
+	@echo 1>&2
+	@echo './hostchk.sh -v 1' 1>&2
+	@echo 1>&2
+	@echo '=-= WARNING WARNING WARNING =-=' 1>&2
+	@echo '=-= If you think this is a bug, consider filing a bug report via:' 1>&2
+	@echo 1>&2
+	@echo './bug-report.sh' 1>&2
+	@echo 1>&2
+	@echo '=-= about to sleep 10 seconds =-=' 1>&2
+	@echo 1>&2
+	@sleep 10
+	@echo '=-= Letting the compile continue in hopes it might be OK, even though we doubt it will be OK. =-=' 1>&2
+	@echo 1>&2
 
 # rules, not file targets
 #
@@ -934,11 +978,6 @@ reset_min_timestamp: reset_tstamp.sh
 test ioccc_test: ioccc_test.sh iocccsize_test.sh dbg mkiocccentry_test.sh jstr_test.sh \
 		 jnum_chk dyn_test txzchk_test.sh txzchk jparse Makefile
 	./ioccc_test.sh
-
-hostchk bug-report:
-	@-./hostchk.sh -v 0; status="$$?"; if [[ $$status -ne 0 ]]; then \
-	    echo "Warning: you might not be able to compile this code, see above for details." 1>&2; \
-	fi
 
 # run test-chkentry on test_JSON files
 #
