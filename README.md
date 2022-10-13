@@ -2,6 +2,14 @@
 
 *NOTE*: This code is currently under alpha-test.
 
+For those who will fork this repo and make pull requests you might consider
+adding the `pre-commit.sample` script to your `.git/hooks` subdirectory as
+`pre-commit`.  This will help prevent the problem of committing code that will
+fail the make test rule. This is not required but it would be helpful if you do
+so. All the script does is run make test and if it fails it exits 1. See the
+sample file as well as `git log 58d447518279eb436564a086a3cfeafeccbb8802` for
+more details.
+
 
 ## `mkiocccentry`
 
