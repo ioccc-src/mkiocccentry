@@ -55,6 +55,8 @@ verge
 verge.html
 # foo :-)
 oebxergfB.txt
+# bug report logs
+bug-report*.txt
 
 # Prerequisites
 *.d
