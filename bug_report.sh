@@ -71,13 +71,27 @@ if [[ $V_FLAG -gt 1 ]]; then
     echo "Will write contents to $LOG_FILE" 1>&2
 fi
 
+# XXX - FIXME
+#
+# Currently the exit codes will not be correctly tested. The idea is here but
+# the exit codes will not be tested right so if for instance make test fails it
+# will still say that all tests passed. This will have to be fixed to make the
+# testing of the exit codes useful but this will come at a later date.
+#
+# Yes it's very amusing that a script called bug_report.sh has a bug but amusing
+# as it would have been I cannot say this was actually intentional! :-) I had
+# thought of it originally but I neglected to address it until after a commit.
+# This bug will be fixed at a later date as I must go do other things now. Still
+# better to have it after all as who can't use more laughs? :-)
+#
+# XXX - FIXME
 echo "## TIME OF REPORT: $(date)" | tee -a -- "$LOG_FILE"
 echo "## RUNNING make clobber: " | tee -a -- "$LOG_FILE"
 make clobber | tee -a -- "$LOG_FILE"  1>&2
 status=$?
 if [[ "$status" -ne 0 ]]; then
     EXIT_CODE=10
-    echo "make clobber failed: new exit code: $EXIT_CODE" | tee -a -- "$LOG_FILE"
+    echo "make clobber failed with exit code $status: new exit code: $EXIT_CODE" | tee -a -- "$LOG_FILE"
 fi
 echo '' >> "$LOG_FILE" 1>&2
 echo "## RUNNING make all: " | tee -a -- "$LOG_FILE" 1>&2
@@ -85,7 +99,7 @@ make all | tee -a -- "$LOG_FILE"  1>&2
 status=$?
 if [[ "$status" -ne 0 ]]; then
     EXIT_CODE=11
-    echo "make all failed: new exit code: $EXIT_CODE" | tee -a -- "$LOG_FILE"
+    echo "make all failed with exit code $status: new exit code: $EXIT_CODE" | tee -a -- "$LOG_FILE"
 fi
 echo '' >> "$LOG_FILE" 1>&2
 echo "## RUNNING make test: " | tee -a -- "$LOG_FILE" 1>&2
@@ -95,6 +109,16 @@ if [[ "$status" -ne 0 ]]; then
     EXIT_CODE=12
     echo "make test failed with exit code $status: new exit code: $EXIT_CODE" | tee -a -- "$LOG_FILE"
 fi
+
+echo '' >> "$LOG_FILE" 1>&2
+echo "## RUNNING hostchk.sh -v 3: " | tee -a -- "$LOG_FILE" 1>&2
+./hostchk.sh -v 3 | tee -a -- "$LOG_FILE"  1>&2
+status=$?
+if [[ "$status" -ne 0 ]]; then
+    EXIT_CODE=13
+    echo "hostchk.sh failed with exit code $status: new exit code: $EXIT_CODE" | tee -a -- "$LOG_FILE"
+fi
+
 
 if [[ "$EXIT_CODE" -ne 0 ]]; then
     echo "Found one more issues. Please file an issue on the GitHub issues page and attach" 1>&2
