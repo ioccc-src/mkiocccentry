@@ -453,8 +453,8 @@ hostchk_warning:
 
 # rules, not file targets
 #
-.PHONY: all all_ref bug-report build checknr clean clean_generated_obj \
-        clean_mkchk_sem clobber configure depend hostchk bug-report install ioccc_test \
+.PHONY: all just_all fast_hostchk hostchk hostchk_warning all_ref bug-report build checknr clean \
+	clean_generated_obj clean_mkchk_sem clobber configure depend hostchk bug-report install ioccc_test \
         legacy_clobber man2html mkchk_sem parser parser-o picky prep prep_clobber \
         pull rebuild_jnum_test release reset_min_timestamp seqcexit shellcheck tags \
         test test-chkentry use_ref
