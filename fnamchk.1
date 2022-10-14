@@ -34,35 +34,35 @@ Followed by "\fBtxz\fP" (or the user supplied extension from option \fB\-E\fP).
 .PP
 NOTE: The quotes above should not be in the filename; they're there only to help distinguish the punctuation from the rest of the format.
 .PP
-It is indirectly invoked via the \fBtxzchk(1)\fP utility which is called by \fBmkiocccentry(1)\fP and it will also be directly executed by the judges during the judging process of the contests.
+It is indirectly invoked via the \fBtxzchk(1)\fP utility which is called by \fBmkiocccentry(1)\fP and it will also be directly executed by the Judges during the judging process of the contests.
 .SH OPTIONS
-.PP
+.TP
 \fB\-h\fP
 Show help and exit.
-.PP
-\fB\-v\fP
+.TP
+\fB\-v \fIlevel\fP\fP
 Set verbosity level.
-Default: \fBDBG_DEFAULT\fP \-> \fBDBG_NONE\fP \-> \fB0\fP.
-.PP
+Default: 0.
+.TP
 \fB\-V\fP
 Show version and exit.
-.PP
+.TP
 \fB\-q\fP
 Quiet mode.
 Silence msg(), warn(), warnp() if verbosity level is 0.
 Default: \fBfalse\fP.
-.PP
-\fB\-E\fP
-Change extension to test (without the dot!).
+.TP
+\fB\-E \fIext\fP\fP
+Change extension to extension specified (without the dot!).
 This is used for \fBTESTING\fP purposes only!
-.PP
+.TP
 \fB\-t\fP
 If the filename does not start with the test mode filename format, issue an error.
-In other words the filename has to start with \fBentry.test-\fP or it's an error.
-.PP
+In other words the filename has to start with \fIentry.test-\fP or it's an error.
+.TP
 \fB\-u\fP
 If the filename does not start with the normal filename format, issue an error.
-In other words if the filename starts with \fBentry.test-\fP it is an error.
+In other words if the filename starts with \fIentry.test-\fP it is an error.
 .SH EXIT STATUS
 .PP
 \fBmain()\fP returns 0 on success; if there's an error the end is not reached.
@@ -75,16 +75,16 @@ If you have an issue with the tool you can open an issue at \fI\<https://github.
 .SH EXAMPLES
 .PP
 .nf
-Run the program on the filename \fIentry.test.0.1650779341.txz\fP:
+Run the program on the filename \fIentry.test-0.1562145368.txz\fP which will fail because the current timestamp is a larger value:
 
 .RS
 \fB
- ./fnamchk entry.test-0.1650779341.txz\fP
+ ./fnamchk -t entry.test-0.1562145368.txz\fP.
 .fi
 .RE
 .PP
 .nf
-Run the program on the filename \fItest.tar\fP, which will fail:
+Run the program on the filename \fItest.tar\fP, which will fail because the name format is invalid:
 
 .RS
 \fB
@@ -92,42 +92,46 @@ Run the program on the filename \fItest.tar\fP, which will fail:
 .fi
 .RE
 .PP
+Note that the below example filenames are based on the current minimum timestamp which is \fB(time_t)1662145368\fP.
+When this value changes the examples below will fail the test of the minimum timestamp if they're not updated.
+When one updates the minimum timestamp one should also update the references to it to the new value in this man page or else the examples will break.
+.PP
 .nf
-Run the program on the filename \fIentry.test.0.1650779341.txz\fP with the option \fI\-u\fP which will fail:
+Run the program on the filename \fIentry.test.0.1662145368.txz\fP with the option \fI\-u\fP which will fail:
 
 .RS
 \fB
- ./fnamchk -u entry.test-0.1650779341.txz\fP
+ ./fnamchk -u entry.test-0.1662145368.txz\fP
 .fi
 .RE
 .PP
 .nf
-Run the program on the filename \fIentry.test.0.1650779341.txz\fP with the option \fI\-t\fP which will pass:
+Run the program on the filename \fIentry.test.0.1662145368.txz\fP with the option \fI\-t\fP which will pass:
 
 .RS
 \fB
- ./fnamchk -t entry.test-0.1650779341.txz\fP
-.fi
-.RE
-.PP
-The above will print "\fBtest\-0\fP".
-.PP
-.nf
-Run the program on the file \fIentry.test.0.1650779341.txt\fP with the option \fI\-t\fP which will pass:
-
-.RS
-\fB
- ./fnamchk -E txt -t entry.test-0.1650779341.txt\fP
+ ./fnamchk -t entry.test-0.1662145368.txz\fP
 .fi
 .RE
 .PP
 The above will print "\fBtest\-0\fP".
 .PP
 .nf
-Run the program on the file \fIentry.test.0.1650779341.txz\fP with the options \fI\-t\fP and \fI\-E txt\fP which will fail:
+Run the program on the file \fIentry.test.0.1662145368.txt\fP with the option \fI\-t\fP which will pass:
 
 .RS
 \fB
- ./fnamchk -E txt -t entry.test-0.1650779341.txz\fP
+ ./fnamchk -E txt -t entry.test-0.1662145368.txt\fP
+.fi
+.RE
+.PP
+The above will print "\fBtest\-0\fP".
+.PP
+.nf
+Run the program on the file \fIentry.test.0.1662145368.txz\fP with the options \fI\-t\fP and \fI\-E txt\fP which will fail:
+
+.RS
+\fB
+ ./fnamchk -E txt -t entry.test-0.1662145368.txz\fP
 .fi
 .RE

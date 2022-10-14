@@ -4,7 +4,7 @@ mkiocccentry \- make an IOCCC compressed tarball for an IOCCC entry
 .SH SYNOPSIS
 \fBmkiocccentry\fP [options] work_dir prog.c Makefile remarks.md [file ...]
 .SH DESCRIPTION
-\fBmkiocccentry\fP gathers your source file, Makefile, remarks as well as any other files and creates a XZ compressed tarball.
+\fBmkiocccentry\fP gathers your source file, Makefile, remarks as well as any other files and creates an XZ compressed tarball.
 The tool runs \fBiocccsize\fP and it also runs a test on the Makefile to verify that everything seems in order.
 You can ignore the warnings except that the Makefile cannot be empty.
 The work_dir is a directory that the program will copy the files to (under a subdirectory based on the title of the entry and the entry number), to create the tarball.
@@ -14,55 +14,51 @@ After the writing of the \fI.info.json\fP file the \fI.author.json\fP file is wr
 If the work_dir already exists the program will tell you to move it or delete it.
 The program does \fBNOT\fP delete it in case you wish to inspect that everything is okay or do any other tests; it does however show you how you can delete it should you wish to.
 .SH OPTIONS
-.PP
+.TP
 \fB\-h\fP
 Show help and exit.
-.PP
+.TP
 \fB\-v\fP
 Set verbosity level.
-.PP
+.TP
 \fB\-V\fP
 Show version and exit.
-.PP
+.TP
 \fB\-t\fP
 Specify path to tar that accepts the \fB\-J\fP option.
 \fBmkiocccentry\fP checks \fI/usr/bin/tar\fP and \fI/bin/tar\fP if this option is not specified.
-.PP
+.TP
 \fB\-c\fP
 Specify path to cp.
 \fBmkiocccentry\fP checks \fI/usr/bin/cp\fP and \fI/bin/cp\fP if this option is not specified.
-.PP
+.TP
 \fB\-l\fP
 Specify path to ls.
 \fBmkiocccentry\fP checks \fI/usr/bin/ls\fP and \fI/bin/ls\fP if this option is not specified.
-.PP
+.TP
 \fB\-T\fP
 Specify path to the \fBtxzchk\fP tool.
 \fBmkiocccentry\fP checks \fI./txzchk\fP and \fI/usr/local/bin/txzchk\fP if this option is not specified.
-.PP
+.TP
 \fB\-F\fP
 Specify path to the \fBfnamchk\fP tool.
 \fBmkiocccentry\fP checks \fI./fnamchk\fP and \fI/usr/local/bin/fnamchk\fP if this option is not specified.
-.PP
+.TP
+\fB\-C\fP
+Specify path to the \fBchkentry\fP tool.
+\fBmkiocccentry\fP checks \fI./chkentry\fP and \fI/usr/local/bin/chkentry\fP if this option is not specified.
+.TP
 \fB\-a\fP
 Write to file specified the answers for easier updating the entry (via the \fB\-i\fP option).
 If the file exists \fBmkiocccentry\fP will ask you if you wish to overwrite it unless \fB\-A\fP is specified which will always overwrite the answers file.
-.PP
+.TP
 \fB\-A\fP
 Always overwrite answers file.
-.PP
-\fB\-j\fP
-Specify path to \fBchkinfo\fP tool.
-\fBmkiocccentry\fP checks \fI./chkinfo\fP and \fI/usr/local/bin/chkinfo\fP if this option is not specified.
-.PP
-\fB\-J\fP
-Specify path to \fBchkauth\fP tool.
-\fBmkiocccentry\fP checks \fI./chkauth\fP and \fI/usr/local/bin/chkauth\fP if this option is not specified.
-.PP
+.TP
 \fB\-W\fP
 Ignore all warnings.
 When this option is specified the program warns you that you've ignored all warnings (therefore not ignoring all warnings :) ), informing you that the judges will not ignore all warnings.
-.PP
+.TP
 \fB\-q\fP
 Quiet mode.
 Silence msg(), warn(), warnp() if verbosity level is 0.
