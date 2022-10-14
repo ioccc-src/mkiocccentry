@@ -34,7 +34,7 @@ Followed by "\fBtxz\fP" (or the user supplied extension from option \fB\-E\fP).
 .PP
 NOTE: The quotes above should not be in the filename; they're there only to help distinguish the punctuation from the rest of the format.
 .PP
-It is indirectly invoked via the \fBtxzchk(1)\fP utility which is called by \fBmkiocccentry(1)\fP and it will also be directly executed by the judges during the judging process of the contests.
+It is indirectly invoked via the \fBtxzchk(1)\fP utility which is called by \fBmkiocccentry(1)\fP and it will also be directly executed by the Judges during the judging process of the contests.
 .SH OPTIONS
 .TP
 \fB\-h\fP
@@ -58,11 +58,11 @@ This is used for \fBTESTING\fP purposes only!
 .TP
 \fB\-t\fP
 If the filename does not start with the test mode filename format, issue an error.
-In other words the filename has to start with \fBentry.test-\fP or it's an error.
+In other words the filename has to start with \fIentry.test-\fP or it's an error.
 .TP
 \fB\-u\fP
 If the filename does not start with the normal filename format, issue an error.
-In other words if the filename starts with \fBentry.test-\fP it is an error.
+In other words if the filename starts with \fIentry.test-\fP it is an error.
 .SH EXIT STATUS
 .PP
 \fBmain()\fP returns 0 on success; if there's an error the end is not reached.
@@ -74,18 +74,27 @@ More than 0 humans work on it! :)
 If you have an issue with the tool you can open an issue at \fI\<https://github.com/ioccc-src/mkiocccentry/issues\>\fP.
 .SH EXAMPLES
 .PP
-Note that the example filenames are based on the current minimum timestamp which is \fB(time_t)1662145368\fP.
-When this value changes the examples below will fail the test of the minimum timestamp if they're not updated.
-One could do a search and replace for \fB1662145368\fP value to the new value whenever the timestamp is changed.
+.nf
+Run the program on the filename \fIentry.test-0.1562145368.txz\fP which will fail because the current timestamp is a larger value:
+
+.RS
+\fB
+ ./fnamchk -t entry.test-0.1562145368.txz\fP.
+.fi
+.RE
 .PP
 .nf
-Run the program on the filename \fItest.tar\fP, which will fail:
+Run the program on the filename \fItest.tar\fP, which will fail because the name format is invalid:
 
 .RS
 \fB
  ./fnamchk test.tar\fP
 .fi
 .RE
+.PP
+Note that the below example filenames are based on the current minimum timestamp which is \fB(time_t)1662145368\fP.
+When this value changes the examples below will fail the test of the minimum timestamp if they're not updated.
+When one updates the minimum timestamp one should also update the references to it to the new value in this man page or else the examples will break.
 .PP
 .nf
 Run the program on the filename \fIentry.test.0.1662145368.txz\fP with the option \fI\-u\fP which will fail:
