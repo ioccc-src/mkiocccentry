@@ -110,7 +110,10 @@ echo "## RUNNING make all: " | tee -a -- "$LOG_FILE" 1>&2
 #
 # Obviously one needn't run this script a second or third time just because it
 # runs hostchk.sh which suggests that you run this script each time it exits
-# non-zero! :-)
+# non-zero! :-) Sorry in advance if this (to make use of an American English
+# phrase which I will happily use for a pun for a pun not made is a wasted
+# opportunity :-) ) throws you for a loop! :-) But now that you're in the loop
+# it shouldn't even matter. :-)
 #
 # This might seem extra verbose or overkill but we feel that if there's an issue
 # with hostchk.sh it really is an issue that will likely prevent a successful

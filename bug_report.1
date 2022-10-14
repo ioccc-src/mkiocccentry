@@ -26,6 +26,10 @@ If it exits non-zero and it's not because of the \fB\-h\fP or \fB\-V\fP option i
 Even if the script exits 0 it does not necessarily mean there is no problem.
 If you feel there is a problem that was not detected you may still open an issue on the GitHub page (or email the Judges).
 The script will tell you how to do this whether there are issues detected or not.
+.PP
+The output can seem redundant if it fails because of \fBhostchk(1)\fP since it will trigger a warning that tells you to use \fBhostchk(1)\fP with more verbosity and also tells you to use \fBbug_report(1)\fP which tells you to use \fBhostchk(1)\fP.
+Sorry in advance if (to use an American English phrase which I will happily use for a pun for a pun not made is a wasted opportunity) this throws you for a loop :-) but we feel that it's better that the warning is really stressed as it most likely means that you won't be able to use the toolkit to successfully create a valid IOCCC tarball.
+But now that you're in the loop it shouldn't even matter! :-)
 .SH BUGS
 .PP
 Right now there are no known bugs except that it cannot possibly account for everything.
