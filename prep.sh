@@ -30,9 +30,9 @@
 #
 export USAGE="usage: $0 [-h] [-v level] [-V] [-e] [-o] [-m make] [-M Makefile]
 
-    -h              print help and exit 5
+    -h              print help and exit 1
     -v level        flag ignored
-    -V              print version and exit 5
+    -V              print version and exit 1
 
     -e		    exit in first make action error (def: exit only at end)
     -o		    do NOT use backup files, fail if bison or flex cannot be used (def: use)
@@ -40,12 +40,12 @@ export USAGE="usage: $0 [-h] [-v level] [-V] [-e] [-o] [-m make] [-M Makefile]
     -M Makefile	    path to Makefile (def: ./Makefile)
 
 Exit codes:
-    0    All is OK for both bison and flex
-    1    -h and help string printed or -V and version string printed
-    2	 command line error
-    3	 Makefile not a readable file that exists
-    4	 Internal function error
-    >=10 some make action exited non-zero"
+     0   all is OK for both bison and flex
+     1   -h and help string printed or -V and version string printed
+     2	 command line error
+     3	 Makefile not a readable file that exists
+     4	 Internal function error
+ >= 10   some make action exited non-zero"
 export MAKE="make"
 export MAKEFILE="./Makefile"
 export PREP_VERSION="0.1 2022-04-19"
@@ -146,7 +146,7 @@ make_action() {
 	echo "$0: Warning: EXIT_CODE is now: $EXIT_CODE" 1>&2
 	if [[ -n $E_FLAG ]]; then
 	    echo
-	    echo "$0: FATAL: $MAKE -f $MAKEFILE $RULE exit status: $status" 1>&2
+	    echo "$0: ERROR: $MAKE -f $MAKEFILE $RULE exit status: $status" 1>&2
 	    echo
 	    echo "=-=-= FAIL: $MAKE $RULE =-=-="
 	    echo

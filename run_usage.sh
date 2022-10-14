@@ -30,15 +30,14 @@ export USAGE="usage: $0 [-h] [-m section] [-M man file] tool
     tool	    one of the IOCCC tools to run with -h option
 
 Exit codes:
-    0	    all okay
-    1	    help string printed
-    2	    tool missing or command missing
-    3	    man page missing
-    4	    command line usage error
-    5	    missing or inconsistent synopsis
-    6	    tool does not have usage string
-    >=42    internal error"
-
+     0	 all okay
+     1	 help string printed
+     2	 tool missing or command missing
+     3	 man page missing
+     4	 command line usage error
+     5	 missing or inconsistent synopsis
+     6	 tool does not have usage string
+ >= 10   internal error"
 
 # parse args
 #
@@ -82,15 +81,15 @@ fi
 
 # verify tool exists and is a regular file and can be executed
 if [[ ! -e "$1" ]]; then
-    echo "$0: missing tool: $1" 1>&2
+    echo "$0: ERROR: missing tool: $1" 1>&2
     exit 2
 fi
 if [[ ! -f "$1" ]]; then
-    echo "$0: tool not a regular file: $1" 1>&2
+    echo "$0: ERROR: tool not a regular file: $1" 1>&2
     exit 2
 fi
 if [[ ! -x "$1" ]]; then
-    echo "$0: tool not executable: $1" 1>&2
+    echo "$0: ERROR: tool not executable: $1" 1>&2
     exit 2
 fi
 
@@ -99,76 +98,76 @@ fi
 # check for executable grep
 GREP=$(type -P grep)
 if [[ -z "${GREP}" ]]; then
-    echo "$0: unable to find grep" 1>&2
+    echo "$0: ERROR: unable to find grep" 1>&2
     exit 2
 fi
 if [[ ! -e "$GREP" ]]; then
-    echo "$0: missing grep: $GREP" 1>&2
+    echo "$0: ERROR: missing grep: $GREP" 1>&2
     exit 2
 fi
 if [[ ! -f "$GREP" ]]; then
-    echo "$0: grep not a regular file: $GREP" 1>&2
+    echo "$0: ERROR: grep not a regular file: $GREP" 1>&2
     exit 2
 fi
 if [[ ! -x "$GREP" ]]; then
-    echo "$0: grep not executable: $GREP" 1>&2
+    echo "$0: ERROR: grep not executable: $GREP" 1>&2
     exit 2
 fi
 
 # check for executable cut
 CUT=$(type -P cut)
 if [[ -z "${CUT}" ]]; then
-    echo "$0: unable to find cut" 1>&2
+    echo "$0: ERROR: unable to find cut" 1>&2
     exit 2
 fi
 if [[ ! -e "$CUT" ]]; then
-    echo "$0: missing cut: $CUT" 1>&2
+    echo "$0: ERROR: missing cut: $CUT" 1>&2
     exit 2
 fi
 if [[ ! -f "$CUT" ]]; then
-    echo "$0: cut not a regular file: $CUT" 1>&2
+    echo "$0: ERROR: cut not a regular file: $CUT" 1>&2
     exit 2
 fi
 if [[ ! -x "$CUT" ]]; then
-    echo "$0: cut not executable: $CUT" 1>&2
+    echo "$0: ERROR: cut not executable: $CUT" 1>&2
     exit 2
 fi
 
 # check for executable sed
 SED=$(type -P sed)
 if [[ -z "${SED}" ]]; then
-    echo "$0: unable to find sed" 1>&2
+    echo "$0: ERROR: unable to find sed" 1>&2
     exit 2
 fi
 if [[ ! -e "$SED" ]]; then
-    echo "$0: missing sed: $SED" 1>&2
+    echo "$0: ERROR: missing sed: $SED" 1>&2
     exit 2
 fi
 if [[ ! -f "$SED" ]]; then
-    echo "$0: sed not a regular file: $SED" 1>&2
+    echo "$0: ERROR: sed not a regular file: $SED" 1>&2
     exit 2
 fi
 if [[ ! -x "$SED" ]]; then
-    echo "$0: sed not executable: $SED" 1>&2
+    echo "$0: ERROR: sed not executable: $SED" 1>&2
     exit 2
 fi
 
 # check for executable awk
 AWK=$(type -P awk)
 if [[ -z "${AWK}" ]]; then
-    echo "$0: unable to find awk" 1>&2
+    echo "$0: ERROR: unable to find awk" 1>&2
     exit 2
 fi
 if [[ ! -e "$AWK" ]]; then
-    echo "$0: missing awk: $AWK" 1>&2
+    echo "$0: ERROR: missing awk: $AWK" 1>&2
     exit 2
 fi
 if [[ ! -f "$AWK" ]]; then
-    echo "$0: awk not a regular file: $AWK" 1>&2
+    echo "$0: ERROR: awk not a regular file: $AWK" 1>&2
     exit 2
 fi
 if [[ ! -x "$AWK" ]]; then
-    echo "$0: awk not executable: $AWK" 1>&2
+    echo "$0: ERROR: awk not executable: $AWK" 1>&2
     exit 2
 fi
 
@@ -201,7 +200,7 @@ if [[ -z "$MAN_FLAG" && -z "$MAN_PAGE" ]]; then
 fi
 
 if [[ ! -e "$MAN_PAGE" ]]; then
-    echo "$0: missing man page for $1: $MAN_PAGE" 1>&2
+    echo "$0: ERROR: missing man page for $1: $MAN_PAGE" 1>&2
     echo "Once a man page exists, you can try adding to the SYNOPSIS section:" 1>&2
     echo "" 1>&2
     echo "$USAGE_FMT" 1>&2
@@ -210,7 +209,7 @@ if [[ ! -e "$MAN_PAGE" ]]; then
 fi
 
 if [[ ! -f "$MAN_PAGE" ]]; then
-    echo "$0: man page $MAN_PAGE not a regular file" 1>&2
+    echo "$0: ERROR: man page $MAN_PAGE not a regular file" 1>&2
     echo "Once a man page exists, you can try adding to the SYNOPSIS section:" 1>&2
     echo "" 1>&2
     echo "$USAGE_FMT" 1>&2
@@ -218,7 +217,7 @@ if [[ ! -f "$MAN_PAGE" ]]; then
     exit 3
 fi
 if [[ ! -r "$MAN_PAGE" ]]; then
-    echo "$0: man page $MAN_PAGE not a readable file" 1>&2
+    echo "$0: ERROR: man page $MAN_PAGE not a readable file" 1>&2
     echo "Once a man page exists, you can try adding to the SYNOPSIS section:" 1>&2
     echo "" 1>&2
     echo "$USAGE_FMT" 1>&2
@@ -241,7 +240,7 @@ fi
 # lines.
 LINES=$(./"$1" -h 2>&1 | grep -c usage)
 if [[ $($GREP -c "$USAGE_RE" "$MAN_PAGE") -ne "$LINES" ]]; then
-    echo "Possible missing or inconsistent usage message for $1." 1>&2
+    echo "$0: ERROR: Possible missing or inconsistent usage message for $1." 1>&2
     echo "If you know what you're doing you can try adding the following string" 1>&2
     echo "to the SYNOPSIS section of the man page:" 1>&2
     echo "" 1>&2

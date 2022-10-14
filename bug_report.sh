@@ -25,6 +25,13 @@ export USAGE="usage: $0 [-h] [-V] [-v level] [-D level]
     -v level		    set verbosity level for this script: (def level: $V_FLAG)
     -D level		    set verbosity level for tests (def: $DBG_LEVEL)
 
+Exit codes:
+     0   all is well
+     1   failed to create a bug report file
+     2   help mode exit or print version mode exit
+     3   invalid command line
+ >= 10   internal error
+
 $0 version: $BUG_REPORT_VERSION"
 
 
@@ -67,11 +74,11 @@ rm -f "$LOG_FILE"
 touch "$LOG_FILE"
 
 if [[ ! -e "$LOG_FILE" ]]; then
-    echo "$0: could not create log file: $LOG_FILE"
+    echo "$0: ERROR: could not create log file: $LOG_FILE"
     exit 1
 fi
 if [[ ! -w "$LOG_FILE" ]]; then
-    echo "$0: log file not writable: $LOG_FILE"
+    echo "$0: ERROR: log file not writable: $LOG_FILE"
     exit 1
 fi
 
@@ -96,7 +103,7 @@ make clobber | tee -a -- "$LOG_FILE"  1>&2
 status=${PIPESTATUS[0]}
 if [[ "$status" -ne 0 ]]; then
     EXIT_CODE=10
-    echo "make clobber failed with exit code $status: new exit code: $EXIT_CODE" | tee -a -- "$LOG_FILE"
+    echo "$0: ERROR: make clobber failed with exit code $status: new exit code: $EXIT_CODE" | tee -a -- "$LOG_FILE"
 fi
 echo '' >> "$LOG_FILE" 1>&2
 echo "## RUNNING make all: " | tee -a -- "$LOG_FILE" 1>&2
@@ -125,7 +132,7 @@ make all | tee -a -- "$LOG_FILE"  1>&2
 status=${PIPESTATUS[0]}
 if [[ "$status" -ne 0 ]]; then
     EXIT_CODE=11
-    echo "make all failed with exit code $status: new exit code: $EXIT_CODE" | tee -a -- "$LOG_FILE"
+    echo "$0: ERROR: make all failed with exit code $status: new exit code: $EXIT_CODE" | tee -a -- "$LOG_FILE"
 fi
 echo '' >> "$LOG_FILE" 1>&2
 echo "## RUNNING make test: " | tee -a -- "$LOG_FILE" 1>&2
@@ -133,7 +140,7 @@ make test | tee -a -- "$LOG_FILE"  1>&2
 status=${PIPESTATUS[0]}
 if [[ "$status" -ne 0 ]]; then
     EXIT_CODE=12
-    echo "make test failed with exit code $status: new exit code: $EXIT_CODE" | tee -a -- "$LOG_FILE"
+    echo "$0: ERROR: make test failed with exit code $status: new exit code: $EXIT_CODE" | tee -a -- "$LOG_FILE"
 fi
 
 echo '' >> "$LOG_FILE" 1>&2
@@ -142,7 +149,7 @@ echo "## RUNNING hostchk.sh -v 3: " | tee -a -- "$LOG_FILE" 1>&2
 status=${PIPESTATUS[0]}
 if [[ "$status" -ne 0 ]]; then
     EXIT_CODE=13
-    echo "hostchk.sh failed with exit code $status: new exit code: $EXIT_CODE" | tee -a -- "$LOG_FILE"
+    echo "$0: ERROR: hostchk.sh failed with exit code $status: new exit code: $EXIT_CODE" | tee -a -- "$LOG_FILE"
 fi
 
 

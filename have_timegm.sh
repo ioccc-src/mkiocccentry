@@ -23,18 +23,12 @@ export USAGE="usage: $0 [-h] [-V] [-v level]
     -V			    print version and exit 2
     -v level		    set verbosity level for this script: (def level: 0)
 
-exit codes:
-    0	- all is well
-    1	- invalid command line
-    2	- strptime() returned NULL
-    3	- strptime() return not '\\0'
-    4	- strftime() failed
-    5	- original time string and conversion mismatch
-    100	- help or version mode used
-    101 - invalid option or option missing an argument
-    102 - missing have_timegm.c
-    103 - have_timegm.c not a regular file
-    104 - have_timegm.c not a readable file
+Exit codes:
+     0	 all is well
+     1	 have_timegm.c or strptime() test failed
+     2	 invalid option or option missing an argument
+     3	 help or version mode used
+ >= 10	 internal error
 
 $0 version: $HAVE_TIMEGM_VERSION"
 
@@ -44,18 +38,18 @@ $0 version: $HAVE_TIMEGM_VERSION"
 while getopts :hv:V flag; do
     case "$flag" in
     h)	echo "$USAGE" 1>&2
-	exit 100
+	exit 3
 	;;
     v)	V_FLAG="$OPTARG";
 	;;
     V)	echo "$0 version $HAVE_TIMEGM_VERSION" 1>&2
-	exit 100
+	exit 3
 	;;
-    \?)	echo "invalid option: -$OPTARG" 1>&2
-	exit 101
+    \?)	echo "$0: ERROR: invalid option: -$OPTARG" 1>&2
+	exit 2
 	;;
-    :)	echo "option -$OPTARG requires an argument" 1>&2
-	exit 101
+    :)	echo "$0: ERROR: option -$OPTARG requires an argument" 1>&2
+	exit 2
 	;;
     *)
 	;;
@@ -65,16 +59,16 @@ done
 # verify we have source to compile
 #
 if [[ ! -e $C_SRC ]]; then
-    echo "$0: missing have_timegm.c: $C_SRC" 1>&2
-    exit 102
+    echo "$0: ERROR: missing have_timegm.c: $C_SRC" 1>&2
+    exit 1
 fi
 if [[ ! -f $C_SRC ]]; then
-    echo "$0: have_timegm.c is not a regular file: $C_SRC" 1>&2
-    exit 103
+    echo "$0: ERROR: have_timegm.c is not a regular file: $C_SRC" 1>&2
+    exit 1
 fi
 if [[ ! -r $C_SRC ]]; then
-    echo "$0: have_timegm.c is not a readable file: $C_SRC" 1>&2
-    exit 104
+    echo "$0: ERROR: have_timegm.c is not a readable file: $C_SRC" 1>&2
+    exit 1
 fi
 
 # prep for compile

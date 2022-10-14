@@ -14,20 +14,12 @@ export USAGE="usage: $0 [-h] [-v level] [-e jstrencode] [-d jstrdecode]
     -e		path to jstrencode tool (def: $JSTRENCODE)
     -d		path to jstrdecode tool (def: $JSTRDECODE)
 
-exit codes:
-
-    0	    - all is well
-    1	    - -h used
-    2	    - invalid option
-    3	    - option argument missing
-    42	    - test #0 failed
-    43	    - test #1 failed
-    44	    - test #2 failed
-    45	    - test #3 failed
-    100	    - jstrencode not executable
-    101	    - jstrdecode not executable
-    102	    - $TEST_FILE exists and can't remove it
-    103	    - $TEST_FILE2 exists and can't remove it
+Exit codes:
+     0	 all is well
+     1	 test failed
+     2	 invalid command line, invalid option or option missing an argument
+     3	 help message printed
+ >= 10	 internal error
 "
 # parse args
 #
@@ -35,7 +27,7 @@ export V_FLAG="0"
 while getopts :hv:e:d: flag; do
     case "$flag" in
     h) echo "$USAGE" 1>&2
-       exit 1
+       exit 3
        ;;
     v) V_FLAG="$OPTARG";
        ;;
@@ -43,11 +35,11 @@ while getopts :hv:e:d: flag; do
        ;;
     d) JSTRDECODE="$OPTARG"
        ;;
-    \?) echo "invalid option: -$OPTARG" 1>&2
+    \?) echo "$0: ERROR: invalid option: -$OPTARG" 1>&2
        exit 2
        ;;
-    :) echo "option -$OPTARG requires an argument" 1>&2
-       exit 3
+    :) echo "$0: ERROR: option -$OPTARG requires an argument" 1>&2
+       exit 2
        ;;
    *)
        ;;
@@ -59,12 +51,12 @@ eval make all 2>&1 | grep -v 'Nothing to be done for'
 # verify we have the tools and conditions to test
 #
 if [[ ! -x "$JSTRENCODE" ]]; then
-    echo "$0: missing jstrencode tool: $JSTRENCODE" 1>&2
-    exit 100
+    echo "$0: ERROR: missing jstrencode tool: $JSTRENCODE" 1>&2
+    exit 10
 fi
 if [[ ! -x "$JSTRDECODE" ]]; then
-    echo "$0: missing jstrdecode tool: $JSTRDECODE" 1>&2
-    exit 101
+    echo "$0: ERROR: missing jstrdecode tool: $JSTRDECODE" 1>&2
+    exit 11
 fi
 # try removing the test files first
 echo rm -f "$TEST_FILE $TEST_FILE2"
@@ -72,12 +64,12 @@ rm -f "$TEST_FILE $TEST_FILE2"
 
 # if the files still exist let the user know and don't proceed
 if [[ -e "$TEST_FILE" ]]; then
-    echo "$0: found $TEST_FILE; move or remove before running this test" 1>&2
-    exit 102
+    echo "$0: ERROR: found $TEST_FILE; move or remove before running this test" 1>&2
+    exit 12
 fi
 if [[ -e "$TEST_FILE2" ]]; then
-    echo "$0: found $TEST_FILE2; move or remove before running this test" 1>&2
-    exit 103
+    echo "$0: ERROR: found $TEST_FILE2; move or remove before running this test" 1>&2
+    exit 13
 fi
 export EXIT_CODE=0
 trap "rm -f \$TEST_FILE \$TEST_FILE2; exit" 0 1 2 3 15
@@ -141,7 +133,7 @@ fi
 if [[ $EXIT_CODE == 0 ]]; then
     echo "$0: all tests passed"
 else
-    echo "$0: test failure detected, about to exit: $EXIT_CODE" 1>&2
+    echo "$0: ERROR: test failure detected, about to exit: $EXIT_CODE" 1>&2
 fi
 rm -f "$TEST_FILE" "$TEST_FILE2"
 exit "$EXIT_CODE"

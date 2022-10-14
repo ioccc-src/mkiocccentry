@@ -7,16 +7,16 @@
 export MKIOCCCENTRY_TEST_VERSION="0.2 2022-08-13"
 export USAGE="usage: $0 [-h] [-v level] [-J level] [-V]
 
-    -h              print help and exit 5
+    -h              print help and exit 1
     -v level        flag ignored
     -J level	    set JSON verbosity level
-    -V              print version and exit 5
+    -V              print version and exit 1
 
 Exit codes:
-    0    All is OK
-    1    -h and help string printed or -V and version string printed
-    2	 command line error
-    >=10 some make action exited non-zero
+     0   all is OK
+     1   -h and help string printed or -V and version string printed
+     2	 command line error
+ >= 10   some make action exited non-zero
 
 mkiocccentry_test.sh version: $MKIOCCCENTRY_TEST_VERSION"
 export V_FLAG="0"
@@ -66,7 +66,7 @@ src_dir="test_src"
 mkdir -p -- "${work_dir}" "${src_dir}"
 status=$?
 if [[ ${status} -ne 0 ]]; then
-    echo "$0: FATAL: error in creating working dirs: mkdir -p -- ${work_dir} ${src_dir}" 1>&2
+    echo "$0: ERROR: error in creating working dirs: mkdir -p -- ${work_dir} ${src_dir}" 1>&2
     exit 250
 fi
 
@@ -74,15 +74,15 @@ eval make all 2>&1 | grep -v 'Nothing to be done for'
 # firewall
 #
 if [[ ! -d ${work_dir} ]]; then
-    echo "$0: FATAL: work_dir not found: ${work_dir}" 1>&2
+    echo "$0: ERROR: work_dir not found: ${work_dir}" 1>&2
     exit 250
 fi
 if [[ ! -d ${src_dir} ]]; then
-    echo "$0: FATAL: src_dir not found: ${src_dir}" 1>&2
+    echo "$0: ERROR: src_dir not found: ${src_dir}" 1>&2
     exit 250
 fi
 if [[ ! -x ./mkiocccentry ]]; then
-    echo "$0: FATAL: executable not found: ./mkiocccentry" 1>&2
+    echo "$0: ERROR: executable not found: ./mkiocccentry" 1>&2
     exit 250
 fi
 
@@ -175,7 +175,7 @@ rm -f "${src_dir}"/empty.c
 yes | ./mkiocccentry -q -W -i answers.txt -v "$V_FLAG" -J "$J_FLAG" -- "${work_dir}" "${src_dir}"/{empty.c,Makefile,remarks.md,extra1,extra2}
 status=$?
 if [[ ${status} -ne 0 ]]; then
-    echo "$0: FATAL: mkiocccentry non-zero exit code: $status" 1>&2
+    echo "$0: ERROR: mkiocccentry non-zero exit code: $status" 1>&2
     exit "${status}"
 fi
 rm -f "${src_dir}"/empty.c
@@ -263,7 +263,7 @@ answers >>answers.txt
 yes | ./mkiocccentry -q -i answers.txt -v "$V_FLAG" -J "$J_FLAG" -- "${work_dir}" "${src_dir}"/{prog.c,Makefile,remarks.md,extra1,extra2}
 status=$?
 if [[ ${status} -ne 0 ]]; then
-    echo "$0: FATAL: mkiocccentry non-zero exit code: $status" 1>&2
+    echo "$0: ERROR: mkiocccentry non-zero exit code: $status" 1>&2
     exit "${status}"
 fi
 
@@ -346,7 +346,7 @@ test -f "${src_dir}"/bar || cat CODE_OF_CONDUCT.md >"${src_dir}"/bar
 yes | ./mkiocccentry -q -i answers.txt -v "$V_FLAG" -J "$J_FLAG" -- "${work_dir}" "${src_dir}"/{prog.c,Makefile,remarks.md,extra1,extra2,foo,bar}
 status=$?
 if [[ ${status} -ne 0 ]]; then
-    echo "$0: FATAL: mkiocccentry non-zero exit code: $status" 1>&2
+    echo "$0: ERROR: mkiocccentry non-zero exit code: $status" 1>&2
     exit "${status}"
 fi
 

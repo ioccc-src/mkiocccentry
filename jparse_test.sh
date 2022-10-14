@@ -17,12 +17,12 @@ export USAGE="usage: $0 [-h] [-v level] [-D dbg_level] [-J level] [-q] [-j jpars
     [file ...]		read JSON documents, one per line, from these files (def: $CHK_TEST_FILE)
 			NOTE: - means read from stdin.
 
-exit codes:
-    0 - all is well
-    1 - at least one test failed
-    2 - help mode exit
-    3 - invalid command line
-    >= 4 - internal error"
+Exit codes:
+     0   all is well
+     1   at least one test failed
+     2   help mode exit
+     3   invalid command line
+  >= 4   internal error"
 export V_FLAG="0"
 export DBG_LEVEL="0"
 export JSON_DBG_LEVEL="0"
@@ -79,15 +79,15 @@ eval make all 2>&1 | grep -v 'Nothing to be done for'
 # firewall
 #
 if [[ ! -e $JPARSE ]]; then
-    echo "$0: jparse not found: $JPARSE"
+    echo "$0: ERROR: jparse not found: $JPARSE"
     exit 4
 fi
 if [[ ! -f $JPARSE ]]; then
-    echo "$0: jparse not a regular file: $JPARSE"
+    echo "$0: ERROR: jparse not a regular file: $JPARSE"
     exit 4
 fi
 if [[ ! -x $JPARSE ]]; then
-    echo "$0: jparse not executable: $JPARSE"
+    echo "$0: ERROR: jparse not executable: $JPARSE"
     exit 4
 fi
 
@@ -207,15 +207,15 @@ if [[ $# -gt 0 ]]; then
 	    done
 	else
 	    if [[ ! -e $CHK_TEST_FILE ]]; then
-		echo "$0: test file not found: $CHK_TEST_FILE"
+		echo "$0: ERROR: test file not found: $CHK_TEST_FILE"
 		exit 4
 	    fi
 	    if [[ ! -f $CHK_TEST_FILE ]]; then
-		echo "$0: test file not a regular file: $CHK_TEST_FILE"
+		echo "$0: ERROR: test file not a regular file: $CHK_TEST_FILE"
 		exit 4
 	    fi
 	    if [[ ! -r $CHK_TEST_FILE ]]; then
-		echo "$0: test file not readable: $CHK_TEST_FILE"
+		echo "$0: ERROR: test file not readable: $CHK_TEST_FILE"
 		exit 4
 	    fi
 	    # process all lines in test file
@@ -233,15 +233,15 @@ elif [[ ! -z "$CHK_TEST_FILE" ]]; then
 	# firewall - check test file
 	#
 	if [[ ! -e $CHK_TEST_FILE ]]; then
-	    echo "$0: test file not found: $CHK_TEST_FILE"
+	    echo "$0: ERROR: test file not found: $CHK_TEST_FILE"
 	    exit 4
 	fi
 	if [[ ! -f $CHK_TEST_FILE ]]; then
-	    echo "$0: test file not a regular file: $CHK_TEST_FILE"
+	    echo "$0: ERROR: test file not a regular file: $CHK_TEST_FILE"
 	    exit 4
 	fi
 	if [[ ! -r $CHK_TEST_FILE ]]; then
-	    echo "$0: test file not readable: $CHK_TEST_FILE"
+	    echo "$0: ERROR: test file not readable: $CHK_TEST_FILE"
 	    exit 4
 	fi
 
@@ -261,10 +261,10 @@ if [[ $V_FLAG -ge 1 ]]; then
 	echo 1>&2
 	echo "$0: see jparse_test.log for details" 1>&2
     else
-	echo "$0: debug[1]: some tests FAILED" 1>&2
-	echo "$0: debug[1]: some tests FAILED" >> "${LOGFILE}"
+	echo "$0: ERROR: debug[1]: some tests FAILED" 1>&2
+	echo "$0: ERROR: debug[1]: some tests FAILED" >> "${LOGFILE}"
 	echo 1>&2
-	echo "$0: see jparse_test.log for details" 1>&2
+	echo "$0: Notice: see jparse_test.log for details" 1>&2
     fi
 fi
 exit "$EXIT_CODE"

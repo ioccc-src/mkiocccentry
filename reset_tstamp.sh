@@ -41,28 +41,17 @@
 #
 export USAGE="usage: $0 [-h] [-v level] [-V] [-l limit_ioccc.h]
 
-    -h              print help and exit 8
+    -h              print help and exit 2
     -v level        set debug level (def: 0)
-    -V              print version and exit 8
+    -V              print version and exit 2
     -l limit_ioccc.h   limit file (def: ./limit_ioccc.h)
 
 Exit codes:
-    0    timestamp updated
-
-    1    failed Phase 0 of verification
-    2    failed Phase 1 of verification
-    3    failed Phase 2 of verification
-    4    failed Phase 3 of verification
-    5    failed Phase 4 of verification
-
-    6    rpl failed to modify limit_ioccc.h
-
-    7    limit_ioccc.h not found or not readable and writable
-
-    8    -h and help string printed or -V and version string printed
-    9    Command line usage error
-
-    >=10  internal error"
+     0   timestamp updated
+     1   A verification phase test failed
+     2   -h and help string printed or -V and version string printed
+     3   Command line usage error
+ >= 10   internal error"
 export RESET_TSTAMP_VERSION="0.4 2022-04-23"
 export V_FLAG="0"
 export LIMIT_IOCCC_H="./limit_ioccc.h"
@@ -72,20 +61,20 @@ export LIMIT_IOCCC_H="./limit_ioccc.h"
 while getopts :hv:Vl: flag; do
     case "$flag" in
     h) echo "$USAGE" 1>&2
-       exit 8
+       exit 2
        ;;
     v) V_FLAG="$OPTARG";
        ;;
     V) echo "$RESET_TSTAMP_VERSION"
-       exit 8
+       exit 2
        ;;
     l) LIMIT_IOCCC_H="$OPTARG";
        ;;
     \?) echo "$0: ERROR: invalid option: -$OPTARG" 1>&2
-       exit 9
+       exit 3
        ;;
     :) echo "$0: ERROR: option -$OPTARG requires an argument" 1>&2
-       exit 9
+       exit 3
        ;;
    *)
        ;;

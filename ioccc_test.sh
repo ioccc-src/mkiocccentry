@@ -39,22 +39,11 @@ export USAGE="usage: $0 [-h] [-v level] [-J json_level] [-V]
     -V              print version and exit 1
 
 Exit codes:
-    0    all tests are OK
-
-    1    -h and help string printed or -V and version string printed
-    2    Command line usage error
-
-    3    ./iocccsize_test.sh not found or not executable
-    4	 ./dbg not found or not executable
-    5    ./mkiocccentry_test.sh not found or not executable
-    6    ./jstr_test.sh not found or not executable
-    7    ./jnum_chk not found or not executable
-    8    ./dyn_test not found or not executable
-    9	 ./jparse_test.sh not found or not executable
-    10	 ./json_teststr.txt not found or not readable
-    11	 ./txzchk not found or not executable
-
-    >=20  some test failed
+     0   all tests are OK
+     1   -h and help string printed or -V and version string printed
+     2   command line usage error
+  3-19   something not found, not a file, or not executable
+ >= 20   some test failed
 
 $0 version: $IOCCC_TEST_VERSION"
 export V_FLAG="0"
