@@ -55,7 +55,7 @@ main(int argc, char *argv[])
     extern int optind;		/* argv index of the next arg */
     bool test = false;		/* true ==> JSON conversion test case result */
     bool error = false;		/* true ==> JSON conversion test suite error */
-    bool strict = false;	/* true ==> strict testing for all struct integer element, implies -t -q */
+    bool strict = false;	/* true ==> strict testing for all struct integer element */
     struct json *node = NULL;	/* allocated JSON parser tree node */
     struct json_number *item = NULL;	/* JSON parser tree node for a JSON number */
     size_t len = 0;		/* length of str */
