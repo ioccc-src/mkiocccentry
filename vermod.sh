@@ -51,17 +51,17 @@ export USAGE="usage: $0 [-h] [-v level] [-d test_dir] [-i limit.sh]
     old_ver       Old version string to change from
     new_ver       New version string to change to
 
-exit codes:
-    0 - all is well
-    1 - rpl exited non-zero
-    2 - rpl command not found
-    3 - no limit.sh file found, or is not readable
-    4 - no test_dir directory found, or is not readable
-    5 - usage message printed due to -h
-    6 - command line error and usage message printed
-    7 - no *.json files found under test_dir
-    8 - new_ver (or old_ver if -o) not found in limit.sh
-    >= 9 - internal error"
+Exit codes:
+     0   all is well
+     1   rpl exited non-zero
+     2   rpl command not found
+     3   no limit.sh file found, or is not readable
+     4   no test_dir directory found, or is not readable
+     5   usage message printed due to -h
+     6   command line error and usage message printed
+     7   no *.json files found under test_dir
+     8   new_ver (or old_ver if -o) not found in limit.sh
+ >= 10   internal error"
 export V_FLAG="0"
 export JSON_TREE="./test_JSON"
 export LIMIT_SH="./limit_ioccc.sh"

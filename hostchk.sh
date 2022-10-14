@@ -56,12 +56,12 @@ export USAGE="usage: $0 [-h] [-V] [-v level] [-D dbg_level] [-t tar] [-c cc] [-f
     -c cc		    path to compiler (def: $CC)
     -f			    faster check (def: run slower for better diagnostics)
 
-exit codes:
-    0 - all is well
-    1 - at least one test failed
-    2 - help mode and version mode exit
-    3 - invalid command line
-    >= 30 - internal error
+Exit codes:
+     0   all is well
+     1   at least one test failed
+     2   help mode and version mode exit
+     3   invalid command line
+ >= 10   internal error
 
 $0 version: $HOSTCHK_VERSION"
 
@@ -236,14 +236,14 @@ if [[ -n "$F_FLAG" ]]; then
     #
     status="$?"
     if [[ $status -ne 0 ]]; then
-	echo "$0: FATAL: unable to compile test file with all necessary system include files $h" 1>&2
+	echo "$0: ERROR: unable to compile test file with all necessary system include files $h" 1>&2
 	EXIT_CODE=42
 	INCLUDE_TEST_SUCCESS="false"
     elif [[ -s "$PROG_FILE" && -x "$PROG_FILE" ]]; then
 	./"$PROG_FILE"
 	status="$?"
 	if [[ $status -ne 0 ]]; then
-	    echo "$0: FATAL: unable to run executable compiled with all necessary system include files" 1>&2
+	    echo "$0: ERROR: unable to run executable compiled with all necessary system include files" 1>&2
 	    EXIT_CODE=43
 	    INCLUDE_TEST_SUCCESS="false"
 	else
@@ -252,7 +252,7 @@ if [[ -n "$F_FLAG" ]]; then
 	    fi
 	fi
     else
-	echo "$0: FATAL: unable to form an executable compiled using all necessary system include files" 1>&2
+	echo "$0: ERROR: unable to form an executable compiled using all necessary system include files" 1>&2
 	EXIT_CODE=44
 	INCLUDE_TEST_SUCCESS="false"
     fi
@@ -282,14 +282,14 @@ else
 	    #
 	    status="$?"
 	    if [[ $status -ne 0 ]]; then
-		echo "$0: FATAL: unable to compile with $h" 1>&2
+		echo "$0: ERROR: unable to compile with $h" 1>&2
 		EXIT_CODE=42
 		INCLUDE_TEST_SUCCESS="false"
 	    elif [[ -s "$PROG_FILE" && -x "$PROG_FILE" ]]; then
 		./"$PROG_FILE"
 		status="$?"
 		if [[ $status -ne 0 ]]; then
-		    echo "$0: FATAL: unable to run executable compiled using: $h" 1>&2
+		    echo "$0: ERROR: unable to run executable compiled using: $h" 1>&2
 		    EXIT_CODE=43
 		    INCLUDE_TEST_SUCCESS="false"
 		else
@@ -298,7 +298,7 @@ else
 		    fi
 		fi
 	    else
-		echo "$0: FATAL: unable to form an executable compiled using: $h" 1>&2
+		echo "$0: ERROR: unable to form an executable compiled using: $h" 1>&2
 		EXIT_CODE=44
 		INCLUDE_TEST_SUCCESS="false"
 	    fi
@@ -314,5 +314,6 @@ else
     fi
 fi
 
-
+# All Done!!! -- Jessica Noll, Age 2
+#
 exit "$EXIT_CODE"

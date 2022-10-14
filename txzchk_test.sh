@@ -63,12 +63,12 @@ export USAGE="usage: $0 [-h] [-V] [-v level] [-t txzchk] [-T tar] [-F fnamchk] [
 				    are not flexible as the check for errors reported by
 				    txzchk and the error file is done as an exact match
 
-exit codes:
-    0 - all is well
-    1 - at least one test failed
-    2 - help mode exit or print version mode exit
-    3 - invalid command line
-    >= 4 - internal error
+Exit codes:
+     0   all is well
+     1   at least one test failed
+     2   help mode exit or print version mode exit
+     3   invalid command line
+ >= 10   internal error
 
 $0 version: $TXZCHK_TEST_VERSION"
 
@@ -129,90 +129,90 @@ eval make all 2>&1 | grep -v 'Nothing to be done for'
 #
 if [[ ! -e $TXZCHK_TREE ]]; then
     echo "$0: ERROR: txzchk_tree not found: $TXZCHK_TREE" 1>&2
-    exit 4
+    exit 10
 fi
 if [[ ! -d $TXZCHK_TREE ]]; then
     echo "$0: ERROR: txzchk_tree not a directory: $TXZCHK_TREE" 1>&2
-    exit 4
+    exit 11
 fi
 if [[ ! -r $TXZCHK_TREE ]]; then
     echo "$0: ERROR: txzchk_tree not readable directory: $TXZCHK_TREE" 1>&2
-    exit 4
+    exit 12
 fi
 
 # good tree
 #
 if [[ ! -e $TXZCHK_GOOD_TREE ]]; then
     echo "$0: ERROR: txzchk_tree/good for txzchk directory not found: $TXZCHK_GOOD_TREE" 1>&2
-    exit 4
+    exit 13
 fi
 if [[ ! -d $TXZCHK_GOOD_TREE ]]; then
     echo "$0: ERROR: txzchk_tree/good for txzchk not a directory: $TXZCHK_GOOD_TREE" 1>&2
-    exit 4
+    exit 14
 fi
 if [[ ! -r $TXZCHK_GOOD_TREE ]]; then
     echo "$0: ERROR: txzchk_tree/good for txzchk not readable directory: $TXZCHK_GOOD_TREE" 1>&2
-    exit 4
+    exit 15
 fi
 
 # bad tree
 #
 if [[ ! -e $TXZCHK_BAD_TREE ]]; then
     echo "$0: ERROR: txzchk_tree/bad for txzchk directory not found: $TXZCHK_BAD_TREE" 1>&2
-    exit 4
+    exit 16
 fi
 if [[ ! -d $TXZCHK_BAD_TREE ]]; then
     echo "$0: ERROR: txzchk_tree/bad for txzchk not a directory: $TXZCHK_BAD_TREE" 1>&2
-    exit 4
+    exit 17
 fi
 if [[ ! -r $TXZCHK_BAD_TREE ]]; then
     echo "$0: ERROR: txzchk_tree/bad for txzchk not readable directory: $TXZCHK_BAD_TREE" 1>&2
-    exit 4
+    exit 18
 fi
 
 # check for txzchk
 #
 if [[ ! -e $TXZCHK ]]; then
     echo "$0: ERROR: txzchk not found: $TXZCHK" 1>&2
-    exit 4
+    exit 19
 fi
 if [[ ! -f $TXZCHK ]]; then
     echo "$0: ERROR: txzchk not a regular file: $TXZCHK" 1>&2
-    exit 4
+    exit 20
 fi
 if [[ ! -x $TXZCHK ]]; then
     echo "$0: ERROR: txzchk not executable: $TXZCHK" 1>&2
-    exit 4
+    exit 21
 fi
 
 # check for fnamchk
 #
 if [[ ! -e $FNAMCHK ]]; then
     echo "$0: ERROR: fnamchk not found: $FNAMCHK" 1>&2
-    exit 4
+    exit 22
 fi
 if [[ ! -f $FNAMCHK ]]; then
     echo "$0: ERROR: fnamchk not a regular file: $FNAMCHK" 1>&2
-    exit 4
+    exit 23
 fi
 if [[ ! -x $FNAMCHK ]]; then
     echo "$0: ERROR: fnamchk not executable: $FNAMCHK" 1>&2
-    exit 4
+    exit 24
 fi
 
 # check for tar
 #
 if [[ ! -e $TAR ]]; then
     echo "$0: ERROR: tar not found: $TAR" 1>&2
-    exit 4
+    exit 25
 fi
 if [[ ! -f $TAR ]]; then
     echo "$0: ERROR: tar not a regular file: $TAR" 1>&2
-    exit 4
+    exit 26
 fi
 if [[ ! -x $TAR ]]; then
     echo "$0: ERROR: tar not executable: $TAR" 1>&2
-    exit 4
+    exit 27
 fi
 
 
@@ -223,11 +223,11 @@ rm -f "$LOGFILE"
 touch "$LOGFILE"
 if [[ ! -f "${LOGFILE}" ]]; then
     echo "$0: ERROR: couldn't create log file" 1>&2
-    exit 5
+    exit 28
 fi
 if [[ ! -w "${LOGFILE}" ]]; then
     echo "$0: ERROR: log file not writable" 1>&2
-    exit 5
+    exit 29
 fi
 
 # We need a file to write the output of txzchk to in order to compare it
@@ -242,11 +242,11 @@ rm -f "$STDERR"
 touch "$STDERR"
 if [[ ! -e "$STDERR" ]]; then
     echo "$0: could not create output file: $STDERR"
-    exit 4
+    exit 30
 fi
 if [[ ! -w "$STDERR" ]]; then
     echo "$0: output file not writable: $STDERR"
-    exit 4
+    exit 31
 fi
 # finally trap exit so that the file is deleted regardless of where the script
 # exits
@@ -272,7 +272,7 @@ run_test()
     #
     if [[ $# -ne 2 ]]; then
 	echo "$0: ERROR: expected 2 args to run_test, found $#" 1>&2
-	exit 4
+	exit 32
     fi
     typeset pass_fail="$1"
     typeset txzchk_test_file="$2"
@@ -280,35 +280,35 @@ run_test()
 
     if [[ ! -e $txzchk_test_file ]]; then
 	echo "$0: in run_test: txzchk_test_file not found: $txzchk_test_file"
-	exit 4
+	exit 33
     fi
     if [[ ! -f $txzchk_test_file ]]; then
 	echo "$0: in run_test: txzchk_test_file not a regular file: $txzchk_test_file"
-	exit 4
+	exit 34
     fi
     if [[ ! -r $txzchk_test_file ]]; then
 	echo "$0: in run_test: txzchk_test_file not readable: $txzchk_test_file"
-	exit 4
+	exit 35
     fi
 
     # if pass_fail is fail then there has to be an error file
     if [[ $pass_fail = fail ]]; then
 	if [[ ! -e $txzchk_err_file ]]; then
 	    echo "$0: in run_test: txzchk_err_file not found for test that must fail: $txzchk_err_file"
-	    exit 4
+	    exit 36
 	fi
 	if [[ ! -f $txzchk_err_file ]]; then
 	    echo "$0: in run_test: txzchk_err_file not a regular file for test that must fail: $txzchk_err_file"
-	    exit 4
+	    exit 37
 	fi
 	if [[ ! -r $txzchk_err_file ]]; then
 	    echo "$0: in run_test: txzchk_err_file not readable for test that must fail: $txzchk_err_file"
-	    exit 4
+	    exit 38
 	fi
     elif [[ $pass_fail = pass ]]; then
 	if [[ -e $txzchk_err_file ]]; then
 	    echo "$0: in run_test: txzchk_err_file exists for test that must not fail: $txzchk_err_file"
-	    exit 4
+	    exit 39
 	fi
     else
 	echo "$0: pass_fail neither 'pass' nor 'fail': $pass_fail"

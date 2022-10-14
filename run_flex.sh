@@ -56,17 +56,11 @@ export USAGE="usage: $0 [-h] [-v level] [-V] [-o] [-f flex] [-l limit_ioccc.sh]
     flex_flags      optional flags to give to flex before the prefix.l argument
 
 Exit codes:
-    0    flex output files formed or backup files used instead
-    1	 flex not found or too old and -o used
-    2    good flex found and ran but failed to form proper output files
-    3    flex input file missing or not readable:         backup file(s) had to be used
-    4    backup file(s) are missing, or are not readable
-    5    failed to use backup file(s) to form the flex C output file(s)
-    6    limit_ioccc.sh or sorry file missing/not readable or verge missing/not executable
-    7    MIN_FLEX_VERSION missing or empty from limit_ioccc.sh
-    8    -h and help string printed or -V and version string printed
-    9    Command line usage error
-    >=10  internal error"
+     0   flex output files formed or backup files used instead
+   1-7	 flex not found or too old and -o used
+     8   -h and help string printed or -V and version string printed
+     9   command line usage error
+ >= 10   internal error"
 export RUN_FLEX_VERSION="0.3 2022-04-22"
 export PREFIX="jparse"
 export V_FLAG="0"

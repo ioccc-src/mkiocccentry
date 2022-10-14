@@ -90,15 +90,15 @@ export USAGE="usage: $0 [-h] [-v level] [-J level] [-q] [-V] [-s] [-I] [-N name]
 	patch		patch to apply to the output of jsemtblgen, . --> do not patch
 	tail		file add to the end of jsemtblgen output (after patched jsemtblgen output), . ==> do not add
 
-exit codes:
-    0	JSON is valid
-    1	JSON is invalid
-    2	-h and help string printed or -V and version string printed
-    3	command line error
-    4	jsemtblgen or patch_tool is not an executable
-    5	file.json, head, patch, and/or tail is not a readable file
-    6	jsemtblgen failed
-    >=7	internal error"
+Exit codes:
+     0	 JSON is valid
+     1	 JSON is invalid
+     2	 -h and help string printed or -V and version string printed
+     3	 command line error
+     4	 jsemtblgen or patch_tool is not an executable
+     5	 file.json, head, patch, and/or tail is not a readable file
+     6	 jsemtblgen failed
+ >= 10	 internal error"
 export V_FLAG="0"
 export J_FLAG="0"
 export Q_FLAG=
@@ -331,7 +331,7 @@ if [[ -n "$HEAD_FILE" ]]; then
     status="$?"
     if [[ $status -ne 0 ]]; then
 	echo "$0: ERROR: cat $HEAD_FILE exit status: $status" 1>&2
-	exit 7
+	exit 10
     fi
 fi
 
@@ -350,23 +350,23 @@ if [[ -n "$PATCH_FILE" ]]; then
     status="$?"
     if [[ $status -ne 0 ]]; then
 	echo "$0: ERROR: mktemp $MKTEMP_TEMPLATE exit code: $status" 1>&2
-	exit 8
+	exit 11
     fi
     if [[ ! -e $TMP_FILE ]]; then
 	echo "$0: ERROR: tmp file not found: $TMP_FILE" 1>&2
-	exit 9
+	exit 12
     fi
     if [[ ! -f $TMP_FILE ]]; then
 	echo "$0: ERROR: tmp not a regular file: $TMP_FILE" 1>&2
-	exit 10
+	exit 14
     fi
     if [[ ! -r $TMP_FILE ]]; then
 	echo "$0: ERROR: tmp not a readable file: $TMP_FILE" 1>&2
-	exit 11
+	exit 15
     fi
     if [[ ! -w $TMP_FILE ]]; then
 	echo "$0: ERROR: tmp not a writable file: $TMP_FILE" 1>&2
-	exit 12
+	exit 16
     fi
     trap "rm -f \$TMP_FILE; exit" 1 2 3 15
     export ORIG_FILE="$TMP_FILE.orig"
@@ -385,19 +385,19 @@ if [[ -n "$PATCH_FILE" ]]; then
     fi
     if [[ ! -e $TMP_FILE ]]; then
 	echo "$0: ERROR: jsemtblgen tmp file does not exist: $TMP_FILE" 1>&2
-	exit 13
+	exit 17
     fi
     if [[ ! -f $TMP_FILE ]]; then
 	echo "$0: ERROR: jsemtblgen tmp file is not a file: $TMP_FILE" 1>&2
-	exit 14
+	exit 18
     fi
     if [[ ! -r $TMP_FILE ]]; then
 	echo "$0: ERROR: jsemtblgen tmp file is not a readable file: $TMP_FILE" 1>&2
-	exit 15
+	exit 19
     fi
     if [[ ! -w $TMP_FILE ]]; then
 	echo "$0: ERROR: jsemtblgen tmp file is not a writable file: $TMP_FILE" 1>&2
-	exit 16
+	exit 20
     fi
 
     # patch the temporary file
@@ -409,7 +409,7 @@ if [[ -n "$PATCH_FILE" ]]; then
     status="$?"
     if [[ $status -ne 0 ]]; then
 	echo "$0: ERROR: rm -f $ORIG_FILE $REJ_FILE filed, exit status: $status" 1>&2
-	exit 17
+	exit 21
     fi
     if [[ $V_FLAG -ge 3 ]]; then
 	echo "$0: debug[3]: about to run: $PATCH_TOOL $TMP_FILE $PATCH_FILE" 1>&2
@@ -418,11 +418,11 @@ if [[ -n "$PATCH_FILE" ]]; then
     status="$?"
     if [[ $status -ne 0 ]]; then
 	echo "$0: ERROR: patch failed, exit status: $status" 1>&2
-	exit 18
+	exit 22
     fi
     if [[ -s $REJ_FILE ]]; then
 	echo "$0: ERROR: patch did not succeed, reject file found: $REJ_FILE" 1>&2
-	exit 19
+	exit 23
     fi
 
     # output patched jsemtblgen generated code
@@ -431,7 +431,7 @@ if [[ -n "$PATCH_FILE" ]]; then
     status="$?"
     if [[ $status -ne 0 ]]; then
 	echo "$0: ERROR: cat $TMP_FILE exit status: $status" 1>&2
-	exit 20
+	exit 24
     fi
 
     # cleanup
@@ -443,7 +443,7 @@ if [[ -n "$PATCH_FILE" ]]; then
     status="$?"
     if [[ $status -ne 0 ]]; then
 	echo "$0: ERROR: rm -f $TMP_FILE $ORIG_FILE $REJ_FILE filed, exit status: $status" 1>&2
-	exit 21
+	exit 25
     fi
     trap - 1 2 3 15
 
@@ -472,7 +472,7 @@ if [[ -n "$TAIL_FILE" ]]; then
     status="$?"
     if [[ $status -ne 0 ]]; then
 	echo "$0: ERROR: cat $TAIL_FILE exit status: $status" 1>&2
-	exit 22
+	exit 26
     fi
 fi
 
