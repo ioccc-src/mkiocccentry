@@ -978,6 +978,8 @@ reset_min_timestamp: reset_tstamp.sh
 test ioccc_test: ioccc_test.sh iocccsize_test.sh dbg mkiocccentry_test.sh jstr_test.sh \
 		 jnum_chk dyn_test txzchk_test.sh txzchk jparse Makefile
 	./ioccc_test.sh
+	@echo
+	@echo 'All tests PASSED'
 
 # run test-chkentry on test_JSON files
 #

@@ -378,10 +378,7 @@ fi
 
 # report overall status
 #
-if [[ $EXIT_CODE -eq 0 ]]; then
-    echo
-    echo "All tests PASSED"
-else
+if [[ $EXIT_CODE -ne 0 ]]; then
     echo
     echo "These test(s) failed:"
     echo "$FAILURE_SUMMARY"
