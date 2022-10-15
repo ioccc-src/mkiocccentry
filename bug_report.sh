@@ -172,6 +172,20 @@ if [[ "$status" -ne 0 ]]; then
 fi
 echo | tee -a -- "$LOG_FILE"
 
+# make -v: get make version
+echo "## RUNNING make -v: " | tee -a -- "$LOG_FILE"
+make -v | tee -a -- "$LOG_FILE"
+status=${PIPESTATUS[0]}
+if [[ "$status" -ne 0 ]]; then
+    ((EXIT_CODE++))
+    echo "$0: ERROR: make -v failed with exit code $status: new exit code: $EXIT_CODE" | tee -a -- "$LOG_FILE"
+    FAILURE_SUMMARY="$FAILURE_SUMMARY
+    make -v non-zero exit code: $status"
+fi
+echo | tee -a -- "$LOG_FILE"
+
+
+
 # make clobber: start clean
 echo "## RUNNING make clobber: " | tee -a -- "$LOG_FILE"
 make clobber | tee -a -- "$LOG_FILE"  1>&2
