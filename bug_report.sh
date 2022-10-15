@@ -21,7 +21,7 @@ export TOOLS="./run_bison.sh ./run_flex.sh ./hostchk.sh ./dbg ./dyn_test ./fnamc
 	      ./jnum_chk ./jparse ./jparse_test.sh ./jstr_test.sh ./jstrencode
 	      ./jstrdecode ./mkiocccentry ./mkiocccentry_test.sh ./prep.sh
 	      ./reset_tstamp.sh ./txzchk ./txzchk_test.sh ./utf8_test ./verge
-	      ./vermod.sh"
+	      ./vermod.sh ./jsemcgen.sh ./jsemtblgen"
 
 export BUG_REPORT_VERSION="0.2 2022-10-15"
 export FAILURE_SUMMARY=
@@ -71,10 +71,10 @@ while getopts :hVv:D: flag; do
 done
 
 
-# Assume all tests will pass. We start at 10 but whenever any test fails it is
+# Assume all tests will pass. We start at 9 but whenever any test fails it is
 # incremented. This makes it easy to rearrange the tests. If at the end the
-# EXIT_CODE is still 10 we know every test passed.
-EXIT_CODE=10
+# EXIT_CODE is still 9 we know every test passed.
+EXIT_CODE=9
 
 # NOTE: log file does not have an underscore in the name because we want to
 # distinguish it from this script which does have an underscore in it.
@@ -129,7 +129,7 @@ echo "## RUNNING uname -a: " | tee -a -- "$LOG_FILE"
 uname -a | tee -a -- "$LOG_FILE"
 status=${PIPESTATUS[0]}
 if [[ "$status" -ne 0 ]]; then
-    EXIT_CODE=10
+    ((EXIT_CODE++))
     echo "$0: ERROR: uname -a failed with exit code $status: new exit code: $EXIT_CODE" | tee -a -- "$LOG_FILE"
     FAILURE_SUMMARY="$FAILURE_SUMMARY
     uname -a non-zero exit code: $status"
@@ -273,7 +273,7 @@ for f in $TOOLS; do
 	echo "$0: $f is executable" | tee -a -- "$LOG_FILE"
 	echo | tee -a -- "$LOG_FILE"
 	echo "## RUNNING $f -h" | tee -a -- "$LOG_FILE"
-	"$f" -h | tee -a -- "$LOG_FILE"
+	"$f" -h 2>&1 | tee -a -- "$LOG_FILE"
 	echo | tee -a -- "$LOG_FILE"
     else
 	((EXIT_CODE++))
@@ -296,10 +296,10 @@ if [[ "$status" -ne 0 ]]; then
 fi
 
 
-# The reason we check for 10 is that's the default value and each time a test
+# The reason we check for 9 is that's the default value and each time a test
 # fails the exit code is incremented. This makes it easy to rearrange the tests
 # without having to worry to update the exit codes.
-if [[ "$EXIT_CODE" -ne 10 ]]; then
+if [[ "$EXIT_CODE" -ne 9 ]]; then
     echo 1>&2
     echo "One or more problems occurred:" | tee -a -- "$LOG_FILE"
     echo "$FAILURE_SUMMARY" | tee -a -- "$LOG_FILE"
