@@ -15,7 +15,7 @@
 #
 
 export BUG_REPORT_VERSION="0.1 2022-10-14"
-
+export FAILURE_SUMMARY=
 export DBG_LEVEL="0"
 export V_FLAG="0"
 export USAGE="usage: $0 [-h] [-V] [-v level] [-D level]
@@ -104,6 +104,8 @@ status=${PIPESTATUS[0]}
 if [[ "$status" -ne 0 ]]; then
     EXIT_CODE=10
     echo "$0: ERROR: make clobber failed with exit code $status: new exit code: $EXIT_CODE" | tee -a -- "$LOG_FILE"
+    FAILURE_SUMMARY="$FAILURE_SUMMARY
+    make clobber non-zero exit code: $status"
 fi
 echo '' >> "$LOG_FILE" 1>&2
 echo "## RUNNING make all: " | tee -a -- "$LOG_FILE" 1>&2
@@ -133,6 +135,8 @@ status=${PIPESTATUS[0]}
 if [[ "$status" -ne 0 ]]; then
     EXIT_CODE=11
     echo "$0: ERROR: make all failed with exit code $status: new exit code: $EXIT_CODE" | tee -a -- "$LOG_FILE"
+    FAILURE_SUMMARY="$FAILURE_SUMMARY
+    make all non-zero exit code: $status"
 fi
 echo '' >> "$LOG_FILE" 1>&2
 echo "## RUNNING make test: " | tee -a -- "$LOG_FILE" 1>&2
@@ -141,6 +145,8 @@ status=${PIPESTATUS[0]}
 if [[ "$status" -ne 0 ]]; then
     EXIT_CODE=12
     echo "$0: ERROR: make test failed with exit code $status: new exit code: $EXIT_CODE" | tee -a -- "$LOG_FILE"
+    FAILURE_SUMMARY="$FAILURE_SUMMARY
+    make test non-zero exit code: $status"
 fi
 
 echo '' >> "$LOG_FILE" 1>&2
@@ -150,27 +156,35 @@ status=${PIPESTATUS[0]}
 if [[ "$status" -ne 0 ]]; then
     EXIT_CODE=13
     echo "$0: ERROR: hostchk.sh failed with exit code $status: new exit code: $EXIT_CODE" | tee -a -- "$LOG_FILE"
+    FAILURE_SUMMARY="$FAILURE_SUMMARY
+    hostchk.sh test non-zero exit code: $status"
 fi
 
 
 if [[ "$EXIT_CODE" -ne 0 ]]; then
-    echo "Found one or more issues. Please file an issue on the GitHub issues page:" 1>&2
-    echo '' 1>&2
-    echo "	https://github.com/ioccc-src/mkiocccentry/issues" 1>&2
-    echo '' 1>&2
-    echo "making sure to attach $LOG_FILE with your report. You may" 1>&2
-    echo "instead email the Judges." 1>&2
+    echo 1>&2
+    echo "One or more problems occurred:" | tee -a -- "$LOG_FILE"
+    echo "$FAILURE_SUMMARY" | tee -a -- "$LOG_FILE"
+    echo  | tee -a -- "$LOG_FILE"
+    echo "Final exit code: $EXIT_CODE" | tee -a -- "$LOG_FILE"
+    echo | tee -a -- "$LOG_FILE"
+    echo "Please file an issue on the GitHub issues page:" | tee -a -- "$LOG_FILE"
+    echo  | tee -a -- "$LOG_FILE"
+    echo "	https://github.com/ioccc-src/mkiocccentry/issues" | tee -a -- "$LOG_FILE"
+    echo | tee -a -- "$LOG_FILE"
+    echo "making sure to attach $LOG_FILE with your report. You may" | tee -a -- "$LOG_FILE"
+    echo "instead email the Judges." | tee -a -- "$LOG_FILE"
 else
-    echo "All tests PASSED" 1>&2
-    echo '' 1>&2
-    echo "A log of the above tests was saved to $LOG_FILE." 1>&2
-    echo "If you feel everything is in order you may safely delete that file." 1>&2
-    echo "Otherwise you may report the issue at the GitHub issue page:" 1>&2
-    echo '' 1>&2
-    echo "	https://github.com/ioccc-src/mkiocccentry/issues" 1>&2
-    echo '' 1>&2
-    echo "making sure to attach $LOG_FILE with your report. You may" 1>&2
-    echo "instead email the Judges." 1>&2
+    echo "All tests PASSED" | tee -a -- "$LOG_FILE"
+    echo | tee -a -- "$LOG_FILE"
+    echo "A log of the above tests was saved to $LOG_FILE." | tee -a -- "$LOG_FILE"
+    echo "If you feel everything is in order you may safely delete that file." | tee -a -- "$LOG_FILE"
+    echo "Otherwise you may report the issue at the GitHub issue page:" | tee -a -- "$LOG_FILE"
+    echo | tee -a -- "$LOG_FILE"
+    echo "	https://github.com/ioccc-src/mkiocccentry/issues" | tee -a -- "$LOG_FILE"
+    echo | tee -a -- "$LOG_FILE"
+    echo "making sure to attach $LOG_FILE with your report. You may" | tee -a -- "$LOG_FILE"
+    echo "instead email the Judges." | tee -a -- "$LOG_FILE"
 
 fi
 
