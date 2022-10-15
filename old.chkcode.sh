@@ -143,7 +143,7 @@ if [[ $status -ne 0 || ! -e $TMPFILE ]]; then
     echo "$0: ERROR: cannot create file: $TMPFILE" 1>&2
     exit 7
 fi
-trap "rm -f \$TMPFILE; exit"  0 1 2 3 15
+trap "rm -f \$TMPFILE; exit" 0 1 2 3 15
 if [[ ! -f $TMPFILE ]]; then
     echo "$0: ERROR: TMPFILE is not a regular file: $TMPFILE" 1>&2
     exit 7
