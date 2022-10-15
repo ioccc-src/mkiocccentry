@@ -368,7 +368,7 @@ if [[ -n "$PATCH_FILE" ]]; then
 	echo "$0: ERROR: tmp not a writable file: $TMP_FILE" 1>&2
 	exit 16
     fi
-    trap "rm -f \$TMP_FILE; exit" 0 0 1 2 3 15
+    trap "rm -f \$TMP_FILE; exit" 0 1 2 3 15
     export ORIG_FILE="$TMP_FILE.orig"
     export REJ_FILE="$TMP_FILE.rej"
 
