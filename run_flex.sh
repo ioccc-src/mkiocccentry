@@ -62,7 +62,7 @@ Exit codes:
      8   -h and help string printed or -V and version string printed
      9   command line usage error
  >= 10   internal error
- 
+
 $0 version: $RUN_FLEX_VERSION"
 
 export PREFIX="jparse"
