@@ -72,7 +72,7 @@ if [[ -e "$TEST_FILE2" ]]; then
     exit 13
 fi
 export EXIT_CODE=0
-trap "rm -f \$TEST_FILE \$TEST_FILE2; exit" 0 1 2 3 15
+trap "rm -f \$TEST_FILE \$TEST_FILE2; exit" EXIT
 
 # run the basic encoding test
 #

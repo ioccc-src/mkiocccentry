@@ -368,7 +368,7 @@ if [[ -n "$PATCH_FILE" ]]; then
 	echo "$0: ERROR: tmp not a writable file: $TMP_FILE" 1>&2
 	exit 16
     fi
-    trap "rm -f \$TMP_FILE; exit" 1 2 3 15
+    trap "rm -f \$TMP_FILE; exit" EXIT
     export ORIG_FILE="$TMP_FILE.orig"
     export REJ_FILE="$TMP_FILE.rej"
 
@@ -445,7 +445,7 @@ if [[ -n "$PATCH_FILE" ]]; then
 	echo "$0: ERROR: rm -f $TMP_FILE $ORIG_FILE $REJ_FILE filed, exit status: $status" 1>&2
 	exit 25
     fi
-    trap - 1 2 3 15
+    trap - EXIT
 
 # case: jsemtblgen is not patched
 #
