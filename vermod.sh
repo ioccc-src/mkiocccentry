@@ -28,28 +28,30 @@
 
 # setup
 #
-export USAGE="usage: $0 [-h] [-v level] [-d test_dir] [-i limit.sh]
+export VERMOD_VERSION="0.1 2022-03-15"
+export USAGE="usage: $0 [-h] [-V] [-v level] [-d test_dir] [-i limit.sh]
 	[-o] [-F] [-Q] [-n] [-l] [-L] old_ver new_ver
 
-    -h            Print help and exit
-    -v level      Set the debugging level (def: 0)
+    -h		    Print help and exit
+    -V		    Print version and exit
+    -v level	    Set the debugging level (def: 0)
 
-    -d test_dir   Process '*.json' files below dir (def: ./test_JSON)
-    -i limit.sh   Use limit.sh to verify new version (def: ./limit_ioccc.sh)
+    -d test_dir	    Process '*.json' files below dir (def: ./test_JSON)
+    -i limit.sh	    Use limit.sh to verify new version (def: ./limit_ioccc.sh)
 
-    -o            Verify old version (def: verify new version)
-    -F            Force change, even if it cannot be verified (def: reject an unverified change)
+    -o		    Verify old version (def: verify new version)
+    -F		    Force change, even if it cannot be verified (def: reject an unverified change)
 
-    -Q            Do not double quote string (def: add double quotes around old_ver and new_ver when making changes)
+    -Q		    Do not double quote string (def: add double quotes around old_ver and new_ver when making changes)
 
-    -n            No op: change no files (def: change files)
-    -l            List files that change/will change (def: do not list)
-                     NOTE: Useful with -n to show what would change
-    -L            List files that do not/will not change (def: do not list)
-                     NOTE: Useful with -n to show what will not change
+    -n		    No op: change no files (def: change files)
+    -l		    List files that change/will change (def: do not list)
+			NOTE: Useful with -n to show what would change
+    -L		    List files that do not/will not change (def: do not list)
+			NOTE: Useful with -n to show what will not change
 
-    old_ver       Old version string to change from
-    new_ver       New version string to change to
+    old_ver	    Old version string to change from
+    new_ver	    New version string to change to
 
 Exit codes:
      0   all is well
@@ -61,7 +63,9 @@ Exit codes:
      6   command line error and usage message printed
      7   no *.json files found under test_dir
      8   new_ver (or old_ver if -o) not found in limit.sh
- >= 10   internal error"
+ >= 10   internal error
+
+$0 version: $VERMOD_VERSION"
 export V_FLAG="0"
 export JSON_TREE="./test_JSON"
 export LIMIT_SH="./limit_ioccc.sh"
@@ -74,9 +78,12 @@ export LIST_NOCHANGE=
 
 # parse args
 #
-while getopts :hv:d:i:oFQnlL flag; do
+while getopts :hVv:d:i:oFQnlL flag; do
     case "$flag" in
     h) echo "$USAGE" 1>&2
+       exit 5
+       ;;
+    V) echo "$VERMOD_VERSION" 1>&2
        exit 5
        ;;
     v) V_FLAG="$OPTARG";

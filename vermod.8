@@ -2,40 +2,43 @@
 .SH NAME
 vermod \- modify version strings (and others) under ./test_JSON/
 .SH SYNOPSIS
-\fBvermod.sh\fP [\-h] [\-v level] [\-d test_dir] [\-i limit.sh] [\-o] [\-F] [\-Q] [\-n] [\-l] [\-L] old_ver new_ver
+\fBvermod.sh\fP [\-h] [\-V] [\-v level] [\-d test_dir] [\-i limit.sh] [\-o] [\-F] [\-Q] [\-n] [\-l] [\-L] old_ver new_ver
 .SH DESCRIPTION
 \fBvermod.sh\fP uses \fBrpl(1)\fP to update strings from an old value to a new value under ./test_JSON (by default).
 This is needed for when a version of a tool changes so that the test suite does not fail.
 .SH OPTIONS
-.PP
+.TP
 \fB\-h\fP
 Show help and exit.
-.PP
+.TP
+\fB\-V\fP
+Show version and exit.
+.TP
 \fB\-v\fP
 Set verbosity level (def: 0).
-.PP
+.TP
 \fB\-d\fP
 Set the directory where the '*.json' files are expected.
-.PP
+.TP
 \fB\-i\fP
 Set limit.sh file to verify new version.
-.PP
+.TP
 \fB\-o\fP
 Verify old version instead of the new version (which is the default).
-.PP
+.TP
 \fB\-F\fP
 Force change even if verification fails (def: reject unverified changes).
-.PP
+.TP
 \fB\-Q\fP
 Do not double quote strings.
-.PP
+.TP
 \fB\-n\fP
 No op: change no files.
-.PP
+.TP
 \fB\-l\fP
 List files that change or would be changed.
 This is useful with \fB\-n\fP to show what would change.
-.PP
+.TP
 \fB\-L\fP
 List files that do not change or would not be changed.
 This is useful with \fB\-n\fP to show what wouldn't change.
