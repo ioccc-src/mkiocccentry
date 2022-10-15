@@ -1,4 +1,4 @@
-.TH fnamchk 1 "09 October 2022" "fnamchk" "IOCCC tools"
+.TH fnamchk 1 "15 October 2022" "fnamchk" "IOCCC tools"
 .SH NAME
 fnamchk \- IOCCC compressed tarball filename sanity check tool
 .SH SYNOPSIS
@@ -74,40 +74,34 @@ More than 0 humans work on it! :)
 If you have an issue with the tool you can open an issue at \fI\<https://github.com/ioccc-src/mkiocccentry/issues\>\fP.
 .SH EXAMPLES
 .PP
+For the examples below assume that the \fBMIN_TIMESTAMP\fP is \fB(time_t)1662145368\fP.
+.PP
+Run the program on the filename \fIentry.test-0.1562145368.txz\fP which will fail because the timestamp in the filename is less than the minimum timestamp:
 .nf
-Run the program on the filename \fIentry.test-0.1562145368.txz\fP which will fail because the current timestamp is a larger value:
-
 .RS
 \fB
- ./fnamchk -t entry.test-0.1562145368.txz\fP.
+ ./fnamchk -t entry.test-0.1562145368.txz\fP
 .fi
 .RE
 .PP
-.nf
 Run the program on the filename \fItest.tar\fP, which will fail because the name format is invalid:
-
+.nf
 .RS
 \fB
  ./fnamchk test.tar\fP
 .fi
 .RE
 .PP
-Note that the below example filenames are based on the current minimum timestamp which is \fB(time_t)1662145368\fP.
-When this value changes the examples below will fail the test of the minimum timestamp if they're not updated.
-When one updates the minimum timestamp one should also update the references to it to the new value in this man page or else the examples will break.
-.PP
+Run the program on the filename \fIentry.test.0.1662145368.txz\fP with the option \fB\-u\fP which will fail because it is a test\-mode filename but the \fB\-u\fP option is specified:
 .nf
-Run the program on the filename \fIentry.test.0.1662145368.txz\fP with the option \fI\-u\fP which will fail:
-
 .RS
 \fB
  ./fnamchk -u entry.test-0.1662145368.txz\fP
 .fi
 .RE
 .PP
+Run the program on the filename \fIentry.test.0.1662145368.txz\fP with the option \fI\-t\fP which will pass because it is a test\-mode file and the timestamp is not less than the minimum:
 .nf
-Run the program on the filename \fIentry.test.0.1662145368.txz\fP with the option \fI\-t\fP which will pass:
-
 .RS
 \fB
  ./fnamchk -t entry.test-0.1662145368.txz\fP
@@ -116,9 +110,8 @@ Run the program on the filename \fIentry.test.0.1662145368.txz\fP with the optio
 .PP
 The above will print "\fBtest\-0\fP".
 .PP
+Run the program on the file \fIentry.test.0.1662145368.txt\fP with the option \fB\-t\fP, changing the extension to \fItxt\fP via the \fB\-E\fP option, which will pass because test mode is specified with a test filename, the extension matches the \fB\-E\fP option and the timestamp is correct:
 .nf
-Run the program on the file \fIentry.test.0.1662145368.txt\fP with the option \fI\-t\fP which will pass:
-
 .RS
 \fB
  ./fnamchk -E txt -t entry.test-0.1662145368.txt\fP
@@ -127,11 +120,22 @@ Run the program on the file \fIentry.test.0.1662145368.txt\fP with the option \f
 .PP
 The above will print "\fBtest\-0\fP".
 .PP
+Run the program on the file \fIentry.test.0.1662145368.txz\fP with the options \fB\-t\fP, changing the extension to \fItxt\fP via the \fB\-E\fP option which will fail because the extension specified does not match the extension in the filename:
 .nf
-Run the program on the file \fIentry.test.0.1662145368.txz\fP with the options \fI\-t\fP and \fI\-E txt\fP which will fail:
-
 .RS
 \fB
  ./fnamchk -E txt -t entry.test-0.1662145368.txz\fP
 .fi
 .RE
+.PP
+It would have passed if the extension was correct because the timestamp in the filename is not less than the minimum timestamp.
+.PP
+Run the program on the file \fIentry.test.0.1662145368.txz\fP without specifying test\-mode or normal mode which will also pass because the filename format is correct (in this case a test mode filename):
+.nf
+.RS
+\fB
+ ./fnamchk entry.test-0.1662145368.txz\fP
+.fi
+.RE
+.PP
+The above will print "\fBtest\-0\fP".

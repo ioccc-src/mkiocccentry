@@ -29,12 +29,13 @@
 
 # setup
 #
-export USAGE="usage: $0 [-h] [-v level] [-V] [-o] [-f flex] [-l limit_ioccc.sh]
+export RUN_FLEX_VERSION="0.3 2022-04-22"
+export USAGE="usage: $0 [-h] [-V] [-v level] [-o] [-f flex] [-l limit_ioccc.sh]
 		        [-g verge] [-p prefix] [-s sorry.h] [-F dir] -- [flex_flags]
 
     -h              print help and exit 8
-    -v level        set debug level (def: 0)
     -V              print version and exit 8
+    -v level        set debug level (def: 0)
     -o		    do NOT use backup files, fail if flex cannot be used (def: use)
     -f flex	    flex tool basename (def: flex)
     -l limit.sh	    version info file (def: ./limit_ioccc.sh)
@@ -60,8 +61,10 @@ Exit codes:
    1-7	 flex not found or too old and -o used
      8   -h and help string printed or -V and version string printed
      9   command line usage error
- >= 10   internal error"
-export RUN_FLEX_VERSION="0.3 2022-04-22"
+ >= 10   internal error
+
+$0 version: $RUN_FLEX_VERSION"
+
 export PREFIX="jparse"
 export V_FLAG="0"
 export FLEX_BASENAME="flex"
