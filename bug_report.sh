@@ -71,10 +71,7 @@ while getopts :hVv:D: flag; do
 done
 
 
-# Assume all tests will pass. We start at 9 but whenever any test fails it is
-# incremented. This makes it easy to rearrange the tests. If at the end the
-# EXIT_CODE is still 9 we know every test passed.
-EXIT_CODE=9
+EXIT_CODE=0
 
 # NOTE: log file does not have an underscore in the name because we want to
 # distinguish it from this script which does have an underscore in it.
@@ -129,7 +126,7 @@ echo "## RUNNING uname -a: " | tee -a -- "$LOG_FILE"
 uname -a | tee -a -- "$LOG_FILE"
 status=${PIPESTATUS[0]}
 if [[ "$status" -ne 0 ]]; then
-    ((EXIT_CODE++))
+    EXIT_CODE=10
     echo "$0: ERROR: uname -a failed with exit code $status: new exit code: $EXIT_CODE" | tee -a -- "$LOG_FILE"
     FAILURE_SUMMARY="$FAILURE_SUMMARY
     uname -a non-zero exit code: $status"
@@ -141,7 +138,7 @@ echo "## RUNNING which -a cc: " | tee -a -- "$LOG_FILE"
 which cc | tee -a -- "$LOG_FILE"
 status=${PIPESTATUS[0]}
 if [[ "$status" -ne 0 ]]; then
-    ((EXIT_CODE++))
+    EXIT_CODE=11
     echo "$0: ERROR: which cc failed with exit code $status: new exit code: $EXIT_CODE" | tee -a -- "$LOG_FILE"
     FAILURE_SUMMARY="$FAILURE_SUMMARY
     which cc non-zero exit code: $status"
@@ -153,7 +150,7 @@ echo "## RUNNING cc -v: " | tee -a -- "$LOG_FILE"
 cc -v 2>&1 | tee -a -- "$LOG_FILE"
 status=${PIPESTATUS[0]}
 if [[ "$status" -ne 0 ]]; then
-    ((EXIT_CODE++))
+    EXIT_CODE=12
     echo "$0: ERROR: cc -v failed with exit code $status: new exit code: $EXIT_CODE" | tee -a -- "$LOG_FILE"
     FAILURE_SUMMARY="$FAILURE_SUMMARY
     cc -v non-zero exit code: $status"
@@ -165,7 +162,7 @@ echo "## RUNNING which make: " | tee -a -- "$LOG_FILE"
 which -a make | tee -a -- "$LOG_FILE"
 status=${PIPESTATUS[0]}
 if [[ "$status" -ne 0 ]]; then
-    ((EXIT_CODE++))
+    EXIT_CODE=13
     echo "$0: ERROR: which -a make failed with exit code $status: new exit code: $EXIT_CODE" | tee -a -- "$LOG_FILE"
     FAILURE_SUMMARY="$FAILURE_SUMMARY
     which -a make non-zero exit code: $status"
@@ -177,7 +174,7 @@ echo "## RUNNING make -v: " | tee -a -- "$LOG_FILE"
 make -v | tee -a -- "$LOG_FILE"
 status=${PIPESTATUS[0]}
 if [[ "$status" -ne 0 ]]; then
-    ((EXIT_CODE++))
+    EXIT_CODE=14
     echo "$0: ERROR: make -v failed with exit code $status: new exit code: $EXIT_CODE" | tee -a -- "$LOG_FILE"
     FAILURE_SUMMARY="$FAILURE_SUMMARY
     make -v non-zero exit code: $status"
@@ -202,7 +199,7 @@ make clobber | tee -a -- "$LOG_FILE"  1>&2
 # I caused. You're welcome! :-)
 status=${PIPESTATUS[0]}
 if [[ "$status" -ne 0 ]]; then
-    ((EXIT_CODE++))
+    EXIT_CODE=15
     echo "$0: ERROR: make clobber failed with exit code $status: new exit code: $EXIT_CODE" | tee -a -- "$LOG_FILE"
     FAILURE_SUMMARY="$FAILURE_SUMMARY
     make clobber non-zero exit code: $status"
@@ -235,7 +232,7 @@ echo "## RUNNING make all: " | tee -a -- "$LOG_FILE" 1>&2
 make all | tee -a -- "$LOG_FILE"
 status=${PIPESTATUS[0]}
 if [[ "$status" -ne 0 ]]; then
-    ((EXIT_CODE++))
+    EXIT_CODE=16
     echo "$0: ERROR: make all failed with exit code $status: new exit code: $EXIT_CODE" | tee -a -- "$LOG_FILE"
     FAILURE_SUMMARY="$FAILURE_SUMMARY
     make all non-zero exit code: $status"
@@ -247,7 +244,7 @@ echo "## RUNNING make test: " | tee -a -- "$LOG_FILE"
 make test | tee -a -- "$LOG_FILE"  1>&2
 status=${PIPESTATUS[0]}
 if [[ "$status" -ne 0 ]]; then
-    ((EXIT_CODE++))
+    EXIT_CODE=17
     echo "$0: ERROR: make test failed with exit code $status: new exit code: $EXIT_CODE" | tee -a -- "$LOG_FILE"
     FAILURE_SUMMARY="$FAILURE_SUMMARY
     make test non-zero exit code: $status"
@@ -259,7 +256,7 @@ echo "## RUNNING which tar: " | tee -a -- "$LOG_FILE"
 which tar | tee -a -- "$LOG_FILE"
 status=${PIPESTATUS[0]}
 if [[ "$status" -ne 0 ]]; then
-    ((EXIT_CODE++))
+    EXIT_CODE=18
     echo "$0: ERROR: which tar failed with exit code $status: new exit code: $EXIT_CODE" | tee -a -- "$LOG_FILE"
     FAILURE_SUMMARY="$FAILURE_SUMMARY
     which tar non-zero exit code: $status"
@@ -276,7 +273,7 @@ for f in $TOOLS; do
 	"$f" -h 2>&1 | tee -a -- "$LOG_FILE"
 	echo | tee -a -- "$LOG_FILE"
     else
-	((EXIT_CODE++))
+	EXIT_CODE=19
 	echo "$0: ERROR: $f is not executable: new exit code: $EXIT_CODE" | tee -a -- "$LOG_FILE"
 	FAILURE_SUMMARY="$FAILURE_SUMMARY
 	$f cannot be executed"
@@ -289,17 +286,14 @@ echo "## RUNNING hostchk.sh -v 3: " | tee -a -- "$LOG_FILE" 1>&2
 ./hostchk.sh -v 3 | tee -a -- "$LOG_FILE"  1>&2
 status=${PIPESTATUS[0]}
 if [[ "$status" -ne 0 ]]; then
-    ((EXIT_CODE++))
+    EXIT_CODE=20
     echo "$0: ERROR: hostchk.sh failed with exit code $status: new exit code: $EXIT_CODE" | tee -a -- "$LOG_FILE"
     FAILURE_SUMMARY="$FAILURE_SUMMARY
     hostchk.sh test non-zero exit code: $status"
 fi
 
 
-# The reason we check for 9 is that's the default value and each time a test
-# fails the exit code is incremented. This makes it easy to rearrange the tests
-# without having to worry to update the exit codes.
-if [[ "$EXIT_CODE" -ne 9 ]]; then
+if [[ "$EXIT_CODE" -ne 0 ]]; then
     echo 1>&2
     echo "One or more problems occurred:" | tee -a -- "$LOG_FILE"
     echo "$FAILURE_SUMMARY" | tee -a -- "$LOG_FILE"
@@ -313,9 +307,6 @@ if [[ "$EXIT_CODE" -ne 9 ]]; then
     echo "making sure to attach $LOG_FILE with your report. You may" | tee -a -- "$LOG_FILE"
     echo "instead email the Judges." | tee -a -- "$LOG_FILE"
 else
-    # here we do set the exit code back to 0 if all is okay so the exit status
-    # of the script does not trigger a false failure.
-    EXIT_CODE=0
     echo "All tests PASSED" | tee -a -- "$LOG_FILE"
     echo | tee -a -- "$LOG_FILE"
     echo "A log of the above tests was saved to $LOG_FILE." | tee -a -- "$LOG_FILE"
