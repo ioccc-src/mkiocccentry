@@ -2,49 +2,49 @@
 .SH NAME
 run_bison.sh \- run bison to generate C code from a *.y file or use backup files if error
 .SH SYNOPSIS
-\fBrun_bison.sh\fP [\-h] [\-v level] [\-V] [\-o] [\-b bison] [\-l limit_ioccc.sh] [\-g verge] [\-p prefix] [\-s sorry.h] [\-B dir] \-\- [bison_flags]
+\fBrun_bison.sh\fP [\-h] [\-V] [\-v level] [\-o] [\-b bison] [\-l limit_ioccc.sh] [\-g verge] [\-p prefix] [\-s sorry.h] [\-B dir] \-\- [bison_flags]
 .SH DESCRIPTION
 \fBrun_bison.sh\fP attempts to find a recent enough version of bison (minimum version defined in \fIlimit_ioccc.sh\fP or file specified by \fB\-l\fP option) and use it to generate code from the \fBprefix.y\fP file.
 The default prefix is \fIjparse\fP but this script can be used for other parsers as well.
 If a recent enough version is not found or bison encounters an error (syntax error or anything else) and the \fB\-o\fP option is not specified, it attempts to use the backup files.
 .SH OPTIONS
-.PP
+.TP
 \fB\-h\fP
 Show help and exit.
-.PP
-\fB\-v\fP
-Set verbosity level.
-.PP
+.TP
 \fB\-V\fP
 Show version and exit.
-.PP
+.TP
+\fB\-v\fP
+Set verbosity level.
+.TP
 \fB\-o\fP
 Do \fBNOT\fP use backup files.
 If bison cannot be used or fails to generate the files the script will fail.
-.PP
+.TP
 \fB\-b\fP
 Specify bison basename.
-.PP
+.TP
 \fB\-l\fP
 Specify path to version file.
-.PP
+.TP
 \fB\-g\fP
 Specify path to the \fBverge\fP tool.
 This is used to determine if the bison tool is recent enough.
-.PP
+.TP
 \fB\-p\fP
 Specify prefix of files to use.
 The bison input file will be \fIprefix.y\fP.
 If the \fB\-o\fP option was not used and bison cannot be used or fails then the backup file \fIprefix.c\fP will be used.
-.PP
+.TP
 \fB\-s\fP
 File to prepend to the C output.
-.PP
+.TP
 \fB\-B\fP
 Specify a directory to search for bison in.
 \fB\-B\fP can be used more than once.
 If not used the script looks at \fB$PATH\fP.
-.PP
+.TP
 The \fBbison_flags\fP are any optional flags to give to bison before the prefix.
 .SH EXIT STATUS
 .PP

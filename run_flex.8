@@ -2,49 +2,49 @@
 .SH NAME
 run_flex.sh \- run flex to generate C code from a *.l file or use backup files if error
 .SH SYNOPSIS
-\fBrun_flex.sh\fP [\-h] [\-v level] [\-V] [\-o] [\-f flex] [\-l limit_ioccc.sh] [\-g verge] [\-p prefix] [\-s sorry.h] [\-F dir] \-\- [flex_flags]
+\fBrun_flex.sh\fP [\-h] [\-V] [\-v level] [\-o] [\-f flex] [\-l limit_ioccc.sh] [\-g verge] [\-p prefix] [\-s sorry.h] [\-F dir] \-\- [flex_flags]
 .SH DESCRIPTION
 \fBrun_flex.sh\fP attempts to find a recent enough version of flex (minimum version defined in \fIlimit_ioccc.sh\fP or file specified by \fB\-l\fP option) and use it to generate code from the \fBprefix.l\fP file.
 The default prefix is \fIjparse\fP but this script can be used for other scanners as well.
 If a recent enough version is not found or flex encounters an error (syntax error or anything else) and the \fB\-o\fP option is not specified, it attempts to use the backup files.
 .SH OPTIONS
-.PP
+.TP
 \fB\-h\fP
 Show help and exit.
-.PP
-\fB\-v\fP
-Set verbosity level.
-.PP
+.TP
 \fB\-V\fP
 Show version and exit.
-.PP
+.TP
+\fB\-v\fP
+Set verbosity level.
+.TP
 \fB\-o\fP
 Do \fBNOT\fP use backup files.
 If flex cannot be used or fails to generate the files the script will fail.
-.PP
+.TP
 \fB\-f\fP
 Specify flex basename.
-.PP
+.TP
 \fB\-l\fP
 Specify path to version file.
-.PP
+.TP
 \fB\-g\fP
 Specify path to the \fBverge\fP tool.
 This is used to determine if the flex tool is recent enough.
-.PP
+.TP
 \fB\-p\fP
 Specify prefix of files to use.
 The flex input file will be \fIprefix.l\fP.
 If the \fB\-o\fP option was not used and flex cannot be used or fails then the backup file \fIprefix.c\fP will be used.
-.PP
+.TP
 \fB\-s\fP
 File to prepend to the C output.
-.PP
+.TP
 \fB\-F\fP
 Specify a directory to search for flex in.
 \fB\-F\fP can be used more than once.
 If not used the script looks at \fB$PATH\fP.
-.PP
+.TP
 The \fBflex_flags\fP are any optional flags to give to flex before the prefix.
 .SH EXIT STATUS
 .PP

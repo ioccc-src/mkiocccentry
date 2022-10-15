@@ -29,12 +29,13 @@
 
 # setup
 #
-export USAGE="usage: $0 [-h] [-v level] [-V] [-o] [-b bison] [-l limit_ioccc.sh]
+export RUN_BISON_VERSION="0.3 2022-04-22"
+export USAGE="usage: $0 [-h] [-V] [-v level] [-V] [-o] [-b bison] [-l limit_ioccc.sh]
 		        [-g verge] [-p prefix] [-s sorry.h] [-B dir] -- [bison_flags]
 
     -h		    print help and exit 8
-    -v level	    set debug level (def: 0)
     -V		    print version and exit 8
+    -v level	    set debug level (def: 0)
     -o		    do NOT use backup files, fail if bison cannot be used (def: use)
     -b bison	    bison tool basename (def: bison)
     -l limit.sh	    version info file (def: ./limit_ioccc.sh)
@@ -60,8 +61,9 @@ Exit codes:
    1-7	 bison not found or too old and -o used
      8   -h and help string printed or -V and version string printed
      9   command line usage error
- >= 10   internal error"
-export RUN_BISON_VERSION="0.3 2022-04-22"
+ >= 10   internal error
+
+$0 version: $RUN_BISON_VERSION"
 export PREFIX="jparse"
 export V_FLAG="0"
 export BISON_BASENAME="bison"
