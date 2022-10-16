@@ -21,9 +21,11 @@ export MAN_SECTION="1"
 export M_FLAG=""
 export MAN_FLAG=""
 export MAN_PAGE=""
-export USAGE="usage: $0 [-h] [-m section] [-M man file] tool
+export RUN_USAGE_VERSION="0.2 2022-09-06"
+export USAGE="usage: $0 [-h] [-V] [-m section] [-M man file] tool
 
     -h		    print help and exit 1
+    -V		    print version and exit 1
     -m section	    man page section (def: $MAN_SECTION)
     -M man file	    man page (including extension)
     --		    end of $0 flags
@@ -37,13 +39,18 @@ Exit codes:
      4	 command line usage error
      5	 missing or inconsistent synopsis
      6	 tool does not have usage string
- >= 10   internal error"
+ >= 10   internal error
+
+$0 version: $RUN_USAGE_VERSION"
 
 # parse args
 #
-while getopts :hm:M: flag; do
+while getopts :hVm:M: flag; do
     case "$flag" in
     h) echo "$USAGE" 1>&2
+       exit 1
+       ;;
+    V) echo "$RUN_USAGE_VERSION" 1>&2
        exit 1
        ;;
     m) M_FLAG="-m"

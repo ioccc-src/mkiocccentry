@@ -274,9 +274,9 @@ run_test()
 	echo "$0: ERROR: expected 2 args to run_test, found $#" 1>&2
 	exit 32
     fi
-    typeset pass_fail="$1"
-    typeset txzchk_test_file="$2"
-    typeset txzchk_err_file="$txzchk_test_file.err"
+    declare pass_fail="$1"
+    declare txzchk_test_file="$2"
+    declare txzchk_err_file="$txzchk_test_file.err"
 
     if [[ ! -e $txzchk_test_file ]]; then
 	echo "$0: in run_test: txzchk_test_file not found: $txzchk_test_file"

@@ -1,24 +1,26 @@
-.TH run_usage 8 "16 September 2022" "run_usage" "IOCCC tools"
+.TH run_usage 8 "16 October 2022" "run_usage" "IOCCC tools"
 .SH NAME
 run_usage \- run -h on a tool to extract usage information to help with checking man page \fBSYNOPSIS\fP \- tool usage consistency
 .SH SYNOPSIS
-\fBrun_usage.sh\fP [\-h] [\-m section] [\-M man file] tool
+\fBrun_usage.sh\fP [\-h] [\-V] [\-m section] [\-M man file] tool
 .SH DESCRIPTION
 .PP
 This script does a best guess at what the \fBSYNOPSIS\fP should be for the supplied tool with certain limitations (see \fBBUGS\fP).
 If the man page exists it attempts to, based on the \fB\-h\fP option of the tool, create the correct regexp for the \fBSYNOPSIS\fP and then uses \fBgrep\fP to check for it in the man page.
 .PP
 If the man page does not exist or is not a regular file or is not readable it is an error but a helpful note is given of what the \fBSYNOPSIS\fP might look like.
-.PP
 .SH OPTIONS
-.PP
+.TP
 \fB\-h\fP
-Show help and exit 1.
-.PP
+Show help and exit.
+.TP
+\fB\-V\fP
+Show version and exit.
+.TP
 \fB\-m\fP
 Specify a different man page section.
 Default is 1.
-.PP
+.TP
 \fB\-M\fP
 Specify the man page filename.
 This is useful when the name of the tool does not match what the man page should be (for example \fBrun_usage.sh\fP has \fBrun_usage.1\fP and not \fBrun_usage.sh.1\fP).

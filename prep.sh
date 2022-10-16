@@ -28,6 +28,7 @@
 
 # setup
 #
+export PREP_VERSION="0.1 2022-04-19"
 export USAGE="usage: $0 [-h] [-v level] [-V] [-e] [-o] [-m make] [-M Makefile]
 
     -h              print help and exit 1
@@ -45,10 +46,11 @@ Exit codes:
      2	 command line error
      3	 Makefile not a readable file that exists
      4	 Internal function error
- >= 10   some make action exited non-zero"
+ >= 10   some make action exited non-zero
+
+$0 version: $PREP_VERSION"
 export MAKE="make"
 export MAKEFILE="./Makefile"
-export PREP_VERSION="0.1 2022-04-19"
 export V_FLAG="0"
 export E_FLAG=
 export EXIT_CODE="0"

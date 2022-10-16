@@ -98,7 +98,7 @@ function is_exec()
 	echo "$0: ERROR: expected 1 arg to is_exec, found $#" | tee -a -- "$LOG_FILE"
 	return 1
     else
-	typeset f="$1"
+	declare f="$1"
 	if [[ ! -e "$f" ]]; then
 	    echo "$0: ERROR: $1 does not exist" | tee -a -- "$LOG_FILE"
 	    return 1

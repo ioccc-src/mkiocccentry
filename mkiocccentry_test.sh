@@ -5,12 +5,12 @@
 # setup
 #
 export MKIOCCCENTRY_TEST_VERSION="0.2 2022-08-13"
-export USAGE="usage: $0 [-h] [-v level] [-J level] [-V]
+export USAGE="usage: $0 [-h] [-V] [-v level] [-J level]
 
     -h              print help and exit 1
+    -V              print version and exit 1
     -v level        flag ignored
     -J level	    set JSON verbosity level
-    -V              print version and exit 1
 
 Exit codes:
      0   all is OK
@@ -30,12 +30,12 @@ while getopts :hv:J:V flag; do
     h) echo "$USAGE" 1>&2
        exit 1
        ;;
+    V) echo "$MKIOCCCENTRY_TEST_VERSION"
+       exit 1
+       ;;
     v) V_FLAG="$OPTARG";
        ;;
     J) J_FLAG="$OPTARG";
-       ;;
-    V) echo "$MKIOCCCENTRY_TEST_VERSION"
-       exit 1
        ;;
     \?) echo "$0: ERROR: invalid option: -$OPTARG" 1>&2
        exit 2
