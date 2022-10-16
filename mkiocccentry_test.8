@@ -1,23 +1,23 @@
-.TH mkiocccentry_test 8 "23 September 2022" "mkiocccentry_test" "IOCCC tools"
+.TH mkiocccentry_test 8 "16 October 2022" "mkiocccentry_test" "IOCCC tools"
 .SH NAME
 mkiocccentry_test.sh \- run several invocations of \fBmkiocccentry(1)\fP to test that it functions well
 .SH SYNOPSIS
-\fBmkiocccentry_test.sh\fP [\-h] [\-v level] [\-J level] [\-V]
+\fBmkiocccentry_test.sh\fP [\-h] [\-V] [\-v level] [\-J level]
 .SH DESCRIPTION
 \fBmkiocccentry_test.sh\fP runs a series of invocations of \fBmkiocccentry\fP, testing various types of inputs including multiple authors some of which have non-ASCII characters in their name.
 .SH OPTIONS
-.PP
+.TP
 \fB\-h\fP
 Show help and exit.
-.PP
-\fB\-v\fP
-Set verbosity level (def: 0).
-.PP
-\fB\-J\fP
-Set JSON verbosity level.
-.PP
+.TP
 \fB\-V\fP
 Print version and exit.
+.TP
+\fB\-v\fP
+Set verbosity level (def: 0).
+.TP
+\fB\-J\fP
+Set JSON verbosity level.
 .SH EXIT STATUS
 .PP
 Exit codes:
