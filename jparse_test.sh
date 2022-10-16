@@ -4,10 +4,12 @@
 
 # setup
 #
+export JPARSE_TEST_VERSION="0.2 2022-07-02"
 export CHK_TEST_FILE="./json_teststr.txt"
-export USAGE="usage: $0 [-h] [-v level] [-D dbg_level] [-J level] [-q] [-j jparse] [file ..]
+export USAGE="usage: $0 [-h] [-V] [-v level] [-D dbg_level] [-J level] [-q] [-j jparse] [file ..]
 
     -h			print help and exit 2
+    -V			print version and exit 2
     -v level		set verbosity level for this script: (def level: 0)
     -D dbg_level	set verbosity level for tests (def: level: 0)
     -J level		set JSON parser verbosity level (def level: 0)
@@ -22,7 +24,10 @@ Exit codes:
      1   at least one test failed
      2   help mode exit
      3   invalid command line
-  >= 4   internal error"
+  >= 4   internal error
+
+$0 version: $JPARSE_TEST_VERSION"
+
 export V_FLAG="0"
 export DBG_LEVEL="0"
 export JSON_DBG_LEVEL="0"
@@ -33,9 +38,12 @@ export EXIT_CODE=0
 
 # parse args
 #
-while getopts :hv:D:J:qj: flag; do
+while getopts :hVv:D:J:qj: flag; do
     case "$flag" in
     h) echo "$USAGE" 1>&2
+       exit 2
+	;;
+    V) echo "$JPARSE_TEST_VERSION" 1>&2
        exit 2
 	;;
     v) V_FLAG="$OPTARG";
@@ -123,11 +131,11 @@ run_test()
 	echo "$0: ERROR: expected 5 args to run_test, found $#" 1>&2
 	exit 4
     fi
-    typeset jparse="$1"
-    typeset dbg_level="$2"
-    typeset json_dbg_level="$3"
-    typeset quiet_mode="$4"
-    typeset json_doc_string="$5"
+    declare jparse="$1"
+    declare dbg_level="$2"
+    declare json_dbg_level="$3"
+    declare quiet_mode="$4"
+    declare json_doc_string="$5"
 
     # debugging
     #

@@ -39,11 +39,12 @@
 
 # setup
 #
-export USAGE="usage: $0 [-h] [-v level] [-V] [-l limit_ioccc.h]
+export RESET_TSTAMP_VERSION="0.4 2022-04-23"
+export USAGE="usage: $0 [-h] [-V] [-v level] [-l limit_ioccc.h]
 
     -h              print help and exit 2
-    -v level        set debug level (def: 0)
     -V              print version and exit 2
+    -v level        set debug level (def: 0)
     -l limit_ioccc.h   limit file (def: ./limit_ioccc.h)
 
 Exit codes:
@@ -51,8 +52,9 @@ Exit codes:
      1   A verification phase test failed
      2   -h and help string printed or -V and version string printed
      3   Command line usage error
- >= 10   internal error"
-export RESET_TSTAMP_VERSION="0.4 2022-04-23"
+ >= 10   internal error
+
+$0 version: $RESET_TSTAMP_VERSION"
 export V_FLAG="0"
 export LIMIT_IOCCC_H="./limit_ioccc.h"
 

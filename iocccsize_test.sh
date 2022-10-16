@@ -82,17 +82,17 @@ fi
 
 get_wc()
 {
-	typeset file="$1"
-	typeset field="$2"
+	declare file="$1"
+	declare field="$2"
 	wc "$file" | sed -e's/^ *//; s/  */ /g' | cut -d' ' "-f$field"
 }
 
 test_size()
 {
-	typeset file="test_iocccsize/$1"
-	typeset expect="$2"
-	typeset gross_count
-	typeset got
+	declare file="test_iocccsize/$1"
+	declare expect="$2"
+	declare gross_count
+	declare got
 
 	got=$("$__tool" "$__tool_args" "$file" 2>/dev/null)
 	if [[ -n $__verbose ]]; then

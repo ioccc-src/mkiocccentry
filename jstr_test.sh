@@ -6,10 +6,12 @@ export JSTRENCODE="./jstrencode"
 export JSTRDECODE="./jstrdecode"
 export TEST_FILE="jstr_test.out"
 export TEST_FILE2="jstr_test2.out"
+export JSTR_TEST_VERSION="0.4 2022-09-28"
 
-export USAGE="usage: $0 [-h] [-v level] [-e jstrencode] [-d jstrdecode]
+export USAGE="usage: $0 [-h] [-V] [-v level] [-e jstrencode] [-d jstrdecode]
 
     -h		print help and exit 1
+    -V		print version and exit 1
     -v		set verbosity level for this script (def level: 0)
     -e		path to jstrencode tool (def: $JSTRENCODE)
     -d		path to jstrdecode tool (def: $JSTRDECODE)
@@ -20,13 +22,16 @@ Exit codes:
      2	 invalid command line, invalid option or option missing an argument
      3	 help message printed
  >= 10	 internal error
-"
+$0 version: $JSTR_TEST_VERSION"
 # parse args
 #
 export V_FLAG="0"
-while getopts :hv:e:d: flag; do
+while getopts :hVv:e:d: flag; do
     case "$flag" in
     h) echo "$USAGE" 1>&2
+       exit 3
+       ;;
+    V) echo "$JSTR_TEST_VERSION" 1>&2
        exit 3
        ;;
     v) V_FLAG="$OPTARG";
