@@ -42,7 +42,7 @@ while getopts :hv:V flag; do
 	;;
     v)	V_FLAG="$OPTARG";
 	;;
-    V)	echo "$0 version $HAVE_TIMEGM_VERSION" 1>&2
+    V)	echo "$HAVE_TIMEGM_VERSION" 1>&2
 	exit 3
 	;;
     \?)	echo "$0: ERROR: invalid option: -$OPTARG" 1>&2
