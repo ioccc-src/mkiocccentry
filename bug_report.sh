@@ -125,8 +125,8 @@ echo "## TIME OF REPORT: $(date)" | tee -a -- "$LOG_FILE"
 # Make array of all commands we need.
 #
 # This is done this way so that we can use each command's index as an offset for
-# an exit code that will be added to 11 (the first exit code that is an error
-# beyond the one that does not have an individual code, see below).
+# an exit code that will be added to BASE_ERR_EXIT_CODE (the first exit code
+# that is an error beyond the one that does not have an individual code, see below).
 #
 # Since arrays also don't have to be assigned contiguously this will allow us to
 # also spread commands out for exit codes. We shouldn't need more than the
@@ -135,13 +135,14 @@ echo "## TIME OF REPORT: $(date)" | tee -a -- "$LOG_FILE"
 # There is an exception to the exit codes here and that's the check for if each
 # of our tools is executable. For that we use a single exit code 10. This is not
 # done until later on but with exit code 10 so that it's out of the way of the
+# other exit codes.
 #
 # We assign the commands to the array one at a time so we have control of the
 # index for the command which will also be part of the error code if it goes
 # wrong.
 #
-# The 0th element will be exit code 11 if it fails; the 1st element will be 11
-# and so on.
+# The 0th element will be exit code 0 + BASE_ERR_EXIT_CODE if it fails; the 1st
+# element will be 1 + BASE_ERR_EXIT_CODE and so on.
 #
 # NOTE: make all will indirectly call make fast_hostchk which, if it reports an
 # issue, will be reported here. However we also directly invoke hostchk.sh later
