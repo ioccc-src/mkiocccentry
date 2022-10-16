@@ -123,11 +123,11 @@ run_test()
 	echo "$0: ERROR: expected 5 args to run_test, found $#" 1>&2
 	exit 4
     fi
-    typeset jparse="$1"
-    typeset dbg_level="$2"
-    typeset json_dbg_level="$3"
-    typeset quiet_mode="$4"
-    typeset json_doc_string="$5"
+    declare jparse="$1"
+    declare dbg_level="$2"
+    declare json_dbg_level="$3"
+    declare quiet_mode="$4"
+    declare json_doc_string="$5"
 
     # debugging
     #
