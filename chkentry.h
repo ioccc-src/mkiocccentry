@@ -83,10 +83,11 @@ static const char * const usage_msg =
     "author.json\tcheck author.json file, . ==> skip IOCCC author check\n"
     "\n"
     "Exit codes:\n"
-    "    0\tall is OK\n"
-    "    3\t-h and help string printed or -V and version string printed\n"
-    "    4\tcommand line error\n"
-    "    >=5\tinternal error\n"
+    "     0   all is OK\n"
+    "     1   JSON semantic check failed\n"
+    "     2   -h and help string printed or -V and version string printed\n"
+    "     3   command line error\n"
+    "  >=10   internal error\n"
     "\n"
     "chkentry version: %s\n";
 
