@@ -80,8 +80,8 @@ fi
 export HOSTCHK_VERSION="0.2 2022-10-12"
 export USAGE="usage: $0 [-h] [-V] [-v level] [-D dbg_level] [-t tar] [-c cc] [-f]
 
-    -h			    print help and exit 2
-    -V			    print version and exit 2
+    -h			    print help and exit
+    -V			    print version and exit
     -v level		    set verbosity level for this script: (def level: 0)
     -D dbg_level	    set verbosity level for tests (def: level: 0)
     -t tar		    path to tar that accepts -J option (def: $TAR)

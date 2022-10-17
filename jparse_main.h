@@ -54,11 +54,11 @@ static void usage(int exitcode, char const *str, char const *prog);
 static const char * const usage_msg =
     "usage: %s [-h] [-v level] [-J level] [-q] [-V] [-s] arg\n"
     "\n"
-    "\t-h\t\tprint help message and exit 0\n"
+    "\t-h\t\tprint help message and exit\n"
     "\t-v level\tset verbosity level (def level: %d)\n"
     "\t-J level\tset JSON verbosity level (def level: %d)\n"
     "\t-q\t\tquiet mode: silence msg(), warn(), warnp() if -v 0 (def: not quiet)\n"
-    "\t-V\t\tprint version string and exit 0\n"
+    "\t-V\t\tprint version string and exit\n"
     "\t-s\t\targ is a string (def: arg is a filename)\n"
     "\n"
     "\targ\t\tparse JSON for string (if -s), file (w/o -s), or stdin (if arg is -)\n"

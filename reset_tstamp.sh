@@ -42,8 +42,8 @@
 export RESET_TSTAMP_VERSION="0.4 2022-04-23"
 export USAGE="usage: $0 [-h] [-V] [-v level] [-l limit_ioccc.h]
 
-    -h              print help and exit 2
-    -V              print version and exit 2
+    -h              print help and exit
+    -V              print version and exit
     -v level        set debug level (def: 0)
     -l limit_ioccc.h   limit file (def: ./limit_ioccc.h)
 

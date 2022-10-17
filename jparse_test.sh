@@ -8,8 +8,8 @@ export JPARSE_TEST_VERSION="0.2 2022-07-02"
 export CHK_TEST_FILE="./json_teststr.txt"
 export USAGE="usage: $0 [-h] [-V] [-v level] [-D dbg_level] [-J level] [-q] [-j jparse] [file ..]
 
-    -h			print help and exit 2
-    -V			print version and exit 2
+    -h			print help and exit
+    -V			print version and exit
     -v level		set verbosity level for this script: (def level: 0)
     -D dbg_level	set verbosity level for tests (def: level: 0)
     -J level		set JSON parser verbosity level (def level: 0)

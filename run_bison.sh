@@ -33,8 +33,8 @@ export RUN_BISON_VERSION="0.3 2022-04-22"
 export USAGE="usage: $0 [-h] [-V] [-v level] [-V] [-o] [-b bison] [-l limit_ioccc.sh]
 		        [-g verge] [-p prefix] [-s sorry.h] [-B dir] -- [bison_flags]
 
-    -h		    print help and exit 8
-    -V		    print version and exit 8
+    -h		    print help and exit
+    -V		    print version and exit
     -v level	    set debug level (def: 0)
     -o		    do NOT use backup files, fail if bison cannot be used (def: use)
     -b bison	    bison tool basename (def: bison)

@@ -24,8 +24,8 @@ export MAN_PAGE=""
 export RUN_USAGE_VERSION="0.2 2022-09-06"
 export USAGE="usage: $0 [-h] [-V] [-m section] [-M man file] tool
 
-    -h		    print help and exit 1
-    -V		    print version and exit 1
+    -h		    print help and exit
+    -V		    print version and exit
     -m section	    man page section (def: $MAN_SECTION)
     -M man file	    man page (including extension)
     --		    end of $0 flags

@@ -51,10 +51,10 @@
 static const char * const usage_msg =
     "usage: %s [-h] [-v level] [-q] [-V] [-t] [-n] [-Q] [string ...]\n"
     "\n"
-    "\t-h\t\tprint help message and exit 0\n"
+    "\t-h\t\tprint help message and exit\n"
     "\t-v level\tset verbosity level: (def level: %d)\n"
     "\t-q\t\tquiet mode: silence msg(), warn(), warnp() if -v 0 (def: not quiet)\n"
-    "\t-V\t\tprint version string and exit 0\n"
+    "\t-V\t\tprint version string and exit\n"
     "\t-t\t\tperform jencchk test on code JSON encode/decode functions\n"
     "\t-n\t\tdo not output newline after encode output (def: print final newline)\n"
     "\t-Q\t\tignore enclosing \"'s (def: encode all bytes)\n"

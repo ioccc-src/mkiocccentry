@@ -33,10 +33,10 @@ export IOCCC_TEST_VERSION="0.462022-04-23"
 
 export USAGE="usage: $0 [-h] [-v level] [-J json_level] [-V]
 
-    -h              print help and exit 1
+    -h              print help and exit
     -v level        set debug level (def: 0)
     -J json_level   set json debug level (def: 0)
-    -V              print version and exit 1
+    -V              print version and exit
 
 Exit codes:
      0   all tests are OK

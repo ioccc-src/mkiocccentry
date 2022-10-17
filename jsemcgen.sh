@@ -74,11 +74,11 @@ export USAGE="usage: $0 [-h] [-v level] [-J level] [-q] [-V] [-s] [-I] [-N name]
 	[-1 func] [-S func] [-B func] [-0 func] [-M func] [-O func] [-A func] [-U func]
 	[-j jsemtblgen] [-p patch_tool] file.json head patch tail
 
-	-h		print help message and exit 2
+	-h		print help message and exit
 	-v level	set verbosity level (def level: 0)
 	-J level	set JSON verbosity level (def level: 0)
 	-q		quiet mode: silence msg(), warn(), warnp() if -v 0 (def: not quiet)
-	-V		print version string and exit 2
+	-V		print version string and exit
 	-s		file.json is a string (def: arg is a filename)
 
 	-I		output as .h include file (def: output as .c src)

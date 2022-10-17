@@ -138,7 +138,7 @@
 static const char * const usage_msg0 =
     "usage: %s [options] work_dir prog.c Makefile remarks.md [file ...]\n"
     "\noptions:\n"
-    "\t-h\t\tprint help message and exit 0\n"
+    "\t-h\t\tprint help message and exit\n"
     "\t-v level\tset verbosity level: (def level: %d)\n"
     "\t-J level\tset JSON verbosity level (def level: %d)\n"
     "\t-q\t\tquiet mode (def: not quiet)\n"

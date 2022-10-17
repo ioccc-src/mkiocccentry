@@ -10,8 +10,8 @@ export JSTR_TEST_VERSION="0.4 2022-09-28"
 
 export USAGE="usage: $0 [-h] [-V] [-v level] [-e jstrencode] [-d jstrdecode]
 
-    -h		print help and exit 1
-    -V		print version and exit 1
+    -h		print help and exit
+    -V		print version and exit
     -v		set verbosity level for this script (def level: 0)
     -e		path to jstrencode tool (def: $JSTRENCODE)
     -d		path to jstrdecode tool (def: $JSTRDECODE)

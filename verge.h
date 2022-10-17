@@ -58,9 +58,9 @@
 static const char * const usage_msg =
     "usage: %s [-h] [-v level] [-V] major.minor.patch-1 major.minor.patch-2\n"
     "\n"
-    "\t-h\t\t\tprint help message and exit 3\n"
+    "\t-h\t\t\tprint help message and exit\n"
     "\t-v level\t\tset verbosity level (def level: %d)\n"
-    "\t-V\t\t\tprint version string and exit 3\n"
+    "\t-V\t\t\tprint version string and exit\n"
     "\n"
     "\tmajor.minor.patch-1\tfirst version  (example: 0.1.1)\n"
     "\tmajor.minor.patch-2\tsecond version (example: 1.3.2)\n"

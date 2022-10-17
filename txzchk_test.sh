@@ -48,8 +48,8 @@ fi
 export TXZCHK_TEST_VERSION="0.3 2022-10-11"
 export USAGE="usage: $0 [-h] [-V] [-v level] [-t txzchk] [-T tar] [-F fnamchk] [-d txzchk_tree]
 
-    -h			    print help and exit 2
-    -V			    print version and exit 2
+    -h			    print help and exit
+    -V			    print version and exit
     -v level		    set verbosity level for this script: (def level: 0)
     -t txzchk		    path to txzchk executable (def: ./txzchk)
     -T tar		    path to tar that accepts -J option (def: $TAR)

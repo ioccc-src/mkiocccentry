@@ -64,7 +64,7 @@
 /*
  * official iocccsize version
  */
-#define IOCCCSIZE_VERSION "28.11 2022-07-10"	/* format: major.minor YYYY-MM-DD */
+#define IOCCCSIZE_VERSION "28.12 2022-10-17"	/* format: major.minor YYYY-MM-DD */
 
 /*
  * official mkiocccentry version

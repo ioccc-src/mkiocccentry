@@ -33,8 +33,8 @@ export RUN_FLEX_VERSION="0.3 2022-04-22"
 export USAGE="usage: $0 [-h] [-V] [-v level] [-o] [-f flex] [-l limit_ioccc.sh]
 		        [-g verge] [-p prefix] [-s sorry.h] [-F dir] -- [flex_flags]
 
-    -h              print help and exit 8
-    -V              print version and exit 8
+    -h              print help and exit
+    -V              print version and exit
     -v level        set debug level (def: 0)
     -o		    do NOT use backup files, fail if flex cannot be used (def: use)
     -f flex	    flex tool basename (def: flex)

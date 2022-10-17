@@ -19,8 +19,8 @@ export HAVE_TIMEGM_VERSION="0.0 2022-08-17"
 
 export USAGE="usage: $0 [-h] [-V] [-v level]
 
-    -h			    print help and exit 2
-    -V			    print version and exit 2
+    -h			    print help and exit
+    -V			    print version and exit
     -v level		    set verbosity level for this script: (def level: 0)
 
 Exit codes:

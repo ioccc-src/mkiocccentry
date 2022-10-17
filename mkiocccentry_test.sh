@@ -7,8 +7,8 @@
 export MKIOCCCENTRY_TEST_VERSION="0.2 2022-08-13"
 export USAGE="usage: $0 [-h] [-V] [-v level] [-J level]
 
-    -h              print help and exit 1
-    -V              print version and exit 1
+    -h              print help and exit
+    -V              print version and exit
     -v level        flag ignored
     -J level	    set JSON verbosity level
 

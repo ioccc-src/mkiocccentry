@@ -140,8 +140,9 @@ bool msg_warn_silent = false;		/* true ==> silence info & warnings if verbosity_
 static char const * const usage =
 "usage: %s [-h] [-v level] [-V] [-q] [-e errno] foo bar [baz]\n"
 "\n"
-"\t-h\t\tprint help message and exit 0\n"
+"\t-h\t\tprint help message and exit\n"
 "\t-v level\tset verbosity level: (def level: 0)\n"
+"\t-V\t\tprint version string and exit\n"
 "\t-q\t\tquiet mode: silence msg(), warn(), warnp() if -v 0 (def: not quiet)\n"
 "\t-e errno\tsimulate setting of errno to cause errp() to be involved\n"
 "\n"

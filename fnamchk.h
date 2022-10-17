@@ -62,7 +62,7 @@
 static const char * const usage_msg =
     "usage: %s [-h] [-v level] [-q] [-V] [-E ext] [-t|-u] filepath\n"
     "\n"
-    "\t-h\t\t\tprint help message and exit 0\n"
+    "\t-h\t\t\tprint help message and exit\n"
     "\t-v level\t\tset verbosity level: (def level: %d)\n"
     "\t-q\t\t\tquiet mode: silence msg(), warn(), warnp() if -v 0 (def: not quiet)\n"
     "\t-V\t\t\tprint version string and exit\n"

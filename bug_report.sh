@@ -29,8 +29,8 @@ export DBG_LEVEL="0"
 export V_FLAG="0"
 export USAGE="usage: $0 [-h] [-V] [-v level] [-D level]
 
-    -h			    print help and exit 2
-    -V			    print version and exit 2
+    -h			    print help and exit
+    -V			    print version and exit
     -v level		    set verbosity level for this script: (def level: $V_FLAG)
     -D level		    set verbosity level for tests (def: $DBG_LEVEL)
 

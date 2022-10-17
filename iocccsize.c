@@ -4,7 +4,7 @@
  *	"You are not expected to understand this" :-)
  *
  *	Public Domain 1992, 2015, 2018, 2019, 2021 by Anthony Howe.  All rights released.
- *	With IOCCC mods in 2019-2021 by chongo (Landon Curt Noll) ^oo^
+ *	With IOCCC mods in 2019-2022 by chongo (Landon Curt Noll) ^oo^
  *
  * SYNOPSIS
  *
@@ -17,12 +17,13 @@
  *	-V		print version and exit 3
  *
  *	Exit codes:
- *		0 - source code is within Rule 2a and Rule 2b limits
- *		1 - source code larger than Rule 2a and/or Rule 2b limits
- *		2 - -h used and help printed
- *		3 - -V used and version printed
- *		4 - invalid command line
- *		>= 5 - some internal error occurred
+ *		0   source code is within Rule 2a and Rule 2b limits
+ *		1   source code larger than Rule 2a and/or Rule 2b limits
+ *		2   -h used and help printed
+ *		3   -V used and version printed
+ *		4   invalid command line
+ *		6   there is no Rule 6!
+ *	    >= 10   some internal error occurred
  *
  * DESCRIPTION
  *
@@ -79,10 +80,10 @@ static char usage0[] =
 "usage: iocccsize [-h] [-i] [-v level] [-q] [-V] < prog.c\n"
 "\n"
 "-i\t\tignored for backward compatibility\n"
-"-h\t\tprint usage message in stderr and exit 2\n"
+"-h\t\tprint usage message in stderr and exit\n"
 "-v level\tset debug level (def: none)\n"
 "-q\t\tquiet mode: silence msg(), warn(), warnp() if -v 0 (def: not msg_warn_silent)\n"
-"-V\t\tprint version and exit 3\n"
+"-V\t\tprint version and exit\n"
 "\n";
 static char usage1[] =
 "\tBy default,the Rule 2b count is written to stdout.\n"
@@ -90,12 +91,13 @@ static char usage1[] =
 "\tand keyword count is written to stdout instead.\n"
 "\n"
 "Exit codes:\n"
-"\t0 - source code is within Rule 2a and Rule 2b limits\n"
-"\t1 - source code larger than Rule 2a and/or Rule 2b limits\n"
-"\t2 - -h used and help printed\n"
-"\t3 - -V used and version printed\n"
-"\t4 - invalid command line\n"
-"\t>= 5 - some internal error occurred\n";
+"     0   source code is within Rule 2a and Rule 2b limits\n"
+"     1   source code larger than Rule 2a and/or Rule 2b limits\n"
+"     2   -h used and help printed\n"
+"     3   -V used and version printed\n"
+"     4   invalid command line\n"
+"     6   there is no Rule 6!\n"
+" >= 10   some internal error occurred\n";
 
 
 int
