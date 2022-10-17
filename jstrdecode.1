@@ -1,41 +1,43 @@
-.TH jstrdecode 1 "2 September 2022" "jstrdecode" "IOCCC tools"
+.TH jstrdecode 1 "17 October 2022" "jstrdecode" "IOCCC tools"
 .SH NAME
-jstrdecode \- decode JSON encoded strings
+\fBjstrdecode\fP \- decode JSON encoded strings
 .SH SYNOPSIS
 \fBjstrdecode\fP [\-h] [\-v level] [\-q] [\-V] [\-t] [\-n] [\-Q] [string ...]
 .SH DESCRIPTION
-\fBjstrdecode\fP decodes JSON encoded strings given on the command line.
+.B jstrdecode
+decodes JSON encoded strings given on the command line.
 If given the \fB\-t\fP option it performs a test on the JSON decode and encode functions.
-.PP
 By default the program reads from \fBstdin\fP.
 .SH OPTIONS
-.PP
+.TP
 \fB\-h\fP
 Show help and exit.
-.PP
-\fB\-v\fP
-Set verbosity level.
-.PP
+.TP
+\fB\-v \fIlevel\fP\fP
+Set verbosity level to \fIlevel\fP.
+.TP
 \fB\-q\fP
 Suppresses some of the output (def: not quiet).
-.PP
+.TP
 \fB\-V\fP
 Show version and exit.
-.PP
+.TP
 \fB\-t\fP
 Run tests on the JSON decode/encode functions.
-.PP
+.TP
 \fB\-n\fP
 Do not output a newline after the decode function.
-.PP
+.TP
 \fB\-Q\fP
-Enclose output in quotes (def: do not).
+Enclose output in quotes.
 .SH EXIT STATUS
 .PP
 \fBmain()\fP returns 1 for errors or issues found; 0 for success.
 .SH BUGS
 .PP
-If you have an issue with the tool you can report it at \fI\<https://github.com/ioccc-src/mkiocccentry/issues\>\fP.
+If you have an issue with the tool you can report it at
+.br
+\fI\<https://github.com/ioccc-src/mkiocccentry/issues\>\fP.
 .SH EXAMPLES
 .PP
 .nf

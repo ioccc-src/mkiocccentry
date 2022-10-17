@@ -1,4 +1,4 @@
-.TH txzchk_test 8 "09 October 2022" "txzchk_test" "IOCCC tools"
+.TH txzchk_test 8 "17 October 2022" "txzchk_test" "IOCCC tools"
 .SH NAME
 txzchk_test.sh \- test suite for \fBtxzchk(1)\fP
 .SH SYNOPSIS
@@ -10,41 +10,33 @@ The script enforces that bad files have an associated error file to compare with
 If an error file is missing it is an error.
 Conversely if a good file has an error file it is also an error.
 .SH OPTIONS
-.PP
+.TP
 \fB\-h\fP
 Show help and exit.
-.PP
+.TP
 \fB\-V\fP
 Print version and exit.
-.PP
-\fB\-v\fP
-Set verbosity level (def: 0) for the script.
-.PP
-\fB\-t\fP
-Specify path to \fBtxzchk\fP.
-.PP
-\fB\-T\fP
-Specify path to \fBtar\fP.
-.PP
-\fB\-F\fP
-Specify path to \fBfnamchk\fP, which \fBtxzchk\fP uses to test if the tarball is validly named and if the files listed are in the correct directory.
-.PP
-\fB\-d\fP
-Specify path to the directory with the expected subdirectories \fIgood\fP and \fIbad\fP, each containing text files of good and bad pseudo-tarballs.
+.TP
+\fB\-v \fIlevel\fP\fP
+Set verbosity level to \fIlevel\fP for the script.
+.TP
+\fB\-t \fItxzchk\fP\fP
+Specify path to \fBtxzchk\fP to \fItxzchk\fP.
+.TP
+\fB\-T \fItar\fP\fP
+Specify path to \fBtar\fP to \fItar\fP.
+.TP
+\fB\-F \fIfnamchk\fP\fP
+Specify path to \fBfnamchk\fP to \fIfnamchk\fP.
+\fBtxzchk\fP uses \fBfnamchk\fP to test if the tarball is validly named and if the files listed are in the correct directory.
+.TP
+\fB\-d \fItxzchk_tree\fP\fP
+Specify path to the directory with the expected subdirectories \fIgood\fP and \fIbad\fP, each containing text files of good and bad pseudo-tarballs, to \fItxzchk_tree\fP.
 As already noted, the \fIbad\fP subdirectory also has error files to compare against the output of \fBtxzchk(1)\fP, in order to make sure that the failure is the correct failure.
 .SH EXIT STATUS
 .PP
-Exit codes:
-.br
-    0 \- all is well
-.br
-    1 \- at least one test failed
-.br
-    2 \- help mode exit
-.br
-    3 \- invalid command line
-.br
-    >= 4 \- internal or test error
+An exit code of 0 means everything is well.
+An non-zero exit code means that either help or version was requested at the command line, at least one test failed or there was an internal or test error.
 .SH FILES
 \fItest_txzchk\fP
 .RS

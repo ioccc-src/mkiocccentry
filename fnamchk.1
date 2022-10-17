@@ -1,4 +1,4 @@
-.TH fnamchk 1 "15 October 2022" "fnamchk" "IOCCC tools"
+.TH fnamchk 1 "16 October 2022" "fnamchk" "IOCCC tools"
 .SH NAME
 fnamchk \- IOCCC compressed tarball filename sanity check tool
 .SH SYNOPSIS
@@ -10,27 +10,25 @@ The program validates that the filename is correct, in the form of \fBentry.cont
 \fBcontest_ID\fP is either \fItest\fP or a valid UUID (see below), \fBentry_number\fP is an integer from \fB0\fP through \fBMAX_ENTRY_NUM\fP (see \fIlimit_ioccc.h\fP) inclusive, \fBtimestamp\fP is an integer of the number of seconds since the epoch and \fBext\fP is either \fBtxz\fP or the user supplied extension from the \fB\-E\fP option.
 .PP
 More specifically, the filename \fBmust\fP:
-.PP
-.RS
+.IP \(bu 4
 Start with "\fBentry\fP".
-.PP
+.IP \(bu 4
 Followed by "\fB.\fP".
-.PP
+.IP \(bu 4
 Followed by either "\fBtest\fP" \fIOR\fP a UUID string in the form of \fBxxxxxxxx-xxxx-4xxx-axxx-xxxxxxxxxxxx\fP where \fBx\fP is a hexadecimal digit in the range \fB[0-9a-f]\fP.
 And yes, there is a \fB4\fP (UUID version 4) and an \fBa\fP (UUID variant 1) in there.
-.PP
+.IP \(bu 4
 Followed by "\fB\-\fP".
-.PP
+.IP \(bu 4
 Followed by a decimal entry number from \fB0\fP through \fBMAX_ENTRY_NUM\fP (see \fIlimit_ioccc.h\fP) inclusive.
-.PP
+.IP \(bu 4
 Followed by "\fB.\fP".
-.PP
+.IP \(bu 4
 Followed by a positive non-zero 64-bit decimal integer.
-.PP
+.IP \(bu 4
 Followed by "\fB.\fP".
-.PP
+.IP \(bu 4
 Followed by "\fBtxz\fP" (or the user supplied extension from option \fB\-E\fP).
-.RE
 .PP
 NOTE: The quotes above should not be in the filename; they're there only to help distinguish the punctuation from the rest of the format.
 .PP
@@ -71,7 +69,9 @@ If there is an error the error message is printed prior to exiting; else the out
 .PP
 More than 0 humans work on it! :)
 .PP
-If you have an issue with the tool you can open an issue at \fI\<https://github.com/ioccc-src/mkiocccentry/issues\>\fP.
+If you have an issue with the tool you can open an issue at
+.br
+\fI<https://github.com/ioccc-src/mkiocccentry/issues\>\fP.
 .SH EXAMPLES
 .PP
 For the examples below assume that the \fBMIN_TIMESTAMP\fP is \fB(time_t)1662145368\fP.

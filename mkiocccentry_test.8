@@ -1,4 +1,4 @@
-.TH mkiocccentry_test 8 "16 October 2022" "mkiocccentry_test" "IOCCC tools"
+.TH mkiocccentry_test 8 "17 October 2022" "mkiocccentry_test" "IOCCC tools"
 .SH NAME
 mkiocccentry_test.sh \- run several invocations of \fBmkiocccentry(1)\fP to test that it functions well
 .SH SYNOPSIS
@@ -19,16 +19,18 @@ Set verbosity level (def: 0).
 \fB\-J\fP
 Set JSON verbosity level.
 .SH EXIT STATUS
-.PP
-Exit codes:
-.br
-0	all tests are OK
-.br
-1	-h and help string printed or -V and version string printed
-.br
-2	Command line usage error
-.br
->=10	some make action exited non-zero
+.TP
+0
+all tests are OK
+.TQ
+1
+\-h and help string printed or \-V and version string printed
+.TQ
+2
+Command line usage error
+.TQ
+>=10
+some make action exited non-zero
 .SH BUGS
 .PP
 This script does not let one set the path to the needed tools like the other scripts do and so requires that one is in the clone of the repo directory to successfully run this script.

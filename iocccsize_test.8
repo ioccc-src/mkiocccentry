@@ -1,4 +1,4 @@
-.TH iocccsize_test 8 "16 October 2022" "iocccsize_test" "IOCCC tools"
+.TH iocccsize_test.sh 8 "17 October 2022" "iocccsize_test" "IOCCC tools"
 .SH NAME
 iocccsize_test.sh \- test iocccsize tool
 .SH SYNOPSIS
@@ -6,34 +6,33 @@ iocccsize_test.sh \- test iocccsize tool
 .SH DESCRIPTION
 \fBiocccsize_test.sh\fP runs a series of tests on the \fBiocccsize(1)\fP tool, verifying that it is functioning properly.
 .SH OPTIONS
-.PP
+.TP
 \fB\-h\fP
 Show help and exit.
-.PP
-\fB\-v\fP
-Set verbosity level (def: 0).
+.TP
+\fB\-v \fIlevel\fP\fP
+Set verbosity level to \fIlevel\fP.
 .RS
 .PP
 A verbosity level of 1 or more will show the PASS or FAIL of individual tests.
-.PP
-A verbosity level of 3 or more will show details such as what
-was expected and what was discovered during each test.
+.br
+A verbosity level of 3 or more will show details such as what was expected and what was discovered during each test.
 .RE
-.PP
+.TP
 \fB\-V\fP
 Print version and exit.
-.PP
-\fB\-i\fP \fRiocccsize\fP
-Specify path to iocccsize tool (def: ./iocccsize).
-.PP
-\fB\-w\fP \fRwork_dir\fP
-Working directory that is removed & rebuilt during the test of the iocccsize tool (def: ./test_iocccsize).
-.PP
-\fB\-l\fP \fRlimit\fP
+.TP
+\fB\-i \fIiocccsize\fP\fP
+Specify path to iocccsize tool to \fIiocccsize\fP (def: ./iocccsize).
+.TP
+\fB\-w \fIwork_dir\fP\fP
+Working directory that is removed and rebuilt during the test of the iocccsize tool (def: ./test_iocccsize).
+.TP
+\fB\-l\fP \fIlimit\fP
 Path to an executable shell script (def: ./limit_ioccc.sh).
 .RS
 .PP
-A limit of \fR.\fP (dot) will disable use of a executable shell script.
+A limit of \fI.\fP (dot) will disable use of a executable shell script.
 .RE
 .SH EXAMPLES
 Run the \fRiocccsize\fP test suite in silent mode, printing only if a problem is discovered:
@@ -57,16 +56,18 @@ You may also wish to try the test script in even more verbose mode:
 .fi
 .RE
 .SH EXIT STATUS
-.PP
-Exit codes:
-.PP
-	0      all is OK
-.br
-	1      one or more tests failed
-.br
-	2      usage message or version string printed
-.br
-	>=10   internal error
+.TP
+0
+all is OK
+.TQ
+1
+one or more tests failed
+.TQ
+2
+usage message or version string printed
+.TQ
+>=10
+internal error
 .SH SEE ALSO
 \fBiocccsize(1)\fP
 .SH BUGS
