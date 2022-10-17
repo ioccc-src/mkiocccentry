@@ -2,7 +2,7 @@
 .SH NAME
 utf8_test \- test translate UTF-8 chars into POSIX portable filename and +
 .SH SYNOPSIS
-\fButf8_test\fP [\-h] [\-v level] [\-q] name ...
+\fButf8_test\fP [\-h] [\-v level] [\-V] [\-q] name ...
 .SH DESCRIPTION
 \fButf8_test\fP translates a UTF-8 string into a POSIX portable filename (allowing for char \fI+\fP as well: that is a plus sign, not a plus or minus sign).
 .PP
@@ -14,9 +14,21 @@ Show help and exit.
 \fB\-v \fIlevel\fP\fP
 Set verbosity level to \fIlevel\fP.
 .TP
+\fB\-V\fP
+Show version and exit.
+.TP
 \fB\-q\fP
 Suppresses some of the output (def: not quiet).
 .SH EXIT STATUS
-.PP
-For success or usage message printed exit 0.
-Otherwise it is a non-zero value.
+.TP
+0
+all is OK
+.TQ
+2
+\-h and help string printed or \-V and version string printed
+.TQ
+3
+invalid command line, invalid option or option missing an argument
+.TQ
+>= 10
+internal error

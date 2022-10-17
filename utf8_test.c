@@ -63,7 +63,7 @@
 /*
  * definitions
  */
-#define VERSION "1.0 2022-03-20"
+#define VERSION "1.1 2022-10-17"
 
 
 /*
@@ -78,13 +78,20 @@
  * This is just an example of usage: there is no mkiocccentry functionality here.
  */
 static char const * const usage =
-"usage: %s [-h] [-v level] [-q] name ...\n"
+"usage: %s [-h] [-v level] [-V] [-q] name ...\n"
 "\n"
 "\t-h\t\tprint help message and exit 0\n"
 "\t-v level\tset verbosity level: (def level: 0)\n"
+"\t-V\t\tprint version string and exit\n"
 "\t-q\t\tquiet mode: silence msg(), warn(), warnp() if -v 0 (def: not quiet)\n"
 "\n"
 "\tname\t\tUTF-8 name to translate into POSIX portable filename and + chars\n"
+"\n"
+"Exit codes:\n"
+"     0   all is OK\n"
+"     2   -h and help string printed or -V and version string printed\n"
+"     3   invalid command line, invalid option or option missing an argument\n"
+" >= 10   internal error\n"
 "\n"
 "Version: %s";
 
@@ -103,11 +110,10 @@ main(int argc, char *argv[])
      * parse args
      */
     program = argv[0];
-    while ((i = getopt(argc, argv, "hv:q")) != -1) {
+    while ((i = getopt(argc, argv, "hv:Vq")) != -1) {
 	switch (i) {
 	case 'h':	/* -h - print help to stderr and exit 0 */
-	    /* exit(0); */
-	    fprintf_usage(0, stderr, usage, program, VERSION); /*ooo*/
+	    fprintf_usage(2, stderr, usage, program, VERSION); /*ooo*/
 	    not_reached();
 	    break;
 	case 'v':	/* -v verbosity */
@@ -115,17 +121,20 @@ main(int argc, char *argv[])
 	    errno = 0;
 	    verbosity_level = (int)strtol(optarg, NULL, 0);
 	    if (errno != 0) {
-		/* exit(1); */
-		err(1, __func__, "cannot parse -v arg: %s error: %s", optarg, strerror(errno)); /*ooo*/
+		err(3, __func__, "cannot parse -v arg: %s error: %s", optarg, strerror(errno)); /*ooo*/
 		not_reached();
 	    }
 	    break;
+	case 'V':	/* -V - print version and exit */
+            print("%s\n", VERSION);
+            exit(2); /* ooo */
+            not_reached();
+            break;
 	case 'q':
 	    msg_warn_silent = true;
 	    break;
 	default:
 	    fprintf_usage(DO_NOT_EXIT, stderr, "invalid -flag");
-	    /* exit(3); */
 	    fprintf_usage(3, stderr, usage, program, VERSION); /*ooo*/
 	    not_reached();
 	}
@@ -133,8 +142,7 @@ main(int argc, char *argv[])
     /* must have 1 or more */
     if (argc-optind <= 0) {
 	fprintf_usage(DO_NOT_EXIT, stderr, "requires 1 or more arguments");
-	/* exit(4); */
-	fprintf_usage(4, stderr, usage, program, VERSION); /*ooo*/
+	fprintf_usage(3, stderr, usage, program, VERSION); /*ooo*/
 	not_reached();
     }
 
@@ -149,7 +157,7 @@ main(int argc, char *argv[])
 	dbg(1, "UTF-8 name to translate: <%s>", argv[i]);
 	name = default_handle(argv[i]);
 	if (name == NULL) {
-	    err(5, __func__, "default_handle(%s) returned NULL", argv[i]);
+	    err(10, __func__, "default_handle(%s) returned NULL", argv[i]); /*ooo*/
 	    not_reached();
 	}
 	dbg(3, "translation into POSIX portable filename and + chars: <%s>", name);
@@ -160,7 +168,7 @@ main(int argc, char *argv[])
 	errno = 0;			/* pre-clear errno for errp() */
 	ret = puts(name);
 	if (ret == EOF) {
-	    errp(6, __func__, "puts error");
+	    errp(3, __func__, "puts error");
 	    not_reached();
 	}
 
