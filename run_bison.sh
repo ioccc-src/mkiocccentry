@@ -58,7 +58,13 @@ export USAGE="usage: $0 [-h] [-V] [-v level] [-V] [-o] [-b bison] [-l limit_iocc
 
 Exit codes:
      0   bison output files formed or backup files used instead
-   1-7	 bison not found or too old and -o used
+     1   bison not found or too old and -o used
+     2   good bison found and ran but failed to form proper output files
+     3   bison input file missing or not readable: backup file(s) had to be used
+     4   backup file(s) are missing, or are not readable
+     5   failed to use backup file(s) to form the bison C output file(s)
+     6   limit_ioccc.sh or sorry.h file missing/not readable or verge missing/not executable
+     7   MIN_BISON_VERSION Missing or empty from limit_ioccc.sh
      8   -h and help string printed or -V and version string printed
      9   command line usage error
  >= 10   internal error
