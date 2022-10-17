@@ -1,4 +1,4 @@
-.TH verge 8 "8 September 2022" "verge" "IOCCC tools"
+.TH verge 8 "17 October 2022" "verge" "IOCCC tools"
 .SH NAME
 verge \- determine if first version >= second version
 .SH SYNOPSIS
@@ -8,32 +8,41 @@ verge \- determine if first version >= second version
 .PP
 This program requires two arguments but accepts several options.
 .SH OPTIONS
+.TP
 \fB\-h\fP
 Show help and exit.
-.PP
-\fB\-v\fP
+.TP
+\fB\-v \fIlevel\fP\fP
 Set verbosity level.
-.PP
+.TP
 \fB\-V\fP
 Show version and exit.
 .SH EXIT STATUS
-.PP
-0	First version >= second version.
-.br
-1	First version < second version.
-.br
-2	One or more invalid version strings.
-.br
-3	\fB\-h\fP and help string printed or \fB\-V\fP and version string printed.
-.br
-4	Command line error.
-.br
->=5	Internal error.
+.TP
+0
+First version >= second version.
+.TQ
+1
+First version < second version.
+.TQ
+2
+One or more invalid version strings.
+.TQ
+3
+\fB\-h\fP and help string printed or \fB\-V\fP and version string printed.
+.TQ
+4
+Command line error.
+.TQ
+>=5
+Internal error.
 .SH NOTES
 This tool is used in the \fBrun_flex.sh\fP and \fBrun_bison.sh\fP scripts to determine if the locally installed flex and bison tools are recent enough to generate the JSON parser from the \fBjparse.l\fP and \fBjparse.y\fP files.
 .SH BUGS
 .PP
-If you have an issue with the tool you can report it at \fI\<https://github.com/ioccc-src/mkiocccentry/issues\>\fP.
+If you have an issue with the tool you can report it at
+.br
+\fI\<https://github.com/ioccc-src/mkiocccentry/issues\>\fP.
 .SH EXAMPLES
 .PP
 .nf

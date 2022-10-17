@@ -1,6 +1,6 @@
-.TH have_timegm 8 "8 September 2022" "have_timegm.sh" "IOCCC tools"
+.TH have_timegm.sh 8 "17 October 2022" "have_timegm.sh" "IOCCC tools"
 .SH NAME
-have_timegm \- test compiler for \fBtimegm(3)\fP, \fBstrptime(3)\fP and \fBstrftime(3)\fP
+have_timegm.sh \- test compiler for \fBtimegm(3)\fP, \fBstrptime(3)\fP and \fBstrftime(3)\fP
 .SH SYNOPSIS
 \fBhave_timegm.sh\fP [\-h] [\-V] [\-v level]
 .SH DESCRIPTION
@@ -18,29 +18,39 @@ Show version and exit.
 \fB\-v\fP
 Set verbosity level.
 .SH EXIT STATUS
-.PP
-.br
-    0	    all is well
-.br
-    1	    invalid command line
-.br
-    2	    strptime() returned NULL
-.br
-    3	    strptime() return value not '\\0'
-.br
-    4	    strftime() failed
-.br
-    5	    original time string and conversion mismatch
-.br
-    100	    help or version mode used
-.br
-    101	    invalid option or option missing an argument
-.br
-    102	    missing \fIhave_timegm.c\fP
-.br
-    103	    \fIhave_timegm.c\fP not a regular file
-.br
-    104	    \fIhave_timegm.c\fP not a readable file
+.TP
+0
+all is well
+.TQ
+1
+invalid command line
+.TQ
+2
+strptime() returned NULL
+.TQ
+3
+strptime() return value not '\\0'
+.TQ
+4
+strftime() failed
+.TQ
+5
+original time string and conversion mismatch
+.TQ
+100
+help or version mode used
+.TQ
+101
+invalid option or option missing an argument
+.TQ
+102
+missing \fIhave_timegm.c\fP
+.TQ
+103
+\fIhave_timegm.c\fP not a regular file
+.TQ
+104
+\fIhave_timegm.c\fP not a readable file
 .SH NOTES
 .PP
 While there is no bug in the tool we are aware of one issue.

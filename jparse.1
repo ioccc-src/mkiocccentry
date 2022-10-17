@@ -1,4 +1,4 @@
-.TH jparse 1 "06 September 2022" "jparse" "IOCCC tools"
+.TH jparse 1 "16 October 2022" "jparse" "IOCCC tools"
 .SH NAME
 jparse \- IOCCC JSON parser
 .SH SYNOPSIS
@@ -7,27 +7,27 @@ jparse \- IOCCC JSON parser
 \fBjparse\fP will parse a block of JSON text either from a file (\fB\-\fP means \fBstdin\fP) or a string passed to the program via the \fB\-s\fP option.
 .PP
 .SH OPTIONS
-.PP
+.TP
 \fB\-h\fP
 Show help and exit.
-.PP
-\fB\-v\fP
-Set verbosity level.
-.PP
-\fB\-J\fP
-Set JSON verbosity level.
+.TP
+\fB\-v \fIlevel\fP\fP
+Set verbosity level to level.
+.TP
+\fB\-J \fIlevel\fP\fP
+Set JSON verbosity level to level.
 Note that you need to specify this option prior to \fB\-s\fP because \fB\-s\fP is processed immediately.
-.PP
+.TP
 \fB\-q\fP
 Suppresses some of the output (def: not quiet).
 Note that you need to specify this option prior to \fB\-s\fP because \fB\-s\fP is processed immediately.
-.PP
+.TP
 \fB\-V\fP
 Show version and exit 0.
-.PP
+.TP
 \fB\-s\fP
 Parse argument as a string.
-.PP
+.TP
 \fB\-n\fP
 Do not output a newline after parsing a string or file (def: do print a newline).
 .SH EXIT STATUS
@@ -45,6 +45,8 @@ This is because it's incredibly long with a lot of OT things and would take even
 .PP
 Better error reporting and various other things need to be added.
 For example showing the file name and line number have to be added.
+.PP
+It's not yet fully re-entrant.
 .SH EXAMPLES
 .PP
 .nf

@@ -1,12 +1,20 @@
-.TH run_bison.sh 8 "14 September 2022" "run_bison.sh" "IOCCC tools"
+.TH run_bison.sh 8 "17 October 2022" "run_bison.sh" "IOCCC tools"
 .SH NAME
-run_bison.sh \- run bison to generate C code from a *.y file or use backup files if error
+run_bison.sh \- run
+.B bison
+to generate C code from a
+.I *.y
+file or use backup files if error
 .SH SYNOPSIS
 \fBrun_bison.sh\fP [\-h] [\-V] [\-v level] [\-o] [\-b bison] [\-l limit_ioccc.sh] [\-g verge] [\-p prefix] [\-s sorry.h] [\-B dir] \-\- [bison_flags]
 .SH DESCRIPTION
-\fBrun_bison.sh\fP attempts to find a recent enough version of bison (minimum version defined in \fIlimit_ioccc.sh\fP or file specified by \fB\-l\fP option) and use it to generate code from the \fBprefix.y\fP file.
+\fBrun_bison.sh\fP attempts to find a recent enough version of
+.B bison
+(minimum version defined in \fIlimit_ioccc.sh\fP or file specified by \fB\-l\fP option) and use it to generate code from the \fBprefix.y\fP file.
 The default prefix is \fIjparse\fP but this script can be used for other parsers as well.
-If a recent enough version is not found or bison encounters an error (syntax error or anything else) and the \fB\-o\fP option is not specified, it attempts to use the backup files.
+If a recent enough version is not found or
+.B bison
+encounters an error (syntax error or anything else) and the \fB\-o\fP option is not specified, it attempts to use the backup files.
 .SH OPTIONS
 .TP
 \fB\-h\fP
@@ -15,64 +23,106 @@ Show help and exit.
 \fB\-V\fP
 Show version and exit.
 .TP
-\fB\-v\fP
-Set verbosity level.
+\fB\-v \fIlevel\fP\fP
+Set verbosity level to \fIlevel\fP.
 .TP
 \fB\-o\fP
 Do \fBNOT\fP use backup files.
-If bison cannot be used or fails to generate the files the script will fail.
+If
+.B bison
+cannot be used or fails to generate the files the script will fail.
 .TP
-\fB\-b\fP
-Specify bison basename.
+\fB\-b \fIbison\fP\fP
+Set
+.B bison
+basename to \fIbison\fP.
 .TP
-\fB\-l\fP
-Specify path to version file.
+\fB\-l \fIlimit_ioccc.sh\fP\fP
+Set path of version file to \fIlimit_ioccc.sh\fP.
 .TP
-\fB\-g\fP
-Specify path to the \fBverge\fP tool.
-This is used to determine if the bison tool is recent enough.
+\fB\-g \fIverge\fP\fP
+Set path to the \fBverge\fP tool to \fIverge\fP.
+This is used to determine if the
+.B bison
+tool is recent enough.
 .TP
-\fB\-p\fP
-Specify prefix of files to use.
+\fB\-p \fIprefix\fP\fP
+Set prefix of files to use to \fIprefix\fP.
 The bison input file will be \fIprefix.y\fP.
-If the \fB\-o\fP option was not used and bison cannot be used or fails then the backup file \fIprefix.c\fP will be used.
+If the \fB\-o\fP option was not used and bison cannot be used or fails then the backup file
+.I prefix.c
+will be used.
 .TP
-\fB\-s\fP
-File to prepend to the C output.
+\fB\-s \fIsorry.h\fP\fP
+Set path of file to prepend to the C output to \fIsorry.h\fP.
 .TP
-\fB\-B\fP
-Specify a directory to search for bison in.
-\fB\-B\fP can be used more than once.
+\fB\-B \fIbison_dir\fP\fP
+Add a directory to search for
+.B bison
+in to \fIbison_dir\fP.
+.B \-B
+can be used more than once.
 If not used the script looks at \fB$PATH\fP.
-.TP
+.PP
 The \fBbison_flags\fP are any optional flags to give to bison before the prefix.
 .SH EXIT STATUS
-.PP
-    0	    bison output files formed or backup files used instead
-.br
-    1	    bison not found or too old and -o used
-.br
-    2	    good bison found and ran but failed to form proper output files
-.br
-    3	    bison input file missing or not readable:         backup file(s) had to be used
-.br
-    4	    backup file(s) are missing, or are not readable
-.br
-    5	    failed to use backup file(s) to form the bison C output file(s)
-.br
-    6	    limit_ioccc.sh or sorry file missing/not readable or verge missing/not executable
-.br
-    7	    MIN_BISON_VERSION missing or empty from limit_ioccc.sh
-.br
-    8	    -h and help string printed or -V and version string printed
-.br
-    9	    Command line usage error
-.br
-    >=10	internal error"
+.TP
+0
+.B bison
+output files formed or backup files used instead
+.TQ
+1
+.B bison
+not found or too old and -o used
+.TQ
+2
+good
+.B bison
+found and ran but failed to form proper output files
+.TQ
+3
+.B bison
+input file missing or not readable: backup file(s) had to be used
+.TQ
+4
+backup file(s) are missing, or are not readable
+.TQ
+5
+failed to use backup file(s) to form the
+.B bison
+C output file(s)
+.TQ
+6
+.I limit_ioccc.sh
+or
+.I sorry.h
+file missing/not readable or
+.B verge
+missing/not executable
+.TQ
+7
+.B MIN_BISON_VERSION
+Missing or empty from
+.I limit_ioccc.sh
+.TQ
+8
+\-h and help string printed or \-V and version string printed
+.TQ
+9
+Command line usage error
+.TQ
+>=10
+internal error
 .SH NOTES
 .PP
-The \fB\-o\fP option is mainly for maintainers of the \fBjparse\fP parser and scanner but it can be used to test if you have a recent enough version of bison.
-The idea behind it is if bison fails it might indicate a syntax error which the authors of \fBjparse\fP would need to fix.
+The \fB\-o\fP option is mainly for maintainers of the
+.B jparse
+parser and scanner but it can be used to test if you have a recent enough version of \fBbison\fP.
+The idea behind it is if
+.B bison
+fails it might indicate a syntax error which the authors of
+.B jparse
+would need to fix.
 .PP
 Beware that some make implementations have a default rule for \fI*.y\fP files so that if one were to in this repo do:
 .nf
@@ -91,10 +141,14 @@ This appears to be because foo is actually referenced in the Makefile as a targe
 There's no way to disable prepending a file to the generated files.
 This should probably be fixed at some point.
 .PP
-If you have any issues with the tool you can open an issue at \fI\<https://github.com/ioccc-src/mkiocccentry/issues\>\fP.
+If you have any issues with the tool you can open an issue at
+.br
+\fI\<https://github.com/ioccc-src/mkiocccentry/issues\>\fP.
 .SH EXAMPLES
 .PP
-Run \fBrun_bison.sh\fP with default options, which should attempt to run bison on the \fIjparse.y\fP file:
+Run \fBrun_bison.sh\fP with default options, which should attempt to run
+.B bison
+on the \fIjparse.y\fP file:
 .nf
 .RS
 \fB
@@ -102,7 +156,9 @@ Run \fBrun_bison.sh\fP with default options, which should attempt to run bison o
 .fi
 .RE
 .PP
-Run \fBrun_bison.sh\fP but specify that backup files are not to be used in case a recent enough version of bison cannot be found or fails for some reason.
+Run \fBrun_bison.sh\fP but specify that backup files are not to be used in case a recent enough version of
+.B bison
+cannot be found or fails for some reason.
 
 .nf
 .RS
@@ -111,7 +167,9 @@ Run \fBrun_bison.sh\fP but specify that backup files are not to be used in case 
 .fi
 .RE
 .PP
-Try and run bison on the file \fIfoobar.y\fP and don't use any backup files:
+Try and run
+.B bison
+on the file \fIfoobar.y\fP and don't use any backup files:
 .nf
 .RS
 \fB
@@ -119,7 +177,11 @@ Try and run bison on the file \fIfoobar.y\fP and don't use any backup files:
 .fi
 .RE
 .PP
-Try and run bison on the file \fIfoobar.y\fP with yacc instead of bison and don't use any backup files:
+Try and run
+.B bison
+on the file \fIfoobar.y\fP with yacc instead of
+.B bison
+and don't use any backup files:
 .nf
 .RS
 \fB

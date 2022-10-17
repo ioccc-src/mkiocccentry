@@ -1,4 +1,4 @@
-.TH iocccsize 1 "16 October 2022" "iocccsize" "IOCCC tools"
+.TH iocccsize 1 "17 October 2022" "iocccsize" "IOCCC tools"
 .SH NAME
 iocccsize \- IOCCC Source Size Tool
 .SH SYNOPSIS
@@ -14,38 +14,42 @@ The source's Rule 2b length is written to stdout; with -v option the Rule 2b len
 The size tool counts most C reserved words (keyword, secondary, and selected preprocessor keywords) as 1.
 The size tool counts all other octets as 1 excluding ASCII whitespace, and excluding any ';', '{' or '}' followed by ASCII whitespace, and excluding any ';', '{' or '}' octet immediately before the end of file.
 .SH OPTIONS
-.PP
+.TP
 \fB\-h\fP
 Show help and exit.
-.PP
+.TP
 \fB\-i\fP
 Ignored for backward compatibility.
-.PP
-\fB\-v\fP \fRlvl\fP
-Set debugging level to \fRlvl\fP.
+.TP
+\fB\-v \fIlevel\fP\fP
+Set debugging level to \fIlevel\fP.
 0, the default, implies no debugging.
-.PP
+.TP
 \fB\-q\fP
 Quiet mode.
 Silence msg(), warn(), warnp() if verbosity level is 0.
-.PP
+.TP
 \fB\-V\fP
 Show version and exit 3.
 .SH EXIT STATUS
-.PP
-Exit codes:
-.PP
-0 \- source code is within Rule 2a and Rule 2b limits
-.PP
-1 \- source code larger than Rule 2a and/or Rule 2b limits
-.PP
-2 \- \-h used and help printed
-.PP
-3 \- \-V used and version printed
-.PP
-4 \- invalid command line
-.PP
->= 5 \- some internal error occurred
+.TP
+0
+source code is within Rule 2a and Rule 2b limits
+.TQ
+1
+source code larger than Rule 2a and/or Rule 2b limits
+.TQ
+2
+\-h used and help printed
+.TQ
+3
+\-V used and version printed
+.TQ
+4
+invalid command line
+.TQ
+>= 5
+some internal error occurred
 .SH EXAMPLES
 .PP
 .nf
@@ -86,27 +90,34 @@ The matched keyword count is currently ignored by the IOCCC.
 Because the original source was an IOCCC winner,
 "You are not expected to understand this" applies to somewhat improved source code. :\-)
 .PP
-But if you think you have an issue with the tool you can open an issue at \fI\<https://github.com/ioccc-src/iocccsize/issues\>\fP.
+But if you think you have an issue with the tool you can open an issue at
+.br
+\fI\<https://github.com/ioccc-src/iocccsize/issues\>\fP.
 .SH IOCCC WARNING
 .PP
 For submitting entries to the IOCCC, and to conform with Rule 2,
 please use the official copy of the IOCCC
-\fIiocccsize\fP
-from the following GitHub repo: \fI\<https://github.com/ioccc-src/mkiocccentry>\fP.
+\fBiocccsize\fP
+from the following GitHub repo:
+.br
+\fI\<https://github.com/ioccc-src/mkiocccentry>\fP.
 .PP
 \fBWARNING:\fP
 Be sure you are using the current version of
-\fIiocccsize\fP
+.B iocccsize
 as this tool may change from time to time.
 Failure to do so may result in your IOCCC submission being rejected!
 .SH HISTORY
 The
-\fIiocccsize\fP
+.B iocccsize
 tool was created by Anthony Howe in 1992.
 This tool was first referenced by IOCCC Rule 2 in 2013.
 .PP
 This tool is based on Anthony Howe's
-\fIiocccsize\fP
-GitHub repo: \fI\<https://github.com/SirWumpus/iocccsize>\fP.
+\fBiocccsize\fP
+GitHub repo:
+.br
+\fI\<https://github.com/SirWumpus/iocccsize>\fP.
+.PP
 The IOCCC judges appreciate Anthony Howe for allowing the IOCCC
 to use a modified copy of his code.

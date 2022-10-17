@@ -1,4 +1,4 @@
-.TH jparse_test 8 "23 September 2022" "jparse_test" "IOCCC tools"
+.TH jparse_test 8 "17 October 2022" "jparse_test" "IOCCC tools"
 .SH NAME
 jparse_test.sh \- test jparse on one or more files with one or more one-line JSON blobs
 .SH SYNOPSIS
@@ -15,37 +15,40 @@ Show help and exit.
 \fB\-V\fP
 Show version and exit.
 .TP
-\fB\-v\fP
-Set verbosity level (def: 0).
+\fB\-v \fIlevel\fP\fP
+Set verbosity level to \fIlevel\fP.
 .TP
-\fB\-D\fP
-Set debug level (def: 0).
+\fB\-D \fIlevel\fP\fP
+Set debug level to \fIlevel\fP.
 .TP
-\fB\-J\fP
-Set JSON verbosity level.
+\fB\-J \fIlevel\fP\fP
+Set JSON verbosity level to \fIlevel\fP.
 .TP
 \fB\-q\fP
 Set quiet mode.
 This will be passed to the JSON parser.
 .TP
-\fB\-j\fP
-Specify path to jparse.
+\fB\-j \fIjparse\fP\fP
+Specify path to jparse to \fIjparse\fP.
 .TP
 \fB\-V\fP
 Print version and exit.
 .SH EXIT STATUS
-.PP
-Exit codes:
-.br
-0	all tests are OK
-.br
-1	at least one test failed
-.br
-2	help mode exit
-.br
-3	invalid command line
-.br
->=4	internal error
+.TP
+0
+all tests are OK
+.TQ
+1
+at least one test failed
+.TQ
+2
+help mode exit
+.TQ
+3
+invalid command line
+.TQ
+>=4
+internal error
 .SH FILES
 \fIjson_teststr.txt\fP
 .RS
@@ -60,6 +63,8 @@ It will be removed prior to each time the script is run to keep the state of the
 The JSON parser \fBjparse\fP was co-developed by Cody Boone Ferguson and Landon Curt Noll (one of the IOCCC Judges) in support for IOCCCMOCK, IOCCC28 and beyond.
 .SH BUGS
 If you have a problem with the tool (not JSON itself! :-) ) you can report it at the GitHub issues page.
-It can be found at: \fI\<https://github.com/ioccc-src/mkiocccentry/issues\>\fP.
+It can be found at
+.br
+\fI\<https://github.com/ioccc-src/mkiocccentry/issues\>\fP.
 .SH SEE ALSO
 \fBjparse(1)\fP.

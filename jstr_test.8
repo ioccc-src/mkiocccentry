@@ -14,41 +14,60 @@ Show help and exit.
 \fB\-V\fP
 Show version and exit.
 .TP
-\fB\-v\fP
-Set verbosity level (def: 0).
+\fB\-v \fIlevel\fP\fP
+Set verbosity level to \fIlevel\fP.
 .TP
-\fB\-e\fP
-Set path to \fBjstrencode(1)\fP tool.
+\fB\-e \fIjstrencode\fP\fP
+Set path to
+.B jstrencode(1)
+tool.
 .TP
-\fB\-d\fP
-Set path to \fBjstrdecode(1)\fP tool.
+\fB\-d \fIjstrdecode\fP\fP
+Set path to
+.B jstrdecode(1)
+tool.
 .SH EXIT STATUS
 .PP
-Exit codes:
-.br
-    0	    \- all is well
-.br
-    1	    \- \-h used
-.br
-    2	    \- invalid option
-.br
-    3	    \- option argument missing
-.br
-    42	    \- test #0 failed
-.br
-    43	    \- test #1 failed
-.br
-    44	    \- test #2 failed
-.br
-    45	    \- test #3 failed
-.br
-    100	    \- jstrencode not executable
-.br
-    101	    \- jstrdecode not executable
-.br
-    102	    \- jstr_test.out exists and can't remove it
-.br
-    103	    \- jstr_test2.out exists and can't remove it
+.TP
+0
+all is well
+.TQ
+1
+\-h used
+.TQ
+2
+invalid option
+.TQ
+3
+option argument missing
+.TQ
+42
+test #0 failed
+.TQ
+43
+test #1 failed
+.TQ
+44
+test #2 failed
+.TQ
+45
+test #3 failed
+.TQ
+100
+.B jstrencode
+not executable
+.TQ
+101
+.B jstrdecode
+not executable
+.TQ
+102
+.I jstr_test.out
+exists and can't remove it
+.TQ
+103
+.I jstr_test2.out
+exists and can't remove it
 .SH FILES
 \fIjstr_test.out\fP
 .RS
@@ -68,6 +87,8 @@ When the script ends this file should be deleted but the script attempts to dele
 The JSON parser \fBjparse\fP was co-developed by Cody Boone Ferguson and Landon Curt Noll (one of the IOCCC Judges) in support for IOCCCMOCK, IOCCC28 and beyond.
 .SH BUGS
 If you have a problem with the tool (not JSON itself! :-) ) you can report it at the GitHub issues page.
-It can be found at: \fI\<https://github.com/ioccc-src/mkiocccentry/issues\>\fP.
+It can be found at
+.br
+\fI\<https://github.com/ioccc-src/mkiocccentry/issues\>\fP.
 .SH SEE ALSO
 \fBjparse(1)\fP, \fBjstrencode(1)\fP, \fBjstrdecode(1)\fP.

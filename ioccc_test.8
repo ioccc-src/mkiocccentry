@@ -1,4 +1,4 @@
-.TH ioccc_test 8 "23 September 2022" "ioccc_test" "IOCCC tools"
+.TH ioccc_test.sh 8 "17 October 2022" "ioccc_test" "IOCCC tools"
 .SH NAME
 ioccc_test.sh \- test suite for IOCCC toolkit
 .SH SYNOPSIS
@@ -19,33 +19,53 @@ Set JSON verbosity level.
 \fB\-V\fP
 Print version and exit.
 .SH EXIT STATUS
-.PP
-Exit codes:
-.br
-0	all tests are OK
-.br
-1	-h and help string printed or -V and version string printed
-.br
-2	Command line usage error
-.br
-3	./iocccsize_test.sh not found or not executable
-.br
-4	./dbg not found or not executable
-.br
-5	./mkiocccentry_test.sh not found or not executable
-.br
-6	./jstr_test.sh not found or not executable
-.br
-7	./jnum_chk not found or not executable
-.br
-8	./dyn_test not found or not executable
-.br
-9	./jparse_test.sh not found or not executable
-.br
-10	./json_teststr.txt not found or not readable
-.br
-11	./txzchk not found or not executable
-.br
->=20	some test failed
+.TP
+0
+all tests are OK
+.TQ
+1
+\-h and help string printed or \-V and version string printed
+.TQ
+2
+Command line usage error
+.TQ
+3
+.B ./iocccsize_test.sh
+not found or not executable
+.TQ
+4
+.B ./dbg
+not found or not executable
+.TQ
+5
+.B ./mkiocccentry_test.sh
+not found or not executable
+.TQ
+6
+.B ./jstr_test.sh
+not found or not executable
+.TQ
+7
+.B ./jnum_chk
+not found or not executable
+.TQ
+8
+.B ./dyn_test
+not found or not executable
+.TQ
+9
+.B ./jparse_test.sh
+not found or not executable
+.TQ
+10
+.I ./json_teststr.txt
+not found or not readable
+.TQ
+11
+.B ./txzchk
+not found or not executable
+.TQ
+>=20
+some test failed
 .SH SEE ALSO
 \fBiocccsize_test(1)\fP, \fBdbg(3)\fP, \fBtxzchk(1)\fP.

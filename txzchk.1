@@ -1,4 +1,4 @@
-.TH txzchk 1 "09 October 2022" "txzchk" "IOCCC tools"
+.TH txzchk 1 "17 October 2022" "txzchk" "IOCCC tools"
 .SH NAME
 txzchk \- sanity checker tool used on IOCCC compressed tarballs
 .SH SYNOPSIS
@@ -15,49 +15,52 @@ The tarball is \fBNOT\fP extracted.
 In other words it makes sure that \fBmkiocccentry(1)\fP was used and that there was no screwing around with the resultant tarball.
 As an important part of the judging process, the Judges will directly execute this tool on every entry's tarball.
 .SH OPTIONS
-.PP
+.TP
 \fB\-h\fP
 Show help and exit.
-.PP
-\fB\-v\fP
+.TP
+\fB\-v \fIlevel\fP\fP
 Set verbosity level.
-.PP
+.TP
 \fB\-q\fP
 Suppresses some of the output.
 Errors and the output of the \fBtar\fP command are still shown.
 If you need to see warnings with this option, use \fB\-w\fP.
-.PP
+.TP
 \fB\-w\fP
 Always show warnings.
 This is useful for in the \fBtxzchk_test(8)\fP script.
-.PP
+.TP
 \fB\-V\fP
 Show version and exit.
-.PP
-\fB\-t\fP
+.TP
+\fB\-t \fItar\fP\fP
 Specify path to \fBtar\fP that accepts the \fB\-J\fP option.
 \fBtxzchk\fP checks \fI/usr/bin/tar\fP and \fI/bin/tar\fP if this option is not specified.
-.PP
-\fB\-F\fP
+.TP
+\fB\-F \fIfnamchk\fP\fP
 Specify path to the IOCCC \fBfnamchk(1)\fP tool.
 If this option is not specified the program looks under the current working directory and \fI/usr/local/bin\fP.
-.PP
+.TP
 \fB\-T\fP
 Assume txzpath is a text file; use \fBfopen(3)\fP and \fBfclose(3)\fP instead of \fBpopen(3)\fP and \fBpclose(3)\fP and don't require \fBtar\fP program.
-.PP
-\fB\-E\fP
+.TP
+\fB\-E \fIext\fP\fP
 Change extension for \fBfnamchk(1)\fP to validate (don't include the dot).
 This is used in conjunction with \fb\-T\fP above for \fBTESTING\fP purposes only!
 .SH EXIT STATUS
-.PP
-.br
-    0	No feathers stuck in tarball. :-)
-.br
-    1	Tarball was successfully parsed :-) but there's at least one feather stuck in it. :-(
-.br
-    2	Usage string was printed either because \fB\-h\fP was used or because of an invalid command line.
-.br
-    >2	An internal error has occurred or unknown tar listing format has been encountered.
+.TP
+0
+No feathers stuck in tarball. :-)
+.TQ
+1
+Tarball was successfully parsed :-) but there's at least one feather stuck in it. :-(
+.TQ
+2
+Usage string was printed either because \fB\-h\fP was used or because of an invalid command line.
+.TQ
+>2
+An internal error has occurred or unknown tar listing format has been encountered.
 .PP
 For exit code > 2 please report (see \fBBUGS\fP section for where to report bugs).
 .SH NOTES
@@ -72,7 +75,9 @@ More importantly, no tar pits \- including the \fBLa Brea Tar Pits\fP \- were di
 Cody Boone Ferguson wrote it! :)
 .PP
 On a more serious note, if you have an issue with the tool please report it at the GitHub issues page.
-You can find it at \fI\<https://github.com/ioccc-src/mkiocccentry/issues\>\fP.
+You can find it at
+.br
+\fI\<https://github.com/ioccc-src/mkiocccentry/issues\>\fP.
 If you would please mention \fB@xexyl\fP as part of the report that would be appreciated.
 .SH EXAMPLES
 .PP
