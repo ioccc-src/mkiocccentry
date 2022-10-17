@@ -1,4 +1,4 @@
-.TH iocccsize 1 "2 September 2022" "iocccsize" "IOCCC tools"
+.TH iocccsize 1 "16 October 2022" "iocccsize" "IOCCC tools"
 .SH NAME
 iocccsize \- IOCCC Source Size Tool
 .SH SYNOPSIS
@@ -21,8 +21,9 @@ Show help and exit.
 \fB\-i\fP
 Ignored for backward compatibility.
 .PP
-\fB\-v\fP
-Turn on some debugging to stderr; \-vv or \-vvv for more
+\fB\-v\fP \fRlvl\fP
+Set debugging level to \fRlvl\fP.
+0, the default, implies no debugging.
 .PP
 \fB\-q\fP
 Quiet mode.
@@ -47,29 +48,60 @@ Exit codes:
 .PP
 >= 5 \- some internal error occurred
 .RE
-.SH BUGS
-.PP
-There are no bugs: "You are not expected to understand this" :\-)
-.PP
-But if you think you have an issue with the tool you can open an issue at \fI\<https://github.com/ioccc-src/iocccsize/issues\>\fP.
 .SH EXAMPLES
 .PP
 .nf
-Run test script:
-
-.RS
-\fB
- ./iocccsize_test.sh\fP
-.fi
-.RE
-.PP
-.nf
-Test if prog.c fits within the IOCCC 2a and 2b rules, only showing output if there's a problem:
+Test if prog.c fits within Rule 2b and Rule 2b limits: reporting of there's a problem.
+Output the Rule 2b value for prog.c:
 .RS
 \fB
  ./iocccsize < prog.c
  ./iocccsize prog.c\fP
 .fi
+.RE
+.PP
+.nf
+Test if prog.c fits within Rule 2b and Rule 2b limits: reporting of there's a problem.
+Output the Rule 2b length, gross (Rule 2a) length, and matched keyword count:
+.RS
+\fB
+ ./iocccsize -v 1 < prog.c
+ ./iocccsize -v 1 prog.c\fP
+.fi
+.RE
+.PP
+.nf
+You may also wish to try the test script in verbose mode:
+.RS
+\fB
+ ./iocccsize_test.sh -v 3\fP
+.fi
+.RE
+.SH SEE ALSO
+\fBiocccsize_test(8)\fP
+.SH BUGS
+.PP
+There are no bugs, only features! :-)
+.PP
+The matched keyword count is currently ignored by the IOCCC.
+.PP
+Because the original source was an IOCCC winner,
+"You are not expected to understand this" applies to somewhat improved source code. :\-)
+.PP
+But if you think you have an issue with the tool you can open an issue at \fI\<https://github.com/ioccc-src/iocccsize/issues\>\fP.
+.RE
+.SH IOCCC WARNING
+.PP
+For submitting entries to the IOCCC, and to conform with Rule 2,
+please use the official copy of the IOCCC
+\fIiocccsize\fP
+from the following GitHub repo: \fI\<https://github.com/ioccc-src/mkiocccentry>\fP.
+.PP
+\fBWARNING:\fP
+Be sure you are using the current version of
+\fIiocccsize\fP
+as this tool may change from time to time.
+Failure to do so may result in your IOCCC submission being rejected!
 .RE
 .SH HISTORY
 The
@@ -77,11 +109,8 @@ The
 tool was created by Anthony Howe in 1992.
 This tool was first referenced by IOCCC Rule 2 in 2013.
 .PP
-Anthony Howe maintains a
+This tool is based on Anthony Howe's
 \fIiocccsize\fP
-at the following GitHub repo: \fI\<https://github.com/SirWumpus/iocccsize>\fP.
-.PP
-For submitting entries to the IOCCC, and to conform with Rule 2,
-please use the official copy of the IOCCC
-\fIiocccsize\fP
-from the following GitHub repo: \fI\<https://github.com/ioccc-src/mkiocccentry>\fP.
+GitHub repo: \fI\<https://github.com/SirWumpus/iocccsize>\fP.
+The IOCCC judges appreciate Anthony Howe for allowing the IOCCC
+to use a modified copy of his code.
