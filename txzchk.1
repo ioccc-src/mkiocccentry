@@ -51,18 +51,19 @@ This is used in conjunction with \fb\-T\fP above for \fBTESTING\fP purposes only
 .SH EXIT STATUS
 .TP
 0
-No feathers stuck in tarball. :-)
+no feathers stuck in tarball  :-)
 .TQ
 1
-Tarball was successfully parsed :-) but there's at least one feather stuck in it. :-(
+tarball was successfully parsed :-) but there's at least one feather stuck in it  :-(
 .TQ
 2
-Usage string was printed either because \fB\-h\fP was used or because of an invalid command line.
+-h and help string printed or -V and version string printed
 .TQ
->2
-An internal error has occurred or unknown tar listing format has been encountered.
-.PP
-For exit code > 2 please report (see \fBBUGS\fP section for where to report bugs).
+3
+invalid command line, invalid option or option missing an argument
+.TQ
+>= 10
+internal error has occurred or unknown tar listing format has been encountered
 .SH NOTES
 .PP
 This tool was written by \fBCody Boone Ferguson\fP for the \fBIOCCC Judges\fP in early 2022 for the \fBIOCCCMOCK\fP, \fBIOCCC28\fP and all future \fBIOCCC\fP competitions after discussing the requirements with \fBLandon Curt Noll\fP, one of the IOCCC Judges.

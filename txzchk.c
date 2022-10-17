@@ -71,7 +71,7 @@ main(int argc, char **argv)
     program = argv[0];
     while ((i = getopt(argc, argv, "hv:qVF:t:TE:w")) != -1) {
 	switch (i) {
-	case 'h':		/* -h - print help to stderr and exit 3 */
+	case 'h':		/* -h - print help to stderr and exit 2 */
 	    usage(2, "-h help mode", program); /*ooo*/
 	    not_reached();
 	    break;
@@ -85,7 +85,7 @@ main(int argc, char **argv)
 	    quiet = true;
 	    msg_warn_silent = true;
 	    break;
-	case 'V':		/* -V - print version and exit */
+	case 'V':		/* -V - print version and exit 2 */
 	    print("%s\n", TXZCHK_VERSION);
 	    exit(2); /*ooo*/
 	    not_reached();
@@ -108,14 +108,14 @@ main(int argc, char **argv)
 	    always_show_warnings = true;
 	    break;
 	default:
-	    usage(2, "invalid -flag", program); /*ooo*/
+	    usage(3, "invalid -flag", program); /*ooo*/
 	    not_reached();
 	}
     }
 
     /* must have the exact required number of args */
     if (argc - optind != REQUIRED_ARGS) {
-	usage(2, "wrong number of arguments", program); /*ooo*/
+	usage(3, "wrong number of arguments", program); /*ooo*/
 	not_reached();
     }
     txzpath = argv[optind];
@@ -183,7 +183,10 @@ main(int argc, char **argv)
     /*
      * All Done!!! - Jessica Noll, age 2
      */
-    exit(txz_info.total_feathers != 0); /*ooo*/
+    if (txz_info.total_feathers != 0) {
+	exit(1); /*ooo*/
+    }
+    exit(0); /*ooo*/
 }
 
 
@@ -203,7 +206,7 @@ show_txz_info(char const *txzpath)
      * firewall
      */
     if (txzpath == NULL) {
-	err(2, __func__, "passed NULL arg");
+	err(10, __func__, "passed NULL arg");
 	not_reached();
     }
 
@@ -322,7 +325,7 @@ txzchk_sanity_chks(char const *tar, char const *fnamchk)
      * firewall
      */
     if ((tar == NULL && !read_from_text_file) || fnamchk == NULL || txzpath == NULL) {
-	err(3, __func__, "called with NULL arg(s)");
+	err(11, __func__, "called with NULL arg(s)");
 	not_reached();
     }
 
@@ -346,7 +349,7 @@ txzchk_sanity_chks(char const *tar, char const *fnamchk)
 		  "    https://www.gnu.org/software/tar/",
 		  "",
 		  NULL);
-	    err(4, __func__, "tar does not exist: %s", tar);
+	    err(12, __func__, "tar does not exist: %s", tar);
 	    not_reached();
 	}
 
@@ -364,7 +367,7 @@ txzchk_sanity_chks(char const *tar, char const *fnamchk)
 		  "    https://www.gnu.org/software/tar/",
 		  "",
 		  NULL);
-	    err(5, __func__, "tar is not a regular file: %s", tar);
+	    err(13, __func__, "tar is not a regular file: %s", tar);
 	    not_reached();
 	}
 
@@ -382,7 +385,7 @@ txzchk_sanity_chks(char const *tar, char const *fnamchk)
 		  "    https://www.gnu.org/software/tar/",
 		  "",
 		  NULL);
-	    err(6, __func__, "tar is not an executable program: %s", tar);
+	    err(14, __func__, "tar is not an executable program: %s", tar);
 	    not_reached();
 	}
     }
@@ -400,7 +403,7 @@ txzchk_sanity_chks(char const *tar, char const *fnamchk)
 	      "",
 	      "    txzchk -F /path/to/fnamchk [...]",
 	      NULL);
-	err(7, __func__, "fnamchk does not exist: %s", fnamchk);
+	err(15, __func__, "fnamchk does not exist: %s", fnamchk);
 	not_reached();
     }
 
@@ -413,7 +416,7 @@ txzchk_sanity_chks(char const *tar, char const *fnamchk)
 	      "",
 	      "    txzchk -F /path/to/fnamchk [...]",
 	      NULL);
-	err(8, __func__, "fnamchk is not a regular file: %s", fnamchk);
+	err(16, __func__, "fnamchk is not a regular file: %s", fnamchk);
 	not_reached();
     }
 
@@ -426,7 +429,7 @@ txzchk_sanity_chks(char const *tar, char const *fnamchk)
 	      "",
 	      "    txzchk -F /path/to/fnamchk [...]",
 	      NULL);
-	err(9, __func__, "fnamchk is not an executable program: %s", fnamchk);
+	err(17, __func__, "fnamchk is not an executable program: %s", fnamchk);
 	not_reached();
     }
 
@@ -443,7 +446,7 @@ txzchk_sanity_chks(char const *tar, char const *fnamchk)
 	      "    txzchk [options] <txzpath>"
 	      "",
 	      NULL);
-	err(10, __func__, "txzpath does not exist: %s", txzpath);
+	err(18, __func__, "txzpath does not exist: %s", txzpath);
 	not_reached();
     }
 
@@ -457,7 +460,7 @@ txzchk_sanity_chks(char const *tar, char const *fnamchk)
 	      "    txzchk [...] <txzpath>",
 	      "",
 	      NULL);
-	err(11, __func__, "txzpath is not a regular file: %s", txzpath);
+	err(19, __func__, "txzpath is not a regular file: %s", txzpath);
 	not_reached();
     }
 
@@ -471,7 +474,7 @@ txzchk_sanity_chks(char const *tar, char const *fnamchk)
 	      "    txzchk [...] <txzpath>"
 	      "",
 	      NULL);
-	err(12, __func__, "txzpath is not readable: %s", txzpath);
+	err(20, __func__, "txzpath is not readable: %s", txzpath);
 	not_reached();
     }
 
@@ -505,7 +508,7 @@ check_txz_file(char const *txzpath, char const *dir_name, struct txz_file *file)
      * firewall
      */
     if (txzpath == NULL || file == NULL || file->basename == NULL || file->filename == NULL) {
-	err(13, __func__, "passed NULL arg(s)");
+	err(21, __func__, "passed NULL arg(s)");
 	not_reached();
     }
 
@@ -601,10 +604,10 @@ check_file_size(char const *txzpath, off_t size, struct txz_file *file)
      */
 
     if (txzpath == NULL || file == NULL) {
-	err(14, __func__, "called with NULL arg(s)");
+	err(22, __func__, "called with NULL arg(s)");
 	not_reached();
     } else if (file->basename == NULL || file->filename == NULL) {
-	err(15, __func__, "file->basename == NULL || file->filename == NULL which should never happen");
+	err(23, __func__, "file->basename == NULL || file->filename == NULL which should never happen");
 	not_reached();
     }
 
@@ -673,10 +676,10 @@ check_all_txz_files(char const *dir_name)
      */
     for (file = txz_files; file != NULL; file = file->next) {
 	if (file->basename == NULL) {
-	    err(16, __func__, "found NULL file->basename in txz_files list");
+	    err(24, __func__, "found NULL file->basename in txz_files list");
 	    not_reached();
 	} else if (file->filename == NULL) {
-	    err(17, __func__, "found NULL file->filename in txz_files list");
+	    err(25, __func__, "found NULL file->filename in txz_files list");
 	    not_reached();
 	}
 	if (!strcmp(file->basename, INFO_JSON_FILENAME)) {
@@ -776,7 +779,7 @@ check_directories(struct txz_file *file, char const *dir_name, char const *txzpa
      * firewall
      */
     if (txzpath == NULL || file == NULL || file->filename == NULL) {
-	err(18, __func__, "passed NULL arg(s)");
+	err(26, __func__, "passed NULL arg(s)");
 	not_reached();
     }
 
@@ -903,7 +906,7 @@ parse_linux_txz_line(char *p, char *linep, char *line_dup, char const *dir_name,
      */
     if (p == NULL || linep == NULL || line_dup == NULL || txzpath == NULL || saveptr == NULL ||
 	sum == NULL || count == NULL) {
-	err(19, __func__, "called with NULL arg(s)");
+	err(27, __func__, "called with NULL arg(s)");
 	not_reached();
     }
 
@@ -980,7 +983,7 @@ parse_linux_txz_line(char *p, char *linep, char *line_dup, char const *dir_name,
     /* p should now contain the filename. */
     file = alloc_txz_file(p, length);
     if (file == NULL) {
-	err(20, __func__, "alloc_txz_file() returned NULL");
+	err(28, __func__, "alloc_txz_file() returned NULL");
 	not_reached();
     }
 
@@ -1024,13 +1027,13 @@ count_and_sum(char const *txzpath, intmax_t *sum, intmax_t *count, intmax_t leng
      * firewall
      */
     if (txzpath == NULL) {
-	err(21, __func__, "txzpath is NULL");
+	err(29, __func__, "txzpath is NULL");
 	not_reached();
     } else if (sum == NULL) {
-	err(22, __func__, "sum is NULL");
+	err(30, __func__, "sum is NULL");
 	return;
     } else if (count == NULL) {
-	err(23, __func__, "count is NULL");
+	err(31, __func__, "count is NULL");
 	not_reached();
     }
     test = sum_and_count(length, sum, count, &sum_check, &count_check);
@@ -1113,7 +1116,7 @@ parse_bsd_txz_line(char *p, char *linep, char *line_dup, char const *dir_name, c
      */
     if (p == NULL || linep == NULL || line_dup == NULL || txzpath == NULL || saveptr == NULL ||
 	sum == NULL || count == NULL) {
-	err(24, __func__, "called with NULL arg(s)");
+	err(32, __func__, "called with NULL arg(s)");
 	not_reached();
     }
 
@@ -1203,7 +1206,7 @@ parse_bsd_txz_line(char *p, char *linep, char *line_dup, char const *dir_name, c
     /* p should now contain the filename. */
     file = alloc_txz_file(p, length);
     if (file == NULL) {
-	err(25, __func__, "alloc_txz_file() returned NULL");
+	err(33, __func__, "alloc_txz_file() returned NULL");
 	not_reached();
     }
 
@@ -1260,7 +1263,7 @@ parse_txz_line(char *linep, char *line_dup, char const *dir_name, char const *tx
 
     if (linep == NULL || line_dup == NULL || txzpath == NULL || dir_count == NULL ||
 	    sum == NULL || count == NULL) {
-	err(26, __func__, "called with NULL arg(s)");
+	err(34, __func__, "called with NULL arg(s)");
 	not_reached();
     }
 
@@ -1354,7 +1357,7 @@ check_tarball(char const *tar, char const *fnamchk)
      */
     if ((!read_from_text_file && tar == NULL) || fnamchk == NULL || txzpath == NULL)
     {
-	err(27, __func__, "called with NULL arg(s)");
+	err(35, __func__, "called with NULL arg(s)");
 	not_reached();
     }
 
@@ -1403,7 +1406,7 @@ check_tarball(char const *tar, char const *fnamchk)
 	 */
 	fnamchk_stream = pipe_open(__func__, true, "% -E % -- %", fnamchk, ext, txzpath);
 	if (fnamchk_stream == NULL) {
-	    err(28, __func__, "popen for reading failed for: %s -- %s", fnamchk, txzpath);
+	    err(36, __func__, "popen for reading failed for: %s -- %s", fnamchk, txzpath);
 	    not_reached();
 	}
 
@@ -1427,7 +1430,7 @@ check_tarball(char const *tar, char const *fnamchk)
 	fnamchk_stream = NULL;
 
 	if (dir_name == NULL || *dir_name == '\0') {
-	    err(29, __func__, "txzchk: unexpected NULL pointer from fnamchk -- %s", txzpath);
+	    err(37, __func__, "txzchk: unexpected NULL pointer from fnamchk -- %s", txzpath);
 	    not_reached();
 	}
     }
@@ -1436,7 +1439,7 @@ check_tarball(char const *tar, char const *fnamchk)
     txz_info.size = file_size(txzpath);
     /* report size if too big or !quiet */
     if (txz_info.size < 0) {
-	err(30, __func__, "%s: impossible error: txzchk_sanity_chks() found tarball but file_size() did not", txzpath);
+	err(38, __func__, "%s: impossible error: txzchk_sanity_chks() found tarball but file_size() did not", txzpath);
 	not_reached();
     } else if (txz_info.size > MAX_TARBALL_LEN) {
 	++txz_info.total_feathers;
@@ -1445,7 +1448,7 @@ check_tarball(char const *tar, char const *fnamchk)
 	      "The compressed tarball exceeds the maximum allowed size, sorry.",
 	      "",
 	      NULL);
-	err(31, __func__, "%s: The compressed tarball size %jd > %jd",
+	err(39, __func__, "%s: The compressed tarball size %jd > %jd",
 		 txzpath, (intmax_t)txz_info.size, (intmax_t)MAX_TARBALL_LEN);
 	not_reached();
     } else if (!quiet) {
@@ -1461,7 +1464,7 @@ check_tarball(char const *tar, char const *fnamchk)
 	errno = 0;
 	if (input_stream == NULL)
 	{
-	    errp(32, __func__, "fopen of %s failed", txzpath);
+	    errp(40, __func__, "fopen of %s failed", txzpath);
 	    not_reached();
 	}
 	errno = 0;		/* pre-clear errno for warnp() */
@@ -1482,7 +1485,7 @@ check_tarball(char const *tar, char const *fnamchk)
 	errno = 0;			/* pre-clear errno for errp() */
 	exit_code = shell_cmd(__func__, true, "% -tJvf %", tar, txzpath);
 	if (exit_code != 0) {
-	    errp(33, __func__, "%s -tJvf %s failed with exit code: %d",
+	    errp(41, __func__, "%s -tJvf %s failed with exit code: %d",
 			      tar, txzpath, WEXITSTATUS(exit_code));
 	    not_reached();
 	}
@@ -1490,7 +1493,7 @@ check_tarball(char const *tar, char const *fnamchk)
 	/* now open a pipe to tar command (tar -tJvf) to read from */
 	input_stream = pipe_open(__func__, true, "% -tJvf %", tar, txzpath);
 	if (input_stream == NULL) {
-	    err(34, __func__, "popen for reading failed for: %s -tJvf %s",
+	    err(42, __func__, "popen for reading failed for: %s -tJvf %s",
 			      tar, txzpath);
 	    not_reached();
 	}
@@ -1605,7 +1608,7 @@ has_special_bits(char const *str)
      * firewall
      */
     if (str == NULL) {
-	err(35, __func__, "called with NULL arg(s)");
+	err(43, __func__, "called with NULL arg(s)");
 	not_reached();
     }
 
@@ -1636,21 +1639,21 @@ add_txz_line(char const *str, int line_num)
      * firewall
      */
     if (str == NULL) {
-	err(36, __func__, "passed NULL arg");
+	err(44, __func__, "passed NULL arg");
 	not_reached();
     }
 
     errno = 0;
     line = calloc(1, sizeof *line);
     if (line == NULL) {
-	errp(37, __func__, "unable to allocate struct txz_line *");
+	errp(45, __func__, "unable to allocate struct txz_line *");
 	not_reached();
     }
 
     errno = 0;
     line->line = strdup(str);
     if (line->line == NULL) {
-	errp(38, __func__, "unable to strdup string '%s' for lines list", str);
+	errp(46, __func__, "unable to strdup string '%s' for lines list", str);
 	not_reached();
     }
     line->line_num = line_num;
@@ -1690,7 +1693,7 @@ parse_all_txz_lines(char const *dir_name, char const *txzpath)
      * firewall
      */
     if (txzpath == NULL) {
-	err(39, __func__, "passed NULL arg");
+	err(47, __func__, "passed NULL arg");
 	not_reached();
     }
 
@@ -1703,7 +1706,7 @@ parse_all_txz_lines(char const *dir_name, char const *txzpath)
 
 	line_dup = strdup(line->line);
 	if (line_dup == NULL) {
-	    err(40, __func__, "%s: duplicating %s failed", txzpath, line->line);
+	    err(48, __func__, "%s: duplicating %s failed", txzpath, line->line);
 	    not_reached();
 	}
 
@@ -1772,26 +1775,26 @@ alloc_txz_file(char const *path, intmax_t length)
      * firewall
      */
     if (path == NULL) {
-	err(41, __func__, "passed NULL path");
+	err(49, __func__, "passed NULL path");
 	not_reached();
     }
     errno = 0;
     file = calloc(1, sizeof *file);
     if (file == NULL) {
-	errp(42, __func__, "%s: unable to allocate a struct txz_file *", txzpath);
+	errp(50, __func__, "%s: unable to allocate a struct txz_file *", txzpath);
 	not_reached();
     }
 
     errno = 0;
     file->filename = strdup(path);
     if (!file->filename) {
-	errp(43, __func__, "%s: unable to strdup filename %s", txzpath, path);
+	errp(51, __func__, "%s: unable to strdup filename %s", txzpath, path);
 	not_reached();
     }
 
     file->basename = base_name(path);
     if (!file->basename || *(file->basename) == '\0') {
-	err(44, __func__, "%s: unable to strdup basename of filename %s", txzpath, path);
+	err(52, __func__, "%s: unable to strdup basename of filename %s", txzpath, path);
 	not_reached();
     }
 
@@ -1824,7 +1827,7 @@ add_txz_file_to_list(struct txz_file *txzfile)
      * firewall
      */
     if (txzfile == NULL || !txzfile->filename || !txzfile->basename) {
-	err(45, __func__, "called with NULL pointer(s)");
+	err(53, __func__, "called with NULL pointer(s)");
 	not_reached();
     }
 
