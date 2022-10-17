@@ -66,12 +66,12 @@ static const char * const usage_msg =
     "\tmajor.minor.patch-2\tsecond version (example: 1.3.2)\n"
     "\n"
     "Exit codes:\n"
-    "    0\tfirst version >= second version\n"
-    "    1\tfirst version < second version\n"
-    "    2\tfirst and/or second version is an invalid version\n"
-    "    3\t-h and help string printed or -V and version string printed\n"
-    "    4\tcommand line error\n"
-    "    >=5\tinternal error\n"
+    "     0   first version >= second version\n"
+    "     1   first version < second version\n"
+    "     2   irst and/or second version is an invalid version\n"
+    "     3   -h and help string printed or -V and version string printed\n"
+    "     4   command line error\n"
+    "  >=10   internal error\n"
     "\n"
     "verge version: %s\n";
 

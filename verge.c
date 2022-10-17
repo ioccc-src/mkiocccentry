@@ -251,7 +251,7 @@ allocate_vers(char *str, long **pvers)
      * firewall
      */
     if (str == NULL || pvers == NULL) {
-	err(5, __func__, "NULL arg(s)");
+	err(10, __func__, "NULL arg(s)");
 	not_reached();
     }
     len = strlen(str);
@@ -266,7 +266,7 @@ allocate_vers(char *str, long **pvers)
     errno = 0;		/* pre-clear errno for errp() */
     wstr = strdup(str);
     if (wstr == NULL) {
-	errp(6, __func__, "cannot strdup: <%s>", str);
+	errp(11, __func__, "cannot strdup: <%s>", str);
 	not_reached();
     }
 
@@ -361,7 +361,7 @@ allocate_vers(char *str, long **pvers)
     errno = 0;		/* pre-clear errno for errp() */
     *pvers = (long *)calloc(dot_count+1+1, sizeof(long));
     if (*pvers == NULL) {
-	errp(7, __func__, "cannot calloc %ju longs", (uintmax_t)dot_count+1+1);
+	errp(12, __func__, "cannot calloc %ju longs", (uintmax_t)dot_count+1+1);
 	not_reached();
     }
 
