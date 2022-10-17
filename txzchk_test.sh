@@ -66,7 +66,7 @@ export USAGE="usage: $0 [-h] [-V] [-v level] [-t txzchk] [-T tar] [-F fnamchk] [
 Exit codes:
      0   all is well
      1   at least one test failed
-     2   help mode exit or print version mode exit
+     2   -h and help string printed or -V and version string printed
      3   invalid command line
  >= 10   internal error
 

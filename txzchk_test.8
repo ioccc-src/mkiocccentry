@@ -34,9 +34,21 @@ Specify path to \fBfnamchk\fP to \fIfnamchk\fP.
 Specify path to the directory with the expected subdirectories \fIgood\fP and \fIbad\fP, each containing text files of good and bad pseudo-tarballs, to \fItxzchk_tree\fP.
 As already noted, the \fIbad\fP subdirectory also has error files to compare against the output of \fBtxzchk(1)\fP, in order to make sure that the failure is the correct failure.
 .SH EXIT STATUS
-.PP
-An exit code of 0 means everything is well.
-An non-zero exit code means that either help or version was requested at the command line, at least one test failed or there was an internal or test error.
+.TP
+0
+all is well
+.TQ
+1
+at least one test failed
+.TQ
+2
+\-h and help string printed or \-V and version string printed
+.TQ
+3
+command line error
+.TQ
+>= 10
+internal error
 .SH FILES
 \fItest_txzchk\fP
 .RS
