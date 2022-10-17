@@ -62,6 +62,13 @@ static const char * const usage_msg =
     "\t[string ...]\tdecode strings on command line (def: read stdin)\n"
     "\t\t\tNOTE: - means read from stdin\n"
     "\n"
+    "Exit codes:\n"
+    "     0   decode successful\n"
+    "     1   decode unsuccessful\n"
+    "     2   -h and help string printed or -V and version string printed\n"
+    "     3   invalid command line, invalid option or option missing an argument\n"
+    " >= 10   internal error\n"
+    "\n"
     "jstrdecode version: %s\n";
 
 

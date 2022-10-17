@@ -176,7 +176,7 @@ main(int argc, char *argv[])
     program = argv[0];
     while ((i = getopt(argc, argv, "hv:qVtnQ")) != -1) {
 	switch (i) {
-	case 'h':		/* -h - print help to stderr and exit 0 */
+	case 'h':		/* -h - print help to stderr and exit 2 */
 	    usage(2, "-h help mode", program); /*ooo*/
 	    not_reached();
 	    break;
@@ -189,9 +189,9 @@ main(int argc, char *argv[])
 	case 'q':
 	    msg_warn_silent = true;
 	    break;
-	case 'V':		/* -V - print version and exit */
+	case 'V':		/* -V - print version and exit 2 */
 	    print("%s\n", JSTRDECODE_VERSION);
-	    exit(0); /*ooo*/
+	    exit(2); /*ooo*/
 	    not_reached();
 	    break;
 	case 't':		/* -t - validate the contents of the jenc[] table */
@@ -208,7 +208,7 @@ main(int argc, char *argv[])
 	    write_quote = true;
 	    break;
 	default:
-	    usage(2, "invalid -flag", program); /*ooo*/
+	    usage(3, "invalid -flag", program); /*ooo*/
 	    not_reached();
 	 }
     }

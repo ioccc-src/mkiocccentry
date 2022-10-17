@@ -31,8 +31,21 @@ Do not output a newline after the decode function.
 \fB\-Q\fP
 Enclose output in quotes.
 .SH EXIT STATUS
-.PP
-\fBmain()\fP returns 1 for errors or issues found; 0 for success.
+.TP
+0
+decode successful
+.TQ
+1
+decode unsuccessful
+.TQ
+2
+\-h and help string printed or -V and version string printed
+.TQ
+3
+command line error
+.TQ
+>= 10
+internal error
 .SH BUGS
 .PP
 If you have an issue with the tool you can report it at
