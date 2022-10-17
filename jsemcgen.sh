@@ -28,11 +28,29 @@
 
 # setup
 #
+export V_FLAG="0"
+export J_FLAG="0"
+export Q_FLAG=
+export S_FLAG=
+export I_FLAG=
+export NAME=
+export DEFAULT_FUNC=
+export PREFIX=
+export NUMBER_FUNC=
+export STRING_FUNC=
+export BOOL_FUNC=
+export NULL_FUNC=
+export MEMBER_FUNC=
+export OBJECT_FUNC=
+export ARRAY_FUNC=
+export UNKNOWN_FUNC=
+export JSEMTBLGEN="./jsemtblgen"
+export JSEMTBLGEN_ARGS=
+export PATCH_TOOL
+export JSEMCGEN_VERSION="1.1 2022-10-17"
 
 # attempt to fetch system specific paths to tools we need
 #
-# get patch path
-PATCH_TOOL="$(type -P patch 2>/dev/null)"
 # It's possible that the path could not be obtained so we set it to the default
 # in this case.
 #
@@ -42,7 +60,12 @@ PATCH_TOOL="$(type -P patch 2>/dev/null)"
 #
 #   ${PATCH_TOOL:=/usr/bin/patch} 2>/dev/null
 #
+# Try to find the patch tool.
+#
+PATCH_TOOL="$(type -P patch 2>/dev/null)"
+
 # make sure PATCH_TOOL is set
+#
 if [[ -z "$PATCH_TOOL" ]]; then
     PATCH_TOOL="/usr/bin/patch"
 fi
@@ -99,26 +122,6 @@ Exit codes:
      5	 file.json, head, patch, and/or tail is not a readable file
      6	 jsemtblgen failed
  >= 10	 internal error"
-export V_FLAG="0"
-export J_FLAG="0"
-export Q_FLAG=
-export CAP_V_FLAG=
-export S_FLAG=
-export I_FLAG=
-export NAME=
-export DEFAULT_FUNC=
-export PREFIX=
-export NUMBER_FUNC=
-export STRING_FUNC=
-export BOOL_FUNC=
-export NULL_FUNC=
-export MEMBER_FUNC=
-export OBJECT_FUNC=
-export ARRAY_FUNC=
-export UNKNOWN_FUNC=
-export JSEMTBLGEN="./jsemtblgen"
-export JSEMTBLGEN_ARGS=
-export PATCH_TOOL
 
 # parse args
 #
@@ -136,8 +139,8 @@ while getopts :hv:J:qVsIN:D:P:1:S:B:0:M:O:A:U:j:p: flag; do
     q) Q_FLAG="-q";
        JSEMTBLGEN_ARGS="$JSEMTBLGEN_ARGS -q";
        ;;
-    V) CAP_V_FLAG="-V";
-       JSEMTBLGEN_ARGS="$JSEMTBLGEN_ARGS -V";
+    V) echo "$JSEMCGEN_VERSION"
+       exit 2
        ;;
     s) S_FLAG="-s";
        JSEMTBLGEN_ARGS="$JSEMTBLGEN_ARGS -s";
@@ -220,7 +223,6 @@ if [[ $V_FLAG -ge 5 ]]; then
     echo "$0: debug[5]: V_FLAG: $V_FLAG" 1>&2
     echo "$0: debug[5]: J_FLAG: $J_FLAG" 1>&2
     echo "$0: debug[5]: Q_FLAG: $Q_FLAG" 1>&2
-    echo "$0: debug[5]: CAP_V_FLAG: $CAP_V_FLAG" 1>&2
     echo "$0: debug[5]: S_FLAG: $S_FLAG" 1>&2
     echo "$0: debug[5]: I_FLAG: $I_FLAG" 1>&2
     echo "$0: debug[5]: NAME: $NAME" 1>&2
