@@ -136,6 +136,7 @@ run_check() {
     local COMMAND="$2"
 
     echo "## RUNNING: $COMMAND" | tee -a -- "$LOG_FILE"
+    echo | tee -a -- "$LOG_FILE"
     command ${COMMAND} 2>&1 | tee -a -- "$LOG_FILE"
 
     # The below reference to PIPESTATUS (instead of $?) fix the bug introduced in commit
@@ -167,6 +168,7 @@ if [[ $V_FLAG -gt 1 ]]; then
     echo "Will write contents to $LOG_FILE" 1>&2
 fi
 
+echo "## BUG_REPORT_VERSION: $BUG_REPORT_VERSION" | tee -a -- "$LOG_FILE"
 echo "## TIME OF REPORT: $(date)" | tee -a -- "$LOG_FILE"
 echo "## BUG_REPORT_VERSION: $BUG_REPORT_VERSION" | tee -a -- "$LOG_FILE"
 echo | tee -a -- "$LOG_FILE"
@@ -174,7 +176,6 @@ echo | tee -a -- "$LOG_FILE"
 
 # bash --version: get bash version
 run_check 10 "bash --version"
-
 # uname -a: get system information
 run_check 11 "uname -a"
 # which cc: get all paths for cc
@@ -245,6 +246,7 @@ run_check 22 "./run_flex.sh -v 1"
 
 # hostchk.sh -v 3: we need to run some checks to make sure the system can
 # compile things and so on
+echo "## RUNNING hostchk.sh -v 3: " | tee -a -- "$LOG_FILE" 1>&2
 run_check 24 "./hostchk.sh -v 3"
 
 # check for makefile.local to see if user is overriding any rules.
@@ -268,6 +270,43 @@ else
 fi
 echo | tee -a -- "$LOG_FILE"
 echo | tee -a -- "$LOG_FILE"
+
+# cat limit_ioccc.sh: this will give us many important variables
+#
+# NOTE: this file should be generated from make all so we should expect to have
+# it and thus if the user does not have there's possibly a problem. However the
+# problem isn't really likely to cause a bug on their end (the cause of this
+# might indicate a problem but the file itself is not necessary for using the
+# repo). Still it has a lot of important variables that we would benefit from
+# having.
+echo "## CHECKING FOR limit_ioccc.sh" | tee -a -- "$LOG_FILE"
+if [[ -e "./limit_ioccc.sh" ]]; then
+    if [[ -r "./limit_ioccc.sh" ]]; then
+	echo "## NOTICE: Found limit_ioccc.sh file:" | tee -a -- "$LOG_FILE"
+	echo "--" | tee -a -- "$LOG_FILE"
+	echo "cat ./limit_ioccc.sh" | tee -a -- "$LOG_FILE"
+	# shellcheck disable=SC2002
+	cat ./limit_ioccc.sh | tee -a -- "$LOG_FILE"
+	echo "--" | tee -a -- "$LOG_FILE"
+    else
+	echo "## NOTICE: Found unreadable limit_ioccc.sh" | tee -a -- "$LOG_FILE"
+    fi
+else
+    echo "## No limit_ioccc.sh file found" | tee -a -- "$LOG_FILE"
+fi
+echo | tee -a -- "$LOG_FILE"
+
+# check if there are any local modifications to anything
+#
+# NOTE: We don't use run_check for this because if git does not exist for some
+# reason then the shell might exit with an error code even though we're not
+# after that (as in it might not be an error). Additionally whether there are
+# differences or not git will return 0. It will return non-zero in the case that
+# it's not in a git repo but we don't explicitly check for this. All we care
+# about is whether or not the user has changes that might be causing a problem.
+echo "## RUNNING git diff to determine if there are local modifications" | tee -a -- "$LOG_FILE"
+git --no-pager diff | tee -a -- "$LOG_FILE"
+echo "## git diff ABOVE" | tee -a -- "$LOG_FILE"
 
 # cat limit_ioccc.sh: this will give us many important variables
 #
