@@ -45,5 +45,7 @@ applicable):**
 
 **Additional context**
 
-Please add any other context about the problem here.
+Please add any other context about the problem here. We highly recommend that
+you run `bug_report.sh` and attach the log file it generates.
+
 Feel free to use [markdown](https://www.markdownguide.org/getting-started/) in your issue report.
