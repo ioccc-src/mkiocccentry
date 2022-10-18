@@ -94,6 +94,8 @@ struct encode
  * and where {JSON_EXPONENT} is of the form:
  *
  *	[Ee][-+]?[0-9]+
+ *
+ * For more information see jparse.y and jparse.l.
  */
 struct json_number
 {

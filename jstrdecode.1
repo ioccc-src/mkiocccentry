@@ -1,4 +1,4 @@
-.TH jstrdecode 1 "17 October 2022" "jstrdecode" "IOCCC tools"
+.TH jstrdecode 1 "18 October 2022" "jstrdecode" "IOCCC tools"
 .SH NAME
 \fBjstrdecode\fP \- decode JSON encoded strings
 .SH SYNOPSIS
@@ -50,7 +50,7 @@ internal error
 .PP
 If you have an issue with the tool you can report it at
 .br
-\fI\<https://github.com/ioccc-src/mkiocccentry/issues\>\fP.
+\fI\<https://github.com/ioccc\-src/mkiocccentry/issues\>\fP.
 .SH EXAMPLES
 .PP
 .nf
@@ -62,11 +62,11 @@ Decode the JSON string \fB{ "test_mode" : false }\fP:
 .RE
 .PP
 .nf
-Decode input from \fBstdin\fP (send \fBEOF\fP, usually ctrl-d or \fB^D\fP, to decode):
+Decode input from \fBstdin\fP (send \fBEOF\fP, usually ctrl\-d or \fB^D\fP, to decode):
 .RS
 \fB
  ./jstrdecode
- -5
+ \-5
  ^D\fP
 .fi
 .RE
@@ -75,7 +75,7 @@ Decode input from \fBstdin\fP (send \fBEOF\fP, usually ctrl-d or \fB^D\fP, to de
 Decode just a negative number:
 .RS
 \fB
- ./jstrdecode -- -5\fP
+ ./jstrdecode \-\- \-5\fP
 .fi
 .RE
 .SH SEE ALSO

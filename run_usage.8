@@ -1,6 +1,6 @@
-.TH run_usage 8 "16 October 2022" "run_usage" "IOCCC tools"
+.TH run_usage 8 "18 October 2022" "run_usage" "IOCCC tools"
 .SH NAME
-run_usage \- run -h on a tool to extract usage information to help with checking man page \fBSYNOPSIS\fP \- tool usage consistency
+run_usage \- run \-h on a tool to extract usage information to help with checking man page \fBSYNOPSIS\fP \- tool usage consistency
 .SH SYNOPSIS
 \fBrun_usage.sh\fP [\-h] [\-V] [\-m section] [\-M man file] tool
 .SH DESCRIPTION
@@ -25,30 +25,37 @@ Default is 1.
 Specify the man page filename.
 This is useful when the name of the tool does not match what the man page should be (for example \fBrun_usage.sh\fP has \fBrun_usage.1\fP and not \fBrun_usage.sh.1\fP).
 .SH EXIT STATUS
-.PP
-.PP
-0	    all okay
-.br
-1	    help string printed
-.br
-2	    tool missing or command used missing
-.br
-3	    man page missing
-.br
-4	    command line usage error
-.br
-5	    missing or inconsistent synopsis
-.br
->=42	    some internal error occurred
+.TP
+0
+all okay
+.TQ
+1
+help string printed
+.TQ
+2
+tool missing or command used missing
+.TQ
+3
+man page missing
+.TQ
+4
+command line usage error
+.TQ
+5
+missing or inconsistent synopsis
+.TQ
+>=42
+some internal error occurred
 .SH NOTES
 .PP
 It has a \fBvery fixed\fP idea of what formatting is correct.
 As this can vary we don't try figuring it out.
 Fortunately the formatting of the \fBSYNOPSIS\fP in the man pages in the repo actually matches the script's idea of correct.
 In particular the tool was even used to generate the \fBSYNOPSIS\fP of this man page.
+However according to standards it is actually not quite correct and I (Cody) will at the end fix the SYNOPSIS of each man page to account for this.
 .PP
 If there's more than one usage string then the script only can detect the number of usage strings matched in the man page.
-In particular if at least one of the lines matches and there are the correct number of usages it will not report a problem because it checks for the number of matches via \fBgrep -c\fP and since it has a correct match it assumes that it's correct.
+In particular if at least one of the lines matches and there are the correct number of usages it will not report a problem because it checks for the number of matches via \fBgrep \-c\fP and since it has a correct match it assumes that it's correct.
 This is a necessary hack because not all greps allow for line crossing and even if they did it could be broken by the order in the file (or tool).
 To fix this would complicate the script more and it's not worth it because we still will visually inspect the man pages.
 .PP
@@ -80,6 +87,6 @@ Determine if the \fBSYNOPSIS\fP in this file is correct (according to the script
 
 .RS
 \fB
- ./run_usage.sh -M run_usage.1 run_usage.sh\fP
+ ./run_usage.sh \-M run_usage.1 run_usage.sh\fP
 .fi
 .RE

@@ -1,4 +1,4 @@
-.TH iocccsize 1 "17 October 2022" "iocccsize" "IOCCC tools"
+.TH iocccsize 1 "18 October 2022" "iocccsize" "IOCCC tools"
 .SH NAME
 iocccsize \- IOCCC Source Size Tool
 .SH SYNOPSIS
@@ -9,7 +9,7 @@ iocccsize \- IOCCC Source Size Tool
 .PP
 Reading a C source file from standard input or a file arg, apply the IOCCC source size rules as explained in the Guidelines.
 .PP
-The source's Rule 2b length is written to stdout; with -v option the Rule 2b length, gross (Rule 2a) length, and matched keyword count are written to stdout.
+The source's Rule 2b length is written to stdout; with \-v option the Rule 2b length, gross (Rule 2a) length, and matched keyword count are written to stdout.
 .PP
 The size tool counts most C reserved words (keyword, secondary, and selected preprocessor keywords) as 1.
 The size tool counts all other octets as 1 excluding ASCII whitespace, and excluding any ';', '{' or '}' followed by ASCII whitespace, and excluding any ';', '{' or '}' octet immediately before the end of file.
@@ -67,8 +67,8 @@ Test if prog.c fits within Rule 2b and Rule 2b limits: reporting of there's a pr
 Output the Rule 2b length, gross (Rule 2a) length, and matched keyword count:
 .RS
 \fB
- ./iocccsize -v 1 < prog.c
- ./iocccsize -v 1 prog.c\fP
+ ./iocccsize \-v 1 < prog.c
+ ./iocccsize \-v 1 prog.c\fP
 .fi
 .RE
 .PP
@@ -76,14 +76,14 @@ Output the Rule 2b length, gross (Rule 2a) length, and matched keyword count:
 You may also wish to try the test script in verbose mode:
 .RS
 \fB
- ./iocccsize_test.sh -v 3\fP
+ ./iocccsize_test.sh \-v 3\fP
 .fi
 .RE
 .SH SEE ALSO
 \fBiocccsize_test(8)\fP
 .SH BUGS
 .PP
-There are no bugs, only features! :-)
+There are no bugs, only features! :\-)
 .PP
 The matched keyword count is currently ignored by the IOCCC.
 .PP
@@ -92,7 +92,7 @@ Because the original source was an IOCCC winner,
 .PP
 But if you think you have an issue with the tool you can open an issue at
 .br
-\fI\<https://github.com/ioccc-src/iocccsize/issues\>\fP.
+\fI\<https://github.com/ioccc\-src/iocccsize/issues\>\fP.
 .SH IOCCC WARNING
 .PP
 For submitting entries to the IOCCC, and to conform with Rule 2,
@@ -100,7 +100,7 @@ please use the official copy of the IOCCC
 \fBiocccsize\fP
 from the following GitHub repo:
 .br
-\fI\<https://github.com/ioccc-src/mkiocccentry>\fP.
+\fI\<https://github.com/ioccc\-src/mkiocccentry>\fP.
 .PP
 \fBWARNING:\fP
 Be sure you are using the current version of

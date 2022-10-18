@@ -1,4 +1,4 @@
-.TH jparse 1 "16 October 2022" "jparse" "IOCCC tools"
+.TH jparse 1 "18 October 2022" "jparse" "IOCCC tools"
 .SH NAME
 jparse \- IOCCC JSON parser
 .SH SYNOPSIS
@@ -32,36 +32,36 @@ Parse argument as a string.
 Do not output a newline after parsing a string or file (def: do print a newline).
 .SH EXIT STATUS
 .PP
-\fB0\fP for success; different non-zero values for error conditions.
+\fB0\fP for success; different non\-zero values for error conditions.
 .SH NOTES
 .PP
 This JSON parser was written as a collaboration between Cody Boone Ferguson and Landon Curt Noll, one of the IOCCC Judges, to support \fBIOCCCMOCK\fP, \fBIOCCC28\fP and beyond.
 .PP
-For more detailed history that goes beyond this humble man page we recommend you check \fBjparse(1)\fP, \fBchkentry(1)\fP, \fBCHANGES.md\fP, \fBREADME.md\fP, the GitHub git log as well as reading the source code (or not :-) ).
+For more detailed history that goes beyond this humble man page we recommend you check \fBjparse(1)\fP, \fBchkentry(1)\fP, \fBCHANGES.md\fP, \fBREADME.md\fP, the GitHub git log as well as reading the source code (or not :\-) ).
 .PP
-We don't recommend you check the GitHub issue page! :-)
-This is because it's incredibly long with a lot of OT things and would take even the fastest readers a very long time to read. :-(
+We don't recommend you check the GitHub issue page! :\-)
+This is because it's incredibly long with a lot of OT things and would take even the fastest readers a very long time to read. :\-(
 .SH BUGS
 .PP
 Better error reporting and various other things need to be added.
 For example showing the file name and line number have to be added.
 .PP
-It's not yet fully re-entrant.
+It's not yet fully re\-entrant.
 .SH EXAMPLES
 .PP
 .nf
 Parse the JSON string \fB{ "test_mode" : false }\fP:
 .RS
 \fB
- ./jparse -s '{ "test_mode" : false }'\fP
+ ./jparse \-s '{ "test_mode" : false }'\fP
 .fi
 .RE
 .PP
 .nf
-Parse input from \fBstdin\fP (send \fBEOF\fP, usually ctrl-d or \fB^D\fP, to parse):
+Parse input from \fBstdin\fP (send \fBEOF\fP, usually ctrl\-d or \fB^D\fP, to parse):
 .RS
 \fB
- ./jparse -
+ ./jparse \-
  []
  ^D\fP
 .fi
@@ -71,7 +71,7 @@ Parse input from \fBstdin\fP (send \fBEOF\fP, usually ctrl-d or \fB^D\fP, to par
 Parse just a negative number:
 .RS
 \fB
- ./jparse -s -5\fP
+ ./jparse \-s \-5\fP
 .fi
 .RE
 .PP
@@ -87,7 +87,7 @@ Parse .info.json file:
 Run the \fBjparse_test.sh\fP script using the default \fIjson_teststr.txt\fP file with verbosity set at 5:
 .RS
 \fB
- ./jparse_test.sh -v 5\fP
+ ./jparse_test.sh \-v 5\fP
 .fi
 .RE
 .SH SEE ALSO

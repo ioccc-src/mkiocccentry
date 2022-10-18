@@ -118,7 +118,7 @@
 
 
 /*
- * array - a dynamic array of identical elements
+ * dyn_array - a dynamic array of elements of the same type
  *
  * The dynamic array maintains both an allocated element count
  * and a number of elements in use.

@@ -1,4 +1,4 @@
-.TH vermod 8 "17 October 2022" "vermod" "IOCCC tools"
+.TH vermod 8 "18 October 2022" "vermod" "IOCCC tools"
 .SH NAME
 vermod \- modify version strings (and others) under ./test_JSON/
 .SH SYNOPSIS
@@ -48,7 +48,7 @@ This is useful with \fB\-n\fP to show what wouldn't change.
 all is well
 .TQ
 1
-\fBrpl\fP exited non-zero
+\fBrpl\fP exited non\-zero
 .TQ
 2
 \fBrpl\fP not found
@@ -71,7 +71,7 @@ no *.json files found under test directory
 8
 new_ver (or old_ver if \-o) not found in limit file
 .TQ
->= 10 
+>= 10
 internal error
 .SH FILES
 \fItest_JSON\fP
@@ -86,17 +86,17 @@ The tool \fBsed(1)\fP and various others could also be used to do this but this 
 .SH EXAMPLES
 .PP
 .nf
-After changing the version of \fBtxzchk\fP to \fB0.12 2022-09-2\fP from \fB0.11 2022-08-23\fP show what files would change:
+After changing the version of \fBtxzchk\fP to \fB0.12 2022\-09\-2\fP from \fB0.11 2022\-08\-23\fP show what files would change:
 .RS
 \fB
- ./vermod.sh -l -n '0.11 2022-08-23' '0.12 2022-09-22'\fP
+ ./vermod.sh \-l \-n '0.11 2022\-08\-23' '0.12 2022\-09\-22'\fP
 .RE
 .PP
 .nf
 After verifying that the above command is correct, run the script again to actually make the changes:
 .RS
 \fB
- ./vermod.sh  '0.11 2022-08-23' '0.12 2022-09-22'\fP
+ ./vermod.sh  '0.11 2022\-08\-23' '0.12 2022\-09\-22'\fP
 .RE
 .SH SEE ALSO
 \fBrpl(1)\fP

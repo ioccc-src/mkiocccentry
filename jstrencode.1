@@ -1,4 +1,4 @@
-.TH jstrencode 1 "17 October 2022" "jstrencode" "IOCCC tools"
+.TH jstrencode 1 "18 October 2022" "jstrencode" "IOCCC tools"
 .SH NAME
 .B jstrencode
 \- encode JSON encoded strings
@@ -52,7 +52,7 @@ internal error
 .PP
 If you have an issue with the tool you can report it at
 .br
-\fI\<https://github.com/ioccc-src/mkiocccentry/issues\>\fP.
+\fI\<https://github.com/ioccc\-src/mkiocccentry/issues\>\fP.
 .SH EXAMPLES
 .PP
 .nf
@@ -64,7 +64,7 @@ Encode the JSON string \fB{ "test_mode" : false }\fP:
 .RE
 .PP
 .nf
-Encode a string containing an escaped \fB"\fP from \fBstdin\fP (send \fBEOF\fP, usually ctrl-d or \fB^D\fP, to encode):
+Encode a string containing an escaped \fB"\fP from \fBstdin\fP (send \fBEOF\fP, usually ctrl\-d or \fB^D\fP, to encode):
 .RS
 \fB
  ./jstrencode
@@ -77,7 +77,7 @@ Encode a string containing an escaped \fB"\fP from \fBstdin\fP (send \fBEOF\fP, 
 Encode just a negative number:
 .RS
 \fB
- ./jstrencode -- -5\fP
+ ./jstrencode \-\- \-5\fP
 .fi
 .RE
 .SH SEE ALSO

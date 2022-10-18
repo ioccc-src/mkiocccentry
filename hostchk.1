@@ -1,4 +1,4 @@
-.TH hostchk 1 "17 October 2022" "hostchk.sh" "IOCCC tools"
+.TH hostchk 1 "18 October 2022" "hostchk.sh" "IOCCC tools"
 .SH NAME
 hostchk.sh \- run a series of checks on your system to help determine if you can correctly use the mkiocccentry toolkit
 .SH SYNOPSIS
@@ -32,7 +32,7 @@ Instead of testing one required system header file at a time it does it all at o
 The default is not to use \fB\-f\fP because it will give more information to help identify the problem (and also let you know which files work).
 .SH EXIT STATUS
 If no issues are detected the script will exit 0.
-Otherwise it will exit non-zero.
+Otherwise it will exit non\-zero.
 .SH NOTES
 .PP
 Even if the script exits 0 it does not necessarily mean there is no problem.
@@ -41,8 +41,8 @@ In that case you should use \fBbug_report(1)\fP and include the log that it crea
 .PP
 The output can seem redundant if it fails and \fBhostchk(1)\fP was run via the Makefile since it will issue a warning that will tell you to use
 \fBhostchk(1)\fP and also tell you to use \fBbug_report(1)\fP which itself will tell you to use \fBhostchk(1)\fP which will trigger the warning again.
-Sorry in advance if (to use an American English phrase which I will happily use for a pun for a pun not made is a wasted opportunity) this throws you for a loop :-) but we feel that it's better that the warning is really stressed as it most likely means that you won't be able to use the toolkit to successfully create a valid IOCCC tarball.
-But now that you're in the loop it shouldn't even matter! :-)
+Sorry in advance if (to use an American English phrase which I will happily use for a pun for a pun not made is a wasted opportunity) this throws you for a loop :\-) but we feel that it's better that the warning is really stressed as it most likely means that you won't be able to use the toolkit to successfully create a valid IOCCC tarball.
+But now that you're in the loop it shouldn't even matter! :\-)
 .SH BUGS
 .PP
 Right now there are no known bugs except that it is currently incomplete.

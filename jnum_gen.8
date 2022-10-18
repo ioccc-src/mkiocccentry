@@ -1,4 +1,4 @@
-.TH jnum_gen 8 "17 October 2022" "jnum_gen" "IOCCC tools"
+.TH jnum_gen 8 "18 October 2022" "jnum_gen" "IOCCC tools"
 .SH NAME
 jnum_gen \- generate JSON number string conversion test data
 .SH SYNOPSIS
@@ -38,15 +38,15 @@ command line error
 internal error
 .SH NOTES
 .PP
-The JSON parser \fBjparse\fP was co-developed by Cody Boone Ferguson and Landon Curt Noll (one of the IOCCC Judges) in support for IOCCCMOCK, IOCCC28 and beyond.
+The JSON parser \fBjparse\fP was co\-developed by Cody Boone Ferguson and Landon Curt Noll (one of the IOCCC Judges) in support for IOCCCMOCK, IOCCC28 and beyond.
 .PP
 This tool is needed in order to generate the test source file for the \fBjnum_chk(8)\fP tool which is needed to verify that the JSON number string conversion routines work as expected.
 The Makefile rule \fBrebuild_jnum_test\fP will create the file \fIjnum_test.c\fP via this tool.
 The tool \fBjnum_chk(8)\fP in turn will use the data in the \fIjnum_test.c\fP file to verify that the conversions work as expected.
 .SH BUGS
-If you have a problem with the tool (not JSON itself! :-) ) you can report it at the GitHub issues page.
+If you have a problem with the tool (not JSON itself! :\-) ) you can report it at the GitHub issues page.
 It can be found at
 .br
-\fI\<https://github.com/ioccc-src/mkiocccentry/issues\>\fP.
+\fI\<https://github.com/ioccc\-src/mkiocccentry/issues\>\fP.
 .SH SEE ALSO
 \fBjparse(1)\fP, \fBjnum_chk(8)\fP.
