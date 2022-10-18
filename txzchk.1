@@ -1,4 +1,4 @@
-.TH txzchk 1 "17 October 2022" "txzchk" "IOCCC tools"
+.TH txzchk 1 "18 October 2022" "txzchk" "IOCCC tools"
 .SH NAME
 txzchk \- sanity checker tool used on IOCCC compressed tarballs
 .SH SYNOPSIS
@@ -51,10 +51,10 @@ This is used in conjunction with \fb\-T\fP above for \fBTESTING\fP purposes only
 .SH EXIT STATUS
 .TP
 0
-no feathers stuck in tarball  :-)
+no feathers stuck in tarball  :\-)
 .TQ
 1
-tarball was successfully parsed :-) but there's at least one feather stuck in it  :-(
+tarball was successfully parsed :\-) but there's at least one feather stuck in it  :\-(
 .TQ
 2
 \-h and help string printed or \-V and version string printed
@@ -69,7 +69,7 @@ internal error has occurred or unknown tar listing format has been encountered
 This tool was written by \fBCody Boone Ferguson\fP for the \fBIOCCC Judges\fP in early 2022 for the \fBIOCCCMOCK\fP, \fBIOCCC28\fP and all future \fBIOCCC\fP competitions after discussing the requirements with \fBLandon Curt Noll\fP, one of the IOCCC Judges.
 For more history see \fBtxzchk(1)\fP, \fBCHANGES.md\fP, \fBREADME.md\fP, the GitHub git log and of course reading the source itself.
 .PP
-No pitman or coal mine was harmed in the making of this tool. :-)
+No pitman or coal mine was harmed in the making of this tool. :\-)
 More importantly, no tar pits \- including the \fBLa Brea Tar Pits\fP \- were disturbed in the making of this tool.
 .SH BUGS
 .PP
@@ -78,34 +78,34 @@ Cody Boone Ferguson wrote it! :)
 On a more serious note, if you have an issue with the tool please report it at the GitHub issues page.
 You can find it at
 .br
-\fI\<https://github.com/ioccc-src/mkiocccentry/issues\>\fP.
+\fI\<https://github.com/ioccc\-src/mkiocccentry/issues\>\fP.
 If you would please mention \fB@xexyl\fP as part of the report that would be appreciated.
 .SH EXAMPLES
 .PP
 .nf
-Run the program on the tarball \fIentry.test-1.1644094311.txz\fP:
+Run the program on the tarball \fIentry.test\-1.1644094311.txz\fP:
 
 .RS
 \fB
- ./txzchk entry.test-1.1644094311.txz\fP
+ ./txzchk entry.test\-1.1644094311.txz\fP
 .fi
 .RE
 .PP
 .nf
-Run the program on the tarball \fIentry.test-1.1644094311.txz\fP, specifying an alternate path to \fBtar\fP and \fBfnamchk\fP:
+Run the program on the tarball \fIentry.test\-1.1644094311.txz\fP, specifying an alternate path to \fBtar\fP and \fBfnamchk\fP:
 
 .RS
 \fB
- ./txzchk -t /path/to/some/tar -F ./filenamechk entry.test-1.1644094311.txz\fP
+ ./txzchk \-t /path/to/some/tar \-F ./filenamechk entry.test\-1.1644094311.txz\fP
 .fi
 .RE
 .PP
 .nf
-Run the program on the file \fIentry.test-1.1644094311.txt\fP, specifying that it's a text file (which means \fB\-T\fP and \fB-E\fP have to be used):
+Run the program on the file \fIentry.test\-1.1644094311.txt\fP, specifying that it's a text file (which means \fB\-T\fP and \fB\-E\fP have to be used):
 
 .RS
 \fB
- ./txzchk -T -E txt entry.test-1.1644094311.txt\fP
+ ./txzchk \-T \-E txt entry.test\-1.1644094311.txt\fP
 .fi
 .RE
 .SH SEE ALSO

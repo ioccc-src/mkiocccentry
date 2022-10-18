@@ -1,4 +1,4 @@
-.TH mkiocccentry 1 "2 September 2022" "mkiocccentry" "IOCCC tools"
+.TH mkiocccentry 1 "18 October 2022" "mkiocccentry" "IOCCC tools"
 .SH NAME
 mkiocccentry \- make an IOCCC compressed tarball for an IOCCC entry
 .SH SYNOPSIS
@@ -75,7 +75,7 @@ Silence msg(), warn(), warnp() if verbosity level is 0.
 all is well
 .TQ
 2
-\-h and help string printed or -V and version string printed
+\-h and help string printed or \-V and version string printed
 .TQ
 3
 invalid command line, invalid option or option missing an argument
@@ -86,7 +86,7 @@ internal error
 .PP
 More than 0 humans work on it! :)
 .PP
-If you have an issue with the tool you can open an issue at \fI\<https://github.com/ioccc-src/mkiocccentry/issues\>\fP.
+If you have an issue with the tool you can open an issue at \fI\<https://github.com/ioccc\-src/mkiocccentry/issues\>\fP.
 .SH EXAMPLES
 .PP
 .nf
@@ -104,7 +104,7 @@ Make \fIwork_dir\fP and then make an entry from the files \fIprog.c\fP, \fIMakef
 .RS
 \fB
  mkdir work_dir
- ./mkiocccentry -a answers work_dir prog.c Makefile remarks.md\fP
+ ./mkiocccentry \-a answers work_dir prog.c Makefile remarks.md\fP
 .fi
 .RE
 .PP
@@ -113,7 +113,7 @@ Use the answers file from the previous invocation to quickly update the entry wi
 
 .RS
 \fB
- ./mkiocccentry -i answers work_dir prog.c Makefile remarks.md data.txt\fP
+ ./mkiocccentry \-i answers work_dir prog.c Makefile remarks.md data.txt\fP
 .fi
 .RE
 .PP
@@ -122,6 +122,6 @@ Run program, specifying alternative path to \fBtar\fP and \fBtxzchk\fP:
 
 .RS
 \fB
- ./mkiocccentry -t /path/to/tar -T /path/to/txzchk\fP
+ ./mkiocccentry \-t /path/to/tar \-T /path/to/txzchk\fP
 .fi
 .RE

@@ -1,8 +1,8 @@
-.TH iocccsize_test.sh 8 "17 October 2022" "iocccsize_test" "IOCCC tools"
+.TH iocccsize_test.sh 8 "18 October 2022" "iocccsize_test" "IOCCC tools"
 .SH NAME
 iocccsize_test.sh \- test iocccsize tool
 .SH SYNOPSIS
-\fBiocccsize_test.sh\fP [\-h] [\-v lvl] [\-V] [\-i iocccsize] [\-w work_dir] \[-l limit]
+\fBiocccsize_test.sh\fP [\-h] [\-v lvl] [\-V] [\-i iocccsize] [\-w work_dir] \[\-l limit]
 .SH DESCRIPTION
 \fBiocccsize_test.sh\fP runs a series of tests on the \fBiocccsize(1)\fP tool, verifying that it is functioning properly.
 .SH OPTIONS
@@ -42,17 +42,17 @@ Run the \fRiocccsize\fP test suite in silent mode, printing only if a problem is
 .fi
 .RE
 .PP
-Run the \fRiocccsize\fP test suite, reporting on each sub-test that is performed:
+Run the \fRiocccsize\fP test suite, reporting on each sub\-test that is performed:
 .RS
 .sp
-\fB./iocccsize_test.sh -v 1\fP
+\fB./iocccsize_test.sh \-v 1\fP
 .fi
 .RE
 .PP
 You may also wish to try the test script in even more verbose mode:
 .PP
 .RS
-\fB./iocccsize_test.sh -v 3\fP
+\fB./iocccsize_test.sh \-v 3\fP
 .fi
 .RE
 .SH EXIT STATUS

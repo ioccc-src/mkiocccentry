@@ -1,4 +1,4 @@
-.TH bug_report 1 "14 October 2022" "bug_report.sh" "IOCCC tools"
+.TH bug_report 1 "18 October 2022" "bug_report.sh" "IOCCC tools"
 .SH NAME
 bug_report.sh \- run a series of tests, collecting system information in the process, to help report bugs and issues
 .SH SYNOPSIS
@@ -20,7 +20,7 @@ Show version and exit.
 .SH EXIT STATUS
 If no issues are detected the script will exit 0.
 In this case it will tell you that all should be okay and you can safely delete the log file.
-If it exits non-zero and it's not because of the \fB\-h\fP or \fB\-V\fP option it will recommend you to report it, reminding you to attach the log in your report.
+If it exits non\-zero and it's not because of the \fB\-h\fP or \fB\-V\fP option it will recommend you to report it, reminding you to attach the log in your report.
 .SH NOTES
 .PP
 Even if the script exits 0 it does not necessarily mean there is no problem.
@@ -28,13 +28,13 @@ If you feel there is a problem that was not detected you may still open an issue
 The script will tell you how to do this whether there are issues detected or not.
 .PP
 The output can seem redundant if it fails because of \fBhostchk(1)\fP since it will trigger a warning that tells you to use \fBhostchk(1)\fP with more verbosity and also tells you to use \fBbug_report(1)\fP which tells you to use \fBhostchk(1)\fP.
-Sorry in advance if (to use an American English phrase which I will happily use for a pun for a pun not made is a wasted opportunity) this throws you for a loop :-) but we feel that it's better that the warning is really stressed as it most likely means that you won't be able to use the toolkit to successfully create a valid IOCCC tarball.
-But now that you're in the loop it shouldn't even matter! :-)
+Sorry in advance if (to use an American English phrase which I will happily use for a pun for a pun not made is a wasted opportunity) this throws you for a loop :\-) but we feel that it's better that the warning is really stressed as it most likely means that you won't be able to use the toolkit to successfully create a valid IOCCC tarball.
+But now that you're in the loop it shouldn't even matter! :\-)
 .SH BUGS
 .PP
 Right now there are no known bugs except that it cannot possibly account for everything.
 Previously there was a bug in this script that made it so that issues detected were not reported.
-This is very ironic and amusing since the purpose of the script is to help identify bugs. :-)
+This is very ironic and amusing since the purpose of the script is to help identify bugs. :\-)
 .PP
 Nevertheless, if you feel there is an issue with this tool you may open an issue at the GitHub issues page.
 Running the script will tell you how to report issues and it would be good if you attach the log file in this report as well.

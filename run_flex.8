@@ -1,4 +1,4 @@
-.TH run_flex.sh 8 "17 October 2022" "run_flex.sh" "IOCCC tools"
+.TH run_flex.sh 8 "18 October 2022" "run_flex.sh" "IOCCC tools"
 .SH NAME
 run_flex.sh \- run
 .B flex
@@ -145,7 +145,7 @@ This should probably be fixed at some point.
 .PP
 If you have any issues with the tool you can open an issue at
 .br
-\fI\<https://github.com/ioccc-src/mkiocccentry/issues\>\fP.
+\fI\<https://github.com/ioccc\-src/mkiocccentry/issues\>\fP.
 .SH EXAMPLES
 .PP
 Run \fBrun_flex.sh\fP with default options, which should attempt to run
@@ -165,7 +165,7 @@ cannot be found or fails for some reason.
 .nf
 .RS
 \fB
- ./run_flex.sh -o\fP
+ ./run_flex.sh \-o\fP
 .fi
 .RE
 .PP
@@ -175,7 +175,7 @@ on the file \fIfoobar.l\fP and don't use any backup files:
 .nf
 .RS
 \fB
- ./run_flex.sh -o -p foobar\fP
+ ./run_flex.sh \-o \-p foobar\fP
 .fi
 .RE
 .PP
@@ -187,6 +187,6 @@ and don't use any backup files:
 .nf
 .RS
 \fB
- ./run_flex.sh -o -p foobar -f lex\fP
+ ./run_flex.sh \-o \-p foobar \-f lex\fP
 .fi
 .RE

@@ -1,10 +1,10 @@
-.TH txzchk_test 8 "17 October 2022" "txzchk_test" "IOCCC tools"
+.TH txzchk_test 8 "18 October 2022" "txzchk_test" "IOCCC tools"
 .SH NAME
 txzchk_test.sh \- test suite for \fBtxzchk(1)\fP
 .SH SYNOPSIS
 \fBtxzchk_test.sh\fP [\-h] [\-V] [\-v level] [\-t txzchk] [\-T tar] [\-F fnamchk] [\-d txzchk_tree]
 .SH DESCRIPTION
-\fBtxzchk_test.sh\fP runs \fBtxzchk\fP in text file mode on pseudo-tar listings to make sure that bad tarballs are flagged with issues and good tarballs are not.
+\fBtxzchk_test.sh\fP runs \fBtxzchk\fP in text file mode on pseudo\-tar listings to make sure that bad tarballs are flagged with issues and good tarballs are not.
 For the bad files it checks that the issues reported are the same as expected.
 The script enforces that bad files have an associated error file to compare with the errors reported by \fBtxzchk(1)\fP so that this can be done without a problem.
 If an error file is missing it is an error.
@@ -31,7 +31,7 @@ Specify path to \fBfnamchk\fP to \fIfnamchk\fP.
 \fBtxzchk\fP uses \fBfnamchk\fP to test if the tarball is validly named and if the files listed are in the correct directory.
 .TP
 \fB\-d \fItxzchk_tree\fP\fP
-Specify path to the directory with the expected subdirectories \fIgood\fP and \fIbad\fP, each containing text files of good and bad pseudo-tarballs, to \fItxzchk_tree\fP.
+Specify path to the directory with the expected subdirectories \fIgood\fP and \fIbad\fP, each containing text files of good and bad pseudo\-tarballs, to \fItxzchk_tree\fP.
 As already noted, the \fIbad\fP subdirectory also has error files to compare against the output of \fBtxzchk(1)\fP, in order to make sure that the failure is the correct failure.
 .SH EXIT STATUS
 .TP
@@ -52,7 +52,7 @@ internal error
 .SH FILES
 \fItest_txzchk\fP
 .RS
-Default directory of good and bad subdirectories each respectively with good and bad pseudo-tarballs.
+Default directory of good and bad subdirectories each respectively with good and bad pseudo\-tarballs.
 .RE
 \fItxzchk_test.log\fP
 .RS
@@ -69,7 +69,7 @@ When a new bad test file is added one has to update the error files. This can be
 .nf
 .RS
 \fB
-    for i in ./test_txzchk/bad/*.txt; do ./txzchk -q -v 0 -w -T -E txt "${i}" 2>"${i}".err; done\fP
+    for i in ./test_txzchk/bad/*.txt; do ./txzchk \-q \-v 0 \-w \-T \-E txt "${i}" 2>"${i}".err; done\fP
 .RE
 .fi
 .PP

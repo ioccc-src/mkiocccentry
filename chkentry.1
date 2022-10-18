@@ -1,4 +1,4 @@
-.TH chkentry 1 "7 October 2022" "chkentry" "IOCCC tools"
+.TH chkentry 1 "18 October 2022" "chkentry" "IOCCC tools"
 .SH NAME
 chkentry \- check JSON files in an IOCCC entry
 .SH SYNOPSIS
@@ -18,7 +18,7 @@ The one argument form is equivalent to calling the command with two arguments: \
 .PP
 As a sanity check, the \fBmkiocccentry(1)\fP program executes \fBchkentry\fP AFTER both the \fI.info.json\fP and \fI.author.json\fP file have been created and before the compressed tarball is formed.
 If \fBmkiocccentry\fP program sees a 0 exit status, then all is well.
-For a non-zero exit code, the tool aborts because any problems detected by \fBchkentry\fP based on what \fBmkiocccentry\fP wrote into \fI.info.json\fP and/or \fI.author.json\fP indicates there is a serious mismatch between what \fBmkiocccentry\fP is doing and what \fBchkentry\fP expects.
+For a non\-zero exit code, the tool aborts because any problems detected by \fBchkentry\fP based on what \fBmkiocccentry\fP wrote into \fI.info.json\fP and/or \fI.author.json\fP indicates there is a serious mismatch between what \fBmkiocccentry\fP is doing and what \fBchkentry\fP expects.
 .PP
 .SH OPTIONS
 .PP
@@ -53,10 +53,10 @@ As such this man page is also unfinished.
 .PP
 .nf
 Run the tool on an IOCCC entry located in the directory
-\fBentry.1d5E8ac2-2cF5-48FB-aD81-3210d16af8ca-0.1652598666\fP:
+\fBentry.1d5E8ac2\-2cF5\-48FB\-aD81\-3210d16af8ca\-0.1652598666\fP:
 
 \fB
- ./chkentry entry.1d5E8ac2-2cF5-48FB-aD81-3210d16af8ca-0.1652598666\fP
+ ./chkentry entry.1d5E8ac2\-2cF5\-48FB\-aD81\-3210d16af8ca\-0.1652598666\fP
 .fi
 
 .PP
