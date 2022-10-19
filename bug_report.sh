@@ -139,10 +139,11 @@ run_check() {
     echo | tee -a -- "$LOG_FILE"
     command ${COMMAND} 2>&1 | tee -a -- "$LOG_FILE"
 
-    # The below reference to PIPESTATUS (instead of $?) fix the bug introduced in commit
-    # 8343c4b8cb97e52df64fe8973e68f0d83c6090e1 where the exit status of each command
-    # was not checked properly which meant that even if a test failed it would not
-    # be reported as an issue which rather defeated the purpose of this script.
+    # The below reference to PIPESTATUS (instead of $?) fixes the bug introduced
+    # in commit 8343c4b8cb97e52df64fe8973e68f0d83c6090e1 where the exit status
+    # of each command was not checked properly which meant that even if a test
+    # failed it would not be reported as an issue which rather defeated the
+    # purpose of this script.
     #
     # As amusing as the thought is that there's a bug in a script to help report
     # bugs and issues, this bug was not in fact intentional. :-) I had thought of it
