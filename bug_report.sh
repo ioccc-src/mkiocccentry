@@ -157,9 +157,9 @@ run_check() {
 	echo "$0: ERROR: $COMMAND FAILED WITH EXIT CODE $status: NEW EXIT_CODE: $EXIT_CODE" | tee -a -- "$LOG_FILE"
 	FAILURE_SUMMARY="$FAILURE_SUMMARY
 	$COMMAND non-zero exit code: $status"
+	echo "### ISSUE DETECTED: $COMMAND returned $status" | tee -a -- "$LOG_FILE"
     fi
-    echo "## ${COMMAND} ABOVE" | tee -a -- "$LOG_FILE"
-    echo | tee -a -- "$LOG_FILE"
+    echo "## OUTPUT OF ${COMMAND} ABOVE" | tee -a -- "$LOG_FILE"
     echo | tee -a -- "$LOG_FILE"
     return 0;
 }
@@ -169,12 +169,13 @@ if [[ $V_FLAG -gt 1 ]]; then
     echo "Will write contents to $LOG_FILE" 1>&2
 fi
 
-echo "## BUG_REPORT_VERSION: $BUG_REPORT_VERSION" | tee -a -- "$LOG_FILE"
-echo "## TIME OF REPORT: $(date)" | tee -a -- "$LOG_FILE"
-echo "## BUG_REPORT_VERSION: $BUG_REPORT_VERSION" | tee -a -- "$LOG_FILE"
+echo "# TIME OF REPORT: $(date)" | tee -a -- "$LOG_FILE"
+echo "# BUG_REPORT_VERSION: $BUG_REPORT_VERSION" | tee -a -- "$LOG_FILE"
 echo | tee -a -- "$LOG_FILE"
 echo | tee -a -- "$LOG_FILE"
-
+# Section 0: environment and system information.
+echo "# SECTION 0: ENVIRONMENT AND SYSTEM INFORMATION" | tee -a -- "$LOG_FILE"
+echo | tee -a -- "$LOG_FILE"
 # bash --version: get bash version
 run_check 10 "bash --version"
 # uname -a: get system information
@@ -187,8 +188,20 @@ run_check 13 "cc -v"
 run_check 14 "which -a make"
 # make -v: get make version
 run_check 15 "make -v"
+# which tar: find the path to tar
+#
+# NOTE: we don't need to check if tar accepts the correct options in this script
+# because hostchk.sh will do that later on.
+run_check 16 "which tar"
+
+echo "# SECTION 0 ABOVE" | tee -a -- "$LOG_FILE"
+echo | tee -a -- "$LOG_FILE"
+
+# Section 1: compilation checks.
+echo "# SECTION 1: COMPILATION CHECKS" | tee -a -- "$LOG_FILE"
+echo | tee -a -- "$LOG_FILE"
 # make clobber: start clean
-run_check 16 "make clobber"
+run_check 17 "make clobber"
 # make all: compile everything before we do anything else
 #
 # NOTE: This will indirectly call make fast_hostchk which, if it reports an
@@ -212,92 +225,106 @@ run_check 16 "make clobber"
 # really is likely that, if the script fails, you will be unable to successfully
 # use the mkiocccentry repo to submit a correct IOCCC entry.
 #
-run_check 17 "make all"
+run_check 18 "make all"
 # make test: run the IOCCC toolkit test suite
-run_check 18 "make test"
-# which tar: find the path to tar
-#
-# NOTE: we don't need to check if tar accepts the correct options in this script
-# because hostchk.sh will do that later on.
-run_check 19 "which tar"
+run_check 19 "make test"
+# hostchk.sh -v 3: we need to run some checks to make sure the system can
+# compile things and so on
+run_check 20 "./hostchk.sh -v 3"
+echo "# SECTION 1 ABOVE" | tee -a -- "$LOG_FILE"
+echo | tee -a -- "$LOG_FILE"
 
-# See that every tool is executable and run -h on each one that is.
-#
-# If any tool is not executable the exit code will be updated to 20.
-for f in $TOOLS; do
-    if is_exec "$f"; then
-	echo "## Checking if $f is executable" | tee -a -- "$LOG_FILE"
-	echo "$0: $f is executable" | tee -a -- "$LOG_FILE"
-	echo | tee -a -- "$LOG_FILE"
-	echo "## RUNNING $f -h" | tee -a -- "$LOG_FILE"
-	"$f" -h 2>&1 | tee -a -- "$LOG_FILE"
-	echo | tee -a -- "$LOG_FILE"
-    else
-	EXIT_CODE=20
-	echo "$0: ERROR: $f is not executable: new exit code: $EXIT_CODE" | tee -a -- "$LOG_FILE"
-	FAILURE_SUMMARY="$FAILURE_SUMMARY
-	$f cannot be executed"
-    fi
-done
-
+# Section 2: JSON scanner and parser checks.
+echo "# SECTION 2: BISON AND FLEX CHECKS" | tee -a -- "$LOG_FILE"
+echo | tee -a -- "$LOG_FILE"
 # run_bison.sh -v 1: check if bison will work
 run_check 21 "./run_bison.sh -v 1"
 # run_flex.sh -v 1: check if flex will work
 run_check 22 "./run_flex.sh -v 1"
+# run make all again: run_bison.sh and run_flex.sh will likely cause a need for
+# recompilation
+echo "## RUNNING make all a second time" | tee -a -- "$LOG_FILE"
+run_check 23 "make all"
+echo "# SECTION 2 ABOVE" | tee -a -- "$LOG_FILE"
+echo | tee -a -- "$LOG_FILE"
 
-# hostchk.sh -v 3: we need to run some checks to make sure the system can
-# compile things and so on
-echo "## RUNNING hostchk.sh -v 3: " | tee -a -- "$LOG_FILE" 1>&2
-run_check 24 "./hostchk.sh -v 3"
+# Section 3: IOCCC environment like version information and making sure that
+# everything is executable.
+echo "# SECTION 3: IOCCC ENVIRONMENT" | tee -a -- "$LOG_FILE"
+echo | tee -a -- "$LOG_FILE"
+# See that every tool is executable and run -V on each one that is.
+#
+# If any tool is not executable the exit code will be set to 24.
+for f in $TOOLS; do
+    if is_exec "$f"; then
+	echo "## CHECKING: if $f is executable" | tee -a -- "$LOG_FILE"
+	echo "## $f is executable" | tee -a -- "$LOG_FILE"
+	echo | tee -a -- "$LOG_FILE"
+	echo "## RUNNING: $f -V" | tee -a -- "$LOG_FILE"
+	echo "$f version $($f -V)" | tee -a -- "$LOG_FILE"
+	echo | tee -a -- "$LOG_FILE"
+    else
+	EXIT_CODE=24
+	echo "$0: ERROR: $f is not executable: new exit code: $EXIT_CODE" | tee -a -- "$LOG_FILE"
+	FAILURE_SUMMARY="$FAILURE_SUMMARY
+	$f cannot be executed"
+	echo "### ISSUE DETECTED: $f is safe from execution" | tee -a -- "$LOG_FILE"
+    fi
+done
+
+# cat limit_ioccc.sh: this will give us many important variables
+#
+# NOTE: this file should be generated from make all so we should expect to have
+# it and thus if the user does not have there's possibly a problem. However the
+# problem isn't really likely to cause a bug on their end (the cause of this
+# might indicate a problem but the file itself is not necessary for using the
+# repo). Still it has a lot of important variables that we would benefit from
+# having.
+echo "## Checking limit_ioccc.sh" | tee -a -- "$LOG_FILE"
+if [[ -e "./limit_ioccc.sh" ]]; then
+    if [[ -r "./limit_ioccc.sh" ]]; then
+	echo "## NOTICE: Found limit_ioccc.sh file:" | tee -a -- "$LOG_FILE"
+	echo "--" | tee -a -- "$LOG_FILE"
+	echo "cat ./limit_ioccc.sh" | tee -a -- "$LOG_FILE"
+	# shellcheck disable=SC2002
+	cat ./limit_ioccc.sh | tee -a -- "$LOG_FILE"
+	echo "--" | tee -a -- "$LOG_FILE"
+    else
+	echo "### NOTICE: Found unreadable limit_ioccc.sh" | tee -a -- "$LOG_FILE"
+    fi
+else
+    echo "### No limit_ioccc.sh file found" | tee -a -- "$LOG_FILE"
+fi
+echo | tee -a -- "$LOG_FILE"
+echo | tee -a -- "$LOG_FILE"
+
+
+# Section 4: check for any user modifications to the tools
+echo "# SECTION 4: USER MODIFICATIONS TO ENVIRONMENT" | tee -a -- "$LOG_FILE"
+echo | tee -a -- "$LOG_FILE"
 
 # check for makefile.local to see if user is overriding any rules.
 #
 # NOTE: we don't use run_check for this because it's not an actual error whether
 # or not the user has a makefile.local file. What matters is the contents of it
 # if they do have one.
-echo "## CHECKING FOR makefile.local" | tee -a -- "$LOG_FILE"
+echo "## CHECKING: if makefile.local exists" | tee -a -- "$LOG_FILE"
 if [[ -e "./makefile.local" ]]; then
     if [[ -r "./makefile.local" ]]; then
-	echo "## NOTICE: Found makefile.local file:" | tee -a -- "$LOG_FILE"
+	echo "### WARNING: Found Makefile overriding file makefile.local:" | tee -a -- "$LOG_FILE"
 	echo "--" | tee -a -- "$LOG_FILE"
 	# shellcheck disable=SC2002
 	cat ./makefile.local | tee -a -- "$LOG_FILE"
 	echo "--" | tee -a -- "$LOG_FILE"
     else
-	echo "## NOTICE: Found unreadable makefile.local" | tee -a -- "$LOG_FILE"
+	echo "### NOTICE: Found unreadable makefile.local" | tee -a -- "$LOG_FILE"
     fi
 else
-    echo "## No makefile.local file found" | tee -a -- "$LOG_FILE"
-fi
-echo | tee -a -- "$LOG_FILE"
-echo | tee -a -- "$LOG_FILE"
-
-# cat limit_ioccc.sh: this will give us many important variables
-#
-# NOTE: this file should be generated from make all so we should expect to have
-# it and thus if the user does not have there's possibly a problem. However the
-# problem isn't really likely to cause a bug on their end (the cause of this
-# might indicate a problem but the file itself is not necessary for using the
-# repo). Still it has a lot of important variables that we would benefit from
-# having.
-echo "## CHECKING FOR limit_ioccc.sh" | tee -a -- "$LOG_FILE"
-if [[ -e "./limit_ioccc.sh" ]]; then
-    if [[ -r "./limit_ioccc.sh" ]]; then
-	echo "## NOTICE: Found limit_ioccc.sh file:" | tee -a -- "$LOG_FILE"
-	echo "--" | tee -a -- "$LOG_FILE"
-	echo "cat ./limit_ioccc.sh" | tee -a -- "$LOG_FILE"
-	# shellcheck disable=SC2002
-	cat ./limit_ioccc.sh | tee -a -- "$LOG_FILE"
-	echo "--" | tee -a -- "$LOG_FILE"
-    else
-	echo "## NOTICE: Found unreadable limit_ioccc.sh" | tee -a -- "$LOG_FILE"
-    fi
-else
-    echo "## No limit_ioccc.sh file found" | tee -a -- "$LOG_FILE"
+    echo "### NOTICE: Makefile has no overriding makefile.local" | tee -a -- "$LOG_FILE"
 fi
 echo | tee -a -- "$LOG_FILE"
 
-# check if there are any local modifications to anything
+# check if there are any local modifications to the code
 #
 # NOTE: We don't use run_check for this because if git does not exist for some
 # reason then the shell might exit with an error code even though we're not
@@ -305,48 +332,13 @@ echo | tee -a -- "$LOG_FILE"
 # differences or not git will return 0. It will return non-zero in the case that
 # it's not in a git repo but we don't explicitly check for this. All we care
 # about is whether or not the user has changes that might be causing a problem.
-echo "## RUNNING git diff to determine if there are local modifications" | tee -a -- "$LOG_FILE"
+echo "## RUNNING: git diff to check for local modifications to the code" | tee -a -- "$LOG_FILE"
 git --no-pager diff | tee -a -- "$LOG_FILE"
 echo "## git diff ABOVE" | tee -a -- "$LOG_FILE"
-
-# cat limit_ioccc.sh: this will give us many important variables
-#
-# NOTE: this file should be generated from make all so we should expect to have
-# it and thus if the user does not have there's possibly a problem. However the
-# problem isn't really likely to cause a bug on their end (the cause of this
-# might indicate a problem but the file itself is not necessary for using the
-# repo). Still it has a lot of important variables that we would benefit from
-# having.
-echo "## CHECKING FOR limit_ioccc.sh" | tee -a -- "$LOG_FILE"
-if [[ -e "./limit_ioccc.sh" ]]; then
-    if [[ -r "./limit_ioccc.sh" ]]; then
-	echo "## NOTICE: Found limit_ioccc.sh file:" | tee -a -- "$LOG_FILE"
-	echo "--" | tee -a -- "$LOG_FILE"
-	echo "cat ./limit_ioccc.sh" | tee -a -- "$LOG_FILE"
-	# shellcheck disable=SC2002
-	cat ./limit_ioccc.sh | tee -a -- "$LOG_FILE"
-	echo "--" | tee -a -- "$LOG_FILE"
-    else
-	echo "## NOTICE: Found unreadable limit_ioccc.sh" | tee -a -- "$LOG_FILE"
-    fi
-else
-    echo "## No limit_ioccc.sh file found" | tee -a -- "$LOG_FILE"
-fi
 echo | tee -a -- "$LOG_FILE"
 echo | tee -a -- "$LOG_FILE"
 
-# check if there are any local modifications to anything
-#
-# NOTE: We don't use run_check for this because if git does not exist for some
-# reason then the shell might exit with an error code even though we're not
-# after that (as in it might not be an error). Additionally whether there are
-# differences or not git will return 0. It will return non-zero in the case that
-# it's not in a git repo but we don't explicitly check for this. All we care
-# about is whether or not the user has changes that might be causing a problem.
-echo "## RUNNING git diff to determine if there are local modifications" | tee -a -- "$LOG_FILE"
-git --no-pager diff | tee -a -- "$LOG_FILE"
-echo "## git diff ABOVE" | tee -a -- "$LOG_FILE"
-
+# final report
 if [[ "$EXIT_CODE" -ne 0 ]]; then
     echo 1>&2
     echo "One or more problems occurred:" | tee -a -- "$LOG_FILE"
