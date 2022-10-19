@@ -373,6 +373,15 @@ else
     echo "instead email the Judges." | tee -a -- "$LOG_FILE"
 
 fi
+echo 1>&2
+echo "NOTE: $LOG_FILE contains various information about" 1>&2
+echo "your environment including things such as hostname, operating system" 1>&2
+echo "information, paths and versions of various tools. Although not encouraged," 1>&2
+echo "you are free to edit this file if you feel so inclined. This information is" 1>&2
+echo "added to the file in case it proves useful in debugging a problem, and therefore" 1>&2
+echo "we kindly request that you provide it to us when you report a problem with this" 1>&2
+echo "code." 1>&2
+
 
 if [[ "$V_FLAG" -gt 1 ]]; then
     echo "About to exit with exit code: $EXIT_CODE" 1>&2
