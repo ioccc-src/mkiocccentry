@@ -1,8 +1,8 @@
-.TH hostchk 1 "18 October 2022" "hostchk.sh" "IOCCC tools"
+.TH hostchk 1 "20 October 2022" "hostchk.sh" "IOCCC tools"
 .SH NAME
 hostchk.sh \- run a series of checks on your system to help determine if you can correctly use the mkiocccentry toolkit
 .SH SYNOPSIS
-\fBhostchk.sh\fP [\-h] [\-V] [\-v level] [\-D dbg_level] [\-t tar] [\-c cc] [\-f]
+\fBhostchk.sh\fP [\-h] [\-V] [\-v level] [\-D dbg_level] [\-c cc] [\-f]
 .SH DESCRIPTION
 \fBhostchk.sh\fP runs a series of checks to determine if you will be able to create an acceptable IOCCC entry tarball.
 If any step fails we recommend you use the \fBbug_report(1)\fP script to create a log file for filing a bug.
@@ -19,9 +19,6 @@ Set verbosity level to \fIlevel\fP.
 .TP
 \fB\-D \fIlevel\fP\fP
 Set verbosity level for the tests the script runs to \fIlevel\fP.
-.TP
-\fB\-t \fItar\fP\fP
-Set path to tar command to \fItar\fP.
 .TP
 \fB\-c \fIcc\fP\fP
 Set path to the compiler (cc) to \fIcc\fP.

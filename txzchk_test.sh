@@ -45,7 +45,7 @@ if [[ -z "$TAR" ]]; then
     TAR="/usr/bin/tar"
 fi
 
-export TXZCHK_TEST_VERSION="0.3 2022-10-11"
+export TXZCHK_TEST_VERSION="0.4 2022-10-20"
 export USAGE="usage: $0 [-h] [-V] [-v level] [-t txzchk] [-T tar] [-F fnamchk] [-d txzchk_tree]
 
     -h			    print help and exit
@@ -215,8 +215,6 @@ if [[ ! -x $TAR ]]; then
     exit 27
 fi
 
-
-
 # remove logfile so that each run starts out with an empty file
 #
 rm -f "$LOGFILE"
@@ -229,6 +227,80 @@ if [[ ! -w "${LOGFILE}" ]]; then
     echo "$0: ERROR: log file not writable" 1>&2
     exit 29
 fi
+
+# set up for tar test
+#
+RUN_TAR_TEST="true"
+TEST_FILE=$(mktemp .txzchk_test.test_file.XXXXXXXXXX)
+status="$?"
+if [[ $status -ne 0 ]]; then
+    echo "$0: ERROR: mktemp $TEST_FILE exit code: $status" 1>&2
+    EXIT_CODE=30
+    RUN_TAR_TEST=
+fi
+date > "$TEST_FILE"
+status="$?"
+if [[ $status -ne 0 ]]; then
+    echo "$0: ERROR: date > $TEST_FILE exit code: $status" 1>&2
+    EXIT_CODE=31
+    RUN_TAR_TEST=
+fi
+if [[ ! -r $TEST_FILE ]]; then
+    echo "$0: ERROR: not a readable TEST_FILE: $TEST_FILE" 1>&2
+    EXIT_CODE=32
+    RUN_TAR_TEST=
+fi
+TAR_ERROR=$(mktemp -u .txzchk_test.tar_err.XXXXXXXXXX.out)
+status="$?"
+if [[ $status -ne 0 ]]; then
+    echo "$0: ERROR: mktemp -u $TAR_ERROR exit code: $status" 1>&2
+    EXIT_CODE=33
+    RUN_TAR_TEST=
+fi
+TARBALL=$(mktemp -u .txzchk_test.tarball.XXXXXXXXXX.txz)
+status="$?"
+if [[ $status -ne 0 ]]; then
+    echo "$0: ERROR: mktemp -u $TARBALL exit code: $status" 1>&2
+    EXIT_CODE=34
+    RUN_TAR_TEST=
+fi
+
+trap "rm -f \$TARBALL \$TEST_FILE \$TAR_ERROR; exit" 1 2 3 15
+
+# run tar test
+#
+TAR_TEST_SUCCESS="true"
+if [[ -n $RUN_TAR_TEST ]]; then
+    "${TAR}" --format=v7 -cJf "$TARBALL" "$TEST_FILE" 2>"$TAR_ERROR"
+    status="$?"
+    if [[ $status -ne 0 ]]; then
+	echo "$0: ERROR: $TAR --format=v7 -cJf $TARBALL $TEST_FILE 2>$TAR_ERROR exit code: $status" 1>&2
+	EXIT_CODE=35
+	TAR_TEST_SUCCESS=
+    fi
+    if [[ ! -s $TARBALL ]]; then
+	echo "$0: ERROR: did not find a non-empty tarball: $TARBALL" 1>&2
+	EXIT_CODE=36
+	TAR_TEST_SUCCESS=
+    fi
+    if [[ -s $TAR_ERROR ]]; then
+	echo "$0: notice: tar stderr follows:" 1>&2
+	cat "$TAR_ERROR" 1>&2
+	echo "$0: notice: end of tar stderr" 1>&2
+	EXIT_CODE=37
+	TAR_TEST_SUCCESS=
+    fi
+else
+    echo "$0: notice: tar test disabled due to test set up error(s)" 1>&2
+    TAR_TEST_SUCCESS=
+fi
+
+# tar test clean up
+#
+if [[ -n $TAR_TEST_SUCCESS ]]; then
+    rm -f "$TEST_FILE" "$TAR_ERROR" "$TARBALL"
+fi
+
 
 # We need a file to write the output of txzchk to in order to compare it
 # with any error file. This is needed for the files that are supposed to
@@ -250,7 +322,7 @@ if [[ ! -w "$STDERR" ]]; then
 fi
 # finally trap exit so that the file is deleted regardless of where the script
 # exits
-trap "rm -f \$STDERR" EXIT
+trap "rm -f \$STDERR; exit" 0 1 2 3 15
 
 if [[ $V_FLAG -ge 5 ]]; then
     echo "$0: debug[5]: will run txzchk from: $TXZCHK" 1>&2

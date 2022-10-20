@@ -53,12 +53,10 @@
 
 # attempt to fetch system specific paths to the tools we need
 #
-# get tar path
-TAR="$(type -P tar 2>/dev/null)"
 # get cc path
 CC="$(type -P cc 2>/dev/null)"
-# It's possible that the paths could not be obtained so we set to defaults in
-# this case.
+# It's possible that a path could not be obtained so we set to defaults in this
+# case.
 #
 # We could do it via parameter substitution but since it tries to execute the
 # command if for some reason the tool ever works without any args specified it
@@ -66,25 +64,19 @@ CC="$(type -P cc 2>/dev/null)"
 # still have to redirect stderr to /dev/null). It would look like:
 #
 #   ${CC:=/usr/bin/cc} 2>/dev/null
-#   ${TAR:=/usr/bin/tar} 2>/dev/null
 #
 # make sure CC is set
 if [[ -z "$CC" ]]; then
     CC="/usr/bin/cc"
 fi
-# make sure TAR is set
-if [[ -z "$TAR" ]]; then
-    TAR="/usr/bin/tar"
-fi
 
 export HOSTCHK_VERSION="0.2 2022-10-12"
-export USAGE="usage: $0 [-h] [-V] [-v level] [-D dbg_level] [-t tar] [-c cc] [-f]
+export USAGE="usage: $0 [-h] [-V] [-v level] [-D dbg_level] [-c cc] [-f]
 
     -h			    print help and exit
     -V			    print version and exit
     -v level		    set verbosity level for this script: (def level: 0)
     -D dbg_level	    set verbosity level for tests (def: level: 0)
-    -t tar		    path to tar that accepts -J option (def: $TAR)
     -c cc		    path to compiler (def: $CC)
     -f			    faster check (def: run slower for better diagnostics)
 
@@ -104,7 +96,7 @@ export EXIT_CODE=0
 export V_FLAG="0"
 export DBG_LEVEL="0"
 export F_FLAG=
-while getopts :hv:VD:t:c:f flag; do
+while getopts :hv:VD:c:f flag; do
     case "$flag" in
     h)	echo "$USAGE" 1>&2
 	exit 2
@@ -115,8 +107,6 @@ while getopts :hv:VD:t:c:f flag; do
 	exit 2
 	;;
     D)	DBG_LEVEL="$OPTARG";
-	;;
-    t)	TAR="$OPTARG";
 	;;
     c)	CC="$OPTARG";
 	;;
@@ -135,21 +125,6 @@ done
 
 # firewall checks
 #
-# check for tar
-#
-if [[ ! -e $TAR ]]; then
-    echo "$0: ERROR: tar not found: $TAR" 1>&2
-    exit 4
-fi
-if [[ ! -f $TAR ]]; then
-    echo "$0: ERROR: tar not a regular file: $TAR" 1>&2
-    exit 4
-fi
-if [[ ! -x $TAR ]]; then
-    echo "$0: ERROR: tar not executable: $TAR" 1>&2
-    exit 4
-fi
-
 # check for cc
 #
 if [[ ! -e $CC ]]; then
@@ -165,78 +140,6 @@ if [[ ! -x $CC ]]; then
     exit 4
 fi
 
-
-# set up for tar test
-#
-RUN_TAR_TEST="true"
-TEST_FILE=$(mktemp .hostchk.test_file.XXXXXXXXXX)
-status="$?"
-if [[ $status -ne 0 ]]; then
-    echo "$0: ERROR: mktemp $TEST_FILE exit code: $status" 1>&2
-    EXIT_CODE=30
-    RUN_TAR_TEST=
-fi
-date > "$TEST_FILE"
-status="$?"
-if [[ $status -ne 0 ]]; then
-    echo "$0: ERROR: date > $TEST_FILE exit code: $status" 1>&2
-    EXIT_CODE=31
-    RUN_TAR_TEST=
-fi
-if [[ ! -r $TEST_FILE ]]; then
-    echo "$0: ERROR: not a readable TEST_FILE: $TEST_FILE" 1>&2
-    EXIT_CODE=32
-    RUN_TAR_TEST=
-fi
-TAR_ERROR=$(mktemp -u .hostchk.tar_err.XXXXXXXXXX.out)
-status="$?"
-if [[ $status -ne 0 ]]; then
-    echo "$0: ERROR: mktemp -u $TAR_ERROR exit code: $status" 1>&2
-    EXIT_CODE=33
-    RUN_TAR_TEST=
-fi
-TARBALL=$(mktemp -u .hostchk.tarball.XXXXXXXXXX.txz)
-status="$?"
-if [[ $status -ne 0 ]]; then
-    echo "$0: ERROR: mktemp -u $TARBALL exit code: $status" 1>&2
-    EXIT_CODE=34
-    RUN_TAR_TEST=
-fi
-
-# run tar test
-#
-TAR_TEST_SUCCESS="true"
-if [[ -n $RUN_TAR_TEST ]]; then
-    "${TAR}" --format=v7 -cJf "$TARBALL" "$TEST_FILE" 2>"$TAR_ERROR"
-    status="$?"
-    if [[ $status -ne 0 ]]; then
-	echo "$0: ERROR: $TAR --format=v7 -cJf $TARBALL $TEST_FILE 2>$TAR_ERROR exit code: $status" 1>&2
-	EXIT_CODE=35
-	TAR_TEST_SUCCESS=
-    fi
-    if [[ ! -s $TARBALL ]]; then
-	echo "$0: ERROR: did not find a non-empty tarball: $TARBALL" 1>&2
-	EXIT_CODE=36
-	TAR_TEST_SUCCESS=
-    fi
-    if [[ -s $TAR_ERROR ]]; then
-	echo "$0: notice: tar stderr follows:" 1>&2
-	cat "$TAR_ERROR" 1>&2
-	echo "$0: notice: end of tar stderr" 1>&2
-	EXIT_CODE=37
-	TAR_TEST_SUCCESS=
-    fi
-else
-    echo "$0: notice: tar test disabled due to test set up error(s)" 1>&2
-    TAR_TEST_SUCCESS=
-fi
-
-# tar test clean up
-#
-if [[ -n $TAR_TEST_SUCCESS ]]; then
-    rm -f "$TEST_FILE" "$TAR_ERROR" "$TARBALL"
-fi
-
 # set up for compile test
 #
 export INCLUDE_TEST_SUCCESS="true"
@@ -248,6 +151,8 @@ if [[ $status -ne 0 ]]; then
     EXIT_CODE=41
     RUN_INCLUDE_TEST=
 fi
+
+trap "rm -f \$PROG_FILE; exit" 1 2 3 15
 
 # Previously, -f was so fast it did absolutely nothing! :-)
 #
