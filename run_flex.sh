@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# run_flex.sh - try to run flex but use backup output files if needed
+# run_flex.sh - try to run flex but use backup output file if needed
 #
 # Copyright (c) 2022 by Landon Curt Noll.  All Rights Reserved.
 #
@@ -36,16 +36,16 @@ export USAGE="usage: $0 [-h] [-V] [-v level] [-o] [-f flex] [-l limit_ioccc.sh]
     -h              print help and exit
     -V              print version and exit
     -v level        set debug level (def: 0)
-    -o		    do NOT use backup files, fail if flex cannot be used (def: use)
+    -o		    do NOT use backup file, fail if flex cannot be used (def: use)
     -f flex	    flex tool basename (def: flex)
     -l limit.sh	    version info file (def: ./limit_ioccc.sh)
     -g verge	    path to verge tool (def: ./verge)
-    -p prefix	    The prefix of files to be used (def: jparse)
+    -p prefix	    The prefix of the file to be used (def: jparse)
 			NOTE: The flex input file will be prefix.l
-			NOTE: If flex cannot be used, these backup
-			NOTE: files are used:
+			NOTE: If flex cannot be used, this backup
+			NOTE: file is used:
 			NOTE:
-			NOTE:		prefix.c
+			NOTE:		prefix.ref.c
 			NOTE:
     -s sorry.h	    File to prepend to C output (def: sorry.tm.ca.h)
     -F dir          first look for flex in dir (def: look just along \$PATH)
@@ -57,12 +57,12 @@ export USAGE="usage: $0 [-h] [-V] [-v level] [-o] [-f flex] [-l limit_ioccc.sh]
     flex_flags      optional flags to give to flex before the prefix.l argument
 
 Exit codes:
-     0   flex output files formed or backup files used instead
+     0   flex output file formed or backup file used instead
      1   flex not found or too old and -o used
-     2   good flex found and ran but failed to form proper output files
-     3   flex input file missing or not readable: backup file(s) had to be used
-     4   backup file(s) are missing, or are not readable
-     5   failed to use backup file(s) to form the flex C output file(s)
+     2   good flex found and ran but failed to form proper output file
+     3   flex input file missing or not readable: backup file had to be used
+     4   backup file is missing, or are not readable
+     5   failed to use backup file to form the flex C output file
      6   limit_ioccc.sh or sorry.h file missing/not readable or verge missing/not executable
      7   MIN_FLEX_VERSION missing or empty from limit_ioccc.sh
      8   -h and help string printed or -V and version string printed
@@ -406,9 +406,9 @@ on_path() {
     return 0;
 }
 
-# use_flex_backup - use backup flex C files in place of flex generated C files
+# use_flex_backup - use backup flex C file in place of flex generated C file
 #
-# NOTE: If -o was given, then we will exit instead of using backup flex C files.
+# NOTE: If -o was given, then we will exit instead of using backup flex C file.
 #
 # warning: use_flex_backup references arguments, but none are ever passed. [SC2120]
 # shellcheck disable=SC2120
@@ -421,14 +421,14 @@ use_flex_backup() {
 	exit 12
     fi
 
-    # If -o, exit instead of using backup flex C files
+    # If -o, exit instead of using backup flex C file
     #
     if [[ -n $O_FLAG ]]; then
 	echo "$0: ERROR: unable to find or use flex and -o given" 1>&2
 	exit 1
     fi
 
-    # look for backup flex C files
+    # look for backup flex C file
     #
     FLEX_BACKUP_C="$PREFIX.ref.c"
     FLEX_C="$PREFIX.c"
@@ -449,9 +449,9 @@ use_flex_backup() {
 	exit 4
     fi
 
-    # copy backup flex C files in place
+    # copy backup flex C file in place
     #
-    echo "# Warning: We are forced to use $FLEX_BASENAME backup files instead of $FLEX_BASENAME C output!" 1>&2
+    echo "# Warning: We are forced to use $FLEX_BASENAME backup file instead of $FLEX_BASENAME C output!" 1>&2
     echo "cp -f -v $FLEX_BACKUP_C $FLEX_C"
     cp -f -v "$FLEX_BACKUP_C" "$FLEX_C"
     status="$?"
@@ -460,7 +460,7 @@ use_flex_backup() {
 	exit 5
     fi
 
-    # moved flex backup files in place
+    # moved flex backup file in place
     #
     return 0
 }
@@ -609,7 +609,7 @@ if [[ $status -ne 0 ]]; then
     exit 2
 fi
 
-# verify the flex C files are non-empty readable files
+# verify the flex C file is a non-empty readable file
 #
 if [[ ! -f $PREFIX.c ]]; then
     echo "$0: Warning: $FLEX_PATH failed to form file: $PREFIX.c" 1>&2

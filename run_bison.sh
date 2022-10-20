@@ -45,7 +45,7 @@ export USAGE="usage: $0 [-h] [-V] [-v level] [-V] [-o] [-b bison] [-l limit_iocc
 			NOTE: If bison cannot be used, these backup
 			NOTE: files are used:
 			NOTE:
-			NOTE:	 prefix.tab.c prefix.tab.h
+			NOTE:	 prefix.tab.ref.c prefix.tab.ref.h
 			NOTE:
     -s sorry.h	    file to prepend to C output (def: sorry.tm.ca.h)
     -B dir          first look for bison in dir (def: look just along \$PATH)

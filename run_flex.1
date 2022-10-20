@@ -1,10 +1,10 @@
-.TH run_flex.sh 8 "18 October 2022" "run_flex.sh" "IOCCC tools"
+.TH run_flex.sh 1 "20 October 2022" "run_flex.sh" "IOCCC tools"
 .SH NAME
 run_flex.sh \- run
 .B flex
 to generate C code from a
 .I *.l
-file or use backup files if error
+file or use backup file if error
 .SH SYNOPSIS
 \fBrun_flex.sh\fP [\-h] [\-V] [\-v level] [\-o] [\-f flex] [\-l limit_ioccc.sh] [\-g verge] [\-p prefix] [\-s sorry.h] [\-F dir] \-\- [flex_flags]
 .SH DESCRIPTION
@@ -14,7 +14,7 @@ file or use backup files if error
 The default prefix is \fIjparse\fP but this script can be used for other scanners as well.
 If a recent enough version is not found or
 .B flex
-encounters an error (syntax error or anything else) and the \fB\-o\fP option is not specified, it attempts to use the backup files.
+encounters an error (syntax error or anything else) and the \fB\-o\fP option is not specified, it attempts to use the backup file \fIprefix.ref.c\fP.
 .SH OPTIONS
 .TP
 \fB\-h\fP
@@ -27,10 +27,10 @@ Show version and exit.
 Set verbosity level to \fIlevel\fP.
 .TP
 \fB\-o\fP
-Do \fBNOT\fP use backup files.
+Do \fBNOT\fP use backup file.
 If
 .B flex
-cannot be used or fails to generate the files the script will fail.
+cannot be used or fails to generate the file the script will fail.
 .TP
 \fB\-f \fIflex\fP\fP
 Set
@@ -47,14 +47,14 @@ This is used to determine if the
 tool is recent enough.
 .TP
 \fB\-p \fIprefix\fP\fP
-Set prefix of files to use to \fIprefix\fP.
+Set prefix of file to use to \fIprefix\fP.
 The
 .B flex
 input file will be \fIprefix.l\fP.
 If the \fB\-o\fP option was not used and
 .B flex
 cannot be used or fails then the backup file
-.I prefix.c
+.I prefix.ref.c
 will be used.
 .TP
 \fB\-s \fIsorry.h\fP\fP
@@ -76,7 +76,7 @@ before the prefix.
 .TP
 0
 .B flex
-output files formed or backup files used instead
+output file formed or backup file used instead
 .TQ
 1
 .B flex
@@ -85,17 +85,17 @@ not found or too old and \fB\-o\fP used
 2
 good
 .B flex
-found and ran but failed to form proper output files
+found and ran but failed to form proper output file
 .TQ
 3
 .B flex
-input file missing or not readable: backup file(s) had to be used
+input file missing or not readable: backup file had to be used
 .TQ
 4
-backup file(s) are missing, or are not readable
+backup file is missing, or are not readable
 .TQ
 5
-failed to use backup file(s) to form the
+failed to use backup file to form the
 .B flex
 C output file(s)
 .TQ
@@ -127,7 +127,7 @@ The idea behind it is if
 .B flex
 fails it might indicate a syntax error which the authors of \fBjparse\fP would need to fix.
 .PP
-Beware that some make implementations have a default rule for \fI*.l\fP files so that if one were to in this repo do:
+Beware that some make implementations have a default rule for \fI*.l\fP file so that if one were to in this repo do:
 .nf
 .RS
 \fB
@@ -140,7 +140,7 @@ the file \fIfoo.c\fP would be overwritten and cause a compilation error.
 This appears to be because foo is actually referenced in the Makefile as a target.
 .SH BUGS
 .PP
-There's no way to disable prepending a file to the generated files.
+There's no way to disable prepending a file to the generated file.
 This should probably be fixed at some point.
 .PP
 If you have any issues with the tool you can open an issue at
@@ -158,7 +158,7 @@ on the \fIjparse.l\fP file:
 .fi
 .RE
 .PP
-Run \fBrun_flex.sh\fP but specify that backup files are not to be used in case a recent enough version of
+Run \fBrun_flex.sh\fP but specify that the backup file is not to be used in case a recent enough version of
 .B flex
 cannot be found or fails for some reason.
 
@@ -171,7 +171,7 @@ cannot be found or fails for some reason.
 .PP
 Try and run
 .B flex
-on the file \fIfoobar.l\fP and don't use any backup files:
+on the file \fIfoobar.l\fP and don't use the backup file:
 .nf
 .RS
 \fB
@@ -183,7 +183,7 @@ Try and run
 .B flex
 on the file \fIfoobar.l\fP with lex instead of
 .B flex
-and don't use any backup files:
+and don't use the backup file:
 .nf
 .RS
 \fB
