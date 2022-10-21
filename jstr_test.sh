@@ -95,7 +95,10 @@ fi
 #
 echo "$0: about to run test #1"
 echo "$JSTRENCODE -v $V_FLAG -n < $JSTRENCODE -v $V_FLAG |  $JSTRDECODE -v $V_FLAG -n > $TEST_FILE"
+# This warning is not correct in our case:
+# note: Make sure not to read and write the same file in the same pipeline. [SC2094]
 # shellcheck disable=SC2094
+#
 "$JSTRENCODE" -v "$V_FLAG" -n < "$JSTRENCODE" -v "$V_FLAG" | $JSTRDECODE -v "$V_FLAG" -n > "$TEST_FILE"
 if cmp -s "$JSTRENCODE" "$TEST_FILE"; then
     echo "$0: test #1 passed"
@@ -105,6 +108,8 @@ else
 fi
 echo "$0: about to run test #2"
 echo "$JSTRENCODE -v $V_FLAG -n < $JSTRDECODE -v $V_FLAG | $JSTRDECODE -v $V_FLAG -n > $TEST_FILE"
+# This warning is incorrect in our case:
+# note: Make sure not to read and write the same file in the same pipeline. [SC2094]
 # shellcheck disable=SC2094
 "$JSTRENCODE" -v "$V_FLAG" -n < "$JSTRDECODE" -v "$V_FLAG" | "$JSTRDECODE" -v "$V_FLAG" -n > "$TEST_FILE"
 if cmp -s "$JSTRDECODE" "$TEST_FILE"; then
@@ -121,9 +126,36 @@ export SRC_SET="jstr_test.sh dbg.c dbg.h fnamchk.c iocccsize.c"
 SRC_SET="$SRC_SET chkentry.c json_parse.c json_parse.h jstrdecode.c jstrencode.c"
 SRC_SET="$SRC_SET limit_ioccc.h mkiocccentry.c txzchk.c util.c util.h"
 echo "cat \$SRC_SET | $JSTRENCODE -v $V_FLAG -n | $JSTRDECODE -v $V_FLAG -n > $TEST_FILE"
+# We cannot double-quote $SRC_SET because doing so would make the shell try
+# catting the list of files as a single file name which obviously would not work
+# so we disable the following check:
+#
+# note: Double quote to prevent globbing and word splitting. [SC2086]
 # shellcheck disable=SC2086
+#
+# And although this issue won't be detected until the previous test is resolved
+# (or in our case ignored) the below is not a useless use of cat. If we were to
+# reorder the command line to say:
+#
+#   "$JSTRENCODE" -v "$V_FLAG" -n | "$JSTRDECODE" -v "$V_FLAG" -n < $SRC_SET > "$TEST_FILE"
+#
+# we would see something like:
+#
+#	./jstr_test.sh: line 139: $SRC_SET: ambiguous redirect
+#
+# and if we were to reorder the command line to say:
+#
+#   < $SRC_SET "$JSTRENCODE" -v "$V_FLAG" -n | "$JSTRDECODE" -v "$V_FLAG" -n > "$TEST_FILE"
+#
+# we would see similar. There might be a way to do it but the typical ways won't
+# work so we disable the useless use of cat check SC2002 as well:
+#
+# note: Useless cat. Consider 'cmd < file | ..' or 'cmd file | ..' instead. [SC2002]
 # shellcheck disable=SC2002
-cat $SRC_SET | $JSTRENCODE -v "$V_FLAG" -n | $JSTRDECODE -v "$V_FLAG" -n > "$TEST_FILE"
+cat $SRC_SET | "$JSTRENCODE" -v "$V_FLAG" -n | "$JSTRDECODE" -v "$V_FLAG" -n > "$TEST_FILE"
+# We cannot double quote "$SRC_SET" because it would make the shell think it's a
+# single file which of course does not exist by that name as it's actually a
+# list of files. Thus we disable shellcheck check SC2086.
 # shellcheck disable=SC2086
 cat $SRC_SET > "$TEST_FILE2"
 if cmp -s "$TEST_FILE2" "$TEST_FILE"; then

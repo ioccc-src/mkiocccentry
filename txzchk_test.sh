@@ -416,14 +416,14 @@ run_test()
     # command does not match it is a fail.
     if [[ -e "$txzchk_err_file" ]]; then
 	if ! cmp -s "$txzchk_err_file" "$STDERR"; then
-	    echo "$0: Warning: in run_test: FAIL: $TXZCHK -w -v 0 -t $TAR -F $FNAMCHK -T -E txt $txzchk_test_file" | tee -a "$LOGFILE" 1>&2
+	    echo "$0: Warning: in run_test: FAIL: $TXZCHK -w -v 0 -t $TAR -F $FNAMCHK -T -E txt $txzchk_test_file" | tee -a -- "$LOGFILE" 1>&2
 	    echo "$0: Warning: in run_test: expected errors do not match result of test" 1>&2
 	    if [[ $V_FLAG -lt 3 ]]; then
-		echo "$0: Warning: for more details try: $TXZCHK -w -v 3 -t $TAR -F $FNAMCHK -T -E txt -- $txzchk_test_file" | tee -a "$LOGFILE" 1>&2
+		echo "$0: Warning: for more details try: $TXZCHK -w -v 3 -t $TAR -F $FNAMCHK -T -E txt -- $txzchk_test_file" | tee -a -- "$LOGFILE" 1>&2
 	    else
-		echo "$0: Warning: for more details try: $TXZCHK -w -v $V_FLAG -t $TAR -F $FNAMCHK -T -E txt -- $txzchk_test_file" | tee -a "$LOGFILE" 1>&2
+		echo "$0: Warning: for more details try: $TXZCHK -w -v $V_FLAG -t $TAR -F $FNAMCHK -T -E txt -- $txzchk_test_file" | tee -a -- "$LOGFILE" 1>&2
 	    fi
-	    echo | tee -a "${LOGFILE}" 1>&2
+	    echo | tee -a -- "${LOGFILE}" 1>&2
 	    EXIT_CODE=42
 	fi
     # Otherwise if there was output written to stderr it indicates that one or
@@ -436,12 +436,12 @@ run_test()
     # 'pass' but this would further complicate the script when the fact there's
     # stderr output is an error that should be addressed.
     elif [[ -s "$STDERR" ]]; then
-	echo "$0: Warning: in run_test: FAIL: $TXZCHK -w -v 0 -t $TAR -F $FNAMCHK -T -E txt $txzchk_test_file" | tee -a "$LOGFILE" 1>&2
+	echo "$0: Warning: in run_test: FAIL: $TXZCHK -w -v 0 -t $TAR -F $FNAMCHK -T -E txt $txzchk_test_file" | tee -a -- "$LOGFILE" 1>&2
 	echo "$0: Warning: in run_test: unexpected errors found for file that should have passed:" | tee -a "$LOGFILE" 1>&2
 	echo cat "$STDERR"
-	# shellcheck disable=SC2002
-	cat "$STDERR" | tee -a "${LOGFILE}"
-	echo | tee -a "${LOGFILE}" 1>&2
+	# tee -a -- "$LOGFILE < "$STDERR"
+	< "$STDERR" tee -a -- "$LOGFILE"
+	echo | tee -a -- "${LOGFILE}" 1>&2
 	exit
 	EXIT_CODE=43
     # all is okay if we get here

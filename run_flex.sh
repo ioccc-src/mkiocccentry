@@ -31,7 +31,7 @@
 #
 export RUN_FLEX_VERSION="0.3 2022-04-22"
 export USAGE="usage: $0 [-h] [-V] [-v level] [-o] [-f flex] [-l limit_ioccc.sh]
-		        [-g verge] [-p prefix] [-s sorry.h] [-F dir] -- [flex_flags]
+		        [-g verge] [-p prefix] [-s sorry.h] [-S] [-F dir] -- [flex_flags]
 
     -h              print help and exit
     -V              print version and exit
@@ -40,20 +40,21 @@ export USAGE="usage: $0 [-h] [-V] [-v level] [-o] [-f flex] [-l limit_ioccc.sh]
     -f flex	    flex tool basename (def: flex)
     -l limit.sh	    version info file (def: ./limit_ioccc.sh)
     -g verge	    path to verge tool (def: ./verge)
-    -p prefix	    The prefix of the file to be used (def: jparse)
+    -p prefix	    the prefix of the file to be used (def: jparse)
 			NOTE: The flex input file will be prefix.l
 			NOTE: If flex cannot be used, this backup
 			NOTE: file is used:
 			NOTE:
 			NOTE:		prefix.ref.c
 			NOTE:
-    -s sorry.h	    File to prepend to C output (def: sorry.tm.ca.h)
+    -s sorry.h	    file to prepend to C output (def: sorry.tm.ca.h)
+    -S		    suppress prepending apology file
     -F dir          first look for flex in dir (def: look just along \$PATH)
 		        NOTE: Multiple -F dir are allowed.
 		        NOTE: Search is performed in dir order before the \$PATH path.
 			NOTE: If dir is missing or not searchable, dir is ignored.
 			NOTE: This is ignored if the final arg is NOT flex.
-    --		    End of $0 flags
+    --		    end of $0 flags
     flex_flags      optional flags to give to flex before the prefix.l argument
 
 Exit codes:
@@ -79,41 +80,44 @@ export VERGE="./verge"
 export MIN_FLEX_VERSION=
 declare -a FLEX_DIRS=()
 export SORRY_H="sorry.tm.ca.h"
+export S_FLAG=
 
 # parse args
 #
-while getopts :hv:Vof:l:g:p:s:F: flag; do
+while getopts :hv:Vof:l:g:p:s:SF: flag; do
     case "$flag" in
-    h) echo "$USAGE" 1>&2
-       exit 8
-       ;;
-    v) V_FLAG="$OPTARG";
-       ;;
-    V) echo "$RUN_FLEX_VERSION"
-       exit 8
-       ;;
-    o) O_FLAG="-o"
-       ;;
-    f) FLEX_BASENAME="$OPTARG";
-       ;;
-    l) LIMIT_IOCCC_SH="$OPTARG";
-       ;;
-    g) VERGE="$OPTARG";
-       ;;
-    p) PREFIX="$OPTARG";
-       ;;
-    s) SORRY_H="$OPTARG";
-       ;;
-    F) FLEX_DIRS[${#FLEX_DIRS[@]}]="$OPTARG";
-       ;;
+    h)	echo "$USAGE" 1>&2
+	exit 8
+	;;
+    v)	V_FLAG="$OPTARG";
+	;;
+    V)	echo "$RUN_FLEX_VERSION"
+	exit 8
+	;;
+    o)	O_FLAG="-o"
+	;;
+    f)	FLEX_BASENAME="$OPTARG";
+	;;
+    l)	LIMIT_IOCCC_SH="$OPTARG";
+	;;
+    g)	VERGE="$OPTARG";
+	;;
+    p)	PREFIX="$OPTARG";
+	;;
+    s)	SORRY_H="$OPTARG";
+	;;
+    S)	S_FLAG="true"
+	;;
+    F)	FLEX_DIRS[${#FLEX_DIRS[@]}]="$OPTARG";
+	;;
     \?) echo "$0: ERROR: invalid option: -$OPTARG" 1>&2
-       exit 9
-       ;;
-    :) echo "$0: ERROR: option -$OPTARG requires an argument" 1>&2
-       exit 9
-       ;;
-   *)
-       ;;
+	exit 9
+	;;
+    :)	echo "$0: ERROR: option -$OPTARG requires an argument" 1>&2
+	exit 9
+	;;
+    *)
+	;;
     esac
 done
 if [[ -z $FLEX_BASENAME ]]; then
@@ -162,23 +166,28 @@ if [[ ! -x $VERGE ]]; then
     echo "$0: ERROR: verge not an executable: $VERGE" 1>&2
     exit 6
 fi
-if [[ ! -e $SORRY_H ]]; then
+if [[ ! -e $SORRY_H && -z "$S_FLAG" ]]; then
     echo "$0: ERROR: sorry file not found: $SORRY_H" 1>&2
     exit 6
 fi
-if [[ ! -f $SORRY_H ]]; then
+if [[ ! -f $SORRY_H && -z "$S_FLAG" ]]; then
     echo "$0: ERROR: sorry file not a regular file: $SORRY_H" 1>&2
     exit 6
 fi
-if [[ ! -r $SORRY_H ]]; then
+if [[ ! -r $SORRY_H && -z "$S_FLAG" ]]; then
     echo "$0: ERROR: sorry file not a readable file: $SORRY_H" 1>&2
     exit 6
 fi
 
 # source the limit_ioccc.sh file
 #
+# We have to disable this check because we can't use the shellcheck directive
+# source="$LIMIT_IOCCC_SH" as this requires the -x option and not all shellcheck
+# versions support -x:
+#
 # warning: ShellCheck can't follow non-constant source. Use a directive to specify location. [SC1090]
 # shellcheck disable=SC1090
+#
 source "$LIMIT_IOCCC_SH" >/dev/null 2>&1
 if [[ -z $MIN_FLEX_VERSION ]]; then
     echo "$0: ERROR: MIN_FLEX_VERSION missing or has an empty value from: $LIMIT_IOCCC_SH" 1>&2
@@ -410,8 +419,12 @@ on_path() {
 #
 # NOTE: If -o was given, then we will exit instead of using backup flex C file.
 #
+# This warning is specifically triggered because we check for the number of args
+# passed to the function to make sure none are given so we have to disable it:
+#
 # warning: use_flex_backup references arguments, but none are ever passed. [SC2120]
 # shellcheck disable=SC2120
+#
 use_flex_backup() {
 
     # parse args
@@ -619,16 +632,16 @@ elif [[ ! -s $PREFIX.c ]]; then
     use_flex_backup
 else
 
-    # prepend the apology file and line number reset
+    # prepend the apology file and line number reset if -S not used
     #
-    add_sorry "$PREFIX.c"
+    if [[ -z "$S_FLAG" ]]; then
+	add_sorry "$PREFIX.c"
+    fi
 
     # print debug of result if -v
     #
     if [[ $V_FLAG -ge 1 ]]; then
-	# note: Double quote to prevent globbing and word splitting. [SC2086]
-	# shellcheck disable=SC2086
-	echo "$0: debug[1]: $(ls -l $PREFIX.c)"
+	echo "$0: debug[1]: $(ls -l "$PREFIX.c")"
 	echo "$0: debug[1]: $FLEX_BASENAME run OK: formed $PREFIX.c" 1>&2
     fi
 fi

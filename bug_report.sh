@@ -286,8 +286,8 @@ if [[ -e "./limit_ioccc.sh" ]]; then
 	echo "## NOTICE: Found limit_ioccc.sh file:" | tee -a -- "$LOG_FILE"
 	echo "--" | tee -a -- "$LOG_FILE"
 	echo "cat ./limit_ioccc.sh" | tee -a -- "$LOG_FILE"
-	# shellcheck disable=SC2002
-	cat ./limit_ioccc.sh | tee -a -- "$LOG_FILE"
+	# tee -a -- "$LOG_FILE" < ./limit_ioccc.sh
+	< limit_ioccc.sh tee -a -- "$LOG_FILE"
 	echo "--" | tee -a -- "$LOG_FILE"
     else
 	echo "### NOTICE: Found unreadable limit_ioccc.sh" | tee -a -- "$LOG_FILE"
@@ -312,9 +312,10 @@ echo "## CHECKING: if makefile.local exists" | tee -a -- "$LOG_FILE"
 if [[ -e "./makefile.local" ]]; then
     if [[ -r "./makefile.local" ]]; then
 	echo "### WARNING: Found Makefile overriding file makefile.local:" | tee -a -- "$LOG_FILE"
+	echo "cat ./makefile.local" | tee -a -- "$LOG_FILE"
 	echo "--" | tee -a -- "$LOG_FILE"
-	# shellcheck disable=SC2002
-	cat ./makefile.local | tee -a -- "$LOG_FILE"
+	# tee -a -- "$LOG_FILE" < makefile.local
+	< makefile.local tee -a -- "$LOG_FILE"
 	echo "--" | tee -a -- "$LOG_FILE"
     else
 	echo "### NOTICE: Found unreadable makefile.local" | tee -a -- "$LOG_FILE"
