@@ -626,7 +626,7 @@ fi
 # case: no usable bison found
 #
 if [[ -z $BISON_PATH ]]; then
-    echo "Warning: failed to discover the path for an up to date bison as: $BISON_BASENAME" 1>&2
+    echo "$0: Warning: failed to discover the path for an up to date bison as: $BISON_BASENAME" 1>&2
     use_bison_backup
     exit 0
 fi

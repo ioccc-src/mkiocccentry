@@ -596,7 +596,7 @@ fi
 # case: no usable flex found
 #
 if [[ -z $FLEX_PATH ]]; then
-    echo "# Warning: failed to discover the path for an up to date flex as: $FLEX_BASENAME" 1>&2
+    echo "$0: Warning: failed to discover the path for an up to date flex as: $FLEX_BASENAME" 1>&2
     use_flex_backup
     exit 0
 fi
