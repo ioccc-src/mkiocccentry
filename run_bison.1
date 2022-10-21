@@ -1,4 +1,4 @@
-.TH run_bison.sh 1 "20 October 2022" "run_bison.sh" "IOCCC tools"
+.TH run_bison.sh 1 "21 October 2022" "run_bison.sh" "IOCCC tools"
 .SH NAME
 run_bison.sh \- run
 .B bison
@@ -6,7 +6,7 @@ to generate C code from a
 .I *.y
 file or use backup files if error
 .SH SYNOPSIS
-\fBrun_bison.sh\fP [\-h] [\-V] [\-v level] [\-o] [\-b bison] [\-l limit_ioccc.sh] [\-g verge] [\-p prefix] [\-s sorry.h] [\-B dir] \-\- [bison_flags]
+\fBrun_bison.sh\fP [\-h] [\-V] [\-v level] [\-o] [\-b bison] [\-l limit_ioccc.sh] [\-g verge] [\-p prefix] [\-s sorry.h] [\-S] [\-B dir] \-\- [bison_flags]
 .SH DESCRIPTION
 \fBrun_bison.sh\fP attempts to find a recent enough version of
 .B bison
@@ -57,6 +57,9 @@ will be used.
 .TP
 \fB\-s \fIsorry.h\fP\fP
 Set path of file to prepend to the C output to \fIsorry.h\fP.
+.TP
+\fB\-S\fP
+Suppress prepending apology to generated C output files.
 .TP
 \fB\-B \fIbison_dir\fP\fP
 Add a directory to search for
@@ -139,9 +142,6 @@ there would be an error in using make.
 Even worse is that until that file is deleted (assuming \fIfoo.y\fP is in error say because it was created by touch and is empty) make will continue to fail.
 This appears to be because foo is actually referenced in the Makefile as a target.
 .SH BUGS
-.PP
-There's no way to disable prepending a file to the generated files.
-This should probably be fixed at some point.
 .PP
 If you have any issues with the tool you can open an issue at
 .br

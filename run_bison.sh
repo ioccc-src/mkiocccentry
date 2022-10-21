@@ -31,7 +31,7 @@
 #
 export RUN_BISON_VERSION="0.3 2022-04-22"
 export USAGE="usage: $0 [-h] [-V] [-v level] [-V] [-o] [-b bison] [-l limit_ioccc.sh]
-		        [-g verge] [-p prefix] [-s sorry.h] [-B dir] -- [bison_flags]
+		        [-g verge] [-p prefix] [-s sorry.h] [-S] [-B dir] -- [bison_flags]
 
     -h		    print help and exit
     -V		    print version and exit
@@ -48,6 +48,7 @@ export USAGE="usage: $0 [-h] [-V] [-v level] [-V] [-o] [-b bison] [-l limit_iocc
 			NOTE:	 prefix.tab.ref.c prefix.tab.ref.h
 			NOTE:
     -s sorry.h	    file to prepend to C output (def: sorry.tm.ca.h)
+    -S		    suppress prepending apology file
     -B dir          first look for bison in dir (def: look just along \$PATH)
 		        NOTE: Multiple -B dir are allowed.
 		        NOTE: Search is performed in dir order before the \$PATH path.
@@ -79,41 +80,44 @@ export MIN_BISON_VERSION=
 declare -a BISON_DIRS=()
 export SORRY_H="sorry.tm.ca.h"
 export O_FLAG=
+export S_FLAG=
 
 # parse args
 #
-while getopts :hv:Vob:l:g:p:s:B: flag; do
+while getopts :hv:Vob:l:g:p:s:SB: flag; do
     case "$flag" in
-    h) echo "$USAGE" 1>&2
-       exit 8
-       ;;
-    v) V_FLAG="$OPTARG";
-       ;;
-    V) echo "$RUN_BISON_VERSION"
-       exit 8
-       ;;
-    o) O_FLAG="-o"
-       ;;
-    b) BISON_BASENAME="$OPTARG";
-       ;;
-    l) LIMIT_IOCCC_SH="$OPTARG";
-       ;;
-    g) VERGE="$OPTARG";
-       ;;
-    p) PREFIX="$OPTARG";
-       ;;
-    s) SORRY_H="$OPTARG";
-       ;;
-    B) BISON_DIRS[${#BISON_DIRS[@]}]="$OPTARG";
-       ;;
-    \?) echo "$0: ERROR: invalid option: -$OPTARG" 1>&2
-       exit 9
-       ;;
-    :) echo "$0: ERROR: option -$OPTARG requires an argument" 1>&2
-       exit 9
-       ;;
-   *)
-       ;;
+    h)	echo "$USAGE" 1>&2
+	exit 8
+	;;
+    v)	V_FLAG="$OPTARG";
+	;;
+    V)	echo "$RUN_BISON_VERSION"
+	exit 8
+	;;
+    o)	O_FLAG="-o"
+	;;
+    b)	BISON_BASENAME="$OPTARG";
+	;;
+    l)	LIMIT_IOCCC_SH="$OPTARG";
+	;;
+    g)	VERGE="$OPTARG";
+	;;
+    p)	PREFIX="$OPTARG";
+	;;
+    s)	SORRY_H="$OPTARG";
+	;;
+    S)	S_FLAG="true";
+	;;
+    B)	BISON_DIRS[${#BISON_DIRS[@]}]="$OPTARG";
+	;;
+    \?)	 echo "$0: ERROR: invalid option: -$OPTARG" 1>&2
+	exit 9
+	;;
+    :)	echo "$0: ERROR: option -$OPTARG requires an argument" 1>&2
+	exit 9
+	;;
+    *)
+	;;
     esac
 done
 if [[ -z $BISON_BASENAME ]]; then
@@ -162,15 +166,15 @@ if [[ ! -x $VERGE ]]; then
     echo "$0: ERROR: verge not an executable: $VERGE" 1>&2
     exit 6
 fi
-if [[ ! -e $SORRY_H ]]; then
+if [[ ! -e $SORRY_H && -z "$S_FLAG" ]]; then
     echo "$0: ERROR: sorry file not found: $SORRY_H" 1>&2
     exit 6
 fi
-if [[ ! -f $SORRY_H ]]; then
+if [[ ! -f $SORRY_H && -z "$S_FLAG" ]]; then
     echo "$0: ERROR: sorry file not a regular file: $SORRY_H" 1>&2
     exit 6
 fi
-if [[ ! -r $SORRY_H ]]; then
+if [[ ! -r $SORRY_H && -z "$S_FLAG" ]]; then
     echo "$0: ERROR: sorry file not a readable file: $SORRY_H" 1>&2
     exit 6
 fi
@@ -664,10 +668,12 @@ elif [[ ! -s $PREFIX.tab.h ]]; then
     use_bison_backup
 else
 
-    # prepend the apology file and line number reset
+    # prepend the apology file and line number reset if -S not used
     #
-    add_sorry "$PREFIX.tab.c"
-    add_sorry "$PREFIX.tab.h"
+    if [[ -z "$S_FLAG" ]]; then
+	add_sorry "$PREFIX.tab.c"
+	add_sorry "$PREFIX.tab.h"
+    fi
 
     # print debug of result if -v
     #
