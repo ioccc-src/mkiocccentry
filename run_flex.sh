@@ -177,8 +177,13 @@ fi
 
 # source the limit_ioccc.sh file
 #
+# We have to disable this check because we can't use the shellcheck directive
+# source="$LIMIT_IOCCC_SH" as this requires the -x option and not all shellcheck
+# versions support -x:
+#
 # warning: ShellCheck can't follow non-constant source. Use a directive to specify location. [SC1090]
 # shellcheck disable=SC1090
+#
 source "$LIMIT_IOCCC_SH" >/dev/null 2>&1
 if [[ -z $MIN_FLEX_VERSION ]]; then
     echo "$0: ERROR: MIN_FLEX_VERSION missing or has an empty value from: $LIMIT_IOCCC_SH" 1>&2
@@ -410,8 +415,12 @@ on_path() {
 #
 # NOTE: If -o was given, then we will exit instead of using backup flex C file.
 #
+# This warning is specifically triggered because we check for the number of args
+# passed to the function to make sure none are given so we have to disable it:
+#
 # warning: use_flex_backup references arguments, but none are ever passed. [SC2120]
 # shellcheck disable=SC2120
+#
 use_flex_backup() {
 
     # parse args
@@ -626,9 +635,7 @@ else
     # print debug of result if -v
     #
     if [[ $V_FLAG -ge 1 ]]; then
-	# note: Double quote to prevent globbing and word splitting. [SC2086]
-	# shellcheck disable=SC2086
-	echo "$0: debug[1]: $(ls -l $PREFIX.c)"
+	echo "$0: debug[1]: $(ls -l "$PREFIX.c")"
 	echo "$0: debug[1]: $FLEX_BASENAME run OK: formed $PREFIX.c" 1>&2
     fi
 fi

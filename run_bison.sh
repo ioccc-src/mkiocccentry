@@ -177,8 +177,13 @@ fi
 
 # source the limit_ioccc.sh file
 #
+# We have to disable this check because we can't use the shellcheck directive
+# source="$LIMIT_IOCCC_SH" as this requires the -x option and not all shellcheck
+# versions support -x:
+#
 # warning: ShellCheck can't follow non-constant source. Use a directive to specify location. [SC1090]
 # shellcheck disable=SC1090
+#
 source "$LIMIT_IOCCC_SH" >/dev/null 2>&1
 if [[ -z $MIN_BISON_VERSION ]]; then
     echo "$0: ERROR: MIN_BISON_VERSION missing or has an empty value from: $LIMIT_IOCCC_SH" 1>&2
@@ -419,6 +424,9 @@ on_path() {
 # use_bison_backup - use backup bison C files in place of bison generated C files
 #
 # NOTE: If -o was given, then we will exit instead of using backup bison C files.
+#
+# This warning is specifically triggered because we check for the number of args
+# passed to the function to make sure none are given so we have to disable it:
 #
 # warning: use_bison_backup references arguments, but none are ever passed. [SC2120]
 # shellcheck disable=SC2120
@@ -665,11 +673,9 @@ else
     #
     if [[ $V_FLAG -ge 1 ]]; then
 	# note: Double quote to prevent globbing and word splitting. [SC2086]
-	# shellcheck disable=SC2086
-	echo "$0: debug[1]: $(ls -l $PREFIX.tab.c)"
+	echo "$0: debug[1]: $(ls -l "$PREFIX.tab.c")"
 	# note: Double quote to prevent globbing and word splitting. [SC2086]
-	# shellcheck disable=SC2086
-	echo "$0: debug[1]: $(ls -l $PREFIX.tab.h)"
+	echo "$0: debug[1]: $(ls -l "$PREFIX.tab.h")"
 	echo "$0: debug[1]: $BISON_BASENAME run OK: formed $PREFIX.tab.c and $PREFIX.tab.h" 1>&2
     fi
 fi
