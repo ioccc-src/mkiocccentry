@@ -1,4 +1,4 @@
-.TH txzchk_test 8 "18 October 2022" "txzchk_test" "IOCCC tools"
+.TH txzchk_test 8 "20 October 2022" "txzchk_test" "IOCCC tools"
 .SH NAME
 txzchk_test.sh \- test suite for \fBtxzchk(1)\fP
 .SH SYNOPSIS
@@ -9,6 +9,10 @@ For the bad files it checks that the issues reported are the same as expected.
 The script enforces that bad files have an associated error file to compare with the errors reported by \fBtxzchk(1)\fP so that this can be done without a problem.
 If an error file is missing it is an error.
 Conversely if a good file has an error file it is also an error.
+.PP
+It also runs a simple test to determine if the system supports the required options for \fBtar(1)\fP.
+Specifically it must support \fB-J\fP and the \fBv7\fP format.
+Thus if a non-empty tarball can be created by \fBtar --format=v7 -cJf\fP all is good.
 .SH OPTIONS
 .TP
 \fB\-h\fP

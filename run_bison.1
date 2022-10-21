@@ -1,4 +1,4 @@
-.TH run_bison.sh 8 "18 October 2022" "run_bison.sh" "IOCCC tools"
+.TH run_bison.sh 1 "20 October 2022" "run_bison.sh" "IOCCC tools"
 .SH NAME
 run_bison.sh \- run
 .B bison
@@ -14,7 +14,7 @@ file or use backup files if error
 The default prefix is \fIjparse\fP but this script can be used for other parsers as well.
 If a recent enough version is not found or
 .B bison
-encounters an error (syntax error or anything else) and the \fB\-o\fP option is not specified, it attempts to use the backup files.
+encounters an error (syntax error or anything else) and the \fB\-o\fP option is not specified, it attempts to use the backup files \fIprefix.tab.ref.c\fP and \fIprefix.tab.ref.h\fP.
 .SH OPTIONS
 .TP
 \fB\-h\fP
@@ -50,7 +50,9 @@ tool is recent enough.
 Set prefix of files to use to \fIprefix\fP.
 The bison input file will be \fIprefix.y\fP.
 If the \fB\-o\fP option was not used and bison cannot be used or fails then the backup file
-.I prefix.c
+.I prefix.tab.ref.c
+and
+.I prefix.tab.ref.h
 will be used.
 .TP
 \fB\-s \fIsorry.h\fP\fP

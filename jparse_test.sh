@@ -267,12 +267,12 @@ if [[ $V_FLAG -ge 1 ]]; then
 	echo "$0: debug[1]: all tests PASSED" 1>&2
 	echo "$0: debug[1]: all tests PASSED" >> "${LOGFILE}"
 	echo 1>&2
-	echo "$0: see jparse_test.log for details" 1>&2
+	echo "$0: see $LOGFILE for details" 1>&2
     else
 	echo "$0: ERROR: debug[1]: some tests FAILED" 1>&2
 	echo "$0: ERROR: debug[1]: some tests FAILED" >> "${LOGFILE}"
 	echo 1>&2
-	echo "$0: Notice: see jparse_test.log for details" 1>&2
+	echo "$0: Notice: see $LOGFILE for details" 1>&2
     fi
 fi
 exit "$EXIT_CODE"

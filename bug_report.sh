@@ -268,7 +268,7 @@ for f in $TOOLS; do
 	echo "$0: ERROR: $f is not executable: new exit code: $EXIT_CODE" | tee -a -- "$LOG_FILE"
 	FAILURE_SUMMARY="$FAILURE_SUMMARY
 	$f cannot be executed"
-	echo "### ISSUE DETECTED: $f is safe from execution" | tee -a -- "$LOG_FILE"
+	echo "### ISSUE DETECTED: $f process execution was botched: not even a zombie process was produced" | tee -a -- "$LOG_FILE"
     fi
 done
 
