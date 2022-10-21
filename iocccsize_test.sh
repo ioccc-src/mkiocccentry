@@ -26,10 +26,10 @@ export USAGE="usage: $0 [-h] [-v lvl] [-V] [-i iocccsize] [-w work_dir] [-l limi
     -h		    print usage message and exit 2
     -v lvl	    set debugging level to lvl (def: 0 ==> no debugging)
     -V		    print tool version and exit 2
-    -i iocccisze    path to iocccsize tool (def: test with ./iocccsize)
+    -i iocccsize    path to iocccsize tool (def: test with ./iocccsize)
     -w work_dir	    working directory that is removed & rebuilt during the test (def: ./test_iocccsize)
     -l limit	    path to limit_ioccc.sh executable shell script (def: ./limit_ioccc.sh)
-		    A limit of . (dot) will disable use of a executable shell script.
+		    A limit of . (dot) will disable use of an executable shell script.
 
 Exit codes:
      0   all is OK
@@ -77,7 +77,7 @@ if [[ ! -f $IOCCCSIZE ]]; then
     exit 11
 fi
 if [[ ! -x $IOCCCSIZE ]]; then
-    echo "$0: ERROR: limit_ioccc.h is not a executable file: $IOCCCSIZE" 1>&2
+    echo "$0: ERROR: limit_ioccc.h is not an executable file: $IOCCCSIZE" 1>&2
     exit 12
 fi
 
@@ -117,6 +117,11 @@ fi
 #
 if [[ $LIMIT_IOCCC != "." ]]; then
     # warning: ShellCheck can't follow non-constant source. Use a directive to specify location.
+    #
+    # We could try instead using shellcheck source="$LIMIT_IOCCC" but this
+    # requires the -x option to shellcheck and not all versions support this
+    # option so we have to disable the warning instead.
+    #
     # shellcheck disable=SC1090
     source "$LIMIT_IOCCC"
     status="$?"
