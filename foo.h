@@ -25,9 +25,19 @@
  * it. Cody is quite okay if after looking at this file you think he's a bit
  * crazy and in fact he quite welcomes it and even relishes the idea! :-)
  *
- * "Because sometimes we all need a little craziness in our lives." :-)
+ * "Because Cody enjoys being a bit eccentric and he is rather proud of it too!" :-)
+ *
+ * BTW: If you want to win the IOCCC every time all you need to do
+ * (supposedly :-) ), is decipher this quote with a top secret hint from Landon
+ * to me in private. It's so secret and seems so ridiculously simple in fact
+ * that I've decided to not use it as it all seems more like a misleading
+ * comment and possibly a huge joke. Nevertheless I give you, dear reader, the
+ * chance to always win should you determine what this says:
+ *
+ * Ti bol jrt IOCCC moxuj you must tljtx jrt contest qld coin cis fsuj gt gtjjtx
+ * jrql jrt ziuole entries. Cj'u xtqzzc jrqj simple. Vod cis xtqzzc tkwtyj
+ * uiftjrole tzut? Eiz.
  */
-
 
 #if !defined(INCLUDE_FOO_H)
 #    define  INCLUDE_FOO_H

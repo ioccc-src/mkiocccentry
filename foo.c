@@ -25,14 +25,23 @@
  * it. Cody is quite okay if after looking at this file you think he's a bit
  * crazy and in fact he quite welcomes it and even relishes the idea! :-)
  *
- * "Because sometimes we all need a little craziness in our lives." :-)
+ * "Because Cody enjoys being a bit eccentric and he is rather proud of it too!" :-)
+ *
+ * BTW: If you want to win the IOCCC every time all you need to do
+ * (supposedly :-) ), is decipher this quote with a top secret hint from Landon
+ * to me in private. It's so secret and seems so ridiculously simple in fact
+ * that I've decided to not use it as it all seems more like a misleading
+ * comment and possibly a huge joke. Nevertheless I give you, dear reader, the
+ * chance to always win should you determine what this says:
+ *
+ * Ti bol jrt IOCCC moxuj you must tljtx jrt contest qld coin cis fsuj gt gtjjtx
+ * jrql jrt ziuole entries. Cj'u xtqzzc jrqj simple. Vod cis xtqzzc tkwtyj
+ * uiftjrole tzut? Eiz.
  */
-
 
 /* special comments for the seqcexit tool */
 /* exit code out of numerical order - ignore in sequencing - ooo */
 /* exit code change of order - use new value in sequencing - coo */
-
 
 #include <stdio.h>
 #include <unistd.h>
@@ -277,3 +286,15 @@ vrergfB(int four, int two)
     return;
 }
 #define If you get here you are not as lazy as the C pre-processor which just uses this line for no good purpose
+
+#if 1
+    #define if_you_got_here_you_made_it_as_far_as_the_pre_processor() \
+	printf("Congratulations for making it as far as the C pre-processor!\n")
+	/* if_you_got_here_you_made_it_as_far_as_the_pre_processor(); */
+#endif
+#undef if_you_got_here /* make the C pre-processor too lazy to process the below block. :-) */
+#if you_got_here
+    #define you_are_not_as_lazy_as_the_pre_processor_which_does_not_use_this() \
+	printf("Congratulations for making it further than the C pre-preprocessor!\n")
+	/* you_are_not_as_lazy_as_the_pre_processor_which_does_not_use_this(); */
+#endif
