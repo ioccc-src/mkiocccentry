@@ -469,9 +469,6 @@ done < <(find "$TXZCHK_GOOD_TREE" -type f -name '*.txt' -print)
 
 # run tests that must fail
 #
-
-# now the text files
-#
 if [[ $V_FLAG -ge 3 ]]; then
     echo "$0: debug[3]: about to run txzchk tests that must fail: text files" 1>&2
 fi

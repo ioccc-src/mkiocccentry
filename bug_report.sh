@@ -237,10 +237,10 @@ echo | tee -a -- "$LOG_FILE"
 # Section 2: JSON scanner and parser checks.
 echo "# SECTION 2: BISON AND FLEX CHECKS" | tee -a -- "$LOG_FILE"
 echo | tee -a -- "$LOG_FILE"
-# run_bison.sh -v 1: check if bison will work
-run_check 21 "./run_bison.sh -v 1"
-# run_flex.sh -v 1: check if flex will work
-run_check 22 "./run_flex.sh -v 1"
+# run_bison.sh -v 7: check if bison will work
+run_check 21 "./run_bison.sh -v 7"
+# run_flex.sh -v 7: check if flex will work
+run_check 22 "./run_flex.sh -v 7"
 # run make all again: run_bison.sh and run_flex.sh will likely cause a need for
 # recompilation
 echo "## RUNNING make all a second time" | tee -a -- "$LOG_FILE"
@@ -368,7 +368,7 @@ else
 fi
 echo 1>&2
 echo "NOTE: $LOG_FILE contains various information about" 1>&2
-echo "your environment including things such as hostname, operating system" 1>&2
+echo "your environment including things such as hostname, login name, operating system" 1>&2
 echo "information, paths and versions of various tools. Although not encouraged," 1>&2
 echo "you are free to edit this file if you feel so inclined. This information is" 1>&2
 echo "added to the file in case it proves useful in debugging a problem, and therefore" 1>&2
