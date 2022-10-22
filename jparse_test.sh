@@ -4,9 +4,9 @@
 
 # setup
 #
-export JPARSE_TEST_VERSION="0.2 2022-07-02"
+export JPARSE_TEST_VERSION="0.3 2022-10-22"
 export CHK_TEST_FILE="./json_teststr.txt"
-export USAGE="usage: $0 [-h] [-V] [-v level] [-D dbg_level] [-J level] [-q] [-j jparse] [file ..]
+export USAGE="usage: $0 [-h] [-V] [-v level] [-D dbg_level] [-J level] [-q] [-j jparse] [-d json_tree] [file ..]
 
     -h			print help and exit
     -V			print version and exit
@@ -15,7 +15,10 @@ export USAGE="usage: $0 [-h] [-V] [-v level] [-D dbg_level] [-J level] [-q] [-j 
     -J level		set JSON parser verbosity level (def level: 0)
     -q			quiet mode: silence msg(), warn(), warnp() if -v 0 (def: not quiet)
     -j /path/to/jparse	path to jparse tool (def: ./jparse)
-
+    -d json_tree	read files from good and bad subdirectories of this directory
+			    These subdirectories are expected:
+				tree/bad
+				tree/good
     [file ...]		read JSON documents, one per line, from these files (def: $CHK_TEST_FILE)
 			NOTE: - means read from stdin.
 
@@ -35,26 +38,29 @@ export Q_FLAG=""
 export JPARSE="./jparse"
 export LOGFILE="./jparse_test.log"
 export EXIT_CODE=0
+export JSON_TREE="./test_JSON"
 
 # parse args
 #
-while getopts :hVv:D:J:qj: flag; do
+while getopts :hVv:D:J:qj:d: flag; do
     case "$flag" in
-    h) echo "$USAGE" 1>&2
-       exit 2
+    h)	echo "$USAGE" 1>&2
+	exit 2
 	;;
-    V) echo "$JPARSE_TEST_VERSION" 1>&2
-       exit 2
+    V)	echo "$JPARSE_TEST_VERSION" 1>&2
+	exit 2
 	;;
-    v) V_FLAG="$OPTARG";
+    v)	V_FLAG="$OPTARG";
 	;;
-    D) DBG_LEVEL="$OPTARG";
+    D)	DBG_LEVEL="$OPTARG";
 	;;
-    J) JSON_DBG_LEVEL="$OPTARG";
+    J)	JSON_DBG_LEVEL="$OPTARG";
 	;;
-    q) Q_FLAG="-q";
+    q)	Q_FLAG="-q";
 	;;
-    j) JPARSE="$OPTARG";
+    j)	JPARSE="$OPTARG";
+	;;
+    d)	JSON_TREE="$OPTARG"
 	;;
     \?) echo "$0: ERROR: invalid option: -$OPTARG" 1>&2
 	exit 3
@@ -84,6 +90,9 @@ shift $(( OPTIND - 1 ));
 
 eval make all 2>&1 | grep -v 'Nothing to be done for'
 
+export JSON_GOOD_TREE="$JSON_TREE/good"
+export JSON_BAD_TREE="$JSON_TREE/bad"
+
 # firewall
 #
 if [[ ! -e $JPARSE ]]; then
@@ -99,6 +108,52 @@ if [[ ! -x $JPARSE ]]; then
     exit 4
 fi
 
+# check that json_tree is a readable directory
+#
+if [[ ! -e $JSON_TREE ]]; then
+    echo "$0: ERROR: json_tree not found: $JSON_TREE" 1>&2
+    exit 10
+fi
+if [[ ! -d $JSON_TREE ]]; then
+    echo "$0: ERROR: json_tree not a directory: $JSON_TREE" 1>&2
+    exit 11
+fi
+if [[ ! -r $JSON_TREE ]]; then
+    echo "$0: ERROR: json_tree not readable directory: $JSON_TREE" 1>&2
+    exit 12
+fi
+
+# good tree
+#
+if [[ ! -e $JSON_GOOD_TREE ]]; then
+    echo "$0: ERROR: json_tree/good for jparse directory not found: $JSON_GOOD_TREE" 1>&2
+    exit 13
+fi
+if [[ ! -d $JSON_GOOD_TREE ]]; then
+    echo "$0: ERROR: json_tree/good for jparse not a directory: $JSON_GOOD_TREE" 1>&2
+    exit 14
+fi
+if [[ ! -r $JSON_GOOD_TREE ]]; then
+    echo "$0: ERROR: json_tree/good for jparse not readable directory: $JSON_GOOD_TREE" 1>&2
+    exit 15
+fi
+
+# bad tree
+#
+if [[ ! -e $JSON_BAD_TREE ]]; then
+    echo "$0: ERROR: json_tree/bad for jparse directory not found: $JSON_BAD_TREE" 1>&2
+    exit 16
+fi
+if [[ ! -d $JSON_BAD_TREE ]]; then
+    echo "$0: ERROR: json_tree/bad for jparse not a directory: $JSON_BAD_TREE" 1>&2
+    exit 17
+fi
+if [[ ! -r $JSON_BAD_TREE ]]; then
+    echo "$0: ERROR: json_tree/bad for jparse not readable directory: $JSON_BAD_TREE" 1>&2
+    exit 18
+fi
+
+
 # remove logfile so that each run starts out with an empty file
 #
 rm -f "$LOGFILE"
@@ -112,10 +167,112 @@ if [[ ! -w "${LOGFILE}" ]]; then
     exit 5
 fi
 
-# run_test - run a single jparse test
+# run_file_test - run a single jparse test on a string
 #
 # usage:
-#	run_test jparse dbg_level json_dbg_level quiet_mode json_doc_string
+#	run_file_test jparse dbg_level json_dbg_level quiet_mode json_doc_file pass|fail
+#
+#	jparse			path to the jparse program
+#	dbg_level		internal test debugging level to use as in: jparse -v dbg_level
+#	json_dbg_level		JSON parser debug level to use in: jparse -J json_dbg_level
+#	quiet_mode		quiet mode to use in: jparse -q
+#	json_doc_file		JSON document as a string to give to jparse
+#	pass|fail		string saying if jparse must return valid json or invalid json
+#
+run_file_test()
+{
+    # parse args
+    #
+    if [[ $# -ne 6 ]]; then
+	echo "$0: ERROR: expected 6 args to run_file_test, found $#" 1>&2
+	exit 4
+    fi
+    declare jparse="$1"
+    declare dbg_level="$2"
+    declare json_dbg_level="$3"
+    declare quiet_mode="$4"
+    declare json_doc_file="$5"
+    declare pass_fail="$6"
+
+    if [[ "$pass_fail" != "pass" && "$pass_fail" != "fail" ]]; then
+	echo "$0: ERROR: in run_file_test: pass_fail neither 'pass' nor 'fail'" 1>&2
+	EXIT_CODE=2
+	return
+    fi
+
+    # debugging
+    #
+    if [[ $V_FLAG -ge 9 ]]; then
+	echo "$0: debug[9]: in run_file_test: jparse: $jparse" 1>&2
+	echo "$0: debug[9]: in run_file_test: dbg_level: $dbg_level" 1>&2
+	echo "$0: debug[9]: in run_file_test: json_dbg_level: $json_dbg_level" 1>&2
+	echo "$0: debug[9]: in run_file_test: quiet_mode: $quiet_mode" 1>&2
+	echo "$0: debug[9]: in run_file_test: json_doc_file: $json_doc_file" 1>&2
+	echo "$0: debug[9]: in run_file_test: pass_fail: $pass_fail" 1>&2
+    fi
+
+    if [[ -z $quiet_mode ]]; then
+	if [[ $V_FLAG -ge 3 ]]; then
+	    echo "$0: debug[3]: about to run test that must $pass_fail: $jparse -v $dbg_level -J $json_dbg_level -- $json_doc_file >> ${LOGFILE} 2>&1" 1>&2
+	fi
+	echo "$0: debug[3]: about to run test that must $pass_fail: $jparse -v $dbg_level -J $json_dbg_level -- $json_doc_file >> ${LOGFILE} 2>&1" >> "${LOGFILE}"
+	"$jparse" -v "$dbg_level" -J "$json_dbg_level" -- "$json_doc_file" >> "${LOGFILE}" 2>&1
+    else
+	if [[ $V_FLAG -ge 3 ]]; then
+	    echo "$0: debug[3]: about to run test that must $pass_fail: $jparse -v $dbg_level -J $json_dbg_level -q -- $json_doc_file >> ${LOGFILE} 2>&1" 1>&2
+	fi
+	echo "$0: debug[3]: about to run test that must $pass_fail: $jparse -v $dbg_level -J $json_dbg_level -q -- $json_doc_file >> ${LOGFILE} 2>&1" >> "${LOGFILE}"
+	"$jparse" -v "$dbg_level" -J "$json_dbg_level" -q -- "$json_doc_file" >> "${LOGFILE}" 2>&1
+    fi
+    status="$?"
+
+    # examine test result
+    #
+    if [[ $status -eq 0 ]]; then
+	if [[ $pass_fail = pass ]]; then
+	    echo "$0: in test that must pass: jparse OK, exit code 0" 1>&2 >> "${LOGFILE}"
+	    if [[ $V_FLAG -ge 3 ]]; then
+		echo "$0: debug[3]: jparse OK, exit code 0" 1>&2
+	    fi
+	else
+	    if [[ $V_FLAG -ge 1 ]]; then
+		echo "$0: in test that must fail: jparse FAIL, exit code: $status" 1>&2 >> "${LOGFILE}"
+		if [[ $V_FLAG -ge 3 ]]; then
+		    echo "$0: debug[3]: in run_file_test: jparse exit code: $status" 1>&2
+		fi
+	    fi
+	    EXIT_CODE=1
+	fi
+    else
+	if [[ $pass_fail = pass ]]; then
+	    if [[ $V_FLAG -ge 1 ]]; then
+		echo "$0: in test that must pass: jparse FAIL, exit code: $status" 1>&2 >> "${LOGFILE}"
+		if [[ $V_FLAG -ge 3 ]]; then
+		    echo "$0: debug[3]: in run_file_test: jparse exit code: $status" 1>&2
+		fi
+	    fi
+	    EXIT_CODE=1
+	else
+	    if [[ $V_FLAG -ge 1 ]]; then
+		echo "$0: in test that must fail: jparse OK, exit code: $status" 1>&2 >> "${LOGFILE}"
+		if [[ $V_FLAG -ge 3 ]]; then
+		    echo "$0: debug[3]: in run_file_test: jparse exit code: $status" 1>&2
+		fi
+	    fi
+	fi
+    fi
+    echo >> "${LOGFILE}"
+
+    # return
+    #
+    return
+}
+
+
+# run_string_test - run a single jparse test on a string
+#
+# usage:
+#	run_string_test jparse dbg_level json_dbg_level quiet_mode json_doc_string
 #
 #	jparse			path to the jparse program
 #	dbg_level		internal test debugging level to use as in: jparse -v dbg_level
@@ -123,12 +280,12 @@ fi
 #	quiet_mode		quiet mode to use in: jparse -q
 #	json_doc_string		JSON document as a string to give to jparse
 #
-run_test()
+run_string_test()
 {
     # parse args
     #
     if [[ $# -ne 5 ]]; then
-	echo "$0: ERROR: expected 5 args to run_test, found $#" 1>&2
+	echo "$0: ERROR: expected 5 args to run_string_test, found $#" 1>&2
 	exit 4
     fi
     declare jparse="$1"
@@ -140,11 +297,11 @@ run_test()
     # debugging
     #
     if [[ $V_FLAG -ge 9 ]]; then
-	echo "$0: debug[9]: in run_test: jparse: $jparse" 1>&2
-	echo "$0: debug[9]: in run_test: dbg_level: $dbg_level" 1>&2
-	echo "$0: debug[9]: in run_test: json_dbg_level: $json_dbg_level" 1>&2
-	echo "$0: debug[9]: in run_test: quiet_mode: $quiet_mode" 1>&2
-	echo "$0: debug[9]: in run_test: json_doc_string: $json_doc_string" 1>&2
+	echo "$0: debug[9]: in run_string_test: jparse: $jparse" 1>&2
+	echo "$0: debug[9]: in run_string_test: dbg_level: $dbg_level" 1>&2
+	echo "$0: debug[9]: in run_string_test: json_dbg_level: $json_dbg_level" 1>&2
+	echo "$0: debug[9]: in run_string_test: quiet_mode: $quiet_mode" 1>&2
+	echo "$0: debug[9]: in run_string_test: json_doc_string: $json_doc_string" 1>&2
     fi
 
     if [[ -z $quiet_mode ]]; then
@@ -173,7 +330,7 @@ run_test()
 	if [[ $V_FLAG -ge 1 ]]; then
 	    echo "$0: jparse FAIL, exit code: $status" 1>&2 >> "${LOGFILE}"
 	    if [[ $V_FLAG -ge 3 ]]; then
-		echo "$0: debug[3]: in run_test: jparse exit code: $status" 1>&2
+		echo "$0: debug[3]: in run_string_test: jparse exit code: $status" 1>&2
 	    fi
 	fi
 	EXIT_CODE=1
@@ -211,7 +368,7 @@ if [[ $# -gt 0 ]]; then
 	    # read JSON document lines from stdin
 	    #
 	    while read -r JSON_DOC; do
-		run_test "$JPARSE" "$DBG_LEVEL" "$JSON_DBG_LEVEL" "$Q_FLAG" "$JSON_DOC"
+		run_string_test "$JPARSE" "$DBG_LEVEL" "$JSON_DBG_LEVEL" "$Q_FLAG" "$JSON_DOC"
 	    done
 	else
 	    if [[ ! -e $CHK_TEST_FILE ]]; then
@@ -229,7 +386,7 @@ if [[ $# -gt 0 ]]; then
 	    # process all lines in test file
 	    #
 	    while read -r JSON_DOC; do
-		run_test "$JPARSE" "$DBG_LEVEL" "$JSON_DBG_LEVEL" "$Q_FLAG" "$JSON_DOC"
+		run_string_test "$JPARSE" "$DBG_LEVEL" "$JSON_DBG_LEVEL" "$Q_FLAG" "$JSON_DOC"
 	    done < "$CHK_TEST_FILE"
 	fi
     done
@@ -256,9 +413,29 @@ elif [[ ! -z "$CHK_TEST_FILE" ]]; then
 	# process all lines in test file
 	#
 	while read -r JSON_DOC; do
-	    run_test "$JPARSE" "$DBG_LEVEL" "$JSON_DBG_LEVEL" "$Q_FLAG" "$JSON_DOC"
+	    run_string_test "$JPARSE" "$DBG_LEVEL" "$JSON_DBG_LEVEL" "$Q_FLAG" "$JSON_DOC"
 	done < "$CHK_TEST_FILE"
 fi
+
+# run tests that must pass
+#
+if [[ $V_FLAG -ge 3 ]]; then
+    echo "$0: debug[3]: about to run jparse tests that must pass: JSON files" 1>&2
+fi
+while read -r file; do
+    run_file_test "$JPARSE" "$DBG_LEVEL" "$JSON_DBG_LEVEL" "$Q_FLAG" "$file" pass
+done < <(find "$JSON_GOOD_TREE" -type f -name '*.json' -print)
+
+
+# run tests that must fail
+#
+if [[ $V_FLAG -ge 3 ]]; then
+    echo "$0: debug[3]: about to run jparse tests that must fail: JSON files" 1>&2
+fi
+while read -r file; do
+    run_file_test "$JPARSE" "$DBG_LEVEL" "$JSON_DBG_LEVEL" "$Q_FLAG" "$file" fail
+done < <(find "$JSON_BAD_TREE" -type f -name '*.json' -print)
+
 
 # All Done!!! -- Jessica Noll, Age 2
 #

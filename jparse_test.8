@@ -1,16 +1,22 @@
-.TH jparse_test 8 "18 October 2022" "jparse_test" "IOCCC tools"
+.TH jparse_test 8 "22 October 2022" "jparse_test" "IOCCC tools"
 .SH NAME
 jparse_test.sh \- test jparse on one or more files with one or more one\-line JSON blobs
 .SH SYNOPSIS
-\fBjparse_test.sh\fP [\-h] [\-V] [\-v level] [\-D dbg_level] [\-J level] [\-q] [\-j jparse] [file ..]
+\fBjparse_test.sh\fP [\-h] [\-V] [\-v level] [\-D dbg_level] [\-J level] [\-q] [\-j jparse] [\-d json_tree] [file ..]
 .SH DESCRIPTION
 \fBjparse_test.sh\fP tests each line in each file for valid JSON.
 The file name \fI\-\fP means read from stdin.
+At least one file is required.
+It also uses \fBfind(1)\fP to look under the JSON tree for good and bad files that must pass or fail respectively.
+The files that must pass are in the subdirectory called \fIgood\fP and the files that must fail are in the subdirectory called \fIbad\fP.
 It keeps a log of all the tests in \fIjparse_test.log\fP for later inspection.
 .SH OPTIONS
 .TP
 \fB\-h\fP
 Show help and exit.
+.TP
+\fB\-V\fP
+Print version and exit.
 .TP
 \fB\-V\fP
 Show version and exit.
@@ -29,10 +35,10 @@ Set quiet mode.
 This will be passed to the JSON parser.
 .TP
 \fB\-j \fIjparse\fP\fP
-Specify path to jparse to \fIjparse\fP.
+Set path to jparse to \fIjparse\fP.
 .TP
-\fB\-V\fP
-Print version and exit.
+\fB\-d \fIjson_tree\fP\fP
+Set json tree to look for good and bad files under to \fIjson_tree\fP.
 .SH EXIT STATUS
 .TP
 0
@@ -58,6 +64,10 @@ The default file that \fBjparse_test.sh\fP reads from.
 .RS
 The log file kept by \fBjparse_test.sh\fP.
 It will be removed prior to each time the script is run to keep the state of the file consistent with the run.
+.RE
+\fItest_JSON\fP
+.RS
+The default JSON tree with good and bad subdirectories for files that must pass and fail, respectively.
 .RE
 .SH NOTES
 The JSON parser \fBjparse\fP was co\-developed by Cody Boone Ferguson and Landon Curt Noll (one of the IOCCC Judges) in support for IOCCCMOCK, IOCCC28 and beyond.
