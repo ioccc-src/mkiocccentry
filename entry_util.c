@@ -59,6 +59,9 @@
  * If your pre-c11 system fails to compile this code, we apologize and
  * request that you compile this repo on a more up to date system such as
  * a system that fully support c11 or later.
+ *
+ * In 2024 we will stop doing going out of our way to support systems that do
+ * not fully implement C11.
  */
 #if defined(TIMEGM_PROBLEM)
 extern time_t timegm(struct tm *timeptr);	/* workaround / gross hack */
