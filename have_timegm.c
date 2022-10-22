@@ -36,11 +36,11 @@
 #define MAX_TIMESTAMP_LEN (48)		/* 28 + 20 more padding for locale */
 #define FMT "%a %b %d %H:%M:%S %Y UTC"	/* timestamp string conversion format */
 
-static char *usage =
+static char const * const usage =
     "usage: %s 'time_string'\n"
     "\n"
     "    time_string   example: Thu Mar 17 01:44:38 2022 UTC\n";
-char *program = NULL;	/* our name */
+char const *program = NULL;	/* our name */
 
 
 int
