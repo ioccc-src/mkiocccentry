@@ -191,8 +191,10 @@ run_check 15 "make -v"
 # which tar: find the path to tar
 #
 # NOTE: we don't need to check if tar accepts the correct options in this script
-# because hostchk.sh will do that later on.
+# because txzchk_test.sh will do that later on.
 run_check 16 "which tar"
+# tar --version: find out what version tar is
+run_check 17 "tar --version"
 
 echo "# SECTION 0 ABOVE" | tee -a -- "$LOG_FILE"
 echo | tee -a -- "$LOG_FILE"
@@ -201,7 +203,7 @@ echo | tee -a -- "$LOG_FILE"
 echo "# SECTION 1: COMPILATION CHECKS" | tee -a -- "$LOG_FILE"
 echo | tee -a -- "$LOG_FILE"
 # make clobber: start clean
-run_check 17 "make clobber"
+run_check 18 "make clobber"
 # make all: compile everything before we do anything else
 #
 # NOTE: This will indirectly call make fast_hostchk which, if it reports an
@@ -225,12 +227,12 @@ run_check 17 "make clobber"
 # really is likely that, if the script fails, you will be unable to successfully
 # use the mkiocccentry repo to submit a correct IOCCC entry.
 #
-run_check 18 "make all"
+run_check 19 "make all"
 # make test: run the IOCCC toolkit test suite
-run_check 19 "make test"
+run_check 20 "make test"
 # hostchk.sh -v 3: we need to run some checks to make sure the system can
 # compile things and so on
-run_check 20 "./hostchk.sh -v 3"
+run_check 21 "./hostchk.sh -v 3"
 echo "# SECTION 1 ABOVE" | tee -a -- "$LOG_FILE"
 echo | tee -a -- "$LOG_FILE"
 
@@ -238,13 +240,13 @@ echo | tee -a -- "$LOG_FILE"
 echo "# SECTION 2: BISON AND FLEX CHECKS" | tee -a -- "$LOG_FILE"
 echo | tee -a -- "$LOG_FILE"
 # run_bison.sh -v 7: check if bison will work
-run_check 21 "./run_bison.sh -v 7"
+run_check 22 "./run_bison.sh -v 7"
 # run_flex.sh -v 7: check if flex will work
-run_check 22 "./run_flex.sh -v 7"
+run_check 23 "./run_flex.sh -v 7"
 # run make all again: run_bison.sh and run_flex.sh will likely cause a need for
 # recompilation
 echo "## RUNNING make all a second time" | tee -a -- "$LOG_FILE"
-run_check 23 "make all"
+run_check 24 "make all"
 echo "# SECTION 2 ABOVE" | tee -a -- "$LOG_FILE"
 echo | tee -a -- "$LOG_FILE"
 
@@ -254,7 +256,7 @@ echo "# SECTION 3: IOCCC ENVIRONMENT" | tee -a -- "$LOG_FILE"
 echo | tee -a -- "$LOG_FILE"
 # See that every tool is executable and run -V on each one that is.
 #
-# If any tool is not executable the exit code will be set to 24.
+# If any tool is not executable the exit code will be set to 25.
 for f in $TOOLS; do
     if is_exec "$f"; then
 	echo "## CHECKING: if $f is executable" | tee -a -- "$LOG_FILE"
@@ -264,7 +266,7 @@ for f in $TOOLS; do
 	echo "$f version $($f -V)" | tee -a -- "$LOG_FILE"
 	echo | tee -a -- "$LOG_FILE"
     else
-	EXIT_CODE=24
+	EXIT_CODE=25
 	echo "$0: ERROR: $f is not executable: new exit code: $EXIT_CODE" | tee -a -- "$LOG_FILE"
 	FAILURE_SUMMARY="$FAILURE_SUMMARY
 	$f cannot be executed"
