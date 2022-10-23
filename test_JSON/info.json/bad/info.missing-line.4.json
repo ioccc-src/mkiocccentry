@@ -1,7 +1,7 @@
 {
 	"no-comment" : "because comments were removed from the original JSON spec",
-	"ioccc_contest" : "IOCCCMOCK",
-	"ioccc_year" : 2022,
+	"IOCCC_contest" : "IOCCCMOCK",
+	"IOCCC_year" : 2022,
 	"mkiocccentry_version" : "0.42 2022-10-22",
 	"iocccsize_version" : "28.12 2022-10-17",
 	"chkentry_version" : "0.1 2022-10-22",

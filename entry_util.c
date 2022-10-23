@@ -92,7 +92,7 @@ free_auth(struct auth *authp)
      */
     /* NOTE: no_comment is a compiled in constant */
     /* NOTE: author_version is a compiled in constant */
-    /* NOTE: ioccc_contest is a compiled in constant */
+    /* NOTE: IOCCC_contest is a compiled in constant */
 
     /*
      * free IOCCC tool versions
@@ -163,7 +163,7 @@ free_info(struct info *infop)
      */
     /* NOTE: no_comment is a compiled in constant */
     /* NOTE: author_version is a compiled in constant */
-    /* NOTE: ioccc_contest is a compiled in constant */
+    /* NOTE: IOCCC_contest is a compiled in constant */
 
     /*
      * free IOCCC tool versions
@@ -3218,9 +3218,9 @@ test_info_JSON(char const *str)
 
 
 /*
- * test_ioccc_contest - test if ioccc_contest is valid
+ * test_IOCCC_contest - test if IOCCC_contest is valid
  *
- * Determine if ioccc_contest matches AUTHOR_JSON_FILENAME.
+ * Determine if IOCCC_contest matches AUTHOR_JSON_FILENAME.
  *
  * given:
  *	str	string to test
@@ -3230,7 +3230,7 @@ test_info_JSON(char const *str)
  *	false ==> string is NOT valid, or NULL pointer, or some internal error
  */
 bool
-test_ioccc_contest(char const *str)
+test_IOCCC_contest(char const *str)
 {
     /*
      * firewall
@@ -3245,40 +3245,40 @@ test_ioccc_contest(char const *str)
      */
     if (strcmp(str, IOCCC_CONTEST) != 0) {
 	json_dbg(JSON_DBG_MED, __func__,
-		 "invalid: ioccc_contest != IOCCC_CONTEST: %s", IOCCC_CONTEST);
+		 "invalid: IOCCC_contest != IOCCC_CONTEST: %s", IOCCC_CONTEST);
 	json_dbg(JSON_DBG_HIGH, __func__,
-		 "invalid: ioccc_contest: %s is not IOCCC_CONTEST: %s", str, IOCCC_CONTEST);
+		 "invalid: IOCCC_contest: %s is not IOCCC_CONTEST: %s", str, IOCCC_CONTEST);
 	return false;
     }
-    json_dbg(JSON_DBG_MED, __func__, "ioccc_contest is valid");
+    json_dbg(JSON_DBG_MED, __func__, "IOCCC_contest is valid");
     return true;
 }
 
 
 /*
- * test_ioccc_year - test if ioccc_year is valid
+ * test_IOCCC_year - test if IOCCC_year is valid
  *
- * Determine if ioccc_year is within the proper limits.
+ * Determine if IOCCC_year is within the proper limits.
  *
  * given:
- *	ioccc_year	year
+ *	IOCCC_year	year
  *
  * returns:
- *	true ==> ioccc_year is valid,
- *	false ==> ioccc_year is NOT valid, or some internal error
+ *	true ==> IOCCC_year is valid,
+ *	false ==> IOCCC_year is NOT valid, or some internal error
  */
 bool
-test_ioccc_year(int ioccc_year)
+test_IOCCC_year(int IOCCC_year)
 {
     /*
      * validate count
      */
-    if (ioccc_year != IOCCC_YEAR) {
+    if (IOCCC_year != IOCCC_YEAR) {
 	json_dbg(JSON_DBG_MED, __func__,
-		 "invalid: ioccc_year: %d != %d", ioccc_year, IOCCC_YEAR);
+		 "invalid: IOCCC_year: %d != %d", IOCCC_year, IOCCC_YEAR);
 	return false;
     }
-    json_dbg(JSON_DBG_MED, __func__, "ioccc_year is valid");
+    json_dbg(JSON_DBG_MED, __func__, "IOCCC_year is valid");
     return true;
 }
 

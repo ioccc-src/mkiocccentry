@@ -1810,7 +1810,7 @@ chk_info_JSON(struct json const *node,
 
 
 /*
- * chk_ioccc_contest - JSON semantic check for ioccc_contest
+ * chk_IOCCC_contest - JSON semantic check for IOCCC_contest
  *
  * given:
  *	node	JSON parse node being checked
@@ -1824,7 +1824,7 @@ chk_info_JSON(struct json const *node,
  *	false ==> JSON element is NOT valid, or NULL pointer, or some internal error
  */
 bool
-chk_ioccc_contest(struct json const *node,
+chk_IOCCC_contest(struct json const *node,
 		  unsigned int depth, struct json_sem *sem, struct json_sem_val_err **val_err)
 {
     char *str = NULL;				/* JTYPE_STRING as decoded JSON string */
@@ -1842,10 +1842,10 @@ chk_ioccc_contest(struct json const *node,
     /*
      * validate decoded JSON string
      */
-    test = test_ioccc_contest(str);
+    test = test_IOCCC_contest(str);
     if (test == false) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(141, node, depth, sem, __func__, "invalid ioccc_contest");
+	    *val_err = werr_sem_val(141, node, depth, sem, __func__, "invalid IOCCC_contest");
 	}
 	return false;
     }
@@ -1861,7 +1861,7 @@ chk_ioccc_contest(struct json const *node,
 
 
 /*
- * chk_ioccc_year - JSON semantic check for ioccc_year
+ * chk_IOCCC_year - JSON semantic check for IOCCC_year
  *
  * given:
  *	node	JSON parse node being checked
@@ -1875,7 +1875,7 @@ chk_ioccc_contest(struct json const *node,
  *	false ==> JSON element is NOT valid, or NULL pointer, or some internal error
  */
 bool
-chk_ioccc_year(struct json const *node,
+chk_IOCCC_year(struct json const *node,
 	       unsigned int depth, struct json_sem *sem, struct json_sem_val_err **val_err)
 {
     int *value = NULL;			/* JSON_NUMBER as decoded int */
@@ -1893,10 +1893,10 @@ chk_ioccc_year(struct json const *node,
     /*
      * validate decoded JSON string
      */
-    test = test_ioccc_year(*value);
+    test = test_IOCCC_year(*value);
     if (test == false) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(142, node, depth, sem, __func__, "invalid ioccc_year");
+	    *val_err = werr_sem_val(142, node, depth, sem, __func__, "invalid IOCCC_year");
 	}
 	return false;
     }

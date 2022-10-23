@@ -1,7 +1,7 @@
 {
-	"IOCCC_info_version" : "1.10 2022-06-22",
-	"ioccc_contest" : "IOCCCMOCK",
-	"ioccc_year" : 2022,
+	"IOCCC_info_version" : "1.12 2022-10-23",
+	"IOCCC_contest" : "IOCCCMOCK",
+	"IOCCC_year" : 2022,
 	"mkiocccentry_version" : "0.42 2022-10-22",
 	"iocccsize_version" : "28.12 2022-10-17",
 	"chkentry_version" : "0.1 2022-10-22",

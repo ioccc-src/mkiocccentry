@@ -1,5 +1,5 @@
 {
-	"IOCCC_author_version" : "1.13 2022-06-22",
+	"IOCCC_author_version" : "1.15 2022-10-23",
 	"IOCCC_contest_id" : "12345678-1234-4321-abcd-1234567890ab",
 	"authors" : [
 		{
@@ -79,8 +79,8 @@
 	"formed_UTC" : "Fri Sep 02 19:02:48 2022 UTC",
 	"formed_timestamp" : 1662145368,
 	"formed_timestamp_usec" : 506171,
-	"ioccc_contest" : "IOCCCMOCK",
-	"ioccc_year" : 2022,
+	"IOCCC_contest" : "IOCCCMOCK",
+	"IOCCC_year" : 2022,
 	"chkentry_version" : "0.1 2022-10-22",
 	"min_timestamp" : 1662145368,
 	"mkiocccentry_version" : "0.42 2022-10-22",
