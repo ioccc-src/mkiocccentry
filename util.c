@@ -309,7 +309,7 @@ is_file(char const *path)
 
 
 /*
- * is_exec - if a path is executable
+ * is_exec - if a path is executable or directory is searchable
  *
  * This function tests if a path exists and we have permissions to execute it.
  *
@@ -345,17 +345,29 @@ is_exec(char const *path)
 	dbg(DBG_HIGH, "path %s does not exist, stat returned: %s", path, strerror(errno));
 	return false;
     }
-    dbg(DBG_VHIGH, "path %s size: %jd", path, (intmax_t)buf.st_size);
+    if (S_ISDIR(buf.st_mode)) {
+	dbg(DBG_VHIGH, "path is a directory: %s size: %jd", path, (intmax_t)buf.st_size);
+    } else {
+	dbg(DBG_VHIGH, "path is a file: %s size: %jd", path, (intmax_t)buf.st_size);
+    }
 
     /*
-     * test if we are allowed to execute it
+     * test if we are allowed to execute or search it
      */
     ret = access(path, X_OK);
     if (ret < 0) {
-	dbg(DBG_HIGH, "path %s is not executable", path);
+	if (S_ISDIR(buf.st_mode)) {
+	    dbg(DBG_HIGH, "cannot search directory: %s ", path);
+	} else {
+	    dbg(DBG_HIGH, "is is not executable: %s", path);
+	}
 	return false;
     }
-    dbg(DBG_VHIGH, "path %s is executable", path);
+    if (S_ISDIR(buf.st_mode)) {
+	dbg(DBG_VHIGH, "path %s is searchable", path);
+    } else {
+	dbg(DBG_VHIGH, "path %s is executable", path);
+    }
     return true;
 }
 
