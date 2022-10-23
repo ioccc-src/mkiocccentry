@@ -94,12 +94,12 @@ fi
 # test JSON encoding and decoding pipe
 #
 echo "$0: about to run test #1"
-echo "$JSTRENCODE -v $V_FLAG -n < $JSTRENCODE -v $V_FLAG |  $JSTRDECODE -v $V_FLAG -n > $TEST_FILE"
+echo "$JSTRENCODE -v $V_FLAG -n < $JSTRENCODE | $JSTRDECODE -v $V_FLAG -n > $TEST_FILE"
 # This warning is not correct in our case:
 # note: Make sure not to read and write the same file in the same pipeline. [SC2094]
 # shellcheck disable=SC2094
 #
-"$JSTRENCODE" -v "$V_FLAG" -n < "$JSTRENCODE" -v "$V_FLAG" | $JSTRDECODE -v "$V_FLAG" -n > "$TEST_FILE"
+"$JSTRENCODE" -v "$V_FLAG" -n < "$JSTRENCODE" | $JSTRDECODE -v "$V_FLAG" -n > "$TEST_FILE"
 if cmp -s "$JSTRENCODE" "$TEST_FILE"; then
     echo "$0: test #1 passed"
 else
@@ -107,11 +107,11 @@ else
     EXIT_CODE=43
 fi
 echo "$0: about to run test #2"
-echo "$JSTRENCODE -v $V_FLAG -n < $JSTRDECODE -v $V_FLAG | $JSTRDECODE -v $V_FLAG -n > $TEST_FILE"
+echo "$JSTRENCODE -v $V_FLAG -n < $JSTRDECODE | $JSTRDECODE -v $V_FLAG -n > $TEST_FILE"
 # This warning is incorrect in our case:
 # note: Make sure not to read and write the same file in the same pipeline. [SC2094]
 # shellcheck disable=SC2094
-"$JSTRENCODE" -v "$V_FLAG" -n < "$JSTRDECODE" -v "$V_FLAG" | "$JSTRDECODE" -v "$V_FLAG" -n > "$TEST_FILE"
+"$JSTRENCODE" -v "$V_FLAG" -n < "$JSTRDECODE" | "$JSTRDECODE" -v "$V_FLAG" -n > "$TEST_FILE"
 if cmp -s "$JSTRDECODE" "$TEST_FILE"; then
     echo "$0: test #2 passed"
 else
