@@ -1134,7 +1134,8 @@ vjson_free(struct json *node, unsigned int depth, va_list ap)
  * given:
  *	node	    pointer to a JSON parser tree node to free
  *	max_depth   maximum tree depth to descend, or 0 ==> infinite depth
- *			NOTE: Use JSON_INFINITE_DEPTH for infinite depth
+ *			NOTE: Use JSON_INFINITE_DEPTH for infinite depth.
+ *			NOTE: Consider use of JSON_DEFAULT_MAX_DEPTH for good default.
  *
  * NOTE: This function will free the internals of a JSON parser tree node.
  *	 It is up to the caller to free the top level struct json if needed.
@@ -1748,6 +1749,7 @@ vjson_fprint(struct json *node, unsigned int depth, va_list ap)
  *	node	    pointer to a JSON parser tree node to free
  *	max_depth   maximum tree depth to descend, or 0 ==> infinite depth
  *			NOTE: Use JSON_INFINITE_DEPTH for infinite depth
+ *			NOTE: Consider use of JSON_DEFAULT_MAX_DEPTH for good default.
  *	...	extra args are ignored, required extra args:
  *
  *		stream	    stream to print on
@@ -1824,6 +1826,7 @@ json_tree_print(struct json *node, unsigned int max_depth, ...)
  *	max_depth   maximum tree depth to descend, or 0 ==> infinite depth
  *			NOTE: Use JSON_INFINITE_DEPTH for infinite depth
  *			       OR if <= json_verbosity_level
+ *			NOTE: Consider use of JSON_DEFAULT_MAX_DEPTH for good default.
  *
  * Example use - free an entire JSON parse tree
  *
@@ -1841,6 +1844,7 @@ json_tree_print(struct json *node, unsigned int max_depth, ...)
  *	node		pointer to a JSON parser tree node to free
  *	max_depth	maximum tree depth to descend, or 0 ==> infinite depth
  *			    NOTE: Use JSON_INFINITE_DEPTH for infinite depth
+ *			    NOTE: Consider use of JSON_DEFAULT_MAX_DEPTH for good default.
  *	stream		stream on which to print
  */
 void
@@ -1897,6 +1901,7 @@ json_dbg_tree_print(int json_dbg_lvl, char const *name, struct json *tree, unsig
  *	node	    pointer to a JSON parse tree
  *	max_depth   maximum tree depth to descend, or 0 ==> infinite depth
  *			NOTE: Use JSON_INFINITE_DEPTH for infinite depth
+ *			NOTE: Consider use of JSON_DEFAULT_MAX_DEPTH for good default.
  *	vcallback   function to operate JSON parse tree node in va_list form
  *	...	    extra args for vcallback
  *
@@ -1969,6 +1974,7 @@ json_tree_walk(struct json *node, unsigned int max_depth,
  *	node	    pointer to a JSON parse tree
  *	max_depth   maximum tree depth to descend, or 0 ==> infinite depth
  *			NOTE: Use JSON_INFINITE_DEPTH for infinite depth
+ *			NOTE: Consider use of JSON_DEFAULT_MAX_DEPTH for good default.
  *	depth	    current tree depth (0 ==> top of tree)
  *	vcallback   function to operate JSON parse tree node in va_list form
  *	ap	    variable argument list
