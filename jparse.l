@@ -275,7 +275,6 @@ parse_json(char const *ptr, size_t len, bool *is_valid)
 	 * perhaps it should call err() instead but for now we make it a
 	 * non-fatal error as well.
 	 */
-	/* XXX - should this be a fatal error ? - XXX */
 	werr(31, __func__, "unable to scan string");
 	++num_errors;
 
@@ -343,10 +342,128 @@ parse_json(char const *ptr, size_t len, bool *is_valid)
 
 
 /*
+ * parse_json_stream - parse an open file stream for JSON data
+ *
+ * Given an open file stream, we will read in all data (until EOF) and
+ * then parse that data as if it were JSON.
+ *
+ * given:
+ *	stream      - open file stream containing JSON data
+ *	is_valid    - != NULL ==> set to true or false depending on json validity
+ *
+ * return:
+ *	pointer to a JSON parse tree
+ *
+ * If stream is NULL or stream is not open, or if read_all() fails,
+ * then this function warns and sets *is_valid (if is_valid != NULL) to false.
+ *
+ * NOTE: The reason this is in the scanner and not the parser is because
+ *	 YY_BUFFER_STATE is part of the scanner and not the parser and that's required
+ *	 for the parse_json_block() function.
+ *
+ * NOTE: This function only warns on error. It does this via the called function
+ *	 parse_json(). This is done so that an entire report of all the problems can
+ *	 be given at the end if the verbosity level is high enough (or otherwise if
+ *	 this information is requested).
+ */
+struct json *
+parse_json_stream(FILE *stream, bool *is_valid)
+{
+    struct json *node = NULL;		/* the JSON parse tree */
+    char *data = NULL;		/* used to determine if there are NUL bytes in the file */
+    size_t len = 0;		/* length of data read */
+
+    /*
+     * firewall
+     */
+    if (stream == NULL) {
+
+	/* report NULL stream */
+	werr(32, __func__, "stream is NULL");
+	++num_errors;
+
+	/* if allowed, report invalid JSON */
+	if (is_valid != NULL) {
+	    *is_valid = false;
+	}
+
+	/* return a blank JSON tree */
+	node = json_alloc(JTYPE_UNSET);
+	return node;
+    }
+    if (is_open_stream(stream) == false) {
+
+	/* report closed stream */
+	werr(33, __func__, "stream is not open");
+	++num_errors;
+
+	/* if allowed, report invalid JSON */
+	if (is_valid != NULL) {
+	    *is_valid = false;
+	}
+
+	/* return a blank JSON tree */
+	node = json_alloc(JTYPE_UNSET);
+	return node;
+    }
+
+    /*
+     * yyin becomes our sanity checked open stream for the sake of the parser / scanner
+     */
+    yyin = stream;
+
+    /*
+     * read the entire file into memory
+     */
+    data = read_all(yyin, &len);
+    if (data == NULL) {
+
+	/* warn about read error */
+	werr(34, __func__, "could not read read stream");
+	++num_errors;
+	clearerr_or_fclose(yyin);
+
+	/* if allowed, report invalid JSON */
+	if (is_valid != NULL) {
+	    *is_valid = false;
+	}
+
+	/* return a blank JSON tree */
+	node = json_alloc(JTYPE_UNSET);
+	return node;
+    }
+
+    /*
+     * JSON parse the data from the file
+     */
+    json_dbg(JSON_DBG_HIGH, __func__, "calling parse_json on data block with length %ju:", (uintmax_t)len);
+    node = parse_json(data, len, is_valid);
+
+    /* free data */
+    if (data != NULL) {
+	free(data);
+	data = NULL;
+    }
+
+    /*
+     * clear error or close stream
+     *
+     * NOTE: clearerr_or_fclose() does nothing if yyin is NULL.
+     */
+    clearerr_or_fclose(yyin);
+    yyin = NULL;
+
+    /*
+     * return the JSON parse tree node
+     */
+    return node;
+}
+
+
+/*
  * parse_json_file	    - parses file file
  *
  * given:
- *
  *	filename    - filename to parse
  *	is_valid    - != NULL ==> set to true or false depending on json validity
  *
@@ -354,25 +471,22 @@ parse_json(char const *ptr, size_t len, bool *is_valid)
  *	pointer to a JSON parse tree
  *
  * If filename is NULL or the filename is not a readable file (or is empty) or
- * if read_all() returns NULL the function warns but does nothing else.
+ * if read_all() read_all() fails,
+ * then this function warns and sets *is_valid (if is_valid != NULL) to false.
  *
  * NOTE: The reason this is in the scanner and not the parser is because
- * YY_BUFFER_STATE is part of the scanner and not the parser and that's required
- * for the parse_json_block() function so I think both ought to be here.
+ *	 YY_BUFFER_STATE is part of the scanner and not the parser and that's required
+ *	 for the parse_json_block() function.
  *
  * NOTE: This function only warns on error. It does this via the called function
- * parse_json(). This is done so that an entire report of all the problems can
- * be given at the end if the verbosity level is high enough (or otherwise if
- * this information is requested).
+ *	 parse_json(). This is done so that an entire report of all the problems can
+ *	 be given at the end if the verbosity level is high enough (or otherwise if
+ *	 this information is requested).
  */
 struct json *
 parse_json_file(char const *filename, bool *is_valid)
 {
     struct json *node = NULL;		/* the JSON parse tree */
-    bool is_stdin = false;	/* true if reading from stdin (filename == "-") */
-    char *data = NULL;		/* used to determine if there are NUL bytes in the file */
-    size_t len = 0;		/* length of data read */
-    int ret;
 
     /*
      * firewall
@@ -380,7 +494,7 @@ parse_json_file(char const *filename, bool *is_valid)
     if (filename == NULL) {
 
 	/* this should actually never happen if called from jparse */
-	werr(32, __func__, "passed NULL filename");
+	werr(35, __func__, "passed NULL filename");
 	++num_errors;
 
 	/* if allowed, report invalid JSON */
@@ -391,11 +505,11 @@ parse_json_file(char const *filename, bool *is_valid)
 	/* return a blank JSON tree */
 	node = json_alloc(JTYPE_UNSET);
 	return node;
-
-    } else if (*filename == '\0') { /* strlen(filename) == 0 */
+    }
+    if (*filename == '\0') { /* strlen(filename) == 0 */
 
 	/* warn about bogus filename */
-	werr(33, __func__, "passed empty filename");
+	werr(36, __func__, "passed empty filename");
 	++num_errors;
 
 	/* if allowed, report invalid JSON */
@@ -409,16 +523,9 @@ parse_json_file(char const *filename, bool *is_valid)
     }
 
     /*
-     * if file is -, then this as a special way to indicate stdin
+     * if file is -, then we will parse stdin
      */
     if (strcmp(filename, "-") == 0) {
-	is_stdin = true;
-    }
-
-    /*
-     * case: will read from stdin
-     */
-    if (is_stdin == true) {
 	yyin = stdin;
 
     /*
@@ -431,7 +538,7 @@ parse_json_file(char const *filename, bool *is_valid)
 	 */
 	if (!exists(filename)) {
 	    /* report missing file */
-	    werr(34, __func__, "passed filename that's not actually a file: %s", filename);
+	    werr(37, __func__, "passed filename that's not actually a file: %s", filename);
 	    ++num_errors;
 
 	    /* if allowed, report invalid JSON */
@@ -446,7 +553,7 @@ parse_json_file(char const *filename, bool *is_valid)
 	}
 	if (!is_file(filename)) {
 	    /* report that file is not a normal file */
-	    werr(35, __func__, "passed filename not a normal file: %s", filename);
+	    werr(38, __func__, "passed filename not a normal file: %s", filename);
 	    ++num_errors;
 
 	    /* if allowed, report invalid JSON */
@@ -461,7 +568,7 @@ parse_json_file(char const *filename, bool *is_valid)
 	if (!is_read(filename)) {
 
 	    /* report unreadable file */
-	    werr(36, __func__, "passed filename not a readable file: %s", filename);
+	    werr(39, __func__, "passed filename not a readable file: %s", filename);
 	    ++num_errors;
 
 	    /* if allowed, report invalid JSON */
@@ -482,7 +589,7 @@ parse_json_file(char const *filename, bool *is_valid)
 	if (yyin == NULL) {
 
 	    /* warn about file open error */
-	    werrp(37, __func__, "couldn't open file %s, ignoring", filename);
+	    werrp(40, __func__, "couldn't open file %s, ignoring", filename);
 	    ++num_errors;
 
 	    /* if allowed, report invalid JSON */
@@ -497,52 +604,9 @@ parse_json_file(char const *filename, bool *is_valid)
     }
 
     /*
-     * read the entire file into memory
+     * JSON parse the open stream
      */
-    data = read_all(yyin, &len);
-    if (data == NULL) {
-	/* warn about read error */
-	/* XXX - should this be a fatal error ? - XXX */
-	werr(38, __func__, "couldn't read in %s", is_stdin?"stdin":filename);
-	++num_errors;
-	clearerr_or_fclose(filename, yyin);
-
-	/* if allowed, report invalid JSON */
-	if (is_valid != NULL) {
-	    *is_valid = false;
-	}
-
-	/* return a blank JSON tree */
-	node = json_alloc(JTYPE_UNSET);
-	return node;
-    }
-
-    /*
-     * JSON parse the data from the file
-     */
-    json_dbg(JSON_DBG_HIGH, __func__, "Calling parse_json with length %ju:", (uintmax_t)len);
-    node = parse_json(data, len, is_valid);
-
-    /* free data */
-    if (data != NULL) {
-	free(data);
-	data = NULL;
-    }
-
-    /*
-     * we cannot use clearerr_or_fclose() here as it's possible that yyin
-     * will be NULL and so we do it manually instead.
-     */
-    if (is_stdin == true) {
-	clearerr(stdin);
-    } else if (yyin != NULL) {
-	errno = 0;
-	ret = fclose(yyin);
-	if (ret != 0) {
-	    warnp(__func__, "error in fclose on file %s", filename);
-	}
-	yyin = NULL;
-    }
+    node = parse_json_stream(yyin, is_valid);
 
     /*
      * return the JSON parse tree node

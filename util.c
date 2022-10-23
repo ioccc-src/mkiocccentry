@@ -3093,41 +3093,43 @@ find_matching_quote(char *q)
 /*
  * clearerr_or_fclose
  *
- * This function calls clearerr() or fclose() depending on if file is stdin or
- * some other file.
+ * If stream is NULL, this function does nothing.
+ *
+ * This function calls clearerr() is stream is stdin, or stdout, or stderr.
+ * Otherwise fclose() will be called on the stream.
  *
  * given:
- *	filename    - the filename of file
- *	file	    - the FILE * (stdin or another file)
- *
- *
- * NOTE: This function will not return on NULL pointers.
+ *	stream		open stream to clear or close, or NULL ==> do nothing
  */
 void
-clearerr_or_fclose(char const *filename, FILE *file)
+clearerr_or_fclose(FILE *stream)
 {
     int ret;
 
     /*
      * firewall
      */
-    if (filename == NULL) {
-	err(180, __func__, "passed NULL filename");
-	not_reached();
-    } else if (file == NULL) {
-	err(181, __func__, "passed NULL file");
-	not_reached();
+    if (stream == NULL) {
+	return;
     }
 
-    if (file == stdin)
-	clearerr(file);
-    else {
+    /*
+     * if stdin, stdout or stderr, then clear the error flag
+     */
+    if (stream == stdin || stream == stdout || stream == stderr) {
+	clearerr(stream);
+
+    /*
+     * close the stream is neither stdin, nor stdout, or stderr
+     */
+    } else {
 	errno = 0;		/* pre-clear errno for warnp() */
-	ret = fclose(file);
+	ret = fclose(stream);
 	if (ret != 0) {
-	    warnp(__func__, "error in fclose on file %s", filename);
+	    warnp(__func__, "failed to fclose stream");
 	}
     }
+    return;
 }
 
 

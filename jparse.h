@@ -89,6 +89,7 @@ extern void yyerror(YYLTYPE *yyltype, struct json **tree, char const *format, ..
  * function prototypes for jparse.l
  */
 extern struct json *parse_json(char const *ptr, size_t len, bool *is_valid);
+extern struct json *parse_json_stream(FILE *stream, bool *is_valid);
 extern struct json *parse_json_file(char const *filename, bool *is_valid);
 
 
