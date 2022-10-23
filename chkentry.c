@@ -49,18 +49,21 @@
 /*
  * functions
  */
-static FILE * chdir_open_json(char const *dir, char const *path);
+static FILE * open_json_dir_file(char const *dir, char const *path);
 static void usage(int exitcode, char const *prog, char const *str) __attribute__((noreturn));
 
 
 /*
- * chdir_open_json - chdir and open a readable JSON file
+ * open_json_dir_file - open a readable JSON file in a given directory
  *
- * Chdir to the directory, if non-NULL, try to open the file.
- * If dir == NULL, just try to open the file.
+ * Temporarily chdir to the directory, if non-NULL, try to open the file,
+ * and then chdir back to the current directory.
+ *
+ * If dir == NULL, just try to open the file without a chdir.
  *
  * given:
- *	dir	directory into which we will chdir or NULL ==> do not chdir
+ *	dir	directory into which we will temporarily chdir or
+ *		    NULL ==> do not chdir
  *	path	path of readable JSON file to open
  *
  * returns:
@@ -73,10 +76,11 @@ static void usage(int exitcode, char const *prog, char const *str) __attribute__
  * NOTE: This function will NOT return NULL.
  */
 static FILE *
-chdir_open_json(char const *dir, char const *path)
+open_json_dir_file(char const *dir, char const *path)
 {
-    FILE *ret = NULL;		/* open file stream to return */
-    int retc = 0;		/* libc function return */
+    FILE *ret_stream = NULL;		/* open file stream to return */
+    int ret = 0;		/* libc function return */
+    int cwd = -1;		/* current working directory */
 
     /*
      * firewall
@@ -87,23 +91,33 @@ chdir_open_json(char const *dir, char const *path)
     }
 
     /*
-     * chdir if dir is non-NULL
+     * note the current directory so we can restore it later, after the chdir(work_dir) below
      */
-    if (dir != NULL) {
+    errno = 0;                  /* pre-clear errno for errp() */
+    cwd = open(".", O_RDONLY|O_DIRECTORY|O_CLOEXEC);
+    if (cwd < 0) {
+        errp(11, __func__, "cannot open .");
+        not_reached();
+    }
+
+    /*
+     * Temporarily chdir if dir is non-NULL
+     */
+    if (dir != NULL && cwd >= 0) {
 
 	/*
 	 * check if we can search / work within the directory
 	 */
 	if (!exists(dir)) {
-	    err(11, __func__, "directory does not exist: %s", dir);
+	    err(12, __func__, "directory does not exist: %s", dir);
 	    not_reached();
 	}
 	if (!is_dir(dir)) {
-	    err(12, __func__, "is not a directory: %s", dir);
+	    err(13, __func__, "is not a directory: %s", dir);
 	    not_reached();
 	}
-	if (!is_exec(path)) {
-	    err(13, __func__, "directory is not searchable: %s", dir);
+	if (!is_exec(dir)) {
+	    err(14, __func__, "directory is not searchable: %s", dir);
 	    not_reached();
 	}
 
@@ -111,9 +125,9 @@ chdir_open_json(char const *dir, char const *path)
 	 * chdir to to the directory
 	 */
 	errno = 0;		/* pre-clear errno for errp() */
-	retc = chdir(dir);
-	if (retc < 0) {
-	    errp(14, __func__, "cannot cd %s", dir);
+	ret = chdir(dir);
+	if (ret < 0) {
+	    errp(15, __func__, "cannot cd %s", dir);
 	    not_reached();
 	}
     }
@@ -122,15 +136,15 @@ chdir_open_json(char const *dir, char const *path)
      * must be a readable file
      */
     if (!exists(path)) {
-	err(15, __func__, "JSON does exist: %s", path);
+	err(16, __func__, "JSON does exist: %s", path);
 	not_reached();
     }
     if (!is_file(path)) {
-	err(16, __func__, "JSON is not a file: %s", path);
+	err(17, __func__, "JSON is not a file: %s", path);
 	not_reached();
     }
     if (!is_read(path)) {
-	err(17, __func__, "JSON is not a readable file: %s", path);
+	err(18, __func__, "JSON is not a readable file: %s", path);
 	not_reached();
     }
 
@@ -138,16 +152,38 @@ chdir_open_json(char const *dir, char const *path)
      * open the readable JSON file
      */
     errno = 0;		/* pre-clear errno for errp() */
-    ret = fopen(path, "r");
-    if (ret == NULL) {
-	errp(18, __func__, "cannot open JSON file: %s", path);
+    ret_stream = fopen(path, "r");
+    if (ret_stream == NULL) {
+	errp(19, __func__, "cannot open JSON file: %s", path);
 	not_reached();
+    }
+
+    /*
+     * if we did a chdir to dir, chdir back to cwd
+     */
+    if (dir != NULL && cwd >= 0) {
+
+	/*
+	 * switch back to the previous current directory
+	 */
+	errno = 0;                  /* pre-clear errno for errp() */
+	ret = fchdir(cwd);
+	if (ret < 0) {
+	    errp(20, __func__, "cannot fchdir to the previous current directory");
+	    not_reached();
+	}
+	errno = 0;                  /* pre-clear errno for errp() */
+	ret = close(cwd);
+	if (ret < 0) {
+	    errp(21, __func__, "close of previous current directory failed");
+	    not_reached();
+	}
     }
 
     /*
      * return open stream
      */
-    return ret;
+    return ret_stream;
 }
 
 
@@ -257,19 +293,19 @@ main(int argc, char *argv[])
 	 * open the .info.json file under entry_dir
 	 */
 	info_filename = ".info.json";
-	info_stream = chdir_open_json(entry_dir, info_filename);
+	info_stream = open_json_dir_file(entry_dir, info_filename);
 	if (info_stream == NULL) { /* paranoia */
-	    err(19, __func__, "chdir_open_json(%s, %s) returned NULL", entry_dir, info_filename);
+	    err(22, __func__, "open_json_dir_file(%s, %s) returned NULL", entry_dir, info_filename);
 	    not_reached();
 	}
 
 	/*
 	 * open the .author.json file under entry_dir
 	 */
-	info_filename = ".author.json";
-	auth_stream = chdir_open_json(entry_dir, auth_filename);
+	auth_filename = ".author.json";
+	auth_stream = open_json_dir_file(entry_dir, auth_filename);
 	if (auth_stream == NULL) { /* paranoia */
-	    err(20, __func__, "chdir_open_json(%s, %s) returned NULL", entry_dir, auth_filename);
+	    err(23, __func__, "open_json_dir_file(%s, %s) returned NULL", entry_dir, auth_filename);
 	    not_reached();
 	}
 
@@ -282,9 +318,9 @@ main(int argc, char *argv[])
 	 * open the .info.json file unless it is .
 	 */
 	if (strcmp(info_filename, ".") != 0) {
-	    info_stream = chdir_open_json(NULL, info_filename);
+	    info_stream = open_json_dir_file(NULL, info_filename);
 	    if (info_stream == NULL) { /* paranoia */
-		err(21, __func__, "chdir_open_json for returned NULL for .info.json path: %s", info_filename);
+		err(24, __func__, "open_json_dir_file for returned NULL for .info.json path: %s", info_filename);
 		not_reached();
 	    }
 	} else {
@@ -295,9 +331,9 @@ main(int argc, char *argv[])
 	 * open the .author.json file unless it is .
 	 */
 	if (strcmp(auth_filename, ".") != 0) {
-	    auth_stream = chdir_open_json(NULL, auth_filename);
+	    auth_stream = open_json_dir_file(NULL, auth_filename);
 	    if (auth_stream == NULL) { /* paranoia */
-		err(22, __func__, "chdir_open_json for returned NULL for .author.json path: %s", auth_filename);
+		err(25, __func__, "open_json_dir_file for returned NULL for .author.json path: %s", auth_filename);
 		not_reached();
 	    }
 	} else {
@@ -308,7 +344,7 @@ main(int argc, char *argv[])
      * case: paranoia
      */
     } else {
-	err(23, __func__, "we should not get here");
+	err(26, __func__, "we should not get here");
 	not_reached();
     }
 
@@ -318,7 +354,7 @@ main(int argc, char *argv[])
     if (info_stream != NULL) {
 	info_tree = parse_json_stream(info_stream, &info_valid);
 	if (info_valid == false || info_tree == NULL) {
-	    err(24, __func__, "failed to JSON parse of .info.json file: %s%s%s",
+	    err(27, __func__, "failed to JSON parse of .info.json file: %s%s%s",
 		   entry_dir == NULL ? "" : entry_dir,
 		   entry_dir == NULL ? "" : "/",
 		   info_filename);
@@ -336,7 +372,7 @@ main(int argc, char *argv[])
     if (auth_stream != NULL) {
 	auth_tree = parse_json_stream(auth_stream, &auth_valid);
 	if (auth_valid == false || auth_tree == NULL) {
-	    err(25, __func__, "failed to JSON parse of .author.json file: %s%s%s",
+	    err(28, __func__, "failed to JSON parse of .author.json file: %s%s%s",
 		   entry_dir == NULL ? "" : entry_dir,
 		   entry_dir == NULL ? "" : "/",
 		   auth_filename);
@@ -349,6 +385,26 @@ main(int argc, char *argv[])
     }
 
     /* XXX - add more code here - XXX */
+
+    /*
+     * cleanup
+     */
+    if (info_stream != NULL) {
+	clearerr_or_fclose(info_stream);
+	info_stream = NULL;
+    }
+    if (auth_stream != NULL) {
+	clearerr_or_fclose(auth_stream);
+	auth_stream = NULL;
+    }
+    if (info_tree != NULL) {
+	json_tree_free(info_tree, JSON_DEFAULT_MAX_DEPTH);
+	info_tree = NULL;
+    }
+    if (auth_tree != NULL) {
+	json_tree_free(auth_tree, JSON_DEFAULT_MAX_DEPTH);
+	auth_tree = NULL;
+    }
 
     /*
      * All Done!!! - Jessica Noll, age 2
