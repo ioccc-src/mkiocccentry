@@ -4965,8 +4965,8 @@ form_tarball(char const *work_dir, char const *entry_dir, char const *tarball_pa
     char *basename_tarball_path;/* basename of tarball_path */
     int exit_code;		/* exit code from shell_cmd() */
     struct stat buf;		/* stat of the tarball */
+    int cwd = -1;		/* current working directory */
     int ret;			/* libc function return */
-    int cwd;			/* current working directory */
 
     /*
      * firewall
