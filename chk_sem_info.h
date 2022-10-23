@@ -27,7 +27,7 @@
 
 #define SEM_INFO_LEN (51)
 
-extern struct json_sem sem_info[SEM_INFO_LEN];
+extern struct json_sem sem_info[SEM_INFO_LEN+1];
 
 extern bool chk_Makefile(struct json const *node,
 	unsigned int depth, struct json_sem *sem, struct json_sem_val_err **val_err);

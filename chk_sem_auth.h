@@ -27,7 +27,7 @@
 
 #define SEM_AUTH_LEN (40)
 
-extern struct json_sem sem_auth[SEM_AUTH_LEN];
+extern struct json_sem sem_auth[SEM_AUTH_LEN+1];
 
 extern bool chk_affiliation(struct json const *node,
 	unsigned int depth, struct json_sem *sem, struct json_sem_val_err **val_err);

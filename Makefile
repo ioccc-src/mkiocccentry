@@ -453,11 +453,10 @@ hostchk_warning:
 
 # rules, not file targets
 #
-.PHONY: all just_all fast_hostchk hostchk hostchk_warning all_ref bug_report.sh build checknr clean \
-	clean_generated_obj clean_mkchk_sem clobber configure depend hostchk bug_report.sh install ioccc_test \
-        legacy_clobber man2html mkchk_sem parser parser-o picky prep prep_clobber \
-        pull rebuild_jnum_test release reset_min_timestamp seqcexit shellcheck tags \
-        test test-chkentry use_ref
+.PHONY: all just_all fast_hostchk hostchk hostchk_warning all_ref all_ref_ptch mkchk_sem bug_report.sh build \
+	checknr clean clean_generated_obj clean_mkchk_sem clobber configure depend hostchk bug_report.sh \
+	install ioccc_test legacy_clobber man2html mkchk_sem parser parser-o picky prep prep_clobber \
+        pull rebuild_jnum_test release reset_min_timestamp seqcexit shellcheck tags test test-chkentry use_ref
 
 
 #####################################
@@ -529,10 +528,10 @@ chk_validate.o: chk_validate.c Makefile
 chkentry.o: chkentry.c chkentry.h Makefile
 	${CC} ${CFLAGS} chkentry.c -c
 
-chkentry: chkentry.o dbg.o util.o sanity.o utf8_posix_map.o dyn_array.o jparse.o jparse.tab.o json_parse.o json_util.o chk_validate.o \
-	  entry_util.c json_sem.o foo.o location.o Makefile
-	${CC} ${CFLAGS} chkentry.o dbg.o util.o sanity.o utf8_posix_map.o jparse.o jparse.tab.o dyn_array.o json_parse.o json_util.o \
-			chk_validate.o entry_util.o json_sem.o foo.o location.o -o $@
+chkentry: chkentry.o dbg.o util.o sanity.o utf8_posix_map.o dyn_array.o jparse.o jparse.tab.o json_parse.o \
+	json_util.o chk_validate.o entry_util.c json_sem.o foo.o location.o chk_sem_info.o chk_sem_auth.o Makefile
+	${CC} ${CFLAGS} chkentry.o dbg.o util.o sanity.o utf8_posix_map.o jparse.o jparse.tab.o dyn_array.o json_parse.o \
+		json_util.o chk_validate.o entry_util.o json_sem.o foo.o location.o chk_sem_info.o chk_sem_auth.o -o $@
 
 jstrencode.o: jstrencode.c jstrencode.h json_util.h json_util.c Makefile
 	${CC} ${CFLAGS} jstrencode.c -c
@@ -778,53 +777,96 @@ rebuild_jnum_test: jnum_gen jnum.testset jnum_header.c Makefile
 # rule used by prep.sh
 #
 all_ref: jsemtblgen jsemcgen.sh test_JSON/info.json/good test_JSON/author.json/good
-	@mkdir -p ref
+	rm -rf ref
+	mkdir -p ref
 	for i in test_JSON/info.json/good/*.json; do \
 	    json="`${BASENAME} -- "$$i"`"; \
+	    echo "rm -f ref/$$json.c"; \
 	    rm -f "ref/$$json.c"; \
-	    echo "./jsemcgen.sh -N sem_info -P chk -- $$i . . . > ref/$$json.c"; \
-	    ./jsemcgen.sh -N sem_info -P chk -- "$$i" . . . > "ref/$$json.c"; \
+	    echo "cat chk.info.head.c > ref/$$json.c"; \
+	    cat chk.info.head.c > "ref/$$json.c"; \
+	    echo "./jsemcgen.sh -N sem_info -P chk -- $$i . . . >> ref/$$json.c"; \
+	    ./jsemcgen.sh -N sem_info -P chk -- "$$i" . . . >> "ref/$$json.c"; \
 	    status="$$?"; \
 	    if [[ $$status -ne 0 ]]; then \
 		echo "./jsemcgen.sh -N sem_info -P chk -- $$i . . . failed, exit code: $$status" 1>&2 ;\
 		exit 1; \
 	    fi; \
+	    echo "cat chk.info.tail.c >> ref/$$json.c"; \
+	    cat chk.info.tail.c >> "ref/$$json.c"; \
 	    echo "ls -l ref/$$json.c"; \
 	    ls -l "ref/$$json.c"; \
+	    echo "rm -f ref/$$json.h"; \
 	    rm -f "ref/$$json.h"; \
-	    echo "./jsemcgen.sh -N sem_info -P chk -I -- $$i . . . > ref/$$json.h"; \
-	    ./jsemcgen.sh -N sem_info -P chk -I -- "$$i" . . . > "ref/$$json.h"; \
+	    echo "cat chk.info.head.h > ref/$$json.h"; \
+	    cat chk.info.head.h > "ref/$$json.h"; \
+	    echo "./jsemcgen.sh -N sem_info -P chk -I -- $$i . . . >> ref/$$json.h"; \
+	    ./jsemcgen.sh -N sem_info -P chk -I -- "$$i" . . . >> "ref/$$json.h"; \
 	    status="$$?"; \
 	    if [[ $$status -ne 0 ]]; then \
 		echo "./jsemcgen.sh -N sem_info -P chk -I -- $$i . . . failed, exit code: $$status" 1>&2 ;\
 		exit 2; \
 	    fi; \
+	    echo "cat chk.info.tail.h >> ref/$$json.h"; \
+	    cat chk.info.tail.h >> "ref/$$json.h"; \
 	    echo "ls -l ref/$$json.h"; \
 	    ls -l "ref/$$json.h"; \
 	done
 	for i in test_JSON/author.json/good/*.json; do \
 	    json="`${BASENAME} -- "$$i"`"; \
+	    echo "rm -f ref/$$json.c"; \
 	    rm -f "ref/$$json.c"; \
-	    echo "./jsemcgen.sh -N sem_auth -P chk -- $$i . . . > ref/$$json.c"; \
-	    ./jsemcgen.sh -N sem_auth -P chk -- "$$i" . . . > "ref/$$json.c"; \
+	    echo "cat chk.auth.head.c > ref/$$json.c"; \
+	    cat chk.auth.head.c > "ref/$$json.c"; \
+	    echo "./jsemcgen.sh -N sem_auth -P chk -- $$i . . . >> ref/$$json.c"; \
+	    ./jsemcgen.sh -N sem_auth -P chk -- "$$i" . . . >> "ref/$$json.c"; \
 	    status="$$?"; \
 	    if [[ $$status -ne 0 ]]; then \
 		echo "./jsemcgen.sh -N sem_auth -P chk -- $$i . . . failed, exit code: $$status" 1>&2 ;\
 		exit 3; \
 	    fi; \
+	    echo "cat chk.auth.tail.c >> ref/$$json.c"; \
+	    cat chk.auth.tail.c >> "ref/$$json.c"; \
 	    echo "ls -l ref/$$json.c"; \
 	    ls -l "ref/$$json.c"; \
+	    echo "cat chk.auth.head.h > ref/$$json.h"; \
+	    cat chk.auth.head.h > "ref/$$json.h"; \
+	    echo "rm -f ref/$$json.h"; \
 	    rm -f "ref/$$json.h"; \
-	    echo "./jsemcgen.sh -N sem_auth -P chk -I -- $$i . . . > ref/$$json.h"; \
-	    ./jsemcgen.sh -N sem_auth -P chk -I -- "$$i" . . . > "ref/$$json.h"; \
+	    echo "./jsemcgen.sh -N sem_auth -P chk -I -- $$i . . . >> ref/$$json.h"; \
+	    ./jsemcgen.sh -N sem_auth -P chk -I -- "$$i" . . . >> "ref/$$json.h"; \
 	    status="$$?"; \
 	    if [[ $$status -ne 0 ]]; then \
 		echo "./jsemcgen.sh -N sem_auth -P chk -I -- $$i . . . failed, exit code: $$status" 1>&2 ;\
 		exit 4; \
 	    fi; \
+	    echo "cat chk.auth.tail.h >> ref/$$json.h"; \
+	    cat chk.auth.tail.h >> "ref/$$json.h"; \
 	    echo "ls -l ref/$$json.h"; \
 	    ls -l "ref/$$json.h"; \
 	done
+
+# form chk.????.ptch.{c,h} files
+#
+# Given a correct set of chk_sem_????.{c,h} files, we form chk.????.ptch.{c,h}
+# diff patch relative to the ref/*.reference.json.{c,h} files.
+#
+# rule should never be invoked by prep.sh
+#
+# This rule is run by the repo maintainers only AFTER chk_sem_????.{c,h} files
+# are updated by hand.
+#
+all_ref_ptch: all_ref \
+	ref/info.reference.json.c ref/info.reference.json.h \
+	ref/author.reference.json.c ref/author.reference.json.h
+	rm -f chk.info.ptch.c
+	-diff -u ref/info.reference.json.c chk_sem_info.c > chk.info.ptch.c
+	rm -f chk.info.ptch.h
+	-diff -u ref/info.reference.json.h chk_sem_info.h > chk.info.ptch.h
+	rm -f chk.auth.ptch.c
+	-diff -u ref/auth.reference.json.c chk_sem_auth.c > chk.auth.ptch.c
+	rm -f chk.auth.ptch.h
+	-diff -u ref/auth.reference.json.h chk_sem_auth.h > chk.auth.ptch.h
 
 # Form the chk_sem_????.{c,h} files
 #
@@ -1097,7 +1139,7 @@ depend: all
 		    exit;                                                           \
 	    fi;                                                                     \
 	    mv -f Makefile Makefile.orig;head -n $$LINE Makefile.orig > Makefile;   \
-	    echo "Generating dependencies.";			 		\
+	    echo "Generating dependencies.";					\
 	    ${CC} ${CFLAGS} -MM ${ALL_CSRC} >> Makefile; \
 	    echo "Make depend completed.";  \
 	fi

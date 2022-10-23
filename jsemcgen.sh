@@ -46,8 +46,8 @@ export ARRAY_FUNC=
 export UNKNOWN_FUNC=
 export JSEMTBLGEN="./jsemtblgen"
 export JSEMTBLGEN_ARGS=
-export PATCH_TOOL
-export JSEMCGEN_VERSION="1.1 2022-10-17"
+export PATCH_TOOL=
+export JSEMCGEN_VERSION="1.2 2022-10-23"
 
 # attempt to fetch system specific paths to tools we need
 #
@@ -110,7 +110,7 @@ export USAGE="usage: $0 [-h] [-v level] [-J level] [-q] [-V] [-s] [-I] [-N name]
 
 	file.json	A valid JSON file used to generate the initial JSON semantics table
 	head		file add to the beginning jsemtblgen output (before patched jsemtblgen output), . ==> do not add
-	patch		patch to apply to the output of jsemtblgen, . --> do not patch
+	patch		patch to apply to the output of jsemtblgen with head and tail, . --> do not patch
 	tail		file add to the end of jsemtblgen output (after patched jsemtblgen output), . ==> do not add
 
 Exit codes:
@@ -326,17 +326,6 @@ if [[ -n $TAIL_FILE ]]; then
     fi
 fi
 
-# output the header
-#
-if [[ -n "$HEAD_FILE" ]]; then
-    cat "$HEAD_FILE"
-    status="$?"
-    if [[ $status -ne 0 ]]; then
-	echo "$0: ERROR: cat $HEAD_FILE exit status: $status" 1>&2
-	exit 10
-    fi
-fi
-
 # case: jsemtblgen is patched
 #
 if [[ -n "$PATCH_FILE" ]]; then
@@ -352,38 +341,49 @@ if [[ -n "$PATCH_FILE" ]]; then
     status="$?"
     if [[ $status -ne 0 ]]; then
 	echo "$0: ERROR: mktemp $MKTEMP_TEMPLATE exit code: $status" 1>&2
-	exit 11
+	exit 10
     fi
     if [[ ! -e $TMP_FILE ]]; then
 	echo "$0: ERROR: tmp file not found: $TMP_FILE" 1>&2
-	exit 12
+	exit 11
     fi
     if [[ ! -f $TMP_FILE ]]; then
 	echo "$0: ERROR: tmp not a regular file: $TMP_FILE" 1>&2
-	exit 14
+	exit 12
     fi
     if [[ ! -r $TMP_FILE ]]; then
 	echo "$0: ERROR: tmp not a readable file: $TMP_FILE" 1>&2
-	exit 15
+	exit 13
     fi
     if [[ ! -w $TMP_FILE ]]; then
 	echo "$0: ERROR: tmp not a writable file: $TMP_FILE" 1>&2
-	exit 16
+	exit 14
     fi
     trap "rm -f \$TMP_FILE; exit" 0 1 2 3 15
     export ORIG_FILE="$TMP_FILE.orig"
     export REJ_FILE="$TMP_FILE.rej"
+
+    # output the header
+    #
+    if [[ -n "$HEAD_FILE" ]]; then
+	cat "$HEAD_FILE" > "$TMP_FILE"
+	status="$?"
+	if [[ $status -ne 0 ]]; then
+	    echo "$0: ERROR: cat $HEAD_FILE > $TMP_FILE exit status: $status" 1>&2
+	    exit 15
+	fi
+    fi
 
     # write the jsemtblgen generated code to a temporary file
     #
     if [[ $V_FLAG -ge 1 ]]; then
 	echo "$0: debug[1]: about to run: $JSEMTBLGEN $JSEMTBLGEN_ARGS > $TMP_FILE" 1>&2
     fi
-    eval "$JSEMTBLGEN" "$JSEMTBLGEN_ARGS" > "$TMP_FILE"
+    eval "$JSEMTBLGEN" "$JSEMTBLGEN_ARGS" >> "$TMP_FILE"
     status="$?"
     if [[ $status -ne 0 ]]; then
 	echo "$0: ERROR: jsemtblgen failed, exit status: $status" 1>&2
-	exit 6
+	exit 16
     fi
     if [[ ! -e $TMP_FILE ]]; then
 	echo "$0: ERROR: jsemtblgen tmp file does not exist: $TMP_FILE" 1>&2
@@ -402,6 +402,17 @@ if [[ -n "$PATCH_FILE" ]]; then
 	exit 20
     fi
 
+    # output the trailer
+    #
+    if [[ -n "$TAIL_FILE" ]]; then
+	cat "$TAIL_FILE" >> "$TMP_FILE"
+	status="$?"
+	if [[ $status -ne 0 ]]; then
+	    echo "$0: ERROR: cat $TAIL_FILE >> $TMP_FILE exit status: $status" 1>&2
+	    exit 21
+	fi
+    fi
+
     # patch the temporary file
     #
     if [[ $V_FLAG -ge 3 ]]; then
@@ -411,7 +422,7 @@ if [[ -n "$PATCH_FILE" ]]; then
     status="$?"
     if [[ $status -ne 0 ]]; then
 	echo "$0: ERROR: rm -f $ORIG_FILE $REJ_FILE filed, exit status: $status" 1>&2
-	exit 21
+	exit 22
     fi
     if [[ $V_FLAG -ge 3 ]]; then
 	echo "$0: debug[3]: about to run: $PATCH_TOOL $TMP_FILE $PATCH_FILE" 1>&2
@@ -420,11 +431,11 @@ if [[ -n "$PATCH_FILE" ]]; then
     status="$?"
     if [[ $status -ne 0 ]]; then
 	echo "$0: ERROR: patch failed, exit status: $status" 1>&2
-	exit 22
+	exit 23
     fi
     if [[ -s $REJ_FILE ]]; then
 	echo "$0: ERROR: patch did not succeed, reject file found: $REJ_FILE" 1>&2
-	exit 23
+	exit 24
     fi
 
     # output patched jsemtblgen generated code
@@ -433,7 +444,7 @@ if [[ -n "$PATCH_FILE" ]]; then
     status="$?"
     if [[ $status -ne 0 ]]; then
 	echo "$0: ERROR: cat $TMP_FILE exit status: $status" 1>&2
-	exit 24
+	exit 25
     fi
 
     # cleanup
@@ -445,13 +456,24 @@ if [[ -n "$PATCH_FILE" ]]; then
     status="$?"
     if [[ $status -ne 0 ]]; then
 	echo "$0: ERROR: rm -f $TMP_FILE $ORIG_FILE $REJ_FILE filed, exit status: $status" 1>&2
-	exit 25
+	exit 26
     fi
     trap - 0 1 2 3 15
 
 # case: jsemtblgen is not patched
 #
 else
+
+    # output the header
+    #
+    if [[ -n "$HEAD_FILE" ]]; then
+	cat "$HEAD_FILE"
+	status="$?"
+	if [[ $status -ne 0 ]]; then
+	    echo "$0: ERROR: cat $HEAD_FILE exit status: $status" 1>&2
+	    exit 27
+	fi
+    fi
 
     # just output unpatched jsemtblgen generated code
     #
@@ -462,19 +484,18 @@ else
     status="$?"
     if [[ $status -ne 0 ]]; then
 	echo "$0: ERROR: jsemtblgen failed, exit status: $status" 1>&2
-	exit 6
+	exit 28
     fi
 
-fi
-
-# output the trailer
-#
-if [[ -n "$TAIL_FILE" ]]; then
-    cat "$TAIL_FILE"
-    status="$?"
-    if [[ $status -ne 0 ]]; then
-	echo "$0: ERROR: cat $TAIL_FILE exit status: $status" 1>&2
-	exit 26
+    # output the trailer
+    #
+    if [[ -n "$TAIL_FILE" ]]; then
+	cat "$TAIL_FILE"
+	status="$?"
+	if [[ $status -ne 0 ]]; then
+	    echo "$0: ERROR: cat $TAIL_FILE exit status: $status" 1>&2
+	    exit 29
+	fi
     fi
 fi
 
