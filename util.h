@@ -181,6 +181,7 @@ extern bool is_exec(char const *path);
 extern bool is_dir(char const *path);
 extern bool is_read(char const *path);
 extern bool is_write(char const *path);
+extern bool is_open_stream(FILE *stream);
 extern off_t file_size(char const *path);
 extern char *cmdprintf(char const *format, ...);
 extern char *vcmdprintf(char const *format, va_list ap);

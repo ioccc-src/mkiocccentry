@@ -222,7 +222,6 @@ base_name(char const *path)
  * This function tests if a path exists.
  *
  * given:
- *
  *      path    - the path to test
  *
  * returns:
@@ -264,7 +263,6 @@ exists(char const *path)
  * This function tests if a path exists and is a regular file.
  *
  * given:
- *
  *      path    - the path to test
  *
  * returns:
@@ -314,7 +312,6 @@ is_file(char const *path)
  * This function tests if a path exists and we have permissions to execute it.
  *
  * given:
- *
  *      path    - the path to test
  *
  * returns:
@@ -378,7 +375,6 @@ is_exec(char const *path)
  * This function tests if a path exists and is a directory.
  *
  * given:
- *
  *      path    - the path to test
  *
  * returns:
@@ -428,7 +424,6 @@ is_dir(char const *path)
  * This function tests if a path exists and we have permissions to read it.
  *
  * given:
- *
  *      path    - the path to test
  *
  * returns:
@@ -480,7 +475,6 @@ is_read(char const *path)
  * This function tests if a path exists and we have permissions to write it.
  *
  * given:
- *
  *      path    - the path to test
  *
  * returns:
@@ -527,12 +521,51 @@ is_write(char const *path)
 
 
 /*
+ * is_open_stream - determine if a file stream is open
+ *
+ * given:
+ *	stream	stream to read if open
+ *
+ * returns:
+ *      true ==> stream is open
+ *      false ==> stream is NULL or nor open
+ */
+bool
+is_open_stream(FILE *stream)
+{
+    long pos = 0;	/* stream position */
+
+    /*
+     * firewall
+     */
+    if (stream == NULL) {
+	warn(__func__, "stream is NULL");
+	return false;
+    }
+
+    /*
+     * determine stream position
+     *
+     * The ftell() function will fail if stream is not open.
+     */
+    pos = ftell(stream);
+    if (pos < 0) {
+	return false;
+    }
+
+    /*
+     * we know that stream is non-NULL and open
+     */
+    return true;
+}
+
+
+/*
  * file_size - determine the file size
  *
  * Return the file size, or -1 if the file does not exist.
  *
  * given:
- *
  *      path    - the path to test
  *
  * returns:
@@ -582,7 +615,6 @@ file_size(char const *path)
  * NOTE: In the worst case, the length of the command line will double.
  *
  * given:
- *
  *      fmt	shell command where % character are replaced with shell escaped args
  *      ...     args (assumed to be of type char *) to use with %'s in fmt
  *
@@ -642,7 +674,6 @@ cmdprintf(char const *fmt, ...)
  * NOTE: In the worst case, the length of the command line will double.
  *
  * given:
- *
  *      fmt	shell command where % character are replaced with shell escaped args
  *      ap	variable argument list
  *
@@ -1769,7 +1800,6 @@ readline_dup(char **linep, bool strip, size_t *lenp, FILE *stream)
  * round_to_multiple - round up to a multiple
  *
  * given:
- *
  *	num		- the number to round up
  *	multiple	- the multiple to round up to
  *
@@ -2088,7 +2118,6 @@ strnull(char const * const str)
  * string_to_long   -	convert str to long and check for errors
  *
  * given:
- *
  *	str	-   the string to convert to a long int.
  *
  * Returns string 'str' as a long int.
@@ -2127,7 +2156,6 @@ string_to_long(char const *str)
  * string_to_long_long   -	convert str to long long and check for errors
  *
  * given:
- *
  *	str	-   the string to convert to a long long int.
  *
  * Returns string 'str' as a long long int.
@@ -2171,7 +2199,6 @@ string_to_long_long(char const *str)
  * string_to_int   -	convert str to int and check for errors
  *
  * given:
- *
  *	str	-   the string to convert to an int.
  *
  * Returns string 'str' as an int.
@@ -2210,7 +2237,6 @@ string_to_int(char const *str)
  * string_to_unsigned_long - string to unsigned long with error checks
  *
  * given:
- *
  *	str	- the string to convert to unsigned long
  *
  * Returns str as an unsigned long.
@@ -2248,7 +2274,6 @@ string_to_unsigned_long(char const *str)
  * string_to_unsigned_long_long - string to unsigned long long with error checks
  *
  * given:
- *
  *	str	- the string to convert to unsigned long long
  *
  * Returns str as an unsigned long long.
@@ -2286,7 +2311,6 @@ string_to_unsigned_long_long(char const *str)
  * string_to_intmax   -	convert base 10 str to intmax_t and check for errors
  *
  * given:
- *
  *	str	-   the string to convert to an intmax_t.
  *
  * Returns string 'str' as a long long int.
@@ -2325,7 +2349,6 @@ string_to_intmax(char const *str)
  * string_to_intmax2   - second interface to convert base 10 str to intmax_t and check for errors
  *
  * given:
- *
  *	str	- the string to convert to an intmax_t
  *	*ret	- pointer to converted intmax_t if return is true
  *
@@ -2385,7 +2408,6 @@ string_to_intmax2(char const *str, intmax_t *ret)
  * string_to_uintmax - string to uintmax_t with error checks
  *
  * given:
- *
  *	str	- the string to convert to uintmax_t
  *
  * Returns str as an unsigned long long.
@@ -2423,7 +2445,6 @@ string_to_uintmax(char const *str)
  * string_to_float - string to long double with error checks
  *
  * given:
- *
  *	str	- the string to convert to a quad_t
  *
  * Returns str as an unsigned long long.
@@ -2462,7 +2483,6 @@ string_to_float(char const *str)
  * valid_contest_id	    -	validate string as a contest ID
  *
  * given:
- *
  *	str	    -	string to test
  *
  * Returns true if it's valid.
@@ -2529,7 +2549,6 @@ valid_contest_id(char *str)
  * parse_verbosity	- parse -v option for our tools
  *
  * given:
- *
  *	program		- the calling program e.g. txzchk, fnamchk, mkiocccentry etc.
  *	arg		- the optarg in the calling tool
  *
@@ -2564,7 +2583,6 @@ parse_verbosity(char const *program, char const *arg)
  * is_decimal	    - if the buffer is a base 10 integer in ASCII
  *
  * given:
- *
  *	ptr	    - pointer to buffer containing an integer in ASCII
  *	len	    - length, starting at ptr
  *
@@ -2657,7 +2675,6 @@ is_decimal(char const *ptr, size_t len)
  * This is a simplified interface for is_decimal().
  *
  * given:
- *
  *	str	    - pointer to buffer containing an integer in ASCII
  *	retlen	    - address of where to store length of str, if retlen != NULL
  *
@@ -3080,7 +3097,6 @@ find_matching_quote(char *q)
  * some other file.
  *
  * given:
- *
  *	filename    - the filename of file
  *	file	    - the FILE * (stdin or another file)
  *
