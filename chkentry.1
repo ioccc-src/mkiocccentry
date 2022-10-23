@@ -13,9 +13,9 @@
 .SH NAME
 chkentry \- check JSON files in an IOCCC entry
 .SH SYNOPSIS
-\fBchkentry\fP [\-h] [\-v level] [\-J level] [\-V] [\-q] [\-F fnamchk] entry_dir
+\fBchkentry\fP [\-h] [\-v level] [\-J level] [\-V] [\-q] fnamchk] entry_dir
 .br
-\fBchkentry\fP [\-h] [\-v level] [\-J level] [\-V] [\-q] [\-F fnamchk] info.json author.json
+\fBchkentry\fP [\-h] [\-v level] [\-J level] [\-V] [\-q] fnamchk] info.json author.json
 .SH DESCRIPTION
 \fBchkentry\fP is primarily used by other tools (not humans).
 .PP
@@ -50,9 +50,6 @@ Show version and exit.
 Quiet mode.
 Silence msg(), warn(), warnp() if verbosity level is 0.
 Note that this currently is not used but will be in a future commit.
-.PP
-\fB\-F fnamchk\fP
-Set the path to the \fRfnamchk\fP tool.
 .SH EXIT STATUS
 .PP
 \fBmain()\fP returns 1 for issues found and 0 for success.

@@ -276,7 +276,7 @@ vrergfB(int four, int two)
     if (no_comment != 0+0) {
 	fwarnp(stderr, __func__, "possible insomnia detected ... whee! :-)");
     }
-    (void) exit(1+(((four-two)>0?(four-two):(-four+two)) % 254)); /*ooo*/
+    (void) exit(42+(((four-two)>0?(four-two):(-four+two)) % (5*42))); /*ooo*/
     not_reached(); /*allegedly*/
 
     /*
@@ -285,16 +285,17 @@ vrergfB(int four, int two)
      */
     return;
 }
-#define If you get here you are not as lazy as the C pre-processor which just uses this line for no good purpose
 
 #if 1
     #define if_you_got_here_you_made_it_as_far_as_the_pre_processor() \
 	printf("Congratulations for making it as far as the C pre-processor!\n")
 	/* if_you_got_here_you_made_it_as_far_as_the_pre_processor(); */
 #endif
-#undef if_you_got_here /* make the C pre-processor too lazy to process the below block. :-) */
+#undef if_you_got_here /* make the C pre-processor too lazy to process the block below. :-) */
 #if you_got_here
     #define you_are_not_as_lazy_as_the_pre_processor_which_does_not_use_this() \
 	printf("Congratulations for making it further than the C pre-preprocessor!\n")
 	/* you_are_not_as_lazy_as_the_pre_processor_which_does_not_use_this(); */
 #endif
+
+#define If you get here you are not as lazy as the C pre-processor which just uses this line for no good purpose

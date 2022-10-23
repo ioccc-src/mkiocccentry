@@ -18,7 +18,7 @@
 	"ioccc_contest" : "IOCCCMOCK",
 	"ioccc_year" : 2022,
 	"iocccsize_version" : "28.12 2022-10-17",
-	"chkentry_version" : "0.0 2022-06-22",
+	"chkentry_version" : "0.1 2022-10-22",
 	"manifest" : [
 		{"info_JSON" : ".info.json"},
 		{"author_JSON" : ".author.json"},
@@ -31,7 +31,7 @@
 		{"extra_file" : "bar"}
 	],
 	"min_timestamp" : 1662145368,
-	"mkiocccentry_version" : "0.40 2022-03-15",
+	"mkiocccentry_version" : "0.42 2022-10-22",
 	"no-comment" : "because comments were removed from the original JSON spec",
 	"nul_warning" : false,
 	"rule_2a_mismatch" : false,

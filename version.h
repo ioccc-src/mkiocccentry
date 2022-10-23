@@ -69,7 +69,7 @@
 /*
  * official mkiocccentry version
  */
-#define MKIOCCCENTRY_VERSION "0.41 2022-09-02"	/* format: major.minor YYYY-MM-DD */
+#define MKIOCCCENTRY_VERSION "0.42 2022-10-22"	/* format: major.minor YYYY-MM-DD */
 
 /*
  * Version of info for JSON the .info.json file.
@@ -94,7 +94,7 @@
 /*
  * official chkentry version
  */
-#define CHKENTRY_VERSION "0.0 2022-06-22"	/* format: major.minor YYYY-MM-DD */
+#define CHKENTRY_VERSION "0.1 2022-10-22"	/* format: major.minor YYYY-MM-DD */
 
 /*
  * official jstrencode version

@@ -1115,7 +1115,7 @@ mkiocccentry_sanity_chks(struct info *infop, char const *work_dir, char const *t
 	      "A chkentry program performs sanity checks on the compressed tarball.",
 	      "Perhaps you need to use:",
 	      "",
-	      "    mkiocccentry -J /path/to/chkentry ...",
+	      "    mkiocccentry -C /path/to/chkentry ...",
 	      "",
 	      "and/or install the chkentry tool?  You can find the source for chkentry in the mkiocccentry GitHub repo:",
 	      "",
@@ -1132,7 +1132,7 @@ mkiocccentry_sanity_chks(struct info *infop, char const *work_dir, char const *t
 	      "",
 	      "Perhaps you need to use another path:",
 	      "",
-	      "    mkiocccentry -J /path/to/chkentry ...",
+	      "    mkiocccentry -C /path/to/chkentry ...",
 	      "",
 	      "and/or install the chkentry tool?  You can find the source for chkentry in the mkiocccentry GitHub repo:",
 	      "",
@@ -1149,7 +1149,7 @@ mkiocccentry_sanity_chks(struct info *infop, char const *work_dir, char const *t
 	      "",
 	      "We suggest you check the permissions on the chkentry program, or use another path:",
 	      "",
-	      "    mkiocccentry -J /path/to/chkentry ...",
+	      "    mkiocccentry -C /path/to/chkentry ...",
 	      "",
 	      "and/or install the chkentry tool?  You can find the source for chkentry in the mkiocccentry GitHub repo:",
 	      "",
@@ -4662,11 +4662,11 @@ write_info(struct info *infop, char const *entry_dir, char const *chkentry, char
 	para("",
 	    "Checking the format of .info.json ...", NULL);
     }
-    dbg(DBG_HIGH, "about to perform: %s -q -F %s -- %s .", chkentry, fnamchk, info_path);
-    exit_code = shell_cmd(__func__, true, "% -q -F % -- % .", chkentry, fnamchk, info_path);
+    dbg(DBG_HIGH, "about to perform: %s -q -- %s .", chkentry, info_path);
+    exit_code = shell_cmd(__func__, true, "% -q -- % .", chkentry, info_path);
     if (exit_code != 0) {
-	err(155, __func__, "%s -q -F %s -- %s . failed with exit code: %d",
-			   chkentry, fnamchk, info_path, WEXITSTATUS(exit_code));
+	err(155, __func__, "%s -q -- %s . failed with exit code: %d",
+			   chkentry, info_path, WEXITSTATUS(exit_code));
 	not_reached();
     }
     if (!quiet) {
@@ -5071,13 +5071,13 @@ form_tarball(char const *work_dir, char const *entry_dir, char const *tarball_pa
     /*
      * perform the txzchk which will indirectly show the user the tarball contents
      */
-    dbg(DBG_HIGH, "about to perform: %s -q -F %s -- %s/../%s",
-		  txzchk, fnamchk, entry_dir, basename_tarball_path);
-    exit_code = shell_cmd(__func__, true, "% -q -F % -- %/../%",
-					  txzchk, fnamchk, entry_dir, basename_tarball_path);
+    dbg(DBG_HIGH, "about to perform: %s -q -- %s/../%s",
+		  txzchk, entry_dir, basename_tarball_path);
+    exit_code = shell_cmd(__func__, true, "% -q -- %/../%",
+					  txzchk, entry_dir, basename_tarball_path);
     if (exit_code != 0) {
-	err(182, __func__, "%s -q -F %s -- %s/../%s failed with exit code: %d",
-			   txzchk, fnamchk, entry_dir, basename_tarball_path, WEXITSTATUS(exit_code));
+	err(182, __func__, "%s -q -- %s/../%s failed with exit code: %d",
+			   txzchk, entry_dir, basename_tarball_path, WEXITSTATUS(exit_code));
 	not_reached();
     }
     para("",

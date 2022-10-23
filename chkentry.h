@@ -67,8 +67,8 @@
  * Use the usage() function to print the usage_msg([0-9]?)+ strings.
  */
 static const char * const usage_msg =
-    "usage: %s [-h] [-v level] [-J level] [-V] [-q] [-F fnamchk] entry_dir\n"
-    "usage: %s [-h] [-v level] [-J level] [-V] [-q] [-F fnamchk] info.json author.json\n"
+    "usage: %s [-h] [-v level] [-J level] [-V] [-q] entry_dir\n"
+    "usage: %s [-h] [-v level] [-J level] [-V] [-q] info.json author.json\n"
     "\n"
     "\t-h\t\tprint help message and exit\n"
     "\t-v level\tset verbosity level (def level: %d)\n"
@@ -76,7 +76,6 @@ static const char * const usage_msg =
     "\t-V\t\tprint version string and exit\n"
     "\t-q\t\tquiet mode (def: not quiet)\n"
     "\t\t\t    NOTE: -q will also silence msg(), warn(), warnp() if -v 0\n"
-    "\t-F fnamchk\tpath to fnamchk tool (def: %s)\n"
     "\n"
     "entry_dir\tIOCCC entry directory with .info.json and author.json files\n"
     "info.json\tcheck info.json file, . ==> skip IOCCC info check\n"
@@ -105,10 +104,5 @@ bool quiet = false;				/* true ==> quiet mode */
 /*
  * function prototypes
  */
-static void chkentry_sanity_chks(char const *entry_dir, char const *info_json, char const *author_json, char const *fnamchk);
-static bool validate_entry_files(char const *entry_dir, char const *info_json, char const *author_json);
-static bool validate_info_json(char const *info_json);
-static bool validate_author_json(char const *author_json);
-static void usage(int exitcode, char const *prog, char const *str, int expected, int argc) __attribute__((noreturn));
 
 #endif /* INCLUDE_CHKENTRY_H */
