@@ -103,7 +103,7 @@ main(int argc, char *argv[])
     for (d = 0.0; d < 1000000.0; d += 1.0) {
 	moved = dyn_array_append_value(array, &d);
 	if (moved == true) {
-	    dbg(DBG_LOW, "moved data after appnding d: %f", d);
+	    dbg(DBG_LOW, "moved data after appending d: %f", d);
 	    moved = false;
 	}
     }

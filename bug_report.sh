@@ -25,6 +25,7 @@ export TOOLS="./run_bison.sh ./run_flex.sh ./hostchk.sh ./dbg ./dyn_test ./fnamc
 
 export BUG_REPORT_VERSION="0.3 2022-10-18"
 export FAILURE_SUMMARY=
+export WARNING_SUMMARY=
 export DBG_LEVEL="0"
 export V_FLAG="0"
 export USAGE="usage: $0 [-h] [-V] [-v level] [-D level]
@@ -93,7 +94,7 @@ fi
 
 
 # is_exec   - determine if arg exists, is a regular file and is executable
-function is_exec()
+is_exec()
 {
     if [[ $# -ne 1 ]]; then
 	echo "$0: ERROR: expected 1 arg to is_exec, found $#" | tee -a -- "$LOG_FILE"
@@ -114,6 +115,48 @@ function is_exec()
 	fi
 	return 0
     fi
+}
+
+# run_check_warn    -	don't make it an error if it fails, just warn
+#
+# usage:
+#	run_check_warn command
+#
+#	command	    - check to run
+#
+run_check_warn() {
+
+    # parse args
+    #
+    if [[ $# -ne 1 ]]; then
+	echo "$0: ERROR: function expects 2 args, found $#" 1>&2
+	exit 3
+    fi
+    local COMMAND="$1"
+
+    echo "## RUNNING: $COMMAND" | tee -a -- "$LOG_FILE"
+    echo | tee -a -- "$LOG_FILE"
+    command ${COMMAND} 2>&1 | tee -a -- "$LOG_FILE"
+
+    status=${PIPESTATUS[0]}
+    if [[ "$status" -ne 0 ]]; then
+	echo "$0: WARNING: $COMMAND FAILED WITH EXIT CODE $status" | tee -a -- "$LOG_FILE"
+	WARNING_SUMMARY="$WARNING_SUMMARY
+	$COMMAND non-zero exit code: $status"
+	echo "### POSSIBLE ISSUE DETECTED: $COMMAND returned $status" | tee -a -- "$LOG_FILE"
+    fi
+
+    echo "## OUTPUT OF ${COMMAND} ABOVE" | tee -a -- "$LOG_FILE"
+    echo | tee -a -- "$LOG_FILE"
+    return 0;
+}
+
+# get_shell - get the user shell :-)
+get_shell() {
+    echo "## RUNNING: echo \$SHELL" | tee -a -- "$LOG_FILE"
+    echo "Default shell: $SHELL" | tee -a -- "$LOG_FILE"
+    echo "## DEFAULT SHELL ABOVE" | tee -a -- "$LOG_FILE"
+    echo | tee -a -- "$LOG_FILE"
 }
 
 # run_check
@@ -176,34 +219,111 @@ echo | tee -a -- "$LOG_FILE"
 # Section 0: environment and system information.
 echo "# SECTION 0: ENVIRONMENT AND SYSTEM INFORMATION" | tee -a -- "$LOG_FILE"
 echo | tee -a -- "$LOG_FILE"
+# echo $SHELL: we need to know their default shell
+get_shell
 # bash --version: get bash version
-run_check 10 "bash --version"
+run_check 11 "bash --version"
 # uname -a: get system information
-run_check 11 "uname -a"
-# which cc: get all paths for cc
-run_check 12 "which cc"
-# cc -v: get compiler version
-run_check 13 "cc -v"
-# which make: get path to make tool
-run_check 14 "which -a make"
-# make -v: get make version
-run_check 15 "make -v"
+run_check 12 "uname -a"
 # which tar: find the path to tar
 #
 # NOTE: we don't need to check if tar accepts the correct options in this script
 # because txzchk_test.sh will do that later on.
-run_check 16 "which tar"
+run_check 13 "which tar"
 # tar --version: find out what version tar is
-run_check 17 "tar --version"
+run_check 14 "tar --version"
+# which awk: get awk path
+run_check 15 "which awk"
+# awk --version | head -n 1: get awk version
+run_check 16 "awk --version | head -n 1"
+# which sed: get sed path
+run_check 17 "which sed"
+# sed --version | head -n 1: get sed version
+# NOTE: this will likely fail in some BSD Unices including macOS as these do not
+# have a --version option and no other way to get version via the command
+# itself. However we can try doing:
+#
+#	strings /usr/bin/sed | head -n 1
+#
+# which seems to have a version string of a kind. Under macOS this gives:
+#
+#	$ strings /usr/bin/sed | head -n 1
+#	@(#)PROGRAM:sed  PROJECT:text_cmds-138.100.3
+#
+# It seems though that this formatting is not consistent across BSDs. For
+# example under FreeBSD it appears to be:
+#
+#	#ifndef lint
+#	static const char sccsid[] = "@(#)main.c	8.2 (Berkeley) 1/3/94";
+#	#endif
+#
+# which would suggest that it probably would be:
+#
+#	@(#)main.c        8.2 (Berkeley) 1/3/94
+#
+# but unfortunately it's not the first string in the source code for sed in
+# FreeBSD.
+#
+# These Unices have the command sw_vers which might help but this will fail on
+# linux. It might be worth checking with something like:
+#
+#	which sw_vers 2>/dev/null && sw_vers
+#
+# but this will require a bit more work to get the formatting right if it's
+# worth adding.
+#
+# So how to go about it? We could try running first sed --version and if that
+# fails we could try extracting the path of sed by `which' and then use strings
+# on that path. But this appears that it might not be enough all the time.
+#
+# There are a number of tools we attempt to get the version from and these are
+# all a warning if it fails rather than making it an error. But in a future
+# commit we will look at a number of ways to try and get version information.
+run_check_warn "sed --version | head -n 1"
+# which basename: get path to basename tool
+run_check 18 "which basename"
+# basename --version
+run_check_warn "basename --version | head -n 1"
+# which cut: get path to cut tool
+run_check 19 "which cut"
+# cut --version
+run_check_warn "cut --version | head -n 1"
+# which cp: get path to cp tool
+run_check 20 "which cp"
+# cp --version
+run_check_warn "cp --version | head -n 1"
+# which grep: get path to grep tool
+run_check 21 "which grep"
+# grep --version
+run_check_warn "grep --version | head -n 1"
 
-echo "# SECTION 0 ABOVE" | tee -a -- "$LOG_FILE"
+
+
+
+echo "# SECTION 0 ABOVE: ENVIRONMENT AND SYSTEM INFORMATION" | tee -a -- "$LOG_FILE"
 echo | tee -a -- "$LOG_FILE"
 
-# Section 1: compilation checks.
-echo "# SECTION 1: COMPILATION CHECKS" | tee -a -- "$LOG_FILE"
+# Section 1: C environment
+echo "# SECTION 1: C ENVIRONMENT" | tee -a -- "$LOG_FILE"
+echo | tee -a -- "$LOG_FILE"
+# which cc: get all paths for cc
+run_check 22 "which cc"
+# cc -v: get compiler version
+run_check 23 "cc -v"
+# which make: get path to make tool
+run_check 24 "which -a make"
+# make -v: get make version
+run_check 25 "make -v"
+# cpp -dM /dev/null: get predefined macros
+run_check 26 "cpp -dM /dev/null"
+echo "# SECTION 1 ABOVE: C ENVIRONMENT" | tee -a -- "$LOG_FILE"
+echo | tee -a -- "$LOG_FILE"
+
+# Section 2: compilation checks.
+echo "# SECTION 2: COMPILATION CHECKS" | tee -a -- "$LOG_FILE"
 echo | tee -a -- "$LOG_FILE"
 # make clobber: start clean
-run_check 18 "make clobber"
+run_check 27 "make clobber"
 # make all: compile everything before we do anything else
 #
 # NOTE: This will indirectly call make fast_hostchk which, if it reports an
@@ -223,51 +343,49 @@ run_check 18 "make clobber"
 #
 # This might seem extra verbose or overkill but we feel that if there's an issue
 # with hostchk.sh it really is an issue that will likely prevent a successful
-# use of this repo so each time the script fails we report the issue since it
-# really is likely that, if the script fails, you will be unable to successfully
-# use the mkiocccentry repo to submit a correct IOCCC entry.
+# use of this repo so each time the script fails we report the issue for that
+# very reason.
 #
-run_check 19 "make all"
+run_check 28 "make all"
 # make test: run the IOCCC toolkit test suite
-run_check 20 "make test"
+run_check 29 "make test"
 # hostchk.sh -v 3: we need to run some checks to make sure the system can
 # compile things and so on
-run_check 21 "./hostchk.sh -v 3"
-echo "# SECTION 1 ABOVE" | tee -a -- "$LOG_FILE"
+run_check 30 "./hostchk.sh -v 3"
+echo "# SECTION 2 ABOVE: COMPILATION CHECKS" | tee -a -- "$LOG_FILE"
 echo | tee -a -- "$LOG_FILE"
 
-# Section 2: JSON scanner and parser checks.
-echo "# SECTION 2: BISON AND FLEX CHECKS" | tee -a -- "$LOG_FILE"
+# Section 3: JSON scanner and parser checks.
+echo "# SECTION 3: BISON AND FLEX CHECKS" | tee -a -- "$LOG_FILE"
 echo | tee -a -- "$LOG_FILE"
 # run_bison.sh -v 7: check if bison will work
-run_check 22 "./run_bison.sh -v 7"
+run_check 31 "./run_bison.sh -v 7"
 # run_flex.sh -v 7: check if flex will work
-run_check 23 "./run_flex.sh -v 7"
+run_check 32 "./run_flex.sh -v 7"
 # run make all again: run_bison.sh and run_flex.sh will likely cause a need for
 # recompilation
 echo "## RUNNING make all a second time" | tee -a -- "$LOG_FILE"
-run_check 24 "make all"
-echo "# SECTION 2 ABOVE" | tee -a -- "$LOG_FILE"
+run_check 33 "make all"
+echo "# SECTION 3 ABOVE: BISON AND FLEX CHECKS" | tee -a -- "$LOG_FILE"
 echo | tee -a -- "$LOG_FILE"
 
-# Section 3: IOCCC environment like version information and making sure that
+# Section 4: IOCCC environment like version information and making sure that
 # everything is executable.
-echo "# SECTION 3: IOCCC ENVIRONMENT" | tee -a -- "$LOG_FILE"
+echo "# SECTION 4: IOCCC ENVIRONMENT" | tee -a -- "$LOG_FILE"
 echo | tee -a -- "$LOG_FILE"
 # See that every tool is executable and run -V on each one that is.
 #
-# If any tool is not executable the exit code will be set to 25.
+# If any tool is not executable the exit code will be set to 34.
 for f in $TOOLS; do
     if is_exec "$f"; then
-	echo "## CHECKING: if $f is executable" | tee -a -- "$LOG_FILE"
-	echo "## $f is executable" | tee -a -- "$LOG_FILE"
-	echo | tee -a -- "$LOG_FILE"
+	echo "## Checking if $f is executable" | tee -a -- "$LOG_FILE"
+	echo "## $f IS EXECUTABLE" | tee -a -- "$LOG_FILE"
 	echo "## RUNNING: $f -V" | tee -a -- "$LOG_FILE"
 	echo "$f version $($f -V)" | tee -a -- "$LOG_FILE"
 	echo | tee -a -- "$LOG_FILE"
     else
-	EXIT_CODE=25
-	echo "$0: ERROR: $f is not executable: new exit code: $EXIT_CODE" | tee -a -- "$LOG_FILE"
+	EXIT_CODE=34
+	echo "$0: ERROR: $f IS NOT EXECUTABLE: new exit code: $EXIT_CODE" | tee -a -- "$LOG_FILE"
 	FAILURE_SUMMARY="$FAILURE_SUMMARY
 	$f cannot be executed"
 	echo "### ISSUE DETECTED: $f process execution was botched: not even a zombie process was produced" | tee -a -- "$LOG_FILE"
@@ -282,6 +400,11 @@ done
 # might indicate a problem but the file itself is not necessary for using the
 # repo). Still it has a lot of important variables that we would benefit from
 # having.
+#
+# A reason why this file might be incorrect: missing awk, sed or both. Ideally
+# the user would have these tools but if one or both are not available this file
+# will not be as useful. This is why we don't mark it as an error.
+#
 echo "## Checking limit_ioccc.sh" | tee -a -- "$LOG_FILE"
 if [[ -e "./limit_ioccc.sh" ]]; then
     if [[ -r "./limit_ioccc.sh" ]]; then
@@ -297,12 +420,12 @@ if [[ -e "./limit_ioccc.sh" ]]; then
 else
     echo "### No limit_ioccc.sh file found" | tee -a -- "$LOG_FILE"
 fi
-echo | tee -a -- "$LOG_FILE"
+echo "# SECTION 4 ABOVE: IOCCC ENVIRONMENT" | tee -a -- "$LOG_FILE"
 echo | tee -a -- "$LOG_FILE"
 
 
-# Section 4: check for any user modifications to the tools
-echo "# SECTION 4: USER MODIFICATIONS TO ENVIRONMENT" | tee -a -- "$LOG_FILE"
+# Section 5: check for any user modifications to the tools
+echo "# SECTION 5: USER MODIFICATIONS TO ENVIRONMENT" | tee -a -- "$LOG_FILE"
 echo | tee -a -- "$LOG_FILE"
 
 # check for makefile.local to see if user is overriding any rules.
@@ -339,9 +462,18 @@ echo "## RUNNING: git diff to check for local modifications to the code" | tee -
 git --no-pager diff | tee -a -- "$LOG_FILE"
 echo "## git diff ABOVE" | tee -a -- "$LOG_FILE"
 echo | tee -a -- "$LOG_FILE"
+echo "# SECTION 5 ABOVE: USER MODIFICATIONS TO ENVIRONMENT" | tee -a -- "$LOG_FILE"
 echo | tee -a -- "$LOG_FILE"
 
 # final report
+if [[ ! -z "$WARNING_SUMMARY" ]]; then
+    echo 1>&2
+    echo "One or more POSSIBLE issues detected:" | tee -a -- "$LOG_FILE"
+    echo  | tee -a -- "$LOG_FILE"
+    echo "$WARNING_SUMMARY" | tee -a -- "$LOG_FILE"
+    echo  | tee -a -- "$LOG_FILE"
+fi
+
 if [[ "$EXIT_CODE" -ne 0 ]]; then
     echo 1>&2
     echo "One or more problems occurred:" | tee -a -- "$LOG_FILE"
@@ -354,7 +486,9 @@ if [[ "$EXIT_CODE" -ne 0 ]]; then
     echo "	https://github.com/ioccc-src/mkiocccentry/issues" | tee -a -- "$LOG_FILE"
     echo | tee -a -- "$LOG_FILE"
     echo "making sure to attach $LOG_FILE with your report. You may" | tee -a -- "$LOG_FILE"
-    echo "instead email the Judges." | tee -a -- "$LOG_FILE"
+    echo "instead email the Judges but you're encouraged to file a" | tee -a -- "$LOG_FILE"
+    echo "report instead. This is because not all tools were written by" | tee -a -- "$LOG_FILE"
+    echo "the Judges." | tee -a -- "$LOG_FILE"
 else
     echo "All tests PASSED" | tee -a -- "$LOG_FILE"
     echo | tee -a -- "$LOG_FILE"
