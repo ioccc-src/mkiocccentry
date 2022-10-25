@@ -167,7 +167,7 @@ if [[ ! -w "${LOGFILE}" ]]; then
     exit 5
 fi
 
-# run_file_test - run a single jparse test on a string
+# run_file_test - run a single jparse test on a file
 #
 # usage:
 #	run_file_test jparse dbg_level json_dbg_level quiet_mode json_doc_file pass|fail
