@@ -4,12 +4,12 @@
  * Make an IOCCC compressed tarball for an IOCCC entry.
  *
  * We will form the IOCCC entry compressed tarball "by hand" in C.
- * Not in some high level language, but standard vanilla C.
- * Why?  Because this is an obfuscated C contest.  But then why isn't
- * this code obfuscated?  Because the IOCCC judges prefer to write
- * in robust unobfuscated code.  Besides, the IOCCC was started
- * as an ironic commentary on the Bourne shell source and finger daemon
- * source.  Moreover, irony is well baked-in to the IOCCC.  :-)
+ * Not in some high level language, but standard vanilla (with a healthy
+ * overdose of chocolate :-) ) C.  Why? Because this is an obfuscated C contest.
+ * But then why isn't this code obfuscated?  Because the IOCCC judges prefer to
+ * write in robust unobfuscated code.  Besides, the IOCCC was started as an
+ * ironic commentary on the Bourne shell source and finger daemon source.
+ * Moreover, irony is well baked-in to the IOCCC.  :-)
  *
  * If you do find a problem with this code, please let the judges know.
  * To contact the judges please see:

@@ -1088,10 +1088,10 @@ YY_RULE_SETUP
 			     * without knowing what what the token actually is?
 			     * Thus we call it token so that it will read
 			     * literally as 'unexpected token' which removes any
-			     * ambiguity (it could be read as 'it's unexpected
-			     * in this place but it is valid in other contexts'
-			     * but it's never actually valid: it's a catch all
-			     * for anything that's not valid.
+			     * ambiguity (it could otherwise be read as 'it's
+			     * unexpected in this place but it is valid in other
+			     * contexts' but it's never actually valid: it's a
+			     * catch all for anything that's not valid).
 			     *
 			     * We also make use of yytext in yyerror()
 			     * which makes for a somewhat reasonable error

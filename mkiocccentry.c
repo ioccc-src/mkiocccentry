@@ -3,13 +3,13 @@
  *
  * Make an IOCCC compressed tarball for an IOCCC entry.
  *
- * We will form the IOCCC entry compressed tarball in C.
- * Not in some high level language, but standard vanilla C.
- * Why?  Because this is an obfuscated C contest.  But then why isn't
- * this code obfuscated?  Because the IOCCC judges prefer to write
- * in robust unobfuscated code.  Besides, the IOCCC was started
- * as an ironic commentary on the Bourne shell source and finger daemon
- * source.  Moreover, irony is well baked-in to the IOCCC.  :-)
+ * We will form the IOCCC entry compressed tarball "by hand" in C.
+ * Not in some high level language, but standard vanilla (with a healthy
+ * overdose of chocolate :-) ) C.  Why?  Because this is an obfuscated C
+ * contest.  But then why isn't this code obfuscated?  Because the IOCCC judges
+ * prefer to write in robust unobfuscated code.  Besides, the IOCCC was started
+ * as an ironic commentary on the Bourne shell source and finger daemon source.
+ * Moreover, irony is well baked-in to the IOCCC.  :-)
  *
  * OK, we do make use of shell scripts to help build and test
  * this repo: but who doesn't use a bit of shell scripting now and then?  :-)

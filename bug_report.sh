@@ -23,7 +23,7 @@ export TOOLS="./run_bison.sh ./run_flex.sh ./hostchk.sh ./dbg ./dyn_test ./fnamc
 	      ./reset_tstamp.sh ./txzchk ./txzchk_test.sh ./utf8_test ./verge
 	      ./vermod.sh ./jsemcgen.sh ./jsemtblgen"
 
-export BUG_REPORT_VERSION="0.3 2022-10-18"
+export BUG_REPORT_VERSION="0.4 2022-10-26"
 export FAILURE_SUMMARY=
 export WARNING_SUMMARY=
 export DBG_LEVEL="0"
@@ -117,6 +117,377 @@ is_exec()
     fi
 }
 
+# get path to tools we might need for get_version and get_version_optional
+# functions below
+WHAT="$(which what)"
+IDENT="$(which ident)"
+STRINGS="$(which strings)" # this should always exist but we check anyway
+
+# A question is how do to determine the version of a tool when there's no
+# universal option to get the version of _all_ tools (and in some tools we
+# cannot detect the version as it will block instead or in the case of echo or
+# yes just print the args).
+#
+# This is a good question and there's no guarantee we can obtain a version. In
+# that case we will report it as an unknown version. Nevertheless we go through
+# a series of steps as follows. First (step 0) we attempt to get the path to the
+# command and then we run the following on the path (if it appears to be a
+# built-in we cannot use the path of course).
+#
+#   1)	use --version (note: under macOS and BSD this will fail on several
+#	tools and in some tools it will fail under linux as well)
+#   2)	use -V (note: this might fail due to multiple reasons)
+#   3)	use -v (note: this might fail due to multiple reasons)
+#   4)	try what(1) (note: this is a macOS and seems available under some BSDs
+#	as well - but despite the man page saying it conforms to to IEEE Std
+#	1003.1-2001 ("POSIX.1") it is not available under linux)
+#   5)	try ident(1) (note: this appears to be a BSD command that's not
+#	available under macOS either)
+#   6)	try strings(1) with showing just the first 10 lines
+#
+# As soon as one of these returns a zero exit code (except for what(1) which is
+# described in the function below) we will stop. If we get through all steps
+# without any results we will mark it as an unknown version.  The first step to
+# succeed we will run a second time to record the output.
+#
+# Unfortunately this is far from perfect but we hope that it will help in a lot
+# of cases. A note about what(1) and ident(1) is that we will only check for it
+# once and if it does not exist we won't try it again. We also use the command
+# command -p in hopes to get the actual path. This also might not be perfect.
+#
+
+# get_version_optional    -	try and get version of an optional tool
+#
+# usage:
+#	get_version_optional command
+#
+#	command	    - command to try and obtain the version
+#
+# NOTE: we don't want the path to the tool in this function as we try
+# determining that instead.
+#
+get_version_optional() {
+
+    # parse args
+    #
+    if [[ $# -ne 1 ]]; then
+	echo "$0: ERROR: function expects 1 arg, found $#" 1>&2
+	exit 3
+    fi
+    local COMMAND
+    local EXIT=0
+    COMMAND="$(which "$1")"
+    if ! is_exec "$COMMAND"; then
+	return
+    fi
+
+    echo "## VERSION CHECK FOR: $1" | tee -a -- "$LOG_FILE"
+
+    # try --version
+    command ${COMMAND} --version >/dev/null 2>&1
+    status=$?
+    if [[ "$status" -eq 0 ]]; then
+	command ${COMMAND} --version | tee -a -- "$LOG_FILE"
+	echo "## $COMMAND --version ABOVE" | tee -a -- "$LOG_FILE"
+	echo | tee -a -- "$LOG_FILE"
+	return
+    fi
+
+    # try -v
+    command "${COMMAND}" -v >/dev/null 2>&1
+    status=$?
+    if [[ "$status" -eq 0 ]]; then
+	command ${COMMAND} -v | tee -a -- "$LOG_FILE"
+	echo "## $COMMAND -v ABOVE" | tee -a -- "$LOG_FILE"
+	echo | tee -a -- "$LOG_FILE"
+	return
+    fi
+
+    # try -V
+    command "${COMMAND}" -V >/dev/null 2>&1
+    status=$?
+    if [[ "$status" -eq 0 ]]; then
+	command ${COMMAND} -V | tee -a -- "$LOG_FILE"
+	echo "## $COMMAND -V ABOVE" | tee -a -- "$LOG_FILE"
+	echo | tee -a -- "$LOG_FILE"
+	return
+    fi
+
+    # try what(1) if available
+    #
+    # An important note is that what(1) might not get the correct information.
+    # For instance running it on bmake(1) I see:
+    #
+    #	$ what ./bmake
+    #   ./bmake:
+    #	 Copyright (c) 1988, 1989, 1990, 1993 The Regents of the University of California.  All rights reserved.
+    #
+    # which(1) is entirely useless.
+    #
+    # The question is should ident(1) come first but the trouble is I don't
+    # actually know what it looks like. Also if the tool in question does not
+    # have the appropriate string it won't give us anything useful either.
+    # Here's what what looks like on cut(1) which as can be seen is useful:
+    #
+    #	$ what /usr/bin/cut
+    #	/usr/bin/cut:
+    #	PROGRAM:cut  PROJECT:text_cmds-154
+    #	PROGRAM:cut  PROJECT:text_cmds-154
+    #
+    # Looking at the Apple website this is indeed the version. Thus because it's
+    # not something that will work in all cases instead we will try ident(1) as
+    # well even if this succeeds. If either succeeds we will not try strings(1).
+    if [[ ! -z "$WHAT" ]]; then
+	$WHAT "${COMMAND}"  >/dev/null 2>&1
+	status=$?
+	if [[ "$status" -eq 0 ]]; then
+	    $WHAT "${COMMAND}" | tee -a -- "$LOG_FILE"
+	    echo "## OUTPUT OF what $COMMAND ABOVE" | tee -a -- "$LOG_FILE"
+	    echo | tee -a -- "$LOG_FILE"
+	    EXIT=1
+	fi
+    fi
+
+    # try ident(1) if available
+    #
+    # The same or similar caveats for what(1) might apply here too but I have no
+    # way to test this.
+    if [[ ! -z "$IDENT" ]]; then
+	$IDENT "${COMMAND}"  >/dev/null 2>&1
+	status=$?
+	if [[ "$status" -eq 0 ]]; then
+	    $IDENT "${COMMAND}" | tee -a -- "$LOG_FILE"
+	    echo "## OUTPUT OF ident $COMMAND ABOVE" | tee -a -- "$LOG_FILE"
+	    echo | tee -a -- "$LOG_FILE"
+	    EXIT=1
+	fi
+    fi
+
+    # if we got output from either what or ident exit
+    if [[ -n "$EXIT" ]]; then
+	return
+    fi
+
+    # try strings(1) if available. The filter is arbitrarily selected. For some
+    # tools it might not be enough lines but if we get here it's probably not
+    # going to be what we want anyway.
+    #
+    # Now a question to be answered is should we even use strings? The reason to
+    # ask such a question is it's likely to work which means that we might never
+    # reach the unknown version and strings(1) probably won't actually give us
+    # the version.
+    #
+    # This is why we warn that there's a possible unknown version and only if
+    # strings fails do we report positively that the version is unknown.
+
+    if [[ ! -z "$STRINGS" ]]; then
+	echo "$0: WARNING: UNKNOWN VERSION FOR $COMMAND: trying strings" | tee -a -- "$LOG_FILE"
+	WARNING_SUMMARY="$WARNING_SUMMARY
+	WARNING: UNKNOWN VERSION FOR $COMMAND: trying strings"
+	$STRINGS "${COMMAND}" | head -n 10 >/dev/null 2>&1
+	status=${PIPESTATUS[0]}
+	if [[ "$status" -eq 0 ]]; then
+	    $STRINGS "${COMMAND}" | head -n 10 | tee -a -- "$LOG_FILE"
+	    echo "## OUTPUT OF strings $COMMAND ABOVE" | tee -a -- "$LOG_FILE"
+	    echo | tee -a -- "$LOG_FILE"
+	    return
+	fi
+    fi
+
+    echo "$0: WARNING: UNKNOWN VERSION FOR $COMMAND" | tee -a -- "$LOG_FILE"
+    WARNING_SUMMARY="$WARNING_SUMMARY
+    WARNING: $COMMAND VERSION UNKNOWN"
+
+    echo | tee -a -- "$LOG_FILE"
+    return 0;
+}
+
+
+# get_version    -	try and get version of a tool
+#
+# usage:
+#	get_version command
+#
+#	command	    - command to try and obtain the version
+#
+# NOTE: we don't want the path to the tool in this function as we try
+# determining that instead.
+#
+get_version() {
+
+    # parse args
+    #
+    if [[ $# -ne 1 ]]; then
+	echo "$0: ERROR: function expects 1 arg, found $#" 1>&2
+	exit 3
+    fi
+    local COMMAND
+    local EXIT=0
+    COMMAND="$(which "$1")"
+    if ! is_exec "$COMMAND"; then
+	# if not executable we can try doing it as a built-in. This might or
+	# might not need to be a better check. Although some of the tools are
+	# built-ins in say zsh it does not appear to be in bash so it's possibly
+	# not a problem. Additionally trying to run command on a built-in in zsh
+	# (say true) will work because it's also a file. Also if it fails to run
+	# we will know there's a problem and likely due to something missing so
+	# the below might be all that's necessary.
+	COMMAND="$1"
+    fi
+
+    echo "## VERSION CHECK FOR: $1" | tee -a -- "$LOG_FILE"
+
+    # try --version
+    command ${COMMAND} --version >/dev/null 2>&1
+    status=$?
+    if [[ "$status" -eq 0 ]]; then
+	command ${COMMAND} --version | tee -a -- "$LOG_FILE"
+	echo "## OUTPUT OF $COMMAND --version ABOVE" | tee -a -- "$LOG_FILE"
+	echo | tee -a -- "$LOG_FILE"
+	return
+    fi
+
+    # try -v
+    command "${COMMAND}" -v >/dev/null 2>&1
+    status=$?
+    if [[ "$status" -eq 0 ]]; then
+	command ${COMMAND} -v | tee -a -- "$LOG_FILE"
+	echo "## OUTPUT OF $COMMAND -v ABOVE" | tee -a -- "$LOG_FILE"
+	echo | tee -a -- "$LOG_FILE"
+	return
+    fi
+
+    # try -V
+    command "${COMMAND}" -V >/dev/null 2>&1
+    status=$?
+    if [[ "$status" -eq 0 ]]; then
+	command ${COMMAND} -V | tee -a -- "$LOG_FILE"
+	echo "## OUTPUT OF $COMMAND -V ABOVE" | tee -a -- "$LOG_FILE"
+	echo | tee -a -- "$LOG_FILE"
+	return
+    fi
+
+    # try what(1) if available
+    #
+    # An important note is that what(1) might not get the correct information.
+    # For instance running it on bmake(1) I see:
+    #
+    #	$ what ./bmake
+    #   ./bmake:
+    #	 Copyright (c) 1988, 1989, 1990, 1993 The Regents of the University of California.  All rights reserved.
+    #
+    # which(1) is entirely useless.
+    #
+    # The question is should ident(1) come first but the trouble is I don't
+    # actually know what it looks like. Also if the tool in question does not
+    # have the appropriate string it won't give us anything useful either.
+    # Here's what what looks like on cut(1) which as can be seen is useful:
+    #
+    #	$ what /usr/bin/cut
+    #	/usr/bin/cut:
+    #	PROGRAM:cut  PROJECT:text_cmds-154
+    #	PROGRAM:cut  PROJECT:text_cmds-154
+    #
+    # Looking at the Apple website this is indeed the version. Thus because it's
+    # not something that will work in all cases instead we will try ident(1) as
+    # well even if this succeeds. If either succeeds we will not try strings(1).
+    if [[ ! -z "$WHAT" ]]; then
+	$WHAT "${COMMAND}"  >/dev/null 2>&1
+	status=$?
+	if [[ "$status" -eq 0 ]]; then
+	    $WHAT "${COMMAND}" | tee -a -- "$LOG_FILE"
+	    echo "## OUTPUT OF what $COMMAND ABOVE" | tee -a -- "$LOG_FILE"
+	    echo | tee -a -- "$LOG_FILE"
+	    EXIT=1
+	fi
+    fi
+
+    # try ident(1) if available
+    #
+    # The same or similar caveats for what(1) might apply here too but I have no
+    # way to test this.
+    if [[ ! -z "$IDENT" ]]; then
+	$IDENT "${COMMAND}"  >/dev/null 2>&1
+	status=$?
+	if [[ "$status" -eq 0 ]]; then
+	    $IDENT "${COMMAND}" | tee -a -- "$LOG_FILE"
+	    echo "## OUTPUT OF ident $COMMAND ABOVE" | tee -a -- "$LOG_FILE"
+	    echo | tee -a -- "$LOG_FILE"
+	    EXIT=1
+	fi
+    fi
+
+    # if we got output from either what or ident exit
+    if [[ -n "$EXIT" ]]; then
+	return
+    fi
+
+    # try strings(1) if available. The filter is arbitrarily selected. For some
+    # tools it might not be enough lines but if we get here it's probably not
+    # going to be what we want anyway.
+    #
+    # Now a question to be answered is should we even use strings? The reason to
+    # ask such a question is it's likely to work which means that we might never
+    # reach the unknown version and strings(1) probably won't actually give us
+    # the version.
+    #
+    # This is why we warn that there's a possible unknown version and only if
+    # strings fails do we report positively that the version is unknown.
+
+    if [[ ! -z "$STRINGS" ]]; then
+	echo "$0: WARNING: UNKNOWN VERSION FOR $COMMAND: trying strings" | tee -a -- "$LOG_FILE"
+	WARNING_SUMMARY="$WARNING_SUMMARY
+	WARNING: UNKNOWN VERSION FOR $COMMAND: trying strings"
+	$STRINGS "${COMMAND}" | head -n 10 >/dev/null 2>&1
+	status=${PIPESTATUS[0]}
+	if [[ "$status" -eq 0 ]]; then
+	    $STRINGS "${COMMAND}" | head -n 10 | tee -a -- "$LOG_FILE"
+	    echo "## strings $COMMAND ABOVE" | tee -a -- "$LOG_FILE"
+	    echo | tee -a -- "$LOG_FILE"
+	    return
+	fi
+    fi
+
+    echo "$0: WARNING: UNKNOWN VERSION FOR $COMMAND" | tee -a -- "$LOG_FILE"
+    WARNING_SUMMARY="$WARNING_SUMMARY
+    WARNING: $COMMAND VERSION UNKNOWN"
+
+    echo | tee -a -- "$LOG_FILE"
+    return 0;
+}
+
+# run_check_optional    -   run check but don't report any problems
+#
+# usage:
+#	run_check_optional command
+#
+#	command	    - check to run
+#
+run_check_optional() {
+
+    # parse args
+    #
+    if [[ $# -ne 1 ]]; then
+	echo "$0: ERROR: function expects 1 arg, found $#" 1>&2
+	exit 3
+    fi
+    local COMMAND="$1"
+
+    echo "## RUNNING: $COMMAND" | tee -a -- "$LOG_FILE"
+    command ${COMMAND} 2>&1 | tee -a -- "$LOG_FILE"
+
+    status=${PIPESTATUS[0]}
+    if [[ "$status" -ne 0 ]]; then
+	echo "$0: OPTIONAL COMMAND $COMMAND FAILED WITH EXIT CODE $status" | tee -a -- "$LOG_FILE"
+    else
+	echo "## OUTPUT OF ${COMMAND} ABOVE" | tee -a -- "$LOG_FILE"
+    fi
+
+    echo | tee -a -- "$LOG_FILE"
+    return 0;
+}
+
+
 # run_check_warn    -	don't make it an error if it fails, just warn
 #
 # usage:
@@ -129,13 +500,12 @@ run_check_warn() {
     # parse args
     #
     if [[ $# -ne 1 ]]; then
-	echo "$0: ERROR: function expects 2 args, found $#" 1>&2
+	echo "$0: ERROR: function expects 1 arg, found $#" 1>&2
 	exit 3
     fi
     local COMMAND="$1"
 
     echo "## RUNNING: $COMMAND" | tee -a -- "$LOG_FILE"
-    echo | tee -a -- "$LOG_FILE"
     command ${COMMAND} 2>&1 | tee -a -- "$LOG_FILE"
 
     status=${PIPESTATUS[0]}
@@ -179,7 +549,6 @@ run_check() {
     local COMMAND="$2"
 
     echo "## RUNNING: $COMMAND" | tee -a -- "$LOG_FILE"
-    echo | tee -a -- "$LOG_FILE"
     command ${COMMAND} 2>&1 | tee -a -- "$LOG_FILE"
 
     # The below reference to PIPESTATUS (instead of $?) fixes the bug introduced
@@ -221,83 +590,169 @@ echo "# SECTION 0: ENVIRONMENT AND SYSTEM INFORMATION" | tee -a -- "$LOG_FILE"
 echo | tee -a -- "$LOG_FILE"
 # echo $SHELL: we need to know their default shell
 get_shell
-# bash --version: get bash version
-run_check 11 "bash --version"
 # uname -a: get system information
-run_check 12 "uname -a"
+run_check 10 "uname -a"
+# sw_vers: if this exists on the system we should use it. This is a BSD/macOS
+# thing
+SW_VERS=$(which sw_vers)
+if [[ -n "$SW_VERS" ]]; then
+    run_check 11 "sw_vers"
+fi
+# which awk: get awk path
+run_check 12 "which awk"
+# awk --version | head -n 1: get awk version
+get_version "awk"
+# which basename: get path to basename tool
+run_check 13 "which basename"
+# try getting basename version
+get_version "basename"
+# which bash: find the party :-) (okay - path to bash)
+run_check 14 "which bash"
+# bash --version: get bash version
+get_version "bash"
+# which cat: find which cat the user owns :-) (okay - path to cat tool)
+run_check 15 "which cat"
+# NOTE: don't try getting cat version because -v is an option and it will block
+
+# which cmp: get path to cmp
+run_check 16 "which cmp"
+# try getting version of cmp
+get_version "cmp"
+# which cp: get path to cp
+run_check 17 "which cp"
+# try getting version of cp
+get_version "cp"
+# which cut: get path to cut tool
+run_check 18 "which cut"
+# try getting cut version
+get_version "cut"
+# which date: find the bug reporter a date :-) (okay - path to date tool)
+run_check 19 "which date"
+# try getting version of date
+get_version "date"
+# which echo: try getting path to echo
+run_check 20 "which echo"
+#
+# NOTE: we don't try getting version of echo because in some implementations
+# (all I've tested in fact) it'll just echo the --version etc. despite the fact
+# the man page suggests it should show a version. Also we probably don't really
+# need a version for echo anyway. Also if we use the get_version function it
+# will end up warning when it gets to strings and then it will show information
+# that probably doesn't even matter. Under systems with what(1) or ident(1) it
+# will get results but on systems without those utilities like linux it'll end
+# up with strings so we just skip trying to find the version entirely.
+
+# which find: what kind of find did the user find ? :-) (or actually just find find :-) )
+run_check 21 "which find"
+# try getting version of find
+get_version "find"
+# which getopts: get the path to getopts
+#
+# NOTE: this might not be necessary but it was suggested anyway. I might be
+# wrong but I suspect in shell scripts it would use the built-in but using which
+# will give the path under both linux and macOS. The same
+run_check 22 "which getopts"
+#
+#NOTE: don't try getting version of getopts for the same reason as for echo.
+
+# which grep: get path to grep tool
+run_check 23 "which grep"
+# try getting grep version
+get_version "grep"
+# which mktemp: get path to mktemp
+run_check 24 "which mktemp"
+# try getting version of mktemp
+get_version "mktemp"
+# which mv: find where user will be moving :-) (or actually just path to mv :-))
+run_check 25 "which mv"
+# try getting version of mv
+get_version "mv"
+# which printf: get path to printf tool
+run_check 26 "which printf"
+# try getting printf version
+get_version "printf"
+# which rm: get path to rm tool
+run_check 27 "which rm"
+# try getting version of rm
+get_version "rm"
+# which sed: get sed path
+run_check 28 "which sed"
+# try getting sed version
+get_version "sed"
+#
 # which tar: find the path to tar
 #
 # NOTE: we don't need to check if tar accepts the correct options in this script
 # because txzchk_test.sh will do that later on.
-run_check 13 "which tar"
+run_check 29  "which tar"
 # tar --version: find out what version tar is
-run_check 14 "tar --version"
-# which awk: get awk path
-run_check 15 "which awk"
-# awk --version | head -n 1: get awk version
-run_check 16 "awk --version | head -n 1"
-# which sed: get sed path
-run_check 17 "which sed"
-# sed --version | head -n 1: get sed version
-# NOTE: this will likely fail in some BSD Unices including macOS as these do not
-# have a --version option and no other way to get version via the command
-# itself. However we can try doing:
-#
-#	strings /usr/bin/sed | head -n 1
-#
-# which seems to have a version string of a kind. Under macOS this gives:
-#
-#	$ strings /usr/bin/sed | head -n 1
-#	@(#)PROGRAM:sed  PROJECT:text_cmds-138.100.3
-#
-# It seems though that this formatting is not consistent across BSDs. For
-# example under FreeBSD it appears to be:
-#
-#	#ifndef lint
-#	static const char sccsid[] = "@(#)main.c	8.2 (Berkeley) 1/3/94";
-#	#endif
-#
-# which would suggest that it probably would be:
-#
-#	@(#)main.c        8.2 (Berkeley) 1/3/94
-#
-# but unfortunately it's not the first string in the source code for sed in
-# FreeBSD.
-#
-# These Unices have the command sw_vers which might help but this will fail on
-# linux. It might be worth checking with something like:
-#
-#	which sw_vers 2>/dev/null && sw_vers
-#
-# but this will require a bit more work to get the formatting right if it's
-# worth adding.
-#
-# So how to go about it? We could try running first sed --version and if that
-# fails we could try extracting the path of sed by `which' and then use strings
-# on that path. But this appears that it might not be enough all the time.
-#
-# There are a number of tools we attempt to get the version from and these are
-# all a warning if it fails rather than making it an error. But in a future
-# commit we will look at a number of ways to try and get version information.
-run_check_warn "sed --version | head -n 1"
-# which basename: get path to basename tool
-run_check 18 "which basename"
-# basename --version
-run_check_warn "basename --version | head -n 1"
-# which cut: get path to cut tool
-run_check 19 "which cut"
-# cut --version
-run_check_warn "cut --version | head -n 1"
-# which cp: get path to cp tool
-run_check 20 "which cp"
-# cp --version
-run_check_warn "cp --version | head -n 1"
-# which grep: get path to grep tool
-run_check 21 "which grep"
-# grep --version
-run_check_warn "grep --version | head -n 1"
+get_version "tar"
+# which tee: get path to tee
+run_check 30 "which tee"
+# try getting version of tee
+get_version "tee"
+# which touch: get path to touch
+run_check 31 "which touch"
+# try getting version of touch
+get_version "touch"
+# which tr: get path to tr
+run_check 32 "which tr"
+# try getting version of tr
+get_version "tr"
+# which true: try getting path to true
+run_check 33 "which true"
+# make sure true is true :-)
+run_check 34 "true"
+# try getting version of true
+get_version "true"
+# which yes: get path to yes
+run_check 35 "which yes"
+# don't try getting version of yes because it will just try printing the args
+# over and over again as it is designed to do
 
+echo "## CHECKING OPTIONAL TOOLS" | tee -a -- "$LOG_FILE"
+# which checknr: determine if checknr is installed
+run_check_optional "which checknr"
+# try getting version of checknr
+get_version_optional "checknr"
+# which ctags: get ctags path
+run_check_optional "which ctags"
+# try getting version of ctags
+get_version_optional "ctags"
+# which gdate: try getting path to gdate
+run_check_optional "which gdate"
+# try getting version of gdate
+get_version_optional "gdate"
+# which install: which install are we using ? :-) (that is find the path to install :-) )
+run_check_optional "which install"
+# try getting version of install
+get_version_optional "install"
+# which man: which man are you ? :-) (that is find the path to the man :-) )
+run_check_optional "which man"
+# try getting version of man (is that the age ? :-) )
+get_version_optional "man"
+# which man2html: try getting path to man2html
+run_check_optional "which man2html"
+# try getting version of man2html
+get_version_optional "man2html"
+# which picky: try getting path to picky tool
+run_check_optional "which picky"
+# don't try getting version of picky as it'll block
 
+# which rpl: get path to rpl
+run_check_optional "which rpl"
+# try getting version of rpl
+get_version_optional "rpl"
+# which seqcexit: get path to seqcexit
+run_check_optional "which seqcexit"
+# try getting version of seqcexit
+get_version_optional "seqcexit"
+# which shellcheck: get path to shellcheck
+run_check_optional "which shellcheck"
+# try getting version of shellcheck
+get_version_optional "shellcheck"
+
+echo "## OPTIONAL TOOLS ABOVE" | tee -a -- "$LOG_FILE"
 
 
 echo "# SECTION 0 ABOVE: ENVIRONMENT AND SYSTEM INFORMATION" | tee -a -- "$LOG_FILE"
@@ -307,15 +762,15 @@ echo | tee -a -- "$LOG_FILE"
 echo "# SECTION 1: C ENVIRONMENT" | tee -a -- "$LOG_FILE"
 echo | tee -a -- "$LOG_FILE"
 # which cc: get all paths for cc
-run_check 22 "which cc"
+run_check 36 "which cc"
 # cc -v: get compiler version
-run_check 23 "cc -v"
+run_check 37 "cc -v"
 # which make: get path to make tool
-run_check 24 "which -a make"
+run_check 38 "which -a make"
 # make -v: get make version
-run_check 25 "make -v"
+run_check 39 "make -v"
 # cpp -dM /dev/null: get predefined macros
-run_check 26 "cpp -dM /dev/null"
+run_check 40 "cpp -dM /dev/null"
 echo "# SECTION 1 ABOVE: C ENVIRONMENT" | tee -a -- "$LOG_FILE"
 echo | tee -a -- "$LOG_FILE"
 
@@ -323,7 +778,7 @@ echo | tee -a -- "$LOG_FILE"
 echo "# SECTION 2: COMPILATION CHECKS" | tee -a -- "$LOG_FILE"
 echo | tee -a -- "$LOG_FILE"
 # make clobber: start clean
-run_check 27 "make clobber"
+run_check 41 "make clobber"
 # make all: compile everything before we do anything else
 #
 # NOTE: This will indirectly call make fast_hostchk which, if it reports an
@@ -346,26 +801,39 @@ run_check 27 "make clobber"
 # use of this repo so each time the script fails we report the issue for that
 # very reason.
 #
-run_check 28 "make all"
+run_check 42 "make all" # the answer to life, the universe and everything conveniently makes all :-)
 # make test: run the IOCCC toolkit test suite
-run_check 29 "make test"
+run_check 43 "make test"
 # hostchk.sh -v 3: we need to run some checks to make sure the system can
 # compile things and so on
-run_check 30 "./hostchk.sh -v 3"
+run_check 44 "./hostchk.sh -v 3"
 echo "# SECTION 2 ABOVE: COMPILATION CHECKS" | tee -a -- "$LOG_FILE"
 echo | tee -a -- "$LOG_FILE"
 
 # Section 3: JSON scanner and parser checks.
 echo "# SECTION 3: BISON AND FLEX CHECKS" | tee -a -- "$LOG_FILE"
 echo | tee -a -- "$LOG_FILE"
+# which bison: get path to bison (be careful it doesn't ram you :- ) )
+run_check_optional "which bison"
+# try getting version of bison
+get_version_optional "bison"
+# which flex: get path to flex without flexing your system's resources :-)
+run_check_optional "which flex"
+# try getting version of flex
+get_version_optional "flex"
+
+# NOTE: we do want to check that run_bison.sh and run_flex.sh do not exit
+# non-zero because if they do it means also backup files could not be used which
+# would mean the repo could not be used properly.
+#
 # run_bison.sh -v 7: check if bison will work
-run_check 31 "./run_bison.sh -v 7"
+run_check 45 "./run_bison.sh -v 7"
 # run_flex.sh -v 7: check if flex will work
-run_check 32 "./run_flex.sh -v 7"
+run_check 46 "./run_flex.sh -v 7"
 # run make all again: run_bison.sh and run_flex.sh will likely cause a need for
 # recompilation
 echo "## RUNNING make all a second time" | tee -a -- "$LOG_FILE"
-run_check 33 "make all"
+run_check 47 "make all"
 echo "# SECTION 3 ABOVE: BISON AND FLEX CHECKS" | tee -a -- "$LOG_FILE"
 echo | tee -a -- "$LOG_FILE"
 
@@ -375,16 +843,16 @@ echo "# SECTION 4: IOCCC ENVIRONMENT" | tee -a -- "$LOG_FILE"
 echo | tee -a -- "$LOG_FILE"
 # See that every tool is executable and run -V on each one that is.
 #
-# If any tool is not executable the exit code will be set to 34.
+# If any tool is not executable the exit code will be set to 48.
 for f in $TOOLS; do
+    echo "## Checking if $f is executable" | tee -a -- "$LOG_FILE"
     if is_exec "$f"; then
-	echo "## Checking if $f is executable" | tee -a -- "$LOG_FILE"
 	echo "## $f IS EXECUTABLE" | tee -a -- "$LOG_FILE"
 	echo "## RUNNING: $f -V" | tee -a -- "$LOG_FILE"
 	echo "$f version $($f -V)" | tee -a -- "$LOG_FILE"
 	echo | tee -a -- "$LOG_FILE"
     else
-	EXIT_CODE=34
+	EXIT_CODE=48
 	echo "$0: ERROR: $f IS NOT EXECUTABLE: new exit code: $EXIT_CODE" | tee -a -- "$LOG_FILE"
 	FAILURE_SUMMARY="$FAILURE_SUMMARY
 	$f cannot be executed"
