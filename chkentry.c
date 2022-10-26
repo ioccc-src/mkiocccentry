@@ -187,6 +187,47 @@ open_json_dir_file(char const *dir, char const *path)
 }
 
 
+/*
+ * usage - print usage to stderr
+ *
+ * Example:
+ *      usage(3, "missing required argument(s), program: %s", program);
+ *
+ * given:
+ *	exitcode        value to exit with
+ *	prog		our program name
+ *	str		top level usage message
+ *
+ * NOTE: We warn with extra newlines to help internal fault messages stand out.
+ *       Normally one should NOT include newlines in warn messages.
+ *
+ * This function does not return.
+ */
+static void
+usage(int exitcode, char const *prog, char const *str)
+{
+    /*
+     * firewall
+     */
+    if (prog == NULL) {
+	prog = "((NULL prog))";
+	warn(__func__, "\nin usage(): program was NULL, forcing it to be: %s\n", prog);
+    }
+    if (str == NULL) {
+	str = "((NULL str))";
+	warn(__func__, "\nin usage(): str was NULL, forcing it to be: %s\n", str);
+    }
+
+    /*
+     * print the formatted usage stream
+     */
+    fprintf_usage(DO_NOT_EXIT, stderr, "%s\n", str);
+    fprintf_usage(exitcode, stderr, usage_msg, prog, prog, DBG_DEFAULT, JSON_DBG_DEFAULT, JNUM_CHK_VERSION);
+    exit(exitcode);		/*ooo*/
+    not_reached();
+}
+
+
 int
 main(int argc, char *argv[])
 {
@@ -202,6 +243,16 @@ main(int argc, char *argv[])
     struct json *auth_tree = NULL;	/* JSON parse tree for .author.json, or NULL ==> not parsed */
     bool info_valid = false;		/* .info.json is valid JSON */
     bool auth_valid = false;		/* .author.json is valid JSON */
+    struct dyn_array *cnt_err = NULL;	/* JSON semantic count errors, initialized so json_sem_check() will create */
+    struct dyn_array *val_err = NULL;	/* JSON semantic validation errors, initialized so json_sem_check() will create */
+    uintmax_t info_cnt_err_cnt = 0;	/* semantic count error count from json_sem_check() for .info.json */
+    uintmax_t info_val_err_cnt = 0;	/* semantic validation error count from json_sem_check() for .info.json */
+    uintmax_t info_int_err_cnt = 0;	/* internal error count from json_sem_check() for .info.json */
+    uintmax_t info_all_err_cnt = 0;	/* number of errors (count+validation+internal) from json_sem_check() for .info.json */
+    uintmax_t auth_cnt_err_cnt = 0;	/* semantic count error count from json_sem_check() for .author.json */
+    uintmax_t auth_val_err_cnt = 0;	/* semantic validation count from json_sem_check() for .author.json */
+    uintmax_t auth_int_err_cnt = 0;	/* internal error count from json_sem_check() for .author.json */
+    uintmax_t auth_all_err_cnt = 0;	/* number of errors (count+validation+internal) from json_sem_check() for .author.json */
     int i;
 
     /*
@@ -384,6 +435,172 @@ main(int argc, char *argv[])
 	       auth_filename);
     }
 
+    /*
+     * check a JSON parse tree against a JSON semantic table for .info.json, if open
+     */
+    if (info_stream != NULL) {
+
+	/*
+	 * perform JSON semantic analysis on the .info.json JSON parse tree
+	 */
+	dbg(DBG_HIGH, "about to perform JSON semantic check for .info.json file: %s%s%s",
+		      entry_dir == NULL ? "" : entry_dir,
+		      entry_dir == NULL ? "" : "/",
+		      info_filename);
+	info_all_err_cnt = json_sem_check(info_tree, JSON_DEFAULT_MAX_DEPTH, sem_info,
+					  &cnt_err, &val_err);
+
+	/*
+	 * firewall on json_sem_check() results AND count errors for .info.json
+	 */
+	if (cnt_err == NULL) {
+	    err(29, __func__, "json_sem_check() left cnt_err as NULL for .info.json file: %s%s%s",
+		   entry_dir == NULL ? "" : entry_dir,
+		   entry_dir == NULL ? "" : "/",
+		   info_filename);
+	    not_reached();
+	}
+	if (dyn_array_tell(cnt_err) < 0) {
+	    err(30, __func__, "dyn_array_tell(cnt_err): %jd < 0 "
+		   "for .info.json file: %s%s%s",
+		   dyn_array_tell(cnt_err),
+		   entry_dir == NULL ? "" : entry_dir,
+		   entry_dir == NULL ? "" : "/",
+		   info_filename);
+	    not_reached();
+	}
+	info_cnt_err_cnt = (uintmax_t) dyn_array_tell(cnt_err);
+	if (val_err == NULL) {
+	    err(31, __func__, "json_sem_check() left val_err as NULL for .info.json file: %s%s%s",
+		   entry_dir == NULL ? "" : entry_dir,
+		   entry_dir == NULL ? "" : "/",
+		   info_filename);
+	    not_reached();
+	}
+	if (dyn_array_tell(val_err) < 0) {
+	    err(32, __func__, "dyn_array_tell(val_err): %jd < 0 "
+		   "for .info.json file: %s%s%s",
+		   dyn_array_tell(val_err),
+		   entry_dir == NULL ? "" : entry_dir,
+		   entry_dir == NULL ? "" : "/",
+		   info_filename);
+	    not_reached();
+	}
+	info_val_err_cnt = (uintmax_t) dyn_array_tell(val_err);
+	if (info_all_err_cnt < info_cnt_err_cnt+info_val_err_cnt) {
+	    err(33, __func__, "info_all_err_cnt: %ju < info_cnt_err_cnt: %ju + info_val_err_cnt: %ju "
+		   "for .info.json file: %s%s%s",
+		   info_all_err_cnt, info_cnt_err_cnt, info_val_err_cnt,
+		   entry_dir == NULL ? "" : entry_dir,
+		   entry_dir == NULL ? "" : "/",
+		   info_filename);
+	    not_reached();
+	}
+	info_int_err_cnt = info_all_err_cnt - (info_all_err_cnt+info_val_err_cnt);
+
+	/*
+	 * report JSON semantic analysis error counts
+	 */
+	dbg(DBG_LOW, "info_all_err_cnt: %ju info_all_err_cnt: %ju info_val_err_cnt: %ju info_int_err_cnt: %ju "
+		      "for .info.json file: %s%s%s",
+		      info_all_err_cnt, info_cnt_err_cnt, info_val_err_cnt, info_int_err_cnt,
+		      entry_dir == NULL ? "" : entry_dir,
+		      entry_dir == NULL ? "" : "/",
+		      info_filename);
+    }
+
+    /*
+     * check a JSON parse tree against a JSON semantic table for .author.json, if open
+     */
+    if (auth_stream != NULL) {
+
+	/*
+	 * perform JSON semantic analysis on the .author.json JSON parse tree
+	 */
+	dbg(DBG_HIGH, "about to perform JSON semantic check for .author.json file: %s%s%s",
+		      entry_dir == NULL ? "" : entry_dir,
+		      entry_dir == NULL ? "" : "/",
+		      auth_filename);
+	auth_all_err_cnt = json_sem_check(auth_tree, JSON_DEFAULT_MAX_DEPTH, sem_auth,
+					  &cnt_err, &val_err);
+
+	/*
+	 * firewall on json_sem_check() results AND count errors for .author.json
+	 */
+	if (cnt_err == NULL) {
+	    err(34, __func__, "json_sem_check() left cnt_err as NULL for .author.json file: %s%s%s",
+		   entry_dir == NULL ? "" : entry_dir,
+		   entry_dir == NULL ? "" : "/",
+		   auth_filename);
+	    not_reached();
+	}
+	if (dyn_array_tell(cnt_err) < 0) {
+	    err(35, __func__, "dyn_array_tell(cnt_err): %jd < 0 "
+		   "for .author.json file: %s%s%s",
+		   dyn_array_tell(cnt_err),
+		   entry_dir == NULL ? "" : entry_dir,
+		   entry_dir == NULL ? "" : "/",
+		   auth_filename);
+	    not_reached();
+	}
+	if (info_cnt_err_cnt > (uintmax_t) dyn_array_tell(cnt_err)) {
+	    err(36, __func__, "info_cnt_err_cnt: %ju > dyn_array_tell(cnt_err): %jd "
+		   "for .author.json file: %s%s%s",
+		   info_cnt_err_cnt, dyn_array_tell(cnt_err),
+		   entry_dir == NULL ? "" : entry_dir,
+		   entry_dir == NULL ? "" : "/",
+		   auth_filename);
+	    not_reached();
+	}
+	auth_cnt_err_cnt = (uintmax_t) dyn_array_tell(cnt_err) - info_cnt_err_cnt;
+	if (val_err == NULL) {
+	    err(37, __func__, "json_sem_check() left val_err as NULL for .author.json file: %s%s%s",
+		   entry_dir == NULL ? "" : entry_dir,
+		   entry_dir == NULL ? "" : "/",
+		   auth_filename);
+	    not_reached();
+	}
+	if (dyn_array_tell(val_err) < 0) {
+	    err(38, __func__, "dyn_array_tell(val_err): %jd < 0 "
+		   "for .author.json file: %s%s%s",
+		   dyn_array_tell(val_err),
+		   entry_dir == NULL ? "" : entry_dir,
+		   entry_dir == NULL ? "" : "/",
+		   auth_filename);
+	    not_reached();
+	}
+	if (info_val_err_cnt > (uintmax_t) dyn_array_tell(val_err)) {
+	    err(39, __func__, "info_val_err_cnt: %ju > dyn_array_tell(val_err): %jd "
+		   "for .author.json file: %s%s%s",
+		   info_val_err_cnt, dyn_array_tell(val_err),
+		   entry_dir == NULL ? "" : entry_dir,
+		   entry_dir == NULL ? "" : "/",
+		   auth_filename);
+	    not_reached();
+	}
+	auth_val_err_cnt = (uintmax_t) dyn_array_tell(val_err) - info_val_err_cnt;
+	if (auth_all_err_cnt < auth_cnt_err_cnt+auth_val_err_cnt) {
+	    err(40, __func__, "auth_all_err_cnt: %ju < auth_cnt_err_cnt: %ju + auth_val_err_cnt: %ju "
+		   "for .author.json file: %s%s%s",
+		   auth_all_err_cnt, auth_cnt_err_cnt, auth_val_err_cnt,
+		   entry_dir == NULL ? "" : entry_dir,
+		   entry_dir == NULL ? "" : "/",
+		   auth_filename);
+	    not_reached();
+	}
+	auth_int_err_cnt = auth_all_err_cnt - (auth_all_err_cnt+auth_val_err_cnt);
+
+	/*
+	 * report JSON semantic analysis error counts
+	 */
+	dbg(DBG_LOW, "auth_all_err_cnt: %ju auth_all_err_cnt: %ju auth_val_err_cnt: %ju auth_int_err_cnt: %ju "
+		      "for .author.json file: %s%s%s",
+		      auth_all_err_cnt, auth_cnt_err_cnt, auth_val_err_cnt, auth_int_err_cnt,
+		      entry_dir == NULL ? "" : entry_dir,
+		      entry_dir == NULL ? "" : "/",
+		      auth_filename);
+    }
+
     /* XXX - add more code here - XXX */
 
     /*
@@ -405,50 +622,17 @@ main(int argc, char *argv[])
 	json_tree_free(auth_tree, JSON_DEFAULT_MAX_DEPTH);
 	auth_tree = NULL;
     }
+    if (cnt_err != NULL) {
+	dyn_array_free(cnt_err);
+	cnt_err = NULL;
+    }
+    if (val_err != NULL) {
+	dyn_array_free(val_err);
+	val_err = NULL;
+    }
 
     /*
      * All Done!!! - Jessica Noll, age 2
      */
     exit(0); /*ooo*/
-}
-
-
-/*
- * usage - print usage to stderr
- *
- * Example:
- *      usage(3, "missing required argument(s), program: %s", program);
- *
- * given:
- *	exitcode        value to exit with
- *	prog		our program name
- *	str		top level usage message
- *
- * NOTE: We warn with extra newlines to help internal fault messages stand out.
- *       Normally one should NOT include newlines in warn messages.
- *
- * This function does not return.
- */
-static void
-usage(int exitcode, char const *prog, char const *str)
-{
-    /*
-     * firewall
-     */
-    if (prog == NULL) {
-	prog = "((NULL prog))";
-	warn(__func__, "\nin usage(): program was NULL, forcing it to be: %s\n", prog);
-    }
-    if (str == NULL) {
-	str = "((NULL str))";
-	warn(__func__, "\nin usage(): str was NULL, forcing it to be: %s\n", str);
-    }
-
-    /*
-     * print the formatted usage stream
-     */
-    fprintf_usage(DO_NOT_EXIT, stderr, "%s\n", str);
-    fprintf_usage(exitcode, stderr, usage_msg, prog, prog, DBG_DEFAULT, JSON_DBG_DEFAULT, JNUM_CHK_VERSION);
-    exit(exitcode);		/*ooo*/
-    not_reached();
 }

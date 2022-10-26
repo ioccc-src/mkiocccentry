@@ -701,7 +701,7 @@ struct json *
 sem_member_name(struct json const *node, unsigned int depth, struct json_sem *sem,
 		char const *name, struct json_sem_val_err **val_err)
 {
-    struct json_member *item = NULL;		/* JSON member */
+    struct json_member const *item = NULL;	/* JSON member */
     struct json *n = NULL;			/* name of JTYPE_MEMBER */
     bool valid = false;				/* true ==> JSON node is converted and valid JTYPE */
 
@@ -728,6 +728,13 @@ sem_member_name(struct json const *node, unsigned int depth, struct json_sem *se
 	}
 	return NULL;
     }
+    item = &(node->item.member);
+    if (item->converted == false) {
+	if (val_err != NULL) {
+	    *val_err = werr_sem_val(48, node, depth, sem, name, "JTYPE_MEMBER node converted is false");
+	}
+	return NULL;
+    }
 
     /*
      * firewall - name
@@ -735,7 +742,7 @@ sem_member_name(struct json const *node, unsigned int depth, struct json_sem *se
     n = item->name;
     if (n == NULL) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(48, node, depth, sem, name, "node name is NULL");
+	    *val_err = werr_sem_val(49, node, depth, sem, name, "node name is NULL");
 	}
 	return NULL;
     }
@@ -750,7 +757,7 @@ sem_member_name(struct json const *node, unsigned int depth, struct json_sem *se
     }
     if (n->type != JTYPE_STRING) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(49, node, depth, sem, name, "node name type %s != JTYPE_STRING",
+	    *val_err = werr_sem_val(50, node, depth, sem, name, "node name type %s != JTYPE_STRING",
 				    json_type_name(n->type));
 	}
 	return NULL;
@@ -783,7 +790,7 @@ struct json *
 sem_member_value(struct json const *node, unsigned int depth, struct json_sem *sem,
 		 char const *name, struct json_sem_val_err **val_err)
 {
-    struct json_member *item = NULL;		/* JSON member */
+    struct json_member const *item = NULL;	/* JSON member */
     struct json *n = NULL;			/* name of JTYPE_MEMBER */
     bool valid = false;				/* true ==> JSON node is converted and valid JTYPE */
 
@@ -805,8 +812,15 @@ sem_member_value(struct json const *node, unsigned int depth, struct json_sem *s
     }
     if (node->type != JTYPE_MEMBER) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(50, node, depth, sem, name, "node type %s != JTYPE_MEMBER",
+	    *val_err = werr_sem_val(51, node, depth, sem, name, "node type %s != JTYPE_MEMBER",
 				    json_type_name(node->type));
+	}
+	return NULL;
+    }
+    item = &(node->item.member);
+    if (item->converted == false) {
+	if (val_err != NULL) {
+	    *val_err = werr_sem_val(52, node, depth, sem, name, "JTYPE_MEMBER node converted is false");
 	}
 	return NULL;
     }
@@ -817,7 +831,7 @@ sem_member_value(struct json const *node, unsigned int depth, struct json_sem *s
     n = item->value;
     if (n == NULL) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(51, node, depth, sem, name, "node name is NULL");
+	    *val_err = werr_sem_val(53, node, depth, sem, name, "node name is NULL");
 	}
 	return NULL;
     }
@@ -876,7 +890,7 @@ sem_member_name_decoded_str(struct json const *node, unsigned int depth, struct 
      */
     if (n->type != JTYPE_STRING) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(52, node, depth, sem, name, "node name type %s != JTYPE_STRING",
+	    *val_err = werr_sem_val(54, node, depth, sem, name, "node name type %s != JTYPE_STRING",
 				    json_type_name(n->type));
 	}
 	return NULL;
@@ -884,7 +898,7 @@ sem_member_name_decoded_str(struct json const *node, unsigned int depth, struct 
     istr = &(n->item.string);
     if (istr->converted == false) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(53, node, depth, sem, name, "node name JTYPE_STRING converted is false");
+	    *val_err = werr_sem_val(55, node, depth, sem, name, "node name JTYPE_STRING converted is false");
 	}
 	return NULL;
     }
@@ -895,7 +909,7 @@ sem_member_name_decoded_str(struct json const *node, unsigned int depth, struct 
     str = istr->str;
     if (str == NULL) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(54, node, depth, sem, name, "node name decoded JSON string is NULL");
+	    *val_err = werr_sem_val(56, node, depth, sem, name, "node name decoded JSON string is NULL");
 	}
 	return NULL;
     }
@@ -953,7 +967,7 @@ sem_member_value_decoded_str(struct json const *node, unsigned int depth, struct
      */
     if (value->type != JTYPE_STRING) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(55, node, depth, sem, name, "node value type %s != JTYPE_STRING",
+	    *val_err = werr_sem_val(57, node, depth, sem, name, "node value type %s != JTYPE_STRING",
 				    json_type_name(value->type));
 	}
 	return NULL;
@@ -961,7 +975,7 @@ sem_member_value_decoded_str(struct json const *node, unsigned int depth, struct
     istr = &(value->item.string);
     if (istr->converted == false) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(56, node, depth, sem, name, "node value JTYPE_STRING converted is false");
+	    *val_err = werr_sem_val(58, node, depth, sem, name, "node value JTYPE_STRING converted is false");
 	}
 	return NULL;
     }
@@ -972,7 +986,7 @@ sem_member_value_decoded_str(struct json const *node, unsigned int depth, struct
     str = istr->str;
     if (str == NULL) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(57, node, depth, sem, name, "node value decoded JSON string is NULL");
+	    *val_err = werr_sem_val(59, node, depth, sem, name, "node value decoded JSON string is NULL");
 	}
 	return NULL;
     }
@@ -1029,7 +1043,7 @@ sem_member_value_bool(struct json const *node, unsigned int depth, struct json_s
      */
     if (value->type != JTYPE_BOOL) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(58, node, depth, sem, name, "node value type %s != JTYPE_BOOL",
+	    *val_err = werr_sem_val(60, node, depth, sem, name, "node value type %s != JTYPE_BOOL",
 				    json_type_name(value->type));
 	}
 	return NULL;
@@ -1037,7 +1051,7 @@ sem_member_value_bool(struct json const *node, unsigned int depth, struct json_s
     ibool = &(value->item.boolean);
     if (ibool->converted == false) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(59, node, depth, sem, name, "node value JTYPE_BOOL converted is false");
+	    *val_err = werr_sem_val(61, node, depth, sem, name, "node value JTYPE_BOOL converted is false");
 	}
 	return NULL;
     }
@@ -1126,7 +1140,7 @@ sem_member_value_str_or_null(struct json const *node, unsigned int depth, struct
 	istr = &(value->item.string);
 	if (istr->converted == false) {
 	    if (val_err != NULL) {
-		*val_err = werr_sem_val(60, node, depth, sem, name, "node value JTYPE_STRING converted is false");
+		*val_err = werr_sem_val(62, node, depth, sem, name, "node value JTYPE_STRING converted is false");
 	    }
 	    return ret;
 	}
@@ -1137,7 +1151,7 @@ sem_member_value_str_or_null(struct json const *node, unsigned int depth, struct
 	ret.str = istr->str;
 	if (ret.str == NULL) {
 	    if (val_err != NULL) {
-		*val_err = werr_sem_val(61, node, depth, sem, name, "node value decoded JSON string is NULL");
+		*val_err = werr_sem_val(63, node, depth, sem, name, "node value decoded JSON string is NULL");
 	    }
 	    return ret;
 	}
@@ -1155,7 +1169,7 @@ sem_member_value_str_or_null(struct json const *node, unsigned int depth, struct
 	inull = &(value->item.null);
 	if (inull->converted == false) {
 	    if (val_err != NULL) {
-		*val_err = werr_sem_val(62, node, depth, sem, name, "node value JTYPE_NULL converted is false");
+		*val_err = werr_sem_val(64, node, depth, sem, name, "node value JTYPE_NULL converted is false");
 	    }
 	    return ret;
 	}
@@ -1168,7 +1182,7 @@ sem_member_value_str_or_null(struct json const *node, unsigned int depth, struct
      */
     default:
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(63, node, depth, sem, name, "node value type %s != JTYPE_STRING and != JTYPE_NULL",
+	    *val_err = werr_sem_val(65, node, depth, sem, name, "node value type %s != JTYPE_STRING and != JTYPE_NULL",
 				    json_type_name(value->type));
 	}
 	break;
@@ -1228,7 +1242,7 @@ sem_member_value_int(struct json const *node, unsigned int depth, struct json_se
      */
     if (value->type != JTYPE_NUMBER) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(64, node, depth, sem, name, "node value type %s != JTYPE_BOOL",
+	    *val_err = werr_sem_val(66, node, depth, sem, name, "node value type %s != JTYPE_BOOL",
 				    json_type_name(value->type));
 	}
 	return NULL;
@@ -1236,7 +1250,7 @@ sem_member_value_int(struct json const *node, unsigned int depth, struct json_se
     inum = &(value->item.number);
     if (inum->converted == false) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(65, node, depth, sem, name, "node value JTYPE_NUMBER converted is false");
+	    *val_err = werr_sem_val(67, node, depth, sem, name, "node value JTYPE_NUMBER converted is false");
 	}
 	return NULL;
     }
@@ -1246,7 +1260,7 @@ sem_member_value_int(struct json const *node, unsigned int depth, struct json_se
      */
     if (inum->int_sized == false) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(66, node, depth, sem, name, "node value JTYPE_NUMBER was unable to convert to an int");
+	    *val_err = werr_sem_val(68, node, depth, sem, name, "node value JTYPE_NUMBER was unable to convert to an int");
 	}
 	return NULL;
     }
@@ -1306,7 +1320,7 @@ sem_member_value_time_t(struct json const *node, unsigned int depth, struct json
      */
     if (value->type != JTYPE_NUMBER) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(67, node, depth, sem, name, "node value type %s != JTYPE_BOOL",
+	    *val_err = werr_sem_val(69, node, depth, sem, name, "node value type %s != JTYPE_BOOL",
 				    json_type_name(value->type));
 	}
 	return NULL;
@@ -1314,7 +1328,7 @@ sem_member_value_time_t(struct json const *node, unsigned int depth, struct json
     inum = &(value->item.number);
     if (inum->converted == false) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(68, node, depth, sem, name, "node value JTYPE_NUMBER converted is false");
+	    *val_err = werr_sem_val(70, node, depth, sem, name, "node value JTYPE_NUMBER converted is false");
 	}
 	return NULL;
     }
@@ -1329,13 +1343,13 @@ sem_member_value_time_t(struct json const *node, unsigned int depth, struct json
 	 */
 	if (inum->is_negative == true) {
 	    if (val_err != NULL) {
-		*val_err = werr_sem_val(69, node, depth, sem, name, "node negative JTYPE_NUMBER with unsigned time_t");
+		*val_err = werr_sem_val(71, node, depth, sem, name, "node negative JTYPE_NUMBER with unsigned time_t");
 	    }
 	    return NULL;
 	}
 	if (inum->umaxint_sized == false) {
 	    if (val_err != NULL) {
-		*val_err = werr_sem_val(70, node, depth, sem, name, "JTYPE_NUMBER umaxint_sized false with unsigned time_t");
+		*val_err = werr_sem_val(72, node, depth, sem, name, "JTYPE_NUMBER umaxint_sized false with unsigned time_t");
 	    }
 	    return NULL;
 	}
@@ -1348,7 +1362,7 @@ sem_member_value_time_t(struct json const *node, unsigned int depth, struct json
 	 */
 	if (inum->maxint_sized == false) {
 	    if (val_err != NULL) {
-		*val_err = werr_sem_val(71, node, depth, sem, name, "JTYPE_NUMBER maxint_sized false with signed time_t");
+		*val_err = werr_sem_val(73, node, depth, sem, name, "JTYPE_NUMBER maxint_sized false with signed time_t");
 	    }
 	    return NULL;
 	}
@@ -1415,7 +1429,7 @@ sem_node_parent(struct json const *node, unsigned int depth, struct json_sem *se
     if (depth <= 0) {
 	if (parent != NULL) {
 	    if (val_err != NULL) {
-		*val_err = werr_sem_val(72, node, depth, sem, name,
+		*val_err = werr_sem_val(74, node, depth, sem, name,
 					"depth: %d <= 0 with non-NULL parent node pointer", depth);
 	    }
 	}
@@ -1427,7 +1441,7 @@ sem_node_parent(struct json const *node, unsigned int depth, struct json_sem *se
      */
     if (parent == NULL) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(73, node, depth, sem, name, "node parent node NULL");
+	    *val_err = werr_sem_val(75, node, depth, sem, name, "node parent node NULL");
 	}
 	return NULL;
     }
@@ -1488,7 +1502,7 @@ sem_object_find_name(struct json const *node, unsigned int depth, struct json_se
     }
     if (memname == NULL) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(74, node, depth, sem, name, "memname is NULL");
+	    *val_err = werr_sem_val(76, node, depth, sem, name, "memname is NULL");
 	}
 	return NULL;
     }
@@ -1498,7 +1512,7 @@ sem_object_find_name(struct json const *node, unsigned int depth, struct json_se
      */
     if (node->type != JTYPE_OBJECT) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(75, node, depth, sem, name, "node type %s != JTYPE_OBJECT",
+	    *val_err = werr_sem_val(77, node, depth, sem, name, "node type %s != JTYPE_OBJECT",
 				    json_type_name(node->type));
 	}
 	return NULL;
@@ -1506,7 +1520,7 @@ sem_object_find_name(struct json const *node, unsigned int depth, struct json_se
     item = &(node->item.object);
     if (item->converted == false) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(76, node, depth, sem, name, "JTYPE_OBJECT node converted is false");
+	    *val_err = werr_sem_val(78, node, depth, sem, name, "JTYPE_OBJECT node converted is false");
 	}
 	return NULL;
     }
@@ -1516,7 +1530,7 @@ sem_object_find_name(struct json const *node, unsigned int depth, struct json_se
      */
     if (item->len < 0) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(77, node, depth, sem, name, "JTYPE_OBJECT set length: %d < 0", item->len);
+	    *val_err = werr_sem_val(79, node, depth, sem, name, "JTYPE_OBJECT set length: %d < 0", item->len);
 	}
 	return NULL;
     } else if (item->len == 0) {
@@ -1525,7 +1539,7 @@ sem_object_find_name(struct json const *node, unsigned int depth, struct json_se
     }
     if (item->set == NULL) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(78, node, depth, sem, name, "JTYPE_OBJECT len: %d > 0 and set is NULL", item->len);
+	    *val_err = werr_sem_val(80, node, depth, sem, name, "JTYPE_OBJECT len: %d > 0 and set is NULL", item->len);
 	}
 	return NULL;
     }
@@ -1542,7 +1556,7 @@ sem_object_find_name(struct json const *node, unsigned int depth, struct json_se
 	 */
 	if (s == NULL) {
 	    if (val_err != NULL) {
-		*val_err = werr_sem_val(79, node, depth, sem, name, "JTYPE_OBJECT set[%d] is NULL", i);
+		*val_err = werr_sem_val(81, node, depth, sem, name, "JTYPE_OBJECT set[%d] is NULL", i);
 	    }
 	    return NULL;
 	}
@@ -1553,7 +1567,7 @@ sem_object_find_name(struct json const *node, unsigned int depth, struct json_se
 	}
 	if (s->type != JTYPE_MEMBER) {
 	    if (val_err != NULL) {
-		*val_err = werr_sem_val(80, node, depth+1, sem, name, "JTYPE_OBJECT set[%d] type: %s != JTYPE_MEMBER",
+		*val_err = werr_sem_val(82, node, depth+1, sem, name, "JTYPE_OBJECT set[%d] type: %s != JTYPE_MEMBER",
 					i, json_type_name(s->type));
 	    }
 	    return NULL;
@@ -1577,7 +1591,7 @@ sem_object_find_name(struct json const *node, unsigned int depth, struct json_se
      * no such member
      */
     if (val_err != NULL) {
-	*val_err = werr_sem_val(81, node, depth, sem, name, "JTYPE_OBJECT has no member named: <%s>", memname);
+	*val_err = werr_sem_val(83, node, depth, sem, name, "JTYPE_OBJECT has no member named: <%s>", memname);
     }
     return NULL;
 }
@@ -1600,7 +1614,7 @@ json_sem_zero_count(struct json_sem *sem)
      * firewall - args
      */
     if (sem == NULL) {
-	err(82, __func__, "sem is NULL");
+	err(84, __func__, "sem is NULL");
 	not_reached();
     }
 
@@ -1687,6 +1701,7 @@ json_sem_count_chk(struct json_sem *sem, struct dyn_array *cnt_err)
 	    cnt.bad_min = false;
 	    cnt.bad_max = true;
 	    cnt.unknown_node = false;
+	    cnt.diagnostic = calloc(BUFSIZ+1, sizeof(char));
 	    if (cnt.diagnostic == NULL) {
 		cnt.diagnostic = "calloc BUFSIZ calloc failed for count is too small";
 		cnt.malloced = false;
@@ -1911,6 +1926,7 @@ sem_walk(struct json *node, unsigned int depth, va_list ap)
 	cnt.bad_min = false;
 	cnt.bad_max = false;
 	cnt.unknown_node = true;
+	cnt.diagnostic = calloc(BUFSIZ+1, sizeof(char));
 	if (cnt.diagnostic == NULL) {
 	    cnt.diagnostic = "calloc BUFSIZ calloc failed for unexpected node";
 	    cnt.malloced = false;
@@ -1923,6 +1939,13 @@ sem_walk(struct json *node, unsigned int depth, va_list ap)
 		    snmsg(cnt.diagnostic, BUFSIZ, "unexpected node: type %s parse tree depth %u%ss",
 			  json_item_type_name(node), depth,
 			  " unnamed member");
+
+		    /* be sure we have a validation error message */
+		    if (err == NULL) {
+			/* err is NULL, assume sem_val_err_NULL */
+			err = &sem_val_err_NULL;
+		    }
+
 		    /* also save validation error message */
 		    dyn_array_append_value(val_err, err);
 
@@ -1977,10 +2000,13 @@ sem_walk(struct json *node, unsigned int depth, va_list ap)
 /*
  * json_sem_check - check a JSON parse tree against a JSON semantic table
  *
- * First, the dynamic array *pcnt_err and the dynamic array *pval_err is
- * created as an empty dynamic array.
+ * First, if *pcnt_err == NULL, then dynamic array *pcnt_err is
+ * created as an empty dynamic array, else the existing dynamic array *pcnt_err
+ * is used.  If *pval_err == NULL, then dynamic array *pval_err is
+ * created as an empty dynamic array, else the existing dynamic array *pval_err
+ * is used.
  *
- * Walk the JSON parse tree and check each node against the JSON semantic table,
+ * We then walk the JSON parse tree and check each node against the JSON semantic table,
  * counting as nodes on the 1st match found in the JSON semantic table,
  * or appending a JSON semantic count error to the *pcnt_err dynamic array
  * when an unknown JSON node is found.
@@ -1999,9 +2025,14 @@ sem_walk(struct json *node, unsigned int depth, va_list ap)
  *	node		pointer to a JSON parse tree
  *	max_depth	maximum tree depth to descend, or 0 ==> infinite depth
  *			    NOTE: Use JSON_INFINITE_DEPTH for infinite depth
+ *			    NOTE: Consider use of JSON_DEFAULT_MAX_DEPTH for good default.
  *	sem		pointer to a JSON semantic table (ends with a JTYPE_UNSET JSON type)
- *	pcnt_err	pointer to dynamic array of JSON semantic count errors
+ *	pcnt_err	pointer to dynamic array of JSON semantic count errors,
+ *			    NOTE: If *pcnt_err == NULL, the dynamic array will be created,
+ *				  If *pcnt_err != NULL, the existing dynamic array will be used.
  *	pval_err	pointer to dynamic array of JSON semantic validation errors
+ *			    NOTE: If *pcnt_err == NULL, the dynamic array will be created,
+ *				  If *pcnt_err != NULL, the existing dynamic array will be used.
  *
  * return:
  *	0 ==> JSON parse tree is semantically consistent with the JSON semantic table,
@@ -2013,13 +2044,13 @@ sem_walk(struct json *node, unsigned int depth, va_list ap)
  *	 and the *pcnt_err dynamic array are empty, them report an internal json_sem_check()
  *	 error was encountered.
  */
-unsigned int
+uintmax_t
 json_sem_check(struct json *node, unsigned int max_depth, struct json_sem *sem,
 	       struct dyn_array **pcnt_err, struct dyn_array **pval_err)
 {
     struct dyn_array *cnt_err = NULL;		/* JSON semantic count errors */
     struct dyn_array *val_err = NULL;		/* JSON semantic validation errors */
-    unsigned int err = 0;			/* number of errors (count+validation+internal) */
+    uintmax_t err = 0;				/* number of errors (count+validation+internal) */
 
     /*
      * firewall - check args
@@ -2046,27 +2077,47 @@ json_sem_check(struct json *node, unsigned int max_depth, struct json_sem *sem,
     }
 
     /*
-     * allocate empty dynamic arrays
+     * allocate empty dynamic arrays if dynamic array pointers are NULL
      */
-    cnt_err = dyn_array_create(sizeof(struct json_sem_cnt_err), JSON_CHUNK, JSON_CHUNK, true);
+    if (*pcnt_err == NULL) {
+	cnt_err = dyn_array_create(sizeof(struct json_sem_cnt_err), JSON_CHUNK, JSON_CHUNK, true);
+	if (cnt_err == NULL) {
+	    warn(__func__, "dyn_array_create() failed to create cnt_err");
+	    ++err;
+	}
+	*pcnt_err = cnt_err;
+    } else {
+	cnt_err = *pcnt_err;
+    }
+    if (*pval_err == NULL) {
+	val_err = dyn_array_create(sizeof(struct json_sem_val_err), JSON_CHUNK, JSON_CHUNK, true);
+	if (val_err == NULL) {
+	    warn(__func__, "dyn_array_create() failed to create val_err");
+	    ++err;
+	}
+	*pval_err = val_err;
+    } else {
+	val_err = *pval_err;
+    }
     if (cnt_err == NULL) {
-	warn(__func__, "dyn_array_create() failed to create cnt_err");
+	warn(__func__, "cnt_err remains NULL in dyn_array_create()");
 	++err;
     }
-    val_err = dyn_array_create(sizeof(struct json_sem_val_err), JSON_CHUNK, JSON_CHUNK, true);
     if (val_err == NULL) {
-	warn(__func__, "dyn_array_create() failed to create val_err");
+	warn(__func__, "val_err remains NULL in dyn_array_create()");
 	++err;
     }
     /* abort early on internal errors */
     if (err > 0) {
 	return err;
     }
-    pcnt_err = &cnt_err;
-    pval_err = &val_err;
 
     /*
      * zero semantic counts
+     *
+     * NOTE: This is very important because the semantic tables have counts
+     *	     that are initialized with the count of the reference JSON file
+     *	     that jsemcgen.sh used to generate them.
      */
     json_sem_zero_count(sem);
 

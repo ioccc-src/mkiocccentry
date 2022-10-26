@@ -44,6 +44,21 @@
 #include "jparse.h"
 
 /*
+ * json_sem - JSON semantics support
+ */
+#include "json_sem.h"
+
+/*
+ * chk_sem_info - check .info.json semantics
+ */
+#include "chk_sem_info.h"
+
+/*
+ * chk_sem_auth - check .author.json semantics
+ */
+#include "chk_sem_auth.h"
+
+/*
  * foo - bar
  */
 #include "foo.h"

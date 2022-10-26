@@ -1169,8 +1169,9 @@ txzchk.o: txzchk.c txzchk.h util.h dyn_array.h dbg.h sanity.h location.h \
   utf8_posix_map.h limit_ioccc.h version.h entry_util.h json_parse.h \
   json_util.h json_sem.h
 chkentry.o: chkentry.c chkentry.h dbg.h json_util.h dyn_array.h \
-  json_parse.h util.h jparse.h jparse.tab.h foo.h sanity.h location.h \
-  utf8_posix_map.h limit_ioccc.h version.h
+  json_parse.h util.h jparse.h jparse.tab.h json_sem.h chk_sem_info.h \
+  chk_sem_auth.h foo.h sanity.h location.h utf8_posix_map.h \
+  limit_ioccc.h version.h
 json_parse.o: json_parse.c dbg.h util.h dyn_array.h json_parse.h \
   json_util.h
 jstrencode.o: jstrencode.c jstrencode.h dbg.h util.h dyn_array.h \

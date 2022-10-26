@@ -150,8 +150,8 @@ extern struct json *sem_object_find_name(struct json const *node, unsigned int d
 				         char const *memname);
 extern void json_sem_zero_count(struct json_sem *sem);
 extern int json_sem_find(struct json *node, unsigned int depth, struct json_sem *sem);
-extern unsigned int json_sem_check(struct json *node, unsigned int max_depth, struct json_sem *sem,
-				   struct dyn_array **pcnt_err, struct dyn_array **pval_err);
+extern uintmax_t json_sem_check(struct json *node, unsigned int max_depth, struct json_sem *sem,
+				struct dyn_array **pcnt_err, struct dyn_array **pval_err);
 
 
 #endif /* INCLUDE_JSON_SEM_H */

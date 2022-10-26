@@ -1732,8 +1732,9 @@ chk_highbit_warning(struct json const *node,
     /*
      * firewall - args
      */
-    if (sem_chk_null_args(node, depth, sem, __func__, val_err) == true) {
-	/* chk_null_args() will have set *val_err */
+    boolean = sem_member_value_bool(node, depth, sem, __func__, val_err);
+    if (boolean == NULL) {
+	/* sem_member_value_bool() will have set *val_err */
 	return false;
     }
 
