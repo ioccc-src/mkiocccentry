@@ -9,11 +9,11 @@
 .\" "Share and Enjoy!"
 .\"     --  Sirius Cybernetics Corporation Complaints Division, JSON spec department. :-)
 .\"
-.TH hostchk.sh 1 "22 October 2022" "hostchk.sh" "IOCCC tools"
+.TH hostchk.sh 1 "27 October 2022" "hostchk.sh" "IOCCC tools"
 .SH NAME
 hostchk.sh \- run a series of checks on your system to help determine if you can correctly use the mkiocccentry toolkit
 .SH SYNOPSIS
-\fBhostchk.sh\fP [\-h] [\-V] [\-v level] [\-D dbg_level] [\-c cc] [\-f]
+\fBhostchk.sh\fP [\-h] [\-V] [\-v level] [\-D dbg_level] [\-c cc] [\-w work_dir] [\-f]
 .SH DESCRIPTION
 \fBhostchk.sh\fP runs a series of checks to determine if you will be able to create an acceptable IOCCC entry tarball.
 If any step fails we recommend you use the \fBbug_report(1)\fP script to create a log file for filing a bug.
@@ -33,6 +33,9 @@ Set verbosity level for the tests the script runs to \fIlevel\fP.
 .TP
 \fB\-c \fIcc\fP\fP
 Set path to the compiler (cc) to \fIcc\fP.
+.TP
+\fB\-w \fIwork_dir\fP\fP
+Change work directory to\fIwork_dir\fP.
 .TP
 \fB\-f\fP
 Fast compile mode.

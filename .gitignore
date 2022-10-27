@@ -57,6 +57,8 @@ verge.html
 oebxergfB.txt
 # bug report logs
 bug-report*.txt
+# hostchk.sh related glob
+hostchk/
 
 # Prerequisites
 *.d
