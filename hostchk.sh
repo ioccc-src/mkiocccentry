@@ -70,14 +70,16 @@ if [[ -z "$CC" ]]; then
     CC="/usr/bin/cc"
 fi
 
-export HOSTCHK_VERSION="0.2 2022-10-12"
-export USAGE="usage: $0 [-h] [-V] [-v level] [-D dbg_level] [-c cc] [-f]
+export WORK_DIR="./hostchk"
+export HOSTCHK_VERSION="0.3 2022-10-27"
+export USAGE="usage: $0 [-h] [-V] [-v level] [-D dbg_level] [-c cc] [-w work_dir] [-f]
 
     -h			    print help and exit
     -V			    print version and exit
     -v level		    set verbosity level for this script: (def level: 0)
     -D dbg_level	    set verbosity level for tests (def: level: 0)
     -c cc		    path to compiler (def: $CC)
+    -w work_dir		    change work directory (def: $WORK_DIR)
     -f			    faster check (def: run slower for better diagnostics)
 
 Exit codes:
@@ -96,7 +98,7 @@ export EXIT_CODE=0
 export V_FLAG="0"
 export DBG_LEVEL="0"
 export F_FLAG=
-while getopts :hv:VD:c:f flag; do
+while getopts :hv:VD:c:w:f flag; do
     case "$flag" in
     h)	echo "$USAGE" 1>&2
 	exit 2
@@ -109,6 +111,8 @@ while getopts :hv:VD:c:f flag; do
     D)	DBG_LEVEL="$OPTARG";
 	;;
     c)	CC="$OPTARG";
+	;;
+    w)	WORK_DIR="$OPTARG";
 	;;
     f)	F_FLAG="true";
 	;;
@@ -129,16 +133,32 @@ done
 #
 if [[ ! -e $CC ]]; then
     echo "$0: ERROR: cc not found: $CC" 1>&2
-    exit 4
+    exit 10
 fi
 if [[ ! -f $CC ]]; then
     echo "$0: ERROR: cc not a regular file: $CC" 1>&2
-    exit 4
+    exit 10
 fi
 if [[ ! -x $CC ]]; then
     echo "$0: ERROR: cc not executable: $CC" 1>&2
-    exit 4
+    exit 10
 fi
+
+# create an empty working directory
+#
+rm -rf  "$WORK_DIR"
+status="$?"
+if [[ $status -ne 0 ]]; then
+    echo "$0: ERROR: rm -rf $WORK_DIR failed, error code: $status" 1>&2
+    exit 11
+fi
+mkdir -p "$WORK_DIR"
+status="$?"
+if [[ $status -ne 0 ]]; then
+    echo "$0: ERROR: mkdir -p $WORK_DIR failed, error code: $status" 1>&2
+    exit 11
+fi
+
 
 # set up for compile test
 #
@@ -147,12 +167,13 @@ RUN_INCLUDE_TEST="true"
 PROG_FILE=$(mktemp -u .hostchk.prog.XXXXXXXXXX)
 status="$?"
 if [[ $status -ne 0 ]]; then
-    echo "$0: ERROR: mktemp -u $PROG_FILE exit code: $status" 1>&2
     EXIT_CODE=41
+    echo "$0: ERROR: mktemp -u $PROG_FILE exit code: $status: new exit code: $EXIT_CODE" 1>&2
     RUN_INCLUDE_TEST=
 fi
 
-trap "rm -f \$PROG_FILE; exit" 1 2 3 15
+# trap to remove prog and also work directory
+trap "rm -rf \$PROG_FILE \$WORK_DIR; exit" 1 2 3 15
 
 # Previously, -f was so fast it did absolutely nothing! :-)
 #
@@ -173,15 +194,15 @@ if [[ -n "$F_FLAG" ]]; then
     #
     status="$?"
     if [[ $status -ne 0 ]]; then
-	echo "$0: ERROR: unable to compile test file with all necessary system include files $h" 1>&2
 	EXIT_CODE=42
+	echo "$0: ERROR: unable to compile test file with all necessary system include files $h: new exit code: $EXIT_CODE" 1>&2
 	INCLUDE_TEST_SUCCESS="false"
     elif [[ -s "$PROG_FILE" && -x "$PROG_FILE" ]]; then
 	./"$PROG_FILE"
 	status="$?"
 	if [[ $status -ne 0 ]]; then
-	    echo "$0: ERROR: unable to run executable compiled with all necessary system include files" 1>&2
 	    EXIT_CODE=43
+	    echo "$0: ERROR: unable to run executable compiled with all necessary system include files: new exit code: $EXIT_CODE" 1>&2
 	    INCLUDE_TEST_SUCCESS="false"
 	else
 	    if [[ $V_FLAG -gt 1 ]]; then
@@ -189,8 +210,8 @@ if [[ -n "$F_FLAG" ]]; then
 	    fi
 	fi
     else
-	echo "$0: ERROR: unable to form an executable compiled using all necessary system include files" 1>&2
 	EXIT_CODE=44
+	echo "$0: ERROR: unable to form an executable compiled using all necessary system include files: new exit code: $EXIT_CODE" 1>&2
 	INCLUDE_TEST_SUCCESS="false"
     fi
 
@@ -219,15 +240,15 @@ else
 	    #
 	    status="$?"
 	    if [[ $status -ne 0 ]]; then
-		echo "$0: ERROR: unable to compile with $h" 1>&2
 		EXIT_CODE=42
+		echo "$0: ERROR: unable to compile with $h: new exit code: $EXIT_CODE" 1>&2
 		INCLUDE_TEST_SUCCESS="false"
 	    elif [[ -s "$PROG_FILE" && -x "$PROG_FILE" ]]; then
 		./"$PROG_FILE"
 		status="$?"
 		if [[ $status -ne 0 ]]; then
-		    echo "$0: ERROR: unable to run executable compiled using: $h" 1>&2
 		    EXIT_CODE=43
+		    echo "$0: ERROR: unable to run executable compiled using: $h: new exit code: $EXIT_CODE" 1>&2
 		    INCLUDE_TEST_SUCCESS="false"
 		else
 		    if [[ $V_FLAG -gt 1 ]]; then
@@ -235,8 +256,8 @@ else
 		    fi
 		fi
 	    else
-		echo "$0: ERROR: unable to form an executable compiled using: $h" 1>&2
 		EXIT_CODE=44
+		echo "$0: ERROR: unable to form an executable compiled using: $h: new exit code: $EXIT_CODE" 1>&2
 		INCLUDE_TEST_SUCCESS="false"
 	    fi
 
@@ -245,11 +266,207 @@ else
 	    rm -f "$PROG_FILE"
 	done < <(grep -h -o '#include.*<.*>' ./*.c ./*.h|sort -u)
     else
-	echo "$0: notice: include test disabled due to test set up error(s)" 1>&2
 	EXIT_CODE=45
+	echo "$0: notice: include test disabled due to test set up error(s): new exit code: $EXIT_CODE" 1>&2
 	INCLUDE_TEST_SUCCESS="false"
     fi
 fi
+
+# now make and test compile and run some C files
+
+# pre-errno test: get value of ENOENT
+if [[ $V_FLAG -gt 1 ]]; then
+    echo "$0: creating source that should print the value of ENOENT" 1>&2
+fi
+cat <<EOF>"$WORK_DIR/pre-errno.c"
+#include <errno.h>
+#include <stdio.h>
+int
+main(void)
+{
+    printf("%d", ENOENT);
+
+    return 0;
+}
+EOF
+WORK_FILE="$WORK_DIR/pre-errno"
+$CC -o "$WORK_FILE" "$WORK_DIR/pre-errno.c"
+if [[ ! -e "$WORK_FILE" ]]; then
+    echo "$0: ERROR: could not create executable errno set up file"
+    exit 46
+fi
+if [[ ! -x "$WORK_FILE" ]]; then
+    echo "$0: ERROR: could not create executable errno set up file"
+    exit 47
+fi
+ENOENT=$("$WORK_FILE")
+if [[ $V_FLAG -gt 1 ]]; then
+    echo "$0: got: ENOENT == $ENOENT" 1>&2
+fi
+
+# errno test 0: test printf of errno == ENOENT. If program does not print:
+#
+#   errno: $ENOENT
+#
+# where $ENOENT was obtained above then there's an inconsistency with the errno
+# value.
+if [[ $V_FLAG -gt 1 ]]; then
+    echo "$0: creating source that should print: errno: $ENOENT" 1>&2
+fi
+cat <<EOF>"$WORK_DIR/errno0.c"
+#include <errno.h>
+#include <stdio.h>
+int
+main(void)
+{
+    errno = ENOENT;
+
+    (void) printf("errno: %d\n", errno);
+    return 0;
+}
+EOF
+WORK_FILE="$WORK_DIR/errno0"
+$CC -o "$WORK_FILE" "$WORK_DIR/errno0.c"
+if [[ ! -e "$WORK_FILE" ]]; then
+    echo "$0: ERROR: could not create executable errno0"
+    exit 48
+fi
+if [[ ! -x "$WORK_FILE" ]]; then
+    echo "$0: ERROR: could not create executable errno0"
+    exit 49
+fi
+if ! "$WORK_FILE" | grep -q "errno: $ENOENT"; then
+    # XXX should we not use -q to grep so we can print the actual value?
+    echo "$0: ERROR: inconsistent ENOENT value: did not get: "errno: $ENOENT"" 1>&2
+    exit 50
+elif [[ $V_FLAG -gt 1 ]]; then
+    echo "$0: got: errno: $ENOENT" 1>&2
+fi
+
+# errno1: create source file that when compiled should return 1 (errno is set to
+# ENOENT so errno == ENOENT should be 1)
+if [[ $V_FLAG -gt 1 ]]; then
+    echo "$0: creating source that should verify errno == $ENOENT, returning 1" 1>&2
+fi
+cat<<EOF>"$WORK_DIR/errno1.c"
+#include <errno.h>
+int
+main(void)
+{
+    errno = ENOENT;
+
+    return errno == ENOENT;
+}
+EOF
+WORK_FILE="$WORK_DIR/errno1"
+$CC -o "$WORK_FILE" "$WORK_DIR/errno1.c"
+if [[ ! -e "$WORK_FILE" ]]; then
+    echo "$0: ERROR: could not create executable errno1" 1>&2
+    exit 51
+fi
+if [[ ! -x "$WORK_FILE" ]]; then
+    echo "$0: ERROR: could not create executable errno1" 1>&2
+    exit 52
+fi
+
+"$WORK_FILE"
+status=$?
+if [[ "$status" -ne 1 ]] ; then
+    echo "$0: ERROR: errno != ENOENT" 1>&2
+    exit 53
+elif [[ "$V_FLAG" -gt 1 ]]; then
+    echo "$0: got return value 1: errno == ENOENT"
+fi
+
+# hello.c: print "Hello, world".
+if [[ $V_FLAG -gt 1 ]]; then
+    echo "$0: creating source that should print: "Hello, world"" 1>&2
+fi
+cat <<EOF>"$WORK_DIR/hello.c"
+#include <stdio.h>
+int
+main(void)
+{
+    (void) printf("Hello, world\n");
+    return 0;
+}
+EOF
+WORK_FILE="$WORK_DIR/hello"
+$CC -o "$WORK_FILE" "$WORK_DIR/hello.c"
+if [[ ! -e "$WORK_FILE" ]]; then
+    echo "$0: ERROR: could not create executable hello" 1>&2
+    exit 54
+fi
+if [[ ! -x "$WORK_FILE" ]]; then
+    echo "$0: ERROR: could not create executable hello" 1>&2
+    exit 55
+fi
+if ! "$WORK_FILE" | grep -q "Hello, world"; then
+    echo "$0: ERROR: expected string "Hello, world" not found" 1>&2
+    exit 56
+elif [[ "$V_FLAG" -gt 1 ]]; then
+    echo "$0: got: "Hello, world"" 1>&2
+fi
+
+# main0: create source file that should return 0
+if [[ $V_FLAG -gt 1 ]]; then
+    echo "$0: creating source that should simply return 0" 1>&2
+fi
+cat <<EOF>"$WORK_DIR/main0.c"
+int
+main(void)
+{
+    return 0;
+}
+EOF
+WORK_FILE="$WORK_DIR/main0"
+$CC -o "$WORK_FILE" "$WORK_DIR/main0.c"
+if [[ ! -e "$WORK_FILE" ]]; then
+    echo "$0: ERROR: could not create executable main0" 1>&2
+    exit 57
+fi
+if [[ ! -x "$WORK_FILE" ]]; then
+    echo "$0: ERROR: could not create executable main0" 1>&2
+    exit 58
+fi
+if ! "$WORK_FILE"; then
+    echo "$0: ERROR: expected return value 0 not returned: got $?" 1>&2
+    exit 59
+elif [[ "$V_FLAG" -gt 1 ]]; then
+    echo "$0: got return value 0" 1>&2
+fi
+
+
+# main1: create source file that should return 1
+if [[ $V_FLAG -gt 1 ]]; then
+    echo "$0: creating source that should simply return 1" 1>&2
+fi
+cat <<EOF>"$WORK_DIR/main1.c"
+int
+main(void)
+{
+    return 1;
+}
+EOF
+WORK_FILE="$WORK_DIR/main1"
+$CC -o "$WORK_FILE" "$WORK_DIR/main1.c"
+if [[ ! -e "$WORK_FILE" ]]; then
+    echo "$0: ERROR: could not create executable main1" 1>&2
+    exit 60
+fi
+if [[ ! -x "$WORK_FILE" ]]; then
+    echo "$0: ERROR: could not create executable main1" 1>&2
+    exit 61
+fi
+if "$WORK_FILE"; then
+    echo "$0: ERROR: expected return value 1 not returned: got $?" 1>&2
+    exit 62
+elif [[ "$V_FLAG" -gt 1 ]]; then
+    echo "$0: got return value 1" 1>&2
+fi
+
+# remove work directory
+rm -rf "$WORK_DIR"
 
 # All Done!!! -- Jessica Noll, Age 2
 #
