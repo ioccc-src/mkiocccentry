@@ -1,5 +1,5 @@
 {
-	"no-comment" : "because comments were removed from the original JSON spec",
+	"no_comment" : "mandatory comment: because comments were removed from the original JSON spec",
 	"manifest" : [
 		{"Makefile" : "Makefile"},
 		{"author_JSON" : ".author.json"},

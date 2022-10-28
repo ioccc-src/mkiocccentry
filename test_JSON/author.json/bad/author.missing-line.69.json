@@ -1,5 +1,5 @@
 {
-	"no-comment" : "because comments were removed from the original JSON spec",
+	"no_comment" : "mandatory comment: because comments were removed from the original JSON spec",
 	"IOCCC_author_version" : "1.15 2022-10-23",
 	"IOCCC_contest" : "IOCCCMOCK",
 	"IOCCC_year" : 2022,

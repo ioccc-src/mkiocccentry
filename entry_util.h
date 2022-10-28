@@ -103,7 +103,7 @@ struct auth
      * .author.json information before the authors array
      */
     /* file format strings */
-    char const *no_comment;	/* because comments were removed from the original JSON spec :-) */
+    char const *no_comment;	/* mandatory comment: because comments were removed from the original JSON spec :-) */
     char const *author_version;	/* IOCCC .author.json format version (compiled in AUTHOR_VERSION) */
     char const *ioccc_contest;	/* IOCCC contest string (compiled in IOCCC[0-9][0-9] or IOCCCMOCK) */
     /* contest year */
@@ -148,7 +148,7 @@ struct info
      * .info.json information before the file name array
      */
     /* file format strings */
-    char const *no_comment;	/* because comments were removed from the original JSON spec :-) */
+    char const *no_comment;	/* mandatory comment: because comments were removed from the original JSON spec :-) */
     char const *info_version;	/* IOCCC .info.json format version (compiled in INFO_VERSION) */
     char const *ioccc_contest;	/* IOCCC contest string (compiled in IOCCC[0-9][0-9] or IOCCCMOCK) */
     /* contest year */

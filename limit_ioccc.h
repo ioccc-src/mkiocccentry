@@ -104,8 +104,8 @@
  *
  *	JSON_PARSING_DIRECTIVE_NAME : JSON_PARSING_DIRECTIVE_VALUE
  */
-#define JSON_PARSING_DIRECTIVE_NAME "no-comment"
-#define JSON_PARSING_DIRECTIVE_VALUE "because comments were removed from the original JSON spec"
+#define JSON_PARSING_DIRECTIVE_NAME "no_comment"
+#define JSON_PARSING_DIRECTIVE_VALUE "mandatory comment: because comments were removed from the original JSON spec"
 
 
 #endif /* ! INCLUDE_LIMIT_IOCCC_H */

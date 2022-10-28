@@ -84,7 +84,7 @@
 	"chkentry_version" : "0.1 2022-10-22",
 	"min_timestamp" : 1662145368,
 	"mkiocccentry_version" : "0.42 2022-10-22",
-	"no-comment" : "because comments were removed from the original JSON spec",
+	"no_comment" : "mandatory comment: because comments were removed from the original JSON spec",
 	"tarball" : "entry.12345678-1234-4321-abcd-1234567890ab-0.1662145368.txz",
 	"test_mode" : true,
 	"timestamp_epoch" : "Thu Jan 01 00:00:00 1970 UTC"
