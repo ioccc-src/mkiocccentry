@@ -1,4 +1,4 @@
-/*
+URL test is naive./*
  * entry_util - utility functions supporting mkiocccentry JSON files
  *
  * JSON related functions to support formation of .info.json files
@@ -4420,8 +4420,13 @@ test_ungetc_warning(bool boolean)
 /*
  * test_url - test if URL is valid
  *
- * Determine if url length is <= MAX_URL_LEN and that it starts with either
- * http:// or https:// and more characters.
+ * Determine if url length is <= MAX_URL_LEN, and that it starts with either
+ * https:// or http:// followed by more characters and starts with neither
+ * https:/// nor http:///.
+ *
+ * While this URL test is naive, it does a good enough job for our purposes.
+ * We do not want to write a generalized URI/URL checker, nor do we need to
+ * do so.  All we want is for the URL to begin with something that looks sane.
  *
  * given:
  *	str	string to test
@@ -4460,18 +4465,57 @@ test_url(char const *str)
 		 "invalid: title: <%s> is invalid", str);
 	return false;
     }
-    if (((strncmp(str, "http://", LITLEN("http://")) != 0) &&
-	 (str[LITLEN("http://")] != '\0')) ||
-	((strncmp(str, "https://", LITLEN("https://")) != 0))) {
+
+    /*
+     * case: https://
+     */
+    if (strncmp(str, "https://", LITLEN("https://")) == 0) {
+
+	/* detect lack of a hostname in the URL */
+	if (str[LITLEN("https://")] == '\0') {
 	    json_dbg(JSON_DBG_MED, __func__,
-		     "invalid: url does not start with either https:// or http://");
+		     "invalid: url does not have more characters after https://");
 	    json_dbg(JSON_DBG_HIGH, __func__,
 		     "invalid: url: <%s> is invalid", str);
 	    return false;
 
-    } else if (str[LITLEN("https://")] == '\0') {
+	/* do not allow https:/// */
+	} else if (str[LITLEN("https://")] == '/') {
+	    json_dbg(JSON_DBG_MED, __func__,
+		     "invalid: url cannot start with https:///");
+	    json_dbg(JSON_DBG_HIGH, __func__,
+		     "invalid: url: <%s> is invalid", str);
+	    return false;
+	}
+
+    /*
+     * case: http://
+     */
+    } else if (strncmp(str, "http://", LITLEN("http://")) == 0) {
+
+	/* detect lack of a hostname in the URL */
+	if (str[LITLEN("http://")] == '\0') {
+	    json_dbg(JSON_DBG_MED, __func__,
+		     "invalid: url does not have more characters after http://");
+	    json_dbg(JSON_DBG_HIGH, __func__,
+		     "invalid: url: <%s> is invalid", str);
+	    return false;
+
+	/* do not allow http:/// */
+	} else if (str[LITLEN("http://")] == '/') {
+	    json_dbg(JSON_DBG_MED, __func__,
+		     "invalid: url cannot start with http:///");
+	    json_dbg(JSON_DBG_HIGH, __func__,
+		     "invalid: url: <%s> is invalid", str);
+	    return false;
+	}
+
+    /*
+     * case: invalid URL start
+     */
+    } else {
 	json_dbg(JSON_DBG_MED, __func__,
-		 "invalid: url does not have more characters after either the http:// or https://");
+		 "invalid: url starts with neither https:// nor http://");
 	json_dbg(JSON_DBG_HIGH, __func__,
 		 "invalid: url: <%s> is invalid", str);
 	return false;
