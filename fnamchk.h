@@ -25,6 +25,8 @@
  *
  * chongo (Landon Curt Noll, http://www.isthe.com/chongo/index.html) /\oo/\
  *
+ * "Because everyone hates when someone gets their name wrong." :-)
+ *
  * Share and enjoy! :-)
  */
 

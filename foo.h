@@ -2,20 +2,7 @@
  * foo - bar
  *
  * "Because sometimes code is foo and sometimes foo is fubar." :-)
- *
- * The JSON parser was co-developed by:
- *
- *	@xexyl
- *	https://xexyl.net		Cody Boone Ferguson
- *	https://ioccc.xexyl.net
- * and:
- *	chongo (Landon Curt Noll, http://www.isthe.com/chongo/index.html) /\oo/\
- *
  * "Because sometimes we need more O in C." :-)
- *
- * This tool is being co-developed by Cody Boone Ferguson and Landon Curt Noll.
- *
- * "Because sometimes even the IOCCC Judges need some help." :-)
  *
  * The concept of this file was developed by:
  *
@@ -27,6 +14,18 @@
  *
  * "Because Cody enjoys being a bit eccentric and he is rather proud of it too!" :-)
  *
+ * This tool is being co-developed by Cody Boone Ferguson and Landon Curt Noll.
+ *
+ * The JSON parser was co-developed by:
+ *
+ *	@xexyl
+ *	https://xexyl.net		Cody Boone Ferguson
+ *	https://ioccc.xexyl.net
+ * and:
+ *	chongo (Landon Curt Noll, http://www.isthe.com/chongo/index.html) /\oo/\
+ *
+ * "Because sometimes even the IOCCC Judges need some help." :-)
+ *
  * BTW: If you want to win the IOCCC every time all you need to do
  * (supposedly :-) ), is decipher this quote with a top secret hint from Landon
  * to me in private. It's so secret and seems so ridiculously simple in fact
@@ -37,6 +36,9 @@
  * Ti bol jrt IOCCC moxuj you must tljtx jrt contest qld coin cis fsuj gt gtjjtx
  * jrql jrt ziuole entries. Cj'u xtqzzc jrqj simple. Vod cis xtqzzc tkwtyj
  * uiftjrole tzut? Eiz.
+ *
+ * "Share and Enjoy!"
+ *     --  Sirius Cybernetics Corporation Complaints Division, JSON spec department. :-)
  */
 
 #if !defined(INCLUDE_FOO_H)
