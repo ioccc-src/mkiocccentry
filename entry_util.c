@@ -1,4 +1,4 @@
-URL test is naive./*
+/*
  * entry_util - utility functions supporting mkiocccentry JSON files
  *
  * JSON related functions to support formation of .info.json files
@@ -2847,7 +2847,7 @@ test_formed_UTC(char const *str)
 		 "invalid: strptime failed convert formed_UTC: <%s>", str);
 	return false;
     }
-    if (ptr[0] == '\0') {
+    if (ptr[0] != '\0') {
 	json_dbg(JSON_DBG_MED, __func__,
 		 "invalid: extra data in formed_UTC");
 	json_dbg(JSON_DBG_HIGH, __func__,
