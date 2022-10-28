@@ -59,7 +59,7 @@ main(int argc, char *argv[])
     struct json *node = NULL;	/* allocated JSON parser tree node */
     struct json_number *item = NULL;	/* JSON parser tree node for a JSON number */
     size_t len = 0;		/* length of str */
-    int arg_cnt = 0;		/* number of args to process */
+    int arg_count = 0;		/* number of args to process */
     int i;
 
     /*
@@ -101,9 +101,9 @@ main(int argc, char *argv[])
 	    not_reached();
 	 }
     }
-    arg_cnt = argc - optind;
-    if (arg_cnt != REQUIRED_ARGS) {
-	usage(4, program, "expected %d arguments, found: %d", REQUIRED_ARGS, arg_cnt); /*ooo*/
+    arg_count = argc - optind;
+    if (arg_count != REQUIRED_ARGS) {
+	usage(4, program, "expected %d arguments, found: %d", REQUIRED_ARGS, arg_count); /*ooo*/
     }
     dbg(DBG_MED, "strict mode: %s", (strict == true) ? "enabled" : "disabled");
 

@@ -1320,10 +1320,10 @@ object2manifest(struct json *node, unsigned int depth, struct json_sem *sem,
 	    }
 
 	    /* count valid occurrence */
-	    ++manp->cnt_info_JSON;
+	    ++manp->count_info_JSON;
 
 	    /* we are allowed only 1 of these mandatory manifest filenames */
-	    if (manp->cnt_info_JSON != 1) {
+	    if (manp->count_info_JSON != 1) {
 		if (val_err != NULL) {
 		    *val_err = werr_sem_val(125, node, depth, sem, __func__,
 					    "manifest found more than one info_JSON filename");
@@ -1347,10 +1347,10 @@ object2manifest(struct json *node, unsigned int depth, struct json_sem *sem,
 	    }
 
 	    /* count valid occurrence */
-	    ++manp->cnt_author_JSON;
+	    ++manp->count_author_JSON;
 
 	    /* we are allowed only 1 of these mandatory manifest filenames */
-	    if (manp->cnt_c_src != 1) {
+	    if (manp->count_c_src != 1) {
 		if (val_err != NULL) {
 		    *val_err = werr_sem_val(128, node, depth, sem, __func__,
 					    "manifest found more than one author_JSON filename");
@@ -1374,10 +1374,10 @@ object2manifest(struct json *node, unsigned int depth, struct json_sem *sem,
 	    }
 
 	    /* count valid occurrence */
-	    ++manp->cnt_c_src;
+	    ++manp->count_c_src;
 
 	    /* we are allowed only 1 of these mandatory manifest filenames */
-	    if (manp->cnt_c_src != 1) {
+	    if (manp->count_c_src != 1) {
 		if (val_err != NULL) {
 		    *val_err = werr_sem_val(130, node, depth, sem, __func__,
 					    "manifest found more than one c_src (prog.c) filename");
@@ -1401,10 +1401,10 @@ object2manifest(struct json *node, unsigned int depth, struct json_sem *sem,
 	    }
 
 	    /* count valid occurrence */
-	    ++manp->cnt_Makefile;
+	    ++manp->count_Makefile;
 
 	    /* we are allowed only 1 of these mandatory manifest filenames */
-	    if (manp->cnt_Makefile != 1) {
+	    if (manp->count_Makefile != 1) {
 		if (val_err != NULL) {
 		    *val_err = werr_sem_val(132, node, depth, sem, __func__,
 					    "manifest found more than one Makefile filename");
@@ -1428,10 +1428,10 @@ object2manifest(struct json *node, unsigned int depth, struct json_sem *sem,
 	    }
 
 	    /* count valid occurrence */
-	    ++manp->cnt_remarks;
+	    ++manp->count_remarks;
 
 	    /* we are allowed only 1 of these mandatory manifest filenames */
-	    if (manp->cnt_remarks != 1) {
+	    if (manp->count_remarks != 1) {
 		if (val_err != NULL) {
 		    *val_err = werr_sem_val(134, node, depth, sem, __func__,
 					    "remarks found more than one remarks filename");
@@ -1451,7 +1451,7 @@ object2manifest(struct json *node, unsigned int depth, struct json_sem *sem,
 		if (val_err != NULL) {
 		    *val_err = werr_sem_val(135, node, depth, sem, __func__,
 					    "manifest extra_file #%jd filename is invalid",
-					    manp->cnt_extra_file);
+					    manp->count_extra_file);
 		}
 		dyn_array_free(man.extra);
 		return false;
@@ -1461,7 +1461,7 @@ object2manifest(struct json *node, unsigned int depth, struct json_sem *sem,
 	    (void) dyn_array_append_value(manp->extra, value);
 
 	    /* count valid occurrence */
-	    ++manp->cnt_extra_file;
+	    ++manp->count_extra_file;
 
 	/*
 	 * case: invalid JTYPE_MEMBER - not part of an IOCCC manifest JTYPE_OBJECT
@@ -1480,47 +1480,47 @@ object2manifest(struct json *node, unsigned int depth, struct json_sem *sem,
     /*
      * verify that we have 1 each of the required mandatory files in manifest
      */
-    if (man.cnt_info_JSON != 1) {
+    if (man.count_info_JSON != 1) {
 	if (val_err != NULL) {
 	    *val_err = werr_sem_val(137, node, depth+2, sem, __func__,
 				    "manifest: expected 1 valid info_JSON, found: %jd",
-				    man.cnt_info_JSON);
+				    man.count_info_JSON);
 	}
 	dyn_array_free(man.extra);
         return false;
     }
-    if (man.cnt_author_JSON != 1) {
+    if (man.count_author_JSON != 1) {
 	if (val_err != NULL) {
 	    *val_err = werr_sem_val(138, node, depth+2, sem, __func__,
 				    "manifest: expected 1 valid author_JSON, found: %jd",
-				    man.cnt_author_JSON);
+				    man.count_author_JSON);
 	}
 	dyn_array_free(man.extra);
         return false;
     }
-    if (man.cnt_c_src != 1) {
+    if (man.count_c_src != 1) {
 	if (val_err != NULL) {
 	    *val_err = werr_sem_val(139, node, depth+2, sem, __func__,
 				    "manifest: expected 1 valid c_src, found: %jd",
-				    man.cnt_c_src);
+				    man.count_c_src);
 	}
 	dyn_array_free(man.extra);
         return false;
     }
-    if (man.cnt_Makefile != 1) {
+    if (man.count_Makefile != 1) {
 	if (val_err != NULL) {
 	    *val_err = werr_sem_val(140, node, depth+2, sem, __func__,
 				    "manifest: expected 1 valid Makefile, found: %jd",
-				    man.cnt_Makefile);
+				    man.count_Makefile);
 	}
 	dyn_array_free(man.extra);
         return false;
     }
-    if (man.cnt_remarks != 1) {
+    if (man.count_remarks != 1) {
 	if (val_err != NULL) {
 	    *val_err = werr_sem_val(141, node, depth+2, sem, __func__,
 				    "manifest: expected 1 valid remarks, found: %jd",
-				    man.cnt_remarks);
+				    man.count_remarks);
 	}
 	dyn_array_free(man.extra);
         return false;
@@ -1531,7 +1531,7 @@ object2manifest(struct json *node, unsigned int depth, struct json_sem *sem,
      *
      * The author_count will be a small number, so we can get away with a lazy O(n^2) match.
      */
-    for (i=1; i < man.cnt_extra_file; ++i) {
+    for (i=1; i < man.count_extra_file; ++i) {
 
 	/* obtain first extra filename to compare against */
 	extra_filename = dyn_array_value(man.extra, char *, i);
@@ -3458,7 +3458,7 @@ test_location_name(char const *str)
 bool
 test_manifest(struct manifest *manp)
 {
-    intmax_t cnt_extra_file = -1;		/* number of extra files */
+    intmax_t count_extra_file = -1;		/* number of extra files */
     bool test = false;			/* test_extra_file() test result */
     char *extra_filename = NULL;	/* filename of an extra file */
     char *extra_filename2 = NULL;	/* second filename of an extra file */
@@ -3476,50 +3476,50 @@ test_manifest(struct manifest *manp)
 	warn(__func__, "manp->extra is NULL");
 	return false;
     }
-    if (manp->cnt_extra_file < 0) {
-	warn(__func__, "manp->cnt_extra_file: %jd < 0", manp->cnt_extra_file);
+    if (manp->count_extra_file < 0) {
+	warn(__func__, "manp->count_extra_file: %jd < 0", manp->count_extra_file);
 	return false;
     }
-    if (manp->cnt_extra_file != dyn_array_tell(manp->extra)) {
-	warn(__func__, "manp->cnt_extra_file: %jd != dyn_array_tell(manp->extra): %jd",
-		       manp->cnt_extra_file, dyn_array_tell(manp->extra));
+    if (manp->count_extra_file != dyn_array_tell(manp->extra)) {
+	warn(__func__, "manp->count_extra_file: %jd != dyn_array_tell(manp->extra): %jd",
+		       manp->count_extra_file, dyn_array_tell(manp->extra));
 	return false;
     }
-    cnt_extra_file = manp->cnt_extra_file;
+    count_extra_file = manp->count_extra_file;
 
     /*
      * look for required mandatory files in manifest
      */
-    if (manp->cnt_info_JSON != 1) {
+    if (manp->count_info_JSON != 1) {
 	json_dbg(JSON_DBG_MED, __func__,
-		 "invalid: expected 1 valid info_JSON, found: %jd", manp->cnt_info_JSON);
+		 "invalid: expected 1 valid info_JSON, found: %jd", manp->count_info_JSON);
         return false;
     }
-    if (manp->cnt_author_JSON != 1) {
+    if (manp->count_author_JSON != 1) {
 	json_dbg(JSON_DBG_MED, __func__,
-		 "invalid: expected 1 valid author_JSON, found: %jd", manp->cnt_author_JSON);
+		 "invalid: expected 1 valid author_JSON, found: %jd", manp->count_author_JSON);
         return false;
     }
-    if (manp->cnt_c_src != 1) {
+    if (manp->count_c_src != 1) {
 	json_dbg(JSON_DBG_MED, __func__,
-		 "invalid: expected 1 valid c_src, found: %jd", manp->cnt_c_src);
+		 "invalid: expected 1 valid c_src, found: %jd", manp->count_c_src);
         return false;
     }
-    if (manp->cnt_Makefile != 1) {
+    if (manp->count_Makefile != 1) {
 	json_dbg(JSON_DBG_MED, __func__,
-		 "invalid: expected 1 valid Makefile, found: %jd", manp->cnt_Makefile);
+		 "invalid: expected 1 valid Makefile, found: %jd", manp->count_Makefile);
         return false;
     }
-    if (manp->cnt_remarks != 1) {
+    if (manp->count_remarks != 1) {
 	json_dbg(JSON_DBG_MED, __func__,
-		 "invalid: expected 1 valid remarks, found: %jd", manp->cnt_remarks);
+		 "invalid: expected 1 valid remarks, found: %jd", manp->count_remarks);
         return false;
     }
 
     /*
      * case: no extra files
      */
-    if (cnt_extra_file == 0) {
+    if (count_extra_file == 0) {
 	json_dbg(JSON_DBG_MED, __func__, "manifest is complete with no extra files");
 	return true;
     }
@@ -3527,7 +3527,7 @@ test_manifest(struct manifest *manp)
     /*
      * verify that extra files are valid filenames and do not match a mandatory file
      */
-    for (i=0; i < cnt_extra_file; ++i) {
+    for (i=0; i < count_extra_file; ++i) {
 
 	/* obtain this valid extra filename */
 	extra_filename = dyn_array_value(manp->extra, char *, i);
@@ -3551,7 +3551,7 @@ test_manifest(struct manifest *manp)
     /*
      * case: only 1 extra file
      */
-    if (cnt_extra_file == 1) {
+    if (count_extra_file == 1) {
 	json_dbg(JSON_DBG_MED, __func__, "manifest is complete with only 1 valid extra filename");
 	return true;
     }
@@ -3561,7 +3561,7 @@ test_manifest(struct manifest *manp)
      *
      * The author_count will be a small number, so we can get away with a lazy O(n^2) match.
      */
-    for (i=1; i < cnt_extra_file; ++i) {
+    for (i=1; i < count_extra_file; ++i) {
 
 	/* obtain first extra filename to compare against */
 	extra_filename = dyn_array_value(manp->extra, char *, i);

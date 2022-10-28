@@ -47,7 +47,7 @@ main(int argc, char *argv[])
     char const *program = NULL;	/* our name */
     extern char *optarg;	/* option argument */
     extern int optind;		/* argv index of the next arg */
-    int arg_cnt = 0;		/* number of args to process */
+    int arg_count = 0;		/* number of args to process */
     char *ver1 = NULL;		/* first version string */
     char *ver2 = NULL;		/* second version string */
     int ver1_levels = 0;	/* number of version levels for first version string */
@@ -82,8 +82,8 @@ main(int argc, char *argv[])
 	    not_reached();
 	 }
     }
-    arg_cnt = argc - optind;
-    if (arg_cnt != REQUIRED_ARGS) {
+    arg_count = argc - optind;
+    if (arg_count != REQUIRED_ARGS) {
 	usage(4, "two args are required", program); /*ooo*/
 	not_reached();
     }

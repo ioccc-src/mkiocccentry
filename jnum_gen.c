@@ -48,7 +48,7 @@ main(int argc, char *argv[])
     char const *program = NULL;	/* our name */
     extern char *optarg;	/* option argument */
     extern int optind;		/* argv index of the next arg */
-    int arg_cnt = 0;		/* number of args to process */
+    int arg_count = 0;		/* number of args to process */
     char *filename = NULL;	/* name of file containing test cases */
     FILE *stream = NULL;	/* test case open stream */
     char *readline_buf = NULL;	/* test case readline_buf buffer */
@@ -96,9 +96,9 @@ main(int argc, char *argv[])
 	    not_reached();
 	 }
     }
-    arg_cnt = argc - optind;
-    if (arg_cnt != REQUIRED_ARGS) {
-	usage(4, program, "expected %d arguments, found: %d", REQUIRED_ARGS, arg_cnt); /*ooo*/
+    arg_count = argc - optind;
+    if (arg_count != REQUIRED_ARGS) {
+	usage(4, program, "expected %d arguments, found: %d", REQUIRED_ARGS, arg_count); /*ooo*/
 	not_reached();
     }
     filename = argv[optind];
