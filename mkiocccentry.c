@@ -4569,7 +4569,7 @@ write_info(struct info *infop, char const *entry_dir, char const *chkentry, char
 	json_fprintf_value_string(info_stream, "\t", JSON_PARSING_DIRECTIVE_NAME, " : ", JSON_PARSING_DIRECTIVE_VALUE, ",\n") &&
 	json_fprintf_value_string(info_stream, "\t", "IOCCC_info_version", " : ", INFO_VERSION, ",\n") &&
 	json_fprintf_value_string(info_stream, "\t", "IOCCC_contest", " : ", IOCCC_CONTEST, ",\n") &&
-	json_fprintf_value_long(info_stream, "\t", "ioccc_year", " : ", (long)IOCCC_YEAR, ",\n") &&
+	json_fprintf_value_long(info_stream, "\t", "IOCCC_year", " : ", (long)IOCCC_YEAR, ",\n") &&
 	json_fprintf_value_string(info_stream, "\t", "mkiocccentry_version", " : ", MKIOCCCENTRY_VERSION, ",\n") &&
 	json_fprintf_value_string(info_stream, "\t", "iocccsize_version", " : ", infop->iocccsize_ver, ",\n") &&
 	json_fprintf_value_string(info_stream, "\t", "chkentry_version", " : ", CHKENTRY_VERSION, ",\n") &&
@@ -4843,7 +4843,7 @@ write_author(struct auth *authp, char const *entry_dir, char const *chkentry, ch
 	json_fprintf_value_string(author_stream, "\t", JSON_PARSING_DIRECTIVE_NAME, " : ", JSON_PARSING_DIRECTIVE_VALUE, ",\n") &&
 	json_fprintf_value_string(author_stream, "\t", "IOCCC_author_version", " : ", AUTHOR_VERSION, ",\n") &&
 	json_fprintf_value_string(author_stream, "\t", "IOCCC_contest", " : ", IOCCC_CONTEST, ",\n") &&
-	json_fprintf_value_long(author_stream, "\t", "ioccc_year", " : ", (long)IOCCC_YEAR, ",\n") &&
+	json_fprintf_value_long(author_stream, "\t", "IOCCC_year", " : ", (long)IOCCC_YEAR, ",\n") &&
 	json_fprintf_value_string(author_stream, "\t", "mkiocccentry_version", " : ", MKIOCCCENTRY_VERSION, ",\n") &&
 	json_fprintf_value_string(author_stream, "\t", "chkentry_version", " : ", CHKENTRY_VERSION, ",\n") &&
 	json_fprintf_value_string(author_stream, "\t", "fnamchk_version", " : ", FNAMCHK_VERSION, ",\n") &&

@@ -272,7 +272,7 @@ extern bool test_github(char const *str);
 extern bool test_highbit_warning(bool boolean);
 extern bool test_info_JSON(char const *str);
 extern bool test_IOCCC_contest(char const *str);
-extern bool test_IOCCC_year(int ioccc_year);
+extern bool test_IOCCC_year(int IOCCC_year);
 extern bool test_iocccsize_version(char const *str);
 extern bool test_location_code(char const *str);
 extern bool test_location_name(char const *str);
