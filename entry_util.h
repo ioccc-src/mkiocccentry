@@ -105,7 +105,7 @@ struct auth
     /* file format strings */
     char const *no_comment;	/* mandatory comment: because comments were removed from the original JSON spec :-) */
     char const *author_version;	/* IOCCC .author.json format version (compiled in AUTHOR_VERSION) */
-    char const *ioccc_contest;	/* IOCCC contest string (compiled in IOCCC[0-9][0-9] or IOCCCMOCK) */
+    char const *IOCCC_contest;	/* IOCCC contest string (compiled in IOCCC[0-9][0-9] or IOCCCMOCK) */
     /* contest year */
     int year;			/* IOCCC year */
     /* IOCCC tool versions */
@@ -150,7 +150,7 @@ struct info
     /* file format strings */
     char const *no_comment;	/* mandatory comment: because comments were removed from the original JSON spec :-) */
     char const *info_version;	/* IOCCC .info.json format version (compiled in INFO_VERSION) */
-    char const *ioccc_contest;	/* IOCCC contest string (compiled in IOCCC[0-9][0-9] or IOCCCMOCK) */
+    char const *IOCCC_contest;	/* IOCCC contest string (compiled in IOCCC[0-9][0-9] or IOCCCMOCK) */
     /* contest year */
     int year;			/* IOCCC year */
     /* IOCCC tool versions */
