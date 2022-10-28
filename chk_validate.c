@@ -384,7 +384,7 @@ chk_affiliation(struct json const *node,
     /*
      * validate decoded JSON string
      */
-     /* paranoia */
+    /* paranoia */
     if (val.str == NULL) {
 	if (val_err != NULL) {
 	    *val_err = werr_sem_val(106, node, depth, sem, __func__,
@@ -961,25 +961,40 @@ bool
 chk_email(struct json const *node,
 	  unsigned int depth, struct json_sem *sem, struct json_sem_val_err **val_err)
 {
-    char *str = NULL;				/* JTYPE_STRING as decoded JSON string */
+    struct str_or_null val;			/* report JSON JTYPE_MEMBER value */
     bool test = false;				/* validation test result */
 
     /*
-     * firewall - args and decoded string check
+     * firewall - args and decoded string or JSON null check
      */
-    str = sem_member_value_decoded_str(node, depth, sem, __func__, val_err);
-    if (str == NULL) {
-	/* sem_member_value_decoded_str() will have set *val_err */
+    val = sem_member_value_str_or_null(node, depth, sem, __func__, val_err);
+    if (val.valid == false) {
+	/* sem_member_value_str_or_null() will have set *val_err */
 	return false;
+    }
+
+    /*
+     * case: affiliation is null
+     */
+    if (val.is_null == true) {
+	return true;
     }
 
     /*
      * validate decoded JSON string
      */
-    test = test_email(str);
+    /* paranoia */
+    if (val.str == NULL) {
+	if (val_err != NULL) {
+	    *val_err = werr_sem_val(122, node, depth, sem, __func__,
+				    "val.valid true, val.is_null false, but val.str is NULL");
+	}
+	return false;
+    }
+    test = test_email(val.str);
     if (test == false) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(122, node, depth, sem, __func__, "invalid email");
+	    *val_err = werr_sem_val(123, node, depth, sem, __func__, "invalid email");
 	}
 	return false;
     }
@@ -1030,7 +1045,7 @@ chk_empty_override(struct json const *node,
     test = test_empty_override(*boolean);
     if (test == false) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(123, node, depth, sem, __func__, "invalid empty_override");
+	    *val_err = werr_sem_val(124, node, depth, sem, __func__, "invalid empty_override");
 	}
 	return false;
     }
@@ -1081,7 +1096,7 @@ chk_entry_num(struct json const *node,
     test = test_entry_num(*value);
     if (test == false) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(124, node, depth, sem, __func__, "invalid entry_num");
+	    *val_err = werr_sem_val(125, node, depth, sem, __func__, "invalid entry_num");
 	}
 	return false;
     }
@@ -1132,7 +1147,7 @@ chk_extra_file(struct json const *node,
     test = test_extra_file(str);
     if (test == false) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(125, node, depth, sem, __func__, "invalid extra_file filename");
+	    *val_err = werr_sem_val(126, node, depth, sem, __func__, "invalid extra_file filename");
 	}
 	return false;
     }
@@ -1183,7 +1198,7 @@ chk_first_rule_is_all(struct json const *node,
     test = test_first_rule_is_all(*boolean);
     if (test == false) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(126, node, depth, sem, __func__, "invalid first_rule_is_all");
+	    *val_err = werr_sem_val(128, node, depth, sem, __func__, "invalid first_rule_is_all");
 	}
 	return false;
     }
@@ -1234,7 +1249,7 @@ chk_fnamchk_version(struct json const *node,
     test = test_fnamchk_version(str);
     if (test == false) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(128, node, depth, sem, __func__, "invalid fnamchk_version");
+	    *val_err = werr_sem_val(129, node, depth, sem, __func__, "invalid fnamchk_version");
 	}
 	return false;
     }
@@ -1288,7 +1303,7 @@ chk_formed_UTC(struct json const *node,
     test = test_formed_UTC(str);
     if (test == false) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(129, node, depth, sem, __func__, "invalid formed_UTC");
+	    *val_err = werr_sem_val(130, node, depth, sem, __func__, "invalid formed_UTC");
 	}
 	return false;
     }
@@ -1324,7 +1339,7 @@ chk_formed_UTC(struct json const *node,
     test = test_formed_timestamp(*formed_timestamp);
     if (test == false) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(130, node, depth, sem, __func__, "invalid formed_timestamp");
+	    *val_err = werr_sem_val(131, node, depth, sem, __func__, "invalid formed_timestamp");
 	}
 	return false;
     }
@@ -1335,7 +1350,7 @@ chk_formed_UTC(struct json const *node,
     test = timestr_eq_tstamp(str, *formed_timestamp);
     if (test == false) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(131, node, depth, sem, __func__,
+	    *val_err = werr_sem_val(132, node, depth, sem, __func__,
 				    "formed_UTC not same time as formed_timestamp");
 	}
 	return false;
@@ -1387,7 +1402,7 @@ chk_formed_timestamp(struct json const *node,
     test = test_formed_timestamp(*value);
     if (test == false) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(132, node, depth, sem, __func__, "invalid formed_timestamp");
+	    *val_err = werr_sem_val(133, node, depth, sem, __func__, "invalid formed_timestamp");
 	}
 	return false;
     }
@@ -1438,7 +1453,7 @@ chk_formed_timestamp_usec(struct json const *node,
     test = test_formed_timestamp_usec(*value);
     if (test == false) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(133, node, depth, sem, __func__, "invalid formed_timestamp_usec");
+	    *val_err = werr_sem_val(134, node, depth, sem, __func__, "invalid formed_timestamp_usec");
 	}
 	return false;
     }
@@ -1489,7 +1504,7 @@ chk_found_all_rule(struct json const *node,
     test = test_found_all_rule(*boolean);
     if (test == false) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(134, node, depth, sem, __func__, "invalid found_all_rule");
+	    *val_err = werr_sem_val(135, node, depth, sem, __func__, "invalid found_all_rule");
 	}
 	return false;
     }
@@ -1540,7 +1555,7 @@ chk_found_clean_rule(struct json const *node,
     test = test_found_clean_rule(*boolean);
     if (test == false) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(135, node, depth, sem, __func__, "invalid found_clean_rule");
+	    *val_err = werr_sem_val(136, node, depth, sem, __func__, "invalid found_clean_rule");
 	}
 	return false;
     }
@@ -1591,7 +1606,7 @@ chk_found_clobber_rule(struct json const *node,
     test = test_found_clobber_rule(*boolean);
     if (test == false) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(136, node, depth, sem, __func__, "invalid found_clobber_rule");
+	    *val_err = werr_sem_val(137, node, depth, sem, __func__, "invalid found_clobber_rule");
 	}
 	return false;
     }
@@ -1642,7 +1657,7 @@ chk_found_try_rule(struct json const *node,
     test = test_found_try_rule(*boolean);
     if (test == false) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(137, node, depth, sem, __func__, "invalid found_try_rule");
+	    *val_err = werr_sem_val(138, node, depth, sem, __func__, "invalid found_try_rule");
 	}
 	return false;
     }
@@ -1675,25 +1690,40 @@ bool
 chk_github(struct json const *node,
 	   unsigned int depth, struct json_sem *sem, struct json_sem_val_err **val_err)
 {
-    char *str = NULL;				/* JTYPE_STRING as decoded JSON string */
+    struct str_or_null val;			/* report JSON JTYPE_MEMBER value */
     bool test = false;				/* validation test result */
 
     /*
-     * firewall - args and decoded string check
+     * firewall - args and decoded string or JSON null check
      */
-    str = sem_member_value_decoded_str(node, depth, sem, __func__, val_err);
-    if (str == NULL) {
-	/* sem_member_value_decoded_str() will have set *val_err */
+    val = sem_member_value_str_or_null(node, depth, sem, __func__, val_err);
+    if (val.valid == false) {
+	/* sem_member_value_str_or_null() will have set *val_err */
 	return false;
+    }
+
+    /*
+     * case: affiliation is null
+     */
+    if (val.is_null == true) {
+	return true;
     }
 
     /*
      * validate decoded JSON string
      */
-    test = test_github(str);
+    /* paranoia */
+    if (val.str == NULL) {
+	if (val_err != NULL) {
+	    *val_err = werr_sem_val(139, node, depth, sem, __func__,
+				    "val.valid true, val.is_null false, but val.str is NULL");
+	}
+	return false;
+    }
+    test = test_github(val.str);
     if (test == false) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(138, node, depth, sem, __func__, "invalid github");
+	    *val_err = werr_sem_val(140, node, depth, sem, __func__, "invalid github");
 	}
 	return false;
     }
@@ -1744,7 +1774,7 @@ chk_highbit_warning(struct json const *node,
     test = test_highbit_warning(*boolean);
     if (test == false) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(139, node, depth, sem, __func__, "invalid highbit_warning");
+	    *val_err = werr_sem_val(141, node, depth, sem, __func__, "invalid highbit_warning");
 	}
 	return false;
     }
@@ -1795,7 +1825,7 @@ chk_info_JSON(struct json const *node,
     test = test_info_JSON(str);
     if (test == false) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(140, node, depth, sem, __func__, "invalid info_JSON filename");
+	    *val_err = werr_sem_val(142, node, depth, sem, __func__, "invalid info_JSON filename");
 	}
 	return false;
     }
@@ -1846,7 +1876,7 @@ chk_IOCCC_contest(struct json const *node,
     test = test_IOCCC_contest(str);
     if (test == false) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(141, node, depth, sem, __func__, "invalid IOCCC_contest");
+	    *val_err = werr_sem_val(143, node, depth, sem, __func__, "invalid IOCCC_contest");
 	}
 	return false;
     }
@@ -1897,7 +1927,7 @@ chk_IOCCC_year(struct json const *node,
     test = test_IOCCC_year(*value);
     if (test == false) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(142, node, depth, sem, __func__, "invalid IOCCC_year");
+	    *val_err = werr_sem_val(144, node, depth, sem, __func__, "invalid IOCCC_year");
 	}
 	return false;
     }
@@ -1948,7 +1978,7 @@ chk_iocccsize_version(struct json const *node,
     test = test_iocccsize_version(str);
     if (test == false) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(143, node, depth, sem, __func__, "invalid iocccsize_version");
+	    *val_err = werr_sem_val(145, node, depth, sem, __func__, "invalid iocccsize_version");
 	}
 	return false;
     }
@@ -1999,7 +2029,7 @@ chk_location_code(struct json const *node,
     test = test_location_code(str);
     if (test == false) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(144, node, depth, sem, __func__, "invalid location_code");
+	    *val_err = werr_sem_val(146, node, depth, sem, __func__, "invalid location_code");
 	}
 	return false;
     }
@@ -2053,7 +2083,7 @@ chk_location_name(struct json const *node,
     test = test_location_name(str);
     if (test == false) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(145, node, depth, sem, __func__, "invalid location_name");
+	    *val_err = werr_sem_val(147, node, depth, sem, __func__, "invalid location_name");
 	}
 	return false;
     }
@@ -2093,7 +2123,7 @@ chk_location_name(struct json const *node,
     test = location_code_name_match(location_code, str);
     if (test == false) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(146, node, depth, sem, __func__,
+	    *val_err = werr_sem_val(148, node, depth, sem, __func__,
 				    "location_name does not refer to same place as location_code");
 	}
 	return false;
@@ -2150,7 +2180,7 @@ chk_manifest(struct json const *node,
     }
     if (node->type != JTYPE_MEMBER) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(147, node, depth, sem, __func__, "node type %s != JTYPE_MEMBER",
+	    *val_err = werr_sem_val(149, node, depth, sem, __func__, "node type %s != JTYPE_MEMBER",
 				    json_type_name(node->type));
 	}
 	return false;
@@ -2166,7 +2196,7 @@ chk_manifest(struct json const *node,
     }
     if (value->type != JTYPE_ARRAY) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(148, node, depth, sem, __func__, "node type %s != JTYPE_ARRAY",
+	    *val_err = werr_sem_val(150, node, depth, sem, __func__, "node type %s != JTYPE_ARRAY",
 				    json_type_name(value->type));
 	}
 	return false;
@@ -2174,7 +2204,7 @@ chk_manifest(struct json const *node,
     array = &(value->item.array);
     if (array->set == NULL) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(149, node, depth+1, sem, __func__,
+	    *val_err = werr_sem_val(151, node, depth+1, sem, __func__,
 				    "node value JTYPE_ARRAY set is NULL");
 	}
 	return false;
@@ -2196,7 +2226,7 @@ chk_manifest(struct json const *node,
     test = test_manifest(&man);
     if (test == false) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(150, node, depth, sem, __func__,
+	    *val_err = werr_sem_val(152, node, depth, sem, __func__,
 				    "manifest is missing required files and/or "
 				    "has invalid/duplicate extra_file filenames");
 	}
@@ -2251,7 +2281,7 @@ chk_min_timestamp(struct json const *node,
     test = test_min_timestamp(*value);
     if (test == false) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(151, node, depth, sem, __func__, "invalid min_timestamp");
+	    *val_err = werr_sem_val(153, node, depth, sem, __func__, "invalid min_timestamp");
 	}
 	return false;
     }
@@ -2302,7 +2332,7 @@ chk_mkiocccentry_version(struct json const *node,
     test = test_mkiocccentry_version(str);
     if (test == false) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(152, node, depth, sem, __func__, "invalid mkiocccentry_version");
+	    *val_err = werr_sem_val(154, node, depth, sem, __func__, "invalid mkiocccentry_version");
 	}
 	return false;
     }
@@ -2353,7 +2383,7 @@ chk_name(struct json const *node,
     test = test_name(str);
     if (test == false) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(153, node, depth, sem, __func__, "invalid name");
+	    *val_err = werr_sem_val(155, node, depth, sem, __func__, "invalid name");
 	}
 	return false;
     }
@@ -2404,7 +2434,7 @@ chk_no_comment(struct json const *node,
     test = test_no_comment(str);
     if (test == false) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(154, node, depth, sem, __func__, "invalid no_comment");
+	    *val_err = werr_sem_val(156, node, depth, sem, __func__, "invalid no_comment");
 	}
 	return false;
     }
@@ -2455,7 +2485,7 @@ chk_nul_warning(struct json const *node,
     test = test_nul_warning(*boolean);
     if (test == false) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(155, node, depth, sem, __func__, "invalid nul_warning");
+	    *val_err = werr_sem_val(157, node, depth, sem, __func__, "invalid nul_warning");
 	}
 	return false;
     }
@@ -2506,7 +2536,7 @@ chk_past_winner(struct json const *node,
     test = test_past_winner(*boolean);
     if (test == false) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(156, node, depth, sem, __func__, "invalid past_winner");
+	    *val_err = werr_sem_val(158, node, depth, sem, __func__, "invalid past_winner");
 	}
 	return false;
     }
@@ -2557,7 +2587,7 @@ chk_remarks(struct json const *node,
     test = test_remarks(str);
     if (test == false) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(157, node, depth, sem, __func__, "invalid remarks filename");
+	    *val_err = werr_sem_val(159, node, depth, sem, __func__, "invalid remarks filename");
 	}
 	return false;
     }
@@ -2608,7 +2638,7 @@ chk_rule_2a_mismatch(struct json const *node,
     test = test_rule_2a_mismatch(*boolean);
     if (test == false) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(158, node, depth, sem, __func__, "invalid rule_2a_mismatch");
+	    *val_err = werr_sem_val(160, node, depth, sem, __func__, "invalid rule_2a_mismatch");
 	}
 	return false;
     }
@@ -2659,7 +2689,7 @@ chk_rule_2a_override(struct json const *node,
     test = test_rule_2a_override(*boolean);
     if (test == false) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(159, node, depth, sem, __func__, "invalid rule_2a_override");
+	    *val_err = werr_sem_val(161, node, depth, sem, __func__, "invalid rule_2a_override");
 	}
 	return false;
     }
@@ -2710,7 +2740,7 @@ chk_rule_2a_size(struct json const *node,
     test = test_rule_2a_size(*value);
     if (test == false) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(160, node, depth, sem, __func__, "invalid rule_2a_size");
+	    *val_err = werr_sem_val(162, node, depth, sem, __func__, "invalid rule_2a_size");
 	}
 	return false;
     }
@@ -2761,7 +2791,7 @@ chk_rule_2b_override(struct json const *node,
     test = test_rule_2b_override(*boolean);
     if (test == false) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(161, node, depth, sem, __func__, "invalid rule_2b_override");
+	    *val_err = werr_sem_val(163, node, depth, sem, __func__, "invalid rule_2b_override");
 	}
 	return false;
     }
@@ -2812,7 +2842,7 @@ chk_rule_2b_size(struct json const *node,
     test = test_rule_2b_size(*value);
     if (test == false) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(162, node, depth, sem, __func__, "invalid rule_2b_size");
+	    *val_err = werr_sem_val(164, node, depth, sem, __func__, "invalid rule_2b_size");
 	}
 	return false;
     }
@@ -2875,7 +2905,7 @@ chk_tarball(struct json const *node,
     }
     if (node->type != JTYPE_MEMBER) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(163, node, depth, sem, __func__, "node type %s != JTYPE_MEMBER",
+	    *val_err = werr_sem_val(165, node, depth, sem, __func__, "node type %s != JTYPE_MEMBER",
 				    json_type_name(node->type));
 	}
 	return false;
@@ -2921,7 +2951,7 @@ chk_tarball(struct json const *node,
     test = test_IOCCC_contest_id(IOCCC_contest_id);
     if (test == false) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(164, node, depth, sem, __func__, "invalid IOCCC_contest_id");
+	    *val_err = werr_sem_val(166, node, depth, sem, __func__, "invalid IOCCC_contest_id");
 	}
 	return false;
     }
@@ -2948,7 +2978,7 @@ chk_tarball(struct json const *node,
     test = test_entry_num(*entry_num);
     if (test == false) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(165, node, depth, sem, __func__, "invalid entry_num");
+	    *val_err = werr_sem_val(167, node, depth, sem, __func__, "invalid entry_num");
 	}
 	return false;
     }
@@ -2975,7 +3005,7 @@ chk_tarball(struct json const *node,
     test = test_test_mode(*test_mode);
     if (test == false) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(166, node, depth, sem, __func__, "invalid test_mode");
+	    *val_err = werr_sem_val(168, node, depth, sem, __func__, "invalid test_mode");
 	}
 	return false;
     }
@@ -3002,7 +3032,7 @@ chk_tarball(struct json const *node,
     test = test_formed_timestamp(*formed_timestamp);
     if (test == false) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(167, node, depth, sem, __func__, "invalid formed_timestamp");
+	    *val_err = werr_sem_val(169, node, depth, sem, __func__, "invalid formed_timestamp");
 	}
 	return false;
     }
@@ -3013,7 +3043,7 @@ chk_tarball(struct json const *node,
     test = test_tarball(str, IOCCC_contest_id, *entry_num, *test_mode, *formed_timestamp);
     if (test == false) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(168, node, depth, sem, __func__, "invalid tarball");
+	    *val_err = werr_sem_val(170, node, depth, sem, __func__, "invalid tarball");
 	}
 	return false;
     }
@@ -3064,7 +3094,7 @@ chk_test_mode(struct json const *node,
     test = test_test_mode(*boolean);
     if (test == false) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(169, node, depth, sem, __func__, "invalid test_mode");
+	    *val_err = werr_sem_val(171, node, depth, sem, __func__, "invalid test_mode");
 	}
 	return false;
     }
@@ -3115,7 +3145,7 @@ chk_timestamp_epoch(struct json const *node,
     test = test_timestamp_epoch(str);
     if (test == false) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(170, node, depth, sem, __func__, "invalid timestamp_epoch");
+	    *val_err = werr_sem_val(172, node, depth, sem, __func__, "invalid timestamp_epoch");
 	}
 	return false;
     }
@@ -3166,7 +3196,7 @@ chk_title(struct json const *node,
     test = test_title(str);
     if (test == false) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(171, node, depth, sem, __func__, "invalid title");
+	    *val_err = werr_sem_val(173, node, depth, sem, __func__, "invalid title");
 	}
 	return false;
     }
@@ -3217,7 +3247,7 @@ chk_trigraph_warning(struct json const *node,
     test = test_trigraph_warning(*boolean);
     if (test == false) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(172, node, depth, sem, __func__, "invalid trigraph_warning");
+	    *val_err = werr_sem_val(174, node, depth, sem, __func__, "invalid trigraph_warning");
 	}
 	return false;
     }
@@ -3250,25 +3280,40 @@ bool
 chk_twitter(struct json const *node,
 			 unsigned int depth, struct json_sem *sem, struct json_sem_val_err **val_err)
 {
-    char *str = NULL;				/* JTYPE_STRING as decoded JSON string */
+    struct str_or_null val;			/* report JSON JTYPE_MEMBER value */
     bool test = false;				/* validation test result */
 
     /*
-     * firewall - args and decoded string check
+     * firewall - args and decoded string or JSON null check
      */
-    str = sem_member_value_decoded_str(node, depth, sem, __func__, val_err);
-    if (str == NULL) {
-	/* sem_member_value_decoded_str() will have set *val_err */
+    val = sem_member_value_str_or_null(node, depth, sem, __func__, val_err);
+    if (val.valid == false) {
+	/* sem_member_value_str_or_null() will have set *val_err */
 	return false;
+    }
+
+    /*
+     * case: affiliation is null
+     */
+    if (val.is_null == true) {
+	return true;
     }
 
     /*
      * validate decoded JSON string
      */
-    test = test_twitter(str);
+    /* paranoia */
+    if (val.str == NULL) {
+	if (val_err != NULL) {
+	    *val_err = werr_sem_val(175, node, depth, sem, __func__,
+				    "val.valid true, val.is_null false, but val.str is NULL");
+	}
+	return false;
+    }
+    test = test_twitter(val.str);
     if (test == false) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(173, node, depth, sem, __func__, "invalid twitter");
+	    *val_err = werr_sem_val(176, node, depth, sem, __func__, "invalid twitter");
 	}
 	return false;
     }
@@ -3319,7 +3364,7 @@ chk_txzchk_version(struct json const *node,
     test = test_txzchk_version(str);
     if (test == false) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(174, node, depth, sem, __func__, "invalid txzchk_version");
+	    *val_err = werr_sem_val(177, node, depth, sem, __func__, "invalid txzchk_version");
 	}
 	return false;
     }
@@ -3370,7 +3415,7 @@ chk_ungetc_warning(struct json const *node,
     test = test_ungetc_warning(*boolean);
     if (test == false) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(175, node, depth, sem, __func__, "invalid ungetc_warning");
+	    *val_err = werr_sem_val(178, node, depth, sem, __func__, "invalid ungetc_warning");
 	}
 	return false;
     }
@@ -3403,25 +3448,40 @@ bool
 chk_url(struct json const *node,
 			 unsigned int depth, struct json_sem *sem, struct json_sem_val_err **val_err)
 {
-    char *str = NULL;				/* JTYPE_STRING as decoded JSON string */
+    struct str_or_null val;			/* report JSON JTYPE_MEMBER value */
     bool test = false;				/* validation test result */
 
     /*
-     * firewall - args and decoded string check
+     * firewall - args and decoded string or JSON null check
      */
-    str = sem_member_value_decoded_str(node, depth, sem, __func__, val_err);
-    if (str == NULL) {
-	/* sem_member_value_decoded_str() will have set *val_err */
+    val = sem_member_value_str_or_null(node, depth, sem, __func__, val_err);
+    if (val.valid == false) {
+	/* sem_member_value_str_or_null() will have set *val_err */
 	return false;
+    }
+
+    /*
+     * case: affiliation is null
+     */
+    if (val.is_null == true) {
+	return true;
     }
 
     /*
      * validate decoded JSON string
      */
-    test = test_url(str);
+    /* paranoia */
+    if (val.str == NULL) {
+	if (val_err != NULL) {
+	    *val_err = werr_sem_val(179, node, depth, sem, __func__,
+				    "val.valid true, val.is_null false, but val.str is NULL");
+	}
+	return false;
+    }
+    test = test_url(val.str);
     if (test == false) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(176, node, depth, sem, __func__, "invalid url");
+	    *val_err = werr_sem_val(180, node, depth, sem, __func__, "invalid url");
 	}
 	return false;
     }
@@ -3472,7 +3532,7 @@ chk_wordbuf_warning(struct json const *node,
     test = test_wordbuf_warning(*boolean);
     if (test == false) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(177, node, depth, sem, __func__, "invalid wordbuf_warning");
+	    *val_err = werr_sem_val(181, node, depth, sem, __func__, "invalid wordbuf_warning");
 	}
 	return false;
     }
