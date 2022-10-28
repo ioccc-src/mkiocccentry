@@ -69,17 +69,17 @@
 /*
  * official mkiocccentry version
  */
-#define MKIOCCCENTRY_VERSION "0.42 2022-10-22"	/* format: major.minor YYYY-MM-DD */
+#define MKIOCCCENTRY_VERSION "0.43 2022-10-28"	/* format: major.minor YYYY-MM-DD */
 
 /*
  * Version of info for JSON the .info.json file.
  */
-#define INFO_VERSION "1.12 2022-10-23"		/* format: major.minor YYYY-MM-DD */
+#define INFO_VERSION "1.13 2022-10-28"		/* format: major.minor YYYY-MM-DD */
 
 /*
  * Version of info for JSON the .author.json file.
  */
-#define AUTHOR_VERSION "1.15 2022-10-23"	/* format: major.minor YYYY-MM-DD */
+#define AUTHOR_VERSION "1.16 2022-10-28"	/* format: major.minor YYYY-MM-DD */
 
 /*
  * official fnamchk version
@@ -94,7 +94,7 @@
 /*
  * official chkentry version
  */
-#define CHKENTRY_VERSION "0.1 2022-10-22"	/* format: major.minor YYYY-MM-DD */
+#define CHKENTRY_VERSION "0.2 2022-10-28"	/* format: major.minor YYYY-MM-DD */
 
 /*
  * official jstrencode version

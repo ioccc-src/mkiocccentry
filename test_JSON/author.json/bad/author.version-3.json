@@ -1,10 +1,10 @@
 {
 	"no_comment" : "mandatory comment: because comments were removed from the original JSON spec",
-	"IOCCC_author_version" : "1.15 2022-10-23",
+	"IOCCC_author_version" : "1.16 2022-10-28",
 	"IOCCC_contest" : "IOCCCMOCK",
 	"IOCCC_year" : 2022,
-	"mkiocccentry_version" : "0.42 2022-10-22",
-	"chkentry_version" : "0.1 2022-10-22",
+	"mkiocccentry_version" : "0.43 2022-10-28",
+	"chkentry_version" : "0.2 2022-10-28",
 	"fnamchk_version" : "00.6 2022-03-15",
 	"IOCCC_contest_id" : "test",
 	"tarball" : "entry.test-0.1662145368.txz",
