@@ -789,7 +789,7 @@ all_ref: jsemtblgen jsemcgen.sh test_JSON/info.json/good test_JSON/author.json/g
 	    ./jsemcgen.sh -N sem_info -P chk -- "$$i" . . . >> "ref/$$json.c"; \
 	    status="$$?"; \
 	    if [[ $$status -ne 0 ]]; then \
-		echo "./jsemcgen.sh -N sem_info -P chk -- $$i . . . failed, exit code: $$status" 1>&2 ;\
+		echo "./jsemcgen.sh -N sem_info -P chk -- $$i . . . failed, exit code: $$status" 1>&2 ; \
 		exit 1; \
 	    fi; \
 	    echo "cat chk.info.tail.c >> ref/$$json.c"; \
@@ -804,7 +804,7 @@ all_ref: jsemtblgen jsemcgen.sh test_JSON/info.json/good test_JSON/author.json/g
 	    ./jsemcgen.sh -N sem_info -P chk -I -- "$$i" . . . >> "ref/$$json.h"; \
 	    status="$$?"; \
 	    if [[ $$status -ne 0 ]]; then \
-		echo "./jsemcgen.sh -N sem_info -P chk -I -- $$i . . . failed, exit code: $$status" 1>&2 ;\
+		echo "./jsemcgen.sh -N sem_info -P chk -I -- $$i . . . failed, exit code: $$status" 1>&2 ; \
 		exit 2; \
 	    fi; \
 	    echo "cat chk.info.tail.h >> ref/$$json.h"; \
@@ -822,22 +822,22 @@ all_ref: jsemtblgen jsemcgen.sh test_JSON/info.json/good test_JSON/author.json/g
 	    ./jsemcgen.sh -N sem_auth -P chk -- "$$i" . . . >> "ref/$$json.c"; \
 	    status="$$?"; \
 	    if [[ $$status -ne 0 ]]; then \
-		echo "./jsemcgen.sh -N sem_auth -P chk -- $$i . . . failed, exit code: $$status" 1>&2 ;\
+		echo "./jsemcgen.sh -N sem_auth -P chk -- $$i . . . failed, exit code: $$status" 1>&2 ; \
 		exit 3; \
 	    fi; \
 	    echo "cat chk.auth.tail.c >> ref/$$json.c"; \
 	    cat chk.auth.tail.c >> "ref/$$json.c"; \
 	    echo "ls -l ref/$$json.c"; \
 	    ls -l "ref/$$json.c"; \
-	    echo "cat chk.auth.head.h > ref/$$json.h"; \
-	    cat chk.auth.head.h > "ref/$$json.h"; \
 	    echo "rm -f ref/$$json.h"; \
 	    rm -f "ref/$$json.h"; \
+	    echo "cat chk.auth.head.h > ref/$$json.h"; \
+	    cat chk.auth.head.h > "ref/$$json.h"; \
 	    echo "./jsemcgen.sh -N sem_auth -P chk -I -- $$i . . . >> ref/$$json.h"; \
 	    ./jsemcgen.sh -N sem_auth -P chk -I -- "$$i" . . . >> "ref/$$json.h"; \
 	    status="$$?"; \
 	    if [[ $$status -ne 0 ]]; then \
-		echo "./jsemcgen.sh -N sem_auth -P chk -I -- $$i . . . failed, exit code: $$status" 1>&2 ;\
+		echo "./jsemcgen.sh -N sem_auth -P chk -I -- $$i . . . failed, exit code: $$status" 1>&2 ; \
 		exit 4; \
 	    fi; \
 	    echo "cat chk.auth.tail.h >> ref/$$json.h"; \
@@ -856,17 +856,16 @@ all_ref: jsemtblgen jsemcgen.sh test_JSON/info.json/good test_JSON/author.json/g
 # This rule is run by the repo maintainers only AFTER chk_sem_????.{c,h} files
 # are updated by hand.
 #
-all_ref_ptch: all_ref \
-	ref/info.reference.json.c ref/info.reference.json.h \
-	ref/author.reference.json.c ref/author.reference.json.h
+all_ref_ptch: ref/info.reference.json.c ref/info.reference.json.h \
+	      ref/author.reference.json.c ref/author.reference.json.h
 	rm -f chk.info.ptch.c
 	-diff -u ref/info.reference.json.c chk_sem_info.c > chk.info.ptch.c
 	rm -f chk.info.ptch.h
 	-diff -u ref/info.reference.json.h chk_sem_info.h > chk.info.ptch.h
 	rm -f chk.auth.ptch.c
-	-diff -u ref/auth.reference.json.c chk_sem_auth.c > chk.auth.ptch.c
+	-diff -u ref/author.reference.json.c chk_sem_auth.c > chk.auth.ptch.c
 	rm -f chk.auth.ptch.h
-	-diff -u ref/auth.reference.json.h chk_sem_auth.h > chk.auth.ptch.h
+	-diff -u ref/author.reference.json.h chk_sem_auth.h > chk.auth.ptch.h
 
 # Form the chk_sem_????.{c,h} files
 #

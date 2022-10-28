@@ -4002,3 +4002,88 @@ sum_and_count(intmax_t value, intmax_t *sump, intmax_t *countp, intmax_t *sum_ch
      */
     return true;
 }
+
+
+/*
+ * malloc_path - malloc a JSON file path
+ *
+ * given:
+ *	dirname		directory containing file, or NULL ==> file is by itself
+ *	filename	path of a file (if dirname == NULL), or path under dirname (if dirname != NULL)
+ *
+ * returns:
+ *	malloced path
+ *
+ * NOTE: This function does not return on error.
+ * NOTE: This function will not return NULL.
+ */
+char *
+malloc_path(char const *dirname, char const *filename)
+{
+    int ret = -1;		/* libc return status */
+    char *buf = NULL;		/* malloced string to return */
+    size_t len;			/* length of path */
+
+    /*
+     * firewall
+     */
+    if (filename == NULL) {
+	err(180, __func__, "filename is NULL");
+	not_reached();
+    }
+
+    /*
+     * case: dirname is NULL
+     *
+     * NULL dirname means path is just filename
+     */
+    if (dirname == NULL) {
+
+	/*
+	 * just return a newlt malloced filename
+	 */
+	errno = 0;		/* pre-clear errno for errp() */
+	buf = strdup(filename);
+	if (buf == NULL) {
+	    errp(181, __func__, "strdup of filename failed: %s", filename);
+	    not_reached();
+	}
+
+    /*
+     * case: dirname is not NULL
+     *
+     * We need to form: dirname/filename
+     */
+    } else {
+
+	/*
+	 * malloc string
+	 */
+	len = strlen(dirname) + 1 + strlen(filename) + 1;	/* +1 for NUL */
+	buf = calloc(len+1, sizeof(char));	/* + 1 for paranoia padding */
+	errno = 0;		/* pre-clear errno for errp() */
+	if (buf == NULL) {
+	    errp(182, __func__, "malloc of %ju bytes failed", (uintmax_t)len);
+	    not_reached();
+	}
+
+	/*
+	 * form string
+	 */
+	errno = 0;		/* pre-clear errno for errp() */
+	ret = snprintf(buf, len, "%s/%s", dirname, filename);
+	if (ret < 0) {
+	    errp(183, __func__, "snprintf returned: %zu < 0", len);
+	    not_reached();
+	}
+    }
+
+    /*
+     * return malloc path
+     */
+    if (buf == NULL) {
+	errp(184, __func__, "function attempted to return NULL");
+	not_reached();
+    }
+    return buf;
+}

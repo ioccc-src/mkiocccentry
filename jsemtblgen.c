@@ -667,7 +667,7 @@ print_sem_c_src(struct dyn_array *tbl, char *tbl_name, char *cap_tbl_name)
      */
     len = dyn_array_tell(tbl);
     print("struct json_sem %s[%s_LEN+1] = {\n", tbl_name, cap_tbl_name);
-    prstr("/* depth    type        min     max   count  name_len validate  name */\n");
+    prstr("/* depth    type        min     max   count   index  name_len validate  name */\n");
 
     /*
      * print each semantic table entry
@@ -727,21 +727,21 @@ print_sem_c_src(struct dyn_array *tbl, char *tbl_name, char *cap_tbl_name)
 	 */
 	if (p->name == NULL) {
 	    if (p->count == INF) {
-		print("  { %u,\t%s,\t1,\tINF,\t%u,\t0,\t",
-		      p->depth, json_type_name(p->type), p->count);
+		print("  { %u,\t%s,\t1,\tINF,\t%u,\t%ju,\t0,\t",
+		      p->depth, json_type_name(p->type), p->count, i);
 		print_c_funct_name(stdout, validate);
 		prstr("\tNULL },\n");
 	    } else {
-		print("  { %u,\t%s,\t1,\t%u,\t%u,\t0,\t",
-		      p->depth, json_type_name(p->type), p->count, p->count);
+		print("  { %u,\t%s,\t1,\t%u,\t%u,\t%ju,\t0,\t",
+		      p->depth, json_type_name(p->type), p->count, p->count, i);
 		print_c_funct_name(stdout, validate);
 		prstr(",\tNULL },\n");
 	    }
 	} else {
 	    if (p->count == INF) {
 		if (p->type == JTYPE_MEMBER && prefix != NULL) {
-		    print("  { %u,\t%s,\t1,\tINF,\t%u,\t%ju,\t",
-			  p->depth, json_type_name(p->type), p->count, (uintmax_t)p->name_len);
+		    print("  { %u,\t%s,\t1,\tINF,\t%u,\t%ju,\t%ju,\t",
+			  p->depth, json_type_name(p->type), p->count, i, (uintmax_t)p->name_len);
 		    print_c_funct_name(stdout, prefix);
 		    prstr("_");
 		    print_c_funct_name(stdout, p->name);
@@ -749,8 +749,8 @@ print_sem_c_src(struct dyn_array *tbl, char *tbl_name, char *cap_tbl_name)
 		    print_c_funct_name(stdout, p->name);
 		    prstr("\" },\n");
 		} else {
-		    print("  { %u,\t%s,\t1,\tINF,\t%u,\t%ju,\t",
-			  p->depth, json_type_name(p->type), p->count, (uintmax_t)p->name_len);
+		    print("  { %u,\t%s,\t1,\tINF,\t%u,\t%ju,\t%ju,\t",
+			  p->depth, json_type_name(p->type), p->count, i, (uintmax_t)p->name_len);
 		    print_c_funct_name(stdout, p->name);
 		    prstr(",\t\"");
 		    print_c_funct_name(stdout, validate);
@@ -758,8 +758,8 @@ print_sem_c_src(struct dyn_array *tbl, char *tbl_name, char *cap_tbl_name)
 		}
 	    } else {
 		if (p->type == JTYPE_MEMBER && prefix != NULL) {
-		    print("  { %u,\t%s,\t1,\t%u,\t%u,\t%ju,\t",
-			  p->depth, json_type_name(p->type), p->count, p->count, (uintmax_t)p->name_len);
+		    print("  { %u,\t%s,\t1,\t%u,\t%u,\t%ju,\t%ju,\t",
+			  p->depth, json_type_name(p->type), p->count, p->count, i, (uintmax_t)p->name_len);
 		    print_c_funct_name(stdout, prefix);
 		    prstr("_");
 		    print_c_funct_name(stdout, p->name);
@@ -767,8 +767,8 @@ print_sem_c_src(struct dyn_array *tbl, char *tbl_name, char *cap_tbl_name)
 		    print_c_funct_name(stdout, p->name);
 		    prstr("\" },\n");
 		} else {
-		    print("  { %u,\t%s,\t1,\t%u,\t%u,\t%ju,\t",
-			  p->depth, json_type_name(p->type), p->count, p->count, (uintmax_t)p->name_len);
+		    print("  { %u,\t%s,\t1,\t%u,\t%u,\r%ju,\t%ju,\t",
+			  p->depth, json_type_name(p->type), p->count, p->count, i, (uintmax_t)p->name_len);
 		    print_c_funct_name(stdout, p->name);
 		    prstr(",\t\"");
 		    print_c_funct_name(stdout, validate);
@@ -781,7 +781,7 @@ print_sem_c_src(struct dyn_array *tbl, char *tbl_name, char *cap_tbl_name)
     /*
      * print semantic table trailer
      */
-    prstr("  { 0,\tJTYPE_UNSET,\t0,\t0,\t0,\t0,\tNULL,\tNULL }\n");
+    prstr("  { 0,\tJTYPE_UNSET,\t0,\t0,\t0,\t-1,\t0,\tNULL,\tNULL }\n");
     prstr("};\n");
 
     return;

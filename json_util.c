@@ -787,7 +787,7 @@ json_fprintf_value_bool(FILE *stream, char const *lead, char const *name, char c
 
 
 /*
- * json_type_name - print a struct json item union type by name
+ * json_type_name - return a struct json item union type name
  *
  * given:
  *	type		one of the values of the JTYPE_ enum

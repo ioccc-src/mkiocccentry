@@ -44,6 +44,7 @@ static struct json_sem_val_err sem_null_ptr = {
     NULL,	/* JSON parse node in question or NULL */
     UINT_MAX,	/* JSON parse tree node depth or UINT_MAX */
     NULL,	/* semantic node in question or NULL */
+    -1,		/* not in JSON semantic table */
     "NULL pointer given to werr_sem_val",	/* diagnostic message or NULL */
     false	/* true ==> struct json_sem_val_err was malloced */
 		/* false ==> this is a static struct json_sem_val_err */
@@ -53,6 +54,7 @@ static struct json_sem_val_err sem_calloc_err = {
     NULL,	/* JSON parse node in question or NULL */
     UINT_MAX,	/* JSON parse tree node depth or UINT_MAX */
     NULL,	/* semantic node in question or NULL */
+    -1,		/* not in JSON semantic table */
     "calloc failure",	/* diagnostic message or NULL */
     false	/* true ==> struct json_sem_val_err was malloced */
 		/* false ==> this is a static struct json_sem_val_err */
@@ -62,6 +64,7 @@ static struct json_sem_val_err sem_strdup_err = {
     NULL,	/* JSON parse node in question or NULL */
     UINT_MAX,	/* JSON parse tree node depth or UINT_MAX */
     NULL,	/* semantic node in question or NULL */
+    -1,		/* not in JSON semantic table */
     "strdup failure",	/* diagnostic message or NULL */
     false	/* true ==> struct json_sem_val_err was malloced */
 		/* false ==> this is a static struct json_sem_val_err */
@@ -71,6 +74,7 @@ static struct json_sem_val_err sem_val_err_NULL = {
     NULL,	/* JSON parse node in question or NULL */
     UINT_MAX,	/* JSON parse tree node depth or UINT_MAX */
     NULL,	/* semantic node in question or NULL */
+    -1,		/* not in JSON semantic table */
     "validation failed yet json_sem_val_err is NULL",	/* diagnostic message or NULL */
     false	/* true ==> struct json_sem_val_err was malloced */
 		/* false ==> this is a static struct json_sem_val_err */
@@ -863,7 +867,7 @@ sem_member_value(struct json const *node, unsigned int depth, struct json_sem *s
  *	!= NULL ==> decoded JTYPE_STRING from the name part of JTYPE_MEMBER
  *	    The val_err arg is ignored
  *	NULL ==> invalid arguments or JSON conversion error
- *	    If val_err != NULLm then *val_err is JSON semantic validation error (struct json_cnt_err)
+ *	    If val_err != NULL, then *val_err is JSON semantic validation error (struct json_cnt_err)
  */
 char *
 sem_member_name_decoded_str(struct json const *node, unsigned int depth, struct json_sem *sem,
@@ -1671,6 +1675,7 @@ json_sem_count_chk(struct json_sem *sem, struct dyn_array *cnt_err)
 	    cnt.bad_min = true;
 	    cnt.bad_max = false;
 	    cnt.unknown_node = false;
+	    cnt.sem_index = i;
 	    cnt.diagnostic = calloc(BUFSIZ+1, sizeof(char));
 	    if (cnt.diagnostic == NULL) {
 		cnt.diagnostic = "calloc BUFSIZ calloc failed for count is too small";
@@ -1701,6 +1706,7 @@ json_sem_count_chk(struct json_sem *sem, struct dyn_array *cnt_err)
 	    cnt.bad_min = false;
 	    cnt.bad_max = true;
 	    cnt.unknown_node = false;
+	    cnt.sem_index = i;
 	    cnt.diagnostic = calloc(BUFSIZ+1, sizeof(char));
 	    if (cnt.diagnostic == NULL) {
 		cnt.diagnostic = "calloc BUFSIZ calloc failed for count is too small";
@@ -1908,6 +1914,10 @@ sem_walk(struct json *node, unsigned int depth, va_list ap)
 		if (err == NULL) {
 		    /* err is NULL, assume sem_val_err_NULL */
 		    err = &sem_val_err_NULL;
+
+		/* record semantic table index */
+		} else {
+		    err->sem_index = index;
 		}
 
 		/* save validation error message */
@@ -1926,6 +1936,7 @@ sem_walk(struct json *node, unsigned int depth, va_list ap)
 	cnt.bad_min = false;
 	cnt.bad_max = false;
 	cnt.unknown_node = true;
+	cnt.sem_index = -1;
 	cnt.diagnostic = calloc(BUFSIZ+1, sizeof(char));
 	if (cnt.diagnostic == NULL) {
 	    cnt.diagnostic = "calloc BUFSIZ calloc failed for unexpected node";
@@ -1975,6 +1986,7 @@ sem_walk(struct json *node, unsigned int depth, va_list ap)
 	cnt.bad_min = false;
 	cnt.bad_max = false;
 	cnt.unknown_node = true;
+	cnt.node = NULL;
 	cnt.diagnostic = calloc(BUFSIZ+1, sizeof(char));
 	if (cnt.diagnostic == NULL) {
 	    cnt.diagnostic = "calloc BUFSIZ calloc failed for json_sem_find result < -1";
@@ -2140,4 +2152,290 @@ json_sem_check(struct json *node, unsigned int max_depth, struct json_sem *sem,
      * report on the number of errors found
      */
     return err;
+}
+
+
+/*
+ * free_cnt_err - free semantic count errors
+ *
+ * given:
+ *	cnt_err		semantic count error dynamic array to free
+ */
+void
+free_cnt_err(struct dyn_array *cnt_err)
+{
+    struct json_sem_cnt_err *p = NULL;	/* pointer to JSON semantic count error */
+    uintmax_t count = 0;		/* length of semantic count array */
+    uintmax_t i = 0;
+
+    /*
+     * firewall
+     */
+    if (cnt_err == NULL) {
+	warn(__func__, "cnt_err is NULL");
+	return;
+    }
+
+    /*
+     * free each semantic count error if malloced
+     */
+    count = dyn_array_tell(cnt_err);
+    for (i=0; i < count; ++i) {
+
+	/*
+	 * free diagnostic is malloced
+	 */
+	p = dyn_array_addr(cnt_err, struct json_sem_cnt_err, i);
+	if (p->malloced == true) {
+	    free(p->diagnostic);
+	    p->diagnostic = NULL;
+	    p->malloced = false;
+	}
+    }
+
+    /*
+     * free the dynamic array
+     */
+    dyn_array_free(cnt_err);
+    return;
+}
+
+
+/*
+ * free_val_err - free semantic count errors
+ *
+ * given:
+ *	val_err		semantic count error dynamic array to free
+ */
+void
+free_val_err(struct dyn_array *val_err)
+{
+    struct json_sem_val_err *p = NULL;	/* pointer to JSON semantic count error */
+    uintmax_t count = 0;		/* length of semantic count array */
+    uintmax_t i = 0;
+
+    /*
+     * firewall
+     */
+    if (val_err == NULL) {
+	warn(__func__, "val_err is NULL");
+	return;
+    }
+
+    /*
+     * free each semantic count error if malloced
+     */
+    count = dyn_array_tell(val_err);
+    for (i=0; i < count; ++i) {
+
+	/*
+	 * free diagnostic is malloced
+	 */
+	p = dyn_array_addr(val_err, struct json_sem_val_err, i);
+	if (p->malloced == true) {
+	    free(p->diagnostic);
+	    p->diagnostic = NULL;
+	    p->malloced = false;
+	}
+    }
+
+    /*
+     * free the dynamic array
+     */
+    dyn_array_free(val_err);
+    return;
+}
+
+
+/*
+ * fprint_cnt_err - print information about a count error on stream
+ *
+ * given:
+ *	stream		open stream to write on
+ *	prefix		print prefix, if non-NULL, before printing info
+ *	sem_cnt_err	pointer to semantic count error to print information about
+ *	postfix		print postfix, if non-NULL, after printing info
+ */
+void
+fprint_cnt_err(FILE *stream, char const *prefix, struct json_sem_cnt_err *sem_cnt_err, char const *postfix)
+{
+    int ret = 0;	/* libc return value */
+    char *p = NULL;	/* JSON node related string */
+    struct json_sem sem_node;	/* JSON semantic node */
+
+    /*
+     * firewall
+     */
+    if (stream == NULL) {
+	warn(__func__, "stream is NULL");
+	return;
+    }
+    if (is_open_stream(stream) == false) {
+	warn(__func__, "stream is is not an open FILE *stream");
+	return;
+    }
+    if (sem_cnt_err == NULL) {
+	warn(__func__, "sem_cnt_err is NULL");
+	return;
+    }
+
+    /*
+     * fill in sem_node for use if needed
+     */
+    if (sem_cnt_err->sem == NULL) {
+	/* setup a dummy struct json_sem if the error has a NULL sem */
+	memset(&sem_node, 0, sizeof(sem_node));
+	sem_node.depth = INF_DEPTH;
+	sem_node.type = JTYPE_UNSET;
+	sem_node.validate = NULL;
+	sem_node.name = NULL;
+    } else {
+	memmove(&sem_node, sem_cnt_err->sem, sizeof(sem_node));
+    }
+
+    /*
+     * print prefix if non-NULL
+     */
+    fpr(stream, __func__, "%s", prefix);
+
+    /*
+     * be more verbose if we are JSON debugging
+     */
+    if (json_dbg_allowed(JSON_DBG_LOW) == true) {
+
+	/*
+	 * case: we have a JSON semantic table index
+	 */
+	if (sem_cnt_err->sem_index >= 0) {
+	    fpr(stream, __func__, "sem_tbl[%d]: ", sem_cnt_err->sem_index);
+	}
+
+	/*
+	 * case: sem_cnt_err->node != NULL
+	 */
+	if (sem_cnt_err->node != NULL) {
+
+	    /*
+	     * print JSON node type
+	     */
+	    fpr(stream, __func__, "node type: %s ", json_item_type_name((struct json *)sem_cnt_err->node));
+
+	    /*
+	     * case: JSON node is a member, print name
+	     */
+	    if (sem_cnt_err->node->type == JTYPE_MEMBER) {
+		p = sem_member_name_decoded_str(sem_cnt_err->node, INF_DEPTH, &sem_node, __func__, NULL);
+		fpr(stream, __func__, "name: \"%s\" ", p);
+	    }
+	}
+
+	/*
+	 * case: bad_min
+	 */
+	if (sem_cnt_err->bad_min == true) {
+	    fpr(stream, __func__, "count: %u < min: %u ", sem_cnt_err->count, sem_node.min);
+	}
+
+	/*
+	 * case: bad_max
+	 */
+	if (sem_cnt_err->bad_max == true) {
+	    fpr(stream, __func__, "count: %u > max: %u ", sem_cnt_err->count, sem_node.max);
+	}
+
+	/*
+	 * case: unknown_node
+	 */
+	if (sem_cnt_err->unknown_node == true) {
+	    fpr(stream, __func__, "unknown node found: %u times ", sem_cnt_err->count);
+	}
+
+	/*
+	 * case: we have a diagnostic string
+	 */
+	if (sem_cnt_err->diagnostic != NULL) {
+	    fpr(stream, __func__, "error: %s ", sem_cnt_err->diagnostic);
+	}
+
+    /*
+     * otherwise just print the diagnostic
+     */
+    } else {
+
+	/*
+	 * case: we have a diagnostic string
+	 */
+	if (sem_cnt_err->diagnostic != NULL) {
+	    fpr(stream, __func__, "%s ", sem_cnt_err->diagnostic);
+	}
+    }
+
+    /*
+     * print postfix if non-NULL
+     */
+    fpr(stream, __func__, "%s", postfix);
+
+    /*
+     * flush stream
+     */
+    errno = 0;		/* pre-clear fflush() status */
+    ret = fflush(stream);
+    if (ret == EOF) {
+	warn(__func__, "fflush returned errno: %d: (%s)", errno, strerror(errno));
+    }
+    return;
+}
+
+
+/*
+ * fprint_val_err - print information about a count error on stream
+ *
+ * given:
+ *	stream		open stream to write on
+ *	prefix		print prefix, if non-NULL, before printing info
+ *	sem_val_err	pointer to semantic count error to print information about
+ *	postfix		print postfix, if non-NULL, after printing info
+ */
+void
+fprint_val_err(FILE *stream, char const *prefix, struct json_sem_val_err *sem_val_err, char const *postfix)
+{
+    int ret = 0;	/* libc return value */
+
+    /*
+     * firewall
+     */
+    if (stream == NULL) {
+	warn(__func__, "stream is NULL");
+	return;
+    }
+    if (is_open_stream(stream) == false) {
+	warn(__func__, "stream is is not an open FILE *stream");
+	return;
+    }
+    if (sem_val_err == NULL) {
+	warn(__func__, "sem_val_err is NULL");
+	return;
+    }
+
+    /*
+     * print prefix if non-NULL
+     */
+    fpr(stream, __func__, "%s", prefix);
+
+    /* XXX - add code here - XXX */
+
+    /*
+     * print postfix if non-NULL
+     */
+    fpr(stream, __func__, "%s", postfix);
+
+    /*
+     * flush stream
+     */
+    errno = 0;		/* pre-clear fflush() status */
+    ret = fflush(stream);
+    if (ret == EOF) {
+	warn(__func__, "fflush returned errno: %d: (%s)", errno, strerror(errno));
+    }
+    return;
 }

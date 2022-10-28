@@ -220,6 +220,7 @@ extern void posix_safe_chk(char const *str, size_t len, bool *slash, bool *posix
 extern void clearerr_or_fclose(FILE *stream);
 extern ssize_t fprint_line_buf(FILE *stream, void *buf, size_t len, int start, int end);
 extern ssize_t fprint_line_str(FILE *stream, char *str, size_t *retlen, int start, int end);
+extern char *malloc_path(char const *dirname, char const *filename);
 
 
 /* find non-whitespace text */

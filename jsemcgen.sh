@@ -425,9 +425,9 @@ if [[ -n "$PATCH_FILE" ]]; then
 	exit 22
     fi
     if [[ $V_FLAG -ge 3 ]]; then
-	echo "$0: debug[3]: about to run: $PATCH_TOOL $TMP_FILE $PATCH_FILE" 1>&2
+	echo "$0: debug[3]: about to run: $PATCH_TOOL -s -u -f -- $TMP_FILE $PATCH_FILE" 1>&2
     fi
-    "$PATCH_TOOL" -s -- "$TMP_FILE" "$PATCH_FILE"
+    "$PATCH_TOOL" -s -u -f -- "$TMP_FILE" "$PATCH_FILE"
     status="$?"
     if [[ $status -ne 0 ]]; then
 	echo "$0: ERROR: patch failed, exit status: $status" 1>&2

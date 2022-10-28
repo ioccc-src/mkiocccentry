@@ -51,11 +51,12 @@
 struct json_sem_cnt_err
 {
     struct json const *node;	/* JSON parse node in question or NULL */
-    struct json_sem *sem;	/* semantic node in question or NULL (unknown_node == true) */
+    struct json_sem const *sem;	/* semantic node in question or NULL (unknown_node == true) */
     unsigned int count;		/* number of times this JSON semantic was matched */
     bool bad_min;		/* true ==> JSON semantic node count under minimum */
     bool bad_max;		/* true ==> JSON semantic node count over maximum */
     bool unknown_node;		/* true ==> JSON node is not known to JSON semantics */
+    int sem_index;		/* index of sem in JSON semantic table or -1 ==> not in table */
     char *diagnostic;		/* diagnostic message or NULL */
     bool malloced;		/* true ==> struct diagnostic malloced */
 				/* false ==> diagnostic is a non-malloced static string */
@@ -71,7 +72,8 @@ struct json_sem_val_err
 {
     struct json const *node;	/* JSON parse node in question or NULL */
     unsigned int depth;		/* JSON parse tree node depth or UINT_MAX */
-    struct json_sem *sem;	/* semantic node in question or NULL */
+    struct json_sem const *sem;	/* semantic node in question or NULL */
+    int sem_index;		/* index of sem in JSON semantic table or -1 ==> not in table */
     char *diagnostic;		/* diagnostic message or NULL */
     bool malloced;		/* true ==> struct diagnostic malloced */
 				/* false ==> diagnostic is a non-malloced static string */
@@ -90,6 +92,7 @@ struct json_sem
     unsigned int min;		/* minimum allowed count */
     unsigned int max;		/* maximum allowed count, 0 ==> infinite */
     unsigned int count;		/* number of times this JSON semantic was matched */
+    int sem_index;		/* index of sem in JSON semantic table or -1 ==> not in table */
     size_t name_len;		/* length of name_str, not including final NUL or 0 */
     bool (* validate)(struct json const *node,
 		      unsigned int depth, struct json_sem *sem, struct json_sem_val_err **val_err);
@@ -152,6 +155,9 @@ extern void json_sem_zero_count(struct json_sem *sem);
 extern int json_sem_find(struct json *node, unsigned int depth, struct json_sem *sem);
 extern uintmax_t json_sem_check(struct json *node, unsigned int max_depth, struct json_sem *sem,
 				struct dyn_array **pcnt_err, struct dyn_array **pval_err);
-
+extern void free_cnt_err(struct dyn_array *cnt_err);
+extern void free_val_err(struct dyn_array *val_err);
+extern void fprint_cnt_err(FILE *stream, char const *prefix, struct json_sem_cnt_err *sem_cnt_err, char const *postfix);
+extern void fprint_val_err(FILE *stream, char const *prefix, struct json_sem_val_err *sem_val_err, char const *postfix);
 
 #endif /* INCLUDE_JSON_SEM_H */
