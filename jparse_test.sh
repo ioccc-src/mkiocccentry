@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 #
-# jparse_test.sh - test jparse on simple one-line JSON files
+# jparse_test.sh - test jparse on simple one-line JSON files as well as whole
+# JSON documents
 
 # setup
 #

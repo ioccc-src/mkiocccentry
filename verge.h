@@ -3,8 +3,6 @@
  *
  * "Because too much minimalism can be sub-minimal." :-)
  *
- * Copyright (c) 2022 by Landon Curt Noll.  All Rights Reserved.
- *
  * This JSON parser was co-developed by:
  *
  *	@xexyl

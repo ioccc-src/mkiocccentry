@@ -3,7 +3,11 @@
  *
  * "Because grammar and syntax alone do not make a complete language." :-)
  *
- * This JSON parser was co-developed by:
+ * The concept of this file was developed by:
+ *
+ *	chongo (Landon Curt Noll, http://www.isthe.com/chongo/index.html) /\oo/\
+ *
+ * The JSON parser was co-developed by:
  *
  *	@xexyl
  *	https://xexyl.net		Cody Boone Ferguson
