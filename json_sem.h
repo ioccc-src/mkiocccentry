@@ -52,7 +52,7 @@
  /*
   * JSON semantic count error
   */
-struct json_sem_cnt_err
+struct json_sem_count_err
 {
     struct json const *node;	/* JSON parse node in question or NULL */
     struct json_sem const *sem;	/* semantic node in question or NULL (unknown_node == true) */
@@ -158,10 +158,10 @@ extern struct json *sem_object_find_name(struct json const *node, unsigned int d
 extern void json_sem_zero_count(struct json_sem *sem);
 extern int json_sem_find(struct json *node, unsigned int depth, struct json_sem *sem);
 extern uintmax_t json_sem_check(struct json *node, unsigned int max_depth, struct json_sem *sem,
-				struct dyn_array **pcnt_err, struct dyn_array **pval_err);
-extern void free_cnt_err(struct dyn_array *cnt_err);
+				struct dyn_array **pcount_err, struct dyn_array **pval_err);
+extern void free_count_err(struct dyn_array *count_err);
 extern void free_val_err(struct dyn_array *val_err);
-extern void fprint_cnt_err(FILE *stream, char const *prefix, struct json_sem_cnt_err *sem_cnt_err, char const *postfix);
+extern void fprint_count_err(FILE *stream, char const *prefix, struct json_sem_count_err *sem_count_err, char const *postfix);
 extern void fprint_val_err(FILE *stream, char const *prefix, struct json_sem_val_err *sem_val_err, char const *postfix);
 
 #endif /* INCLUDE_JSON_SEM_H */

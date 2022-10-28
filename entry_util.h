@@ -213,12 +213,12 @@ struct info
  */
 struct manifest
 {
-    intmax_t cnt_info_JSON;	/* count of info_JSON JSON member found (will be ".info.json") */
-    intmax_t cnt_author_JSON;	/* count of author_JSON JSON member found (will be ".author.json") */
-    intmax_t cnt_c_src;		/* count of c_src JSON member found (will be "prog.c") */
-    intmax_t cnt_Makefile;	/* count of Makefile JSON member found (will be "Makefile") */
-    intmax_t cnt_remarks;	/* count of remarks JSON member found (will be "remarks") */
-    intmax_t cnt_extra_file;	/* count of extra JSON members found */
+    intmax_t count_info_JSON;	/* count of info_JSON JSON member found (will be ".info.json") */
+    intmax_t count_author_JSON;	/* count of author_JSON JSON member found (will be ".author.json") */
+    intmax_t count_c_src;		/* count of c_src JSON member found (will be "prog.c") */
+    intmax_t count_Makefile;	/* count of Makefile JSON member found (will be "Makefile") */
+    intmax_t count_remarks;	/* count of remarks JSON member found (will be "remarks") */
+    intmax_t count_extra_file;	/* count of extra JSON members found */
     struct dyn_array *extra;	/* dynamic array of extra JSON member filenames (char *) */
 };
 

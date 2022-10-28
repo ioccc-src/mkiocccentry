@@ -46,7 +46,7 @@ main(int argc, char **argv)
     bool string_flag_used = false;  /* true ==> -S string was used */
     bool valid_json = false;	    /* true ==> JSON parse was valid */
     struct json *tree = NULL;	    /* JSON parse tree or NULL */
-    int arg_cnt = 0;		    /* number of args to process */
+    int arg_count = 0;		    /* number of args to process */
     int i;
 
     /*
@@ -87,8 +87,8 @@ main(int argc, char **argv)
 	    not_reached();
 	}
     }
-    arg_cnt = argc - optind;
-    if (arg_cnt != REQUIRED_ARGS) {
+    arg_count = argc - optind;
+    if (arg_count != REQUIRED_ARGS) {
 	usage(3, "wrong number of arguments", program); /*ooo*/
 	not_reached();
     }

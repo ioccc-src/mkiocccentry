@@ -1239,7 +1239,7 @@ para(char const *line, ...)
     va_list ap;			/* variable argument list */
     int ret;			/* libc function return value */
     int fd;			/* stdout as a file descriptor or -1 */
-    int line_cnt;		/* number of lines in the paragraph */
+    int line_count;		/* number of lines in the paragraph */
 
     /*
      * stdarg variable argument list setup
@@ -1268,7 +1268,7 @@ para(char const *line, ...)
     /*
      * print paragraph strings followed by newlines
      */
-    line_cnt = 0;
+    line_count = 0;
     while (line != NULL) {
 
 	/*
@@ -1308,7 +1308,7 @@ para(char const *line, ...)
 		not_reached();
 	    }
 	}
-	++line_cnt;		/* count this line as printed */
+	++line_count;		/* count this line as printed */
 
 	/*
 	 * move to next line string
@@ -1339,7 +1339,7 @@ para(char const *line, ...)
 	    not_reached();
 	}
     }
-    dbg(DBG_VVHIGH, "%s() printed %d line paragraph", __func__, line_cnt);
+    dbg(DBG_VVHIGH, "%s() printed %d line paragraph", __func__, line_count);
     return;
 }
 
@@ -1367,7 +1367,7 @@ fpara(FILE * stream, char const *line, ...)
     va_list ap;			/* variable argument list */
     int ret;			/* libc function return value */
     int fd;			/* stream as a file descriptor or -1 */
-    int line_cnt;		/* number of lines in the paragraph */
+    int line_count;		/* number of lines in the paragraph */
 
     /*
      * stdarg variable argument list setup
@@ -1397,7 +1397,7 @@ fpara(FILE * stream, char const *line, ...)
     /*
      * print paragraph strings followed by newlines
      */
-    line_cnt = 0;
+    line_count = 0;
     while (line != NULL) {
 
 	/*
@@ -1437,7 +1437,7 @@ fpara(FILE * stream, char const *line, ...)
 		not_reached();
 	    }
 	}
-	++line_cnt;		/* count this line as printed */
+	++line_count;		/* count this line as printed */
 
 	/*
 	 * move to next line string
@@ -1468,7 +1468,7 @@ fpara(FILE * stream, char const *line, ...)
 	    not_reached();
 	}
     }
-    dbg(DBG_VVHIGH, "%s() printed %d line paragraph", __func__, line_cnt);
+    dbg(DBG_VVHIGH, "%s() printed %d line paragraph", __func__, line_count);
     return;
 }
 
