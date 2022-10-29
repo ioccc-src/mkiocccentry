@@ -967,7 +967,9 @@ else
     echo "	https://github.com/ioccc-src/mkiocccentry/issues" | tee -a -- "$LOG_FILE"
     echo | tee -a -- "$LOG_FILE"
     echo "making sure to attach $LOG_FILE with your report. You may" | tee -a -- "$LOG_FILE"
-    echo "instead email the Judges." | tee -a -- "$LOG_FILE"
+    echo "instead email the Judges but you're encouraged to file a" | tee -a -- "$LOG_FILE"
+    echo "report instead. This is because not all tools were written by" | tee -a -- "$LOG_FILE"
+    echo "the Judges." | tee -a -- "$LOG_FILE"
 
 fi
 echo 1>&2
