@@ -184,10 +184,10 @@ get_version_optional() {
     echo "## VERSION CHECK FOR: $1" | tee -a -- "$LOG_FILE"
 
     # try --version
-    command ${COMMAND} --version >/dev/null 2>&1
+    command "${COMMAND}" --version >/dev/null 2>&1
     status=$?
     if [[ "$status" -eq 0 ]]; then
-	command ${COMMAND} --version | tee -a -- "$LOG_FILE"
+	command "${COMMAND}" --version | tee -a -- "$LOG_FILE"
 	echo "## $COMMAND --version ABOVE" | tee -a -- "$LOG_FILE"
 	echo | tee -a -- "$LOG_FILE"
 	return
@@ -197,7 +197,7 @@ get_version_optional() {
     command "${COMMAND}" -v >/dev/null 2>&1
     status=$?
     if [[ "$status" -eq 0 ]]; then
-	command ${COMMAND} -v | tee -a -- "$LOG_FILE"
+	command "${COMMAND}" -v | tee -a -- "$LOG_FILE"
 	echo "## $COMMAND -v ABOVE" | tee -a -- "$LOG_FILE"
 	echo | tee -a -- "$LOG_FILE"
 	return
@@ -207,7 +207,7 @@ get_version_optional() {
     command "${COMMAND}" -V >/dev/null 2>&1
     status=$?
     if [[ "$status" -eq 0 ]]; then
-	command ${COMMAND} -V | tee -a -- "$LOG_FILE"
+	command "${COMMAND}" -V | tee -a -- "$LOG_FILE"
 	echo "## $COMMAND -V ABOVE" | tee -a -- "$LOG_FILE"
 	echo | tee -a -- "$LOG_FILE"
 	return
@@ -338,10 +338,10 @@ get_version() {
     echo "## VERSION CHECK FOR: $1" | tee -a -- "$LOG_FILE"
 
     # try --version
-    command ${COMMAND} --version >/dev/null 2>&1
+    command "${COMMAND}" --version >/dev/null 2>&1
     status=$?
     if [[ "$status" -eq 0 ]]; then
-	command ${COMMAND} --version | tee -a -- "$LOG_FILE"
+	command "${COMMAND}" --version | tee -a -- "$LOG_FILE"
 	echo "## OUTPUT OF $COMMAND --version ABOVE" | tee -a -- "$LOG_FILE"
 	echo | tee -a -- "$LOG_FILE"
 	return
@@ -351,7 +351,7 @@ get_version() {
     command "${COMMAND}" -v >/dev/null 2>&1
     status=$?
     if [[ "$status" -eq 0 ]]; then
-	command ${COMMAND} -v | tee -a -- "$LOG_FILE"
+	command "${COMMAND}" -v | tee -a -- "$LOG_FILE"
 	echo "## OUTPUT OF $COMMAND -v ABOVE" | tee -a -- "$LOG_FILE"
 	echo | tee -a -- "$LOG_FILE"
 	return
@@ -361,7 +361,7 @@ get_version() {
     command "${COMMAND}" -V >/dev/null 2>&1
     status=$?
     if [[ "$status" -eq 0 ]]; then
-	command ${COMMAND} -V | tee -a -- "$LOG_FILE"
+	command "${COMMAND}" -V | tee -a -- "$LOG_FILE"
 	echo "## OUTPUT OF $COMMAND -V ABOVE" | tee -a -- "$LOG_FILE"
 	echo | tee -a -- "$LOG_FILE"
 	return
@@ -474,6 +474,11 @@ run_check_optional() {
     local COMMAND="$1"
 
     echo "## RUNNING: $COMMAND" | tee -a -- "$LOG_FILE"
+
+    # We have to disable the warning to quote COMMAND: shellcheck is totally
+    # wrong about quoting this. If one does quote the below variable COMMAND it
+    # will cause the command to fail making sure that the script is worthless.
+    # shellcheck disable=SC2086
     command ${COMMAND} 2>&1 | tee -a -- "$LOG_FILE"
 
     status=${PIPESTATUS[0]}
@@ -506,6 +511,10 @@ run_check_warn() {
     local COMMAND="$1"
 
     echo "## RUNNING: $COMMAND" | tee -a -- "$LOG_FILE"
+    # We have to disable the warning to quote COMMAND: shellcheck is totally
+    # wrong about quoting this. If one does quote the below variable COMMAND it
+    # will cause the command to fail making sure that the script is worthless.
+    # shellcheck disable=SC2086
     command ${COMMAND} 2>&1 | tee -a -- "$LOG_FILE"
 
     status=${PIPESTATUS[0]}
@@ -549,6 +558,10 @@ run_check() {
     local COMMAND="$2"
 
     echo "## RUNNING: $COMMAND" | tee -a -- "$LOG_FILE"
+    # We have to disable the warning to quote COMMAND: shellcheck is totally
+    # wrong about quoting this. If one does quote the below variable COMMAND it
+    # will cause the command to fail making sure that the script is worthless.
+    # shellcheck disable=SC2086
     command ${COMMAND} 2>&1 | tee -a -- "$LOG_FILE"
 
     # The below reference to PIPESTATUS (instead of $?) fixes the bug introduced

@@ -327,7 +327,7 @@ compile_test() {
 if [[ $V_FLAG -gt 1 ]]; then
     echo "$0: creating source that should print the value of ENOENT" 1>&2
 fi
-cat <<EOF>"$WORK_DIR/pre-errno.c"
+cat <<EOF >"$WORK_DIR/pre-errno.c"
 #include <errno.h>
 #include <stdio.h>
 int
@@ -354,7 +354,7 @@ fi
 if [[ $V_FLAG -gt 1 ]]; then
     echo "$0: creating source that should print: errno: $ENOENT" 1>&2
 fi
-cat <<EOF>"$WORK_DIR/errno0.c"
+cat <<EOF >"$WORK_DIR/errno0.c"
 #include <errno.h>
 #include <stdio.h>
 int
@@ -382,7 +382,7 @@ fi
 if [[ $V_FLAG -gt 1 ]]; then
     echo "$0: creating source that should verify errno == $ENOENT, returning 1" 1>&2
 fi
-cat<<EOF>"$WORK_DIR/errno1.c"
+cat<<EOF >"$WORK_DIR/errno1.c"
 #include <errno.h>
 int
 main(void)
@@ -408,7 +408,7 @@ fi
 if [[ $V_FLAG -gt 1 ]]; then
     echo "$0: creating source that should print: "Hello, world"" 1>&2
 fi
-cat <<EOF>"$WORK_DIR/hello.c"
+cat <<EOF >"$WORK_DIR/hello.c"
 #include <stdio.h>
 int
 main(void)
@@ -431,7 +431,7 @@ fi
 if [[ $V_FLAG -gt 1 ]]; then
     echo "$0: creating source that should simply return 0" 1>&2
 fi
-cat <<EOF>"$WORK_DIR/main0.c"
+cat <<EOF >"$WORK_DIR/main0.c"
 int
 main(void)
 {
@@ -453,7 +453,7 @@ fi
 if [[ $V_FLAG -gt 1 ]]; then
     echo "$0: creating source that should simply return 1" 1>&2
 fi
-cat <<EOF>"$WORK_DIR/main1.c"
+cat <<EOF >"$WORK_DIR/main1.c"
 int
 main(void)
 {

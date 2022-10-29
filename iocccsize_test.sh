@@ -10,7 +10,16 @@
 
 # setup
 #
+# Under CentOS shellcheck complains about the comment, reporting:
+#
+#	warning: Remove space after = if trying to assign a value (for empty string, use var='' ... ). [SC1007]
+#
+# which seems silly and pointless so we disable it for the next two
+# lines.
+#
+# shellcheck disable=SC1007
 export DIGRAPHS=	# assume #undef DIGRAPHS
+# shellcheck disable=SC1007
 export TRIGRAPHS=	# assume #undef TRIGRAPHS
 export LIMIT_IOCCC="./limit_ioccc.sh"
 export WORK_DIR="./test_iocccsize"
