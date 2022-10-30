@@ -7,6 +7,10 @@
 #
 # get path to uudecode if possible
 UUDECODE="$(type -P uudecode 2>/dev/null)"
+if [[ -z "$UUDECODE" ]]; then
+    # set to default if empty
+    UUDECODE="/usr/bin/uudecode"
+fi
 
 export JPARSE_TEST_VERSION="0.4 2022-10-30"
 export CHK_TEST_FILE="./json_teststr.txt"
