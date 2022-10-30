@@ -13,7 +13,7 @@
 .SH NAME
 jparse_test.sh \- test jparse on one or more files with one or more one\-line JSON blobs
 .SH SYNOPSIS
-\fBjparse_test.sh\fP [\-h] [\-V] [\-v level] [\-D dbg_level] [\-J level] [\-q] [\-j jparse] [\-d json_tree] [file ..]
+\fBjparse_test.sh\fP [\-h] [\-V] [\-v level] [\-D dbg_level] [\-J level] [\-q] [\-j jparse] [\-d json_tree] [\- u uudecode] [file ..]
 .SH DESCRIPTION
 \fBjparse_test.sh\fP tests each line in each file for valid JSON.
 The file name \fI\-\fP means read from stdin.
@@ -50,6 +50,12 @@ Set path to jparse to \fIjparse\fP.
 .TP
 \fB\-d \fIjson_tree\fP\fP
 Set json tree to look for good and bad files under to \fIjson_tree\fP.
+.TP
+\fB\-u \fIuudecode\fP\fP
+Set path to uudecode to \fIuudecode\fP for binary tests.
+.RS
+If uudecode is not found these tests will be skipped.
+.RE
 .SH EXIT STATUS
 .TP
 0

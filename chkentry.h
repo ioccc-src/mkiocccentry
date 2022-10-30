@@ -3,11 +3,7 @@
  *
  * "Because grammar and syntax alone do not make a complete language." :-)
  *
- * This tool is being co-developed by Cody Boone Ferguson and Landon Curt Noll.
- * The concept of the JSON semantics tables, which this tool will use, was
- * developed by Landon Curt Noll.
- *
- * The JSON parser was co-developed by:
+ * This tool and the JSON parser were co-developed by:
  *
  *	@xexyl
  *	https://xexyl.net		Cody Boone Ferguson
@@ -16,6 +12,8 @@
  *	chongo (Landon Curt Noll, http://www.isthe.com/chongo/index.html) /\oo/\
  *
  * "Because sometimes even the IOCCC Judges need some help." :-)
+ *
+ * The concept of the JSON semantics tables was developed by Landon Curt Noll.
  *
  * "Share and Enjoy!"
  *     --  Sirius Cybernetics Corporation Complaints Division, JSON spec department. :-)

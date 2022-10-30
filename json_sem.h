@@ -86,8 +86,8 @@ struct json_sem_val_err
 /*
  * JSON semantic node
  *
- * An array of JSON semantics may describe the what is required
- * or allowed in a given valid JSON document.
+ * An array of JSON semantics describes what is required or allowed in a given
+ * valid JSON document.
  */
 struct json_sem
 {
