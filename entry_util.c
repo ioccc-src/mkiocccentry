@@ -1625,7 +1625,7 @@ timestr_eq_tstamp(char const *timestr, time_t timestamp)
 		 "invalid: strptime failed convert time string: <%s>", timestr);
 	return false;
     }
-    if (ptr[0] == '\0') {
+    if (ptr[0] != '\0') {
 	json_dbg(JSON_DBG_MED, __func__,
 		 "invalid: extra data in time string");
 	json_dbg(JSON_DBG_HIGH, __func__,
