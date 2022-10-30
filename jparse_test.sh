@@ -5,9 +5,12 @@
 
 # setup
 #
-export JPARSE_TEST_VERSION="0.3 2022-10-22"
+# get path to uudecode if possible
+UUDECODE="$(type -P uudecode 2>/dev/null)"
+
+export JPARSE_TEST_VERSION="0.4 2022-10-30"
 export CHK_TEST_FILE="./json_teststr.txt"
-export USAGE="usage: $0 [-h] [-V] [-v level] [-D dbg_level] [-J level] [-q] [-j jparse] [-d json_tree] [file ..]
+export USAGE="usage: $0 [-h] [-V] [-v level] [-D dbg_level] [-J level] [-q] [-j jparse] [-d json_tree] [-u uudecode] [file ..]
 
     -h			print help and exit
     -V			print version and exit
@@ -20,6 +23,7 @@ export USAGE="usage: $0 [-h] [-V] [-v level] [-D dbg_level] [-J level] [-q] [-j 
 			    These subdirectories are expected:
 				tree/bad
 				tree/good
+    -u uudecode		path to uudecode
     [file ...]		read JSON documents, one per line, from these files (def: $CHK_TEST_FILE)
 			NOTE: - means read from stdin.
 
@@ -40,10 +44,11 @@ export JPARSE="./jparse"
 export LOGFILE="./jparse_test.log"
 export EXIT_CODE=0
 export JSON_TREE="./test_JSON"
+export RUN_NUL_TESTS="true"
 
 # parse args
 #
-while getopts :hVv:D:J:qj:d: flag; do
+while getopts :hVv:D:J:qj:d:u: flag; do
     case "$flag" in
     h)	echo "$USAGE" 1>&2
 	exit 2
@@ -61,7 +66,9 @@ while getopts :hVv:D:J:qj:d: flag; do
 	;;
     j)	JPARSE="$OPTARG";
 	;;
-    d)	JSON_TREE="$OPTARG"
+    d)	JSON_TREE="$OPTARG";
+	;;
+    u)	UUDECODE="$OPTARG";
 	;;
     \?) echo "$0: ERROR: invalid option: -$OPTARG" 1>&2
 	exit 3
@@ -153,6 +160,28 @@ if [[ ! -r $JSON_BAD_TREE ]]; then
     echo "$0: ERROR: json_tree/bad for jparse not readable directory: $JSON_BAD_TREE" 1>&2
     exit 18
 fi
+# check for uudecode
+#
+# If not found we skip those tests
+if [[ ! -e $UUDECODE ]]; then
+    if [[ "$V_FLAG" -gt 1 ]]; then
+	echo "$0: warning: uudecode not found: $UUDECODE: will skip binary tests"
+    fi
+    RUN_NUL_TESTS=""
+fi
+if [[ ! -f $UUDECODE ]]; then
+    if [[ "$V_FLAG" -gt 1 ]]; then
+	echo "$0: ERROR: uudecode not a regular file: $UUDECODE: will skip binary tests"
+    fi
+    RUN_NUL_TESTS=""
+fi
+if [[ ! -x $UUDECODE ]]; then
+    if [[ "$V_FLAG" -gt 1 ]]; then
+	echo "$0: warning: uudecode not executable: $UUDECODE: will skip binary tests"
+    fi
+    RUN_NUL_TESTS=""
+fi
+
 
 
 # remove logfile so that each run starts out with an empty file
@@ -167,6 +196,80 @@ if [[ ! -w "${LOGFILE}" ]]; then
     echo "$0: ERROR: log file not writable" 1>&2
     exit 5
 fi
+
+# run_binary_test - run a single jparse test on a file
+#
+# usage:
+#	run_binary_test jparse dbg_level json_dbg_level quiet_mode json_doc_file pass|fail
+#
+#	jparse			path to the jparse program
+#	dbg_level		internal test debugging level to use as in: jparse -v dbg_level
+#	json_dbg_level		JSON parser debug level to use in: jparse -J json_dbg_level
+#	quiet_mode		quiet mode to use in: jparse -q
+#	json_doc_file		JSON document as a string to give to jparse
+#	pass|fail		string saying if jparse must return valid json or invalid json
+#
+run_binary_test()
+{
+    # parse args
+    #
+    if [[ $# -ne 5 ]]; then
+	echo "$0: ERROR: expected 5 args to run_binary_test, found $#" 1>&2
+	exit 4
+    fi
+    declare jparse="$1"
+    declare dbg_level="$2"
+    declare json_dbg_level="$3"
+    declare quiet_mode="$4"
+    declare json_doc_file="$5"
+
+    # debugging
+    #
+    if [[ $V_FLAG -ge 9 ]]; then
+	echo "$0: debug[9]: in run_binary_test: jparse: $jparse" 1>&2
+	echo "$0: debug[9]: in run_binary_test: dbg_level: $dbg_level" 1>&2
+	echo "$0: debug[9]: in run_binary_test: json_dbg_level: $json_dbg_level" 1>&2
+	echo "$0: debug[9]: in run_binary_test: quiet_mode: $quiet_mode" 1>&2
+	echo "$0: debug[9]: in run_binary_test: json_doc_file: $json_doc_file" 1>&2
+    fi
+
+    if [[ -z $quiet_mode ]]; then
+	if [[ $V_FLAG -ge 3 ]]; then
+	    echo "$0: debug[3]: about to run test that must fail: $UUDECODE $json_doc_file | $jparse -v $dbg_level -J $json_dbg_level -- - >> ${LOGFILE} 2>&1" 1>&2
+	fi
+	echo "$0: debug[3]: about to run test that must fail: $UUDECODE $json_doc_file | $jparse -v $dbg_level -J $json_dbg_level -- - >> ${LOGFILE} 2>&1" >> "${LOGFILE}"
+	"$UUDECODE" "$json_doc_file" | "$jparse" -v "$dbg_level" -J "$json_dbg_level" -- - >> "${LOGFILE}" 2>&1
+    else
+	if [[ $V_FLAG -ge 3 ]]; then
+	    echo "$0: debug[3]: about to run test that must fail: $UUDECODE $json_doc_file | $jparse -v $dbg_level -J $json_dbg_level -q -- - >> ${LOGFILE} 2>&1" 1>&2
+	fi
+	echo "$0: debug[3]: about to run test that must fail: $UUDECODE $json_doc_file | $jparse -v $dbg_level -J $json_dbg_level -q -- - >> ${LOGFILE} 2>&1" >> "${LOGFILE}"
+	"$UUDECODE" "$json_doc_file" | "$jparse" -v "$dbg_level" -J "$json_dbg_level" -q -- - >> "${LOGFILE}" 2>&1
+    fi
+    status="$?"
+
+    # examine test result.
+    #
+    # Since the tests must always fail if status is 0 it's a fail.
+    if [[ $status -eq 0 ]]; then
+	    echo "$0: in test that must fail: jparse FAIL, exit code 0" 1>&2 >> "${LOGFILE}"
+	    if [[ $V_FLAG -ge 3 ]]; then
+		echo "$0: debug[3]: jparse FAIL, exit code 0" 1>&2
+	    fi
+	    EXIT_CODE=1
+    elif [[ $V_FLAG -ge 1 ]]; then
+	    echo "$0: in test that must fail: jparse FAIL, exit code: $status" 1>&2 >> "${LOGFILE}"
+	    if [[ $V_FLAG -ge 3 ]]; then
+		echo "$0: debug[3]: in run_binary_test: jparse exit code: $status" 1>&2
+	    fi
+    fi
+    echo >> "${LOGFILE}"
+
+    # return
+    #
+    return
+}
+
 
 # run_file_test - run a single jparse test on a file
 #
@@ -197,7 +300,7 @@ run_file_test()
 
     if [[ "$pass_fail" != "pass" && "$pass_fail" != "fail" ]]; then
 	echo "$0: ERROR: in run_file_test: pass_fail neither 'pass' nor 'fail'" 1>&2
-	EXIT_CODE=2
+	EXIT_CODE=4
 	return
     fi
 
@@ -437,6 +540,12 @@ while read -r file; do
     run_file_test "$JPARSE" "$DBG_LEVEL" "$JSON_DBG_LEVEL" "$Q_FLAG" "$file" fail
 done < <(find "$JSON_BAD_TREE" -type f -name '*.json' -print)
 
+# if we have uudecode run tests on binary files (particularly NUL bytes)
+if [[ -n "$RUN_NUL_TESTS" ]]; then
+    while read -r file; do
+	run_binary_test "$JPARSE" "$DBG_LEVEL" "$JSON_DBG_LEVEL" "$Q_FLAG" "$file"
+    done < <(find "$JSON_BAD_TREE" -type f -name '*.json.uu' -print)
+fi
 
 # All Done!!! -- Jessica Noll, Age 2
 #

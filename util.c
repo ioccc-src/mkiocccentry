@@ -541,6 +541,8 @@ is_open_stream(FILE *stream)
     if (stream == NULL) {
 	warn(__func__, "stream is NULL");
 	return false;
+    } else if (stream == stdin || isatty(fileno(stream))) {
+	return true;
     }
 
     /*
@@ -548,8 +550,10 @@ is_open_stream(FILE *stream)
      *
      * The ftell() function will fail if stream is not open.
      */
+    errno = 0;
     pos = ftell(stream);
     if (pos < 0) {
+	warnp(__func__, "ftell() returned < 0");
 	return false;
     }
 
