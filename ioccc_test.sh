@@ -50,6 +50,7 @@ export V_FLAG="0"
 export J_FLAG="0"
 export EXIT_CODE="0"
 export FAILURE_SUMMARY=
+export LOGFILE="./ioccc_test.log"
 
 # parse args
 #
@@ -207,38 +208,50 @@ if [[ ! -x ./txzchk ]]; then
     exit 11
 fi
 
+# log file
+rm -f "$LOGFILE"
+# try creating a new log file
+touch "$LOGFILE"
+if [[ ! -e "$LOGFILE" ]]; then
+    echo "$0: ERROR: couldn't create log file: $LOGFILE" 1>&2
+    exit 12
+fi
+if [[ ! -w "$LOGFILE" ]]; then
+    echo "$0: ERROR: log file is not writable: $LOGFILE" 1>&2
+    exit 12
+fi
 
 # start the test suite
 #
-echo "Start test suite"
-echo
+echo "Start test suite" | tee -a -- "$LOGFILE"
+echo | tee -a -- "$LOGFILE"
 
 # iocccsize_test.sh
 #
-echo "RUNNING: iocccsize_test.sh"
-echo
-echo "./iocccsize_test.sh -v 1"
-./iocccsize_test.sh -v 1
-status="$?"
+echo "RUNNING: iocccsize_test.sh" | tee -a -- "$LOGFILE"
+echo | tee -a -- "$LOGFILE"
+echo "./iocccsize_test.sh -v 1" | tee -a -- "$LOGFILE"
+./iocccsize_test.sh -v 1 | tee -a -- "$LOGFILE"
+status="${PIPESTATUS[0]}"
 if [[ $status -ne 0 ]]; then
-    echo "$0: ERROR: iocccsize_test.sh non-zero exit code: $status" 1>&2
+    echo "$0: ERROR: iocccsize_test.sh non-zero exit code: $status" 1>&2 | tee -a -- "$LOGFILE"
     FAILURE_SUMMARY="$FAILURE_SUMMARY
     iocccsize_test.sh non-zero exit code: $status"
     EXIT_CODE="20"
 else
-    echo
-    echo "PASSED: iocccsize_test.sh"
+    echo | tee -a -- "$LOGFILE"
+    echo "PASSED: iocccsize_test.sh" | tee -a -- "$LOGFILE"
 fi
 
 # dbg
 #
-echo
-echo "RUNNING: dbg"
+echo | tee -a -- "$LOGFILE"
+echo "RUNNING: dbg" | tee -a -- "$LOGFILE"
 rm -f dbg.out
-echo
-echo "./dbg -e 2 foo bar baz >dbg.out 2>&1"
-./dbg -e 2 foo bar baz >dbg.out 2>&1
-status="$?"
+echo | tee -a -- "$LOGFILE"
+echo "./dbg -e 2 foo bar baz >dbg.out 2>&1" | tee -a -- "$LOGFILE"
+./dbg -e 2 foo bar baz >dbg.out 2>&1 | tee -a -- "$LOGFILE"
+status="${PIPESTATUS[0]}"
 if [[ $status -ne 5 ]]; then
     echo "exit status of dbg: $status != 5";
     FAILURE_SUMMARY="$FAILURE_SUMMARY
@@ -247,110 +260,110 @@ if [[ $status -ne 5 ]]; then
 else
     grep -q '^ERROR\[5\]: main: simulated error, foo: foo bar: bar: errno\[2\]: No such file or directory$' dbg.out
     status="$?"
-    if [[ $status -ne 0 ]]; then
-	echo "$0: ERROR: did not find the correct dbg error message" 1>&2
-	echo "$0: ERROR: beginning dbg.out contents" 1>&2
-	cat dbg.out 1>&2
-	echo "$0: ERROR: dbg.out contents complete" 1>&2
+    if [[ $status -ne 1 ]]; then
+	echo "$0: ERROR: did not find the correct dbg error message" 1>&2 | tee -a -- "$LOGFILE"
+	echo "$0: ERROR: beginning dbg.out contents" 1>&2 | tee -a -- "$LOGFILE"
+	< dbg.out tee -a -- "$LOGFILE"
+	echo "$0: ERROR: dbg.out contents complete" 1>&2 | tee -a -- "$LOGFILE"
 	FAILURE_SUMMARY="$FAILURE_SUMMARY
     did not find the correct dbg error message"
 	EXIT_CODE="22"
     else
-	echo
-	echo "PASSED: dbg"
+	echo | tee -a -- "$LOGFILE"
+	echo "PASSED: dbg" | tee -a -- "$LOGFILE"
 	rm -f dbg.out
     fi
 fi
 
 # mkiocccentry_test.sh
 #
-echo
-echo "RUNNING: mkiocccentry_test.sh"
-echo
-echo "./mkiocccentry_test.sh"
-./mkiocccentry_test.sh
-status="$?"
+echo | tee -a -- "$LOGFILE"
+echo "RUNNING: mkiocccentry_test.sh" | tee -a -- "$LOGFILE"
+echo | tee -a -- "$LOGFILE"
+echo "./mkiocccentry_test.sh" | tee -a -- "$LOGFILE"
+./mkiocccentry_test.sh | tee -a -- "$LOGFILE"
+status="${PIPESTATUS[0]}"
 if [[ $status -ne 0 ]]; then
-    echo "$0: ERROR: mkiocccentry_test.sh non-zero exit code: $status" 1>&2
+    echo "$0: ERROR: mkiocccentry_test.sh non-zero exit code: $status" 1>&2 | tee -a -- "$LOGFILE"
     FAILURE_SUMMARY="$FAILURE_SUMMARY
     mkiocccentry_test.sh non-zero exit code: $status"
     EXIT_CODE="23"
 else
-    echo
-    echo "PASSED: mkiocccentry_test.sh"
+    echo | tee -a -- "$LOGFILE"
+    echo "PASSED: mkiocccentry_test.sh" | tee -a -- "$LOGFILE"
 fi
 
 
 # jstr_test.sh
 #
-echo
-echo "RUNNING: jstr_test.sh"
-echo
-echo "./jstr_test.sh"
-./jstr_test.sh
-status="$?"
+echo | tee -a -- "$LOGFILE"
+echo "RUNNING: jstr_test.sh" | tee -a -- "$LOGFILE"
+echo | tee -a -- "$LOGFILE"
+echo "./jstr_test.sh" | tee -a -- "$LOGFILE"
+./jstr_test.sh | tee -a -- "$LOGFILE"
+status="${PIPESTATUS[0]}"
 if [[ $status -ne 0 ]]; then
-    echo "$0: ERROR: jstr_test.sh non-zero exit code: $status" 1>&2
+    echo "$0: ERROR: jstr_test.sh non-zero exit code: $status" 1>&2 | tee -a -- "$LOGFILE"
     FAILURE_SUMMARY="$FAILURE_SUMMARY
     jstr_test.sh non-zero exit code: $status"
     EXIT_CODE="24"
 else
-    echo
-    echo "PASSED: jstr_test.sh"
+    echo | tee -a -- "$LOGFILE"
+    echo "PASSED: jstr_test.sh" | tee -a -- "$LOGFILE"
 fi
 
 # jnum_chk
 #
-echo
-echo "RUNNING: jnum_chk"
-echo
-echo "./jnum_chk"
-./jnum_chk -J "${J_FLAG}"
-status="$?"
+echo | tee -a -- "$LOGFILE"
+echo "RUNNING: jnum_chk" | tee -a -- "$LOGFILE"
+echo | tee -a -- "$LOGFILE"
+echo "./jnum_chk" | tee -a -- "$LOGFILE"
+./jnum_chk -J "${J_FLAG}" | tee -a -- "$LOGFILE"
+status="${PIPESTATUS[0]}"
 if [[ $status -ne 0 ]]; then
-    echo "$0: ERROR: jnum_chk non-zero exit code: $status" 1>&2
+    echo "$0: ERROR: jnum_chk non-zero exit code: $status" 1>&2 | tee -a -- "$LOGFILE"
     FAILURE_SUMMARY="$FAILURE_SUMMARY
     jnum_chk non-zero exit code: $status"
     EXIT_CODE="25"
 else
-    echo
-    echo "PASSED: jnum_chk"
+    echo | tee -a -- "$LOGFILE"
+    echo "PASSED: jnum_chk" | tee -a -- "$LOGFILE"
 fi
 
 # dyn_test
 #
-echo
-echo "RUNNING: dyn_test"
-echo
-echo "./dyn_test"
-./dyn_test
-status="$?"
+echo | tee -a -- "$LOGFILE"
+echo "RUNNING: dyn_test" | tee -a -- "$LOGFILE"
+echo | tee -a -- "$LOGFILE"
+echo "./dyn_test" | tee -a -- "$LOGFILE"
+./dyn_test | tee -a -- "$LOGFILE"
+status="${PIPESTATUS[0]}"
 if [[ $status -ne 0 ]]; then
-    echo "$0: ERROR: dyn_test non-zero exit code: $status" 1>&2
+    echo "$0: ERROR: dyn_test non-zero exit code: $status" 1>&2 | tee -a -- "$LOGFILE"
     FAILURE_SUMMARY="$FAILURE_SUMMARY
     dyn_test non-zero exit code: $status"
     EXIT_CODE="26"
 else
-    echo
-    echo "PASSED: dyn_test"
+    echo | tee -a -- "$LOGFILE"
+    echo "PASSED: dyn_test" | tee -a -- "$LOGFILE"
 fi
 
 # jparse_test.sh
 #
-echo
-echo "RUNNING: jparse_test.sh"
-echo
-echo "./jparse_test.sh -J $V_FLAG json_teststr.txt"
-./jparse_test.sh -J "$V_FLAG" json_teststr.txt
-status="$?"
+echo | tee -a -- "$LOGFILE"
+echo "RUNNING: jparse_test.sh" | tee -a -- "$LOGFILE"
+echo | tee -a -- "$LOGFILE"
+echo "./jparse_test.sh -J $V_FLAG json_teststr.txt" | tee -a -- "$LOGFILE"
+./jparse_test.sh -J "$V_FLAG" json_teststr.txt | tee -a -- "$LOGFILE"
+status="${PIPESTATUS[0]}"
 if [[ $status -ne 0 ]]; then
-    echo "$0: ERROR: jparse_test.sh non-zero exit code: $status" 1>&2
+    echo "$0: ERROR: jparse_test.sh non-zero exit code: $status" 1>&2 | tee -a -- "$LOGFILE"
     FAILURE_SUMMARY="$FAILURE_SUMMARY
     jparse_test.sh non-zero exit code: $status"
     EXIT_CODE="27"
 else
-    echo
-    echo "PASSED: jparse_test.sh"
+    echo | tee -a -- "$LOGFILE"
+    echo "PASSED: jparse_test.sh" | tee -a -- "$LOGFILE"
 fi
 
 # txzchk_test.sh
@@ -359,30 +372,30 @@ fi
 # the test_txzchk/bad subdirectory all have that form. This is a stylistic
 # choice that can be changed if so desired but I have the ./ to match the rest
 # of the command line.
-echo
-echo "RUNNING: txzchk_test.sh"
-echo
-echo "./txzchk_test.sh -t ./txzchk -F ./fnamchk -d ./test_txzchk"
-./txzchk_test.sh -t ./txzchk -F ./fnamchk -d ./test_txzchk
-status="$?"
+echo | tee -a -- "$LOGFILE"
+echo "RUNNING: txzchk_test.sh" | tee -a -- "$LOGFILE"
+echo | tee -a -- "$LOGFILE"
+echo "./txzchk_test.sh -t ./txzchk -F ./fnamchk -d ./test_txzchk" | tee -a -- "$LOGFILE"
+./txzchk_test.sh -t ./txzchk -F ./fnamchk -d ./test_txzchk | tee -a -- "$LOGFILE"
+status="${PIPESTATUS[0]}"
 if [[ $status -ne 0 ]]; then
-    echo "$0: ERROR: txzchk_test.sh non-zero exit code: $status" 1>&2
+    echo "$0: ERROR: txzchk_test.sh non-zero exit code: $status" 1>&2 | tee -a -- "$LOGFILE"
     FAILURE_SUMMARY="$FAILURE_SUMMARY
     txzchk_test.sh non-zero exit code: $status"
     EXIT_CODE="28"
 else
-    echo
-    echo "PASSED: txzchk_test.sh"
+    echo | tee -a -- "$LOGFILE"
+    echo "PASSED: txzchk_test.sh" | tee -a -- "$LOGFILE"
 fi
 
 
 # report overall status
 #
 if [[ $EXIT_CODE -ne 0 ]]; then
-    echo
-    echo "These test(s) failed:"
-    echo "$FAILURE_SUMMARY"
-    echo
-    echo "About to exit: $EXIT_CODE"
+    echo | tee -a -- "$LOGFILE"
+    echo "These test(s) failed:" | tee -a -- "$LOGFILE"
+    echo "$FAILURE_SUMMARY" | tee -a -- "$LOGFILE"
+    echo | tee -a -- "$LOGFILE"
+    echo "About to exit: $EXIT_CODE" | tee -a -- "$LOGFILE"
 fi
 exit "$EXIT_CODE"
