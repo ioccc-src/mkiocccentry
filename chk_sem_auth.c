@@ -41,7 +41,7 @@ struct json_sem sem_auth[SEM_AUTH_LEN+1] = {
 /* depth    type        min     max   count   index  name_len validate  name */
   { 5,	JTYPE_NUMBER,	1,	5,	5,	0,	0,	NULL,	NULL },
   { 5,	JTYPE_STRING,	16,	105,	105,	1,	0,	NULL,	NULL },
-  { 5,	JTYPE_BOOL,	2,	9,	9,	2,	0,	NULL,	NULL },
+  { 5,	JTYPE_BOOL,	2,	10,	10,	2,	0,	NULL,	NULL },
   { 5,	JTYPE_NULL,	0,	25,	25,	3,	0,	NULL,	NULL },
   { 4,	JTYPE_MEMBER,	1,	5,	5,	4,	11,	chk_affiliation,	"affiliation" },
   { 4,	JTYPE_MEMBER,	1,	5,	5,	5,	13,	chk_author_handle,	"author_handle" },

@@ -1,6 +1,6 @@
---- ref/info.reference.json.c	2022-10-28 01:30:51
-+++ chk_sem_info.c	2022-10-28 01:30:52
-@@ -36,17 +36,17 @@
+--- ref/info.reference.json.c	2022-10-29 17:11:00
++++ chk_sem_info.c	2022-10-29 16:52:42
+@@ -39,17 +39,17 @@
  
  struct json_sem sem_info[SEM_INFO_LEN+1] = {
  /* depth    type        min     max   count   index  name_len validate  name */
