@@ -3,11 +3,7 @@
  *
  * "Because grammar and syntax alone do not make a complete language." :-)
  *
- * This tool is being co-developed by Cody Boone Ferguson and Landon Curt Noll.
- * The concept of the JSON semantics tables, which this tool will use, was
- * developed by Landon Curt Noll.
- *
- * The JSON parser was co-developed by:
+ * This tool and the JSON parser were co-developed by:
  *
  *	@xexyl
  *	https://xexyl.net		Cody Boone Ferguson
@@ -16,6 +12,8 @@
  *	chongo (Landon Curt Noll, http://www.isthe.com/chongo/index.html) /\oo/\
  *
  * "Because sometimes even the IOCCC Judges need some help." :-)
+ *
+ * The concept of the JSON semantics tables was developed by Landon Curt Noll.
  *
  * "Share and Enjoy!"
  *     --  Sirius Cybernetics Corporation Complaints Division, JSON spec department. :-)
@@ -51,7 +49,7 @@
 /*
  * functions
  */
-static FILE * open_json_dir_file(char const *dir, char const *path);
+static FILE *open_json_dir_file(char const *dir, char const *path);
 static void usage(int exitcode, char const *prog, char const *str) __attribute__((noreturn));
 
 
@@ -550,19 +548,19 @@ main(int argc, char *argv[])
     if (info_all_err_count > 0) {
 	fpr(stderr, __func__, "What follows are semantic errors for .info.json file: %s\n", info_path);
 	if (info_count_err == NULL) {
-	    fpr(stderr, __func__, "  info_count_err is NULL!!!\n");
+	    fpr(stderr, __func__, "info_count_err is NULL!!!\n");
 	} else {
 	    for (i=0; i < info_count_err_count; ++i) {
 		sem_count_err = dyn_array_addr(info_count_err, struct json_sem_count_err, i);
-		fprint_count_err(stderr, "  .info.json count error ", sem_count_err, "\n");
+		fprint_count_err(stderr, ".info.json count error ", sem_count_err, "\n");
 	    }
 	    for (i=0; i < info_val_err_count; ++i) {
 		sem_val_err = dyn_array_addr(info_val_err, struct json_sem_val_err, i);
-		fprint_val_err(stderr, "  .info.json validation error ", sem_val_err, "\n");
+		fprint_val_err(stderr, ".info.json validation error ", sem_val_err, "\n");
 	    }
 	}
 	if (info_int_err_count > 0) {
-	    fpr(stderr, __func__, "  .info.json internal errors found: %ju", info_int_err_count);
+	    fpr(stderr, __func__, ".info.json internal errors found: %ju", info_int_err_count);
 	}
     }
 
@@ -572,19 +570,19 @@ main(int argc, char *argv[])
     if (auth_all_err_count > 0) {
 	fpr(stderr, __func__, "What follows are semantic errors for .author.json file: %s\n", auth_path);
 	if (auth_count_err == NULL) {
-	    fpr(stderr, __func__, "  auth_count_err is NULL!!!\n");
+	    fpr(stderr, __func__, "auth_count_err is NULL!!!\n");
 	} else {
 	    for (i=0; i < auth_count_err_count; ++i) {
 		sem_count_err = dyn_array_addr(auth_count_err, struct json_sem_count_err, i);
-		fprint_count_err(stderr, "  .author.json count error ", sem_count_err, "\n");
+		fprint_count_err(stderr, ".author.json count error ", sem_count_err, "\n");
 	    }
 	    for (i=0; i < auth_val_err_count; ++i) {
 		sem_val_err = dyn_array_addr(auth_val_err, struct json_sem_val_err, i);
-		fprint_val_err(stderr, "  .author.json validation error ", sem_val_err, "\n");
+		fprint_val_err(stderr, ".author.json validation error ", sem_val_err, "\n");
 	    }
 	}
 	if (auth_int_err_count > 0) {
-	    fpr(stderr, __func__, "  .author.json internal errors found: %ju", auth_int_err_count);
+	    fpr(stderr, __func__, ".author.json internal errors found: %ju", auth_int_err_count);
 	}
     }
 
@@ -593,12 +591,12 @@ main(int argc, char *argv[])
      */
     if (all_count_err_count > 0) {
 	if (info_count_err_count > 0) {
-	    dbg(DBG_LOW, "count errors for   .info.json: %ju", info_count_err_count);
+	    dbg(DBG_LOW, "count errors for .info.json: %ju", info_count_err_count);
 	}
 	if (auth_count_err_count > 0) {
 	    dbg(DBG_LOW, "count errors for .author.json: %ju", auth_count_err_count);
 	}
-	dbg(DBG_LOW, "count errors for   both files: %ju", all_count_err_count);
+	dbg(DBG_LOW, "count errors for both files: %ju", all_count_err_count);
     }
 
     /*
@@ -606,12 +604,12 @@ main(int argc, char *argv[])
      */
     if (all_val_err_count > 0) {
 	if (info_val_err_count > 0) {
-	    dbg(DBG_LOW, "validation errors for   .info.json: %ju", info_val_err_count);
+	    dbg(DBG_LOW, "validation errors for .info.json: %ju", info_val_err_count);
 	}
 	if (auth_val_err_count > 0) {
 	    dbg(DBG_LOW, "validation errors for .author.json: %ju", auth_val_err_count);
 	}
-	dbg(DBG_LOW, "validation errors for   both files: %ju", all_val_err_count);
+	dbg(DBG_LOW, "validation errors for both files: %ju", all_val_err_count);
     }
 
     /*
@@ -619,12 +617,12 @@ main(int argc, char *argv[])
      */
     if (all_int_err_count > 0) {
 	if (info_int_err_count > 0) {
-	    dbg(DBG_LOW, "internal errors for   .info.json: %ju", info_int_err_count);
+	    dbg(DBG_LOW, "internal errors for .info.json: %ju", info_int_err_count);
 	}
 	if (auth_int_err_count > 0) {
 	    dbg(DBG_LOW, "internal errors for .author.json: %ju", auth_int_err_count);
 	}
-	dbg(DBG_LOW, "internal errors for   both files: %ju", all_int_err_count);
+	dbg(DBG_LOW, "internal errors for both files: %ju", all_int_err_count);
     }
 
     /*
@@ -632,12 +630,12 @@ main(int argc, char *argv[])
      */
     if (all_all_err_count > 0) {
 	if (info_all_err_count > 0) {
-	    dbg(DBG_LOW, "total semantic errors for   .info.json: %ju", info_all_err_count);
+	    dbg(DBG_LOW, "total semantic errors for .info.json: %ju", info_all_err_count);
 	}
 	if (auth_all_err_count > 0) {
 	    dbg(DBG_LOW, "total semantic errors for .author.json: %ju", auth_all_err_count);
 	}
-	dbg(DBG_LOW, "total semantic errors for   both files: %ju", all_all_err_count);
+	dbg(DBG_LOW, "total semantic errors for both files: %ju", all_all_err_count);
     }
 
     /*
@@ -699,8 +697,7 @@ main(int argc, char *argv[])
 		auth_path = NULL;
 	    }
 	}
-	/* XXX - change 0, to 1 below so that semantic errors will force a non-zero exit - XXX */
-	err(0, __func__, "JSON semantic check failed"); /*ooo*/
+	err(1, __func__, "JSON semantic check failed"); /*ooo*/
 	not_reached();
     } else {
 	dbg(DBG_LOW, "JSON semantic check OK");
