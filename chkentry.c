@@ -699,9 +699,10 @@ main(int argc, char *argv[])
 		auth_path = NULL;
 	    }
 	}
-	/* XXX - change 0, to 1 below so that semantic errors will force a non-zero exit - XXX */
-	err(0, __func__, "JSON semantic check failed"); /*ooo*/
+	err(1, __func__, "JSON semantic check failed"); /*ooo*/
 	not_reached();
+    } else {
+	dbg(DBG_LOW, "JSON semantic check OK");
     }
     exit(0); /*ooo*/
 }

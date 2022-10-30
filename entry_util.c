@@ -1285,15 +1285,17 @@ object2manifest(struct json *node, unsigned int depth, struct json_sem *sem,
     }
 
     /*
-     * examine each JTYPE_MEMBER of the JTYPE_ARRAY
+     * examine each JTYPE_OBJECT for the manifest JTYPE_ARRAY
      */
     for (i=0; i < array_len; ++i) {
 	struct json *e = array->set[i];		/* next item in the JTYPE_ARRAY */
 	char *name = NULL;			/* name string of name part of JTYPE_MEMBER */
 	char *value = NULL;			/* value string of name part of JTYPE_MEMBER */
+	struct json_object *o = NULL;		/* current JTYPE_OBJECT of the manifest JTYPE_ARRAY to examine */
+	struct json *jo = NULL;			/* JSON element of JTYPE_OBJECT of the manifest JTYPE_ARRAY to examine */
 
 	/*
-	 * firewall - validate JTYPE_MEMBER item in the JTYPE_ARRAY
+	 * firewall - validate JTYPE_OBJECT item in the JTYPE_ARRAY
 	 */
 	test = sem_node_valid_converted(e, depth+1, sem, __func__, val_err);
 	if (test == false) {
@@ -1301,11 +1303,48 @@ object2manifest(struct json *node, unsigned int depth, struct json_sem *sem,
 	    dyn_array_free(man.extra);
 	    return false;
 	}
-	if (e->type != JTYPE_MEMBER) {
+	if (e->type != JTYPE_OBJECT) {
 	    if (val_err != NULL) {
-		*val_err = werr_sem_val(123, e, depth, sem, __func__,
-					"manifest JTYPE_ARRAY[%jd] type %s != JTYPE_MEMBER",
+		*val_err = werr_sem_val(123, e, depth+1, sem, __func__,
+					"manifest JTYPE_ARRAY[%jd] type %s != JTYPE_OBJECT",
 					i, json_type_name(e->type));
+	    }
+	    dyn_array_free(man.extra);
+	    return false;
+	}
+	o = &(e->item.object);
+
+	/*
+	 * examine the JTYPE_MEMBER of the JTYPE_OBJECT
+	 *
+	 * In our case, each JTYPE_OBJECT of the manifest JTYPE_ARRAY must contain
+	 * ONLY 1 thing, a single JTYPE_MEMBER
+	 */
+	if (o->len != 1) {
+	    if (val_err != NULL) {
+		*val_err = werr_sem_val(124, e, depth+1, sem, __func__,
+					"manifest JTYPE_ARRAY[%jd] JTYPE_OBJECT len: %d != 1",
+					i, o->len);
+	    }
+	    dyn_array_free(man.extra);
+	    return false;
+	}
+
+	/*
+	 * firewall - validate JTYPE_MEMBER item in the JTYPE_OBJECT of the manifest JTYPE_ARRAY
+	 */
+	jo = o->set[0];
+	test = sem_node_valid_converted(jo, depth+2, sem, __func__, val_err);
+	if (test == false) {
+	    /* sem_node_valid_converted() will have set *val_err */
+	    dyn_array_free(man.extra);
+	    return false;
+	}
+	if (jo->type != JTYPE_MEMBER) {
+	    if (val_err != NULL) {
+		*val_err = werr_sem_val(125, jo, depth+1, sem, __func__,
+					"manifest JTYPE_ARRAY[%jd] 0th JTYPE_OBJECT type %s != JTYPE_MEMBER",
+					i, json_type_name(jo->type));
 	    }
 	    dyn_array_free(man.extra);
 	    return false;
@@ -1314,13 +1353,13 @@ object2manifest(struct json *node, unsigned int depth, struct json_sem *sem,
 	/*
 	 * obtain JTYPE_MEMBER name and value as decoded JSON strings
 	 */
-	name = sem_member_name_decoded_str(e, depth+2, sem, __func__, val_err);
+	name = sem_member_name_decoded_str(jo, depth+2, sem, __func__, val_err);
 	if (name == NULL) {
 	    /* sem_member_name_decoded_str() will have set *val_err */
 	    dyn_array_free(man.extra);
 	    return false;
 	}
-	value = sem_member_value_decoded_str(e, depth+2, sem, __func__, val_err);
+	value = sem_member_value_decoded_str(jo, depth+2, sem, __func__, val_err);
 	if (value == NULL) {
 	    /* sem_member_value_decoded_str() will have set *val_err */
 	    dyn_array_free(man.extra);
@@ -1337,21 +1376,23 @@ object2manifest(struct json *node, unsigned int depth, struct json_sem *sem,
 	    test = test_info_JSON(value);
 	    if (test == false) {
 		if (val_err != NULL) {
-		    *val_err = werr_sem_val(124, e, depth, sem, __func__,
-					    "manifest info_JSON filename is invalid");
+		    *val_err = werr_sem_val(126, jo, depth+2, sem, __func__,
+					    "manifest JTYPE_ARRAY[%jd] 0th JTYPE_OBJECT JTYPE_MEMBER "
+					    "info_JSON filename is invalid", i);
 		}
 		dyn_array_free(man.extra);
 		return false;
 	    }
 
 	    /* count valid occurrence */
-	    ++manp->count_info_JSON;
+	    ++man.count_info_JSON;
 
 	    /* we are allowed only 1 of these mandatory manifest filenames */
-	    if (manp->count_info_JSON != 1) {
+	    if (man.count_info_JSON != 1) {
 		if (val_err != NULL) {
-		    *val_err = werr_sem_val(125, e, depth, sem, __func__,
-					    "manifest found more than one info_JSON filename");
+		    *val_err = werr_sem_val(128, jo, depth+2, sem, __func__,
+					    "manifest JTYPE_ARRAY[%jd] 0th JTYPE_OBJECT JTYPE_MEMBER "
+					    "found more than one info_JSON filename", i);
 		}
 		dyn_array_free(man.extra);
 		return false;
@@ -1364,21 +1405,23 @@ object2manifest(struct json *node, unsigned int depth, struct json_sem *sem,
 	    test = test_author_JSON(value);
 	    if (test == false) {
 		if (val_err != NULL) {
-		    *val_err = werr_sem_val(126, e, depth, sem, __func__,
-					    "manifest author_JSON filename is invalid");
+		    *val_err = werr_sem_val(129, jo, depth+2, sem, __func__,
+					    "manifest JTYPE_ARRAY[%jd] 0th JTYPE_OBJECT JTYPE_MEMBER "
+					    "author_JSON filename is invalid", i);
 		}
 		dyn_array_free(man.extra);
 		return false;
 	    }
 
 	    /* count valid occurrence */
-	    ++manp->count_author_JSON;
+	    ++man.count_author_JSON;
 
 	    /* we are allowed only 1 of these mandatory manifest filenames */
-	    if (manp->count_c_src != 1) {
+	    if (man.count_author_JSON != 1) {
 		if (val_err != NULL) {
-		    *val_err = werr_sem_val(128, e, depth, sem, __func__,
-					    "manifest found more than one author_JSON filename");
+		    *val_err = werr_sem_val(130, jo, depth+2, sem, __func__,
+					    "manifest JTYPE_ARRAY[%jd] 0th JTYPE_OBJECT JTYPE_MEMBER "
+					    "found more than one author_JSON filename", i);
 		}
 		dyn_array_free(man.extra);
 		return false;
@@ -1391,21 +1434,23 @@ object2manifest(struct json *node, unsigned int depth, struct json_sem *sem,
 	    test = test_c_src(value);
 	    if (test == false) {
 		if (val_err != NULL) {
-		    *val_err = werr_sem_val(129, e, depth, sem, __func__,
-					    "manifest c_src (prog.c) filename is invalid");
+		    *val_err = werr_sem_val(131, jo, depth+2, sem, __func__,
+					    "manifest JTYPE_ARRAY[%jd] 0th JTYPE_OBJECT JTYPE_MEMBER "
+					    "c_src filename is invalid", i);
 		}
 		dyn_array_free(man.extra);
 		return false;
 	    }
 
 	    /* count valid occurrence */
-	    ++manp->count_c_src;
+	    ++man.count_c_src;
 
 	    /* we are allowed only 1 of these mandatory manifest filenames */
-	    if (manp->count_c_src != 1) {
+	    if (man.count_c_src != 1) {
 		if (val_err != NULL) {
-		    *val_err = werr_sem_val(130, e, depth, sem, __func__,
-					    "manifest found more than one c_src (prog.c) filename");
+		    *val_err = werr_sem_val(132, jo, depth+2, sem, __func__,
+					    "manifest JTYPE_ARRAY[%jd] 0th JTYPE_OBJECT JTYPE_MEMBER "
+					    "found more than one c_src filename", i);
 		}
 		dyn_array_free(man.extra);
 		return false;
@@ -1418,21 +1463,23 @@ object2manifest(struct json *node, unsigned int depth, struct json_sem *sem,
 	    test = test_Makefile(value);
 	    if (test == false) {
 		if (val_err != NULL) {
-		    *val_err = werr_sem_val(131, e, depth, sem, __func__,
-					    "manifest Makefile filename is invalid");
+		    *val_err = werr_sem_val(133, jo, depth+2, sem, __func__,
+					    "manifest JTYPE_ARRAY[%jd] 0th JTYPE_OBJECT JTYPE_MEMBER "
+					    "Makefile filename is invalid", i);
 		}
 		dyn_array_free(man.extra);
 		return false;
 	    }
 
 	    /* count valid occurrence */
-	    ++manp->count_Makefile;
+	    ++man.count_Makefile;
 
 	    /* we are allowed only 1 of these mandatory manifest filenames */
-	    if (manp->count_Makefile != 1) {
+	    if (man.count_Makefile != 1) {
 		if (val_err != NULL) {
-		    *val_err = werr_sem_val(132, e, depth, sem, __func__,
-					    "manifest found more than one Makefile filename");
+		    *val_err = werr_sem_val(134, jo, depth+2, sem, __func__,
+					    "manifest JTYPE_ARRAY[%jd] 0th JTYPE_OBJECT JTYPE_MEMBER "
+					    "found more than one Makefile filename", i);
 		}
 		dyn_array_free(man.extra);
 		return false;
@@ -1445,21 +1492,23 @@ object2manifest(struct json *node, unsigned int depth, struct json_sem *sem,
 	    test = test_remarks(value);
 	    if (test == false) {
 		if (val_err != NULL) {
-		    *val_err = werr_sem_val(133, e, depth, sem, __func__,
-					    "manifest remarks filename is invalid");
+		    *val_err = werr_sem_val(135, jo, depth+2, sem, __func__,
+					    "manifest JTYPE_ARRAY[%jd] 0th JTYPE_OBJECT JTYPE_MEMBER "
+					    "remarks filename is invalid", i);
 		}
 		dyn_array_free(man.extra);
 		return false;
 	    }
 
 	    /* count valid occurrence */
-	    ++manp->count_remarks;
+	    ++man.count_remarks;
 
 	    /* we are allowed only 1 of these mandatory manifest filenames */
-	    if (manp->count_remarks != 1) {
+	    if (man.count_remarks != 1) {
 		if (val_err != NULL) {
-		    *val_err = werr_sem_val(134, e, depth, sem, __func__,
-					    "remarks found more than one remarks filename");
+		    *val_err = werr_sem_val(136, jo, depth+2, sem, __func__,
+					    "manifest JTYPE_ARRAY[%jd] 0th JTYPE_OBJECT JTYPE_MEMBER "
+					    "found more than one remarks filename", i);
 		}
 		dyn_array_free(man.extra);
 		return false;
@@ -1474,28 +1523,28 @@ object2manifest(struct json *node, unsigned int depth, struct json_sem *sem,
 	    test = test_extra_file(value);
 	    if (test == false) {
 		if (val_err != NULL) {
-		    *val_err = werr_sem_val(135, e, depth, sem, __func__,
-					    "manifest extra_file #%jd filename is invalid",
-					    manp->count_extra_file);
+		    *val_err = werr_sem_val(137, jo, depth+2, sem, __func__,
+					    "manifest JTYPE_ARRAY[%jd] 0th JTYPE_OBJECT JTYPE_MEMBER "
+					    "extra_file #%jd filename is invalid", i, man.count_extra_file);
 		}
 		dyn_array_free(man.extra);
 		return false;
 	    }
 
 	    /* append pointer to extra_file filename to dynamic array */
-	    (void) dyn_array_append_value(manp->extra, value);
+	    (void) dyn_array_append_value(man.extra, &value);
 
 	    /* count valid occurrence */
-	    ++manp->count_extra_file;
+	    ++man.count_extra_file;
 
 	/*
 	 * case: invalid JTYPE_MEMBER - not part of an IOCCC manifest JTYPE_OBJECT
 	 */
 	} else {
 	    if (val_err != NULL) {
-		*val_err = werr_sem_val(136, e, depth+2, sem, __func__,
-					"manifest JTYPE_OBJECT has invalid JTYPE_MEMBER name: <%s>",
-					name);
+		*val_err = werr_sem_val(138, jo, depth+2, sem, __func__,
+					"manifest JTYPE_ARRAY[%jd] 0th JTYPE_OBJECT "
+					"has invalid JTYPE_MEMBER name: <%s>", i, name);
 	    }
 	    dyn_array_free(man.extra);
 	    return false;
@@ -1507,7 +1556,7 @@ object2manifest(struct json *node, unsigned int depth, struct json_sem *sem,
      */
     if (man.count_info_JSON != 1) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(137, node, depth+2, sem, __func__,
+	    *val_err = werr_sem_val(139, node, depth+2, sem, __func__,
 				    "manifest: expected 1 valid info_JSON, found: %jd",
 				    man.count_info_JSON);
 	}
@@ -1516,7 +1565,7 @@ object2manifest(struct json *node, unsigned int depth, struct json_sem *sem,
     }
     if (man.count_author_JSON != 1) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(138, node, depth+2, sem, __func__,
+	    *val_err = werr_sem_val(140, node, depth+2, sem, __func__,
 				    "manifest: expected 1 valid author_JSON, found: %jd",
 				    man.count_author_JSON);
 	}
@@ -1525,7 +1574,7 @@ object2manifest(struct json *node, unsigned int depth, struct json_sem *sem,
     }
     if (man.count_c_src != 1) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(139, node, depth+2, sem, __func__,
+	    *val_err = werr_sem_val(141, node, depth+2, sem, __func__,
 				    "manifest: expected 1 valid c_src, found: %jd",
 				    man.count_c_src);
 	}
@@ -1534,7 +1583,7 @@ object2manifest(struct json *node, unsigned int depth, struct json_sem *sem,
     }
     if (man.count_Makefile != 1) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(140, node, depth+2, sem, __func__,
+	    *val_err = werr_sem_val(142, node, depth+2, sem, __func__,
 				    "manifest: expected 1 valid Makefile, found: %jd",
 				    man.count_Makefile);
 	}
@@ -1543,9 +1592,22 @@ object2manifest(struct json *node, unsigned int depth, struct json_sem *sem,
     }
     if (man.count_remarks != 1) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(141, node, depth+2, sem, __func__,
+	    *val_err = werr_sem_val(143, node, depth+2, sem, __func__,
 				    "manifest: expected 1 valid remarks, found: %jd",
 				    man.count_remarks);
+	}
+	dyn_array_free(man.extra);
+        return false;
+    }
+
+    /*
+     * verify that we do not have to many extra filenames
+     */
+    if (man.count_extra_file < 0 || man.count_extra_file > MAX_FILE_COUNT-MANDATORY_FILE_COUNT) {
+	if (val_err != NULL) {
+	    *val_err = werr_sem_val(144, node, depth+2, sem, __func__,
+				    "manifest: man.count_extra_file: %jd just be >=0 and < %d",
+				    man.count_extra_file, MAX_FILE_COUNT-MANDATORY_FILE_COUNT);
 	}
 	dyn_array_free(man.extra);
         return false;
@@ -1562,7 +1624,7 @@ object2manifest(struct json *node, unsigned int depth, struct json_sem *sem,
 	extra_filename = dyn_array_value(man.extra, char *, i);
 	if (extra_filename == NULL) {
 	    if (val_err != NULL) {
-		*val_err = werr_sem_val(142, node, depth+2, sem, __func__,
+		*val_err = werr_sem_val(145, node, depth+2, sem, __func__,
 					"manifest extra[i = %jd] is NULL", i);
 	    }
 	    dyn_array_free(man.extra);
@@ -1578,7 +1640,7 @@ object2manifest(struct json *node, unsigned int depth, struct json_sem *sem,
 	    extra_filename2 = dyn_array_value(man.extra, char *, j);
 	    if (extra_filename2 == NULL) {
 		if (val_err != NULL) {
-		    *val_err = werr_sem_val(143, node, depth+2, sem, __func__,
+		    *val_err = werr_sem_val(146, node, depth+2, sem, __func__,
 					    "manifest extra[j = %jd] is NULL", j);
 		}
 		dyn_array_free(man.extra);
@@ -1590,7 +1652,7 @@ object2manifest(struct json *node, unsigned int depth, struct json_sem *sem,
 	     */
 	    if (strcmp(extra_filename, extra_filename2) == 0) {
 		if (val_err != NULL) {
-		    *val_err = werr_sem_val(144, node, depth+2, sem, __func__,
+		    *val_err = werr_sem_val(147, node, depth+2, sem, __func__,
 					    "manifest extra[%jd] filename: matches manifest extra[%jd] filename",
 					    i, j);
 		}
