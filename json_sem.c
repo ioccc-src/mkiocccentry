@@ -1654,7 +1654,7 @@ json_sem_zero_count(struct json_sem *sem)
 void
 json_sem_count_chk(struct json_sem *sem, struct dyn_array *count_err)
 {
-    struct json_sem_count_err cnt;	/* semantic count error */
+    struct json_sem_count_err count;	/* semantic count error */
     int i;
 
     /*
@@ -1682,32 +1682,32 @@ json_sem_count_chk(struct json_sem *sem, struct dyn_array *count_err)
 	    /*
 	     * form count is too small error
 	     */
-	    cnt.node = NULL;
-	    cnt.sem = &(sem[i]);
-	    cnt.count = sem[i].count;
-	    cnt.bad_min = true;
-	    cnt.bad_max = false;
-	    cnt.unknown_node = false;
-	    if (cnt.sem != NULL) {
-		cnt.sem_index = cnt.sem->sem_index;
+	    count.node = NULL;
+	    count.sem = &(sem[i]);
+	    count.count = sem[i].count;
+	    count.bad_min = true;
+	    count.bad_max = false;
+	    count.unknown_node = false;
+	    if (count.sem != NULL) {
+		count.sem_index = count.sem->sem_index;
 	    } else {
-		cnt.sem_index = -1;
+		count.sem_index = -1;
 	    }
-	    cnt.diagnostic = calloc(BUFSIZ+1, sizeof(char));
-	    if (cnt.diagnostic == NULL) {
-		cnt.diagnostic = "calloc BUFSIZ calloc failed for count is too small";
-		cnt.malloced = false;
+	    count.diagnostic = calloc(BUFSIZ+1, sizeof(char));
+	    if (count.diagnostic == NULL) {
+		count.diagnostic = "calloc BUFSIZ calloc failed for count is too small";
+		count.malloced = false;
 	    } else {
-		snmsg(cnt.diagnostic, BUFSIZ, "node type %s parse tree depth %u%s%s: found %u < minimum: %d",
+		snmsg(count.diagnostic, BUFSIZ, "node type %s parse tree depth %u%s%s: found %u < minimum: %d",
 		      json_type_name(sem[i].type), sem[i].depth,
 		      (sem[i].name != NULL) ? " member name: " : "",
 		      (sem[i].name != NULL) ? sem[i].name : "",
 		      sem[i].count, sem[i].min);
-		cnt.malloced = true;
+		count.malloced = true;
 	    }
 
 	    /* save semantic count error */
-	    dyn_array_append_value(count_err, &cnt);
+	    dyn_array_append_value(count_err, &count);
 
 	/*
 	 * case: count is too large
@@ -1717,32 +1717,32 @@ json_sem_count_chk(struct json_sem *sem, struct dyn_array *count_err)
 	    /*
 	     * form count is too large error
 	     */
-	    cnt.node = NULL;
-	    cnt.sem = &(sem[i]);
-	    cnt.count = sem[i].count;
-	    cnt.bad_min = false;
-	    cnt.bad_max = true;
-	    cnt.unknown_node = false;
-	    if (cnt.sem != NULL) {
-		cnt.sem_index = cnt.sem->sem_index;
+	    count.node = NULL;
+	    count.sem = &(sem[i]);
+	    count.count = sem[i].count;
+	    count.bad_min = false;
+	    count.bad_max = true;
+	    count.unknown_node = false;
+	    if (count.sem != NULL) {
+		count.sem_index = count.sem->sem_index;
 	    } else {
-		cnt.sem_index = -1;
+		count.sem_index = -1;
 	    }
-	    cnt.diagnostic = calloc(BUFSIZ+1, sizeof(char));
-	    if (cnt.diagnostic == NULL) {
-		cnt.diagnostic = "calloc BUFSIZ calloc failed for count is too small";
-		cnt.malloced = false;
+	    count.diagnostic = calloc(BUFSIZ+1, sizeof(char));
+	    if (count.diagnostic == NULL) {
+		count.diagnostic = "calloc BUFSIZ calloc failed for count is too small";
+		count.malloced = false;
 	    } else {
-		snmsg(cnt.diagnostic, BUFSIZ, "node type %s parse tree depth %u%s%s: found %u > maximum: %d",
+		snmsg(count.diagnostic, BUFSIZ, "node type %s parse tree depth %u%s%s: found %u > maximum: %d",
 		      json_type_name(sem[i].type), sem[i].depth,
 		      (sem[i].name != NULL) ? " member name: " : "",
 		      (sem[i].name != NULL) ? sem[i].name : "",
 		      sem[i].count, sem[i].max);
-		cnt.malloced = true;
+		count.malloced = true;
 	    }
 
 	    /* save semantic count error */
-	    dyn_array_append_value(count_err, &cnt);
+	    dyn_array_append_value(count_err, &count);
 	}
     }
     return;
@@ -1849,7 +1849,7 @@ json_sem_find(struct json *node, unsigned int depth, struct json_sem *sem)
  *	ap	variable argument list, required ap args:
  *
  *		sem		JSON semantic table (ends with a JTYPE_UNSET JSON type)
- *		count_err		dynamic array of JSON semantic count errors
+ *		count_err	dynamic array of JSON semantic count errors
  *		val_err		dynamic array of JSON semantic validation errors
  *
  * NOTE: This function does nothing if node == NULL.
@@ -1865,7 +1865,7 @@ sem_walk(struct json *node, unsigned int depth, va_list ap)
     struct dyn_array *val_err = NULL;	/* dynamic array of JSON semantic validation errors */
     bool test = false;			/* validation test result */
     struct json_sem_val_err *err = NULL;/* pointer to semantic validation error */
-    struct json_sem_count_err cnt;	/* semantic count error */
+    struct json_sem_count_err count;	/* semantic count error */
     int index = -1;			/* semantic array index match or -1 ==> no march or < -1 ==> error */
 
     /*
@@ -1951,24 +1951,24 @@ sem_walk(struct json *node, unsigned int depth, va_list ap)
 	/*
 	 * semantic table non-match
 	 */
-	cnt.node = node;
-	cnt.sem = NULL;
-	cnt.count = 1;
-	cnt.bad_min = false;
-	cnt.bad_max = false;
-	cnt.unknown_node = true;
-	cnt.sem_index = -1;
-	cnt.diagnostic = calloc(BUFSIZ+1, sizeof(char));
-	if (cnt.diagnostic == NULL) {
-	    cnt.diagnostic = "calloc BUFSIZ calloc failed for unexpected node";
-	    cnt.malloced = false;
+	count.node = node;
+	count.sem = NULL;
+	count.count = 1;
+	count.bad_min = false;
+	count.bad_max = false;
+	count.unknown_node = true;
+	count.sem_index = -1;
+	count.diagnostic = calloc(BUFSIZ+1, sizeof(char));
+	if (count.diagnostic == NULL) {
+	    count.diagnostic = "calloc BUFSIZ calloc failed for unexpected node";
+	    count.malloced = false;
 	} else {
 	    if (node->type == JTYPE_MEMBER) {
 		char *name = NULL;	/* name of JTYPE_MEMBER */
 
 		name = sem_member_name_decoded_str(node, depth, sem, __func__, &err);
 		if (name == NULL) {
-		    snmsg(cnt.diagnostic, BUFSIZ, "depth: %u type: %s name: ((NULL)); unnamed member",
+		    snmsg(count.diagnostic, BUFSIZ, "depth: %u type: %s name: ((NULL)); unnamed member",
 			  depth, json_item_type_name(node));
 
 		    /* be sure we have a validation error message */
@@ -1981,43 +1981,43 @@ sem_walk(struct json *node, unsigned int depth, va_list ap)
 		    dyn_array_append_value(val_err, err);
 
 		} else {
-		    snmsg(cnt.diagnostic, BUFSIZ, "depth: %u type: %s name: \"%s\"; unexpected node",
+		    snmsg(count.diagnostic, BUFSIZ, "depth: %u type: %s name: \"%s\"; unexpected node",
 			  depth, json_item_type_name(node), name);
 		}
 	    } else {
-		snmsg(cnt.diagnostic, BUFSIZ, "depth: %u type: %s; unexpected node",
+		snmsg(count.diagnostic, BUFSIZ, "depth: %u type: %s; unexpected node",
 		      depth, json_item_type_name(node));
 	    }
-	    cnt.malloced = true;
+	    count.malloced = true;
 	}
 
 	/* save semantic count error */
-	dyn_array_append_value(count_err, &cnt);
+	dyn_array_append_value(count_err, &count);
 
     } else {
 
 	/*
 	 * error searching semantic table
 	 */
-	cnt.node = node;
-	cnt.sem = NULL;
-	cnt.count = 1;
-	cnt.bad_min = false;
-	cnt.bad_max = false;
-	cnt.unknown_node = true;
-	cnt.sem_index = -1;
-	cnt.diagnostic = calloc(BUFSIZ+1, sizeof(char));
-	if (cnt.diagnostic == NULL) {
-	    cnt.diagnostic = "calloc BUFSIZ calloc failed for json_sem_find result < -1";
-	    cnt.malloced = false;
+	count.node = node;
+	count.sem = NULL;
+	count.count = 1;
+	count.bad_min = false;
+	count.bad_max = false;
+	count.unknown_node = true;
+	count.sem_index = -1;
+	count.diagnostic = calloc(BUFSIZ+1, sizeof(char));
+	if (count.diagnostic == NULL) {
+	    count.diagnostic = "calloc BUFSIZ calloc failed for json_sem_find result < -1";
+	    count.malloced = false;
 	} else {
-	    snwerr(index, cnt.diagnostic, BUFSIZ, "json_sem_find",
+	    snwerr(index, count.diagnostic, BUFSIZ, "json_sem_find",
 			  "json_sem_find failed, returned %d < -1", index);
-	    cnt.malloced = true;
+	    count.malloced = true;
 	}
 
 	/* save semantic count error */
-	dyn_array_append_value(count_err, &cnt);
+	dyn_array_append_value(count_err, &count);
     }
 
     /*
@@ -2047,7 +2047,7 @@ sem_walk(struct json *node, unsigned int depth, va_list ap)
  * function returns false (indicating a JSON semantic validation error is found),
  * the *pval_err dynamic array is appended with the given JSON semantic validation error.
  *
- * Once the JSON parse tree is walked, the counts in the JSON semantic table
+ * Once the JSON parse tree is traversed, the counts in the JSON semantic table
  * are checked against the minimum and maximum allowed counts.  When a count
  * is found to be out of range, JSON semantic count error is appended to
  * the *pcount_err dynamic array.
@@ -2069,7 +2069,7 @@ sem_walk(struct json *node, unsigned int depth, va_list ap)
  *	0 ==> JSON parse tree is semantically consistent with the JSON semantic table,
  *	> 0  ==> number of errors (count+validation+internal) found
  *
- * NOTE: The number of errors do not reflect the sum of JSON semantic count and
+ * NOTE: The number of errors does not reflect the sum of JSON semantic count and
  *	 JSON semantic validation errors because internal errors are also counted.
  *	 When evaluating a non-zero return and both the *pval_err dynamic array
  *	 and the *pcount_err dynamic array are empty, them report an internal json_sem_check()
