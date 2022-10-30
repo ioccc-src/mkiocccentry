@@ -167,7 +167,7 @@ JSON_COMMA		","
 
 .			{
 			    /* invalid token: any other character */
-			    warn(__func__, "\ninvalid token: 0x%02x = <%c>", *yytext, *yytext);
+			    warn(__func__, "invalid token: 0x%02x = <%c>", *yytext, *yytext);
 
 			    /*
 			     * This is a hack for better error messages with
