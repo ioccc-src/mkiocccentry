@@ -42,7 +42,7 @@ extern "C" {
  * backward compatibility
  *
  * Not all compilers support __attribute__ nor do they support __has_builtin.
- * For example, MSVC, TenDRA and Little C Compiler doesn't support __attribute__.
+ * For example, MSVC, TenDRA and Little C Compiler don't support __attribute__.
  * Early gcc does not support __attribute__.
  *
  * Not all compilers have __has_builtin
