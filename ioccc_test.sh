@@ -260,7 +260,7 @@ if [[ $status -ne 5 ]]; then
 else
     grep -q '^ERROR\[5\]: main: simulated error, foo: foo bar: bar: errno\[2\]: No such file or directory$' dbg.out
     status="$?"
-    if [[ $status -ne 1 ]]; then
+    if [[ $status -ne 0 ]]; then
 	echo "$0: ERROR: did not find the correct dbg error message" 1>&2 | tee -a -- "$LOGFILE"
 	echo "$0: ERROR: beginning dbg.out contents" 1>&2 | tee -a -- "$LOGFILE"
 	< dbg.out tee -a -- "$LOGFILE"
