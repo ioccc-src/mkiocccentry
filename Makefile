@@ -525,13 +525,15 @@ soup/chk_sem_info.o: soup/chk_sem_info.c soup/chk_sem_info.h Makefile
 soup/chk_validate.o: soup/chk_validate.c Makefile
 	cd soup; ${CC} ${CFLAGS} -I.. chk_validate.c -c
 
-chkentry.o: chkentry.c chkentry.h Makefile
+chkentry.o: chkentry.c chkentry.h jparse.tab.h Makefile
 	${CC} ${CFLAGS} chkentry.c -Isoup -c
 
 chkentry: chkentry.o dbg.o util.o sanity.o utf8_posix_map.o dyn_array.o jparse.o jparse.tab.o json_parse.o \
-	json_util.o soup/chk_validate.o entry_util.c json_sem.o foo.o location.o soup/chk_sem_info.o soup/chk_sem_auth.o Makefile
+	json_util.o soup/chk_validate.o entry_util.c json_sem.o foo.o location.o soup/chk_sem_info.o \
+	soup/chk_sem_auth.o Makefile
 	${CC} ${CFLAGS} chkentry.o dbg.o util.o sanity.o utf8_posix_map.o jparse.o jparse.tab.o dyn_array.o json_parse.o \
-		json_util.o soup/chk_validate.o entry_util.o json_sem.o foo.o location.o soup/chk_sem_info.o soup/chk_sem_auth.o -o $@
+		json_util.o soup/chk_validate.o entry_util.o json_sem.o foo.o location.o soup/chk_sem_info.o \
+		soup/chk_sem_auth.o -o $@
 
 jstrencode.o: jstrencode.c jstrencode.h json_util.h json_util.c Makefile
 	${CC} ${CFLAGS} jstrencode.c -c
