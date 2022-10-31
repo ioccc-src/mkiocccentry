@@ -44,7 +44,7 @@ extern struct json_sem sem_info[SEM_INFO_LEN+1];
 
 extern bool chk_Makefile(struct json const *node,
 	unsigned int depth, struct json_sem *sem, struct json_sem_val_err **val_err);
-extern bool chk_author_JSON(struct json const *node,
+extern bool chk_auth_JSON(struct json const *node,
 	unsigned int depth, struct json_sem *sem, struct json_sem_val_err **val_err);
 extern bool chk_c_src(struct json const *node,
 	unsigned int depth, struct json_sem *sem, struct json_sem_val_err **val_err);

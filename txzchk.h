@@ -82,9 +82,9 @@ struct txz_info
     bool has_info_json;			    /* true ==> has a .info.json file */
     bool empty_info_json;		    /* true ==> .info.json size == 0 */
     off_t info_json_size;		    /* .info.json file size */
-    bool has_author_json;		    /* true ==> has an .author.json file */
-    off_t author_json_size;		    /* .author.json file size */
-    bool empty_author_json;		    /* true ==> .author.json size == 0 */
+    bool has_auth_json;			    /* true ==> has an .auth.json file */
+    off_t auth_json_size;		    /* .auth.json file size */
+    bool empty_auth_json;		    /* true ==> .auth.json size == 0 */
     bool has_prog_c;			    /* true ==> has a prog.c file */
     bool empty_prog_c;			    /* true ==> prog.c size == 0 (this is for debugging information only) */
     off_t prog_c_size;			    /* prog.c file size */
@@ -103,7 +103,7 @@ struct txz_info
     uintmax_t files_size_too_big;	    /* > 0 ==> total number of times files size sum > MAX_SUM_FILELEN */
     uintmax_t files_size_shrunk;	    /* > 0 ==> total files size shrunk this many times */
     uintmax_t correct_directory;	    /* number of files in the correct directory */
-    uintmax_t invalid_dot_files;	    /* number of dot files that aren't .author.json and .info.json */
+    uintmax_t invalid_dot_files;	    /* number of dot files that aren't .auth.json and .info.json */
     uintmax_t named_dot;		    /* number of files called just '.' */
     uintmax_t total_files;		    /* total files in the tarball */
     uintmax_t abnormal_files;		    /* total number of abnormal files in tarball (i.e. not regular files) */

@@ -234,7 +234,7 @@ RUN_TAR_TEST="true"
 TEST_FILE=$(mktemp .txzchk_test.test_file.XXXXXXXXXX)
 status="$?"
 if [[ $status -ne 0 ]]; then
-    echo "$0: ERROR: mktemp $TEST_FILE exit code: $status" 1>&2
+    echo "$0: ERROR: mktemp .txzchk_test.test_file.XXXXXXXXXX exit code: $status" 1>&2
     EXIT_CODE=30
     RUN_TAR_TEST=
 fi

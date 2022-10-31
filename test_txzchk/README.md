@@ -26,7 +26,7 @@ drwxr-xr-x  0 501    20          0 Jun  3 05:50 test-0/
 -rw-r--r--  0 501    20       1854 Jun  3 05:50 test-0/Makefile
 -rw-r--r--  0 501    20          4 Jun  3 05:50 test-0/extra2
 -rw-r--r--  0 501    20          0 Jun  3 05:50 test-0/prog.c
--rw-r--r--  0 501    20       2793 Jun  3 05:50 test-0/.author.json
+-rw-r--r--  0 501    20       2793 Jun  3 05:50 test-0/.auth.json
 -rw-r--r--  0 501    20       3715 Jun  3 05:50 test-0/remarks.md
 -rw-r--r--  0 501    20       1429 Jun  3 05:50 test-0/.info.json
 -rw-r--r--  0 501    20          4 Jun  3 05:50 test-0/extra1

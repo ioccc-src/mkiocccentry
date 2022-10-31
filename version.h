@@ -77,9 +77,9 @@
 #define INFO_VERSION "1.13 2022-10-28"		/* format: major.minor YYYY-MM-DD */
 
 /*
- * Version of info for JSON the .author.json file.
+ * Version of info for JSON the .auth.json file.
  */
-#define AUTHOR_VERSION "1.16 2022-10-28"	/* format: major.minor YYYY-MM-DD */
+#define AUTH_VERSION "1.17 2022-10-30"	/* format: major.minor YYYY-MM-DD */
 
 /*
  * official fnamchk version

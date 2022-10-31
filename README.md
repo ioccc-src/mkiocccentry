@@ -58,8 +58,8 @@ For more information and examples, try:
 
 ##  `chkentry`
 
-The official **IOCCC** `.info.json` and `.author.json` sanity checker tool.
-Invoked by `mkiocccentry` after the `.info.json` and `.author.json` files have
+The official **IOCCC** `.info.json` and `.auth.json` sanity checker tool.
+Invoked by `mkiocccentry` after the `.info.json` and `.auth.json` files have
 been created, it will attempt to validate the files. If it does not successfully
 validate the files there is a mismatch between what is expected and what is
 actually there and `mkiocccentry` will fail.

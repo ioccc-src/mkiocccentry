@@ -33,7 +33,7 @@
 	"test_mode" : false,
 	"manifest" : [
 		{"info_JSON" : ".info.json"},
-		{"author_JSON" : ".author.json"},
+		{"auth_JSON" : ".auth.json"},
 		{"c_src" : "prog.c"},
 		{"Makefile" : "Makefile"},
 		{"extra_file" : "extra1"},

@@ -55,7 +55,7 @@
 #include "chk_sem_info.h"
 
 /*
- * chk_sem_auth - check .author.json semantics
+ * chk_sem_auth - check .auth.json semantics
  */
 #include "chk_sem_auth.h"
 
@@ -84,7 +84,7 @@
  */
 static const char * const usage_msg =
     "usage: %s [-h] [-v level] [-J level] [-V] [-q] entry_dir\n"
-    "usage: %s [-h] [-v level] [-J level] [-V] [-q] info.json author.json\n"
+    "usage: %s [-h] [-v level] [-J level] [-V] [-q] info.json auth.json\n"
     "\n"
     "\t-h\t\tprint help message and exit\n"
     "\t-v level\tset verbosity level (def level: %d)\n"
@@ -93,9 +93,9 @@ static const char * const usage_msg =
     "\t-q\t\tquiet mode (def: not quiet)\n"
     "\t\t\t    NOTE: -q will also silence msg(), warn(), warnp() if -v 0\n"
     "\n"
-    "entry_dir\tIOCCC entry directory with .info.json and author.json files\n"
+    "entry_dir\tIOCCC entry directory with .info.json and auth.json files\n"
     "info.json\tcheck info.json file, . ==> skip IOCCC info check\n"
-    "author.json\tcheck author.json file, . ==> skip IOCCC author check\n"
+    "auth.json\tcheck auth.json file, . ==> skip IOCCC author check\n"
     "\n"
     "Exit codes:\n"
     "     0   all is OK\n"

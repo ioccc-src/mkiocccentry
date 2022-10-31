@@ -1,5 +1,5 @@
---- ref/info.reference.json.c	2022-10-29 17:11:00
-+++ chk_sem_info.c	2022-10-29 16:52:42
+--- ref/info.reference.json.c	2022-10-30 14:41:07
++++ chk_sem_info.c	2022-10-30 14:33:42
 @@ -39,17 +39,17 @@
  
  struct json_sem sem_info[SEM_INFO_LEN+1] = {
@@ -7,7 +7,8 @@
 -  { 5,	JTYPE_STRING,	1,	84,	84,	0,	0,	NULL,	NULL },
 +  { 5,	JTYPE_STRING,	10,	84,	84,	0,	0,	NULL,	NULL },
    { 4,	JTYPE_MEMBER,	1,	1,	1,	1,	8,	chk_Makefile,	"Makefile" },
-   { 4,	JTYPE_MEMBER,	1,	1,	1,	2,	11,	chk_author_JSON,	"author_JSON" },
+-  { 4,	JTYPE_MEMBER,	1,	1,	1,	2,	9,	chk_auth_JSON,	"auth_JSON" },
++  { 4,	JTYPE_MEMBER,	1,	1,	1,	2,	11,	chk_auth_JSON,	"auth_JSON" },
    { 4,	JTYPE_MEMBER,	1,	1,	1,	3,	5,	chk_c_src,	"c_src" },
 -  { 4,	JTYPE_MEMBER,	1,	37,	37,	4,	10,	chk_extra_file,	"extra_file" },
 +  { 4,	JTYPE_MEMBER,	0,	37,	37,	4,	10,	chk_extra_file,	"extra_file" },

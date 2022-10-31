@@ -143,7 +143,7 @@ main(int argc, char *argv[])
     int extra_count = 0;			/* number of extra files */
     char **extra_list = NULL;			/* list of extra files (if any) */
     struct info info;				/* data to form .info.json */
-    struct auth auth;				/* data to form .author.json */
+    struct auth auth;				/* data to form .auth.json */
     int author_count = 0;			/* number of authors */
     struct author *author_set = NULL;		/* list of authors */
     bool tar_flag_used = false;			/* true ==> -t /path/to/tar was given */
@@ -575,14 +575,14 @@ main(int argc, char *argv[])
     form_auth(&auth, &info, author_count, author_set);
 
     /*
-     * write the .author.json file
+     * write the .auth.json file
      */
     if (!quiet) {
-	para("", "Forming the .author.json file ...", NULL);
+	para("", "Forming the .auth.json file ...", NULL);
     }
-    write_author(&auth, entry_dir, chkentry, fnamchk);
+    write_auth(&auth, entry_dir, chkentry, fnamchk);
     if (!quiet) {
-	para("... completed .author.json file.", "", NULL);
+	para("... completed .auth.json file.", "", NULL);
     }
 
     /*
@@ -4608,7 +4608,7 @@ write_info(struct info *infop, char const *entry_dir, char const *chkentry, char
      * write mandatory files to the open .info.json file
      */
     ret = json_fprintf_value_string(info_stream, "\t\t{", "info_JSON", " : ", INFO_JSON_FILENAME, "},\n") &&
-	  json_fprintf_value_string(info_stream, "\t\t{", "author_JSON", " : ", AUTHOR_JSON_FILENAME, "},\n") &&
+	  json_fprintf_value_string(info_stream, "\t\t{", "auth_JSON", " : ", AUTH_JSON_FILENAME, "},\n") &&
 	  json_fprintf_value_string(info_stream, "\t\t{", "c_src", " : ", infop->prog_c, "},\n") &&
 	  json_fprintf_value_string(info_stream, "\t\t{", "Makefile", " : ", infop->Makefile, "},\n") &&
 	  json_fprintf_value_string(info_stream, "\t\t{", "remarks", " : ", infop->remarks_md,
@@ -4722,7 +4722,7 @@ form_auth(struct auth *authp, struct info *infop, int author_count, struct autho
      */
     /* copy over file format strings as compiled in compiled in constants */
     authp->no_comment = infop->no_comment;
-    authp->author_version = AUTHOR_VERSION;
+    authp->auth_version = AUTH_VERSION;
     authp->IOCCC_contest = infop->IOCCC_contest;
     /* contest year */
     authp->year = infop->year;
@@ -4773,7 +4773,7 @@ form_auth(struct auth *authp, struct info *infop, int author_count, struct autho
 
 
 /*
- * write_author - create the .author.json file
+ * write_auth - create the .auth.json file
  *
  * Form a simple JSON .author file describing the entry.
  *
@@ -4786,11 +4786,11 @@ form_auth(struct auth *authp, struct info *infop, int author_count, struct autho
  * This function does not return on error.
  */
 static void
-write_author(struct auth *authp, char const *entry_dir, char const *chkentry, char const *fnamchk)
+write_auth(struct auth *authp, char const *entry_dir, char const *chkentry, char const *fnamchk)
 {
-    char *author_path;		/* path to .author.json file */
-    size_t author_path_len;	/* length of path to .author.json */
-    FILE *author_stream;	/* open write stream to the .author.json file */
+    char *author_path;		/* path to .auth.json file */
+    size_t author_path_len;	/* length of path to .auth.json */
+    FILE *author_stream;	/* open write stream to the .auth.json file */
     int ret;			/* libc function return */
     int exit_code;		/* exit code from shell_cmd() */
     int i;
@@ -4812,9 +4812,9 @@ write_author(struct auth *authp, char const *entry_dir, char const *chkentry, ch
 
 
     /*
-     * open .author.json for writing
+     * open .auth.json for writing
      */
-    author_path_len = strlen(entry_dir) + 1 + LITLEN(AUTHOR_JSON_FILENAME) + 1;
+    author_path_len = strlen(entry_dir) + 1 + LITLEN(AUTH_JSON_FILENAME) + 1;
     errno = 0;			/* pre-clear errno for errp() */
     author_path = (char *)malloc(author_path_len + 1);
     if (author_path == NULL) {
@@ -4822,12 +4822,12 @@ write_author(struct auth *authp, char const *entry_dir, char const *chkentry, ch
 	not_reached();
     }
     errno = 0;			/* pre-clear errno for errp() */
-    ret = snprintf(author_path, author_path_len, "%s/%s", entry_dir, AUTHOR_JSON_FILENAME);
+    ret = snprintf(author_path, author_path_len, "%s/%s", entry_dir, AUTH_JSON_FILENAME);
     if (ret <= 0) {
 	errp(167, __func__, "snprintf #0 error: %d", ret);
 	not_reached();
     }
-    dbg(DBG_HIGH, ".author.json path: %s", author_path);
+    dbg(DBG_HIGH, ".auth.json path: %s", author_path);
     errno = 0;			/* pre-clear errno for errp() */
     author_stream = fopen(author_path, "w");
     if (author_stream == NULL) {
@@ -4836,12 +4836,12 @@ write_author(struct auth *authp, char const *entry_dir, char const *chkentry, ch
     }
 
     /*
-     * write leading part of authorship to the open .author.json file
+     * write leading part of authorship to the open .auth.json file
      */
     errno = 0;			/* pre-clear errno for errp() */
     ret = fprintf(author_stream, "{\n") > 0 &&
 	json_fprintf_value_string(author_stream, "\t", JSON_PARSING_DIRECTIVE_NAME, " : ", JSON_PARSING_DIRECTIVE_VALUE, ",\n") &&
-	json_fprintf_value_string(author_stream, "\t", "IOCCC_author_version", " : ", AUTHOR_VERSION, ",\n") &&
+	json_fprintf_value_string(author_stream, "\t", "IOCCC_auth_version", " : ", AUTH_VERSION, ",\n") &&
 	json_fprintf_value_string(author_stream, "\t", "IOCCC_contest", " : ", IOCCC_CONTEST, ",\n") &&
 	json_fprintf_value_long(author_stream, "\t", "IOCCC_year", " : ", (long)IOCCC_YEAR, ",\n") &&
 	json_fprintf_value_string(author_stream, "\t", "mkiocccentry_version", " : ", MKIOCCCENTRY_VERSION, ",\n") &&
@@ -4859,7 +4859,7 @@ write_author(struct auth *authp, char const *entry_dir, char const *chkentry, ch
     }
 
     /*
-     * write author info to the open .author.json file
+     * write author info to the open .auth.json file
      */
     for (i = 0; i < authp->author_count; ++i) {
 	struct author *ap = &(authp->author[i]);
@@ -4885,7 +4885,7 @@ write_author(struct auth *authp, char const *entry_dir, char const *chkentry, ch
     }
 
     /*
-     * write trailing part of authorship to the open .author.json file
+     * write trailing part of authorship to the open .auth.json file
      */
     errno = 0;			/* pre-clear errno for errp() */
     ret = fprintf(author_stream, "\t],\n") > 0 &&
@@ -4915,7 +4915,7 @@ write_author(struct auth *authp, char const *entry_dir, char const *chkentry, ch
      */
     if (!quiet) {
 	para("",
-	    "Checking the format of .author.json ...", NULL);
+	    "Checking the format of .auth.json ...", NULL);
     }
     dbg(DBG_HIGH, "about to perform: %s -q -- . %s", chkentry, author_path);
     exit_code = shell_cmd(__func__, true, "% -q -- . %", chkentry, author_path);
@@ -4925,7 +4925,7 @@ write_author(struct auth *authp, char const *entry_dir, char const *chkentry, ch
 	not_reached();
     }
     if (!quiet) {
-	para("... all appears well with the .author.json file.", NULL);
+	para("... all appears well with the .auth.json file.", NULL);
     }
 
     /*

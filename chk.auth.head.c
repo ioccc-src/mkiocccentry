@@ -1,5 +1,5 @@
 /*
- * chk_sem_auth - check .author.json semantics
+ * chk_sem_auth - check .auth.json semantics
  *
  * "Because grammar and syntax alone do not make a complete language." :-)
  *
@@ -32,7 +32,7 @@
 
 
 /*
- * chk_sem_auth - check .author.json semantics
+ * chk_sem_auth - check .auth.json semantics
  */
 #include "chk_sem_auth.h"
 

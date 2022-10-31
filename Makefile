@@ -303,7 +303,7 @@ DSYMDIRS= $(TARGETS:=.dSYM)
 SH_FILES= iocccsize_test.sh jstr_test.sh limit_ioccc.sh mkiocccentry_test.sh \
 	  vermod.sh prep.sh run_bison.sh run_flex.sh reset_tstamp.sh ioccc_test.sh \
 	  jparse_test.sh txzchk_test.sh hostchk.sh jsemcgen.sh have_timegm.sh \
-	  run_usage.sh bug_report.sh
+	  run_usage.sh bug_report.sh all_ref.sh
 BUILD_LOG= build.log
 TXZCHK_LOG=txzchk_test.log
 
@@ -772,79 +772,17 @@ rebuild_jnum_test: jnum_gen jnum.testset jnum_header.c Makefile
 	${CP} -f -v jnum_header.c jnum_test.c
 	./jnum_gen jnum.testset >> jnum_test.c
 
-# Form unpatched semantic tables, without headers and trailers, from the reference info and author JSON files
+# Form unpatched semantic tables, without headers and trailers, from the reference info and auth JSON files
 #
 # rule used by prep.sh
 #
-all_ref: jsemtblgen jsemcgen.sh test_JSON/info.json/good test_JSON/author.json/good
+all_ref: jsemtblgen jsemcgen.sh test_JSON/info.json/good test_JSON/auth.json/good all_ref.sh
 	rm -rf ref
 	mkdir -p ref
-	for i in test_JSON/info.json/good/*.json; do \
-	    json="`${BASENAME} -- "$$i"`"; \
-	    echo "rm -f ref/$$json.c"; \
-	    rm -f "ref/$$json.c"; \
-	    echo "cat chk.info.head.c > ref/$$json.c"; \
-	    cat chk.info.head.c > "ref/$$json.c"; \
-	    echo "./jsemcgen.sh -N sem_info -P chk -- $$i . . . >> ref/$$json.c"; \
-	    ./jsemcgen.sh -N sem_info -P chk -- "$$i" . . . >> "ref/$$json.c"; \
-	    status="$$?"; \
-	    if [[ $$status -ne 0 ]]; then \
-		echo "./jsemcgen.sh -N sem_info -P chk -- $$i . . . failed, exit code: $$status" 1>&2 ; \
-		exit 1; \
-	    fi; \
-	    echo "cat chk.info.tail.c >> ref/$$json.c"; \
-	    cat chk.info.tail.c >> "ref/$$json.c"; \
-	    echo "ls -l ref/$$json.c"; \
-	    ls -l "ref/$$json.c"; \
-	    echo "rm -f ref/$$json.h"; \
-	    rm -f "ref/$$json.h"; \
-	    echo "cat chk.info.head.h > ref/$$json.h"; \
-	    cat chk.info.head.h > "ref/$$json.h"; \
-	    echo "./jsemcgen.sh -N sem_info -P chk -I -- $$i . . . >> ref/$$json.h"; \
-	    ./jsemcgen.sh -N sem_info -P chk -I -- "$$i" . . . >> "ref/$$json.h"; \
-	    status="$$?"; \
-	    if [[ $$status -ne 0 ]]; then \
-		echo "./jsemcgen.sh -N sem_info -P chk -I -- $$i . . . failed, exit code: $$status" 1>&2 ; \
-		exit 2; \
-	    fi; \
-	    echo "cat chk.info.tail.h >> ref/$$json.h"; \
-	    cat chk.info.tail.h >> "ref/$$json.h"; \
-	    echo "ls -l ref/$$json.h"; \
-	    ls -l "ref/$$json.h"; \
-	done
-	for i in test_JSON/author.json/good/*.json; do \
-	    json="`${BASENAME} -- "$$i"`"; \
-	    echo "rm -f ref/$$json.c"; \
-	    rm -f "ref/$$json.c"; \
-	    echo "cat chk.auth.head.c > ref/$$json.c"; \
-	    cat chk.auth.head.c > "ref/$$json.c"; \
-	    echo "./jsemcgen.sh -N sem_auth -P chk -- $$i . . . >> ref/$$json.c"; \
-	    ./jsemcgen.sh -N sem_auth -P chk -- "$$i" . . . >> "ref/$$json.c"; \
-	    status="$$?"; \
-	    if [[ $$status -ne 0 ]]; then \
-		echo "./jsemcgen.sh -N sem_auth -P chk -- $$i . . . failed, exit code: $$status" 1>&2 ; \
-		exit 3; \
-	    fi; \
-	    echo "cat chk.auth.tail.c >> ref/$$json.c"; \
-	    cat chk.auth.tail.c >> "ref/$$json.c"; \
-	    echo "ls -l ref/$$json.c"; \
-	    ls -l "ref/$$json.c"; \
-	    echo "rm -f ref/$$json.h"; \
-	    rm -f "ref/$$json.h"; \
-	    echo "cat chk.auth.head.h > ref/$$json.h"; \
-	    cat chk.auth.head.h > "ref/$$json.h"; \
-	    echo "./jsemcgen.sh -N sem_auth -P chk -I -- $$i . . . >> ref/$$json.h"; \
-	    ./jsemcgen.sh -N sem_auth -P chk -I -- "$$i" . . . >> "ref/$$json.h"; \
-	    status="$$?"; \
-	    if [[ $$status -ne 0 ]]; then \
-		echo "./jsemcgen.sh -N sem_auth -P chk -I -- $$i . . . failed, exit code: $$status" 1>&2 ; \
-		exit 4; \
-	    fi; \
-	    echo "cat chk.auth.tail.h >> ref/$$json.h"; \
-	    cat chk.auth.tail.h >> "ref/$$json.h"; \
-	    echo "ls -l ref/$$json.h"; \
-	    ls -l "ref/$$json.h"; \
-	done
+	./all_ref.sh -v 1 \
+	    chk.info.head.c chk.info.tail.c chk.info.head.h chk.info.tail.h \
+	    chk.auth.head.c chk.auth.tail.c chk.auth.head.h chk.auth.tail.h \
+	    test_JSON/info.json/good test_JSON/auth.json/good ref
 
 # form chk.????.ptch.{c,h} files
 #
@@ -857,15 +795,15 @@ all_ref: jsemtblgen jsemcgen.sh test_JSON/info.json/good test_JSON/author.json/g
 # are updated by hand.
 #
 all_ref_ptch: ref/info.reference.json.c ref/info.reference.json.h \
-	      ref/author.reference.json.c ref/author.reference.json.h
+	      ref/auth.reference.json.c ref/auth.reference.json.h
 	rm -f chk.info.ptch.c
 	-diff -u ref/info.reference.json.c chk_sem_info.c > chk.info.ptch.c
 	rm -f chk.info.ptch.h
 	-diff -u ref/info.reference.json.h chk_sem_info.h > chk.info.ptch.h
 	rm -f chk.auth.ptch.c
-	-diff -u ref/author.reference.json.c chk_sem_auth.c > chk.auth.ptch.c
+	-diff -u ref/auth.reference.json.c chk_sem_auth.c > chk.auth.ptch.c
 	rm -f chk.auth.ptch.h
-	-diff -u ref/author.reference.json.h chk_sem_auth.h > chk.auth.ptch.h
+	-diff -u ref/auth.reference.json.h chk_sem_auth.h > chk.auth.ptch.h
 
 # Form the chk_sem_????.{c,h} files
 #
@@ -873,29 +811,29 @@ all_ref_ptch: ref/info.reference.json.c ref/info.reference.json.h \
 #
 mkchk_sem: chk_sem_auth.c chk_sem_auth.h chk_sem_info.c chk_sem_info.h
 
-chk_sem_auth.c: jsemtblgen jsemcgen.sh test_JSON/author.json/good/author.reference.json \
+chk_sem_auth.c: jsemtblgen jsemcgen.sh test_JSON/auth.json/good/auth.reference.json \
 		chk.auth.head.c chk.auth.ptch.c chk.auth.tail.c Makefile
 	@${RM} -f $@
 	./jsemcgen.sh -N sem_auth -P chk -- \
-	    test_JSON/author.json/good/author.reference.json chk.auth.head.c chk.auth.ptch.c chk.auth.tail.c > $@
+	    test_JSON/auth.json/good/auth.reference.json chk.auth.head.c chk.auth.ptch.c chk.auth.tail.c $@
 
-chk_sem_auth.h: jsemtblgen jsemcgen.sh test_JSON/author.json/good/author.reference.json \
+chk_sem_auth.h: jsemtblgen jsemcgen.sh test_JSON/auth.json/good/auth.reference.json \
 		chk.auth.head.h chk.auth.ptch.h chk.auth.tail.h Makefile
 	@${RM} -f $@
 	./jsemcgen.sh -N sem_auth -P chk -I -- \
-	    test_JSON/author.json/good/author.reference.json chk.auth.head.h chk.auth.ptch.h chk.auth.tail.h > $@
+	    test_JSON/auth.json/good/auth.reference.json chk.auth.head.h chk.auth.ptch.h chk.auth.tail.h $@
 
 chk_sem_info.c: jsemtblgen jsemcgen.sh test_JSON/info.json/good/info.reference.json \
 		chk.info.head.c chk.info.ptch.c chk.info.tail.c Makefile
 	@${RM} -f $@
 	./jsemcgen.sh -N sem_info -P chk -- \
-	    test_JSON/info.json/good/info.reference.json chk.info.head.c chk.info.ptch.c chk.info.tail.c > $@
+	    test_JSON/info.json/good/info.reference.json chk.info.head.c chk.info.ptch.c chk.info.tail.c $@
 
 chk_sem_info.h: jsemtblgen jsemcgen.sh test_JSON/info.json/good/info.reference.json \
 		chk.info.head.h chk.info.ptch.h chk.info.tail.h Makefile
 	@${RM} -f $@
 	./jsemcgen.sh -N sem_info -P chk -I -- \
-	    test_JSON/info.json/good/info.reference.json chk.info.head.h chk.info.ptch.h chk.info.tail.h > $@
+	    test_JSON/info.json/good/info.reference.json chk.info.head.h chk.info.ptch.h chk.info.tail.h $@
 
 # sequence exit codes
 #
@@ -1101,6 +1039,7 @@ clobber: clean prep_clobber
 	${RM} -f ${BUILD_LOG}
 	${RM} -f jparse_test.log chkentry_test.log txzchk_test.log
 	${RM} -f ${HTML_MAN_TARGETS}
+	${RM} -f .jsemcgen.out.*
 
 distclean nuke: clobber
 

@@ -1,5 +1,5 @@
 /*
- * chk_sem_auth - check .author.json semantics
+ * chk_sem_auth - check .auth.json semantics
  *
  * "Because grammar and syntax alone do not make a complete language." :-)
  *
@@ -32,7 +32,7 @@
 
 
 /*
- * chk_sem_auth - check .author.json semantics
+ * chk_sem_auth - check .auth.json semantics
  */
 #include "chk_sem_auth.h"
 
@@ -60,7 +60,7 @@ struct json_sem sem_auth[SEM_AUTH_LEN+1] = {
   { 2,	JTYPE_STRING,	28,	28,	28,	18,	0,	NULL,	NULL },
   { 2,	JTYPE_BOOL,	1,	1,	1,	19,	0,	NULL,	NULL },
   { 2,	JTYPE_ARRAY,	1,	1,	1,	20,	0,	NULL,	NULL },
-  { 1,	JTYPE_MEMBER,	1,	1,	1,	21,	20,	chk_IOCCC_author_version,	"IOCCC_author_version" },
+  { 1,	JTYPE_MEMBER,	1,	1,	1,	21,	18,	chk_IOCCC_auth_version,	"IOCCC_auth_version" },
   { 1,	JTYPE_MEMBER,	1,	1,	1,	22,	13,	chk_IOCCC_contest,	"IOCCC_contest" },
   { 1,	JTYPE_MEMBER,	1,	1,	1,	23,	16,	chk_IOCCC_contest_id,	"IOCCC_contest_id" },
   { 1,	JTYPE_MEMBER,	1,	1,	1,	24,	10,	chk_IOCCC_year,	"IOCCC_year" },

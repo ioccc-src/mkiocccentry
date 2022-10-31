@@ -15,21 +15,21 @@ chkentry \- check JSON files in an IOCCC entry
 .SH SYNOPSIS
 \fBchkentry\fP [\-h] [\-v level] [\-J level] [\-V] [\-q] fnamchk] entry_dir
 .br
-\fBchkentry\fP [\-h] [\-v level] [\-J level] [\-V] [\-q] fnamchk] info.json author.json
+\fBchkentry\fP [\-h] [\-v level] [\-J level] [\-V] [\-q] fnamchk] info.json auth.json
 .SH DESCRIPTION
 \fBchkentry\fP is primarily used by other tools (not humans).
 .PP
-Validate the \fI.info.json\fP and/or \fI.author.json\fP of an IOCCC entry.
+Validate the \fI.info.json\fP and/or \fI.auth.json\fP of an IOCCC entry.
 In the two argument form, \fIinfo.JSON\fP is the path of an IOCCC entry information JSON file,
-and \fIauthor.JSON\fP is the path of an IOCCC entry author JSON file.
+and \fIauth.JSON\fP is the path of an IOCCC entry author JSON file.
 If \fIinfo.JSON\fP is \fR.\fP (dot), then this file is ignored.
-If \fIauthor.JSON\fP is \fR.\fP (dot), then this file is ignored.
-In the one argument form, \fIentry_dir\fP is assumed to be a directory containing both \fI.info.json\fP and \fI.author.json\fP files.
-The one argument form is equivalent to calling the command with two arguments: \fIentry_dir/.info.json\fP and \fIentry_dir/.author.json\fP.
+If \fIauth.JSON\fP is \fR.\fP (dot), then this file is ignored.
+In the one argument form, \fIentry_dir\fP is assumed to be a directory containing both \fI.info.json\fP and \fI.auth.json\fP files.
+The one argument form is equivalent to calling the command with two arguments: \fIentry_dir/.info.json\fP and \fIentry_dir/.auth.json\fP.
 .PP
-As a sanity check, the \fBmkiocccentry(1)\fP program executes \fBchkentry\fP AFTER both the \fI.info.json\fP and \fI.author.json\fP file have been created and before the compressed tarball is formed.
+As a sanity check, the \fBmkiocccentry(1)\fP program executes \fBchkentry\fP AFTER both the \fI.info.json\fP and \fI.auth.json\fP file have been created and before the compressed tarball is formed.
 If \fBmkiocccentry\fP program sees a 0 exit status, then all is well.
-For a non\-zero exit code, the tool aborts because any problems detected by \fBchkentry\fP based on what \fBmkiocccentry\fP wrote into \fI.info.json\fP and/or \fI.author.json\fP indicates there is a serious mismatch between what \fBmkiocccentry\fP is doing and what \fBchkentry\fP expects.
+For a non\-zero exit code, the tool aborts because any problems detected by \fBchkentry\fP based on what \fBmkiocccentry\fP wrote into \fI.info.json\fP and/or \fI.auth.json\fP indicates there is a serious mismatch between what \fBmkiocccentry\fP is doing and what \fBchkentry\fP expects.
 .PP
 .SH OPTIONS
 .PP
@@ -74,10 +74,10 @@ Run the tool on just the IOCCC entry information JSON file \fBtest/info.JSON\fP:
 
 .PP
 .nf
-Run the tool on just the IOCCC entry author JSON file \fBtest/author.JSON\fP:
+Run the tool on just the IOCCC entry author JSON file \fBtest/auth.JSON\fP:
 
 \fB
- ./chkentry . test/author.JSON\fP
+ ./chkentry . test/auth.JSON\fP
 .fi
 .SH SEE ALSO
 .PP

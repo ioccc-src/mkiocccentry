@@ -1,5 +1,5 @@
 /*
- * chk_sem_auth - check .author.json semantics
+ * chk_sem_auth - check .auth.json semantics
  *
  * "Because grammar and syntax alone do not make a complete language." :-)
  *
@@ -66,7 +66,7 @@ extern bool chk_twitter(struct json const *node,
 	unsigned int depth, struct json_sem *sem, struct json_sem_val_err **val_err);
 extern bool chk_url(struct json const *node,
 	unsigned int depth, struct json_sem *sem, struct json_sem_val_err **val_err);
-extern bool chk_IOCCC_author_version(struct json const *node,
+extern bool chk_IOCCC_auth_version(struct json const *node,
 	unsigned int depth, struct json_sem *sem, struct json_sem_val_err **val_err);
 extern bool chk_IOCCC_contest(struct json const *node,
 	unsigned int depth, struct json_sem *sem, struct json_sem_val_err **val_err);

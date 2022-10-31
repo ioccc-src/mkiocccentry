@@ -1,7 +1,7 @@
 Warning: txzchk: ./test_txzchk/bad/entry.test-3.9876543210.txt: found incorrect directory in filename test-0/extra1
 Warning: txzchk: ./test_txzchk/bad/entry.test-3.9876543210.txt: found incorrect directory in filename test-0/.info.json
 Warning: txzchk: ./test_txzchk/bad/entry.test-3.9876543210.txt: found incorrect directory in filename test-0/remarks.md
-Warning: txzchk: ./test_txzchk/bad/entry.test-3.9876543210.txt: found incorrect directory in filename test-0/.author.json
+Warning: txzchk: ./test_txzchk/bad/entry.test-3.9876543210.txt: found incorrect directory in filename test-0/.auth.json
 Warning: txzchk: ./test_txzchk/bad/entry.test-3.9876543210.txt: found incorrect directory in filename test-0/prog.c
 Warning: txzchk: ./test_txzchk/bad/entry.test-3.9876543210.txt: found incorrect directory in filename test-0/extra2
 Warning: txzchk: ./test_txzchk/bad/entry.test-3.9876543210.txt: found incorrect directory in filename test-0/Makefile

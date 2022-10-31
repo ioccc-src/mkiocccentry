@@ -2,7 +2,7 @@
  * entry_util - utilities supporting mkiocccentry JSON files
  *
  * JSON related functions to support formation of .info.json files
- * and .author.json files, their related check tools, test code,
+ * and .auth.json files, their related check tools, test code,
  * and string encoding/decoding tools.
  *
  * "Because specs w/o version numbers are forced to commit to their original design flaws." :-)
@@ -65,7 +65,7 @@
  * defines
  */
 #define INFO_JSON_FILENAME ".info.json"
-#define AUTHOR_JSON_FILENAME ".author.json"
+#define AUTH_JSON_FILENAME ".auth.json"
 #define PROG_C_FILENAME "prog.c"
 #define REMARKS_FILENAME "remarks.md"
 #define MAKEFILE_FILENAME "Makefile"
@@ -74,7 +74,7 @@
  * IOCCC author information
  *
  * Information we will collect for each author of an IOCCC entry to fill out the authors JSON array
- * within the .author.json file.
+ * within the .auth.json file.
  */
 struct author
 {
@@ -93,18 +93,18 @@ struct author
 };
 
 /*
- * IOCCC .author.json information
+ * IOCCC .auth.json information
  *
- * Information we will collect in order to form the .author.json file.
+ * Information we will collect in order to form the .auth.json file.
  */
 struct auth
 {
     /*
-     * .author.json information before the authors array
+     * .auth.json information before the authors array
      */
     /* file format strings */
     char const *no_comment;	/* mandatory comment: because comments were removed from the original JSON spec :-) */
-    char const *author_version;	/* IOCCC .author.json format version (compiled in AUTHOR_VERSION) */
+    char const *auth_version;	/* IOCCC .auth.json format version (compiled in AUTH_VERSION) */
     char const *IOCCC_contest;	/* IOCCC contest string (compiled in IOCCC[0-9][0-9] or IOCCCMOCK) */
     /* contest year */
     int year;			/* IOCCC year */
@@ -128,7 +128,7 @@ struct auth
     struct author *author;	/* set of authors for this entry */
 
     /*
-     * .author.json information after the authors array
+     * .auth.json information after the authors array
      */
     time_t tstamp;		/* seconds since epoch when .info json was formed (see gettimeofday(2)) */
     int usec;			/* microseconds since the tstamp second */
@@ -191,7 +191,7 @@ struct info
      * file name array
      */
     char const *info_file;	/* .info.json filename */
-    char const *author_file;	/* .author.json filename */
+    char const *auth_file;	/* .auth.json filename */
     char *prog_c;		/* prog.c filename */
     char *Makefile;		/* Makefile filename */
     char *remarks_md;		/* remarks.md filename */
@@ -214,7 +214,7 @@ struct info
 struct manifest
 {
     intmax_t count_info_JSON;	/* count of info_JSON JSON member found (will be ".info.json") */
-    intmax_t count_author_JSON;	/* count of author_JSON JSON member found (will be ".author.json") */
+    intmax_t count_auth_JSON;	/* count of auth_JSON JSON member found (will be ".auth.json") */
     intmax_t count_c_src;		/* count of c_src JSON member found (will be "prog.c") */
     intmax_t count_Makefile;	/* count of Makefile JSON member found (will be "Makefile") */
     intmax_t count_remarks;	/* count of remarks JSON member found (will be "remarks") */
@@ -232,7 +232,7 @@ extern void free_author_array(struct author *authorp, int author_count);
 extern void free_manifest(struct manifest *manp);
 extern bool object2author(struct json *node, unsigned int depth, struct json_sem *sem,
 			  char const *name, struct json_sem_val_err **val_err,
-			  struct author *auth, int auth_num);
+			  struct author *auth, int author_num);
 extern bool object2manifest(struct json *node, unsigned int depth, struct json_sem *sem,
 			    char const *name, struct json_sem_val_err **val_err,
 			    struct manifest *manp);
@@ -240,14 +240,14 @@ extern bool timestr_eq_tstamp(char const *timestr, time_t timestamp);
 extern char *form_tar_filename(char const *IOCCC_contest_id, int entry_num, bool test_mode,
 			       time_t formed_timestamp);
 
-extern bool test_IOCCC_author_version(char const *str);
+extern bool test_IOCCC_auth_version(char const *str);
 extern bool test_IOCCC_contest_id(char const *str);
 extern bool test_IOCCC_info_version(char const *str);
 extern bool test_Makefile(char const *str);
 extern bool test_Makefile_override(bool boolean);
 extern bool test_abstract(char const *str);
 extern bool test_affiliation(char const *str);
-extern bool test_author_JSON(char const *str);
+extern bool test_auth_JSON(char const *str);
 extern bool test_author_count(int author_count);
 extern bool test_author_handle(char const *str);
 extern bool test_author_number(int author_number);

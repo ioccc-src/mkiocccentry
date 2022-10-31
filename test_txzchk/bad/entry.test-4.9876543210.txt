@@ -3,7 +3,7 @@ drwxr-xr-x  0 501    20          0 Feb  6 01:23 test-4/
 -rw-r--r--  0 501    20          4 Feb  6 00:56 test-4/extra2
 -rw-r--r--  0 501    20         29 Feb  6 01:23 test-4/.foo
 -rw-r--r--  0 501    20          0 Feb  6 00:56 test-4/prog.c
--rw-r--r--  0 501    20        720 Feb  6 00:56 test-4/.author.json
+-rw-r--r--  0 501    20        720 Feb  6 00:56 test-4/.auth.json
 -rw-r--r--  0 501    20        358 Feb  6 00:56 test-4/remarks.md
 -rw-r--r--  0 501    20       1231 Feb  6 00:56 test-4/.info.json
 -rw-r--r--  0 501    20          4 Feb  6 00:56 test-4/extra1

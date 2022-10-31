@@ -41,7 +41,7 @@ struct json_sem sem_info[SEM_INFO_LEN+1] = {
 /* depth    type        min     max   count   index  name_len validate  name */
   { 5,	JTYPE_STRING,	10,	84,	84,	0,	0,	NULL,	NULL },
   { 4,	JTYPE_MEMBER,	1,	1,	1,	1,	8,	chk_Makefile,	"Makefile" },
-  { 4,	JTYPE_MEMBER,	1,	1,	1,	2,	11,	chk_author_JSON,	"author_JSON" },
+  { 4,	JTYPE_MEMBER,	1,	1,	1,	2,	11,	chk_auth_JSON,	"auth_JSON" },
   { 4,	JTYPE_MEMBER,	1,	1,	1,	3,	5,	chk_c_src,	"c_src" },
   { 4,	JTYPE_MEMBER,	0,	37,	37,	4,	10,	chk_extra_file,	"extra_file" },
   { 4,	JTYPE_MEMBER,	1,	1,	1,	5,	9,	chk_info_JSON,	"info_JSON" },

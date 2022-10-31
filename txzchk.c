@@ -218,9 +218,9 @@ show_txz_info(char const *txzpath)
 	dbg(DBG_MED, "%s %s a .info.json", txzpath, has_does_not_have(txz_info.has_info_json));
 	dbg(DBG_HIGH, "%s %s an empty .info.json", txzpath, has_does_not_have(txz_info.empty_info_json));
 	dbg(DBG_HIGH, "%s .info.json size is %jd", txzpath, (intmax_t)txz_info.info_json_size);
-	dbg(DBG_MED, "%s %s a .author.json", txzpath, has_does_not_have(txz_info.has_author_json));
-	dbg(DBG_HIGH, "%s %s an empty .author.json", txzpath, has_does_not_have(txz_info.empty_author_json));
-	dbg(DBG_HIGH, "%s .author.json size is %jd", txzpath, (intmax_t)txz_info.author_json_size);
+	dbg(DBG_MED, "%s %s a .auth.json", txzpath, has_does_not_have(txz_info.has_auth_json));
+	dbg(DBG_HIGH, "%s %s an empty .auth.json", txzpath, has_does_not_have(txz_info.empty_auth_json));
+	dbg(DBG_HIGH, "%s .auth.json size is %jd", txzpath, (intmax_t)txz_info.auth_json_size);
 	dbg(DBG_MED, "%s %s a prog.c", txzpath, has_does_not_have(txz_info.has_prog_c));
 	dbg(DBG_HIGH, "%s %s an empty prog.c", txzpath, has_does_not_have(txz_info.empty_prog_c));
 	dbg(DBG_HIGH, "%s prog.c size is %jd", txzpath, (intmax_t)txz_info.prog_c_size);
@@ -517,7 +517,7 @@ check_txz_file(char const *txzpath, char const *dir_name, struct txz_file *file)
      *
      * NOTE: Files that are allowed to begin with '.' must also be lower case.
      * In other words if any of the letters in INFO_JSON_FILENAME or
-     * AUTHOR_JSON_FILENAME are upper case the file is an invalid dot file.
+     * AUTH_JSON_FILENAME are upper case the file is an invalid dot file.
      *
      * Yes there's a certain irony that the macro names for these filenames are
      * all upper case and so we're checking for lower case by using upper case
@@ -527,7 +527,7 @@ check_txz_file(char const *txzpath, char const *dir_name, struct txz_file *file)
      * lower case upper case! :-) Alternatively you can just deal with the
      * irony.
      */
-    if (!strcmp(file->basename, INFO_JSON_FILENAME) || !strcmp(file->basename, AUTHOR_JSON_FILENAME)) {
+    if (!strcmp(file->basename, INFO_JSON_FILENAME) || !strcmp(file->basename, AUTH_JSON_FILENAME)) {
 	allowed_dot_file = true;
     }
 
@@ -548,7 +548,7 @@ check_txz_file(char const *txzpath, char const *dir_name, struct txz_file *file)
 	/*
 	 * Check for dot files but note that a basename of only '.' also counts
 	 * as a filename with just '.': so if the file starts with a '.' and
-	 * it's not AUTHOR_JSON_FILENAME and not INFO_JSON_FILENAME then it's an
+	 * it's not AUTH_JSON_FILENAME and not INFO_JSON_FILENAME then it's an
 	 * invalid dot file; if it's ONLY '.' it counts as BOTH an invalid dot
 	 * file AND a file called just '.' (which would likely be a directory
 	 * but is abuse nonetheless).
@@ -556,7 +556,7 @@ check_txz_file(char const *txzpath, char const *dir_name, struct txz_file *file)
 	if (*(file->basename) == '.') {
 	    ++txz_info.total_feathers;
 	    warn("txzchk", "%s: found non %s and %s dot file %s",
-			   txzpath, AUTHOR_JSON_FILENAME, INFO_JSON_FILENAME, file->basename);
+			   txzpath, AUTH_JSON_FILENAME, INFO_JSON_FILENAME, file->basename);
 	    txz_info.invalid_dot_files++;
 
 	    /* check for files called '.' without anything after the dot */
@@ -612,10 +612,10 @@ check_file_size(char const *txzpath, off_t size, struct txz_file *file)
     }
 
     if (size == 0) {
-	if (!strcmp(file->basename, AUTHOR_JSON_FILENAME)) {
+	if (!strcmp(file->basename, AUTH_JSON_FILENAME)) {
 	    ++txz_info.total_feathers;
-	    warn("txzchk", "%s: found empty %s file", txzpath, AUTHOR_JSON_FILENAME);
-	    txz_info.empty_author_json = true;
+	    warn("txzchk", "%s: found empty %s file", txzpath, AUTH_JSON_FILENAME);
+	    txz_info.empty_auth_json = true;
 	} else if (!strcmp(file->basename, INFO_JSON_FILENAME)) {
 	    ++txz_info.total_feathers;
 	    txz_info.empty_info_json = true;
@@ -634,8 +634,8 @@ check_file_size(char const *txzpath, off_t size, struct txz_file *file)
 	}
     } else {
 	/* record size of required files for informational purposes */
-	if (!strcmp(file->basename, AUTHOR_JSON_FILENAME)) {
-	    txz_info.author_json_size = size;
+	if (!strcmp(file->basename, AUTH_JSON_FILENAME)) {
+	    txz_info.auth_json_size = size;
 	} else if (!strcmp(file->basename, INFO_JSON_FILENAME)) {
 	    txz_info.info_json_size = size;
 	} else if (!strcmp(file->basename, "remarks.md")) {
@@ -684,8 +684,8 @@ check_all_txz_files(char const *dir_name)
 	}
 	if (!strcmp(file->basename, INFO_JSON_FILENAME)) {
 	    txz_info.has_info_json = true;
-	} else if (!strcmp(file->basename, AUTHOR_JSON_FILENAME)) {
-	    txz_info.has_author_json = true;
+	} else if (!strcmp(file->basename, AUTH_JSON_FILENAME)) {
+	    txz_info.has_auth_json = true;
 	} else if (!strcmp(file->basename, MAKEFILE_FILENAME)) {
 	    txz_info.has_Makefile = true;
 	} else if (!strcmp(file->basename, PROG_C_FILENAME)) {
@@ -712,9 +712,9 @@ check_all_txz_files(char const *dir_name)
 	++txz_info.total_feathers;
 	warn("txzchk", "%s: no .info.json found", txzpath);
     }
-    if (!txz_info.has_author_json) {
+    if (!txz_info.has_auth_json) {
 	++txz_info.total_feathers;
-	warn("txzchk", "%s: no .author.json found", txzpath);
+	warn("txzchk", "%s: no .auth.json found", txzpath);
     }
     if (!txz_info.has_prog_c) {
 	++txz_info.total_feathers;
@@ -734,7 +734,7 @@ check_all_txz_files(char const *dir_name)
     }
 
     /*
-     * Report total number of non .author.json and .info.json dot files.
+     * Report total number of non .auth.json and .info.json dot files.
      * Don't increment the number of feathers as this was done in
      * check_txz_file().
      */

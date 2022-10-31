@@ -1,5 +1,5 @@
 Warning: txzchk: ./test_txzchk/bad/entry.test-1.1663759978.txt: no .info.json found
-Warning: txzchk: ./test_txzchk/bad/entry.test-1.1663759978.txt: no .author.json found
+Warning: txzchk: ./test_txzchk/bad/entry.test-1.1663759978.txt: no .auth.json found
 Warning: txzchk: ./test_txzchk/bad/entry.test-1.1663759978.txt: no prog.c found
 Warning: txzchk: ./test_txzchk/bad/entry.test-1.1663759978.txt: no Makefile found
 Warning: txzchk: ./test_txzchk/bad/entry.test-1.1663759978.txt: no remarks.md found

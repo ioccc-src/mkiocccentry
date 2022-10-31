@@ -39,7 +39,7 @@
 
 
 /*
- * chk_IOCCC_author_version - JSON semantic check for IOCCC_author_version
+ * chk_IOCCC_auth_version - JSON semantic check for IOCCC_auth_version
  *
  * given:
  *	node	JSON parse node being checked
@@ -53,7 +53,7 @@
  *	false ==> JSON element is NOT valid, or NULL pointer, or some internal error
  */
 bool
-chk_IOCCC_author_version(struct json const *node,
+chk_IOCCC_auth_version(struct json const *node,
 			 unsigned int depth, struct json_sem *sem, struct json_sem_val_err **val_err)
 {
     char *str = NULL;				/* JTYPE_STRING as decoded JSON string */
@@ -71,10 +71,10 @@ chk_IOCCC_author_version(struct json const *node,
     /*
      * validate decoded JSON string
      */
-    test = test_IOCCC_author_version(str);
+    test = test_IOCCC_auth_version(str);
     if (test == false) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(100, node, depth, sem, __func__, "invalid IOCCC_author_version");
+	    *val_err = werr_sem_val(100, node, depth, sem, __func__, "invalid IOCCC_auth_version");
 	}
 	return false;
     }
@@ -411,7 +411,7 @@ chk_affiliation(struct json const *node,
 
 
 /*
- * chk_author_JSON - JSON semantic check for author_JSON
+ * chk_auth_JSON - JSON semantic check for auth_JSON
  *
  * given:
  *	node	JSON parse node being checked
@@ -425,7 +425,7 @@ chk_affiliation(struct json const *node,
  *	false ==> JSON element is NOT valid, or NULL pointer, or some internal error
  */
 bool
-chk_author_JSON(struct json const *node,
+chk_auth_JSON(struct json const *node,
 	        unsigned int depth, struct json_sem *sem, struct json_sem_val_err **val_err)
 {
     char *str = NULL;				/* JTYPE_STRING as decoded JSON string */
@@ -443,10 +443,10 @@ chk_author_JSON(struct json const *node,
     /*
      * validate decoded JSON string
      */
-    test = test_author_JSON(str);
+    test = test_auth_JSON(str);
     if (test == false) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(108, node, depth, sem, __func__, "invalid author_JSON filename");
+	    *val_err = werr_sem_val(108, node, depth, sem, __func__, "invalid auth_JSON filename");
 	}
 	return false;
     }

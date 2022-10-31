@@ -39,7 +39,7 @@
 #include "json_sem.h"
 
 /*
- * chk_sem_auth - check .author.json semantics
+ * chk_sem_auth - check .auth.json semantics
  */
 #include "chk_sem_auth.h"
 

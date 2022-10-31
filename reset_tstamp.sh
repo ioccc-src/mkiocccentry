@@ -166,7 +166,7 @@ fi
 echo
 echo 'WARNING: Are you sure you want to invalidate all existing compressed tarballs'
 echo 'WARNING: and all prior .info.JSON files that have been made,'
-echo 'WARNING: and all prior .author.JSON files that have been made,'
+echo 'WARNING: and all prior .auth.JSON files that have been made,'
 echo 'WARNING: forcing everyone to rebuild their compressed tarball entries?'
 echo
 echo 'WARNING: If you really wish to do this, please enter the following phrase:'

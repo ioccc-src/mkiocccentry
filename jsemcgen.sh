@@ -64,7 +64,7 @@ fi
 
 export USAGE="usage: $0 [-h] [-v level] [-J level] [-q] [-V] [-s] [-I] [-N name] [-D def_func] [-P prefix]
 	[-1 func] [-S func] [-B func] [-0 func] [-M func] [-O func] [-A func] [-U func]
-	[-j jsemtblgen] [-p patch_tool] file.json head patch tail
+	[-j jsemtblgen] [-p patch_tool] file.json head patch tail out
 
 	-h		print help message and exit
 	-v level	set verbosity level (def level: 0)
@@ -104,6 +104,7 @@ export USAGE="usage: $0 [-h] [-v level] [-J level] [-q] [-V] [-s] [-I] [-N name]
 	head		file add to the beginning jsemtblgen output (before patched jsemtblgen output), . ==> do not add
 	patch		patch to apply to the output of jsemtblgen with head and tail, . --> do not patch
 	tail		file add to the end of jsemtblgen output (after patched jsemtblgen output), . ==> do not add
+	out		jsemtblgen output, with possible head and tail and patch applied
 
 Exit codes:
      0	 JSON is valid
@@ -191,8 +192,8 @@ done
 # check args
 #
 shift $(( OPTIND - 1 ));
-if [[ $# -ne 4 ]]; then
-    echo "$0: ERROR: expected 4 arguments, found $#" 1>&2
+if [[ $# -ne 5 ]]; then
+    echo "$0: ERROR: expected 5 arguments, found $#" 1>&2
     echo "$USAGE" 1>&2
     exit 3
 fi
@@ -201,6 +202,7 @@ JSEMTBLGEN_ARGS="$JSEMTBLGEN_ARGS -- '$JSON_FILE'"
 HEAD_FILE="$2"
 PATCH_FILE="$3"
 TAIL_FILE="$4"
+OUT_FILE="$5"
 export JSON_FILE HEAD_FILE PATCH_FILE TAIL_FILE OUT_FILE
 if [[ $HEAD_FILE = "." ]]; then
     HEAD_FILE=
@@ -351,13 +353,21 @@ if [[ -n "$PATCH_FILE" ]]; then
 	echo "$0: ERROR: tmp not a writable file: $TMP_FILE" 1>&2
 	exit 14
     fi
-    trap "rm -f \$TMP_FILE; exit" 0 1 2 3 15
+    if [[ $V_FLAG -ge 3 ]]; then
+	trap "exit" 0 1 2 3 15
+    else
+	trap "rm -f \$TMP_FILE \$TMP_FILE.rej \$TMP_FILE.orig; exit" 0 1 2 3 15
+    fi
     export ORIG_FILE="$TMP_FILE.orig"
     export REJ_FILE="$TMP_FILE.rej"
+    export PATH_ERR="$TMP_FILE.err"
 
     # output the header
     #
     if [[ -n "$HEAD_FILE" ]]; then
+	if [[ $V_FLAG -ge 1 ]]; then
+	    echo "$0: debug[1]: cat $HEAD_FILE > $TMP_FILE"
+	fi
 	cat "$HEAD_FILE" > "$TMP_FILE"
 	status="$?"
 	if [[ $status -ne 0 ]]; then
@@ -397,6 +407,9 @@ if [[ -n "$PATCH_FILE" ]]; then
     # output the trailer
     #
     if [[ -n "$TAIL_FILE" ]]; then
+	if [[ $V_FLAG -ge 1 ]]; then
+	    echo "$0: debug[1]: cat $TAIL_FILE > $TMP_FILE"
+	fi
 	cat "$TAIL_FILE" >> "$TMP_FILE"
 	status="$?"
 	if [[ $status -ne 0 ]]; then
@@ -430,25 +443,29 @@ if [[ -n "$PATCH_FILE" ]]; then
 	exit 24
     fi
 
-    # output patched jsemtblgen generated code
+    # move patched jsemtblgen generated code to output file
     #
-    cat "$TMP_FILE"
+    mv -f "$TMP_FILE" "$OUT_FILE"
     status="$?"
     if [[ $status -ne 0 ]]; then
-	echo "$0: ERROR: cat $TMP_FILE exit status: $status" 1>&2
+	echo "$0: ERROR: mv -f $TMP_FILE $OUT_FILE exit status: $status" 1>&2
 	exit 25
     fi
 
     # cleanup
     #
     if [[ $V_FLAG -ge 3 ]]; then
-	echo "$0: debug[3]: about to run: rm -f $TMP_FILE $ORIG_FILE $REJ_FILE" 1>&2
-    fi
-    rm -f "$TMP_FILE" "$ORIG_FILE" "$REJ_FILE"
-    status="$?"
-    if [[ $status -ne 0 ]]; then
-	echo "$0: ERROR: rm -f $TMP_FILE $ORIG_FILE $REJ_FILE filed, exit status: $status" 1>&2
-	exit 26
+	echo "$0: debug[3]: preserving possible patch files: $TMP_FILE $ORIG_FILE $REJ_FILE" 1>&2
+    else
+	if [[ $V_FLAG -ge 1 ]]; then
+	    echo "$0: debug[3]: about to run: rm -f $ORIG_FILE $REJ_FILE" 1>&2
+	fi
+	rm -f "$TMP_FILE" "$ORIG_FILE" "$REJ_FILE"
+	status="$?"
+	if [[ $status -ne 0 ]]; then
+	    echo "$0: ERROR: rm -f $TMP_FILE $ORIG_FILE $REJ_FILE filed, exit status: $status" 1>&2
+	    exit 26
+	fi
     fi
     trap - 0 1 2 3 15
 
@@ -459,34 +476,50 @@ else
     # output the header
     #
     if [[ -n "$HEAD_FILE" ]]; then
-	cat "$HEAD_FILE"
+	if [[ $V_FLAG -ge 1 ]]; then
+	    echo "$0: debug[1]: about to run: cat $HEAD_FILE > $OUT_FILE" 1>&2
+	fi
+	cat "$HEAD_FILE" > "$OUT_FILE"
 	status="$?"
 	if [[ $status -ne 0 ]]; then
-	    echo "$0: ERROR: cat $HEAD_FILE exit status: $status" 1>&2
+	    echo "$0: ERROR: cat $HEAD_FILE > $OUT_FILE exit status: $status" 1>&2
 	    exit 27
+	fi
+    else
+	if [[ $V_FLAG -ge 1 ]]; then
+	    echo "$0: debug[1]: about to run: rm -f $OUT_FILE" 1>&2
+	fi
+	rm -f "$OUT_FILE"
+	status="$?"
+	if [[ $status -ne 0 ]]; then
+	    echo "$0: ERROR: rm -f $OUT_FILE exit status: $status" 1>&2
+	    exit 28
 	fi
     fi
 
     # just output unpatched jsemtblgen generated code
     #
     if [[ $V_FLAG -ge 1 ]]; then
-	echo "$0: debug[1]: about to run: $JSEMTBLGEN $JSEMTBLGEN_ARGS" 1>&2
+	echo "$0: debug[1]: about to run: $JSEMTBLGEN $JSEMTBLGEN_ARGS >> $OUT_FILE" 1>&2
     fi
-    eval "$JSEMTBLGEN" "$JSEMTBLGEN_ARGS"
+    eval "$JSEMTBLGEN" "$JSEMTBLGEN_ARGS" >> "$OUT_FILE"
     status="$?"
     if [[ $status -ne 0 ]]; then
-	echo "$0: ERROR: jsemtblgen failed, exit status: $status" 1>&2
-	exit 28
+	echo "$0: ERROR: $JSEMTBLGEN $JSEMTBLGEN_ARGS >> $OUT_FILE  failed, exit status: $status" 1>&2
+	exit 29
     fi
 
     # output the trailer
     #
     if [[ -n "$TAIL_FILE" ]]; then
-	cat "$TAIL_FILE"
+	if [[ $V_FLAG -ge 1 ]]; then
+	    echo "$0: debug[1]: about to run: cat $TAIL_FILE >> $OUT_FILE" 1>&2
+	fi
+	cat "$TAIL_FILE" >> "$OUT_FILE"
 	status="$?"
 	if [[ $status -ne 0 ]]; then
-	    echo "$0: ERROR: cat $TAIL_FILE exit status: $status" 1>&2
-	    exit 29
+	    echo "$0: ERROR: cat $TAIL_FILE >> $OUT_FILE exit status: $status" 1>&2
+	    exit 30
 	fi
     fi
 fi

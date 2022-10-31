@@ -21,7 +21,7 @@
 	"chkentry_version" : "0.2 2022-10-28",
 	"manifest" : [
 		{"info_JSON" : ".info.json"},
-		{"author_JSON" : ".author.json"},
+		{"auth_JSON" : ".auth.json"},
 		{"c_src" : "prog.c"},
 		{"Makefile" : "Makefile"},
 		{"remarks" : "remarks.md"},

@@ -2,7 +2,7 @@
 	"no_comment" : "mandatory comment: because comments were removed from the original JSON spec",
 	"manifest" : [
 		{"Makefile" : "Makefile"},
-		{"author_JSON" : ".author.json"},
+		{"auth_JSON" : ".auth.json"},
 		{"c_src" : "prog.c"},
 		{"extra_file" : "extra1"},
 		{"extra_file" : "extra2"}
