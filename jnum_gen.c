@@ -736,7 +736,7 @@ usage(int exitcode, char const *prog, char const *str, int expected, int argc)
     } else {
 	fprintf_usage(DO_NOT_EXIT, stderr, "%s", str);
     }
-    fprintf_usage(exitcode, stderr, usage_msg, prog, DBG_DEFAULT, JNUM_CHK_VERSION);
+    fprintf_usage(exitcode, stderr, usage_msg, prog, DBG_DEFAULT, JNUM_GEN_VERSION);
     exit(exitcode); /*ooo*/
     not_reached();
 }
