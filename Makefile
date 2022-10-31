@@ -274,8 +274,8 @@ TEST_TARGETS= dbg utf8_test dyn_test
 OBJFILES= dbg.o util.o mkiocccentry.o iocccsize.o fnamchk.o txzchk.o chkentry.o \
 	json_parse.o jstrencode.o jstrdecode.o rule_count.o location.o sanity.o utf8_test.o verge.o \
 	dyn_array.o dyn_test.o dbg_test.o jnum_chk.o jnum_gen.o jnum_test.o \
-	json_util.o jparse_main.o entry_util.o jsemtblgen.o chk_sem_auth.o chk_sem_info.o \
-	chk_validate.o json_sem.o have_timegm.o
+	json_util.o jparse_main.o entry_util.o jsemtblgen.o soup/chk_sem_auth.o soup/chk_sem_info.o \
+	soup/chk_validate.o json_sem.o have_timegm.o
 LESS_PICKY_CSRC= utf8_posix_map.c foo.c
 LESS_PICKY_H_FILES = oebxergfB.h
 LESS_PICKY_OBJ= utf8_posix_map.o foo.o
@@ -293,8 +293,8 @@ ALL_CSRC= ${LESS_PICKY_CSRC} ${GENERATED_CSRC} ${SRCFILES}
 H_FILES= dbg.h chkentry.h json_parse.h jstrdecode.h jstrencode.h limit_ioccc.h \
 	mkiocccentry.h txzchk.h util.h location.h utf8_posix_map.h jparse.h \
 	verge.h sorry.tm.ca.h dyn_array.h dyn_test.h json_util.h jnum_chk.h \
-	jnum_gen.h jparse_main.h entry_util.h jsemtblgen.h chk_sem_auth.h \
-	chk_sem_info.h chk_validate.h json_sem.h foo.h
+	jnum_gen.h jparse_main.h entry_util.h jsemtblgen.h soup/chk_sem_auth.h \
+	soup/chk_sem_info.h soup/chk_validate.h json_sem.h foo.h
 # This is a simpler way to do:
 #
 #   DSYMDIRS = $(patsubst %,%.dSYM,$(TARGETS))
@@ -516,22 +516,22 @@ txzchk: txzchk.o dbg.o util.o dyn_array.o location.o \
 	${CC} ${CFLAGS} txzchk.o dbg.o util.o dyn_array.o location.o \
 	     utf8_posix_map.o sanity.o -o $@
 
-chk_sem_auth.o: chk_sem_auth.c chk_sem_auth.h Makefile
-	${CC} ${CFLAGS} chk_sem_auth.c -c
+soup/chk_sem_auth.o: soup/chk_sem_auth.c soup/chk_sem_auth.h Makefile
+	cd soup; ${CC} ${CFLAGS} -I.. chk_sem_auth.c -c
 
-chk_sem_info.o: chk_sem_info.c chk_sem_info.h Makefile
-	${CC} ${CFLAGS} chk_sem_info.c -c
+soup/chk_sem_info.o: soup/chk_sem_info.c soup/chk_sem_info.h Makefile
+	cd soup; ${CC} ${CFLAGS} -I.. chk_sem_info.c -c
 
-chk_validate.o: chk_validate.c Makefile
-	${CC} ${CFLAGS} chk_validate.c -c
+soup/chk_validate.o: soup/chk_validate.c Makefile
+	cd soup; ${CC} ${CFLAGS} -I.. chk_validate.c -c
 
 chkentry.o: chkentry.c chkentry.h Makefile
-	${CC} ${CFLAGS} chkentry.c -c
+	${CC} ${CFLAGS} chkentry.c -Isoup -c
 
 chkentry: chkentry.o dbg.o util.o sanity.o utf8_posix_map.o dyn_array.o jparse.o jparse.tab.o json_parse.o \
-	json_util.o chk_validate.o entry_util.c json_sem.o foo.o location.o chk_sem_info.o chk_sem_auth.o Makefile
+	json_util.o soup/chk_validate.o entry_util.c json_sem.o foo.o location.o soup/chk_sem_info.o soup/chk_sem_auth.o Makefile
 	${CC} ${CFLAGS} chkentry.o dbg.o util.o sanity.o utf8_posix_map.o jparse.o jparse.tab.o dyn_array.o json_parse.o \
-		json_util.o chk_validate.o entry_util.o json_sem.o foo.o location.o chk_sem_info.o chk_sem_auth.o -o $@
+		json_util.o soup/chk_validate.o entry_util.o json_sem.o foo.o location.o soup/chk_sem_info.o soup/chk_sem_auth.o -o $@
 
 jstrencode.o: jstrencode.c jstrencode.h json_util.h json_util.c Makefile
 	${CC} ${CFLAGS} jstrencode.c -c
@@ -777,63 +777,63 @@ rebuild_jnum_test: jnum_gen jnum.testset jnum_header.c Makefile
 # rule used by prep.sh
 #
 all_ref: jsemtblgen jsemcgen.sh test_JSON/info.json/good test_JSON/auth.json/good all_ref.sh
-	rm -rf ref
-	mkdir -p ref
+	rm -rf soup/ref
+	mkdir -p soup/ref
 	./all_ref.sh -v 1 \
-	    chk.info.head.c chk.info.tail.c chk.info.head.h chk.info.tail.h \
-	    chk.auth.head.c chk.auth.tail.c chk.auth.head.h chk.auth.tail.h \
-	    test_JSON/info.json/good test_JSON/auth.json/good ref
+	    soup/chk.info.head.c soup/chk.info.tail.c soup/chk.info.head.h soup/chk.info.tail.h \
+	    soup/chk.auth.head.c soup/chk.auth.tail.c soup/chk.auth.head.h soup/chk.auth.tail.h \
+	    test_JSON/info.json/good test_JSON/auth.json/good soup/ref
 
 # form chk.????.ptch.{c,h} files
 #
-# Given a correct set of chk_sem_????.{c,h} files, we form chk.????.ptch.{c,h}
+# Given a correct set of soup/chk_sem_????.{c,h} files, we form chk.????.ptch.{c,h}
 # diff patch relative to the ref/*.reference.json.{c,h} files.
 #
 # rule should never be invoked by prep.sh
 #
-# This rule is run by the repo maintainers only AFTER chk_sem_????.{c,h} files
+# This rule is run by the repo maintainers only AFTER soup/chk_sem_????.{c,h} files
 # are updated by hand.
 #
-all_ref_ptch: ref/info.reference.json.c ref/info.reference.json.h \
-	      ref/auth.reference.json.c ref/auth.reference.json.h
-	rm -f chk.info.ptch.c
-	-diff -u ref/info.reference.json.c chk_sem_info.c > chk.info.ptch.c
-	rm -f chk.info.ptch.h
-	-diff -u ref/info.reference.json.h chk_sem_info.h > chk.info.ptch.h
-	rm -f chk.auth.ptch.c
-	-diff -u ref/auth.reference.json.c chk_sem_auth.c > chk.auth.ptch.c
-	rm -f chk.auth.ptch.h
-	-diff -u ref/auth.reference.json.h chk_sem_auth.h > chk.auth.ptch.h
+all_ref_ptch: soup/ref/info.reference.json.c soup/ref/info.reference.json.h \
+	      soup/ref/auth.reference.json.c soup/ref/auth.reference.json.h
+	rm -f soup/chk.info.ptch.c
+	-diff -u soup/ref/info.reference.json.c soup/chk_sem_info.c > soup/chk.info.ptch.c
+	rm -f soup/chk.info.ptch.h
+	-diff -u soup/ref/info.reference.json.h soup/chk_sem_info.h > soup/chk.info.ptch.h
+	rm -f soup/chk.auth.ptch.c
+	-diff -u soup/ref/auth.reference.json.c soup/chk_sem_auth.c > soup/chk.auth.ptch.c
+	rm -f soup/chk.auth.ptch.h
+	-diff -u soup/ref/auth.reference.json.h soup/chk_sem_auth.h > soup/chk.auth.ptch.h
 
-# Form the chk_sem_????.{c,h} files
+# Form the soup/chk_sem_????.{c,h} files
 #
 # rule used by prep.sh
 #
-mkchk_sem: chk_sem_auth.c chk_sem_auth.h chk_sem_info.c chk_sem_info.h
+mkchk_sem: soup/chk_sem_auth.c soup/chk_sem_auth.h soup/chk_sem_info.c soup/chk_sem_info.h
 
-chk_sem_auth.c: jsemtblgen jsemcgen.sh test_JSON/auth.json/good/auth.reference.json \
-		chk.auth.head.c chk.auth.ptch.c chk.auth.tail.c Makefile
+soup/chk_sem_auth.c: jsemtblgen jsemcgen.sh test_JSON/auth.json/good/auth.reference.json \
+		soup/chk.auth.head.c soup/chk.auth.ptch.c soup/chk.auth.tail.c Makefile
 	@${RM} -f $@
 	./jsemcgen.sh -N sem_auth -P chk -- \
-	    test_JSON/auth.json/good/auth.reference.json chk.auth.head.c chk.auth.ptch.c chk.auth.tail.c $@
+	    test_JSON/auth.json/good/auth.reference.json soup/chk.auth.head.c soup/chk.auth.ptch.c soup/chk.auth.tail.c $@
 
-chk_sem_auth.h: jsemtblgen jsemcgen.sh test_JSON/auth.json/good/auth.reference.json \
-		chk.auth.head.h chk.auth.ptch.h chk.auth.tail.h Makefile
+soup/chk_sem_auth.h: jsemtblgen jsemcgen.sh test_JSON/auth.json/good/auth.reference.json \
+		soup/chk.auth.head.h soup/chk.auth.ptch.h soup/chk.auth.tail.h Makefile
 	@${RM} -f $@
 	./jsemcgen.sh -N sem_auth -P chk -I -- \
-	    test_JSON/auth.json/good/auth.reference.json chk.auth.head.h chk.auth.ptch.h chk.auth.tail.h $@
+	    test_JSON/auth.json/good/auth.reference.json soup/chk.auth.head.h soup/chk.auth.ptch.h soup/chk.auth.tail.h $@
 
-chk_sem_info.c: jsemtblgen jsemcgen.sh test_JSON/info.json/good/info.reference.json \
-		chk.info.head.c chk.info.ptch.c chk.info.tail.c Makefile
+soup/chk_sem_info.c: jsemtblgen jsemcgen.sh test_JSON/info.json/good/info.reference.json \
+		soup/chk.info.head.c soup/chk.info.ptch.c soup/chk.info.tail.c Makefile
 	@${RM} -f $@
 	./jsemcgen.sh -N sem_info -P chk -- \
-	    test_JSON/info.json/good/info.reference.json chk.info.head.c chk.info.ptch.c chk.info.tail.c $@
+	    test_JSON/info.json/good/info.reference.json soup/chk.info.head.c soup/chk.info.ptch.c soup/chk.info.tail.c $@
 
-chk_sem_info.h: jsemtblgen jsemcgen.sh test_JSON/info.json/good/info.reference.json \
-		chk.info.head.h chk.info.ptch.h chk.info.tail.h Makefile
+soup/chk_sem_info.h: jsemtblgen jsemcgen.sh test_JSON/info.json/good/info.reference.json \
+		soup/chk.info.head.h soup/chk.info.ptch.h soup/chk.info.tail.h Makefile
 	@${RM} -f $@
 	./jsemcgen.sh -N sem_info -P chk -I -- \
-	    test_JSON/info.json/good/info.reference.json chk.info.head.h chk.info.ptch.h chk.info.tail.h $@
+	    test_JSON/info.json/good/info.reference.json soup/chk.info.head.h soup/chk.info.ptch.h soup/chk.info.tail.h $@
 
 # sequence exit codes
 #
@@ -973,8 +973,8 @@ clean_generated_obj:
 # rule used by prep.sh
 #
 clean_mkchk_sem:
-	${RM} -f chk_sem_auth.c chk_sem_auth.h chk_sem_auth.o
-	${RM} -f chk_sem_info.c chk_sem_info.h chk_sem_info.o
+	${RM} -f soup/chk_sem_auth.c soup/chk_sem_auth.h soup/chk_sem_auth.o
+	${RM} -f soup/chk_sem_info.c soup/chk_sem_info.h soup/chk_sem_info.o
 
 # clobber legacy code and files - files that are no longer needed
 #
@@ -989,6 +989,9 @@ legacy_clobber:
 	${RM} -rf jauthchk.dSYM
 	${RM} -f jinfochk
 	${RM} -rf jinfochk.dSYM
+	${RM} -rf ref
+	${RM} -f chk.{auth,info}.{head,tail,ptch}.{c,h}
+	${RM} -f chk_sem_auth.o chk_sem_info.o chk_validate.o
 
 # rule used by prep.sh and make clobber
 #
@@ -1010,7 +1013,7 @@ prep_clobber: legacy_clobber
 	${RM} -f .sorry.*
 	${RM} -f .exit_code.*
 	${RM} -f .jsemcgen.*
-	${RM} -rf ref
+	${RM} -rf soup/ref
 	${RM} -f legacy_os
 	${RM} -rf legacy_os.dSYM
 
@@ -1040,6 +1043,7 @@ clobber: clean prep_clobber
 	${RM} -f jparse_test.log chkentry_test.log txzchk_test.log
 	${RM} -f ${HTML_MAN_TARGETS}
 	${RM} -f .jsemcgen.out.*
+	${RM} -f .all_ref.*
 
 distclean nuke: clobber
 
@@ -1106,10 +1110,6 @@ fnamchk.o: fnamchk.c fnamchk.h dbg.h util.h dyn_array.h limit_ioccc.h \
 txzchk.o: txzchk.c txzchk.h util.h dyn_array.h dbg.h sanity.h location.h \
   utf8_posix_map.h limit_ioccc.h version.h entry_util.h json_parse.h \
   json_util.h json_sem.h
-chkentry.o: chkentry.c chkentry.h dbg.h json_util.h dyn_array.h \
-  json_parse.h util.h jparse.h jparse.tab.h json_sem.h chk_sem_info.h \
-  chk_sem_auth.h foo.h sanity.h location.h utf8_posix_map.h \
-  limit_ioccc.h version.h
 json_parse.o: json_parse.c dbg.h util.h dyn_array.h json_parse.h \
   json_util.h
 jstrencode.o: jstrencode.c jstrencode.h dbg.h util.h dyn_array.h \
@@ -1139,13 +1139,12 @@ entry_util.o: entry_util.c dbg.h util.h dyn_array.h entry_util.h \
   version.h json_parse.h json_util.h json_sem.h limit_ioccc.h location.h
 jsemtblgen.o: jsemtblgen.c jsemtblgen.h dbg.h util.h dyn_array.h \
   json_util.h json_parse.h jparse.h jparse.tab.h json_sem.h iocccsize.h
-chk_sem_auth.o: chk_sem_auth.c chk_sem_auth.h json_sem.h util.h \
-  dyn_array.h dbg.h json_parse.h json_util.h
-chk_sem_info.o: chk_sem_info.c chk_sem_info.h json_sem.h util.h \
-  dyn_array.h dbg.h json_parse.h json_util.h
-chk_validate.o: chk_validate.c chk_validate.h entry_util.h version.h \
-  json_parse.h util.h dyn_array.h dbg.h json_util.h json_sem.h \
-  limit_ioccc.h location.h chk_sem_auth.h chk_sem_info.h
+chk_sem_auth.o: soup/chk_sem_auth.c soup/chk_sem_auth.h \
+  soup/../json_sem.h soup/../util.h soup/../dyn_array.h soup/../dbg.h \
+  soup/../json_parse.h soup/../json_util.h
+chk_sem_info.o: soup/chk_sem_info.c soup/chk_sem_info.h \
+  soup/../json_sem.h soup/../util.h soup/../dyn_array.h soup/../dbg.h \
+  soup/../json_parse.h soup/../json_util.h
 json_sem.o: json_sem.c dbg.h json_sem.h util.h dyn_array.h json_parse.h \
   json_util.h
 have_timegm.o: have_timegm.c

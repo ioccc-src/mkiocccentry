@@ -33,7 +33,7 @@
 /*
  * json_sem - JSON semantics support
  */
-#include "json_sem.h"
+#include "../json_sem.h"
 
 
 #if !defined(SEM_AUTH_LEN)

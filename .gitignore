@@ -44,7 +44,7 @@ mkiocccentry
 mkiocccentry.html
 oebxergfB.txt
 orig.iocccsize
-ref/*
+soup/ref/*
 tags
 test_iocccsize
 test_set
