@@ -18,17 +18,22 @@
 .\" Humour impairment is not virtue nor is it a vice, it's just plain
 .\" wrong: almost as wrong as JSON spec mis-features and C++ obfuscation! :-)
 .\"
+.\" When you're playing with tar and you run you might trip and fall into a
+.\" tar pit. And if it's Hallowe'en you might be running from a ghost or vampire
+.\" or some kind of monster. :\-) That's why you should use txzchk(1): to make sure
+.\" you won't get stuck in tar! :\-)
+.\"
 .\" "Share and Enjoy!"
 .\"     --  Sirius Cybernetics Corporation Complaints Division, JSON spec department. :-)
 .\"
-.TH txzchk 1 "29 October 2022" "txzchk" "IOCCC tools"
+.TH txzchk 1 "31 October 2022" "txzchk" "IOCCC tools"
 .SH NAME
 txzchk \- sanity checker tool used on IOCCC compressed tarballs
 .SH SYNOPSIS
 \fBtxzchk\fP [\-h] [\-v level] [\-q] [\-w] [\-V] [\-t tar] [\-F fnamchk] [\-T] [\-E ext] txzpath
 .SH DESCRIPTION
 \fBtxzchk\fP runs a series of sanity tests on IOCCC compressed tarballs.
-It is invoked by \fBmkiocccentry(1)\fP after the tarball is formed, reporting any feathers stuck in the tarball (i.e. issues found) and exiting the program accordingly; if \fBtxzchk\fP does not return 0 \fBmkiocccentry\fP will exit with an error.
+It is invoked by \fBmkiocccentry(1)\fP after the tarball is formed, reporting any feathers stuck in the tarball (i.e. issues found) and exiting the program accordingly; if \fBtxzchk\fP does not return 0, \fBmkiocccentry\fP will exit with an error.
 .PP
 The program runs \fBtar \-tJvf\fP on the \fItxzpath\fP and parses the output of the command, performing a variety of tests on the tarball.
 As a side effect it will show the user the contents of the tarball.
@@ -52,7 +57,7 @@ If you need to see warnings with this option, use \fB\-w\fP.
 .TP
 \fB\-w\fP
 Always show warnings.
-This is useful for in the \fBtxzchk_test(8)\fP script.
+This is used in the \fBtxzchk_test(8)\fP script because it must see the warnings.
 .TP
 \fB\-V\fP
 Show version and exit.
@@ -66,7 +71,7 @@ Specify path to the IOCCC \fBfnamchk(1)\fP tool.
 If this option is not specified the program looks under the current working directory and \fI/usr/local/bin\fP.
 .TP
 \fB\-T\fP
-Assume txzpath is a text file; use \fBfopen(3)\fP and \fBfclose(3)\fP instead of \fBpopen(3)\fP and \fBpclose(3)\fP and don't require \fBtar\fP program.
+Assume txzpath is a text file: use \fBfopen(3)\fP and \fBfclose(3)\fP instead of \fBpopen(3)\fP and \fBpclose(3)\fP and don't require \fBtar\fP program.
 .TP
 \fB\-E \fIext\fP\fP
 Change extension for \fBfnamchk(1)\fP to validate (don't include the dot).
