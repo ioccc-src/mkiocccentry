@@ -1,6 +1,6 @@
 {
 	"IOCCC_auth_version" : "1.17 2022-10-30",
-	"IOCCC_contest_id" : "12345678-1234-4321-abcd-1234567890ab",
+	"IOCCC_contest_id" : "test",
 	"authors" : [
 		{
 			"name" : "author0 middle0 thisisaveryverylonglastname0",
@@ -85,7 +85,7 @@
 	"min_timestamp" : 1662145368,
 	"mkiocccentry_version" : "0.43 2022-10-28",
 	"no_comment" : "mandatory comment: because comments were removed from the original JSON spec",
-	"tarball" : "entry.12345678-1234-4321-abcd-1234567890ab-0.1662145368.txz",
+	"tarball" : "entry.test-0.1662145368.txz",
 	"test_mode" : true,
 	"timestamp_epoch" : "Thu Jan 01 00:00:00 1970 UTC"
 }

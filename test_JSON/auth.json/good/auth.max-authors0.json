@@ -76,8 +76,8 @@
 			"url" : "https:\/\/host0.example.com\/index.html",
 			"twitter" : "@twitter4",
 			"github" : "@github4",
-			"affiliation" : null,
-			"past_winner" : "an affiliation for #4 author",
+			"affiliation" : "an affiliation for #4 author",
+			"past_winner" : false,
 			"default_handle" : true,
 			"author_handle" : "jrandom+5af89d19308010a8481f79d",
 			"author_number" : 4

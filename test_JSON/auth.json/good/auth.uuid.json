@@ -10,7 +10,7 @@
 	"tarball" : "entry.12345678-1234-4321-abcd-1234567890ab-0.1662145368.txz",
 	"entry_num" : 0,
 	"author_count" : 5,
-	"test_mode" : true,
+	"test_mode" : false,
 	"authors" : [
 		{
 			"name" : "author0 middle0 thisisaveryverylonglastname0",

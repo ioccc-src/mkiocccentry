@@ -76,8 +76,8 @@
 			"url" : null,
 			"twitter" : null,
 			"github" : null,
-			"affiliation" : "an affiliation for #4 author",
-			"past_winner" : false,
+			"affiliation" : null,
+			"past_winner" : "an affiliation for #4 author",
 			"default_handle" : true,
 			"author_handle" : "jrandom+5af89d19308010a8481f79d",
 			"author_number" : 4
