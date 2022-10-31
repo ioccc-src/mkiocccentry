@@ -228,6 +228,7 @@ if [[ ! -w "${LOGFILE}" ]]; then
     exit 29
 fi
 
+# set up for the different tests
 # set up for tar test
 #
 RUN_TAR_TEST="true"
@@ -265,7 +266,26 @@ if [[ $status -ne 0 ]]; then
     RUN_TAR_TEST=
 fi
 
-trap "rm -f \$TARBALL \$TEST_FILE \$TAR_ERROR; exit" 1 2 3 15
+# We need a file to write the output of txzchk to in order to compare it
+# with any error file. This is needed for the files that are supposed to
+# fail but it's possible that there could be a use for good files too.
+STDERR=$(mktemp -u .txzchk_test.stderr.XXXXXXXXXX)
+# delete the temporary file in the off chance it already exists
+rm -f "$STDERR"
+# now let's make sure we can create it as well: if we can't or it's not
+# writable there's an issue.
+#
+touch "$STDERR"
+if [[ ! -e "$STDERR" ]]; then
+    echo "$0: could not create output file: $STDERR"
+    exit 30
+fi
+if [[ ! -w "$STDERR" ]]; then
+    echo "$0: output file not writable: $STDERR"
+    exit 31
+fi
+
+trap "rm -f \$TARBALL \$TEST_FILE \$TAR_ERROR \$STDERR; exit" 0 1 2 3 15
 
 # run tar test
 #
@@ -300,29 +320,6 @@ fi
 if [[ -n $TAR_TEST_SUCCESS ]]; then
     rm -f "$TEST_FILE" "$TAR_ERROR" "$TARBALL"
 fi
-
-
-# We need a file to write the output of txzchk to in order to compare it
-# with any error file. This is needed for the files that are supposed to
-# fail but it's possible that there could be a use for good files too.
-STDERR=$(mktemp -u .txzchk_test.stderr.XXXXXXXXXX)
-# delete the temporary file in the off chance it already exists
-rm -f "$STDERR"
-# now let's make sure we can create it as well: if we can't or it's not
-# writable there's an issue.
-#
-touch "$STDERR"
-if [[ ! -e "$STDERR" ]]; then
-    echo "$0: could not create output file: $STDERR"
-    exit 30
-fi
-if [[ ! -w "$STDERR" ]]; then
-    echo "$0: output file not writable: $STDERR"
-    exit 31
-fi
-# finally trap exit so that the file is deleted regardless of where the script
-# exits
-trap "rm -f \$STDERR; exit" 0 1 2 3 15
 
 if [[ $V_FLAG -ge 5 ]]; then
     echo "$0: debug[5]: will run txzchk from: $TXZCHK" 1>&2
@@ -476,6 +473,9 @@ while read -r file; do
     run_test fail "$file"
 done < <(find "$TXZCHK_BAD_TREE" -type f -name '*.txt' -print)
 
+# explicitly delete the temporary files
+
+rm -f "$TARBALL" "$TEST_FILE" "$TAR_ERROR" "$STDERR"
 
 # All Done!!! -- Jessica Noll, Age 2
 #
