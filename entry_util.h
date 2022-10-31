@@ -215,7 +215,7 @@ struct manifest
 {
     intmax_t count_info_JSON;	/* count of info_JSON JSON member found (will be ".info.json") */
     intmax_t count_auth_JSON;	/* count of auth_JSON JSON member found (will be ".auth.json") */
-    intmax_t count_c_src;		/* count of c_src JSON member found (will be "prog.c") */
+    intmax_t count_c_src;	/* count of c_src JSON member found (will be "prog.c") */
     intmax_t count_Makefile;	/* count of Makefile JSON member found (will be "Makefile") */
     intmax_t count_remarks;	/* count of remarks JSON member found (will be "remarks") */
     intmax_t count_extra_file;	/* count of extra JSON members found */

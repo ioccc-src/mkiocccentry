@@ -99,7 +99,6 @@ TEE= tee
 TR= tr
 TRUE= true
 
-
 ##################
 # legacy targets #
 ##################
@@ -256,7 +255,7 @@ MAN1_TARGETS= mkiocccentry txzchk fnamchk iocccsize chkentry jstrdecode jstrenco
 MAN3_TARGETS= dbg
 MAN8_TARGETS= reset_tstamp verge limit_ioccc iocccsize_test ioccc_test run_usage utf8_test \
 	      have_timegm jparse_test txzchk_test vermod mkiocccentry_test jstr_test jnum_chk \
-	      jnum_gen
+	      jnum_gen chkentry_test
 MAN_TARGETS= ${MAN1_TARGETS} ${MAN3_TARGETS} ${MAN8_TARGETS}
 HTML_MAN_TARGETS= $(patsubst %,%.html,$(MAN_TARGETS))
 # This is a simpler way to do:
@@ -303,7 +302,7 @@ DSYMDIRS= $(TARGETS:=.dSYM)
 SH_FILES= iocccsize_test.sh jstr_test.sh limit_ioccc.sh mkiocccentry_test.sh \
 	  vermod.sh prep.sh run_bison.sh run_flex.sh reset_tstamp.sh ioccc_test.sh \
 	  jparse_test.sh txzchk_test.sh hostchk.sh jsemcgen.sh have_timegm.sh \
-	  run_usage.sh bug_report.sh soup/all_ref.sh
+	  run_usage.sh bug_report.sh soup/all_ref.sh chkentry_test.sh
 BUILD_LOG= build.log
 TXZCHK_LOG=txzchk_test.log
 
@@ -1112,6 +1111,10 @@ fnamchk.o: fnamchk.c fnamchk.h dbg.h util.h dyn_array.h limit_ioccc.h \
 txzchk.o: txzchk.c txzchk.h util.h dyn_array.h dbg.h sanity.h location.h \
   utf8_posix_map.h limit_ioccc.h version.h entry_util.h json_parse.h \
   json_util.h json_sem.h
+chkentry.o: chkentry.c chkentry.h dbg.h json_util.h dyn_array.h \
+  json_parse.h util.h jparse.h jparse.tab.h json_sem.h \
+  soup/chk_sem_info.h soup/../json_sem.h soup/chk_sem_auth.h foo.h \
+  sanity.h location.h utf8_posix_map.h limit_ioccc.h version.h
 json_parse.o: json_parse.c dbg.h util.h dyn_array.h json_parse.h \
   json_util.h
 jstrencode.o: jstrencode.c jstrencode.h dbg.h util.h dyn_array.h \
@@ -1147,6 +1150,11 @@ chk_sem_auth.o: soup/chk_sem_auth.c soup/chk_sem_auth.h \
 chk_sem_info.o: soup/chk_sem_info.c soup/chk_sem_info.h \
   soup/../json_sem.h soup/../util.h soup/../dyn_array.h soup/../dbg.h \
   soup/../json_parse.h soup/../json_util.h
+chk_validate.o: soup/chk_validate.c soup/chk_validate.h \
+  soup/../entry_util.h soup/../version.h soup/../json_parse.h \
+  soup/../util.h soup/../dyn_array.h soup/../dbg.h soup/../json_util.h \
+  soup/../json_sem.h soup/../limit_ioccc.h soup/../location.h \
+  soup/chk_sem_auth.h soup/chk_sem_info.h
 json_sem.o: json_sem.c dbg.h json_sem.h util.h dyn_array.h json_parse.h \
   json_util.h
 have_timegm.o: have_timegm.c

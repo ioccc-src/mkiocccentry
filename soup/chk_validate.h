@@ -26,17 +26,17 @@
 /*
  * entry_util - utilities supporting mkiocccentry JSON files
  */
-#include "entry_util.h"
+#include "../entry_util.h"
 
 /*
  * json_util - general JSON parser utility support functions
  */
-#include "json_util.h"
+#include "../json_util.h"
 
 /*
  * json_sem - JSON semantics support
  */
-#include "json_sem.h"
+#include "../json_sem.h"
 
 /*
  * chk_sem_auth - check .auth.json semantics

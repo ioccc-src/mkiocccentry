@@ -1191,8 +1191,8 @@ object2author(struct json *node, unsigned int depth, struct json_sem *sem,
  *	extra_file
  *
  * provided that those extra filenames do NOT match one of the above
- * mentioned mandatory files AND that the extra filename is POSIX portable
- * safe plus + chars.
+ * mentioned mandatory files (case-insensitive) AND that the extra filename is
+ * POSIX portable safe and + chars.
  *
  * This function records the number of mandatory files found in the
  * IOCCC manifest. It will flag as an error, it a mandatory file is
@@ -1601,7 +1601,7 @@ object2manifest(struct json *node, unsigned int depth, struct json_sem *sem,
     }
 
     /*
-     * verify that we do not have to many extra filenames
+     * verify that we do not have too many extra filenames
      */
     if (man.count_extra_file < 0 || man.count_extra_file > MAX_FILE_COUNT-MANDATORY_FILE_COUNT) {
 	if (val_err != NULL) {
@@ -2806,23 +2806,23 @@ test_extra_file(char const *str)
     }
 
     /* verify that extra_file does not match a mandatory filename */
-    if (strcmp(str, INFO_JSON_FILENAME) == 0) {
+    if (strcasecmp(str, INFO_JSON_FILENAME) == 0) {
 	json_dbg(JSON_DBG_MED, __func__,
 		 "invalid: extra_file matches a mandatory file %s", INFO_JSON_FILENAME);
 	return false;
-    } else if (strcmp(str, AUTH_JSON_FILENAME) == 0) {
+    } else if (strcasecmp(str, AUTH_JSON_FILENAME) == 0) {
 	json_dbg(JSON_DBG_MED, __func__,
 		 "invalid: extra_file matches a mandatory file %s", AUTH_JSON_FILENAME);
 	return false;
-    } else if (strcmp(str, PROG_C_FILENAME) == 0) {
+    } else if (strcasecmp(str, PROG_C_FILENAME) == 0) {
 	json_dbg(JSON_DBG_MED, __func__,
 		 "invalid: extra_file matches a mandatory file %s", PROG_C_FILENAME);
 	return false;
-    } else if (strcmp(str, MAKEFILE_FILENAME) == 0) {
+    } else if (strcasecmp(str, MAKEFILE_FILENAME) == 0) {
 	json_dbg(JSON_DBG_MED, __func__,
 		 "invalid: extra_file matches a mandatory file %s", MAKEFILE_FILENAME);
 	return false;
-    } else if (strcmp(str, REMARKS_FILENAME) == 0) {
+    } else if (strcasecmp(str, REMARKS_FILENAME) == 0) {
 	json_dbg(JSON_DBG_MED, __func__,
 		 "invalid: extra_file matches a mandatory file %s", REMARKS_FILENAME);
 	return false;
@@ -3674,7 +3674,7 @@ test_manifest(struct manifest *manp)
 	    /*
 	     * compare first and second extra filenames
 	     */
-	    if (strcmp(extra_filename, extra_filename2) == 0) {
+	    if (strcasecmp(extra_filename, extra_filename2) == 0) {
 		json_dbg(JSON_DBG_MED, __func__,
 			 "invalid: manifest extra[%jd] filename matches manifest extra[%jd] filename",
 			 i, j);
