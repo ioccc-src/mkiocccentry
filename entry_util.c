@@ -2806,23 +2806,23 @@ test_extra_file(char const *str)
     }
 
     /* verify that extra_file does not match a mandatory filename */
-    if (strcmp(str, INFO_JSON_FILENAME) == 0) {
+    if (strcasecmp(str, INFO_JSON_FILENAME) == 0) {
 	json_dbg(JSON_DBG_MED, __func__,
 		 "invalid: extra_file matches a mandatory file %s", INFO_JSON_FILENAME);
 	return false;
-    } else if (strcmp(str, AUTH_JSON_FILENAME) == 0) {
+    } else if (strcasecmp(str, AUTH_JSON_FILENAME) == 0) {
 	json_dbg(JSON_DBG_MED, __func__,
 		 "invalid: extra_file matches a mandatory file %s", AUTH_JSON_FILENAME);
 	return false;
-    } else if (strcmp(str, PROG_C_FILENAME) == 0) {
+    } else if (strcasecmp(str, PROG_C_FILENAME) == 0) {
 	json_dbg(JSON_DBG_MED, __func__,
 		 "invalid: extra_file matches a mandatory file %s", PROG_C_FILENAME);
 	return false;
-    } else if (strcmp(str, MAKEFILE_FILENAME) == 0) {
+    } else if (strcasecmp(str, MAKEFILE_FILENAME) == 0) {
 	json_dbg(JSON_DBG_MED, __func__,
 		 "invalid: extra_file matches a mandatory file %s", MAKEFILE_FILENAME);
 	return false;
-    } else if (strcmp(str, REMARKS_FILENAME) == 0) {
+    } else if (strcasecmp(str, REMARKS_FILENAME) == 0) {
 	json_dbg(JSON_DBG_MED, __func__,
 		 "invalid: extra_file matches a mandatory file %s", REMARKS_FILENAME);
 	return false;
