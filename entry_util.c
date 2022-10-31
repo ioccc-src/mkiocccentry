@@ -1191,8 +1191,8 @@ object2author(struct json *node, unsigned int depth, struct json_sem *sem,
  *	extra_file
  *
  * provided that those extra filenames do NOT match one of the above
- * mentioned mandatory files AND that the extra filename is POSIX portable
- * safe plus + chars.
+ * mentioned mandatory files (case-insensitive) AND that the extra filename is
+ * POSIX portable safe and + chars.
  *
  * This function records the number of mandatory files found in the
  * IOCCC manifest. It will flag as an error, it a mandatory file is
@@ -1601,7 +1601,7 @@ object2manifest(struct json *node, unsigned int depth, struct json_sem *sem,
     }
 
     /*
-     * verify that we do not have to many extra filenames
+     * verify that we do not have too many extra filenames
      */
     if (man.count_extra_file < 0 || man.count_extra_file > MAX_FILE_COUNT-MANDATORY_FILE_COUNT) {
 	if (val_err != NULL) {
