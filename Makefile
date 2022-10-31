@@ -303,7 +303,7 @@ DSYMDIRS= $(TARGETS:=.dSYM)
 SH_FILES= iocccsize_test.sh jstr_test.sh limit_ioccc.sh mkiocccentry_test.sh \
 	  vermod.sh prep.sh run_bison.sh run_flex.sh reset_tstamp.sh ioccc_test.sh \
 	  jparse_test.sh txzchk_test.sh hostchk.sh jsemcgen.sh have_timegm.sh \
-	  run_usage.sh bug_report.sh all_ref.sh
+	  run_usage.sh bug_report.sh soup/all_ref.sh
 BUILD_LOG= build.log
 TXZCHK_LOG=txzchk_test.log
 
@@ -776,10 +776,10 @@ rebuild_jnum_test: jnum_gen jnum.testset jnum_header.c Makefile
 #
 # rule used by prep.sh
 #
-all_ref: jsemtblgen jsemcgen.sh test_JSON/info.json/good test_JSON/auth.json/good all_ref.sh
+all_ref: jsemtblgen jsemcgen.sh test_JSON/info.json/good test_JSON/auth.json/good soup/all_ref.sh
 	rm -rf soup/ref
 	mkdir -p soup/ref
-	./all_ref.sh -v 1 \
+	./soup/all_ref.sh -v 1 \
 	    soup/chk.info.head.c soup/chk.info.tail.c soup/chk.info.head.h soup/chk.info.tail.h \
 	    soup/chk.auth.head.c soup/chk.auth.tail.c soup/chk.auth.head.h soup/chk.auth.tail.h \
 	    test_JSON/info.json/good test_JSON/auth.json/good soup/ref
