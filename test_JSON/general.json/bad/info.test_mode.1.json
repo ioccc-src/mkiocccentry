@@ -8,11 +8,11 @@
 	"chkentry_version" : "0.2 2022-10-28",
 	"fnamchk_version" : "0.6 2022-03-15",
 	"txzchk_version" : "0.13 2022-10-09",
-	"IOCCC_contest_id" : "12345678-1234-4321-abcd-1234567890ab",
+	"IOCCC_contest_id" : "test",
 	"entry_num" : 0,
 	"title" : "title-for-entry0",
 	"abstract" : "abstract for entry #0",
-	"tarball" : "entry.12345678-1234-4321-abcd-1234567890ab-0.1662145368.txz",
+	"tarball" : "entry.test-0.1645219582.txz",
 	"rule_2a_size" : 0,
 	"rule_2b_size" : 0,
 	"empty_override" : true,
@@ -40,10 +40,9 @@
 		{"extra_file" : "extra1"},
 		{"extra_file" : "extra2"}
 	],
-	"formed_timestamp" : 1662145368,
-	"formed_timestamp_usec" : 13685,
+	"formed_timestamp" : 1645219582,
+	"formed_timestamp_usec" : 920407,
 	"timestamp_epoch" : "Thu Jan 01 00:00:00 1970 UTC",
 	"min_timestamp" : 1662145368,
-	"foo" : true,
-	"formed_UTC" : "Fri Sep 02 19:02:48 2022 UTC"
+	"formed_UTC" : "Fri Feb 18 21:26:22 2022 UTC"
 }

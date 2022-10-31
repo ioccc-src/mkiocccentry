@@ -30,7 +30,7 @@
 	"found_clean_rule" : true,
 	"found_clobber_rule" : true,
 	"found_try_rule" : true,
-	"test_mode" : false,
+	"test_mode" : true,
 	"manifest" : [
 		{"info_JSON" : ".info.json"},
 		{"auth_JSON" : ".auth.json"},
@@ -44,6 +44,5 @@
 	"formed_timestamp_usec" : 13685,
 	"timestamp_epoch" : "Thu Jan 01 00:00:00 1970 UTC",
 	"min_timestamp" : 1662145368,
-	"foo" : true,
 	"formed_UTC" : "Fri Sep 02 19:02:48 2022 UTC"
 }
