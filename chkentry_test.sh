@@ -14,7 +14,7 @@ export USAGE="usage: $0 [-h] [-V] [-v level] [-D dbg_level] [-J level] [-q] [-c 
     -D dbg_level	set verbosity level for tests (def: level: 0)
     -J level		set JSON parser verbosity level (def level: 0)
     -q			quiet mode: silence msg(), warn(), warnp() if -v 0 (def: not quiet)
-    -j /path/to/chkentry	path to chkentry tool (def: ./chkentry)
+    -c /path/to/chkentry	path to chkentry tool (def: ./chkentry)
     -d json_tree	read files from good and bad subdirectories of this directory
 			    These subdirectories are expected:
 				tree/info.json/bad
