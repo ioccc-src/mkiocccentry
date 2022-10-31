@@ -255,7 +255,7 @@ MAN1_TARGETS= mkiocccentry txzchk fnamchk iocccsize chkentry jstrdecode jstrenco
 MAN3_TARGETS= dbg
 MAN8_TARGETS= reset_tstamp verge limit_ioccc iocccsize_test ioccc_test run_usage utf8_test \
 	      have_timegm jparse_test txzchk_test vermod mkiocccentry_test jstr_test jnum_chk \
-	      jnum_gen
+	      jnum_gen chkentry_test
 MAN_TARGETS= ${MAN1_TARGETS} ${MAN3_TARGETS} ${MAN8_TARGETS}
 HTML_MAN_TARGETS= $(patsubst %,%.html,$(MAN_TARGETS))
 # This is a simpler way to do:
@@ -302,7 +302,7 @@ DSYMDIRS= $(TARGETS:=.dSYM)
 SH_FILES= iocccsize_test.sh jstr_test.sh limit_ioccc.sh mkiocccentry_test.sh \
 	  vermod.sh prep.sh run_bison.sh run_flex.sh reset_tstamp.sh ioccc_test.sh \
 	  jparse_test.sh txzchk_test.sh hostchk.sh jsemcgen.sh have_timegm.sh \
-	  run_usage.sh bug_report.sh soup/all_ref.sh
+	  run_usage.sh bug_report.sh soup/all_ref.sh chkentry_test.sh
 BUILD_LOG= build.log
 TXZCHK_LOG=txzchk_test.log
 
