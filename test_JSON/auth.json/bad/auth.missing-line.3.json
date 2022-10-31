@@ -1,6 +1,5 @@
 {
 	"no_comment" : "mandatory comment: because comments were removed from the original JSON spec",
-	"IOCCC_auth_version" : "1.17 2022-10-30",
 	"IOCCC_contest" : "IOCCCMOCK",
 	"IOCCC_year" : 2022,
 	"mkiocccentry_version" : "0.43 2022-10-28",
