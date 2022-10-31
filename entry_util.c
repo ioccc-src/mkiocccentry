@@ -3674,7 +3674,7 @@ test_manifest(struct manifest *manp)
 	    /*
 	     * compare first and second extra filenames
 	     */
-	    if (strcmp(extra_filename, extra_filename2) == 0) {
+	    if (strcasecmp(extra_filename, extra_filename2) == 0) {
 		json_dbg(JSON_DBG_MED, __func__,
 			 "invalid: manifest extra[%jd] filename matches manifest extra[%jd] filename",
 			 i, j);
