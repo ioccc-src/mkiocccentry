@@ -51,10 +51,10 @@ Set json tree to look for good and bad files under to \fIjson_tree\fP.
 .SH EXIT STATUS
 .TP
 0
-all tests are OK
+all tests passed
 .TQ
 1
-at least one test failed
+all JSON files were valid JSON, however some chkentry semantic tests failed
 .TQ
 2
 help mode exit
@@ -62,7 +62,19 @@ help mode exit
 3
 invalid command line
 .TQ
->=4
+4
+missing or non-executable chkentry
+.TQ
+5
+missing or non-readable json_tree directory or subdirectory
+.TQ
+6
+some files were invalid JSON, chkentry correctly tested all other files
+.TQ
+7
+some files were invalid JSON, some chkentry tests failed
+.TQ
+>=10
 internal error
 .SH FILES
 \fIchkentry_test.log\fP

@@ -5,7 +5,20 @@
 
 # setup
 #
-export CHKENTRY_TEST_VERSION="0.0 2022-10-31"
+export V_FLAG="0"
+export DBG_LEVEL="0"
+export JSON_DBG_LEVEL="0"
+export Q_FLAG=""
+export CHKENTRY="./chkentry"
+export LOGFILE="./chkentry_test.log"
+export EXIT_CODE=0
+export INVALID_JSON_FOUND=""
+export UNEXPECTED_SEMANRIC_ERROR=""
+export SEMANRIC_ERROR_MISSED=""
+export JSON_TREE="./test_JSON"
+
+export CHKENTRY_TEST_VERSION="0.1 2022-10-31"
+
 export USAGE="usage: $0 [-h] [-V] [-v level] [-D dbg_level] [-J level] [-q] [-c chkentry] [-d json_tree]
 
     -h			print help and exit
@@ -14,31 +27,29 @@ export USAGE="usage: $0 [-h] [-V] [-v level] [-D dbg_level] [-J level] [-q] [-c 
     -D dbg_level	set verbosity level for tests (def: level: 0)
     -J level		set JSON parser verbosity level (def level: 0)
     -q			quiet mode: silence msg(), warn(), warnp() if -v 0 (def: not quiet)
-    -c /path/to/chkentry	path to chkentry tool (def: ./chkentry)
-    -d json_tree	read files from good and bad subdirectories of this directory
-			    These subdirectories are expected:
-				tree/info.json/bad
-				tree/info.json/good
-				tree/auth.json/bad
-				tree/auth.json/good
+    -c chkentry		path to chkentry tool (def: $CHKENTRY)
+    -d json_tree	test files json_tree/{info,auth}.json/{good,bad}/*.json (def: $JSON_TREE)
+
+			NOTE: these subdirectories are required under json_tree:
+
+			json_tree/info.json/good/	valid JSON syntax that is a proper .info.json semantic file
+			json_tree/info.json/bad/	valid JSON syntax that has 1 or more .info.json semantic errors
+
+			json_tree/auth.json/good/	valid JSON syntax that is a proper .auth.json semantic file
+			json_tree/auth.json/bad/	valid JSON syntax that has 1 or more .auth.json semantic errors
 
 Exit codes:
-     0   all is well
-     1   at least one test failed
+     0   all tests passed
+     1   all JSON files were valid JSON, however some chkentry semantic tests failed
      2   help mode exit
      3   invalid command line
-  >= 4   internal error
+     4	 missing or non-executable chkentry
+     5	 missing or non-readable json_tree directory or subdirectory
+     6	 some files were invalid JSON, chkentry correctly tested all other files
+     7	 some files were invalid JSON, some chkentry tests failed
+ >= 10   internal error
 
 $0 version: $CHKENTRY_TEST_VERSION"
-
-export V_FLAG="0"
-export DBG_LEVEL="0"
-export JSON_DBG_LEVEL="0"
-export Q_FLAG=""
-export CHKENTRY="./chkentry"
-export LOGFILE="./chkentry_test.log"
-export EXIT_CODE=0
-export JSON_TREE="./test_JSON"
 
 # parse args
 #
@@ -87,13 +98,16 @@ fi
 # check args
 #
 shift $(( OPTIND - 1 ));
-
-eval make all 2>&1 | grep -v 'Nothing to be done for'
-
+if [[ $# -ne 0 ]]; then
+    echo "$0: ERROR: expected 0 arguments, found $#" 1>&2
+    echo "$USAGE" 1>&2
+    exit 3
+fi
 export INFO_GOOD_TREE="$JSON_TREE/info.json/good"
 export INFO_BAD_TREE="$JSON_TREE/info.json/bad"
 export AUTH_GOOD_TREE="$JSON_TREE/auth.json/good"
 export AUTH_BAD_TREE="$JSON_TREE/auth.json/bad"
+
 # firewall
 #
 if [[ ! -e $CHKENTRY ]]; then
@@ -113,78 +127,76 @@ fi
 #
 if [[ ! -e $JSON_TREE ]]; then
     echo "$0: ERROR: json_tree not found: $JSON_TREE" 1>&2
-    exit 10
+    exit 5
 fi
 if [[ ! -d $JSON_TREE ]]; then
     echo "$0: ERROR: json_tree not a directory: $JSON_TREE" 1>&2
-    exit 11
+    exit 5
 fi
 if [[ ! -r $JSON_TREE ]]; then
     echo "$0: ERROR: json_tree not readable directory: $JSON_TREE" 1>&2
-    exit 12
+    exit 5
 fi
 
 # good tree for auth.json
 #
 if [[ ! -e $AUTH_GOOD_TREE ]]; then
     echo "$0: ERROR: json_tree/auth.json/good for chkentry directory not found: $AUTH_GOOD_TREE" 1>&2
-    exit 13
+    exit 5
 fi
 if [[ ! -d $AUTH_GOOD_TREE ]]; then
     echo "$0: ERROR: json_tree/auth.json/good for chkentry not a directory: $AUTH_GOOD_TREE" 1>&2
-    exit 14
+    exit 5
 fi
 if [[ ! -r $AUTH_GOOD_TREE ]]; then
     echo "$0: ERROR: json_tree/auth.json/good for chkentry not readable directory: $AUTH_GOOD_TREE" 1>&2
-    exit 15
+    exit 5
 fi
 
 # bad tree for auth.json
 #
 if [[ ! -e $AUTH_BAD_TREE ]]; then
     echo "$0: ERROR: json_tree/auth.json/bad for chkentry directory not found: $AUTH_BAD_TREE" 1>&2
-    exit 16
+    exit 5
 fi
 if [[ ! -d $AUTH_BAD_TREE ]]; then
     echo "$0: ERROR: json_tree/auth.json/bad for chkentry not a directory: $AUTH_BAD_TREE" 1>&2
-    exit 17
+    exit 5
 fi
 if [[ ! -r $AUTH_BAD_TREE ]]; then
     echo "$0: ERROR: json_tree/auth.json/bad for chkentry not readable directory: $AUTH_BAD_TREE" 1>&2
-    exit 18
+    exit 5
 fi
-
 
 # good tree for info.json
 #
 if [[ ! -e $INFO_GOOD_TREE ]]; then
     echo "$0: ERROR: json_tree/info.json/good for chkentry directory not found: $INFO_GOOD_TREE" 1>&2
-    exit 19
+    exit 5
 fi
 if [[ ! -d $INFO_GOOD_TREE ]]; then
     echo "$0: ERROR: json_tree/info.json/good for chkentry not a directory: $INFO_GOOD_TREE" 1>&2
-    exit 20
+    exit 5
 fi
 if [[ ! -r $INFO_GOOD_TREE ]]; then
     echo "$0: ERROR: json_tree/info.json/good for chkentry not readable directory: $INFO_GOOD_TREE" 1>&2
-    exit 21
+    exit 5
 fi
 
 # bad tree for info.json
 #
 if [[ ! -e $INFO_BAD_TREE ]]; then
     echo "$0: ERROR: json_tree/info.json/bad for chkentry directory not found: $INFO_BAD_TREE" 1>&2
-    exit 22
+    exit 5
 fi
 if [[ ! -d $INFO_BAD_TREE ]]; then
     echo "$0: ERROR: json_tree/info.json/bad for chkentry not a directory: $INFO_BAD_TREE" 1>&2
-    exit 23
+    exit 5
 fi
 if [[ ! -r $INFO_BAD_TREE ]]; then
     echo "$0: ERROR: json_tree/info.json/bad for chkentry not readable directory: $INFO_BAD_TREE" 1>&2
-    exit 24
+    exit 5
 fi
-
 
 # remove logfile so that each run starts out with an empty file
 #
@@ -192,13 +204,12 @@ rm -f "$LOGFILE"
 touch "$LOGFILE"
 if [[ ! -f "${LOGFILE}" ]]; then
     echo "$0: ERROR: couldn't create log file" 1>&2
-    exit 5
+    exit 10
 fi
 if [[ ! -w "${LOGFILE}" ]]; then
     echo "$0: ERROR: log file not writable" 1>&2
-    exit 5
+    exit 11
 fi
-
 
 # run_auth_test - run a single chkentry test on a file
 #
@@ -218,7 +229,7 @@ run_auth_test()
     #
     if [[ $# -ne 6 ]]; then
 	echo "$0: ERROR: expected 6 args to run_auth_test, found $#" 1>&2
-	exit 4
+	exit 12
     fi
     declare chkentry="$1"
     declare dbg_level="$2"
@@ -229,8 +240,7 @@ run_auth_test()
 
     if [[ "$pass_fail" != "pass" && "$pass_fail" != "fail" ]]; then
 	echo "$0: ERROR: in run_auth_test: pass_fail neither 'pass' nor 'fail'" 1>&2
-	EXIT_CODE=2
-	return
+	exit 13
     fi
 
     # debugging
@@ -244,52 +254,59 @@ run_auth_test()
 	echo "$0: debug[9]: in run_auth_test: pass_fail: $pass_fail" 1>&2
     fi
 
+    # perform the test
+    #
     if [[ -z $quiet_mode ]]; then
 	if [[ $V_FLAG -ge 3 ]]; then
 	    echo "$0: debug[3]: about to run test that must $pass_fail: $chkentry -v $dbg_level -J $json_dbg_level -- . $auth_json >> ${LOGFILE} 2>&1" 1>&2
 	fi
-	echo "$0: debug[3]: about to run test that must $pass_fail: $chkentry -v $dbg_level -J $json_dbg_level -- . $auth_json >> ${LOGFILE} 2>&1" >> "${LOGFILE}"
+	echo "$0: about to run test that must $pass_fail: $chkentry -v $dbg_level -J $json_dbg_level -- . $auth_json >> ${LOGFILE} 2>&1" >> "${LOGFILE}"
 	"$chkentry" -v "$dbg_level" -J "$json_dbg_level" -- . "$auth_json" >> "${LOGFILE}" 2>&1
+	status="$?"
     else
 	if [[ $V_FLAG -ge 3 ]]; then
 	    echo "$0: debug[3]: about to run test that must $pass_fail: $chkentry -v $dbg_level -J $json_dbg_level -q -- . $auth_json >> ${LOGFILE} 2>&1" 1>&2
 	fi
-	echo "$0: debug[3]: about to run test that must $pass_fail: $chkentry -v $dbg_level -J $json_dbg_level -q -- . $auth_json >> ${LOGFILE} 2>&1" >> "${LOGFILE}"
+	echo "$0: about to run test that must $pass_fail: $chkentry -v $dbg_level -J $json_dbg_level -q -- . $auth_json >> ${LOGFILE} 2>&1" >> "${LOGFILE}"
 	"$chkentry" -v "$dbg_level" -J "$json_dbg_level" -q -- . "$auth_json" >> "${LOGFILE}" 2>&1
+	status="$?"
     fi
-    status="$?"
 
     # examine test result
     #
-    if [[ $status -eq 0 ]]; then
+    if [[ $status -eq 4 ]]; then
+	echo "$0: ERROR: file is not valid JSON, not a valid file for chkentry to test: $auth_json" >> "${LOGFILE}"
+	if [[ $V_FLAG -ge 1 ]]; then
+	    echo "$0: debug[1]: ERROR: file is not valid JSON, not a valid file for chkentry to test: $auth_json" 1>&2
+	fi
+	INVALID_JSON_FOUND="true"
+    elif [[ $status -eq 0 ]]; then
 	if [[ $pass_fail = pass ]]; then
-	    echo "$0: in test that must pass: chkentry OK, exit code 0" 1>&2 >> "${LOGFILE}"
+	    echo "$0: test $auth_json should PASS: chkentry PASS with exit code 0" 1>&2 >> "${LOGFILE}"
 	    if [[ $V_FLAG -ge 3 ]]; then
-		echo "$0: debug[3]: chkentry OK, exit code 0" 1>&2
+		echo "$0: debug[3]: test $auth_json should PASS: chkentry passed with exit code 0" 1>&2
 	    fi
 	else
+	    echo "$0: ERROR: test $auth_json should FAIL: chkentry incorrectly exited code 0" 1>&2 >> "${LOGFILE}"
 	    if [[ $V_FLAG -ge 1 ]]; then
-		echo "$0: in test that must fail: chkentry FAIL, exit code: $status" 1>&2 >> "${LOGFILE}"
-		if [[ $V_FLAG -ge 3 ]]; then
-		    echo "$0: debug[3]: in run_auth_test: chkentry exit code: $status" 1>&2
-		fi
+		echo "$0: debug[1]: ERROR: test $auth_json should FAIL: chkentry incorrectly exited code 0" 1>&2
 	    fi
-	    EXIT_CODE=1
+	    SEMANRIC_ERROR_MISSED="true"
 	fi
     else
 	if [[ $pass_fail = pass ]]; then
+	    echo "$0: ERROR: test $auth_json should PASS: chkentry FAIL with exit code: $status" 1>&2 >> "${LOGFILE}"
 	    if [[ $V_FLAG -ge 1 ]]; then
-		echo "$0: in test that must pass: chkentry FAIL, exit code: $status" 1>&2 >> "${LOGFILE}"
-		if [[ $V_FLAG -ge 3 ]]; then
-		    echo "$0: debug[3]: in run_auth_test: chkentry exit code: $status" 1>&2
+		if [[ $V_FLAG -ge 1 ]]; then
+		    echo "$0: debug[1]: ERROR: test $auth_json should pass: chkentry FAIL with exit code: $status" 1>&2
 		fi
 	    fi
-	    EXIT_CODE=1
+	    UNEXPECTED_SEMANRIC_ERROR="true"
 	else
+	    echo "$0: test $auth_json should FAIL: chkentry FAIL correctly with exit code: $status" 1>&2 >> "${LOGFILE}"
 	    if [[ $V_FLAG -ge 1 ]]; then
-		echo "$0: in test that must fail: chkentry OK, exit code: $status" 1>&2 >> "${LOGFILE}"
 		if [[ $V_FLAG -ge 3 ]]; then
-		    echo "$0: debug[3]: in run_auth_test: chkentry exit code: $status" 1>&2
+		    echo "$0: debug[3]: debug[3]: test $auth_json should FAIL: chkentry FAIL correctly with exit code: $status" 1>&2
 		fi
 	    fi
 	fi
@@ -300,6 +317,7 @@ run_auth_test()
     #
     return
 }
+
 # run_info_test - run a single chkentry test on a file
 #
 # usage:
@@ -318,7 +336,7 @@ run_info_test()
     #
     if [[ $# -ne 6 ]]; then
 	echo "$0: ERROR: expected 6 args to run_info_test, found $#" 1>&2
-	exit 4
+	exit 13
     fi
     declare chkentry="$1"
     declare dbg_level="$2"
@@ -344,129 +362,62 @@ run_info_test()
 	echo "$0: debug[9]: in run_info_test: pass_fail: $pass_fail" 1>&2
     fi
 
+    # perform the test
+    #
     if [[ -z $quiet_mode ]]; then
 	if [[ $V_FLAG -ge 3 ]]; then
 	    echo "$0: debug[3]: about to run test that must $pass_fail: $chkentry -v $dbg_level -J $json_dbg_level -- $info_json . >> ${LOGFILE} 2>&1" 1>&2
 	fi
-	echo "$0: debug[3]: about to run test that must $pass_fail: $chkentry -v $dbg_level -J $json_dbg_level -- $info_json . >> ${LOGFILE} 2>&1" >> "${LOGFILE}"
+	echo "$0: about to run test that must $pass_fail: $chkentry -v $dbg_level -J $json_dbg_level -- $info_json . >> ${LOGFILE} 2>&1" >> "${LOGFILE}"
 	"$chkentry" -v "$dbg_level" -J "$json_dbg_level" -- "$info_json" . >> "${LOGFILE}" 2>&1
+	status="$?"
     else
 	if [[ $V_FLAG -ge 3 ]]; then
 	    echo "$0: debug[3]: about to run test that must $pass_fail: $chkentry -v $dbg_level -J $json_dbg_level -q -- $info_json . >> ${LOGFILE} 2>&1" 1>&2
 	fi
-	echo "$0: debug[3]: about to run test that must $pass_fail: $chkentry -v $dbg_level -J $json_dbg_level -q -- $info_json . >> ${LOGFILE} 2>&1" >> "${LOGFILE}"
+	echo "$0: about to run test that must $pass_fail: $chkentry -v $dbg_level -J $json_dbg_level -q -- $info_json . >> ${LOGFILE} 2>&1" >> "${LOGFILE}"
 	"$chkentry" -v "$dbg_level" -J "$json_dbg_level" -q -- "$info_json" . >> "${LOGFILE}" 2>&1
+	status="$?"
     fi
-    status="$?"
 
     # examine test result
     #
-    if [[ $status -eq 0 ]]; then
-	if [[ $pass_fail = pass ]]; then
-	    echo "$0: in test that must pass: chkentry OK, exit code 0" 1>&2 >> "${LOGFILE}"
-	    if [[ $V_FLAG -ge 3 ]]; then
-		echo "$0: debug[3]: chkentry OK, exit code 0" 1>&2
-	    fi
-	else
-	    if [[ $V_FLAG -ge 1 ]]; then
-		echo "$0: in test that must fail: chkentry FAIL, exit code: $status" 1>&2 >> "${LOGFILE}"
-		if [[ $V_FLAG -ge 3 ]]; then
-		    echo "$0: debug[3]: in run_info_test: chkentry exit code: $status" 1>&2
-		fi
-	    fi
-	    EXIT_CODE=1
-	fi
-    else
-	if [[ $pass_fail = pass ]]; then
-	    if [[ $V_FLAG -ge 1 ]]; then
-		echo "$0: in test that must pass: chkentry FAIL, exit code: $status" 1>&2 >> "${LOGFILE}"
-		if [[ $V_FLAG -ge 3 ]]; then
-		    echo "$0: debug[3]: in run_info_test: chkentry exit code: $status" 1>&2
-		fi
-	    fi
-	    EXIT_CODE=1
-	else
-	    if [[ $V_FLAG -ge 1 ]]; then
-		echo "$0: in test that must fail: chkentry OK, exit code: $status" 1>&2 >> "${LOGFILE}"
-		if [[ $V_FLAG -ge 3 ]]; then
-		    echo "$0: debug[3]: in run_info_test: chkentry exit code: $status" 1>&2
-		fi
-	    fi
-	fi
-    fi
-    echo >> "${LOGFILE}"
-
-    # return
-    #
-    return
-}
-
-
-# run_string_test - run a single chkentry test on a string
-#
-# usage:
-#	run_string_test chkentry dbg_level json_dbg_level quiet_mode json_doc_string
-#
-#	chkentry			path to the chkentry program
-#	dbg_level		internal test debugging level to use as in: chkentry -v dbg_level
-#	json_dbg_level		JSON parser debug level to use in: chkentry -J json_dbg_level
-#	quiet_mode		quiet mode to use in: chkentry -q
-#	json_doc_string		JSON document as a string to give to chkentry
-#
-run_string_test()
-{
-    # parse args
-    #
-    if [[ $# -ne 5 ]]; then
-	echo "$0: ERROR: expected 5 args to run_string_test, found $#" 1>&2
-	exit 4
-    fi
-    declare chkentry="$1"
-    declare dbg_level="$2"
-    declare json_dbg_level="$3"
-    declare quiet_mode="$4"
-    declare json_doc_string="$5"
-
-    # debugging
-    #
-    if [[ $V_FLAG -ge 9 ]]; then
-	echo "$0: debug[9]: in run_string_test: chkentry: $chkentry" 1>&2
-	echo "$0: debug[9]: in run_string_test: dbg_level: $dbg_level" 1>&2
-	echo "$0: debug[9]: in run_string_test: json_dbg_level: $json_dbg_level" 1>&2
-	echo "$0: debug[9]: in run_string_test: quiet_mode: $quiet_mode" 1>&2
-	echo "$0: debug[9]: in run_string_test: json_doc_string: $json_doc_string" 1>&2
-    fi
-
-    if [[ -z $quiet_mode ]]; then
-	if [[ $V_FLAG -ge 3 ]]; then
-	    echo "$0: debug[3]: about to run: $chkentry -v $dbg_level -J $json_dbg_level -s -- $json_doc_string >> ${LOGFILE} 2>&1" 1>&2
-	fi
-	echo "$0: debug[3]: about to run: $chkentry -v $dbg_level -J $json_dbg_level -s -- $json_doc_string >> ${LOGFILE} 2>&1" >> "${LOGFILE}"
-	"$chkentry" -v "$dbg_level" -J "$json_dbg_level" -s -- "$json_doc_string" >> "${LOGFILE}" 2>&1
-    else
-	if [[ $V_FLAG -ge 3 ]]; then
-	    echo "$0: debug[3]: about to run: $chkentry -v $dbg_level -J $json_dbg_level -q -s -- $json_doc_string >> ${LOGFILE} 2>&1" 1>&2
-	fi
-	echo "$0: debug[3]: about to run: $chkentry -v $dbg_level -J $json_dbg_level -q -s -- $json_doc_string >> ${LOGFILE} 2>&1" >> "${LOGFILE}"
-	"$chkentry" -v "$dbg_level" -J "$json_dbg_level" -q -s -- "$json_doc_string" >> "${LOGFILE}" 2>&1
-    fi
-    status="$?"
-
-    # examine test result
-    #
-    if [[ $status -eq 0 ]]; then
-	echo "$0: chkentry OK, exit code 0" 1>&2 >> "${LOGFILE}"
-	if [[ $V_FLAG -ge 3 ]]; then
-	    echo "$0: debug[3]: chkentry OK, exit code 0" 1>&2
-	fi
-    else
+    if [[ $status -eq 4 ]]; then
+	echo "$0: ERROR: file is not valid JSON, not a valid file for chkentry to test: $info_json" >> "${LOGFILE}"
 	if [[ $V_FLAG -ge 1 ]]; then
-	    echo "$0: chkentry FAIL, exit code: $status" 1>&2 >> "${LOGFILE}"
+	    echo "$0: debug[1]: ERROR: file is not valid JSON, not a valid file for chkentry to test: $info_json" 1>&2
+	fi
+	INVALID_JSON_FOUND="true"
+    elif [[ $status -eq 0 ]]; then
+	if [[ $pass_fail = pass ]]; then
+	    echo "$0: test $info_json should PASS: chkentry PASS with exit code 0" 1>&2 >> "${LOGFILE}"
 	    if [[ $V_FLAG -ge 3 ]]; then
-		echo "$0: debug[3]: in run_string_test: chkentry exit code: $status" 1>&2
+		echo "$0: debug[3]: test $info_json should PASS: chkentry passed with exit code 0" 1>&2
+	    fi
+	else
+	    echo "$0: ERROR: test $info_json should FAIL: chkentry incorrectly exited code 0" 1>&2 >> "${LOGFILE}"
+	    if [[ $V_FLAG -ge 1 ]]; then
+		echo "$0: debug[1]: ERROR: test $info_json should FAIL: chkentry incorrectly exited code 0" 1>&2
+	    fi
+	    SEMANRIC_ERROR_MISSED="true"
+	fi
+    else
+	if [[ $pass_fail = pass ]]; then
+	    echo "$0: ERROR: test $info_json should PASS: chkentry FAIL with exit code: $status" 1>&2 >> "${LOGFILE}"
+	    if [[ $V_FLAG -ge 1 ]]; then
+		if [[ $V_FLAG -ge 1 ]]; then
+		    echo "$0: debug[1]: ERROR: test $info_json should pass: chkentry FAIL with exit code: $status" 1>&2
+		fi
+	    fi
+	    UNEXPECTED_SEMANRIC_ERROR="true"
+	else
+	    echo "$0: test $info_json should FAIL: chkentry FAIL correctly with exit code: $status" 1>&2 >> "${LOGFILE}"
+	    if [[ $V_FLAG -ge 1 ]]; then
+		if [[ $V_FLAG -ge 3 ]]; then
+		    echo "$0: debug[3]: debug[3]: test $info_json should FAIL: chkentry FAIL correctly with exit code: $status" 1>&2
+		fi
 	    fi
 	fi
-	EXIT_CODE=1
     fi
     echo >> "${LOGFILE}"
 
@@ -504,7 +455,6 @@ while read -r file; do
     run_info_test "$CHKENTRY" "$DBG_LEVEL" "$JSON_DBG_LEVEL" "$Q_FLAG" "$file" pass
 done < <(find "$INFO_GOOD_TREE" -type f -name '*.json' -print)
 
-
 # run tests that must fail: info.json
 #
 if [[ $V_FLAG -ge 3 ]]; then
@@ -514,20 +464,51 @@ while read -r file; do
     run_info_test "$CHKENTRY" "$DBG_LEVEL" "$JSON_DBG_LEVEL" "$Q_FLAG" "$file" fail
 done < <(find "$INFO_BAD_TREE" -type f -name '*.json' -print)
 
+# determine exit code
+#
+if [[ -z $INVALID_JSON_FOUND ]]; then
+    if [[ -z $UNEXPECTED_SEMANRIC_ERROR && -z $SEMANRIC_ERROR_MISSED ]]; then
+	EXIT_CODE=0
+	echo "$0: all tests PASSED" >> "${LOGFILE}"
+	if [[ $V_FLAG -ge 1 ]]; then
+	    echo "$0: debug[1]: all tests PASSED" 1>&2
+	fi
+	echo "$0: notice: about to exit: $EXIT_CODE" >> "${LOGFILE}"
+    else
+	EXIT_CODE=1
+	echo "$0: all JSON files were valid JSON, however some chkentry semantic tests failed" >> "${LOGFILE}"
+	if [[ $V_FLAG -ge 1 ]]; then
+	    echo "$0: debug[1]: all JSON files were valid JSON, however some chkentry semantic tests failed" 1>&2
+	    echo 1>&2
+	    echo "$0: Notice: see $LOGFILE for details" 1>&2
+	    echo "$0: ERROR: about to exit: $EXIT_CODE" 1>&2
+	fi
+	echo "$0: ERROR: about to exit: $EXIT_CODE" >> "${LOGFILE}"
+    fi
+else
+    if [[ -z $UNEXPECTED_SEMANRIC_ERROR && -z $SEMANRIC_ERROR_MISSED ]]; then
+	EXIT_CODE=6
+	echo "$0: some files were invalid JSON, chkentry correctly tested all other files" >> "${LOGFILE}"
+	if [[ $V_FLAG -ge 1 ]]; then
+	    echo "$0: debug[1]: some files were invalid JSON, chkentry correctly tested all other files" 1>&2
+	    echo 1>&2
+	    echo "$0: Notice: see $LOGFILE for details" 1>&2
+	    echo "$0: ERROR: about to exit: $EXIT_CODE" 1>&2
+	fi
+	echo "$0: ERROR: about to exit: $EXIT_CODE" >> "${LOGFILE}"
+    else
+	EXIT_CODE=7
+	echo "$0: some files were invalid JSON, some chkentry tests failed" >> "${LOGFILE}"
+	if [[ $V_FLAG -ge 1 ]]; then
+	    echo "$0: debug[1]: some files were invalid JSON, some chkentry tests failed" 1>&2
+	    echo 1>&2
+	    echo "$0: Notice: see $LOGFILE for details" 1>&2
+	    echo "$0: ERROR: about to exit: $EXIT_CODE" 1>&2
+	fi
+	echo "$0: ERROR: about to exit: $EXIT_CODE" >> "${LOGFILE}"
+    fi
+fi
 
 # All Done!!! -- Jessica Noll, Age 2
 #
-if [[ $V_FLAG -ge 1 ]]; then
-    if [[ $EXIT_CODE -eq 0 ]]; then
-	echo "$0: debug[1]: all tests PASSED" 1>&2
-	echo "$0: debug[1]: all tests PASSED" >> "${LOGFILE}"
-	echo 1>&2
-	echo "$0: see $LOGFILE for details" 1>&2
-    else
-	echo "$0: ERROR: debug[1]: some tests FAILED" 1>&2
-	echo "$0: ERROR: debug[1]: some tests FAILED" >> "${LOGFILE}"
-	echo 1>&2
-	echo "$0: Notice: see $LOGFILE for details" 1>&2
-    fi
-fi
 exit "$EXIT_CODE"
