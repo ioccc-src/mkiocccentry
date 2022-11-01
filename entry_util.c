@@ -34,6 +34,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <strings.h> /* strcasecmp */
 
 /*
  * dbg - info, debug, warning, error, and usage message facility
