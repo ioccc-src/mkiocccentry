@@ -1,0 +1,96 @@
+.\" section 1 man page for jstrencode
+.\"
+.\" This man page was first written by Cody Boone Ferguson for the IOCCC
+.\" in 2022.
+.\"
+.\" Humour impairment is not virtue nor is it a vice, it's just plain
+.\" wrong: almost as wrong as JSON spec mis-features and C++ obfuscation! :-)
+.\"
+.\" "Share and Enjoy!"
+.\"     --  Sirius Cybernetics Corporation Complaints Division, JSON spec department. :-)
+.\"
+.TH jstrencode 1 "29 October 2022" "jstrencode" "IOCCC tools"
+.SH NAME
+.B jstrencode
+\- encode JSON encoded strings
+.SH SYNOPSIS
+\fBjstrencode\fP [\-h] [\-v level] [\-q] [\-V] [\-t] [\-n] [\-Q] [string ...]
+.SH DESCRIPTION
+\fBjstrencode\fP encodes JSON encoded strings given on the command line.
+If given the \fB\-t\fP option it performs a test on the JSON encode and encode functions.
+.PP
+By default the program reads from \fBstdin\fP.
+.SH OPTIONS
+.PP
+\fB\-h\fP
+Show help and exit.
+.PP
+\fB\-v\fP
+Set verbosity level.
+.PP
+\fB\-q\fP
+Suppresses some of the output (def: not quiet).
+.PP
+\fB\-V\fP
+Show version and exit.
+.PP
+\fB\-t\fP
+Run tests on the JSON encode/encode functions.
+.PP
+\fB\-n\fP
+Do not output a newline after the encode function.
+.PP
+\fB\-Q\fP
+Enclose output in quotes (def: do not).
+\fBmain()\fP returns 1 for errors or issues found; 0 for success.
+.SH EXIT STATUS
+.TP
+0
+encode successful
+.TQ
+1
+encode unsuccessful
+.TQ
+2
+\-h and help string printed or \-V and version string printed
+.TQ
+3
+command line error
+.TQ
+>= 10
+internal error
+.SH BUGS
+.PP
+If you have an issue with the tool you can report it at
+.br
+\fI\<https://github.com/ioccc\-src/mkiocccentry/issues\>\fP.
+.SH EXAMPLES
+.PP
+.nf
+Encode the JSON string \fB{ "test_mode" : false }\fP:
+.RS
+\fB
+ ./jstrencode { "test_mode" : false }\fP
+.fi
+.RE
+.PP
+.nf
+Encode a string containing an escaped \fB"\fP from \fBstdin\fP (send \fBEOF\fP, usually ctrl\-d or \fB^D\fP, to encode):
+.RS
+\fB
+ ./jstrencode
+ {"test\\"ing":false}
+ ^D\fP
+.fi
+.RE
+.PP
+.nf
+Encode just a negative number:
+.RS
+\fB
+ ./jstrencode \-\- \-5\fP
+.fi
+.RE
+.SH SEE ALSO
+.PP
+For the decode counterpart, see \fBjstrdecode(1)\fP.

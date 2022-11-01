@@ -1,0 +1,62 @@
+.\" section 8 man page for reset_tstamp.sh
+.\"
+.\" This man page was first written by Cody Boone Ferguson for the IOCCC
+.\" in 2022.
+.\"
+.\" Humour impairment is not virtue nor is it a vice, it's just plain
+.\" wrong: almost as wrong as JSON spec mis-features and C++ obfuscation! :-)
+.\"
+.\" "Share and Enjoy!"
+.\"     --  Sirius Cybernetics Corporation Complaints Division, JSON spec department. :-)
+.\"
+.TH reset_tstamp.sh 8 "29 October 2022" "reset_tstamp.sh" "IOCCC tools"
+.SH NAME
+reset_tstamp \- reset the minimum timestamp \fBMIN_TIMESTAMP\fP
+.SH SYNOPSIS
+\fBreset_tstamp.sh\fP [\-h] [\-V] [\-v level] [\-l limit_ioccc.h]
+.SH DESCRIPTION
+\fBreset_tstamp.sh\fP will reset the minimum timestamp allowed for entries to the contest.
+.SH OPTIONS
+.TP
+\fB\-h\fP
+Show help and exit.
+.TP
+\fB\-V\fP
+Print version and exit.
+.TP
+\fB\-v\fP
+Set verbosity level.
+.TP
+\fB\-l\fP
+Specify limit file.
+.SH EXIT STATUS
+.PP
+An exit code of 0 indicates that the timestamp was successfully updated.
+.PP
+An exit code of 1 means Phase 0 of verification failed.
+.PP
+An exit code of 2 means Phase 1 of verification failed.
+.PP
+An exit code of 3 means Phase 2 of verification failed.
+.PP
+An exit code of 4 means Phase 3 of verification failed.
+.PP
+An exit code of 5 means Phase 4 of verification failed.
+.PP
+An exit code of 6 means \fBrpl(1)\fP failed to modify the \fIlimit_ioccc.h\fP file.
+.PP
+An exit code of 7 means that the limit file not found or not readable and not writable.
+.PP
+An exit code of 8 means \fB\-h\fP was used or \fB\-V\fP was used.
+.PP
+An exit code of 9 means a command line usage error.
+.PP
+An exit code >= 10 means an internal error occurred.
+.SH NOTES
+.PP
+Only run this script when you wish to invalidate all timestamps prior to now, such as when you make a fundamental change to a critical JSON format, or make a fundamental change to the compressed tarball file structure, or make a critical change to limit_ioccc.h that is MORE restrictive.
+.PP
+\fBDO NOT\fP run this script simply for a new IOCCC!
+.PP
+Yes, we make it very hard to run this script for good reason.
+Only IOCCC judges can perform ALL the steps needed to complete this action.

@@ -1,0 +1,152 @@
+.\" section 1 man page for fnamchk
+.\"
+.\" This man page was first written by Cody Boone Ferguson for the IOCCC
+.\" in 2022.
+.\"
+.\" Humour impairment is not virtue nor is it a vice, it's just plain
+.\" wrong: almost as wrong as JSON spec mis-features and C++ obfuscation! :-)
+.\"
+.\" "Share and Enjoy!"
+.\"     --  Sirius Cybernetics Corporation Complaints Division, JSON spec department. :-)
+.\"
+.TH fnamchk 1 "29 October 2022" "fnamchk" "IOCCC tools"
+.SH NAME
+fnamchk \- IOCCC compressed tarball filename sanity check tool
+.SH SYNOPSIS
+\fBfnamchk\fP [\-h] [\-v level] [\-q] [\-V] [\-E ext] [\-t|\-u] filepath
+.SH DESCRIPTION
+\fBfnamchk\fP verifies that an IOCCC compressed tarball is properly named.
+.PP
+The program validates that the filename is correct, in the form of \fBentry.contest_ID\-entry_num.timestamp.ext\fP where
+\fBcontest_ID\fP is either \fItest\fP or a valid UUID (see below), \fBentry_number\fP is an integer from \fB0\fP through \fBMAX_ENTRY_NUM\fP (see \fIlimit_ioccc.h\fP) inclusive, \fBtimestamp\fP is an integer of the number of seconds since the epoch and \fBext\fP is either \fBtxz\fP or the user supplied extension from the \fB\-E\fP option.
+.PP
+More specifically, the filename \fBmust\fP:
+.IP \(bu 4
+Start with "\fBentry\fP".
+.IP \(bu 4
+Followed by "\fB.\fP".
+.IP \(bu 4
+Followed by either "\fBtest\fP" \fIOR\fP a UUID string in the form of \fBxxxxxxxx\-xxxx\-4xxx\-axxx\-xxxxxxxxxxxx\fP where \fBx\fP is a hexadecimal digit in the range \fB[0\-9a\-f]\fP.
+And yes, there is a \fB4\fP (UUID version 4) and an \fBa\fP (UUID variant 1) in there.
+.IP \(bu 4
+Followed by "\fB\-\fP".
+.IP \(bu 4
+Followed by a decimal entry number from \fB0\fP through \fBMAX_ENTRY_NUM\fP (see \fIlimit_ioccc.h\fP) inclusive.
+.IP \(bu 4
+Followed by "\fB.\fP".
+.IP \(bu 4
+Followed by a positive non\-zero 64\-bit decimal integer.
+.IP \(bu 4
+Followed by "\fB.\fP".
+.IP \(bu 4
+Followed by "\fBtxz\fP" (or the user supplied extension from option \fB\-E\fP).
+.PP
+NOTE: The quotes above should not be in the filename; they're there only to help distinguish the punctuation from the rest of the format.
+.PP
+It is indirectly invoked via the \fBtxzchk(1)\fP utility which is called by \fBmkiocccentry(1)\fP and it will also be directly executed by the Judges during the judging process of the contests.
+.SH OPTIONS
+.TP
+\fB\-h\fP
+Show help and exit.
+.TP
+\fB\-v \fIlevel\fP\fP
+Set verbosity level.
+Default: 0.
+.TP
+\fB\-V\fP
+Show version and exit.
+.TP
+\fB\-q\fP
+Quiet mode.
+Silence msg(), warn(), warnp() if verbosity level is 0.
+Default: \fBfalse\fP.
+.TP
+\fB\-E \fIext\fP\fP
+Change extension to extension specified (without the dot!).
+This is used for \fBTESTING\fP purposes only!
+.TP
+\fB\-t\fP
+If the filename does not start with the test mode filename format, issue an error.
+In other words the filename has to start with \fIentry.test\-\fP or it's an error.
+.TP
+\fB\-u\fP
+If the filename does not start with the normal filename format, issue an error.
+In other words if the filename starts with \fIentry.test\-\fP it is an error.
+.SH EXIT STATUS
+.PP
+\fBmain()\fP returns 0 on success; if there's an error the end is not reached.
+If there is an error the error message is printed prior to exiting; else the output will be the name of the required directory in the tarball (this is used by \fBtxzchk(1)\fP).
+.SH BUGS
+.PP
+More than 0 humans work on it! :)
+.PP
+If you have an issue with the tool you can open an issue at
+.br
+\fI<https://github.com/ioccc\-src/mkiocccentry/issues\>\fP.
+.SH EXAMPLES
+.PP
+For the examples below assume that the \fBMIN_TIMESTAMP\fP is \fB(time_t)1662145368\fP.
+.PP
+Run the program on the filename \fIentry.test\-0.1562145368.txz\fP which will fail because the timestamp in the filename is less than the minimum timestamp:
+.nf
+.RS
+\fB
+ ./fnamchk \-t entry.test\-0.1562145368.txz\fP
+.fi
+.RE
+.PP
+Run the program on the filename \fItest.tar\fP, which will fail because the name format is invalid:
+.nf
+.RS
+\fB
+ ./fnamchk test.tar\fP
+.fi
+.RE
+.PP
+Run the program on the filename \fIentry.test.0.1662145368.txz\fP with the option \fB\-u\fP which will fail because it is a test\-mode filename but the \fB\-u\fP option is specified:
+.nf
+.RS
+\fB
+ ./fnamchk \-u entry.test\-0.1662145368.txz\fP
+.fi
+.RE
+.PP
+Run the program on the filename \fIentry.test.0.1662145368.txz\fP with the option \fI\-t\fP which will pass because it is a test\-mode file and the timestamp is not less than the minimum:
+.nf
+.RS
+\fB
+ ./fnamchk \-t entry.test\-0.1662145368.txz\fP
+.fi
+.RE
+.PP
+The above will print "\fBtest\-0\fP".
+.PP
+Run the program on the file \fIentry.test.0.1662145368.txt\fP with the option \fB\-t\fP, changing the extension to \fItxt\fP via the \fB\-E\fP option, which will pass because test mode is specified with a test filename, the extension matches the \fB\-E\fP option and the timestamp is correct:
+.nf
+.RS
+\fB
+ ./fnamchk \-E txt \-t entry.test\-0.1662145368.txt\fP
+.fi
+.RE
+.PP
+The above will print "\fBtest\-0\fP".
+.PP
+Run the program on the file \fIentry.test.0.1662145368.txz\fP with the options \fB\-t\fP, changing the extension to \fItxt\fP via the \fB\-E\fP option which will fail because the extension specified does not match the extension in the filename:
+.nf
+.RS
+\fB
+ ./fnamchk \-E txt \-t entry.test\-0.1662145368.txz\fP
+.fi
+.RE
+.PP
+It would have passed if the extension was correct because the timestamp in the filename is not less than the minimum timestamp.
+.PP
+Run the program on the file \fIentry.test.0.1662145368.txz\fP without specifying test\-mode or normal mode which will also pass because the filename format is correct (in this case a test mode filename):
+.nf
+.RS
+\fB
+ ./fnamchk entry.test\-0.1662145368.txz\fP
+.fi
+.RE
+.PP
+The above will print "\fBtest\-0\fP".

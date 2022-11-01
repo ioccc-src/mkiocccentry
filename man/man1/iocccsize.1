@@ -1,0 +1,134 @@
+.\" section 1 man page for iocccsize
+.\"
+.\" This man page was first written by Cody Boone Ferguson for the IOCCC
+.\" in 2022.
+.\"
+.\" Humour impairment is not virtue nor is it a vice, it's just plain
+.\" wrong: almost as wrong as JSON spec mis-features and C++ obfuscation! :-)
+.\"
+.\" "Share and Enjoy!"
+.\"     --  Sirius Cybernetics Corporation Complaints Division, JSON spec department. :-)
+.\"
+.TH iocccsize 1 "29 October 2022" "iocccsize" "IOCCC tools"
+.SH NAME
+iocccsize \- IOCCC Source Size Tool
+.SH SYNOPSIS
+\fBiocccsize\fP [\-h] [\-i] [\-v level] [\-q] [\-V] prog.c
+.br
+\fBiocccsize\fP [\-h] [\-i] [\-v level] [\-q] [\-V] < prog.c
+.SH DESCRIPTION
+.PP
+Reading a C source file from standard input or a file arg, apply the IOCCC source size rules as explained in the Guidelines.
+.PP
+The source's Rule 2b length is written to stdout; with \-v option the Rule 2b length, gross (Rule 2a) length, and matched keyword count are written to stdout.
+.PP
+The size tool counts most C reserved words (keyword, secondary, and selected preprocessor keywords) as 1.
+The size tool counts all other octets as 1 excluding ASCII whitespace, and excluding any ';', '{' or '}' followed by ASCII whitespace, and excluding any ';', '{' or '}' octet immediately before the end of file.
+.SH OPTIONS
+.TP
+\fB\-h\fP
+Show help and exit.
+.TP
+\fB\-i\fP
+Ignored for backward compatibility.
+.TP
+\fB\-v \fIlevel\fP\fP
+Set debugging level to \fIlevel\fP.
+0, the default, implies no debugging.
+.TP
+\fB\-q\fP
+Quiet mode.
+Silence msg(), warn(), warnp() if verbosity level is 0.
+.TP
+\fB\-V\fP
+Show version and exit.
+.SH EXIT STATUS
+.TP
+0
+source code is within Rule 2a and Rule 2b limits
+.TQ
+1
+source code larger than Rule 2a and/or Rule 2b limits
+.TQ
+2
+\-h used and help printed
+.TQ
+3
+\-V used and version printed
+.TQ
+4
+invalid command line
+.TQ
+>= 5
+some internal error occurred
+.SH EXAMPLES
+.PP
+.nf
+Test if prog.c fits within Rule 2b and Rule 2b limits: reporting of there's a problem.
+Output the Rule 2b value for prog.c:
+.RS
+\fB
+ ./iocccsize < prog.c
+ ./iocccsize prog.c\fP
+.fi
+.RE
+.PP
+.nf
+Test if prog.c fits within Rule 2b and Rule 2b limits: reporting of there's a problem.
+Output the Rule 2b length, gross (Rule 2a) length, and matched keyword count:
+.RS
+\fB
+ ./iocccsize \-v 1 < prog.c
+ ./iocccsize \-v 1 prog.c\fP
+.fi
+.RE
+.PP
+.nf
+You may also wish to try the test script in verbose mode:
+.RS
+\fB
+ ./iocccsize_test.sh \-v 3\fP
+.fi
+.RE
+.SH SEE ALSO
+\fBiocccsize_test(8)\fP
+.SH BUGS
+.PP
+There are no bugs, only features! :\-)
+.PP
+The matched keyword count is currently ignored by the IOCCC.
+.PP
+Because the original source was an IOCCC winner,
+"You are not expected to understand this" applies to somewhat improved source code. :\-)
+.PP
+But if you think you have an issue with the tool you can open an issue at
+.br
+\fI\<https://github.com/ioccc\-src/iocccsize/issues\>\fP.
+.SH IOCCC WARNING
+.PP
+For submitting entries to the IOCCC, and to conform with Rule 2,
+please use the official copy of the IOCCC
+\fBiocccsize\fP
+from the following GitHub repo:
+.br
+\fI\<https://github.com/ioccc\-src/mkiocccentry>\fP.
+.PP
+\fBWARNING:\fP
+Be sure you are using the current version of
+.B iocccsize
+as this tool may change from time to time.
+Failure to do so may result in your IOCCC submission being rejected!
+.SH HISTORY
+The
+.B iocccsize
+tool was created by Anthony Howe in 1992.
+This tool was first referenced by IOCCC Rule 2 in 2013.
+.PP
+This tool is based on Anthony Howe's
+\fBiocccsize\fP
+GitHub repo:
+.br
+\fI\<https://github.com/SirWumpus/iocccsize>\fP.
+.PP
+The IOCCC judges appreciate Anthony Howe for allowing the IOCCC
+to use a modified copy of his code.

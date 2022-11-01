@@ -1,0 +1,45 @@
+.\" section 8 man page for utf8_test
+.\"
+.\" This man page was first written by Cody Boone Ferguson for the IOCCC
+.\" in 2022.
+.\"
+.\" Humour impairment is not virtue nor is it a vice, it's just plain
+.\" wrong: almost as wrong as JSON spec mis-features and C++ obfuscation! :-)
+.\"
+.\" "Share and Enjoy!"
+.\"     --  Sirius Cybernetics Corporation Complaints Division, JSON spec department. :-)
+.\"
+.TH utf8_test 8 "29 October 2022" "utf8_test" "IOCCC tools"
+.SH NAME
+utf8_test \- test translate UTF\-8 chars into POSIX portable filename and +
+.SH SYNOPSIS
+\fButf8_test\fP [\-h] [\-v level] [\-V] [\-q] name ...
+.SH DESCRIPTION
+\fButf8_test\fP translates a UTF\-8 string into a POSIX portable filename (allowing for char \fI+\fP as well: that is a plus sign, not a plus or minus sign).
+.PP
+.SH OPTIONS
+.TP
+\fB\-h\fP
+Show help and exit.
+.TP
+\fB\-v \fIlevel\fP\fP
+Set verbosity level to \fIlevel\fP.
+.TP
+\fB\-V\fP
+Show version and exit.
+.TP
+\fB\-q\fP
+Suppresses some of the output (def: not quiet).
+.SH EXIT STATUS
+.TP
+0
+all is OK
+.TQ
+2
+\-h and help string printed or \-V and version string printed
+.TQ
+3
+invalid command line, invalid option or option missing an argument
+.TQ
+>= 10
+internal error

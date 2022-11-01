@@ -223,9 +223,9 @@ CFLAGS= ${C_STD} ${COPT} -pedantic ${D_LEGACY} ${WARN_FLAGS} ${LDFLAGS}
 
 # where and what to install
 #
-MAN1_DIR = /usr/local/share/man/man1
-MAN8_DIR = /usr/local/share/man/man8
-MAN3_DIR = /usr/local/share/man/man3
+DEST_MAN1_DIR = /usr/local/share/man/man1
+DEST_MAN8_DIR = /usr/local/share/man/man8
+DEST_MAN3_DIR = /usr/local/share/man/man3
 DESTDIR= /usr/local/bin
 TARGETS= mkiocccentry iocccsize dbg fnamchk txzchk chkentry \
 	jstrencode jstrdecode utf8_test jparse verge jnum_chk jnum_gen \
@@ -250,6 +250,9 @@ SH_TARGETS=limit_ioccc.sh
 #     all but still important parts of the repo so these would be skipped as
 #     well if we directly referred to TARGETS.
 #
+MAN1_DIR=man/man1
+MAN3_DIR=man/man3
+MAN8_DIR=man/man8
 MAN1_TARGETS= mkiocccentry txzchk fnamchk iocccsize chkentry jstrdecode jstrencode \
 	      jparse bug_report hostchk run_flex run_bison
 MAN3_TARGETS= dbg
@@ -1051,13 +1054,19 @@ distclean nuke: clobber
 install: all
 	# we have to first make sure the directories exist!
 	${INSTALL} -v -d -m 0755 ${DESTDIR}
-	${INSTALL} -v -d -m 0755 ${MAN1_DIR}
-	${INSTALL} -v -d -m 0755 ${MAN3_DIR}
-	${INSTALL} -v -d -m 0755 ${MAN8_DIR}
+	${INSTALL} -v -d -m 0755 ${DEST_MAN1_DIR}
+	${INSTALL} -v -d -m 0755 ${DEST_MAN3_DIR}
+	${INSTALL} -v -d -m 0755 ${DEST_MAN8_DIR}
 	${INSTALL} -v -m 0555 ${TARGETS} ${SH_TARGETS} ${DESTDIR}
-	${INSTALL} -v -m 0644 ${MAN1PAGES} ${MAN1_DIR}
-	${INSTALL} -v -m 0644 ${MAN3PAGES} ${MAN3_DIR}
-	${INSTALL} -v -m 0644 ${MAN8PAGES} ${MAN8_DIR}
+	@for i in ${MAN1PAGES}; do \
+	    ${INSTALL} -v -m 0644 ${MAN1_DIR}/$$i ${DEST_MAN1_DIR}; \
+	done
+	@for i in ${MAN3PAGES}; do \
+	    ${INSTALL} -v -m 0644 ${MAN3_DIR}/$$i ${DEST_MAN3_DIR}; \
+	done
+	@for i in ${MAN8PAGES}; do \
+	    ${INSTALL} -v -m 0644 ${MAN8_DIR}/$$i ${DEST_MAN8_DIR}; \
+	done
 
 tags: ${ALL_CSRC} ${H_FILES}
 	-${CTAGS} ${ALL_CSRC} ${H_FILES} 2>&1 | \

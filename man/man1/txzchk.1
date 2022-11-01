@@ -1,0 +1,145 @@
+.\" section 1 man page for txzchk
+.\"
+.\" This man page was first written by Cody Boone Ferguson for the IOCCC
+.\" in 2022.
+.\"
+.\" txzchk was written by Cody Boone Ferguson.
+.\"
+.\" Dedicated to:
+.\"
+.\"	The many poor souls who have been tarred and feathered:
+.\"
+.\"	    "Because sometimes people throw feathers on tar." :\-(
+.\"
+.\"	And to my wonderful Mum and my dear cousin and friend Dani:
+.\"
+.\"	    "Because even feathery balls of tar need some love.: :\-)
+.\"
+.\" Humour impairment is not virtue nor is it a vice, it's just plain
+.\" wrong: almost as wrong as JSON spec mis-features and C++ obfuscation! :-)
+.\"
+.\" When you're playing with tar and you run you might trip and fall into a
+.\" tar pit. And if it's Hallowe'en you might be running from a ghost or vampire
+.\" or some kind of monster. :\-) That's why you should use txzchk(1): to make sure
+.\" you won't get stuck in tar! :\-)
+.\"
+.\" "Share and Enjoy!"
+.\"     --  Sirius Cybernetics Corporation Complaints Division, JSON spec department. :-)
+.\"
+.TH txzchk 1 "31 October 2022" "txzchk" "IOCCC tools"
+.SH NAME
+txzchk \- sanity checker tool used on IOCCC compressed tarballs
+.SH SYNOPSIS
+\fBtxzchk\fP [\-h] [\-v level] [\-q] [\-w] [\-V] [\-t tar] [\-F fnamchk] [\-T] [\-E ext] txzpath
+.SH DESCRIPTION
+\fBtxzchk\fP runs a series of sanity tests on IOCCC compressed tarballs.
+It is invoked by \fBmkiocccentry(1)\fP after the tarball is formed, reporting any feathers stuck in the tarball (i.e. issues found) and exiting the program accordingly; if \fBtxzchk\fP does not return 0, \fBmkiocccentry\fP will exit with an error.
+.PP
+The program runs \fBtar \-tJvf\fP on the \fItxzpath\fP and parses the output of the command, performing a variety of tests on the tarball.
+As a side effect it will show the user the contents of the tarball.
+The tarball is \fBNOT\fP extracted.
+\fBtxzchk\fP also runs the IOCCC tool \fBfnamchk(1)\fP on the file, verifying that the tarball is properly named (this is also how it gets the directory name that the files should be in).
+.PP
+In other words it makes sure that \fBmkiocccentry(1)\fP was used and that there was no screwing around with the resultant tarball.
+As an important part of the judging process, the Judges will directly execute this tool on every entry's tarball.
+.SH OPTIONS
+.TP
+\fB\-h\fP
+Show help and exit.
+.TP
+\fB\-v \fIlevel\fP\fP
+Set verbosity level.
+.TP
+\fB\-q\fP
+Suppresses some of the output.
+Errors and the output of the \fBtar\fP command are still shown.
+If you need to see warnings with this option, use \fB\-w\fP.
+.TP
+\fB\-w\fP
+Always show warnings.
+This is used in the \fBtxzchk_test(8)\fP script because it must see the warnings.
+.TP
+\fB\-V\fP
+Show version and exit.
+.TP
+\fB\-t \fItar\fP\fP
+Specify path to \fBtar\fP that accepts the \fB\-J\fP option.
+\fBtxzchk\fP checks \fI/usr/bin/tar\fP and \fI/bin/tar\fP if this option is not specified.
+.TP
+\fB\-F \fIfnamchk\fP\fP
+Specify path to the IOCCC \fBfnamchk(1)\fP tool.
+If this option is not specified the program looks under the current working directory and \fI/usr/local/bin\fP.
+.TP
+\fB\-T\fP
+Assume txzpath is a text file: use \fBfopen(3)\fP and \fBfclose(3)\fP instead of \fBpopen(3)\fP and \fBpclose(3)\fP and don't require \fBtar\fP program.
+.TP
+\fB\-E \fIext\fP\fP
+Change extension for \fBfnamchk(1)\fP to validate (don't include the dot).
+This is used in conjunction with \fb\-T\fP above for \fBTESTING\fP purposes only!
+.SH EXIT STATUS
+.TP
+0
+no feathers stuck in tarball  :\-)
+.TQ
+1
+tarball was successfully parsed :\-) but there's at least one feather stuck in it  :\-(
+.TQ
+2
+\-h and help string printed or \-V and version string printed
+.TQ
+3
+invalid command line, invalid option or option missing an argument
+.TQ
+>= 10
+internal error has occurred or unknown tar listing format has been encountered
+.SH NOTES
+.PP
+This tool was written by \fBCody Boone Ferguson\fP for the \fBIOCCC Judges\fP in early 2022 for the \fBIOCCCMOCK\fP, \fBIOCCC28\fP and all future \fBIOCCC\fP competitions after discussing the requirements with \fBLandon Curt Noll\fP, one of the IOCCC Judges.
+For more history see \fBtxzchk(1)\fP, \fBCHANGES.md\fP, \fBREADME.md\fP, the GitHub git log and of course reading the source itself.
+.PP
+No pitman or coal mine was harmed in the making of this tool. :\-)
+More importantly, no tar pits \- including the \fBLa Brea Tar Pits\fP \- were disturbed in the making of this tool.
+.SH BUGS
+.PP
+Cody Boone Ferguson wrote it! :)
+.PP
+On a more serious note, if you have an issue with the tool please report it at the GitHub issues page.
+You can find it at
+.br
+\fI\<https://github.com/ioccc\-src/mkiocccentry/issues\>\fP.
+If you would please mention \fB@xexyl\fP as part of the report that would be appreciated.
+.SH EXAMPLES
+.PP
+.nf
+Run the program on the tarball \fIentry.test\-1.1644094311.txz\fP:
+
+.RS
+\fB
+ ./txzchk entry.test\-1.1644094311.txz\fP
+.fi
+.RE
+.PP
+.nf
+Run the program on the tarball \fIentry.test\-1.1644094311.txz\fP, specifying an alternate path to \fBtar\fP and \fBfnamchk\fP:
+
+.RS
+\fB
+ ./txzchk \-t /path/to/some/tar \-F ./filenamechk entry.test\-1.1644094311.txz\fP
+.fi
+.RE
+.PP
+.nf
+Run the program on the file \fIentry.test\-1.1644094311.txt\fP, specifying that it's a text file (which means \fB\-T\fP and \fB\-E\fP have to be used):
+
+.RS
+\fB
+ ./txzchk \-T \-E txt entry.test\-1.1644094311.txt\fP
+.fi
+.RE
+.SH SEE ALSO
+.PP
+The IOCCC tools \fBtxzchk(1)\fP, the test suite \fBtxzchk_test(8)\fP, \fBfnamchk(1)\fP and \fBmkiocccentry(1)\fP.
+.br
+The tarry \fBtar(1)\fP command itself.
+.br
+And don't forget the very tarry \fBLa Brea Tar Pits\fP: \fB<https://tarpits.org>\fP.
