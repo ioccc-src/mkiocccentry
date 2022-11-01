@@ -45,9 +45,6 @@
 %{
 
 
-#include <inttypes.h>
-#include <stdio.h>
-#include <unistd.h> /* getopt */
 
 /*
  * jparse - JSON parser demo tool
