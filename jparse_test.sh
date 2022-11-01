@@ -40,6 +40,8 @@ export JPARSE="./jparse"
 export LOGFILE="./jparse_test.log"
 export EXIT_CODE=0
 export JSON_TREE="./test_JSON"
+export FILE_FAILURE_SUMMARY=""
+export STRING_FAILURE_SUMMARY=""
 
 # parse args
 #
@@ -233,15 +235,17 @@ run_file_test()
 	if [[ $pass_fail = pass ]]; then
 	    echo "$0: in test that must pass: jparse OK, exit code 0" 1>&2 >> "${LOGFILE}"
 	    if [[ $V_FLAG -ge 3 ]]; then
-		echo "$0: debug[3]: jparse OK, exit code 0" 1>&2
+		echo "$0: debug[3]: jparse OK, exit code 0" 1>&2 >> "${LOGFILE}"
 	    fi
 	else
 	    if [[ $V_FLAG -ge 1 ]]; then
 		echo "$0: in test that must fail: jparse FAIL, exit code: $status" 1>&2 >> "${LOGFILE}"
 		if [[ $V_FLAG -ge 3 ]]; then
-		    echo "$0: debug[3]: in run_file_test: jparse exit code: $status" 1>&2
+		    echo "$0: debug[3]: in run_file_test: jparse exit code: $status" 1>&2 >> "${LOGFILE}"
 		fi
 	    fi
+	    FILE_FAILURE_SUMMARY="$FILE_FAILURE_SUMMARY
+	    FILE: $json_doc_file"
 	    EXIT_CODE=1
 	fi
     else
@@ -249,15 +253,17 @@ run_file_test()
 	    if [[ $V_FLAG -ge 1 ]]; then
 		echo "$0: in test that must pass: jparse FAIL, exit code: $status" 1>&2 >> "${LOGFILE}"
 		if [[ $V_FLAG -ge 3 ]]; then
-		    echo "$0: debug[3]: in run_file_test: jparse exit code: $status" 1>&2
+		    echo "$0: debug[3]: in run_file_test: jparse exit code: $status" 1>&2 >> "${LOGFILE}"
 		fi
 	    fi
+	    FILE_FAILURE_SUMMARY="$FILE_FAILURE_SUMMARY
+	    FILE: $json_doc_file"
 	    EXIT_CODE=1
 	else
 	    if [[ $V_FLAG -ge 1 ]]; then
 		echo "$0: in test that must fail: jparse OK, exit code: $status" 1>&2 >> "${LOGFILE}"
 		if [[ $V_FLAG -ge 3 ]]; then
-		    echo "$0: debug[3]: in run_file_test: jparse exit code: $status" 1>&2
+		    echo "$0: debug[3]: in run_file_test: jparse exit code: $status" 1>&2 >> "${LOGFILE}"
 		fi
 	    fi
 	fi
@@ -331,9 +337,11 @@ run_string_test()
 	if [[ $V_FLAG -ge 1 ]]; then
 	    echo "$0: jparse FAIL, exit code: $status" 1>&2 >> "${LOGFILE}"
 	    if [[ $V_FLAG -ge 3 ]]; then
-		echo "$0: debug[3]: in run_string_test: jparse exit code: $status" 1>&2
+		echo "$0: debug[3]: in run_string_test: jparse exit code: $status" 1>&2 >> "${LOGFILE}"
 	    fi
 	fi
+	STRING_FAILURE_SUMMARY="$STRING_FAILURE_SUMMARY
+	STRING: $json_doc_string"
 	EXIT_CODE=1
     fi
     echo >> "${LOGFILE}"
@@ -354,7 +362,7 @@ if [[ $# -gt 0 ]]; then
 	CHK_TEST_FILE="$1"
 	shift
 	if [[ $V_FLAG -ge 1 && "$CHK_TEST_FILE" != "-" ]]; then
-	    echo "$0: debug[1]: reading JSON documents from: $CHK_TEST_FILE" 1>&2
+	    echo "$0: debug[1]: reading JSON documents from: $CHK_TEST_FILE" 1>&2 >> "${LOGFILE}"
 	fi
 
 	# firewall - check test file
@@ -363,7 +371,7 @@ if [[ $# -gt 0 ]]; then
 	    # note input source
 	    #
 	    if [[ $V_FLAG -ge 1 ]]; then
-		echo "$0: debug[1]: reading JSON documents from stdin" 1>&2
+		echo "$0: debug[1]: reading JSON documents from stdin" 1>&2 >> "${LOGFILE}"
 	    fi
 
 	    # read JSON document lines from stdin
@@ -393,7 +401,7 @@ if [[ $# -gt 0 ]]; then
     done
 elif [[ ! -z "$CHK_TEST_FILE" ]]; then
 	if [[ $V_FLAG -ge 1 ]]; then
-	    echo "$0: debug[1]: reading JSON documents from: $CHK_TEST_FILE" 1>&2
+	    echo "$0: debug[1]: reading JSON documents from: $CHK_TEST_FILE" 1>&2 >> "${LOGFILE}"
 	fi
 
 	# firewall - check test file
@@ -421,7 +429,7 @@ fi
 # run tests that must pass
 #
 if [[ $V_FLAG -ge 3 ]]; then
-    echo "$0: debug[3]: about to run jparse tests that must pass: JSON files" 1>&2
+    echo "$0: debug[3]: about to run jparse tests that must pass: JSON files" 1>&2 >> "${LOGFILE}"
 fi
 while read -r file; do
     run_file_test "$JPARSE" "$DBG_LEVEL" "$JSON_DBG_LEVEL" "$Q_FLAG" "$file" pass
@@ -431,12 +439,25 @@ done < <(find "$JSON_GOOD_TREE" -type f -name '*.json' -print)
 # run tests that must fail
 #
 if [[ $V_FLAG -ge 3 ]]; then
-    echo "$0: debug[3]: about to run jparse tests that must fail: JSON files" 1>&2
+    echo "$0: debug[3]: about to run jparse tests that must fail: JSON files" 1>&2 >> "${LOGFILE}"
 fi
 while read -r file; do
     run_file_test "$JPARSE" "$DBG_LEVEL" "$JSON_DBG_LEVEL" "$Q_FLAG" "$file" fail
 done < <(find "$JSON_BAD_TREE" -type f -name '*.json' -print)
 
+
+if [[ -n "$FILE_FAILURE_SUMMARY" ]]; then
+    echo "The following files failed: " | tee -a -- "${LOGFILE}"
+    echo "--" | tee -a -- "${LOGFILE}"
+    echo "$FILE_FAILURE_SUMMARY" | tee -a -- "${LOGFILE}"
+    echo "--" | tee -a -- "${LOGFILE}"
+fi
+if [[ -n "$STRING_FAILURE_SUMMARY" ]]; then
+    echo "The following strings failed: " | tee -a -- "${LOGFILE}"
+    echo "--" | tee -a -- "${LOGFILE}"
+    echo "$STRING_FAILURE_SUMMARY" | tee -a -- "${LOGFILE}"
+    echo "--" | tee -a -- "${LOGFILE}"
+fi
 
 # All Done!!! -- Jessica Noll, Age 2
 #
