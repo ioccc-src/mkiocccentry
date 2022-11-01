@@ -51,9 +51,24 @@ Quiet mode.
 Silence msg(), warn(), warnp() if verbosity level is 0.
 Note that this currently is not used but will be in a future commit.
 .SH EXIT STATUS
-.PP
-\fBmain()\fP returns 1 for issues found and 0 for success.
-If an error is encountered the end is not reached.
+.TP
+0
+all is OK
+.TQ
+1
+JSON files(s) are valid JSON, however semantic one or more checks failed
+.TQ
+2
+\-h and help string printed or \-V and version string printed
+.TQ
+3
+command line error
+.TQ
+4
+file(s) were not valid JSON, no semantic checks were performed
+.TQ
+>=10
+internal error
 .SH EXAMPLES
 .PP
 .nf

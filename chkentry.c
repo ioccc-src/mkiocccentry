@@ -222,7 +222,7 @@ usage(int exitcode, char const *prog, char const *str)
      * print the formatted usage stream
      */
     fprintf_usage(DO_NOT_EXIT, stderr, "%s\n", str);
-    fprintf_usage(exitcode, stderr, usage_msg, prog, prog, DBG_DEFAULT, JSON_DBG_DEFAULT, JNUM_CHK_VERSION);
+    fprintf_usage(exitcode, stderr, usage_msg, prog, prog, DBG_DEFAULT, JSON_DBG_DEFAULT, CHKENTRY_VERSION);
     exit(exitcode);		/*ooo*/
     not_reached();
 }
@@ -322,8 +322,7 @@ main(int argc, char *argv[])
     }
     if (info_filename != NULL && strcmp(info_filename, ".") == 0 &&
         auth_filename != NULL && strcmp(auth_filename, ".") == 0 && entry_dir == NULL) {
-	/* Easter egg */
-	vrergfB(-1, -1);
+	vrergfB(-1, -1); /* Easter egg */
 	not_reached();
     }
     if (entry_dir == NULL) {
@@ -426,7 +425,7 @@ main(int argc, char *argv[])
     if (info_stream != NULL) {
 	info_tree = parse_json_stream(info_stream, &info_valid);
 	if (info_valid == false || info_tree == NULL) {
-	    err(29, __func__, "failed to JSON parse of .info.json file: %s", info_path);
+	    err(4, __func__, "failed to JSON parse of .info.json file: %s", info_path); /*ooo*/
 	    not_reached();
 	}
 	dbg(DBG_LOW, "successful JSON parse of .info.json file: %s", info_path);
@@ -438,7 +437,7 @@ main(int argc, char *argv[])
     if (auth_stream != NULL) {
 	auth_tree = parse_json_stream(auth_stream, &auth_valid);
 	if (auth_valid == false || auth_tree == NULL) {
-	    err(30, __func__, "failed to JSON parse of .auth.json file: %s", auth_path);
+	    err(4, __func__, "failed to JSON parse of .auth.json file: %s", auth_path); /*ooo*/
 	    not_reached();
 	}
 	dbg(DBG_LOW, "successful JSON parse of .auth.json file: %s", auth_path);
@@ -639,6 +638,27 @@ main(int argc, char *argv[])
     }
 
     /*
+     * summarize the JSON semantic check status
+     */
+    if (info_all_err_count > 0) {
+	if (info_path == NULL) {
+	    werr(1, __func__, "JSON semantic check failed for .info.json file: ((NULL))"); /*ooo*/
+	} else {
+	    werr(1, __func__, "JSON semantic check failed for .info.json file: %s", info_path); /*ooo*/
+	}
+    }
+    if (auth_all_err_count > 0) {
+	if (auth_path == NULL) {
+	    werr(1, __func__, "JSON semantic check failed for .auth.json file: ((NULL))"); /*ooo*/
+	} else {
+	    werr(1, __func__, "JSON semantic check failed for .auth.json file: %s", auth_path); /*ooo*/
+	}
+    }
+    if (all_all_err_count == 0) {
+	dbg(DBG_LOW, "JSON semantic check OK");
+    }
+
+    /*
      * cleanup - except for info_path and auth_path
      */
     if (info_stream != NULL) {
@@ -673,34 +693,22 @@ main(int argc, char *argv[])
 	free_val_err(auth_val_err);
 	auth_val_err = NULL;
     }
+    if (info_path != NULL) {
+	free(info_path);
+	info_path = NULL;
+    }
+    if (auth_path != NULL) {
+	free(auth_path);
+	auth_path = NULL;
+    }
 
     /*
      * All Done!!! - Jessica Noll, age 2
      *
      */
     if (all_all_err_count > 0) {
-	if (info_all_err_count > 0) {
-	    if (info_path == NULL) {
-		werr(1, __func__, "JSON semantic check failed for .info.json file: ((NULL))"); /*ooo*/
-	    } else {
-		werr(1, __func__, "JSON semantic check failed for .info.json file: %s", info_path); /*ooo*/
-		free(info_path);
-		info_path = NULL;
-	    }
-	}
-	if (auth_all_err_count > 0) {
-	    if (auth_path == NULL) {
-		werr(1, __func__, "JSON semantic check failed for .auth.json file: ((NULL))"); /*ooo*/
-	    } else {
-		werr(1, __func__, "JSON semantic check failed for .auth.json file: %s", auth_path); /*ooo*/
-		free(auth_path);
-		auth_path = NULL;
-	    }
-	}
 	err(1, __func__, "JSON semantic check failed"); /*ooo*/
 	not_reached();
-    } else {
-	dbg(DBG_LOW, "JSON semantic check OK");
     }
     exit(0); /*ooo*/
 }

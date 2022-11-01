@@ -94,7 +94,7 @@
 /*
  * official chkentry version
  */
-#define CHKENTRY_VERSION "0.2 2022-10-28"	/* format: major.minor YYYY-MM-DD */
+#define CHKENTRY_VERSION "0.3 2022-10-31"	/* format: major.minor YYYY-MM-DD */
 
 /*
  * official jstrencode version
