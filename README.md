@@ -66,9 +66,15 @@ actually there and `mkiocccentry` will fail.
 
 As a stand-alone tool it will report whether the files are validly formed.
 
-*NOTE*: This tool is **very much a work in progress**. Although the JSON parser
-(see `jparse` below) is complete there are still some things that have to be
-done before this tool can be finished.
+This tool was co-developed in 2022 by:
+
+*@xexyl* (**Cody Boone Ferguson**, [https://xexyl.net](https://xexyl.net),
+[https://ioccc.xexyl.net](https://ioccc.xexyl.net))
+
+and:
+
+*chongo* (**Landon Curt Noll**, [http://www.isthe.com/chongo/index.html](http://www.isthe.com/chongo/index.htm)) /\oo/\
+
 
 For more information and examples, try:
 
