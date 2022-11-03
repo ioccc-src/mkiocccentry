@@ -53,21 +53,6 @@ int json_verbosity_level = JSON_DBG_NONE;	/* json debug level set by -J in jpars
  * static declarations
  */
 
-/*
- * JSON warn (NOT error) codes to ignore
- *
- * When a tool is given command line arguments of the form:
- *
- *	.. -W 123 -W 1345 -W 56 ...
- *
- * this means the tool will ignore {JSON-0123}, {JSON-1345}, and {JSON-0056}.
- * The code_ignore_settable holds the JSON codes to ignore.
- *
- * NOTE: A NULL ignore_json_code_set means that the set has not been setup.
- */
-static void alloc_json_code_ignore_set(void);
-static int cmp_codes(const void *a, const void *b);
-static void expand_json_code_ignore_set(void);
 
 
 /*

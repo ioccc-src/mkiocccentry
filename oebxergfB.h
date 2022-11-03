@@ -19,9 +19,7 @@
  * too of course and there's plenty of humour as well. Of course one has to
  * figure out how to trigger them too but that shouldn't be too hard to do.
  *
- * This tool is being co-developed by Cody Boone Ferguson and Landon Curt Noll.
- *
- * The JSON parser was co-developed by:
+ * This tool and the JSON parser were co-developed by:
  *
  *	@xexyl
  *	https://xexyl.net		Cody Boone Ferguson
@@ -800,7 +798,7 @@ static char const *oebxergfB[] =
 "fsqlaw aqufudw ua ytas uttwpyt? :-) )\n"
 ,
 "    Rud msq hesx bnyb ue Lyuew, yb twyab yffslduep bs asiw asqlfwa, yobwl\n"
-"    Ayeqylm 37bn msq xutt kw fnylpwd y ouew osl nyvuep Inluabiya dwfslybusea\n"
+"    37 Ayeqylm msq xutt kw fnylpwd y ouew osl nyvuep Inluabiya dwfslybusea\n"
 "    abutt qr?\n"
 "\n"
 "Nqb nwlw'a y oqeem bnuep yksqb tsfybuse yed dybwa: tspufyttm arwyhuep, wvwe\n"
@@ -1912,8 +1910,7 @@ static char const *oebxergfB[] =
 "dlwia sv jw rwrta so Slsr vut oueytu nyv hqi blq. Cb ua nsrd jyb jwa\n"
 "aupeuouhyeb hseawanqea vut oueytm lwyansl jw 'Slsahwrbuha'!\n"
 ,
-"Co msq qaw Wssptw (yed xns dswae'b ? :) ) msq iupnb oued bnua lwasqlfw so\n"
-"vytqw:\n"
+"Co msq qaw Wssptw msq iupnb oued bnua lwasqlfw so vytqw:\n"
 "\n"
 "    nbbra://xxx.pssptwpqudw.fsi\n"
 "\n"

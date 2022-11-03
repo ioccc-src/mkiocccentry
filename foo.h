@@ -14,9 +14,7 @@
  *
  * "Because Cody enjoys being a bit eccentric and he is rather proud of it too!" :-)
  *
- * This tool is being co-developed by Cody Boone Ferguson and Landon Curt Noll.
- *
- * The JSON parser was co-developed by:
+ * This tool and the JSON parser were co-developed by:
  *
  *	@xexyl
  *	https://xexyl.net		Cody Boone Ferguson
