@@ -1,5 +1,24 @@
 # Major changes to the IOCCC entry toolkit
 
+## Release 0.7 2022-11-03
+
+Released IOCCC entry toolkit v0.7 2022-11-03
+
+`chkentry` is now code complete!
+Added test suite for `chkentry`. More test files will be added in time.
+
+Removed prefix in bison and flex code. The programmer's apology and warning are
+still in `sorry.tm.ca.h`.
+
+A test suite for `txzchk` was added.
+
+Removed the `MAX_DIR_KSIZE` limit. There still is a maximum tarball size but now
+there also is a limit of the number of files in the tarball. `txzchk` and
+`mkiocccentry` were updated for this.
+
+There probably were other changes as well but we're one step closer to IOCCCMOCK
+with `chkentry` being complete!
+
 
 ## Release 0.6 2022-09-02
 
