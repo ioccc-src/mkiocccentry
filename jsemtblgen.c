@@ -313,7 +313,7 @@ gen_sem_tbl(struct json *tree, unsigned int max_depth, ...)
 
 
 /*
- * vupdate_tbl - tree talk callback to update semantic table for a given JSON node
+ * vupdate_tbl - tree walk callback to update semantic table for a given JSON node
  *
  * If the JSON node is represented in the semantic table, update the count.
  * If the JSON node is not in the semantic table, this function will add a
@@ -336,7 +336,7 @@ static void
 vupdate_tbl(struct json *node, unsigned int depth, va_list ap)
 {
     struct dyn_array *tbl = NULL;    /* semantic table - array of struct json_sem */
-    struct json_sem *p = NULL;	     /* i-th entey in the semantic */
+    struct json_sem *p = NULL;	     /* i-th entry in the semantics table */
     struct json_sem new;	     /* new semantic table entry */
     va_list ap2;		     /* copy of va_list ap */
     intmax_t len = 0;		     /* number of semantic table entries */
@@ -550,15 +550,15 @@ sem_cmp(void const *a, void const *b)
  * Print str a valid C function.  Any character that is not
  * alphanumeric is printed as an underscore ("_") character.
  *
- * If the first character if str is a digit,
+ * If the first character of str is a digit,
  * a leading x ("x") will be printed before str is processed.
  *
- * If the first character if str is an underscore ("_"),
+ * If the first character of str is an underscore ("_"),
  * a leading x ("x") will be printed before str is processed.
  * C names starting with underscore ("_") are reserved, so this
  * rule prevents the function from being a reserved function.
  *
- * An empty string will cause x ("x") will be printed.
+ * An empty string will cause x ("x") to be printed.
  *
  * If a C reserved word would otherwise be printed, a leading
  * x ("x") will be printed before str is processed.

@@ -137,7 +137,7 @@ typedef unsigned char bool;
 
 
 /*
- * invalid exit codes (values < 0): that may be returned by shell_cmd()
+ * invalid exit codes (values < 0) that may be returned by shell_cmd()
  */
 #define CALLOC_FAILED_EXIT (-2)		/* invalid exit code - calloc() failure */
 #define SYSTEM_FAILED_EXIT (-3)		/* invalid exit code - system() failed - returned exit 127 */
