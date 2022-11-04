@@ -370,8 +370,10 @@ struct json *
 parse_json_stream(FILE *stream, bool *is_valid)
 {
     struct json *node = NULL;		/* the JSON parse tree */
-    char *data = NULL;		/* used to determine if there are NUL bytes in the file */
-    size_t len = 0;		/* length of data read */
+    char *data = NULL;			/* used to determine if there are NUL bytes in the file */
+    size_t len = 0;			/* length of data read */
+    bool invalid_json_byte = false;	/* true ==> invalid non-encoded byte found in the data to parse */
+    size_t i = 0;
 
     /*
      * firewall
@@ -426,6 +428,51 @@ parse_json_stream(FILE *stream, bool *is_valid)
 	/* if allowed, report invalid JSON */
 	if (is_valid != NULL) {
 	    *is_valid = false;
+	}
+
+	/* return a blank JSON tree */
+	node = json_alloc(JTYPE_UNSET);
+	return node;
+    }
+
+    /*
+     * Programmers apology: XXX - gross hack - XXX
+     *
+     * At issue according to the so-called JSON spec, are bytes between
+     * 0x00 and 0x1f EXCEPT for \n (newline), \r (return) and \t (tab).
+     * If any such bytes are detected, then an error is raised BEFORE the
+     * scanner/parser is invoked.  While it is true that \n, \r and \t
+     * must be JSON encoded, it is reasonable that such characters might
+     * be found in a normal data file, so we will not object if we find
+     * those 3 characters not encoded in the data block.
+     *
+     * As a quick and dirty hack, we "manually" scan the data block
+     * for such invalid bytes and object whenever we find them.
+     *
+     * XXX - We need to better handle this, perhaps in the scanner? - XXX
+     */
+    for (i=0; i < len; ++i) {
+	if (data[i] >= 0x00 && data[i] < 0x20 &&
+	    data[i] != '\n' && data[i] != '\r' && data[i] != '\t') {
+	    invalid_json_byte = true;
+	    werr(35, __func__, "byte[%zu]: 0x%02x is not allowed by the JSON spec", i, data[i]);
+	    ++num_errors;
+	}
+    }
+    if (invalid_json_byte == true) {
+
+	/* clean up input stream */
+	clearerr_or_fclose(yyin);
+
+	/* if allowed, report invalid JSON */
+	if (is_valid != NULL) {
+	    *is_valid = false;
+	}
+
+	/* free data */
+	if (data != NULL) {
+	    free(data);
+	    data = NULL;
 	}
 
 	/* return a blank JSON tree */
@@ -494,7 +541,7 @@ parse_json_file(char const *filename, bool *is_valid)
     if (filename == NULL) {
 
 	/* this should actually never happen if called from jparse */
-	werr(35, __func__, "passed NULL filename");
+	werr(36, __func__, "passed NULL filename");
 	++num_errors;
 
 	/* if allowed, report invalid JSON */
@@ -509,7 +556,7 @@ parse_json_file(char const *filename, bool *is_valid)
     if (*filename == '\0') { /* strlen(filename) == 0 */
 
 	/* warn about bogus filename */
-	werr(36, __func__, "passed empty filename");
+	werr(37, __func__, "passed empty filename");
 	++num_errors;
 
 	/* if allowed, report invalid JSON */
@@ -538,7 +585,7 @@ parse_json_file(char const *filename, bool *is_valid)
 	 */
 	if (!exists(filename)) {
 	    /* report missing file */
-	    werr(37, __func__, "passed filename that's not actually a file: %s", filename);
+	    werr(38, __func__, "passed filename that's not actually a file: %s", filename);
 	    ++num_errors;
 
 	    /* if allowed, report invalid JSON */
@@ -553,7 +600,7 @@ parse_json_file(char const *filename, bool *is_valid)
 	}
 	if (!is_file(filename)) {
 	    /* report that file is not a normal file */
-	    werr(38, __func__, "passed filename not a normal file: %s", filename);
+	    werr(39, __func__, "passed filename not a normal file: %s", filename);
 	    ++num_errors;
 
 	    /* if allowed, report invalid JSON */
@@ -568,7 +615,7 @@ parse_json_file(char const *filename, bool *is_valid)
 	if (!is_read(filename)) {
 
 	    /* report unreadable file */
-	    werr(39, __func__, "passed filename not a readable file: %s", filename);
+	    werr(40, __func__, "passed filename not a readable file: %s", filename);
 	    ++num_errors;
 
 	    /* if allowed, report invalid JSON */
@@ -589,7 +636,7 @@ parse_json_file(char const *filename, bool *is_valid)
 	if (yyin == NULL) {
 
 	    /* warn about file open error */
-	    werrp(40, __func__, "couldn't open file %s, ignoring", filename);
+	    werrp(41, __func__, "couldn't open file %s, ignoring", filename);
 	    ++num_errors;
 
 	    /* if allowed, report invalid JSON */
