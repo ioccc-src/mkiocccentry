@@ -3,20 +3,23 @@
 # bug-report.sh - collect system information to help user report bugs and issues
 # using the mkiocccentry tools
 #
-# This script is being written by:
+# This script was written in 2022 by:
 #
 #	@xexyl
 #	https://xexyl.net		Cody Boone Ferguson
 #	https://ioccc.xexyl.net
 #
+# with some minor improvements by:
+#
+#	chongo (Landon Curt Noll, http://www.isthe.com/chongo/index.html) /\oo/\
+#
 # "Because sometimes even the IOCCC Judges need some help." :-)
 #
-# NOTE: This is a work in progress.
 
 # setup
 #
-# All of our tools. Kept towards top of file in case the list needs to be
-# changed.
+# All of our tools. Kept towards the top of file in case the list ever needs to
+# be changed.
 #
 export TOOLS="./run_bison.sh ./run_flex.sh ./hostchk.sh ./dbg ./dyn_test ./fnamchk
 	      ./ioccc_test.sh ./iocccsize ./iocccsize_test.sh ./chkentry ./jnum_gen
@@ -232,7 +235,7 @@ get_version_optional() {
     # The question is should ident(1) come first but the trouble is I don't
     # actually know what it looks like. Also if the tool in question does not
     # have the appropriate string it won't give us anything useful either.
-    # Here's what what looks like on cut(1) which as can be seen is useful:
+    # Here's what what(1) looks like on cut(1) which as can be seen is useful:
     #
     #	$ what /usr/bin/cut
     #	/usr/bin/cut:
@@ -241,7 +244,8 @@ get_version_optional() {
     #
     # Looking at the Apple website this is indeed the version. Thus because it's
     # not something that will work in all cases instead we will try ident(1) as
-    # well even if this succeeds. If either succeeds we will not try strings(1).
+    # well even if what(1) succeeds. If either succeeds we will not try
+    # strings(1).
     #
     if [[ ! -z "$WHAT" ]]; then
 	$WHAT "${COMMAND}"  >/dev/null 2>&1
@@ -270,7 +274,7 @@ get_version_optional() {
 	fi
     fi
 
-    # if we got output from either what or ident exit
+    # if we got output from either what(1) or ident(1) then skip strings(1)
     #
     if [[ -n "$EXIT" ]]; then
 	return
@@ -292,10 +296,10 @@ get_version_optional() {
 	echo "$0: WARNING: UNKNOWN VERSION FOR $COMMAND: trying strings" | tee -a -- "$LOG_FILE"
 	WARNING_SUMMARY="$WARNING_SUMMARY
 	WARNING: UNKNOWN VERSION FOR $COMMAND: trying strings"
-	$STRINGS "${COMMAND}" | head -n 10 >/dev/null 2>&1
+	$STRINGS "${COMMAND}" | head -n 15 >/dev/null 2>&1
 	status=${PIPESTATUS[0]}
 	if [[ "$status" -eq 0 ]]; then
-	    $STRINGS "${COMMAND}" | head -n 10 | tee -a -- "$LOG_FILE"
+	    $STRINGS "${COMMAND}" | head -n 15 | tee -a -- "$LOG_FILE"
 	    echo "## OUTPUT OF strings $COMMAND ABOVE" | tee -a -- "$LOG_FILE"
 	    echo | tee -a -- "$LOG_FILE"
 	    return
@@ -336,10 +340,12 @@ get_version() {
 	# if not executable we can try doing it as a built-in. This might or
 	# might not need to be a better check. Although some of the tools are
 	# built-ins in say zsh it does not appear to be in bash so it's possibly
-	# not a problem. Additionally trying to run command on a built-in in zsh
-	# (say true) will work because it's also a file. Also if it fails to run
-	# we will know there's a problem and likely due to something missing so
-	# the below might be all that's necessary.
+	# not a problem (since we use /usr/bin/env bash).
+	#
+	# Additionally trying to run command on a built-in in zsh (for example:
+	# true) will work because it's also a file. Also if it fails to run we
+	# will know there's a problem and likely due to something missing so the
+	# below might be all that's necessary.
 	COMMAND="$1"
     fi
     echo "## VERSION CHECK FOR: $1" | tee -a -- "$LOG_FILE"
@@ -429,7 +435,7 @@ get_version() {
 	fi
     fi
 
-    # if we got output from either what or ident exit
+    # if we got output from either what(1) or ident(1) then skip strings(1)
     #
     if [[ -n "$EXIT" ]]; then
 	return
@@ -451,10 +457,10 @@ get_version() {
 	echo "$0: WARNING: UNKNOWN VERSION FOR $COMMAND: trying strings" | tee -a -- "$LOG_FILE"
 	WARNING_SUMMARY="$WARNING_SUMMARY
 	WARNING: UNKNOWN VERSION FOR $COMMAND: trying strings"
-	$STRINGS "${COMMAND}" | head -n 10 >/dev/null 2>&1
+	$STRINGS "${COMMAND}" | head -n 15 >/dev/null 2>&1
 	status=${PIPESTATUS[0]}
 	if [[ "$status" -eq 0 ]]; then
-	    $STRINGS "${COMMAND}" | head -n 10 | tee -a -- "$LOG_FILE"
+	    $STRINGS "${COMMAND}" | head -n 15 | tee -a -- "$LOG_FILE"
 	    echo "## strings $COMMAND ABOVE" | tee -a -- "$LOG_FILE"
 	    echo | tee -a -- "$LOG_FILE"
 	    return
@@ -632,7 +638,7 @@ echo | tee -a -- "$LOG_FILE"
 # These tools are required in order to compile tools that are needed
 # by someone submitting an entry to the IOCCC.
 #
-# If you system cannot compile and/or fails in this section, you may
+# If your system cannot compile and/or fails in this section, you may
 # still consider submitting an IOCCC entry from this system.  However
 # you will have to use a more modern and/or more capable system in which
 # to compile this tool set OR add missing tools your system.

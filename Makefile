@@ -417,6 +417,9 @@ fast_hostchk: hostchk.sh
 	    ${MAKE} hostchk_warning; \
 	fi
 
+bug_report: bug_report.sh
+	@-./bug_report.sh -v 1
+
 # slower more verbose build environment sanity check
 #
 hostchk: hostchk.sh
