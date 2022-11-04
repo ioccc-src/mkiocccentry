@@ -78,7 +78,7 @@ JSON_NL			\n+
  * routines actually do these checks. This simplifies the parser regex and so we
  * don't have to worry about complicating the parser unnecessarily.
  */
-JSON_STRING		\"([^\n"]|\\\")*\"
+JSON_STRING		\"([^"\x01-\x1f]|\\\")*\"
 JSON_INTEGER		-?([1-9][0-9]*|0)
 JSON_FRACTION		"."[0-9]+
 JSON_EXPONENT		[Ee][-+]?[0-9]+
