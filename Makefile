@@ -413,14 +413,14 @@ just_all: ${TARGETS} ${TEST_TARGETS}
 # fast build environment sanity check
 #
 fast_hostchk: hostchk.sh
-	@./hostchk.sh -f -v 0; status="$$?"; if [ "$$status" -ne 0 ]; then \
+	@-./hostchk.sh -f -v 0; status="$$?"; if [ "$$status" -ne 0 ]; then \
 	    ${MAKE} hostchk_warning; \
 	fi
 
 # slower more verbose build environment sanity check
 #
 hostchk: hostchk.sh
-	@./hostchk.sh -v 1; status="$$?"; if [ "$$status" -ne 0 ]; then \
+	@-./hostchk.sh -v 1; status="$$?"; if [ "$$status" -ne 0 ]; then \
 	    ${MAKE} hostchk_warning; \
 	fi
 
@@ -1045,6 +1045,7 @@ clobber: clean prep_clobber
 	${RM} -f ${HTML_MAN_TARGETS}
 	${RM} -f .jsemcgen.out.*
 	${RM} -f .all_ref.*
+	${RM} -rf .hostchk.work.*
 
 distclean nuke: clobber
 

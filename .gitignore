@@ -1,6 +1,6 @@
 # IOCCC submission toolkit specific exclusions
 .exit_code.*
-.hostchk.*
+.hostchk.work.*
 .sorry.*
 answers.txt
 bug-report*.txt
@@ -17,7 +17,6 @@ dyn_test
 fnamchk
 fnamchk.html
 have_timegm
-hostchk/
 ioccc_test.log
 iocccsize
 iocccsize.html
