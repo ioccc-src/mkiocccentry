@@ -6,16 +6,18 @@
 # This script is being written by:
 #
 #	@xexyl
-# 	https://xexyl.net		Cody Boone Ferguson
+#	https://xexyl.net		Cody Boone Ferguson
 #	https://ioccc.xexyl.net
 #
 # "Because sometimes even the IOCCC Judges need some help." :-)
 #
 # NOTE: This is a work in progress.
-#
 
+# setup
+#
 # All of our tools. Kept towards top of file in case the list needs to be
 # changed.
+#
 export TOOLS="./run_bison.sh ./run_flex.sh ./hostchk.sh ./dbg ./dyn_test ./fnamchk
 	      ./ioccc_test.sh ./iocccsize ./iocccsize_test.sh ./chkentry ./jnum_gen
 	      ./jnum_chk ./jparse ./jparse_test.sh ./jstr_test.sh ./jstrencode
@@ -23,11 +25,12 @@ export TOOLS="./run_bison.sh ./run_flex.sh ./hostchk.sh ./dbg ./dyn_test ./fnamc
 	      ./reset_tstamp.sh ./txzchk ./txzchk_test.sh ./utf8_test ./verge
 	      ./vermod.sh ./jsemcgen.sh ./jsemtblgen"
 
-export BUG_REPORT_VERSION="0.4 2022-10-26"
+export BUG_REPORT_VERSION="0.5 2022-11-03"
 export FAILURE_SUMMARY=
 export WARNING_SUMMARY=
 export DBG_LEVEL="0"
 export V_FLAG="0"
+export EXIT_CODE=0
 export USAGE="usage: $0 [-h] [-V] [-v level] [-D level]
 
     -h			    print help and exit
@@ -43,7 +46,6 @@ Exit codes:
  >= 10   internal error
 
 $0 version: $BUG_REPORT_VERSION"
-
 
 # parse args
 #
@@ -71,18 +73,18 @@ while getopts :hVv:D: flag; do
     esac
 done
 
-
-EXIT_CODE=0
-
+# Determine the name of the log file
+#
 # NOTE: log file does not have an underscore in the name because we want to
 # distinguish it from this script which does have an underscore in it.
+#
 LOG_FILE="bug-report.$(/bin/date +%Y%m%d.%H%M%S).txt"
+export LOG_FILE
 
-
-# attempt to create log file
+# attempt to create a writable log file
+#
 rm -f "$LOG_FILE"
 touch "$LOG_FILE"
-
 if [[ ! -e "$LOG_FILE" ]]; then
     echo "$0: ERROR: could not create log file: $LOG_FILE"
     exit 1
@@ -92,8 +94,8 @@ if [[ ! -w "$LOG_FILE" ]]; then
     exit 1
 fi
 
-
 # is_exec   - determine if arg exists, is a regular file and is executable
+#
 is_exec()
 {
     if [[ $# -ne 1 ]]; then
@@ -119,10 +121,13 @@ is_exec()
 
 # get path to tools we might need for get_version and get_version_optional
 # functions below
+#
 WHAT="$(which what)"
 IDENT="$(which ident)"
 STRINGS="$(which strings)" # this should always exist but we check anyway
 
+# get_version_optional    -	try and get version of an optional tool
+#
 # A question is how do to determine the version of a tool when there's no
 # universal option to get the version of _all_ tools (and in some tools we
 # cannot detect the version as it will block instead or in the case of echo or
@@ -155,9 +160,6 @@ STRINGS="$(which strings)" # this should always exist but we check anyway
 # once and if it does not exist we won't try it again. We also use the command
 # command -p in hopes to get the actual path. This also might not be perfect.
 #
-
-# get_version_optional    -	try and get version of an optional tool
-#
 # usage:
 #	get_version_optional command
 #
@@ -184,6 +186,7 @@ get_version_optional() {
     echo "## VERSION CHECK FOR: $1" | tee -a -- "$LOG_FILE"
 
     # try --version
+    #
     command "${COMMAND}" --version >/dev/null 2>&1
     status=$?
     if [[ "$status" -eq 0 ]]; then
@@ -194,6 +197,7 @@ get_version_optional() {
     fi
 
     # try -v
+    #
     command "${COMMAND}" -v >/dev/null 2>&1
     status=$?
     if [[ "$status" -eq 0 ]]; then
@@ -204,6 +208,7 @@ get_version_optional() {
     fi
 
     # try -V
+    #
     command "${COMMAND}" -V >/dev/null 2>&1
     status=$?
     if [[ "$status" -eq 0 ]]; then
@@ -237,6 +242,7 @@ get_version_optional() {
     # Looking at the Apple website this is indeed the version. Thus because it's
     # not something that will work in all cases instead we will try ident(1) as
     # well even if this succeeds. If either succeeds we will not try strings(1).
+    #
     if [[ ! -z "$WHAT" ]]; then
 	$WHAT "${COMMAND}"  >/dev/null 2>&1
 	status=$?
@@ -252,6 +258,7 @@ get_version_optional() {
     #
     # The same or similar caveats for what(1) might apply here too but I have no
     # way to test this.
+    #
     if [[ ! -z "$IDENT" ]]; then
 	$IDENT "${COMMAND}"  >/dev/null 2>&1
 	status=$?
@@ -264,6 +271,7 @@ get_version_optional() {
     fi
 
     # if we got output from either what or ident exit
+    #
     if [[ -n "$EXIT" ]]; then
 	return
     fi
@@ -279,7 +287,7 @@ get_version_optional() {
     #
     # This is why we warn that there's a possible unknown version and only if
     # strings fails do we report positively that the version is unknown.
-
+    #
     if [[ ! -z "$STRINGS" ]]; then
 	echo "$0: WARNING: UNKNOWN VERSION FOR $COMMAND: trying strings" | tee -a -- "$LOG_FILE"
 	WARNING_SUMMARY="$WARNING_SUMMARY
@@ -294,14 +302,14 @@ get_version_optional() {
 	fi
     fi
 
+    # report unknown version
+    #
     echo "$0: WARNING: UNKNOWN VERSION FOR $COMMAND" | tee -a -- "$LOG_FILE"
     WARNING_SUMMARY="$WARNING_SUMMARY
     WARNING: $COMMAND VERSION UNKNOWN"
-
     echo | tee -a -- "$LOG_FILE"
     return 0;
 }
-
 
 # get_version    -	try and get version of a tool
 #
@@ -334,10 +342,10 @@ get_version() {
 	# the below might be all that's necessary.
 	COMMAND="$1"
     fi
-
     echo "## VERSION CHECK FOR: $1" | tee -a -- "$LOG_FILE"
 
     # try --version
+    #
     command "${COMMAND}" --version >/dev/null 2>&1
     status=$?
     if [[ "$status" -eq 0 ]]; then
@@ -348,6 +356,7 @@ get_version() {
     fi
 
     # try -v
+    #
     command "${COMMAND}" -v >/dev/null 2>&1
     status=$?
     if [[ "$status" -eq 0 ]]; then
@@ -358,6 +367,7 @@ get_version() {
     fi
 
     # try -V
+    #
     command "${COMMAND}" -V >/dev/null 2>&1
     status=$?
     if [[ "$status" -eq 0 ]]; then
@@ -391,6 +401,7 @@ get_version() {
     # Looking at the Apple website this is indeed the version. Thus because it's
     # not something that will work in all cases instead we will try ident(1) as
     # well even if this succeeds. If either succeeds we will not try strings(1).
+    #
     if [[ ! -z "$WHAT" ]]; then
 	$WHAT "${COMMAND}"  >/dev/null 2>&1
 	status=$?
@@ -406,6 +417,7 @@ get_version() {
     #
     # The same or similar caveats for what(1) might apply here too but I have no
     # way to test this.
+    #
     if [[ ! -z "$IDENT" ]]; then
 	$IDENT "${COMMAND}"  >/dev/null 2>&1
 	status=$?
@@ -418,6 +430,7 @@ get_version() {
     fi
 
     # if we got output from either what or ident exit
+    #
     if [[ -n "$EXIT" ]]; then
 	return
     fi
@@ -433,7 +446,7 @@ get_version() {
     #
     # This is why we warn that there's a possible unknown version and only if
     # strings fails do we report positively that the version is unknown.
-
+    #
     if [[ ! -z "$STRINGS" ]]; then
 	echo "$0: WARNING: UNKNOWN VERSION FOR $COMMAND: trying strings" | tee -a -- "$LOG_FILE"
 	WARNING_SUMMARY="$WARNING_SUMMARY
@@ -448,10 +461,11 @@ get_version() {
 	fi
     fi
 
+    # report unknown version
+    #
     echo "$0: WARNING: UNKNOWN VERSION FOR $COMMAND" | tee -a -- "$LOG_FILE"
     WARNING_SUMMARY="$WARNING_SUMMARY
     WARNING: $COMMAND VERSION UNKNOWN"
-
     echo | tee -a -- "$LOG_FILE"
     return 0;
 }
@@ -492,7 +506,6 @@ run_check_optional() {
     return 0;
 }
 
-
 # run_check_warn    -	don't make it an error if it fails, just warn
 #
 # usage:
@@ -509,14 +522,14 @@ run_check_warn() {
 	exit 3
     fi
     local COMMAND="$1"
-
     echo "## RUNNING: $COMMAND" | tee -a -- "$LOG_FILE"
+
     # We have to disable the warning to quote COMMAND: shellcheck is totally
     # wrong about quoting this. If one does quote the below variable COMMAND it
     # will cause the command to fail making sure that the script is worthless.
     # shellcheck disable=SC2086
+    #
     command ${COMMAND} 2>&1 | tee -a -- "$LOG_FILE"
-
     status=${PIPESTATUS[0]}
     if [[ "$status" -ne 0 ]]; then
 	echo "$0: WARNING: $COMMAND FAILED WITH EXIT CODE $status" | tee -a -- "$LOG_FILE"
@@ -525,12 +538,15 @@ run_check_warn() {
 	echo "### POSSIBLE ISSUE DETECTED: $COMMAND returned $status" | tee -a -- "$LOG_FILE"
     fi
 
+    # report result
+    #
     echo "## OUTPUT OF ${COMMAND} ABOVE" | tee -a -- "$LOG_FILE"
     echo | tee -a -- "$LOG_FILE"
     return 0;
 }
 
 # get_shell - get the user shell :-)
+#
 get_shell() {
     echo "## RUNNING: echo \$SHELL" | tee -a -- "$LOG_FILE"
     echo "Default shell: $SHELL" | tee -a -- "$LOG_FILE"
@@ -556,12 +572,13 @@ run_check() {
     fi
     local CODE="$1"
     local COMMAND="$2"
-
     echo "## RUNNING: $COMMAND" | tee -a -- "$LOG_FILE"
+
     # We have to disable the warning to quote COMMAND: shellcheck is totally
     # wrong about quoting this. If one does quote the below variable COMMAND it
     # will cause the command to fail making sure that the script is worthless.
     # shellcheck disable=SC2086
+    #
     command ${COMMAND} 2>&1 | tee -a -- "$LOG_FILE"
 
     # The below reference to PIPESTATUS (instead of $?) fixes the bug introduced
@@ -576,6 +593,7 @@ run_check() {
     # adding the tests. However since the world definitely needs more reasons to
     # laugh I'm keeping this comment here for the sake of humour and the irony that
     # I caused. You're welcome! :-)
+    #
     status=${PIPESTATUS[0]}
     if [[ "$status" -ne 0 ]]; then
 	EXIT_CODE="$CODE"
@@ -589,63 +607,99 @@ run_check() {
     return 0;
 }
 
+#############################
+# Pre-section of the report #
+#############################
 
 if [[ $V_FLAG -gt 1 ]]; then
     echo "Will write contents to $LOG_FILE" 1>&2
 fi
-
 echo "# TIME OF REPORT: $(date)" | tee -a -- "$LOG_FILE"
 echo "# BUG_REPORT_VERSION: $BUG_REPORT_VERSION" | tee -a -- "$LOG_FILE"
+
+#################################################
+# Section 0: environment and system information #
+#################################################
+
 echo | tee -a -- "$LOG_FILE"
+echo "#################################################" | tee -a -- "$LOG_FILE"
+echo "# SECTION 0: ENVIRONMENT AND SYSTEM INFORMATION #" | tee -a -- "$LOG_FILE"
+echo "#################################################" | tee -a -- "$LOG_FILE"
 echo | tee -a -- "$LOG_FILE"
-# Section 0: environment and system information.
-echo "# SECTION 0: ENVIRONMENT AND SYSTEM INFORMATION" | tee -a -- "$LOG_FILE"
-echo | tee -a -- "$LOG_FILE"
+
+# Required tool checks
+#
+# These tools are required in order to compile tools that are needed
+# by someone submitting an entry to the IOCCC.
+#
+# If you system cannot compile and/or fails in this section, you may
+# still consider submitting an IOCCC entry from this system.  However
+# you will have to use a more modern and/or more capable system in which
+# to compile this tool set OR add missing tools your system.
+#
 # echo $SHELL: we need to know their default shell
 get_shell
+
 # uname -a: get system information
 run_check 10 "uname -a"
+
 # sw_vers: if this exists on the system we should use it. This is a BSD/macOS
 # thing
 SW_VERS=$(which sw_vers)
 if [[ -n "$SW_VERS" ]]; then
     run_check 11 "sw_vers"
 fi
+
 # which awk: get awk path
 run_check 12 "which awk"
+
 # awk --version | head -n 1: get awk version
 get_version "awk"
+
 # which basename: get path to basename tool
 run_check 13 "which basename"
+
 # try getting basename version
 get_version "basename"
+
 # which bash: find the party :-) (okay - path to bash)
 run_check 14 "which bash"
+
 # bash --version: get bash version
 get_version "bash"
+
 # which cat: find which cat the user owns :-) (okay - path to cat tool)
 run_check 15 "which cat"
+
 # NOTE: don't try getting cat version because -v is an option and it will block
 
 # which cmp: get path to cmp
 run_check 16 "which cmp"
+
 # try getting version of cmp
 get_version "cmp"
+
 # which cp: get path to cp
 run_check 17 "which cp"
+
 # try getting version of cp
 get_version "cp"
+
 # which cut: get path to cut tool
 run_check 18 "which cut"
+
 # try getting cut version
 get_version "cut"
+
 # which date: find the bug reporter a date :-) (okay - path to date tool)
 run_check 19 "which date"
+
 # try getting version of date
 get_version "date"
+
 # which echo: try getting path to echo
 run_check 20 "which echo"
-#
+
 # NOTE: we don't try getting version of echo because in some implementations
 # (all I've tested in fact) it'll just echo the --version etc. despite the fact
 # the man page suggests it should show a version. Also we probably don't really
@@ -657,141 +711,225 @@ run_check 20 "which echo"
 
 # which find: what kind of find did the user find ? :-) (or actually just find find :-) )
 run_check 21 "which find"
+
 # try getting version of find
 get_version "find"
+
 # which getopts: get the path to getopts
 #
 # NOTE: this might not be necessary but it was suggested anyway. I might be
 # wrong but I suspect in shell scripts it would use the built-in but using which
 # will give the path under both linux and macOS. The same
 run_check 22 "which getopts"
-#
-#NOTE: don't try getting version of getopts for the same reason as for echo.
+
+# NOTE: don't try getting version of getopts for the same reason as for echo.
 
 # which grep: get path to grep tool
 run_check 23 "which grep"
+
 # try getting grep version
 get_version "grep"
+
 # which mktemp: get path to mktemp
 run_check 24 "which mktemp"
+
 # try getting version of mktemp
 get_version "mktemp"
+
 # which mv: find where user will be moving :-) (or actually just path to mv :-))
 run_check 25 "which mv"
+
 # try getting version of mv
 get_version "mv"
+
 # which printf: get path to printf tool
 run_check 26 "which printf"
+
 # try getting printf version
 get_version "printf"
+
 # which rm: get path to rm tool
 run_check 27 "which rm"
+
 # try getting version of rm
 get_version "rm"
+
 # which sed: get sed path
 run_check 28 "which sed"
+
 # try getting sed version
 get_version "sed"
-#
+
 # which tar: find the path to tar
 #
 # NOTE: we don't need to check if tar accepts the correct options in this script
 # because txzchk_test.sh will do that later on.
 run_check 29  "which tar"
+
 # tar --version: find out what version tar is
 get_version "tar"
+
 # which tee: get path to tee
 run_check 30 "which tee"
+
 # try getting version of tee
 get_version "tee"
+
 # which touch: get path to touch
 run_check 31 "which touch"
+
 # try getting version of touch
 get_version "touch"
+
 # which tr: get path to tr
 run_check 32 "which tr"
+
 # try getting version of tr
 get_version "tr"
+
 # which true: try getting path to true
 run_check 33 "which true"
+
 # make sure true is true :-)
 run_check 34 "true"
+
 # try getting version of true
 get_version "true"
+
 # which yes: get path to yes
 run_check 35 "which yes"
+
 # don't try getting version of yes because it will just try printing the args
 # over and over again as it is designed to do
 
-echo "## CHECKING OPTIONAL TOOLS" | tee -a -- "$LOG_FILE"
+echo "#-----------------------------------------------------#" | tee -a -- "$LOG_FILE"
+echo "# SECTION 0 ABOVE: ENVIRONMENT AND SYSTEM INFORMATION #" | tee -a -- "$LOG_FILE"
+echo "#-----------------------------------------------------#" | tee -a -- "$LOG_FILE"
+
+#############################
+# Section 1: optional tools #
+#############################
+
+echo | tee -a -- "$LOG_FILE"
+echo "#############################" | tee -a -- "$LOG_FILE"
+echo "# SECTION 1: OPTIONAL TOOLS #" | tee -a -- "$LOG_FILE"
+echo "#############################" | tee -a -- "$LOG_FILE"
+echo | tee -a -- "$LOG_FILE"
+
+# optional tool checks
+#
+# If is OK to not have an optional tool in that such optional tools
+# are NOT mandatory to compile the core tools that someone needs
+# to submit an entry to the IOCCC.
+#
+# These optional tools are used by the maintainers and/or
+# there are workarounds for not having these tools.
+
 # which checknr: determine if checknr is installed
 run_check_optional "which checknr"
+
 # try getting version of checknr
 get_version_optional "checknr"
+
 # which ctags: get ctags path
 run_check_optional "which ctags"
+
 # try getting version of ctags
 get_version_optional "ctags"
+
 # which gdate: try getting path to gdate
 run_check_optional "which gdate"
+
 # try getting version of gdate
 get_version_optional "gdate"
+
 # which install: which install are we using ? :-) (that is find the path to install :-) )
 run_check_optional "which install"
+
 # try getting version of install
 get_version_optional "install"
+
 # which man: which man are you ? :-) (that is find the path to the man :-) )
 run_check_optional "which man"
+
 # try getting version of man (is that the age ? :-) )
 get_version_optional "man"
+
 # which man2html: try getting path to man2html
 run_check_optional "which man2html"
+
 # try getting version of man2html
 get_version_optional "man2html"
+
 # which picky: try getting path to picky tool
 run_check_optional "which picky"
+
 # don't try getting version of picky as it'll block
 
 # which rpl: get path to rpl
 run_check_optional "which rpl"
+
 # try getting version of rpl
 get_version_optional "rpl"
+
 # which seqcexit: get path to seqcexit
 run_check_optional "which seqcexit"
+
 # try getting version of seqcexit
 get_version_optional "seqcexit"
+
 # which shellcheck: get path to shellcheck
 run_check_optional "which shellcheck"
+
 # try getting version of shellcheck
 get_version_optional "shellcheck"
 
-echo "## OPTIONAL TOOLS ABOVE" | tee -a -- "$LOG_FILE"
+echo "#---------------------------------#" | tee -a -- "$LOG_FILE"
+echo "# SECTION 1 ABOVE: OPTIONAL TOOLS #" | tee -a -- "$LOG_FILE"
+echo "#---------------------------------#" | tee -a -- "$LOG_FILE"
 
+############################
+# Section 2: C environment #
+############################
 
-echo "# SECTION 0 ABOVE: ENVIRONMENT AND SYSTEM INFORMATION" | tee -a -- "$LOG_FILE"
+echo | tee -a -- "$LOG_FILE"
+echo "############################" | tee -a -- "$LOG_FILE"
+echo "# SECTION 2: C ENVIRONMENT #" | tee -a -- "$LOG_FILE"
+echo "############################" | tee -a -- "$LOG_FILE"
 echo | tee -a -- "$LOG_FILE"
 
-# Section 1: C environment
-echo "# SECTION 1: C ENVIRONMENT" | tee -a -- "$LOG_FILE"
-echo | tee -a -- "$LOG_FILE"
 # which cc: get all paths for cc
 run_check 36 "which cc"
+
 # cc -v: get compiler version
 run_check 37 "cc -v"
+
 # which make: get path to make tool
 run_check 38 "which -a make"
+
 # make -v: get make version
 run_check 39 "make -v"
+
 # cpp -dM /dev/null: get predefined macros
 run_check 40 "cpp -dM /dev/null"
-echo "# SECTION 1 ABOVE: C ENVIRONMENT" | tee -a -- "$LOG_FILE"
+
+echo "#--------------------------------#" | tee -a -- "$LOG_FILE"
+echo "# SECTION 2 ABOVE: C ENVIRONMENT #" | tee -a -- "$LOG_FILE"
+echo "#--------------------------------#" | tee -a -- "$LOG_FILE"
+
+#################################
+# Section 3: compilation checks #
+#################################
+
+echo | tee -a -- "$LOG_FILE"
+echo "#################################" | tee -a -- "$LOG_FILE"
+echo "# SECTION 3: COMPILATION CHECKS #" | tee -a -- "$LOG_FILE"
+echo "#################################" | tee -a -- "$LOG_FILE"
 echo | tee -a -- "$LOG_FILE"
 
-# Section 2: compilation checks.
-echo "# SECTION 2: COMPILATION CHECKS" | tee -a -- "$LOG_FILE"
-echo | tee -a -- "$LOG_FILE"
 # make clobber: start clean
 run_check 41 "make clobber"
+
 # make all: compile everything before we do anything else
 #
 # NOTE: This will indirectly call make fast_hostchk which, if it reports an
@@ -815,23 +953,40 @@ run_check 41 "make clobber"
 # very reason.
 #
 run_check 42 "make all" # the answer to life, the universe and everything conveniently makes all :-)
+
 # make test: run the IOCCC toolkit test suite
 run_check 43 "make test"
+
 # hostchk.sh -v 3: we need to run some checks to make sure the system can
 # compile things and so on
 run_check 44 "./hostchk.sh -v 3"
-echo "# SECTION 2 ABOVE: COMPILATION CHECKS" | tee -a -- "$LOG_FILE"
+
+echo "#-------------------------------------#" | tee -a -- "$LOG_FILE"
+echo "# SECTION 3 ABOVE: COMPILATION CHECKS $" | tee -a -- "$LOG_FILE"
+echo "#-------------------------------------#" | tee -a -- "$LOG_FILE"
+
+#############################################
+# Section 4: JSON scanner and parser checks #
+#############################################
+
+echo | tee -a -- "$LOG_FILE"
+echo "####################################" | tee -a -- "$LOG_FILE"
+echo "# SECTION 4: BISON AND FLEX CHECKS #" | tee -a -- "$LOG_FILE"
+echo "####################################" | tee -a -- "$LOG_FILE"
 echo | tee -a -- "$LOG_FILE"
 
-# Section 3: JSON scanner and parser checks.
-echo "# SECTION 3: BISON AND FLEX CHECKS" | tee -a -- "$LOG_FILE"
-echo | tee -a -- "$LOG_FILE"
+# pre-clean
+rm -f lex.yy.c
+
 # which bison: get path to bison (be careful it doesn't ram you :- ) )
 run_check_optional "which bison"
+
 # try getting version of bison
 get_version_optional "bison"
+
 # which flex: get path to flex without flexing your system's resources :-)
 run_check_optional "which flex"
+
 # try getting version of flex
 get_version_optional "flex"
 
@@ -841,22 +996,36 @@ get_version_optional "flex"
 #
 # run_bison.sh -v 7: check if bison will work
 run_check 45 "./run_bison.sh -v 7"
+
 # run_flex.sh -v 7: check if flex will work
 run_check 46 "./run_flex.sh -v 7"
+
 # run make all again: run_bison.sh and run_flex.sh will likely cause a need for
 # recompilation
 echo "## RUNNING make all a second time" | tee -a -- "$LOG_FILE"
 run_check 47 "make all"
-echo "# SECTION 3 ABOVE: BISON AND FLEX CHECKS" | tee -a -- "$LOG_FILE"
+
+# post-clean
+rm -f lex.yy.c
+
+echo "#----------------------------------------#" | tee -a -- "$LOG_FILE"
+echo "# SECTION 4 ABOVE: BISON AND FLEX CHECKS #" | tee -a -- "$LOG_FILE"
+echo "#----------------------------------------#" | tee -a -- "$LOG_FILE"
+
+####################################################################
+# Section 5: IOCCC environment like version info executable checks #
+####################################################################
+
+echo | tee -a -- "$LOG_FILE"
+echo "################################" | tee -a -- "$LOG_FILE"
+echo "# SECTION 5: IOCCC ENVIRONMENT #" | tee -a -- "$LOG_FILE"
+echo "################################" | tee -a -- "$LOG_FILE"
 echo | tee -a -- "$LOG_FILE"
 
-# Section 4: IOCCC environment like version information and making sure that
-# everything is executable.
-echo "# SECTION 4: IOCCC ENVIRONMENT" | tee -a -- "$LOG_FILE"
-echo | tee -a -- "$LOG_FILE"
 # See that every tool is executable and run -V on each one that is.
 #
 # If any tool is not executable the exit code will be set to 48.
+#
 for f in $TOOLS; do
     echo "## Checking if $f is executable" | tee -a -- "$LOG_FILE"
     if is_exec "$f"; then
@@ -901,12 +1070,20 @@ if [[ -e "./limit_ioccc.sh" ]]; then
 else
     echo "### No limit_ioccc.sh file found" | tee -a -- "$LOG_FILE"
 fi
-echo "# SECTION 4 ABOVE: IOCCC ENVIRONMENT" | tee -a -- "$LOG_FILE"
 echo | tee -a -- "$LOG_FILE"
 
+echo "#------------------------------------#" | tee -a -- "$LOG_FILE"
+echo "# SECTION 5 ABOVE: IOCCC ENVIRONMENT #" | tee -a -- "$LOG_FILE"
+echo "#------------------------------------#" | tee -a -- "$LOG_FILE"
 
-# Section 5: check for any user modifications to the tools
-echo "# SECTION 5: USER MODIFICATIONS TO ENVIRONMENT" | tee -a -- "$LOG_FILE"
+############################################################
+# Section 6: check for any user modifications to the tools #
+############################################################
+
+echo | tee -a -- "$LOG_FILE"
+echo "################################################" | tee -a -- "$LOG_FILE"
+echo "# SECTION 6: USER MODIFICATIONS TO IOCCC TOOLS #" | tee -a -- "$LOG_FILE"
+echo "################################################" | tee -a -- "$LOG_FILE"
 echo | tee -a -- "$LOG_FILE"
 
 # check for makefile.local to see if user is overriding any rules.
@@ -914,6 +1091,7 @@ echo | tee -a -- "$LOG_FILE"
 # NOTE: we don't use run_check for this because it's not an actual error whether
 # or not the user has a makefile.local file. What matters is the contents of it
 # if they do have one.
+#
 echo "## CHECKING: if makefile.local exists" | tee -a -- "$LOG_FILE"
 if [[ -e "./makefile.local" ]]; then
     if [[ -r "./makefile.local" ]]; then
@@ -939,14 +1117,32 @@ echo | tee -a -- "$LOG_FILE"
 # differences or not git will return 0. It will return non-zero in the case that
 # it's not in a git repo but we don't explicitly check for this. All we care
 # about is whether or not the user has changes that might be causing a problem.
+
+echo "## RUNNING: git status on the code" | tee -a -- "$LOG_FILE"
+git --no-pager status | tee -a -- "$LOG_FILE"
+echo | tee -a -- "$LOG_FILE"
+echo "## git status ABOVE" | tee -a -- "$LOG_FILE"
+echo | tee -a -- "$LOG_FILE"
+
 echo "## RUNNING: git diff to check for local modifications to the code" | tee -a -- "$LOG_FILE"
 git --no-pager diff | tee -a -- "$LOG_FILE"
 echo "## git diff ABOVE" | tee -a -- "$LOG_FILE"
 echo | tee -a -- "$LOG_FILE"
-echo "# SECTION 5 ABOVE: USER MODIFICATIONS TO ENVIRONMENT" | tee -a -- "$LOG_FILE"
+
+echo "## RUNNING: git diff --staged to check for local modifications to the code" | tee -a -- "$LOG_FILE"
+git --no-pager diff --staged | tee -a -- "$LOG_FILE"
+echo "## git diff --staged ABOVE" | tee -a -- "$LOG_FILE"
 echo | tee -a -- "$LOG_FILE"
 
-# final report
+echo "#----------------------------------------------------#" | tee -a -- "$LOG_FILE"
+echo "# SECTION 6 ABOVE: USER MODIFICATIONS TO IOCCC TOOLS #" | tee -a -- "$LOG_FILE"
+echo "#----------------------------------------------------#" | tee -a -- "$LOG_FILE"
+echo | tee -a -- "$LOG_FILE"
+
+################
+# final report #
+################
+
 if [[ ! -z "$WARNING_SUMMARY" ]]; then
     echo 1>&2
     echo "One or more POSSIBLE issues detected:" | tee -a -- "$LOG_FILE"
@@ -954,7 +1150,6 @@ if [[ ! -z "$WARNING_SUMMARY" ]]; then
     echo "$WARNING_SUMMARY" | tee -a -- "$LOG_FILE"
     echo  | tee -a -- "$LOG_FILE"
 fi
-
 if [[ "$EXIT_CODE" -ne 0 ]]; then
     echo 1>&2
     echo "One or more problems occurred:" | tee -a -- "$LOG_FILE"
@@ -983,7 +1178,6 @@ else
     echo "instead email the Judges but you're encouraged to file a" | tee -a -- "$LOG_FILE"
     echo "report instead. This is because not all tools were written by" | tee -a -- "$LOG_FILE"
     echo "the Judges." | tee -a -- "$LOG_FILE"
-
 fi
 echo 1>&2
 echo "NOTE: $LOG_FILE contains various information about" 1>&2
@@ -994,7 +1188,8 @@ echo "added to the file in case it proves useful in debugging a problem, and the
 echo "we kindly request that you provide it to us when you report a problem with this" 1>&2
 echo "code." 1>&2
 
-
+# All Done!!! -- Jessica Noll, Age 2
+#
 if [[ "$V_FLAG" -gt 1 ]]; then
     echo "About to exit with exit code: $EXIT_CODE" 1>&2
 fi
