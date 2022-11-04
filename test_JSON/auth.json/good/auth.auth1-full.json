@@ -4,7 +4,7 @@
 	"IOCCC_contest" : "IOCCCMOCK",
 	"IOCCC_year" : 2022,
 	"mkiocccentry_version" : "0.43 2022-10-28",
-	"chkentry_version" : "0.2 2022-10-28",
+	"chkentry_version" : "0.3 2022-10-31",
 	"fnamchk_version" : "0.6 2022-03-15",
 	"IOCCC_contest_id" : "12345678-1234-4321-abcd-1234567890ab",
 	"tarball" : "entry.12345678-1234-4321-abcd-1234567890ab-0.1662145368.txz",

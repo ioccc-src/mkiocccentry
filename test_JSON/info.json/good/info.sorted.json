@@ -18,7 +18,7 @@
 	"IOCCC_contest" : "IOCCCMOCK",
 	"IOCCC_year" : 2022,
 	"iocccsize_version" : "28.12 2022-10-17",
-	"chkentry_version" : "0.2 2022-10-28",
+	"chkentry_version" : "0.3 2022-10-31",
 	"manifest" : [
 		{"info_JSON" : ".info.json"},
 		{"auth_JSON" : ".auth.json"},
