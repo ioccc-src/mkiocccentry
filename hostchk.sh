@@ -9,11 +9,15 @@
 #
 #	https://github.com/ioccc-src/mkiocccentry/issues
 #
-# This script is being written by:
+# This script was written in 2022 by:
 #
 #	@xexyl
 #	https://xexyl.net		Cody Boone Ferguson
 #	https://ioccc.xexyl.net
+#
+# with some improvements and fixes by:
+#
+#	chongo (Landon Curt Noll, http://www.isthe.com/chongo/index.html) /\oo/\
 #
 # "Because sometimes even the IOCCC Judges need some help." :-)
 #
@@ -183,6 +187,8 @@ if [[ -n $F_FLAG ]]; then
 
     # test compile
     #
+    # NOTE: if your grep does not have -o this will fail. If this happens please
+    # submit a bug report and we'll add a workaround.
     printf "%s\n%s\n" "$(grep -h -o '#include.*<.*>' ./*.c ./*.h|sort -u)" "int main(void) { return 0; }" |
 	    "${CC}" -x c - -o "$PROG_FILE"
     status="$?"
@@ -256,6 +262,9 @@ elif [[ -n $RUN_INCLUDE_TEST ]]; then
 	# clean up after compile test
 	#
 	rm -f "$PROG_FILE"
+
+    # NOTE: if your grep does not have -o this will fail. If this happens please
+    # submit a bug report and we'll add a workaround.
     done < <(grep -h -o '#include.*<.*>' ./*.c ./*.h|sort -u)
 
 # case: neither -f nor run include tests one at a time
