@@ -44,7 +44,8 @@
 
 YY_BUFFER_STATE bs;
 
-/* FIXME - handle locations - FIXME
+/*
+ * XXX - FIXME - handle locations - FIXME - XXX
  *
  * This is just a placeholder for now and is subject to change.
  */
@@ -446,7 +447,7 @@ parse_json_stream(FILE *stream, bool *is_valid)
      * be found in a normal data file, so we will not object if we find
      * those 3 characters not encoded in the data block.
      *
-     * As a quick and dirty hack, we "manually" scan the data block
+     * As a quick and dirty hack, we scan "by hand" the data block
      * for such invalid bytes and object whenever we find them.
      *
      * XXX - We need to better handle this, perhaps in the scanner? - XXX

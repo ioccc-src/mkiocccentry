@@ -618,7 +618,8 @@ char *yytext;
 
 YY_BUFFER_STATE bs;
 
-/* FIXME - handle locations - FIXME
+/*
+ * XXX - FIXME - handle locations - FIXME - XXX
  *
  * This is just a placeholder for now and is subject to change.
  */
@@ -626,7 +627,7 @@ int yycolumn = 1;
 #define YY_USER_ACTION yylloc->first_line = yylloc->last_line = yylineno; \
     yylloc->first_column = yycolumn; yylloc->last_column = yycolumn+yyleng-1; \
     yycolumn += yyleng;
-#line 578 "jparse.c"
+#line 579 "jparse.c"
 /*
  * Section 2: Patterns (regular expressions) and actions.
  */
@@ -648,7 +649,7 @@ int yycolumn = 1;
  * don't have to worry about complicating the parser unnecessarily.
  */
 /* Actions. */
-#line 600 "jparse.c"
+#line 601 "jparse.c"
 
 #define INITIAL 0
 
@@ -883,9 +884,9 @@ YY_DECL
 		}
 
 	{
-#line 96 "jparse.l"
+#line 97 "jparse.l"
 
-#line 837 "jparse.c"
+#line 838 "jparse.c"
 
 	while ( /*CONSTCOND*/1 )		/* loops until end-of-file is reached */
 		{
@@ -954,7 +955,7 @@ do_action:	/* This label is used only to access EOF actions. */
 
 case 1:
 YY_RULE_SETUP
-#line 97 "jparse.l"
+#line 98 "jparse.l"
 {
 			    /*
 			     * Whitespace excluding newlines
@@ -973,14 +974,14 @@ YY_RULE_SETUP
 case 2:
 /* rule 2 can match eol */
 YY_RULE_SETUP
-#line 112 "jparse.l"
+#line 113 "jparse.l"
 {
 			    yycolumn = 1;
 			}
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 116 "jparse.l"
+#line 117 "jparse.l"
 {
 			    /* string */
 			    return JSON_STRING;
@@ -988,7 +989,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 121 "jparse.l"
+#line 122 "jparse.l"
 {
 			    /* number */
 			    return JSON_NUMBER;
@@ -996,7 +997,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 126 "jparse.l"
+#line 127 "jparse.l"
 {
 			    /* null object */
 			    return JSON_NULL;
@@ -1004,7 +1005,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 131 "jparse.l"
+#line 132 "jparse.l"
 {
 			    /* boolean: true */
 			    return JSON_TRUE;
@@ -1012,7 +1013,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 135 "jparse.l"
+#line 136 "jparse.l"
 {
 			    /* boolean: false */
 			    return JSON_FALSE;
@@ -1020,7 +1021,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 140 "jparse.l"
+#line 141 "jparse.l"
 {
 			    /* start of object */
 			    return JSON_OPEN_BRACE;
@@ -1028,7 +1029,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 144 "jparse.l"
+#line 145 "jparse.l"
 {
 			    /* end of object */
 			    return JSON_CLOSE_BRACE;
@@ -1036,7 +1037,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
-#line 149 "jparse.l"
+#line 150 "jparse.l"
 {
 			    /* start of array */
 			    return JSON_OPEN_BRACKET;
@@ -1044,7 +1045,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
-#line 153 "jparse.l"
+#line 154 "jparse.l"
 {
 			    /* end of array */
 			    return JSON_CLOSE_BRACKET;
@@ -1052,7 +1053,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
-#line 158 "jparse.l"
+#line 159 "jparse.l"
 {
 			    /* colon or 'equals' */
 			    return JSON_COLON;
@@ -1060,7 +1061,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
-#line 163 "jparse.l"
+#line 164 "jparse.l"
 {
 			    /* comma: name/value pair separator */
 			    return JSON_COMMA;
@@ -1068,7 +1069,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
-#line 168 "jparse.l"
+#line 169 "jparse.l"
 {
 			    /* invalid token: any other character */
 			    warn(__func__, "invalid token: 0x%02x = <%c>", *yytext, *yytext);
@@ -1104,10 +1105,10 @@ YY_RULE_SETUP
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
-#line 201 "jparse.l"
+#line 202 "jparse.l"
 YY_FATAL_ERROR( "flex scanner jammed" );
 	YY_BREAK
-#line 1059 "jparse.c"
+#line 1060 "jparse.c"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 
@@ -2124,7 +2125,7 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 201 "jparse.l"
+#line 202 "jparse.l"
 
 
 /* Section 3: Code that's copied to the generated scanner */
@@ -2373,7 +2374,7 @@ parse_json_stream(FILE *stream, bool *is_valid)
      * be found in a normal data file, so we will not object if we find
      * those 3 characters not encoded in the data block.
      *
-     * As a quick and dirty hack, we "manually" scan the data block
+     * As a quick and dirty hack, we scan "by hand" the data block
      * for such invalid bytes and object whenever we find them.
      *
      * XXX - We need to better handle this, perhaps in the scanner? - XXX
