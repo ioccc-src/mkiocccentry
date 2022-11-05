@@ -2169,8 +2169,8 @@ void yyfree (void * ptr )
  *	len	    - length of data in bytes
  *
  * return:
- *	true ==> data != NULL AND len > 0 AND no NUL bytes found
- *	false ==> data == NULL OR len <= 0 OR one or more NUL bytes found
+ *	true ==> data == NULL OR len <= 0 OR one or more NUL bytes found
+ *	false ==> data != NULL AND len > 0 AND no NUL bytes found
  */
 static bool
 nul_scan(char const *data, size_t len)
