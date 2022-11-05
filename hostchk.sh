@@ -157,7 +157,7 @@ fi
 #
 export INCLUDE_TEST_SUCCESS="true"
 RUN_INCLUDE_TEST="true"
-PROG_FILE=$(mktemp -u "$WORK_DIR/hostchk.prog")
+PROG_FILE=$(mktemp -u "$WORK_DIR/hostchk.prog.XXXXXXXXXX")
 status="$?"
 if [[ $status -ne 0 ]]; then
     EXIT_CODE=16	# will exit 16 at the end unless EXIT_CODE is changed later on
