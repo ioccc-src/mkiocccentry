@@ -1010,6 +1010,7 @@ legacy_clobber:
 	${RM} -f jnum_chk
 	${RM} -rf jnum_chk.dSYM
 	${RM} -rf test_iocccsize test_src test_work
+	${RM} -f .exit_code.*
 
 # rule used by prep.sh and make clobber
 #
@@ -1028,9 +1029,6 @@ prep_clobber: legacy_clobber
 	${RM} -rf test/jnum_chk.dSYM
 	${RM} -f jnum_gen
 	${RM} -rf jnum_gen.dSYM
-	${RM} -f .sorry.*
-	${RM} -f .exit_code.*
-	${RM} -f .jsemcgen.*
 	${RM} -rf soup/ref
 	${RM} -f legacy_os
 	${RM} -rf legacy_os.dSYM
@@ -1063,6 +1061,9 @@ clobber: clean prep_clobber
 	${RM} -f .jsemcgen.out.*
 	${RM} -f .all_ref.*
 	${RM} -rf .hostchk.work.*
+	${RM} -f .sorry.*
+	${RM} -f .jsemcgen.*
+	${RM} -f .txzchk_test,*
 	${RM} -f test/ioccc_test.log
 
 distclean nuke: clobber

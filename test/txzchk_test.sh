@@ -169,10 +169,6 @@ if [[ $V_FLAG -ge 3 ]]; then
     echo "$0: debug[3]: TOPDIR is the current directory: $TOPDIR" 1>&2
 fi
 
-# make the default all set
-#
-make all 2>&1 | grep -v 'Nothing to be done for'
-
 # check that txzchk_tree is a readable directory
 #
 if [[ ! -e $TXZCHK_TREE ]]; then
@@ -280,7 +276,7 @@ fi
 # set up for tar test
 #
 RUN_TAR_TEST="true"
-TEST_FILE=$(mktemp .txzchk_test.test_file.XXXXXXXXXX)
+TEST_FILE=$(mktemp .txzchk_test.XXXXXXXXXX.test_file)
 status="$?"
 if [[ $status -ne 0 ]]; then
     echo "$0: ERROR: mktemp .txzchk_test.test_file.XXXXXXXXXX exit code: $status" 1>&2

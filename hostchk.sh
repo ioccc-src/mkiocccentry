@@ -139,7 +139,7 @@ fi
 # setup a working directory unless -w was given
 #
 if [[ -z $W_FLAG ]]; then
-    WORK_DIR=$(mktemp -d .hostchk.work.XXXXXXXXXX)
+    WORK_DIR=$(mktemp -d .hostchk.XXXXXXXXXX.work)
     status="$?"
     if [[ $status -ne 0 ]]; then
 	echo "$0: ERROR: mktemp -d .hostchk.work.XXXXXXXXXX exit code: $status" 1>&2
@@ -157,7 +157,7 @@ fi
 #
 export INCLUDE_TEST_SUCCESS="true"
 RUN_INCLUDE_TEST="true"
-PROG_FILE=$(mktemp -u "$WORK_DIR/hostchk.prog.XXXXXXXXXX")
+PROG_FILE=$(mktemp -u "$WORK_DIR/hostchk.XXXXXXXXXX.prog")
 status="$?"
 if [[ $status -ne 0 ]]; then
     EXIT_CODE=16	# will exit 16 at the end unless EXIT_CODE is changed later on
