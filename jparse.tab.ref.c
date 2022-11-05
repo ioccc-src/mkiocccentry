@@ -1556,7 +1556,7 @@ yyreduce:
 			   "*tree = NULL;");
 	}
 	if (json_dbg_allowed(JSON_DBG_HIGH)) {
-	    json_dbg(JSON_DBG_HIGH, __func__, "under json: about also to perform: "
+	    json_dbg(JSON_DBG_HIGH, __func__, "under json: about to also perform: "
 					      "*tree = $json;");
 	}
 	if (tree == NULL) {
