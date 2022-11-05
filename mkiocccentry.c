@@ -1352,7 +1352,6 @@ get_contest_id(bool *testp, bool *read_answers_flag_used)
 {
     char *malloc_ret;		/* allocated return string */
     size_t len;			/* input string length */
-    int ret;			/* libc function return */
     bool valid = false;		/* true ==> IOCCC_contest_id is valid */
     bool seen_answers_header = false;
 
@@ -1371,16 +1370,7 @@ get_contest_id(bool *testp, bool *read_answers_flag_used)
      * explain contest ID
      */
     if (need_hints) {
-	para("To submit entries to the IOCCC, you must a registered contestant and have received a",
-	     "IOCCC contest ID (via email) shortly after you have been successfully registered.",
-	     "If the IOCCC is open, you may register as a contestant. See:",
-	     "",
-	     NULL);
-	errno = 0;		/* pre-clear errno for warnp() */
-	ret = fprintf(stderr, "    %s\n", IOCCC_REGISTER_URL);
-	if (ret <= 0) {
-	    warnp(__func__, "fprintf error printing IOCCC_REGISTER_URL");
-	}
+	show_registration_url();
 	para("",
 	     "If you do not have an IOCCC contest ID and you wish to test this program,",
 	     "you may use the special contest ID:",
@@ -1418,7 +1408,6 @@ get_contest_id(bool *testp, bool *read_answers_flag_used)
 	}
 
 	dbg(DBG_HIGH, "the IOCCC contest ID as entered is: %s", malloc_ret);
-	ret = 0;		/* initialize paranoia */
 
 	/*
 	 * case: IOCCC contest ID is test, quick return
@@ -5174,9 +5163,10 @@ remind_user(char const *work_dir, char const *entry_dir, char const *tar, char c
 	 * remind them that this is a test entry, not an official entry
 	 */
 	para("",
-	     "As you entered an IOCCC contest ID of test, the compressed tarball",
-	     "that was just formed CANNOT be used as an IOCCC entry.",
-	     "",
+	     "As you entered an IOCCC contest ID of 'test', the compressed tarball",
+	     "that was just formed CANNOT be used as an IOCCC entry. Please",
+	     "do NOT email the Judges your entry!"
+	     "", "",
 	     NULL);
 
     /*
@@ -5187,32 +5177,100 @@ remind_user(char const *work_dir, char const *entry_dir, char const *tar, char c
 	/*
 	 * inform them of the compressed tarball file
 	 */
-	para("",
-	     "Assuming that the IOCCC is still open, you may submit your entry",
-	     "by uploading following compressed tarball file:",
-	     "",
-	     NULL);
-	ret = printf("    %s/%s\n", work_dir, tarball_path);
-	if (ret <= 0) {
-	    errp(188, __func__, "printf #2 error");
-	    not_reached();
-	}
+	#if defined(IOCCC_SUBMIT_SERVER_READY)
+	    show_registration_url();
+	    show_submit_url(work_dir, tarball_path);
+	#else /* IOCCC_SUBMIT_SERVER_READY */
+	    show_submit_url(work_dir, tarball_path);
+	#endif /* IOCCC_SUBMIT_SERVER_READY */
     }
 
-    /*
-     * case: test mode report
-     */
-    if (!test_mode) {
+    return;
+}
+/*
+ *  show_registration_url
+ *
+ *  If the submit server is ready we will tell the user how to register as a
+ *  contestant. If it is NOT ready we will tell them they cannot register as a
+ *  contestant and implicitly that they may NOT submit an entry.
+ *
+ */
+static void
+show_registration_url(void)
+{
+    #if defined (IOCCC_SUBMIT_SERVER_READY)
+	int ret;
 	para("",
-	     "If the contest is still open, you may upload the above",
-	     "tarball to the following submission URL:",
+	     "To submit entries to the IOCCC, you must be a registered contestant and have received a",
+	     "IOCCC contest ID (via email) shortly after you've successfully registered. To do so,",
+	     "please visit:",
 	     "",
 	     NULL);
-	ret = printf("    %s\n\n", IOCCC_SUBMIT_URL);
-	if (ret < 0) {
-	    errp(189, __func__, "printf #4 error");
+	errno = 0;		/* pre-clear errno for warnp() */
+	ret = fprintf(stderr, "    %s\n", IOCCC_REGISTER_URL);
+	if (ret <= 0) {
+	    err(188, __func__, "fprintf error printing IOCCC_REGISTER_URL");
 	    not_reached();
 	}
+    #else /* IOCCC_SUBMIT_SERVER_READY */
+    para("The IOCCC submit server is NOT ready so you may not register as an IOCCC",
+	 "contestant at this time.",
+	 "",
+	 NULL);
+    #endif /* IOCCC_SUBMIT_SERVER_READY */
+}
+
+/*
+ *  show_submit_url
+ *
+ *  If the submit server is ready we will tell the user where they may submit
+ *  their entry if the contest is still open. If the submit server is NOT open
+ *  we will tell them that the server is not ready and that they CANNOT submit
+ *  their entry.
+ *
+ *  given:
+ *	    work_dir	    - work directory
+ *	    tarball_path    - path to the entry tarball
+ *
+ * NOTE: if either work_dir or tarball_path is NULL we will do nothing in the
+ * assumption that the server is NOT ready (though they shouldn't be NULL
+ * anyway). Nevertheless we still make sure to check that the server IS ready
+ * before printing anything to the user.
+ */
+static void
+show_submit_url(char const *work_dir, char const *tarball_path)
+{
+    if (work_dir == NULL || tarball_path == NULL) {
+	return;
     }
-    return;
+    #if defined (IOCCC_SUBMIT_SERVER_READY)
+    int ret;
+    para("",
+	 "Once you've registered, you may submit your entry by uploading",
+	 "the following tarball:",
+	 "",
+	 NULL);
+    ret = printf("    %s/%s\n", work_dir, tarball_path);
+    if (ret <= 0) {
+	errp(189, __func__, "printf #4 error");
+	not_reached();
+    }
+
+    para("",
+	 "If the contest is still open, you may upload the above",
+	 "tarball to the following submission URL:",
+	 "",
+	 NULL);
+    ret = printf("    %s\n\n", IOCCC_SUBMIT_URL);
+    if (ret < 0) {
+	errp(190, __func__, "printf #5 error");
+	not_reached();
+    }
+    #else /* IOCCC_SUBMIT_SERVER_READY */
+	para("",
+	     "The IOCCC submit server is NOT ready so you may NOT enter the",
+	     "contest. Please do NOT email the Judges your entry."
+	     "",
+	     NULL);
+    #endif /* IOCCC_SUBMIT_SERVER_READY */
 }
