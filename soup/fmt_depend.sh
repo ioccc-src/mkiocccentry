@@ -34,10 +34,9 @@
 #
 # Share and enjoy! :-)
 
-# setuo
+# setup
 #
 export FMT_DEPEND_VERSION="1.1 2022-11-05"
-export TOPDIR=
 
 export USAGE="usage: $0 [-h] [-V] [-v level]
 
@@ -56,7 +55,7 @@ $0 version: $FMT_DEPEND_VERSION"
 # parse args
 #
 export V_FLAG="0"
-while getopts :hVv:Z: flag; do
+while getopts :hVv: flag; do
     case "$flag" in
     h) echo "$USAGE" 1>&2
        exit 2
@@ -65,8 +64,6 @@ while getopts :hVv:Z: flag; do
        exit 2
        ;;
     v) V_FLAG="$OPTARG";
-       ;;
-    Z) TOPDIR="$OPTARG";
        ;;
     \?) echo "$0: ERROR: invalid option: -$OPTARG" 1>&2
        exit 3
@@ -102,7 +99,7 @@ sed -e 's/^\(.*\)$/\1\n/' |
 #
 fmt -s -w 100 |
 
-# print a leading tar before the 2nd and later
+# print a leading tab before the 2nd and later
 # lines of each paragraph
 #
 sed -e 's/^\([^:][^:]*\)$/\t\1/' |
