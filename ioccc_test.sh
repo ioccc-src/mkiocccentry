@@ -406,11 +406,11 @@ fi
 echo | tee -a -- "$LOGFILE"
 echo "RUNNING: chkentry_test.sh" | tee -a -- "$LOGFILE"
 echo | tee -a -- "$LOGFILE"
-echo "./chkentry_test.sh" | tee -a -- "$LOGFILE"
-./chkentry_test.sh | tee -a -- "$LOGFILE"
+echo "./chkentry_test.sh -v 1" | tee -a -- "$LOGFILE"
+./chkentry_test.sh -v 1 | tee -a -- "$LOGFILE"
 status="${PIPESTATUS[0]}"
 if [[ $status -ne 0 ]]; then
-    echo "$0: ERROR: chkentry_test.sh non-zero exit code: $status" 1>&2 | tee -a -- "$LOGFILE"
+    echo "$0: ERROR: chkentry_test.sh -v 1 non-zero exit code: $status" 1>&2 | tee -a -- "$LOGFILE"
     FAILURE_SUMMARY="$FAILURE_SUMMARY
     chkentry_test.sh non-zero exit code: $status"
     EXIT_CODE="29"
