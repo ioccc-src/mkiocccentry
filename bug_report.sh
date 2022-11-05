@@ -27,7 +27,7 @@ export TOOLS="
     ./chkentry
     ./dbg
     ./fnamchk
-    ./have_timegm
+    ./have_timegm.sh
     ./hostchk.sh
     ./iocccsize
     ./jnum_gen
