@@ -58,7 +58,7 @@ export TOOLS="
     ./vermod.sh
     "
 
-export BUG_REPORT_VERSION="0.6 2022-11-06"
+export BUG_REPORT_VERSION="0.6 2022-11-05"
 export FAILURE_SUMMARY=
 export WARNING_SUMMARY=
 export DBG_LEVEL="0"
@@ -766,32 +766,39 @@ run_check 23 "which grep"
 # try getting grep version
 get_version "grep"
 
+# which head: determine if the user has a head :-) (on my behalf I hope they do:
+# I lost my head years ago and it's a real problem I can tell you! :-) )
+run_check 24 "which head"
+
+# try getting version of head
+get_version "head"
+
 # which mktemp: get path to mktemp
-run_check 24 "which mktemp"
+run_check 25 "which mktemp"
 
 # try getting version of mktemp
 get_version "mktemp"
 
 # which mv: find where user will be moving :-) (or actually just path to mv :-))
-run_check 25 "which mv"
+run_check 26 "which mv"
 
 # try getting version of mv
 get_version "mv"
 
 # which printf: get path to printf tool
-run_check 26 "which printf"
+run_check 27 "which printf"
 
 # try getting printf version
 get_version "printf"
 
 # which rm: get path to rm tool
-run_check 27 "which rm"
+run_check 28 "which rm"
 
 # try getting version of rm
 get_version "rm"
 
 # which sed: get sed path
-run_check 28 "which sed"
+run_check 29 "which sed"
 
 # try getting sed version
 get_version "sed"
@@ -800,40 +807,40 @@ get_version "sed"
 #
 # NOTE: we don't need to check if tar accepts the correct options in this script
 # because txzchk_test.sh will do that later on.
-run_check 29  "which tar"
+run_check 30  "which tar"
 
 # tar --version: find out what version tar is
 get_version "tar"
 
-# which tee: get path to tee
-run_check 30 "which tee"
+# which tee: get path to tee (I don't mind if I have a cup of tea either :-) )
+run_check 31 "which tee"
 
 # try getting version of tee
 get_version "tee"
 
 # which touch: get path to touch
-run_check 31 "which touch"
+run_check 32 "which touch"
 
 # try getting version of touch
 get_version "touch"
 
 # which tr: get path to tr
-run_check 32 "which tr"
+run_check 33 "which tr"
 
 # try getting version of tr
 get_version "tr"
 
 # which true: try getting path to true
-run_check 33 "which true"
+run_check 34 "which true"
 
 # make sure true is true :-)
-run_check 34 "true"
+run_check 35 "true"
 
 # try getting version of true
 get_version "true"
 
 # which yes: get path to yes
-run_check 35 "which yes"
+run_check 36 "which yes"
 
 # don't try getting version of yes because it will just try printing the args
 # over and over again as it is designed to do
@@ -872,6 +879,12 @@ run_check_optional "which ctags"
 
 # try getting version of ctags
 get_version_optional "ctags"
+
+# which fmt: determine if fmt is installed
+run_check_optional "which fmt"
+
+# try getting version of fmt
+get_version_optional "fmt"
 
 # which gdate: try getting path to gdate
 run_check_optional "which gdate"
@@ -935,19 +948,19 @@ echo "############################" | tee -a -- "$LOG_FILE"
 echo | tee -a -- "$LOG_FILE"
 
 # which cc: get all paths for cc
-run_check 36 "which cc"
+run_check 37 "which cc"
 
 # cc -v: get compiler version
-run_check 37 "cc -v"
+run_check 38 "cc -v"
 
 # which make: get path to make tool
-run_check 38 "which -a make"
+run_check 39 "which -a make"
 
 # make -v: get make version
-run_check 39 "make -v"
+run_check 40 "make -v"
 
 # cpp -dM /dev/null: get predefined macros
-run_check 40 "cpp -dM /dev/null"
+run_check 41 "cpp -dM /dev/null"
 
 echo "#--------------------------------#" | tee -a -- "$LOG_FILE"
 echo "# SECTION 2 ABOVE: C ENVIRONMENT #" | tee -a -- "$LOG_FILE"
@@ -964,7 +977,7 @@ echo "#################################" | tee -a -- "$LOG_FILE"
 echo | tee -a -- "$LOG_FILE"
 
 # make clobber: start clean
-run_check 41 "make clobber"
+run_check 43 "make clobber" # 42 is reserved for 'Life, the Universe and Everything' :-)
 
 # make all: compile everything before we do anything else
 #
@@ -988,14 +1001,14 @@ run_check 41 "make clobber"
 # use of this repo so each time the script fails we report the issue for that
 # very reason.
 #
-run_check 42 "make all" # the answer to life, the universe and everything conveniently makes all :-)
+run_check 42 "make all" # the answer to life, the universe and everything originally conveniently made all :-)
 
 # make test: run the IOCCC toolkit test suite
-run_check 43 "make test"
+run_check 44 "make test"
 
 # hostchk.sh -v 3: we need to run some checks to make sure the system can
 # compile things and so on
-run_check 44 "./hostchk.sh -v 3"
+run_check 45 "./hostchk.sh -v 3"
 
 echo "#-------------------------------------#" | tee -a -- "$LOG_FILE"
 echo "# SECTION 3 ABOVE: COMPILATION CHECKS $" | tee -a -- "$LOG_FILE"
@@ -1031,15 +1044,15 @@ get_version_optional "flex"
 # would mean the repo could not be used properly.
 #
 # run_bison.sh -v 7: check if bison will work
-run_check 45 "./run_bison.sh -v 7"
+run_check 46 "./run_bison.sh -v 7"
 
 # run_flex.sh -v 7: check if flex will work
-run_check 46 "./run_flex.sh -v 7"
+run_check 47 "./run_flex.sh -v 7"
 
 # run make all again: run_bison.sh and run_flex.sh will likely cause a need for
 # recompilation
 echo "## RUNNING make all a second time" | tee -a -- "$LOG_FILE"
-run_check 47 "make all"
+run_check 48 "make all"
 
 # post-clean
 rm -f lex.yy.c
@@ -1060,7 +1073,7 @@ echo | tee -a -- "$LOG_FILE"
 
 # See that every tool is executable and run -V on each one that is.
 #
-# If any tool is not executable the exit code will be set to 48.
+# If any tool is not executable the exit code will be set to 49.
 #
 for f in $TOOLS; do
     echo "## Checking if $f is executable" | tee -a -- "$LOG_FILE"
@@ -1070,7 +1083,7 @@ for f in $TOOLS; do
 	echo "$f version $($f -V)" | tee -a -- "$LOG_FILE"
 	echo | tee -a -- "$LOG_FILE"
     else
-	EXIT_CODE=48
+	EXIT_CODE=49
 	echo "$0: ERROR: $f IS NOT EXECUTABLE: new exit code: $EXIT_CODE" | tee -a -- "$LOG_FILE"
 	FAILURE_SUMMARY="$FAILURE_SUMMARY
 	$f cannot be executed"
