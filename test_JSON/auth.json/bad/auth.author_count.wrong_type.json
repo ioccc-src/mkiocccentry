@@ -1,0 +1,35 @@
+{
+	"no_comment" : "mandatory comment: because comments were removed from the original JSON spec",
+	"IOCCC_auth_version" : "1.17 2022-10-30",
+	"IOCCC_contest" : "IOCCCMOCK",
+	"IOCCC_year" : 2022,
+	"mkiocccentry_version" : "0.43 2022-10-28",
+	"chkentry_version" : "0.3 2022-10-31",
+	"fnamchk_version" : "0.6 2022-03-15",
+	"IOCCC_contest_id" : "12345678-1234-4321-abcd-1234567890ab",
+	"tarball" : "entry.12345678-1234-4321-abcd-1234567890ab-0.1662145368.txz",
+	"entry_num" : 0,
+	"author_count" : null,
+	"test_mode" : false,
+	"authors" : [
+		{
+			"name" : "author0 middle0 thisisaveryverylonglastname0",
+			"location_code" : "AU",
+			"location_name" : "Australia",
+			"email" : "user0@example.com",
+			"url" : "https:\/\/host0.example.com\/index.html",
+			"twitter" : "@twitter0",
+			"github" : "@github0",
+			"affiliation" : "an affiliation for #0 author",
+			"past_winner" : false,
+			"default_handle" : true,
+			"author_handle" : "author0_middle0_thisisaveryveryl",
+			"author_number" : 0
+		}
+	],
+	"formed_timestamp" : 1662145368,
+	"formed_timestamp_usec" : 506171,
+	"timestamp_epoch" : "Thu Jan 01 00:00:00 1970 UTC",
+	"min_timestamp" : 1662145368,
+	"formed_UTC" : "Fri Sep 02 19:02:48 2022 UTC"
+}

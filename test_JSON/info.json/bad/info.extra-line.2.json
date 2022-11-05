@@ -38,7 +38,7 @@
 		{"Makefile" : "Makefile"},
 		{"remarks" : "remarks.md"},
 		{"extra_file" : "extra1"},
-		{"extra_file" : "Extra1"}
+		{"extra_file" : "prog.c"}
 	],
 	"formed_timestamp" : 1662145368,
 	"formed_timestamp_usec" : 13685,
