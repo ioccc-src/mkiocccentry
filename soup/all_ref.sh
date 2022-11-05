@@ -287,7 +287,7 @@ if [[ ! -r $REF_DIR ]]; then
     exit 6
 fi
 
-TMP_FILE=$(mktemp .all_ref.XXXXXXXXXX)
+TMP_FILE=$(mktemp .all_ref.XXXXXXXXXX.out)
 status="$?"
 if [[ $status -ne 0 ]]; then
     echo "$0: ERROR: mktemp .all_ref.XXXXXXXXXX exit code: $status" 1>&2

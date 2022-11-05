@@ -327,7 +327,7 @@ if [[ -n "$PATCH_FILE" ]]; then
     # obtain a temporary filenames
     #
     export MKTEMP_TEMPLATE TMP_FILE
-    MKTEMP_TEMPLATE=".jsemcgen.out.XXXXXXXXXX"
+    MKTEMP_TEMPLATE=".jsemcgen.XXXXXXXXXX.out"
     if [[ $V_FLAG -ge 3 ]]; then
 	echo "$0: debug[3]: about to run: mktemp $MKTEMP_TEMPLATE" 1>&2
     fi

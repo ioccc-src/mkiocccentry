@@ -1,7 +1,11 @@
 # IOCCC submission toolkit specific exclusions
-.exit_code.*
-.hostchk.work.*
-.sorry.*
+.all_ref.*.out
+.hostchk.*.work/
+.jsemcgen.*.out
+.sorry.*.c
+.txzchk_test.*.test_file
+.txzchk_test.tar_err.*.out
+.txzchk_test.tarball.*.txz
 answers.txt
 bug-report*.txt
 build.log

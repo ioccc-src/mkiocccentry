@@ -493,7 +493,7 @@ add_sorry() {
     # obtain a temporary filename
     #
     export MKTEMP_TEMPLATE TMP_FILE
-    MKTEMP_TEMPLATE=".sorry.$(basename "$0").XXXXXXXXXX"
+    MKTEMP_TEMPLATE=".sorry.$(basename "$0").XXXXXXXXXX.c"
     TMP_FILE=$(mktemp "$MKTEMP_TEMPLATE")
     status="$?"
     if [[ $status -ne 0 ]]; then

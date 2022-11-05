@@ -276,7 +276,7 @@ fi
 # set up for tar test
 #
 RUN_TAR_TEST="true"
-TEST_FILE=$(mktemp .txzchk_test.test_file.XXXXXXXXXX)
+TEST_FILE=$(mktemp .txzchk_test.XXXXXXXXXX.test_file)
 status="$?"
 if [[ $status -ne 0 ]]; then
     echo "$0: ERROR: mktemp .txzchk_test.test_file.XXXXXXXXXX exit code: $status" 1>&2
