@@ -180,7 +180,6 @@ if [[ ! -x ./jparse_test.sh ]]; then
     echo "$0: ERROR: ./jparse_test.sh is not executable" 1>&2
     exit 9
 fi
-
 # json_teststr.txt: for jparse_test.sh
 if [[ ! -e ./json_teststr.txt ]]; then
     echo "$0: ERROR: json_teststr.txt file not found" 1>&2
@@ -207,6 +206,19 @@ if [[ ! -x ./txzchk ]]; then
     echo "$0: ERROR: ./txzchk is not executable" 1>&2
     exit 11
 fi
+# chkentry_test.sh
+if [[ ! -e ./chkentry_test.sh ]]; then
+    echo "$0: ERROR: ./chkentry_test.sh file not found" 1>&2
+    exit 12
+fi
+if [[ ! -f ./chkentry_test.sh ]]; then
+    echo "$0: ERROR: ./chkentry_test.sh is not a regular file" 1>&2
+    exit 12
+fi
+if [[ ! -x ./chkentry_test.sh ]]; then
+    echo "$0: ERROR: ./chkentry_test.sh is not executable" 1>&2
+    exit 12
+fi
 
 # log file
 rm -f "$LOGFILE"
@@ -214,11 +226,11 @@ rm -f "$LOGFILE"
 touch "$LOGFILE"
 if [[ ! -e "$LOGFILE" ]]; then
     echo "$0: ERROR: couldn't create log file: $LOGFILE" 1>&2
-    exit 12
+    exit 13
 fi
 if [[ ! -w "$LOGFILE" ]]; then
     echo "$0: ERROR: log file is not writable: $LOGFILE" 1>&2
-    exit 12
+    exit 13
 fi
 
 # start the test suite
@@ -372,6 +384,7 @@ fi
 # the test_txzchk/bad subdirectory all have that form. This is a stylistic
 # choice that can be changed if so desired but I have the ./ to match the rest
 # of the command line.
+#
 echo | tee -a -- "$LOGFILE"
 echo "RUNNING: txzchk_test.sh" | tee -a -- "$LOGFILE"
 echo | tee -a -- "$LOGFILE"
@@ -388,6 +401,23 @@ else
     echo "PASSED: txzchk_test.sh" | tee -a -- "$LOGFILE"
 fi
 
+# chkentry_test.sh
+#
+echo | tee -a -- "$LOGFILE"
+echo "RUNNING: chkentry_test.sh" | tee -a -- "$LOGFILE"
+echo | tee -a -- "$LOGFILE"
+echo "./chkentry_test.sh" | tee -a -- "$LOGFILE"
+./chkentry_test.sh | tee -a -- "$LOGFILE"
+status="${PIPESTATUS[0]}"
+if [[ $status -ne 0 ]]; then
+    echo "$0: ERROR: chkentry_test.sh non-zero exit code: $status" 1>&2 | tee -a -- "$LOGFILE"
+    FAILURE_SUMMARY="$FAILURE_SUMMARY
+    chkentry_test.sh non-zero exit code: $status"
+    EXIT_CODE="29"
+else
+    echo | tee -a -- "$LOGFILE"
+    echo "PASSED: chkentry_test.sh" | tee -a -- "$LOGFILE"
+fi
 
 # report overall status
 #
