@@ -89,7 +89,7 @@ jstrdecode_stream(FILE *in_stream, FILE *out_stream, bool write_quote)
     /*
      * decode data read from input stream
      */
-    buf = json_decode(input, inputlen, &bufsiz);
+    buf = json_decode(input, inputlen, &bufsiz, NULL);
     if (buf == NULL) {
 	warn(__func__, "error while encoding stdin buffer");
 	success = false;
