@@ -90,9 +90,6 @@ fi
 # check args
 #
 shift $(( OPTIND - 1 ));
-
-eval make all 2>&1 | grep -v 'Nothing to be done for'
-
 export JSON_GOOD_TREE="$JSON_TREE/general.json/good"
 export JSON_BAD_TREE="$JSON_TREE/general.json/bad"
 

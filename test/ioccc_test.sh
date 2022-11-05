@@ -131,10 +131,6 @@ if [[ $V_FLAG -ge 3 ]]; then
     echo "$0: debug[3]: TOPDIR is the current directory: $TOPDIR" 1>&2
 fi
 
-# make the default all set
-#
-make all 2>&1 | grep -v 'Nothing to be done for'
-
 # firewall - verify we have the required executables and needed data file(s)
 #
 # iocccsize_test.sh
