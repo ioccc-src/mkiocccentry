@@ -224,17 +224,17 @@ JSON_COMMA		","
  * and report their presence if we find any NUL bytes in data.
  *
  * We scan data for both NUL bytes.  When a NUL byte is detected, count
- * we increment the num_errors external varaible.
+ * we increment the num_errors external variable.
  *
  * We also keep track of newlines.  For the first MAX_NUL_REPORTED occurrences
  * of a NUL byte, we use the werr() function to issue an error reporting
  * both the line number a byte position of the NUL byte.  Once we reach a
- * total of * MAX_NUL_REPORTED NUL bytes detected, we issue a "too many NUL"
+ * total of MAX_NUL_REPORTED NUL bytes detected, we issue a "too many NUL"
  * style message and stop reporting further NUL byte error messages.
  * This is done in case we encounter a large block of NUL bytes so as to
  * not flood the system with lots of error messages.
  *
- * We also return a false if data == NULL or len <= 0.
+ * We also return false if data == NULL or len <= 0.
  *
  * given:
  *
