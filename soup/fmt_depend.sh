@@ -78,7 +78,7 @@ done
 
 # remove \'s
 #
-tr -d \\ |
+tr -d '\\' |
 
 # convert newlines into a single space
 #
