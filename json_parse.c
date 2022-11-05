@@ -905,13 +905,14 @@ jencchk(void)
  *	ptr	start of memory block to decode
  *	len	length of block to decode in bytes
  *	retlen	address of where to store allocated length, if retlen != NULL
+ *	has_nul	if != NULL and we find an encoded NUL byte we will do *has_nul = true
  *
  * returns:
  *	allocated JSON decoding of a block, or NULL ==> error
  *	NOTE: retlen, if non-NULL, is set to 0 on error
  */
 char *
-json_decode(char const *ptr, size_t len, size_t *retlen)
+json_decode(char const *ptr, size_t len, size_t *retlen, bool *has_nul)
 {
     char *ret = NULL;	    /* allocated encoding string or NULL */
     char *beyond = NULL;    /* beyond the end of the allocated encoding string */
@@ -1064,6 +1065,9 @@ json_decode(char const *ptr, size_t len, size_t *retlen)
 			++mlen;
 			i += 5;
 
+			if (c == '0' && d == '0' && has_nul != NULL) {
+			    *has_nul = true; /* set has_nul to true */
+			}
 		    /*
 		     * case: count \uxxxx as 2 characters
 		     */
@@ -1077,7 +1081,7 @@ json_decode(char const *ptr, size_t len, size_t *retlen)
 		 * case: \uxxxx is invalid because xxxx is not HEX
 		 */
 		} else {
-			warn(__func__, "\\u, not foolowed by 4 hex chars");
+			warn(__func__, "\\u, not followed by 4 hex chars");
 			return NULL;
 		}
 		break;
@@ -1188,7 +1192,7 @@ json_decode(char const *ptr, size_t len, size_t *retlen)
 		break;
 	    case 'e':	/* ASCII escape */
 		++i;
-		*p++ = 0x0b;  /* no all C compilers understand /e */
+		*p++ = 0x0b;  /* not all C compilers understand \e */
 		break;
 	    case '"':	/*fallthrough*/
 	    case '/':	/*fallthrough*/
@@ -1226,6 +1230,9 @@ json_decode(char const *ptr, size_t len, size_t *retlen)
 		    i += 5;
 		    *p++ = (char)((xc << 4) | xd);
 
+		    if (xc == 0 && xd == 0 && has_nul != NULL) {
+			*has_nul = true; /* record NUL byte */
+		    }
 		/*
 		 * case: \uxxxx
 		 */
@@ -1266,8 +1273,8 @@ json_decode(char const *ptr, size_t len, size_t *retlen)
     /*
      * return result
      */
-    dbg(DBG_VVVHIGH, "returning from json_decode(ptr, %ju, *%ju)",
-		     (uintmax_t)len, (uintmax_t)mlen);
+    dbg(DBG_VVVHIGH, "returning from json_decode(ptr, %ju, *%ju, %s)",
+		     (uintmax_t)len, (uintmax_t)mlen, has_nul != NULL ? booltostr(*has_nul) : "false");
     if (retlen != NULL) {
 	*retlen = mlen;
     }
@@ -1318,7 +1325,7 @@ json_decode_str(char const *str, size_t *retlen)
     /*
      * convert to json_decode() call
      */
-    ret = json_decode(str, len, retlen);
+    ret = json_decode(str, len, retlen, NULL);
     if (ret == NULL) {
 	dbg(DBG_VVHIGH, "returning NULL for decoding of: <%s>", str);
     } else {
@@ -2693,7 +2700,7 @@ json_conv_string(char const *ptr, size_t len, bool quote)
      * decode the JSON encoded string
      */
     /* decode the entire string */
-    item->str = json_decode_str(item->as_str, &(item->str_len));
+    item->str = json_decode(item->as_str, len, &(item->str_len), &(item->has_nul));
     if (item->str == NULL) {
 	warn(__func__, "quote === %s: JSON string decode failed for: <%s>",
 		       booltostr(quote), item->as_str);
@@ -2710,11 +2717,6 @@ json_conv_string(char const *ptr, size_t len, bool quote)
     if (item->as_str_len == item->str_len && memcmp(item->as_str, item->str, item->as_str_len) == 0) {
 	item->same = true;	/* decoded string same an original JSON encoded string (perhaps sans '"'s) */
     }
-
-    /*
-     * determine if decoded JSON string is a C string
-     */
-    item->has_nul = is_string(item->str, item->str_len);
 
     /*
      * determine POSIX state of the decoded string
