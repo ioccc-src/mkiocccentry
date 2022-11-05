@@ -18,17 +18,47 @@
 
 # setup
 #
-# All of our tools. Kept towards the top of file in case the list ever needs to
-# be changed.
+# Maintain this list towards the top of file, in sorted order.
 #
-export TOOLS="./run_bison.sh ./run_flex.sh ./hostchk.sh ./dbg ./dyn_test ./fnamchk
-	      ./ioccc_test.sh ./iocccsize ./iocccsize_test.sh ./chkentry ./jnum_gen
-	      ./jnum_chk ./jparse ./jparse_test.sh ./jstr_test.sh ./jstrencode
-	      ./jstrdecode ./mkiocccentry ./mkiocccentry_test.sh ./prep.sh
-	      ./reset_tstamp.sh ./txzchk ./txzchk_test.sh ./utf8_test ./verge
-	      ./vermod.sh ./jsemcgen.sh ./jsemtblgen"
+# Do NOT put this tool (bug-report.sh) in the list, it you will
+# cause an infinite loop.
+#
+export TOOLS="
+    ./chkentry
+    ./dbg
+    ./fnamchk
+    ./have_timegm
+    ./hostchk.sh
+    ./iocccsize
+    ./jnum_gen
+    ./jparse
+    ./jsemcgen.sh
+    ./jsemtblgen
+    ./jstrdecode
+    ./jstrencode
+    ./mkiocccentry
+    ./prep.sh
+    ./reset_tstamp.sh
+    ./run_bison.sh
+    ./run_flex.sh
+    ./run_usage.sh
+    ./soup/all_ref.sh
+    ./test/chkentry_test.sh
+    ./test/dyn_test
+    ./test/ioccc_test.sh
+    ./test/iocccsize_test.sh
+    ./test/jnum_chk
+    ./test/jparse_test.sh
+    ./test/jstr_test.sh
+    ./test/mkiocccentry_test.sh
+    ./test/txzchk_test.sh
+    ./test/utf8_test
+    ./txzchk
+    ./verge
+    ./vermod.sh
+    "
 
-export BUG_REPORT_VERSION="0.5 2022-11-03"
+export BUG_REPORT_VERSION="0.6 2022-11-06"
 export FAILURE_SUMMARY=
 export WARNING_SUMMARY=
 export DBG_LEVEL="0"

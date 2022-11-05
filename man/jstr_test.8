@@ -1,0 +1,92 @@
+.\" section 8 man page for jstr_test.sh
+.\"
+.\" This man page was first written by Cody Boone Ferguson for the IOCCC
+.\" in 2022.
+.\"
+.\" Humour impairment is not virtue nor is it a vice, it's just plain
+.\" wrong: almost as wrong as JSON spec mis-features and C++ obfuscation! :-)
+.\"
+.\" "Share and Enjoy!"
+.\"     --  Sirius Cybernetics Corporation Complaints Division, JSON spec department. :-)
+.\"
+.TH jstr_test.sh 8 "29 October 2022" "jstr_test.sh" "IOCCC tools"
+.SH NAME
+jstr_test.sh \- JSON string encoding and decoding tests
+.SH SYNOPSIS
+\fBjstr_test.sh\fP [\-h] [\-V] [\-v level] [\-e jstrencode] [\-d jstrdecode] [\-Z topdir]
+.SH DESCRIPTION
+Using \fBjstrencode(1)\fP and \fBjstrdecode(1)\fP the \fBjstr_test.sh\fP script runs a series of tests to make sure that both encoding and decoding of JSON strings work as expected.
+This is important because if either is not working right then there will be a problem with the JSON parser as well as these tools use the same routines that the JSON parser uses.
+.SH OPTIONS
+.TP
+\fB\-h\fP
+Show help and exit.
+.TP
+\fB\-V\fP
+Show version and exit.
+.TP
+\fB\-v \fIlevel\fP\fP
+Set verbosity level to \fIlevel\fP.
+.TP
+\fB\-e \fIjstrencode\fP\fP
+Set path to
+.B jstrencode(1)
+tool.
+.TP
+\fB\-d \fIjstrdecode\fP\fP
+Set path to
+.B jstrdecode(1)
+tool.
+.TP
+\fB\-Z\fP \fItopdir\fP
+Declare the top level directory of this repository.
+The \fBtopdir\fP directory must contain the source file \fImkiocccentry.c\fP.
+By default, the source file \fImkiocccentry.c\fP is searched for in the current directory,
+and then the parent of current directory.
+.sp 1
+If \fB\-Z\fP \fItopdir\fP is used on the command line, then the source file \fImkiocccentry.c\fP need not exist
+in the \fBtopdir\fP directory.
+If \fB\-Z\fP \fItopdir\fP is not used on the command line, and the source file \fImkiocccentry.c\fP
+is not found in the current directory not the parent of current directory,
+then this command exits as if there was a command line error.
+.sp 1
+Once the \fBtopdir\fP directory is established,
+this command moves to that directory.
+.SH EXIT STATUS
+.PP
+.TP
+0
+all is well
+.TQ
+2
+\-h and help string printed or \-V and version string printed
+.TQ
+3
+Command line usage error
+.TQ
+>= 10
+internal error
+.SH FILES
+\fIjstr_test.out\fP
+.RS
+This temporary file holds the output of an encoded JSON string (via \fBjstrencode(1)\fP) decoded by \fBjstrdecode(1)\fP which, along with \fIjstr_test2.out\fP, is used to to verify that encoding and decoding work.
+If the file exists and cannot be removed the script will exit with code 102.
+In the script this file is the variable \fBTEST_FILE\fP.
+When the script ends this file should be deleted but the script attempts to delete it, upon execution, in case it still exists or was created by some other process.
+.RE
+\fIjstr_test2.out\fP
+.RS
+This temporary file holds the output of an encoded JSON string (via \fBjstrencode(1)\fP) decoded by \fBjstrdecode(1)\fP which, along with \fIjstr_test.out\fP, is used to to verify that encoding and decoding work.
+If the file exists and cannot be removed the script will exit with code 103.
+In the script this file is the variable \fBTEST_FILE2\fP.
+When the script ends this file should be deleted but the script attempts to delete it, upon execution, in case it still exists or was created by some other process.
+.RE
+.SH NOTES
+The JSON parser \fBjparse\fP was co\-developed by Cody Boone Ferguson and Landon Curt Noll (one of the IOCCC Judges) in support for IOCCCMOCK, IOCCC28 and beyond.
+.SH BUGS
+If you have a problem with the tool (not JSON itself! :\-) ) you can report it at the GitHub issues page.
+It can be found at
+.br
+\fI\<https://github.com/ioccc\-src/mkiocccentry/issues\>\fP.
+.SH SEE ALSO
+\fBjparse(1)\fP, \fBjstrencode(1)\fP, \fBjstrdecode(1)\fP.

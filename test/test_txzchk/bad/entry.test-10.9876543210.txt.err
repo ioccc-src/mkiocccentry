@@ -1,0 +1,20 @@
+ERROR[6]: main: second '-' separated token length: 7 != 6: test/test_txzchk/bad/entry.test-10.9876543210.txt
+Warning: txzchk: test/test_txzchk/bad/entry.test-10.9876543210.txt: ./fnamchk test/test_txzchk/bad/entry.test-10.9876543210.txt failed with exit code: 6
+Warning: txzchk: test/test_txzchk/bad/entry.test-10.9876543210.txt: found non-numerical UID in file in line -rw-r--r--  0 chongo staff       4 Feb  6 02:40 test-10/extra1
+Warning: txzchk: test/test_txzchk/bad/entry.test-10.9876543210.txt: found non-numerical GID in file in line: -rw-r--r--  0 chongo staff       4 Feb  6 02:40 test-10/extra1
+Warning: txzchk: test/test_txzchk/bad/entry.test-10.9876543210.txt: found non-numerical UID in file in line -rw-r--r--  0 chongo staff    1231 Feb  6 02:40 test-10/.info.json
+Warning: txzchk: test/test_txzchk/bad/entry.test-10.9876543210.txt: found non-numerical GID in file in line: -rw-r--r--  0 chongo staff    1231 Feb  6 02:40 test-10/.info.json
+Warning: txzchk: test/test_txzchk/bad/entry.test-10.9876543210.txt: found non-numerical UID in file in line -rw-r--r--  0 chongo staff     358 Feb  6 02:40 test-10/remarks.md
+Warning: txzchk: test/test_txzchk/bad/entry.test-10.9876543210.txt: found non-numerical GID in file in line: -rw-r--r--  0 chongo staff     358 Feb  6 02:40 test-10/remarks.md
+Warning: txzchk: test/test_txzchk/bad/entry.test-10.9876543210.txt: found non-numerical UID in file in line -rw-r--r--  0 chongo staff     720 Feb  6 02:40 test-10/.auth.json
+Warning: txzchk: test/test_txzchk/bad/entry.test-10.9876543210.txt: found non-numerical GID in file in line: -rw-r--r--  0 chongo staff     720 Feb  6 02:40 test-10/.auth.json
+Warning: txzchk: test/test_txzchk/bad/entry.test-10.9876543210.txt: found non-numerical UID in file in line -rw-r--r--  0 chongo staff       0 Feb  6 02:40 test-10/prog.c
+Warning: txzchk: test/test_txzchk/bad/entry.test-10.9876543210.txt: found non-numerical GID in file in line: -rw-r--r--  0 chongo staff       0 Feb  6 02:40 test-10/prog.c
+Warning: txzchk: test/test_txzchk/bad/entry.test-10.9876543210.txt: found non-numerical UID in file in line -rw-r--r--  0 chongo staff       4 Feb  6 02:40 test-10/extra2
+Warning: txzchk: test/test_txzchk/bad/entry.test-10.9876543210.txt: found non-numerical GID in file in line: -rw-r--r--  0 chongo staff       4 Feb  6 02:40 test-10/extra2
+Warning: txzchk: test/test_txzchk/bad/entry.test-10.9876543210.txt: found non-numerical UID in file in line -rw-r--r--  0 chongo staff     896 Feb  6 02:40 test-10/Makefile
+Warning: txzchk: test/test_txzchk/bad/entry.test-10.9876543210.txt: found non-numerical GID in file in line: -rw-r--r--  0 chongo staff     896 Feb  6 02:40 test-10/Makefile
+Warning: txzchk: test/test_txzchk/bad/entry.test-10.9876543210.txt: found non-numerical UID in file in line drwxr-xr-x  0 chongo staff       0 Feb  6 02:40 test-10/
+Warning: txzchk: test/test_txzchk/bad/entry.test-10.9876543210.txt: found non-numerical GID in file in line: drwxr-xr-x  0 chongo staff       0 Feb  6 02:40 test-10/
+Warning: txzchk: test/test_txzchk/bad/entry.test-10.9876543210.txt: not all files in correct directory
+Warning: txzchk: test/test_txzchk/bad/entry.test-10.9876543210.txt: found 18 feathers stuck in the tarball

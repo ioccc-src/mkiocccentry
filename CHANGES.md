@@ -1,23 +1,56 @@
 # Major changes to the IOCCC entry toolkit
 
-## Release 0.7 2022-11-03
 
-Released IOCCC entry toolkit v0.7 2022-11-03
+## Release 0.7 2022-11-05
 
-`chkentry` is now code complete!
-Added test suite for `chkentry`. More test files will be added in time.
+Released IOCCC entry toolkit v0.7 2022-11-05
 
-Removed prefix in bison and flex code. The programmer's apology and warning are
-still in `sorry.tm.ca.h`.
+Changed BUG_REPORT_VERSION from "0.5 2022-11-03" to "0.6 2022-11-06".
+Changed FMT_DEPEND_VERSION from "1.0 2022-09-28" to "1.1 2022-11-05".
+Changed CHKENTRY_TEST_VERSION from "0.1 2022-10-11" to "0.2 2022-11-04".
+Changed IOCCC_TEST_VERSION from "0462202-04-23" (sic) to "0.5 2022-11=04".
+Changed TEST_IOCCCSIZE_VERSION from "1.1 2022-10-16" to ="1.2 2022-11-04".
+Changed JPARSE_TEST_VERSION from "0.3 2022-10-22" to "0.4 2022-11-04".
+Changed JSTR_TEST_VERSION from "0.4 2022-09-28" to "0.4 2022-11-05".
+Changed TXZCHK_TEST_VERSION from "0.4 2022-10-20" to "0.5 2022-11-04".
+
+The `chkentry(1)` tool is now code complete!  Added test suite for
+`chkentry` called test/chkentry_test.sh.  The `chkentry(1)` tool
+passes all tests.
+
+Removed prefix in bison and flex code. The programmer's apology and
+warning are still in `sorry.tm.ca.h`.
 
 A test suite for `txzchk` was added.
 
-Removed the `MAX_DIR_KSIZE` limit. There still is a maximum tarball size but now
-there also is a limit of the number of files in the tarball. `txzchk` and
-`mkiocccentry` were updated for this.
+Removed the `MAX_DIR_KSIZE` limit. There still is a maximum tarball
+size but now there also is a limit of the number of files in the
+tarball. `txzchk` and `mkiocccentry` were updated for this.
 
-There probably were other changes as well but we're one step closer to IOCCCMOCK
-with `chkentry` being complete!
+We're one step closer to being able to invite the public to
+review these tools.
+
+Created the test sub-directory.  Moved many test tools under the
+test sub-directory.  Moved log files under test.
+
+Created the man sub-directory.  Moved all man pages under the
+man sub-directory.  The html files are also build under man.
+
+Added the soup sub-directory.  Moved tools related to building semantic
+test tables for chkentry under the soup sub-directory.  Moved ref
+under soup.
+
+Added fmt_depend.sh under the soup sub-directory to format
+the make depend lines in a system independent way.
+
+Added -Z topdir flags to soup/fmt_depend.sh, test/ioccc_test.sh,
+test/jstr_test.sh, test/mkiocccentry_test.sh, and test/txzchk_test.sh.
+By default these tools cd to the top level directory where the
+mkiocccentry.c source file resides.  By use of -Z topdir, one can
+force the top level directory location.
+
+Experimenting with compiling code in sub-directories such as soup
+and test.
 
 
 ## Release 0.6 2022-09-02

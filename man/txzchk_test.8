@@ -1,0 +1,139 @@
+.\" section 8 man page for txzchk_test.sh
+.\"
+.\" This man page was first written by Cody Boone Ferguson for the IOCCC
+.\" in 2022.
+.\"
+.\" txzchk was written by Cody Boone Ferguson. The txzchk_test.sh was written
+.\" to test txzchk:
+.\"
+.\"	"Because sometimes people throw feathers on tar :\-( and because
+.\"	 sometimes people try hiding the fact they're planning on throwing
+.\"	 feathers on the tar." :\-)
+.\"
+.\" Dedicated to:
+.\"
+.\"	The many poor souls who have been tarred and feathered:
+.\"
+.\"	    "Because sometimes people throw feathers on tar :-(
+.\"
+.\"	And to my wonderful Mum and my dear cousin and friend Dani:
+.\"
+.\"	    "Because even feathery balls of tar need some love." :-)
+.\"
+.\" Humour impairment is not virtue nor is it a vice, it's just plain
+.\" wrong: almost as wrong as JSON spec mis-features and C++ obfuscation! :-)
+.\"
+.\" "Share and Enjoy!"
+.\"     --  Sirius Cybernetics Corporation Complaints Division, JSON spec department. :-)
+.\"
+.TH txzchk_test 8 "04 November 2022" "txzchk_test" "IOCCC tools"
+.SH NAME
+txzchk_test.sh \- test suite for \fBtxzchk(1)\fP
+.SH SYNOPSIS
+\fBtxzchk_test.sh\fP [\-h] [\-V] [\-v level] [\-t txzchk] [\-T tar] [\-F fnamchk] [\-d txzchk_tree] [\-Z topdir]
+.SH DESCRIPTION
+\fBtxzchk_test.sh\fP runs \fBtxzchk\fP in text file mode on pseudo\-tar listings to make sure that bad tarballs are flagged with issues and good tarballs are not.
+For the bad files it checks that the issues reported are the same as expected.
+The script enforces that bad files have an associated error file to compare with the errors reported by \fBtxzchk(1)\fP so that this can be done without a problem.
+If an error file is missing it is an error.
+Conversely if a good file has an error file it is also an error.
+.PP
+It also runs a simple test to determine if the system supports the required options for \fBtar(1)\fP.
+Specifically it must support \fB-J\fP and the \fBv7\fP format.
+Thus if a non-empty tarball can be created by \fBtar --format=v7 -cJf\fP all is good.
+.SH OPTIONS
+.TP
+\fB\-h\fP
+Show help and exit.
+.TP
+\fB\-V\fP
+Print version and exit.
+.TP
+\fB\-v \fIlevel\fP\fP
+Set verbosity level to \fIlevel\fP for the script.
+.TP
+\fB\-t \fItxzchk\fP\fP
+Set \fBtxzchk\fP path to \fItxzchk\fP.
+.TP
+\fB\-T \fItar\fP\fP
+Set \fBtar\fP path to \fItar\fP.
+.TP
+\fB\-F\fP \fIfnamchk\fP
+Set \fBfnamchk\fP path to \fIfnamchk\fP.
+\fBtxzchk\fP uses \fBfnamchk\fP to test if the tarball is validly named and if the files listed are in the correct directory.
+.TP
+\fB\-d\fP \fItxzchk_tree\fP
+Set path to the directory with the expected subdirectories \fIgood\fP and \fIbad\fP, each containing text files of good and bad pseudo\-tarballs, to \fItxzchk_tree\fP.
+As already noted, the \fIbad\fP subdirectory also has error files to compare against the output of \fBtxzchk(1)\fP, in order to make sure that the failure is the correct failure.
+.TP
+\fB\-Z\fP \fItopdir\fP
+Declare the top level directory of this repository.
+The \fBtopdir\fP directory must contain the source file \fImkiocccentry.c\fP.
+By default, the source file \fImkiocccentry.c\fP is searched for in the current directory,
+and then the parent of current directory.
+.sp 1
+If \fB\-Z\fP \fItopdir\fP is used on the command line, then the source file \fImkiocccentry.c\fP need not exist
+in the \fBtopdir\fP directory.
+If \fB\-Z\fP \fItopdir\fP is not used on the command line, and the source file \fImkiocccentry.c\fP
+is not found in the current directory not the parent of current directory,
+then this command exits as if there was a command line error.
+.sp 1
+Once the \fBtopdir\fP directory is established,
+this command moves to that directory.
+.SH EXIT STATUS
+.TP
+0
+all is well
+.TQ
+1
+at least one test failed
+.TQ
+2
+\-h and help string printed or \-V and version string printed
+.TQ
+3
+command line error
+.TQ
+>= 10
+internal error
+.SH FILES
+\fItest_txzchk\fP
+.RS
+Default directory of good and bad subdirectories each respectively with good and bad pseudo\-tarballs.
+.RE
+\fItxzchk_test.log\fP
+.RS
+The log file kept by \fBtxzchk_test.sh\fP.
+It will be removed prior to each time the script is run to keep the state of the file consistent with the run.
+.RE
+.SH NOTES
+.PP
+\fBtxzchk\fP was written by \fBCody Boone Ferguson\fP after discussion with \fBLandon Curt Noll\fP (one of the IOCCC Judges) in support of IOCCCMOCK, IOCCC28 and beyond.
+In order to test different tarballs and tar listing formats Cody added the text file mode early on to help in development.
+That fact coupled with the fact there is the need to test that the tool works properly is what inspired him to create this script.
+.PP
+When a new bad test file is added one has to update the error files. This can be accomplished by running:
+.nf
+.RS
+\fB
+    for i in ./test_txzchk/bad/*.txt; do ./txzchk \-q \-v 0 \-w \-T \-E txt "${i}" 2>"${i}".err; done\fP
+.RE
+.fi
+.PP
+which is also documented in the readme for this script.
+Please note that this will overwrite all of the error files so one has to be careful that the errors are actually correct: if one were to have an outdated version of \fBtxzchk(1)\fP or there's some other problem (for example, an unknown tar listing output that's not specifically being tested), for two examples, then one could inadvertently make the script think all is okay when it's not okay at all!
+.PP
+The script \fBioccc_test.sh\fP runs this script.
+.SH BUGS
+.PP
+The error files for the files under the bad subdirectory are not flexible in content because the script checks for an exact match between the output of \fBtxzchk(1)\fP and the error files.
+This is why the script will always pass to \fBtxzchk(1)\fP the options \fB\-w \-v 0 \-q\fP.
+As such the verbose option to the script really is only for the script.
+Perhaps error codes should be used instead but since \fBtxzchk(1)\fP is supposed to check all issues this would have to be done differently from the rest of the repo.
+Additionally if this was done it would make it necessary to have only one issue in each test file which is not a good idea as it's easier to miss feathered tarballs by the simple fact that one has to be sure to have enough test files (there are a lot of checks that \fBtxzchk(1)\fP performs!).
+.PP
+Perhaps there should be more tests done with the exit code of \fBtxzchk(1)\fP but the script is pretty thorough otherwise.
+It is hoped that this will make the script harder to break than it is to have feathers in tar but if you can break it please report an issue on the GitHub issues page.
+See \fBtxzchk(1)\fP for more details on this.
+.SH SEE ALSO
+\fBtxzchk(1)\fP, \fBtxzchk_test(8)\fP, \fBfnamchk(1)\fP.

@@ -1,0 +1,6 @@
+Warning: txzchk: test/test_txzchk/bad/entry.test-1.1663759978.txt: no .info.json found
+Warning: txzchk: test/test_txzchk/bad/entry.test-1.1663759978.txt: no .auth.json found
+Warning: txzchk: test/test_txzchk/bad/entry.test-1.1663759978.txt: no prog.c found
+Warning: txzchk: test/test_txzchk/bad/entry.test-1.1663759978.txt: no Makefile found
+Warning: txzchk: test/test_txzchk/bad/entry.test-1.1663759978.txt: no remarks.md found
+Warning: txzchk: test/test_txzchk/bad/entry.test-1.1663759978.txt: found 5 feathers stuck in the tarball
