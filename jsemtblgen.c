@@ -545,9 +545,9 @@ sem_cmp(void const *a, void const *b)
 
 
 /*
- * print_c_funct_name - print a string as a C function
+ * print_c_funct_name - print a string as a C function name
  *
- * Print str a valid C function.  Any character that is not
+ * Prints str as a valid C function name. Any character that is not
  * alphanumeric is printed as an underscore ("_") character.
  *
  * If the first character of str is a digit,
