@@ -1084,17 +1084,18 @@ tags: ${ALL_CSRC} ${H_FILES}
 	     ${GREP} -E -v 'Duplicate entry|Second entry ignored'
 
 depend: all soup/fmt_depend.sh
-	@LINE="`${GREP} -n '^### DO NOT CHANGE' Makefile | ${CUT} -d: -f1-1`";	\
-	if [ "$$LINE" = "" ]; then                                              \
-	    echo "Make depend aborted, tag not found in Makefile.";		\
-	    exit 1;								\
-	fi;                                                                     \
-	${MV} -f Makefile Makefile.orig;					\
-	${HEAD} -n "$$LINE" Makefile.orig > Makefile
-	@echo "Generating dependencies."
+	@echo
+	@echo "make depend starting"
+	@echo
+	@${SED} -I .orig -n -e '1,/^### DO NOT CHANGE MANUALLY BEYOND THIS LINE/p' Makefile
 	${CC} ${CFLAGS} -MM ${ALL_CSRC} | ./soup/fmt_depend.sh >> Makefile
-	@-if ${CMP} -s Makefile.orig Makefile; then rm -f Makefile.orig; fi
-	@echo "Make depend completed."
+	@-if ${CMP} -s Makefile.orig Makefile; then \
+	    ${RM} -f Makefile.orig; \
+	else \
+	    echo; echo "Makefile dependencies updated"; echo; echo "Previous version may be found in: Makefile.orig"; \
+	fi
+	@echo
+	@echo "make depend completed"
 
 
 ###############

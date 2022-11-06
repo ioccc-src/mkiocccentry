@@ -36,7 +36,7 @@
 
 # setup
 #
-export FMT_DEPEND_VERSION="1.1 2022-11-05"
+export FMT_DEPEND_VERSION="1.2 2022-11-05"
 
 export USAGE="usage: $0 [-h] [-V] [-v level]
 
@@ -76,53 +76,88 @@ while getopts :hVv: flag; do
     esac
 done
 
-# remove \'s
+# convert newlines tabs space and backslashes into a single space
 #
-tr -d '\\' |
+tr -s '\n\t \\' ' ' |
 
-# convert newlines into a single space
+# print a newline before make target (" foo:") in the line middle
+# print a newline before make target ("^foo:") at the start of a line
 #
-tr '\012' ' ' |
+sed -e 's/ \([^: ][^: ]*:\)/\n\1/g' \
+    -e 's/^\([^: ][^: ]*:\)/\n\1/g' |
 
-# convert multiple spaces into a single space AND
-# print each make target on a separate line
+# print a blank line before and after non-empty lines
 #
-sed -e 's/  */ /g' -e 's/ \([^: ][^: ]*:\)/\n\1/g' |
+sed -e 's/^\(..*\)$/\1\n/' |
 
-# print a blank line before each make target
-#
-sed -e 's/^\(.*\)$/\1\n/' |
-
-# treating each make target line a paragraph
-# (that is now separated by a blank line)
-# fold words at the 100 character line length
+# By now, each make target and their dependencies are in a single long line
+# that is surrounded by blank lines.  We use fmt to treat each
+# make dependency line as a paragraph and format that paragraph
+# (as whitespace delimited words) to a given width.
 #
 fmt -s -w 100 |
 
-# print a leading tab before the 2nd and later
-# lines of each paragraph
+# By now, make targets are word formatted paragraph of limited line length.
+# We indent the 2nd and subsequent lines of those paragraphs with a tab.
 #
 sed -e 's/^\([^:][^:]*\)$/\t\1/' |
 
+# By now, make dependencies are blank line separated with 2nd and subsequent
+# lines indented by a tab.
+#
 # print lines with a trailing \ unless they
 # are preceded by a blank line, remove blank lines
 #
-awk 'BEGIN { line=""; }
+awk '
+    # initialize line to empty
+    #
+    BEGIN {
+	line="";
+    }
+
+    # normal line processing
+    #
     {
+	# case: our current line is empty
 	if (length($0) == 0) {
+
+	    # case: line buffer is not empty
+	    #
 	    if (length(line) > 0) {
+
+		# print line buffer followed by newline
 		print line;
 	    }
+
+	    # clear the line buffer now that we printed it
 	    line="";
+
+       # case: our current line has text (not empty)
+       #
        } else {
+
+	   # case: line buffer is not empty
+	   #
 	   if (length(line) > 0) {
+
+	       # print the line buffer followed by a space, blackslash and newline
 	       print line " \\";
 	   }
+
+	   # store the current non-empty into the line buffer
 	   line = $0;
        }
     }
+
+    # on EOF / end of input
+    #
     END {
+
+	# case: line buffer is not empty
+	#
 	if (length(line) > 0) {
+
+	    # print line buffer followed by newline
 	    print line;
 	}
     }'
