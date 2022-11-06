@@ -794,6 +794,13 @@ json_number:
 
 /* Section 3: C code */
 
+static void
+location_print(YYLTYPE *loc)
+{
+    if (loc != NULL) {
+	fprintf(stderr, " at line %d on column %d: ", loc->first_line, loc->first_column);
+    }
+}
 
 /*
  * yyerror	- generate an error message for the scanner/parser
@@ -817,7 +824,6 @@ yyerror(YYLTYPE *yyltype, struct json **node, char const *format, ...)
      */
     va_start(ap, format);
 
-    UNUSED_ARG(yyltype);
 
     /*
      * generate an error message for the JSON parser and scanner
@@ -826,8 +832,11 @@ yyerror(YYLTYPE *yyltype, struct json **node, char const *format, ...)
     if (node != NULL && *node != NULL) {
 	fprint(stderr, " type: %s ", json_item_type_name(*node));
     }
+    if (yyltype != NULL) {
+	fprint(stderr, " at line %d on column %d: ", yyltype->first_line, yyltype->first_column);
+    }
     if (yytext != NULL && *yytext != '\0') {
-	fprint(stderr, " line: %d: %s\n", yylineno, yytext);
+	fprint(stderr, "%s\n", yytext);
     } else if (yytext == NULL) {
 	fprint(stderr, " line: %d: text == NULL\n", yylineno);
     } else {
