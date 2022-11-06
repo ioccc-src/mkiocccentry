@@ -205,34 +205,60 @@ JSON_COMMA		","
 
 
 /*
- * nul_scan - detect NUL bytes
+ * low_byte_scan - detect certain low byte values
  *
- * By NUL, we refer to a byte with the value of 0.
+ * A scan data for bytes in the class: [\x00-\x08\x0e-\x1f]
  *
  * A flex programmer's apology:
  *
  * Whenever a scanner matches a token, the text of the token is stored in
  * the NUL byte terminated string yytext.  The length in yyleng is the same
  * as the value that would be returned by the strlen(3) function.
- * Even though regular expressions can detect the presence of a NUL bytes
+ * Even though regular expressions can detect the presence of a NUL (\x00) bytes
  * in a block of data, error reporting and internal pointer advancement
- * appears to assume NUL terminated strings AND thus the state machine
+ * appears to assume NUL (\x00) terminated strings AND thus the state machine
  * can become "confused" when scanning a block of data with NUL bytes inside
  * instead of just terminating it.
  *
- * To avoid such problems, we pre-scan the block of data for NUL bytes
- * and report their presence if we find any NUL bytes in data.
+ * To avoid such problems, we pre-scan the block of data for NUL (\x00) bytes
+ * and report their presence if we find any NUL (\x00) bytes in data.
  *
- * We scan data for both NUL bytes.  When a NUL byte is detected, count
- * we increment the num_errors external variable.
+ * The so-called JSON spec does not allow byte values [\x00-\x1f] within
+ * JSON strings.  Attempts to modify JSON_STRING to exclude such byte values
+ * within a JSON string has not worked well, especially when it comes to
+ * printing error messages with strings that contain such bytes.
  *
- * We also keep track of newlines.  For the first MAX_NUL_REPORTED occurrences
- * of a NUL byte, we use the werr() function to issue an error reporting
- * both the line number a byte position of the NUL byte.  Once we reach a
- * total of MAX_NUL_REPORTED NUL bytes detected, we issue a "too many NUL"
- * style message and stop reporting further NUL byte error messages.
- * This is done in case we encounter a large block of NUL bytes so as to
- * not flood the system with lots of error messages.
+ * To make it easier for the scanner and error messages, we pre-scan data
+ * for bytes in the class: [\x00-\x08\x0e-\x1f].  Compared to [\x00-\x1f],
+ * this class allows the following subset of whitespace characters:
+ *
+ *	\x09	Horizontal Tab (\t)
+ *	\x0a	Line Feed (\n)
+ *	\x0b	Vertical Tab (\v)
+ *	\x0c	Form Feed (\f)
+ *	\x0d	Carriage Return (\r)
+ *
+ *	NOTE: Along with \x20 (space) this represents the ASCII whitespace set.
+ *	      We avoid scanning for \x20 (space) by limiting our upper exclusiuon
+ *	      range to \x1f.
+ *
+ * While this subset of whitespace characters are strictly not allowed in
+ * JSON strings, we won't scan for them because it might be reasonable for
+ * those characters to used outside elements of JSON syntax:
+ *
+ * We scan data for bytes in the class: [\x00-\x08\x0e-\x1f].  When such
+ * bytes are detected, we increment the external variable, num_errors.
+ *
+ * We also keep track of newlines.  Not to exclude them, but to make it easy
+ * for this routine to reference line number and byte position in the line.
+ *
+ * When a byte in the class: [\x00-\x08\x0e-\x1f] is detected we consider
+ * issuing a warning message that indicates the line number, byte position in the line,
+ * and byte value.  To avoid printing a huge flood of warning messages (say should
+ * a large block of NUL (\x00) and SOM (\x01) bytes are encountered), we
+ * limit the number of NUL (\x00) byte warnings to the first MAX_NUL_REPORTED, and
+ * limit the number of low ([\x01-\x08\x0e-\x1f]) byte warnings to the first MAX_LOW_REPORTED.
+ * Should we find more warnings that the limit, a one time "too many" warning is issues.
  *
  * We also return false if data == NULL or len <= 0.
  *
@@ -242,16 +268,18 @@ JSON_COMMA		","
  *	len	    - length of data in bytes
  *
  * return:
- *	true ==> data == NULL OR len <= 0 OR one or more NUL bytes found
- *	false ==> data != NULL AND len > 0 AND no NUL bytes found
+ *	true ==> data == NULL  OR  len <= 0 OR  one or more [\x00-\x08\x0e-\x1f] bytes are found
+ *	false ==> data != NULL AND len > 0  AND no NUL [\x00-\x08\x0e-\x1f] bytes were found
  */
 static bool
-nul_scan(char const *data, size_t len)
+low_byte_scan(char const *data, size_t len)
 {
     size_t linenum = 0;	    /* number of newline terminated lines we have processed */
-    size_t nul_count = 0;   /* number of NUL bytes detected */
+    size_t nul_count = 0;   /* number of NUL (\x00) bytes detected */
+    size_t low_count = 0;   /* number of low ([\x01-\x08\x0e-\x1f]) bytes detected */
     size_t byte_pos = 0;    /* byte position within the current line number */
-    bool report_limit = false;	/* true ==> we have reached the MAX_NUL_REPORTED limit */
+    bool nul_limit = false;	/* true ==> found too many NUL (\x00) bytes to report all */
+    bool low_limit = false;	/* true ==> found too many low ([\x01-\x08\x0e-\x1f]) bytes to report all */
     size_t i = 0;
 
     /*
@@ -289,24 +317,77 @@ nul_scan(char const *data, size_t len)
 
 	    /* count NUL byte */
 	    ++nul_count;
+	    ++num_errors;
 
 	    /*
-	     * case: below the report limit
+	     * case below the report limit
 	     */
 	    if (nul_count <= MAX_NUL_REPORTED) {
 		werr(32, __func__, "invalid NUL (0) byte detected in line: %zu byte position: %zu",
 			 linenum, byte_pos);
 
 	    /*
-	     * case: at or above the report limit
+	     * case at or above the report limit
 	     */
-	    } else if (report_limit == false) {
-		werr(33, __func__, "too many NUL (0) bytes detected: additional NUL byte reports disabled");
-		report_limit = true;	/* report reaching report limit only once */
+	    } else if (nul_limit == false) {
+		werr(33, __func__, "too many NUL (0) bytes detected: "
+			 "additional NUL byte reports disabled");
+		nul_limit = true;	/* report reaching report limit only once */
 	    }
 	    break;
 
-	case '\n':	/* newline */
+	/*
+	 * For grins, we document some of the historic byte meanings :-)
+	 */
+	case '\x01':	/* SOH - Start of Heading */
+	case '\x02':	/* EOA - Start of Text */
+	case '\x03':	/* EOM - End of Text */
+	case '\x04':	/* EOT - End of Transmission */
+	case '\x05':	/* ENQ - Enquiry */
+	case '\x06':	/* ACK - Acknowledgement */
+	case '\x07':	/* BEL - Bell */
+	case '\x08':	/* BS - Backspace */
+	case '\x0e':	/* SO - Shift Out */
+	case '\x0f':	/* SI - Shift In */
+	case '\x10':	/* DCO / DLE - Data Link Escape */
+	case '\x11':	/* DC1 / XON - Device Control 1 */
+	case '\x12':	/* DC2 - Device Control 2 */
+	case '\x13':	/* DC3 / XOFF - Device Control 3 */
+	case '\x14':	/* DC4 - Device Control 4 */
+	case '\x15':	/* ERR / NAK - Negative Acknowledgement */
+	case '\x16':	/* SYNC / SYN - Synchronous Idle */
+	case '\x17':	/* LEM / ETB - End of Transmission Block */
+	case '\x18':	/* S0 / CAN - Cancel */
+	case '\x19':	/* S1 / EM - End of Medium */
+	case '\x1a':	/* S2 / SS / SUB - Substitute */
+	case '\x1b':	/* S3 / ESC - Escape */
+	case '\x1c':	/* S4 / FS - File Separator */
+	case '\x1d':	/* S5 / GS - Group Separator */
+	case '\x1e':	/* S6 / RS - Record Separator */
+	case '\x1f':	/* S7 / US - Unit Separator */
+
+	    /* count low ([\x01-\x08\x0e-\x1f]) byte */
+	    ++low_count;
+	    ++num_errors;
+
+	    /*
+	     * case below the report limit
+	     */
+	    if (low_count <= MAX_LOW_REPORTED) {
+		werr(34, __func__, "invalid LOW byte 0x%02x detected in line: %zu byte position: %zu",
+			 data[i], linenum, byte_pos);
+
+	    /*
+	     * case at or above the report limit
+	     */
+	    } else if (low_limit == false) {
+		werr(35, __func__, "too many LOW bytes ([\x01-\x08\x0e-\x1f] detected: "
+		         "additional low byte reports disabled");
+		low_limit = true;	/* report reaching report limit only once */
+	    }
+	    break;
+
+	case '\n':	/* \x0a - LF - Line Feed / Newline */
 
 	    /* count newline */
 	    ++linenum;
@@ -321,7 +402,7 @@ nul_scan(char const *data, size_t len)
     /*
      * return the NUL detection status
      */
-    if (nul_count > 0) {
+    if (nul_count > 0 || low_count > 0) {
 	return true;
     }
     return false;
@@ -377,7 +458,7 @@ parse_json(char const *ptr, size_t len, bool *is_valid)
     if (ptr == NULL) {
 
 	/* this should never happen */
-	werr(34, __func__, "ptr is NULL");
+	werr(36, __func__, "ptr is NULL");
 	++num_errors;
 
 	/* if allowed, report invalid JSON */
@@ -401,7 +482,7 @@ parse_json(char const *ptr, size_t len, bool *is_valid)
 	 * perhaps it should call err() instead but for now we make it a
 	 * non-fatal error as well.
 	 */
-	werr(35, __func__, "unable to scan string");
+	werr(37, __func__, "unable to scan string");
 	++num_errors;
 
 	/* if allowed, report invalid JSON */
@@ -498,7 +579,7 @@ parse_json_stream(FILE *stream, bool *is_valid)
     struct json *node = NULL;		/* the JSON parse tree */
     char *data = NULL;			/* used to determine if there are NUL bytes in the file */
     size_t len = 0;			/* length of data read */
-    bool nul_detected = false;		/* true ==> a NUL byte was detected in data */
+    bool low_byte_detected = false;	/* true ==> byte values [\x00-\x08\x0e-\x1f] detected in data */
 
     /*
      * firewall
@@ -506,7 +587,7 @@ parse_json_stream(FILE *stream, bool *is_valid)
     if (stream == NULL) {
 
 	/* report NULL stream */
-	werr(36, __func__, "stream is NULL");
+	werr(38, __func__, "stream is NULL");
 	++num_errors;
 
 	/* if allowed, report invalid JSON */
@@ -521,7 +602,7 @@ parse_json_stream(FILE *stream, bool *is_valid)
     if (is_open_stream(stream) == false) {
 
 	/* report closed stream */
-	werr(37, __func__, "stream is not open");
+	werr(39, __func__, "stream is not open");
 	++num_errors;
 
 	/* if allowed, report invalid JSON */
@@ -546,7 +627,7 @@ parse_json_stream(FILE *stream, bool *is_valid)
     if (data == NULL) {
 
 	/* warn about read error */
-	werr(38, __func__, "could not read read stream");
+	werr(40, __func__, "could not read read stream");
 	++num_errors;
 	clearerr_or_fclose(yyin);
 
@@ -561,13 +642,13 @@ parse_json_stream(FILE *stream, bool *is_valid)
     }
 
     /*
-     * pre-scan data for NUL bytes
+     * pre-scan data for byte values from [\x00-\x08\x0e-\x1f]
      */
-    nul_detected = nul_scan(data, len);
-    if (nul_detected == true) {
+    low_byte_detected = low_byte_scan(data, len);
+    if (low_byte_detected == true) {
 
 	/* report invalid JSON */
-	werr(39, __func__, "invalid NUL (0) detected: data block is NOT valid JSON");
+	werr(41, __func__, "invalid NUL (0) detected: data block is NOT valid JSON");
 
 	/* clean up input stream */
 	clearerr_or_fclose(yyin);
@@ -649,7 +730,7 @@ parse_json_file(char const *filename, bool *is_valid)
     if (filename == NULL) {
 
 	/* this should actually never happen if called from jparse */
-	werr(40, __func__, "passed NULL filename");
+	werr(42, __func__, "passed NULL filename");
 	++num_errors;
 
 	/* if allowed, report invalid JSON */
@@ -664,7 +745,7 @@ parse_json_file(char const *filename, bool *is_valid)
     if (*filename == '\0') { /* strlen(filename) == 0 */
 
 	/* warn about bogus filename */
-	werr(41, __func__, "passed empty filename");
+	werr(43, __func__, "passed empty filename");
 	++num_errors;
 
 	/* if allowed, report invalid JSON */
@@ -684,7 +765,7 @@ parse_json_file(char const *filename, bool *is_valid)
 	yyin = stdin;
 
     /*
-     * case: will read from a file
+     * case will read from a file
      */
     } else {
 
@@ -693,7 +774,7 @@ parse_json_file(char const *filename, bool *is_valid)
 	 */
 	if (!exists(filename)) {
 	    /* report missing file */
-	    werr(42, __func__, "passed filename that's not actually a file: %s", filename);
+	    werr(44, __func__, "passed filename that's not actually a file: %s", filename);
 	    ++num_errors;
 
 	    /* if allowed, report invalid JSON */
@@ -708,7 +789,7 @@ parse_json_file(char const *filename, bool *is_valid)
 	}
 	if (!is_file(filename)) {
 	    /* report that file is not a normal file */
-	    werr(43, __func__, "passed filename not a normal file: %s", filename);
+	    werr(45, __func__, "passed filename not a normal file: %s", filename);
 	    ++num_errors;
 
 	    /* if allowed, report invalid JSON */
@@ -723,7 +804,7 @@ parse_json_file(char const *filename, bool *is_valid)
 	if (!is_read(filename)) {
 
 	    /* report unreadable file */
-	    werr(44, __func__, "passed filename not a readable file: %s", filename);
+	    werr(46, __func__, "passed filename not a readable file: %s", filename);
 	    ++num_errors;
 
 	    /* if allowed, report invalid JSON */
@@ -744,7 +825,7 @@ parse_json_file(char const *filename, bool *is_valid)
 	if (yyin == NULL) {
 
 	    /* warn about file open error */
-	    werrp(45, __func__, "couldn't open file %s, ignoring", filename);
+	    werrp(47, __func__, "couldn't open file %s, ignoring", filename);
 	    ++num_errors;
 
 	    /* if allowed, report invalid JSON */
