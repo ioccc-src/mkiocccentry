@@ -21,52 +21,57 @@ export MAN_SECTION="1"
 export M_FLAG=""
 export MAN_FLAG=""
 export MAN_PAGE=""
-export RUN_USAGE_VERSION="0.2 2022-09-06"
-export USAGE="usage: $0 [-h] [-V] [-m section] [-M man file] tool
+export MAN_DIR="./man"
+export RUN_USAGE_VERSION="0.2 2022-11-06"
+export USAGE="usage: $0 [-h] [-V] [-m section] [-M man_file] [-D man_dir] tool
 
     -h		    print help and exit
     -V		    print version and exit
     -m section	    man page section (def: $MAN_SECTION)
     -M man file	    man page (including extension)
+    -D man_dir	    directory that man pages are to be found in
     --		    end of $0 flags
     tool	    one of the IOCCC tools to run with -h option
 
 Exit codes:
      0	 all okay
-     1	 help string printed
+     1	 help or version string printed
      2	 tool missing or command missing
      3	 man page missing
      4	 command line usage error
      5	 missing or inconsistent synopsis
      6	 tool does not have usage string
+     7	 man directory does not exist or is not a readable directory
  >= 10   internal error
 
 $0 version: $RUN_USAGE_VERSION"
 
 # parse args
 #
-while getopts :hVm:M: flag; do
+while getopts :hVm:M:D: flag; do
     case "$flag" in
-    h) echo "$USAGE" 1>&2
-       exit 1
-       ;;
-    V) echo "$RUN_USAGE_VERSION" 1>&2
-       exit 1
-       ;;
-    m) M_FLAG="-m"
-       MAN_SECTION="$OPTARG";
-       ;;
-    M) MAN_FLAG="-M"
-       MAN_PAGE="$OPTARG";
-       ;;
+    h)	echo "$USAGE" 1>&2
+	exit 1
+	;;
+    V)	echo "$RUN_USAGE_VERSION" 1>&2
+	exit 1
+	;;
+    m)	M_FLAG="-m"
+	MAN_SECTION="$OPTARG";
+	;;
+    M)	MAN_FLAG="-M"
+	MAN_PAGE="$OPTARG";
+	;;
+    D)	MAN_DIR="$OPTARG";
+	;;
     \?) echo "$0: ERROR: invalid option: -$OPTARG" 1>&2
-       exit 4
-       ;;
-    :) echo "$0: ERROR: option -$OPTARG requires an argument" 1>&2
-       exit 4
-       ;;
-   *)
-       ;;
+	exit 4
+	;;
+    :)	echo "$0: ERROR: option -$OPTARG requires an argument" 1>&2
+	exit 4
+	;;
+    *)
+	;;
     esac
 done
 
@@ -99,6 +104,22 @@ if [[ ! -x "$1" ]]; then
     echo "$0: ERROR: tool not executable: $1" 1>&2
     exit 2
 fi
+
+# verify man directory exists
+if [[ ! -e "$MAN_DIR" ]]; then
+    echo "$0: ERROR: missing man directory: $MAN_DIR" 1>&2
+    exit 7
+fi
+if [[ ! -d "$MAN_DIR" ]]; then
+    echo "$0: ERROR: man directory path not a directory: $MAN_DIR" 1>&2
+    exit 7
+fi
+if [[ ! -r "$MAN_DIR" ]]; then
+    echo "$0: ERROR: man directory not readable: $MAN_DIR" 1>&2
+    exit 7
+fi
+
+
 
 # we also have to verify that the commands we need exist
 
@@ -204,7 +225,7 @@ USAGE_RE="$(echo "$USAGE_FMT"|$SED -e 's/\\/\\\\/g' -e 's/\[/\\[/g' -e 's/\]/\\]
 
 # check for man page
 if [[ -z "$MAN_FLAG" && -z "$MAN_PAGE" ]]; then
-    MAN_PAGE="$1.$MAN_SECTION"
+    MAN_PAGE="$MAN_DIR/$1.$MAN_SECTION"
 fi
 
 if [[ ! -e "$MAN_PAGE" ]]; then
