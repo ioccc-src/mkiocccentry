@@ -2469,11 +2469,11 @@ yyerror(YYLTYPE *yyltype, struct json **node, char const *format, ...)
 	fprint(stderr, " at line %d on column %d: ", yyltype->first_line, yyltype->first_column);
     }
     if (yytext != NULL && *yytext != '\0') {
-	fprint(stderr, ":%s\n", yytext);
+	fprint(stderr, "%s\n", yytext);
     } else if (yytext == NULL) {
-	fprint(stderr, " line: %d: text == NULL\n", yylineno);
+	fprstr(stderr, "text == NULL\n");
     } else {
-	fprint(stderr, " line: %d: empty text\n", yylineno);
+	fprstr(stderr, "empty text\n");
     }
 
     /*
