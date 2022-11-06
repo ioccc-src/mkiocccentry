@@ -463,7 +463,7 @@ vupdate_tbl(struct json *node, unsigned int depth, va_list ap)
  *
  * Produce a semantic table that is in some canonical order.
  *
- * NOTE: Since the table is not vert large, we do not need to
+ * NOTE: Since the table is not very large, we do not need to
  *	 optimize lookups in this table.  It is better to reverse
  *	 sort by depth for human understanding.  This will help
  *	 put the more common nodes early in the table.
