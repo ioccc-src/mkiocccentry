@@ -14,8 +14,8 @@
 #
 # Permission to use, copy, modify, and distribute this software and its
 # documentation for any purpose and without fee is hereby granted, provided that
-# the above copyright, this permission notice and text this comment, and the
-# disclaimer below appear in all of the following:
+# the above copyright, this permission notice, this comment, and the disclaimer
+# below appear in all of the following:
 #
 #       supporting documentation
 #       source copies
@@ -78,7 +78,7 @@ done
 
 # convert newlines tabs space and backslashes into a single space
 #
-tr -s "\n\t \\" " " |
+tr -s "\n\t \\\\" " " |
 
 # print a newline before make target (" foo:") in the line middle
 # print a newline before make target ("^foo:") at the start of a line
@@ -140,7 +140,7 @@ awk '
 	   #
 	   if (length(line) > 0) {
 
-	       # print the line buffer followed by a space, blackslash and newline
+	       # print the line buffer followed by a space, backslash and newline
 	       print line " \\";
 	   }
 
