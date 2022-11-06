@@ -78,7 +78,7 @@ done
 
 # convert newlines tabs space and backslashes into a single space
 #
-tr -s '\n\t \\' ' ' |
+tr -s "\n\t \\" " " |
 
 # print a newline before make target (" foo:") in the line middle
 # print a newline before make target ("^foo:") at the start of a line
