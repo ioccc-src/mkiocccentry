@@ -1087,7 +1087,7 @@ depend: all soup/fmt_depend.sh
 	@echo
 	@echo "make depend starting"
 	@echo
-	@${SED} -I .orig -n -e '1,/^### DO NOT CHANGE MANUALLY BEYOND THIS LINE/p' Makefile
+	@${SED} -i.orig -n -e '1,/^### DO NOT CHANGE MANUALLY BEYOND THIS LINE/p' Makefile
 	${CC} ${CFLAGS} -MM ${ALL_CSRC} | ./soup/fmt_depend.sh >> Makefile
 	@-if ${CMP} -s Makefile.orig Makefile; then \
 	    ${RM} -f Makefile.orig; \
