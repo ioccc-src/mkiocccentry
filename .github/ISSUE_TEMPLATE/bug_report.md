@@ -55,9 +55,10 @@ We request that you **PLEASE** run the command:
 ./bug_report.sh
 ```
 
-Please attach the bug report file that `./bug_report.sh` generated.
+and attach the bug report file that `./bug_report.sh` generated.
 The bug report file will be a filename in the same directory with a
-filename of the form: `bug-report.YYYYMMDD.HHMMSS.txt`
+filename of the form: `bug-report.YYYYMMDD.HHMMSS.txt` and it will tell you the
+name as well.
 
 vvvvvvvvvvvvvvvvvvvvvvvvv --- Drag the file into the area below, please!
 
