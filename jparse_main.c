@@ -110,7 +110,8 @@ main(int argc, char **argv)
 
 	/* parse arg as a json filename */
 	dbg(DBG_HIGH, "Calling parse_json_file(\"%s\", &valid_json):", argv[argc-1]);
-	tree = parse_json_file(argv[argc-1], &valid_json);
+	filename = argv[argc-1];
+	tree = parse_json_file(filename, &valid_json);
     }
 
     /*

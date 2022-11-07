@@ -53,6 +53,7 @@
 
 
 unsigned num_errors = 0;		/* > 0 number of errors encountered */
+char const *filename = NULL;		/* if != NULL this is the filename we're parsing */
 
 /*
  * bison debug information for development
@@ -61,6 +62,39 @@ int yydebug = 0;	/* 0 ==> verbose bison debug off, 1 ==> verbose bison debug on 
 
 %}
 
+%code requires {
+    #if !defined(YYLTYPE_IS_DECLARED)
+    struct YYLTYPE
+    {
+	int first_line;
+	int first_column;
+	int last_line;
+	int last_column;
+	char const *filename;
+    };
+    typedef struct YYLTYPE YYLTYPE;
+    #define YYLTYPE_IS_DECLARED 1
+    #define YYLLOC_DEFAULT(Current, Rhs, N)                             \
+    do                                                                  \
+      if (N)                                                            \
+        {                                                               \
+          (Current).first_line   = YYRHSLOC (Rhs, 1).first_line;        \
+          (Current).first_column = YYRHSLOC (Rhs, 1).first_column;      \
+          (Current).last_line    = YYRHSLOC (Rhs, N).last_line;         \
+          (Current).last_column  = YYRHSLOC (Rhs, N).last_column;       \
+	  (Current).filename     = YYRHSLOC (Rhs, 1).filename;		\
+        }                                                               \
+      else                                                              \
+        { /* empty RHS */                                               \
+          (Current).first_line   = (Current).last_line   =              \
+            YYRHSLOC (Rhs, 0).last_line;                                \
+          (Current).first_column = (Current).last_column =              \
+            YYRHSLOC (Rhs, 0).last_column;                              \
+	  (Current).filename = NULL;					\
+        }                                                               \
+    while (0)
+    #endif
+}
 
 /*
  * Terminal symbols (token kind)
@@ -794,13 +828,6 @@ json_number:
 
 /* Section 3: C code */
 
-static void
-location_print(YYLTYPE *loc)
-{
-    if (loc != NULL) {
-	fprintf(stderr, " at line %d on column %d: ", loc->first_line, loc->first_column);
-    }
-}
 
 /*
  * yyerror	- generate an error message for the scanner/parser
@@ -830,13 +857,16 @@ yyerror(YYLTYPE *yyltype, struct json **node, char const *format, ...)
      */
     vfpr(stderr, __func__, format, ap);
     if (node != NULL && *node != NULL) {
-	fprint(stderr, " type: %s ", json_item_type_name(*node));
+	fprint(stderr, " node type %s", json_item_type_name(*node));
     }
     if (yyltype != NULL) {
-	fprint(stderr, " at line %d on column %d: ", yyltype->first_line, yyltype->first_column);
+	    if (yyltype->filename != NULL) {
+		fprint(stderr, " in file %s", yyltype->filename);
+	    }
+	    fprint(stderr, " at line %d column %d: ", yyltype->first_line, yyltype->first_column);
     }
     if (yytext != NULL && *yytext != '\0') {
-	fprint(stderr, "%s\n", yytext);
+	fprint(stderr, "<%s>\n", yytext);
     } else if (yytext == NULL) {
 	fprstr(stderr, "text == NULL\n");
     } else {

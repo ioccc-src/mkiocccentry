@@ -9,7 +9,7 @@
 .\" "Share and Enjoy!"
 .\"     --  Sirius Cybernetics Corporation Complaints Division, JSON spec department. :-)
 .\"
-.TH jparse 1 "06 November 2022" "jparse" "IOCCC tools"
+.TH jparse 1 "07 November 2022" "jparse" "IOCCC tools"
 .SH NAME
 jparse \- IOCCC JSON parser
 .SH SYNOPSIS
@@ -55,7 +55,6 @@ This is because it's incredibly long with a lot of OT things and would take even
 .PP
 Although error reporting does have locations it is only line numbers and columns.
 Additionally the column can be misleading because of characters that take up more than one column but are counted as just one (tabs for example).
-File names are not shown yet and it's undecided whether this will be added.
 .PP
 It's not fully re-entrant and we've not decided if we will make it re-entrant.
 That's to be determined at a later date.
@@ -84,7 +83,7 @@ Parse input from \fBstdin\fP (send \fBEOF\fP, usually ctrl\-d or \fB^D\fP, to pa
 Parse just a negative number:
 .RS
 \fB
- ./jparse \-s \-5\fP
+ ./jparse \-s \-\- \-5\fP
 .fi
 .RE
 .PP

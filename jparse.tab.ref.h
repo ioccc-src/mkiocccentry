@@ -95,6 +95,42 @@
 #if YYDEBUG
 extern int yydebug;
 #endif
+/* "%code requires" blocks.  */
+#line 65 "jparse.y"
+
+    #if !defined(YYLTYPE_IS_DECLARED)
+    struct YYLTYPE
+    {
+	int first_line;
+	int first_column;
+	int last_line;
+	int last_column;
+	char const *filename;
+    };
+    typedef struct YYLTYPE YYLTYPE;
+    #define YYLTYPE_IS_DECLARED 1
+    #define YYLLOC_DEFAULT(Current, Rhs, N)                             \
+    do                                                                  \
+      if (N)                                                            \
+        {                                                               \
+          (Current).first_line   = YYRHSLOC (Rhs, 1).first_line;        \
+          (Current).first_column = YYRHSLOC (Rhs, 1).first_column;      \
+          (Current).last_line    = YYRHSLOC (Rhs, N).last_line;         \
+          (Current).last_column  = YYRHSLOC (Rhs, N).last_column;       \
+	  (Current).filename     = YYRHSLOC (Rhs, 1).filename;		\
+        }                                                               \
+      else                                                              \
+        { /* empty RHS */                                               \
+          (Current).first_line   = (Current).last_line   =              \
+            YYRHSLOC (Rhs, 0).last_line;                                \
+          (Current).first_column = (Current).last_column =              \
+            YYRHSLOC (Rhs, 0).last_column;                              \
+	  (Current).filename = NULL;					\
+        }                                                               \
+    while (0)
+    #endif
+
+#line 83 "jparse.tab.h"
 
 /* Token kinds.  */
 #ifndef YYTOKENTYPE
