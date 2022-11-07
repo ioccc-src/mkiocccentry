@@ -45,12 +45,10 @@
 YY_BUFFER_STATE bs;
 
 /*
- * XXX - FIXME - handle locations - FIXME - XXX
- *
- * This is just a placeholder for now and is subject to change.
+ * locations in the file / json block
  */
 int yycolumn = 1;
-#define YY_USER_ACTION yylloc->first_line = yylloc->last_line = yylineno; \
+#define YY_USER_ACTION yylloc->filename = filename; yylloc->first_line = yylloc->last_line = yylineno; \
     yylloc->first_column = yycolumn; yylloc->last_column = yycolumn+yyleng-1; \
     yycolumn += yyleng;
 %}
@@ -75,8 +73,14 @@ JSON_NL			\n+
  * NOTE: On the subject of JSON_STRING one might ask the question about the
  * tighter restrictions on JSON strings and why we don't even consider them.
  * This is a good question but the answer is simple: the JSON string conversion
- * routines actually do these checks. This simplifies the parser regex and so we
- * don't have to worry about complicating the parser unnecessarily.
+ * routines actually do these checks. This simplifies the lexer regex and so we
+ * don't have to worry about complicating the lexer or parser unnecessarily.
+ *
+ * We do exclude specific lower bytes but we also pre-scan for these same bytes
+ * and if they're there and unescaped we warn about it. The reason to still
+ * exclude them is because this way they are not passed to the parser. This
+ * might not be necessary because if we find invalid bytes it is an error and
+ * the parser will never find them but this is more defensive.
  */
 JSON_STRING		\"([^"\x01-\x1f]|\\\")*\"
 JSON_INTEGER		-?([1-9][0-9]*|0)
@@ -734,8 +738,8 @@ parse_json_stream(FILE *stream, bool *is_valid)
  *	pointer to a JSON parse tree
  *
  * If filename is NULL or the filename is not a readable file (or is empty) or
- * if read_all() read_all() fails,
- * then this function warns and sets *is_valid (if is_valid != NULL) to false.
+ * if read_all() read_all() fails, then this function warns and sets *is_valid
+ * (if is_valid != NULL) to false.
  *
  * NOTE: The reason this is in the scanner and not the parser is because
  *	 YY_BUFFER_STATE is part of the scanner and not the parser and that's required

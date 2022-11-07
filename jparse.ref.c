@@ -619,15 +619,13 @@ char *yytext;
 YY_BUFFER_STATE bs;
 
 /*
- * XXX - FIXME - handle locations - FIXME - XXX
- *
- * This is just a placeholder for now and is subject to change.
+ * locations in the file / json block
  */
 int yycolumn = 1;
-#define YY_USER_ACTION yylloc->first_line = yylloc->last_line = yylineno; \
+#define YY_USER_ACTION yylloc->filename = filename; yylloc->first_line = yylloc->last_line = yylineno; \
     yylloc->first_column = yycolumn; yylloc->last_column = yycolumn+yyleng-1; \
     yycolumn += yyleng;
-#line 579 "jparse.c"
+#line 577 "jparse.c"
 /*
  * Section 2: Patterns (regular expressions) and actions.
  */
@@ -645,11 +643,17 @@ int yycolumn = 1;
  * NOTE: On the subject of JSON_STRING one might ask the question about the
  * tighter restrictions on JSON strings and why we don't even consider them.
  * This is a good question but the answer is simple: the JSON string conversion
- * routines actually do these checks. This simplifies the parser regex and so we
- * don't have to worry about complicating the parser unnecessarily.
+ * routines actually do these checks. This simplifies the lexer regex and so we
+ * don't have to worry about complicating the lexer or parser unnecessarily.
+ *
+ * We do exclude specific lower bytes but we also pre-scan for these same bytes
+ * and if they're there and unescaped we warn about it. The reason to still
+ * exclude them is because this way they are not passed to the parser. This
+ * might not be necessary because if we find invalid bytes it is an error and
+ * the parser will never find them but this is more defensive.
  */
 /* Actions. */
-#line 601 "jparse.c"
+#line 605 "jparse.c"
 
 #define INITIAL 0
 
@@ -884,9 +888,9 @@ YY_DECL
 		}
 
 	{
-#line 97 "jparse.l"
+#line 101 "jparse.l"
 
-#line 838 "jparse.c"
+#line 842 "jparse.c"
 
 	while ( /*CONSTCOND*/1 )		/* loops until end-of-file is reached */
 		{
@@ -955,7 +959,7 @@ do_action:	/* This label is used only to access EOF actions. */
 
 case 1:
 YY_RULE_SETUP
-#line 98 "jparse.l"
+#line 102 "jparse.l"
 {
 			    /*
 			     * Whitespace excluding newlines
@@ -974,14 +978,14 @@ YY_RULE_SETUP
 case 2:
 /* rule 2 can match eol */
 YY_RULE_SETUP
-#line 113 "jparse.l"
+#line 117 "jparse.l"
 {
 			    yycolumn = 1;
 			}
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 117 "jparse.l"
+#line 121 "jparse.l"
 {
 			    /* string */
 			    return JSON_STRING;
@@ -989,7 +993,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 122 "jparse.l"
+#line 126 "jparse.l"
 {
 			    /* number */
 			    return JSON_NUMBER;
@@ -997,7 +1001,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 127 "jparse.l"
+#line 131 "jparse.l"
 {
 			    /* null object */
 			    return JSON_NULL;
@@ -1005,7 +1009,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 132 "jparse.l"
+#line 136 "jparse.l"
 {
 			    /* boolean: true */
 			    return JSON_TRUE;
@@ -1013,7 +1017,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 136 "jparse.l"
+#line 140 "jparse.l"
 {
 			    /* boolean: false */
 			    return JSON_FALSE;
@@ -1021,7 +1025,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 141 "jparse.l"
+#line 145 "jparse.l"
 {
 			    /* start of object */
 			    return JSON_OPEN_BRACE;
@@ -1029,7 +1033,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 145 "jparse.l"
+#line 149 "jparse.l"
 {
 			    /* end of object */
 			    return JSON_CLOSE_BRACE;
@@ -1037,7 +1041,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
-#line 150 "jparse.l"
+#line 154 "jparse.l"
 {
 			    /* start of array */
 			    return JSON_OPEN_BRACKET;
@@ -1045,7 +1049,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
-#line 154 "jparse.l"
+#line 158 "jparse.l"
 {
 			    /* end of array */
 			    return JSON_CLOSE_BRACKET;
@@ -1053,7 +1057,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
-#line 159 "jparse.l"
+#line 163 "jparse.l"
 {
 			    /* colon or 'equals' */
 			    return JSON_COLON;
@@ -1061,7 +1065,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
-#line 164 "jparse.l"
+#line 168 "jparse.l"
 {
 			    /* comma: name/value pair separator */
 			    return JSON_COMMA;
@@ -1069,7 +1073,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
-#line 169 "jparse.l"
+#line 173 "jparse.l"
 {
 			    /* invalid token: any other character */
 			    warn(__func__, "at line %d column %d: invalid token: 0x%02x = <%c>", yylloc->first_line, yylloc->first_column, *yytext, *yytext);
@@ -1105,10 +1109,10 @@ YY_RULE_SETUP
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
-#line 202 "jparse.l"
+#line 206 "jparse.l"
 YY_FATAL_ERROR( "flex scanner jammed" );
 	YY_BREAK
-#line 1060 "jparse.c"
+#line 1064 "jparse.c"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 
@@ -2125,7 +2129,7 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 202 "jparse.l"
+#line 206 "jparse.l"
 
 
 /* Section 3: Code that's copied to the generated scanner */
@@ -2661,8 +2665,8 @@ parse_json_stream(FILE *stream, bool *is_valid)
  *	pointer to a JSON parse tree
  *
  * If filename is NULL or the filename is not a readable file (or is empty) or
- * if read_all() read_all() fails,
- * then this function warns and sets *is_valid (if is_valid != NULL) to false.
+ * if read_all() read_all() fails, then this function warns and sets *is_valid
+ * (if is_valid != NULL) to false.
  *
  * NOTE: The reason this is in the scanner and not the parser is because
  *	 YY_BUFFER_STATE is part of the scanner and not the parser and that's required

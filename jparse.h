@@ -67,6 +67,7 @@
  */
 extern unsigned num_errors;		/* > 0 number of errors encountered */
 extern char const *json_parser_version;	/* official JSON parser version */
+extern char const *filename;		/* if != NULL this is the filename we're parsing */
 /* lexer and parser specific variables */
 extern int yylineno;			/* line number in lexer */
 extern char *yytext;			/* current text */
