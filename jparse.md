@@ -9,7 +9,7 @@ Contest_), originally in the
 # Synopsis
 
 ```sh
-./jparse [-h] [-v level] [-J level] [-q] [-V] [-s] arg
+./jparse [-h] [-v level] [-J level] [-q] [-V] [-s] -- arg
 ```
 
 The `-v` option increases the overall verbosity level whereas the `-J` option
@@ -40,9 +40,6 @@ code! This is because the generated code is likely to give you nightmares and
 cause other horrible symptoms.
 
 # Bugs
-
-Better error reporting and various other things need to be added.  For
-example showing the file name and line number have to be added.
 
 It's not yet fully re-entrant. This might or might not be done later on. See
 below for the implications.
@@ -80,7 +77,7 @@ Parse input from stdin (send EOF, usually ctrl-d or ^D, to parse):
 Parse just a negative number:
 
 ```sh
-./jparse -s -5
+./jparse -s -- -5
 ```
 
 Parse .info.json file:
