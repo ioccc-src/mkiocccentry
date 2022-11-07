@@ -523,7 +523,7 @@ sem_cmp(void const *a, void const *b)
      */
     if (first->name != NULL) {
 	if (second->name != NULL) {
-	    cmp = memcmp(first->name, second->name, first->name_len);
+	    cmp = strcmp(first->name, second->name);
 	    if (cmp > 0) {
 		return 1;	/* first > second */
 	    } else if (cmp < 0) {
