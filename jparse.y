@@ -63,15 +63,16 @@ int yydebug = 0;	/* 0 ==> verbose bison debug off, 1 ==> verbose bison debug on 
 %}
 
 %code requires {
-    #define YYLTYPE YYLTYPE
-    typedef struct YYLTYPE
+    #if !defined(YYLTYPE_IS_DECLARED)
+    struct YYLTYPE
     {
 	int first_line;
 	int first_column;
 	int last_line;
 	int last_column;
 	char const *filename;
-    } YYLTYPE;
+    };
+    typedef struct YYLTYPE YYLTYPE;
     #define YYLTYPE_IS_DECLARED 1
     #define YYLLOC_DEFAULT(Current, Rhs, N)                             \
     do                                                                  \
@@ -92,7 +93,7 @@ int yydebug = 0;	/* 0 ==> verbose bison debug off, 1 ==> verbose bison debug on 
 	  (Current).filename = NULL;					\
         }                                                               \
     while (0)
-
+    #endif
 }
 
 /*

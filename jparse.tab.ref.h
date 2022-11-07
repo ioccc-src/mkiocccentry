@@ -98,15 +98,16 @@ extern int yydebug;
 /* "%code requires" blocks.  */
 #line 65 "jparse.y"
 
-    #define YYLTYPE YYLTYPE
-    typedef struct YYLTYPE
+    #if !defined(YYLTYPE_IS_DECLARED)
+    struct YYLTYPE
     {
 	int first_line;
 	int first_column;
 	int last_line;
 	int last_column;
 	char const *filename;
-    } YYLTYPE;
+    };
+    typedef struct YYLTYPE YYLTYPE;
     #define YYLTYPE_IS_DECLARED 1
     #define YYLLOC_DEFAULT(Current, Rhs, N)                             \
     do                                                                  \
@@ -127,9 +128,9 @@ extern int yydebug;
 	  (Current).filename = NULL;					\
         }                                                               \
     while (0)
+    #endif
 
-
-#line 82 "jparse.tab.h"
+#line 83 "jparse.tab.h"
 
 /* Token kinds.  */
 #ifndef YYTOKENTYPE

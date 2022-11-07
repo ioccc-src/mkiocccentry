@@ -731,13 +731,13 @@ parse_json_stream(FILE *stream, bool *is_valid)
  * parse_json_file	    - parses file file
  *
  * given:
- *	filename    - filename to parse
+ *	name	    - filename of file to parse
  *	is_valid    - != NULL ==> set to true or false depending on json validity
  *
  * return:
  *	pointer to a JSON parse tree
  *
- * If filename is NULL or the filename is not a readable file (or is empty) or
+ * If name is NULL or the name is not a readable file (or is empty) or
  * if read_all() read_all() fails, then this function warns and sets *is_valid
  * (if is_valid != NULL) to false.
  *
@@ -751,17 +751,17 @@ parse_json_stream(FILE *stream, bool *is_valid)
  *	 this information is requested).
  */
 struct json *
-parse_json_file(char const *filename, bool *is_valid)
+parse_json_file(char const *name, bool *is_valid)
 {
     struct json *node = NULL;		/* the JSON parse tree */
 
     /*
      * firewall
      */
-    if (filename == NULL) {
+    if (name == NULL) {
 
 	/* this should actually never happen if called from jparse */
-	werr(46, __func__, "passed NULL filename");
+	werr(46, __func__, "passed NULL name");
 	++num_errors;
 
 	/* if allowed, report invalid JSON */
@@ -773,9 +773,9 @@ parse_json_file(char const *filename, bool *is_valid)
 	node = json_alloc(JTYPE_UNSET);
 	return node;
     }
-    if (*filename == '\0') { /* strlen(filename) == 0 */
+    if (*name == '\0') { /* strlen(name) == 0 */
 
-	/* warn about bogus filename */
+	/* warn about bogus name */
 	werr(47, __func__, "passed empty filename");
 	++num_errors;
 
@@ -792,7 +792,7 @@ parse_json_file(char const *filename, bool *is_valid)
     /*
      * if file is -, then we will parse stdin
      */
-    if (strcmp(filename, "-") == 0) {
+    if (strcmp(name, "-") == 0) {
 	yyin = stdin;
 
     /*
@@ -801,11 +801,11 @@ parse_json_file(char const *filename, bool *is_valid)
     } else {
 
 	/*
-	 * validate filename
+	 * validate name
 	 */
-	if (!exists(filename)) {
+	if (!exists(name)) {
 	    /* report missing file */
-	    werr(48, __func__, "passed filename that's not actually a file: %s", filename);
+	    werr(48, __func__, "passed filename that's not actually a file: %s", name);
 	    ++num_errors;
 
 	    /* if allowed, report invalid JSON */
@@ -818,9 +818,9 @@ parse_json_file(char const *filename, bool *is_valid)
 	    return node;
 
 	}
-	if (!is_file(filename)) {
+	if (!is_file(name)) {
 	    /* report that file is not a normal file */
-	    werr(49, __func__, "passed filename not a normal file: %s", filename);
+	    werr(49, __func__, "passed filename not a normal file: %s", name);
 	    ++num_errors;
 
 	    /* if allowed, report invalid JSON */
@@ -832,10 +832,10 @@ parse_json_file(char const *filename, bool *is_valid)
 	    node = json_alloc(JTYPE_UNSET);
 	    return node;
 	}
-	if (!is_read(filename)) {
+	if (!is_read(name)) {
 
 	    /* report unreadable file */
-	    werr(50, __func__, "passed filename not a readable file: %s", filename);
+	    werr(50, __func__, "passed filename not a readable file: %s", name);
 	    ++num_errors;
 
 	    /* if allowed, report invalid JSON */
@@ -852,11 +852,11 @@ parse_json_file(char const *filename, bool *is_valid)
 	 * open file for scanner to use
 	 */
 	errno = 0;
-	yyin = fopen(filename, "r");
+	yyin = fopen(name, "r");
 	if (yyin == NULL) {
 
 	    /* warn about file open error */
-	    werrp(51, __func__, "couldn't open file %s, ignoring", filename);
+	    werrp(51, __func__, "couldn't open file %s, ignoring", name);
 	    ++num_errors;
 
 	    /* if allowed, report invalid JSON */
