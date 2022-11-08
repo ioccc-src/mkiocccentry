@@ -9,11 +9,11 @@
 .\"
 .\"	The many poor souls who have been tarred and feathered:
 .\"
-.\"	    "Because sometimes people throw feathers on tar." :\-(
+.\"	    "Because sometimes people throw feathers on tar." :-(
 .\"
 .\"	And to my wonderful Mum and my dear cousin and friend Dani:
 .\"
-.\"	    "Because even feathery balls of tar need some love.: :\-)
+.\"	    "Because even feathery balls of tar need some love.: :-)
 .\"
 .\" Humour impairment is not virtue nor is it a vice, it's just plain
 .\" wrong: almost as wrong as JSON spec mis-features and C++ obfuscation! :-)
@@ -26,7 +26,7 @@
 .\" "Share and Enjoy!"
 .\"     --  Sirius Cybernetics Corporation Complaints Division, JSON spec department. :-)
 .\"
-.TH txzchk 1 "31 October 2022" "txzchk" "IOCCC tools"
+.TH txzchk 1 "08 November 2022" "txzchk" "IOCCC tools"
 .SH NAME
 txzchk \- sanity checker tool used on IOCCC compressed tarballs
 .SH SYNOPSIS
@@ -112,7 +112,6 @@ If you would please mention \fB@xexyl\fP as part of the report that would be app
 .PP
 .nf
 Run the program on the tarball \fIentry.test\-1.1644094311.txz\fP:
-
 .RS
 \fB
  ./txzchk entry.test\-1.1644094311.txz\fP
@@ -121,7 +120,6 @@ Run the program on the tarball \fIentry.test\-1.1644094311.txz\fP:
 .PP
 .nf
 Run the program on the tarball \fIentry.test\-1.1644094311.txz\fP, specifying an alternate path to \fBtar\fP and \fBfnamchk\fP:
-
 .RS
 \fB
  ./txzchk \-t /path/to/some/tar \-F ./filenamechk entry.test\-1.1644094311.txz\fP
@@ -130,7 +128,6 @@ Run the program on the tarball \fIentry.test\-1.1644094311.txz\fP, specifying an
 .PP
 .nf
 Run the program on the file \fIentry.test\-1.1644094311.txt\fP, specifying that it's a text file (which means \fB\-T\fP and \fB\-E\fP have to be used):
-
 .RS
 \fB
  ./txzchk \-T \-E txt entry.test\-1.1644094311.txt\fP

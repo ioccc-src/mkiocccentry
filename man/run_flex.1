@@ -9,7 +9,7 @@
 .\" "Share and Enjoy!"
 .\"     --  Sirius Cybernetics Corporation Complaints Division, JSON spec department. :-)
 .\"
-.TH run_flex.sh 1 "29 October 2022" "run_flex.sh" "IOCCC tools"
+.TH run_flex.sh 1 "08 November 2022" "run_flex.sh" "IOCCC tools"
 .SH NAME
 run_flex.sh \- run
 .B flex
@@ -172,7 +172,6 @@ on the \fIjparse.l\fP file:
 Run \fBrun_flex.sh\fP but specify that the backup file is not to be used in case a recent enough version of
 .B flex
 cannot be found or fails for some reason.
-
 .nf
 .RS
 \fB
@@ -201,3 +200,5 @@ and don't use the backup file:
  ./run_flex.sh \-o \-p foobar \-f lex\fP
 .fi
 .RE
+.SH SEE ALSO
+\fBrun_bison(1)\fP, \fBjparse(1)\fP and \fBchkentry(1)\fP
