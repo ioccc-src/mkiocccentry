@@ -76,9 +76,34 @@ while getopts :hVv: flag; do
     esac
 done
 
+# detect fmt "feature"
+#
+# On some systems, fmt -s -w 100 will:
+#
+#    fold lines of 100 characters that include spaces into 2 lines
+#
+# On other systems, fmt -s -w 100 will:
+#
+#    fold lines of 101 characters that include spaces into 2 lines
+#
+# There seems to be either a "fencepost error" or perhaps a different
+# interpretation as to what the '-w 100' means: to limit lines to 100
+# characters or to split lines starting at 100 characters.  Regardless
+# of why, the difference in behavior is somewhere between a misfeature
+# and a bug.  :-(
+#
+export WIDTH="100"
+COUNT=$(echo -n '123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 1234567890' |
+	fmt -s -w 100 | wc -l)
+if [[ $COUNT -gt 1 ]]; then
+    # We are on a "fold lines of 101 characters that include spaces into 2 lines" host
+    # To match hosts that fold at 100, we increase our width by 1.
+    WIDTH=101
+fi
+
 # convert newlines tabs space and backslashes into a single space
 #
-tr -s "\n\t \\\\" " " |
+tr -s "\\n\\t \\\\" " " |
 
 # print a newline before make target (" foo:") in the line middle
 # print a newline before make target ("^foo:") at the start of a line
@@ -95,7 +120,7 @@ sed -e 's/^\(..*\)$/\1\n/' |
 # make dependency line as a paragraph and format that paragraph
 # (as whitespace delimited words) to a given width.
 #
-fmt -s -w 100 |
+fmt -s -w "$WIDTH" |
 
 # By now, make targets are word formatted paragraph of limited line length.
 # We indent the 2nd and subsequent lines of those paragraphs with a tab.
