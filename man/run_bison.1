@@ -9,7 +9,7 @@
 .\" "Share and Enjoy!"
 .\"     --  Sirius Cybernetics Corporation Complaints Division, JSON spec department. :-)
 .\"
-.TH run_bison.sh 1 "29 October 2022" "run_bison.sh" "IOCCC tools"
+.TH run_bison.sh 1 "08 November 2022" "run_bison.sh" "IOCCC tools"
 .SH NAME
 run_bison.sh \- run
 .B bison
@@ -172,7 +172,6 @@ on the \fIjparse.y\fP file:
 Run \fBrun_bison.sh\fP but specify that backup files are not to be used in case a recent enough version of
 .B bison
 cannot be found or fails for some reason.
-
 .nf
 .RS
 \fB
@@ -201,3 +200,5 @@ and don't use any backup files:
  ./run_bison.sh \-o \-p foobar \-b yacc\fP
 .fi
 .RE
+.SH SEE ALSO
+\fBrun_flex(1)\fP, \fBjparse(1)\fP and \fBchkentry(1)\fP

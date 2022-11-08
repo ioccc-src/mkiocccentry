@@ -93,18 +93,18 @@ fi
 #
 if [[ -n $TOPDIR ]]; then
     if [[ ! -d $TOPDIR ]]; then
-	echo "$0: ERROR: -T $TOPDIR given: not a directory: $TOPDIR" 1>&2
+	echo "$0: ERROR: -Z $TOPDIR given: not a directory: $TOPDIR" 1>&2
 	exit 3
     fi
     if [[ $V_FLAG -ge 1 ]]; then
-	echo "$0: debug[1]: -T $TOPDIR given, about to cd $TOPDIR" 1>&2
+	echo "$0: debug[1]: -Z $TOPDIR given, about to cd $TOPDIR" 1>&2
     fi
     # warning: Use 'cd ... || exit' or 'cd ... || return' in case cd fails. [SC2164]
     # shellcheck disable=SC2164
     cd "$TOPDIR"
     status="$?"
     if [[ $status -ne 0 ]]; then
-	echo "$0: ERROR: -T $TOPDIR given: cd $TOPDIR exit code: $status" 1>&2
+	echo "$0: ERROR: -Z $TOPDIR given: cd $TOPDIR exit code: $status" 1>&2
 	exit 3
     fi
 elif [[ -f mkiocccentry.c ]]; then
@@ -124,7 +124,7 @@ elif [[ -f ../mkiocccentry.c ]]; then
 	echo "$0: debug[3]: assume TOPDIR is ..: $TOPDIR" 1>&2
     fi
 else
-    echo "$0: ERROR: cannot determine TOPDIR, use -T topdir" 1>&2
+    echo "$0: ERROR: cannot determine TOPDIR, use -Z topdir" 1>&2
     exit 3
 fi
 if [[ $V_FLAG -ge 3 ]]; then

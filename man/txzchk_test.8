@@ -26,7 +26,7 @@
 .\" "Share and Enjoy!"
 .\"     --  Sirius Cybernetics Corporation Complaints Division, JSON spec department. :-)
 .\"
-.TH txzchk_test 8 "04 November 2022" "txzchk_test" "IOCCC tools"
+.TH txzchk_test 8 "08 November 2022" "txzchk_test" "IOCCC tools"
 .SH NAME
 txzchk_test.sh \- test suite for \fBtxzchk(1)\fP
 .SH SYNOPSIS
@@ -75,7 +75,7 @@ and then the parent of current directory.
 If \fB\-Z\fP \fItopdir\fP is used on the command line, then the source file \fImkiocccentry.c\fP need not exist
 in the \fBtopdir\fP directory.
 If \fB\-Z\fP \fItopdir\fP is not used on the command line, and the source file \fImkiocccentry.c\fP
-is not found in the current directory not the parent of current directory,
+is not found in the current directory or the parent of current directory,
 then this command exits as if there was a command line error.
 .sp 1
 Once the \fBtopdir\fP directory is established,
@@ -136,4 +136,4 @@ Perhaps there should be more tests done with the exit code of \fBtxzchk(1)\fP bu
 It is hoped that this will make the script harder to break than it is to have feathers in tar but if you can break it please report an issue on the GitHub issues page.
 See \fBtxzchk(1)\fP for more details on this.
 .SH SEE ALSO
-\fBtxzchk(1)\fP, \fBtxzchk_test(8)\fP, \fBfnamchk(1)\fP.
+\fBtxzchk(1)\fP, \fBtxzchk_test(8)\fP and \fBfnamchk(1)\fP

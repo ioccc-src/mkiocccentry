@@ -48,25 +48,18 @@ YY_BUFFER_STATE bs;
  * locations in the file / json block
  */
 int yycolumn = 1;
-#define YY_USER_ACTION yylloc->filename = filename; yylloc->first_line = yylloc->last_line = yylineno; \
-    yylloc->first_column = yycolumn; yylloc->last_column = yycolumn+yyleng-1; \
-    yycolumn += yyleng;
+#define YY_USER_ACTION \
+			yylloc->filename = filename; \
+			yylloc->first_line = yylloc->last_line = yylineno; \
+			yylloc->first_column = yycolumn; \
+			yylloc->last_column = yycolumn+yyleng-1; \
+			yycolumn += yyleng;
 %}
 
 /*
  * Section 2: Patterns (regular expressions) and actions.
  */
 
-/*
- * XXX JSON_WS is not needed but for testing I have the whitespace here
- * and below in the actions I print out that it is whitespace and how many are
- * being ignored. The text looks like one of:
- *
- *	ignoring 1 whitespace
- *	ignoring [2-9]+ whitespaces
- *
- * to help distinguish it from other patterns matched.
- */
 JSON_WS			[ \t\r]+
 JSON_NL			\n+
 /*
@@ -108,7 +101,8 @@ JSON_COMMA		","
 			     * the parser.
 			     *
 			     * We don't need the below message but for debugging
-			     * purposes we have it printed for now.
+			     * purposes we print how many whitespaces are
+			     * ignored, if the JSON debug level is high enough.
 			     */
 			    (void) json_dbg(JSON_DBG_VVHIGH, __func__, "\nignoring %ju whitespace%s\n",
 							     (uintmax_t)yyleng, yyleng==1?"":"s");
