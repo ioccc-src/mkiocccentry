@@ -42,6 +42,8 @@
  */
 %parse-param { struct json **tree }
 
+/* this is to make the scanner re-entrant */
+%param { yyscan_t scanner }
 %{
 
 
@@ -51,6 +53,14 @@
  */
 #include "jparse.h"
 
+/*
+ * for the re-entrant scanner.
+ *
+ * NOTE that we cannot include this in jparse.h so we do it here instead.
+ *
+ * XXX - !! Change this to jparse.lex.h after run_flex.sh generates it !! - XXX
+ */
+#include "jparse.lex.ref.h"
 
 unsigned num_errors = 0;		/* > 0 number of errors encountered */
 char const *filename = NULL;		/* if != NULL this is the filename we're parsing */
@@ -94,6 +104,7 @@ int yydebug = 0;	/* 0 ==> verbose bison debug off, 1 ==> verbose bison debug on 
         }                                                               \
     while (0)
     #endif
+    typedef void * yyscan_t;
 }
 
 /*
@@ -342,14 +353,14 @@ json_value:
 	if (json_dbg_allowed(JSON_DBG_VHIGH)) {
 	    json_dbg(JSON_DBG_VHIGH, __func__, "under json_value: starting: "
 					       "json_value: JSON_TRUE");
-	    json_dbg(JSON_DBG_VVHIGH, __func__, "under json_value: yytext: <%s>", yytext);
-	    json_dbg(JSON_DBG_VVHIGH, __func__, "under json_value: yyleng: <%d>", yyleng);
+	    json_dbg(JSON_DBG_VVHIGH, __func__, "under json_value: yytext: <%s>", yyget_text(scanner));
+	    json_dbg(JSON_DBG_VVHIGH, __func__, "under json_value: yyleng: <%d>", yyget_leng(scanner));
 	    json_dbg(JSON_DBG_VHIGH, __func__, "under json_value: about to perform: "
 					       "$json_value = parse_json_bool(yytext);");
 	}
 
 	/* action */
-	$json_value = parse_json_bool(yytext); /* magic: json_value becomes JTYPE_BOOL type */
+	$json_value = parse_json_bool(yyget_text(scanner)); /* magic: json_value becomes JTYPE_BOOL type */
 
 	/* post-action debugging */
 	if (json_dbg_allowed(JSON_DBG_HIGH)) {
@@ -372,14 +383,14 @@ json_value:
 	if (json_dbg_allowed(JSON_DBG_VHIGH)) {
 	    json_dbg(JSON_DBG_VHIGH, __func__, "under json_value: starting: "
 					       "json_value: JSON_FALSE");
-	    json_dbg(JSON_DBG_VVHIGH, __func__, "under json_value: yytext: <%s>", yytext);
-	    json_dbg(JSON_DBG_VVHIGH, __func__, "under json_value: yyleng: <%d>", yyleng);
+	    json_dbg(JSON_DBG_VVHIGH, __func__, "under json_value: yytext: <%s>", yyget_text(scanner));
+	    json_dbg(JSON_DBG_VVHIGH, __func__, "under json_value: yyleng: <%d>", yyget_leng(scanner));
 	    json_dbg(JSON_DBG_VHIGH, __func__, "under json_value: about to perform: "
 					       "$json_value = parse_json_bool(yytext);");
 	}
 
 	/* action */
-	$json_value = parse_json_bool(yytext); /* magic: json_value becomes JTYPE_BOOL type */
+	$json_value = parse_json_bool(yyget_text(scanner)); /* magic: json_value becomes JTYPE_BOOL type */
 
 	/* post-action debugging */
 	if (json_dbg_allowed(JSON_DBG_HIGH)) {
@@ -402,14 +413,14 @@ json_value:
 	if (json_dbg_allowed(JSON_DBG_VHIGH)) {
 	    json_dbg(JSON_DBG_VHIGH, __func__, "under json_value: starting: "
 					       "json_value: JSON_NULL");
-	    json_dbg(JSON_DBG_VVHIGH, __func__, "under json_value: yytext: <%s>", yytext);
-	    json_dbg(JSON_DBG_VVHIGH, __func__, "under json_value: yyleng: <%d>", yyleng);
+	    json_dbg(JSON_DBG_VVHIGH, __func__, "under json_value: yytext: <%s>", yyget_text(scanner));
+	    json_dbg(JSON_DBG_VVHIGH, __func__, "under json_value: yyleng: <%d>", yyget_leng(scanner));
 	    json_dbg(JSON_DBG_VHIGH, __func__, "under json_value: about to perform: "
 					       "$json_value = parse_json_null(yytext);");
 	}
 
 	/* action */
-	$json_value = parse_json_null(yytext); /* magic: json_value becomes JTYPE_NULL type */
+	$json_value = parse_json_null(yyget_text(scanner)); /* magic: json_value becomes JTYPE_NULL type */
 
 	/* post-action debugging */
 	if (json_dbg_allowed(JSON_DBG_HIGH)) {
@@ -770,14 +781,14 @@ json_string:
 	if (json_dbg_allowed(JSON_DBG_VHIGH)) {
 	    json_dbg(JSON_DBG_VHIGH, __func__, "under json_string: starting: "
 					       "json_string: JSON_STRING");
-	    json_dbg(JSON_DBG_VVHIGH, __func__, "under json_string: yytext: <%s>", yytext);
-	    json_dbg(JSON_DBG_VVHIGH, __func__, "under json_string: yyleng: <%d>", yyleng);
+	    json_dbg(JSON_DBG_VVHIGH, __func__, "under json_string: yytext: <%s>", yyget_text(scanner));
+	    json_dbg(JSON_DBG_VVHIGH, __func__, "under json_string: yyleng: <%d>", yyget_leng(scanner));
 	    json_dbg(JSON_DBG_VHIGH, __func__, "under json_string: about to perform: "
 					       "$json_string = parse_json_string(yytext, yyleng);");
 	}
 
 	/* action */
-	$json_string = parse_json_string(yytext, yyleng);
+	$json_string = parse_json_string(yyget_text(scanner), yyget_leng(scanner));
 
 	/* post-action debugging */
 	if (json_dbg_allowed(JSON_DBG_HIGH)) {
@@ -802,14 +813,14 @@ json_number:
 	if (json_dbg_allowed(JSON_DBG_VHIGH)) {
 	    json_dbg(JSON_DBG_VHIGH, __func__, "under json_number: starting: "
 					       "json_number: JSON_NUMBER");
-	    json_dbg(JSON_DBG_VVHIGH, __func__, "under json_number: yytext: <%s>", yytext);
-	    json_dbg(JSON_DBG_VVHIGH, __func__, "under json_number: yyleng: <%d>", yyleng);
+	    json_dbg(JSON_DBG_VVHIGH, __func__, "under json_number: yytext: <%s>", yyget_text(scanner));
+	    json_dbg(JSON_DBG_VVHIGH, __func__, "under json_number: yyleng: <%d>", yyget_leng(scanner));
 	    json_dbg(JSON_DBG_VHIGH, __func__, "under json_number: about to perform: "
 					       "$json_number = parse_json_number(yytext);");
 	}
 
 	/* action */
-	$json_number = parse_json_number(yytext);
+	$json_number = parse_json_number(yyget_text(scanner));
 
 	/* post-action debugging */
 	if (json_dbg_allowed(JSON_DBG_HIGH)) {
@@ -836,16 +847,24 @@ json_number:
  *
  *	yyltype	    location type
  *	node	    pointer to struct json * or NULL
+ *	scanner	    scanner instance
  *	format	    printf style format string
  *	...	    optional parameters based on the format
  *
  */
 void
-yyerror(YYLTYPE *yyltype, struct json **node, char const *format, ...)
+yyerror(YYLTYPE *yyltype, struct json **node, yyscan_t scanner, char const *format, ...)
 {
     va_list ap;		/* variable argument list */
     int ret;		/* libc function return value */
 
+    /*
+     * firewall
+     */
+    if (scanner == NULL) {
+	err(35, __func__, "NULL scanner");
+	not_reached();
+    }
     /*
      * stdarg variable argument list setup
      */
@@ -865,9 +884,9 @@ yyerror(YYLTYPE *yyltype, struct json **node, char const *format, ...)
 	    }
 	    fprint(stderr, " at line %d column %d: ", yyltype->first_line, yyltype->first_column);
     }
-    if (yytext != NULL && *yytext != '\0') {
-	fprint(stderr, "<%s>\n", yytext);
-    } else if (yytext == NULL) {
+    if (yyget_text(scanner) != NULL && *yyget_text(scanner) != '\0') {
+	fprint(stderr, "<%s>\n", yyget_text(scanner));
+    } else if (yyget_text(scanner) == NULL) {
 	fprstr(stderr, "text == NULL\n");
     } else {
 	fprstr(stderr, "empty text\n");

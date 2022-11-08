@@ -27,7 +27,8 @@
  * unnecessary.
  */
 %option noyywrap yylineno nodefault 8bit
-%option bison-bridge bison-locations
+%option bison-bridge bison-locations reentrant
+%option header-file="jparse.lex.h"
 
 %{
 /* Declarations etc. go here.
@@ -47,7 +48,6 @@ YY_BUFFER_STATE bs;
 /*
  * locations in the file / json block
  */
-int yycolumn = 1;
 #define YY_USER_ACTION \
 			yylloc->filename = filename; \
 			yylloc->first_line = yylloc->last_line = yylineno; \
@@ -449,6 +449,7 @@ parse_json(char const *ptr, size_t len, bool *is_valid)
 {
     struct json *tree = NULL;		/* the JSON parse tree */
     int ret = 0;			/* yyparse() return value */
+    yyscan_t scanner;			/* scanner instance: is a void * */
 
     /*
      * We set *is_valid = true if is_valid != NULL so that the caller does not
@@ -485,10 +486,14 @@ parse_json(char const *ptr, size_t len, bool *is_valid)
     }
 
     /*
+     * initialise scanner
+     */
+    yylex_init(&scanner);
+
+    /*
      * scan the blob
      */
-    yylineno = 1;
-    bs = yy_scan_bytes(ptr, len);
+    bs = yy_scan_bytes(ptr, len, scanner);
     if (bs == NULL) {
 	/*
 	 * if unable to scan the bytes it indicates an internal error and
@@ -505,8 +510,16 @@ parse_json(char const *ptr, size_t len, bool *is_valid)
 
 	/* return a blank JSON tree */
 	tree = json_alloc(JTYPE_UNSET);
+	yylex_destroy(scanner);
 	return tree;
     }
+
+    /*
+     * we cannot set the column and probably line number without first having a
+     * buffer which is why the yy_scan_bytes() is called first.
+     */
+    yyset_column(1, scanner);
+    yyset_lineno(1, scanner);
 
     /*
      * announce beginning to parse
@@ -521,12 +534,12 @@ parse_json(char const *ptr, size_t len, bool *is_valid)
     /*
      * parse the blob, passing into the parser the node
      */
-    ret = yyparse(&tree);
+    ret = yyparse(&tree, scanner);
 
     /*
      * scan and parse clean up
      */
-    yy_delete_buffer(bs);
+    yy_delete_buffer(bs, scanner);
     bs = NULL;
 
     /*
@@ -553,6 +566,9 @@ parse_json(char const *ptr, size_t len, bool *is_valid)
 	    *is_valid = false;
 	}
     }
+
+    /* free scanner */
+    yylex_destroy(scanner);
 
     /*
      * return parse tree
@@ -633,18 +649,18 @@ parse_json_stream(FILE *stream, bool *is_valid)
     /*
      * yyin becomes our sanity checked open stream for the sake of the parser / scanner
      */
-    yyin = stream;
+    /* yyin = stream; */
 
     /*
      * read the entire file into memory
      */
-    data = read_all(yyin, &len);
+    data = read_all(stream, &len);
     if (data == NULL) {
 
 	/* warn about read error */
 	werr(42, __func__, "could not read read stream");
 	++num_errors;
-	clearerr_or_fclose(yyin);
+	clearerr_or_fclose(stream);
 
 	/* if allowed, report invalid JSON */
 	if (is_valid != NULL) {
@@ -676,7 +692,7 @@ parse_json_stream(FILE *stream, bool *is_valid)
 	}
 
 	/* clean up input stream */
-	clearerr_or_fclose(yyin);
+	clearerr_or_fclose(stream);
 
 	/* if allowed, report invalid JSON */
 	if (is_valid != NULL) {
@@ -709,10 +725,10 @@ parse_json_stream(FILE *stream, bool *is_valid)
     /*
      * clear error or close stream
      *
-     * NOTE: clearerr_or_fclose() does nothing if yyin is NULL.
+     * NOTE: clearerr_or_fclose() does nothing if stream is NULL.
      */
-    clearerr_or_fclose(yyin);
-    yyin = NULL;
+    clearerr_or_fclose(stream);
+    stream = NULL;
 
     /*
      * return the JSON parse tree node
@@ -748,6 +764,7 @@ struct json *
 parse_json_file(char const *name, bool *is_valid)
 {
     struct json *node = NULL;		/* the JSON parse tree */
+    FILE *stream = NULL;		/* file stream to read from */
 
     /*
      * firewall
@@ -787,7 +804,7 @@ parse_json_file(char const *name, bool *is_valid)
      * if file is -, then we will parse stdin
      */
     if (strcmp(name, "-") == 0) {
-	yyin = stdin;
+	stream = stdin;
 
     /*
      * case will read from a file
@@ -846,8 +863,8 @@ parse_json_file(char const *name, bool *is_valid)
 	 * open file for scanner to use
 	 */
 	errno = 0;
-	yyin = fopen(name, "r");
-	if (yyin == NULL) {
+	stream = fopen(name, "r");
+	if (stream == NULL) {
 
 	    /* warn about file open error */
 	    werrp(51, __func__, "couldn't open file %s, ignoring", name);
@@ -867,7 +884,7 @@ parse_json_file(char const *name, bool *is_valid)
     /*
      * JSON parse the open stream
      */
-    node = parse_json_stream(yyin, is_valid);
+    node = parse_json_stream(stream, is_valid);
 
     /*
      * return the JSON parse tree node

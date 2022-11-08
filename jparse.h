@@ -72,23 +72,19 @@ extern unsigned num_errors;		/* > 0 number of errors encountered */
 extern char const *json_parser_version;	/* official JSON parser version */
 extern char const *filename;		/* if != NULL this is the filename we're parsing */
 /* lexer and parser specific variables */
-extern int yylineno;			/* line number in lexer */
-extern char *yytext;			/* current text */
-extern FILE *yyin;			/* input file lexer/parser reads from */
 extern unsigned num_errors;		/* > 0 number of errors encountered */
-extern int yyleng;
 extern int yydebug;
 
 
 /*
  * lexer specific
  */
-extern int yylex(YYSTYPE *yylval_param, YYLTYPE *yylloc_param);
+extern int yylex(YYSTYPE *yylval_param, YYLTYPE *yylloc_param, yyscan_t scanner);
 
 /*
  * function prototypes for jparse.y
  */
-extern void yyerror(YYLTYPE *yyltype, struct json **tree, char const *format, ...);
+extern void yyerror(YYLTYPE *yyltype, struct json **tree, yyscan_t scanner, char const *format, ...);
 
 /*
  * function prototypes for jparse.l
