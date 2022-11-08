@@ -51,9 +51,9 @@ YY_BUFFER_STATE bs;
 #define YY_USER_ACTION \
 			yylloc->filename = filename; \
 			yylloc->first_line = yylloc->last_line = yylineno; \
-			yylloc->first_column = yycolumn; \
-			yylloc->last_column = yycolumn+yyleng-1; \
-			yycolumn += yyleng;
+			yylloc->first_column = yyget_column(yyscanner); \
+			yylloc->last_column = yyget_column(yyscanner)+yyget_leng(yyscanner)-1; \
+			yyset_column(yyget_leng(yyscanner), yyscanner);
 %}
 
 /*
