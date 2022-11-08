@@ -57,10 +57,8 @@
  * for the re-entrant scanner.
  *
  * NOTE that we cannot include this in jparse.h so we do it here instead.
- *
- * XXX - !! Change this to jparse.lex.h after run_flex.sh generates it !! - XXX
  */
-#include "jparse.lex.ref.h"
+#include "jparse.lex.h"
 
 unsigned num_errors = 0;		/* > 0 number of errors encountered */
 char const *filename = NULL;		/* if != NULL this is the filename we're parsing */
