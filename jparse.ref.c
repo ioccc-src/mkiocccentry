@@ -633,16 +633,6 @@ int yycolumn = 1;
  * Section 2: Patterns (regular expressions) and actions.
  */
 /*
- * XXX JSON_WS is not needed but for testing I have the whitespace here
- * and below in the actions I print out that it is whitespace and how many are
- * being ignored. The text looks like one of:
- *
- *	ignoring 1 whitespace
- *	ignoring [2-9]+ whitespaces
- *
- * to help distinguish it from other patterns matched.
- */
-/*
  * NOTE: On the subject of JSON_STRING one might ask the question about the
  * tighter restrictions on JSON strings and why we don't even consider them.
  * This is a good question but the answer is simple: the JSON string conversion
@@ -656,7 +646,7 @@ int yycolumn = 1;
  * the parser will never find them but this is more defensive.
  */
 /* Actions. */
-#line 608 "jparse.c"
+#line 598 "jparse.c"
 
 #define INITIAL 0
 
@@ -891,9 +881,9 @@ YY_DECL
 		}
 
 	{
-#line 104 "jparse.l"
+#line 94 "jparse.l"
 
-#line 845 "jparse.c"
+#line 835 "jparse.c"
 
 	while ( /*CONSTCOND*/1 )		/* loops until end-of-file is reached */
 		{
@@ -962,7 +952,7 @@ do_action:	/* This label is used only to access EOF actions. */
 
 case 1:
 YY_RULE_SETUP
-#line 105 "jparse.l"
+#line 95 "jparse.l"
 {
 			    /*
 			     * Whitespace excluding newlines
@@ -972,7 +962,8 @@ YY_RULE_SETUP
 			     * the parser.
 			     *
 			     * We don't need the below message but for debugging
-			     * purposes we have it printed for now.
+			     * purposes we print how many whitespaces are
+			     * ignored, if the JSON debug level is high enough.
 			     */
 			    (void) json_dbg(JSON_DBG_VVHIGH, __func__, "\nignoring %ju whitespace%s\n",
 							     (uintmax_t)yyleng, yyleng==1?"":"s");
@@ -981,14 +972,14 @@ YY_RULE_SETUP
 case 2:
 /* rule 2 can match eol */
 YY_RULE_SETUP
-#line 120 "jparse.l"
+#line 111 "jparse.l"
 {
 			    yycolumn = 1;
 			}
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 124 "jparse.l"
+#line 115 "jparse.l"
 {
 			    /* string */
 			    return JSON_STRING;
@@ -996,7 +987,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 129 "jparse.l"
+#line 120 "jparse.l"
 {
 			    /* number */
 			    return JSON_NUMBER;
@@ -1004,7 +995,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 134 "jparse.l"
+#line 125 "jparse.l"
 {
 			    /* null object */
 			    return JSON_NULL;
@@ -1012,7 +1003,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 139 "jparse.l"
+#line 130 "jparse.l"
 {
 			    /* boolean: true */
 			    return JSON_TRUE;
@@ -1020,7 +1011,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 143 "jparse.l"
+#line 134 "jparse.l"
 {
 			    /* boolean: false */
 			    return JSON_FALSE;
@@ -1028,7 +1019,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 148 "jparse.l"
+#line 139 "jparse.l"
 {
 			    /* start of object */
 			    return JSON_OPEN_BRACE;
@@ -1036,7 +1027,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 152 "jparse.l"
+#line 143 "jparse.l"
 {
 			    /* end of object */
 			    return JSON_CLOSE_BRACE;
@@ -1044,7 +1035,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
-#line 157 "jparse.l"
+#line 148 "jparse.l"
 {
 			    /* start of array */
 			    return JSON_OPEN_BRACKET;
@@ -1052,7 +1043,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
-#line 161 "jparse.l"
+#line 152 "jparse.l"
 {
 			    /* end of array */
 			    return JSON_CLOSE_BRACKET;
@@ -1060,7 +1051,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
-#line 166 "jparse.l"
+#line 157 "jparse.l"
 {
 			    /* colon or 'equals' */
 			    return JSON_COLON;
@@ -1068,7 +1059,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
-#line 171 "jparse.l"
+#line 162 "jparse.l"
 {
 			    /* comma: name/value pair separator */
 			    return JSON_COMMA;
@@ -1076,7 +1067,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
-#line 176 "jparse.l"
+#line 167 "jparse.l"
 {
 			    /* invalid token: any other character */
 			    warn(__func__, "at line %d column %d: invalid token: 0x%02x = <%c>", yylloc->first_line, yylloc->first_column, *yytext, *yytext);
@@ -1112,10 +1103,10 @@ YY_RULE_SETUP
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
-#line 209 "jparse.l"
+#line 200 "jparse.l"
 YY_FATAL_ERROR( "flex scanner jammed" );
 	YY_BREAK
-#line 1067 "jparse.c"
+#line 1058 "jparse.c"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 
@@ -2132,7 +2123,7 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 209 "jparse.l"
+#line 200 "jparse.l"
 
 
 /* Section 3: Code that's copied to the generated scanner */
