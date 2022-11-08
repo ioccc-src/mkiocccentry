@@ -49,7 +49,7 @@
 #include <stdio.h>
 #include <stdint.h>
 #include <stdlib.h>
-#include <strings.h>
+#include <strings.h> /* strncasecmp */
 #include <sys/time.h>
 #include <unistd.h>
 

@@ -36,7 +36,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <string.h>
-#include <strings.h>	/* for strcasecmp() */
+#include <strings.h>	/* strcasecmp() */
 #include <ctype.h>
 #include <stdint.h>
 
