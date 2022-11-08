@@ -96,7 +96,7 @@
 extern int yydebug;
 #endif
 /* "%code requires" blocks.  */
-#line 65 "jparse.y"
+#line 73 "jparse.y"
 
     #if !defined(YYLTYPE_IS_DECLARED)
     struct YYLTYPE
@@ -129,8 +129,9 @@ extern int yydebug;
         }                                                               \
     while (0)
     #endif
+    typedef void * yyscan_t;
 
-#line 83 "jparse.tab.h"
+#line 84 "jparse.tab.h"
 
 /* Token kinds.  */
 #ifndef YYTOKENTYPE
@@ -181,7 +182,7 @@ struct YYLTYPE
 
 
 
-int yyparse (struct json **tree);
+int yyparse (struct json **tree, yyscan_t scanner);
 
 
 #endif /* !YY_YY_JPARSE_TAB_H_INCLUDED  */

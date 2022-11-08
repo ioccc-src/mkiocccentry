@@ -46,9 +46,14 @@ below for the implications.
 
 # Re-entrancy
 
-Although the parser is re-entrant the scanner is not. As such the use of
-`jparse` itself is not re-entrant. If it's not clear this means do not have more
-than one parse active in the same process at the same time.
+Although the scanner and parser are re-entrant only one parse at one time in a
+process has been tested. The testing of more than one parse at the same time is
+way out of scope of this repo but will be tested more as I move this to a
+separate repo.
+
+If it's not clear this means that having more than one parse active in the same
+process at the same time is not tested so even though it should be okay there
+might be some issues that have yet to be discovered.
 
 # Compiling and using in your own code
 

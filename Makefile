@@ -658,15 +658,15 @@ jparse.tab.c jparse.tab.h bison: jparse.y jparse.h sorry.tm.ca.h run_bison.sh li
 	./run_bison.sh -b ${BISON_BASENAME} ${BISON_DIRS} -p jparse -v 1 ${RUN_O_FLAG} -- \
 		       ${BISON_FLAGS}
 
-# How to create jparse.c
+# How to create jparse.c and jparse.lex.h
 #
 # Convert jparse.l into jparse.c via flex, if flex found and has a recent enough
 # version. Otherwise, if RUN_O_FLAG is NOT set use the pre-built reference copy
 # stored in jparse.ref.c. If it IS specified it is an error.
 #
 # NOTE: The value of RUN_O_FLAG depends on what rule called this rule.
-jparse.c flex: jparse.l jparse.h sorry.tm.ca.h jparse.tab.h run_flex.sh limit_ioccc.sh \
-	       verge jparse.ref.c Makefile
+jparse.c jparse.lex.h flex: jparse.l jparse.h sorry.tm.ca.h jparse.tab.h run_flex.sh limit_ioccc.sh \
+	       verge jparse.ref.c jparse.lex.ref.h Makefile
 	./run_flex.sh -f ${FLEX_BASENAME} ${FLEX_DIRS} -p jparse -v 1 ${RUN_O_FLAG} -- \
 		      ${FLEX_FLAGS} -o jparse.c
 
@@ -741,8 +741,8 @@ parser: jparse.y jparse.l Makefile
 	${RM} -f jparse.tab.c jparse.tab.h
 	${MAKE} jparse.tab.c jparse.tab.h
 	${MAKE} jparse.tab.o
-	${RM} -f jparse.c
-	${MAKE} jparse.c
+	${RM} -f jparse.c jparse.lex.h
+	${MAKE} jparse.c jparse.lex.h
 	${MAKE} jparse.o
 	${RM} -f jparse.tab.ref.c
 	${CP} -f -v jparse.tab.c jparse.tab.ref.c
@@ -750,6 +750,8 @@ parser: jparse.y jparse.l Makefile
 	${CP} -f -v jparse.tab.h jparse.tab.ref.h
 	${RM} -f jparse.ref.c
 	${CP} -f -v jparse.c jparse.ref.c
+	${RM} -f -v jparse.lex.ref.h
+	${CP} -f -v jparse.lex.h jparse.lex.ref.h
 	${MAKE} jparse
 	${MAKE} jsemtblgen
 	${MAKE} chkentry
@@ -765,13 +767,15 @@ parser-o: jparse.y jparse.l Makefile
 # restore reference code that was produced by previous successful make parser
 #
 # This rule forces the use of reference copies of JSON parser C code.
-use_ref: jparse.tab.ref.c jparse.tab.ref.h jparse.ref.c
+use_ref: jparse.tab.ref.c jparse.tab.ref.h jparse.ref.c jparse.lex.ref.h
 	${RM} -f jparse.tab.c
 	${CP} -f -v jparse.tab.ref.c jparse.tab.c
 	${RM} -f jparse.tab.h
 	${CP} -f -v jparse.tab.ref.h jparse.tab.h
 	${RM} -f jparse.c
 	${CP} -f -v jparse.ref.c jparse.c
+	${RM} -f jparse.lex.h
+	${CP} -f -v jparse.lex.ref.h jparse.lex.h
 
 # use jnum_gen to regenerate test jnum_chk test suite
 #
@@ -1106,7 +1110,8 @@ depend: all soup/fmt_depend.sh
 utf8_posix_map.o: utf8_posix_map.c utf8_posix_map.h util.h dyn_array.h dbg.h limit_ioccc.h version.h
 foo.o: foo.c foo.h dbg.h oebxergfB.h
 jparse.o: jparse.c jparse.h dbg.h util.h dyn_array.h json_parse.h json_util.h jparse.tab.h
-jparse.tab.o: jparse.tab.c jparse.h dbg.h util.h dyn_array.h json_parse.h json_util.h jparse.tab.h
+jparse.tab.o: jparse.tab.c jparse.h dbg.h util.h dyn_array.h json_parse.h json_util.h jparse.tab.h \
+	jparse.lex.h
 dbg.o: dbg.c dbg.h
 util.o: util.c dbg.h util.h dyn_array.h limit_ioccc.h version.h
 mkiocccentry.o: mkiocccentry.c mkiocccentry.h util.h dyn_array.h dbg.h location.h utf8_posix_map.h \

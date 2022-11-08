@@ -29,7 +29,7 @@
 
 # setup
 #
-export RUN_FLEX_VERSION="0.3 2022-04-22"
+export RUN_FLEX_VERSION="0.4 2022-11-08"
 export USAGE="usage: $0 [-h] [-V] [-v level] [-o] [-f flex] [-l limit_ioccc.sh]
 		        [-g verge] [-p prefix] [-s sorry.h] [-S] [-F dir] -- [flex_flags]
 
@@ -40,12 +40,13 @@ export USAGE="usage: $0 [-h] [-V] [-v level] [-o] [-f flex] [-l limit_ioccc.sh]
     -f flex	    flex tool basename (def: flex)
     -l limit.sh	    version info file (def: ./limit_ioccc.sh)
     -g verge	    path to verge tool (def: ./verge)
-    -p prefix	    the prefix of the file to be used (def: jparse)
+    -p prefix	    the prefix of the files to be used (def: jparse)
 			NOTE: The flex input file will be prefix.l
-			NOTE: If flex cannot be used, this backup
-			NOTE: file is used:
+			NOTE: If flex cannot be used, these backup
+			NOTE: files are used:
 			NOTE:
 			NOTE:		prefix.ref.c
+			NOTE		prefix.lex.ref.h
 			NOTE:
     -s sorry.h	    file to prepend to C output (def: sorry.tm.ca.h)
     -S		    suppress prepending apology file
@@ -445,6 +446,8 @@ use_flex_backup() {
     #
     FLEX_BACKUP_C="$PREFIX.ref.c"
     FLEX_C="$PREFIX.c"
+    FLEX_BACKUP_H="$PREFIX.lex.ref.h"
+    FLEX_H="$PREFIX.lex.h"
     if [[ ! -e $FLEX_BACKUP_C ]]; then
 	echo "$0: ERROR: file not found: $FLEX_BACKUP_C" 1>&2
 	exit 4
@@ -461,10 +464,24 @@ use_flex_backup() {
 	echo "$0: ERROR: empty file: $FLEX_BACKUP_C" 1>&2
 	exit 4
     fi
+    if [[ ! -f $FLEX_BACKUP_H ]]; then
+	echo "$0: ERROR: not a regular file: $FLEX_BACKUP_H" 1>&2
+	exit 4
+    fi
+    if [[ ! -r $FLEX_BACKUP_H ]]; then
+	echo "$0: ERROR: not a readable file: $FLEX_BACKUP_H" 1>&2
+	exit 4
+    fi
+    if [[ ! -s $FLEX_BACKUP_H ]]; then
+	echo "$0: ERROR: empty file: $FLEX_BACKUP_H" 1>&2
+	exit 4
+    fi
+
+
 
     # copy backup flex C file in place
     #
-    echo "# Warning: We are forced to use $FLEX_BASENAME backup file instead of $FLEX_BASENAME C output!" 1>&2
+    echo "# Warning: We are forced to use $FLEX_BASENAME backup files instead of $FLEX_BASENAME C output!" 1>&2
     echo "cp -f -v $FLEX_BACKUP_C $FLEX_C"
     cp -f -v "$FLEX_BACKUP_C" "$FLEX_C"
     status="$?"
@@ -472,6 +489,14 @@ use_flex_backup() {
 	echo "$0: ERROR: failed to copy $FLEX_BACKUP_C to $FLEX_C exit code: $status" 1>&2
 	exit 5
     fi
+    echo "cp -f -v $FLEX_BACKUP_H $FLEX_H"
+    cp -f -v "$FLEX_BACKUP_H" "$FLEX_H"
+    status="$?"
+    if [[ $status -ne 0 ]]; then
+	echo "$0: ERROR: failed to copy $FLEX_BACKUP_H to $FLEX_H exit code: $status" 1>&2
+	exit 5
+    fi
+
 
     # moved flex backup file in place
     #
@@ -630,19 +655,29 @@ if [[ ! -f $PREFIX.c ]]; then
 elif [[ ! -s $PREFIX.c ]]; then
     echo "$0: Warning: $FLEX_PATH failed to form non-empty file: $PREFIX.c" 1>&2
     use_flex_backup
+elif [[ ! -f $PREFIX.lex.h ]]; then
+    echo "$0: Warning: $FLEX_PATH failed to form file: $PREFIX.lex.h" 1>&2
+    use_flex_backup
+elif [[ ! -s $PREFIX.tab.h ]]; then
+    echo "$0: Warning: $FLEX_PATH failed to form non-empty file: $PREFIX.lex.h" 1>&2
+    use_flex_backup
 else
 
     # prepend the apology file and line number reset if -S not used
     #
     if [[ -z "$S_FLAG" ]]; then
 	add_sorry "$PREFIX.c"
+	add_sorry "$PREFIX.lex.h"
     fi
 
     # print debug of result if -v
     #
     if [[ $V_FLAG -ge 1 ]]; then
+	# note: Double quote to prevent globbing and word splitting. [SC2086]
 	echo "$0: debug[1]: $(ls -l "$PREFIX.c")"
-	echo "$0: debug[1]: $FLEX_BASENAME run OK: formed $PREFIX.c" 1>&2
+	# note: Double quote to prevent globbing and word splitting. [SC2086]
+	echo "$0: debug[1]: $(ls -l "$PREFIX.lex.h")"
+	echo "$0: debug[1]: $FLEX_BASENAME run OK: formed $PREFIX.c and $PREFIX.lex.h" 1>&2
     fi
 fi
 
