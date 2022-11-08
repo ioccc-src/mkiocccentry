@@ -647,11 +647,6 @@ parse_json_stream(FILE *stream, bool *is_valid)
     }
 
     /*
-     * yyin becomes our sanity checked open stream for the sake of the parser / scanner
-     */
-    /* yyin = stream; */
-
-    /*
      * read the entire file into memory
      */
     data = read_all(stream, &len);
