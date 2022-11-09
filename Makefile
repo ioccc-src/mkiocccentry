@@ -242,8 +242,7 @@ SH_TARGETS=limit_ioccc.sh
 # (0) Currently not all targets have man pages.
 # (1) Some of the targets that have man pages are not actually in the TARGETS
 #     variable. TEST_TARGETS, for example, has utf8_test, which means
-#     utf8_test.1 would be left out. SH_TARGETS has limit_ioccc.sh which means
-#     limit_ioccc.1 would be left out and so on.
+#     utf8_test.1 would be left out.
 # (2) Even when all targets have man pages if another target is added without
 #     adding a man page make install would fail and even if make install is not
 #     that likely to be used we still don't want it to fail in the case it
@@ -256,7 +255,7 @@ SH_TARGETS=limit_ioccc.sh
 MAN1_TARGETS= man/mkiocccentry man/txzchk man/fnamchk man/iocccsize man/chkentry man/jstrdecode man/jstrencode \
 	      man/jparse man/bug_report man/hostchk man/run_flex man/run_bison
 MAN3_TARGETS= man/dbg
-MAN8_TARGETS= man/reset_tstamp man/verge man/limit_ioccc man/iocccsize_test man/ioccc_test man/run_usage man/utf8_test \
+MAN8_TARGETS= man/reset_tstamp man/verge man/iocccsize_test man/ioccc_test man/run_usage man/utf8_test \
 	      man/jparse_test man/txzchk_test man/vermod man/mkiocccentry_test man/jstr_test man/jnum_chk \
 	      man/jnum_gen man/chkentry_test
 MAN_TARGETS= ${MAN1_TARGETS} ${MAN3_TARGETS} ${MAN8_TARGETS}
