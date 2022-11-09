@@ -70,11 +70,13 @@
  */
 extern unsigned num_errors;		/* > 0 number of errors encountered */
 extern char const *json_parser_version;	/* official JSON parser version */
-extern char const *filename;		/* if != NULL this is the filename we're parsing */
 /* lexer and parser specific variables */
-extern unsigned num_errors;		/* > 0 number of errors encountered */
 extern int yydebug;
 
+struct json_extra
+{
+    char const *filename;	/* filename being parsed ("-" means stdin) */
+};
 
 /*
  * lexer specific
@@ -89,8 +91,8 @@ extern void yyerror(YYLTYPE *yyltype, struct json **tree, yyscan_t scanner, char
 /*
  * function prototypes for jparse.l
  */
-extern struct json *parse_json(char const *ptr, size_t len, bool *is_valid);
-extern struct json *parse_json_stream(FILE *stream, bool *is_valid);
+extern struct json *parse_json(char const *filename, char const *ptr, size_t len, bool *is_valid);
+extern struct json *parse_json_stream(char const *filename, FILE *stream, bool *is_valid);
 extern struct json *parse_json_file(char const *name, bool *is_valid);
 
 

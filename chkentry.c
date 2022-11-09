@@ -423,7 +423,7 @@ main(int argc, char *argv[])
      * parse .info.json if it is open
      */
     if (info_stream != NULL) {
-	info_tree = parse_json_stream(info_stream, &info_valid);
+	info_tree = parse_json_stream(info_path, info_stream, &info_valid);
 	if (info_valid == false || info_tree == NULL) {
 	    err(4, __func__, "failed to JSON parse of .info.json file: %s", info_path); /*ooo*/
 	    not_reached();
@@ -435,7 +435,7 @@ main(int argc, char *argv[])
      * parse .auth.json if it is open
      */
     if (auth_stream != NULL) {
-	auth_tree = parse_json_stream(auth_stream, &auth_valid);
+	auth_tree = parse_json_stream(auth_path, auth_stream, &auth_valid);
 	if (auth_valid == false || auth_tree == NULL) {
 	    err(4, __func__, "failed to JSON parse of .auth.json file: %s", auth_path); /*ooo*/
 	    not_reached();
