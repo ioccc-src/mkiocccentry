@@ -3,17 +3,22 @@
 
 ## Release 0.8 2022-11-09
 
-Removed legacy support for old systems such as CentOS 7.
+Improve the situation with some systems requiring some feature test macros.
 Removed all references to `${TIMEGM_PROBLEM}` in Makefile.
 Removed all references to `${D_LEGACY}` in Makefile.
 Cleaned out the `$(WARN_FLAGS}` list (from legacy hosts).
+These changes allow for cleanly compiling under CentOS without as many
+complexities (it was also important for modern systems like Fedora).
 
-Make a number of important fixes to `chkentry`.
-Make a number of important fixes to JSON parser.
+Made a number of important fixes to `chkentry`.
 
-The JSON parser is now reentrant.
+Made a number of important fixes to JSON parser.
+Pre-scan documents for problematic bytes prior to trying to parse it as json.
 
-Improved JSON parser error messages.
+The JSON scanner and parser are now re-entrant!
+
+Improved JSON parser error messages by adding filename and location (lines and
+columns).
 
 Added filename argument to top level parser functions:
 
@@ -21,6 +26,12 @@ Added filename argument to top level parser functions:
 extern struct json *parse_json(char const *ptr, size_t len, char const *filename, bool *is_valid);
 extern struct json *parse_json_stream(FILE *stream, char const *filename, bool *is_valid);
 ```
+
+This was one part of making the scanner and parser re-entrant. See the git log
+and diffs of `jparse.l` and `jparse.y` for more details.
+
+The documentation of the JSON parser is not complete and it will not be
+completed until after IOCCCMOCK.
 
 Fixed several memory leaks.
 
