@@ -1,6 +1,39 @@
 # Major changes to the IOCCC entry toolkit
 
 
+## Release 0.8 2022-11-09
+
+Removed legacy support for old systems such as CentOS 7.
+Removed all references to `${TIMEGM_PROBLEM}` in Makefile.
+Removed all references to `${D_LEGACY}` in Makefile.
+Cleaned out the `$(WARN_FLAGS}` list (from legacy hosts).
+
+Make a number of important fixes to `chkentry`.
+Make a number of important fixes to JSON parser.
+
+The JSON parser is now reentrant.
+
+Improved JSON parser error messages.
+
+Added filename argument to top level parser functions:
+
+```c
+extern struct json *parse_json(char const *ptr, size_t len, char const *filename, bool *is_valid);
+extern struct json *parse_json_stream(FILE *stream, char const *filename, bool *is_valid);
+```
+
+Fixed several memory leaks.
+
+Fixed a number of typos in comments.
+
+Many man pages updated and/or fixed.
+Removed `limit_ioccc(8)` man page.
+
+Made a number of shell script fixes with respect to the `mktemp(1)` command.
+
+Experimenting with a system independent `make depend` tool: work in progress.
+
+
 ## Release 0.7 2022-11-05
 
 Released IOCCC entry toolkit v0.7 2022-11-05
