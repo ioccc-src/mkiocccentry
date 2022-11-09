@@ -50,7 +50,7 @@ YY_BUFFER_STATE bs;
  * locations in the file / json block
  */
 #define YY_USER_ACTION \
-			yylloc->filename = yyextra->filename; \
+			yylloc->filename = yyextra != NULL ? yyextra->filename:""; \
 			yylloc->first_line = yylloc->last_line = yylineno; \
 			yylloc->first_column = yyget_column(yyscanner); \
 			yylloc->last_column = yyget_column(yyscanner)+yyget_leng(yyscanner)-1; \
@@ -547,7 +547,7 @@ parse_json(char const *filename, char const *ptr, size_t len, bool *is_valid)
     ret = yyparse(&tree, scanner);
 
     /*
-     * scan and parse clean up
+     * free memory associated with bytes scanned by yy_scan_bytes()
      */
     yy_delete_buffer(bs, scanner);
     bs = NULL;
