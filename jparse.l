@@ -490,7 +490,7 @@ parse_json(char const *filename, char const *ptr, size_t len, bool *is_valid)
     }
 
     if (filename == NULL) {
-	dbg(DBG_HIGH, __func__, "filename is NULL, forcing it to be \"-\" for stdin");
+	json_dbg(JSON_DBG_HIGH, __func__, "filename is NULL, forcing it to be \"-\" for stdin");
 	filename = "-";	/* assume stdin */
     }
 
@@ -658,7 +658,7 @@ parse_json_stream(char const *filename, FILE *stream, bool *is_valid)
     }
 
     if (filename == NULL) {
-	dbg(DBG_HIGH, __func__, "filename is NULL, forcing it to be \"-\" for stdin");
+	json_dbg(JSON_DBG_HIGH, __func__, "filename is NULL, forcing it to be \"-\" for stdin");
 	filename = "-";
     }
 
