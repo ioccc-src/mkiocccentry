@@ -25,7 +25,7 @@
 /* exit code change of order - use new value in sequencing - coo */
 
 
-#define _XOPEN_SOURCE       /* See feature_test_macros(7) - for strptime(3) and strftime(3) */
+#define _GNU_SOURCE
 #include <time.h>
 #include <sys/time.h>
 

@@ -102,29 +102,6 @@ TEE= tee
 TR= tr
 TRUE= true
 
-##################
-# legacy targets #
-##################
-
-# In a few cases, legacy systems such as CentOS 7 that are pre-c11 cannot compile
-# this repo without extraordinary workarounds / gross hacks.
-#
-# While this repo does not officially support pre-c11 systems that have
-# problems with the timegm() function not being declared in <time.h>.
-#
-# If your pre-c11 system fails to compile this code, we apologize and
-# request that you compile this repo on a more up to date system such as
-# a system that fully support c11 or later.
-#
-# XXX - ###################################################################### - XXX #
-# XXX - In 2024 we will stop trying to support legacy systems such as CentOS 7 - XXX #
-# XXX - ###################################################################### - XXX #
-#
-D_LEGACY:=
-ifeq ($(TIMEGM_PROBLEM),)
-TIMEGM_PROBLEM=$(shell ./have_timegm.sh 2>/dev/null)
-endif
-
 
 #######################
 # Makefile parameters #
@@ -161,60 +138,17 @@ COPT= -O0 -g
 WARN_FLAGS= -Wall -Wextra -Werror
 
 
-# Legacy system workaround / gross hacks
-#
-# NOTE: The code in the mkiocccentry repo is to help you form and
-#	submit a compressed tarball that meets the IOCCC requirements.
-#	Your IOCCC entry is free to require older C standards, or
-#	even not specify a C standard at all.  Moreover, your entry's
-#	Makefile, can do what it needs to do, perhaps by using the
-#	Makefile.example as a basis.
-#
-ifeq ($(TIMEGM_PROBLEM),-DTIMEGM_PROBLEM)
-#
-# NOTE:	We found that such hosts that do not have the timegm() function
-#	defined in <time.h> also suffer from other legacy issues.  The
-#	defines added to ${D_LEGACY} below are a best effort to try and
-#	let such pre-c11 systems do something with this repo.
-#
-# NOTE: We also found that such pre-c11 systems (such as CentOS 7) need
-#	to link with -lm because floorl() was not in libc by default.
-#
-# NOTE: We also found that that such systems were triggered with -Weverything
-#	for entirely irrelevant reasons. Although we don't enable -Weverything
-#	we add to WARN_FLAGS in the hopes this will help such legacy systems.
-#
-#   -Wno-poison-system-directories -Wno-unreachable-code-break -Wno-padded
-#
-# While this repo does not officially support pre-c11 systems that have
-# problems with the timegm() function not being declared in <time.h>.
-#
-# If your pre-c11 system fails to compile this code, we apologize and
-# request that you compile this repo on a more up to date system such as
-# a system that fully support c11 or later.
-#
-# XXX - ####################################################################### - XXX #
-# XXX - In 2024 we will D_LEGACY and stop trying to support such legacy systems - XXX #
-# XXX - ####################################################################### - XXX #
-#
-D_LEGACY+= -D_DEFAULT_SOURCE -D_ISOC99_SOURCE -D_POSIX_C_SOURCE=200809
-LDFLAGS+= -lm
-WARN_FLAGS+= -Wno-unused-command-line-argument -Wno-poison-system-directories -Wno-unreachable-code-break -Wno-padded
-#
-endif
-
-
 # how to compile
 #
 # We test by forcing warnings to be errors so you don't have to (allegedly :-) )
 #
-CFLAGS= ${C_STD} ${COPT} -pedantic ${D_LEGACY} ${WARN_FLAGS} ${LDFLAGS}
+CFLAGS= ${C_STD} ${COPT} -pedantic ${WARN_FLAGS} ${LDFLAGS}
 
 
 # NOTE: If you use ASAN, set this environment var:
 #	ASAN_OPTIONS="detect_stack_use_after_return=1"
 #
-#CFLAGS= ${C_STD} -O0 -g -pedantic ${D_LEGACY} ${WARN_FLAGS} ${LDFLAGS} -fsanitize=address -fno-omit-frame-pointer
+#CFLAGS= ${C_STD} -O0 -g -pedantic ${WARN_FLAGS} ${LDFLAGS} -fsanitize=address -fno-omit-frame-pointer
 
 # NOTE: For valgrind, run with:
 #
@@ -486,7 +420,7 @@ mkiocccentry.o: mkiocccentry.c Makefile
 mkiocccentry: mkiocccentry.o rule_count.o dbg.o util.o dyn_array.o json_parse.o entry_util.o \
 	json_util.o entry_time.o location.o utf8_posix_map.o sanity.o json_sem.o Makefile
 	${CC} ${CFLAGS} mkiocccentry.o rule_count.o dbg.o util.o dyn_array.o json_parse.o \
-	    entry_util.o entry_time.o json_util.o location.o utf8_posix_map.o sanity.o json_sem.o -o $@
+	    entry_util.o entry_time.o json_util.o location.o utf8_posix_map.o sanity.o json_sem.o -lm -o $@
 
 iocccsize.o: iocccsize.c Makefile
 	${CC} ${CFLAGS} -DMKIOCCCENTRY_USE iocccsize.c -c
@@ -541,19 +475,19 @@ chkentry: chkentry.o dbg.o util.o sanity.o utf8_posix_map.o dyn_array.o jparse.o
 	soup/chk_sem_auth.o Makefile
 	${CC} ${CFLAGS} chkentry.o dbg.o util.o sanity.o utf8_posix_map.o jparse.o jparse.tab.o dyn_array.o json_parse.o \
 		json_util.o soup/chk_validate.o entry_util.o entry_time.o json_sem.o foo.o location.o soup/chk_sem_info.o \
-		soup/chk_sem_auth.o -o $@
+		soup/chk_sem_auth.o -lm -o $@
 
 jstrencode.o: jstrencode.c jstrencode.h json_util.h json_util.c Makefile
 	${CC} ${CFLAGS} jstrencode.c -c
 
 jstrencode: jstrencode.o dbg.o json_parse.o json_util.o util.o dyn_array.o Makefile
-	${CC} ${CFLAGS} jstrencode.o dbg.o json_parse.o json_util.o util.o dyn_array.o -o $@
+	${CC} ${CFLAGS} jstrencode.o dbg.o json_parse.o json_util.o util.o dyn_array.o -lm -o $@
 
 jstrdecode.o: jstrdecode.c jstrdecode.h json_util.h json_parse.h Makefile
 	${CC} ${CFLAGS} jstrdecode.c -c
 
 jstrdecode: jstrdecode.o dbg.o json_parse.o json_util.o util.o dyn_array.o Makefile
-	${CC} ${CFLAGS} jstrdecode.o dbg.o json_parse.o json_util.o util.o dyn_array.o -o $@
+	${CC} ${CFLAGS} jstrdecode.o dbg.o json_parse.o json_util.o util.o dyn_array.o -lm -o $@
 
 test/jnum_test.o: test/jnum_test.c Makefile
 	cd test; ${CC} ${CFLAGS} -I.. jnum_test.c -c
@@ -563,13 +497,13 @@ test/jnum_chk.o: test/jnum_chk.c test/jnum_chk.h Makefile
 
 test/jnum_chk: test/jnum_chk.o dbg.o json_parse.o json_util.o util.o dyn_array.o test/jnum_test.o Makefile
 	cd test; ${CC} ${CFLAGS} -I.. jnum_chk.o ../dbg.o ../json_parse.o ../json_util.o ../util.o ../dyn_array.o \
-				 jnum_test.o -o jnum_chk
+				 jnum_test.o -lm -o jnum_chk
 
 jnum_gen.o: jnum_gen.c jnum_gen.h Makefile
 	${CC} ${CFLAGS} jnum_gen.c -c
 
 jnum_gen: jnum_gen.o dbg.o json_parse.o json_util.o util.o dyn_array.o Makefile
-	${CC} ${CFLAGS} jnum_gen.o dbg.o json_parse.o json_util.o util.o dyn_array.o -o $@
+	${CC} ${CFLAGS} jnum_gen.o dbg.o json_parse.o json_util.o util.o dyn_array.o -lm -o $@
 
 jparse.o: jparse.c jparse.h Makefile
 	${CC} ${CFLAGS} -Wno-unused-but-set-variable -Wno-unused-function -Wno-unneeded-internal-declaration jparse.c -c
@@ -589,7 +523,7 @@ jparse_main.o: jparse_main.c Makefile
 jparse: jparse.o jparse.tab.o util.o dyn_array.o dbg.o json_parse.o \
 	json_util.o jparse_main.o Makefile
 	${CC} ${CFLAGS} jparse.o jparse.tab.o util.o dyn_array.o dbg.o json_parse.o \
-			json_util.o jparse_main.o -o $@
+			json_util.o jparse_main.o -lm -o $@
 
 jsemtblgen.o: jsemtblgen.c Makefile
 	${CC} ${CFLAGS} jsemtblgen.c -c
@@ -597,7 +531,7 @@ jsemtblgen.o: jsemtblgen.c Makefile
 jsemtblgen: jsemtblgen.o jparse.o jparse.tab.o util.o dyn_array.o dbg.o json_parse.o \
 	    json_util.o rule_count.o Makefile
 	${CC} ${CFLAGS} jsemtblgen.o jparse.o jparse.tab.o util.o dyn_array.o dbg.o json_parse.o \
-			json_util.o rule_count.o -o $@
+			json_util.o rule_count.o -lm -o $@
 
 test/utf8_test.o: test/utf8_test.c utf8_posix_map.h Makefile
 	cd test; ${CC} ${CFLAGS} -I.. utf8_test.c -c
