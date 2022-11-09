@@ -114,6 +114,18 @@ main(int argc, char **argv)
 	tree = parse_json_file(filename, &valid_json);
     }
 
+    if (tree == NULL) {
+	warn(program, "JSON parse tree is NULL");
+    }
+    /*
+     * free the JSON parse tree
+     */
+    else {
+	json_tree_free(tree, JSON_INFINITE_DEPTH);
+	free(tree);
+	tree = NULL;
+    }
+
     /*
      * firewall - JSON parser must have returned a valid JSON parse tree
      */
@@ -122,22 +134,7 @@ main(int argc, char **argv)
 	err(1, program, "invalid JSON"); /*ooo*/
 	not_reached();
     }
-    if (tree == NULL) {
-	warn(program, "JSON parse tree is NULL");
-    }
 
-    /*
-     * free the JSON parse tree
-     */
-    if (tree == NULL) {
-	json_tree_free(tree, JSON_INFINITE_DEPTH);
-	free(tree);
-	tree = NULL;
-    }
-
-    /*
-     *  exit based on JSON parse success or failure
-     */
     if (num_errors > 0) {
 	msg("invalid JSON");
 	exit(1); /*ooo*/
