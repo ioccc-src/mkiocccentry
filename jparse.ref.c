@@ -2570,9 +2570,9 @@ low_byte_scan(char const *data, size_t len, size_t *low_bytes, size_t *nul_bytes
  *
  * given:
  *
- *	filename    - filename or NULL for stdin
  *	ptr	    - pointer to start of json blob
  *	len	    - length of the json blob
+ *	filename    - filename or NULL for stdin
  *	is_valid    - != NULL ==> set to true or false depending on json validity
  *
  * return:
@@ -2586,7 +2586,7 @@ low_byte_scan(char const *data, size_t len, size_t *low_bytes, size_t *nul_bytes
  * enough (or otherwise if this information is requested).
  */
 struct json *
-parse_json(char const *filename, char const *ptr, size_t len, bool *is_valid)
+parse_json(char const *ptr, size_t len, char const *filename, bool *is_valid)
 {
     struct json *tree = NULL;		/* the JSON parse tree */
     int ret = 0;			/* yyparse() return value */
@@ -2732,8 +2732,8 @@ parse_json(char const *filename, char const *ptr, size_t len, bool *is_valid)
  * then parse that data as if it were JSON.
  *
  * given:
- *	filename    - name of file or NULL for stdin
  *	stream      - open file stream containing JSON data
+ *	filename    - name of file or NULL for stdin
  *	is_valid    - != NULL ==> set to true or false depending on json validity
  *
  * return:
@@ -2752,7 +2752,7 @@ parse_json(char const *filename, char const *ptr, size_t len, bool *is_valid)
  *	 this information is requested).
  */
 struct json *
-parse_json_stream(char const *filename, FILE *stream, bool *is_valid)
+parse_json_stream(FILE *stream, char const *filename, bool *is_valid)
 {
     struct json *node = NULL;		/* the JSON parse tree */
     char *data = NULL;			/* used to determine if there are NUL bytes in the file */
@@ -2863,7 +2863,7 @@ parse_json_stream(char const *filename, FILE *stream, bool *is_valid)
      * JSON parse the data from the file
      */
     json_dbg(JSON_DBG_HIGH, __func__, "calling parse_json on data block with length %ju:", (uintmax_t)len);
-    node = parse_json(filename, data, len, is_valid);
+    node = parse_json(data, len, filename, is_valid);
 
     /* free data */
     if (data != NULL) {
@@ -3033,7 +3033,7 @@ parse_json_file(char const *name, bool *is_valid)
     /*
      * JSON parse the open stream
      */
-    node = parse_json_stream(name, stream, is_valid);
+    node = parse_json_stream(stream, name, is_valid);
 
     /*
      * return the JSON parse tree node
