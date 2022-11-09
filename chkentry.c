@@ -659,16 +659,13 @@ main(int argc, char *argv[])
     }
 
     /*
-     * cleanup - except for info_path and auth_path
+     * cleanup - except for info_path, auth_path, info_stream and auth_stream.
+     *
+     * We don't try closing info_stream or auth_stream because the json parser
+     * already does that at this point. This is because we no longer use yyin
+     * due to complications introduced when making the lexer re-entrant. This is
+     * not a problem under macOS but it is under linux.
      */
-    if (info_stream != NULL) {
-	clearerr_or_fclose(info_stream);
-	info_stream = NULL;
-    }
-    if (auth_stream != NULL) {
-	clearerr_or_fclose(auth_stream);
-	auth_stream = NULL;
-    }
     if (info_tree != NULL) {
 	json_tree_free(info_tree, JSON_DEFAULT_MAX_DEPTH);
 	info_tree = NULL;
