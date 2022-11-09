@@ -26,39 +26,15 @@
 #    define  INCLUDE_ENTRY_UTIL_H
 
 
-#include <time.h>
-#include <ctype.h>
-#include <sys/time.h>
-
-/*
- * version - official IOCCC toolkit versions
- */
-#include "version.h"
-
 /*
  * json_parse - JSON parser support code
  */
 #include "json_parse.h"
 
 /*
- * json_util - general JSON parser utility support functions
- */
-#include "json_util.h"
-
-/*
  * json_sem - JSON semantics support
  */
 #include "json_sem.h"
-
-/*
- * limit_ioccc - IOCCC size and rule related limitations
- */
-#include "limit_ioccc.h"
-
-/*
- * location - location/country codes
- */
-#include "location.h"
 
 
 /*
@@ -69,6 +45,7 @@
 #define PROG_C_FILENAME "prog.c"
 #define REMARKS_FILENAME "remarks.md"
 #define MAKEFILE_FILENAME "Makefile"
+
 
 /*
  * IOCCC author information
@@ -261,7 +238,6 @@ extern bool test_entry_num(int entry_num);
 extern bool test_extra_file(char const *str);
 extern bool test_first_rule_is_all(bool boolean);
 extern bool test_fnamchk_version(char const *str);
-extern bool test_formed_UTC(char const *str);
 extern bool test_formed_timestamp(time_t tstamp);
 extern bool test_formed_timestamp_usec(int formed_timestamp_usec);
 extern bool test_found_all_rule(bool boolean);

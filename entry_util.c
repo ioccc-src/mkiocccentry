@@ -35,6 +35,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <strings.h> /* strcasecmp */
+#include <ctype.h>
 
 /*
  * dbg - info, debug, warning, error, and usage message facility
@@ -47,26 +48,29 @@
 #include "util.h"
 
 /*
+ * version - official IOCCC toolkit versions
+ */
+#include "version.h"
+
+/*
+ * limit_ioccc - IOCCC size and rule related limitations
+ */
+#include "limit_ioccc.h"
+
+/*
  * entry_util - utilities supporting mkiocccentry JSON files
  */
 #include "entry_util.h"
 
+/*
+ * entry_time - utility functions supporting mkiocccentry JSON files related to time
+ */
+#include "entry_time.h"
 
 /*
- * While this repo does not officially support pre-c11 systems that have
- * problems with the timegm() function not being declared in <time.h>, the
- * workaround / gross hack below is an attempt to make such systems work.
- *
- * If your pre-c11 system fails to compile this code, we apologize and
- * request that you compile this repo on a more up to date system such as
- * a system that fully support c11 or later.
- *
- * In 2024 we will stop doing going out of our way to support systems that do
- * not fully implement C11.
+ * location - location/country codes
  */
-#if defined(TIMEGM_PROBLEM)
-extern time_t timegm(struct tm *timeptr);	/* workaround / gross hack */
-#endif
+#include "location.h"
 
 
 /*
@@ -1676,81 +1680,6 @@ object2manifest(struct json *node, unsigned int depth, struct json_sem *sem,
 
 
 /*
- * timestr_eq_tstamp - determine if a time string matches a timestamp
- *
- * given:
- *	timestr		a time string formatted by "%a %b %d %H:%M:%S %Y UTC"
- *	timestamp	timestamp as a time_t to compare
- *
- * returns:
- *	true ==> time string is the same time as timestamp,
- *	false ==> time string differs in time from timestamp, or
- *		  time string is invalid format, or internal error
- */
-bool
-timestr_eq_tstamp(char const *timestr, time_t timestamp)
-{
-    struct tm timeptr;			/* formed_UTC converted into broken-out time */
-    char *ptr = NULL;			/* ptr to first char in buf not converted */
-    time_t timestr_as_time_t;		/* timestr as a timestamp */
-
-    /*
-     * firewall
-     */
-    if (timestr == NULL) {
-	warn(__func__, "timestr is NULL");
-	return false;
-    }
-
-    /*
-     * convert into broken-out time
-     */
-    ptr = strptime(timestr, "%a %b %d %H:%M:%S %Y UTC", &timeptr);
-    if (ptr == NULL) {
-	json_dbg(JSON_DBG_MED, __func__,
-		 "invalid: strptime cannot convert time string");
-	json_dbg(JSON_DBG_HIGH, __func__,
-		 "invalid: strptime failed convert time string: <%s>", timestr);
-	return false;
-    }
-    if (ptr[0] != '\0') {
-	json_dbg(JSON_DBG_MED, __func__,
-		 "invalid: extra data in time string");
-	json_dbg(JSON_DBG_HIGH, __func__,
-		 "invalid: extra data in time string: <%s>", timestr);
-	return false;
-    }
-
-    /*
-     * convert broken-out time into timestamp
-     */
-    timestr_as_time_t = timegm(&timeptr);
-
-    /*
-     * compare timestamps
-     */
-    if (timestr_as_time_t != timestamp) {
-	json_dbg(JSON_DBG_MED, __func__,
-		 "invalid: time string not same time as timestamp");
-	if ((time_t)-1 > 0) {
-	    /* case: unsigned time_t */
-	    json_dbg(JSON_DBG_HIGH, __func__,
-		     "invalid: time string: <%s> %ju != timestamp: %ju",
-		     timestr, (uintmax_t)timestr_as_time_t, (uintmax_t)timestamp);
-	} else {
-	    /* case: signed time_t */
-	    json_dbg(JSON_DBG_HIGH, __func__,
-		     "invalid: time string: <%s> %jd != timestamp: %jd",
-		     timestr, (intmax_t)timestr_as_time_t, (intmax_t)timestamp);
-	}
-	return false;
-    }
-    json_dbg(JSON_DBG_MED, __func__, "time string same time as timestamp");
-    return true;
-}
-
-
-/*
  * form_tar_filename - return an malloced tarball filename
  *
  * given:
@@ -2909,10 +2838,7 @@ test_fnamchk_version(char const *str)
 bool
 test_formed_UTC(char const *str)
 {
-    struct tm timeptr;			/* formed_UTC converted into broken-out time */
-    char *ptr = NULL;			/* ptr to first char in buf not converted */
-    char buf[MAX_TIMESTAMP_LEN+1+1];	/* conversion back to time string */
-    size_t strftime_ret;		/* length of strftime() string without the trailing newline */
+    bool match = false;			/* true ==> time string matched reconverted time string */
 
     /*
      * firewall
@@ -2926,47 +2852,17 @@ test_formed_UTC(char const *str)
      * validate str
      */
 
-    /* convert into broken-out time */
-    ptr = strptime(str, "%a %b %d %H:%M:%S %Y UTC", &timeptr);
-    if (ptr == NULL) {
-	json_dbg(JSON_DBG_MED, __func__,
-		 "invalid: strptime cannot convert formed_UTC");
-	json_dbg(JSON_DBG_HIGH, __func__,
-		 "invalid: strptime failed convert formed_UTC: <%s>", str);
-	return false;
-    }
-    if (ptr[0] != '\0') {
-	json_dbg(JSON_DBG_MED, __func__,
-		 "invalid: extra data in formed_UTC");
-	json_dbg(JSON_DBG_HIGH, __func__,
-		 "invalid: extra data in formed_UTC: <%s>", str);
-	return false;
-    }
-
     /*
-     * convert back to time string
+     * compare time string with a reconverted time string
      */
-    memset(buf, 0, sizeof(buf));
-    strftime_ret = strftime(buf, MAX_TIMESTAMP_LEN+1, "%a %b %d %H:%M:%S %Y UTC", &timeptr);
-    if (strftime_ret == 0) {
+    match = conv_timestr_test(str);
+    if (match == false) {
 	json_dbg(JSON_DBG_MED, __func__,
-		 "invalid: strftime failed to convert back to time string");
+		 "invalid: conv_into_out_of() failed");
 	json_dbg(JSON_DBG_HIGH, __func__,
-		 "invalid: strftime conversion back to time string failed: <%s>", str);
+		 "invalid: conv_into_out_of() failed for: <%s>", str);
 	return false;
     }
-
-    /*
-     * compare original time_string with reconverted time string buffer
-     */
-    if (strcmp(str, buf) != 0) {
-	json_dbg(JSON_DBG_MED, __func__,
-		 "invalid: formed_UTC != reconverted time string");
-	json_dbg(JSON_DBG_HIGH, __func__,
-		 "invalid: formed_UTC: <%s> != reconverted: <%s>", str, buf);
-	return false;
-    }
-    json_dbg(JSON_DBG_MED, __func__, "formed_UTC is valid");
     return true;
 }
 
@@ -2987,34 +2883,12 @@ test_formed_UTC(char const *str)
 bool
 test_formed_timestamp(time_t tstamp)
 {
-    struct timeval tp;			/* gettimeofday time value */
     time_t now = 0;			/* the time now */
-    int ret;				/* libc return code */
 
     /*
      * record the time
      */
-    errno = 0;			/* pre-clear errno for errp() */
-    ret = gettimeofday(&tp, NULL);
-    if (ret < 0) {
-	json_dbg(JSON_DBG_MED, __func__,
-		 "invalid: gettimeofday error");
-	return false;
-    }
-    now = tp.tv_sec;
-    if ((time_t)-1 > 0) {
-	/* case: unsigned time_t */
-	json_dbg(JSON_DBG_HIGH, __func__, "now: %ju",
-		 (uintmax_t)now);
-	json_dbg(JSON_DBG_HIGH, __func__, "now+MAX_CLOCK_ERROR: %ju",
-		 (uintmax_t)(now+MAX_CLOCK_ERROR));
-    } else {
-	/* case: signed time_t */
-	json_dbg(JSON_DBG_HIGH, __func__, "now: %jd",
-		 (intmax_t)now);
-	json_dbg(JSON_DBG_HIGH, __func__, "now+MAX_CLOCK_ERROR: %jd",
-		 (intmax_t)(now+MAX_CLOCK_ERROR));
-    }
+    now = get_now();
 
     /*
      * compare with the minimum timestamp

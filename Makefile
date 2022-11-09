@@ -197,7 +197,7 @@ ifeq ($(TIMEGM_PROBLEM),-DTIMEGM_PROBLEM)
 # XXX - In 2024 we will D_LEGACY and stop trying to support such legacy systems - XXX #
 # XXX - ####################################################################### - XXX #
 #
-D_LEGACY+= -D_DEFAULT_SOURCE -D_ISOC99_SOURCE -D_POSIX_C_SOURCE=200809L -D_XOPEN_SOURCE=600 -DTIMEGM_PROBLEM
+D_LEGACY+= -D_DEFAULT_SOURCE -D_ISOC99_SOURCE -D_POSIX_C_SOURCE=200809
 LDFLAGS+= -lm
 WARN_FLAGS+= -Wno-unused-command-line-argument -Wno-poison-system-directories -Wno-unreachable-code-break -Wno-padded
 #
@@ -257,7 +257,7 @@ MAN1_TARGETS= man/mkiocccentry man/txzchk man/fnamchk man/iocccsize man/chkentry
 	      man/jparse man/bug_report man/hostchk man/run_flex man/run_bison
 MAN3_TARGETS= man/dbg
 MAN8_TARGETS= man/reset_tstamp man/verge man/limit_ioccc man/iocccsize_test man/ioccc_test man/run_usage man/utf8_test \
-	      man/have_timegm man/jparse_test man/txzchk_test man/vermod man/mkiocccentry_test man/jstr_test man/jnum_chk \
+	      man/jparse_test man/txzchk_test man/vermod man/mkiocccentry_test man/jstr_test man/jnum_chk \
 	      man/jnum_gen man/chkentry_test
 MAN_TARGETS= ${MAN1_TARGETS} ${MAN3_TARGETS} ${MAN8_TARGETS}
 HTML_MAN_TARGETS= $(patsubst %,%.html,$(MAN_TARGETS))
@@ -277,7 +277,7 @@ OBJFILES= dbg.o util.o mkiocccentry.o iocccsize.o fnamchk.o txzchk.o chkentry.o 
 	json_parse.o jstrencode.o jstrdecode.o rule_count.o location.o sanity.o test/utf8_test.o verge.o \
 	dyn_array.o test/dyn_test.o dbg_test.o test/jnum_chk.o jnum_gen.o test/jnum_test.o \
 	json_util.o jparse_main.o entry_util.o jsemtblgen.o soup/chk_sem_auth.o soup/chk_sem_info.o \
-	soup/chk_validate.o json_sem.o have_timegm.o
+	soup/chk_validate.o json_sem.o entry_time.o
 LESS_PICKY_CSRC= utf8_posix_map.c foo.c
 LESS_PICKY_H_FILES = oebxergfB.h
 LESS_PICKY_OBJ= utf8_posix_map.o foo.o
@@ -296,7 +296,7 @@ H_FILES= dbg.h chkentry.h json_parse.h jstrdecode.h jstrencode.h limit_ioccc.h \
 	mkiocccentry.h txzchk.h util.h location.h utf8_posix_map.h jparse.h \
 	verge.h sorry.tm.ca.h dyn_array.h test/dyn_test.h json_util.h test/jnum_chk.h \
 	jnum_gen.h jparse_main.h entry_util.h jsemtblgen.h soup/chk_sem_auth.h \
-	soup/chk_sem_info.h soup/chk_validate.h json_sem.h foo.h
+	soup/chk_sem_info.h soup/chk_validate.h json_sem.h foo.h entry_time.h
 # This is a simpler way to do:
 #
 #   DSYMDIRS = $(patsubst %,%.dSYM,$(TARGETS))
@@ -304,7 +304,7 @@ H_FILES= dbg.h chkentry.h json_parse.h jstrdecode.h jstrencode.h limit_ioccc.h \
 DSYMDIRS= $(TARGETS:=.dSYM)
 SH_FILES= test/iocccsize_test.sh test/jstr_test.sh limit_ioccc.sh test/mkiocccentry_test.sh \
 	  vermod.sh prep.sh run_bison.sh run_flex.sh reset_tstamp.sh test/ioccc_test.sh \
-	  test/jparse_test.sh test/txzchk_test.sh hostchk.sh jsemcgen.sh have_timegm.sh \
+	  test/jparse_test.sh test/txzchk_test.sh hostchk.sh jsemcgen.sh \
 	  run_usage.sh bug_report.sh soup/all_ref.sh test/chkentry_test.sh soup/fmt_depend.sh
 BUILD_LOG= build.log
 TXZCHK_LOG= test/txzchk_test.log
@@ -477,13 +477,16 @@ sanity.o: sanity.c Makefile
 entry_util.o: entry_util.c Makefile
 	${CC} ${CFLAGS} entry_util.c -c
 
+entry_time.o: entry_time.c Makefile
+	${CC} ${CFLAGS} entry_time.c -c
+
 mkiocccentry.o: mkiocccentry.c Makefile
 	${CC} ${CFLAGS} mkiocccentry.c -c
 
 mkiocccentry: mkiocccentry.o rule_count.o dbg.o util.o dyn_array.o json_parse.o entry_util.o \
-	json_util.o location.o utf8_posix_map.o sanity.o json_sem.o Makefile
+	json_util.o entry_time.o location.o utf8_posix_map.o sanity.o json_sem.o Makefile
 	${CC} ${CFLAGS} mkiocccentry.o rule_count.o dbg.o util.o dyn_array.o json_parse.o \
-	    entry_util.o json_util.o location.o utf8_posix_map.o sanity.o json_sem.o -o $@
+	    entry_util.o entry_time.o json_util.o location.o utf8_posix_map.o sanity.o json_sem.o -o $@
 
 iocccsize.o: iocccsize.c Makefile
 	${CC} ${CFLAGS} -DMKIOCCCENTRY_USE iocccsize.c -c
@@ -537,7 +540,7 @@ chkentry: chkentry.o dbg.o util.o sanity.o utf8_posix_map.o dyn_array.o jparse.o
 	json_util.o soup/chk_validate.o entry_util.c json_sem.o foo.o location.o soup/chk_sem_info.o \
 	soup/chk_sem_auth.o Makefile
 	${CC} ${CFLAGS} chkentry.o dbg.o util.o sanity.o utf8_posix_map.o jparse.o jparse.tab.o dyn_array.o json_parse.o \
-		json_util.o soup/chk_validate.o entry_util.o json_sem.o foo.o location.o soup/chk_sem_info.o \
+		json_util.o soup/chk_validate.o entry_util.o entry_time.o json_sem.o foo.o location.o soup/chk_sem_info.o \
 		soup/chk_sem_auth.o -o $@
 
 jstrencode.o: jstrencode.c jstrencode.h json_util.h json_util.c Makefile
@@ -1119,7 +1122,7 @@ mkiocccentry.o: mkiocccentry.c mkiocccentry.h util.h dyn_array.h dbg.h location.
 iocccsize.o: iocccsize.c iocccsize_err.h iocccsize.h
 fnamchk.o: fnamchk.c fnamchk.h dbg.h util.h dyn_array.h limit_ioccc.h version.h utf8_posix_map.h
 txzchk.o: txzchk.c txzchk.h util.h dyn_array.h dbg.h sanity.h location.h utf8_posix_map.h \
-	limit_ioccc.h version.h entry_util.h json_parse.h json_util.h json_sem.h
+	limit_ioccc.h version.h entry_util.h json_parse.h json_sem.h json_util.h
 chkentry.o: chkentry.c chkentry.h dbg.h json_util.h dyn_array.h json_parse.h util.h jparse.h \
 	jparse.tab.h json_sem.h soup/chk_sem_info.h soup/../json_sem.h soup/chk_sem_auth.h foo.h sanity.h \
 	location.h utf8_posix_map.h limit_ioccc.h version.h
@@ -1146,16 +1149,14 @@ jnum_test.o: test/jnum_test.c test/../json_parse.h test/../util.h test/../dyn_ar
 json_util.o: json_util.c dbg.h json_parse.h util.h dyn_array.h json_util.h
 jparse_main.o: jparse_main.c jparse_main.h dbg.h util.h dyn_array.h jparse.h json_parse.h \
 	json_util.h jparse.tab.h
-entry_util.o: entry_util.c dbg.h util.h dyn_array.h entry_util.h version.h json_parse.h json_util.h \
-	json_sem.h limit_ioccc.h location.h
+entry_util.o: entry_util.c dbg.h util.h dyn_array.h version.h limit_ioccc.h entry_util.h \
+	json_parse.h json_sem.h json_util.h entry_time.h location.h
 jsemtblgen.o: jsemtblgen.c jsemtblgen.h dbg.h util.h dyn_array.h json_util.h json_parse.h jparse.h \
 	jparse.tab.h json_sem.h iocccsize.h
 chk_sem_auth.o: soup/chk_sem_auth.c soup/chk_sem_auth.h soup/../json_sem.h soup/../util.h \
 	soup/../dyn_array.h soup/../dbg.h soup/../json_parse.h soup/../json_util.h
 chk_sem_info.o: soup/chk_sem_info.c soup/chk_sem_info.h soup/../json_sem.h soup/../util.h \
 	soup/../dyn_array.h soup/../dbg.h soup/../json_parse.h soup/../json_util.h
-chk_validate.o: soup/chk_validate.c soup/chk_validate.h soup/../entry_util.h soup/../version.h \
-	soup/../json_parse.h soup/../util.h soup/../dyn_array.h soup/../dbg.h soup/../json_util.h \
-	soup/../json_sem.h soup/../limit_ioccc.h soup/../location.h soup/chk_sem_auth.h soup/chk_sem_info.h
 json_sem.o: json_sem.c dbg.h json_sem.h util.h dyn_array.h json_parse.h json_util.h
-have_timegm.o: have_timegm.c
+entry_time.o: entry_time.c dbg.h json_util.h dyn_array.h json_parse.h util.h entry_time.h \
+	limit_ioccc.h version.h
