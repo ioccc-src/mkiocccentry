@@ -268,7 +268,8 @@ JSON_COMMA		","
  *	nul_bytes   - pointer to set the number of NUL bytes found in
  *
  * return:
- *	true ==> data == NULL  OR  len <= 0 OR  one or more [\x00-\x08\x0e-\x1f] bytes are found
+ *	true ==> data == NULL  OR  len <= 0 OR  one or more [\x00-\x08\x0e-\x1f]
+ *		 bytes are found OR low_bytes == NULL OR nul_bytes == NULL
  *	false ==> data != NULL AND len > 0  AND no NUL [\x00-\x08\x0e-\x1f] bytes were found
  */
 static bool
@@ -286,17 +287,17 @@ low_byte_scan(char const *data, size_t len, size_t *low_bytes, size_t *nul_bytes
     if (data == NULL) {
 	werr(30, __func__, "data is NULL");
 	++num_errors;
-	return false;
+	return true;
     }
     if (len <= 0) {
 	werr(31, __func__, "len: %zu <= 0 ", len);
 	++num_errors;
-	return false;
+	return true;
     }
     if (low_bytes == NULL) {
 	werr(32, __func__, "low_bytes is NULL");
 	++num_errors;
-	return false;
+	return true;
     } else {
 	/* set *low_bytes to 0 */
 	*low_bytes = 0;
@@ -304,7 +305,7 @@ low_byte_scan(char const *data, size_t len, size_t *low_bytes, size_t *nul_bytes
     if (nul_bytes == NULL) {
 	werr(33, __func__, "nul_bytes is NULL"); /* nul_bytes is ironically NULL! :-) */
 	++num_errors;
-	return false;
+	return true;
     } else {
 	*nul_bytes = 0;
     }
