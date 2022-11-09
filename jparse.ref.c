@@ -580,7 +580,7 @@ static const flex_int32_t yy_rule_can_match_eol[16] =
  * problems. Another way is to provide 'int yywrap() { return 1; }' but this is
  * unnecessary.
  */
-#line 34 "jparse.l"
+#line 35 "jparse.l"
 /* Declarations etc. go here.
  *
  * Code is copied verbatim near the top of the generated code.
@@ -599,7 +599,7 @@ YY_BUFFER_STATE bs;
  * locations in the file / json block
  */
 #define YY_USER_ACTION \
-			yylloc->filename = filename; \
+			yylloc->filename = yyextra != NULL ? yyextra->filename:""; \
 			yylloc->first_line = yylloc->last_line = yylineno; \
 			yylloc->first_column = yyget_column(yyscanner); \
 			yylloc->last_column = yyget_column(yyscanner)+yyget_leng(yyscanner)-1; \
@@ -634,9 +634,7 @@ YY_BUFFER_STATE bs;
 #include <unistd.h>
 #endif
 
-#ifndef YY_EXTRA_TYPE
-#define YY_EXTRA_TYPE void *
-#endif
+#define YY_EXTRA_TYPE struct json_extra *
 
 /* Holds the entire state of the reentrant scanner. */
 struct yyguts_t
@@ -906,9 +904,9 @@ YY_DECL
 		}
 
 	{
-#line 94 "jparse.l"
+#line 95 "jparse.l"
 
-#line 860 "jparse.c"
+#line 858 "jparse.c"
 
 	while ( /*CONSTCOND*/1 )		/* loops until end-of-file is reached */
 		{
@@ -979,7 +977,7 @@ do_action:	/* This label is used only to access EOF actions. */
 
 case 1:
 YY_RULE_SETUP
-#line 95 "jparse.l"
+#line 96 "jparse.l"
 {
 			    /*
 			     * Whitespace excluding newlines
@@ -999,14 +997,14 @@ YY_RULE_SETUP
 case 2:
 /* rule 2 can match eol */
 YY_RULE_SETUP
-#line 111 "jparse.l"
+#line 112 "jparse.l"
 {
 			    yycolumn = 1;
 			}
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 115 "jparse.l"
+#line 116 "jparse.l"
 {
 			    /* string */
 			    return JSON_STRING;
@@ -1014,7 +1012,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 120 "jparse.l"
+#line 121 "jparse.l"
 {
 			    /* number */
 			    return JSON_NUMBER;
@@ -1022,7 +1020,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 125 "jparse.l"
+#line 126 "jparse.l"
 {
 			    /* null object */
 			    return JSON_NULL;
@@ -1030,7 +1028,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 130 "jparse.l"
+#line 131 "jparse.l"
 {
 			    /* boolean: true */
 			    return JSON_TRUE;
@@ -1038,7 +1036,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 134 "jparse.l"
+#line 135 "jparse.l"
 {
 			    /* boolean: false */
 			    return JSON_FALSE;
@@ -1046,7 +1044,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 139 "jparse.l"
+#line 140 "jparse.l"
 {
 			    /* start of object */
 			    return JSON_OPEN_BRACE;
@@ -1054,7 +1052,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 143 "jparse.l"
+#line 144 "jparse.l"
 {
 			    /* end of object */
 			    return JSON_CLOSE_BRACE;
@@ -1062,7 +1060,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
-#line 148 "jparse.l"
+#line 149 "jparse.l"
 {
 			    /* start of array */
 			    return JSON_OPEN_BRACKET;
@@ -1070,7 +1068,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
-#line 152 "jparse.l"
+#line 153 "jparse.l"
 {
 			    /* end of array */
 			    return JSON_CLOSE_BRACKET;
@@ -1078,7 +1076,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
-#line 157 "jparse.l"
+#line 158 "jparse.l"
 {
 			    /* colon or 'equals' */
 			    return JSON_COLON;
@@ -1086,7 +1084,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
-#line 162 "jparse.l"
+#line 163 "jparse.l"
 {
 			    /* comma: name/value pair separator */
 			    return JSON_COMMA;
@@ -1094,7 +1092,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
-#line 167 "jparse.l"
+#line 168 "jparse.l"
 {
 			    /* invalid token: any other character */
 			    warn(__func__, "at line %d column %d: invalid token: 0x%02x = <%c>", yylloc->first_line, yylloc->first_column, *yytext, *yytext);
@@ -1130,10 +1128,10 @@ YY_RULE_SETUP
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
-#line 200 "jparse.l"
+#line 201 "jparse.l"
 YY_FATAL_ERROR( "flex scanner jammed" );
 	YY_BREAK
-#line 1085 "jparse.c"
+#line 1083 "jparse.c"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 
@@ -2337,7 +2335,7 @@ void yyfree (void * ptr , yyscan_t yyscanner)
 
 #define YYTABLES_NAME "yytables"
 
-#line 200 "jparse.l"
+#line 201 "jparse.l"
 
 
 /* Section 3: Code that's copied to the generated scanner */
@@ -2409,7 +2407,8 @@ void yyfree (void * ptr , yyscan_t yyscanner)
  *	nul_bytes   - pointer to set the number of NUL bytes found in
  *
  * return:
- *	true ==> data == NULL  OR  len <= 0 OR  one or more [\x00-\x08\x0e-\x1f] bytes are found
+ *	true ==> data == NULL  OR  len <= 0 OR  one or more [\x00-\x08\x0e-\x1f]
+ *		 bytes are found OR low_bytes == NULL OR nul_bytes == NULL
  *	false ==> data != NULL AND len > 0  AND no NUL [\x00-\x08\x0e-\x1f] bytes were found
  */
 static bool
@@ -2427,17 +2426,17 @@ low_byte_scan(char const *data, size_t len, size_t *low_bytes, size_t *nul_bytes
     if (data == NULL) {
 	werr(30, __func__, "data is NULL");
 	++num_errors;
-	return false;
+	return true;
     }
     if (len <= 0) {
 	werr(31, __func__, "len: %zu <= 0 ", len);
 	++num_errors;
-	return false;
+	return true;
     }
     if (low_bytes == NULL) {
 	werr(32, __func__, "low_bytes is NULL");
 	++num_errors;
-	return false;
+	return true;
     } else {
 	/* set *low_bytes to 0 */
 	*low_bytes = 0;
@@ -2445,7 +2444,7 @@ low_byte_scan(char const *data, size_t len, size_t *low_bytes, size_t *nul_bytes
     if (nul_bytes == NULL) {
 	werr(33, __func__, "nul_bytes is NULL"); /* nul_bytes is ironically NULL! :-) */
 	++num_errors;
-	return false;
+	return true;
     } else {
 	*nul_bytes = 0;
     }
@@ -2571,6 +2570,7 @@ low_byte_scan(char const *data, size_t len, size_t *low_bytes, size_t *nul_bytes
  *
  * given:
  *
+ *	filename    - filename or NULL for stdin
  *	ptr	    - pointer to start of json blob
  *	len	    - length of the json blob
  *	is_valid    - != NULL ==> set to true or false depending on json validity
@@ -2586,11 +2586,12 @@ low_byte_scan(char const *data, size_t len, size_t *low_bytes, size_t *nul_bytes
  * enough (or otherwise if this information is requested).
  */
 struct json *
-parse_json(char const *ptr, size_t len, bool *is_valid)
+parse_json(char const *filename, char const *ptr, size_t len, bool *is_valid)
 {
     struct json *tree = NULL;		/* the JSON parse tree */
     int ret = 0;			/* yyparse() return value */
     yyscan_t scanner;			/* scanner instance: is a void * */
+    struct json_extra extra;
 
     /*
      * We set *is_valid = true if is_valid != NULL so that the caller does not
@@ -2626,10 +2627,16 @@ parse_json(char const *ptr, size_t len, bool *is_valid)
 	return tree;
     }
 
+    if (filename == NULL) {
+	json_dbg(JSON_DBG_HIGH, __func__, "filename is NULL, forcing it to be \"-\" for stdin");
+	filename = "-";	/* assume stdin */
+    }
+
     /*
      * initialise scanner
      */
-    yylex_init(&scanner);
+    extra.filename = filename;
+    yylex_init_extra(&extra, &scanner);
 
     /*
      * scan the blob
@@ -2678,7 +2685,7 @@ parse_json(char const *ptr, size_t len, bool *is_valid)
     ret = yyparse(&tree, scanner);
 
     /*
-     * scan and parse clean up
+     * free memory associated with bytes scanned by yy_scan_bytes()
      */
     yy_delete_buffer(bs, scanner);
     bs = NULL;
@@ -2725,6 +2732,7 @@ parse_json(char const *ptr, size_t len, bool *is_valid)
  * then parse that data as if it were JSON.
  *
  * given:
+ *	filename    - name of file or NULL for stdin
  *	stream      - open file stream containing JSON data
  *	is_valid    - != NULL ==> set to true or false depending on json validity
  *
@@ -2744,7 +2752,7 @@ parse_json(char const *ptr, size_t len, bool *is_valid)
  *	 this information is requested).
  */
 struct json *
-parse_json_stream(FILE *stream, bool *is_valid)
+parse_json_stream(char const *filename, FILE *stream, bool *is_valid)
 {
     struct json *node = NULL;		/* the JSON parse tree */
     char *data = NULL;			/* used to determine if there are NUL bytes in the file */
@@ -2785,6 +2793,11 @@ parse_json_stream(FILE *stream, bool *is_valid)
 	/* return a blank JSON tree */
 	node = json_alloc(JTYPE_UNSET);
 	return node;
+    }
+
+    if (filename == NULL) {
+	json_dbg(JSON_DBG_HIGH, __func__, "filename is NULL, forcing it to be \"-\" for stdin");
+	filename = "-";
     }
 
     /*
@@ -2850,7 +2863,7 @@ parse_json_stream(FILE *stream, bool *is_valid)
      * JSON parse the data from the file
      */
     json_dbg(JSON_DBG_HIGH, __func__, "calling parse_json on data block with length %ju:", (uintmax_t)len);
-    node = parse_json(data, len, is_valid);
+    node = parse_json(filename, data, len, is_valid);
 
     /* free data */
     if (data != NULL) {
@@ -2948,7 +2961,7 @@ parse_json_file(char const *name, bool *is_valid)
     } else {
 
 	/*
-	 * validate name
+	 * validate filename
 	 */
 	if (!exists(name)) {
 	    /* report missing file */
@@ -3020,7 +3033,7 @@ parse_json_file(char const *name, bool *is_valid)
     /*
      * JSON parse the open stream
      */
-    node = parse_json_stream(stream, is_valid);
+    node = parse_json_stream(name, stream, is_valid);
 
     /*
      * return the JSON parse tree node

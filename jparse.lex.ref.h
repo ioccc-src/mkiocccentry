@@ -309,9 +309,7 @@ void yyfree ( void * , yyscan_t yyscanner );
 #include <unistd.h>
 #endif
 
-#ifndef YY_EXTRA_TYPE
-#define YY_EXTRA_TYPE void *
-#endif
+#define YY_EXTRA_TYPE struct json_extra *
 
 int yylex_init (yyscan_t* scanner);
 
@@ -569,9 +567,9 @@ extern int yylex \
 #undef yyTABLES_NAME
 #endif
 
-#line 200 "jparse.l"
+#line 201 "jparse.l"
 
 
-#line 524 "jparse.lex.h"
+#line 522 "jparse.lex.h"
 #undef yyIN_HEADER
 #endif /* yyHEADER_H */

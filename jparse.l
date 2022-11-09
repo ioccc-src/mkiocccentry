@@ -29,6 +29,7 @@
 %option noyywrap yylineno nodefault 8bit
 %option bison-bridge bison-locations reentrant
 %option header-file="jparse.lex.h"
+%option extra-type="struct json_extra *"
 
 %{
 /* Declarations etc. go here.
@@ -49,7 +50,7 @@ YY_BUFFER_STATE bs;
  * locations in the file / json block
  */
 #define YY_USER_ACTION \
-			yylloc->filename = filename; \
+			yylloc->filename = yyextra != NULL ? yyextra->filename:""; \
 			yylloc->first_line = yylloc->last_line = yylineno; \
 			yylloc->first_column = yyget_column(yyscanner); \
 			yylloc->last_column = yyget_column(yyscanner)+yyget_leng(yyscanner)-1; \
@@ -268,7 +269,8 @@ JSON_COMMA		","
  *	nul_bytes   - pointer to set the number of NUL bytes found in
  *
  * return:
- *	true ==> data == NULL  OR  len <= 0 OR  one or more [\x00-\x08\x0e-\x1f] bytes are found
+ *	true ==> data == NULL  OR  len <= 0 OR  one or more [\x00-\x08\x0e-\x1f]
+ *		 bytes are found OR low_bytes == NULL OR nul_bytes == NULL
  *	false ==> data != NULL AND len > 0  AND no NUL [\x00-\x08\x0e-\x1f] bytes were found
  */
 static bool
@@ -286,17 +288,17 @@ low_byte_scan(char const *data, size_t len, size_t *low_bytes, size_t *nul_bytes
     if (data == NULL) {
 	werr(30, __func__, "data is NULL");
 	++num_errors;
-	return false;
+	return true;
     }
     if (len <= 0) {
 	werr(31, __func__, "len: %zu <= 0 ", len);
 	++num_errors;
-	return false;
+	return true;
     }
     if (low_bytes == NULL) {
 	werr(32, __func__, "low_bytes is NULL");
 	++num_errors;
-	return false;
+	return true;
     } else {
 	/* set *low_bytes to 0 */
 	*low_bytes = 0;
@@ -304,7 +306,7 @@ low_byte_scan(char const *data, size_t len, size_t *low_bytes, size_t *nul_bytes
     if (nul_bytes == NULL) {
 	werr(33, __func__, "nul_bytes is NULL"); /* nul_bytes is ironically NULL! :-) */
 	++num_errors;
-	return false;
+	return true;
     } else {
 	*nul_bytes = 0;
     }
@@ -430,6 +432,7 @@ low_byte_scan(char const *data, size_t len, size_t *low_bytes, size_t *nul_bytes
  *
  * given:
  *
+ *	filename    - filename or NULL for stdin
  *	ptr	    - pointer to start of json blob
  *	len	    - length of the json blob
  *	is_valid    - != NULL ==> set to true or false depending on json validity
@@ -445,11 +448,12 @@ low_byte_scan(char const *data, size_t len, size_t *low_bytes, size_t *nul_bytes
  * enough (or otherwise if this information is requested).
  */
 struct json *
-parse_json(char const *ptr, size_t len, bool *is_valid)
+parse_json(char const *filename, char const *ptr, size_t len, bool *is_valid)
 {
     struct json *tree = NULL;		/* the JSON parse tree */
     int ret = 0;			/* yyparse() return value */
     yyscan_t scanner;			/* scanner instance: is a void * */
+    struct json_extra extra;
 
     /*
      * We set *is_valid = true if is_valid != NULL so that the caller does not
@@ -485,10 +489,16 @@ parse_json(char const *ptr, size_t len, bool *is_valid)
 	return tree;
     }
 
+    if (filename == NULL) {
+	json_dbg(JSON_DBG_HIGH, __func__, "filename is NULL, forcing it to be \"-\" for stdin");
+	filename = "-";	/* assume stdin */
+    }
+
     /*
      * initialise scanner
      */
-    yylex_init(&scanner);
+    extra.filename = filename;
+    yylex_init_extra(&extra, &scanner);
 
     /*
      * scan the blob
@@ -537,7 +547,7 @@ parse_json(char const *ptr, size_t len, bool *is_valid)
     ret = yyparse(&tree, scanner);
 
     /*
-     * scan and parse clean up
+     * free memory associated with bytes scanned by yy_scan_bytes()
      */
     yy_delete_buffer(bs, scanner);
     bs = NULL;
@@ -584,6 +594,7 @@ parse_json(char const *ptr, size_t len, bool *is_valid)
  * then parse that data as if it were JSON.
  *
  * given:
+ *	filename    - name of file or NULL for stdin
  *	stream      - open file stream containing JSON data
  *	is_valid    - != NULL ==> set to true or false depending on json validity
  *
@@ -603,7 +614,7 @@ parse_json(char const *ptr, size_t len, bool *is_valid)
  *	 this information is requested).
  */
 struct json *
-parse_json_stream(FILE *stream, bool *is_valid)
+parse_json_stream(char const *filename, FILE *stream, bool *is_valid)
 {
     struct json *node = NULL;		/* the JSON parse tree */
     char *data = NULL;			/* used to determine if there are NUL bytes in the file */
@@ -644,6 +655,11 @@ parse_json_stream(FILE *stream, bool *is_valid)
 	/* return a blank JSON tree */
 	node = json_alloc(JTYPE_UNSET);
 	return node;
+    }
+
+    if (filename == NULL) {
+	json_dbg(JSON_DBG_HIGH, __func__, "filename is NULL, forcing it to be \"-\" for stdin");
+	filename = "-";
     }
 
     /*
@@ -709,7 +725,7 @@ parse_json_stream(FILE *stream, bool *is_valid)
      * JSON parse the data from the file
      */
     json_dbg(JSON_DBG_HIGH, __func__, "calling parse_json on data block with length %ju:", (uintmax_t)len);
-    node = parse_json(data, len, is_valid);
+    node = parse_json(filename, data, len, is_valid);
 
     /* free data */
     if (data != NULL) {
@@ -807,7 +823,7 @@ parse_json_file(char const *name, bool *is_valid)
     } else {
 
 	/*
-	 * validate name
+	 * validate filename
 	 */
 	if (!exists(name)) {
 	    /* report missing file */
@@ -879,7 +895,7 @@ parse_json_file(char const *name, bool *is_valid)
     /*
      * JSON parse the open stream
      */
-    node = parse_json_stream(stream, is_valid);
+    node = parse_json_stream(name, stream, is_valid);
 
     /*
      * return the JSON parse tree node
