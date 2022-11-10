@@ -58,7 +58,7 @@ while getopts :hVv:D:J:qc:d: flag; do
     h)	echo "$USAGE" 1>&2
 	exit 2
 	;;
-    V)	echo "$CHKENTRY_TEST_VERSION" 1>&2
+    V)	echo "$CHKENTRY_TEST_VERSION"
 	exit 2
 	;;
     v)	V_FLAG="$OPTARG";

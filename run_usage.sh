@@ -53,7 +53,7 @@ while getopts :hVm:M:D: flag; do
     h)	echo "$USAGE" 1>&2
 	exit 1
 	;;
-    V)	echo "$RUN_USAGE_VERSION" 1>&2
+    V)	echo "$RUN_USAGE_VERSION"
 	exit 1
 	;;
     m)	M_FLAG="-m"

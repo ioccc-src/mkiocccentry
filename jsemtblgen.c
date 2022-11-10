@@ -162,13 +162,11 @@ main(int argc, char **argv)
     errno = 0;		/* pre-clear errno for errp() */
     cap_tbl_name = strdup(tbl_name);
     if (cap_tbl_name == NULL) {
-	++num_errors;
 	errp(10, program, "strdup of tbl_name failed");
 	not_reached();
     }
     len = strlen(tbl_name);
     if (len <= 0) {
-	++num_errors;
 	errp(11, program, "tbl_name cannot be empty");
 	not_reached();
     }
@@ -216,12 +214,10 @@ main(int argc, char **argv)
      * firewall - JSON parser must have returned a valid JSON parse tree
      */
     if (valid_json == false) {
-	++num_errors;
 	err(1, program, "invalid JSON"); /*ooo*/
 	not_reached();
     }
     if (tree == NULL) {
-	++num_errors;
 	err(12, program, "JSON parse tree is NULL");
 	not_reached();
     }
@@ -231,7 +227,6 @@ main(int argc, char **argv)
      */
     tbl = dyn_array_create(sizeof(struct json_sem), CHUNK, CHUNK, true);
     if (tbl == NULL) {
-	++num_errors;
 	err(13, program, "NULL dynamic array");
 	not_reached();
     }
@@ -260,9 +255,12 @@ main(int argc, char **argv)
     }
 
     /*
-     *  exit based on JSON parse success or failure
+     * exit based on JSON parse success or failure
+     *
+     * NOTE: this check is not strictly needed because if the JSON is not valid
+     * it's a fatal error.
      */
-    if (num_errors > 0) {
+    if (!valid_json) {
 	exit(1); /*ooo*/
     }
     exit(0); /*ooo*/

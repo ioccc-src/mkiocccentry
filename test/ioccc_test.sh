@@ -396,8 +396,8 @@ fi
 echo | tee -a -- "$LOGFILE"
 echo "RUNNING: test/jstr_test.sh" | tee -a -- "$LOGFILE"
 echo | tee -a -- "$LOGFILE"
-echo "test/jstr_test.sh" | tee -a -- "$LOGFILE"
-test/jstr_test.sh | tee -a -- "$LOGFILE"
+echo "test/jstr_test.sh -Z $TOPDIR" | tee -a -- "$LOGFILE"
+test/jstr_test.sh -Z "$TOPDIR" | tee -a -- "$LOGFILE"
 status="${PIPESTATUS[0]}"
 if [[ $status -ne 0 ]]; then
     echo "$0: ERROR: test/jstr_test.sh non-zero exit code: $status" 1>&2 | tee -a -- "$LOGFILE"
