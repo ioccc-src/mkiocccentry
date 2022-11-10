@@ -83,7 +83,7 @@ while getopts :hVv:d:i:oFQnlL flag; do
     h) echo "$USAGE" 1>&2
        exit 5
        ;;
-    V) echo "$VERMOD_VERSION" 1>&2
+    V) echo "$VERMOD_VERSION"
        exit 5
        ;;
     v) V_FLAG="$OPTARG";

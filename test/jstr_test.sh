@@ -37,7 +37,7 @@ while getopts :hVv:e:d:Z: flag; do
     h) echo "$USAGE" 1>&2
        exit 2
        ;;
-    V) echo "$JSTR_TEST_VERSION" 1>&2
+    V) echo "$JSTR_TEST_VERSION"
        exit 2
        ;;
     v) V_FLAG="$OPTARG";
@@ -173,7 +173,7 @@ fi
 # test some text holes in the encoding and decoding pipe
 #
 echo "$0: about to run test #3"
-export SRC_SET="jstr_test.sh dbg.c dbg.h fnamchk.c iocccsize.c"
+export SRC_SET="$0 dbg.c dbg.h fnamchk.c iocccsize.c"
 SRC_SET="$SRC_SET chkentry.c json_parse.c json_parse.h jstrdecode.c jstrencode.c"
 SRC_SET="$SRC_SET limit_ioccc.h mkiocccentry.c txzchk.c util.c util.h"
 echo "cat \$SRC_SET | $JSTRENCODE -v $V_FLAG -n | $JSTRDECODE -v $V_FLAG -n > $TEST_FILE"

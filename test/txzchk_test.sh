@@ -88,7 +88,7 @@ while getopts :hVv:t:d:T:F:Z: flag; do
     h)	echo "$USAGE" 1>&2
 	exit 2
 	;;
-    V)	echo "$TXZCHK_TEST_VERSION" 1>&2
+    V)	echo "$TXZCHK_TEST_VERSION"
 	exit 2
 	;;
     v)	V_FLAG="$OPTARG";

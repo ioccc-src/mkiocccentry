@@ -50,7 +50,7 @@ while getopts :hVv:D:J:qj:d: flag; do
     h)	echo "$USAGE" 1>&2
 	exit 2
 	;;
-    V)	echo "$JPARSE_TEST_VERSION" 1>&2
+    V)	echo "$JPARSE_TEST_VERSION"
 	exit 2
 	;;
     v)	V_FLAG="$OPTARG";
