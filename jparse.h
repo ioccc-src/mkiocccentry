@@ -62,7 +62,7 @@
 /*
  * official JSON parser version
  */
-#define JSON_PARSER_VERSION "0.11 2022-11-04"		/* format: major.minor YYYY-MM-DD */
+#define JSON_PARSER_VERSION "0.12 2022-11-09"		/* format: major.minor YYYY-MM-DD */
 
 
 /*
