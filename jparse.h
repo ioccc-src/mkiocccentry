@@ -68,7 +68,6 @@
 /*
  * globals
  */
-extern unsigned num_errors;		/* > 0 number of errors encountered */
 extern char const *json_parser_version;	/* official JSON parser version */
 /* lexer and parser specific variables */
 extern int yydebug;
