@@ -204,16 +204,26 @@ echo "cat \$SRC_SET | $JSTRENCODE -v $V_FLAG -n | $JSTRDECODE -v $V_FLAG -n > $T
 # note: Useless cat. Consider 'cmd < file | ..' or 'cmd file | ..' instead. [SC2002]
 # shellcheck disable=SC2002
 cat $SRC_SET | "$JSTRENCODE" -v "$V_FLAG" -n | "$JSTRDECODE" -v "$V_FLAG" -n > "$TEST_FILE"
-# We cannot double quote "$SRC_SET" because it would make the shell think it's a
-# single file which of course does not exist by that name as it's actually a
-# list of files. Thus we disable shellcheck check SC2086.
-# shellcheck disable=SC2086
-cat $SRC_SET > "$TEST_FILE2"
-if cmp -s "$TEST_FILE2" "$TEST_FILE"; then
-    echo "$0: test #3 passed"
-else
+STATUS="$?"
+if [[ "$STATUS" -ne 0 ]]; then
     echo "$0: test #3 failed" 1>&2
     EXIT_CODE=45
+else
+    # We cannot double quote "$SRC_SET" because it would make the shell think it's a
+    # single file which of course does not exist by that name as it's actually a
+    # list of files. Thus we disable shellcheck check SC2086.
+    # shellcheck disable=SC2086
+    cat $SRC_SET > "$TEST_FILE2"
+    STATUS="$?"
+    if [[ "$STATUS" -ne 0 ]]; then
+	echo "$0: test #3 failed" 1>&2
+	EXIT_CODE=45
+    elif cmp -s "$TEST_FILE2" "$TEST_FILE"; then
+	echo "$0: test #3 passed"
+    else
+	echo "$0: test #3 failed" 1>&2
+	EXIT_CODE=45
+    fi
 fi
 
 # All Done!!! -- Jessica Noll, Age 2
