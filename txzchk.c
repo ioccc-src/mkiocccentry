@@ -191,7 +191,7 @@ main(int argc, char **argv)
 
 
 /*
- * show_txz_info    - show information about tarball (if verbosity is >= medium)
+ * show_txz_info    - show information about tarball (if verbosity is >= DBG_MED)
  *
  * given:
  *
@@ -762,7 +762,7 @@ check_all_txz_files(char const *dir_name)
  *	dir_name	- the directory expected (or NULL if fnamchk fails)
  *	txzpath		- the tarball path
  *
- * Issues a warning for every violations specific to directories (and
+ * Issues a warning for every violation specific to directories (and
  * subdirectories).
  *
  * Does not return on error.

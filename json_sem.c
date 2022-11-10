@@ -1287,7 +1287,7 @@ sem_member_value_int(struct json const *node, unsigned int depth, struct json_se
  * and if it is a JTYPE_NUMBER (JSON number), return a pointer to a time_t
  * or return NULL on error or invalid input.
  *
- * If the JTYPE_NUMBER (JSON number) cannot be returned as an time_t, NULL is returned.
+ * If the JTYPE_NUMBER (JSON number) cannot be returned as a time_t, NULL is returned.
  *
  * given:
  *	node	JSON parse node being checked
@@ -1298,7 +1298,7 @@ sem_member_value_int(struct json const *node, unsigned int depth, struct json_se
  *		NULL ==> do not report a JSON semantic validation error
  *
  * returns:
- *	!= NULL ==> decoded JTYPE_NUMBER as an time_t from the value part of JTYPE_MEMBER
+ *	!= NULL ==> decoded JTYPE_NUMBER as a time_t from the value part of JTYPE_MEMBER
  *	    The val_err arg is ignored
  *	NULL ==> invalid arguments or JSON conversion error
  *	    If val_err != NULL then *val_err is JSON semantic validation error (struct json_sem_val_err)
