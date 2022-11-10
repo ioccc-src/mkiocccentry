@@ -1680,7 +1680,7 @@ object2manifest(struct json *node, unsigned int depth, struct json_sem *sem,
 
 
 /*
- * form_tar_filename - return an malloced tarball filename
+ * form_tar_filename - return a malloced tarball filename
  *
  * given:
  *	IOCCC_contest_id	IOCCC contest UUID or test

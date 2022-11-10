@@ -3496,7 +3496,7 @@ fprint_line_buf(FILE *stream, void *buf, size_t len, int start, int end)
     }
 
     /*
-     * if we had an print error, report the last errno that was observed
+     * if we had a print error, report the last errno that was observed
      */
     if (delayed_errno != 0) {
 	warn(__func__, "last write errno: %d (%s)", delayed_errno, strerror(delayed_errno));
