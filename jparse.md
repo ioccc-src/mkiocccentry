@@ -25,7 +25,7 @@ string, respectively.
 # Exit status
 
 If the JSON is valid the exit status of `jparse` is 0. Different non-zero values
-are for different error conditions, or help string printed.
+are for different error conditions, or help or version string printed.
 
 
 # History
@@ -39,17 +39,12 @@ read the `jparse.l` and `jparse.y` files and **NOT** the bison or flex generated
 code! This is because the generated code is likely to give you nightmares and
 cause other horrible symptoms.
 
-# Bugs
-
-It's not yet fully re-entrant. This might or might not be done later on. See
-below for the implications.
-
 # Re-entrancy
 
-Although the scanner and parser are re-entrant only one parse at one time in a
-process has been tested. The testing of more than one parse at the same time is
-way out of scope of this repo but will be tested more as I move this to a
-separate repo.
+Although the scanner and parser are both re-entrant, only one parse at one time
+in a process has been tested. The testing of more than one parse at the same
+time is way out of scope of this repo but will be tested more as I (@xexyl, Cody
+Boone Ferguson) move this to a separate repo.
 
 If it's not clear this means that having more than one parse active in the same
 process at the same time is not tested so even though it should be okay there
@@ -59,9 +54,9 @@ might be some issues that have yet to be discovered.
 
 This won't be described until after the IOCCCMOCK contest and any changes are
 made based on what is learnt. After this I (Cody) will make a separate repo for
-the parser which will have an updated README and I will document how to use the
-tool in your own projects. The below section Examples will be updated at this
-point as well.
+the parser which will have an updated README. In there I will document how to
+use the tool in your own projects. The below section Examples will be updated at
+this point as well.
 
 # Examples
 
@@ -107,4 +102,3 @@ The following man pages might also be of value:
 - chkentry(1) (for the IOCCC reason the code exists in the first place)
 - flex(1)
 - bison(1)
-
