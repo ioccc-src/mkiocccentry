@@ -204,11 +204,19 @@ echo "cat \$SRC_SET | $JSTRENCODE -v $V_FLAG -n | $JSTRDECODE -v $V_FLAG -n > $T
 # note: Useless cat. Consider 'cmd < file | ..' or 'cmd file | ..' instead. [SC2002]
 # shellcheck disable=SC2002
 cat $SRC_SET | "$JSTRENCODE" -v "$V_FLAG" -n | "$JSTRDECODE" -v "$V_FLAG" -n > "$TEST_FILE"
-STATUS="$?"
-if [[ "$STATUS" -ne 0 ]]; then
-    echo "$0: test #3 failed" 1>&2
-    EXIT_CODE=45
-else
+# copy the PIPESTATUS array as the following command will destroy its contents
+STATUS=("${PIPESTATUS[@]}")
+# test each part of the pipeline
+ERROR=
+for status in "${STATUS[@]}"; do
+    if [[ "$status" -ne 0 ]]; then
+	echo "$0: test #3 failed" 1>&2
+	EXIT_CODE=45
+	ERROR=1
+	break
+    fi
+done
+if [[ -z "$ERROR" ]]; then
     # We cannot double quote "$SRC_SET" because it would make the shell think it's a
     # single file which of course does not exist by that name as it's actually a
     # list of files. Thus we disable shellcheck check SC2086.
