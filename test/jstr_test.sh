@@ -221,9 +221,7 @@ if [[ -z "$ERROR" ]]; then
     # single file which of course does not exist by that name as it's actually a
     # list of files. Thus we disable shellcheck check SC2086.
     # shellcheck disable=SC2086
-    cat $SRC_SET > "$TEST_FILE2"
-    STATUS="$?"
-    if [[ "$STATUS" -ne 0 ]]; then
+    if ! cat $SRC_SET > "$TEST_FILE2"; then
 	echo "$0: test #3 failed" 1>&2
 	EXIT_CODE=45
     elif cmp -s "$TEST_FILE2" "$TEST_FILE"; then
