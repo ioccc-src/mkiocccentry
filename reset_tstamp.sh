@@ -40,12 +40,12 @@
 # setup
 #
 export RESET_TSTAMP_VERSION="0.4 2022-04-23"
-export USAGE="usage: $0 [-h] [-V] [-v level] [-l limit_ioccc.h]
+export USAGE="usage: $0 [-h] [-V] [-v level] [-l limit.h]
 
     -h              print help and exit
     -V              print version and exit
     -v level        set debug level (def: 0)
-    -l limit_ioccc.h   limit file (def: ./limit_ioccc.h)
+    -l limit.h	    limit file (def: ./limit_ioccc.h)
 
 Exit codes:
      0   timestamp updated
@@ -83,7 +83,7 @@ while getopts :hv:Vl: flag; do
     esac
 done
 if [[ -z $LIMIT_IOCCC_H ]]; then
-    echo "$0: ERROR: -b $LIMIT_IOCCC_H name cannot be empty" 1>&2
+    echo "$0: ERROR: -l $LIMIT_IOCCC_H name cannot be empty" 1>&2
     exit 9
 fi
 
@@ -98,19 +98,19 @@ fi
 # firewall
 #
 if [[ ! -e $LIMIT_IOCCC_H ]]; then
-    echo "$0: ERROR: limit_ioccc.h file not found: $LIMIT_IOCCC_H" 1>&2
+    echo "$0: ERROR: limit.h file not found: $LIMIT_IOCCC_H" 1>&2
     exit 7
 fi
 if [[ ! -f $LIMIT_IOCCC_H ]]; then
-    echo "$0: ERROR: limit_ioccc.h not a regular file: $LIMIT_IOCCC_H" 1>&2
+    echo "$0: ERROR: limit.h not a regular file: $LIMIT_IOCCC_H" 1>&2
     exit 7
 fi
 if [[ ! -r $LIMIT_IOCCC_H ]]; then
-    echo "$0: ERROR: limit_ioccc.h not a readable file: $LIMIT_IOCCC_H" 1>&2
+    echo "$0: ERROR: limit.h not a readable file: $LIMIT_IOCCC_H" 1>&2
     exit 7
 fi
 if [[ ! -w $LIMIT_IOCCC_H ]]; then
-    echo "$0: ERROR: limit_ioccc.h not a writable file: $LIMIT_IOCCC_H" 1>&2
+    echo "$0: ERROR: limit.h not a writable file: $LIMIT_IOCCC_H" 1>&2
     exit 7
 fi
 

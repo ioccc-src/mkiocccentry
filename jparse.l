@@ -74,7 +74,10 @@ JSON_NL			\n+
  * and if they're there and unescaped we warn about it. The reason to still
  * exclude them is because this way they are not passed to the parser. This
  * might not be necessary because if we find invalid bytes it is an error and
- * the parser will never find them but this is more defensive.
+ * the parser will never find them but this is more defensive. For the
+ * interested, the old regexp was:
+ *
+ *	    \"([^\n"]|\\\")*\"
  */
 JSON_STRING		\"([^"\x01-\x1f]|\\\")*\"
 JSON_INTEGER		-?([1-9][0-9]*|0)
@@ -539,7 +542,7 @@ parse_json(char const *ptr, size_t len, char const *filename, bool *is_valid)
     }
 
     /*
-     * parse the blob, passing into the parser the node
+     * parse the blob, passing into the parser the node and scanner
      */
     ret = yyparse(&tree, scanner);
 

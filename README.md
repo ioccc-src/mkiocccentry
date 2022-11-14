@@ -10,7 +10,7 @@ Form an **IOCCC** entry as an XZ compressed tarball file.
 For examples and more information, try:
 
 
-	    man ./mkiocccentry.1
+	    man ./man/mkiocccentry.1
 
 
 ## `iocccsize`
@@ -24,26 +24,31 @@ This code is based on code by *@SirWumpus* (**Anthony Howe**):
 For more information and examples, try:
 
 
-	    man ./iocccsize.1
+	    man ./man/iocccsize.1
 
 
 ## `txzchk`
 
-The official **IOCCC** tarball validation checker.
+The official **IOCCC** tarball validation tool.
 
 It is invoked by `mkiocccentry`; `txzchk` in turn uses `fnamchk` to make sure
 that the tarball was correctly named and formed (i.e. the `mkiocccentry` tool
 was used).
 
+`txzchk` verifies that the tarball does not have any feathers stuck in it (i.e.
+the tarball conforms to the IOCCC tarball rules). Invoked by `mkiocccentry`;
+`txzchk` in turn uses `fnamchk` to make sure that the tarball was correctly named
+and formed. In other words `txzchk` makes sure that the `mkiocccentry` tool was
+used and there was no screwing around with the resultant tarball.
 
-This tool was written in 2022 by *@xexyl* (**Cody Boone Ferguson**). See
+`txzchk` was written in 2022 by *@xexyl* (**Cody Boone Ferguson**). See
 [https://xexyl.net](https://xexyl.net) and
 [https://ioccc.xexyl.net](https://ioccc.xexyl.net).
 
 For more information and examples, try:
 
 
-	    man ./txzchk.1
+	    man ./man/txzchk.1
 
 
 ##  `fnamchk`
@@ -53,7 +58,7 @@ The official **IOCCC** XZ compressed tarball filename sanity checker tool.
 For more information and examples, try:
 
 
-	    man ./fnamechk.1
+	    man ./man/fnamechk.1
 
 
 ##  `chkentry`
@@ -79,7 +84,7 @@ and:
 For more information and examples, try:
 
 
-	    man ./chkentry.1
+	    man ./man/chkentry.1
 
 
 
@@ -103,7 +108,7 @@ and:
 For more information and examples, try:
 
 
-	    man ./jparse.1
+	    man ./man/jparse.1
 
 
 ## `run_bison.sh`
@@ -115,6 +120,11 @@ script the backup files will be used instead.
 
 This script is part of the creation of the JSON parser `jparse`.
 
+For more information and examples, try:
+
+	    man ./man/run_bison.1
+
+
 ## `run_flex.sh`
 
 This script attempts to find a recent enough version of `flex(1)` to generate
@@ -124,3 +134,6 @@ script the backup files will be used instead.
 
 This script is part of the creation of the JSON parser `jparse`.
 
+For more information and examples, try:
+
+	    man ./man/run_flex.1

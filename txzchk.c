@@ -7,6 +7,14 @@
  * and formed. In other words txzchk makes sure that the mkiocccentry tool was
  * used and there was no screwing around with the resultant tarball.
  *
+ * Written in 2022 by:
+ *
+ *	@xexyl
+ *	https://xexyl.net		Cody Boone Ferguson
+ *	https://ioccc.xexyl.net
+ *
+ * "Because sometimes even the IOCCC Judges need some help." :-)
+ *
  * Dedicated to:
  *
  *	The many poor souls who have been tarred and feathered:
@@ -17,13 +25,12 @@
  *
  *	    "Because even feathery balls of tar need some love." :-)
  *
- * Written in 2022 by:
+ * Disclaimer:
  *
- *	@xexyl
- *	https://xexyl.net		Cody Boone Ferguson
- *	https://ioccc.xexyl.net
- *
- * "Because sometimes even the IOCCC Judges need some help." :-)
+ *	No pitman or coal mines were harmed in the making of this tool and
+ *	neither were any pine trees or birch trees. :-) More importantly, no tar
+ *	pits - including the La Brea Tar Pits - were disturbed in the making of
+ *	this tool. :-)
  */
 
 
