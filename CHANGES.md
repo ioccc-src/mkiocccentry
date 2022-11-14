@@ -13,7 +13,8 @@ complexities (it was also important for modern systems like Fedora).
 Made a number of important fixes to `chkentry`.
 
 Made a number of important fixes to JSON parser.
-Pre-scan documents for problematic bytes prior to trying to parse it as json.
+Pre-scan documents and strings for problematic bytes prior to trying to parse it
+as json.
 
 The JSON scanner and parser are now re-entrant!
 
