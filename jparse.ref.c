@@ -2680,7 +2680,7 @@ parse_json(char const *ptr, size_t len, char const *filename, bool *is_valid)
     }
 
     /*
-     * parse the blob, passing into the parser the node
+     * parse the blob, passing into the parser the node and scanner
      */
     ret = yyparse(&tree, scanner);
 
