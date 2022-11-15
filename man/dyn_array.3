@@ -1,0 +1,194 @@
+.\" section 3 man page for dyn_array
+.\"
+.\" This man page was first written by Cody Boone Ferguson for the IOCCC
+.\" in 2022.
+.\"
+.\" Humour impairment is not virtue nor is it a vice, it's just plain
+.\" wrong: almost as wrong as JSON spec mis-features and C++ obfuscation! :-)
+.\"
+.\" "Share and Enjoy!"
+.\"     --  Sirius Cybernetics Corporation Complaints Division, JSON spec department. :-)
+.\"
+.TH dyn_array 3  "15 November 2022" "dyn_array"
+.SH NAME
+.BR dyn_array_value(),
+.BR dyn_array_addr(),
+.BR dyn_array_tell(),
+.BR dyn_array_beyond(),
+.BR dyn_array_alloced(),
+.BR dyn_array_avail(),
+.BR dyn_array_rewind(),
+.BR dyn_array_create(),
+.BR dyn_array_append_value(),
+.BR dyn_array_append_set(),
+.BR dyn_array_concat_array(),
+.BR dyn_array_seek(),
+.BR dyn_array_clear(),
+.BR dyn_array_free(),
+\- dynamic array facility
+.SH SYNOPSIS
+\fB#include "dyn_array.h"\fP
+.sp
+.BI "#define dyn_array_value(array_p, type, index) (((type *)(((struct dyn_array *)(array_p))->data))[(index)])"
+.br
+.BI "#define dyn_array_addr(array_p, type, index) (((type *)(((struct dyn_array *)(array_p))->data))+(index))"
+.br
+.BI "#define dyn_array_tell(array_p) (((struct dyn_array *)(array_p))->count)"
+.br
+.BI "#define dyn_array_beyond(array_p, type) (dyn_array_addr(array_p, type, dyn_array_tell(array_p)))"
+.br
+.BI "#define dyn_array_alloced(array_p) (((struct dyn_array *)(array_p))->allocated)"
+.br
+.BI "#define dyn_array_avail(array_p) (dyn_array_alloced(array_p) - dyn_array_tell(array_p))"
+.br
+.BI "#define dyn_array_rewind(array_p) (dyn_array_seek((struct dyn_array *)(array_p), 0, SEEK_SET))"
+.sp
+.BI "extern struct dyn_array *dyn_array_create(size_t elm_size, intmax_t chunk, intmax_t start_elm_count, bool zeroize);"
+.br
+.BI "extern bool dyn_array_append_value(struct dyn_array *array, void *value_to_add);"
+.br
+.BI "extern bool dyn_array_append_set(struct dyn_array *array, void *array_to_add_p, intmax_t count_of_elements_to_add);"
+.br
+.BI "extern bool dyn_array_concat_array(struct dyn_array *array, struct dyn_array *other);"
+.br
+.BI "extern bool dyn_array_seek(struct dyn_array *array, off_t offset, int whence);"
+.br
+.BI "extern void dyn_array_clear(struct dyn_array *array);"
+.sp
+.BI "extern void dyn_array_free(struct dyn_array *array);"
+.SH DESCRIPTION
+These macros and functions provide a way to create, modify and manipulate general purpose dynamic arrays.
+.PP
+The function 
+.BR dyn_array_create()
+creates a dynamic array where each element is of size \fIelm_size\fP.
+The \fIchunk\fP and \fIstart_elm_count\fP specify a fixed number of elements to expand by when allocating and the starting number of elements to allocate, respectively.
+If \fIzeroize\fP is true the newly allocated chunks are zeroed.
+The function always allocates one more chunk than requested to serve as a guard chunk.
+This extra chunk will not be listed in the total element allocation count.
+The function returns a pointer to the new dynamic array, a \fBstruct dyn_array\fP (see below for details).
+.PP
+The function
+.BR dyn_array_append_value()
+appends the single value \fIvalue_to_add\fP to the array \fIarray\fP.
+The array will grow if all allocated values are used.
+If the function will return true if the address of the array of elements moved during \fBrealloc()\fP.
+Otherwise it returns false.
+.PP
+The function
+.BR dyn_array_append_set()
+appends a set of values of a given array to the end of the dynamic array.
+The \fIarray\fP is a pointer to the dynamic array.
+The \fIarray_to_add_p\fP is a pointer to the array to add to the end of the dynamic array \fIarray\fP.
+The \fIcount_of_elements_to_add\fP is the number of elements to add to the dynamic array.
+If after adding the values of the array, all allocated values are used, the array will grow.
+If the address of the array of elements moved during \fBrealloc()\fP the function returns true.
+Otherwise it returns false.
+.PP
+The function
+.BR dyn_array_concat_array()
+concatenates the \fIother\fP dynamic array to the \fIarray\fP dynamic array.
+If the address of the array of elements moved during \fBrealloc()\fP the function returns true.
+Otherwise it returns false.
+The contents of the other array is not modified nor is it freed.
+If after adding the values of the array, all allocated values are used, the dynamic array will grow.
+.PP
+The function
+.BR dyn_array_seek()
+sets the elements in use on the dynamic array \fIarray\fP.
+The \fIoffset\fP is the offset in elements from the \fIwhence\fP which can be:
+.RS
+.TP
+\fBSEEK_SET\fP
+offset from the dynamic array beginning.
+.TQ
+\fBSEEK_CUR\fP
+offset from the current element in use.
+.TQ
+\fBSEEK_END\fP
+offset from the end of the allocated elements.
+.RE
+The function will return true if the address of the array of elements moved during \fBrealloc()\fP and false otherwise.
+Attempting to seek to or before the beginning of the array will have the effect of calling \fBdyn_array_clear()\fP as described below.
+.PP
+The function
+.BR dyn_array_clear()
+will clear any element in use in the dynamic array \fIarray\fP (if the \fIzeroize\fP boolean is true) and then set the number of elements in use to 0.
+The function does not free allocated storage.
+For that see \fBdyn_array_free()\fP.
+.PP
+The function
+.BR dyn_array_free()
+frees the contents of the dynamic array \fParray\fP.
+If \fIarray->zeroize\fP is true and the data of the array is not NULL and the array has allocated nodes and the size of arrays is > 0 the function will clear the array data (via \fBmemset()\fP) first.
+The function does not free the \fBstruct dyn_array\fP itself: it only frees any allocated storage.
+.SS Convenience macros
+.PP
+The macro
+.BR dyn_array_value()
+obtains the element in a dynamic array \fIarray_p\fP of type \fItype\fP at \fIindex\fP:
+When \fBmsg_warn_silent == true\fP the \fBmsg()\fP and \fBwarn()\fP functions will be silenced if \fBverbosity_level <= 0\fP.
+.PP
+The macro
+.BR dyn_array_addr()
+obtains the address in a dynamic array \fIarray_p\fP of an element of type \fItype\fP at \fIindex\fP.
+.PP
+The macro
+.BR dyn_array_tell()
+returns the current element count of the dynamic array \fIarray_p\fP.
+.PP
+The macro
+.BR dyn_array_beyond()
+returns the address of the element just beyond the elements in use.
+.PP
+The macro
+.BR dyn_array_alloced()
+returns the number of elements allocated in memory for the dynamic array.
+.PP
+The macro
+.BR dyn_array_avail()
+returns the number of elements available (allocated but not in use) of the dynamic array.
+.PP
+The macro
+.BR dyn_array_rewind()
+rewinds a dynamic array back to zero elements.
+.SS The struct dyn_array
+.PP
+The \fIdyn_array\fP structure is defined in \fIdyn_array.h\fP as follows:
+.sp
+.in +4n
+.nf
+struct dyn_array
+{
+    size_t elm_size;            /* Number of bytes for a single element */
+    bool zeroize;               /* true ==> always zero newly allocated chunks, false ==> don't */
+    intmax_t count;             /* Number of elements in use */
+    intmax_t allocated;         /* Number of elements allocated (>= count) */
+    intmax_t chunk;             /* Number of elements to expand by when allocating */
+    void *data;                 /* allocated dynamic array of identical things or NULL */
+};
+.fi
+.in
+.SH RETURN VALUE
+.PP
+The function
+.BR dyn_array_create()
+returns a pointer to a \fBstruct dyn_array\fP which is the address of the newly allocated struct.
+It does not return on error.
+.PP
+The functions
+.BR dyn_array_append_value(),
+.BR dyn_array_append_set(),
+.BR dyn_array_concat_array()
+and
+.BR dyn_array_seek()
+return true if the address of the array of elements moved during \fBrealloc()\fP.
+Otherwise they return false.
+.PP
+The functions
+.BR dyn_array_clear()
+and
+.BR dyn_array_free()
+return void.
+.SH EXAMPLE
+For an example program that uses the dynamic array facility see the files \fIdyn_test.h\fP and \fIdyn_test.c\fP.

@@ -188,7 +188,7 @@ SH_TARGETS=limit_ioccc.sh
 #
 MAN1_TARGETS= man/mkiocccentry man/txzchk man/fnamchk man/iocccsize man/chkentry man/jstrdecode man/jstrencode \
 	      man/jparse man/bug_report man/hostchk man/run_flex man/run_bison
-MAN3_TARGETS= man/dbg
+MAN3_TARGETS= man/dbg man/dyn_array
 MAN8_TARGETS= man/reset_tstamp man/verge man/iocccsize_test man/ioccc_test man/run_usage man/utf8_test \
 	      man/jparse_test man/txzchk_test man/vermod man/mkiocccentry_test man/jstr_test man/jnum_chk \
 	      man/jnum_gen man/chkentry_test
