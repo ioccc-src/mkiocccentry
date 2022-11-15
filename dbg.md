@@ -20,7 +20,7 @@ case of debug messages, turn on increasing levels of verbosity.
 4. Compile your source file(s) and link in `dbg.o`.
 
 
-For a more information including an example see the next section.
+For more information including an example see the next section.
 
 
 # The dbg API
