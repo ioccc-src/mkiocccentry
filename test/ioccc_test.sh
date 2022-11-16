@@ -146,17 +146,17 @@ if [[ ! -x test/iocccsize_test.sh ]]; then
     echo "$0: ERROR: test/iocccsize_test.sh is not executable" 1>&2
     exit 4
 fi
-# dbg
-if [[ ! -e dbg ]]; then
-    echo "$0: ERROR: dbg file not found" 1>&2
+# dbg_test
+if [[ ! -e dbg_test ]]; then
+    echo "$0: ERROR: dbg_test file not found" 1>&2
     exit 5
 fi
-if [[ ! -f dbg ]]; then
-    echo "$0: ERROR: dbg is not a regular file" 1>&2
+if [[ ! -f dbg_test ]]; then
+    echo "$0: ERROR: dbg_test is not a regular file" 1>&2
     exit 5
 fi
-if [[ ! -x dbg ]]; then
-    echo "$0: ERROR: dbg is not executable" 1>&2
+if [[ ! -x dbg_test ]]; then
+    echo "$0: ERROR: dbg_test is not executable" 1>&2
     exit 5
 fi
 # mkiocccentry_test.sh
@@ -341,35 +341,35 @@ else
     echo "PASSED: test/iocccsize_test.sh" | tee -a -- "$LOGFILE"
 fi
 
-# dbg
+# dbg_test
 #
 echo | tee -a -- "$LOGFILE"
-echo "RUNNING: dbg" | tee -a -- "$LOGFILE"
-rm -f dbg.out
+echo "RUNNING: dbg_test" | tee -a -- "$LOGFILE"
+rm -f dbg_test.out
 echo | tee -a -- "$LOGFILE"
-echo "./dbg -e 2 foo bar baz >dbg.out 2>&1" | tee -a -- "$LOGFILE"
-./dbg -e 2 foo bar baz >dbg.out 2>&1 | tee -a -- "$LOGFILE"
+echo "./dbg_test -e 2 foo bar baz >dbg_test.out 2>&1" | tee -a -- "$LOGFILE"
+./dbg_test -e 2 foo bar baz >dbg_test.out 2>&1 | tee -a -- "$LOGFILE"
 status="${PIPESTATUS[0]}"
 if [[ $status -ne 5 ]]; then
-    echo "exit status of dbg: $status != 5";
+    echo "exit status of dbg_test: $status != 5";
     FAILURE_SUMMARY="$FAILURE_SUMMARY
-    exit status of dbg: $status != 5";
+    exit status of dbg_test: $status != 5";
     EXIT_CODE="21"
 else
-    grep -q '^ERROR\[5\]: main: simulated error, foo: foo bar: bar: errno\[2\]: No such file or directory$' dbg.out
+    grep -q '^ERROR\[5\]: main: simulated error, foo: foo bar: bar: errno\[2\]: No such file or directory$' dbg_test.out
     status="$?"
     if [[ $status -ne 0 ]]; then
-	echo "$0: ERROR: did not find the correct dbg error message" 1>&2 | tee -a -- "$LOGFILE"
-	echo "$0: ERROR: beginning dbg.out contents" 1>&2 | tee -a -- "$LOGFILE"
-	< dbg.out tee -a -- "$LOGFILE"
-	echo "$0: ERROR: dbg.out contents complete" 1>&2 | tee -a -- "$LOGFILE"
+	echo "$0: ERROR: did not find the correct dbg_test error message" 1>&2 | tee -a -- "$LOGFILE"
+	echo "$0: ERROR: beginning dbg_test.out contents" 1>&2 | tee -a -- "$LOGFILE"
+	< dbg_test.out tee -a -- "$LOGFILE"
+	echo "$0: ERROR: dbg_test.out contents complete" 1>&2 | tee -a -- "$LOGFILE"
 	FAILURE_SUMMARY="$FAILURE_SUMMARY
-    did not find the correct dbg error message"
+    did not find the correct dbg_test error message"
 	EXIT_CODE="22"
     else
 	echo | tee -a -- "$LOGFILE"
-	echo "PASSED: dbg" | tee -a -- "$LOGFILE"
-	rm -f dbg.out
+	echo "PASSED: dbg_test" | tee -a -- "$LOGFILE"
+	rm -f dbg_test.out
     fi
 fi
 
