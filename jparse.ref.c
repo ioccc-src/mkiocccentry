@@ -588,7 +588,7 @@ static const flex_int32_t yy_rule_can_match_eol[16] =
 
 
 /*
- * jparse - JSON parser demo tool
+ * jparse - JSON parser
  */
 #include "jparse.h"
 

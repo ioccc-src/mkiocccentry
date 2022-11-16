@@ -39,7 +39,7 @@
 
 
 /*
- * jparse - JSON parser demo tool
+ * jparse - JSON parser
  */
 #include "jparse.h"
 
