@@ -81,7 +81,9 @@ CUT = cut
 CC= cc
 CP= cp
 CTAGS= ctags
+DIFF= diff
 FMT= fmt
+GIT= git
 GREP= grep
 HEAD= head
 INSTALL= install
@@ -93,6 +95,7 @@ MV= mv
 PICKY= picky
 RM= rm
 RPL= rpl
+RSYNC= rsync
 SED= sed
 SEQCEXIT= seqcexit
 SHELL= bash
@@ -1037,6 +1040,72 @@ depend: all soup/fmt_depend.sh
 	fi
 	@echo
 	@echo "make depend completed"
+
+
+########################################################################
+# external repositories - rules to help incorporate other repositories #
+########################################################################
+
+# This repo is designed to be a standalone repo.  Even though we use other
+# repositories, we prefer to NOT clone them.  We want this repo to depend
+# on a specific version of such code so that a change in the code of those
+# external repositories will NOT impact this repo.
+#
+# For that reason, and others, we maintain a private copy of an external
+# repository as clone.repo.  The clone.repo directory is excluded from
+# out repo via the .gitignore file.  We copy clone.repo/ into repo/ and
+# check in those file directly into this repo.
+#
+# The following rules are used by the people who maintain this repo.
+# If you are not someone who maintains this repo, the rules in this section
+# are probably not for you.
+
+.PHONY: dbg.clone dbg.diff dbg.fetch dbg.reclone dbg.reload dbg.rsync dbg.status \
+	all.clone all.diff all.fetch all.reclone all.reload all.rsync all.status
+
+# dbg external repo
+#
+dbg.clone:
+	${GIT} clone https://github.com/lcn2/dbg.git dbg.clone
+
+dbg.diff: dbg.clone/ dbg/
+	${DIFF} -u -r --exclude='.*' dbg.clone dbg
+
+dbg.fetch: dbg.clone/
+	cd dbg.clone; ${GIT} fetch
+	cd dbg.clone; ${GIT} fetch --prune --tags
+	cd dbg.clone; ${GIT} merge --ff-only || ${GIT} rebase --rebase-merges
+	${GIT} status dbg.clone
+
+dbg.reclone:
+	${RM} -rf dbg.clone
+	${MAKE} dbg.clone
+
+dbg.reload: dbg.clone/
+	${RM} -rf dbg
+	${MAKE} dbg.rsync
+
+dbg.rsync: dbg.clone/
+	${RSYNC} -a -S -0 --delete -C --exclude='.*' -v dbg.clone/ dbg
+
+dbg.status: dbg.clone/
+	${GIT} status dbg.clone
+
+# rules to operate on all external repositories
+#
+all.clone: dbg.clone
+
+all.diff: dbg.diff
+
+all.fetch: dbg.fetch
+
+all.reclone: dbg.reclone
+
+all.reload: dbg.reload
+
+all.rsync: dbg.rsync
+
+all.status: dbg.status
 
 
 ###############

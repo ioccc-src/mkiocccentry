@@ -10,7 +10,7 @@ answers.txt
 bug-report*.txt
 build.log
 chkentry
-dbg
+dbg.clone
 dbg_example
 dbg_test
 dbg_test.c
