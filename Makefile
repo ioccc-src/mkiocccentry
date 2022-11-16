@@ -374,22 +374,24 @@ hostchk_warning:
 	@echo '=-= hostchk exited non-zero =-=' 1>&2
 	@echo 1>&2
 	@echo '=-= WARNING WARNING WARNING =-=' 1>&2
-	@echo '=-= your build environment may not be able to compile mkiocccentry and friends =-=' 1>&2
+	@echo '=-= your build environment may not be able to compile =-=' 1>&2
+	@echo '=-= mkiocccentry and friends =-=' 1>&2
 	@echo 1>&2
 	@echo '=-= WARNING WARNING WARNING =-=' 1>&2
 	@echo '=-= For hints as to what might be wrong try running:' 1>&2
 	@echo 1>&2
-	@echo './hostchk.sh -v 1' 1>&2
+	@echo '    ./hostchk.sh -v 1' 1>&2
 	@echo 1>&2
 	@echo '=-= WARNING WARNING WARNING =-=' 1>&2
 	@echo '=-= If you think this is a bug, consider filing a bug report via:' 1>&2
 	@echo 1>&2
-	@echo './bug_report.sh' 1>&2
+	@echo '    ./bug_report.sh' 1>&2
 	@echo 1>&2
 	@echo '=-= about to sleep 10 seconds =-=' 1>&2
 	@echo 1>&2
 	@sleep 10
-	@echo '=-= Letting the compile continue in hopes it might be OK, even though we doubt it will be OK. =-=' 1>&2
+	@echo '=-= Letting the compile continue in hopes it might be OK, =-=' 1>&2
+	@echo '=-= even though we doubt it will be OK. =-=' 1>&2
 	@echo 1>&2
 
 # rules, not file targets
