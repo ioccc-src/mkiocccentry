@@ -423,7 +423,7 @@ entry_time.o: entry_time.c Makefile
 	${CC} ${CFLAGS} entry_time.c -c
 
 dbg:
-	${MAKE} -C dbg
+	${MAKE} -C dbg CFLAGS="${CFLAGS}"
 	${CP} -f dbg/dbg.3 man/dbg.3
 
 mkiocccentry.o: mkiocccentry.c Makefile
