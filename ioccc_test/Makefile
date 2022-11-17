@@ -33,6 +33,9 @@ jnum_chk: jnum_chk.o ../dbg ../json_parse.o ../json_util.o ../util.o ../dyn_arra
 	${CC} ${CFLAGS} -I.. jnum_chk.o ../dbg/dbg.o ../json_parse.o ../json_util.o ../util.o ../dyn_array.o \
 				 jnum_test.o -lm -o jnum_chk
 
+test: all ioccc_test.sh
+	 ./ioccc_test.sh
+
 configure:
 	@echo nothing to $@
 

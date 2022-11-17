@@ -879,8 +879,7 @@ ioccc_test:
 test: dbg all chkentry ioccc_test/ioccc_test.sh ioccc_test/iocccsize_test.sh \
 	    ioccc_test/mkiocccentry_test.sh ioccc_test/jstr_test.sh \
 	    ioccc_test/txzchk_test.sh txzchk jparse
-	${MAKE} -C ioccc_test
-	cd ioccc_test && ./ioccc_test.sh
+	${MAKE} -C ioccc_test test
 	@echo
 	@echo 'All tests PASSED'
 
