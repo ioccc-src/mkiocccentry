@@ -1,0 +1,4 @@
+Warning: txzchk: found non-numerical GID in file in line -rw-rw-r-- 1017/staff         4 2022-01-25 14:05 test-4/extra2
+Warning: txzchk: found non-numerical UID in line -rw-rw-r-- cody/1018       896 2022-01-25 14:05 test-4/Makefile
+Warning: txzchk: ./test_ioccc/test_txzchk/bad/entry.test-4.1922598666.txt: no .info.json found
+Warning: txzchk: ./test_ioccc/test_txzchk/bad/entry.test-4.1922598666.txt: found 3 feathers stuck in the tarball

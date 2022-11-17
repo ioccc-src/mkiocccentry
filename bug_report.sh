@@ -42,16 +42,16 @@ export TOOLS="
     ./run_flex.sh
     ./run_usage.sh
     ./soup/all_ref.sh
-    ./ioccc_test/chkentry_test.sh
-    ./ioccc_test/dyn_test
-    ./ioccc_test/ioccc_test.sh
-    ./ioccc_test/iocccsize_test.sh
-    ./ioccc_test/jnum_chk
-    ./ioccc_test/jparse_test.sh
-    ./ioccc_test/jstr_test.sh
-    ./ioccc_test/mkiocccentry_test.sh
-    ./ioccc_test/txzchk_test.sh
-    ./ioccc_test/utf8_test
+    ./test_ioccc/chkentry_test.sh
+    ./test_ioccc/dyn_test
+    ./test_ioccc/ioccc_test.sh
+    ./test_ioccc/iocccsize_test.sh
+    ./test_ioccc/jnum_chk
+    ./test_ioccc/jparse_test.sh
+    ./test_ioccc/jstr_test.sh
+    ./test_ioccc/mkiocccentry_test.sh
+    ./test_ioccc/txzchk_test.sh
+    ./test_ioccc/utf8_test
     ./txzchk
     ./verge
     ./vermod.sh
