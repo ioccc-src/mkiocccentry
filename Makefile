@@ -195,7 +195,7 @@ SH_TARGETS=limit_ioccc.sh
 MAN1_TARGETS= man/mkiocccentry man/txzchk man/fnamchk man/iocccsize man/chkentry man/jstrdecode man/jstrencode \
 	      man/jparse man/bug_report man/hostchk man/run_flex man/run_bison
 MAN3_TARGETS= dbg/dbg man/dyn_array
-MAN8_TARGETS= man/reset_tstamp man/verge man/iocccsize_test man/ioccc_test man/run_usage man/utf8_test \
+MAN8_TARGETS= man/reset_tstamp man/verge man/iocccsize_test man/test_ioccc man/run_usage man/utf8_test \
 	      man/jparse_test man/txzchk_test man/vermod man/mkiocccentry_test man/jstr_test man/jnum_chk \
 	      man/jnum_gen man/chkentry_test
 MAN_TARGETS= ${MAN1_TARGETS} ${MAN3_TARGETS} ${MAN8_TARGETS}
@@ -211,10 +211,10 @@ MAN3PAGES= $(MAN3_TARGETS:=.3)
 MAN8PAGES= $(MAN8_TARGETS:=.8)
 MANPAGES= ${MAN1PAGES} ${MAN3PAGES} ${MAN8PAGES}
 
-TEST_TARGETS= dbg/dbg_test ioccc_test/utf8_test ioccc_test/dyn_test ioccc_test/jnum_chk
+TEST_TARGETS= dbg/dbg_test test_ioccc/utf8_test test_ioccc/dyn_test test_ioccc/jnum_chk
 OBJFILES= dbg/dbg.o util.o mkiocccentry.o iocccsize.o fnamchk.o txzchk.o chkentry.o \
 	json_parse.o jstrencode.o jstrdecode.o rule_count.o location.o sanity.o verge.o \
-	dyn_array.o ioccc_test/dyn_test.o dbg/dbg_test.o ioccc_test/jnum_chk.o jnum_gen.o ioccc_test/jnum_test.o \
+	dyn_array.o test_ioccc/dyn_test.o dbg/dbg_test.o test_ioccc/jnum_chk.o jnum_gen.o test_ioccc/jnum_test.o \
 	json_util.o jparse_main.o entry_util.o jsemtblgen.o soup/chk_sem_auth.o soup/chk_sem_info.o \
 	soup/chk_validate.o json_sem.o entry_time.o
 LESS_PICKY_CSRC= utf8_posix_map.c foo.c
@@ -233,7 +233,7 @@ SRCFILES= $(OBJFILES:.o=.c)
 ALL_CSRC= ${LESS_PICKY_CSRC} ${GENERATED_CSRC} ${SRCFILES}
 H_FILES= dbg/dbg.h chkentry.h json_parse.h jstrdecode.h jstrencode.h limit_ioccc.h \
 	mkiocccentry.h txzchk.h util.h location.h utf8_posix_map.h jparse.h \
-	verge.h sorry.tm.ca.h dyn_array.h ioccc_test/dyn_test.h json_util.h ioccc_test/jnum_chk.h \
+	verge.h sorry.tm.ca.h dyn_array.h test_ioccc/dyn_test.h json_util.h test_ioccc/jnum_chk.h \
 	jnum_gen.h jparse_main.h entry_util.h jsemtblgen.h soup/chk_sem_auth.h \
 	soup/chk_sem_info.h soup/chk_validate.h json_sem.h foo.h entry_time.h
 # This is a simpler way to do:
@@ -241,12 +241,12 @@ H_FILES= dbg/dbg.h chkentry.h json_parse.h jstrdecode.h jstrencode.h limit_ioccc
 #   DSYMDIRS = $(patsubst %,%.dSYM,$(TARGETS))
 #
 DSYMDIRS= $(TARGETS:=.dSYM)
-SH_FILES= ioccc_test/iocccsize_test.sh ioccc_test/jstr_test.sh limit_ioccc.sh ioccc_test/mkiocccentry_test.sh \
-	  vermod.sh prep.sh run_bison.sh run_flex.sh reset_tstamp.sh ioccc_test/ioccc_test.sh \
-	  ioccc_test/jparse_test.sh ioccc_test/txzchk_test.sh hostchk.sh jsemcgen.sh \
-	  run_usage.sh bug_report.sh soup/all_ref.sh ioccc_test/chkentry_test.sh soup/fmt_depend.sh
+SH_FILES= test_ioccc/iocccsize_test.sh test_ioccc/jstr_test.sh limit_ioccc.sh test_ioccc/mkiocccentry_test.sh \
+	  vermod.sh prep.sh run_bison.sh run_flex.sh reset_tstamp.sh test_ioccc/ioccc_test.sh \
+	  test_ioccc/jparse_test.sh test_ioccc/txzchk_test.sh hostchk.sh jsemcgen.sh \
+	  run_usage.sh bug_report.sh soup/all_ref.sh test_ioccc/chkentry_test.sh soup/fmt_depend.sh
 BUILD_LOG= build.log
-TXZCHK_LOG= ioccc_test/txzchk_test.log
+TXZCHK_LOG= test_ioccc/txzchk_test.log
 
 # RUN_O_FLAG - determine if the bison and flex backup files should be used
 #
@@ -401,7 +401,7 @@ hostchk_warning:
 #
 .PHONY: all just_all fast_hostchk hostchk hostchk_warning all_ref all_ref_ptch mkchk_sem bug_report.sh build \
 	checknr clean clean_generated_obj clean_mkchk_sem clobber configure depend hostchk bug_report.sh \
-	install ioccc_test legacy_clobber man2html mkchk_sem parser parser-o picky prep prep_clobber \
+	install test_ioccc legacy_clobber man2html mkchk_sem parser parser-o picky prep prep_clobber \
         pull rebuild_jnum_test release reset_min_timestamp seqcexit shellcheck tags test test-chkentry use_ref \
 	dbg soup
 
@@ -526,7 +526,7 @@ dyn_array.o: dyn_array.c Makefile
 foo.o: foo.c oebxergfB.h Makefile
 	${CC} ${CFLAGS} foo.c -c
 
-limit_ioccc.sh: limit_ioccc.h version.h dbg/dbg.h dyn_array.h ioccc_test/dyn_test.h jparse.h jparse_main.h \
+limit_ioccc.sh: limit_ioccc.h version.h dbg/dbg.h dyn_array.h test_ioccc/dyn_test.h jparse.h jparse_main.h \
 		Makefile
 	${RM} -f $@
 	@echo '#!/usr/bin/env bash' > $@
@@ -537,7 +537,7 @@ limit_ioccc.sh: limit_ioccc.h version.h dbg/dbg.h dyn_array.h ioccc_test/dyn_tes
 	    ${AWK} '{print $$2 "=\"" $$3 "\"" ;}' | ${TR} -d '[a-z]()' | \
 	    ${SED} -e 's/"_/"/' -e 's/""/"/g' -e 's/^/export /' >> $@
 	${GREP} -hE '^#define (.*_VERSION|TIMESTAMP_EPOCH|JSON_PARSING_DIRECTIVE_)' \
-		     version.h limit_ioccc.h dbg/dbg.h dyn_array.h ioccc_test/dyn_test.h jparse.h jparse_main.h | \
+		     version.h limit_ioccc.h dbg/dbg.h dyn_array.h test_ioccc/dyn_test.h jparse.h jparse_main.h | \
 	    ${GREP} -v 'UUID_VERSION' | \
 	    ${SED} -e 's/^#define/export/' -e 's/ "/="/' -e 's/"[	 ].*$$/"/' >> $@
 	-if ${GREP} -q '^#define DIGRAPHS' limit_ioccc.h; then \
@@ -685,22 +685,22 @@ use_ref: jparse.tab.ref.c jparse.tab.ref.h jparse.ref.c jparse.lex.ref.h
 
 # use jnum_gen to regenerate test jnum_chk test suite
 #
-rebuild_jnum_test: jnum_gen ioccc_test/jnum.testset jnum_header.c Makefile
-	${RM} -f ioccc_test/jnum_test.c
-	${CP} -f -v jnum_header.c ioccc_test/jnum_test.c
-	./jnum_gen ioccc_test/jnum.testset >> ioccc_test/jnum_test.c
+rebuild_jnum_test: jnum_gen test_ioccc/jnum.testset jnum_header.c Makefile
+	${RM} -f test_ioccc/jnum_test.c
+	${CP} -f -v jnum_header.c test_ioccc/jnum_test.c
+	./jnum_gen test_ioccc/jnum.testset >> test_ioccc/jnum_test.c
 
 # Form unpatched semantic tables, without headers and trailers, from the reference info and auth JSON files
 #
 # rule used by prep.sh
 #
-all_ref: jsemtblgen jsemcgen.sh ioccc_test/test_JSON/info.json/good ioccc_test/test_JSON/auth.json/good soup/all_ref.sh
+all_ref: jsemtblgen jsemcgen.sh test_ioccc/test_JSON/info.json/good test_ioccc/test_JSON/auth.json/good soup/all_ref.sh
 	rm -rf soup/ref
 	mkdir -p soup/ref
 	./soup/all_ref.sh -v 1 \
 	    soup/chk.info.head.c soup/chk.info.tail.c soup/chk.info.head.h soup/chk.info.tail.h \
 	    soup/chk.auth.head.c soup/chk.auth.tail.c soup/chk.auth.head.h soup/chk.auth.tail.h \
-	    ioccc_test/test_JSON/info.json/good ioccc_test/test_JSON/auth.json/good soup/ref
+	    test_ioccc/test_JSON/info.json/good test_ioccc/test_JSON/auth.json/good soup/ref
 
 # form chk.????.ptch.{c,h} files
 #
@@ -729,29 +729,29 @@ all_ref_ptch: soup/ref/info.reference.json.c soup/ref/info.reference.json.h \
 #
 mkchk_sem: soup/chk_sem_auth.c soup/chk_sem_auth.h soup/chk_sem_info.c soup/chk_sem_info.h
 
-soup/chk_sem_auth.c: jsemtblgen jsemcgen.sh ioccc_test/test_JSON/auth.json/good/auth.reference.json \
+soup/chk_sem_auth.c: jsemtblgen jsemcgen.sh test_ioccc/test_JSON/auth.json/good/auth.reference.json \
 		soup/chk.auth.head.c soup/chk.auth.ptch.c soup/chk.auth.tail.c Makefile
 	@${RM} -f $@
 	./jsemcgen.sh -N sem_auth -P chk -- \
-	    ioccc_test/test_JSON/auth.json/good/auth.reference.json soup/chk.auth.head.c soup/chk.auth.ptch.c soup/chk.auth.tail.c $@
+	    test_ioccc/test_JSON/auth.json/good/auth.reference.json soup/chk.auth.head.c soup/chk.auth.ptch.c soup/chk.auth.tail.c $@
 
-soup/chk_sem_auth.h: jsemtblgen jsemcgen.sh ioccc_test/test_JSON/auth.json/good/auth.reference.json \
+soup/chk_sem_auth.h: jsemtblgen jsemcgen.sh test_ioccc/test_JSON/auth.json/good/auth.reference.json \
 		soup/chk.auth.head.h soup/chk.auth.ptch.h soup/chk.auth.tail.h Makefile
 	@${RM} -f $@
 	./jsemcgen.sh -N sem_auth -P chk -I -- \
-	    ioccc_test/test_JSON/auth.json/good/auth.reference.json soup/chk.auth.head.h soup/chk.auth.ptch.h soup/chk.auth.tail.h $@
+	    test_ioccc/test_JSON/auth.json/good/auth.reference.json soup/chk.auth.head.h soup/chk.auth.ptch.h soup/chk.auth.tail.h $@
 
-soup/chk_sem_info.c: jsemtblgen jsemcgen.sh ioccc_test/test_JSON/info.json/good/info.reference.json \
+soup/chk_sem_info.c: jsemtblgen jsemcgen.sh test_ioccc/test_JSON/info.json/good/info.reference.json \
 		soup/chk.info.head.c soup/chk.info.ptch.c soup/chk.info.tail.c Makefile
 	@${RM} -f $@
 	./jsemcgen.sh -N sem_info -P chk -- \
-	    ioccc_test/test_JSON/info.json/good/info.reference.json soup/chk.info.head.c soup/chk.info.ptch.c soup/chk.info.tail.c $@
+	    test_ioccc/test_JSON/info.json/good/info.reference.json soup/chk.info.head.c soup/chk.info.ptch.c soup/chk.info.tail.c $@
 
-soup/chk_sem_info.h: jsemtblgen jsemcgen.sh ioccc_test/test_JSON/info.json/good/info.reference.json \
+soup/chk_sem_info.h: jsemtblgen jsemcgen.sh test_ioccc/test_JSON/info.json/good/info.reference.json \
 		soup/chk.info.head.h soup/chk.info.ptch.h soup/chk.info.tail.h Makefile
 	@${RM} -f $@
 	./jsemcgen.sh -N sem_info -P chk -I -- \
-	    ioccc_test/test_JSON/info.json/good/info.reference.json soup/chk.info.head.h soup/chk.info.ptch.h soup/chk.info.tail.h $@
+	    test_ioccc/test_JSON/info.json/good/info.reference.json soup/chk.info.head.h soup/chk.info.ptch.h soup/chk.info.tail.h $@
 
 # sequence exit codes
 #
@@ -870,23 +870,23 @@ man2html: ${MANPAGES}
 reset_min_timestamp: reset_tstamp.sh
 	./reset_tstamp.sh
 
-ioccc_test: 
-	${MAKE} -C ioccc_test
+test_ioccc: 
+	${MAKE} -C test_ioccc
 
 
 # perform all of the mkiocccentry repo required tests
 #
-test: dbg all chkentry ioccc_test/ioccc_test.sh ioccc_test/iocccsize_test.sh \
-	    ioccc_test/mkiocccentry_test.sh ioccc_test/jstr_test.sh \
-	    ioccc_test/txzchk_test.sh txzchk jparse
-	${MAKE} -C ioccc_test test
+test: dbg all chkentry test_ioccc/ioccc_test.sh test_ioccc/iocccsize_test.sh \
+	    test_ioccc/mkiocccentry_test.sh test_ioccc/jstr_test.sh \
+	    test_ioccc/txzchk_test.sh txzchk jparse
+	${MAKE} -C test_ioccc test
 	@echo
 	@echo 'All tests PASSED'
 
 # run test-chkentry on test_JSON files
 #
-test-chkentry: all chkentry ioccc_test/test-chkentry.sh Makefile
-	./ioccc_test/test-chkentry.sh -v 1
+test-chkentry: all chkentry test_ioccc/test-chkentry.sh Makefile
+	./test_ioccc/test-chkentry.sh -v 1
 
 
 # rule used by prep.sh and make clean
@@ -921,7 +921,7 @@ legacy_clobber:
 	${RM} -f dbg_test.c
 	${RM} -rf dyn_test.dSYM
 	${RM} -f jparse_test.log chkentry_test.log txzchk_test.log
-	${RM} -f ioccc_test.log chkentry_test.log jparse_test.log txzchk_test.log
+	${RM} -f test_ioccc.log chkentry_test.log jparse_test.log txzchk_test.log
 	${RM} -f jnum_chk
 	${RM} -rf jnum_chk.dSYM
 	${RM} -rf test_iocccsize test_src test_work
@@ -934,15 +934,15 @@ prep_clobber: legacy_clobber
 	${RM} -f ${TARGETS} ${TEST_TARGETS}
 	${RM} -f ${GENERATED_CSRC} ${GENERATED_HSRC}
 	${RM} -f answers.txt
-	${RM} -f ioccc_test/jstr_test.out ioccc_test/jstr_test2.out
-	${RM} -rf ioccc_test/test_iocccsize ioccc_test/test_src ioccc_test/test_work
+	${RM} -f test_ioccc/jstr_test.out test_ioccc/jstr_test2.out
+	${RM} -rf test_ioccc/test_iocccsize test_ioccc/test_src test_ioccc/test_work
 	${RM} -f tags dbg_test.out
 	${RM} -f jparse.output jparse.html
 	${RM} -f ${TXZCHK_LOG}
 	${RM} -f dbg_test.c
-	${RM} -rf ioccc_test/dyn_test.dSYM
-	${RM} -f ioccc_test/jnum_chk
-	${RM} -rf ioccc_test/jnum_chk.dSYM
+	${RM} -rf test_ioccc/dyn_test.dSYM
+	${RM} -f test_ioccc/jnum_chk
+	${RM} -rf test_ioccc/jnum_chk.dSYM
 	${RM} -f jnum_gen
 	${RM} -rf jnum_gen.dSYM
 	${RM} -rf soup/ref
@@ -960,8 +960,8 @@ configure:
 # clean legacy code and files - files that are no longer needed
 #
 legacy_clean:
-	${RM} -f jint.o ioccc_test/jint.test.o jint_gen.o
-	${RM} -f jfloat.o ioccc_test/jfloat.test.o jfloat_gen.o
+	${RM} -f jint.o test_ioccc/jint.test.o jint_gen.o
+	${RM} -f jfloat.o test_ioccc/jfloat.test.o jfloat_gen.o
 	${RM} -f jauthchk.o jinfochk.o
 
 clean: clean_generated_obj legacy_clean
@@ -972,7 +972,7 @@ clean: clean_generated_obj legacy_clean
 
 clobber: clean prep_clobber
 	${RM} -f ${BUILD_LOG}
-	${RM} -f ioccc_test/jparse_test.log ioccc_test/chkentry_test.log ioccc_test/txzchk_test.log
+	${RM} -f test_ioccc/jparse_test.log test_ioccc/chkentry_test.log test_ioccc/txzchk_test.log
 	${RM} -f ${HTML_MAN_TARGETS}
 	${RM} -f .jsemcgen.out.*
 	${RM} -f .all_ref.*
@@ -980,9 +980,9 @@ clobber: clean prep_clobber
 	${RM} -f .sorry.*
 	${RM} -f .jsemcgen.*
 	${RM} -f .txzchk_test,*
-	${RM} -f ioccc_test/ioccc_test.log
+	${RM} -f test_ioccc/test_ioccc.log
 	${MAKE} -C dbg clobber
-	${MAKE} -C ioccc_test clobber
+	${MAKE} -C test_ioccc clobber
 	${MAKE} -C soup clobber
 
 distclean nuke: clobber
@@ -1117,15 +1117,15 @@ sanity.o: sanity.c sanity.h util.h dyn_array.h dbg/dbg.h location.h utf8_posix_m
 	version.h
 verge.o: verge.c verge.h dbg/dbg.h util.h dyn_array.h limit_ioccc.h version.h
 dyn_array.o: dyn_array.c dyn_array.h dbg/dbg.h
-dyn_test.o: ioccc_test/dyn_test.c ioccc_test/dyn_test.h ioccc_test/../util.h dyn_array.h dbg/dbg.h \
-	ioccc_test/../dbg/dbg.h ioccc_test/../dyn_array.h
+dyn_test.o: test_ioccc/dyn_test.c test_ioccc/dyn_test.h test_ioccc/../util.h dyn_array.h dbg/dbg.h \
+	test_ioccc/../dbg/dbg.h test_ioccc/../dyn_array.h
 dbg_test.o: dbg/dbg_test.c dbg/dbg.h
-jnum_chk.o: ioccc_test/jnum_chk.c ioccc_test/jnum_chk.h ioccc_test/../dbg/dbg.h ioccc_test/../util.h \
-	dyn_array.h dbg/dbg.h ioccc_test/../json_parse.h util.h ioccc_test/../json_util.h json_parse.h \
-	ioccc_test/../version.h
+jnum_chk.o: test_ioccc/jnum_chk.c test_ioccc/jnum_chk.h test_ioccc/../dbg/dbg.h test_ioccc/../util.h \
+	dyn_array.h dbg/dbg.h test_ioccc/../json_parse.h util.h test_ioccc/../json_util.h json_parse.h \
+	test_ioccc/../version.h
 jnum_gen.o: jnum_gen.c jnum_gen.h dbg/dbg.h util.h dyn_array.h json_parse.h json_util.h \
 	limit_ioccc.h version.h
-jnum_test.o: ioccc_test/jnum_test.c ioccc_test/../json_parse.h util.h dyn_array.h dbg/dbg.h
+jnum_test.o: test_ioccc/jnum_test.c test_ioccc/../json_parse.h util.h dyn_array.h dbg/dbg.h
 json_util.o: json_util.c dbg/dbg.h json_parse.h util.h dyn_array.h json_util.h
 jparse_main.o: jparse_main.c jparse_main.h dbg/dbg.h util.h dyn_array.h jparse.h json_parse.h \
 	json_util.h jparse.tab.h

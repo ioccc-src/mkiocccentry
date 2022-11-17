@@ -1,5 +1,0 @@
-Warning: txzchk: ./ioccc_test/test_txzchk/bad/entry.test-2.1922598666.txt: found absolute path /test-2/Makefile
-Warning: txzchk: ./ioccc_test/test_txzchk/bad/entry.test-2.1922598666.txt: found incorrect directory in filename /test-2/Makefile
-Warning: txzchk: ./ioccc_test/test_txzchk/bad/entry.test-2.1922598666.txt: found directory change in filename /test-2/Makefile
-Warning: txzchk: ./ioccc_test/test_txzchk/bad/entry.test-2.1922598666.txt: not all files in correct directory
-Warning: txzchk: ./ioccc_test/test_txzchk/bad/entry.test-2.1922598666.txt: found 4 feathers stuck in the tarball
