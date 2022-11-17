@@ -10,12 +10,12 @@ export DBG_LEVEL="0"
 export JSON_DBG_LEVEL="0"
 export Q_FLAG=""
 export CHKENTRY="./chkentry"
-export LOGFILE="./test/chkentry_test.log"
+export LOGFILE="./ioccc_test/chkentry_test.log"
 export EXIT_CODE=0
 export INVALID_JSON_FOUND=""
 export UNEXPECTED_SEMANRIC_ERROR=""
 export SEMANRIC_ERROR_MISSED=""
-export JSON_TREE="./test/test_JSON"
+export JSON_TREE="./ioccc_test/test_JSON"
 
 export CHKENTRY_TEST_VERSION="0.2 2022-11-04"
 

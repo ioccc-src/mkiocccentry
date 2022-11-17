@@ -37,9 +37,9 @@ export DBG_LEVEL="0"
 export JSON_DBG_LEVEL="0"
 export Q_FLAG=""
 export JPARSE="./jparse"
-export LOGFILE="./test/jparse_test.log"
+export LOGFILE="./ioccc_test/jparse_test.log"
 export EXIT_CODE=0
-export JSON_TREE="./test/test_JSON"
+export JSON_TREE="./ioccc_test/test_JSON"
 export FILE_FAILURE_SUMMARY=""
 export STRING_FAILURE_SUMMARY=""
 

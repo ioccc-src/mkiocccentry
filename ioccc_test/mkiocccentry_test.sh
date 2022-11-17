@@ -104,8 +104,8 @@ fi
 
 # working locations - adjust as needed
 #
-work_dir="test/test_work"
-src_dir="test/test_src"
+work_dir="ioccc_test/test_work"
+src_dir="ioccc_test/test_src"
 
 # be sure the working locations exist
 #
