@@ -346,7 +346,7 @@ FLEX_FLAGS = -8
 # all - default rule - must be first #
 ######################################
 
-all: dbg fast_hostchk just_all
+all: dbg soup fast_hostchk just_all
 
 # The original make all that bypasses running hostchk.sh
 #
@@ -403,7 +403,7 @@ hostchk_warning:
 	checknr clean clean_generated_obj clean_mkchk_sem clobber configure depend hostchk bug_report.sh \
 	install ioccc_test legacy_clobber man2html mkchk_sem parser parser-o picky prep prep_clobber \
         pull rebuild_jnum_test release reset_min_timestamp seqcexit shellcheck tags test test-chkentry use_ref \
-	dbg
+	dbg soup
 
 
 #####################################
@@ -454,14 +454,8 @@ txzchk: txzchk.o dbg/dbg.o util.o dyn_array.o location.o \
 	${CC} ${CFLAGS} txzchk.o dbg/dbg.o util.o dyn_array.o location.o \
 	     utf8_posix_map.o sanity.o -o $@
 
-soup/chk_sem_auth.o: soup/chk_sem_auth.c soup/chk_sem_auth.h Makefile
-	cd soup && ${CC} ${CFLAGS} -I.. chk_sem_auth.c -c
-
-soup/chk_sem_info.o: soup/chk_sem_info.c soup/chk_sem_info.h Makefile
-	cd soup && ${CC} ${CFLAGS} -I.. chk_sem_info.c -c
-
-soup/chk_validate.o: soup/chk_validate.c Makefile
-	cd soup && ${CC} ${CFLAGS} -I.. chk_validate.c -c
+soup:
+	${MAKE} -C soup
 
 chkentry.o: chkentry.c chkentry.h jparse.tab.h Makefile
 	${CC} ${CFLAGS} -Isoup chkentry.c -c
@@ -990,6 +984,7 @@ clobber: clean prep_clobber
 	${RM} -f ioccc_test/ioccc_test.log
 	${MAKE} -C dbg clobber
 	${MAKE} -C ioccc_test clobber
+	${MAKE} -C soup clobber
 
 distclean nuke: clobber
 
