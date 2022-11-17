@@ -32,6 +32,8 @@ jstrencode
 limit_ioccc.sh
 makefile.local
 man/chkentry.html
+# man/dbg.3 is a copy of dbg/dbg.3 which we don't need to duplicate
+man/dbg.3
 man/dbg.html
 man/fnamchk.html
 man/iocccsize.html
