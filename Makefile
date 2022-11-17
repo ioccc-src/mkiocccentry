@@ -455,7 +455,7 @@ txzchk: txzchk.o dbg/dbg.o util.o dyn_array.o location.o \
 	     utf8_posix_map.o sanity.o -o $@
 
 soup:
-	${MAKE} -C soup
+	${MAKE} -C soup CFLAGS="${CFLAGS}"
 
 chkentry.o: chkentry.c chkentry.h jparse.tab.h Makefile
 	${CC} ${CFLAGS} -Isoup chkentry.c -c
