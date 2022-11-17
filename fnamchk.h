@@ -38,7 +38,7 @@
 /*
  * dbg - info, debug, warning, error, and usage message facility
  */
-#include "dbg.h"
+#include "dbg/dbg.h"
 
 /*
  * util - entry common utility functions for the IOCCC toolkit

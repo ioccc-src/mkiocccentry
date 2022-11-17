@@ -53,7 +53,7 @@
 /*
  * dbg - info, debug, warning, error, and usage message facility
  */
-#include "dbg.h"
+#include "dbg/dbg.h"
 
 /*
  * limit_ioccc - IOCCC size and rule related limitations

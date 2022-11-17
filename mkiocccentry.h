@@ -69,7 +69,7 @@
 /*
  * dbg - info, debug, warning, error, and usage message facility
  */
-#include "dbg.h"
+#include "dbg/dbg.h"
 
 /*
  * location - location/country codes

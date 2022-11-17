@@ -25,7 +25,7 @@
 #
 export TOOLS="
     ./chkentry
-    ./dbg
+    ./dbg/dbg_test
     ./fnamchk
     ./hostchk.sh
     ./iocccsize

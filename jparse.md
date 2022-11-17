@@ -3,8 +3,7 @@
 `jparse` is a JSON parser written in C with the help of `flex(1)` and
 `bison(1)`. It was co-developed by Cody Boone Ferguson and Landon Curt Noll (one
 of the IOCCC Judges) in support of the *IOCCC* (_International Obfuscated C Code
-Contest_), originally in the
-[mkiocccentry repo](https://github.com/ioccc-src/mkiocccentry).
+Contest_), originally in the [mkiocccentry repo](https://github.com/ioccc-src/mkiocccentry).
 
 # Synopsis
 

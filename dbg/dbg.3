@@ -1,0 +1,464 @@
+.\" section 3 man page for dbg
+.\"
+.\" This man page was first written by Cody Boone Ferguson for the IOCCC
+.\" in 2022. The man page is dedicated to Grace Hopper who popularised the
+.\" term 'debugging' after a real moth in a mainframe was causing it to
+.\" malfunction (the term had already existed but she made it popular
+.\" because of actually removing an insect that was causing a malfunction).
+.\"
+.\" Humour impairment is not virtue nor is it a vice, it's just plain
+.\" wrong: almost as wrong as JSON spec mis-features and C++ obfuscation! :-)
+.\"
+.\" "Share and Enjoy!"
+.\"     --  Sirius Cybernetics Corporation Complaints Division, JSON spec department. :-)
+.\"
+.TH dbg 3  "08 November 2022" "dbg"
+.SH NAME
+.BR msg(),
+.BR vmsg(),
+.BR fmsg(),
+.BR vfmsg(),
+.BR snmsg(),
+.BR vsnmsg(),
+.BR dbg(),
+.BR vdbg(),
+.BR fdbg(),
+.BR vfdbg(),
+.BR sndbg(),
+.BR vsndbg(),
+.BR warn(),
+.BR vwarn(),
+.BR fwarn(),
+.BR vfwarn(),
+.BR snwarn(),
+.BR vsnwarn(),
+.BR warnp(),
+.BR vwarnp(),
+.BR fwarnp(),
+.BR vfwarnp(),
+.BR snwarnp(),
+.BR vsnwarnp(),
+.BR err(),
+.BR verr(),
+.BR ferr(),
+.BR vferr(),
+.BR errp(),
+.BR verrp(),
+.BR ferrp(),
+.BR vferrp(),
+.BR werr(),
+.BR vwerr(),
+.BR fwerr(),
+.BR vfwerr(),
+.BR snwerr(),
+.BR vsnwerr(),
+.BR werrp(),
+.BR vwerrp(),
+.BR fwerrp(),
+.BR vfwerrp(),
+.BR snwerrp(),
+.BR vsnwerrp(),
+.BR warn_or_err(),
+.BR vwarn_or_err(),
+.BR fwarn_or_err(),
+.BR vfwarn_or_err(),
+.BR warnp_or_errp(),
+.BR vwarnp_or_errp(),
+.BR fwarnp_or_errp(),
+.BR vfwarnp_or_errp(),
+.BR printf_usage(),
+.BR vprintf_usage(),
+.BR fprintf_usage(),
+.BR vfprintf_usage()
+\- info, debug, warning, error and usage message facilities
+.SH SYNOPSIS
+\fB#include "dbg.h"\fP
+.sp
+.BI "extern int verbosity_level;		/* maximum debug level for debug messages */"
+.br
+.BI "extern bool msg_output_allowed;		/* false ==> disable informational messages */"
+.br
+.BI "extern bool dbg_output_allowed;		/* false ==> disable debug messages */"
+.br
+.BI "extern bool warn_output_allowed;		/* false ==> disable warning messages */"
+.br
+.BI "extern bool err_output_allowed;		/* false ==> disable error messages */"
+.br
+.BI "extern bool usage_output_allowed;		/* false ==> disable usage messages */"
+.br
+.BI "extern bool msg_warn_silent;		/* true ==> silence info & warnings if verbosity_level <= 0 */"
+.sp
+.BI "void msg(const char *fmt, ...);"
+.br
+.BI "void vmsg(char const *fmt, va_list ap);"
+.br
+.BI "void fmsg(FILE *stream, const char *fmt, ...);"
+.br
+.BI "void vfmsg(FILE *stream, char const *fmt, va_list ap);"
+.br
+.BI "void snmsg(char *str, size_t size, char const *fmt, ...);"
+.br
+.BI "void vsnmsg(char *str, size_t size, char const *fmt, va_list ap);"
+.sp
+.BI "void dbg(int level, const char *fmt, ...);"
+.br
+.BI "void vdbg(int level, char const *fmt, va_list ap);"
+.br
+.BI "void fdbg(FILE *stream, int level, const char *fmt, ...);"
+.br
+.BI "void vfdbg(FILE *stream, int level, char const *fmt, va_list ap);"
+.br
+.BI "void sndbg(char *str, size_t size, int level, char const *fmt, ...);"
+.br
+.BI "void vsndbg(char *str, size_t size, int level, char const *fmt, va_list ap);"
+.sp
+.BI "void warn(const char *name, const char *fmt, ...);"
+.br
+.BI "void vwarn(char const *name, char const *fmt, va_list ap);"
+.br
+.BI "void fwarn(FILE *stream, const char *name, const char *fmt, ...);"
+.br
+.BI "void vfwarn(FILE *stream, char const *name, char const *fmt, va_list ap);"
+.br
+.BI "void snwarn(char *str, size_t size, char const *name, char const *fmt, ...);"
+.br
+.BI "void vsnwarn(char *str, size_t size, char const *name, char const *fmt, va_list ap);"
+.sp
+.BI "void warnp(const char *name, const char *fmt, ...);"
+.br
+.BI "void vwarnp(char const *name, char const *fmt, va_list ap);"
+.br
+.BI "void fwarnp(FILE *stream, const char *name, const char *fmt, ...);"
+.br
+.BI "void vfwarnp(FILE *stream, char const *name, char const *fmt, va_list ap);"
+.br
+.BI "void snwarnp(char *str, size_t size, char const *name, char const *fmt, ...);"
+.br
+.BI "void vsnwarnp(char *str, size_t size, char const *name, char const *fmt, va_list ap);"
+.sp
+.BI "void err(int exitcode, const char *name, const char *fmt, ...);"
+.br
+.BI "void verr(int exitcode, char const *name, char const *fmt, va_list ap);"
+.br
+.BI "void ferr(int exitcode, FILE *stream, const char *name, const char *fmt, ...);"
+.br
+.BI "void vferr(int exitcode, FILE *stream, char const *name, char const *fmt, va_list ap);"
+.sp
+.BI "void errp(int exitcode, const char *name, const char *fmt, ...);"
+.br
+.BI "void verrp(int exitcode, char const *name, char const *fmt, va_list ap);"
+.br
+.BI "void ferrp(int exitcode, FILE *stream, const char *name, const char *fmt, ...);"
+.br
+.BI "void vferrp(int exitcode, FILE *stream, char const *name, char const *fmt, va_list ap);"
+.sp
+.BI "void werr(int error_code, const char *name, const char *fmt, ...);"
+.br
+.BI "void vwerr(int error_code, char const *name, char const *fmt, va_list ap);"
+.br
+.BI "void fwerr(int error_code, FILE *stream, const char *name, const char *fmt, ...);"
+.br
+.BI "void vfwerr(int error_code, FILE *stream, char const *name, char const *fmt, va_list ap);"
+.br
+.BI "void snwerr(int error_code, char *str, size_t size, char const *name, char const *fmt, ...);"
+.br
+.BI "void vsnwerr(int error_code, char *str, size_t size, char const *name, char const *fmt, va_list ap);"
+.sp
+.BI "void werrp(int error_code, const char *name, const char *fmt, ...);"
+.br
+.BI "void vwerrp(int error_code, char const *name, char const *fmt, va_list ap);"
+.br
+.BI "void fwerrp(int error_code, FILE *stream, const char *name, const char *fmt, ...);"
+.br
+.BI "void vfwerrp(int error_code, FILE *stream, char const *name, char const *fmt, va_list ap);"
+.br
+.BI "void snwerrp(int error_code, char *str, size_t size, char const *name, char const *fmt, ...);"
+.br
+.BI "void vsnwerrp(int error_code, char *str, size_t size, char const *name, char const *fmt, va_list ap);"
+.sp
+.BI "void warn_or_err(int exitcode, const char *name, bool warning, const char *fmt, ...);"
+.br
+.BI "void vwarn_or_err(int exitcode, const char *name, bool warning, const char *fmt, va_list ap);
+.br
+.BI "void fwarn_or_err(int exitcode, FILE *stream, const char *name, bool warning, const char *fmt, ...);"
+.br
+.BI "void vfwarn_or_err(int exitcode, FILE *stream, const char *name, bool warning, const char *fmt, va_list ap);"
+.SH DESCRIPTION
+These functions provide a way to write informative messages, debug messages, warning messages, error messages, non\-fatal error messages as well as usage messages.
+.SS Errno versions
+.PP
+The functions \fBwarnp()\fP, \fBfwarnp()\fP, \fBvfwarnp()\fP, \fBvsnwarnp()\fP, \fBerrp()\fP, \fBferrp()\fP, \fBwerrp()\fP, \fBfwerrp()\fP, \fBvsnwerrp()\fP, \fBwarnp_or_errp()\fP and \fBfwarnp_or_errp()\fP write a message according to the value of \fBerrno\fP, making sure to restore the \fBerrno\fP value in the case the function returns.
+.SS Alternative output \fBFILE *\fP stream
+The functions that do not take a \fBFILE *\fP or a \fBchar *\fP write to \fBstderr\fP.
+The functions
+.BR fmsg(),
+.BR vfmsg(),
+.BR fdbg(),
+.BR vfdbg(),
+.BR fwarn(),
+.BR vfwarn(),
+.BR fwarnp(),
+.BR vfwarnp(),
+.BR ferr(),
+.BR vferr(),
+.BR ferrp(),
+.BR vferrp(),
+.BR fwerr(),
+.BR vfwerrp(),
+.BR fwarn_or_err(),
+.BR vfwarn_or_err(),
+.BR fwarnp_or_errp(),
+.BR fprintf_usage()
+and
+.BR vfprintf_usage()
+can write to an alternative \fBFILE *\fP stream.
+.SS Writing to a \fBchar *\fP buffer
+The functions
+.BR snmsg(),
+.BR sndbg(),
+.BR snwarn(),
+.BR snwarnp(),
+.BR snwerr()
+and
+.BR snwerrp()
+write a message to a buffer of a fixed size.
+They do not write a newline after the message but the string is NUL terminated.
+They do not do anything if passed a NULL pointer or \fBsize <= 1\fP.
+.SS Variadic versions
+.PP
+The functions
+.BR vmsg(),
+.BR vfmsg(),
+.BR vsnmsg(),
+.BR vdbg(),
+.BR vfdbg(),
+.BR vsndbg(),
+.BR vwarn(),
+.BR vfwarn(),
+.BR vsnwarn(),
+.BR vwarnp(),
+.BR vfwarnp(),
+.BR vsnwarnp(),
+.BR verr(),
+.BR vferr(),
+.BR verrp(),
+.BR vferrp(),
+.BR vwerr(),
+.BR vfwerr(),
+.BR vsnwerr(),
+.BR vwerrp(),
+.BR vfwerrp(),
+.BR vsnwerrp(),
+.BR vwarn_or_err(),
+.BR vfwarn_or_err(),
+.BR vwarnp_or_errp(),
+.BR vprintf_usage(),
+and
+.BR vfprintf_usage()
+are equivalent to the functions
+.BR msg(),
+.BR fmsg(),
+.BR snmsg(),
+.BR dbg(),
+.BR fdbg(),
+.BR sndbg(),
+.BR warn(),
+.BR fwarn(),
+.BR snwarn(),
+.BR warnp(),
+.BR fwarnp(),
+.BR snwarnp(),
+.BR err(),
+.BR ferr(),
+.BR errp(),
+.BR ferrp(),
+.BR werr(),
+.BR fwerr(),
+.BR snwerr(),
+.BR werrp(),
+.BR fwerrp(),
+.BR snwerrp(),
+.BR warn_or_err(),
+.BR fwarn_or_err(),
+.BR warnp_or_errp(),
+.BR printf_usage(),
+and
+.BR fprintf_usage()
+except that they are called with a \fIva_list\fP instead of a variable number of arguments.
+The state of the \fIva_list\fP is not modified by these functions.
+.SS Format of the fmt string
+The format string is a character string in the same form as \fBprintf\fP.
+As these are quite complex please refer to the \fBprintf(3)\fP man page for more details and examples.
+.SS Output control
+.PP
+When \fBmsg_output_allowed == false\fP the \fBmsg()\fP functions will not print anything.
+.sp
+When \fBdbg_output_allowed == false\fP the \fBdbg()\fP functions will not print anything.
+.sp
+When \fBwarn_output_allowed == false\fP the \fBwarn()\fP functions will not print anything.
+.sp
+When \fBerr_output_allowed == false\fP the \fBerr()\fP functions will not print anything.
+.sp
+When \fBusage_output_allowed == false\fP the \fBprintf_usage()\fP functions will not print anything.
+.sp
+When \fBmsg_warn_silent == true\fP the \fBmsg()\fP and \fBwarn()\fP functions will be silenced if \fBverbosity_level <= 0\fP.
+.SH RETURN VALUE
+.PP
+These functions return void except that the functions
+.BR err(),
+.BR verr(),
+.BR ferr(),
+.BR vferr(),
+.BR errp(),
+.BR verrp(),
+.BR ferrp(),
+and
+.BR vferrp()
+do not return at all.
+More specifically they do call \fBexit(3)\fP with the appropriate exit code but immediately after call either \fB__builtin_unreachable\fP or \fBabort(3)\fP depending on the value of \fB__has_builtin(__builtin_unreachable)\fP, thereby terminating the program.
+.PP
+The functions
+.BR warn_or_err(),
+.BR vwarn_or_err(),
+.BR fwarn_or_err(),
+.BR vfwarn_or_err(),
+.BR warnp_or_errp(),
+.BR vwarnp_or_errp(),
+.BR fwarnp_or_errp()
+and
+.BR vfwarnp_or_errp()
+do not return if warning is false in the same manner as the functions
+.BR err(),
+.BR verr(),
+.BR ferr(),
+.BR vferr(),
+.BR errp(),
+.BR verrp(),
+.BR ferrp(),
+and
+.BR vferrp().
+.PP
+The functions
+.BR printf_usage(),
+.BR vprintf_usage(),
+.BR fprintf_usage()
+and
+.BR vfprintf_usage()
+do not return if exitcode >= 0.
+.SH NOTES
+.SS Variadic arguments
+In the \fIva_list\fP functions, the argument \fIap\fP is not checked for consistency like they are using the primary interfaces.
+For this reason these versions are not recommended for use.
+.SS In case of NULL name
+If \fIname\fP is \fBNULL\fP it will be set to
+.BR "((NULL name))"
+and the following warning, preceded by a newline, will be issued:
+.sp
+.BI "Warning: foo: name is NULL, forcing name to be: ((NULL name))"
+.sp
+where \fBfoo\fP is the name of the function.
+.SS The fmt argument
+The \fBfmt\fP argument in the functions is a \fBprintf(3)\fP style format.
+If the format requires arguments, then such arguments may be given after the fmt.
+For modern C compilers, the agreement between any % directives in fmt, and any arguments that may follow is checked by the format attribute facility.
+Thus having too many arguments, too few arguments, or arguments of the wrong type will result in compiler warnings.
+.SS In case of NULL fmt
+If \fIfmt\fP is \fBNULL\fP it will be set to
+.BR "((NULL fmt))"
+and the following warning, preceded by a newline, will be issued:
+.sp
+.BI "Warning: foo: fmt is NULL, forcing fmt to be: ((NULL fmt))"
+.sp
+where \fBfoo\fP is the name of the function.
+.sp
+When the \fIfmt\fP is \fBNULL\fP or contains no \fB%\fP specifiers the arguments following \fIfmt\fP will be ignored.
+.SS Error checking
+All writes are checked for errors.
+Write error messages are written to stderr.
+However, a persistent problem writing to the stream (such as if the stream being written to was previously closed) will likely prevent such an error from being seen.
+.SS Newlines
+All functions output extra newlines to help let the messages stand out better.
+.SH EXAMPLE
+.RS 4
+.nf
+$ cat dbg_example.c
+/*
+ * This is just a trivial demo for the dbg api, see the main function in dbg.c
+ * for a better example.
+ */
+
+#include "dbg.h"
+
+#define filename "foo.bar"
+
+long length = 7;
+
+int
+main(void)
+{
+
+    /*
+     * We suggest you use getopt(3) and strtol(3) (cast to an int)
+     * to convert \-v verbosity_level on the command line.
+     */
+    msg("NOTE: Setting verbosity_level to DBG_MED: %d", DBG_MED);
+    verbosity_level = DBG_MED; /* DBG_MED == (3) */
+
+    /*
+     * This will print:
+     *
+     *	    Warning: main: elephant is sky\-blue pink
+     *
+     * with newlines as described.
+     */
+    msg("NOTE: The next line should say: \\"Warning: %s: %s", __func__, "elephant is sky\-blue pink\\"");
+    warn(__func__, "elephant is sky\-blue pink\n");
+
+    /* this will not print anything as verbosity_level 3 (DBG_MED) < 5 (DBG_HIGH): */
+    dbg(DBG_HIGH, "starting critical section");
+
+    /*
+     * Because verbosity_level == 3 (DBG_MED) and filename is "foo.bar" and
+     * length == 7 this will print (with newlines added as described):
+     *
+     *	    debug[3]: file: foo.bar has length: 7
+     */
+    msg("NOTE: The next line should read: \\"debug[3]: file: %s has length: %ld\\"", filename, length);
+    dbg(DBG_MED, "file: %s has length: %ld\n", filename, length);
+
+    /*
+     * If EPERM == 1 then this will print:
+     *
+     *	    ERROR[2]: main: test: errno[1]: Operation not permitted
+     *
+     * with newlines as discussed and then exit 2.
+     */
+    errno = EPERM;
+    msg("NOTE: The next line should read: \\"ERROR[2]: main: test: errno[%d]: %s\\"", errno, strerror(errno));
+    errp(2, __func__, "test");
+
+    return 2; /* this return is never reached */
+}
+$ cc \-c dbg.c
+$ cc \-o dbg_example dbg_example.c dbg.o
+The above two commands could be shortened to just:
+\fBcc \-o dbg_example dbg_example.c dbg.c\fP
+$ ./dbg_example
+NOTE: Setting verbosity_level to DBG_MED: 3
+NOTE: The next line should say: "Warning: main: elephant is sky\-blue pink"
+Warning: main: elephant is sky\-blue pink
+
+NOTE: The next line should read: "debug[3]: file: foo.bar has length: 7"
+debug[3]: file: foo.bar has length: 7
+
+NOTE: The next line should read: "ERROR[2]: main: test: errno[1]: Operation not permitted"
+ERROR[2]: main: test: errno[1]: Operation not permitted
+$ echo $?
+2
+.fi
+.RE
+.SH SEE ALSO
+.BR printf(3)
+.SH HISTORY
+The dbg facility was first written by Landon Curt Noll in 1989.
+Version 2.0 was developed and tested within the IOCCC mkiocccentry GitHub repo.

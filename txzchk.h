@@ -47,7 +47,7 @@
 /*
  * dbg - info, debug, warning, error, and usage message facility
  */
-#include "dbg.h"
+#include "dbg/dbg.h"
 
 /*
  * sanity - perform common IOCCC sanity checks
