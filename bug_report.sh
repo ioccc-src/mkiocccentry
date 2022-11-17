@@ -25,7 +25,7 @@
 #
 export TOOLS="
     ./chkentry
-    ./dbg
+    ./dbg/dbg_test
     ./fnamchk
     ./hostchk.sh
     ./iocccsize
@@ -42,16 +42,16 @@ export TOOLS="
     ./run_flex.sh
     ./run_usage.sh
     ./soup/all_ref.sh
-    ./test/chkentry_test.sh
-    ./test/dyn_test
-    ./test/ioccc_test.sh
-    ./test/iocccsize_test.sh
-    ./test/jnum_chk
-    ./test/jparse_test.sh
-    ./test/jstr_test.sh
-    ./test/mkiocccentry_test.sh
-    ./test/txzchk_test.sh
-    ./test/utf8_test
+    ./ioccc_test/chkentry_test.sh
+    ./ioccc_test/dyn_test
+    ./ioccc_test/ioccc_test.sh
+    ./ioccc_test/iocccsize_test.sh
+    ./ioccc_test/jnum_chk
+    ./ioccc_test/jparse_test.sh
+    ./ioccc_test/jstr_test.sh
+    ./ioccc_test/mkiocccentry_test.sh
+    ./ioccc_test/txzchk_test.sh
+    ./ioccc_test/utf8_test
     ./txzchk
     ./verge
     ./vermod.sh

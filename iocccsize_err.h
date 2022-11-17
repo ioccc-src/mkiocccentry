@@ -23,7 +23,7 @@ extern "C" {
 /*
  * dbg - debug, warning and error reporting facility
  */
-#include "dbg.h"
+#include "dbg/dbg.h"
 
 
 #define iocccsize_warnx(...)	warn(__func__, __VA_ARGS__)

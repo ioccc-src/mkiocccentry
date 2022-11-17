@@ -32,6 +32,8 @@ jstrencode
 limit_ioccc.sh
 makefile.local
 man/chkentry.html
+# man/dbg.3 is a copy of dbg/dbg.3 which we don't need to duplicate
+man/dbg.3
 man/dbg.html
 man/fnamchk.html
 man/iocccsize.html
@@ -48,15 +50,15 @@ oebxergfB.txt
 orig.iocccsize
 soup/ref/
 tags
-test/chkentry_test.log
-test/ioccc_test.log
-test/jparse_test.log
-test/jstr_test.out
-test/jstr_test2.out
-test/test_iocccsize/
-test/test_src/
-test/test_work/
-test/txzchk_test.log
+ioccc_test/chkentry_test.log
+ioccc_test/ioccc_test.log
+ioccc_test/jparse_test.log
+ioccc_test/jstr_test.out
+ioccc_test/jstr_test2.out
+ioccc_test/test_iocccsize/
+ioccc_test/test_src/
+ioccc_test/test_work/
+ioccc_test/txzchk_test.log
 txzchk
 utf8_test
 verge
