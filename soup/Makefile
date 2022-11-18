@@ -15,6 +15,11 @@ SRCFILES= $(OBJFILES:.o=.c)
 
 all: ${OBJFILES}
 
+.PHONY: all
+
+all:
+	@:
+
 chk_sem_auth.o: chk_sem_auth.c chk_sem_auth.h Makefile
 	${CC} ${CFLAGS} -I.. chk_sem_auth.c -c
 
