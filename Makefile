@@ -423,7 +423,7 @@ entry_time.o: entry_time.c Makefile
 	${CC} ${CFLAGS} entry_time.c -c
 
 dbg: dbg/dbg.h dbg/dbg.c
-	${MAKE} -C dbg CFLAGS="${CFLAGS}"
+	@${MAKE} -C dbg CFLAGS="${CFLAGS}"
 	@${CP} -f dbg/dbg.3 man/dbg.3
 
 mkiocccentry.o: mkiocccentry.c Makefile
@@ -455,7 +455,7 @@ txzchk: txzchk.o dbg/dbg.o util.o dyn_array.o location.o \
 	     utf8_posix_map.o sanity.o -o $@
 
 soup:
-	${MAKE} -C soup CFLAGS="${CFLAGS}"
+	@${MAKE} -C soup CFLAGS="${CFLAGS}"
 
 chkentry.o: chkentry.c chkentry.h jparse.tab.h Makefile
 	${CC} ${CFLAGS} -Isoup chkentry.c -c

@@ -41,7 +41,10 @@ DESTDIR= /usr/local/bin
 
 TARGETS= dbg.o dbg_test dbg_example
 
+.PHONY: all
+
 all: ${TARGETS}
+	@:
 
 dbg.o: dbg.c dbg.h Makefile
 	${CC} ${CFLAGS} dbg.c -c
