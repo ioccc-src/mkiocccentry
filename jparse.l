@@ -26,7 +26,9 @@
  * problems. Another way is to provide 'int yywrap() { return 1; }' but this is
  * unnecessary.
  */
-%option noyywrap yylineno nodefault 8bit
+%option noyywrap
+%option nodefault nounput
+%option yylineno 8bit
 %option bison-bridge bison-locations reentrant
 %option header-file="jparse.lex.h"
 %option extra-type="struct json_extra *"

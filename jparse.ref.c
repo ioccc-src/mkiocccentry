@@ -580,7 +580,7 @@ static const flex_int32_t yy_rule_can_match_eol[16] =
  * problems. Another way is to provide 'int yywrap() { return 1; }' but this is
  * unnecessary.
  */
-#line 35 "jparse.l"
+#line 37 "jparse.l"
 /* Declarations etc. go here.
  *
  * Code is copied verbatim near the top of the generated code.
@@ -744,8 +744,6 @@ extern int yywrap ( yyscan_t yyscanner );
 
 #ifndef YY_NO_UNPUT
     
-    static void yyunput ( int c, char *buf_ptr  , yyscan_t yyscanner);
-    
 #endif
 
 #ifndef yytext_ptr
@@ -907,9 +905,9 @@ YY_DECL
 		}
 
 	{
-#line 98 "jparse.l"
+#line 100 "jparse.l"
 
-#line 861 "jparse.c"
+#line 859 "jparse.c"
 
 	while ( /*CONSTCOND*/1 )		/* loops until end-of-file is reached */
 		{
@@ -980,7 +978,7 @@ do_action:	/* This label is used only to access EOF actions. */
 
 case 1:
 YY_RULE_SETUP
-#line 99 "jparse.l"
+#line 101 "jparse.l"
 {
 			    /*
 			     * Whitespace excluding newlines
@@ -1000,14 +998,14 @@ YY_RULE_SETUP
 case 2:
 /* rule 2 can match eol */
 YY_RULE_SETUP
-#line 115 "jparse.l"
+#line 117 "jparse.l"
 {
 			    yycolumn = 1;
 			}
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 119 "jparse.l"
+#line 121 "jparse.l"
 {
 			    /* string */
 			    return JSON_STRING;
@@ -1015,7 +1013,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 124 "jparse.l"
+#line 126 "jparse.l"
 {
 			    /* number */
 			    return JSON_NUMBER;
@@ -1023,7 +1021,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 129 "jparse.l"
+#line 131 "jparse.l"
 {
 			    /* null object */
 			    return JSON_NULL;
@@ -1031,7 +1029,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 134 "jparse.l"
+#line 136 "jparse.l"
 {
 			    /* boolean: true */
 			    return JSON_TRUE;
@@ -1039,7 +1037,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 138 "jparse.l"
+#line 140 "jparse.l"
 {
 			    /* boolean: false */
 			    return JSON_FALSE;
@@ -1047,7 +1045,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 143 "jparse.l"
+#line 145 "jparse.l"
 {
 			    /* start of object */
 			    return JSON_OPEN_BRACE;
@@ -1055,7 +1053,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 147 "jparse.l"
+#line 149 "jparse.l"
 {
 			    /* end of object */
 			    return JSON_CLOSE_BRACE;
@@ -1063,7 +1061,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
-#line 152 "jparse.l"
+#line 154 "jparse.l"
 {
 			    /* start of array */
 			    return JSON_OPEN_BRACKET;
@@ -1071,7 +1069,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
-#line 156 "jparse.l"
+#line 158 "jparse.l"
 {
 			    /* end of array */
 			    return JSON_CLOSE_BRACKET;
@@ -1079,7 +1077,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
-#line 161 "jparse.l"
+#line 163 "jparse.l"
 {
 			    /* colon or 'equals' */
 			    return JSON_COLON;
@@ -1087,7 +1085,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
-#line 166 "jparse.l"
+#line 168 "jparse.l"
 {
 			    /* comma: name/value pair separator */
 			    return JSON_COMMA;
@@ -1095,7 +1093,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
-#line 171 "jparse.l"
+#line 173 "jparse.l"
 {
 			    /* invalid token: any other character */
 			    warn(__func__, "at line %d column %d: invalid token: 0x%02x = <%c>", yylloc->first_line, yylloc->first_column, *yytext, *yytext);
@@ -1131,10 +1129,10 @@ YY_RULE_SETUP
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
-#line 204 "jparse.l"
+#line 206 "jparse.l"
 YY_FATAL_ERROR( "flex scanner jammed" );
 	YY_BREAK
-#line 1086 "jparse.c"
+#line 1084 "jparse.c"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 
@@ -1473,48 +1471,6 @@ static int yy_get_next_buffer (yyscan_t yyscanner)
 }
 
 #ifndef YY_NO_UNPUT
-
-    static void yyunput (int c, char * yy_bp , yyscan_t yyscanner)
-{
-	char *yy_cp;
-    struct yyguts_t * yyg = (struct yyguts_t*)yyscanner;
-
-    yy_cp = yyg->yy_c_buf_p;
-
-	/* undo effects of setting up yytext */
-	*yy_cp = yyg->yy_hold_char;
-
-	if ( yy_cp < YY_CURRENT_BUFFER_LVALUE->yy_ch_buf + 2 )
-		{ /* need to shift things up to make room */
-		/* +2 for EOB chars. */
-		int number_to_move = yyg->yy_n_chars + 2;
-		char *dest = &YY_CURRENT_BUFFER_LVALUE->yy_ch_buf[
-					YY_CURRENT_BUFFER_LVALUE->yy_buf_size + 2];
-		char *source =
-				&YY_CURRENT_BUFFER_LVALUE->yy_ch_buf[number_to_move];
-
-		while ( source > YY_CURRENT_BUFFER_LVALUE->yy_ch_buf )
-			*--dest = *--source;
-
-		yy_cp += (int) (dest - source);
-		yy_bp += (int) (dest - source);
-		YY_CURRENT_BUFFER_LVALUE->yy_n_chars =
-			yyg->yy_n_chars = (int) YY_CURRENT_BUFFER_LVALUE->yy_buf_size;
-
-		if ( yy_cp < YY_CURRENT_BUFFER_LVALUE->yy_ch_buf + 2 )
-			YY_FATAL_ERROR( "flex scanner push-back overflow" );
-		}
-
-	*--yy_cp = (char) c;
-
-    if ( c == '\n' ){
-        --yylineno;
-    }
-
-	yyg->yytext_ptr = yy_bp;
-	yyg->yy_hold_char = *yy_cp;
-	yyg->yy_c_buf_p = yy_cp;
-}
 
 #endif
 
@@ -2338,7 +2294,7 @@ void yyfree (void * ptr , yyscan_t yyscanner)
 
 #define YYTABLES_NAME "yytables"
 
-#line 204 "jparse.l"
+#line 206 "jparse.l"
 
 
 /* Section 3: Code that's copied to the generated scanner */
