@@ -888,7 +888,6 @@ test: dbg all chkentry test_ioccc/ioccc_test.sh test_ioccc/iocccsize_test.sh \
 test-chkentry: all chkentry test_ioccc/test-chkentry.sh Makefile
 	./test_ioccc/test-chkentry.sh -v 1
 
-
 # rule used by prep.sh and make clean
 #
 clean_generated_obj:
@@ -927,6 +926,7 @@ legacy_clobber:
 	${RM} -rf test_iocccsize test_src test_work
 	${RM} -f .exit_code.*
 	${RM} -f dbg.out
+	${RM} -rf ioccc_test test
 
 # rule used by prep.sh and make clobber
 #
