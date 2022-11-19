@@ -1,6 +1,58 @@
 # Major changes to the IOCCC entry toolkit
 
 
+## Release 0.8.1 2022-11-19
+
+This is "roll-up" release was added so that it could be referenced
+in the https://www.ioccc.org/index.html news section.
+
+Updated legacy_clobber rule to remove older directories no longer used.
+
+Moved test directory to test_ioccc to avoid Makefile confusion
+with the test rule.
+
+Restructure dbg facility and Makefile in accordance with
+the new method of copying code from external GitHub repositories.
+
+Improve formatting with the hostchk_warning rule.
+
+Added initial dyn_array.md documentation.
+
+Typo fixes to the verge.8 man page.
+
+Minor fixes to jparse.md.
+
+Updated txzchk comments (source, header, man page).
+
+Improved and updated README.md documentation.
+
+Improved bug_report.sh: in particular in reporting versions.
+
+Bug fixes and improvements to several shell scripts.
+Made changes to satisfy shellcheck as well.
+
+Added rules in the Makefile to make is easier to import code from
+external GitHub repositories.
+
+```
+This repo is designed to be a standalone repo.  Even though we use other
+repositories, we prefer to NOT clone them.  We want this repo to depend
+on a specific version of such code so that a change in the code of those
+external repositories will NOT impact this repo.
+
+For that reason, and others, we maintain a private copy of an external
+repository as clone.repo.  The clone.repo directory is excluded from
+out repo via the .gitignore file.  We copy clone.repo/ into repo/ and
+check in those file directly into this repo.
+```
+
+The dbg code is now a copy of the code from the dbg repo.
+
+Update JSON parser version.  Changed JSON_PARSER_VERSION from "0.11
+2022-11-04" to "0.12 2022-11-09".  There was an API change (an
+addition of a filename argument in some calls) that suggested version change.
+
+
 ## Release 0.8 2022-11-09
 
 Improve the situation with some systems requiring some feature test macros.
