@@ -28,9 +28,11 @@
  * Disclaimer:
  *
  *	No pitman or coal mines were harmed in the making of this tool and
- *	neither were any pine trees or birch trees. :-) More importantly, no tar
- *	pits - including the La Brea Tar Pits - were disturbed in the making of
- *	this tool. :-)
+ *	neither were any pine trees or birch trees. Whether the fact no coal
+ *	mines were harmed is a good or bad thing might be debatable but
+ *	nevertheless none were harmed. :-) More importantly, no tar pits -
+ *	including the La Brea Tar Pits - were disturbed in the making of this
+ *	tool. :-)
  */
 
 
