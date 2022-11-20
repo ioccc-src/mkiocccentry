@@ -58,7 +58,7 @@ The official **IOCCC** XZ compressed tarball filename sanity checker tool.
 For more information and examples, try:
 
 
-	    man ./man/fnamechk.1
+	    man ./man/fnamchk.1
 
 
 ##  `chkentry`
