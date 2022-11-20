@@ -49,7 +49,7 @@
 /*
  * dyn_array - dynamic array facility
  */
-#include "../dyn_array.h"
+#include "../dyn_array/dyn_array.h"
 
 
 /*

@@ -20,6 +20,8 @@ extern "C" {
 /*
  * standard truth :-)
  */
+#if !defined(BOOL_IS_DEFINED)
+#define BOOL_IS_DEFINED
 #if defined(__STDC_VERSION__) && (__STDC_VERSION__ >= 199901L)
 /* have a C99 compiler - we should expect to have <stdbool.h> */
 #include <stdbool.h>
@@ -31,7 +33,7 @@ typedef unsigned char bool;
 #undef false
 #define false ((bool)(0))
 #endif
-
+#endif
 
 #ifndef IOCCCSIZE_VERSION
 #define IOCCCSIZE_VERSION "unofficial iocccsize version"

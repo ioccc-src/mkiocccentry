@@ -21,7 +21,7 @@ For an overview of all the functions and macros, please see the man page
 `dyn_array.3`. You can render it by:
 
 ```sh
-man ./dyn_array.3
+man ./dyn_array/dyn_array.3
 ```
 
 An example program making use of some of the functions is `dyn_test.c`. How to

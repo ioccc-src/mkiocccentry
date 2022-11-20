@@ -23,7 +23,6 @@
 /* exit code change of order - use new value in sequencing - coo */
 
 
-#include <stdbool.h>
 #include <sys/types.h>
 #include <stdio.h>
 

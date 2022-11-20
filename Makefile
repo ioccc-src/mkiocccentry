@@ -194,7 +194,7 @@ SH_TARGETS=limit_ioccc.sh
 #
 MAN1_TARGETS= man/mkiocccentry man/txzchk man/fnamchk man/iocccsize man/chkentry man/jstrdecode man/jstrencode \
 	      man/jparse man/bug_report man/hostchk man/run_flex man/run_bison
-MAN3_TARGETS= dbg/dbg man/dyn_array
+MAN3_TARGETS= dbg/dbg dyn_array/dyn_array
 MAN8_TARGETS= man/reset_tstamp man/verge man/iocccsize_test man/test_ioccc man/run_usage man/utf8_test \
 	      man/jparse_test man/txzchk_test man/vermod man/mkiocccentry_test man/jstr_test man/jnum_chk \
 	      man/jnum_gen man/chkentry_test
@@ -214,7 +214,7 @@ MANPAGES= ${MAN1PAGES} ${MAN3PAGES} ${MAN8PAGES}
 TEST_TARGETS= dbg/dbg_test test_ioccc/utf8_test test_ioccc/dyn_test test_ioccc/jnum_chk
 OBJFILES= dbg/dbg.o util.o mkiocccentry.o iocccsize.o fnamchk.o txzchk.o chkentry.o \
 	json_parse.o jstrencode.o jstrdecode.o rule_count.o location.o sanity.o verge.o \
-	dyn_array.o test_ioccc/dyn_test.o dbg/dbg_test.o test_ioccc/jnum_chk.o jnum_gen.o test_ioccc/jnum_test.o \
+	dyn_array/dyn_array.o test_ioccc/dyn_test.o dbg/dbg_test.o test_ioccc/jnum_chk.o jnum_gen.o test_ioccc/jnum_test.o \
 	json_util.o jparse_main.o entry_util.o jsemtblgen.o soup/chk_sem_auth.o soup/chk_sem_info.o \
 	soup/chk_validate.o json_sem.o entry_time.o
 LESS_PICKY_CSRC= utf8_posix_map.c foo.c
@@ -233,7 +233,7 @@ SRCFILES= $(OBJFILES:.o=.c)
 ALL_CSRC= ${LESS_PICKY_CSRC} ${GENERATED_CSRC} ${SRCFILES}
 H_FILES= dbg/dbg.h chkentry.h json_parse.h jstrdecode.h jstrencode.h limit_ioccc.h \
 	mkiocccentry.h txzchk.h util.h location.h utf8_posix_map.h jparse.h \
-	verge.h sorry.tm.ca.h dyn_array.h test_ioccc/dyn_test.h json_util.h test_ioccc/jnum_chk.h \
+	verge.h sorry.tm.ca.h dyn_array/dyn_array.h test_ioccc/dyn_test.h json_util.h test_ioccc/jnum_chk.h \
 	jnum_gen.h jparse_main.h entry_util.h jsemtblgen.h soup/chk_sem_auth.h \
 	soup/chk_sem_info.h soup/chk_validate.h json_sem.h foo.h entry_time.h
 # This is a simpler way to do:
@@ -403,7 +403,7 @@ hostchk_warning:
 	checknr clean clean_generated_obj clean_mkchk_sem clobber configure depend hostchk bug_report.sh \
 	install test_ioccc legacy_clobber man2html mkchk_sem parser parser-o picky prep prep_clobber \
         pull rebuild_jnum_test release reset_min_timestamp seqcexit shellcheck tags test test-chkentry use_ref \
-	dbg soup
+	dbg soup dyn_array
 
 
 #####################################
@@ -429,9 +429,9 @@ dbg: dbg/dbg.h dbg/dbg.c
 mkiocccentry.o: mkiocccentry.c Makefile
 	${CC} ${CFLAGS} mkiocccentry.c -c
 
-mkiocccentry: mkiocccentry.o rule_count.o dbg/dbg.o util.o dyn_array.o json_parse.o entry_util.o \
+mkiocccentry: mkiocccentry.o rule_count.o dbg/dbg.o util.o dyn_array/dyn_array.o json_parse.o entry_util.o \
 	json_util.o entry_time.o location.o utf8_posix_map.o sanity.o json_sem.o Makefile
-	${CC} ${CFLAGS} mkiocccentry.o rule_count.o dbg/dbg.o util.o dyn_array.o json_parse.o \
+	${CC} ${CFLAGS} mkiocccentry.o rule_count.o dbg/dbg.o util.o dyn_array/dyn_array.o json_parse.o \
 	    entry_util.o entry_time.o json_util.o location.o utf8_posix_map.o sanity.o json_sem.o -lm -o $@
 
 iocccsize.o: iocccsize.c Makefile
@@ -443,15 +443,15 @@ iocccsize: iocccsize.o rule_count.o dbg/dbg.o Makefile
 fnamchk.o: fnamchk.c fnamchk.h Makefile
 	${CC} ${CFLAGS} fnamchk.c -c
 
-fnamchk: fnamchk.o dbg/dbg.o util.o dyn_array.o Makefile
-	${CC} ${CFLAGS} fnamchk.o dbg/dbg.o util.o dyn_array.o -o $@
+fnamchk: fnamchk.o dbg/dbg.o util.o dyn_array/dyn_array.o Makefile
+	${CC} ${CFLAGS} fnamchk.o dbg/dbg.o util.o dyn_array/dyn_array.o -o $@
 
 txzchk.o: txzchk.c txzchk.h Makefile
 	${CC} ${CFLAGS} txzchk.c -c
 
-txzchk: txzchk.o dbg/dbg.o util.o dyn_array.o location.o \
+txzchk: txzchk.o dbg/dbg.o util.o dyn_array/dyn_array.o location.o \
 	utf8_posix_map.o sanity.o Makefile
-	${CC} ${CFLAGS} txzchk.o dbg/dbg.o util.o dyn_array.o location.o \
+	${CC} ${CFLAGS} txzchk.o dbg/dbg.o util.o dyn_array/dyn_array.o location.o \
 	     utf8_posix_map.o sanity.o -o $@
 
 soup:
@@ -460,30 +460,30 @@ soup:
 chkentry.o: chkentry.c chkentry.h jparse.tab.h Makefile
 	${CC} ${CFLAGS} -Isoup chkentry.c -c
 
-chkentry: chkentry.o dbg/dbg.o util.o sanity.o utf8_posix_map.o dyn_array.o jparse.o jparse.tab.o json_parse.o \
+chkentry: chkentry.o dbg/dbg.o util.o sanity.o utf8_posix_map.o dyn_array/dyn_array.o jparse.o jparse.tab.o json_parse.o \
 	json_util.o soup/chk_validate.o entry_util.c json_sem.o foo.o location.o soup/chk_sem_info.o \
 	soup/chk_sem_auth.o Makefile
-	${CC} ${CFLAGS} chkentry.o dbg/dbg.o util.o sanity.o utf8_posix_map.o jparse.o jparse.tab.o dyn_array.o json_parse.o \
+	${CC} ${CFLAGS} chkentry.o dbg/dbg.o util.o sanity.o utf8_posix_map.o jparse.o jparse.tab.o dyn_array/dyn_array.o json_parse.o \
 		json_util.o soup/chk_validate.o entry_util.o entry_time.o json_sem.o foo.o location.o soup/chk_sem_info.o \
 		soup/chk_sem_auth.o -lm -o $@
 
 jstrencode.o: jstrencode.c jstrencode.h json_util.h json_util.c Makefile
 	${CC} ${CFLAGS} jstrencode.c -c
 
-jstrencode: jstrencode.o dbg/dbg.o json_parse.o json_util.o util.o dyn_array.o Makefile
-	${CC} ${CFLAGS} jstrencode.o dbg/dbg.o json_parse.o json_util.o util.o dyn_array.o -lm -o $@
+jstrencode: jstrencode.o dbg/dbg.o json_parse.o json_util.o util.o dyn_array/dyn_array.o Makefile
+	${CC} ${CFLAGS} jstrencode.o dbg/dbg.o json_parse.o json_util.o util.o dyn_array/dyn_array.o -lm -o $@
 
 jstrdecode.o: jstrdecode.c jstrdecode.h json_util.h json_parse.h Makefile
 	${CC} ${CFLAGS} jstrdecode.c -c
 
-jstrdecode: jstrdecode.o dbg/dbg.o json_parse.o json_util.o util.o dyn_array.o Makefile
-	${CC} ${CFLAGS} jstrdecode.o dbg/dbg.o json_parse.o json_util.o util.o dyn_array.o -lm -o $@
+jstrdecode: jstrdecode.o dbg/dbg.o json_parse.o json_util.o util.o dyn_array/dyn_array.o Makefile
+	${CC} ${CFLAGS} jstrdecode.o dbg/dbg.o json_parse.o json_util.o util.o dyn_array/dyn_array.o -lm -o $@
 
 jnum_gen.o: jnum_gen.c jnum_gen.h Makefile
 	${CC} ${CFLAGS} jnum_gen.c -c
 
-jnum_gen: jnum_gen.o dbg/dbg.o json_parse.o json_util.o util.o dyn_array.o Makefile
-	${CC} ${CFLAGS} jnum_gen.o dbg/dbg.o json_parse.o json_util.o util.o dyn_array.o -lm -o $@
+jnum_gen: jnum_gen.o dbg/dbg.o json_parse.o json_util.o util.o dyn_array/dyn_array.o Makefile
+	${CC} ${CFLAGS} jnum_gen.o dbg/dbg.o json_parse.o json_util.o util.o dyn_array/dyn_array.o -lm -o $@
 
 jparse.o: jparse.c jparse.h Makefile
 	${CC} ${CFLAGS} -Wno-unused-but-set-variable -Wno-unused-function -Wno-unneeded-internal-declaration jparse.c -c
@@ -500,33 +500,33 @@ jparse.tab.o: jparse.tab.c Makefile
 jparse_main.o: jparse_main.c Makefile
 	${CC} ${CFLAGS} jparse_main.c -c
 
-jparse: jparse.o jparse.tab.o util.o dyn_array.o dbg/dbg.o json_parse.o \
+jparse: jparse.o jparse.tab.o util.o dyn_array/dyn_array.o dbg/dbg.o json_parse.o \
 	json_util.o jparse_main.o Makefile
-	${CC} ${CFLAGS} jparse.o jparse.tab.o util.o dyn_array.o dbg/dbg.o json_parse.o \
+	${CC} ${CFLAGS} jparse.o jparse.tab.o util.o dyn_array/dyn_array.o dbg/dbg.o json_parse.o \
 			json_util.o jparse_main.o -lm -o $@
 
 jsemtblgen.o: jsemtblgen.c Makefile
 	${CC} ${CFLAGS} jsemtblgen.c -c
 
-jsemtblgen: jsemtblgen.o jparse.o jparse.tab.o util.o dyn_array.o dbg/dbg.o json_parse.o \
+jsemtblgen: jsemtblgen.o jparse.o jparse.tab.o util.o dyn_array/dyn_array.o dbg/dbg.o json_parse.o \
 	    json_util.o rule_count.o Makefile
-	${CC} ${CFLAGS} jsemtblgen.o jparse.o jparse.tab.o util.o dyn_array.o dbg/dbg.o json_parse.o \
+	${CC} ${CFLAGS} jsemtblgen.o jparse.o jparse.tab.o util.o dyn_array/dyn_array.o dbg/dbg.o json_parse.o \
 			json_util.o rule_count.o -lm -o $@
 
 verge.o: verge.c verge.h Makefile
 	${CC} ${CFLAGS} verge.c -c
 
-verge: verge.o dbg/dbg.o util.o dyn_array.o Makefile
-	${CC} ${CFLAGS} verge.o dbg/dbg.o util.o dyn_array.o -o $@
+verge: verge.o dbg/dbg.o util.o dyn_array/dyn_array.o Makefile
+	${CC} ${CFLAGS} verge.o dbg/dbg.o util.o dyn_array/dyn_array.o -o $@
 
-dyn_array.o: dyn_array.c Makefile
-	${CC} ${CFLAGS} dyn_array.c -c
-
+dyn_array: dyn_array/dyn_array.h dyn_array/dyn_array.c
+	@${MAKE} -C dyn_array CFLAGS="${CFLAGS}"
+	@${CP} -f dyn_array/dyn_array.3 man/dyn_array.3
 
 foo.o: foo.c oebxergfB.h Makefile
 	${CC} ${CFLAGS} foo.c -c
 
-limit_ioccc.sh: limit_ioccc.h version.h dbg/dbg.h dyn_array.h test_ioccc/dyn_test.h jparse.h jparse_main.h \
+limit_ioccc.sh: limit_ioccc.h version.h dbg/dbg.h dyn_array/dyn_array.h test_ioccc/dyn_test.h jparse.h jparse_main.h \
 		Makefile
 	${RM} -f $@
 	@echo '#!/usr/bin/env bash' > $@
@@ -537,7 +537,7 @@ limit_ioccc.sh: limit_ioccc.h version.h dbg/dbg.h dyn_array.h test_ioccc/dyn_tes
 	    ${AWK} '{print $$2 "=\"" $$3 "\"" ;}' | ${TR} -d '[a-z]()' | \
 	    ${SED} -e 's/"_/"/' -e 's/""/"/g' -e 's/^/export /' >> $@
 	${GREP} -hE '^#define (.*_VERSION|TIMESTAMP_EPOCH|JSON_PARSING_DIRECTIVE_)' \
-		     version.h limit_ioccc.h dbg/dbg.h dyn_array.h test_ioccc/dyn_test.h jparse.h jparse_main.h | \
+		     version.h limit_ioccc.h dbg/dbg.h dyn_array/dyn_array.h test_ioccc/dyn_test.h jparse.h jparse_main.h | \
 	    ${GREP} -v 'UUID_VERSION' | \
 	    ${SED} -e 's/^#define/export/' -e 's/ "/="/' -e 's/"[	 ].*$$/"/' >> $@
 	-if ${GREP} -q '^#define DIGRAPHS' limit_ioccc.h; then \
@@ -1036,7 +1036,10 @@ depend: all soup/fmt_depend.sh
 # are probably not for you.
 
 .PHONY: dbg.clone dbg.diff dbg.fetch dbg.reclone dbg.reload dbg.rsync dbg.status \
-	all.clone all.diff all.fetch all.reclone all.reload all.rsync all.status
+        dyn_array/dyn_array.clone dyn_array.diff dyn_array.fetch dyn_array.reclone dyn_array.reload \
+	dyn_array.rsync dyn_array.status jparse.clone jparse.diff jparse.fetch jparse.reclone \
+	jparse.reload jparse.rsync jparse.status all.clone all.diff all.fetch all.reclone \
+	all.reload all.rsync all.status
 
 # dbg external repo
 #
@@ -1066,21 +1069,82 @@ dbg.rsync: dbg.clone/
 dbg.status: dbg.clone/
 	${GIT} status dbg.clone
 
+# dyn_array external repo
+#
+dyn_array/dyn_array.clone:
+	@echo 'rule disabled, enable once dyn_array repo exists'
+	@#${GIT} clone https://github.com/lcn2/dyn_array.git dyn_array/dyn_array.clone
+
+dyn_array.diff: dyn_array/dyn_array.clone/ dyn_array/
+	@#${DIFF} -u -r --exclude='.*' dyn_array/dyn_array.clone dyn_array
+
+dyn_array.fetch: dyn_array/dyn_array.clone/
+	@#cd dyn_array/dyn_array.clone && ${GIT} fetch
+	@#cd dyn_array/dyn_array.clone && ${GIT} fetch --prune --tags
+	@#cd dyn_array/dyn_array.clone && ${GIT} merge --ff-only || ${GIT} rebase --rebase-merges
+	@#${GIT} status dyn_array/dyn_array.clone
+
+dyn_array.reclone:
+	@echo 'rule disabled, enable once dyn_array repo exists'
+	@#${RM} -rf dyn_array/dyn_array.clone
+	@#${MAKE} dyn_array/dyn_array.clone
+
+dyn_array.reload: dyn_array/dyn_array.clone/
+	@#${RM} -rf dyn_array
+	@#${MAKE} dyn_array.rsync
+
+dyn_array.rsync: dyn_array/dyn_array.clone/
+	@#${RSYNC} -a -S -0 --delete -C --exclude='.*' -v dyn_array/dyn_array.clone/ dyn_array
+
+dyn_array.status: dyn_array/dyn_array.clone/
+	@#${GIT} status dyn_array/dyn_array.clone
+
+# jparse external repo
+#
+jparse.clone:
+	@echo 'rule disabled, enable once jparse repo exists'
+	@#${GIT} clone https://github.com/xexyl/jparse.git jparse.clone
+
+jparse.diff: jparse.clone/ jparse/
+	@#${DIFF} -u -r --exclude='.*' jparse.clone jparse
+
+jparse.fetch: jparse.clone/
+	@#cd jparse.clone && ${GIT} fetch
+	@#cd jparse.clone && ${GIT} fetch --prune --tags
+	@#cd jparse.clone && ${GIT} merge --ff-only || ${GIT} rebase --rebase-merges
+	@#${GIT} status jparse.clone
+
+jparse.reclone:
+	@echo 'rule disabled, enable once jparse repo exists'
+	@#${RM} -rf jparse.clone
+	@#${MAKE} jparse.clone
+
+jparse.reload: jparse.clone/
+	@#${RM} -rf jparse
+	@#${MAKE} jparse.rsync
+
+jparse.rsync: jparse.clone/
+	@#${RSYNC} -a -S -0 --delete -C --exclude='.*' -v jparse.clone/ jparse
+
+jparse.status: jparse.clone/
+	@#${GIT} status jparse.clone
+
+
 # rules to operate on all external repositories
 #
-all.clone: dbg.clone
+all.clone: dbg.clone dyn_array/dyn_array.clone jparse.clone
 
-all.diff: dbg.diff
+all.diff: dbg.diff dyn_array.diff jparse.diff
 
-all.fetch: dbg.fetch
+all.fetch: dbg.fetch dyn_array.fetch jparse.fetch
 
-all.reclone: dbg.reclone
+all.reclone: dbg.reclone dyn_array.reclone jparse.reclone
 
-all.reload: dbg.reload
+all.reload: dbg.reload dyn_array.reload jparse.reload
 
-all.rsync: dbg.rsync
+all.rsync: dbg.rsync dyn_array.rsync jparse.rsync
 
-all.status: dbg.status
+all.status: dbg.status dyn_array.status jparse.status
 
 
 ###############
@@ -1088,58 +1152,65 @@ all.status: dbg.status
 ###############
 
 ### DO NOT CHANGE MANUALLY BEYOND THIS LINE
-utf8_posix_map.o: utf8_posix_map.c utf8_posix_map.h util.h dyn_array.h dbg/dbg.h limit_ioccc.h \
-	version.h
+utf8_posix_map.o: utf8_posix_map.c utf8_posix_map.h util.h dyn_array/dyn_array.h \
+	dyn_array/../dbg/dbg.h dbg/dbg.h limit_ioccc.h version.h
 foo.o: foo.c foo.h dbg/dbg.h oebxergfB.h
-jparse.o: jparse.c jparse.h dbg/dbg.h util.h dyn_array.h json_parse.h json_util.h jparse.tab.h
-jparse.tab.o: jparse.tab.c jparse.h dbg/dbg.h util.h dyn_array.h json_parse.h json_util.h \
-	jparse.tab.h jparse.lex.h
+jparse.o: jparse.c jparse.h dbg/dbg.h util.h dyn_array/dyn_array.h dyn_array/../dbg/dbg.h \
+	json_parse.h json_util.h jparse.tab.h
+jparse.tab.o: jparse.tab.c jparse.h dbg/dbg.h util.h dyn_array/dyn_array.h dyn_array/../dbg/dbg.h \
+	json_parse.h json_util.h jparse.tab.h jparse.lex.h
 dbg.o: dbg/dbg.c dbg/dbg.h
-util.o: util.c dbg/dbg.h util.h dyn_array.h limit_ioccc.h version.h
-mkiocccentry.o: mkiocccentry.c mkiocccentry.h util.h dyn_array.h dbg/dbg.h location.h \
-	utf8_posix_map.h limit_ioccc.h version.h sanity.h iocccsize.h json_util.h json_parse.h entry_util.h \
-	json_sem.h
+util.o: util.c dbg/dbg.h util.h dyn_array/dyn_array.h dyn_array/../dbg/dbg.h limit_ioccc.h version.h
+mkiocccentry.o: mkiocccentry.c mkiocccentry.h util.h dyn_array/dyn_array.h dyn_array/../dbg/dbg.h \
+	dbg/dbg.h location.h utf8_posix_map.h limit_ioccc.h version.h sanity.h iocccsize.h json_util.h \
+	json_parse.h entry_util.h json_sem.h
 iocccsize.o: iocccsize.c iocccsize_err.h iocccsize.h
-fnamchk.o: fnamchk.c fnamchk.h dbg/dbg.h util.h dyn_array.h limit_ioccc.h version.h utf8_posix_map.h
-txzchk.o: txzchk.c txzchk.h util.h dyn_array.h dbg/dbg.h sanity.h location.h utf8_posix_map.h \
-	limit_ioccc.h version.h entry_util.h json_parse.h json_sem.h json_util.h
-chkentry.o: chkentry.c chkentry.h dbg/dbg.h json_util.h dyn_array.h json_parse.h util.h jparse.h \
-	jparse.tab.h json_sem.h soup/chk_sem_info.h soup/../json_sem.h soup/chk_sem_auth.h foo.h sanity.h \
-	location.h utf8_posix_map.h limit_ioccc.h version.h
-json_parse.o: json_parse.c dbg/dbg.h util.h dyn_array.h json_parse.h json_util.h
-jstrencode.o: jstrencode.c jstrencode.h dbg/dbg.h util.h dyn_array.h json_parse.h limit_ioccc.h \
-	version.h
-jstrdecode.o: jstrdecode.c jstrdecode.h dbg/dbg.h util.h dyn_array.h json_parse.h limit_ioccc.h \
-	version.h
+fnamchk.o: fnamchk.c fnamchk.h dbg/dbg.h util.h dyn_array/dyn_array.h dyn_array/../dbg/dbg.h \
+	limit_ioccc.h version.h utf8_posix_map.h
+txzchk.o: txzchk.c txzchk.h util.h dyn_array/dyn_array.h dyn_array/../dbg/dbg.h dbg/dbg.h sanity.h \
+	location.h utf8_posix_map.h limit_ioccc.h version.h entry_util.h json_parse.h json_sem.h json_util.h
+chkentry.o: chkentry.c chkentry.h dbg/dbg.h json_util.h dyn_array/dyn_array.h dyn_array/../dbg/dbg.h \
+	json_parse.h util.h jparse.h jparse.tab.h json_sem.h soup/chk_sem_info.h soup/../json_sem.h \
+	soup/chk_sem_auth.h foo.h sanity.h location.h utf8_posix_map.h limit_ioccc.h version.h
+json_parse.o: json_parse.c dbg/dbg.h util.h dyn_array/dyn_array.h dyn_array/../dbg/dbg.h \
+	json_parse.h json_util.h
+jstrencode.o: jstrencode.c jstrencode.h dbg/dbg.h util.h dyn_array/dyn_array.h \
+	dyn_array/../dbg/dbg.h json_parse.h limit_ioccc.h version.h
+jstrdecode.o: jstrdecode.c jstrdecode.h dbg/dbg.h util.h dyn_array/dyn_array.h \
+	dyn_array/../dbg/dbg.h json_parse.h limit_ioccc.h version.h
 rule_count.o: rule_count.c iocccsize_err.h iocccsize.h
-location.o: location.c location.h util.h dyn_array.h dbg/dbg.h
-sanity.o: sanity.c sanity.h util.h dyn_array.h dbg/dbg.h location.h utf8_posix_map.h limit_ioccc.h \
+location.o: location.c location.h util.h dyn_array/dyn_array.h dyn_array/../dbg/dbg.h dbg/dbg.h
+sanity.o: sanity.c sanity.h util.h dyn_array/dyn_array.h dyn_array/../dbg/dbg.h dbg/dbg.h location.h \
+	utf8_posix_map.h limit_ioccc.h version.h
+verge.o: verge.c verge.h dbg/dbg.h util.h dyn_array/dyn_array.h dyn_array/../dbg/dbg.h limit_ioccc.h \
 	version.h
-verge.o: verge.c verge.h dbg/dbg.h util.h dyn_array.h limit_ioccc.h version.h
-dyn_array.o: dyn_array.c dyn_array.h dbg/dbg.h
-dyn_test.o: test_ioccc/dyn_test.c test_ioccc/dyn_test.h test_ioccc/../util.h dyn_array.h dbg/dbg.h \
-	test_ioccc/../dbg/dbg.h test_ioccc/../dyn_array.h
+dyn_array.o: dyn_array/dyn_array.c dyn_array/dyn_array.h dyn_array/../dbg/dbg.h
+dyn_test.o: test_ioccc/dyn_test.c test_ioccc/dyn_test.h test_ioccc/../util.h dyn_array/dyn_array.h \
+	dyn_array/../dbg/dbg.h test_ioccc/../dbg/dbg.h test_ioccc/../dyn_array/dyn_array.h
 dbg_test.o: dbg/dbg_test.c dbg/dbg.h
 jnum_chk.o: test_ioccc/jnum_chk.c test_ioccc/jnum_chk.h test_ioccc/../dbg/dbg.h test_ioccc/../util.h \
-	dyn_array.h dbg/dbg.h test_ioccc/../json_parse.h util.h test_ioccc/../json_util.h json_parse.h \
-	test_ioccc/../version.h
-jnum_gen.o: jnum_gen.c jnum_gen.h dbg/dbg.h util.h dyn_array.h json_parse.h json_util.h \
-	limit_ioccc.h version.h
-jnum_test.o: test_ioccc/jnum_test.c test_ioccc/../json_parse.h util.h dyn_array.h dbg/dbg.h
-json_util.o: json_util.c dbg/dbg.h json_parse.h util.h dyn_array.h json_util.h
-jparse_main.o: jparse_main.c jparse_main.h dbg/dbg.h util.h dyn_array.h jparse.h json_parse.h \
-	json_util.h jparse.tab.h
-entry_util.o: entry_util.c dbg/dbg.h util.h dyn_array.h version.h limit_ioccc.h entry_util.h \
-	json_parse.h json_sem.h json_util.h entry_time.h location.h
-jsemtblgen.o: jsemtblgen.c jsemtblgen.h dbg/dbg.h util.h dyn_array.h json_util.h json_parse.h \
-	jparse.h jparse.tab.h json_sem.h iocccsize.h
-chk_sem_auth.o: soup/chk_sem_auth.c soup/chk_sem_auth.h soup/../json_sem.h util.h dyn_array.h \
-	dbg/dbg.h json_parse.h json_util.h
-chk_sem_info.o: soup/chk_sem_info.c soup/chk_sem_info.h soup/../json_sem.h util.h dyn_array.h \
-	dbg/dbg.h json_parse.h json_util.h
+	dyn_array/dyn_array.h dyn_array/../dbg/dbg.h test_ioccc/../json_parse.h util.h \
+	test_ioccc/../json_util.h json_parse.h test_ioccc/../version.h
+jnum_gen.o: jnum_gen.c jnum_gen.h dbg/dbg.h util.h dyn_array/dyn_array.h dyn_array/../dbg/dbg.h \
+	json_parse.h json_util.h limit_ioccc.h version.h
+jnum_test.o: test_ioccc/jnum_test.c test_ioccc/../json_parse.h util.h dyn_array/dyn_array.h \
+	dyn_array/../dbg/dbg.h
+json_util.o: json_util.c dbg/dbg.h json_parse.h util.h dyn_array/dyn_array.h dyn_array/../dbg/dbg.h \
+	json_util.h
+jparse_main.o: jparse_main.c jparse_main.h dbg/dbg.h util.h dyn_array/dyn_array.h \
+	dyn_array/../dbg/dbg.h jparse.h json_parse.h json_util.h jparse.tab.h
+entry_util.o: entry_util.c dbg/dbg.h util.h dyn_array/dyn_array.h dyn_array/../dbg/dbg.h version.h \
+	limit_ioccc.h entry_util.h json_parse.h json_sem.h json_util.h entry_time.h location.h
+jsemtblgen.o: jsemtblgen.c jsemtblgen.h dbg/dbg.h util.h dyn_array/dyn_array.h \
+	dyn_array/../dbg/dbg.h json_util.h json_parse.h jparse.h jparse.tab.h json_sem.h iocccsize.h
+chk_sem_auth.o: soup/chk_sem_auth.c soup/chk_sem_auth.h soup/../json_sem.h util.h \
+	dyn_array/dyn_array.h dyn_array/../dbg/dbg.h json_parse.h json_util.h
+chk_sem_info.o: soup/chk_sem_info.c soup/chk_sem_info.h soup/../json_sem.h util.h \
+	dyn_array/dyn_array.h dyn_array/../dbg/dbg.h json_parse.h json_util.h
 chk_validate.o: soup/chk_validate.c soup/chk_validate.h soup/../entry_util.h json_parse.h util.h \
-	dyn_array.h dbg/dbg.h json_sem.h json_util.h soup/../json_util.h soup/../json_sem.h \
-	soup/chk_sem_auth.h soup/chk_sem_info.h entry_time.h location.h
-json_sem.o: json_sem.c dbg/dbg.h json_sem.h util.h dyn_array.h json_parse.h json_util.h
-entry_time.o: entry_time.c dbg/dbg.h json_util.h dyn_array.h json_parse.h util.h entry_time.h \
-	limit_ioccc.h version.h
+	dyn_array/dyn_array.h dyn_array/../dbg/dbg.h json_sem.h json_util.h soup/../json_util.h \
+	soup/../json_sem.h soup/chk_sem_auth.h soup/chk_sem_info.h entry_time.h location.h dbg/dbg.h
+json_sem.o: json_sem.c dbg/dbg.h json_sem.h util.h dyn_array/dyn_array.h dyn_array/../dbg/dbg.h \
+	json_parse.h json_util.h
+entry_time.o: entry_time.c dbg/dbg.h json_util.h dyn_array/dyn_array.h dyn_array/../dbg/dbg.h \
+	json_parse.h util.h entry_time.h limit_ioccc.h version.h

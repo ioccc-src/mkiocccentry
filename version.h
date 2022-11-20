@@ -136,7 +136,7 @@
  * debug version
  *
  * Because the dbg is a self contained system, we cannot define DBG_VERSION here.
- * See dbg.h for the DBG_VERSION value.
+ * See dbg/dbg.h for the DBG_VERSION value.
  */
 
 
@@ -144,7 +144,8 @@
  * dynamic array versions
  *
  * Because the dynamic array is a self contained system, we cannot define
- * DYN_ALLOC_VERSION here. See dyn_array.h for the DYN_ALLOC_VERSION value.
+ * DYN_ALLOC_VERSION here. See dyn_array/dyn_array.h for the DYN_ALLOC_VERSION
+ * value.
  *
  * Because the dynamic array is a self contained system, we cannot define
  * DYN_TEST_VERSION here. See dyn_test.h for the DYN_TEST_VERSION value.

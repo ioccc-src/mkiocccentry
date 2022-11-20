@@ -47,7 +47,9 @@
 /*
  * standard truth :-)
  */
-#if defined(__STDC_VERSION__) && (__STDC_VERSION__ >= 199901L)
+#if !defined(BOOL_IS_DEFINED)
+#define BOOL_IS_DEFINED
+#if !defined(__STDC_VERSION__) && (__STDC_VERSION__ >= 199901L)
 /* have a C99 compiler - we should expect to have <stdbool.h> */
 #include <stdbool.h>
 #elif !defined(__cplusplus)
@@ -57,6 +59,7 @@ typedef unsigned char bool;
 #define true ((bool)(1))
 #undef false
 #define false ((bool)(0))
+#endif
 #endif
 /* booltostr - convert a boolean to a string */
 #if !defined(booltostr)

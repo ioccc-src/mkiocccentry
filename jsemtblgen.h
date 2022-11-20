@@ -41,7 +41,7 @@
 /*
  * dyn_array - dynamic array facility
  */
-#include "dyn_array.h"
+#include "dyn_array/dyn_array.h"
 
 /*
  * json_util - general JSON parser utility support functions
