@@ -38,10 +38,16 @@ man/dbg.html
 man/fnamchk.html
 man/iocccsize.html
 man/jparse.html
+# man/jparse.1 is a copy of jparse/jparse.1 which we don't need to duplicate
+man/jparse.1
 man/jstrdecode.html
 man/jstrencode.html
 man/limit_ioccc.html
 man/mkiocccentry.html
+# man/run_bison.1 is a copy of jparse/run_bison.1 which we don't need to duplicate
+man/run_bison.1
+# man/run_flex.1 is a copy of jparse/run_flex.1 which we don't need to duplicate
+man/run_flex.1
 man/txzchk.html
 man/utf8_test.html
 man/verge.html

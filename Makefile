@@ -193,9 +193,9 @@ SH_TARGETS=limit_ioccc.sh
 #     well if we directly referred to TARGETS.
 #
 MAN1_TARGETS= man/mkiocccentry man/txzchk man/fnamchk man/iocccsize man/chkentry man/jstrdecode man/jstrencode \
-	      jparse/jparse man/bug_report man/hostchk man/run_flex man/run_bison
+	      jparse/jparse man/bug_report man/hostchk jparse/run_flex jparse/run_bison
 MAN3_TARGETS= dbg/dbg dyn_array/dyn_array
-MAN8_TARGETS= man/reset_tstamp man/verge man/iocccsize_test man/test_ioccc man/run_usage man/utf8_test \
+MAN8_TARGETS= man/reset_tstamp jparse/verge man/iocccsize_test man/ioccc_test man/run_usage man/utf8_test \
 	      jparse/jparse_test man/txzchk_test man/vermod man/mkiocccentry_test man/jstr_test man/jnum_chk \
 	      man/jnum_gen man/chkentry_test
 MAN_TARGETS= ${MAN1_TARGETS} ${MAN3_TARGETS} ${MAN8_TARGETS}
@@ -421,6 +421,7 @@ jparse: jparse/jparse.h jparse/jparse.l jparse/jparse.y jparse/Makefile
 	@${MAKE} -C jparse CFLAGS="${CFLAGS} -Wno-unused-function -Wno-unneeded-internal-declaration"
 	@${CP} -f jparse/jparse.1 man/jparse.1
 	@${CP} -f jparse/jparse_test.8 man/jparse_test.8
+	@${CP} -f jparse/run_flex.1 jparse/run_bison.1 man/
 
 
 jsemtblgen.o: jsemtblgen.c Makefile
