@@ -20,6 +20,7 @@ have_timegm
 iocccsize
 jnum_chk
 jnum_gen
+jparse/jparse
 jparse.c
 jparse.lex.h
 jparse.tab.c
