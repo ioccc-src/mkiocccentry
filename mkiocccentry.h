@@ -104,7 +104,7 @@
 /*
  * json_util - general JSON parser utility support functions
  */
-#include "json_util.h"
+#include "jparse/json_util.h"
 
 /*
  * entry_util - utilities supporting mkiocccentry JSON files

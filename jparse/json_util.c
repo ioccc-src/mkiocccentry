@@ -30,7 +30,7 @@
 /*
  * dbg - info, debug, warning, error, and usage message facility
  */
-#include "dbg/dbg.h"
+#include "../dbg/dbg.h"
 
 /*
  * json_parse - JSON parser support code

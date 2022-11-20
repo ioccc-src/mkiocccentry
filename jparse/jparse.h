@@ -1,5 +1,5 @@
 /*
- * jparse - JSON parser demo tool
+ * jparse - JSON parser
  *
  * "Because specs w/o version numbers are forced to commit to their original design flaws." :-)
  *
@@ -27,12 +27,12 @@
 /*
  * dbg - info, debug, warning, error, and usage message facility
  */
-#include "dbg/dbg.h"
+#include "../dbg/dbg.h"
 
 /*
  * util - entry common utility functions for the IOCCC toolkit
  */
-#include "util.h"
+#include "../util.h"
 
 /*
  * json_parse - JSON parser support code

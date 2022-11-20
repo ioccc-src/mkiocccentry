@@ -38,7 +38,7 @@
 /*
  * json_util - general JSON parser utility support functions
  */
-#include "json_util.h"
+#include "jparse/json_util.h"
 
 /*
  * entry_time - utility functions supporting mkiocccentry JSON files related to time

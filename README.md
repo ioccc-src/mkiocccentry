@@ -58,7 +58,7 @@ The official **IOCCC** XZ compressed tarball filename sanity checker tool.
 For more information and examples, try:
 
 
-	    man ./man/fnamechk.1
+	    man ./man/fnamchk.1
 
 
 ##  `chkentry`
@@ -108,7 +108,7 @@ and:
 For more information and examples, try:
 
 
-	    man ./man/jparse.1
+	    man ./jparse/jparse.1
 
 
 ## `run_bison.sh`
@@ -122,7 +122,7 @@ This script is part of the creation of the JSON parser `jparse`.
 
 For more information and examples, try:
 
-	    man ./man/run_bison.1
+	    man ./jparse/run_bison.1
 
 
 ## `run_flex.sh`
@@ -136,4 +136,4 @@ This script is part of the creation of the JSON parser `jparse`.
 
 For more information and examples, try:
 
-	    man ./man/run_flex.1
+	    man ./jparse/run_flex.1
