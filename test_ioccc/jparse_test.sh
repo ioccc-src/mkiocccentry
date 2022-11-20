@@ -15,7 +15,7 @@ export USAGE="usage: $0 [-h] [-V] [-v level] [-D dbg_level] [-J level] [-q] [-j 
     -D dbg_level	set verbosity level for tests (def: level: 0)
     -J level		set JSON parser verbosity level (def level: 0)
     -q			quiet mode: silence msg(), warn(), warnp() if -v 0 (def: not quiet)
-    -j /path/to/jparse	path to jparse tool (def: ./jparse)
+    -j /path/to/jparse	path to jparse tool (def: ./jparse/jparse)
     -d json_tree	read files from good and bad subdirectories of this directory
 			    These subdirectories are expected:
 				tree/bad
@@ -36,7 +36,7 @@ export V_FLAG="0"
 export DBG_LEVEL="0"
 export JSON_DBG_LEVEL="0"
 export Q_FLAG=""
-export JPARSE="./jparse"
+export JPARSE="./jparse/jparse"
 export LOGFILE="./test_ioccc/jparse_test.log"
 export EXIT_CODE=0
 export JSON_TREE="./test_ioccc/test_JSON"

@@ -25,17 +25,17 @@
 /*
  * dbg - info, debug, warning, error, and usage message facility
  */
-#include "dbg/dbg.h"
+#include "../dbg/dbg.h"
 
 /*
  * util - entry common utility functions for the IOCCC toolkit
  */
-#include "util.h"
+#include "../util.h"
 
 /*
  * limit_ioccc - IOCCC size and rule related limitations
  */
-#include "limit_ioccc.h"
+#include "../limit_ioccc.h"
 
 
 /*

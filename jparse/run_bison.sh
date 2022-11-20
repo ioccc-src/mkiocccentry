@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# run_flex.sh - try to run flex but use backup output file if needed
+# run_bison.sh - try to run bison but use backup output files if needed
 #
 # Copyright (c) 2022 by Landon Curt Noll.  All Rights Reserved.
 #
@@ -29,75 +29,76 @@
 
 # setup
 #
-export RUN_FLEX_VERSION="0.4 2022-11-08"
-export USAGE="usage: $0 [-h] [-V] [-v level] [-o] [-f flex] [-l limit_ioccc.sh]
-		        [-g verge] [-p prefix] [-s sorry.h] [-S] [-F dir] -- [flex_flags]
+export RUN_BISON_VERSION="0.3 2022-04-22"
+export USAGE="usage: $0 [-h] [-V] [-v level] [-V] [-o] [-b bison] [-l limit_ioccc.sh]
+		        [-g verge] [-p prefix] [-s sorry.h] [-S] [-B dir] [-D dir] -- [bison_flags]
 
-    -h              print help and exit
-    -V              print version and exit
-    -v level        set debug level (def: 0)
-    -o		    do NOT use backup file, fail if flex cannot be used (def: use)
-    -f flex	    flex tool basename (def: flex)
-    -l limit.sh	    version info file (def: ./limit_ioccc.sh)
+    -h		    print help and exit
+    -V		    print version and exit
+    -v level	    set debug level (def: 0)
+    -o		    do NOT use backup files, fail if bison cannot be used (def: use)
+    -b bison	    bison tool basename (def: bison)
+    -l limit.sh	    version info file (def: ../limit_ioccc.sh)
     -g verge	    path to verge tool (def: ./verge)
-    -p prefix	    the prefix of the files to be used (def: jparse)
-			NOTE: The flex input file will be prefix.l
-			NOTE: If flex cannot be used, these backup
+    -p prefix	    the prefix of files to be used (def: jparse)
+			NOTE: The bison input file will be prefix.y
+			NOTE: If bison cannot be used, these backup
 			NOTE: files are used:
 			NOTE:
-			NOTE:		prefix.ref.c
-			NOTE		prefix.lex.ref.h
+			NOTE:	 prefix.tab.ref.c prefix.tab.ref.h
 			NOTE:
     -s sorry.h	    file to prepend to C output (def: sorry.tm.ca.h)
     -S		    suppress prepending apology file
-    -F dir          first look for flex in dir (def: look just along \$PATH)
-		        NOTE: Multiple -F dir are allowed.
+    -B dir          first look for bison in dir (def: look just along \$PATH)
+		        NOTE: Multiple -B dir are allowed.
 		        NOTE: Search is performed in dir order before the \$PATH path.
 			NOTE: If dir is missing or not searchable, dir is ignored.
-			NOTE: This is ignored if the final arg is NOT flex.
+			NOTE: This is ignored if the final arg is NOT bison.
+    -D dir	    look for prefix file in this directory
     --		    end of $0 flags
-    flex_flags      optional flags to give to flex before the prefix.l argument
+    bison_flags    optional flags to give to bison before the prefix.y argument
 
 Exit codes:
-     0   flex output file formed or backup file used instead
-     1   flex not found or too old and -o used
-     2   good flex found and ran but failed to form proper output file
-     3   flex input file missing or not readable: backup file had to be used
-     4   backup file is missing, or are not readable
-     5   failed to use backup file to form the flex C output file
+     0   bison output files formed or backup files used instead
+     1   bison not found or too old and -o used
+     2   good bison found and ran but failed to form proper output files
+     3   bison input file missing or not readable: backup file(s) had to be used
+     4   backup file(s) are missing, or are not readable
+     5   failed to use backup file(s) to form the bison C output file(s)
      6   limit_ioccc.sh or sorry.h file missing/not readable or verge missing/not executable
-     7   MIN_FLEX_VERSION missing or empty from limit_ioccc.sh
+     7   MIN_BISON_VERSION Missing or empty from limit_ioccc.sh
      8   -h and help string printed or -V and version string printed
      9   command line usage error
  >= 10   internal error
 
-$0 version: $RUN_FLEX_VERSION"
-
+$0 version: $RUN_BISON_VERSION"
+export D_FLAG="."
 export PREFIX="jparse"
 export V_FLAG="0"
-export FLEX_BASENAME="flex"
-export LIMIT_IOCCC_SH="./limit_ioccc.sh"
+export BISON_BASENAME="bison"
+export LIMIT_IOCCC_SH="../limit_ioccc.sh"
 export VERGE="./verge"
-export MIN_FLEX_VERSION=
-declare -a FLEX_DIRS=()
+export MIN_BISON_VERSION=
+declare -a BISON_DIRS=()
 export SORRY_H="sorry.tm.ca.h"
+export O_FLAG=
 export S_FLAG=
 
 # parse args
 #
-while getopts :hv:Vof:l:g:p:s:SF: flag; do
+while getopts :hv:Vob:l:g:p:s:SB:D: flag; do
     case "$flag" in
     h)	echo "$USAGE" 1>&2
 	exit 8
 	;;
     v)	V_FLAG="$OPTARG";
 	;;
-    V)	echo "$RUN_FLEX_VERSION"
+    V)	echo "$RUN_BISON_VERSION"
 	exit 8
 	;;
     o)	O_FLAG="-o"
 	;;
-    f)	FLEX_BASENAME="$OPTARG";
+    b)	BISON_BASENAME="$OPTARG";
 	;;
     l)	LIMIT_IOCCC_SH="$OPTARG";
 	;;
@@ -107,11 +108,13 @@ while getopts :hv:Vof:l:g:p:s:SF: flag; do
 	;;
     s)	SORRY_H="$OPTARG";
 	;;
-    S)	S_FLAG="true"
+    S)	S_FLAG="true";
 	;;
-    F)	FLEX_DIRS[${#FLEX_DIRS[@]}]="$OPTARG";
+    B)	BISON_DIRS[${#BISON_DIRS[@]}]="$OPTARG";
 	;;
-    \?) echo "$0: ERROR: invalid option: -$OPTARG" 1>&2
+    D)	D_FLAG="$OPTARG"
+	;;
+    \?)	 echo "$0: ERROR: invalid option: -$OPTARG" 1>&2
 	exit 9
 	;;
     :)	echo "$0: ERROR: option -$OPTARG requires an argument" 1>&2
@@ -121,8 +124,12 @@ while getopts :hv:Vof:l:g:p:s:SF: flag; do
 	;;
     esac
 done
-if [[ -z $FLEX_BASENAME ]]; then
-    echo "$0: ERROR: -b $FLEX_BASENAME name cannot be empty" 1>&2
+if [[ -z $BISON_BASENAME ]]; then
+    echo "$0: ERROR: -b $BISON_BASENAME name cannot be empty" 1>&2
+    exit 9
+fi
+if [[ -z "$D_FLAG" ]]; then
+    echo "$0: ERROR: -D dir cannot be empty" 1>&2
     exit 9
 fi
 if [[ -z $PREFIX ]]; then
@@ -130,14 +137,17 @@ if [[ -z $PREFIX ]]; then
     exit 9
 fi
 
+# set up the final prefix
+PREFIX="$D_FLAG/$PREFIX"
+
 # check args
 #
 shift $(( OPTIND - 1 ));
 if [[ $V_FLAG -ge 1 ]]; then
     if [[ $# -gt 0 ]]; then
-	echo "$0: debug[1]: args to pass to flex before $PREFIX.l: $*" 1>&2
+	echo "$0: debug[1]: args to pass to bison before $PREFIX.y: $*" 1>&2
     else
-	echo "$0: debug[1]: pass no args to flex before $PREFIX.l" 1>&2
+	echo "$0: debug[1]: pass no args to bison before $PREFIX.y" 1>&2
     fi
 fi
 
@@ -190,24 +200,24 @@ fi
 # shellcheck disable=SC1090
 #
 source "$LIMIT_IOCCC_SH" >/dev/null 2>&1
-if [[ -z $MIN_FLEX_VERSION ]]; then
-    echo "$0: ERROR: MIN_FLEX_VERSION missing or has an empty value from: $LIMIT_IOCCC_SH" 1>&2
+if [[ -z $MIN_BISON_VERSION ]]; then
+    echo "$0: ERROR: MIN_BISON_VERSION missing or has an empty value from: $LIMIT_IOCCC_SH" 1>&2
     exit 7
 fi
 
 # debug
 #
 if [[ $V_FLAG -ge 5 ]]; then
-    echo "$0: debug[5]: RUN_FLEX_VERSION=$RUN_FLEX_VERSION" 1>&2
+    echo "$0: debug[5]: RUN_BISON_VERSION=$RUN_BISON_VERSION" 1>&2
     echo "$0: debug[5]: PREFIX=$PREFIX" 1>&2
     echo "$0: debug[5]: V_FLAG=$V_FLAG" 1>&2
-    echo "$0: debug[5]: FLEX_BASENAME=$FLEX_BASENAME" 1>&2
+    echo "$0: debug[5]: BISON_BASENAME=$BISON_BASENAME" 1>&2
     echo "$0: debug[5]: LIMIT_IOCCC_SH=$LIMIT_IOCCC_SH" 1>&2
     echo "$0: debug[5]: VERGE=$VERGE" 1>&2
-    echo "$0: debug[5]: MIN_FLEX_VERSION=$MIN_FLEX_VERSION" 1>&2
+    echo "$0: debug[5]: MIN_BISON_VERSION=$MIN_BISON_VERSION" 1>&2
     echo "$0: debug[5]: SORRY_H=$SORRY_H" 1>&2
-    for dir in "${FLEX_DIRS[@]}"; do
-	echo "$0: debug[5]: FLEX_DIRS=$dir" 1>&2
+    for dir in "${BISON_DIRS[@]}"; do
+	echo "$0: debug[5]: BISON_DIRS=$dir" 1>&2
     done
 fi
 
@@ -314,6 +324,16 @@ look_for() {
     # set path found
     #
     PATH_FOUND="$DIR/$TOOL"
+
+    # if print mode, print this path on stdout
+    #
+    if [[ -n $PRINT_MODE ]]; then
+	echo "$DIR/$TOOL"
+    fi
+    if [[ $V_FLAG -ge 3 ]]; then
+	echo "$0: debug[3]: tool: $PATH_FOUND version: $TOOL_VERSION is good" 1>&2
+    fi
+    # found a good tool in $PATH
     return 0;
 }
 
@@ -416,89 +436,85 @@ on_path() {
     return 0;
 }
 
-# use_flex_backup - use backup flex C file in place of flex generated C file
+# use_bison_backup - use backup bison C files in place of bison generated C files
 #
-# NOTE: If -o was given, then we will exit instead of using backup flex C file.
+# NOTE: If -o was given, then we will exit instead of using backup bison C files.
 #
 # This warning is specifically triggered because we check for the number of args
 # passed to the function to make sure none are given so we have to disable it:
 #
-# warning: use_flex_backup references arguments, but none are ever passed. [SC2120]
+# warning: use_bison_backup references arguments, but none are ever passed. [SC2120]
 # shellcheck disable=SC2120
-#
-use_flex_backup() {
+use_bison_backup() {
 
     # parse args
     #
     if [[ $# -ne 0 ]]; then
-	echo "$0: ERROR: use_flex_backup function expects 0 args, found $#" 1>&2
+	echo "$0: ERROR: use_bison_backup function expects 0 args, found $#" 1>&2
 	exit 12
     fi
 
-    # If -o, exit instead of using backup flex C file
+    # If -o, exit instead of using backup bison C files
     #
     if [[ -n $O_FLAG ]]; then
-	echo "$0: ERROR: unable to find or use flex and -o given" 1>&2
+	echo "$0: ERROR: unable to find or use bison and -o given" 1>&2
 	exit 1
     fi
 
-    # look for backup flex C file
+    # look for bison backup bison C files
     #
-    FLEX_BACKUP_C="$PREFIX.ref.c"
-    FLEX_C="$PREFIX.c"
-    FLEX_BACKUP_H="$PREFIX.lex.ref.h"
-    FLEX_H="$PREFIX.lex.h"
-    if [[ ! -e $FLEX_BACKUP_C ]]; then
-	echo "$0: ERROR: file not found: $FLEX_BACKUP_C" 1>&2
+    BISON_BACKUP_C="$PREFIX.tab.ref.c"
+    BISON_C="$PREFIX.tab.c"
+    BISON_BACKUP_H="$PREFIX.tab.ref.h"
+    BISON_H="$PREFIX.tab.h"
+    if [[ ! -e $BISON_BACKUP_C ]]; then
+	echo "$0: ERROR: file not found: $BISON_BACKUP_C" 1>&2
 	exit 4
     fi
-    if [[ ! -f $FLEX_BACKUP_C ]]; then
-	echo "$0: ERROR: not a regular file: $FLEX_BACKUP_C" 1>&2
+    if [[ ! -f $BISON_BACKUP_C ]]; then
+	echo "$0: ERROR: not a regular file: $BISON_BACKUP_C" 1>&2
 	exit 4
     fi
-    if [[ ! -r $FLEX_BACKUP_C ]]; then
-	echo "$0: ERROR: not a readable file: $FLEX_BACKUP_C" 1>&2
+    if [[ ! -r $BISON_BACKUP_C ]]; then
+	echo "$0: ERROR: not a readable file: $BISON_BACKUP_C" 1>&2
 	exit 4
     fi
-    if [[ ! -s $FLEX_BACKUP_C ]]; then
-	echo "$0: ERROR: empty file: $FLEX_BACKUP_C" 1>&2
+    if [[ ! -s $BISON_BACKUP_C ]]; then
+	echo "$0: ERROR: empty file: $BISON_BACKUP_C" 1>&2
 	exit 4
     fi
-    if [[ ! -f $FLEX_BACKUP_H ]]; then
-	echo "$0: ERROR: not a regular file: $FLEX_BACKUP_H" 1>&2
+    if [[ ! -f $BISON_BACKUP_H ]]; then
+	echo "$0: ERROR: not a regular file: $BISON_BACKUP_H" 1>&2
 	exit 4
     fi
-    if [[ ! -r $FLEX_BACKUP_H ]]; then
-	echo "$0: ERROR: not a readable file: $FLEX_BACKUP_H" 1>&2
+    if [[ ! -r $BISON_BACKUP_H ]]; then
+	echo "$0: ERROR: not a readable file: $BISON_BACKUP_H" 1>&2
 	exit 4
     fi
-    if [[ ! -s $FLEX_BACKUP_H ]]; then
-	echo "$0: ERROR: empty file: $FLEX_BACKUP_H" 1>&2
+    if [[ ! -s $BISON_BACKUP_H ]]; then
+	echo "$0: ERROR: empty file: $BISON_BACKUP_H" 1>&2
 	exit 4
     fi
 
-
-
-    # copy backup flex C file in place
+    # copy bison backup C files in place
     #
-    echo "# Warning: We are forced to use $FLEX_BASENAME backup files instead of $FLEX_BASENAME C output!" 1>&2
-    echo "cp -f -v $FLEX_BACKUP_C $FLEX_C"
-    cp -f -v "$FLEX_BACKUP_C" "$FLEX_C"
+    echo "Warning: We are forced to use $BISON_BASENAME backup files instead of $BISON_BASENAME C output!" 1>&2
+    echo "cp -f -v $BISON_BACKUP_C $BISON_C"
+    cp -f -v "$BISON_BACKUP_C" "$BISON_C"
     status="$?"
     if [[ $status -ne 0 ]]; then
-	echo "$0: ERROR: failed to copy $FLEX_BACKUP_C to $FLEX_C exit code: $status" 1>&2
+	echo "$0: ERROR: failed to copy $BISON_BACKUP_C to $BISON_C exit code: $status" 1>&2
 	exit 5
     fi
-    echo "cp -f -v $FLEX_BACKUP_H $FLEX_H"
-    cp -f -v "$FLEX_BACKUP_H" "$FLEX_H"
+    echo "cp -f -v $BISON_BACKUP_H $BISON_H"
+    cp -f -v "$BISON_BACKUP_H" "$BISON_H"
     status="$?"
     if [[ $status -ne 0 ]]; then
-	echo "$0: ERROR: failed to copy $FLEX_BACKUP_H to $FLEX_H exit code: $status" 1>&2
+	echo "$0: ERROR: failed to copy $BISON_BACKUP_H to $BISON_H exit code: $status" 1>&2
 	exit 5
     fi
 
-
-    # moved flex backup file in place
+    # moved bison backup files in place
     #
     return 0
 }
@@ -580,104 +596,104 @@ add_sorry() {
 }
 
 
-# run flex
+# run bison
 #
 #
 if [[ $V_FLAG -ge 1 ]]; then
-    echo "$0: debug[3]: checking for flex as: $FLEX_BASENAME" 1>&2
+    echo "$0: debug[3]: checking for bison as: $BISON_BASENAME" 1>&2
 fi
 
-# check -F dirs first
+# check -B dirs first
 #
-export FLEX_PATH=
-for dir in "${FLEX_DIRS[@]}"; do
+export BISON_PATH=
+for dir in "${BISON_DIRS[@]}"; do
 
-    # look for a good flex in dir
+    # look for a good bison in dir
     #
-    look_for "$FLEX_BASENAME" "$MIN_FLEX_VERSION" "$dir"
+    look_for "$BISON_BASENAME" "$MIN_BISON_VERSION" "$dir"
     status="$?"
     if [[ $status -eq 0 && -n $PATH_FOUND ]]; then
-	FLEX_PATH="$PATH_FOUND"
+	BISON_PATH="$PATH_FOUND"
 	if [[ $V_FLAG -ge 1 ]]; then
-	    echo "$0: debug[1]: found a good $FLEX_BASENAME: $FLEX_PATH" 1>&2
+	    echo "$0: debug[1]: found a good $BISON_BASENAME: $BISON_PATH" 1>&2
 	fi
 	break
     fi
 done
 
-# if no flex found so far, look on $PATH
+# if no bison found so far, look on $PATH
 #
-if [[ -z $FLEX_PATH ]]; then
-    on_path "$FLEX_BASENAME" "$MIN_FLEX_VERSION"
+if [[ -z $BISON_PATH ]]; then
+    on_path "$BISON_BASENAME" "$MIN_BISON_VERSION"
     status="$?"
     if [[ $status -eq 0 && -n $PATH_FOUND ]]; then
-	FLEX_PATH="$PATH_FOUND"
+	BISON_PATH="$PATH_FOUND"
 	if [[ $V_FLAG -ge 1 ]]; then
-	    echo "$0: debug[1]: $FLEX_BASENAME on \$PATH is good: $FLEX_PATH" 1>&2
+	    echo "$0: debug[1]: $BISON_BASENAME on \$PATH is good: $BISON_PATH" 1>&2
 	fi
     fi
 fi
 
-# case: no usable flex found
+# case: no usable bison found
 #
-if [[ -z $FLEX_PATH ]]; then
-    echo "$0: Warning: failed to discover the path for an up to date flex as: $FLEX_BASENAME" 1>&2
-    use_flex_backup
+if [[ -z $BISON_PATH ]]; then
+    echo "$0: Warning: failed to discover the path for an up to date bison as: $BISON_BASENAME" 1>&2
+    use_bison_backup
     exit 0
 fi
 
-# verify that flex input file is readable
+# verify that bison input file is readable
 #
-if [[ ! -f "$PREFIX.l" ]]; then
-    echo "$0: ERROR: $FLEX_BASENAME input file not found: $PREFIX.l" 1>&2
+if [[ ! -f "$PREFIX.y" ]]; then
+    echo "$0: ERROR: $BISON_BASENAME input file not found: $PREFIX.y" 1>&2
     exit 3
 fi
-if [[ ! -r "$PREFIX.l" ]]; then
-    echo "$0: ERROR: $FLEX_BASENAME input file not readable: $PREFIX.l" 1>&2
+if [[ ! -r "$PREFIX.y" ]]; then
+    echo "$0: ERROR: $BISON_BASENAME input file not readable: $PREFIX.y" 1>&2
     exit 3
 fi
 
-# execute flex
+# execute bison
 #
-echo "$FLEX_PATH $* $PREFIX.l"
-"$FLEX_PATH" "$@" "$PREFIX.l"
+echo "$BISON_PATH $* $PREFIX.y"
+"$BISON_PATH" "$@" "$PREFIX.y"
 status="$?"
 if [[ $status -ne 0 ]]; then
-    echo "$0: ERROR: $FLEX_PATH failed, exit code: $status" 1>&2
+    echo "$0: ERROR: $BISON_PATH failed, exit code: $status" 1>&2
     exit 2
 fi
 
-# verify the flex C file is a non-empty readable file
+# verify the bison C files are non-empty readable files
 #
-if [[ ! -f $PREFIX.c ]]; then
-    echo "$0: Warning: $FLEX_PATH failed to form file: $PREFIX.c" 1>&2
-    use_flex_backup
-elif [[ ! -s $PREFIX.c ]]; then
-    echo "$0: Warning: $FLEX_PATH failed to form non-empty file: $PREFIX.c" 1>&2
-    use_flex_backup
-elif [[ ! -f $PREFIX.lex.h ]]; then
-    echo "$0: Warning: $FLEX_PATH failed to form file: $PREFIX.lex.h" 1>&2
-    use_flex_backup
+if [[ ! -f $PREFIX.tab.c ]]; then
+    echo "$0: Warning: $BISON_PATH failed to form file: $PREFIX.tab.c" 1>&2
+    use_bison_backup
+elif [[ ! -s $PREFIX.tab.c ]]; then
+    echo "$0: Warning: $BISON_PATH failed to form non-empty file: $PREFIX.tab.c" 1>&2
+    use_bison_backup
+elif [[ ! -f $PREFIX.tab.h ]]; then
+    echo "$0: Warning: $BISON_PATH failed to form file: $PREFIX.tab.h" 1>&2
+    use_bison_backup
 elif [[ ! -s $PREFIX.tab.h ]]; then
-    echo "$0: Warning: $FLEX_PATH failed to form non-empty file: $PREFIX.lex.h" 1>&2
-    use_flex_backup
+    echo "$0: Warning: $BISON_PATH failed to form non-empty file: $PREFIX.tab.h" 1>&2
+    use_bison_backup
 else
 
     # prepend the apology file and line number reset if -S not used
     #
     if [[ -z "$S_FLAG" ]]; then
-	add_sorry "$PREFIX.c"
-	add_sorry "$PREFIX.lex.h"
+	add_sorry "$PREFIX.tab.c"
+	add_sorry "$PREFIX.tab.h"
     fi
 
     # print debug of result if -v
     #
     if [[ $V_FLAG -ge 1 ]]; then
 	# note: Double quote to prevent globbing and word splitting. [SC2086]
-	echo "$0: debug[1]: $(ls -l "$PREFIX.c")"
+	echo "$0: debug[1]: $(ls -l "$PREFIX.tab.c")"
 	# note: Double quote to prevent globbing and word splitting. [SC2086]
-	echo "$0: debug[1]: $(ls -l "$PREFIX.lex.h")"
-	echo "$0: debug[1]: $FLEX_BASENAME run OK: formed $PREFIX.c and $PREFIX.lex.h" 1>&2
+	echo "$0: debug[1]: $(ls -l "$PREFIX.tab.h")"
+	echo "$0: debug[1]: $BISON_BASENAME run OK: formed $PREFIX.tab.c and $PREFIX.tab.h" 1>&2
     fi
 fi
 

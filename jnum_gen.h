@@ -35,12 +35,12 @@
 /*
  * json_parse - JSON parser support code
  */
-#include "json_parse.h"
+#include "jparse/json_parse.h"
 
 /*
  * json_util - general JSON parser utility support functions
  */
-#include "json_util.h"
+#include "jparse/json_util.h"
 
 /*
  * limit_ioccc - IOCCC size and rule related limitations
