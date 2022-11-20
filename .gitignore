@@ -55,6 +55,7 @@ mkiocccentry
 oebxergfB.txt
 orig.iocccsize
 soup/ref/
+soup/.soup
 tags
 test_ioccc/chkentry_test.log
 test_ioccc/test_ioccc.log
