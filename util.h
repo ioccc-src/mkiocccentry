@@ -36,15 +36,12 @@
 #include <inttypes.h> /* uintmax_t and intmax_t and perhaps SIZE_MAX */
 #include <string.h> /* for strcmp */
 
-/*
- * dyn_array - dynamic array facility
- */
-#include "dyn_array.h"
-
 
 /*
  * standard truth :-)
  */
+#if !defined(BOOL_IS_DEFINED)
+#define BOOL_IS_DEFINED
 #if defined(__STDC_VERSION__) && (__STDC_VERSION__ >= 199901L)
 /* have a C99 compiler - we should expect to have <stdbool.h> */
 #include <stdbool.h>
@@ -56,6 +53,7 @@ typedef unsigned char bool;
 #undef false
 #define false ((bool)(0))
 #endif
+#endif
 /* booltostr - convert a boolean to a string */
 #if !defined(booltostr)
 #define booltostr(x) ((x) ? "true" : "false")
@@ -64,6 +62,12 @@ typedef unsigned char bool;
 #if !defined(strtobool)
 #define strtobool(x) ((x) != NULL && !strcmp((x), "true"))
 #endif
+
+/*
+ * dyn_array - dynamic array facility
+ */
+#include "dyn_array.h"
+
 
 /*
  * off_t MAX and MIN
