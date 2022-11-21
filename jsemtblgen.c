@@ -72,7 +72,7 @@ main(int argc, char **argv)
     struct json *tree = NULL;	    /* JSON parse tree or NULL */
     int arg_count = 0;		    /* number of args to process */
     char *cap_tbl_name = NULL;	    /* UPPER case copy of tbl_name */
-    size_t len = 0;		    /* length pf tbl_name */
+    size_t len = 0;		    /* length of tbl_name */
     size_t i;
     int c;
 
