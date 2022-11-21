@@ -877,7 +877,7 @@ depend: all soup/fmt_depend.sh
 # are probably not for you.
 
 .PHONY: dbg.clone dbg.diff dbg.fetch dbg.reclone dbg.reload dbg.rsync dbg.status \
-        dyn_array/dyn_array.clone dyn_array.diff dyn_array.fetch dyn_array.reclone dyn_array.reload \
+        dyn_array.clone dyn_array.diff dyn_array.fetch dyn_array.reclone dyn_array.reload \
 	dyn_array.rsync dyn_array.status jparse.clone jparse.diff jparse.fetch jparse.reclone \
 	jparse.reload jparse.rsync jparse.status all.clone all.diff all.fetch all.reclone \
 	all.reload all.rsync all.status
@@ -912,33 +912,33 @@ dbg.status: dbg.clone/
 
 # dyn_array external repo
 #
-dyn_array/dyn_array.clone:
+dyn_array.clone:
 	@echo 'rule disabled, enable once dyn_array repo exists'
-	@#${GIT} clone https://github.com/lcn2/dyn_array.git dyn_array/dyn_array.clone
+	@#${GIT} clone https://github.com/lcn2/dyn_array.git dyn_array.clone
 
-dyn_array.diff: dyn_array/dyn_array.clone/ dyn_array/
-	@#${DIFF} -u -r --exclude='.*' dyn_array/dyn_array.clone dyn_array
+dyn_array.diff: dyn_array.clone/ dyn_array/
+	@#${DIFF} -u -r --exclude='.*' dyn_array.clone dyn_array
 
-dyn_array.fetch: dyn_array/dyn_array.clone/
-	@#cd dyn_array/dyn_array.clone && ${GIT} fetch
-	@#cd dyn_array/dyn_array.clone && ${GIT} fetch --prune --tags
-	@#cd dyn_array/dyn_array.clone && ${GIT} merge --ff-only || ${GIT} rebase --rebase-merges
-	@#${GIT} status dyn_array/dyn_array.clone
+dyn_array.fetch: dyn_array.clone/
+	@#cd dyn_array.clone && ${GIT} fetch
+	@#cd dyn_array.clone && ${GIT} fetch --prune --tags
+	@#cd dyn_array.clone && ${GIT} merge --ff-only || ${GIT} rebase --rebase-merges
+	@#${GIT} status dyn_array.clone
 
 dyn_array.reclone:
 	@echo 'rule disabled, enable once dyn_array repo exists'
-	@#${RM} -rf dyn_array/dyn_array.clone
-	@#${MAKE} dyn_array/dyn_array.clone
+	@#${RM} -rf dyn_array.clone
+	@#${MAKE} dyn_array.clone
 
-dyn_array.reload: dyn_array/dyn_array.clone/
+dyn_array.reload: dyn_array.clone/
 	@#${RM} -rf dyn_array
 	@#${MAKE} dyn_array.rsync
 
-dyn_array.rsync: dyn_array/dyn_array.clone/
-	@#${RSYNC} -a -S -0 --delete -C --exclude='.*' -v dyn_array/dyn_array.clone/ dyn_array
+dyn_array.rsync: dyn_array.clone/
+	@#${RSYNC} -a -S -0 --delete -C --exclude='.*' -v dyn_array.clone/ dyn_array
 
-dyn_array.status: dyn_array/dyn_array.clone/
-	@#${GIT} status dyn_array/dyn_array.clone
+dyn_array.status: dyn_array.clone/
+	@#${GIT} status dyn_array.clone
 
 # jparse external repo
 #
@@ -973,7 +973,7 @@ jparse.status: jparse.clone/
 
 # rules to operate on all external repositories
 #
-all.clone: dbg.clone dyn_array/dyn_array.clone jparse.clone
+all.clone: dbg.clone dyn_array.clone jparse.clone
 
 all.diff: dbg.diff dyn_array.diff jparse.diff
 
