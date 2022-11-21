@@ -46,10 +46,10 @@ soup:
 	fi
 
 clean:
-	${RM} *.o
+	${RM} -f *.o
 
 clobber: clean
-	${RM} .soup
+	${RM} -f .soup
 
 install: all
 	@${ECHO} "nothing to $@. Try eating the soup instead."
