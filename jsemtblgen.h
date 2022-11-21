@@ -46,12 +46,12 @@
 /*
  * json_util - general JSON parser utility support functions
  */
-#include "jparse/json_util.h"
+#include "json_util.h"
 
 /*
  * jparse - JSON parser demo tool
  */
-#include "jparse/jparse.h"
+#include "jparse.h"
 
 /*
  * json_sem - JSON semantics support

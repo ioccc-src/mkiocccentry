@@ -48,7 +48,7 @@
  *	say sorry in a fun and friendly way, so we honour those friends
  *	accordingly.
  */
-#line 1 "jparse.lex.h"
+#line 1 "./jparse.lex.h"
 #ifndef yyHEADER_H
 #define yyHEADER_H 1
 #define yyIN_HEADER 1
@@ -567,7 +567,7 @@ extern int yylex \
 #undef yyTABLES_NAME
 #endif
 
-#line 206 "jparse.l"
+#line 206 "./jparse.l"
 
 
 #line 522 "jparse.lex.h"

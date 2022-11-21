@@ -38,7 +38,7 @@ export USAGE="usage: $0 [-h] [-V] [-v level] [-V] [-o] [-b bison] [-l limit_iocc
     -v level	    set debug level (def: 0)
     -o		    do NOT use backup files, fail if bison cannot be used (def: use)
     -b bison	    bison tool basename (def: bison)
-    -l limit.sh	    version info file (def: ../limit_ioccc.sh)
+    -l limit.sh	    version info file (def: limit_ioccc.sh)
     -g verge	    path to verge tool (def: ./verge)
     -p prefix	    the prefix of files to be used (def: jparse)
 			NOTE: The bison input file will be prefix.y
@@ -76,7 +76,7 @@ export D_FLAG="."
 export PREFIX="jparse"
 export V_FLAG="0"
 export BISON_BASENAME="bison"
-export LIMIT_IOCCC_SH="../limit_ioccc.sh"
+export LIMIT_IOCCC_SH="limit_ioccc.sh"
 export VERGE="./verge"
 export MIN_BISON_VERSION=
 declare -a BISON_DIRS=()

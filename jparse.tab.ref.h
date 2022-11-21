@@ -48,7 +48,7 @@
  *	say sorry in a fun and friendly way, so we honour those friends
  *	accordingly.
  */
-#line 1 "jparse.tab.h"
+#line 1 "./jparse.tab.h"
 /* A Bison parser, made by GNU Bison 3.8.2.  */
 
 /* Bison interface for Yacc-like parsers in C
@@ -96,7 +96,7 @@
 extern int yydebug;
 #endif
 /* "%code requires" blocks.  */
-#line 73 "jparse.y"
+#line 73 "./jparse.y"
 
     #if !defined(YYLTYPE_IS_DECLARED)
     struct YYLTYPE

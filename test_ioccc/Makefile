@@ -157,8 +157,8 @@ jnum_test.o: jnum_test.c Makefile
 jnum_chk.o: jnum_chk.c jnum_chk.h Makefile
 	${CC} ${CFLAGS} -I.. jnum_chk.c -c
 
-jnum_chk: jnum_chk.o ../dbg ../jparse/json_parse.o ../jparse/json_util.o ../util.o ../dyn_array/dyn_array.o jnum_test.o Makefile
-	${CC} ${CFLAGS} -I.. jnum_chk.o ../dbg/dbg.o ../jparse/json_parse.o ../jparse/json_util.o ../util.o \
+jnum_chk: jnum_chk.o ../dbg ../json_parse.o ../json_util.o ../util.o ../dyn_array/dyn_array.o jnum_test.o Makefile
+	${CC} ${CFLAGS} -I.. jnum_chk.o ../dbg/dbg.o ../json_parse.o ../json_util.o ../util.o \
 		../dyn_array/dyn_array.o jnum_test.o -lm -o jnum_chk
 
 

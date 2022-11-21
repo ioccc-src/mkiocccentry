@@ -38,7 +38,7 @@ export USAGE="usage: $0 [-h] [-V] [-v level] [-o] [-f flex] [-l limit_ioccc.sh]
     -v level        set debug level (def: 0)
     -o		    do NOT use backup file, fail if flex cannot be used (def: use)
     -f flex	    flex tool basename (def: flex)
-    -l limit.sh	    version info file (def: ../limit_ioccc.sh)
+    -l limit.sh	    version info file (def: limit_ioccc.sh)
     -g verge	    path to verge tool (def: ./verge)
     -p prefix	    the prefix of the files to be used (def: jparse)
 			NOTE: The flex input file will be prefix.l
@@ -78,7 +78,7 @@ export D_FLAG="."
 export PREFIX="jparse"
 export V_FLAG="0"
 export FLEX_BASENAME="flex"
-export LIMIT_IOCCC_SH="../limit_ioccc.sh"
+export LIMIT_IOCCC_SH="limit_ioccc.sh"
 export VERGE="./verge"
 export MIN_FLEX_VERSION=
 declare -a FLEX_DIRS=()

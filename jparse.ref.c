@@ -48,7 +48,7 @@
  *	say sorry in a fun and friendly way, so we honour those friends
  *	accordingly.
  */
-#line 1 "jparse.c"
+#line 1 "./jparse.c"
 #line 1 "jparse.c"
 
 #line 3 "jparse.c"
@@ -552,7 +552,7 @@ static const flex_int32_t yy_rule_can_match_eol[16] =
 #define yymore() yymore_used_but_not_detected
 #define YY_MORE_ADJ 0
 #define YY_RESTORE_YY_MORE_OFFSET
-#line 1 "jparse.l"
+#line 1 "./jparse.l"
 /*
  * JSON scanner - JSON scanner in flex grammar form
  *
@@ -580,7 +580,7 @@ static const flex_int32_t yy_rule_can_match_eol[16] =
  * problems. Another way is to provide 'int yywrap() { return 1; }' but this is
  * unnecessary.
  */
-#line 37 "jparse.l"
+#line 37 "./jparse.l"
 /* Declarations etc. go here.
  *
  * Code is copied verbatim near the top of the generated code.
@@ -905,7 +905,7 @@ YY_DECL
 		}
 
 	{
-#line 100 "jparse.l"
+#line 100 "./jparse.l"
 
 #line 859 "jparse.c"
 
@@ -978,7 +978,7 @@ do_action:	/* This label is used only to access EOF actions. */
 
 case 1:
 YY_RULE_SETUP
-#line 101 "jparse.l"
+#line 101 "./jparse.l"
 {
 			    /*
 			     * Whitespace excluding newlines
@@ -998,14 +998,14 @@ YY_RULE_SETUP
 case 2:
 /* rule 2 can match eol */
 YY_RULE_SETUP
-#line 117 "jparse.l"
+#line 117 "./jparse.l"
 {
 			    yycolumn = 1;
 			}
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 121 "jparse.l"
+#line 121 "./jparse.l"
 {
 			    /* string */
 			    return JSON_STRING;
@@ -1013,7 +1013,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 126 "jparse.l"
+#line 126 "./jparse.l"
 {
 			    /* number */
 			    return JSON_NUMBER;
@@ -1021,7 +1021,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 131 "jparse.l"
+#line 131 "./jparse.l"
 {
 			    /* null object */
 			    return JSON_NULL;
@@ -1029,7 +1029,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 136 "jparse.l"
+#line 136 "./jparse.l"
 {
 			    /* boolean: true */
 			    return JSON_TRUE;
@@ -1037,7 +1037,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 140 "jparse.l"
+#line 140 "./jparse.l"
 {
 			    /* boolean: false */
 			    return JSON_FALSE;
@@ -1045,7 +1045,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 145 "jparse.l"
+#line 145 "./jparse.l"
 {
 			    /* start of object */
 			    return JSON_OPEN_BRACE;
@@ -1053,7 +1053,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 149 "jparse.l"
+#line 149 "./jparse.l"
 {
 			    /* end of object */
 			    return JSON_CLOSE_BRACE;
@@ -1061,7 +1061,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
-#line 154 "jparse.l"
+#line 154 "./jparse.l"
 {
 			    /* start of array */
 			    return JSON_OPEN_BRACKET;
@@ -1069,7 +1069,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
-#line 158 "jparse.l"
+#line 158 "./jparse.l"
 {
 			    /* end of array */
 			    return JSON_CLOSE_BRACKET;
@@ -1077,7 +1077,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
-#line 163 "jparse.l"
+#line 163 "./jparse.l"
 {
 			    /* colon or 'equals' */
 			    return JSON_COLON;
@@ -1085,7 +1085,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
-#line 168 "jparse.l"
+#line 168 "./jparse.l"
 {
 			    /* comma: name/value pair separator */
 			    return JSON_COMMA;
@@ -1093,7 +1093,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
-#line 173 "jparse.l"
+#line 173 "./jparse.l"
 {
 			    /* invalid token: any other character */
 			    warn(__func__, "at line %d column %d: invalid token: 0x%02x = <%c>", yylloc->first_line, yylloc->first_column, *yytext, *yytext);
@@ -1129,7 +1129,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
-#line 206 "jparse.l"
+#line 206 "./jparse.l"
 YY_FATAL_ERROR( "flex scanner jammed" );
 	YY_BREAK
 #line 1084 "jparse.c"
@@ -2294,7 +2294,7 @@ void yyfree (void * ptr , yyscan_t yyscanner)
 
 #define YYTABLES_NAME "yytables"
 
-#line 206 "jparse.l"
+#line 206 "./jparse.l"
 
 
 /* Section 3: Code that's copied to the generated scanner */

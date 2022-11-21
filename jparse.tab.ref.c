@@ -48,7 +48,7 @@
  *	say sorry in a fun and friendly way, so we honour those friends
  *	accordingly.
  */
-#line 1 "jparse.tab.c"
+#line 1 "./jparse.tab.c"
 /* A Bison parser, made by GNU Bison 3.8.2.  */
 
 /* Bison implementation for Yacc-like parsers in C
@@ -118,7 +118,7 @@
 
 
 /* First part of user prologue.  */
-#line 47 "jparse.y"
+#line 47 "./jparse.y"
 
 
 
@@ -1529,7 +1529,7 @@ yyreduce:
     switch (yyn)
       {
   case 2: /* json: json_element  */
-#line 163 "jparse.y"
+#line 163 "./jparse.y"
     {
 	/*
 	 * $$ = $json
@@ -1587,7 +1587,7 @@ yyreduce:
     break;
 
   case 3: /* json_value: json_object  */
-#line 221 "jparse.y"
+#line 221 "./jparse.y"
     {
 	/*
 	 * $$ = $json_value
@@ -1620,7 +1620,7 @@ yyreduce:
     break;
 
   case 4: /* json_value: json_array  */
-#line 252 "jparse.y"
+#line 252 "./jparse.y"
     {
 	/*
 	 * $$ = $json_value
@@ -1653,7 +1653,7 @@ yyreduce:
     break;
 
   case 5: /* json_value: json_string  */
-#line 283 "jparse.y"
+#line 283 "./jparse.y"
     {
 	/*
 	 * $$ = $json_value
@@ -1686,7 +1686,7 @@ yyreduce:
     break;
 
   case 6: /* json_value: json_number  */
-#line 314 "jparse.y"
+#line 314 "./jparse.y"
     {
 	/*
 	 * $$ = $json_value
@@ -1719,7 +1719,7 @@ yyreduce:
     break;
 
   case 7: /* json_value: "true"  */
-#line 345 "jparse.y"
+#line 345 "./jparse.y"
     {
 	/*
 	 * $$ = $json_value
@@ -1751,7 +1751,7 @@ yyreduce:
     break;
 
   case 8: /* json_value: "false"  */
-#line 375 "jparse.y"
+#line 375 "./jparse.y"
     {
 	/*
 	 * $$ = $json_value
@@ -1783,7 +1783,7 @@ yyreduce:
     break;
 
   case 9: /* json_value: "null"  */
-#line 405 "jparse.y"
+#line 405 "./jparse.y"
     {
 	/*
 	 * $$ = $json_value
@@ -1815,7 +1815,7 @@ yyreduce:
     break;
 
   case 10: /* json_object: "{" json_members "}"  */
-#line 437 "jparse.y"
+#line 437 "./jparse.y"
     {
 	/*
 	 * $$ = $json_object
@@ -1848,7 +1848,7 @@ yyreduce:
     break;
 
   case 11: /* json_object: "{" "}"  */
-#line 468 "jparse.y"
+#line 468 "./jparse.y"
     {
 	/*
 	 * $$ = $json_object
@@ -1878,7 +1878,7 @@ yyreduce:
     break;
 
   case 12: /* json_members: json_member  */
-#line 498 "jparse.y"
+#line 498 "./jparse.y"
     {
 	/*
 	 * $$ = $json_members
@@ -1914,7 +1914,7 @@ yyreduce:
     break;
 
   case 13: /* json_members: json_members "," json_member  */
-#line 532 "jparse.y"
+#line 532 "./jparse.y"
     {
 	/*
 	 * $$ = $json_members
@@ -1953,7 +1953,7 @@ yyreduce:
     break;
 
   case 14: /* json_member: json_string ":" json_element  */
-#line 571 "jparse.y"
+#line 571 "./jparse.y"
     {
 	/*
 	 * $$ = $json_member
@@ -1989,7 +1989,7 @@ yyreduce:
     break;
 
   case 15: /* json_array: "[" json_elements "]"  */
-#line 607 "jparse.y"
+#line 607 "./jparse.y"
     {
 	/*
 	 * $$ = $json_array
@@ -2022,7 +2022,7 @@ yyreduce:
     break;
 
   case 16: /* json_array: "[" "]"  */
-#line 638 "jparse.y"
+#line 638 "./jparse.y"
     {
 	/*
 	 * $$ = $json_array
@@ -2052,7 +2052,7 @@ yyreduce:
     break;
 
   case 17: /* json_elements: json_element  */
-#line 668 "jparse.y"
+#line 668 "./jparse.y"
     {
 	/*
 	 * $$ = $json_elements
@@ -2088,7 +2088,7 @@ yyreduce:
     break;
 
   case 18: /* json_elements: json_elements "," json_element  */
-#line 702 "jparse.y"
+#line 702 "./jparse.y"
     {
 	/*
 	 * $$ = $json_elements
@@ -2126,7 +2126,7 @@ yyreduce:
     break;
 
   case 19: /* json_element: json_value  */
-#line 740 "jparse.y"
+#line 740 "./jparse.y"
     {
 	/*
 	 * $$ = $json_element
@@ -2159,7 +2159,7 @@ yyreduce:
     break;
 
   case 20: /* json_string: JSON_STRING  */
-#line 773 "jparse.y"
+#line 773 "./jparse.y"
     {
 	/*
 	 * $$ = $json_string
@@ -2191,7 +2191,7 @@ yyreduce:
     break;
 
   case 21: /* json_number: JSON_NUMBER  */
-#line 805 "jparse.y"
+#line 805 "./jparse.y"
     {
 	/*
 	 * $$ = $json_number
@@ -2430,7 +2430,7 @@ yyreturnlab:
   return yyresult;
 }
 
-#line 835 "jparse.y"
+#line 835 "./jparse.y"
 
 
 
