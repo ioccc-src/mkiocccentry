@@ -59,7 +59,7 @@
 .SH DESCRIPTION
 These macros and functions provide a way to create, modify and manipulate general purpose dynamic arrays.
 .PP
-The function 
+The function
 .BR dyn_array_create()
 creates a dynamic array where each element is of size \fIelm_size\fP.
 The \fIchunk\fP and \fIstart_elm_count\fP specify a fixed number of elements to expand by when allocating and the starting number of elements to allocate, respectively.
@@ -119,7 +119,7 @@ For that see \fBdyn_array_free()\fP.
 .PP
 The function
 .BR dyn_array_free()
-frees the contents of the dynamic array \fParray\fP.
+frees the contents of the dynamic array \fBarray\fP.
 If \fIarray->zeroize\fP is true and the data of the array is not NULL and the array has allocated nodes and the size of arrays is > 0 the function will clear the array data (via \fBmemset()\fP) first.
 The function does not free the \fBstruct dyn_array\fP itself: it only frees any allocated storage.
 .SS Convenience macros
