@@ -76,8 +76,8 @@
 AWK= awk
 BASENAME= basename
 CAT= cat
-CMP = cmp
-CUT = cut
+CMP= cmp
+CUT= cut
 CC= cc
 CP= cp
 CTAGS= ctags
@@ -100,7 +100,7 @@ SED= sed
 SEQCEXIT= seqcexit
 SHELL= bash
 SHELLCHECK= shellcheck
-CHECKNR = checknr
+CHECKNR= checknr
 TEE= tee
 TR= tr
 TRUE= true
@@ -167,13 +167,13 @@ CFLAGS= ${C_STD} ${COPT} -pedantic ${WARN_FLAGS} ${LDFLAGS}
 
 # where and what to install
 #
-MAN1_DIR = /usr/local/share/man/man1
-MAN8_DIR = /usr/local/share/man/man8
-MAN3_DIR = /usr/local/share/man/man3
+MAN1_DIR= /usr/local/share/man/man1
+MAN8_DIR= /usr/local/share/man/man8
+MAN3_DIR= /usr/local/share/man/man3
 DESTDIR= /usr/local/bin
 TARGETS= mkiocccentry iocccsize fnamchk txzchk chkentry jstrencode jstrdecode \
 	 jnum_gen jsemtblgen
-SH_TARGETS=limit_ioccc.sh
+SH_TARGETS= limit_ioccc.sh
 
 # man pages
 #
@@ -202,9 +202,9 @@ MAN_TARGETS= ${MAN1_TARGETS} ${MAN3_TARGETS} ${MAN8_TARGETS}
 HTML_MAN_TARGETS= $(patsubst %,%.html,$(MAN_TARGETS))
 # This is a simpler way to do:
 #
-#   MAN1PAGES = $(patsubst %,%.1,$(MAN1_TARGETS))
-#   MAN3PAGES = $(patsubst %,%.3,$(MAN3_TARGETS))
-#   MAN8PAGES = $(patsubst %,%.8,$(MAN8_TARGETS))
+#   MAN1PAGES= $(patsubst %,%.1,$(MAN1_TARGETS))
+#   MAN3PAGES= $(patsubst %,%.3,$(MAN3_TARGETS))
+#   MAN8PAGES= $(patsubst %,%.8,$(MAN8_TARGETS))
 #
 MAN1PAGES= $(MAN1_TARGETS:=.1)
 MAN3PAGES= $(MAN3_TARGETS:=.3)
@@ -218,7 +218,7 @@ OBJFILES= dbg/dbg.o util.o mkiocccentry.o iocccsize.o fnamchk.o txzchk.o chkentr
 	jparse/json_util.o jparse/jparse_main.o entry_util.o jsemtblgen.o soup/chk_sem_auth.o soup/chk_sem_info.o \
 	soup/chk_validate.o json_sem.o entry_time.o
 LESS_PICKY_CSRC= utf8_posix_map.c foo.c
-LESS_PICKY_H_FILES = oebxergfB.h
+LESS_PICKY_H_FILES= oebxergfB.h
 LESS_PICKY_OBJ= utf8_posix_map.o foo.o
 GENERATED_CSRC= jparse.c jparse.tab.c
 GENERATED_HSRC= jparse.tab.h jparse.lex.h
@@ -227,7 +227,7 @@ FLEXFILES= jparse.l
 BISONFILES= jparse.y
 # This is a simpler way to do:
 #
-#   SRCFILES =  $(patsubst %.o,%.c,$(OBJFILES))
+#   SRCFILES=  $(patsubst %.o,%.c,$(OBJFILES))
 #
 SRCFILES= $(OBJFILES:.o=.c)
 ALL_CSRC= ${LESS_PICKY_CSRC} ${GENERATED_CSRC} ${SRCFILES}
@@ -238,7 +238,7 @@ H_FILES= dbg/dbg.h chkentry.h jparse/json_parse.h jstrdecode.h jstrencode.h limi
 	soup/chk_sem_info.h soup/chk_validate.h json_sem.h foo.h entry_time.h
 # This is a simpler way to do:
 #
-#   DSYMDIRS = $(patsubst %,%.dSYM,$(TARGETS))
+#   DSYMDIRS= $(patsubst %,%.dSYM,$(TARGETS))
 #
 DSYMDIRS= $(TARGETS:=.dSYM)
 SH_FILES= test_ioccc/iocccsize_test.sh test_ioccc/jstr_test.sh limit_ioccc.sh test_ioccc/mkiocccentry_test.sh \
@@ -422,7 +422,6 @@ jparse: jparse/jparse.h jparse/jparse.l jparse/jparse.y jparse/Makefile
 	@${CP} -f jparse/jparse.1 man/jparse.1
 	@${CP} -f jparse/jparse_test.8 man/jparse_test.8
 	@${CP} -f jparse/run_flex.1 jparse/run_bison.1 man/
-
 
 jsemtblgen.o: jsemtblgen.c Makefile
 	${CC} ${CFLAGS} jsemtblgen.c -c
