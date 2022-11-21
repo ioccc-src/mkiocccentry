@@ -536,8 +536,8 @@ rebuild_jnum_test: jnum_gen test_ioccc/jnum.testset jnum_header.c Makefile
 # rule used by prep.sh
 #
 all_ref: jsemtblgen jsemcgen.sh test_ioccc/test_JSON/info.json/good test_ioccc/test_JSON/auth.json/good soup/all_ref.sh
-	rm -rf soup/ref
-	mkdir -p soup/ref
+	${RM} -rf soup/ref
+	${MKDIR} -p soup/ref
 	./soup/all_ref.sh -v 1 \
 	    soup/chk.info.head.c soup/chk.info.tail.c soup/chk.info.head.h soup/chk.info.tail.h \
 	    soup/chk.auth.head.c soup/chk.auth.tail.c soup/chk.auth.head.h soup/chk.auth.tail.h \
@@ -555,14 +555,14 @@ all_ref: jsemtblgen jsemcgen.sh test_ioccc/test_JSON/info.json/good test_ioccc/t
 #
 all_ref_ptch: soup/ref/info.reference.json.c soup/ref/info.reference.json.h \
 	      soup/ref/auth.reference.json.c soup/ref/auth.reference.json.h
-	rm -f soup/chk.info.ptch.c
-	-diff -u soup/ref/info.reference.json.c soup/chk_sem_info.c > soup/chk.info.ptch.c
-	rm -f soup/chk.info.ptch.h
-	-diff -u soup/ref/info.reference.json.h soup/chk_sem_info.h > soup/chk.info.ptch.h
-	rm -f soup/chk.auth.ptch.c
-	-diff -u soup/ref/auth.reference.json.c soup/chk_sem_auth.c > soup/chk.auth.ptch.c
-	rm -f soup/chk.auth.ptch.h
-	-diff -u soup/ref/auth.reference.json.h soup/chk_sem_auth.h > soup/chk.auth.ptch.h
+	${RM} -f soup/chk.info.ptch.c
+	-${DIFF} -u soup/ref/info.reference.json.c soup/chk_sem_info.c > soup/chk.info.ptch.c
+	${RM} -f soup/chk.info.ptch.h
+	-${DIFF} -u soup/ref/info.reference.json.h soup/chk_sem_info.h > soup/chk.info.ptch.h
+	${RM} -f soup/chk.auth.ptch.c
+	-${DIFF} -u soup/ref/auth.reference.json.c soup/chk_sem_auth.c > soup/chk.auth.ptch.c
+	${RM} -f soup/chk.auth.ptch.h
+	-${DIFF} -u soup/ref/auth.reference.json.h soup/chk_sem_auth.h > soup/chk.auth.ptch.h
 
 # Form the soup/chk_sem_????.{c,h} files
 #
