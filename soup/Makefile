@@ -41,6 +41,7 @@ CC= cc
 CP= cp
 CTAGS= ctags
 DIFF= diff
+ECHO = echo
 FMT= fmt
 GIT= git
 GREP= grep
@@ -59,8 +60,10 @@ SED= sed
 SEQCEXIT= seqcexit
 SHELL= bash
 SHELLCHECK= shellcheck
+SLEEP = sleep
 CHECKNR = checknr
 TEE= tee
+TOUCH = touch
 TR= tr
 TRUE= true
 
@@ -166,21 +169,21 @@ chk_validate.o: chk_validate.c Makefile
 
 soup:
 	@-if [[ -r .soup ]]; then \
-	    echo "Soup already cooked. Don't forget to eat it before it goes cold!"; \
+	    ${ECHO} "Soup already cooked. Don't forget to eat it before it goes cold!"; \
         else \
-	    echo "Mixing the ingredients..."; \
-	    echo "Cooking the soup..."; \
+	    ${ECHO} "Mixing the ingredients..."; \
+	    ${ECHO} "Cooking the soup..."; \
 	    ${TOUCH} .soup; \
 	    ${SLEEP} 2; \
-	    echo "Soup made. Don't forget to eat it before it goes cold!"; \
+	    ${ECHO} "Soup made. Don't forget to eat it before it goes cold!"; \
 	fi
 
 eat eating eat_soup eating_soup: all
 	@-if [[ -r .soup ]]; then \
-	    echo "That was mighty delicous soup but now you feel bloated! :-("; \
+	    ${ECHO} "That was mighty delicous soup but now you feel bloated! :-("; \
 	    ${RM} -f .soup; \
 	else \
-	    echo "How can you eat soup that you haven't made yet?"; \
+	    ${ECHO} "How can you eat soup that you haven't made yet?"; \
 	fi
 
 
@@ -189,7 +192,7 @@ eat eating eat_soup eating_soup: all
 ###################################
 
 configure:
-	@echo "nothing to $@. Try making some soup instead."
+	@${ECHO} "nothing to $@. Try making some soup instead."
 
 clean:
 	${RM} -f *.o
