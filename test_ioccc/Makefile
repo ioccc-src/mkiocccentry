@@ -40,10 +40,10 @@ configure:
 	@echo nothing to $@
 
 clean:
-	${RM} *.o
+	${RM} -f *.o
 
 clobber: clean
-	${RM} ${TARGETS}
+	${RM} -f ${TARGETS}
 
 install: all
 	@echo nothing to $@

@@ -417,7 +417,7 @@ jparse.tab.o: jparse.tab.c Makefile
 jparse_main.o: jparse_main.c Makefile
 	${CC} ${CFLAGS} jparse_main.c -c
 
-jparse: jparse/jparse.h jparse/jparse.l jparse/jparse.y
+jparse: jparse/jparse.h jparse/jparse.l jparse/jparse.y jparse/Makefile
 	@${MAKE} -C jparse CFLAGS="${CFLAGS} -Wno-unused-function -Wno-unneeded-internal-declaration"
 	@${CP} -f jparse/jparse.1 man/jparse.1
 	@${CP} -f jparse/jparse_test.8 man/jparse_test.8
@@ -806,7 +806,7 @@ legacy_clean:
 	${RM} -f jauthchk.o jinfochk.o
 
 clean: clean_generated_obj legacy_clean
-	${RM} -f ${OBJFILES} *.o
+	${RM} -f ${OBJFILES}
 	${RM} -f ${GENERATED_OBJ}
 	${RM} -f ${LESS_PICKY_OBJ}
 	${RM} -rf ${DSYMDIRS}
@@ -825,7 +825,6 @@ clobber: clean prep_clobber
 	${MAKE} -C dbg clobber
 	${MAKE} -C test_ioccc clobber
 	${MAKE} -C soup clobber
-	${MAKE} -C jparse clobber
 
 distclean nuke: clobber
 
