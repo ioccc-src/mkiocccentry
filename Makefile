@@ -1017,6 +1017,7 @@ depend: all soup/fmt_depend.sh
 	    echo; echo "Makefile dependencies updated"; echo; echo "Previous version may be found in: Makefile.orig"; \
 	fi
 	@echo
+	@${MAKE} -C soup depend
 	@echo "make depend completed"
 
 

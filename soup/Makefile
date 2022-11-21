@@ -140,6 +140,7 @@ OBJFILES= chk_sem_auth.o chk_sem_info.o chk_validate.o
 #   SRCFILES =  $(patsubst %.o,%.c,$(OBJFILES))
 #
 SRCFILES= $(OBJFILES:.o=.c)
+ALL_CSRC= ${SRCFILES}
 
 
 ######################################
@@ -166,6 +167,21 @@ chk_validate.o: chk_validate.c Makefile
 ###################################################################
 # repo tools - rules for those who maintain the mkiocccentry repo #
 ###################################################################
+
+depend: all ./fmt_depend.sh
+	@echo
+	@echo "make depend starting"
+	@echo
+	@${SED} -i.orig -n -e '1,/^### DO NOT CHANGE MANUALLY BEYOND THIS LINE/p' Makefile
+	${CC} ${CFLAGS} -MM -I../dbg -I.. ${ALL_CSRC} | ./fmt_depend.sh >> Makefile
+	@-if ${CMP} -s Makefile.orig Makefile; then \
+	    ${RM} -f Makefile.orig; \
+	else \
+	    echo; echo "Makefile dependencies updated"; echo; echo "Previous version may be found in: Makefile.orig"; \
+	fi
+	@echo
+	@echo "make depend completed"
+
 
 soup:
 	@-if [[ -r .soup ]]; then \
@@ -202,3 +218,16 @@ clobber: clean
 
 install: all
 	@${ECHO} "nothing to $@. Try eating the soup instead."
+
+###############
+# make depend #
+###############
+
+### DO NOT CHANGE MANUALLY BEYOND THIS LINE
+chk_sem_auth.o: chk_sem_auth.c chk_sem_auth.h ../json_sem.h ../util.h ../dyn_array/dyn_array.h \
+	../dyn_array/../dbg/dbg.h ../json_parse.h ../json_util.h
+chk_sem_info.o: chk_sem_info.c chk_sem_info.h ../json_sem.h ../util.h ../dyn_array/dyn_array.h \
+	../dyn_array/../dbg/dbg.h ../json_parse.h ../json_util.h
+chk_validate.o: chk_validate.c chk_validate.h ../entry_util.h ../json_parse.h ../util.h \
+	../dyn_array/dyn_array.h ../dyn_array/../dbg/dbg.h ../json_sem.h ../json_util.h chk_sem_auth.h \
+	chk_sem_info.h ../entry_time.h ../location.h ../dbg/dbg.h
