@@ -123,9 +123,13 @@
 #define ISO_3166_1_CODE_URL2 "https://www.iso.org/obp/ui/#iso:pub:PUB500001:en"
 #define ISO_3166_1_CODE_URL3 "https://www.iso.org/obp/ui/#search"
 #define ISO_3166_1_CODE_URL4 "https://www.iso.org/glossary-for-iso-3166.html"
-#define IOCCC_REGISTER_URL "https://register.ioccc.org/NOT/a/real/URL"	/* XXX - change to real URL when ready */
-#define IOCCC_SUBMIT_URL "https://submit.ioccc.org/NOT/a/real/URL"	/* XXX - change to real URL when ready */
-#undef IOCCC_SUBMIT_SERVER_READY /* XXX - change to #define when submit server is ready */
+
+#undef IOCCC_WINNER_HANDLE_READY /* TODO: change to #define when IOCCC winner handles are available and ready */
+
+#define IOCCC_REGISTER_URL "https://register.ioccc.org/NOT/a/real/URL"	/* TODO: change to real URL when ready */
+#define IOCCC_SUBMIT_URL "https://submit.ioccc.org/NOT/a/real/URL"	/* TODO: change to real URL when ready */
+#undef IOCCC_SUBMIT_SERVER_READY /* TODO: change to #define when submit server is ready */
+
 /* NOTE: The next two are for the warn_rule_2a_size() function. Do **NOT** change these values! */
 #define RULE_2A_BIG_FILE_WARNING (0)	/* warn that prog.c appears to be too big under Rule 2a */
 #define RULE_2A_IOCCCSIZE_MISMATCH (1)	/* warn that prog.c iocccsize size differs from the file size */

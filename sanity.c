@@ -59,9 +59,6 @@ ioccc_sanity_chks(void)
  *	fnamchk		    - if fnamchk option used and fnamchk ! NULL set *fnamchk to path
  *	chkentry_flag_used  - true ==> -C chkentry was used	    -
  *	chkentry	    - if -C chkentry was used and chkentry != NULL set *chkentry to path
- *
- * XXX This function should probably be updated to search for at least jparse as
- * well if not other utils too.
  */
 void
 find_utils(bool tar_flag_used, char **tar, bool cp_flag_used, char **cp, bool ls_flag_used,

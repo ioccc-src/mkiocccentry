@@ -60,21 +60,21 @@ LDFLAGS=
 #
 #	^^ the line is above :-)
 #
-# XXX - ###################################################################### - XXX #
-# XXX - In 2024 we will will support only c17 so C_STD will become c-std=gnu17 - XXX #
-# XXX - ###################################################################### - XXX #
+# TODO - ###################################################################### - TODO #
+# TODO - In 2024 we will will support only c17 so C_STD will become c-std=gnu17 - TODO #
+# TODO - ###################################################################### - TODO #
 #
 C_STD= -std=gnu11
 #C_STD= -std=gnu17
 
 # optimization and debug level
 #
-#COPT= -O3 -g3	# XXX - this will be the production release value - XXX #
+#COPT= -O3 -g3	# TODO - this will be the production release value - TODO #
 COPT= -O0 -g
 
 # Compiler warnings
 #
-#WARN_FLAGS= -Wall -Wextra	# XXX - this will be the production release value - XXX #
+#WARN_FLAGS= -Wall -Wextra	# TODO - this will be the production release value - TODO #
 WARN_FLAGS= -Wall -Wextra -Werror
 
 

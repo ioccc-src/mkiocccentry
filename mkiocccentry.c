@@ -4119,11 +4119,12 @@ get_author_info(struct author **author_set_p)
 	     */
 	    if (author_set[i].past_winner == true) {
 
+#if defined(IOCCC_WINNER_HANDLE_READY)
 		/*
 		 * explain to the past IOCCC winner
 		 */
 		if (need_hints) {
-		    /* XXX - update XXX's to show how past IOCCC winner can find their IOCCC winner handle - XXX */
+		    /* TODO: update to show how past IOCCC winner can find their IOCCC winner handle */
 		    para("",
 		         "As a self-declared past IOCCC winner, we recommend that you enter your",
 			 "IOCCC winner handle instead of just pressing return, unless of course, the",
@@ -4132,12 +4133,13 @@ get_author_info(struct author **author_set_p)
 			 "If you do not know your IOCCC winner handle, then you can find your IOCCC winner handle",
 			 "by doing the following:",
 			 "",
-			 "     XXX - explain how - XXX",
+			 "     TODO: explain how to find an IOCCC winner handle",
 			 "",
 			 "By entering your IOCCC winner handle, you will help us match up this entry",
 			 "on the website should you happen to win (again) with this entry.",
 			 NULL);
 		}
+#endif /* IOCCC_WINNER_HANDLE_READY */
 	    }
 
 	    /*

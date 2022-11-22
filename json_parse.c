@@ -55,9 +55,6 @@
 /*
  * JSON encoding of an octet in a JSON string
  *
- * XXX - this table assumes we process on a byte basis - XXX
- * XXX - consider an approach that allowed for smaller UTF-8 non-ASCII encoding - XXX
- *
  * NOTE: JSON_BYTE_VALUES is #defined as (BYTE_VALUES) (see util.h) and this table
  * MUST be 256 long.
  */
@@ -208,9 +205,6 @@ static bool json_process_floating(struct json_number *item, char const *str, siz
  *
  * This is OK in that it does not violate the JSON spec, it just
  * makes encoded strings with UTF-8 longer than they need to be.
- *
- * XXX - Optimize this function to not encode UTF-8 characters
- *	 that are not strictly needed by the JSON spec.
  *
  * NOTE: While there exist C escapes for characters such as '\v',
  *	 due to flaws in the JSON spec, we must encode such characters
@@ -1391,9 +1385,6 @@ parse_json_string(char const *string, size_t len)
 	err(165, __func__, "couldn't decode string: <%s>", string);
 	not_reached();
     }
-
-    /* XXX Are there any other checks that have to be done ? */
-
     return str;
 }
 
@@ -1436,7 +1427,7 @@ parse_json_bool(char const *string)
     item = &(boolean->item.boolean);
     if (!item->converted) {
 	/*
-	 * XXX json_conv_bool_str() calls json_conv_bool() which will warn if the
+	 * json_conv_bool_str() calls json_conv_bool() which will warn if the
 	 * boolean is neither true nor false. We know that this function should never
 	 * be called on anything but the strings "true" or "false" and since the
 	 * function will abort if NULL is returned we should check if

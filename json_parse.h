@@ -35,8 +35,7 @@
 /*
  * JSON encoding of an octet in a JSON string
  *
- * XXX - this table assumes we process on a byte basis - XXX
- * XXX - consider an approach that allowed for smaller UTF-8 non-ASCII encoding - XXX
+ * NOTE: this table assumes we process on a byte basis.
  */
 struct encode
 {
@@ -444,8 +443,7 @@ struct json
 /*
  * external data structures
  *
- * XXX - this table assumes we process on a byte basis - XXX
- * XXX - consider an approach that allowed for smaller UTF-8 non-ASCII encoding - XXX
+ * NOTE: this table assumes we process on a byte basis.
  */
 extern struct encode jenc[];
 

@@ -262,7 +262,7 @@ fi
 # Another way of getting the number of lines is echoing the USAGE_RE and piping
 # it to wc -l but this would require also deleting spaces via say tr(1).
 #
-# XXX However it still won't work right if all the usage strings are the same as
+# NOTE: It still won't work right if all the usage strings are the same as
 # it only works by the number of matches not what is matched. It works by first
 # determining how many lines the regexp contains and then uses the -c option of
 # grep, checking if the number returned by grep is the same as the number of
