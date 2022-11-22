@@ -177,7 +177,6 @@ typedef unsigned char bool;
 /*
  * external function declarations
  */
-extern int const hexval[];
 extern char *base_name(char const *path);
 extern bool exists(char const *path);
 extern bool is_file(char const *path);
