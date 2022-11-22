@@ -65,7 +65,7 @@
  * global variables
  */
 extern int json_verbosity_level;	/* print json debug messages <= json_verbosity_level in json_dbg(), json_vdbg() */
-
+extern int const hexval[];
 
 /*
  * external function declarations
