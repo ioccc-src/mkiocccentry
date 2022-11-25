@@ -43,6 +43,9 @@ export JSEMCGEN_VERSION="1.2 2022-10-23"
 
 # attempt to fetch system specific paths to tools we need
 #
+# Try to find the patch tool.
+#
+PATCH_TOOL="$(type -P patch 2>/dev/null)"
 # It's possible that the path could not be obtained so we set it to the default
 # in this case.
 #
@@ -52,9 +55,6 @@ export JSEMCGEN_VERSION="1.2 2022-10-23"
 #
 #   ${PATCH_TOOL:=/usr/bin/patch} 2>/dev/null
 #
-# Try to find the patch tool.
-#
-PATCH_TOOL="$(type -P patch 2>/dev/null)"
 
 # make sure PATCH_TOOL is set
 #
