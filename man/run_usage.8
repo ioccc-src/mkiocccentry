@@ -13,7 +13,7 @@
 .SH NAME
 run_usage \- run \-h on a tool to extract usage information to help with checking man page \fBSYNOPSIS\fP \- tool usage consistency
 .SH SYNOPSIS
-\fBrun_usage.sh\fP [\-h] [\-V] [\-m section] [\-M man file] [\-D man_dir] tool
+\fBrun_usage.sh\fP [\-h] [\-V] [\-v level] [\-a awk] [\-c cut] [\-g grep] [\-s sed] [\-m section] [\-M man_file] [\-D man_dir] tool
 .SH DESCRIPTION
 .PP
 This script does a best guess at what the \fBSYNOPSIS\fP should be for the supplied tool with certain limitations (see both \fBNOTES\fP and \fBBUGS\fP).
@@ -24,6 +24,21 @@ If the man page does not exist or is not a regular file or is not readable it is
 .TP
 \fB\-h\fP
 Show help and exit.
+.TP
+\fB\-v \fIlevel\fP\fP
+Set verbosity level.
+.TP
+\fB\-a \fIawk\fP\fP
+Set path to awk tool.
+.TP
+\fB\-c \fIcut\fP\fP
+Set path to cut tool.
+.TP
+\fB\-g \fIgrep\fP\fP
+Set path to grep tool.
+.TP
+\fB\-s \fIsed\fP\fP
+Set path to sed tool.
 .TP
 \fB\-V\fP
 Show version and exit.
@@ -87,7 +102,6 @@ It's not perfect.
 See above line and above \fBNOTES\fP if this is not clear!
 .PP
 It requires a \fB\-h\fP option for the tool in question and that this option will prefix each syntax with \fBusage:\fP.
-If the usage spans more than one line it will not pick up on the full usage.
 .PP
 It does not have a quiet mode so that it only prints out what the format might be for \fBSYNOPSIS\fP.
 It does however not print anything if everything seems okay.
