@@ -128,7 +128,7 @@ LDFLAGS=
 #	^^ the line is above :-)
 #
 # TODO - ###################################################################### - TODO #
-# TODO - In 2024 we will will support only c17 so C_STD will become c-std=gnu17 - TODO #
+# TODO - In 2024 we will will support only c17 so C_STD will become -std=gnu17  - TODO #
 # TODO - ###################################################################### - TODO #
 #
 C_STD= -std=gnu11
@@ -197,7 +197,7 @@ MAN1_TARGETS= man/mkiocccentry man/txzchk man/fnamchk man/iocccsize man/chkentry
 MAN3_TARGETS= dbg/dbg dyn_array/dyn_array
 MAN8_TARGETS= man/reset_tstamp man/verge man/iocccsize_test man/ioccc_test man/run_usage man/utf8_test \
 	      man/jparse_test man/txzchk_test man/vermod man/mkiocccentry_test man/jstr_test man/jnum_chk \
-	      man/jnum_gen man/chkentry_test
+	      man/jnum_gen man/chkentry_test man/jsemtblgen man/jsemcgen man/all_ref
 MAN_TARGETS= ${MAN1_TARGETS} ${MAN3_TARGETS} ${MAN8_TARGETS}
 HTML_MAN_TARGETS= $(patsubst %,%.html,$(MAN_TARGETS))
 # This is a simpler way to do:
@@ -430,9 +430,8 @@ mkiocccentry.o: mkiocccentry.c Makefile
 	${CC} ${CFLAGS} mkiocccentry.c -c
 
 mkiocccentry: mkiocccentry.o rule_count.o dbg/dbg.o util.o dyn_array/dyn_array.o json_parse.o entry_util.o \
-	json_util.o entry_time.o location.o utf8_posix_map.o sanity.o json_sem.o Makefile
-	${CC} ${CFLAGS} mkiocccentry.o rule_count.o dbg/dbg.o util.o dyn_array/dyn_array.o json_parse.o \
-	    entry_util.o entry_time.o json_util.o location.o utf8_posix_map.o sanity.o json_sem.o -lm -o $@
+	json_util.o entry_time.o location.o utf8_posix_map.o sanity.o json_sem.o
+	${CC} ${CFLAGS} $^ -lm -o $@
 
 iocccsize.o: iocccsize.c Makefile
 	${CC} ${CFLAGS} -DMKIOCCCENTRY_USE iocccsize.c -c
@@ -454,7 +453,11 @@ txzchk: txzchk.o dbg/dbg.o util.o dyn_array/dyn_array.o location.o \
 	${CC} ${CFLAGS} txzchk.o dbg/dbg.o util.o dyn_array/dyn_array.o location.o \
 	     utf8_posix_map.o sanity.o -o $@
 
-soup:
+soup: soup/chk.auth.head.c soup/chk.auth.ptch.h soup/chk.info.head.c soup/chk.info.ptch.h \
+	soup/chk_sem_auth.c  soup/chk_sem_info.h soup/chk.auth.head.h soup/chk.auth.tail.c \
+	soup/chk.info.head.h soup/chk.info.tail.c soup/chk_sem_auth.h  soup/chk_validate.c \
+	soup/chk.auth.ptch.c soup/chk.auth.tail.h soup/chk.info.ptch.c soup/chk.info.tail.h \
+	soup/chk_sem_info.c  soup/chk_validate.h
 	@${MAKE} -C soup CFLAGS="${CFLAGS}"
 
 chkentry.o: chkentry.c chkentry.h jparse.tab.h Makefile

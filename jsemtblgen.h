@@ -100,7 +100,7 @@ static const char * const usage_msg =
     "\n"
     "\t-D def_func\tvalidate with def_func() unless overridden by another flag (def: NULL)\n"
     "\n"
-    "\t-P prefix\tvalidate JTYPE_MEMBER JSON nodes with prefix_name() (def: do not)\n"
+    "\t-P prefix\tvalidate JTYPE_MEMBER JSON nodes with prefix() (def: do not)\n"
     "\n"
     "\t\t\tNOTE: The name is based on the JTYPE_MEMBER JSON decoded name string.\n"
     "\t\t\tNOTE: Underscore (_) replaces any name chars that are not valid in a C function name.\n"
