@@ -1,0 +1,135 @@
+.\" section 8 man page for jsemcgen.sh
+.\"
+.\" This man page was first written by Cody Boone Ferguson for the IOCCC
+.\" in 2022.
+.\"
+.\" Humour impairment is not virtue nor is it a vice, it's just plain
+.\" wrong: almost as wrong as JSON spec mis-features and C++ obfuscation! :-)
+.\"
+.\" "Share and Enjoy!"
+.\"     --  Sirius Cybernetics Corporation Complaints Division, JSON spec department. :-)
+.\"
+.TH jsemcgen.sh 8 "27 November 2022" "jsemcgen.sh" "IOCCC tools"
+.SH NAME
+jsemcgen.sh \- generate JSON semantics table via the \fBjsemtblgen(8)\fP tool
+.SH SYNOPSIS
+\fBjsemcgen.sh\fP [\-h] [\-v level] [\-J level] [\-q] [\-V] [\-s] [\-I] [\-N name] [\-D def_func] [\-P prefix] [\-1 func] [\-S func] [\-B func] [\-0 func] [\-M func] [\-O func] [\-A func] [\-U func] [\-j jsemtblgen] [\-p patch_tool] file.json head patch tail out
+.SH DESCRIPTION
+This tool is a wrapper to the \fBjsemtblgen(8)\fP tool. Along with \fBall_ref(8)\fP these tools create the JSON semantics tables for the \fBchkentry(1)\fP tool.
+As the \fBchkentry(1)\fP tool is a vitally important part of the IOCCC judging process these tools are also vital in running the IOCCC but at a lower level.
+.PP
+The \fIfile.json\fP file is expected to be a valid JSON file used to generate the initial JSON semantics table.
+The \fIhead\fP file is a file add to the beginning of the \fBjsemtblgen(8)\fP output (before patched \fBjsemtblgen(8)\fP output).
+The \fIpatch\fP file is a patch file to apply to the output of \fBjsemtblgen(8)\fP with \fIhead\fP and \fItail\fP.
+The \fItail\fP file is a file to add to the end of the \fBjsemtblgen(8)\fP output (after patching the \fBjsemtblgen(8)\fP output).
+The \fIout\fP argument is the \fBjsemtblgen(8)\fP output with possible head, tail and patch applied.
+If you do not wish to specify \fIhead\fP, \fIpatch\fP or \fItail\fP specify \fI.\fP instead.
+.SH OPTIONS
+.TP
+\fB\-h\fP
+Show help and exit.
+.TP
+\fB\-v \fIlevel\fP\fP
+Set verbosity level to level.
+.TP
+\fB\-J \fIlevel\fP\fP
+Set JSON verbosity level.
+.TP
+\fB\-q\fP
+Set quiet mode.
+.TP
+\fB\-V\fP
+Show version and exit.
+.TP
+\fB\-s\fP
+Specify that arg is a string to be processed rather than a file.
+.TP
+\fB\-I\fP
+Output as a C header file.
+.TP
+\fB\-N \fIname\fP\fP
+Set name of the semantics table.
+.TP
+\fB\-D \fIdef_func\fP\fP
+Validate with \fIdef_func()\fP unless overridden by another flag.
+.TP
+\fB\-P \fIprefix\fP\fP
+Validate \fBJTYPE_MEMBER\fP JSON nodes with prefix_name() (def: do not)
+.RS
+Note that the name is based on the \fBJTYPE_MEMBER\fP JSON decoded name string.
+Underscore (_) replaces any name chars that are not valid in a C function name.
+\fB\-P\fP overrides any use of \fB\-M\fP.
+.RE
+.TP
+\fB\-1 \fIfunc\fP\fP
+Validate \fBJTYPE_NUMBER\fP JSON nodes with \fIfunc()\fP.
+.TP
+\fB\-S \fIfunc\fP\fP
+Validate \fBJTYPE_STRING\fP JSON nodes with \fIfunc()\fP.
+.TP
+\fB\-B \fIfunc\fP\fP
+Validate \fBJTYPE_BOOL\fP JSON nodes with \fIfunc()\fP.
+.TP
+\fB\-0 \fIfunc\fP\fP
+Validate \fBJTYPE_NULL\fP JSON nodes with \fIfunc()\fP.
+.TP
+\fB\-M \fIfunc\fP\fP
+Validate \fBJTYPE_MEMBER\fP JSON nodes with \fIfunc()\fP.
+.TP
+\fB\-O \fIfunc\fP\fP
+Validate \fBJTYPE_OBJECT\fP JSON nodes with \fIfunc()\fP.
+.TP
+\fB\-A \fIfunc\fP\fP
+Validate \fBJTYPE_ARRAY\fP JSON nodes with \fIfunc()\fP.
+.TP
+\fB\-U \fIfunc\fP\fP
+Validate nodes with unknown types with \fIfunc()\fP.
+.TP
+\fB\--j \fIjsemtblgen\fP\fP
+Set path to \fBjsemtblgen(8)\fP.
+.RS
+This option is only used in this script.
+.RE
+.TP
+\fB\-p \fIpatch_tool\fP\fP
+Set path to the patch program.
+.RS
+This option is only used in this script.
+.RE
+.SH EXIT STATUS
+.TP
+0
+JSON is valid.
+.TQ
+1
+JSON is invalid.
+.TQ
+2
+\fB\-h\fP or \fB\-V\fP used and help string or version string printed.
+.TQ
+3
+Command line error.
+.TQ
+4
+\fBjsemtblgen\fP or \fBpatch_tool\fP is not an executable.
+.TQ
+5
+One or more of the files \fIfile.json\fP, \fIhead\fP, \fIpatch\fP, and/or \fItail\fP is or are not a readable file.
+.TQ
+6
+\fBjsemtblgen(8)\fP failed.
+.TQ
+>= 10
+Internal error.
+.SH NOTES
+.PP
+The JSON parser \fBjparse\fP was co\-developed by Cody Boone Ferguson and Landon Curt Noll (one of the IOCCC Judges) in support for IOCCCMOCK, IOCCC28 and beyond.
+.PP
+This tool is needed in order to generate the JSON semantics table for \fBchkentry(1)\fP.
+.SH BUGS
+If you have a problem with the tool (not JSON itself! :\-) ) you can report it at the GitHub issues page.
+It can be found at
+.br
+\fI\<https://github.com/ioccc\-src/mkiocccentry/issues\>\fP.
+.SH SEE ALSO
+\fBjsemtblgen(8)\fP, \fBchkentry(1)\fP, \fBall_ref(8)\fP

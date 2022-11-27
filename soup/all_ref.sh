@@ -3,7 +3,7 @@
 # all_ref - form the ref directory
 #
 # For the ref sub-directory using via ./jsemcgen.sh, from test .info.json
-# and .auth.json files, forming *.json.c and *.json.h semantic table files
+# and .auth.json files, form *.json.c and *.json.h semantic table files
 # under a given directory.
 #
 # The concept of this file was developed by:
@@ -28,10 +28,8 @@ export V_FLAG="0"
 export JSEMCGEN_SH="./jsemcgen.sh"
 export ALL_REF_VERSION="1.0 2022-10-30"
 
-export USAGE="usage: $0 [-h] [-v level] [-V] [-j jsemcgen.sh] \
-	info.head.c info.tail.c info.head.h info.tail.h  \
-	auth.head.c auth.tail.c auth.head.h auth.tail.h  \
-	info_dir auth_dir ref_dir
+export USAGE="usage: $0 [-h] [-v level] [-V] [-j jsemcgen.sh] info.head.c info.tail.c info.head.h
+	info.tail.h auth.head.c auth.tail.c auth.head.h auth.tail.h info_dir auth_dir ref_dir
 
 	-h		print help message and exit
 	-v level	set verbosity level (def level: 0)
@@ -60,7 +58,7 @@ Exit codes:
      3	 command line error
      4	 jsemcgen.sh not found or not executable
      5	 missing or not readable header or trailer file
-     6	 missing, nor readable, or not writable info_dir, auth_dir and/or ref_dir
+     6	 missing, not readable, or not writable info_dir, auth_dir and/or ref_dir
  >= 10	 internal error"
 
 # parse args

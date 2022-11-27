@@ -101,7 +101,7 @@ export USAGE="usage: $0 [-h] [-v level] [-J level] [-q] [-V] [-s] [-I] [-N name]
 	-p patch_tool	path to the patch tool (def: $PATCH_TOOL)
 
 	file.json	A valid JSON file used to generate the initial JSON semantics table
-	head		file add to the beginning jsemtblgen output (before patched jsemtblgen output), . ==> do not add
+	head		file add to the beginning of the jsemtblgen output (before patched jsemtblgen output), . ==> do not add
 	patch		patch to apply to the output of jsemtblgen with head and tail, . --> do not patch
 	tail		file add to the end of jsemtblgen output (after patched jsemtblgen output), . ==> do not add
 	out		jsemtblgen output, with possible head and tail and patch applied

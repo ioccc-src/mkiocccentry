@@ -197,7 +197,7 @@ MAN1_TARGETS= man/mkiocccentry man/txzchk man/fnamchk man/iocccsize man/chkentry
 MAN3_TARGETS= dbg/dbg dyn_array/dyn_array
 MAN8_TARGETS= man/reset_tstamp man/verge man/iocccsize_test man/ioccc_test man/run_usage man/utf8_test \
 	      man/jparse_test man/txzchk_test man/vermod man/mkiocccentry_test man/jstr_test man/jnum_chk \
-	      man/jnum_gen man/chkentry_test
+	      man/jnum_gen man/chkentry_test man/jsemtblgen man/jsemcgen man/all_ref
 MAN_TARGETS= ${MAN1_TARGETS} ${MAN3_TARGETS} ${MAN8_TARGETS}
 HTML_MAN_TARGETS= $(patsubst %,%.html,$(MAN_TARGETS))
 # This is a simpler way to do:
