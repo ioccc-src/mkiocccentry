@@ -8,7 +8,7 @@
  * As per IOCCC anonymous judging policy, the calls to json_dbg() in this file
  * that are JSON_DBG_MED or lower will NOT reveal any JSON content.
  * Only at JSON_DBG_HIGH or higher should json_dbg() calls in the file
- * will print JSON content.
+ * print JSON content.
  *
  * "Because specs w/o version numbers are forced to commit to their original design flaws." :-)
  *
