@@ -2152,7 +2152,8 @@ string_to_long_long(char const *str)
 	not_reached();
     }
     else if (num <= LLONG_MIN || num >= LLONG_MAX) {
-	err(159, __func__, "number %s out of range for long long int (must be > %lld && < %lld)", str, LLONG_MIN, LLONG_MAX);
+	err(159, __func__, "number %s out of range for long long int (must be > %jd && < %jd)",
+			    str, (intmax_t)LLONG_MIN, (intmax_t)LLONG_MAX);
 	not_reached();
     }
     return num;
