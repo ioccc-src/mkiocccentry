@@ -2922,7 +2922,7 @@ chk_tarball(struct json const *node,
     }
 
     /*
-     * obtain the IOCCC_contest_id
+     * obtain the tarball filename
      */
     str = sem_member_value_decoded_str(node, depth, sem, __func__, val_err);
     if (str == NULL) {
