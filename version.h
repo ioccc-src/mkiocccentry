@@ -69,7 +69,7 @@
 /*
  * official mkiocccentry version
  */
-#define MKIOCCCENTRY_VERSION "0.43 2022-10-28"	/* format: major.minor YYYY-MM-DD */
+#define MKIOCCCENTRY_VERSION "0.44 2022-11-30"	/* format: major.minor YYYY-MM-DD */
 
 /*
  * Version of info for JSON the .info.json file.
@@ -79,7 +79,7 @@
 /*
  * Version of info for JSON the .auth.json file.
  */
-#define AUTH_VERSION "1.17 2022-10-30"	/* format: major.minor YYYY-MM-DD */
+#define AUTH_VERSION "1.18 2022-11-30"	/* format: major.minor YYYY-MM-DD */
 
 /*
  * official fnamchk version
@@ -94,7 +94,7 @@
 /*
  * official chkentry version
  */
-#define CHKENTRY_VERSION "0.3 2022-10-31"	/* format: major.minor YYYY-MM-DD */
+#define CHKENTRY_VERSION "0.4 2022-11-30"	/* format: major.minor YYYY-MM-DD */
 
 /*
  * official jstrencode version
