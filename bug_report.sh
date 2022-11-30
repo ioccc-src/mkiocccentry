@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# bug-report.sh - collect system information to help user report bugs and issues
+# bug_report.sh - collect system information to help user report bugs and issues
 # using the mkiocccentry tools
 #
 # This script was written in 2022 by:
