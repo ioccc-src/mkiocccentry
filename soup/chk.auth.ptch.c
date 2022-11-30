@@ -14,7 +14,7 @@
    { 4,	JTYPE_MEMBER,	1,	5,	5,	5,	13,	chk_author_handle,	"author_handle" },
    { 4,	JTYPE_MEMBER,	1,	5,	5,	6,	13,	chk_author_number,	"author_number" },
 @@ -56,8 +56,8 @@
-   { 4,	JTYPE_MEMBER,	1,	5,	5,	14,	7,	chk_twitter,	"twitter" },
+   { 4,	JTYPE_MEMBER,	1,	5,	5,	14,	7,	chk_mastodon,	"mastodon" },
    { 4,	JTYPE_MEMBER,	1,	5,	5,	15,	3,	chk_url,	"url" },
    { 3,	JTYPE_OBJECT,	1,	5,	5,	16,	0,	NULL,	NULL },
 -  { 2,	JTYPE_NUMBER,	1,	6,	6,	17,	0,	NULL,	NULL },

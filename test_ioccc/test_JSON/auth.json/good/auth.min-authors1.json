@@ -18,7 +18,7 @@
 			"location_name" : "Australia",
 			"email" : null,
 			"url" : null,
-			"twitter" : null,
+			"mastodon" : null,
 			"github" : null,
 			"affiliation" : null,
 			"past_winner" : false,

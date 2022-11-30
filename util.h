@@ -225,6 +225,7 @@ extern ssize_t fprint_line_buf(FILE *stream, void *buf, size_t len, int start, i
 extern ssize_t fprint_line_str(FILE *stream, char *str, size_t *retlen, int start, int end);
 extern char *malloc_path(char const *dirname, char const *filename);
 
+extern size_t count_char(char const *str, int ch);
 
 /* find non-whitespace text */
 extern size_t find_text(char const *ptr, size_t len, char **first);

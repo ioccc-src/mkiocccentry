@@ -18,7 +18,7 @@
 			"location_name" : "Australia",
 			"email" : "user0@example.com",
 			"url" : "https:\/\/host0.example.com\/index.html",
-			"twitter" : "@twitter0",
+			"mastodon" : "@mastodon0@example.com",
 			"github" : "@github0",
 			"affiliation" : "an affiliation for #0 author",
 			"past_winner" : false,

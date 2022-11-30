@@ -548,7 +548,7 @@ main(int argc, char *argv[])
 		author_set[i].location_code,
 		author_set[i].email,
 		author_set[i].url,
-		author_set[i].twitter,
+		author_set[i].mastodon,
 		author_set[i].github,
 		author_set[i].affiliation);
 	    if (ret <= 0) {
@@ -3371,7 +3371,7 @@ get_author_info(struct author **author_set_p)
     char guard;			/* scanf guard to catch excess amount of input */
     char *def_handle = NULL;	/* default author handle computed from name */
     bool pass = false;		/* true ==> passed test */
-    char *p;
+    char *p, *last_at;
     int i = 0;
     int j = 0;
 
@@ -3495,7 +3495,7 @@ get_author_info(struct author **author_set_p)
 	para("",
 	     "We will ask for the author(s) Email address. Press return if you don't want to provide it.",
 	     "We will ask for a home URL (starting with http:// or https://), or press return to skip.",
-	     "We will ask a twitter handle (must start with @), or press return to skip.",
+	     "We will ask a mastodon handle (must start with @), or press return to skip.",
 	     "We will ask a GitHub account (must start with @), or press return to skip.",
 	     "We will ask for an affiliation (company, school, group) of the author.",
 	     "We will ask if you have won the IOCCC before. Your answer will not affect your chances of winning.",
@@ -3901,78 +3901,81 @@ get_author_info(struct author **author_set_p)
 	dbg(DBG_MED, "Author #%d URL: %s", i, author_set[i].url);
 
 	/*
-	 * ask for twitter handle
+	 * ask for mastodon handle
 	 */
 	do {
 
 	    /*
-	     * request twitter handle
+	     * request mastodon handle
 	     */
-	    author_set[i].twitter = NULL;
-	    author_set[i].twitter = prompt(need_hints ?
-		"Enter author twitter handle, starting with @, or press return to skip" :
-		"Enter author twitter handle", &len);
+	    author_set[i].mastodon = NULL;
+	    author_set[i].mastodon = prompt(need_hints ?
+		"Enter author mastodon handle, starting with @, or press return to skip" :
+		"Enter author mastodon handle", &len);
 	    if (len == 0) {
-		dbg(DBG_VHIGH, "Twitter handle not given");
+		dbg(DBG_VHIGH, "Mastodon handle not given");
 	    } else {
-		dbg(DBG_VHIGH, "Twitter handle: %s", author_set[i].twitter);
+		dbg(DBG_VHIGH, "Mastodon handle: %s", author_set[i].mastodon);
 	    }
 
 	    /*
 	     * reject if too long
 	     */
-	    if (len > MAX_TWITTER_LEN) {
+	    if (len > MAX_MASTODON_LEN) {
 
 		/*
 		 * issue rejection message
 		 */
 		errno = 0;		/* pre-clear errno for warnp() */
-		ret = fprintf(stderr, "\nSorry ( tm Canada :-) ), we limit twitter handles,"
-			      "starting with the @, to %d characters\n\n", MAX_TWITTER_LEN);
+		ret = fprintf(stderr, "\nSorry ( tm Canada :-) ), we limit mastodon handles,"
+			      "starting with the @, to %d characters\n\n", MAX_MASTODON_LEN);
 		if (ret <= 0) {
-		    warnp(__func__, "fprintf error while printing twitter handle length limit");
+		    warnp(__func__, "fprintf error while printing mastodon handle length limit");
 		}
 
 		/*
 		 * free storage
 		 */
-		if (author_set[i].twitter != NULL) {
-		    free(author_set[i].twitter);
-		    author_set[i].twitter = NULL;
+		if (author_set[i].mastodon != NULL) {
+		    free(author_set[i].mastodon);
+		    author_set[i].mastodon = NULL;
 		}
 		continue;
 	    }
 
 	    /*
-	     * reject if no leading @, or if more than one @
+	     * reject if no leading @ or there's not a second @
 	     */
 	    if (len > 0) {
-		p = strchr(author_set[i].twitter, '@');
-		if (p == NULL || author_set[i].twitter[0] != '@' || p != strrchr(author_set[i].twitter, '@') ||
-		    author_set[i].twitter[1] == '\0') {
+		p = strchr(author_set[i].mastodon, '@');
+		last_at = strrchr(author_set[i].mastodon, '@');
+		if (author_set[i].mastodon[0] != '@' || p == NULL || last_at == NULL ||
+		    count_char(author_set[i].mastodon, '@') != 2 || author_set[i].mastodon[1] == '\0' ||
+		    strstr(author_set[i].mastodon, "@@") != NULL || author_set[i].mastodon[len-1] == '@') {
 
 		    /*
 		     * issue rejection message
 		     */
 		    fpara(stderr,
 			  "",
-			  "Twitter handles must start with a @ and have no other @-signs.",
+			  "Mastodon handles must start with a @ and must have one other @ that's not adjacent to",
+			  "the other and is not the last character in the handle.",
 			  "",
 			  NULL);
 
 		    /*
 		     * free storage
 		     */
-		    if (author_set[i].twitter != NULL) {
-			free(author_set[i].twitter);
-			author_set[i].twitter = NULL;
+		    if (author_set[i].mastodon != NULL) {
+			free(author_set[i].mastodon);
+			author_set[i].mastodon = NULL;
 		    }
 		    continue;
 		}
 	    }
-	} while (author_set[i].twitter == NULL);
+	} while (author_set[i].mastodon == NULL);
 
-	dbg(DBG_MED, "Author #%d twitter: %s", i, author_set[i].twitter);
+	dbg(DBG_MED, "Author #%d mastodon: %s", i, author_set[i].mastodon);
 
 	/*
 	 * ask for GitHub account
@@ -4271,8 +4274,8 @@ get_author_info(struct author **author_set_p)
 						printf("Email: %s\n", author_set[i].email)) <= 0 ||
 	    ((author_set[i].url[0] == '\0') ? printf("URL not given\n") :
 					      printf("URL: %s\n", author_set[i].url)) <= 0 ||
-	    ((author_set[i].twitter[0] == '\0') ? printf("Twitter handle not given\n") :
-						  printf("Twitter handle: %s\n", author_set[i].twitter)) <= 0 ||
+	    ((author_set[i].mastodon[0] == '\0') ? printf("Mastodon handle not given\n") :
+						  printf("Mastodon handle: %s\n", author_set[i].mastodon)) <= 0 ||
 	    ((author_set[i].github[0] == '\0') ? printf("GitHub username not given\n") :
 						 printf("GitHub username: %s\n", author_set[i].github)) <= 0 ||
 	    ((author_set[i].affiliation[0] == '\0') ? printf("Affiliation not given\n") :
@@ -4861,7 +4864,7 @@ write_auth(struct auth *authp, char const *entry_dir, char const *chkentry, char
 	    json_fprintf_value_string(author_stream, "\t\t\t", "location_name", " : ", ap->location_name, ",\n") &&
 	    json_fprintf_value_string(author_stream, "\t\t\t", "email", " : ", strnull(ap->email), ",\n") &&
 	    json_fprintf_value_string(author_stream, "\t\t\t", "url", " : ", strnull(ap->url), ",\n") &&
-	    json_fprintf_value_string(author_stream, "\t\t\t", "twitter", " : ", strnull(ap->twitter), ",\n") &&
+	    json_fprintf_value_string(author_stream, "\t\t\t", "mastodon", " : ", strnull(ap->mastodon), ",\n") &&
 	    json_fprintf_value_string(author_stream, "\t\t\t", "github", " : ", strnull(ap->github), ",\n") &&
 	    json_fprintf_value_string(author_stream, "\t\t\t", "affiliation", " : ", strnull(ap->affiliation), ",\n") &&
 	    json_fprintf_value_bool(author_stream, "\t\t\t", "past_winner", " : ", ap->past_winner, ",\n") &&

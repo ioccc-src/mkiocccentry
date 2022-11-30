@@ -4052,3 +4052,36 @@ malloc_path(char const *dirname, char const *filename)
     }
     return buf;
 }
+
+/*
+ * count the number of instances of a char in the string
+ *
+ * given:
+ *
+ *	str	string to search
+ *	ch	character to find
+ *
+ * NOTE: this function does not return on NULL pointer.
+ */
+size_t
+count_char(char const *str, int ch)
+{
+    size_t count = 0;	    /* number of ch in the string */
+    size_t i = 0;	    /* what character in str we're at */
+
+    /*
+     * firewall
+     */
+    if (str == NULL) {
+	err(185, __func__, "given NULL str");
+	not_reached();
+    }
+
+    for (count = 0, i = 0; str[i] != '\0'; ++i) {
+	if (str[i] == ch) {
+	    ++count;
+	}
+    }
+
+    return count;
+}
