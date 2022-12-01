@@ -292,9 +292,9 @@ free_author_array(struct author *author_set, int author_count)
 	    free(author_set[i].url);
 	    author_set[i].url = NULL;
 	}
-	if (author_set[i].twitter != NULL) {
-	    free(author_set[i].twitter);
-	    author_set[i].twitter = NULL;
+	if (author_set[i].mastodon != NULL) {
+	    free(author_set[i].mastodon);
+	    author_set[i].mastodon = NULL;
 	}
 	if (author_set[i].github != NULL) {
 	    free(author_set[i].github);
@@ -402,12 +402,12 @@ object2author(struct json *node, unsigned int depth, struct json_sem *sem,
     char *url = NULL;			/* home URL of author or NULL ==> not provided */
     bool found_url = false;		/* true ==> found url in node */
     bool url_withheld = false;		/* true ==> home URL of author withheld */
-    char *twitter = NULL;		/* author twitter handle or NULL ==> not provided */
-    bool found_twitter = false;		/* true ==> found twitter in node */
-    bool twitter_withheld = false;	/* true ==> author twitter handle withheld */
+    char *mastodon = NULL;		/* author mastodon handle or NULL ==> not provided */
+    bool found_mastodon = false;		/* true ==> found mastodon in node */
+    bool mastodon_withheld = false;	/* true ==> author mastodon handle withheld */
     char *github = NULL;		/* author GitHub username or NULL ==> not provided */
     bool found_github = false;		/* true ==> found github in node */
-    bool github_withheld = false;	/* true ==> author twitter handle withheld */
+    bool github_withheld = false;	/* true ==> author mastodon handle withheld */
     char *affiliation = NULL;		/* author affiliation or NULL ==> not provided */
     bool found_affiliation = false;	/* true ==> found affiliation in node */
     bool affiliation_withheld = false;	/* true ==> author affiliation withheld */
@@ -628,11 +628,11 @@ object2author(struct json *node, unsigned int depth, struct json_sem *sem,
 		url_withheld = false;
 	    }
 
-	/* case: IOCCC author twitter */
-	} else if (strcmp(name, "twitter") == 0) {
+	/* case: IOCCC author mastodon */
+	} else if (strcmp(name, "mastodon") == 0) {
 
 	    /* firewall - check for duplicate JTYPE_MEMBER */
-	    if (found_twitter == true) {
+	    if (found_mastodon == true) {
 		if (val_err != NULL) {
 		    *val_err = werr_sem_val(67, e, depth+2, sem, __func__,
 					    "author array index[%d] JTYPE_OBJECT[%d] found more than 1 <%s>",
@@ -640,7 +640,7 @@ object2author(struct json *node, unsigned int depth, struct json_sem *sem,
 		    }
 		return false;
 	    }
-	    found_twitter = true;
+	    found_mastodon = true;
 
 	    /* obtain value as JTYPE_STRING or JTYPE_NULL */
 	    val_or_null = sem_member_value_str_or_null(e, depth+2, sem, __func__, NULL);
@@ -653,11 +653,11 @@ object2author(struct json *node, unsigned int depth, struct json_sem *sem,
 		return false;
 	    }
 	    if (val_or_null.is_null == true) {
-		twitter = NULL;
-		twitter_withheld = true;
+		mastodon = NULL;
+		mastodon_withheld = true;
 	    } else {
-		twitter = val_or_null.str;
-		twitter_withheld = false;
+		mastodon = val_or_null.str;
+		mastodon_withheld = false;
 	    }
 
 	/* case: IOCCC author github */
@@ -869,10 +869,10 @@ object2author(struct json *node, unsigned int depth, struct json_sem *sem,
 	}
 	return false;
     }
-    if (found_twitter == false) {
+    if (found_mastodon == false) {
 	if (val_err != NULL) {
 	    *val_err = werr_sem_val(86, node, depth, sem, __func__,
-				    "author array index[%d]: missing twitter", author_num);
+				    "author array index[%d]: missing mastodon", author_num);
 	}
 	return false;
     }
@@ -953,8 +953,8 @@ object2author(struct json *node, unsigned int depth, struct json_sem *sem,
     if (url == NULL) {
 	url = "";
     }
-    if (twitter == NULL) {
-	twitter = "";
+    if (mastodon == NULL) {
+	mastodon = "";
     }
     if (github == NULL) {
 	github = "";
@@ -1010,10 +1010,10 @@ object2author(struct json *node, unsigned int depth, struct json_sem *sem,
 	return false;
     }
 
-    if (twitter_withheld == false && test_twitter(twitter) == false) {
+    if (mastodon_withheld == false && test_mastodon(mastodon) == false) {
 	if (val_err != NULL) {
 	    *val_err = werr_sem_val(102, node, depth, sem, __func__,
-				    "author array index[%d]: twitter is invalid", author_num);
+				    "author array index[%d]: mastodon is invalid", author_num);
 	}
 	return false;
     }
@@ -1116,11 +1116,11 @@ object2author(struct json *node, unsigned int depth, struct json_sem *sem,
 	return false;
     }
     errno = 0;		/* pre-clear errno for werrp_sem_val() */
-    auth->twitter = strdup(twitter);
+    auth->mastodon = strdup(mastodon);
     if (auth->url == NULL) {
 	if (val_err != NULL) {
 	    *val_err = werrp_sem_val(114, node, depth, sem, __func__,
-				     "author array index[%d]: strdup of twitter failed", author_num);
+				     "author array index[%d]: strdup of mastodon failed", author_num);
 	}
 	free_author_array(auth, 1);
 	return false;
@@ -2572,6 +2572,12 @@ test_default_handle(bool boolean)
  * returns:
  *	true ==> string is valid,
  *	false ==> string is NOT valid, or NULL pointer, or some internal error
+ *
+ * NOTE: we don't check for domains in a way that would validate it as a
+ * properly named domain name in the email address. It is outside the scope of
+ * this code and the regex for email is ridiculously complicated. See
+ * https://www.regular-expressions.info/email.html and scroll down to 'The
+ * Official Standard: RFC 5322' for details.
  */
 bool
 test_email(char const *str)
@@ -4255,10 +4261,10 @@ test_trigraph_warning(bool boolean)
 
 
 /*
- * test_twitter - test if twitter account is valid
+ * test_mastodon - test if mastodon account is valid
  *
- * Determine if twitter length is <= MAX_TWITTER_LEN and that it has a leading '@'
- * and _only_ one '@'.
+ * Determine if mastodon length is <= MAX_MASTODON_LEN and that it has a leading '@'
+ * and one other '@' which is not right next to the first one.
  *
  * given:
  *	str	string to test
@@ -4266,12 +4272,19 @@ test_trigraph_warning(bool boolean)
  * returns:
  *	true ==> string is valid,
  *	false ==> string is NOT valid, or NULL pointer, or some internal error
+ *
+ * NOTE: we don't check for domains in a way that would validate it as a
+ * properly named domain name. Just like email this would get complicated. The
+ * proper regex for email is ridiculously complicated. See
+ * https://www.regular-expressions.info/email.html and scroll down to 'The
+ * Official Standard: RFC 5322' for details.
  */
 bool
-test_twitter(char const *str)
+test_mastodon(char const *str)
 {
     size_t length = 0;
     char *p = NULL;
+    char *last_at = NULL;
 
     /*
      * firewall
@@ -4287,35 +4300,60 @@ test_twitter(char const *str)
     /* check for a valid length */
     if (*str == '\0') { /* strlen(str) == 0 */
 	json_dbg(JSON_DBG_MED, __func__,
-		 "empty twitter is invalid");
+		 "empty mastodon is invalid");
 	return false;
     }
     length = strlen(str);
-    if (length > MAX_TWITTER_LEN) {
+    if (length > MAX_MASTODON_LEN) {
 	json_dbg(JSON_DBG_MED, __func__,
-		 "invalid: twitter length %ju > max %d: <%s>", (uintmax_t)length, MAX_TWITTER_LEN, str);
+		 "invalid: mastodon length %ju > max %d: <%s>", (uintmax_t)length, MAX_MASTODON_LEN, str);
 	json_dbg(JSON_DBG_HIGH, __func__,
 		 "invalid: title: <%s> is invalid", str);
 	return false;
     }
-    /* check for valid twitter account chars */
+    /* check for valid mastodon account chars */
     p = strchr(str, '@');
+    last_at = strrchr(str, '@');
     if (p == NULL || str[0] != '@') {
 	json_dbg(JSON_DBG_MED, __func__,
-		 "invalid: twitter account does not start with '@'");
+		 "invalid: mastodon account does not start with '@'");
 	json_dbg(JSON_DBG_HIGH, __func__,
-		 "invalid: twitter: <%s> is invalid", str);
+		 "invalid: mastodon: <%s> is invalid", str);
 	return false;
-    } else if (p != strrchr(str, '@')) {
+    } else if (str[1] == '\0') {
 	json_dbg(JSON_DBG_MED, __func__,
-		 "invalid: twitter account has more than one '@'");
+		 "invalid: mastodon account is empty beyond the first '@'");
 	json_dbg(JSON_DBG_HIGH, __func__,
-		 "invalid: twitter: <%s> is invalid", str);
+		 "invalid: mastodon: <%s> is invalid", str);
+	return false;
+    } else if (last_at == NULL) {
+	json_dbg(JSON_DBG_MED, __func__,
+		 "invalid: mastodon account has only one '@'");
+	json_dbg(JSON_DBG_HIGH, __func__,
+		 "invalid: mastodon: <%s> is invalid", str);
+	return false;
+    } else if (strstr(str, "@@") != NULL) {
+	json_dbg(JSON_DBG_MED, __func__,
+		 "invalid: mastodon account has adjacent '@'s");
+	json_dbg(JSON_DBG_HIGH, __func__,
+		 "invalid: mastodon: <%s> is invalid", str);
+	return false;
+    } else if (count_char(str, '@') != 2) {
+	json_dbg(JSON_DBG_MED, __func__,
+		 "invalid: mastodon account does not have exactly two '@'s");
+	json_dbg(JSON_DBG_HIGH, __func__,
+		 "invalid: mastodon: <%s> is invalid", str);
+	return false;
+    } else if (str[length - 1] == '@') {
+	json_dbg(JSON_DBG_MED, __func__,
+		 "invalid: mastodon account ends with a '@'");
+	json_dbg(JSON_DBG_HIGH, __func__,
+		 "invalid: mastodon: <%s> is invalid", str);
 	return false;
 
     }
 
-    json_dbg(JSON_DBG_MED, __func__, "twitter is valid");
+    json_dbg(JSON_DBG_MED, __func__, "mastodon is valid");
     return true;
 }
 

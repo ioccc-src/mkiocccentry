@@ -148,7 +148,7 @@ author0 middle0 thisisaveryverylonglastname0
 AU
 user0@example.com
 https://host0.example.com/index.html
-@twitter0
+@mastodon0@example.com
 @github0
 an affiliation for #0 author
 n
@@ -169,7 +169,7 @@ cat <<"EOF"
 US
 user2@example.com
 http://host2.example.com/index.html
-@twitter2
+@mastodon2@example.com
 @github2
 an affiliation for #2 author
 y
@@ -178,7 +178,7 @@ author3 middle3 last3
 AU
 user0@example.com
 https://host0.example.com/index.html
-@twitter3
+@mastodon3@example.com
 @github3
 an affiliation for #3 author
 y
@@ -187,7 +187,7 @@ author3-last3
 AU
 user0@example.com
 https://host0.example.com/index.html
-@twitter4
+@mastodon4@example.com
 @github4
 an affiliation for #4 author
 n
@@ -249,7 +249,7 @@ author0 middle0 thisisaveryverylonglastname0
 AU
 user0@example.com
 https://host0.example.com/index.html
-@twitter0
+@mastodon0@example.com
 @github0
 an affiliation for #0 author
 n
@@ -270,7 +270,7 @@ cat <<"EOF"
 US
 user2@example.com
 http://host2.example.com/index.html
-@twitter2
+@mastodon2@example.com
 @github2
 an affiliation for #2 author
 y
@@ -279,7 +279,7 @@ author3 middle3 last3
 AU
 user0@example.com
 https://host0.example.com/index.html
-@twitter3
+@mastodon3@example.com
 @github3
 an affiliation for #3 author
 y
@@ -288,7 +288,7 @@ author3-last3
 AU
 user0@example.com
 https://host0.example.com/index.html
-@twitter4
+@mastodon4@example.com
 @github4
 an affiliation for #4 author
 n
@@ -328,7 +328,7 @@ author0 middle0 thisisaveryverylonglastname0
 AU
 user0@example.com
 https://host0.example.com/index.html
-@twitter0
+@mastodon0@example.com
 @github0
 an affiliation for #0 author
 n
@@ -349,7 +349,7 @@ cat <<"EOF"
 US
 user2@example.com
 http://host2.example.com/index.html
-@twitter2
+@mastodon2@example.com
 @github2
 an affiliation for #2 author
 y
@@ -358,7 +358,7 @@ author3 middle3 last3
 AU
 user0@example.com
 https://host0.example.com/index.html
-@twitter3
+@mastodon3@example.com
 @github3
 an affiliation for #3 author
 y
@@ -367,7 +367,7 @@ author3-last3
 AU
 user0@example.com
 https://host0.example.com/index.html
-@twitter4
+@mastodon4@example.com
 @github4
 an affiliation for #4 author
 n

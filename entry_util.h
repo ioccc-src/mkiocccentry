@@ -60,7 +60,7 @@ struct author
     char const *location_name;	/* name of author location/country (compiled in from loc[]) */
     char *email;		/* Email address of author or empty string ==> not provided */
     char *url;			/* home URL of author or empty string ==> not provided */
-    char *twitter;		/* author twitter handle or empty string ==> not provided */
+    char *mastodon;		/* author mastodon handle or empty string ==> not provided */
     char *github;		/* author GitHub username or empty string ==> not provided */
     char *affiliation;		/* author affiliation or empty string ==> not provided */
     bool past_winner;		/* true ==> author claims to have won before, false ==> author claims not a prev winner */
@@ -271,7 +271,7 @@ extern bool test_test_mode(bool boolean);
 extern bool test_timestamp_epoch(char const *str);
 extern bool test_title(char const *str);
 extern bool test_trigraph_warning(bool boolean);
-extern bool test_twitter(char const *str);
+extern bool test_mastodon(char const *str);
 extern bool test_txzchk_version(char const *str);
 extern bool test_ungetc_warning(bool boolean);
 extern bool test_url(char const *str);

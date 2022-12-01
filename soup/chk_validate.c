@@ -3273,7 +3273,7 @@ chk_trigraph_warning(struct json const *node,
 
 
 /*
- * chk_twitter - JSON semantic check for twitter
+ * chk_mastodon - JSON semantic check for mastodon
  *
  * given:
  *	node	JSON parse node being checked
@@ -3287,7 +3287,7 @@ chk_trigraph_warning(struct json const *node,
  *	false ==> JSON element is NOT valid, or NULL pointer, or some internal error
  */
 bool
-chk_twitter(struct json const *node,
+chk_mastodon(struct json const *node,
 			 unsigned int depth, struct json_sem *sem, struct json_sem_val_err **val_err)
 {
     struct str_or_null val;			/* report JSON JTYPE_MEMBER value */
@@ -3320,10 +3320,10 @@ chk_twitter(struct json const *node,
 	}
 	return false;
     }
-    test = test_twitter(val.str);
+    test = test_mastodon(val.str);
     if (test == false) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(176, node, depth, sem, __func__, "invalid twitter");
+	    *val_err = werr_sem_val(176, node, depth, sem, __func__, "invalid mastodon");
 	}
 	return false;
     }

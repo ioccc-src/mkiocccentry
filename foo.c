@@ -288,7 +288,7 @@ vrergfB(int four, int two)
 
 #if 1
     #define if_you_got_here_you_made_it_as_far_as_the_pre_processor() \
-	printf("Congratulations for making it as far as the C pre-processor!\n")
+	printf("Congratulations for making it as far as the C pre-processor! :-)\n")
 	/* if_you_got_here_you_made_it_as_far_as_the_pre_processor(); */
 #endif
 #undef if_you_got_here /* make the C pre-processor too lazy to process the block below. :-) */
