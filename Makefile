@@ -403,7 +403,7 @@ hostchk_warning:
 	checknr clean clean_generated_obj clean_mkchk_sem clobber configure depend hostchk bug_report.sh \
 	install test_ioccc legacy_clobber man2html mkchk_sem parser parser-o picky prep prep_clobber \
         pull rebuild_jnum_test release reset_min_timestamp seqcexit shellcheck tags test test-chkentry use_ref \
-	dbg soup dyn_array
+	dbg soup dyn_array jparse
 
 
 #####################################
@@ -510,6 +510,9 @@ jparse/jparse: jparse.o jparse.tab.o util.o dyn_array/dyn_array.o dbg/dbg.o json
 	json_util.o jparse_main.o Makefile
 	${CC} ${CFLAGS} jparse.o jparse.tab.o util.o dyn_array/dyn_array.o dbg/dbg.o json_parse.o \
 			json_util.o jparse_main.o -lm -o $@
+
+jparse: jparse/jparse
+	@:
 
 jsemtblgen.o: jsemtblgen.c Makefile
 	${CC} ${CFLAGS} jsemtblgen.c -c
@@ -664,9 +667,7 @@ parser: jparse.y jparse.l Makefile
 	${CP} -f -v jparse.c jparse.ref.c
 	${RM} -f -v jparse.lex.ref.h
 	${CP} -f -v jparse.lex.h jparse.lex.ref.h
-	${MAKE} jparse
-	${MAKE} jsemtblgen
-	${MAKE} chkentry
+	${MAKE} all
 
 #
 # make parser-o: Force the rebuild of the JSON parser.
@@ -876,7 +877,7 @@ man2html: ${MANPAGES}
 reset_min_timestamp: reset_tstamp.sh
 	./reset_tstamp.sh
 
-test_ioccc: 
+test_ioccc:
 	${MAKE} -C test_ioccc
 
 
