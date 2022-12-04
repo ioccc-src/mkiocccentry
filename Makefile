@@ -1008,7 +1008,7 @@ tags: ${ALL_CSRC} ${H_FILES}
 	-${CTAGS} ${ALL_CSRC} ${H_FILES} 2>&1 | \
 	     ${GREP} -E -v 'Duplicate entry|Second entry ignored'
 
-depend: all soup/fmt_depend.sh
+depend: soup/fmt_depend.sh
 	@echo
 	@echo "make depend starting"
 	@echo

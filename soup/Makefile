@@ -168,7 +168,7 @@ chk_validate.o: chk_validate.c Makefile
 # repo tools - rules for those who maintain the mkiocccentry repo #
 ###################################################################
 
-depend: all ./fmt_depend.sh
+depend: ./fmt_depend.sh
 	@echo
 	@echo "make depend starting"
 	@echo
