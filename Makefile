@@ -172,7 +172,7 @@ MAN8_DIR= /usr/local/share/man/man8
 MAN3_DIR= /usr/local/share/man/man3
 DESTDIR= /usr/local/bin
 TARGETS= mkiocccentry iocccsize fnamchk txzchk chkentry jstrencode jstrdecode \
-	 jparse verge jnum_gen jsemtblgen
+	 jparse/jparse verge jnum_gen jsemtblgen
 SH_TARGETS=limit_ioccc.sh
 
 # man pages
@@ -506,7 +506,7 @@ jparse.tab.o: jparse.tab.c Makefile
 jparse_main.o: jparse_main.c Makefile
 	${CC} ${CFLAGS} jparse_main.c -c
 
-jparse: jparse.o jparse.tab.o util.o dyn_array/dyn_array.o dbg/dbg.o json_parse.o \
+jparse/jparse: jparse.o jparse.tab.o util.o dyn_array/dyn_array.o dbg/dbg.o json_parse.o \
 	json_util.o jparse_main.o Makefile
 	${CC} ${CFLAGS} jparse.o jparse.tab.o util.o dyn_array/dyn_array.o dbg/dbg.o json_parse.o \
 			json_util.o jparse_main.o -lm -o $@

@@ -38,8 +38,8 @@ export TOOLS="
     ./mkiocccentry
     ./prep.sh
     ./reset_tstamp.sh
-    ./jparse/run_bison.sh
-    ./jparse/run_flex.sh
+    ./run_bison.sh
+    ./run_flex.sh
     ./run_usage.sh
     ./soup/all_ref.sh
     ./test_ioccc/chkentry_test.sh
@@ -1161,10 +1161,10 @@ get_version_optional "flex"
 # would mean the repo could not be used properly.
 #
 # run_bison.sh -v 7: check if bison will work
-run_check 45 "./jparse/run_bison.sh -v 7 -s ./jparse/sorry.tm.ca.h -g ./jparse/verge -l ./limit_ioccc.sh -D jparse"
+run_check 45 "./run_bison.sh -v 7 -s ./sorry.tm.ca.h -g ./verge -l ./limit_ioccc.sh -D ."
 
 # run_flex.sh -v 7: check if flex will work
-run_check 46 "./jparse/run_flex.sh -v 7 -s ./jparse/sorry.tm.ca.h -g ./jparse/verge -l ./limit_ioccc.sh -D jparse"
+run_check 46 "./run_flex.sh -v 7 -s ./sorry.tm.ca.h -g ./verge -l ./limit_ioccc.sh -D ."
 
 # run make all again: run_bison.sh and run_flex.sh will likely cause a need for
 # recompilation
