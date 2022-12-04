@@ -172,7 +172,7 @@ MAN8_DIR= /usr/local/share/man/man8
 MAN3_DIR= /usr/local/share/man/man3
 DESTDIR= /usr/local/bin
 TARGETS= mkiocccentry iocccsize fnamchk txzchk chkentry jstrencode jstrdecode \
-	 jparse verge jnum_gen jsemtblgen
+	 jparse/jparse verge jnum_gen jsemtblgen
 SH_TARGETS=limit_ioccc.sh
 
 # man pages
@@ -403,7 +403,7 @@ hostchk_warning:
 	checknr clean clean_generated_obj clean_mkchk_sem clobber configure depend hostchk bug_report.sh \
 	install test_ioccc legacy_clobber man2html mkchk_sem parser parser-o picky prep prep_clobber \
         pull rebuild_jnum_test release reset_min_timestamp seqcexit shellcheck tags test test-chkentry use_ref \
-	dbg soup dyn_array
+	dbg soup dyn_array jparse
 
 
 #####################################
@@ -506,10 +506,13 @@ jparse.tab.o: jparse.tab.c Makefile
 jparse_main.o: jparse_main.c Makefile
 	${CC} ${CFLAGS} jparse_main.c -c
 
-jparse: jparse.o jparse.tab.o util.o dyn_array/dyn_array.o dbg/dbg.o json_parse.o \
+jparse/jparse: jparse.o jparse.tab.o util.o dyn_array/dyn_array.o dbg/dbg.o json_parse.o \
 	json_util.o jparse_main.o Makefile
 	${CC} ${CFLAGS} jparse.o jparse.tab.o util.o dyn_array/dyn_array.o dbg/dbg.o json_parse.o \
 			json_util.o jparse_main.o -lm -o $@
+
+jparse: jparse/jparse
+	@:
 
 jsemtblgen.o: jsemtblgen.c Makefile
 	${CC} ${CFLAGS} jsemtblgen.c -c
@@ -664,9 +667,7 @@ parser: jparse.y jparse.l Makefile
 	${CP} -f -v jparse.c jparse.ref.c
 	${RM} -f -v jparse.lex.ref.h
 	${CP} -f -v jparse.lex.h jparse.lex.ref.h
-	${MAKE} jparse
-	${MAKE} jsemtblgen
-	${MAKE} chkentry
+	${MAKE} all
 
 #
 # make parser-o: Force the rebuild of the JSON parser.
@@ -876,7 +877,7 @@ man2html: ${MANPAGES}
 reset_min_timestamp: reset_tstamp.sh
 	./reset_tstamp.sh
 
-test_ioccc: 
+test_ioccc:
 	${MAKE} -C test_ioccc
 
 
@@ -1008,7 +1009,7 @@ tags: ${ALL_CSRC} ${H_FILES}
 	-${CTAGS} ${ALL_CSRC} ${H_FILES} 2>&1 | \
 	     ${GREP} -E -v 'Duplicate entry|Second entry ignored'
 
-depend: all soup/fmt_depend.sh
+depend: soup/fmt_depend.sh
 	@echo
 	@echo "make depend starting"
 	@echo
