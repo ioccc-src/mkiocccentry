@@ -4089,8 +4089,7 @@ static char const *oebxergfB[] =
 "imac3> UOYOIT * HMDL psvwleiweb VKOMO ftqw > 1;\n"
 "Oirbm awb (1.11 awf)\n"
 ,
-"Hlsi bnw tuklylm so Vuttuyi Itsxwa bnw Otdwl (f. 3574/3577 – 3017),\n"
-"Nylkwl-Uqlpwse:\n"
+"Hlsi bnw tuklylm so Vuttuyi Itsxwa, Nylkwl-Uqlpwse:\n"
 "\n"
 "Tnw Ovuta so Uishw\n"
 "\n"
@@ -4144,8 +4143,7 @@ static char const *oebxergfB[] =
 "-- Lypeqa Lyzxwtt\n"
 "Tnw Nylkwl-Uqlpwse Usepw Nshw\n"
 ,
-"Hlsi bnw tuklylm so Vuttuyi Itsxwa bnw Otdwl (f. 3574/3577 – 3017),\n"
-"Nylkwl-Uqlpwse:\n"
+"Hlsi bnw tuklylm so Vuttuyi Itsxwa, Nylkwl-Uqlpwse:\n"
 "\n"
 "ROHOFRZFWO\n"
 "TKO ESMCTZ DH ULDBO\n"
@@ -4209,6 +4207,13 @@ static char const *oebxergfB[] =
 "rtyebmepw, uba lymauep, uba anurrmep bs bnw oylbnwaba lwyfnwa so Kwl Lyuwabuwa\n"
 "lwyti as bnyb ytt so Oqlsrw xutt fsiw ykwppue bs sql tyedwa, nyb yed rqlaw ue\n"
 "nyedw. Giwe.\n"
+,
+"Vw ylw ytt yxylw so ueduvudqyta xns ylw nupntm ahuttwd ue bnwul abqrudubm. Ts\n"
+"iyeypw ytxyma bs oued bnw ... xslab xym so dwytuep xubn xlubbwe ueablqfbusea,\n"
+"byhwa hesxtwdpw. Usiwbnuep nya bs kw hesxe xwtt ue sldwl bs kw blyeaosliwd uebs\n"
+"yffqlybw wllsl.\n"
+"(Uueyase, 3998: 89)\n"
+"- 'Ruaykutubm: Iseblsvwlauyt Rwkybwa yed Eamfnsasfuyt Ewlarwfbuvwa' km Rwkslyn\n"
 ,
 NULL
 };
