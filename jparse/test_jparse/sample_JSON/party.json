@@ -1,0 +1,62 @@
+{
+        "name" : "Bilbo Baggins",
+        "age" : 111,
+        "event" : "A Long-expected Party",
+	"location" : "Bag End, Bagshot Row, Hobbiton, Westfarthing, the Shire, Middle-earth",
+        "guest_list" : [
+                {
+                        "name" : "Frodo Baggins",
+			"age": 33,
+                        "RSVP_requested" : false,
+                        "attendance" : "assumed",
+                        "guest_number":  1,
+                        "like_level" : 1.0,
+                        "RSVP_state" : "default accepted"
+                },
+                {
+                        "name" : "Gandalf",
+                        "alias" : "Gandalf the Grey",
+                        "alias" : "Mithrandir",
+			"alias" : "Thark\u00FBn",
+			"alias" : "Ol\u00F3rin",
+			"alias" : "Inc\u00E1nus", 
+                        "RSVP_requested" : false,
+                        "attendance" : "assumed",
+                        "guest_number":  2,
+                        "like_level" : 1.0,
+                        "RSVP_state" : "default accepted"
+                },
+                {
+                        "name" : "Gollum",
+                        "alias" : "Precious",
+			"alias" : "Sm\u00E9agol",
+			"alias" : "D\u00EDgol",
+                        "RSVP_requested" : false,
+                        "attendance" : "denied",
+                        "guest_number":  -1,
+                        "like_level" : -1.0,
+                        "RSVP_state" : null
+                },
+                {
+                        "name": "Proudfoot",
+                        "alias": "Proudfeet",
+                        "RSVP_requested" : true,
+                        "attendance" : "pending",
+                        "guest_number":  3,
+                        "like_level" : 0.5,
+                        "RSVP_state" : "pending"
+                },
+                {
+                        "name": "Sackville-Baggins",
+			"alias": "Spoons thieves",
+                        "RSVP_requested" : false,
+                        "attendance" : "tolerated",
+                        "guest_number":  144,
+                        "like_level" : -0.1,
+                        "RSVP_state" : "party crash"
+                }
+        ],
+        "guest_list_state" : "incomplete",
+        "overall_like_level" : 0.5,
+        "total_guests" : 144
+}
