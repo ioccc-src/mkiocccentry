@@ -9,7 +9,7 @@
 .\" "Share and Enjoy!"
 .\"     --  Sirius Cybernetics Corporation Complaints Division, JSON spec department. :-)
 .\"
-.TH dyn_array 3  "15 November 2022" "dyn_array"
+.TH dyn_array 3  "27 November 2022" "dyn_array"
 .SH NAME
 .BR dyn_array_value(),
 .BR dyn_array_addr(),
@@ -24,7 +24,7 @@
 .BR dyn_array_concat_array(),
 .BR dyn_array_seek(),
 .BR dyn_array_clear(),
-.BR dyn_array_free(),
+.BR dyn_array_free()
 \- dynamic array facility
 .SH SYNOPSIS
 \fB#include "dyn_array.h"\fP
@@ -59,7 +59,7 @@
 .SH DESCRIPTION
 These macros and functions provide a way to create, modify and manipulate general purpose dynamic arrays.
 .PP
-The function 
+The function
 .BR dyn_array_create()
 creates a dynamic array where each element is of size \fIelm_size\fP.
 The \fIchunk\fP and \fIstart_elm_count\fP specify a fixed number of elements to expand by when allocating and the starting number of elements to allocate, respectively.
@@ -119,7 +119,7 @@ For that see \fBdyn_array_free()\fP.
 .PP
 The function
 .BR dyn_array_free()
-frees the contents of the dynamic array \fParray\fP.
+frees the contents of the dynamic array \fBarray\fP.
 If \fIarray->zeroize\fP is true and the data of the array is not NULL and the array has allocated nodes and the size of arrays is > 0 the function will clear the array data (via \fBmemset()\fP) first.
 The function does not free the \fBstruct dyn_array\fP itself: it only frees any allocated storage.
 .SS Convenience macros
