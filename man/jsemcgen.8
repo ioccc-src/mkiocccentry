@@ -15,7 +15,7 @@ jsemcgen.sh \- generate JSON semantics table via the \fBjsemtblgen(8)\fP tool
 .SH SYNOPSIS
 \fBjsemcgen.sh\fP [\-h] [\-v level] [\-J level] [\-q] [\-V] [\-s] [\-I] [\-N name] [\-D def_func] [\-P prefix] [\-1 func] [\-S func] [\-B func] [\-0 func] [\-M func] [\-O func] [\-A func] [\-U func] [\-j jsemtblgen] [\-p patch_tool] file.json head patch tail out
 .SH DESCRIPTION
-This tool is a wrapper to the \fBjsemtblgen(8)\fP tool. Along with \fBall_ref(8)\fP these tools create the JSON semantics tables for the \fBchkentry(1)\fP tool.
+This tool is a wrapper to the \fBjsemtblgen(8)\fP tool. Along with \fBall_ref(8)\fP these tools, in the case of the IOCCC, create the JSON semantics tables for the \fBchkentry(1)\fP tool.
 As the \fBchkentry(1)\fP tool is a vitally important part of the IOCCC judging process these tools are also vital in running the IOCCC but at a lower level.
 .PP
 The \fIfile.json\fP file is expected to be a valid JSON file used to generate the initial JSON semantics table.
