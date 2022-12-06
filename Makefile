@@ -460,12 +460,12 @@ soup: soup/chk.auth.head.c soup/chk.auth.ptch.h soup/chk.info.head.c soup/chk.in
 	soup/chk_sem_info.c  soup/chk_validate.h
 	@${MAKE} -C soup CFLAGS="${CFLAGS}"
 
-chkentry.o: chkentry.c chkentry.h jparse.tab.h Makefile
+chkentry.o: chkentry.c chkentry.h jparse.tab.h oebxergfB.h Makefile
 	${CC} ${CFLAGS} -Isoup chkentry.c -c
 
-chkentry: chkentry.o dbg/dbg.o util.o sanity.o utf8_posix_map.o dyn_array/dyn_array.o jparse.o jparse.tab.o json_parse.o \
-	json_util.o soup/chk_validate.o entry_util.c json_sem.o foo.o location.o soup/chk_sem_info.o \
-	soup/chk_sem_auth.o Makefile
+chkentry: chkentry.o oebxergfB.h dbg/dbg.o util.o sanity.o utf8_posix_map.o dyn_array/dyn_array.o \
+	jparse.o jparse.tab.o json_parse.o json_util.o soup/chk_validate.o entry_util.c json_sem.o \
+	foo.o location.o soup/chk_sem_info.o soup/chk_sem_auth.o Makefile
 	${CC} ${CFLAGS} chkentry.o dbg/dbg.o util.o sanity.o utf8_posix_map.o jparse.o jparse.tab.o dyn_array/dyn_array.o json_parse.o \
 		json_util.o soup/chk_validate.o entry_util.o entry_time.o json_sem.o foo.o location.o soup/chk_sem_info.o \
 		soup/chk_sem_auth.o -lm -o $@

@@ -64,18 +64,6 @@
  */
 #include "foo.h"
 
-/*
- * sanity - because foo is insane (because Cody Boone Ferguson is a bit insane! :-) ) :-)
- *
- * Actually we need this because we use it to find the path to fnamchk but it
- * can't be denied that foo is insane :-)
- *
- * NB: sanity.h will include files that we need so we could actually get rid of
- * including util.h and dbg.h but if sanity.h ever changes this would be a
- * problem so we will still include them above.
- */
-#include "sanity.h"
-
 
 /*
  * usage message
