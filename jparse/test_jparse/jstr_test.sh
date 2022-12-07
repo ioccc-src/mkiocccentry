@@ -6,8 +6,8 @@
 #
 export JSTRENCODE="./jstrencode"
 export JSTRDECODE="./jstrdecode"
-export TEST_FILE="test_ioccc/jstr_test.out"
-export TEST_FILE2="test_ioccc/jstr_test2.out"
+export TEST_FILE="./jparse/test_jparse/jstr_test.out"
+export TEST_FILE2="./jparse/test_jparse/jstr_test2.out"
 export JSTR_TEST_VERSION="0.4 2022-11-05"
 export TOPDIR=
 

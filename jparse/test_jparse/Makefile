@@ -1,30 +1,21 @@
 #!/usr/bin/make
 #
-# test - mkiocccentry test tools
+# test_jparse - mkiocccentry jparse test tools
 #
-# Copyright (c) 2022 by Landon Curt Noll.  All Rights Reserved.
-#
-# Permission to use, copy, modify, and distribute this software and
-# its documentation for any purpose and without fee is hereby granted,
-# provided that the above copyright, this permission notice and text
-# this comment, and the disclaimer below appear in all of the following:
-#
-#       supporting documentation
-#       source copies
-#       source works derived from this source
-#       binaries derived from this source or from derived source
-#
-# LANDON CURT NOLL DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE,
-# INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS. IN NO
-# EVENT SHALL LANDON CURT NOLL BE LIABLE FOR ANY SPECIAL, INDIRECT OR
-# CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF
-# USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR
-# OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
-# PERFORMANCE OF THIS SOFTWARE.
-#
-# chongo (Landon Curt Noll, http://www.isthe.com/chongo/index.html) /\oo/\
-#
-# Share and enjoy! :-)
+# "Because specs w/o version numbers are forced to commit to their original design flaws." :-)
+# 
+# This JSON parser was co-developed by:
+# 
+#	@xexyl
+# 	https://xexyl.net		Cody Boone Ferguson
+# 	https://ioccc.xexyl.net
+# and:
+# 	chongo (Landon Curt Noll, http://www.isthe.com/chongo/index.html) /\oo/\
+# 
+# "Because sometimes even the IOCCC Judges need some help." :-)
+# 
+# "Share and Enjoy!"
+#	--  Sirius Cybernetics Corporation Complaints Division, JSON spec department. :-)
 ####
 
 
@@ -127,7 +118,7 @@ CFLAGS= ${C_STD} ${COPT} -pedantic ${WARN_FLAGS} ${LDFLAGS}
 # where and what to install
 #
 DESTDIR= /usr/local/bin
-TARGETS= utf8_test dyn_test
+TARGETS= jnum_chk
 SH_TARGETS=
 
 
@@ -136,28 +127,28 @@ SH_TARGETS=
 ######################################
 
 all: ${TARGETS}
+	@:
 
 .PHONY: all test configure clean clobber install
 
-utf8_test.o: utf8_test.c ../utf8_posix_map.h Makefile
-	${CC} ${CFLAGS} -I.. utf8_test.c -c
+jnum_test.o: jnum_test.c Makefile
+	${CC} ${CFLAGS} -I../.. jnum_test.c -c
 
-utf8_test: utf8_test.o ../utf8_posix_map.o ../dbg ../util.o ../dyn_array/dyn_array.o Makefile
-	${CC} ${CFLAGS} -I.. utf8_test.o ../utf8_posix_map.o ../dbg/dbg.o ../util.o ../dyn_array/dyn_array.o -o utf8_test
+jnum_chk.o: jnum_chk.c jnum_chk.h Makefile
+	${CC} ${CFLAGS} -I../.. jnum_chk.c -c
 
-dyn_test.o: dyn_test.c Makefile
-	${CC} ${CFLAGS} -I.. dyn_test.c -c
-
-dyn_test: dyn_test.o ../dbg ../util.o ../dyn_array/dyn_array.o Makefile
-	${CC} ${CFLAGS} -I.. dyn_test.o ../dbg/dbg.o ../util.o ../dyn_array/dyn_array.o -o dyn_test
+jnum_chk: jnum_chk.o ../../dbg ../../json_parse.o ../../json_util.o ../../util.o ../../dyn_array/dyn_array.o \
+	jnum_test.o Makefile
+	${CC} ${CFLAGS} -I../.. jnum_chk.o ../../dbg/dbg.o ../../json_parse.o ../../json_util.o ../../util.o \
+		../../dyn_array/dyn_array.o jnum_test.o -lm -o jnum_chk
 
 
 ###################################################################
 # repo tools - rules for those who maintain the mkiocccentry repo #
 ###################################################################
 
-test: all ioccc_test.sh
-	 ./ioccc_test.sh
+test: all jparse_test.sh
+	 ./jparse_test.sh -j ../jparse -d ./test_JSON ./json_teststr.txt
 
 
 ###################################

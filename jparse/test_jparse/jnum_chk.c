@@ -38,7 +38,7 @@
 /*
  * version - official IOCCC toolkit versions
  */
-#include "../version.h"
+#include "../../version.h"
 
 
 /*

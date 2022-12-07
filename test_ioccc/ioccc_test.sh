@@ -173,29 +173,29 @@ if [[ ! -x test_ioccc/mkiocccentry_test.sh ]]; then
     exit 6
 fi
 # jstr_test.sh
-if [[ ! -e test_ioccc/jstr_test.sh ]]; then
-    echo "$0: ERROR: test_ioccc/jstr_test.sh file not found" 1>&2
+if [[ ! -e jparse/test_jparse/jstr_test.sh ]]; then
+    echo "$0: ERROR: jparse/test_jparse/jstr_test.sh file not found" 1>&2
     exit 7
 fi
-if [[ ! -f test_ioccc/jstr_test.sh ]]; then
-    echo "$0: ERROR: test_ioccc/jstr_test.sh is not a regular file" 1>&2
+if [[ ! -f jparse/test_jparse/jstr_test.sh ]]; then
+    echo "$0: ERROR: jparse/test_jparse/jstr_test.sh is not a regular file" 1>&2
     exit 7
 fi
-if [[ ! -x test_ioccc/jstr_test.sh ]]; then
-    echo "$0: ERROR: test_ioccc/jstr_test.sh is not executable" 1>&2
+if [[ ! -x jparse/test_jparse/jstr_test.sh ]]; then
+    echo "$0: ERROR: jparse/test_jparse/jstr_test.sh is not executable" 1>&2
     exit 7
 fi
 # jnum_chk
-if [[ ! -e test_ioccc/jnum_chk ]]; then
-    echo "$0: ERROR: test_ioccc/jnum_chk file not found" 1>&2
+if [[ ! -e jparse/test_jparse/jnum_chk ]]; then
+    echo "$0: ERROR: jparse/test_jparse/jnum_chk file not found" 1>&2
     exit 8
 fi
-if [[ ! -f test_ioccc/jnum_chk ]]; then
-    echo "$0: ERROR: test_ioccc/jnum_chk is not a regular file" 1>&2
+if [[ ! -f jparse/test_jparse/jnum_chk ]]; then
+    echo "$0: ERROR: jparse/test_jparse/jnum_chk is not a regular file" 1>&2
     exit 8
 fi
-if [[ ! -x test_ioccc/jnum_chk ]]; then
-    echo "$0: ERROR: test_ioccc/jnum_chk is not executable" 1>&2
+if [[ ! -x jparse/test_jparse/jnum_chk ]]; then
+    echo "$0: ERROR: jparse/test_jparse/jnum_chk is not executable" 1>&2
     exit 8
 fi
 # dyn_test
@@ -212,29 +212,29 @@ if [[ ! -x test_ioccc/dyn_test ]]; then
     exit 9
 fi
 # jparse_test.sh
-if [[ ! -e test_ioccc/jparse_test.sh ]]; then
-    echo "$0: ERROR: test_ioccc/jparse_test.sh file not found" 1>&2
+if [[ ! -e jparse/test_jparse/jparse_test.sh ]]; then
+    echo "$0: ERROR: jparse/test_jparse/jparse_test.sh file not found" 1>&2
     exit 10
 fi
-if [[ ! -f test_ioccc/jparse_test.sh ]]; then
-    echo "$0: ERROR: test_ioccc/jparse_test.sh is not a regular file" 1>&2
+if [[ ! -f jparse/test_jparse/jparse_test.sh ]]; then
+    echo "$0: ERROR: jparse/test_jparse/jparse_test.sh is not a regular file" 1>&2
     exit 10
 fi
-if [[ ! -x test_ioccc/jparse_test.sh ]]; then
-    echo "$0: ERROR: test_ioccc/jparse_test.sh is not executable" 1>&2
+if [[ ! -x jparse/test_jparse/jparse_test.sh ]]; then
+    echo "$0: ERROR: jparse/test_jparse/jparse_test.sh is not executable" 1>&2
     exit 10
 fi
 # json_teststr.txt: for jparse_test.sh
-if [[ ! -e test_ioccc/json_teststr.txt ]]; then
-    echo "$0: ERROR: test_ioccc/json_teststr.txt file not found" 1>&2
+if [[ ! -e jparse/test_jparse/json_teststr.txt ]]; then
+    echo "$0: ERROR: jparse/test_jparse/json_teststr.txt file not found" 1>&2
     exit 11
 fi
-if [[ ! -f test_ioccc/json_teststr.txt ]]; then
-    echo "$0: ERROR: test_ioccc/jparse_test.sh is not a regular file" 1>&2
+if [[ ! -f jparse/test_jparse/json_teststr.txt ]]; then
+    echo "$0: ERROR: jparse/test_jparse/jparse_test.sh is not a regular file" 1>&2
     exit 11
 fi
-if [[ ! -r test_ioccc/json_teststr.txt ]]; then
-    echo "$0: ERROR: test_ioccc/json_teststr.txt is not readable" 1>&2
+if [[ ! -r jparse/test_jparse/json_teststr.txt ]]; then
+    echo "$0: ERROR: jparse/test_jparse/json_teststr.txt is not readable" 1>&2
     exit 11
 fi
 # txzchk
@@ -264,16 +264,16 @@ if [[ ! -x test_ioccc/chkentry_test.sh ]]; then
     exit 13
 fi
 # test_JSON
-if [[ ! -e test_ioccc/test_JSON ]]; then
-    echo "$0: ERROR: test_ioccc/test_JSON file not found" 1>&2
+if [[ ! -e jparse/test_jparse/test_JSON ]]; then
+    echo "$0: ERROR: jparse/test_jparse/test_JSON file not found" 1>&2
     exit 14
 fi
-if [[ ! -d test_ioccc/test_JSON ]]; then
-    echo "$0: ERROR: test_ioccc/test_JSON is not a directory" 1>&2
+if [[ ! -d jparse/test_jparse/test_JSON ]]; then
+    echo "$0: ERROR: jparse/test_jparse/test_JSON is not a directory" 1>&2
     exit 14
 fi
-if [[ ! -r test_ioccc/test_JSON ]]; then
-    echo "$0: ERROR: test_ioccc/test_JSON is not readable directory" 1>&2
+if [[ ! -r jparse/test_jparse/test_JSON ]]; then
+    echo "$0: ERROR: jparse/test_jparse/test_JSON is not readable directory" 1>&2
     exit 14
 fi
 # chkentry
@@ -394,37 +394,37 @@ fi
 # jstr_test.sh
 #
 echo | tee -a -- "$LOGFILE"
-echo "RUNNING: test_ioccc/jstr_test.sh" | tee -a -- "$LOGFILE"
+echo "RUNNING: jparse/test_jparse/jstr_test.sh" | tee -a -- "$LOGFILE"
 echo | tee -a -- "$LOGFILE"
-echo "test_ioccc/jstr_test.sh -Z $TOPDIR" | tee -a -- "$LOGFILE"
-test_ioccc/jstr_test.sh -Z "$TOPDIR" | tee -a -- "$LOGFILE"
+echo "jparse/test_jparse/jstr_test.sh -Z $TOPDIR" | tee -a -- "$LOGFILE"
+jparse/test_jparse/jstr_test.sh -Z "$TOPDIR" | tee -a -- "$LOGFILE"
 status="${PIPESTATUS[0]}"
 if [[ $status -ne 0 ]]; then
-    echo "$0: ERROR: test_ioccc/jstr_test.sh non-zero exit code: $status" 1>&2 | tee -a -- "$LOGFILE"
+    echo "$0: ERROR: jparse/test_jparse/jstr_test.sh non-zero exit code: $status" 1>&2 | tee -a -- "$LOGFILE"
     FAILURE_SUMMARY="$FAILURE_SUMMARY
-    test_ioccc/jstr_test.sh non-zero exit code: $status"
+    jparse/test_jparse/jstr_test.sh non-zero exit code: $status"
     EXIT_CODE="24"
 else
     echo | tee -a -- "$LOGFILE"
-    echo "PASSED: test_ioccc/jstr_test.sh" | tee -a -- "$LOGFILE"
+    echo "PASSED: jparse/test_jparse/jstr_test.sh" | tee -a -- "$LOGFILE"
 fi
 
 # jnum_chk
 #
 echo | tee -a -- "$LOGFILE"
-echo "RUNNING: test_ioccc/jnum_chk" | tee -a -- "$LOGFILE"
+echo "RUNNING: jparse/test_jparse/jnum_chk" | tee -a -- "$LOGFILE"
 echo | tee -a -- "$LOGFILE"
-echo "test_ioccc/jnum_chk" | tee -a -- "$LOGFILE"
-test_ioccc/jnum_chk -J "${J_FLAG}" | tee -a -- "$LOGFILE"
+echo "jparse/test_jparse/jnum_chk" | tee -a -- "$LOGFILE"
+jparse/test_jparse/jnum_chk -J "${J_FLAG}" | tee -a -- "$LOGFILE"
 status="${PIPESTATUS[0]}"
 if [[ $status -ne 0 ]]; then
-    echo "$0: ERROR: test_ioccc/jnum_chk non-zero exit code: $status" 1>&2 | tee -a -- "$LOGFILE"
+    echo "$0: ERROR: jparse/test_jparse/jnum_chk non-zero exit code: $status" 1>&2 | tee -a -- "$LOGFILE"
     FAILURE_SUMMARY="$FAILURE_SUMMARY
-    test_ioccc/jnum_chk non-zero exit code: $status"
+    jparse/test_jparse/jnum_chk non-zero exit code: $status"
     EXIT_CODE="25"
 else
     echo | tee -a -- "$LOGFILE"
-    echo "PASSED: test_ioccc/jnum_chk" | tee -a -- "$LOGFILE"
+    echo "PASSED: jparse/test_jparse/jnum_chk" | tee -a -- "$LOGFILE"
 fi
 
 # dyn_test
@@ -448,19 +448,19 @@ fi
 # jparse_test.sh
 #
 echo | tee -a -- "$LOGFILE"
-echo "RUNNING: test_ioccc/jparse_test.sh" | tee -a -- "$LOGFILE"
+echo "RUNNING: jparse/test_jparse/jparse_test.sh" | tee -a -- "$LOGFILE"
 echo | tee -a -- "$LOGFILE"
-echo "test_ioccc/jparse_test.sh -J $V_FLAG -d test_ioccc/test_JSON test_ioccc/json_teststr.txt" | tee -a -- "$LOGFILE"
-test_ioccc/jparse_test.sh -J "$V_FLAG" -d test_ioccc/test_JSON test_ioccc/json_teststr.txt | tee -a -- "$LOGFILE"
+echo "jparse/test_jparse/jparse_test.sh -J $V_FLAG -d jparse/test_jparse/test_JSON jparse/test_jparse/json_teststr.txt" | tee -a -- "$LOGFILE"
+jparse/test_jparse/jparse_test.sh -J "$V_FLAG" -d jparse/test_jparse/test_JSON jparse/test_jparse/json_teststr.txt | tee -a -- "$LOGFILE"
 status="${PIPESTATUS[0]}"
 if [[ $status -ne 0 ]]; then
-    echo "$0: ERROR: test_ioccc/jparse_test.sh non-zero exit code: $status" 1>&2 | tee -a -- "$LOGFILE"
+    echo "$0: ERROR: jparse/test_jparse/jparse_test.sh non-zero exit code: $status" 1>&2 | tee -a -- "$LOGFILE"
     FAILURE_SUMMARY="$FAILURE_SUMMARY
-    test_ioccc/jparse_test.sh non-zero exit code: $status"
+    jparse/test_jparse/jparse_test.sh non-zero exit code: $status"
     EXIT_CODE="27"
 else
     echo | tee -a -- "$LOGFILE"
-    echo "PASSED: test_ioccc/jparse_test.sh" | tee -a -- "$LOGFILE"
+    echo "PASSED: jparse/test_jparse/jparse_test.sh" | tee -a -- "$LOGFILE"
 fi
 
 # txzchk_test.sh
@@ -491,8 +491,8 @@ fi
 echo | tee -a -- "$LOGFILE"
 echo "RUNNING: test_ioccc/chkentry_test.sh" | tee -a -- "$LOGFILE"
 echo | tee -a -- "$LOGFILE"
-echo "test_ioccc/chkentry_test.sh -v 1 -d test_ioccc/test_JSON -c ./chkentry" | tee -a -- "$LOGFILE"
-test_ioccc/chkentry_test.sh -v 1 -d test_ioccc/test_JSON -c ./chkentry | tee -a -- "$LOGFILE"
+echo "test_ioccc/chkentry_test.sh -v 1 -d jparse/test_jparse/test_JSON -c ./chkentry" | tee -a -- "$LOGFILE"
+test_ioccc/chkentry_test.sh -v 1 -d jparse/test_jparse/test_JSON -c ./chkentry | tee -a -- "$LOGFILE"
 status="${PIPESTATUS[0]}"
 if [[ $status -ne 0 ]]; then
     echo "$0: ERROR: test_ioccc/chkentry_test.sh non-zero exit code: $status" 1>&2 | tee -a -- "$LOGFILE"

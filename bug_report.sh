@@ -46,9 +46,9 @@ export TOOLS="
     ./test_ioccc/dyn_test
     ./test_ioccc/ioccc_test.sh
     ./test_ioccc/iocccsize_test.sh
-    ./test_ioccc/jnum_chk
-    ./test_ioccc/jparse_test.sh
-    ./test_ioccc/jstr_test.sh
+    ./jparse/test_jparse/jnum_chk
+    ./jparse/test_jparse/jparse_test.sh
+    ./jparse/test_jparse/jstr_test.sh
     ./test_ioccc/mkiocccentry_test.sh
     ./test_ioccc/txzchk_test.sh
     ./test_ioccc/utf8_test
