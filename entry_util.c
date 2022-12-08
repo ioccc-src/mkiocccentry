@@ -4326,7 +4326,7 @@ test_mastodon(char const *str)
 	json_dbg(JSON_DBG_HIGH, __func__,
 		 "invalid: mastodon: <%s> is invalid", str);
 	return false;
-    } else if (last_at == NULL) {
+    } else if (last_at == NULL || last_at == p) {
 	json_dbg(JSON_DBG_MED, __func__,
 		 "invalid: mastodon account has only one '@'");
 	json_dbg(JSON_DBG_HIGH, __func__,
