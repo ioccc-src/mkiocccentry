@@ -6,7 +6,9 @@
 # setup
 #
 export JPARSE_TEST_VERSION="0.4 2022-11-04"
-export CHK_TEST_FILE="./json_teststr.txt"
+export CHK_TEST_FILE="./jparse/test_jparse/json_teststr.txt"
+export JPARSE="./jparse/jparse"
+export JSON_TREE="./jparse/test_jparse/test_JSON"
 export USAGE="usage: $0 [-h] [-V] [-v level] [-D dbg_level] [-J level] [-q] [-j jparse] [-d json_tree] [file ..]
 
     -h			print help and exit
@@ -15,7 +17,7 @@ export USAGE="usage: $0 [-h] [-V] [-v level] [-D dbg_level] [-J level] [-q] [-j 
     -D dbg_level	set verbosity level for tests (def: level: 0)
     -J level		set JSON parser verbosity level (def level: 0)
     -q			quiet mode: silence msg(), warn(), warnp() if -v 0 (def: not quiet)
-    -j /path/to/jparse	path to jparse tool (def: ./jparse/jparse)
+    -j /path/to/jparse	path to jparse tool (def: $JPARSE)
     -d json_tree	read files from good and bad subdirectories of this directory
 			    These subdirectories are expected:
 				tree/bad
@@ -36,10 +38,8 @@ export V_FLAG="0"
 export DBG_LEVEL="0"
 export JSON_DBG_LEVEL="0"
 export Q_FLAG=""
-export JPARSE="./jparse/jparse"
-export LOGFILE="./test_ioccc/jparse_test.log"
+export LOGFILE="./jparse_test.log"
 export EXIT_CODE=0
-export JSON_TREE="./test_ioccc/test_JSON"
 export FILE_FAILURE_SUMMARY=""
 export STRING_FAILURE_SUMMARY=""
 

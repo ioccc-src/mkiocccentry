@@ -3950,7 +3950,7 @@ get_author_info(struct author **author_set_p)
 		p = strchr(author_set[i].mastodon, '@');
 		last_at = strrchr(author_set[i].mastodon, '@');
 		if (author_set[i].mastodon[0] != '@' || p == NULL || last_at == NULL ||
-		    count_char(author_set[i].mastodon, '@') != 2 || author_set[i].mastodon[1] == '\0' ||
+		    last_at == p || count_char(author_set[i].mastodon, '@') != 2 || author_set[i].mastodon[1] == '\0' ||
 		    strstr(author_set[i].mastodon, "@@") != NULL || author_set[i].mastodon[len-1] == '@') {
 
 		    /*

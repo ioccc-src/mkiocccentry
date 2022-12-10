@@ -15,7 +15,7 @@ export EXIT_CODE=0
 export INVALID_JSON_FOUND=""
 export UNEXPECTED_SEMANRIC_ERROR=""
 export SEMANRIC_ERROR_MISSED=""
-export JSON_TREE="./test_ioccc/test_JSON"
+export JSON_TREE="./jparse/test_jparse/test_JSON"
 
 export CHKENTRY_TEST_VERSION="0.2 2022-11-04"
 
