@@ -73,14 +73,20 @@
 # utilities #
 #############
 
+# suggestion: List utility filenames, not paths.
+#	      Do not list shell builtin (echo, cd, ...) tools.
+#	      Keep the list in alphabetical order.
+#
+AR= ar
 AWK= awk
 BASENAME= basename
 CAT= cat
-CMP= cmp
-CUT= cut
 CC= cc
+CHECKNR= checknr
+CMP= cmp
 CP= cp
 CTAGS= ctags
+CUT= cut
 DIFF= diff
 FMT= fmt
 GIT= git
@@ -88,8 +94,8 @@ GREP= grep
 HEAD= head
 INSTALL= install
 MAKE= make
-MAN= man
 MAN2HTML= man2html
+MAN= man
 MKTEMP= mktemp
 MV= mv
 PICKY= picky
@@ -100,11 +106,9 @@ SED= sed
 SEQCEXIT= seqcexit
 SHELL= bash
 SHELLCHECK= shellcheck
-CHECKNR= checknr
 TEE= tee
 TR= tr
 TRUE= true
-
 
 #######################
 # Makefile parameters #
