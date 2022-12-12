@@ -255,7 +255,7 @@ extern_all: extern_include extern_objs extern_liba extern_man
 # internal make rules #
 #######################
 
-test: dbg_test checknr Makefile
+test: dbg_test check_man Makefile
 	${RM} -f dbg_test.out
 	@echo "RUNNING: dbg_test"
 	@echo "./dbg_test -e 2 foo bar baz >dbg_test.out 2>&1"
@@ -280,15 +280,18 @@ test: dbg_test checknr Makefile
 
 # inspect and verify man pages
 #
-checknr: ${ALL_MAN_TARGETS} Makefile
+check_man: ${ALL_MAN_TARGETS} Makefile
 	@HAVE_CHECKNR="`type -P ${CHECKNR}`"; if [[ -z "$$HAVE_CHECKNR" ]]; then \
 	    echo 'The checknr command could not be found.' 1>&2; \
 	    echo 'The checknr command is required to run this rule.'; 1>&2; \
 	    echo ''; 1>&2; \
-	    exit 1; \
 	else \
 	    echo "${CHECKNR} -c.BR.SS.BI ${ALL_MAN_TARGETS}"; \
 	    ${CHECKNR} -c.BR.SS.BI ${ALL_MAN_TARGETS}; \
+	    status="$$?"; \
+	    if [[ $$status -ne 0 ]]; then \
+		echo 'Warning: ${CHECKNR} failed, error code: $$status'; \
+	    fi; \
 	fi
 
 
@@ -311,16 +314,16 @@ clobber: clean
 
 install: all
 	${INSTALL} -v -d -m 0775 ${DEST_LIB}
-	${INSTALL} -v -d -m 0775 ${DEST_DIR}
+#none#	${INSTALL} -v -d -m 0775 ${DEST_DIR}
 #none#	${INSTALL} -v -d -m 0775 ${MAN1_DIR}
 	${INSTALL} -v -d -m 0775 ${MAN3_DIR}
 #none#	${INSTALL} -v -d -m 0775 ${MAN8_DIR}
 	${INSTALL} -v -d -m 0775 ${DEST_INCLUDE}
-#none#	${INSTALL} -v -S -m 0444 ${MAN1_TARGETS} ${MAN1_DIR}
-	${INSTALL} -v -S -m 0444 ${MAN3_TARGETS} ${MAN3_DIR}
-#none#	${INSTALL} -v -S -m 0444 ${MAN8_TARGETS} ${MAN8_DIR}
-	${INSTALL} -v -S -m 0444 ${LIBA_TARGETS} ${DEST_LIB}
-	${INSTALL} -v -S -m 0444 ${H_SRC_TARGETS} ${DEST_INCLUDE}
+#none#	${INSTALL} -v -m 0444 ${MAN1_TARGETS} ${MAN1_DIR}
+	${INSTALL} -v -m 0444 ${MAN3_TARGETS} ${MAN3_DIR}
+#none#	${INSTALL} -v -m 0444 ${MAN8_TARGETS} ${MAN8_DIR}
+	${INSTALL} -v -m 0444 ${LIBA_TARGETS} ${DEST_LIB}
+	${INSTALL} -v -m 0444 ${H_SRC_TARGETS} ${DEST_INCLUDE}
 
 tags: ${ALL_SRC} ${ALL_BUILT_SRC}
 	-${CTAGS} ${ALL_SRC} ${ALL_BUILT_SRC} 2>&1 | \
