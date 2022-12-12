@@ -32,14 +32,19 @@
 # utilities #
 #############
 
+# suggestion: List utility filenames, not paths.
+#	      Do not list shell builtin (echo, cd, ...) tools.
+#	      Keep the list in alphabetical order.
+#
 AWK= awk
 BASENAME= basename
 CAT= cat
-CMP = cmp
-CUT = cut
 CC= cc
+CHECKNR = checknr
+CMP = cmp
 CP= cp
 CTAGS= ctags
+CUT = cut
 DIFF= diff
 ECHO = echo
 FMT= fmt
@@ -48,8 +53,8 @@ GREP= grep
 HEAD= head
 INSTALL= install
 MAKE= make
-MAN= man
 MAN2HTML= man2html
+MAN= man
 MKTEMP= mktemp
 MV= mv
 PICKY= picky
@@ -61,7 +66,6 @@ SEQCEXIT= seqcexit
 SHELL= bash
 SHELLCHECK= shellcheck
 SLEEP = sleep
-CHECKNR = checknr
 TEE= tee
 TOUCH = touch
 TR= tr
@@ -208,7 +212,7 @@ eat eating eat_soup eating_soup: all
 ###################################
 
 configure:
-	@${ECHO} "nothing to $@. Try making some soup instead."
+	@${ECHO} "nothing to $@. Try making soup instead."
 
 clean:
 	${RM} -f *.o
@@ -217,7 +221,7 @@ clobber: clean
 	${RM} -f .soup
 
 install: all
-	@${ECHO} "nothing to $@. Try eating the soup instead."
+	@${ECHO} "nothing to $@. Try eating soup instead."
 
 ###############
 # make depend #

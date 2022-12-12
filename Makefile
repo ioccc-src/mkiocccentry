@@ -73,14 +73,20 @@
 # utilities #
 #############
 
+# suggestion: List utility filenames, not paths.
+#	      Do not list shell builtin (echo, cd, ...) tools.
+#	      Keep the list in alphabetical order.
+#
+AR= ar
 AWK= awk
 BASENAME= basename
 CAT= cat
-CMP= cmp
-CUT= cut
 CC= cc
+CHECKNR= checknr
+CMP= cmp
 CP= cp
 CTAGS= ctags
+CUT= cut
 DIFF= diff
 FMT= fmt
 GIT= git
@@ -88,8 +94,8 @@ GREP= grep
 HEAD= head
 INSTALL= install
 MAKE= make
-MAN= man
 MAN2HTML= man2html
+MAN= man
 MKTEMP= mktemp
 MV= mv
 PICKY= picky
@@ -100,11 +106,9 @@ SED= sed
 SEQCEXIT= seqcexit
 SHELL= bash
 SHELLCHECK= shellcheck
-CHECKNR= checknr
 TEE= tee
 TR= tr
 TRUE= true
-
 
 #######################
 # Makefile parameters #
@@ -212,7 +216,7 @@ MAN8PAGES= $(MAN8_TARGETS:=.8)
 MANPAGES= ${MAN1PAGES} ${MAN3PAGES} ${MAN8PAGES}
 
 TEST_TARGETS= dbg/dbg_test test_ioccc/utf8_test test_ioccc/dyn_test jparse/test_jparse/jnum_chk
-OBJFILES= dbg/dbg.o util.o mkiocccentry.o iocccsize.o fnamchk.o txzchk.o chkentry.o \
+OBJFILES= util.o mkiocccentry.o iocccsize.o fnamchk.o txzchk.o chkentry.o \
 	json_parse.o jstrencode.o jstrdecode.o rule_count.o location.o sanity.o verge.o \
 	dyn_array/dyn_array.o test_ioccc/dyn_test.o dbg/dbg_test.o jparse/test_jparse/jnum_chk.o \
 	jnum_gen.o jparse/test_jparse/jnum_test.o json_util.o jparse_main.o entry_util.o jsemtblgen.o \
@@ -429,28 +433,28 @@ dbg: dbg/dbg.h dbg/dbg.c
 mkiocccentry.o: mkiocccentry.c Makefile
 	${CC} ${CFLAGS} mkiocccentry.c -c
 
-mkiocccentry: mkiocccentry.o rule_count.o dbg/dbg.o util.o dyn_array/dyn_array.o json_parse.o entry_util.o \
+mkiocccentry: mkiocccentry.o rule_count.o dbg/dbg.a util.o dyn_array/dyn_array.o json_parse.o entry_util.o \
 	json_util.o entry_time.o location.o utf8_posix_map.o sanity.o json_sem.o
 	${CC} ${CFLAGS} $^ -lm -o $@
 
 iocccsize.o: iocccsize.c Makefile
 	${CC} ${CFLAGS} -DMKIOCCCENTRY_USE iocccsize.c -c
 
-iocccsize: iocccsize.o rule_count.o dbg/dbg.o Makefile
-	${CC} ${CFLAGS} iocccsize.o rule_count.o dbg/dbg.o -o $@
+iocccsize: iocccsize.o rule_count.o dbg/dbg.a Makefile
+	${CC} ${CFLAGS} iocccsize.o rule_count.o dbg/dbg.a -o $@
 
 fnamchk.o: fnamchk.c fnamchk.h Makefile
 	${CC} ${CFLAGS} fnamchk.c -c
 
-fnamchk: fnamchk.o dbg/dbg.o util.o dyn_array/dyn_array.o Makefile
-	${CC} ${CFLAGS} fnamchk.o dbg/dbg.o util.o dyn_array/dyn_array.o -o $@
+fnamchk: fnamchk.o dbg/dbg.a util.o dyn_array/dyn_array.o Makefile
+	${CC} ${CFLAGS} fnamchk.o dbg/dbg.a util.o dyn_array/dyn_array.o -o $@
 
 txzchk.o: txzchk.c txzchk.h Makefile
 	${CC} ${CFLAGS} txzchk.c -c
 
-txzchk: txzchk.o dbg/dbg.o util.o dyn_array/dyn_array.o location.o \
+txzchk: txzchk.o dbg/dbg.a util.o dyn_array/dyn_array.o location.o \
 	utf8_posix_map.o sanity.o Makefile
-	${CC} ${CFLAGS} txzchk.o dbg/dbg.o util.o dyn_array/dyn_array.o location.o \
+	${CC} ${CFLAGS} txzchk.o dbg/dbg.a util.o dyn_array/dyn_array.o location.o \
 	     utf8_posix_map.o sanity.o -o $@
 
 soup: soup/chk.auth.head.c soup/chk.auth.ptch.h soup/chk.info.head.c soup/chk.info.ptch.h \
@@ -463,30 +467,30 @@ soup: soup/chk.auth.head.c soup/chk.auth.ptch.h soup/chk.info.head.c soup/chk.in
 chkentry.o: chkentry.c chkentry.h jparse.tab.h oebxergfB.h Makefile
 	${CC} ${CFLAGS} -Isoup chkentry.c -c
 
-chkentry: chkentry.o oebxergfB.h dbg/dbg.o util.o sanity.o utf8_posix_map.o dyn_array/dyn_array.o \
+chkentry: chkentry.o oebxergfB.h dbg/dbg.a util.o sanity.o utf8_posix_map.o dyn_array/dyn_array.o \
 	jparse.o jparse.tab.o json_parse.o json_util.o soup/chk_validate.o entry_util.c json_sem.o \
 	foo.o location.o soup/chk_sem_info.o soup/chk_sem_auth.o Makefile
-	${CC} ${CFLAGS} chkentry.o dbg/dbg.o util.o sanity.o utf8_posix_map.o jparse.o jparse.tab.o dyn_array/dyn_array.o json_parse.o \
+	${CC} ${CFLAGS} chkentry.o dbg/dbg.a util.o sanity.o utf8_posix_map.o jparse.o jparse.tab.o dyn_array/dyn_array.o json_parse.o \
 		json_util.o soup/chk_validate.o entry_util.o entry_time.o json_sem.o foo.o location.o soup/chk_sem_info.o \
 		soup/chk_sem_auth.o -lm -o $@
 
 jstrencode.o: jstrencode.c jstrencode.h json_util.h json_util.c Makefile
 	${CC} ${CFLAGS} jstrencode.c -c
 
-jstrencode: jstrencode.o dbg/dbg.o json_parse.o json_util.o util.o dyn_array/dyn_array.o Makefile
-	${CC} ${CFLAGS} jstrencode.o dbg/dbg.o json_parse.o json_util.o util.o dyn_array/dyn_array.o -lm -o $@
+jstrencode: jstrencode.o dbg/dbg.a json_parse.o json_util.o util.o dyn_array/dyn_array.o Makefile
+	${CC} ${CFLAGS} jstrencode.o dbg/dbg.a json_parse.o json_util.o util.o dyn_array/dyn_array.o -lm -o $@
 
 jstrdecode.o: jstrdecode.c jstrdecode.h json_util.h json_parse.h Makefile
 	${CC} ${CFLAGS} jstrdecode.c -c
 
-jstrdecode: jstrdecode.o dbg/dbg.o json_parse.o json_util.o util.o dyn_array/dyn_array.o Makefile
-	${CC} ${CFLAGS} jstrdecode.o dbg/dbg.o json_parse.o json_util.o util.o dyn_array/dyn_array.o -lm -o $@
+jstrdecode: jstrdecode.o dbg/dbg.a json_parse.o json_util.o util.o dyn_array/dyn_array.o Makefile
+	${CC} ${CFLAGS} jstrdecode.o dbg/dbg.a json_parse.o json_util.o util.o dyn_array/dyn_array.o -lm -o $@
 
 jnum_gen.o: jnum_gen.c jnum_gen.h Makefile
 	${CC} ${CFLAGS} jnum_gen.c -c
 
-jnum_gen: jnum_gen.o dbg/dbg.o json_parse.o json_util.o util.o dyn_array/dyn_array.o Makefile
-	${CC} ${CFLAGS} jnum_gen.o dbg/dbg.o json_parse.o json_util.o util.o dyn_array/dyn_array.o -lm -o $@
+jnum_gen: jnum_gen.o dbg/dbg.a json_parse.o json_util.o util.o dyn_array/dyn_array.o Makefile
+	${CC} ${CFLAGS} jnum_gen.o dbg/dbg.a json_parse.o json_util.o util.o dyn_array/dyn_array.o -lm -o $@
 
 jparse.o: jparse.c jparse.h Makefile
 	${CC} ${CFLAGS} -Wno-unused-but-set-variable -Wno-unused-function -Wno-unneeded-internal-declaration jparse.c -c
@@ -506,9 +510,9 @@ jparse.tab.o: jparse.tab.c Makefile
 jparse_main.o: jparse_main.c Makefile
 	${CC} ${CFLAGS} jparse_main.c -c
 
-jparse/jparse: jparse.o jparse.tab.o util.o dyn_array/dyn_array.o dbg/dbg.o json_parse.o \
+jparse/jparse: jparse.o jparse.tab.o util.o dyn_array/dyn_array.o dbg/dbg.a json_parse.o \
 	json_util.o jparse_main.o Makefile
-	${CC} ${CFLAGS} jparse.o jparse.tab.o util.o dyn_array/dyn_array.o dbg/dbg.o json_parse.o \
+	${CC} ${CFLAGS} jparse.o jparse.tab.o util.o dyn_array/dyn_array.o dbg/dbg.a json_parse.o \
 			json_util.o jparse_main.o -lm -o $@
 
 jparse: jparse/jparse
@@ -517,16 +521,16 @@ jparse: jparse/jparse
 jsemtblgen.o: jsemtblgen.c Makefile
 	${CC} ${CFLAGS} jsemtblgen.c -c
 
-jsemtblgen: jsemtblgen.o jparse.o jparse.tab.o util.o dyn_array/dyn_array.o dbg/dbg.o json_parse.o \
+jsemtblgen: jsemtblgen.o jparse.o jparse.tab.o util.o dyn_array/dyn_array.o dbg/dbg.a json_parse.o \
 	    json_util.o rule_count.o Makefile
-	${CC} ${CFLAGS} jsemtblgen.o jparse.o jparse.tab.o util.o dyn_array/dyn_array.o dbg/dbg.o json_parse.o \
+	${CC} ${CFLAGS} jsemtblgen.o jparse.o jparse.tab.o util.o dyn_array/dyn_array.o dbg/dbg.a json_parse.o \
 			json_util.o rule_count.o -lm -o $@
 
 verge.o: verge.c verge.h Makefile
 	${CC} ${CFLAGS} verge.c -c
 
-verge: verge.o dbg/dbg.o util.o dyn_array/dyn_array.o Makefile
-	${CC} ${CFLAGS} verge.o dbg/dbg.o util.o dyn_array/dyn_array.o -o $@
+verge: verge.o dbg/dbg.a util.o dyn_array/dyn_array.o Makefile
+	${CC} ${CFLAGS} verge.o dbg/dbg.a util.o dyn_array/dyn_array.o -o $@
 
 dyn_array: dyn_array/dyn_array.h dyn_array/dyn_array.c
 	@${MAKE} -C dyn_array CFLAGS="${CFLAGS}"
@@ -1172,7 +1176,6 @@ jparse.o: jparse.c jparse.h dbg/dbg.h util.h dyn_array/dyn_array.h dyn_array/../
 	json_parse.h json_util.h jparse.tab.h
 jparse.tab.o: jparse.tab.c jparse.h dbg/dbg.h util.h dyn_array/dyn_array.h dyn_array/../dbg/dbg.h \
 	json_parse.h json_util.h jparse.tab.h jparse.lex.h
-dbg.o: dbg/dbg.c dbg/dbg.h
 util.o: util.c dbg/dbg.h util.h dyn_array/dyn_array.h dyn_array/../dbg/dbg.h limit_ioccc.h version.h
 mkiocccentry.o: mkiocccentry.c mkiocccentry.h util.h dyn_array/dyn_array.h dyn_array/../dbg/dbg.h \
 	dbg/dbg.h location.h utf8_posix_map.h limit_ioccc.h version.h sanity.h iocccsize.h json_util.h \
