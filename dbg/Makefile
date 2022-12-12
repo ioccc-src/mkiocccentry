@@ -283,7 +283,11 @@ test: dbg_test check_man Makefile
 check_man: ${ALL_MAN_TARGETS} Makefile
 	@HAVE_CHECKNR="`type -P ${CHECKNR}`"; if [[ -z "$$HAVE_CHECKNR" ]]; then \
 	    echo 'The checknr command could not be found.' 1>&2; \
-	    echo 'The checknr command is required to run this rule.'; 1>&2; \
+	    echo 'The checknr command is required to run the $@ rule.' 1>&2; \
+	    echo ''; 1>&2; \
+	    echo 'The source code and install instructions for checknr are available from this GitHub repo:' 1>&2; \
+	    echo ''; 1>&2; \
+	    echo '    https://github.com/lcn2/checknr' 1>&2; \
 	    echo ''; 1>&2; \
 	else \
 	    echo "${CHECKNR} -c.BR.SS.BI ${ALL_MAN_TARGETS}"; \
