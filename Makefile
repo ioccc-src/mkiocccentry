@@ -94,8 +94,6 @@ GREP= grep
 HEAD= head
 INSTALL= install
 MAKE= make
-MAN2HTML= man2html
-MAN= man
 MKTEMP= mktemp
 MV= mv
 PICKY= picky
@@ -171,54 +169,15 @@ CFLAGS= ${C_STD} ${COPT} -pedantic ${WARN_FLAGS} ${LDFLAGS}
 
 # where and what to install
 #
-MAN1_DIR= /usr/local/share/man/man1
-MAN8_DIR= /usr/local/share/man/man8
-MAN3_DIR= /usr/local/share/man/man3
 DESTDIR= /usr/local/bin
 TARGETS= mkiocccentry iocccsize fnamchk txzchk chkentry jstrencode jstrdecode \
 	 jparse/jparse verge jnum_gen jsemtblgen
 SH_TARGETS=limit_ioccc.sh
 
-# man pages
-#
-# We explicitly define the man page targets for more than three reasons:
-#
-# (0) Currently not all targets have man pages.
-# (1) Some of the targets that have man pages are not actually in the TARGETS
-#     variable. TEST_TARGETS, for example, has utf8_test, which means
-#     utf8_test.1 would be left out.
-# (2) Even when all targets have man pages if another target is added without
-#     adding a man page make install would fail and even if make install is not
-#     that likely to be used we still don't want it to fail in the case it
-#     actually is used.
-# (3) Along the lines of (2) there are some files that will have man pages
-#     (run_bison.sh and run_flex.sh for two examples) that are not targets at
-#     all but still important parts of the repo so these would be skipped as
-#     well if we directly referred to TARGETS.
-#
-MAN1_TARGETS= man/mkiocccentry man/txzchk man/fnamchk man/iocccsize man/chkentry man/jstrdecode man/jstrencode \
-	      man/jparse man/bug_report man/hostchk man/run_flex man/run_bison
-MAN3_TARGETS= dbg/dbg dyn_array/dyn_array
-MAN8_TARGETS= man/reset_tstamp man/verge man/iocccsize_test man/ioccc_test man/run_usage man/utf8_test \
-	      man/jparse_test man/txzchk_test man/vermod man/mkiocccentry_test man/jstr_test man/jnum_chk \
-	      man/jnum_gen man/chkentry_test man/jsemtblgen man/jsemcgen man/all_ref
-MAN_TARGETS= ${MAN1_TARGETS} ${MAN3_TARGETS} ${MAN8_TARGETS}
-HTML_MAN_TARGETS= $(patsubst %,%.html,$(MAN_TARGETS))
-# This is a simpler way to do:
-#
-#   MAN1PAGES= $(patsubst %,%.1,$(MAN1_TARGETS))
-#   MAN3PAGES= $(patsubst %,%.3,$(MAN3_TARGETS))
-#   MAN8PAGES= $(patsubst %,%.8,$(MAN8_TARGETS))
-#
-MAN1PAGES= $(MAN1_TARGETS:=.1)
-MAN3PAGES= $(MAN3_TARGETS:=.3)
-MAN8PAGES= $(MAN8_TARGETS:=.8)
-MANPAGES= ${MAN1PAGES} ${MAN3PAGES} ${MAN8PAGES}
-
 TEST_TARGETS= dbg/dbg_test test_ioccc/utf8_test test_ioccc/dyn_test jparse/test_jparse/jnum_chk
 OBJFILES= util.o mkiocccentry.o iocccsize.o fnamchk.o txzchk.o chkentry.o \
 	json_parse.o jstrencode.o jstrdecode.o rule_count.o location.o sanity.o verge.o \
-	dyn_array/dyn_array.o test_ioccc/dyn_test.o dbg/dbg_test.o jparse/test_jparse/jnum_chk.o \
+	jparse/test_jparse/jnum_chk.o \
 	jnum_gen.o jparse/test_jparse/jnum_test.o json_util.o jparse_main.o entry_util.o jsemtblgen.o \
 	soup/chk_sem_auth.o soup/chk_sem_info.o soup/chk_validate.o json_sem.o entry_time.o
 LESS_PICKY_CSRC= utf8_posix_map.c foo.c
@@ -237,7 +196,7 @@ SRCFILES= $(OBJFILES:.o=.c)
 ALL_CSRC= ${LESS_PICKY_CSRC} ${GENERATED_CSRC} ${SRCFILES}
 H_FILES= dbg/dbg.h chkentry.h json_parse.h jstrdecode.h jstrencode.h limit_ioccc.h \
 	mkiocccentry.h txzchk.h util.h location.h utf8_posix_map.h jparse.h \
-	verge.h sorry.tm.ca.h dyn_array/dyn_array.h test_ioccc/dyn_test.h json_util.h jparse/test_jparse/jnum_chk.h \
+	verge.h sorry.tm.ca.h dyn_array/dyn_array.h json_util.h jparse/test_jparse/jnum_chk.h \
 	jnum_gen.h jparse_main.h entry_util.h jsemtblgen.h soup/chk_sem_auth.h \
 	soup/chk_sem_info.h soup/chk_validate.h json_sem.h foo.h entry_time.h
 # This is a simpler way to do:
@@ -350,11 +309,12 @@ FLEX_FLAGS= -8
 # all - default rule - must be first #
 ######################################
 
-all: dbg soup fast_hostchk just_all
+all: fast_hostchk just_all
 
 # The original make all that bypasses running hostchk.sh
 #
-just_all: ${TARGETS}
+just_all: soup ${TARGETS}
+	${MAKE} -C man all
 
 # fast build environment sanity check
 #
@@ -405,9 +365,9 @@ hostchk_warning:
 #
 .PHONY: all just_all fast_hostchk hostchk hostchk_warning all_ref all_ref_ptch mkchk_sem bug_report.sh build \
 	check_man clean clean_generated_obj clean_mkchk_sem clobber configure depend hostchk bug_report.sh \
-	install test_ioccc legacy_clobber man2html mkchk_sem parser parser-o picky prep prep_clobber \
+	install test_ioccc legacy_clobber mkchk_sem parser parser-o picky prep prep_clobber \
         pull rebuild_jnum_test release reset_min_timestamp seqcexit shellcheck tags test test-chkentry use_ref \
-	dbg soup dyn_array jparse
+	soup jparse
 
 
 #####################################
@@ -426,14 +386,10 @@ entry_util.o: entry_util.c Makefile
 entry_time.o: entry_time.c Makefile
 	${CC} ${CFLAGS} entry_time.c -c
 
-dbg: dbg/dbg.h dbg/dbg.c
-	@${MAKE} -C dbg CFLAGS="${CFLAGS}"
-	@${CP} -f dbg/dbg.3 man/dbg.3
-
 mkiocccentry.o: mkiocccentry.c Makefile
 	${CC} ${CFLAGS} mkiocccentry.c -c
 
-mkiocccentry: mkiocccentry.o rule_count.o dbg/dbg.a util.o dyn_array/dyn_array.o json_parse.o entry_util.o \
+mkiocccentry: mkiocccentry.o rule_count.o dbg/dbg.a util.o dyn_array/dyn_array.a json_parse.o entry_util.o \
 	json_util.o entry_time.o location.o utf8_posix_map.o sanity.o json_sem.o
 	${CC} ${CFLAGS} $^ -lm -o $@
 
@@ -446,15 +402,15 @@ iocccsize: iocccsize.o rule_count.o dbg/dbg.a Makefile
 fnamchk.o: fnamchk.c fnamchk.h Makefile
 	${CC} ${CFLAGS} fnamchk.c -c
 
-fnamchk: fnamchk.o dbg/dbg.a util.o dyn_array/dyn_array.o Makefile
-	${CC} ${CFLAGS} fnamchk.o dbg/dbg.a util.o dyn_array/dyn_array.o -o $@
+fnamchk: fnamchk.o dbg/dbg.a util.o dyn_array/dyn_array.a Makefile
+	${CC} ${CFLAGS} fnamchk.o dbg/dbg.a util.o dyn_array/dyn_array.a -o $@
 
 txzchk.o: txzchk.c txzchk.h Makefile
 	${CC} ${CFLAGS} txzchk.c -c
 
-txzchk: txzchk.o dbg/dbg.a util.o dyn_array/dyn_array.o location.o \
+txzchk: txzchk.o dbg/dbg.a util.o dyn_array/dyn_array.a location.o \
 	utf8_posix_map.o sanity.o Makefile
-	${CC} ${CFLAGS} txzchk.o dbg/dbg.a util.o dyn_array/dyn_array.o location.o \
+	${CC} ${CFLAGS} txzchk.o dbg/dbg.a util.o dyn_array/dyn_array.a location.o \
 	     utf8_posix_map.o sanity.o -o $@
 
 soup: soup/chk.auth.head.c soup/chk.auth.ptch.h soup/chk.info.head.c soup/chk.info.ptch.h \
@@ -467,30 +423,30 @@ soup: soup/chk.auth.head.c soup/chk.auth.ptch.h soup/chk.info.head.c soup/chk.in
 chkentry.o: chkentry.c chkentry.h jparse.tab.h oebxergfB.h Makefile
 	${CC} ${CFLAGS} -Isoup chkentry.c -c
 
-chkentry: chkentry.o oebxergfB.h dbg/dbg.a util.o sanity.o utf8_posix_map.o dyn_array/dyn_array.o \
+chkentry: chkentry.o oebxergfB.h dbg/dbg.a util.o sanity.o utf8_posix_map.o dyn_array/dyn_array.a \
 	jparse.o jparse.tab.o json_parse.o json_util.o soup/chk_validate.o entry_util.c json_sem.o \
 	foo.o location.o soup/chk_sem_info.o soup/chk_sem_auth.o Makefile
-	${CC} ${CFLAGS} chkentry.o dbg/dbg.a util.o sanity.o utf8_posix_map.o jparse.o jparse.tab.o dyn_array/dyn_array.o json_parse.o \
+	${CC} ${CFLAGS} chkentry.o dbg/dbg.a util.o sanity.o utf8_posix_map.o jparse.o jparse.tab.o dyn_array/dyn_array.a json_parse.o \
 		json_util.o soup/chk_validate.o entry_util.o entry_time.o json_sem.o foo.o location.o soup/chk_sem_info.o \
 		soup/chk_sem_auth.o -lm -o $@
 
 jstrencode.o: jstrencode.c jstrencode.h json_util.h json_util.c Makefile
 	${CC} ${CFLAGS} jstrencode.c -c
 
-jstrencode: jstrencode.o dbg/dbg.a json_parse.o json_util.o util.o dyn_array/dyn_array.o Makefile
-	${CC} ${CFLAGS} jstrencode.o dbg/dbg.a json_parse.o json_util.o util.o dyn_array/dyn_array.o -lm -o $@
+jstrencode: jstrencode.o dbg/dbg.a json_parse.o json_util.o util.o dyn_array/dyn_array.a Makefile
+	${CC} ${CFLAGS} jstrencode.o dbg/dbg.a json_parse.o json_util.o util.o dyn_array/dyn_array.a -lm -o $@
 
 jstrdecode.o: jstrdecode.c jstrdecode.h json_util.h json_parse.h Makefile
 	${CC} ${CFLAGS} jstrdecode.c -c
 
-jstrdecode: jstrdecode.o dbg/dbg.a json_parse.o json_util.o util.o dyn_array/dyn_array.o Makefile
-	${CC} ${CFLAGS} jstrdecode.o dbg/dbg.a json_parse.o json_util.o util.o dyn_array/dyn_array.o -lm -o $@
+jstrdecode: jstrdecode.o dbg/dbg.a json_parse.o json_util.o util.o dyn_array/dyn_array.a Makefile
+	${CC} ${CFLAGS} jstrdecode.o dbg/dbg.a json_parse.o json_util.o util.o dyn_array/dyn_array.a -lm -o $@
 
 jnum_gen.o: jnum_gen.c jnum_gen.h Makefile
 	${CC} ${CFLAGS} jnum_gen.c -c
 
-jnum_gen: jnum_gen.o dbg/dbg.a json_parse.o json_util.o util.o dyn_array/dyn_array.o Makefile
-	${CC} ${CFLAGS} jnum_gen.o dbg/dbg.a json_parse.o json_util.o util.o dyn_array/dyn_array.o -lm -o $@
+jnum_gen: jnum_gen.o dbg/dbg.a json_parse.o json_util.o util.o dyn_array/dyn_array.a Makefile
+	${CC} ${CFLAGS} jnum_gen.o dbg/dbg.a json_parse.o json_util.o util.o dyn_array/dyn_array.a -lm -o $@
 
 jparse.o: jparse.c jparse.h Makefile
 	${CC} ${CFLAGS} -Wno-unused-but-set-variable -Wno-unused-function -Wno-unneeded-internal-declaration jparse.c -c
@@ -510,9 +466,9 @@ jparse.tab.o: jparse.tab.c Makefile
 jparse_main.o: jparse_main.c Makefile
 	${CC} ${CFLAGS} jparse_main.c -c
 
-jparse/jparse: jparse.o jparse.tab.o util.o dyn_array/dyn_array.o dbg/dbg.a json_parse.o \
+jparse/jparse: jparse.o jparse.tab.o util.o dyn_array/dyn_array.a dbg/dbg.a json_parse.o \
 	json_util.o jparse_main.o Makefile
-	${CC} ${CFLAGS} jparse.o jparse.tab.o util.o dyn_array/dyn_array.o dbg/dbg.a json_parse.o \
+	${CC} ${CFLAGS} jparse.o jparse.tab.o util.o dyn_array/dyn_array.a dbg/dbg.a json_parse.o \
 			json_util.o jparse_main.o -lm -o $@
 
 jparse: jparse/jparse
@@ -521,25 +477,21 @@ jparse: jparse/jparse
 jsemtblgen.o: jsemtblgen.c Makefile
 	${CC} ${CFLAGS} jsemtblgen.c -c
 
-jsemtblgen: jsemtblgen.o jparse.o jparse.tab.o util.o dyn_array/dyn_array.o dbg/dbg.a json_parse.o \
+jsemtblgen: jsemtblgen.o jparse.o jparse.tab.o util.o dyn_array/dyn_array.a dbg/dbg.a json_parse.o \
 	    json_util.o rule_count.o Makefile
-	${CC} ${CFLAGS} jsemtblgen.o jparse.o jparse.tab.o util.o dyn_array/dyn_array.o dbg/dbg.a json_parse.o \
+	${CC} ${CFLAGS} jsemtblgen.o jparse.o jparse.tab.o util.o dyn_array/dyn_array.a dbg/dbg.a json_parse.o \
 			json_util.o rule_count.o -lm -o $@
 
 verge.o: verge.c verge.h Makefile
 	${CC} ${CFLAGS} verge.c -c
 
-verge: verge.o dbg/dbg.a util.o dyn_array/dyn_array.o Makefile
-	${CC} ${CFLAGS} verge.o dbg/dbg.a util.o dyn_array/dyn_array.o -o $@
-
-dyn_array: dyn_array/dyn_array.h dyn_array/dyn_array.c
-	@${MAKE} -C dyn_array CFLAGS="${CFLAGS}"
-	@${CP} -f dyn_array/dyn_array.3 man/dyn_array.3
+verge: verge.o dbg/dbg.a util.o dyn_array/dyn_array.a Makefile
+	${CC} ${CFLAGS} verge.o dbg/dbg.a util.o dyn_array/dyn_array.a -o $@
 
 foo.o: foo.c oebxergfB.h Makefile
 	${CC} ${CFLAGS} foo.c -c
 
-limit_ioccc.sh: limit_ioccc.h version.h dbg/dbg.h dyn_array/dyn_array.h test_ioccc/dyn_test.h jparse.h jparse_main.h \
+limit_ioccc.sh: limit_ioccc.h version.h dbg/dbg.h dyn_array/dyn_array.h dyn_array/dyn_test.h jparse.h jparse_main.h \
 		Makefile
 	${RM} -f $@
 	@echo '#!/usr/bin/env bash' > $@
@@ -550,7 +502,7 @@ limit_ioccc.sh: limit_ioccc.h version.h dbg/dbg.h dyn_array/dyn_array.h test_ioc
 	    ${AWK} '{print $$2 "=\"" $$3 "\"" ;}' | ${TR} -d '[a-z]()' | \
 	    ${SED} -e 's/"_/"/' -e 's/""/"/g' -e 's/^/export /' >> $@
 	${GREP} -hE '^#define (.*_VERSION|TIMESTAMP_EPOCH|JSON_PARSING_DIRECTIVE_)' \
-		     version.h limit_ioccc.h dbg/dbg.h dyn_array/dyn_array.h test_ioccc/dyn_test.h jparse.h jparse_main.h | \
+		     version.h limit_ioccc.h dbg/dbg.h dyn_array/dyn_array.h dyn_array/dyn_test.h jparse.h jparse_main.h | \
 	    ${GREP} -v 'UUID_VERSION' | \
 	    ${SED} -e 's/^#define/export/' -e 's/ "/="/' -e 's/"[	 ].*$$/"/' >> $@
 	-if ${GREP} -q '^#define DIGRAPHS' limit_ioccc.h; then \
@@ -588,6 +540,32 @@ jparse.c jparse.lex.h flex: jparse.l jparse.h sorry.tm.ca.h jparse.tab.h run_fle
 	       verge jparse.ref.c jparse.lex.ref.h Makefile
 	./run_flex.sh -f ${FLEX_BASENAME} ${FLEX_DIRS} -p jparse -v 1 ${RUN_O_FLAG} -- \
 		      ${FLEX_FLAGS} -o jparse.c
+
+
+#############################################################
+# rules that invoke rules in Makefiles in other directories #
+#############################################################
+
+dbg/dbg.h: dbg/Makefile
+	${MAKE} -C dbg extern_include
+
+dbg/dbg.a: dbg/Makefile
+	${MAKE} -C dbg extern_liba
+
+dbg/dbg.3: dbg/Makefile
+	${MAKE} -C dbg extern_man
+
+dbg/dbg_test: dbg/Makefile
+	${MAKE} -C dbg dbg_test
+
+dyn_array/dyn_array.h: dyn_array/Makefile
+	${MAKE} -C dyn_array extern_include
+
+dyn_array/dyn_array.a: dyn_array/Makefile
+	${MAKE} -C dyn_array extern_liba
+
+dyn_array/dyn_array.3: dyn_array/Makefile
+	${MAKE} -C dyn_array extern_man
 
 
 ###################################################################
@@ -826,57 +804,8 @@ shellcheck: ${SH_FILES} .shellcheckrc Makefile
 
 # inspect and verify man pages
 #
-check_man: ${MANPAGES}
-	@HAVE_CHECKNR="`type -P ${CHECKNR}`"; if [[ -z "$$HAVE_CHECKNR" ]]; then \
-	    echo 'The checknr command could not be found.' 1>&2; \
-	    echo 'The checknr command is required to run the $@ rule.' 1>&2; \
-	    echo ''; 1>&2; \
-	    echo 'The source code and install instructions for checknr are available from this GitHub repo:' 1>&2; \
-	    echo ''; 1>&2; \
-	    echo '    https://github.com/lcn2/checknr' 1>&2; \
-	    echo ''; 1>&2; \
-	else \
-	    echo "${CHECKNR} -c.BR.SS.BI ${MANPAGES}"; \
-	    ${CHECKNR} -c.BR.SS.BI ${MANPAGES}; \
-	    status="$$?"; \
-	    if [[ $$status -ne 0 ]]; then \
-		echo 'Warning: ${CHECKNR} failed, error code: $$status'; \
-	    fi; \
-	fi
-
-man2html: ${MANPAGES}
-	@HAVE_MAN2HTML="`type -P ${MAN2HTML}`"; \
-	 HAVE_MAN="`type -P ${MAN}`"; \
-	if [[ -z "$$HAVE_MAN2HTML" ]]; then \
-	    echo 'The man2html command could not be found.' 1>&2; \
-	    echo 'The man2html command is required to run this rule.'; 1>&2; \
-	fi; \
-	if [[ -z "$$HAVE_MAN" ]]; then \
-	    echo 'The man command could not be found.' 1>&2; \
-	    echo 'The man command is required to run this rule.'; 1>&2; \
-	fi; \
-	if [[ -z "$$HAVE_MAN2HTML" || -z "$$HAVE_MAN" ]]; then \
-	    echo ''; 1>&2; \
-	    exit 1; \
-	fi
-	@for i in ${MAN1_TARGETS}; do \
-	    echo ${RM} -f "$$i.html"; \
-	    ${RM} -f "$$i.html"; \
-	    echo "${MAN} ./$$i.1 | ${MAN2HTML} -compress -title $$i > man/$$i.html"; \
-	    ${MAN} "./$$i.1" | ${MAN2HTML} -compress -title "$$i" > man/"$$i.html"; \
-	done
-	@for i in ${MAN3_TARGETS}; do \
-	    echo ${RM} -f "$$i.html"; \
-	    ${RM} -f "$$i.html"; \
-	    echo "${MAN} ./$$i.3 | ${MAN2HTML} -compress -title $$i > man/$$i.html"; \
-	    ${MAN} "./$$i.3" | ${MAN2HTML} -compress -title "$$i" > man/"$$i.html"; \
-	done
-	@for i in ${MAN8_TARGETS}; do \
-	    echo ${RM} -f "$$i.html"; \
-	    ${RM} -f "$$i.html"; \
-	    echo "${MAN} ./$$i.8 | ${MAN2HTML} -compress -title $$i > man/$$i.html"; \
-	    ${MAN} "./$$i.8" | ${MAN2HTML} -compress -title "$$i" > man/"$$i.html"; \
-	done
+check_man: man/Makefile
+	${MAKE} -C man check_man
 
 # Only run this rule when you wish to invalidate all timestamps
 # prior to now, such as when you make a fundamental change to a
@@ -940,7 +869,7 @@ legacy_clobber:
 	${RM} -f chk_sem_auth.o chk_sem_info.o chk_validate.o
 	${RM} -f jstr_test.out jstr_test2.out
 	${RM} -rf test_iocccsize test_src test_work
-	${RM} -f dbg_test.c
+	${RM} -f dbg_test.c dbg_test.out
 	${RM} -rf dyn_test.dSYM
 	${RM} -f jparse_test.log chkentry_test.log txzchk_test.log
 	${RM} -f test_ioccc.log chkentry_test.log jparse_test.log txzchk_test.log
@@ -950,6 +879,7 @@ legacy_clobber:
 	${RM} -f .exit_code.*
 	${RM} -f dbg.out
 	${RM} -rf ioccc_test test
+	${RM} -f man/*.html
 
 # rule used by prep.sh and make clobber
 #
@@ -959,11 +889,9 @@ prep_clobber: legacy_clobber
 	${RM} -f answers.txt
 	${RM} -f jparse/test_jparse/jstr_test.out jparse/test_jparse/jstr_test2.out
 	${RM} -rf test_ioccc/test_iocccsize test_ioccc/test_src test_ioccc/test_work
-	${RM} -f tags dbg_test.out
-	${RM} -f jparse.output jparse.html
+	${RM} -f tags
+	${RM} -f jparse.output
 	${RM} -f ${TXZCHK_LOG}
-	${RM} -f dbg_test.c
-	${RM} -rf test_ioccc/dyn_test.dSYM
 	${RM} -f jparse/test_jparse/jnum_chk
 	${RM} -rf jparse/test_jparse/jnum_chk.dSYM
 	${RM} -f jnum_gen
@@ -992,11 +920,15 @@ clean: clean_generated_obj legacy_clean
 	${RM} -f ${GENERATED_OBJ}
 	${RM} -f ${LESS_PICKY_OBJ}
 	${RM} -rf ${DSYMDIRS}
+	${MAKE} -C dbg $@
+	${MAKE} -C dyn_array $@
+	${MAKE} -C test_ioccc $@
+	${MAKE} -C soup $@
+	${MAKE} -C man $@
 
 clobber: clean prep_clobber
 	${RM} -f ${BUILD_LOG}
 	${RM} -f jparse/test_jparse/jparse_test.log test_ioccc/chkentry_test.log test_ioccc/txzchk_test.log
-	${RM} -f ${HTML_MAN_TARGETS}
 	${RM} -f .jsemcgen.out.*
 	${RM} -f .all_ref.*
 	${RM} -rf .hostchk.work.*
@@ -1004,22 +936,18 @@ clobber: clean prep_clobber
 	${RM} -f .jsemcgen.*
 	${RM} -f .txzchk_test,*
 	${RM} -f test_ioccc/test_ioccc.log
-	${MAKE} -C dbg clobber
-	${MAKE} -C test_ioccc clobber
-	${MAKE} -C soup clobber
+	${MAKE} -C dbg $@
+	${MAKE} -C dyn_array $@
+	${MAKE} -C test_ioccc $@
+	${MAKE} -C soup $@
+	${MAKE} -C man $@
 
 distclean nuke: clobber
 
 install: all
 	# we have to first make sure the directories exist!
 	${INSTALL} -v -d -m 0755 ${DESTDIR}
-	${INSTALL} -v -d -m 0755 ${MAN1_DIR}
-	${INSTALL} -v -d -m 0755 ${MAN3_DIR}
-	${INSTALL} -v -d -m 0755 ${MAN8_DIR}
 	${INSTALL} -v -m 0555 ${TARGETS} ${SH_TARGETS} ${DESTDIR}
-	${INSTALL} -v -m 0644 ${MAN1PAGES} ${MAN1_DIR}
-	${INSTALL} -v -m 0644 ${MAN3PAGES} ${MAN3_DIR}
-	${INSTALL} -v -m 0644 ${MAN8PAGES} ${MAN8_DIR}
 
 tags: ${ALL_CSRC} ${H_FILES}
 	-${CTAGS} ${ALL_CSRC} ${H_FILES} 2>&1 | \
@@ -1207,10 +1135,6 @@ sanity.o: sanity.c sanity.h util.h dyn_array/dyn_array.h dyn_array/../dbg/dbg.h 
 	utf8_posix_map.h limit_ioccc.h version.h
 verge.o: verge.c verge.h dbg/dbg.h util.h dyn_array/dyn_array.h dyn_array/../dbg/dbg.h limit_ioccc.h \
 	version.h
-dyn_array.o: dyn_array/dyn_array.c dyn_array/dyn_array.h dyn_array/../dbg/dbg.h
-dyn_test.o: test_ioccc/dyn_test.c test_ioccc/dyn_test.h test_ioccc/../util.h dyn_array/dyn_array.h \
-	dyn_array/../dbg/dbg.h test_ioccc/../dbg/dbg.h test_ioccc/../dyn_array/dyn_array.h
-dbg_test.o: dbg/dbg_test.c dbg/dbg.h
 jnum_chk.o: jparse/test_jparse/jnum_chk.c jparse/test_jparse/jnum_chk.h \
 	jparse/test_jparse/../../dbg/dbg.h jparse/test_jparse/../../util.h dyn_array/dyn_array.h \
 	dyn_array/../dbg/dbg.h json_parse.h util.h json_util.h jparse/test_jparse/../../version.h

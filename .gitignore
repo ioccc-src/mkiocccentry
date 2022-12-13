@@ -10,63 +10,47 @@ answers.txt
 bug-report*.txt
 build.log
 chkentry
+chkentry_test.log
 dbg.clone
-dbg_example
-dbg_test
-dbg_test.c
-dyn_test
+dbg/dbg_example
+dbg/dbg_test
+dbg/dbg_test.c
+dyn_array/dyn_test
 fnamchk
 have_timegm
 iocccsize
 jnum_chk
 jnum_gen
-jparse/jparse
 jparse.c
 jparse.lex.h
+jparse.output
 jparse.tab.c
 jparse.tab.h
+jparse.xml
+jparse/jparse
+jparse_test.log
 jsemtblgen
 json_parser
+jstr_test.out
+jstr_test2.out
 jstrdecode
 jstrencode
 limit_ioccc.sh
 makefile.local
-man/chkentry.html
-# man/dbg.3 is a copy of dbg/dbg.3 which we don't need to duplicate
 man/dbg.3
-man/dbg.html
-man/fnamchk.html
-man/iocccsize.html
-man/jparse.html
-# man/jparse.1 is a copy of jparse.1 which we don't need to duplicate
-man/jparse.1
-man/jstrdecode.html
-man/jstrencode.html
-man/limit_ioccc.html
-man/mkiocccentry.html
-# man/run_bison.1 is a copy of run_bison.1 which we don't need to duplicate
-man/run_bison.1
-# man/run_flex.1 is a copy of run_flex.1 which we don't need to duplicate
-man/run_flex.1
-man/txzchk.html
-man/utf8_test.html
-man/verge.html
+man/dyn_array.3
 mkiocccentry
 oebxergfB.txt
 orig.iocccsize
-soup/ref/
 soup/.soup
+soup/ref/
 tags
-chkentry_test.log
 test_ioccc/test_ioccc.log
-jparse_test.log
-jstr_test.out
-jstr_test2.out
-test_iocccsize/
 test_ioccc/test_src/
 test_ioccc/test_work/
-txzchk_test.log
+test_iocccsize/
 txzchk
+txzchk_test.log
 utf8_test
 verge
 
@@ -138,8 +122,3 @@ makefile.local
 
 # temporary files
 *.tmp
-
-# parser logs
-jparse.output
-jparse.html
-jparse.xml

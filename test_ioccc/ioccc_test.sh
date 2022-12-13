@@ -199,16 +199,16 @@ if [[ ! -x jparse/test_jparse/jnum_chk ]]; then
     exit 8
 fi
 # dyn_test
-if [[ ! -e test_ioccc/dyn_test ]]; then
-    echo "$0: ERROR: test_ioccc/dyn_test file not found" 1>&2
+if [[ ! -e dyn_array/dyn_test ]]; then
+    echo "$0: ERROR: dyn_array/dyn_test file not found" 1>&2
     exit 9
 fi
-if [[ ! -f test_ioccc/dyn_test ]]; then
-    echo "$0: ERROR: test_ioccc/dyn_test is not a regular file" 1>&2
+if [[ ! -f dyn_array/dyn_test ]]; then
+    echo "$0: ERROR: dyn_array/dyn_test is not a regular file" 1>&2
     exit 9
 fi
-if [[ ! -x test_ioccc/dyn_test ]]; then
-    echo "$0: ERROR: test_ioccc/dyn_test is not executable" 1>&2
+if [[ ! -x dyn_array/dyn_test ]]; then
+    echo "$0: ERROR: dyn_array/dyn_test is not executable" 1>&2
     exit 9
 fi
 # jparse_test.sh
@@ -430,19 +430,19 @@ fi
 # dyn_test
 #
 echo | tee -a -- "$LOGFILE"
-echo "RUNNING: test_ioccc/dyn_test" | tee -a -- "$LOGFILE"
+echo "RUNNING: dyn_array/dyn_test" | tee -a -- "$LOGFILE"
 echo | tee -a -- "$LOGFILE"
-echo "test_ioccc/dyn_test" | tee -a -- "$LOGFILE"
-test_ioccc/dyn_test | tee -a -- "$LOGFILE"
+echo "dyn_array/dyn_test" | tee -a -- "$LOGFILE"
+dyn_array/dyn_test | tee -a -- "$LOGFILE"
 status="${PIPESTATUS[0]}"
 if [[ $status -ne 0 ]]; then
-    echo "$0: ERROR: test_ioccc/dyn_test non-zero exit code: $status" 1>&2 | tee -a -- "$LOGFILE"
+    echo "$0: ERROR: dyn_array/dyn_test non-zero exit code: $status" 1>&2 | tee -a -- "$LOGFILE"
     FAILURE_SUMMARY="$FAILURE_SUMMARY
-    test_ioccc/dyn_test non-zero exit code: $status"
+    dyn_array/dyn_test non-zero exit code: $status"
     EXIT_CODE="26"
 else
     echo | tee -a -- "$LOGFILE"
-    echo "PASSED: test_ioccc/dyn_test" | tee -a -- "$LOGFILE"
+    echo "PASSED: dyn_array/dyn_test" | tee -a -- "$LOGFILE"
 fi
 
 # jparse_test.sh

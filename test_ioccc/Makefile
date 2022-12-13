@@ -92,7 +92,7 @@ LDFLAGS=
 #	^^ the line is above :-)
 #
 # TODO - ###################################################################### - TODO #
-# TODO - In 2024 we will will support only c17 so C_STD will become c-std=gnu17 - TODO #
+# TODO - In 2023 we will will support only c17 so C_STD will become c-std=gnu17 - TODO #
 # TODO - ###################################################################### - TODO #
 #
 C_STD= -std=gnu11
@@ -132,7 +132,7 @@ CFLAGS= ${C_STD} ${COPT} -pedantic ${WARN_FLAGS} ${LDFLAGS}
 # where and what to install
 #
 DESTDIR= /usr/local/bin
-TARGETS= utf8_test dyn_test
+TARGETS= utf8_test
 SH_TARGETS=
 
 
@@ -147,14 +147,11 @@ all: ${TARGETS}
 utf8_test.o: utf8_test.c ../utf8_posix_map.h Makefile
 	${CC} ${CFLAGS} -I.. utf8_test.c -c
 
-utf8_test: utf8_test.o ../utf8_posix_map.o ../dbg ../util.o ../dyn_array/dyn_array.o Makefile
-	${CC} ${CFLAGS} -I.. utf8_test.o ../utf8_posix_map.o ../dbg/dbg.o ../util.o ../dyn_array/dyn_array.o -o utf8_test
+utf8_test: utf8_test.o ../utf8_posix_map.o ../dbg/dbg.a ../util.o ../dyn_array/dyn_array.a Makefile
+	${CC} ${CFLAGS} -I.. utf8_test.o ../utf8_posix_map.o ../dbg/dbg.a ../util.o ../dyn_array/dyn_array.a -o utf8_test
 
-dyn_test.o: dyn_test.c Makefile
-	${CC} ${CFLAGS} -I.. dyn_test.c -c
-
-dyn_test: dyn_test.o ../dbg ../util.o ../dyn_array/dyn_array.o Makefile
-	${CC} ${CFLAGS} -I.. dyn_test.o ../dbg/dbg.o ../util.o ../dyn_array/dyn_array.o -o dyn_test
+ioccc_test.sh: ../dbg/dbg_test ../dyn_array/dyn_test
+	@:
 
 
 ###################################################################
@@ -163,6 +160,32 @@ dyn_test: dyn_test.o ../dbg ../util.o ../dyn_array/dyn_array.o Makefile
 
 test: all ioccc_test.sh
 	 ./ioccc_test.sh
+
+
+#############################################################
+# rules that invoke rules in Makefiles in other directories #
+#############################################################
+
+../util.o: ../Makefile
+	${MAKE} -C .. util.o
+
+../utf8_posix_map.h: ../Makefile
+	${MAKE} -C .. utf8_posix_map.h
+
+../utf8_posix_map.o: ../Makefile
+	${MAKE} -C .. utf8_posix_map.o
+
+../dbg/dbg.a: ../dbg/Makefile
+	${MAKE} -C ../dbg dbg.a
+
+../dbg/dbg_test: ../dbg/Makefile
+	${MAKE} -C ../dbg dbg_test
+
+../dyn_array/dyn_array.a: ../dyn_array/Makefile
+	${MAKE} -C ../dyn_array dyn_array.a
+
+../dyn_array/dyn_test: ../dyn_array/Makefile
+	${MAKE} -C ../dyn_array dyn_test
 
 
 ###################################

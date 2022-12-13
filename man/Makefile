@@ -1,8 +1,8 @@
 #!/usr/bin/make
 #
-# dbg - info, debug, warning, error and usage message facilities
+# man - man pages for the mkiocccentry repo
 #
-# Copyright (c) 1989,1997,2018-2022 by Landon Curt Noll.  All Rights Reserved.
+# Copyright (c) 2022 by Landon Curt Noll.  All Rights Reserved.
 #
 # Permission to use, copy, modify, and distribute this software and
 # its documentation for any purpose and without fee is hereby granted,
@@ -101,8 +101,8 @@ CFLAGS= ${C_STD} ${C_OPT} ${WARN_FLAGS} ${LDFLAGS}
 
 # source files that are permanent (not made, nor removed)
 #
-C_SRC= dbg.c dbg_example.c dbg_test.c
-H_SRC= dbg.h
+C_SRC=
+H_SRC=
 ALL_SRC= ${C_SRC} ${H_SRC}
 
 
@@ -112,15 +112,15 @@ ALL_SRC= ${C_SRC} ${H_SRC}
 
 # NOTE: ${LIB_OBJS} are objects to put into a library and removed by make clean
 #
-LIB_OBJS= dbg.o
+LIB_OBJS=
 
 # NOTE: ${OTHER_OBJS} are objects NOT put into a library and removed by make clean
 #
-OTHER_OBJS= dbg_test.o dbg_example.o
+OTHER_OBJS=
 
 # NOTE: intermediate files to make and removed by make clean
 #
-BUILT_C_SRC= dbg_test.c
+BUILT_C_SRC=
 BUILT_H_SRC=
 ALL_BUILT_SRC= ${BUILT_C_SRC} ${BUILT_H_SRC}
 
@@ -149,11 +149,11 @@ DEST_DIR= /usr/local/bin
 
 # may be used outside of this directory
 #
-EXTERN_H= dbg.h
-EXTERN_O= dbg.o
+EXTERN_H=
+EXTERN_O=
 EXTERN_MAN= ${ALL_MAN_TARGETS}
-EXTERN_LIBA= dbg.a
-EXTERN_PROG= dbg_example dbg_test
+EXTERN_LIBA=
+EXTERN_PROG=
 
 # NOTE: ${EXTERN_CLOBBER} used outside of this directory and removed by make clobber
 #
@@ -166,26 +166,33 @@ EXTERN_CLOBBER= ${EXTERN_O} ${EXTERN_LIBA} ${EXTERN_PROG}
 
 # man pages
 #
-MAN1_TARGETS=
-MAN3_TARGETS= dbg.3
-MAN8_TARGETS=
+MAN1_TARGETS= bug_report.1 chkentry.1 fnamchk.1 hostchk.1 iocccsize.1 jparse.1 jstrdecode.1 \
+	jstrencode.1 mkiocccentry.1 run_bison.1 run_flex.1 txzchk.1
+MAN3_TARGETS= dbg.3 dyn_array.3
+MAN8_TARGETS= all_ref.8 chkentry_test.8 ioccc_test.8 iocccsize_test.8 jnum_chk.8 jnum_gen.8 \
+	jparse_test.8 jsemcgen.8 jsemtblgen.8 jstr_test.8 mkiocccentry_test.8 reset_tstamp.8 \
+	run_usage.8 txzchk_test.8 utf8_test.8 verge.8 vermod.8
 ALL_MAN_TARGETS= ${MAN1_TARGETS} ${MAN3_TARGETS} ${MAN8_TARGETS}
+
+# These man pages are build and removed by make clobber
+#
+BUILT_MAN_TARGETS= dbg.3 dyn_array.3
 
 # libraries
 #
-LIBA_TARGETS= dbg.a
+LIBA_TARGETS=
 
 # include files
 #
-H_SRC_TARGETS= dbg.h
+H_SRC_TARGETS=
 
 # what to make by all but NOT to removed by clobber (because they are not files)
 #
-ALL_OTHER_TARGETS= extern_everything
+ALL_OTHER_TARGETS= extern_everything ${BUILT_MAN_TARGETS}
 
 # what to make by all and removed by clobber (and thus not ${ALL_OTHER_TARGETS})
 #
-TARGETS= ${LIBA_TARGETS} dbg_test dbg_example
+TARGETS= ${LIBA_TARGETS} ${BUILT_MAN_TARGETS}
 
 
 ###########################################
@@ -208,29 +215,24 @@ all: ${TARGETS} ${ALL_OTHER_TARGETS} Makefile
 # what to make #
 ################
 
-dbg.o: dbg.c dbg.h
-	${CC} ${CFLAGS} dbg.c -c
-
-dbg.a: ${LIB_OBJS}
+dbg.3: ../dbg/dbg.3
 	${RM} -f $@
-	${AR} -r -u -v $@ $^
-	${RANLIB} $@
+	${CP} -v -f $^ $@
 
-dbg_test.c: dbg.c
+dyn_array.3: ../dyn_array/dyn_array.3
 	${RM} -f $@
-	${CP} -v -f dbg.c $@
+	${CP} -v -f $^ $@
 
-dbg_test.o: dbg_test.c dbg.h
-	${CC} ${CFLAGS} -DDBG_TEST dbg_test.c -c
 
-dbg_test: dbg_test.o dbg.a
-	${CC} ${CFLAGS} dbg_test.o dbg.a -o $@
+#############################################################
+# rules that invoke rules in Makefiles in other directories #
+#############################################################
 
-dbg_example.o:  dbg_example.c dbg.h
-	${CC} ${CFLAGS} dbg_example.c -c
+../dbg/dbg.3: ../dbg/Makefile
+	${MAKE} -C ../dbg dbg.3
 
-dbg_example: dbg_example.o dbg.a
-	${CC} ${CFLAGS} dbg_example.o dbg.a -o $@
+../dyn_array/dyn_array.3: ../dyn_array/Makefile
+	${MAKE} -C ../dyn_array dyn_array.3
 
 
 ###########################################
@@ -259,28 +261,8 @@ extern_everything: extern_include extern_objs extern_liba extern_man extern_prog
 # internal make rules #
 #######################
 
-test: dbg_test check_man Makefile
-	${RM} -f dbg_test.out
-	@echo "RUNNING: dbg_test"
-	@echo "./dbg_test -e 2 foo bar baz >dbg_test.out 2>&1"
-	@-./dbg_test -v 1 -e 2 foo bar baz >dbg_test.out 2>&1; \
-	  status="$$?"; \
-	  if [[ $$status -ne 5 ]]; then \
-	    echo "exit status of dbg_test: $$status != 5"; \
-	    exit 21; \
-	  else \
-	      ${GREP} -q '^ERROR\[5\]: main: simulated error, foo: foo bar: bar: errno\[2\]: No such file or directory$$' dbg_test.out; \
-	      status="$$?"; \
-	      if [[ $$status -ne 0 ]]; then \
-		echo "ERROR: did not find the correct dbg_test error message" 1>&2; \
-		echo "ERROR: beginning dbg_test.out contents" 1>&2; \
-		${CAT} dbg_test.out 1>&2; \
-		echo "ERROR: dbg_test.out contents complete" 1>&2; \
-		exit 22; \
-	      else \
-		echo "PASSED: dbg_test"; \
-	      fi; \
-	  fi
+test: check_man Makefile
+	@:
 
 # inspect and verify man pages
 #
@@ -314,7 +296,6 @@ configure:
 clean:
 	${RM} -f ${ALL_OBJS}
 	${RM} -f ${ALL_BUILT_SRC}
-	${RM} -f dbg_test.out
 
 clobber: clean
 	${RM} -f ${TARGETS}
@@ -322,18 +303,17 @@ clobber: clean
 	${RM} -f tags
 
 install: all
-	${INSTALL} -v -d -m 0775 ${DEST_LIB}
+#none#	${INSTALL} -v -d -m 0775 ${DEST_LIB}
 #none#	${INSTALL} -v -d -m 0775 ${DEST_DIR}
-#none#	${INSTALL} -v -d -m 0775 ${MAN1_DIR}
+	${INSTALL} -v -d -m 0775 ${MAN1_DIR}
 	${INSTALL} -v -d -m 0775 ${MAN3_DIR}
-#none#	${INSTALL} -v -d -m 0775 ${MAN8_DIR}
+	${INSTALL} -v -d -m 0775 ${MAN8_DIR}
 	${INSTALL} -v -d -m 0775 ${DEST_INCLUDE}
-#none#	${INSTALL} -v -m 0444 ${MAN1_TARGETS} ${MAN1_DIR}
+	${INSTALL} -v -m 0444 ${MAN1_TARGETS} ${MAN1_DIR}
 	${INSTALL} -v -m 0444 ${MAN3_TARGETS} ${MAN3_DIR}
-#none#	${INSTALL} -v -m 0444 ${MAN8_TARGETS} ${MAN8_DIR}
-	${INSTALL} -v -m 0444 ${LIBA_TARGETS} ${DEST_LIB}
-	${INSTALL} -v -m 0444 ${H_SRC_TARGETS} ${DEST_INCLUDE}
+	${INSTALL} -v -m 0444 ${MAN8_TARGETS} ${MAN8_DIR}
+#none#	${INSTALL} -v -m 0444 ${LIBA_TARGETS} ${DEST_LIB}
+#none#	${INSTALL} -v -m 0444 ${H_SRC_TARGETS} ${DEST_INCLUDE}
 
 tags: ${ALL_SRC} ${ALL_BUILT_SRC}
-	-${CTAGS} ${ALL_SRC} ${ALL_BUILT_SRC} 2>&1 | \
-	     ${GREP} -E -v 'Duplicate entry|Second entry ignored'
+	@:
