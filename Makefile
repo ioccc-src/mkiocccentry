@@ -132,7 +132,7 @@ LDFLAGS=
 #	^^ the line is above :-)
 #
 # TODO - ###################################################################### - TODO #
-# TODO - In 2024 we will will support only c17 so C_STD will become -std=gnu17  - TODO #
+# TODO - In 2023 we will will support only c17 so C_STD will become -std=gnu17  - TODO #
 # TODO - ###################################################################### - TODO #
 #
 C_STD= -std=gnu11
@@ -404,7 +404,7 @@ hostchk_warning:
 # rules, not file targets
 #
 .PHONY: all just_all fast_hostchk hostchk hostchk_warning all_ref all_ref_ptch mkchk_sem bug_report.sh build \
-	checknr clean clean_generated_obj clean_mkchk_sem clobber configure depend hostchk bug_report.sh \
+	check_man clean clean_generated_obj clean_mkchk_sem clobber configure depend hostchk bug_report.sh \
 	install test_ioccc legacy_clobber man2html mkchk_sem parser parser-o picky prep prep_clobber \
         pull rebuild_jnum_test release reset_min_timestamp seqcexit shellcheck tags test test-chkentry use_ref \
 	dbg soup dyn_array jparse
@@ -826,15 +826,22 @@ shellcheck: ${SH_FILES} .shellcheckrc Makefile
 
 # inspect and verify man pages
 #
-checknr: ${MANPAGES}
+check_man: ${MANPAGES}
 	@HAVE_CHECKNR="`type -P ${CHECKNR}`"; if [[ -z "$$HAVE_CHECKNR" ]]; then \
 	    echo 'The checknr command could not be found.' 1>&2; \
-	    echo 'The checknr command is required to run this rule.'; 1>&2; \
+	    echo 'The checknr command is required to run the $@ rule.' 1>&2; \
 	    echo ''; 1>&2; \
-	    exit 1; \
+	    echo 'The source code and install instructions for checknr are available from this GitHub repo:' 1>&2; \
+	    echo ''; 1>&2; \
+	    echo '    https://github.com/lcn2/checknr' 1>&2; \
+	    echo ''; 1>&2; \
 	else \
 	    echo "${CHECKNR} -c.BR.SS.BI ${MANPAGES}"; \
 	    ${CHECKNR} -c.BR.SS.BI ${MANPAGES}; \
+	    status="$$?"; \
+	    if [[ $$status -ne 0 ]]; then \
+		echo 'Warning: ${CHECKNR} failed, error code: $$status'; \
+	    fi; \
 	fi
 
 man2html: ${MANPAGES}
