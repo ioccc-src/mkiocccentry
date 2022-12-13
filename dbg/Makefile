@@ -153,10 +153,11 @@ EXTERN_H= dbg.h
 EXTERN_O= dbg.o
 EXTERN_MAN= ${ALL_MAN_TARGETS}
 EXTERN_LIBA= dbg.a
+EXTERN_PROG= dbg_example dbg_test
 
 # NOTE: ${EXTERN_CLOBBER} used outside of this directory and removed by make clobber
 #
-EXTERN_CLOBBER= ${EXTERN_O} ${EXTERN_LIBA}
+EXTERN_CLOBBER= ${EXTERN_O} ${EXTERN_LIBA} ${EXTERN_PROG}
 
 
 ######################
@@ -180,7 +181,7 @@ H_SRC_TARGETS= dbg.h
 
 # what to make by all but NOT to removed by clobber (because they are not files)
 #
-ALL_OTHER_TARGETS= extern_all
+ALL_OTHER_TARGETS= extern_everything
 
 # what to make by all and removed by clobber (and thus not ${ALL_OTHER_TARGETS})
 #
@@ -200,7 +201,7 @@ all: ${TARGETS} ${ALL_OTHER_TARGETS} Makefile
 ######################################################
 
 .PHONY: all configure clean clobber install test \
-	extern_include extern_objs extern_liba extern_man extern_all
+	extern_include extern_objs extern_liba extern_man extern_everything
 
 
 ################
@@ -248,7 +249,10 @@ extern_liba: ${EXTERN_LIBA}
 extern_man: ${EXTERN_MAN}
 	@:
 
-extern_all: extern_include extern_objs extern_liba extern_man
+extern_prog: ${EXTERN_PROG}
+	@:
+
+extern_everything: extern_include extern_objs extern_liba extern_man extern_prog
 	@:
 
 #######################
