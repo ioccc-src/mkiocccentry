@@ -1063,8 +1063,8 @@ depend: soup/fmt_depend.sh
 dbg.clone:
 	${GIT} clone https://github.com/lcn2/dbg.git dbg.clone
 
-dbg.diff: dbg.clone/ dbg/
-	${DIFF} -u -r --exclude='.*' dbg.clone dbg
+dbg.diff: dbg.clone/ dbg/ .exclude
+	${DIFF} -u -r --exclude-from=.exclude dbg.clone dbg
 
 dbg.fetch: dbg.clone/
 	cd dbg.clone && ${GIT} fetch
@@ -1080,8 +1080,8 @@ dbg.reload: dbg.clone/
 	${RM} -rf dbg
 	${MAKE} dbg.rsync
 
-dbg.rsync: dbg.clone/
-	${RSYNC} -a -S -0 --delete -C --exclude='.*' -v dbg.clone/ dbg
+dbg.rsync: dbg.clone/ .exclude
+	${RSYNC} -a -S -0 --delete -C --exclude-from=.exclude -v dbg.clone/ dbg
 
 dbg.status: dbg.clone/
 	${GIT} status dbg.clone
@@ -1092,8 +1092,8 @@ dyn_array/dyn_array.clone:
 	@echo 'rule disabled, enable once dyn_array repo exists'
 	@#${GIT} clone https://github.com/lcn2/dyn_array.git dyn_array/dyn_array.clone
 
-dyn_array.diff: dyn_array/dyn_array.clone/ dyn_array/
-	@#${DIFF} -u -r --exclude='.*' dyn_array/dyn_array.clone dyn_array
+dyn_array.diff: dyn_array/dyn_array.clone/ dyn_array/ .exclude
+	@#${DIFF} -u -r --exclude-from=.exclude dyn_array/dyn_array.clone dyn_array
 
 dyn_array.fetch: dyn_array/dyn_array.clone/
 	@#cd dyn_array/dyn_array.clone && ${GIT} fetch
@@ -1110,8 +1110,8 @@ dyn_array.reload: dyn_array/dyn_array.clone/
 	@#${RM} -rf dyn_array
 	@#${MAKE} dyn_array.rsync
 
-dyn_array.rsync: dyn_array/dyn_array.clone/
-	@#${RSYNC} -a -S -0 --delete -C --exclude='.*' -v dyn_array/dyn_array.clone/ dyn_array
+dyn_array.rsync: dyn_array/dyn_array.clone/ .exclude
+	@#${RSYNC} -a -S -0 --delete -C --exclude-from=.exclude -v dyn_array/dyn_array.clone/ dyn_array
 
 dyn_array.status: dyn_array/dyn_array.clone/
 	@#${GIT} status dyn_array/dyn_array.clone
@@ -1122,8 +1122,8 @@ jparse.clone:
 	@echo 'rule disabled, enable once jparse repo exists'
 	@#${GIT} clone https://github.com/xexyl/jparse.git jparse.clone
 
-jparse.diff: jparse.clone/ jparse/
-	@#${DIFF} -u -r --exclude='.*' jparse.clone jparse
+jparse.diff: jparse.clone/ jparse/ .exclude
+	@#${DIFF} -u -r --exclude-from=.exclude jparse.clone jparse
 
 jparse.fetch: jparse.clone/
 	@#cd jparse.clone && ${GIT} fetch
@@ -1140,8 +1140,8 @@ jparse.reload: jparse.clone/
 	@#${RM} -rf jparse
 	@#${MAKE} jparse.rsync
 
-jparse.rsync: jparse.clone/
-	@#${RSYNC} -a -S -0 --delete -C --exclude='.*' -v jparse.clone/ jparse
+jparse.rsync: jparse.clone/ .exclude
+	@#${RSYNC} -a -S -0 --delete -C --exclude-from=.exclude -v jparse.clone/ jparse
 
 jparse.status: jparse.clone/
 	@#${GIT} status jparse.clone
