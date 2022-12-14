@@ -29,12 +29,12 @@
 /*
  * json_parse - JSON parser support code
  */
-#include "json_parse.h"
+#include "jparse/json_parse.h"
 
 /*
  * json_sem - JSON semantics support
  */
-#include "json_sem.h"
+#include "jparse/json_sem.h"
 
 
 /*

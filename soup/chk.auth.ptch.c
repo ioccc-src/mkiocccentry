@@ -1,5 +1,5 @@
---- soup/ref/auth.reference.json.c	2022-10-30 18:09:25
-+++ soup/chk_sem_auth.c	2022-10-30 18:09:06
+--- soup/ref/auth.reference.json.c	2022-12-13 07:46:35
++++ soup/chk_sem_auth.c	2022-12-13 07:47:55
 @@ -40,9 +40,9 @@
  struct json_sem sem_auth[SEM_AUTH_LEN+1] = {
  /* depth    type        min     max   count   index  name_len validate  name */
@@ -14,7 +14,7 @@
    { 4,	JTYPE_MEMBER,	1,	5,	5,	5,	13,	chk_author_handle,	"author_handle" },
    { 4,	JTYPE_MEMBER,	1,	5,	5,	6,	13,	chk_author_number,	"author_number" },
 @@ -56,8 +56,8 @@
-   { 4,	JTYPE_MEMBER,	1,	5,	5,	14,	7,	chk_mastodon,	"mastodon" },
+   { 4,	JTYPE_MEMBER,	1,	5,	5,	14,	11,	chk_past_winner,	"past_winner" },
    { 4,	JTYPE_MEMBER,	1,	5,	5,	15,	3,	chk_url,	"url" },
    { 3,	JTYPE_OBJECT,	1,	5,	5,	16,	0,	NULL,	NULL },
 -  { 2,	JTYPE_NUMBER,	1,	6,	6,	17,	0,	NULL,	NULL },

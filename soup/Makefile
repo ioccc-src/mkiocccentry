@@ -228,10 +228,13 @@ install: all
 ###############
 
 ### DO NOT CHANGE MANUALLY BEYOND THIS LINE
-chk_sem_auth.o: chk_sem_auth.c chk_sem_auth.h ../json_sem.h ../util.h ../dyn_array/dyn_array.h \
-	../dyn_array/../dbg/dbg.h ../json_parse.h ../json_util.h
-chk_sem_info.o: chk_sem_info.c chk_sem_info.h ../json_sem.h ../util.h ../dyn_array/dyn_array.h \
-	../dyn_array/../dbg/dbg.h ../json_parse.h ../json_util.h
-chk_validate.o: chk_validate.c chk_validate.h ../entry_util.h ../json_parse.h ../util.h \
-	../dyn_array/dyn_array.h ../dyn_array/../dbg/dbg.h ../json_sem.h ../json_util.h chk_sem_auth.h \
-	chk_sem_info.h ../entry_time.h ../location.h ../dbg/dbg.h
+chk_sem_auth.o: chk_sem_auth.c chk_sem_auth.h ../jparse/json_sem.h ../jparse/../util.h \
+	../dyn_array/dyn_array.h ../dyn_array/../dbg/dbg.h ../jparse/json_parse.h ../util.h \
+	../jparse/json_util.h ../jparse/../dyn_array/dyn_array.h
+chk_sem_info.o: chk_sem_info.c chk_sem_info.h ../jparse/json_sem.h ../jparse/../util.h \
+	../dyn_array/dyn_array.h ../dyn_array/../dbg/dbg.h ../jparse/json_parse.h ../util.h \
+	../jparse/json_util.h ../jparse/../dyn_array/dyn_array.h
+chk_validate.o: chk_validate.c chk_validate.h ../entry_util.h ../jparse/json_parse.h ../util.h \
+	../dyn_array/dyn_array.h ../dyn_array/../dbg/dbg.h ../jparse/json_sem.h ../jparse/../util.h \
+	../jparse/json_util.h ../jparse/../dyn_array/dyn_array.h chk_sem_auth.h chk_sem_info.h \
+	../entry_time.h ../location.h ../dbg/dbg.h

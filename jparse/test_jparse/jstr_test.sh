@@ -4,8 +4,8 @@
 
 # setuo
 #
-export JSTRENCODE="./jstrencode"
-export JSTRDECODE="./jstrdecode"
+export JSTRENCODE="./jparse/jstrencode"
+export JSTRDECODE="./jparse/jstrdecode"
 export TEST_FILE="./jparse/test_jparse/jstr_test.out"
 export TEST_FILE2="./jparse/test_jparse/jstr_test2.out"
 export JSTR_TEST_VERSION="0.4 2022-11-05"
@@ -174,7 +174,7 @@ fi
 #
 echo "$0: about to run test #3"
 export SRC_SET="$0 dbg/dbg.c dbg/dbg.h fnamchk.c iocccsize.c"
-SRC_SET="$SRC_SET chkentry.c json_parse.c json_parse.h jstrdecode.c jstrencode.c"
+SRC_SET="$SRC_SET chkentry.c ./jparse/json_parse.c ./jparse/json_parse.h ./jparse/jstrdecode.c ./jparse/jstrencode.c"
 SRC_SET="$SRC_SET limit_ioccc.h mkiocccentry.c txzchk.c util.c util.h"
 echo "cat \$SRC_SET | $JSTRENCODE -v $V_FLAG -n | $JSTRDECODE -v $V_FLAG -n > $TEST_FILE"
 # We cannot double-quote $SRC_SET because doing so would make the shell try

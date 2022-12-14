@@ -580,6 +580,7 @@ static const flex_int32_t yy_rule_can_match_eol[16] =
  * problems. Another way is to provide 'int yywrap() { return 1; }' but this is
  * unnecessary.
  */
+#define YY_NO_INPUT 1
 #line 37 "./jparse.l"
 /* Declarations etc. go here.
  *
@@ -604,7 +605,7 @@ YY_BUFFER_STATE bs;
 			yylloc->first_column = yyget_column(yyscanner); \
 			yylloc->last_column = yyget_column(yyscanner)+yyget_leng(yyscanner)-1; \
 			yyset_column(yyget_leng(yyscanner), yyscanner);
-#line 556 "jparse.c"
+#line 557 "jparse.c"
 /*
  * Section 2: Patterns (regular expressions) and actions.
  */
@@ -625,7 +626,7 @@ YY_BUFFER_STATE bs;
  *	    \"([^\n"]|\\\")*\"
  */
 /* Actions. */
-#line 577 "jparse.c"
+#line 578 "jparse.c"
 
 #define INITIAL 0
 
@@ -907,7 +908,7 @@ YY_DECL
 	{
 #line 100 "./jparse.l"
 
-#line 859 "jparse.c"
+#line 860 "jparse.c"
 
 	while ( /*CONSTCOND*/1 )		/* loops until end-of-file is reached */
 		{
@@ -1132,7 +1133,7 @@ YY_RULE_SETUP
 #line 206 "./jparse.l"
 YY_FATAL_ERROR( "flex scanner jammed" );
 	YY_BREAK
-#line 1084 "jparse.c"
+#line 1085 "jparse.c"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 

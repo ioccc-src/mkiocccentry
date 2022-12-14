@@ -32,7 +32,7 @@
 /*
  * json_util - general JSON parser utility support functions
  */
-#include "json_util.h"
+#include "jparse/json_util.h"
 
 /*
  * util - entry common utility functions for the IOCCC toolkit
@@ -42,12 +42,12 @@
 /*
  * jparse - the parser
  */
-#include "jparse.h"
+#include "jparse/jparse.h"
 
 /*
  * json_sem - JSON semantics support
  */
-#include "json_sem.h"
+#include "jparse/json_sem.h"
 
 /*
  * chk_sem_info - check .info.json semantics

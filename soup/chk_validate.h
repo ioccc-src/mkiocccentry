@@ -31,12 +31,12 @@
 /*
  * json_util - general JSON parser utility support functions
  */
-#include "json_util.h"
+#include "../jparse/json_util.h"
 
 /*
  * json_sem - JSON semantics support
  */
-#include "../json_sem.h"
+#include "../jparse/json_sem.h"
 
 /*
  * chk_sem_auth - check .auth.json semantics
