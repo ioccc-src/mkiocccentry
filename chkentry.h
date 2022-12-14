@@ -87,7 +87,7 @@ static const char * const usage_msg =
     "\n"
     "Exit codes:\n"
     "     0   all is OK\n"
-    "     1   JSON files(s) are valid JSON, however semantic one or more checks failed\n"
+    "     1   JSON files(s) are valid JSON, however one or more semantic checks failed\n"
     "     2   -h and help string printed or -V and version string printed\n"
     "     3   command line error\n"
     "     4   file(s) were not valid JSON, no semantic checks were performed\n"
