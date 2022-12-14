@@ -58,24 +58,81 @@ TOUCH = touch
 TR= tr
 TRUE= true
 
-GENERATED_CSRC= jparse.c jparse.tab.c
+
+######################
+# target information #
+######################
+
+# man pages
+#
+MAN1_TARGETS= jparse.1
+MAN3_TARGETS= 
+MAN8_TARGETS= jparse_test.8
+ALL_MAN_TARGETS= ${MAN1_TARGETS} ${MAN3_TARGETS} ${MAN8_TARGETS}
+EXTERN_MAN= ${ALL_MAN_TARGETS}
+
 GENERATED_HSRC= jparse.tab.h jparse.lex.h
-GENERATED_OBJ= jparse.o jparse.tab.o
-OBJFILES= jnum_gen.o jparse.tab.o jsemtblgen.o json_sem.o jstrdecode.o verge.o jparse.o \
+GENERATED_OBJ= jparse.o jparse.tab.o jparse.tab.o
+OBJFILES= jnum_gen.o jsemtblgen.o json_sem.o jstrdecode.o verge.o \
 	  jparse_main.o json_parse.o json_util.o jstrencode.o
 # This is a simpler way to do:
 #
 #   SRCFILES =  $(patsubst %.o,%.c,$(OBJFILES))
 #
 SRCFILES= $(OBJFILES:.o=.c)
+GENERATED_CSRC=$(GENERATED_OBJ:.o=.c)
 ALL_CSRC= ${GENERATED_CSRC} ${SRCFILES}
+
 
 TARGETS= jparse verge jsemtblgen jnum_gen jstrdecode jstrencode
 
-all: ${TARGETS} ${OBJFILES}
+all: ${TARGETS}
 	@:
 
-CFLAGS= -O3 -g3 -pedantic -Wall -Wno-unneeded-internal-declaration
+##################
+# How to compile #
+##################
+
+# C source standards being used
+#
+# This repo supports c11 and later.
+#
+# NOTE: The use of -std=gnu11 is because there are a few older systems
+#       in late 2021 that do not have compilers that (yet) support gnu17.
+#       While there may be even more out of date systems that do not
+#       support gnu11, we have to draw the line somewhere.
+#
+#       --------------------------------------------------
+#
+#       ^^ the line is above :-)
+#
+# TODO - ###################################################################### - TODO #
+# TODO - In 2023 we will will support only c17 so C_STD will become -std=gnu17  - TODO #
+# TODO - ###################################################################### - TODO #
+#
+C_STD= -std=gnu11
+#C_STD= -std=gnu17
+
+# optimization and debug level
+#
+C_OPT= -O3 -g3
+#C_OPT= -O0 -g
+
+# Compiler warnings
+#
+WARN_FLAGS= -pedantic -Wall -Wextra -Wno-unneeded-internal-declaration
+#WARN_FLAGS= -pedantic -Wall -Wextra -Werror
+
+# linker options
+#
+LDFLAGS=
+
+# how to compile
+#
+# NOTE: If you use ASAN, set this environment var:
+#       ASAN_OPTIONS="detect_stack_use_after_return=1"
+#
+CFLAGS= ${C_STD} ${C_OPT} ${WARN_FLAGS} ${LDFLAGS}
 #CFLAGS= -O3 -g3 -pedantic -Wall -Werror
 
 # RUN_O_FLAG - determine if the bison and flex backup files should be used
@@ -298,6 +355,29 @@ verge.o: verge.c verge.h Makefile
 verge: verge.o ../dbg/dbg.a ../util.o ../dyn_array/dyn_array.o Makefile
 	${CC} ${CFLAGS} verge.o ../dbg/dbg.o ../util.o ../dyn_array/dyn_array.o -o $@
 
+extern_man: ${EXTERN_MAN}
+	@:
+
+# inspect and verify man pages
+#
+check_man checknr: ${ALL_MAN_TARGETS} Makefile
+	@-HAVE_CHECKNR="`type -P ${CHECKNR}`"; if [[ -z "$$HAVE_CHECKNR" ]]; then \
+	    echo 'The checknr command could not be found.' 1>&2; \
+	    echo 'The checknr command is required to run the $@ rule.' 1>&2; \
+	    echo ''; 1>&2; \
+	    echo 'The source code and install instructions for checknr are available from this GitHub repo:' 1>&2; \
+	    echo ''; 1>&2; \
+	    echo '    https://github.com/lcn2/checknr' 1>&2; \
+	    echo ''; 1>&2; \
+	else \
+	    echo "${CHECKNR} -c.BR.SS.BI ${ALL_MAN_TARGETS}"; \
+	    ${CHECKNR} -c.BR.SS.BI ${ALL_MAN_TARGETS}; \
+	    status="$$?"; \
+	    if [[ $$status -ne 0 ]]; then \
+		echo 'ERROR: checknr: ${CHECKNR} failed, error code: $$status'; \
+		exit 23; \
+	    fi; \
+	fi
 
 
 configure:
@@ -318,7 +398,7 @@ install: all
 
 depend: ../soup/fmt_depend.sh
 	@echo
-	@echo "make depend starting"
+	@echo "jparse make depend starting"
 	@echo
 	@${SED} -i.orig -n -e '1,/^### DO NOT CHANGE MANUALLY BEYOND THIS LINE/p' Makefile
 	${CC} ${CFLAGS} -MM -I../dbg -I../dyn_array -I.. ${ALL_CSRC} | ../soup/fmt_depend.sh >> Makefile
@@ -328,7 +408,7 @@ depend: ../soup/fmt_depend.sh
 	    echo; echo "Makefile dependencies updated"; echo; echo "Previous version may be found in: Makefile.orig"; \
 	fi
 	@echo
-	@echo "make depend completed"
+	@echo "jparse make depend completed"
 
 ###############
 # make depend #
@@ -339,10 +419,10 @@ jparse.o: jparse.c jparse.h ../dbg/dbg.h ../util.h ../dyn_array/dyn_array.h \
 	../dyn_array/../dbg/dbg.h json_parse.h json_util.h jparse.tab.h
 jparse.tab.o: jparse.tab.c jparse.h ../dbg/dbg.h ../util.h ../dyn_array/dyn_array.h \
 	../dyn_array/../dbg/dbg.h json_parse.h json_util.h jparse.tab.h jparse.lex.h
-jnum_gen.o: jnum_gen.c jnum_gen.h ../dbg/dbg.h ../util.h ../dyn_array/dyn_array.h \
-	../dyn_array/../dbg/dbg.h json_parse.h json_util.h ../limit_ioccc.h ../version.h
 jparse.tab.o: jparse.tab.c jparse.h ../dbg/dbg.h ../util.h ../dyn_array/dyn_array.h \
 	../dyn_array/../dbg/dbg.h json_parse.h json_util.h jparse.tab.h jparse.lex.h
+jnum_gen.o: jnum_gen.c jnum_gen.h ../dbg/dbg.h ../util.h ../dyn_array/dyn_array.h \
+	../dyn_array/../dbg/dbg.h json_parse.h json_util.h ../limit_ioccc.h ../version.h
 jsemtblgen.o: jsemtblgen.c jsemtblgen.h ../dbg/dbg.h ../util.h ../dyn_array/dyn_array.h \
 	../dyn_array/../dbg/dbg.h json_util.h json_parse.h jparse.h jparse.tab.h json_sem.h ../iocccsize.h
 json_sem.o: json_sem.c ../dbg/dbg.h json_sem.h ../util.h ../dyn_array/dyn_array.h \
@@ -351,8 +431,6 @@ jstrdecode.o: jstrdecode.c jstrdecode.h ../dbg/dbg.h ../util.h ../dyn_array/dyn_
 	../dyn_array/../dbg/dbg.h json_parse.h ../limit_ioccc.h ../version.h
 verge.o: verge.c verge.h ../dbg/dbg.h ../util.h ../dyn_array/dyn_array.h ../dyn_array/../dbg/dbg.h \
 	../limit_ioccc.h ../version.h
-jparse.o: jparse.c jparse.h ../dbg/dbg.h ../util.h ../dyn_array/dyn_array.h \
-	../dyn_array/../dbg/dbg.h json_parse.h json_util.h jparse.tab.h
 jparse_main.o: jparse_main.c jparse_main.h ../dbg/dbg.h ../util.h ../dyn_array/dyn_array.h \
 	../dyn_array/../dbg/dbg.h jparse.h json_parse.h json_util.h jparse.tab.h
 json_parse.o: json_parse.c ../dbg/dbg.h ../util.h ../dyn_array/dyn_array.h ../dyn_array/../dbg/dbg.h \

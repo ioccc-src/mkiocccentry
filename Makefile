@@ -170,8 +170,8 @@ CFLAGS= ${C_STD} ${COPT} -pedantic ${WARN_FLAGS} ${LDFLAGS}
 # where and what to install
 #
 DESTDIR= /usr/local/bin
-TARGETS= mkiocccentry iocccsize fnamchk txzchk chkentry jparse/jstrencode jparse/jstrdecode \
-	 jparse/jparse jparse/verge jparse/jnum_gen jparse/jsemtblgen
+TARGETS= mkiocccentry iocccsize fnamchk txzchk chkentry jparse/jnum_gen
+	 
 SH_TARGETS=limit_ioccc.sh
 
 TEST_TARGETS= dbg/dbg_test test_ioccc/utf8_test test_ioccc/dyn_test jparse/test_jparse/jnum_chk
@@ -367,7 +367,7 @@ hostchk_warning:
 	check_man clean clean_generated_obj clean_mkchk_sem clobber configure depend hostchk bug_report.sh \
 	install test_ioccc legacy_clobber mkchk_sem parser parser-o picky prep prep_clobber \
         pull rebuild_jnum_test release reset_min_timestamp seqcexit shellcheck tags test test-chkentry use_ref \
-	soup jparse
+	soup jparse dbg.3
 
 
 #####################################
@@ -430,73 +430,7 @@ chkentry: chkentry.o oebxergfB.h dbg/dbg.a util.o sanity.o utf8_posix_map.o dyn_
 		dyn_array/dyn_array.a jparse/json_parse.o jparse/json_util.o soup/chk_validate.o entry_util.o \
 		entry_time.o jparse/json_sem.o foo.o location.o soup/chk_sem_info.o soup/chk_sem_auth.o -lm -o $@
 
-jparse/jstrencode.o: jparse/jstrencode.c jparse/jstrencode.h jparse/json_util.h jparse/json_util.c Makefile
-	${MAKE} -C jparse CFLAGS="${CFLAGS}" jstrencode.o
 
-jparse/jstrencode: jparse/jstrencode.o dbg/dbg.a jparse/json_parse.o jparse/json_util.o util.o dyn_array/dyn_array.a Makefile
-	${MAKE} -C jparse CFLAGS="${CFLAGS}" jstrencode
-
-jparse/jstrdecode.o: jparse/jstrdecode.c jparse/jstrdecode.h jparse/json_util.h jparse/json_parse.h Makefile
-	${MAKE} -C jparse CFLAGS="${CFLAGS}" jstrdecode.o
-
-jparse/jstrdecode: jparse/jstrdecode.o dbg/dbg.a jparse/json_parse.o jparse/json_util.o util.o dyn_array/dyn_array.a Makefile
-	${MAKE} -C jparse CFLAGS="${CFLAGS}" jstrdecode
-
-jparse/jnum_gen.o: jparse/jnum_gen.c jparse/jnum_gen.h Makefile
-	${MAKE} -C jparse CFLAGS="${CFLAGS}" jnum_gen.o
-
-jparse/jnum_gen: jparse/jnum_gen.o dbg/dbg.a jparse/json_parse.o jparse/json_util.o util.o dyn_array/dyn_array.a Makefile
-	${MAKE} -C jparse CFLAGS="${CFLAGS}" jnum_gen
-
-jparse.o: jparse/jparse.c jparse/jparse.h Makefile
-	${MAKE} -C jparse CFLAGS="${CFLAGS}" jparse.o
-
-jparse/json_sem.o: jparse/json_sem.c Makefile
-	${MAKE} -C jparse CFLAGS="${CFLAGS}" json_sem.o
-
-jparse/json_util.o: jparse/json_util.c jparse/json_util.h Makefile
-	${MAKE} -C jparse CFLAGS="${CFLAGS}" json_util.o
-
-jparse/json_parse.o: jparse/json_parse.c Makefile
-	${MAKE} -C jparse CFLAGS="${CFLAGS}" json_parse.o
-
-jparse/jparse.tab.o: jparse/jparse.tab.c Makefile
-	${MAKE} -C jparse CFLAGS="${CFLAGS}" jparse.tab.o
-
-jparse/jparse_main.o: jparse/jparse_main.c Makefile
-	${MAKE} -C jparse CFLAGS="${CFLAGS}" jparse_main.o
-
-jparse/jparse: jparse.o jparse/jparse.tab.o util.o dyn_array/dyn_array.a dbg/dbg.a jparse/json_parse.o \
-	jparse/json_util.o jparse/jparse_main.o Makefile
-	${MAKE} -C jparse CFLAGS="${CFLAGS}" jparse
-
-jparse: jparse/jparse
-	@:
-
-jparse/jsemtblgen.o: jparse/jsemtblgen.c Makefile
-	${MAKE} -C jparse CFLAGS="${CFLAGS}" jsemtblgen.o
-
-jparse/jsemtblgen: jparse/jsemtblgen.o jparse.o jparse/jparse.tab.o util.o dyn_array/dyn_array.a dbg/dbg.a jparse/json_parse.o \
-	    jparse/json_util.o rule_count.o Makefile
-	${MAKE} -C jparse CFLAGS="${CFLAGS}" jsemtblgen
-
-jsemtblgen.o: jparse/jsemtblgen.o
-	@:
-
-jsemtblgen: jparse/jsemtblgen
-	@:
-
-jparse/verge.o: jparse/verge.c jparse/verge.h Makefile
-	${MAKE} -C jparse CFLAGS="${CFLAGS}" verge.o
-
-jparse/verge: jparse/verge.o dbg/dbg.a util.o dyn_array/dyn_array.a Makefile
-	${MAKE} -C jparse CFLAGS="${CFLAGS}" verge
-
-verge.o: jparse/verge.o
-	@:
-
-verge: jparse/verge
-	@:
 foo.o: foo.c oebxergfB.h Makefile
 	${CC} ${CFLAGS} foo.c -c
 
@@ -525,29 +459,6 @@ limit_ioccc.sh: limit_ioccc.h version.h dbg/dbg.h dyn_array/dyn_array.h dyn_arra
 	    echo "export TRIGRAPHS="; \
 	fi >> $@
 
-# How to create jparse/jparse.tab.c and jparse/jparse.tab.h
-#
-# Convert jparse/jparse.y into jparse/jparse.tab.c and jparse/jparse.tab.c via bison, if bison is
-# found and has a recent enough version. Otherwise, if RUN_O_FLAG is NOT
-# specified use a pre-built reference copies stored in jparse/jparse.tab.ref.h and
-# jparse/jparse.tab.ref.c. If it IS specified it is an error.
-#
-# NOTE: The value of RUN_O_FLAG depends on what rule called this rule.
-jparse/jparse.tab.c jparse/jparse.tab.h bison: jparse/jparse.y jparse/jparse.h jparse/sorry.tm.ca.h jparse/run_bison.sh limit_ioccc.sh \
-	verge jparse/jparse.tab.ref.c jparse/jparse.tab.ref.h Makefile
-	${MAKE} -C jparse CFLAGS="${CFLAGS}" bison
-
-# How to create jparse/jparse.c and jparse/jparse.lex.h
-#
-# Convert jparse/jparse.l into jparse/jparse.c via flex, if flex found and has a recent enough
-# version. Otherwise, if RUN_O_FLAG is NOT set use the pre-built reference copy
-# stored in jparse/jparse.ref.c. If it IS specified it is an error.
-#
-# NOTE: The value of RUN_O_FLAG depends on what rule called this rule.
-jparse/jparse.c jparse/jparse.lex.h flex: jparse/jparse.l jparse/jparse.h jparse/sorry.tm.ca.h jparse/jparse.tab.h jparse/run_flex.sh limit_ioccc.sh \
-	       verge jparse/jparse.ref.c jparse/jparse.lex.ref.h Makefile
-	${MAKE} -C jparse CFLAGS="${CFLAGS}" flex
-
 
 #############################################################
 # rules that invoke rules in Makefiles in other directories #
@@ -573,6 +484,68 @@ dyn_array/dyn_array.a: dyn_array/Makefile
 
 dyn_array/dyn_array.3: dyn_array/Makefile
 	${MAKE} -C dyn_array extern_man
+
+jparse/jparse.1: jparse/Makefile
+	${MAKE} -C jparse extern_man
+
+jparse/jparse_test.8: jparse/Makefile
+	${MAKE} -C jparse extern_man
+
+# How to create jparse/jparse.tab.c and jparse/jparse.tab.h
+#
+# Convert jparse/jparse.y into jparse/jparse.tab.c and jparse/jparse.tab.c via bison, if bison is
+# found and has a recent enough version. Otherwise, if RUN_O_FLAG is NOT
+# specified use a pre-built reference copies stored in jparse/jparse.tab.ref.h and
+# jparse/jparse.tab.ref.c. If it IS specified it is an error.
+#
+# NOTE: The value of RUN_O_FLAG depends on what rule called this rule.
+jparse/jparse.tab.c jparse/jparse.tab.h bison: jparse/jparse.y jparse/jparse.h jparse/sorry.tm.ca.h jparse/run_bison.sh limit_ioccc.sh \
+	jparse/verge jparse/jparse.tab.ref.c jparse/jparse.tab.ref.h Makefile
+	${MAKE} -C jparse CFLAGS="${CFLAGS}" bison
+
+# How to create jparse/jparse.c and jparse/jparse.lex.h
+#
+# Convert jparse/jparse.l into jparse/jparse.c via flex, if flex found and has a recent enough
+# version. Otherwise, if RUN_O_FLAG is NOT set use the pre-built reference copy
+# stored in jparse/jparse.ref.c. If it IS specified it is an error.
+#
+# NOTE: The value of RUN_O_FLAG depends on what rule called this rule.
+jparse/jparse.c jparse/jparse.lex.h flex: jparse/jparse.l jparse/jparse.h jparse/sorry.tm.ca.h jparse/jparse.tab.h jparse/run_flex.sh limit_ioccc.sh \
+	       jparse/verge jparse/jparse.ref.c jparse/jparse.lex.ref.h Makefile
+	${MAKE} -C jparse CFLAGS="${CFLAGS}" flex
+
+
+jparse/jstrencode.o: jparse/jstrencode.c jparse/jstrencode.h jparse/json_util.h jparse/json_util.c Makefile
+	${MAKE} -C jparse CFLAGS="${CFLAGS}" jstrencode.o
+
+jparse/jstrencode: jparse/jstrencode.o dbg/dbg.a jparse/json_parse.o jparse/json_util.o util.o dyn_array/dyn_array.a Makefile
+	${MAKE} -C jparse CFLAGS="${CFLAGS}" jstrencode
+
+jparse/jstrdecode.o: jparse/jstrdecode.c jparse/jstrdecode.h jparse/json_util.h jparse/json_parse.h Makefile
+	${MAKE} -C jparse CFLAGS="${CFLAGS}" jstrdecode.o
+
+jparse/jstrdecode: jparse/jstrdecode.o dbg/dbg.a jparse/json_parse.o jparse/json_util.o util.o dyn_array/dyn_array.a Makefile
+	${MAKE} -C jparse CFLAGS="${CFLAGS}" jstrdecode
+
+jparse/jnum_gen: jparse/jnum_gen.o dbg/dbg.a jparse/json_parse.o jparse/json_util.o util.o dyn_array/dyn_array.a Makefile
+	${MAKE} -C jparse CFLAGS="${CFLAGS}" jnum_gen
+
+jparse/jparse.tab.o: jparse/jparse.tab.c Makefile
+	${MAKE} -C jparse CFLAGS="${CFLAGS}" jparse.tab.o
+
+jparse/jparse_main.o: jparse/jparse_main.c Makefile
+	${MAKE} -C jparse CFLAGS="${CFLAGS}" jparse_main.o
+
+jparse/jparse: jparse.o jparse/jparse.tab.o util.o dyn_array/dyn_array.a dbg/dbg.a jparse/json_parse.o \
+	jparse/json_util.o jparse/jparse_main.o Makefile
+	${MAKE} -C jparse CFLAGS="${CFLAGS}" jparse
+
+jparse/jsemtblgen.o: jparse/jsemtblgen.c Makefile
+	${MAKE} -C jparse CFLAGS="${CFLAGS}" jsemtblgen.o
+
+jparse/jsemtblgen: jparse/jsemtblgen.o jparse/jparse.o jparse/jparse.tab.o util.o dyn_array/dyn_array.a dbg/dbg.a jparse/json_parse.o \
+	    jparse/json_util.o rule_count.o Makefile
+	${MAKE} -C jparse CFLAGS="${CFLAGS}" jsemtblgen
 
 
 ###################################################################

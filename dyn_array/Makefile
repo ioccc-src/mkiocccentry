@@ -271,7 +271,7 @@ test: check_man dyn_test Makefile
 
 # inspect and verify man pages
 #
-check_man: ${ALL_MAN_TARGETS} Makefile
+check_man checknr: ${ALL_MAN_TARGETS} Makefile
 	@-HAVE_CHECKNR="`type -P ${CHECKNR}`"; if [[ -z "$$HAVE_CHECKNR" ]]; then \
 	    echo 'The checknr command could not be found.' 1>&2; \
 	    echo 'The checknr command is required to run the $@ rule.' 1>&2; \

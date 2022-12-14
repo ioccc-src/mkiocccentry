@@ -174,7 +174,7 @@ chk_validate.o: chk_validate.c Makefile
 
 depend: ./fmt_depend.sh
 	@echo
-	@echo "make depend starting"
+	@echo "soup make depend starting"
 	@echo
 	@${SED} -i.orig -n -e '1,/^### DO NOT CHANGE MANUALLY BEYOND THIS LINE/p' Makefile
 	${CC} ${CFLAGS} -MM -I../dbg -I.. ${ALL_CSRC} | ./fmt_depend.sh >> Makefile
@@ -184,7 +184,7 @@ depend: ./fmt_depend.sh
 	    echo; echo "Makefile dependencies updated"; echo; echo "Previous version may be found in: Makefile.orig"; \
 	fi
 	@echo
-	@echo "make depend completed"
+	@echo "soup make depend completed"
 
 
 soup:
