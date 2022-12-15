@@ -218,19 +218,19 @@ all: ${TARGETS} ${ALL_OTHER_TARGETS} Makefile
 
 dbg.3: ../dbg/dbg.3
 	@${RM} -f $@
-	@${CP} -v -f $^ $@
+	@${CP} -f $^ $@
 
 dyn_array.3: ../dyn_array/dyn_array.3
 	@${RM} -f $@
-	@${CP} -v -f $^ $@
+	@${CP} -f $^ $@
 
 jparse.1: ../jparse/man/jparse.1
 	@${RM} -f $@
-	@${CP} -v -f $^ $@
+	@${CP} -f $^ $@
 
 jparse_test.8: ../jparse/man/jparse_test.8
 	@${RM} -f $@
-	@${CP} -v -f $^ $@
+	@${CP} -f $^ $@
 
 
 #############################################################
@@ -244,10 +244,10 @@ jparse_test.8: ../jparse/man/jparse_test.8
 	@${MAKE} -C ../dyn_array dyn_array.3
 
 ../jparse/man/jparse.1: ../jparse/Makefile
-	@${MAKE} -C ../jparse man/jparse.1
+	@${MAKE} -C ../jparse jparse.1
 
 ../jparse/man/jparse_test.8: ../jparse/Makefile
-	@${MAKE} -C ../jparse man/jparse_test.8
+	@${MAKE} -C ../jparse jparse_test.8
 
 
 ###########################################

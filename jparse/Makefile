@@ -303,7 +303,8 @@ all: ${TARGETS} ${ALL_OTHER_TARGETS} Makefile
 ######################################################
 
 .PHONY: all configure clean clobber install \
-	extern_include extern_objs extern_liba extern_man extern_prog extern_everything
+	extern_include extern_objs extern_liba extern_man extern_prog extern_everything \
+	jparse.1 jparse_test.8
 
 ################
 # what to make #
@@ -468,6 +469,12 @@ extern_liba: ${EXTERN_LIBA}
 	@:
 
 extern_man: ${EXTERN_MAN}
+	@:
+
+jparse.1: man/jparse.1
+	@:
+
+jparse_test.8: man/jparse_test.8
 	@:
 
 extern_prog: ${EXTERN_PROG}

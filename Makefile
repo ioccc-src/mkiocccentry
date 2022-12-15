@@ -314,7 +314,7 @@ all: fast_hostchk just_all
 # The original make all that bypasses running hostchk.sh
 #
 just_all: soup ${TARGETS}
-	${MAKE} -C man all
+	@${MAKE} -C man all
 
 # fast build environment sanity check
 #
@@ -464,37 +464,37 @@ limit_ioccc.sh: limit_ioccc.h version.h dbg/dbg.h dyn_array/dyn_array.h dyn_arra
 #############################################################
 
 dbg/dbg.h: dbg/Makefile
-	${MAKE} -C dbg extern_include
+	@${MAKE} -C dbg extern_include
 
 dbg/dbg.a: dbg/Makefile
-	${MAKE} -C dbg extern_liba
+	@${MAKE} -C dbg extern_liba
 
 dbg/dbg.3: dbg/Makefile
-	${MAKE} -C dbg extern_man
+	@${MAKE} -C dbg extern_man
 
 dbg/dbg_test: dbg/Makefile
-	${MAKE} -C dbg dbg_test
+	@${MAKE} -C dbg dbg_test
 
 dyn_array/dyn_array.h: dyn_array/Makefile
-	${MAKE} -C dyn_array extern_include
+	@${MAKE} -C dyn_array extern_include
 
 dyn_array/dyn_array.a: dyn_array/Makefile
-	${MAKE} -C dyn_array extern_liba
+	@${MAKE} -C dyn_array extern_liba
 
 dyn_array/dyn_array.3: dyn_array/Makefile
-	${MAKE} -C dyn_array extern_man
+	@${MAKE} -C dyn_array extern_man
 
 jparse/jparse.h: jparse/Makefile
-	${MAKE} -C jparse extern_include
+	@${MAKE} -C jparse extern_include
 
 jparse/jparse.a: jparse/Makefile
-	${MAKE} -C jparse extern_liba
+	@${MAKE} -C jparse extern_liba
 
 jparse/jparse.1: jparse/Makefile
-	${MAKE} -C jparse extern_man
+	@${MAKE} -C jparse extern_man
 
 jparse/jparse_test.8: jparse/Makefile
-	${MAKE} -C jparse extern_man
+	@${MAKE} -C jparse extern_man
 
 # How to create jparse/jparse.tab.c and jparse/jparse.tab.h
 #
