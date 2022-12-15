@@ -45,6 +45,7 @@ MAN= man
 MKTEMP= mktemp
 MV= mv
 PICKY= picky
+RANLIB = ranlib
 RM= rm
 RPL= rpl
 RSYNC= rsync
@@ -57,37 +58,6 @@ TEE= tee
 TOUCH = touch
 TR= tr
 TRUE= true
-
-
-######################
-# target information #
-######################
-
-# man pages
-#
-MAN1_TARGETS= jparse.1
-MAN3_TARGETS= 
-MAN8_TARGETS= jparse_test.8
-ALL_MAN_TARGETS= ${MAN1_TARGETS} ${MAN3_TARGETS} ${MAN8_TARGETS}
-EXTERN_MAN= ${ALL_MAN_TARGETS}
-
-GENERATED_HSRC= jparse.tab.h jparse.lex.h
-GENERATED_OBJ= jparse.o jparse.tab.o jparse.tab.o
-OBJFILES= jnum_gen.o jsemtblgen.o json_sem.o jstrdecode.o verge.o \
-	  jparse_main.o json_parse.o json_util.o jstrencode.o
-# This is a simpler way to do:
-#
-#   SRCFILES =  $(patsubst %.o,%.c,$(OBJFILES))
-#
-SRCFILES= $(OBJFILES:.o=.c)
-GENERATED_CSRC=$(GENERATED_OBJ:.o=.c)
-ALL_CSRC= ${GENERATED_CSRC} ${SRCFILES}
-
-
-TARGETS= jparse verge jsemtblgen jnum_gen jstrdecode jstrencode
-
-all: ${TARGETS}
-	@:
 
 ##################
 # How to compile #
@@ -134,6 +104,43 @@ LDFLAGS=
 #
 CFLAGS= ${C_STD} ${C_OPT} ${WARN_FLAGS} ${LDFLAGS}
 #CFLAGS= -O3 -g3 -pedantic -Wall -Werror
+
+###############
+# source code #
+###############
+
+# source files that are permanent (not made, nor removed)
+#
+C_SRC= jparse_main.c json_parse.c json_sem.c json_util.c jnum_gen.c jnum_header.c \
+       jsemtblgen.c jstrdecode.c jstrencode.c
+H_SRC= jparse.h jnum_gen.h jparse_main.h jsemtblgen.h json_parse.h json_sem.h json_util.h \
+       jstrdecode.h jstrencode.h sorry.tm.ca.h verge.h
+ALL_SRC= ${C_SRC} ${H_SRC}
+
+
+######################
+# intermediate files #
+######################
+
+# NOTE: ${LIB_OBJS} are objects to put into a library and removed by make clean
+#
+LIB_OBJS= jparse.o jparse.tab.o jparse_main.o json_parse.o json_sem.o json_util.o
+
+# NOTE: ${OTHER_OBJS} are objects NOT put into a library and removed by make clean
+#
+OTHER_OBJS= 
+
+# NOTE: intermediate files to make and removed by make clean
+#
+BUILT_C_SRC=
+BUILT_H_SRC=
+ALL_BUILT_SRC= ${BUILT_C_SRC} ${BUILT_H_SRC}
+
+# all intermediate files and removed by make clean
+#
+ALL_OBJS= ${LIB_OBJS} ${OTHER_OBJS}
+
+
 
 # RUN_O_FLAG - determine if the bison and flex backup files should be used
 #
@@ -212,23 +219,95 @@ FLEX_DIRS= \
 #
 FLEX_FLAGS = -8
 
+#######################
+# install information #
+#######################
+
+# where to install
+#
+MAN1_DIR= /usr/local/share/man/man1
+MAN3_DIR= /usr/local/share/man/man3
+MAN8_DIR= /usr/local/share/man/man8
+DEST_INCLUDE= /usr/local/include
+DEST_LIB= /usr/local/lib
+DEST_DIR= /usr/local/bin
+
+
+#################################
+# external Makefile information #
+#################################
+
+# may be used outside of this directory
+#
+EXTERN_H= jparse.h
+EXTERN_O= jparse.o
+EXTERN_MAN= ${ALL_MAN_TARGETS}
+EXTERN_LIBA= jparse.a
+
+# NOTE: ${EXTERN_CLOBBER} used outside of this directory and removed by make clobber
+#
+EXTERN_CLOBBER= ${EXTERN_O} ${EXTERN_LIBA} ${EXTERN_PROG}
+
+GENERATED_HSRC= jparse.tab.h jparse.lex.h
+GENERATED_OBJ= jparse.o jparse.tab.o jparse.tab.o
+OBJFILES= jnum_gen.o jsemtblgen.o json_sem.o jstrdecode.o verge.o \
+	  jparse_main.o json_parse.o json_util.o jstrencode.o
+# This is a simpler way to do:
+#
+#   SRCFILES =  $(patsubst %.o,%.c,$(OBJFILES))
+#
+SRCFILES= $(OBJFILES:.o=.c)
+GENERATED_CSRC=$(GENERATED_OBJ:.o=.c)
+ALL_CSRC= ${GENERATED_CSRC} ${SRCFILES}
+
+
+
+######################
+# target information #
+######################
+
+# man pages
+#
+MAN1_TARGETS= man/jparse.1
+MAN3_TARGETS= 
+MAN8_TARGETS= man/jparse_test.8
+ALL_MAN_TARGETS= ${MAN1_TARGETS} ${MAN8_TARGETS}
+EXTERN_MAN= ${ALL_MAN_TARGETS}
+
+
+
+# libraries
+#
+LIBA_TARGETS= jparse.a
+
+# include files
+#
+H_SRC_TARGETS= jparse.h
+
+# what to make by all but NOT to removed by clobber (because they are not files)
+#
+ALL_OTHER_TARGETS= extern_everything
+
+# what to make by all and removed by clobber (and thus not ${ALL_OTHER_TARGETS})
+#
+TARGETS= ${LIBA_TARGETS} jparse verge jsemtblgen jnum_gen jstrdecode jstrencode
+
+###########################################
+# all rule - default rule - must be first #
+###########################################
+all: ${TARGETS} ${ALL_OTHER_TARGETS} Makefile
+	@:
+
 ######################################################
 # List rules that do not create themselves as .PHONY #
 ######################################################
-.PHONY: all clean clobber
 
-#############################################################
-# rules that invoke rules in Makefiles in other directories #
-#############################################################
+.PHONY: all configure clean clobber install \
+	extern_include extern_objs extern_liba extern_man extern_prog extern_everything
 
-../dbg/dbg.a: ../dbg/Makefile
-	${MAKE} -C ../dbg extern_liba
-
-../util.o: ../Makefile
-	${MAKE} -C .. util.o
-
-../chkentry: ../chkentry.h ../chkentry.c ../Makefile
-	${MAKE} -C .. chkentry
+################
+# what to make #
+################
 
 #
 # make parser
@@ -287,22 +366,21 @@ jparse_main.o: jparse_main.c Makefile
 jparse.o: jparse.c jparse.h Makefile
 	${CC} ${CFLAGS} -Wno-unused-but-set-variable -Wno-unused-function -Wno-unneeded-internal-declaration jparse.c -c
 
-jparse: jparse.o jparse.tab.o ../util.o ../dyn_array/dyn_array.o ../dbg/dbg.o json_parse.o \
-	json_util.o jparse_main.o Makefile
-	${CC} ${CFLAGS} -Wno-unneeded-internal-declaration jparse.o jparse.tab.o ../util.o ../dyn_array/dyn_array.o ../dbg/dbg.o json_parse.o \
-			json_util.o jparse_main.o -lm -o $@
+jparse: jparse.a ../util.o ../dyn_array/dyn_array.o ../dbg/dbg.o Makefile
+	${CC} ${CFLAGS} -Wno-unneeded-internal-declaration jparse.a ../util.o ../dyn_array/dyn_array.o ../dbg/dbg.o \
+			-lm -o $@
 
 jstrencode.o: jstrencode.c jstrencode.h json_util.h json_util.c Makefile
 	${CC} ${CFLAGS} jstrencode.c -c
 
-jstrencode: jstrencode.o ../dbg/dbg.a json_parse.o json_util.o ../util.o ../dyn_array/dyn_array.a Makefile
-	${CC} ${CFLAGS} jstrencode.o ../dbg/dbg.a json_parse.o json_util.o ../util.o ../dyn_array/dyn_array.a -lm -o $@
+jstrencode: jstrencode.o ../dbg/dbg.a jparse.a ../util.o ../dyn_array/dyn_array.a Makefile
+	${CC} ${CFLAGS} jstrencode.o ../dbg/dbg.a jparse.a ../util.o ../dyn_array/dyn_array.a -lm -o $@
 
 jstrdecode.o: jstrdecode.c jstrdecode.h json_util.h json_parse.h Makefile
 	${CC} ${CFLAGS} jstrdecode.c -c
 
-jstrdecode: jstrdecode.o ../dbg/dbg.a json_parse.o json_util.o ../util.o ../dyn_array/dyn_array.a Makefile
-	${CC} ${CFLAGS} jstrdecode.o ../dbg/dbg.a json_parse.o json_util.o ../util.o ../dyn_array/dyn_array.a -lm -o $@
+jstrdecode: jstrdecode.o ../dbg/dbg.a jparse.a ../util.o ../dyn_array/dyn_array.a Makefile
+	${CC} ${CFLAGS} jstrdecode.o ../dbg/dbg.a jparse.a ../util.o ../dyn_array/dyn_array.a -lm -o $@
 
 json_parse.o: json_parse.c Makefile
 	${CC} ${CFLAGS} json_parse.c -c
@@ -310,16 +388,16 @@ json_parse.o: json_parse.c Makefile
 jnum_gen.o: jnum_gen.c jnum_gen.h Makefile
 	${CC} ${CFLAGS} jnum_gen.c -c
 
-jnum_gen: jnum_gen.o ../dbg/dbg.a json_parse.o json_util.o ../util.o ../dyn_array/dyn_array.a Makefile
-	${CC} ${CFLAGS} jnum_gen.o ../dbg/dbg.a json_parse.o json_util.o ../util.o ../dyn_array/dyn_array.a -lm -o $@
+jnum_gen: jnum_gen.o ../dbg/dbg.a jparse.a ../util.o ../dyn_array/dyn_array.a Makefile
+	${CC} ${CFLAGS} jnum_gen.o ../dbg/dbg.a jparse.a ../util.o ../dyn_array/dyn_array.a -lm -o $@
 
 jsemtblgen.o: jsemtblgen.c Makefile
 	${CC} ${CFLAGS} jsemtblgen.c -c
 
-jsemtblgen: jsemtblgen.o jparse.o jparse.tab.o ../util.o ../dyn_array/dyn_array.a ../dbg/dbg.a json_parse.o \
-	    json_util.o ../rule_count.o Makefile
-	${CC} ${CFLAGS} jsemtblgen.o jparse.o jparse.tab.o ../util.o ../dyn_array/dyn_array.a ../dbg/dbg.a json_parse.o \
-			json_util.o ../rule_count.o -lm -o $@
+jsemtblgen: jsemtblgen.o jparse.a ../util.o ../dyn_array/dyn_array.a ../dbg/dbg.a \
+	    ../rule_count.o Makefile
+	${CC} ${CFLAGS} jsemtblgen.o jparse.a ../util.o ../dyn_array/dyn_array.a ../dbg/dbg.a \
+			../rule_count.o -lm -o $@
 
 json_sem.o: json_sem.c Makefile
 	${CC} ${CFLAGS} json_sem.c -c
@@ -355,8 +433,56 @@ verge.o: verge.c verge.h Makefile
 verge: verge.o ../dbg/dbg.a ../util.o ../dyn_array/dyn_array.o Makefile
 	${CC} ${CFLAGS} verge.o ../dbg/dbg.o ../util.o ../dyn_array/dyn_array.o -o $@
 
+
+jparse.a: ${LIB_OBJS}
+	${RM} -f $@
+	${AR} -r -u -v $@ $^
+	${RANLIB} $@
+
+
+
+#############################################################
+# rules that invoke rules in Makefiles in other directories #
+#############################################################
+
+../dbg/dbg.a: ../dbg/Makefile
+	${MAKE} -C ../dbg extern_liba
+
+../util.o: ../Makefile
+	${MAKE} -C .. util.o
+
+../chkentry: ../chkentry.h ../chkentry.c ../Makefile
+	${MAKE} -C .. chkentry
+
+###########################################
+# rules for use by higher level Makefiles #
+###########################################
+
+extern_include: ${EXTERN_H}
+	@:
+
+extern_objs: ${EXTERN_O}
+	@:
+
+extern_liba: ${EXTERN_LIBA}
+	@:
+
 extern_man: ${EXTERN_MAN}
 	@:
+
+extern_prog: ${EXTERN_PROG}
+	@:
+
+extern_everything: extern_include extern_objs extern_liba extern_man extern_prog
+	@:
+
+#######################
+# internal make rules #
+#######################
+
+test: check_man Makefile
+	@${MAKE} -C test_jparse all test
+
 
 # inspect and verify man pages
 #
@@ -379,6 +505,9 @@ check_man checknr: ${ALL_MAN_TARGETS} Makefile
 	    fi; \
 	fi
 
+#######################
+# common make actions #
+#######################
 
 configure:
 	@echo nothing to $@
@@ -390,7 +519,21 @@ clobber: clean
 	${RM} -f ${TARGETS}
 
 install: all
-	@echo nothing to $@
+	${INSTALL} -v -d -m 0775 ${DEST_LIB}
+#none#	${INSTALL} -v -d -m 0775 ${DEST_DIR}
+	${INSTALL} -v -d -m 0775 ${MAN1_DIR}
+#none#	${INSTALL} -v -d -m 0775 ${MAN3_DIR}
+	${INSTALL} -v -d -m 0775 ${MAN8_DIR}
+	${INSTALL} -v -d -m 0775 ${DEST_INCLUDE}
+	${INSTALL} -v -m 0444 ${MAN1_TARGETS} ${MAN1_DIR}
+#none#	${INSTALL} -v -m 0444 ${MAN3_TARGETS} ${MAN3_DIR}
+	${INSTALL} -v -m 0444 ${MAN8_TARGETS} ${MAN8_DIR}
+	${INSTALL} -v -m 0444 ${LIBA_TARGETS} ${DEST_LIB}
+	${INSTALL} -v -m 0444 ${H_SRC_TARGETS} ${DEST_INCLUDE}
+
+tags: ${ALL_SRC} ${ALL_BUILT_SRC}
+	-${CTAGS} ${ALL_SRC} ${ALL_BUILT_SRC} 2>&1 | \
+	     ${GREP} -E -v 'Duplicate entry|Second entry ignored'
 
 ###################################################################
 # repo tools - rules for those who maintain the mkiocccentry repo #

@@ -424,11 +424,10 @@ chkentry.o: chkentry.c chkentry.h jparse/jparse.tab.h oebxergfB.h Makefile
 	${CC} ${CFLAGS} -Isoup chkentry.c -c
 
 chkentry: chkentry.o oebxergfB.h dbg/dbg.a util.o sanity.o utf8_posix_map.o dyn_array/dyn_array.a \
-	jparse/jparse.o jparse/jparse.tab.o jparse/json_parse.o jparse/json_util.o soup/chk_validate.o entry_util.c jparse/json_sem.o \
-	foo.o location.o soup/chk_sem_info.o soup/chk_sem_auth.o Makefile
-	${CC} ${CFLAGS} chkentry.o dbg/dbg.a util.o sanity.o utf8_posix_map.o jparse/jparse.o jparse/jparse.tab.o \
-		dyn_array/dyn_array.a jparse/json_parse.o jparse/json_util.o soup/chk_validate.o entry_util.o \
-		entry_time.o jparse/json_sem.o foo.o location.o soup/chk_sem_info.o soup/chk_sem_auth.o -lm -o $@
+	jparse/jparse.a soup/chk_validate.o entry_util.c foo.o location.o soup/chk_sem_info.o soup/chk_sem_auth.o Makefile
+	${CC} ${CFLAGS} chkentry.o dbg/dbg.a util.o sanity.o utf8_posix_map.o jparse/jparse.a \
+		dyn_array/dyn_array.a soup/chk_validate.o entry_util.o entry_time.o \
+		foo.o location.o soup/chk_sem_info.o soup/chk_sem_auth.o -lm -o $@
 
 
 foo.o: foo.c oebxergfB.h Makefile
@@ -485,6 +484,12 @@ dyn_array/dyn_array.a: dyn_array/Makefile
 dyn_array/dyn_array.3: dyn_array/Makefile
 	${MAKE} -C dyn_array extern_man
 
+jparse/jparse.h: jparse/Makefile
+	${MAKE} -C jparse extern_include
+
+jparse/jparse.a: jparse/Makefile
+	${MAKE} -C jparse extern_liba
+
 jparse/jparse.1: jparse/Makefile
 	${MAKE} -C jparse extern_man
 
@@ -518,7 +523,7 @@ jparse/jparse.c jparse/jparse.lex.h flex: jparse/jparse.l jparse/jparse.h jparse
 jparse/jstrencode.o: jparse/jstrencode.c jparse/jstrencode.h jparse/json_util.h jparse/json_util.c Makefile
 	${MAKE} -C jparse CFLAGS="${CFLAGS}" jstrencode.o
 
-jparse/jstrencode: jparse/jstrencode.o dbg/dbg.a jparse/json_parse.o jparse/json_util.o util.o dyn_array/dyn_array.a Makefile
+jparse/jstrencode: jparse/jstrencode.o dbg/dbg.a jparse/jparse.a util.o dyn_array/dyn_array.a Makefile
 	${MAKE} -C jparse CFLAGS="${CFLAGS}" jstrencode
 
 jparse/jstrdecode.o: jparse/jstrdecode.c jparse/jstrdecode.h jparse/json_util.h jparse/json_parse.h Makefile
@@ -536,15 +541,14 @@ jparse/jparse.tab.o: jparse/jparse.tab.c Makefile
 jparse/jparse_main.o: jparse/jparse_main.c Makefile
 	${MAKE} -C jparse CFLAGS="${CFLAGS}" jparse_main.o
 
-jparse/jparse: jparse.o jparse/jparse.tab.o util.o dyn_array/dyn_array.a dbg/dbg.a jparse/json_parse.o \
-	jparse/json_util.o jparse/jparse_main.o Makefile
+jparse/jparse: jparse/jparse.a util.o dyn_array/dyn_array.a dbg/dbg.a Makefile
 	${MAKE} -C jparse CFLAGS="${CFLAGS}" jparse
 
 jparse/jsemtblgen.o: jparse/jsemtblgen.c Makefile
 	${MAKE} -C jparse CFLAGS="${CFLAGS}" jsemtblgen.o
 
-jparse/jsemtblgen: jparse/jsemtblgen.o jparse/jparse.o jparse/jparse.tab.o util.o dyn_array/dyn_array.a dbg/dbg.a jparse/json_parse.o \
-	    jparse/json_util.o rule_count.o Makefile
+jparse/jsemtblgen: jparse/jsemtblgen.o jparse/jparse.a util.o dyn_array/dyn_array.a dbg/dbg.a \
+	    rule_count.o Makefile
 	${MAKE} -C jparse CFLAGS="${CFLAGS}" jsemtblgen
 
 
