@@ -512,5 +512,8 @@ if [[ $EXIT_CODE -ne 0 ]]; then
     echo "$FAILURE_SUMMARY" | tee -a -- "$LOGFILE"
     echo | tee -a -- "$LOGFILE"
     echo "About to exit: $EXIT_CODE" | tee -a -- "$LOGFILE"
+    echo
+    echo "See $LOGFILE for more details"
+    echo
 fi
 exit "$EXIT_CODE"
