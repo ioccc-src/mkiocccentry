@@ -29,21 +29,21 @@ export TOOLS="
     ./fnamchk
     ./hostchk.sh
     ./iocccsize
-    ./jnum_gen
+    ./jparse/jnum_gen
     ./jparse/jparse
-    ./jsemcgen.sh
-    ./jsemtblgen
-    ./jstrdecode
-    ./jstrencode
+    ./jparse/jsemcgen.sh
+    ./jparse/jsemtblgen
+    ./jparse/jstrdecode
+    ./jparse/jstrencode
     ./mkiocccentry
     ./prep.sh
     ./reset_tstamp.sh
-    ./run_bison.sh
-    ./run_flex.sh
+    ./jparse/run_bison.sh
+    ./jparse/run_flex.sh
     ./run_usage.sh
     ./soup/all_ref.sh
     ./test_ioccc/chkentry_test.sh
-    ./test_ioccc/dyn_test
+    ./dyn_array/dyn_test
     ./test_ioccc/ioccc_test.sh
     ./test_ioccc/iocccsize_test.sh
     ./jparse/test_jparse/jnum_chk
@@ -53,7 +53,7 @@ export TOOLS="
     ./test_ioccc/txzchk_test.sh
     ./test_ioccc/utf8_test
     ./txzchk
-    ./verge
+    ./jparse/verge
     ./vermod.sh
     "
 
@@ -1161,10 +1161,10 @@ get_version_optional "flex"
 # would mean the repo could not be used properly.
 #
 # run_bison.sh -v 7: check if bison will work
-run_check 45 "./run_bison.sh -v 7 -s ./sorry.tm.ca.h -g ./verge -l ./limit_ioccc.sh -D ."
+run_check 45 "./jparse/run_bison.sh -v 7 -s ./jparse/sorry.tm.ca.h -g ./jparse/verge -l ./limit_ioccc.sh -D ./jparse"
 
 # run_flex.sh -v 7: check if flex will work
-run_check 46 "./run_flex.sh -v 7 -s ./sorry.tm.ca.h -g ./verge -l ./limit_ioccc.sh -D ."
+run_check 46 "./jparse/run_flex.sh -v 7 -s ./jparse/sorry.tm.ca.h -g ./jparse/verge -l ./limit_ioccc.sh -D ./jparse"
 
 # run make all again: run_bison.sh and run_flex.sh will likely cause a need for
 # recompilation
@@ -1351,7 +1351,7 @@ echo "your environment including things such as hostname, login name, operating 
 echo "information, paths and versions of various tools. Although not encouraged," 1>&2
 echo "you are free to edit this file if you feel so inclined. This information is" 1>&2
 echo "added to the file in case it proves useful in debugging a problem, and therefore" 1>&2
-echo "we kindly request that you provide it to us when you report a problem with this" 1>&2
+echo "we kindly request that you please provide it to us when you report a problem with this" 1>&2
 echo "code." 1>&2
 
 # All Done!!! -- Jessica Noll, Age 2

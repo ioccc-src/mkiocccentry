@@ -137,10 +137,20 @@ jnum_test.o: jnum_test.c Makefile
 jnum_chk.o: jnum_chk.c jnum_chk.h Makefile
 	${CC} ${CFLAGS} -I../.. jnum_chk.c -c
 
-jnum_chk: jnum_chk.o ../../dbg ../../json_parse.o ../../json_util.o ../../util.o ../../dyn_array/dyn_array.o \
+jnum_chk: jnum_chk.o ../../dbg/dbg.a ../json_parse.o ../json_util.o ../../util.o ../../dyn_array/dyn_array.o \
 	jnum_test.o Makefile
-	${CC} ${CFLAGS} -I../.. jnum_chk.o ../../dbg/dbg.o ../../json_parse.o ../../json_util.o ../../util.o \
+	${CC} ${CFLAGS} -I../.. jnum_chk.o ../../dbg/dbg.a ../json_parse.o ../json_util.o ../../util.o \
 		../../dyn_array/dyn_array.o jnum_test.o -lm -o jnum_chk
+
+#############################################################
+# rules that invoke rules in Makefiles in other directories #
+#############################################################
+
+../../dbg/dbg.a: ../../dbg/Makefile
+	${MAKE} -C ../../dbg extern_liba
+
+../../util.o: ../../Makefile
+	${MAKE} -C ../.. util.o
 
 
 ###################################################################

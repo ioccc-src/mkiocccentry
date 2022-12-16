@@ -31,17 +31,17 @@
 /*
  * dbg - info, debug, warning, error, and usage message facility
  */
-#include "dbg/dbg.h"
+#include "../dbg/dbg.h"
 
 /*
  * util - entry common utility functions for the IOCCC toolkit
  */
-#include "util.h"
+#include "../util.h"
 
 /*
  * dyn_array - dynamic array facility
  */
-#include "dyn_array/dyn_array.h"
+#include "../dyn_array/dyn_array.h"
 
 /*
  * json_util - general JSON parser utility support functions
@@ -61,7 +61,7 @@
 /*
  * iocccsize - IOCCC Source Size Tool
  */
-#include "iocccsize.h"
+#include "../iocccsize.h"
 
 /*
  * official jsemtblgen version

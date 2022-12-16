@@ -28,7 +28,7 @@
 /*
  * json_parse - JSON parser support code
  */
-#include "json_parse.h"
+#include "../../jparse/json_parse.h"
 
 
 /*

@@ -174,9 +174,9 @@ MAN8_TARGETS= all_ref.8 chkentry_test.8 ioccc_test.8 iocccsize_test.8 jnum_chk.8
 	run_usage.8 txzchk_test.8 utf8_test.8 verge.8 vermod.8
 ALL_MAN_TARGETS= ${MAN1_TARGETS} ${MAN3_TARGETS} ${MAN8_TARGETS}
 
-# These man pages are build and removed by make clobber
+# These man pages are built and removed by make clobber
 #
-BUILT_MAN_TARGETS= dbg.3 dyn_array.3
+BUILT_MAN_TARGETS= dbg.3 dyn_array.3 jparse.1 jparse_test.8
 
 # libraries
 #
@@ -208,7 +208,8 @@ all: ${TARGETS} ${ALL_OTHER_TARGETS} Makefile
 ######################################################
 
 .PHONY: all configure clean clobber install test \
-	extern_include extern_objs extern_liba extern_man extern_prog extern_everything
+	extern_include extern_objs extern_liba extern_man extern_prog extern_everything \
+	dbg.3 dyn_array.3 jparse.1 jparse_test.8
 
 
 ################
@@ -216,12 +217,20 @@ all: ${TARGETS} ${ALL_OTHER_TARGETS} Makefile
 ################
 
 dbg.3: ../dbg/dbg.3
-	${RM} -f $@
-	${CP} -v -f $^ $@
+	@${RM} -f $@
+	@${CP} -f $^ $@
 
 dyn_array.3: ../dyn_array/dyn_array.3
-	${RM} -f $@
-	${CP} -v -f $^ $@
+	@${RM} -f $@
+	@${CP} -f $^ $@
+
+jparse.1: ../jparse/man/jparse.1
+	@${RM} -f $@
+	@${CP} -f $^ $@
+
+jparse_test.8: ../jparse/man/jparse_test.8
+	@${RM} -f $@
+	@${CP} -f $^ $@
 
 
 #############################################################
@@ -229,10 +238,16 @@ dyn_array.3: ../dyn_array/dyn_array.3
 #############################################################
 
 ../dbg/dbg.3: ../dbg/Makefile
-	${MAKE} -C ../dbg dbg.3
+	@${MAKE} -C ../dbg dbg.3
 
 ../dyn_array/dyn_array.3: ../dyn_array/Makefile
-	${MAKE} -C ../dyn_array dyn_array.3
+	@${MAKE} -C ../dyn_array dyn_array.3
+
+../jparse/man/jparse.1: ../jparse/Makefile
+	@${MAKE} -C ../jparse jparse.1
+
+../jparse/man/jparse_test.8: ../jparse/Makefile
+	@${MAKE} -C ../jparse jparse_test.8
 
 
 ###########################################
@@ -266,7 +281,7 @@ test: check_man Makefile
 
 # inspect and verify man pages
 #
-check_man: ${ALL_MAN_TARGETS} Makefile
+check_man checknr: ${ALL_MAN_TARGETS} Makefile
 	@-HAVE_CHECKNR="`type -P ${CHECKNR}`"; if [[ -z "$$HAVE_CHECKNR" ]]; then \
 	    echo 'The checknr command could not be found.' 1>&2; \
 	    echo 'The checknr command is required to run the $@ rule.' 1>&2; \

@@ -27,7 +27,7 @@
  * unnecessary.
  */
 %option noyywrap
-%option nodefault nounput
+%option nodefault nounput noinput
 %option yylineno 8bit
 %option bison-bridge bison-locations reentrant
 %option header-file="jparse.lex.h"

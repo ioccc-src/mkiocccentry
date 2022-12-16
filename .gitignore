@@ -39,6 +39,8 @@ limit_ioccc.sh
 makefile.local
 man/dbg.3
 man/dyn_array.3
+man/jparse.1
+man/jparse_test.8
 mkiocccentry
 oebxergfB.txt
 orig.iocccsize

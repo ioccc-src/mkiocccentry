@@ -32,7 +32,7 @@
 /*
  * json_util - general JSON parser utility support functions
  */
-#include "json_util.h"
+#include "jparse/json_util.h"
 
 /*
  * util - entry common utility functions for the IOCCC toolkit
@@ -42,12 +42,12 @@
 /*
  * jparse - the parser
  */
-#include "jparse.h"
+#include "jparse/jparse.h"
 
 /*
  * json_sem - JSON semantics support
  */
-#include "json_sem.h"
+#include "jparse/json_sem.h"
 
 /*
  * chk_sem_info - check .info.json semantics
@@ -87,7 +87,7 @@ static const char * const usage_msg =
     "\n"
     "Exit codes:\n"
     "     0   all is OK\n"
-    "     1   JSON files(s) are valid JSON, however semantic one or more checks failed\n"
+    "     1   JSON files(s) are valid JSON, however one or more semantic checks failed\n"
     "     2   -h and help string printed or -V and version string printed\n"
     "     3   command line error\n"
     "     4   file(s) were not valid JSON, no semantic checks were performed\n"

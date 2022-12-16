@@ -25,7 +25,12 @@
 /*
  * dyn_array - dynamic array facility
  */
-#include "dyn_array/dyn_array.h"
+#include "../dyn_array/dyn_array.h"
+
+/*
+ * util - utilities and macros
+ */
+#include "../util.h"
 
 /*
  * json_parse - JSON parser support code

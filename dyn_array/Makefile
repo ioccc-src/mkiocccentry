@@ -201,7 +201,9 @@ all: ${TARGETS} ${ALL_OTHER_TARGETS} Makefile
 ######################################################
 
 .PHONY: all configure clean clobber install test \
-	extern_include extern_objs extern_liba extern_man extern_prog extern_everything
+	extern_include extern_objs extern_liba extern_man extern_prog extern_everything \
+	dyn_array.3
+
 
 
 ################
@@ -250,6 +252,9 @@ extern_liba: ${EXTERN_LIBA}
 extern_man: ${EXTERN_MAN}
 	@:
 
+dyn_array.3:
+	@:
+
 extern_prog: ${EXTERN_PROG}
 	@:
 
@@ -271,7 +276,7 @@ test: check_man dyn_test Makefile
 
 # inspect and verify man pages
 #
-check_man: ${ALL_MAN_TARGETS} Makefile
+check_man checknr: ${ALL_MAN_TARGETS} Makefile
 	@-HAVE_CHECKNR="`type -P ${CHECKNR}`"; if [[ -z "$$HAVE_CHECKNR" ]]; then \
 	    echo 'The checknr command could not be found.' 1>&2; \
 	    echo 'The checknr command is required to run the $@ rule.' 1>&2; \
