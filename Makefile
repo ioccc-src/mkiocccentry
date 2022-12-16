@@ -843,6 +843,7 @@ legacy_clobber:
 	${RM} -f dbg.out
 	${RM} -rf ioccc_test test
 	${RM} -f man/*.html
+	${RM} -f jparse.lex.h jparse.tab.c jparse.tab.h jparse.c
 
 # rule used by prep.sh and make clobber
 #
