@@ -171,7 +171,7 @@ CFLAGS= ${C_STD} ${COPT} -pedantic ${WARN_FLAGS} ${LDFLAGS}
 #
 DESTDIR= /usr/local/bin
 TARGETS= mkiocccentry iocccsize fnamchk txzchk chkentry jparse/jnum_gen
-	 
+
 SH_TARGETS=limit_ioccc.sh
 
 TEST_TARGETS= dbg/dbg_test test_ioccc/utf8_test test_ioccc/dyn_test jparse/test_jparse/jnum_chk

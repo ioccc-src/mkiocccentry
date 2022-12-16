@@ -1,17 +1,17 @@
 #!/usr/bin/make
 #
 # jparse - a JSON parser written in C
-# 
+#
 #  This JSON parser was co-developed by:
-# 
-# 	@xexyl
-# 	https://xexyl.net		Cody Boone Ferguson
-# 	https://ioccc.xexyl.net
+#
+#	@xexyl
+#	https://xexyl.net		Cody Boone Ferguson
+#	https://ioccc.xexyl.net
 #  and:
-# 	chongo (Landon Curt Noll, http://www.isthe.com/chongo/index.html) /\oo/\
-# 
+#	chongo (Landon Curt Noll, http://www.isthe.com/chongo/index.html) /\oo/\
+#
 #  "Because sometimes even the IOCCC Judges need some help." :-)
-# 
+#
 #  "Share and Enjoy!"
 #      --  Sirius Cybernetics Corporation Complaints Division, JSON spec department. :-)
 
@@ -128,7 +128,7 @@ LIB_OBJS= jparse.o jparse.tab.o jparse_main.o json_parse.o json_sem.o json_util.
 
 # NOTE: ${OTHER_OBJS} are objects NOT put into a library and removed by make clean
 #
-OTHER_OBJS= 
+OTHER_OBJS=
 
 # NOTE: intermediate files to make and removed by make clean
 #
@@ -269,7 +269,7 @@ ALL_CSRC= ${GENERATED_CSRC} ${SRCFILES}
 # man pages
 #
 MAN1_TARGETS= man/jparse.1
-MAN3_TARGETS= 
+MAN3_TARGETS=
 MAN8_TARGETS= man/jparse_test.8
 ALL_MAN_TARGETS= ${MAN1_TARGETS} ${MAN8_TARGETS}
 EXTERN_MAN= ${ALL_MAN_TARGETS}
