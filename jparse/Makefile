@@ -413,7 +413,7 @@ json_sem.o: json_sem.c Makefile
 # NOTE: The value of RUN_O_FLAG depends on what rule called this rule.
 jparse.tab.c jparse.tab.h bison: jparse.y jparse.h sorry.tm.ca.h run_bison.sh ../limit_ioccc.sh \
 	verge jparse.tab.ref.c jparse.tab.ref.h Makefile
-	./run_bison.sh -g ./verge -s ./sorry.tm.ca.h -l ../limit_ioccc.sh -b ${BISON_BASENAME} ${BISON_DIRS} -p jparse -v 1 ${RUN_O_FLAG} -- \
+	./run_bison.sh -g ../verge -s ./sorry.tm.ca.h -l ../limit_ioccc.sh -b ${BISON_BASENAME} ${BISON_DIRS} -p jparse -v 1 ${RUN_O_FLAG} -- \
 		       ${BISON_FLAGS}
 
 # How to create jparse.c and jparse.lex.h
@@ -425,7 +425,7 @@ jparse.tab.c jparse.tab.h bison: jparse.y jparse.h sorry.tm.ca.h run_bison.sh ..
 # NOTE: The value of RUN_O_FLAG depends on what rule called this rule.
 jparse.c jparse.lex.h flex: jparse.l jparse.h ./sorry.tm.ca.h jparse.tab.h ./run_flex.sh ../limit_ioccc.sh \
 	       verge jparse.ref.c jparse.lex.ref.h Makefile
-	./run_flex.sh -g verge -s ./sorry.tm.ca.h -l ../limit_ioccc.sh -f ${FLEX_BASENAME} ${FLEX_DIRS} -p jparse -v 1 ${RUN_O_FLAG} -- \
+	./run_flex.sh -g ../verge -s ./sorry.tm.ca.h -l ../limit_ioccc.sh -f ${FLEX_BASENAME} ${FLEX_DIRS} -p jparse -v 1 ${RUN_O_FLAG} -- \
 		      ${FLEX_FLAGS} -o jparse.c
 
 verge.o: verge.c verge.h Makefile
