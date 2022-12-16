@@ -201,8 +201,7 @@ all: ${TARGETS} ${ALL_OTHER_TARGETS} Makefile
 ######################################################
 
 .PHONY: all configure clean clobber install test \
-	extern_include extern_objs extern_liba extern_man extern_prog extern_everything \
-	dbg.3
+	extern_include extern_objs extern_liba extern_man extern_prog extern_everything
 
 
 ################
