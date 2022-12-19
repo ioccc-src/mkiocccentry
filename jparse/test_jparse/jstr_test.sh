@@ -2,7 +2,7 @@
 #
 # jstr_test.sh - JSON string encoding and decoding test
 
-# setuo
+# setup
 #
 export JSTRENCODE="./jstrencode"
 export JSTRDECODE="./jstrdecode"

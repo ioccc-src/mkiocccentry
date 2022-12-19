@@ -153,10 +153,19 @@ ALL_CSRC= ${SRCFILES}
 
 all: ${OBJFILES}
 
-.PHONY: all soup eat eating eat_soup eating_soup configure clean clobber install
 
-all:
-	@:
+#################################################
+# .PHONY list of rules that do not create files #
+#################################################
+
+.PHONY: all \
+	depend soup eat eating eat_soup eating_soup prep_clean prep_clobber legacy_clean legacy_clobber \
+	configure clean clobber install
+
+
+####################################
+# things to make in this directory #
+####################################
 
 chk_sem_auth.o: chk_sem_auth.c chk_sem_auth.h Makefile
 	${CC} ${CFLAGS} -I.. chk_sem_auth.c -c
@@ -168,9 +177,19 @@ chk_validate.o: chk_validate.c Makefile
 	${CC} ${CFLAGS} -I.. chk_validate.c -c
 
 
-###################################################################
-# repo tools - rules for those who maintain the mkiocccentry repo #
-###################################################################
+#########################################################
+# rules that invoke Makefile rules in other directories #
+#########################################################
+
+
+####################################
+# rules for use by other Makefiles #
+####################################
+
+
+###########################################################
+# repo tools - rules for those who maintain the this repo #
+###########################################################
 
 depend: ./fmt_depend.sh
 	@echo
@@ -206,6 +225,18 @@ eat eating eat_soup eating_soup: all
 	    ${ECHO} "How can you eat soup that you haven't made yet?"; \
 	fi
 
+prep_clean: legacy_clean
+	@:
+
+prep_clobber: legacy_clobber
+	${RM} -rf ref
+
+legacy_clean:
+	@:
+
+legacy_clobber:
+	@:
+
 
 ###################################
 # standard Makefile utility rules #
@@ -215,13 +246,14 @@ configure:
 	@${ECHO} "nothing to $@. Try making soup instead."
 
 clean:
-	${RM} -f *.o
+	${RM} -f chk_sem_auth.o chk_sem_info.o chk_validate.o
 
 clobber: clean
 	${RM} -f .soup
 
 install: all
 	@${ECHO} "nothing to $@. Try eating soup instead."
+
 
 ###############
 # make depend #

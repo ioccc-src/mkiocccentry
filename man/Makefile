@@ -203,18 +203,19 @@ all: ${TARGETS} ${ALL_OTHER_TARGETS} Makefile
 	@:
 
 
-######################################################
-# List rules that do not create themselves as .PHONY #
-######################################################
+#################################################
+# .PHONY list of rules that do not create files #
+#################################################
 
-.PHONY: all configure clean clobber install test \
+.PHONY: all \
+	test check_man prep_clean prep_clobber legacy_clean legacy_clobber \
 	extern_include extern_objs extern_liba extern_man extern_prog extern_everything \
-	dbg.3 dyn_array.3 jparse.1 jparse_test.8
+	configure clean clobber install
 
 
-################
-# what to make #
-################
+####################################
+# things to make in this directory #
+####################################
 
 dbg.3: ../dbg/dbg.3
 	@${RM} -f $@
@@ -233,26 +234,26 @@ jparse_test.8: ../jparse/man/jparse_test.8
 	@${CP} -f $^ $@
 
 
-#############################################################
-# rules that invoke rules in Makefiles in other directories #
-#############################################################
+#########################################################
+# rules that invoke Makefile rules in other directories #
+#########################################################
 
-../dbg/dbg.3: ../dbg/Makefile
+../dbg/dbg.3:
 	@${MAKE} -C ../dbg dbg.3
 
-../dyn_array/dyn_array.3: ../dyn_array/Makefile
+../dyn_array/dyn_array.3:
 	@${MAKE} -C ../dyn_array dyn_array.3
 
-../jparse/man/jparse.1: ../jparse/Makefile
-	@${MAKE} -C ../jparse jparse.1
+../jparse/man/jparse.1:
+	@${MAKE} -C ../jparse man/jparse.1
 
-../jparse/man/jparse_test.8: ../jparse/Makefile
-	@${MAKE} -C ../jparse jparse_test.8
+../jparse/man/jparse_test.8:
+	@${MAKE} -C ../jparse man/jparse_test.8
 
 
-###########################################
-# rules for use by higher level Makefiles #
-###########################################
+####################################
+# rules for use by other Makefiles #
+####################################
 
 extern_include: ${EXTERN_H}
 	@:
@@ -272,9 +273,10 @@ extern_prog: ${EXTERN_PROG}
 extern_everything: extern_include extern_objs extern_liba extern_man extern_prog
 	@:
 
-#######################
-# internal make rules #
-#######################
+
+###########################################################
+# repo tools - rules for those who maintain the this repo #
+###########################################################
 
 test: check_man Makefile
 	@:
@@ -300,10 +302,22 @@ check_man: ${ALL_MAN_TARGETS} Makefile
 	    fi; \
 	fi
 
+prep_clean: legacy_clean
+	@:
 
-#######################
-# common make actions #
-#######################
+prep_clobber: legacy_clobber
+	@:
+
+legacy_clean:
+	@:
+
+legacy_clobber:
+	${RM} -f *.html
+
+
+###################################
+# standard Makefile utility rules #
+###################################
 
 configure:
 	@echo nothing to $@
@@ -330,5 +344,9 @@ install: all
 #none#	${INSTALL} -v -m 0444 ${LIBA_TARGETS} ${DEST_LIB}
 #none#	${INSTALL} -v -m 0444 ${H_SRC_TARGETS} ${DEST_INCLUDE}
 
-tags: ${ALL_SRC} ${ALL_BUILT_SRC}
-	@:
+
+###############
+# make depend #
+###############
+
+### DO NOT CHANGE MANUALLY BEYOND THIS LINE

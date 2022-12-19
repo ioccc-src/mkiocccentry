@@ -142,7 +142,19 @@ SH_TARGETS=
 
 all: ${TARGETS}
 
-.PHONY: all test configure clean clobber install
+
+#################################################
+# .PHONY list of rules that do not create files #
+#################################################
+
+.PHONY: all \
+	test prep_clean prep_clobber legacy_clean legacy_clobber \
+	configure clean clobber install
+
+
+####################################
+# things to make in this directory #
+####################################
 
 utf8_test.o: utf8_test.c ../utf8_posix_map.h Makefile
 	${CC} ${CFLAGS} -I.. utf8_test.c -c
@@ -154,17 +166,9 @@ ioccc_test.sh: ../dbg/dbg_test ../dyn_array/dyn_test
 	@:
 
 
-###################################################################
-# repo tools - rules for those who maintain the mkiocccentry repo #
-###################################################################
-
-test: all ioccc_test.sh
-	 ./ioccc_test.sh
-
-
-#############################################################
-# rules that invoke rules in Makefiles in other directories #
-#############################################################
+#########################################################
+# rules that invoke Makefile rules in other directories #
+#########################################################
 
 ../util.o: ../Makefile
 	${MAKE} -C .. util.o
@@ -188,6 +192,32 @@ test: all ioccc_test.sh
 	${MAKE} -C ../dyn_array dyn_test
 
 
+####################################
+# rules for use by other Makefiles #
+####################################
+
+
+###########################################################
+# repo tools - rules for those who maintain the this repo #
+###########################################################
+
+test: all ioccc_test.sh
+	 ./ioccc_test.sh
+
+prep_clean: legacy_clean
+	@:
+
+prep_clobber: legacy_clobber
+	${RM} -rf test_iocccsize test_src test_work
+
+legacy_clean:
+	${RM} -f jint.test.o jfloat.test.o
+
+legacy_clobber:
+	${RM} -f jparse_test.log jint.test jfloat.test
+
+
+
 ###################################
 # standard Makefile utility rules #
 ###################################
@@ -196,10 +226,18 @@ configure:
 	@echo nothing to $@
 
 clean:
-	${RM} -f *.o
+	${RM} -f utf8_test.o
 
 clobber: clean
 	${RM} -f ${TARGETS}
+	${RM} -f test_ioccc.log chkentry_test.log txzchk_test.log
 
 install: all
 	@echo nothing to $@
+
+
+###############
+# make depend #
+###############
+
+### DO NOT CHANGE MANUALLY BEYOND THIS LINE

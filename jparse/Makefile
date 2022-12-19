@@ -140,8 +140,6 @@ ALL_BUILT_SRC= ${BUILT_C_SRC} ${BUILT_H_SRC}
 #
 ALL_OBJS= ${LIB_OBJS} ${OTHER_OBJS}
 
-
-
 # RUN_O_FLAG - determine if the bison and flex backup files should be used
 #
 # RUN_O_FLAG=		use bison and flex backup files,
@@ -250,16 +248,10 @@ EXTERN_CLOBBER= ${EXTERN_O} ${EXTERN_LIBA} ${EXTERN_PROG}
 
 GENERATED_HSRC= jparse.tab.h jparse.lex.h
 GENERATED_OBJ= jparse.o jparse.tab.o jparse.tab.o
-OBJFILES= jnum_gen.o jsemtblgen.o json_sem.o jstrdecode.o verge.o \
-	  jparse_main.o json_parse.o json_util.o jstrencode.o
-# This is a simpler way to do:
-#
-#   SRCFILES =  $(patsubst %.o,%.c,$(OBJFILES))
-#
-SRCFILES= $(OBJFILES:.o=.c)
-GENERATED_CSRC=$(GENERATED_OBJ:.o=.c)
+SRCFILES= jnum_gen.c jnum_header.c jparse.ref.c jparse.tab.ref.c jparse_main.c jsemtblgen.c \
+	json_parse.c json_sem.c json_util.c jstrdecode.c jstrencode.c verge.c
+GENERATED_CSRC= jparse.tab.c jparse.lex.c
 ALL_CSRC= ${GENERATED_CSRC} ${SRCFILES}
-
 
 
 ######################
@@ -273,7 +265,6 @@ MAN3_TARGETS=
 MAN8_TARGETS= man/jparse_test.8
 ALL_MAN_TARGETS= ${MAN1_TARGETS} ${MAN8_TARGETS}
 EXTERN_MAN= ${ALL_MAN_TARGETS}
-
 
 
 # libraries
@@ -290,27 +281,165 @@ ALL_OTHER_TARGETS= extern_everything
 
 # what to make by all and removed by clobber (and thus not ${ALL_OTHER_TARGETS})
 #
-TARGETS= ${LIBA_TARGETS} jparse verge jsemtblgen jnum_gen jstrdecode jstrencode
+TARGETS= ${LIBA_TARGETS} jparse verge jsemtblgen jnum_gen jstrdecode jstrencode jparse jparse.a
+
 
 ###########################################
 # all rule - default rule - must be first #
 ###########################################
+
 all: ${TARGETS} ${ALL_OTHER_TARGETS} Makefile
 	@:
 
-######################################################
-# List rules that do not create themselves as .PHONY #
-######################################################
 
-.PHONY: all configure clean clobber install \
-	extern_include extern_objs extern_liba extern_man extern_prog extern_everything \
-	jparse.1 jparse_test.8
+#################################################
+# .PHONY list of rules that do not create files #
+#################################################
 
-################
-# what to make #
-################
+.PHONY: all \
+	extern_include extern_objs extern_liba extern_man extern_prog extern_everything man/jparse.1 man/jparse_test.8 \
+	parser parser-o use_ref bison flex test tags check_man prep_clean prep_clobber legacy_clean legacy_clobber \
+	configure clean clobber install \
+	depend
 
+
+####################################
+# things to make in this directory #
+####################################
+
+json_util.o: json_util.c json_util.h Makefile
+	${CC} ${CFLAGS} -Wno-unused-function -Wno-unneeded-internal-declaration json_util.c -c
+
+jparse.tab.o: jparse.tab.c Makefile
+	${CC} ${CFLAGS} -Wno-unused-function -Wno-unneeded-internal-declaration jparse.tab.c -c
+
+jparse_main.o: jparse_main.c Makefile
+	${CC} ${CFLAGS} jparse_main.c -c
+
+jparse.o: jparse.c jparse.h Makefile
+	${CC} ${CFLAGS} -Wno-unused-but-set-variable -Wno-unused-function -Wno-unneeded-internal-declaration jparse.c -c
+
+jparse: jparse.a ../util.o ../dyn_array/dyn_array.o ../dbg/dbg.o Makefile
+	${CC} ${CFLAGS} -Wno-unneeded-internal-declaration jparse.a ../util.o ../dyn_array/dyn_array.o ../dbg/dbg.o \
+			-lm -o $@
+
+jstrencode.o: jstrencode.c jstrencode.h json_util.h json_util.c Makefile
+	${CC} ${CFLAGS} jstrencode.c -c
+
+jstrencode: jstrencode.o ../dbg/dbg.a jparse.a ../util.o ../dyn_array/dyn_array.a Makefile
+	${CC} ${CFLAGS} jstrencode.o ../dbg/dbg.a jparse.a ../util.o ../dyn_array/dyn_array.a -lm -o $@
+
+jstrdecode.o: jstrdecode.c jstrdecode.h json_util.h json_parse.h Makefile
+	${CC} ${CFLAGS} jstrdecode.c -c
+
+jstrdecode: jstrdecode.o ../dbg/dbg.a jparse.a ../util.o ../dyn_array/dyn_array.a Makefile
+	${CC} ${CFLAGS} jstrdecode.o ../dbg/dbg.a jparse.a ../util.o ../dyn_array/dyn_array.a -lm -o $@
+
+json_parse.o: json_parse.c Makefile
+	${CC} ${CFLAGS} json_parse.c -c
+
+jnum_gen.o: jnum_gen.c jnum_gen.h Makefile
+	${CC} ${CFLAGS} jnum_gen.c -c
+
+jnum_gen: jnum_gen.o ../dbg/dbg.a jparse.a ../util.o ../dyn_array/dyn_array.a Makefile
+	${CC} ${CFLAGS} jnum_gen.o ../dbg/dbg.a jparse.a ../util.o ../dyn_array/dyn_array.a -lm -o $@
+
+jsemtblgen.o: jsemtblgen.c jparse.tab.h Makefile
+	${CC} ${CFLAGS} jsemtblgen.c -c
+
+jsemtblgen: jsemtblgen.o jparse.a ../util.o ../dyn_array/dyn_array.a ../dbg/dbg.a \
+	    ../rule_count.o Makefile
+	${CC} ${CFLAGS} jsemtblgen.o jparse.a ../util.o ../dyn_array/dyn_array.a ../dbg/dbg.a \
+			../rule_count.o -lm -o $@
+
+json_sem.o: json_sem.c Makefile
+	${CC} ${CFLAGS} json_sem.c -c
+
+# How to create jparse.tab.c and jparse.tab.h
 #
+# Convert jparse.y into jparse.tab.c and jparse.tab.c via bison, if bison is
+# found and has a recent enough version. Otherwise, if RUN_O_FLAG is NOT
+# specified use a pre-built reference copies stored in jparse.tab.ref.h and
+# jparse.tab.ref.c. If it IS specified it is an error.
+#
+# NOTE: The value of RUN_O_FLAG depends on what rule called this rule.
+jparse.tab.c jparse.tab.h: jparse.y jparse.h sorry.tm.ca.h run_bison.sh ../limit_ioccc.sh \
+	verge jparse.tab.ref.c jparse.tab.ref.h Makefile
+	./run_bison.sh -g ./verge -s ./sorry.tm.ca.h -l ../limit_ioccc.sh -b ${BISON_BASENAME} ${BISON_DIRS} \
+	    -p jparse -v 1 ${RUN_O_FLAG} -- ${BISON_FLAGS}
+
+# How to create jparse.c and jparse.lex.h
+#
+# Convert jparse.l into jparse.c via flex, if flex found and has a recent enough
+# version. Otherwise, if RUN_O_FLAG is NOT set use the pre-built reference copy
+# stored in jparse.ref.c. If it IS specified it is an error.
+#
+# NOTE: The value of RUN_O_FLAG depends on what rule called this rule.
+jparse.c jparse.lex.h: jparse.l jparse.h ./sorry.tm.ca.h jparse.tab.h ./run_flex.sh ../limit_ioccc.sh \
+	verge jparse.ref.c jparse.lex.ref.h Makefile
+	./run_flex.sh -g ./verge -s ./sorry.tm.ca.h -l ../limit_ioccc.sh -f ${FLEX_BASENAME} ${FLEX_DIRS} \
+	    -p jparse -v 1 ${RUN_O_FLAG} -- ${FLEX_FLAGS} -o jparse.c
+
+verge.o: verge.c verge.h Makefile
+	${CC} ${CFLAGS} verge.c -c
+
+verge: verge.o ../dbg/dbg.a ../util.o ../dyn_array/dyn_array.o Makefile
+	${CC} ${CFLAGS} verge.o ../dbg/dbg.o ../util.o ../dyn_array/dyn_array.o -o $@
+
+
+jparse.a: ${LIB_OBJS}
+	${RM} -f $@
+	${AR} -r -u -v $@ $^
+	${RANLIB} $@
+
+
+#########################################################
+# rules that invoke Makefile rules in other directories #
+#########################################################
+
+../dbg/dbg.a: ../dbg/Makefile
+	${MAKE} -C ../dbg extern_liba
+
+../util.o: ../Makefile
+	${MAKE} -C .. util.o
+
+../chkentry: ../chkentry.h ../chkentry.c ../Makefile
+	${MAKE} -C .. chkentry
+
+
+####################################
+# rules for use by other Makefiles #
+####################################
+
+extern_include: ${EXTERN_H}
+	@:
+
+extern_objs: ${EXTERN_O}
+	@:
+
+extern_liba: ${EXTERN_LIBA}
+	@:
+
+extern_man: ${EXTERN_MAN}
+	@:
+
+extern_prog: ${EXTERN_PROG}
+	@:
+
+extern_everything: extern_include extern_objs extern_liba extern_man extern_prog
+	@:
+
+man/jparse.1:
+	@:
+
+man/jparse_test.8:
+	@:
+
+
+###########################################################
+# repo tools - rules for those who maintain the this repo #
+###########################################################
+
 # make parser
 #
 # Force the rebuild of the JSON parser and then form the reference copies of
@@ -354,142 +483,18 @@ use_ref: jparse.tab.ref.c jparse.tab.ref.h jparse.ref.c jparse.lex.ref.h
 	${RM} -f jparse.lex.h
 	${CP} -f -v jparse.lex.ref.h jparse.lex.h
 
-
-json_util.o: json_util.c json_util.h Makefile
-	${CC} ${CFLAGS} -Wno-unused-function -Wno-unneeded-internal-declaration json_util.c -c
-
-jparse.tab.o: jparse.tab.c Makefile
-	${CC} ${CFLAGS} -Wno-unused-function -Wno-unneeded-internal-declaration jparse.tab.c -c
-
-jparse_main.o: jparse_main.c Makefile
-	${CC} ${CFLAGS} jparse_main.c -c
-
-jparse.o: jparse.c jparse.h Makefile
-	${CC} ${CFLAGS} -Wno-unused-but-set-variable -Wno-unused-function -Wno-unneeded-internal-declaration jparse.c -c
-
-jparse: jparse.a ../util.o ../dyn_array/dyn_array.o ../dbg/dbg.o Makefile
-	${CC} ${CFLAGS} -Wno-unneeded-internal-declaration jparse.a ../util.o ../dyn_array/dyn_array.o ../dbg/dbg.o \
-			-lm -o $@
-
-jstrencode.o: jstrencode.c jstrencode.h json_util.h json_util.c Makefile
-	${CC} ${CFLAGS} jstrencode.c -c
-
-jstrencode: jstrencode.o ../dbg/dbg.a jparse.a ../util.o ../dyn_array/dyn_array.a Makefile
-	${CC} ${CFLAGS} jstrencode.o ../dbg/dbg.a jparse.a ../util.o ../dyn_array/dyn_array.a -lm -o $@
-
-jstrdecode.o: jstrdecode.c jstrdecode.h json_util.h json_parse.h Makefile
-	${CC} ${CFLAGS} jstrdecode.c -c
-
-jstrdecode: jstrdecode.o ../dbg/dbg.a jparse.a ../util.o ../dyn_array/dyn_array.a Makefile
-	${CC} ${CFLAGS} jstrdecode.o ../dbg/dbg.a jparse.a ../util.o ../dyn_array/dyn_array.a -lm -o $@
-
-json_parse.o: json_parse.c Makefile
-	${CC} ${CFLAGS} json_parse.c -c
-
-jnum_gen.o: jnum_gen.c jnum_gen.h Makefile
-	${CC} ${CFLAGS} jnum_gen.c -c
-
-jnum_gen: jnum_gen.o ../dbg/dbg.a jparse.a ../util.o ../dyn_array/dyn_array.a Makefile
-	${CC} ${CFLAGS} jnum_gen.o ../dbg/dbg.a jparse.a ../util.o ../dyn_array/dyn_array.a -lm -o $@
-
-jsemtblgen.o: jsemtblgen.c Makefile
-	${CC} ${CFLAGS} jsemtblgen.c -c
-
-jsemtblgen: jsemtblgen.o jparse.a ../util.o ../dyn_array/dyn_array.a ../dbg/dbg.a \
-	    ../rule_count.o Makefile
-	${CC} ${CFLAGS} jsemtblgen.o jparse.a ../util.o ../dyn_array/dyn_array.a ../dbg/dbg.a \
-			../rule_count.o -lm -o $@
-
-json_sem.o: json_sem.c Makefile
-	${CC} ${CFLAGS} json_sem.c -c
-
-# How to create jparse.tab.c and jparse.tab.h
-#
-# Convert jparse.y into jparse.tab.c and jparse.tab.c via bison, if bison is
-# found and has a recent enough version. Otherwise, if RUN_O_FLAG is NOT
-# specified use a pre-built reference copies stored in jparse.tab.ref.h and
-# jparse.tab.ref.c. If it IS specified it is an error.
-#
-# NOTE: The value of RUN_O_FLAG depends on what rule called this rule.
-jparse.tab.c jparse.tab.h bison: jparse.y jparse.h sorry.tm.ca.h run_bison.sh ../limit_ioccc.sh \
-	verge jparse.tab.ref.c jparse.tab.ref.h Makefile
-	./run_bison.sh -g ../verge -s ./sorry.tm.ca.h -l ../limit_ioccc.sh -b ${BISON_BASENAME} ${BISON_DIRS} -p jparse -v 1 ${RUN_O_FLAG} -- \
-		       ${BISON_FLAGS}
-
-# How to create jparse.c and jparse.lex.h
-#
-# Convert jparse.l into jparse.c via flex, if flex found and has a recent enough
-# version. Otherwise, if RUN_O_FLAG is NOT set use the pre-built reference copy
-# stored in jparse.ref.c. If it IS specified it is an error.
-#
-# NOTE: The value of RUN_O_FLAG depends on what rule called this rule.
-jparse.c jparse.lex.h flex: jparse.l jparse.h ./sorry.tm.ca.h jparse.tab.h ./run_flex.sh ../limit_ioccc.sh \
-	       verge jparse.ref.c jparse.lex.ref.h Makefile
-	./run_flex.sh -g ../verge -s ./sorry.tm.ca.h -l ../limit_ioccc.sh -f ${FLEX_BASENAME} ${FLEX_DIRS} -p jparse -v 1 ${RUN_O_FLAG} -- \
-		      ${FLEX_FLAGS} -o jparse.c
-
-verge.o: verge.c verge.h Makefile
-	${CC} ${CFLAGS} verge.c -c
-
-verge: verge.o ../dbg/dbg.a ../util.o ../dyn_array/dyn_array.o Makefile
-	${CC} ${CFLAGS} verge.o ../dbg/dbg.o ../util.o ../dyn_array/dyn_array.o -o $@
-
-
-jparse.a: ${LIB_OBJS}
-	${RM} -f $@
-	${AR} -r -u -v $@ $^
-	${RANLIB} $@
-
-
-
-#############################################################
-# rules that invoke rules in Makefiles in other directories #
-#############################################################
-
-../dbg/dbg.a: ../dbg/Makefile
-	${MAKE} -C ../dbg extern_liba
-
-../util.o: ../Makefile
-	${MAKE} -C .. util.o
-
-../chkentry: ../chkentry.h ../chkentry.c ../Makefile
-	${MAKE} -C .. chkentry
-
-###########################################
-# rules for use by higher level Makefiles #
-###########################################
-
-extern_include: ${EXTERN_H}
+bison: jparse.tab.c jparse.tab.h
 	@:
 
-extern_objs: ${EXTERN_O}
+flex: jparse.c jparse.lex.h
 	@:
-
-extern_liba: ${EXTERN_LIBA}
-	@:
-
-extern_man: ${EXTERN_MAN}
-	@:
-
-jparse.1: man/jparse.1
-	@:
-
-jparse_test.8: man/jparse_test.8
-	@:
-
-extern_prog: ${EXTERN_PROG}
-	@:
-
-extern_everything: extern_include extern_objs extern_liba extern_man extern_prog
-	@:
-
-#######################
-# internal make rules #
-#######################
 
 test: check_man Makefile
 	@${MAKE} -C test_jparse all test
 
+tags: ${ALL_SRC} ${ALL_BUILT_SRC}
+	-${CTAGS} ${ALL_SRC} ${ALL_BUILT_SRC} 2>&1 | \
+	     ${GREP} -E -v 'Duplicate entry|Second entry ignored'
 
 # inspect and verify man pages
 #
@@ -512,18 +517,36 @@ check_man: ${ALL_MAN_TARGETS} Makefile
 	    fi; \
 	fi
 
-#######################
-# common make actions #
-#######################
+prep_clean: legacy_clean
+	${MAKE} -C test_jparse $@
+
+prep_clobber: legacy_clobber
+	${RM} -f jnum_gen
+	${RM} -rf jnum_gen.dSYM
+	${MAKE} -C test_jparse $@
+
+legacy_clean:
+	${MAKE} -C test_jparse $@
+
+legacy_clobber:
+	${RM} -f jstr_test.out jstr_test2.out
+	${MAKE} -C test_jparse $@
+
+
+###################################
+# standard Makefile utility rules #
+###################################
 
 configure:
 	@echo nothing to $@
 
 clean:
-	${RM} -f ${OBJFILES}
+	${RM} -f ${LIB_OBJS}
 
 clobber: clean
 	${RM} -f ${TARGETS}
+	${RM} -f jparse.output
+	${RM} -f jsemcgen.out.*
 
 install: all
 	${INSTALL} -v -d -m 0775 ${DEST_LIB}
@@ -538,13 +561,10 @@ install: all
 	${INSTALL} -v -m 0444 ${LIBA_TARGETS} ${DEST_LIB}
 	${INSTALL} -v -m 0444 ${H_SRC_TARGETS} ${DEST_INCLUDE}
 
-tags: ${ALL_SRC} ${ALL_BUILT_SRC}
-	-${CTAGS} ${ALL_SRC} ${ALL_BUILT_SRC} 2>&1 | \
-	     ${GREP} -E -v 'Duplicate entry|Second entry ignored'
 
-###################################################################
-# repo tools - rules for those who maintain the mkiocccentry repo #
-###################################################################
+###############
+# make depend #
+###############
 
 depend: ../soup/fmt_depend.sh
 	@echo
@@ -560,32 +580,4 @@ depend: ../soup/fmt_depend.sh
 	@echo
 	@echo "jparse make depend completed"
 
-###############
-# make depend #
-###############
-
 ### DO NOT CHANGE MANUALLY BEYOND THIS LINE
-jparse.o: jparse.c jparse.h ../dbg/dbg.h ../util.h ../dyn_array/dyn_array.h \
-	../dyn_array/../dbg/dbg.h json_parse.h json_util.h jparse.tab.h
-jparse.tab.o: jparse.tab.c jparse.h ../dbg/dbg.h ../util.h ../dyn_array/dyn_array.h \
-	../dyn_array/../dbg/dbg.h json_parse.h json_util.h jparse.tab.h jparse.lex.h
-jparse.tab.o: jparse.tab.c jparse.h ../dbg/dbg.h ../util.h ../dyn_array/dyn_array.h \
-	../dyn_array/../dbg/dbg.h json_parse.h json_util.h jparse.tab.h jparse.lex.h
-jnum_gen.o: jnum_gen.c jnum_gen.h ../dbg/dbg.h ../util.h ../dyn_array/dyn_array.h \
-	../dyn_array/../dbg/dbg.h json_parse.h json_util.h ../limit_ioccc.h ../version.h
-jsemtblgen.o: jsemtblgen.c jsemtblgen.h ../dbg/dbg.h ../util.h ../dyn_array/dyn_array.h \
-	../dyn_array/../dbg/dbg.h json_util.h json_parse.h jparse.h jparse.tab.h json_sem.h ../iocccsize.h
-json_sem.o: json_sem.c ../dbg/dbg.h json_sem.h ../util.h ../dyn_array/dyn_array.h \
-	../dyn_array/../dbg/dbg.h json_parse.h json_util.h
-jstrdecode.o: jstrdecode.c jstrdecode.h ../dbg/dbg.h ../util.h ../dyn_array/dyn_array.h \
-	../dyn_array/../dbg/dbg.h json_parse.h ../limit_ioccc.h ../version.h
-verge.o: verge.c verge.h ../dbg/dbg.h ../util.h ../dyn_array/dyn_array.h ../dyn_array/../dbg/dbg.h \
-	../limit_ioccc.h ../version.h
-jparse_main.o: jparse_main.c jparse_main.h ../dbg/dbg.h ../util.h ../dyn_array/dyn_array.h \
-	../dyn_array/../dbg/dbg.h jparse.h json_parse.h json_util.h jparse.tab.h
-json_parse.o: json_parse.c ../dbg/dbg.h ../util.h ../dyn_array/dyn_array.h ../dyn_array/../dbg/dbg.h \
-	json_parse.h json_util.h
-json_util.o: json_util.c ../dbg/dbg.h json_parse.h ../util.h ../dyn_array/dyn_array.h \
-	../dyn_array/../dbg/dbg.h json_util.h
-jstrencode.o: jstrencode.c jstrencode.h ../dbg/dbg.h ../util.h ../dyn_array/dyn_array.h \
-	../dyn_array/../dbg/dbg.h json_parse.h ../limit_ioccc.h ../version.h

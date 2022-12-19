@@ -196,17 +196,19 @@ all: ${TARGETS} ${ALL_OTHER_TARGETS} Makefile
 	@:
 
 
-######################################################
-# List rules that do not create themselves as .PHONY #
-######################################################
+#################################################
+# .PHONY list of rules that do not create files #
+#################################################
 
-.PHONY: all configure clean clobber install test \
-	extern_include extern_objs extern_liba extern_man extern_prog extern_everything
+.PHONY: all \
+	extern_include extern_objs extern_liba extern_man extern_prog extern_everything dyn_array.3 \
+	test check_man tags prep_clean prep_clobber legacy_clean legacy_clobber \
+	configure clean clobber install
 
 
-################
-# what to make #
-################
+####################################
+# things to make in this directory #
+####################################
 
 dyn_array.o: dyn_array.c dyn_array.h
 	${CC} ${CFLAGS} dyn_array.c -c
@@ -223,9 +225,9 @@ dyn_test: dyn_test.o ../dbg/dbg.a ../util.o dyn_array.a Makefile
 	${CC} ${CFLAGS} dyn_test.o ../dbg/dbg.a ../util.o dyn_array.a -o dyn_test
 
 
-#############################################################
-# rules that invoke rules in Makefiles in other directories #
-#############################################################
+#########################################################
+# rules that invoke Makefile rules in other directories #
+#########################################################
 
 ../dbg/dbg.a: ../dbg/Makefile
 	${MAKE} -C ../dbg extern_liba
@@ -234,9 +236,9 @@ dyn_test: dyn_test.o ../dbg/dbg.a ../util.o dyn_array.a Makefile
 	${MAKE} -C .. util.o
 
 
-###########################################
-# rules for use by higher level Makefiles #
-###########################################
+####################################
+# rules for use by other Makefiles #
+####################################
 
 extern_include: ${EXTERN_H}
 	@:
@@ -250,18 +252,19 @@ extern_liba: ${EXTERN_LIBA}
 extern_man: ${EXTERN_MAN}
 	@:
 
-dyn_array.3:
-	@:
-
 extern_prog: ${EXTERN_PROG}
 	@:
 
 extern_everything: extern_include extern_objs extern_liba extern_man extern_prog
 	@:
 
-#######################
-# internal make rules #
-#######################
+dyn_array.3:
+	@:
+
+
+###########################################################
+# repo tools - rules for those who maintain the this repo #
+###########################################################
 
 test: check_man dyn_test Makefile
 	@-./dyn_test; \
@@ -293,10 +296,26 @@ check_man: ${ALL_MAN_TARGETS} Makefile
 	    fi; \
 	fi
 
+tags: ${ALL_SRC} ${ALL_BUILT_SRC}
+	-${CTAGS} ${ALL_SRC} ${ALL_BUILT_SRC} 2>&1 | \
+	     ${GREP} -E -v 'Duplicate entry|Second entry ignored'
 
-#######################
-# common make actions #
-#######################
+prep_clean: legacy_clean
+	@:
+
+prep_clobber: legacy_clobber
+	@:
+
+legacy_clean:
+	@:
+
+legacy_clobber:
+	@:
+
+
+###################################
+# standard Makefile utility rules #
+###################################
 
 configure:
 	@echo nothing to $@
@@ -323,6 +342,9 @@ install: all
 	${INSTALL} -v -m 0444 ${LIBA_TARGETS} ${DEST_LIB}
 	${INSTALL} -v -m 0444 ${H_SRC_TARGETS} ${DEST_INCLUDE}
 
-tags: ${ALL_SRC} ${ALL_BUILT_SRC}
-	-${CTAGS} ${ALL_SRC} ${ALL_BUILT_SRC} 2>&1 | \
-	     ${GREP} -E -v 'Duplicate entry|Second entry ignored'
+
+###############
+# make depend #
+###############
+
+### DO NOT CHANGE MANUALLY BEYOND THIS LINE

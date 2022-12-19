@@ -336,6 +336,10 @@ if [[ $status -ne 0 ]]; then
     FAILURE_SUMMARY="$FAILURE_SUMMARY
     test_ioccc/iocccsize_test.sh non-zero exit code: $status"
     EXIT_CODE="20"
+    echo | tee -a -- "$LOGFILE"
+    echo "EXIT_CODE set to: $EXIT_CODE" | tee -a -- "$LOGFILE"
+    echo | tee -a -- "$LOGFILE"
+    echo "FAILED: test_ioccc/iocccsize_test.sh" | tee -a -- "$LOGFILE"
 else
     echo | tee -a -- "$LOGFILE"
     echo "PASSED: test_ioccc/iocccsize_test.sh" | tee -a -- "$LOGFILE"
@@ -355,6 +359,10 @@ if [[ $status -ne 5 ]]; then
     FAILURE_SUMMARY="$FAILURE_SUMMARY
     exit status of dbg_test: $status != 5";
     EXIT_CODE="21"
+    echo | tee -a -- "$LOGFILE"
+    echo "EXIT_CODE set to: $EXIT_CODE" | tee -a -- "$LOGFILE"
+    echo | tee -a -- "$LOGFILE"
+    echo "FAILED: dbg_test" | tee -a -- "$LOGFILE"
 else
     grep -q '^ERROR\[5\]: main: simulated error, foo: foo bar: bar: errno\[2\]: No such file or directory$' dbg_test.out
     status="$?"
@@ -366,6 +374,10 @@ else
 	FAILURE_SUMMARY="$FAILURE_SUMMARY
     did not find the correct dbg_test error message"
 	EXIT_CODE="22"
+	echo | tee -a -- "$LOGFILE"
+	echo "EXIT_CODE set to: $EXIT_CODE" | tee -a -- "$LOGFILE"
+	echo | tee -a -- "$LOGFILE"
+	echo "FAILED: dbg_test" | tee -a -- "$LOGFILE"
     else
 	echo | tee -a -- "$LOGFILE"
 	echo "PASSED: dbg_test" | tee -a -- "$LOGFILE"
@@ -386,6 +398,10 @@ if [[ $status -ne 0 ]]; then
     FAILURE_SUMMARY="$FAILURE_SUMMARY
     test_ioccc/mkiocccentry_test.sh non-zero exit code: $status"
     EXIT_CODE="23"
+    echo | tee -a -- "$LOGFILE"
+    echo "EXIT_CODE set to: $EXIT_CODE" | tee -a -- "$LOGFILE"
+    echo | tee -a -- "$LOGFILE"
+    echo "FAILED: test_ioccc/mkiocccentry_test.sh" | tee -a -- "$LOGFILE"
 else
     echo | tee -a -- "$LOGFILE"
     echo "PASSED: test_ioccc/mkiocccentry_test.sh" | tee -a -- "$LOGFILE"
@@ -396,14 +412,18 @@ fi
 echo | tee -a -- "$LOGFILE"
 echo "RUNNING: jparse/test_jparse/jstr_test.sh" | tee -a -- "$LOGFILE"
 echo | tee -a -- "$LOGFILE"
-echo "jparse/test_jparse/jstr_test.sh -Z $TOPDIR" | tee -a -- "$LOGFILE"
-jparse/test_jparse/jstr_test.sh -Z "$TOPDIR" | tee -a -- "$LOGFILE"
+echo "jparse/test_jparse/jstr_test.sh -Z $TOPDIR -e $TOPDIR/jparse/jstrencode -d $TOPDIR/jparse/jstrdecode" | tee -a -- "$LOGFILE"
+jparse/test_jparse/jstr_test.sh -Z "$TOPDIR" -e "$TOPDIR/jparse/jstrencode" -d "$TOPDIR/jparse/jstrdecode" | tee -a -- "$LOGFILE"
 status="${PIPESTATUS[0]}"
 if [[ $status -ne 0 ]]; then
     echo "$0: ERROR: jparse/test_jparse/jstr_test.sh non-zero exit code: $status" 1>&2 | tee -a -- "$LOGFILE"
     FAILURE_SUMMARY="$FAILURE_SUMMARY
     jparse/test_jparse/jstr_test.sh non-zero exit code: $status"
     EXIT_CODE="24"
+    echo | tee -a -- "$LOGFILE"
+    echo "EXIT_CODE set to: $EXIT_CODE" | tee -a -- "$LOGFILE"
+    echo | tee -a -- "$LOGFILE"
+    echo "FAILED: jparse/test_jparse/jstr_test.sh" | tee -a -- "$LOGFILE"
 else
     echo | tee -a -- "$LOGFILE"
     echo "PASSED: jparse/test_jparse/jstr_test.sh" | tee -a -- "$LOGFILE"
@@ -422,6 +442,10 @@ if [[ $status -ne 0 ]]; then
     FAILURE_SUMMARY="$FAILURE_SUMMARY
     jparse/test_jparse/jnum_chk non-zero exit code: $status"
     EXIT_CODE="25"
+    echo | tee -a -- "$LOGFILE"
+    echo "EXIT_CODE set to: $EXIT_CODE" | tee -a -- "$LOGFILE"
+    echo | tee -a -- "$LOGFILE"
+    echo "FAILED: jparse/test_jparse/jnum_chk" | tee -a -- "$LOGFILE"
 else
     echo | tee -a -- "$LOGFILE"
     echo "PASSED: jparse/test_jparse/jnum_chk" | tee -a -- "$LOGFILE"
@@ -440,6 +464,10 @@ if [[ $status -ne 0 ]]; then
     FAILURE_SUMMARY="$FAILURE_SUMMARY
     dyn_array/dyn_test non-zero exit code: $status"
     EXIT_CODE="26"
+    echo | tee -a -- "$LOGFILE"
+    echo "EXIT_CODE set to: $EXIT_CODE" | tee -a -- "$LOGFILE"
+    echo | tee -a -- "$LOGFILE"
+    echo "FAILED: dyn_array/dyn_test" | tee -a -- "$LOGFILE"
 else
     echo | tee -a -- "$LOGFILE"
     echo "PASSED: dyn_array/dyn_test" | tee -a -- "$LOGFILE"
@@ -450,14 +478,18 @@ fi
 echo | tee -a -- "$LOGFILE"
 echo "RUNNING: jparse/test_jparse/jparse_test.sh" | tee -a -- "$LOGFILE"
 echo | tee -a -- "$LOGFILE"
-echo "jparse/test_jparse/jparse_test.sh -J $V_FLAG -d jparse/test_jparse/test_JSON jparse/test_jparse/json_teststr.txt" | tee -a -- "$LOGFILE"
-jparse/test_jparse/jparse_test.sh -J "$V_FLAG" -d jparse/test_jparse/test_JSON jparse/test_jparse/json_teststr.txt | tee -a -- "$LOGFILE"
+echo "jparse/test_jparse/jparse_test.sh -J $V_FLAG -d jparse/test_jparse/test_JSON -j jparse/jparse jparse/test_jparse/json_teststr.txt" | tee -a -- "$LOGFILE"
+jparse/test_jparse/jparse_test.sh -J "$V_FLAG" -d jparse/test_jparse/test_JSON -j jparse/jparse jparse/test_jparse/json_teststr.txt | tee -a -- "$LOGFILE"
 status="${PIPESTATUS[0]}"
 if [[ $status -ne 0 ]]; then
     echo "$0: ERROR: jparse/test_jparse/jparse_test.sh non-zero exit code: $status" 1>&2 | tee -a -- "$LOGFILE"
     FAILURE_SUMMARY="$FAILURE_SUMMARY
     jparse/test_jparse/jparse_test.sh non-zero exit code: $status"
     EXIT_CODE="27"
+    echo | tee -a -- "$LOGFILE"
+    echo "EXIT_CODE set to: $EXIT_CODE" | tee -a -- "$LOGFILE"
+    echo | tee -a -- "$LOGFILE"
+    echo "FAILED: jparse/test_jparse/jparse_test.sh" | tee -a -- "$LOGFILE"
 else
     echo | tee -a -- "$LOGFILE"
     echo "PASSED: jparse/test_jparse/jparse_test.sh" | tee -a -- "$LOGFILE"
@@ -481,6 +513,10 @@ if [[ $status -ne 0 ]]; then
     FAILURE_SUMMARY="$FAILURE_SUMMARY
     test_ioccc/txzchk_test.sh non-zero exit code: $status"
     EXIT_CODE="28"
+    echo | tee -a -- "$LOGFILE"
+    echo "EXIT_CODE set to: $EXIT_CODE" | tee -a -- "$LOGFILE"
+    echo | tee -a -- "$LOGFILE"
+    echo "FAILED: test_ioccc/txzchk_test.sh" | tee -a -- "$LOGFILE"
 else
     echo | tee -a -- "$LOGFILE"
     echo "PASSED: test_ioccc/txzchk_test.sh" | tee -a -- "$LOGFILE"
@@ -499,6 +535,10 @@ if [[ $status -ne 0 ]]; then
     FAILURE_SUMMARY="$FAILURE_SUMMARY
     test_ioccc/chkentry_test.sh non-zero exit code: $status"
     EXIT_CODE="29"
+    echo | tee -a -- "$LOGFILE"
+    echo "EXIT_CODE set to: $EXIT_CODE" | tee -a -- "$LOGFILE"
+    echo | tee -a -- "$LOGFILE"
+    echo "FAILED: test_ioccc/chkentry_test.sh" | tee -a -- "$LOGFILE"
 else
     echo | tee -a -- "$LOGFILE"
     echo "PASSED: test_ioccc/chkentry_test.sh" | tee -a -- "$LOGFILE"

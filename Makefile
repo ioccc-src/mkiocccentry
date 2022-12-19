@@ -170,7 +170,8 @@ CFLAGS= ${C_STD} ${COPT} -pedantic ${WARN_FLAGS} ${LDFLAGS}
 # where and what to install
 #
 DESTDIR= /usr/local/bin
-TARGETS= mkiocccentry iocccsize fnamchk txzchk chkentry jparse/jnum_gen
+TARGETS= mkiocccentry iocccsize fnamchk txzchk chkentry \
+	jparse/jnum_gen jparse/jstrencode jparse/jstrdecode jparse/jparse jparse/jparse.a
 
 SH_TARGETS=limit_ioccc.sh
 
@@ -361,8 +362,11 @@ hostchk_warning:
 	@echo '=-= even though we doubt it will be OK. =-=' 1>&2
 	@echo 1>&2
 
-# rules, not file targets
-#
+
+#################################################
+# .PHONY list of rules that do not create files #
+#################################################
+
 .PHONY: all just_all fast_hostchk hostchk hostchk_warning all_ref all_ref_ptch mkchk_sem bug_report.sh build \
 	check_man clean clean_generated_obj clean_mkchk_sem clobber configure depend hostchk bug_report.sh \
 	install test_ioccc legacy_clobber mkchk_sem parser parser-o picky prep prep_clobber \
@@ -370,9 +374,9 @@ hostchk_warning:
 	soup jparse dbg.3
 
 
-#####################################
-# rules to compile and build source #
-#####################################
+####################################
+# things to make in this directory #
+####################################
 
 rule_count.o: rule_count.c Makefile
 	${CC} ${CFLAGS} -DMKIOCCCENTRY_USE rule_count.c -c
@@ -413,13 +417,6 @@ txzchk: txzchk.o dbg/dbg.a util.o dyn_array/dyn_array.a location.o \
 	${CC} ${CFLAGS} txzchk.o dbg/dbg.a util.o dyn_array/dyn_array.a location.o \
 	     utf8_posix_map.o sanity.o -o $@
 
-soup: soup/chk.auth.head.c soup/chk.auth.ptch.h soup/chk.info.head.c soup/chk.info.ptch.h \
-	soup/chk_sem_auth.c  soup/chk_sem_info.h soup/chk.auth.head.h soup/chk.auth.tail.c \
-	soup/chk.info.head.h soup/chk.info.tail.c soup/chk_sem_auth.h  soup/chk_validate.c \
-	soup/chk.auth.ptch.c soup/chk.auth.tail.h soup/chk.info.ptch.c soup/chk.info.tail.h \
-	soup/chk_sem_info.c  soup/chk_validate.h
-	@${MAKE} -C soup CFLAGS="${CFLAGS}"
-
 chkentry.o: chkentry.c chkentry.h jparse/jparse.tab.h oebxergfB.h Makefile
 	${CC} ${CFLAGS} -Isoup chkentry.c -c
 
@@ -459,9 +456,9 @@ limit_ioccc.sh: limit_ioccc.h version.h dbg/dbg.h dyn_array/dyn_array.h dyn_arra
 	fi >> $@
 
 
-#############################################################
-# rules that invoke rules in Makefiles in other directories #
-#############################################################
+#########################################################
+# rules that invoke Makefile rules in other directories #
+#########################################################
 
 dbg/dbg.h: dbg/Makefile
 	@${MAKE} -C dbg extern_include
@@ -495,6 +492,13 @@ jparse/jparse.1: jparse/Makefile
 
 jparse/jparse_test.8: jparse/Makefile
 	@${MAKE} -C jparse extern_man
+
+soup: soup/chk.auth.head.c soup/chk.auth.ptch.h soup/chk.info.head.c soup/chk.info.ptch.h \
+	soup/chk_sem_auth.c  soup/chk_sem_info.h soup/chk.auth.head.h soup/chk.auth.tail.c \
+	soup/chk.info.head.h soup/chk.info.tail.c soup/chk_sem_auth.h  soup/chk_validate.c \
+	soup/chk.auth.ptch.c soup/chk.auth.tail.h soup/chk.info.ptch.c soup/chk.info.tail.h \
+	soup/chk_sem_info.c  soup/chk_validate.h
+	@${MAKE} -C soup CFLAGS="${CFLAGS}"
 
 # How to create jparse/jparse.tab.c and jparse/jparse.tab.h
 #
@@ -552,11 +556,15 @@ jparse/jsemtblgen: jparse/jsemtblgen.o jparse/jparse.a util.o dyn_array/dyn_arra
 	${MAKE} -C jparse CFLAGS="${CFLAGS}" jsemtblgen
 
 
-###################################################################
-# repo tools - rules for those who maintain the mkiocccentry repo #
-###################################################################
+####################################
+# rules for use by other Makefiles #
+####################################
 
-#
+
+###########################################################
+# repo tools - rules for those who maintain the this repo #
+###########################################################
+
 # make build release pull
 #
 # Things to do before a release, forming a pull request and/or updating the
@@ -584,7 +592,6 @@ build release pull: prep.sh
 		echo "NOTE: The above details were saved in the file: ${BUILD_LOG}"; \
 	    fi
 
-#
 # make prep
 #
 # Things to do before a release, forming a pull request and/or updating the
@@ -612,7 +619,6 @@ prep: prep.sh
 	    fi
 	@echo NOTE: The above details were saved in the file: ${BUILD_LOG}
 
-#
 # make parser
 #
 # Force the rebuild of the JSON parser and then form the reference copies of
@@ -814,6 +820,52 @@ clean_mkchk_sem:
 	${RM} -f soup/chk_sem_auth.c soup/chk_sem_auth.h soup/chk_sem_auth.o
 	${RM} -f soup/chk_sem_info.c soup/chk_sem_info.h soup/chk_sem_info.o
 
+tags: ${ALL_CSRC} ${H_FILES}
+	-${CTAGS} ${ALL_CSRC} ${H_FILES} 2>&1 | \
+	     ${GREP} -E -v 'Duplicate entry|Second entry ignored'
+
+# rule used by make clean
+#
+prep_clean: legacy_clean
+	${MAKE} -C dbg $@
+	${MAKE} -C dyn_array $@
+	${MAKE} -C test_ioccc $@
+	${MAKE} -C soup $@
+	${MAKE} -C man $@
+	${MAKE} -C jparse $@
+
+# rule used by prep.sh and make clobber
+#
+prep_clobber: legacy_clobber
+	${RM} -f ${TARGETS} ${TEST_TARGETS}
+	${RM} -f ${GENERATED_CSRC} ${GENERATED_HSRC}
+	${RM} -f answers.txt
+	${RM} -f tags
+	${RM} -f jparse.output
+	${RM} -f ${TXZCHK_LOG}
+	${RM} -f legacy_os
+	${RM} -rf legacy_os.dSYM
+	${MAKE} -C dbg $@
+	${MAKE} -C dyn_array $@
+	${MAKE} -C test_ioccc $@
+	${MAKE} -C soup $@
+	${MAKE} -C man $@
+	${MAKE} -C jparse $@
+
+# clean legacy code and files - files that are no longer needed
+#
+legacy_clean:
+	${RM} -f jint.o jint_gen.o
+	${RM} -f jfloat.o jfloat_gen.o
+	${RM} -f jauthchk.o jinfochk.o jnum_gen.o jsemtblgen.o jstrdecode.o jstrencode.o verge.o
+	${RM} -f jparse.tab.o jparse_main.o json_parse.o
+	${MAKE} -C dbg $@
+	${MAKE} -C dyn_array $@
+	${MAKE} -C test_ioccc $@
+	${MAKE} -C soup $@
+	${MAKE} -C man $@
+	${MAKE} -C jparse $@
+
 # clobber legacy code and files - files that are no longer needed
 #
 legacy_clobber:
@@ -830,7 +882,6 @@ legacy_clobber:
 	${RM} -rf ref
 	${RM} -f chk.{auth,info}.{head,tail,ptch}.{c,h}
 	${RM} -f chk_sem_auth.o chk_sem_info.o chk_validate.o
-	${RM} -f jparse/jstr_test.out jparse/jstr_test2.out
 	${RM} -rf test_iocccsize test_src test_work
 	${RM} -f dbg_test.c dbg_test.out
 	${RM} -rf dyn_test.dSYM
@@ -842,96 +893,13 @@ legacy_clobber:
 	${RM} -f .exit_code.*
 	${RM} -f dbg.out
 	${RM} -rf ioccc_test test
-	${RM} -f man/*.html
 	${RM} -f jparse.lex.h jparse.tab.c jparse.tab.h jparse.c
-
-# rule used by prep.sh and make clobber
-#
-prep_clobber: legacy_clobber
-	${RM} -f ${TARGETS} ${TEST_TARGETS}
-	${RM} -f ${GENERATED_CSRC} ${GENERATED_HSRC}
-	${RM} -f answers.txt
-	${RM} -f jparse/test_jparse/jstr_test.out jparse/test_jparse/jstr_test2.out
-	${RM} -rf test_ioccc/test_iocccsize test_ioccc/test_src test_ioccc/test_work
-	${RM} -f tags
-	${RM} -f jparse.output
-	${RM} -f ${TXZCHK_LOG}
-	${RM} -f jparse/test_jparse/jnum_chk
-	${RM} -rf jparse/test_jparse/jnum_chk.dSYM
-	${RM} -f jparse/jnum_gen
-	${RM} -rf jparse/jnum_gen.dSYM
-	${RM} -rf soup/ref
-	${RM} -f legacy_os
-	${RM} -rf legacy_os.dSYM
-
-
-###################################
-# standard Makefile utility rules #
-###################################
-
-configure:
-	@echo nothing to configure
-
-# clean legacy code and files - files that are no longer needed
-#
-legacy_clean:
-	${RM} -f jint.o test_ioccc/jint.test.o jint_gen.o
-	${RM} -f jfloat.o test_ioccc/jfloat.test.o jfloat_gen.o
-	${RM} -f jauthchk.o jinfochk.o
-
-clean: clean_generated_obj legacy_clean
-	${RM} -f ${OBJFILES}
-	${RM} -f ${GENERATED_OBJ}
-	${RM} -f ${LESS_PICKY_OBJ}
-	${RM} -rf ${DSYMDIRS}
 	${MAKE} -C dbg $@
 	${MAKE} -C dyn_array $@
 	${MAKE} -C test_ioccc $@
 	${MAKE} -C soup $@
 	${MAKE} -C man $@
-
-clobber: clean prep_clobber
-	${RM} -f ${BUILD_LOG}
-	${RM} -f jparse/test_jparse/jparse_test.log test_ioccc/chkentry_test.log test_ioccc/txzchk_test.log
-	${RM} -f .jparse/jsemcgen.out.*
-	${RM} -f .all_ref.*
-	${RM} -rf .hostchk.work.*
-	${RM} -f .sorry.*
-	${RM} -f .jparse/jsemcgen.*
-	${RM} -f .txzchk_test,*
-	${RM} -f test_ioccc/test_ioccc.log
-	${MAKE} -C dbg $@
-	${MAKE} -C dyn_array $@
-	${MAKE} -C test_ioccc $@
-	${MAKE} -C soup $@
-	${MAKE} -C man $@
-
-distclean nuke: clobber
-
-install: all
-	# we have to first make sure the directories exist!
-	${INSTALL} -v -d -m 0755 ${DESTDIR}
-	${INSTALL} -v -m 0555 ${TARGETS} ${SH_TARGETS} ${DESTDIR}
-
-tags: ${ALL_CSRC} ${H_FILES}
-	-${CTAGS} ${ALL_CSRC} ${H_FILES} 2>&1 | \
-	     ${GREP} -E -v 'Duplicate entry|Second entry ignored'
-
-depend: jparse soup/fmt_depend.sh
-	@echo
-	@echo "make depend starting"
-	@echo
-	@${SED} -i.orig -n -e '1,/^### DO NOT CHANGE MANUALLY BEYOND THIS LINE/p' Makefile
-	${CC} ${CFLAGS} -MM -Isoup -I. ${ALL_CSRC} | ./soup/fmt_depend.sh >> Makefile
-	@-if ${CMP} -s Makefile.orig Makefile; then \
-	    ${RM} -f Makefile.orig; \
-	else \
-	    echo; echo "Makefile dependencies updated"; echo; echo "Previous version may be found in: Makefile.orig"; \
-	fi
-	@echo
-	@${MAKE} -C soup depend
-	@${MAKE} -C jparse depend
-	@echo "make depend completed"
+	${MAKE} -C jparse $@
 
 
 ########################################################################
@@ -1062,6 +1030,64 @@ all.reload: dbg.reload dyn_array.reload jparse.reload
 all.rsync: dbg.rsync dyn_array.rsync jparse.rsync
 
 all.status: dbg.status dyn_array.status jparse.status
+
+
+###################################
+# standard Makefile utility rules #
+###################################
+
+configure:
+	@echo nothing to configure
+
+clean: clean_generated_obj legacy_clean
+	${RM} -f ${OBJFILES}
+	${RM} -f ${GENERATED_OBJ}
+	${RM} -f ${LESS_PICKY_OBJ}
+	${RM} -rf ${DSYMDIRS}
+	${MAKE} -C dyn_array $@
+	${MAKE} -C test_ioccc $@
+	${MAKE} -C soup $@
+	${MAKE} -C man $@
+	${MAKE} -C jparse $@
+
+clobber: clean prep_clobber
+	${RM} -f ${BUILD_LOG}
+	${RM} -f .all_ref.*
+	${RM} -rf .hostchk.work.*
+	${RM} -f .sorry.*
+	${RM} -f .txzchk_test,*
+	${MAKE} -C dbg $@
+	${MAKE} -C dyn_array $@
+	${MAKE} -C test_ioccc $@
+	${MAKE} -C soup $@
+	${MAKE} -C man $@
+	${MAKE} -C jparse $@
+
+install: all
+	# we have to first make sure the directories exist!
+	${INSTALL} -v -d -m 0755 ${DESTDIR}
+	${INSTALL} -v -m 0555 ${TARGETS} ${SH_TARGETS} ${DESTDIR}
+
+
+###################################
+# standard Makefile utility rules #
+###################################
+
+depend: jparse soup/fmt_depend.sh
+	@echo
+	@echo "make depend starting"
+	@echo
+	@${SED} -i.orig -n -e '1,/^### DO NOT CHANGE MANUALLY BEYOND THIS LINE/p' Makefile
+	${CC} ${CFLAGS} -MM -Isoup -I. ${ALL_CSRC} | ./soup/fmt_depend.sh >> Makefile
+	@-if ${CMP} -s Makefile.orig Makefile; then \
+	    ${RM} -f Makefile.orig; \
+	else \
+	    echo; echo "Makefile dependencies updated"; echo; echo "Previous version may be found in: Makefile.orig"; \
+	fi
+	@echo
+	@${MAKE} -C soup depend
+	@${MAKE} -C jparse depend
+	@echo "make depend completed"
 
 
 ###############

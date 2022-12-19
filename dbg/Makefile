@@ -196,17 +196,19 @@ all: ${TARGETS} ${ALL_OTHER_TARGETS} Makefile
 	@:
 
 
-######################################################
-# List rules that do not create themselves as .PHONY #
-######################################################
+#################################################
+# .PHONY list of rules that do not create files #
+#################################################
 
-.PHONY: all configure clean clobber install test \
-	extern_include extern_objs extern_liba extern_man extern_prog extern_everything
+.PHONY: all \
+	extern_include extern_objs extern_liba extern_man extern_prog extern_everything dbg.3 \
+	test check_man prep_clean prep_clobber legacy_clean legacy_clobber \
+	configure clean clobber install
 
 
-################
-# what to make #
-################
+####################################
+# things to make in this directory #
+####################################
 
 dbg.o: dbg.c dbg.h
 	${CC} ${CFLAGS} dbg.c -c
@@ -233,9 +235,14 @@ dbg_example: dbg_example.o dbg.a
 	${CC} ${CFLAGS} dbg_example.o dbg.a -o $@
 
 
-###########################################
-# rules for use by higher level Makefiles #
-###########################################
+#########################################################
+# rules that invoke Makefile rules in other directories #
+#########################################################
+
+
+####################################
+# rules for use by other Makefiles #
+####################################
 
 extern_include: ${EXTERN_H}
 	@:
@@ -249,18 +256,19 @@ extern_liba: ${EXTERN_LIBA}
 extern_man: ${EXTERN_MAN}
 	@:
 
-dbg.3:
-	@:
-
 extern_prog: ${EXTERN_PROG}
 	@:
 
 extern_everything: extern_include extern_objs extern_liba extern_man extern_prog
 	@:
 
-#######################
-# internal make rules #
-#######################
+dbg.3:
+	@:
+
+
+###########################################################
+# repo tools - rules for those who maintain the this repo #
+###########################################################
 
 test: dbg_test check_man Makefile
 	${RM} -f dbg_test.out
@@ -306,10 +314,22 @@ check_man: ${ALL_MAN_TARGETS} Makefile
 	    fi; \
 	fi
 
+prep_clean: legacy_clean
+	@:
 
-#######################
-# common make actions #
-#######################
+prep_clobber: legacy_clobber
+	@:
+
+legacy_clean:
+	@:
+
+legacy_clobber:
+	@:
+
+
+###################################
+# standard Makefile utility rules #
+###################################
 
 configure:
 	@echo nothing to $@
@@ -340,3 +360,9 @@ install: all
 tags: ${ALL_SRC} ${ALL_BUILT_SRC}
 	-${CTAGS} ${ALL_SRC} ${ALL_BUILT_SRC} 2>&1 | \
 	     ${GREP} -E -v 'Duplicate entry|Second entry ignored'
+
+###############
+# make depend #
+###############
+
+### DO NOT CHANGE MANUALLY BEYOND THIS LINE

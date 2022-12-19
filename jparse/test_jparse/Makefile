@@ -129,7 +129,19 @@ SH_TARGETS=
 all: ${TARGETS}
 	@:
 
-.PHONY: all test configure clean clobber install
+
+#################################################
+# .PHONY list of rules that do not create files #
+#################################################
+
+.PHONY: all \
+	test prep_clean prep_clobber legacy_clean legacy_clobber \
+	configure clean clobber install
+
+
+####################################
+# things to make in this directory #
+####################################
 
 jnum_test.o: jnum_test.c Makefile
 	${CC} ${CFLAGS} -I../.. jnum_test.c -c
@@ -142,9 +154,10 @@ jnum_chk: jnum_chk.o ../../dbg/dbg.a ../json_parse.o ../json_util.o ../../util.o
 	${CC} ${CFLAGS} -I../.. jnum_chk.o ../../dbg/dbg.a ../json_parse.o ../json_util.o ../../util.o \
 		../../dyn_array/dyn_array.o jnum_test.o -lm -o jnum_chk
 
-#############################################################
-# rules that invoke rules in Makefiles in other directories #
-#############################################################
+
+#########################################################
+# rules that invoke Makefile rules in other directories #
+#########################################################
 
 ../../dbg/dbg.a: ../../dbg/Makefile
 	${MAKE} -C ../../dbg extern_liba
@@ -153,12 +166,32 @@ jnum_chk: jnum_chk.o ../../dbg/dbg.a ../json_parse.o ../json_util.o ../../util.o
 	${MAKE} -C ../.. util.o
 
 
-###################################################################
-# repo tools - rules for those who maintain the mkiocccentry repo #
-###################################################################
+####################################
+# rules for use by other Makefiles #
+####################################
+
+
+###########################################################
+# repo tools - rules for those who maintain the this repo #
+###########################################################
 
 test: all jparse_test.sh
 	 ./jparse_test.sh -j ../jparse -d ./test_JSON ./json_teststr.txt
+
+prep_clean: legacy_clean
+	${RM} -f jnum_chk.o jnum_gen.o
+
+prep_clobber: legacy_clobber
+	${RM} -f jstr_test.out jstr_test2.out
+	${RM} -f jnum_chk jnum_gen
+	${RM} -rf jnum_chk.dSYM
+	${RM} -rf jnum_gen.dSYM
+
+legacy_clean:
+	@:
+
+legacy_clobber:
+	@:
 
 
 ###################################
@@ -169,10 +202,18 @@ configure:
 	@echo nothing to $@
 
 clean:
-	${RM} -f *.o
+	${RM} -f jnum_chk.o jnum_test.o
 
 clobber: clean
 	${RM} -f ${TARGETS}
+	${RM} -f jparse_test.log chkentry_test.log txzchk_test.log
 
 install: all
 	@echo nothing to $@
+
+
+###############
+# make depend #
+###############
+
+### DO NOT CHANGE MANUALLY BEYOND THIS LINE
