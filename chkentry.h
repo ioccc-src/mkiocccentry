@@ -30,24 +30,9 @@
 #include "dbg/dbg.h"
 
 /*
- * json_util - general JSON parser utility support functions
- */
-#include "jparse/json_util.h"
-
-/*
- * util - entry common utility functions for the IOCCC toolkit
- */
-#include "jparse/util.h"
-
-/*
  * jparse - the parser
  */
 #include "jparse/jparse.h"
-
-/*
- * json_sem - JSON semantics support
- */
-#include "jparse/json_sem.h"
 
 /*
  * chk_sem_info - check .info.json semantics

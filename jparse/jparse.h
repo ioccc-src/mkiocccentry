@@ -44,6 +44,11 @@
  */
 #include "json_util.h"
 
+/*
+ * json_sem - JSON semantics support
+ */
+#include "json_sem.h"
+
 
 /*
  * definitions

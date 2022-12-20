@@ -43,9 +43,9 @@
 #include "dbg/dbg.h"
 
 /*
- * util - entry common utility functions for the IOCCC toolkit
+ * jparse - the parser
  */
-#include "jparse/util.h"
+#include "jparse/jparse.h"
 
 /*
  * version - official IOCCC toolkit versions

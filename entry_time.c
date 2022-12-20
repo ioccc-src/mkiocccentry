@@ -36,9 +36,9 @@
 #include "dbg/dbg.h"
 
 /*
- * json_util - general JSON parser utility support functions
+ * jparse - the parser
  */
-#include "jparse/json_util.h"
+#include "jparse/jparse.h"
 
 /*
  * entry_time - utility functions supporting mkiocccentry JSON files related to time

@@ -27,14 +27,9 @@
 
 
 /*
- * json_parse - JSON parser support code
+ * jparse - the parser
  */
-#include "jparse/json_parse.h"
-
-/*
- * json_sem - JSON semantics support
- */
-#include "jparse/json_sem.h"
+#include "jparse/jparse.h"
 
 
 /*

@@ -266,7 +266,8 @@ chk_sem_auth.o: chk_sem_auth.c chk_sem_auth.h ../jparse/json_sem.h ../jparse/uti
 chk_sem_info.o: chk_sem_info.c chk_sem_info.h ../jparse/json_sem.h ../jparse/util.h \
 	../jparse/../dyn_array/dyn_array.h ../jparse/../dyn_array/../dbg/dbg.h ../jparse/json_parse.h \
 	../jparse/json_util.h
-chk_validate.o: chk_validate.c chk_validate.h ../entry_util.h ../jparse/json_parse.h \
-	../jparse/util.h ../jparse/../dyn_array/dyn_array.h ../jparse/../dyn_array/../dbg/dbg.h \
-	../jparse/json_sem.h ../jparse/json_util.h chk_sem_auth.h chk_sem_info.h ../entry_time.h \
+chk_validate.o: chk_validate.c chk_validate.h ../entry_util.h ../jparse/jparse.h \
+	../jparse/../dbg/dbg.h ../jparse/util.h ../jparse/../dyn_array/dyn_array.h \
+	../jparse/../dyn_array/../dbg/dbg.h ../jparse/json_parse.h ../jparse/json_util.h \
+	../jparse/json_sem.h ../jparse/jparse.tab.h chk_sem_auth.h chk_sem_info.h ../entry_time.h \
 	../location.h ../dbg/dbg.h

@@ -42,9 +42,9 @@
 
 
 /*
- * util - entry common utility functions for the IOCCC toolkit
+ * jparse - the parser
  */
-#include "jparse/util.h"
+#include "jparse/jparse.h"
 
 /*
  * dbg - info, debug, warning, error, and usage message facility
