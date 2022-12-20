@@ -36,7 +36,7 @@
 /*
  * util - entry common utility functions for the IOCCC toolkit
  */
-#include "../util.h"
+#include "util.h"
 
 /*
  * dyn_array - dynamic array facility

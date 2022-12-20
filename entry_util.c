@@ -45,7 +45,7 @@
 /*
  * util - entry common utility functions for the IOCCC toolkit
  */
-#include "util.h"
+#include "jparse/util.h"
 
 /*
  * version - official IOCCC toolkit versions
@@ -350,6 +350,72 @@ free_manifest(struct manifest *manp)
      */
     memset(manp, 0, sizeof(*manp));
     return;
+}
+
+
+/*
+ * valid_contest_id	    -	validate string as a contest ID
+ *
+ * given:
+ *	str	    -	string to test
+ *
+ * Returns true if it's valid.
+ *
+ * Returns false if it's invalid, NULL or empty string.
+ */
+bool
+valid_contest_id(char *str)
+{
+    size_t len;			/* input string length */
+    int ret;			/* libc function return */
+    unsigned int a, b, c, d, e, f;	/* parts of the UUID string */
+    unsigned int version = 0;	/* UUID version hex character */
+    unsigned int variant = 0;	/* UUID variant hex character */
+    char guard;			/* scanf guard to catch excess amount of input */
+    size_t i;
+
+    if (str == NULL || strlen(str) == 0) {
+	return false;
+    }
+
+    if (!strcmp(str, "test")) {
+	/*
+	 * special case: test is valid
+	 */
+	return true;
+    }
+    len = strlen(str);
+
+    /*
+     * validate format of non-test contest ID.  The contest ID, if not "test"
+     * must be a UUID.  The UUID has the 36 character format:
+     *
+     *	    xxxxxxxx-xxxx-4xxx-axxx-xxxxxxxxxxxx
+     *
+     * where 'x' is a hex character.  The 4 is the UUID version and the variant
+     * 1.
+     */
+    if (len != UUID_LEN) {
+	return false;
+    }
+
+    /* convert to UUID lower case before checking */
+    for (i = 0; i < len; ++i) {
+	str[i] = (char)tolower(str[i]);
+    }
+    dbg(DBG_VHIGH, "converted the IOCCC contest ID to: %s", str);
+    /* validate UUID string, version and variant */
+    ret = sscanf(str, "%8x-%4x-%1x%3x-%1x%3x-%8x%4x%c", &a, &b, &version, &c, &variant, &d, &e, &f, &guard);
+    dbg(DBG_HIGH, "UUID version hex char: %1x", version);
+    dbg(DBG_HIGH, "UUID variant hex char: %1x", variant);
+    if (ret != 8 || version != UUID_VERSION || variant != UUID_VARIANT) {
+	return false;
+    }
+
+
+    dbg(DBG_MED, "IOCCC contest ID is a UUID: %s", str);
+
+    return true;
 }
 
 

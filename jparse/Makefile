@@ -281,7 +281,7 @@ ALL_OTHER_TARGETS= extern_everything
 
 # what to make by all and removed by clobber (and thus not ${ALL_OTHER_TARGETS})
 #
-TARGETS= ${LIBA_TARGETS} jparse verge jsemtblgen jnum_gen jstrdecode jstrencode jparse jparse.a
+TARGETS= ${LIBA_TARGETS} jparse.a jparse verge jsemtblgen jnum_gen jstrdecode jstrencode
 
 
 ###########################################
@@ -319,21 +319,21 @@ jparse_main.o: jparse_main.c Makefile
 jparse.o: jparse.c jparse.h Makefile
 	${CC} ${CFLAGS} -Wno-unused-but-set-variable -Wno-unused-function -Wno-unneeded-internal-declaration jparse.c -c
 
-jparse: jparse.a ../util.o ../dyn_array/dyn_array.o ../dbg/dbg.o Makefile
-	${CC} ${CFLAGS} -Wno-unneeded-internal-declaration jparse.a ../util.o ../dyn_array/dyn_array.o ../dbg/dbg.o \
+jparse: jparse.a util.o ../dyn_array/dyn_array.a ../dbg/dbg.a Makefile
+	${CC} ${CFLAGS} -Wno-unneeded-internal-declaration jparse.a util.o ../dyn_array/dyn_array.a ../dbg/dbg.a \
 			-lm -o $@
 
 jstrencode.o: jstrencode.c jstrencode.h json_util.h json_util.c Makefile
 	${CC} ${CFLAGS} jstrencode.c -c
 
-jstrencode: jstrencode.o ../dbg/dbg.a jparse.a ../util.o ../dyn_array/dyn_array.a Makefile
-	${CC} ${CFLAGS} jstrencode.o ../dbg/dbg.a jparse.a ../util.o ../dyn_array/dyn_array.a -lm -o $@
+jstrencode: jstrencode.o ../dbg/dbg.a jparse.a util.o ../dyn_array/dyn_array.a Makefile
+	${CC} ${CFLAGS} jstrencode.o ../dbg/dbg.a jparse.a util.o ../dyn_array/dyn_array.a -lm -o $@
 
 jstrdecode.o: jstrdecode.c jstrdecode.h json_util.h json_parse.h Makefile
 	${CC} ${CFLAGS} jstrdecode.c -c
 
-jstrdecode: jstrdecode.o ../dbg/dbg.a jparse.a ../util.o ../dyn_array/dyn_array.a Makefile
-	${CC} ${CFLAGS} jstrdecode.o ../dbg/dbg.a jparse.a ../util.o ../dyn_array/dyn_array.a -lm -o $@
+jstrdecode: jstrdecode.o ../dbg/dbg.a jparse.a util.o ../dyn_array/dyn_array.a Makefile
+	${CC} ${CFLAGS} jstrdecode.o ../dbg/dbg.a jparse.a util.o ../dyn_array/dyn_array.a -lm -o $@
 
 json_parse.o: json_parse.c Makefile
 	${CC} ${CFLAGS} json_parse.c -c
@@ -341,15 +341,15 @@ json_parse.o: json_parse.c Makefile
 jnum_gen.o: jnum_gen.c jnum_gen.h Makefile
 	${CC} ${CFLAGS} jnum_gen.c -c
 
-jnum_gen: jnum_gen.o ../dbg/dbg.a jparse.a ../util.o ../dyn_array/dyn_array.a Makefile
-	${CC} ${CFLAGS} jnum_gen.o ../dbg/dbg.a jparse.a ../util.o ../dyn_array/dyn_array.a -lm -o $@
+jnum_gen: jnum_gen.o ../dbg/dbg.a jparse.a util.o ../dyn_array/dyn_array.a Makefile
+	${CC} ${CFLAGS} jnum_gen.o ../dbg/dbg.a jparse.a util.o ../dyn_array/dyn_array.a -lm -o $@
 
 jsemtblgen.o: jsemtblgen.c jparse.tab.h Makefile
 	${CC} ${CFLAGS} jsemtblgen.c -c
 
-jsemtblgen: jsemtblgen.o jparse.a ../util.o ../dyn_array/dyn_array.a ../dbg/dbg.a \
+jsemtblgen: jsemtblgen.o jparse.a util.o ../dyn_array/dyn_array.a ../dbg/dbg.a \
 	    ../rule_count.o Makefile
-	${CC} ${CFLAGS} jsemtblgen.o jparse.a ../util.o ../dyn_array/dyn_array.a ../dbg/dbg.a \
+	${CC} ${CFLAGS} jsemtblgen.o jparse.a util.o ../dyn_array/dyn_array.a ../dbg/dbg.a \
 			../rule_count.o -lm -o $@
 
 json_sem.o: json_sem.c Makefile
@@ -380,12 +380,14 @@ jparse.c jparse.lex.h: jparse.l jparse.h ./sorry.tm.ca.h jparse.tab.h ./run_flex
 	./run_flex.sh -g ./verge -s ./sorry.tm.ca.h -l ../limit_ioccc.sh -f ${FLEX_BASENAME} ${FLEX_DIRS} \
 	    -p jparse -v 1 ${RUN_O_FLAG} -- ${FLEX_FLAGS} -o jparse.c
 
+util.o: util.c util.h Makefile
+	${CC} ${CFLAGS} util.c -c
+
 verge.o: verge.c verge.h Makefile
 	${CC} ${CFLAGS} verge.c -c
 
-verge: verge.o ../dbg/dbg.a ../util.o ../dyn_array/dyn_array.o Makefile
-	${CC} ${CFLAGS} verge.o ../dbg/dbg.o ../util.o ../dyn_array/dyn_array.o -o $@
-
+verge: verge.o ../dbg/dbg.a util.o ../dyn_array/dyn_array.a Makefile
+	${CC} ${CFLAGS} verge.o ../dbg/dbg.a util.o ../dyn_array/dyn_array.a -o $@
 
 jparse.a: ${LIB_OBJS}
 	${RM} -f $@
@@ -400,11 +402,8 @@ jparse.a: ${LIB_OBJS}
 ../dbg/dbg.a: ../dbg/Makefile
 	${MAKE} -C ../dbg extern_liba
 
-../util.o: ../Makefile
-	${MAKE} -C .. util.o
-
-../chkentry: ../chkentry.h ../chkentry.c ../Makefile
-	${MAKE} -C .. chkentry
+../dyn_array/dyn_array.a: ../dyn_array/Makefile
+	${MAKE} -C ../dyn_array extern_liba
 
 
 ####################################

@@ -30,7 +30,7 @@
 /*
  * util - entry common utility functions for the IOCCC toolkit
  */
-#include "../../util.h"
+#include "../util.h"
 
 /*
  * json_parse - JSON parser support code

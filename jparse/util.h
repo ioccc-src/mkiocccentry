@@ -66,7 +66,7 @@ typedef unsigned char bool;
 /*
  * dyn_array - dynamic array facility
  */
-#include "dyn_array/dyn_array.h"
+#include "../dyn_array/dyn_array.h"
 
 
 /*
@@ -213,7 +213,6 @@ extern unsigned long string_to_unsigned_long(char const *str);
 extern unsigned long long string_to_unsigned_long_long(char const *str);
 extern uintmax_t string_to_uintmax(char const *str);
 extern long double string_to_float(char const *str);
-extern bool valid_contest_id(char *str);
 extern int parse_verbosity(char const *program, char const *arg);
 extern bool is_decimal(char const *ptr, size_t len);
 extern bool is_decimal_str(char const *str, size_t *retlen);

@@ -176,7 +176,7 @@ TARGETS= mkiocccentry iocccsize fnamchk txzchk chkentry \
 SH_TARGETS=limit_ioccc.sh
 
 TEST_TARGETS= dbg/dbg_test test_ioccc/utf8_test test_ioccc/dyn_test jparse/test_jparse/jnum_chk
-OBJFILES= util.o mkiocccentry.o iocccsize.o fnamchk.o txzchk.o chkentry.o jparse/json_parse.o \
+OBJFILES= jparse/util.o mkiocccentry.o iocccsize.o fnamchk.o txzchk.o chkentry.o jparse/json_parse.o \
 	  jparse/jstrencode.o jparse/jstrdecode.o rule_count.o location.o sanity.o jparse/verge.o \
 	  jparse/test_jparse/jnum_chk.o jparse/jnum_gen.o jparse/test_jparse/jnum_test.o jparse/json_util.o \
 	  jparse/jparse_main.o entry_util.o jparse/jsemtblgen.o soup/chk_sem_auth.o soup/chk_sem_info.o \
@@ -196,7 +196,7 @@ BISONFILES= jparse/jparse.y
 SRCFILES= $(OBJFILES:.o=.c)
 ALL_CSRC= ${LESS_PICKY_CSRC} ${GENERATED_CSRC} ${SRCFILES}
 H_FILES= dbg/dbg.h chkentry.h jparse/json_parse.h jparse/jstrdecode.h jparse/jstrencode.h limit_ioccc.h \
-	mkiocccentry.h txzchk.h util.h location.h utf8_posix_map.h jparse/jparse.h \
+	mkiocccentry.h txzchk.h jparse/util.h location.h utf8_posix_map.h jparse/jparse.h \
 	jparse/verge.h jparse/sorry.tm.ca.h dyn_array/dyn_array.h jparse/json_util.h jparse/test_jparse/jnum_chk.h \
 	jparse/jnum_gen.h jparse/jparse_main.h entry_util.h jparse/jsemtblgen.h soup/chk_sem_auth.h \
 	soup/chk_sem_info.h soup/chk_validate.h jparse/json_sem.h foo.h entry_time.h
@@ -393,7 +393,7 @@ entry_time.o: entry_time.c Makefile
 mkiocccentry.o: mkiocccentry.c Makefile
 	${CC} ${CFLAGS} mkiocccentry.c -c
 
-mkiocccentry: mkiocccentry.o rule_count.o dbg/dbg.a util.o dyn_array/dyn_array.a jparse/json_parse.o entry_util.o \
+mkiocccentry: mkiocccentry.o rule_count.o dbg/dbg.a jparse/util.o dyn_array/dyn_array.a jparse/json_parse.o entry_util.o \
 	jparse/json_util.o entry_time.o location.o utf8_posix_map.o sanity.o jparse/json_sem.o
 	${CC} ${CFLAGS} $^ -lm -o $@
 
@@ -406,23 +406,23 @@ iocccsize: iocccsize.o rule_count.o dbg/dbg.a Makefile
 fnamchk.o: fnamchk.c fnamchk.h Makefile
 	${CC} ${CFLAGS} fnamchk.c -c
 
-fnamchk: fnamchk.o dbg/dbg.a util.o dyn_array/dyn_array.a Makefile
-	${CC} ${CFLAGS} fnamchk.o dbg/dbg.a util.o dyn_array/dyn_array.a -o $@
+fnamchk: fnamchk.o dbg/dbg.a jparse/util.o dyn_array/dyn_array.a Makefile
+	${CC} ${CFLAGS} fnamchk.o dbg/dbg.a jparse/util.o dyn_array/dyn_array.a -o $@
 
 txzchk.o: txzchk.c txzchk.h Makefile
 	${CC} ${CFLAGS} txzchk.c -c
 
-txzchk: txzchk.o dbg/dbg.a util.o dyn_array/dyn_array.a location.o \
+txzchk: txzchk.o dbg/dbg.a jparse/util.o dyn_array/dyn_array.a location.o \
 	utf8_posix_map.o sanity.o Makefile
-	${CC} ${CFLAGS} txzchk.o dbg/dbg.a util.o dyn_array/dyn_array.a location.o \
+	${CC} ${CFLAGS} txzchk.o dbg/dbg.a jparse/util.o dyn_array/dyn_array.a location.o \
 	     utf8_posix_map.o sanity.o -o $@
 
 chkentry.o: chkentry.c chkentry.h jparse/jparse.tab.h oebxergfB.h Makefile
 	${CC} ${CFLAGS} -Isoup chkentry.c -c
 
-chkentry: chkentry.o oebxergfB.h dbg/dbg.a util.o sanity.o utf8_posix_map.o dyn_array/dyn_array.a \
+chkentry: chkentry.o oebxergfB.h dbg/dbg.a jparse/util.o sanity.o utf8_posix_map.o dyn_array/dyn_array.a \
 	jparse/jparse.a soup/chk_validate.o entry_util.c foo.o location.o soup/chk_sem_info.o soup/chk_sem_auth.o Makefile
-	${CC} ${CFLAGS} chkentry.o dbg/dbg.a util.o sanity.o utf8_posix_map.o jparse/jparse.a \
+	${CC} ${CFLAGS} chkentry.o dbg/dbg.a jparse/util.o sanity.o utf8_posix_map.o jparse/jparse.a \
 		dyn_array/dyn_array.a soup/chk_validate.o entry_util.o entry_time.o \
 		foo.o location.o soup/chk_sem_info.o soup/chk_sem_auth.o -lm -o $@
 
@@ -527,16 +527,16 @@ jparse/jparse.c jparse/jparse.lex.h flex: jparse/jparse.l jparse/jparse.h jparse
 jparse/jstrencode.o: jparse/jstrencode.c jparse/jstrencode.h jparse/json_util.h jparse/json_util.c Makefile
 	${MAKE} -C jparse CFLAGS="${CFLAGS}" jstrencode.o
 
-jparse/jstrencode: jparse/jstrencode.o dbg/dbg.a jparse/jparse.a util.o dyn_array/dyn_array.a Makefile
+jparse/jstrencode: jparse/jstrencode.o dbg/dbg.a jparse/jparse.a jparse/util.o dyn_array/dyn_array.a Makefile
 	${MAKE} -C jparse CFLAGS="${CFLAGS}" jstrencode
 
 jparse/jstrdecode.o: jparse/jstrdecode.c jparse/jstrdecode.h jparse/json_util.h jparse/json_parse.h Makefile
 	${MAKE} -C jparse CFLAGS="${CFLAGS}" jstrdecode.o
 
-jparse/jstrdecode: jparse/jstrdecode.o dbg/dbg.a jparse/json_parse.o jparse/json_util.o util.o dyn_array/dyn_array.a Makefile
+jparse/jstrdecode: jparse/jstrdecode.o dbg/dbg.a jparse/json_parse.o jparse/json_util.o jparse/util.o dyn_array/dyn_array.a Makefile
 	${MAKE} -C jparse CFLAGS="${CFLAGS}" jstrdecode
 
-jparse/jnum_gen: jparse/jnum_gen.o dbg/dbg.a jparse/json_parse.o jparse/json_util.o util.o dyn_array/dyn_array.a Makefile
+jparse/jnum_gen: jparse/jnum_gen.o dbg/dbg.a jparse/json_parse.o jparse/json_util.o jparse/util.o dyn_array/dyn_array.a Makefile
 	${MAKE} -C jparse CFLAGS="${CFLAGS}" jnum_gen
 
 jparse/jparse.tab.o: jparse/jparse.tab.c Makefile
@@ -545,13 +545,13 @@ jparse/jparse.tab.o: jparse/jparse.tab.c Makefile
 jparse/jparse_main.o: jparse/jparse_main.c Makefile
 	${MAKE} -C jparse CFLAGS="${CFLAGS}" jparse_main.o
 
-jparse/jparse: jparse/jparse.a util.o dyn_array/dyn_array.a dbg/dbg.a Makefile
+jparse/jparse: jparse/jparse.a jparse/util.o dyn_array/dyn_array.a dbg/dbg.a Makefile
 	${MAKE} -C jparse CFLAGS="${CFLAGS}" jparse
 
 jparse/jsemtblgen.o: jparse/jsemtblgen.c Makefile
 	${MAKE} -C jparse CFLAGS="${CFLAGS}" jsemtblgen.o
 
-jparse/jsemtblgen: jparse/jsemtblgen.o jparse/jparse.a util.o dyn_array/dyn_array.a dbg/dbg.a \
+jparse/jsemtblgen: jparse/jsemtblgen.o jparse/jparse.a jparse/util.o dyn_array/dyn_array.a dbg/dbg.a \
 	    rule_count.o Makefile
 	${MAKE} -C jparse CFLAGS="${CFLAGS}" jsemtblgen
 
@@ -1095,76 +1095,80 @@ depend: jparse soup/fmt_depend.sh
 ###############
 
 ### DO NOT CHANGE MANUALLY BEYOND THIS LINE
-utf8_posix_map.o: utf8_posix_map.c utf8_posix_map.h util.h dyn_array/dyn_array.h \
-	dyn_array/../dbg/dbg.h dbg/dbg.h limit_ioccc.h version.h
+utf8_posix_map.o: utf8_posix_map.c utf8_posix_map.h jparse/util.h jparse/../dyn_array/dyn_array.h \
+	jparse/../dyn_array/../dbg/dbg.h dbg/dbg.h limit_ioccc.h version.h
 foo.o: foo.c foo.h dbg/dbg.h oebxergfB.h
-jparse.o: jparse/jparse.c jparse/jparse.h jparse/../dbg/dbg.h jparse/../util.h dyn_array/dyn_array.h \
-	dyn_array/../dbg/dbg.h jparse/json_parse.h jparse/json_util.h jparse/../dyn_array/dyn_array.h \
-	jparse/jparse.tab.h
-jparse.tab.o: jparse/jparse.tab.c jparse/jparse.h jparse/../dbg/dbg.h jparse/../util.h \
-	dyn_array/dyn_array.h dyn_array/../dbg/dbg.h jparse/json_parse.h jparse/json_util.h \
-	jparse/../dyn_array/dyn_array.h jparse/jparse.tab.h jparse/jparse.lex.h
-util.o: util.c dbg/dbg.h util.h dyn_array/dyn_array.h dyn_array/../dbg/dbg.h limit_ioccc.h version.h
-mkiocccentry.o: mkiocccentry.c mkiocccentry.h util.h dyn_array/dyn_array.h dyn_array/../dbg/dbg.h \
-	dbg/dbg.h location.h utf8_posix_map.h limit_ioccc.h version.h sanity.h iocccsize.h \
-	jparse/json_util.h jparse/../dyn_array/dyn_array.h jparse/../util.h jparse/json_parse.h entry_util.h \
-	jparse/json_sem.h
+jparse.o: jparse/jparse.c jparse/jparse.h jparse/../dbg/dbg.h jparse/util.h \
+	jparse/../dyn_array/dyn_array.h jparse/../dyn_array/../dbg/dbg.h jparse/json_parse.h \
+	jparse/json_util.h jparse/jparse.tab.h
+jparse.tab.o: jparse/jparse.tab.c jparse/jparse.h jparse/../dbg/dbg.h jparse/util.h \
+	jparse/../dyn_array/dyn_array.h jparse/../dyn_array/../dbg/dbg.h jparse/json_parse.h \
+	jparse/json_util.h jparse/jparse.tab.h jparse/jparse.lex.h
+util.o: jparse/util.c jparse/../dbg/dbg.h jparse/util.h jparse/../dyn_array/dyn_array.h \
+	jparse/../dyn_array/../dbg/dbg.h
+mkiocccentry.o: mkiocccentry.c mkiocccentry.h jparse/util.h jparse/../dyn_array/dyn_array.h \
+	jparse/../dyn_array/../dbg/dbg.h dbg/dbg.h location.h utf8_posix_map.h limit_ioccc.h version.h \
+	sanity.h iocccsize.h jparse/json_util.h jparse/json_parse.h entry_util.h jparse/json_sem.h
 iocccsize.o: iocccsize.c iocccsize_err.h iocccsize.h
-fnamchk.o: fnamchk.c fnamchk.h dbg/dbg.h util.h dyn_array/dyn_array.h dyn_array/../dbg/dbg.h \
-	limit_ioccc.h version.h utf8_posix_map.h
-txzchk.o: txzchk.c txzchk.h util.h dyn_array/dyn_array.h dyn_array/../dbg/dbg.h dbg/dbg.h sanity.h \
-	location.h utf8_posix_map.h limit_ioccc.h version.h entry_util.h jparse/json_parse.h \
-	jparse/../util.h jparse/json_sem.h jparse/json_util.h jparse/../dyn_array/dyn_array.h
+fnamchk.o: fnamchk.c fnamchk.h dbg/dbg.h jparse/util.h jparse/../dyn_array/dyn_array.h \
+	jparse/../dyn_array/../dbg/dbg.h limit_ioccc.h version.h utf8_posix_map.h
+txzchk.o: txzchk.c txzchk.h jparse/util.h jparse/../dyn_array/dyn_array.h \
+	jparse/../dyn_array/../dbg/dbg.h dbg/dbg.h sanity.h location.h utf8_posix_map.h limit_ioccc.h \
+	version.h entry_util.h jparse/json_parse.h jparse/json_sem.h jparse/json_util.h
 chkentry.o: chkentry.c chkentry.h dbg/dbg.h jparse/json_util.h jparse/../dyn_array/dyn_array.h \
-	jparse/../dyn_array/../dbg/dbg.h jparse/../util.h dyn_array/dyn_array.h jparse/json_parse.h util.h \
-	jparse/jparse.h jparse/../dbg/dbg.h jparse/jparse.tab.h jparse/json_sem.h soup/chk_sem_info.h \
+	jparse/../dyn_array/../dbg/dbg.h jparse/util.h jparse/json_parse.h jparse/jparse.h \
+	jparse/../dbg/dbg.h jparse/jparse.tab.h jparse/json_sem.h soup/chk_sem_info.h \
 	soup/../jparse/json_sem.h soup/chk_sem_auth.h foo.h version.h
-json_parse.o: jparse/json_parse.c jparse/../dbg/dbg.h jparse/../util.h dyn_array/dyn_array.h \
-	dyn_array/../dbg/dbg.h jparse/json_parse.h jparse/json_util.h jparse/../dyn_array/dyn_array.h
-jstrencode.o: jparse/jstrencode.c jparse/jstrencode.h jparse/../dbg/dbg.h jparse/../util.h \
-	dyn_array/dyn_array.h dyn_array/../dbg/dbg.h jparse/json_parse.h jparse/../limit_ioccc.h version.h
-jstrdecode.o: jparse/jstrdecode.c jparse/jstrdecode.h jparse/../dbg/dbg.h jparse/../util.h \
-	dyn_array/dyn_array.h dyn_array/../dbg/dbg.h jparse/json_parse.h jparse/../limit_ioccc.h version.h
+json_parse.o: jparse/json_parse.c jparse/../dbg/dbg.h jparse/util.h jparse/../dyn_array/dyn_array.h \
+	jparse/../dyn_array/../dbg/dbg.h jparse/json_parse.h jparse/json_util.h
+jstrencode.o: jparse/jstrencode.c jparse/jstrencode.h jparse/../dbg/dbg.h jparse/util.h \
+	jparse/../dyn_array/dyn_array.h jparse/../dyn_array/../dbg/dbg.h jparse/json_parse.h \
+	jparse/../limit_ioccc.h version.h
+jstrdecode.o: jparse/jstrdecode.c jparse/jstrdecode.h jparse/../dbg/dbg.h jparse/util.h \
+	jparse/../dyn_array/dyn_array.h jparse/../dyn_array/../dbg/dbg.h jparse/json_parse.h \
+	jparse/../limit_ioccc.h version.h
 rule_count.o: rule_count.c iocccsize_err.h iocccsize.h
-location.o: location.c location.h util.h dyn_array/dyn_array.h dyn_array/../dbg/dbg.h dbg/dbg.h
-sanity.o: sanity.c sanity.h util.h dyn_array/dyn_array.h dyn_array/../dbg/dbg.h dbg/dbg.h location.h \
-	utf8_posix_map.h limit_ioccc.h version.h
-verge.o: jparse/verge.c jparse/verge.h jparse/../dbg/dbg.h jparse/../util.h dyn_array/dyn_array.h \
-	dyn_array/../dbg/dbg.h jparse/../limit_ioccc.h version.h
+location.o: location.c location.h jparse/util.h jparse/../dyn_array/dyn_array.h \
+	jparse/../dyn_array/../dbg/dbg.h dbg/dbg.h
+sanity.o: sanity.c sanity.h jparse/util.h jparse/../dyn_array/dyn_array.h \
+	jparse/../dyn_array/../dbg/dbg.h dbg/dbg.h location.h utf8_posix_map.h limit_ioccc.h version.h
+verge.o: jparse/verge.c jparse/verge.h jparse/../dbg/dbg.h jparse/util.h \
+	jparse/../dyn_array/dyn_array.h jparse/../dyn_array/../dbg/dbg.h jparse/../limit_ioccc.h version.h
 jnum_chk.o: jparse/test_jparse/jnum_chk.c jparse/test_jparse/jnum_chk.h \
-	jparse/test_jparse/../../dbg/dbg.h jparse/test_jparse/../../util.h dyn_array/dyn_array.h \
-	dyn_array/../dbg/dbg.h jparse/test_jparse/../../jparse/json_parse.h \
-	jparse/test_jparse/../../jparse/../util.h jparse/test_jparse/../../jparse/json_util.h \
-	jparse/test_jparse/../../jparse/../dyn_array/dyn_array.h jparse/test_jparse/../../version.h
-jnum_gen.o: jparse/jnum_gen.c jparse/jnum_gen.h jparse/../dbg/dbg.h jparse/../util.h \
-	dyn_array/dyn_array.h dyn_array/../dbg/dbg.h jparse/json_parse.h jparse/json_util.h \
-	jparse/../dyn_array/dyn_array.h jparse/../limit_ioccc.h version.h
+	jparse/test_jparse/../../dbg/dbg.h jparse/test_jparse/../util.h \
+	jparse/test_jparse/../../dyn_array/dyn_array.h jparse/test_jparse/../../dyn_array/../dbg/dbg.h \
+	jparse/test_jparse/../../jparse/json_parse.h jparse/test_jparse/../../jparse/json_util.h \
+	jparse/test_jparse/../json_parse.h jparse/test_jparse/../../version.h
+jnum_gen.o: jparse/jnum_gen.c jparse/jnum_gen.h jparse/../dbg/dbg.h jparse/util.h \
+	jparse/../dyn_array/dyn_array.h jparse/../dyn_array/../dbg/dbg.h jparse/json_parse.h \
+	jparse/json_util.h jparse/../limit_ioccc.h version.h
 jnum_test.o: jparse/test_jparse/jnum_test.c jparse/test_jparse/../../jparse/json_parse.h \
-	jparse/test_jparse/../../jparse/../util.h dyn_array/dyn_array.h dyn_array/../dbg/dbg.h
-json_util.o: jparse/json_util.c jparse/../dbg/dbg.h jparse/json_parse.h jparse/../util.h \
-	dyn_array/dyn_array.h dyn_array/../dbg/dbg.h jparse/json_util.h jparse/../dyn_array/dyn_array.h
-jparse_main.o: jparse/jparse_main.c jparse/jparse_main.h jparse/../dbg/dbg.h jparse/../util.h \
-	dyn_array/dyn_array.h dyn_array/../dbg/dbg.h jparse/jparse.h jparse/json_parse.h jparse/json_util.h \
-	jparse/../dyn_array/dyn_array.h jparse/jparse.tab.h
-entry_util.o: entry_util.c dbg/dbg.h util.h dyn_array/dyn_array.h dyn_array/../dbg/dbg.h version.h \
-	limit_ioccc.h entry_util.h jparse/json_parse.h jparse/../util.h jparse/json_sem.h jparse/json_util.h \
-	jparse/../dyn_array/dyn_array.h entry_time.h location.h
-jsemtblgen.o: jparse/jsemtblgen.c jparse/jsemtblgen.h jparse/../dbg/dbg.h jparse/../util.h \
-	dyn_array/dyn_array.h dyn_array/../dbg/dbg.h jparse/../dyn_array/dyn_array.h jparse/json_util.h \
+	jparse/test_jparse/../../jparse/util.h jparse/test_jparse/../../jparse/../dyn_array/dyn_array.h \
+	jparse/test_jparse/../../jparse/../dyn_array/../dbg/dbg.h
+json_util.o: jparse/json_util.c jparse/../dbg/dbg.h jparse/json_parse.h jparse/util.h \
+	jparse/../dyn_array/dyn_array.h jparse/../dyn_array/../dbg/dbg.h jparse/json_util.h
+jparse_main.o: jparse/jparse_main.c jparse/jparse_main.h jparse/../dbg/dbg.h jparse/util.h \
+	jparse/../dyn_array/dyn_array.h jparse/../dyn_array/../dbg/dbg.h jparse/jparse.h jparse/json_parse.h \
+	jparse/json_util.h jparse/jparse.tab.h
+entry_util.o: entry_util.c dbg/dbg.h jparse/util.h jparse/../dyn_array/dyn_array.h \
+	jparse/../dyn_array/../dbg/dbg.h version.h limit_ioccc.h entry_util.h jparse/json_parse.h \
+	jparse/json_sem.h jparse/json_util.h entry_time.h location.h
+jsemtblgen.o: jparse/jsemtblgen.c jparse/jsemtblgen.h jparse/../dbg/dbg.h jparse/util.h \
+	jparse/../dyn_array/dyn_array.h jparse/../dyn_array/../dbg/dbg.h jparse/json_util.h \
 	jparse/json_parse.h jparse/jparse.h jparse/jparse.tab.h jparse/json_sem.h jparse/../iocccsize.h
 chk_sem_auth.o: soup/chk_sem_auth.c soup/chk_sem_auth.h soup/../jparse/json_sem.h \
-	soup/../jparse/../util.h dyn_array/dyn_array.h dyn_array/../dbg/dbg.h soup/../jparse/json_parse.h \
-	soup/../jparse/json_util.h soup/../jparse/../dyn_array/dyn_array.h
+	soup/../jparse/util.h soup/../jparse/../dyn_array/dyn_array.h \
+	soup/../jparse/../dyn_array/../dbg/dbg.h soup/../jparse/json_parse.h soup/../jparse/json_util.h
 chk_sem_info.o: soup/chk_sem_info.c soup/chk_sem_info.h soup/../jparse/json_sem.h \
-	soup/../jparse/../util.h dyn_array/dyn_array.h dyn_array/../dbg/dbg.h soup/../jparse/json_parse.h \
-	soup/../jparse/json_util.h soup/../jparse/../dyn_array/dyn_array.h
+	soup/../jparse/util.h soup/../jparse/../dyn_array/dyn_array.h \
+	soup/../jparse/../dyn_array/../dbg/dbg.h soup/../jparse/json_parse.h soup/../jparse/json_util.h
 chk_validate.o: soup/chk_validate.c soup/chk_validate.h soup/../entry_util.h jparse/json_parse.h \
-	jparse/../util.h dyn_array/dyn_array.h dyn_array/../dbg/dbg.h jparse/json_sem.h jparse/json_util.h \
-	jparse/../dyn_array/dyn_array.h soup/../jparse/json_util.h soup/../jparse/json_sem.h \
-	soup/chk_sem_auth.h soup/chk_sem_info.h entry_time.h location.h util.h dbg/dbg.h
-json_sem.o: jparse/json_sem.c jparse/../dbg/dbg.h jparse/json_sem.h jparse/../util.h \
-	dyn_array/dyn_array.h dyn_array/../dbg/dbg.h jparse/json_parse.h jparse/json_util.h \
-	jparse/../dyn_array/dyn_array.h
+	jparse/util.h jparse/../dyn_array/dyn_array.h jparse/../dyn_array/../dbg/dbg.h jparse/json_sem.h \
+	jparse/json_util.h soup/../jparse/json_util.h soup/../jparse/json_sem.h soup/chk_sem_auth.h \
+	soup/chk_sem_info.h entry_time.h location.h dbg/dbg.h
+json_sem.o: jparse/json_sem.c jparse/../dbg/dbg.h jparse/json_sem.h jparse/util.h \
+	jparse/../dyn_array/dyn_array.h jparse/../dyn_array/../dbg/dbg.h jparse/json_parse.h \
+	jparse/json_util.h
 entry_time.o: entry_time.c dbg/dbg.h jparse/json_util.h jparse/../dyn_array/dyn_array.h \
-	jparse/../dyn_array/../dbg/dbg.h jparse/../util.h dyn_array/dyn_array.h jparse/json_parse.h \
-	entry_time.h limit_ioccc.h version.h
+	jparse/../dyn_array/../dbg/dbg.h jparse/util.h jparse/json_parse.h entry_time.h limit_ioccc.h \
+	version.h

@@ -159,8 +159,8 @@ all: ${TARGETS}
 utf8_test.o: utf8_test.c ../utf8_posix_map.h Makefile
 	${CC} ${CFLAGS} -I.. utf8_test.c -c
 
-utf8_test: utf8_test.o ../utf8_posix_map.o ../dbg/dbg.a ../util.o ../dyn_array/dyn_array.a Makefile
-	${CC} ${CFLAGS} -I.. utf8_test.o ../utf8_posix_map.o ../dbg/dbg.a ../util.o ../dyn_array/dyn_array.a -o utf8_test
+utf8_test: utf8_test.o ../utf8_posix_map.o ../dbg/dbg.a ../jparse/util.o ../dyn_array/dyn_array.a Makefile
+	${CC} ${CFLAGS} -I.. utf8_test.o ../utf8_posix_map.o ../dbg/dbg.a ../jparse/util.o ../dyn_array/dyn_array.a -o utf8_test
 
 ioccc_test.sh: ../dbg/dbg_test ../dyn_array/dyn_test
 	@:
@@ -170,8 +170,8 @@ ioccc_test.sh: ../dbg/dbg_test ../dyn_array/dyn_test
 # rules that invoke Makefile rules in other directories #
 #########################################################
 
-../util.o: ../Makefile
-	${MAKE} -C .. util.o
+../jparse/util.o: ../Makefile
+	${MAKE} -C ../jparse util.o
 
 ../utf8_posix_map.h: ../Makefile
 	${MAKE} -C .. utf8_posix_map.h

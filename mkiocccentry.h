@@ -64,7 +64,7 @@
 /*
  * util - entry common utility functions for the IOCCC toolkit
  */
-#include "util.h"
+#include "jparse/util.h"
 
 /*
  * dbg - info, debug, warning, error, and usage message facility

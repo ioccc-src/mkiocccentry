@@ -50,6 +50,13 @@
 #define CHUNK (1024)		/* allocate CHUNK elements at a time */
 
 
+/*
+ * forward declarations
+ */
+static int parse_verbosity(char const *program, char const *arg);
+static void usage(int exitcode, char const *str, char const *prog);
+
+
 int
 main(int argc, char *argv[])
 {
@@ -78,7 +85,7 @@ main(int argc, char *argv[])
 	    verbosity_level = parse_verbosity(program, optarg);
 	    break;
 	case 'V':		/* -V - print version and exit */
-	    print("%s\n", DYN_TEST_VERSION);
+	    (void) printf("%s\n", DYN_TEST_VERSION);
 	    exit(3); /*ooo*/
 	    not_reached();
 	    break;
@@ -166,6 +173,40 @@ main(int argc, char *argv[])
 	exit(1); /*ooo*/
     }
     exit(0); /*ooo*/
+}
+
+
+/*
+ * parse_verbosity	- parse -v option for our tools
+ *
+ * given:
+ *	program		- the calling program e.g. txzchk, fnamchk, mkiocccentry etc.
+ *	arg		- the optarg in the calling tool
+ *
+ * Returns the parsed verbosity.
+ *
+ * Returns DBG_NONE if passed NULL args or empty string.
+ */
+static int
+parse_verbosity(char const *program, char const *arg)
+{
+    int verbosity;
+
+    if (program == NULL || arg == NULL || !strlen(arg)) {
+	return DBG_NONE;
+    }
+
+    /*
+     * parse verbosity
+     */
+    errno = 0;		/* pre-clear errno for errp() */
+    verbosity = (int)strtol(arg, NULL, 0);
+    if (errno != 0) {
+	errp(1, __func__, "%s: cannot parse -v arg: %s error: %s", program, arg, strerror(errno)); /*ooo*/
+	not_reached();
+    }
+
+    return verbosity;
 }
 
 

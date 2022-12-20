@@ -30,7 +30,7 @@
 /*
  * util - utilities and macros
  */
-#include "../util.h"
+#include "util.h"
 
 /*
  * json_parse - JSON parser support code

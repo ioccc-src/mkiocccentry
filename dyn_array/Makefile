@@ -221,8 +221,8 @@ dyn_array.a: ${LIB_OBJS}
 dyn_test.o: dyn_test.c dyn_array.h
 	${CC} ${CFLAGS} dyn_test.c -c
 
-dyn_test: dyn_test.o ../dbg/dbg.a ../util.o dyn_array.a Makefile
-	${CC} ${CFLAGS} dyn_test.o ../dbg/dbg.a ../util.o dyn_array.a -o dyn_test
+dyn_test: dyn_test.o ../dbg/dbg.a dyn_array.a Makefile
+	${CC} ${CFLAGS} dyn_test.o ../dbg/dbg.a dyn_array.a -o dyn_test
 
 
 #########################################################
@@ -231,9 +231,6 @@ dyn_test: dyn_test.o ../dbg/dbg.a ../util.o dyn_array.a Makefile
 
 ../dbg/dbg.a: ../dbg/Makefile
 	${MAKE} -C ../dbg extern_liba
-
-../util.o: ../Makefile
-	${MAKE} -C .. util.o
 
 
 ####################################

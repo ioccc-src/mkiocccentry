@@ -30,7 +30,7 @@
 /*
  * util - entry common utility functions for the IOCCC toolkit
  */
-#include "../util.h"
+#include "util.h"
 
 /*
  * limit_ioccc - IOCCC size and rule related limitations

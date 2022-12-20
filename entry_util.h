@@ -207,6 +207,7 @@ extern void free_auth(struct auth *authp);
 extern void free_info(struct info *infop);
 extern void free_author_array(struct author *authorp, int author_count);
 extern void free_manifest(struct manifest *manp);
+extern bool valid_contest_id(char *str);
 extern bool object2author(struct json *node, unsigned int depth, struct json_sem *sem,
 			  char const *name, struct json_sem_val_err **val_err,
 			  struct author *auth, int author_num);
