@@ -241,6 +241,7 @@ EXTERN_H= jparse.h
 EXTERN_O=
 EXTERN_MAN= ${ALL_MAN_TARGETS}
 EXTERN_LIBA= jparse.a
+EXTERN_PROG= jparse jsemtblgen jsemcgen.sh jstrdecode jstrencode
 
 # NOTE: ${EXTERN_CLOBBER} used outside of this directory and removed by make clobber
 #
@@ -281,7 +282,7 @@ ALL_OTHER_TARGETS= extern_everything
 
 # what to make by all and removed by clobber (and thus not ${ALL_OTHER_TARGETS})
 #
-TARGETS= ${LIBA_TARGETS} jparse.a jparse verge jsemtblgen jnum_gen jstrdecode jstrencode
+TARGETS= ${LIBA_TARGETS} jparse verge jsemtblgen jnum_gen jstrdecode jstrencode
 
 
 ###########################################
@@ -319,21 +320,20 @@ jparse_main.o: jparse_main.c Makefile
 jparse.o: jparse.c jparse.h Makefile
 	${CC} ${CFLAGS} -Wno-unused-but-set-variable -Wno-unused-function -Wno-unneeded-internal-declaration jparse.c -c
 
-jparse: jparse.a ../dyn_array/dyn_array.a ../dbg/dbg.a Makefile
-	${CC} ${CFLAGS} -Wno-unneeded-internal-declaration jparse.a ../dyn_array/dyn_array.a ../dbg/dbg.a \
-			-lm -o $@
+jparse: jparse_main.o ../dbg/dbg.a ../dyn_array/dyn_array.a jparse.a
+	${CC} ${CFLAGS} $^ -lm -o $@
 
 jstrencode.o: jstrencode.c jstrencode.h json_util.h json_util.c Makefile
 	${CC} ${CFLAGS} jstrencode.c -c
 
-jstrencode: jstrencode.o ../dbg/dbg.a jparse.a ../dyn_array/dyn_array.a Makefile
-	${CC} ${CFLAGS} jstrencode.o ../dbg/dbg.a jparse.a ../dyn_array/dyn_array.a -lm -o $@
+jstrencode: jstrencode.o ../dbg/dbg.a ../dyn_array/dyn_array.a jparse.a
+	${CC} ${CFLAGS} $^ -lm -o $@
 
 jstrdecode.o: jstrdecode.c jstrdecode.h json_util.h json_parse.h Makefile
 	${CC} ${CFLAGS} jstrdecode.c -c
 
-jstrdecode: jstrdecode.o ../dbg/dbg.a jparse.a ../dyn_array/dyn_array.a Makefile
-	${CC} ${CFLAGS} jstrdecode.o ../dbg/dbg.a jparse.a ../dyn_array/dyn_array.a -lm -o $@
+jstrdecode: jstrdecode.o ../dbg/dbg.a ../dyn_array/dyn_array.a jparse.a
+	${CC} ${CFLAGS} $^ -lm -o $@
 
 json_parse.o: json_parse.c Makefile
 	${CC} ${CFLAGS} json_parse.c -c
@@ -341,16 +341,14 @@ json_parse.o: json_parse.c Makefile
 jnum_gen.o: jnum_gen.c jnum_gen.h Makefile
 	${CC} ${CFLAGS} jnum_gen.c -c
 
-jnum_gen: jnum_gen.o ../dbg/dbg.a jparse.a ../dyn_array/dyn_array.a Makefile
-	${CC} ${CFLAGS} jnum_gen.o ../dbg/dbg.a jparse.a ../dyn_array/dyn_array.a -lm -o $@
+jnum_gen: jnum_gen.o ../dbg/dbg.a ../dyn_array/dyn_array.a jparse.a
+	${CC} ${CFLAGS} $^ -lm -o $@
 
 jsemtblgen.o: jsemtblgen.c jparse.tab.h Makefile
 	${CC} ${CFLAGS} jsemtblgen.c -c
 
-jsemtblgen: jsemtblgen.o jparse.a ../dyn_array/dyn_array.a ../dbg/dbg.a \
-	    ../rule_count.o Makefile
-	${CC} ${CFLAGS} jsemtblgen.o jparse.a ../dyn_array/dyn_array.a ../dbg/dbg.a \
-			../rule_count.o -lm -o $@
+jsemtblgen: jsemtblgen.o ../dbg/dbg.a ../dyn_array/dyn_array.a jparse.a
+	${CC} ${CFLAGS} $^ -lm -o $@
 
 json_sem.o: json_sem.c Makefile
 	${CC} ${CFLAGS} json_sem.c -c
@@ -481,6 +479,13 @@ use_ref: jparse.tab.ref.c jparse.tab.ref.h jparse.ref.c jparse.lex.ref.h
 	${CP} -f -v jparse.ref.c jparse.c
 	${RM} -f jparse.lex.h
 	${CP} -f -v jparse.lex.ref.h jparse.lex.h
+
+# use jnum_gen to regenerate test jnum_chk test suite
+#
+rebuild_jnum_test: jnum_gen test_jparse/jnum.testset jnum_header.c Makefile
+	${RM} -f test_jparse/jnum_test.c
+	${CP} -f -v jnum_header.c test_jparse/jnum_test.c
+	./jnum_gen test_jparse/jnum.testset >> test_jparse/jnum_test.c
 
 bison: jparse.tab.c jparse.tab.h
 	@:

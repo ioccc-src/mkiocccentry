@@ -170,124 +170,45 @@ CFLAGS= ${C_STD} ${COPT} -pedantic ${WARN_FLAGS} ${LDFLAGS}
 # where and what to install
 #
 DESTDIR= /usr/local/bin
-TARGETS= mkiocccentry iocccsize fnamchk txzchk chkentry \
-	jparse/jnum_gen jparse/jstrencode jparse/jstrdecode jparse/jparse jparse/jparse.a
+TARGETS= mkiocccentry iocccsize fnamchk txzchk chkentry
 
 SH_TARGETS=limit_ioccc.sh
 
 TEST_TARGETS= dbg/dbg_test test_ioccc/utf8_test test_ioccc/dyn_test jparse/test_jparse/jnum_chk
-OBJFILES= jparse/util.o mkiocccentry.o iocccsize.o fnamchk.o txzchk.o chkentry.o jparse/json_parse.o \
-	  jparse/jstrencode.o jparse/jstrdecode.o rule_count.o location.o sanity.o jparse/verge.o \
-	  jparse/test_jparse/jnum_chk.o jparse/jnum_gen.o jparse/test_jparse/jnum_test.o jparse/json_util.o \
-	  jparse/jparse_main.o entry_util.o jparse/jsemtblgen.o soup/chk_sem_auth.o soup/chk_sem_info.o \
-	  soup/chk_validate.o jparse/json_sem.o entry_time.o
+OBJFILES= mkiocccentry.o iocccsize.o fnamchk.o txzchk.o chkentry.o \
+	  rule_count.o location.o sanity.o \
+	  entry_util.o soup/chk_sem_auth.o soup/chk_sem_info.o \
+	  soup/chk_validate.o entry_time.o
 LESS_PICKY_CSRC= utf8_posix_map.c foo.c
 LESS_PICKY_H_FILES= oebxergfB.h
 LESS_PICKY_OBJ= utf8_posix_map.o foo.o
-GENERATED_CSRC= jparse/jparse.c jparse/jparse.tab.c
-GENERATED_HSRC= jparse/jparse.tab.h jparse/jparse.lex.h
-GENERATED_OBJ= jparse.o jparse/jparse.tab.o
-FLEXFILES= jparse/jparse.l
-BISONFILES= jparse/jparse.y
+GENERATED_CSRC=
+GENERATED_HSRC=
+GENERATED_OBJ=
+FLEXFILES=
+BISONFILES=
 # This is a simpler way to do:
 #
 #   SRCFILES=  $(patsubst %.o,%.c,$(OBJFILES))
 #
 SRCFILES= $(OBJFILES:.o=.c)
 ALL_CSRC= ${LESS_PICKY_CSRC} ${GENERATED_CSRC} ${SRCFILES}
-H_FILES= dbg/dbg.h chkentry.h jparse/json_parse.h jparse/jstrdecode.h jparse/jstrencode.h limit_ioccc.h \
-	mkiocccentry.h txzchk.h jparse/util.h location.h utf8_posix_map.h jparse/jparse.h \
-	jparse/verge.h jparse/sorry.tm.ca.h dyn_array/dyn_array.h jparse/json_util.h jparse/test_jparse/jnum_chk.h \
-	jparse/jnum_gen.h jparse/jparse_main.h entry_util.h jparse/jsemtblgen.h soup/chk_sem_auth.h \
-	soup/chk_sem_info.h soup/chk_validate.h jparse/json_sem.h foo.h entry_time.h
+H_FILES= dbg/dbg.h chkentry.h limit_ioccc.h \
+	mkiocccentry.h txzchk.h location.h utf8_posix_map.h jparse/jparse.h \
+	dyn_array/dyn_array.h \
+	entry_util.h soup/chk_sem_auth.h \
+	soup/chk_sem_info.h soup/chk_validate.h foo.h entry_time.h
 # This is a simpler way to do:
 #
 #   DSYMDIRS= $(patsubst %,%.dSYM,$(TARGETS))
 #
 DSYMDIRS= $(TARGETS:=.dSYM)
-SH_FILES= test_ioccc/iocccsize_test.sh jparse/test_jparse/jstr_test.sh limit_ioccc.sh test_ioccc/mkiocccentry_test.sh \
-	  vermod.sh prep.sh jparse/run_bison.sh jparse/run_flex.sh reset_tstamp.sh test_ioccc/ioccc_test.sh \
-	  jparse/test_jparse/jparse_test.sh test_ioccc/txzchk_test.sh hostchk.sh jparse/jsemcgen.sh \
+SH_FILES= test_ioccc/iocccsize_test.sh limit_ioccc.sh test_ioccc/mkiocccentry_test.sh \
+	  vermod.sh prep.sh reset_tstamp.sh test_ioccc/ioccc_test.sh \
+	  test_ioccc/txzchk_test.sh hostchk.sh \
 	  run_usage.sh bug_report.sh soup/all_ref.sh test_ioccc/chkentry_test.sh soup/fmt_depend.sh
 BUILD_LOG= build.log
 TXZCHK_LOG= test_ioccc/txzchk_test.log
-
-# RUN_O_FLAG - determine if the bison and flex backup files should be used
-#
-# RUN_O_FLAG=		use bison and flex backup files,
-#			    if bison and/or flex not found or too old
-# RUN_O_FLAG= -o	do not use bison and flex backup files,
-#			    instead fail if bison and/or flex not found or too old
-#
-RUN_O_FLAG=
-#RUN_O_FLAG= -o
-
-# the basename of bison (or yacc) to look for
-#
-BISON_BASENAME= bison
-#BISON_BASENAME= yacc
-
-# Where jparse/run_bison.sh will search for bison with a recent enough version
-#
-# The -B arguments specify where to look for bison with a version,
-# that is >= the minimum version (see MIN_BISON_VERSION in limit_ioccc.sh),
-# before searching for bison on $PATH.
-#
-# NOTE: If is OK if these directories do not exist.
-#
-BISON_DIRS= \
-	-B /opt/homebrew/opt/bison/bin \
-	-B /usr/local/opt/bison/bin \
-	-B /opt/homebrew/bin \
-	-B /opt/local/bin \
-	-B /usr/local/opt \
-	-B /usr/local/bin \
-	-B .
-
-# Additional flags to pass to bison
-#
-# For --report all it will generate upon execution (if bison successfully
-# generates the code) the file jparse.output. With --report all --html it will
-# generate a html file which is easier to follow but I'm not sure how portable
-# this is; under CentOS (which does not have the right version but actually
-# normally generates code fine) the error:
-#
-#   jparse/jparse.y: error: xsltproc failed with status 127
-#
-# is thrown and since this could happen on other systems even with the
-# appropriate version I have not enabled this.
-#
-# For the -Wcounterexamples it gives counter examples if there are ever
-# shift/reduce conflicts in the grammar. The other warnings are of use as well.
-#
-BISON_FLAGS= -Werror -Wcounterexamples -Wmidrule-values -Wprecedence -Wdeprecated \
-	      --report all --header
-
-# the basename of flex (or lex) to look for
-#
-FLEX_BASENAME= flex
-#FLEX_BASENAME= lex
-
-# Where jparse/run_flex.sh will search for flex with a recent enough version
-#
-# The -F arguments specify where to look for flex with a version,
-# that is >= the minimum version (see MIN_FLEX_VERSION in limit_ioccc.sh),
-# before searching for bison on $PATH.
-#
-# NOTE: If is OK if these directories do not exist.
-#
-FLEX_DIRS= \
-	-F /opt/homebrew/opt/flex/bin \
-	-F /usr/local/opt/flex/bin \
-	-F /opt/homebrew/bin \
-	-F /opt/local/bin \
-	-F /usr/local/opt \
-	-F /usr/local/bin \
-	-F .
-
-# flags to pass to flex
-#
-FLEX_FLAGS= -8
 
 ############################################################
 # User specific configurations - override Makefile values  #
@@ -314,7 +235,7 @@ all: fast_hostchk just_all
 
 # The original make all that bypasses running hostchk.sh
 #
-just_all: soup ${TARGETS}
+just_all: soup jparse/jparse ${TARGETS}
 	@${MAKE} -C man all
 
 # fast build environment sanity check
@@ -393,8 +314,8 @@ entry_time.o: entry_time.c Makefile
 mkiocccentry.o: mkiocccentry.c Makefile
 	${CC} ${CFLAGS} mkiocccentry.c -c
 
-mkiocccentry: mkiocccentry.o rule_count.o dbg/dbg.a jparse/util.o dyn_array/dyn_array.a jparse/json_parse.o entry_util.o \
-	jparse/json_util.o entry_time.o location.o utf8_posix_map.o sanity.o jparse/json_sem.o
+mkiocccentry: mkiocccentry.o rule_count.o entry_util.o \
+	entry_time.o location.o utf8_posix_map.o sanity.o dbg/dbg.a dyn_array/dyn_array.a jparse/jparse.a
 	${CC} ${CFLAGS} $^ -lm -o $@
 
 iocccsize.o: iocccsize.c Makefile
@@ -406,32 +327,27 @@ iocccsize: iocccsize.o rule_count.o dbg/dbg.a Makefile
 fnamchk.o: fnamchk.c fnamchk.h Makefile
 	${CC} ${CFLAGS} fnamchk.c -c
 
-fnamchk: fnamchk.o dbg/dbg.a jparse/util.o dyn_array/dyn_array.a Makefile
-	${CC} ${CFLAGS} fnamchk.o dbg/dbg.a jparse/util.o dyn_array/dyn_array.a -o $@
+fnamchk: fnamchk.o dbg/dbg.a dyn_array/dyn_array.a jparse/jparse.a
+	${CC} ${CFLAGS} $^ -o $@
 
 txzchk.o: txzchk.c txzchk.h Makefile
 	${CC} ${CFLAGS} txzchk.c -c
 
-txzchk: txzchk.o dbg/dbg.a jparse/util.o dyn_array/dyn_array.a location.o \
-	utf8_posix_map.o sanity.o Makefile
-	${CC} ${CFLAGS} txzchk.o dbg/dbg.a jparse/util.o dyn_array/dyn_array.a location.o \
-	     utf8_posix_map.o sanity.o -o $@
+txzchk: txzchk.o location.o \
+	utf8_posix_map.o sanity.o dbg/dbg.a dyn_array/dyn_array.a jparse/jparse.a
+	${CC} ${CFLAGS} $^ -o $@
 
-chkentry.o: chkentry.c chkentry.h jparse/jparse.tab.h oebxergfB.h Makefile
+chkentry.o: chkentry.c chkentry.h jparse/jparse.h oebxergfB.h Makefile
 	${CC} ${CFLAGS} -Isoup chkentry.c -c
 
-chkentry: chkentry.o oebxergfB.h dbg/dbg.a jparse/util.o sanity.o utf8_posix_map.o dyn_array/dyn_array.a \
-	jparse/jparse.a soup/chk_validate.o entry_util.c foo.o location.o soup/chk_sem_info.o soup/chk_sem_auth.o Makefile
-	${CC} ${CFLAGS} chkentry.o dbg/dbg.a jparse/util.o sanity.o utf8_posix_map.o jparse/jparse.a \
-		dyn_array/dyn_array.a soup/chk_validate.o entry_util.o entry_time.o \
-		foo.o location.o soup/chk_sem_info.o soup/chk_sem_auth.o -lm -o $@
-
+chkentry: chkentry.o sanity.o utf8_posix_map.o soup/chk_validate.o entry_util.o foo.o location.o soup/chk_sem_info.o \
+	soup/chk_sem_auth.o entry_time.o dbg/dbg.a dyn_array/dyn_array.a jparse/jparse.a
+	${CC} ${CFLAGS} $^ -lm -o $@
 
 foo.o: foo.c oebxergfB.h Makefile
 	${CC} ${CFLAGS} foo.c -c
 
-limit_ioccc.sh: limit_ioccc.h version.h dbg/dbg.h dyn_array/dyn_array.h dyn_array/dyn_test.h jparse/jparse.h jparse/jparse_main.h \
-		Makefile
+limit_ioccc.sh: limit_ioccc.h version.h dbg/dbg.h dyn_array/dyn_array.h jparse/jparse.h Makefile
 	${RM} -f $@
 	@echo '#!/usr/bin/env bash' > $@
 	@echo '#' >> $@
@@ -441,7 +357,7 @@ limit_ioccc.sh: limit_ioccc.h version.h dbg/dbg.h dyn_array/dyn_array.h dyn_arra
 	    ${AWK} '{print $$2 "=\"" $$3 "\"" ;}' | ${TR} -d '[a-z]()' | \
 	    ${SED} -e 's/"_/"/' -e 's/""/"/g' -e 's/^/export /' >> $@
 	${GREP} -hE '^#define (.*_VERSION|TIMESTAMP_EPOCH|JSON_PARSING_DIRECTIVE_)' \
-		     version.h limit_ioccc.h dbg/dbg.h dyn_array/dyn_array.h dyn_array/dyn_test.h jparse/jparse.h jparse/jparse_main.h | \
+		     version.h limit_ioccc.h dbg/dbg.h dyn_array/dyn_array.h jparse/jparse.h | \
 	    ${GREP} -v 'UUID_VERSION' | \
 	    ${SED} -e 's/^#define/export/' -e 's/ "/="/' -e 's/"[	 ].*$$/"/' >> $@
 	-if ${GREP} -q '^#define DIGRAPHS' limit_ioccc.h; then \
@@ -487,11 +403,20 @@ jparse/jparse.h: jparse/Makefile
 jparse/jparse.a: jparse/Makefile
 	@${MAKE} -C jparse extern_liba
 
+jparse/jparse: jparse/Makefile
+	@${MAKE} -C jparse extern_prog
+
 jparse/jparse.1: jparse/Makefile
 	@${MAKE} -C jparse extern_man
 
 jparse/jparse_test.8: jparse/Makefile
 	@${MAKE} -C jparse extern_man
+
+jparse/jsemtblgen: jparse/Makefile
+	@${MAKE} -C jparse extern_prog
+
+jparse/jsemcgen.sh: jparse/Makefile
+	@${MAKE} -C jparse extern_prog
 
 soup: soup/chk.auth.head.c soup/chk.auth.ptch.h soup/chk.info.head.c soup/chk.info.ptch.h \
 	soup/chk_sem_auth.c  soup/chk_sem_info.h soup/chk.auth.head.h soup/chk.auth.tail.c \
@@ -499,61 +424,6 @@ soup: soup/chk.auth.head.c soup/chk.auth.ptch.h soup/chk.info.head.c soup/chk.in
 	soup/chk.auth.ptch.c soup/chk.auth.tail.h soup/chk.info.ptch.c soup/chk.info.tail.h \
 	soup/chk_sem_info.c  soup/chk_validate.h
 	@${MAKE} -C soup CFLAGS="${CFLAGS}"
-
-# How to create jparse/jparse.tab.c and jparse/jparse.tab.h
-#
-# Convert jparse/jparse.y into jparse/jparse.tab.c and jparse/jparse.tab.c via bison, if bison is
-# found and has a recent enough version. Otherwise, if RUN_O_FLAG is NOT
-# specified use a pre-built reference copies stored in jparse/jparse.tab.ref.h and
-# jparse/jparse.tab.ref.c. If it IS specified it is an error.
-#
-# NOTE: The value of RUN_O_FLAG depends on what rule called this rule.
-jparse/jparse.tab.c jparse/jparse.tab.h bison: jparse/jparse.y jparse/jparse.h jparse/sorry.tm.ca.h jparse/run_bison.sh limit_ioccc.sh \
-	jparse/verge jparse/jparse.tab.ref.c jparse/jparse.tab.ref.h Makefile
-	${MAKE} -C jparse CFLAGS="${CFLAGS}" bison
-
-# How to create jparse/jparse.c and jparse/jparse.lex.h
-#
-# Convert jparse/jparse.l into jparse/jparse.c via flex, if flex found and has a recent enough
-# version. Otherwise, if RUN_O_FLAG is NOT set use the pre-built reference copy
-# stored in jparse/jparse.ref.c. If it IS specified it is an error.
-#
-# NOTE: The value of RUN_O_FLAG depends on what rule called this rule.
-jparse/jparse.c jparse/jparse.lex.h flex: jparse/jparse.l jparse/jparse.h jparse/sorry.tm.ca.h jparse/jparse.tab.h jparse/run_flex.sh limit_ioccc.sh \
-	       jparse/verge jparse/jparse.ref.c jparse/jparse.lex.ref.h Makefile
-	${MAKE} -C jparse CFLAGS="${CFLAGS}" flex
-
-
-jparse/jstrencode.o: jparse/jstrencode.c jparse/jstrencode.h jparse/json_util.h jparse/json_util.c Makefile
-	${MAKE} -C jparse CFLAGS="${CFLAGS}" jstrencode.o
-
-jparse/jstrencode: jparse/jstrencode.o dbg/dbg.a jparse/jparse.a jparse/util.o dyn_array/dyn_array.a Makefile
-	${MAKE} -C jparse CFLAGS="${CFLAGS}" jstrencode
-
-jparse/jstrdecode.o: jparse/jstrdecode.c jparse/jstrdecode.h jparse/json_util.h jparse/json_parse.h Makefile
-	${MAKE} -C jparse CFLAGS="${CFLAGS}" jstrdecode.o
-
-jparse/jstrdecode: jparse/jstrdecode.o dbg/dbg.a jparse/json_parse.o jparse/json_util.o jparse/util.o dyn_array/dyn_array.a Makefile
-	${MAKE} -C jparse CFLAGS="${CFLAGS}" jstrdecode
-
-jparse/jnum_gen: jparse/jnum_gen.o dbg/dbg.a jparse/json_parse.o jparse/json_util.o jparse/util.o dyn_array/dyn_array.a Makefile
-	${MAKE} -C jparse CFLAGS="${CFLAGS}" jnum_gen
-
-jparse/jparse.tab.o: jparse/jparse.tab.c Makefile
-	${MAKE} -C jparse CFLAGS="${CFLAGS}" jparse.tab.o
-
-jparse/jparse_main.o: jparse/jparse_main.c Makefile
-	${MAKE} -C jparse CFLAGS="${CFLAGS}" jparse_main.o
-
-jparse/jparse: jparse/jparse.a jparse/util.o dyn_array/dyn_array.a dbg/dbg.a Makefile
-	${MAKE} -C jparse CFLAGS="${CFLAGS}" jparse
-
-jparse/jsemtblgen.o: jparse/jsemtblgen.c Makefile
-	${MAKE} -C jparse CFLAGS="${CFLAGS}" jsemtblgen.o
-
-jparse/jsemtblgen: jparse/jsemtblgen.o jparse/jparse.a jparse/util.o dyn_array/dyn_array.a dbg/dbg.a \
-	    rule_count.o Makefile
-	${MAKE} -C jparse CFLAGS="${CFLAGS}" jsemtblgen
 
 
 ####################################
@@ -640,13 +510,6 @@ parser-o: jparse/jparse.y jparse/jparse.l Makefile
 # This rule forces the use of reference copies of JSON parser C code.
 use_ref: jparse/jparse.tab.ref.c jparse/jparse.tab.ref.h jparse/jparse.ref.c jparse/jparse.lex.ref.h
 	${MAKE} -C jparse use_ref
-
-# use jparse/jnum_gen to regenerate test jnum_chk test suite
-#
-rebuild_jnum_test: jparse/jnum_gen jparse/test_jparse/jnum.testset jnum_header.c Makefile
-	${RM} -f jparse/test_jparse/jnum_test.c
-	${CP} -f -v jnum_header.c jparse/test_jparse/jnum_test.c
-	./jparse/jnum_gen jparse/test_jparse/jnum.testset >> jparse/test_jparse/jnum_test.c
 
 # Form unpatched semantic tables, without headers and trailers, from the reference info and auth JSON files
 #
@@ -798,7 +661,7 @@ test_ioccc:
 #
 test: dbg all chkentry test_ioccc/ioccc_test.sh test_ioccc/iocccsize_test.sh \
 	    test_ioccc/mkiocccentry_test.sh jparse/test_jparse/jstr_test.sh \
-	    test_ioccc/txzchk_test.sh txzchk jparse
+	    test_ioccc/txzchk_test.sh txzchk jparse/jparse
 	${MAKE} -C jparse/test_jparse all
 	${MAKE} -C test_ioccc test
 	@echo
@@ -1099,14 +962,6 @@ utf8_posix_map.o: utf8_posix_map.c utf8_posix_map.h jparse/jparse.h jparse/../db
 	jparse/util.h jparse/../dyn_array/dyn_array.h jparse/../dyn_array/../dbg/dbg.h jparse/json_parse.h \
 	jparse/json_util.h jparse/json_sem.h jparse/jparse.tab.h dbg/dbg.h limit_ioccc.h version.h
 foo.o: foo.c foo.h dbg/dbg.h oebxergfB.h
-jparse.o: jparse/jparse.c jparse/jparse.h jparse/../dbg/dbg.h jparse/util.h \
-	jparse/../dyn_array/dyn_array.h jparse/../dyn_array/../dbg/dbg.h jparse/json_parse.h \
-	jparse/json_util.h jparse/json_sem.h jparse/jparse.tab.h
-jparse.tab.o: jparse/jparse.tab.c jparse/jparse.h jparse/../dbg/dbg.h jparse/util.h \
-	jparse/../dyn_array/dyn_array.h jparse/../dyn_array/../dbg/dbg.h jparse/json_parse.h \
-	jparse/json_util.h jparse/json_sem.h jparse/jparse.tab.h jparse/jparse.lex.h
-util.o: jparse/util.c jparse/../dbg/dbg.h jparse/util.h jparse/../dyn_array/dyn_array.h \
-	jparse/../dyn_array/../dbg/dbg.h
 mkiocccentry.o: mkiocccentry.c mkiocccentry.h jparse/jparse.h jparse/../dbg/dbg.h jparse/util.h \
 	jparse/../dyn_array/dyn_array.h jparse/../dyn_array/../dbg/dbg.h jparse/json_parse.h \
 	jparse/json_util.h jparse/json_sem.h jparse/jparse.tab.h dbg/dbg.h location.h utf8_posix_map.h \
@@ -1123,14 +978,6 @@ chkentry.o: chkentry.c chkentry.h dbg/dbg.h jparse/jparse.h jparse/../dbg/dbg.h 
 	jparse/../dyn_array/dyn_array.h jparse/../dyn_array/../dbg/dbg.h jparse/json_parse.h \
 	jparse/json_util.h jparse/json_sem.h jparse/jparse.tab.h soup/chk_sem_info.h \
 	soup/../jparse/json_sem.h soup/chk_sem_auth.h foo.h version.h
-json_parse.o: jparse/json_parse.c jparse/../dbg/dbg.h jparse/util.h jparse/../dyn_array/dyn_array.h \
-	jparse/../dyn_array/../dbg/dbg.h jparse/json_parse.h jparse/json_util.h
-jstrencode.o: jparse/jstrencode.c jparse/jstrencode.h jparse/../dbg/dbg.h jparse/util.h \
-	jparse/../dyn_array/dyn_array.h jparse/../dyn_array/../dbg/dbg.h jparse/json_parse.h \
-	jparse/../limit_ioccc.h version.h
-jstrdecode.o: jparse/jstrdecode.c jparse/jstrdecode.h jparse/../dbg/dbg.h jparse/util.h \
-	jparse/../dyn_array/dyn_array.h jparse/../dyn_array/../dbg/dbg.h jparse/json_parse.h \
-	jparse/../limit_ioccc.h version.h
 rule_count.o: rule_count.c iocccsize_err.h iocccsize.h
 location.o: location.c location.h jparse/jparse.h jparse/../dbg/dbg.h jparse/util.h \
 	jparse/../dyn_array/dyn_array.h jparse/../dyn_array/../dbg/dbg.h jparse/json_parse.h \
@@ -1139,31 +986,10 @@ sanity.o: sanity.c sanity.h jparse/jparse.h jparse/../dbg/dbg.h jparse/util.h \
 	jparse/../dyn_array/dyn_array.h jparse/../dyn_array/../dbg/dbg.h jparse/json_parse.h \
 	jparse/json_util.h jparse/json_sem.h jparse/jparse.tab.h dbg/dbg.h location.h utf8_posix_map.h \
 	limit_ioccc.h version.h
-verge.o: jparse/verge.c jparse/verge.h jparse/../dbg/dbg.h jparse/util.h \
-	jparse/../dyn_array/dyn_array.h jparse/../dyn_array/../dbg/dbg.h jparse/../limit_ioccc.h version.h
-jnum_chk.o: jparse/test_jparse/jnum_chk.c jparse/test_jparse/jnum_chk.h \
-	jparse/test_jparse/../../dbg/dbg.h jparse/test_jparse/../util.h \
-	jparse/test_jparse/../../dyn_array/dyn_array.h jparse/test_jparse/../../dyn_array/../dbg/dbg.h \
-	jparse/test_jparse/../../jparse/json_parse.h jparse/test_jparse/../../jparse/json_util.h \
-	jparse/test_jparse/../json_parse.h jparse/test_jparse/../../version.h
-jnum_gen.o: jparse/jnum_gen.c jparse/jnum_gen.h jparse/../dbg/dbg.h jparse/util.h \
-	jparse/../dyn_array/dyn_array.h jparse/../dyn_array/../dbg/dbg.h jparse/json_parse.h \
-	jparse/json_util.h jparse/../limit_ioccc.h version.h
-jnum_test.o: jparse/test_jparse/jnum_test.c jparse/test_jparse/../../jparse/json_parse.h \
-	jparse/test_jparse/../../jparse/util.h jparse/test_jparse/../../jparse/../dyn_array/dyn_array.h \
-	jparse/test_jparse/../../jparse/../dyn_array/../dbg/dbg.h
-json_util.o: jparse/json_util.c jparse/../dbg/dbg.h jparse/json_parse.h jparse/util.h \
-	jparse/../dyn_array/dyn_array.h jparse/../dyn_array/../dbg/dbg.h jparse/json_util.h
-jparse_main.o: jparse/jparse_main.c jparse/jparse_main.h jparse/../dbg/dbg.h jparse/util.h \
-	jparse/../dyn_array/dyn_array.h jparse/../dyn_array/../dbg/dbg.h jparse/jparse.h jparse/json_parse.h \
-	jparse/json_util.h jparse/json_sem.h jparse/jparse.tab.h
 entry_util.o: entry_util.c dbg/dbg.h jparse/jparse.h jparse/../dbg/dbg.h jparse/util.h \
 	jparse/../dyn_array/dyn_array.h jparse/../dyn_array/../dbg/dbg.h jparse/json_parse.h \
 	jparse/json_util.h jparse/json_sem.h jparse/jparse.tab.h version.h limit_ioccc.h entry_util.h \
 	entry_time.h location.h
-jsemtblgen.o: jparse/jsemtblgen.c jparse/jsemtblgen.h jparse/../dbg/dbg.h jparse/util.h \
-	jparse/../dyn_array/dyn_array.h jparse/../dyn_array/../dbg/dbg.h jparse/json_util.h \
-	jparse/json_parse.h jparse/jparse.h jparse/json_sem.h jparse/jparse.tab.h jparse/../iocccsize.h
 chk_sem_auth.o: soup/chk_sem_auth.c soup/chk_sem_auth.h soup/../jparse/json_sem.h \
 	soup/../jparse/util.h soup/../jparse/../dyn_array/dyn_array.h \
 	soup/../jparse/../dyn_array/../dbg/dbg.h soup/../jparse/json_parse.h soup/../jparse/json_util.h
@@ -1175,9 +1001,6 @@ chk_validate.o: soup/chk_validate.c soup/chk_validate.h soup/../entry_util.h jpa
 	jparse/json_parse.h jparse/json_util.h jparse/json_sem.h jparse/jparse.tab.h \
 	soup/../jparse/json_util.h soup/../jparse/json_sem.h soup/chk_sem_auth.h soup/chk_sem_info.h \
 	entry_time.h location.h dbg/dbg.h
-json_sem.o: jparse/json_sem.c jparse/../dbg/dbg.h jparse/json_sem.h jparse/util.h \
-	jparse/../dyn_array/dyn_array.h jparse/../dyn_array/../dbg/dbg.h jparse/json_parse.h \
-	jparse/json_util.h
 entry_time.o: entry_time.c dbg/dbg.h jparse/jparse.h jparse/../dbg/dbg.h jparse/util.h \
 	jparse/../dyn_array/dyn_array.h jparse/../dyn_array/../dbg/dbg.h jparse/json_parse.h \
 	jparse/json_util.h jparse/json_sem.h jparse/jparse.tab.h entry_time.h limit_ioccc.h version.h

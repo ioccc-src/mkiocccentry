@@ -41,6 +41,7 @@
  */
 #define REQUIRED_ARGS (1)	/* number of required arguments on the command line */
 #define CHUNK (16)		/* allocate CHUNK elements at a time */
+#define STRLEN(s)		(sizeof (s)-1)
 
 
 /*
@@ -58,6 +59,148 @@ static char *member_func = NULL;	/* -M func - validate JTYPE_MEMBER JSON nodes o
 static char *object_func = NULL;	/* -O func - validate JTYPE_OBJECT JSON nodes or NULL */
 static char *array_func = NULL;		/* -A func - validate JTYPE_ARRAY JSON nodes or NULL */
 static char *unknown_func = NULL;	/* -U func - validate nodes with unknown types or NULL */
+
+/*
+ * IOCCC Judge's remarks:
+ *
+ * The following editorial plea expresses a view shared by more than zero
+ * IOCCC judges. It may not represent the opinion of all those involved
+ * with this code nor the International Obfuscated C Code Contest as a whole:
+ *
+ * The long list of reserved words below should be a source
+ * of embarrassment to some of those involved in standardizing C.
+ * The growing list of reserved words, along with an expanding set of
+ * linguistic inventions has the appearance of feature
+ * creep that, if left unchecked, risks turning a beautifully elegant
+ * language into a steaming pile of biological excretion.
+ *
+ * The history of the IOCCC has taught us that even minor changes
+ * to the language are not always well understood by compiler writers,
+ * let alone the standards body who publishes them. We have enormous
+ * sympathy for C compiler writers who must keep up with the creeping
+ * featurism.  We are aware of some C standards members who share
+ * these concerns.  Alas, they seem to be a minority.
+ *
+ * The C standards body as a whole, before they emit yet more mountains of new
+ * standardese, might wish consider the option of moth-balling their committee.
+ * Or if they must produce a new standard, consider naming whatever
+ * follows c11 as CNC (C's Not C).  :-)
+ */
+
+/*
+ * C reserved words, plus a few #preprocessor tokens, that count as 1
+ *
+ * NOTE: For a good list of reserved words in C, see:
+ *
+ *	http://www.bezem.de/pdf/ReservedWordsInC.pdf
+ *
+ * by Johan Bezem of JB Enterprises:
+ *
+ *	See http://www.bezem.de/en/
+ */
+typedef struct {
+	size_t length;
+	const char *word;
+} Word;
+
+static Word cwords[] = {
+	/* Yes Virginia, we left #define off the list on purpose! */
+	{ STRLEN("#elif"), "#elif" } ,
+	{ STRLEN("#else"), "#else" } ,
+	{ STRLEN("#endif"), "#endif" } ,
+	{ STRLEN("#error"), "#error" } ,
+	{ STRLEN("#ident"), "#ident" } ,
+	{ STRLEN("#if"), "#if" } ,
+	{ STRLEN("#ifdef"), "#ifdef" } ,
+	{ STRLEN("#ifndef"), "#ifndef" } ,
+	{ STRLEN("#include"), "#include" } ,
+	{ STRLEN("#line"), "#line" } ,
+	{ STRLEN("#pragma"), "#pragma" } ,
+	{ STRLEN("#sccs"), "#sccs" } ,
+	{ STRLEN("#warning"), "#warning" } ,
+
+	{ STRLEN("_Alignas"), "_Alignas" } ,
+	{ STRLEN("_Alignof"), "_Alignof" } ,
+	{ STRLEN("_Atomic"), "_Atomic" } ,
+	{ STRLEN("_Bool"), "_Bool" } ,
+	{ STRLEN("_Complex"), "_Complex" } ,
+	{ STRLEN("_Generic"), "_Generic" } ,
+	{ STRLEN("_Imaginary"), "_Imaginary" } ,
+	{ STRLEN("_Noreturn"), "_Noreturn" } ,
+	{ STRLEN("_Pragma"), "_Pragma" } ,
+	{ STRLEN("_Static_assert"), "_Static_assert" } ,
+	{ STRLEN("_Thread_local"), "_Thread_local" } ,
+
+	{ STRLEN("alignas"), "alignas" } ,
+	{ STRLEN("alignof"), "alignof" } ,
+	{ STRLEN("and"), "and" } ,
+	{ STRLEN("and_eq"), "and_eq" } ,
+	{ STRLEN("auto"), "auto" } ,
+	{ STRLEN("bitand"), "bitand" } ,
+	{ STRLEN("bitor"), "bitor" } ,
+	{ STRLEN("bool"), "bool" } ,
+	{ STRLEN("break"), "break" } ,
+	{ STRLEN("case"), "case" } ,
+	{ STRLEN("char"), "char" } ,
+	{ STRLEN("compl"), "compl" } ,
+	{ STRLEN("const"), "const" } ,
+	{ STRLEN("continue"), "continue" } ,
+	{ STRLEN("default"), "default" } ,
+	{ STRLEN("do"), "do" } ,
+	{ STRLEN("double"), "double" } ,
+	{ STRLEN("else"), "else" } ,
+	{ STRLEN("enum"), "enum" } ,
+	{ STRLEN("extern"), "extern" } ,
+	{ STRLEN("false"), "false" } ,
+	{ STRLEN("float"), "float" } ,
+	{ STRLEN("for"), "for" } ,
+	{ STRLEN("goto"), "goto" } ,
+	{ STRLEN("if"), "if" } ,
+	{ STRLEN("inline"), "inline" } ,
+	{ STRLEN("int"), "int" } ,
+	{ STRLEN("long"), "long" } ,
+	{ STRLEN("noreturn"), "noreturn" } ,
+	{ STRLEN("not"), "not" } ,
+	{ STRLEN("not_eq"), "not_eq" } ,
+	{ STRLEN("or"), "or" } ,
+	{ STRLEN("or_eq"), "or_eq" } ,
+	{ STRLEN("register"), "register" } ,
+	{ STRLEN("restrict"), "restrict" } ,
+	{ STRLEN("return"), "return" } ,
+	{ STRLEN("short"), "short" } ,
+	{ STRLEN("signed"), "signed" } ,
+	{ STRLEN("sizeof"), "sizeof" } ,
+	{ STRLEN("static"), "static" } ,
+	{ STRLEN("static_assert"), "static_assert" } ,
+	{ STRLEN("struct"), "struct" } ,
+	{ STRLEN("switch"), "switch" } ,
+	{ STRLEN("thread_local"), "thread_local" } ,
+	{ STRLEN("true"), "true" } ,
+	{ STRLEN("typedef"), "typedef" } ,
+	{ STRLEN("union"), "union" } ,
+	{ STRLEN("unsigned"), "unsigned" } ,
+	{ STRLEN("void"), "void" } ,
+	{ STRLEN("volatile"), "volatile" } ,
+	{ STRLEN("while"), "while" } ,
+	{ STRLEN("xor"), "xor" } ,
+	{ STRLEN("xor_eq"), "xor_eq" } ,
+
+	{ 0, NULL }
+};
+
+
+/*
+ * forward declarations
+ */
+static void gen_sem_tbl(struct json *tree, unsigned int max_depth, ...);
+static void vupdate_tbl(struct json *node, unsigned int depth, va_list ap);
+static int sem_cmp(void const *a, void const *b);
+static void print_c_funct_name(FILE *stream, char const *str);
+static void print_sem_c_src(struct dyn_array *tbl, char *tbl_name, char *cap_tbl_name);
+static void print_sem_h_src(struct dyn_array *tbl, char *tbl_name, char *cap_tbl_name);
+static Word *find_member(Word *table, const char *string);
+static bool test_reserved(const char *string);
+static void usage(int exitcode, char const *str, char const *prog);
 
 
 int
@@ -604,7 +747,7 @@ print_c_funct_name(FILE *stream, char const *str)
      * case: str begins with a digit
      * case: str begins with an underscore
      */
-    reserved = is_reserved(str);
+    reserved = test_reserved(str);
     if (reserved == true || str[0] == '\0' || (isascii(str[0]) && isdigit(str[0])) || str[0] == '_') {
 	/* print a leading x */
 	fprstr(stream, "x");
@@ -912,6 +1055,66 @@ print_sem_h_src(struct dyn_array *tbl, char *tbl_name, char *cap_tbl_name)
     print("\n#endif /* %s_LEN */\n", cap_tbl_name);
 
     return;
+}
+
+
+/*
+ * find_member - find an entry in a word table
+ *
+ * given:
+ *	table		table of words to scan
+ *	string		word to find in the table
+ *
+ * returns:
+ *	NULL ==> string is not in the table,
+ *	!= NULL ==> table entry that matches string
+ */
+static Word *
+find_member(Word *table, const char *string)
+{
+	Word *w;
+	for (w = table; w->length != 0; w++) {
+		if (strcmp(string, w->word) == 0) {
+			return w;
+		}
+	}
+	return NULL;
+}
+
+
+/*
+ * test_reserved - if string is a reserved word in C
+ *
+ * given:
+ *	string	the string to check
+ *
+ * returns:
+ *	true ==> string is a reserved word in C
+ *	false ==> string is NOT a reserved word in C or is NULL
+ */
+static bool
+test_reserved(const char *string)
+{
+    static Word *found = NULL;
+
+    /*
+     * firewall
+     */
+    if (string == NULL) {
+	/* NULL pointer is not a reserved word */
+	return false;
+    }
+
+    /*
+     * search the reserved word table
+     */
+    found = find_member(cwords, string);
+    if (found == NULL) {
+	/* case: string is not a reserved word */
+	return false;
+    }
+    /* case: string is a reserved word */
+    return true;
 }
 
 

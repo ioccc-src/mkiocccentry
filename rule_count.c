@@ -197,6 +197,18 @@ static Word cwords[] = {
 	{ 0, NULL }
 };
 
+
+/*
+ * find_member - find an entry in a word table
+ *
+ * given:
+ *	table		table of words to scan
+ *	string		word to find in the table
+ *
+ * returns:
+ *	NULL ==> string is not in the table,
+ *	!= NULL ==> table entry that matches string
+ */
 static Word *
 find_member(Word *table, const char *string)
 {
@@ -209,6 +221,21 @@ find_member(Word *table, const char *string)
 	return NULL;
 }
 
+
+/*
+ * rule_count - count data on file stream, according to Rule 2a and Rule 2b
+ *
+ * In addition to the Rule 2a and Rule 2b counting, count keywords.
+ * We also warn about various situations such found high-bit or non-ASCII character,
+ * found NUL byte, found an unknown Tri-Graph, word buffer overflow,
+ * or ungetc called too many times.
+ *
+ * given:
+ *	fp_in		open file stream to count data on
+ *
+ * returns:
+ *	RuleCount information
+ */
 RuleCount
 rule_count(FILE *fp_in)
 {
@@ -414,6 +441,7 @@ rule_count(FILE *fp_in)
 
 	return counts;
 }
+
 
 /*
  * is_reserved - if string is a reserved word in C

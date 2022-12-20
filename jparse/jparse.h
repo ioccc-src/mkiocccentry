@@ -49,6 +49,11 @@
  */
 #include "json_sem.h"
 
+/*
+ * official jparse version
+ */
+#define JPARSE_VERSION "0.11 2022-07-04"		/* format: major.minor YYYY-MM-DD */
+
 
 /*
  * definitions
