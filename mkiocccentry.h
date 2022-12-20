@@ -102,11 +102,6 @@
 #include "version.h"
 
 /*
- * json_util - general JSON parser utility support functions
- */
-#include "jparse/json_util.h"
-
-/*
  * entry_util - utilities supporting mkiocccentry JSON files
  */
 #include "entry_util.h"
