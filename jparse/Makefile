@@ -112,9 +112,9 @@ CFLAGS= ${C_STD} ${C_OPT} ${WARN_FLAGS} ${LDFLAGS}
 # source files that are permanent (not made, nor removed)
 #
 C_SRC= jparse_main.c json_parse.c json_sem.c json_util.c jnum_gen.c jnum_header.c \
-       jsemtblgen.c jstrdecode.c jstrencode.c
+       jsemtblgen.c jstrdecode.c jstrencode.c util.c
 H_SRC= jparse.h jnum_gen.h jparse_main.h jsemtblgen.h json_parse.h json_sem.h json_util.h \
-       jstrdecode.h jstrencode.h sorry.tm.ca.h verge.h
+       jstrdecode.h jstrencode.h sorry.tm.ca.h util.h verge.h
 ALL_SRC= ${C_SRC} ${H_SRC}
 
 
@@ -124,7 +124,7 @@ ALL_SRC= ${C_SRC} ${H_SRC}
 
 # NOTE: ${LIB_OBJS} are objects to put into a library and removed by make clean
 #
-LIB_OBJS= jparse.o jparse.tab.o jparse_main.o json_parse.o json_sem.o json_util.o
+LIB_OBJS= jparse.o jparse.tab.o jparse_main.o json_parse.o json_sem.o json_util.o util.o
 
 # NOTE: ${OTHER_OBJS} are objects NOT put into a library and removed by make clean
 #
@@ -238,7 +238,7 @@ DEST_DIR= /usr/local/bin
 # may be used outside of this directory
 #
 EXTERN_H= jparse.h
-EXTERN_O= jparse.o
+EXTERN_O=
 EXTERN_MAN= ${ALL_MAN_TARGETS}
 EXTERN_LIBA= jparse.a
 
@@ -249,7 +249,7 @@ EXTERN_CLOBBER= ${EXTERN_O} ${EXTERN_LIBA} ${EXTERN_PROG}
 GENERATED_HSRC= jparse.tab.h jparse.lex.h
 GENERATED_OBJ= jparse.o jparse.tab.o jparse.tab.o
 SRCFILES= jnum_gen.c jnum_header.c jparse.ref.c jparse.tab.ref.c jparse_main.c jsemtblgen.c \
-	json_parse.c json_sem.c json_util.c jstrdecode.c jstrencode.c verge.c
+	json_parse.c json_sem.c json_util.c jstrdecode.c jstrencode.c util.c verge.c
 GENERATED_CSRC= jparse.tab.c jparse.lex.c
 ALL_CSRC= ${GENERATED_CSRC} ${SRCFILES}
 
@@ -319,21 +319,21 @@ jparse_main.o: jparse_main.c Makefile
 jparse.o: jparse.c jparse.h Makefile
 	${CC} ${CFLAGS} -Wno-unused-but-set-variable -Wno-unused-function -Wno-unneeded-internal-declaration jparse.c -c
 
-jparse: jparse.a util.o ../dyn_array/dyn_array.a ../dbg/dbg.a Makefile
-	${CC} ${CFLAGS} -Wno-unneeded-internal-declaration jparse.a util.o ../dyn_array/dyn_array.a ../dbg/dbg.a \
+jparse: jparse.a ../dyn_array/dyn_array.a ../dbg/dbg.a Makefile
+	${CC} ${CFLAGS} -Wno-unneeded-internal-declaration jparse.a ../dyn_array/dyn_array.a ../dbg/dbg.a \
 			-lm -o $@
 
 jstrencode.o: jstrencode.c jstrencode.h json_util.h json_util.c Makefile
 	${CC} ${CFLAGS} jstrencode.c -c
 
-jstrencode: jstrencode.o ../dbg/dbg.a jparse.a util.o ../dyn_array/dyn_array.a Makefile
-	${CC} ${CFLAGS} jstrencode.o ../dbg/dbg.a jparse.a util.o ../dyn_array/dyn_array.a -lm -o $@
+jstrencode: jstrencode.o ../dbg/dbg.a jparse.a ../dyn_array/dyn_array.a Makefile
+	${CC} ${CFLAGS} jstrencode.o ../dbg/dbg.a jparse.a ../dyn_array/dyn_array.a -lm -o $@
 
 jstrdecode.o: jstrdecode.c jstrdecode.h json_util.h json_parse.h Makefile
 	${CC} ${CFLAGS} jstrdecode.c -c
 
-jstrdecode: jstrdecode.o ../dbg/dbg.a jparse.a util.o ../dyn_array/dyn_array.a Makefile
-	${CC} ${CFLAGS} jstrdecode.o ../dbg/dbg.a jparse.a util.o ../dyn_array/dyn_array.a -lm -o $@
+jstrdecode: jstrdecode.o ../dbg/dbg.a jparse.a ../dyn_array/dyn_array.a Makefile
+	${CC} ${CFLAGS} jstrdecode.o ../dbg/dbg.a jparse.a ../dyn_array/dyn_array.a -lm -o $@
 
 json_parse.o: json_parse.c Makefile
 	${CC} ${CFLAGS} json_parse.c -c
@@ -341,15 +341,15 @@ json_parse.o: json_parse.c Makefile
 jnum_gen.o: jnum_gen.c jnum_gen.h Makefile
 	${CC} ${CFLAGS} jnum_gen.c -c
 
-jnum_gen: jnum_gen.o ../dbg/dbg.a jparse.a util.o ../dyn_array/dyn_array.a Makefile
-	${CC} ${CFLAGS} jnum_gen.o ../dbg/dbg.a jparse.a util.o ../dyn_array/dyn_array.a -lm -o $@
+jnum_gen: jnum_gen.o ../dbg/dbg.a jparse.a ../dyn_array/dyn_array.a Makefile
+	${CC} ${CFLAGS} jnum_gen.o ../dbg/dbg.a jparse.a ../dyn_array/dyn_array.a -lm -o $@
 
 jsemtblgen.o: jsemtblgen.c jparse.tab.h Makefile
 	${CC} ${CFLAGS} jsemtblgen.c -c
 
-jsemtblgen: jsemtblgen.o jparse.a util.o ../dyn_array/dyn_array.a ../dbg/dbg.a \
+jsemtblgen: jsemtblgen.o jparse.a ../dyn_array/dyn_array.a ../dbg/dbg.a \
 	    ../rule_count.o Makefile
-	${CC} ${CFLAGS} jsemtblgen.o jparse.a util.o ../dyn_array/dyn_array.a ../dbg/dbg.a \
+	${CC} ${CFLAGS} jsemtblgen.o jparse.a ../dyn_array/dyn_array.a ../dbg/dbg.a \
 			../rule_count.o -lm -o $@
 
 json_sem.o: json_sem.c Makefile
