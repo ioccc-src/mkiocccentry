@@ -259,7 +259,7 @@ EXTERN_H= jparse.h
 EXTERN_O=
 EXTERN_MAN= ${ALL_MAN_TARGETS}
 EXTERN_LIBA= jparse.a
-EXTERN_PROG= jparse jsemtblgen jsemcgen.sh jstrdecode jstrencode
+EXTERN_PROG= jparse jsemtblgen jsemcgen.sh jnum_gen jstrdecode jstrencode
 
 # NOTE: ${EXTERN_CLOBBER} used outside of this directory and removed by make clobber
 #
