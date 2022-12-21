@@ -102,7 +102,7 @@ main(int argc, char *argv[])
     /*
      * create dynamic array
      */
-    array = dyn_array_create(sizeof(double), CHUNK, CHUNK, "double test");
+    array = dyn_array_create(sizeof(double), CHUNK, CHUNK, true);
 
     /*
      * load a million doubles
