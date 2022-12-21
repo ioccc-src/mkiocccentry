@@ -108,6 +108,7 @@ TEE= tee
 TR= tr
 TRUE= true
 
+
 #######################
 # Makefile parameters #
 #######################
@@ -175,10 +176,8 @@ TARGETS= mkiocccentry iocccsize fnamchk txzchk chkentry
 SH_TARGETS=limit_ioccc.sh
 
 TEST_TARGETS= dbg/dbg_test test_ioccc/utf8_test test_ioccc/dyn_test jparse/test_jparse/jnum_chk
-OBJFILES= mkiocccentry.o iocccsize.o fnamchk.o txzchk.o chkentry.o \
-	  rule_count.o location.o sanity.o \
-	  entry_util.o soup/chk_sem_auth.o soup/chk_sem_info.o \
-	  soup/chk_validate.o entry_time.o
+OBJFILES= mkiocccentry.o iocccsize.o fnamchk.o txzchk.o chkentry.o rule_count.o location.o sanity.o \
+	  entry_util.o entry_time.o
 LESS_PICKY_CSRC= utf8_posix_map.c foo.c
 LESS_PICKY_H_FILES= oebxergfB.h
 LESS_PICKY_OBJ= utf8_posix_map.o foo.o
@@ -187,17 +186,12 @@ GENERATED_HSRC=
 GENERATED_OBJ=
 FLEXFILES=
 BISONFILES=
-# This is a simpler way to do:
-#
-#   SRCFILES=  $(patsubst %.o,%.c,$(OBJFILES))
-#
-SRCFILES= $(OBJFILES:.o=.c)
+SRCFILES= mkiocccentry.c iocccsize.c fnamchk.c txzchk.c chkentry.c rule_count.c location.c sanity.c \
+	  entry_util.c entry_time.c
 ALL_CSRC= ${LESS_PICKY_CSRC} ${GENERATED_CSRC} ${SRCFILES}
 H_FILES= dbg/dbg.h chkentry.h limit_ioccc.h \
 	mkiocccentry.h txzchk.h location.h utf8_posix_map.h jparse/jparse.h \
-	dyn_array/dyn_array.h \
-	entry_util.h soup/chk_sem_auth.h \
-	soup/chk_sem_info.h soup/chk_validate.h foo.h entry_time.h
+	dyn_array/dyn_array.h entry_util.h foo.h entry_time.h
 # This is a simpler way to do:
 #
 #   DSYMDIRS= $(patsubst %,%.dSYM,$(TARGETS))
@@ -209,6 +203,7 @@ SH_FILES= test_ioccc/iocccsize_test.sh limit_ioccc.sh test_ioccc/mkiocccentry_te
 	  run_usage.sh bug_report.sh soup/all_ref.sh test_ioccc/chkentry_test.sh soup/fmt_depend.sh
 BUILD_LOG= build.log
 TXZCHK_LOG= test_ioccc/txzchk_test.log
+
 
 ############################################################
 # User specific configurations - override Makefile values  #
@@ -291,8 +286,7 @@ hostchk_warning:
 .PHONY: all just_all fast_hostchk hostchk hostchk_warning all_ref all_ref_ptch mkchk_sem bug_report.sh build \
 	check_man clean clean_generated_obj clean_mkchk_sem clobber configure depend hostchk bug_report.sh \
 	install test_ioccc legacy_clobber mkchk_sem parser parser-o picky prep prep_clobber \
-        pull rebuild_jnum_test release reset_min_timestamp seqcexit shellcheck tags test test-chkentry use_ref \
-	soup jparse dbg.3
+        pull rebuild_jnum_test release reset_min_timestamp seqcexit shellcheck tags test test-chkentry use_ref
 
 
 ####################################
@@ -337,11 +331,12 @@ txzchk: txzchk.o location.o \
 	utf8_posix_map.o sanity.o dbg/dbg.a dyn_array/dyn_array.a jparse/jparse.a
 	${CC} ${CFLAGS} $^ -o $@
 
-chkentry.o: chkentry.c chkentry.h jparse/jparse.h oebxergfB.h Makefile
-	${CC} ${CFLAGS} -Isoup chkentry.c -c
+chkentry.o: chkentry.c chkentry.h jparse/jparse.h oebxergfB.h soup/chk_sem_info.h \
+	soup/chk_sem_auth.h Makefile
+	${CC} ${CFLAGS} chkentry.c -c
 
-chkentry: chkentry.o sanity.o utf8_posix_map.o soup/chk_validate.o entry_util.o foo.o location.o soup/chk_sem_info.o \
-	soup/chk_sem_auth.o entry_time.o dbg/dbg.a dyn_array/dyn_array.a jparse/jparse.a
+chkentry: chkentry.o sanity.o utf8_posix_map.o entry_util.o foo.o location.o \
+	entry_time.o dbg/dbg.a dyn_array/dyn_array.a jparse/jparse.a soup/soup.a
 	${CC} ${CFLAGS} $^ -lm -o $@
 
 foo.o: foo.c oebxergfB.h Makefile
@@ -418,12 +413,17 @@ jparse/jsemtblgen: jparse/Makefile
 jparse/jsemcgen.sh: jparse/Makefile
 	@${MAKE} -C jparse extern_prog
 
-soup: soup/chk.auth.head.c soup/chk.auth.ptch.h soup/chk.info.head.c soup/chk.info.ptch.h \
-	soup/chk_sem_auth.c  soup/chk_sem_info.h soup/chk.auth.head.h soup/chk.auth.tail.c \
-	soup/chk.info.head.h soup/chk.info.tail.c soup/chk_sem_auth.h  soup/chk_validate.c \
-	soup/chk.auth.ptch.c soup/chk.auth.tail.h soup/chk.info.ptch.c soup/chk.info.tail.h \
-	soup/chk_sem_info.c  soup/chk_validate.h
-	@${MAKE} -C soup CFLAGS="${CFLAGS}"
+soup/soup.a: soup/Makefile
+	@${MAKE} -C soup extern_liba
+
+soup/chk_sem_info.h: soup/Makefile
+	@${MAKE} -C soup extern_include
+
+soup/chk_sem_auth.h: soup/Makefile
+	@${MAKE} -C soup extern_include
+
+soup/soup.h: soup/Makefile
+	@${MAKE} -C soup extern_include
 
 
 ####################################
@@ -508,75 +508,9 @@ parser-o: jparse/jparse.y jparse/jparse.l Makefile
 # restore reference code that was produced by previous successful make parser
 #
 # This rule forces the use of reference copies of JSON parser C code.
+#
 use_ref: jparse/jparse.tab.ref.c jparse/jparse.tab.ref.h jparse/jparse.ref.c jparse/jparse.lex.ref.h
 	${MAKE} -C jparse use_ref
-
-# Form unpatched semantic tables, without headers and trailers, from the reference info and auth JSON files
-#
-# rule used by prep.sh
-#
-all_ref: jparse/jsemtblgen jparse/jsemcgen.sh jparse/test_jparse/test_JSON/info.json/good jparse/test_jparse/test_JSON/auth.json/good soup/all_ref.sh
-	rm -rf soup/ref
-	mkdir -p soup/ref
-	./soup/all_ref.sh -v 1 -j jparse/jsemcgen.sh \
-	    soup/chk.info.head.c soup/chk.info.tail.c soup/chk.info.head.h soup/chk.info.tail.h \
-	    soup/chk.auth.head.c soup/chk.auth.tail.c soup/chk.auth.head.h soup/chk.auth.tail.h \
-	    jparse/test_jparse/test_JSON/info.json/good jparse/test_jparse/test_JSON/auth.json/good soup/ref
-
-# form chk.????.ptch.{c,h} files
-#
-# Given a correct set of soup/chk_sem_????.{c,h} files, we form chk.????.ptch.{c,h}
-# diff patch relative to the ref/*.reference.json.{c,h} files.
-#
-# rule should never be invoked by prep.sh
-#
-# This rule is run by the repo maintainers only AFTER soup/chk_sem_????.{c,h} files
-# are updated by hand.
-#
-all_ref_ptch: soup/ref/info.reference.json.c soup/ref/info.reference.json.h \
-	      soup/ref/auth.reference.json.c soup/ref/auth.reference.json.h
-	rm -f soup/chk.info.ptch.c
-	-diff -u soup/ref/info.reference.json.c soup/chk_sem_info.c > soup/chk.info.ptch.c
-	rm -f soup/chk.info.ptch.h
-	-diff -u soup/ref/info.reference.json.h soup/chk_sem_info.h > soup/chk.info.ptch.h
-	rm -f soup/chk.auth.ptch.c
-	-diff -u soup/ref/auth.reference.json.c soup/chk_sem_auth.c > soup/chk.auth.ptch.c
-	rm -f soup/chk.auth.ptch.h
-	-diff -u soup/ref/auth.reference.json.h soup/chk_sem_auth.h > soup/chk.auth.ptch.h
-
-# Form the soup/chk_sem_????.{c,h} files
-#
-# rule used by prep.sh
-#
-mkchk_sem: soup/chk_sem_auth.c soup/chk_sem_auth.h soup/chk_sem_info.c soup/chk_sem_info.h
-
-soup/chk_sem_auth.c: jparse/jsemtblgen jparse/jsemcgen.sh jparse/test_jparse/test_JSON/auth.json/good/auth.reference.json \
-		soup/chk.auth.head.c soup/chk.auth.ptch.c soup/chk.auth.tail.c Makefile
-	@${RM} -f $@
-	./jparse/jsemcgen.sh -N sem_auth -P chk -j jparse/jsemtblgen -- \
-	    jparse/test_jparse/test_JSON/auth.json/good/auth.reference.json soup/chk.auth.head.c \
-	    soup/chk.auth.ptch.c soup/chk.auth.tail.c $@
-
-soup/chk_sem_auth.h: jparse/jsemtblgen jparse/jsemcgen.sh jparse/test_jparse/test_JSON/auth.json/good/auth.reference.json \
-		soup/chk.auth.head.h soup/chk.auth.ptch.h soup/chk.auth.tail.h Makefile
-	@${RM} -f $@
-	./jparse/jsemcgen.sh -N sem_auth -P chk -I -j jparse/jsemtblgen -- \
-	    jparse/test_jparse/test_JSON/auth.json/good/auth.reference.json soup/chk.auth.head.h \
-	    soup/chk.auth.ptch.h soup/chk.auth.tail.h $@
-
-soup/chk_sem_info.c: jparse/jsemtblgen jparse/jsemcgen.sh jparse/test_jparse/test_JSON/info.json/good/info.reference.json \
-		soup/chk.info.head.c soup/chk.info.ptch.c soup/chk.info.tail.c Makefile
-	@${RM} -f $@
-	./jparse/jsemcgen.sh -N sem_info -P chk -j jparse/jsemtblgen -- \
-	    jparse/test_jparse/test_JSON/info.json/good/info.reference.json soup/chk.info.head.c \
-	    soup/chk.info.ptch.c soup/chk.info.tail.c $@
-
-soup/chk_sem_info.h: jparse/jsemtblgen jparse/jsemcgen.sh jparse/test_jparse/test_JSON/info.json/good/info.reference.json \
-		soup/chk.info.head.h soup/chk.info.ptch.h soup/chk.info.tail.h Makefile
-	@${RM} -f $@
-	./jparse/jsemcgen.sh -N sem_info -P chk -I -j jparse/jsemtblgen -- \
-	    jparse/test_jparse/test_JSON/info.json/good/info.reference.json soup/chk.info.head.h \
-	    soup/chk.info.ptch.h soup/chk.info.tail.h $@
 
 # sequence exit codes
 #
@@ -932,30 +866,29 @@ install: all
 	${INSTALL} -v -m 0555 ${TARGETS} ${SH_TARGETS} ${DESTDIR}
 
 
-###################################
-# standard Makefile utility rules #
-###################################
+###############
+# make depend #
+###############
 
-depend: jparse soup/fmt_depend.sh
+depend: ${ALL_CSRC} soup/fmt_depend.sh
 	@echo
 	@echo "make depend starting"
 	@echo
 	@${SED} -i.orig -n -e '1,/^### DO NOT CHANGE MANUALLY BEYOND THIS LINE/p' Makefile
-	${CC} ${CFLAGS} -MM -Isoup -I. ${ALL_CSRC} | ./soup/fmt_depend.sh >> Makefile
+	${CC} ${CFLAGS} -MM -I. ${ALL_CSRC} | ./soup/fmt_depend.sh >> Makefile
 	@-if ${CMP} -s Makefile.orig Makefile; then \
 	    ${RM} -f Makefile.orig; \
 	else \
 	    echo; echo "Makefile dependencies updated"; echo; echo "Previous version may be found in: Makefile.orig"; \
 	fi
 	@echo
-	@${MAKE} -C soup depend
-	@${MAKE} -C jparse depend
+	@${MAKE} -C dbg $@
+	@${MAKE} -C dyn_array $@
+	@${MAKE} -C test_ioccc $@
+	@${MAKE} -C soup $@
+	@${MAKE} -C man $@
+	@${MAKE} -C jparse $@
 	@echo "make depend completed"
-
-
-###############
-# make depend #
-###############
 
 ### DO NOT CHANGE MANUALLY BEYOND THIS LINE
 utf8_posix_map.o: utf8_posix_map.c utf8_posix_map.h jparse/jparse.h jparse/../dbg/dbg.h \
@@ -976,8 +909,9 @@ txzchk.o: txzchk.c txzchk.h jparse/jparse.h jparse/../dbg/dbg.h jparse/util.h \
 	utf8_posix_map.h limit_ioccc.h version.h entry_util.h
 chkentry.o: chkentry.c chkentry.h dbg/dbg.h jparse/jparse.h jparse/../dbg/dbg.h jparse/util.h \
 	jparse/../dyn_array/dyn_array.h jparse/../dyn_array/../dbg/dbg.h jparse/json_parse.h \
-	jparse/json_util.h jparse/json_sem.h jparse/jparse.tab.h soup/chk_sem_info.h \
-	soup/../jparse/json_sem.h soup/chk_sem_auth.h foo.h version.h
+	jparse/json_util.h jparse/json_sem.h jparse/jparse.tab.h soup/soup.h soup/../entry_util.h \
+	soup/../jparse/json_util.h soup/../jparse/json_sem.h soup/chk_sem_auth.h soup/chk_sem_info.h \
+	soup/chk_validate.h foo.h version.h
 rule_count.o: rule_count.c iocccsize_err.h iocccsize.h
 location.o: location.c location.h jparse/jparse.h jparse/../dbg/dbg.h jparse/util.h \
 	jparse/../dyn_array/dyn_array.h jparse/../dyn_array/../dbg/dbg.h jparse/json_parse.h \
@@ -990,17 +924,6 @@ entry_util.o: entry_util.c dbg/dbg.h jparse/jparse.h jparse/../dbg/dbg.h jparse/
 	jparse/../dyn_array/dyn_array.h jparse/../dyn_array/../dbg/dbg.h jparse/json_parse.h \
 	jparse/json_util.h jparse/json_sem.h jparse/jparse.tab.h version.h limit_ioccc.h entry_util.h \
 	entry_time.h location.h
-chk_sem_auth.o: soup/chk_sem_auth.c soup/chk_sem_auth.h soup/../jparse/json_sem.h \
-	soup/../jparse/util.h soup/../jparse/../dyn_array/dyn_array.h \
-	soup/../jparse/../dyn_array/../dbg/dbg.h soup/../jparse/json_parse.h soup/../jparse/json_util.h
-chk_sem_info.o: soup/chk_sem_info.c soup/chk_sem_info.h soup/../jparse/json_sem.h \
-	soup/../jparse/util.h soup/../jparse/../dyn_array/dyn_array.h \
-	soup/../jparse/../dyn_array/../dbg/dbg.h soup/../jparse/json_parse.h soup/../jparse/json_util.h
-chk_validate.o: soup/chk_validate.c soup/chk_validate.h soup/../entry_util.h jparse/jparse.h \
-	jparse/../dbg/dbg.h jparse/util.h jparse/../dyn_array/dyn_array.h jparse/../dyn_array/../dbg/dbg.h \
-	jparse/json_parse.h jparse/json_util.h jparse/json_sem.h jparse/jparse.tab.h \
-	soup/../jparse/json_util.h soup/../jparse/json_sem.h soup/chk_sem_auth.h soup/chk_sem_info.h \
-	entry_time.h location.h dbg/dbg.h
 entry_time.o: entry_time.c dbg/dbg.h jparse/jparse.h jparse/../dbg/dbg.h jparse/util.h \
 	jparse/../dyn_array/dyn_array.h jparse/../dyn_array/../dbg/dbg.h jparse/json_parse.h \
 	jparse/json_util.h jparse/json_sem.h jparse/jparse.tab.h entry_time.h limit_ioccc.h version.h

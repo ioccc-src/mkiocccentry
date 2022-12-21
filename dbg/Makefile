@@ -39,12 +39,14 @@ AR= ar
 CAT= cat
 CC= cc
 CHECKNR= checknr
+CMP= cmp
 CP= cp
 CTAGS= ctags
 GREP= grep
 INSTALL= install
 RANLIB= ranlib
 RM= rm
+SED= sed
 SHELL= bash
 
 
@@ -103,7 +105,7 @@ CFLAGS= ${C_STD} ${C_OPT} ${WARN_FLAGS} ${LDFLAGS}
 #
 C_SRC= dbg.c dbg_example.c dbg_test.c
 H_SRC= dbg.h
-ALL_SRC= ${C_SRC} ${H_SRC}
+ALL_CSRC= ${C_SRC} ${H_SRC}
 
 
 ######################
@@ -357,12 +359,30 @@ install: all
 	${INSTALL} -v -m 0444 ${LIBA_TARGETS} ${DEST_LIB}
 	${INSTALL} -v -m 0444 ${H_SRC_TARGETS} ${DEST_INCLUDE}
 
-tags: ${ALL_SRC} ${ALL_BUILT_SRC}
-	-${CTAGS} ${ALL_SRC} ${ALL_BUILT_SRC} 2>&1 | \
+tags: ${ALL_CSRC} ${ALL_BUILT_SRC}
+	-${CTAGS} ${ALL_CSRC} ${ALL_BUILT_SRC} 2>&1 | \
 	     ${GREP} -E -v 'Duplicate entry|Second entry ignored'
 
 ###############
 # make depend #
 ###############
 
+depend: ${ALL_CSRC} ../soup/fmt_depend.sh
+	@echo
+	@echo "make depend starting"
+	@echo
+	@${SED} -i.orig -n -e '1,/^### DO NOT CHANGE MANUALLY BEYOND THIS LINE/p' Makefile
+	${CC} ${CFLAGS} -MM ${ALL_CSRC} | ../soup/fmt_depend.sh >> Makefile
+	@-if ${CMP} -s Makefile.orig Makefile; then \
+	    ${RM} -f Makefile.orig; \
+	else \
+	    echo; echo "Makefile dependencies updated"; echo; echo "Previous version may be found in: Makefile.orig"; \
+	fi
+	@echo
+	@echo "make depend completed"
+
 ### DO NOT CHANGE MANUALLY BEYOND THIS LINE
+dbg.o: dbg.c dbg.h
+dbg_example.o: dbg_example.c dbg.h
+dbg_test.o: dbg_test.c dbg.h
+dbg.o: dbg.h

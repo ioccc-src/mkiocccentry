@@ -26,8 +26,8 @@
 AWK= awk
 BASENAME= basename
 CAT= cat
-CMP = cmp
-CUT = cut
+CMP= cmp
+CUT= cut
 CC= cc
 CP= cp
 CTAGS= ctags
@@ -50,15 +50,15 @@ SED= sed
 SEQCEXIT= seqcexit
 SHELL= bash
 SHELLCHECK= shellcheck
-CHECKNR = checknr
+CHECKNR= checknr
 TEE= tee
 TR= tr
 TRUE= true
 
 
-#######################
-# Makefile parameters #
-#######################
+##################
+# How to compile #
+##################
 
 # linker options
 #
@@ -122,6 +122,76 @@ TARGETS= jnum_chk
 SH_TARGETS=
 
 
+###############
+# source code #
+###############
+
+# source files that are permanent (not made, nor removed)
+#
+C_SRC= jnum_chk.c jnum_test.c
+H_SRC= jnum_chk.h
+ALL_CSRC= ${C_SRC} ${H_SRC}
+
+
+######################
+# intermediate files #
+######################
+
+# NOTE: ${LIB_OBJS} are objects to put into a library and removed by make clean
+#
+LIB_OBJS=
+
+# NOTE: ${OTHER_OBJS} are objects NOT put into a library and removed by make clean
+#
+OTHER_OBJS=
+
+# NOTE: intermediate files to make and removed by make clean
+#
+BUILT_C_SRC=
+BUILT_H_SRC=
+ALL_BUILT_SRC= ${BUILT_C_SRC} ${BUILT_H_SRC}
+
+# all intermediate files and removed by make clean
+#
+ALL_OBJS= ${LIB_OBJS} ${OTHER_OBJS}
+
+
+#######################
+# install information #
+#######################
+
+# where to install
+#
+MAN1_DIR= /usr/local/share/man/man1
+MAN3_DIR= /usr/local/share/man/man3
+MAN8_DIR= /usr/local/share/man/man8
+DEST_INCLUDE= /usr/local/include
+DEST_LIB= /usr/local/lib
+DEST_DIR= /usr/local/bin
+
+
+#################################
+# external Makefile information #
+#################################
+
+# may be used outside of this directory
+#
+EXTERN_H=
+EXTERN_O=
+EXTERN_MAN= ${ALL_MAN_TARGETS}
+EXTERN_LIBA=
+EXTERN_PROG=
+
+# NOTE: ${EXTERN_CLOBBER} used outside of this directory and removed by make clobber
+#
+EXTERN_CLOBBER= ${EXTERN_O} ${EXTERN_LIBA} ${EXTERN_PROG}
+
+
+######################
+# target information #
+######################
+
+
 ######################################
 # all - default rule - must be first #
 ######################################
@@ -136,7 +206,9 @@ all: ${TARGETS}
 
 .PHONY: all \
 	test prep_clean prep_clobber legacy_clean legacy_clobber \
-	configure clean clobber install
+	configure clean clobber install \
+	test_JSON/info.json/good/info.reference.json \
+	test_JSON/auth.json/good/auth.reference.json
 
 
 ####################################
@@ -149,10 +221,8 @@ jnum_test.o: jnum_test.c Makefile
 jnum_chk.o: jnum_chk.c jnum_chk.h Makefile
 	${CC} ${CFLAGS} -I../.. jnum_chk.c -c
 
-jnum_chk: jnum_chk.o ../../dbg/dbg.a ../json_parse.o ../json_util.o ../util.o ../../dyn_array/dyn_array.o \
-	jnum_test.o Makefile
-	${CC} ${CFLAGS} -I../.. jnum_chk.o ../../dbg/dbg.a ../json_parse.o ../json_util.o ../util.o \
-		../../dyn_array/dyn_array.o jnum_test.o -lm -o jnum_chk
+jnum_chk: jnum_chk.o jnum_test.o ../../dbg/dbg.a ../../dyn_array/dyn_array.o ../jparse.a
+	${CC} ${CFLAGS} $^ -lm -o $@
 
 
 #########################################################
@@ -162,10 +232,22 @@ jnum_chk: jnum_chk.o ../../dbg/dbg.a ../json_parse.o ../json_util.o ../util.o ..
 ../../dbg/dbg.a: ../../dbg/Makefile
 	${MAKE} -C ../../dbg extern_liba
 
+../../dyn_array/dyn_array.a: ../../dyn_array/Makefile
+	${MAKE} -C ../../dyn_array extern_liba
+
+../jparse.a: ../Makefile
+	${MAKE} -C .. extern_liba
+
 
 ####################################
 # rules for use by other Makefiles #
 ####################################
+
+test_JSON/info.json/good/info.reference.json:
+	@:
+
+test_JSON/auth.json/good/auth.reference.json:
+	@:
 
 
 ###########################################################
@@ -213,4 +295,25 @@ install: all
 # make depend #
 ###############
 
+depend: ${ALL_CSRC} ../../soup/fmt_depend.sh
+	@echo
+	@echo "make depend starting"
+	@echo
+	@${SED} -i.orig -n -e '1,/^### DO NOT CHANGE MANUALLY BEYOND THIS LINE/p' Makefile
+	${CC} ${CFLAGS} -MM ${ALL_CSRC} | ../../soup/fmt_depend.sh >> Makefile
+	@-if ${CMP} -s Makefile.orig Makefile; then \
+	    ${RM} -f Makefile.orig; \
+	else \
+	    echo; echo "Makefile dependencies updated"; echo; echo "Previous version may be found in: Makefile.orig"; \
+	fi
+	@echo
+	@echo "make depend completed"
+
 ### DO NOT CHANGE MANUALLY BEYOND THIS LINE
+jnum_chk.o: jnum_chk.c jnum_chk.h ../../dbg/dbg.h ../util.h ../../dyn_array/dyn_array.h \
+	../../dyn_array/../dbg/dbg.h ../../jparse/json_parse.h ../../jparse/json_util.h ../json_parse.h \
+	../../version.h
+jnum_test.o: jnum_test.c ../../jparse/json_parse.h ../../jparse/util.h \
+	../../jparse/../dyn_array/dyn_array.h ../../jparse/../dyn_array/../dbg/dbg.h
+jnum_chk.o: jnum_chk.h ../../dbg/dbg.h ../util.h ../../dyn_array/dyn_array.h \
+	../../dyn_array/../dbg/dbg.h ../../jparse/json_parse.h ../../jparse/json_util.h ../json_parse.h

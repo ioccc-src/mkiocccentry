@@ -37,13 +37,11 @@
 #
 AR= ar
 CAT= cat
-CC= cc
 CHECKNR= checknr
 CP= cp
 CTAGS= ctags
 GREP= grep
 INSTALL= install
-RANLIB= ranlib
 RM= rm
 SHELL= bash
 
@@ -51,48 +49,6 @@ SHELL= bash
 ##################
 # How to compile #
 ##################
-
-# C source standards being used
-#
-# This repo supports c11 and later.
-#
-# NOTE: The use of -std=gnu11 is because there are a few older systems
-#       in late 2021 that do not have compilers that (yet) support gnu17.
-#       While there may be even more out of date systems that do not
-#       support gnu11, we have to draw the line somewhere.
-#
-#       --------------------------------------------------
-#
-#       ^^ the line is above :-)
-#
-# TODO - ###################################################################### - TODO #
-# TODO - In 2023 we will will support only c17 so C_STD will become -std=gnu17  - TODO #
-# TODO - ###################################################################### - TODO #
-#
-C_STD= -std=gnu11
-#C_STD= -std=gnu17
-
-# optimization and debug level
-#
-C_OPT= -O3 -g3
-#C_OPT= -O0 -g
-
-# Compiler warnings
-#
-WARN_FLAGS= -pedantic -Wall -Wextra
-#WARN_FLAGS= -pedantic -Wall -Wextra -Werror
-
-# linker options
-#
-LDFLAGS=
-
-# how to compile
-#
-# NOTE: If you use ASAN, set this environment var:
-#       ASAN_OPTIONS="detect_stack_use_after_return=1"
-#
-CFLAGS= ${C_STD} ${C_OPT} ${WARN_FLAGS} ${LDFLAGS}
-#CFLAGS= ${C_STD} -O0 -g ${WARN_FLAGS} ${LDFLAGS} -fsanitize=address -fno-omit-frame-pointer
 
 
 ###############
@@ -348,5 +304,8 @@ install: all
 ###############
 # make depend #
 ###############
+
+depend:
+	@:
 
 ### DO NOT CHANGE MANUALLY BEYOND THIS LINE

@@ -36,16 +36,15 @@
 #	      Do not list shell builtin (echo, cd, ...) tools.
 #	      Keep the list in alphabetical order.
 #
-
 AWK= awk
 BASENAME= basename
 CAT= cat
 CC= cc
-CHECKNR = checknr
-CMP = cmp
+CHECKNR= checknr
+CMP= cmp
 CP= cp
 CTAGS= ctags
-CUT = cut
+CUT= cut
 DIFF= diff
 FMT= fmt
 GIT= git
@@ -70,9 +69,9 @@ TR= tr
 TRUE= true
 
 
-#######################
-# Makefile parameters #
-#######################
+##################
+# How to compile #
+##################
 
 # linker options
 #
@@ -128,6 +127,76 @@ CFLAGS= ${C_STD} ${COPT} -pedantic ${WARN_FLAGS} ${LDFLAGS}
 #
 # NOTE: Replace mkiocccentry with whichever tool you want to test and the ...
 # with the arguments and options you want.
+
+
+###############
+# source code #
+###############
+
+# source files that are permanent (not made, nor removed)
+#
+C_SRC= utf8_test.c
+H_SRC=
+ALL_CSRC= ${C_SRC} ${H_SRC}
+
+
+######################
+# intermediate files #
+######################
+
+# NOTE: ${LIB_OBJS} are objects to put into a library and removed by make clean
+#
+LIB_OBJS=
+
+# NOTE: ${OTHER_OBJS} are objects NOT put into a library and removed by make clean
+#
+OTHER_OBJS=
+
+# NOTE: intermediate files to make and removed by make clean
+#
+BUILT_C_SRC=
+BUILT_H_SRC=
+ALL_BUILT_SRC= ${BUILT_C_SRC} ${BUILT_H_SRC}
+
+# all intermediate files and removed by make clean
+#
+ALL_OBJS= ${LIB_OBJS} ${OTHER_OBJS}
+
+
+#######################
+# install information #
+#######################
+
+# where to install
+#
+MAN1_DIR= /usr/local/share/man/man1
+MAN3_DIR= /usr/local/share/man/man3
+MAN8_DIR= /usr/local/share/man/man8
+DEST_INCLUDE= /usr/local/include
+DEST_LIB= /usr/local/lib
+DEST_DIR= /usr/local/bin
+
+
+#################################
+# external Makefile information #
+#################################
+
+# may be used outside of this directory
+#
+EXTERN_H=
+EXTERN_O=
+EXTERN_MAN= ${ALL_MAN_TARGETS}
+EXTERN_LIBA=
+EXTERN_PROG=
+
+# NOTE: ${EXTERN_CLOBBER} used outside of this directory and removed by make clobber
+#
+EXTERN_CLOBBER= ${EXTERN_O} ${EXTERN_LIBA} ${EXTERN_PROG}
+
+
+######################
+# target information #
+######################
 
 # where and what to install
 #
@@ -240,4 +309,22 @@ install: all
 # make depend #
 ###############
 
+depend: ${ALL_CSRC} ../soup/fmt_depend.sh
+	@echo
+	@echo "make depend starting"
+	@echo
+	@${SED} -i.orig -n -e '1,/^### DO NOT CHANGE MANUALLY BEYOND THIS LINE/p' Makefile
+	${CC} ${CFLAGS} -MM ${ALL_CSRC} | ../soup/fmt_depend.sh >> Makefile
+	@-if ${CMP} -s Makefile.orig Makefile; then \
+	    ${RM} -f Makefile.orig; \
+	else \
+	    echo; echo "Makefile dependencies updated"; echo; echo "Previous version may be found in: Makefile.orig"; \
+	fi
+	@echo
+	@echo "make depend completed"
+
 ### DO NOT CHANGE MANUALLY BEYOND THIS LINE
+utf8_test.o: utf8_test.c ../utf8_posix_map.h ../jparse/jparse.h ../jparse/../dbg/dbg.h \
+	../jparse/util.h ../jparse/../dyn_array/dyn_array.h ../jparse/../dyn_array/../dbg/dbg.h \
+	../jparse/json_parse.h ../jparse/json_util.h ../jparse/json_sem.h ../jparse/jparse.tab.h \
+	../dbg/dbg.h ../limit_ioccc.h ../version.h

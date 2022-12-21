@@ -27,13 +27,12 @@ AWK= awk
 BASENAME= basename
 CAT= cat
 CC= cc
-CHECKNR = checknr
-CMP = cmp
+CHECKNR= checknr
+CMP= cmp
 CP= cp
 CTAGS= ctags
-CUT = cut
+CUT= cut
 DIFF= diff
-ECHO = echo
 FMT= fmt
 GIT= git
 GREP= grep
@@ -45,7 +44,7 @@ MAN= man
 MKTEMP= mktemp
 MV= mv
 PICKY= picky
-RANLIB = ranlib
+RANLIB= ranlib
 RM= rm
 RPL= rpl
 RSYNC= rsync
@@ -53,9 +52,9 @@ SED= sed
 SEQCEXIT= seqcexit
 SHELL= bash
 SHELLCHECK= shellcheck
-SLEEP = sleep
+SLEEP= sleep
 TEE= tee
-TOUCH = touch
+TOUCH= touch
 TR= tr
 TRUE= true
 
@@ -152,8 +151,8 @@ RUN_O_FLAG=
 
 # the basename of bison (or yacc) to look for
 #
-BISON_BASENAME = bison
-#BISON_BASENAME = yacc
+BISON_BASENAME= bison
+#BISON_BASENAME= yacc
 
 # Where run_bison.sh will search for bison with a recent enough version
 #
@@ -188,7 +187,7 @@ BISON_DIRS= \
 # For the -Wcounterexamples it gives counter examples if there are ever
 # shift/reduce conflicts in the grammar. The other warnings are of use as well.
 #
-BISON_FLAGS = -Werror -Wcounterexamples -Wmidrule-values -Wprecedence -Wdeprecated \
+BISON_FLAGS= -Werror -Wcounterexamples -Wmidrule-values -Wprecedence -Wdeprecated \
 	      --report all --header
 
 # the basename of flex (or lex) to look for
@@ -215,7 +214,7 @@ FLEX_DIRS= \
 
 # flags to pass to flex
 #
-FLEX_FLAGS = -8
+FLEX_FLAGS= -8
 
 #######################
 # install information #
@@ -251,7 +250,7 @@ GENERATED_HSRC= jparse.tab.h jparse.lex.h
 GENERATED_OBJ= jparse.o jparse.tab.o jparse.tab.o
 SRCFILES= jnum_gen.c jnum_header.c jparse.ref.c jparse.tab.ref.c jparse_main.c jsemtblgen.c \
 	json_parse.c json_sem.c json_util.c jstrdecode.c jstrencode.c util.c verge.c
-GENERATED_CSRC= jparse.tab.c jparse.lex.c
+GENERATED_CSRC= jparse.tab.c
 ALL_CSRC= ${GENERATED_CSRC} ${SRCFILES}
 
 
@@ -402,6 +401,9 @@ jparse.a: ${LIB_OBJS}
 
 ../dyn_array/dyn_array.a: ../dyn_array/Makefile
 	${MAKE} -C ../dyn_array extern_liba
+
+test_jparse/test_JSON/auth.json/good/auth.reference.json: test_jparse/Makefile
+	${MAKE} -C test_jparse test_JSON/auth.json/good/auth.reference.json
 
 
 ####################################
@@ -570,7 +572,7 @@ install: all
 # make depend #
 ###############
 
-depend: ../soup/fmt_depend.sh
+depend: ${ALL_CSRC} ../soup/fmt_depend.sh
 	@echo
 	@echo "jparse make depend starting"
 	@echo
@@ -585,3 +587,29 @@ depend: ../soup/fmt_depend.sh
 	@echo "jparse make depend completed"
 
 ### DO NOT CHANGE MANUALLY BEYOND THIS LINE
+jparse.tab.o: jparse.tab.c jparse.h ../dbg/dbg.h util.h ../dyn_array/dyn_array.h \
+	../dyn_array/../dbg/dbg.h json_parse.h json_util.h json_sem.h jparse.tab.h jparse.lex.h
+jnum_gen.o: jnum_gen.c jnum_gen.h ../dbg/dbg.h util.h ../dyn_array/dyn_array.h \
+	../dyn_array/../dbg/dbg.h json_parse.h json_util.h ../limit_ioccc.h ../version.h
+jnum_header.o: jnum_header.c json_parse.h util.h ../dyn_array/dyn_array.h ../dyn_array/../dbg/dbg.h
+jparse.ref.o: jparse.ref.c jparse.h ../dbg/dbg.h util.h ../dyn_array/dyn_array.h \
+	../dyn_array/../dbg/dbg.h json_parse.h json_util.h json_sem.h jparse.tab.h
+jparse.tab.ref.o: jparse.tab.ref.c jparse.h ../dbg/dbg.h util.h ../dyn_array/dyn_array.h \
+	../dyn_array/../dbg/dbg.h json_parse.h json_util.h json_sem.h jparse.tab.h jparse.lex.h
+jparse_main.o: jparse_main.c jparse_main.h ../dbg/dbg.h util.h ../dyn_array/dyn_array.h \
+	../dyn_array/../dbg/dbg.h jparse.h json_parse.h json_util.h json_sem.h jparse.tab.h
+jsemtblgen.o: jsemtblgen.c jsemtblgen.h ../dbg/dbg.h util.h ../dyn_array/dyn_array.h \
+	../dyn_array/../dbg/dbg.h json_util.h json_parse.h jparse.h json_sem.h jparse.tab.h ../iocccsize.h
+json_parse.o: json_parse.c ../dbg/dbg.h util.h ../dyn_array/dyn_array.h ../dyn_array/../dbg/dbg.h \
+	json_parse.h json_util.h
+json_sem.o: json_sem.c ../dbg/dbg.h json_sem.h util.h ../dyn_array/dyn_array.h \
+	../dyn_array/../dbg/dbg.h json_parse.h json_util.h
+json_util.o: json_util.c ../dbg/dbg.h json_parse.h util.h ../dyn_array/dyn_array.h \
+	../dyn_array/../dbg/dbg.h json_util.h
+jstrdecode.o: jstrdecode.c jstrdecode.h ../dbg/dbg.h util.h ../dyn_array/dyn_array.h \
+	../dyn_array/../dbg/dbg.h json_parse.h ../limit_ioccc.h ../version.h
+jstrencode.o: jstrencode.c jstrencode.h ../dbg/dbg.h util.h ../dyn_array/dyn_array.h \
+	../dyn_array/../dbg/dbg.h json_parse.h ../limit_ioccc.h ../version.h
+util.o: util.c ../dbg/dbg.h util.h ../dyn_array/dyn_array.h ../dyn_array/../dbg/dbg.h
+verge.o: verge.c verge.h ../dbg/dbg.h util.h ../dyn_array/dyn_array.h ../dyn_array/../dbg/dbg.h \
+	../limit_ioccc.h ../version.h

@@ -35,14 +35,9 @@
 #include "jparse/jparse.h"
 
 /*
- * chk_sem_info - check .info.json semantics
+ * soup - some delicious IOCCC soup recipes :-)
  */
-#include "soup/chk_sem_info.h"
-
-/*
- * chk_sem_auth - check .auth.json semantics
- */
-#include "soup/chk_sem_auth.h"
+#include "soup/soup.h"
 
 /*
  * foo - bar
