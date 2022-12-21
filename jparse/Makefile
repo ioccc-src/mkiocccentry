@@ -58,6 +58,7 @@ TOUCH= touch
 TR= tr
 TRUE= true
 
+
 ##################
 # How to compile #
 ##################
@@ -104,6 +105,7 @@ LDFLAGS=
 CFLAGS= ${C_STD} ${C_OPT} ${WARN_FLAGS} ${LDFLAGS}
 #CFLAGS= -O3 -g3 -pedantic -Wall -Werror
 
+
 ###############
 # source code #
 ###############
@@ -111,15 +113,27 @@ CFLAGS= ${C_STD} ${C_OPT} ${WARN_FLAGS} ${LDFLAGS}
 # source files that are permanent (not made, nor removed)
 #
 C_SRC= jparse_main.c json_parse.c json_sem.c json_util.c jnum_gen.c jnum_header.c \
-       jsemtblgen.c jstrdecode.c jstrencode.c util.c
+       jsemtblgen.c jstrdecode.c jstrencode.c util.c \
+       jparse.ref.c jparse.tab.ref.c
 H_SRC= jparse.h jnum_gen.h jparse_main.h jsemtblgen.h json_parse.h json_sem.h json_util.h \
-       jstrdecode.h jstrencode.h sorry.tm.ca.h util.h verge.h
-ALL_SRC= ${C_SRC} ${H_SRC}
+       jstrdecode.h jstrencode.h sorry.tm.ca.h util.h verge.h \
+       jparse.lex.ref.h jparse.tab.ref.h
+
+# source files that do not conform to strict picky standards
+#
+LESS_PICKY_CSRC=
+LESS_PICKY_HSRC=
 
 
 ######################
 # intermediate files #
 ######################
+
+# NOTE: intermediate files to make and removed by make clean
+#
+BUILT_C_SRC= jparse.tab.c
+BUILT_H_SRC= jparse.tab.h jparse.lex.h
+ALL_BUILT_SRC= ${BUILT_C_SRC} ${BUILT_H_SRC}
 
 # NOTE: ${LIB_OBJS} are objects to put into a library and removed by make clean
 #
@@ -129,15 +143,13 @@ LIB_OBJS= jparse.o jparse.tab.o jparse_main.o json_parse.o json_sem.o json_util.
 #
 OTHER_OBJS=
 
-# NOTE: intermediate files to make and removed by make clean
-#
-BUILT_C_SRC=
-BUILT_H_SRC=
-ALL_BUILT_SRC= ${BUILT_C_SRC} ${BUILT_H_SRC}
-
 # all intermediate files and removed by make clean
 #
 ALL_OBJS= ${LIB_OBJS} ${OTHER_OBJS}
+
+# rule used by prep.sh and make clean via make clean_generated_obj
+#
+GENERATED_OBJ= jparse.o jparse.tab.o jparse.tab.o
 
 # RUN_O_FLAG - determine if the bison and flex backup files should be used
 #
@@ -216,6 +228,13 @@ FLEX_DIRS= \
 #
 FLEX_FLAGS= -8
 
+# all source files
+#
+ALL_CSRC= ${C_SRC} ${LESS_PICKY_CSRC} ${BUILT_C_SRC}
+ALL_HSRC= ${H_SRC} ${LESS_PICKY_HSRC} ${BUILT_H_SRC}
+ALL_SRC= ${ALL_CSRC} ${ALL_HSRC}
+
+
 #######################
 # install information #
 #######################
@@ -246,13 +265,6 @@ EXTERN_PROG= jparse jsemtblgen jsemcgen.sh jstrdecode jstrencode
 #
 EXTERN_CLOBBER= ${EXTERN_O} ${EXTERN_LIBA} ${EXTERN_PROG}
 
-GENERATED_HSRC= jparse.tab.h jparse.lex.h
-GENERATED_OBJ= jparse.o jparse.tab.o jparse.tab.o
-SRCFILES= jnum_gen.c jnum_header.c jparse.ref.c jparse.tab.ref.c jparse_main.c jsemtblgen.c \
-	json_parse.c json_sem.c json_util.c jstrdecode.c jstrencode.c util.c verge.c
-GENERATED_CSRC= jparse.tab.c
-ALL_CSRC= ${GENERATED_CSRC} ${SRCFILES}
-
 
 ######################
 # target information #
@@ -265,7 +277,6 @@ MAN3_TARGETS=
 MAN8_TARGETS= man/jparse_test.8
 ALL_MAN_TARGETS= ${MAN1_TARGETS} ${MAN8_TARGETS}
 EXTERN_MAN= ${ALL_MAN_TARGETS}
-
 
 # libraries
 #
@@ -414,13 +425,16 @@ jparse.a: ${LIB_OBJS}
 #########################################################
 
 ../dbg/dbg.a: ../dbg/Makefile
-	${MAKE} -C ../dbg extern_liba
+	@${MAKE} -C ../dbg extern_liba
 
 ../dyn_array/dyn_array.a: ../dyn_array/Makefile
-	${MAKE} -C ../dyn_array extern_liba
+	@${MAKE} -C ../dyn_array extern_liba
+
+test_jparse/test_JSON/info.json/good/info.reference.json: test_jparse/Makefile
+	@${MAKE} -C test_jparse test_JSON/info.json/good/info.reference.json
 
 test_jparse/test_JSON/auth.json/good/auth.reference.json: test_jparse/Makefile
-	${MAKE} -C test_jparse test_JSON/auth.json/good/auth.reference.json
+	@${MAKE} -C test_jparse test_JSON/auth.json/good/auth.reference.json
 
 
 ####################################
@@ -478,7 +492,6 @@ parser: jparse.y jparse.l Makefile
 	${CP} -f -v jparse.lex.h jparse.lex.ref.h
 	${MAKE} -C .. all
 
-#
 # make parser-o: Force the rebuild of the JSON parser.
 #
 # NOTE: This does NOT use the reference copies of JSON parser C code.
@@ -514,6 +527,11 @@ flex: jparse.c jparse.lex.h
 
 test: check_man Makefile
 	@${MAKE} -C test_jparse all test
+
+# rule used by prep.sh and make clean
+#
+clean_generated_obj:
+	${RM} -f ${GENERATED_OBJ}
 
 tags: ${ALL_SRC} ${ALL_BUILT_SRC}
 	-${CTAGS} ${ALL_SRC} ${ALL_BUILT_SRC} 2>&1 | \
@@ -604,29 +622,27 @@ depend: ${ALL_CSRC} ../soup/fmt_depend.sh
 	@echo "jparse make depend completed"
 
 ### DO NOT CHANGE MANUALLY BEYOND THIS LINE
-jparse.tab.o: jparse.tab.c jparse.h ../dbg/dbg.h util.h ../dyn_array/dyn_array.h \
-	../dyn_array/../dbg/dbg.h json_parse.h json_util.h json_sem.h jparse.tab.h jparse.lex.h
-jnum_gen.o: jnum_gen.c jnum_gen.h ../dbg/dbg.h util.h ../dyn_array/dyn_array.h \
-	../dyn_array/../dbg/dbg.h json_parse.h json_util.h ../limit_ioccc.h ../version.h
-jnum_header.o: jnum_header.c json_parse.h util.h ../dyn_array/dyn_array.h ../dyn_array/../dbg/dbg.h
-jparse.ref.o: jparse.ref.c jparse.h ../dbg/dbg.h util.h ../dyn_array/dyn_array.h \
-	../dyn_array/../dbg/dbg.h json_parse.h json_util.h json_sem.h jparse.tab.h
-jparse.tab.ref.o: jparse.tab.ref.c jparse.h ../dbg/dbg.h util.h ../dyn_array/dyn_array.h \
-	../dyn_array/../dbg/dbg.h json_parse.h json_util.h json_sem.h jparse.tab.h jparse.lex.h
 jparse_main.o: jparse_main.c jparse_main.h ../dbg/dbg.h util.h ../dyn_array/dyn_array.h \
 	../dyn_array/../dbg/dbg.h jparse.h json_parse.h json_util.h json_sem.h jparse.tab.h
-jsemtblgen.o: jsemtblgen.c jsemtblgen.h ../dbg/dbg.h util.h ../dyn_array/dyn_array.h \
-	../dyn_array/../dbg/dbg.h json_util.h json_parse.h jparse.h json_sem.h jparse.tab.h ../iocccsize.h
 json_parse.o: json_parse.c ../dbg/dbg.h util.h ../dyn_array/dyn_array.h ../dyn_array/../dbg/dbg.h \
 	json_parse.h json_util.h
 json_sem.o: json_sem.c ../dbg/dbg.h json_sem.h util.h ../dyn_array/dyn_array.h \
 	../dyn_array/../dbg/dbg.h json_parse.h json_util.h
 json_util.o: json_util.c ../dbg/dbg.h json_parse.h util.h ../dyn_array/dyn_array.h \
 	../dyn_array/../dbg/dbg.h json_util.h
+jnum_gen.o: jnum_gen.c jnum_gen.h ../dbg/dbg.h util.h ../dyn_array/dyn_array.h \
+	../dyn_array/../dbg/dbg.h json_parse.h json_util.h ../limit_ioccc.h ../version.h
+jnum_header.o: jnum_header.c json_parse.h util.h ../dyn_array/dyn_array.h ../dyn_array/../dbg/dbg.h
+jsemtblgen.o: jsemtblgen.c jsemtblgen.h ../dbg/dbg.h util.h ../dyn_array/dyn_array.h \
+	../dyn_array/../dbg/dbg.h json_util.h json_parse.h jparse.h json_sem.h jparse.tab.h ../iocccsize.h
 jstrdecode.o: jstrdecode.c jstrdecode.h ../dbg/dbg.h util.h ../dyn_array/dyn_array.h \
 	../dyn_array/../dbg/dbg.h json_parse.h ../limit_ioccc.h ../version.h
 jstrencode.o: jstrencode.c jstrencode.h ../dbg/dbg.h util.h ../dyn_array/dyn_array.h \
 	../dyn_array/../dbg/dbg.h json_parse.h ../limit_ioccc.h ../version.h
 util.o: util.c ../dbg/dbg.h util.h ../dyn_array/dyn_array.h ../dyn_array/../dbg/dbg.h
-verge.o: verge.c verge.h ../dbg/dbg.h util.h ../dyn_array/dyn_array.h ../dyn_array/../dbg/dbg.h \
-	../limit_ioccc.h ../version.h
+jparse.ref.o: jparse.ref.c jparse.h ../dbg/dbg.h util.h ../dyn_array/dyn_array.h \
+	../dyn_array/../dbg/dbg.h json_parse.h json_util.h json_sem.h jparse.tab.h
+jparse.tab.ref.o: jparse.tab.ref.c jparse.h ../dbg/dbg.h util.h ../dyn_array/dyn_array.h \
+	../dyn_array/../dbg/dbg.h json_parse.h json_util.h json_sem.h jparse.tab.h jparse.lex.h
+jparse.tab.o: jparse.tab.c jparse.h ../dbg/dbg.h util.h ../dyn_array/dyn_array.h \
+	../dyn_array/../dbg/dbg.h json_parse.h json_util.h json_sem.h jparse.tab.h jparse.lex.h

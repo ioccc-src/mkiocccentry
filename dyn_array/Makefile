@@ -105,12 +105,22 @@ CFLAGS= ${C_STD} ${C_OPT} ${WARN_FLAGS} ${LDFLAGS}
 #
 C_SRC= dyn_array.c dyn_test.c
 H_SRC= dyn_array.h dyn_array.h
-ALL_CSRC= ${C_SRC} ${H_SRC}
+
+# source files that do not conform to strict picky standards
+#
+LESS_PICKY_CSRC=
+LESS_PICKY_HSRC=
 
 
 ######################
 # intermediate files #
 ######################
+
+# NOTE: intermediate files to make and removed by make clean
+#
+BUILT_C_SRC=
+BUILT_H_SRC=
+ALL_BUILT_SRC= ${BUILT_C_SRC} ${BUILT_H_SRC}
 
 # NOTE: ${LIB_OBJS} are objects to put into a library and removed by make clean
 #
@@ -120,15 +130,15 @@ LIB_OBJS= dyn_array.o
 #
 OTHER_OBJS= dyn_test.o
 
-# NOTE: intermediate files to make and removed by make clean
-#
-BUILT_C_SRC=
-BUILT_H_SRC=
-ALL_BUILT_SRC= ${BUILT_C_SRC} ${BUILT_H_SRC}
-
 # all intermediate files and removed by make clean
 #
 ALL_OBJS= ${LIB_OBJS} ${OTHER_OBJS}
+
+# all source files
+#
+ALL_CSRC= ${C_SRC} ${LESS_PICKY_CSRC} ${BUILT_C_SRC}
+ALL_HSRC= ${H_SRC} ${LESS_PICKY_HSRC} ${BUILT_H_SRC}
+ALL_SRC= ${ALL_CSRC} ${ALL_HSRC}
 
 
 #######################
@@ -249,7 +259,7 @@ dyn_test: dyn_test.o ../dbg/dbg.a dyn_array.a Makefile
 #########################################################
 
 ../dbg/dbg.a: ../dbg/Makefile
-	${MAKE} -C ../dbg extern_liba
+	@${MAKE} -C ../dbg extern_liba
 
 
 ####################################
@@ -312,8 +322,8 @@ check_man: ${ALL_MAN_TARGETS} Makefile
 	    fi; \
 	fi
 
-tags: ${ALL_CSRC} ${ALL_BUILT_SRC}
-	-${CTAGS} ${ALL_CSRC} ${ALL_BUILT_SRC} 2>&1 | \
+tags: ${ALL_SRC}
+	-${CTAGS} ${ALL_SRC} 2>&1 | \
 	     ${GREP} -E -v 'Duplicate entry|Second entry ignored'
 
 prep_clean: legacy_clean
@@ -380,5 +390,3 @@ depend: ${ALL_CSRC} ../soup/fmt_depend.sh
 ### DO NOT CHANGE MANUALLY BEYOND THIS LINE
 dyn_array.o: dyn_array.c dyn_array.h ../dbg/dbg.h
 dyn_test.o: dyn_test.c dyn_test.h ../dbg/dbg.h ../dyn_array/dyn_array.h
-dyn_array.o: dyn_array.h ../dbg/dbg.h
-dyn_array.o: dyn_array.h ../dbg/dbg.h

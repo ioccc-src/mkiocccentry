@@ -105,7 +105,11 @@ CFLAGS= ${C_STD} ${C_OPT} ${WARN_FLAGS} ${LDFLAGS}
 #
 C_SRC= dbg.c dbg_example.c dbg_test.c
 H_SRC= dbg.h
-ALL_CSRC= ${C_SRC} ${H_SRC}
+
+# source files that do not conform to strict picky standards
+#
+LESS_PICKY_CSRC=
+LESS_PICKY_HSRC=
 
 
 ######################
@@ -129,6 +133,12 @@ ALL_BUILT_SRC= ${BUILT_C_SRC} ${BUILT_H_SRC}
 # all intermediate files and removed by make clean
 #
 ALL_OBJS= ${LIB_OBJS} ${OTHER_OBJS}
+
+# all source files
+#
+ALL_CSRC= ${C_SRC} ${LESS_PICKY_CSRC} ${BUILT_C_SRC}
+ALL_HSRC= ${H_SRC} ${LESS_PICKY_HSRC} ${BUILT_H_SRC}
+ALL_SRC= ${ALL_CSRC} ${ALL_HSRC}
 
 
 #######################
@@ -402,4 +412,4 @@ depend: ${ALL_CSRC} ../soup/fmt_depend.sh
 dbg.o: dbg.c dbg.h
 dbg_example.o: dbg_example.c dbg.h
 dbg_test.o: dbg_test.c dbg.h
-dbg.o: dbg.h
+dbg_test.o: dbg_test.c dbg.h

@@ -103,7 +103,11 @@ CFLAGS= ${C_STD} ${C_OPT} ${WARN_FLAGS} ${LDFLAGS}
 #
 C_SRC= chk_sem_info.c chk_sem_auth.c chk_validate.c
 H_SRC= chk_validate.h soup.h
-ALL_SRC= ${C_SRC} ${H_SRC}
+
+# source files that do not conform to strict picky standards
+#
+LESS_PICKY_CSRC=
+LESS_PICKY_HSRC=
 
 
 ######################
@@ -127,6 +131,12 @@ ALL_BUILT_SRC= ${BUILT_C_SRC} ${BUILT_H_SRC}
 # all intermediate files and removed by make clean
 #
 ALL_OBJS= ${LIB_OBJS} ${OTHER_OBJS}
+
+# all source files
+#
+ALL_CSRC= ${C_SRC} ${LESS_PICKY_CSRC} ${BUILT_C_SRC}
+ALL_HSRC= ${H_SRC} ${LESS_PICKY_HSRC} ${BUILT_H_SRC}
+ALL_SRC= ${ALL_CSRC} ${ALL_HSRC}
 
 
 #######################
@@ -218,7 +228,10 @@ all: ${TARGETS}
 
 .PHONY: all \
 	depend soup eat eating eat_soup eating_soup prep_clean prep_clobber legacy_clean legacy_clobber \
-	configure clean clobber install
+	configure clean clobber install \
+	../jparse/jsemcgen.sh \
+	../jparse/test_jparse/test_JSON/info.json/good/info.reference.json \
+	../jparse/test_jparse/test_JSON/auth.json/good/auth.reference.json
 
 
 ####################################
@@ -249,7 +262,7 @@ chk_sem_info.c: ../jparse/jsemtblgen ../jparse/jsemcgen.sh ../jparse/test_jparse
 chk_sem_info.h: ../jparse/jsemtblgen ../jparse/jsemcgen.sh ../jparse/test_jparse/test_JSON/info.json/good/info.reference.json \
 		chk.info.head.h chk.info.ptch.h chk.info.tail.h Makefile
 	@${RM} -f $@
-	../jparse/jsemcgen.sh -N sem_info -P chk -I -j ../jparse/jsemtblgen -- \
+	@../jparse/jsemcgen.sh -N sem_info -P chk -I -j ../jparse/jsemtblgen -- \
 	    ../jparse/test_jparse/test_JSON/info.json/good/info.reference.json chk.info.head.h \
 	    chk.info.ptch.h chk.info.tail.h $@
 
@@ -263,7 +276,7 @@ chk_sem_auth.c: ../jparse/jsemtblgen ../jparse/jsemcgen.sh ../jparse/test_jparse
 chk_sem_auth.h: ../jparse/jsemtblgen ../jparse/jsemcgen.sh ../jparse/test_jparse/test_JSON/auth.json/good/auth.reference.json \
 		chk.auth.head.h chk.auth.ptch.h chk.auth.tail.h Makefile
 	@${RM} -f $@
-	../jparse/jsemcgen.sh -N sem_auth -P chk -I -j ../jparse/jsemtblgen -- \
+	@../jparse/jsemcgen.sh -N sem_auth -P chk -I -j ../jparse/jsemtblgen -- \
 	    ../jparse/test_jparse/test_JSON/auth.json/good/auth.reference.json chk.auth.head.h \
 	    chk.auth.ptch.h chk.auth.tail.h $@
 
@@ -273,16 +286,16 @@ chk_sem_auth.h: ../jparse/jsemtblgen ../jparse/jsemcgen.sh ../jparse/test_jparse
 #########################################################
 
 ../jparse/jsemtblgen: ../jparse/Makefile
-	${MAKE} -C ../jparse extern_prog
+	@${MAKE} -C ../jparse extern_prog
 
 ../jparse/jsemcgen.sh: ../jparse/Makefile
-	${MAKE} -C ../jparse extern_prog
+	@${MAKE} -C ../jparse extern_prog
 
 ../jparse/test_jparse/test_JSON/info.json/good/info.reference.json: ../jparse/Makefile
-	${MAKE} -C ../jparse test_jparse/test_JSON/info.json/good/info.reference.json
+	@${MAKE} -C ../jparse test_jparse/test_JSON/info.json/good/info.reference.json
 
 ../jparse/test_jparse/test_JSON/auth.json/good/auth.reference.json: ../jparse/Makefile
-	${MAKE} -C ../jparse test_jparse/test_JSON/auth.json/good/auth.reference.json
+	@${MAKE} -C ../jparse test_jparse/test_JSON/auth.json/good/auth.reference.json
 
 
 ####################################
@@ -404,12 +417,12 @@ install: all
 # make depend #
 ###############
 
-depend: ./fmt_depend.sh
+depend: ${ALL_CSRC} ./fmt_depend.sh
 	@echo
 	@echo "soup make depend starting"
 	@echo
 	@${SED} -i.orig -n -e '1,/^### DO NOT CHANGE MANUALLY BEYOND THIS LINE/p' Makefile
-	${CC} ${CFLAGS} -MM -I../dbg -I.. ${ALL_SRC} | ./fmt_depend.sh >> Makefile
+	${CC} ${CFLAGS} -MM -I../dbg -I.. ${ALL_CSRC} | ./fmt_depend.sh >> Makefile
 	@-if ${CMP} -s Makefile.orig Makefile; then \
 	    ${RM} -f Makefile.orig; \
 	else \
@@ -430,11 +443,9 @@ chk_validate.o: chk_validate.c chk_validate.h ../entry_util.h ../jparse/jparse.h
 	../jparse/../dyn_array/../dbg/dbg.h ../jparse/json_parse.h ../jparse/json_util.h \
 	../jparse/json_sem.h ../jparse/jparse.tab.h chk_sem_auth.h chk_sem_info.h ../entry_time.h \
 	../location.h ../dbg/dbg.h
-chk_validate.o: chk_validate.h ../entry_util.h ../jparse/jparse.h ../jparse/../dbg/dbg.h \
-	../jparse/util.h ../jparse/../dyn_array/dyn_array.h ../jparse/../dyn_array/../dbg/dbg.h \
-	../jparse/json_parse.h ../jparse/json_util.h ../jparse/json_sem.h ../jparse/jparse.tab.h \
-	chk_sem_auth.h chk_sem_info.h
-soup.o: soup.h ../entry_util.h ../jparse/jparse.h ../jparse/../dbg/dbg.h ../jparse/util.h \
+chk_sem_info.o: chk_sem_info.c chk_sem_info.h ../jparse/json_sem.h ../jparse/util.h \
 	../jparse/../dyn_array/dyn_array.h ../jparse/../dyn_array/../dbg/dbg.h ../jparse/json_parse.h \
-	../jparse/json_util.h ../jparse/json_sem.h ../jparse/jparse.tab.h chk_sem_auth.h chk_sem_info.h \
-	chk_validate.h
+	../jparse/json_util.h
+chk_sem_auth.o: chk_sem_auth.c chk_sem_auth.h ../jparse/json_sem.h ../jparse/util.h \
+	../jparse/../dyn_array/dyn_array.h ../jparse/../dyn_array/../dbg/dbg.h ../jparse/json_parse.h \
+	../jparse/json_util.h

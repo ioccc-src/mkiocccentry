@@ -76,7 +76,7 @@
 # suggestion: List utility filenames, not paths.
 #	      Do not list shell builtin (echo, cd, ...) tools.
 #	      Keep the list in alphabetical order.
-#
+
 AR= ar
 AWK= awk
 BASENAME= basename
@@ -109,9 +109,9 @@ TR= tr
 TRUE= true
 
 
-#######################
-# Makefile parameters #
-#######################
+##################
+# How to compile #
+##################
 
 # linker options
 #
@@ -160,6 +160,104 @@ CFLAGS= ${C_STD} ${COPT} -pedantic ${WARN_FLAGS} ${LDFLAGS}
 #
 #CFLAGS= ${C_STD} -O0 -g -pedantic ${WARN_FLAGS} ${LDFLAGS} -fsanitize=address -fno-omit-frame-pointer
 
+
+###############
+# source code #
+###############
+
+# source files that are permanent (not made, nor removed)
+#
+C_SRC= mkiocccentry.c iocccsize.c fnamchk.c txzchk.c chkentry.c rule_count.c location.c sanity.c \
+	entry_util.c entry_time.c
+H_SRC= dbg/dbg.h chkentry.h limit_ioccc.h \
+	mkiocccentry.h txzchk.h location.h utf8_posix_map.h jparse/jparse.h \
+	dyn_array/dyn_array.h entry_util.h foo.h entry_time.h
+
+# source files that do not conform to strict picky standards
+#
+LESS_PICKY_CSRC= utf8_posix_map.c foo.c
+LESS_PICKY_HSRC= oebxergfB.h
+
+
+######################
+# intermediate files #
+######################
+
+# NOTE: intermediate files to make and removed by make clean
+#
+BUILT_C_SRC=
+BUILT_H_SRC=
+ALL_BUILT_SRC= ${BUILT_C_SRC} ${BUILT_H_SRC}
+
+# NOTE: ${LIB_OBJS} are objects to put into a library and removed by make clean
+#
+LIB_OBJS=
+
+# NOTE: ${OTHER_OBJS} are objects NOT put into a library and removed by make clean
+#
+OTHER_OBJS= mkiocccentry.o iocccsize.o fnamchk.o txzchk.o chkentry.o rule_count.o location.o sanity.o \
+	  entry_util.o entry_time.o utf8_posix_map.o foo.o
+
+# all intermediate files and removed by make clean
+#
+ALL_OBJS= ${LIB_OBJS} ${OTHER_OBJS}
+
+# all source files
+#
+ALL_CSRC= ${C_SRC} ${LESS_PICKY_CSRC} ${BUILT_C_SRC}
+ALL_HSRC= ${H_SRC} ${LESS_PICKY_HSRC} ${BUILT_H_SRC}
+ALL_SRC= ${ALL_CSRC} ${ALL_HSRC}
+
+
+#######################
+# install information #
+#######################
+
+# where to install
+#
+MAN1_DIR= /usr/local/share/man/man1
+MAN3_DIR= /usr/local/share/man/man3
+MAN8_DIR= /usr/local/share/man/man8
+DEST_INCLUDE= /usr/local/include
+DEST_LIB= /usr/local/lib
+DEST_DIR= /usr/local/bin
+
+
+#################################
+# external Makefile information #
+#################################
+
+# may be used outside of this directory
+#
+EXTERN_H=
+EXTERN_O=
+EXTERN_MAN=
+EXTERN_LIBA=
+EXTERN_PROG= bug_report.sh chkentry fnamchk hostchk.sh iocccsize mkiocccentry prep.sh \
+	reset_tstamp.sh run_usage.sh txzchk vermod.sh
+
+# NOTE: ${EXTERN_CLOBBER} used outside of this directory and removed by make clobber
+#
+EXTERN_CLOBBER= ${EXTERN_O} ${EXTERN_LIBA} ${EXTERN_PROG}
+
+
+######################
+# target information #
+######################
+
+SH_TARGETS=limit_ioccc.sh
+
+TEST_TARGETS= dbg/dbg_test test_ioccc/utf8_test test_ioccc/dyn_test jparse/test_jparse/jnum_chk
+FLEXFILES=
+BISONFILES=
+DSYMDIRS= mkiocccentry.dSYM iocccsize.dSYM fnamchk.dSYM txzchk.dSYM chkentry.dSYM
+SH_FILES= test_ioccc/iocccsize_test.sh limit_ioccc.sh test_ioccc/mkiocccentry_test.sh \
+	  vermod.sh prep.sh reset_tstamp.sh test_ioccc/ioccc_test.sh \
+	  test_ioccc/txzchk_test.sh hostchk.sh \
+	  run_usage.sh bug_report.sh soup/all_ref.sh test_ioccc/chkentry_test.sh soup/fmt_depend.sh
+BUILD_LOG= build.log
+TXZCHK_LOG= test_ioccc/txzchk_test.log
+
 # NOTE: For valgrind, run with:
 #
 #	valgrind --leak-check=yes --track-origins=yes --leak-resolution=high --read-var-info=yes \
@@ -170,39 +268,7 @@ CFLAGS= ${C_STD} ${COPT} -pedantic ${WARN_FLAGS} ${LDFLAGS}
 
 # where and what to install
 #
-DESTDIR= /usr/local/bin
 TARGETS= mkiocccentry iocccsize fnamchk txzchk chkentry
-
-SH_TARGETS=limit_ioccc.sh
-
-TEST_TARGETS= dbg/dbg_test test_ioccc/utf8_test test_ioccc/dyn_test jparse/test_jparse/jnum_chk
-OBJFILES= mkiocccentry.o iocccsize.o fnamchk.o txzchk.o chkentry.o rule_count.o location.o sanity.o \
-	  entry_util.o entry_time.o
-LESS_PICKY_CSRC= utf8_posix_map.c foo.c
-LESS_PICKY_H_FILES= oebxergfB.h
-LESS_PICKY_OBJ= utf8_posix_map.o foo.o
-GENERATED_CSRC=
-GENERATED_HSRC=
-GENERATED_OBJ=
-FLEXFILES=
-BISONFILES=
-SRCFILES= mkiocccentry.c iocccsize.c fnamchk.c txzchk.c chkentry.c rule_count.c location.c sanity.c \
-	  entry_util.c entry_time.c
-ALL_CSRC= ${LESS_PICKY_CSRC} ${GENERATED_CSRC} ${SRCFILES}
-H_FILES= dbg/dbg.h chkentry.h limit_ioccc.h \
-	mkiocccentry.h txzchk.h location.h utf8_posix_map.h jparse/jparse.h \
-	dyn_array/dyn_array.h entry_util.h foo.h entry_time.h
-# This is a simpler way to do:
-#
-#   DSYMDIRS= $(patsubst %,%.dSYM,$(TARGETS))
-#
-DSYMDIRS= $(TARGETS:=.dSYM)
-SH_FILES= test_ioccc/iocccsize_test.sh limit_ioccc.sh test_ioccc/mkiocccentry_test.sh \
-	  vermod.sh prep.sh reset_tstamp.sh test_ioccc/ioccc_test.sh \
-	  test_ioccc/txzchk_test.sh hostchk.sh \
-	  run_usage.sh bug_report.sh soup/all_ref.sh test_ioccc/chkentry_test.sh soup/fmt_depend.sh
-BUILD_LOG= build.log
-TXZCHK_LOG= test_ioccc/txzchk_test.log
 
 
 ############################################################
@@ -531,7 +597,7 @@ seqcexit: Makefile
 	    ${SEQCEXIT} -D werr_sem_val -D werrp_sem_val -- ${ALL_CSRC}; \
 	fi
 
-picky: ${ALL_CSRC} ${H_FILES} ${LESS_PICKY_H_FILES} ${FLEXFILES} ${BISONFILES} Makefile
+picky: ${ALL_SRC} ${FLEXFILES} ${BISONFILES} Makefile
 	@if ! type -P ${PICKY} >/dev/null 2>&1; then \
 	    echo "The picky tool could not be found." 1>&2; \
 	    echo "The picky tool is required for this rule." 1>&2; \
@@ -542,10 +608,10 @@ picky: ${ALL_CSRC} ${H_FILES} ${LESS_PICKY_H_FILES} ${FLEXFILES} ${BISONFILES} M
 	    echo 1>&2; \
 	    exit 1; \
 	else \
-	    echo "${PICKY} -w132 -u -s -t8 -v -e -- ${SRCFILES} ${H_FILES} ${FLEXFILES} ${BISONFILES}"; \
-	    ${PICKY} -w132 -u -s -t8 -v -e -- ${SRCFILES} ${H_FILES} ${FLEXFILES} ${BISONFILES}; \
-	    echo "${PICKY} -w132 -u -s -t8 -v -e -8 -- ${LESS_PICKY_CSRC} ${LESS_PICKY_H_FILES}"; \
-	    ${PICKY} -w132 -u -s -t8 -v -e -8 -- ${LESS_PICKY_CSRC} ${LESS_PICKY_H_FILES}; \
+	    echo "${PICKY} -w132 -u -s -t8 -v -e -- ${C_SRC} ${H_SRC} ${FLEXFILES} ${BISONFILES}"; \
+	    ${PICKY} -w132 -u -s -t8 -v -e -- ${C_SRC} ${H_SRC} ${FLEXFILES} ${BISONFILES}; \
+	    echo "${PICKY} -w132 -u -s -t8 -v -e -8 -- ${LESS_PICKY_CSRC} ${LESS_PICKY_HSRC}"; \
+	    ${PICKY} -w132 -u -s -t8 -v -e -8 -- ${LESS_PICKY_CSRC} ${LESS_PICKY_HSRC}; \
 	    echo "${PICKY} -w -u -s -t8 -v -e -8 -- ${SH_FILES}"; \
 	    ${PICKY} -w -u -s -t8 -v -e -8 -- ${SH_FILES}; \
 	fi
@@ -609,7 +675,7 @@ test-chkentry: all chkentry test_ioccc/test-chkentry.sh Makefile
 # rule used by prep.sh and make clean
 #
 clean_generated_obj:
-	${RM} -f ${GENERATED_OBJ}
+	${MAKE} -C jparse $@
 
 # rule used by prep.sh
 #
@@ -617,8 +683,8 @@ clean_mkchk_sem:
 	${RM} -f soup/chk_sem_auth.c soup/chk_sem_auth.h soup/chk_sem_auth.o
 	${RM} -f soup/chk_sem_info.c soup/chk_sem_info.h soup/chk_sem_info.o
 
-tags: ${ALL_CSRC} ${H_FILES}
-	-${CTAGS} ${ALL_CSRC} ${H_FILES} 2>&1 | \
+tags: ${ALL_SRC}
+	-${CTAGS} ${ALL_SRC} 2>&1 | \
 	     ${GREP} -E -v 'Duplicate entry|Second entry ignored'
 
 # rule used by make clean
@@ -635,7 +701,6 @@ prep_clean: legacy_clean
 #
 prep_clobber: legacy_clobber
 	${RM} -f ${TARGETS} ${TEST_TARGETS}
-	${RM} -f ${GENERATED_CSRC} ${GENERATED_HSRC}
 	${RM} -f answers.txt
 	${RM} -f tags
 	${RM} -f jparse.output
@@ -837,9 +902,8 @@ configure:
 	@echo nothing to configure
 
 clean: clean_generated_obj legacy_clean
-	${RM} -f ${OBJFILES}
-	${RM} -f ${GENERATED_OBJ}
-	${RM} -f ${LESS_PICKY_OBJ}
+	${RM} -f ${OTHER_OBJS}
+	${RM} -f ${LESS_PICKY_OBJS}
 	${RM} -rf ${DSYMDIRS}
 	${MAKE} -C dyn_array $@
 	${MAKE} -C test_ioccc $@
@@ -862,8 +926,8 @@ clobber: clean prep_clobber
 
 install: all
 	# we have to first make sure the directories exist!
-	${INSTALL} -v -d -m 0755 ${DESTDIR}
-	${INSTALL} -v -m 0555 ${TARGETS} ${SH_TARGETS} ${DESTDIR}
+	${INSTALL} -v -d -m 0755 ${DEST_DIR}
+	${INSTALL} -v -m 0555 ${TARGETS} ${SH_TARGETS} ${DEST_DIR}
 
 
 ###############
@@ -891,10 +955,6 @@ depend: ${ALL_CSRC} soup/fmt_depend.sh
 	@echo "make depend completed"
 
 ### DO NOT CHANGE MANUALLY BEYOND THIS LINE
-utf8_posix_map.o: utf8_posix_map.c utf8_posix_map.h jparse/jparse.h jparse/../dbg/dbg.h \
-	jparse/util.h jparse/../dyn_array/dyn_array.h jparse/../dyn_array/../dbg/dbg.h jparse/json_parse.h \
-	jparse/json_util.h jparse/json_sem.h jparse/jparse.tab.h dbg/dbg.h limit_ioccc.h version.h
-foo.o: foo.c foo.h dbg/dbg.h oebxergfB.h
 mkiocccentry.o: mkiocccentry.c mkiocccentry.h jparse/jparse.h jparse/../dbg/dbg.h jparse/util.h \
 	jparse/../dyn_array/dyn_array.h jparse/../dyn_array/../dbg/dbg.h jparse/json_parse.h \
 	jparse/json_util.h jparse/json_sem.h jparse/jparse.tab.h dbg/dbg.h location.h utf8_posix_map.h \
@@ -927,3 +987,7 @@ entry_util.o: entry_util.c dbg/dbg.h jparse/jparse.h jparse/../dbg/dbg.h jparse/
 entry_time.o: entry_time.c dbg/dbg.h jparse/jparse.h jparse/../dbg/dbg.h jparse/util.h \
 	jparse/../dyn_array/dyn_array.h jparse/../dyn_array/../dbg/dbg.h jparse/json_parse.h \
 	jparse/json_util.h jparse/json_sem.h jparse/jparse.tab.h entry_time.h limit_ioccc.h version.h
+utf8_posix_map.o: utf8_posix_map.c utf8_posix_map.h jparse/jparse.h jparse/../dbg/dbg.h \
+	jparse/util.h jparse/../dyn_array/dyn_array.h jparse/../dyn_array/../dbg/dbg.h jparse/json_parse.h \
+	jparse/json_util.h jparse/json_sem.h jparse/jparse.tab.h dbg/dbg.h limit_ioccc.h version.h
+foo.o: foo.c foo.h dbg/dbg.h oebxergfB.h

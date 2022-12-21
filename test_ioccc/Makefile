@@ -107,13 +107,11 @@ COPT= -O0 -g
 #WARN_FLAGS= -Wall -Wextra	# TODO - this will be the production release value - TODO #
 WARN_FLAGS= -Wall -Wextra -Werror
 
-
 # how to compile
 #
 # We test by forcing warnings to be errors so you don't have to (allegedly :-) )
 #
 CFLAGS= ${C_STD} ${COPT} -pedantic ${WARN_FLAGS} ${LDFLAGS}
-
 
 # NOTE: If you use ASAN, set this environment var:
 #	ASAN_OPTIONS="detect_stack_use_after_return=1"
@@ -137,7 +135,11 @@ CFLAGS= ${C_STD} ${COPT} -pedantic ${WARN_FLAGS} ${LDFLAGS}
 #
 C_SRC= utf8_test.c
 H_SRC=
-ALL_CSRC= ${C_SRC} ${H_SRC}
+
+# source files that do not conform to strict picky standards
+#
+LESS_PICKY_CSRC=
+LESS_PICKY_HSRC=
 
 
 ######################
@@ -161,6 +163,12 @@ ALL_BUILT_SRC= ${BUILT_C_SRC} ${BUILT_H_SRC}
 # all intermediate files and removed by make clean
 #
 ALL_OBJS= ${LIB_OBJS} ${OTHER_OBJS}
+
+# all source files
+#
+ALL_CSRC= ${C_SRC} ${LESS_PICKY_CSRC} ${BUILT_C_SRC}
+ALL_HSRC= ${H_SRC} ${LESS_PICKY_HSRC} ${BUILT_H_SRC}
+ALL_SRC= ${ALL_CSRC} ${ALL_HSRC}
 
 
 #######################
@@ -257,25 +265,25 @@ ioccc_test.sh: ../dbg/dbg_test ../dyn_array/dyn_test
 #########################################################
 
 ../jparse/util.o: ../Makefile
-	${MAKE} -C ../jparse util.o
+	@${MAKE} -C ../jparse util.o
 
 ../utf8_posix_map.h: ../Makefile
-	${MAKE} -C .. utf8_posix_map.h
+	@${MAKE} -C .. utf8_posix_map.h
 
 ../utf8_posix_map.o: ../Makefile
-	${MAKE} -C .. utf8_posix_map.o
+	@${MAKE} -C .. utf8_posix_map.o
 
 ../dbg/dbg.a: ../dbg/Makefile
-	${MAKE} -C ../dbg dbg.a
+	@${MAKE} -C ../dbg dbg.a
 
 ../dbg/dbg_test: ../dbg/Makefile
-	${MAKE} -C ../dbg dbg_test
+	@${MAKE} -C ../dbg dbg_test
 
 ../dyn_array/dyn_array.a: ../dyn_array/Makefile
-	${MAKE} -C ../dyn_array dyn_array.a
+	@${MAKE} -C ../dyn_array dyn_array.a
 
 ../dyn_array/dyn_test: ../dyn_array/Makefile
-	${MAKE} -C ../dyn_array dyn_test
+	@${MAKE} -C ../dyn_array dyn_test
 
 
 ####################################

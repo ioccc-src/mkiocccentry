@@ -130,7 +130,11 @@ SH_TARGETS=
 #
 C_SRC= jnum_chk.c jnum_test.c
 H_SRC= jnum_chk.h
-ALL_CSRC= ${C_SRC} ${H_SRC}
+
+# source files that do not conform to strict picky standards
+#
+LESS_PICKY_CSRC=
+LESS_PICKY_HSRC=
 
 
 ######################
@@ -154,6 +158,12 @@ ALL_BUILT_SRC= ${BUILT_C_SRC} ${BUILT_H_SRC}
 # all intermediate files and removed by make clean
 #
 ALL_OBJS= ${LIB_OBJS} ${OTHER_OBJS}
+
+# all source files
+#
+ALL_CSRC= ${C_SRC} ${LESS_PICKY_CSRC} ${BUILT_C_SRC}
+ALL_HSRC= ${H_SRC} ${LESS_PICKY_HSRC} ${BUILT_H_SRC}
+ALL_SRC= ${ALL_CSRC} ${ALL_HSRC}
 
 
 #######################
@@ -247,13 +257,13 @@ jnum_chk: jnum_chk.o jnum_test.o ../../dbg/dbg.a ../../dyn_array/dyn_array.o ../
 #########################################################
 
 ../../dbg/dbg.a: ../../dbg/Makefile
-	${MAKE} -C ../../dbg extern_liba
+	@${MAKE} -C ../../dbg extern_liba
 
 ../../dyn_array/dyn_array.a: ../../dyn_array/Makefile
-	${MAKE} -C ../../dyn_array extern_liba
+	@${MAKE} -C ../../dyn_array extern_liba
 
 ../jparse.a: ../Makefile
-	${MAKE} -C .. extern_liba
+	@${MAKE} -C .. extern_liba
 
 
 ####################################
