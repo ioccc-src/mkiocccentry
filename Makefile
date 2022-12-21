@@ -375,7 +375,7 @@ mkiocccentry.o: mkiocccentry.c Makefile
 	${CC} ${CFLAGS} mkiocccentry.c -c
 
 mkiocccentry: mkiocccentry.o rule_count.o entry_util.o \
-	entry_time.o location.o utf8_posix_map.o sanity.o dbg/dbg.a dyn_array/dyn_array.a jparse/jparse.a
+	entry_time.o location.o utf8_posix_map.o sanity.o jparse/jparse.a dyn_array/dyn_array.a dbg/dbg.a
 	${CC} ${CFLAGS} $^ -lm -o $@
 
 iocccsize.o: iocccsize.c Makefile
@@ -387,14 +387,14 @@ iocccsize: iocccsize.o rule_count.o dbg/dbg.a Makefile
 fnamchk.o: fnamchk.c fnamchk.h Makefile
 	${CC} ${CFLAGS} fnamchk.c -c
 
-fnamchk: fnamchk.o dbg/dbg.a dyn_array/dyn_array.a jparse/jparse.a
+fnamchk: fnamchk.o jparse/jparse.a dyn_array/dyn_array.a dbg/dbg.a
 	${CC} ${CFLAGS} $^ -o $@
 
 txzchk.o: txzchk.c txzchk.h Makefile
 	${CC} ${CFLAGS} txzchk.c -c
 
 txzchk: txzchk.o location.o \
-	utf8_posix_map.o sanity.o dbg/dbg.a dyn_array/dyn_array.a jparse/jparse.a
+	utf8_posix_map.o sanity.o jparse/jparse.a dyn_array/dyn_array.a dbg/dbg.a
 	${CC} ${CFLAGS} $^ -o $@
 
 chkentry.o: chkentry.c chkentry.h jparse/jparse.h oebxergfB.h soup/chk_sem_info.h \
@@ -402,7 +402,7 @@ chkentry.o: chkentry.c chkentry.h jparse/jparse.h oebxergfB.h soup/chk_sem_info.
 	${CC} ${CFLAGS} chkentry.c -c
 
 chkentry: chkentry.o sanity.o utf8_posix_map.o entry_util.o foo.o location.o \
-	entry_time.o dbg/dbg.a dyn_array/dyn_array.a jparse/jparse.a soup/soup.a
+	entry_time.o jparse/jparse.a dyn_array/dyn_array.a dbg/dbg.a soup/soup.a
 	${CC} ${CFLAGS} $^ -lm -o $@
 
 foo.o: foo.c oebxergfB.h Makefile

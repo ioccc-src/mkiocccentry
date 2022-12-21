@@ -248,7 +248,7 @@ jnum_test.o: jnum_test.c Makefile
 jnum_chk.o: jnum_chk.c jnum_chk.h Makefile
 	${CC} ${CFLAGS} -I../.. jnum_chk.c -c
 
-jnum_chk: jnum_chk.o jnum_test.o ../../dbg/dbg.a ../../dyn_array/dyn_array.o ../jparse.a
+jnum_chk: jnum_chk.o jnum_test.o ../jparse.a ../../dyn_array/dyn_array.o ../../dbg/dbg.a
 	${CC} ${CFLAGS} $^ -lm -o $@
 
 

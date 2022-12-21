@@ -250,8 +250,8 @@ dyn_array.a: ${LIB_OBJS}
 dyn_test.o: dyn_test.c dyn_array.h
 	${CC} ${CFLAGS} dyn_test.c -c
 
-dyn_test: dyn_test.o ../dbg/dbg.a dyn_array.a Makefile
-	${CC} ${CFLAGS} dyn_test.o ../dbg/dbg.a dyn_array.a -o dyn_test
+dyn_test: dyn_test.o dyn_array.a ../dbg/dbg.a Makefile
+	${CC} ${CFLAGS} dyn_test.o dyn_array.a ../dbg/dbg.a -o dyn_test
 
 
 #########################################################

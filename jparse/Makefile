@@ -347,19 +347,19 @@ jparse_main.o: jparse_main.c Makefile
 jparse.o: jparse.c jparse.h Makefile
 	${CC} ${CFLAGS} -Wno-unused-but-set-variable -Wno-unused-function -Wno-unneeded-internal-declaration jparse.c -c
 
-jparse: jparse_main.o ../dbg/dbg.a ../dyn_array/dyn_array.a jparse.a
+jparse: jparse_main.o jparse.a ../dyn_array/dyn_array.a ../dbg/dbg.a
 	${CC} ${CFLAGS} $^ -lm -o $@
 
 jstrencode.o: jstrencode.c jstrencode.h json_util.h json_util.c Makefile
 	${CC} ${CFLAGS} jstrencode.c -c
 
-jstrencode: jstrencode.o ../dbg/dbg.a ../dyn_array/dyn_array.a jparse.a
+jstrencode: jstrencode.o jparse.a ../dyn_array/dyn_array.a ../dbg/dbg.a
 	${CC} ${CFLAGS} $^ -lm -o $@
 
 jstrdecode.o: jstrdecode.c jstrdecode.h json_util.h json_parse.h Makefile
 	${CC} ${CFLAGS} jstrdecode.c -c
 
-jstrdecode: jstrdecode.o ../dbg/dbg.a ../dyn_array/dyn_array.a jparse.a
+jstrdecode: jstrdecode.o jparse.a ../dyn_array/dyn_array.a ../dbg/dbg.a
 	${CC} ${CFLAGS} $^ -lm -o $@
 
 json_parse.o: json_parse.c Makefile
@@ -368,13 +368,13 @@ json_parse.o: json_parse.c Makefile
 jnum_gen.o: jnum_gen.c jnum_gen.h Makefile
 	${CC} ${CFLAGS} jnum_gen.c -c
 
-jnum_gen: jnum_gen.o ../dbg/dbg.a ../dyn_array/dyn_array.a jparse.a
+jnum_gen: jnum_gen.o jparse.a ../dyn_array/dyn_array.a ../dbg/dbg.a
 	${CC} ${CFLAGS} $^ -lm -o $@
 
 jsemtblgen.o: jsemtblgen.c jparse.tab.h Makefile
 	${CC} ${CFLAGS} jsemtblgen.c -c
 
-jsemtblgen: jsemtblgen.o ../dbg/dbg.a ../dyn_array/dyn_array.a jparse.a
+jsemtblgen: jsemtblgen.o jparse.a ../dyn_array/dyn_array.a ../dbg/dbg.a
 	${CC} ${CFLAGS} $^ -lm -o $@
 
 json_sem.o: json_sem.c Makefile

@@ -253,8 +253,8 @@ all: ${TARGETS}
 utf8_test.o: utf8_test.c ../utf8_posix_map.h Makefile
 	${CC} ${CFLAGS} -I.. utf8_test.c -c
 
-utf8_test: utf8_test.o ../utf8_posix_map.o ../dbg/dbg.a ../jparse/util.o ../dyn_array/dyn_array.a Makefile
-	${CC} ${CFLAGS} -I.. utf8_test.o ../utf8_posix_map.o ../dbg/dbg.a ../jparse/util.o ../dyn_array/dyn_array.a -o utf8_test
+utf8_test: utf8_test.o ../utf8_posix_map.o ../jparse/util.o ../dyn_array/dyn_array.a ../dbg/dbg.a
+	${CC} ${CFLAGS} -I.. $^ -o $@
 
 ioccc_test.sh: ../dbg/dbg_test ../dyn_array/dyn_test
 	@:
