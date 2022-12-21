@@ -188,6 +188,23 @@ ALL_OTHER_TARGETS= extern_everything
 TARGETS= ${LIBA_TARGETS}
 
 
+############################################################
+# User specific configurations - override Makefile values  #
+############################################################
+
+# The directive below retrieves any user specific configurations from makefile.local.
+#
+# The - before include means it's not an error if the file does not exist.
+#
+# We put this directive just before the first all rule so that you may override
+# or modify any of the above Makefile variables.  To override a value, use := symbols.
+# For example:
+#
+#       CC:= gcc
+#
+-include makefile.local
+
+
 ######################################
 # all - default rule - must be first #
 ######################################
@@ -402,3 +419,22 @@ depend: ./fmt_depend.sh
 	@echo "soup make depend completed"
 
 ### DO NOT CHANGE MANUALLY BEYOND THIS LINE
+chk_sem_info.o: chk_sem_info.c chk_sem_info.h ../jparse/json_sem.h ../jparse/util.h \
+	../jparse/../dyn_array/dyn_array.h ../jparse/../dyn_array/../dbg/dbg.h ../jparse/json_parse.h \
+	../jparse/json_util.h
+chk_sem_auth.o: chk_sem_auth.c chk_sem_auth.h ../jparse/json_sem.h ../jparse/util.h \
+	../jparse/../dyn_array/dyn_array.h ../jparse/../dyn_array/../dbg/dbg.h ../jparse/json_parse.h \
+	../jparse/json_util.h
+chk_validate.o: chk_validate.c chk_validate.h ../entry_util.h ../jparse/jparse.h \
+	../jparse/../dbg/dbg.h ../jparse/util.h ../jparse/../dyn_array/dyn_array.h \
+	../jparse/../dyn_array/../dbg/dbg.h ../jparse/json_parse.h ../jparse/json_util.h \
+	../jparse/json_sem.h ../jparse/jparse.tab.h chk_sem_auth.h chk_sem_info.h ../entry_time.h \
+	../location.h ../dbg/dbg.h
+chk_validate.o: chk_validate.h ../entry_util.h ../jparse/jparse.h ../jparse/../dbg/dbg.h \
+	../jparse/util.h ../jparse/../dyn_array/dyn_array.h ../jparse/../dyn_array/../dbg/dbg.h \
+	../jparse/json_parse.h ../jparse/json_util.h ../jparse/json_sem.h ../jparse/jparse.tab.h \
+	chk_sem_auth.h chk_sem_info.h
+soup.o: soup.h ../entry_util.h ../jparse/jparse.h ../jparse/../dbg/dbg.h ../jparse/util.h \
+	../jparse/../dyn_array/dyn_array.h ../jparse/../dyn_array/../dbg/dbg.h ../jparse/json_parse.h \
+	../jparse/json_util.h ../jparse/json_sem.h ../jparse/jparse.tab.h chk_sem_auth.h chk_sem_info.h \
+	chk_validate.h
