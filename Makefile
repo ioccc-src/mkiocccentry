@@ -963,10 +963,10 @@ iocccsize.o: iocccsize.c iocccsize_err.h iocccsize.h
 fnamchk.o: fnamchk.c fnamchk.h dbg/dbg.h jparse/jparse.h jparse/../dbg/dbg.h jparse/util.h \
 	jparse/../dyn_array/dyn_array.h jparse/../dyn_array/../dbg/dbg.h jparse/json_parse.h \
 	jparse/json_util.h jparse/json_sem.h jparse/jparse.tab.h limit_ioccc.h version.h utf8_posix_map.h
-txzchk.o: txzchk.c txzchk.h jparse/jparse.h jparse/../dbg/dbg.h jparse/util.h \
+txzchk.o: txzchk.c txzchk.h dbg/dbg.h sanity.h jparse/jparse.h jparse/../dbg/dbg.h jparse/util.h \
 	jparse/../dyn_array/dyn_array.h jparse/../dyn_array/../dbg/dbg.h jparse/json_parse.h \
-	jparse/json_util.h jparse/json_sem.h jparse/jparse.tab.h dbg/dbg.h sanity.h location.h \
-	utf8_posix_map.h limit_ioccc.h version.h entry_util.h
+	jparse/json_util.h jparse/json_sem.h jparse/jparse.tab.h location.h utf8_posix_map.h limit_ioccc.h \
+	version.h entry_util.h
 chkentry.o: chkentry.c chkentry.h dbg/dbg.h jparse/jparse.h jparse/../dbg/dbg.h jparse/util.h \
 	jparse/../dyn_array/dyn_array.h jparse/../dyn_array/../dbg/dbg.h jparse/json_parse.h \
 	jparse/json_util.h jparse/json_sem.h jparse/jparse.tab.h soup/soup.h soup/../entry_util.h \
