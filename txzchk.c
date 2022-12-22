@@ -487,9 +487,6 @@ txzchk_sanity_chks(char const *tar, char const *fnamchk)
 	not_reached();
     }
 
-    /* we also check that all the tables across the IOCCC toolkit are sane */
-    ioccc_sanity_chks();
-
     return;
 }
 
