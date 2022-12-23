@@ -401,7 +401,7 @@ chkentry.o: chkentry.c chkentry.h jparse/jparse.h oebxergfB.h soup/chk_sem_info.
 	soup/chk_sem_auth.h Makefile
 	${CC} ${CFLAGS} chkentry.c -c
 
-chkentry: chkentry.o sanity.o utf8_posix_map.o entry_util.o foo.o location.o \
+chkentry: chkentry.o entry_util.o foo.o location.o \
 	entry_time.o jparse/jparse.a dyn_array/dyn_array.a dbg/dbg.a soup/soup.a
 	${CC} ${CFLAGS} $^ -lm -o $@
 
