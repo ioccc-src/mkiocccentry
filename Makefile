@@ -443,7 +443,7 @@ dbg/dbg.h: dbg/Makefile
 dbg/dbg.a: dbg/Makefile
 	@${MAKE} -C dbg extern_liba
 
-dbg/dbg.3: dbg/Makefile
+dbg/man/man3/dbg.3: dbg/Makefile
 	@${MAKE} -C dbg extern_man
 
 dbg/dbg_test: dbg/Makefile
@@ -455,7 +455,7 @@ dyn_array/dyn_array.h: dyn_array/Makefile
 dyn_array/dyn_array.a: dyn_array/Makefile
 	@${MAKE} -C dyn_array extern_liba
 
-dyn_array/dyn_array.3: dyn_array/Makefile
+dyn_array/man/man3/dyn_array.3: dyn_array/Makefile
 	@${MAKE} -C dyn_array extern_man
 
 jparse/jparse.h: jparse/Makefile
@@ -467,10 +467,10 @@ jparse/jparse.a: jparse/Makefile
 jparse/jparse: jparse/Makefile
 	@${MAKE} -C jparse extern_prog
 
-jparse/jparse.1: jparse/Makefile
+jparse/man/man1/jparse.1: jparse/Makefile
 	@${MAKE} -C jparse extern_man
 
-jparse/jparse_test.8: jparse/Makefile
+jparse/man/man8/jparse_test.8: jparse/Makefile
 	@${MAKE} -C jparse extern_man
 
 jparse/jsemtblgen: jparse/Makefile
@@ -925,9 +925,10 @@ clobber: clean prep_clobber
 	${MAKE} -C jparse $@
 
 install: all
-	# we have to first make sure the directories exist!
+	@# we have to first make sure the directories exist!
 	${INSTALL} -v -d -m 0755 ${DEST_DIR}
 	${INSTALL} -v -m 0555 ${TARGETS} ${SH_TARGETS} ${DEST_DIR}
+	${MAKE} -C man install
 
 
 ###############
