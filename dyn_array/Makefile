@@ -389,4 +389,4 @@ depend: ${ALL_CSRC} ../soup/fmt_depend.sh
 
 ### DO NOT CHANGE MANUALLY BEYOND THIS LINE
 dyn_array.o: dyn_array.c dyn_array.h ../dbg/dbg.h
-dyn_test.o: dyn_test.c dyn_test.h ../dbg/dbg.h ../dyn_array/dyn_array.h
+dyn_test.o: dyn_test.c dyn_test.h ../dbg/dbg.h dyn_array.h

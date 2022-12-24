@@ -35,8 +35,8 @@ recommend you check `jparse(1)` and the `chkentry(1)` man page in the
 want to go further than that you can read the GitHub git log as well as reading
 the source code. If you do read the source code we **STRONGLY** recommend you
 read the `jparse.l` and `jparse.y` files and **NOT** the bison or flex generated
-code! This is because the generated code is likely to give you nightmares and
-cause other horrible symptoms.
+code! This is because the generated code might give you nightmares and cause
+other horrible symptoms. :-) See `sorry.tm.ca.h` for more details.
 
 # Re-entrancy
 

@@ -1586,14 +1586,14 @@ check_utf8_posix_map(void)
 	/* non-NULL check */
 	if (hmap[i].utf8_str == NULL) {
 	    err(11, __func__, "found utf8_str NULL pointer not at end (hmap[%ju]) of hmap[%ju]; "
-			      "fix table in utf8_posix_map.c and recompile",
-			      (uintmax_t)max, (uintmax_t)i);
+			      "fix table in %s and recompile",
+			      (uintmax_t)max, (uintmax_t)i, __FILE__);
 	    not_reached();
 	}
 	if (hmap[i].posix_str == NULL) {
 	    err(12, __func__, "found posix_str NULL pointer not at end (hmap[%ju]) of hmap[%ju]; "
-			      "fix table in utf8_posix_map.c and recompile",
-			      (uintmax_t)max, (uintmax_t)i);
+			      "fix table in %s and recompile",
+			      (uintmax_t)max, (uintmax_t)i, __FILE__);
 	    not_reached();
 	}
 
@@ -1604,7 +1604,7 @@ check_utf8_posix_map(void)
 	/* POSIX portable plus + check on posix_str if string is not empty */
 	if (hmap[i].posix_str_len > 0 && posix_plus_safe(hmap[i].posix_str, true, false, false) == false) {
 	    err(13, __func__, "hmap[%ju] = '%s' is not POSIX portable plus + safe; "
-			      "fix table in utf8_posix_map.c and recompile", (uintmax_t)i, hmap[i].posix_str);
+			      "fix table in %s and recompile", (uintmax_t)i, hmap[i].posix_str, __FILE__);
 	    not_reached();
 	}
     }
@@ -1613,11 +1613,11 @@ check_utf8_posix_map(void)
      * check final NULL at end of table
      */
     if (hmap[max-1].utf8_str != NULL || hmap[max-1].posix_str != NULL) {
-	err(14, __func__, "no final NULL element at hmap[%ju]; fix table in utf8_posix_map.c and recompile", (uintmax_t)(max-1));
+	err(14, __func__, "no final NULL element at hmap[%ju]; fix table in %s and recompile", (uintmax_t)(max-1), __FILE__);
 	not_reached();
     }
     utf8_posix_map_checked = true;
-    dbg(DBG_VVHIGH, "hmap[0..%ju] sane and ready in utf8_posix_map.c", (uintmax_t)(max-1));
+    dbg(DBG_VVHIGH, "hmap[0..%ju] sane and ready in %s", (uintmax_t)(max-1), __FILE__);
     return;
 }
 
