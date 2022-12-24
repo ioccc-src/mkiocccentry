@@ -25,7 +25,7 @@
  * "Because sometimes even the IOCCC Judges need some help." :-)
  *
  * BTW: If you want to win the IOCCC every time all you need to do
- * (supposedly :-) ), is decipher this quote with a top secret hint from Landon
+ * (supposedly :-) ) is decipher this quote with a top secret hint from Landon
  * to me in private. It's so secret and seems so ridiculously simple in fact
  * that I've decided to not use it as it all seems more like a misleading
  * comment and possibly a huge joke. Nevertheless I give you, dear reader, the

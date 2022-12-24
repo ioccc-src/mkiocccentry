@@ -179,7 +179,8 @@ EXTERN_CLOBBER= ${EXTERN_O} ${EXTERN_LIBA} ${EXTERN_PROG}
 # man pages
 #
 MAN1_TARGETS=
-MAN3_TARGETS= dbg.3
+MAN3_TARGETS= man/man3/dbg.3  man/man3/err.3 man/man3/msg.3 man/man3/warn.3 man/man3/werr.3 \
+	      man/man3/printf_usage.3 man/man3/warn_or_err.3
 MAN8_TARGETS=
 ALL_MAN_TARGETS= ${MAN1_TARGETS} ${MAN3_TARGETS} ${MAN8_TARGETS}
 
@@ -230,7 +231,8 @@ all: ${TARGETS} ${ALL_OTHER_TARGETS} Makefile
 #################################################
 
 .PHONY: all \
-	extern_include extern_objs extern_liba extern_man extern_prog extern_everything dbg.3 \
+	extern_include extern_objs extern_liba extern_man extern_prog extern_everything man/man3/dbg.3 \
+	man/man3/err.3 man/man3/msg.3 man/man3/warn.3 man/man3/werr.3 man/man3/printf_usage.3 man/man3/warn_or_err.3 \
 	test check_man prep_clean prep_clobber legacy_clean legacy_clobber \
 	configure clean clobber install
 
@@ -291,8 +293,27 @@ extern_prog: ${EXTERN_PROG}
 extern_everything: extern_include extern_objs extern_liba extern_man extern_prog
 	@:
 
-dbg.3:
+man/man3/dbg.3:
 	@:
+
+man/man3/warn.3:
+	@:
+
+man/man3/msg.3:
+	@:
+
+man/man3/warn_or_err.3:
+	@:
+
+man/man3/werr.3:
+	@:
+
+man/man3/err.3:
+	@:
+
+man/man3/printf_usage.3:
+	@:
+
 
 
 ###########################################################

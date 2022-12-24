@@ -272,9 +272,9 @@ EXTERN_CLOBBER= ${EXTERN_O} ${EXTERN_LIBA} ${EXTERN_PROG}
 
 # man pages
 #
-MAN1_TARGETS= man/jparse.1
+MAN1_TARGETS= man/man1/jparse.1
 MAN3_TARGETS=
-MAN8_TARGETS= man/jparse_test.8
+MAN8_TARGETS= man/man8/jparse_test.8
 ALL_MAN_TARGETS= ${MAN1_TARGETS} ${MAN8_TARGETS}
 EXTERN_MAN= ${ALL_MAN_TARGETS}
 
@@ -325,7 +325,7 @@ all: ${TARGETS} ${ALL_OTHER_TARGETS} Makefile
 #################################################
 
 .PHONY: all \
-	extern_include extern_objs extern_liba extern_man extern_prog extern_everything man/jparse.1 man/jparse_test.8 \
+	extern_include extern_objs extern_liba extern_man extern_prog extern_everything man/man1/jparse.1 man/man8/jparse_test.8 \
 	parser parser-o use_ref bison flex test tags check_man prep_clean prep_clobber legacy_clean legacy_clobber \
 	configure clean clobber install \
 	depend
