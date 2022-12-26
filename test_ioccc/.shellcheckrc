@@ -1,0 +1,23 @@
+# Turn on warnings for unquoted variables with safe values
+enable=quote-safe-variables
+
+# Turn on warnings for unassigned uppercase variables
+enable=check-unassigned-uppercase
+
+# Suggest adding a default case in `case` statements
+enable=add-default-case
+
+# Warn when uppercase variables are unassigned
+enable=check-unassigned-uppercase
+
+# Suggest 'command -v' instead of 'which'
+enable=deprecate-which
+
+# Suggest quoting variables without metacharacters
+enable=quote-safe-variables
+
+# Require [[ and warn about [ in Bash/Ksh
+enable=require-double-brackets
+
+# Allow [ ! -z foo ] instead of suggesting -n
+disable=SC2236

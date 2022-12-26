@@ -76,37 +76,26 @@
 # suggestion: List utility filenames, not paths.
 #	      Do not list shell builtin (echo, cd, ...) tools.
 #	      Keep the list in alphabetical order.
-
-AR= ar
+#
 AWK= awk
-BASENAME= basename
-CAT= cat
 CC= cc
-CHECKNR= checknr
 CMP= cmp
-CP= cp
 CTAGS= ctags
-CUT= cut
 DIFF= diff
-FMT= fmt
 GIT= git
 GREP= grep
-HEAD= head
 INSTALL= install
 MAKE= make
-MKTEMP= mktemp
-MV= mv
 PICKY= picky
 RM= rm
-RPL= rpl
 RSYNC= rsync
 SED= sed
 SEQCEXIT= seqcexit
 SHELL= bash
 SHELLCHECK= shellcheck
+SLEEP= sleep
 TEE= tee
 TR= tr
-TRUE= true
 
 
 ##################
@@ -139,8 +128,8 @@ C_STD= -std=gnu11
 
 # optimization and debug level
 #
-#COPT= -O3 -g3	# TODO - this will be the production release value - TODO #
-COPT= -O0 -g
+#C_OPT= -O3 -g3	# TODO - this will be the production release value - TODO #
+C_OPT= -O0 -g
 
 # Compiler warnings
 #
@@ -152,7 +141,7 @@ WARN_FLAGS= -Wall -Wextra -Werror
 #
 # We test by forcing warnings to be errors so you don't have to (allegedly :-) )
 #
-CFLAGS= ${C_STD} ${COPT} -pedantic ${WARN_FLAGS} ${LDFLAGS}
+CFLAGS= ${C_STD} ${C_OPT} -pedantic ${WARN_FLAGS} ${LDFLAGS}
 
 
 # NOTE: If you use ASAN, set this environment var:
@@ -177,6 +166,10 @@ H_SRC= dbg/dbg.h chkentry.h limit_ioccc.h \
 #
 LESS_PICKY_CSRC= utf8_posix_map.c foo.c
 LESS_PICKY_HSRC= oebxergfB.h
+
+# all shell scripts
+#
+SH_FILES= limit_ioccc.sh vermod.sh prep.sh reset_tstamp.sh hostchk.sh run_usage.sh bug_report.sh
 
 
 ######################
@@ -206,7 +199,7 @@ ALL_OBJS= ${LIB_OBJS} ${OTHER_OBJS}
 #
 ALL_CSRC= ${C_SRC} ${LESS_PICKY_CSRC} ${BUILT_C_SRC}
 ALL_HSRC= ${H_SRC} ${LESS_PICKY_HSRC} ${BUILT_H_SRC}
-ALL_SRC= ${ALL_CSRC} ${ALL_HSRC}
+ALL_SRC= ${ALL_CSRC} ${ALL_HSRC} ${SH_FILES}
 
 
 #######################
@@ -247,14 +240,7 @@ EXTERN_CLOBBER= ${EXTERN_O} ${EXTERN_LIBA} ${EXTERN_PROG}
 
 SH_TARGETS=limit_ioccc.sh
 
-TEST_TARGETS= dbg/dbg_test test_ioccc/utf8_test test_ioccc/dyn_test jparse/test_jparse/jnum_chk
-FLEXFILES=
-BISONFILES=
 DSYMDIRS= mkiocccentry.dSYM iocccsize.dSYM fnamchk.dSYM txzchk.dSYM chkentry.dSYM
-SH_FILES= test_ioccc/iocccsize_test.sh limit_ioccc.sh test_ioccc/mkiocccentry_test.sh \
-	  vermod.sh prep.sh reset_tstamp.sh test_ioccc/ioccc_test.sh \
-	  test_ioccc/txzchk_test.sh hostchk.sh \
-	  run_usage.sh bug_report.sh soup/all_ref.sh test_ioccc/chkentry_test.sh soup/fmt_depend.sh
 BUILD_LOG= build.log
 TXZCHK_LOG= test_ioccc/txzchk_test.log
 
@@ -339,7 +325,7 @@ hostchk_warning:
 	@echo 1>&2
 	@echo '=-= about to sleep 10 seconds =-=' 1>&2
 	@echo 1>&2
-	@sleep 10
+	@${SLEEP} 10
 	@echo '=-= Letting the compile continue in hopes it might be OK, =-=' 1>&2
 	@echo '=-= even though we doubt it will be OK. =-=' 1>&2
 	@echo 1>&2
@@ -491,6 +477,9 @@ soup/chk_sem_auth.h: soup/Makefile
 soup/soup.h: soup/Makefile
 	@${MAKE} -C soup extern_include
 
+test_ioccc: test_ioccc/Makefile
+	${MAKE} -C test_ioccc test_ioccc
+
 
 ####################################
 # rules for use by other Makefiles #
@@ -560,7 +549,7 @@ prep: prep.sh
 # Force the rebuild of the JSON parser and then form the reference copies of
 # JSON parser C code (if recent enough version of flex and bison are found).
 #
-parser: jparse/jparse.y jparse/jparse.l jparse/Makefile
+parser: jparse/Makefile
 	${MAKE} -C jparse parser
 
 #
@@ -568,19 +557,19 @@ parser: jparse/jparse.y jparse/jparse.l jparse/Makefile
 #
 # NOTE: This does NOT use the reference copies of JSON parser C code.
 #
-parser-o: jparse/jparse.y jparse/jparse.l Makefile
-	${MAKE} -C jparse parser RUN_O_FLAG='-o'
+parser-o: jparse/Makefile
+	${MAKE} -C jparse RUN_O_FLAG='-o' parser
 
 # restore reference code that was produced by previous successful make parser
 #
 # This rule forces the use of reference copies of JSON parser C code.
 #
-use_ref: jparse/jparse.tab.ref.c jparse/jparse.tab.ref.h jparse/jparse.ref.c jparse/jparse.lex.ref.h
+use_ref: jparse/Makefile
 	${MAKE} -C jparse use_ref
 
 # sequence exit codes
 #
-seqcexit: Makefile
+seqcexit: ${ALL_CSRC}
 	@HAVE_SEQCEXIT="`type -P ${SEQCEXIT}`"; if [[ -z "$$HAVE_SEQCEXIT" ]]; then \
 	    echo 'The seqcexit tool could not be found.' 1>&2; \
 	    echo 'The seqcexit tool is required for this rule.'; 1>&2; \
@@ -591,13 +580,17 @@ seqcexit: Makefile
 	    echo ''; 1>&2; \
 	    exit 1; \
 	else \
-	    echo "${SEQCEXIT} -c -D werr_sem_val -D werrp_sem_val -- ${FLEXFILES} ${BISONFILES}"; \
-	    ${SEQCEXIT} -c -D werr_sem_val -D werrp_sem_val -- ${FLEXFILES} ${BISONFILES}; \
 	    echo "${SEQCEXIT} -D werr_sem_val -D werrp_sem_val -- ${ALL_CSRC}"; \
 	    ${SEQCEXIT} -D werr_sem_val -D werrp_sem_val -- ${ALL_CSRC}; \
 	fi
+	${MAKE} -C dbg $@
+	${MAKE} -C dyn_array $@
+	${MAKE} -C jparse $@
+	${MAKE} -C man $@
+	${MAKE} -C soup $@
+	${MAKE} -C test_ioccc $@
 
-picky: ${ALL_SRC} ${FLEXFILES} ${BISONFILES} Makefile
+picky: ${ALL_SRC}
 	@if ! type -P ${PICKY} >/dev/null 2>&1; then \
 	    echo "The picky tool could not be found." 1>&2; \
 	    echo "The picky tool is required for this rule." 1>&2; \
@@ -608,17 +601,26 @@ picky: ${ALL_SRC} ${FLEXFILES} ${BISONFILES} Makefile
 	    echo 1>&2; \
 	    exit 1; \
 	else \
-	    echo "${PICKY} -w132 -u -s -t8 -v -e -- ${C_SRC} ${H_SRC} ${FLEXFILES} ${BISONFILES}"; \
-	    ${PICKY} -w132 -u -s -t8 -v -e -- ${C_SRC} ${H_SRC} ${FLEXFILES} ${BISONFILES}; \
-	    echo "${PICKY} -w132 -u -s -t8 -v -e -8 -- ${LESS_PICKY_CSRC} ${LESS_PICKY_HSRC}"; \
-	    ${PICKY} -w132 -u -s -t8 -v -e -8 -- ${LESS_PICKY_CSRC} ${LESS_PICKY_HSRC}; \
+	    echo "${PICKY} -w132 -u -s -t8 -v -e -- ${C_SRC} ${H_SRC}"; \
+	    ${PICKY} -w132 -u -s -t8 -v -e -- ${C_SRC} ${H_SRC}; EXIT_CODE="$$?"; \
+	    if [[ $$EXIT_CODE -ne 0 ]]; then echo "make $@: ERROR: CODE[1]: $$EXIT_CODE" 1>&2; exit 1; fi; \
 	    echo "${PICKY} -w -u -s -t8 -v -e -8 -- ${SH_FILES}"; \
-	    ${PICKY} -w -u -s -t8 -v -e -8 -- ${SH_FILES}; \
+	    ${PICKY} -w -u -s -t8 -v -e -8 -- ${SH_FILES}; EXIT_CODE="$$?"; \
+	    if [[ $$EXIT_CODE -ne 0 ]]; then echo "make $@: ERROR: CODE[2]: $$EXIT_CODE" 1>&2; exit 2; fi; \
+	    echo "${PICKY} -w132 -u -s -t8 -v -e -8 -- ${LESS_PICKY_CSRC} ${LESS_PICKY_HSRC}"; \
+	    ${PICKY} -w132 -u -s -t8 -v -e -8 -- ${LESS_PICKY_CSRC} ${LESS_PICKY_HSRC}; EXIT_CODE="$$?"; \
+	    if [[ $$EXIT_CODE -ne 0 ]]; then echo "make $@: ERROR: CODE[3]: $$EXIT_CODE" 1>&2; exit 3; fi; \
 	fi
+	${MAKE} -C dbg $@
+	${MAKE} -C dyn_array $@
+	${MAKE} -C jparse $@
+	${MAKE} -C man $@
+	${MAKE} -C soup $@
+	${MAKE} -C test_ioccc $@
 
 # inspect and verify shell scripts
 #
-shellcheck: ${SH_FILES} .shellcheckrc Makefile
+shellcheck: ${SH_FILES} .shellcheckrc
 	@HAVE_SHELLCHECK="`type -P ${SHELLCHECK}`"; if [[ -z "$$HAVE_SHELLCHECK" ]]; then \
 	    echo 'The shellcheck command could not be found.' 1>&2; \
 	    echo 'The shellcheck command is required to run this rule.'; 1>&2; \
@@ -631,13 +633,32 @@ shellcheck: ${SH_FILES} .shellcheckrc Makefile
 	    exit 1; \
 	else \
 	    echo "${SHELLCHECK} -f gcc -- ${SH_FILES}"; \
-	    ${SHELLCHECK} -f gcc -- ${SH_FILES}; \
+	    ${SHELLCHECK} -f gcc -- ${SH_FILES}; EXIT_CODE="$$?"; \
+	    if [[ $$EXIT_CODE -ne 0 ]]; then echo "make $@: ERROR: CODE[1]: $$EXIT_CODE" 1>&2; exit 1; fi; \
 	fi
+	${MAKE} -C dbg $@
+	${MAKE} -C dyn_array $@
+	${MAKE} -C jparse $@
+	${MAKE} -C man $@
+	${MAKE} -C soup $@
+	${MAKE} -C test_ioccc $@
 
 # inspect and verify man pages
 #
 check_man: man/Makefile
 	${MAKE} -C man check_man
+
+# vi/vim tags
+#
+tags: ${ALL_CSRC} ${ALL_HSRC}
+	-${CTAGS} ${ALL_CSRC} ${ALL_HSRC} 2>&1 | \
+	     ${GREP} -E -v 'Duplicate entry|Second entry ignored'
+	${MAKE} -C dbg $@
+	${MAKE} -C dyn_array $@
+	${MAKE} -C jparse $@
+	${MAKE} -C man $@
+	${MAKE} -C soup $@
+	${MAKE} -C test_ioccc $@
 
 # Only run this rule when you wish to invalidate all timestamps
 # prior to now, such as when you make a fundamental change to a
@@ -652,10 +673,6 @@ check_man: man/Makefile
 #
 reset_min_timestamp: reset_tstamp.sh
 	./reset_tstamp.sh
-
-test_ioccc:
-	${MAKE} -C test_ioccc
-
 
 # perform all of the mkiocccentry repo required tests
 #
@@ -675,7 +692,7 @@ test-chkentry: all chkentry test_ioccc/test-chkentry.sh Makefile
 # rule used by prep.sh and make clean
 #
 clean_generated_obj:
-	${MAKE} -C jparse $@
+	${MAKE} -C jparse clean_generated_obj
 
 # rule used by prep.sh
 #
@@ -683,24 +700,20 @@ clean_mkchk_sem:
 	${RM} -f soup/chk_sem_auth.c soup/chk_sem_auth.h soup/chk_sem_auth.o
 	${RM} -f soup/chk_sem_info.c soup/chk_sem_info.h soup/chk_sem_info.o
 
-tags: ${ALL_SRC}
-	-${CTAGS} ${ALL_SRC} 2>&1 | \
-	     ${GREP} -E -v 'Duplicate entry|Second entry ignored'
-
 # rule used by make clean
 #
 prep_clean: legacy_clean
 	${MAKE} -C dbg $@
 	${MAKE} -C dyn_array $@
-	${MAKE} -C test_ioccc $@
-	${MAKE} -C soup $@
-	${MAKE} -C man $@
 	${MAKE} -C jparse $@
+	${MAKE} -C man $@
+	${MAKE} -C soup $@
+	${MAKE} -C test_ioccc $@
 
 # rule used by prep.sh and make clobber
 #
-prep_clobber: legacy_clobber
-	${RM} -f ${TARGETS} ${TEST_TARGETS}
+prep_clobber: prep_clean legacy_clobber
+	${RM} -f ${TARGETS}
 	${RM} -f answers.txt
 	${RM} -f tags
 	${RM} -f jparse.output
@@ -709,10 +722,10 @@ prep_clobber: legacy_clobber
 	${RM} -rf legacy_os.dSYM
 	${MAKE} -C dbg $@
 	${MAKE} -C dyn_array $@
-	${MAKE} -C test_ioccc $@
-	${MAKE} -C soup $@
-	${MAKE} -C man $@
 	${MAKE} -C jparse $@
+	${MAKE} -C man $@
+	${MAKE} -C soup $@
+	${MAKE} -C test_ioccc $@
 
 # clean legacy code and files - files that are no longer needed
 #
@@ -723,14 +736,14 @@ legacy_clean:
 	${RM} -f jparse.tab.o jparse_main.o json_parse.o
 	${MAKE} -C dbg $@
 	${MAKE} -C dyn_array $@
-	${MAKE} -C test_ioccc $@
-	${MAKE} -C soup $@
-	${MAKE} -C man $@
 	${MAKE} -C jparse $@
+	${MAKE} -C man $@
+	${MAKE} -C soup $@
+	${MAKE} -C test_ioccc $@
 
 # clobber legacy code and files - files that are no longer needed
 #
-legacy_clobber:
+legacy_clobber: legacy_clean
 	${RM} -f jint jfloat
 	${RM} -f jint.set.tmp jint_gen
 	${RM} -f jfloat.set.tmp jfloat_gen
@@ -758,10 +771,10 @@ legacy_clobber:
 	${RM} -f jparse.lex.h jparse.tab.c jparse.tab.h jparse.c
 	${MAKE} -C dbg $@
 	${MAKE} -C dyn_array $@
-	${MAKE} -C test_ioccc $@
-	${MAKE} -C soup $@
-	${MAKE} -C man $@
 	${MAKE} -C jparse $@
+	${MAKE} -C man $@
+	${MAKE} -C soup $@
+	${MAKE} -C test_ioccc $@
 
 
 ########################################################################
@@ -902,8 +915,7 @@ configure:
 	@echo nothing to configure
 
 clean: clean_generated_obj legacy_clean
-	${RM} -f ${OTHER_OBJS}
-	${RM} -f ${LESS_PICKY_OBJS}
+	${RM} -f ${OTHER_OBJS} ${LESS_PICKY_OBJS}
 	${RM} -rf ${DSYMDIRS}
 	${MAKE} -C dyn_array $@
 	${MAKE} -C test_ioccc $@

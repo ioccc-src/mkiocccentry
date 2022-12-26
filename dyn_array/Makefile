@@ -36,17 +36,18 @@
 #	      Keep the list in alphabetical order.
 #
 AR= ar
-CAT= cat
 CC= cc
 CHECKNR= checknr
 CMP= cmp
-CP= cp
 CTAGS= ctags
 GREP= grep
 INSTALL= install
+MAKE= make
+PICKY= picky
 RANLIB= ranlib
 RM= rm
 SED= sed
+SEQCEXIT= seqcexit
 SHELL= bash
 
 
@@ -111,6 +112,10 @@ H_SRC= dyn_array.h dyn_array.h
 LESS_PICKY_CSRC=
 LESS_PICKY_HSRC=
 
+# all shell scripts
+#
+SH_FILES=
+
 
 ######################
 # intermediate files #
@@ -138,7 +143,7 @@ ALL_OBJS= ${LIB_OBJS} ${OTHER_OBJS}
 #
 ALL_CSRC= ${C_SRC} ${LESS_PICKY_CSRC} ${BUILT_C_SRC}
 ALL_HSRC= ${H_SRC} ${LESS_PICKY_HSRC} ${BUILT_H_SRC}
-ALL_SRC= ${ALL_CSRC} ${ALL_HSRC}
+ALL_SRC= ${ALL_CSRC} ${ALL_HSRC} ${SH_FILES}
 
 
 #######################
@@ -301,6 +306,44 @@ test: check_man dyn_test Makefile
 	    echo "PASSED: dyn_test"; \
 	fi
 
+# sequence exit codes
+#
+seqcexit: ${ALL_CSRC}
+	@HAVE_SEQCEXIT="`type -P ${SEQCEXIT}`"; if [[ -z "$$HAVE_SEQCEXIT" ]]; then \
+	    echo 'The seqcexit tool could not be found.' 1>&2; \
+	    echo 'The seqcexit tool is required for this rule.'; 1>&2; \
+	    echo ''; 1>&2; \
+	    echo 'See the following GitHub repo for seqcexit:'; 1>&2; \
+	    echo ''; 1>&2; \
+	    echo '    https://github.com/lcn2/seqcexit'; 1>&2; \
+	    echo ''; 1>&2; \
+	    exit 1; \
+	else \
+	    echo "${SEQCEXIT} -D werr_sem_val -D werrp_sem_val -- ${ALL_CSRC}"; \
+	    ${SEQCEXIT} -D werr_sem_val -D werrp_sem_val -- ${ALL_CSRC}; \
+	fi
+
+picky: ${ALL_SRC}
+	@if ! type -P ${PICKY} >/dev/null 2>&1; then \
+	    echo "The picky tool could not be found." 1>&2; \
+	    echo "The picky tool is required for this rule." 1>&2; \
+	    echo "We recommend you install picky v2.6 or later" 1>&2; \
+	    echo "from this URL:" 1>&2; \
+	    echo 1>&2; \
+	    echo "http://grail.eecs.csuohio.edu/~somos/picky.html" 1>&2; \
+	    echo 1>&2; \
+	    exit 1; \
+	else \
+	    echo "${PICKY} -w132 -u -s -t8 -v -e -- ${C_SRC} ${H_SRC}"; \
+	    ${PICKY} -w132 -u -s -t8 -v -e -- ${C_SRC} ${H_SRC}; EXIT_CODE="$$?"; \
+	    if [[ $$EXIT_CODE -ne 0 ]]; then echo "make $@: ERROR: CODE[1]: $$EXIT_CODE" 1>&2; exit 1; fi; \
+	fi
+
+# inspect and verify shell scripts
+#
+shellcheck:
+	@:
+
 # inspect and verify man pages
 #
 check_man: ${ALL_MAN_TARGETS} Makefile
@@ -322,20 +365,22 @@ check_man: ${ALL_MAN_TARGETS} Makefile
 	    fi; \
 	fi
 
-tags: ${ALL_SRC}
-	-${CTAGS} ${ALL_SRC} 2>&1 | \
+# vi/vim tags
+#
+tags: ${ALL_CSRC} ${ALL_HSRC}
+	-${CTAGS} ${ALL_CSRC} ${ALL_HSRC} 2>&1 | \
 	     ${GREP} -E -v 'Duplicate entry|Second entry ignored'
 
 prep_clean: legacy_clean
 	@:
 
-prep_clobber: legacy_clobber
-	@:
+prep_clobber: prep_clean legacy_clobber
+	${RM} -f dyn_test
 
 legacy_clean:
 	@:
 
-legacy_clobber:
+legacy_clobber: legacy_clean
 	@:
 
 
@@ -347,8 +392,7 @@ configure:
 	@echo nothing to $@
 
 clean:
-	${RM} -f ${ALL_OBJS}
-	${RM} -f ${ALL_BUILT_SRC}
+	${RM} -f ${ALL_OBJS} ${ALL_BUILT_SRC}
 
 clobber: clean
 	${RM} -f ${TARGETS}

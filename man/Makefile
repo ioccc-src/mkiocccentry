@@ -35,13 +35,10 @@
 #	      Do not list shell builtin (echo, cd, ...) tools.
 #	      Keep the list in alphabetical order.
 #
-AR= ar
-CAT= cat
 CHECKNR= checknr
 CP= cp
-CTAGS= ctags
-GREP= grep
 INSTALL= install
+MAKE= make
 RM= rm
 SHELL= bash
 
@@ -65,6 +62,9 @@ H_SRC=
 LESS_PICKY_CSRC=
 LESS_PICKY_HSRC=
 
+# all shell scripts
+#
+SH_FILES=
 
 ######################
 # intermediate files #
@@ -92,7 +92,7 @@ ALL_OBJS= ${LIB_OBJS} ${OTHER_OBJS}
 #
 ALL_CSRC= ${C_SRC} ${LESS_PICKY_CSRC} ${BUILT_C_SRC}
 ALL_HSRC= ${H_SRC} ${LESS_PICKY_HSRC} ${BUILT_H_SRC}
-ALL_SRC= ${ALL_CSRC} ${ALL_HSRC}
+ALL_SRC= ${ALL_CSRC} ${ALL_HSRC} ${SH_FILES}
 
 
 #######################
@@ -289,6 +289,19 @@ extern_everything: extern_include extern_objs extern_liba extern_man extern_prog
 test: check_man Makefile
 	@:
 
+# sequence exit codes
+#
+seqcexit:
+	@:
+
+picky: ${ALL_SRC}
+	@:
+
+# inspect and verify shell scripts
+#
+shellcheck:
+	@:
+
 # inspect and verify man pages
 #
 check_man: ${ALL_MAN_TARGETS} Makefile
@@ -310,16 +323,21 @@ check_man: ${ALL_MAN_TARGETS} Makefile
 	    fi; \
 	fi
 
+# vi/vim tags
+#
+tags: ${ALL_CSRC} ${ALL_HSRC}
+	@:
+
 prep_clean: legacy_clean
 	@:
 
-prep_clobber: legacy_clobber
+prep_clobber: prep_clean legacy_clobber
 	@:
 
 legacy_clean:
 	@:
 
-legacy_clobber:
+legacy_clobber: legacy_clean
 	${RM} -f *.html
 
 
@@ -331,13 +349,10 @@ configure:
 	@echo nothing to $@
 
 clean:
-	${RM} -f ${ALL_OBJS}
-	${RM} -f ${ALL_BUILT_SRC}
+	@:
 
 clobber: clean
 	${RM} -f ${TARGETS}
-	${RM} -f ${EXTERN_CLOBBER}
-	${RM} -f tags
 
 install: all
 #none#	${INSTALL} -v -d -m 0775 ${DEST_LIB}

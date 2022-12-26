@@ -39,11 +39,16 @@
 AR= ar
 CC= cc
 CMP= cmp
+CTAGS= ctags
+GREP= grep
 MAKE= make
+PICKY= picky
 RANLIB= ranlib
 RM= rm
 SED= sed
+SEQCEXIT= seqcexit
 SHELL= bash
+SHELLCHECK= shellcheck
 SLEEP= sleep
 TOUCH= touch
 
@@ -109,6 +114,10 @@ H_SRC= chk_validate.h soup.h
 LESS_PICKY_CSRC=
 LESS_PICKY_HSRC=
 
+# all shell scripts
+#
+SH_FILES= all_ref.sh fmt_depend.sh
+
 
 ######################
 # intermediate files #
@@ -136,7 +145,7 @@ ALL_OBJS= ${LIB_OBJS} ${OTHER_OBJS}
 #
 ALL_CSRC= ${C_SRC} ${LESS_PICKY_CSRC} ${BUILT_C_SRC}
 ALL_HSRC= ${H_SRC} ${LESS_PICKY_HSRC} ${BUILT_H_SRC}
-ALL_SRC= ${ALL_CSRC} ${ALL_HSRC}
+ALL_SRC= ${ALL_CSRC} ${ALL_HSRC} ${SH_FILES}
 
 
 #######################
@@ -383,16 +392,82 @@ eat eating eat_soup eating_soup: all
 	    echo "How can you eat soup that you haven't made yet?"; \
 	fi
 
+# sequence exit codes
+#
+seqcexit: ${ALL_CSRC}
+	@HAVE_SEQCEXIT="`type -P ${SEQCEXIT}`"; if [[ -z "$$HAVE_SEQCEXIT" ]]; then \
+	    echo 'The seqcexit tool could not be found.' 1>&2; \
+	    echo 'The seqcexit tool is required for this rule.'; 1>&2; \
+	    echo ''; 1>&2; \
+	    echo 'See the following GitHub repo for seqcexit:'; 1>&2; \
+	    echo ''; 1>&2; \
+	    echo '    https://github.com/lcn2/seqcexit'; 1>&2; \
+	    echo ''; 1>&2; \
+	    exit 1; \
+	else \
+	    echo "${SEQCEXIT} -D werr_sem_val -D werrp_sem_val -- ${ALL_CSRC}"; \
+	    ${SEQCEXIT} -D werr_sem_val -D werrp_sem_val -- ${ALL_CSRC}; \
+	fi
+
+picky: ${ALL_SRC}
+	@if ! type -P ${PICKY} >/dev/null 2>&1; then \
+	    echo "The picky tool could not be found." 1>&2; \
+	    echo "The picky tool is required for this rule." 1>&2; \
+	    echo "We recommend you install picky v2.6 or later" 1>&2; \
+	    echo "from this URL:" 1>&2; \
+	    echo 1>&2; \
+	    echo "http://grail.eecs.csuohio.edu/~somos/picky.html" 1>&2; \
+	    echo 1>&2; \
+	    exit 1; \
+	else \
+	    echo "${PICKY} -w132 -u -s -t8 -v -e -- ${C_SRC} ${H_SRC}"; \
+	    ${PICKY} -w132 -u -s -t8 -v -e -- ${C_SRC} ${H_SRC}; EXIT_CODE="$$?"; \
+	    if [[ $$EXIT_CODE -ne 0 ]]; then echo "make $@: ERROR: CODE[1]: $$EXIT_CODE" 1>&2; exit 1; fi; \
+	    echo "${PICKY} -w -u -s -t8 -v -e -8 -- ${SH_FILES}"; \
+	    ${PICKY} -w -u -s -t8 -v -e -8 -- ${SH_FILES}; EXIT_CODE="$$?"; \
+	    if [[ $$EXIT_CODE -ne 0 ]]; then echo "make $@: ERROR: CODE[2]: $$EXIT_CODE" 1>&2; exit 2; fi; \
+	fi
+
+# inspect and verify shell scripts
+#
+shellcheck: ${SH_FILES} .shellcheckrc
+	@HAVE_SHELLCHECK="`type -P ${SHELLCHECK}`"; if [[ -z "$$HAVE_SHELLCHECK" ]]; then \
+	    echo 'The shellcheck command could not be found.' 1>&2; \
+	    echo 'The shellcheck command is required to run this rule.'; 1>&2; \
+	    echo ''; 1>&2; \
+	    echo 'See the following GitHub repo for shellcheck:'; 1>&2; \
+	    echo ''; 1>&2; \
+	    echo '    https://github.com/koalaman/shellcheck.net'; 1>&2; \
+	    echo ''; 1>&2; \
+	    echo 'Or use the package manager in your OS to install it.' 1>&2; \
+	    exit 1; \
+	else \
+	    echo "${SHELLCHECK} -f gcc -- ${SH_FILES}"; \
+	    ${SHELLCHECK} -f gcc -- ${SH_FILES}; \
+	    if [[ $$EXIT_CODE -ne 0 ]]; then echo "make $@: ERROR: CODE[1]: $$EXIT_CODE" 1>&2; exit 1; fi; \
+	fi
+
+# inspect and verify man pages
+#
+check_man:
+	@:
+
+# vi/vim tags
+#
+tags: ${ALL_CSRC} ${ALL_HSRC}
+	-${CTAGS} ${ALL_CSRC} ${ALL_HSRC} 2>&1 | \
+	     ${GREP} -E -v 'Duplicate entry|Second entry ignored'
+
 prep_clean: legacy_clean
 	@:
 
-prep_clobber: legacy_clobber
+prep_clobber: prep_clean legacy_clobber
 	${RM} -rf ref
 
 legacy_clean:
 	@:
 
-legacy_clobber:
+legacy_clobber: legacy_clean
 	@:
 
 
@@ -408,6 +483,7 @@ clean:
 
 clobber: clean
 	${RM} -f .soup
+	${RM} -f tags
 
 install: all
 	@echo "nothing to $@. Try eating soup instead."

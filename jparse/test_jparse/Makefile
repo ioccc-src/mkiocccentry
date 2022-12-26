@@ -3,17 +3,17 @@
 # test_jparse - mkiocccentry jparse test tools
 #
 # "Because specs w/o version numbers are forced to commit to their original design flaws." :-)
-# 
+#
 # This JSON parser was co-developed by:
-# 
+#
 #	@xexyl
 # 	https://xexyl.net		Cody Boone Ferguson
 # 	https://ioccc.xexyl.net
 # and:
 # 	chongo (Landon Curt Noll, http://www.isthe.com/chongo/index.html) /\oo/\
-# 
+#
 # "Because sometimes even the IOCCC Judges need some help." :-)
-# 
+#
 # "Share and Enjoy!"
 #	--  Sirius Cybernetics Corporation Complaints Division, JSON spec department. :-)
 ####
@@ -23,37 +23,21 @@
 # utilities #
 #############
 
-AWK= awk
-BASENAME= basename
-CAT= cat
-CMP= cmp
-CUT= cut
+# suggestion: List utility filenames, not paths.
+#	      Do not list shell builtin (echo, cd, ...) tools.
+#	      Keep the list in alphabetical order.
+#
 CC= cc
-CP= cp
+CMP= cmp
 CTAGS= ctags
-DIFF= diff
-FMT= fmt
-GIT= git
 GREP= grep
-HEAD= head
-INSTALL= install
 MAKE= make
-MAN= man
-MAN2HTML= man2html
-MKTEMP= mktemp
-MV= mv
 PICKY= picky
 RM= rm
-RPL= rpl
-RSYNC= rsync
 SED= sed
 SEQCEXIT= seqcexit
 SHELL= bash
 SHELLCHECK= shellcheck
-CHECKNR= checknr
-TEE= tee
-TR= tr
-TRUE= true
 
 
 ##################
@@ -86,8 +70,8 @@ C_STD= -std=gnu11
 
 # optimization and debug level
 #
-#COPT= -O3 -g3	# TODO - this will be the production release value - TODO #
-COPT= -O0 -g
+#C_OPT= -O3 -g3	# TODO - this will be the production release value - TODO #
+C_OPT= -O0 -g
 
 # Compiler warnings
 #
@@ -99,7 +83,7 @@ WARN_FLAGS= -Wall -Wextra -Werror
 #
 # We test by forcing warnings to be errors so you don't have to (allegedly :-) )
 #
-CFLAGS= ${C_STD} ${COPT} -pedantic ${WARN_FLAGS} ${LDFLAGS}
+CFLAGS= ${C_STD} ${C_OPT} -pedantic ${WARN_FLAGS} ${LDFLAGS}
 
 
 # NOTE: If you use ASAN, set this environment var:
@@ -117,7 +101,7 @@ CFLAGS= ${C_STD} ${COPT} -pedantic ${WARN_FLAGS} ${LDFLAGS}
 
 # where and what to install
 #
-DESTDIR= /usr/local/bin
+DEST_DIR= /usr/local/bin
 TARGETS= jnum_chk
 SH_TARGETS=
 
@@ -136,6 +120,10 @@ H_SRC= jnum_chk.h
 LESS_PICKY_CSRC=
 LESS_PICKY_HSRC=
 
+# all shell scripts
+#
+SH_FILES= jparse_test.sh jstr_test.sh
+
 
 ######################
 # intermediate files #
@@ -143,7 +131,7 @@ LESS_PICKY_HSRC=
 
 # NOTE: ${LIB_OBJS} are objects to put into a library and removed by make clean
 #
-LIB_OBJS=
+LIB_OBJS= jnum_chk.o jnum_test.o
 
 # NOTE: ${OTHER_OBJS} are objects NOT put into a library and removed by make clean
 #
@@ -163,7 +151,7 @@ ALL_OBJS= ${LIB_OBJS} ${OTHER_OBJS}
 #
 ALL_CSRC= ${C_SRC} ${LESS_PICKY_CSRC} ${BUILT_C_SRC}
 ALL_HSRC= ${H_SRC} ${LESS_PICKY_HSRC} ${BUILT_H_SRC}
-ALL_SRC= ${ALL_CSRC} ${ALL_HSRC}
+ALL_SRC= ${ALL_CSRC} ${ALL_HSRC} ${SH_FILES}
 
 
 #######################
@@ -284,10 +272,76 @@ test_JSON/auth.json/good/auth.reference.json:
 test: all jparse_test.sh
 	 ./jparse_test.sh -j ../jparse -d ./test_JSON ./json_teststr.txt
 
+# sequence exit codes
+#
+seqcexit: ${ALL_CSRC}
+	@HAVE_SEQCEXIT="`type -P ${SEQCEXIT}`"; if [[ -z "$$HAVE_SEQCEXIT" ]]; then \
+	    echo 'The seqcexit tool could not be found.' 1>&2; \
+	    echo 'The seqcexit tool is required for this rule.'; 1>&2; \
+	    echo ''; 1>&2; \
+	    echo 'See the following GitHub repo for seqcexit:'; 1>&2; \
+	    echo ''; 1>&2; \
+	    echo '    https://github.com/lcn2/seqcexit'; 1>&2; \
+	    echo ''; 1>&2; \
+	    exit 1; \
+	else \
+	    echo "${SEQCEXIT} -D werr_sem_val -D werrp_sem_val -- ${ALL_CSRC}"; \
+	    ${SEQCEXIT} -D werr_sem_val -D werrp_sem_val -- ${ALL_CSRC}; \
+	fi
+
+picky: ${ALL_SRC}
+	@if ! type -P ${PICKY} >/dev/null 2>&1; then \
+	    echo "The picky tool could not be found." 1>&2; \
+	    echo "The picky tool is required for this rule." 1>&2; \
+	    echo "We recommend you install picky v2.6 or later" 1>&2; \
+	    echo "from this URL:" 1>&2; \
+	    echo 1>&2; \
+	    echo "http://grail.eecs.csuohio.edu/~somos/picky.html" 1>&2; \
+	    echo 1>&2; \
+	    exit 1; \
+	else \
+	    echo "${PICKY} -w132 -u -s -t8 -v -e -- ${C_SRC} ${H_SRC}"; \
+	    ${PICKY} -w132 -u -s -t8 -v -e -- ${C_SRC} ${H_SRC}; EXIT_CODE="$$?"; \
+	    if [[ $$EXIT_CODE -ne 0 ]]; then echo "make $@: ERROR: CODE[1]: $$EXIT_CODE" 1>&2; exit 1; fi; \
+	    echo "${PICKY} -w -u -s -t8 -v -e -8 -- ${SH_FILES}"; \
+	    ${PICKY} -w -u -s -t8 -v -e -8 -- ${SH_FILES}; EXIT_CODE="$$?"; \
+	    if [[ $$EXIT_CODE -ne 0 ]]; then echo "make $@: ERROR: CODE[2]: $$EXIT_CODE" 1>&2; exit 2; fi; \
+	fi
+
+# inspect and verify shell scripts
+#
+shellcheck: ${SH_FILES} .shellcheckrc
+	@HAVE_SHELLCHECK="`type -P ${SHELLCHECK}`"; if [[ -z "$$HAVE_SHELLCHECK" ]]; then \
+	    echo 'The shellcheck command could not be found.' 1>&2; \
+	    echo 'The shellcheck command is required to run this rule.'; 1>&2; \
+	    echo ''; 1>&2; \
+	    echo 'See the following GitHub repo for shellcheck:'; 1>&2; \
+	    echo ''; 1>&2; \
+	    echo '    https://github.com/koalaman/shellcheck.net'; 1>&2; \
+	    echo ''; 1>&2; \
+	    echo 'Or use the package manager in your OS to install it.' 1>&2; \
+	    exit 1; \
+	else \
+	    echo "${SHELLCHECK} -f gcc -- ${SH_FILES}"; \
+	    ${SHELLCHECK} -f gcc -- ${SH_FILES}; \
+	    if [[ $$EXIT_CODE -ne 0 ]]; then echo "make $@: ERROR: CODE[1]: $$EXIT_CODE" 1>&2; exit 1; fi; \
+	fi
+
+# inspect and verify man pages
+#
+check_man:
+	@:
+
+# vi/vim tags
+#
+tags: ${ALL_CSRC} ${ALL_HSRC}
+	-${CTAGS} ${ALL_CSRC} ${ALL_HSRC} 2>&1 | \
+	     ${GREP} -E -v 'Duplicate entry|Second entry ignored'
+
 prep_clean: legacy_clean
 	${RM} -f jnum_chk.o jnum_gen.o
 
-prep_clobber: legacy_clobber
+prep_clobber: prep_clean legacy_clobber
 	${RM} -f jstr_test.out jstr_test2.out
 	${RM} -f jnum_chk jnum_gen
 	${RM} -rf jnum_chk.dSYM
@@ -296,7 +350,7 @@ prep_clobber: legacy_clobber
 legacy_clean:
 	@:
 
-legacy_clobber:
+legacy_clobber: legacy_clean
 	@:
 
 
@@ -308,11 +362,12 @@ configure:
 	@echo nothing to $@
 
 clean:
-	${RM} -f jnum_chk.o jnum_test.o
+	${RM} -f ${ALL_OBJS} ${ALL_BUILT_SRC}
 
 clobber: clean
 	${RM} -f ${TARGETS}
 	${RM} -f jparse_test.log chkentry_test.log txzchk_test.log
+	${RM} -f tags
 
 install: all
 	@echo nothing to $@

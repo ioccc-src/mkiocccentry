@@ -23,40 +23,22 @@
 #	      Do not list shell builtin (echo, cd, ...) tools.
 #	      Keep the list in alphabetical order.
 #
-AWK= awk
-BASENAME= basename
-CAT= cat
+AR= ar
 CC= cc
 CHECKNR= checknr
 CMP= cmp
 CP= cp
 CTAGS= ctags
-CUT= cut
-DIFF= diff
-FMT= fmt
-GIT= git
 GREP= grep
-HEAD= head
 INSTALL= install
 MAKE= make
-MAN2HTML= man2html
-MAN= man
-MKTEMP= mktemp
-MV= mv
 PICKY= picky
 RANLIB= ranlib
 RM= rm
-RPL= rpl
-RSYNC= rsync
 SED= sed
 SEQCEXIT= seqcexit
 SHELL= bash
 SHELLCHECK= shellcheck
-SLEEP= sleep
-TEE= tee
-TOUCH= touch
-TR= tr
-TRUE= true
 
 
 ##################
@@ -113,16 +95,24 @@ CFLAGS= ${C_STD} ${C_OPT} ${WARN_FLAGS} ${LDFLAGS}
 # source files that are permanent (not made, nor removed)
 #
 C_SRC= jparse_main.c json_parse.c json_sem.c json_util.c jnum_gen.c jnum_header.c \
-       jsemtblgen.c jstrdecode.c jstrencode.c util.c \
-       jparse.ref.c jparse.tab.ref.c
+       jsemtblgen.c jstrdecode.c jstrencode.c util.c
 H_SRC= jparse.h jnum_gen.h jparse_main.h jsemtblgen.h json_parse.h json_sem.h json_util.h \
        jstrdecode.h jstrencode.h sorry.tm.ca.h util.h verge.h \
-       jparse.lex.ref.h jparse.tab.ref.h
+       jparse.tab.ref.h
 
 # source files that do not conform to strict picky standards
 #
-LESS_PICKY_CSRC=
-LESS_PICKY_HSRC=
+LESS_PICKY_CSRC= jparse.ref.c jparse.tab.ref.c
+LESS_PICKY_HSRC= jparse.lex.ref.h
+
+# bison and flex
+#
+FLEXFILES= jparse.l
+BISONFILES= jparse.y
+
+# all shell scripts
+#
+SH_FILES= jsemcgen.sh run_bison.sh run_flex.sh
 
 
 ######################
@@ -149,7 +139,7 @@ ALL_OBJS= ${LIB_OBJS} ${OTHER_OBJS}
 
 # rule used by prep.sh and make clean via make clean_generated_obj
 #
-GENERATED_OBJ= jparse.o jparse.tab.o jparse.tab.o
+BUILT_OBJS= jparse.o jparse.tab.o jparse.tab.o
 
 # RUN_O_FLAG - determine if the bison and flex backup files should be used
 #
@@ -232,7 +222,7 @@ FLEX_FLAGS= -8
 #
 ALL_CSRC= ${C_SRC} ${LESS_PICKY_CSRC} ${BUILT_C_SRC}
 ALL_HSRC= ${H_SRC} ${LESS_PICKY_HSRC} ${BUILT_H_SRC}
-ALL_SRC= ${ALL_CSRC} ${ALL_HSRC}
+ALL_SRC= ${ALL_CSRC} ${ALL_HSRC} ${SH_FILES}
 
 
 #######################
@@ -525,21 +515,77 @@ bison: jparse.tab.c jparse.tab.h
 flex: jparse.c jparse.lex.h
 	@:
 
-test: check_man Makefile
+test: check_man test_jparse/Makefile
 	@${MAKE} -C test_jparse all test
 
 # rule used by prep.sh and make clean
 #
 clean_generated_obj:
-	${RM} -f ${GENERATED_OBJ}
+	${RM} -f ${BUILT_OBJS}
 
-tags: ${ALL_SRC} ${ALL_BUILT_SRC}
-	-${CTAGS} ${ALL_SRC} ${ALL_BUILT_SRC} 2>&1 | \
-	     ${GREP} -E -v 'Duplicate entry|Second entry ignored'
+# sequence exit codes
+#
+seqcexit: ${FLEXFILES} ${BISONFILES} ${ALL_CSRC} test_jparse/Makefile
+	@HAVE_SEQCEXIT="`type -P ${SEQCEXIT}`"; if [[ -z "$$HAVE_SEQCEXIT" ]]; then \
+	    echo 'The seqcexit tool could not be found.' 1>&2; \
+	    echo 'The seqcexit tool is required for this rule.'; 1>&2; \
+	    echo ''; 1>&2; \
+	    echo 'See the following GitHub repo for seqcexit:'; 1>&2; \
+	    echo ''; 1>&2; \
+	    echo '    https://github.com/lcn2/seqcexit'; 1>&2; \
+	    echo ''; 1>&2; \
+	    exit 1; \
+	else \
+	    echo "${SEQCEXIT} -c -D werr_sem_val -D werrp_sem_val -- ${FLEXFILES} ${BISONFILES}"; \
+	    ${SEQCEXIT} -c -D werr_sem_val -D werrp_sem_val -- ${FLEXFILES} ${BISONFILES}; \
+	    echo "${SEQCEXIT} -D werr_sem_val -D werrp_sem_val -- ${ALL_CSRC}"; \
+	    ${SEQCEXIT} -D werr_sem_val -D werrp_sem_val -- ${ALL_CSRC}; \
+	fi
+	@${MAKE} -C test_jparse all $@
+
+picky: ${ALL_SRC} test_jparse/Makefile
+	@if ! type -P ${PICKY} >/dev/null 2>&1; then \
+	    echo "The picky tool could not be found." 1>&2; \
+	    echo "The picky tool is required for this rule." 1>&2; \
+	    echo "We recommend you install picky v2.6 or later" 1>&2; \
+	    echo "from this URL:" 1>&2; \
+	    echo 1>&2; \
+	    echo "http://grail.eecs.csuohio.edu/~somos/picky.html" 1>&2; \
+	    echo 1>&2; \
+	    exit 1; \
+	else \
+	    echo "${PICKY} -w132 -u -s -t8 -v -e -- ${C_SRC} ${H_SRC}"; \
+	    ${PICKY} -w132 -u -s -t8 -v -e -- ${C_SRC} ${H_SRC}; EXIT_CODE="$$?"; \
+	    if [[ $$EXIT_CODE -ne 0 ]]; then echo "make $@: ERROR: CODE[1]: $$EXIT_CODE" 1>&2; exit 1; fi; \
+	    echo "${PICKY} -w -u -s -t8 -v -e -8 -- ${FLEXFILES} ${BISONFILES}"; \
+	    ${PICKY} -w -u -s -t8 -v -e -8 -- ${FLEXFILES} ${BISONFILES}; EXIT_CODE="$$?"; \
+	    if [[ $$EXIT_CODE -ne 0 ]]; then echo "make $@: ERROR: CODE[2]: $$EXIT_CODE" 1>&2; exit 2; fi; \
+	fi
+	@${MAKE} -C test_jparse all $@
+
+# inspect and verify shell scripts
+#
+shellcheck: ${SH_FILES} .shellcheckrc test_jparse/Makefile
+	@HAVE_SHELLCHECK="`type -P ${SHELLCHECK}`"; if [[ -z "$$HAVE_SHELLCHECK" ]]; then \
+	    echo 'The shellcheck command could not be found.' 1>&2; \
+	    echo 'The shellcheck command is required to run this rule.'; 1>&2; \
+	    echo ''; 1>&2; \
+	    echo 'See the following GitHub repo for shellcheck:'; 1>&2; \
+	    echo ''; 1>&2; \
+	    echo '    https://github.com/koalaman/shellcheck.net'; 1>&2; \
+	    echo ''; 1>&2; \
+	    echo 'Or use the package manager in your OS to install it.' 1>&2; \
+	    exit 1; \
+	else \
+	    echo "${SHELLCHECK} -f gcc -- ${SH_FILES}"; \
+	    ${SHELLCHECK} -f gcc -- ${SH_FILES}; \
+	    if [[ $$EXIT_CODE -ne 0 ]]; then echo "make $@: ERROR: CODE[1]: $$EXIT_CODE" 1>&2; exit 1; fi; \
+	fi
+	@${MAKE} -C test_jparse all $@
 
 # inspect and verify man pages
 #
-check_man: ${ALL_MAN_TARGETS} Makefile
+check_man: ${ALL_MAN_TARGETS} test_jparse/Makefile
 	@-HAVE_CHECKNR="`type -P ${CHECKNR}`"; if [[ -z "$$HAVE_CHECKNR" ]]; then \
 	    echo 'The checknr command could not be found.' 1>&2; \
 	    echo 'The checknr command is required to run the $@ rule.' 1>&2; \
@@ -557,19 +603,27 @@ check_man: ${ALL_MAN_TARGETS} Makefile
 		exit 23; \
 	    fi; \
 	fi
+	@${MAKE} -C test_jparse all $@
 
-prep_clean: legacy_clean
+# vi/vim tags
+#
+tags: ${ALL_CSRC} ${ALL_HSRC} test_jparse/Makefile
+	-${CTAGS} ${ALL_CSRC} ${ALL_HSRC} 2>&1 | \
+	     ${GREP} -E -v 'Duplicate entry|Second entry ignored'
+	@${MAKE} -C test_jparse all $@
+
+prep_clean: legacy_clean test_jparse/Makefile
 	${MAKE} -C test_jparse $@
 
-prep_clobber: legacy_clobber
+prep_clobber: prep_clean legacy_clobber
 	${RM} -f jnum_gen
 	${RM} -rf jnum_gen.dSYM
 	${MAKE} -C test_jparse $@
 
-legacy_clean:
+legacy_clean: test_jparse/Makefile
 	${MAKE} -C test_jparse $@
 
-legacy_clobber:
+legacy_clobber: legacy_clean test_jparse/Makefile
 	${RM} -f jstr_test.out jstr_test2.out
 	${MAKE} -C test_jparse $@
 
@@ -582,14 +636,15 @@ configure:
 	@echo nothing to $@
 
 clean:
-	${RM} -f ${LIB_OBJS}
+	${RM} -f ${ALL_OBJS} ${ALL_BUILT_SRC}
 
 clobber: clean
 	${RM} -f ${TARGETS}
 	${RM} -f jparse.output
 	${RM} -f jsemcgen.out.*
+	${RM} -f tags
 
-install: all
+install: all test_jparse/Makefile
 	${INSTALL} -v -d -m 0775 ${DEST_LIB}
 #none#	${INSTALL} -v -d -m 0775 ${DEST_DIR}
 	${INSTALL} -v -d -m 0775 ${MAN1_DIR}
@@ -601,6 +656,7 @@ install: all
 	${INSTALL} -v -m 0444 ${MAN8_TARGETS} ${MAN8_DIR}
 	${INSTALL} -v -m 0444 ${LIBA_TARGETS} ${DEST_LIB}
 	${INSTALL} -v -m 0444 ${H_SRC_TARGETS} ${DEST_INCLUDE}
+	${MAKE} -C test_jparse $@
 
 
 ###############
