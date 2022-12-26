@@ -449,10 +449,10 @@ extern_prog: ${EXTERN_PROG}
 extern_everything: extern_include extern_objs extern_liba extern_man extern_prog
 	@:
 
-man/jparse.1:
+man/man1/jparse.1:
 	@:
 
-man/jparse_test.8:
+man/man8/jparse_test.8:
 	@:
 
 
