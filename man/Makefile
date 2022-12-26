@@ -132,18 +132,21 @@ EXTERN_CLOBBER= ${EXTERN_O} ${EXTERN_LIBA} ${EXTERN_PROG}
 
 # man pages
 #
-MAN1_TARGETS= bug_report.1 chkentry.1 fnamchk.1 hostchk.1 iocccsize.1 jparse.1 jstrdecode.1 \
-	jstrencode.1 mkiocccentry.1 run_bison.1 run_flex.1 txzchk.1
-MAN3_TARGETS= dbg.3 dyn_array.3 err.3 msg.3 warn.3 werr.3 printf_usage.3 warn_or_err.3
-MAN8_TARGETS= all_ref.8 chkentry_test.8 ioccc_test.8 iocccsize_test.8 jnum_chk.8 jnum_gen.8 \
-	jparse_test.8 jsemcgen.8 jsemtblgen.8 jstr_test.8 mkiocccentry_test.8 reset_tstamp.8 \
-	run_usage.8 txzchk_test.8 utf8_test.8 verge.8 vermod.8
+MAN1_TARGETS= man1/bug_report.1 man1/chkentry.1 man1/fnamchk.1 man1/hostchk.1 man1/iocccsize.1 \
+	      man1/jparse.1 man1/jstrdecode.1 man1/jstrencode.1 man1/mkiocccentry.1 man1/run_bison.1 \
+	      man1/run_flex.1 man1/txzchk.1
+MAN3_TARGETS= man3/dbg.3 man3/dyn_array.3 man3/err.3 man3/msg.3 man3/warn.3 man3/werr.3 man3/printf_usage.3 \
+	      man3/warn_or_err.3
+MAN8_TARGETS= man8/all_ref.8 man8/chkentry_test.8 man8/ioccc_test.8 man8/iocccsize_test.8 man8/jnum_chk.8 \
+	      man8/jnum_gen.8 man8/jparse_test.8 man8/jsemcgen.8 man8/jsemtblgen.8 man8/jstr_test.8 \
+	      man8/mkiocccentry_test.8 man8/reset_tstamp.8 man8/run_usage.8 man8/txzchk_test.8 man8/utf8_test.8 \
+	      man8/verge.8 man8/vermod.8
 ALL_MAN_TARGETS= ${MAN1_TARGETS} ${MAN3_TARGETS} ${MAN8_TARGETS}
 
 # These man pages are built and removed by make clobber
 #
-BUILT_MAN_TARGETS= dbg.3 err.3 msg.3 warn.3 werr.3 printf_usage.3 warn_or_err.3 \
-		   dyn_array.3 jparse.1 jparse_test.8
+BUILT_MAN_TARGETS= man3/dbg.3 man3/err.3 man3/msg.3 man3/warn.3 man3/werr.3 man3/printf_usage.3 man3/warn_or_err.3 \
+		   man3/dyn_array.3 man1/jparse.1 man8/jparse_test.8
 
 # libraries
 #
@@ -201,43 +204,43 @@ all: ${TARGETS} ${ALL_OTHER_TARGETS} Makefile
 # things to make in this directory #
 ####################################
 
-dbg.3: ../dbg/man/man3/dbg.3
+man3/dbg.3: ../dbg/man/man3/dbg.3
 	@${RM} -f $@
 	@${CP} -f $^ $@
 
-err.3: ../dbg/man/man3/err.3
+man3/err.3: ../dbg/man/man3/err.3
 	@${RM} -f $@
 	@${CP} -f $^ $@
 
-printf_usage.3: ../dbg/man/man3/printf_usage.3
+man3/printf_usage.3: ../dbg/man/man3/printf_usage.3
 	@${RM} -f $@
 	@${CP} -f $^ $@
 
-warn.3: ../dbg/man/man3/warn.3
+man3/warn.3: ../dbg/man/man3/warn.3
 	@${RM} -f $@
 	@${CP} -f $^ $@
 
-warn_or_err.3: ../dbg/man/man3/warn_or_err.3
+man3/warn_or_err.3: ../dbg/man/man3/warn_or_err.3
 	@${RM} -f $@
 	@${CP} -f $^ $@
 
-msg.3: ../dbg/man/man3/msg.3
+man3/msg.3: ../dbg/man/man3/msg.3
 	@${RM} -f $@
 	@${CP} -f $^ $@
 
-werr.3: ../dbg/man/man3/werr.3
+man3/werr.3: ../dbg/man/man3/werr.3
 	@${RM} -f $@
 	@${CP} -f $^ $@
 
-dyn_array.3: ../dyn_array/man/man3/dyn_array.3
+man3/dyn_array.3: ../dyn_array/man/man3/dyn_array.3
 	@${RM} -f $@
 	@${CP} -f $^ $@
 
-jparse.1: ../jparse/man/man1/jparse.1
+man1/jparse.1: ../jparse/man/man1/jparse.1
 	@${RM} -f $@
 	@${CP} -f $^ $@
 
-jparse_test.8: ../jparse/man/man8/jparse_test.8
+man8/jparse_test.8: ../jparse/man/man8/jparse_test.8
 	@${RM} -f $@
 	@${CP} -f $^ $@
 
@@ -247,16 +250,16 @@ jparse_test.8: ../jparse/man/man8/jparse_test.8
 #########################################################
 
 ../dbg/dbg.3:
-	@${MAKE} -C ../dbg dbg.3
+	@${MAKE} -C ../dbg man3/dbg.3
 
 ../dyn_array/dyn_array.3:
-	@${MAKE} -C ../dyn_array dyn_array.3
+	@${MAKE} -C ../dyn_array man3/dyn_array.3
 
 ../jparse/man/jparse.1:
-	@${MAKE} -C ../jparse man/jparse.1
+	@${MAKE} -C ../jparse man1/jparse.1
 
 ../jparse/man/jparse_test.8:
-	@${MAKE} -C ../jparse man/jparse_test.8
+	@${MAKE} -C ../jparse man8/jparse_test.8
 
 
 ####################################

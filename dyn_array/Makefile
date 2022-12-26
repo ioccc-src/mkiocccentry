@@ -289,7 +289,7 @@ extern_prog: ${EXTERN_PROG}
 extern_everything: extern_include extern_objs extern_liba extern_man extern_prog
 	@:
 
-dyn_array.3:
+man/man3/dyn_array.3:
 	@:
 
 
