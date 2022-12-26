@@ -37,11 +37,11 @@ jstrdecode
 jstrencode
 limit_ioccc.sh
 makefile.local
-man/dbg.3
+man/man3/dbg.3
 man/dyn_array.3
 man/err.3
-man/jparse.1
-man/jparse_test.8
+man/man1/jparse.1
+man/man8/jparse_test.8
 man/msg.3
 man/printf_usage.3
 man/warn.3
