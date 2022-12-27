@@ -342,6 +342,8 @@ legacy_clean:
 
 legacy_clobber: legacy_clean
 	${RM} -f *.html
+	${RM} -f dbg.3 dyn_array.3 err.3 jparse.1 jparse_test.8 msg.3 printf_usage.3
+	${RM} -f warn.3 warn_or_err.3 werr.3
 
 
 ###################################
