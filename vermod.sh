@@ -59,7 +59,7 @@ Exit codes:
      2   rpl command not found
      3   no limit.sh file found, or is not readable
      4   no test_dir directory found, or is not readable
-     5   usage message printed due to -h
+     5   -h and help string printed or -V and version string printed
      6   command line error and usage message printed
      7   no *.json files found under test_dir
      8   new_ver (or old_ver if -o) not found in limit.sh
