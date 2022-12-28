@@ -30,6 +30,7 @@ CMP= cmp
 CP= cp
 CTAGS= ctags
 GREP= grep
+INDEPEND= independ
 INSTALL= install
 MAKE= make
 PICKY= picky
@@ -39,6 +40,20 @@ SED= sed
 SEQCEXIT= seqcexit
 SHELL= bash
 SHELLCHECK= shellcheck
+
+
+###########################
+# Makefile directory name #
+###########################
+
+# The name of this directory
+#
+# This value is used to print the generic name of this directory
+# so that various echo statements below can use this name
+# to help distinguish themselves from echo statements used
+# by Makefiles in other directories.
+#
+OUR_NAME= jparse
 
 
 ##################
@@ -317,57 +332,57 @@ all: ${TARGETS} ${ALL_OTHER_TARGETS} Makefile
 .PHONY: all \
 	extern_include extern_objs extern_liba extern_man extern_prog extern_everything man/man1/jparse.1 man/man8/jparse_test.8 \
 	parser parser-o use_ref bison flex test tags check_man prep_clean prep_clobber legacy_clean legacy_clobber \
-	configure clean clobber install \
-	depend
+	configure clean clobber install depend \
+	util.o
 
 
 ####################################
 # things to make in this directory #
 ####################################
 
-json_util.o: json_util.c json_util.h Makefile
+json_util.o: json_util.c json_util.h
 	${CC} ${CFLAGS} -Wno-unused-function -Wno-unneeded-internal-declaration json_util.c -c
 
-jparse.tab.o: jparse.tab.c Makefile
+jparse.tab.o: jparse.tab.c
 	${CC} ${CFLAGS} -Wno-unused-function -Wno-unneeded-internal-declaration jparse.tab.c -c
 
-jparse_main.o: jparse_main.c Makefile
+jparse_main.o: jparse_main.c
 	${CC} ${CFLAGS} jparse_main.c -c
 
-jparse.o: jparse.c jparse.h Makefile
+jparse.o: jparse.c jparse.h
 	${CC} ${CFLAGS} -Wno-unused-but-set-variable -Wno-unused-function -Wno-unneeded-internal-declaration jparse.c -c
 
 jparse: jparse_main.o jparse.a ../dyn_array/dyn_array.a ../dbg/dbg.a
 	${CC} ${CFLAGS} $^ -lm -o $@
 
-jstrencode.o: jstrencode.c jstrencode.h json_util.h json_util.c Makefile
+jstrencode.o: jstrencode.c jstrencode.h json_util.h json_util.c
 	${CC} ${CFLAGS} jstrencode.c -c
 
 jstrencode: jstrencode.o jparse.a ../dyn_array/dyn_array.a ../dbg/dbg.a
 	${CC} ${CFLAGS} $^ -lm -o $@
 
-jstrdecode.o: jstrdecode.c jstrdecode.h json_util.h json_parse.h Makefile
+jstrdecode.o: jstrdecode.c jstrdecode.h json_util.h json_parse.h
 	${CC} ${CFLAGS} jstrdecode.c -c
 
 jstrdecode: jstrdecode.o jparse.a ../dyn_array/dyn_array.a ../dbg/dbg.a
 	${CC} ${CFLAGS} $^ -lm -o $@
 
-json_parse.o: json_parse.c Makefile
+json_parse.o: json_parse.c
 	${CC} ${CFLAGS} json_parse.c -c
 
-jnum_gen.o: jnum_gen.c jnum_gen.h Makefile
+jnum_gen.o: jnum_gen.c jnum_gen.h
 	${CC} ${CFLAGS} jnum_gen.c -c
 
 jnum_gen: jnum_gen.o jparse.a ../dyn_array/dyn_array.a ../dbg/dbg.a
 	${CC} ${CFLAGS} $^ -lm -o $@
 
-jsemtblgen.o: jsemtblgen.c jparse.tab.h Makefile
+jsemtblgen.o: jsemtblgen.c jparse.tab.h
 	${CC} ${CFLAGS} jsemtblgen.c -c
 
 jsemtblgen: jsemtblgen.o jparse.a ../dyn_array/dyn_array.a ../dbg/dbg.a
 	${CC} ${CFLAGS} $^ -lm -o $@
 
-json_sem.o: json_sem.c Makefile
+json_sem.o: json_sem.c
 	${CC} ${CFLAGS} json_sem.c -c
 
 # How to create jparse.tab.c and jparse.tab.h
@@ -379,7 +394,7 @@ json_sem.o: json_sem.c Makefile
 #
 # NOTE: The value of RUN_O_FLAG depends on what rule called this rule.
 jparse.tab.c jparse.tab.h: jparse.y jparse.h sorry.tm.ca.h run_bison.sh ../limit_ioccc.sh \
-	verge jparse.tab.ref.c jparse.tab.ref.h Makefile
+	verge jparse.tab.ref.c jparse.tab.ref.h
 	./run_bison.sh -g ./verge -s ./sorry.tm.ca.h -l ../limit_ioccc.sh -b ${BISON_BASENAME} ${BISON_DIRS} \
 	    -p jparse -v 1 ${RUN_O_FLAG} -- ${BISON_FLAGS}
 
@@ -391,17 +406,17 @@ jparse.tab.c jparse.tab.h: jparse.y jparse.h sorry.tm.ca.h run_bison.sh ../limit
 #
 # NOTE: The value of RUN_O_FLAG depends on what rule called this rule.
 jparse.c jparse.lex.h: jparse.l jparse.h ./sorry.tm.ca.h jparse.tab.h ./run_flex.sh ../limit_ioccc.sh \
-	verge jparse.ref.c jparse.lex.ref.h Makefile
+	verge jparse.ref.c jparse.lex.ref.h
 	./run_flex.sh -g ./verge -s ./sorry.tm.ca.h -l ../limit_ioccc.sh -f ${FLEX_BASENAME} ${FLEX_DIRS} \
 	    -p jparse -v 1 ${RUN_O_FLAG} -- ${FLEX_FLAGS} -o jparse.c
 
-util.o: util.c util.h Makefile
+util.o: util.c util.h
 	${CC} ${CFLAGS} util.c -c
 
-verge.o: verge.c verge.h Makefile
+verge.o: verge.c verge.h
 	${CC} ${CFLAGS} verge.c -c
 
-verge: verge.o ../dbg/dbg.a util.o ../dyn_array/dyn_array.a Makefile
+verge: verge.o ../dbg/dbg.a util.o ../dyn_array/dyn_array.a
 	${CC} ${CFLAGS} verge.o ../dbg/dbg.a util.o ../dyn_array/dyn_array.a -o $@
 
 jparse.a: ${LIB_OBJS}
@@ -465,7 +480,7 @@ man/man8/jparse_test.8:
 # Force the rebuild of the JSON parser and then form the reference copies of
 # JSON parser C code (if recent enough version of flex and bison are found).
 #
-parser: jparse.y jparse.l Makefile
+parser: jparse.y jparse.l
 	${RM} -f jparse.tab.c jparse.tab.h
 	${MAKE} jparse.tab.c jparse.tab.h
 	${MAKE} jparse.tab.o
@@ -486,7 +501,7 @@ parser: jparse.y jparse.l Makefile
 #
 # NOTE: This does NOT use the reference copies of JSON parser C code.
 #
-parser-o: jparse.y jparse.l Makefile
+parser-o: jparse.y jparse.l
 	${MAKE} parser RUN_O_FLAG='-o'
 
 # restore reference code that was produced by previous successful make parser
@@ -504,7 +519,7 @@ use_ref: jparse.tab.ref.c jparse.tab.ref.h jparse.ref.c jparse.lex.ref.h
 
 # use jnum_gen to regenerate test jnum_chk test suite
 #
-rebuild_jnum_test: jnum_gen test_jparse/jnum.testset jnum_header.c Makefile
+rebuild_jnum_test: jnum_gen test_jparse/jnum.testset jnum_header.c
 	${RM} -f test_jparse/jnum_test.c
 	${CP} -f -v jnum_header.c test_jparse/jnum_test.c
 	./jnum_gen test_jparse/jnum.testset >> test_jparse/jnum_test.c
@@ -516,7 +531,12 @@ flex: jparse.c jparse.lex.h
 	@:
 
 test: check_man test_jparse/Makefile
+	@echo
+	@echo "${OUR_NAME}: make $@ starting"
+	@echo
 	@${MAKE} -C test_jparse all test
+	@echo
+	@echo "${OUR_NAME}: make $@ complete"
 
 # rule used by prep.sh and make clean
 #
@@ -526,6 +546,10 @@ clean_generated_obj:
 # sequence exit codes
 #
 seqcexit: ${FLEXFILES} ${BISONFILES} ${ALL_CSRC} test_jparse/Makefile
+	@echo
+	@echo "${OUR_NAME}: make $@ starting"
+	@echo
+	@${MAKE} -C test_jparse all $@
 	@HAVE_SEQCEXIT="`type -P ${SEQCEXIT}`"; if [[ -z "$$HAVE_SEQCEXIT" ]]; then \
 	    echo 'The seqcexit tool could not be found.' 1>&2; \
 	    echo 'The seqcexit tool is required for this rule.'; 1>&2; \
@@ -541,9 +565,14 @@ seqcexit: ${FLEXFILES} ${BISONFILES} ${ALL_CSRC} test_jparse/Makefile
 	    echo "${SEQCEXIT} -D werr_sem_val -D werrp_sem_val -- ${ALL_CSRC}"; \
 	    ${SEQCEXIT} -D werr_sem_val -D werrp_sem_val -- ${ALL_CSRC}; \
 	fi
-	@${MAKE} -C test_jparse all $@
+	@echo
+	@echo "${OUR_NAME}: make $@ complete"
 
 picky: ${ALL_SRC} test_jparse/Makefile
+	@echo
+	@echo "${OUR_NAME}: make $@ starting"
+	@echo
+	@${MAKE} -C test_jparse all $@
 	@if ! type -P ${PICKY} >/dev/null 2>&1; then \
 	    echo "The picky tool could not be found." 1>&2; \
 	    echo "The picky tool is required for this rule." 1>&2; \
@@ -561,11 +590,16 @@ picky: ${ALL_SRC} test_jparse/Makefile
 	    ${PICKY} -w -u -s -t8 -v -e -8 -- ${FLEXFILES} ${BISONFILES}; EXIT_CODE="$$?"; \
 	    if [[ $$EXIT_CODE -ne 0 ]]; then echo "make $@: ERROR: CODE[2]: $$EXIT_CODE" 1>&2; exit 2; fi; \
 	fi
-	@${MAKE} -C test_jparse all $@
+	@echo
+	@echo "${OUR_NAME}: make $@ complete"
 
 # inspect and verify shell scripts
 #
 shellcheck: ${SH_FILES} .shellcheckrc test_jparse/Makefile
+	@echo
+	@echo "${OUR_NAME}: make $@ starting"
+	@echo
+	@${MAKE} -C test_jparse all $@
 	@HAVE_SHELLCHECK="`type -P ${SHELLCHECK}`"; if [[ -z "$$HAVE_SHELLCHECK" ]]; then \
 	    echo 'The shellcheck command could not be found.' 1>&2; \
 	    echo 'The shellcheck command is required to run this rule.'; 1>&2; \
@@ -581,11 +615,16 @@ shellcheck: ${SH_FILES} .shellcheckrc test_jparse/Makefile
 	    ${SHELLCHECK} -f gcc -- ${SH_FILES}; \
 	    if [[ $$EXIT_CODE -ne 0 ]]; then echo "make $@: ERROR: CODE[1]: $$EXIT_CODE" 1>&2; exit 1; fi; \
 	fi
-	@${MAKE} -C test_jparse all $@
+	@echo
+	@echo "${OUR_NAME}: make $@ complete"
 
 # inspect and verify man pages
 #
 check_man: ${ALL_MAN_TARGETS} test_jparse/Makefile
+	@echo
+	@echo "${OUR_NAME}: make $@ starting"
+	@echo
+	@${MAKE} -C test_jparse all $@
 	@-HAVE_CHECKNR="`type -P ${CHECKNR}`"; if [[ -z "$$HAVE_CHECKNR" ]]; then \
 	    echo 'The checknr command could not be found.' 1>&2; \
 	    echo 'The checknr command is required to run the $@ rule.' 1>&2; \
@@ -603,29 +642,55 @@ check_man: ${ALL_MAN_TARGETS} test_jparse/Makefile
 		exit 23; \
 	    fi; \
 	fi
-	@${MAKE} -C test_jparse all $@
+	@echo
+	@echo "${OUR_NAME}: make $@ complete"
 
 # vi/vim tags
 #
 tags: ${ALL_CSRC} ${ALL_HSRC} test_jparse/Makefile
+	@echo
+	@echo "${OUR_NAME}: make $@ starting"
+	@echo
+	@${MAKE} -C test_jparse all $@
 	-${CTAGS} ${ALL_CSRC} ${ALL_HSRC} 2>&1 | \
 	     ${GREP} -E -v 'Duplicate entry|Second entry ignored'
-	@${MAKE} -C test_jparse all $@
+	@echo
+	@echo "${OUR_NAME}: make $@ complete"
 
 prep_clean: legacy_clean test_jparse/Makefile
+	@echo
+	@echo "${OUR_NAME}: make $@ starting"
+	@echo
 	${MAKE} -C test_jparse $@
+	@echo
+	@echo "${OUR_NAME}: make $@ complete"
 
 prep_clobber: prep_clean legacy_clobber
+	@echo
+	@echo "${OUR_NAME}: make $@ starting"
+	@echo
 	${RM} -f jnum_gen
 	${RM} -rf jnum_gen.dSYM
 	${MAKE} -C test_jparse $@
+	@echo
+	@echo "${OUR_NAME}: make $@ complete"
 
 legacy_clean: test_jparse/Makefile
+	@echo
+	@echo "${OUR_NAME}: make $@ starting"
+	@echo
 	${MAKE} -C test_jparse $@
+	@echo
+	@echo "${OUR_NAME}: make $@ complete"
 
 legacy_clobber: legacy_clean test_jparse/Makefile
+	@echo
+	@echo "${OUR_NAME}: make $@ starting"
+	@echo
 	${RM} -f jstr_test.out jstr_test2.out
 	${MAKE} -C test_jparse $@
+	@echo
+	@echo "${OUR_NAME}: make $@ complete"
 
 
 ###################################
@@ -636,15 +701,29 @@ configure:
 	@echo nothing to $@
 
 clean:
+	@echo
+	@echo "${OUR_NAME}: make $@ starting"
+	@echo
 	${RM} -f ${ALL_OBJS} ${ALL_BUILT_SRC}
+	@echo
+	@echo "${OUR_NAME}: make $@ complete"
 
 clobber: clean
+	@echo
+	@echo "${OUR_NAME}: make $@ starting"
+	@echo
 	${RM} -f ${TARGETS}
 	${RM} -f jparse.output
 	${RM} -f jsemcgen.out.*
 	${RM} -f tags
+	@echo
+	@echo "${OUR_NAME}: make $@ complete"
 
 install: all test_jparse/Makefile
+	@echo
+	@echo "${OUR_NAME}: make $@ starting"
+	@echo
+	${MAKE} -C test_jparse all $@
 	${INSTALL} -v -d -m 0775 ${DEST_LIB}
 #none#	${INSTALL} -v -d -m 0775 ${DEST_DIR}
 	${INSTALL} -v -d -m 0775 ${MAN1_DIR}
@@ -656,49 +735,64 @@ install: all test_jparse/Makefile
 	${INSTALL} -v -m 0444 ${MAN8_TARGETS} ${MAN8_DIR}
 	${INSTALL} -v -m 0444 ${LIBA_TARGETS} ${DEST_LIB}
 	${INSTALL} -v -m 0444 ${H_SRC_TARGETS} ${DEST_INCLUDE}
-	${MAKE} -C test_jparse $@
+	@echo
+	@echo "${OUR_NAME}: make $@ complete"
 
 
 ###############
 # make depend #
 ###############
 
-depend: ${ALL_CSRC} ../soup/fmt_depend.sh
+depend: ${ALL_CSRC} all
 	@echo
-	@echo "jparse make depend starting"
+	@echo "${OUR_NAME}: make $@ starting"
 	@echo
 	@${SED} -i.orig -n -e '1,/^### DO NOT CHANGE MANUALLY BEYOND THIS LINE/p' Makefile
-	${CC} ${CFLAGS} -MM -I../dbg -I../dyn_array -I.. ${ALL_CSRC} | ../soup/fmt_depend.sh >> Makefile
+	${CC} ${CFLAGS} -MM -I../dbg -I../dyn_array -I.. ${ALL_CSRC} | ${INDEPEND} >> Makefile
 	@-if ${CMP} -s Makefile.orig Makefile; then \
 	    ${RM} -f Makefile.orig; \
 	else \
-	    echo; echo "Makefile dependencies updated"; echo; echo "Previous version may be found in: Makefile.orig"; \
+	    echo; \
+	    echo "${OUR_NAME}: Makefile dependencies updated"; \
+	    echo; \
+	    echo "${OUR_NAME}: Previous version may be found in: Makefile.orig"; \
 	fi
 	@echo
-	@echo "jparse make depend completed"
+	@echo "${OUR_NAME}: make $@ complete"
+	${MAKE} -C test_jparse $@
 
 ### DO NOT CHANGE MANUALLY BEYOND THIS LINE
-jparse_main.o: jparse_main.c jparse_main.h ../dbg/dbg.h util.h ../dyn_array/dyn_array.h \
-	../dyn_array/../dbg/dbg.h jparse.h json_parse.h json_util.h json_sem.h jparse.tab.h
-json_parse.o: json_parse.c ../dbg/dbg.h util.h ../dyn_array/dyn_array.h ../dyn_array/../dbg/dbg.h \
-	json_parse.h json_util.h
-json_sem.o: json_sem.c ../dbg/dbg.h json_sem.h util.h ../dyn_array/dyn_array.h \
-	../dyn_array/../dbg/dbg.h json_parse.h json_util.h
-json_util.o: json_util.c ../dbg/dbg.h json_parse.h util.h ../dyn_array/dyn_array.h \
-	../dyn_array/../dbg/dbg.h json_util.h
-jnum_gen.o: jnum_gen.c jnum_gen.h ../dbg/dbg.h util.h ../dyn_array/dyn_array.h \
-	../dyn_array/../dbg/dbg.h json_parse.h json_util.h ../limit_ioccc.h ../version.h
-jnum_header.o: jnum_header.c json_parse.h util.h ../dyn_array/dyn_array.h ../dyn_array/../dbg/dbg.h
-jsemtblgen.o: jsemtblgen.c jsemtblgen.h ../dbg/dbg.h util.h ../dyn_array/dyn_array.h \
-	../dyn_array/../dbg/dbg.h json_util.h json_parse.h jparse.h json_sem.h jparse.tab.h ../iocccsize.h
-jstrdecode.o: jstrdecode.c jstrdecode.h ../dbg/dbg.h util.h ../dyn_array/dyn_array.h \
-	../dyn_array/../dbg/dbg.h json_parse.h ../limit_ioccc.h ../version.h
-jstrencode.o: jstrencode.c jstrencode.h ../dbg/dbg.h util.h ../dyn_array/dyn_array.h \
-	../dyn_array/../dbg/dbg.h json_parse.h ../limit_ioccc.h ../version.h
-util.o: util.c ../dbg/dbg.h util.h ../dyn_array/dyn_array.h ../dyn_array/../dbg/dbg.h
-jparse.ref.o: jparse.ref.c jparse.h ../dbg/dbg.h util.h ../dyn_array/dyn_array.h \
-	../dyn_array/../dbg/dbg.h json_parse.h json_util.h json_sem.h jparse.tab.h
-jparse.tab.ref.o: jparse.tab.ref.c jparse.h ../dbg/dbg.h util.h ../dyn_array/dyn_array.h \
-	../dyn_array/../dbg/dbg.h json_parse.h json_util.h json_sem.h jparse.tab.h jparse.lex.h
-jparse.tab.o: jparse.tab.c jparse.h ../dbg/dbg.h util.h ../dyn_array/dyn_array.h \
-	../dyn_array/../dbg/dbg.h json_parse.h json_util.h json_sem.h jparse.tab.h jparse.lex.h
+jnum_gen.o: ../dbg/dbg.h ../dyn_array/../dbg/dbg.h ../dyn_array/dyn_array.h \
+    ../limit_ioccc.h ../version.h jnum_gen.c jnum_gen.h json_parse.h \
+    json_util.h util.h
+jnum_header.o: ../dyn_array/../dbg/dbg.h ../dyn_array/dyn_array.h \
+    jnum_header.c json_parse.h util.h
+jparse.ref.o: ../dbg/dbg.h ../dyn_array/../dbg/dbg.h \
+    ../dyn_array/dyn_array.h jparse.h jparse.ref.c jparse.tab.h \
+    json_parse.h json_sem.h json_util.h util.h
+jparse.tab.o: ../dbg/dbg.h ../dyn_array/../dbg/dbg.h \
+    ../dyn_array/dyn_array.h jparse.h jparse.lex.h jparse.tab.c \
+    jparse.tab.h json_parse.h json_sem.h json_util.h util.h
+jparse.tab.ref.o: ../dbg/dbg.h ../dyn_array/../dbg/dbg.h \
+    ../dyn_array/dyn_array.h jparse.h jparse.lex.h jparse.tab.h \
+    jparse.tab.ref.c json_parse.h json_sem.h json_util.h util.h
+jparse_main.o: ../dbg/dbg.h ../dyn_array/../dbg/dbg.h \
+    ../dyn_array/dyn_array.h jparse.h jparse.tab.h jparse_main.c \
+    jparse_main.h json_parse.h json_sem.h json_util.h util.h
+jsemtblgen.o: ../dbg/dbg.h ../dyn_array/../dbg/dbg.h \
+    ../dyn_array/dyn_array.h ../iocccsize.h jparse.h jparse.tab.h \
+    jsemtblgen.c jsemtblgen.h json_parse.h json_sem.h json_util.h util.h
+json_parse.o: ../dbg/dbg.h ../dyn_array/../dbg/dbg.h \
+    ../dyn_array/dyn_array.h json_parse.c json_parse.h json_util.h util.h
+json_sem.o: ../dbg/dbg.h ../dyn_array/../dbg/dbg.h ../dyn_array/dyn_array.h \
+    json_parse.h json_sem.c json_sem.h json_util.h util.h
+json_util.o: ../dbg/dbg.h ../dyn_array/../dbg/dbg.h \
+    ../dyn_array/dyn_array.h json_parse.h json_util.c json_util.h util.h
+jstrdecode.o: ../dbg/dbg.h ../dyn_array/../dbg/dbg.h \
+    ../dyn_array/dyn_array.h ../limit_ioccc.h ../version.h json_parse.h \
+    jstrdecode.c jstrdecode.h util.h
+jstrencode.o: ../dbg/dbg.h ../dyn_array/../dbg/dbg.h \
+    ../dyn_array/dyn_array.h ../limit_ioccc.h ../version.h json_parse.h \
+    jstrencode.c jstrencode.h util.h
+util.o: ../dbg/dbg.h ../dyn_array/../dbg/dbg.h ../dyn_array/dyn_array.h \
+    util.c util.h

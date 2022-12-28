@@ -39,8 +39,23 @@ CHECKNR= checknr
 CP= cp
 INSTALL= install
 MAKE= make
+MKDIR= mkdir
 RM= rm
 SHELL= bash
+
+
+###########################
+# Makefile directory name #
+###########################
+
+# The name of this directory
+#
+# This value is used to print the generic name of this directory
+# so that various echo statements below can use this name
+# to help distinguish themselves from echo statements used
+# by Makefiles in other directories.
+#
+OUR_NAME= man
 
 
 ##################
@@ -186,7 +201,7 @@ TARGETS= ${LIBA_TARGETS} ${BUILT_MAN_TARGETS}
 # all rule - default rule - must be first #
 ###########################################
 
-all: ${TARGETS} ${ALL_OTHER_TARGETS} Makefile
+all: ${TARGETS} ${ALL_OTHER_TARGETS}
 	@:
 
 
@@ -197,7 +212,7 @@ all: ${TARGETS} ${ALL_OTHER_TARGETS} Makefile
 .PHONY: all \
 	test check_man prep_clean prep_clobber legacy_clean legacy_clobber \
 	extern_include extern_objs extern_liba extern_man extern_prog extern_everything \
-	configure clean clobber install
+	configure clean clobber install depend
 
 
 ####################################
@@ -205,42 +220,52 @@ all: ${TARGETS} ${ALL_OTHER_TARGETS} Makefile
 ####################################
 
 man3/dbg.3: ../dbg/man/man3/dbg.3
+	@${MKDIR} -p man3
 	@${RM} -f $@
 	@${CP} -f $^ $@
 
 man3/err.3: ../dbg/man/man3/err.3
+	@${MKDIR} -p man3
 	@${RM} -f $@
 	@${CP} -f $^ $@
 
 man3/printf_usage.3: ../dbg/man/man3/printf_usage.3
+	@${MKDIR} -p man3
 	@${RM} -f $@
 	@${CP} -f $^ $@
 
 man3/warn.3: ../dbg/man/man3/warn.3
+	@${MKDIR} -p man3
 	@${RM} -f $@
 	@${CP} -f $^ $@
 
 man3/warn_or_err.3: ../dbg/man/man3/warn_or_err.3
+	@${MKDIR} -p man3
 	@${RM} -f $@
 	@${CP} -f $^ $@
 
 man3/msg.3: ../dbg/man/man3/msg.3
+	@${MKDIR} -p man3
 	@${RM} -f $@
 	@${CP} -f $^ $@
 
 man3/werr.3: ../dbg/man/man3/werr.3
+	@${MKDIR} -p man3
 	@${RM} -f $@
 	@${CP} -f $^ $@
 
 man3/dyn_array.3: ../dyn_array/man/man3/dyn_array.3
+	@${MKDIR} -p man3
 	@${RM} -f $@
 	@${CP} -f $^ $@
 
 man1/jparse.1: ../jparse/man/man1/jparse.1
+	@${MKDIR} -p man1
 	@${RM} -f $@
 	@${CP} -f $^ $@
 
 man8/jparse_test.8: ../jparse/man/man8/jparse_test.8
+	@${MKDIR} -p man8
 	@${RM} -f $@
 	@${CP} -f $^ $@
 
@@ -289,25 +314,48 @@ extern_everything: extern_include extern_objs extern_liba extern_man extern_prog
 # repo tools - rules for those who maintain the this repo #
 ###########################################################
 
-test: check_man Makefile
-	@:
+test: check_man
+	@echo
+	@echo "${OUR_NAME}: make $@ starting"
+	@echo
+	@echo "${OUR_NAME}: nothing to do"
+	@echo
+	@echo "${OUR_NAME}: make $@ complete"
 
 # sequence exit codes
 #
 seqcexit:
-	@:
+	@echo
+	@echo "${OUR_NAME}: make $@ starting"
+	@echo
+	@echo "${OUR_NAME}: nothing to do"
+	@echo
+	@echo "${OUR_NAME}: make $@ complete"
 
 picky: ${ALL_SRC}
-	@:
+	@echo
+	@echo "${OUR_NAME}: make $@ starting"
+	@echo
+	@echo "${OUR_NAME}: nothing to do"
+	@echo
+	@echo "${OUR_NAME}: make $@ complete"
 
 # inspect and verify shell scripts
 #
 shellcheck:
-	@:
+	@echo
+	@echo "${OUR_NAME}: make $@ starting"
+	@echo
+	@echo "${OUR_NAME}: nothing to do"
+	@echo
+	@echo "${OUR_NAME}: make $@ complete"
 
 # inspect and verify man pages
 #
-check_man: ${ALL_MAN_TARGETS} Makefile
+check_man: ${ALL_MAN_TARGETS}
+	@echo
+	@echo "${OUR_NAME}: make $@ starting"
+	@echo
 	@-HAVE_CHECKNR="`type -P ${CHECKNR}`"; if [[ -z "$$HAVE_CHECKNR" ]]; then \
 	    echo 'The checknr command could not be found.' 1>&2; \
 	    echo 'The checknr command is required to run the $@ rule.' 1>&2; \
@@ -325,25 +373,52 @@ check_man: ${ALL_MAN_TARGETS} Makefile
 		exit 23; \
 	    fi; \
 	fi
+	@echo
+	@echo "${OUR_NAME}: make $@ complete"
 
 # vi/vim tags
 #
 tags: ${ALL_CSRC} ${ALL_HSRC}
-	@:
+	@echo
+	@echo "${OUR_NAME}: make $@ starting"
+	@echo
+	@echo "${OUR_NAME}: nothing to do"
+	@echo
+	@echo "${OUR_NAME}: make $@ complete"
 
 prep_clean: legacy_clean
-	@:
+	@echo
+	@echo "${OUR_NAME}: make $@ starting"
+	@echo
+	@echo "${OUR_NAME}: nothing to do"
+	@echo
+	@echo "${OUR_NAME}: make $@ complete"
 
 prep_clobber: prep_clean legacy_clobber
-	@:
+	@echo
+	@echo "${OUR_NAME}: make $@ starting"
+	@echo
+	@echo "${OUR_NAME}: nothing to do"
+	@echo
+	@echo "${OUR_NAME}: make $@ complete"
 
 legacy_clean:
-	@:
+	@echo
+	@echo "${OUR_NAME}: make $@ starting"
+	@echo
+	@echo "${OUR_NAME}: nothing to do"
+	@echo
+	@echo "${OUR_NAME}: make $@ complete"
 
 legacy_clobber: legacy_clean
+	@echo
+	@echo "${OUR_NAME}: make $@ starting"
+	@echo
 	${RM} -f *.html
 	${RM} -f dbg.3 dyn_array.3 err.3 jparse.1 jparse_test.8 msg.3 printf_usage.3
 	${RM} -f warn.3 warn_or_err.3 werr.3
+	@echo
+	@echo "${OUR_NAME}: make $@ complete"
 
 
 ###################################
@@ -354,12 +429,25 @@ configure:
 	@echo nothing to $@
 
 clean:
-	@:
+	@echo
+	@echo "${OUR_NAME}: make $@ starting"
+	@echo
+	@echo "${OUR_NAME}: nothing to do"
+	@echo
+	@echo "${OUR_NAME}: make $@ complete"
 
 clobber: clean
+	@echo
+	@echo "${OUR_NAME}: make $@ starting"
+	@echo
 	${RM} -f ${TARGETS}
+	@echo
+	@echo "${OUR_NAME}: make $@ complete"
 
 install: all
+	@echo
+	@echo "${OUR_NAME}: make $@ starting"
+	@echo
 #none#	${INSTALL} -v -d -m 0775 ${DEST_LIB}
 #none#	${INSTALL} -v -d -m 0775 ${DEST_DIR}
 	${INSTALL} -v -d -m 0775 ${MAN1_DIR}
@@ -371,6 +459,8 @@ install: all
 	${INSTALL} -v -m 0444 ${MAN8_TARGETS} ${MAN8_DIR}
 #none#	${INSTALL} -v -m 0444 ${LIBA_TARGETS} ${DEST_LIB}
 #none#	${INSTALL} -v -m 0444 ${H_SRC_TARGETS} ${DEST_INCLUDE}
+	@echo
+	@echo "${OUR_NAME}: make $@ complete"
 
 
 ###############
@@ -378,6 +468,11 @@ install: all
 ###############
 
 depend:
-	@:
+	@echo
+	@echo "${OUR_NAME}: make $@ starting"
+	@echo
+	@echo "${OUR_NAME}: nothing to do"
+	@echo
+	@echo "${OUR_NAME}: make $@ complete"
 
 ### DO NOT CHANGE MANUALLY BEYOND THIS LINE

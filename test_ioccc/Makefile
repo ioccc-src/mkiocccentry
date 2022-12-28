@@ -1,6 +1,6 @@
 #!/usr/bin/make
 #
-# test - mkiocccentry test tools
+# test_ioccc - mkiocccentry test tools
 #
 # Copyright (c) 2022 by Landon Curt Noll.  All Rights Reserved.
 #
@@ -38,6 +38,7 @@
 #
 CC= cc
 CMP= cmp
+INDEPEND= independ
 MAKE= make
 PICKY= picky
 RM= rm
@@ -45,6 +46,20 @@ SED= sed
 SEQCEXIT= seqcexit
 SHELL= bash
 SHELLCHECK= shellcheck
+
+
+###########################
+# Makefile directory name #
+###########################
+
+# The name of this directory
+#
+# This value is used to print the generic name of this directory
+# so that various echo statements below can use this name
+# to help distinguish themselves from echo statements used
+# by Makefiles in other directories.
+#
+OUR_NAME= test_ioccc
 
 
 ##################
@@ -225,14 +240,14 @@ all: ${TARGETS}
 
 .PHONY: all \
 	test prep_clean prep_clobber legacy_clean legacy_clobber \
-	configure clean clobber install
+	configure clean clobber install depend
 
 
 ####################################
 # things to make in this directory #
 ####################################
 
-utf8_test.o: utf8_test.c ../utf8_posix_map.h Makefile
+utf8_test.o: utf8_test.c ../utf8_posix_map.h
 	${CC} ${CFLAGS} -I.. utf8_test.c -c
 
 utf8_test: utf8_test.o ../utf8_posix_map.o ../jparse/util.o ../dyn_array/dyn_array.a ../dbg/dbg.a
@@ -246,11 +261,8 @@ ioccc_test.sh: ../dbg/dbg_test ../dyn_array/dyn_test
 # rules that invoke Makefile rules in other directories #
 #########################################################
 
-../jparse/util.o: ../Makefile
+../jparse/util.o: ../jparse/Makefile
 	@${MAKE} -C ../jparse util.o
-
-../utf8_posix_map.h: ../Makefile
-	@${MAKE} -C .. utf8_posix_map.h
 
 ../utf8_posix_map.o: ../Makefile
 	@${MAKE} -C .. utf8_posix_map.o
@@ -278,11 +290,19 @@ ioccc_test.sh: ../dbg/dbg_test ../dyn_array/dyn_test
 ###########################################################
 
 test: all ioccc_test.sh
+	@echo
+	@echo "${OUR_NAME}: make $@ starting"
+	@echo
 	 ./ioccc_test.sh
+	@echo
+	@echo "${OUR_NAME}: make $@ complete"
 
 # sequence exit codes
 #
 seqcexit: ${ALL_CSRC}
+	@echo
+	@echo "${OUR_NAME}: make $@ starting"
+	@echo
 	@HAVE_SEQCEXIT="`type -P ${SEQCEXIT}`"; if [[ -z "$$HAVE_SEQCEXIT" ]]; then \
 	    echo 'The seqcexit tool could not be found.' 1>&2; \
 	    echo 'The seqcexit tool is required for this rule.'; 1>&2; \
@@ -296,8 +316,13 @@ seqcexit: ${ALL_CSRC}
 	    echo "${SEQCEXIT} -D werr_sem_val -D werrp_sem_val -- ${ALL_CSRC}"; \
 	    ${SEQCEXIT} -D werr_sem_val -D werrp_sem_val -- ${ALL_CSRC}; \
 	fi
+	@echo
+	@echo "${OUR_NAME}: make $@ complete"
 
 picky: ${ALL_SRC}
+	@echo
+	@echo "${OUR_NAME}: make $@ starting"
+	@echo
 	@if ! type -P ${PICKY} >/dev/null 2>&1; then \
 	    echo "The picky tool could not be found." 1>&2; \
 	    echo "The picky tool is required for this rule." 1>&2; \
@@ -315,10 +340,15 @@ picky: ${ALL_SRC}
 	    ${PICKY} -w -u -s -t8 -v -e -8 -- ${SH_FILES}; EXIT_CODE="$$?"; \
 	    if [[ $$EXIT_CODE -ne 0 ]]; then echo "make $@: ERROR: CODE[2]: $$EXIT_CODE" 1>&2; exit 2; fi; \
 	fi
+	@echo
+	@echo "${OUR_NAME}: make $@ complete"
 
 # inspect and verify shell scripts
 #
 shellcheck: ${SH_FILES} .shellcheckrc
+	@echo
+	@echo "${OUR_NAME}: make $@ starting"
+	@echo
 	@HAVE_SHELLCHECK="`type -P ${SHELLCHECK}`"; if [[ -z "$$HAVE_SHELLCHECK" ]]; then \
 	    echo 'The shellcheck command could not be found.' 1>&2; \
 	    echo 'The shellcheck command is required to run this rule.'; 1>&2; \
@@ -334,29 +364,61 @@ shellcheck: ${SH_FILES} .shellcheckrc
 	    ${SHELLCHECK} -f gcc -- ${SH_FILES}; \
 	    if [[ $$EXIT_CODE -ne 0 ]]; then echo "make $@: ERROR: CODE[1]: $$EXIT_CODE" 1>&2; exit 1; fi; \
 	fi
+	@echo
+	@echo "${OUR_NAME}: make $@ complete"
 
 # inspect and verify man pages
 #
 check_man:
-	@:
+	@echo
+	@echo "${OUR_NAME}: make $@ starting"
+	@echo
+	@echo "${OUR_NAME}: nothing to do"
+	@echo
+	@echo "${OUR_NAME}: make $@ complete"
 
 # vi/vim tags
 #
 tags: ${ALL_CSRC} ${ALL_HSRC}
-	@:
+	@echo
+	@echo "${OUR_NAME}: make $@ starting"
+	@echo
+	@echo "${OUR_NAME}: nothing to do"
+	@echo
+	@echo "${OUR_NAME}: make $@ complete"
 
 prep_clean: legacy_clean
-	@:
+	@echo
+	@echo "${OUR_NAME}: make $@ starting"
+	@echo
+	@echo "${OUR_NAME}: nothing to do"
+	@echo
+	@echo "${OUR_NAME}: make $@ complete"
 
 prep_clobber: prep_clean legacy_clobber
+	@echo
+	@echo "${OUR_NAME}: make $@ starting"
+	@echo
 	${RM} -rf test_iocccsize test_src test_work
 	${RM} -f utf8_test
+	@echo
+	@echo "${OUR_NAME}: make $@ complete"
 
 legacy_clean:
+	@echo
+	@echo "${OUR_NAME}: make $@ starting"
+	@echo
 	${RM} -f jint.test.o jfloat.test.o
+	@echo
+	@echo "${OUR_NAME}: make $@ complete"
 
 legacy_clobber: legacy_clean
+	@echo
+	@echo "${OUR_NAME}: make $@ starting"
+	@echo
 	${RM} -f jparse_test.log jint.test jfloat.test
+	@echo
+	@echo "${OUR_NAME}: make $@ complete"
 
 
 
@@ -368,36 +430,55 @@ configure:
 	@echo nothing to $@
 
 clean:
+	@echo
+	@echo "${OUR_NAME}: make $@ starting"
+	@echo
 	${RM} -f utf8_test.o
+	@echo
+	@echo "${OUR_NAME}: make $@ complete"
 
 clobber: clean
+	@echo
+	@echo "${OUR_NAME}: make $@ starting"
+	@echo
 	${RM} -f ${TARGETS}
 	${RM} -f test_ioccc.log chkentry_test.log txzchk_test.log
+	@echo
+	@echo "${OUR_NAME}: make $@ complete"
 
 install: all
-	@echo nothing to $@
+	@echo
+	@echo "${OUR_NAME}: make $@ starting"
+	@echo
+	@echo "${OUR_NAME}: nothing to do"
+	@echo
+	@echo "${OUR_NAME}: make $@ complete"
 
 
 ###############
 # make depend #
 ###############
 
-depend: ${ALL_CSRC} ../soup/fmt_depend.sh
+depend: ${ALL_CSRC} all
 	@echo
-	@echo "make depend starting"
+	@echo "${OUR_NAME}: make $@ starting"
 	@echo
 	@${SED} -i.orig -n -e '1,/^### DO NOT CHANGE MANUALLY BEYOND THIS LINE/p' Makefile
-	${CC} ${CFLAGS} -MM ${ALL_CSRC} | ../soup/fmt_depend.sh >> Makefile
+	${CC} ${CFLAGS} -MM ${ALL_CSRC} | ${INDEPEND} >> Makefile
 	@-if ${CMP} -s Makefile.orig Makefile; then \
 	    ${RM} -f Makefile.orig; \
 	else \
-	    echo; echo "Makefile dependencies updated"; echo; echo "Previous version may be found in: Makefile.orig"; \
+	    echo; \
+	    echo "${OUR_NAME}: Makefile dependencies updated"; \
+	    echo; \
+	    echo "${OUR_NAME}: Previous version may be found in: Makefile.orig"; \
 	fi
 	@echo
-	@echo "make depend completed"
+	@echo "${OUR_NAME}: make $@ complete"
 
 ### DO NOT CHANGE MANUALLY BEYOND THIS LINE
-utf8_test.o: utf8_test.c ../utf8_posix_map.h ../jparse/jparse.h ../jparse/../dbg/dbg.h \
-	../jparse/util.h ../jparse/../dyn_array/dyn_array.h ../jparse/../dyn_array/../dbg/dbg.h \
-	../jparse/json_parse.h ../jparse/json_util.h ../jparse/json_sem.h ../jparse/jparse.tab.h \
-	../dbg/dbg.h ../limit_ioccc.h ../version.h
+utf8_test.o: ../dbg/dbg.h ../jparse/../dbg/dbg.h \
+    ../jparse/../dyn_array/../dbg/dbg.h ../jparse/../dyn_array/dyn_array.h \
+    ../jparse/jparse.h ../jparse/jparse.tab.h ../jparse/json_parse.h \
+    ../jparse/json_sem.h ../jparse/json_util.h ../jparse/util.h \
+    ../limit_ioccc.h ../utf8_posix_map.h ../version.h utf8_test.c

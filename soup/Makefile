@@ -41,6 +41,7 @@ CC= cc
 CMP= cmp
 CTAGS= ctags
 GREP= grep
+INDEPEND= independ
 MAKE= make
 PICKY= picky
 RANLIB= ranlib
@@ -51,6 +52,20 @@ SHELL= bash
 SHELLCHECK= shellcheck
 SLEEP= sleep
 TOUCH= touch
+
+
+###########################
+# Makefile directory name #
+###########################
+
+# The name of this directory
+#
+# This value is used to print the generic name of this directory
+# so that various echo statements below can use this name
+# to help distinguish themselves from echo statements used
+# by Makefiles in other directories.
+#
+OUR_NAME= soup
 
 
 ##################
@@ -237,7 +252,7 @@ all: ${TARGETS}
 
 .PHONY: all \
 	depend soup eat eating eat_soup eating_soup prep_clean prep_clobber legacy_clean legacy_clobber \
-	configure clean clobber install \
+	configure clean clobber install depend \
 	../jparse/jsemcgen.sh \
 	../jparse/test_jparse/test_JSON/info.json/good/info.reference.json \
 	../jparse/test_jparse/test_JSON/auth.json/good/auth.reference.json
@@ -247,13 +262,13 @@ all: ${TARGETS}
 # things to make in this directory #
 ####################################
 
-chk_sem_info.o: chk_sem_info.c chk_sem_info.h Makefile
+chk_sem_info.o: chk_sem_info.c chk_sem_info.h
 	${CC} ${CFLAGS} -I.. chk_sem_info.c -c
 
-chk_sem_auth.o: chk_sem_auth.c chk_sem_auth.h Makefile
+chk_sem_auth.o: chk_sem_auth.c chk_sem_auth.h
 	${CC} ${CFLAGS} -I.. chk_sem_auth.c -c
 
-chk_validate.o: chk_validate.c Makefile
+chk_validate.o: chk_validate.c
 	${CC} ${CFLAGS} -I.. chk_validate.c -c
 
 soup.a: ${LIB_OBJS}
@@ -262,28 +277,28 @@ soup.a: ${LIB_OBJS}
 	${RANLIB} $@
 
 chk_sem_info.c: ../jparse/jsemtblgen ../jparse/jsemcgen.sh ../jparse/test_jparse/test_JSON/info.json/good/info.reference.json \
-		chk.info.head.c chk.info.ptch.c chk.info.tail.c Makefile
+		chk.info.head.c chk.info.ptch.c chk.info.tail.c
 	@${RM} -f $@
 	../jparse/jsemcgen.sh -N sem_info -P chk -j ../jparse/jsemtblgen -- \
 	    ../jparse/test_jparse/test_JSON/info.json/good/info.reference.json chk.info.head.c \
 	    chk.info.ptch.c chk.info.tail.c $@
 
 chk_sem_info.h: ../jparse/jsemtblgen ../jparse/jsemcgen.sh ../jparse/test_jparse/test_JSON/info.json/good/info.reference.json \
-		chk.info.head.h chk.info.ptch.h chk.info.tail.h Makefile
+		chk.info.head.h chk.info.ptch.h chk.info.tail.h
 	@${RM} -f $@
 	@../jparse/jsemcgen.sh -N sem_info -P chk -I -j ../jparse/jsemtblgen -- \
 	    ../jparse/test_jparse/test_JSON/info.json/good/info.reference.json chk.info.head.h \
 	    chk.info.ptch.h chk.info.tail.h $@
 
 chk_sem_auth.c: ../jparse/jsemtblgen ../jparse/jsemcgen.sh ../jparse/test_jparse/test_JSON/auth.json/good/auth.reference.json \
-		chk.auth.head.c chk.auth.ptch.c chk.auth.tail.c Makefile
+		chk.auth.head.c chk.auth.ptch.c chk.auth.tail.c
 	@${RM} -f $@
 	../jparse/jsemcgen.sh -N sem_auth -P chk -j ../jparse/jsemtblgen -- \
 	    ../jparse/test_jparse/test_JSON/auth.json/good/auth.reference.json chk.auth.head.c \
 	    chk.auth.ptch.c chk.auth.tail.c $@
 
 chk_sem_auth.h: ../jparse/jsemtblgen ../jparse/jsemcgen.sh ../jparse/test_jparse/test_JSON/auth.json/good/auth.reference.json \
-		chk.auth.head.h chk.auth.ptch.h chk.auth.tail.h Makefile
+		chk.auth.head.h chk.auth.ptch.h chk.auth.tail.h
 	@${RM} -f $@
 	@../jparse/jsemcgen.sh -N sem_auth -P chk -I -j ../jparse/jsemtblgen -- \
 	    ../jparse/test_jparse/test_JSON/auth.json/good/auth.reference.json chk.auth.head.h \
@@ -333,6 +348,14 @@ extern_everything: extern_include extern_objs extern_liba extern_man extern_prog
 ###########################################################
 # repo tools - rules for those who maintain the this repo #
 ###########################################################
+
+test: all
+	@echo
+	@echo "${OUR_NAME}: make $@ starting"
+	@echo
+	@echo "${OUR_NAME}: nothing to do"
+	@echo
+	@echo "${OUR_NAME}: make $@ complete"
 
 # Form unpatched semantic tables, without headers and trailers, from the reference info and auth JSON files
 #
@@ -395,6 +418,9 @@ eat eating eat_soup eating_soup: all
 # sequence exit codes
 #
 seqcexit: ${ALL_CSRC}
+	@echo
+	@echo "${OUR_NAME}: make $@ starting"
+	@echo
 	@HAVE_SEQCEXIT="`type -P ${SEQCEXIT}`"; if [[ -z "$$HAVE_SEQCEXIT" ]]; then \
 	    echo 'The seqcexit tool could not be found.' 1>&2; \
 	    echo 'The seqcexit tool is required for this rule.'; 1>&2; \
@@ -408,8 +434,13 @@ seqcexit: ${ALL_CSRC}
 	    echo "${SEQCEXIT} -D werr_sem_val -D werrp_sem_val -- ${ALL_CSRC}"; \
 	    ${SEQCEXIT} -D werr_sem_val -D werrp_sem_val -- ${ALL_CSRC}; \
 	fi
+	@echo
+	@echo "${OUR_NAME}: make $@ complete"
 
 picky: ${ALL_SRC}
+	@echo
+	@echo "${OUR_NAME}: make $@ starting"
+	@echo
 	@if ! type -P ${PICKY} >/dev/null 2>&1; then \
 	    echo "The picky tool could not be found." 1>&2; \
 	    echo "The picky tool is required for this rule." 1>&2; \
@@ -427,10 +458,15 @@ picky: ${ALL_SRC}
 	    ${PICKY} -w -u -s -t8 -v -e -8 -- ${SH_FILES}; EXIT_CODE="$$?"; \
 	    if [[ $$EXIT_CODE -ne 0 ]]; then echo "make $@: ERROR: CODE[2]: $$EXIT_CODE" 1>&2; exit 2; fi; \
 	fi
+	@echo
+	@echo "${OUR_NAME}: make $@ complete"
 
 # inspect and verify shell scripts
 #
 shellcheck: ${SH_FILES} .shellcheckrc
+	@echo
+	@echo "${OUR_NAME}: make $@ starting"
+	@echo
 	@HAVE_SHELLCHECK="`type -P ${SHELLCHECK}`"; if [[ -z "$$HAVE_SHELLCHECK" ]]; then \
 	    echo 'The shellcheck command could not be found.' 1>&2; \
 	    echo 'The shellcheck command is required to run this rule.'; 1>&2; \
@@ -446,29 +482,61 @@ shellcheck: ${SH_FILES} .shellcheckrc
 	    ${SHELLCHECK} -f gcc -- ${SH_FILES}; \
 	    if [[ $$EXIT_CODE -ne 0 ]]; then echo "make $@: ERROR: CODE[1]: $$EXIT_CODE" 1>&2; exit 1; fi; \
 	fi
+	@echo
+	@echo "${OUR_NAME}: make $@ complete"
 
 # inspect and verify man pages
 #
 check_man:
-	@:
+	@echo
+	@echo "${OUR_NAME}: make $@ starting"
+	@echo
+	@echo "${OUR_NAME}: nothing to do"
+	@echo
+	@echo "${OUR_NAME}: make $@ complete"
 
 # vi/vim tags
 #
 tags: ${ALL_CSRC} ${ALL_HSRC}
+	@echo
+	@echo "${OUR_NAME}: make $@ starting"
+	@echo
 	-${CTAGS} ${ALL_CSRC} ${ALL_HSRC} 2>&1 | \
 	     ${GREP} -E -v 'Duplicate entry|Second entry ignored'
+	@echo
+	@echo "${OUR_NAME}: make $@ complete"
 
 prep_clean: legacy_clean
-	@:
+	@echo
+	@echo "${OUR_NAME}: make $@ starting"
+	@echo
+	@echo "${OUR_NAME}: nothing to do"
+	@echo
+	@echo "${OUR_NAME}: make $@ complete"
 
 prep_clobber: prep_clean legacy_clobber
+	@echo
+	@echo "${OUR_NAME}: make $@ starting"
+	@echo
 	${RM} -rf ref
+	@echo
+	@echo "${OUR_NAME}: make $@ complete"
 
 legacy_clean:
-	@:
+	@echo
+	@echo "${OUR_NAME}: make $@ starting"
+	@echo
+	@echo "${OUR_NAME}: nothing to do"
+	@echo
+	@echo "${OUR_NAME}: make $@ complete"
 
 legacy_clobber: legacy_clean
-	@:
+	@echo
+	@echo "${OUR_NAME}: make $@ starting"
+	@echo
+	@echo "${OUR_NAME}: nothing to do"
+	@echo
+	@echo "${OUR_NAME}: make $@ complete"
 
 
 ###################################
@@ -479,49 +547,64 @@ configure:
 	@echo "nothing to $@. Try making soup instead."
 
 clean:
+	@echo
+	@echo "${OUR_NAME}: make $@ starting"
+	@echo
 	${RM} -f chk_sem_auth.o chk_sem_info.o chk_validate.o
+	@echo
+	@echo "${OUR_NAME}: make $@ complete"
 
 clobber: clean
+	@echo
+	@echo "${OUR_NAME}: make $@ starting"
+	@echo
 	${RM} -f .soup
 	${RM} -f tags
+	@echo
+	@echo "${OUR_NAME}: make $@ complete"
 
 install: all
+	@echo
+	@echo "${OUR_NAME}: make $@ starting"
+	@echo
 	@echo "nothing to $@. Try eating soup instead."
+	@echo
+	@echo "${OUR_NAME}: make $@ complete"
 
 
 ###############
 # make depend #
 ###############
 
-depend: ${ALL_CSRC} ./fmt_depend.sh
+depend: ${ALL_CSRC} all
 	@echo
-	@echo "soup make depend starting"
+	@echo "${OUR_NAME}: make $@ starting"
 	@echo
 	@${SED} -i.orig -n -e '1,/^### DO NOT CHANGE MANUALLY BEYOND THIS LINE/p' Makefile
-	${CC} ${CFLAGS} -MM -I../dbg -I.. ${ALL_CSRC} | ./fmt_depend.sh >> Makefile
+	${CC} ${CFLAGS} -MM -I../dbg -I.. ${ALL_CSRC} | ${INDEPEND} >> Makefile
 	@-if ${CMP} -s Makefile.orig Makefile; then \
 	    ${RM} -f Makefile.orig; \
 	else \
-	    echo; echo "Makefile dependencies updated"; echo; echo "Previous version may be found in: Makefile.orig"; \
+	    echo; \
+	    echo "${OUR_NAME}: Makefile dependencies updated"; \
+	    echo; \
+	    echo "${OUR_NAME}: Previous version may be found in: Makefile.orig"; \
 	fi
 	@echo
-	@echo "soup make depend completed"
+	@echo "${OUR_NAME}: make $@ complete"
 
 ### DO NOT CHANGE MANUALLY BEYOND THIS LINE
-chk_sem_info.o: chk_sem_info.c chk_sem_info.h ../jparse/json_sem.h ../jparse/util.h \
-	../jparse/../dyn_array/dyn_array.h ../jparse/../dyn_array/../dbg/dbg.h ../jparse/json_parse.h \
-	../jparse/json_util.h
-chk_sem_auth.o: chk_sem_auth.c chk_sem_auth.h ../jparse/json_sem.h ../jparse/util.h \
-	../jparse/../dyn_array/dyn_array.h ../jparse/../dyn_array/../dbg/dbg.h ../jparse/json_parse.h \
-	../jparse/json_util.h
-chk_validate.o: chk_validate.c chk_validate.h ../entry_util.h ../jparse/jparse.h \
-	../jparse/../dbg/dbg.h ../jparse/util.h ../jparse/../dyn_array/dyn_array.h \
-	../jparse/../dyn_array/../dbg/dbg.h ../jparse/json_parse.h ../jparse/json_util.h \
-	../jparse/json_sem.h ../jparse/jparse.tab.h chk_sem_auth.h chk_sem_info.h ../entry_time.h \
-	../location.h ../dbg/dbg.h
-chk_sem_info.o: chk_sem_info.c chk_sem_info.h ../jparse/json_sem.h ../jparse/util.h \
-	../jparse/../dyn_array/dyn_array.h ../jparse/../dyn_array/../dbg/dbg.h ../jparse/json_parse.h \
-	../jparse/json_util.h
-chk_sem_auth.o: chk_sem_auth.c chk_sem_auth.h ../jparse/json_sem.h ../jparse/util.h \
-	../jparse/../dyn_array/dyn_array.h ../jparse/../dyn_array/../dbg/dbg.h ../jparse/json_parse.h \
-	../jparse/json_util.h
+chk_sem_auth.o: ../jparse/../dyn_array/../dbg/dbg.h \
+    ../jparse/../dyn_array/dyn_array.h ../jparse/json_parse.h \
+    ../jparse/json_sem.h ../jparse/json_util.h ../jparse/util.h \
+    chk_sem_auth.c chk_sem_auth.h
+chk_sem_info.o: ../jparse/../dyn_array/../dbg/dbg.h \
+    ../jparse/../dyn_array/dyn_array.h ../jparse/json_parse.h \
+    ../jparse/json_sem.h ../jparse/json_util.h ../jparse/util.h \
+    chk_sem_info.c chk_sem_info.h
+chk_validate.o: ../dbg/dbg.h ../entry_time.h ../entry_util.h \
+    ../jparse/../dbg/dbg.h ../jparse/../dyn_array/../dbg/dbg.h \
+    ../jparse/../dyn_array/dyn_array.h ../jparse/jparse.h \
+    ../jparse/jparse.tab.h ../jparse/json_parse.h ../jparse/json_sem.h \
+    ../jparse/json_util.h ../jparse/util.h ../location.h chk_sem_auth.h \
+    chk_sem_info.h chk_validate.c chk_validate.h

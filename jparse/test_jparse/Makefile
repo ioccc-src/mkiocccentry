@@ -31,6 +31,7 @@ CC= cc
 CMP= cmp
 CTAGS= ctags
 GREP= grep
+INDEPEND= independ
 MAKE= make
 PICKY= picky
 RM= rm
@@ -38,6 +39,20 @@ SED= sed
 SEQCEXIT= seqcexit
 SHELL= bash
 SHELLCHECK= shellcheck
+
+
+###########################
+# Makefile directory name #
+###########################
+
+# The name of this directory
+#
+# This value is used to print the generic name of this directory
+# so that various echo statements below can use this name
+# to help distinguish themselves from echo statements used
+# by Makefiles in other directories.
+#
+OUR_NAME= test_jparse
 
 
 ##################
@@ -221,7 +236,7 @@ all: ${TARGETS}
 
 .PHONY: all \
 	test prep_clean prep_clobber legacy_clean legacy_clobber \
-	configure clean clobber install \
+	configure clean clobber install depend \
 	test_JSON/info.json/good/info.reference.json \
 	test_JSON/auth.json/good/auth.reference.json
 
@@ -230,10 +245,10 @@ all: ${TARGETS}
 # things to make in this directory #
 ####################################
 
-jnum_test.o: jnum_test.c Makefile
+jnum_test.o: jnum_test.c
 	${CC} ${CFLAGS} -I../.. jnum_test.c -c
 
-jnum_chk.o: jnum_chk.c jnum_chk.h Makefile
+jnum_chk.o: jnum_chk.c jnum_chk.h
 	${CC} ${CFLAGS} -I../.. jnum_chk.c -c
 
 jnum_chk: jnum_chk.o jnum_test.o ../jparse.a ../../dyn_array/dyn_array.o ../../dbg/dbg.a
@@ -270,11 +285,19 @@ test_JSON/auth.json/good/auth.reference.json:
 ###########################################################
 
 test: all jparse_test.sh
+	@echo
+	@echo "${OUR_NAME}: make $@ starting"
+	@echo
 	 ./jparse_test.sh -j ../jparse -d ./test_JSON ./json_teststr.txt
+	@echo
+	@echo "${OUR_NAME}: make $@ complete"
 
 # sequence exit codes
 #
 seqcexit: ${ALL_CSRC}
+	@echo
+	@echo "${OUR_NAME}: make $@ starting"
+	@echo
 	@HAVE_SEQCEXIT="`type -P ${SEQCEXIT}`"; if [[ -z "$$HAVE_SEQCEXIT" ]]; then \
 	    echo 'The seqcexit tool could not be found.' 1>&2; \
 	    echo 'The seqcexit tool is required for this rule.'; 1>&2; \
@@ -288,8 +311,13 @@ seqcexit: ${ALL_CSRC}
 	    echo "${SEQCEXIT} -D werr_sem_val -D werrp_sem_val -- ${ALL_CSRC}"; \
 	    ${SEQCEXIT} -D werr_sem_val -D werrp_sem_val -- ${ALL_CSRC}; \
 	fi
+	@echo
+	@echo "${OUR_NAME}: make $@ complete"
 
 picky: ${ALL_SRC}
+	@echo
+	@echo "${OUR_NAME}: make $@ starting"
+	@echo
 	@if ! type -P ${PICKY} >/dev/null 2>&1; then \
 	    echo "The picky tool could not be found." 1>&2; \
 	    echo "The picky tool is required for this rule." 1>&2; \
@@ -307,10 +335,15 @@ picky: ${ALL_SRC}
 	    ${PICKY} -w -u -s -t8 -v -e -8 -- ${SH_FILES}; EXIT_CODE="$$?"; \
 	    if [[ $$EXIT_CODE -ne 0 ]]; then echo "make $@: ERROR: CODE[2]: $$EXIT_CODE" 1>&2; exit 2; fi; \
 	fi
+	@echo
+	@echo "${OUR_NAME}: make $@ complete"
 
 # inspect and verify shell scripts
 #
 shellcheck: ${SH_FILES} .shellcheckrc
+	@echo
+	@echo "${OUR_NAME}: make $@ starting"
+	@echo
 	@HAVE_SHELLCHECK="`type -P ${SHELLCHECK}`"; if [[ -z "$$HAVE_SHELLCHECK" ]]; then \
 	    echo 'The shellcheck command could not be found.' 1>&2; \
 	    echo 'The shellcheck command is required to run this rule.'; 1>&2; \
@@ -326,32 +359,64 @@ shellcheck: ${SH_FILES} .shellcheckrc
 	    ${SHELLCHECK} -f gcc -- ${SH_FILES}; \
 	    if [[ $$EXIT_CODE -ne 0 ]]; then echo "make $@: ERROR: CODE[1]: $$EXIT_CODE" 1>&2; exit 1; fi; \
 	fi
+	@echo
+	@echo "${OUR_NAME}: make $@ complete"
 
 # inspect and verify man pages
 #
 check_man:
-	@:
+	@echo
+	@echo "${OUR_NAME}: make $@ starting"
+	@echo
+	@echo "${OUR_NAME}: nothing to do"
+	@echo
+	@echo "${OUR_NAME}: make $@ complete"
 
 # vi/vim tags
 #
 tags: ${ALL_CSRC} ${ALL_HSRC}
+	@echo
+	@echo "${OUR_NAME}: make $@ starting"
+	@echo
 	-${CTAGS} ${ALL_CSRC} ${ALL_HSRC} 2>&1 | \
 	     ${GREP} -E -v 'Duplicate entry|Second entry ignored'
+	@echo
+	@echo "${OUR_NAME}: make $@ complete"
 
 prep_clean: legacy_clean
+	@echo
+	@echo "${OUR_NAME}: make $@ starting"
+	@echo
 	${RM} -f jnum_chk.o jnum_gen.o
+	@echo
+	@echo "${OUR_NAME}: make $@ complete"
 
 prep_clobber: prep_clean legacy_clobber
+	@echo
+	@echo "${OUR_NAME}: make $@ starting"
+	@echo
 	${RM} -f jstr_test.out jstr_test2.out
 	${RM} -f jnum_chk jnum_gen
 	${RM} -rf jnum_chk.dSYM
 	${RM} -rf jnum_gen.dSYM
+	@echo
+	@echo "${OUR_NAME}: make $@ complete"
 
 legacy_clean:
-	@:
+	@echo
+	@echo "${OUR_NAME}: make $@ starting"
+	@echo
+	@echo "${OUR_NAME}: nothing to do"
+	@echo
+	@echo "${OUR_NAME}: make $@ complete"
 
 legacy_clobber: legacy_clean
-	@:
+	@echo
+	@echo "${OUR_NAME}: make $@ starting"
+	@echo
+	@echo "${OUR_NAME}: nothing to do"
+	@echo
+	@echo "${OUR_NAME}: make $@ complete"
 
 
 ###################################
@@ -362,40 +427,58 @@ configure:
 	@echo nothing to $@
 
 clean:
+	@echo
+	@echo "${OUR_NAME}: make $@ starting"
+	@echo
 	${RM} -f ${ALL_OBJS} ${ALL_BUILT_SRC}
+	@echo
+	@echo "${OUR_NAME}: make $@ complete"
 
 clobber: clean
+	@echo
+	@echo "${OUR_NAME}: make $@ starting"
+	@echo
 	${RM} -f ${TARGETS}
 	${RM} -f jparse_test.log chkentry_test.log txzchk_test.log
+	@echo
+	@echo "${OUR_NAME}: make $@ complete"
 	${RM} -f tags
 
 install: all
-	@echo nothing to $@
+	@echo
+	@echo "${OUR_NAME}: make $@ starting"
+	@echo
+	@echo "${OUR_NAME}: nothing to do"
+	@echo
+	@echo "${OUR_NAME}: make $@ complete"
 
 
 ###############
 # make depend #
 ###############
 
-depend: ${ALL_CSRC} ../../soup/fmt_depend.sh
+depend: ${ALL_CSRC} all
 	@echo
-	@echo "make depend starting"
+	@echo "${OUR_NAME}: make $@ starting"
 	@echo
 	@${SED} -i.orig -n -e '1,/^### DO NOT CHANGE MANUALLY BEYOND THIS LINE/p' Makefile
-	${CC} ${CFLAGS} -MM ${ALL_CSRC} | ../../soup/fmt_depend.sh >> Makefile
+	${CC} ${CFLAGS} -MM ${ALL_CSRC} | ${INDEPEND} >> Makefile
 	@-if ${CMP} -s Makefile.orig Makefile; then \
 	    ${RM} -f Makefile.orig; \
 	else \
-	    echo; echo "Makefile dependencies updated"; echo; echo "Previous version may be found in: Makefile.orig"; \
+	    echo; \
+	    echo "${OUR_NAME}: Makefile dependencies updated"; \
+	    echo; \
+	    echo "${OUR_NAME}: Previous version may be found in: Makefile.orig"; \
 	fi
 	@echo
-	@echo "make depend completed"
+	@echo "${OUR_NAME}: make $@ complete"
 
 ### DO NOT CHANGE MANUALLY BEYOND THIS LINE
-jnum_chk.o: jnum_chk.c jnum_chk.h ../../dbg/dbg.h ../util.h ../../dyn_array/dyn_array.h \
-	../../dyn_array/../dbg/dbg.h ../../jparse/json_parse.h ../../jparse/json_util.h ../json_parse.h \
-	../../version.h
-jnum_test.o: jnum_test.c ../../jparse/json_parse.h ../../jparse/util.h \
-	../../jparse/../dyn_array/dyn_array.h ../../jparse/../dyn_array/../dbg/dbg.h
-jnum_chk.o: jnum_chk.h ../../dbg/dbg.h ../util.h ../../dyn_array/dyn_array.h \
-	../../dyn_array/../dbg/dbg.h ../../jparse/json_parse.h ../../jparse/json_util.h ../json_parse.h
+jnum_chk.o: ../../dbg/dbg.h ../../dyn_array/../dbg/dbg.h \
+    ../../dyn_array/dyn_array.h ../../jparse/json_parse.h \
+    ../../jparse/json_util.h ../../version.h ../json_parse.h ../util.h \
+    jnum_chk.c jnum_chk.h
+jnum_test.o: ../../jparse/../dyn_array/../dbg/dbg.h \
+    ../../jparse/../dyn_array/dyn_array.h ../../jparse/json_parse.h \
+    ../../jparse/util.h jnum_test.c

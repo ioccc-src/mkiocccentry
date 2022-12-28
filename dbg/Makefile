@@ -1,4 +1,4 @@
-#!/usr/bin/make
+
 #
 # dbg - info, debug, warning, error and usage message facilities
 #
@@ -43,6 +43,7 @@ CMP= cmp
 CP= cp
 CTAGS= ctags
 GREP= grep
+INDEPEND= independ
 INSTALL= install
 PICKY= picky
 RANLIB= ranlib
@@ -50,6 +51,20 @@ RM= rm
 SED= sed
 SEQCEXIT= seqcexit
 SHELL= bash
+
+
+###########################
+# Makefile directory name #
+###########################
+
+# The name of this directory
+#
+# This value is used to print the generic name of this directory
+# so that various echo statements below can use this name
+# to help distinguish themselves from echo statements used
+# by Makefiles in other directories.
+#
+OUR_NAME= dbg
 
 
 ##################
@@ -200,7 +215,7 @@ H_SRC_TARGETS= dbg.h
 
 # what to make by all but NOT to removed by clobber (because they are not files)
 #
-ALL_OTHER_TARGETS= extern_everything
+ALL_OTHER_TARGETS=
 
 # what to make by all and removed by clobber (and thus not ${ALL_OTHER_TARGETS})
 #
@@ -228,7 +243,7 @@ TARGETS= ${LIBA_TARGETS} dbg_test dbg_example
 # all rule - default rule - must be first #
 ###########################################
 
-all: ${TARGETS} ${ALL_OTHER_TARGETS} Makefile
+all: ${TARGETS}
 	@:
 
 
@@ -240,14 +255,15 @@ all: ${TARGETS} ${ALL_OTHER_TARGETS} Makefile
 	extern_include extern_objs extern_liba extern_man extern_prog extern_everything man/man3/dbg.3 \
 	man/man3/err.3 man/man3/msg.3 man/man3/warn.3 man/man3/werr.3 man/man3/printf_usage.3 man/man3/warn_or_err.3 \
 	test check_man prep_clean prep_clobber legacy_clean legacy_clobber \
-	configure clean clobber install
+	configure clean clobber install depend \
+	dbg.a
 
 
 ####################################
 # things to make in this directory #
 ####################################
 
-dbg.o: dbg.c dbg.h
+dbg.o: dbg.c
 	${CC} ${CFLAGS} dbg.c -c
 
 dbg.a: ${LIB_OBJS}
@@ -259,13 +275,13 @@ dbg_test.c: dbg.c
 	${RM} -f $@
 	${CP} -v -f dbg.c $@
 
-dbg_test.o: dbg_test.c dbg.h
+dbg_test.o: dbg_test.c
 	${CC} ${CFLAGS} -DDBG_TEST dbg_test.c -c
 
 dbg_test: dbg_test.o dbg.a
 	${CC} ${CFLAGS} dbg_test.o dbg.a -o $@
 
-dbg_example.o:  dbg_example.c dbg.h
+dbg_example.o: dbg_example.c
 	${CC} ${CFLAGS} dbg_example.c -c
 
 dbg_example: dbg_example.o dbg.a
@@ -321,12 +337,14 @@ man/man3/printf_usage.3:
 	@:
 
 
-
 ###########################################################
 # repo tools - rules for those who maintain the this repo #
 ###########################################################
 
-test: dbg_test check_man Makefile
+test: dbg_test check_man
+	@echo
+	@echo "${OUR_NAME}: make $@ starting"
+	@echo
 	${RM} -f dbg_test.out
 	@echo "RUNNING: dbg_test"
 	@echo "./dbg_test -e 2 foo bar baz >dbg_test.out 2>&1"
@@ -348,10 +366,15 @@ test: dbg_test check_man Makefile
 		echo "PASSED: dbg_test"; \
 	      fi; \
 	  fi
+	@echo
+	@echo "${OUR_NAME}: make $@ complete"
 
 # sequence exit codes
 #
 seqcexit: ${ALL_CSRC}
+	@echo
+	@echo "${OUR_NAME}: make $@ starting"
+	@echo
 	@HAVE_SEQCEXIT="`type -P ${SEQCEXIT}`"; if [[ -z "$$HAVE_SEQCEXIT" ]]; then \
 	    echo 'The seqcexit tool could not be found.' 1>&2; \
 	    echo 'The seqcexit tool is required for this rule.'; 1>&2; \
@@ -365,8 +388,13 @@ seqcexit: ${ALL_CSRC}
 	    echo "${SEQCEXIT} -D werr_sem_val -D werrp_sem_val -- ${ALL_CSRC}"; \
 	    ${SEQCEXIT} -D werr_sem_val -D werrp_sem_val -- ${ALL_CSRC}; \
 	fi
+	@echo
+	@echo "${OUR_NAME}: make $@ complete"
 
 picky: ${ALL_SRC}
+	@echo
+	@echo "${OUR_NAME}: make $@ starting"
+	@echo
 	@if ! type -P ${PICKY} >/dev/null 2>&1; then \
 	    echo "The picky tool could not be found." 1>&2; \
 	    echo "The picky tool is required for this rule." 1>&2; \
@@ -381,15 +409,25 @@ picky: ${ALL_SRC}
 	    ${PICKY} -w132 -u -s -t8 -v -e -- ${C_SRC} ${H_SRC}; \
 	    EXIT_CODE="$$?"; if [[ $$EXIT_CODE -ne 0 ]]; then echo "picky: ERROR: $$EXIT_CODE" 1>&2; exit 1; fi; \
 	fi
+	@echo
+	@echo "${OUR_NAME}: make $@ complete"
 
 # inspect and verify shell scripts
 #
 shellcheck:
-	@:
+	@echo
+	@echo "${OUR_NAME}: make $@ starting"
+	@echo
+	@echo "${OUR_NAME}: nothing to do"
+	@echo
+	@echo "${OUR_NAME}: make $@ complete"
 
 # inspect and verify man pages
 #
-check_man: ${ALL_MAN_TARGETS} Makefile
+check_man: ${ALL_MAN_TARGETS}
+	@echo
+	@echo "${OUR_NAME}: make $@ starting"
+	@echo
 	@-HAVE_CHECKNR="`type -P ${CHECKNR}`"; if [[ -z "$$HAVE_CHECKNR" ]]; then \
 	    echo 'The checknr command could not be found.' 1>&2; \
 	    echo 'The checknr command is required to run the $@ rule.' 1>&2; \
@@ -407,24 +445,51 @@ check_man: ${ALL_MAN_TARGETS} Makefile
 		exit 23; \
 	    fi; \
 	fi
+	@echo
+	@echo "${OUR_NAME}: make $@ complete"
 
 # vi/vim tags
 #
 tags: ${ALL_CSRC} ${ALL_HSRC}
+	@echo
+	@echo "${OUR_NAME}: make $@ starting"
+	@echo
 	-${CTAGS} ${ALL_CSRC} ${ALL_HSRC} 2>&1 | \
 	     ${GREP} -E -v 'Duplicate entry|Second entry ignored'
+	@echo
+	@echo "${OUR_NAME}: make $@ complete"
 
 prep_clean: legacy_clean
-	@:
+	@echo
+	@echo "${OUR_NAME}: make $@ starting"
+	@echo
+	@echo "${OUR_NAME}: nothing to do"
+	@echo
+	@echo "${OUR_NAME}: make $@ complete"
 
 prep_clobber: prep_clean legacy_clobber
+	@echo
+	@echo "${OUR_NAME}: make $@ starting"
+	@echo
 	${RM} -f dbg_test
+	@echo
+	@echo "${OUR_NAME}: make $@ complete"
 
 legacy_clean:
-	@:
+	@echo
+	@echo "${OUR_NAME}: make $@ starting"
+	@echo
+	@echo "${OUR_NAME}: nothing to do"
+	@echo
+	@echo "${OUR_NAME}: make $@ complete"
 
 legacy_clobber: legacy_clean
-	@:
+	@echo
+	@echo "${OUR_NAME}: make $@ starting"
+	@echo
+	@echo "${OUR_NAME}: nothing to do"
+	@echo
+	@echo "${OUR_NAME}: make $@ complete"
 
 
 ###################################
@@ -435,15 +500,28 @@ configure:
 	@echo nothing to $@
 
 clean:
+	@echo
+	@echo "${OUR_NAME}: make $@ starting"
+	@echo
 	${RM} -f ${ALL_OBJS} ${ALL_BUILT_SRC}
 	${RM} -f dbg_test.out
+	@echo
+	@echo "${OUR_NAME}: make $@ complete"
 
 clobber: clean
+	@echo
+	@echo "${OUR_NAME}: make $@ starting"
+	@echo
 	${RM} -f ${TARGETS}
 	${RM} -f ${EXTERN_CLOBBER}
 	${RM} -f tags
+	@echo
+	@echo "${OUR_NAME}: make $@ complete"
 
 install: all
+	@echo
+	@echo "${OUR_NAME}: make $@ starting"
+	@echo
 	${INSTALL} -v -d -m 0775 ${DEST_LIB}
 #none#	${INSTALL} -v -d -m 0775 ${DEST_DIR}
 #none#	${INSTALL} -v -d -m 0775 ${MAN1_DIR}
@@ -455,27 +533,32 @@ install: all
 #none#	${INSTALL} -v -m 0444 ${MAN8_TARGETS} ${MAN8_DIR}
 	${INSTALL} -v -m 0444 ${LIBA_TARGETS} ${DEST_LIB}
 	${INSTALL} -v -m 0444 ${H_SRC_TARGETS} ${DEST_INCLUDE}
+	@echo
+	@echo "${OUR_NAME}: make $@ complete"
+
 
 ###############
 # make depend #
 ###############
 
-depend: ${ALL_CSRC} ../soup/fmt_depend.sh
+depend: ${ALL_CSRC} all
 	@echo
-	@echo "make depend starting"
+	@echo "${OUR_NAME}: make $@ starting"
 	@echo
 	@${SED} -i.orig -n -e '1,/^### DO NOT CHANGE MANUALLY BEYOND THIS LINE/p' Makefile
-	${CC} ${CFLAGS} -MM ${ALL_CSRC} | ../soup/fmt_depend.sh >> Makefile
+	${CC} ${CFLAGS} -MM ${ALL_CSRC} | ${INDEPEND} >> Makefile
 	@-if ${CMP} -s Makefile.orig Makefile; then \
 	    ${RM} -f Makefile.orig; \
 	else \
-	    echo; echo "Makefile dependencies updated"; echo; echo "Previous version may be found in: Makefile.orig"; \
+	    echo; \
+	    echo "${OUR_NAME}: Makefile dependencies updated"; \
+	    echo; \
+	    echo "${OUR_NAME}: Previous version may be found in: Makefile.orig"; \
 	fi
 	@echo
-	@echo "make depend completed"
+	@echo "${OUR_NAME}: make $@ complete"
 
 ### DO NOT CHANGE MANUALLY BEYOND THIS LINE
 dbg.o: dbg.c dbg.h
-dbg_example.o: dbg_example.c dbg.h
-dbg_test.o: dbg_test.c dbg.h
-dbg_test.o: dbg_test.c dbg.h
+dbg_example.o: dbg.h dbg_example.c
+dbg_test.o: dbg.h dbg_test.c

@@ -41,6 +41,7 @@ CHECKNR= checknr
 CMP= cmp
 CTAGS= ctags
 GREP= grep
+INDEPEND= independ
 INSTALL= install
 MAKE= make
 PICKY= picky
@@ -49,6 +50,20 @@ RM= rm
 SED= sed
 SEQCEXIT= seqcexit
 SHELL= bash
+
+
+###########################
+# Makefile directory name #
+###########################
+
+# The name of this directory
+#
+# This value is used to print the generic name of this directory
+# so that various echo statements below can use this name
+# to help distinguish themselves from echo statements used
+# by Makefiles in other directories.
+#
+OUR_NAME= dyn_array
 
 
 ##################
@@ -226,7 +241,7 @@ TARGETS= ${LIBA_TARGETS} dyn_test
 # all rule - default rule - must be first #
 ###########################################
 
-all: ${TARGETS} ${ALL_OTHER_TARGETS} Makefile
+all: ${TARGETS} ${ALL_OTHER_TARGETS}
 	@:
 
 
@@ -237,7 +252,8 @@ all: ${TARGETS} ${ALL_OTHER_TARGETS} Makefile
 .PHONY: all \
 	extern_include extern_objs extern_liba extern_man extern_prog extern_everything man/man3/dyn_array.3 \
 	test check_man tags prep_clean prep_clobber legacy_clean legacy_clobber \
-	configure clean clobber install
+	configure clean clobber install depend \
+	dyn_array.a
 
 
 ####################################
@@ -255,7 +271,7 @@ dyn_array.a: ${LIB_OBJS}
 dyn_test.o: dyn_test.c dyn_array.h
 	${CC} ${CFLAGS} dyn_test.c -c
 
-dyn_test: dyn_test.o dyn_array.a ../dbg/dbg.a Makefile
+dyn_test: dyn_test.o dyn_array.a ../dbg/dbg.a
 	${CC} ${CFLAGS} dyn_test.o dyn_array.a ../dbg/dbg.a -o dyn_test
 
 
@@ -297,7 +313,10 @@ man/man3/dyn_array.3:
 # repo tools - rules for those who maintain the this repo #
 ###########################################################
 
-test: check_man dyn_test Makefile
+test: check_man dyn_test
+	@echo
+	@echo "${OUR_NAME}: make $@ starting"
+	@echo
 	@-./dyn_test; \
 	status="$$?"; \
 	if [[ $$status -ne 0 ]]; then \
@@ -305,10 +324,15 @@ test: check_man dyn_test Makefile
 	else \
 	    echo "PASSED: dyn_test"; \
 	fi
+	@echo
+	@echo "${OUR_NAME}: make $@ complete"
 
 # sequence exit codes
 #
 seqcexit: ${ALL_CSRC}
+	@echo
+	@echo "${OUR_NAME}: make $@ starting"
+	@echo
 	@HAVE_SEQCEXIT="`type -P ${SEQCEXIT}`"; if [[ -z "$$HAVE_SEQCEXIT" ]]; then \
 	    echo 'The seqcexit tool could not be found.' 1>&2; \
 	    echo 'The seqcexit tool is required for this rule.'; 1>&2; \
@@ -322,8 +346,13 @@ seqcexit: ${ALL_CSRC}
 	    echo "${SEQCEXIT} -D werr_sem_val -D werrp_sem_val -- ${ALL_CSRC}"; \
 	    ${SEQCEXIT} -D werr_sem_val -D werrp_sem_val -- ${ALL_CSRC}; \
 	fi
+	@echo
+	@echo "${OUR_NAME}: make $@ complete"
 
 picky: ${ALL_SRC}
+	@echo
+	@echo "${OUR_NAME}: make $@ starting"
+	@echo
 	@if ! type -P ${PICKY} >/dev/null 2>&1; then \
 	    echo "The picky tool could not be found." 1>&2; \
 	    echo "The picky tool is required for this rule." 1>&2; \
@@ -338,15 +367,25 @@ picky: ${ALL_SRC}
 	    ${PICKY} -w132 -u -s -t8 -v -e -- ${C_SRC} ${H_SRC}; EXIT_CODE="$$?"; \
 	    if [[ $$EXIT_CODE -ne 0 ]]; then echo "make $@: ERROR: CODE[1]: $$EXIT_CODE" 1>&2; exit 1; fi; \
 	fi
+	@echo
+	@echo "${OUR_NAME}: make $@ complete"
 
 # inspect and verify shell scripts
 #
 shellcheck:
-	@:
+	@echo
+	@echo "${OUR_NAME}: make $@ starting"
+	@echo
+	@echo "${OUR_NAME}: nothing to do"
+	@echo
+	@echo "${OUR_NAME}: make $@ complete"
 
 # inspect and verify man pages
 #
-check_man: ${ALL_MAN_TARGETS} Makefile
+check_man: ${ALL_MAN_TARGETS}
+	@echo
+	@echo "${OUR_NAME}: make $@ starting"
+	@echo
 	@-HAVE_CHECKNR="`type -P ${CHECKNR}`"; if [[ -z "$$HAVE_CHECKNR" ]]; then \
 	    echo 'The checknr command could not be found.' 1>&2; \
 	    echo 'The checknr command is required to run the $@ rule.' 1>&2; \
@@ -364,24 +403,51 @@ check_man: ${ALL_MAN_TARGETS} Makefile
 		exit 23; \
 	    fi; \
 	fi
+	@echo
+	@echo "${OUR_NAME}: make $@ complete"
 
 # vi/vim tags
 #
 tags: ${ALL_CSRC} ${ALL_HSRC}
+	@echo
+	@echo "${OUR_NAME}: make $@ starting"
+	@echo
 	-${CTAGS} ${ALL_CSRC} ${ALL_HSRC} 2>&1 | \
 	     ${GREP} -E -v 'Duplicate entry|Second entry ignored'
+	@echo
+	@echo "${OUR_NAME}: make $@ complete"
 
 prep_clean: legacy_clean
-	@:
+	@echo
+	@echo "${OUR_NAME}: make $@ starting"
+	@echo
+	@echo "${OUR_NAME}: nothing to do"
+	@echo
+	@echo "${OUR_NAME}: make $@ complete"
 
 prep_clobber: prep_clean legacy_clobber
+	@echo
+	@echo "${OUR_NAME}: make $@ starting"
+	@echo
 	${RM} -f dyn_test
+	@echo
+	@echo "${OUR_NAME}: make $@ complete"
 
 legacy_clean:
-	@:
+	@echo
+	@echo "${OUR_NAME}: make $@ starting"
+	@echo
+	@echo "${OUR_NAME}: nothing to do"
+	@echo
+	@echo "${OUR_NAME}: make $@ complete"
 
 legacy_clobber: legacy_clean
-	@:
+	@echo
+	@echo "${OUR_NAME}: make $@ starting"
+	@echo
+	@echo "${OUR_NAME}: nothing to do"
+	@echo
+	@echo "${OUR_NAME}: make $@ complete"
 
 
 ###################################
@@ -392,14 +458,27 @@ configure:
 	@echo nothing to $@
 
 clean:
+	@echo
+	@echo "${OUR_NAME}: make $@ starting"
+	@echo
 	${RM} -f ${ALL_OBJS} ${ALL_BUILT_SRC}
+	@echo
+	@echo "${OUR_NAME}: make $@ complete"
 
 clobber: clean
+	@echo
+	@echo "${OUR_NAME}: make $@ starting"
+	@echo
 	${RM} -f ${TARGETS}
 	${RM} -f ${EXTERN_CLOBBER}
 	${RM} -f tags
+	@echo
+	@echo "${OUR_NAME}: make $@ complete"
 
 install: all
+	@echo
+	@echo "${OUR_NAME}: make $@ starting"
+	@echo
 	${INSTALL} -v -d -m 0775 ${DEST_LIB}
 #none#	${INSTALL} -v -d -m 0775 ${DEST_DIR}
 #none#	${INSTALL} -v -d -m 0775 ${MAN1_DIR}
@@ -411,26 +490,31 @@ install: all
 #none#	${INSTALL} -v -m 0444 ${MAN8_TARGETS} ${MAN8_DIR}
 	${INSTALL} -v -m 0444 ${LIBA_TARGETS} ${DEST_LIB}
 	${INSTALL} -v -m 0444 ${H_SRC_TARGETS} ${DEST_INCLUDE}
+	@echo
+	@echo "${OUR_NAME}: make $@ complete"
 
 
 ###############
 # make depend #
 ###############
 
-depend: ${ALL_CSRC} ../soup/fmt_depend.sh
+depend: ${ALL_CSRC} all
 	@echo
-	@echo "make depend starting"
+	@echo "${OUR_NAME}: make $@ starting"
 	@echo
 	@${SED} -i.orig -n -e '1,/^### DO NOT CHANGE MANUALLY BEYOND THIS LINE/p' Makefile
-	${CC} ${CFLAGS} -MM ${ALL_CSRC} | ../soup/fmt_depend.sh >> Makefile
+	${CC} ${CFLAGS} -MM ${ALL_CSRC} | ${INDEPEND} >> Makefile
 	@-if ${CMP} -s Makefile.orig Makefile; then \
 	    ${RM} -f Makefile.orig; \
 	else \
-	    echo; echo "Makefile dependencies updated"; echo; echo "Previous version may be found in: Makefile.orig"; \
+	    echo; \
+	    echo "${OUR_NAME}: Makefile dependencies updated"; \
+	    echo; \
+	    echo "${OUR_NAME}: Previous version may be found in: Makefile.orig"; \
 	fi
 	@echo
-	@echo "make depend completed"
+	@echo "${OUR_NAME}: make $@ complete"
 
 ### DO NOT CHANGE MANUALLY BEYOND THIS LINE
-dyn_array.o: dyn_array.c dyn_array.h ../dbg/dbg.h
-dyn_test.o: dyn_test.c dyn_test.h ../dbg/dbg.h dyn_array.h
+dyn_array.o: ../dbg/dbg.h dyn_array.c dyn_array.h
+dyn_test.o: ../dbg/dbg.h dyn_array.h dyn_test.c dyn_test.h
