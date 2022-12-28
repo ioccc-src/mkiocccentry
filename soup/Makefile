@@ -131,7 +131,7 @@ LESS_PICKY_HSRC=
 
 # all shell scripts
 #
-SH_FILES= all_ref.sh fmt_depend.sh
+SH_FILES= all_ref.sh
 
 
 ######################
