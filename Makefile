@@ -1027,6 +1027,7 @@ clobber: clean prep_clobber
 	${MAKE} -C jparse $@
 	@echo
 	${RM} -f ${BUILD_LOG}
+	${RM} -f limit_ioccc.sh
 	${RM} -f .all_ref.*
 	${RM} -rf .hostchk.work.*
 	${RM} -f .sorry.*
