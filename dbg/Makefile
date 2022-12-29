@@ -255,8 +255,7 @@ all: ${TARGETS}
 	extern_include extern_objs extern_liba extern_man extern_prog extern_everything man/man3/dbg.3 \
 	man/man3/err.3 man/man3/msg.3 man/man3/warn.3 man/man3/werr.3 man/man3/printf_usage.3 man/man3/warn_or_err.3 \
 	test check_man prep_clean prep_clobber legacy_clean legacy_clobber \
-	configure clean clobber install depend \
-	dbg.a
+	configure clean clobber install depend
 
 
 ####################################

@@ -237,6 +237,7 @@ TARGETS= utf8_test fnamchk ${SH_TARGETS}
 ######################################
 
 all: ${TARGETS} ${EXTERN_PROG}
+	@:
 
 
 #################################################
@@ -273,7 +274,7 @@ fnamchk: fnamchk.o ../jparse/jparse.a ../dyn_array/dyn_array.a ../dbg/dbg.a
 #########################################################
 
 ../dbg/dbg.a: ../dbg/Makefile
-	@${MAKE} -C ../dbg dbg extern_liba
+	@${MAKE} -C ../dbg dbg.a extern_liba
 
 ../dbg/dbg_test: ../dbg/Makefile
 	@${MAKE} -C ../dbg extern_prog

@@ -191,7 +191,7 @@ EXTERN_H= chk_sem_info.h chk_sem_auth.h
 EXTERN_O=
 EXTERN_MAN= ${ALL_MAN_TARGETS}
 EXTERN_LIBA= soup.a
-EXTERN_PROG= hostchk.sh run_usage.sh vermod.sh reset_tstamp.sh limit_ioccc.sh
+EXTERN_PROG= hostchk.sh run_usage.sh vermod.sh reset_tstamp.sh
 
 # NOTE: ${EXTERN_CLOBBER} used outside of this directory and removed by make clobber
 #
@@ -219,7 +219,7 @@ H_SRC_TARGETS=
 
 # shell targets to make by all and removed by clobber
 #
-SH_TARGETS= limit_ioccc.sh
+SH_TARGETS= 
 
 # what to make by all but NOT to removed by clobber (because they are not files)
 #
@@ -252,6 +252,7 @@ TARGETS= ${LIBA_TARGETS} ${SH_TARGETS}
 ######################################
 
 all: ${TARGETS}
+	@:
 
 
 #################################################
@@ -262,9 +263,7 @@ all: ${TARGETS}
 	depend soup eat eating eat_soup eating_soup prep_clean prep_clobber legacy_clean legacy_clobber \
 	configure clean clobber install depend \
 	prep build release pull reset_min_timestamp \
-	../jparse/jsemcgen.sh hostchk.sh \
-	../jparse/test_jparse/test_JSON/info.json/good/info.reference.json \
-	../jparse/test_jparse/test_JSON/auth.json/good/auth.reference.json
+	hostchk.sh limit_ioccc.sh
 
 
 ####################################
@@ -308,29 +307,32 @@ soup.a: ${LIB_OBJS}
 
 chk_sem_info.c: ../jparse/jsemtblgen ../jparse/jsemcgen.sh ../jparse/test_jparse/test_JSON/info.json/good/info.reference.json \
 		chk.info.head.c chk.info.ptch.c chk.info.tail.c
-	@${RM} -f $@
+	${RM} -f $@
 	../jparse/jsemcgen.sh -N sem_info -P chk -j ../jparse/jsemtblgen -- \
 	    ../jparse/test_jparse/test_JSON/info.json/good/info.reference.json chk.info.head.c \
 	    chk.info.ptch.c chk.info.tail.c $@
 
+chk.info.head.c chk.info.ptch.c chk.info.tail.c:
+	@:
+
 chk_sem_info.h: ../jparse/jsemtblgen ../jparse/jsemcgen.sh ../jparse/test_jparse/test_JSON/info.json/good/info.reference.json \
 		chk.info.head.h chk.info.ptch.h chk.info.tail.h
-	@${RM} -f $@
-	@../jparse/jsemcgen.sh -N sem_info -P chk -I -j ../jparse/jsemtblgen -- \
+	${RM} -f $@
+	../jparse/jsemcgen.sh -N sem_info -P chk -I -j ../jparse/jsemtblgen -- \
 	    ../jparse/test_jparse/test_JSON/info.json/good/info.reference.json chk.info.head.h \
 	    chk.info.ptch.h chk.info.tail.h $@
 
 chk_sem_auth.c: ../jparse/jsemtblgen ../jparse/jsemcgen.sh ../jparse/test_jparse/test_JSON/auth.json/good/auth.reference.json \
 		chk.auth.head.c chk.auth.ptch.c chk.auth.tail.c
-	@${RM} -f $@
+	${RM} -f $@
 	../jparse/jsemcgen.sh -N sem_auth -P chk -j ../jparse/jsemtblgen -- \
 	    ../jparse/test_jparse/test_JSON/auth.json/good/auth.reference.json chk.auth.head.c \
 	    chk.auth.ptch.c chk.auth.tail.c $@
 
 chk_sem_auth.h: ../jparse/jsemtblgen ../jparse/jsemcgen.sh ../jparse/test_jparse/test_JSON/auth.json/good/auth.reference.json \
 		chk.auth.head.h chk.auth.ptch.h chk.auth.tail.h
-	@${RM} -f $@
-	@../jparse/jsemcgen.sh -N sem_auth -P chk -I -j ../jparse/jsemtblgen -- \
+	${RM} -f $@
+	../jparse/jsemcgen.sh -N sem_auth -P chk -I -j ../jparse/jsemtblgen -- \
 	    ../jparse/test_jparse/test_JSON/auth.json/good/auth.reference.json chk.auth.head.h \
 	    chk.auth.ptch.h chk.auth.tail.h $@
 
@@ -339,16 +341,16 @@ chk_sem_auth.h: ../jparse/jsemtblgen ../jparse/jsemcgen.sh ../jparse/test_jparse
 # rules that invoke Makefile rules in other directories #
 #########################################################
 
-../jparse/jsemtblgen: ../jparse/Makefile
+../jparse/jsemtblgen:
 	@${MAKE} -C ../jparse extern_prog
 
-../jparse/jsemcgen.sh: ../jparse/Makefile
+../jparse/jsemcgen.sh:
 	@${MAKE} -C ../jparse extern_prog
 
-../jparse/test_jparse/test_JSON/info.json/good/info.reference.json: ../jparse/Makefile
+../jparse/test_jparse/test_JSON/info.json/good/info.reference.json:
 	@${MAKE} -C ../jparse test_jparse/test_JSON/info.json/good/info.reference.json
 
-../jparse/test_jparse/test_JSON/auth.json/good/auth.reference.json: ../jparse/Makefile
+../jparse/test_jparse/test_JSON/auth.json/good/auth.reference.json:
 	@${MAKE} -C ../jparse test_jparse/test_JSON/auth.json/good/auth.reference.json
 
 ####################################
