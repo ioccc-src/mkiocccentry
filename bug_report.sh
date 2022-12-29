@@ -27,7 +27,7 @@ export TOOLS="
     ./chkentry
     ./dbg/dbg_test
     ./fnamchk
-    ./hostchk.sh
+    ./soup/hostchk.sh
     ./iocccsize
     ./jparse/jnum_gen
     ./jparse/jparse
@@ -36,11 +36,11 @@ export TOOLS="
     ./jparse/jstrdecode
     ./jparse/jstrencode
     ./mkiocccentry
-    ./prep.sh
-    ./reset_tstamp.sh
+    ./test_ioccc/prep.sh
+    ./soup/reset_tstamp.sh
     ./jparse/run_bison.sh
     ./jparse/run_flex.sh
-    ./run_usage.sh
+    ./soup/run_usage.sh
     ./soup/all_ref.sh
     ./test_ioccc/chkentry_test.sh
     ./dyn_array/dyn_test
@@ -54,7 +54,7 @@ export TOOLS="
     ./test_ioccc/utf8_test
     ./txzchk
     ./jparse/verge
-    ./vermod.sh
+    ./soup/vermod.sh
     "
 
 export BUG_REPORT_VERSION="0.7 2022-11-10"
@@ -1125,7 +1125,7 @@ run_check 43 "make test"
 
 # hostchk.sh -v 3: we need to run some checks to make sure the system can
 # compile things and so on
-run_check 44 "./hostchk.sh -v 3"
+run_check 44 "./soup/hostchk.sh -v 3"
 
 echo "#-------------------------------------#" | tee -a -- "$LOG_FILE"
 echo "# SECTION 3 ABOVE: COMPILATION CHECKS $" | tee -a -- "$LOG_FILE"
@@ -1161,10 +1161,10 @@ get_version_optional "flex"
 # would mean the repo could not be used properly.
 #
 # run_bison.sh -v 7: check if bison will work
-run_check 45 "./jparse/run_bison.sh -v 7 -s ./jparse/sorry.tm.ca.h -g ./jparse/verge -l ./limit_ioccc.sh -D ./jparse"
+run_check 45 "./jparse/run_bison.sh -v 7 -s ./jparse/sorry.tm.ca.h -g ./jparse/verge -l ./soup/limit_ioccc.sh -D ./jparse"
 
 # run_flex.sh -v 7: check if flex will work
-run_check 46 "./jparse/run_flex.sh -v 7 -s ./jparse/sorry.tm.ca.h -g ./jparse/verge -l ./limit_ioccc.sh -D ./jparse"
+run_check 46 "./jparse/run_flex.sh -v 7 -s ./jparse/sorry.tm.ca.h -g ./jparse/verge -l ./soup/limit_ioccc.sh -D ./jparse"
 
 # run make all again: run_bison.sh and run_flex.sh will likely cause a need for
 # recompilation
