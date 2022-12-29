@@ -42,7 +42,7 @@
 /*
  * foo - bar
  */
-#include "foo.h"
+#include "soup/foo.h"
 
 
 /*

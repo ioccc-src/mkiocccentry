@@ -505,8 +505,8 @@ fi
 echo | tee -a -- "$LOGFILE"
 echo "RUNNING: test_ioccc/txzchk_test.sh" | tee -a -- "$LOGFILE"
 echo | tee -a -- "$LOGFILE"
-echo "test_ioccc/txzchk_test.sh -t ./txzchk -F ./fnamchk -d test_ioccc/test_txzchk -Z $TOPDIR" | tee -a -- "$LOGFILE"
-test_ioccc/txzchk_test.sh -t ./txzchk -F ./fnamchk -d ./test_ioccc/test_txzchk -Z "$TOPDIR" | tee -a -- "$LOGFILE"
+echo "test_ioccc/txzchk_test.sh -t ./txzchk -F ./test_ioccc/fnamchk -d test_ioccc/test_txzchk -Z $TOPDIR" | tee -a -- "$LOGFILE"
+test_ioccc/txzchk_test.sh -t ./txzchk -F ./test_ioccc/fnamchk -d ./test_ioccc/test_txzchk -Z "$TOPDIR" | tee -a -- "$LOGFILE"
 status="${PIPESTATUS[0]}"
 if [[ $status -ne 0 ]]; then
     echo "$0: ERROR: test_ioccc/txzchk_test.sh non-zero exit code: $status" 1>&2 | tee -a -- "$LOGFILE"

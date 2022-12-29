@@ -203,11 +203,11 @@ MAN3_TARGETS= man/man3/dyn_array.3
 MAN8_TARGETS=
 ALL_MAN_TARGETS= ${MAN1_TARGETS} ${MAN3_TARGETS} ${MAN8_TARGETS}
 
-# libraries
+# libraries to make by all, what to install, and removed by clobber
 #
 LIBA_TARGETS= dyn_array.a
 
-# include files
+# include files but NOT to removed by clobber
 #
 H_SRC_TARGETS= dyn_array.h
 
@@ -215,7 +215,7 @@ H_SRC_TARGETS= dyn_array.h
 #
 ALL_OTHER_TARGETS= extern_everything
 
-# what to make by all and removed by clobber (and thus not ${ALL_OTHER_TARGETS})
+# what to make by all, what to install, and removed by clobber (and thus not ${ALL_OTHER_TARGETS})
 #
 TARGETS= ${LIBA_TARGETS} dyn_test
 
@@ -318,9 +318,9 @@ test: check_man dyn_test
 	@echo "${OUR_NAME}: make $@ starting"
 	@echo
 	@-./dyn_test; \
-	status="$$?"; \
-	if [[ $$status -ne 0 ]]; then \
-	    echo 'ERROR: dyn_test failed, error code: $$status'; \
+	EXIT_CODE="$$?"; \
+	if [[ $$EXIT_CODE -ne 0 ]]; then \
+	    echo 'ERROR: dyn_test failed, error code: $$EXIT_CODE'; \
 	else \
 	    echo "PASSED: dyn_test"; \
 	fi
@@ -364,8 +364,12 @@ picky: ${ALL_SRC}
 	    exit 1; \
 	else \
 	    echo "${PICKY} -w132 -u -s -t8 -v -e -- ${C_SRC} ${H_SRC}"; \
-	    ${PICKY} -w132 -u -s -t8 -v -e -- ${C_SRC} ${H_SRC}; EXIT_CODE="$$?"; \
-	    if [[ $$EXIT_CODE -ne 0 ]]; then echo "make $@: ERROR: CODE[1]: $$EXIT_CODE" 1>&2; exit 1; fi; \
+	    ${PICKY} -w132 -u -s -t8 -v -e -- ${C_SRC} ${H_SRC}; \
+	    EXIT_CODE="$$?"; \
+	    if [[ $$EXIT_CODE -ne 0 ]]; then \
+		echo "make $@: ERROR: CODE[1]: $$EXIT_CODE" 1>&2; \
+		exit 1; \
+	    fi; \
 	fi
 	@echo
 	@echo "${OUR_NAME}: make $@ complete"
@@ -397,9 +401,9 @@ check_man: ${ALL_MAN_TARGETS}
 	else \
 	    echo "${CHECKNR} -c.BR.SS.BI ${ALL_MAN_TARGETS}"; \
 	    ${CHECKNR} -c.BR.SS.BI ${ALL_MAN_TARGETS}; \
-	    status="$$?"; \
-	    if [[ $$status -ne 0 ]]; then \
-		echo 'ERROR: checknr: ${CHECKNR} failed, error code: $$status'; \
+	    EXIT_CODE="$$?"; \
+	    if [[ $$EXIT_CODE -ne 0 ]]; then \
+		echo 'ERROR: checknr: ${CHECKNR} failed, error code: $$EXIT_CODE'; \
 		exit 23; \
 	    fi; \
 	fi

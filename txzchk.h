@@ -54,17 +54,17 @@
 /*
  * sanity - perform common IOCCC sanity checks
  */
-#include "sanity.h"
+#include "soup/sanity.h"
 
 /*
  * limit_ioccc - IOCCC size and rule related limitations
  */
-#include "limit_ioccc.h"
+#include "soup/limit_ioccc.h"
 
 /*
  * entry_util - utilities supporting mkiocccentry JSON files
  */
-#include "entry_util.h"
+#include "soup/entry_util.h"
 
 
 /*

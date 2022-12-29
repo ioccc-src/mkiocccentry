@@ -97,26 +97,6 @@
 #define CHKENTRY_VERSION "0.4 2022-11-30"	/* format: major.minor YYYY-MM-DD */
 
 /*
- * official jstrencode version
- */
-#define JSTRENCODE_VERSION "0.5 2022-04-17"	/* format: major.minor YYYY-MM-DD */
-
-/*
- * official jstrdecode version
- */
-#define JSTRDECODE_VERSION "0.5 2022-04-17"	/* format: major.minor YYYY-MM-DD */
-
-/*
- * official jnum_chk version
- */
-#define JNUM_CHK_VERSION "0.8 2022-05-01"	/* format: major.minor YYYY-MM-DD */
-
-/*
- * official jnum_gen version
- */
-#define JNUM_GEN_VERSION "0.7 2022-05-01"	/* format: major.minor YYYY-MM-DD */
-
-/*
  * minimum bison version needed to build the JSON parser
  */
 #define MIN_BISON_VERSION "3.8.2"		/* from: bison -V 2>&1 | head -n 1 | awk '{print $NF}' */

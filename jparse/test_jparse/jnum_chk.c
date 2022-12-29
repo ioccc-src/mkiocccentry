@@ -35,16 +35,16 @@
  */
 #include "jnum_chk.h"
 
-/*
- * version - official IOCCC toolkit versions
- */
-#include "../../version.h"
-
 
 /*
  * definitions
  */
 #define REQUIRED_ARGS (0)	/* number of required arguments on the command line */
+
+/*
+ * official jnum_chk version
+ */
+#define JNUM_CHK_VERSION "0.8 2022-05-01"      /* format: major.minor YYYY-MM-DD */
 
 
 int

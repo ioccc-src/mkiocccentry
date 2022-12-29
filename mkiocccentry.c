@@ -5065,13 +5065,13 @@ form_tarball(char const *work_dir, char const *entry_dir, char const *tarball_pa
     /*
      * perform the txzchk which will indirectly show the user the tarball contents
      */
-    dbg(DBG_HIGH, "about to perform: %s -q -- %s/../%s",
-		  txzchk, entry_dir, basename_tarball_path);
-    exit_code = shell_cmd(__func__, true, "% -q -- %/../%",
-					  txzchk, entry_dir, basename_tarball_path);
+    dbg(DBG_HIGH, "about to perform: %s -q -F %s -- %s/../%s",
+		  txzchk, fnamchk, entry_dir, basename_tarball_path);
+    exit_code = shell_cmd(__func__, true, "% -q -F % -- %/../%",
+					  txzchk, fnamchk, entry_dir, basename_tarball_path);
     if (exit_code != 0) {
-	err(182, __func__, "%s -q -- %s/../%s failed with exit code: %d",
-			   txzchk, entry_dir, basename_tarball_path, WEXITSTATUS(exit_code));
+	err(182, __func__, "%s -q -F %s -- %s/../%s failed with exit code: %d",
+			   txzchk, fnamchk, entry_dir, basename_tarball_path, WEXITSTATUS(exit_code));
 	not_reached();
     }
     para("",

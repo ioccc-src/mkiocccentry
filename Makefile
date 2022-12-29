@@ -171,20 +171,17 @@ CFLAGS= ${C_STD} ${C_OPT} -pedantic ${WARN_FLAGS} ${LDFLAGS}
 
 # source files that are permanent (not made, nor removed)
 #
-C_SRC= mkiocccentry.c iocccsize.c fnamchk.c txzchk.c chkentry.c rule_count.c location.c sanity.c \
-	entry_util.c entry_time.c
-H_SRC= dbg/dbg.h chkentry.h limit_ioccc.h \
-	mkiocccentry.h txzchk.h location.h utf8_posix_map.h jparse/jparse.h \
-	dyn_array/dyn_array.h entry_util.h foo.h entry_time.h
+C_SRC= mkiocccentry.c iocccsize.c txzchk.c chkentry.c
+H_SRC= chkentry.h mkiocccentry.h txzchk.h
 
 # source files that do not conform to strict picky standards
 #
-LESS_PICKY_CSRC= utf8_posix_map.c foo.c
-LESS_PICKY_HSRC= oebxergfB.h
+LESS_PICKY_CSRC=
+LESS_PICKY_HSRC=
 
 # all shell scripts
 #
-SH_FILES= limit_ioccc.sh vermod.sh prep.sh reset_tstamp.sh hostchk.sh run_usage.sh bug_report.sh
+SH_FILES= bug_report.sh
 
 
 ######################
@@ -203,8 +200,7 @@ LIB_OBJS=
 
 # NOTE: ${OTHER_OBJS} are objects NOT put into a library and removed by make clean
 #
-OTHER_OBJS= mkiocccentry.o iocccsize.o fnamchk.o txzchk.o chkentry.o rule_count.o location.o sanity.o \
-	  entry_util.o entry_time.o utf8_posix_map.o foo.o
+OTHER_OBJS= mkiocccentry.o iocccsize.o txzchk.o chkentry.o
 
 # all intermediate files and removed by make clean
 #
@@ -241,8 +237,7 @@ EXTERN_H=
 EXTERN_O=
 EXTERN_MAN=
 EXTERN_LIBA=
-EXTERN_PROG= bug_report.sh chkentry fnamchk hostchk.sh iocccsize mkiocccentry prep.sh \
-	reset_tstamp.sh run_usage.sh txzchk vermod.sh
+EXTERN_PROG= bug_report.sh chkentry iocccsize mkiocccentry txzchk
 
 # NOTE: ${EXTERN_CLOBBER} used outside of this directory and removed by make clobber
 #
@@ -253,11 +248,15 @@ EXTERN_CLOBBER= ${EXTERN_O} ${EXTERN_LIBA} ${EXTERN_PROG}
 # target information #
 ######################
 
-SH_TARGETS= limit_ioccc.sh
+# shell targets to make by all and removed by clobber
+#
+SH_TARGETS=
 
-DSYMDIRS= mkiocccentry.dSYM iocccsize.dSYM fnamchk.dSYM txzchk.dSYM chkentry.dSYM
+# directories sometimes build under macOS and removed by clobber
+#
+DSYMDIRS= mkiocccentry.dSYM iocccsize.dSYM txzchk.dSYM chkentry.dSYM
+
 BUILD_LOG= build.log
-TXZCHK_LOG= test_ioccc/txzchk_test.log
 
 # NOTE: For valgrind, run with:
 #
@@ -269,9 +268,13 @@ TXZCHK_LOG= test_ioccc/txzchk_test.log
 
 ALL_SUBDIRS= all_dbg all_dyn_array all_jparse all_man all_soup all_test_ioccc
 
-# where and what to install
+# what to make by all but NOT to removed by clobber (because they are not files)
 #
-TARGETS= ${ALL_SUBDIRS} mkiocccentry iocccsize fnamchk txzchk chkentry
+ALL_OTHER_TARGETS= ${ALL_SUBDIRS}
+
+# what to make by all, what to install, and removed by clobber (and thus not ${ALL_OTHER_TARGETS})
+#
+TARGETS= mkiocccentry iocccsize txzchk chkentry ${SH_TARGETS}
 
 
 ############################################################
@@ -299,12 +302,14 @@ all: fast_hostchk just_all
 
 # The original make all that bypasses running hostchk.sh
 #
-just_all: ${TARGETS}
+just_all: ${ALL_SUBDIRS} ${TARGETS}
 
 # fast build environment sanity check
 #
-fast_hostchk: hostchk.sh
-	@-./hostchk.sh -f -v 0; status="$$?"; if [ "$$status" -ne 0 ]; then \
+fast_hostchk: soup/hostchk.sh
+	@-./soup/hostchk.sh -f -v 0; \
+	EXIT_CODE="$$?"; \
+	if [ "$$EXIT_CODE" -ne 0 ]; then \
 	    ${MAKE} hostchk_warning; \
 	fi
 
@@ -313,8 +318,10 @@ bug_report: bug_report.sh
 
 # slower more verbose build environment sanity check
 #
-hostchk: hostchk.sh
-	@-./hostchk.sh -v 1; status="$$?"; if [ "$$status" -ne 0 ]; then \
+hostchk: soup/hostchk.sh
+	@-./soup/hostchk.sh -v 1; \
+	EXIT_CODE="$$?"; \
+	if [ "$$EXIT_CODE" -ne 0 ]; then \
 	    ${MAKE} hostchk_warning; \
 	fi
 
@@ -332,7 +339,7 @@ hostchk_warning:
 	@echo '=-= WARNING WARNING WARNING =-=' 1>&2
 	@echo '=-= For hints as to what might be wrong try running:' 1>&2
 	@echo 1>&2
-	@echo '    ./hostchk.sh -v 1' 1>&2
+	@echo '    ./soup/hostchk.sh -v 1' 1>&2
 	@echo 1>&2
 	@echo '=-= WARNING WARNING WARNING =-=' 1>&2
 	@echo '=-= If you think this is a bug, consider filing a bug report via:' 1>&2
@@ -354,7 +361,8 @@ hostchk_warning:
 .PHONY: all just_all fast_hostchk hostchk hostchk_warning all_ref all_ref_ptch mkchk_sem bug_report.sh build \
 	check_man clean clean_generated_obj clean_mkchk_sem clobber configure depend hostchk bug_report.sh \
 	install test_ioccc legacy_clobber mkchk_sem parser parser-o picky prep prep_clobber \
-        pull rebuild_jnum_test release reset_min_timestamp seqcexit shellcheck tags test test-chkentry use_ref \
+        pull rebuild_jnum_test release seqcexit shellcheck tags test test-chkentry use_ref \
+	prep build release pull reset_min_timestamp \
 	all_dbg all_dyn_array all_jparse all_man all_soup all_test_ioccc depend
 
 
@@ -362,78 +370,29 @@ hostchk_warning:
 # things to make in this directory #
 ####################################
 
-rule_count.o: rule_count.c
-	${CC} ${CFLAGS} -DMKIOCCCENTRY_USE rule_count.c -c
-
-sanity.o: sanity.c
-	${CC} ${CFLAGS} sanity.c -c
-
-entry_util.o: entry_util.c
-	${CC} ${CFLAGS} entry_util.c -c
-
-entry_time.o: entry_time.c
-	${CC} ${CFLAGS} entry_time.c -c
-
 mkiocccentry.o: mkiocccentry.c
 	${CC} ${CFLAGS} mkiocccentry.c -c
 
-mkiocccentry: mkiocccentry.o rule_count.o entry_util.o \
-	entry_time.o location.o utf8_posix_map.o sanity.o jparse/jparse.a dyn_array/dyn_array.a dbg/dbg.a
+mkiocccentry: mkiocccentry.o dbg/dbg.a dyn_array/dyn_array.a soup/soup.a jparse/jparse.a
 	${CC} ${CFLAGS} $^ -lm -o $@
 
 iocccsize.o: iocccsize.c
 	${CC} ${CFLAGS} -DMKIOCCCENTRY_USE iocccsize.c -c
 
-iocccsize: iocccsize.o rule_count.o dbg/dbg.a
-	${CC} ${CFLAGS} iocccsize.o rule_count.o dbg/dbg.a -o $@
-
-fnamchk.o: fnamchk.c fnamchk.h
-	${CC} ${CFLAGS} fnamchk.c -c
-
-fnamchk: fnamchk.o jparse/jparse.a dyn_array/dyn_array.a dbg/dbg.a
+iocccsize: iocccsize.o dbg/dbg.a soup/soup.a
 	${CC} ${CFLAGS} $^ -o $@
 
-txzchk.o: txzchk.c txzchk.h
+txzchk.o: txzchk.c
 	${CC} ${CFLAGS} txzchk.c -c
 
-txzchk: txzchk.o location.o \
-	utf8_posix_map.o sanity.o jparse/jparse.a dyn_array/dyn_array.a dbg/dbg.a
+txzchk: txzchk.o dbg/dbg.a dyn_array/dyn_array.a soup/soup.a jparse/jparse.a
 	${CC} ${CFLAGS} $^ -o $@
 
-chkentry.o: chkentry.c chkentry.h jparse/jparse.h oebxergfB.h soup/chk_sem_info.h \
-	soup/chk_sem_auth.h
+chkentry.o: chkentry.c
 	${CC} ${CFLAGS} chkentry.c -c
 
-chkentry: chkentry.o entry_util.o foo.o location.o \
-	entry_time.o jparse/jparse.a dyn_array/dyn_array.a dbg/dbg.a soup/soup.a
+chkentry: chkentry.o dbg/dbg.a dyn_array/dyn_array.a soup/soup.a jparse/jparse.a
 	${CC} ${CFLAGS} $^ -lm -o $@
-
-foo.o: foo.c oebxergfB.h
-	${CC} ${CFLAGS} foo.c -c
-
-limit_ioccc.sh: limit_ioccc.h version.h dbg/dbg.h dyn_array/dyn_array.h jparse/jparse.h
-	${RM} -f $@
-	@echo '#!/usr/bin/env bash' > $@
-	@echo '#' >> $@
-	@echo '# Copies of select limit_ioccc.h and version.h values for shell script use' >> $@
-	@echo '#' >> $@
-	${GREP} -E '^#define (RULE_|MAX_|UUID_|MIN_|IOCCC_)' limit_ioccc.h | \
-	    ${AWK} '{print $$2 "=\"" $$3 "\"" ;}' | ${TR} -d '[a-z]()' | \
-	    ${SED} -e 's/"_/"/' -e 's/""/"/g' -e 's/^/export /' >> $@
-	${GREP} -hE '^#define (.*_VERSION|TIMESTAMP_EPOCH|JSON_PARSING_DIRECTIVE_)' \
-		     version.h limit_ioccc.h dbg/dbg.h dyn_array/dyn_array.h jparse/jparse.h | \
-	    ${GREP} -v 'UUID_VERSION' | \
-	    ${SED} -e 's/^#define/export/' -e 's/ "/="/' -e 's/"[	 ].*$$/"/' >> $@
-	-if ${GREP} -q '^#define DIGRAPHS' limit_ioccc.h; then \
-	    echo "export DIGRAPHS='yes'"; \
-	else \
-	    echo "export DIGRAPHS="; \
-	fi >> $@
-	-if ${GREP} -q '^#define TRIGRAPHS' limit_ioccc.h; then \
-	    echo "export TRIGRAPHS='yes'"; \
-	else \
-	    echo "export TRIGRAPHS="; \
-	fi >> $@
 
 
 #########################################################
@@ -512,8 +471,11 @@ soup/chk_sem_auth.h: soup/Makefile
 soup/soup.h: soup/Makefile
 	@${MAKE} -C soup extern_include
 
-test_ioccc: test_ioccc/Makefile
-	${MAKE} -C test_ioccc test_ioccc
+soup/limit_ioccc.sh: soup/Makefile
+	${MAKE} -C soup extern_prog
+
+reset_min_timestamp: soup/Makefile
+	@${MAKE} -C soup reset_min_timestamp
 
 
 ####################################
@@ -524,33 +486,6 @@ test_ioccc: test_ioccc/Makefile
 ###########################################################
 # repo tools - rules for those who maintain the this repo #
 ###########################################################
-
-# make build release pull
-#
-# Things to do before a release, forming a pull request and/or updating the
-# GitHub repo.
-#
-# This runs through all of the prep steps, exiting on the first failure.
-#
-# NOTE: The reference copies of the JSON parser C code will NOT be used
-# so if bison and/or flex is not found or too old THIS RULE WILL FAIL!
-#
-# NOTE: Please try this rule BEFORE make prep.
-#
-build release pull: prep.sh
-	${RM} -f ${BUILD_LOG}
-	@echo "./prep.sh -e -o 2>&1 | ${TEE} ${BUILD_LOG}"
-	@./prep.sh -e -o 2>&1 | ${TEE} "${BUILD_LOG}"; \
-	    EXIT_CODE="$${PIPESTATUS[0]}"; \
-	    if [[ $$EXIT_CODE -ne 0 ]]; then \
-		echo "=-=-=-=-= Warning: prep.sh error code: $$EXIT_CODE =-=-=-=-=" 1>&2; \
-		echo 1>&2; \
-		echo "NOTE: The above details were saved in the file: ${BUILD_LOG}"; \
-		echo 1>&2; \
-		exit 1; \
-	    else \
-		echo "NOTE: The above details were saved in the file: ${BUILD_LOG}"; \
-	    fi
 
 # make prep
 #
@@ -568,16 +503,45 @@ build release pull: prep.sh
 # The point is: if you're working on this repo and make build fails, try this
 # rule instead.
 #
-prep: prep.sh
+prep: test_ioccc/prep.sh
 	${RM} -f ${BUILD_LOG}
-	@echo "./prep.sh 2>&1 | ${TEE} ${BUILD_LOG}"
-	@-./prep.sh 2>&1 | ${TEE} "${BUILD_LOG}"; \
+	@echo "./test_ioccc/prep.sh 2>&1 | ${TEE} ${BUILD_LOG}"
+	@-./test_ioccc/prep.sh 2>&1 | ${TEE} "${BUILD_LOG}"; \
 	    EXIT_CODE="$${PIPESTATUS[0]}"; \
 	    if [[ $$EXIT_CODE -ne 0 ]]; then \
-		echo "=-=-=-=-= Warning: prep.sh error code: $$EXIT_CODE =-=-=-=-=" 1>&2; \
+		echo "=-=-=-=-= Warning: test_ioccc/prep.sh error code: $$EXIT_CODE =-=-=-=-=" 1>&2; \
 		echo 1>&2; \
 	    fi
 	@echo NOTE: The above details were saved in the file: ${BUILD_LOG}
+
+# make build release pull
+#
+# Things to do before a release, forming a pull request and/or updating the
+# GitHub repo.
+#
+# This runs through all of the prep steps, exiting on the first failure.
+#
+# NOTE: The reference copies of the JSON parser C code will NOT be used
+# so if bison and/or flex is not found or too old THIS RULE WILL FAIL!
+#
+# NOTE: Please try this rule BEFORE make prep.
+#
+build: release
+pull: release
+release: test_ioccc/prep.sh
+	${RM} -f ${BUILD_LOG}
+	@echo "./test_ioccc/prep.sh -e -o 2>&1 | ${TEE} ${BUILD_LOG}"
+	@./test_ioccc/prep.sh -e -o 2>&1 | ${TEE} "${BUILD_LOG}"; \
+	    EXIT_CODE="$${PIPESTATUS[0]}"; \
+	    if [[ $$EXIT_CODE -ne 0 ]]; then \
+		echo "=-=-=-=-= Warning: test_ioccc/prep.sh error code: $$EXIT_CODE =-=-=-=-=" 1>&2; \
+		echo 1>&2; \
+		echo "NOTE: The above details were saved in the file: ${BUILD_LOG}"; \
+		echo 1>&2; \
+		exit 1; \
+	    else \
+		echo "NOTE: The above details were saved in the file: ${BUILD_LOG}"; \
+	    fi
 
 # make parser
 #
@@ -651,14 +615,19 @@ picky: ${ALL_SRC}
 	    exit 1; \
 	else \
 	    echo "${PICKY} -w132 -u -s -t8 -v -e -- ${C_SRC} ${H_SRC}"; \
-	    ${PICKY} -w132 -u -s -t8 -v -e -- ${C_SRC} ${H_SRC}; EXIT_CODE="$$?"; \
-	    if [[ $$EXIT_CODE -ne 0 ]]; then echo "make $@: ERROR: CODE[1]: $$EXIT_CODE" 1>&2; exit 1; fi; \
+	    ${PICKY} -w132 -u -s -t8 -v -e -- ${C_SRC} ${H_SRC}; \
+	    EXIT_CODE="$$?"; \
+	    if [[ $$EXIT_CODE -ne 0 ]]; then \
+	        echo "make $@: ERROR: CODE[1]: $$EXIT_CODE" 1>&2; \
+		exit 1; \
+	    fi; \
 	    echo "${PICKY} -w -u -s -t8 -v -e -8 -- ${SH_FILES}"; \
-	    ${PICKY} -w -u -s -t8 -v -e -8 -- ${SH_FILES}; EXIT_CODE="$$?"; \
-	    if [[ $$EXIT_CODE -ne 0 ]]; then echo "make $@: ERROR: CODE[2]: $$EXIT_CODE" 1>&2; exit 2; fi; \
-	    echo "${PICKY} -w132 -u -s -t8 -v -e -8 -- ${LESS_PICKY_CSRC} ${LESS_PICKY_HSRC}"; \
-	    ${PICKY} -w132 -u -s -t8 -v -e -8 -- ${LESS_PICKY_CSRC} ${LESS_PICKY_HSRC}; EXIT_CODE="$$?"; \
-	    if [[ $$EXIT_CODE -ne 0 ]]; then echo "make $@: ERROR: CODE[3]: $$EXIT_CODE" 1>&2; exit 3; fi; \
+	    ${PICKY} -w -u -s -t8 -v -e -8 -- ${SH_FILES}; \
+	    EXIT_CODE="$$?"; \
+	    if [[ $$EXIT_CODE -ne 0 ]]; then \
+	        echo "make $@: ERROR: CODE[2]: $$EXIT_CODE" 1>&2; \
+		exit 2; \
+	    fi; \
 	fi
 	@echo
 	@echo "${OUR_NAME}: make $@ complete"
@@ -687,8 +656,12 @@ shellcheck: ${SH_FILES} .shellcheckrc
 	    exit 1; \
 	else \
 	    echo "${SHELLCHECK} -f gcc -- ${SH_FILES}"; \
-	    ${SHELLCHECK} -f gcc -- ${SH_FILES}; EXIT_CODE="$$?"; \
-	    if [[ $$EXIT_CODE -ne 0 ]]; then echo "make $@: ERROR: CODE[1]: $$EXIT_CODE" 1>&2; exit 1; fi; \
+	    ${SHELLCHECK} -f gcc -- ${SH_FILES}; \
+	    EXIT_CODE="$$?"; \
+	    if [[ $$EXIT_CODE -ne 0 ]]; then \
+		echo "make $@: ERROR: CODE[1]: $$EXIT_CODE" 1>&2; \
+		exit 1; \
+	    fi; \
 	fi
 	@echo
 	@echo "${OUR_NAME}: make $@ complete"
@@ -720,23 +693,9 @@ tags: ${ALL_CSRC} ${ALL_HSRC}
 	@echo
 	@echo "${OUR_NAME}: make $@ complete"
 
-# Only run this rule when you wish to invalidate all timestamps
-# prior to now, such as when you make a fundamental change to a
-# critical JSON format, or make a fundamental change the compressed
-# tarball file structure, or make a critical change to limit_ioccc.h
-# that is MORE restrictive.
-#
-# DO NOT run this rule simply for a new IOCCC!
-#
-# Yes, we make it very hard to run this rule for good reason.
-# Only IOCCC judges can perform ALL the steps needed to complete this action.
-#
-reset_min_timestamp: reset_tstamp.sh
-	./reset_tstamp.sh
-
 # perform all of the mkiocccentry repo required tests
 #
-test: all
+test: all soup/limit_ioccc.sh
 	@echo
 	@echo "${OUR_NAME}: make $@ starting"
 	@echo
@@ -796,7 +755,6 @@ prep_clobber: prep_clean legacy_clobber
 	${RM} -f answers.txt
 	${RM} -f tags
 	${RM} -f jparse.output
-	${RM} -f ${TXZCHK_LOG}
 	${RM} -f legacy_os
 	${RM} -rf legacy_os.dSYM
 	@echo
@@ -850,7 +808,6 @@ legacy_clobber: legacy_clean
 	${RM} -f dbg_test.c dbg_test.out
 	${RM} -rf dyn_test.dSYM
 	${RM} -f jparse_test.log chkentry_test.log txzchk_test.log
-	${RM} -f test_ioccc.log chkentry_test.log jparse_test.log txzchk_test.log
 	${RM} -f jnum_chk
 	${RM} -rf jnum_chk.dSYM
 	${RM} -rf test_iocccsize test_src test_work
@@ -1030,8 +987,8 @@ clobber: clean prep_clobber
 	${RM} -f limit_ioccc.sh
 	${RM} -f .all_ref.*
 	${RM} -rf .hostchk.work.*
+	${RM} -f .txzchk_test.*
 	${RM} -f .sorry.*
-	${RM} -f .txzchk_test,*
 	@echo
 	@echo "${OUR_NAME}: make $@ complete"
 
@@ -1042,7 +999,7 @@ install: all
 	@${MAKE} -C dbg $@
 	@# we have to first make sure the directories exist!
 	${INSTALL} -v -d -m 0755 ${DEST_DIR}
-	${INSTALL} -v -m 0555 ${TARGETS} ${SH_TARGETS} ${DEST_DIR}
+	${INSTALL} -v -m 0555 ${TARGETS} ${DEST_DIR}
 	${MAKE} -C man install
 	@echo
 	@echo "${OUR_NAME}: make $@ complete"
@@ -1064,7 +1021,7 @@ depend: ${ALL_CSRC} all
 	@${MAKE} -C jparse $@
 	@echo
 	@${SED} -i.orig -n -e '1,/^### DO NOT CHANGE MANUALLY BEYOND THIS LINE/p' Makefile
-	${CC} ${CFLAGS} -MM -I. ${ALL_CSRC} | ${INDEPEND} >> Makefile
+	${CC} ${CFLAGS} -MM -I. -DMKIOCCCENTRY_USE ${ALL_CSRC} | ${INDEPEND} >> Makefile
 	@-if ${CMP} -s Makefile.orig Makefile; then \
 	    ${RM} -f Makefile.orig; \
 	else \
@@ -1077,52 +1034,27 @@ depend: ${ALL_CSRC} all
 	@echo "${OUR_NAME}: make $@ complete"
 
 ### DO NOT CHANGE MANUALLY BEYOND THIS LINE
-chkentry.o: chkentry.c chkentry.h dbg/dbg.h foo.h jparse/../dbg/dbg.h \
+chkentry.o: chkentry.c chkentry.h dbg/dbg.h jparse/../dbg/dbg.h \
     jparse/../dyn_array/../dbg/dbg.h jparse/../dyn_array/dyn_array.h \
     jparse/jparse.h jparse/jparse.tab.h jparse/json_parse.h \
-    jparse/json_sem.h jparse/json_util.h jparse/util.h soup/../entry_util.h \
-    soup/../jparse/json_sem.h soup/../jparse/json_util.h \
-    soup/chk_sem_auth.h soup/chk_sem_info.h soup/chk_validate.h soup/soup.h \
-    version.h
-entry_time.o: dbg/dbg.h entry_time.c entry_time.h jparse/../dbg/dbg.h \
+    jparse/json_sem.h jparse/json_util.h jparse/util.h soup/../dbg/dbg.h \
+    soup/../jparse/jparse.h soup/../jparse/json_sem.h \
+    soup/../jparse/json_util.h soup/chk_sem_auth.h soup/chk_sem_info.h \
+    soup/chk_validate.h soup/entry_time.h soup/entry_util.h soup/foo.h \
+    soup/limit_ioccc.h soup/location.h soup/sanity.h soup/soup.h \
+    soup/utf8_posix_map.h soup/version.h
+iocccsize.o: iocccsize.c iocccsize.h soup/../dbg/dbg.h soup/iocccsize_err.h \
+    soup/limit_ioccc.h soup/version.h
+mkiocccentry.o: dbg/dbg.h iocccsize.h jparse/../dbg/dbg.h \
     jparse/../dyn_array/../dbg/dbg.h jparse/../dyn_array/dyn_array.h \
     jparse/jparse.h jparse/jparse.tab.h jparse/json_parse.h \
-    jparse/json_sem.h jparse/json_util.h jparse/util.h limit_ioccc.h \
-    version.h
-entry_util.o: dbg/dbg.h entry_time.h entry_util.c entry_util.h \
-    jparse/../dbg/dbg.h jparse/../dyn_array/../dbg/dbg.h \
+    jparse/json_sem.h jparse/json_util.h jparse/util.h mkiocccentry.c \
+    mkiocccentry.h soup/../dbg/dbg.h soup/../jparse/jparse.h \
+    soup/entry_util.h soup/limit_ioccc.h soup/location.h soup/sanity.h \
+    soup/utf8_posix_map.h soup/version.h
+txzchk.o: dbg/dbg.h jparse/../dbg/dbg.h jparse/../dyn_array/../dbg/dbg.h \
     jparse/../dyn_array/dyn_array.h jparse/jparse.h jparse/jparse.tab.h \
     jparse/json_parse.h jparse/json_sem.h jparse/json_util.h jparse/util.h \
-    limit_ioccc.h location.h version.h
-fnamchk.o: dbg/dbg.h fnamchk.c fnamchk.h jparse/../dbg/dbg.h \
-    jparse/../dyn_array/../dbg/dbg.h jparse/../dyn_array/dyn_array.h \
-    jparse/jparse.h jparse/jparse.tab.h jparse/json_parse.h \
-    jparse/json_sem.h jparse/json_util.h jparse/util.h limit_ioccc.h \
-    utf8_posix_map.h version.h
-foo.o: dbg/dbg.h foo.c foo.h oebxergfB.h
-iocccsize.o: iocccsize.c iocccsize.h iocccsize_err.h
-location.o: dbg/dbg.h jparse/../dbg/dbg.h jparse/../dyn_array/../dbg/dbg.h \
-    jparse/../dyn_array/dyn_array.h jparse/jparse.h jparse/jparse.tab.h \
-    jparse/json_parse.h jparse/json_sem.h jparse/json_util.h jparse/util.h \
-    location.c location.h
-mkiocccentry.o: dbg/dbg.h entry_util.h iocccsize.h jparse/../dbg/dbg.h \
-    jparse/../dyn_array/../dbg/dbg.h jparse/../dyn_array/dyn_array.h \
-    jparse/jparse.h jparse/jparse.tab.h jparse/json_parse.h \
-    jparse/json_sem.h jparse/json_util.h jparse/util.h limit_ioccc.h \
-    location.h mkiocccentry.c mkiocccentry.h sanity.h utf8_posix_map.h \
-    version.h
-rule_count.o: iocccsize.h iocccsize_err.h rule_count.c
-sanity.o: dbg/dbg.h jparse/../dbg/dbg.h jparse/../dyn_array/../dbg/dbg.h \
-    jparse/../dyn_array/dyn_array.h jparse/jparse.h jparse/jparse.tab.h \
-    jparse/json_parse.h jparse/json_sem.h jparse/json_util.h jparse/util.h \
-    limit_ioccc.h location.h sanity.c sanity.h utf8_posix_map.h version.h
-txzchk.o: dbg/dbg.h entry_util.h jparse/../dbg/dbg.h \
-    jparse/../dyn_array/../dbg/dbg.h jparse/../dyn_array/dyn_array.h \
-    jparse/jparse.h jparse/jparse.tab.h jparse/json_parse.h \
-    jparse/json_sem.h jparse/json_util.h jparse/util.h limit_ioccc.h \
-    location.h sanity.h txzchk.c txzchk.h utf8_posix_map.h version.h
-utf8_posix_map.o: dbg/dbg.h jparse/../dbg/dbg.h \
-    jparse/../dyn_array/../dbg/dbg.h jparse/../dyn_array/dyn_array.h \
-    jparse/jparse.h jparse/jparse.tab.h jparse/json_parse.h \
-    jparse/json_sem.h jparse/json_util.h jparse/util.h limit_ioccc.h \
-    utf8_posix_map.c utf8_posix_map.h version.h
+    soup/../dbg/dbg.h soup/../jparse/jparse.h soup/entry_util.h \
+    soup/limit_ioccc.h soup/location.h soup/sanity.h soup/utf8_posix_map.h \
+    soup/version.h txzchk.c txzchk.h

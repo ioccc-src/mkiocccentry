@@ -26,7 +26,12 @@
 /*
  * entry_util - utilities supporting mkiocccentry JSON files
  */
-#include "../entry_util.h"
+#include "entry_util.h"
+
+/*
+ * entry_time - utility functions supporting mkiocccentry JSON files related to time.h
+ */
+#include "entry_time.h"
 
 /*
  * json_util - general JSON parser utility support functions
@@ -52,6 +57,26 @@
  * chk_validate - validate functions for checking JSON semantics
  */
 #include "chk_validate.h"
+
+/*
+ * limit_ioccc - IOCCC size and rule related limitations
+ */
+#include "limit_ioccc.h"
+
+/*
+ * sanity - perform common IOCCC sanity checks
+ */
+#include "sanity.h"
+
+/*
+ * utf8_posix_map - translate UTF-8 into POSIX portable filename and + chars
+ */
+#include "utf8_posix_map.h"
+
+/*
+ * version - official IOCCC toolkit versions
+ */
+#include "version.h"
 
 
 #endif /* INCLUDE_SOUP_H */

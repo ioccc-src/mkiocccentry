@@ -21,7 +21,7 @@
 export DIGRAPHS=	# assume #undef DIGRAPHS
 # shellcheck disable=SC1007
 export TRIGRAPHS=	# assume #undef TRIGRAPHS
-export LIMIT_IOCCC="./limit_ioccc.sh"
+export LIMIT_IOCCC="./soup/limit_ioccc.sh"
 export WORK_DIR="./test_ioccc/test_iocccsize"
 export IOCCCSIZE="./iocccsize"
 export EXIT_CODE=0
@@ -35,9 +35,9 @@ export USAGE="usage: $0 [-h] [-v lvl] [-V] [-i iocccsize] [-w work_dir] [-l limi
     -h		    print usage message and exit 2
     -v lvl	    set debugging level to lvl (def: 0 ==> no debugging)
     -V		    print tool version and exit 2
-    -i iocccsize    path to iocccsize tool (def: test with ./iocccsize)
-    -w work_dir	    working directory that is removed & rebuilt during the test (def: ./test_iocccsize)
-    -l limit	    path to limit_ioccc.sh executable shell script (def: ./limit_ioccc.sh)
+    -i iocccsize    path to iocccsize tool (def: test with $IOCCCSIZE)
+    -w work_dir	    working directory that is removed & rebuilt during the test (def: $WORK_DIR)
+    -l limit	    path to limit_ioccc.sh executable shell script (def: $LIMIT_IOCCC)
 		    A limit of . (dot) will disable use of an executable shell script.
 
 Exit codes:

@@ -37,11 +37,6 @@
  */
 #include "json_parse.h"
 
-/*
- * limit_ioccc - IOCCC size and rule related limitations
- */
-#include "../limit_ioccc.h"
-
 
 /*
  * usage message

@@ -43,11 +43,6 @@
 #include "json_util.h"
 
 /*
- * limit_ioccc - IOCCC size and rule related limitations
- */
-#include "../limit_ioccc.h"
-
-/*
  * dyn_array - dynamic array facility
  */
 #include "../dyn_array/dyn_array.h"

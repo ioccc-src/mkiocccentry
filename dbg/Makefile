@@ -205,11 +205,11 @@ MAN3_TARGETS= man/man3/dbg.3  man/man3/err.3 man/man3/msg.3 man/man3/warn.3 man/
 MAN8_TARGETS=
 ALL_MAN_TARGETS= ${MAN1_TARGETS} ${MAN3_TARGETS} ${MAN8_TARGETS}
 
-# libraries
+# libraries to make by all, what to install, and removed by clobber
 #
 LIBA_TARGETS= dbg.a
 
-# include files
+# include files but NOT to removed by clobber
 #
 H_SRC_TARGETS= dbg.h
 
@@ -217,7 +217,7 @@ H_SRC_TARGETS= dbg.h
 #
 ALL_OTHER_TARGETS=
 
-# what to make by all and removed by clobber (and thus not ${ALL_OTHER_TARGETS})
+# what to make by all, what to install, and removed by clobber (and thus not ${ALL_OTHER_TARGETS})
 #
 TARGETS= ${LIBA_TARGETS} dbg_test dbg_example
 
@@ -349,14 +349,14 @@ test: dbg_test check_man
 	@echo "RUNNING: dbg_test"
 	@echo "./dbg_test -e 2 foo bar baz >dbg_test.out 2>&1"
 	@-./dbg_test -v 1 -e 2 foo bar baz >dbg_test.out 2>&1; \
-	  status="$$?"; \
-	  if [[ $$status -ne 5 ]]; then \
-	    echo "exit status of dbg_test: $$status != 5"; \
+	  EXIT_CODE="$$?"; \
+	  if [[ $$EXIT_CODE -ne 5 ]]; then \
+	    echo "exit status of dbg_test: $$EXIT_CODE != 5"; \
 	    exit 21; \
 	  else \
 	      ${GREP} -q '^ERROR\[5\]: main: simulated error, foo: foo bar: bar: errno\[2\]: No such file or directory$$' dbg_test.out; \
-	      status="$$?"; \
-	      if [[ $$status -ne 0 ]]; then \
+	      EXIT_CODE="$$?"; \
+	      if [[ $$EXIT_CODE -ne 0 ]]; then \
 		echo "ERROR: did not find the correct dbg_test error message" 1>&2; \
 		echo "ERROR: beginning dbg_test.out contents" 1>&2; \
 		${CAT} dbg_test.out 1>&2; \
@@ -407,7 +407,11 @@ picky: ${ALL_SRC}
 	else \
 	    echo "${PICKY} -w132 -u -s -t8 -v -e -- ${C_SRC} ${H_SRC}"; \
 	    ${PICKY} -w132 -u -s -t8 -v -e -- ${C_SRC} ${H_SRC}; \
-	    EXIT_CODE="$$?"; if [[ $$EXIT_CODE -ne 0 ]]; then echo "picky: ERROR: $$EXIT_CODE" 1>&2; exit 1; fi; \
+	    EXIT_CODE="$$?"; \
+	    if [[ $$EXIT_CODE -ne 0 ]]; then \
+		echo "picky: ERROR: $$EXIT_CODE" 1>&2; \
+		exit 1; \
+	    fi; \
 	fi
 	@echo
 	@echo "${OUR_NAME}: make $@ complete"
@@ -439,9 +443,9 @@ check_man: ${ALL_MAN_TARGETS}
 	else \
 	    echo "${CHECKNR} -c.BR.SS.BI ${ALL_MAN_TARGETS}"; \
 	    ${CHECKNR} -c.BR.SS.BI ${ALL_MAN_TARGETS}; \
-	    status="$$?"; \
-	    if [[ $$status -ne 0 ]]; then \
-		echo 'ERROR: checknr: ${CHECKNR} failed, error code: $$status'; \
+	    EXIT_CODE="$$?"; \
+	    if [[ $$EXIT_CODE -ne 0 ]]; then \
+		echo 'ERROR: checknr: ${CHECKNR} failed, error code: $$EXIT_CODE'; \
 		exit 23; \
 	    fi; \
 	fi

@@ -57,16 +57,19 @@ if [[ -z "$TAR" ]]; then
 fi
 
 export TXZCHK_TEST_VERSION="0.5 2022-11-04"
-export USAGE="usage: $0 [-h] [-V] [-v level] [-t txzchk] [-T tar] [-F fnamchk] [-d txzchk_tree] [-Z topdir]
+export FNAMCHK="./test_ioccc/fnamchk"
+export TXZCHK="./txzchk"
+export TXZCHK_TREE="./test_ioccc/test_txzchk"
+export USAGE="usage: $0 [-h] [-V] [-v level] [-t txzchk] [-T tar] [-F fnamchk] [-d txzchk_tree] [-Z topdir] [-k]
 
     -h			    print help and exit
     -V			    print version and exit
     -v level		    set verbosity level for this script: (def level: 0)
-    -t txzchk		    path to txzchk executable (def: ./txzchk)
+    -t txzchk		    path to txzchk executable (def: $TXZCHK)
     -T tar		    path to tar that accepts -J option (def: $TAR)
-    -F fnamchk	            path to fnamchk (def: ./fnamchk)
+    -F fnamchk	            path to fnamchk (def: $FNAMCHK)
 
-    -d txzchk_tree	    tree where txzchk test files are to be found (def: ./test_txzchk)
+    -d txzchk_tree	    tree where txzchk test files are to be found (def: $TXZCHK_TREE)
 			      These subdirectories are expected:
 				txzchk_tree/bad
 				txzchk_tree/good
@@ -74,6 +77,7 @@ export USAGE="usage: $0 [-h] [-V] [-v level] [-t txzchk] [-T tar] [-F fnamchk] [
 				    are not flexible as the check for errors reported by
 				    txzchk and the error file is done as an exact match
     -Z topdir		    top level build directory (def: try . or ..)
+    -k			    keep temporary files on exit (def: remove temporary files before exiting)
 
 Exit codes:
      0   all is well
@@ -84,17 +88,15 @@ Exit codes:
 
 $0 version: $TXZCHK_TEST_VERSION"
 
-export TXZCHK="./txzchk"
 export EXIT_CODE=0
-export TXZCHK_TREE="./test_ioccc/test_txzchk"
 export LOGFILE="./test_ioccc/txzchk_test.log"
-export FNAMCHK="./fnamchk"
 export TOPDIR=
 
 # parse args
 #
 export V_FLAG="0"
-while getopts :hVv:t:d:T:F:Z: flag; do
+export K_FLAG=""
+while getopts :hVv:t:d:T:F:Z:k flag; do
     case "$flag" in
     h)	echo "$USAGE" 1>&2
 	exit 2
@@ -113,6 +115,8 @@ while getopts :hVv:t:d:T:F:Z: flag; do
     T)	TAR="$OPTARG";
 	;;
     Z)  TOPDIR="$OPTARG";
+        ;;
+    k)  K_FLAG="true";
         ;;
     \?) echo "$0: ERROR: invalid option: -$OPTARG" 1>&2
 	exit 3
@@ -306,14 +310,14 @@ if [[ ! -r $TEST_FILE ]]; then
     EXIT_CODE=32
     RUN_TAR_TEST=
 fi
-TAR_ERROR=$(mktemp -u .txzchk_test.tar_err.XXXXXXXXXX.out)
+TAR_ERROR=$(mktemp .txzchk_test.XXXXXXXXXX.tar_err.out)
 status="$?"
 if [[ $status -ne 0 ]]; then
     echo "$0: ERROR: mktemp -u $TAR_ERROR exit code: $status" 1>&2
     EXIT_CODE=33
     RUN_TAR_TEST=
 fi
-TARBALL=$(mktemp -u .txzchk_test.tarball.XXXXXXXXXX.txz)
+TARBALL=$(mktemp .txzchk_test.XXXXXXXXXX.tarball.txz)
 status="$?"
 if [[ $status -ne 0 ]]; then
     echo "$0: ERROR: mktemp -u $TARBALL exit code: $status" 1>&2
@@ -324,23 +328,29 @@ fi
 # We need a file to write the output of txzchk to in order to compare it
 # with any error file. This is needed for the files that are supposed to
 # fail but it's possible that there could be a use for good files too.
-STDERR=$(mktemp -u .txzchk_test.stderr.XXXXXXXXXX)
+TMP_STDERR_FILE=$(mktemp -u .txzchk_test.stderr.XXXXXXXXXX)
 # delete the temporary file in the off chance it already exists
-rm -f "$STDERR"
+rm -f "$TMP_STDERR_FILE"
 # now let's make sure we can create it as well: if we can't or it's not
 # writable there's an issue.
 #
-touch "$STDERR"
-if [[ ! -e "$STDERR" ]]; then
-    echo "$0: could not create output file: $STDERR"
+touch "$TMP_STDERR_FILE"
+if [[ ! -e "$TMP_STDERR_FILE" ]]; then
+    echo "$0: could not create output file: $TMP_STDERR_FILE"
     exit 30
 fi
-if [[ ! -w "$STDERR" ]]; then
-    echo "$0: output file not writable: $STDERR"
+if [[ ! -w "$TMP_STDERR_FILE" ]]; then
+    echo "$0: output file not writable: $TMP_STDERR_FILE"
     exit 31
 fi
 
-trap "rm -f \$TARBALL \$TEST_FILE \$TAR_ERROR \$STDERR; exit" 0 1 2 3 15
+# remove or key temporary files
+#
+if [[ -z $K_FLAG ]]; then
+    trap "rm -f \$TARBALL \$TEST_FILE \$TAR_ERROR \$TMP_STDERR_FILE; exit" 0 1 2 3 15
+else
+    trap "rm -f \$TARBALL \$TEST_FILE \$TAR_ERROR \$TMP_STDERR_FILE; exit" 1 2 3 15
+fi
 
 # run tar test
 #
@@ -452,10 +462,10 @@ run_test()
     fi
 
     if [[ $V_FLAG -ge 5 ]]; then
-	echo "$0: debug[5]: in run_test: about to run: $TXZCHK -w -v 0 -q -t $TAR -F $FNAMCHK -T -E txt -- $txzchk_test_file 2>$STDERR"
+	echo "$0: debug[5]: in run_test: about to run: $TXZCHK -w -v 0 -q -t $TAR -F $FNAMCHK -T -E txt -- $txzchk_test_file 2>$TMP_STDERR_FILE"
     fi
 
-    "$TXZCHK" -w -v 0 -q -F "$FNAMCHK" -t "$TAR" -T -E txt -- "$txzchk_test_file" 2>"$STDERR"
+    "$TXZCHK" -w -v 0 -q -F "$FNAMCHK" -t "$TAR" -T -E txt -- "$txzchk_test_file" 2>"$TMP_STDERR_FILE"
     status="$?"
 
     if [[ $V_FLAG -ge 7 ]]; then
@@ -467,9 +477,9 @@ run_test()
     # if we have an error file (expected errors) and the output of the above
     # command does not match it is a fail.
     if [[ -e "$txzchk_err_file" ]]; then
-	if ! cmp -s "$txzchk_err_file" "$STDERR"; then
+	if ! cmp -s "$txzchk_err_file" "$TMP_STDERR_FILE"; then
 	    echo "$0: Warning: in run_test: FAIL: $TXZCHK -w -v 0 -t $TAR -F $FNAMCHK -T -E txt $txzchk_test_file" | tee -a -- "$LOGFILE" 1>&2
-	    echo "$0: Warning: in run_test: expected errors do not match result of test" 1>&2
+	    echo "$0: Warning: in run_test: expected errors: $txzchk_err_file do not match result of test: $TMP_STDERR_FILE" 1>&2
 	    if [[ $V_FLAG -lt 3 ]]; then
 		echo "$0: Warning: for more details try: $TXZCHK -w -v 3 -t $TAR -F $FNAMCHK -T -E txt -- $txzchk_test_file" | tee -a -- "$LOGFILE" 1>&2
 	    else
@@ -487,12 +497,12 @@ run_test()
     # it is an error. Perhaps this check should also check that pass_fail is not
     # 'pass' but this would further complicate the script when the fact there's
     # stderr output is an error that should be addressed.
-    elif [[ -s "$STDERR" ]]; then
+    elif [[ -s "$TMP_STDERR_FILE" ]]; then
 	echo "$0: Warning: in run_test: FAIL: $TXZCHK -w -v 0 -t $TAR -F $FNAMCHK -T -E txt $txzchk_test_file" | tee -a -- "$LOGFILE" 1>&2
 	echo "$0: Warning: in run_test: unexpected errors found for file that should have passed:" | tee -a "$LOGFILE" 1>&2
-	echo cat "$STDERR"
-	# tee -a -- "$LOGFILE < "$STDERR"
-	< "$STDERR" tee -a -- "$LOGFILE"
+	echo cat "$TMP_STDERR_FILE"
+	# tee -a -- "$LOGFILE < "$TMP_STDERR_FILE"
+	< "$TMP_STDERR_FILE" tee -a -- "$LOGFILE"
 	echo | tee -a -- "${LOGFILE}" 1>&2
 	exit
 	EXIT_CODE=43
@@ -530,7 +540,29 @@ done < <(find "$TXZCHK_BAD_TREE" -type f -name '*.txt' -print)
 
 # explicitly delete the temporary files
 
-rm -f "$TARBALL" "$TEST_FILE" "$TAR_ERROR" "$STDERR"
+if [[ -z $K_FLAG ]]; then
+    rm -f "$TARBALL" "$TEST_FILE" "$TAR_ERROR" "$TMP_STDERR_FILE"
+else
+    echo
+    echo "$0: keeping temporary files due to use of -k"
+    echo
+    echo "$0: to remove the temporary files:"
+    echo
+    echo -n "rm -f"
+    if [[ -e $TARBALL ]]; then
+	echo -n " $TARBALL"
+    fi
+    if [[ -e $TEST_FILE ]]; then
+	echo -n " $TEST_FILE"
+    fi
+    if [[ -e $TAR_ERROR ]]; then
+	echo -n " $TAR_ERROR"
+    fi
+    if [[ -e $TMP_STDERR_FILE ]]; then
+	echo -n " $TMP_STDERR_FILE"
+    fi
+    echo
+fi
 
 # All Done!!! -- Jessica Noll, Age 2
 #

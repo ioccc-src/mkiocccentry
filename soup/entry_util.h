@@ -29,7 +29,7 @@
 /*
  * jparse - the parser
  */
-#include "jparse/jparse.h"
+#include "../jparse/jparse.h"
 
 
 /*

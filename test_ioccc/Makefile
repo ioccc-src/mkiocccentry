@@ -126,8 +126,8 @@ CFLAGS= ${C_STD} ${C_OPT} -pedantic ${WARN_FLAGS} ${LDFLAGS}
 
 # source files that are permanent (not made, nor removed)
 #
-C_SRC= utf8_test.c
-H_SRC=
+C_SRC= utf8_test.c fnamchk.c
+H_SRC= fnamchk.h
 
 # source files that do not conform to strict picky standards
 #
@@ -136,7 +136,8 @@ LESS_PICKY_HSRC=
 
 # all shell scripts
 #
-SH_FILES= chkentry_test.sh ioccc_test.sh iocccsize_test.sh mkiocccentry_test.sh txzchk_test.sh
+SH_FILES= chkentry_test.sh ioccc_test.sh iocccsize_test.sh mkiocccentry_test.sh txzchk_test.sh \
+	prep.sh
 
 
 ######################
@@ -149,7 +150,7 @@ LIB_OBJS=
 
 # NOTE: ${OTHER_OBJS} are objects NOT put into a library and removed by make clean
 #
-OTHER_OBJS=
+OTHER_OBJS= fnamchk.o
 
 # NOTE: intermediate files to make and removed by make clean
 #
@@ -166,6 +167,8 @@ ALL_OBJS= ${LIB_OBJS} ${OTHER_OBJS}
 ALL_CSRC= ${C_SRC} ${LESS_PICKY_CSRC} ${BUILT_C_SRC}
 ALL_HSRC= ${H_SRC} ${LESS_PICKY_HSRC} ${BUILT_H_SRC}
 ALL_SRC= ${ALL_CSRC} ${ALL_HSRC} ${SH_FILES}
+
+TXZCHK_LOG= txzchk_test.log
 
 
 #######################
@@ -192,7 +195,7 @@ EXTERN_H=
 EXTERN_O=
 EXTERN_MAN= ${ALL_MAN_TARGETS}
 EXTERN_LIBA=
-EXTERN_PROG=
+EXTERN_PROG= prep.sh fnamchk
 
 # NOTE: ${EXTERN_CLOBBER} used outside of this directory and removed by make clobber
 #
@@ -203,11 +206,13 @@ EXTERN_CLOBBER= ${EXTERN_O} ${EXTERN_LIBA} ${EXTERN_PROG}
 # target information #
 ######################
 
-# where and what to install
+# shell targets to make by all and removed by clobber
 #
-DEST_DIR= /usr/local/bin
-TARGETS= utf8_test
 SH_TARGETS=
+
+# what to make by all, what to install, and removed by clobber (and thus not ${ALL_OTHER_TARGETS})
+#
+TARGETS= utf8_test fnamchk ${SH_TARGETS}
 
 
 ############################################################
@@ -231,7 +236,7 @@ SH_TARGETS=
 # all - default rule - must be first #
 ######################################
 
-all: ${TARGETS}
+all: ${TARGETS} ${EXTERN_PROG}
 
 
 #################################################
@@ -247,37 +252,40 @@ all: ${TARGETS}
 # things to make in this directory #
 ####################################
 
-utf8_test.o: utf8_test.c ../utf8_posix_map.h
+utf8_test.o: utf8_test.c
 	${CC} ${CFLAGS} -I.. utf8_test.c -c
 
-utf8_test: utf8_test.o ../utf8_posix_map.o ../jparse/util.o ../dyn_array/dyn_array.a ../dbg/dbg.a
+utf8_test: utf8_test.o ../dbg/dbg.a ../dyn_array/dyn_array.a ../soup/soup.a ../jparse/jparse.a
 	${CC} ${CFLAGS} -I.. $^ -o $@
 
 ioccc_test.sh: ../dbg/dbg_test ../dyn_array/dyn_test
 	@:
+
+fnamchk.o: fnamchk.c fnamchk.h
+	${CC} ${CFLAGS} fnamchk.c -c
+
+fnamchk: fnamchk.o ../jparse/jparse.a ../dyn_array/dyn_array.a ../dbg/dbg.a
+	${CC} ${CFLAGS} $^ -o $@
 
 
 #########################################################
 # rules that invoke Makefile rules in other directories #
 #########################################################
 
-../jparse/util.o: ../jparse/Makefile
-	@${MAKE} -C ../jparse util.o
-
-../utf8_posix_map.o: ../Makefile
-	@${MAKE} -C .. utf8_posix_map.o
-
 ../dbg/dbg.a: ../dbg/Makefile
-	@${MAKE} -C ../dbg dbg.a
+	@${MAKE} -C ../dbg dbg extern_liba
 
 ../dbg/dbg_test: ../dbg/Makefile
-	@${MAKE} -C ../dbg dbg_test
+	@${MAKE} -C ../dbg extern_prog
 
 ../dyn_array/dyn_array.a: ../dyn_array/Makefile
-	@${MAKE} -C ../dyn_array dyn_array.a
+	@${MAKE} -C ../dyn_array extern_liba
 
 ../dyn_array/dyn_test: ../dyn_array/Makefile
 	@${MAKE} -C ../dyn_array dyn_test
+
+../soup/soup.a: ../soup/Makefile
+	@${MAKE} -C ../soup extern_liba
 
 
 ####################################
@@ -334,11 +342,19 @@ picky: ${ALL_SRC}
 	    exit 1; \
 	else \
 	    echo "${PICKY} -w132 -u -s -t8 -v -e -- ${C_SRC} ${H_SRC}"; \
-	    ${PICKY} -w132 -u -s -t8 -v -e -- ${C_SRC} ${H_SRC}; EXIT_CODE="$$?"; \
-	    if [[ $$EXIT_CODE -ne 0 ]]; then echo "make $@: ERROR: CODE[1]: $$EXIT_CODE" 1>&2; exit 1; fi; \
+	    ${PICKY} -w132 -u -s -t8 -v -e -- ${C_SRC} ${H_SRC}; \
+	    EXIT_CODE="$$?"; \
+	    if [[ $$EXIT_CODE -ne 0 ]]; then \
+		echo "make $@: ERROR: CODE[1]: $$EXIT_CODE" 1>&2; \
+		exit 1; \
+	    fi; \
 	    echo "${PICKY} -w -u -s -t8 -v -e -8 -- ${SH_FILES}"; \
-	    ${PICKY} -w -u -s -t8 -v -e -8 -- ${SH_FILES}; EXIT_CODE="$$?"; \
-	    if [[ $$EXIT_CODE -ne 0 ]]; then echo "make $@: ERROR: CODE[2]: $$EXIT_CODE" 1>&2; exit 2; fi; \
+	    ${PICKY} -w -u -s -t8 -v -e -8 -- ${SH_FILES}; \
+	    EXIT_CODE="$$?"; \
+	    if [[ $$EXIT_CODE -ne 0 ]]; then \
+		echo "make $@: ERROR: CODE[2]: $$EXIT_CODE" 1>&2; \
+		exit 2; \
+	    fi; \
 	fi
 	@echo
 	@echo "${OUR_NAME}: make $@ complete"
@@ -362,7 +378,11 @@ shellcheck: ${SH_FILES} .shellcheckrc
 	else \
 	    echo "${SHELLCHECK} -f gcc -- ${SH_FILES}"; \
 	    ${SHELLCHECK} -f gcc -- ${SH_FILES}; \
-	    if [[ $$EXIT_CODE -ne 0 ]]; then echo "make $@: ERROR: CODE[1]: $$EXIT_CODE" 1>&2; exit 1; fi; \
+	    EXIT_CODE="$$?"; \
+	    if [[ $$EXIT_CODE -ne 0 ]]; then \
+		echo "make $@: ERROR: CODE[1]: $$EXIT_CODE" 1>&2; \
+		exit 1; \
+	    fi; \
 	fi
 	@echo
 	@echo "${OUR_NAME}: make $@ complete"
@@ -400,7 +420,7 @@ prep_clobber: prep_clean legacy_clobber
 	@echo "${OUR_NAME}: make $@ starting"
 	@echo
 	${RM} -rf test_iocccsize test_src test_work
-	${RM} -f utf8_test
+	${RM} -f ${TXZCHK_LOG}
 	@echo
 	@echo "${OUR_NAME}: make $@ complete"
 
@@ -477,8 +497,16 @@ depend: ${ALL_CSRC} all
 	@echo "${OUR_NAME}: make $@ complete"
 
 ### DO NOT CHANGE MANUALLY BEYOND THIS LINE
-utf8_test.o: ../dbg/dbg.h ../jparse/../dbg/dbg.h \
+fnamchk.o: ../dbg/dbg.h ../jparse/../dbg/dbg.h \
     ../jparse/../dyn_array/../dbg/dbg.h ../jparse/../dyn_array/dyn_array.h \
     ../jparse/jparse.h ../jparse/jparse.tab.h ../jparse/json_parse.h \
     ../jparse/json_sem.h ../jparse/json_util.h ../jparse/util.h \
-    ../limit_ioccc.h ../utf8_posix_map.h ../version.h utf8_test.c
+    ../soup/../dbg/dbg.h ../soup/../jparse/jparse.h ../soup/limit_ioccc.h \
+    ../soup/utf8_posix_map.h ../soup/version.h fnamchk.c fnamchk.h
+utf8_test.o: ../soup/../dbg/dbg.h ../soup/../jparse/../dbg/dbg.h \
+    ../soup/../jparse/../dyn_array/../dbg/dbg.h \
+    ../soup/../jparse/../dyn_array/dyn_array.h ../soup/../jparse/jparse.h \
+    ../soup/../jparse/jparse.tab.h ../soup/../jparse/json_parse.h \
+    ../soup/../jparse/json_sem.h ../soup/../jparse/json_util.h \
+    ../soup/../jparse/util.h ../soup/limit_ioccc.h ../soup/utf8_posix_map.h \
+    ../soup/version.h utf8_test.c

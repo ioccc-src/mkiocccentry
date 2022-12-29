@@ -7,10 +7,10 @@
 # This JSON parser was co-developed by:
 #
 #	@xexyl
-# 	https://xexyl.net		Cody Boone Ferguson
-# 	https://ioccc.xexyl.net
+#	https://xexyl.net		Cody Boone Ferguson
+#	https://ioccc.xexyl.net
 # and:
-# 	chongo (Landon Curt Noll, http://www.isthe.com/chongo/index.html) /\oo/\
+#	chongo (Landon Curt Noll, http://www.isthe.com/chongo/index.html) /\oo/\
 #
 # "Because sometimes even the IOCCC Judges need some help." :-)
 #
@@ -114,12 +114,6 @@ CFLAGS= ${C_STD} ${C_OPT} -pedantic ${WARN_FLAGS} ${LDFLAGS}
 # NOTE: Replace mkiocccentry with whichever tool you want to test and the ...
 # with the arguments and options you want.
 
-# where and what to install
-#
-DEST_DIR= /usr/local/bin
-TARGETS= jnum_chk
-SH_TARGETS=
-
 
 ###############
 # source code #
@@ -203,6 +197,14 @@ EXTERN_CLOBBER= ${EXTERN_O} ${EXTERN_LIBA} ${EXTERN_PROG}
 ######################
 # target information #
 ######################
+
+# shell targets to make by all and removed by clobber
+#
+SH_TARGETS=
+
+# what to make by all, what to install, and removed by clobber (and thus not ${ALL_OTHER_TARGETS})
+#
+TARGETS= jnum_chk ${SH_TARGETS}
 
 
 ############################################################
@@ -329,11 +331,19 @@ picky: ${ALL_SRC}
 	    exit 1; \
 	else \
 	    echo "${PICKY} -w132 -u -s -t8 -v -e -- ${C_SRC} ${H_SRC}"; \
-	    ${PICKY} -w132 -u -s -t8 -v -e -- ${C_SRC} ${H_SRC}; EXIT_CODE="$$?"; \
-	    if [[ $$EXIT_CODE -ne 0 ]]; then echo "make $@: ERROR: CODE[1]: $$EXIT_CODE" 1>&2; exit 1; fi; \
+	    ${PICKY} -w132 -u -s -t8 -v -e -- ${C_SRC} ${H_SRC}; \
+	    EXIT_CODE="$$?"; \
+	    if [[ $$EXIT_CODE -ne 0 ]]; then \
+		echo "make $@: ERROR: CODE[1]: $$EXIT_CODE" 1>&2; \
+		exit 1; \
+	    fi; \
 	    echo "${PICKY} -w -u -s -t8 -v -e -8 -- ${SH_FILES}"; \
-	    ${PICKY} -w -u -s -t8 -v -e -8 -- ${SH_FILES}; EXIT_CODE="$$?"; \
-	    if [[ $$EXIT_CODE -ne 0 ]]; then echo "make $@: ERROR: CODE[2]: $$EXIT_CODE" 1>&2; exit 2; fi; \
+	    ${PICKY} -w -u -s -t8 -v -e -8 -- ${SH_FILES}; \
+	    EXIT_CODE="$$?"; \
+	    if [[ $$EXIT_CODE -ne 0 ]]; then \
+		echo "make $@: ERROR: CODE[2]: $$EXIT_CODE" 1>&2; \
+		exit 2; \
+	    fi; \
 	fi
 	@echo
 	@echo "${OUR_NAME}: make $@ complete"
@@ -357,7 +367,11 @@ shellcheck: ${SH_FILES} .shellcheckrc
 	else \
 	    echo "${SHELLCHECK} -f gcc -- ${SH_FILES}"; \
 	    ${SHELLCHECK} -f gcc -- ${SH_FILES}; \
-	    if [[ $$EXIT_CODE -ne 0 ]]; then echo "make $@: ERROR: CODE[1]: $$EXIT_CODE" 1>&2; exit 1; fi; \
+	    EXIT_CODE="$$?"; \
+	    if [[ $$EXIT_CODE -ne 0 ]]; then \
+		echo "make $@: ERROR: CODE[1]: $$EXIT_CODE" 1>&2; \
+		exit 1; \
+	    fi; \
 	fi
 	@echo
 	@echo "${OUR_NAME}: make $@ complete"
@@ -477,8 +491,8 @@ depend: ${ALL_CSRC} all
 ### DO NOT CHANGE MANUALLY BEYOND THIS LINE
 jnum_chk.o: ../../dbg/dbg.h ../../dyn_array/../dbg/dbg.h \
     ../../dyn_array/dyn_array.h ../../jparse/json_parse.h \
-    ../../jparse/json_util.h ../../version.h ../json_parse.h ../util.h \
-    jnum_chk.c jnum_chk.h
+    ../../jparse/json_util.h ../json_parse.h ../util.h jnum_chk.c \
+    jnum_chk.h
 jnum_test.o: ../../jparse/../dyn_array/../dbg/dbg.h \
     ../../jparse/../dyn_array/dyn_array.h ../../jparse/json_parse.h \
     ../../jparse/util.h jnum_test.c

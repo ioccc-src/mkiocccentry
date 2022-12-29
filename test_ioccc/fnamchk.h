@@ -38,22 +38,22 @@
 /*
  * dbg - info, debug, warning, error, and usage message facility
  */
-#include "dbg/dbg.h"
+#include "../dbg/dbg.h"
 
 /*
  * jparse - the parser
  */
-#include "jparse/jparse.h"
+#include "../jparse/jparse.h"
 
 /*
  * limit_ioccc - IOCCC size and rule related limitations
  */
-#include "limit_ioccc.h"
+#include "../soup/limit_ioccc.h"
 
 /*
  * utf8_posix_map - translate UTF-8 into POSIX portable filename and + chars
  */
-#include "utf8_posix_map.h"
+#include "../soup/utf8_posix_map.h"
 
 
 /*

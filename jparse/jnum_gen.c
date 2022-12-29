@@ -41,6 +41,11 @@
 #define REQUIRED_ARGS (1)	/* number of required arguments on the command readline_buf */
 #define CHUNK (16)		/* allocate CHUNK elements at a time */
 
+/*
+ * official jnum_gen version
+ */
+#define JNUM_GEN_VERSION "0.7 2022-05-01"	/* format: major.minor YYYY-MM-DD */
+
 
 int
 main(int argc, char *argv[])
@@ -83,7 +88,7 @@ main(int argc, char *argv[])
 	    verbosity_level = parse_verbosity(program, optarg);
 	    break;
 	case 'V':		/* -V - print version and exit */
-	    print("%s\n", JNUM_CHK_VERSION);
+	    print("%s\n", JNUM_GEN_VERSION);
 	    exit(3); /*ooo*/
 	    not_reached();
 	    break;

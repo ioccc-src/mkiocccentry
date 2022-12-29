@@ -57,7 +57,7 @@
 /*
  * utf8_posix_map - translate UTF-8 into POSIX portable filename and + chars
  */
-#include "../utf8_posix_map.h"
+#include "../soup/utf8_posix_map.h"
 
 
 /*

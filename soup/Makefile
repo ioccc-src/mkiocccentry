@@ -121,17 +121,20 @@ CFLAGS= ${C_STD} ${C_OPT} ${WARN_FLAGS} ${LDFLAGS}
 
 # source files that are permanent (not made, nor removed)
 #
-C_SRC= chk_sem_info.c chk_sem_auth.c chk_validate.c
-H_SRC= chk_validate.h soup.h
+C_SRC= chk_sem_info.c chk_sem_auth.c chk_validate.c entry_time.c entry_util.c \
+	location.c sanity.c rule_count.c
+H_SRC= chk_validate.h soup.h entry_time.h entry_util.h foo.h limit_ioccc.h location.h \
+	sanity.h utf8_posix_map.h version.h iocccsize_err.h
 
 # source files that do not conform to strict picky standards
 #
-LESS_PICKY_CSRC=
-LESS_PICKY_HSRC=
+LESS_PICKY_CSRC= utf8_posix_map.c foo.c
+LESS_PICKY_HSRC= oebxergfB.h
 
 # all shell scripts
 #
-SH_FILES= all_ref.sh
+SH_FILES= all_ref.sh hostchk.sh run_usage.sh vermod.sh \
+	reset_tstamp.sh
 
 
 ######################
@@ -140,7 +143,8 @@ SH_FILES= all_ref.sh
 
 # NOTE: ${LIB_OBJS} are objects to put into a library and removed by make clean
 #
-LIB_OBJS= chk_sem_info.o chk_sem_auth.o chk_validate.o
+LIB_OBJS= chk_sem_info.o chk_sem_auth.o chk_validate.o entry_time.o entry_util.o \
+	location.o sanity.o foo.o utf8_posix_map.o rule_count.o
 
 # NOTE: ${OTHER_OBJS} are objects NOT put into a library and removed by make clean
 #
@@ -187,7 +191,7 @@ EXTERN_H= chk_sem_info.h chk_sem_auth.h
 EXTERN_O=
 EXTERN_MAN= ${ALL_MAN_TARGETS}
 EXTERN_LIBA= soup.a
-EXTERN_PROG=
+EXTERN_PROG= hostchk.sh run_usage.sh vermod.sh reset_tstamp.sh limit_ioccc.sh
 
 # NOTE: ${EXTERN_CLOBBER} used outside of this directory and removed by make clobber
 #
@@ -213,13 +217,17 @@ LIBA_TARGETS= soup.a
 #
 H_SRC_TARGETS=
 
+# shell targets to make by all and removed by clobber
+#
+SH_TARGETS= limit_ioccc.sh
+
 # what to make by all but NOT to removed by clobber (because they are not files)
 #
 ALL_OTHER_TARGETS= extern_everything
 
-# what to make by all and removed by clobber (and thus not ${ALL_OTHER_TARGETS})
+# what to make by all, what to install, and removed by clobber (and thus not ${ALL_OTHER_TARGETS})
 #
-TARGETS= ${LIBA_TARGETS}
+TARGETS= ${LIBA_TARGETS} ${SH_TARGETS}
 
 
 ############################################################
@@ -253,7 +261,8 @@ all: ${TARGETS}
 .PHONY: all \
 	depend soup eat eating eat_soup eating_soup prep_clean prep_clobber legacy_clean legacy_clobber \
 	configure clean clobber install depend \
-	../jparse/jsemcgen.sh \
+	prep build release pull reset_min_timestamp \
+	../jparse/jsemcgen.sh hostchk.sh \
 	../jparse/test_jparse/test_JSON/info.json/good/info.reference.json \
 	../jparse/test_jparse/test_JSON/auth.json/good/auth.reference.json
 
@@ -262,14 +271,35 @@ all: ${TARGETS}
 # things to make in this directory #
 ####################################
 
+rule_count.o: rule_count.c
+	${CC} ${CFLAGS} -DMKIOCCCENTRY_USE rule_count.c -c
+
 chk_sem_info.o: chk_sem_info.c chk_sem_info.h
-	${CC} ${CFLAGS} -I.. chk_sem_info.c -c
+	${CC} ${CFLAGS} chk_sem_info.c -c
 
 chk_sem_auth.o: chk_sem_auth.c chk_sem_auth.h
-	${CC} ${CFLAGS} -I.. chk_sem_auth.c -c
+	${CC} ${CFLAGS} chk_sem_auth.c -c
 
 chk_validate.o: chk_validate.c
-	${CC} ${CFLAGS} -I.. chk_validate.c -c
+	${CC} ${CFLAGS} chk_validate.c -c
+
+entry_time.o: entry_time.c
+	${CC} ${CFLAGS} entry_time.c -c
+
+entry_util.o: entry_util.c
+	${CC} ${CFLAGS} entry_util.c -c
+
+location.o: location.c
+	${CC} ${CFLAGS} location.c -c
+
+foo.o: foo.c
+	${CC} ${CFLAGS} foo.c -c
+
+sanity.o: sanity.c
+	${CC} ${CFLAGS} sanity.c -c
+
+utf8_posix_map.o: utf8_posix_map.c
+	${CC} ${CFLAGS} utf8_posix_map.c -c
 
 soup.a: ${LIB_OBJS}
 	${RM} -f $@
@@ -321,10 +351,33 @@ chk_sem_auth.h: ../jparse/jsemtblgen ../jparse/jsemcgen.sh ../jparse/test_jparse
 ../jparse/test_jparse/test_JSON/auth.json/good/auth.reference.json: ../jparse/Makefile
 	@${MAKE} -C ../jparse test_jparse/test_JSON/auth.json/good/auth.reference.json
 
-
 ####################################
 # rules for use by other Makefiles #
 ####################################
+
+limit_ioccc.sh: limit_ioccc.h version.h ../dbg/dbg.h ../dyn_array/dyn_array.h ../jparse/jparse.h
+	${RM} -f $@
+	@echo '#!/usr/bin/env bash' > $@
+	@echo '#' >> $@
+	@echo '# Copies of select limit_ioccc.h and version.h values for shell script use' >> $@
+	@echo '#' >> $@
+	${GREP} -E '^#define (RULE_|MAX_|UUID_|MIN_|IOCCC_)' limit_ioccc.h | \
+	    ${AWK} '{print $$2 "=\"" $$3 "\"" ;}' | ${TR} -d '[a-z]()' | \
+	    ${SED} -e 's/"_/"/' -e 's/""/"/g' -e 's/^/export /' >> $@
+	${GREP} -hE '^#define (.*_VERSION|TIMESTAMP_EPOCH|JSON_PARSING_DIRECTIVE_)' \
+		     version.h limit_ioccc.h ../dbg/dbg.h ../dyn_array/dyn_array.h ../jparse/jparse.h | \
+	    ${GREP} -v 'UUID_VERSION' | \
+	    ${SED} -e 's/^#define/export/' -e 's/ "/="/' -e 's/"[	 ].*$$/"/' >> $@
+	-if ${GREP} -q '^#define DIGRAPHS' limit_ioccc.h; then \
+	    echo "export DIGRAPHS='yes'"; \
+	else \
+	    echo "export DIGRAPHS="; \
+	fi >> $@
+	-if ${GREP} -q '^#define TRIGRAPHS' limit_ioccc.h; then \
+	    echo "export TRIGRAPHS='yes'"; \
+	else \
+	    echo "export TRIGRAPHS="; \
+	fi >> $@
 
 extern_include: ${EXTERN_H}
 	@:
@@ -359,7 +412,7 @@ test: all
 
 # Form unpatched semantic tables, without headers and trailers, from the reference info and auth JSON files
 #
-# rule used by prep.sh
+# rule used by ../test_ioccc/prep.sh
 #
 all_ref: ../jparse/jsemtblgen ../jparse/jsemcgen.sh ../jparse/test_jparse/test_JSON/info.json/good ../jparse/test_jparse/test_JSON/auth.json/good all_ref.sh
 	rm -rf ref
@@ -374,7 +427,7 @@ all_ref: ../jparse/jsemtblgen ../jparse/jsemcgen.sh ../jparse/test_jparse/test_J
 # Given a correct set of chk_sem_????.{c,h} files, we form chk.????.ptch.{c,h}
 # diff patch relative to the ref/*.reference.json.{c,h} files.
 #
-# rule should never be invoked by prep.sh
+# rule should never be invoked by ../test_ioccc/prep.sh
 #
 # This rule is run by the repo maintainers only AFTER chk_sem_????.{c,h} files
 # are updated by hand.
@@ -392,7 +445,7 @@ all_ref_ptch: ref/info.reference.json.c ref/info.reference.json.h \
 
 # Form the chk_sem_????.{c,h} files
 #
-# rule used by prep.sh
+# rule used by ../test_ioccc/prep.sh
 #
 mkchk_sem: chk_sem_auth.c chk_sem_auth.h chk_sem_info.c chk_sem_info.h
 
@@ -414,6 +467,20 @@ eat eating eat_soup eating_soup: all
 	else \
 	    echo "How can you eat soup that you haven't made yet?"; \
 	fi
+
+# Only run this rule when you wish to invalidate all timestamps
+# prior to now, such as when you make a fundamental change to a
+# critical JSON format, or make a fundamental change the compressed
+# tarball file structure, or make a critical change to limit_ioccc.h
+# that is MORE restrictive.
+#
+# DO NOT run this rule simply for a new IOCCC!
+#
+# Yes, we make it very hard to run this rule for good reason.
+# Only IOCCC judges can perform ALL the steps needed to complete this action.
+#
+reset_min_timestamp: reset_tstamp.sh
+	./reset_tstamp.sh
 
 # sequence exit codes
 #
@@ -452,11 +519,19 @@ picky: ${ALL_SRC}
 	    exit 1; \
 	else \
 	    echo "${PICKY} -w132 -u -s -t8 -v -e -- ${C_SRC} ${H_SRC}"; \
-	    ${PICKY} -w132 -u -s -t8 -v -e -- ${C_SRC} ${H_SRC}; EXIT_CODE="$$?"; \
-	    if [[ $$EXIT_CODE -ne 0 ]]; then echo "make $@: ERROR: CODE[1]: $$EXIT_CODE" 1>&2; exit 1; fi; \
+	    ${PICKY} -w132 -u -s -t8 -v -e -- ${C_SRC} ${H_SRC}; \
+	    EXIT_CODE="$$?"; \
+	    if [[ $$EXIT_CODE -ne 0 ]]; then \
+		echo "make $@: ERROR: CODE[1]: $$EXIT_CODE" 1>&2; \
+		exit 1; \
+	    fi; \
 	    echo "${PICKY} -w -u -s -t8 -v -e -8 -- ${SH_FILES}"; \
-	    ${PICKY} -w -u -s -t8 -v -e -8 -- ${SH_FILES}; EXIT_CODE="$$?"; \
-	    if [[ $$EXIT_CODE -ne 0 ]]; then echo "make $@: ERROR: CODE[2]: $$EXIT_CODE" 1>&2; exit 2; fi; \
+	    ${PICKY} -w -u -s -t8 -v -e -8 -- ${SH_FILES}; \
+	    EXIT_CODE="$$?"; \
+	    if [[ $$EXIT_CODE -ne 0 ]]; then \
+		echo "make $@: ERROR: CODE[2]: $$EXIT_CODE" 1>&2; \
+		exit 2; \
+	    fi; \
 	fi
 	@echo
 	@echo "${OUR_NAME}: make $@ complete"
@@ -480,7 +555,11 @@ shellcheck: ${SH_FILES} .shellcheckrc
 	else \
 	    echo "${SHELLCHECK} -f gcc -- ${SH_FILES}"; \
 	    ${SHELLCHECK} -f gcc -- ${SH_FILES}; \
-	    if [[ $$EXIT_CODE -ne 0 ]]; then echo "make $@: ERROR: CODE[1]: $$EXIT_CODE" 1>&2; exit 1; fi; \
+	    EXIT_CODE="$$?"; \
+	    if [[ $$EXIT_CODE -ne 0 ]]; then \
+		echo "make $@: ERROR: CODE[1]: $$EXIT_CODE" 1>&2; \
+		exit 1; \
+	    fi; \
 	fi
 	@echo
 	@echo "${OUR_NAME}: make $@ complete"
@@ -560,6 +639,7 @@ clobber: clean
 	@echo
 	${RM} -f .soup
 	${RM} -f tags
+	${RM} -f ${TARGETS}
 	@echo
 	@echo "${OUR_NAME}: make $@ complete"
 
@@ -602,9 +682,37 @@ chk_sem_info.o: ../jparse/../dyn_array/../dbg/dbg.h \
     ../jparse/../dyn_array/dyn_array.h ../jparse/json_parse.h \
     ../jparse/json_sem.h ../jparse/json_util.h ../jparse/util.h \
     chk_sem_info.c chk_sem_info.h
-chk_validate.o: ../dbg/dbg.h ../entry_time.h ../entry_util.h \
-    ../jparse/../dbg/dbg.h ../jparse/../dyn_array/../dbg/dbg.h \
-    ../jparse/../dyn_array/dyn_array.h ../jparse/jparse.h \
-    ../jparse/jparse.tab.h ../jparse/json_parse.h ../jparse/json_sem.h \
-    ../jparse/json_util.h ../jparse/util.h ../location.h chk_sem_auth.h \
-    chk_sem_info.h chk_validate.c chk_validate.h
+chk_validate.o: ../dbg/dbg.h ../jparse/../dbg/dbg.h \
+    ../jparse/../dyn_array/../dbg/dbg.h ../jparse/../dyn_array/dyn_array.h \
+    ../jparse/jparse.h ../jparse/jparse.tab.h ../jparse/json_parse.h \
+    ../jparse/json_sem.h ../jparse/json_util.h ../jparse/util.h \
+    chk_sem_auth.h chk_sem_info.h chk_validate.c chk_validate.h \
+    entry_time.h entry_util.h location.h
+entry_time.o: ../dbg/dbg.h ../jparse/../dbg/dbg.h \
+    ../jparse/../dyn_array/../dbg/dbg.h ../jparse/../dyn_array/dyn_array.h \
+    ../jparse/jparse.h ../jparse/jparse.tab.h ../jparse/json_parse.h \
+    ../jparse/json_sem.h ../jparse/json_util.h ../jparse/util.h \
+    entry_time.c entry_time.h limit_ioccc.h version.h
+entry_util.o: ../dbg/dbg.h ../jparse/../dbg/dbg.h \
+    ../jparse/../dyn_array/../dbg/dbg.h ../jparse/../dyn_array/dyn_array.h \
+    ../jparse/jparse.h ../jparse/jparse.tab.h ../jparse/json_parse.h \
+    ../jparse/json_sem.h ../jparse/json_util.h ../jparse/util.h \
+    entry_time.h entry_util.c entry_util.h limit_ioccc.h location.h \
+    version.h
+foo.o: ../dbg/dbg.h foo.c foo.h oebxergfB.h
+location.o: ../dbg/dbg.h ../jparse/../dbg/dbg.h \
+    ../jparse/../dyn_array/../dbg/dbg.h ../jparse/../dyn_array/dyn_array.h \
+    ../jparse/jparse.h ../jparse/jparse.tab.h ../jparse/json_parse.h \
+    ../jparse/json_sem.h ../jparse/json_util.h ../jparse/util.h location.c \
+    location.h
+rule_count.o: ../iocccsize.h iocccsize_err.h rule_count.c
+sanity.o: ../dbg/dbg.h ../jparse/../dbg/dbg.h \
+    ../jparse/../dyn_array/../dbg/dbg.h ../jparse/../dyn_array/dyn_array.h \
+    ../jparse/jparse.h ../jparse/jparse.tab.h ../jparse/json_parse.h \
+    ../jparse/json_sem.h ../jparse/json_util.h ../jparse/util.h \
+    limit_ioccc.h location.h sanity.c sanity.h utf8_posix_map.h version.h
+utf8_posix_map.o: ../dbg/dbg.h ../jparse/../dbg/dbg.h \
+    ../jparse/../dyn_array/../dbg/dbg.h ../jparse/../dyn_array/dyn_array.h \
+    ../jparse/jparse.h ../jparse/jparse.tab.h ../jparse/json_parse.h \
+    ../jparse/json_sem.h ../jparse/json_util.h ../jparse/util.h \
+    limit_ioccc.h utf8_posix_map.c utf8_posix_map.h version.h

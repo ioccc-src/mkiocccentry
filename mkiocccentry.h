@@ -74,22 +74,22 @@
 /*
  * location - location/country codes
  */
-#include "location.h"
+#include "soup/location.h"
 
 /*
  * utf8_posix_map - translate UTF-8 into POSIX portable filename and + chars
  */
-#include "utf8_posix_map.h"
+#include "soup/utf8_posix_map.h"
 
 /*
  * sanity - perform common IOCCC sanity checks
  */
-#include "sanity.h"
+#include "soup/sanity.h"
 
 /*
  * limit_ioccc - IOCCC size and rule related limitations
  */
-#include "limit_ioccc.h"
+#include "soup/limit_ioccc.h"
 
 /*
  * iocccsize use
@@ -99,12 +99,12 @@
 /*
  * version - official IOCCC toolkit versions
  */
-#include "version.h"
+#include "soup/version.h"
 
 /*
  * entry_util - utilities supporting mkiocccentry JSON files
  */
-#include "entry_util.h"
+#include "soup/entry_util.h"
 
 
 /*

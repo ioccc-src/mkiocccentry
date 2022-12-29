@@ -40,6 +40,12 @@
 #define REQUIRED_ARGS (0)	/* number of required arguments on the command line */
 
 /*
+ * official jstrencode version
+ */
+#define JSTRENCODE_VERSION "0.5 2022-04-17"	/* format: major.minor YYYY-MM-DD */
+
+
+/*
  * jstrencode_stream - encode an open file stream onto another open file stream
  *
  * given:

@@ -39,6 +39,11 @@
  */
 #define REQUIRED_ARGS (0)	/* number of required arguments on the command line */
 
+/*
+ * official jstrdecode version
+ */
+#define JSTRDECODE_VERSION "0.5 2022-04-17"	/* format: major.minor YYYY-MM-DD */
+
 
 /*
  * jstrdecode_stream - decode an open file stream onto another open file stream

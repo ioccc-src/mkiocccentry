@@ -1385,9 +1385,15 @@ check_tarball(char const *tar, char const *fnamchk)
      * fnamchk on it directly with the appropriate options (for example -E txt
      * would tell it to expect the extension txt instead of txz).
      */
-    errno = 0;			/* pre-clear errno for errp() */
-    exit_code = shell_cmd(__func__, true, "% -E % -- % >/dev/null", fnamchk, ext, txzpath);
-
+    if (dbg_allowed(DBG_HIGH)) {
+	dbg(DBG_MED, "about to execute: %s -v 5 -E %s -- %s", fnamchk, ext, txzpath);
+	errno = 0;			/* pre-clear errno for errp() */
+	exit_code = shell_cmd(__func__, true, "% -v 5 -E % -- %", fnamchk, ext, txzpath);
+    } else {
+	dbg(DBG_MED, "about to execute: %s -E %s -- %s >/dev/null", fnamchk, ext, txzpath);
+	errno = 0;			/* pre-clear errno for errp() */
+	exit_code = shell_cmd(__func__, true, "% -E % -- % >/dev/null", fnamchk, ext, txzpath);
+    }
     if (exit_code != 0) {
 	warn("txzchk", "%s: %s %s failed with exit code: %d", txzpath, fnamchk, txzpath, WEXITSTATUS(exit_code));
 	++txz_info.total_feathers;

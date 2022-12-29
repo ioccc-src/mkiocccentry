@@ -174,7 +174,7 @@ BISON_BASENAME= bison
 # Where run_bison.sh will search for bison with a recent enough version
 #
 # The -B arguments specify where to look for bison with a version,
-# that is >= the minimum version (see MIN_BISON_VERSION in limit_ioccc.sh),
+# that is >= the minimum version (see MIN_BISON_VERSION in ../soup/limit_ioccc.sh),
 # before searching for bison on $PATH.
 #
 # NOTE: If is OK if these directories do not exist.
@@ -215,7 +215,7 @@ FLEX_BASENAME= flex
 # Where run_flex.sh will search for flex with a recent enough version
 #
 # The -F arguments specify where to look for flex with a version,
-# that is >= the minimum version (see MIN_FLEX_VERSION in limit_ioccc.sh),
+# that is >= the minimum version (see MIN_FLEX_VERSION in ../soup/limit_ioccc.sh),
 # before searching for bison on $PATH.
 #
 # NOTE: If is OK if these directories do not exist.
@@ -283,11 +283,11 @@ MAN8_TARGETS= man/man8/jparse_test.8
 ALL_MAN_TARGETS= ${MAN1_TARGETS} ${MAN8_TARGETS}
 EXTERN_MAN= ${ALL_MAN_TARGETS}
 
-# libraries
+# libraries to make by all, what to install, and removed by clobber
 #
 LIBA_TARGETS= jparse.a
 
-# include files
+# include files NOT to removed by clobber
 #
 H_SRC_TARGETS= jparse.h
 
@@ -295,7 +295,7 @@ H_SRC_TARGETS= jparse.h
 #
 ALL_OTHER_TARGETS= extern_everything
 
-# what to make by all and removed by clobber (and thus not ${ALL_OTHER_TARGETS})
+# what to make by all, what to install, and removed by clobber (and thus not ${ALL_OTHER_TARGETS})
 #
 TARGETS= ${LIBA_TARGETS} jparse verge jsemtblgen jnum_gen jstrdecode jstrencode
 
@@ -393,9 +393,11 @@ json_sem.o: json_sem.c
 # jparse.tab.ref.c. If it IS specified it is an error.
 #
 # NOTE: The value of RUN_O_FLAG depends on what rule called this rule.
-jparse.tab.c jparse.tab.h: jparse.y jparse.h sorry.tm.ca.h run_bison.sh ../limit_ioccc.sh \
+#
+# XXX - we should not use ../soup/limit_ioccc.sh to determine the minimum bison version
+jparse.tab.c jparse.tab.h: jparse.y jparse.h sorry.tm.ca.h run_bison.sh ../soup/limit_ioccc.sh \
 	verge jparse.tab.ref.c jparse.tab.ref.h
-	./run_bison.sh -g ./verge -s ./sorry.tm.ca.h -l ../limit_ioccc.sh -b ${BISON_BASENAME} ${BISON_DIRS} \
+	./run_bison.sh -g ./verge -s sorry.tm.ca.h -l ../soup/limit_ioccc.sh -b ${BISON_BASENAME} ${BISON_DIRS} \
 	    -p jparse -v 1 ${RUN_O_FLAG} -- ${BISON_FLAGS}
 
 # How to create jparse.c and jparse.lex.h
@@ -405,9 +407,11 @@ jparse.tab.c jparse.tab.h: jparse.y jparse.h sorry.tm.ca.h run_bison.sh ../limit
 # stored in jparse.ref.c. If it IS specified it is an error.
 #
 # NOTE: The value of RUN_O_FLAG depends on what rule called this rule.
-jparse.c jparse.lex.h: jparse.l jparse.h ./sorry.tm.ca.h jparse.tab.h ./run_flex.sh ../limit_ioccc.sh \
+#
+# XXX - we should not use ../soup/limit_ioccc.sh to determine the minimum flex version
+jparse.c jparse.lex.h: jparse.l jparse.h ./sorry.tm.ca.h jparse.tab.h ./run_flex.sh ../soup/limit_ioccc.sh \
 	verge jparse.ref.c jparse.lex.ref.h
-	./run_flex.sh -g ./verge -s ./sorry.tm.ca.h -l ../limit_ioccc.sh -f ${FLEX_BASENAME} ${FLEX_DIRS} \
+	./run_flex.sh -g ./verge -s sorry.tm.ca.h -l ../soup/limit_ioccc.sh -f ${FLEX_BASENAME} ${FLEX_DIRS} \
 	    -p jparse -v 1 ${RUN_O_FLAG} -- ${FLEX_FLAGS} -o jparse.c
 
 util.o: util.c util.h
@@ -440,6 +444,9 @@ test_jparse/test_JSON/info.json/good/info.reference.json: test_jparse/Makefile
 
 test_jparse/test_JSON/auth.json/good/auth.reference.json: test_jparse/Makefile
 	@${MAKE} -C test_jparse test_JSON/auth.json/good/auth.reference.json
+
+../soup/limit_ioccc.sh: ../soup/Makefile
+	@${MAKE} -C ../soup limit_ioccc.sh
 
 
 ####################################
@@ -584,11 +591,19 @@ picky: ${ALL_SRC} test_jparse/Makefile
 	    exit 1; \
 	else \
 	    echo "${PICKY} -w132 -u -s -t8 -v -e -- ${C_SRC} ${H_SRC}"; \
-	    ${PICKY} -w132 -u -s -t8 -v -e -- ${C_SRC} ${H_SRC}; EXIT_CODE="$$?"; \
-	    if [[ $$EXIT_CODE -ne 0 ]]; then echo "make $@: ERROR: CODE[1]: $$EXIT_CODE" 1>&2; exit 1; fi; \
+	    ${PICKY} -w132 -u -s -t8 -v -e -- ${C_SRC} ${H_SRC}; \
+	    EXIT_CODE="$$?"; \
+	    if [[ $$EXIT_CODE -ne 0 ]]; then \
+		echo "make $@: ERROR: CODE[1]: $$EXIT_CODE" 1>&2; \
+		exit 1; \
+	    fi; \
 	    echo "${PICKY} -w -u -s -t8 -v -e -8 -- ${FLEXFILES} ${BISONFILES}"; \
-	    ${PICKY} -w -u -s -t8 -v -e -8 -- ${FLEXFILES} ${BISONFILES}; EXIT_CODE="$$?"; \
-	    if [[ $$EXIT_CODE -ne 0 ]]; then echo "make $@: ERROR: CODE[2]: $$EXIT_CODE" 1>&2; exit 2; fi; \
+	    ${PICKY} -w -u -s -t8 -v -e -8 -- ${FLEXFILES} ${BISONFILES}; \
+	    EXIT_CODE="$$?"; \
+	    if [[ $$EXIT_CODE -ne 0 ]]; then \
+		echo "make $@: ERROR: CODE[2]: $$EXIT_CODE" 1>&2; \
+		exit 2; \
+	    fi; \
 	fi
 	@echo
 	@echo "${OUR_NAME}: make $@ complete"
@@ -613,7 +628,11 @@ shellcheck: ${SH_FILES} .shellcheckrc test_jparse/Makefile
 	else \
 	    echo "${SHELLCHECK} -f gcc -- ${SH_FILES}"; \
 	    ${SHELLCHECK} -f gcc -- ${SH_FILES}; \
-	    if [[ $$EXIT_CODE -ne 0 ]]; then echo "make $@: ERROR: CODE[1]: $$EXIT_CODE" 1>&2; exit 1; fi; \
+	    EXIT_CODE="$$?"; \
+	    if [[ $$EXIT_CODE -ne 0 ]]; then \
+		echo "make $@: ERROR: CODE[1]: $$EXIT_CODE" 1>&2; \
+		exit 1; \
+	    fi; \
 	fi
 	@echo
 	@echo "${OUR_NAME}: make $@ complete"
@@ -636,9 +655,9 @@ check_man: ${ALL_MAN_TARGETS} test_jparse/Makefile
 	else \
 	    echo "${CHECKNR} -c.BR.SS.BI ${ALL_MAN_TARGETS}"; \
 	    ${CHECKNR} -c.BR.SS.BI ${ALL_MAN_TARGETS}; \
-	    status="$$?"; \
-	    if [[ $$status -ne 0 ]]; then \
-		echo 'ERROR: checknr: ${CHECKNR} failed, error code: $$status'; \
+	    EXIT_CODE="$$?"; \
+	    if [[ $$EXIT_CODE -ne 0 ]]; then \
+		echo 'ERROR: checknr: ${CHECKNR} failed, error code: $$EXIT_CODE'; \
 		exit 23; \
 	    fi; \
 	fi
@@ -763,8 +782,7 @@ depend: ${ALL_CSRC} all
 
 ### DO NOT CHANGE MANUALLY BEYOND THIS LINE
 jnum_gen.o: ../dbg/dbg.h ../dyn_array/../dbg/dbg.h ../dyn_array/dyn_array.h \
-    ../limit_ioccc.h ../version.h jnum_gen.c jnum_gen.h json_parse.h \
-    json_util.h util.h
+    jnum_gen.c jnum_gen.h json_parse.h json_util.h util.h
 jnum_header.o: ../dyn_array/../dbg/dbg.h ../dyn_array/dyn_array.h \
     jnum_header.c json_parse.h util.h
 jparse.ref.o: ../dbg/dbg.h ../dyn_array/../dbg/dbg.h \
@@ -789,10 +807,8 @@ json_sem.o: ../dbg/dbg.h ../dyn_array/../dbg/dbg.h ../dyn_array/dyn_array.h \
 json_util.o: ../dbg/dbg.h ../dyn_array/../dbg/dbg.h \
     ../dyn_array/dyn_array.h json_parse.h json_util.c json_util.h util.h
 jstrdecode.o: ../dbg/dbg.h ../dyn_array/../dbg/dbg.h \
-    ../dyn_array/dyn_array.h ../limit_ioccc.h ../version.h json_parse.h \
-    jstrdecode.c jstrdecode.h util.h
+    ../dyn_array/dyn_array.h json_parse.h jstrdecode.c jstrdecode.h util.h
 jstrencode.o: ../dbg/dbg.h ../dyn_array/../dbg/dbg.h \
-    ../dyn_array/dyn_array.h ../limit_ioccc.h ../version.h json_parse.h \
-    jstrencode.c jstrencode.h util.h
+    ../dyn_array/dyn_array.h json_parse.h jstrencode.c jstrencode.h util.h
 util.o: ../dbg/dbg.h ../dyn_array/../dbg/dbg.h ../dyn_array/dyn_array.h \
     util.c util.h

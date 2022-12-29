@@ -33,12 +33,12 @@
 /*
  * dbg - info, debug, warning, error, and usage message facility
  */
-#include "dbg/dbg.h"
+#include "../dbg/dbg.h"
 
 /*
  * jparse - the parser
  */
-#include "jparse/jparse.h"
+#include "../jparse/jparse.h"
 
 /*
  * entry_time - utility functions supporting mkiocccentry JSON files related to time

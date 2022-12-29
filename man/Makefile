@@ -177,7 +177,7 @@ ALL_OTHER_TARGETS= extern_everything ${BUILT_MAN_TARGETS}
 
 # what to make by all and removed by clobber (and thus not ${ALL_OTHER_TARGETS})
 #
-TARGETS= ${LIBA_TARGETS} ${BUILT_MAN_TARGETS}
+TARGETS= ${BUILT_MAN_TARGETS}
 
 
 ############################################################
@@ -201,7 +201,7 @@ TARGETS= ${LIBA_TARGETS} ${BUILT_MAN_TARGETS}
 # all rule - default rule - must be first #
 ###########################################
 
-all: ${TARGETS} ${ALL_OTHER_TARGETS}
+all: ${ALL_OTHER_TARGETS} ${TARGETS}
 	@:
 
 
@@ -367,9 +367,9 @@ check_man: ${ALL_MAN_TARGETS}
 	else \
 	    echo "${CHECKNR} -c.BR.SS.BI ${ALL_MAN_TARGETS}"; \
 	    ${CHECKNR} -c.BR.SS.BI ${ALL_MAN_TARGETS}; \
-	    status="$$?"; \
-	    if [[ $$status -ne 0 ]]; then \
-		echo 'ERROR: checknr: ${CHECKNR} failed, error code: $$status'; \
+	    EXIT_CODE="$$?"; \
+	    if [[ $$EXIT_CODE -ne 0 ]]; then \
+		echo 'ERROR: checknr: ${CHECKNR} failed, error code: $$EXIT_CODE'; \
 		exit 23; \
 	    fi; \
 	fi
