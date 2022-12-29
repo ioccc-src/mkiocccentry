@@ -332,8 +332,7 @@ all: ${TARGETS} ${ALL_OTHER_TARGETS} Makefile
 .PHONY: all \
 	extern_include extern_objs extern_liba extern_man extern_prog extern_everything man/man1/jparse.1 man/man8/jparse_test.8 \
 	parser parser-o use_ref bison flex test tags check_man prep_clean prep_clobber legacy_clean legacy_clobber \
-	configure clean clobber install depend \
-	util.o
+	configure clean clobber install depend
 
 
 ####################################

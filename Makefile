@@ -299,6 +299,7 @@ TARGETS= mkiocccentry iocccsize txzchk chkentry ${SH_TARGETS}
 ######################################
 
 all: fast_hostchk just_all
+	@:
 
 # The original make all that bypasses running hostchk.sh
 #
@@ -358,8 +359,8 @@ hostchk_warning:
 # .PHONY list of rules that do not create files #
 #################################################
 
-.PHONY: all just_all fast_hostchk hostchk hostchk_warning all_ref all_ref_ptch mkchk_sem bug_report.sh build \
-	check_man clean clean_generated_obj clean_mkchk_sem clobber configure depend hostchk bug_report.sh \
+.PHONY: all just_all fast_hostchk hostchk hostchk_warning all_ref all_ref_ptch mkchk_sem bug_report build \
+	check_man clean clean_generated_obj clean_mkchk_sem clobber configure depend hostchk \
 	install test_ioccc legacy_clobber mkchk_sem parser parser-o picky prep prep_clobber \
         pull rebuild_jnum_test release seqcexit shellcheck tags test test-chkentry use_ref \
 	prep build release pull reset_min_timestamp \

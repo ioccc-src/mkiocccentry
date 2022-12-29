@@ -252,8 +252,7 @@ all: ${TARGETS} ${ALL_OTHER_TARGETS}
 .PHONY: all \
 	extern_include extern_objs extern_liba extern_man extern_prog extern_everything man/man3/dyn_array.3 \
 	test check_man tags prep_clean prep_clobber legacy_clean legacy_clobber \
-	configure clean clobber install depend \
-	dyn_array.a
+	configure clean clobber install depend
 
 
 ####################################
