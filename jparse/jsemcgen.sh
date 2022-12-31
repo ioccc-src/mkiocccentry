@@ -36,7 +36,7 @@ export MEMBER_FUNC=
 export OBJECT_FUNC=
 export ARRAY_FUNC=
 export UNKNOWN_FUNC=
-export JSEMTBLGEN="./jparse/jsemtblgen"
+export JSEMTBLGEN="../jparse/jsemtblgen"
 export JSEMTBLGEN_ARGS=
 export PATCH_TOOL=
 export JSEMCGEN_VERSION="1.2 2022-10-23"
@@ -97,7 +97,7 @@ export USAGE="usage: $0 [-h] [-v level] [-J level] [-q] [-V] [-s] [-I] [-N name]
 	NOTE: All of the above are passed down to the jsemtblgen tool.
 	      All of the below are only used by this script.
 
-	-j jsemtblgen	path to jsemtblgen (def: ./jsemtblgen)
+	-j jsemtblgen	path to jsemtblgen (def: $JSEMTBLGEN)
 	-p patch_tool	path to the patch tool (def: $PATCH_TOOL)
 
 	file.json	A valid JSON file used to generate the initial JSON semantics table

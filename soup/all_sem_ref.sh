@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# all_ref - form the ref directory
+# all_sem_ref - form the semantic ref directory
 #
 # For the ref sub-directory using via ./jsemcgen.sh, from test .info.json
 # and .auth.json files, form *.json.c and *.json.h semantic table files
@@ -25,17 +25,19 @@
 # setup
 #
 export V_FLAG="0"
-export JSEMCGEN_SH="./jsemcgen.sh"
-export ALL_REF_VERSION="1.0 2022-10-30"
+export JSEMTBLGEN="../jparse/jsemtblgen"
+export JSEMCGEN_SH="../jparse/jsemcgen.sh"
+export ALL_SEM_REF_VERSION="1.1 2022-12-30"
 
-export USAGE="usage: $0 [-h] [-v level] [-V] [-j jsemcgen.sh] info.head.c info.tail.c info.head.h
+export USAGE="usage: $0 [-h] [-v level] [-V] [-j jsemtblgen] [-J jsemcgen.sh] info.head.c info.tail.c info.head.h
 	info.tail.h auth.head.c auth.tail.c auth.head.h auth.tail.h info_dir auth_dir ref_dir
 
 	-h		print help message and exit
 	-v level	set verbosity level (def level: 0)
 	-V		print version string and exit
 
-	-j jsemcgen.sh	path to jsemcgen.sh (def: ./jsemcgen.sh)
+	-j jsemtblgen	path to jsemtblgen (def: $JSEMTBLGEN)
+	-J jsemcgen.sh	path to jsemcgen.sh (def: $JSEMCGEN_SH)
 
 	info.head.c	.info.json style header for .c semantic table files
 	info.tail.c	.info.json style trailer for .c semantic table files
@@ -56,14 +58,14 @@ Exit codes:
      0	 all is well
      2	 -h and help string printed or -V and version string printed
      3	 command line error
-     4	 jsemcgen.sh not found or not executable
+     4	 jsemcgen.sh and/or jsemtblgen not found or not executable
      5	 missing or not readable header or trailer file
      6	 missing, not readable, or not writable info_dir, auth_dir and/or ref_dir
  >= 10	 internal error"
 
 # parse args
 #
-while getopts :hv:Vj: flag; do
+while getopts :hv:Vj:J: flag; do
     case "$flag" in
     h) echo "$USAGE" 1>&2
        exit 2
@@ -71,10 +73,12 @@ while getopts :hv:Vj: flag; do
     v) V_FLAG="$OPTARG";
        JSEMTBLGEN_ARGS="$JSEMTBLGEN_ARGS -v '$V_FLAG'";
        ;;
-    V) echo "$ALL_REF_VERSION"
+    V) echo "$ALL_SEM_REF_VERSION"
        exit 2
        ;;
-    j) JSEMCGEN_SH="$OPTARG";
+    j) JSEMTBLGEN="$OPTARG";
+       ;;
+    J) JSEMCGEN_SH="$OPTARG";
        ;;
     \?) echo "$0: ERROR: invalid option: -$OPTARG" 1>&2
        exit 3
@@ -127,6 +131,10 @@ fi
 #
 if [[ ! -x $JSEMCGEN_SH ]]; then
     echo "$0: ERROR: jsemcgen.sh is not an executable: $JSEMCGEN_SH" 1>&2
+    exit 4
+fi
+if [[ ! -x $JSEMTBLGEN ]]; then
+    echo "$0: ERROR: jsemtblgen is not an executable: $JSEMTBLGEN" 1>&2
     exit 4
 fi
 #
@@ -315,12 +323,12 @@ find "$INFO_DIR" -type f -name '*.json' -print 2>/dev/null | while read -r path;
     # form output file
     #
     if [[ $V_FLAG -ge 5 ]]; then
-	echo "$0: debug[5]: about to execute: $JSEMCGEN_SH -N sem_info -P chk -- $path . . . $TMP_FILE" 1>&2
+	echo "$0: debug[5]: about to execute: $JSEMCGEN_SH -j $JSEMTBLGEN -N sem_info -P chk -- $path . . . $TMP_FILE" 1>&2
     fi
-    "$JSEMCGEN_SH" -N sem_info -P chk -- "$path" . . . "$TMP_FILE"
+    "$JSEMCGEN_SH" -j "$JSEMTBLGEN" -N sem_info -P chk -- "$path" . . . "$TMP_FILE"
     status="$?"
     if [[ $status -ne 0 ]]; then
-	echo "$0: ERROR: $JSEMCGEN_SH -N sem_info -P chk -- $path . . . $TMP_FILE  exit code: $status" 1>&2
+	echo "$0: ERROR: $JSEMCGEN_SH -j $JSEMTBLGEN -N sem_info -P chk -- $path . . . $TMP_FILE  exit code: $status" 1>&2
 	exit 11
     fi
     if [[ $V_FLAG -ge 5 ]]; then
@@ -355,12 +363,12 @@ find "$INFO_DIR" -type f -name '*.json' -print 2>/dev/null | while read -r path;
     # form output file
     #
     if [[ $V_FLAG -ge 5 ]]; then
-	echo "$0: debug[5]: about to execute: $JSEMCGEN_SH -N sem_info -P chk -I -- $path . . . $TMP_FILE" 1>&2
+	echo "$0: debug[5]: about to execute: $JSEMCGEN_SH -j $JSEMTBLGEN -N sem_info -P chk -I -- $path . . . $TMP_FILE" 1>&2
     fi
-    "$JSEMCGEN_SH" -N sem_info -P chk -I -- "$path" . . . "$TMP_FILE"
+    "$JSEMCGEN_SH" -j "$JSEMTBLGEN" -N sem_info -P chk -I -- "$path" . . . "$TMP_FILE"
     status="$?"
     if [[ $status -ne 0 ]]; then
-	echo "$0: ERROR: $JSEMCGEN_SH -N sem_info -P chk -I -- $path . . . $TMP_FILE  exit code: $status" 1>&2
+	echo "$0: ERROR: $JSEMCGEN_SH -j $JSEMTBLGEN -N sem_info -P chk -I -- $path . . . $TMP_FILE  exit code: $status" 1>&2
 	exit 13
     fi
     if [[ $V_FLAG -ge 5 ]]; then
@@ -395,12 +403,12 @@ find "$AUTH_DIR" -type f -name '*.json' -print 2>/dev/null | while read -r path;
     # form output file
     #
     if [[ $V_FLAG -ge 5 ]]; then
-	echo "$0: debug[5]: about to execute: $JSEMCGEN_SH -N sem_auth -P chk -- $path . . . $TMP_FILE" 1>&2
+	echo "$0: debug[5]: about to execute: $JSEMCGEN_SH -j $JSEMTBLGEN -N sem_auth -P chk -- $path . . . $TMP_FILE" 1>&2
     fi
-    "$JSEMCGEN_SH" -N sem_auth -P chk -- "$path" . . . "$TMP_FILE"
+    "$JSEMCGEN_SH" -j "$JSEMTBLGEN" -N sem_auth -P chk -- "$path" . . . "$TMP_FILE"
     status="$?"
     if [[ $status -ne 0 ]]; then
-	echo "$0: ERROR: $JSEMCGEN_SH -N sem_auth -P chk -- $path . . . $TMP_FILE  exit code: $status" 1>&2
+	echo "$0: ERROR: $JSEMCGEN_SH -j $JSEMTBLGEN -N sem_auth -P chk -- $path . . . $TMP_FILE  exit code: $status" 1>&2
 	exit 15
     fi
     if [[ $V_FLAG -ge 5 ]]; then
@@ -435,12 +443,12 @@ find "$AUTH_DIR" -type f -name '*.json' -print 2>/dev/null | while read -r path;
     # form output file
     #
     if [[ $V_FLAG -ge 5 ]]; then
-	echo "$0: debug[5]: about to execute: $JSEMCGEN_SH -N sem_auth -P chk -I -- $path . . . $TMP_FILE" 1>&2
+	echo "$0: debug[5]: about to execute: $JSEMCGEN_SH -j $JSEMTBLGEN -N sem_auth -P chk -I -- $path . . . $TMP_FILE" 1>&2
     fi
-    "$JSEMCGEN_SH" -N sem_auth -P chk -I -- "$path" . . . "$TMP_FILE"
+    "$JSEMCGEN_SH" -j "$JSEMTBLGEN" -N sem_auth -P chk -I -- "$path" . . . "$TMP_FILE"
     status="$?"
     if [[ $status -ne 0 ]]; then
-	echo "$0: ERROR: $JSEMCGEN_SH -N sem_auth -P chk -I -- $path . . . $TMP_FILE  exit code: $status" 1>&2
+	echo "$0: ERROR: $JSEMCGEN_SH -j $JSEMTBLGEN -N sem_auth -P chk -I -- $path . . . $TMP_FILE  exit code: $status" 1>&2
 	exit 17
     fi
     if [[ $V_FLAG -ge 5 ]]; then

@@ -359,11 +359,11 @@ hostchk_warning:
 # .PHONY list of rules that do not create files #
 #################################################
 
-.PHONY: all just_all fast_hostchk hostchk hostchk_warning all_ref all_ref_ptch mkchk_sem bug_report build \
+.PHONY: all just_all fast_hostchk hostchk hostchk_warning all_sem_ref all_sem_ref_ptch bug_report build \
 	check_man clean clean_generated_obj clean_mkchk_sem clobber configure depend hostchk \
 	install test_ioccc legacy_clobber mkchk_sem parser parser-o picky prep prep_clobber \
-        pull rebuild_jnum_test release seqcexit shellcheck tags test test-chkentry use_ref \
-	prep build release pull reset_min_timestamp \
+        pull rebuild_jnum_test release seqcexit shellcheck tags test test-chkentry use_json_ref \
+	prep build release pull reset_min_timestamp load_json_ref \
 	all_dbg all_dyn_array all_jparse all_man all_soup all_test_ioccc depend
 
 
@@ -550,7 +550,7 @@ release: test_ioccc/prep.sh
 # JSON parser C code (if recent enough version of flex and bison are found).
 #
 parser: jparse/Makefile
-	${MAKE} -C jparse parser
+	${MAKE} -C jparse $@
 
 #
 # make parser-o: Force the rebuild of the JSON parser.
@@ -558,18 +558,44 @@ parser: jparse/Makefile
 # NOTE: This does NOT use the reference copies of JSON parser C code.
 #
 parser-o: jparse/Makefile
-	${MAKE} -C jparse RUN_O_FLAG='-o' parser
+	${MAKE} -C jparse $@
 
-# restore reference code that was produced by previous successful make parser
+# load bison/flex reference code from the previous successful make parser
+#
+load_json_ref: jparse/Makefile
+	${MAKE} -C jparse $@
+
+# restore bison/flex reference code that was produced by previous successful make parser
 #
 # This rule forces the use of reference copies of JSON parser C code.
 #
-use_ref: jparse/Makefile
-	${MAKE} -C jparse use_ref
+use_json_ref: jparse/Makefile
+	${MAKE} -C jparse $@
+
+# Form unpatched semantic tables, without headers and trailers, from the reference info and auth JSON files
+#
+# rule used by ../test_ioccc/prep.sh
+#
+all_sem_ref: soup/Makefile
+	${MAKE} -C soup $@
+
+# form chk.????.ptch.{c,h} files
+#
+# Given a correct set of chk_sem_????.{c,h} files, we form chk.????.ptch.{c,h}
+# diff patch relative to the ref/*.reference.json.{c,h} files.
+#
+# rule should never be invoked by ../test_ioccc/prep.sh
+#
+# This rule is run by the repo maintainers only AFTER chk_sem_????.{c,h} files
+# are updated by hand.
+#
+all_sem_ref_ptch: soup/Makefile
+	${MAKE} -C soup $@
 
 # sequence exit codes
 #
-seqcexit: ${ALL_CSRC}
+seqcexit: ${ALL_CSRC} dbg/Makefile dyn_array/Makefile jparse/Makefile man/Makefile \
+	soup/Makefile test_ioccc/Makefile
 	@echo
 	@echo "${OUR_NAME}: make $@ starting"
 	@echo
@@ -595,7 +621,8 @@ seqcexit: ${ALL_CSRC}
 	@echo
 	@echo "${OUR_NAME}: make $@ complete"
 
-picky: ${ALL_SRC}
+picky: ${ALL_SRC} dbg/Makefile dyn_array/Makefile jparse/Makefile man/Makefile \
+	soup/Makefile test_ioccc/Makefile
 	@echo
 	@echo "${OUR_NAME}: make $@ starting"
 	@echo
@@ -635,7 +662,8 @@ picky: ${ALL_SRC}
 
 # inspect and verify shell scripts
 #
-shellcheck: ${SH_FILES} .shellcheckrc
+shellcheck: ${SH_FILES} .shellcheckrc dbg/Makefile dyn_array/Makefile jparse/Makefile man/Makefile \
+	soup/Makefile test_ioccc/Makefile
 	@echo
 	@echo "${OUR_NAME}: make $@ starting"
 	@echo
@@ -679,7 +707,8 @@ check_man: man/Makefile
 
 # vi/vim tags
 #
-tags: ${ALL_CSRC} ${ALL_HSRC}
+tags: ${ALL_CSRC} ${ALL_HSRC} dbg/Makefile dyn_array/Makefile jparse/Makefile man/Makefile \
+	soup/Makefile test_ioccc/Makefile
 	@echo
 	@echo "${OUR_NAME}: make $@ starting"
 	@echo
@@ -696,7 +725,8 @@ tags: ${ALL_CSRC} ${ALL_HSRC}
 
 # perform all of the mkiocccentry repo required tests
 #
-test: all soup/limit_ioccc.sh
+test: all soup/limit_ioccc.sh dbg/Makefile dyn_array/Makefile jparse/Makefile man/Makefile \
+	soup/Makefile test_ioccc/Makefile
 	@echo
 	@echo "${OUR_NAME}: make $@ starting"
 	@echo
@@ -716,18 +746,23 @@ test-chkentry: all chkentry test_ioccc/test-chkentry.sh
 
 # rule used by prep.sh and make clean
 #
-clean_generated_obj:
+clean_generated_obj: jparse/Makefile
 	${MAKE} -C jparse clean_generated_obj
 
 # rule used by prep.sh
 #
-clean_mkchk_sem:
-	${RM} -f soup/chk_sem_auth.c soup/chk_sem_auth.h soup/chk_sem_auth.o
-	${RM} -f soup/chk_sem_info.c soup/chk_sem_info.h soup/chk_sem_info.o
+clean_mkchk_sem: soup/Makefile
+	${MAKE} -C soup $@
+
+# rule used by prep.sh
+#
+mkchk_sem: soup/Makefile
+	${MAKE} -C soup $@
 
 # rule used by make clean
 #
-prep_clean: legacy_clean
+prep_clean: legacy_clean dbg/Makefile dyn_array/Makefile jparse/Makefile man/Makefile \
+	soup/Makefile test_ioccc/Makefile
 	@echo
 	@echo "${OUR_NAME}: make $@ starting"
 	@echo
@@ -742,7 +777,8 @@ prep_clean: legacy_clean
 
 # rule used by prep.sh and make clobber
 #
-prep_clobber: prep_clean legacy_clobber
+prep_clobber: prep_clean legacy_clobber dbg/Makefile dyn_array/Makefile jparse/Makefile man/Makefile \
+	soup/Makefile test_ioccc/Makefile
 	@echo
 	@echo "${OUR_NAME}: make $@ starting"
 	@echo
@@ -763,7 +799,8 @@ prep_clobber: prep_clean legacy_clobber
 
 # clean legacy code and files - files that are no longer needed
 #
-legacy_clean:
+legacy_clean: dbg/Makefile dyn_array/Makefile jparse/Makefile man/Makefile \
+	soup/Makefile test_ioccc/Makefile
 	@echo
 	@echo "${OUR_NAME}: make $@ starting"
 	@echo
@@ -782,7 +819,8 @@ legacy_clean:
 
 # clobber legacy code and files - files that are no longer needed
 #
-legacy_clobber: legacy_clean
+legacy_clobber: legacy_clean dbg/Makefile dyn_array/Makefile jparse/Makefile man/Makefile \
+	soup/Makefile test_ioccc/Makefile
 	@echo
 	@echo "${OUR_NAME}: make $@ starting"
 	@echo
@@ -813,6 +851,7 @@ legacy_clobber: legacy_clean
 	${RM} -rf jnum_chk.dSYM
 	${RM} -rf test_iocccsize test_src test_work
 	${RM} -f .exit_code.*
+	${RM} -f .all_ref.*
 	${RM} -f dbg.out
 	${RM} -rf ioccc_test test
 	${RM} -f jparse.lex.h jparse.tab.c jparse.tab.h jparse.c
@@ -957,7 +996,8 @@ all.status: dbg.status dyn_array.status jparse.status
 configure:
 	@echo nothing to configure
 
-clean: clean_generated_obj legacy_clean
+clean: clean_generated_obj legacy_clean dbg/Makefile dyn_array/Makefile jparse/Makefile man/Makefile \
+	soup/Makefile test_ioccc/Makefile
 	@echo
 	@echo "${OUR_NAME}: make $@ starting"
 	@echo
@@ -973,7 +1013,8 @@ clean: clean_generated_obj legacy_clean
 	@echo
 	@echo "${OUR_NAME}: make $@ complete"
 
-clobber: clean prep_clobber
+clobber: clean prep_clobber dbg/Makefile dyn_array/Makefile jparse/Makefile man/Makefile \
+	soup/Makefile test_ioccc/Makefile
 	@echo
 	@echo "${OUR_NAME}: make $@ starting"
 	@echo
@@ -986,14 +1027,13 @@ clobber: clean prep_clobber
 	@echo
 	${RM} -f ${BUILD_LOG}
 	${RM} -f limit_ioccc.sh
-	${RM} -f .all_ref.*
 	${RM} -rf .hostchk.work.*
 	${RM} -f .txzchk_test.*
 	${RM} -f .sorry.*
 	@echo
 	@echo "${OUR_NAME}: make $@ complete"
 
-install: all
+install: all dbg/Makefile man/Makefile
 	@echo
 	@echo "${OUR_NAME}: make $@ starting"
 	@echo
@@ -1010,7 +1050,8 @@ install: all
 # make depend #
 ###############
 
-depend: ${ALL_CSRC} all
+depend: ${ALL_CSRC} all dbg/Makefile dyn_array/Makefile jparse/Makefile man/Makefile \
+	soup/Makefile test_ioccc/Makefile
 	@echo
 	@echo "${OUR_NAME}: make $@ starting"
 	@echo

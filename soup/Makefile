@@ -133,7 +133,7 @@ LESS_PICKY_HSRC= oebxergfB.h
 
 # all shell scripts
 #
-SH_FILES= all_ref.sh hostchk.sh run_usage.sh vermod.sh \
+SH_FILES= all_sem_ref.sh hostchk.sh run_usage.sh vermod.sh \
 	reset_tstamp.sh
 
 
@@ -219,7 +219,7 @@ H_SRC_TARGETS=
 
 # shell targets to make by all and removed by clobber
 #
-SH_TARGETS= 
+SH_TARGETS=
 
 # what to make by all but NOT to removed by clobber (because they are not files)
 #
@@ -262,8 +262,8 @@ all: ${TARGETS}
 .PHONY: all \
 	depend soup eat eating eat_soup eating_soup prep_clean prep_clobber legacy_clean legacy_clobber \
 	configure clean clobber install depend \
-	prep build release pull reset_min_timestamp \
-	hostchk.sh limit_ioccc.sh
+	prep build release pull reset_min_timestamp clean_mkchk_sem mkchk_sem \
+	hostchk.sh limit_ioccc.sh all_sem_ref all_sem_ref_ptch
 
 
 ####################################
@@ -416,13 +416,14 @@ test: all
 #
 # rule used by ../test_ioccc/prep.sh
 #
-all_ref: ../jparse/jsemtblgen ../jparse/jsemcgen.sh ../jparse/test_jparse/test_JSON/info.json/good ../jparse/test_jparse/test_JSON/auth.json/good all_ref.sh
+all_sem_ref: ../jparse/jsemtblgen ../jparse/jsemcgen.sh ../jparse/test_jparse/test_JSON/info.json/good ../jparse/test_jparse/test_JSON/auth.json/good all_sem_ref.sh
 	rm -rf ref
 	mkdir -p ref
-	./all_ref.sh -v 1 -j ../jparse/jsemcgen.sh \
+	./all_sem_ref.sh -v 1 -j ../jparse/jsemtblgen -J ../jparse/jsemcgen.sh -- \
 	    chk.info.head.c chk.info.tail.c chk.info.head.h chk.info.tail.h \
 	    chk.auth.head.c chk.auth.tail.c chk.auth.head.h chk.auth.tail.h \
-	    ../jparse/test_jparse/test_JSON/info.json/good ../jparse/test_jparse/test_JSON/auth.json/good ref
+	    ../jparse/test_jparse/test_JSON/info.json/good \
+	    ../jparse/test_jparse/test_JSON/auth.json/good ref
 
 # form chk.????.ptch.{c,h} files
 #
@@ -434,7 +435,7 @@ all_ref: ../jparse/jsemtblgen ../jparse/jsemcgen.sh ../jparse/test_jparse/test_J
 # This rule is run by the repo maintainers only AFTER chk_sem_????.{c,h} files
 # are updated by hand.
 #
-all_ref_ptch: ref/info.reference.json.c ref/info.reference.json.h \
+all_sem_ref_ptch: ref/info.reference.json.c ref/info.reference.json.h \
 	      ref/auth.reference.json.c ref/auth.reference.json.h
 	rm -f chk.info.ptch.c
 	-diff -u ref/info.reference.json.c chk_sem_info.c > chk.info.ptch.c
@@ -449,7 +450,8 @@ all_ref_ptch: ref/info.reference.json.c ref/info.reference.json.h \
 #
 # rule used by ../test_ioccc/prep.sh
 #
-mkchk_sem: chk_sem_auth.c chk_sem_auth.h chk_sem_info.c chk_sem_info.h
+mkchk_sem: chk_sem_info.c chk_sem_info.h chk_sem_auth.c chk_sem_auth.h
+	@:
 
 soup:
 	@-if [[ -r .soup ]]; then \
@@ -587,6 +589,10 @@ tags: ${ALL_CSRC} ${ALL_HSRC}
 	@echo
 	@echo "${OUR_NAME}: make $@ complete"
 
+clean_mkchk_sem:
+	${RM} -f chk_sem_info.c chk_sem_info.h chk_sem_info.o
+	${RM} -f chk_sem_auth.c chk_sem_auth.h chk_sem_auth.o
+
 prep_clean: legacy_clean
 	@echo
 	@echo "${OUR_NAME}: make $@ starting"
@@ -641,6 +647,7 @@ clobber: clean
 	@echo
 	${RM} -f .soup
 	${RM} -f tags
+	${RM} -f .all_ref.*
 	${RM} -f ${TARGETS}
 	@echo
 	@echo "${OUR_NAME}: make $@ complete"

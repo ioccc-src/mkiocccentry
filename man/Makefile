@@ -152,7 +152,7 @@ MAN1_TARGETS= man1/bug_report.1 man1/chkentry.1 man1/fnamchk.1 man1/hostchk.1 ma
 	      man1/run_flex.1 man1/txzchk.1
 MAN3_TARGETS= man3/dbg.3 man3/dyn_array.3 man3/err.3 man3/msg.3 man3/warn.3 man3/werr.3 man3/printf_usage.3 \
 	      man3/warn_or_err.3
-MAN8_TARGETS= man8/all_ref.8 man8/chkentry_test.8 man8/ioccc_test.8 man8/iocccsize_test.8 man8/jnum_chk.8 \
+MAN8_TARGETS= man8/all_sem_ref.8 man8/chkentry_test.8 man8/ioccc_test.8 man8/iocccsize_test.8 man8/jnum_chk.8 \
 	      man8/jnum_gen.8 man8/jparse_test.8 man8/jsemcgen.8 man8/jsemtblgen.8 man8/jstr_test.8 \
 	      man8/mkiocccentry_test.8 man8/reset_tstamp.8 man8/run_usage.8 man8/txzchk_test.8 man8/utf8_test.8 \
 	      man8/verge.8 man8/vermod.8

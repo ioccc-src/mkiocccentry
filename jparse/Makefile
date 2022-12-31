@@ -331,7 +331,7 @@ all: ${TARGETS} ${ALL_OTHER_TARGETS} Makefile
 
 .PHONY: all \
 	extern_include extern_objs extern_liba extern_man extern_prog extern_everything man/man1/jparse.1 man/man8/jparse_test.8 \
-	parser parser-o use_ref bison flex test tags check_man prep_clean prep_clobber legacy_clean legacy_clobber \
+	parser parser-o use_json_ref bison flex test tags check_man prep_clean prep_clobber legacy_clean legacy_clobber load_json_ref \
 	configure clean clobber install depend
 
 
@@ -501,7 +501,6 @@ parser: jparse.y jparse.l
 	${CP} -f -v jparse.c jparse.ref.c
 	${RM} -f -v jparse.lex.ref.h
 	${CP} -f -v jparse.lex.h jparse.lex.ref.h
-	${MAKE} -C .. all
 
 # make parser-o: Force the rebuild of the JSON parser.
 #
@@ -510,10 +509,23 @@ parser: jparse.y jparse.l
 parser-o: jparse.y jparse.l
 	${MAKE} parser RUN_O_FLAG='-o'
 
+# load reference code from the previous successful make parser
+#
+load_json_ref: jparse.tab.c jparse.tab.h jparse.c jparse.lex.h
+	${RM} -f jparse.tab.ref.c
+	${CP} -f -v jparse.tab.c jparse.tab.ref.c
+	${RM} -f jparse.tab.ref.h
+	${CP} -f -v jparse.tab.h jparse.tab.ref.h
+	${RM} -f jparse.ref.c
+	${CP} -f -v jparse.c jparse.ref.c
+	${RM} -f jparse.lex.ref.h
+	${CP} -f -v jparse.lex.h jparse.lex.ref.h
+
 # restore reference code that was produced by previous successful make parser
 #
 # This rule forces the use of reference copies of JSON parser C code.
-use_ref: jparse.tab.ref.c jparse.tab.ref.h jparse.ref.c jparse.lex.ref.h
+#
+use_json_ref: jparse.tab.ref.c jparse.tab.ref.h jparse.ref.c jparse.lex.ref.h
 	${RM} -f jparse.tab.c
 	${CP} -f -v jparse.tab.ref.c jparse.tab.c
 	${RM} -f jparse.tab.h
