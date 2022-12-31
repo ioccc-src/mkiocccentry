@@ -548,20 +548,36 @@ depend: ${ALL_CSRC} all
 	@echo
 	@echo "${OUR_NAME}: make $@ starting"
 	@echo
-	@${SED} -i.orig -n -e '1,/^### DO NOT CHANGE MANUALLY BEYOND THIS LINE/p' Makefile
-	${CC} ${CFLAGS} -MM ${ALL_CSRC} | ${INDEPEND} >> Makefile
-	@-if ${CMP} -s Makefile.orig Makefile; then \
-	    ${RM} -f Makefile.orig; \
+	@HAVE_INDEPEND="`type -P ${INDEPEND}`"; if [[ -z "$$HAVE_INDEPEND" ]]; then \
+	    echo 'The independ command could not be found.' 1>&2; \
+	    echo 'The independ command is required to run this rule.'; 1>&2; \
+	    echo ''; 1>&2; \
+	    echo 'See the following GitHub repo for where to obtain independ:'; 1>&2; \
+	    echo ''; 1>&2; \
+	    echo '    https://github.com/lcn2/independ'; 1>&2; \
+	    echo ''; 1>&2; \
 	else \
-	    echo; \
-	    echo "${OUR_NAME}: Makefile dependencies updated"; \
-	    echo; \
-	    echo "${OUR_NAME}: Previous version may be found in: Makefile.orig"; \
+	    @${SED} -i.orig -n -e '1,/^### DO NOT CHANGE MANUALLY BEYOND THIS LINE/p' Makefile; \
+	    ${CC} ${CFLAGS} -MM -I. -DMKIOCCCENTRY_USE ${ALL_CSRC} | ${INDEPEND} >> Makefile; \
+	    if ${CMP} -s Makefile.orig Makefile; then \
+		${RM} -f Makefile.orig; \
+	    else \
+		echo; \
+		echo "${OUR_NAME}: Makefile dependencies updated"; \
+		echo; \
+		echo "${OUR_NAME}: Previous version may be found in: Makefile.orig"; \
+	    fi; \
 	fi
 	@echo
 	@echo "${OUR_NAME}: make $@ complete"
 
 ### DO NOT CHANGE MANUALLY BEYOND THIS LINE
+dbg.o: dbg.c dbg.h
+dbg_example.o: dbg.h dbg_example.c
+dbg_test.o: dbg.h dbg_test.c
+dbg.o: dbg.c dbg.h
+dbg_example.o: dbg.h dbg_example.c
+dbg_test.o: dbg.h dbg_test.c
 dbg.o: dbg.c dbg.h
 dbg_example.o: dbg.h dbg_example.c
 dbg_test.o: dbg.h dbg_test.c
