@@ -533,3 +533,5 @@ dyn_array.o: ../dbg/dbg.h dyn_array.c dyn_array.h
 dyn_test.o: ../dbg/dbg.h dyn_array.h dyn_test.c dyn_test.h
 dyn_array.o: ../dbg/dbg.h dyn_array.c dyn_array.h
 dyn_test.o: ../dbg/dbg.h dyn_array.h dyn_test.c dyn_test.h
+dyn_array.o: ../dbg/dbg.h dyn_array.c dyn_array.h
+dyn_test.o: ../dbg/dbg.h dyn_array.h dyn_test.c dyn_test.h

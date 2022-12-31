@@ -26,7 +26,7 @@
 export TOOLS="
     ./chkentry
     ./dbg/dbg_test
-    ./fnamchk
+    ./test_ioccc/fnamchk
     ./soup/hostchk.sh
     ./iocccsize
     ./jparse/jnum_gen
@@ -41,7 +41,7 @@ export TOOLS="
     ./jparse/run_bison.sh
     ./jparse/run_flex.sh
     ./soup/run_usage.sh
-    ./soup/all_ref.sh
+    ./soup/all_sem_ref.sh
     ./test_ioccc/chkentry_test.sh
     ./dyn_array/dyn_test
     ./test_ioccc/ioccc_test.sh

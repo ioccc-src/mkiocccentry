@@ -581,3 +581,6 @@ dbg_test.o: dbg.h dbg_test.c
 dbg.o: dbg.c dbg.h
 dbg_example.o: dbg.h dbg_example.c
 dbg_test.o: dbg.h dbg_test.c
+dbg.o: dbg.c dbg.h
+dbg_example.o: dbg.h dbg_example.c
+dbg_test.o: dbg.h dbg_test.c

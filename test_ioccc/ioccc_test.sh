@@ -264,16 +264,16 @@ if [[ ! -x test_ioccc/chkentry_test.sh ]]; then
     exit 13
 fi
 # test_JSON
-if [[ ! -e jparse/test_jparse/test_JSON ]]; then
-    echo "$0: ERROR: jparse/test_jparse/test_JSON file not found" 1>&2
+if [[ ! -e ./test_ioccc/test_JSON ]]; then
+    echo "$0: ERROR: ./test_JSON file not found" 1>&2
     exit 14
 fi
-if [[ ! -d jparse/test_jparse/test_JSON ]]; then
-    echo "$0: ERROR: jparse/test_jparse/test_JSON is not a directory" 1>&2
+if [[ ! -d ./test_ioccc/test_JSON ]]; then
+    echo "$0: ERROR: ./test_ioccc/test_JSON is not a directory" 1>&2
     exit 14
 fi
-if [[ ! -r jparse/test_jparse/test_JSON ]]; then
-    echo "$0: ERROR: jparse/test_jparse/test_JSON is not readable directory" 1>&2
+if [[ ! -r ./test_ioccc/test_JSON ]]; then
+    echo "$0: ERROR: ./test_ioccc/test_JSON is not readable directory" 1>&2
     exit 14
 fi
 # chkentry
@@ -478,8 +478,8 @@ fi
 echo | tee -a -- "$LOGFILE"
 echo "RUNNING: jparse/test_jparse/jparse_test.sh" | tee -a -- "$LOGFILE"
 echo | tee -a -- "$LOGFILE"
-echo "jparse/test_jparse/jparse_test.sh -J $V_FLAG -d jparse/test_jparse/test_JSON -j jparse/jparse jparse/test_jparse/json_teststr.txt" | tee -a -- "$LOGFILE"
-jparse/test_jparse/jparse_test.sh -J "$V_FLAG" -d jparse/test_jparse/test_JSON -j jparse/jparse jparse/test_jparse/json_teststr.txt | tee -a -- "$LOGFILE"
+echo "jparse/test_jparse/jparse_test.sh -J $V_FLAG -d ./test_ioccc/test_JSON -j jparse/jparse jparse/test_jparse/json_teststr.txt" | tee -a -- "$LOGFILE"
+jparse/test_jparse/jparse_test.sh -J "$V_FLAG" -d ./test_ioccc/test_JSON -j jparse/jparse jparse/test_jparse/json_teststr.txt | tee -a -- "$LOGFILE"
 status="${PIPESTATUS[0]}"
 if [[ $status -ne 0 ]]; then
     echo "$0: ERROR: jparse/test_jparse/jparse_test.sh non-zero exit code: $status" 1>&2 | tee -a -- "$LOGFILE"
@@ -527,8 +527,8 @@ fi
 echo | tee -a -- "$LOGFILE"
 echo "RUNNING: test_ioccc/chkentry_test.sh" | tee -a -- "$LOGFILE"
 echo | tee -a -- "$LOGFILE"
-echo "test_ioccc/chkentry_test.sh -v 1 -d jparse/test_jparse/test_JSON -c ./chkentry" | tee -a -- "$LOGFILE"
-test_ioccc/chkentry_test.sh -v 1 -d jparse/test_jparse/test_JSON -c ./chkentry | tee -a -- "$LOGFILE"
+echo "test_ioccc/chkentry_test.sh -v 1 -d ./test_ioccc/test_JSON -c ./chkentry" | tee -a -- "$LOGFILE"
+test_ioccc/chkentry_test.sh -v 1 -d ./test_ioccc/test_JSON -c ./chkentry | tee -a -- "$LOGFILE"
 status="${PIPESTATUS[0]}"
 if [[ $status -ne 0 ]]; then
     echo "$0: ERROR: test_ioccc/chkentry_test.sh non-zero exit code: $status" 1>&2 | tee -a -- "$LOGFILE"

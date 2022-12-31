@@ -28,6 +28,8 @@
 
 # setup
 #
+export JSON_TREE="../test_ioccc/test_JSON"
+export LIMIT_SH="./limit_ioccc.sh"
 export VERMOD_VERSION="0.1 2022-03-15"
 export USAGE="usage: $0 [-h] [-V] [-v level] [-d test_dir] [-i limit.sh]
 	[-o] [-F] [-Q] [-n] [-l] [-L] old_ver new_ver
@@ -36,8 +38,8 @@ export USAGE="usage: $0 [-h] [-V] [-v level] [-d test_dir] [-i limit.sh]
     -V		    Print version and exit
     -v level	    Set the debugging level (def: 0)
 
-    -d test_dir	    Process '*.json' files below dir (def: ./test_JSON)
-    -i limit.sh	    Use limit.sh to verify new version (def: ./limit_ioccc.sh)
+    -d test_dir	    Process '*.json' files below dir (def: $JSON_TREE)
+    -i limit.sh	    Use limit.sh to verify new version (def: $LIMIT_SH)
 
     -o		    Verify old version (def: verify new version)
     -F		    Force change, even if it cannot be verified (def: reject an unverified change)
@@ -67,8 +69,6 @@ Exit codes:
 
 $0 version: $VERMOD_VERSION"
 export V_FLAG="0"
-export JSON_TREE="./test_JSON"
-export LIMIT_SH="./limit_ioccc.sh"
 export OLD_FLAG=
 export FORCE=
 export QUOTE='"'

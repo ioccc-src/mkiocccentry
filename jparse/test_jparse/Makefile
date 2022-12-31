@@ -290,7 +290,7 @@ test: all jparse_test.sh
 	@echo
 	@echo "${OUR_NAME}: make $@ starting"
 	@echo
-	 ./jparse_test.sh -j ../jparse -d ./test_JSON ./json_teststr.txt
+	 ./jparse_test.sh -j ../jparse -d test_JSON -s . ./json_teststr.txt
 	@echo
 	@echo "${OUR_NAME}: make $@ complete"
 
@@ -499,6 +499,13 @@ depend: ${ALL_CSRC} all
 	@echo "${OUR_NAME}: make $@ complete"
 
 ### DO NOT CHANGE MANUALLY BEYOND THIS LINE
+jnum_chk.o: ../../dbg/dbg.h ../../dyn_array/../dbg/dbg.h \
+    ../../dyn_array/dyn_array.h ../../jparse/json_parse.h \
+    ../../jparse/json_util.h ../json_parse.h ../util.h jnum_chk.c \
+    jnum_chk.h
+jnum_test.o: ../../jparse/../dyn_array/../dbg/dbg.h \
+    ../../jparse/../dyn_array/dyn_array.h ../../jparse/json_parse.h \
+    ../../jparse/util.h jnum_test.c
 jnum_chk.o: ../../dbg/dbg.h ../../dyn_array/../dbg/dbg.h \
     ../../dyn_array/dyn_array.h ../../jparse/json_parse.h \
     ../../jparse/json_util.h ../json_parse.h ../util.h jnum_chk.c \
