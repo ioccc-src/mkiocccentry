@@ -813,7 +813,9 @@ legacy_clean: dbg/Makefile dyn_array/Makefile jparse/Makefile man/Makefile \
 	${RM} -f jint.o jint_gen.o
 	${RM} -f jfloat.o jfloat_gen.o
 	${RM} -f jauthchk.o jinfochk.o jnum_gen.o jsemtblgen.o jstrdecode.o jstrencode.o verge.o
-	${RM} -f jparse.tab.o jparse_main.o json_parse.o
+	${RM} -f chkentry.o entry_time.o entry_util.o fnamchk.o foo.o jparse.o json_sem.o
+	${RM} -f json_util.o location.o rule_count.o sanity.o utf8_posix_map.o util.o
+	${RM} -f sanity.o utf8_posix_map.o util.o
 	@echo
 	@echo "${OUR_NAME}: make $@ complete"
 
@@ -855,6 +857,8 @@ legacy_clobber: legacy_clean dbg/Makefile dyn_array/Makefile jparse/Makefile man
 	${RM} -f dbg.out
 	${RM} -rf ioccc_test test
 	${RM} -f jparse.lex.h jparse.tab.c jparse.tab.h jparse.c
+	${RM} -f fnamchk jnum_gen jsemtblgen jstrdecode jstrencode verge
+	${RM} -f hostchk.sh prep.sh reset_tstamp.sh run_usage.sh vermod.sh
 	@echo
 	@echo "${OUR_NAME}: make $@ complete"
 
