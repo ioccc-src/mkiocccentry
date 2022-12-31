@@ -1161,3 +1161,27 @@ txzchk.o: dbg/dbg.h jparse/../dbg/dbg.h jparse/../dyn_array/../dbg/dbg.h \
     soup/../dbg/dbg.h soup/../jparse/jparse.h soup/entry_util.h \
     soup/limit_ioccc.h soup/location.h soup/sanity.h soup/utf8_posix_map.h \
     soup/version.h txzchk.c txzchk.h
+chkentry.o: chkentry.c chkentry.h dbg/dbg.h jparse/../dbg/dbg.h \
+    jparse/../dyn_array/../dbg/dbg.h jparse/../dyn_array/dyn_array.h \
+    jparse/jparse.h jparse/jparse.tab.h jparse/json_parse.h \
+    jparse/json_sem.h jparse/json_util.h jparse/util.h soup/../dbg/dbg.h \
+    soup/../jparse/jparse.h soup/../jparse/json_sem.h \
+    soup/../jparse/json_util.h soup/chk_sem_auth.h soup/chk_sem_info.h \
+    soup/chk_validate.h soup/entry_time.h soup/entry_util.h soup/foo.h \
+    soup/limit_ioccc.h soup/location.h soup/sanity.h soup/soup.h \
+    soup/utf8_posix_map.h soup/version.h
+iocccsize.o: iocccsize.c iocccsize.h soup/../dbg/dbg.h soup/iocccsize_err.h \
+    soup/limit_ioccc.h soup/version.h
+mkiocccentry.o: dbg/dbg.h iocccsize.h jparse/../dbg/dbg.h \
+    jparse/../dyn_array/../dbg/dbg.h jparse/../dyn_array/dyn_array.h \
+    jparse/jparse.h jparse/jparse.tab.h jparse/json_parse.h \
+    jparse/json_sem.h jparse/json_util.h jparse/util.h mkiocccentry.c \
+    mkiocccentry.h soup/../dbg/dbg.h soup/../jparse/jparse.h \
+    soup/entry_util.h soup/limit_ioccc.h soup/location.h soup/sanity.h \
+    soup/utf8_posix_map.h soup/version.h
+txzchk.o: dbg/dbg.h jparse/../dbg/dbg.h jparse/../dyn_array/../dbg/dbg.h \
+    jparse/../dyn_array/dyn_array.h jparse/jparse.h jparse/jparse.tab.h \
+    jparse/json_parse.h jparse/json_sem.h jparse/json_util.h jparse/util.h \
+    soup/../dbg/dbg.h soup/../jparse/jparse.h soup/entry_util.h \
+    soup/limit_ioccc.h soup/location.h soup/sanity.h soup/utf8_posix_map.h \
+    soup/version.h txzchk.c txzchk.h

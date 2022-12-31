@@ -305,35 +305,35 @@ soup.a: ${LIB_OBJS}
 	${AR} -r -u -v $@ $^
 	${RANLIB} $@
 
-chk_sem_info.c: ../jparse/jsemtblgen ../jparse/jsemcgen.sh ../jparse/test_jparse/test_JSON/info.json/good/info.reference.json \
+chk_sem_info.c: ../jparse/jsemtblgen ../jparse/jsemcgen.sh ../test_ioccc/test_JSON/info.json/good/info.reference.json \
 		chk.info.head.c chk.info.ptch.c chk.info.tail.c
 	${RM} -f $@
 	../jparse/jsemcgen.sh -N sem_info -P chk -j ../jparse/jsemtblgen -- \
-	    ../jparse/test_jparse/test_JSON/info.json/good/info.reference.json chk.info.head.c \
+	    ../test_ioccc/test_JSON/info.json/good/info.reference.json chk.info.head.c \
 	    chk.info.ptch.c chk.info.tail.c $@
 
 chk.info.head.c chk.info.ptch.c chk.info.tail.c:
 	@:
 
-chk_sem_info.h: ../jparse/jsemtblgen ../jparse/jsemcgen.sh ../jparse/test_jparse/test_JSON/info.json/good/info.reference.json \
+chk_sem_info.h: ../jparse/jsemtblgen ../jparse/jsemcgen.sh ../test_ioccc/test_JSON/info.json/good/info.reference.json \
 		chk.info.head.h chk.info.ptch.h chk.info.tail.h
 	${RM} -f $@
 	../jparse/jsemcgen.sh -N sem_info -P chk -I -j ../jparse/jsemtblgen -- \
-	    ../jparse/test_jparse/test_JSON/info.json/good/info.reference.json chk.info.head.h \
+	    ../test_ioccc/test_JSON/info.json/good/info.reference.json chk.info.head.h \
 	    chk.info.ptch.h chk.info.tail.h $@
 
-chk_sem_auth.c: ../jparse/jsemtblgen ../jparse/jsemcgen.sh ../jparse/test_jparse/test_JSON/auth.json/good/auth.reference.json \
+chk_sem_auth.c: ../jparse/jsemtblgen ../jparse/jsemcgen.sh ../test_ioccc/test_JSON/auth.json/good/auth.reference.json \
 		chk.auth.head.c chk.auth.ptch.c chk.auth.tail.c
 	${RM} -f $@
 	../jparse/jsemcgen.sh -N sem_auth -P chk -j ../jparse/jsemtblgen -- \
-	    ../jparse/test_jparse/test_JSON/auth.json/good/auth.reference.json chk.auth.head.c \
+	    ../test_ioccc/test_JSON/auth.json/good/auth.reference.json chk.auth.head.c \
 	    chk.auth.ptch.c chk.auth.tail.c $@
 
-chk_sem_auth.h: ../jparse/jsemtblgen ../jparse/jsemcgen.sh ../jparse/test_jparse/test_JSON/auth.json/good/auth.reference.json \
+chk_sem_auth.h: ../jparse/jsemtblgen ../jparse/jsemcgen.sh ../test_ioccc/test_JSON/auth.json/good/auth.reference.json \
 		chk.auth.head.h chk.auth.ptch.h chk.auth.tail.h
 	${RM} -f $@
 	../jparse/jsemcgen.sh -N sem_auth -P chk -I -j ../jparse/jsemtblgen -- \
-	    ../jparse/test_jparse/test_JSON/auth.json/good/auth.reference.json chk.auth.head.h \
+	    ../test_ioccc/test_JSON/auth.json/good/auth.reference.json chk.auth.head.h \
 	    chk.auth.ptch.h chk.auth.tail.h $@
 
 
@@ -347,11 +347,11 @@ chk_sem_auth.h: ../jparse/jsemtblgen ../jparse/jsemcgen.sh ../jparse/test_jparse
 ../jparse/jsemcgen.sh:
 	@${MAKE} -C ../jparse extern_prog
 
-../jparse/test_jparse/test_JSON/info.json/good/info.reference.json:
-	@${MAKE} -C ../jparse test_jparse/test_JSON/info.json/good/info.reference.json
+../test_ioccc/test_JSON/info.json/good/info.reference.json:
+	@${MAKE} -C ../jparse test_ioccc/test_JSON/info.json/good/info.reference.json
 
-../jparse/test_jparse/test_JSON/auth.json/good/auth.reference.json:
-	@${MAKE} -C ../jparse test_jparse/test_JSON/auth.json/good/auth.reference.json
+../test_ioccc/test_JSON/auth.json/good/auth.reference.json:
+	@${MAKE} -C ../jparse test_ioccc/test_JSON/auth.json/good/auth.reference.json
 
 ####################################
 # rules for use by other Makefiles #
@@ -416,14 +416,14 @@ test: all
 #
 # rule used by ../test_ioccc/prep.sh
 #
-all_sem_ref: ../jparse/jsemtblgen ../jparse/jsemcgen.sh ../jparse/test_jparse/test_JSON/info.json/good ../jparse/test_jparse/test_JSON/auth.json/good all_sem_ref.sh
+all_sem_ref: ../jparse/jsemtblgen ../jparse/jsemcgen.sh ../test_ioccc/test_JSON/info.json/good ../test_ioccc/test_JSON/auth.json/good all_sem_ref.sh
 	rm -rf ref
 	mkdir -p ref
 	./all_sem_ref.sh -v 1 -j ../jparse/jsemtblgen -J ../jparse/jsemcgen.sh -- \
 	    chk.info.head.c chk.info.tail.c chk.info.head.h chk.info.tail.h \
 	    chk.auth.head.c chk.auth.tail.c chk.auth.head.h chk.auth.tail.h \
-	    ../jparse/test_jparse/test_JSON/info.json/good \
-	    ../jparse/test_jparse/test_JSON/auth.json/good ref
+	    ../test_ioccc/test_JSON/info.json/good \
+	    ../test_ioccc/test_JSON/auth.json/good ref
 
 # form chk.????.ptch.{c,h} files
 #
@@ -725,6 +725,49 @@ location.o: ../dbg/dbg.h ../jparse/../dbg/dbg.h \
     ../jparse/json_sem.h ../jparse/json_util.h ../jparse/util.h location.c \
     location.h
 rule_count.o: ../iocccsize.h iocccsize_err.h rule_count.c
+sanity.o: ../dbg/dbg.h ../jparse/../dbg/dbg.h \
+    ../jparse/../dyn_array/../dbg/dbg.h ../jparse/../dyn_array/dyn_array.h \
+    ../jparse/jparse.h ../jparse/jparse.tab.h ../jparse/json_parse.h \
+    ../jparse/json_sem.h ../jparse/json_util.h ../jparse/util.h \
+    limit_ioccc.h location.h sanity.c sanity.h utf8_posix_map.h version.h
+utf8_posix_map.o: ../dbg/dbg.h ../jparse/../dbg/dbg.h \
+    ../jparse/../dyn_array/../dbg/dbg.h ../jparse/../dyn_array/dyn_array.h \
+    ../jparse/jparse.h ../jparse/jparse.tab.h ../jparse/json_parse.h \
+    ../jparse/json_sem.h ../jparse/json_util.h ../jparse/util.h \
+    limit_ioccc.h utf8_posix_map.c utf8_posix_map.h version.h
+chk_sem_auth.o: ../jparse/../dyn_array/../dbg/dbg.h \
+    ../jparse/../dyn_array/dyn_array.h ../jparse/json_parse.h \
+    ../jparse/json_sem.h ../jparse/json_util.h ../jparse/util.h \
+    chk_sem_auth.c chk_sem_auth.h
+chk_sem_info.o: ../jparse/../dyn_array/../dbg/dbg.h \
+    ../jparse/../dyn_array/dyn_array.h ../jparse/json_parse.h \
+    ../jparse/json_sem.h ../jparse/json_util.h ../jparse/util.h \
+    chk_sem_info.c chk_sem_info.h
+chk_validate.o: ../dbg/dbg.h ../jparse/../dbg/dbg.h \
+    ../jparse/../dyn_array/../dbg/dbg.h ../jparse/../dyn_array/dyn_array.h \
+    ../jparse/jparse.h ../jparse/jparse.tab.h ../jparse/json_parse.h \
+    ../jparse/json_sem.h ../jparse/json_util.h ../jparse/util.h \
+    chk_sem_auth.h chk_sem_info.h chk_validate.c chk_validate.h \
+    entry_time.h entry_util.h location.h
+entry_time.o: ../dbg/dbg.h ../jparse/../dbg/dbg.h \
+    ../jparse/../dyn_array/../dbg/dbg.h ../jparse/../dyn_array/dyn_array.h \
+    ../jparse/jparse.h ../jparse/jparse.tab.h ../jparse/json_parse.h \
+    ../jparse/json_sem.h ../jparse/json_util.h ../jparse/util.h \
+    entry_time.c entry_time.h limit_ioccc.h version.h
+entry_util.o: ../dbg/dbg.h ../jparse/../dbg/dbg.h \
+    ../jparse/../dyn_array/../dbg/dbg.h ../jparse/../dyn_array/dyn_array.h \
+    ../jparse/jparse.h ../jparse/jparse.tab.h ../jparse/json_parse.h \
+    ../jparse/json_sem.h ../jparse/json_util.h ../jparse/util.h \
+    entry_time.h entry_util.c entry_util.h limit_ioccc.h location.h \
+    version.h
+foo.o: ../dbg/dbg.h foo.c foo.h oebxergfB.h
+location.o: ../dbg/dbg.h ../jparse/../dbg/dbg.h \
+    ../jparse/../dyn_array/../dbg/dbg.h ../jparse/../dyn_array/dyn_array.h \
+    ../jparse/jparse.h ../jparse/jparse.tab.h ../jparse/json_parse.h \
+    ../jparse/json_sem.h ../jparse/json_util.h ../jparse/util.h location.c \
+    location.h
+rule_count.o: ../dbg/dbg.h ../iocccsize.h iocccsize_err.h limit_ioccc.h \
+    rule_count.c version.h
 sanity.o: ../dbg/dbg.h ../jparse/../dbg/dbg.h \
     ../jparse/../dyn_array/../dbg/dbg.h ../jparse/../dyn_array/dyn_array.h \
     ../jparse/jparse.h ../jparse/jparse.tab.h ../jparse/json_parse.h \

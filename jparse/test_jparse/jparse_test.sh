@@ -9,7 +9,8 @@ export JPARSE_TEST_VERSION="0.4 2022-11-04"
 export CHK_TEST_FILE="./jparse/test_jparse/json_teststr.txt"
 export JPARSE="./jparse/jparse"
 export JSON_TREE="./jparse/test_jparse/test_JSON"
-export USAGE="usage: $0 [-h] [-V] [-v level] [-D dbg_level] [-J level] [-q] [-j jparse] [-d json_tree] [file ..]
+export SUBDIR="general.json"
+export USAGE="usage: $0 [-h] [-V] [-v level] [-D dbg_level] [-J level] [-q] [-j jparse] [-d json_tree] [-s subdir] [file ..]
 
     -h			print help and exit
     -V			print version and exit
@@ -20,8 +21,9 @@ export USAGE="usage: $0 [-h] [-V] [-v level] [-D dbg_level] [-J level] [-q] [-j 
     -j /path/to/jparse	path to jparse tool (def: $JPARSE)
     -d json_tree	read files from good and bad subdirectories of this directory
 			    These subdirectories are expected:
-				tree/bad
-				tree/good
+				tree/subdir/bad
+				tree/subdir/good
+    -s subdir		subdirectory under json_tree
     [file ...]		read JSON documents, one per line, from these files (def: $CHK_TEST_FILE)
 			NOTE: - means read from stdin.
 
@@ -45,7 +47,7 @@ export STRING_FAILURE_SUMMARY=""
 
 # parse args
 #
-while getopts :hVv:D:J:qj:d: flag; do
+while getopts :hVv:D:J:qj:d:s: flag; do
     case "$flag" in
     h)	echo "$USAGE" 1>&2
 	exit 2
@@ -65,6 +67,8 @@ while getopts :hVv:D:J:qj:d: flag; do
 	;;
     d)	JSON_TREE="$OPTARG"
 	;;
+    s)  SUBDIR="$OPTARG"
+	;;
     \?) echo "$0: ERROR: invalid option: -$OPTARG" 1>&2
 	exit 3
 	;;
@@ -79,6 +83,7 @@ if [[ $V_FLAG -ge 1 ]]; then
     echo "$0: debug[1]: -v: $V_FLAG" 1>&2
     echo "$0: debug[1]: -D: $DBG_LEVEL" 1>&2
     echo "$0: debug[1]: -J: $JSON_DBG_LEVEL" 1>&2
+    echo "$0: debug[1]: -s: $SUBDIR" 1>&2
     if [[ -z $Q_FLAG ]]; then
 	echo "$0: debug[1]: -q: false" 1>&2
     else
@@ -90,8 +95,8 @@ fi
 # check args
 #
 shift $(( OPTIND - 1 ));
-export JSON_GOOD_TREE="$JSON_TREE/general.json/good"
-export JSON_BAD_TREE="$JSON_TREE/general.json/bad"
+export JSON_GOOD_TREE="$JSON_TREE/$SUBDIR/good"
+export JSON_BAD_TREE="$JSON_TREE/$SUBDIR/bad"
 
 # firewall
 #
