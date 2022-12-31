@@ -374,25 +374,25 @@ hostchk_warning:
 mkiocccentry.o: mkiocccentry.c
 	${CC} ${CFLAGS} mkiocccentry.c -c
 
-mkiocccentry: mkiocccentry.o dbg/dbg.a dyn_array/dyn_array.a soup/soup.a jparse/jparse.a
+mkiocccentry: mkiocccentry.o soup/soup.a jparse/jparse.a dyn_array/dyn_array.a dbg/dbg.a
 	${CC} ${CFLAGS} $^ -lm -o $@
 
 iocccsize.o: iocccsize.c
 	${CC} ${CFLAGS} -DMKIOCCCENTRY_USE iocccsize.c -c
 
-iocccsize: iocccsize.o dbg/dbg.a soup/soup.a
+iocccsize: iocccsize.o soup/soup.a dbg/dbg.a
 	${CC} ${CFLAGS} $^ -o $@
 
 txzchk.o: txzchk.c
 	${CC} ${CFLAGS} txzchk.c -c
 
-txzchk: txzchk.o dbg/dbg.a dyn_array/dyn_array.a soup/soup.a jparse/jparse.a
+txzchk: txzchk.o soup/soup.a jparse/jparse.a dyn_array/dyn_array.a dbg/dbg.a
 	${CC} ${CFLAGS} $^ -o $@
 
 chkentry.o: chkentry.c
 	${CC} ${CFLAGS} chkentry.c -c
 
-chkentry: chkentry.o dbg/dbg.a dyn_array/dyn_array.a soup/soup.a jparse/jparse.a
+chkentry: chkentry.o soup/soup.a jparse/jparse.a dyn_array/dyn_array.a dbg/dbg.a
 	${CC} ${CFLAGS} $^ -lm -o $@
 
 
@@ -1025,7 +1025,6 @@ clobber: clean prep_clobber dbg/Makefile dyn_array/Makefile jparse/Makefile man/
 	${MAKE} -C man $@
 	${MAKE} -C jparse $@
 	@echo
-	${RM} -f ${BUILD_LOG}
 	${RM} -f limit_ioccc.sh
 	${RM} -rf .hostchk.work.*
 	${RM} -f .txzchk_test.*

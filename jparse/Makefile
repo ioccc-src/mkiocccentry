@@ -419,8 +419,8 @@ util.o: util.c util.h
 verge.o: verge.c verge.h
 	${CC} ${CFLAGS} verge.c -c
 
-verge: verge.o ../dbg/dbg.a util.o ../dyn_array/dyn_array.a
-	${CC} ${CFLAGS} verge.o ../dbg/dbg.a util.o ../dyn_array/dyn_array.a -o $@
+verge: verge.o util.o ../dbg/dbg.a ../dyn_array/dyn_array.a
+	${CC} ${CFLAGS} $^ -o $@
 
 jparse.a: ${LIB_OBJS}
 	${RM} -f $@

@@ -256,7 +256,7 @@ all: ${TARGETS} ${EXTERN_PROG}
 utf8_test.o: utf8_test.c
 	${CC} ${CFLAGS} -I.. utf8_test.c -c
 
-utf8_test: utf8_test.o ../dbg/dbg.a ../dyn_array/dyn_array.a ../soup/soup.a ../jparse/jparse.a
+utf8_test: utf8_test.o ../soup/soup.a ../jparse/jparse.a ../dyn_array/dyn_array.a ../dbg/dbg.a
 	${CC} ${CFLAGS} -I.. $^ -o $@
 
 ioccc_test.sh: ../dbg/dbg_test ../dyn_array/dyn_test

@@ -253,7 +253,7 @@ jnum_test.o: jnum_test.c
 jnum_chk.o: jnum_chk.c jnum_chk.h
 	${CC} ${CFLAGS} -I../.. jnum_chk.c -c
 
-jnum_chk: jnum_chk.o jnum_test.o ../jparse.a ../../dyn_array/dyn_array.o ../../dbg/dbg.a
+jnum_chk: jnum_chk.o jnum_test.o ../jparse.a ../../dyn_array/dyn_array.a ../../dbg/dbg.a
 	${CC} ${CFLAGS} $^ -lm -o $@
 
 
