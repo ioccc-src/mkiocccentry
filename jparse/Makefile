@@ -110,7 +110,7 @@ CFLAGS= ${C_STD} ${C_OPT} ${WARN_FLAGS} ${LDFLAGS}
 # source files that are permanent (not made, nor removed)
 #
 C_SRC= jparse_main.c json_parse.c json_sem.c json_util.c jnum_gen.c jnum_header.c \
-       jsemtblgen.c jstrdecode.c jstrencode.c util.c
+       jsemtblgen.c jstrdecode.c jstrencode.c util.c verge.c
 H_SRC= jparse.h jnum_gen.h jparse_main.h jsemtblgen.h json_parse.h json_sem.h json_util.h \
        jstrdecode.h jstrencode.h sorry.tm.ca.h util.h verge.h \
        jparse.tab.ref.h
@@ -146,7 +146,7 @@ LIB_OBJS= jparse.o jparse.tab.o jparse_main.o json_parse.o json_sem.o json_util.
 
 # NOTE: ${OTHER_OBJS} are objects NOT put into a library and removed by make clean
 #
-OTHER_OBJS=
+OTHER_OBJS= verge.o
 
 # all intermediate files and removed by make clean
 #
@@ -773,7 +773,7 @@ install: all test_jparse/Makefile
 # make depend #
 ###############
 
-depend: ${ALL_CSRC} all
+depend: ${ALL_CSRC}
 	${MAKE} -C test_jparse $@
 	@echo
 	@echo "${OUR_NAME}: make $@ starting"
@@ -834,3 +834,5 @@ jstrencode.o: ../dbg/dbg.h ../dyn_array/../dbg/dbg.h \
     ../dyn_array/dyn_array.h json_parse.h jstrencode.c jstrencode.h util.h
 util.o: ../dbg/dbg.h ../dyn_array/../dbg/dbg.h ../dyn_array/dyn_array.h \
     util.c util.h
+verge.o: ../dbg/dbg.h ../dyn_array/../dbg/dbg.h ../dyn_array/dyn_array.h \
+    ../soup/limit_ioccc.h ../soup/version.h util.h verge.c verge.h

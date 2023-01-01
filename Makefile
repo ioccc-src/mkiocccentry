@@ -1053,7 +1053,7 @@ install: all dbg/Makefile man/Makefile
 # make depend #
 ###############
 
-depend: ${ALL_CSRC} all
+depend: ${ALL_CSRC}
 	@echo
 	@echo "${OUR_NAME}: make $@ starting"
 	@echo
