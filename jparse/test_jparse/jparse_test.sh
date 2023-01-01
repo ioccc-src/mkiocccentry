@@ -9,7 +9,7 @@ export JPARSE_TEST_VERSION="0.4 2022-11-04"
 export CHK_TEST_FILE="./jparse/test_jparse/json_teststr.txt"
 export JPARSE="./jparse/jparse"
 export JSON_TREE="./jparse/test_jparse/test_JSON"
-export SUBDIR="general.json"
+export SUBDIR="."
 export USAGE="usage: $0 [-h] [-V] [-v level] [-D dbg_level] [-J level] [-q] [-j jparse] [-d json_tree] [-s subdir] [file ..]
 
     -h			print help and exit
