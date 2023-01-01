@@ -504,22 +504,23 @@ install: all
 depend: ${ALL_CSRC} all
 	@echo
 	@echo "${OUR_NAME}: make $@ starting"
-	@echo
 	@HAVE_INDEPEND="`type -P ${INDEPEND}`"; if [[ -z "$$HAVE_INDEPEND" ]]; then \
-	    echo 'The independ command could not be found.' 1>&2; \
-	    echo 'The independ command is required to run this rule.'; 1>&2; \
+	    echo '${OUR_NAME}: The independ command could not be found.' 1>&2; \
+	    echo '${OUR_NAME}: The independ command is required to perform: make $@'; 1>&2; \
 	    echo ''; 1>&2; \
 	    echo 'See the following GitHub repo for where to obtain independ:'; 1>&2; \
 	    echo ''; 1>&2; \
 	    echo '    https://github.com/lcn2/independ'; 1>&2; \
-	    echo ''; 1>&2; \
 	else \
-	    @${SED} -i.orig -n -e '1,/^### DO NOT CHANGE MANUALLY BEYOND THIS LINE/p' Makefile; \
+	    if ! ${GREP} -q '^### DO NOT CHANGE MANUALLY BEYOND THIS LINE$$' Makefile; then \
+	        echo "${OUR_NAME}: make $@ aborting, Makefile missing: ### DO NOT CHANGE MANUALLY BEYOND THIS LINE" 1>&2; \
+		exit 1; \
+	    fi; \
+	    ${SED} -i.orig -n -e '1,/^### DO NOT CHANGE MANUALLY BEYOND THIS LINE$$/p' Makefile; \
 	    ${CC} ${CFLAGS} -MM -I. -DMKIOCCCENTRY_USE ${ALL_CSRC} | ${INDEPEND} >> Makefile; \
 	    if ${CMP} -s Makefile.orig Makefile; then \
 		${RM} -f Makefile.orig; \
 	    else \
-		echo; \
 		echo "${OUR_NAME}: Makefile dependencies updated"; \
 		echo; \
 		echo "${OUR_NAME}: Previous version may be found in: Makefile.orig"; \
@@ -529,9 +530,5 @@ depend: ${ALL_CSRC} all
 	@echo "${OUR_NAME}: make $@ complete"
 
 ### DO NOT CHANGE MANUALLY BEYOND THIS LINE
-dyn_array.o: ../dbg/dbg.h dyn_array.c dyn_array.h
-dyn_test.o: ../dbg/dbg.h dyn_array.h dyn_test.c dyn_test.h
-dyn_array.o: ../dbg/dbg.h dyn_array.c dyn_array.h
-dyn_test.o: ../dbg/dbg.h dyn_array.h dyn_test.c dyn_test.h
 dyn_array.o: ../dbg/dbg.h dyn_array.c dyn_array.h
 dyn_test.o: ../dbg/dbg.h dyn_array.h dyn_test.c dyn_test.h

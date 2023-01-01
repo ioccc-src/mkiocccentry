@@ -1053,8 +1053,7 @@ install: all dbg/Makefile man/Makefile
 # make depend #
 ###############
 
-depend: ${ALL_CSRC} all dbg/Makefile dyn_array/Makefile jparse/Makefile man/Makefile \
-	soup/Makefile test_ioccc/Makefile
+depend: ${ALL_CSRC} all
 	@echo
 	@echo "${OUR_NAME}: make $@ starting"
 	@echo
@@ -1065,21 +1064,24 @@ depend: ${ALL_CSRC} all dbg/Makefile dyn_array/Makefile jparse/Makefile man/Make
 	@${MAKE} -C man $@
 	@${MAKE} -C jparse $@
 	@echo
+	@echo "${OUR_NAME}: make $@ starting"
 	@HAVE_INDEPEND="`type -P ${INDEPEND}`"; if [[ -z "$$HAVE_INDEPEND" ]]; then \
-	    echo 'The independ command could not be found.' 1>&2; \
-	    echo 'The independ command is required to run this rule.'; 1>&2; \
+	    echo '${OUR_NAME}: The independ command could not be found.' 1>&2; \
+	    echo '${OUR_NAME}: The independ command is required to perform: make $@'; 1>&2; \
 	    echo ''; 1>&2; \
 	    echo 'See the following GitHub repo for where to obtain independ:'; 1>&2; \
 	    echo ''; 1>&2; \
 	    echo '    https://github.com/lcn2/independ'; 1>&2; \
-	    echo ''; 1>&2; \
 	else \
-	    @${SED} -i.orig -n -e '1,/^### DO NOT CHANGE MANUALLY BEYOND THIS LINE/p' Makefile; \
+	    if ! ${GREP} -q '^### DO NOT CHANGE MANUALLY BEYOND THIS LINE$$' Makefile; then \
+	        echo "${OUR_NAME}: make $@ aborting, Makefile missing: ### DO NOT CHANGE MANUALLY BEYOND THIS LINE" 1>&2; \
+		exit 1; \
+	    fi; \
+	    ${SED} -i.orig -n -e '1,/^### DO NOT CHANGE MANUALLY BEYOND THIS LINE$$/p' Makefile; \
 	    ${CC} ${CFLAGS} -MM -I. -DMKIOCCCENTRY_USE ${ALL_CSRC} | ${INDEPEND} >> Makefile; \
 	    if ${CMP} -s Makefile.orig Makefile; then \
 		${RM} -f Makefile.orig; \
 	    else \
-		echo; \
 		echo "${OUR_NAME}: Makefile dependencies updated"; \
 		echo; \
 		echo "${OUR_NAME}: Previous version may be found in: Makefile.orig"; \
@@ -1089,78 +1091,6 @@ depend: ${ALL_CSRC} all dbg/Makefile dyn_array/Makefile jparse/Makefile man/Make
 	@echo "${OUR_NAME}: make $@ complete"
 
 ### DO NOT CHANGE MANUALLY BEYOND THIS LINE
-chkentry.o: chkentry.c chkentry.h dbg/dbg.h jparse/../dbg/dbg.h \
-    jparse/../dyn_array/../dbg/dbg.h jparse/../dyn_array/dyn_array.h \
-    jparse/jparse.h jparse/jparse.tab.h jparse/json_parse.h \
-    jparse/json_sem.h jparse/json_util.h jparse/util.h soup/../dbg/dbg.h \
-    soup/../jparse/jparse.h soup/../jparse/json_sem.h \
-    soup/../jparse/json_util.h soup/chk_sem_auth.h soup/chk_sem_info.h \
-    soup/chk_validate.h soup/entry_time.h soup/entry_util.h soup/foo.h \
-    soup/limit_ioccc.h soup/location.h soup/sanity.h soup/soup.h \
-    soup/utf8_posix_map.h soup/version.h
-iocccsize.o: iocccsize.c iocccsize.h soup/../dbg/dbg.h soup/iocccsize_err.h \
-    soup/limit_ioccc.h soup/version.h
-mkiocccentry.o: dbg/dbg.h iocccsize.h jparse/../dbg/dbg.h \
-    jparse/../dyn_array/../dbg/dbg.h jparse/../dyn_array/dyn_array.h \
-    jparse/jparse.h jparse/jparse.tab.h jparse/json_parse.h \
-    jparse/json_sem.h jparse/json_util.h jparse/util.h mkiocccentry.c \
-    mkiocccentry.h soup/../dbg/dbg.h soup/../jparse/jparse.h \
-    soup/entry_util.h soup/limit_ioccc.h soup/location.h soup/sanity.h \
-    soup/utf8_posix_map.h soup/version.h
-txzchk.o: dbg/dbg.h jparse/../dbg/dbg.h jparse/../dyn_array/../dbg/dbg.h \
-    jparse/../dyn_array/dyn_array.h jparse/jparse.h jparse/jparse.tab.h \
-    jparse/json_parse.h jparse/json_sem.h jparse/json_util.h jparse/util.h \
-    soup/../dbg/dbg.h soup/../jparse/jparse.h soup/entry_util.h \
-    soup/limit_ioccc.h soup/location.h soup/sanity.h soup/utf8_posix_map.h \
-    soup/version.h txzchk.c txzchk.h
-chkentry.o: chkentry.c chkentry.h dbg/dbg.h jparse/../dbg/dbg.h \
-    jparse/../dyn_array/../dbg/dbg.h jparse/../dyn_array/dyn_array.h \
-    jparse/jparse.h jparse/jparse.tab.h jparse/json_parse.h \
-    jparse/json_sem.h jparse/json_util.h jparse/util.h soup/../dbg/dbg.h \
-    soup/../jparse/jparse.h soup/../jparse/json_sem.h \
-    soup/../jparse/json_util.h soup/chk_sem_auth.h soup/chk_sem_info.h \
-    soup/chk_validate.h soup/entry_time.h soup/entry_util.h soup/foo.h \
-    soup/limit_ioccc.h soup/location.h soup/sanity.h soup/soup.h \
-    soup/utf8_posix_map.h soup/version.h
-iocccsize.o: iocccsize.c iocccsize.h soup/../dbg/dbg.h soup/iocccsize_err.h \
-    soup/limit_ioccc.h soup/version.h
-mkiocccentry.o: dbg/dbg.h iocccsize.h jparse/../dbg/dbg.h \
-    jparse/../dyn_array/../dbg/dbg.h jparse/../dyn_array/dyn_array.h \
-    jparse/jparse.h jparse/jparse.tab.h jparse/json_parse.h \
-    jparse/json_sem.h jparse/json_util.h jparse/util.h mkiocccentry.c \
-    mkiocccentry.h soup/../dbg/dbg.h soup/../jparse/jparse.h \
-    soup/entry_util.h soup/limit_ioccc.h soup/location.h soup/sanity.h \
-    soup/utf8_posix_map.h soup/version.h
-txzchk.o: dbg/dbg.h jparse/../dbg/dbg.h jparse/../dyn_array/../dbg/dbg.h \
-    jparse/../dyn_array/dyn_array.h jparse/jparse.h jparse/jparse.tab.h \
-    jparse/json_parse.h jparse/json_sem.h jparse/json_util.h jparse/util.h \
-    soup/../dbg/dbg.h soup/../jparse/jparse.h soup/entry_util.h \
-    soup/limit_ioccc.h soup/location.h soup/sanity.h soup/utf8_posix_map.h \
-    soup/version.h txzchk.c txzchk.h
-chkentry.o: chkentry.c chkentry.h dbg/dbg.h jparse/../dbg/dbg.h \
-    jparse/../dyn_array/../dbg/dbg.h jparse/../dyn_array/dyn_array.h \
-    jparse/jparse.h jparse/jparse.tab.h jparse/json_parse.h \
-    jparse/json_sem.h jparse/json_util.h jparse/util.h soup/../dbg/dbg.h \
-    soup/../jparse/jparse.h soup/../jparse/json_sem.h \
-    soup/../jparse/json_util.h soup/chk_sem_auth.h soup/chk_sem_info.h \
-    soup/chk_validate.h soup/entry_time.h soup/entry_util.h soup/foo.h \
-    soup/limit_ioccc.h soup/location.h soup/sanity.h soup/soup.h \
-    soup/utf8_posix_map.h soup/version.h
-iocccsize.o: iocccsize.c iocccsize.h soup/../dbg/dbg.h soup/iocccsize_err.h \
-    soup/limit_ioccc.h soup/version.h
-mkiocccentry.o: dbg/dbg.h iocccsize.h jparse/../dbg/dbg.h \
-    jparse/../dyn_array/../dbg/dbg.h jparse/../dyn_array/dyn_array.h \
-    jparse/jparse.h jparse/jparse.tab.h jparse/json_parse.h \
-    jparse/json_sem.h jparse/json_util.h jparse/util.h mkiocccentry.c \
-    mkiocccentry.h soup/../dbg/dbg.h soup/../jparse/jparse.h \
-    soup/entry_util.h soup/limit_ioccc.h soup/location.h soup/sanity.h \
-    soup/utf8_posix_map.h soup/version.h
-txzchk.o: dbg/dbg.h jparse/../dbg/dbg.h jparse/../dyn_array/../dbg/dbg.h \
-    jparse/../dyn_array/dyn_array.h jparse/jparse.h jparse/jparse.tab.h \
-    jparse/json_parse.h jparse/json_sem.h jparse/json_util.h jparse/util.h \
-    soup/../dbg/dbg.h soup/../jparse/jparse.h soup/entry_util.h \
-    soup/limit_ioccc.h soup/location.h soup/sanity.h soup/utf8_posix_map.h \
-    soup/version.h txzchk.c txzchk.h
 chkentry.o: chkentry.c chkentry.h dbg/dbg.h jparse/../dbg/dbg.h \
     jparse/../dyn_array/../dbg/dbg.h jparse/../dyn_array/dyn_array.h \
     jparse/jparse.h jparse/jparse.tab.h jparse/json_parse.h \
