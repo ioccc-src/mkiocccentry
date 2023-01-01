@@ -1,6 +1,13 @@
 # Major changes to the IOCCC entry toolkit
 
 
+## Release 0.9.9 2022-12-31
+
+Release just prior to version 1.0: the "public comment version".
+
+XXX - add more details
+
+
 ## Release 0.8.1 2022-11-19
 
 This is "roll-up" release was added so that it could be referenced
