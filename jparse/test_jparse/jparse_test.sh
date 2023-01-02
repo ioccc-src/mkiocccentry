@@ -5,7 +5,7 @@
 
 # setup
 #
-export JPARSE_TEST_VERSION="0.4 2022-11-04"
+export JPARSE_TEST_VERSION="0.5 2022-12-31"
 export CHK_TEST_FILE="./jparse/test_jparse/json_teststr.txt"
 export JPARSE="./jparse/jparse"
 export JSON_TREE="./jparse/test_jparse/test_JSON"
@@ -19,13 +19,13 @@ export USAGE="usage: $0 [-h] [-V] [-v level] [-D dbg_level] [-J level] [-q] [-j 
     -J level		set JSON parser verbosity level (def level: 0)
     -q			quiet mode: silence msg(), warn(), warnp() if -v 0 (def: not quiet)
     -j /path/to/jparse	path to jparse tool (def: $JPARSE)
-    -d json_tree	read files from good and bad subdirectories of this directory
+    -d json_tree	read files under json_tree/subdir/good and json_tree/subdir/bad (def: $JSON_TREE)
 			    These subdirectories are expected:
-				tree/subdir/bad
-				tree/subdir/good
-    -s subdir		subdirectory under json_tree
-    [file ...]		read JSON documents, one per line, from these files (def: $CHK_TEST_FILE)
-			NOTE: - means read from stdin.
+				json_tree/tree/subdir/bad
+				json_tree/tree/subdir/good
+    -s subdir		subdirectory under json_tree to find the good and bad subdirectories (def: $SUBDIR)
+    [file ...]		read JSON documents, one per line, from these files, - means stdin (def: $CHK_TEST_FILE)
+			NOTE: To use stdin, end the command line with: -- -
 
 Exit codes:
      0   all is well
