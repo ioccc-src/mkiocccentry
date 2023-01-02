@@ -46,6 +46,20 @@
                         "RSVP_state" : "default accepted"
                 },
 		{
+                        "name" : "Sauron",
+                        "alias" : "(Second) Dark Lord",
+                        "alias" : "Annatar, the Lord of Gifts",
+			"alias" : "Gorthaur",
+			"alias" : "Aulendil",
+			"alias" : "Artano",
+			"alias" : "Thû",
+			"alias" : "the Necromancer",
+                        "RSVP_requested" : ,
+                        "attendance" : "denied",
+                        "like_level" : -1.0,
+                        "RSVP_state" : "'What are Hobbits?'"
+                },
+		{
                         "name" : "Gollum",
                         "alias" : "Precious",
 			"alias" : "Sméagol",

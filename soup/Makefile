@@ -665,7 +665,7 @@ install: all
 # make depend #
 ###############
 
-depend: ${ALL_CSRC} all
+depend: ${ALL_CSRC}
 	@echo
 	@echo "${OUR_NAME}: make $@ starting"
 	@HAVE_INDEPEND="`type -P ${INDEPEND}`"; if [[ -z "$$HAVE_INDEPEND" ]]; then \
