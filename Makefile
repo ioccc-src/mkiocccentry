@@ -354,7 +354,7 @@ all: fast_hostchk just_all
 
 # The original make all that bypasses running hostchk.sh
 #
-just_all: ${ALL_SUBDIRS} ${TARGETS}
+just_all: ${ALL_SUBDIRS} ${TARGETS} build_man
 
 # fast build environment sanity check
 #
