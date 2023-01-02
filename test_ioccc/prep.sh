@@ -182,16 +182,17 @@ make_action 13 clean_mkchk_sem
 make_action 14 all_sem_ref
 make_action 15 mkchk_sem
 make_action 16 all
-make_action 17 parser
-make_action 18 all
-make_action 19 load_json_ref
-make_action 20 use_json_ref
-make_action 21 clean_generated_obj
-make_action 22 all
 if [[ -n $O_FLAG ]]; then
-    make_action 23 parser-o
-    make_action 24 all
+    make_action 17 parser-o
+else
+    make_action 18 parser
 fi
+make_action 19 all
+make_action 20 load_json_ref
+make_action 21 use_json_ref
+make_action 22 clean_generated_obj
+make_action 23 all
+# make_action 24 bug_report-t
 make_action 25 shellcheck
 make_action 26 seqcexit
 make_action 27 picky
