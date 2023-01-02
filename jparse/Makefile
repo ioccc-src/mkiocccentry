@@ -55,31 +55,35 @@ SHELLCHECK= shellcheck
 #
 OUR_NAME= jparse
 
-# Makefile debug
-#
-# Q= @   do not echo internal Makefile actions (quiet mode)
-# Q=    echo internal Makefile actions (debug / verbose mode)
-#
-# V= @:  do not echo debug statements (quiet mode)
-# V= @   echo debug statements (debug / verbose mode)
-#
-# INSTALL_Q= @	do not echo install commands (quiet mode)
-# INSTALL_Q=	echo install commands (debug / verbose mode
-#
-# INSTALL_V=	install w/o -v flag (quiet mode)
-# INSTALL_V= -v	install with -v (debug / verbose mode
+# Q= @   				do not echo internal Makefile actions (quiet mode)
+# Q=    				echo internal Makefile actions (debug / verbose mode)
 #
 #Q=
 Q= @
+
+# V= @:  				do not echo debug statements (quiet mode)
+# V= @   				echo debug statements (debug / verbose mode)
 #
 V= @:
 #V= @
+
+# INSTALL_Q= @				do not echo install commands (quiet mode)
+# INSTALL_Q=				echo install commands (debug / verbose mode
 #
 INSTALL_Q=
 #INSTALL_Q= @
+
+# INSTALL_V=				install w/o -v flag (quiet mode)
+# INSTALL_V= -v				install with -v (debug / verbose mode
 #
 #INSTALL_V=
 INSTALL_V= -v
+
+# MAKE_CD_Q= --no-print-directory	silence make cd messages (quiet mode)
+# MAKE_CD_Q= 				silence make cd messages (quiet mode)
+#
+MAKE_CD_Q= --no-print-directory
+#MAKE_CD_Q=
 
 
 ##################
@@ -476,19 +480,19 @@ jparse.a: ${LIB_OBJS}
 #########################################################
 
 ../dbg/dbg.a: ../dbg/Makefile
-	@${MAKE} -C ../dbg extern_liba
+	@${MAKE} ${MAKE_CD_Q} -C ../dbg extern_liba
 
 ../dyn_array/dyn_array.a: ../dyn_array/Makefile
-	@${MAKE} -C ../dyn_array extern_liba
+	@${MAKE} ${MAKE_CD_Q} -C ../dyn_array extern_liba
 
 test_jparse/test_JSON/info.json/good/info.reference.json: test_jparse/Makefile
-	@${MAKE} -C test_jparse test_JSON/info.json/good/info.reference.json
+	@${MAKE} ${MAKE_CD_Q} -C test_jparse test_JSON/info.json/good/info.reference.json
 
 test_jparse/test_JSON/auth.json/good/auth.reference.json: test_jparse/Makefile
-	@${MAKE} -C test_jparse test_JSON/auth.json/good/auth.reference.json
+	@${MAKE} ${MAKE_CD_Q} -C test_jparse test_JSON/auth.json/good/auth.reference.json
 
 ../soup/limit_ioccc.sh: ../soup/Makefile
-	@${MAKE} -C ../soup limit_ioccc.sh
+	@${MAKE} ${MAKE_CD_Q} -C ../soup limit_ioccc.sh
 
 
 ####################################
@@ -595,7 +599,7 @@ test: check_man test_jparse/Makefile
 	@echo
 	@echo "${OUR_NAME}: make $@ starting"
 	@echo
-	@${MAKE} -C test_jparse all test
+	@${MAKE} ${MAKE_CD_Q} -C test_jparse all test
 	@echo
 	@echo "${OUR_NAME}: make $@ complete"
 
@@ -610,7 +614,7 @@ seqcexit: ${FLEXFILES} ${BISONFILES} ${ALL_CSRC} test_jparse/Makefile
 	@echo
 	@echo "${OUR_NAME}: make $@ starting"
 	@echo
-	@${MAKE} -C test_jparse all $@
+	@${MAKE} ${MAKE_CD_Q} -C test_jparse all $@
 	@HAVE_SEQCEXIT="`type -P ${SEQCEXIT}`"; if [[ -z "$$HAVE_SEQCEXIT" ]]; then \
 	    echo 'The seqcexit tool could not be found.' 1>&2; \
 	    echo 'The seqcexit tool is required for this rule.'; 1>&2; \
@@ -633,7 +637,7 @@ picky: ${ALL_SRC} test_jparse/Makefile
 	@echo
 	@echo "${OUR_NAME}: make $@ starting"
 	@echo
-	@${MAKE} -C test_jparse all $@
+	@${MAKE} ${MAKE_CD_Q} -C test_jparse all $@
 	@if ! type -P ${PICKY} >/dev/null 2>&1; then \
 	    echo "The picky tool could not be found." 1>&2; \
 	    echo "The picky tool is required for this rule." 1>&2; \
@@ -668,7 +672,7 @@ shellcheck: ${SH_FILES} .shellcheckrc test_jparse/Makefile
 	@echo
 	@echo "${OUR_NAME}: make $@ starting"
 	@echo
-	@${MAKE} -C test_jparse all $@
+	@${MAKE} ${MAKE_CD_Q} -C test_jparse all $@
 	@HAVE_SHELLCHECK="`type -P ${SHELLCHECK}`"; if [[ -z "$$HAVE_SHELLCHECK" ]]; then \
 	    echo 'The shellcheck command could not be found.' 1>&2; \
 	    echo 'The shellcheck command is required to run this rule.'; 1>&2; \
@@ -731,7 +735,7 @@ tags: ${ALL_CSRC} ${ALL_HSRC} test_jparse/Makefile
 	@echo
 	@echo "${OUR_NAME}: make $@ starting"
 	@echo
-	@${MAKE} -C test_jparse all $@
+	@${MAKE} ${MAKE_CD_Q} -C test_jparse all $@
 	-${CTAGS} ${ALL_CSRC} ${ALL_HSRC} 2>&1 | \
 	     ${GREP} -E -v 'Duplicate entry|Second entry ignored'
 	@echo
@@ -741,7 +745,7 @@ prep_clean: legacy_clean test_jparse/Makefile
 	@echo
 	@echo "${OUR_NAME}: make $@ starting"
 	@echo
-	${MAKE} -C test_jparse $@
+	${MAKE} ${MAKE_CD_Q} -C test_jparse $@
 	@echo
 	@echo "${OUR_NAME}: make $@ complete"
 
@@ -751,7 +755,7 @@ prep_clobber: prep_clean legacy_clobber
 	@echo
 	${RM} -f jnum_gen
 	${RM} -rf jnum_gen.dSYM
-	${MAKE} -C test_jparse $@
+	${MAKE} ${MAKE_CD_Q} -C test_jparse $@
 	@echo
 	@echo "${OUR_NAME}: make $@ complete"
 
@@ -759,7 +763,7 @@ legacy_clean: test_jparse/Makefile
 	@echo
 	@echo "${OUR_NAME}: make $@ starting"
 	@echo
-	${MAKE} -C test_jparse $@
+	${MAKE} ${MAKE_CD_Q} -C test_jparse $@
 	@echo
 	@echo "${OUR_NAME}: make $@ complete"
 
@@ -768,7 +772,7 @@ legacy_clobber: legacy_clean test_jparse/Makefile
 	@echo "${OUR_NAME}: make $@ starting"
 	@echo
 	${RM} -f jstr_test.out jstr_test2.out
-	${MAKE} -C test_jparse $@
+	${MAKE} ${MAKE_CD_Q} -C test_jparse $@
 	@echo
 	@echo "${OUR_NAME}: make $@ complete"
 
@@ -803,7 +807,7 @@ install: all test_jparse/Makefile install_man
 	@echo
 	@echo "${OUR_NAME}: make $@ starting"
 	@echo
-	${MAKE} -C test_jparse all $@
+	${MAKE} ${MAKE_CD_Q} -C test_jparse all $@
 	${INSTALL_Q} ${INSTALL} ${INSTALL_V} -d -m 0775 ${DEST_LIB}
 	${INSTALL_Q} ${INSTALL} ${INSTALL_V} -m 0444 ${LIBA_TARGETS} ${DEST_LIB}
 	${INSTALL_Q} ${INSTALL} ${INSTALL_V} -d -m 0775 ${DEST_INCLUDE}
@@ -819,7 +823,7 @@ install: all test_jparse/Makefile install_man
 ###############
 
 depend: ${ALL_CSRC}
-	${MAKE} -C test_jparse $@
+	${MAKE} ${MAKE_CD_Q} -C test_jparse $@
 	@echo
 	@echo "${OUR_NAME}: make $@ starting"
 	@HAVE_INDEPEND="`type -P ${INDEPEND}`"; if [[ -z "$$HAVE_INDEPEND" ]]; then \

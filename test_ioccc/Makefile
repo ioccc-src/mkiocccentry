@@ -64,31 +64,35 @@ SHELLCHECK= shellcheck
 #
 OUR_NAME= test_ioccc
 
-# Makefile debug
-#
-# Q= @   do not echo internal Makefile actions (quiet mode)
-# Q=    echo internal Makefile actions (debug / verbose mode)
-#
-# V= @:  do not echo debug statements (quiet mode)
-# V= @   echo debug statements (debug / verbose mode)
-#
-# INSTALL_Q= @	do not echo install commands (quiet mode)
-# INSTALL_Q=	echo install commands (debug / verbose mode
-#
-# INSTALL_V=	install w/o -v flag (quiet mode)
-# INSTALL_V= -v	install with -v (debug / verbose mode
+# Q= @   				do not echo internal Makefile actions (quiet mode)
+# Q=    				echo internal Makefile actions (debug / verbose mode)
 #
 #Q=
 Q= @
+
+# V= @:  				do not echo debug statements (quiet mode)
+# V= @   				echo debug statements (debug / verbose mode)
 #
 V= @:
 #V= @
+
+# INSTALL_Q= @				do not echo install commands (quiet mode)
+# INSTALL_Q=				echo install commands (debug / verbose mode
 #
 INSTALL_Q=
 #INSTALL_Q= @
+
+# INSTALL_V=				install w/o -v flag (quiet mode)
+# INSTALL_V= -v				install with -v (debug / verbose mode
 #
 #INSTALL_V=
 INSTALL_V= -v
+
+# MAKE_CD_Q= --no-print-directory	silence make cd messages (quiet mode)
+# MAKE_CD_Q= 				silence make cd messages (quiet mode)
+#
+MAKE_CD_Q= --no-print-directory
+#MAKE_CD_Q=
 
 
 ##################
@@ -333,19 +337,19 @@ fnamchk: fnamchk.o ../jparse/jparse.a ../dyn_array/dyn_array.a ../dbg/dbg.a
 #########################################################
 
 ../dbg/dbg.a: ../dbg/Makefile
-	@${MAKE} -C ../dbg extern_liba
+	@${MAKE} ${MAKE_CD_Q} -C ../dbg extern_liba
 
 ../dbg/dbg_test: ../dbg/Makefile
-	@${MAKE} -C ../dbg extern_prog
+	@${MAKE} ${MAKE_CD_Q} -C ../dbg extern_prog
 
 ../dyn_array/dyn_array.a: ../dyn_array/Makefile
-	@${MAKE} -C ../dyn_array extern_liba
+	@${MAKE} ${MAKE_CD_Q} -C ../dyn_array extern_liba
 
 ../dyn_array/dyn_test: ../dyn_array/Makefile
-	@${MAKE} -C ../dyn_array dyn_test
+	@${MAKE} ${MAKE_CD_Q} -C ../dyn_array dyn_test
 
 ../soup/soup.a: ../soup/Makefile
-	@${MAKE} -C ../soup extern_liba
+	@${MAKE} ${MAKE_CD_Q} -C ../soup extern_liba
 
 
 ####################################

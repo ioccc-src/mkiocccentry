@@ -65,31 +65,35 @@ SHELL= bash
 #
 OUR_NAME= dyn_array
 
-# Makefile debug
-#
-# Q= @   do not echo internal Makefile actions (quiet mode)
-# Q=    echo internal Makefile actions (debug / verbose mode)
-#
-# V= @:  do not echo debug statements (quiet mode)
-# V= @   echo debug statements (debug / verbose mode)
-#
-# INSTALL_Q= @	do not echo install commands (quiet mode)
-# INSTALL_Q=	echo install commands (debug / verbose mode
-#
-# INSTALL_V=	install w/o -v flag (quiet mode)
-# INSTALL_V= -v	install with -v (debug / verbose mode
+# Q= @   				do not echo internal Makefile actions (quiet mode)
+# Q=    				echo internal Makefile actions (debug / verbose mode)
 #
 #Q=
 Q= @
+
+# V= @:  				do not echo debug statements (quiet mode)
+# V= @   				echo debug statements (debug / verbose mode)
 #
 V= @:
 #V= @
+
+# INSTALL_Q= @				do not echo install commands (quiet mode)
+# INSTALL_Q=				echo install commands (debug / verbose mode
 #
 INSTALL_Q=
 #INSTALL_Q= @
+
+# INSTALL_V=				install w/o -v flag (quiet mode)
+# INSTALL_V= -v				install with -v (debug / verbose mode
 #
 #INSTALL_V=
 INSTALL_V= -v
+
+# MAKE_CD_Q= --no-print-directory	silence make cd messages (quiet mode)
+# MAKE_CD_Q= 				silence make cd messages (quiet mode)
+#
+MAKE_CD_Q= --no-print-directory
+#MAKE_CD_Q=
 
 
 ##################
@@ -327,7 +331,7 @@ dyn_test: dyn_test.o dyn_array.a ../dbg/dbg.a
 #########################################################
 
 ../dbg/dbg.a: ../dbg/Makefile
-	@${MAKE} -C ../dbg extern_liba
+	@${MAKE} ${MAKE_CD_Q} -C ../dbg extern_liba
 
 
 ####################################

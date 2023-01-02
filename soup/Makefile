@@ -69,31 +69,35 @@ TOUCH= touch
 #
 OUR_NAME= soup
 
-# Makefile debug
-#
-# Q= @   do not echo internal Makefile actions (quiet mode)
-# Q=    echo internal Makefile actions (debug / verbose mode)
-#
-# V= @:  do not echo debug statements (quiet mode)
-# V= @   echo debug statements (debug / verbose mode)
-#
-# INSTALL_Q= @	do not echo install commands (quiet mode)
-# INSTALL_Q=	echo install commands (debug / verbose mode
-#
-# INSTALL_V=	install w/o -v flag (quiet mode)
-# INSTALL_V= -v	install with -v (debug / verbose mode
+# Q= @   				do not echo internal Makefile actions (quiet mode)
+# Q=    				echo internal Makefile actions (debug / verbose mode)
 #
 #Q=
 Q= @
+
+# V= @:  				do not echo debug statements (quiet mode)
+# V= @   				echo debug statements (debug / verbose mode)
 #
 V= @:
 #V= @
+
+# INSTALL_Q= @				do not echo install commands (quiet mode)
+# INSTALL_Q=				echo install commands (debug / verbose mode
 #
 INSTALL_Q=
 #INSTALL_Q= @
+
+# INSTALL_V=				install w/o -v flag (quiet mode)
+# INSTALL_V= -v				install with -v (debug / verbose mode
 #
 #INSTALL_V=
 INSTALL_V= -v
+
+# MAKE_CD_Q= --no-print-directory	silence make cd messages (quiet mode)
+# MAKE_CD_Q= 				silence make cd messages (quiet mode)
+#
+MAKE_CD_Q= --no-print-directory
+#MAKE_CD_Q=
 
 
 ##################
@@ -389,16 +393,16 @@ chk_sem_auth.h: ../jparse/jsemtblgen ../jparse/jsemcgen.sh ../test_ioccc/test_JS
 #########################################################
 
 ../jparse/jsemtblgen:
-	@${MAKE} -C ../jparse extern_prog
+	@${MAKE} ${MAKE_CD_Q} -C ../jparse extern_prog
 
 ../jparse/jsemcgen.sh:
-	@${MAKE} -C ../jparse extern_prog
+	@${MAKE} ${MAKE_CD_Q} -C ../jparse extern_prog
 
 ../test_ioccc/test_JSON/info.json/good/info.reference.json:
-	@${MAKE} -C ../jparse test_ioccc/test_JSON/info.json/good/info.reference.json
+	@${MAKE} ${MAKE_CD_Q} -C ../jparse test_ioccc/test_JSON/info.json/good/info.reference.json
 
 ../test_ioccc/test_JSON/auth.json/good/auth.reference.json:
-	@${MAKE} -C ../jparse test_ioccc/test_JSON/auth.json/good/auth.reference.json
+	@${MAKE} ${MAKE_CD_Q} -C ../jparse test_ioccc/test_JSON/auth.json/good/auth.reference.json
 
 ####################################
 # rules for use by other Makefiles #
