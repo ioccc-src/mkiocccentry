@@ -41,9 +41,9 @@ SHELL= bash
 SHELLCHECK= shellcheck
 
 
-###########################
-# Makefile directory name #
-###########################
+####################
+# Makefile control #
+####################
 
 # The name of this directory
 #
@@ -53,6 +53,32 @@ SHELLCHECK= shellcheck
 # by Makefiles in other directories.
 #
 OUR_NAME= test_jparse
+
+# Makefile debug
+#
+# Q= @   do not echo internal Makefile actions (quiet mode)
+# Q=    echo internal Makefile actions (debug / verbose mode)
+#
+# V= @:  do not echo debug statements (quiet mode)
+# V= @   echo debug statements (debug / verbose mode)
+#
+# INSTALL_Q= @	do not echo install commands (quiet mode)
+# INSTALL_Q=	echo install commands (debug / verbose mode
+#
+# INSTALL_V=	install w/o -v flag (quiet mode)
+# INSTALL_V= -v	install with -v (debug / verbose mode
+#
+#Q=
+Q= @
+#
+V= @:
+#V= @
+#
+INSTALL_Q=
+#INSTALL_Q= @
+#
+#INSTALL_V=
+INSTALL_V= -v
 
 
 ##################
@@ -198,13 +224,17 @@ EXTERN_CLOBBER= ${EXTERN_O} ${EXTERN_LIBA} ${EXTERN_PROG}
 #
 SH_TARGETS=
 
+# program targets to make by all, installed by install, and removed by clobber
+#
+PROG_TARGETS= jnum_chk
+
 # what to make by all but NOT to removed by clobber
 #
-ALL_OTHER_TARGETS= extern_everything
+ALL_OTHER_TARGETS= ${SH_TARGETS} extern_everything
 
 # what to make by all, what to install, and removed by clobber (and thus not ${ALL_OTHER_TARGETS})
 #
-TARGETS= jnum_chk ${SH_TARGETS}
+TARGETS= ${PROG_TARGETS}
 
 
 ############################################################
@@ -462,7 +492,8 @@ install: all
 	@echo
 	@echo "${OUR_NAME}: make $@ starting"
 	@echo
-	@echo "${OUR_NAME}: nothing to do"
+	${INSTALL_Q} ${INSTALL} ${INSTALL_V} -d -m 0775 ${DEST_DIR}
+	${INSTALL_Q} ${INSTALL} ${INSTALL_V} -m 0555 ${SH_TARGETS} ${PROG_TARGETS} ${DEST_DIR}
 	@echo
 	@echo "${OUR_NAME}: make $@ complete"
 

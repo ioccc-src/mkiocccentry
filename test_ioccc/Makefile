@@ -41,6 +41,7 @@ CC= cc
 CMP= cmp
 GREP= grep
 INDEPEND= independ
+INSTALL= install
 MAKE= make
 PICKY= picky
 RM= rm
@@ -50,9 +51,9 @@ SHELL= bash
 SHELLCHECK= shellcheck
 
 
-###########################
-# Makefile directory name #
-###########################
+####################
+# Makefile control #
+####################
 
 # The name of this directory
 #
@@ -62,6 +63,32 @@ SHELLCHECK= shellcheck
 # by Makefiles in other directories.
 #
 OUR_NAME= test_ioccc
+
+# Makefile debug
+#
+# Q= @   do not echo internal Makefile actions (quiet mode)
+# Q=    echo internal Makefile actions (debug / verbose mode)
+#
+# V= @:  do not echo debug statements (quiet mode)
+# V= @   echo debug statements (debug / verbose mode)
+#
+# INSTALL_Q= @	do not echo install commands (quiet mode)
+# INSTALL_Q=	echo install commands (debug / verbose mode
+#
+# INSTALL_V=	install w/o -v flag (quiet mode)
+# INSTALL_V= -v	install with -v (debug / verbose mode
+#
+#Q=
+Q= @
+#
+V= @:
+#V= @
+#
+INSTALL_Q=
+#INSTALL_Q= @
+#
+#INSTALL_V=
+INSTALL_V= -v
 
 
 ##################
@@ -232,16 +259,19 @@ ALL_MAN_TARGETS= ${MAN1_TARGETS} ${MAN3_TARGETS} ${MAN8_TARGETS}
 
 # shell targets to make by all and removed by clobber
 #
-SH_TARGETS=
+SH_TARGETS= prep.sh
+
+# program targets to make by all, installed by install, and removed by clobber
+#
+PROG_TARGETS= utf8_test fnamchk
 
 # what to make by all but NOT to removed by clobber
 #
-ALL_OTHER_TARGETS= extern_everything ${ALL_MAN_PAGES}
-
+ALL_OTHER_TARGETS= ${SH_TARGETS} extern_everything ${ALL_MAN_PAGES}
 
 # what to make by all, what to install, and removed by clobber (and thus not ${ALL_OTHER_TARGETS})
 #
-TARGETS= utf8_test fnamchk ${SH_TARGETS} ${ALL_MAN_BUILT}
+TARGETS= ${PROG_TARGETS} ${ALL_MAN_BUILT}
 
 
 ############################################################
@@ -274,7 +304,7 @@ all: ${TARGETS} ${EXTERN_PROG}
 #################################################
 
 .PHONY: all \
-	test prep_clean prep_clobber legacy_clean legacy_clobber \
+	test prep_clean prep_clobber legacy_clean legacy_clobber install_man \
 	configure clean clobber install depend
 
 
@@ -443,6 +473,14 @@ check_man: ${ALL_MAN_TARGETS}
 	@echo
 	@echo "${OUR_NAME}: make $@ complete"
 
+# install man pages
+#
+install_man: ${ALL_MAN_TARGETS}
+	${INSTALL_Q} ${INSTALL} ${INSTALL_V} -d -m 0775 ${MAN1_DIR}
+	${INSTALL_Q} ${INSTALL} ${INSTALL_V} -m 0444 ${MAN1_TARGETS} ${MAN1_DIR}
+	${INSTALL_Q} ${INSTALL} ${INSTALL_V} -d -m 0775 ${MAN8_DIR}
+	${INSTALL_Q} ${INSTALL} ${INSTALL_V} -m 0444 ${MAN8_TARGETS} ${MAN8_DIR}
+
 # vi/vim tags
 #
 tags: ${ALL_CSRC} ${ALL_HSRC}
@@ -512,11 +550,12 @@ clobber: clean
 	@echo
 	@echo "${OUR_NAME}: make $@ complete"
 
-install: all
+install: all install_man
 	@echo
 	@echo "${OUR_NAME}: make $@ starting"
 	@echo
-	@echo "${OUR_NAME}: nothing to do"
+	${INSTALL_Q} ${INSTALL} ${INSTALL_V} -d -m 0775 ${DEST_DIR}
+	${INSTALL_Q} ${INSTALL} ${INSTALL_V} -m 0555 ${SH_TARGETS} ${PROG_TARGETS} ${DEST_DIR}
 	@echo
 	@echo "${OUR_NAME}: make $@ complete"
 

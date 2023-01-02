@@ -99,9 +99,9 @@ TEE= tee
 TR= tr
 
 
-###########################
-# Makefile directory name #
-###########################
+####################
+# Makefile control #
+####################
 
 # The name of this directory
 #
@@ -111,6 +111,32 @@ TR= tr
 # by Makefiles in other directories.
 #
 OUR_NAME= mkiocccentry
+
+# Makefile debug
+#
+# Q= @   do not echo internal Makefile actions (quiet mode)
+# Q=    echo internal Makefile actions (debug / verbose mode)
+#
+# V= @:  do not echo debug statements (quiet mode)
+# V= @   echo debug statements (debug / verbose mode)
+#
+# INSTALL_Q= @	do not echo install commands (quiet mode)
+# INSTALL_Q=	echo install commands (debug / verbose mode
+#
+# INSTALL_V=	install w/o -v flag (quiet mode)
+# INSTALL_V= -v	install with -v (debug / verbose mode
+#
+#Q=
+Q= @
+#
+V= @:
+#V= @
+#
+INSTALL_Q=
+#INSTALL_Q= @
+#
+#INSTALL_V=
+INSTALL_V= -v
 
 
 ##################
@@ -273,6 +299,10 @@ ALL_MAN_TARGETS= ${MAN1_TARGETS} ${MAN3_TARGETS} ${MAN8_TARGETS}
 #
 SH_TARGETS=
 
+# program targets to make by all, installed by install, and removed by clobber
+#
+PROG_TARGETS= mkiocccentry iocccsize txzchk chkentry
+
 # directories sometimes build under macOS and removed by clobber
 #
 DSYMDIRS= mkiocccentry.dSYM iocccsize.dSYM txzchk.dSYM chkentry.dSYM
@@ -291,11 +321,11 @@ ALL_SUBDIRS= all_dbg all_dyn_array all_jparse all_man all_soup all_test_ioccc
 
 # what to make by all but NOT to removed by clobber
 #
-ALL_OTHER_TARGETS= ${ALL_SUBDIRS} ${ALL_MAN_PAGES}
+ALL_OTHER_TARGETS= ${SH_TARGETS} ${ALL_SUBDIRS} ${ALL_MAN_PAGES} build_man
 
 # what to make by all, what to install, and removed by clobber (and thus not ${ALL_OTHER_TARGETS})
 #
-TARGETS= mkiocccentry iocccsize txzchk chkentry ${SH_TARGETS} ${ALL_MAN_BUILT}
+TARGETS= ${PROG_TARGETS} ${ALL_MAN_BUILT}
 
 
 ############################################################
@@ -384,7 +414,7 @@ hostchk_warning:
 	check_man clean clean_generated_obj clean_mkchk_sem clobber configure depend hostchk \
 	install test_ioccc legacy_clobber mkchk_sem parser parser-o picky prep prep_clobber \
         pull rebuild_jnum_test release seqcexit shellcheck tags test test-chkentry use_json_ref \
-	prep build release pull reset_min_timestamp load_json_ref \
+	prep build release pull reset_min_timestamp load_json_ref build_man \
 	all_dbg all_dyn_array all_jparse all_man all_soup all_test_ioccc depend
 
 
@@ -710,6 +740,26 @@ check_man: dbg/Makefile dyn_array/Makefile jparse/Makefile \
 	@echo
 	@echo "${OUR_NAME}: make $@ complete"
 
+# build a user convenience man directory
+#
+build_man: dbg/Makefile dyn_array/Makefile jparse/Makefile \
+	soup/Makefile test_ioccc/Makefile
+	${V} @echo
+	${V} @echo "${OUR_NAME}: make $@ starting"
+	${V} @echo
+	${Q} ${MAKE} -C dbg install_man \
+		MAN1_DIR=../man/man1 MAN3_DIR=../man/man3 MAN8_DIR=../man/man8 INSTALL_Q=@ INSTALL_V=
+	${Q} ${MAKE} -C dyn_array install_man \
+		MAN1_DIR=../man/man1 MAN3_DIR=../man/man3 MAN8_DIR=../man/man8 INSTALL_Q=@ INSTALL_V=
+	${Q} ${MAKE} -C jparse install_man \
+		MAN1_DIR=../man/man1 MAN3_DIR=../man/man3 MAN8_DIR=../man/man8 INSTALL_Q=@ INSTALL_V=
+	${Q} ${MAKE} -C soup install_man \
+		MAN1_DIR=../man/man1 MAN3_DIR=../man/man3 MAN8_DIR=../man/man8 INSTALL_Q=@ INSTALL_V=
+	${Q} ${MAKE} -C test_ioccc install_man \
+		MAN1_DIR=../man/man1 MAN3_DIR=../man/man3 MAN8_DIR=../man/man8 INSTALL_Q=@ INSTALL_V=
+	${V} @echo
+	${V} @echo "${OUR_NAME}: make $@ complete"
+
 # vi/vim tags
 #
 tags: ${ALL_CSRC} ${ALL_HSRC} dbg/Makefile dyn_array/Makefile jparse/Makefile \
@@ -1034,17 +1084,23 @@ clobber: clean prep_clobber dbg/Makefile dyn_array/Makefile jparse/Makefile \
 	${RM} -f .txzchk_test.*
 	${RM} -f .sorry.*
 	${RM} -f ${TARGETS}
+	${RM} -rf man
 	@echo
 	@echo "${OUR_NAME}: make $@ complete"
 
-install: all dbg/Makefile
+install: all dbg/Makefile dyn_array/Makefile jparse/Makefile \
+        soup/Makefile test_ioccc/Makefile
 	@echo
 	@echo "${OUR_NAME}: make $@ starting"
 	@echo
-	@${MAKE} -C dbg $@
-	@# we have to first make sure the directories exist!
-	${INSTALL} -v -d -m 0755 ${DEST_DIR}
-	${INSTALL} -v -m 0555 ${TARGETS} ${DEST_DIR}
+	${MAKE} -C dbg $@
+	${MAKE} -C dyn_array $@
+	${MAKE} -C test_ioccc $@
+	${MAKE} -C soup $@
+	${MAKE} -C jparse $@
+	@echo
+	${INSTALL_Q} ${INSTALL} ${INSTALL_V} -d -m 0775 ${DEST_DIR}
+	${INSTALL_Q} ${INSTALL} ${INSTALL_V} -m 0555 ${SH_TARGETS} ${PROG_TARGETS} ${DEST_DIR}
 	@echo
 	@echo "${OUR_NAME}: make $@ complete"
 

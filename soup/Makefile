@@ -43,6 +43,7 @@ CMP= cmp
 CTAGS= ctags
 GREP= grep
 INDEPEND= independ
+INSTALL= install
 MAKE= make
 PICKY= picky
 RANLIB= ranlib
@@ -55,9 +56,9 @@ SLEEP= sleep
 TOUCH= touch
 
 
-###########################
-# Makefile directory name #
-###########################
+####################
+# Makefile control #
+####################
 
 # The name of this directory
 #
@@ -67,6 +68,32 @@ TOUCH= touch
 # by Makefiles in other directories.
 #
 OUR_NAME= soup
+
+# Makefile debug
+#
+# Q= @   do not echo internal Makefile actions (quiet mode)
+# Q=    echo internal Makefile actions (debug / verbose mode)
+#
+# V= @:  do not echo debug statements (quiet mode)
+# V= @   echo debug statements (debug / verbose mode)
+#
+# INSTALL_Q= @	do not echo install commands (quiet mode)
+# INSTALL_Q=	echo install commands (debug / verbose mode
+#
+# INSTALL_V=	install w/o -v flag (quiet mode)
+# INSTALL_V= -v	install with -v (debug / verbose mode
+#
+#Q=
+Q= @
+#
+V= @:
+#V= @
+#
+INSTALL_Q=
+#INSTALL_Q= @
+#
+#INSTALL_V=
+INSTALL_V= -v
 
 
 ##################
@@ -207,7 +234,7 @@ EXTERN_H= chk_sem_info.h chk_sem_auth.h
 EXTERN_O=
 EXTERN_MAN= ${ALL_MAN_TARGETS}
 EXTERN_LIBA= soup.a
-EXTERN_PROG= hostchk.sh run_usage.sh vermod.sh reset_tstamp.sh
+EXTERN_PROG= hostchk.sh run_usage.sh vermod.sh reset_tstamp.sh all_sem_ref.sh
 
 # NOTE: ${EXTERN_CLOBBER} used outside of this directory and removed by make clobber
 #
@@ -235,15 +262,19 @@ H_SRC_TARGETS=
 
 # shell targets to make by all and removed by clobber
 #
-SH_TARGETS=
+SH_TARGETS= hostchk.sh run_usage.sh vermod.sh reset_tstamp.sh all_sem_ref.sh
+
+# program targets to make by all, installed by install, and removed by clobber
+#
+PROG_TARGETS=
 
 # what to make by all but NOT to removed by clobber
 #
-ALL_OTHER_TARGETS= extern_everything ${ALL_MAN_PAGES}
+ALL_OTHER_TARGETS= ${SH_TARGETS} extern_everything ${ALL_MAN_PAGES}
 
 # what to make by all, what to install, and removed by clobber (and thus not ${ALL_OTHER_TARGETS})
 #
-TARGETS= ${LIBA_TARGETS} ${SH_TARGETS} ${ALL_MAN_BUILT}
+TARGETS= ${LIBA_TARGETS} ${PROG_TARGETS} ${ALL_MAN_BUILT}
 
 
 ############################################################
@@ -278,7 +309,7 @@ all: ${TARGETS}
 .PHONY: all \
 	depend soup eat eating eat_soup eating_soup prep_clean prep_clobber legacy_clean legacy_clobber \
 	configure clean clobber install depend \
-	prep build release pull reset_min_timestamp clean_mkchk_sem mkchk_sem \
+	prep build release pull reset_min_timestamp clean_mkchk_sem mkchk_sem install_man \
 	hostchk.sh limit_ioccc.sh all_sem_ref all_sem_ref_ptch
 
 
@@ -610,6 +641,14 @@ check_man: ${ALL_MAN_TARGETS}
 	@echo
 	@echo "${OUR_NAME}: make $@ complete"
 
+# install man pages
+#
+install_man: ${ALL_MAN_TARGETS}
+	${INSTALL_Q} ${INSTALL} ${INSTALL_V} -d -m 0775 ${MAN1_DIR}
+	${INSTALL_Q} ${INSTALL} ${INSTALL_V} -m 0444 ${MAN1_TARGETS} ${MAN1_DIR}
+	${INSTALL_Q} ${INSTALL} ${INSTALL_V} -d -m 0775 ${MAN8_DIR}
+	${INSTALL_Q} ${INSTALL} ${INSTALL_V} -m 0444 ${MAN8_TARGETS} ${MAN8_DIR}
+
 # vi/vim tags
 #
 tags: ${ALL_CSRC} ${ALL_HSRC}
@@ -684,11 +723,14 @@ clobber: clean
 	@echo
 	@echo "${OUR_NAME}: make $@ complete"
 
-install: all
+install: all install_man
 	@echo
 	@echo "${OUR_NAME}: make $@ starting"
 	@echo
-	@echo "nothing to $@. Try eating soup instead."
+	${INSTALL_Q} ${INSTALL} ${INSTALL_V} -d -m 0775 ${DEST_LIB}
+	${INSTALL_Q} ${INSTALL} ${INSTALL_V} -m 0444 ${LIBA_TARGETS} ${DEST_LIB}
+	${INSTALL_Q} ${INSTALL} ${INSTALL_V} -d -m 0775 ${DEST_DIR}
+	${INSTALL_Q} ${INSTALL} ${INSTALL_V} -m 0555 ${SH_TARGETS} ${PROG_TARGETS} ${DEST_DIR}
 	@echo
 	@echo "${OUR_NAME}: make $@ complete"
 

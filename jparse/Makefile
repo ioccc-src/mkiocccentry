@@ -42,9 +42,9 @@ SHELL= bash
 SHELLCHECK= shellcheck
 
 
-###########################
-# Makefile directory name #
-###########################
+####################
+# Makefile control #
+####################
 
 # The name of this directory
 #
@@ -54,6 +54,32 @@ SHELLCHECK= shellcheck
 # by Makefiles in other directories.
 #
 OUR_NAME= jparse
+
+# Makefile debug
+#
+# Q= @   do not echo internal Makefile actions (quiet mode)
+# Q=    echo internal Makefile actions (debug / verbose mode)
+#
+# V= @:  do not echo debug statements (quiet mode)
+# V= @   echo debug statements (debug / verbose mode)
+#
+# INSTALL_Q= @	do not echo install commands (quiet mode)
+# INSTALL_Q=	echo install commands (debug / verbose mode
+#
+# INSTALL_V=	install w/o -v flag (quiet mode)
+# INSTALL_V= -v	install with -v (debug / verbose mode
+#
+#Q=
+Q= @
+#
+V= @:
+#V= @
+#
+INSTALL_Q=
+#INSTALL_Q= @
+#
+#INSTALL_V=
+INSTALL_V= -v
 
 
 ##################
@@ -295,17 +321,25 @@ ALL_MAN_TARGETS= ${MAN1_TARGETS} ${MAN3_TARGETS} ${MAN8_TARGETS}
 #
 LIBA_TARGETS= jparse.a
 
+# shell targets to make by all and removed by clobber
+#
+SH_TARGETS=
+
+# program targets to make by all, installed by install, and removed by clobber
+#
+PROG_TARGETS= jparse verge jsemtblgen jnum_gen jstrdecode jstrencode
+
 # include files NOT to removed by clobber
 #
 H_SRC_TARGETS= jparse.h
 
 # what to make by all but NOT to removed by clobber
 #
-ALL_OTHER_TARGETS= extern_everything ${ALL_MAN_PAGES}
+ALL_OTHER_TARGETS= ${SH_TARGETS} extern_everything ${ALL_MAN_PAGES}
 
 # what to make by all, what to install, and removed by clobber (and thus not ${ALL_OTHER_TARGETS})
 #
-TARGETS= ${LIBA_TARGETS} jparse verge jsemtblgen jnum_gen jstrdecode jstrencode ${ALL_MAN_BUILT}
+TARGETS= ${LIBA_TARGETS} ${PROG_TARGETS} ${ALL_MAN_BUILT}
 
 
 ############################################################
@@ -339,7 +373,8 @@ all: ${TARGETS} ${ALL_OTHER_TARGETS} Makefile
 
 .PHONY: all \
 	extern_include extern_objs extern_liba extern_man extern_prog extern_everything man/man1/jparse.1 man/man8/jparse_test.8 \
-	parser parser-o use_json_ref bison flex test tags check_man prep_clean prep_clobber legacy_clean legacy_clobber load_json_ref \
+	parser parser-o use_json_ref bison flex test tags check_man prep_clean prep_clobber legacy_clean legacy_clobber \
+	load_json_ref install_man \
 	configure clean clobber install depend
 
 
@@ -682,6 +717,14 @@ check_man: ${ALL_MAN_TARGETS}
 	@echo
 	@echo "${OUR_NAME}: make $@ complete"
 
+# install man pages
+#
+install_man: ${ALL_MAN_TARGETS}
+	${INSTALL_Q} ${INSTALL} ${INSTALL_V} -d -m 0775 ${MAN1_DIR}
+	${INSTALL_Q} ${INSTALL} ${INSTALL_V} -m 0444 ${MAN1_TARGETS} ${MAN1_DIR}
+	${INSTALL_Q} ${INSTALL} ${INSTALL_V} -d -m 0775 ${MAN8_DIR}
+	${INSTALL_Q} ${INSTALL} ${INSTALL_V} -m 0444 ${MAN8_TARGETS} ${MAN8_DIR}
+
 # vi/vim tags
 #
 tags: ${ALL_CSRC} ${ALL_HSRC} test_jparse/Makefile
@@ -756,22 +799,17 @@ clobber: clean
 	@echo
 	@echo "${OUR_NAME}: make $@ complete"
 
-install: all test_jparse/Makefile
+install: all test_jparse/Makefile install_man
 	@echo
 	@echo "${OUR_NAME}: make $@ starting"
 	@echo
 	${MAKE} -C test_jparse all $@
-	${INSTALL} -v -d -m 0775 ${DEST_LIB}
-#none#	${INSTALL} -v -d -m 0775 ${DEST_DIR}
-	${INSTALL} -v -d -m 0775 ${MAN1_DIR}
-#none#	${INSTALL} -v -d -m 0775 ${MAN3_DIR}
-	${INSTALL} -v -d -m 0775 ${MAN8_DIR}
-	${INSTALL} -v -d -m 0775 ${DEST_INCLUDE}
-	${INSTALL} -v -m 0444 ${MAN1_TARGETS} ${MAN1_DIR}
-#none#	${INSTALL} -v -m 0444 ${MAN3_TARGETS} ${MAN3_DIR}
-	${INSTALL} -v -m 0444 ${MAN8_TARGETS} ${MAN8_DIR}
-	${INSTALL} -v -m 0444 ${LIBA_TARGETS} ${DEST_LIB}
-	${INSTALL} -v -m 0444 ${H_SRC_TARGETS} ${DEST_INCLUDE}
+	${INSTALL_Q} ${INSTALL} ${INSTALL_V} -d -m 0775 ${DEST_LIB}
+	${INSTALL_Q} ${INSTALL} ${INSTALL_V} -m 0444 ${LIBA_TARGETS} ${DEST_LIB}
+	${INSTALL_Q} ${INSTALL} ${INSTALL_V} -d -m 0775 ${DEST_INCLUDE}
+	${INSTALL_Q} ${INSTALL} ${INSTALL_V} -m 0444 ${H_SRC_TARGETS} ${DEST_INCLUDE}
+	${INSTALL_Q} ${INSTALL} ${INSTALL_V} -d -m 0775 ${DEST_DIR}
+	${INSTALL_Q} ${INSTALL} ${INSTALL_V} -m 0555 ${SH_TARGETS} ${PROG_TARGETS} ${DEST_DIR}
 	@echo
 	@echo "${OUR_NAME}: make $@ complete"
 
