@@ -169,9 +169,6 @@ ALL_SRC= ${ALL_CSRC} ${ALL_HSRC} ${SH_FILES}
 
 # where to install
 #
-MAN1_DIR= /usr/local/share/man/man1
-MAN3_DIR= /usr/local/share/man/man3
-MAN8_DIR= /usr/local/share/man/man8
 DEST_INCLUDE= /usr/local/include
 DEST_LIB= /usr/local/lib
 DEST_DIR= /usr/local/bin
@@ -185,7 +182,6 @@ DEST_DIR= /usr/local/bin
 #
 EXTERN_H=
 EXTERN_O=
-EXTERN_MAN= ${ALL_MAN_TARGETS}
 EXTERN_LIBA=
 EXTERN_PROG=
 
@@ -201,6 +197,10 @@ EXTERN_CLOBBER= ${EXTERN_O} ${EXTERN_LIBA} ${EXTERN_PROG}
 # shell targets to make by all and removed by clobber
 #
 SH_TARGETS=
+
+# what to make by all but NOT to removed by clobber
+#
+ALL_OTHER_TARGETS= extern_everything
 
 # what to make by all, what to install, and removed by clobber (and thus not ${ALL_OTHER_TARGETS})
 #

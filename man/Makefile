@@ -81,6 +81,16 @@ LESS_PICKY_HSRC=
 #
 SH_FILES=
 
+# all man pages that NOT built and NOT removed by make clobber
+#
+MAN1_PAGES= man1/bug_report.1 man1/chkentry.1 man1/fnamchk.1 man1/hostchk.1 man1/iocccsize.1 \
+	man1/mkiocccentry.1 man1/txzchk.1
+MAN3_PAGES=
+MAN8_PAGES= man8/all_sem_ref.8 man8/chkentry_test.8 man8/ioccc_test.8 man8/iocccsize_test.8 \
+	man8/mkiocccentry_test.8 man8/reset_tstamp.8 man8/run_usage.8 man8/txzchk_test.8 man8/vermod.8
+ALL_MAN_PAGES= ${MAN1_PAGES} ${MAN3_PAGES} ${MAN8_PAGES}
+
+
 ######################
 # intermediate files #
 ######################
@@ -108,6 +118,14 @@ ALL_OBJS= ${LIB_OBJS} ${OTHER_OBJS}
 ALL_CSRC= ${C_SRC} ${LESS_PICKY_CSRC} ${BUILT_C_SRC}
 ALL_HSRC= ${H_SRC} ${LESS_PICKY_HSRC} ${BUILT_H_SRC}
 ALL_SRC= ${ALL_CSRC} ${ALL_HSRC} ${SH_FILES}
+
+# all man pages that built and removed by make clobber
+#
+MAN1_BUILT= man1/jparse.1
+MAN3_BUILT= man3/dbg.3 man3/err.3 man3/printf_usage.3 man3/warn.3 man3/warn_or_err.3 man3/msg.3 \
+	man3/werr.3 man3/dyn_array.3
+MAN8_BUILT= man8/jparse_test.8
+ALL_MAN_BUILT= ${MAN1_BUILT} ${MAN3_BUILT} ${MAN8_BUILT}
 
 
 #######################
@@ -147,21 +165,10 @@ EXTERN_CLOBBER= ${EXTERN_O} ${EXTERN_LIBA} ${EXTERN_PROG}
 
 # man pages
 #
-MAN1_TARGETS= man1/bug_report.1 man1/chkentry.1 man1/fnamchk.1 man1/hostchk.1 man1/iocccsize.1 \
-	      man1/jparse.1 man1/jstrdecode.1 man1/jstrencode.1 man1/mkiocccentry.1 man1/run_bison.1 \
-	      man1/run_flex.1 man1/txzchk.1
-MAN3_TARGETS= man3/dbg.3 man3/dyn_array.3 man3/err.3 man3/msg.3 man3/warn.3 man3/werr.3 man3/printf_usage.3 \
-	      man3/warn_or_err.3
-MAN8_TARGETS= man8/all_sem_ref.8 man8/chkentry_test.8 man8/ioccc_test.8 man8/iocccsize_test.8 man8/jnum_chk.8 \
-	      man8/jnum_gen.8 man8/jparse_test.8 man8/jsemcgen.8 man8/jsemtblgen.8 man8/jstr_test.8 \
-	      man8/mkiocccentry_test.8 man8/reset_tstamp.8 man8/run_usage.8 man8/txzchk_test.8 man8/utf8_test.8 \
-	      man8/verge.8 man8/vermod.8
+MAN1_TARGETS= ${MAN1_PAGES} ${MAN1_BUILT}
+MAN3_TARGETS= ${MAN3_PAGES} ${MAN3_BUILT}
+MAN8_TARGETS= ${MAN8_PAGES} ${MAN8_BUILT}
 ALL_MAN_TARGETS= ${MAN1_TARGETS} ${MAN3_TARGETS} ${MAN8_TARGETS}
-
-# These man pages are built and removed by make clobber
-#
-BUILT_MAN_TARGETS= man3/dbg.3 man3/err.3 man3/msg.3 man3/warn.3 man3/werr.3 man3/printf_usage.3 man3/warn_or_err.3 \
-		   man3/dyn_array.3 man1/jparse.1 man8/jparse_test.8
 
 # libraries
 #
@@ -171,13 +178,13 @@ LIBA_TARGETS=
 #
 H_SRC_TARGETS=
 
-# what to make by all but NOT to removed by clobber (because they are not files)
+# what to make by all but NOT to removed by clobber
 #
-ALL_OTHER_TARGETS= extern_everything ${BUILT_MAN_TARGETS}
+ALL_OTHER_TARGETS= extern_everything ${ALL_MAN_PAGES}
 
 # what to make by all and removed by clobber (and thus not ${ALL_OTHER_TARGETS})
 #
-TARGETS= ${BUILT_MAN_TARGETS}
+TARGETS= ${ALL_MAN_BUILT}
 
 
 ############################################################

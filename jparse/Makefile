@@ -129,6 +129,15 @@ BISONFILES= jparse.y
 #
 SH_FILES= jsemcgen.sh run_bison.sh run_flex.sh
 
+# all man pages that NOT built and NOT removed by make clobber
+#
+MAN1_PAGES= man/man1/jparse.1 man/man1/jstrdecode.1 man/man1/jstrencode.1 man/man1/run_bison.1 \
+	man/man1/run_flex.1
+MAN3_PAGES=
+MAN8_PAGES= man/man8/jnum_chk.8 man/man8/jnum_gen.8 man/man8/jparse_test.8 man/man8/jsemcgen.8 \
+	man/man8/jsemtblgen.8 man/man8/jstr_test.8 man/man8/utf8_test.8 man/man8/verge.8
+ALL_MAN_PAGES= ${MAN1_PAGES} ${MAN3_PAGES} ${MAN8_PAGES}
+
 
 ######################
 # intermediate files #
@@ -277,11 +286,10 @@ EXTERN_CLOBBER= ${EXTERN_O} ${EXTERN_LIBA} ${EXTERN_PROG}
 
 # man pages
 #
-MAN1_TARGETS= man/man1/jparse.1
-MAN3_TARGETS=
-MAN8_TARGETS= man/man8/jparse_test.8
-ALL_MAN_TARGETS= ${MAN1_TARGETS} ${MAN8_TARGETS}
-EXTERN_MAN= ${ALL_MAN_TARGETS}
+MAN1_TARGETS= ${MAN1_PAGES} ${MAN1_BUILT}
+MAN3_TARGETS= ${MAN3_PAGES} ${MAN3_BUILT}
+MAN8_TARGETS= ${MAN8_PAGES} ${MAN8_BUILT}
+ALL_MAN_TARGETS= ${MAN1_TARGETS} ${MAN3_TARGETS} ${MAN8_TARGETS}
 
 # libraries to make by all, what to install, and removed by clobber
 #
@@ -291,13 +299,13 @@ LIBA_TARGETS= jparse.a
 #
 H_SRC_TARGETS= jparse.h
 
-# what to make by all but NOT to removed by clobber (because they are not files)
+# what to make by all but NOT to removed by clobber
 #
-ALL_OTHER_TARGETS= extern_everything
+ALL_OTHER_TARGETS= extern_everything ${ALL_MAN_PAGES}
 
 # what to make by all, what to install, and removed by clobber (and thus not ${ALL_OTHER_TARGETS})
 #
-TARGETS= ${LIBA_TARGETS} jparse verge jsemtblgen jnum_gen jstrdecode jstrencode
+TARGETS= ${LIBA_TARGETS} jparse verge jsemtblgen jnum_gen jstrdecode jstrencode ${ALL_MAN_BUILT}
 
 
 ############################################################

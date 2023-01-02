@@ -131,6 +131,13 @@ LESS_PICKY_HSRC=
 #
 SH_FILES=
 
+# all man pages that NOT built and NOT removed by make clobber
+#
+MAN1_PAGES=
+MAN3_PAGES= man/man3/dyn_array.3
+MAN8_PAGES=
+ALL_MAN_PAGES= ${MAN1_PAGES} ${MAN3_PAGES} ${MAN8_PAGES}
+
 
 ######################
 # intermediate files #
@@ -159,6 +166,13 @@ ALL_OBJS= ${LIB_OBJS} ${OTHER_OBJS}
 ALL_CSRC= ${C_SRC} ${LESS_PICKY_CSRC} ${BUILT_C_SRC}
 ALL_HSRC= ${H_SRC} ${LESS_PICKY_HSRC} ${BUILT_H_SRC}
 ALL_SRC= ${ALL_CSRC} ${ALL_HSRC} ${SH_FILES}
+
+# all man pages that built and removed by make clobber
+#
+MAN1_BUILT=
+MAN3_BUILT=
+MAN8_BUILT=
+ALL_MAN_BUILT= ${MAN1_BUILT} ${MAN3_BUILT} ${MAN8_BUILT}
 
 
 #######################
@@ -198,9 +212,9 @@ EXTERN_CLOBBER= ${EXTERN_O} ${EXTERN_LIBA} ${EXTERN_PROG}
 
 # man pages
 #
-MAN1_TARGETS=
-MAN3_TARGETS= man/man3/dyn_array.3
-MAN8_TARGETS=
+MAN1_TARGETS= ${MAN1_PAGES} ${MAN1_BUILT}
+MAN3_TARGETS= ${MAN3_PAGES} ${MAN3_BUILT}
+MAN8_TARGETS= ${MAN8_PAGES} ${MAN8_BUILT}
 ALL_MAN_TARGETS= ${MAN1_TARGETS} ${MAN3_TARGETS} ${MAN8_TARGETS}
 
 # libraries to make by all, what to install, and removed by clobber
@@ -211,13 +225,13 @@ LIBA_TARGETS= dyn_array.a
 #
 H_SRC_TARGETS= dyn_array.h
 
-# what to make by all but NOT to removed by clobber (because they are not files)
+# what to make by all but NOT to removed by clobber
 #
-ALL_OTHER_TARGETS= extern_everything
+ALL_OTHER_TARGETS= extern_everything ${ALL_MAN_PAGES}
 
 # what to make by all, what to install, and removed by clobber (and thus not ${ALL_OTHER_TARGETS})
 #
-TARGETS= ${LIBA_TARGETS} dyn_test
+TARGETS= ${LIBA_TARGETS} dyn_test ${ALL_MAN_BUILT}
 
 
 ############################################################

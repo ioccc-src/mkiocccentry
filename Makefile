@@ -183,6 +183,13 @@ LESS_PICKY_HSRC=
 #
 SH_FILES= bug_report.sh
 
+# all man pages that NOT built and NOT removed by make clobber
+#
+MAN1_PAGES=
+MAN3_PAGES=
+MAN8_PAGES=
+ALL_MAN_PAGES= ${MAN1_PAGES} ${MAN3_PAGES} ${MAN8_PAGES}
+
 
 ######################
 # intermediate files #
@@ -211,6 +218,13 @@ ALL_OBJS= ${LIB_OBJS} ${OTHER_OBJS}
 ALL_CSRC= ${C_SRC} ${LESS_PICKY_CSRC} ${BUILT_C_SRC}
 ALL_HSRC= ${H_SRC} ${LESS_PICKY_HSRC} ${BUILT_H_SRC}
 ALL_SRC= ${ALL_CSRC} ${ALL_HSRC} ${SH_FILES}
+
+# all man pages that built and removed by make clobber
+#
+MAN1_BUILT=
+MAN3_BUILT=
+MAN8_BUILT=
+ALL_MAN_BUILT= ${MAN1_BUILT} ${MAN3_BUILT} ${MAN8_BUILT}
 
 
 #######################
@@ -248,6 +262,13 @@ EXTERN_CLOBBER= ${EXTERN_O} ${EXTERN_LIBA} ${EXTERN_PROG}
 # target information #
 ######################
 
+# man pages
+#
+MAN1_TARGETS= ${MAN1_PAGES} ${MAN1_BUILT}
+MAN3_TARGETS= ${MAN3_PAGES} ${MAN3_BUILT}
+MAN8_TARGETS= ${MAN8_PAGES} ${MAN8_BUILT}
+ALL_MAN_TARGETS= ${MAN1_TARGETS} ${MAN3_TARGETS} ${MAN8_TARGETS}
+
 # shell targets to make by all and removed by clobber
 #
 SH_TARGETS=
@@ -268,13 +289,13 @@ BUILD_LOG= build.log
 
 ALL_SUBDIRS= all_dbg all_dyn_array all_jparse all_man all_soup all_test_ioccc
 
-# what to make by all but NOT to removed by clobber (because they are not files)
+# what to make by all but NOT to removed by clobber
 #
-ALL_OTHER_TARGETS= ${ALL_SUBDIRS}
+ALL_OTHER_TARGETS= ${ALL_SUBDIRS} ${ALL_MAN_PAGES}
 
 # what to make by all, what to install, and removed by clobber (and thus not ${ALL_OTHER_TARGETS})
 #
-TARGETS= mkiocccentry iocccsize txzchk chkentry ${SH_TARGETS}
+TARGETS= mkiocccentry iocccsize txzchk chkentry ${SH_TARGETS} ${ALL_MAN_BUILT}
 
 
 ############################################################
@@ -1036,6 +1057,7 @@ clobber: clean prep_clobber dbg/Makefile dyn_array/Makefile jparse/Makefile man/
 	${RM} -rf .hostchk.work.*
 	${RM} -f .txzchk_test.*
 	${RM} -f .sorry.*
+	${RM} -f ${TARGETS}
 	@echo
 	@echo "${OUR_NAME}: make $@ complete"
 
